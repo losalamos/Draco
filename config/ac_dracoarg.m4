@@ -116,7 +116,7 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl
    
    dnl defines --with-cppflags
-   AC_ARG_ENABLE(cppflags,
+   AC_ARG_WITH(cppflags,
       [  --with-cppflags[=flags] add flags to \$CPPFLAGS])
 
    dnl
@@ -124,7 +124,7 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl
    
    dnl defines --with-cxxflags
-   AC_ARG_ENABLE(cxxflags,
+   AC_ARG_WITH(cxxflags,
       [  --with-cxxflags[=flags] add flags to \$CXXFLAGS])
 
    dnl
@@ -132,7 +132,7 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl
    
    dnl defines --with-cflags
-   AC_ARG_ENABLE(cflags,
+   AC_ARG_WITH(cflags,
       [  --with-cflags[=flags]   add flags to \$CFLAGS])
 
    dnl
@@ -140,7 +140,7 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl
    
    dnl defines --with-f90flags
-   AC_ARG_ENABLE(f90flags,
+   AC_ARG_WITH(f90flags,
       [  --with-f90flags[=flags] add flags to \$F90FLAGS])
 
    dnl
@@ -148,7 +148,7 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl
    
    dnl defines --with-arflags
-   AC_ARG_ENABLE(arflags,
+   AC_ARG_WITH(arflags,
       [  --with-arflags[=flags]  add flags to \$ARFLAGS])
 
    dnl
@@ -156,7 +156,7 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl
    
    dnl defines --with-ldflags
-   AC_ARG_ENABLE(ldflags,
+   AC_ARG_WITH(ldflags,
       [  --with-ldflags[=flags]  add flags to \$LDFLAGS])
 
    dnl
