@@ -140,9 +140,6 @@ case $exe in
 
 esac
 
-echo $test_exec
-exit 1
-
 ##---------------------------------------------------------------------------##
 ## Give message about executable
 
