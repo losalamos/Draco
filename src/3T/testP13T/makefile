@@ -13,10 +13,10 @@ need_c4		:= yes
 need_namelist	:= yes
 need_spdf	:= yes
 need_util	:= yes
-need_pooma	:= no
 need_mesh	:= yes
 need_3T		:= yes
 need_units	:= yes
+need_radphys	:= yes
 need_matprops	:= yes
 
 # Go get the standard includeable makefile for Draco components.
@@ -43,14 +43,17 @@ objs	= $(srcs:%.cc=$(env)/%.o) \
 default: main_$(env)
 
 main_$(env) : deps $(objs) \
-	$(dep_lib3T) $(dep_libunits) $(dep_libmatprops) $(dep_libds++)
+	$(dep_lib3T) $(dep_libmatprops) $(dep_libradphys) $(dep_libunits) \
+	$(dep_libutil) $(dep_libspdf) \
+	$(dep_libnml) $(dep_libc4) $(dep_libds++)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../../units;   $(MAKE) $(subnj))
-	(cd ../../matprops;   $(MAKE) $(subnj))
-	(cd ../../3T;   $(MAKE) $(subnj))
+	(cd ../../3T;         $(MAKE) $(subnj))
+	(cd ../../units;      $(MAKE) $(subnj) dodeps=no)
+	(cd ../../radphys;    $(MAKE) $(subnj) dodeps=no)
+	(cd ../../matprops;   $(MAKE) $(subnj) dodeps=no)
 endif
 
 $(dep_libmatprops):
