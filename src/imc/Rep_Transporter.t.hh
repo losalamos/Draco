@@ -100,8 +100,7 @@ Rep_Transporter<MT,FT,PT>::transport(double dt, int cycle, int print_f,
     while (*source)
     {
 	// get a particle from the source
-	rtt_dsxx::SP<PT> particle =
-	    source->get_Source_Particle(dt); 
+	rtt_dsxx::SP<PT> particle = source->get_Source_Particle(dt); 
 	Check (particle->status());
 
 	// transport the particle

@@ -207,8 +207,7 @@ void DD_Transporter<MT,FT,PT>::trans_src_async(SP_PT_Diagnostic check,
     using std::setw;
 
     // get a source particle
-    SP<PT> particle =
-	source->get_Source_Particle(delta_t); 
+    SP<PT> particle = source->get_Source_Particle(delta_t); 
     Check (particle->status());
 
     // transport the particle; update counters
