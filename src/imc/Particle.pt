@@ -7,13 +7,14 @@
 //---------------------------------------------------------------------------//
 
 #include "imctest/OS_Mesh.hh"
+#include "imctest/Random.hh"
 #include "Particle.cc"
 
 IMCSPACE
 
-instantiate class Particle<OS_Mesh>
+instantiate class Particle<OS_Mesh, Random>
 
-instantiate class Particle_Stack<OS_Mesh>
+instantiate class Particle_Stack<OS_Mesh, Random>
 
 CSPACE
 

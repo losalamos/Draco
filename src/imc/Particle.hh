@@ -22,6 +22,12 @@
 //  2)   4-3-98 : added Particle-Stack struct; added friendship to list and 
 //                stack stl template classes.  If add stacks based on other
 //                stl containers don't forget to add friendship in Particle 
+//  3)   4-6-98 : moved the default constructor to public with an assert(0); 
+//                this way, if anyone tries to use it the code will crash at 
+//                runtime, yet, the STL containers still can see the 
+//                constructor to make the containers, can't give objects to 
+//                initialize the containers because there are no conversion 
+//                constructors in Particle
 // 
 //===========================================================================//
 
@@ -33,7 +39,6 @@
 //===========================================================================//
 
 #include "imctest/Names.hh"
-#include "imctest/Random.hh"
 #include "imctest/Opacity.hh"
 #include "ds++/SP.hh"
 #include <vector>
@@ -42,6 +47,7 @@
 #include <cmath>
 #include <stack>
 #include <list>
+#include <cassert>
 
 IMCSPACE
 
@@ -54,15 +60,15 @@ using std::exp;
 using std::stack;
 using std::list;
 
-template<class MT> class Particle;
+template<class MT, class RN> class Particle;
 
-template<class MT>
+template<class MT, class RN>
 struct Particle_Stack
 {
-    typedef stack<Particle<MT>, list<Particle<MT> > > Bank;
+    typedef stack<Particle<MT, RN>, list<Particle<MT, RN> > > Bank;
 };
 
-template<class MT>
+template<class MT, class RN>
 class Particle
 {
 public: 
@@ -84,9 +90,9 @@ public:
 	bool detail_status() const { return detail; }
 
       // diagnostic print functions
-	void print(const Particle<MT> &) const;
-	void print_alive(const Particle<MT> &) const;
-	void print_dead(const Particle<MT> &) const;
+	void print(const Particle<MT, RN> &) const;
+	void print_alive(const Particle<MT, RN> &) const;
+	void print_dead(const Particle<MT, RN> &) const;
 	void print_dist(double, double, double, int) const;
 	void print_xs(const Opacity<MT> &, int) const;
 
@@ -96,8 +102,6 @@ public:
 
   // friends and such
     friend class Diagnostic;
-    template<class T, class C> friend class stack;
-    template<class T, class A> friend class list;
 
 private:
   // particle energy-weight
@@ -118,7 +122,7 @@ private:
     string descriptor;
 
   // random number object
-    Random random;
+    RN random;
 
   // private particle service functions
 
@@ -137,16 +141,22 @@ private:
   // surface crossings, return a false if particle escapes
     bool surface(const MT &, int);
 
-  // null constructor usable only be friends of the class
-    Particle();
+  // IMC transport step
+    void trans_IMC(const MT &, const Opacity<MT> &);
+    
+  // DDMC transport step
+    void trans_DDMC(const MT &, const Opacity<MT> &);
 
-  // have not yet defined copy constructors or assignment operators
-  // Particle(const Particle<MT> &);
-  // Particle<MT>& operator=(const Particle<MT> &);
+  // Begin_Doc particle-int.tex
+  // Begin_Verbatim 
 
 public:
-  // explicit constructor
-    inline explicit Particle(const MT &, long, double);
+  // Particle constructor
+    inline Particle(const MT &, long, double);
+
+  // null constructor required as kluge for the STL containers which need a
+  // default constructor, this calls an assert(0) so you can't use it
+    inline Particle();
 
   // transport solvers
 
@@ -154,25 +164,25 @@ public:
     void source(vector<double> &, vector<double> &, const MT &);
 
   // IMC transport step
-    void transport_IMC(const MT &, const Opacity<MT> &, 
+    void transport(const MT &, const Opacity<MT> &, 
 		   SP<Diagnostic> = SP<Diagnostic>());
-
-  // DDMC transport step
-    void transport_DDMC(const MT &, const Opacity<MT> &);
 
   // other services
     bool status() const { return alive; }
 
   // public diagnostic services
     void print(ostream &) const;
+
+  // End_Verbatim 
+  // End_Doc 
 };
 
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
 
-template<class MT>
-inline ostream& operator<<(ostream &output, Particle<MT> &object)
+template<class MT, class RN>
+inline ostream& operator<<(ostream &output, Particle<MT, RN> &object)
 {
     object.print(output);
     return output;
@@ -184,8 +194,8 @@ inline ostream& operator<<(ostream &output, Particle<MT> &object)
 
 // Particle<MT>::Diagnostic inline functions
 
-template<class MT>
-inline void Particle<MT>::Diagnostic::header() const 
+template<class MT, class RN>
+inline void Particle<MT, RN>::Diagnostic::header() const 
 { 
     output << "*** PARTICLE HISTORY ***" << endl; 
     output << "------------------------" << endl;
@@ -193,25 +203,37 @@ inline void Particle<MT>::Diagnostic::header() const
 
 // Particle<MT> inline functions
 
-template<class MT>
-inline Particle<MT>::Particle(const MT &mesh, long seed, double ew_)
-    :ew(ew_), r(mesh.get_Coord().get_dim(), 0.0), 
-     omega(mesh.get_Coord().get_sdim(), 0.0), cell(0), alive(true), 
-     descriptor("born"), random(seed), time_left(0), fraction(1)
+template<class MT, class RN>
+inline Particle<MT, RN>::Particle(const MT &mesh, long seed, double ew_)
+    : ew(ew_), r(mesh.get_Coord().get_dim(), 0.0), 
+      omega(mesh.get_Coord().get_sdim(), 0.0), cell(0), alive(true), 
+      descriptor("born"), random(seed), time_left(0), fraction(1)
 {
-  // explicit constructor, Particle must be defined with a Mesh
+  // non-default constructor, Particle must be defined with a Mesh
 }
 
-template<class MT>
-inline void Particle<MT>::stream(double distance)
+template<class MT, class RN>
+inline Particle<MT, RN>::Particle()
+    : random(-1)
+{
+  // default constructor for use with stl containers; must provide an
+  // initializer for Random because it doesn't have a default constructor 
+
+  // assertion to kill the run if anybody actually tries to use this
+    assert (0);
+}
+
+template<class MT, class RN>
+inline void Particle<MT, RN>::stream(double distance)
 {
   // calculate new location when Particle streams
     for (int i = 0; i <= r.size()-1; i++)
 	r[i] = r[i] + distance * omega[i];
 }
 
-template<class MT>
-inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, double distance)
+template<class MT, class RN>
+inline void Particle<MT, RN>::stream_IMC(const Opacity<MT> &xs,
+					 double distance)
 {
   // hardwire minimum energy weight fraction
     double minwt_frac = 0.01;

@@ -17,7 +17,10 @@
 //
 // revision history:
 // -----------------
-// 0) original
+//  0) original
+//  1)   4-6-98 : removed explicit from constructor, but added assertion to 
+//                assure that the conversion argument to the random number 
+//                object is a long int < 0
 // 
 //===========================================================================//
 
@@ -25,6 +28,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <cassert>
 
 IMCSPACE
 
@@ -53,7 +57,7 @@ private:
 
 public:
   // must give seed to Random number object
-    explicit inline Random(long);
+    inline Random(long);
  
   // overloaded assignment operators
     inline const Random& operator=(const Random &rhs);
@@ -105,7 +109,8 @@ inline Random::Random(long idum_)
     : mbig(1000000000), mseed(161803398), mz(0), fac(1.0/mbig),
       inext(0), inextp(0), ma(56), iff(0), idum(idum_), count(0),
       seed(idum_)
-{ 
+{     
+    assert (idum_ < 0);
     fill(ma.begin(), ma.end(), 0); 
 }
 
