@@ -1007,7 +1007,7 @@ EOF
 
 
 # testing setup
-	test_alltarget="$test_alltarget tstOpacity tstTally tstParticle"
+	test_alltarget="$test_alltarget tstOpacity tstTally tstParticle tstTopology_Builder"
         
 	test_nprocs="1 2 4"
 

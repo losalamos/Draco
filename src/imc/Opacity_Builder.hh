@@ -41,7 +41,6 @@ class Opacity_Builder
     typedef dsxx::SP<Opacity<MT> > SP_Opacity; 
 
   private:
-
     // data received from XX_Interface
     std::vector<double> density;
     std::vector<double> kappa;
@@ -54,9 +53,6 @@ class Opacity_Builder
     std::string analytic_opacity;
     std::string analytic_sp_heat;
 
-    // Begin_Doc opacity_builder-int.tex
-    // Begin_Verbatim 
-
   public:
     // templated explicit constructor depends on interface type (IT)
     template<class IT>
@@ -68,10 +64,7 @@ class Opacity_Builder
     SP_Mat build_Mat(SP_MT);
     
     // build Opacity helper functions
-    SP_Opacity build_Opacity(SP_MT, SP_Mat);	
-
-    // End_Verbatim 
-    // End_Doc 
+    SP_Opacity build_Opacity(SP_MT, SP_Mat);
 };
     
 } // end namespace rtt_imc
