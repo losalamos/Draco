@@ -83,6 +83,8 @@ namespace rtt_mc
 //                 probably decide to store.
 // 10) 2000-11-21: Implemented print_vertex_vector() member function, which
 //                 was the last part of the overall print_mesh() function.
+// 11) 2000-11-30: Added get_cell_pair(), the third graphic service for the
+//                 TET_Mesh class, to support Ensight_Translator.
 //
 //___________________________________________________________________________//
 
