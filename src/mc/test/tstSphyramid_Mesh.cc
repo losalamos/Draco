@@ -421,9 +421,15 @@ void simple_one_cell_Sphyramid()
     
     // The explicit-value tests has been hand-checked in a weak sense and,
     // therefore, are more of a regression test.
-    vector<double> position_sampled;
-
-
+    {
+	vector<double> position_sampled;
+	
+	position_sampled = mesh->sample_pos(1,ran_object);
+	//if (position_sampled.size() != 3)                    ITFAILS;
+	//if (!soft_equiv(position_sampled[0], 0.2515, 0.001)) ITFAILS;
+	//if (!soft_equiv(position_sampled[1], 0.1961, 0.001)) ITFAILS;
+	//if (!soft_equiv(position_sampled[2], 0.2216, 0.001)) ITFAILS;
+    }
 
 
     

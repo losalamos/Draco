@@ -17,9 +17,9 @@
 
 #include "Coord_sys.hh"
 #include "Layout.hh"
-//#include "rng/Sprng.hh"
+#include "rng/Sprng.hh"
 #include "ds++/SP.hh"
-//#include "ds++/Assert.hh"
+#include "ds++/Assert.hh"
 //#include "Math.hh"
 //#include "Constants.hh"
 //#include "Sampler.hh"
@@ -74,7 +74,7 @@ class Sphyramid_Mesh
     // typedef rtt_dsxx::SP<Sphyramid_Mesh> SP_Mesh;
     typedef rtt_dsxx::SP<Coord_sys>            SP_Coord;
     // typedef rtt_dsxx::SP<Sphyramid_Mesh::Pack>  SP_Pack;
-    // typedef rtt_rng::Sprng rng_Sprng;
+    typedef rtt_rng::Sprng                     rng_Sprng;
     typedef std::vector<int>                   sf_int;
     // typedef std::vector<std::vector<int>>     vf_int;
     typedef std::vector<double>                sf_double;
@@ -178,7 +178,7 @@ class Sphyramid_Mesh
     inline double face_area(int cell,int face) const;
     vf_double get_vertices(int cell) const;
     vf_double get_vertices(int cell, int face) const;
-    // inline sf_double sample_pos(int, rng_Sprng &) const;
+    inline sf_double sample_pos(int cell, rng_Sprng &random) const;
     // inline sf_double sample_pos(int, rng_Sprng &, sf_double, double)
     // const;
     // inline sf_double sample_pos_on_face(int,int, rng_Sprng &) const;
@@ -494,6 +494,62 @@ double Sphyramid_Mesh::face_area(int cell, int face) const
     Ensure (face_area >= 0.);
     return face_area;
 }
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Sample a position uniformly in an Sphyramid_Mesh cell
+ * 
+ * \param cell cell number
+ * \param random random number object
+ * \return location in cell
+ */
+Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell, 
+						     rng_Sprng &random) const
+{
+    Require (cell > 0);
+    Require (cell <= num_cells());
+    Check   (this->coord->get_dim() == 3);
+
+    // initialize location vector
+    sf_double position(this->coord->get_dim(), 0.0);
+
+    // get x-dimension cell extents
+    double lox = get_low_x(cell);
+    double hix = get_high_x(cell);
+    Check (lox >= 0.0);
+    Check (hix >= 0.0);
+
+    // calculate corresponding y (and z) cell extents
+    double loy = lox*this->tan_beta;
+    double hiy = hix*this->tan_beta;
+    Check (loy >= 0.0);
+    Check (hiy >= 0.0);
+    
+    // sample x uniformly in cell
+    position[0] = 0.0;
+    
+    // sample y and z value
+    double pos_y = position[0]*this->tan_beta;
+    double neg_y =-pos_y;
+    Check (pos_y >= loy);
+    Check (pos_y <= hiy);
+
+    position[1] = neg_y+random.ran()*(pos_y-neg_y);
+    position[2] = neg_y+random.ran()*(pos_y-neg_y);
+
+    // check that sampled position is within cell
+    Ensure (position[0] >= lox);
+    Ensure (position[0] <= hix);
+    Ensure (position[1] >=-tan_beta*position[0]);
+    Ensure (position[1] <= tan_beta*position[0]);
+    Ensure (position[2] >=-tan_beta*position[0]);
+    Ensure (position[2] <= tan_beta*position[0]);
+
+    // return position
+    return position;
+
+}
+
+      
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Calculate the neighbors around a cell.
