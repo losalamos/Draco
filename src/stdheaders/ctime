@@ -3,7 +3,7 @@
 /* Murillo Michelle L. */
 /* Mon Jul 17 11:28:41 2000 */
 /*---------------------------------------------------------------------------*/
-/* @> ctime for stdheaders package */
+/* $Id$ */
 /*---------------------------------------------------------------------------*/
 
 #ifndef __stdheaders_ctime__
@@ -12,6 +12,7 @@
 #include <time.h>
 
 namespace std {
+
 using ::size_t;
 using ::clock_t;
 using ::time_t;

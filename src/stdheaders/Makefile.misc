@@ -1,6 +1,20 @@
+##---------------------------------------------------------------------------##
+## draco/src/stdheaders/Makefile.misc
+## add stdheaders for compilers that don't provide std namespace
+## $Id$ 
+##---------------------------------------------------------------------------##
+
+##---------------------------------------------------------------------------##
+## Headers (add as needed)
+##---------------------------------------------------------------------------##
+
 extraheaders := cmath ctime cctype cstdlib cstring cassert cfloat
 
 extraInstallHeaders := $(addprefix ${includedir}/${package}/, ${extraheaders})
+
+##---------------------------------------------------------------------------##
+## Targets
+##---------------------------------------------------------------------------##
 
 install: ${extraInstallHeaders}
 
@@ -10,4 +24,8 @@ uninstall: extraUninstall
 
 extraUninstall:
 	-${UNINSTALL} ${extraInstallHeaders}
+
+##---------------------------------------------------------------------------##
+## end of makefile.misc
+##---------------------------------------------------------------------------##
 
