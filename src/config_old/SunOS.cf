@@ -70,7 +70,7 @@ comm	:=
 else
 comm	:= c4
 SYS_FLAGS = -I/home/tme/lib/mpi/include -DC4_MPI
-SYS_LIBS = -L/home/tme/lib/mpi/lib/solaris/ch_p4 -lmpi
+SYS_LIBS = -L/home/tme/lib/mpi/lib/solaris/ch_p4 -lpmpi -lmpi -lsocket -lnsl
 endif
 
 ifdef nj
