@@ -15,7 +15,6 @@ need_spdf	:= yes
 need_util	:= yes
 #need_pooma	:= yes
 need_mesh	:= yes
-need_pcg        := yes
 
 # Go get the standard includeable makefile for Draco components.
 
