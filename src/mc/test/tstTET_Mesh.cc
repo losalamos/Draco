@@ -918,6 +918,25 @@ void Test_TET()
             theOutput << cell_pair_5[i][j] << "\n";
     theOutput << "END get_cell_pair\n";
 
+//    theOutput << "Ready for mesh_ptr_6." << endl;
+//
+//    SP<RTT_Mesh_Reader> reader_6(new RTT_Mesh_Reader("TET_RTT_6"));
+//    if (!reader_6)                                       ITFAILS;
+//
+//    TET_Builder* ptr_read_build_6 = new TET_Builder(reader_6);
+//
+//    SP<TET_Mesh> mesh_ptr_6 = ptr_read_build_6->build_Mesh();
+//    delete ptr_read_build_6;
+//
+//    theOutput << "BEGIN get_cell_pair\n";
+//
+//    VF_INT cell_pair_6 = mesh_ptr_6->get_cell_pair();
+//
+//    for (int i = 0; i < cell_pair_6.size() ; ++i)
+//        for (int j = 0 ; j < cell_pair_6[i].size() ; ++j)
+//            theOutput << cell_pair_6[i][j] << "\n";
+//    theOutput << "END get_cell_pair\n";
+
 }   // end Test_TET()
 
 int main(int argc, char *argv[])
