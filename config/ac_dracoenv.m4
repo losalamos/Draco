@@ -558,6 +558,20 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # end of lapack setup
        #
 
+       #
+       # gandolf requires -lfortran on the link line.
+       #
+
+       AC_MSG_CHECKING("libfortran requirements")
+       if test -n "${vendor_gandolf}" = vendor ; then
+          LIBS="${LIBS} -lfortran"
+          AC_MSG_RESULT("-lfortran added to LIBS")
+       fi
+
+       #
+       # end of gandolf/libfortran setup
+       #
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
 

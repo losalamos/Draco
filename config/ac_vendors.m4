@@ -247,9 +247,8 @@ AC_DEFUN(AC_GANDOLF_SETUP, [dnl
        fi
    fi
 
-   dnl note that we add some system-specific libraries for this
-   dnl vendor in AC_DRACO_ENV; also, the user must set up LAPACK for
-   dnl this to work
+   dnl SGI needs "-lfortran" on the load line when including libgandolf.a.
+   dnl This library is added to ${LIBS} in AC_DRACO_ENV.
 ])
 
 dnl-------------------------------------------------------------------------dnl

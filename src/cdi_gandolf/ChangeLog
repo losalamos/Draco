@@ -1,3 +1,8 @@
+2002-04-01  Kelly Thompson  <kgt@lanl.gov>
+
+	* Updated installed version of libraries to version 3.6.
+	/codes/radtran/vendors/gandolf/Linux/libgandolf.a 
+
 2001-12-17  Thomas M. Evans  <tme@lanl.gov>
 
 	* cdi_gandolf: released cdi_gandolf-1_1_0.  This release updates
