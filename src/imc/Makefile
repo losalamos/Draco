@@ -14,7 +14,8 @@ INCLUDE = -I../ds++
 LIB = -L../ds++ -lds++_sunkaig -lm
 OPTIONS = --strict -x 
 COPTIONS = -M
-RM = rm -r
+RMREC = rm -r
+RM = rm
 
 ##---------------------------------------------------------------------------##
 ## OBJECTS
