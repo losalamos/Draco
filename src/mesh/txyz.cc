@@ -150,6 +150,15 @@ int main( int argc, char *argv[] )
         for (Mesh_XYZ::bssf::const_iterator citer = cxb.begin();
              citer != cxb.end(); ++citer, ++iter)
             *iter = *citer;
+
+        Mesh_XYZ::bssf ab( spm );
+        iter = ab.begin();
+        *iter = 1.;
+        iter++;
+        *iter = 0.;
+        iter = ab.begin();
+        if (*iter++ != 1.)
+            cout << "Error in bssf::iterator operator++(int)" << endl;
       }
       catch (const dsxx::assertion &ass)
       {

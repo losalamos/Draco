@@ -417,13 +417,15 @@ template<class T>
 Mesh_XYZ::bstf<T>::iterator
 Mesh_XYZ::bstf<T>::iterator::operator++( int dummy )
 {
+    Mesh_XYZ::bstf<T>::iterator temp = *this;
+
     bfield->next_element(i,j,k,f);
     if (f == -1)
         *this = bfield->end();
     else
         p = &(*bfield)(i,j,k,f);
 
-    return *this;
+    return temp;
 }
 
 template<class T>
@@ -468,13 +470,15 @@ template<class T>
 Mesh_XYZ::bstf<T>::const_iterator
 Mesh_XYZ::bstf<T>::const_iterator::operator++( int dummy )
 {
+    Mesh_XYZ::bstf<T>::const_iterator temp = *this;
+
     bfield->next_element(i,j,k,f);
     if (f == -1)
         *this = bfield->end();
     else
         p = &(*bfield)(i,j,k,f);
 
-    return *this;
+    return temp;
 }
 
 template<class T>
