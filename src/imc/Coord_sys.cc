@@ -6,8 +6,8 @@
 // @> Coord_sys base class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/Coord_sys.hh"
-#include "imctest/Constants.hh"
+#include "imc/Coord_sys.hh"
+#include "imc/Constants.hh"
 #include <iostream>
 #include <cmath>
 

@@ -6,7 +6,7 @@
 // @> OS_Interface class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/OS_Interface.hh"
+#include "imc/OS_Interface.hh"
 #include "ds++/Assert.hh"
 
 IMCSPACE

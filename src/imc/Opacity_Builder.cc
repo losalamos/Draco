@@ -6,7 +6,7 @@
 // @> Opacity_Builder class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/Opacity_Builder.hh"
+#include "imc/Opacity_Builder.hh"
 #include "ds++/Assert.hh"
 
 IMCSPACE
@@ -14,6 +14,7 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // constructors
 //---------------------------------------------------------------------------//
+
 template<class MT>
 template<class IT>
 Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface, SP<MT> mesh)

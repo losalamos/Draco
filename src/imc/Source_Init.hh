@@ -6,8 +6,8 @@
 // @> Source_Init class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Source_Init_hh__
-#define __imctest_Source_Init_hh__
+#ifndef __imc_Source_Init_hh__
+#define __imc_Source_Init_hh__
 
 //===========================================================================//
 // class Source_Init - 
@@ -21,9 +21,9 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
-#include "imctest/Opacity.hh"
-#include "imctest/Mat_State.hh"
+#include "imc/Names.hh"
+#include "imc/Opacity.hh"
+#include "imc/Mat_State.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <string>
@@ -125,8 +125,8 @@ public:
 
 CSPACE
 
-#endif                          // __imctest_Source_Init_hh__
+#endif                          // __imc_Source_Init_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Source_Init.hh
+//                              end of imc/Source_Init.hh
 //---------------------------------------------------------------------------//

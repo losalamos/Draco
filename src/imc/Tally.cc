@@ -6,7 +6,7 @@
 // @> Tally class implementation file.
 //---------------------------------------------------------------------------//
 
-#include "imctest/Tally.hh"
+#include "imc/Tally.hh"
 
 IMCSPACE
 

@@ -6,8 +6,8 @@
 // @> OS_Interface class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_OS_Interface_hh__
-#define __imctest_OS_Interface_hh__
+#ifndef __imc_OS_Interface_hh__
+#define __imc_OS_Interface_hh__
 
 //===========================================================================//
 // class OS_Interface - 
@@ -24,8 +24,8 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
-#include "imctest/OS_Mesh.hh"
+#include "imc/Names.hh"
+#include "imc/OS_Mesh.hh"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -141,8 +141,8 @@ inline OS_Interface::OS_Interface(const string &infile)
 
 CSPACE
 
-#endif                          // __imctest_OS_Interface_hh__
+#endif                          // __imc_OS_Interface_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/OS_Interface.hh
+//                              end of imc/OS_Interface.hh
 //---------------------------------------------------------------------------//

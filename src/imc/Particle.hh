@@ -6,8 +6,8 @@
 // @> Particle class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Particle_hh__
-#define __imctest_Particle_hh__
+#ifndef __imc_Particle_hh__
+#define __imc_Particle_hh__
 
 //===========================================================================//
 // class Particle - 
@@ -47,9 +47,9 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
-#include "imctest/Opacity.hh"
-#include "imctest/Tally.hh"
+#include "imc/Names.hh"
+#include "imc/Opacity.hh"
+#include "imc/Tally.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
@@ -330,8 +330,8 @@ inline string Particle<MT>::get_descriptor(int index)
 
 CSPACE
 
-#endif                          // __imctest_Particle_hh__
+#endif                          // __imc_Particle_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Particle.hh
+//                              end of imc/Particle.hh
 //---------------------------------------------------------------------------//

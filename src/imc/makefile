@@ -1,12 +1,12 @@
 ###############################################################################
-# draco/src/imctest/makefile 
+# draco/src/imc/makefile 
 # Thomas M. Evans
 # Tue Mar 10 11:44:16 1998
 ###############################################################################
-# @> Rules for constructing the IMCTEST support library
+# @> Rules for constructing the IMC support library
 ###############################################################################
 
-pkg := imctest
+pkg := imc
 
 need_c4  := yes
 need_rng := yes
@@ -55,5 +55,5 @@ cc_files := $(libsrcs)
 include ../config/make.end
 
 ###############################################################################
-#			 end of draco/src/imctest/makefile
+#			 end of draco/src/imc/makefile
 ###############################################################################

@@ -6,8 +6,8 @@
 // @> Source class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Source_hh__
-#define __imctest_Source_hh__
+#ifndef __imc_Source_hh__
+#define __imc_Source_hh__
 
 //===========================================================================//
 // class Source - 
@@ -20,9 +20,9 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
-#include "imctest/Particle.hh"
-#include "imctest/Particle_Buffer.hh"
+#include "imc/Names.hh"
+#include "imc/Particle.hh"
+#include "imc/Particle_Buffer.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <iostream>
@@ -81,8 +81,8 @@ public:
 
 CSPACE
 
-#endif                          // __imctest_Source_hh__
+#endif                          // __imc_Source_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Source.hh
+//                              end of imc/Source.hh
 //---------------------------------------------------------------------------//

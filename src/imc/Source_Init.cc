@@ -6,11 +6,11 @@
 // @> Source_Init class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/Source_Init.hh"
-#include "imctest/Constants.hh"
-#include "imctest/Math.hh"
-#include "imctest/Particle.hh"
-#include "imctest/Particle_Buffer.hh"
+#include "imc/Source_Init.hh"
+#include "imc/Constants.hh"
+#include "imc/Math.hh"
+#include "imc/Particle.hh"
+#include "imc/Particle_Buffer.hh"
 #include "rng/Sprng.hh"
 #include "ds++/Assert.hh"
 #include <cmath>

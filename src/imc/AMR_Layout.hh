@@ -6,8 +6,8 @@
 // @> AMR_Layout implementation file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_AMR_Layout_hh__
-#define __imctest_AMR_Layout_hh__
+#ifndef __imc_AMR_Layout_hh__
+#define __imc_AMR_Layout_hh__
 
 //===========================================================================//
 // class AMR_Layout - 
@@ -20,7 +20,7 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
+#include "imc/Names.hh"
 #include <iostream>
 #include <vector>
 
@@ -86,8 +86,8 @@ inline bool AMR_Layout::operator==(const AMR_Layout &rhs) const
 AMR_Layout::AMR_Layout(int ncells, int coarse_faces)
     : face(ncells * coarse_faces), num_cells(ncells) {}
 
-#endif                          // __imctest_AMR_Layout_hh__
+#endif                          // __imc_AMR_Layout_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/AMR_Layout.hh
+//                              end of imc/AMR_Layout.hh
 //---------------------------------------------------------------------------//

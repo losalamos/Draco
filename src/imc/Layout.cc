@@ -6,7 +6,7 @@
 // @> Layout class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/Layout.hh"
+#include "imc/Layout.hh"
 #include <iomanip>
 
 IMCSPACE

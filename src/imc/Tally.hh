@@ -6,8 +6,8 @@
 // @> Tally class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Tally_hh__
-#define __imctest_Tally_hh__
+#ifndef __imc_Tally_hh__
+#define __imc_Tally_hh__
 
 //===========================================================================//
 // class Tally - 
@@ -20,10 +20,8 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
+#include "imc/Names.hh"
 #include "ds++/SP.hh"
-
-
 
 IMCSPACE
 
@@ -52,26 +50,25 @@ public:
 // inline member functions for Tally
 //---------------------------------------------------------------------------//
 
- 
 template<class MT>
 inline double Tally<MT>::get_energy_dep(const int cell)
 {
     return energy_dep(cell);
 }
 
+//---------------------------------------------------------------------------//
+
 template<class MT>
 inline double Tally<MT>::get_energy_dep_tot()
 {
     return energy_dep_tot;
 }
-  
-
 
 CSPACE
 
-#endif                          // __imctest_Tally_hh__
+#endif                          // __imc_Tally_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Tally.hh
+//                              end of imc/Tally.hh
 //---------------------------------------------------------------------------//
 

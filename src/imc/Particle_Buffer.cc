@@ -6,7 +6,7 @@
 // @> Particle_Buffer class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/Particle_Buffer.hh"
+#include "imc/Particle_Buffer.hh"
 #include <cstdlib>
 
 IMCSPACE

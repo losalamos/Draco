@@ -6,8 +6,8 @@
 // @> OS_Mesh mesh class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_OS_Mesh_hh__
-#define __imctest_OS_Mesh_hh__
+#ifndef __imc_OS_Mesh_hh__
+#define __imc_OS_Mesh_hh__
 
 //===========================================================================//
 // class OS_Mesh - 
@@ -36,9 +36,9 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
-#include "imctest/Coord_sys.hh"
-#include "imctest/Layout.hh"
+#include "imc/Names.hh"
+#include "imc/Coord_sys.hh"
+#include "imc/Layout.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
@@ -424,8 +424,8 @@ inline vector<double> OS_Mesh::sample_pos(string dist, int cell,
 
 CSPACE
 
-#endif                          // __imctest_OS_Mesh_hh__
+#endif                          // __imc_OS_Mesh_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/OS_Mesh.hh
+//                              end of imc/OS_Mesh.hh
 //---------------------------------------------------------------------------//

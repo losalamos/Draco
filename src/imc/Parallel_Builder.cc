@@ -6,11 +6,11 @@
 // @> Parallel_Builder implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/Parallel_Builder.hh"
-#include "imctest/XYCoord_sys.hh"
-#include "imctest/XYZCoord_sys.hh"
-#include "imctest/Math.hh"
-#include "imctest/Constants.hh"
+#include "imc/Parallel_Builder.hh"
+#include "imc/XYCoord_sys.hh"
+#include "imc/XYZCoord_sys.hh"
+#include "imc/Math.hh"
+#include "imc/Constants.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
 #include <string>

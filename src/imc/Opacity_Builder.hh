@@ -6,8 +6,8 @@
 // @> Opacity_Builder class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Opacity_Builder_hh__
-#define __imctest_Opacity_Builder_hh__
+#ifndef __imc_Opacity_Builder_hh__
+#define __imc_Opacity_Builder_hh__
 
 //===========================================================================//
 // class Opacity_Builder - 
@@ -20,9 +20,9 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
-#include "imctest/Opacity.hh"
-#include "imctest/Mat_State.hh"
+#include "imc/Names.hh"
+#include "imc/Opacity.hh"
+#include "imc/Mat_State.hh"
 #include "ds++/SP.hh"
 #include <vector>
 
@@ -66,8 +66,8 @@ public:
     
 CSPACE
 
-#endif                          // __imctest_Opacity_Builder_hh__
+#endif                          // __imc_Opacity_Builder_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Opacity_Builder.hh
+//                              end of imc/Opacity_Builder.hh
 //---------------------------------------------------------------------------//

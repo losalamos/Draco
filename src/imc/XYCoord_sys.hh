@@ -6,8 +6,8 @@
 // @> XYCoord_sys derived class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_XYCoord_sys_hh__
-#define __imctest_XYCoord_sys_hh__
+#ifndef __imc_XYCoord_sys_hh__
+#define __imc_XYCoord_sys_hh__
 
 //===========================================================================//
 // class XYCoord_sys - 
@@ -29,8 +29,8 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
-#include "imctest/Coord_sys.hh"
+#include "imc/Names.hh"
+#include "imc/Coord_sys.hh"
 #include "rng/Sprng.hh"
 #include "ds++/Assert.hh"
 #include <vector>
@@ -92,8 +92,8 @@ XYCoord_sys::sample_pos(string dist, vector<double> min, vector<double> max,
 
 CSPACE
 
-#endif                          // __imctest_XYCoord_sys_hh__
+#endif                          // __imc_XYCoord_sys_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/XYCoord_sys.hh
+//                              end of imc/XYCoord_sys.hh
 //---------------------------------------------------------------------------//

@@ -6,7 +6,7 @@
 // @> Source class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/Source.hh"
+#include "imc/Source.hh"
 #include "ds++/Assert.hh"
 
 IMCSPACE

@@ -1,5 +1,5 @@
 ###############################################################################
-# draco/src/imctest/test/makefile 
+# draco/src/imc/test/makefile 
 # Thomas M. Evans
 # Tue Mar 10 15:00:20 1998
 ###############################################################################
@@ -8,7 +8,7 @@
 
 SRC_TOP = ../..
 
-need_imctest    := yes
+need_imc        := yes
 need_c4         := yes
 
 # Go get the standard includeable makefile for Draco components.
@@ -46,15 +46,15 @@ objs    = $(srcs:%.cc=$(env)/%.o) \
 default: main_$(env)
 
 main_$(env) : deps $(objs) \
-	$(dep_libimctest) $(dep_libds++) $(dep_libc4)
+	$(dep_libimc) $(dep_libds++) $(dep_libc4)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm 
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../../imctest;   $(MAKE) $(subnj))
+	(cd ../../imc;   $(MAKE) $(subnj))
 endif
 
-$(dep_libimctest):
+$(dep_libimc):
 $(dep_libds++):
 $(dep_libc4):
 
@@ -71,5 +71,5 @@ include $(SRC_TOP)/config/make.end
 
 
 ###############################################################################
-#			 end of draco/src/imctest/test/makefile
+#			 end of draco/src/imc/test/makefile
 ###############################################################################

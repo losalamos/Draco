@@ -6,8 +6,8 @@
 // @> config file for namespace definitions
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Names_hh__
-#define __imctest_Names_hh__
+#ifndef __imc_Names_hh__
+#define __imc_Names_hh__
 
 //===========================================================================//
 // class Names - 
@@ -26,8 +26,8 @@
 
 #define CSPACE }
 
-#endif                          // __imctest_Names_hh__
+#endif                          // __imc_Names_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Names.hh
+//                              end of imc/Names.hh
 //---------------------------------------------------------------------------//

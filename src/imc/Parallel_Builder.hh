@@ -6,8 +6,8 @@
 // @> Parallel_Builder header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Parallel_Builder_hh__
-#define __imctest_Parallel_Builder_hh__
+#ifndef __imc_Parallel_Builder_hh__
+#define __imc_Parallel_Builder_hh__
 
 //===========================================================================//
 // class Parallel_Builder - 
@@ -21,12 +21,12 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
-#include "imctest/Coord_sys.hh"
-#include "imctest/Layout.hh"
-#include "imctest/Opacity.hh"
-#include "imctest/Source_Init.hh"
-#include "imctest/Particle_Buffer.hh"
+#include "imc/Names.hh"
+#include "imc/Coord_sys.hh"
+#include "imc/Layout.hh"
+#include "imc/Opacity.hh"
+#include "imc/Source_Init.hh"
+#include "imc/Particle_Buffer.hh"
 #include "ds++/SP.hh"
 
 IMCSPACE
@@ -87,8 +87,8 @@ public:
 
 CSPACE
 
-#endif                          // __imctest_Parallel_Builder_hh__
+#endif                          // __imc_Parallel_Builder_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Parallel_Builder.hh
+//                              end of imc/Parallel_Builder.hh
 //---------------------------------------------------------------------------//

@@ -6,8 +6,8 @@
 // @> XYZCoord_sys derived class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_XYZCoord_sys_hh__
-#define __imctest_XYZCoord_sys_hh__
+#ifndef __imc_XYZCoord_sys_hh__
+#define __imc_XYZCoord_sys_hh__
 
 //===========================================================================//
 // class XYZCoord_sys - 
@@ -26,8 +26,8 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
-#include "imctest/Coord_sys.hh"
+#include "imc/Names.hh"
+#include "imc/Coord_sys.hh"
 #include "rng/Sprng.hh"
 #include "ds++/Assert.hh"
 #include <vector>
@@ -88,8 +88,8 @@ XYZCoord_sys::sample_pos(string dist, vector<double> min, vector<double> max,
 
 CSPACE
 
-#endif                          // __imctest_XYZCoord_sys_hh__
+#endif                          // __imc_XYZCoord_sys_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/XYZCoord_sys.hh
+//                              end of imc/XYZCoord_sys.hh
 //---------------------------------------------------------------------------//

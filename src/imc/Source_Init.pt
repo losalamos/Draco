@@ -6,8 +6,8 @@
 // @> Instantialyzer for template class Source_Init
 //---------------------------------------------------------------------------//
 
-#include "imctest/OS_Mesh.hh"
-#include "imctest/OS_Interface.hh"
+#include "imc/OS_Mesh.hh"
+#include "imc/OS_Interface.hh"
 #include "ds++/SP.hh"
 #include "Source_Init.cc"
 

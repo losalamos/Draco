@@ -6,9 +6,9 @@
 // @> Particle class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/Particle.hh"
-#include "imctest/Constants.hh"
-#include "imctest/Math.hh"
+#include "imc/Particle.hh"
+#include "imc/Constants.hh"
+#include "imc/Math.hh"
 #include <iomanip>
 
 IMCSPACE

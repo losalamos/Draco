@@ -6,8 +6,8 @@
 // @> OS_Mesh class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/OS_Mesh.hh"
-#include "imctest/Constants.hh"
+#include "imc/OS_Mesh.hh"
+#include "imc/Constants.hh"
 #include <iomanip>
 
 IMCSPACE

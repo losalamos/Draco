@@ -6,8 +6,8 @@
 // @> Instantialyzer for template class Parallel_Builder
 //---------------------------------------------------------------------------//
 
-#include "imctest/OS_Mesh.hh"
-#include "imctest/Particle.hh"
+#include "imc/OS_Mesh.hh"
+#include "imc/Particle.hh"
 #include "Parallel_Builder.cc"
 
 IMCSPACE

@@ -6,8 +6,8 @@
 // @> IMC::Global namespace constants
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Constants_hh__
-#define __imctest_Constants_hh__
+#ifndef __imc_Constants_hh__
+#define __imc_Constants_hh__
 
 //===========================================================================//
 // Namespace Constants - 
@@ -23,7 +23,7 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
+#include "imc/Names.hh"
 #include <cmath>
 #include <cfloat>
 
@@ -67,8 +67,8 @@ const double c = 2.99792458e8;
 CSPACE
 CSPACE
 
-#endif                          // __imctest_Constants_hh__
+#endif                          // __imc_Constants_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Constants.hh
+//                              end of imc/Constants.hh
 //---------------------------------------------------------------------------//

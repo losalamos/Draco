@@ -6,7 +6,7 @@
 // @> Instantialyzer for template class Opacity
 //---------------------------------------------------------------------------//
 
-#include "imctest/OS_Mesh.hh"
+#include "imc/OS_Mesh.hh"
 #include "Opacity.cc"
 #include <iostream>
 

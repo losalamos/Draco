@@ -6,8 +6,8 @@
 // @> Particle_Buffer class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Particle_Buffer_hh__
-#define __imctest_Particle_Buffer_hh__
+#ifndef __imc_Particle_Buffer_hh__
+#define __imc_Particle_Buffer_hh__
 
 //===========================================================================//
 // class Particle_Buffer - 
@@ -23,8 +23,8 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
-#include "imctest/Constants.hh"
+#include "imc/Names.hh"
+#include "imc/Constants.hh"
 #include "c4/global.hh"
 #include "rng/Random.hh"
 #include "ds++/Assert.hh"
@@ -173,8 +173,8 @@ public:
 
 CSPACE
 
-#endif                          // __imctest_Particle_Buffer_hh__
+#endif                          // __imc_Particle_Buffer_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Particle_Buffer.hh
+//                              end of imc/Particle_Buffer.hh
 //---------------------------------------------------------------------------//

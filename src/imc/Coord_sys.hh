@@ -6,8 +6,8 @@
 // @> Coord_sys abstract base class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Coord_sys_hh__
-#define __imctest_Coord_sys_hh__
+#ifndef __imc_Coord_sys_hh__
+#define __imc_Coord_sys_hh__
 
 //===========================================================================//
 // class Coord_sys - 
@@ -27,7 +27,7 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
+#include "imc/Names.hh"
 #include "rng/Sprng.hh"
 #include <vector>
 #include <string>
@@ -77,8 +77,8 @@ public:
 
 CSPACE
 
-#endif                          // __imctest_Coord_sys_hh__
+#endif                          // __imc_Coord_sys_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Coord_sys.hh
+//                              end of imc/Coord_sys.hh
 //---------------------------------------------------------------------------//

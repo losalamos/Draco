@@ -6,7 +6,7 @@
 // @> Instantialyzer for template class Source
 //---------------------------------------------------------------------------//
 
-#include "OS_Mesh.hh"
+#include "imc/OS_Mesh.hh"
 #include "Source.cc"
 
 IMCSPACE

@@ -6,8 +6,8 @@
 // @> IMC::Global namespace math functions
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Math_hh__
-#define __imctest_Math_hh__
+#ifndef __imc_Math_hh__
+#define __imc_Math_hh__
 
 //===========================================================================//
 // namespace Math - 
@@ -20,7 +20,7 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
+#include "imc/Names.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 #include <vector>
@@ -139,8 +139,8 @@ inline T max(T A, T B)
 CSPACE
 CSPACE
 
-#endif                          // __imctest_Math_hh__
+#endif                          // __imc_Math_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Math.hh
+//                              end of imc/Math.hh
 //---------------------------------------------------------------------------//

@@ -6,9 +6,9 @@
 // @> OS_Builder class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/OS_Builder.hh"
-#include "imctest/XYCoord_sys.hh"
-#include "imctest/XYZCoord_sys.hh"
+#include "imc/OS_Builder.hh"
+#include "imc/XYCoord_sys.hh"
+#include "imc/XYZCoord_sys.hh"
 #include <cassert>
 #include <iostream>
 

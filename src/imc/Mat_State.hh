@@ -6,8 +6,8 @@
 // @> Mat_State class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Mat_State_hh__
-#define __imctest_Mat_State_hh__
+#ifndef __imc_Mat_State_hh__
+#define __imc_Mat_State_hh__
 
 //===========================================================================//
 // class Mat_State - 
@@ -20,7 +20,7 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
+#include "imc/Names.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
@@ -80,8 +80,8 @@ inline int Mat_State<MT>::num_cells() const
 
 CSPACE
 
-#endif                          // __imctest_Mat_State_hh__
+#endif                          // __imc_Mat_State_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Mat_State.hh
+//                              end of imc/Mat_State.hh
 //---------------------------------------------------------------------------//

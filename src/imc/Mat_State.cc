@@ -6,7 +6,7 @@
 // @> Mat_State class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/Mat_State.hh"
+#include "imc/Mat_State.hh"
 #include <iomanip>
 
 IMCSPACE
@@ -33,6 +33,7 @@ void Mat_State<MT>::print(ostream &output, int cell) const
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
+
 template<class MT>
 ostream& operator<<(ostream &output, const Mat_State<MT> &object)
 {

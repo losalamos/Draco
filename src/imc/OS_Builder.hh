@@ -6,8 +6,8 @@
 // @> OS_Builder class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_OS_Builder_hh__
-#define __imctest_OS_Builder_hh__
+#ifndef __imc_OS_Builder_hh__
+#define __imc_OS_Builder_hh__
 
 //===========================================================================//
 // class OS_Builder - 
@@ -24,11 +24,11 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
-#include "imctest/Coord_sys.hh"
-#include "imctest/Layout.hh"
-#include "imctest/OS_Mesh.hh"
-#include "imctest/OS_Interface.hh"
+#include "imc/Names.hh"
+#include "imc/Coord_sys.hh"
+#include "imc/Layout.hh"
+#include "imc/OS_Mesh.hh"
+#include "imc/OS_Interface.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <string>
@@ -92,8 +92,8 @@ inline OS_Builder::OS_Builder(SP<OS_Interface> interface)
 
 CSPACE
 
-#endif                          // __imctest_OS_Builder_hh__
+#endif                          // __imc_OS_Builder_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/OS_Builder.hh
+//                              end of imc/OS_Builder.hh
 //---------------------------------------------------------------------------//

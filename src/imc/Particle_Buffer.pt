@@ -6,8 +6,8 @@
 // @> Instantialyzer for template class Particle_Buffer
 //---------------------------------------------------------------------------//
 
-#include "imctest/OS_Mesh.hh"
-#include "imctest/Particle.hh"
+#include "imc/OS_Mesh.hh"
+#include "imc/Particle.hh"
 #include "Particle_Buffer.cc"
 
 IMCSPACE

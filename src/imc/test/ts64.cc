@@ -6,15 +6,15 @@
 // @> test driver for Builder classes
 //---------------------------------------------------------------------------//
 
-#include "imctest/OS_Interface.hh"
-#include "imctest/OS_Builder.hh"
-#include "imctest/OS_Mesh.hh"
-#include "imctest/Mat_State.hh"
-#include "imctest/Opacity_Builder.hh"
-#include "imctest/Opacity.hh"
-#include "imctest/Particle.hh"
-#include "imctest/Tally.hh"
-#include "imctest/Math.hh"
+#include "imc/OS_Interface.hh"
+#include "imc/OS_Builder.hh"
+#include "imc/OS_Mesh.hh"
+#include "imc/Mat_State.hh"
+#include "imc/Opacity_Builder.hh"
+#include "imc/Opacity.hh"
+#include "imc/Particle.hh"
+#include "imc/Tally.hh"
+#include "imc/Math.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <fstream>

@@ -6,8 +6,8 @@
 // @> Layout class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Layout_hh__
-#define __imctest_Layout_hh__
+#ifndef __imc_Layout_hh__
+#define __imc_Layout_hh__
 
 //===========================================================================//
 // class Layout - 
@@ -25,7 +25,7 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
+#include "imc/Names.hh"
 #include <iostream>
 #include <vector>
 
@@ -131,8 +131,8 @@ inline int& Layout::operator()(int cell_index, int face_index)
 
 CSPACE
 
-#endif                          // __imctest_Layout_hh__
+#endif                          // __imc_Layout_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Layout.hh
+//                              end of imc/Layout.hh
 //---------------------------------------------------------------------------//

@@ -6,8 +6,8 @@
 // @> Opacity class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_Opacity_hh__
-#define __imctest_Opacity_hh__
+#ifndef __imc_Opacity_hh__
+#define __imc_Opacity_hh__
 
 //===========================================================================//
 // class Opacity - 
@@ -21,7 +21,7 @@
 // 
 //===========================================================================//
 
-#include "imctest/Names.hh"
+#include "imc/Names.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 
@@ -80,6 +80,8 @@ inline double Opacity<MT>::get_sigeffscat(int cell) const
     return fleck(cell) * sigma(cell);
 }
 
+//---------------------------------------------------------------------------//
+
 template<class MT>
 inline double Opacity<MT>::get_sigeffabs(int cell) const 
 { 
@@ -88,8 +90,8 @@ inline double Opacity<MT>::get_sigeffabs(int cell) const
 
 CSPACE
 
-#endif                          // __imctest_Opacity_hh__
+#endif                          // __imc_Opacity_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/Opacity.hh
+//                              end of imc/Opacity.hh
 //---------------------------------------------------------------------------//
