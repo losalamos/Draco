@@ -286,8 +286,8 @@ inline rtt_dsxx::SP<rtt_mc::Topology> recv_TOP()
     int *idata = new int[size];
     int *jdata = new int[cpp_size + ppc_size + bc_size];
 
-    C4::Recv(jdata, cpp_size + ppc_size + bc_size, 0, 104);
-    C4::Recv(idata, size, 0, 105);
+    C4::Recv<int>(jdata, cpp_size + ppc_size + bc_size, 0, 104);
+    C4::Recv<int>(idata, size, 0, 105);
 
     rtt_mc::Topology::vf_int cpp(cpp_size);
     rtt_mc::Topology::vf_int ppc(ppc_size);

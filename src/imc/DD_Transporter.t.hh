@@ -118,7 +118,7 @@ DD_Transporter<MT,PT>::transport(double dt, int cycle_in, int print_f_in,
     // particle history diagnostic
     rtt_dsxx::SP<typename PT::Diagnostic> check;
     if (verbose)
-        check = new PT::Diagnostic(cout, true); 
+        check = new typename PT::Diagnostic(cout, true); 
 
     // make a census and communication bank on this node
     SP_Census new_census_bank(new Particle_Buffer<PT>::Census());

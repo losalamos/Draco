@@ -13,6 +13,7 @@
 #define __imc_Opacity_hh__
 
 #include "ds++/Assert.hh"
+#include <iomanip>
 #include <iostream>
 
 namespace rtt_imc 
@@ -128,8 +129,8 @@ std::ostream& operator<<(std::ostream &output, const Opacity<MT> &object)
 {
     // print out opacities for all cells
     using std::endl;
-    using std::setw;
     using std::ios;
+    using std::setw;
     using std::setiosflags;
 
     output << setw(8) << setiosflags(ios::right) << "Cell" 

@@ -89,7 +89,7 @@ Rep_Transporter<MT,PT>::transport(double dt, int cycle, int print_f,
     // particle history diagnostic
     rtt_dsxx::SP<typename PT::Diagnostic> check;
     if (verbose)
-	check = new PT::Diagnostic(cout, true); 
+	check = new typename PT::Diagnostic(cout, true); 
 
     // begin timing the transport on this processor
     double trans_begin = C4::Wtime();

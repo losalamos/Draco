@@ -14,6 +14,7 @@
 
 #include "Opacity.hh"
 #include "Tally.hh"
+#include "Global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"

@@ -259,7 +259,7 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_ss(double delta_t)
     // retain the inward normal to give a "normal" distribution
     if (ss_dist == "cosine")
     {
-	double costheta = sqrt(rand.ran());
+	double costheta = std::sqrt(rand.ran());
 	double phi      = 2.0 * pi * rand.ran();
 	nss.get_Mesh().get_Coord().calc_omega(costheta, phi, omega);
     }

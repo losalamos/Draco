@@ -13,6 +13,7 @@
 #define __imc_Topology_Builder_hh__
 
 #include "mc/Topology.hh"
+#include "c4/global.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>
