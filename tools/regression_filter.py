@@ -176,6 +176,9 @@ for line in lines:
     # don't want to catch checkout of files with name "error" in them.
     match = checkout.search(line)
 
+    if match:
+        continue
+
     # search on compile echo line
     # Do not catch Lahey F95 echo: "Encountered 0 errors, 0 warnings ..."
     match = lahey.search(line)
