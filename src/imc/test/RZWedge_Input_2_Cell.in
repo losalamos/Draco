@@ -1,0 +1,22 @@
+c Test RZWedge_Mesh input file
+
+coord: rz
+end-title
+
+num_rcoarse: 1
+num_zcoarse: 1
+lor_bnd: reflect
+hir_bnd: vacuum
+loz_bnd: vacuum
+hiz_bnd: vacuum
+end-init
+
+wedge_angle_degrees: 10.0
+rcoarse: 0 4
+num_rfine: 1
+zcoarse: 0 4
+num_zfine: 2
+end-mesh
+
+end-source
+

@@ -33,7 +33,7 @@ using namespace rtt_imc;
 using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------//
-// TESTS
+// TEST HELPER FUNCTIONS
 //---------------------------------------------------------------------------//
 
 SP<Surface_tracker> build_surface_tracker()
@@ -49,15 +49,16 @@ SP<Surface_tracker> build_surface_tracker()
     vector<int> tally_indices(3);
     tally_indices[0] = 1; tally_indices[1] = 2; tally_indices[2] = 4;
 
-    // make surface areas of 1.0, 2.0, and 4.0 because this if just for
+    // make surface areas of 1.0, 2.0, 3.0, and 4.0 because this if just for
     // access testing
-    vector<double> sa(3);
-    sa[0] = static_cast<double>(tally_indices[0]);
-    sa[1] = static_cast<double>(tally_indices[1]);
-    sa[2] = static_cast<double>(tally_indices[2]);
+    vector<double> sa(4);
+    sa[0] = 1.0;
+    sa[1] = 2.0;
+    sa[2] = 3.0; // this surface isn't local to the tracker
+    sa[3] = 4.0;
 
-    SP<Surface_tracker> tracker(new Surface_tracker(surfaces, tally_indices,
-						    sa));
+    SP<Surface_tracker> tracker(new Surface_tracker(
+				    4, surfaces, tally_indices, sa));
 
     return tracker;
 
@@ -78,12 +79,13 @@ SP<Extrinsic_Surface_Tracker> build_extrinsic_surface_tracker()
     vector<int> tally_indices(3);
     tally_indices[0] = 1; tally_indices[1] = 2; tally_indices[2] = 4;
 
-    // make surface areas of 1.0, 2.0, and 4.0 because this if just for
+    // make surface areas of 1.0, 2.0, 3.0, and 4.0 because this if just for
     // access testing
-    vector<double> sa(3);
-    sa[0] = static_cast<double>(tally_indices[0]);
-    sa[1] = static_cast<double>(tally_indices[1]);
-    sa[2] = static_cast<double>(tally_indices[2]);
+    vector<double> sa(4);
+    sa[0] = 1.0;
+    sa[1] = 2.0;
+    sa[2] = 3.0; // this surface isn't local to the tracker
+    sa[3] = 4.0;
 
     // Postulate a phony mesh with two cells. All of the surfaces are
     // supposed to be in cell 1, cell 2 has none.
@@ -91,7 +93,7 @@ SP<Extrinsic_Surface_Tracker> build_extrinsic_surface_tracker()
     cell_data[0] = true; cell_data[1] = false;
 
     SP<Extrinsic_Surface_Tracker> tracker( 
-	new Extrinsic_Surface_Tracker (surfaces, tally_indices, sa, 
+	new Extrinsic_Surface_Tracker (4, surfaces, tally_indices, sa, 
 				       cell_data) ); 
 
     Ensure(tracker);
@@ -112,6 +114,41 @@ Surface_Sub_Tally make_surface_tally()
 
     // The highest surface index number is 4:
     return Surface_Sub_Tally(mesh, 4);
+
+}
+
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
+
+void test_simple_constructor()
+{
+  
+    vector<SP<Surface> > surfaces;
+
+    surfaces.push_back( SP<Sphere>( new Sphere( 0.0, 1.0) ) );
+    surfaces.push_back( SP<Sphere>( new Sphere( 1.0, 1.0) ) );
+    surfaces.push_back( SP<Sphere>( new Sphere(-1.0, 3.0) ) );
+
+    // make surface areas of 1.0, 2.0, 3.0 because this if just for access
+    // testing
+    vector<double> sa(3);
+    sa[0] = 1.0;
+    sa[1] = 2.0;
+    sa[2] = 3.0;
+
+    Surface_tracker tracker(surfaces, sa);  
+
+    if (tracker.get_num_global_surfaces() != 3) ITFAILS;
+    if (!tracker.surface_in_tracker(1))         ITFAILS;
+    if (!tracker.surface_in_tracker(2))         ITFAILS;
+    if (!tracker.surface_in_tracker(3))         ITFAILS;
+
+    if (tracker.get_surface_area(1) != 1.0)     ITFAILS;
+    if (tracker.get_surface_area(2) != 2.0)     ITFAILS;
+    if (tracker.get_surface_area(3) != 3.0)     ITFAILS;
+
+    cout << "Done simple constructor test." << endl;
 
 }
 
@@ -147,7 +184,18 @@ void test_initial_status()
 
     if (tracker->get_surface_area(1) != 1.0) ITFAILS;
     if (tracker->get_surface_area(2) != 2.0) ITFAILS;
+    if (tracker->get_surface_area(3) != 3.0) ITFAILS;
     if (tracker->get_surface_area(4) != 4.0) ITFAILS;
+
+    if (tracker->get_num_global_surfaces() != 4) ITFAILS;
+
+    if (!tracker->surface_in_tracker(1)) ITFAILS;
+    if (!tracker->surface_in_tracker(2)) ITFAILS;
+    if (tracker->surface_in_tracker(3))  ITFAILS;
+    if (!tracker->surface_in_tracker(4)) ITFAILS;
+
+    cout << "Done initial status test." << endl;
+
 }
 
 //---------------------------------------------------------------------------//
@@ -213,6 +261,8 @@ void test_tracker()
     if (!soft_equiv(tally.weight(2, true,  2), exp(-2.0) ) )          ITFAILS;
     if (!soft_equiv(tally.weight(4, true,  2), exp(-1.0-sqrt(5.0))))  ITFAILS;
     if (!soft_equiv(tally.weight(4, false, 2), exp(3.0-2*sqrt(5.0)))) ITFAILS;
+
+    cout << "Done tracker test." << endl;
     
 }
 
@@ -290,6 +340,7 @@ void test_extrinsic_tracker()
     if (!soft_equiv(tally.weight(4, true,  2), 0.0 ) ) ITFAILS;
     if (!soft_equiv(tally.weight(4, false, 2), 0.0 ) ) ITFAILS;
 
+    cout << "Done extrinsic tracker test." << endl;
 }
 
 //---------------------------------------------------------------------------//
@@ -309,6 +360,8 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
+
+	test_simple_constructor();
 
 	test_initial_status();
 

@@ -79,9 +79,14 @@ Extrinsic_Tracker_Builder<MT>::Extrinsic_Tracker_Builder(
 /*! 
  * \brief Builds and returns the surface tracker. 
  *
- * \return an instantiated tracker if there are local tally surfaces defined
- * on the mesh; a non-assigned tracker if there are no local tally surfaces
- * defined (even if there are global tally surfaces).
+ * A tracker is built if there are any surfaces in the problem.  These
+ * surfaces are defined globally.  A tracker on a given processor may not
+ * have any surfaces; however, a tracker is still built.  The tracker may be
+ * used to access the surface areas for \b all defined surfaces in the
+ * problem.
+ *
+ * \return an instantiated tracker if there are any tally surfaces defined
+ * globally in the problem.
  */
 template<class MT>
 typename Extrinsic_Tracker_Builder<MT>::SP_Tracker
@@ -90,12 +95,17 @@ Extrinsic_Tracker_Builder<MT>::build_tracker()
     // make a tracker
     SP_Tracker tracker;
 
-    // only return if there are surfaces; there may be surfaces on other
-    // processors, however, we return an empty tracker if there are no
-    // surfaces on this mesh
-    if (!surfaces.empty()) 
+    // build a tracker if surfaces are defined in the problem, during
+    // contruction (in the constructor) the global_surface_number will be
+    // equal to the number of global surfaces in the problem; if this is
+    // non-zero then build the tracker
+    if (global_surface_number) 
     {
-	tracker = new Extrinsic_Surface_Tracker(surfaces, 
+	Check (global_surface_number == surface_areas.size());
+
+	// build the tracker
+	tracker = new Extrinsic_Surface_Tracker(global_surface_number,
+						surfaces, 
 						surface_indices,
 						surface_areas,
 						surface_in_cell);
@@ -125,15 +135,12 @@ void Extrinsic_Tracker_Builder<MT>::construction_implementation(
 
     for (int surface = 0; surface < given_surface_number; ++surface)
     {
-
 	global_surface_number++;
-
 	process_surface( surface_data[surface] );
-	
     }
 
     Ensure (global_surface_number == given_surface_number);
-    Ensure (surface_areas.size() == surfaces.size());
+    Ensure (surface_areas.size() == global_surface_number);
     Ensure (surfaces.size() == surface_indices.size());
     Ensure (surfaces.size() <= given_surface_number);
 }
@@ -200,8 +207,10 @@ void Extrinsic_Tracker_Builder<MT>::process_sphere(
     {
 	// if the sphere intersects a cell on this mesh then add it
 	add_surface_to_list(sphere);
-	build_surface_areas(*sphere);
     }
+    
+    // build surface areas for all surfaces
+    build_surface_areas(*sphere);
 }
 
 //---------------------------------------------------------------------------//

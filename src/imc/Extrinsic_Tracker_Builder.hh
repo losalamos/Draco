@@ -88,7 +88,7 @@ class Extrinsic_Tracker_Builder
 
     // ACCESSORS
 
-    //! Build and return the surface tracker on an MT.
+    // Build and return the surface tracker on an MT.
     SP_Tracker build_tracker();
 
     //! Get the surface containing status for a cell.

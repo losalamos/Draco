@@ -40,13 +40,14 @@ namespace rtt_imc
 Surface_tracker::Surface_tracker(
     const vector<Surface_tracker::SP_Surface>& surfaces_,
     const vector<double>&                      surface_areas_)
-    : surface_list(surfaces_),
+    : num_global_surfaces(surfaces_.size()),
+      surface_list(surfaces_),
       is_inside(surfaces_.size()),
       tally_indices(surfaces_.size()),
       surface_areas(surface_areas_)
 { 
     
-    Require (surface_areas.size() == surface_list.size());
+    Require (surface_areas.size() == num_global_surfaces);
 
     int index = 1;
     for (vector<int>::iterator tally_index = tally_indices.begin();
@@ -63,24 +64,28 @@ Surface_tracker::Surface_tracker(
  * \brief Construct with a list of surfaces and tally indices.
  *
  * The surface list includes only those surfaces that intersect at least one
- * cell on the local mesh.  Thus, we require a map of global surface index
- * (range [0,N_surface)) to local surface index.
+ * cell on the local mesh.  Thus, we require a map of local surface index to
+ * global surface index.
  * 
+ * \param num_global_surfaces_ number of global surfaces in the problem
  * \param surfaces_ list of surfaces that are \b local to the mesh
  * \param tally_indices_ map of local surface index to global surface index
  * \param surface_areas_ list of surface areas for each surface
  */
 Surface_tracker::Surface_tracker(
+    const int                                  num_global_surfaces_,
     const vector<Surface_tracker::SP_Surface>& surfaces_,
     const vector<int>&                         tally_indices_,
     const vector<double>&                      surface_areas_)
-    : surface_list(surfaces_),
+    : num_global_surfaces(num_global_surfaces_),
+      surface_list(surfaces_),
       is_inside(surfaces_.size()),
       tally_indices(tally_indices_),
       surface_areas(surface_areas_)
 {
     
-    Require (surface_areas.size() == surface_list.size());
+    Require( surface_areas.size() == num_global_surfaces );
+    Require( num_global_surfaces >= tally_indices.size() );
 
     // Make sure index list is the same size:
     Require( tally_indices.size() == surface_list.size() );

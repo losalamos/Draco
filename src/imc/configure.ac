@@ -37,9 +37,9 @@ AC_RUNTESTS(tstFrequency \
             tstRW_Sub_Tally \
             tstRandom_Walk \
             tstAzimuthal_Mesh \
+            tstSurface_tracker \
             tstExtrinsic_Tracker \
             tstSurface_Sub_Tally \
-            tstSurface_tracker \
             tstRZ_Surface_tracking \
 	    tstParticle \
             tstParticle_trans \
@@ -64,6 +64,8 @@ echo copying ${srcdir}/test/OS_Input_B.in to test/OS_Input_B
 cp ${srcdir}/test/OS_Input_B.in test/OS_Input_B
 echo copying ${srcdir}/test/RZWedge_Input.in to test/RZWedge_Input
 cp ${srcdir}/test/RZWedge_Input.in test/RZWedge_Input
+echo copying ${srcdir}/test/RZWedge_Input_2_Cell.in to test/RZWedge_Input_2_Cell
+cp ${srcdir}/test/RZWedge_Input_2_Cell.in test/RZWedge_Input_2_Cell
 echo copying ${srcdir}/test/Sphyramid_Input.in to test/Sphyramid_Input
 cp ${srcdir}/test/Sphyramid_Input.in test/Sphyramid_Input
 

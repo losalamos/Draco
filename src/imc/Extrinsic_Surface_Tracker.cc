@@ -49,9 +49,10 @@ Extrinsic_Surface_Tracker::Extrinsic_Surface_Tracker(
  * surface-in-cell data.
  *
  * The surface list includes only those surfaces that intersect at least one
- * cell on the local mesh.  Thus, we require a map of global surface index
- * (range [0,N_surface)) to local surface index.
+ * cell on the local mesh.  Thus, we require a map of local surface index to
+ * global surface index.
  * 
+ * \param num_surfaces_ number of global surfaces in the problem
  * \param surfaces_ list of surfaces that are \b local to the mesh
  * \param tally_indices_ map of local surface index to global surface index
  * \param surface_areas_ list of surface areas for each surface
@@ -59,11 +60,12 @@ Extrinsic_Surface_Tracker::Extrinsic_Surface_Tracker(
  * for each cell indicating that one or more surfaces intersect the cell
  */
 Extrinsic_Surface_Tracker::Extrinsic_Surface_Tracker(
+    const int                      num_surfaces_,
     const std::vector<SP_Surface> &surfaces,
     const std::vector<int>        &tally_indices,
     const std::vector<double>     &surface_areas_,
     const std::vector<bool>       &surface_in_cell_data_)
-    : Surface_tracker(surfaces, tally_indices, surface_areas_),
+    : Surface_tracker(num_surfaces_, surfaces, tally_indices, surface_areas_),
       surface_in_cell_data(surface_in_cell_data_),
       number_cells(surface_in_cell_data_.size())
 {

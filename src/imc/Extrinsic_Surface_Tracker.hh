@@ -56,7 +56,8 @@ class Extrinsic_Surface_Tracker : public Surface_tracker
     typedef std::vector<bool>::iterator bool_iterator;
 
     // Full constructor.
-    Extrinsic_Surface_Tracker(const std::vector<SP_Surface> &surfaces,
+    Extrinsic_Surface_Tracker(const int num_global_surfaces,
+			      const std::vector<SP_Surface> &surfaces,
 			      const std::vector<int> &tally_indices,
 			      const std::vector<double> &surface_areas,
 			      const std::vector<bool> &surface_in_cell_data);

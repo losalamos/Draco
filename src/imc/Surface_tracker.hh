@@ -55,6 +55,8 @@ class Surface_Sub_Tally;
  * surfaces on domain-decomosed meshes. We also allow the surface tracker to
  * hold no surfaces.
  *
+ * The surface tracker also holds a global list of surface areas in cm^2.
+ *
  * \sa Surface_tracker.cc for detailed descriptions.
  */
 /*! 
@@ -86,7 +88,8 @@ class Surface_tracker
 		    const std::vector<double>& surface_areas);
 
     // Construct with a list of surfaces and tally indices.
-    Surface_tracker(const std::vector<SP_Surface>& surfaces,
+    Surface_tracker(const int num_global_surfaces,
+		    const std::vector<SP_Surface>& surfaces,
 		    const std::vector<int>& tally_indices,
 		    const std::vector<double>& surface_areas);
 
@@ -123,11 +126,20 @@ class Surface_tracker
 
     inline double get_surface_area(int surface) const;
 
+    inline bool surface_in_tracker(int surface) const;
+
+    int get_num_global_surfaces() const { return num_global_surfaces; }
+
+    int get_num_local_surfaces() const { return surface_list.size(); }
+
     int surfaces() const { return surface_list.size(); }
 
   private:
 
     // DATA
+
+    // Number of global surfaces.
+    int num_global_surfaces;
 
     std::vector<SP_Surface> surface_list;
     std::vector<int>        tally_indices;
@@ -165,19 +177,39 @@ bool Surface_tracker::get_inside(int surface) const
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Determine if a global surface is stored in the tracker.
+ *
+ * \param surface global surface number
+ * \return true if surface is in tracker; false otherwise
+ */
+bool Surface_tracker::surface_in_tracker(int surface) const
+{
+    Check(surface > 0);
+    Check(surface <= num_global_surfaces);
+
+    // Find the surface index in the vector of indices:
+    std::vector<int>::const_iterator surface_iterator = 
+	std::find(tally_indices.begin(), tally_indices.end(), surface);
+
+    // if the surface_iterator points to the end of the list then that
+    // surface is not in the tracker
+    if (surface_iterator == tally_indices.end())
+	return false;
+
+    return true;
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Get the surface area subtended by the mesh for a given surface.
  * 
  * \param surface global surface index
  */
 double Surface_tracker::get_surface_area(int surface) const
 {
-    int index = get_data_index(surface);
-    
-    Require ( index >= 0 );
-    Require ( index < surface_areas.size() );
-    
-    Ensure (surface_areas[index]);
-    return surface_areas[index];
+    Require (surface > 0);
+    Require (surface <= num_global_surfaces);
+    return surface_areas[surface-1];
 }
 
 //---------------------------------------------------------------------------//
@@ -185,6 +217,7 @@ double Surface_tracker::get_surface_area(int surface) const
 int Surface_tracker::get_data_index(int surface) const
 {
     Check(surface > 0);
+    Check(surface <= num_global_surfaces);
 
     // Find the surface index in the vector of indices:
     std::vector<int>::const_iterator surface_iterator = 
