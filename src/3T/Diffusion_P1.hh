@@ -46,9 +46,10 @@ class Diffusion_P1 : private MT::Coord_Mapper,
     SP< PreCond< Diffusion_P1<MT> > > precond;
 
     Mat1<double> dx, dy, dz;
+    fcdsf fdeltal;
 
-    fcdsf Dprime, Dtwidle, Dhat;
-    fcdsf Ftwidle, Fhat;
+    fcdsf Dprime,      Dtwidle, Dhat;
+    fcdsf Fprimeprime, Ftwidle, Fhat , F;
 
   public:
 
@@ -75,12 +76,21 @@ class Diffusion_P1 : private MT::Coord_Mapper,
                 const ccsf& Qbar_r,
                 ccsf& phi );
 
-    void calculate_Dprime( const fcdsf& D );
+    void calculate_opposing_face( const fcdsf& X, fcdsf& Xprime );
     void calculate_Dtwidle( const fcdsf& D, const fcdsf& Dp );
     void calculate_Dhat_on_boundaries( const fcdsf& D );
+    void calculate_Ftwidle( const fcdsf& D, const fcdsf& Fprime );
+    void calculate_Fhat_on_boundaries( const fcdsf& D,
+                                       const fcdsf& Fprime,
+                                       const bssf& f_b );
     void calculate_A( const ccsf& sigmaabar );
     void calculate_b( const ccsf& Qbar_r );
     void calculate_b( const ccsf& Qbar_r, const fcdsf& Fh );
+
+    void solve_A_phi_equals_b( ccsf& phi );
+
+    void calculate_new_F( const fcdsf& D, const fcdsf& Fprime,
+                          const bssf& f_b, const ccsf& phi );
 
     Banded_Matrix<double,7>& get_A() { return A; }
 };
