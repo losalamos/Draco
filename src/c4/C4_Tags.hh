@@ -21,20 +21,6 @@ namespace rtt_c4
  */
 const int C4_SUCCESS = 0;
 
-//---------------------------------------------------------------------------//
-// DEFAULT TYPE TAGS
-//---------------------------------------------------------------------------//
-
-const int C4_char_Tag   = 431;
-const int C4_int_Tag    = 432;
-const int C4_float_Tag  = 433;
-const int C4_double_Tag = 434;
-
-const int C4_char_ptr_Tag   = 442;
-const int C4_int_ptr_Tag    = 443;
-const int C4_float_ptr_Tag  = 444;
-const int C4_double_ptr_Tag = 445;
-
 } // end namespace rtt_c4
 
 #endif                          // __c4_C4_Tags_hh__

@@ -41,27 +41,69 @@ struct C4_Traits
 //---------------------------------------------------------------------------//
 
 template<> 
-class C4_Traits<char> 
+struct C4_Traits<char> 
 {
-    static const int tag = C4_char_Tag;
+    static const int tag = 431;
 };
 
 template<> 
-class C4_Traits<int> 
+struct C4_Traits<unsigned char> 
 {
-    static const int tag = C4_int_Tag;
+    static const int tag = 432;
 };
 
 template<> 
-class C4_Traits<float> 
+struct C4_Traits<short> 
 {
-    static const int tag = C4_float_Tag;
+    static const int tag = 433;
 };
 
 template<> 
-class C4_Traits<double> 
+struct C4_Traits<unsigned short> 
 {
-    static const int tag = C4_double_Tag;
+    static const int tag = 434;
+};
+
+template<> 
+struct C4_Traits<int> 
+{
+    static const int tag = 435;
+};
+
+template<> 
+struct C4_Traits<unsigned int> 
+{
+    static const int tag = 436;
+};
+
+template<> 
+struct C4_Traits<long> 
+{
+    static const int tag = 437;
+};
+
+template<> 
+struct C4_Traits<unsigned long> 
+{
+    static const int tag = 438;
+};
+
+template<> 
+struct C4_Traits<float> 
+{
+    static const int tag = 439;
+};
+
+template<> 
+struct C4_Traits<double> 
+{
+    static const int tag = 440;
+};
+
+template<> 
+struct C4_Traits<long double> 
+{
+    static const int tag = 441;
 };
 
 //---------------------------------------------------------------------------//
@@ -69,27 +111,69 @@ class C4_Traits<double>
 //---------------------------------------------------------------------------//
 
 template<> 
-class C4_Traits<char *>
+struct C4_Traits<char *> 
 {
-    static const int tag = C4_char_ptr_Tag;
-};
-
-template<>
-class C4_Traits<int *> 
-{
-    static const int tag = C4_int_ptr_Tag;
+    static const int tag = 451;
 };
 
 template<> 
-class C4_Traits<float *>
+struct C4_Traits<unsigned char *> 
 {
-    static const int tag = C4_float_ptr_Tag;
+    static const int tag = 452;
 };
 
 template<> 
-class C4_Traits<double *>
+struct C4_Traits<short *> 
 {
-    static const int tag = C4_double_ptr_Tag;
+    static const int tag = 453;
+};
+
+template<> 
+struct C4_Traits<unsigned short *> 
+{
+    static const int tag = 454;
+};
+
+template<> 
+struct C4_Traits<int *> 
+{
+    static const int tag = 455;
+};
+
+template<> 
+struct C4_Traits<unsigned int *> 
+{
+    static const int tag = 456;
+};
+
+template<> 
+struct C4_Traits<long *> 
+{
+    static const int tag = 457;
+};
+
+template<> 
+struct C4_Traits<unsigned long *> 
+{
+    static const int tag = 458;
+};
+
+template<> 
+struct C4_Traits<float *> 
+{
+    static const int tag = 459;
+};
+
+template<> 
+struct C4_Traits<double *> 
+{
+    static const int tag = 460;
+};
+
+template<> 
+struct C4_Traits<long double *> 
+{
+    static const int tag = 461;
 };
 
 } // end namespace rtt_c4

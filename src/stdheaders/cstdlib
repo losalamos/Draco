@@ -3,7 +3,7 @@
 /* Murillo Michelle L. */
 /* Tue Jul 18 17:11:03 2000 */
 /*---------------------------------------------------------------------------*/
-/* @> cstdlib for stdheaders package */
+/* $Id$ */
 /*---------------------------------------------------------------------------*/
 
 #ifndef __stdheaders_cstdlib__
@@ -14,6 +14,7 @@
 namespace std {
 using ::rand;
 using ::free;
+using ::exit;
 } /*namespace std*/
 
 
