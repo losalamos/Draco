@@ -29,11 +29,11 @@
 int main( int argc, char *argv[] )
 {
 // Initialize C4.
-    C4_Init( argc, argv );
+    C4::Init( argc, argv );
 
-    int node  = C4_node();
-    int nodes = C4_nodes();
-    int ptype = C4_group();
+    int node  = C4::node();
+    int nodes = C4::nodes();
+    int ptype = C4::group();
 
 // Now, try to read in some namelist input.
     NML_Group *g;
@@ -73,7 +73,7 @@ int main( int argc, char *argv[] )
     pcg_ctrl.pcg_fe( x, b, pcg_matvec, pcg_precond );
 
 // Wrap up C4.
-    C4_Finalize();
+    C4::Finalize();
 
 // Done.
     return 0;
