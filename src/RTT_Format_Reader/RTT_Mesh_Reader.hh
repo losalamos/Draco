@@ -72,7 +72,6 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     {
         transform2CYGNUS();
     }
-
 /*!
  * \brief Destroys an RTT_Mesh_Reader class object
  */

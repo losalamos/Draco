@@ -52,10 +52,6 @@ void SideFlags::readFlagTypes(ifstream & meshfile)
     for (int i = 0; i < dims.get_nside_flag_types(); ++i)
     {
 	meshfile >> flagTypeNum >> dummyString;
-	// Ignore plurals in side flag definitions
-	if (dummyString[dummyString.size()-1] == 's' || 
-	    dummyString[dummyString.size()-1] == 'S')
-	    dummyString.resize(dummyString.size()-1);
 	Insist(flagTypeNum == i+1,
 	       "Invalid mesh file: side flag type out of order");
 	flagTypes[i] = new Flags(dims.get_nside_flags(i), dummyString);

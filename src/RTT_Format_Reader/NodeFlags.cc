@@ -52,10 +52,6 @@ void NodeFlags::readFlagTypes(ifstream & meshfile)
     for (int i = 0; i < dims.get_nnode_flag_types(); ++i)
     {
 	meshfile >> flagTypeNum >> dummyString;
-	// Ignore plurals in node flag definitions
-	if (dummyString[dummyString.size()-1] == 's' || 
-	    dummyString[dummyString.size()-1] == 'S')
-	    dummyString.resize(dummyString.size()-1);
 	Insist(flagTypeNum == i+1,
 	       "Invalid mesh file: node flag type out of order");
 	flagTypes[i] = new Flags(dims.get_nnode_flags(i), dummyString);
