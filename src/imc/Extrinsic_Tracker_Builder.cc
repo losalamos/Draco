@@ -197,8 +197,9 @@ bool Extrinsic_Tracker_Builder::sphere_intersects_cell(
 	Insist(0, "Logic error in sphere_intersects_cell");
     }
     
+    // default return condition
+    return false;
 }
-
 
 //---------------------------------------------------------------------------//
 bool Extrinsic_Tracker_Builder::check_point(const Sphere& sphere,

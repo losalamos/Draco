@@ -15,6 +15,7 @@
 
 #include "Random_Walk.hh"
 #include "mc/Constants.hh"
+#include "rng/Random.hh"
 #include <utility>
 #include <cmath>
 
