@@ -77,20 +77,28 @@ int main(int argc, char *argv[])
       // run the interface parser
 	SP<OS_Interface> interface = new OS_Interface(infile);
 	interface->parser();
+        cout << "Parser has run" << endl;
 	
       // initialize the mesh builder and build mesh
 	OS_Builder os_build(interface);
 	mesh = os_build.build_Mesh();
+        cout << "We built the mesh" << endl;
 	
       // initialize the Opacity builder and build state 
 	Opacity_Builder<OS_Mesh> opacity_build(interface, mesh);
 	mat_state = opacity_build.build_Mat();
+	cout << "We built the Mat State" << endl;
 	opacity   = opacity_build.build_Opacity();
+	cout << "We built the Opacity" << endl;
+       
     }
 
   // do a diagnostic on Mesh build
 
     Builder_diagnostic(*mesh, *mat_state, *opacity);
+    cout << "We ran the diagnostic" << endl;
+    cout << "Check *try.dat* diagnostic file" << endl;
+    cout << "<<ALL DONE>>" << endl;
 }
 
 
