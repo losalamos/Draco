@@ -12,7 +12,10 @@
 
 #include "UserVec.hh"
 
-#include <iostream.h>
+#include <iostream>
+
+using std::cout;
+using std::endl;
 
 int sz = 5;
 bool passed = true;
