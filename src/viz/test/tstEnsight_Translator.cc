@@ -9,7 +9,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Viz_Test.hh"
+#include "viz_test.hh"
 #include "../Ensight_Translator.hh"
 #include "../Release.hh"
 #include "ds++/Assert.hh"
@@ -24,13 +24,9 @@
 using namespace std;
 using rtt_viz::Ensight_Translator;
 
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_viz_test::fail(__LINE__);
-
 //---------------------------------------------------------------------------//
 
-void ensight_dump_test()
+void ensight_dump_test(const bool binary)
 {
     // dimensions
     int ncells   = 27; 
@@ -66,6 +62,9 @@ void ensight_dump_test()
     ens_cdata_names[1] = "Pressure";
 
     string prefix   = "testproblem";
+    if ( binary )
+	prefix += "_binary";
+    
     int icycle      = 1;
     double time     = .01;
     double dt       = .01;
@@ -92,10 +91,13 @@ void ensight_dump_test()
 	for (int j = 0; j < ipar[i].size(); j++)
 	    input >> ipar[i][j];
 
+    const bool static_geom = false;
+
     // build an Ensight_Translator (make sure it overwrites any existing
     // stuff) 
     Ensight_Translator translator(prefix, gd_wpath, ens_vdata_names,
-				  ens_cdata_names, true); 
+				  ens_cdata_names, true, static_geom,
+				  binary); 
 
     translator.ensight_dump(icycle, time, dt,
 			    ipar, iel_type, rgn_index, pt_coor,
@@ -109,7 +111,8 @@ void ensight_dump_test()
     // build another ensight translator; this should overwrite the existing
     // directories
     Ensight_Translator translator2(prefix, gd_wpath, ens_vdata_names,
-				   ens_cdata_names, true); 
+				   ens_cdata_names, true, static_geom,
+				   binary); 
     
     translator2.ensight_dump(icycle, time, dt,
 			     ipar, iel_type, rgn_index, pt_coor,
@@ -120,7 +123,8 @@ void ensight_dump_test()
     // thus we will not overwrite the existing directories
 
     Ensight_Translator translator3(prefix, gd_wpath, ens_vdata_names,
- 				   ens_cdata_names); 
+ 				   ens_cdata_names, false, static_geom,
+				   binary); 
     
     // now add another dump to the existing data
     translator3.ensight_dump(2, .05, dt,
@@ -128,9 +132,10 @@ void ensight_dump_test()
 			     ens_vrtx_data, ens_cell_data,
 			     rgn_data, rgn_name);    
 
-    // make yet a fourth translator that will append (explicitly)
+    // make yet a fourth translator that will append
     Ensight_Translator translator4(prefix, gd_wpath, ens_vdata_names,
-				   ens_cdata_names, false); 
+				   ens_cdata_names, false, static_geom,
+				   binary); 
     
     // add yet another dump to the existing data
     translator4.ensight_dump(3, .10, dt,
@@ -154,10 +159,14 @@ int main(int argc, char *argv[])
     try
     {
 	// tests
-	ensight_dump_test();
+	ensight_dump_test(false); // ascii dump
 	
-	// run python diff scrips
+	// run python diff scrips (only works for ascii)
 	system("python ./tstEnsight_Diff.py");
+
+	ensight_dump_test(true); // binary dump
+
+	// ... there's no check for binary, yet.
     }
     catch(rtt_dsxx::assertion &ass)
     {
@@ -168,7 +177,7 @@ int main(int argc, char *argv[])
     // status of test
     cout << endl;
     cout <<     "**********************************************" << endl;
-    if (passed) 
+    if (rtt_viz_test::passed) 
     {
         cout << "**** Ensight_Translator Self Test: PASSED ****" << endl;
     }

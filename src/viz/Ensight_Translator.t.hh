@@ -27,36 +27,46 @@ namespace rtt_viz
  *
  * \param prefix std_string giving the name of the problem
  * \param gd_wpath directory where dumps are stored
- * \param ens_vdata_names_in string field containing vertex data names
- * \param ens_cdata_names_in string field containing cell data names
+ * \param ens_vdata_names string field containing vertex data names
+ * \param ens_cdata_names string field containing cell data names
  * \param overwrite bool that controls whether an existing ensight
  * directory is to be appended to or overwritten.  If true, overwrites the
  * existing ensight directory.  If false, and the ensight directory exists,
  * the case file is appended to.  In either case, if the ensight directory
  * does not exist it is created.  The default for overwrite is false.
- * \param static_geom_in optional input that if true, geometry is assumed
+ * \param static_geom optional input that if true, geometry is assumed
  * the same across all calls to Ensight_Translator::ensight_dump.
+ * \param binary If true, geometry and variable data files are output in
+ * binary format.
+ *
+ * NOTE: If appending data (\a overwrite is false), then \a binary must
+ * be the same value as the first ensight dump.  This class does NOT check
+ * for this potential error (yes, it's possible to check and is left for a
+ * future exercise).
  */
 template<class SSF>
 Ensight_Translator::Ensight_Translator(const std_string &prefix,
 				       const std_string &gd_wpath,
-				       const SSF        &ens_vdata_names_in,
-				       const SSF        &ens_cdata_names_in,
+				       const SSF        &ens_vdata_names,
+				       const SSF        &ens_cdata_names,
 				       const bool        overwrite,
-				       const bool        static_geom_in)
-    : ens_vdata_names(ens_vdata_names_in),
-      ens_cdata_names(ens_cdata_names_in),
-      static_geom(static_geom_in)
+				       const bool        static_geom,
+				       const bool        binary)
+    : d_static_geom(static_geom)
+    , d_binary(binary)
+    , d_ens_vdata_names(ens_vdata_names)
+    , d_ens_cdata_names(ens_cdata_names)
+      
 {
-    Require (dump_times.empty());
+    Require (d_dump_times.empty());
     createFilenames(prefix, gd_wpath);
     
     bool graphics_continue = false; // default behavior
     
     if ( ! overwrite ) {
-	// then try to parse the case file
+	// then try to parse the case file.  Case files are always ascii.
 
-	std::ifstream casefile(case_filename.c_str());
+	std::ifstream casefile(d_case_filename.c_str());
 
 	if ( casefile ) {
 	    // then case file exists, so parse the dump times
@@ -85,14 +95,14 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
 
 	    // read the dump_times
 
-	    dump_times.resize(num_steps);
+	    d_dump_times.resize(num_steps);
 	    
 	    for ( int i = 0; i < num_steps; i++ ) {
-		casefile >> dump_times[i];
+		casefile >> d_dump_times[i];
 		Insist(casefile.good(),
 		       "Error reading dump_times from case file!");
 		//std::cout << "   STEP " << i
-		//	  << " TIME " << dump_times[i] << std::endl;
+		//	  << " TIME " << d_dump_times[i] << std::endl;
 	    }
 	    
 	    casefile.close();
@@ -118,32 +128,35 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
  *
  * \param dt current problem timestep
  *
- * \param ipar_in IVF field of pointers to cell vertices.  ipar_in is
- * dimensioned [0:ncells-1, 0:nvertices/cell-1].  Given ipar[i][j], is the
- * jth+1 vertex number for the ith+1 cell.  The vertex number is the i+1
- * entry from the pt_coor_in field.
+ * \param ipar IVF field of pointers to vertices.  Dimensioned
+ * [0:ncells-1, 0:n_local_vertices_per_cell-1], where
+ * n_local_vertices_per_cell is the number of vertices that make up the cell.
+ * ipar(i,j) maps the jth+1 vertex number, in the ith+1 cell, to Ensight's
+ * "vertex number."  The "vertex number" is in [1:nvertices], so that for
+ * example, the corresponding x-coordinate is pt_coor(ipar(i,j)-1, 0).
  *
- * \param iel_type ISF field of Ensight_Cell_Types.  Each cell in the problem
- * must be associated with a Ensight_Cell_Types enumeration object.
+ * \param iel_type ISF field of Ensight_Cell_Types.  Dimensioned
+ * [0:ncells-1].  Each cell in the problem must be associated with a
+ * Ensight_Cell_Types enumeration object.
  *
- * \param cell_rgn_index ISF field of region identifiers for each cell.  This
- * matches a region index to each cell in the problem.
+ * \param cell_rgn_index ISF field of region identifiers.  Dimensioned
+ * [0:ncells-1].  This matches a region index to each cell in the problem.
  *
- * \param pt_coor_in FVF field of vertex coordinates. pt_coor_in is
+ * \param pt_coor FVF field of vertex coordinates. pt_coor is
  * dimensioned [0:nvertices-1, 0:ndim-1].  For each vertex point give the
  * value in the appropriate dimension.
  *
- * \param ens_vrtx_data_in FVF field of vertex data.  ens_vrtx_data_in is
+ * \param ens_vrtx_data FVF field of vertex data.  ens_vrtx_data is
  * dimensioned [0:nvertices-1, 0:number of vertex data fields - 1].  The
- * ordering of the second index must match the ens_vdata_names_in field input
+ * ordering of the second index must match the ens_vdata_names field input
  * argument to Ensight_Translator::Ensight_Translator().  The ordering of the
- * first index must match the vertex ordering from pt_coor_in.
+ * first index must match the vertex ordering from pt_coor.
  *
- * \param ens_cell_data_in FVF field of cell data.  ens_cell_data_in is
+ * \param ens_cell_data FVF field of cell data.  ens_cell_data is
  * dimensioned [0:ncells-1, 0:number of cell data fields - 1].  The ordering
- * of the second index must match the ens_cdata_names_in field input argument
+ * of the second index must match the ens_cdata_names field input argument
  * to Ensight_Translator::Ensight_Translator().  The ordering of the first
- * index must match the cell ordering from ipar_in.
+ * index must match the cell ordering from ipar.
  *
  * \param rgn_numbers ISF field of unique region ids.  This has dimensions of
  * the number of unique values found in the cell_rgn_index field.
@@ -183,8 +196,8 @@ void Ensight_Translator::ensight_dump(int        icycle,
     // >>> PREPARE DATA TO SET ENSIGHT OUTPUT
 
     // Increment local dump counter and add dump time
-    dump_times.push_back(time);
-    int igrdump_num = dump_times.size();
+    d_dump_times.push_back(time);
+    int igrdump_num = d_dump_times.size();
     Check (igrdump_num < 10000);
 
     // load traits for vector field types
@@ -224,7 +237,7 @@ void Ensight_Translator::ensight_dump(int        icycle,
     // announce the graphics dump
     std::cout << ">>> ENSIGHT GRAPHICS DUMP: icycle= " << icycle 
 	      << " time= " << time << " dt= " << dt << std::endl
-	      << "dir= " << ens_prefix << ", dump_number= " 
+	      << "dir= " << d_ens_prefix << ", dump_number= " 
 	      << igrdump_num << std::endl;
 
     // create the parts list
@@ -246,7 +259,6 @@ void Ensight_Translator::ensight_dump(int        icycle,
     
     // create the parts names
     vector<string> part_names;
-    int index;
     
     for (int i = 0; i < nparts; i++)
     {
@@ -255,7 +267,7 @@ void Ensight_Translator::ensight_dump(int        icycle,
 
 	if (find_location_c != rgn_numbers.end())
 	{
-	    index = find_location_c - rgn_numbers.begin();
+	    int index = find_location_c - rgn_numbers.begin();
 	    part_names.push_back(rgn_name[index]);
 	}
 	else if (find_location_c == rgn_numbers.end())
@@ -263,84 +275,62 @@ void Ensight_Translator::ensight_dump(int        icycle,
 	    Insist (0, "Didn't supply a region name!");
 	}
     }
+
     Insist (parts_list.size() == part_names.size(), "Mismatch on part size!");
     Insist (rgn_name.size() == parts_list.size(), "Mismatch on region size!");
 
-    // CREATE THE INDEXES FOR DUMPING CELL DATA.  ELEMENT (CELL) DATA IS
-    // DUMPED BY PART NUMBER AS THE PRIMARY INDEX, AND BY CELL-TYPE AS THE
-    // SECONDARY INDEX.  INDEX_CELL CONTAINS THE ORDER IN WHICH TO DUMP THE
-    // CELL DATA.  IPTR_INDEX_CELL(i+(j-1)*ncell_types_ensight) POINTS TO THE
-    // ELEMENT OF INDEX_CELL WHICH IS THE FIRST ELEMENT OF CELL-TYPE i, AND
-    // PART j. 
+    // create the cells that make up each part
 
-    // cell index and integer pointer into index_cell
-    int kk = num_ensight_cell_types * nparts + 1;
-    vector<int> index_cell(ncells);
-    vector<int> ptr_index_cell(kk, 0);
+    // vertices_of_part[ipart] is the set of vertex indices that make up part
+    // ipart.
+    vec_set_int vertices_of_part(nparts);
 
+    // cells_of_type[ipart][itype][i] is the cell index of the i'th cell of
+    // type itype in part ipart.
+    sf3_int cells_of_type(nparts);
+    for ( int i = 0; i < nparts; i++ )
+	cells_of_type[i].resize(d_num_ensight_cell_types);
+
+    // Initialize cells_of_type and vertices_of_part.
+
+    for ( int i = 0; i < ncells; i++ )
     {
-	// define some temporary indices
-	vector<int> itmp(ncells);
-	vector<int> jtmp(kk, 0);
+	find_location = find(parts_list.begin(), parts_list.end(),
+			     cell_rgn_index[i]);
 
-	for (int i = 0; i < ncells; i++)
-	{
-	    // find cell type
-	    find_location = find(cell_type_index.begin(),
-				 cell_type_index.end(), iel_type[i]);
+	Check(find_location != parts_list.end());
+	Check(iel_type[i] < d_num_ensight_cell_types);
 
-	    if (find_location != cell_type_index.end())
-		itmp[i] = find_location - cell_type_index.begin();
-	    else
-		Insist(0, "Element type not in cell_type_index!");
+	int ipart = find_location - parts_list.begin();
 
-	    // find cell part number
-	    find_location = find(parts_list.begin(), parts_list.end(),
-				 cell_rgn_index[i]);
+	cells_of_type[ipart][iel_type[i]].push_back(i);
 
-	    if (find_location != parts_list.end())
-		itmp[i] += (find_location - parts_list.begin()) *
-		    num_ensight_cell_types;
-	    else
-		Insist(0, "Part index not in parts_list!");
-
-	    jtmp[itmp[i]] += 1;
-	}
+	int nvertices = d_vrtx_cnt[iel_type[i]];
 	
-	for (int i = 1; i < kk; i++)
-	{
-	    ptr_index_cell[i] = ptr_index_cell[i-1] + jtmp[i-1];
-	}
-	for (int i = 0; i < kk; i++)
-	    jtmp[i] = ptr_index_cell[i];
-
-	for (int i = 0; i < ncells; i++)
-	{
-	    index_cell[jtmp[itmp[i]]] = i;
-	    jtmp[itmp[i]] += 1;
-	}
+	for ( int iv = 0; iv < nvertices; ++iv )
+	    vertices_of_part[ipart].insert(ipar(i, iv)-1);
     }
 
     // >>> WRITE OUT DATA TO DIRECTORIES
     
     // write time to case file
-    ensight_case(time);
+    ensight_case();
 
     // WRITE THE GEOMETRY FILE
-    if ( (! static_geom ) ||
-	 (dump_times.size() == 1) ) {
+    if ( (! d_static_geom ) ||
+	 (d_dump_times.size() == 1) ) {
 	ensight_geom(ens_postfix, icycle, time, dt, ipar, pt_coor,
-		     part_names, index_cell, ptr_index_cell);
+		     part_names, cells_of_type, vertices_of_part);
     }
 
     // write the vertex data
     if (ens_vrtx_data.nrows() > 0)
-	ensight_vrtx_data(ens_postfix, ens_vrtx_data);
+	ensight_vrtx_data(ens_postfix, ens_vrtx_data, vertices_of_part);
 
     // write out the cell data
     if (ens_cell_data.nrows() > 0)
-	ensight_cell_data(ens_postfix, ens_cell_data, index_cell,
-			  ptr_index_cell, part_names); 
+	ensight_cell_data(ens_postfix, ens_cell_data, cells_of_type,
+			  part_names); 
 }
 
 //---------------------------------------------------------------------------//
@@ -358,112 +348,95 @@ Ensight_Translator::ensight_geom(
     const rtt_traits::Viz_Traits<IVF> &ipar, 
     const rtt_traits::Viz_Traits<FVF> &pt_coor,
     const sf_string                   &part_names,
-    const sf_int                      &index_cell, 
-    const sf_int                      &ptr_index_cell)
+    const sf3_int                     &cells_of_type, 
+    const vec_set_int                 &vertices_of_part)
 {
-    using std::ofstream;
-    using std::setw;
-    using std::ios;
-    using std::endl;
+    using rtt_viz::endl;
     using std::string;
-
-    Require (ipar.nrows() == index_cell.size());
+    using std::ostringstream;
 
     // make output file for this timestep
-    string filename  = geo_dir + "/";
-    if ( static_geom ) {
+    string filename  = d_geo_dir + "/";
+    if ( d_static_geom ) {
 	filename += "data";
     }
     else {
 	filename += ens_postfix;
     }
-    const char *file = filename.c_str();
-    ofstream geomout(file);
+
+    Ensight_Stream geomout(filename, d_binary, true);
 
     // write the header
     geomout << "Description line 1" << endl;
-    geomout << "probtime " << time << " cycleno " << icycle << endl;
+    
+    ostringstream s;
+    s << "probtime " << time << " cycleno " << icycle;
+    geomout << s.str() << endl;
+    
     geomout << "node id given" << endl;
     geomout << "element id given" << endl;
-    geomout << "coordinates" << endl;
-    geomout << setw(8) << pt_coor.nrows() << endl;
-
-    // WRITE THE UNSTRUCTURED COORDINATE DATA. DATA IS ALWAYS
-    // 3D, 2D DATA IS CONFINED TO A PLANE, 1D TO A LINE IN 3-SPACE
     
     int ndim = pt_coor.ncols(0);
 
-    for (int i = 0; i < pt_coor.nrows(); i++)
-    {
-	Check (pt_coor.ncols(i) == ndim);
+    // write the data for each part
 
-	// print out node index: REMEMBER, node indices run from [1,N]
-	// whereas the pt_coor array runs from [0,N-1]
-	geomout << setw(8) << i+1;
-	
-	// set precision
-	geomout.precision(5);
-	geomout.setf(ios::scientific, ios::floatfield);
-
-	// do 3-D output
-	if (ndim == 3)
-	    geomout << setw(12) << pt_coor(i, 0) << setw(12) << pt_coor(i, 1)
-		    << setw(12) << pt_coor(i, 2) << endl;
-
-	// do 2-D output
-	if (ndim == 2)
-	{
-	    double zero = 0.0;
-	    geomout << setw(12) << pt_coor(i, 0) << setw(12) << pt_coor(i, 1) 
-		    << setw(12) << zero << endl;
-	}
-	   
-	// do 1-D output
-	if (ndim == 1)
-	{
-	    double zero = 0.0;
-	    geomout << setw(12) << pt_coor(i, 0) << setw(12) << zero
-		    << setw(12) << zero << endl;
-	}
-    }
-
-    // write the cell data
-    int counter  = 0;
-    int num_elem = 0;
-    int high;
-    int low;
     for (int ipart = 0; ipart < part_names.size(); ipart++)
     {
 	// output part number and names
-	geomout << "part " << ipart+1 << endl;
+ 	geomout << "part" << endl;
+ 	geomout << ipart+1 << endl;
 	geomout << part_names[ipart] << endl;
 
-	// find ensight cell type
-	for (int type = 0; type < num_ensight_cell_types; type++)
+	// output the global vertex indices and form local_vertex.
+	// local_vertex maps the global vertex index to the local vertex
+	// index, for this particular part.
+	geomout << "coordinates" << endl;
+	const set_int &v = vertices_of_part[ipart];
+	geomout << v.size() << endl;
+	std::map<int, int> local_vertex;
+	int count = 1;
+	for ( set_const_iterator iv = v.begin(); iv != v.end(); ++iv )
 	{
-	    // calculate number of elements of type
-	    low  = ptr_index_cell[counter];
-	    high = ptr_index_cell[counter+1];
-	    num_elem = high - low;
+	    geomout << *iv+1 << endl;
+	    local_vertex[*iv+1] = count;
+	    ++count;
+	}
+
+	// output the coordinates
+	for ( int idim = 0; idim < ndim; idim++ )
+	    for ( set_const_iterator iv = v.begin(); iv != v.end(); ++iv )
+		geomout << pt_coor(*iv, idim) << endl;
+
+	// ensight expects coordinates for three dimensions, so fill any
+	// remaining dimensions with zeroes
+	double zero = 0.0;
+	for ( int idim = ndim; idim < 3; idim++ )
+	    for ( set_const_iterator iv = v.begin(); iv != v.end(); ++iv )
+		geomout << zero << endl;
+
+	// for each cell type, dump the local vertex indices for each cell.
+	for (int type = 0; type < d_num_ensight_cell_types; type++)
+	{
+	    const sf_int &c = cells_of_type[ipart][type];
+	    const int num_elem = c.size();
 	    
 	    if (num_elem > 0)
 	    {
-		geomout << ensight_cell_names[type] << endl;
-		geomout << setw(8) << num_elem << endl;
+		geomout << d_ensight_cell_names[type] << endl;
+		geomout << num_elem << endl;
+
+		for ( int i = 0; i < num_elem; ++i )
+		    geomout << c[i] << endl;
 		
-		for (int i = low; i < high; i++)
+		for ( int i = 0; i < num_elem; ++i )
 		{
-		    geomout << setw(8) << index_cell[i] + 1;
-		    for (int j = 0; j < vrtx_cnt[type]; j++)
-			geomout << setw(8) << ipar(index_cell[i], j);
+		    for (int j = 0; j < d_vrtx_cnt[type]; j++)
+			geomout << local_vertex[ipar(c[i],j)];
 		    geomout << endl;
 		}
 	    }
-
-	    // increment type counter in parts list
-	    counter++;
-	}
-    }
+	} // done looping over cell types
+    } // done looping over parts
 }
 
 //---------------------------------------------------------------------------//
@@ -473,48 +446,33 @@ Ensight_Translator::ensight_geom(
 template<class FVF> 
 void Ensight_Translator::ensight_vrtx_data(
     const std_string                  &ens_postfix,
-    const rtt_traits::Viz_Traits<FVF> &ens_vrtx_data)
+    const rtt_traits::Viz_Traits<FVF> &ens_vrtx_data,
+    const vec_set_int                 &vertices_of_part)
 {
-    using std::ofstream;
-    using std::endl;
-    using std::ios;
-    using std::setw;
+    using rtt_viz::endl;
     using std::string;
+
+    const int nparts = vertices_of_part.size();
 
     // loop over all vertex data fields and write out data for each field
     for (int nvd = 0; nvd < ens_vrtx_data.ncols(0); nvd++)
     {
 	// open file for this data
-	string filename  = vdata_dirs[nvd] + "/" + ens_postfix;
-	const char *file = filename.c_str();
-	ofstream vout(file);
+	string filename  = d_vdata_dirs[nvd] + "/" + ens_postfix;
+	Ensight_Stream vout(filename, d_binary);
 
-	vout << ens_vdata_names[nvd] << endl;
-	
-	// set precisions
-	vout.precision(5);
-	vout.setf(ios::scientific, ios::floatfield);
-	
-	// write 6 data entries per line
-	int count   = 0;
-	int columns = 0;
+	vout << d_ens_vdata_names[nvd] << endl;
 
-	if (ens_vrtx_data.nrows() > 6)
-	    columns = 6;
-	else 
-	    columns = ens_vrtx_data.nrows();
-
-	while (count < ens_vrtx_data.nrows())
+	// loop over parts and output the data for this particular field
+	for ( int ipart = 0; ipart < nparts; ++ipart )
 	{
-	    for (int j = 0; j < columns; j++)
-	    {
-		vout << setw(12) << ens_vrtx_data(count, nvd);
-		count++;
-	    }
-	    vout << endl;
+	    vout << "part" << endl;
+	    vout << ipart+1 << endl;
+	    vout << "coordinates" << endl;
 
-	    if (ens_vrtx_data.nrows() - count < columns) 
-		columns = ens_vrtx_data.nrows() - count;
+	    const set_int &v = vertices_of_part[ipart];
+	    for ( set_const_iterator iv = v.begin(); iv != v.end(); ++iv )
+		vout << ens_vrtx_data(*iv, nvd) << endl;
 	}
     }
 }
@@ -527,90 +485,43 @@ template<class FVF>
 void Ensight_Translator::ensight_cell_data(
     const std_string                  &ens_postfix,
     const rtt_traits::Viz_Traits<FVF> &ens_cell_data,
-    const sf_int                      &index_cell,
-    const sf_int                      &ptr_index_cell,
+    const sf3_int                     &cells_of_type,
     const sf_string                   &part_names)
 {
-    using std::ofstream;
-    using std::endl;
-    using std::ios;
-    using std::setw;
+    using rtt_viz::endl;
     using std::string;
 
     // loop over all vertex data fields and write out data for each field
     for (int ncd = 0; ncd < ens_cell_data.ncols(0); ncd++)
     {
 	// open file for this data
-	string filename  = cdata_dirs[ncd] + "/" + ens_postfix;
-	const char *file = filename.c_str();
-	ofstream cellout(file);
+	string filename  = d_cdata_dirs[ncd] + "/" + ens_postfix;
+	Ensight_Stream cellout(filename, d_binary);
 
-	cellout << ens_cdata_names[ncd] << endl;
-
-	// set precision
-	cellout.precision(5);
-	cellout.setf(ios::scientific, ios::floatfield);
-
-	// write the cell data
-	int counter  = 0;
-	int num_elem = 0;
-	int high;
-	int low;
-
-	// count runs from 0 to ncells-1 across types
-	int cell_count = 0; 
+	cellout << d_ens_cdata_names[ncd] << endl;
 
 	for (int ipart = 0; ipart < part_names.size(); ipart++)
 	{
-	    // output part number
-	    cellout << "part " << ipart+1 << endl;
+	    cellout << "part" << endl;
+	    cellout << ipart+1 << endl;
 	    
 	    // loop over ensight cell types
-	    for (int type = 0; type < num_ensight_cell_types; type++)
+	    for (int type = 0; type < d_num_ensight_cell_types; type++)
 	    {
-		// calculate number of elements of type
-		low  = ptr_index_cell[counter];
-		high = ptr_index_cell[counter+1];
-		num_elem = high - low;
+		const sf_int &c = cells_of_type[ipart][type];
+		
+		int num_elem = c.size();
 
-		// print out if number of elements is greater than zero
+		// print out data if there are cells of this type
 		if (num_elem > 0)
 		{
-		    int columns    = 0;
-		    int elem_count = 0;
-
-		    // determine groups of six for printing
-		    if (num_elem > 6) 
-			columns = 6;
-		    else
-			columns = num_elem;
-
 		    // printout cell-type name
-		    cellout << ensight_cell_names[type] << endl;
+		    cellout << d_ensight_cell_names[type] << endl;
 
 		    // print out data
-		    for (int i = low; i < high; i++)
-		    {
-			while (elem_count < num_elem)
-			{
-			    for (int j = 0; j < columns; j++)
-			    {
-				cellout << setw(12) <<
-				    ens_cell_data(index_cell[cell_count],
-						  ncd); 
-				cell_count++;
-				elem_count++;
-			    }
-			    cellout << endl;
-
-			    if (num_elem - elem_count < columns)
-				columns = num_elem - elem_count;
-			}
-		    }
+		    for (int i = 0; i < num_elem; i++)
+			cellout << ens_cell_data(c[i], ncd) << endl;
 		}
-		    
-		// increment counter of death
-		counter++;		
 	    } 
 	}
     }

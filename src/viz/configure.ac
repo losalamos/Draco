@@ -18,7 +18,8 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(traits ds++)
 
 dnl tests
-AC_RUNTESTS(tstEnsight_Translator, scalar)
+AC_RUNTESTS(tstEnsight_Translator \
+            tstEnsight_Stream, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV

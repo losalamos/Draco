@@ -37,14 +37,25 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
+thistestdep := libviz_test${libsuffix}
+thistestlib := -L. -lviz_test
+thistestlib_dep := viz_test.o
+
 ##---------------------------------------------------------------------------##
 ## RULES
 ##---------------------------------------------------------------------------##
 
-${test_alltarget}: ${testdeps} ${objs}
+${test_alltarget}: ${thistestdep} ${testdeps} ${objs}
 
 tstEnsight_Translator: tstEnsight_Translator.o
-	${LD} ${LDFLAGS} -o $@ $< ${testlibs}
+	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
+
+tstEnsight_Stream: tstEnsight_Stream.o
+	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
+
+${thistestdep}: ${thistestlib_dep} ${testdeps}
+	${AR} ${ARFLAGS} $@ ${thistestlib_dep} ${ARTESTLIBS}
+	${RANLIB} $@
 
 %.py: python/%.py
 	cp $< .

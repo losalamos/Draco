@@ -15,12 +15,15 @@
 #include "traits/Viz_Traits.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Check_Strings.hh"
+#include "Ensight_Stream.hh"
 
 #include <sstream>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <vector>
+#include <set>
+#include <map>
 #include <string>
 #include <algorithm>
 #include <cstring>
@@ -144,7 +147,9 @@ enum Ensight_Cell_Types
 // 0) original
 // 1) 05-APR-03 : removed constructors where the dump_times are arguments;
 //                these were confusing and they were causing trouble on the
-//                IBM platforms because of a bug in xlC
+//                IBM platforms because of a bug in xlC.
+// 2) 15-Nov-04 : Changed to Ensight Gold format.  Added option for binary
+//                dumps.
 // 
 //===========================================================================//
 
@@ -157,47 +162,57 @@ class Ensight_Translator
     typedef std::vector<std::string>   sf_string;
     typedef std::string                std_string;
 
+    typedef std::vector<sf_int>        sf2_int;
+    typedef std::vector<sf2_int>       sf3_int;
+    typedef std::set<int>              set_int;
+    typedef std::vector<set_int>       vec_set_int;
+
+    typedef set_int::const_iterator    set_const_iterator;
+
   private:
     // >>> DATA
 
     // if true, geometry is static
-    bool static_geom;
+    bool d_static_geom;
+
+    // if true, output geometry and varible data files in binary format.
+    bool d_binary;
 
     // Number of Ensight cell types.
-    int num_ensight_cell_types;
+    int d_num_ensight_cell_types;
 
     // Ensight cell names.
-    sf_string ensight_cell_names;
+    sf_string d_ensight_cell_names;
 
     // Number of vertices for a given Ensight cell type.
-    sf_int vrtx_cnt;
+    sf_int d_vrtx_cnt;
     
     // Cell types.
-    sf_int cell_type_index;
+    sf_int d_cell_type_index;
 
     // Vector of dump_times.
-    sf_double dump_times;
+    sf_double d_dump_times;
 
     // Ensight file prefixes.
-    std_string ens_prefix;
+    std_string d_ens_prefix;
 
     // Names of vertex data.
-    sf_string ens_vdata_names;
+    sf_string d_ens_vdata_names;
     
     // Names of cell data.
-    sf_string ens_cdata_names;
+    sf_string d_ens_cdata_names;
 
     // Name of case file.
-    std_string case_filename;
+    std_string d_case_filename;
 
     // Name of geometry directory.
-    std_string geo_dir;
+    std_string d_geo_dir;
 
     // Names of vdata directories.
-    sf_string vdata_dirs;
+    sf_string d_vdata_dirs;
 
     // Names of cdata directories.
-    sf_string cdata_dirs;
+    sf_string d_cdata_dirs;
 
   private:
     // >>> PRIVATE IMPLEMENTATION
@@ -207,7 +222,7 @@ class Ensight_Translator
 			 const std_string &gd_wpath);
     
     // Write out case file.
-    void ensight_case(const double);
+    void ensight_case();
 
     // Write out geometry file.
     template<class IVF, class FVF>
@@ -215,19 +230,22 @@ class Ensight_Translator
 		      const double, const double, 
 		      const rtt_traits::Viz_Traits<IVF> &,
 		      const rtt_traits::Viz_Traits<FVF> &,
-		      const sf_string &, const sf_int &, const sf_int &); 
+		      const sf_string &,
+		      const sf3_int &,
+		      const vec_set_int &); 
 
     // Write out vertex data.
     template<class FVF>
     void ensight_vrtx_data(const std_string &, 
-			   const rtt_traits::Viz_Traits<FVF> &);
+			   const rtt_traits::Viz_Traits<FVF> &,
+			   const vec_set_int &);
 
     // Write out cell data.
     template<class FVF>
     void ensight_cell_data(const std_string &,
 			   const rtt_traits::Viz_Traits<FVF> &,
-			   const sf_int &,
-			   const sf_int &, const sf_string &);
+			   const sf3_int &,
+			   const sf_string &);
 
     // Initializer used by constructors
     void initialize(const bool graphics_continue);
@@ -237,24 +255,25 @@ class Ensight_Translator
     // Constructor.
     template<class SSF>
     Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
-		       const SSF &ens_vdata_names, 
-		       const SSF &ens_cdata_names, 
+		       const SSF &ens_vdata_names,
+		       const SSF &ens_cdata_names,
 		       const bool overwrite = false,
-		       const bool static_geom_in = false); 
+		       const bool static_geom = false,
+		       const bool binary = false); 
 
     // Do an Ensight_Dump.
     template<class ISF, class IVF, class SSF, class FVF>
     void ensight_dump(int icycle, double time, double dt,
-		      const IVF &ipar_in, const ISF &iel_type, 
-		      const ISF &cell_rgn_index, const FVF &pt_coor_in,
-		      const FVF &ens_vrtx_data_in, 
-		      const FVF &ens_cell_data_in, const ISF &rgn_numbers, 
+		      const IVF &ipar, const ISF &iel_type, 
+		      const ISF &cell_rgn_index, const FVF &pt_coor,
+		      const FVF &ens_vrtx_data, 
+		      const FVF &ens_cell_data, const ISF &rgn_numbers, 
 		      const SSF &rgn_name); 
 
     // >>> ACCESSORS
 
     //! Get the list of dump times.
-    const sf_double& get_dump_times() const { return dump_times; }
+    const sf_double& get_dump_times() const { return d_dump_times; }
 };
 
 } // end namespace rtt_viz

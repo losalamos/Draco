@@ -1,5 +1,5 @@
 FORMAT
-type: ensight
+type: ensight gold
 
 GEOMETRY
 model: 1   ./geo/data.****

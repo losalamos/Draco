@@ -1336,7 +1336,8 @@ package="viz"
 
 
 
-	test_alltarget="$test_alltarget tstEnsight_Translator"
+	test_alltarget="$test_alltarget tstEnsight_Translator \
+            tstEnsight_Stream"
 
 	test_nprocs="scalar"
 
