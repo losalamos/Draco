@@ -17,10 +17,10 @@ namespace rtt_PCGDiffusionSolver
 {
  
  // Since rtt_PCGDiffusionSolver is a limited namespace
- // I risk putting in this using declaration for dsxx::SP, and dsxx::Mat1.
+ // I risk putting in this using declaration for rtt_dsxx::SP, and rtt_dsxx::Mat1.
  
- using dsxx::SP;
- using dsxx::Mat1;
+ using rtt_dsxx::SP;
+ using rtt_dsxx::Mat1;
 
  //===========================================================================//
  // class MatVecP1Diff - 

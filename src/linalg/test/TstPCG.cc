@@ -56,7 +56,7 @@ int main( int argc, char *argv[] )
     int nys = 12;
     int nru = nxs * nys;
 
-    using dsxx::SP;
+    using rtt_dsxx::SP;
     
     SP< PCG_MatVec<double> >  pcg_matvec(new TstPCG_MatVec<double>(nxs,nys));
     SP< PCG_PreCond<double> > pcg_precond(new TstPCG_PreCond<double>());
@@ -68,7 +68,7 @@ int main( int argc, char *argv[] )
     pcg_ctrl.setFparm(PCG_Ctrl<double>::ALPHA, 0.1);
     pcg_ctrl.setOutputLevel(PCG_Ctrl<double>::LEVPRM);
 
-    using dsxx::Mat1;
+    using rtt_dsxx::Mat1;
     
     Mat1<double> x(nru);
     Mat1<double> b(nru);

@@ -29,7 +29,7 @@ int main( int argc, char *argv[] )
 	Tester<Factory> tester("test.in", argc, argv);
 	tester.run<Test,Test::VCTF>("PoomaMesh_XYZ::vctf");
     }
-    catch( dsxx::assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 	std::cout << "Failed assertion: " << a.what() << std::endl;
     }

@@ -20,7 +20,7 @@
 using rtt_matprops::MultiMatCellMatProps;
 using rtt_matprops::InterpedMaterialProps;
 using rtt_matprops::FifiMatPropsReader;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 testMmcMatProp::testMmcMatProp()
 {

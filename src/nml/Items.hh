@@ -54,7 +54,7 @@ class nmi_int : public NML_Item {
     void modify_default( va_list *pap );
     void update_value();
 
-    dsxx::String Type() const { return "int"; }
+    rtt_dsxx::String Type() const { return "int"; }
 };
 
 #define N_float(a,b) NMI_FLOAT, #a, b, &a
@@ -68,7 +68,7 @@ class nmi_float : public NML_Item {
     void modify_default( va_list *pap );
     void update_value();
 
-    dsxx::String Type() const { return "float"; }
+    rtt_dsxx::String Type() const { return "float"; }
 };
 
 #define N_double(a,b) NMI_DOUBLE, #a, b, &a
@@ -82,14 +82,14 @@ class nmi_double : public NML_Item {
     void modify_default( va_list *pap );
     void update_value();
 
-    dsxx::String Type() const { return "double"; }
+    rtt_dsxx::String Type() const { return "double"; }
 };
 
 class nmi_int_set : public NML_Item {
 
   protected:
     int *pv;
-    std::map<dsxx::String, int> m;
+    std::map<rtt_dsxx::String, int> m;
 
     nmi_int_set( int undef, int nvals, ... );
 
@@ -98,8 +98,8 @@ class nmi_int_set : public NML_Item {
     void modify_default( va_list *pap );
     void update_value();
 
-    dsxx::String Type() const { return "int_set"; }
-    virtual dsxx::String Choices() const;
+    rtt_dsxx::String Type() const { return "int_set"; }
+    virtual rtt_dsxx::String Choices() const;
 };
 
 class nmi_int_array : public NML_Item {
@@ -113,7 +113,7 @@ class nmi_int_array : public NML_Item {
     void modify_default( va_list *pap );
     void update_value();
 
-    dsxx::String Type() const { return "int_array"; }
+    rtt_dsxx::String Type() const { return "int_array"; }
 };
 
 #define N_bool(a,b) NMI_BOOL, #a, #b, &a
@@ -125,7 +125,7 @@ class nmi_bool : public nmi_int_set {
     void modify_default( va_list *pap );
     void update_value();
 
-    dsxx::String Type() const { return "bool"; }
+    rtt_dsxx::String Type() const { return "bool"; }
 };
 
 // This is known to be right for Linux, HP/UX, AIX, SUNOS, and UNICOS
@@ -158,41 +158,41 @@ class nmi_flog : public nmi_int_set {
     void modify_default( va_list *pap );
     void update_value();
 
-    dsxx::String Type() const { return "flog"; }
+    rtt_dsxx::String Type() const { return "flog"; }
 };
 
 #define N_String(a,b) NMI_STRING, #a, b, &a
 
 class nmi_String : public NML_Item {
 
-    dsxx::String *ps;
+    rtt_dsxx::String *ps;
 
   public:
     nmi_String( va_list *pap );
     void modify_default( va_list *pap );
     void update_value();
 
-    dsxx::String File_Rep();
+    rtt_dsxx::String File_Rep();
     void Read_Value( nmistream& nis );
 
-    dsxx::String Type() const { return "String"; }
+    rtt_dsxx::String Type() const { return "String"; }
 };
 
 #define N_DynArray_int(a,b) NMI_INT_DYNARRAY, #a, b, &a
 
 class nmi_DynArray_int : public NML_Item {
 
-    dsxx::DynArray<int> *pdai;
+    rtt_dsxx::DynArray<int> *pdai;
 
   public:
     nmi_DynArray_int( va_list *pap );
     void modify_default( va_list *pap );
     void update_value();
 
-    dsxx::String File_Rep();
+    rtt_dsxx::String File_Rep();
     void Read_Value( nmistream& nis );
 
-    dsxx::String Type() const { return "DynArray<int>"; }
+    rtt_dsxx::String Type() const { return "DynArray<int>"; }
 };
 
 // The page formatting item types.
@@ -202,9 +202,9 @@ class nmi_PageBreak : public NML_Item {
     nmi_PageBreak( va_list *pap );
     void modify_default( va_list *pap );
     void update_value();
-    dsxx::String File_Rep();
+    rtt_dsxx::String File_Rep();
 
-    dsxx::String Type() const { return "PageBreak"; }
+    rtt_dsxx::String Type() const { return "PageBreak"; }
 };
 
 class nmi_BoxStart : public NML_Item {
@@ -212,9 +212,9 @@ class nmi_BoxStart : public NML_Item {
     nmi_BoxStart( va_list *pap );
     void modify_default( va_list *pap );
     void update_value();
-    dsxx::String File_Rep();
+    rtt_dsxx::String File_Rep();
 
-    dsxx::String Type() const { return "BoxStart"; }
+    rtt_dsxx::String Type() const { return "BoxStart"; }
 };
 
 class nmi_BoxEnd : public NML_Item {
@@ -222,9 +222,9 @@ class nmi_BoxEnd : public NML_Item {
     nmi_BoxEnd( va_list *pap );
     void modify_default( va_list *pap );
     void update_value();
-    dsxx::String File_Rep();
+    rtt_dsxx::String File_Rep();
 
-    dsxx::String Type() const { return "BoxEnd"; }
+    rtt_dsxx::String Type() const { return "BoxEnd"; }
 };
 
 #endif				// __nml_Items_hh__

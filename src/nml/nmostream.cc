@@ -16,7 +16,7 @@
 #include <list>
 using std::list;
 
-using dsxx::String;
+using rtt_dsxx::String;
 
 //-------------------------------------------------------------------------//
 // Dump out a block.

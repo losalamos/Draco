@@ -27,7 +27,7 @@ class pcg_DB {
   public:
 // Some way to name this thing.
 
-    dsxx::String name;
+    rtt_dsxx::String name;
 
 // Pick up the namelist variables.
 
@@ -38,9 +38,9 @@ class pcg_DB {
 // Methods.
 
   public:
-    pcg_DB( dsxx::String _name ) : name(_name) {}
+    pcg_DB( rtt_dsxx::String _name ) : name(_name) {}
 
-    dsxx::String Name() const { return name; }
+    rtt_dsxx::String Name() const { return name; }
 
     void setup_namelist( NML_Group& g );
 };

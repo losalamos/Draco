@@ -19,7 +19,7 @@
 #include <list>
 using std::list;
 
-using dsxx::String;
+using rtt_dsxx::String;
 
 #define MAX_ITEM_LEN 40
 #define MAX_LINE_LEN 200

@@ -71,7 +71,7 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 
 	bool errorOnOutOfBounds = false;
 
-	dsxx::SP<BilinearInterpGrid>
+	rtt_dsxx::SP<BilinearInterpGrid>
 	    spGrid(new BilinearInterpGrid(tempGrid, densityGrid,
 					  errorOnOutOfBounds));
 	
@@ -87,7 +87,7 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 	    reader.getEnergyLowerbounds(materialId, i, energyLowerbounds[i-1]);
 	}
 
-	dsxx::Mat2<double> data(tempGrid.size(), densityGrid.size(), 0.0);
+	rtt_dsxx::Mat2<double> data(tempGrid.size(), densityGrid.size(), 0.0);
 	vector<BilinearInterpTable> tables(numGroups);
 
 	// Read and load SigmaTotal interpolation table.

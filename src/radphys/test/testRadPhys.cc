@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
 	{
 	    rtt_radphys::testRadPhys(i);
 	}
-	catch (const dsxx::assertion &ass)
+	catch (const rtt_dsxx::assertion &ass)
 	{
 	    std::cerr << ass.what() << std::endl;
 	}

@@ -26,8 +26,8 @@ class TstPCG_PreCond : public PCG_PreCond<T> {
     TstPCG_PreCond();
     ~TstPCG_PreCond();
 
-    void  Left_PreCond( dsxx::Mat1<T>& x, const dsxx::Mat1<T>&b );
-    void Right_PreCond( dsxx::Mat1<T>& x, const dsxx::Mat1<T>&b );
+    void  Left_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>&b );
+    void Right_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>&b );
 };
 
 #endif                          // __linalg_test_TstPCG_PreCond_hh__

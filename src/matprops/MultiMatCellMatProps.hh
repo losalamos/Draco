@@ -58,12 +58,12 @@ namespace rtt_matprops {
 
    private:
     
-     dsxx::SP<UMCMP> spumcmp;
+     rtt_dsxx::SP<UMCMP> spumcmp;
 
      // CREATORS
 
    public:
-     MultiMatCellMatProps(const dsxx::SP<UMCMP> &spumcmp_)
+     MultiMatCellMatProps(const rtt_dsxx::SP<UMCMP> &spumcmp_)
 	 :spumcmp(spumcmp_)
      {
 	 //empty

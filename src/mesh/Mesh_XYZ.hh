@@ -15,9 +15,9 @@
 #include "ds++/Mat.hh"
 #include "ds++/SP.hh"
 
-// using dsxx::Mat1;
-// using dsxx::Mat2;
-// using dsxx::Mat3;
+// using rtt_dsxx::Mat1;
+// using rtt_dsxx::Mat2;
+// using rtt_dsxx::Mat3;
 
 #include "c4/NodeInfo.hh"
 
@@ -29,7 +29,7 @@
 
 struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo
 {
-    typedef dsxx::Mat1<int>::size_type size_type;
+    typedef rtt_dsxx::Mat1<int>::size_type size_type;
 
     int nct;			// # of total cells in problem.
     int nxy;                    // # of cells in an x-y plane.
@@ -98,7 +98,7 @@ class Mesh_XYZ : private XYZ_Mapper
     typedef Mesh_DB Mesh_DB;
 
     typedef XYZ_Mapper::size_type size_type;
-    typedef dsxx::SP<const Mesh_XYZ> FieldConstructor;
+    typedef rtt_dsxx::SP<const Mesh_XYZ> FieldConstructor;
 
     typedef cctf<double> ccsf;
     typedef fcdtf<double> fcdsf;
@@ -156,7 +156,7 @@ class Mesh_XYZ : private XYZ_Mapper
 	friend class Mesh_XYZ;
 	friend class gfcdtf<T>;
 
-	dsxx::Mat2<T> data;
+	rtt_dsxx::Mat2<T> data;
         const Mesh_XYZ* mesh;
         FieldConstructor spm;
 
@@ -169,12 +169,12 @@ class Mesh_XYZ : private XYZ_Mapper
 	typedef T value_type;
         typedef T& reference;
         typedef const T& const_reference;
-        typedef typename dsxx::Mat2<T>::pointer pointer;
-        typedef typename dsxx::Mat2<T>::const_pointer const_pointer;
-        typedef typename dsxx::Mat2<T>::iterator iterator;
-        typedef typename dsxx::Mat2<T>::const_iterator const_iterator;
-        typedef typename dsxx::Mat2<T>::difference_type difference_type;
-        typedef typename dsxx::Mat2<T>::size_type size_type;
+        typedef typename rtt_dsxx::Mat2<T>::pointer pointer;
+        typedef typename rtt_dsxx::Mat2<T>::const_pointer const_pointer;
+        typedef typename rtt_dsxx::Mat2<T>::iterator iterator;
+        typedef typename rtt_dsxx::Mat2<T>::const_iterator const_iterator;
+        typedef typename rtt_dsxx::Mat2<T>::difference_type difference_type;
+        typedef typename rtt_dsxx::Mat2<T>::size_type size_type;
 
 	fcdtf( const FieldConstructor& spm_ )
 	    : XYZ_Mapper( spm_->get_Mesh_DB() ),
@@ -250,20 +250,20 @@ class Mesh_XYZ : private XYZ_Mapper
     template<class T>
     class gfcdtf : private XYZ_Mapper,
                    public xm::Indexable< T, gfcdtf<T> > {
-	dsxx::Mat4<T> data;
+	rtt_dsxx::Mat4<T> data;
         const Mesh_XYZ* mesh;
         FieldConstructor spm;
 
       public:
-        typedef typename dsxx::Mat4<T>::iterator iterator;
-        typedef typename dsxx::Mat4<T>::const_iterator const_iterator;
+        typedef typename rtt_dsxx::Mat4<T>::iterator iterator;
+        typedef typename rtt_dsxx::Mat4<T>::const_iterator const_iterator;
 
 	gfcdtf( const FieldConstructor& spm_ )
 	    : XYZ_Mapper( spm_->get_Mesh_DB() ),
-	      data( dsxx::Bounds( 0, 5 ),
-                    dsxx::Bounds( 0, ncx - 1 ),
-                    dsxx::Bounds( 0, ncy - 1 ),
-                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+	      data( rtt_dsxx::Bounds( 0, 5 ),
+                    rtt_dsxx::Bounds( 0, ncx - 1 ),
+                    rtt_dsxx::Bounds( 0, ncy - 1 ),
+                    rtt_dsxx::Bounds( zoff - 1, zoff + nczp ) ),
               mesh( spm_.bp() ), spm( spm_ )
 	{}
 
@@ -274,10 +274,10 @@ class Mesh_XYZ : private XYZ_Mapper
 
         gfcdtf<T>( const fcdtf<T>& f )
             : XYZ_Mapper( f.get_Mesh_DB() ),
-              data( dsxx::Bounds( 0, 5 ),
-                    dsxx::Bounds( 0, ncx - 1 ),
-                    dsxx::Bounds( 0, ncy - 1 ),
-                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+              data( rtt_dsxx::Bounds( 0, 5 ),
+                    rtt_dsxx::Bounds( 0, ncx - 1 ),
+                    rtt_dsxx::Bounds( 0, ncy - 1 ),
+                    rtt_dsxx::Bounds( zoff - 1, zoff + nczp ) ),
               mesh( f.mesh ), spm( f.spm )
         { *this = f; }
 
@@ -313,7 +313,7 @@ class Mesh_XYZ : private XYZ_Mapper
     class cctf : private XYZ_Mapper,
                        public xm::Indexable< T, cctf<T> >
     {
-        dsxx::Mat1<T> data;
+        rtt_dsxx::Mat1<T> data;
         const Mesh_XYZ* mesh;
         FieldConstructor spm;
 
@@ -326,12 +326,12 @@ class Mesh_XYZ : private XYZ_Mapper
 	typedef T value_type;
         typedef T& reference;
         typedef const T& const_reference;
-        typedef typename dsxx::Mat1<T>::pointer pointer;
-        typedef typename dsxx::Mat1<T>::const_pointer const_pointer;
-        typedef typename dsxx::Mat1<T>::iterator iterator;
-        typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
-        typedef typename dsxx::Mat1<T>::difference_type difference_type;
-        typedef typename dsxx::Mat1<T>::size_type size_type;
+        typedef typename rtt_dsxx::Mat1<T>::pointer pointer;
+        typedef typename rtt_dsxx::Mat1<T>::const_pointer const_pointer;
+        typedef typename rtt_dsxx::Mat1<T>::iterator iterator;
+        typedef typename rtt_dsxx::Mat1<T>::const_iterator const_iterator;
+        typedef typename rtt_dsxx::Mat1<T>::difference_type difference_type;
+        typedef typename rtt_dsxx::Mat1<T>::size_type size_type;
 
 	cctf( const FieldConstructor& spm_ ) 
           : XYZ_Mapper( spm_->get_Mesh_DB() ),
@@ -411,19 +411,19 @@ class Mesh_XYZ : private XYZ_Mapper
         : private XYZ_Mapper,
           public xm::Indexable< T, gcctf<T> >
     {
-        dsxx::Mat3<T> data;
+        rtt_dsxx::Mat3<T> data;
         const Mesh_XYZ* mesh;
         FieldConstructor spm;
 
       public:
-        typedef typename dsxx::Mat3<T>::iterator iterator;
-        typedef typename dsxx::Mat3<T>::const_iterator const_iterator;
+        typedef typename rtt_dsxx::Mat3<T>::iterator iterator;
+        typedef typename rtt_dsxx::Mat3<T>::const_iterator const_iterator;
 
         gcctf( const FieldConstructor& spm_ )
             : XYZ_Mapper( spm_->get_Mesh_DB() ),
-              data( dsxx::Bounds( 0, ncx - 1 ),
-                    dsxx::Bounds( 0, ncy - 1 ),
-                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+              data( rtt_dsxx::Bounds( 0, ncx - 1 ),
+                    rtt_dsxx::Bounds( 0, ncy - 1 ),
+                    rtt_dsxx::Bounds( zoff - 1, zoff + nczp ) ),
               mesh( spm_.bp() ), spm( spm_ )
         {}
 
@@ -434,9 +434,9 @@ class Mesh_XYZ : private XYZ_Mapper
 
         gcctf<T>( const cctf<T>& c )
             : XYZ_Mapper( c.get_Mesh_DB() ),
-              data( dsxx::Bounds( 0, ncx - 1 ),
-                    dsxx::Bounds( 0, ncy - 1 ),
-                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+              data( rtt_dsxx::Bounds( 0, ncx - 1 ),
+                    rtt_dsxx::Bounds( 0, ncy - 1 ),
+                    rtt_dsxx::Bounds( zoff - 1, zoff + nczp ) ),
               mesh( c.mesh ), spm( c.spm )
         { *this = c; }
 
@@ -465,7 +465,7 @@ class Mesh_XYZ : private XYZ_Mapper
     class nctf : private XYZ_Mapper,
                        public xm::Indexable< T, nctf<T> >
     {
-        dsxx::Mat1<T> data;
+        rtt_dsxx::Mat1<T> data;
         const Mesh_XYZ* mesh;
         FieldConstructor spm;
 
@@ -479,12 +479,12 @@ class Mesh_XYZ : private XYZ_Mapper
 	typedef T value_type;
         typedef T& reference;
         typedef const T& const_reference;
-        typedef typename dsxx::Mat1<T>::pointer pointer;
-        typedef typename dsxx::Mat1<T>::const_pointer const_pointer;
-        typedef typename dsxx::Mat1<T>::iterator iterator;
-        typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
-        typedef typename dsxx::Mat1<T>::difference_type difference_type;
-        typedef typename dsxx::Mat1<T>::size_type size_type;
+        typedef typename rtt_dsxx::Mat1<T>::pointer pointer;
+        typedef typename rtt_dsxx::Mat1<T>::const_pointer const_pointer;
+        typedef typename rtt_dsxx::Mat1<T>::iterator iterator;
+        typedef typename rtt_dsxx::Mat1<T>::const_iterator const_iterator;
+        typedef typename rtt_dsxx::Mat1<T>::difference_type difference_type;
+        typedef typename rtt_dsxx::Mat1<T>::size_type size_type;
 
 	nctf( const FieldConstructor& spm_ ) 
           : XYZ_Mapper( spm_->get_Mesh_DB() ),
@@ -565,7 +565,7 @@ class Mesh_XYZ : private XYZ_Mapper
 	friend class Mesh_XYZ;
 	friend class gvctf<T>;
 
-	dsxx::Mat2<T> data;
+	rtt_dsxx::Mat2<T> data;
         const Mesh_XYZ* mesh;
         FieldConstructor spm;
 
@@ -578,12 +578,12 @@ class Mesh_XYZ : private XYZ_Mapper
 	typedef T value_type;
         typedef T& reference;
         typedef const T& const_reference;
-        typedef typename dsxx::Mat2<T>::pointer pointer;
-        typedef typename dsxx::Mat2<T>::const_pointer const_pointer;
-        typedef typename dsxx::Mat2<T>::iterator iterator;
-        typedef typename dsxx::Mat2<T>::const_iterator const_iterator;
-        typedef typename dsxx::Mat2<T>::difference_type difference_type;
-        typedef typename dsxx::Mat2<T>::size_type size_type;
+        typedef typename rtt_dsxx::Mat2<T>::pointer pointer;
+        typedef typename rtt_dsxx::Mat2<T>::const_pointer const_pointer;
+        typedef typename rtt_dsxx::Mat2<T>::iterator iterator;
+        typedef typename rtt_dsxx::Mat2<T>::const_iterator const_iterator;
+        typedef typename rtt_dsxx::Mat2<T>::difference_type difference_type;
+        typedef typename rtt_dsxx::Mat2<T>::size_type size_type;
 
 	vctf( const FieldConstructor& spm_ )
 	    : XYZ_Mapper( spm_->get_Mesh_DB() ),
@@ -659,20 +659,20 @@ class Mesh_XYZ : private XYZ_Mapper
     template<class T>
     class gvctf : private XYZ_Mapper,
                   public xm::Indexable< T, gvctf<T> > {
-	dsxx::Mat4<T> data;
+	rtt_dsxx::Mat4<T> data;
         const Mesh_XYZ* mesh;
         FieldConstructor spm;
 
       public:
-        typedef typename dsxx::Mat4<T>::iterator iterator;
-        typedef typename dsxx::Mat4<T>::const_iterator const_iterator;
+        typedef typename rtt_dsxx::Mat4<T>::iterator iterator;
+        typedef typename rtt_dsxx::Mat4<T>::const_iterator const_iterator;
 
 	gvctf( const FieldConstructor& spm_ )
 	    : XYZ_Mapper( spm_->get_Mesh_DB() ),
-	      data( dsxx::Bounds( 0, 7 ),
-                    dsxx::Bounds( 0, ncx - 1 ),
-                    dsxx::Bounds( 0, ncy - 1 ),
-                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+	      data( rtt_dsxx::Bounds( 0, 7 ),
+                    rtt_dsxx::Bounds( 0, ncx - 1 ),
+                    rtt_dsxx::Bounds( 0, ncy - 1 ),
+                    rtt_dsxx::Bounds( zoff - 1, zoff + nczp ) ),
               mesh( spm_.bp() ), spm( spm_ )
 	{}
 
@@ -683,10 +683,10 @@ class Mesh_XYZ : private XYZ_Mapper
 
         gvctf<T>( const vctf<T>& v )
             : XYZ_Mapper( v.get_Mesh_DB() ),
-              data( dsxx::Bounds( 0, 7 ),
-                    dsxx::Bounds( 0, ncx - 1 ),
-                    dsxx::Bounds( 0, ncy - 1 ),
-                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+              data( rtt_dsxx::Bounds( 0, 7 ),
+                    rtt_dsxx::Bounds( 0, ncx - 1 ),
+                    rtt_dsxx::Bounds( 0, ncy - 1 ),
+                    rtt_dsxx::Bounds( zoff - 1, zoff + nczp ) ),
               mesh( v.mesh ), spm( v.spm )
         { *this = v; }
 
@@ -873,22 +873,22 @@ class Mesh_XYZ : private XYZ_Mapper
     template<class T, int N>
     class tiny_vec : public xm::Indexable< T, tiny_vec<T,N> > {
 
-        dsxx::Mat1<T> data;
+        rtt_dsxx::Mat1<T> data;
 
       public:
 	typedef T value_type;
         typedef T& reference;
         typedef const T& const_reference;
-        typedef typename dsxx::Mat1<T>::pointer pointer;
-        typedef typename dsxx::Mat1<T>::const_pointer const_pointer;
-        typedef typename dsxx::Mat1<T>::iterator iterator;
-        typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
-        typedef typename dsxx::Mat1<T>::difference_type
+        typedef typename rtt_dsxx::Mat1<T>::pointer pointer;
+        typedef typename rtt_dsxx::Mat1<T>::const_pointer const_pointer;
+        typedef typename rtt_dsxx::Mat1<T>::iterator iterator;
+        typedef typename rtt_dsxx::Mat1<T>::const_iterator const_iterator;
+        typedef typename rtt_dsxx::Mat1<T>::difference_type
                                         difference_type;
-        typedef typename dsxx::Mat1<T>::size_type size_type;
-        typedef typename dsxx::Mat1<T>::reverse_iterator
+        typedef typename rtt_dsxx::Mat1<T>::size_type size_type;
+        typedef typename rtt_dsxx::Mat1<T>::reverse_iterator
                                         reverse_iterator;
-        typedef typename dsxx::Mat1<T>::const_reverse_iterator
+        typedef typename rtt_dsxx::Mat1<T>::const_reverse_iterator
                                         const_reverse_iterator;
 
         tiny_vec() : data( N ) {}
@@ -947,11 +947,11 @@ class Mesh_XYZ : private XYZ_Mapper
     };
 
   private:
-    dsxx::Mat1<double> xc, yc, zc;
-    dsxx::Mat1<double> xf, yf, zf;
+    rtt_dsxx::Mat1<double> xc, yc, zc;
+    rtt_dsxx::Mat1<double> xf, yf, zf;
     double       dx, dy, dz;
     ccsf vc;
-    dsxx::Mat1<double> xA, yA, zA;
+    rtt_dsxx::Mat1<double> xA, yA, zA;
 
     ccsf dX, dY, dZ;
     ccsf xC, yC, zC;
@@ -992,17 +992,17 @@ class Mesh_XYZ : private XYZ_Mapper
     void get_dy(ccsf& dy) const { dy = dY; }
     void get_dz(ccsf& dz) const { dz = dZ; }
 
-    const dsxx::Mat1<double>& get_xc() const { return xc; }
-    const dsxx::Mat1<double>& get_yc() const { return yc; }
-    const dsxx::Mat1<double>& get_zc() const { return zc; }
+    const rtt_dsxx::Mat1<double>& get_xc() const { return xc; }
+    const rtt_dsxx::Mat1<double>& get_yc() const { return yc; }
+    const rtt_dsxx::Mat1<double>& get_zc() const { return zc; }
 
     void get_xloc(ccsf& xloc) const { xloc = xC; }
     void get_yloc(ccsf& yloc) const { yloc = yC; }
     void get_zloc(ccsf& zloc) const { zloc = zC; }
 
-    const dsxx::Mat1<double>& get_xf() const { return xf; }
-    const dsxx::Mat1<double>& get_yf() const { return yf; }
-    const dsxx::Mat1<double>& get_zf() const { return zf; }
+    const rtt_dsxx::Mat1<double>& get_xf() const { return xf; }
+    const rtt_dsxx::Mat1<double>& get_yf() const { return yf; }
+    const rtt_dsxx::Mat1<double>& get_zf() const { return zf; }
 
     void get_xloc(fcdsf& xloc) const { xloc = xF; }
     void get_yloc(fcdsf& yloc) const { yloc = yF; }
@@ -1012,9 +1012,9 @@ class Mesh_XYZ : private XYZ_Mapper
     void get_face_areas(fcdsf& fa) const;
     void get_face_lengths(fcdsf& fl) const;
 
-    const dsxx::Mat1<double>& get_xA() const { return xA; }
-    const dsxx::Mat1<double>& get_yA() const { return yA; }
-    const dsxx::Mat1<double>& get_zA() const { return zA; }
+    const rtt_dsxx::Mat1<double>& get_xA() const { return xA; }
+    const rtt_dsxx::Mat1<double>& get_yA() const { return yA; }
+    const rtt_dsxx::Mat1<double>& get_zA() const { return zA; }
 
     const ccsf& get_vc() const { return vc; }
     void get_cell_volumes(ccsf &vols) const { vols = vc; }

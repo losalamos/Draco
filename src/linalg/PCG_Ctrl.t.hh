@@ -13,7 +13,7 @@ using std::cout;
 using std::endl;
 using std::flush;
 
-using namespace dsxx;
+using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------//
 // Constructor.
@@ -76,10 +76,10 @@ PCG_Ctrl<T>::operator=(const PCG_Ctrl<T> &rhs)
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::solve(dsxx::Mat1<T>& x,
-			const dsxx::Mat1<T>& b,
-			dsxx::SP< PCG_MatVec<T> > pcg_matvec,
-			dsxx::SP< PCG_PreCond<T> > pcg_precond,
+void PCG_Ctrl<T>::solve(rtt_dsxx::Mat1<T>& x,
+			const rtt_dsxx::Mat1<T>& b,
+			rtt_dsxx::SP< PCG_MatVec<T> > pcg_matvec,
+			rtt_dsxx::SP< PCG_PreCond<T> > pcg_precond,
 			const int nru)
 {
     // Allocate the work arrays
@@ -95,8 +95,8 @@ void PCG_Ctrl<T>::solve(dsxx::Mat1<T>& x,
     
     computeWorkSpace();
 
-    dsxx::Mat1<int> iwork(d_iparm(NWI)); // PCG IWK array
-    dsxx::Mat1<T> fwork(d_iparm(NWF)); // PCG FWK array
+    rtt_dsxx::Mat1<int> iwork(d_iparm(NWI)); // PCG IWK array
+    rtt_dsxx::Mat1<T> fwork(d_iparm(NWF)); // PCG FWK array
 
     // These variables are used to communicate with the PCG package.
     // See the "call _methR" PCG documentation.
@@ -173,15 +173,15 @@ void PCG_Ctrl<T>::solve(dsxx::Mat1<T>& x,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::callPCG(dsxx::Mat1<T> &x,
-			  const dsxx::Mat1<T> &b,
+void PCG_Ctrl<T>::callPCG(rtt_dsxx::Mat1<T> &x,
+			  const rtt_dsxx::Mat1<T> &b,
 			  int &ijob,
 			  int &ireq,
 			  int &iva,
 			  int &ivql,
 			  int &ivqr,
-			  dsxx::Mat1<int> &iwork,
-			  dsxx::Mat1<T> &fwork)
+			  rtt_dsxx::Mat1<int> &iwork,
+			  rtt_dsxx::Mat1<T> &fwork)
 {
     int iError = 0;
     
@@ -356,7 +356,7 @@ void PCG_Ctrl<T>::setFparm(const Fparms parm,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::setUexact(const dsxx::Mat1<T>& uExact)
+void PCG_Ctrl<T>::setUexact(const rtt_dsxx::Mat1<T>& uExact)
 {
     d_uExact = uExact;
     d_iparm(IUEXAC) = YES;

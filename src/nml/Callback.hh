@@ -13,18 +13,18 @@
 
 class NML_Callback {
 
-    dsxx::String name;
+    rtt_dsxx::String name;
     void *data;
-    void (*f) ( const dsxx::String& arg, void *data );
+    void (*f) ( const rtt_dsxx::String& arg, void *data );
 
   public:
     NML_Callback() : data(0), f(0) {}
 
-    NML_Callback( void *_d, void (*_f) ( const dsxx::String&, void * ) )
+    NML_Callback( void *_d, void (*_f) ( const rtt_dsxx::String&, void * ) )
 	: data(_d), f(_f)
     {}
 
-    void invoke( const dsxx::String& current_val )
+    void invoke( const rtt_dsxx::String& current_val )
     {
 	if (!f) throw "Cannot invoke NULL Callback.";
 

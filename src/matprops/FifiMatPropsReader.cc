@@ -13,7 +13,7 @@
 #include "ds++/Assert.hh"
 
 #include "ds++/Mat.hh"
-using dsxx::Mat2;
+using rtt_dsxx::Mat2;
 
 #include <iostream>
 using std::istream;

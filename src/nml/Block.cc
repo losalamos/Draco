@@ -14,7 +14,7 @@
 #include <iostream>
 using namespace std;
 
-using dsxx::String;
+using rtt_dsxx::String;
 
 NML_Block::~NML_Block()
 {

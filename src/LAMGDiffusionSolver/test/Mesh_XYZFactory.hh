@@ -101,12 +101,12 @@ class Mesh_XYZFactory
 
 class Mesh_XYZFactory::Product
 {
-    dsxx::SP<Mesh_XYZ> spmesh_m;
+    rtt_dsxx::SP<Mesh_XYZ> spmesh_m;
     Mesh_XYZ::FieldConstructor fCtor_m;
 	
   public:
 	
-    Product(const dsxx::SP<Mesh_XYZ> &spmesh_in)
+    Product(const rtt_dsxx::SP<Mesh_XYZ> &spmesh_in)
 	: spmesh_m(spmesh_in), fCtor_m(spmesh_in)
     {
 	// empty
@@ -124,7 +124,7 @@ class Mesh_XYZFactory::Product
 
 inline Mesh_XYZFactory::Product Mesh_XYZFactory::create() const
 {
-    return Product(dsxx::SP<Mesh_XYZ>(new Mesh_XYZ(mdb_m)));
+    return Product(rtt_dsxx::SP<Mesh_XYZ>(new Mesh_XYZ(mdb_m)));
 }
 
 } // end namespace rtt_LAMGDiffusionSolver_test

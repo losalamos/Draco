@@ -25,41 +25,41 @@ class Banded_Matrix
     int nro;			// row offset.
     int nrp, nrt;		// # rows this processor, total.
 
-    dsxx::Mat2<T> data;		// The actual non-zero elements in the matrix.
+    rtt_dsxx::Mat2<T> data;		// The actual non-zero elements in the matrix.
     int diag_offset[N];		// Band offset from diagonal.
 
 // For a given row, indicate the range of active bands
 
-    dsxx::Mat1<int> start_band, nbands;
+    rtt_dsxx::Mat1<int> start_band, nbands;
 
 // Receive buffer for the data from the column vector which will be sent to
 // us during the matrix vector multiply routine.
 
-    dsxx::Mat1<T> cvdata;
+    rtt_dsxx::Mat1<T> cvdata;
 
 // Mapping from band, row indices to the index in cvdata which holds the
 // corresponding element from the vector.
 
-    dsxx::Mat2<int> cvindex;
+    rtt_dsxx::Mat2<int> cvindex;
 
     bool verbose;		// Be chatty?
 
     int receivers;
-    dsxx::Mat1<int> receiver_node, receiver_nels;
-    dsxx::Mat2<int> receiver_ndxs;
-    dsxx::Mat2<T>   receiver_data;
-    dsxx::Mat1<C4::C4_Req> sreq;
+    rtt_dsxx::Mat1<int> receiver_node, receiver_nels;
+    rtt_dsxx::Mat2<int> receiver_ndxs;
+    rtt_dsxx::Mat2<T>   receiver_data;
+    rtt_dsxx::Mat1<C4::C4_Req> sreq;
 
     int self_receiver_id, self_sender_id;
 
     int senders;
-    dsxx::Mat1<int> sender_node, sender_nels, sender_head;
-    dsxx::Mat1<C4::C4_Req> rreq;
+    rtt_dsxx::Mat1<int> sender_node, sender_nels, sender_head;
+    rtt_dsxx::Mat1<C4::C4_Req> rreq;
 
     struct rcvr_tag {
 	int node;
 	int nels;
-	dsxx::Mat1<int> indexes;
+	rtt_dsxx::Mat1<int> indexes;
 
 	rcvr_tag( int node_, int nels_, int *indexes_ )
 	    : node(node_), nels(nels_), indexes(nels)
@@ -110,7 +110,7 @@ class Banded_Matrix
     T& operator()( int row, int n ) { return data(n,row); }
     const T& operator()( int row, int n ) const { return data(n,row); }
 
-    void emit_occupancy_vectors( const dsxx::Mat1<int>& ov ) const;
+    void emit_occupancy_vectors( const rtt_dsxx::Mat1<int>& ov ) const;
     void emit_receiver_structs() const;
     void emit_sender_structs() const;
 };

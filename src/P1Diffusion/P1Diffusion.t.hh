@@ -21,7 +21,7 @@ namespace rtt_P1Diffusion
 // Since rtt_P1Diffusion is a limited namespace
 // I risk putting in this using declaration.
  
-using dsxx::SP;
+using rtt_dsxx::SP;
  
 template<class MT, class MS, bool HV>
 P1Diffusion<MT,MS,HV>::P1Diffusion(const rtt_diffusion::Diffusion_DB &diffdb,

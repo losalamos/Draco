@@ -22,8 +22,8 @@ class PCG_PreCond {
   public:
     virtual ~PCG_PreCond() {}
 
-    virtual void  Left_PreCond( dsxx::Mat1<T>& x, const dsxx::Mat1<T>& b ) =0;
-    virtual void Right_PreCond( dsxx::Mat1<T>& x, const dsxx::Mat1<T>& b ) =0;
+    virtual void  Left_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>& b ) =0;
+    virtual void Right_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>& b ) =0;
 };
 
 #endif                          // __linalg_PCG_PreCond_hh__

@@ -23,21 +23,21 @@ class nmistream;
 class NML_Item {
 
   protected:
-    dsxx::String name;
-    dsxx::String value;		// (The current value).
-    dsxx::String default_value;
+    rtt_dsxx::String name;
+    rtt_dsxx::String value;		// (The current value).
+    rtt_dsxx::String default_value;
     std::list< NML_Callback > cblist;
 
-    dsxx::String widget;
+    rtt_dsxx::String widget;
     int active;
 
   public:
     int defered_callback;
-    dsxx::String callback_binding;
+    rtt_dsxx::String callback_binding;
 
   public:
-    NML_Item( const dsxx::String& _name,
-	      const dsxx::String& _defval )
+    NML_Item( const rtt_dsxx::String& _name,
+	      const rtt_dsxx::String& _defval )
 	: name(_name), default_value(_defval),
 	  defered_callback(0)
     {}
@@ -51,13 +51,13 @@ class NML_Item {
     NML_Item() : widget("Default") {}
 
     void set_default();
-    void set_new_default( const dsxx::String& ndef, int update_now =1 );
+    void set_new_default( const rtt_dsxx::String& ndef, int update_now =1 );
     virtual void modify_default( va_list *pap ) =0;
 
-    void set_value( const dsxx::String& newval ) { value = newval; }
+    void set_value( const rtt_dsxx::String& newval ) { value = newval; }
     virtual void update_value() =0;
 
-    virtual dsxx::String File_Rep();
+    virtual rtt_dsxx::String File_Rep();
     virtual void Read_Value( nmistream& nis );
 
 // Some methods for dealing with callbacks.
@@ -67,17 +67,17 @@ class NML_Item {
     void delete_callback( NML_Callback& cb );
     void do_callbacks();
 
-    const dsxx::String& Name() const { return name; }
-    const dsxx::String& Value() const { return value; }
-    const dsxx::String& Default() const { return default_value; }
+    const rtt_dsxx::String& Name() const { return name; }
+    const rtt_dsxx::String& Value() const { return value; }
+    const rtt_dsxx::String& Default() const { return default_value; }
 
 // Some methods for helping with Tk interaction.
 
-    virtual dsxx::String Type() const =0;
-    virtual dsxx::String Choices() const  { return ""; }
-    virtual dsxx::String Widget() const { return widget; }
+    virtual rtt_dsxx::String Type() const =0;
+    virtual rtt_dsxx::String Choices() const  { return ""; }
+    virtual rtt_dsxx::String Widget() const { return widget; }
 
-    void Set_widget( dsxx::String w ) { widget = w; }
+    void Set_widget( rtt_dsxx::String w ) { widget = w; }
 
     // Might need a way to pass in configuration data too.  Could add
     // a config datum to this class, and provide a way to export it to

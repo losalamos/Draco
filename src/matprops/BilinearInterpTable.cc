@@ -25,7 +25,7 @@ typedef BilinearInterpTable::Memento Memento;
 
 BilinearInterpTable::BilinearInterpTable(const std::vector<double> &x1vals_,
 					 const std::vector<double> &x2vals_,
-					 const dsxx::Mat2<double> &yvals_)
+					 const rtt_dsxx::Mat2<double> &yvals_)
     : grid(new BilinearInterpGrid(x1vals_, x2vals_)), yvals(yvals_),
       isEmpty(false)
 {
@@ -39,8 +39,8 @@ BilinearInterpTable::BilinearInterpTable(const std::vector<double> &x1vals_,
 //    table of evaluations.
 //------------------------------------------------------------------------//
 
-BilinearInterpTable::BilinearInterpTable(const dsxx::SP<BilinearInterpGrid> &grid_,
-					 const dsxx::Mat2<double> &yvals_)
+BilinearInterpTable::BilinearInterpTable(const rtt_dsxx::SP<BilinearInterpGrid> &grid_,
+					 const rtt_dsxx::Mat2<double> &yvals_)
     : grid(grid_), yvals(yvals_), isEmpty(false)
 {
     Require(yvals.get_xlen() == grid->size(1));

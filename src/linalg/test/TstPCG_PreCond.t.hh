@@ -28,7 +28,7 @@ TstPCG_PreCond<T>::TstPCG_PreCond()
 //---------------------------------------------------------------------------//
 
 template<class T>
-void TstPCG_PreCond<T>::Left_PreCond( dsxx::Mat1<T>& x, const dsxx::Mat1<T>&b )
+void TstPCG_PreCond<T>::Left_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>&b )
 {
     x = b;
 }
@@ -38,7 +38,7 @@ void TstPCG_PreCond<T>::Left_PreCond( dsxx::Mat1<T>& x, const dsxx::Mat1<T>&b )
 //---------------------------------------------------------------------------//
 
 template<class T>
-void TstPCG_PreCond<T>::Right_PreCond( dsxx::Mat1<T>& x, const dsxx::Mat1<T>&b )
+void TstPCG_PreCond<T>::Right_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>&b )
 {
     x = b;
 }

@@ -16,8 +16,8 @@
 #include <map>
 using std::map;
 
-using dsxx::DynArray;
-using dsxx::String;
+using rtt_dsxx::DynArray;
+using rtt_dsxx::String;
 
 //===========================================================================//
 // class nmi_int

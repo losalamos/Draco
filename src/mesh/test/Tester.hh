@@ -70,7 +70,7 @@ class Tester
 	    factory_m = new FACTORY(mdb);
 	    std::cout << "Factory created in Tester" << std::endl;
 	}
-	catch( dsxx::assertion& a )
+	catch( rtt_dsxx::assertion& a )
 	{
 	    std::cout << "Factory not created in Tester" << std::endl;
 	    std::cout << "Failed assertion: " << a.what() << std::endl;
@@ -166,7 +166,7 @@ void Tester<FACTORY>::run(const std::string &name)
 
 	passed = tester.passed();
     }
-    catch( dsxx::assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 	std::cout << "Failed assertion: " << a.what() << std::endl;
     }
@@ -194,7 +194,7 @@ void Tester<FACTORY>::run(const std::string &name)
 
 	passed = tester.passed();
     }
-    catch( dsxx::assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 	std::cout << "Failed assertion: " << a.what() << std::endl;
     }

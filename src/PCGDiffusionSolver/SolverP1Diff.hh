@@ -25,7 +25,7 @@ namespace rtt_PCGDiffusionSolver
 
  // Inside a small namespace I feel I can put in a using declaration.
  
- using dsxx::SP;
+ using rtt_dsxx::SP;
  
  //===========================================================================//
  // class SolverP1Diff - 

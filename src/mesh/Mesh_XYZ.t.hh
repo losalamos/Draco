@@ -381,8 +381,8 @@ void Mesh_XYZ::gcctf<T>::update_guard_cells()
     using namespace C4;
     C4_Req lrcv, rrcv;
 
-    dsxx::Mat2<T> lrbuf( &data(0,0,zoff-1), ncx, ncy );
-    dsxx::Mat2<T> rrbuf( &data(0,0,zoff+nczp), ncx, ncy );
+    rtt_dsxx::Mat2<T> lrbuf( &data(0,0,zoff-1), ncx, ncy );
+    rtt_dsxx::Mat2<T> rrbuf( &data(0,0,zoff+nczp), ncx, ncy );
 
     if (node > 0)
         RecvAsync( lrcv, &lrbuf(0,0), ncx*ncy, node-1 );
@@ -418,8 +418,8 @@ void Mesh_XYZ::gfcdtf<T>::update_gfcdtf()
     using namespace C4;
     C4_Req lrcv, rrcv;
 
-    dsxx::Mat3<T> lrbuf( &data(0,0,0,zoff-1), 6, ncx, ncy );
-    dsxx::Mat3<T> rrbuf( &data(0,0,0,zoff+nczp), 6, ncx, ncy );
+    rtt_dsxx::Mat3<T> lrbuf( &data(0,0,0,zoff-1), 6, ncx, ncy );
+    rtt_dsxx::Mat3<T> rrbuf( &data(0,0,0,zoff+nczp), 6, ncx, ncy );
 
     if (node > 0)
         RecvAsync( lrcv, &lrbuf(0,0,0), 6*ncx*ncy, node-1 );
@@ -455,8 +455,8 @@ void Mesh_XYZ::gvctf<T>::update_gvctf()
     using namespace C4;
     C4_Req lrcv, rrcv;
 
-    dsxx::Mat3<T> lrbuf( &data(0,0,0,zoff-1), 8, ncx, ncy );
-    dsxx::Mat3<T> rrbuf( &data(0,0,0,zoff+nczp), 8, ncx, ncy );
+    rtt_dsxx::Mat3<T> lrbuf( &data(0,0,0,zoff-1), 8, ncx, ncy );
+    rtt_dsxx::Mat3<T> rrbuf( &data(0,0,0,zoff+nczp), 8, ncx, ncy );
 
     if (node > 0)
         RecvAsync( lrcv, &lrbuf(0,0,0), 8*ncx*ncy, node-1 );

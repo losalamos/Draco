@@ -28,7 +28,7 @@ int main( int argc, char *argv[] )
 	Tester<Factory> tester("test.in", argc, argv);
 	tester.run<Test,Test::CCTF>("Mesh_XYZ::cctf");
     }
-    catch( dsxx::assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 	std::cout << "Failed assertion: " << a.what() << std::endl;
     }

@@ -68,26 +68,26 @@ namespace rtt_P1Diffusion
 
      // DATA
     
-     dsxx::SP<MeshType> spm;
-     dsxx::SP<MatrixSolver> spsolver;
-     dsxx::SP<P1Momentum> spmomentum;
+     rtt_dsxx::SP<MeshType> spm;
+     rtt_dsxx::SP<MatrixSolver> spsolver;
+     rtt_dsxx::SP<P1Momentum> spmomentum;
      FieldConstructor fCtor;
      typename MatFacTraits::PreComputedState preComputedMatrixState;
      bool jacobiScale;
      
      // Cache the swapped values to avoid too much communication.
      
-     mutable dsxx::SP<fcdsf> spDSwap;
-     mutable dsxx::SP<fcdsf> spFprimeSwap;
-     mutable dsxx::SP<fcdsf> spDeltaLSwap;
+     mutable rtt_dsxx::SP<fcdsf> spDSwap;
+     mutable rtt_dsxx::SP<fcdsf> spFprimeSwap;
+     mutable rtt_dsxx::SP<fcdsf> spDeltaLSwap;
 
    public:
 
      // CREATORS
     
      P1Diffusion(const rtt_diffusion::Diffusion_DB &diffdb,
-		 const dsxx::SP<MeshType>& spm_,
-		 const dsxx::SP<MatrixSolver> &spsolver_,
+		 const rtt_dsxx::SP<MeshType>& spm_,
+		 const rtt_dsxx::SP<MatrixSolver> &spsolver_,
                  const FieldConstructor &fCtor_);
 
      // MANIPULATORS

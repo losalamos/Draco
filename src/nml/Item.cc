@@ -13,7 +13,7 @@ using std::list;
 
 #include <ctype.h>
 
-using dsxx::String;
+using rtt_dsxx::String;
 
 void NML_Item::set_default()
 {

@@ -35,7 +35,7 @@ void TestSolver<MT,Solver>::runTest()
 template<class MT, class Solver>
 void TestSolver<MT,Solver>::runTest(bool jacobiScale)
 {
-    using dsxx::SP;
+    using rtt_dsxx::SP;
     
     if (jacobiScale)
 	diff_db.pc_meth = 1;

@@ -22,7 +22,7 @@ class PCG_MatVec {
   public:
     virtual ~PCG_MatVec() {}
 
-    virtual void MatVec( dsxx::Mat1<T>& b, const dsxx::Mat1<T>& x ) =0;
+    virtual void MatVec( rtt_dsxx::Mat1<T>& b, const rtt_dsxx::Mat1<T>& x ) =0;
 };
 
 #endif                          // __linalg_PCG_MatVec_hh__

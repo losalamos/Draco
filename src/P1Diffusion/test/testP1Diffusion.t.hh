@@ -44,7 +44,7 @@ namespace rtt_P1Diffusion_test
 {
 
  template<class MT>
- testP1Diffusion<MT>::testP1Diffusion(const dsxx::SP<MT> &spMesh_,
+ testP1Diffusion<MT>::testP1Diffusion(const rtt_dsxx::SP<MT> &spMesh_,
 				      const FieldConstructor &fCtor_,
 				      double D_, double sigma_, double q_,
 				      double fTop_, double fBot_,

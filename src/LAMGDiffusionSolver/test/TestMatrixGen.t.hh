@@ -57,7 +57,7 @@ void TestMatrixGen<MTFactory>::runTest()
 
     TESTASSERT(totalMatrixElements == expectedNumEntries);
 
-    dsxx::SP<Matrix> spMatrix;
+    rtt_dsxx::SP<Matrix> spMatrix;
 
     typedef typename MT::ccsf ccsf;
     ccsf ADiagonal(fCtor);

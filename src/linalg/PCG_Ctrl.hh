@@ -79,9 +79,9 @@ class PCG_Ctrl
 
     // DATA
 
-    dsxx::Mat1<int> d_iparm; // PCG IPARM array
-    dsxx::Mat1<T> d_fparm; // PCG FPARM array
-    dsxx::Mat1<T> d_uExact; // PCG UEXACT array
+    rtt_dsxx::Mat1<int> d_iparm; // PCG IPARM array
+    rtt_dsxx::Mat1<T> d_fparm; // PCG FPARM array
+    rtt_dsxx::Mat1<T> d_uExact; // PCG UEXACT array
     Method d_method; // The PCG iterative method to be called
 
   public:
@@ -101,10 +101,10 @@ class PCG_Ctrl
     // MANIPULATORS
 
     PCG_Ctrl& operator=(const PCG_Ctrl &rhs);
-    void solve(dsxx::Mat1<T>& x,
-	       const dsxx::Mat1<T>& b,
-	       dsxx::SP< PCG_MatVec<T> > pcg_matvec,
-	       dsxx::SP< PCG_PreCond<T> > pcg_precond,
+    void solve(rtt_dsxx::Mat1<T>& x,
+	       const rtt_dsxx::Mat1<T>& b,
+	       rtt_dsxx::SP< PCG_MatVec<T> > pcg_matvec,
+	       rtt_dsxx::SP< PCG_PreCond<T> > pcg_precond,
 	       const int nru = -1);
     void setIparm(const Iparms parm,
 		  const int value);
@@ -116,22 +116,22 @@ class PCG_Ctrl
     void setStopTest(const StopTest value);
     void setPrecon(const Precon value);
     void setUinit(const Uinit value);
-    void setUexact(const dsxx::Mat1<T>& uExact);
+    void setUexact(const rtt_dsxx::Mat1<T>& uExact);
 
   private:
 
     // IMPLEMENTATION
 
     void computeWorkSpace();
-    void callPCG(dsxx::Mat1<T>& x,
-		 const dsxx::Mat1<T>& b,
+    void callPCG(rtt_dsxx::Mat1<T>& x,
+		 const rtt_dsxx::Mat1<T>& b,
 		 int &ijob,
 		 int &ireq,
 		 int &iva,
 		 int &ivql,
 		 int &ivqr,
-		 dsxx::Mat1<int> &iwork,
-		 dsxx::Mat1<T> &fwork);
+		 rtt_dsxx::Mat1<int> &iwork,
+		 rtt_dsxx::Mat1<T> &fwork);
     int getSize() const { return d_iparm(NRU); }
 };
 

@@ -73,7 +73,7 @@ int main( int argc, char *argv[] )
     g.readgroup("testPCGDiffusionSolver.in");
     g.writegroup("testPCGDiffusionSolver.out");
 
-    dsxx::SP<Mesh_XYZ> spmesh(new Mesh_XYZ(mdb));
+    rtt_dsxx::SP<Mesh_XYZ> spmesh(new Mesh_XYZ(mdb));
 
     const Mesh_XYZ::FieldConstructor &fCtor = spmesh;
 

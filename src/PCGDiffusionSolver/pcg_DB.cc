@@ -17,7 +17,7 @@ namespace rtt_PCGDiffusionSolver
 
 void pcg_DB::setup_namelist( NML_Group& g )
 {
-    dsxx::String fldeqn = name;
+    rtt_dsxx::String fldeqn = name;
 
 #include ".nml_pcg.cc"
 }

@@ -16,11 +16,11 @@
 #include <string>
 #include <vector>
 
-void funcYYY(dsxx::Mat2<double> &data);
+void funcYYY(rtt_dsxx::Mat2<double> &data);
 
 namespace rtt_matprops {
 
-void funcXXX(dsxx::Mat2<double> &data);
+void funcXXX(rtt_dsxx::Mat2<double> &data);
 
 //===========================================================================//
 // class MaterialPropsReader - 
@@ -123,7 +123,7 @@ class MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getSigmaTotal(MaterialId materialId, int group,
-			       dsxx::Mat2<double> &data) = 0;
+			       rtt_dsxx::Mat2<double> &data) = 0;
 
     //------------------------------------------------------------------------//
     // getSigmaAbsorption:
@@ -136,7 +136,7 @@ class MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getSigmaAbsorption(MaterialId materialId, int group,
-				    dsxx::Mat2<double> &data) = 0;
+				    rtt_dsxx::Mat2<double> &data) = 0;
 
     //------------------------------------------------------------------------//
     // getSigmaScattering:
@@ -149,7 +149,7 @@ class MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getSigmaScattering(MaterialId materialId, int group,
-				    dsxx::Mat2<double> &data) = 0;
+				    rtt_dsxx::Mat2<double> &data) = 0;
 
     //------------------------------------------------------------------------//
     // getSigmaEmission:
@@ -162,7 +162,7 @@ class MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getSigmaEmission(MaterialId materialId, int group,
-				  dsxx::Mat2<double> &data) = 0;
+				  rtt_dsxx::Mat2<double> &data) = 0;
 
     //------------------------------------------------------------------------//
     // getElectronIonCoupling:
@@ -175,7 +175,7 @@ class MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getElectronIonCoupling(MaterialId materialId,
-					dsxx::Mat2<double> &data) = 0;
+					rtt_dsxx::Mat2<double> &data) = 0;
 	
     //------------------------------------------------------------------------//
     // getElectronConductionCoeff:
@@ -188,7 +188,7 @@ class MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getElectronConductionCoeff(MaterialId materialId,
-					    dsxx::Mat2<double> &data) = 0;
+					    rtt_dsxx::Mat2<double> &data) = 0;
 	
     //------------------------------------------------------------------------//
     // getIonConductionCoeff:
@@ -201,7 +201,7 @@ class MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getIonConductionCoeff(MaterialId materialId,
-				       dsxx::Mat2<double> &data) = 0;
+				       rtt_dsxx::Mat2<double> &data) = 0;
 	
     //------------------------------------------------------------------------//
     // getElectronSpecificHeat:
@@ -214,7 +214,7 @@ class MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getElectronSpecificHeat(MaterialId materialId,
-					 dsxx::Mat2<double> &data) = 0;
+					 rtt_dsxx::Mat2<double> &data) = 0;
 	
     //------------------------------------------------------------------------//
     // getIonSpecificHeat:
@@ -227,7 +227,7 @@ class MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getIonSpecificHeat(MaterialId materialId,
-				    dsxx::Mat2<double> &data) = 0;
+				    rtt_dsxx::Mat2<double> &data) = 0;
 
     // ACCESSORS
 

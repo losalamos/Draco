@@ -49,7 +49,7 @@ namespace rtt_P1Diffusion_test
      double A;
      double B;
 
-     dsxx::SP<MT> spMesh;
+     rtt_dsxx::SP<MT> spMesh;
      FieldConstructor fCtor;
      rtt_diffusion::Diffusion_DB diffdb;
      pcg_DB pcg_db;
@@ -61,7 +61,7 @@ namespace rtt_P1Diffusion_test
      
    public:
 
-     testP1Diffusion(const dsxx::SP<MT> &spMesh_,
+     testP1Diffusion(const rtt_dsxx::SP<MT> &spMesh_,
 		     const FieldConstructor &fCtor_,
 		     double D_, double sigma_, double q_,
 		     double fTop_, double fBot_,

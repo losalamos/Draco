@@ -148,7 +148,7 @@ void Tester<FACTORY>::run(const std::string &name)
 
 	passed = tester.passed();
     }
-    catch( dsxx::assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 	std::cout << "Failed assertion: " << a.what() << std::endl;
     }
@@ -176,7 +176,7 @@ void Tester<FACTORY>::run(const std::string &name)
 
 	passed = tester.passed();
     }
-    catch( dsxx::assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 	std::cout << "Failed assertion: " << a.what() << std::endl;
     }

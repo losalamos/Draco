@@ -52,14 +52,14 @@ class Solver
 
   public:
 
-    typedef dsxx::Mat1<RTT_F90_INTEGER> IMat1;
-    typedef dsxx::Mat1<RTT_F90_DOUBLE> DMat1;
+    typedef rtt_dsxx::Mat1<RTT_F90_INTEGER> IMat1;
+    typedef rtt_dsxx::Mat1<RTT_F90_DOUBLE> DMat1;
 
     // DATA
 
   private:
     
-    dsxx::SP<Representation> rep;
+    rtt_dsxx::SP<Representation> rep;
     
   public:
 

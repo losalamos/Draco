@@ -44,7 +44,7 @@ namespace rtt_PCGDiffusionSolver
      // if (pcg_db.iuexac)
      // {
      //    .. set up the exact solution into uExact, to be tested
-     //    pcg_ctrl.setUexact(const dsxx::Mat1<T>& uExact);
+     //    pcg_ctrl.setUexact(const rtt_dsxx::Mat1<T>& uExact);
      // }
 
      pcg_ctrl.setLogical(PCG_Ctrl::ICKSTG, logical(pcg_db.ickstg));
@@ -68,13 +68,13 @@ namespace rtt_PCGDiffusionSolver
 
      // Now solve the matrix equation A.x = rhs.
 
-     dsxx::Mat1<double> phitmp(phi.size());
+     rtt_dsxx::Mat1<double> phitmp(phi.size());
      std::copy(phi.begin(), phi.end(), phitmp.begin());
     
-     dsxx::Mat1<double> brhstmp(brhs.size());
+     rtt_dsxx::Mat1<double> brhstmp(brhs.size());
      std::copy(brhs.begin(), brhs.end(), brhstmp.begin());
 
-     dsxx::Mat1<double> &constbrhstmp = brhstmp;
+     rtt_dsxx::Mat1<double> &constbrhstmp = brhstmp;
      
      // pcg_ctrl.pcg_fe(phitmp, brhstmp, spMatVec, spPreCond);
      pcg_ctrl.solve(phitmp, constbrhstmp, spMatVec, spPreCond);

@@ -50,7 +50,7 @@ int main(int argc , char *argv[])
 	xxx.execute_test();
 
     }
-    catch (const dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &ass)
     {
 	cerr << "Test: FAILED: assertion: " << ass.what() << endl;
     }

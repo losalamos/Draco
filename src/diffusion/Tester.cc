@@ -52,7 +52,7 @@ void Tester::run()
 		  << std::endl;
 	runTest();
     }
-    catch( dsxx::assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 	os() << "Failed assertion: " << a.what() << std::endl;
 	setPassed(false);

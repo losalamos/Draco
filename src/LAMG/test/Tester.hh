@@ -160,7 +160,7 @@ void Tester::run()
 	runTest();
 
     }
-    catch( dsxx::assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 	std::cout << "Failed assertion: " << a.what() << std::endl;
 	passed_m = false;

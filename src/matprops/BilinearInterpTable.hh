@@ -61,11 +61,11 @@ class BilinearInterpTable
 
     // The grid axis values on which to do the interpolation.
     
-    dsxx::SP<BilinearInterpGrid> grid;
+    rtt_dsxx::SP<BilinearInterpGrid> grid;
     
     // yvals is the 2-dimensional grid of tabulated y values.
 
-    dsxx::Mat2<double> yvals;
+    rtt_dsxx::Mat2<double> yvals;
 
     // Is this an empty table?
 
@@ -96,7 +96,7 @@ class BilinearInterpTable
 
     BilinearInterpTable(const std::vector<double> &x1vals_,
 			const std::vector<double> &x2vals_,
-			const dsxx::Mat2<double> &yvals_);
+			const rtt_dsxx::Mat2<double> &yvals_);
     
     //------------------------------------------------------------------------//
     // BilinearInterpTable:
@@ -115,8 +115,8 @@ class BilinearInterpTable
     //    table of evaluations.
     //------------------------------------------------------------------------//
 
-    BilinearInterpTable(const dsxx::SP<BilinearInterpGrid> &grid_,
-			const dsxx::Mat2<double> &yvals_);
+    BilinearInterpTable(const rtt_dsxx::SP<BilinearInterpGrid> &grid_,
+			const rtt_dsxx::Mat2<double> &yvals_);
     
     //------------------------------------------------------------------------//
     // BilinearInterpTable:
@@ -125,7 +125,7 @@ class BilinearInterpTable
     //------------------------------------------------------------------------//
 
     template<class BinaryOperation>
-    inline BilinearInterpTable(const dsxx::SP<BilinearInterpGrid> &grid_,
+    inline BilinearInterpTable(const rtt_dsxx::SP<BilinearInterpGrid> &grid_,
 			       BinaryOperation binary_op);
     
     //=======================================================================//
@@ -164,7 +164,7 @@ class BilinearInterpTable
     //    Return a const reference to the grid.
     //------------------------------------------------------------------------//
 
-    const dsxx::SP<BilinearInterpGrid> getGrid() const { return grid; }
+    const rtt_dsxx::SP<BilinearInterpGrid> getGrid() const { return grid; }
     
     //------------------------------------------------------------------------//
     // interpolate:
@@ -273,7 +273,7 @@ BilinearInterpTable::BilinearInterpTable(const std::vector<double> &x1vals_,
 
 template<class BinaryOperation>
 inline
-BilinearInterpTable::BilinearInterpTable(const dsxx::SP<BilinearInterpGrid> &grid_,
+BilinearInterpTable::BilinearInterpTable(const rtt_dsxx::SP<BilinearInterpGrid> &grid_,
 					 BinaryOperation binary_op)
     : grid(grid_), yvals(grid_->size(1),grid_->size(2)),
       isEmpty(false)

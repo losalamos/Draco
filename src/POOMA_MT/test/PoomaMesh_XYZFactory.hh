@@ -139,12 +139,12 @@ class PoomaMesh_XYZFactory
 
 class PoomaMesh_XYZFactory::Product
 {
-    dsxx::SP<MT> spmesh_m;
+    rtt_dsxx::SP<MT> spmesh_m;
     MT::FieldConstructor fCtor_m;
 	
   public:
 	
-    Product(const dsxx::SP<MT> &spmesh_in)
+    Product(const rtt_dsxx::SP<MT> &spmesh_in)
 	: spmesh_m(spmesh_in), fCtor_m(spmesh_in)
     {
 	// empty
@@ -166,7 +166,7 @@ inline PoomaMesh_XYZFactory::Product PoomaMesh_XYZFactory::create() const
     MeshValue_t **cellWidth = const_cast<MeshValue_t **>(cellWidth_m);
     e_dim_tag *decomposition = const_cast<e_dim_tag *>(decomposition_m);
 
-    return Product(dsxx::SP<MT>(new MT(numCells, cellWidth, decomposition)));
+    return Product(rtt_dsxx::SP<MT>(new MT(numCells, cellWidth, decomposition)));
 }
 
 } // end namespace rtt_POOMA_MT_test

@@ -112,7 +112,7 @@ class PoomaMesh_XYZ
 
     // typedefs
     typedef unsigned long size_type;
-    typedef dsxx::SP< PoomaMesh_XYZ<Mesh> > FieldConstructor;
+    typedef rtt_dsxx::SP< PoomaMesh_XYZ<Mesh> > FieldConstructor;
 
     typedef cctf<double>   ccsf;
     typedef fcdtf<double> fcdsf;

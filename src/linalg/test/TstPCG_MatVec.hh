@@ -27,7 +27,7 @@ class TstPCG_MatVec : public PCG_MatVec<T> {
     TstPCG_MatVec( int _nxs, int _nys );
     ~TstPCG_MatVec();
 
-    void MatVec( dsxx::Mat1<T>& b, const dsxx::Mat1<T>& x );
+    void MatVec( rtt_dsxx::Mat1<T>& b, const rtt_dsxx::Mat1<T>& x );
 };
 
 #endif                          // __linalg_test_TstPCG_MatVec_hh__

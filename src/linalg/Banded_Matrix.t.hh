@@ -21,8 +21,8 @@ using std::cout;
 using std::endl;
 using std::flush;
     
-using dsxx::Mat1;
-using dsxx::Mat2;
+using rtt_dsxx::Mat1;
+using rtt_dsxx::Mat2;
 
 //---------------------------------------------------------------------------//
 // Compute and store the info which describes the messaging pattern required

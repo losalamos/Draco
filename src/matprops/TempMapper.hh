@@ -16,7 +16,7 @@ namespace rtt_matprops
 
  // using is inside restricted namespace
  
- using dsxx::SP;
+ using rtt_dsxx::SP;
  
  //===========================================================================//
  // class TempMapper - 

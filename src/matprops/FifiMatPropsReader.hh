@@ -250,7 +250,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getSigmaTotal(MaterialId materialId, int group,
-			       dsxx::Mat2<double> &data);
+			       rtt_dsxx::Mat2<double> &data);
 
     //------------------------------------------------------------------------//
     // getSigmaAbsorption:
@@ -265,7 +265,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getSigmaAbsorption(MaterialId materialId, int group,
-				    dsxx::Mat2<double> &data);
+				    rtt_dsxx::Mat2<double> &data);
 
     //------------------------------------------------------------------------//
     // getSigmaScattering:
@@ -280,7 +280,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getSigmaScattering(MaterialId materialId, int group,
-				    dsxx::Mat2<double> &data);
+				    rtt_dsxx::Mat2<double> &data);
 
     //------------------------------------------------------------------------//
     // getSigmaEmission:
@@ -295,7 +295,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getSigmaEmission(MaterialId materialId, int group,
-				  dsxx::Mat2<double> &data);
+				  rtt_dsxx::Mat2<double> &data);
 
     //------------------------------------------------------------------------//
     // getElectronIonCoupling:
@@ -310,7 +310,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getElectronIonCoupling(MaterialId materialId,
-					dsxx::Mat2<double> &data);
+					rtt_dsxx::Mat2<double> &data);
 	
     //------------------------------------------------------------------------//
     // getElectronConductionCoeff:
@@ -325,7 +325,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getElectronConductionCoeff(MaterialId materialId,
-					    dsxx::Mat2<double> &data);
+					    rtt_dsxx::Mat2<double> &data);
 	
     //------------------------------------------------------------------------//
     // getIonConductionCoeff:
@@ -340,7 +340,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getIonConductionCoeff(MaterialId materialId,
-				       dsxx::Mat2<double> &data);
+				       rtt_dsxx::Mat2<double> &data);
 	
     //------------------------------------------------------------------------//
     // getElectronSpecificHeat:
@@ -355,7 +355,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getElectronSpecificHeat(MaterialId materialId,
-					 dsxx::Mat2<double> &data);
+					 rtt_dsxx::Mat2<double> &data);
 	
     //------------------------------------------------------------------------//
     // getIonSpecificHeat:
@@ -370,7 +370,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     virtual bool getIonSpecificHeat(MaterialId materialId,
-				    dsxx::Mat2<double> &data);
+				    rtt_dsxx::Mat2<double> &data);
 
     // ACCESSORS
 
@@ -415,7 +415,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     void getSigma(const MaterialInfo &matInfo, int group,
-		  const std::string &keyword, dsxx::Mat2<double> &dataMat);
+		  const std::string &keyword, rtt_dsxx::Mat2<double> &dataMat);
 
     //------------------------------------------------------------------------//
     // calcTemperatureDerivative:
@@ -424,8 +424,8 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     void calcTemperatureDerivative(MaterialId materialId,
-				   const dsxx::Mat2<double> &data,
-				   dsxx::Mat2<double> &derivative) const;
+				   const rtt_dsxx::Mat2<double> &data,
+				   rtt_dsxx::Mat2<double> &derivative) const;
 };
 
 } // end of rtt_matprops namespace
