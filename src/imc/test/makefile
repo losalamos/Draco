@@ -22,6 +22,11 @@ ifeq ($(tst),async)
 srcs += testasync.cc
 endif
 
+# async communication test with vectors
+ifeq ($(tst),asyncvect)
+srcs += testasynvect.cc
+endif
+
 # parallel test driver
 ifeq ($(tst),p)
 srcs += testp.cc
