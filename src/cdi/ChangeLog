@@ -1,3 +1,8 @@
+2002-03-18  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* cdi: Planck function integrators now allow T=0 and, in which
+	case, return zero.
+
 2001-12-17  Thomas M. Evans  <tme@lanl.gov>
 
 	* cdi: release version 1_1_0. Lots of updates since original

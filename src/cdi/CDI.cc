@@ -217,6 +217,9 @@ inline double polylog_series_minus_one_planck(double x)
  *
  * then you must multiply by acT^4.
  *
+ * In the limit of T -> zero, b(T) -> zero, therefore we return a hard zero
+ * for a temperature equal to a hard zero.
+ *
  * \param lowFreq lower frequency bound in keV
  *
  * \param highFreq higher frequency bound in keV
@@ -230,7 +233,11 @@ double CDI::integratePlanckSpectrum(double lowFreq, double highFreq, double T)
 {
     Require (lowFreq >= 0.0);
     Require (highFreq >= lowFreq);
-    Require (T > 0.0);
+    Require (T >= 0.0);
+
+    // return 0 if temperature is a hard zero
+    if (T == 0.0)
+	return 0.0;
 
     // determine the upper and lower x
     double lower_x = lowFreq  / T;
@@ -254,7 +261,7 @@ double CDI::integratePlanckSpectrum(double lowFreq, double highFreq, double T)
 	integral = upper_poly - lower_taylor;
     else 
 	integral = upper_poly_m1 - lower_poly_m1;
-	  
+
     Ensure (integral >= 0.0 && integral <= 1.0);
 
     return integral;
@@ -302,6 +309,9 @@ double CDI::integratePlanckSpectrum(double lowFreq, double highFreq, double T)
  *
  * then you must multiply by acT^4.
  *
+ * In the limit of T -> zero, b(T) -> zero, therefore we return a hard zero
+ * for a temperature equal to a hard zero.
+ *
  * \param frequency frequency upper integration limit in keV
  *
  * \param T the temperature in keV (must be greater than 0.0)
@@ -311,7 +321,7 @@ double CDI::integratePlanckSpectrum(double lowFreq, double highFreq, double T)
  */
 double CDI::integratePlanckSpectrum(double frequency, double T)
 {
-    Require (T > 0.0);
+    Require (T >= 0.0);
     Require (frequency >= 0.0);
 
     // calculate the integral
@@ -368,6 +378,9 @@ double CDI::integratePlanckSpectrum(double frequency, double T)
  *
  * then you must multiply by acT^4.
  *
+ * In the limit of T -> zero, b(T) -> zero, therefore we return a hard zero
+ * for a temperature equal to a hard zero.
+ *
  * If no groups are defined then an exception is thrown.
  *
  * \param groupIndex index of the frequency group to integrate [1,num_groups]
@@ -381,7 +394,7 @@ double CDI::integratePlanckSpectrum(double frequency, double T)
 double CDI::integratePlanckSpectrum(int groupIndex, double T)
 {
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
-    Require (T > 0.0);
+    Require (T >= 0.0);
     Require (groupIndex > 0 && 
 	     groupIndex <= frequencyGroupBoundaries.size() - 1);
 
@@ -393,7 +406,7 @@ double CDI::integratePlanckSpectrum(int groupIndex, double T)
     // calculate the integral over the frequency group
     double integral = integratePlanckSpectrum(lower_bound, upper_bound, T);
 	  
-    Ensure (integral > 0.0 && integral <= 1.0);
+    Ensure (integral >= 0.0 && integral <= 1.0);
 
     return integral;
 }
@@ -446,6 +459,9 @@ double CDI::integratePlanckSpectrum(int groupIndex, double T)
  *
  * then you must multiply by acT^4.
  *
+ * In the limit of T -> zero, b(T) -> zero, therefore we return a hard zero
+ * for a temperature equal to a hard zero.
+ *
  * If no groups are defined then an exception is thrown.
  *
  * \param T the temperature in keV (must be greater than 0.0)
@@ -456,7 +472,7 @@ double CDI::integratePlanckSpectrum(int groupIndex, double T)
 double CDI::integratePlanckSpectrum(double T)
 {
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
-    Require (T > 0.0);
+    Require (T >= 0.0);
 
     // first determine the group boundaries for groupIndex
     double lower_bound = frequencyGroupBoundaries.front();
@@ -466,7 +482,7 @@ double CDI::integratePlanckSpectrum(double T)
     // calculate the integral 
     double integral = integratePlanckSpectrum(lower_bound, upper_bound, T);
 	  
-    Ensure (integral > 0.0 && integral <= 1.0);
+    Ensure (integral >= 0.0 && integral <= 1.0);
 
     return integral;
 }
