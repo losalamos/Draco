@@ -70,6 +70,10 @@ int main( int argc, char *argv[] )
     xf = 1.;
     xf *= xgc;
 
+    Mesh_XYZ::gfcdsf xgf( spm );
+    xf = 1.;
+    xgf = xf;
+
     Mesh_XYZ::bssf b1( spm );
     b1.face(0) = 0.;
 
@@ -134,6 +138,11 @@ int main( int argc, char *argv[] )
     zerovec = 0.0;
     fourFCV = zerovec;
     Mesh_XYZ::scatter( fourFCV, oneVCV, Mesh_XYZ::OpAddAssign() );
+
+    Mesh_XYZ::fcdsf swapFC( spm );
+    oneFC = 1.;
+    Mesh_XYZ::swap( swapFC, oneFC );
+    //dump( swapFC, "swapFC, after" );
 
     Mesh_XYZ::fcdvf face_normals( spm );
     face_normals = spm->get_fn();

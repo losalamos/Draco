@@ -255,6 +255,60 @@ class Mesh_XYZ : private XYZ_Mapper
     typedef fcdtf<int> fcdif;
     typedef fcdtf<tiny_vec<double, 3> > fcdvf;
 
+// Guarded face centered discontinuous field
+// Has a value on each face in each cell.
+
+    template<class T>
+    class gfcdtf : private XYZ_Mapper,
+                   public xm::Indexable< T, gfcdtf<T> > {
+	dsxx::Mat4<T> data;
+
+      public:
+        typedef typename dsxx::Mat4<T>::iterator iterator;
+        typedef typename dsxx::Mat4<T>::const_iterator const_iterator;
+
+	gfcdtf( const dsxx::SP<Mesh_XYZ>& m )
+	    : XYZ_Mapper( m->get_Mesh_DB() ),
+	      data( dsxx::Bounds( 0, ncx - 1 ),
+                    dsxx::Bounds( 0, ncy - 1 ),
+                    dsxx::Bounds( zoff - 1, zoff + nczp ),
+                    dsxx::Bounds( 0, 5 ) )
+	{}
+
+        gfcdtf<T>& operator=( const fcdtf<T>& c );
+        void update_gfcdtf();
+
+        gfcdtf<T>( const fcdtf<T>& c )
+            : XYZ_Mapper( c.get_Mesh_DB() ),
+              data( dsxx::Bounds( 0, ncx - 1 ),
+                    dsxx::Bounds( 0, ncy - 1 ),
+                    dsxx::Bounds( zoff - 1, zoff + nczp ),
+                    dsxx::Bounds( 0, 5 ) )
+        { *this = c; }
+
+    // i, j, k == global xyz cell indicies
+    // f == face index
+    // c == local cell index
+
+        T  operator()( int i, int j, int k, int f ) const
+        { return data(i,j,k,f); }
+        T& operator()( int i, int j, int k, int f )
+        { return data(i,j,k,f); }
+
+        T operator[]( int i ) const { return data[i]; }
+        T& operator[]( int i ) { return data[i]; }
+
+        iterator begin() { return data.begin(); }
+        iterator end() { return data.end(); }
+
+        const_iterator begin() const { return data.begin(); }
+        const_iterator end() const { return data.end(); }
+
+        int size() const { return data.size(); }
+    };
+
+    typedef gfcdtf<double> gfcdsf;
+
 // Cell centered field
 // Has a value in each cell.
 
@@ -575,6 +629,9 @@ class Mesh_XYZ : private XYZ_Mapper
 
     template <class T1, class T2, class Op>
     static void gather( fcdtf<T1>& to, const cctf<T2>& from, const Op& op );
+
+    template <class T>
+    static void swap( fcdtf<T>& to, const fcdtf<T>& from );
 
     class OpAddAssign {
       public:
