@@ -30,6 +30,8 @@ Because this package does not have long for this world it is not
 extensively documented.  For guidance in its use (if you need it
 temporarily) see R. Lowrie <lowrie@lanl.gov>.
 
+\sa <a href="http://www.cfdlab.ae.utexas.edu/otherresearch/pcg/imacs94/imacs94.html">PCG: A SOFTWARE PACKAGE FOR THE ITERATIVE SOLUTION OF LINEAR SYSTEMS ON SCALAR, VECTOR AND PARALLEL COMPUTERS</a>. 
+
 <!---------------------------------------------------------------------------->
 
 */
