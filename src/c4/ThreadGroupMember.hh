@@ -102,6 +102,9 @@ class ThreadGroupMember {
     void gmin ( T& x ) const { scalar_reduce< T, ScalarMin<T> >( x ); }
     template<class T> 
     void gmax ( T& x ) const { scalar_reduce< T, ScalarMax<T> >( x ); }
+
+    template<class T>
+    void gsum( T *px, int n ) const;
 };
 
 C4_NAMESPACE_END
