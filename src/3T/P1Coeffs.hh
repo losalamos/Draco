@@ -33,24 +33,21 @@ namespace rtt_3T
 
      // NESTED CLASSES AND TYPEDEFS
 
-     typedef typename P13T<DS>::fcdsf fcdsf;
-     typedef typename P13T<DS>::ccsf ccsf;
-     typedef typename P13T<DS>::DiscFluxField DiscFluxField;
-
      // DATA
     
-     dsxx::SP<fcdsf> spD;
-     dsxx::SP<DiscFluxField> spFprime;
-     dsxx::SP<ccsf> spSigmaAbsBar;
-     dsxx::SP<ccsf> spQEEM;
-     dsxx::SP<ccsf> spREEM;
-     dsxx::SP<ccsf> spQRadBar;
-     dsxx::SP<ccsf> spQElecStar;
-     dsxx::SP<ccsf> spCvStar;
-     dsxx::SP<ccsf> spNu;
-
      const P13T<DS> &p13T;
      const dsxx::SP<MT> spMesh;
+
+     fcdsf xD;
+     DiscFluxField xFprime;
+     ccsf xSigmaAbsBar;
+     ccsf xQEEM;
+     ccsf xREEM;
+     ccsf xQRadBar;
+     ccsf xQElecStar;
+     ccsf xCvStar;
+     ccsf xNu;
+
      double dt;
      int    groupNo;
      const P13TOptions &options;
@@ -84,15 +81,15 @@ namespace rtt_3T
     
      // ACCESSORS
 
-     const fcdsf &D() const { return *spD; }
-     const DiscFluxField &Fprime() const { return *spFprime; }
-     const ccsf &sigmaAbsBar() const { return *spSigmaAbsBar; }
-     const ccsf &QEEM() const { return *spQEEM; }
-     const ccsf &REEM() const { return *spREEM; }
-     const ccsf &QRadBar() const { return *spQRadBar; }
-     const ccsf &QElecStar() const { return *spQElecStar; }
-     const ccsf &CvStar() const { return *spCvStar; }
-     const ccsf &nu() const { return *spNu; }
+     const fcdsf &D() const { return xD; }
+     const DiscFluxField &Fprime() const { return xFprime; }
+     const ccsf &sigmaAbsBar() const { return xSigmaAbsBar; }
+     const ccsf &QEEM() const { return xQEEM; }
+     const ccsf &REEM() const { return xREEM; }
+     const ccsf &QRadBar() const { return xQRadBar; }
+     const ccsf &QElecStar() const { return xQElecStar; }
+     const ccsf &CvStar() const { return xCvStar; }
+     const ccsf &nu() const { return xNu; }
 
      double get_dt() const { return dt; }
      const MaterialProperties &getMatprops() const { return matprops; }

@@ -10,6 +10,7 @@ pkg := 3T
 
 need_units	:= yes
 need_mesh	:= yes
+need_radphys	:= yes
 need_linalg	:= yes
 need_P1Diffusion := yes
 
@@ -30,6 +31,7 @@ resolve_libs = \
 	-L../mesh -lmesh_$(env) \
 	-L../geom -lgeom_$(env) \
 	-L../P1Diffusion -lP1Diffusion_$(env) \
+	-L../radphys -lradphys_$(env) \
 	-L../linalg -llinalg_$(env) \
 	-L../util -lutil_$(env) \
 	-L../spdf -lspdf_$(env) \
@@ -47,6 +49,7 @@ ifneq ($(dodeps),no)
 	(cd ../spdf;   $(MAKE) $(subnj) dodeps=no)
 	(cd ../util;   $(MAKE) $(subnj) dodeps=no)
 	(cd ../linalg; $(MAKE) $(subnj) dodeps=no)
+	(cd ../radphys; $(MAKE) $(subnj) dodeps=no)
 	(cd ../P1Diffusion; $(MAKE) $(subnj) dodeps=no)
 	(cd ../geom;   $(MAKE) $(subnj) dodeps=no)
 	(cd ../mesh;   $(MAKE) $(subnj) dodeps=no)

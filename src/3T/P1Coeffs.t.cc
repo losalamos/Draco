@@ -36,18 +36,11 @@ namespace rtt_3T
        matprops(matprops_), velocity(velocity_),
        prevStateField(prevStateField_),
        QRad(QRad_), QElectron(QElectron_), QIon(QIon_),
-       TElectron(TElectron_), TIon(TIon_)
+       TElectron(TElectron_), TIon(TIon_),
+       xQEEM(spMesh), xREEM(spMesh), xQRadBar(spMesh),
+       xQElecStar(spMesh), xCvStar(spMesh), xNu(spMesh),
+       xSigmaAbsBar(spMesh), xD(spMesh), xFprime(spMesh)
  {
-     spQEEM = new ccsf(spMesh);
-     spREEM = new ccsf(spMesh);
-     spQRadBar = new ccsf(spMesh);
-     spQElecStar = new ccsf(spMesh);
-     spCvStar = new ccsf(spMesh);
-     spNu = new ccsf(spMesh);
-     spSigmaAbsBar = new ccsf(spMesh);
-     spD = new fcdsf(spMesh);
-     spFprime = new DiscFluxField(spMesh);
-     
      calcP1Coeffs();
  }
 
@@ -91,25 +84,16 @@ namespace rtt_3T
     
      // Allocate and calculate the diffusion constant.
 
-     Assert(spD);
-     
-     *spD = (1.0/3.0) / (sigmaTotal + tauP1);
+     xD = (1.0/3.0) / (sigmaTotal + tauP1);
 
      // Make shorthand references.
 
-     Assert(spQEEM);
-     Assert(spREEM);
-     Assert(spQRadBar);
-     Assert(spQElecStar);
-     Assert(spCvStar);
-     Assert(spNu);
-     
-     ccsf &QEEM = *spQEEM;
-     ccsf &REEM = *spREEM;
-     ccsf &QRadBar = *spQRadBar;
-     const ccsf &QElecStar = *spQElecStar;
-     const ccsf &CvStar = *spCvStar;
-     const ccsf &nu = *spNu;
+     ccsf &QEEM = xQEEM;
+     ccsf &REEM = xREEM;
+     ccsf &QRadBar = xQRadBar;
+     const ccsf &QElecStar = xQElecStar;
+     const ccsf &CvStar = xCvStar;
+     const ccsf &nu = xNu;
 
      if (options.getIsCoupledMaterial())
      {
@@ -121,9 +105,7 @@ namespace rtt_3T
     
 	 // Calculate modified sigma absorption
 
-	 Assert(spSigmaAbsBar);
-	 
-	 *spSigmaAbsBar = (1.0 - nu) * sigmaAbs + tau;
+	 xSigmaAbsBar = (1.0 - nu) * sigmaAbs + tau;
 
 	 // Calculate the emmissive removal coefficient
 	
@@ -149,8 +131,7 @@ namespace rtt_3T
      }
      else
      {
-	 Assert(spSigmaAbsBar);
-	 *spSigmaAbsBar = sigmaAbs + tau;
+	 xSigmaAbsBar = sigmaAbs + tau;
 	 REEM = 0.0;
 	 QEEM = 0.0;
 	 QRadBar = tau*prevStateField.phi + QRad;
@@ -158,8 +139,7 @@ namespace rtt_3T
 
      // Calculate the "telegraph" term to the P1 equation.
 
-     Assert(spFprime);
-     *spFprime = tauP1*prevStateField.F / (sigmaTotal + tauP1);
+     xFprime = tauP1*prevStateField.F / (sigmaTotal + tauP1);
 
  }
 
@@ -194,11 +174,8 @@ namespace rtt_3T
 
     // Make shorthand references.
 
-     Assert(spCvStar);
-     Assert(spNu);
-     
-     const ccsf &CvStar = *spCvStar;
-     ccsf &nu = *spNu;
+     const ccsf &CvStar = xCvStar;
+     ccsf &nu = xNu;
 
     // Calculate the "nu" used in the 3T modification of sigmaAbs
     
@@ -238,11 +215,8 @@ namespace rtt_3T
 
      // Shorthand reference names.
 
-     Assert(spCvStar);
-     Assert(spQElecStar);
-     
-     ccsf &CvStar = *spCvStar;
-     ccsf &QElecStar = *spQElecStar;
+     ccsf &CvStar = xCvStar;
+     ccsf &QElecStar = xQElecStar;
 
     // CvStar is one of the results, as well as intermediate.
     

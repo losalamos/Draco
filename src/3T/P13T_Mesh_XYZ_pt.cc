@@ -27,15 +27,6 @@ template
 void rtt_timestep::field_ts_advisor::update_tstep<T1>(
     const rtt_timestep::ts_manager &, const T1 &, const T1 &);
 
-#include "radphys/RadiationPhysics.t.cc"
-
-template
-void XTM::RadiationPhysics::getPlanck<T1>(const T1 &, T1 &) const;
-
-template
-void XTM::RadiationPhysics::getPlanckTemperatureDerivative<T1>(const T1 &,
-							       T1 &) const;
-
 //---------------------------------------------------------------------------//
 //                              end of P13T_Mesh_XYZ_pt.cc
 //---------------------------------------------------------------------------//
