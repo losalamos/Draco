@@ -40,7 +40,7 @@ static const int RTLD_LAZY = 1; // or whatever.
 void *dlopen(const char *filename, int flag)
 {
     Insist(0, "Serious Shared_Lib error.");
-    void *dummy;
+    void *dummy(0);
     return dummy;
 }
 
@@ -53,7 +53,7 @@ char *dlerror(void)
 void *dlsym(void *handle, const char *symbol)
 {
     Insist(0, "Serious Shared_Lib error.");
-    void *dummy;
+    void *dummy(0);
     return dummy;
 }
 
