@@ -75,7 +75,9 @@ class UserVec : public xm::Indexable<T,UserVec<T> > {
     template<class X>
     UserVec<T>& operator=( const xm::Xpr< T, X, UserVec<T> >& x )
     {
- 	return assign_from( x );
+	// we need to scope the Base class because some compilers (CXX 6.5.0)
+	// suck
+ 	return xm::Indexable<T,UserVec<T> >::assign_from( x );
     }
 };
 
@@ -126,7 +128,9 @@ class FooBar : public xm::Indexable<T,FooBar<T> > {
     template<class X>
     FooBar<T>& operator=( const xm::Xpr< T, X, FooBar<T> >& x )
     {
- 	return assign_from( x );
+	// we need to scope the Base class because some compilers (CXX 6.5.0)
+	// suck
+ 	return xm::Indexable<T,FooBar<T> >::assign_from( x );
     }
 };
 

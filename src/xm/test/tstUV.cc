@@ -13,9 +13,11 @@
 #include "UserVec.hh"
 
 #include <iostream>
+#include <cmath>
 
 using std::cout;
 using std::endl;
+using std::exp;
 
 int sz = 5;
 bool passed = true;

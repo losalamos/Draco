@@ -10,11 +10,8 @@
 #error "Users should only include xm/xm.hh"
 #endif
 
-#ifdef __sgi
-#include <math.h>
-#else
+#include <cstdlib>
 #include <cmath>
-#endif
 
 XM_NAMESPACE_BEG
 
@@ -359,7 +356,8 @@ class OpLabs {
   public:
     static inline P apply( const P& x )
     {
-	return std::labs(x);
+	using namespace std;
+	return labs(x);
     }
 };
 
