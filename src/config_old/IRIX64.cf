@@ -45,7 +45,7 @@ sprng   := lfg
 endif
 
 ifndef SPRNG_LIB
-SPRNG_LIB := /scratch/tme/sprng
+SPRNG_LIB := /scratch/tme/sprng/sprng0.5
 endif
 
 shlib_suffix := so
@@ -92,8 +92,8 @@ SYS_LINK_FLAGS	:=  --backend -Wl,-woff,84,-woff,85
 R10k	= --backend -r10000 
 
 ifeq ($(bits),32)
-CXX	+= -32
-STRICT	=
+CXX	+= -n32
+#STRICT	=
 R10k	=
 cmplr	= k32
 endif
@@ -151,8 +151,10 @@ endif
 
 ifeq ($(need_sprng), yes)
 SYS_FLAGS += -I$(SPRNG_LIB)/SRC
+#SYS_FLAGS += -I$(SPRNG_LIB)/include
 ifeq ($(bits),32)
 SYS_LIBS += -L$(SPRNG_LIB)/sgi32 -l$(sprng)
+#SYS_LIBS += -L$(SPRNG_LIB)/lib -l$(sprng)
 else
 SYS_LIBS += -L$(SPRNG_LIB)/sgi64 -l$(sprng)
 endif
