@@ -29,7 +29,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-debug          turn on debug (-g) option"
 ac_help="$ac_help
-  --with-posix[=num]      give posix source (199309L default)"
+  --with-posix[=num]      give posix source (system-dependent defaults)"
 ac_help="$ac_help
   --enable-32-bit         do 32-bit compilation (SGI ONLY)"
 ac_help="$ac_help

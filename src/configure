@@ -13,7 +13,7 @@ ac_default_prefix=/usr/local
 # Any additions from configure.in:
 ac_help="$ac_help
   --with-mpi=[vendor,mpich] 
-	                  determine MPI implementation (vendor by default)"
+	                  determine MPI implementation (vendor on SGI,SUN; mpich on LINUX)"
 ac_help="$ac_help
   --with-mpi-inc[=DIR]    tell where MPI includes are (\${MPI_INC_DIR} by default)"
 ac_help="$ac_help
@@ -52,7 +52,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-debug          turn on debug (-g) option"
 ac_help="$ac_help
-  --with-posix[=num]      give posix source (199309L default)"
+  --with-posix[=num]      give posix source (system-dependent defaults)"
 ac_help="$ac_help
   --enable-32-bit         do 32-bit compilation (SGI ONLY)"
 ac_help="$ac_help
@@ -715,6 +715,7 @@ EOF
        fi
    fi
 
+               
             
    	
       # Check whether --enable-shmem or --disable-shmem was given.
@@ -838,7 +839,7 @@ EOF
        fi
    fi
 
-            
+      
    
       # Check whether --with-sprng or --without-sprng was given.
 if test "${with_sprng+set}" = set; then

@@ -29,7 +29,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-debug          turn on debug (-g) option"
 ac_help="$ac_help
-  --with-posix[=num]      give posix source (199309L default)"
+  --with-posix[=num]      give posix source (system-dependent defaults)"
 ac_help="$ac_help
   --enable-32-bit         do 32-bit compilation (SGI ONLY)"
 ac_help="$ac_help
@@ -812,82 +812,7 @@ EOF
        fi
    fi
 
-   # now set up the platform-independent comm directories
-    
-   #
-   # if mpi is on then set it up
-   #
-
-   # vendor mpi
-   if test "${with_mpi}" = vendor ; then
-
-       if test -n "${MPI_LIB}" ; then
-	   
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPI_LIB} -lmpi are the directories added 
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpi"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpi"
-   fi
-
-       elif test -z "${MPI_LIB}" ; then
-	   
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -lmpi are the directories added 
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lmpi"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpi"
-   fi
-
-       fi
-
-   # mpich mpi
-   elif test "${with_mpi}" = mpich ; then
-
-       if test -n "${MPI_LIB}" ; then
-	   
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPI_LIB} -lpmpi -lmpi are the directories added 
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lpmpi -lmpi"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lpmpi -lmpi"
-   fi
-
-       elif test -z "${MPI_LIB}" ; then
-	   
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -lpmpi -lmpi are the directories added 
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lpmpi -lmpi"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lpmpi -lmpi"
-   fi
-
-       fi
-
-   fi
-
-   #
-   # if shmem is on then set it up
-   #
-
-   if test "${enable_shmem}" = yes ; then
-       if test -n "${SHMEM_LIB}" ; then
-	   VENDOR_LIBS="${VENDOR_LIBS} -L${SHMEM_LIB} -lsma -lpthread"
-       elif test -z "${SHMEM_LIB}" ; then
-	   VENDOR_LIBS="${VENDOR_LIBS} -lsma -lpthread"
-       fi
-   fi
-
-      
-   
+         
          
    # set the DBC level
    if test "${with_dbc:=default}" != default ; then
@@ -906,32 +831,12 @@ EOF
    fi
 
          
-   # set the POSIX source level
-   if test "${with_posix}" = yes ; then
-       cat >> confdefs.h <<\EOF
-#define _POSIX_C_SOURCE "199309L"
-EOF
-
-       cat >> confdefs.h <<\EOF
-#define _POSIX_SOURCE 1
-EOF
-
-   elif test "${with_posix:=199309L}" != no ; then
-       cat >> confdefs.h <<EOF
-#define _POSIX_C_SOURCE $with_posix
-EOF
-
-       cat >> confdefs.h <<\EOF
-#define _POSIX_SOURCE 1
-EOF
-
-   fi
-   
+      
             
       # Extract the first word of "python", so it can be a program name with args.
 set dummy python; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:935: checking for $ac_word" >&5
+echo "configure:840: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_PYTHON_PATH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -976,7 +881,7 @@ else { echo "configure: error: can not run $ac_config_sub" 1>&2; exit 1; }
 fi
 
 echo $ac_n "checking host system type""... $ac_c" 1>&6
-echo "configure:980: checking host system type" >&5
+echo "configure:885: checking host system type" >&5
 
 host_alias=$host
 case "$host_alias" in
@@ -1006,7 +911,7 @@ echo "$ac_t""$host" 1>&6
        # Extract the first word of "KCC", so it can be a program name with args.
 set dummy KCC; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1010: checking for $ac_word" >&5
+echo "configure:915: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CXX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1084,7 +989,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1088: checking for $ac_word" >&5
+echo "configure:993: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CXX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1116,7 +1021,7 @@ test -n "$CXX" || CXX="gcc"
 
 
 echo $ac_n "checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works""... $ac_c" 1>&6
-echo "configure:1120: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works" >&5
+echo "configure:1025: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works" >&5
 
 ac_ext=C
 # CXXFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
@@ -1127,12 +1032,12 @@ cross_compiling=$ac_cv_prog_cxx_cross
 
 cat > conftest.$ac_ext << EOF
 
-#line 1131 "configure"
+#line 1036 "configure"
 #include "confdefs.h"
 
 int main(){return(0);}
 EOF
-if { (eval echo configure:1136: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1041: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   ac_cv_prog_cxx_works=yes
   # If we can't run a trivial program, we are probably using a cross compiler.
   if (./conftest; exit) 2>/dev/null; then
@@ -1158,12 +1063,12 @@ if test $ac_cv_prog_cxx_works = no; then
   { echo "configure: error: installation or configuration problem: C++ compiler cannot create executables." 1>&2; exit 1; }
 fi
 echo $ac_n "checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler""... $ac_c" 1>&6
-echo "configure:1162: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler" >&5
+echo "configure:1067: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler" >&5
 echo "$ac_t""$ac_cv_prog_cxx_cross" 1>&6
 cross_compiling=$ac_cv_prog_cxx_cross
 
 echo $ac_n "checking whether we are using GNU C++""... $ac_c" 1>&6
-echo "configure:1167: checking whether we are using GNU C++" >&5
+echo "configure:1072: checking whether we are using GNU C++" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_gxx'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1172,7 +1077,7 @@ else
   yes;
 #endif
 EOF
-if { ac_try='${CXX-g++} -E conftest.C'; { (eval echo configure:1176: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+if { ac_try='${CXX-g++} -E conftest.C'; { (eval echo configure:1081: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
   ac_cv_prog_gxx=yes
 else
   ac_cv_prog_gxx=no
@@ -1191,7 +1096,7 @@ ac_test_CXXFLAGS="${CXXFLAGS+set}"
 ac_save_CXXFLAGS="$CXXFLAGS"
 CXXFLAGS=
 echo $ac_n "checking whether ${CXX-g++} accepts -g""... $ac_c" 1>&6
-echo "configure:1195: checking whether ${CXX-g++} accepts -g" >&5
+echo "configure:1100: checking whether ${CXX-g++} accepts -g" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_cxx_g'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1225,7 +1130,7 @@ fi
 	   # Extract the first word of "gcc", so it can be a program name with args.
 set dummy gcc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1229: checking for $ac_word" >&5
+echo "configure:1134: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1255,7 +1160,7 @@ if test -z "$CC"; then
   # Extract the first word of "cc", so it can be a program name with args.
 set dummy cc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1259: checking for $ac_word" >&5
+echo "configure:1164: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1306,7 +1211,7 @@ fi
       # Extract the first word of "cl", so it can be a program name with args.
 set dummy cl; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1310: checking for $ac_word" >&5
+echo "configure:1215: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1338,7 +1243,7 @@ fi
 fi
 
 echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works""... $ac_c" 1>&6
-echo "configure:1342: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
+echo "configure:1247: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
 
 ac_ext=c
 # CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
@@ -1349,12 +1254,12 @@ cross_compiling=$ac_cv_prog_cc_cross
 
 cat > conftest.$ac_ext << EOF
 
-#line 1353 "configure"
+#line 1258 "configure"
 #include "confdefs.h"
 
 main(){return(0);}
 EOF
-if { (eval echo configure:1358: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1263: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   ac_cv_prog_cc_works=yes
   # If we can't run a trivial program, we are probably using a cross compiler.
   if (./conftest; exit) 2>/dev/null; then
@@ -1380,12 +1285,12 @@ if test $ac_cv_prog_cc_works = no; then
   { echo "configure: error: installation or configuration problem: C compiler cannot create executables." 1>&2; exit 1; }
 fi
 echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler""... $ac_c" 1>&6
-echo "configure:1384: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
+echo "configure:1289: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
 echo "$ac_t""$ac_cv_prog_cc_cross" 1>&6
 cross_compiling=$ac_cv_prog_cc_cross
 
 echo $ac_n "checking whether we are using GNU C""... $ac_c" 1>&6
-echo "configure:1389: checking whether we are using GNU C" >&5
+echo "configure:1294: checking whether we are using GNU C" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_gcc'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1394,7 +1299,7 @@ else
   yes;
 #endif
 EOF
-if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:1398: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:1303: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
   ac_cv_prog_gcc=yes
 else
   ac_cv_prog_gcc=no
@@ -1413,7 +1318,7 @@ ac_test_CFLAGS="${CFLAGS+set}"
 ac_save_CFLAGS="$CFLAGS"
 CFLAGS=
 echo $ac_n "checking whether ${CC-cc} accepts -g""... $ac_c" 1>&6
-echo "configure:1417: checking whether ${CC-cc} accepts -g" >&5
+echo "configure:1322: checking whether ${CC-cc} accepts -g" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_cc_g'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1502,7 +1407,7 @@ fi
        # Extract the first word of "CC", so it can be a program name with args.
 set dummy CC; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1506: checking for $ac_word" >&5
+echo "configure:1411: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CXX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1531,7 +1436,7 @@ fi
        # Extract the first word of "cc", so it can be a program name with args.
 set dummy cc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1535: checking for $ac_word" >&5
+echo "configure:1440: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1612,7 +1517,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1616: checking for $ac_word" >&5
+echo "configure:1521: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CXX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1644,7 +1549,7 @@ test -n "$CXX" || CXX="gcc"
 
 
 echo $ac_n "checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works""... $ac_c" 1>&6
-echo "configure:1648: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works" >&5
+echo "configure:1553: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works" >&5
 
 ac_ext=C
 # CXXFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
@@ -1655,12 +1560,12 @@ cross_compiling=$ac_cv_prog_cxx_cross
 
 cat > conftest.$ac_ext << EOF
 
-#line 1659 "configure"
+#line 1564 "configure"
 #include "confdefs.h"
 
 int main(){return(0);}
 EOF
-if { (eval echo configure:1664: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1569: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   ac_cv_prog_cxx_works=yes
   # If we can't run a trivial program, we are probably using a cross compiler.
   if (./conftest; exit) 2>/dev/null; then
@@ -1686,12 +1591,12 @@ if test $ac_cv_prog_cxx_works = no; then
   { echo "configure: error: installation or configuration problem: C++ compiler cannot create executables." 1>&2; exit 1; }
 fi
 echo $ac_n "checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler""... $ac_c" 1>&6
-echo "configure:1690: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler" >&5
+echo "configure:1595: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler" >&5
 echo "$ac_t""$ac_cv_prog_cxx_cross" 1>&6
 cross_compiling=$ac_cv_prog_cxx_cross
 
 echo $ac_n "checking whether we are using GNU C++""... $ac_c" 1>&6
-echo "configure:1695: checking whether we are using GNU C++" >&5
+echo "configure:1600: checking whether we are using GNU C++" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_gxx'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1700,7 +1605,7 @@ else
   yes;
 #endif
 EOF
-if { ac_try='${CXX-g++} -E conftest.C'; { (eval echo configure:1704: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+if { ac_try='${CXX-g++} -E conftest.C'; { (eval echo configure:1609: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
   ac_cv_prog_gxx=yes
 else
   ac_cv_prog_gxx=no
@@ -1719,7 +1624,7 @@ ac_test_CXXFLAGS="${CXXFLAGS+set}"
 ac_save_CXXFLAGS="$CXXFLAGS"
 CXXFLAGS=
 echo $ac_n "checking whether ${CXX-g++} accepts -g""... $ac_c" 1>&6
-echo "configure:1723: checking whether ${CXX-g++} accepts -g" >&5
+echo "configure:1628: checking whether ${CXX-g++} accepts -g" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_cxx_g'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1753,7 +1658,7 @@ fi
 	   # Extract the first word of "gcc", so it can be a program name with args.
 set dummy gcc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1757: checking for $ac_word" >&5
+echo "configure:1662: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1783,7 +1688,7 @@ if test -z "$CC"; then
   # Extract the first word of "cc", so it can be a program name with args.
 set dummy cc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1787: checking for $ac_word" >&5
+echo "configure:1692: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1834,7 +1739,7 @@ fi
       # Extract the first word of "cl", so it can be a program name with args.
 set dummy cl; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1838: checking for $ac_word" >&5
+echo "configure:1743: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1866,7 +1771,7 @@ fi
 fi
 
 echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works""... $ac_c" 1>&6
-echo "configure:1870: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
+echo "configure:1775: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
 
 ac_ext=c
 # CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
@@ -1877,12 +1782,12 @@ cross_compiling=$ac_cv_prog_cc_cross
 
 cat > conftest.$ac_ext << EOF
 
-#line 1881 "configure"
+#line 1786 "configure"
 #include "confdefs.h"
 
 main(){return(0);}
 EOF
-if { (eval echo configure:1886: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1791: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   ac_cv_prog_cc_works=yes
   # If we can't run a trivial program, we are probably using a cross compiler.
   if (./conftest; exit) 2>/dev/null; then
@@ -1908,12 +1813,12 @@ if test $ac_cv_prog_cc_works = no; then
   { echo "configure: error: installation or configuration problem: C compiler cannot create executables." 1>&2; exit 1; }
 fi
 echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler""... $ac_c" 1>&6
-echo "configure:1912: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
+echo "configure:1817: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
 echo "$ac_t""$ac_cv_prog_cc_cross" 1>&6
 cross_compiling=$ac_cv_prog_cc_cross
 
 echo $ac_n "checking whether we are using GNU C""... $ac_c" 1>&6
-echo "configure:1917: checking whether we are using GNU C" >&5
+echo "configure:1822: checking whether we are using GNU C" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_gcc'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1922,7 +1827,7 @@ else
   yes;
 #endif
 EOF
-if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:1926: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:1831: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
   ac_cv_prog_gcc=yes
 else
   ac_cv_prog_gcc=no
@@ -1941,7 +1846,7 @@ ac_test_CFLAGS="${CFLAGS+set}"
 ac_save_CFLAGS="$CFLAGS"
 CFLAGS=
 echo $ac_n "checking whether ${CC-cc} accepts -g""... $ac_c" 1>&6
-echo "configure:1945: checking whether ${CC-cc} accepts -g" >&5
+echo "configure:1850: checking whether ${CC-cc} accepts -g" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_cc_g'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1981,7 +1886,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1985: checking for $ac_word" >&5
+echo "configure:1890: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CXX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2013,7 +1918,7 @@ test -n "$CXX" || CXX="gcc"
 
 
 echo $ac_n "checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works""... $ac_c" 1>&6
-echo "configure:2017: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works" >&5
+echo "configure:1922: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works" >&5
 
 ac_ext=C
 # CXXFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
@@ -2024,12 +1929,12 @@ cross_compiling=$ac_cv_prog_cxx_cross
 
 cat > conftest.$ac_ext << EOF
 
-#line 2028 "configure"
+#line 1933 "configure"
 #include "confdefs.h"
 
 int main(){return(0);}
 EOF
-if { (eval echo configure:2033: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1938: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   ac_cv_prog_cxx_works=yes
   # If we can't run a trivial program, we are probably using a cross compiler.
   if (./conftest; exit) 2>/dev/null; then
@@ -2055,12 +1960,12 @@ if test $ac_cv_prog_cxx_works = no; then
   { echo "configure: error: installation or configuration problem: C++ compiler cannot create executables." 1>&2; exit 1; }
 fi
 echo $ac_n "checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler""... $ac_c" 1>&6
-echo "configure:2059: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler" >&5
+echo "configure:1964: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler" >&5
 echo "$ac_t""$ac_cv_prog_cxx_cross" 1>&6
 cross_compiling=$ac_cv_prog_cxx_cross
 
 echo $ac_n "checking whether we are using GNU C++""... $ac_c" 1>&6
-echo "configure:2064: checking whether we are using GNU C++" >&5
+echo "configure:1969: checking whether we are using GNU C++" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_gxx'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2069,7 +1974,7 @@ else
   yes;
 #endif
 EOF
-if { ac_try='${CXX-g++} -E conftest.C'; { (eval echo configure:2073: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+if { ac_try='${CXX-g++} -E conftest.C'; { (eval echo configure:1978: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
   ac_cv_prog_gxx=yes
 else
   ac_cv_prog_gxx=no
@@ -2088,7 +1993,7 @@ ac_test_CXXFLAGS="${CXXFLAGS+set}"
 ac_save_CXXFLAGS="$CXXFLAGS"
 CXXFLAGS=
 echo $ac_n "checking whether ${CXX-g++} accepts -g""... $ac_c" 1>&6
-echo "configure:2092: checking whether ${CXX-g++} accepts -g" >&5
+echo "configure:1997: checking whether ${CXX-g++} accepts -g" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_cxx_g'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2122,7 +2027,7 @@ fi
        # Extract the first word of "gcc", so it can be a program name with args.
 set dummy gcc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2126: checking for $ac_word" >&5
+echo "configure:2031: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2152,7 +2057,7 @@ if test -z "$CC"; then
   # Extract the first word of "cc", so it can be a program name with args.
 set dummy cc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2156: checking for $ac_word" >&5
+echo "configure:2061: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2203,7 +2108,7 @@ fi
       # Extract the first word of "cl", so it can be a program name with args.
 set dummy cl; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2207: checking for $ac_word" >&5
+echo "configure:2112: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2235,7 +2140,7 @@ fi
 fi
 
 echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works""... $ac_c" 1>&6
-echo "configure:2239: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
+echo "configure:2144: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
 
 ac_ext=c
 # CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
@@ -2246,12 +2151,12 @@ cross_compiling=$ac_cv_prog_cc_cross
 
 cat > conftest.$ac_ext << EOF
 
-#line 2250 "configure"
+#line 2155 "configure"
 #include "confdefs.h"
 
 main(){return(0);}
 EOF
-if { (eval echo configure:2255: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:2160: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   ac_cv_prog_cc_works=yes
   # If we can't run a trivial program, we are probably using a cross compiler.
   if (./conftest; exit) 2>/dev/null; then
@@ -2277,12 +2182,12 @@ if test $ac_cv_prog_cc_works = no; then
   { echo "configure: error: installation or configuration problem: C compiler cannot create executables." 1>&2; exit 1; }
 fi
 echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler""... $ac_c" 1>&6
-echo "configure:2281: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
+echo "configure:2186: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
 echo "$ac_t""$ac_cv_prog_cc_cross" 1>&6
 cross_compiling=$ac_cv_prog_cc_cross
 
 echo $ac_n "checking whether we are using GNU C""... $ac_c" 1>&6
-echo "configure:2286: checking whether we are using GNU C" >&5
+echo "configure:2191: checking whether we are using GNU C" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_gcc'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2291,7 +2196,7 @@ else
   yes;
 #endif
 EOF
-if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:2295: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:2200: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
   ac_cv_prog_gcc=yes
 else
   ac_cv_prog_gcc=no
@@ -2310,7 +2215,7 @@ ac_test_CFLAGS="${CFLAGS+set}"
 ac_save_CFLAGS="$CFLAGS"
 CFLAGS=
 echo $ac_n "checking whether ${CC-cc} accepts -g""... $ac_c" 1>&6
-echo "configure:2314: checking whether ${CC-cc} accepts -g" >&5
+echo "configure:2219: checking whether ${CC-cc} accepts -g" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_cc_g'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2359,7 +2264,7 @@ fi
       # Extract the first word of "ranlib", so it can be a program name with args.
 set dummy ranlib; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2363: checking for $ac_word" >&5
+echo "configure:2268: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_RANLIB'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2387,16 +2292,87 @@ else
 fi
 
 
-   
+         
    # systems setup
    case $host in
-   Linux)
-       LD='${CXX}'
-       AR="ar"
-       ARFLAGS="cr"
-       ARLIBS=""
+   *-linux-gnu)
+       # we do not do any posix source defines unless the user
+       # specifically requests them
+       if test "${with_posix:=no}" = yes ; then
+	   with_posix='199309L'
+       fi
+
+       if test "${with_posix}" != no ; then
+	   cat >> confdefs.h <<\EOF
+#define _POSIX_SOURCE 1
+EOF
+
+	   cat >> confdefs.h <<EOF
+#define _POSIX_C_SOURCE $with_posix
+EOF
+
+       fi
+
+       #
+       # setup communication packages
+       #
+   
+       # setup for mpi support, on linux vendor and mich are one
+       # and the same because there is no vendor for mpi on linux
+        
+       if test "${with_mpi}" = vendor ; then
+	   with_mpi='mpich'
+       fi
+
+       if test "${with_mpi}" = mpich ; then
+	   
+	   # define mpich libraries for v1.2 of mpich
+	   if test -n "${MPI_LIB}" ; then
+	       linux_mpi_libs="-L${MPI_LIB} -lmpich"
+	   elif test -z "${MPI_LIB}" ; then
+	       linux_mpi_libs="-lmpich"
+	   fi
+
+	   # define the linux mpi libs
+	   
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # ${linux_mpi_libs} are the directories added 
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${linux_mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${linux_mpi_libs}"
+   fi
+
+
+       fi
+
+       # shmem (not available on suns)
+       if test "${enable_shmem}" = yes ; then
+	   { echo "configure: error: "We don't support shmem on linux!"" 1>&2; exit 1; }
+       fi
+
+       #
+       # end of communication package setup
+       #
    ;;
    mips-sgi-irix6.*)
+       # posix source defines, by default we set poaix on 
+       if test "${with_posix:=yes}" = yes ; then
+	   with_posix='199309L'
+       fi
+
+       if test "${with_posix}" != no ; then
+	   cat >> confdefs.h <<EOF
+#define _POSIX_C_SOURCE $with_posix
+EOF
+
+	   cat >> confdefs.h <<\EOF
+#define _POSIX_SOURCE 1
+EOF
+
+       fi
+
        # RANLIB TAG ON SGI
        RANLIB=':'
 
@@ -2423,14 +2399,53 @@ fi
 	   LDFLAGS="-mips${with_mips:=4} ${LDFLAGS}"
        fi
 
+       #
+       # setup communication packages
+       #
+   
+       # setup for mpi support
+       # we only support vendor mpi on sgis       
+       if test "${with_mpi}" = vendor ; then
+	   if test -n "${MPI_LIB}" ; then
+	       
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # -L${MPI_LIB} -lmpi are the directories added 
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpi"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpi"
+   fi
+
+	   elif test -z "${MPI_LIB}" ; then
+	       
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # -lmpi are the directories added 
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lmpi"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpi"
+   fi
+
+	   fi
+       elif test "${with_mpi}" = mpich ; then
+	   { echo "configure: error: "We don't support mpich on the SGI yet!"" 1>&2; exit 1; }
+       fi
+
+       # setup for shmem support
+       if test "${enable_shmem}" = yes ; then
+	   if test -n "${SHMEM_LIB}" ; then
+	       VENDOR_LIBS="${VENDOR_LIBS} -L${SHMEM_LIB} -lsma -lpthread"
+	   elif test -z "${SHMEM_LIB}" ; then
+	       VENDOR_LIBS="${VENDOR_LIBS} -lsma -lpthread"
+	   fi
+       fi
+
        # MPT (Message Passing Toolkit) for SGI vendor
        # implementation of MPI and SHMEM
        if test -z "${MPI_INC}" &&  test "${with_mpi}" = vendor ; then
-	   MPI_INC="${MPT_SGI}/usr/include/"
-	   cat >> confdefs.h <<EOF
-#define MPI_INC ${MPI_INC}
-EOF
-	   
+	   MPI_INC="${MPT_SGI}/usr/include/"	   
 	   MPI_H="\"${MPI_INC}mpi.h\""
 	   cat >> confdefs.h <<EOF
 #define MPI_H ${MPI_H}
@@ -2440,16 +2455,16 @@ EOF
 
        if test -z "${SHMEM_INC}" && test "${enable_shmem}" = yes ; then
 	   SHMEM_INC="${MPT_SGI}/usr/include/mpp/"
-	   cat >> confdefs.h <<EOF
-#define SHMEM_INC ${SHMEM_INC}
-EOF
-
 	   SHMEM_H="\"${SHMEM_INC}shmem.h\""
 	   cat >> confdefs.h <<EOF
 #define SHMEM_H ${SHMEM_H}
 EOF
 
        fi
+
+       #
+       # end of communication package setup
+       #
 
        #PCGLIB EXTRAS
        if test "${enable_pcglib}" = yes ; then
@@ -2472,19 +2487,70 @@ EOF
        fi
    ;;
    sparc-sun-solaris2.*)
-       # MPICH LIBRARY EXTRAS
-       if test "${with_mpi}" = mpich ; then
-	   
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -lsocket -lnsl are the directories added 
+       # posix source defines, by default we set poaix on 
+       if test "${with_posix:=yes}" = yes ; then
+	   with_posix='199309L'
+       fi
 
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lsocket -lnsl"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsocket -lnsl"
-   fi
+       if test "${with_posix}" != no ; then
+	   cat >> confdefs.h <<EOF
+#define _POSIX_C_SOURCE $with_posix
+EOF
+
+	   cat >> confdefs.h <<\EOF
+#define _POSIX_SOURCE 1
+EOF
 
        fi
+
+       #
+       # setup communication packages
+       #
+   
+       # setup for mpi support
+       # we only support mpich on sgis       
+       if test "${with_mpi}" = vendor ; then
+	   { echo "configure: error: "We don't support vendor mpi on the SUN yet!"" 1>&2; exit 1; }
+       elif test "${with_mpi}" = mpich ; then
+	   
+	   # define sun-required libraries for mpich, v 1.0 (this
+	   # needs to be updated for version 1.2)
+	   sun_mpi_libs='-lpmpi -lmpi -lsocket -lnsl'
+   
+	   if test -n "${MPI_LIB}" ; then
+	       
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # -L${MPI_LIB} ${sun_mpi_libs} are the directories added 
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} ${sun_mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} ${sun_mpi_libs}"
+   fi
+
+	   elif test -z "${MPI_LIB}" ; then
+	       
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # ${sun_mpi_libs} are the directories added 
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${sun_mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${sun_mpi_libs}"
+   fi
+
+	   fi
+
+       fi
+
+       # shmem (not available on suns)
+       if test "${enable_shmem}" = yes ; then
+	   { echo "configure: error: "We don't support shmem on suns!"" 1>&2; exit 1; }
+       fi
+
+       #
+       # end of communication package setup
+       #
 
        # PCGLIB EXTRAS
        if test "${enable_pcglib}" = yes ; then
@@ -2509,6 +2575,8 @@ EOF
        fi
    ;;
    *)
+       # catchall for nothing
+   ;;
    esac
 
    # add system specific libraries
