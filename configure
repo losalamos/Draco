@@ -120,6 +120,9 @@ fi
 
 
 
+
+
+
 ###-------------------------------------------------------------------------###
 ### include the DRACO argument macro
 ###-------------------------------------------------------------------------###
@@ -192,6 +195,10 @@ ac_help="$ac_help
                           determine LAPACK implementation (vendor default)"
 ac_help="$ac_help
   --with-lapack-lib[=DIR]    tell where LAPACK libs are (\${LAPACK_LIB_DIR} by default)"
+ac_help="$ac_help
+  --with-gandolf[=lib]    determine the gandolf lib name (gandolf is default)"
+ac_help="$ac_help
+  --with-gandolf-lib[=DIR]    tell where GANDOLF libraries are (\${GANDOLF_LIB_DIR} by default)"
 ac_help="$ac_help
   --with-c4[=scalar,mpi,shmem]   
 		          turn on c4 (default scalar) "
@@ -1229,23 +1236,23 @@ fi
        if test -z "${PCG_LIB}" ; then
 	   
    # vendor_pcg is the vendor_<> tag (equals pkg or test)
-   # -lpcg are the directories added 
+   # -l${with_pcg} are the directories added 
 
    if test "${vendor_pcg}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lpcg"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_pcg}"
    elif test "${vendor_pcg}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lpcg"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_pcg}"
    fi
 
        elif test -n "${PCG_LIB}" ; then
 	   
    # vendor_pcg is the vendor_<> tag (equals pkg or test)
-   # -L${PCG_LIB} -lpcg are the directories added 
+   # -L${PCG_LIB} -l${with_pcg} are the directories added 
 
    if test "${vendor_pcg}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${PCG_LIB} -lpcg"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${PCG_LIB} -l${with_pcg}"
    elif test "${vendor_pcg}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${PCG_LIB} -lpcg"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${PCG_LIB} -l${with_pcg}"
    fi
 
        fi
@@ -1323,23 +1330,23 @@ fi
        if test -z "${LAPACK_LIB}" ; then
 	   
    # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -llapack -lf77blas -latlas are the directories added 
+   # -llapack -lf77blas -lcblas -latlas are the directories added 
 
    if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -llapack -lf77blas -latlas"
+       VENDOR_LIBS="${VENDOR_LIBS} -llapack -lf77blas -lcblas -latlas"
    elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -llapack -lf77blas -latlas"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -llapack -lf77blas -lcblas -latlas"
    fi
 
        elif test -n "${LAPACK_LIB}" ; then
 	   
    # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -L${LAPACK_LIB} -llapack -lf77blas -latlas are the directories added 
+   # -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas are the directories added 
 
    if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -latlas"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas"
    elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -latlas"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas"
    fi
 
        fi
@@ -1347,6 +1354,95 @@ fi
    fi
 
       
+   
+      # Check whether --with-gandolf or --without-gandolf was given.
+if test "${with_gandolf+set}" = set; then
+  withval="$with_gandolf"
+  :
+fi
+
+
+      
+        
+   
+ # Check whether --with-gandolf-lib or --without-gandolf-lib was given.
+if test "${with_gandolf_lib+set}" = set; then
+  withval="$with_gandolf_lib"
+  if test $with_gandolf_lib != "no" ; then
+      if test $with_gandolf_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${GANDOLF_LIB_DIR}
+         eval with_gandolf_lib=\${GANDOLF_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_gandolf_lib=`eval echo "$with_gandolf_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_gandolf_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-gandolf-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_gandolf_lib ; then
+         { echo "configure: error: $with_gandolf_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      GANDOLF_LIB="${with_gandolf_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >> confdefs.h <<EOF
+#define GANDOLF_LIB ${with_gandolf_lib}/
+EOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "GANDOLF_LIB has been set to $GANDOLF_LIB" 1>&6
+
+   fi
+fi
+
+
+   
+
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_gandolf=pkg
+
+   # gandolf is set to libgandolf by default
+   if test "${with_gandolf:=gandolf}" = yes ; then
+       with_gandolf='gandolf'
+   fi
+
+   # set up the libraries
+   if test "${with_gandolf}" != no ; then
+       if test -z "${GANDOLF_LIB}" ; then
+	   
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -l${with_gandolf} are the directories added 
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gandolf}"
+   fi
+
+       elif test -n "${GANDOLF_LIB}" ; then
+	   
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -L${GANDOLF_LIB} -l${with_gandolf} are the directories added 
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   fi
+
+       fi
+   fi
+
+         
 
 
          
@@ -1545,7 +1641,7 @@ subdirs="autodoc tools src doc"
 # Extract the first word of "autoconf", so it can be a program name with args.
 set dummy autoconf; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1549: checking for $ac_word" >&5
+echo "configure:1645: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_AUTOCONF'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1583,7 +1679,7 @@ for dir in $subdirs
    do
        if test -d ${srcdir}/${dir} ; then
 	   echo $ac_n "checking "configure in ${srcdir}/${dir}"""... $ac_c" 1>&6
-echo "configure:1587: checking "configure in ${srcdir}/${dir}"" >&5
+echo "configure:1683: checking "configure in ${srcdir}/${dir}"" >&5
 	   cd $srcdir/$dir
 	   if test -f configure ; then 
 	       echo "$ac_t"""exists"" 1>&6
@@ -1751,6 +1847,7 @@ s%@SPRNG_INC@%$SPRNG_INC%g
 s%@SPRNG_LIB@%$SPRNG_LIB%g
 s%@PCG_LIB@%$PCG_LIB%g
 s%@LAPACK_LIB@%$LAPACK_LIB%g
+s%@GANDOLF_LIB@%$GANDOLF_LIB%g
 s%@subdirs@%$subdirs%g
 s%@AUTOCONF@%$AUTOCONF%g
 
