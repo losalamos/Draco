@@ -58,20 +58,13 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        AC_DEFINE(C4_SCALAR)
    elif test "$with_c4" = mpi ; then
        AC_DEFINE(C4_MPI)
-   elif test "$with_c4" = shmem ; then
-       AC_DEFINE(C4_SHMEM)
    fi
 
-   # if c4=mpi or shmem and with-mpi and enable-shmem are
-   # set to no explicitly then define them (mpi gets set to   
-   # vendor by default)
+   # if c4=mpi and with-mpi=no explicitly then 
+   # define them (mpi gets set to vendor by default)
    if test "$with_c4" = mpi ; then
        if test "$with_mpi" = no ; then
 	   with_mpi='vendor'
-       fi
-   elif test "$with_c4" = shmem ; then
-       if test "$enable_shmem" = no ; then
-	   enable_shmem='yes'
        fi
    fi
 
@@ -567,27 +560,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_MSG_ERROR("We do not support mpich on the SGI yet!")
        fi
 
-       # setup for shmem support
-       if test "${enable_shmem}" = yes ; then
-	   if test -n "${SHMEM_LIB}" ; then
-	       VENDOR_LIBS="${VENDOR_LIBS} -L${SHMEM_LIB} -lsma -lpthread"
-	   elif test -z "${SHMEM_LIB}" ; then
-	       VENDOR_LIBS="${VENDOR_LIBS} -lsma -lpthread"
-	   fi
-       fi
-
        # MPT (Message Passing Toolkit) for SGI vendor
        # implementation of MPI and SHMEM
        if test -z "${MPI_INC}" &&  test "${with_mpi}" = vendor ; then
 	   MPI_INC="${MPT_SGI}/usr/include/"	   
 	   MPI_H="\"${MPI_INC}mpi.h\""
 	   AC_DEFINE_UNQUOTED(MPI_H, ${MPI_H})
-       fi
-
-       if test -z "${SHMEM_INC}" && test "${enable_shmem}" = yes ; then
-	   SHMEM_INC="${MPT_SGI}/usr/include/mpp/"
-	   SHMEM_H="\"${SHMEM_INC}shmem.h\""
-	   AC_DEFINE_UNQUOTED(SHMEM_H, ${SHMEM_H})
        fi
 
        # add SGI MPT Specfic options
@@ -673,6 +651,36 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
 	   AC_DEFINE(_POSIX_SOURCE)
        fi
+
+       #
+       # setup communication packages
+       #
+       
+       # setup vendor mpi
+       if test "${with_mpi}" = vendor ; then
+
+	   # set up libraries (the headers are already set)
+	   if test -n "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
+	   elif test -z "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
+	   fi
+       
+       # setup mpich
+       elif test "${with_mpi}" = mpich ; then
+
+	   # set up libraries (the headers are already set)
+	   if test -n "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpich)
+	   elif test -z "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpich)
+	   fi
+   
+       fi
+
+       #
+       # end of communication packages
+       #
    ;;
    sparc-sun-solaris2.*)
        # posix source defines, by default we set poaix on 
