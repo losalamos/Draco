@@ -16,7 +16,7 @@
 #include "imc/Source_Init.hh"
 #include "imc/Particle_Buffer.hh"
 #include "imc/Particle.hh"
-#include "imc/Constants.hh"
+#include "imc/Global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
@@ -348,6 +348,16 @@ int main(int argc, char *argv[])
  // try block
     try
     {
+      // lets look at our buffers
+	int sb = 1000;
+	int db = 1000 * (9);
+	int ib = 1000 * (2);
+	int cb = 1000 * (500);
+	Check (IMC::Global::buffer_s == sb);
+	Check (IMC::Global::buffer_d == db);
+	Check (IMC::Global::buffer_i == ib);
+	Check (IMC::Global::buffer_c == cb);
+
       // declare geometry and material stuff
 	SP<OS_Mesh> mesh;
 	SP< Mat_State<OS_Mesh> > mat_state;
@@ -422,10 +432,13 @@ int main(int argc, char *argv[])
   	    Builder_diagnostic(*mesh, *opacity);
 	    comm_particle1(*mesh, *buffer, *rcon);
 	    comm_particle2(*mesh, *buffer, *rcon);
-	cout << rn_stream << endl;	
-	rn_stream++;
-	cout << rn_stream << endl;
 	}
+
+      // lets look at our buffers
+	Check (IMC::Global::buffer_s == sb);
+	Check (IMC::Global::buffer_d == db);
+	Check (IMC::Global::buffer_i == ib);
+	Check (IMC::Global::buffer_c == cb);
     }
     catch (const dsxx::assertion &ass)
     {

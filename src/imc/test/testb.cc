@@ -16,7 +16,7 @@
 #include "imc/Particle_Buffer.hh"
 #include "imc/Source_Init.hh"
 #include "imc/Tally.hh"
-#include "imc/Math.hh"
+#include "imc/Global.hh"
 #include "rng/Rnd_Control.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
