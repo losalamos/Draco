@@ -66,12 +66,12 @@ class Sphyramid_Mesh
     struct Pack;
 
     // Forward declarations of cell-centered fields
-    //template<class T> class CCSF;
-    //template<class T> class CCVF;
+    template<class T> class CCSF;
+    template<class T> class CCVF;
 
   public:
     // Typedefs used throughout Sphyramid_Mesh class.
-    typedef rtt_dsxx::SP<Sphyramid_Mesh> SP_Mesh;
+    typedef rtt_dsxx::SP<Sphyramid_Mesh>       SP_Mesh;
     typedef rtt_dsxx::SP<Coord_sys>            SP_Coord;
     typedef rtt_dsxx::SP<Sphyramid_Mesh::Pack> SP_Pack;
     typedef rtt_rng::Sprng                     rng_Sprng;
@@ -81,13 +81,6 @@ class Sphyramid_Mesh
     typedef std::string                        std_string;
     typedef std::pair<sf_double, sf_double>    pair_sf_double;
 
-    // Handy typedefs to CC fields (not formally needed in KCC3.3+).
-    // typedef CCSF<double> CCSF_double;
-    // typedef CCSF<int> CCSF_int;
-    // typedef CCVF<int> CCVF_double;
-    // typedef CCVF<int> CCVF_int;
-    // typedef CCSF<std_string> CCSF_string;
-  
   private:
     // Base class reference to a derived coordinate system class
     // (the Sphyramid_Mesh is always three-dimensional, Cartesian)
@@ -851,6 +844,226 @@ struct Sphyramid_Mesh::Pack
     // Unpack function
     SP_Mesh unpack() const;
 };
+
+//===========================================================================//
+/*!
+ * \class Sphyramid_Mesh::CCSF (Copied from class OS_Mesh::CCSF)
+ * \brief cell-centered scalar fields
+ */
+//===========================================================================//
+
+template<class T> class Sphyramid_Mesh::CCSF
+{
+  public:
+    // STL style typedefs.
+    typedef T value_type;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef typename std::vector<T>::iterator iterator;
+    typedef typename std::vector<T>::const_iterator const_iterator;
+    typedef typename std::vector<T>::size_type size_type;
+
+  private:
+    // SP back to Sphyramid_Mesh.
+    SP_Mesh mesh;
+
+    // Data in field.
+    std::vector<T> data;
+
+  public:
+    // Explicit constructor.
+    inline explicit CCSF(SP_Mesh mesh_);
+    
+    // Additional constructors.
+    inline CCSF(SP_Mesh mesh_, const std::vector<T> &array);
+
+    // Return reference to mesh.
+    const Sphyramid_Mesh& get_Mesh() const { return *mesh; }
+
+    // Subscripting
+
+    // we use () to indicate absolute cell numer and [] to indicate 
+    // vector-stype (0:n-1) indexing.
+    const_reference operator()(int cell) const { return data[cell-1]; }
+    reference operator()(int cell) { return data[cell-1]; }
+
+    const_reference operator[](int index) const { return data[index]; }
+    reference operator[](int index) { return data[index]; }
+
+    // STL style functions.
+    iterator begin() { return data.begin(); }
+    const_iterator begin() const { return data.begin(); }
+
+    iterator end() { return data.end(); }
+    const_iterator end() const { return data.end(); }
+
+    size_type size() const { return data.size(); }
+    bool empty() const { return data.empty(); }
+};
+
+//---------------------------------------------------------------------------//
+// Sphyramid_Mesh::CCSF inline functions
+//---------------------------------------------------------------------------//
+// CCSF explicit constructor
+
+template<class T>
+Sphyramid_Mesh::CCSF<T>::CCSF(SP_Mesh mesh_) 
+    : mesh(mesh_), data(mesh->num_cells()) 
+{
+    Require (this->mesh);
+    Ensure  (!empty());
+}
+
+//---------------------------------------------------------------------------//
+// constructor for automatic initialization
+
+template<class T>
+Sphyramid_Mesh::CCSF<T>::CCSF(SP_Mesh mesh_, const std::vector<T> &array)
+    : mesh(mesh_), data(array)
+{
+    Require (this->mesh)
+    Ensure  (this->data.size() == this->mesh->num_cells());
+    Ensure  (!empty());
+}
+
+//===========================================================================//
+// class Sphyramid_Mesh::CCVF (copied from class OS_Mesh::CCVF)
+//
+// cell-centered vector fields
+//===========================================================================//
+template<class T> class Sphyramid_Mesh::CCVF
+{
+  public:
+    // STL style typedefs.
+    // typedef T value_type
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef typename std::vector<T>::iterator iterator;
+    typedef typename std::vector<T>::const_iterator const_iterator;
+    typedef typename std::vector<T>::size_type size_type;
+
+  private:
+    // SP back to Sphyramid_Mesh.
+    SP_Mesh mesh;
+
+    // 2-D field vector (dimension, num_cells).
+    std::vector< std::vector<T> > data;
+
+  public:
+    //inline explicit constructor.
+    inline explicit CCVF(SP_Mesh mesh_);
+
+    // Additional constructors.
+    //inline CCVF(SP_Mesh, const std::vector< std::vector<T> > &);
+
+    // Return reference to mesh.
+    const Sphyramid_Mesh& get_Mesh() const { return *mesh; }
+
+    // Subscripting.
+    inline const T& operator()(int dim, int cell) const;
+    inline T& operator()(int dim, int cell);
+
+    // Getting a CC vector in a cell.
+    //inline std::vector<T> operator()(int) const;
+
+    // STL style functions.
+    //iterator begin() { return data.begin(); }
+    //const_iterator begin() const { return data.begin(); }
+    inline iterator begin(int i);
+    inline const_iterator begin(int i) const;
+
+    //iterator end() { return data.end(); }
+    //const_iterator end() const { return data.end(); }
+    inline iterator end(int i);
+    inline const_iterator end(int i) const;
+
+    size_type size() const {return data.size(); }
+    bool empty() const {return data.empty(); }
+    inline size_type size(int i) const;
+    // inline bool empty(int i) const;
+};
+
+//---------------------------------------------------------------------------//
+// Sphyramid_Mesh::CCVF inline functions
+//---------------------------------------------------------------------------//
+// CCVF explicit constructor
+
+template<class T> 
+Sphyramid_Mesh::CCVF<T>::CCVF(SP_Mesh mesh_)
+    :mesh(mesh_), 
+     data(mesh->get_Coord().get_dim())
+{
+    Require (mesh);
+    Check   (mesh->get_Coord().get_dim() == 3);
+
+    // initialize data array
+    for (int i = 0; i < mesh->get_Coord().get_dim(); i++)
+    {
+	data[i].resize(mesh->num_cells());
+    }
+}
+//---------------------------------------------------------------------------//
+// constant overloaded ()
+
+template<class T>
+const T& Sphyramid_Mesh::CCVF<T>::operator()(int dim, int cell) const 
+{
+    return this->data[dim-1][cell-1]; 
+}
+
+//---------------------------------------------------------------------------//
+// assignment overloaded ()
+
+template<class T>
+T& Sphyramid_Mesh::CCVF<T>::operator()(int dim, int cell)
+{
+    return this->data[dim-1][cell-1];
+}
+
+//---------------------------------------------------------------------------//
+// STL style functionality for CCVF fields
+
+template<class T>
+typename Sphyramid_Mesh::CCVF<T>::iterator 
+Sphyramid_Mesh::CCVF<T>::begin(int i)
+{
+    Require(i > 0 && i <= this->data.size());
+    return this->data[i-1].begin();
+}
+
+template<class T>
+typename Sphyramid_Mesh::CCVF<T>::const_iterator 
+Sphyramid_Mesh::CCVF<T>::begin(int i) const
+{
+    Require(i > 0 && i <= this->data.size());
+    return this->data[i-1].begin();
+}
+
+template<class T>
+typename Sphyramid_Mesh::CCVF<T>::iterator 
+Sphyramid_Mesh::CCVF<T>::end(int i)
+{
+    Require(i > 0 && i <= this->data.size());
+    return this->data[i-1].end();
+}
+
+template<class T>
+typename Sphyramid_Mesh::CCVF<T>::const_iterator 
+Sphyramid_Mesh::CCVF<T>::end(int i) const
+{
+    Require(i > 0 && i <= this->data.size());
+    return this>data[i-1].end();
+}
+
+template<class T>
+typename Sphyramid_Mesh::CCVF<T>::size_type
+Sphyramid_Mesh::CCVF<T>::size(int i) const
+{
+    Require(i > 0 && i <= this->data.size());
+    return this->data[i-1].size();
+}
+
+
 
 }  // end namespace rtt_mc
 
