@@ -256,34 +256,40 @@ void Source_Builder<MT,PT>::calc_ess()
     for (int ss = 0; ss < ss_pos.size(); ss++)
     {
         // surface src cells (local id) must be defined by the host
-	Check (defined_surcells[ss].size() > 0);
 	vector<int> surcells = defined_surcells[ss];
-	Check (ss_desc[ss] == "allow_refl_bc" ? true : 
-	       ess.get_Mesh().check_defined_surcells(ss_pos[ss], surcells));
-
-	int local_cell;
-	for (int sc = 0; sc < surcells.size(); sc++)
-	{      
-	    // local cell index for the ss'th surface source
-	    local_cell = surcells[sc];
-	    Check (local_cell > 0 && local_cell <=
-		   ss_face_in_cell.get_Mesh().num_cells()); 
-
-	    // make sure this cell doesn't already have a surface source
-	    Check (ss_face_in_cell(local_cell) == 0);
-
-	    // assign source face to surface source cell
-	    ss_face_in_cell(local_cell) = ss_face_in_cell.get_Mesh().
-		get_bndface(ss_pos[ss], local_cell);
-
-	    // assign energy to surface source cell
-	    ess(local_cell) = a * c * 0.25 *
-		ess.get_Mesh().face_area
-		(local_cell, ss_face_in_cell(local_cell)) * 
-		pow(ss_temp[ss],4) * delta_t;
-
-	    // accumulate esstot
-	    esstot += ess(local_cell);
+	
+	// do the surface source calculation only if there are actually cells 
+	// on this processor that contain the surface source
+	if (!surcells.empty())
+	{
+	    Check (ss_desc[ss] == "allow_refl_bc" ? true : 
+		   ess.get_Mesh().check_defined_surcells(ss_pos[ss],
+							 surcells));
+	    
+	    int local_cell;
+	    for (int sc = 0; sc < surcells.size(); sc++)
+	    {      
+		// local cell index for the ss'th surface source
+		local_cell = surcells[sc];
+		Check (local_cell > 0 && local_cell <=
+		       ss_face_in_cell.get_Mesh().num_cells()); 
+		
+		// make sure this cell doesn't already have a surface source
+		Check (ss_face_in_cell(local_cell) == 0);
+		
+		// assign source face to surface source cell
+		ss_face_in_cell(local_cell) = ss_face_in_cell.get_Mesh().
+		    get_bndface(ss_pos[ss], local_cell);
+		
+		// assign energy to surface source cell
+		ess(local_cell) = a * c * 0.25 *
+		    ess.get_Mesh().face_area
+		    (local_cell, ss_face_in_cell(local_cell)) * 
+		    pow(ss_temp[ss],4) * delta_t;
+		
+		// accumulate esstot
+		esstot += ess(local_cell);
+	    }
 	}
     }
 }

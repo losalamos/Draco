@@ -132,6 +132,9 @@ class Rep_Source_Builder : public Source_Builder<MT,PT>
 			     SP_Rnd_Control);
 
     // IMPLEMENTATION OF BASE CLASS ACCESSORS
+    
+    //! Get global total intial census energy on processor.
+    double get_initial_census_energy() const { return ecentot; }
 
     //! Get global energy loss in volume emission on processor.
     double get_eloss_vol() const { return global_eloss_vol; }

@@ -174,7 +174,7 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
 				       local_nss, ss_face_in_cell, ew_ss, 
 				       census, ss_dist, local_nvoltot,
 				       local_nsstot, rnd_control, state,
-				       mesh_op));
+				       mesh_op, topology));
 
     // return the source
     return source;

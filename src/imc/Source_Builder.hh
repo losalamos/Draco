@@ -113,6 +113,9 @@ namespace rtt_imc
 // 0) original
 // 1) 19 Jun 2000 : added function reset_ew_in_census to allow for post-comb
 //                  census energy-weight readjustment.
+// 2) 03-JUL-00   : made get_initial_census_energy a virtual function because
+//                  in DD topologies ecentot is a local value and in full
+//                  replication it is a global value
 // 
 //===========================================================================//
 
@@ -332,12 +335,12 @@ class Source_Builder
     //! Get total surface source energy on processor.
     double get_esstot() const { return esstot; }
 
-    //! Get total initial census energy on processor.
-    double get_initial_census_energy() const { return ecentot; }
-
     // Topology dependent data.  This data could be either global or local
     // depending upon the topology.  The data that is returned lives in the
     // derived class.
+
+    //! Get total initial census energy on processor - topology dependent.
+    virtual double get_initial_census_energy() const = 0;
 
     //! Get energy loss in volume emission - topology dependent.
     virtual double get_eloss_vol() const = 0;

@@ -143,6 +143,9 @@ class DD_Source_Builder : public Source_Builder<MT,PT>
 
     // IMPLEMENTATION OF BASE CLASS ACCESSORS
 
+    //! Get global total intial census energy.
+    inline double get_initial_census_energy() const;
+
     //! Get global energy loss in volume emission.
     double get_eloss_vol() const { return global_eloss_vol; }
 
@@ -164,6 +167,18 @@ class DD_Source_Builder : public Source_Builder<MT,PT>
     //! Get global, total number of post-comb census particles.
     int get_ncentot() const { return global_ncentot; }
 };
+
+//---------------------------------------------------------------------------//
+// INLINE FUNCTIONS
+//---------------------------------------------------------------------------//
+
+template<class MT, class PT>
+double DD_Source_Builder<MT,PT>::get_initial_census_energy() const
+{
+    double energy = ecentot;
+    C4::gsum(energy);
+    return energy;
+}
 
 } // end namespace rtt_imc
 

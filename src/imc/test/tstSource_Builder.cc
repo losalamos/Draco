@@ -683,7 +683,8 @@ void source_DD_test()
     {
 	SP_Particle particle = source->get_Source_Particle(.001);
 	calc_cen_ewtot      += particle->get_ew();
-	int gcell            = particle->get_cell();
+	int lcell            = particle->get_cell();
+	int gcell            = topology->global_cell(lcell);
 	if (gcell < 2*C4::node() + 1)                                ITFAILS;
 	if (C4::node() < 3)
 	    if (gcell > 2*(C4::node()+1))                            ITFAILS;

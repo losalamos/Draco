@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// Release.cc
-// Thomas M. Evans
-// Wed Apr 14 15:36:52 1999
-// $Id$
+/*!
+ * \file   imc/Release.cc
+ * \author Thomas M. Evans
+ * \date   Wed Apr 14 15:36:52 1999
+ * \brief  Release function implementation for imc library.
+ */
 //---------------------------------------------------------------------------//
-// @> Release function implementation for imc library
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Release.hh"

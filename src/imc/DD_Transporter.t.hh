@@ -473,7 +473,7 @@ void DD_Transporter<MT,PT>::set(SP_Mesh mesh_in,
     Require (tally_in);
     Require (communicator_in);
 
-    // assign objects (no need to assign communicator as it should be null)
+    // assign objects
     mesh         = mesh_in;
     opacity      = opacity_in;
     source       = source_in;
@@ -482,13 +482,14 @@ void DD_Transporter<MT,PT>::set(SP_Mesh mesh_in,
     communicator = communicator_in;
     
     // number of global cells is the same number of cells on processor
-    int num_cells = topology->num_cells();
+    int num_cells = topology->num_cells(C4::node());
 
     Ensure (num_cells == mesh->num_cells());
     Ensure (num_cells == opacity->num_cells());
     Ensure (num_cells == source->num_cells());
     Ensure (num_cells == mat_state->num_cells());
     Ensure (num_cells == tally->num_cells());
+    Ensure (communicator);
     Ensure (topology);
     Ensure (buffer);
 }

@@ -1,9 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// Source.hh
-// Thomas M. Evans
-// Thu May 14 08:45:49 1998
+/*!
+ * \file   imc/Source.hh
+ * \author Thomas M. Evans
+ * \date   Thu May 14 08:45:49 1998
+ * \brief  Source class header file.
+ */
 //---------------------------------------------------------------------------//
-// @> Source class header file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __imc_Source_hh__
@@ -13,6 +16,7 @@
 #include "Particle_Buffer.hh"
 #include "Mat_State.hh"
 #include "Mesh_Operations.hh"
+#include "mc/Topology.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <iostream>
@@ -22,15 +26,23 @@ namespace rtt_imc
 {
 
 //===========================================================================//
-// class Source - 
-//
-// Purpose : produce a particle for IMC transport
-//
+/*!
+ * \class Source
+ 
+ * \brief Get source particles for IMC transport.
+
+ * The Source class generates rtt_imc::Particle objects when queried with the
+ * get_Source_Particle() function.  The Source has an overloaded bool()
+ * operator that allows the user to query when the source is active or empty.
+
+ */
 // revision history:
 // -----------------
 // 0) original
 // 1) 21-DEC-99: removed T^4 data and replaced it with the Mesh_Operations
 //               class that does volume emission sampling using the tilt
+// 2) 03-JUL-00: added Topology member data to map census particles from 
+//               global cells to local cells
 // 
 //===========================================================================//
 
@@ -38,16 +50,20 @@ template<class MT, class PT = Particle<MT> >
 class Source
 {
   public:
-    // usefull typedefs
+    // Usefull typedefs
     typedef typename MT::template CCSF<int>      ccsf_int;
     typedef typename MT::template CCSF<double>   ccsf_double;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>       SP_Topology;
     typedef typename Particle_Buffer<PT>::Census PB_Census;
     typedef rtt_dsxx::SP<PB_Census>              SP_Census;
     typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>   SP_Rnd_Control; 
     typedef rtt_dsxx::SP<Mat_State<MT> >         SP_Mat_State;
     typedef rtt_dsxx::SP<Mesh_Operations<MT> >   SP_Mesh_Op; 
 
-  public:
+  private:
+    // Problem topology.
+    SP_Topology topology;
+
     // volume source particles: number and first random number stream per
     // cell
     ccsf_int vol_rnnum;
@@ -88,7 +104,7 @@ class Source
     // Material State
     SP_Mat_State material;
 
-    // Mesh_Operations class for performing volume emission sampling with T^4 
+    // Mesh_Operations class for performing volume emission sampling with T^4
     // tilts
     SP_Mesh_Op mesh_op;
 
@@ -96,7 +112,7 @@ class Source
     // Constructor.
     Source(ccsf_int &, ccsf_int &, ccsf_double &, ccsf_int &, ccsf_int &, 
 	   ccsf_int &, ccsf_double &, SP_Census, std::string, int, int, 
-	   SP_Rnd_Control, SP_Mat_State, SP_Mesh_Op);
+	   SP_Rnd_Control, SP_Mat_State, SP_Mesh_Op, SP_Topology);
 
     // Required services for Source.
     rtt_dsxx::SP<PT> get_Source_Particle(double); 

@@ -1,9 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// Source.t.hh
-// Thomas M. Evans
-// Thu May 14 08:45:49 1998
+/*!
+ * \file   imc/Source.t.hh
+ * \author Thomas M. Evans, Todd J. Urbatsch
+ * \date   Thu May 14 08:45:49 1998
+ * \brief  Source class template definitions file.
+ */
 //---------------------------------------------------------------------------//
-// @> Source class implementation file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Source.hh"
@@ -54,23 +57,27 @@ Source<MT, PT>::Source(ccsf_int &vol_rnnum_,
 		       int nsstot_,
 		       SP_Rnd_Control rcon_, 
 		       SP_Mat_State mat_state,
-		       SP_Mesh_Op operations) 
+		       SP_Mesh_Op operations,
+		       SP_Topology top) 
     : vol_rnnum(vol_rnnum_), 
-      nvol(nvol_), 
-      ew_vol(ew_vol_), 
-      ss_rnnum(ss_rnnum_), 
-      nss(nss_), 
-      fss(fss_), 
-      ew_ss(ew_ss_),
-      ss_dist(ssd), 
-      census(census_), 
-      nvoltot(nvoltot_), 
-      nsstot(nsstot_),
-      ncentot(census->size()), 
-      rcon(rcon_),
-      material(mat_state), 
-      mesh_op(operations)
+    nvol(nvol_), 
+    ew_vol(ew_vol_), 
+    ss_rnnum(ss_rnnum_), 
+    nss(nss_), 
+    fss(fss_), 
+    ew_ss(ew_ss_),
+    ss_dist(ssd), 
+    census(census_), 
+    nvoltot(nvoltot_), 
+    nsstot(nsstot_),
+    ncentot(census->size()), 
+    rcon(rcon_),
+    material(mat_state), 
+    mesh_op(operations),
+    topology(top)
 {
+    Require (topology);
+
     // some assertions
     Check (vol_rnnum.get_Mesh() == nvol.get_Mesh());
     Check (nvol.get_Mesh()      == ss_rnnum.get_Mesh());
@@ -269,6 +276,13 @@ SP<PT> Source<MT, PT>::get_census(double delta_t)
 
     // make sure the particle is active
     census_particle->reset_status();
+
+    // give the census particle a local cell index
+    int global_cell = census_particle->get_cell();
+    int local_cell  = topology->local_cell(global_cell);
+    Ensure (local_cell);
+    
+    census_particle->set_cell(local_cell);
 
     // return the particle
     return census_particle;
