@@ -19,7 +19,7 @@ AC_SPRNG_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(mc rng c4 ds++)
+AC_NEEDS_LIBS(mc viz rng c4 traits ds++)
 
 # testing setup
 AC_RUNTESTS(tstOpacity tstTally tstParticle tstTopology_Builder \
