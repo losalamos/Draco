@@ -25,6 +25,9 @@
 
 #include "units/PhysicalConstants.hh"
 
+#include "Q1DGaussLeg.hh"
+#include "Q2DLevelSym.hh"
+#include "Q3DLevelSym.hh"
 #include "QuadCreator.hh"
 
 namespace rtt_quadrature

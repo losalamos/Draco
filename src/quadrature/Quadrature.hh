@@ -35,9 +35,6 @@ const double TOL = 1.0e-13;
  * (abscissas) and weights associated with a particular quadrature scheme
  * specified by the calling routine.
  *
- */
-
-/*! 
  * \example quadrature/test/tQuadrature.cc
  * 
  * Example of Quadrature usage and testing algorithm.  This test code
@@ -89,13 +86,11 @@ class Quadrature
      */
 
     Quadrature( size_t snOrder_, double norm_ )
-	: snOrder( snOrder_ ), norm( norm_ ) { }
-
-    // prevent defaults
-    Quadrature();
+	: snOrder( snOrder_ ), norm( norm_ ) { /* empty */ }
+    Quadrature();     // prevent defaults
 
     //! Virtual destructor.
-    virtual ~Quadrature() {/*...*/}
+    virtual ~Quadrature() {/* empty */}
 
     // ACCESSORS
 
@@ -296,50 +291,14 @@ class Quadrature
      */
     virtual size_t getSnOrder() const = 0;
 
-    /*!
-     * \brief Integrates dOmega over the unit sphere. (The sum of quadrature weights.)
-     */
+    //! \brief Integrates dOmega over the unit sphere. (The sum of quadrature weights.)
     double iDomega() const;
 
-    /*!
-     * \brief Integrates the vector Omega over the unit sphere. 
-     *
-     * The solution to this integral is a vector with length equal to the
-     * number of dimensions of the quadrature set.  The solution should be
-     * the zero vector. 
-     *
-     * The integral is actually calculated as a quadrature sum over all
-     * directions of the quantity: 
-     *
-     *     Omega(m) * wt(m)
-     *
-     * Omega is a vector quantity.
-     */
+    //! \brief Integrates the vector Omega over the unit sphere. 
     vector<double> iOmegaDomega() const;
 
-    /*!
-     * \brief Integrates the tensor (Omega Omega) over the unit sphere. 
-     *
-     * The solution to this integral is a tensor vector with ndims^2 elements
-     * The off-diagonal elements should be zero.  The diagonal elements
-     * should have the value sumwt/3.  
-     *
-     * We actually return a 1D vector whose length is ndims^2.  The "diagonal"
-     * elements are 0, 4 and 8.
-     *
-     * The integral is actually calculated as a quadrature sum over all
-     * directions of the quantity:
-     *
-     *     Omega(m) Omega(m) wt(m)
-     *
-     * The quantity ( Omega Omega ) is a tensor quantity.
-     */
+    //! \brief Integrates the tensor (Omega Omega) over the unit sphere. 
     vector<double> iOmegaOmegaDomega() const;
-
-
-    // Other accessors that may be needed in the future.
-    //
-    // virtual int getNumAnglesPerOctant() = 0;
 
   protected:
 
@@ -358,201 +317,10 @@ class Quadrature
     vector< vector< double > > omega;
 };
 
-//===========================================================================//
-/*!
- * \class Q1DGaussLeg
- *
- * \brief A class to encapsulate a 1D Gauss Legendre Quadrature set.
- *
- * The client only needs to call QuadCreator::QuadCreate with the requested
- * quadrature set specified.  Since this quadrature set is inheireted from
- * the class Quadrature the client never needs to access this class directly.
- * The class overrides the virutal member functions contained in the class
- * Quadrature and contains data members that define the quadrature set.
- */
-//===========================================================================//
-
-class Q1DGaussLeg : public Quadrature
-{
-
-    // NESTED CLASSES and TYPEDEFS
-
-    // DATA
-
-    size_t numAngles;  // == snOrder
-
-  public:
-
-    // CREATORS
-
-    /*!
-     * \brief Constructs a 1D Gauss Legendre quadrature object.
-     *
-     * \param snOrder_ Integer specifying the order of the SN set to be
-     *                 constructed. 
-     * \param norm_    A normalization constant.  The sum of the quadrature
-     *                 weights will be equal to this value (default = 2.0).
-     */
-    // The default values for snOrder_ and norm_ were set in QuadCreator.
-    Q1DGaussLeg( size_t snOrder_, double norm_ );
-
-    // disable default construction
-    Q1DGaussLeg();
-
-    // ACCESSORS
-
-    // These functions override the virtual member functions specifed in the
-    // parent class Quadrature.
-    
-    size_t getNumAngles()   const { return numAngles; }
-    void   display()        const;
-    string name()           const { return "1D Gauss Legendre"; }
-    size_t dimensionality() const { return 1; }
-    size_t getSnOrder()     const { return snOrder; }
-
-  private:
-    
-    // IMPLEMENTATION
-
-};
-
-
-//===========================================================================//
-/*!
- * \class Q2DLevelSym
- *
- * \brief A class to encapsulate a 2D Level Symmetric quadrature set.
- *
- * The client only needs to call QuadCreator::QuadCreate with the requested
- * quadrature set specified.  Since this quadrature set is inherited from
- * the class Quadrature the client never needs to access this class directly.
- * The class overrides the virtual member functions contained in the class
- * Quadrature and contains data members that define the quadrature set.
- */
-//===========================================================================//
-
-class Q2DLevelSym : public Quadrature
-{
-
-    // NESTED CLASSES and TYPEDEFS
-
-    // DATA
-
-    size_t numAngles; // defaults to 12.
-
-  public:
-
-    // CREATORS
-    
-    /*!
-     * \brief Constructs a 2D Level Symmetric quadrature object.
-     *
-     * \param snOrder_ Integer specifying the order of the SN set to be
-     *                 constructed.  Number of angles = (snOrder+2)*snOrder/2.
-     * \param norm_    A normalization constant.  The sum of the quadrature
-     *                 weights will be equal to this value (default = 2*PI).
-     */
-    // The default values for snOrder_ and norm_ were set in QuadCreator.
-    Q2DLevelSym( size_t snOrder_, double norm_ );
-
-    // disable default construction
-    Q2DLevelSym();
-
-    // ACCESSORS
-
-    // These functions override the virtual member functions specifed in the
-    // parent class Quadrature.
-
-    //! Returns the number of angles in the current quadrature set.
-    size_t getNumAngles()   const { return numAngles; }
-    //! Prints a short table containing the quadrature directions and weights.
-    void display()       const;
-    //! Returns the official name of the current quadrature set.
-    string name()        const { return "2D Level Symmetric"; }
-    //! Returns the number of dimensions in the current quadrature set.
-    size_t dimensionality() const { return 2; }
-    //! Returns the order of the SN set.
-    size_t getSnOrder()     const { return snOrder; }
-    //! Returns the number of eta levels in the quadrature set.
-    size_t getLevels()      const { return snOrder; }
-
-  private:
-    
-    // IMPLEMENTATION
-
-};
-
-
-//===========================================================================//
-/*!
- * \class Q3DLevelSym
- *
- * \brief A class to encapsulate a 3D Level Symmetric quadrature set.
- *
- * The client only needs to call QuadCreator::QuadCreate with the requested
- * quadrature set specified.  Since this quadrature set is inheireted from
- * the class Quadrature the client never needs to access this class directly.
- * The class overrides the virutal member functions contained in the class
- * Quadrature and contains data members that define the quadrature set.
- */
-//===========================================================================//
-
-class Q3DLevelSym : public Quadrature
-{
-
-    // NESTED CLASSES and TYPEDEFS
-
-    // DATA
-
-    size_t numAngles; // defaults to 24.
-
-  public:
-
-    // CREATORS
-    
-    /*!
-     * \brief Constructs a 3D Level Symmetric quadrature object.
-     *
-     * \param snOrder_ Integer specifying the order of the SN set to be
-     *                 constructed.  Number of angles = (snOrder+2)*snOrder.
-     * \param norm_    A normalization constant.  The sum of the quadrature
-     *                 weights will be equal to this value (default = 4*PI).
-     */
-    // The default values for snOrder_ and norm_ were set in QuadCreator.
-    Q3DLevelSym( size_t snOrder_, double norm_ );
-
-    // disable default construction
-    Q3DLevelSym();
-
-    // ACCESSORS
-
-    // These functions override the virtual member functions specifed in the
-    // parent class Quadrature.
-
-    //! Returns the number of angles in the current quadrature set.
-    size_t getNumAngles()   const { return numAngles; }
-    //! Prints a short table containing the quadrature directions and weights.
-    void display()       const;
-    //! Returns the official name of the current quadrature set.
-    string name()        const { return "3D Level Symmetric"; }
-    //! Returns the number of dimensions in the current quadrature set.
-    size_t dimensionality() const { return 3; }
-    //! Returns the order of the SN set.
-    size_t getSnOrder()     const { return snOrder; }
-    //! Returns the number of xi levels in the quadrature set.
-    size_t getLevels()      const { return snOrder; }
-
-  private:
-    
-    // IMPLEMENTATION
-
-};
-
-
 } // end namespace rtt_quadrature
 
-#endif                          // __quadrature_Quadrature_hh__
+#endif // __quadrature_Quadrature_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of quadrature/Quadrature.hh
+//                       end of quadrature/Quadrature.hh
 //---------------------------------------------------------------------------//

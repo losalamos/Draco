@@ -13,7 +13,6 @@
 #define __quadrature_QuadCreator_hh__
 
 #include "ds++/SP.hh"
-#include "Quadrature.hh"
 
 namespace rtt_quadrature
 {
