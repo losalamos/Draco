@@ -11,6 +11,7 @@
 
 #include "Mesh_DB.hh"
 
+#include "traits/MT_traits.hh"
 #include "ds++/Mat.hh"
 #include "ds++/SP.hh"
 
@@ -86,6 +87,8 @@ class Mesh_XYZ : private XYZ_Mapper
     template<class T> class gvctf;
     template<class T, int N> class tiny_vec;
 
+    typedef Mesh_DB Mesh_DB;
+    
     typedef cctf<double> ccsf;
     typedef cctf<int> ccif;
     typedef gcctf<double> gccsf;
