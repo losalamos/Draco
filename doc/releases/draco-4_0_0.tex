@@ -22,6 +22,7 @@
 
 \newcommand{\draco}{Draco}
 \newcommand{\dracor}{\draco-4\_0\_0}
+\newcolumntype{L}{>{\ttfamily}X}
 
 \newcommand{\autoconf}{\textsf{Autoconf}}
 \newcommand{\automake}{\textsf{Automake}} 
@@ -155,10 +156,10 @@ The following table summarizes changes to \draco\ components since
     imc & random walk improvements, random walk and surface tracking
     available for all particle types, new objects builder based on
     Factory Pattern \\
-    cdi & optimizations to Planckian integrators
+    cdi & optimizations to Planckian integrators \\
     Draco Build System & optimization flags for \textsf{gcc} updated
     \\
-    tools & added features to texttt{package\_depends.py} tool \\
+    tools & added features to \texttt{package\_depends.py} tool \\
 
     \hline\hline 
   \end{tabularx}
@@ -204,14 +205,13 @@ There were major build system changes between \draco-3\_1\_0 and
 \draco-3\_2\_0 \cite{draco-3_2_0}.  These changes have caused some
 consternation to \draco\ Build System clients.  In retrospect,
 \draco-3\_2\_0 probably should have been a major release (although it
-was documented like a major release in Ref. ~\ncite{draco-3_2_0}).
+was documented like a major release in Ref.~\citen{draco-3_2_0}).
 
 %%---------------------------------------------------------------------------%%
 
 \nocite{rn98046}
 \nocite{xtm:9936}
 \nocite{draco-3_0_0}
-\nocite{draco-4_0_0}
 \bibliographystyle{rnote}
 \bibliography{../bib/draco}
 
