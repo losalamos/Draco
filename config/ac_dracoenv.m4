@@ -43,67 +43,125 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    NMLGEN=${libexecdir}/nmlgen
 
    dnl
+   dnl C4 OPERATIONS
+   dnl
+
+   # do the correct #defines
+   if test "$with_c4" = scalar ; then
+       AC_DEFINE(C4_SCALAR)
+   elif test "$with_c4" = mpi ; then
+       AC_DEFINE(C4_MPI)
+   elif test "$with_c4" = shmem ; then
+       AC_DEFINE(C4_SHMEM)
+   fi
+
+   # if c4=mpi or shmem and with-mpi and enable-shmem are
+   # set to no explicitly then define them (mpi gets set to   
+   # vendor by default)
+   if test "$with_c4" = mpi ; then
+       if test "$with_mpi" = no ; then
+	   with_mpi='vendor'
+       fi
+   elif test "$with_c4" = shmem ; then
+       if test "$enable_shmem" = no ; then
+	   enable_shmem='yes'
+       fi
+   fi
+
+   # now set up the platform-independent comm directories
+   AC_COMM_SET
+   
+   dnl
+   dnl DBC SETUP
+   dnl
+
+   # set the DBC level
+   if test "${with_dbc:=default}" != default ; then
+       AC_DEFINE_UNQUOTED(DBC, $with_dbc)
+   fi
+
+   dnl
+   dnl LIBRARIES
+   dnl
+   
+   # set the libsuffix variable
+   if test "${enable_shared:=no}" = yes ; then
+       libsuffix='.so'
+   else
+       libsuffix='.a'
+   fi
+
+   dnl
+   dnl POSIX SOURCE
+   dnl
+
+   # set the POSIX source level
+   if test "${with_posix}" = yes ; then
+       AC_DEFINE(_POSIX_C_SOURCE, "199309L")
+       AC_DEFINE(_POSIX_SOURCE)
+   elif test "${with_posix:=199309L}" != no ; then
+       AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
+       AC_DEFINE(_POSIX_SOURCE)
+   fi
+   
+   dnl
    dnl COMPILER SETUPS
    dnl
 
    dnl first find the host
    AC_CANONICAL_HOST
+
+   dnl determine which compiler we are using
+
+   # do tests of --with-cxx, see if the compiler exists and then call
+   # the proper setup function, we default to the GNU EGCS compiler 
+   # that is defined by g++ (c++) and gcc under EGCS
    
-   dnl test for the presence of KCC
-   AC_CHECK_PROG(CXX, KCC, KCC, NO_KCC)
-   AC_CHECK_PROG(CC, KCC, KCC --c, NO_KCC)
-   if test "$CXX" = NO_KCC ; then
+   if test "${with_cxx}" = kcc ; then
+       AC_CHECK_PROG(CXX, KCC, KCC)
+       if test "${CXX}" = KCC ; then
+	   CC='KCC --c'
+	   AC_DRACO_KCC
+       else
+	   AC_PROG_CXX
+	   AC_PROG_CC
+	   if test "${CXX}" = CC && test "${CC}" = cc ; then
+	       AC_DRACO_CC
+	   else
+	       AC_DRACO_EGCS
+	   fi
+       fi
+   elif test "${with_cxx}" = cc ; then
+       AC_CHECK_PROG(CXX, CC, CC)
+       AC_CHECK_PROG(CC, cc, cc)
+       if test "${CXX}" = CC && test "${CC}" = cc ; then
+	   AC_DRACO_CC
+       else 
+	   AC_PROG_CXX
+	   AC_PROG_CC
+	   AC_DRACO_EGCS
+       fi
+   elif test "${with_cxx}" = egcs ; then
        AC_PROG_CXX
-   else
-       # KCC SPECIFIC FLAGS
-       dirstoclean='ti_files'
-
-       # LINKER AND LIBRARY (AR)
-       LD='${CXX}'
-       AR='${CXX}'
-       ARFLAGS='-o'
-       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-
-       # COMPILATION FLAGS
-
-       # strict asci compliance
-       if test "${enable_strict_ansi:=yes}" = yes ; then
-	   STRICTFLAG="--strict"
-       fi
-
-       # optimization level
-       if test "${enable_debug:=no}" = yes && \
-          test "${with_opt:=0}" != 0 ; then
-	   CXXFLAGS="${CXXFLAGS} -g"
-	   CFLAGS="${CFLAGS} -g"
-       fi
-       CXXFLAGS="${CXXFLAGS} +K${with_opt:=0}"
-       CFLAGS="${CFLAGS} +K${with_opt:=0}"
-
-       # static linking option
-       if test "${enable_static_ld}" = yes ; then
-	   LDFLAGS="${LDFLAGS} --static_libKCC -Bstatic"
-       fi
-
-       # final compiler additions
-       CXXFLAGS="${CXXFLAGS} --one_per"
-
-       # For version 3.3 of KCC the strict and thread_safe
-       # cannot be used together (in general).
-
-       if test "$with_c4" = shmem ; then
-          CXXFLAGS="${CXXFLAGS} --thread_safe"
-          STRICTFLAG=""
-          LDFLAGS="${LDFLAGS} --thread_safe --static_libKCC"
-       fi
-   fi
-
-   if test "$CC" = NO_KCC ; then
        AC_PROG_CC
+       AC_DRACO_EGCS
+   fi
+   
+   # check to see that we have a C++ compiler defined, throw an error
+   # if not
+   if test "${CXX}" = KCC || test "${CXX}" = CC || \
+      test "${CXX}" = g++ || test "${CXX}" = c++ ; then
+	   found_cxx='good'
+   fi
+   
+   if test "${found_cxx}" != good ; then
+       AC_MSG_ERROR("No valid C++ Compiler Found!")
    fi
 	
    dnl check for ranlib
    AC_PROG_RANLIB
+
+   dnl setup the system-specific stuff
 
    # systems setup
    case $host in

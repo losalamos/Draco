@@ -18,7 +18,7 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl c4 toggle (scalar by default)
    dnl
 
-   # define --with-c4
+   dnl define --with-c4
    AC_ARG_WITH(c4, 
       [  --with-c4[=scalar,mpi,shmem]   
 		          turn on c4 (default scalar) ])
@@ -27,31 +27,6 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    if test "${with_c4:=scalar}" = yes ; then
        with_c4='scalar'
    fi
-
-   # now do the correct #defines
-   if test "$with_c4" = scalar ; then
-       AC_DEFINE(C4_SCALAR)
-   elif test "$with_c4" = mpi ; then
-       AC_DEFINE(C4_MPI)
-   elif test "$with_c4" = shmem ; then
-       AC_DEFINE(C4_SHMEM)
-   fi
-
-   # if c4=mpi or shmem and with-mpi and enable-shmem are
-   # set to no explicitly then define them (mpi gets set to   
-   # vendor by default)
-   if test "$with_c4" = mpi ; then
-       if test "$with_mpi" = no ; then
-	   with_mpi='vendor'
-       fi
-   elif test "$with_c4" = shmem ; then
-       if test "$enable_shmem" = no ; then
-	   enable_shmem='yes'
-       fi
-   fi
-
-   # now set up the platform-independent directories
-   AC_COMM_SET
 
    dnl
    dnl DBC toggle
@@ -66,10 +41,6 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    elif test "${with_dbc}" = no ; then
        with_dbc='0'
    fi
-
-   if test "${with_dbc:=default}" != default ; then
-       AC_DEFINE_UNQUOTED(DBC, $with_dbc)
-   fi
 	
    dnl
    dnl SHARED versus ARCHIVE libraries
@@ -79,10 +50,17 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    AC_ARG_ENABLE(shared,
       [  --enable-shared         turn on shared libraries (.a default)])
 
-   if test "${enable_shared:=no}" = yes ; then
-       libsuffix='.so'
-   else
-       libsuffix='.a'
+   dnl
+   dnl CHOOSE A C++ COMPILER
+   dnl
+
+   dnl defines --with-cxx
+   AC_ARG_WITH(cxx,
+      [  --with-cxx[=kcc,cc]     choose a c++ compiler (KCC is default)])
+
+   dnl the default is KCC
+   if test "${with_cxx:=kcc}" = yes ; then
+       with_cxx='kcc'
    fi
 
    dnl
@@ -124,14 +102,6 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl defines --with-posix
    AC_ARG_WITH(posix,
       [  --with-posix[=num]      give posix source (199309L default)])
-
-   if test "${with_posix}" = yes ; then
-       AC_DEFINE(_POSIX_C_SOURCE, "199309L")
-       AC_DEFINE(_POSIX_SOURCE)
-   elif test "${with_posix:=199309L}" != no ; then
-       AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
-       AC_DEFINE(_POSIX_SOURCE)
-   fi
 
    dnl
    dnl CHOSE BIT COMPILATION ON SGI'S

@@ -175,7 +175,7 @@ ${includedir}/${package}/%: ${package}/%
 # Makefile depends on all of the M4 files in the config directory
 
 configfiles := aclocal.m4 ac_local.m4 ac_conf.m4 ac_vendors.m4 ac_dracoarg.m4 \
- ac_dracoenv.m4
+ ac_dracoenv.m4 ac_compiler.m4
 configfiles := $(addprefix ${top_srcdir}/../../config/, ${configfiles})
 
 ${top_srcdir}/configure: configure.in ${configfiles}
