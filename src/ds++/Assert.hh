@@ -261,12 +261,14 @@ void insist( std::string const & cond,
 #endif
 
 #if DBC & 1
+#define REQUIRE_ON
 #define Require(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
 #else
 #define Require(c) 
 #endif
 
 #if DBC & 2
+#define CHECK_ON
 #define Check(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
 #define Assert(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
 #else
@@ -275,6 +277,7 @@ void insist( std::string const & cond,
 #endif
 
 #if DBC & 4
+#define REMEMBER_ON
 #define Ensure(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
 #define Remember(c) c;
 #else
