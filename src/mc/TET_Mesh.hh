@@ -247,11 +247,11 @@ class TET_Mesh::CCSF
  private:
 
     // Typedefs for notational convenience.
-    typedef T value_type;
+//  typedef T value_type;
     typedef T& reference;
     typedef const T& const_reference;
-    typedef typename std::vector<T>::pointer pointer;
-    typedef typename std::vector<T>::const_pointer const_pointer;
+//  typedef typename std::vector<T>::pointer pointer;
+//  typedef typename std::vector<T>::const_pointer const_pointer;
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
     typedef typename std::vector<T>::size_type size_type;
@@ -280,24 +280,30 @@ class TET_Mesh::CCSF
      * and [] to indicate internal identifiers (0, 1, 2, 3, 4, etc.).
      */
 
+    //! \brief Constant overloaded () operator.
     const_reference operator()(int cell) const { return data[cell-1]; }
 
+    //! \brief Assignment overloaded () operator.
     reference operator()(int cell) { return data[cell-1]; }
 
-    const_reference operator[](int index) const { return data[index]; }
+    //! \brief Constant overloaded [] operator.
+    const_reference operator[](int cell_) const { return data[cell_]; }
 
-    reference operator[](int index) { return data[index]; }
+    //! \brief Assignment overloaded [] operator.
+    reference operator[](int cell_) { return data[cell_]; }
 
     // STL style functions.
 
+    //! Iterators from first cell to one-past-last cell.
     iterator begin() { return data.begin(); }
 
     const_iterator begin() const { return data.begin(); }
 
     iterator end() { return data.end(); }
 
-    const_iterator end() const {return data.end();}
+    const_iterator end() const { return data.end(); }
 
+    //! \brief For scalar fields, return the number of cells.
     size_type size() const { return data.size(); }
 
     bool empty() const { return data.empty(); }
@@ -360,6 +366,16 @@ class TET_Mesh::CCVF
 {
  private:
 
+    // Typedefs for notational convenience.
+//  typedef T value_type;
+    typedef T& reference;
+    typedef const T& const_reference;
+//  typedef typename std::vector<T>::pointer pointer;
+//  typedef typename std::vector<T>::const_pointer const_pointer;
+    typedef typename std::vector<T>::iterator iterator;
+    typedef typename std::vector<T>::const_iterator const_iterator;
+    typedef typename std::vector<T>::size_type size_type;
+
     //! Smart pointer back to underlying TET_Mesh.
     SP<TET_Mesh> mesh;
 
@@ -382,18 +398,56 @@ class TET_Mesh::CCVF
      *
      * We use () to indicate external cell numbers (1, 2, 3, 4, 5, etc.),
      * and external dimensions (1, 2, 3 for X, Y, Z).
-     * Brackets [] indicate internal identifiers (0, 1, 2, 3, 4, etc.).
      */
 
     //! \brief Constant overloaded () operator.
-    const T& operator()(int dim, int cell) const
+    const_reference operator()(int dim, int cell) const
     { return data[dim-1][cell-1]; }
 
     //! \brief Assignment overloaded () operator.
-    T& operator()(int dim, int cell) { return data[dim-1][cell-1]; }
+    reference operator()(int dim, int cell)
+    { return data[dim-1][cell-1]; }
 
     // Get a vector associated with a cell.
     inline vector<T> operator()(int) const;
+
+    // STL style functions.
+
+    //! Iterators without argument refer to dimensions (X,Y,Z) - NOT cells.
+    const_iterator begin() const { return data.begin(); }
+
+    iterator begin() { return data.begin(); }
+
+    const_iterator end() const { return data.end(); }
+
+    iterator end() { return data.end(); }
+
+    //! Iterators with arguments allow iteration over cells.
+    const_iterator begin(int i) const
+    { Require ( i >= 1 && i <= data.size() ); return data[i-1].begin(); }
+
+    iterator begin(int i)
+    { Require ( i >= 1 && i <= data.size() ); return data[i-1].begin(); }
+
+    const_iterator end(int i) const
+    { Require ( i >= 1 && i <= data.size() ); return data[i-1].end(); }
+
+    iterator end(int i)
+    { Require ( i >= 1 && i <= data.size() ); return data[i-1].end(); }
+
+    //! Without argument, size() should always return 3.
+    size_type size() const { return data.size(); }
+
+    //! size(i) returns the number of entries (cells) in the i-direction.
+    size_type size(int i) const
+    { Require ( i >= 1 && i <= data.size() ); return data[i-1].size(); }
+
+    //! Without argument, empty() checks the entire field.
+    bool empty() const { return data.empty(); }
+
+    //! empty(i) checks absence of entries in the i-dimension of the field.
+    bool empty(int i) const
+    { Require ( i >= 1 && i <= data.size() ); return data[i-1].empty(); }
 
 };  // end class TET_Mesh::CCVF
 
@@ -414,7 +468,7 @@ inline TET_Mesh::CCVF<T>::CCVF(SP<TET_Mesh> mesh_)
 
     // initialize data array
     for (int i = 0; i < mesh->get_Coord().get_dim(); i++)
-	    data[i].resize(mesh->num_cells());
+        data[i].resize(mesh->num_cells());
 }
 
 //___________________________________________________________________________//
@@ -426,14 +480,14 @@ inline TET_Mesh::CCVF<T>::CCVF(SP<TET_Mesh> mesh_)
  * Constructor for automatic initialization.
  */
 template<class T>
-inline TET_Mesh::CCVF<T>::CCVF(SP<TET_Mesh> mesh_, 
-			      const vector<vector<T> > &array)
+inline TET_Mesh::CCVF<T>::CCVF(SP<TET_Mesh> mesh_,
+                  const vector<vector<T> > &array)
     : mesh(mesh_), data(array)
 {
     Ensure (data.size() == mesh->get_Coord().get_dim());
 
     for (int dim = 0; dim < mesh->get_Coord().get_dim(); dim++)
-	    Ensure (data[dim].size() == mesh->num_cells());
+        Ensure (data[dim].size() == mesh->num_cells());
 }
 
 //___________________________________________________________________________//
@@ -449,14 +503,14 @@ inline vector<T> TET_Mesh::CCVF<T>::operator()(int cell) const
 {
     // declare return vector
     vector<T> x;
-    
+
     // loop through dimensions and make return vector for this cell
     for (int i = 0; i < data.size(); i++)
-	    x.push_back(data[i][cell-1]);
+        x.push_back(data[i][cell-1]);
 
     Ensure (x.size() == data.size());
     return x;
-} 
+}
 
 //---------------------------------------------------------------------------//
 //  end of TET_Mesh::CCVF inline functions
