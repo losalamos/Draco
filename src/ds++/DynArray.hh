@@ -40,8 +40,8 @@ class DynArray {
 
   public:
 
-    DynArray( int _sz =1, int _base =0, float gf =1.5 );
-    DynArray( int _sz, int _base, T dv, float gf );
+    DynArray( int sz_ =1, int base_ =0, float gf =1.5 );
+    DynArray( int sz_, int base_, T dv, float gf );
     DynArray( const DynArray<T>& da );
     DynArray<T>& operator=( const DynArray<T>& da );
 

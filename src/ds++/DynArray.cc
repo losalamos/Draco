@@ -15,8 +15,8 @@
 //---------------------------------------------------------------------------//
 
 template<class T>
-DynArray<T>::DynArray( int _sz, int _base, float gf )
-    : sz(_sz), base(_base), growthfactor(gf)
+DynArray<T>::DynArray( int sz_, int base_, float gf )
+    : sz(sz_), base(base_), growthfactor(gf)
 {
     if (sz < 1) sz = 1;
     v = new T[sz];
@@ -36,8 +36,8 @@ DynArray<T>::DynArray( int _sz, int _base, float gf )
 //---------------------------------------------------------------------------//
 
 template<class T>
-DynArray<T>::DynArray( int _sz, int _base, T dv, float gf )
-    : sz(_sz), base(_base), defval(dv), growthfactor(gf)
+DynArray<T>::DynArray( int sz_, int base_, T dv, float gf )
+    : sz(sz_), base(base_), defval(dv), growthfactor(gf)
 {
     if (sz < 1) sz = 1;
     v = new T[sz];
