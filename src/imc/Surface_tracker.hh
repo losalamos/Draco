@@ -3,9 +3,8 @@
  * \file   imc/Surface_tracker.hh
  * \author Mike Buksas
  * \date   Thu Jun 19 11:33:00 2003
- * \brief  Computes and tallies surface crossings for a collection of surfaces.  
- *
- * Long description.
+ * \brief  Header file for Surface_tracker
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -38,9 +37,11 @@ class Surface_Sub_Tally;
  *
  * Surfaces are held through a vector of smart pointers to the abstract base
  * class Surface, which are provided in the constructor. This class uses the
- * functions 
- *    Surface::is_inside(vector, const vector&) and
- *    Surface::distance_to(vector, const vector&, bool)
+ * functions:
+ * \code   
+ *    Surface::is_inside(vector position , const vector& direction)
+ *    Surface::distance_to(vector position, const vector& direction, bool is_inside)
+ * \endcode
  *
  * The inside/outside status for a new particle is initialized via a call to
  * Surface_tracker::initialize_status(const vector&, const vector&). This
@@ -50,7 +51,7 @@ class Surface_Sub_Tally;
  * \sa Surface_tracker.cc for detailed descriptions.
  */
 /*! 
- * \example imc/test/imc_test.cc 
+ * \example imc/test/tstSurface_tracker.cc 
  * 
  * description of example
  */
@@ -68,6 +69,7 @@ class Surface_tracker
 
     typedef rtt_dsxx::SP<rtt_mc::Surface> SP_Surface;
     typedef std::vector<SP_Surface>::const_iterator surface_iterator;
+    typedef std::vector<bool>::iterator bool_iterator;
 
     // CREATORS
     
@@ -85,15 +87,21 @@ class Surface_tracker
     //! Assignment operator for Surface_tracker
     Surface_tracker& operator=(const Surface_tracker &rhs);
 
-    void initialize_status(const std::vector<double>& position,
-			   const std::vector<double>& direction);
+    void initialize_status(const std::vector<double> &position,
+			   const std::vector<double> &direction);
 
-    void tally_crossings(const std::vector<double>& position,
-			 const std::vector<double>& direction,
-			 double distance,
-			 double initial_ew,
-			 double sigma,
-			 Surface_Sub_Tally&);
+    void tally_crossings_implicit_abs(const std::vector<double> &position,
+				      const std::vector<double> &direction,
+				      double distance,
+				      double initial_ew,
+				      double sigma,
+				      Surface_Sub_Tally&);
+
+    void tally_crossings_analog_abs(const std::vector<double> &position,
+				    const std::vector<double> &direction,
+				    double distance,
+				    double ew,
+				    Surface_Sub_Tally&);
 
     // ACCESSORS:
 

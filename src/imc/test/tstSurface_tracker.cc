@@ -4,6 +4,7 @@
  * \author Mike Buksas
  * \date   Thu Jun 19 11:54:14 2003
  * \brief  Test execuatble for Surface_tracker class.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -120,7 +121,8 @@ void test_streaming()
 
     Surface_Sub_Tally tally( make_surface_tally() );
     
-    tracker->tally_crossings(position, direction, distance, ew, sigma, tally);
+    tracker->tally_crossings_implicit_abs(
+	position, direction, distance, ew, sigma, tally);
 
     if (!soft_equiv(tally.get_outward_tally(1)[3], exp(-2.0) ) ) ITFAILS;
     if (!soft_equiv(tally.get_inward_tally (2)[3], exp(-1.0) ) ) ITFAILS;
@@ -136,7 +138,8 @@ void test_streaming()
     direction[2] = 0.0;
 
     tracker->initialize_status(position, direction);
-    tracker->tally_crossings(position, direction, distance, ew, sigma, tally);
+    tracker->tally_crossings_implicit_abs(
+	position, direction, distance, ew, sigma, tally);
 
     // Stream
     for (int i=0; i<3; ++i) position[i] += direction[i] * distance;
@@ -149,7 +152,8 @@ void test_streaming()
     // New distance
     distance = 2.0;
 
-    tracker->tally_crossings(position, direction, distance, ew, sigma, tally);
+    tracker->tally_crossings_implicit_abs(
+	position, direction, distance, ew, sigma, tally);
 
     if (!soft_equiv(tally.get_outward_tally(2)[1], exp(-2.0) ) ) ITFAILS;
     if (!soft_equiv(tally.get_outward_tally(3)[1], exp(-1.0-sqrt(5.0)))) ITFAILS;

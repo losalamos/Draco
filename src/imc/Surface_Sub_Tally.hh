@@ -3,9 +3,8 @@
  * \file   imc/Surface_Sub_Tally.hh
  * \author Mike Buksas
  * \date   Mon Jun 23 15:33:15 2003
- * \brief  Contains tally information for surface crossings
- *
- * Long description.
+ * \brief  Header file for Surface_Sub_Tally
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -27,11 +26,14 @@ class Azimuthal_Mesh;
  * \class Surface_Sub_Tally
  * \brief Records angular dependence and direction of particle tracings
  *
- * Long description or discussion goes here.  Information about Doxygen
- * commands can be found at:
+ * This class accumulates all of the surface crossing information (for a
+ * single energy group in a multi-group context). Specifically, the total
+ * energy weight, per azimuthal bin, per surface, per direction
+ * (inward/outward).
  *
- * Doxygen tutorial: http://www.stack.nl/~dimitri/doxygen/docblocks.html
- * Doxygen keywords: http://www.stack.nl/~dimitri/doxygen/commands.html
+ * The azimuthal bins are defined by a Azimuthal_Mesh object. A smart pointer
+ * to the object and the number of surfaces to tally over are requied at
+ * construction. 
  *
  * \sa Surface_Sub_Tally.cc for detailed descriptions.
  *
@@ -51,17 +53,15 @@ class Surface_Sub_Tally
 {
   public:
 
-    // NESTED CLASSES AND TYPEDEFS
-
     // CREATORS
     
-    //! default constructors
+    //! Constructor
     Surface_Sub_Tally(rtt_dsxx::SP<Azimuthal_Mesh> az_mesh, int surfaces);
 
-    //! copy constructor
+    //! Copy Constructor
     Surface_Sub_Tally(const Surface_Sub_Tally &rhs);
 
-    //! destructor
+    //! Destructor
     ~Surface_Sub_Tally();
 
     // MANIPULATORS
@@ -75,26 +75,30 @@ class Surface_Sub_Tally
 
     // ACCESSORS
 
+    //! Access the outward tally for a given surface #
     const std::vector<double>& get_outward_tally(int surface) const;
-    const std::vector<double>& get_inward_tally (int surface) const;
-    const std::vector<std::vector<double> > get_tally() const { return tally; }
 
-    int get_number_surfaces() const { return surfaces; }
+    //! Access the inward tally for a given surface #
+    const std::vector<double>& get_inward_tally (int surface) const;
+
+    //! Access the entire tally.
+    const std::vector<std::vector<double> >& get_tally() const { return tally; }
+
+    //! Get the number of surfaces
+    int get_number_surfaces() const { return surfaces; } 
+							 
+    //! Get the number of bins in the mesh
     int get_mesh_size() const { return mesh_size; }
 
   private:
 
-    // NESTED CLASSES AND TYPEDEFS
-
-    // IMPLEMENTATION
-
     // DATA
 
-    rtt_dsxx::SP<Azimuthal_Mesh> the_mesh;
+    rtt_dsxx::SP<Azimuthal_Mesh> azimuthal_mesh;
     std::vector<std::vector<double> > tally;
-    int mesh_size;   //! number of bins in the azimuthal mesh
-    int surfaces;    //! number of surfaces
-    int tallies;     //! number of tallies
+    int mesh_size;   //!< number of bins in the azimuthal mesh
+    int surfaces;    //!< number of surfaces
+    int tallies;     //!< number of tallies
 
 
 };

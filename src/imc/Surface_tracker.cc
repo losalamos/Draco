@@ -3,7 +3,8 @@
  * \file   imc/Surface_tracker.cc
  * \author Mike Buksas
  * \date   Thu Jun 19 11:33:00 2003
- * \brief  Computes and tallies surface crossings for a collection of surfaces.
+ * \brief  Implementation file for Surface_tracker
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -26,28 +27,65 @@ Surface_tracker::Surface_tracker(
     const vector<Surface_tracker::SP_Surface>& surfaces_)
     : surfaces(surfaces_),
       is_inside(surfaces_.size())
-{ /* ... */ }
+{ 
+
+    Require(is_inside.size() > 0);
+
+}
 
 
-void Surface_tracker::initialize_status(const vector<double>& position,
-					const vector<double>& direction)
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Resets the offical inside/outside status variables. Use when
+ * tracking for a new particle.
+ * 
+ * \param position Position of the Particle.
+ * \param direction Direction of the Particle.
+ * \return void
+ *
+ * This function calls is_inside for each surface with the provided position
+ * and direction. It stores the result of each call in the internal boolean
+ * array. 
+ */
+
+void Surface_tracker::initialize_status(const std::vector<double>& position,
+					const std::vector<double>& direction)
 {
 
-    int i = 0;
+    vector<bool>::iterator status = is_inside.begin();
     for (surface_iterator surface = surfaces.begin();
 	 surface != surfaces.end();
-	 ++surface, ++i)
+	 ++surface, ++status)
     {
-	is_inside[i] = (*surface)->is_inside(position, direction);
+	*status = (*surface)->is_inside(position, direction);
     }
 
 } 
 
 
 //---------------------------------------------------------------------------//
-void Surface_tracker::tally_crossings(
-    const vector<double>& position,
-    const vector<double>& direction,
+/*! 
+ * \brief Checks for and tallies surface crossings during an implicit
+ * streaming step.
+ *
+ * This function takes an initial position and direction and a streaming
+ * distance and determines whrether any of the collection of surfaces was
+ * crossed. For each crossing that takes place, the energy weight at the
+ * point of crossing is computed from the initial weight \f$ w\f$ and the
+ * coefficient of attenuation \f$\sigma\f$ via \f$ w_c = e^{-\sigma d_c}\f$
+ * where \f$ d_c\f$ is the distance to the crossing.
+ * 
+ * \param position Position of the Particle
+ * \param direction Direction of the Particle
+ * \param distance distance of travel
+ * \param initial_ew energy weight at beginning of step
+ * \param sigma coefficient of exponential attenuation with distance traveled.
+ * \return void
+ */
+
+void Surface_tracker::tally_crossings_implicit_abs(
+    const std::vector<double>& position,
+    const std::vector<double>& direction,
     double distance, double initial_ew, double sigma,
     Surface_Sub_Tally& tally)
 {
@@ -64,10 +102,10 @@ void Surface_tracker::tally_crossings(
 	 ++surface, ++index)
     {
 
-	while (1)
-	{
-	    bool ends_inside = (*surface)->is_inside(final_position, direction);
+	bool ends_inside = (*surface)->is_inside(final_position, direction);
 	    
+	do // while is_inside != ends_inside
+	{
 	    double crossing_distance =
 		(*surface)->distance_to(position, direction, is_inside[index]);
 
@@ -79,15 +117,76 @@ void Surface_tracker::tally_crossings(
 		double crossing_ew = 
 		    initial_ew * exp(-sigma * crossing_distance);
 		
-		tally.add_to_tally(index, direction, is_inside[index], crossing_ew);
+		tally.add_to_tally(index, direction, is_inside[index], 
+				   crossing_ew);
 
 		is_inside[index] = !is_inside[index];
 
 	    }
 
-	    if (is_inside[index] == ends_inside) break; // out of while loop
+	} while (is_inside[index] != ends_inside);
 
-	}
+    }
+    
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Checks for and tallies surface crossings during an analog streaming
+ * step.
+ * 
+ * This function takes an initial position and direction and a streaming
+ * distance and determines whrether any of the collection of surfaces was
+ * crossed. Each crossing is tallied at the given energy weight.
+ *
+ * \param position Position of the Particle
+ * \param direction Direction of the Particle
+ * \param distance distance of travel
+ * \param ew energy weight
+ * \return void
+ */
+
+void Surface_tracker::tally_crossings_analog_abs(
+    const std::vector<double>& position,
+    const std::vector<double>& direction,
+    double distance, double ew, 
+    Surface_Sub_Tally& tally)
+{
+
+    Check(position.size()  == 3);
+    Check(direction.size() == 3);
+
+    vector<double> final_position(position);
+    for (int i=0; i!=3; ++i) final_position[i] += distance * direction[i];
+
+    int surface_index = 0;
+    for (surface_iterator surface = surfaces.begin();
+	 surface != surfaces.end();
+	 ++surface, ++surface_index)
+    {
+
+	bool ends_inside = (*surface)->is_inside(final_position, direction);
+	    
+	do // is_inside != ends_inside
+	{
+	    double crossing_distance =
+		(*surface)->distance_to(position, direction, 
+					is_inside[surface_index]);
+
+	    Check(distance > 0);
+
+	    if (crossing_distance <= distance || 
+		is_inside[surface_index] != ends_inside)
+	    {
+		
+		tally.add_to_tally(surface_index, direction, 
+				   is_inside[surface_index], ew);
+
+		is_inside[surface_index] = !is_inside[surface_index];
+
+	    }
+
+	} while (is_inside[surface_index] != ends_inside);
 
     }
     

@@ -3,9 +3,8 @@
  * \file   imc/Azimuthal_Mesh.hh
  * \author Mike Buksas
  * \date   Mon Jun 23 12:56:30 2003
- * \brief  Class representing a mesh of aximuthal bins centered on the z axis.
- *
- * Long description.
+ * \brief  Header file for Azimuthal_Mesh
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -22,20 +21,17 @@ namespace rtt_imc
 //===========================================================================//
 /*!
  * \class Azimuthal_Mesh
- * \brief
+ * \brief Stores azimuthal angular bin information
  *
- * Long description or discussion goes here.  Information about Doxygen
- * commands can be found at:
+ * This class implements an azimuthally symmetric angular mesh with it's axis
+ * of symmetry oriented along the z axis of a Cartesian coordinate
+ * system. The information necessary to describe this mesh is the cosines of
+ * the boundaries between the angular bins. 
  *
- * Doxygen tutorial: http://www.stack.nl/~dimitri/doxygen/docblocks.html
- * Doxygen keywords: http://www.stack.nl/~dimitri/doxygen/commands.html
+ * Note that all of the bin arguments in the interface functions are 1-based.
  *
  * \sa Azimuthal_Mesh.cc for detailed descriptions.
  *
- * Code Sample:
- * \code
- *     cout << "Hello, world." << endl;
- * \endcode
  */
 /*! 
  * \example imc/test/imc_test.cc 
@@ -72,23 +68,27 @@ class Azimuthal_Mesh
 
     // ACCESSORS
 
-    double get_lower_cosine(int bin) const;
-    double get_upper_cosine(int bin) const;
+    double get_lower_cosine(int bin) const; //!< Cosine of lower boundary angle
+    double get_upper_cosine(int bin) const; //!< Cosine of upper boundary angle
 
-    int size() const { return bins; }
+    int size() const { return bins; } //!< Get the number of azimuthal bins 
+
+    //! Determine whrether the given direction is in the given bin
     bool is_in_bin(const std::vector<double>& direction, int bin) const;
+
+    //! Find the first bin that contains the given direction.
     int find_bin(const std::vector<double>& direction) const;
 
   private:
 
     // DATA
     
-    int bins;
-    std::vector<double> bin_cosines;
+    int bins;  //! Number of bins
+    std::vector<double> bin_cosines;  //! Cosines of bin boundaries incl -1,1
 
     // IMPLEMENTATION
 
-    bool check_cosines(const std::vector<double>& cosines) const;
+    bool check_cosines() const;
 
 };
 
