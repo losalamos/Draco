@@ -979,8 +979,8 @@ int main(int argc, char *argv[])
     ifstream fileModel("TET_MODEL_1");
     ostringstream theModel;
     char c_model;
-    while ((c_model = fileModel.get()) != EOF)
-        theModel << c_model;
+    while (fileModel.get(c_model))
+        theModel.put(c_model);
     fileModel.close();
 
     // ThreeVector tests
