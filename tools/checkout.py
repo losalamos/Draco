@@ -9,14 +9,22 @@ Usage:
 
    checkout -r tagname [project]    or:
    checkout project [version]
+   checkout -h or checkout --help
+   checkout -n or checkout --dry-run
+   checkout -l or checkout --list
 
 Where project is one of 'draco', 'clubimc', 'milagro', 'wedgehog' or
-'uncleMcFlux'.  In the first form, the project name is optional if it is the
-first word of the tag, e.g. 'wedgehog-4_3_0'. In the second form, the
-project name and tag are hyphenated to produce the tag.
+'uncleMcFlux', or a string of characters long enough to identify the
+project uniquely.  In the first form, the project name is optional if
+it is the first word of the tag, e.g. 'wedgehog-4_3_0'. In the second
+form, the project name and tag are hyphenated to produce the tag.
+
+The -h [--help] argument prints this message.
+the -n [--dry-run] argument causes the cvs command to be printed but
+not executed.
 """
 
-from Utils import disambiguate
+from Utils import disambiguate, AmbiguousKeyError
 import sys, os, getopt
 
 server = "sf.lanl.gov"
@@ -30,12 +38,14 @@ projects = {'draco'      :'draco',
 username =  os.environ['LOGNAME']
 
 try:
-    options, extras = getopt.getopt(sys.argv[1:], 'r:h', ['help'])
+    options, extras = getopt.getopt(sys.argv[1:], 'r:hnl', \
+                                    ['help','dry-run', 'list'])
 except getopt.GetoptError:
     sys.exit('ERROR: bad option or missing argument')
 
 tag = ''
 package = ''
+dry_run = False;
 
 options_dict = dict(options)
 
@@ -49,14 +59,23 @@ if '-r' in options_dict:
     # Attempt to find package name
     package = tag.split('-')[0];
     if package not in projects.keys(): package = ''
-        
+
+if '-n' in options_dict or '--dry-run' in options_dict:
+    dry_run = True;
+
+if '-l' in options_dict or '--list' in options_dict:
+    print "Packages that this tool can checkout: ", projects.keys()
+    sys.exit()
 
 # If we don't have a package, try and get it from extras
 if not package:
     try:
-        package = extras[0]
+        package = disambiguate(extras[0], projects.keys())
     except IndexError:
         sys.exit("ERROR: No package name given.")
+    except AmbiguousKeyError:
+        sys.exit("ERROR: Ambiguous package name.")
+
     if not package in projects.keys():
         sys.exit("ERROR: Unrecognized package name: %s" % package)
     
@@ -80,10 +99,10 @@ command = "cvs -z9 -d:ext:%s@sf.lanl.gov:/cvsroot/%s co %s %s" % \
 
 print "Executing: %s" % command
 
-command_out = os.popen(command)
-output = command_out.read()
-
-print output
+if not dry_run:
+    command_out = os.popen(command)
+    output = command_out.read()
+    print output
 
 
 
