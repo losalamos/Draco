@@ -19,12 +19,15 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 void version(const std::string &progname)
 {
     std::string version = "1.0.0";
     std::cout << progname << ": version " << version << std::endl;
 }
+
+using std::vector;
 
 //---------------------------------------------------------------------------//
 // main
@@ -61,48 +64,57 @@ int main( int argc, char *argv[] )
     SP< PCG_MatVec<double> >  pcg_matvec(new TstPCG_MatVec<double>(nxs,nys));
     SP< PCG_PreCond<double> > pcg_precond(new TstPCG_PreCond<double>());
 
-    PCG_Ctrl<double> pcg_ctrl(PCG_Ctrl<double>::GMRS);
-    pcg_ctrl.setIparm(PCG_Ctrl<double>::ITSMAX, 1000);
-    pcg_ctrl.setIparm(PCG_Ctrl<double>::NS2, 10);
-    pcg_ctrl.setFparm(PCG_Ctrl<double>::ZETA, 0.001);
-    pcg_ctrl.setFparm(PCG_Ctrl<double>::ALPHA, 0.1);
-    pcg_ctrl.setOutputLevel(PCG_Ctrl<double>::LEVPRM);
+    // Set the methods to test and loop over them
 
-    using rtt_dsxx::Mat1;
+    vector<PCG_Ctrl<double>::Method> methods;
+    methods.push_back(PCG_Ctrl<double>::BAS);
+    methods.push_back(PCG_Ctrl<double>::CG);
+    methods.push_back(PCG_Ctrl<double>::GMRS);
+
+    for ( int iMeth = 0; iMeth < methods.size(); iMeth++ ) { 
+	PCG_Ctrl<double> pcg_ctrl(methods[iMeth]);
+	pcg_ctrl.setIparm(PCG_Ctrl<double>::ITSMAX, 1000);
+	pcg_ctrl.setIparm(PCG_Ctrl<double>::NS2, 10);
+	pcg_ctrl.setFparm(PCG_Ctrl<double>::ZETA, 0.001);
+	pcg_ctrl.setFparm(PCG_Ctrl<double>::ALPHA, 0.1);
+	pcg_ctrl.setOutputLevel(PCG_Ctrl<double>::LEVPRM);
+
+	using rtt_dsxx::Mat1;
     
-    Mat1<double> x(nru);
-    Mat1<double> b(nru);
+	Mat1<double> x(nru);
+	Mat1<double> b(nru);
 
-    double h = 1.0/(nxs+1);
-    b = h*h;
-
-    pcg_ctrl.solve( x, b, pcg_matvec, pcg_precond );
-
-    // evaluate the results to see if it converged.
-    
-    Mat1<double> res(nru);
-
-    // Get the results.
-    
-    pcg_matvec->MatVec(res, x);
-
-    // The residual is the results minus the rhs.
-
-    {
-	C4::HTSyncSpinLock ht;
-
-	const int ndigits = 2;
+	double h = 1.0/(nxs+1);
+	b = h*h;
 	
-	for (int i = 0; i<nru; i++)
+	pcg_ctrl.solve( x, b, pcg_matvec, pcg_precond );
+
+	// evaluate the results to see if it converged.
+	
+	Mat1<double> res(nru);
+
+	// Get the results.
+	
+	pcg_matvec->MatVec(res, x);
+
+	// The residual is the results minus the rhs.
+
 	{
-	    using rtt_linalg::compare_reals;
-	    using rtt_linalg::testMsg;
-	    std::cout << res[i] << " " << b[i]
-		      << " ---> "
-		      << testMsg(compare_reals(res[i], b[i], ndigits))
-		      << std::endl;
+	    C4::HTSyncSpinLock ht;
+
+	    const int ndigits = 2;
+	
+	    for (int i = 0; i<nru; i++)
+	    {
+		using rtt_linalg::compare_reals;
+		using rtt_linalg::testMsg;
+		std::cout << res[i] << " " << b[i]
+			  << " ---> "
+			  << testMsg(compare_reals(res[i], b[i], ndigits))
+			  << std::endl;
+	    }
 	}
-    }
+    } // done with loop over methods
 
 // Wrap up C4.
     C4::Finalize();
