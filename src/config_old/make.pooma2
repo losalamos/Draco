@@ -1,0 +1,10 @@
+include $(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.app
+
+# Draco should set the debug/optimiztion level.
+# This next line will undo POOMA's choice.
+CXXOPT := 
+
+all:
+	echo "POOMA_DEFINES = ${CXXFLAGSAPP}" >> ${makeout}
+	echo "POOMA_LFLAGS = ${LFLAGS}" >> ${makeout}
+	echo "POOMA_LIBS  = ${LIBS}" >> ${makeout}

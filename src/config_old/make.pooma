@@ -1,13 +1,5 @@
-$(SRC_TOP)/config/.pooma.$(env): $(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.def
+$(SRC_TOP)/config/.pooma.$(env): $(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.def \
+   $(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.app
 	$(RM) $@
-	echo INCLUDES  = $(shell grep ^INCLUDES \
-	$(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.def | cut -c23- ) >> $@
-	echo POOMA_INCLUDES  = $(shell grep ^CXXINCLUDES \
-	$(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.def | cut -c23- ) >> $@
-	echo POOMA_DEFINES  = $(shell grep ^CXXDEFINES \
-	$(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.def | cut -c23- ) >> $@
-	echo POOMA_LFLAGS  = $(shell grep ^LFLAGS \
-	$(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.app | cut -c14- ) >> $@
-	echo POOMA_LIBS  = $(shell grep ^LIBS \
-	$(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.app | cut -c14- ) >> $@
+	${MAKE} -f $(SRC_TOP)/config/make.pooma2 makeout=$@
 
