@@ -36,6 +36,10 @@ ifndef c4
 c4	:= no
 endif
 
+ifndef threads
+threads	:= yes
+endif
+
 ifndef sprng
 sprng   := lfg
 endif
@@ -52,20 +56,12 @@ endif
 
 ifeq ($(cxx),KCC)
 
-#ifneq ($(c4),shmem)
-#STRICT	= --strict
-#endif
-
-ifneq ($(c4),no)
-threads := yes
-endif
-
 ifeq ($(c4),s2)
 strict	:= no
 threads	:= yes
 endif
 
-ifdef threads
+ifneq ($(threads),no)
 THREADS	= --thread_safe
 strict	= no
 endif
