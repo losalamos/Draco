@@ -6,9 +6,9 @@
 // @> test driver for OS_Builder
 //---------------------------------------------------------------------------//
 
-#include "OS_Parser.hh"
-#include "OS_Builder.hh"
-#include "OS_Mesh.hh"
+#include "../OS_Parser.hh"
+#include "../OS_Builder.hh"
+#include "../OS_Mesh.hh"
 #include "SP.hh"
 #include <iostream>
 #include <string>

@@ -6,12 +6,12 @@
 // @> test driver to test some functionality of OS_Mesh
 //---------------------------------------------------------------------------//
 
-#include "XYCoord_sys.hh"
-#include "XYZCoord_sys.hh"
-#include "Layout.hh"
-#include "Global.hh"
-#include "Random.hh"
-#include "OS_Mesh.hh"
+#include "../XYCoord_sys.hh"
+#include "../XYZCoord_sys.hh"
+#include "../Layout.hh"
+#include "../Global.hh"
+#include "../Random.hh"
+#include "../OS_Mesh.hh"
 #include <vector>
 #include <string>
 #include "SP.hh"
