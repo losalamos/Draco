@@ -70,7 +70,8 @@ typedef FifiMatPropsReader FMPR;
 //------------------------------------------------------------------------//
 
 FMPR::FifiMatPropsReader(const vector<MaterialDefinition> &matdefs,
-			 const Units &outputUnits_, std::istream &is_)
+			 const Units &outputUnits_,
+                         const rtt_dsxx::SP<std::istream> &is_)
     : MaterialPropsReader(outputUnits_), fifiParser(is_),
       fileUnits(Units::getAstroPhysUnits())
 {

@@ -68,14 +68,14 @@ namespace
 //   Create a FifiParser from an open and valid input stream.
 //---------------------------------------------------------------------------//
 
-FifiParser::FifiParser( std::istream &is_)
-    : is(is_)
+FifiParser::FifiParser(const rtt_dsxx::SP<std::istream> &spIstream_in)
+    : spIstream(spIstream_in)
 {
     // Set the current position to the beginning of the file.
     
-    is.seekg(0);
+    is().seekg(0);
     curLinePos.lineNo = 1;
-    curLinePos.filePosition = is.tellg();
+    curLinePos.filePosition = is().tellg();
 
     // There is no previous line position, so also set it to the beginning
     // of the file.  (Other methods rely on this behaviour.)
@@ -128,7 +128,7 @@ bool FifiParser::parseMaterial()
     
     if (!getCard(card))
     {
-	if (!is.eof())
+	if (!is().eof())
 	{
 	    throw ParseError(string("FifiParser::parseMaterial: ")
 			     + "stream error.");
@@ -241,7 +241,7 @@ bool FifiParser::parseMaterial()
     // We must clean up if we've found the next material or hit the
     // end of file.
 
-    if (foundNextMaterial || is.eof())
+    if (foundNextMaterial || is().eof())
     {
 
 	derr << "Inserting keyword map for material: " << matid << endl;
@@ -301,18 +301,18 @@ istream &FifiParser::getCard(string &str) const
 
 	// Get the line into the buffer, up to but not including the '\n'
 	
-	std::getline(is, buf, '\n');
+	std::getline(is(), buf, '\n');
 
 	// Is everything OK?
 	
-	if (!is)
-	    return is;
+	if (!is())
+	    return is();
 
 	// Update the current line position to point to the beginning
 	// of the **next line**.
 	
 	prevLinePos = curLinePos;
-	curLinePos.filePosition = is.tellg();
+	curLinePos.filePosition = is().tellg();
 	curLinePos.lineNo++;
 
 	// No sense processing an empty line.
@@ -354,7 +354,7 @@ istream &FifiParser::getCard(string &str) const
     
     str.assign(buf, 0, lineSize);
 
-    return is;
+    return is();
 }
 
 //---------------------------------------------------------------------------//
@@ -399,7 +399,7 @@ void FifiParser::parse()
     // If getCard() returned a non-zero stream state, then it had
     // better be due to an end of file!
     
-    if (!is.eof())
+    if (!is().eof())
 	throw ParseError(string("FifiParser::parse: ")
 			 + "stream error");
 }
@@ -424,7 +424,7 @@ bool FifiParser::getData(vector<double> &data_) const
 
 	if (!getCard(card))
 	{
-	    if (is.eof())
+	    if (is().eof())
 	    {
 		// Set the answer.
     
@@ -596,8 +596,8 @@ FifiParser::DataType FifiParser::getDataType(const std::string &keyword)
 
 void FifiParser::setPosition(const Position &position) const
 {
-    is.clear();
-    is.seekg(position.filePosition);
+    is().clear();
+    is().seekg(position.filePosition);
     Position tmpLinePos = curLinePos;
     curLinePos = position;
     derr << "Setting position beggining of line: "

@@ -9,6 +9,8 @@
 #ifndef __matprops_FifiParser_hh__
 #define __matprops_FifiParser_hh__
 
+#include "ds++/SP.hh"
+
 #include <string>
 #include <map>
 #include <iostream>
@@ -143,7 +145,7 @@ class FifiParser
 
     // The input stream that we will parse.
     
-    mutable std::istream &is;
+    rtt_dsxx::SP<std::istream> spIstream;
 
     // The mapping of a material id to a MaterialInfo object
     // used to find the file position of the keywords within the material
@@ -164,7 +166,7 @@ class FifiParser
 
     // CREATORS
     
-    FifiParser(std::istream &is_);
+    FifiParser(const rtt_dsxx::SP<std::istream> &spIstream_in);
 
     // MANIPULATORS
     
@@ -181,6 +183,8 @@ class FifiParser
     // IMPLEMENTATION
 
   private:
+
+    std::istream &is() const { return *spIstream; }
 
     const MaterialInfo &getMaterialInfo(MaterialId materialId) const;
 

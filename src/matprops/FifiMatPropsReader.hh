@@ -12,6 +12,7 @@
 #include "MaterialPropsReader.hh"
 #include "FifiParser.hh"
 
+#include "ds++/SP.hh"
 #include "ds++/Mat.hh"
 
 #include <string>
@@ -169,7 +170,8 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     FifiMatPropsReader(const std::vector<MaterialDefinition> &matdefs,
-		       const rtt_units::Units &outputUnits_, std::istream &is_);
+		       const rtt_units::Units &outputUnits_,
+                       const rtt_dsxx::SP<std::istream> &is_);
 
     // MANIPULATORS
     
