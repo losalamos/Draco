@@ -55,6 +55,8 @@ namespace rtt_mc
 // revision history:
 // -----------------
 // 0) original
+// 1) 05-03-00 : modified local_to_global mapping to allow different local
+//               and global field types (e.g. vector and ccsf)
 // 
 //===========================================================================//
 
@@ -86,8 +88,8 @@ class Parallel_Data_Operator
     template<class T>  void global_sum(T *, T *);
 
     // Map local data fields to global data fields.
-    template<class FT, class Op>
-    void local_to_global(FT &local, FT &global, Op);
+    template<class FT, class GT, class Op>
+    void local_to_global(FT &local, GT &global, Op);
 };
 
 //---------------------------------------------------------------------------//
@@ -215,9 +217,9 @@ void Parallel_Data_Operator::global_sum(T *begin, T *end)
  * global cells
  * \param mapping nested operations functor class (see above) 
  */
-template<class FT, class Op>
+template<class FT, class GT, class Op>
 void Parallel_Data_Operator::local_to_global(FT &local_field,
-					     FT &global_field,
+					     GT &global_field,
 					     Op mapping)
 {
     // the global field should be equal to the number of global cells and
@@ -243,12 +245,12 @@ void Parallel_Data_Operator::local_to_global(FT &local_field,
 	typename FT::iterator end    = local_field.end();
 	
 	// iterators for global field
-	typename FT::iterator global_begin = global_field.begin();
-	typename FT::iterator global_end   = global_field.end();
+	typename GT::iterator global_begin = global_field.begin();
+	typename GT::iterator global_end   = global_field.end();
 	
 	// iterators for reading/writing
 	typename FT::iterator itr;
-	typename FT::iterator global;
+	typename GT::iterator global;
 
 	// local and global cell indices
 	int local_cell;
@@ -363,8 +365,8 @@ struct Parallel_Data_Operator::Data_Decomposed
 	data_op.global_sum(global_begin, global_end);
     }
 
-    template<class FT>
-    void operator()(FT &local_field, FT &global_field, SP_Topology top, 
+    template<class FT, class GT>
+    void operator()(FT &local_field, GT &global_field, SP_Topology top, 
 		    Parallel_Data_Operator data_op)
     {
 	// this will be a combination of data_distributed and data_decomposed 
@@ -382,8 +384,8 @@ struct Parallel_Data_Operator::Data_Decomposed
  */
 struct Parallel_Data_Operator::Data_Distributed
 {
-    template<class FT>
-    void operator()(FT &local, FT &global, Parallel_Data_Operator data_op)
+    template<class FT, class GT>
+    void operator()(FT &local, GT &global, Parallel_Data_Operator data_op)
     {
 	// Do nothing
     }
