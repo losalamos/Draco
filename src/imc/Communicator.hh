@@ -17,7 +17,9 @@
 //
 // revision history:
 // -----------------
-// 0) original
+//  0) original
+//  1) 12-17-98: added print_recv_status() diagnostic to print out the status 
+//               of recv_buffer[] 
 // 
 //===========================================================================//
 
@@ -26,7 +28,7 @@
 #include "ds++/SP.hh"
 #include <vector>
 #include <algorithm>
-#include <ostream>
+#include <iostream>
 
 IMCSPACE
 
@@ -96,6 +98,7 @@ public:
 
   // diagnostic 
     void print(ostream &) const;
+    void arecv_print_status(const Particle_Buffer<PT> &);
 };
 
 //---------------------------------------------------------------------------//

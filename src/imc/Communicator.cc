@@ -281,6 +281,19 @@ bool Communicator<PT>::arecv_status(const Particle_Buffer<PT> &buffer)
 }
 
 //---------------------------------------------------------------------------//
+// print out the status of the recv nodes
+
+template<class PT>
+void Communicator<PT>::arecv_print_status(const Particle_Buffer<PT> &buffer)
+{
+    using std::cerr;
+    for (int i = 0; i < recv_buffer.size(); i++)
+	cerr << "Receive buffer on node " << node() << " from node " 
+	     << recv_nodes[i] << " has status "	     
+	     << buffer.comm_status(recv_buffer[i]) << endl;
+}
+
+//---------------------------------------------------------------------------//
 // get the status (in use or free) of async send Comm_Buffers
 
 template<class PT>
