@@ -53,6 +53,33 @@ DummyMultigroupOpacity::DummyMultigroupOpacity(rtt_cdi::Reaction reaction,
     for ( int i=0; i<numGroupBoundaries; ++i )
 	groupBoundaries[i] = 5.0 * pow(10.0,(i-2.0));
 } 
+
+// Constructor for entering a different group boundary structure than the
+// default 
+DummyMultigroupOpacity::DummyMultigroupOpacity(
+    rtt_cdi::Reaction reaction,
+    rtt_cdi::Model    model,
+    int num_boundaries)
+    : dataFilename( "none" ),
+      dataDescriptor( "DummyMultigroupOpacity" ),
+      energyPolicyDescriptor( "Multigroup" ),
+      numTemperatures( 3 ),
+      numDensities( 2 ),
+      numGroupBoundaries( num_boundaries ),
+      reaction_type(reaction),
+      model_type(model)
+{
+    temperatureGrid.resize( numTemperatures );
+    densityGrid.resize( numDensities );
+    groupBoundaries.resize( numGroupBoundaries );  
+	    
+    for ( int i=0; i<numTemperatures; ++i )
+	temperatureGrid[i] = (i+1) * 1.0;
+    for ( int i=0; i<numDensities; ++i )
+	densityGrid[i] = (i+1) * 0.1;
+    for ( int i=0; i<numGroupBoundaries; ++i )
+	groupBoundaries[i] = 5.0 * pow(10.0,(i-2.0));
+} 
     
 // --------- //
 // Accessors //

@@ -17,12 +17,14 @@
 #include "../CDI.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <sstream>
 #include <typeinfo>
+#include <iomanip>
 
 using namespace std;
 
@@ -35,6 +37,7 @@ using rtt_cdi::GrayOpacity;
 using rtt_cdi::MultigroupOpacity;
 using rtt_cdi::EoS;
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -179,6 +182,7 @@ void test_CDI()
     SP<const GrayOpacity>       gray_iso_scatter;
     SP<const MultigroupOpacity> mg_planck_abs;
     SP<const MultigroupOpacity> mg_iso_scatter;
+    SP<const MultigroupOpacity> mg_diff_bound;
     SP<const EoS>               eos;
 
     // assign to dummy state objects
@@ -191,6 +195,9 @@ void test_CDI()
 						  rtt_cdi::PLANCK);
     mg_iso_scatter   = new DummyMultigroupOpacity(rtt_cdi::SCATTERING,
 						  rtt_cdi::ISOTROPIC);
+    mg_diff_bound    = new DummyMultigroupOpacity(rtt_cdi::SCATTERING,
+						  rtt_cdi::THOMSON,
+						  6);
     
     eos              = new DummyEoS();
     
@@ -209,12 +216,72 @@ void test_CDI()
 	}
     if (cdi.isEoSSet()) ITFAILS;
 
+    // there should be no energy group boundaries set yet
+    if (CDI::getFrequencyGroupBoundaries().empty())
+    {
+	PASSMSG("Good, no frequency group boundaries defined yet.");
+    }
+    else
+    {
+	FAILMSG("Oh-oh, frequency boundaries are defined.");
+    }
+
     // now assign stuff to it
     cdi.setGrayOpacity(gray_planck_abs);
     cdi.setGrayOpacity(gray_iso_scatter);
     cdi.setMultigroupOpacity(mg_planck_abs);
     cdi.setMultigroupOpacity(mg_iso_scatter);
     cdi.setEoS(eos);
+
+    // check the energy group boundaries
+    {
+	vector<double> b1 = CDI::getFrequencyGroupBoundaries();
+	vector<double> b2 = cdi.mg(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION)->
+	    getGroupBoundaries();
+	vector<double> b3 = cdi.mg(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING)->
+	    getGroupBoundaries();
+
+	// these should all be equal
+	bool test = true;
+
+	if (!soft_equiv(b1.begin(), b1.end(), b2.begin(), b2.end()))
+	    test = false;
+
+	if (!soft_equiv(b1.begin(), b1.end(), b3.begin(), b3.end()))
+	    test = false;
+
+	if (test)
+	{
+	    PASSMSG("All multigroup data has consistent energy groups.");
+	}
+	else
+	{
+	    FAILMSG("Multigroup data has inconsistent energy groups.");
+	}
+    }
+
+    // catch an exception when we try to assign a multigroup opacity to CDI
+    // that has a different frequency group structure
+    bool caught = false;
+    try 
+    {
+	cdi.setMultigroupOpacity(mg_diff_bound);
+    }
+    catch (const rtt_dsxx::assertion &ass)
+    {
+	ostringstream message;
+	message << "Good, we caught the following exception: \n"
+		<< ass.what();
+	PASSMSG(message.str());
+	caught = true;
+    }
+    if (!caught) 
+    {
+	ostringstream message;
+	message << "Failed to catch an exception for setting a different "
+		<< "frequency group structure.";
+	FAILMSG(message.str());
+    } 
 
     // make sure these are assigned
     if (cdi.isGrayOpacitySet(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION))
@@ -263,14 +330,17 @@ void test_CDI()
     }
 
     // catch some exceptions
-    bool caught = false;
+    caught = false;
     try 
     {
 	cdi.setGrayOpacity(gray_planck_abs);
     }
     catch (const rtt_dsxx::assertion &ass)
     {
-	PASSMSG("Good, we caught an overwrite exception.");
+	ostringstream message;
+	message << "Good, we caught the following exception: \n"
+		<< ass.what();
+	PASSMSG(message.str());
 	caught = true;
     }
     if (!caught) 
@@ -285,7 +355,10 @@ void test_CDI()
     }
     catch (const rtt_dsxx::assertion &ass)
     {
-	PASSMSG("Good, we caught an illegal access exception.");
+	ostringstream message;
+	message << "Good, we caught the following exception: \n"
+		<< ass.what();
+	PASSMSG(message.str());
 	caught = true;
     }
     if (!caught)
@@ -350,12 +423,150 @@ void test_CDI()
     }
     catch (const rtt_dsxx::assertion &ass)
     {
-	PASSMSG("Good, we caught an illegal access exception.");
+	ostringstream message;
+	message << "Good, we caught the following exception: \n"
+		<< ass.what();
+	PASSMSG(message.str());
 	caught = true;
     }
     if (!caught)
     {
 	FAILMSG("Failed to catch an illegal access exception!");
+    }
+
+    // there should be no energy group boundaries set yet
+    if (CDI::getFrequencyGroupBoundaries().empty())
+    {
+	PASSMSG("Good, no frequency group boundaries defined after reset.");
+    }
+    else
+    {
+	FAILMSG("Oh-oh, frequency boundaries are defined after reset.");
+    }
+}
+
+//---------------------------------------------------------------------------//
+
+void test_planck_integration()
+{
+    // catch our assertion
+    bool caught = false;
+    try
+    {
+	CDI::integratePlanckSpectrum(1, 1.0);
+    }
+    catch(const rtt_dsxx::assertion &ass)
+    {
+	ostringstream message;
+	message << "Caught illegal Planck calculation assertion: \n"
+		<< "\t" << ass.what();
+	PASSMSG(message.str());
+	caught = true;
+    }
+    if (!caught)
+    {
+	FAILMSG("Did not catch an exception for calculating Planck integral.");
+    }
+
+    // check some planck integrals
+    double int_total = CDI::integratePlanckSpectrum(100.0, 1.0);
+    if (soft_equiv(int_total, 1.0, 3.5e-10))
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a total normalized Planck integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_total;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a total normalized Planck integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_total 
+		<< " instead of 1.0.";
+	FAILMSG(message.str());
+    }
+
+    double int_1 = CDI::integratePlanckSpectrum(5.0, 10.0);
+    if (soft_equiv(int_1, .00529316, 1.0e-6))
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a total normalized Planck integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_1;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a total normalized Planck integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_1 
+		<< " instead of .00529316.";
+	FAILMSG(message.str());
+    }
+
+    double int_2 = CDI::integratePlanckSpectrum(.50, 10.0);
+    if (soft_equiv(int_2, 6.29674e-6, 1.0e-6))
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a total normalized Planck integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_2;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a total normalized Planck integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_2
+		<< " instead of 6.29674e-6.";
+	FAILMSG(message.str());
+    }
+
+    double int_0 = CDI::integratePlanckSpectrum(0.0, 10.0);
+    if (!soft_equiv(int_0, 0.0, 1.e-6)) ITFAILS;
+
+    // catch an illegal group assertion
+    CDI cdi;
+    SP<const MultigroupOpacity> mg(
+	new DummyMultigroupOpacity(rtt_cdi::SCATTERING, rtt_cdi::THOMSON)); 
+    cdi.setMultigroupOpacity(mg);
+
+    // check the normalized planck integrals
+    if (CDI::getNumberFrequencyGroups() != 3) ITFAILS;
+
+    double g1_integral = CDI::integratePlanckSpectrum(1, 1.0);
+    double g2_integral = CDI::integratePlanckSpectrum(2, 1.0);
+    double g3_integral = CDI::integratePlanckSpectrum(3, 1.0);
+
+    if (soft_equiv(g1_integral, 0.00528686, 1.e-6))
+    {
+	PASSMSG("Group 1 integral within tolerance.");
+    }
+    else
+    {
+	FAILMSG("Group 1 integral fails tolerance.");
+    }
+    
+    if (soft_equiv(g2_integral, 0.74924, 1.e-6))
+    {
+	PASSMSG("Group 2 integral within tolerance.");
+    }
+    else
+    {
+	FAILMSG("Group 2 integral fails tolerance.");
+    }
+    
+    if (soft_equiv(g3_integral, 0.245467, 1.e-6))
+    {
+	PASSMSG("Group 3 integral within tolerance.");
+    }
+    else
+    {
+	FAILMSG("Group 3 integral fails tolerance.");
     }
 }
  
@@ -371,11 +582,13 @@ int main(int argc, char *argv[])
 		 << endl;
 	    return 0;
 	}
-
+    
     try
     {
 	// >>> UNIT TESTS
 	test_CDI();
+
+	test_planck_integration();
     }
     catch (rtt_dsxx::assertion &ass)
     {

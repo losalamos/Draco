@@ -11,6 +11,8 @@
 
 #include "CDI.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include <cmath>
 
 namespace rtt_cdi
 {
@@ -36,7 +38,307 @@ CDI::~CDI()
 {
     // empty
 }
+
+
+//---------------------------------------------------------------------------//
+// STATIC DATA
+//---------------------------------------------------------------------------//
+
+std::vector<double> CDI::frequencyGroupBoundaries = std::vector<double>();
+
+//---------------------------------------------------------------------------//
+// STATIC FUNCTIONS
+//---------------------------------------------------------------------------//
+
+std::vector<double> CDI::getFrequencyGroupBoundaries()
+{
+    return frequencyGroupBoundaries;
+}
+
+//---------------------------------------------------------------------------//
+
+int CDI::getNumberFrequencyGroups()
+{
+    int ng = 0;
+
+    if (!frequencyGroupBoundaries.empty())
+	ng = frequencyGroupBoundaries.size() - 1;
+
+    return ng;
+}    
+
+//---------------------------------------------------------------------------//
+
+// nested namespace that holds the Taylor series coefficients of the
+// normalized Planckian
+
+namespace
+{
+const double coeff_3  =    1.0 / 3.0;
+const double coeff_4  =   -1.0 / 8.0;
+const double coeff_5  =    1.0 / 60.0;
+const double coeff_7  =   -1.0 / 5040.0;
+const double coeff_9  =    1.0 / 272160.0;
+const double coeff_11 =   -1.0 / 13305600.0;
+const double coeff_13 =    1.0 / 622702080.0;
+const double coeff_15 =  -6.91 / 196151155200.0;
+const double coeff_17 =    1.0 / 1270312243200.0;
+const double coeff_19 = -3.617 / 202741834014720.0;
+const double coeff_21 = 43.867 / 107290978560589824.0;
+
+const double pi       =    2.0 * std::asin(1.0);
+const double coeff    =   15.0 / (pi*pi*pi*pi);
+
+// return the 21-term Taylor series expansion for the normalized Planck
+// integral given x
+inline double taylor_series_planck(double x)
+{
+    Require (x >= 0.0);
+
+    // calculate the 21-term Taylor series expansion for x
+    double xsqrd  = x * x;
+    double xpower = x * x * x;
+    double taylor = 0.0;
+    {
+	taylor += coeff_3  * xpower;
+	xpower *= x;
+	taylor += coeff_4  * xpower;
+	xpower *= x;
+	taylor += coeff_5  * xpower;
+	xpower *= xsqrd;
+	taylor += coeff_7  * xpower;
+	xpower *= xsqrd;
+	taylor += coeff_9  * xpower;
+	xpower *= xsqrd;
+	taylor += coeff_11 * xpower;
+	xpower *= xsqrd;
+	taylor += coeff_13 * xpower;
+	xpower *= xsqrd;
+	taylor += coeff_15 * xpower;
+	xpower *= xsqrd;
+	taylor += coeff_17 * xpower;
+	xpower *= xsqrd;
+	taylor += coeff_19 * xpower;
+	xpower *= xsqrd;
+	taylor += coeff_21 * xpower;
+	
+	taylor *= coeff;
+    }
+
+    Ensure (taylor >= 0.0);
+    return taylor;
+}
+
+// return the 10-term Polylogarithmic expansion (minus one) for the Planck
+// integral given x
+inline double polylog_series_minus_one_planck(double x)
+{
+    Require (x >= 0.0);
+
+    double xsqrd = x * x;
+
+    // calculate the 10-term Polylogirithmic expansion (minus one) for x
+    double poly = 0.0;
     
+    // calculate the polylogarithmic terms for x bound
+    double li1 = 0.0;
+    double li2 = 0.0; 
+    double li3 = 0.0;
+    double li4 = 0.0;
+
+    for (int i = 1; i <= 10; i++)
+    {
+	li1 += std::exp(-i * x) / i;
+	li2 += std::exp(-i * x) / (i*i);
+	li3 += std::exp(-i * x) / (i*i*i);
+	li4 += std::exp(-i * x) / (i*i*i*i);
+    }
+
+    // calculate the lower polylogarithmic integral
+    poly = -1.0 * coeff * (xsqrd * x * li1   +
+			   3.0 * xsqrd * li2 + 
+			   6.0 * x * li3     +
+			   6.0 * li4 );
+    
+    Ensure (poly <= 0.0);
+    return poly;
+}
+
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ *
+ * \brief Integrate the normalized Planckian spectrum from 0 to x (hnu/kT).
+ *
+ * This function integrates the normalized Plankian that is defined:
+ *
+ * b(x) = 15/pi^4 * x^3 / (e^x - 1)
+ *
+ * where 
+ *
+ * x = (h nu) / (kT)
+ * 
+ * and 
+ * 
+ * B(nu, T)dnu = acT^4/4pi * b(x)dx
+ * 
+ * where B(nu, T) is the Plankian and is defined
+ *
+ * B(nu, T) = 2hnu^3/c^2 (e^hnu/kt - 1)^-1
+ *
+ * This function performs the following integration:
+ *
+ *      Int_(0)^(x) b(x) dx
+ *
+ * using the method of B. Clark (JCP (70)/2, 1987).  We use a 10-term
+ * Polylogarithmic expansion for the normalized Planckian, except in the
+ * low-x limit, where we use a 21-term Taylor series expansion.
+ *
+ * The user is responsible for applying the appropriate constants to the
+ * result of this integration.  For example, to make the result of this
+ * integration equivalent to
+ *
+ *      Int_(0)^{nu) B(nu,T) dnu
+ * 
+ * then you must multiply by a factor of acT^4/4pi where a is the radiation
+ * constant.  If you want to evaluate expressions like the following:
+ *
+ *      Int_(4pi)Int_(0)^{nu) B(nu,T) dnu domega
+ *
+ * then you must multiply by acT^4.
+ *
+ * \param frequency frequency upper integration limit in keV
+ *
+ * \param T the temperature in keV (must be greater than 0.0)
+ * 
+ * \return integrated normalized Plankian from 0 to x (hnu/kT)
+ *
+ */
+double CDI::integratePlanckSpectrum(double frequency, double T)
+{
+    Require (T > 0.0);
+    Require (frequency >= 0.0);
+
+    // first determine the normalized frequency
+    double x = frequency / T;
+
+    // get the taylor and polylogarithmic series for x; if x is in the
+    // polylogarithmic limit we will have to add one because 0.0 is ALWAYS in
+    // the taylor series limit
+    double taylor = taylor_series_planck(x);
+    double poly   = polylog_series_minus_one_planck(x) + 1.0;
+
+    // compare the Taylor series and Polylogarithmic series to determine the
+    // integral
+    double integral = 0.0;
+
+    if (taylor < poly)
+	integral = taylor;
+    else 
+	integral = poly;
+      
+    Ensure (integral >= 0.0 && integral <= 1.0);
+
+    return integral;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ *
+ * \brief Integrate the Planckian spectrum over a frequency group.
+ *
+ * This function integrates the normalized Plankian that is defined:
+ *
+ * b(x) = 15/pi^4 * x^3 / (e^x - 1)
+ *
+ * where 
+ *
+ * x = (h nu) / (kT)
+ * 
+ * and 
+ * 
+ * B(nu, T)dnu = acT^4/4pi * b(x)dx
+ * 
+ * where B(nu, T) is the Plankian and is defined
+ *
+ * B(nu, T) = 2hnu^3/c^2 (e^hnu/kt - 1)^-1
+ *
+ * The normalized Plankian, integrated from 0 to infinity, equals
+ * one. However, depending upon the maximum and minimum group boundaries, the
+ * normalized Planck function may integrate to something less than one.
+ *
+ * This function performs the following integration:
+ *
+ *      Int_(x_g-1)^(x_g) b(x) dx
+ *
+ * using the method of B. Clark (JCP (70)/2, 1987).  We use a 10-term
+ * Polylogarithmic expansion for the normalized Planckian, except in the
+ * low-x limit, where we use a 21-term Taylor series expansion.
+ *
+ * The user is responsible for applying the appropriate constants to the
+ * result of this integration.  For example, to make the result of this
+ * integration equivalent to
+ *
+ *      Int_(nu_g-1)^{nu_g) B(nu,T) dnu
+ * 
+ * then you must multiply by a factor of acT^4/4pi where a is the radiation
+ * constant.  If you want to evaluate expressions like the following:
+ *
+ *      Int_(4pi)Int_(nu_g-1)^{nu_g) B(nu,T) dnu domega
+ *
+ * then you must multiply by acT^4.
+ *
+ * If no groups are defined then an exception is thrown.
+ *
+ * \param groupIndex index of the frequency group to integrate [1,num_groups]
+ *
+ * \param T the temperature in keV (must be greater than 0.0)
+ * 
+ * \return integrated normalized Plankian over the group specified by
+ * groupIndex
+ *
+ */
+double CDI::integratePlanckSpectrum(int groupIndex, double T)
+{
+    Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
+    Require (T > 0.0);
+    Require (groupIndex > 0 && 
+	     groupIndex <= frequencyGroupBoundaries.size() - 1);
+
+    // first determine the group boundaries for groupIndex
+    double lower_bound = frequencyGroupBoundaries[groupIndex-1];
+    double upper_bound = frequencyGroupBoundaries[groupIndex];
+    Check (upper_bound > lower_bound);
+
+    // determine the upper and lower x
+    double lower_x = lower_bound / T;
+    double upper_x = upper_bound / T;
+
+    // determine the upper and lower bounds calculated by the taylor and
+    // polylogarithmic approximations
+    double lower_taylor  = taylor_series_planck(lower_x);
+    double upper_taylor  = taylor_series_planck(upper_x);
+    double lower_poly_m1 = polylog_series_minus_one_planck(lower_x);
+    double upper_poly_m1 = polylog_series_minus_one_planck(upper_x);
+    double lower_poly    = lower_poly_m1 + 1.0;
+    double upper_poly    = upper_poly_m1 + 1.0;
+
+    // determine the integral based on the upper and lower bounds
+    double integral = 0.0;
+
+    if (lower_taylor < lower_poly && upper_taylor < upper_poly)
+	integral = upper_taylor - lower_taylor;
+    else if (lower_taylor < lower_poly && upper_taylor >= upper_poly)
+	integral = upper_poly - lower_taylor;
+    else 
+	integral = upper_poly_m1 - lower_poly_m1;
+	  
+    Ensure (integral > 0.0 && integral <= 1.0);
+
+    return integral;
+}
+
 //---------------------------------------------------------------------------//
 // SET FUNCTIONS
 //---------------------------------------------------------------------------//
@@ -89,6 +391,8 @@ void CDI::setGrayOpacity(const SP_GrayOpacity &spGOp)
  */
 void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp) 
 {
+    using rtt_dsxx::soft_equiv;
+
     Require (spMGOp);
 
     // determine the model and reaction types
@@ -96,7 +400,31 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp)
     int reaction = spMGOp->getReactionType();
 
     Insist (!multigroupOpacities[model][reaction],
-	    "Tried to overwrite a set MultigroupOpacity object!");\
+	    "Tried to overwrite a set MultigroupOpacity object!");
+
+    // if the frequency group boundaries have not been assigned in any CDI
+    // object, then assign them here
+    if (frequencyGroupBoundaries.empty())
+    {
+	// copy the the group boundaries for this material to the "global"
+	// group boundaries that will be enforced for all CDI objects
+	frequencyGroupBoundaries = spMGOp->getGroupBoundaries();
+    }
+
+    // always check that the number of frequency groups is the same for each
+    // multigroup material added to CDI
+    Insist (spMGOp->getNumGroupBoundaries() == 
+	    frequencyGroupBoundaries.size(),
+	    "Incompatible frequency groups assigned for this material");
+
+    // do a check of the actual boundary values when DBC check is on (this is
+    // more expensive so we retain the option of turning it off)
+    const std::vector<double> &ref = spMGOp->getGroupBoundaries();
+    Check (soft_equiv(frequencyGroupBoundaries.begin(),
+		      frequencyGroupBoundaries.end(),
+		      ref.begin(),
+		      ref.end(),
+		      1.0e-6));
 
     // assign the smart pointer
     multigroupOpacities[model][reaction] = spMGOp;
@@ -122,8 +450,8 @@ void CDI::setEoS( const SP_EoS &in_spEoS )
 // GET FUNCTIONS
 //---------------------------------------------------------------------------//
 
-// Provide CDI with access to the full interfaces defined by
-// GrayOpacity.hh and MultigroupOpacity.hh
+// Provide CDI with access to the full interfaces defined by GrayOpacity.hh
+// and MultigroupOpacity.hh
     
 CDI::SP_GrayOpacity CDI::gray(rtt_cdi::Model    m, 
 			      rtt_cdi::Reaction r) const 
@@ -167,10 +495,10 @@ void CDI::reset()
 
 	for (int j = 0; j < constants::num_Reactions; j++)
 	{
-	    // reassign the GrayOpacity SP
+	    // reassign the GrayOpacity SP to a null SP
 	    grayOpacities[i][j] = SP_GrayOpacity();
 
-	    // reassign the MultigroupOpacity SP
+	    // reassign the MultigroupOpacity SP to a null SP
 	    multigroupOpacities[i][j] = SP_MultigroupOpacity();
 
 	    // check it
@@ -178,6 +506,10 @@ void CDI::reset()
 	    Check (!multigroupOpacities[i][j]);
 	}
     }
+
+    // empty the frequency group boundaries
+    frequencyGroupBoundaries.clear();
+    Check (frequencyGroupBoundaries.empty());
 
     // reset the EoS SP
     spEoS = SP_EoS();

@@ -84,6 +84,14 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
 			   rtt_cdi::Model    = rtt_cdi::ANALYTIC);
 
     /*!
+     * \brief Constructor for DummyMultigroupOpacity object.
+     * 
+     * This constructor allows the user to enter a different number of
+     * frequency boundaries.
+     */
+    DummyMultigroupOpacity(rtt_cdi::Reaction, rtt_cdi::Model, int);
+
+    /*!
      * \brief Default DummyMultigroupOpacity destructor.
      *
      * This is required to correctly release memory when a

@@ -110,6 +110,20 @@ class CDI
      * [rtt_cdi::Model][rtt_cdi::Reaction]. 
      */
     VF_MultigroupOpacity multigroupOpacities;
+
+    /*!
+     * \brief Frequency group boundaries for multigroup data.
+     *
+     * This is a static vector that contains the frequency boundaries for
+     * multigroup data sets.  The number of frequency (energy) groups is the
+     * size of the vector minus one.  
+     *
+     * This data is stored as static so that the same structure is guaranteed
+     * for all multigroup data sets.  Thus, each CDI object will have access
+     * to the same energy group structure.
+     *
+     */
+    static std::vector<double> frequencyGroupBoundaries;
 	
     /*!
      * \brief Smart pointer to the equation of state object.
@@ -230,7 +244,7 @@ class CDI
      * overwrite a data object with the same attributes as one that already
      * has been set.  The only way to "reset" these objects is to call
      * CDI::reset().  Note that CDI::reset() resets \b ALL of the objects
-     * stored by CDI.
+     * stored by CDI (including group boundaries).
      */
     void reset();
 
@@ -248,6 +262,34 @@ class CDI
      * \brief Query to see if an eos is set.
      */
     bool isEoSSet() const;
+
+    /*!
+     * \brief Return the frequency group boundaries.
+     *
+     * Every multigroup opacity object held by any CDI object contains the
+     * same frequency group boundaries.  This static function allows CDI
+     * users to access the group boundaries without referencing a particular
+     * material. 
+     *
+     * Note, the group boundaries are not set until a multigroup opacity
+     * object is set for the first time (in any CDI object) with the
+     * setMultigroupOpacity function.
+     */
+    static std::vector<double> getFrequencyGroupBoundaries();
+
+    /*!
+     * \brief Return the number of frequency groups.
+     */
+    static int getNumberFrequencyGroups();
+
+    // Integrate the normalized Planckian from 0 to x (hnu/kT).
+    static double integratePlanckSpectrum(double frequency, double T);
+
+    // Integrate the normalized Planckian spectrum over a frequency group.
+    static double integratePlanckSpectrum(int groupIndex, double T);
+
+    // Integrate the normalized Planckian spectrum over all frequency groups.
+    static double integratePlanckSpectrum(double T);
 
   private:
 	
