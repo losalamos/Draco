@@ -27,6 +27,12 @@ This article describes one such method which we shall call
 from the transport code for every material in a cell, regardless of
 the initial input temperatures.
 
+This method is somewhat arbitrary. It's virtues are simplicity 
+combined with an attempt to do something
+``reasonable'' based on energy conservation principles.
+ However, it cannot be represented as a high order
+accuracy mapping. The most accurate results can be expected with meshes which
+minimize the number and size of multi-material cells. 
 
 
 \section{Definitions}
@@ -99,15 +105,16 @@ Solving for $\overline{T}$:
 \label{eq:tbar}
 \end{equation}
 This equation provides a formula for the calculation of 
-cell average temperatures.
+cell average temperatures. 
 
 \section{Cell Average Material Properties}
 
-We calculate  effective average heat capacity of a cell as an example
+We calculate effective average heat capacity of a cell as an example
 material property. Again using the principal of energy conservation, 
 we wish to calculate a $\overline{c_{v}}$ such that:
 \begin{equation}
-\sum_{j=1}^{nmat} \overline{c_{v}}  V_{j} (\overline{T}^{n+1}-\overline{T}^{n})   = 
+\sum_{j=1}^{nmat} \overline{c_{v}}  V_{j} 
+(\overline{T}^{n+1}-\overline{T}^{n})   = 
 \sum_{j=1}^{nmat} c_{v,j} V_{j} (T_{j}^{n+1}-T_{j}^{n})
 \end{equation}
 Using the definition of $\overline{T}$ from equation~(\ref{eq:tbar}):
@@ -122,7 +129,25 @@ Solving for $\overline{c_{v}}$:
 {\sum_{j=1}^{nmat} V_{j}}
 \label{eq:cvbar}
 \end{equation}
-Other material properties can be calculated in a similar fashion, i.e.,
+
+
+As an additional example, consider the calculation of cell average absorption
+opacities, $\overline{\sigma}_a$ (length$^{-1}$).
+ Let $\overline{\phi}$ be the cell 
+average intensity (energy/length$^2$-time). Conservation of radiation
+energy absorption then demands:
+\begin{equation}
+ \sum_{j=1}^{nmat} \overline{\sigma}_a V_j \overline{\phi} =
+\sum_{j=1}^{nmat} \sigma_{a,j} V_j \overline{\phi}
+\end{equation}
+Solving for $\overline{\sigma}_a$:
+\begin{equation}
+\overline{\sigma}_{a} = \frac{ \sum_{j=1}^{nmat} \sigma_{a,j} V_{j} } 
+{\sum_{j=1}^{nmat} V_{j}}
+\end{equation}
+
+Other material properties can be calculated in a fashion similar
+to the specific heat and the absorption opacity, i.e.,
 as a volume weighted average.
 
 \section{Material Temperatures at $t^{n+1}$}
@@ -182,7 +207,8 @@ or, alternatively, in terms of cell average quantities:
 Spatial differencing schemes which place the material temperatures at
 computational cell centers often require material properties definitions
 on the cell faces for purposes of calculating flow from the cell. 
-In order to ``reasonably'' propagate a Marshak temperature wave,  it has been observed
+In order to propagate a Marshak temperature wave  
+in a ``reasonable'' manner, it has been observed
 that these face material properties should be calculated at a temperature
 which is  some average of the cell center temperatures. In this section
 we provide a means to estimate such a face temperature.
@@ -191,24 +217,24 @@ Using equation~(\ref{eq:tbar}) to calculate an average temperature
  $\overline{T}$ on each cell, we make the following definitions:
 \begin{description}
 \item[$\gamma$] = a user selectable constant between zero and one.
-\item[$\overline{T_{A}}$] = the $\overline{T}$ in the cell which is adjacent
+\item[$\overline{T}_{A}$] = the $\overline{T}$ in the cell which is adjacent
       to the shared face on which we wish to calculate a temperature.
-\item[$T_{H}$] = $\max( \overline{T}, \overline{T_{A}})$
-\item[$T_{L}$] = $\min( \overline{T}, \overline{T_{A}})$
+\item[$T_{H}$] = $\max( \overline{T}, \overline{T}_{A})$
+\item[$T_{L}$] = $\min( \overline{T}, \overline{T}_{A})$
 \end{description}
-We then use  following procedure to estimate a face temperature for
+We then use the following procedure to estimate a face temperature for
 each material in the cell:
 \begin{equation}
 \alpha_{F} = (\gamma T_{H} + (1 - \gamma) T_{L})/\overline{T}
 \end{equation}
 \begin{equation}
-T_{F,j} = \alpha_{F}T_{j}, j=1,nmat
+T_{F,j} = \alpha_{F}T_{j}, \; \; j=1,nmat
 \end{equation}
 where the subscript $_{F}$ indicates a face value. Given a face
 temperature, calculation of material properties can then proceed
 in the same manner as for cell centers.
 For material properties which are temperature dependent, the amount of
-energy propagated from one cell to another is affected by the
+energy propagated from one cell to another is affected by the choice of the
 constant $\gamma$. Lacking any information about material properties
 in the general case, we recommend a value of $\gamma = 0.5$ as a
 reasonable initial value.
@@ -222,7 +248,7 @@ individual material energy depositions and temperatures.
 The behavior of a multiple-material cell which happens to contain
 only  one material is indistinguishable from a single material cell.
 
-Also, this scheme accommodates the steady-state thermal equilibrium
+This procedure  accommodates the steady-state thermal equilibrium
 solution, as all the materials in a cell are guaranteed to be at
 equilibrium upon exit from every time cycle.
 
