@@ -45,6 +45,7 @@ CPPFLAGS = @CPPFLAGS@
 CPPFLAGS += -I . -I .. @testcppflags@ -I ${includedir}
 
 CXX = @CXX@
+STRICTFLAG = @STRICTFLAG@
 CXXFLAGS = @CXXFLAGS@
 
 LD = @LD@

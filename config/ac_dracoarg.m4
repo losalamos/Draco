@@ -2,7 +2,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl ac_dracoarg.m4
 dnl DRACO arguments macro that defines DRACO's non-vendor arguments
 dnl
-dnl Time-stamp: <99/02/03 10:02:50 tme>
+dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl

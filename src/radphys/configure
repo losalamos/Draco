@@ -1286,7 +1286,7 @@ fi
 
        # strict asci compliance
        if test "${enable_strict_ansi:=yes}" = yes ; then
-	   CXXFLAGS="${CXXFLAGS} --strict"
+	   STRICTFLAG="--strict"
        fi
 
        # optimization level
@@ -1651,6 +1651,9 @@ EOF
 
                                                    
    
+   CXXFLAGS="${CXXFLAGS} \${STRICTFLAG}"
+   
+
    
 
 trap '' 1 2 15
@@ -1834,6 +1837,7 @@ s%@SITE_EXP@%$SITE_EXP%g
 s%@site_exp@%$site_exp%g
 s%@test_output_files@%$test_output_files%g
 s%@configure_command@%$configure_command%g
+s%@STRICTFLAG@%$STRICTFLAG%g
 
 CEOF
 EOF

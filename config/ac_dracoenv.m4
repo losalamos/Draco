@@ -3,7 +3,7 @@ dnl ac_dracoenv.m4
 dnl puts together the DRACO environments given the arguments from 
 dnl vendors (ac_vendors.m4) and DRACO (ac_dracoarg.m4)
 dnl
-dnl Time-stamp: <99/02/09 10:13:53 tme>
+dnl Time-stamp: <99/02/23 09:13:34 rsqrd>
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
@@ -68,7 +68,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # strict asci compliance
        if test "${enable_strict_ansi:=yes}" = yes ; then
-	   CXXFLAGS="${CXXFLAGS} --strict"
+	   STRICTFLAG="--strict"
        fi
 
        # optimization level
@@ -241,6 +241,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_SUBST(test_output_files)dnl
 
    AC_SUBST(configure_command)dnl
+
+   CXXFLAGS="${CXXFLAGS} \${STRICTFLAG}"
+   AC_SUBST(STRICTFLAG)
 
    dnl end of AC_DRACO_ENV
 ])
