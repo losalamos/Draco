@@ -336,13 +336,13 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    # eight byte float types
    if test -n "${def_eight_byte_float_type}" ; then
        AC_DETERMINE_FLOAT(8)
-       AC_DEFINE_UNQUOTED(EIGHT_BYTE_INT_TYPE, ${FLOAT_SIZE_TYPE})
+       AC_DEFINE_UNQUOTED(EIGHT_BYTE_FLOAT_TYPE, ${FLOAT_SIZE_TYPE})
    fi
 
    # four byte float types
    if test -n "${def_four_byte_float_type}" ; then
        AC_DETERMINE_FLOAT(4)
-       AC_DEFINE_UNQUOTED(FOUR_BYTE_INT_TYPE, ${FLOAT_SIZE_TYPE})
+       AC_DEFINE_UNQUOTED(FOUR_BYTE_FLOAT_TYPE, ${FLOAT_SIZE_TYPE})
    fi
 
 
