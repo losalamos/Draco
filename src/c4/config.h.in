@@ -24,6 +24,9 @@
 #undef _POSIX_SOURCE
 #undef _POSIX_C_SOURCE
 
+/* Turn off C++ bindings */
+#undef MPI_NO_CPPBIND
+
 #endif                          /* __c4_config_h__ */
 
 /*---------------------------------------------------------------------------*/
