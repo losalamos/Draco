@@ -55,7 +55,9 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
       vdata_dirs(ens_vdata_names.size()),
       cdata_dirs(ens_cdata_names.size())
 {
-    // assign values to ensight_cell_names
+    // Assign values to ensight_cell_names. These are
+    // the official "Ensight" names that must be used in 
+    // the Ensight file.
     ensight_cell_names[0]  = "point";
     ensight_cell_names[1]  = "bar2";
     ensight_cell_names[2]  = "bar3";
@@ -72,7 +74,8 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
     ensight_cell_names[13] = "penta6";
     ensight_cell_names[14] = "penta15";
 
-    // assign values to vrtx_center
+    // Assign values to vrtx_count, the number of vertices 
+    // in a cell.
     vrtx_cnt[0]  = 1;
     vrtx_cnt[1]  = 2;
     vrtx_cnt[2]  = 3;
@@ -89,7 +92,8 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
     vrtx_cnt[13] = 6;
     vrtx_cnt[14] = 15;
 
-    // assign values to cell_type_index
+    // Assign values to cell_type_index. The user will
+    // use these to identify cell types.
     cell_type_index[0]  = point;
     cell_type_index[1]  = two_node_bar;
     cell_type_index[2]  = three_node_bar;
