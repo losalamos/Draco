@@ -14,6 +14,7 @@
 
 #include "ds++/Assert.hh"
 #include <vector>
+#include <iostream>
 
 namespace rtt_mc
 {
@@ -41,7 +42,9 @@ namespace rtt_mc
  * The ordering of cells across a face is row-wise starting from the lowest
  * coordinate: thus across the hi x face in XY, 1=lo y and 2=hi y.
  * Similarly, across the hi y face in XYZ 1=lo x lo z, 2=hi x lo z, 3=lo x hi
- * z, and 4=hi x hi z.
+ * z, and 4=hi x hi z.  There is no formal requirement to follow this
+ * methodology; however, for consistency one should attempt to use this
+ * convention.
 
  * The AMR_Layout uses the convention of coarse faces.  For example, in a 2-D
  * RZ mesh each cell has 4 coarse faces.  However, if one of the sides of a
@@ -104,7 +107,26 @@ class AMR_Layout
     inline void set_size(int, int, int);
 
     // >>> OVERLOADED OPERATORS
+    
+    // Overloaded subscripting operators for assignment and retrieval.
+    inline int    operator()(int, int, int) const;
+    inline int&   operator()(int, int, int);
+    inline sf_int operator()(int, int) const;
+
+    // Overloaded equality operators.
+    bool operator==(const AMR_Layout &) const;
+    bool operator!=(const AMR_Layout &rhs) const { return !(*this == rhs); }
+
+    // Diagnostic funcitions.
+    void print(std::ostream &, int) const;
 };
+
+//---------------------------------------------------------------------------//
+// OVERLOADED OPERATORS
+//---------------------------------------------------------------------------//
+// Overload operator for stream output.
+
+std::ostream& operator<<(std::ostream &, const AMR_Layout &);
 
 //---------------------------------------------------------------------------//
 // INLINE FUNCTIONS FOR AMR_LAYOUT
@@ -158,6 +180,66 @@ void AMR_Layout::set_size(int cell, int num_coarse_faces)
 void AMR_Layout::set_size(int cell, int face, int num_cells_across)
 {
     cell_face[cell-1][face-1].resize(num_cells_across);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Access the cell across a coarse/fine face combination.
+ * \param cell cell index
+ * \param coarse_face coarse face index
+ * \param fine_face fine face index
+ * \return cell index on other side of cell, coarse_face, fine_face triplet
+ */
+int AMR_Layout::operator()(int cell, int coarse_face, int fine_face) const
+{
+    Require (cell > 0 && cell <= cell_face.size());
+    Require (coarse_face > 0 && coarse_face <= cell_face[cell-1].size());
+    Require (fine_face > 0 &&
+	     fine_face <= cell_face[cell-1][coarse_face-1].size());
+    return cell_face[cell-1][coarse_face-1][fine_face-1];
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Mutable access for the cell across a coarse/fine face combination.
+
+ * This overloaded operator allows the user to change the value of the cell
+ * across a face.  This operator should be used to build the AMR_Layout.
+
+ * \param cell cell index
+ * \param coarse_face coarse face index
+ * \param fine_face fine face index
+
+ * \return mutable cell index on other side of cell, coarse_face, fine_face
+ * triplet
+
+ */
+int& AMR_Layout::operator()(int cell, int coarse_face, int fine_face)
+{
+    Require (cell > 0 && cell <= cell_face.size());
+    Require (coarse_face > 0 && coarse_face <= cell_face[cell-1].size());
+    Require (fine_face > 0 &&
+	     fine_face <= cell_face[cell-1][coarse_face-1].size());
+    return cell_face[cell-1][coarse_face-1][fine_face-1];
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return a vector of cells across a coarse face.
+
+ * This is a non-mutable look-up option for determining the cells across a
+ * coarse face.
+
+ * \param cell cell index
+ * \param coarse_face coarse face index
+ * \return vector of cells across the coarse face
+
+ */
+AMR_Layout::sf_int AMR_Layout::operator()(int cell, int coarse_face) const
+{
+    Require (cell > 0 && cell <= cell_face.size());
+    Require (coarse_face > 0 && coarse_face <= cell_face[cell-1].size());
+    return cell_face[cell-1][coarse_face-1];
 }
 
 } // end namespace rtt_mc

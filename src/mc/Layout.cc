@@ -28,7 +28,7 @@ void Layout::print(std::ostream &output, int cell_index) const
       
     int faces = num_faces(cell_index);
 
-  // print the face information for cell indexed by cell_index
+    // print the face information for cell indexed by cell_index
     output << "=============" << endl;
     output << "Cell   : "     << cell_index << endl;
     output << "# faces: "     << faces << endl;
@@ -51,6 +51,19 @@ std::ostream& operator<<(std::ostream &output, const Layout &object)
     for (int i = 1; i <= num_cells; i++)
         object.print(output, i);
     return output;
+}
+
+//---------------------------------------------------------------------------//
+// Equality operator
+
+bool Layout::operator==(const Layout &rhs) const
+{
+    // if the data is equal, the Layouts are equal
+    if (face_cell == rhs.face_cell)
+	return true;
+    
+    // if we haven't returned then the Layouts aren't equal
+    return false;
 }
 
 } // end namespace rtt_mc

@@ -75,7 +75,7 @@ class Layout
     int num_cells() const { return face_cell.size(); }
     inline int num_faces(int) const;
 
-    // Diagnostic functions
+    // Diagnostic functions.
     void print(std::ostream &, int) const;
 
     // Overloaded subscripting operators for assignment and retrieval.
@@ -83,7 +83,7 @@ class Layout
     inline int& operator()(int, int);
 
     // Overloaded operators for equality.
-    inline bool operator==(const Layout &) const;
+    bool operator==(const Layout &) const;
     bool operator!=(const Layout &rhs) const { return !(*this == rhs); }
 };
 
@@ -93,19 +93,6 @@ class Layout
 // overload operator for stream output
 
 std::ostream& operator<<(std::ostream &, const Layout &);
-
-//---------------------------------------------------------------------------//
-// overload equality(==) operator for design-by-contract
-
-bool Layout::operator==(const Layout &rhs) const
-{
-    // if the data is equal, the Layouts are equal
-    if (face_cell == rhs.face_cell)
-	return true;
-    
-    // if we haven't returned then the Layouts aren't equal
-    return false;
-}
 
 //---------------------------------------------------------------------------//
 // inline functions for Layout
