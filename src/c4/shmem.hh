@@ -58,10 +58,10 @@ class Msg_DB {
 class Msg_Queue {
 
     int nmsgs;
-    DynArray<Msg_DB *> msgs;
+    dsxx::DynArray<Msg_DB *> msgs;
 
     int nfree;
-    DynArray<Msg_DB *> freelist;
+    dsxx::DynArray<Msg_DB *> freelist;
 
   public:
     Msg_Queue()

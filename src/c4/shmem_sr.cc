@@ -675,7 +675,7 @@ C4_NAMESPACE_END
 
 #include "ds++/DynArray.cc"
 
-template class DynArray<C4::Msg_DB *>;
+template class dsxx::DynArray<C4::Msg_DB *>;
 
 //---------------------------------------------------------------------------//
 //                              end of shmem_sr.cc
