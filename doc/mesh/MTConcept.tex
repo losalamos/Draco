@@ -1,7 +1,7 @@
 %%---------------------------------------------------------------------------%%
 %% MTConcept.tex
 %% Shawn Pautz
-%% Time-stamp: <99/02/09 16:12:45 tme>
+%% Time-stamp: <99/04/28 11:13:37 pautz>
 %%---------------------------------------------------------------------------%%
 \documentclass[11pt]{rnote}
 \usepackage[centertags]{amsmath}
@@ -34,7 +34,7 @@
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
 \refno{XTM-RN(U)99-006}
-\subject{Specification of the \concept{MT} Concept}
+\subject{Specification of the Solon Mesh}
 
 %-------NO CHANGES
 \divisionname{Applied Theoretical \& Computational Physics Div.}
@@ -74,6 +74,8 @@
   R.M. Roberts, XTM MS D409\\ 
   S.A. Turner, XTM MS D409\\ 
   T.J. Urbatsch, XTM MS D409\\ 
+  T.A. Wareing, XTM MS D409\\ 
+  J.S. Warsa, XTM MS D409\\ 
   XDO MS B218:\\ 
 }
 
@@ -85,16 +87,20 @@
 
 \begin{abstract}
 
-In this note we describe the \concept{MT} concept, which defines the
+In this note we describe the \concept{Solon 3D Orthogonal Cartesian
+  Mesh} concept, which defines the
 requirements for a \C++ class that provides a variety of services for
 an orthogonal 3D Cartesian mesh. This concept was originally defined
 for use in the Solon radiation transport package, but is intended to
-be used by other similar packages as well. The \concept{MT} concept is 
+be used by other similar packages as well. The \concept{Solon 3D
+  Orthogonal Cartesian Mesh} concept is 
 defined in generic terms that correspond with those used in the
 Standard Template Library; hence any class that conforms to the
-\concept{MT} requirements is a valid model of the \concept{MT} concept
+\concept{Solon 3D Orthogonal Cartesian Mesh} requirements is a valid
+model of this concept
 and also may be used with numerous STL components. Since the
-\concept{MT} concept could prove useful to other radiation transport
+\concept{Solon 3D Orthogonal Cartesian Mesh} concept could prove
+useful to other radiation transport
 packages, classes that are models of it have been included in the
 Draco component library.
 
@@ -115,19 +121,23 @@ During the design of the Solon radiation transport package the need
 for a class to supply data and services related to the mesh was
 appreciated. The initial development of this mesh class borrowed many
 ideas from the STL; more recently it has been updated to reflect the
-generic programming standards set forth in~\cite{au99}. In keeping with the
-terminology introduced in~\cite{au99}, we have defined the \concept{MT} {\it
-  concept}; a concept is the set of requirements and constraints
-imposed on a class or set of classes. Any class meeting the
-requirements of a given concept is said to be a {\it model} of that
-concept; in particular, any class adhering to the \concept{MT}
-requirements is a model of \concept{MT}. Since the mesh requirements
-of Solon are incorporated in the \concept{MT} concept, any model of
-\concept{MT} may be used in Solon with minimal integration effort,
-despite potentially radically different implementation
-details~\cite{ro99}.
+generic programming standards set forth in Ref.~\cite{au99}. In
+keeping with the terminology introduced in Ref.~\cite{au99}, we have
+defined the \concept{Solon 3D Orthogonal Cartesian Mesh} {\it
+  concept}; a concept is the set of
+requirements and constraints imposed on a class or set of classes. Any
+class meeting the requirements of a given concept is said to be a {\it
+  model} of that concept; in particular, any class adhering to the
+\concept{Solon 3D Orthogonal Cartesian Mesh} requirements is a model
+of this concept. Since the mesh
+requirements of Solon are incorporated in the \concept{Solon 3D
+  Orthogonal Cartesian Mesh} concept,
+any model of this concept may be used in Solon with minimal
+integration effort, despite potentially radically different
+implementation details~\cite{ro99}.
 
-The \concept{MT} concept (and the classes that are models of it) is a
+The \concept{Solon 3D Orthogonal Cartesian Mesh} concept (and the
+classes that are models of it) is a
 part of the larger Draco effort to define and implement \C++ components 
 useful for the development of a wide variety of radiation transport
 packages. As packages are developed, and as their needs are met by
@@ -136,653 +146,69 @@ concepts, it is hoped that each successive package will need to define
 and implement fewer new concepts and instead can reuse previously
 designed and tested Draco components.
 
-\section{Concepts}
+\section{General Description of the \concept{Solon 3D Orthogonal
+    Cartesian Mesh} Concept}
 
-Besides the \concept{MT} concept itself, there are several associated
-concepts that together are used to define the \concept{MT}. Some of
-these concepts are already defined in~\cite{au99} and will not be restated
-here. The new concepts defined below are specified according to the
-format in~\cite{au99}.
+The \concept{Solon 3D Orthogonal Cartesian Mesh} concept is defined in 
+detail in Section~\ref{sec:solon 3d orth cart mesh}, but we wish to
+give a basic overview of this
+concept here. The \concept{Solon 3D Orthogonal Cartesian Mesh} concept
+is actually a specialization, or {\it refinement}~\cite{au99}, of the
+\concept{Solon 3D Mesh} concept, which is defined in
+Section~\ref{sec:solon 3d mesh}. The
+\concept{Solon 3D Orthogonal Cartesian Mesh} concept is used for the
+special case of an orthogonal hexahedral mesh; it has a few member
+functions that have meaning only in this case.
 
-\subsection{MT}
-A model of \concept{MT} is a class that describes an orthogonal 3D
-Cartesian mesh and has nested type definitions for a variety of field
-types. The mesh is required to have constant thickness (fixed number
-of cells) in any given direction.
+The \concept{Solon 3D Mesh} concept contains most of the services
+needed by the Solon package. It contains several nested classes that
+represent field types, such as cell centered fields and vertex
+centered fields. These fields are refinements of the \concept{Solon
+  Mesh Field} concept, defined in Section~\ref{sec:solon mesh
+  field}. The \concept{Solon 3D
+  Mesh} concept has a variety of scatter and gather member functions
+between different pairs of fields. These scatter and gather operations 
+are specialized according to the low level mathematical operations
+they perform by means of one of several tag classes (in some
+implementations these ``tag'' classes may have more functionality than 
+being mere tags). These tag classes are refinements of the
+\concept{Scatter/Gather Tag} concept, defined in
+Section~\ref{sec:scatter gather tag}. The
+\concept{Solon 3D Mesh} concept also contains numerous global
+reduction functions for all of the fields and it supplies other mesh
+related services such as the calculation of cell volumes and
+coordinates.
 
-\subsubsection{Refinement of}
-\concept{Equality Comparable} (Austern, page 85).
+It is assumed that an implementation of the \concept{Solon 3D
+  Orthogonal Cartesian Mesh} concept will potentially make use of
+parallelism. Solon is designed in such a way that all parallel issues
+related to the mesh are handled by the class that models the
+\concept{Solon 3D Orthogonal Cartesian Mesh} concept. For example,
+rather than making Solon aware of whether the data associated with two 
+neighboring cells is on the same or different processes, or whether
+the parallelism/communication is based on message passing or threads,
+these issues instead are the responsibility of the scatter/gather
+operations that may involve them.
 
-\subsubsection{Associated Types}
+We note that no assumptions are made regarding the implementation of
+the \concept{Solon 3D Orthogonal Cartesian Mesh} concept. Any
+implementation that conforms to the public interface specified in the
+following sections and performs the defined operations is valid; this
+is an integral goal of the generic programming approach. Hence a
+variety of implementations of different complexities and with
+different performance characteristics may be used with Solon without
+requiring any code changes in Solon.
 
-\begin{typelist}
-  \typeitem{Size type}{X::size\cu type}{An unsigned integral type that
-    can represent the number of cells in the entire mesh.}
-  \typeitem{Field constructor type}{X::FieldConstructor}{The argument
-    type for constructing one of the \concept{MT} fields.}
-  \typeitem{Cell centered field}{template <class T> X::cctf<T>}{A
-    model of \concept{Cell Centered MTField}.}
-  \typeitem{Face centered discontinuous field}{template <class T>
-    X::fcdtf<T>}{A model of \concept{Face Centered Discontinuous
-      MTField}.}
-  \typeitem{Node centered field}{template <class T> X::nctf<T>}{A
-    model of \concept{Node Centered MTField}.}
-  \typeitem{Vertex centered field}{template <class T> X::vctf<T>}{A
-    model of \concept{Vertex Centered MTField}.}
-  \typeitem{Boundary specified field}{template <class T>
-    X::bstf<T>}{A model of \concept{Boundary Specified MTField}.}
-  \typeitem{Cell centered scalar field}{X::ccsf}{A typedef for
-    \comp{X::cctf<double>}.}
-  \typeitem{Face centered discontinuous scalar field}{X::fcdsf}{A
-    typedef for \comp{X::fcdtf<double>}.}
-  \typeitem{Node centered scalar field}{X::ncsf}{A typedef for
-    \comp{X::nctf<double>}.}
-  \typeitem{Vertex centered scalar field}{X::vcsf}{A typedef for
-    \comp{X::vctf<double>}.}
-  \typeitem{Boundary specified scalar field}{X::bssf}{A typedef for
-    \comp{X::bstf<double>}.}
-  \typeitem{Cell centered integer field}{X::ccif}{A typedef for
-    \comp{X::cctf<int>}.}
-  \typeitem{Face centered discontinuous integer field}{X::fcdif}{A
-    typedef for \comp{X::fcdtf<int>}.}
-  \typeitem{Node centered integer field}{X::ncif}{A typedef for
-    \comp{X::nctf<int>}.}
-  \typeitem{Vertex centered integer field}{X::vcif}{A typedef for
-    \comp{X::vctf<int>}.}
-  \typeitem{Boundary specified integer field}{X::bsif}{A typedef for
-    \comp{X::bstf<int>}.}
-  \typeitem{Cell centered vector scalar field}{X::ccvsf}{A typedef for
-    \comp{X::cctf<vec>}, where \comp{vec} is a model of
-    \concept{DoubleVec}.}
-  \typeitem{Face centered discontinuous vector scalar
-    field}{X::fcdvsf}{A typedef for \comp{X::fcdtf<vec>}, where
-    \comp{vec} is a model of \concept{DoubleVec}.}
-  \typeitem{Node centered vector scalar field}{X::ncvsf}{A typedef for
-    \comp{X::nctf<vec>}, where \comp{vec} is a model of
-    \concept{DoubleVec}.}
-  \typeitem{Vertex centered vector scalar field}{X::vcvsf}{A typedef
-    for \comp{X::vctf<vec>}, where \comp{vec} is a model of
-    \concept{DoubleVec}.}
-  \typeitem{Boundary specified vector scalar field}{X::bsvsf}{A typedef
-    for \comp{X::bstf<vec>}, where \comp{vec} is a model of
-    \concept{DoubleVec}.}
-  \typeitem{Assign tag}{X::OpAssign}{A model of \concept{Assign
-      Tag}.}
-  \typeitem{Assign with addition tag}{X::OpAddAssign}{A model of
-    \concept{Add Assign Tag}.}
-  \typeitem{Assign with subtraction tag}{X::OpSubAssign}{A model
-    of \concept{Sub Assign Tag}.}
-  \typeitem{Assign with multiplication tag}{X::OpMultAssign}{A
-    model of \concept{Mult Assign Tag}.}
-  \typeitem{Assign with minimum tag}{X::OpMinAssign}{A model of
-    \concept{Min Assign Tag}.}
-  \typeitem{Assign with maximum tag}{X::OpMaxAssign}{A model of
-    \concept{Max Assign Tag}.}
-\end{typelist}
+\section{Basic Concepts}
 
-\subsubsection{Notation}
-\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.4\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-  \comp{X} & A type that is a model of \concept{MT}. \\
-  \comp{a,b} & Object of type \comp{X}. \\
-  \comp{c} & Object of type \comp{X::ccsf}. \\
-  \comp{f} & Object of type \comp{X::fcdsf}. \\
-  \comp{fv} & Object of type \comp{X::fcdvsf}. \\
-  \comp{v} & Object of type \comp{X::vcsf}. \\
-  \comp{n} & Object of type \comp{X::ncsf}. \\
-  \comp{ft,ft1,ft2} & Object of type \comp{X::fcdtf<T>}. \\
-  \comp{ct} & Object of type \comp{X::cctf<T>}. \\
-  \comp{vt} & Object of type \comp{X::vctf<T>}. \\
-  \comp{nt} & Object of type \comp{X::nctf<T>}. \\
-  \comp{bt} & Object of type \comp{X::bstf<T>}. \\
-  \comp{Tag} & A type that is a model of \concept{Scatter/Gather Tag}. \\
-  \comp{tag} & Object of type \comp{Tag}. \\
-\end{tabularx}
-
-\subsubsection{Definitions}
-
-\begin{deflist}
-  \defitem{A {\it cell} of an \concept{MT} is the basic mesh
-    element. It occupies a fixed region of space; the union of all
-    cells as well as their relation to each other makes up the mesh.}
-  \defitem{The {\it center} of a cell is the location of its geometric 
-    center.}
-  \defitem{A {\it face} of a cell is one of the six rectangular areas
-    that define its boundary. We sometimes refer to the face {\it
-    center}, which is the location of the geometric center of the
-    face. If there are two cells sharing the face, then for the
-    purposes of defining a face centered discontinuous field we define 
-    a separate face center for each cell.}
-  \defitem{A {\it node} of a cell is one of the points where three of
-    its faces touch. If more than one cell has such a point at the
-    same geometric location, then those cells share the node.}
-  \defitem{A {\it vertex} of a cell is located at the same point as
-    one of the cell's nodes. Each cell that shares the node has its
-    own separately defined vertex.}
-  \defitem{A {\it boundary face} of an \concept{MT} is any cell face
-    that is located on the boundary of the mesh, i.e. for which there
-    is only one cell that is partially defined by it.}
-\end{deflist}
-
-\subsubsection{Valid Expressions}
-
-\begin{exprlist}
-  \expritem{Equality}{a == b}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Convertible to \comp{bool}. \\
-     Semantics: & Returns \comp{true} if \comp{\&a == \&b}. Otherwise
-     returns \comp{false}. \\
-     \end{tabularx}}
-  \expritem{Inequality}{a != b}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Convertible to \comp{bool}. \\
-     Semantics: & Equivalent to \comp{!(a == b)}. \\
-     \end{tabularx}}
-  \expritem{Number of cells}{a.get\cu ncells()}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & \comp{size\cu type} \\
-     Semantics: & Returns the number of mesh cells in the current
-     process. \\
-     Postcondition: & \comp{0 <= a.get\cu ncells() <= a.get\cu
-       total\cu ncells()}. \\
-     \end{tabularx}}
-  \expritem{Total number of cells}{a.get\cu total\cu ncells()}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & \comp{size\cu type} \\
-     Semantics: & Returns the total number of mesh cells in all
-     processes. Equivalent to \comp{a.get\cu ncx()*a.get\cu
-       ncy()*a.get\cu ncz()}. \\
-     Postcondition: & \comp{0 <= a.get\cu ncells() <= a.get\cu
-       total\cu ncells()}. \\
-     \end{tabularx}}
-  \expritem{Number of cells along x-axis}{a.get\cu ncx()}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & \comp{size\cu type} \\
-     Semantics: & Returns the number of mesh cells along the x-axis in
-     the full mesh. \\
-     Postcondition: & \comp{0 <= a.get\cu ncx() <= a.get\cu total\cu
-       ncells()}. \\
-     \end{tabularx}}
-  \expritem{Number of cells along y-axis}{a.get\cu ncy()}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & \comp{size\cu type} \\
-     Semantics: & Returns the number of mesh cells along the y-axis in
-     the full mesh. \\
-     Postcondition: & \comp{0 <= a.get\cu ncy() <= a.get\cu total\cu
-       ncells()}. \\
-     \end{tabularx}}
-  \expritem{Number of cells along z-axis}{a.get\cu ncz()}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & \comp{size\cu type} \\
-     Semantics: & Returns the number of mesh cells along the z-axis in
-     the full mesh. \\
-     Postcondition: & \comp{0 <= a.get\cu ncz() <= a.get\cu total\cu
-       ncells()}. \\
-     \end{tabularx}}
-  \expritem{$\Delta$x}{a.get\cu dx(c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{c} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{c.get\cu Mesh() == a}. \\
-     Semantics: & Each cell value in \comp{c} is assigned the value of
-     $\Delta$x for that cell. \\
-     \end{tabularx}}
-  \expritem{$\Delta$y}{a.get\cu dy(c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{c} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{c.get\cu Mesh() == a}. \\
-     Semantics: & Each cell value in \comp{c} is assigned the value of
-     $\Delta$y for that cell. \\
-     \end{tabularx}}
-  \expritem{$\Delta$z}{a.get\cu dz(c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{c} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{c.get\cu Mesh() == a}. \\
-     Semantics: & Each cell value in \comp{c} is assigned the value of
-     $\Delta$z for that cell. \\
-     \end{tabularx}}
-  \expritem{X coordinates of cell centers}{a.get\cu xloc(c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{c} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{c.get\cu Mesh() == a}. \\
-     Semantics: & Each cell value in \comp{c} is assigned the value of
-     the x coordinate of that cell's center. \\
-     \end{tabularx}}
-  \expritem{Y coordinates of cell centers}{a.get\cu yloc(c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{c} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{c.get\cu Mesh() == a}. \\
-     Semantics: & Each cell value in \comp{c} is assigned the value of
-     the y coordinate of that cell's center. \\
-     \end{tabularx}}
-  \expritem{Z coordinates of cell centers}{a.get\cu zloc(c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{c} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{c.get\cu Mesh() == a}. \\
-     Semantics: & Each cell value in \comp{c} is assigned the value of
-     the z coordinate of that cell's center. \\
-     \end{tabularx}}
-  \expritem{X coordinates of cell faces}{a.get\cu xloc(f)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{f} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{f.get\cu Mesh() == a}. \\
-     Semantics: & Each face value in \comp{f} is assigned the value of
-     the x coordinate of that face's center. \\
-     \end{tabularx}}
-  \expritem{Y coordinates of cell faces}{a.get\cu yloc(f)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{f} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{f.get\cu Mesh() == a}. \\
-     Semantics: & Each face value in \comp{f} is assigned the value of
-     the y coordinate of that face's center. \\
-     \end{tabularx}}
-  \expritem{Z coordinates of cell faces}{a.get\cu zloc(f)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{f} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{f.get\cu Mesh() == a}. \\
-     Semantics: & Each face value in \comp{f} is assigned the value of
-     the z coordinate of that face's center. \\
-     \end{tabularx}}
-  \expritem{Face normals}{a.get\cu face\cu normals(fv)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{fv} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{fv.get\cu Mesh() == a}. \\
-     Semantics: & Each face value in \comp{fv} is assigned the value of
-     the outward unit normal on that face. \\
-     \end{tabularx}}
-  \expritem{Face areas}{a.get\cu face\cu areas(f)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{f} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{f.get\cu Mesh() == a}. \\
-     Semantics: & Each face value in \comp{f} is assigned the value of
-     the area of that face. \\
-     \end{tabularx}}
-  \expritem{Face lengths}{a.get\cu face\cu lengths(f)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{f} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{f.get\cu Mesh() == a}. \\
-     Semantics: & Each face value in \comp{f} is assigned the value of
-     the length of that face, defined as the volume of the cell in
-     which the face is located divided by the face area. \\
-     \end{tabularx}}
-  \expritem{Cell volumes}{a.get\cu cell\cu volumes(c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{c} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{c.get\cu Mesh() == a}. \\
-     Semantics: & Each cell value in \comp{c} is assigned the value of
-     the volume of the cell. \\
-     \end{tabularx}}
-  \expritem{Vertex volumes}{a.get\cu vertex\cu volumes(v)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{v} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{v.get\cu Mesh() == a}. \\
-     Semantics: & Each vertex value in \comp{v} is assigned the value of
-     the volume of the vertex, defined as the volume of the cell in
-     which the vertex is located / 8. \\
-     \end{tabularx}}
-  \expritem{Node volumes}{a.get\cu node\cu volumes(n)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{n} is mutable. \\
-     Return type: & \comp{void} \\
-     Precondition: & \comp{n.get\cu Mesh() == a}. \\
-     Semantics: & Each node value in \comp{n} is assigned the value of
-     the volume of the node, defined as the sum of the volumes of the
-     vertices associated with that node. \\
-     \end{tabularx}}
-  \expritem{Cell centered to face centered scatter}
-    {X::scatter(ft, ct, tag)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{ft} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{ft.get\cu Mesh() == ct.get\cu Mesh()}. \\
-       & The operation associated with \comp{tag} is a valid
-       expression between \comp{ft}'s value type and \comp{ct}'s value
-       type. \\
-     Semantics: & For each face value of \comp{ft}, the operation
-     associated with \comp{tag} is applied in series to the initial
-     face value in \comp{ft} and to each cell value in \comp{ct}
-     located in a cell that is adjacent to the face. The result is
-     assigned back to the face in \comp{ft}. \\
-     \end{tabularx}}
-  \expritem{Face centered to cell centered scatter}
-    {X::scatter(ct, ft, tag)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{ct} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{ct.get\cu Mesh() == ft.get\cu Mesh()}. \\
-       & The operation associated with \comp{tag} is a valid
-       expression between \comp{ct}'s value type and \comp{ft}'s value
-       type. \\
-     Semantics: & For each cell value of \comp{ct}, the operation
-     associated with \comp{tag} is applied in series to the initial
-     cell value in \comp{ct} and to each face value in \comp{ft}
-     located in the same cell. The result is assigned back to the cell
-     in \comp{ct}. \\
-     \end{tabularx}}
-  \expritem{Vertex centered to face centered scatter}
-    {X::scatter(ft, vt, op)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{ft} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{ft.get\cu Mesh() == vt.get\cu Mesh()}. \\
-       & The operation associated with \comp{tag} is a valid
-       expression between \comp{ft}'s value type and \comp{vt}'s value
-       type. \\
-     Semantics: & For each face value of \comp{ft}, the operation
-     associated with \comp{tag} is applied in series to the initial
-     face value in \comp{ft} and to each vertex value in \comp{vt}
-     located in the same cell and adjacent to the face. The result is
-     assigned back to the face in \comp{ft}. \\
-     \end{tabularx}}
-  \expritem{Face centered to vertex centered scatter}
-    {X::scatter(vt, ft, op)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{vt} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{vt.get\cu Mesh() == ft.get\cu Mesh()}. \\
-       & The operation associated with \comp{tag} is a valid
-       expression between \comp{vt}'s value type and \comp{ft}'s value
-       type. \\
-     Semantics: & For each vertex value of \comp{vt}, the operation
-     associated with \comp{tag} is applied in series to the initial
-     vertex value in \comp{vt} and to each face value in \comp{ft}
-     located in the same cell and adjacent to the vertex. The result
-     is assigned back to the vertex in \comp{vt}. \\
-     \end{tabularx}}
-  \expritem{Vertex centered to node centered scatter}
-    {X::scatter(nt, vt, op)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{nt} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{nt.get\cu Mesh() == vt.get\cu Mesh()}. \\
-       & The operation associated with \comp{tag} is a valid
-       expression between \comp{nt}'s value type and \comp{vt}'s value
-       type. \\
-     Semantics: & For each node value of \comp{nt}, the operation
-     associated with \comp{tag} is applied in series to the initial
-     node value in \comp{nt} and to each vertex value in \comp{vt}
-     adjacent to the node. The result is assigned back to the node in
-     \comp{nt}. \\
-     \end{tabularx}}
-  \expritem{Vertex centered to cell centered scatter}
-    {X::scatter(ct, vt, op)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{ct} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{ct.get\cu Mesh() == vt.get\cu Mesh()}. \\
-       & The operation associated with \comp{tag} is a valid
-       expression between \comp{ct}'s value type and \comp{vt}'s value
-       type. \\
-     Semantics: & For each cell value of \comp{ct}, the operation
-     associated with \comp{tag} is applied in series to the initial
-     cell value in \comp{ct} and to each vertex value in \comp{vt} in
-     the same cell. The result is assigned back to the cell in
-     \comp{ct}. \\
-     \end{tabularx}}
-  \expritem{Cell centered to face centered gather}
-    {X::gather(ft, ct, op)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{ft} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{ft.get\cu Mesh() == ct.get\cu Mesh()}. \\
-       & The operation associated with \comp{tag} is a valid
-       expression between \comp{ft}'s value type and \comp{ct}'s value
-       type. \\
-     Semantics: & For each face value of \comp{ft}, the operation
-     associated with \comp{tag} is applied between the initial face
-     value in \comp{ft} and to the cell value in \comp{ct} in the same
-     cell. The result is assigned back to the face in \comp{ft}. \\
-     \end{tabularx}}
-  \expritem{Face centered to boundary specified gather}
-    {X::gather(bt, ft, op)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{bt} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{bt.get\cu Mesh() == ft.get\cu Mesh()}. \\
-       & The operation associated with \comp{tag} is a valid
-       expression between \comp{bt}'s value type and \comp{ft}'s value
-       type. \\
-     Semantics: & For each boundary value of \comp{bt}, the operation
-     associated with \comp{tag} is applied between the initial
-     boundary value in \comp{bt} and to the face value in \comp{ft}
-     adjacent to it. The result is assigned back to the boundary in
-     \comp{bt}. \\
-     \end{tabularx}}
-  \expritem{Boundary specified to face centered gather}
-    {X::gather(ft, bt, op)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{ft} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{ft.get\cu Mesh() == bt.get\cu Mesh()}. \\
-       & The operation associated with \comp{tag} is a valid
-       expression between \comp{ft}'s value type and \comp{bt}'s value
-       type. \\
-     Semantics: & For each face value of \comp{ft}, the operation
-     associated with \comp{tag} is applied between the initial face
-     value in \comp{ft} and to the boundary value in \comp{bt}
-     adjacent to it. The result is assigned back to the face in
-     \comp{ft}. \\
-     \end{tabularx}}
-  \expritem{Node centered to vertex centered gather}
-    {X::gather(vt, nt, op)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{vt} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{vt.get\cu Mesh() == nt.get\cu Mesh()}. \\
-       & The operation associated with \comp{tag} is a valid
-       expression between \comp{vt}'s value type and \comp{nt}'s value
-       type. \\
-     Semantics: & For each vertex value of \comp{vt}, the operation
-     associated with \comp{tag} is applied between the initial vertex
-     value in \comp{vt} and to the node value in \comp{nt} adjacent to
-     it. The result is assigned back to the vertex in \comp{vt}. \\
-     \end{tabularx}}
-  \expritem{Cell centered to vertex centered gather}
-    {X::gather(vt, ct, op)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{vt} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{vt.get\cu Mesh() == ct.get\cu Mesh()}. \\
-       & The operation associated with \comp{tag} is a valid
-       expression between \comp{vt}'s value type and \comp{ct}'s value
-       type. \\
-     Semantics: & For each vertex value of \comp{vt}, the operation
-     associated with \comp{tag} is applied between the initial vertex
-     value in \comp{vt} and to the cell value in \comp{ct} in the same
-     cell. The result is assigned back to the vertex in \comp{vt}. \\
-     \end{tabularx}}
-  \expritem{Face swaps}
-    {X::swap\cu faces(ft1, ft2)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{ft1} is mutable. \\
-     Return type: & \comp{void} \\
-     Preconditions: & \comp{ft1.get\cu Mesh() == ft2.get\cu
-       Mesh()}. \\
-     Semantics: & For each pair of face values in \comp{ft2}, the
-     order of the values is reversed and assigned to the corresponding
-     pair in \comp{ft1}. At boundaries (where there are no face pairs)
-     the single face value should be assigned \comp{0}. \\
-     \end{tabularx}}
-  \expritem{Cell centered sum}
-    {X::sum(ct)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{ct}. \\
-     Semantics: & The value returned is the sum of all values
-     contained in \comp{ct} in all processes. \\
-     \end{tabularx}}
-  \expritem{Face centered sum}
-    {X::sum(ft)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{ft}. \\
-     Semantics: & The value returned is the sum of all values
-     contained in \comp{ft} in all processes. \\
-     \end{tabularx}}
-  \expritem{Node centered sum}
-    {X::sum(nt)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{nt}. \\
-     Semantics: & The value returned is the sum of all values
-     contained in \comp{nt} in all processes. \\
-     \end{tabularx}}
-  \expritem{Vertex centered sum}
-    {X::sum(vt)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{vt}. \\
-     Semantics: & The value returned is the sum of all values
-     contained in \comp{vt} in all processes. \\
-     \end{tabularx}}
-  \expritem{Boundary specified sum}
-    {X::sum(bt)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{bt}. \\
-     Semantics: & The value returned is the sum of all values
-     contained in \comp{bt} in all processes. \\
-     \end{tabularx}}
-  \expritem{Cell centered minimum}
-    {X::min(ct)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{ct}. \\
-     Semantics: & The value returned is the minimum of all values
-     contained in \comp{ct} in all processes. \\
-     \end{tabularx}}
-  \expritem{Face centered minimum}
-    {X::min(ft)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{ft}. \\
-     Semantics: & The value returned is the minimum of all values
-     contained in \comp{ft} in all processes. \\
-     \end{tabularx}}
-  \expritem{Node centered minimum}
-    {X::min(nt)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{nt}. \\
-     Semantics: & The value returned is the minimum of all values
-     contained in \comp{nt} in all processes. \\
-     \end{tabularx}}
-  \expritem{Vertex centered minimum}
-    {X::min(vt)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{vt}. \\
-     Semantics: & The value returned is the minimum of all values
-     contained in \comp{vt} in all processes. \\
-     \end{tabularx}}
-  \expritem{Boundary specified minimum}
-    {X::min(bt)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{bt}. \\
-     Semantics: & The value returned is the minimum of all values
-     contained in \comp{bt} in all processes. \\
-     \end{tabularx}}
-  \expritem{Cell centered maximum}
-    {X::max(ct)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{ct}. \\
-     Semantics: & The value returned is the maximum of all values
-     contained in \comp{ct} in all processes. \\
-     \end{tabularx}}
-  \expritem{Face centered maximum}
-    {X::max(ft)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{ft}. \\
-     Semantics: & The value returned is the maximum of all values
-     contained in \comp{ft} in all processes. \\
-     \end{tabularx}}
-  \expritem{Node centered maximum}
-    {X::max(nt)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{nt}. \\
-     Semantics: & The value returned is the maximum of all values
-     contained in \comp{nt} in all processes. \\
-     \end{tabularx}}
-  \expritem{Vertex centered maximum}
-    {X::max(vt)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{vt}. \\
-     Semantics: & The value returned is the maximum of all values
-     contained in \comp{vt} in all processes. \\
-     \end{tabularx}}
-  \expritem{Boundary specified maximum}
-    {X::max(bt)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & The value type of \comp{bt}. \\
-     Semantics: & The value returned is the maximum of all values
-     contained in \comp{bt} in all processes. \\
-     \end{tabularx}}
-\end{exprlist}
-
-\subsubsection{Complexity Guarantees}
-
-\begin{complist}
-  \compitem{The comparison operations are amortized constant time.}
-  \compitem{All of the other operations defined above are linear in
-    the number of cells in the mesh.}
-\end{complist}
-
-\subsubsection{Models}
-
-The \comp{Mesh\cu XYZ} class is a model of \concept{MT}.
+Besides the \concept{Solon 3D Orthogonal Cartesian Mesh} concept
+itself, there are several associated concepts that together are used
+to define the \concept{Solon 3D Orthogonal Cartesian Mesh}
+concept. Some of the lowest level concepts are already defined in
+Ref.~\cite{au99} and will not be restated here. In this section we
+define some slightly higher level, although still basic, concepts. In
+Section~\ref{sec:mesh concepts} we will define the higher level
+concepts that are specifically associated with a mesh.
 
 \subsection{Binary Op}
 
@@ -791,7 +217,7 @@ the value of its first argument but otherwise does not return a
 value.
 
 \subsubsection{Refinement of}
-\concept{Binary Function} (Austern, page 112).
+\concept{Binary Function} (~\cite{au99}, page 112).
 
 \subsubsection{Associated Types}
 
@@ -812,7 +238,7 @@ A \concept{Default Constructible Binary Op} is a \concept{Binary Op}
 that has a default constructor.
 
 \subsubsection{Refinement of}
-\concept{Default Constructible} (Austern, page 84), \concept{Binary
+\concept{Default Constructible} (~\cite{au99}, page 84), \concept{Binary
   Op}.
 
 \subsubsection{Models}
@@ -1038,7 +464,7 @@ The \comp{Mesh\cu XYZ::OpMinAssign} class in Draco is a model of
 \subsection{Max Assign Op}
 
 A \concept{Max Assign Op} is a \concept{Default Constructible Binary
-  Op} that does assignment with minimum operations.
+  Op} that does assignment with maximum operations.
 
 \subsubsection{Refinement of}
 \concept{Default Constructible Binary Op}.
@@ -1079,14 +505,15 @@ The \comp{Mesh\cu XYZ::OpMaxAssign} class in Draco is a model of
 \concept{Max Assign Op}.
 
 \subsection{Scatter/Gather Tag}
+\label{sec:scatter gather tag}
 
 A \concept{Scatter/Gather Tag} is a concept that is used in
-association with the scatter and gather operations of \concept{MT}. It 
-is at least \concept{Default Constructible}, but in some
-implementations it may also be a \concept{Binary Op}.
+association with the scatter and gather operations of \concept{Solon
+  3D Mesh}. It is at least \concept{Default Constructible}, but in
+some implementations it may also be a \concept{Binary Op}.
 
 \subsubsection{Refinement of}
-\concept{Default Constructible} (Austern, page 84).
+\concept{Default Constructible} (~\cite{au99}, page 84).
 
 \subsubsection{Associated Types}
 
@@ -1103,8 +530,8 @@ models of \concept{Scatter/Gather Tag}.
 \subsection{Assign Tag}
 
 An \concept{Assign Tag} is a \concept{Scatter/Gather Tag} that causes
-the \concept{MT} scatter/gather operations to use the semantics of
-\concept{Assign Op}.
+the \concept{Solon 3D Mesh} scatter/gather operations to use the
+semantics of \concept{Assign Op}.
 
 \subsubsection{Refinement of}
 \concept{Scatter/Gather Tag}.
@@ -1123,8 +550,8 @@ The \comp{Mesh\cu XYZ::OpAssign} class in Draco is a model of
 \subsection{Add Assign Tag}
 
 An \concept{Add Assign Tag} is a \concept{Scatter/Gather Tag} that
-causes the \concept{MT} scatter/gather operations to use the semantics
-of \concept{Add Assign Op}.
+causes the \concept{Solon 3D Mesh} scatter/gather operations to use
+the semantics of \concept{Add Assign Op}.
 
 \subsubsection{Refinement of}
 \concept{Scatter/Gather Tag}.
@@ -1143,8 +570,8 @@ The \comp{Mesh\cu XYZ::OpAddAssign} class in Draco is a model of
 \subsection{Sub Assign Tag}
 
 A \concept{Sub Assign Tag} is a \concept{Scatter/Gather Tag} that
-causes the \concept{MT} scatter/gather operations to use the semantics
-of \concept{Sub Assign Op}.
+causes the \concept{Solon 3D Mesh} scatter/gather operations to use
+the semantics of \concept{Sub Assign Op}.
 
 \subsubsection{Refinement of}
 \concept{Scatter/Gather Tag}.
@@ -1163,8 +590,8 @@ The \comp{Mesh\cu XYZ::OpSubAssign} class in Draco is a model of
 \subsection{Mult Assign Tag}
 
 A \concept{Mult Assign Tag} is a \concept{Scatter/Gather Tag} that
-causes the \concept{MT} scatter/gather operations to use the semantics
-of \concept{Mult Assign Op}.
+causes the \concept{Solon 3D Mesh} scatter/gather operations to use
+the semantics of \concept{Mult Assign Op}.
 
 \subsubsection{Refinement of}
 \concept{Scatter/Gather Tag}.
@@ -1183,8 +610,8 @@ The \comp{Mesh\cu XYZ::OpMultAssign} class in Draco is a model of
 \subsection{Min Assign Tag}
 
 A \concept{Min Assign Tag} is a \concept{Scatter/Gather Tag} that
-causes the \concept{MT} scatter/gather operations to use the semantics
-of \concept{Min Assign Op}.
+causes the \concept{Solon 3D Mesh} scatter/gather operations to use
+the semantics of \concept{Min Assign Op}.
 
 \subsubsection{Refinement of}
 \concept{Scatter/Gather Tag}.
@@ -1203,8 +630,8 @@ The \comp{Mesh\cu XYZ::OpMinAssign} class in Draco is a model of
 \subsection{Max Assign Tag}
 
 A \concept{Max Assign Tag} is a \concept{Scatter/Gather Tag} that
-causes the \concept{MT} scatter/gather operations to use the semantics
-of \concept{Max Assign Op}.
+causes the \concept{Solon 3D Mesh} scatter/gather operations to use
+the semantics of \concept{Max Assign Op}.
 
 \subsubsection{Refinement of}
 \concept{Scatter/Gather Tag}.
@@ -1220,627 +647,13 @@ underlying operation must be.
 The \comp{Mesh\cu XYZ::OpMaxAssign} class in Draco is a model of
 \concept{Max Assign Tag}.
 
-\subsection{Expression Enabled Container}
-
-An \concept{Expression Enabled Container} is a \concept{Container} for 
-which all of the usual expression template expressions have been
-defined. These expressions are not necessarily implemented with
-expression templates.
-
-\subsubsection{Refinement of}
-\concept{Container} (Austern, page 125).
-
-\subsubsection{Associated Types}
-
-The same as for \concept{Container}, except that the requirements for
-\comp{X::value\cu type} are strengthened. Each of the valid
-expressions listed below must have overloaded versions defined for
-\comp{X::value\cu type}.
-
-\subsubsection{Notation}
-\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.4\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-  \comp{X} & A type that is a model of \concept{Expression Enabled
-    Container}. \\
-  \comp{T} & \comp{X}'s value type. \\
-  \comp{a} & Object of type \comp{X}. \\
-  \comp{b,c} & Object of type \comp{X} or type \comp{T} or an
-  expression. \\
-\end{tabularx}
-
-\subsubsection{Definitions}
-
-\begin{deflist}
-  \defitem{An {\it expression} is any combination of the
-    non-assignment operations listed below operating on objects of
-    type \comp{X} or \comp{T}. The return type of an expression is not 
-    specified, but the expression must behave semantically as if the
-    return type were \comp{X\&}.}
-\end{deflist}
-
-\subsubsection{Valid Expressions}
-
-In addition to the expressions defined in \concept{Container}, the
-following expressions must be valid.
-
-\begin{exprlist}
-  \expritem{Assignment}{a = b}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{a} is mutable. \\
-     Return type: & \comp{X\&}. \\
-     Precondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. \\
-     Postcondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. If \comp{b} is an object of type
-     \comp{T}, then each element of \comp{a} is equal to \comp{b}.
-     Otherwise \comp{a} contains a copy of each of \comp{b}'s
-     elements. \\
-     \end{tabularx}}
-  \expritem{Assignment with addition}{a += b}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{a} is mutable. \\
-     Return type: & \comp{X\&}. \\
-     Precondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{T::operator+=} being applied to
-     each element of \comp{a} with \comp{b}, if \comp{b} is an object
-     of type \comp{T}. Otherwise equivalent to \comp{T::operator+=}
-     being applied to corresponding elements of \comp{a} and
-     \comp{b}. \\
-     Postcondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. \\
-     \end{tabularx}}
-  \expritem{Assignment with subtraction}{a -= b}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{a} is mutable. \\
-     Return type: & \comp{X\&}. \\
-     Precondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{T::operator-=} being applied to
-     each element of \comp{a} with \comp{b}, if \comp{b} is an object
-     of type \comp{T}. Otherwise equivalent to \comp{T::operator-=}
-     being applied to corresponding elements of \comp{a} and
-     \comp{b}. \\
-     Postcondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. \\
-     \end{tabularx}}
-  \expritem{Assignment with multiplication}{a *= b}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{a} is mutable. \\
-     Return type: & \comp{X\&}. \\
-     Precondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{T::operator*=} being applied to
-     each element of \comp{a} with \comp{b}, if \comp{b} is an object
-     of type \comp{T}. Otherwise equivalent to \comp{T::operator*=}
-     being applied to corresponding elements of \comp{a} and
-     \comp{b}. \\
-     Postcondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. \\
-     \end{tabularx}}
-  \expritem{Assignment with division}{a /= b}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{a} is mutable. \\
-     Return type: & \comp{X\&}. \\
-     Precondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{T::operator/=} being applied to
-     each element of \comp{a} with \comp{b}, if \comp{b} is an object
-     of type \comp{T}. Otherwise equivalent to \comp{T::operator/=}
-     being applied to corresponding elements of \comp{a} and
-     \comp{b}. \\
-     Postcondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. \\
-     \end{tabularx}}
-  \expritem{Unary plus}{+b}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{T::operator+} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Unary minus}{-b}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{T::operator-} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Addition}{b + c}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if either \comp{b} or \comp{c} is not an
-     object of type \comp{T}. Semantically, though, it should behave
-     as if it were \comp{X\&}. \\
-     Precondition: & Unless \comp{b} and \comp{c} are both objects of
-     type \comp{T}, this expression must be used in a statement that
-     contains one of the assignment operators. \\
-                   & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{T::operator+} being applied to
-     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
-     object of type \comp{T}) with corresponding elements of \comp{c}
-     (or \comp{c} itself if \comp{c} is an object of type
-     \comp{T}). \\
-     \end{tabularx}}
-  \expritem{Subtraction}{b - c}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if either \comp{b} or \comp{c} is not an
-     object of type \comp{T}. Semantically, though, it should behave
-     as if it were \comp{X\&}. \\
-     Precondition: & Unless \comp{b} and \comp{c} are both objects of
-     type \comp{T}, this expression must be used in a statement that
-     contains one of the assignment operators. \\
-                   & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{T::operator-} being applied to
-     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
-     object of type \comp{T}) with corresponding elements of \comp{c}
-     (or \comp{c} itself if \comp{c} is an object of type
-     \comp{T}). \\
-     \end{tabularx}}
-  \expritem{Multiplication}{b * c}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if either \comp{b} or \comp{c} is not an
-     object of type \comp{T}. Semantically, though, it should behave
-     as if it were \comp{X\&}. \\
-     Precondition: & Unless \comp{b} and \comp{c} are both objects of
-     type \comp{T}, this expression must be used in a statement that
-     contains one of the assignment operators. \\
-                   & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{T::operator*} being applied to
-     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
-     object of type \comp{T}) with corresponding elements of \comp{c}
-     (or \comp{c} itself if \comp{c} is an object of type
-     \comp{T}). \\
-     \end{tabularx}}
-  \expritem{Division}{b / c}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if either \comp{b} or \comp{c} is not an
-     object of type \comp{T}. Semantically, though, it should behave
-     as if it were \comp{X\&}. \\
-     Precondition: & Unless \comp{b} and \comp{c} are both objects of
-     type \comp{T}, this expression must be used in a statement that
-     contains one of the assignment operators. \\
-                   & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{T::operator/} being applied to
-     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
-     object of type \comp{T}) with corresponding elements of \comp{c}
-     (or \comp{c} itself if \comp{c} is an object of type
-     \comp{T}). \\
-     \end{tabularx}}
-  \expritem{Arc cosine}{acos(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{acos()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Arc sine}{asin(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{asin()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Arc tangent}{atan(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{atan()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Arc tangent 2}{atan2(b,c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if either \comp{b} or \comp{c} is not an
-     object of type \comp{T}. Semantically, though, it should behave
-     as if it were \comp{X\&}. \\
-     Precondition: & Unless \comp{b} and \comp{c} are both objects of
-     type \comp{T}, this expression must be used in a statement that
-     contains one of the assignment operators. \\
-                   & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{atan2()} being applied to
-     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
-     object of type \comp{T}) with corresponding elements of \comp{c}
-     (or \comp{c} itself if \comp{c} is an object of type
-     \comp{T}). \\
-     \end{tabularx}}
-  \expritem{Cosine}{cos(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{cos()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Sine}{sin(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{sin()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Tangent}{tan(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{tan()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Hyperbolic cosine}{cosh(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{cosh()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Hyperbolic sine}{sinh(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{sinh()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Hyperbolic tangent}{tanh(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{tanh()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Exponential}{exp(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{exp()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Logarithm}{log(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{log()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Base-10 logarithm}{log10(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{log10()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Power}{pow(b,c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if either \comp{b} or \comp{c} is not an
-     object of type \comp{T}. Semantically, though, it should behave
-     as if it were \comp{X\&}. \\
-     Precondition: & Unless \comp{b} and \comp{c} are both objects of
-     type \comp{T}, this expression must be used in a statement that
-     contains one of the assignment operators. \\
-                   & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{pow()} being applied to
-     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
-     object of type \comp{T}) with corresponding elements of \comp{c}
-     (or \comp{c} itself if \comp{c} is an object of type
-     \comp{T}). \\
-     \end{tabularx}}
-  \expritem{Square root}{sqrt(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{sqrt()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Ceiling}{ceil(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{ceil()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Absolute value}{abs(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{abs()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Absolute value}{labs(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{labs()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Absolute value}{fabs(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{fabs()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Floor}{floor(b)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if \comp{b} is not an object of type
-     \comp{T}. Semantically, though, it should behave as if it were
-     \comp{X\&}. \\
-     Precondition: & Unless \comp{b} is an object of type \comp{T},
-     this expression must be used in a statement that contains one of
-     the assignment operators. \\
-     Postcondition: & Unless \comp{b} is an object of type \comp{T},
-     the resulting expression should behave semantically as a
-     \comp{X\&} in which each element has been assigned the result of
-     \comp{floor()} applied to corresponding elements of
-     \comp{b}. \\
-     \end{tabularx}}
-  \expritem{Modulus}{fmod(b,c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if either \comp{b} or \comp{c} is not an
-     object of type \comp{T}. Semantically, though, it should behave
-     as if it were \comp{X\&}. \\
-     Precondition: & Unless \comp{b} and \comp{c} are both objects of
-     type \comp{T}, this expression must be used in a statement that
-     contains one of the assignment operators. \\
-                   & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{fmod()} being applied to
-     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
-     object of type \comp{T}) with corresponding elements of \comp{c}
-     (or \comp{c} itself if \comp{c} is an object of type
-     \comp{T}). \\
-     \end{tabularx}}
-  \expritem{Minimum}{min(b,c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if either \comp{b} or \comp{c} is not an
-     object of type \comp{T}. Semantically, though, it should behave
-     as if it were \comp{X\&}. \\
-     Precondition: & Unless \comp{b} and \comp{c} are both objects of
-     type \comp{T}, this expression must be used in a statement that
-     contains one of the assignment operators. \\
-                   & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{min()} being applied to
-     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
-     object of type \comp{T}) with corresponding elements of \comp{c}
-     (or \comp{c} itself if \comp{c} is an object of type
-     \comp{T}). \\
-     \end{tabularx}}
-  \expritem{Maximum}{max(b,c)}
-    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
-    >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & Undefined if either \comp{b} or \comp{c} is not an
-     object of type \comp{T}. Semantically, though, it should behave
-     as if it were \comp{X\&}. \\
-     Precondition: & Unless \comp{b} and \comp{c} are both objects of
-     type \comp{T}, this expression must be used in a statement that
-     contains one of the assignment operators. \\
-                   & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. \\
-     Semantics: & Equivalent to \comp{max()} being applied to
-     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
-     object of type \comp{T}) with corresponding elements of \comp{c}
-     (or \comp{c} itself if \comp{c} is an object of type
-     \comp{T}). \\
-     \end{tabularx}}
-\end{exprlist}
-
-\subsubsection{Complexity Guarantees}
-
-All of the operations defined above are linear in the container's
-size.
-
-\subsubsection{Models}
-
-All of the \comp{Mesh\cu XYZ} fields are models of \concept{Expression
-  Enabled Container}.
-
-\subsection{Expression Enabled Forward Container}
-
-An \concept{Expression Enabled Forward Container} is a
-\concept{Forward Container} for which all of the usual expression
-template expressions have been defined. These expressions are not
-necessarily implemented with expression templates.
-
-\subsubsection{Refinement of}
-\concept{Forward Container} (Austern, page 131), \concept{Expression
-  Enabled Container}.
-
-\subsubsection{Models}
-
-All of the \comp{Mesh\cu XYZ} fields are models of \concept{Expression
-  Enabled Forward Container}.
-
-\subsection{Expression Enabled Random Access Container}
-
-An \concept{Expression Enabled Random Access Container} is a
-\concept{Random Access Container} for which all of the usual
-expression template expressions have been defined. These expressions
-are not necessarily implemented with expression templates.
-
-\subsubsection{Refinement of}
-\concept{Random Access Container} (Austern, page 135),
-\concept{Expression Enabled Forward Container}.
-
-\subsubsection{Models}
-
-The \comp{Mesh\cu XYZ::tiny\cu vec<>} class is a model of
-\concept{Expression Enabled Random Access Container}.
-
 \subsection{DoubleVec}
 
 A \concept{DoubleVec} is an \concept{Expression Enabled Random Access
   Container} that stores a 3D vector of \comp{double}s.
 
 \subsubsection{Refinement of}
-\concept{Expression Enabled Random Access Container}.
+\concept{Expression Enabled Random Access Container} (\cite{rn99046}).
 
 \subsubsection{Associated Types}
 
@@ -1883,14 +696,21 @@ In addition to the expressions defined in \concept{Expression Enabled
 The \comp{Mesh\cu XYZ::tiny\cu vec<double>} class is a model of
 \concept{DoubleVec}.
 
-\subsection{MTField}
 
-An \concept{MTField} is an \concept{Expression Enabled Forward
-  Container} that stores a data field associated with an
-\concept{MT}.
+\section{Mesh Concepts}
+\label{sec:mesh concepts}
+
+In this section we define the various mesh and mesh-related concepts.
+
+\subsection{Solon Mesh Field}
+\label{sec:solon mesh field}
+
+A \concept{Solon Mesh Field} is an \concept{Expression Enabled Forward
+  Container} that stores a data field associated with a
+\concept{Solon 3D Mesh}.
 
 \subsubsection{Refinement of}
-\concept{Expression Enabled Forward Container}.
+\concept{Expression Enabled Forward Container} (\cite{rn99046}).
 
 \subsubsection{Associated Types}
 
@@ -1901,17 +721,16 @@ the current process. In addition to the types defined in
 is defined.
 
 \begin{typelist}
-  \typeitem{Mesh type}{M}{The type of the mesh object with respect to which 
-    an \concept{MTField} is defined.}
+  \typeitem{Mesh type}{mesh\cu type}{The type of the mesh object with
+    respect to which a \concept{Solon Mesh Field} is defined.}
 \end{typelist}
 
 \subsubsection{Notation}
 \begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.4\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
-  \comp{X} & A type that is a model of \concept{MTField}. \\
-  \comp{M} & A type that is a model of \concept{MT}. \\
+  \comp{X} & A type that is a model of \concept{Solon Mesh Field}. \\
   \comp{a} & Object of type \comp{X}. \\
-  \comp{f} & Object of type \comp{M::FieldConstructor}. \\
+  \comp{f} & Object of type \comp{mesh\cu type::FieldConstructor}. \\
 \end{tabularx}
 
 \subsubsection{Valid Expressions}
@@ -1928,16 +747,16 @@ In addition to the expressions defined in \concept{Expression Enabled
   \expritem{Obtain mesh}{a.get\cu Mesh()}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & \comp{M\&} \\
+     Return type: & \comp{mesh\cu type\&} \\
      Semantics: & Returns a reference to the mesh object with respect
      to which \comp{a} is defined. \\
      \end{tabularx}}
   \expritem{Obtain field constructor}{a.get\cu FieldConstructor()}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
-     Return type: & \comp{M::FieldConstructor\&} \\
+     Return type: & \comp{mesh\cu type::FieldConstructor\&} \\
      Postcondition: & The returned reference, when used as an argument 
-     to the \concept{MTField} constructor, yields an object defined
+     to the \concept{Solon Mesh Field} constructor, yields an object defined
      with respect to the same mesh as \comp{a}. \\
      \end{tabularx}}
   \expritem{Beginning of range}{a.begin()}
@@ -1989,73 +808,767 @@ In addition to the expressions defined in \concept{Expression Enabled
 
 \subsubsection{Models}
 
-All of the \comp{Mesh\cu XYZ} fields are models of \concept{MTField}.
+All of the \comp{Mesh\cu XYZ} fields are models of \concept{Solon Mesh
+  Field}.
 
-\subsection{Cell Centered MTField}
+\subsection{Cell Centered Solon Mesh Field}
 
-A \concept{Cell Centered MTField} is an \concept{MTField} that
-contains a value for each cell in the associated mesh.
+A \concept{Cell Centered Solon Mesh Field} is a \concept{Solon Mesh
+  Field} that contains a value for each cell in the associated mesh.
 
 \subsubsection{Refinement of}
-\concept{MTField}.
+\concept{Solon Mesh Field}.
 
 \subsubsection{Models}
 
 The \comp{Mesh\cu XYZ::cctf<>} class is a model of \concept{Cell
-  Centered MTField}.
+  Centered Solon Mesh Field}.
 
-\subsection{Face Centered Discontinuous MTField}
+\subsection{Face Centered Discontinuous Solon Mesh Field}
 
-A \concept{Face Centered Discontinuous MTField} is an
-\concept{MTField} that contains a value for each face in the
+A \concept{Face Centered Discontinuous Solon Mesh Field} is a
+\concept{Solon Mesh Field} that contains a value for each face in the
 associated mesh.
 
 \subsubsection{Refinement of}
-\concept{MTField}.
+\concept{Solon Mesh Field}.
 
 \subsubsection{Models}
 
 The \comp{Mesh\cu XYZ::fcdtf<>} class is a model of \concept{Face
-  Centered Discontinuous MTField}.
+  Centered Discontinuous Solon Mesh Field}.
 
-\subsection{Node Centered MTField}
+\subsection{Node Centered Solon Mesh Field}
 
-A \concept{Node Centered MTField} is an \concept{MTField} that
-contains a value for each node in the associated mesh.
+A \concept{Node Centered Solon Mesh Field} is a \concept{Solon Mesh
+  Field} that contains a value for each node in the associated mesh.
 
 \subsubsection{Refinement of}
-\concept{MTField}.
+\concept{Solon Mesh Field}.
 
 \subsubsection{Models}
 
 The \comp{Mesh\cu XYZ::nctf<>} class is a model of \concept{Node
-  Centered MTField}.
+  Centered Solon Mesh Field}.
 
-\subsection{Vertex Centered MTField}
+\subsection{Vertex Centered Solon Mesh Field}
 
-A \concept{Vertex Centered MTField} is an \concept{MTField} that
-contains a value for each vertex in the associated mesh.
+A \concept{Vertex Centered Solon Mesh Field} is a \concept{Solon Mesh
+  Field} that contains a value for each vertex in the associated mesh.
 
 \subsubsection{Refinement of}
-\concept{MTField}.
+\concept{Solon Mesh Field}.
 
 \subsubsection{Models}
 
 The \comp{Mesh\cu XYZ::vctf<>} class is a model of \concept{Vertex
-  Centered MTField}.
+  Centered Solon Mesh Field}.
 
-\subsection{Boundary Specified MTField}
+\subsection{Boundary Face Solon Mesh Field}
 
-A \concept{Boundary Specified MTField} is an \concept{MTField} that
-contains a value for each boundary face in the associated mesh.
+A \concept{Boundary Face Solon Mesh Field} is a \concept{Solon Mesh
+  Field} that contains a value for each boundary face in the
+associated mesh.
 
 \subsubsection{Refinement of}
-\concept{MTField}.
+\concept{Solon Mesh Field}.
 
 \subsubsection{Models}
 
-The \comp{Mesh\cu XYZ::bstf<>} class is a model of \concept{Boundary
-  Specified  MTField}.
+The \comp{Mesh\cu XYZ::bftf<>} class is a model of \concept{Boundary
+  Face Solon Mesh Field}.
+
+
+\subsection{Solon 3D Mesh}
+\label{sec:solon 3d mesh}
+A model of \concept{Solon 3D Mesh} is a class that describes a
+3D mesh and has nested type definitions for a variety of field types.
+
+\subsubsection{Refinement of}
+\concept{Equality Comparable} (~\cite{au99}, page 85).
+
+\subsubsection{Associated Types}
+
+\begin{typelist}
+  \typeitem{Size type}{X::size\cu type}{An unsigned integral type that
+    can represent the number of cells in the entire mesh.}
+  \typeitem{Field constructor type}{X::FieldConstructor}{The argument
+    type for constructing a \concept{Solon Mesh Field}.}
+  \typeitem{Cell centered template field (cctf)}{template <class T>
+    X::cctf<T>}{A model of \concept{Cell Centered Solon Mesh Field}.}
+  \typeitem{Face centered discontinuous template field
+    (fcdtf)}{template <class T> X::fcdtf<T>}{A model of \concept{Face
+      Centered Discontinuous Solon Mesh Field}.}
+  \typeitem{Node centered template field (nctf)}{template <class T>
+    X::nctf<T>}{A model of \concept{Node Centered Solon Mesh Field}.}
+  \typeitem{Vertex centered template field (vctf)}{template <class T>
+    X::vctf<T>}{A model of \concept{Vertex Centered Solon Mesh Field}.}
+  \typeitem{Boundary face template field (bftf)}{template <class T>
+    X::bftf<T>}{A model of \concept{Boundary Face Solon Mesh Field}.}
+  \typeitem{Cell centered scalar field}{X::ccsf}{A typedef for
+    \comp{X::cctf<double>}.}
+  \typeitem{Face centered discontinuous scalar field}{X::fcdsf}{A
+    typedef for \comp{X::fcdtf<double>}.}
+  \typeitem{Node centered scalar field}{X::ncsf}{A typedef for
+    \comp{X::nctf<double>}.}
+  \typeitem{Vertex centered scalar field}{X::vcsf}{A typedef for
+    \comp{X::vctf<double>}.}
+  \typeitem{Boundary face scalar field}{X::bfsf}{A typedef for
+    \comp{X::bftf<double>}.}
+  \typeitem{Cell centered integer field}{X::ccif}{A typedef for
+    \comp{X::cctf<int>}.}
+  \typeitem{Face centered discontinuous integer field}{X::fcdif}{A
+    typedef for \comp{X::fcdtf<int>}.}
+  \typeitem{Node centered integer field}{X::ncif}{A typedef for
+    \comp{X::nctf<int>}.}
+  \typeitem{Vertex centered integer field}{X::vcif}{A typedef for
+    \comp{X::vctf<int>}.}
+  \typeitem{Boundary face integer field}{X::bfif}{A typedef for
+    \comp{X::bftf<int>}.}
+  \typeitem{Cell centered vector scalar field}{X::ccvsf}{A typedef for
+    \comp{X::cctf<vec>}, where \comp{vec} is a model of
+    \concept{DoubleVec}.}
+  \typeitem{Face centered discontinuous vector scalar
+    field}{X::fcdvsf}{A typedef for \comp{X::fcdtf<vec>}, where
+    \comp{vec} is a model of \concept{DoubleVec}.}
+  \typeitem{Node centered vector scalar field}{X::ncvsf}{A typedef for
+    \comp{X::nctf<vec>}, where \comp{vec} is a model of
+    \concept{DoubleVec}.}
+  \typeitem{Vertex centered vector scalar field}{X::vcvsf}{A typedef
+    for \comp{X::vctf<vec>}, where \comp{vec} is a model of
+    \concept{DoubleVec}.}
+  \typeitem{Boundary face vector scalar field}{X::bfvsf}{A typedef
+    for \comp{X::bftf<vec>}, where \comp{vec} is a model of
+    \concept{DoubleVec}.}
+  \typeitem{Assign tag}{X::OpAssign}{A model of \concept{Assign
+      Tag}.}
+  \typeitem{Assign with addition tag}{X::OpAddAssign}{A model of
+    \concept{Add Assign Tag}.}
+  \typeitem{Assign with subtraction tag}{X::OpSubAssign}{A model
+    of \concept{Sub Assign Tag}.}
+  \typeitem{Assign with multiplication tag}{X::OpMultAssign}{A
+    model of \concept{Mult Assign Tag}.}
+  \typeitem{Assign with minimum tag}{X::OpMinAssign}{A model of
+    \concept{Min Assign Tag}.}
+  \typeitem{Assign with maximum tag}{X::OpMaxAssign}{A model of
+    \concept{Max Assign Tag}.}
+\end{typelist}
+
+\subsubsection{Notation}
+\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.4\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+  \comp{X} & A type that is a model of \concept{Solon 3D Mesh}. \\
+  \comp{a,b} & Object of type \comp{X}. \\
+  \comp{c} & Object of type \comp{X::ccsf}. \\
+  \comp{f} & Object of type \comp{X::fcdsf}. \\
+  \comp{fv} & Object of type \comp{X::fcdvsf}. \\
+  \comp{v} & Object of type \comp{X::vcsf}. \\
+  \comp{n} & Object of type \comp{X::ncsf}. \\
+  \comp{ft,ft1,ft2} & Object of type \comp{X::fcdtf<T>}. \\
+  \comp{ct} & Object of type \comp{X::cctf<T>}. \\
+  \comp{vt} & Object of type \comp{X::vctf<T>}. \\
+  \comp{nt} & Object of type \comp{X::nctf<T>}. \\
+  \comp{bt} & Object of type \comp{X::bftf<T>}. \\
+  \comp{Tag} & A type that is a model of \concept{Scatter/Gather Tag}. \\
+  \comp{tag} & Object of type \comp{Tag}. \\
+\end{tabularx}
+
+\subsubsection{Definitions}
+
+\begin{deflist}
+  \defitem{A {\it cell} of a \concept{Solon 3D Mesh} is the basic mesh
+    element. It occupies a fixed region of space; the union of all
+    cells as well as their relation to each other makes up the mesh.}
+  \defitem{The {\it center} of a cell is the location of its geometric 
+    center.}
+  \defitem{A {\it face} of a cell is one of the planar areas
+    that define its boundary. We sometimes refer to the face {\it
+    center}, which is the location of the geometric center of the
+    face. If there are two cells sharing the face, then for the
+    purposes of defining a face centered discontinuous field we define 
+    a separate face center for each cell.}
+  \defitem{A {\it node} of a cell is one of the points where three or
+    more of its faces touch. If more than one cell has such a point at
+    the same geometric location, then those cells share the node.}
+  \defitem{A {\it vertex} of a cell is located at the same point as
+    one of the cell's nodes. Each cell that shares the node has its
+    own separately defined vertex.}
+  \defitem{A {\it boundary face} of a \concept{Solon 3D Mesh} is any
+    cell face that is located on the boundary of the mesh, i.e. for
+    which there is only one cell that is partially defined by it.}
+\end{deflist}
+
+\subsubsection{Valid Expressions}
+
+\begin{exprlist}
+  \expritem{Equality}{a == b}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Convertible to \comp{bool}. \\
+     Semantics: & Returns \comp{true} if \comp{\&a == \&b}. Otherwise
+     returns \comp{false}. \\
+     \end{tabularx}}
+  \expritem{Inequality}{a != b}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Convertible to \comp{bool}. \\
+     Semantics: & Equivalent to \comp{!(a == b)}. \\
+     \end{tabularx}}
+  \expritem{Number of cells}{a.get\cu ncells()}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & \comp{size\cu type} \\
+     Semantics: & Returns the number of mesh cells in the current
+     process. \\
+     Postcondition: & \comp{0 <= a.get\cu ncells() <= a.get\cu
+       total\cu ncells()}. \\
+     \end{tabularx}}
+  \expritem{Total number of cells}{a.get\cu total\cu ncells()}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & \comp{size\cu type} \\
+     Semantics: & Returns the total number of mesh cells in all
+     processes. \\
+     Postcondition: & \comp{0 <= a.get\cu ncells() <= a.get\cu
+       total\cu ncells()}. \\
+     \end{tabularx}}
+  \expritem{X coordinates of cell centers}{a.get\cu xloc(c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{c} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{c.get\cu Mesh() == a}. \\
+     Semantics: & Each cell value in \comp{c} is assigned the value of
+     the x coordinate of that cell's center. \\
+     \end{tabularx}}
+  \expritem{Y coordinates of cell centers}{a.get\cu yloc(c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{c} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{c.get\cu Mesh() == a}. \\
+     Semantics: & Each cell value in \comp{c} is assigned the value of
+     the y coordinate of that cell's center. \\
+     \end{tabularx}}
+  \expritem{Z coordinates of cell centers}{a.get\cu zloc(c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{c} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{c.get\cu Mesh() == a}. \\
+     Semantics: & Each cell value in \comp{c} is assigned the value of
+     the z coordinate of that cell's center. \\
+     \end{tabularx}}
+  \expritem{X coordinates of cell faces}{a.get\cu xloc(f)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{f} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{f.get\cu Mesh() == a}. \\
+     Semantics: & Each face value in \comp{f} is assigned the value of
+     the x coordinate of that face's center. \\
+     \end{tabularx}}
+  \expritem{Y coordinates of cell faces}{a.get\cu yloc(f)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{f} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{f.get\cu Mesh() == a}. \\
+     Semantics: & Each face value in \comp{f} is assigned the value of
+     the y coordinate of that face's center. \\
+     \end{tabularx}}
+  \expritem{Z coordinates of cell faces}{a.get\cu zloc(f)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{f} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{f.get\cu Mesh() == a}. \\
+     Semantics: & Each face value in \comp{f} is assigned the value of
+     the z coordinate of that face's center. \\
+     \end{tabularx}}
+  \expritem{Face normals}{a.get\cu face\cu normals(fv)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{fv} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{fv.get\cu Mesh() == a}. \\
+     Semantics: & Each face value in \comp{fv} is assigned the value of
+     the outward unit normal on that face. \\
+     \end{tabularx}}
+  \expritem{Face areas}{a.get\cu face\cu areas(f)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{f} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{f.get\cu Mesh() == a}. \\
+     Semantics: & Each face value in \comp{f} is assigned the value of
+     the area of that face. \\
+     \end{tabularx}}
+  \expritem{Face lengths}{a.get\cu face\cu lengths(f)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{f} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{f.get\cu Mesh() == a}. \\
+     Semantics: & Each face value in \comp{f} is assigned the value of
+     the length of that face, defined as the volume of the cell in
+     which the face is located divided by the face area. \\
+     \end{tabularx}}
+  \expritem{Cell volumes}{a.get\cu cell\cu volumes(c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{c} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{c.get\cu Mesh() == a}. \\
+     Semantics: & Each cell value in \comp{c} is assigned the value of
+     the volume of the cell. \\
+     \end{tabularx}}
+  \expritem{Vertex volumes}{a.get\cu vertex\cu volumes(v)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{v} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{v.get\cu Mesh() == a}. \\
+     Semantics: & Each vertex value in \comp{v} is assigned the value of
+     the volume of the vertex, defined as the volume of the cell in
+     which the vertex is located / 8. \\
+     \end{tabularx}}
+  \expritem{Node volumes}{a.get\cu node\cu volumes(n)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{n} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{n.get\cu Mesh() == a}. \\
+     Semantics: & Each node value in \comp{n} is assigned the value of
+     the volume of the node, defined as the sum of the volumes of the
+     vertices associated with that node. \\
+     \end{tabularx}}
+  \expritem{Cell centered to face centered scatter}
+    {X::scatter(ft, ct, tag)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{ft} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{ft.get\cu Mesh() == ct.get\cu Mesh()}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ft}'s value type and \comp{ct}'s value
+       type. \\
+     Semantics: & For each face value of \comp{ft}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     face value in \comp{ft} and to each cell value in \comp{ct}
+     located in a cell that is adjacent to the face. The result is
+     assigned back to the face in \comp{ft}. \\
+     \end{tabularx}}
+  \expritem{Face centered to cell centered scatter}
+    {X::scatter(ct, ft, tag)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{ct} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{ct.get\cu Mesh() == ft.get\cu Mesh()}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ct}'s value type and \comp{ft}'s value
+       type. \\
+     Semantics: & For each cell value of \comp{ct}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     cell value in \comp{ct} and to each face value in \comp{ft}
+     located in the same cell. The result is assigned back to the cell
+     in \comp{ct}. \\
+     \end{tabularx}}
+  \expritem{Vertex centered to face centered scatter}
+    {X::scatter(ft, vt, tag)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{ft} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{ft.get\cu Mesh() == vt.get\cu Mesh()}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ft}'s value type and \comp{vt}'s value
+       type. \\
+     Semantics: & For each face value of \comp{ft}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     face value in \comp{ft} and to each vertex value in \comp{vt}
+     located in the same cell and adjacent to the face. The result is
+     assigned back to the face in \comp{ft}. \\
+     \end{tabularx}}
+  \expritem{Face centered to vertex centered scatter}
+    {X::scatter(vt, ft, tag)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{vt} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{vt.get\cu Mesh() == ft.get\cu Mesh()}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{vt}'s value type and \comp{ft}'s value
+       type. \\
+     Semantics: & For each vertex value of \comp{vt}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     vertex value in \comp{vt} and to each face value in \comp{ft}
+     located in the same cell and adjacent to the vertex. The result
+     is assigned back to the vertex in \comp{vt}. \\
+     \end{tabularx}}
+  \expritem{Vertex centered to node centered scatter}
+    {X::scatter(nt, vt, tag)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{nt} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{nt.get\cu Mesh() == vt.get\cu Mesh()}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{nt}'s value type and \comp{vt}'s value
+       type. \\
+     Semantics: & For each node value of \comp{nt}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     node value in \comp{nt} and to each vertex value in \comp{vt}
+     adjacent to the node. The result is assigned back to the node in
+     \comp{nt}. \\
+     \end{tabularx}}
+  \expritem{Vertex centered to cell centered scatter}
+    {X::scatter(ct, vt, tag)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{ct} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{ct.get\cu Mesh() == vt.get\cu Mesh()}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ct}'s value type and \comp{vt}'s value
+       type. \\
+     Semantics: & For each cell value of \comp{ct}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     cell value in \comp{ct} and to each vertex value in \comp{vt} in
+     the same cell. The result is assigned back to the cell in
+     \comp{ct}. \\
+     \end{tabularx}}
+  \expritem{Cell centered to face centered gather}
+    {X::gather(ft, ct, tag)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{ft} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{ft.get\cu Mesh() == ct.get\cu Mesh()}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ft}'s value type and \comp{ct}'s value
+       type. \\
+     Semantics: & For each face value of \comp{ft}, the operation
+     associated with \comp{tag} is applied between the initial face
+     value in \comp{ft} and to the cell value in \comp{ct} in the same
+     cell. The result is assigned back to the face in \comp{ft}. \\
+     \end{tabularx}}
+  \expritem{Face centered to boundary face gather}
+    {X::gather(bt, ft, tag)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{bt} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{bt.get\cu Mesh() == ft.get\cu Mesh()}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{bt}'s value type and \comp{ft}'s value
+       type. \\
+     Semantics: & For each boundary value of \comp{bt}, the operation
+     associated with \comp{tag} is applied between the initial
+     boundary value in \comp{bt} and to the face value in \comp{ft}
+     adjacent to it. The result is assigned back to the boundary in
+     \comp{bt}. \\
+     \end{tabularx}}
+  \expritem{Boundary face to face centered gather}
+    {X::gather(ft, bt, tag)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{ft} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{ft.get\cu Mesh() == bt.get\cu Mesh()}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ft}'s value type and \comp{bt}'s value
+       type. \\
+     Semantics: & For each face value of \comp{ft}, the operation
+     associated with \comp{tag} is applied between the initial face
+     value in \comp{ft} and to the boundary value in \comp{bt}
+     adjacent to it. The result is assigned back to the face in
+     \comp{ft}. \\
+     \end{tabularx}}
+  \expritem{Node centered to vertex centered gather}
+    {X::gather(vt, nt, tag)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{vt} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{vt.get\cu Mesh() == nt.get\cu Mesh()}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{vt}'s value type and \comp{nt}'s value
+       type. \\
+     Semantics: & For each vertex value of \comp{vt}, the operation
+     associated with \comp{tag} is applied between the initial vertex
+     value in \comp{vt} and to the node value in \comp{nt} adjacent to
+     it. The result is assigned back to the vertex in \comp{vt}. \\
+     \end{tabularx}}
+  \expritem{Cell centered to vertex centered gather}
+    {X::gather(vt, ct, tag)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{vt} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{vt.get\cu Mesh() == ct.get\cu Mesh()}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{vt}'s value type and \comp{ct}'s value
+       type. \\
+     Semantics: & For each vertex value of \comp{vt}, the operation
+     associated with \comp{tag} is applied between the initial vertex
+     value in \comp{vt} and to the cell value in \comp{ct} in the same
+     cell. The result is assigned back to the vertex in \comp{vt}. \\
+     \end{tabularx}}
+  \expritem{Face swaps}
+    {X::swap\cu faces(ft1, ft2)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{ft1} is mutable. \\
+     Return type: & \comp{void} \\
+     Preconditions: & \comp{ft1.get\cu Mesh() == ft2.get\cu
+       Mesh()}. \\
+     Semantics: & For each pair of face values in \comp{ft2}, the
+     order of the values is reversed and assigned to the corresponding
+     pair in \comp{ft1}. At boundaries (where there are no face pairs)
+     the single face value should be assigned \comp{0}. \\
+     \end{tabularx}}
+  \expritem{Cell centered sum}
+    {X::sum(ct)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{ct}. \\
+     Semantics: & The value returned is the sum of all values
+     contained in \comp{ct} in all processes. \\
+     \end{tabularx}}
+  \expritem{Face centered sum}
+    {X::sum(ft)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{ft}. \\
+     Semantics: & The value returned is the sum of all values
+     contained in \comp{ft} in all processes. \\
+     \end{tabularx}}
+  \expritem{Node centered sum}
+    {X::sum(nt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{nt}. \\
+     Semantics: & The value returned is the sum of all values
+     contained in \comp{nt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Vertex centered sum}
+    {X::sum(vt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{vt}. \\
+     Semantics: & The value returned is the sum of all values
+     contained in \comp{vt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Boundary face sum}
+    {X::sum(bt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{bt}. \\
+     Semantics: & The value returned is the sum of all values
+     contained in \comp{bt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Cell centered minimum}
+    {X::min(ct)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{ct}. \\
+     Semantics: & The value returned is the minimum of all values
+     contained in \comp{ct} in all processes. \\
+     \end{tabularx}}
+  \expritem{Face centered minimum}
+    {X::min(ft)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{ft}. \\
+     Semantics: & The value returned is the minimum of all values
+     contained in \comp{ft} in all processes. \\
+     \end{tabularx}}
+  \expritem{Node centered minimum}
+    {X::min(nt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{nt}. \\
+     Semantics: & The value returned is the minimum of all values
+     contained in \comp{nt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Vertex centered minimum}
+    {X::min(vt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{vt}. \\
+     Semantics: & The value returned is the minimum of all values
+     contained in \comp{vt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Boundary face minimum}
+    {X::min(bt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{bt}. \\
+     Semantics: & The value returned is the minimum of all values
+     contained in \comp{bt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Cell centered maximum}
+    {X::max(ct)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{ct}. \\
+     Semantics: & The value returned is the maximum of all values
+     contained in \comp{ct} in all processes. \\
+     \end{tabularx}}
+  \expritem{Face centered maximum}
+    {X::max(ft)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{ft}. \\
+     Semantics: & The value returned is the maximum of all values
+     contained in \comp{ft} in all processes. \\
+     \end{tabularx}}
+  \expritem{Node centered maximum}
+    {X::max(nt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{nt}. \\
+     Semantics: & The value returned is the maximum of all values
+     contained in \comp{nt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Vertex centered maximum}
+    {X::max(vt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{vt}. \\
+     Semantics: & The value returned is the maximum of all values
+     contained in \comp{vt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Boundary face maximum}
+    {X::max(bt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{bt}. \\
+     Semantics: & The value returned is the maximum of all values
+     contained in \comp{bt} in all processes. \\
+     \end{tabularx}}
+\end{exprlist}
+
+\subsubsection{Complexity Guarantees}
+
+\begin{complist}
+  \compitem{The comparison operations are amortized constant time.}
+  \compitem{All of the other operations defined above are linear in
+    the number of cells in the mesh.}
+\end{complist}
+
+\subsubsection{Models}
+
+The \comp{Mesh\cu XYZ} class is a model of \concept{Solon 3D Mesh}.
+
+\subsection{Solon 3D Orthogonal Cartesian Mesh}
+\label{sec:solon 3d orth cart mesh}
+
+A \concept{Solon 3D Orthogonal Cartesian Mesh} is a \concept{Solon 3D
+  Mesh} that describes an orthogonal Cartesian mesh. The mesh is
+required to have a fixed number of orthogonal hexahedral cells in any
+particular direction.
+
+\subsubsection{Refinement of}
+\concept{Solon 3D Mesh}.
+
+\subsubsection{Associated Types}
+
+There are no additional types beyond those defined in \concept{Solon
+  3D Mesh}.
+
+\subsubsection{Notation}
+\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.4\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+  \comp{X} & A type that is a model of \concept{Solon 3D Orthogonal
+    Cartesian Mesh}. \\
+  \comp{a} & Object of type \comp{X}. \\
+  \comp{c} & Object of type \comp{X::ccsf}. \\
+\end{tabularx}
+
+\subsubsection{Valid Expressions}
+
+\begin{exprlist}
+  \expritem{Number of cells along x-axis}{a.get\cu ncx()}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & \comp{size\cu type} \\
+     Semantics: & Returns the number of mesh cells along the x-axis in
+     the full mesh. \\
+     Postcondition: & \comp{0 <= a.get\cu ncx() <= a.get\cu total\cu
+       ncells()}. \\
+     \end{tabularx}}
+  \expritem{Number of cells along y-axis}{a.get\cu ncy()}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & \comp{size\cu type} \\
+     Semantics: & Returns the number of mesh cells along the y-axis in
+     the full mesh. \\
+     Postcondition: & \comp{0 <= a.get\cu ncy() <= a.get\cu total\cu
+       ncells()}. \\
+     \end{tabularx}}
+  \expritem{Number of cells along z-axis}{a.get\cu ncz()}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & \comp{size\cu type} \\
+     Semantics: & Returns the number of mesh cells along the z-axis in
+     the full mesh. \\
+     Postcondition: & \comp{0 <= a.get\cu ncz() <= a.get\cu total\cu
+       ncells()}. \\
+     \end{tabularx}}
+  \expritem{Total number of cells}{a.get\cu total\cu ncells()}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & \comp{size\cu type} \\
+     Semantics: & Returns the total number of mesh cells in all
+     processes. Equivalent to \comp{a.get\cu ncx()*a.get\cu
+       ncy()*a.get\cu ncz()}. \\
+     Postcondition: & \comp{0 <= a.get\cu ncells() <= a.get\cu
+       total\cu ncells()}. \\
+     \end{tabularx}}
+  \expritem{$\Delta$x}{a.get\cu dx(c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{c} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{c.get\cu Mesh() == a}. \\
+     Semantics: & Each cell value in \comp{c} is assigned the value of
+     $\Delta$x for that cell. \\
+     \end{tabularx}}
+  \expritem{$\Delta$y}{a.get\cu dy(c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{c} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{c.get\cu Mesh() == a}. \\
+     Semantics: & Each cell value in \comp{c} is assigned the value of
+     $\Delta$y for that cell. \\
+     \end{tabularx}}
+  \expritem{$\Delta$z}{a.get\cu dz(c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Type requirements: & \comp{c} is mutable. \\
+     Return type: & \comp{void} \\
+     Precondition: & \comp{c.get\cu Mesh() == a}. \\
+     Semantics: & Each cell value in \comp{c} is assigned the value of
+     $\Delta$z for that cell. \\
+     \end{tabularx}}
+\end{exprlist}
+
+\subsubsection{Complexity Guarantees}
+
+\begin{complist}
+  \compitem{The operations defined above are linear in the number of
+    cells in the mesh.}
+\end{complist}
+
+\subsubsection{Models}
+
+The \comp{Mesh\cu XYZ} class is a model of \concept{Solon 3D
+  Orthogonal Cartesian Mesh}.
+
 
 \bibliographystyle{../tex/rnote}
 \bibliography{../bib/draco}
@@ -2064,5 +1577,5 @@ The \comp{Mesh\cu XYZ::bstf<>} class is a model of \concept{Boundary
 \end{document}
 
 %%---------------------------------------------------------------------------%%
-%% end of test.tex
+%% end of MTConcept.tex
 %%---------------------------------------------------------------------------%%
