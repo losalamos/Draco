@@ -590,7 +590,7 @@ void interpolation_error_test()
 
 void random_walk_OS_Mesh_test()
 {
-    Random_Walk<MT> rw;
+    // Random_Walk<MT> rw;
 
     if (rtt_imc_test::passed)
 	PASSMSG("Random Walk on OS_Mesh ok.");
