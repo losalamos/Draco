@@ -22,9 +22,6 @@ namespace rtt_mc
 
 using rtt_meshReaders::Element_Definition;
 
-using std::cerr;  // FOR DEBUGGING.
-using std::endl;  // FOR DEBUGGING.
-
 //___________________________________________________________________________//
 /*!
  * \class TET_Builder

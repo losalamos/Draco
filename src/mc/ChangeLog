@@ -1,3 +1,9 @@
+2000-12-11  H. Grady Hughes  <hgh@lanl.gov>
+
+	* TET_Builder.cc, TET_Builder.hh, test/tstTET_Mesh.cc:
+	Replaced previous connectivity builders with an N*log(N)
+	version.
+
 2000-12-03  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Builder.cc: Another, slightly faster version of the

@@ -67,6 +67,10 @@
 #include <set>
 #include <map>
 
+#ifdef __sun
+#include <ctime>
+#endif
+
 using namespace std;
 
 using rtt_mc::Coord_sys;
@@ -392,6 +396,7 @@ void Test_TET()
     if (cells_ver[0].size() != 4)   ITFAILS;
     if (cells_ver[1].size() != 4)   ITFAILS;
 
+    cerr << "Ready for mesh_ptr_H." << endl;
     theOutput << "Ready for mesh_ptr_H." << endl;
 
     SP<TET_Mesh> mesh_ptr_H(new TET_Mesh(titl, coor, layo, vertex_vec,
@@ -437,6 +442,7 @@ void Test_TET()
     // Test interface ---> TET_Builder instantiation with hand-coded interface.
     // This mesh should be the same 2-tet pyramid as in mesh_ptr_H.
 
+    cerr << "Ready for mesh_ptr_0." << endl;
     theOutput << "Ready for mesh_ptr_0." << endl;
 
     SP<TET_test_1> interface(new TET_test_1());
@@ -486,6 +492,7 @@ void Test_TET()
     // Test interface ---> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should also be the same 2-tet pyramid as in mesh_ptr_H.
 
+    cerr << "Ready for mesh_ptr_1." << endl;
     theOutput << "Ready for mesh_ptr_1." << endl;
 
     SP<RTT_Mesh_Reader> reader_1(new RTT_Mesh_Reader("TET_RTT_1"));
@@ -777,6 +784,7 @@ void Test_TET()
     // Test interface ---> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should be the 96-tet cube from Todd Wareing.
 
+    cerr << "Ready for mesh_ptr_2." << endl;
     theOutput << "Ready for mesh_ptr_2." << endl;
 
     SP<RTT_Mesh_Reader> reader_2(new RTT_Mesh_Reader("TET_RTT_2"));
@@ -833,6 +841,7 @@ void Test_TET()
     // Test interface ---> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should be the one-tet case from the definition file.
 
+    cerr << "Ready for mesh_ptr_3." << endl;
     theOutput << "Ready for mesh_ptr_3." << endl;
 
     SP<RTT_Mesh_Reader> reader_3(new RTT_Mesh_Reader("TET_RTT_3"));
@@ -866,6 +875,7 @@ void Test_TET()
     if (*mesh_ptr_1 == *mesh_ptr_3)                      ITFAILS;
     if (*mesh_ptr_2 == *mesh_ptr_3)                      ITFAILS;
 
+    cerr << "Ready for mesh_ptr_4." << endl;
     theOutput << "Ready for mesh_ptr_4." << endl;
 
     SP<RTT_Mesh_Reader> reader_4(new RTT_Mesh_Reader("TET_RTT_4"));
@@ -899,6 +909,7 @@ void Test_TET()
     if (*mesh_ptr_1 == *mesh_ptr_4)                      ITFAILS;
     if (*mesh_ptr_2 == *mesh_ptr_4)                      ITFAILS;
 
+    cerr << "Ready for mesh_ptr_5." << endl;
     theOutput << "Ready for mesh_ptr_5." << endl;
 
     SP<RTT_Mesh_Reader> reader_5(new RTT_Mesh_Reader("TET_RTT_5"));
@@ -918,6 +929,7 @@ void Test_TET()
             theOutput << cell_pair_5[i][j] << "\n";
     theOutput << "END get_cell_pair\n";
 
+//    cerr << "Ready for mesh_ptr_6." << endl;
 //    theOutput << "Ready for mesh_ptr_6." << endl;
 //
 //    SP<RTT_Mesh_Reader> reader_6(new RTT_Mesh_Reader("TET_RTT_6"));
@@ -943,6 +955,10 @@ int main(int argc, char *argv[])
 {
  try {
     C4::Init(argc, argv);
+
+#ifdef __sun
+    clock_t t_1 = clock();
+#endif
 
     // this is a serial test
     if (C4::node())
@@ -986,6 +1002,13 @@ int main(int argc, char *argv[])
     cout <<     "************************************" << endl;
     cout << endl;
     cout << "Done testing TET_Mesh." << endl;
+
+#ifdef __sun
+    clock_t t_2 = clock();
+    cerr << "Total time = "
+         << static_cast<double>(t_2 - t_1)/static_cast<double>(CLOCKS_PER_SEC)
+         << endl;
+#endif
 
     C4::Finalize();
 

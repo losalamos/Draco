@@ -10,14 +10,22 @@
 //---------------------------------------------------------------------------//
 
 #include <set>
+#include <utility>
 #include <algorithm>
 #include "TET_Builder.hh"
+
+#ifdef __sun
+#include <ctime>
+#endif
 
 namespace rtt_mc
 {
 
+using std::cerr;  // FOR DEBUGGING and TIMING.
+
 using std::endl;
 using std::set;
+using std::make_pair;
 
 //! Build a TET_Mesh, using TET_Builder's private data.
 rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
@@ -30,67 +38,81 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
     for (int c = 1; c <= cells_vertices.size(); ++c)
         layout.set_size(c,FOUR);
 
-    SF_INT neighbors_found(cells_vertices.size(),0);
-    VF_INT cells_vert_parent(cells_vertices);
-    for (int c = 0 ; c < cells_vertices.size() ; ++c)
-        for (int v = 0 ; v < cells_vertices[c].size() ; ++v)
-            cells_vert_parent[c][v] = parent[cells_vertices[c][v]];
+    typedef std::map<SetInt, std::pair<int, int> > FaceMap;
 
-    for (int L_cell = 0 ; L_cell < cells_vertices.size() - 1 ; ++L_cell)
+    FaceMap faces;
+
+#ifdef __sun
+    clock_t t1 = clock();
+#endif
+
+    for (int cell = 0 ; cell < cells_vertices.size() ; ++cell)
     {
-        if (neighbors_found[L_cell] == FOUR)
-            continue;
+        FaceMap::iterator pos;
 
-        for (int R_cell = L_cell + 1; R_cell < cells_vertices.size(); ++R_cell)
+        SetInt face_0;
+        face_0.insert(parent[cells_vertices[cell][1]]);
+        face_0.insert(parent[cells_vertices[cell][2]]);
+        face_0.insert(parent[cells_vertices[cell][3]]);
+
+        pos = faces.find(face_0);
+        if (pos == faces.end())
+            faces.insert(make_pair(face_0, make_pair(cell+1, 1)));
+        else
         {
-            if (neighbors_found[R_cell] == FOUR)
-                continue;
+            layout((pos->second).first, (pos->second).second) = cell +1;
+            layout(cell+1, 1) = (pos->second).first;
+        }
 
-            int count = 0;
+        SetInt face_1;
+        face_1.insert(parent[cells_vertices[cell][2]]);
+        face_1.insert(parent[cells_vertices[cell][3]]);
+        face_1.insert(parent[cells_vertices[cell][0]]);
 
-            for (int lv = 0 ; lv < FOUR ; ++lv)
-            {
-                SF_INT::iterator R_itr = std::find(
-                            cells_vert_parent[R_cell].begin(),
-                            cells_vert_parent[R_cell].end(),
-                            cells_vert_parent[L_cell][lv]);
+        pos = faces.find(face_1);
+        if (pos == faces.end())
+            faces.insert(make_pair(face_1, make_pair(cell+1, 2)));
+        else
+        {
+            layout((pos->second).first, (pos->second).second) = cell +1;
+            layout(cell+1, 2) = (pos->second).first;
+        }
 
-                if (R_itr != cells_vert_parent[R_cell].end())
-                    ++count;
-            }
-            if (count == THREE)
-            {
-                ++neighbors_found[L_cell];
-                ++neighbors_found[R_cell];
-                SF_INT L_hits(FOUR, -1);
+        SetInt face_2;
+        face_2.insert(parent[cells_vertices[cell][3]]);
+        face_2.insert(parent[cells_vertices[cell][0]]);
+        face_2.insert(parent[cells_vertices[cell][1]]);
 
-                for (int lv = 0 ; lv < FOUR ; ++lv)
-                {
-                    SF_INT::iterator R_itr = std::find(
-                                cells_vert_parent[R_cell].begin(),
-                                cells_vert_parent[R_cell].end(),
-                                cells_vert_parent[L_cell][lv]);
-    
-                    if (R_itr != cells_vert_parent[R_cell].end())
-                        L_hits[lv] = R_itr - cells_vert_parent[R_cell].begin();
-                }
+        pos = faces.find(face_2);
+        if (pos == faces.end())
+            faces.insert(make_pair(face_2, make_pair(cell+1, 3)));
+        else
+        {
+            layout((pos->second).first, (pos->second).second) = cell +1;
+            layout(cell+1, 3) = (pos->second).first;
+        }
 
-                SF_INT::iterator L_itr = std::find(L_hits.begin(),
-                                                    L_hits.end(), -1);
-                int v = L_itr - L_hits.begin();
-                layout(L_cell + 1, v + 1) = R_cell + 1;
+        SetInt face_3;
+        face_3.insert(parent[cells_vertices[cell][0]]);
+        face_3.insert(parent[cells_vertices[cell][1]]);
+        face_3.insert(parent[cells_vertices[cell][2]]);
 
-                for (int rv = 0 ; rv < FOUR ; ++rv)
-                    if (std::find(L_hits.begin(), L_hits.end(), rv)
-                                               == L_hits.end())
-                    {
-                        layout(R_cell + 1, rv + 1) = L_cell + 1;
-                        break;
-                    }
-            }
-
+        pos = faces.find(face_3);
+        if (pos == faces.end())
+            faces.insert(make_pair(face_3, make_pair(cell+1, 4)));
+        else
+        {
+            layout((pos->second).first, (pos->second).second) = cell +1;
+            layout(cell+1, 4) = (pos->second).first;
         }
     }
+
+#ifdef __sun
+    clock_t t2 = clock();
+    cerr << "Layout builder time = "
+         << static_cast<double>(t2 - t1)/static_cast<double>(CLOCKS_PER_SEC)
+         << endl;
+#endif
 
     // Create third constructor argument: vertex_vector.
     SF_THREEVECTOR vertex_vector;
