@@ -178,7 +178,7 @@ void Test_ThreeVector()
 
     // End of test sampling in a triangle.
 
-}
+}   // end Test_ThreeVector()
 
 // TET_Mesh Tests
 void Test_TET()
@@ -252,7 +252,7 @@ void Test_TET()
     if (fabs(0.5 - mesh_ptr_1->face_area(1,4)) > TET_epsilon)          ITFAILS;
 
 
-}
+}   // end Test_TET()
 
 int main(int argc, char *argv[])
 {
@@ -293,7 +293,8 @@ int main(int argc, char *argv[])
     cout << "Done testing TET_Mesh." << endl;
 
     C4::Finalize();
-}
+
+}   // end main(int, char *[])
 
 //---------------------------------------------------------------------------//
 //                              end of tstTET_Mesh.cc
