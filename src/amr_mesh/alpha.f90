@@ -39,14 +39,23 @@
 
           type(integer_CCSF)      ::   int_CCSF_1,   int_CCSF_2
           type(real_CCSF)         ::  real_CCSF_1,  real_CCSF_2
+
           type(integer_CCVF)      ::   int_CCVF_1,   int_CCVF_2,        &
                                        int_CCVF_3,   int_CCVF_4
           type(real_CCVF)         ::  real_CCVF_1,  real_CCVF_2,        &
                                       real_CCVF_3,  real_CCVF_4
+
           type(integer_FCSF)      ::   int_FCSF_1,   int_FCSF_2
           type(real_FCSF)         ::  real_FCSF_1,  real_FCSF_2
+
           type(integer_FCDSF)     ::  int_FCDSF_1,  int_FCDSF_2
           type(real_FCDSF)        :: real_FCDSF_1, real_FCDSF_2
+
+          type(integer_FCVF)      ::   int_FCVF_1,   int_FCVF_2,        &
+                                       int_FCVF_3,   int_FCVF_4
+          type(real_FCVF)         ::  real_FCVF_1,  real_FCVF_2,        &
+                                      real_FCVF_3,  real_FCVF_4
+
           type(integer_NCSF)      ::   int_NCSF_1,   int_NCSF_2,        &
                                        int_NCSF_3,   int_NCSF_4
           type(real_NCSF)         ::  real_NCSF_1,  real_NCSF_2,        &
@@ -64,14 +73,14 @@
           integer, dimension (:,:), allocatable :: num_adj_cell_faces,  &
               adj_cells_faces, cells_nodes, dis_face_generation,        &
               cells_dirs, corner_nodes_faces_gen, nodes_dirs,           &
-              corner_nodes_dirs
+              corner_nodes_dirs, face_nodes_dirs, face_nodes_faces_gen
 
           real*8, dimension (:,:), allocatable  :: nodes_vertices,      &
               corner_nodes_vertices, centered_nodes_vertices,           &
               cells_faces_area, face_nodes_vertices, cells_min_coords,  &
               cells_mid_coords, cells_max_coords, cells_dirs_width,     &
               cell_nodes_coords, dis_face_nodes_area,                   &
-              corner_nodes_faces_area
+              corner_nodes_faces_area, face_nodes_faces_area
 
           integer, dimension (:), allocatable   :: generation,          &
               cell_face_nodes, cell_faces_centered_node,                &
@@ -191,6 +200,9 @@
           allocate(corner_nodes_faces_area(ncnodes, 2 * ndims))
           allocate(nodes_dirs(nnodes, ndims))
           allocate(corner_nodes_dirs(ncnodes, ndims))
+          allocate(face_nodes_dirs(nfnodes, ndims))
+          allocate(face_nodes_faces_gen(nfnodes, 2 * ndims))
+          allocate(face_nodes_faces_area(nfnodes, 2 * ndims))
 
           ! Build some uninitialized mesh fields
           call construct_CCSF(mesh_class,  int_CCSF_1)
@@ -206,6 +218,11 @@
 
           call construct_FCDSF(mesh_class,  int_FCDSF_1)
           call construct_FCDSF(mesh_class, real_FCDSF_1)
+
+          call construct_FCVF(mesh_class,  int_FCVF_1)
+          call construct_FCVF(mesh_class, real_FCVF_1)
+          call construct_FCVF(mesh_class,  int_FCVF_2, 2*ndims)
+          call construct_FCVF(mesh_class, real_FCVF_2, 2*ndims)
 
           call construct_NCSF(mesh_class,  int_NCSF_1)
           call construct_NCSF(mesh_class, real_NCSF_1)
@@ -264,6 +281,38 @@
                   call set_FCDSF(real_FCDSF_1, cell, face, volume(cell))
                   volume(cell) = get_FCDSF(real_FCDSF_1, cell, face)
 
+                  call set_FCVF(int_FCVF_1, cell, face, dirs)
+                  dirs = get_FCVF(int_FCVF_1, cell, face)
+                  call set_FCVF(real_FCVF_1,cell,face, mesh_min_coords)
+                  mesh_min_coords = get_FCVF(real_FCVF_1, cell, face)
+
+                  call set_FCVF(int_FCVF_2,cell,face,cell_faces_specific_node)
+                  cell_faces_specific_node = get_FCVF(int_FCVF_2, cell, face)
+                  call set_FCVF(real_FCVF_2,cell,face, cell_faces_area)
+                  cell_faces_area = get_FCVF(real_FCVF_2, cell, face)
+
+                  dir = 1
+                  do while (dir .le. ndims)
+                      call set_FCVF(int_FCVF_1, cell, face, dir,         &
+                          generation(cell))
+                      generation(cell) = get_FCVF(int_FCVF_1,cell,face,dir)
+                      call set_FCVF(real_FCVF_1,cell,face, dir, volume(cell))
+                      volume(cell) = get_FCVF(real_FCVF_1, cell, face, dir)
+
+                      dir = dir + 1
+                  end do
+
+                  dir = 1
+                  do while (dir .le. 2 * ndims)
+                      call set_FCVF(int_FCVF_2, cell, face, dir,         &
+                          generation(cell))
+                      generation(cell) = get_FCVF(int_FCVF_2,cell,face,dir)
+                      call set_FCVF(real_FCVF_2,cell,face, dir, volume(cell))
+                      volume(cell) = get_FCVF(real_FCVF_2, cell, face, dir)
+
+                      dir = dir + 1
+                  end do
+
                   face = face + 1
 
               end do
@@ -312,7 +361,6 @@
                   cells_dirs_width(cell, dir) = get_CCVF(real_CCVF_1,   &
                                                          cell, dir)
 
-                  nodes_dirs(node, dir) = dir
                   dirs(dir) = dir
 
                   dir = dir + 1
@@ -374,6 +422,7 @@
                   call set_NCVF(real_NCVF_1, node, dir, mesh_min_coords(dir))
                   mesh_min_coords(dir) = get_NCVF(real_NCVF_1, node, dir)
 
+                  nodes_dirs(node, dir) = dir
                   dir = dir + 1
               end do
 
@@ -438,6 +487,7 @@
 
           node = 1
           cell = 1
+          face = 1
           do while (cell .le. ncells)
               do while (node .le. 2 * ndims)
                   dis_face_generation(cell, node) = generation(cell)
@@ -465,6 +515,11 @@
                                dis_face_generation)
           call construct_FCDSF(mesh_class, real_FCDSF_2,          &
                                dis_face_nodes_area)
+
+          call construct_FCVF(mesh_class,  int_FCVF_3, face_nodes_dirs)
+          call construct_FCVF(mesh_class, real_FCVF_3, centered_nodes_vertices)
+          call construct_FCVF(mesh_class,  int_FCVF_4, face_nodes_faces_gen)
+          call construct_FCVF(mesh_class, real_FCVF_4, face_nodes_faces_area)
 
           call construct_NCSF(mesh_class,  int_NCSF_3, nodes_generation)
           call construct_NCSF(mesh_class, real_NCSF_3, nodes_area)
@@ -502,6 +557,15 @@
           dis_face_generation = get_FCDSF(int_FCDSF_1)
           call set_FCDSF(real_FCDSF_1, dis_face_nodes_area)
           dis_face_nodes_area = get_FCDSF(real_FCDSF_1)
+
+          call set_FCVF( int_FCVF_3, face_nodes_dirs)
+          face_nodes_dirs = get_FCVF( int_FCVF_3)
+          call set_FCVF(real_FCVF_3, centered_nodes_vertices)
+          centered_nodes_vertices = get_FCVF(real_FCVF_3)
+          call set_FCVF( int_FCVF_4, face_nodes_faces_gen)
+          face_nodes_faces_gen = get_FCVF( int_FCVF_4)
+          call set_FCVF(real_FCVF_4, face_nodes_faces_area)
+          face_nodes_faces_area = get_FCVF(real_FCVF_4)
 
           call set_NCSF(int_NCSF_3, nodes_generation)
           nodes_generation = get_NCSF(int_NCSF_3)
@@ -572,6 +636,9 @@
           deallocate(corner_nodes_faces_area)
           deallocate(nodes_dirs)
           deallocate(corner_nodes_dirs)
+          deallocate(face_nodes_dirs)
+          deallocate(face_nodes_faces_gen)
+          deallocate(face_nodes_faces_area)
 
 !===========================================================================
 ! Get rid of the CAR_CU_Mesh class object and the associated test fields. 
@@ -601,6 +668,15 @@
           call destruct_FCDSF(int_FCDSF_2)
           call destruct_FCDSF(real_FCDSF_1)
           call destruct_FCDSF(real_FCDSF_2)
+
+          call destruct_FCVF(int_FCVF_1)
+          call destruct_FCVF(int_FCVF_2)
+          call destruct_FCVF(int_FCVF_3)
+          call destruct_FCVF(int_FCVF_4)
+          call destruct_FCVF(real_FCVF_1)
+          call destruct_FCVF(real_FCVF_2)
+          call destruct_FCVF(real_FCVF_3)
+          call destruct_FCVF(real_FCVF_4)
 
           call destruct_NCSF(int_NCSF_1)
           call destruct_NCSF(int_NCSF_2)

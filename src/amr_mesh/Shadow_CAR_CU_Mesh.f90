@@ -31,8 +31,8 @@
           public ::  destruct_Mesh,  construct_CCSF,  destruct_CCSF,     &
                     construct_CCVF,   destruct_CCVF, construct_FCSF,     &
                      destruct_FCSF, construct_FCDSF, destruct_FCDSF,     &
-                    construct_NCSF,   destruct_NCSF, construct_NCVF,     &
-                     destruct_NCVF
+                    construct_FCVF,   destruct_FCVF, construct_NCSF,     &
+                     destruct_NCSF,  construct_NCVF,  destruct_NCVF
 
 !===========================================================================
 ! General mesh scalar accessor functions
@@ -72,9 +72,9 @@
 ! Mesh field accessor functions
 !===========================================================================
 
-          public :: get_CCSF, set_CCSF, get_CCVF, set_CCVF, get_FCSF,   &
-                    set_FCSF, get_FCDSF, set_FCDSF, get_NCSF, set_NCSF, &
-                    get_NCVF, set_NCVF
+          public :: get_CCSF, set_CCSF, get_CCVF,  set_CCVF,  get_FCSF, &
+                    set_FCSF, get_FCVF, set_FCVF, get_FCDSF, set_FCDSF, &
+                    get_NCSF, set_NCSF, get_NCVF, set_NCVF
 
 !===========================================================================
 ! Class type definitions
@@ -93,6 +93,18 @@
               integer             :: this
               type(CAR_CU_Mesh)   :: mesh
           end type real_CCSF
+
+          type, public :: integer_CCVF
+              integer             :: this
+              type(CAR_CU_Mesh)   :: mesh            
+              integer             :: vec_size
+          end type integer_CCVF
+
+          type, public :: real_CCVF
+              integer             :: this
+              type(CAR_CU_Mesh)   :: mesh
+              integer             :: vec_size
+          end type real_CCVF
 
           type, public :: integer_FCSF
               integer             :: this
@@ -114,17 +126,17 @@
               type(CAR_CU_Mesh)   :: mesh
           end type real_FCDSF
 
-          type, public :: integer_CCVF
+          type, public :: integer_FCVF
               integer             :: this
               type(CAR_CU_Mesh)   :: mesh            
               integer             :: vec_size
-          end type integer_CCVF
+          end type integer_FCVF
 
-          type, public :: real_CCVF
+          type, public :: real_FCVF
               integer             :: this
               type(CAR_CU_Mesh)   :: mesh
               integer             :: vec_size
-          end type real_CCVF
+          end type real_FCVF
 
           type, public :: integer_NCSF
               integer             :: this
@@ -200,6 +212,18 @@
           interface destruct_FCDSF
               module procedure  int_FCDSF_destruct
               module procedure real_FCDSF_destruct
+          end interface
+
+          interface construct_FCVF
+              module procedure  int_FCVF_construct
+              module procedure  int_FCVF_construct_arb
+              module procedure real_FCVF_construct
+              module procedure real_FCVF_construct_arb
+          end interface
+
+          interface destruct_FCVF
+              module procedure  int_FCVF_destruct
+              module procedure real_FCVF_destruct
           end interface
 
           interface construct_NCSF
@@ -408,6 +432,24 @@
               module procedure set_real_FCDSF_cell_face
           end interface
 
+          interface get_FCVF
+              module procedure get_integer_FCVF_all
+              module procedure get_integer_FCVF_cell_face
+              module procedure get_integer_FCVF_cell_face_dim
+              module procedure get_real_FCVF_all
+              module procedure get_real_FCVF_cell_face
+              module procedure get_real_FCVF_cell_face_dim
+          end interface
+
+          interface set_FCVF
+              module procedure set_integer_FCVF_all
+              module procedure set_integer_FCVF_cell_face
+              module procedure set_integer_FCVF_cell_face_dim
+              module procedure set_real_FCVF_all
+              module procedure set_real_FCVF_cell_face
+              module procedure set_real_FCVF_cell_face_dim
+          end interface
+
           interface get_NCSF
               module procedure get_integer_NCSF_all
               module procedure get_integer_NCSF_node
@@ -456,6 +498,7 @@
 ! Construct a C++ CAR_CU_Mesh integer CCSF class object (self). Initialization
 ! can be performed by including the optional data argument. An uninitialized
 ! CCSF is created if this argument is not specified.
+
               subroutine int_CCSF_construct(mesh, self, data)
                   type(CAR_CU_Mesh),  intent(in)           :: mesh
                   type(integer_CCSF), intent(inout)        :: self
@@ -472,6 +515,7 @@
               end subroutine int_CCSF_construct
 
 ! Destroy a C++ CAR_CU_Mesh int CCSF class object (self).
+
               subroutine int_CCSF_destruct(self)
                   type(integer_CCSF), intent(inout) :: self
 
@@ -482,6 +526,7 @@
 ! Construct a C++ CAR_CU_Mesh real CCSF class object (self). Initialization
 ! can be performed by including the optional data argument. An uninitialized
 ! CCSF is created if this argument is not specified.
+
               subroutine real_CCSF_construct(mesh, self, data)
                   type(CAR_CU_Mesh), intent(in)            :: mesh
                   type(real_CCSF),   intent(inout)         :: self
@@ -497,6 +542,7 @@
               end subroutine real_CCSF_construct
 
 ! Destroy a C++ CAR_CU_Mesh real CCSF class object (self).
+
               subroutine real_CCSF_destruct(self)
                   type(real_CCSF), intent(inout) :: self
 
@@ -509,6 +555,7 @@
 ! CCVF is created if this argument is not specified. This constructor defaults
 ! to the dimension of the second array element being the same as that of the 
 ! problem geometry.
+
               subroutine int_CCVF_construct(mesh, self, data)
                   type(CAR_CU_Mesh),  intent(in)           :: mesh
                   type(integer_CCVF), intent(inout)        :: self
@@ -592,6 +639,7 @@
 ! CCVF is created if this argument is not specified. This constructor defaults
 ! to the dimension of the second array element being the same as that of the 
 ! problem geometry.
+
               subroutine real_CCVF_construct(mesh, self, data)
                   type(CAR_CU_Mesh), intent(in)            :: mesh
                   type(real_CCVF),   intent(inout)         :: self
@@ -631,6 +679,7 @@
 ! can be performed by including the optional data argument. An uninitialized
 ! CCVF is created if this argument is not specified. This constructor allows
 ! specification for the size of the second array index size.
+
               subroutine real_CCVF_arb_construct(mesh, self, vec_size, data)
                   type(CAR_CU_Mesh), intent(in)            :: mesh
                   type(real_CCVF),   intent(inout)         :: self
@@ -664,6 +713,7 @@
               end subroutine real_CCVF_arb_construct
 
 ! Destroy a C++ CAR_CU_Mesh real CCVF class object (self).
+
               subroutine real_CCVF_destruct(self)
                   type(real_CCVF), intent(inout) :: self
 
@@ -674,6 +724,7 @@
 ! Construct a C++ CAR_CU_Mesh integer FCSF class object (self). Initialization
 ! can be performed by including the optional data argument. An uninitialized
 ! FCSF is created if this argument is not specified.
+
               subroutine int_FCSF_construct(mesh, self, data)
                   type(CAR_CU_Mesh),  intent(in)               :: mesh
                   type(integer_FCSF), intent(inout)            :: self
@@ -689,6 +740,7 @@
               end subroutine int_FCSF_construct
 
 ! Destroy a C++ CAR_CU_Mesh int FCSF class object (self).
+
               subroutine int_FCSF_destruct(self)
                   type(integer_FCSF), intent(inout) :: self
 
@@ -699,6 +751,7 @@
 ! Construct a C++ CAR_CU_Mesh real FCSF class object (self). Initialization
 ! can be performed by including the optional data argument. An uninitialized
 ! FCSF is created if this argument is not specified.
+
               subroutine real_FCSF_construct(mesh, self, data)
                   type(CAR_CU_Mesh), intent(in)               :: mesh
                   type(real_FCSF),   intent(inout)            :: self
@@ -726,6 +779,7 @@
 ! Construct a C++ CAR_CU_Mesh integer FCDSF class object (self). Initialization
 ! can be performed by including the optional data argument. An uninitialized
 ! FCDSF is created if this argument is not specified.
+
               subroutine int_FCDSF_construct(mesh, self, data)
                   type(CAR_CU_Mesh),  intent(in)               :: mesh
                   type(integer_FCDSF), intent(inout)           :: self
@@ -759,6 +813,7 @@
               end subroutine int_FCDSF_construct
 
 ! Destroy a C++ CAR_CU_Mesh int FCDSF class object (self).
+
               subroutine int_FCDSF_destruct(self)
                   type(integer_FCDSF), intent(inout) :: self
 
@@ -769,6 +824,7 @@
 ! Construct a C++ CAR_CU_Mesh real FCDSF class object (self). Initialization
 ! can be performed by including the optional data argument. An uninitialized
 ! FCDSF is created if this argument is not specified.
+
               subroutine real_FCDSF_construct(mesh, self, data)
                   type(CAR_CU_Mesh), intent(in)               :: mesh
                   type(real_FCDSF),   intent(inout)           :: self
@@ -802,6 +858,7 @@
               end subroutine real_FCDSF_construct
 
 ! Destroy a C++ CAR_CU_Mesh real FCDSF class object (self).
+
               subroutine real_FCDSF_destruct(self)
                   type(real_FCDSF), intent(inout) :: self
 
@@ -809,10 +866,185 @@
 
               end subroutine real_FCDSF_destruct
 
+! Construct a C++ CAR_CU_Mesh integer FCVF class object (self). Initialization
+! can be performed by including the optional data argument. An uninitialized
+! FCVF is created if this argument is not specified. This constructor defaults
+! to the dimension of the second array element being the same as that of the 
+! problem geometry.
+
+              subroutine int_FCVF_construct(mesh, self, data)
+                  type(CAR_CU_Mesh),  intent(in)               :: mesh
+                  type(integer_FCVF), intent(inout)            :: self
+                  integer, optional,  intent(in),                       &
+                           dimension(get_num_face_nodes(mesh),          &
+                                     get_num_dims(mesh))       :: data
+                  integer, dimension(get_num_face_nodes(mesh) *         &
+                                     get_num_dims(mesh))       :: ret_data
+                  integer                                      :: data_size = 0
+                  integer                                      :: face, dim
+                  integer                                      :: vec_size
+
+                  vec_size  = get_num_dims(mesh)
+                  if (present(data)) then 
+                      face = 1
+                      do while(face .le. get_num_face_nodes(mesh))
+                          dim = 1
+                          do while (dim .le. get_num_dims(mesh))
+                              ret_data(vec_size * (face-1) + dim) =     &
+                                  data(face, dim)
+                              dim = dim + 1
+                          end do
+                          face = face + 1
+                      end do
+                      data_size = get_num_face_nodes(mesh) * vec_size
+                  endif
+
+                  call construct_mesh_fcvf_i(mesh%this, self%this,      &
+                                             ret_data, data_size, vec_size)
+                  self%mesh = mesh
+                  self%vec_size = vec_size
+
+              end subroutine int_FCVF_construct
+
+! Construct a C++ CAR_CU_Mesh integer FCVF class object (self). Initialization
+! can be performed by including the optional data argument. An uninitialized
+! FCVF is created if this argument is not specified. This constructor sets the
+! dimension of the second array element via vec_size.
+
+              subroutine int_FCVF_construct_arb(mesh, self, vec_size, data)
+                  type(CAR_CU_Mesh),  intent(in)               :: mesh
+                  type(integer_FCVF), intent(inout)            :: self
+                  integer, intent(in)                          :: vec_size
+                  integer, optional,  intent(in),                       &
+                           dimension(get_num_face_nodes(mesh),          &
+                                     vec_size)                 :: data
+                  integer, dimension(get_num_face_nodes(mesh) *         &
+                                     vec_size)                 :: ret_data
+                  integer                                      :: data_size = 0
+                  integer                                      :: face, dim
+
+                  if (present(data)) then 
+                      face = 1
+                      do while(face .le. get_num_face_nodes(mesh))
+                          dim = 1
+                          do while (dim .le. vec_size)
+                              ret_data(vec_size * (face-1) + dim) =     &
+                                  data(face, dim)
+                              dim = dim + 1
+                          end do
+                          face = face + 1
+                      end do
+                      data_size = get_num_face_nodes(mesh) * vec_size
+                  endif
+
+                  call construct_mesh_fcvf_i(mesh%this, self%this,      &
+                                             ret_data, data_size, vec_size)
+                  self%mesh = mesh
+                  self%vec_size = vec_size
+
+              end subroutine int_FCVF_construct_arb
+
+! Destroy a C++ CAR_CU_Mesh integer FCVF class object (self).
+
+              subroutine int_FCVF_destruct(self)
+                  type(integer_FCVF), intent(inout) :: self
+
+                  call destruct_mesh_fcvf_i(self%this)
+
+              end subroutine int_FCVF_destruct
+
+! Construct a C++ CAR_CU_Mesh real FCVF class object (self). Initialization
+! can be performed by including the optional data argument. An uninitialized
+! FCVF is created if this argument is not specified. This constructor defaults
+! to the dimension of the second array element being the same as that of the 
+! problem geometry.
+
+              subroutine real_FCVF_construct(mesh, self, data)
+                  type(CAR_CU_Mesh),  intent(in)               :: mesh
+                  type(real_FCVF), intent(inout)               :: self
+                  real*8, optional,  intent(in),                        &
+                          dimension(get_num_face_nodes(mesh),           &
+                                    get_num_dims(mesh))        :: data
+                  real*8, dimension(get_num_face_nodes(mesh) *          &
+                                    get_num_dims(mesh))        :: ret_data
+                  integer                                      :: data_size = 0
+                  integer                                      :: face, dim
+                  integer                                      :: vec_size
+
+                  vec_size  = get_num_dims(mesh)
+                  if (present(data)) then 
+                      face = 1
+                      do while(face .le. get_num_face_nodes(mesh))
+                          dim = 1
+                          do while (dim .le. vec_size)
+                              ret_data(vec_size * (face-1) + dim) =     &
+                                  data(face, dim)
+                              dim = dim + 1
+                          end do
+                          face = face + 1
+                      end do
+                      data_size = get_num_face_nodes(mesh) * vec_size
+                  endif
+
+                  call construct_mesh_fcvf_d(mesh%this, self%this,      &
+                                             ret_data, data_size, vec_size)
+                  self%mesh = mesh
+                  self%vec_size = vec_size
+
+              end subroutine real_FCVF_construct
+
+! Construct a C++ CAR_CU_Mesh real FCVF class object (self). Initialization
+! can be performed by including the optional data argument. An uninitialized
+! FCVF is created if this argument is not specified. This constructor sets the
+! dimension of the second array element via vec_size.
+
+              subroutine real_FCVF_construct_arb(mesh, self, vec_size, data)
+                  type(CAR_CU_Mesh),  intent(in)               :: mesh
+                  type(real_FCVF), intent(inout)               :: self
+                  integer, intent(in)                          :: vec_size
+                  real*8, optional,  intent(in),                        &
+                          dimension(get_num_face_nodes(mesh),           &
+                                    vec_size)                  :: data
+                  real*8, dimension(get_num_face_nodes(mesh) *          &
+                                    vec_size)                  :: ret_data
+                  integer                                      :: data_size = 0
+                  integer                                      :: face, dim
+
+                  if (present(data)) then 
+                      face = 1
+                      do while(face .le. get_num_face_nodes(mesh))
+                          dim = 1
+                          do while (dim .le. vec_size)
+                              ret_data(vec_size * (face-1) + dim) =     &
+                                  data(face, dim)
+                              dim = dim + 1
+                          end do
+                          face = face + 1
+                      end do
+                      data_size = get_num_face_nodes(mesh) * vec_size
+                  endif
+
+                  call construct_mesh_fcvf_d(mesh%this, self%this,      &
+                                             ret_data, data_size, vec_size)
+                  self%mesh = mesh
+                  self%vec_size = vec_size
+
+              end subroutine real_FCVF_construct_arb
+
+! Destroy a C++ CAR_CU_Mesh real FCVF class object (self).
+
+              subroutine real_FCVF_destruct(self)
+                  type(real_FCVF), intent(inout) :: self
+
+                  call destruct_mesh_fcvf_d(self%this)
+
+              end subroutine real_FCVF_destruct
+
 ! Construct a C++ CAR_CU_Mesh integer NCSF class object (self) including both
 ! the corner and face-centered nodes. Initialization can be performed by 
 ! including the optional data argument. An uninitialized NCSF is created if 
 ! this argument is not specified.
+
               subroutine int_NCSF_construct_def(mesh, self, data)
                   type(CAR_CU_Mesh),  intent(in)           :: mesh
                   type(integer_NCSF), intent(inout)        :: self
@@ -835,6 +1067,7 @@
 ! only the corner nodes. Initialization can be performed by including the 
 ! optional data argument. An uninitialized NCSF is created if this argument
 ! is not specified.
+
               subroutine int_NCSF_construct_arb(mesh, self, vec_size, data)
                   type(CAR_CU_Mesh),  intent(in)                    :: mesh
                   type(integer_NCSF), intent(inout)                 :: self
@@ -853,6 +1086,7 @@
 
 
 ! Destroy a C++ CAR_CU_Mesh int NCSF class object (self).
+
               subroutine int_NCSF_destruct(self)
                   type(integer_NCSF), intent(inout) :: self
 
@@ -903,6 +1137,7 @@
               end subroutine real_NCSF_construct_arb
 
 ! Destroy a C++ CAR_CU_Mesh real NCSF class object (self).
+
               subroutine real_NCSF_destruct(self)
                   type(real_NCSF), intent(inout) :: self
 
@@ -1034,6 +1269,7 @@
               end subroutine int_NCVF_construct_arb_2
 
 ! Destroy a C++ CAR_CU_Mesh int NCVF class object (self).
+
               subroutine int_NCVF_destruct(self)
                   type(integer_NCVF), intent(inout) :: self
 
@@ -1165,6 +1401,7 @@
               end subroutine real_NCVF_construct_arb_2
 
 ! Destroy a C++ CAR_CU_Mesh real NCVF class object (self).
+
               subroutine real_NCVF_destruct(self)
                   type(real_NCVF), intent(inout) :: self
 
@@ -2293,6 +2530,241 @@
                                      self%this, cell, face, data)
 
               end subroutine set_real_FCDSF_cell_face
+
+!===========================================================================
+! integer FCVF class objects
+!===========================================================================
+! Return an entire C++ CAR_CU_Mesh integer FCVF class object (self).
+              function get_integer_FCVF_all(self)           result(data)
+                  type(integer_FCVF), intent(in)                :: self
+                  integer, dimension(get_num_face_nodes(self%mesh),     &
+                                     self%vec_size)             :: data
+                  integer, dimension(get_num_face_nodes(self%mesh) *    &
+                                     self%vec_size)             :: ret_data
+                  integer                                       :: data_size
+                  integer                                       :: face, dim
+
+                  data_size = get_num_face_nodes(self%mesh) * self%vec_size
+                  call get_mesh_fcvf_i(self%mesh%this, self%this,       &
+                                       ret_data, data_size)
+
+                  face = 1
+                  do while(face .le. get_num_face_nodes(self%mesh))
+                      dim = 1
+                      do while (dim .le. self%vec_size)
+                          data(face, dim) = ret_data(self%vec_size *    &
+                                                     (face-1) + dim)
+                          dim = dim + 1
+                      end do
+                      face = face + 1
+                  end do
+
+              end function get_integer_FCVF_all
+
+! Return all of the dim face values for a cell in a C++ CAR_CU_Mesh integer 
+! FCVF class object (self).
+              function get_integer_FCVF_cell_face(self, cell, face)     &
+                                                          result(data)
+                  type(integer_FCVF), intent(in)              :: self
+                  integer, intent(in)                         :: cell, face
+                  integer, dimension(self%vec_size)           :: data
+                  integer                                     :: data_size
+
+                  data_size = self%vec_size
+                  call get_mesh_fcvf_i_cell_face(self%mesh%this,        &
+                                                 self%this, cell, face, &
+                                                 data, data_size)
+     
+              end function get_integer_FCVF_cell_face
+
+! Return a dim cell face value from a C++ CAR_CU_Mesh integer FCVF class 
+! object (self).
+              function get_integer_FCVF_cell_face_dim(self, cell, face, &
+                                                      dim)    result(data)
+                  type(integer_FCVF), intent(in)           :: self
+                  integer, intent(in)                      :: cell, face, dim
+                  integer                                  :: data
+
+                  call get_mesh_fcvf_i_cell_face_dim(self%mesh%this,    &
+                                                     self%this, cell,   &
+                                                     face, dim, data)
+
+              end function get_integer_FCVF_cell_face_dim
+
+! Set an entire C++ CAR_CU_Mesh integer FCVF class object (self) (can also
+! be done at initialization using the constructor).
+              subroutine set_integer_FCVF_all(self, data)
+                  type(integer_FCVF), intent(in)                   :: self
+                  integer, intent(in),                                  &
+                           dimension(get_num_face_nodes(self%mesh),     &
+                                     self%vec_size)                :: data
+                  integer, dimension(get_num_face_nodes(self%mesh) *    &
+                                     self%vec_size)                :: ret_data
+                  integer                                          :: data_size
+                  integer                                    :: face, dim
+
+                  face = 1
+                  do while(face .le. get_num_face_nodes(self%mesh))
+                      dim = 1
+                      do while (dim .le. self%vec_size)
+                          ret_data(self%vec_size * (face-1) + dim) =    &
+                              data(face, dim)
+                          dim = dim + 1
+                      end do
+                      face = face + 1
+                  end do
+
+                  data_size = get_num_face_nodes(self%mesh) * self%vec_size
+                  call set_mesh_fcvf_i(self%mesh%this, self%this,       &
+                                       ret_data, data_size)
+
+              end subroutine set_integer_FCVF_all
+
+! Set all of the dim face values for a cell in a C++ CAR_CU_Mesh integer FCVF
+! class object (self).
+              subroutine set_integer_FCVF_cell_face(self, cell, face,   &
+                                                    data)
+                  type(integer_FCVF), intent(in)                 :: self
+                  integer, intent(in)                            :: cell, face
+                  integer, intent(in), dimension(self%vec_size)  :: data
+                  integer                                        :: data_size
+
+                  data_size = self%vec_size
+                  call set_mesh_fcvf_i_cell_face(self%mesh%this,        &
+                                                 self%this, cell, face, &
+                                                 data, data_size)
+
+              end subroutine set_integer_FCVF_cell_face
+
+! Set a dim cell face value for a C++ CAR_CU_Mesh integer FCVF class object 
+! (self).
+              subroutine set_integer_FCVF_cell_face_dim(self, cell,     &
+                                                        face, dim, data)
+                  type(integer_FCVF), intent(in)           :: self
+                  integer, intent(in)                      :: cell, face, dim
+                  integer, intent(in)                      :: data
+
+                  call set_mesh_fcvf_i_cell_face_dim(self%mesh%this,    &
+                                                     self%this, cell,   &
+                                                     face, dim, data)
+
+              end subroutine set_integer_FCVF_cell_face_dim
+
+!===========================================================================
+! double FCVF class objects
+!===========================================================================
+! Return an entire C++ CAR_CU_Mesh real FCVF class object (self).
+              function get_real_FCVF_all(self)              result(data)
+                  type(real_FCVF), intent(in)                   :: self
+                  real*8, dimension(get_num_face_nodes(self%mesh),      &
+                                    self%vec_size)              :: data
+                  real*8, dimension(get_num_face_nodes(self%mesh) *     &
+                                    self%vec_size)              :: ret_data
+                  integer                                       :: data_size
+                  integer                                       :: face, dim
+
+                  data_size = get_num_face_nodes(self%mesh) * self%vec_size
+                  call get_mesh_fcvf_d(self%mesh%this, self%this,       &
+                                       ret_data, data_size)
+
+                  face = 1
+                  do while(face .le. get_num_face_nodes(self%mesh))
+                      dim = 1
+                      do while (dim .le. self%vec_size)
+                          data(face, dim) = ret_data(self%vec_size *    &
+                                                     (face-1) + dim)
+                          dim = dim + 1
+                      end do
+                      face = face + 1
+                  end do
+
+              end function get_real_FCVF_all
+
+! Return all of the dim face values for a cell in a C++ CAR_CU_Mesh real 
+! FCVF class object (self).
+              function get_real_FCVF_cell_face(self, cell, face) result(data)
+                  type(real_FCVF), intent(in)                 :: self
+                  integer, intent(in)                         :: cell, face
+                  real*8, dimension(self%vec_size)            :: data
+                  integer                                     :: data_size
+
+                  data_size = self%vec_size
+                  call get_mesh_fcvf_d_cell_face(self%mesh%this,        &
+                                                 self%this, cell, face, &
+                                                 data, data_size)
+     
+              end function get_real_FCVF_cell_face
+
+! Return a dim cell face value from a C++ CAR_CU_Mesh real FCVF class 
+! object (self).
+              function get_real_FCVF_cell_face_dim(self,cell,face,dim)  &
+                                                   result(data)
+                  type(real_FCVF), intent(in)          :: self
+                  integer, intent(in)                  :: cell, face, dim
+                  real*8                               :: data
+
+                  call get_mesh_fcvf_d_cell_face_dim(self%mesh%this,    &
+                                                     self%this, cell,   &
+                                                     face, dim, data)
+
+              end function get_real_FCVF_cell_face_dim
+
+! Set an entire C++ CAR_CU_Mesh real FCVF class object (self) (can also
+! be done at initialization using the constructor).
+              subroutine set_real_FCVF_all(self, data)
+                  type(real_FCVF), intent(in)                      :: self
+                  real*8, intent(in),                                   &
+                          dimension(get_num_face_nodes(self%mesh),      &
+                                    self%vec_size)                 :: data
+                  real*8, dimension(get_num_face_nodes(self%mesh) *     &
+                                    self%vec_size)                 :: ret_data
+                  integer                                          :: data_size
+                  integer                                    :: face, dim
+
+                  face = 1
+                  do while(face .le. get_num_face_nodes(self%mesh))
+                      dim = 1
+                      do while (dim .le. self%vec_size)
+                          ret_data(self%vec_size * (face-1) + dim) =    &
+                              data(face, dim)
+                          dim = dim + 1
+                      end do
+                      face = face + 1
+                  end do
+
+                  data_size = get_num_face_nodes(self%mesh) * self%vec_size
+                  call set_mesh_fcvf_d(self%mesh%this, self%this,       &
+                                       ret_data, data_size)
+
+              end subroutine set_real_FCVF_all
+
+! Set all of the dim face values for a cell in a C++ CAR_CU_Mesh real FCVF
+! class object (self).
+              subroutine set_real_FCVF_cell_face(self, cell, face, data)
+                  type(real_FCVF), intent(in)                    :: self
+                  integer, intent(in)                            :: cell, face
+                  real*8, intent(in), dimension(self%vec_size)   :: data
+                  integer                                        :: data_size
+
+                  data_size = self%vec_size
+                  call set_mesh_fcvf_d_cell_face(self%mesh%this,        &
+                                                 self%this, cell, face, &
+                                                 data, data_size)
+
+              end subroutine set_real_FCVF_cell_face
+
+! Set a dim cell face value for a C++ CAR_CU_Mesh real FCVF class object 
+! (self).
+              subroutine set_real_FCVF_cell_face_dim(self,cell,face,dim,data)
+                  type(real_FCVF), intent(in)              :: self
+                  integer, intent(in)                      :: cell, face, dim
+                  real*8,  intent(in)                      :: data
+
+                  call set_mesh_fcvf_d_cell_face_dim(self%mesh%this,    &
+                                                     self%this, cell,   &
+                                                     face, dim, data)
+
+              end subroutine set_real_FCVF_cell_face_dim
 
 !===========================================================================
 ! integer NCSF class objects

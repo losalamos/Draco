@@ -168,8 +168,46 @@ class CAR_CU_Mesh
 	inline const T & operator()(int, int) const;
 	inline T & operator()(int, int);
 
-	// getting a CC vector
+	// getting a FCDSF vector
 	inline vector<T> operator()(int) const;
+    };  
+
+    // class definitions of the face-centered fields.
+    template<class T>
+    class FCVF
+    {
+      private:
+	// SP back to CAR_CU_Mesh 
+	SP<CAR_CU_Mesh> mesh;
+	// data in field, (num_faces, dim)
+	vector<vector<T> > data;
+
+      public:
+	// inline explicit constructor
+	inline explicit FCVF(SP<CAR_CU_Mesh>);
+
+	// inline explicit constructor
+	inline explicit FCVF(SP<CAR_CU_Mesh>, int vec_size);
+
+	// additional constructors
+	inline FCVF(SP<CAR_CU_Mesh>, const vector<vector<T> > &);
+
+	// return reference to mesh
+	const CAR_CU_Mesh & get_Mesh() const { return * mesh; }
+
+	// subscripting
+	inline const T & operator()(int cell, int face, int dim) const;
+	inline T & operator()(int cell, int face, int dim);
+
+ 	inline const vector<T> & operator()(int cell, int face) const;
+	inline vector<T> & operator()(int cell, int face);
+
+	// return reference to the data
+	inline const vector<vector<T> > & operator()() const;
+	inline vector<vector<T> > & operator()();
+
+        // return the size of the FCVF trailing index
+        int get_size() {return data[0].size();}
     };  
 
     // class definitions of the node-centered fields.
@@ -689,6 +727,135 @@ inline vector<T> CAR_CU_Mesh::FCDSF<T>::operator()(int cell) const
     // return
     Ensure (x.size() == data[cell-1].size());
     return x;
+}
+
+//---------------------------------------------------------------------------//
+// CAR_CU_Mesh::FCVF inline functions
+//---------------------------------------------------------------------------//
+// FCVF explicit constructor with the size of the second index of the vector 
+// defaulted to be equal to the problem geometry dimension.
+
+template<class T>
+inline CAR_CU_Mesh::FCVF<T>::FCVF(SP<CAR_CU_Mesh> mesh_)
+    : mesh(mesh_), data(mesh->num_face_nodes())
+{
+    Require (mesh);
+
+    // resize the second index of the vector to the default size equal to 
+    // the problem geometry dimension
+    for (int i = 0; i < data.size(); i++)
+        data[i].resize(mesh->get_ndim());
+}
+
+// FCVF explicit constructor with the size of the second index of the vector 
+// input.
+
+template<class T>
+inline CAR_CU_Mesh::FCVF<T>::FCVF(SP<CAR_CU_Mesh> mesh_, int vec_size)
+    : mesh(mesh_), data(mesh->num_face_nodes())
+{
+    Require (mesh);
+
+    // resize the second index of the vector to the input size
+    for (int i = 0; i < data.size(); i++)
+        data[i].resize(vec_size);
+}
+
+//---------------------------------------------------------------------------//
+// constructor for automatic initialization
+
+template<class T>
+inline CAR_CU_Mesh::FCVF<T>::FCVF(SP<CAR_CU_Mesh> mesh_, 
+			      const vector<vector<T> > & array)
+    : mesh(mesh_), data(array)
+{
+    Require (mesh);
+    // check things out
+    Ensure (data.size() == mesh->num_face_nodes());
+}
+
+//---------------------------------------------------------------------------//
+// constant overloaded ()
+
+template<class T>
+inline const vector<vector<T> > & CAR_CU_Mesh::FCVF<T>::operator()() const 
+{
+    return data;
+}
+
+//---------------------------------------------------------------------------//
+// constant overloaded ()
+
+template<class T>
+inline const vector<T> & CAR_CU_Mesh::FCVF<T>::operator()(int cell, 
+							  int face) const 
+{
+    // declare return vector
+    vector<T> x;
+    
+    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
+        mesh->get_Coord().get_dim())));
+
+    // loop through faces and make return vector for this cell
+    for (int i = 0; i < data[index - mesh->num_corner_nodes() - 1].size(); i++)
+	x.push_back(data[index - mesh->num_corner_nodes() - 1][i]);
+
+    // return
+    Ensure (x.size() == data[index - mesh->num_corner_nodes() - 1].size());
+    return x;
+}
+
+//---------------------------------------------------------------------------//
+// constant overloaded ()
+
+template<class T>
+inline const T & CAR_CU_Mesh::FCVF<T>::operator()(int cell, int face, 
+						  int dim) const 
+{
+    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
+        mesh->get_Coord().get_dim())));
+    return data[index - mesh->num_corner_nodes() - 1][dim - 1]; 
+}
+
+//---------------------------------------------------------------------------//
+// assignment overloaded ()
+
+template<class T>
+inline vector<vector<T> > & CAR_CU_Mesh::FCVF<T>::operator()()
+{
+    return data;
+}
+
+//---------------------------------------------------------------------------//
+// assignment overloaded ()
+
+template<class T>
+inline vector<T> & CAR_CU_Mesh::FCVF<T>::operator()(int cell, int face)
+{
+    // declare return vector
+    vector<T> x;
+    
+    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
+        mesh->get_Coord().get_dim())));
+
+    // loop through faces and make return vector for this cell
+    for (int i = 0; i < data[index - mesh->num_corner_nodes() - 1].size(); i++)
+	x.push_back(data[index - mesh->num_corner_nodes() - 1][i]);
+
+    // return
+    Ensure (x.size() == data[index - mesh->num_corner_nodes() - 1].size());
+    return x;
+}
+
+//---------------------------------------------------------------------------//
+// assignment overloaded ()
+
+template<class T>
+inline T & CAR_CU_Mesh::FCVF<T>::operator()(int cell, int face, int dim)
+{
+    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
+        mesh->get_Coord().get_dim())));
+    return data[index - mesh->num_corner_nodes() - 1][dim - 1];
 }
 
 //---------------------------------------------------------------------------//
