@@ -116,7 +116,12 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
 
     Ensure (invariant());
 }
-
+/*!
+ * Returns all the ndim-dimensional interior elements as well as the 
+ * (ndim-1) dimensional vacuum and
+ * reflective boundary face elements
+ *
+ */
 std::vector<std::vector<int> > Hex_Mesh_Reader::get_element_nodes() const
 {
     // Collate the interior, vacuum, and reflective mesh elements into
@@ -136,7 +141,13 @@ std::vector<std::vector<int> > Hex_Mesh_Reader::get_element_nodes() const
 	result.push_back(ipar_rb[i]);
     return result;
 }
-
+/*!
+ * Returns an element type for each element in the mesh. Will
+ * always be one of rtt_meshReaders::Element_Definition::NODE,
+ * rtt_meshReaders::Element_Definition::BAR_2,
+ * rtt_meshReaders::Element_Definition::QUAD_4,
+ * or rtt_meshReaders::Element_Definition::HEXA_8.
+ */
 std::vector<Element_Definition::Element_Type> 
 Hex_Mesh_Reader::get_element_types() const
 {
@@ -165,7 +176,21 @@ Hex_Mesh_Reader::get_element_types() const
 	tmp.push_back(d2);
     return tmp;
 }
-
+/*!
+ * There is no provision for naming element sets in the Hex 
+ * format. The following default names are provided for the sets
+ * found on the mesh file: 
+ * <ul>
+ *   <li> "Interior" -- All the ndim-dimensional cells in the problem.
+ *   <li> "Interior_Region_x" - Interior cells with integer flag "x".
+ *   <li> "Vacumm_Boundary" -- All the (ndim-1)dimensional vacuum boundary faces.
+ *   <li> "Vacuum_Boundary_Region_x" -- Vacuum boundary faces with
+ *         flag integer "x"
+ *   <li> "Reflective_Boundary" -- All the (ndim-1) dimensional reflective boundary
+ *         faces.
+ * </ul>
+ *
+ */
 std::map<std::string, std::set<int> > 
 Hex_Mesh_Reader::get_element_sets() const
 {
@@ -178,8 +203,14 @@ Hex_Mesh_Reader::get_element_sets() const
     std::vector<int> tmp;
     std::set<int> rgn_index;
     std::set<int> stmp;
-    
-    // Create sets for all the interior mesh regions.
+
+    // Create a set that flags all interior cells.
+    stmp.clear();
+    for (int i=0; i<ncells; i++)
+	stmp.insert(i);
+    result.insert(resultT::value_type("Interior", stmp));
+
+    // Create sets for all the interior mesh sub-regions.
     // This loops over the whole mesh number_of_mesh_regions times. Could
     // be made to do it more efficiently in one loop? Note that this 
     // depends on  the elements being stored in a specific order.
@@ -238,6 +269,10 @@ Hex_Mesh_Reader::get_element_sets() const
     return result;
 }
 
+/*!
+ * Checks the internal consistancy of the Hex_Mesh_Reader private data.
+ *
+ */
 bool Hex_Mesh_Reader::invariant() const
 {
     bool ldum = check_dims()

@@ -81,7 +81,7 @@ namespace rtt_meshReaders
  * provides an adequate amount of information for our present needs. However,
  * it is difficult to show that this description is complete and unambiguous.
  *
- * \sa The \ref meshReadersOverview page provides an overview of
+ * \sa The \ref rtt_meshreaders_overview page provides an overview of
  * the other utilities in the rtt_meshReaders namespace.
  *
  */
