@@ -45,32 +45,32 @@ class DoubleContainer
         return *this;
     }
     
-    bool operator==(const DoubleContainer& dc)
+    bool operator==(const DoubleContainer& dc) const
     {
 	return data == dc.data;
     }
 
-    bool operator!=(const DoubleContainer& dc)
+    bool operator!=(const DoubleContainer& dc) const
     {
 	return data != dc.data;
     }
 
-    bool operator<(const DoubleContainer& dc)
+    bool operator<(const DoubleContainer& dc) const
     {
 	return data < dc.data;
     }
     
-    bool operator<=(const DoubleContainer& dc)
+    bool operator<=(const DoubleContainer& dc) const
     {
 	return data <= dc.data;
     }
 
-    bool operator>(const DoubleContainer& dc)
+    bool operator>(const DoubleContainer& dc) const
     {
 	return data > dc.data;
     }
     
-    bool operator>=(const DoubleContainer& dc)
+    bool operator>=(const DoubleContainer& dc) const
     {
 	return data >= dc.data;
     }
