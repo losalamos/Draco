@@ -13,9 +13,9 @@
 #define __imc_Source_hh__
 
 #include "Particle.hh"
-#include "Particle_Buffer.hh"
 #include "Mat_State.hh"
 #include "Mesh_Operations.hh"
+#include "mc/Particle_Stack.hh"
 #include "mc/Topology.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
@@ -57,14 +57,14 @@ class Source
 {
   public:
     // Usefull typedefs
-    typedef typename MT::template CCSF<int>      ccsf_int;
-    typedef typename MT::template CCSF<double>   ccsf_double;
-    typedef rtt_dsxx::SP<rtt_mc::Topology>       SP_Topology;
-    typedef typename Particle_Buffer<PT>::Census PB_Census;
-    typedef rtt_dsxx::SP<PB_Census>              SP_Census;
-    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>   SP_Rnd_Control; 
-    typedef rtt_dsxx::SP<Mat_State<MT> >         SP_Mat_State;
-    typedef rtt_dsxx::SP<Mesh_Operations<MT> >   SP_Mesh_Op; 
+    typedef typename MT::template CCSF<int>             ccsf_int;
+    typedef typename MT::template CCSF<double>          ccsf_double;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>              SP_Topology;
+    typedef typename rtt_mc::Particle_Stack<PT>::Census PB_Census;
+    typedef rtt_dsxx::SP<PB_Census>                     SP_Census;
+    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>          SP_Rnd_Control; 
+    typedef rtt_dsxx::SP<Mat_State<MT> >                SP_Mat_State;
+    typedef rtt_dsxx::SP<Mesh_Operations<MT> >          SP_Mesh_Op; 
 
   private:
     // >>> DATA

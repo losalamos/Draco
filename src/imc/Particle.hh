@@ -18,6 +18,7 @@
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Packing_Utils.hh"
 #include <vector>
 #include <string>
 #include <iostream> 
@@ -41,7 +42,10 @@ namespace rtt_imc
  * object.  Thus, reproducible Monte Carlo calculations may be performed.
 
  * Particle containers and buffers (for communication) are defined in
- * rtt_imc::Particle_Buffer.
+ * rtt_mc::Particle_Buffer and rtt_mc::Particle_Stack.  Input/Output
+ * functions are in rtt_mc::Particle_IO.  A communication class for parallel
+ * transport (that uses the Particle_Buffer classes) is defined in the
+ * rtt_mc::Communicator class.
 
  * The primary operation for IMC particles is transport().  Given a mesh,
  * opacity, and material data, the particles are capable of transporting
@@ -116,6 +120,7 @@ namespace rtt_imc
 //                enumeration value (integer)
 // 17) 24-SEP-01: switched to hybrid aborption behavior and added streaming
 //                to cutoff. See memo CCS-4:01-33(U)
+// 18) 20-DEC-01: redesigned the pack infrastructure
 // 
 //===========================================================================//
 
@@ -130,7 +135,8 @@ class Particle
 		     CENSUS_BORN=2, 
 		     BOUNDARY_BORN=3, 
 		     VOL_EMISSION=4,
-		     SURFACE_SOURCE=5, 
+		     SURFACE_SOURCE=5,
+		     UNPACKED=6,
 		     SCATTER=100, 
 		     LOW_WEIGHT=101,
 		     EFF_SCATTER=102, 
@@ -146,16 +152,11 @@ class Particle
 		     CENSUS=300, 
 		     KILLED=1000};
 
-
-    // Forward declaration of Pack class
-    struct Pack;
-
-    // Public typedefs:
-    typedef rtt_dsxx::SP<Particle::Pack> SP_Pack;
-    typedef rtt_dsxx::SP<Particle>       SP_Particle;
-    typedef std::vector<double>          sf_double;
-    typedef rtt_rng::Sprng               Rnd_Type;
-    typedef std::string                  std_string;
+    // Useful typedefs.
+    typedef std::vector<double>      sf_double;
+    typedef rtt_rng::Sprng           Rnd_Type;
+    typedef rtt_dsxx::SP<Rnd_Type>   SP_Rnd_Type;
+    typedef std::string              std_string;
 
     /*!
      * \class Particle::Diagnostic
@@ -191,7 +192,6 @@ class Particle
 
     // Friend declarations.
     friend class Diagnostic;
-    friend class Pack;
 
   private:
 
@@ -227,7 +227,7 @@ class Particle
     int descriptor;
 
     // Random number object.
-    Rnd_Type random;
+    SP_Rnd_Type random;
 
   private:
     // >>> IMPLEMENTATION
@@ -237,7 +237,8 @@ class Particle
 
     //! Perform streaming operations specific to particles undergoing
     //implicit absorption
-    inline void stream_implicit_capture(const Opacity<MT> &, Tally<MT> &, double);
+    inline void stream_implicit_capture(const Opacity<MT> &, Tally<MT> &, 
+					double);
 
     //! Perform streaming operations specific to particles undergoing analog
     // absorption
@@ -266,6 +267,9 @@ class Particle
     inline Particle(const sf_double &, const sf_double &, double, int,
 		    Rnd_Type, double = 1, double = 1, int = BORN);
 
+    // Unpacking constructor.
+    inline Particle(const std::vector<char> &);
+
     // >>> TRANSPORT INTERFACE
 
     // IMC transport step.
@@ -290,16 +294,16 @@ class Particle
     const sf_double& get_omega() const { return omega; }
 
     //! Get the particle's random number object.
-    const Rnd_Type& get_random() const { return random; }
+    const Rnd_Type& get_random() const { return *random; }
 
     //! Get the particle descriptor.
     int get_descriptor() const { return descriptor; }
 
     //! Convert an integer descriptor into a string.
-    inline static std_string get_descriptor(int);
+    static std_string convert_descriptor_to_string(int);
     
     //! Convert a string descriptor into an integer.
-    inline static int get_index(std_string);
+    static int convert_string_to_descriptor(std_string);
 
     // >>> SET FUNCTIONS
     
@@ -310,7 +314,7 @@ class Particle
     void kill_particle() { alive = false; }
 
     //! Set the particle's random number.
-    void set_random(const Rnd_Type &ran) { random = ran; }
+    void set_random(const Rnd_Type &ran) { random = new Rnd_Type(ran); }
 
     //! Set the particle's time-left fraction.
     void set_time_left(double t) { time_left = t; }
@@ -336,49 +340,39 @@ class Particle
     bool operator!=(const Particle<MT> &p) const { return !(*this == p); } 
 
     // Pack function
-    SP_Pack pack() const;
-
+    inline std::vector<char> pack() const;
 };
 
 //---------------------------------------------------------------------------//
-// overloaded operators
+// OVERLOADED OPERATORS
 //---------------------------------------------------------------------------//
 // output ascii version of Particle
 
 template<class MT>
-inline std::ostream& operator<<(std::ostream &output, 
-				const Particle<MT> &object)
+std::ostream& operator<<(std::ostream &output, 
+			 const Particle<MT> &object)
 {
     object.print(output);
     return output;
 }
 
 //---------------------------------------------------------------------------//
-// inline functions for Particle<MT>::Diagnostic
+// PARTICLE<MT> INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
-// Particle<MT>::Diagnostic inline functions
-
+/*!
+ * \brief Regular particle constructor.
+ *
+ * The constructor is declared inline for optimization purposes.
+ */
 template<class MT>
-inline void Particle<MT>::Diagnostic::header() const 
-{ 
-    output << "*** PARTICLE HISTORY ***" << std::endl; 
-    output << "------------------------" << std::endl;
-}
-
-//---------------------------------------------------------------------------//
-// Particle<MT> inline functions
-//---------------------------------------------------------------------------//
-// Particle<MT> constructor
-
-template<class MT>
-inline Particle<MT>::Particle(const sf_double& r_, 
-			      const sf_double& omega_, 
-			      double ew_,
-			      int cell_, 
-			      Rnd_Type random_, 
-			      double frac,
-			      double tleft, 
-			      int desc)
+Particle<MT>::Particle(const sf_double& r_, 
+		       const sf_double& omega_, 
+		       double ew_,
+		       int cell_, 
+		       Rnd_Type random_, 
+		       double frac,
+		       double tleft, 
+		       int desc)
     : ew(ew_), 
       r(r_),
       omega(omega_),
@@ -387,7 +381,7 @@ inline Particle<MT>::Particle(const sf_double& r_,
       fraction(frac), 
       alive(true), 
       descriptor(desc),
-      random(random_)
+      random(new Rnd_Type(random_))
 {
     // non-default particle constructor
     Ensure (r.size() < 4);
@@ -396,9 +390,119 @@ inline Particle<MT>::Particle(const sf_double& r_,
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Unpacking constructor.
+ *
+ * This constructor is used to unpack a particle that has been packed with
+ * the Particle::pack() function.
+ *
+ * It is declared inline for optimization.
+ */
+template<class MT>
+Particle<MT>::Particle(const std::vector<char> &packed)
+{
+    Require (packed.size() >= 3 * sizeof(int) + 6 * sizeof(double));
+
+    // make an unpacker
+    rtt_dsxx::Unpacker u;
+    
+    // set it
+    u.set_buffer(packed.size(), &packed[0]);
+
+    // unpack the spatial dimension of the particle
+    int dimension = 0;
+    u >> dimension;
+    Check (dimension > 0 && dimension <= 3);
+
+    // size the dimension and direction 
+    r.resize(dimension);
+    omega.resize(3);
+
+    // unpack the position
+    for (int i = 0; i < dimension; i++)
+	u >> r[i];
+
+    // unpack the rest of the data
+    u >> omega[0] >> omega[1] >> omega[2] >> cell >> ew >> time_left
+      >> fraction;
+    Check (time_left >= 0.0);
+    Check (fraction  >= 0.0);
+    Check (cell      >  0);
+    Check (ew        >= 0.0);
+
+    // get the size of the RN state
+    int size_rn = 0;
+    u >> size_rn;
+    Check (size_rn > 0);
+
+    // make a packed rn vector
+    std::vector<char> prn(size_rn);
+
+    // unpack the rn state
+    for (int i = 0; i < size_rn; i++)
+	u >> prn[i];
+
+    // rebuild the rn state
+    random = new Rnd_Type(prn);
+    Check (random->get_num() >= 0);
+    Check (random->get_id());
+
+    // assign the descriptor and status
+    descriptor = UNPACKED;
+    alive      = true;
+    
+    Ensure (status());
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Pack a particle into a char stream for communication and
+ * persistence. 
+ */
+template<class MT>
+std::vector<char> Particle<MT>::pack() const
+{
+    Require (omega.size() == 3);
+
+    // make a packer
+    rtt_dsxx::Packer p;
+
+    // first pack the random number state
+    std::vector<char> prn = random->pack();
+
+    // determine the size of the packed particle: 1 int for cell, + 1 int for
+    // size of packed RN state + 1 int for dimension of space; dimension +
+    // 6 doubles; + size of RN state chars
+    int size = 3 * sizeof(int) + (r.size() + 6) * sizeof(double) + prn.size();
+
+    // set the packed buffer
+    std::vector<char> packed(size);
+    p.set_buffer(size, &packed[0]);
+
+    // pack the spatial dimension
+    p << static_cast<int>(r.size());
+    
+    // pack the dimension
+    for (int i = 0; i < r.size(); i++)
+	p << r[i];
+    
+    // pack the rest of the data
+    p << omega[0] << omega[1] << omega[2] << cell << ew << time_left
+      << fraction;
+
+    // pack the RN state
+    p << static_cast<int>(prn.size());
+    for (int i = 0; i < prn.size(); i++)
+	p << prn[i];
+
+    Ensure (p.get_ptr() == &packed[0] + size);
+    return packed;
+}
+
+//---------------------------------------------------------------------------//
 
 template<class MT>
-inline void Particle<MT>::stream(double distance)
+void Particle<MT>::stream(double distance)
 {
     // calculate new location when Particle streams
     for (int i = 0; i <= r.size()-1; i++)
@@ -408,9 +512,9 @@ inline void Particle<MT>::stream(double distance)
 //---------------------------------------------------------------------------//
 
 template<class MT>
-inline void Particle<MT>::stream_implicit_capture(const Opacity<MT> &xs, 
-						  Tally<MT> &tally,
-						  double distance)
+void Particle<MT>::stream_implicit_capture(const Opacity<MT> &xs, 
+					   Tally<MT> &tally,
+					   double distance)
 {
     Check(distance>=0)
 
@@ -447,8 +551,10 @@ inline void Particle<MT>::stream_implicit_capture(const Opacity<MT> &xs,
 
 }
 
+//---------------------------------------------------------------------------//
+
 template<class MT>
-inline void Particle<MT>::stream_analog_capture(Tally<MT> &tally, 
+void Particle<MT>::stream_analog_capture(Tally<MT> &tally, 
 						double distance)
 {
     Check(distance>=0)
@@ -458,210 +564,6 @@ inline void Particle<MT>::stream_analog_capture(Tally<MT> &tally,
     // Physically transport the particle
     stream(distance); 
 }
-
-
-
-//---------------------------------------------------------------------------//
-// convert a particle event descriptor string into an int
-
-template<class MT>
-inline int Particle<MT>::get_index(std::string desc)
-{
-    // declare return type
-    int return_value;
-
-    // born descriptors
-    if (desc == "born")
-	return_value = BORN;
-    else if (desc == "census_born")
-	return_value = CENSUS_BORN;
-    else if (desc == "boundary_born")
-	return_value = BOUNDARY_BORN;
-    else if (desc == "vol_emission")
-	return_value = VOL_EMISSION;
-    else if (desc == "surface_source")
-	return_value = SURFACE_SOURCE;
-
-    // collision event descriptors
-    else if (desc == "scatter")
-	return_value = SCATTER;
-    else if (desc == "low_weight")
-	return_value = LOW_WEIGHT;
-    else if (desc == "eff_scatter")
-	return_value = EFF_SCATTER;
-    else if (desc == "thom_scatter")
-	return_value = THOM_SCATTER;
- 
-    // streaming descriptors
-    else if (desc == "reflection")
-	return_value = REFLECTION;
-    else if (desc == "stream")
-	return_value = STREAM;
-    else if (desc == "escape")
-	return_value = ESCAPE;
-    else if (desc == "cross_boundary")
-	return_value = CROSS_BOUNDARY;
-
-    // time and census descriptors
-    else if (desc == "census")
-	return_value = CENSUS;
-
-    // death
-    else if (desc == "killed")
-	return_value = KILLED;
-
-    // last else
-    else 
-	Insist(0,"Invalid string descriptor");
-
-    // return
-    return return_value;
-
-}
-
-//---------------------------------------------------------------------------//
-// convert an int into a particle event descriptor
-
-/* Changed */
-
-template<class MT>
-inline std::string Particle<MT>::get_descriptor(int index)
-{
-
-    switch (index) {
-
-    // born descriptors
-    case BORN: 	         return "born";
-    case CENSUS_BORN:	 return "census_born";
-    case BOUNDARY_BORN:	 return "boundary_born";
-    case VOL_EMISSION:	 return "vol_emission";
-    case SURFACE_SOURCE: return "surface_source";
-
-    // collision event descriptors
-    case SCATTER:        return "scatter";
-    case LOW_WEIGHT: 	 return "low_weight";
-    case EFF_SCATTER:	 return "eff_scatter";
-    case THOM_SCATTER:	 return "thom_scatter";
-
-    // streaming descriptors
-    case REFLECTION:	 return "reflection";
-    case STREAM:	 return "stream";
-    case ESCAPE:	 return "escape";
-    case CROSS_BOUNDARY: return "cross_boundary";
-
-    // time and census descriptors
-    case CENSUS:	 return "census";
-
-    // death
-    case KILLED:	 return "killed";
-
-    default:
-	Insist(0,"Unrecognized descriptor number");
-	return "";
-	    
-    }    
-
-}
-
-
-//===========================================================================//
-/*!  
- * \struct Particle::Pack 
- 
- * \brief Nested class for packing particles into raw data for writing
- * or communication.
- 
- */
-//===========================================================================//
-
-template <typename MT>
-struct Particle<MT>::Pack { 
-    
-  private:
-    
-    // Size info is static for class wide consistency and access
-    static int double_data_size;
-    static int int_data_size;
-    static int char_data_size;
-    static bool setup_done;
-
-    double *double_data; 
-    int *int_data;       
-    char*char_data;      
-
-    // Disallow assignment
-    const Pack& operator=(const Pack &);
-
-    // Internal size set routine
-    static void set_sizes(int, int);
-
-  public:
-    
-    /* Setup */
-
-    static void setup_buffer_sizes(const MT& mesh, 
-				   const rtt_rng::Rnd_Control &rcon);
-
-    static void setup_buffer_sizes(const int dim,
-				   const rtt_rng::Rnd_Control &rcon);
-
-    /* Structors */
-    
-    // Construct from three pointers
-    Pack(double*, int*, char*); 
-
-    // Construct from Particle
-    Pack(const Particle&);
-    
-    // Copy
-    Pack(const Pack&);
-    
-    // Destroy
-    ~Pack();
-    
-    /* Accessors */
-    
-    //! Get const pointer to beginning of integer data stream
-    const int* int_begin() const {return int_data; }
-    
-    //! Get const pointer to begining of char data stream
-    const char* char_begin() const {return char_data; }
-    
-    //! Get const pointer to begining of double double stream
-    const double* double_begin() const {return double_data; }
-    
-    //! Get const pointer to one past end of integer data stream
-    const int* int_end() const {return int_data+int_data_size; }
-    
-    //! Get const pointer to one past end of char data stream
-    const char* char_end() const {return char_data+char_data_size; }
-    
-    //! Get const pointer to one past end of double data stream
-    const double* double_end() const {return double_data+double_data_size; }
-    
-    //! Unpack function
-    SP_Particle unpack() const;
-
-    /* Functions for size information is static to assist in constructing
-       Particle_Buffer objects */
-
-    //! Get size of integer data stream
-    static int get_int_size() { return int_data_size; }
-    
-    //! Get size of char data stream
-    static int get_char_size() { return char_data_size; }
-    
-    //! Get size of double data stream
-    static int get_double_size() { return double_data_size; }
-
-    //! Get setup status of class
-    static bool get_setup() { return setup_done; }
-    
-    //! Unpack from provided data
-    static SP_Particle unpack(int, double*, int, int*, int, char*);
-    
-}; // End of class Particle::Pack
-
 
 } // end namespace rtt_imc
 

@@ -39,7 +39,8 @@ namespace rtt_imc
 //               transported particle instead of after every buffer_size
 //               particles are run.  This is more robust, but maybe less
 //               efficient .
-// 
+// 2) 01-08-02 : updated to use new rtt_mc::Particle_Buffer and
+//               rtt_mc::Communicator 
 //===========================================================================//
 
 template<class MT, class PT>
@@ -47,21 +48,20 @@ class DD_Transporter : public Transporter<MT,PT>
 {
   public:
     // Useful typdefs.
-    typedef rtt_dsxx::SP<MT>                      SP_Mesh;
-    typedef rtt_dsxx::SP<Opacity<MT> >            SP_Opacity;
-    typedef rtt_dsxx::SP<Mat_State<MT> >          SP_Mat_State;
-    typedef rtt_dsxx::SP<Source<MT,PT> >          SP_Source;
-    typedef rtt_dsxx::SP<Tally<MT> >              SP_Tally;
-    typedef rtt_dsxx::SP<Communicator<PT> >       SP_Communicator;
-    typedef typename Particle_Buffer<PT>::Census  Census;
-    typedef typename Particle_Buffer<PT>::Bank    Bank;
-    typedef rtt_dsxx::SP<Census>                  SP_Census;
-    typedef std::string                           std_string;
-    typedef rtt_dsxx::SP<rtt_mc::Topology>        SP_Topology;
-    typedef rtt_dsxx::SP<Particle_Buffer<PT> >    SP_Buffer;
-    typedef std::vector<C4::C4_Req>               sf_C4_Req;
-    typedef std::vector<int>                      sf_int;
-    typedef rtt_dsxx::SP<typename PT::Diagnostic> SP_PT_Diagnostic;
+    typedef rtt_dsxx::SP<MT>                            SP_Mesh;
+    typedef rtt_dsxx::SP<Opacity<MT> >                  SP_Opacity;
+    typedef rtt_dsxx::SP<Mat_State<MT> >                SP_Mat_State;
+    typedef rtt_dsxx::SP<Source<MT,PT> >                SP_Source;
+    typedef rtt_dsxx::SP<Tally<MT> >                    SP_Tally;
+    typedef rtt_dsxx::SP<rtt_mc::Communicator<PT> >     SP_Communicator;
+    typedef typename rtt_mc::Particle_Stack<PT>::Census Census;
+    typedef typename rtt_mc::Particle_Stack<PT>::Bank   Bank;
+    typedef rtt_dsxx::SP<Census>                        SP_Census;
+    typedef std::string                                 std_string;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>              SP_Topology;
+    typedef std::vector<C4::C4_Req>                     sf_C4_Req;
+    typedef std::vector<int>                            sf_int;
+    typedef rtt_dsxx::SP<typename PT::Diagnostic>       SP_PT_Diagnostic;
 
   private:
     // Mesh Type object.
@@ -84,9 +84,6 @@ class DD_Transporter : public Transporter<MT,PT>
 
     // Topology (better be full replication)
     SP_Topology topology;
-
-    // Particle Buffer.
-    SP_Buffer buffer;
 
     // Particle counters.
     int finished;
@@ -122,7 +119,7 @@ class DD_Transporter : public Transporter<MT,PT>
 
   public:
     // Constructor.
-    DD_Transporter(SP_Topology, SP_Buffer);
+    DD_Transporter(SP_Topology);
 
     // >>> PUBLIC INTERFACE
     

@@ -31,10 +31,9 @@ namespace rtt_imc
  * construction.  
  */
 template<class MT, class PT>
-DD_Transporter<MT,PT>::DD_Transporter(SP_Topology top, SP_Buffer buf)
+DD_Transporter<MT,PT>::DD_Transporter(SP_Topology top)
     : Transporter<MT,PT>(),
     topology(top),
-    buffer(buf),
     num_run(0),
     nsrc_run(0),
     num_done(0),
@@ -50,7 +49,6 @@ DD_Transporter<MT,PT>::DD_Transporter(SP_Topology top, SP_Buffer buf)
     Require (!tally);
     Require (!communicator);
     Require (topology);
-    Require (buffer);
 
     // check the topology
     Insist (topology->get_parallel_scheme() == "DD" ||
@@ -121,11 +119,11 @@ DD_Transporter<MT,PT>::transport(double dt, int cycle_in, int print_f_in,
         check = new typename PT::Diagnostic(cout, true); 
 
     // make a census and communication bank on this node
-    SP_Census new_census_bank(new Particle_Buffer<PT>::Census());
+    SP_Census new_census_bank(new Census());
     Bank bank;
 
     // post arecvs to communicating processors
-    communicator->post(*buffer);
+    communicator->post();
 
     // post arecvs from each node to master and from master to all nodes
     post_step_arecvs();
@@ -146,10 +144,10 @@ DD_Transporter<MT,PT>::transport(double dt, int cycle_in, int print_f_in,
 
 	// if send-buffers are not empty, flush them
 	else if (communicator->get_send_size())
-	    communicator->flush(*buffer);
+	    communicator->flush();
 
 	// receive particles as second-to-last option
-	else if (communicator->arecv_post(*buffer, bank))
+	else if (communicator->arecv_post(bank))
 	{
 	    int bsize = bank.size();
 	    Check (bank.size() > 0);
@@ -172,10 +170,10 @@ DD_Transporter<MT,PT>::transport(double dt, int cycle_in, int print_f_in,
     // clean up receive buffers 
     Check (!communicator->get_send_size());
     Check (!bank.size());
-    communicator->asend_end(*buffer);
-    communicator->arecv_end(*buffer);
-    Check (!communicator->arecv_status(*buffer));
-    Check (!communicator->asend_status(*buffer));
+    communicator->asend_end();
+    communicator->arecv_end();
+    Check (!communicator->arecv_status());
+    Check (!communicator->asend_status());
 
     // finished with this timestep
     cerr << ">> Finished particle transport for cycle " 
@@ -242,7 +240,7 @@ void DD_Transporter<MT,PT>::trans_src_async(SP_PT_Diagnostic check,
     
     // if particle crosses a domain boundary, communicate the particle
     if (particle->get_descriptor() == PT::CROSS_BOUNDARY)
-        communicator->communicate(*buffer, particle);
+        communicator->communicate(particle);
 
     // The conditional has been commented out because too many MPI buffers
     // were building up.  To check the incoming buffer for every source
@@ -252,12 +250,13 @@ void DD_Transporter<MT,PT>::trans_src_async(SP_PT_Diagnostic check,
     // particle. 
     // 
     // >>> clip <<< 
-    // if we have transported the same number of particles as the buffer
-    // size;  then... if (!(nsrc_run % Particle_Buffer<PT>::get_buffer_s()))
+    // if we have transported the same number of particles as
+    // >>> the buffer // size; then... if (!(nsrc_run %
+    // >>> Particle_Buffer<PT>::get_maximum_num_particles())) 
     // >>> clip <<<
     //
     // check on, receive, and transport the incoming buffer
-    if (communicator->arecv_post(*buffer, bank))
+    if (communicator->arecv_post(bank))
 	while (bank.size())
 	    trans_domain_async(check, bank, new_census_bank);
     
@@ -315,7 +314,7 @@ void DD_Transporter<MT,PT>::trans_domain_async(SP_PT_Diagnostic check,
     }
     
     if (particle->get_descriptor() == PT::CROSS_BOUNDARY)
-	communicator->communicate(*buffer, particle);
+	communicator->communicate(particle);
   
     // during the source block, this statement could fill the bank such that
     // all incoming particles are run before another source particle is run.
@@ -326,8 +325,8 @@ void DD_Transporter<MT,PT>::trans_domain_async(SP_PT_Diagnostic check,
     // frequently is more inefficient, but seems to be more robust.  Ideally, 
     // we would want to check at some optimal frequency, somewhere between 1
     // and buffer_size.  
-    // if (!(num_run % Particle_Buffer<PT>::get_buffer_s()))
-    communicator->arecv_post(*buffer, bank);
+    // if (!(num_run % Particle_Buffer<PT>::get_maximum_num_particles()))
+    communicator->arecv_post(bank);
 
     // message particle counter
     if (!(num_run % print_f)) 
@@ -515,7 +514,6 @@ void DD_Transporter<MT,PT>::set(SP_Mesh mesh_in,
     Ensure (num_cells == tally->num_cells());
     Ensure (communicator);
     Ensure (topology);
-    Ensure (buffer);
 }
 
 //---------------------------------------------------------------------------//
@@ -535,7 +533,6 @@ template<class MT, class PT>
 void DD_Transporter<MT,PT>::unset()
 {
     Require (topology);
-    Require (buffer);
 
     // assign the fundamental objects to null pointers
     mesh         = SP_Mesh();
@@ -566,7 +563,6 @@ template<class MT, class PT>
 bool DD_Transporter<MT,PT>::ready() const
 {
     Require (topology);
-    Require (buffer);
 
     bool indicator = true;
 

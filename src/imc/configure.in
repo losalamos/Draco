@@ -25,7 +25,7 @@ AC_NEEDS_LIBS_TEST(cdi_analytic)
 # testing setup
 AC_RUNTESTS(tstTally tstParticle tstSource_Builder \
             tstMesh_Operations tstTransporter \
-            tstCommunicator tstMat_State_Builder, 1 2 4)
+            tstMat_State_Builder, 1 2 4)
 
 # DRACO SETUP
 AC_DRACO_ENV

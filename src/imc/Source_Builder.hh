@@ -14,15 +14,17 @@
 
 #include "Particle.hh"
 #include "Source.hh"
-#include "Particle_Buffer.hh"
 #include "Opacity.hh"
 #include "Mat_State.hh"
+#include "Global.hh"
+#include "mc/Particle_Stack.hh"
 #include "mc/Topology.hh"
 #include "mc/Parallel_Data_Operator.hh"
 #include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 #include <vector>
 #include <string>
 #include <iostream>
@@ -119,7 +121,9 @@ namespace rtt_imc
 // 3) 24 Aug 2000 : added capability for the random number stream ID's to
 //                  wrap around 2e9.
 // 4) 31-JUL-2001 : changed mod_with_2e9 to INTEGER_MODULO_1E9 from rtt_mc
-// 
+// 4) 07-JAN-2002 : moved constructor to header file so that automatic
+//                  instantiation will work; updated to work with new
+//                  Particle_Stack 
 //===========================================================================//
 
 template<class MT, class PT = Particle<MT> >
@@ -127,23 +131,23 @@ class Source_Builder
 {
   public:
     // typedefs used in the inheritance chain
-    typedef rtt_dsxx::SP<Source<MT,PT> >         SP_Source;
-    typedef typename Particle_Buffer<PT>::Census PB_Census;
-    typedef rtt_dsxx::SP<PB_Census>              SP_Census;
-    typedef rtt_dsxx::SP<Opacity<MT> >           SP_Opacity;
-    typedef rtt_dsxx::SP<Mat_State<MT> >         SP_Mat_State;
-    typedef rtt_dsxx::SP<MT>                     SP_Mesh;
-    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>   SP_Rnd_Control;
-    typedef rtt_dsxx::SP<rtt_mc::Topology>       SP_Topology;
-    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>  SP_Comm_Patterns;
-    typedef std::vector<int>                     sf_int;
-    typedef std::vector<std::vector<int> >       vf_int;
-    typedef std::vector<double>                  sf_double;
-    typedef std::vector<std::string>             sf_string;
-    typedef std::string                          std_string;
-    typedef typename MT::CCSF_double             ccsf_double;
-    typedef typename MT::CCSF_int                ccsf_int;
-    typedef typename MT::CCVF_double             ccvf_double;
+    typedef rtt_dsxx::SP<Source<MT,PT> >                SP_Source;
+    typedef typename rtt_mc::Particle_Stack<PT>::Census Census;
+    typedef rtt_dsxx::SP<Census>                        SP_Census;
+    typedef rtt_dsxx::SP<Opacity<MT> >                  SP_Opacity;
+    typedef rtt_dsxx::SP<Mat_State<MT> >                SP_Mat_State;
+    typedef rtt_dsxx::SP<MT>                            SP_Mesh;
+    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>          SP_Rnd_Control;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>              SP_Topology;
+    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>         SP_Comm_Patterns;
+    typedef std::vector<int>                            sf_int;
+    typedef std::vector<std::vector<int> >              vf_int;
+    typedef std::vector<double>                         sf_double;
+    typedef std::vector<std::string>                    sf_string;
+    typedef std::string                                 std_string;
+    typedef typename MT::CCSF_double                    ccsf_double;
+    typedef typename MT::CCSF_int                       ccsf_int;
+    typedef typename MT::CCVF_double                    ccvf_double;
 
   private:
     // BASE CLASS DATA
@@ -366,6 +370,95 @@ class Source_Builder
     //! Get total number of post-comb census particles - topology dependent.
     virtual int get_ncentot() const = 0;
 };
+
+//---------------------------------------------------------------------------//
+// TEMPLATE MEMBER DEFINITIONS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Source_Builder base class constructor.
+ *
+ * The Source_Builder base class constructor gets data from a run-time
+ * interface and a valid Topology to construct its data.  The data in
+ * Source_Builder is divided into two basic types: \arg interface data comes
+ * from the interface and is used to calculate source fields, \arg source
+ * data fields are the products of the Source_Builder process.  The interface
+ * data must be given to Source_Builder locally.  That is, the data should be
+ * dimensioned to the local (on-processor) mesh size.  All fields in
+ * Source_Builder are dimensioned to the local mesh.
+ *
+ * When the constructor is called the following requirements must be met:
+ * \arg a mesh must exist and be properly sized, \arg the rtt_rng::rn_stream
+ * must be the same on all processors.
+ *
+ * \param interface rtt_dsxx::SP to a valid run-time interface
+ * \param mesh rtt_dsxx::SP to a local mesh object
+ * \param top rtt_dsxx::SP to a topology object 
+ */
+template<class MT, class PT>
+template<class IT>
+Source_Builder<MT,PT>::Source_Builder(rtt_dsxx::SP<IT> interface,
+				      SP_Mesh mesh, 
+				      SP_Topology top)
+    : elapsed_t(interface->get_elapsed_t()), 
+      evol_ext(interface->get_evol_ext()),
+      rad_s_tend(interface->get_rad_s_tend()),
+      rad_source(interface->get_rad_source()),
+      rad_temp(interface->get_rad_temp()),
+      ss_pos(interface->get_ss_pos()),
+      ss_temp(interface->get_ss_temp()),
+      defined_surcells(interface->get_defined_surcells()),
+      ss_desc(interface->get_ss_desc()),
+      npnom(interface->get_npnom()),
+      npmax(interface->get_npmax()),
+      dnpdt(interface->get_dnpdt()),
+      cycle(interface->get_cycle()), 
+      delta_t(interface->get_delta_t()), 
+      ss_dist(interface->get_ss_dist()),
+      topology(top), 
+      parallel_data_op(top),
+      census(interface->get_census()),
+      npwant(0),
+      ecen(mesh),
+      ew_cen(mesh),
+      ecentot(0),
+      evol(mesh),
+      ew_vol(mesh),
+      evol_net(mesh),
+      mat_vol_src(mesh),
+      evoltot(0),
+      mat_vol_srctot(0),
+      ess(mesh),
+      ew_ss(mesh),
+      ss_face_in_cell(mesh),
+      esstot(0),
+      volrn(mesh),
+      ssrn(mesh)
+{
+    using rtt_mc::global::min;
+
+    Require(mesh);
+    Require(mesh->num_cells() == topology->num_cells(C4::node()));
+    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+
+    // modulo the rn_stream with 1e9 so that, when we get to more than
+    // 1e9 particles (each with its own rn_stream, numbered 0 to 1e9-1), the
+    // rn_stream starts back with rn_stream=0.  The rng package is still
+    // limited to rnstream < numgen, so the 1e9 wrap-around is moot unless
+    // numgen is 1e9 or higher (int size limiting + spawn change).
+    rtt_rng::rn_stream = INTEGER_MODULO_1E9(rtt_rng::rn_stream);
+
+    int num_cells = mesh->num_cells();
+
+    // calculate the desired number of source particles
+    npwant = min(npmax, static_cast<int>(npnom + dnpdt * elapsed_t)); 
+
+    Ensure(evol_ext.size() == num_cells);
+    Ensure(rad_source.size() == num_cells);
+    Ensure(rad_temp.size() == num_cells || rad_temp.size() == 0);
+    Ensure(ss_pos.size() == ss_temp.size());
+    Ensure(ss_pos.size() == defined_surcells.size());
+    Ensure(npwant > 0);
+}
 
 } // end namespace rtt_imc
 

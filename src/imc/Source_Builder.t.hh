@@ -10,114 +10,10 @@
 //---------------------------------------------------------------------------//
 
 #include "Source_Builder.hh"
-#include "Particle.hh"
-#include "Global.hh"
-#include "ds++/Assert.hh"
 #include <cmath>
 
 namespace rtt_imc
 {
-
-using rtt_rng::Sprng;
-using C4::nodes;
-using C4::node;
-using rtt_dsxx::SP;
-
-using std::pow;
-using std::fabs;
-using std::vector;
-using std::fill;
-using std::string;
-using std::cout;
-using std::endl;
-
-//---------------------------------------------------------------------------//
-// CONSTRUCTOR
-//---------------------------------------------------------------------------//
-/*!
- * \brief Source_Builder base class constructor.
- *
- * The Source_Builder base class constructor gets data from a run-time
- * interface and a valid Topology to construct its data.  The data in
- * Source_Builder is divided into two basic types: \arg interface data comes
- * from the interface and is used to calculate source fields, \arg source
- * data fields are the products of the Source_Builder process.  The interface
- * data must be given to Source_Builder locally.  That is, the data should be
- * dimensioned to the local (on-processor) mesh size.  All fields in
- * Source_Builder are dimensioned to the local mesh.
- *
- * When the constructor is called the following requirements must be met:
- * \arg a mesh must exist and be properly sized, \arg the rtt_rng::rn_stream
- * must be the same on all processors.
- *
- * \param interface rtt_dsxx::SP to a valid run-time interface
- * \param mesh rtt_dsxx::SP to a local mesh object
- * \param top rtt_dsxx::SP to a topology object 
- */
-template<class MT, class PT>
-template<class IT>
-Source_Builder<MT,PT>::Source_Builder(SP<IT> interface, SP_Mesh mesh, 
-				      SP_Topology top)
-    : elapsed_t(interface->get_elapsed_t()), 
-      evol_ext(interface->get_evol_ext()),
-      rad_s_tend(interface->get_rad_s_tend()),
-      rad_source(interface->get_rad_source()),
-      rad_temp(interface->get_rad_temp()),
-      ss_pos(interface->get_ss_pos()),
-      ss_temp(interface->get_ss_temp()),
-      defined_surcells(interface->get_defined_surcells()),
-      ss_desc(interface->get_ss_desc()),
-      npnom(interface->get_npnom()),
-      npmax(interface->get_npmax()),
-      dnpdt(interface->get_dnpdt()),
-      cycle(interface->get_cycle()), 
-      delta_t(interface->get_delta_t()), 
-      ss_dist(interface->get_ss_dist()),
-      topology(top), 
-      parallel_data_op(top),
-      census(interface->get_census()),
-      npwant(0),
-      ecen(mesh),
-      ew_cen(mesh),
-      ecentot(0),
-      evol(mesh),
-      ew_vol(mesh),
-      evol_net(mesh),
-      mat_vol_src(mesh),
-      evoltot(0),
-      mat_vol_srctot(0),
-      ess(mesh),
-      ew_ss(mesh),
-      ss_face_in_cell(mesh),
-      esstot(0),
-      volrn(mesh),
-      ssrn(mesh)
-{
-    using rtt_mc::global::min;
-
-    Require(mesh);
-    Require(mesh->num_cells() == topology->num_cells(node()));
-    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
-
-    // modulo the rn_stream with 1e9 so that, when we get to more than
-    // 1e9 particles (each with its own rn_stream, numbered 0 to 1e9-1), the
-    // rn_stream starts back with rn_stream=0.  The rng package is still
-    // limited to rnstream < numgen, so the 1e9 wrap-around is moot unless
-    // numgen is 1e9 or higher (int size limiting + spawn change).
-    rtt_rng::rn_stream = INTEGER_MODULO_1E9(rtt_rng::rn_stream);
-
-    int num_cells = mesh->num_cells();
-
-    // calculate the desired number of source particles
-    npwant = min(npmax, static_cast<int>(npnom + dnpdt * elapsed_t)); 
-
-    Ensure(evol_ext.size() == num_cells);
-    Ensure(rad_source.size() == num_cells);
-    Ensure(rad_temp.size() == num_cells || rad_temp.size() == 0);
-    Ensure(ss_pos.size() == ss_temp.size());
-    Ensure(ss_pos.size() == defined_surcells.size());
-    Ensure(npwant > 0);
-}
 
 //===========================================================================//
 // IMPLEMENTATION INHERITANCE FOR SOURCE BUILDERS
@@ -154,8 +50,8 @@ void Source_Builder<MT,PT>::calc_source_energies(const Mat_State<MT> &state,
 {
     // make sure that the number of cells on this mesh is consistent (it
     // should be a submesh)
-    Require(topology->num_cells(node()) == state.num_cells());
-    Require(topology->num_cells(node()) == opacity.num_cells());
+    Require(topology->num_cells(C4::node()) == state.num_cells());
+    Require(topology->num_cells(C4::node()) == opacity.num_cells());
 
     // calc volume emission energy per cell, total
     calc_evol(state, opacity);
@@ -255,6 +151,7 @@ void Source_Builder<MT,PT>::calc_ess()
     // draco niceties
     using rtt_mc::global::a;
     using rtt_mc::global::c;
+    using std::vector;
 
     // reset esstot
     esstot = 0.0;
@@ -418,6 +315,10 @@ void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh,
 						 const int &ncentot,
 						 const ccsf_int &cenrn)
 {
+    using rtt_rng::Sprng;
+    using rtt_dsxx::SP;
+    using std::vector;
+
     Require(mesh);
     Require(census);
     Require(mesh->num_cells() == ncen.size());
@@ -447,7 +348,8 @@ void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh,
 	    // sample frequency (not now; 1 group)
 
 	    // create Particle
-	    SP<PT> particle(new PT(r, omega, ew_cen(cell), global_cell, random));
+	    SP<PT> particle(new PT(r, omega, ew_cen(cell), global_cell, 
+				   random));
 
 	    // write particle to census
 	    census->push(particle);
@@ -488,6 +390,9 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 					SP_Census dead_census,
 					ccsf_int &max_dead_rand_id)
 {
+    using rtt_rng::Sprng;
+    using rtt_dsxx::SP;
+
     // silly checks
     Require(census);
     Require(local_ncentot >= 0);
@@ -496,7 +401,7 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
     eloss_comb = 0;
 
     // initialize number of (new, combed) census particles
-    fill(local_ncen.begin(), local_ncen.end(), 0);
+    std::fill(local_ncen.begin(), local_ncen.end(), 0);
     local_ncentot = 0;
 
     // in-function data required for combing
@@ -513,7 +418,7 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
     double local_precombed_ecentot = 0.0;
 
     // make new census bank to hold combed census particles
-    SP_Census comb_census(new Particle_Buffer<PT>::Census());
+    SP_Census comb_census(new Census());
 
     // comb census if there are particles in it
     if (census->size() > 0)
@@ -521,7 +426,7 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 	while (census->size())
 	{
 	    // read census particle
-	    SP<PT> particle = census->top();
+	    rtt_dsxx::SP<PT> particle = census->top();
 	    census->pop();
 	    
 	    // get pertinent census particle attributes
@@ -654,7 +559,7 @@ void Source_Builder<MT,PT>::reset_ew_in_census(const int &local_ncentot,
     C4::gsum(global_ncentot);
 
     // make a new census bank to hold census particle with updated ew's
-    SP_Census updated_census(new Particle_Buffer<PT>::Census());
+    SP_Census updated_census(new Census());
 
     // initialize local, global energy loss due to the ew readjustment.
     // hopefully the global_incremental_eloss takes global_eloss_cen closer
@@ -668,7 +573,7 @@ void Source_Builder<MT,PT>::reset_ew_in_census(const int &local_ncentot,
     while (census->size())
     {
 	// get particle off census list
-	SP<PT> particle = census->top();
+	rtt_dsxx::SP<PT> particle = census->top();
 	census->pop();
 
 	// get census particle's cell (always global); convert to local

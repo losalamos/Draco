@@ -19,70 +19,6 @@
 namespace rtt_imc
 {
 
-using C4::nodes;
-using C4::node;
-using rtt_dsxx::SP;
-using rtt_mc::Parallel_Data_Operator;
-
-using std::cout;
-using std::endl;
-using std::ios;
-
-//---------------------------------------------------------------------------//
-// constructor
-//---------------------------------------------------------------------------//
-/*!
- * \brief Constructor for Rep_Source_Builder.
- */
-template<class MT, class PT>
-template<class IT>
-Rep_Source_Builder<MT,PT>::Rep_Source_Builder(SP<IT> interface, SP_Mesh mesh, 
-					      SP_Topology top)
-    : Source_Builder<MT,PT>(interface, mesh, top),
-      global_ncen(mesh),
-      global_ncentot(0),
-      local_ncen(mesh),
-      local_ncentot(0),
-      global_eloss_cen(0),
-      global_nvol(mesh),
-      global_nvoltot(0),
-      local_nvol(mesh),
-      local_nvoltot(0),
-      global_nss(mesh),
-      global_nsstot(0),
-      local_nss(mesh),
-      local_nsstot(0),
-      global_eloss_vol(0),
-      global_eloss_ss(0)
-{ 
-    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
-
-    // if the census does not exist yet then we build it --> if the census
-    // does not exist it means that this is the initial IMC cycle
-    if (census)
-    {
-	// sweep through cells and fill in persistent data
-
-	// checks of persistent data
-	double ecentot_check = 0.0;
-	for (int cell = 1; cell <= mesh->num_cells(); cell++)
-	{
-	    // get global values of ecen from the interface
-	    ecen(cell)     = interface->get_ecen(cell);
-	    ecentot_check += ecen(cell);
-	    
-	    // more may follow --> probably cumulative edits
-	}
-	
-	// get ecentot
-	ecentot = interface->get_ecentot();
-    
-	// checks
-	Check(rtt_mc::global::soft_equiv(ecentot, ecentot_check, 
-					 mesh->num_cells() * 1.e-12));
-    }
-}
-
 //---------------------------------------------------------------------------//
 // SOURCE BUILDER MAIN INTERFACE FUNCTIONS
 //---------------------------------------------------------------------------//
@@ -118,7 +54,7 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
 
     // comb census -- called even if census is empty; must update local_ncen
     double eloss_comb = 0;
-    SP_Census dead_census(new Particle_Buffer<PT>::Census());
+    SP_Census dead_census(new Census());
     ccsf_int max_dead_rand_id(mesh);
     comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb,
 		dead_census, max_dead_rand_id);
@@ -148,8 +84,8 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     global_eloss_cen += global_eloss_comb;
 
     // build Mesh_Operations class for source
-    SP<Mesh_Operations<MT> > mesh_op
-	(new Mesh_Operations<MT>(mesh, state, topology, patterns)); 
+    rtt_dsxx::SP<Mesh_Operations<MT> > mesh_op(
+	new Mesh_Operations<MT>(mesh, state, topology, patterns)); 
 
     // build the source --> the source gets a SP to the census on this
     // processor, this means that as particles are taken out of the source
@@ -191,7 +127,7 @@ void Rep_Source_Builder<MT,PT>::calc_initial_census(SP_Mesh mesh,
     Require(!census);
 
     // make the census
-    census = new Particle_Buffer<PT>::Census();
+    census = new Census();
 
     // calculate global source energies for volume emission and surface
     // source -> Data_Replicated quantities -> calc_source_energies
@@ -357,15 +293,16 @@ void Rep_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
  *                          energy of any resurrected census particles.
  *  */
 template<class MT, class PT>
-void Rep_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh,
-							    ccsf_int
-							     &max_dead_rand_id, 
-							    SP_Census
-							     dead_census,
-							    double 
-							     &global_eloss_comb)
-
+void Rep_Source_Builder<MT,PT>::recalc_census_ew_after_comb(
+    SP_Mesh mesh,
+    ccsf_int &max_dead_rand_id, 
+    SP_Census dead_census,
+    double &global_eloss_comb)
 {
+    using rtt_mc::Parallel_Data_Operator;
+    using rtt_rng::Sprng;
+    using rtt_dsxx::SP;
+
     // check sizes
     Require (global_ncen.size() == mesh->num_cells());
     Require (local_ncen.size()  == mesh->num_cells());
@@ -609,10 +546,13 @@ void Rep_Source_Builder<MT,PT>::calc_source_numbers()
  * \param rn_field       mutable field of starting random number stream IDs
  */
 template<class MT, class PT> 
-void Rep_Source_Builder<MT,PT>::calc_num_part_and_rn_fields
-(const ccsf_int &global_n_field, const int global_numtot,
- int &next_avail_rn, ccsf_int &local_n_field, int &local_numtot, 
- ccsf_int &rn_field)
+void Rep_Source_Builder<MT,PT>::calc_num_part_and_rn_fields(
+    const ccsf_int &global_n_field,
+    const int global_numtot,
+    int &next_avail_rn,
+    ccsf_int &local_n_field,
+    int &local_numtot, 
+    ccsf_int &rn_field)
 {
     // requirements
     int num_cells = global_n_field.size();
@@ -643,19 +583,19 @@ void Rep_Source_Builder<MT,PT>::calc_num_part_and_rn_fields
 	if (global_n_field(cell) > 0)
 	{
 	    // calculate the integer number of particles per cell
-	    even_spread = global_n_field(cell) / nodes();
+	    even_spread = global_n_field(cell) / C4::nodes();
 	    
 	    // calculate the remainder left from integer division
-	    leftover = global_n_field(cell) - nodes() * even_spread;
-	    Check(leftover < nodes());
+	    leftover = global_n_field(cell) - C4::nodes() * even_spread;
+	    Check(leftover < C4::nodes());
 
 	    // for this cell, shifted_node is a local renumbering of
 	    // processors beginning with the first processor that gets any
 	    // leftover particles
-	    int shifted_node = (node() + nodes() - first_proc_for_leftovers) 
-		% nodes();  
+	    int shifted_node = (C4::node() + C4::nodes() - 
+				first_proc_for_leftovers) % C4::nodes();  
 	    Check (shifted_node >= 0);
-	    Check (shifted_node < nodes());
+	    Check (shifted_node < C4::nodes());
 	    
 	    // set the starting random number stream ID for this cell on this
 	    // processor. Recall that, when processor nodes are numbered
@@ -679,9 +619,9 @@ void Rep_Source_Builder<MT,PT>::calc_num_part_and_rn_fields
 
 	    // increment the ID of the next processor to get any leftovers
 	    first_proc_for_leftovers = (first_proc_for_leftovers + leftover)
-		% nodes();
+		% C4::nodes();
 	    Check (first_proc_for_leftovers >= 0);
-	    Check (first_proc_for_leftovers < nodes());
+	    Check (first_proc_for_leftovers < C4::nodes());
 	}
 	else
 	{

@@ -84,7 +84,7 @@ Rep_Transporter<MT,PT>::transport(double dt, int cycle, int print_f,
 	 << " on proc " << C4::node() << " using full replication." << endl;
 
     // make a new census Comm_Buffer on this node
-    SP_Census new_census_bank(new Particle_Buffer<PT>::Census());
+    SP_Census new_census_bank(new Census());
 
     // particle history diagnostic
     rtt_dsxx::SP<typename PT::Diagnostic> check;

@@ -16,8 +16,8 @@
 #include "Opacity.hh"
 #include "Source.hh"
 #include "Tally.hh"
-#include "Particle_Buffer.hh"
-#include "Communicator.hh"
+#include "mc/Communicator.hh"
+#include "mc/Particle_Stack.hh"
 #include "ds++/SP.hh"
 #include <string>
 
@@ -46,15 +46,15 @@ class Transporter
 {
   public:
     // Useful typedefs.
-    typedef rtt_dsxx::SP<MT>                      SP_Mesh;
-    typedef rtt_dsxx::SP<Opacity<MT> >            SP_Opacity;
-    typedef rtt_dsxx::SP<Mat_State<MT> >          SP_Mat_State;
-    typedef rtt_dsxx::SP<Source<MT,PT> >          SP_Source;
-    typedef rtt_dsxx::SP<Tally<MT> >              SP_Tally;
-    typedef rtt_dsxx::SP<Communicator<PT> >       SP_Communicator;
-    typedef typename Particle_Buffer<PT>::Census  Census;
-    typedef rtt_dsxx::SP<Census>                  SP_Census;
-    typedef std::string                           std_string;
+    typedef rtt_dsxx::SP<MT>                             SP_Mesh;
+    typedef rtt_dsxx::SP<Opacity<MT> >                   SP_Opacity;
+    typedef rtt_dsxx::SP<Mat_State<MT> >                 SP_Mat_State;
+    typedef rtt_dsxx::SP<Source<MT,PT> >                 SP_Source;
+    typedef rtt_dsxx::SP<Tally<MT> >                     SP_Tally;
+    typedef rtt_dsxx::SP<rtt_mc::Communicator<PT> >      SP_Communicator;
+    typedef typename rtt_mc::Particle_Stack<PT>::Census  Census;
+    typedef rtt_dsxx::SP<Census>                         SP_Census;
+    typedef std::string                                  std_string;
 
   public:
     // Constructor.

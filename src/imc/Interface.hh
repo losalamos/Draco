@@ -12,7 +12,7 @@
 #ifndef __imc_Interface_hh__
 #define __imc_Interface_hh__
 
-#include "Particle_Buffer.hh"
+#include "mc/Particle_Stack.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <string>
@@ -76,7 +76,8 @@ class Interface
     typedef std::vector<int>                                   sf_int;
     typedef std::vector<std::vector<int> >                     vf_int;
     typedef std::vector<std::string>                           sf_string;
-    typedef rtt_dsxx::SP<typename Particle_Buffer<PT>::Census> SP_Census; 
+    typedef typename rtt_mc::Particle_Stack<PT>::Census        Census;
+    typedef rtt_dsxx::SP<Census>                               SP_Census; 
     
   public:
     // Constructor.

@@ -11,7 +11,6 @@
 
 #include "DD_Source_Builder.hh"
 #include "Mesh_Operations.hh"
-#include "Global.hh"
 #include "c4/global.hh"
 #include "mc/Math.hh"
 #include "mc/Parallel_Data_Operator.hh"
@@ -20,73 +19,6 @@
 
 namespace rtt_imc
 {
-
-using C4::nodes;
-using C4::node;
-using rtt_dsxx::SP;
-using rtt_mc::global::soft_equiv;
-using rtt_mc::Parallel_Data_Operator;
-
-using std::cout;
-using std::endl;
-using std::ios;
-using std::accumulate;
-
-//---------------------------------------------------------------------------//
-// constructor
-//---------------------------------------------------------------------------//
-/*!
- * \brief Constructor for DD_Source_Builder.
- */
-template<class MT, class PT>
-template<class IT>
-DD_Source_Builder<MT,PT>::DD_Source_Builder(SP<IT> interface, SP_Mesh mesh, 
-					    SP_Topology top)
-    : Source_Builder<MT,PT>(interface, mesh, top),
-    local_ncen(mesh),
-    local_ncentot(0),
-    local_eloss_cen(0),
-    global_eloss_cen(0),
-    local_nvol(mesh),
-    local_nvoltot(0),
-    local_nss(mesh),
-    local_nsstot(0),
-    local_eloss_vol(0),
-    global_eloss_vol(0),
-    local_eloss_ss(0),
-    global_eloss_ss(0)
-{ 
-    // at the beginning of the timestep, random number stream ID should be
-    // the same on every processor.
-    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
-    
-    // Update the persistent census energy data, unless the census does not
-    // exist yet, which is the case on the first IMC cycle.
-    if (census)
-    {
-	// a check on the total census energy
-	double ecentot_check = 0.0;
-
-	for (int cell = 1; cell <= mesh->num_cells(); cell++)
-	{
-	    // get local values of ecen from the interface
-	    ecen(cell)     = interface->get_ecen(cell);
-	    ecentot_check += ecen(cell);
-
-	    // more updates may follow -- probably time-cumulative edits
-	}
-
-	// sum up census energy check from all processors
-	C4::gsum(ecentot_check);
-
-	// get total global census energy from the interface
-	global_ecentot = interface->get_ecentot();
-
-	// check consistency of energies and totals
-	Check (rtt_mc::global::soft_equiv(global_ecentot, ecentot_check,
-					  mesh->num_cells() * 1.0e-12));
-    }
-}
 
 //---------------------------------------------------------------------------//
 // BUILD THE SOURCE ON THIS DD TOPOLOGY
@@ -127,7 +59,7 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     calc_source_numbers();
 
     // initialize data for resurrecting dead, combed-out census particles
-    SP_Census dead_census(new Particle_Buffer<PT>::Census());
+    SP_Census dead_census(new Census());
     ccsf_int max_dead_rand_id(mesh);
 
     // comb census -- even if census is empty; must update local_ncen
@@ -164,8 +96,8 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     global_eloss_cen += global_eloss_comb;
     
     // build Mesh_Operations class for source
-    SP<Mesh_Operations<MT> > mesh_op
-	(new Mesh_Operations<MT>(mesh, state, topology, patterns)); 
+    rtt_dsxx::SP<Mesh_Operations<MT> > mesh_op(
+	new Mesh_Operations<MT>(mesh, state, topology, patterns)); 
 
     // build the source --> the source gets a SP to the census on this
     // processor, this means that as particles are taken out of the source
@@ -217,7 +149,7 @@ void DD_Source_Builder<MT,PT>::calc_initial_census(SP_Mesh mesh,
     Require(!census);
 
     // make the census on this processor
-    census = new Particle_Buffer<PT>::Census();
+    census = new Census();
 
     // calculate local source energies for volume emission and surface
     // source.  In the DD topology, these are Data_Distributed quantities.
@@ -393,14 +325,14 @@ void DD_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
  * 
  */
 template<class MT, class PT>
-void DD_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh,
-							   ccsf_int
-							    &max_dead_rand_id, 
-							   SP_Census
-							    dead_census,
-							   double 
-							    &global_eloss_comb)
+void DD_Source_Builder<MT,PT>::recalc_census_ew_after_comb(
+    SP_Mesh mesh,
+    ccsf_int &max_dead_rand_id, 
+    SP_Census dead_census,
+    double &global_eloss_comb)
 {
+    using rtt_rng::Sprng;
+
     // check sizes
     Require (local_ncen.size() == mesh->num_cells());
 
@@ -425,7 +357,7 @@ void DD_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh,
     while(dead_census->size() > 0)
     {
 	// get the dead particle
-	SP<PT> dead_particle = dead_census->top();
+	rtt_dsxx::SP<PT> dead_particle = dead_census->top();
 	dead_census->pop();
 
 	// get the dead particle's attributes
@@ -652,13 +584,16 @@ void DD_Source_Builder<MT,PT>::calc_source_numbers()
  *
  */
 template<class MT, class PT> 
-void DD_Source_Builder<MT,PT>::calc_fullDD_rn_fields(const int
-						     global_numcells, 
-						     ccsf_int &local_n_field,
-						     int &next_avail_rn, 
-						     ccsf_int &rn_field, 
-						     const int global_ntot)
+void DD_Source_Builder<MT,PT>::calc_fullDD_rn_fields(
+    const int global_numcells, 
+    ccsf_int &local_n_field,
+    int &next_avail_rn, 
+    ccsf_int &rn_field, 
+    const int global_ntot)
 {
+    using rtt_mc::Parallel_Data_Operator;
+    using std::accumulate;
+
     // require that source number and random number stream IDs are equally
     // sized.  require (weak check) that local and global cell numbers are OK
     int num_cells = local_n_field.size();

@@ -14,13 +14,15 @@
 
 #include "Source_Builder.hh"
 #include "Source.hh"
-#include "Particle_Buffer.hh"
 #include "Opacity.hh"
 #include "Mat_State.hh"
+#include "Particle.hh"
+#include "mc/Particle_Stack.hh"
 #include "mc/Topology.hh"
 #include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 #include <vector>
 #include <string>
 #include <iostream>
@@ -50,6 +52,9 @@ namespace rtt_imc
 // 2) 26 Jul 2000 : modified calc_num_part_and_rn_fields to better distribute 
 //                  leftover particles (after integer math) across all procs.
 // 3) 26 Jun 2001 : relaxed check of ecentot in constructor
+// 4) 07 Jan 2002 : moved constructor to header file so that automatic
+//                  instantiation will work; updated to work with new
+//                  Particle_Stack 
 //===========================================================================//
 
 template<class MT, class PT = Particle<MT> >
@@ -57,23 +62,23 @@ class Rep_Source_Builder : public Source_Builder<MT,PT>
 {
   public:
     // typedefs used in the inheritance chain
-    typedef rtt_dsxx::SP<Source<MT,PT> >         SP_Source;
-    typedef typename Particle_Buffer<PT>::Census PB_Census;
-    typedef rtt_dsxx::SP<PB_Census>              SP_Census;
-    typedef rtt_dsxx::SP<Opacity<MT> >           SP_Opacity;
-    typedef rtt_dsxx::SP<Mat_State<MT> >         SP_Mat_State;
-    typedef rtt_dsxx::SP<MT>                     SP_Mesh;
-    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>   SP_Rnd_Control; 
-    typedef rtt_dsxx::SP<rtt_mc::Topology>       SP_Topology;
-    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>  SP_Comm_Patterns;
-    typedef std::vector<int>                     sf_int;
-    typedef std::vector<double>                  sf_double;
-    typedef std::vector<std::string>             sf_string;
-    typedef std::vector<std::vector<double> >    vf_double;
-    typedef std::string                          std_string;
-    typedef typename MT::CCSF_double             ccsf_double;
-    typedef typename MT::CCSF_int                ccsf_int;
-    typedef typename MT::CCVF_double             ccvf_double;             
+    typedef rtt_dsxx::SP<Source<MT,PT> >                SP_Source;
+    typedef typename rtt_mc::Particle_Stack<PT>::Census Census;
+    typedef rtt_dsxx::SP<Census>                        SP_Census;
+    typedef rtt_dsxx::SP<Opacity<MT> >                  SP_Opacity;
+    typedef rtt_dsxx::SP<Mat_State<MT> >                SP_Mat_State;
+    typedef rtt_dsxx::SP<MT>                            SP_Mesh;
+    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>          SP_Rnd_Control; 
+    typedef rtt_dsxx::SP<rtt_mc::Topology>              SP_Topology;
+    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>         SP_Comm_Patterns;
+    typedef std::vector<int>                            sf_int;
+    typedef std::vector<double>                         sf_double;
+    typedef std::vector<std::string>                    sf_string;
+    typedef std::vector<std::vector<double> >           vf_double;
+    typedef std::string                                 std_string;
+    typedef typename MT::CCSF_double                    ccsf_double;
+    typedef typename MT::CCSF_int                       ccsf_int;
+    typedef typename MT::CCVF_double                    ccvf_double;
 
   private:
     // Data fields unique or more properly defined for full Replication
@@ -160,6 +165,62 @@ class Rep_Source_Builder : public Source_Builder<MT,PT>
     //! Get global, total number of post-comb census particles on processor.
     int get_ncentot() const { return global_ncentot; }
 };
+
+//---------------------------------------------------------------------------//
+// TEMPLATE MEMBER DEFINITIONS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Constructor for Rep_Source_Builder.
+ */
+template<class MT, class PT>
+template<class IT>
+Rep_Source_Builder<MT,PT>::Rep_Source_Builder(rtt_dsxx::SP<IT> interface, 
+					      SP_Mesh mesh, 
+					      SP_Topology top)
+    : Source_Builder<MT,PT>(interface, mesh, top),
+      global_ncen(mesh),
+      global_ncentot(0),
+      local_ncen(mesh),
+      local_ncentot(0),
+      global_eloss_cen(0),
+      global_nvol(mesh),
+      global_nvoltot(0),
+      local_nvol(mesh),
+      local_nvoltot(0),
+      global_nss(mesh),
+      global_nsstot(0),
+      local_nss(mesh),
+      local_nsstot(0),
+      global_eloss_vol(0),
+      global_eloss_ss(0)
+{ 
+    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+
+    // if the census does not exist yet then we build it --> if the census
+    // does not exist it means that this is the initial IMC cycle
+    if (census)
+    {
+	// sweep through cells and fill in persistent data
+
+	// checks of persistent data
+	double ecentot_check = 0.0;
+	for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	{
+	    // get global values of ecen from the interface
+	    ecen(cell)     = interface->get_ecen(cell);
+	    ecentot_check += ecen(cell);
+	    
+	    // more may follow --> probably cumulative edits
+	}
+	
+	// get ecentot
+	ecentot = interface->get_ecentot();
+    
+	// checks
+	Check(rtt_mc::global::soft_equiv(ecentot, ecentot_check, 
+					 mesh->num_cells() * 1.e-12));
+    }
+}
 
 } // end namespace rtt_imc
 
