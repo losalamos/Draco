@@ -6,9 +6,17 @@
 /* @> cmath for stdheaders package */
 /*---------------------------------------------------------------------------*/
 
+
 #ifndef __stdheaders_cmath__
 #define __stdheaders_cmath__
 
+#include <math.h>
+
+namespace std {
+using ::fabs;
+using ::pow;
+using ::sqrt;
+} /*namespace std*/
 
 #endif    /* __stdheaders_cmath__ */
 
