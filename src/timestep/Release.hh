@@ -40,7 +40,7 @@ namespace rtt_timestep
 /*!
  * \page timestep_overview Overview of the Draco Time Step Manager
  *
- * \version 1_0_1
+ * \version 1_0_2
  *
  * <h3> Introduction </h3>
  * The classes contained in the rtt_timestep name space are designed

@@ -18,7 +18,7 @@ namespace rtt_timestep
 // this library in the form timestep-#_#_# in pkg_version variable
 const std::string release()
 {
-    std::string pkg_release = "@(#)timestep-1_0_1";
+    std::string pkg_release = "@(#)timestep-1_0_2";
     return pkg_release;
 }
 
