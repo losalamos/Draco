@@ -19,11 +19,30 @@ using namespace std;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
+using rtt_mc::global::soft_equiv;
 #include <vector>
 
 
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__);
+
+//---------------------------------------------------------------------------//
+// make a fake random number generator that always returns "1"
+//---------------------------------------------------------------------------//
+class Ran_1
+{
+  public:
+    inline double ran() const {return 1;}
+};
+
+//---------------------------------------------------------------------------//
+// make a fake random number generator that always returns 1/2
+//---------------------------------------------------------------------------//
+class Ran_half
+{
+  public:
+    inline double ran() const {return 0.5;}
+};
 
 //---------------------------------------------------------------------------//
 // test the function sample_general_linear_test
@@ -118,6 +137,72 @@ void sample_general_linear_test()
 }
 
 //---------------------------------------------------------------------------//
+// Test the sampling a frequency from a planckian distribution at kT.
+//---------------------------------------------------------------------------//
+
+void test_sampling_planckian_frequency()
+{
+    using rtt_mc::global::pi;
+
+    // make a random number generator
+    int seed = 1234567;
+    Rnd_Control rand_control(seed);
+    Sprng ran_object = rand_control.get_rn(10);
+
+    // make a simple check that kT=0 produces hnu=0
+    double kT  = 0.0;
+    double hnu = rtt_mc::sampler::sample_planckian_frequency(ran_object, kT); 
+    if (!soft_equiv(hnu, 0.0))  ITFAILS;
+
+    // test the planck freq sampler when all random numbers are 1
+    {
+	Ran_1 ran1;
+	kT  = 1.0;
+	hnu = rtt_mc::sampler::sample_planckian_frequency(ran1, kT);
+	if (!soft_equiv(hnu, 0.0))  ITFAILS;
+    }
+
+    // test the planck freq sampler when all random numbers are 1/2
+    {
+	Ran_half ranh;
+	kT  = 1.0;
+	hnu = rtt_mc::sampler::sample_planckian_frequency(ranh, kT);
+	if (!soft_equiv(hnu, -kT*log(0.0625)))  ITFAILS;
+    }
+
+    // do some binning and compare to analytic Planck at the 3-sigma level.
+    int num_bins     = 100;
+    double bin_width = 0.1;
+    int num_samples  = 10000;
+    kT               = 1.0;
+    vector<double> freq_bins(num_bins, 0.0);
+
+    for (int i = 0; i < num_samples; i++)
+    {
+	hnu = rtt_mc::sampler::sample_planckian_frequency(ran_object, kT);
+	int index = hnu/kT/bin_width;
+	if (index < num_bins)
+	    freq_bins[index] += 1.0;
+    }
+
+    for (int b = 0; b < num_bins; b++)
+	freq_bins[b] /= num_samples;
+    
+    for (int b = 0; b < num_bins; b++)
+    {
+	double freq     = (b+0.5)*bin_width;
+	double x        = freq/kT; 
+
+	double analytic = 15.0/std::pow(pi,4)*x*x*x/(exp(x)-1.0) * bin_width;
+
+	double expected_samples = analytic * num_samples;
+	double three_sigma_eps  = 3.0 / sqrt(expected_samples);
+
+	if (!soft_equiv(freq_bins[b], analytic, three_sigma_eps))     ITFAILS;
+    }
+}
+
+//---------------------------------------------------------------------------//
 // main function for tstSampler
 //---------------------------------------------------------------------------//
 
@@ -145,10 +230,13 @@ int main(int argc, char *argv[])
     {
         // test the sampling of a general linear pdf
 	sample_general_linear_test();
+
+	// test the sampling of a Planckian frequency
+	test_sampling_planckian_frequency();
     }
     catch (rtt_dsxx::assertion &ass)
     {
-        cout << "Assertion during sample_general_linear_test: " 
+        cout << "Assertion during tstSampler: " 
 	     << ass.what() << endl;
         C4::Finalize();
         return 1;
