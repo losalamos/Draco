@@ -79,6 +79,8 @@ class Mesh_XYZ : private XYZ_Mapper
 	      data( m->get_ncp(), 6 )
 	{}
 
+	fcdsf& operator=( double x ) { data = x; return *this; }
+
     // i, j, k == global xyz cell indicies
     // f == face index
     // c == local cell index
@@ -96,11 +98,21 @@ class Mesh_XYZ : private XYZ_Mapper
 	}
     };
 
+    class cell_array : public Mat1<double> {
+
+	cell_array( const Mesh_XYZ *m ) : Mat1<double>( m->get_ncp() ) {}
+
+      public:
+	cell_array( const SP<Mesh_XYZ>& m ) : Mat1<double>( m->get_ncp() ) {}
+
+	friend class Mesh_XYZ;
+    };
+
   private:
     Mat1<double> xc, yc, zc;
     Mat1<double> xf, yf, zf;
     double       dx, dy, dz;
-    Mat1<double> vc;
+    cell_array vc;
     Mat1<double> xA, yA, zA;
 
     fcdsf xF, yF, zF;
@@ -135,13 +147,10 @@ class Mesh_XYZ : private XYZ_Mapper
     const Mat1<double>& get_yA() const { return yA; }
     const Mat1<double>& get_zA() const { return zA; }
 
-    const Mat1<double>& get_vc() const { return vc; }
-
-    class cell_array : public Mat1<double> {
-      public:
-	cell_array( const SP<Mesh_XYZ>& m ) : Mat1<double>( m->get_ncp() ) {}
-    };
+    const cell_array& get_vc() const { return vc; }
 };
+
+void dump( const Mesh_XYZ::cell_array& data, char *name );
 
 #endif                          // __mesh_Mesh_XYZ_hh__
 
