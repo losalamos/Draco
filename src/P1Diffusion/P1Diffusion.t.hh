@@ -134,30 +134,30 @@ namespace rtt_P1Diffusion
  {
      for (int c = 0; c < spm->get_ncells(); ++c)
      {
-         KEnergy(c,0) = sigmaF(c,0)*velocity(c,0)(0)
-                      + sigmaF(c,2)*velocity(c,0)(1)
-                      + sigmaF(c,4)*velocity(c,0)(2);
-         KEnergy(c,1) = sigmaF(c,1)*velocity(c,1)(0)
-                      + sigmaF(c,2)*velocity(c,1)(1)
-                      + sigmaF(c,4)*velocity(c,1)(2);
-         KEnergy(c,2) = sigmaF(c,0)*velocity(c,2)(0)
-                      + sigmaF(c,3)*velocity(c,2)(1)
-                      + sigmaF(c,4)*velocity(c,2)(2);
-         KEnergy(c,3) = sigmaF(c,1)*velocity(c,3)(0)
-                      + sigmaF(c,3)*velocity(c,3)(1)
-                      + sigmaF(c,4)*velocity(c,3)(2);
-         KEnergy(c,4) = sigmaF(c,0)*velocity(c,4)(0)
-                      + sigmaF(c,2)*velocity(c,4)(1)
-                      + sigmaF(c,5)*velocity(c,4)(2);
-         KEnergy(c,5) = sigmaF(c,1)*velocity(c,5)(0)
-                      + sigmaF(c,2)*velocity(c,5)(1)
-                      + sigmaF(c,5)*velocity(c,5)(2);
-         KEnergy(c,6) = sigmaF(c,0)*velocity(c,6)(0)
-                      + sigmaF(c,3)*velocity(c,6)(1)
-                      + sigmaF(c,5)*velocity(c,6)(2);
-         KEnergy(c,7) = sigmaF(c,1)*velocity(c,7)(0)
-                      + sigmaF(c,3)*velocity(c,7)(1)
-                      + sigmaF(c,5)*velocity(c,7)(2);
+         KEnergy(c,0) = sigmaF(c,0)*velocity(c,0)[0]
+                      + sigmaF(c,2)*velocity(c,0)[1]
+                      + sigmaF(c,4)*velocity(c,0)[2];
+         KEnergy(c,1) = sigmaF(c,1)*velocity(c,1)[0]
+                      + sigmaF(c,2)*velocity(c,1)[1]
+                      + sigmaF(c,4)*velocity(c,1)[2];
+         KEnergy(c,2) = sigmaF(c,0)*velocity(c,2)[0]
+                      + sigmaF(c,3)*velocity(c,2)[1]
+                      + sigmaF(c,4)*velocity(c,2)[2];
+         KEnergy(c,3) = sigmaF(c,1)*velocity(c,3)[0]
+                      + sigmaF(c,3)*velocity(c,3)[1]
+                      + sigmaF(c,4)*velocity(c,3)[2];
+         KEnergy(c,4) = sigmaF(c,0)*velocity(c,4)[0]
+                      + sigmaF(c,2)*velocity(c,4)[1]
+                      + sigmaF(c,5)*velocity(c,4)[2];
+         KEnergy(c,5) = sigmaF(c,1)*velocity(c,5)[0]
+                      + sigmaF(c,2)*velocity(c,5)[1]
+                      + sigmaF(c,5)*velocity(c,5)[2];
+         KEnergy(c,6) = sigmaF(c,0)*velocity(c,6)[0]
+                      + sigmaF(c,3)*velocity(c,6)[1]
+                      + sigmaF(c,5)*velocity(c,6)[2];
+         KEnergy(c,7) = sigmaF(c,1)*velocity(c,7)[0]
+                      + sigmaF(c,3)*velocity(c,7)[1]
+                      + sigmaF(c,5)*velocity(c,7)[2];
      }
  }
 
