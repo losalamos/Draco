@@ -665,8 +665,10 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
     double high_w = center_value+slope[0]*(hix-x_center);
 
     // check that weighting function is positive throughout the cell
-    Insist (low_w  >= 0, "Weighting function is negative!");
-    Insist (high_w >= 0, "Weighting function is negative!");
+    Insist ((low_w  >= 0) || soft_equiv(low_w,0.0), 
+	    "Weighting function is negative!");
+    Insist ((high_w >= 0) || soft_equiv(high_w,0.0), 
+	    "Weighting function is negative!");
 
     // >>> sample x position <<<
 
