@@ -62,7 +62,7 @@ CXX	+= --output_dependencies .dkcc.$(basename $(notdir $*))_$(env)
 endif
 endif
 
-INSTANTIALYZER	+= -m edg
+INSTANTIALYZER	+= -m ansi
 
 ifeq ($(c4),no)
 SYS_FLAGS = -DNOMPI
