@@ -12,7 +12,8 @@
 #include "ds++/Assert.hh"
 #include <iostream>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 using std::endl;
 
@@ -390,7 +391,7 @@ void OS_Builder::assign3D(Layout &layout)
 	}
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of OS_Builder.cc

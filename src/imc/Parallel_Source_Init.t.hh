@@ -14,14 +14,15 @@
 #include <fstream>
 #include <cmath>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // draco components
 using C4::node;
 using C4::nodes;
 using C4::Send;
 using C4::Recv;
-using Global::min;
+using global::min;
 
 // std components
 using std::fill;
@@ -700,7 +701,7 @@ void Parallel_Source_Init<MT,PT>::calc_evol(const Opacity<MT> &opacity,
     for (int cell = 1; cell <= evol.get_Mesh().num_cells(); cell++)
     {
       // calc cell centered volume source
-	evol_net(cell) = opacity.fplanck(cell) * Global::a * Global::c *
+	evol_net(cell) = opacity.fplanck(cell) * global::a * global::c *
 	    pow(state.get_T(cell), 4) * evol.get_Mesh().volume(cell) * 
 	    delta_t;
 	evol(cell) = evol_net(cell) + 
@@ -761,7 +762,7 @@ void Parallel_Source_Init<MT,PT>::calc_ess()
 		get_bndface(ss_pos[ss], surcells[sc]);
 
 	  // assign energy to surface source cell
-	    ess(surcells[sc]) = Global::a * Global::c * 0.25 *
+	    ess(surcells[sc]) = global::a * global::c * 0.25 *
 		ess.get_Mesh().face_area(surcells[sc], fss(surcells[sc])) *
 		pow(ss_temp[ss],4) * delta_t;
 
@@ -784,7 +785,7 @@ void Parallel_Source_Init<MT,PT>::calc_init_ecen()
     for (int cell = 1; cell <= ecen.get_Mesh().num_cells(); cell++)
     {
       // calc cell centered census radiation energy
-	ecen(cell) = Global::a * ecen.get_Mesh().volume(cell) *
+	ecen(cell) = global::a * ecen.get_Mesh().volume(cell) *
 	    pow(rad_temp[cell-1], 4);
 
       // accumulate ecentot
@@ -1340,7 +1341,7 @@ void Parallel_Source_Init<MT,PT>::print(ostream &out) const
     out << "======================================" << endl;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Parallel_Source_Init.t.hh

@@ -21,10 +21,10 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include <iostream>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 using std::ostream;
 
@@ -106,7 +106,7 @@ inline double Opacity<MT>::get_sigeffabs(int cell) const
     return fleck(cell) * sigma_abs(cell);
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Opacity_hh__
 

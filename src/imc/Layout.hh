@@ -25,11 +25,11 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include <iostream>
 #include <vector>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // defined namespaces
 using std::ostream;
@@ -129,7 +129,7 @@ inline int& Layout::operator()(int cell_index, int face_index)
     return face_cell[cell_index-1][face_index-1];
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Layout_hh__
 

@@ -24,7 +24,6 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Coord_sys.hh"
 #include "Layout.hh"
 #include "OS_Mesh.hh"
@@ -33,7 +32,8 @@
 #include <vector>
 #include <string>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // stl components
 using std::vector;
@@ -98,7 +98,7 @@ inline OS_Builder::OS_Builder(SP<IT> interface)
     bnd_cond     = interface->get_boundaries();
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_OS_Builder_hh__
 

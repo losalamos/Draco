@@ -27,12 +27,12 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "rng/Sprng.hh"
 #include <vector>
 #include <string>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 using std::vector;
 using std::string;
@@ -86,7 +86,7 @@ public:
   // End_Doc 
 };
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Coord_sys_hh__
 

@@ -28,7 +28,6 @@
 //
 //===========================================================================//
 
-#include "Names.hh"
 #include "c4/global.hh"
 #include "rng/Random.hh"
 #include "ds++/Assert.hh"
@@ -36,7 +35,8 @@
 #include <iostream>
 #include <vector>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // draco components
 using rtt_rng::Sprng;
@@ -290,7 +290,7 @@ Particle_Buffer<PT>::Comm_Buffer::operator=(const Comm_Buffer &rhs)
     return *this;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Particle_Buffer_hh__
 

@@ -10,11 +10,12 @@
 #include "Particle.hh"
 #include "Communicator.t.hh"
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 template class Communicator<Particle<OS_Mesh> >;
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Communicator_pt.cc

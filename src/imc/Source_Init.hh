@@ -30,7 +30,6 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Opacity.hh"
 #include "Mat_State.hh"
 #include "Particle.hh"
@@ -41,7 +40,8 @@
 #include <iostream>
 #include <vector>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // draco components
 using rtt_rng::Rnd_Control;
@@ -232,7 +232,7 @@ inline double Source_Init<MT,PT>::get_t4_slope(int dim, int cell) const
     return t4_slope(dim, cell); 
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Source_Init_hh__
 

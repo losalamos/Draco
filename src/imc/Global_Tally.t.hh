@@ -10,7 +10,8 @@
 #include "Global.hh"
 #include <iomanip>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 using std::setiosflags;
 using std::ios;
@@ -259,8 +260,8 @@ void Global_Tally<MT,PT>::print(ostream &out) const
 	out << setw(10) << i+1 << setw(15) << temperature[i] 
 	    << setw(15) << temperature[i] * dedt[i] << setw(15)
 	    << pow(ewpl[i] / 
-		   (Global::a * Global::c * delta_t * volume[i]), 0.25)
-	    << setw(15) << ewpl[i] / Global::c / delta_t
+		   (global::a * global::c * delta_t * volume[i]), 0.25)
+	    << setw(15) << ewpl[i] / global::c / delta_t
 	    << setw(15) << evol_net[i] << setw(15) << dedt[i] << endl;
     }
 
@@ -310,7 +311,7 @@ void Global_Tally<MT,PT>::print(ostream &out) const
 	<< setw(15) << eloss_vol << setw(15) << eloss_ss << endl;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Global_Tally.t.hh

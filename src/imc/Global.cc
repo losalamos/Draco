@@ -8,15 +8,17 @@
 
 #include "Global.hh"
 
-IMCSPACE
-GLOBALSPACE
+namespace rtt_imc 
+{
+namespace global
+{
 
 //---------------------------------------------------------------------------//
 // PROBLEM VARIABLE INITIAL DEFINITIONS
 //---------------------------------------------------------------------------//
 
-CSPACE
-CSPACE
+} // end namespace global
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Global.cc

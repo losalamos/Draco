@@ -25,11 +25,11 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // stl components
 using std::ostream;
@@ -214,7 +214,7 @@ inline double Tally<MT>::volume(int cell) const
     return energy_dep.get_Mesh().volume(cell);
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Tally_hh__
 

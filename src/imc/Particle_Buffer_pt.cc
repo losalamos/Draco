@@ -10,7 +10,8 @@
 #include "Particle.hh"
 #include "Particle_Buffer.t.hh"
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 using rtt_rng::Rnd_Control;
 
@@ -20,7 +21,7 @@ template
 Particle_Buffer<Particle<OS_Mesh> >::Particle_Buffer(const OS_Mesh &, 
 						     const Rnd_Control &);  
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Particle_Buffer_pt.cc

@@ -9,7 +9,8 @@
 #include "Layout.hh"
 #include <iomanip>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -52,7 +53,7 @@ ostream& operator<<(ostream &output, const Layout &object)
     return output;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Layout.cc

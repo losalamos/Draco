@@ -9,7 +9,8 @@
 #include "Mat_State.hh"
 #include <iomanip>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 //---------------------------------------------------------------------------//
 // public member functions
@@ -53,7 +54,7 @@ ostream& operator<<(ostream &output, const Mat_State<MT> &object)
     return output;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Mat_State.t.hh

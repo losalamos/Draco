@@ -11,7 +11,8 @@
 #include <algorithm>
 #include <numeric>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 using std::fill;
 using std::accumulate;
@@ -631,7 +632,7 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const
     Ensure (buffer.n_part == 0);
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Particle_Buffer.t.hh

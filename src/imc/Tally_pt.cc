@@ -9,11 +9,12 @@
 #include "OS_Mesh.hh"
 #include "Tally.t.hh"
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 template class Tally<OS_Mesh>;
 
-CSPACE
+} // end namespace rtt_imc
 
 
 //---------------------------------------------------------------------------//

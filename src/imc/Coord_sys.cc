@@ -11,9 +11,10 @@
 #include <iostream>
 #include <cmath>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
-using Global::pi;
+using global::pi;
 using std::cos;
 using std::sin;
 using std::sqrt;
@@ -76,7 +77,7 @@ void Coord_sys::calc_omega(double costheta, double phi, vector<double>
     }
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Coord_sys.cc

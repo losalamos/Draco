@@ -10,7 +10,8 @@
 #include "Particle.hh"
 #include "Parallel_Builder.t.hh"
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 using rtt_rng::Rnd_Control;
 
@@ -47,7 +48,7 @@ Parallel_Builder<OS_Mesh>::send_Communicator();
 template SP<Communicator<Particle<OS_Mesh> > > 
 Parallel_Builder<OS_Mesh>::recv_Communicator();
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Parallel_Builder_pt.cc

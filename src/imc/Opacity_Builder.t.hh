@@ -11,7 +11,8 @@
 #include "ds++/Assert.hh"
 #include <cmath>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // stl components
 using std::pow;
@@ -156,8 +157,8 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
       // calculate Fleck factor, for 1 group sigma_abs = planck
 	double dedt  = mat->get_dedt(cell);
 	Insist(dedt > 0, "The specific heat is <= 0!");
-	double beta  = 4.0 * Global::a * T*T*T * mesh->volume(cell) / dedt;
-	double denom = implicitness * beta * Global::c * delta_t *
+	double beta  = 4.0 * global::a * T*T*T * mesh->volume(cell) / dedt;
+	double denom = implicitness * beta * global::c * delta_t *
 	    sigma_abs(cell);
 	fleck(cell)  = 1.0 / (1.0 + denom);
     }
@@ -170,7 +171,7 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
     return return_opacity;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Opacity_Builder.t.hh

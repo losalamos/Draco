@@ -9,7 +9,8 @@
 #include "Tally.hh"
 #include <iomanip>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 using std::setw;
 using std::ios;
@@ -134,7 +135,7 @@ void Tally<MT>::cycle_print(ostream &out) const
 
 
 }
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Tally.t.hh

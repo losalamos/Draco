@@ -20,7 +20,6 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 #include <vector>
@@ -28,8 +27,10 @@
 #include <cfloat>
 #include <iomanip>
 
-IMCSPACE
-GLOBALSPACE
+namespace rtt_imc 
+{
+namespace global
+{
 
 using std::vector;
 using std::ostream;
@@ -140,8 +141,8 @@ inline T max(T A, T B)
     return A > B ? A : B;
 }
 
-CSPACE
-CSPACE
+} // end namespace global
+} // end namespace rtt_imc
 
 #endif                          // __imc_Math_hh__
 

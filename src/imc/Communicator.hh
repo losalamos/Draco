@@ -23,14 +23,14 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Particle_Buffer.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <algorithm>
 #include <iostream>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // DRACO components
 using dsxx::SP;
@@ -116,7 +116,7 @@ int Communicator<PT>::global_to_local(int global_index) const
     return itr - send_nodes.begin();
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Communicator_hh__
 

@@ -21,19 +21,20 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Math.hh"
 #include "Constants.hh"
 
-IMCSPACE
-GLOBALSPACE
+namespace rtt_imc 
+{
+namespace global
+{
 
 //---------------------------------------------------------------------------//
 // PROBLEM VARIABLES
 //---------------------------------------------------------------------------//
 
-CSPACE
-CSPACE
+} // end namespace global
+} // end namespace rtt_imc
 
 #endif                          // __imc_Global_hh__
 

@@ -12,10 +12,12 @@
 #include <iomanip>
 #include <cmath>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // Draco functions
-using Global::pi;
+using rtt_rng::Sprng;
+using rtt_imc::global::pi;
 
 // STL functions
 using std::ios;
@@ -162,7 +164,7 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 // sample surface source particle
 
 template<class MT, class PT>
-SP<PT> IMC::Source<MT, PT>::get_ss(double delta_t)
+SP<PT> Source<MT, PT>::get_ss(double delta_t)
 {
 
   // face on which surface source resides
@@ -184,7 +186,7 @@ SP<PT> IMC::Source<MT, PT>::get_ss(double delta_t)
     if (ss_dist == "cosine")
     {
 	double costheta = sqrt(rand.ran());
-	double phi = 2.0 * Global::pi * rand.ran();
+	double phi = 2.0 * global::pi * rand.ran();
 	nss.get_Mesh().get_Coord().calc_omega(costheta, phi, omega);
     }
 
@@ -206,7 +208,7 @@ SP<PT> IMC::Source<MT, PT>::get_ss(double delta_t)
 // sample volume emission particle
 
 template<class MT, class PT>
-SP<PT> IMC::Source<MT, PT>::get_evol(double delta_t)
+SP<PT> Source<MT, PT>::get_evol(double delta_t)
 {
   // get the random number object
     Sprng rand = rcon->get_rn();
@@ -302,7 +304,7 @@ void Source<MT, PT>::print(ostream &out) const
 	    << ew_ss(i) << endl;
 }
 	
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Source.t.hh

@@ -35,7 +35,6 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Coord_sys.hh"
 #include "Layout.hh"
 #include "Opacity.hh"
@@ -53,7 +52,8 @@
 #include <iostream>
 #include <string>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // draco stuff
 using C4::node;
@@ -248,7 +248,7 @@ inline vector<int> Parallel_Builder<MT>::get_procs(int mcell) const
     return procs_per_cell[mcell-1];
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Parallel_Builder_hh__
 

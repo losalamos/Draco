@@ -23,14 +23,14 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Opacity.hh"
 #include "Mat_State.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <string>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // stl components
 using std::string;
@@ -75,7 +75,7 @@ public:
   // End_Doc 
 };
     
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Opacity_Builder_hh__
 

@@ -20,12 +20,12 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 #include <string>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // stl components
 using std::ostream;
@@ -102,7 +102,7 @@ inline int Mat_State<MT>::num_cells() const
     return density.get_Mesh().num_cells();
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Mat_State_hh__
 

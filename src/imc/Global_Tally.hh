@@ -21,7 +21,6 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Mat_State.hh"
 #include "Source_Init.hh"
 #include "Tally.hh"
@@ -31,7 +30,8 @@
 #include <vector>
 #include <iostream>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // stl components
 using std::vector;
@@ -191,7 +191,7 @@ inline double Global_Tally<MT,PT>::calc_frac_tot() const
     return calc_de_tot() / eint_end;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Global_Tally_hh__
 

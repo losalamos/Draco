@@ -28,7 +28,6 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Coord_sys.hh"
 #include "rng/Sprng.hh"
 #include "ds++/Assert.hh"
@@ -36,7 +35,8 @@
 #include <string>
 #include <cmath>
 
-IMCSPACE
+namespace rtt_imc 
+{
     
 using std::vector;
 using std::string;
@@ -188,7 +188,7 @@ XYZCoord_sys::sample_pos_on_face(vector<double> &min, vector<double> &max,
   // return assigned array
     return r;
 }
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_XYZCoord_sys_hh__
 

@@ -56,7 +56,6 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Opacity.hh"
 #include "Tally.hh"
 #include "rng/Random.hh"
@@ -67,7 +66,8 @@
 #include <iostream>
 #include <cmath>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // STL classes used in Particle
 using std::vector;
@@ -295,7 +295,7 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
     else // update particle energy-weight, time_left, and position.
     {
 	ew = new_ew;
-	time_left -= distance / Global::c;
+	time_left -= distance / global::c;
 	for (int i = 0; i <= r.size()-1; i++)
 	    r[i] = r[i] + distance * omega[i];
     }
@@ -399,7 +399,7 @@ inline string Particle<MT>::get_descriptor(int index)
     return return_value;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Particle_hh__
 

@@ -9,11 +9,12 @@
 #include "OS_Mesh.hh"
 #include "Global_Tally.t.hh"
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 template class Global_Tally<OS_Mesh>;
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Global_Tally_pt.cc

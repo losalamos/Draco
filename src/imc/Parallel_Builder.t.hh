@@ -15,13 +15,14 @@
 #include <cstdio>
 #include <fstream>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // draco necessities
 using C4::Send;
 using C4::Recv;
-using Global::max;
-using Global::min;
+using global::max;
+using global::min;
 
 // std necessities
 using std::string;
@@ -1954,7 +1955,7 @@ void Parallel_Builder<MT>::print(ostream &out) const
     }
 }
     
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Parallel_Builder.t.hh

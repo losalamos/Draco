@@ -31,7 +31,6 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Opacity.hh"
 #include "Mat_State.hh"
 #include "Particle.hh"
@@ -42,7 +41,8 @@
 #include <string>
 #include <vector>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // draco components
 using rtt_rng::Rnd_Control;
@@ -211,7 +211,7 @@ inline ostream& operator<<(ostream &out,
     return out;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Parallel_Source_Init_hh__
 

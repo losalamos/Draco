@@ -9,11 +9,12 @@
 #include "OS_Mesh.hh"
 #include "Particle.t.hh"
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 template class Particle<OS_Mesh>;
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Particle_pt.cc

@@ -27,12 +27,13 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include <cmath>
 #include <cfloat>
 
-IMCSPACE
-GLOBALSPACE
+namespace rtt_imc 
+{
+namespace global
+{
 
 //---------------------------------------------------------------------------//
 // FUNDAMENTAL CONSTANTS
@@ -58,8 +59,8 @@ const double k = 8.617308e-8;
 // Planck constant, keV-s
 const double h = 4.135706e-18;
 
-CSPACE
-CSPACE
+} // end namespace global
+} // end namespace rtt_imc
 
 #endif                          // __imc_Constants_hh__
 

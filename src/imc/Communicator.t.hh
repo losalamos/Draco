@@ -10,7 +10,8 @@
 #include "c4/global.hh"
 #include <iomanip>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // std components
 using std::fill;
@@ -382,7 +383,7 @@ void Communicator<PT>::print(ostream &out) const
 	out << setw(15) << send_nodes[i] << endl;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Communicator.t.hh

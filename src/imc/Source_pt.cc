@@ -9,11 +9,12 @@
 #include "OS_Mesh.hh"
 #include "Source.t.hh"
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 template class Source<OS_Mesh>;
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Source_pt.cc

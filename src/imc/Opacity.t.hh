@@ -9,7 +9,8 @@
 #include "Opacity.hh"
 #include <iomanip>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 //---------------------------------------------------------------------------//
 // public member functions
@@ -54,7 +55,7 @@ ostream& operator<<(ostream &output, const Opacity<MT> &object)
     return output;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Opacity.t.hh

@@ -20,7 +20,6 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Particle.hh"
 #include "Particle_Buffer.hh"
 #include "Mat_State.hh"
@@ -29,7 +28,8 @@
 #include <iostream>
 #include <string>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // draco components
 using rtt_rng::Rnd_Control;
@@ -139,7 +139,7 @@ inline ostream& operator<<(ostream &output, const Source<MT,PT> &object)
 }
 
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_Source_hh__
 

@@ -46,7 +46,6 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Coord_sys.hh"
 #include "Layout.hh"
 #include "rng/Sprng.hh"
@@ -58,7 +57,8 @@
 #include <iostream>
 #include <string>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // stl namespaces
 using std::vector;
@@ -604,7 +604,7 @@ inline vector<double> OS_Mesh::sample_pos_on_face(int cell, int face,
     return r;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 #endif                          // __imc_OS_Mesh_hh__
 

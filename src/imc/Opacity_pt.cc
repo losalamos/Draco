@@ -10,7 +10,8 @@
 #include "Opacity.t.hh"
 #include <iostream>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 using std::ostream;
 
@@ -18,7 +19,7 @@ template class Opacity<OS_Mesh>;
 
 template ostream& operator<<(ostream&, const Opacity<OS_Mesh> &);
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Opacity_pt.cc

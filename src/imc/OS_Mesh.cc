@@ -10,7 +10,8 @@
 #include "Global.hh"
 #include <iomanip>
 
-IMCSPACE
+namespace rtt_imc 
+{
 
 // std components
 using std::sort;
@@ -128,7 +129,7 @@ double OS_Mesh::get_db(const vector<double> &r, const vector<double> &omega,
 {
     using std::vector;
     using std::min_element;
-    using Global::huge;
+    using global::huge;
     
   // calculate distance to the vec(r) boundaries
 
@@ -143,7 +144,7 @@ double OS_Mesh::get_db(const vector<double> &r, const vector<double> &omega,
 
       // find the distances to boundary along each dimension
 	if (omega[i] == 0.0)
-	    dim_dist_boundary[i] = Global::huge;
+	    dim_dist_boundary[i] = global::huge;
 	else if (omega[i] > 0.0)
 	    dim_dist_boundary[i] = (max(d, cell) - r[i]) / omega[i];
 	else
@@ -368,7 +369,7 @@ void OS_Mesh::print(ostream &output, int cell) const
     output << "+++++++++++++++" << endl;
 }
 
-CSPACE
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of OS_Mesh.cc
