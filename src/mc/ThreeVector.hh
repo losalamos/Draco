@@ -154,7 +154,7 @@ class ThreeVector
      * \param A        The starting vector.
      * \param B        The ending vector.
      * \param fraction The fractional distance from A to B.
-     * \return         fraction*A + (1.0 - fraction)*B.
+     * \return         (1.0 - fraction)*A + fraction*B.
      *
      * The fraction need not be bounded by (0, 1).  Extrapolation is allowed.
      */
@@ -163,9 +163,9 @@ class ThreeVector
         double fraction)
     {
         return ThreeVector(
-            fraction*A.get_x() + (1.0 - fraction)*B.get_x(),
-            fraction*A.get_y() + (1.0 - fraction)*B.get_y(),
-            fraction*A.get_z() + (1.0 - fraction)*B.get_z());
+            (1.0 - fraction)*A.get_x() + fraction*B.get_x(),
+            (1.0 - fraction)*A.get_y() + fraction*B.get_y(),
+            (1.0 - fraction)*A.get_z() + fraction*B.get_z());
     }
 
     //! \brief Sample uniformly within a triangle specified by its vertices.

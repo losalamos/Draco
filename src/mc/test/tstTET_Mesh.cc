@@ -50,10 +50,15 @@ using rtt_meshReaders::RTT_Format;
 //! Typedef for scalar field of ThreeVectors.
 typedef std::vector<ThreeVector> SF_THREEVECTOR;
 
+//! Typedef for scalar field of doubles.
+typedef std::vector<double> SF_DOUBLE;
+
 //! Typedef for vector field of integers.
 typedef std::vector< std::vector<int> > VF_INT;
 
+double MID_epsilon = 0.0001;
 int seed = 493875348;
+int num = 5;
 
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__);
@@ -71,12 +76,10 @@ class Mesh_Proxy
 // ThreeVector Tests
 void Test_ThreeVector()
 {
-    int num = 5;
-    int *idr = init_sprng(0, num, seed, 1);
-    double TRI_epsilon = 0.0001;
-    Sprng random(idr, 0);
-
     // Test sampling in a triangle.
+
+    int *idr = init_sprng(0, num, seed, 1);
+    Sprng random(idr, 0);
 
     int numm = 10000;
     double factor = 36.0/static_cast<double>(numm);
@@ -112,8 +115,8 @@ void Test_ThreeVector()
     if (count[5][2] != 0.0)                        ITFAILS;
     if (count[5][3] != 0.0)                        ITFAILS;
     if (count[5][4] != 0.0)                        ITFAILS;
-    if (fabs(count[5][5] - 0.5544) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[5][6] - 0.5040) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[5][5] - 0.5544) > MID_epsilon)  ITFAILS;
+    if (fabs(count[5][6] - 0.5040) > MID_epsilon)  ITFAILS;
     if (count[5][7] != 0.0)                        ITFAILS;
     if (count[5][8] != 0.0)                        ITFAILS;
     if (count[5][9] != 0.0)                        ITFAILS;
@@ -123,10 +126,10 @@ void Test_ThreeVector()
     if (count[4][1] != 0.0)                        ITFAILS;
     if (count[4][2] != 0.0)                        ITFAILS;
     if (count[4][3] != 0.0)                        ITFAILS;
-    if (fabs(count[4][4] - 0.4968) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[4][5] - 1.0476) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[4][6] - 1.0368) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[4][7] - 0.5040) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[4][4] - 0.4968) > MID_epsilon)  ITFAILS;
+    if (fabs(count[4][5] - 1.0476) > MID_epsilon)  ITFAILS;
+    if (fabs(count[4][6] - 1.0368) > MID_epsilon)  ITFAILS;
+    if (fabs(count[4][7] - 0.5040) > MID_epsilon)  ITFAILS;
     if (count[4][8] != 0.0)                        ITFAILS;
     if (count[4][9] != 0.0)                        ITFAILS;
     if (count[4][10] != 0.0)                       ITFAILS;
@@ -134,51 +137,51 @@ void Test_ThreeVector()
     if (count[3][0] != 0.0)                        ITFAILS;
     if (count[3][1] != 0.0)                        ITFAILS;
     if (count[3][2] != 0.0)                        ITFAILS;
-    if (fabs(count[3][3] - 0.5220) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[3][4] - 0.9792) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[3][5] - 0.9396) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[3][6] - 0.9504) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[3][7] - 1.0260) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[3][8] - 0.5184) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[3][3] - 0.5220) > MID_epsilon)  ITFAILS;
+    if (fabs(count[3][4] - 0.9792) > MID_epsilon)  ITFAILS;
+    if (fabs(count[3][5] - 0.9396) > MID_epsilon)  ITFAILS;
+    if (fabs(count[3][6] - 0.9504) > MID_epsilon)  ITFAILS;
+    if (fabs(count[3][7] - 1.0260) > MID_epsilon)  ITFAILS;
+    if (fabs(count[3][8] - 0.5184) > MID_epsilon)  ITFAILS;
     if (count[3][9] != 0.0)                        ITFAILS;
     if (count[3][10] != 0.0)                       ITFAILS;
     if (count[3][11] != 0.0)                       ITFAILS;
     if (count[2][0] != 0.0)                        ITFAILS;
     if (count[2][1] != 0.0)                        ITFAILS;
-    if (fabs(count[2][2] - 0.4932) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[2][3] - 0.9972) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[2][4] - 1.0800) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[2][5] - 1.0872) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[2][6] - 1.0404) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[2][7] - 0.9324) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[2][8] - 1.0368) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[2][9] - 0.5508) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[2][2] - 0.4932) > MID_epsilon)  ITFAILS;
+    if (fabs(count[2][3] - 0.9972) > MID_epsilon)  ITFAILS;
+    if (fabs(count[2][4] - 1.0800) > MID_epsilon)  ITFAILS;
+    if (fabs(count[2][5] - 1.0872) > MID_epsilon)  ITFAILS;
+    if (fabs(count[2][6] - 1.0404) > MID_epsilon)  ITFAILS;
+    if (fabs(count[2][7] - 0.9324) > MID_epsilon)  ITFAILS;
+    if (fabs(count[2][8] - 1.0368) > MID_epsilon)  ITFAILS;
+    if (fabs(count[2][9] - 0.5508) > MID_epsilon)  ITFAILS;
     if (count[2][10] != 0.0)                       ITFAILS;
     if (count[2][11] != 0.0)                       ITFAILS;
     if (count[1][0] != 0.0)                        ITFAILS;
-    if (fabs(count[1][1] - 0.4752) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[1][2] - 1.0116) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[1][3] - 1.0044) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[1][4] - 0.9684) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[1][5] - 1.0188) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[1][6] - 0.9324) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[1][7] - 1.0080) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[1][8] - 1.0044) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[1][9] - 0.8424) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[1][10] - 0.5076) > TRI_epsilon) ITFAILS;
+    if (fabs(count[1][1] - 0.4752) > MID_epsilon)  ITFAILS;
+    if (fabs(count[1][2] - 1.0116) > MID_epsilon)  ITFAILS;
+    if (fabs(count[1][3] - 1.0044) > MID_epsilon)  ITFAILS;
+    if (fabs(count[1][4] - 0.9684) > MID_epsilon)  ITFAILS;
+    if (fabs(count[1][5] - 1.0188) > MID_epsilon)  ITFAILS;
+    if (fabs(count[1][6] - 0.9324) > MID_epsilon)  ITFAILS;
+    if (fabs(count[1][7] - 1.0080) > MID_epsilon)  ITFAILS;
+    if (fabs(count[1][8] - 1.0044) > MID_epsilon)  ITFAILS;
+    if (fabs(count[1][9] - 0.8424) > MID_epsilon)  ITFAILS;
+    if (fabs(count[1][10] - 0.5076) > MID_epsilon) ITFAILS;
     if (count[1][11] != 0.0)                       ITFAILS;
-    if (fabs(count[0][0] - 0.5184) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[0][1] - 0.9216) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[0][2] - 0.9180) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[0][3] - 1.0872) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[0][4] - 1.0080) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[0][5] - 0.9900) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[0][6] - 0.9540) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[0][7] - 1.0188) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[0][8] - 1.0044) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[0][9] - 1.0548) > TRI_epsilon)  ITFAILS;
-    if (fabs(count[0][10] - 0.9936) > TRI_epsilon) ITFAILS;
-    if (fabs(count[0][11] - 0.4608) > TRI_epsilon) ITFAILS;
+    if (fabs(count[0][0] - 0.5184) > MID_epsilon)  ITFAILS;
+    if (fabs(count[0][1] - 0.9216) > MID_epsilon)  ITFAILS;
+    if (fabs(count[0][2] - 0.9180) > MID_epsilon)  ITFAILS;
+    if (fabs(count[0][3] - 1.0872) > MID_epsilon)  ITFAILS;
+    if (fabs(count[0][4] - 1.0080) > MID_epsilon)  ITFAILS;
+    if (fabs(count[0][5] - 0.9900) > MID_epsilon)  ITFAILS;
+    if (fabs(count[0][6] - 0.9540) > MID_epsilon)  ITFAILS;
+    if (fabs(count[0][7] - 1.0188) > MID_epsilon)  ITFAILS;
+    if (fabs(count[0][8] - 1.0044) > MID_epsilon)  ITFAILS;
+    if (fabs(count[0][9] - 1.0548) > MID_epsilon)  ITFAILS;
+    if (fabs(count[0][10] - 0.9936) > MID_epsilon) ITFAILS;
+    if (fabs(count[0][11] - 0.4608) > MID_epsilon) ITFAILS;
 
 //  Beginning:  a way to see these results ordered on the page.
 //  cout.setf(ios::fixed);
@@ -186,7 +189,7 @@ void Test_ThreeVector()
 //
 //  for (int yy = 5 ; yy >= 0 ; yy--) {
 //      for (int xx = 0; xx < 12; xx++)
-//          cout << setw(10) << factor*count[yy][xx];
+//          cout << setw(10) << count[yy][xx];
 //      cout << endl;
 //  }
 //  End:  a way to see these results ordered on the page.
@@ -319,6 +322,55 @@ void Test_TET()
     // ... but the meshes should be equal.
     if (*mesh_ptr_1 != *mesh_ptr_3)                      ITFAILS;
 
+    // Test sampling in a tethedron.
+
+    int *idr = init_sprng(0, num, seed, 1);
+    Sprng random(idr, 0);
+
+    int numm = 1000000;
+    double factor = 500.0/(3.0*static_cast<double>(numm));
+
+    double count[10][10][10];
+    for (int x = 0; x < 10 ; x++)
+       for (int y = 0; y < 10 ; y++)
+           for (int z = 0; z < 10 ; z++)
+               count[x][y][z] = 0.;
+
+    for (int i = 0 ; i < numm ; i++)
+    {
+        SF_DOUBLE R = mesh_ptr_3->sample_pos(1,random);
+
+        int xx = static_cast<int>(10.0*R[0]);
+        int yy = static_cast<int>(10.0*R[1]);
+        int zz = static_cast<int>(10.0*R[2]);
+
+        if (xx < 0 || xx > 9)               ITFAILS;
+        if (yy < 0 || yy > 9)               ITFAILS;
+        if (zz < 0 || zz > 9)               ITFAILS;
+
+        count[xx][yy][zz] += 1.;
+    }
+
+    for (int xx = 0; xx < 10 ; xx++)
+        for (int yy = 0; yy < 10 ; yy++)
+            for (int zz = 0; zz < 10 ; zz++)
+                count[xx][yy][zz] *= factor;
+
+//  Beginning:  a way to see these results ordered on the page.
+    cout.setf(ios::fixed);
+    cout.precision(5);
+  
+    for (int zz = 0 ; zz < 10 ; zz++) {
+       for (int yy = 9 ; yy >= 0 ; yy--) {
+           for (int xx = 0; xx < 10; xx++)
+               cout << setw(10) << count[xx][yy][zz];
+           cout << endl;
+       }
+       cout << endl << endl;
+    }
+//  End:  a way to see these results ordered on the page.
+
+    // End of test sampling in a tethedron.
 
 }   // end Test_TET()
 
