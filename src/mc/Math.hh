@@ -18,6 +18,7 @@
 // -----------------
 // 0) original
 // 1) 04-13-99 : moved into mc package 
+// 2) 08-04-00 : modified soft_equiv to handle comparisons to zero.
 //
 //===========================================================================//
 
@@ -51,6 +52,11 @@ inline bool soft_equiv(const FPT &value, const FPT &reference,
 	passed = true;
     else
 	passed = false;
+
+    // second chance for passing if reference is identically zero
+    if (reference == 0 && !passed)
+	if (fabs(value) < precision)
+	    passed = true;
 
     return passed;
 }
