@@ -1,0 +1,91 @@
+digraph wedgehog_level {
+    /* graph attributes */
+    center=1;
+    size="8,14";
+    ranksep=1.25;
+    
+    /* levels */
+    level1 [shape=plaintext, label="Level 1:", fontsize=18];
+    level2 [shape=plaintext, label="Level 2:", fontsize=18];
+    level3 [shape=plaintext, label="Level 3:", fontsize=18];
+    level4 [shape=plaintext, label="Level 4:", fontsize=18];
+    level5 [shape=plaintext, label="Level 5:", fontsize=18];
+    level6 [shape=plaintext, label="Level 6:", fontsize=18];
+    level7 [shape=plaintext, label="Level 7:", fontsize=18];
+    level8 [shape=plaintext, label="Level 8:", fontsize=18];
+    
+    level8 -> level7 -> level6 -> level5 -> level4 -> level3 -> level2 ->
+	level1 [style=invis];   
+
+    /* draco packages */
+	
+    /* level 1 */
+    dsxx [width=4, shape=box, label="ds++\n 1_3_0"];
+    
+    /* level 2 */
+    c4 [width=2, shape=box, label="c4\n 1_4_0"];
+    rng [width=1, shape=box, label="rng\n 1_3_0"];
+    traits [shape=box, label="traits\n 1_3_0"];
+    meshReaders [shape=box, label="meshReaders\n 1_1_0"];
+
+    /* level 3 */
+    viz [shape=box, label="viz\n 1_0_0"];
+    rttReader [shape=box, label="RTT_Format_Reader\n 1_0_0"];
+    
+    /* level 4 */
+    mc [width=2, shape=box, label="mc\n 2_0_0"];
+    
+    /* level 5 */
+    imc [width=2, shape=box, label="imc\n 2_0_0"];
+	
+    /* wedgehog packages */
+    
+    /* level 6 */
+    whogCom [label="wedgehog_components"];
+
+    /* level 7 */
+    whogInt [label="wedgehog_interfaces"];
+    whogOut [label="wedgehog_output"];
+
+    /* level 8 */
+    whog [label="wedgehog"];
+
+    /* Levelization diagram */
+	
+    /* level 2 */
+    rng -> dsxx;
+    c4 -> dsxx;
+    traits -> dsxx;
+    meshReaders -> dsxx;
+	
+    /* level 3 */
+    viz -> {traits dsxx};
+    rttReader -> {meshReaders dsxx};
+	
+    /* level 4 */
+    mc -> {viz meshReaders c4 rng dsxx};
+    mc -> rttReader [style=dotted];
+	
+    /* level 5 */
+    imc -> {mc rng c4 dsxx};
+    
+    /* level 6 */
+    whogCom -> {imc mc c4 rng dsxx};
+
+    /* level 7 */
+    whogInt -> {whogCom imc mc dsxx};
+    whogOut -> {whogCom imc mc c4 dsxx};
+
+    /* level 8 */
+    whog -> {whogCom whogOut whogInt imc mc rng dsxx c4};
+    
+    /* dependencies */
+    {rank=same; level1 dsxx};
+    {rank=same; level2 c4 rng traits meshReaders};
+    {rank=same; level3 viz rttReader};
+    {rank=same; level4 mc};
+    {rank=same; level5 imc};
+    {rank=same; level6 whogCom};
+    {rank=same; level7 whogInt whogOut};
+    {rank=same; level8 whog};
+}
