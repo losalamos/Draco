@@ -13,6 +13,9 @@
 top_srcdir = @top_srcdir@
 srcdir     = @srcdir@
 
+# current directory: directory that make is actually in
+curdir := $(shell pwd)
+
 # get the relative directory between the top_srcdir and the srcdir
 
 reldir := $(shell echo "${srcdir}" | sed s%${top_srcdir}%% | sed 's%/[^/]*%../%g')
