@@ -1,0 +1,234 @@
+## -*- Mode: sh -*-
+#! /bin/bash2
+##---------------------------------------------------------------------------##
+## Script to run regression tests for draco
+##
+## Usage:
+##    draco_regression <opts>
+##---------------------------------------------------------------------------##
+## Time-stamp: <02/03/28 14:08:54 tme>
+##---------------------------------------------------------------------------##
+
+##---------------------------------------------------------------------------##
+## Check regression directories and make log files
+
+# determine hostname and system
+hostname=`hostname`
+uname=`uname -a`
+username=`/usr/bin/whoami`
+regress_home=/home/regress
+
+# get environment
+. /home/regress/.bash_profile
+
+# Echo environment
+echo ">>>"
+echo ">>>Environment (printenv)"
+echo ">>>"
+printenv
+
+echo ">>> whoami"
+/usr/bin/whoami
+
+echo ">>> groups"
+groups
+
+echo ">>> id"
+id
+
+# get gcc version
+echo " "
+echo ">>>"
+echo ">>>Software versions"
+echo ">>>"
+echo " "
+echo "% gcc --version"
+gcc --version
+
+# get ld version
+echo "% ld --version"
+ld --version
+echo " "
+
+# set up fortran 90 LAHEY 60 for now
+. /usr/local/lf9560/bash_setup
+echo "\$PATH = $PATH"
+echo "\$LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
+echo "which lf95 ... "
+which lf95
+lf95 --version
+
+# check the regression directory
+
+if test ${username} = "kellyt" ; then
+    REGDIR=`pwd`
+else
+    REGDIR="${regress_home}/draco"
+fi
+
+# Change to the regression directory
+
+if [ ! -d ${REGDIR} ] ; then
+    echo ">>> Regression directory does not exist! EXITING"
+    exit 1 
+fi
+
+##---------------------------------------------------------------------------##
+## make regression directories
+
+# home         : the regression top-level directory
+# draco_src    : location of draco source directory
+# draco_mpi    : location of parallel build target directory
+# draco_scalar : location of scalar build target directory
+# draco_opt    : location of parallel, optimized build target directory
+# target_list  : list of build target directories
+
+home=${REGDIR}
+draco_src="${home}/draco"
+draco_mpi="${home}/mpi"
+draco_scalar="${home}/scalar"
+draco_opt="${home}/opt"
+draco_lampi_dbg="${home}/lampi_dbg"
+
+target_list="${draco_mpi} ${draco_scalar} ${draco_opt} ${draco_lampi_dbg}"
+
+##---------------------------------------------------------------------------##
+## set up SourceForge cvs
+
+# Find cvs
+
+cvs=`which cvs`
+
+# set cvs environment
+if test ${username} = "kellyt"; then
+   export CVS_RSH=ssh
+else
+   export CVS_RSH=/home/regress/bin/draco_ssh
+fi
+
+cvsroot='-z9 -d:ext:sf.lanl.gov:/cvsroot/draco'
+
+##---------------------------------------------------------------------------##
+## Checkout draco
+
+# goto regression directory and do a draco checkout
+
+cd $home
+
+# remove the source directory
+
+if [ -d $draco_src ]; then
+    echo ">>> Removing ${draco_src}, draco source code"
+    rm -rf $draco_src
+fi
+
+# checkout draco
+
+echo ">>> Checking out draco in $home"
+echo "${cvs} -q $cvsroot checkout -P draco"
+${cvs} -q $cvsroot checkout -P draco
+
+##---------------------------------------------------------------------------##
+## Set up vendors
+
+SPRNG_LIB='/codes/radtran/vendors/sprng/Linux/lib'
+SPRNG_INC='/codes/radtran/vendors/sprng/include'
+SPRNG_SETUP="--with-sprng-inc=${SPRNG_INC} --with-sprng-lib=${SPRNG_LIB}"
+
+GRACE_LIB='/usr/local/grace/lib'
+GRACE_INC='/usr/local/grace/include'
+GRACE_SETUP="--with-grace-inc=${GRACE_INC} --with-grace-lib=${GRACE_LIB}"
+
+GANDOLF_LIB='/codes/radtran/vendors/gandolf/Linux'
+GANDOLF_SETUP="--with-gandolf-lib=${GANDOLF_LIB}"
+
+EOSPAC_LIB='/codes/radtran/vendors/eospac/Linux/lib'
+EOSPAC_SETUP="--with-eospac-lib=${EOSPAC_LIB}"
+
+export SESPATHU=/codes/radtran/physical_data/eos
+export SESPATHC=/codes/radtran/physical_data/eos
+
+MPI_INC='/usr/local/mpich/include'
+MPI_LIB='/usr/local/mpich/lib'
+MPI_SETUP="--with-mpi-inc=${MPI_INC} --with-mpi-lib=${MPI_LIB}"
+
+PCG_LIB='/codes/radtran/vendors/pcg/Linux/lib'
+PCG_SETUP="--with-pcg-lib=${PCG_LIB}"
+
+LAPACK_LIB='/codes/radtran/vendors/atlas/Linux/lib'
+LAPACK_SETUP="--with-lapack=atlas --with-lapack-lib=${LAPACK_LIB}"
+
+VENDOR_SETUP="${GANDOLF_SETUP} ${PCG_SETUP} ${LAPACK_SETUP}"
+VENDOR_SETUP="${VENDOR_SETUP} ${SPRNG_SETUP} ${EOSPAC_SETUP}"
+VENDOR_SETUP="${VENDOR_SETUP} ${GRACE_SETUP}"
+
+##---------------------------------------------------------------------------##
+## LOOP THROUGH AND DO BUILD AND CHECKS
+
+for target in ${target_list}; do
+
+    cd $home
+
+    case $target in
+	
+	# setup parallel build options
+	${draco_mpi})
+	    OPTIONS='--with-c4=mpi'
+	    VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+	;;
+
+	# setup serial build options
+	${draco_scalar})
+	    OPTIONS=''
+	    VENDOR_OPTIONS="${VENDOR_SETUP}"
+	;;
+
+	# setup of parallel optimized options
+	${draco_opt})
+	    OPTIONS='--with-c4=mpi --with-opt=2 --with-dbc=0'
+	    VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+	;;
+
+        # LAMPI version
+        ${draco_lampi_dbg})
+	   source /codes/radtran/vendors/lampi/setup_lampi
+           MPI_SETUP="--with-mpi=lampi --with-mpi-inc=${MPI_INC_DIR} --with-mpi-lib=${MPI_LIB_DIR}"
+	   OPTIONS='--with-c4=mpi --with-dbc=7 --enable-debug'
+	   VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+        ;;
+
+	# catchall
+	*)
+            echo ">>>"
+            echo ">>> \$target = $target"
+	    echo ">>> Non-specified target! EXITING"
+	    exit 1
+	;;
+
+    esac
+
+    # remove the old target directory if it exists
+    if [ -d $target ]; then
+	echo ">>> Removing old $target target directory"
+	rm -rf $target
+    fi
+
+    # build the target directory
+    echo ">>> Building $target target directory"
+    mkdir $target    
+    mkdir $target/draco
+
+    # do configure and make inside of target directory
+    echo ">>> Running configure in $target/draco"
+    cd $target/draco
+
+    echo "$draco_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS"
+    $draco_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS
+
+    # do gmake check
+    echo ">>> Doing gmake check in $target/draco"
+    
+    echo "gmake -k check nj=8"
+    gmake -k check nj=8
+    
+done
