@@ -142,6 +142,20 @@ void receive_async(C4_Req &request,
 }
 
 //---------------------------------------------------------------------------//
+// BROADCAST
+//---------------------------------------------------------------------------//
+
+template<class T>
+int broadcast(const T *buffer, 
+	      int      size,
+	      int      root)
+{
+    MPI_Bcast(const_cast<T *>(buffer), size, MPI_Traits<T>::element_type(),
+	      root, communicator);
+    return C4_SUCCESS;
+}
+
+//---------------------------------------------------------------------------//
 // GLOBAL REDUCTIONS
 //---------------------------------------------------------------------------//
 

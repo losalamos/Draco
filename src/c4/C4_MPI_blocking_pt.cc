@@ -19,7 +19,7 @@ namespace rtt_c4
 {
 
 //---------------------------------------------------------------------------//
-// EXPLICIT INSTANTIATIONS OF BLOCKING SEND/RECEIVE
+// EXPLICIT INSTANTIATIONS OF BLOCKING SEND/RECEIVE AND BROADCAST
 //---------------------------------------------------------------------------//
 
 template int send(const char *, int, int, int);
@@ -45,6 +45,18 @@ template int receive(unsigned long *, int, int, int);
 template int receive(float *, int, int, int);
 template int receive(double *, int, int, int); 
 template int receive(long double *, int, int, int);
+
+template int broadcast(const char *, int, int);
+template int broadcast(const unsigned char *, int, int);
+template int broadcast(const short *, int, int);
+template int broadcast(const unsigned short *, int, int);
+template int broadcast(const int *, int, int);
+template int broadcast(const unsigned int *, int, int);
+template int broadcast(const long *, int, int);
+template int broadcast(const unsigned long *, int, int);
+template int broadcast(const float *, int, int);
+template int broadcast(const double *, int, int); 
+template int broadcast(const long double *, int, int);
 
 } // end namespace rtt_c4
 

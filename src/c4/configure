@@ -1465,7 +1465,7 @@ fi;
 
 
 
-	test_alltarget="$test_alltarget tstTime tstReduction tstPingPong tstComm_Dup"
+	test_alltarget="$test_alltarget tstTime tstReduction tstPingPong tstComm_Dup tstBroadcast"
 
 	test_nprocs="1 2 4"
 

@@ -1,3 +1,7 @@
+2004-11-17  Rob Lowrie  <lowrie@lanl.gov>
+
+	* c4: Added broadcast().
+
 2003-04-22  Kent Budge  <kgbudge@tresosos.lanl.gov>
 
 	* C4_MPI.cc: Added a probe function to increase support for
