@@ -18,7 +18,7 @@ using std::string;
 // this library in the form mesh-#_#_# in pkg_version variable
 const string release()
 {
-    string pkg_release = "@(#)mesh-1_8_0";
+    string pkg_release = "@(#)mesh-1_9_0";
     return pkg_release;
 }
 
