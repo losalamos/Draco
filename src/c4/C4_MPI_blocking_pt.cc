@@ -46,17 +46,17 @@ template int receive(float *, int, int, int);
 template int receive(double *, int, int, int); 
 template int receive(long double *, int, int, int);
 
-template int broadcast(const char *, int, int);
-template int broadcast(const unsigned char *, int, int);
-template int broadcast(const short *, int, int);
-template int broadcast(const unsigned short *, int, int);
-template int broadcast(const int *, int, int);
-template int broadcast(const unsigned int *, int, int);
-template int broadcast(const long *, int, int);
-template int broadcast(const unsigned long *, int, int);
-template int broadcast(const float *, int, int);
-template int broadcast(const double *, int, int); 
-template int broadcast(const long double *, int, int);
+template int broadcast(char *, int, int);
+template int broadcast(unsigned char *, int, int);
+template int broadcast(short *, int, int);
+template int broadcast(unsigned short *, int, int);
+template int broadcast(int *, int, int);
+template int broadcast(unsigned int *, int, int);
+template int broadcast(long *, int, int);
+template int broadcast(unsigned long *, int, int);
+template int broadcast(float *, int, int);
+template int broadcast(double *, int, int); 
+template int broadcast(long double *, int, int);
 
 } // end namespace rtt_c4
 

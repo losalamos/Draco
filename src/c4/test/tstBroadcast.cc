@@ -39,7 +39,7 @@ void test_simple()
     long   l = 0;
     float  f = 0;
     double d = 0;
-
+	
     // assign on node 0
     if (rtt_c4::node() == 0)
     {
@@ -49,7 +49,7 @@ void test_simple()
 	f = 1.5;
 	d = 2.5;
     }
-
+    
     // send out data, using node 0 as root
     broadcast(&c, 1, 0);
     broadcast(&i, 1, 0);
@@ -69,7 +69,49 @@ void test_simple()
     if (rtt_c4_test::passed)
     {
 	ostringstream m;
-	m << "Broadcast communication ok on " << rtt_c4::node();
+	m << "test_simple() ok on " << rtt_c4::node();
+	PASSMSG(m.str());
+    }
+}
+
+//---------------------------------------------------------------------------//
+void test_loop()
+{
+    // If kmax is too big (like 10000000), shmem will fail.
+    const int kmax = 10;
+    
+    if (rtt_c4::node() == 0) // host proc
+    {
+	// send out the values on host
+	for ( int k = 0; k < kmax; ++k )
+	{
+	    Insist(! broadcast(&k, 1, 0), "MPI Error");
+	    double foo = k + 0.5;
+	    Insist(! broadcast(&foo, 1, 0), "MPI Error");
+	}
+    }
+    else // all other procs
+    {
+	// ... wait for a bit, so that host fills up the buffers
+	sleep(1);
+	
+	int kk;
+	double foofoo;
+	for ( int k = 0; k < kmax; ++k )
+	{
+	    kk = -1;
+	    foofoo = -2.0;
+	    Insist(! broadcast(&kk, 1, 0), "MPI Error");
+	    if ( kk != k ) ITFAILS;
+	    Insist(! broadcast(&foofoo, 1, 0), "MPI Error");
+	    if ( foofoo != k + 0.5 ) ITFAILS;
+	}
+    }
+
+    if (rtt_c4_test::passed)
+    {
+	ostringstream m;
+	m << "test_loop() ok on " << rtt_c4::node();
 	PASSMSG(m.str());
     }
 }
@@ -95,6 +137,7 @@ int main(int argc, char *argv[])
     {
 	// >>> UNIT TESTS
 	test_simple();
+	test_loop();
     }
     catch (rtt_dsxx::assertion &ass)
     {

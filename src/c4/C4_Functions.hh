@@ -136,7 +136,7 @@ void receive_async(C4_Req& request, T *buffer, int size, int source,
 //---------------------------------------------------------------------------//
 
 template<class T>
-int broadcast(const T *buffer, int size, int root);
+int broadcast(T *buffer, int size, int root);
 
 //---------------------------------------------------------------------------//
 // GLOBAL REDUCTIONS

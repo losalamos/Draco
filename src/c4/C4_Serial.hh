@@ -114,7 +114,7 @@ void receive_async(C4_Req &request,
 //---------------------------------------------------------------------------//
 
 template<class T>
-int broadcast(const T *buffer, 
+int broadcast(T *buffer, 
 	      int      size,
 	      int      root)
 {
