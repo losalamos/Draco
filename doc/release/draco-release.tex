@@ -73,13 +73,15 @@
   G.L. Olson, XTM MS D409\\ 
   J.M. McGhee, XTM MS D409\\ 
   H.G. Hughes, XTM MS D409\\ 
+  B.T. Adams, XTM MS D409\\
   T.M. Evans, XTM MS D409\\ 
   M.G. Gray, XTM MS D409\\ 
   M.L. Hall, XTM MS D409\\ 
-  S. Pautz, XTM MS D409\\ 
+  S.D. Pautz, XTM MS D409\\ 
   R.M. Roberts, XTM MS D409\\ 
   S.A. Turner, XTM MS D409\\ 
-  T.J. Urbatsch, XTM MS D409\\ 
+  T.J. Urbatsch, XTM MS D409\\
+  T.A. Wareing, XTM MS D409\\
   J.S. Warsa, XTM MS D409\\
 }
 
@@ -267,7 +269,7 @@ in this instance is that the new \stable\ \dsxx\ can break B's head
 revision of \cfour.  However, this is exactly the point of using
 \stable\ tags during development.  In the process of bringing
 respective versions of packages to a \stable, releasable state,
-developers working on complimentary packages are forced to communicate
+developers working on complementary packages are forced to communicate
 with each other to resolve code conflicts.  The nefarious condition of
 resolving multiple conflicts between many packages before a release,
 which results when many developers work independently, is avoided.
@@ -326,7 +328,7 @@ concur with the {\bf cvs} major revision numbers.  See
 \S~\ref{sec:rel_num} for details.
 
 Each package in \draco\ should conform to the policies stated above.
-A few points of illucidation about these policies follow.  First, all 
+A few points of elucidation about these policies follow.  First, all 
 packages should provide a library function called \texttt{release()}
 that has the following prototype:
 \begin{verbatim}
@@ -548,8 +550,8 @@ When updating a package number, the release number in
 
 As alluded to in earlier sections, bugs are handled on {\bf cvs}
 branches that join at a particular release.  For example, consider a
-bug fix to \texttt{c4\_1.9.0} that is in \draco\ version
-\texttt{draco\_1.4.0}.  A branch is generated at this release as
+bug fix to \texttt{c4-1\_9\_0} that is in \draco\ version
+\texttt{draco-1\_4\_0}.  A branch is generated at this release as
 illustrated in Figure~\ref{fig:branch}.  To generate the branch the
 \begin{figure}
   \centerline{\includegraphics[width=4in]{branch.eps}}
@@ -558,21 +560,21 @@ illustrated in Figure~\ref{fig:branch}.  To generate the branch the
 \end{figure}
 following {\bf cvs} commands are used:
 \begin{verbatim}
-     cvs checkout -r draco_1.4.0 draco
+     cvs checkout -r draco-1_4_0 draco
      cd draco/src/c4
-     cvs tag -b c4_1.9.1
+     cvs tag -b c4-1_9_1
 \end{verbatim}
 This creates a branch to \cfour\ release~1.4.  If the bug fix is
 required in a \draco\ release, \draco\ should be re-released with the
-appropriate branch number.  For example, to include \texttt{c4\_1.9.1}
-in a \draco\ release we tag \draco\ using:
+appropriate branch number.  For example, to include
+\texttt{c4-1\_9\_1} in a \draco\ release we tag \draco\ using:
 \begin{verbatim}
-     cvs checkout -r draco_1.4.0 draco
+     cvs checkout -r draco-1_4_0 draco
      cd draco/src
-     cvs update -r c4_1.9.1 c4
+     cvs update -r c4-1_9_1 c4
      cd ..
      (run regression tests)
-     cvs tag draco_1.4.1
+     cvs tag draco-1_4_1
 \end{verbatim}
 Thus, \draco\ itself is not put on a branch.  The branch number on
 \draco\ versions indicates bug fixes in \draco\ packages.  Also note
@@ -581,18 +583,18 @@ are used for bug fixes only.  Thus, a \stable\ version will always be
 farther down the revision tree than a branch.
 
 Additional fixes of bugs on package branches should be tagged using
-\texttt{cvs tag c4\_1.9.2}.  Thus, to make a tag to this \cfour\ 
+\texttt{cvs tag c4-1\_9\_2}.  Thus, to make a tag to this \cfour\ 
 version use the following commands:
 \begin{verbatim}
-     cvs checkout -r draco_1.4.1 draco
+     cvs checkout -r draco-1_4_1 draco
      cd draco/src
-     cvs tag c4_1.9.2 c4
+     cvs tag c4-1_9_2 c4
      cd ..
      (run regression tests)
-     cvs tag draco_1.4.2
+     cvs tag draco-1_4_2
 \end{verbatim}
 We note that {\bf cvs} branches automatically release code to the end
-of the branch.  Hence, \texttt{cvs checkout -r c4\_1.9.1 c4} will
+of the branch.  Hence, \texttt{cvs checkout -r c4-1\_9\_1 c4} will
 automatically give the sources at the end of the \cfour\ branch
 connected to release~1.9.  We add tags to clarify the development and
 bug tracking process in \draco\ even though they may not be strictly
