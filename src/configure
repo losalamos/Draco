@@ -1182,7 +1182,7 @@ fi
 
 # The order of packages in AC_CONFIG_SUBDIRS **is** important.
 # Each AC_CONFIG_SUBDIRS corresponds to a level, level 1 at the
-# top -> level 4 at the bottom.  On each level the ordering is
+# top -> level 5 at the bottom.  On each level the ordering is
 # NOT important with the exception of mesh (mesh is need for the
 # radphys test suite)
 
@@ -1190,9 +1190,11 @@ subdirs="ds++ xm traits"
 
 subdirs="ds++ xm traits units nml c4 rng"
 
-subdirs="ds++ xm traits units nml c4 rng mesh radphys linalg diffusion mc timestep"
+subdirs="ds++ xm traits units nml c4 rng stopwatch"
 
-subdirs="ds++ xm traits units nml c4 rng mesh radphys linalg diffusion mc timestep imc matprops P1Diffusion"
+subdirs="ds++ xm traits units nml c4 rng stopwatch mesh radphys linalg diffusion mc timestep"
+
+subdirs="ds++ xm traits units nml c4 rng stopwatch mesh radphys linalg diffusion mc timestep imc matprops P1Diffusion"
 
 
 trap '' 1 2 15
@@ -1477,7 +1479,7 @@ if test "$no_recursion" != yes; then
     esac
   done
 
-  for ac_config_dir in ds++ xm traits units nml c4 rng mesh radphys linalg diffusion mc timestep imc matprops P1Diffusion; do
+  for ac_config_dir in ds++ xm traits units nml c4 rng stopwatch mesh radphys linalg diffusion mc timestep imc matprops P1Diffusion; do
 
     # Do not complain, so a configure script can configure whichever
     # parts of a large source tree are present.
@@ -1544,5 +1546,6 @@ if test "$no_recursion" != yes; then
     cd $ac_popdir
   done
 fi
+
 
 

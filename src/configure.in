@@ -13,12 +13,13 @@ AC_DRACO_ARGS
 
 # The order of packages in AC_CONFIG_SUBDIRS **is** important.
 # Each AC_CONFIG_SUBDIRS corresponds to a level, level 1 at the
-# top -> level 4 at the bottom.  On each level the ordering is
+# top -> level 5 at the bottom.  On each level the ordering is
 # NOT important with the exception of mesh (mesh is need for the
 # radphys test suite)
 
 AC_CONFIG_SUBDIRS(ds++ xm traits)
 AC_CONFIG_SUBDIRS(units nml c4 rng)
+AC_CONFIG_SUBDIRS(stopwatch)
 AC_CONFIG_SUBDIRS(mesh radphys linalg diffusion mc timestep)
 AC_CONFIG_SUBDIRS(imc matprops P1Diffusion)
 
@@ -27,3 +28,10 @@ AC_OUTPUT(Makefile)
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/ configure.in
 dnl-------------------------------------------------------------------------dnl
+dnl-------------------------------------------------------------------------dnl
+dnl draco/src configure.in
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for draco/src/
+dnl-------------------------------------------------------------------------dnl
+
