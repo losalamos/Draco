@@ -338,47 +338,6 @@ AC_DEFUN(AC_COMPILER_PORTLAND_F90, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl ABSOFT F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
-
-   # Check for working Absoft F90 compiler
-
-   AC_CHECK_PROG(F90, f90, f90, none)
-
-   # Stupid Absoft Fortran does not have a version header
-  
-   # F90FREE, F90FIXED AND MODFLAG
-
-   F90FREE=''
-   F90FIXED=''
-   MODFLAG='-p'
-
-   # LINKER AND LIBRARY (AR)
-
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-       F90FLAGS=""
-
-       if test "${enable_debug:=no}" = yes
-       then
-	    F90FLAGS="-g ${F90FLAGS}"
-       else
-	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_ABSOFT_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
 dnl COMPAQ F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
