@@ -152,7 +152,7 @@ AC_DEFUN(AC_DRACO_XL_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS="-qextchk -qhalt=s -qarch=pwr2 -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp"
+   F90FLAGS="-qextchk -qhalt=s -qarch=pwr2 -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp ${F90FREE}"
 
    if test "${enable_debug:=no}" = yes && test "${with_opt:=0}" != 0
    then
@@ -199,7 +199,7 @@ AC_DEFUN(AC_DRACO_FUJITSU_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS="-X9 -Am"
+   F90FLAGS="-X9 -Am ${F90FREE}"
 
    if test "${enable_debug:=no}" = yes && test "${with_opt:=0}" != 0
    then
@@ -243,7 +243,7 @@ AC_DEFUN(AC_DRACO_WORKSHOP_F90, [dnl
 
    # Set COMPILATION FLAGS
 
-   F90FLAGS=
+   F90FLAGS="${F90FREE}"
 
    if test "${enable_debug:=no}" = yes && test "${with_opt:=0}" != 0
    then
@@ -287,7 +287,7 @@ AC_DEFUN(AC_DRACO_CRAY_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS=
+   F90FLAGS="${F90FREE}"
 
    if test "${enable_debug:=no}" = yes && test "${with_opt:=0}" != 0
    then
@@ -331,7 +331,7 @@ AC_DEFUN(AC_DRACO_MIPS_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS=
+   F90FLAGS="${F90FREE}"
 
    if test "${enable_debug:=no}" = yes && test "${with_opt:=0}" != 0
    then
