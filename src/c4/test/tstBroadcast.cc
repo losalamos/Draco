@@ -9,17 +9,19 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <unistd.h>
+
+#include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
+
 #include "c4_test.hh"
 #include "../C4_Traits.hh"
 #include "../Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
-#include "ds++/Assert.hh"
-#include "ds++/Soft_Equivalence.hh"
-
-#include <iostream>
-#include <vector>
-#include <sstream>
 
 using namespace std;
 
