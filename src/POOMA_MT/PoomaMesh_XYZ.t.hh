@@ -436,7 +436,7 @@ template <class Mesh>
 template <class T>
 void
 PoomaMesh_XYZ<Mesh>::swap_faces(typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& to,
-    const typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& from)
+    const typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& from, T bndryValue)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
 
@@ -466,27 +466,27 @@ PoomaMesh_XYZ<Mesh>::swap_faces(typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& to,
 	if (loc[0] != 0)
 	    (*bftoit)(0) = bffromit.offset(-1, 0, 0)(1);
 	else
-	    (*bftoit)(0) = 0;
+	    (*bftoit)(0) = bndryValue;
 	if (loc[0] != ncx-1)
 	    (*bftoit)(1) = bffromit.offset(+1, 0, 0)(0);
 	else
-	    (*bftoit)(1) = 0;
+	    (*bftoit)(1) = bndryValue;
 	if (loc[1] != 0)
 	    (*bftoit)(2) = bffromit.offset( 0,-1, 0)(3);
 	else
-	    (*bftoit)(2) = 0;
+	    (*bftoit)(2) = bndryValue;
 	if (loc[1] != ncy-1)
 	    (*bftoit)(3) = bffromit.offset( 0,+1, 0)(2);
 	else
-	    (*bftoit)(3) = 0;
+	    (*bftoit)(3) = bndryValue;
 	if (loc[2] != 0)
 	    (*bftoit)(4) = bffromit.offset( 0, 0,-1)(5);
 	else
-	    (*bftoit)(4) = 0;
+	    (*bftoit)(4) = bndryValue;
 	if (loc[2] != ncz-1)
 	    (*bftoit)(5) = bffromit.offset( 0, 0,+1)(4);
 	else
-	    (*bftoit)(5) = 0;
+	    (*bftoit)(5) = bndryValue;
     }
 
     // Explicitly indicate that we have finished scalar code

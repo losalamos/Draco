@@ -3450,7 +3450,8 @@ class PoomaMesh_XYZ
     static void gather(vctf<T1>& to, const cctf<T2>& from, const Op& op);
 
     template <class T>
-    static void swap_faces(fcdtf<T>& to, const fcdtf<T>& from);
+    static void swap_faces(fcdtf<T>& to, const fcdtf<T>& from,
+			   T bndryValue = T());
 
 
     // reduction operations
