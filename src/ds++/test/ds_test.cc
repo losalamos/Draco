@@ -33,7 +33,7 @@ bool fail(int line)
 
 //---------------------------------------------------------------------------//
 
-bool fail(int line, char *file)
+bool fail(int line, const char *file)
 {
     std::cout << "Test: failed on line " << line << " in " << file
 	      << std::endl;

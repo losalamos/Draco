@@ -18,7 +18,7 @@
 
 //---------------------------------------------------------------------------//
 
-void Check_Strings_test()
+static void Check_Strings_test()
 {
     // Define a vector of strings for testing
     std::string n[] = {"this", "is", "a#", "test", "xxx!", "space check",
@@ -36,7 +36,7 @@ void Check_Strings_test()
 
     std::cout << "The " << names.size() << 
 	" strings to be tested are: " << std::endl;
-    for (int i=0; i<names.size(); i++)
+    for (size_t i=0; i<names.size(); ++i)
 	std::cout  << "\"" << names[i]  << "\"" << std::endl;
 	
     std::cout << std::endl;
@@ -54,7 +54,7 @@ void Check_Strings_test()
     else
     {
 	std::cout << "*** Error in string definition -" << std::endl;
-	for (int i=0; i<result.size(); i++)
+	for (size_t i=0; i<result.size(); i++)
 	    std::cout << "Found disallowed character(s) in string: \"" 
 		      << *result[i] << "\"" << std::endl;
 	std::cout << "The following characters are forbidden:" << 
@@ -93,7 +93,7 @@ void Check_Strings_test()
     else
     {
 	std::cout << "*** Error in string definition -" << std::endl;
-	for (int i=0; i<result2.size(); i++)
+	for (size_t i=0; i<result2.size(); i++)
 	    std::cout << "Size of string is not in allowable range: \"" 
 		      << *result2[i] << "\"" << std::endl;
 	std::cout << "Strings lengths must be greater than " << low 
@@ -127,7 +127,7 @@ void Check_Strings_test()
     else
     {
 	std::cout << "*** Error in string definition -" << std::endl;
-	for (int i=0; i<result3.size(); i++)
+	for (size_t i=0; i<result3.size(); i++)
 	    std::cout << "Duplicate string found: \"" 
 		      << *result3[i] << "\"" << std::endl;
 	std::cout << "All strings must be unique!" << std::endl;
@@ -153,9 +153,12 @@ void Check_Strings_test()
 
 int main(int argc, char *argv[])
 {
+    //lint -e30 -e85 -e24 -e715 -e818 Suppress warnings about use of argv 
+    //          (string comparison, unknown length, etc.)
+
     // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (std::string(argv[arg]) == "--version")
+    for( int arg = 1; arg < argc; arg++ )
+	if( size_t idx = std::string(argv[arg]).find("--version") == 0 )
 	{
 	    std::cout << argv[0] << ": version " << rtt_dsxx::release() << std::endl; 
 	    return 0;
@@ -166,13 +169,15 @@ int main(int argc, char *argv[])
 	// tests
 	Check_Strings_test();
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion const & ass)
     {
 	std::cout << "Failure on Assertion: " << ass.what() << std::endl;
 	return 1;
     }
 
     std::cout << "Done testing Check_Strings." << std::endl;
+
+    return 0;
 }
 
 //---------------------------------------------------------------------------//

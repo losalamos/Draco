@@ -36,7 +36,7 @@ namespace rtt_ds_test
 
 bool fail(int line);
 
-bool fail(int line, char *file);
+bool fail(int line, const char *file);
 
 bool pass_msg(const std::string &);
 
