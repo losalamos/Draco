@@ -1,22 +1,35 @@
+2000-06-16  H. Grady Hughes  <hgh@lanl.gov>
+
+	* TET_Builder.hh, configure.in, test/Makefile.misc,
+	test/tstTET_Mesh.cc, and added test/TET_RTT_4.in: TET_Builder now
+	eliminates from node_sets those flags with no associated nodes.
+	A fourth RTT-format test file has been added to test the feature.
+
+2000-06-15  H. Grady Hughes  <hgh@lanl.gov>
+
+	* ../configure.in, configure.in, test/tstTET_Mesh.cc: Relevelized
+	and changed #include and namespace lines in the test code to take
+	advantage of the revised RTT_Format_Reader class.
+
 2000-06-08  H. Grady Hughes  <hgh@lanl.gov>
-   
+
 	* TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
- 	test/TET_test_1.hh, test/tstTET_Mesh.cc: The information from the
- 	interface service get_element_sets() is converted to two separate
- 	maps, side_sets and cell_sets, and used to initialize data members
- 	of the TET_Mesh class.  The TET_Mesh class no longer has knowledge
- 	of element_sets.  Also, new diagnostic functions print_node_sets,
- 	print_side_sets, and print_cell_sets are added to TET_Mesh.
+	test/TET_test_1.hh, test/tstTET_Mesh.cc: The information from the
+	interface service get_element_sets() is converted to two separate
+	maps, side_sets and cell_sets, and used to initialize data members
+	of the TET_Mesh class.  The TET_Mesh class no longer has knowledge
+	of element_sets.  Also, new diagnostic functions print_node_sets,
+	print_side_sets, and print_cell_sets are added to TET_Mesh.
 
 2000-05-03  H. Grady Hughes  <hgh@lanl.gov>
 
 	* Tet_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
- 	test/TET_test_1.hh, test/tstTET_Mesh.cc: TET_Builder, TET_Mesh,
- 	and their test files now use the get_node_coord_units(),
- 	get_node_sets(), get_element_sets(), and get_title() services of
- 	the Mesh_Reader base class.  At the top level (TET_Mesh), the
- 	get_element_sets() service will later be replaced by side- and
- 	cell-specific data structures.
+	test/TET_test_1.hh, test/tstTET_Mesh.cc: TET_Builder, TET_Mesh,
+	and their test files now use the get_node_coord_units(),
+	get_node_sets(), get_element_sets(), and get_title() services of
+	the Mesh_Reader base class.  At the top level (TET_Mesh), the
+	get_element_sets() service will later be replaced by side- and
+	cell-specific data structures.
 	
 2000-05-02  Thomas M. Evans  <tme@lanl.gov>
 
@@ -27,23 +40,23 @@
 2000-04-26  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
- 	test/TET_test_1.hh, test/tstTET_Mesh.cc: Added private data VF_INT
- 	sides_vertices for future needs, and made proper use of
- 	get_element_nodes() and get_element_types() from the Mesh_Reader
- 	base class.
+	test/TET_test_1.hh, test/tstTET_Mesh.cc: Added private data VF_INT
+	sides_vertices for future needs, and made proper use of
+	get_element_nodes() and get_element_types() from the Mesh_Reader
+	base class.
 	
 2000-04-25  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Mesh.cc, TET_Mesh.hh: Renamed in_cell() to in_open_cell()
- 	and added the related function in_closed_cell().
+	and added the related function in_closed_cell().
 
 2000-04-18  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Mesh.cc, ThreeVector.hh, test/tstTET_Mesh.cc,
- 	test/TET_RTT_2.in: Changed direction of vector in lin_comb() in
- 	ThreeVector.hh, correcting a bug in sample_pos() in TET_Mesh;
- 	added another regression test to test/tstTET_Mesh.cc; installed a
- 	new RTT-format test file for later regression testing.
+	test/TET_RTT_2.in: Changed direction of vector in lin_comb() in
+	ThreeVector.hh, correcting a bug in sample_pos() in TET_Mesh;
+	added another regression test to test/tstTET_Mesh.cc; installed a
+	new RTT-format test file for later regression testing.
 
 2000-04-18  Thomas M. Evans  <tme@lanl.gov>
 
@@ -59,46 +72,46 @@
 2000-04-06  H. Grady Hughes  <hgh@lanl.gov>
 	
 	* test/TET_RET_1.in: Added an RTT-format test file for testing
- 	interfaces for the TET_Builder class.
+	interfaces for the TET_Builder class.
 
 2000-04-04  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Builder.hh, TET_Builder.cc, TET_test_1.hh, tstTET_Mesh.cc:
- 	Rewrote the builder class and the tests to be consistent with the
- 	new meshReader classes
+	Rewrote the builder class and the tests to be consistent with the
+	new meshReader classes
 
 2000-02-12  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Mesh.hh, TET_Mesh.cc, TET_Builder.hh, TET_Builder.cc: Added
- 	TET_Mesh member functions get_cell_types() and get_point_coord()
- 	for Ensight support.  Also eliminated all using declarations from
- 	TET_Mesh and TET_Builder.
+	TET_Mesh member functions get_cell_types() and get_point_coord()
+	for Ensight support.  Also eliminated all using declarations from
+	TET_Mesh and TET_Builder.
 
 2000-02-10  Thomas M. Evans  <tme@lanl.gov>
 
 	* OS_Builder.hh, OS_Builder.cc: the builder now reads its own
- 	simple OS_Mesh format file.  This format file can be in a separate
- 	file or in the traditional input file.  This move precedes the
- 	general move to have mesh builders read their own mesh format
- 	files.
+	simple OS_Mesh format file.  This format file can be in a separate
+	file or in the traditional input file.  This move precedes the
+	general move to have mesh builders read their own mesh format
+	files.
 	
 2000-02-09  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Builder.hh, TET_Builder.cc, test/TET_test_1.hh,
- 	test/tstTET_Mesh.cc: Initial commit of TET_test_1.hh, an example
- 	of a TET_Mesh Interface Type class, and extension of
- 	tstTET_Mesh.cc to include instantiation from that <IT> class.
-  	Also corrected some out-of-range index errors in TET_Builder.
+	test/tstTET_Mesh.cc: Initial commit of TET_test_1.hh, an example
+	of a TET_Mesh Interface Type class, and extension of
+	tstTET_Mesh.cc to include instantiation from that <IT> class.
+	Also corrected some out-of-range index errors in TET_Builder.
 
 2000-02-08  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Builder.hh, TET_Builder.cc: Initial commit of components for
- 	the TET_Mesh builder class.
+	the TET_Mesh builder class.
 
 2000-02-07  H. Grady Hughes  <hgh@lanl.gov>
 
 	* test/tstTET_Mesh.cc: Added many tests of TET_Mesh functions, for
- 	a "hand-coded" test mesh.
+	a "hand-coded" test mesh.
 	
 2000-02-02  Thomas M. Evans  <tme@lanl.gov>
 
@@ -110,7 +123,7 @@
 2000-01-30  H. Grady Hughes <hgh@lanl.gov>
 
 	* TET_Mesh.hh: Added subscripting, iterators, size, and empty
- 	functions to class TET_Mesh::CCVF.
+	functions to class TET_Mesh::CCVF.
 
 2000-01-28  H. Grady Hughes <hgh@lanl.gov>
 
@@ -121,7 +134,7 @@
 2000-01-27  H. Grady Hughes <hgh@lanl.gov>
 
 	* TET_Mesh.hh, TET_Mesh.cc, ThreeVector.hh: Initial commit of
- 	components for the TET_Mesh.
+	components for the TET_Mesh.
 	
 1999-12-14  Thomas M. Evans  <tme@lanl.gov>
 

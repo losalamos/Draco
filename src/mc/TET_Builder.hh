@@ -220,6 +220,19 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
 
     title = interface->get_title();
 
+    // Eliminate from node_sets those flags with no associated nodes.
+
+    MAP_String_SetInt::iterator node_set_iter = node_sets.begin();
+
+    while ( node_set_iter != node_sets.end() )
+        if ((*node_set_iter).second.empty())
+            {
+                MAP_String_SetInt::iterator targ = node_set_iter++;
+                node_sets.erase(targ);
+            }
+        else
+            ++node_set_iter;
+
     // TET_Mesh objects are 3-D.
     for (int node_ = 0 ; node_ < node_coords.size() ; node_++)
         Check (node_coords[node_].size() == THREE);

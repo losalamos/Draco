@@ -609,6 +609,31 @@ mesh_ptr_3->print_cell_sets(cerr);
     if (*mesh_ptr_1 == *mesh_ptr_3)                      ITFAILS;
     if (*mesh_ptr_2 == *mesh_ptr_3)                      ITFAILS;
 
+cerr << "Ready for mesh_ptr_4." << endl;
+
+    SP<RTT_Mesh_Reader> reader_4(new RTT_Mesh_Reader("TET_RTT_4"));
+    if (!reader_4)                                       ITFAILS;
+
+    TET_Builder read_build_4(reader_4);
+
+    SP<TET_Mesh> mesh_ptr_4 = read_build_4.build_Mesh();
+mesh_ptr_4->print_node_sets(cerr);
+mesh_ptr_4->print_side_sets(cerr);
+mesh_ptr_4->print_cell_sets(cerr);
+    if (!mesh_ptr_4)                                     ITFAILS;
+
+    // Again, the pointers themselves should not be equal...
+    if (mesh_ptr_H == mesh_ptr_4)                        ITFAILS;
+    if (mesh_ptr_0 == mesh_ptr_4)                        ITFAILS;
+    if (mesh_ptr_1 == mesh_ptr_4)                        ITFAILS;
+    if (mesh_ptr_2 == mesh_ptr_4)                        ITFAILS;
+
+    // ... and the meshes should not be equal.
+    if (*mesh_ptr_H == *mesh_ptr_4)                      ITFAILS;
+    if (*mesh_ptr_0 == *mesh_ptr_4)                      ITFAILS;
+    if (*mesh_ptr_1 == *mesh_ptr_4)                      ITFAILS;
+    if (*mesh_ptr_2 == *mesh_ptr_4)                      ITFAILS;
+
 }   // end Test_TET()
 
 int main(int argc, char *argv[])
