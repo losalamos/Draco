@@ -21,7 +21,7 @@
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
-#include "meshReaders/RTT_Mesh_Reader.hh"
+#include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 
 #include <iomanip>
 #include <vector>
@@ -49,7 +49,7 @@ using rtt_viz::Ensight_Translator;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
 using rtt_mc_test::TET_test_1;
-using rtt_meshReaders::RTT_Mesh_Reader;
+using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
 
 //---------------------------------------------------------------------------//
 // TESTS

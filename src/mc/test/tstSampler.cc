@@ -189,7 +189,7 @@ void test_sampling_planckian_frequency()
     for (int i = 0; i < num_samples; i++)
     {
 	hnu = rtt_mc::sampler::sample_planckian_frequency(ran_object, kT);
-	int index = hnu/kT/bin_width;
+	int index = static_cast<int>(hnu/kT/bin_width);
 	if (index < num_bins)
 	    freq_bins[index] += 1.0;
     }
