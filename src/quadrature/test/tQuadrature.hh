@@ -12,63 +12,58 @@
 #ifndef __Quadrature_test_tQuadrature_hh__
 #define __Quadrature_test_tQuadrature_hh__
 
-#include "UnitTestFrame/TestApp.hh"
+#include <string>
 
 namespace rtt_quadrature_test
 {
  
+using std::string;
+
 //===========================================================================//
-/*!
- * \class tQuadrature
- *
- * \brief A class used to test the QuadCreator and Quadrature classes.  It is 
- * inheireted from Randy's UnitTestFrame::TestApp.
- */
-// revision history:
-// -----------------
-// 1.1) Original
-// 1.2) Added comments (some in Doxygen format).
-//      Changed the test program to loop over a sequence of quadrature
-//         types performing the same tests on each object. 
-//      Implemented use of ds++/Assert class.
-//           
-// 
+// PASS/FAILURE LIMIT
 //===========================================================================//
 
-class tQuadrature : public rtt_UnitTestFrame::TestApp
-{
+// Returns true for pass
+// Returns false for fail
+// Failure functions also set rtt_cdi_eospac_test::passed to false
 
-    // NESTED CLASSES AND TYPEDEFS
+// These can be used in any combination in a test to print output messages  
+// if no fail functions are called then the test will pass
+// (rtt_cdi_eospac_test::passed will have its default value of true)
 
-    // DATA
-    
-  public:
+// Needless to say, these can be used in many different combinations or
+// ways.  We do not constrain draco tests except that the output must be of
+// the form "Test: pass/fail"
 
-    // CREATORS
-    
-    tQuadrature( int argc, char *argv[], std::ostream &os_in );
-    //Defaulted:  tQuadrature(const tQuadrature &rhs);
-    //Defaulted: ~tQuadrature();
+bool fail(int line);
 
-    // MANIPULATORS
-    
-    //Defaulted: tQuadrature& operator=(const tQuadrature &rhs);
+bool fail(int line, char *file);
 
-    // ACCESSORS
+bool pass_msg(const std::string &);
 
-    std::string name() const { return "tQuadrature"; }
-    std::string version() const;
+bool fail_msg(const std::string &);
 
-  protected:
-    
-    std::string runTest();
+//---------------------------------------------------------------------------//
+// PASSING CONDITIONALS
+//---------------------------------------------------------------------------//
 
-  private:
-    
-    // IMPLEMENTATION
-};
+extern bool passed;
 
 } // end namespace rtt_Quadrature_test
+
+//===========================================================================//
+// TEST MACROS
+//
+// USAGE:
+// if (!condition) ITFAILS;
+//
+// These are a convenience only
+//===========================================================================//
+
+#define ITFAILS    rtt_quadrature_test::fail(__LINE__);
+#define FAILURE    rtt_quadrature_test::fail(__LINE__, __FILE__);
+#define PASSMSG(a) rtt_quadrature_test::pass_msg(a);
+#define FAILMSG(a) rtt_quadrature_test::fail_msg(a);
 
 #endif // __Quadrature_test_tQuadrature_hh__
 
