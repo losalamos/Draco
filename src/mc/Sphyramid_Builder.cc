@@ -395,6 +395,10 @@ void Sphyramid_Builder::parser1D(std_ifstream &in)
 	    Insist (this->alpha_degrees >  0.0,  "Cone Angle <= 0!");
 	    Insist (this->alpha_degrees <= 45.0, "Cone Angle > 45!");
 	}
+	if (keyword == "wedge_angle_degrees:")
+	{
+	    Insist (0,"Wedge angle only required in RZWedge meshes!");
+	}
     }
 }
 //---------------------------------------------------------------------------//
