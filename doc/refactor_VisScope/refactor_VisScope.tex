@@ -1,0 +1,328 @@
+%%---------------------------------------------------------------------------%%
+%% refactor_VisScope.tex
+%% Mike Buksas
+%% Time-stamp: <02/07/29 19:03:54 tmonster>
+%%---------------------------------------------------------------------------%%
+%%
+%% Project Vision Statement
+%% ------------------------
+%% A vision statement explains the project in terms of an end result.
+%% It clarifies where the project is going by answering the questions
+%%      -What?
+%%      -Why?
+%%      -How will we know the project is a success?
+%%
+%% Project Scope Statement
+%% -----------------------
+%% A scope statement describes how a project will achieve its end
+%% result given limited resources.  It sets a project's boundaries by
+%% defining the balance between resources, constraints, and
+%% deliverables. 
+%%
+%% Critical Success Factors
+%% ------------------------
+%% What has to happen for success?  What cannot happen?
+%%
+%% Risk Assessment
+%% ---------------
+%% What is the probability of the occurence of each identified risk?
+%% What is the impact if it happens?  
+%%
+%%
+%%      ---used with permission and adapted from David A. Schmaltz's 
+%%         ``Mastering Projects Workshop: Participant Guide,'' 
+%%         True North pgs, Inc., P.O. Box 1532,  Walla Walla, WA 99362, 
+%%         projectcommunity.com, Rev. 6, August 2001, copyright.
+%%
+%%
+%% Project Tracking
+%% ----------------
+%% Track actual results and performance with plans. 
+%% 
+%%    -Did you change the vision or scope of your project?
+%%    -How well did you identify critical success factors?
+%%    -What risks did your project realize? ...
+%%    -How well were you able to estimate delivery dates?
+%%    -What corrective action was taken?
+%%    -What lessons have you learned?
+%%  
+%% The addition of project tracking to the vision and scope statement
+%% makes it a living document that is revisited at the completion of
+%% the project and whenever risks are realized or vision and scope
+%% change. 
+%%
+%%      ---project tracking section adapted from a LANL ASC Internal 
+%%         Assessment of the Jayenne Code Project (CCS-4) by Vicki
+%%         Clark and Barbara Hoffbauer (CCN-12).  July 22, 2003. 
+%%
+%%
+%%---------------------------------------------------------------------------%%
+\documentclass[11pt]{nmemo}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{tmadd,tmath}
+\usepackage{cite}
+
+%%---------------------------------------------------------------------------%%
+%% DEFINE SPECIFIC ENVIRONMENTS HERE
+%%---------------------------------------------------------------------------%%
+%\newcommand{\elfit}{\ensuremath{\operatorname{Im}(-1/\epsilon(\vq,\omega)}}
+%\msection{}-->section commands
+%\tradem{}  -->add TM subscript to entry
+%\ucatm{}   -->add trademark footnote about entry
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\toms{Distribution}
+%\toms{Joe Sixpak/XTM, MS B226}
+\refno{CCS-4:02-????(U)}
+\subject{Vision and Scope Statements for Project Camel Norton}
+
+%-------NO CHANGES
+\divisionname{Computer and Computational Sciences}
+\groupname{CCS-4:Transport Methods Group}
+\fromms{Mike Buksas/CCS-4, MS D409}
+\phone{(505)66?--????}
+\originator{fml}
+\typist{fml}
+\date{\today}
+%-------NO CHANGES
+
+%-------OPTIONS
+%\reference{NPB Star Reimbursable Project}
+%\thru{P. D. Soran, XTM, MS B226}
+%\enc{list}      
+%\attachments{list}
+%\cy{list}
+%\encas
+%\attachmentas
+%\attachmentsas 
+%-------OPTIONS
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+\distribution {}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN VISION STATEMENT
+%%---------------------------------------------------------------------------%%
+
+\opening
+
+\section*{Vision Statement}
+
+Project Camel Norton\footnote{The name is an anagram of Monte Carlo,
+  if you must know.} will produce improved code in the Draco MC and
+IMC packages. Time permitting, it will also extend to the interaface
+components within Milagro. Within IMC, we seek to reduce the amount of
+duplicated code in the Particle class heirachy and simplify the
+execution of the transport algorithm. This is the highest priority of
+this project. In the MC component the goal is to improve the topology
+class to reduce the amount of inforation it requires.  This is the
+second priority of this project. Within Milagro, we seek to eliminate
+the redundancies in the interface code and the global tally. This is
+the third priority of this project.
+
+For the remainder of this document, we refer to these as the
+particle-transport subproject, the topology subproject and the milagro
+interface subproject.
+
+This project is being undertaken to simplify the addition of new
+features and improve maintenance. The next area to be affect by the
+addition of new features in the transport algorithm. The ease by which
+specific features can be added after the refactoring is comlete will
+be our criteria for success. This will be done in comparison to the
+difficulties encountered in the addition of the surface tracking
+capability.
+
+\newpage
+\section*{Scope Statement}
+
+%%
+%% Include those of the following elements that apply to your project
+%%
+
+\subsection*{Product of the Project}
+
+The product of Project Camel Norton will be the replacement of
+existing code while preserving functionality. {\em No new capabilities
+  will be added as part of this project.}
+
+For the transport algorithm in {\tt draco/imc} the modifications to
+the code will likely result in the creation of new classes and the
+removal of functionality from the Particle heriachy of classes. We
+will use the design in Uncle McFlux as a model, where the Particle
+class and the Particle transport algorithm are seperated.
+
+The design for the refactored code will be based on the anticipation
+of several new features: DDIMC, Three dimensional support, Material
+Motion and Compton Scattering. Our goal is code which will support the
+addition of these features with minimum of effort.
+
+The {\tt General\_Topology} class in {\tt draco/mc} supportes a very
+general range of cell to domain mappings, including full replication
+and fully decomposed meshes. The class, however, does not enforce a
+distinction between topologies which contain information about the
+global mesh or which only contain the necessary local information
+about the neighbors of a given mesh. We seek to improve the topology
+class to make this distinction more explicit.
+
+Milagro stuff....
+
+\subsection*{Quality of the Product}
+
+The quality of the new code will be measured informally in terms of
+the abstract entities known as {\em code smells}. See~\cite[Chapter
+3]{fowler00} for the comprehensive list of smells. An examination of
+the code of the Particle classes reveals the following bad smells:
+{\em Duplicated Code, Long Method}, and {\em Large Class}.  Based on
+the anticipation of new features, we also conclude that the Particle
+class suffers from {\em Divergent Change}, that is, it has too many
+reasons to change with the addition of new features. 
+
+The changes in the topology class should make the purpose of the
+resulting classes easier to understand. The classes should have
+greater {\em intention} and be more self-documenting.
+
+Based on the experience of integrating the Surface Tracking
+functionality into Wedgehog we also accuse the broader draco library
+structure of suffering from {\em Shotgun Surgery}, that is, a new
+feature prompted changes in multiple, widely seperated, parts of the
+code. This feature was perhaps especially difficult in this regard. We
+should be on the lookout for ways to minimize the disruptive impact of
+similarly cross-cutting features.
+
+\subsection*{Delivery Date}
+
+\subsection*{Trade-offs}
+             E.g., higher product quality implies later delivery date.
+
+
+\newpage
+\section*{Critical Success Factors}
+
+For the particle-transport subproject to be considered a success, we
+must be able to recuperate some of the time spent refactoring in time
+spent adding new features. Refactoring is strictly a software
+development issue, and hence is an ordinary problem. The problem
+acquires a dilemma-like character becasue it's goal is diffucilt to
+quantify and can only be attempted after the project is complete.
+
+To deal with this dilemma, we can consider incorporating the addition
+of a selected feature into a broader project, thereby expanding the
+scope to include one cycle of ``refactor, then implement''. The
+relative ease of the implementation phase can be used to judge the
+success of the project.
+
+Another risk involves keeping the scope of the refactor limited to
+areas where the payoff in terms of maintenance is the greatest. The
+author of this document has been known to succumb to refactor-mania on
+occasion. 
+
+The topology subproject must be evaluated in a similar fashion. It may
+be undertaken as the same time as the particle-transport refactor if
+it is deemed useful in implementing new features. If it appears to
+remain independent, it will be postponed and evaluated seperately.
+
+The Milagro-interface subproject can also be evaluated by its
+facilitation of new features. We can also examine it for code smells,
+especially code duplication.
+
+\begin{table}[ht]
+  \caption{Critical Success Factor Actions.}
+    \begin{enumerate}
+    \item Resolve it now.
+    \item Factor into Plan.
+    \item Change Vision/Scope.
+    \item Other.
+    \end{enumerate}
+\end{table}
+
+\begin{table}[ht]
+  \begin{center}
+    \caption{Critical success factors for Project Camel Norton.}
+    \label{tab:critical-success}
+    \begin{tabular}{|p{4.5cm}|c|c|p{4.5cm}|} 
+    \hline
+                       & Problem or & Strategy  &          \\
+    Factor             &  Dilemma   & (1,2,3,4) & Comments \\ 
+    \hline\hline
+    Refactor must pay-off in development time.
+    & Dilemma & 3 
+    & Consider including a feature implementation step. Keep
+    refactoring and implemention stages seperate. \\ 
+                                %
+    \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+\newpage
+\section*{Risk Assessment}
+
+\begin{table}[ht]
+  \begin{center}
+    \caption{Risk Assessment for Project Camel Norton.}
+    \label{tab:risk}
+    \begin{tabular}{|p{4.5cm}|c|c|c|p{4.5cm}|} 
+    \hline
+    Risk & Likelihood & Impact & Importance & Contingency \\ 
+    \hline\hline
+    Too difficult to tell if refactoring is useful & 6 & 3 & 18 &
+    Add an implementation step. \\
+    \hline
+    Refactor spreads to rest of package & 4 & 8 & 32 &
+    Evaluate additional refactoring targets on merits \\
+    \hline
+    Refactored code is significantly slower & 2 & 9 & 18 &
+    Add an optimization refactor step when new features are
+    implemented. \\ \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+\newpage
+\section*{Project Tracking}
+
+Track actual results and performance with plans.
+
+   Did you change the vision or scope of your project? 
+   
+   How well did you identify critical success factors?  What lessons
+   have you learned?
+ 
+   What risks did your project realize?  How well did you estimate the
+   likelihood and impact of the realized risks?  Did you encounter
+   unforseen risks?  What lessons have you learned?
+ 
+   How well were you able to estimate delivery dates?  What lessons
+   have you learned?
+
+   What corrective action was taken?
+   
+   How will you improve the vision and scope statements for future
+   projects?
+
+\newpage
+\bibliography{cs}
+\bibliographystyle{plain}
+
+\closing
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of refactor_VisScope.tex
+%%---------------------------------------------------------------------------%%
+
