@@ -128,10 +128,10 @@ void Opacity_Test()
 	    * o.get_sigma_abs(i+3);
 	double flecki  = 1.0 / (1.0 + di);
 	double flecki3 = 1.0 / (1.0 + di3);
-	if (o.get_fleck(i) != flecki)    ITFAILS;
-	if (o.get_fleck(i+3) != flecki3) ITFAILS;
+	if (!soft_equiv(o.get_fleck(i), flecki))    ITFAILS;
+	if (!soft_equiv(o.get_fleck(i+3), flecki3)) ITFAILS;
 
-	// test fleck * planck
+	// test fleck * planck -Wold-style-cast
 	if (!soft_equiv(o.fplanck(i), flecki * o.get_planck(i), 1.e-16))
 	    ITFAILS;
 	if (!soft_equiv(o.fplanck(i+3), flecki3 * o.get_planck(i+3), 1.e-16)) 
