@@ -1,19 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
-// CAR_CU_Interface.cc
+// Interface.cc
 // B.T. Adams (bta@lanl.gov)
 // 18 May 99
 //---------------------------------------------------------------------------//
 // @> CAR_CU_Interface class implementation file (developed from 
 // OS_Interface.hh)
 /*! 
- * \file   amr_mesh/CAR_CU_Interface.cc
+ * \file   amr_mesh/Interface.cc
  * \author B.T. Adams
  * \date   Tue May 18 10:33:26 1999
  * \brief  Implementation file for CAR_CU_Interface class library.
  */
 //---------------------------------------------------------------------------//
 
-#include "CAR_CU_Interface.hh"
+#include "Interface.hh"
 #include "ds++/Assert.hh"
 #include <algorithm>
 #include <map>
@@ -484,5 +484,5 @@ vector<double> CAR_CU_Interface::get_rad_temp() const
 } // end namespace rtt_amr
 
 //---------------------------------------------------------------------------//
-//                              end of CAR_CU_Interface.cc
+//                              end of Interface.cc
 //---------------------------------------------------------------------------//

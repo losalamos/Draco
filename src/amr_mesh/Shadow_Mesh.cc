@@ -1,18 +1,18 @@
 //----------------------------------*-C++-*----------------------------------//
-// Shadow_CAR_CU_Mesh.cc
+// Shadow_Mesh.cc
 // B.T. Adams (bta@lanl.gov)
 // 27 Sept 99
 /*! 
- * \file   amr_mesh/Shadow_CAR_CU_Mesh.cc
+ * \file   amr_mesh/Shadow_Mesh.cc
  * \author B.T. Adams
  * \date   Mon 27 Sep 10:33:26 1999
  * \brief  Provides the C++ side of the shadow object interface functions to
  *         the Continuous Adaptive Refinement Cartesion Unstructured Mesh 
  *         class for use with Fortran 90 codes. The complimentary Fortran 90
  *         shadow object interface functions that reference the functions 
- *         herein are provided in Shadow_CAR_CU_Mesh.f90. Note that the class
+ *         herein are provided in Shadow_Mesh.f90. Note that the class
  *         constructor is not shadowed because the mesh is constructed 
- *         directly by the Shadow_CAR_CU_Builder class object.  An example 
+ *         directly by the Shadow_Builder class object.  An example 
  *         code is also provide to illustrate the usage of all of the shadow
  *         object interface functions to the amr_mesh package from a Fortran 
  *         90 code.
@@ -21,25 +21,25 @@
  *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.
  */
 //---------------------------------------------------------------------------//
-// @> Shadow_CAR_CU_Mesh interface file
+// @> Shadow_Mesh interface file
 //---------------------------------------------------------------------------//
 
-#ifndef __amr_Shadow_CAR_CU_Mesh_cc__
-#define __amr_Shadow_CAR_CU_Mesh_cc__
+#ifndef __amr_Shadow_Mesh_cc__
+#define __amr_Shadow_Mesh_cc__
 
-#include "CAR_CU_Mesh.hh"
-#include "Shadow_Opaque_Pointers.hh"
+#include "Mesh.hh"
+#include "ds++/opaquePointers.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 
 //===========================================================================//
-// Shadow_CAR_CU_Mesh - 
+// Shadow_Mesh - 
 //
 // Purpose : Provides shadow object interface functions to the Continuous 
 //           Adaptive Refinement Cartesion Unstructured Mesh Class for use
 //           with Fortran 90 codes. Note that the class constructor is not 
 //           shadowed because the mesh is constructed directly by the 
-//           Shadow_CAR_CU_Builder class object.
+//           Shadow_Builder class object.
 //
 // revision history:
 // -----------------
@@ -51,7 +51,7 @@ namespace rtt_amr
 {
 // draco components
 using dsxx::SP;
-using rtt_shadow::opaque_pointers;
+using dsxx::opaque_pointers;
 
 extern "C" 
 {
@@ -5389,8 +5389,8 @@ extern "C"
 
 } // end namespace rtt_amr
 
-#endif                          // __amr_Shadow_CAR_CU_Mesh_cc__
+#endif                          // __amr_Shadow_Mesh_cc__
 
 //---------------------------------------------------------------------------//
-//                              end of amr_mesh/Shadow_CAR_CU_Mesh.cc
+//                              end of amr_mesh/Shadow_Mesh.cc
 //---------------------------------------------------------------------------//

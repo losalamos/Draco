@@ -1,16 +1,16 @@
 //----------------------------------*-C++-*----------------------------------//
-// Shadow_CAR_CU_Mesh_Builder.cc
+// Shadow_Builder.cc
 // B.T. Adams (bta@lanl.gov)
 // 27 Sept 99
 /*! 
- * \file   amr_mesh/Shadow_CAR_CU_Mesh_Builder.cc
+ * \file   amr_mesh/Shadow_Builder.cc
  * \author B.T. Adams
  * \date   Mon 27 Sep 10:33:26 1999
  * \brief  Provides the C++ side of the shadow object interface functions to
  *         the Continuous Adaptive Refinement Cartesion Unstructured Mesh 
  *         Builder class for use with Fortran 90 codes. The complimentary 
  *         Fortran 90 shadow object interface functions that reference the 
- *         functions herein are provided in Shadow_CAR_CU_Mesh_Builder.f90.
+ *         functions herein are provided in Shadow_Builder.f90.
  *         Only the class constructor and destructor are shadowed, as all 
  *         other class functions are invoked automatically by the shadow 
  *         object interface of the CAR_CU_Builder class constructor. An 
@@ -22,21 +22,21 @@
  *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.
  */
 //---------------------------------------------------------------------------//
-// @> Shadow_CAR_CU_Mesh_Builder interface file
+// @> Shadow_Builder interface file
 //---------------------------------------------------------------------------//
 
-#ifndef __amr_Shadow_CAR_CU_Mesh_Builder_cc__
-#define __amr_Shadow_CAR_CU_Mesh_Builder_cc__
+#ifndef __amr_Shadow_Builder_cc__
+#define __amr_Shadow_Builder_cc__
 
-#include "CAR_CU_Builder.hh"
-#include "CAR_CU_Interface.hh"
-#include "RTT_Format.hh"
-#include "CAR_CU_Mesh.hh"
-#include "Shadow_Opaque_Pointers.hh"
+#include "Builder.hh"
+#include "Interface.hh"
+#include "meshReaders/RTT_Format.hh"
+#include "Mesh.hh"
+#include "ds++/opaquePointers.hh"
 #include <iostream>
 
 //===========================================================================//
-// Shadow_CAR_CU_Mesh_Builder - 
+// Shadow_CAR_CU_Builder - 
 //
 // Purpose : Provides flat interface functions to the Continuous Adaptive 
 // Refinement Cartesion Unstructured Mesh Builder Class for use with Fortran.
@@ -54,7 +54,7 @@ using std::cout;
 // draco components
 using dsxx::SP;
 using rtt_format::RTT_Format;
-using rtt_shadow::opaque_pointers;
+using dsxx::opaque_pointers;
 
 extern "C" 
 {
@@ -144,8 +144,8 @@ extern "C"
 
 }  // end namespace rtt_amr
 
-#endif                          // __amr_Shadow_CAR_CU_Mesh_Builder_cc__
+#endif                          // __amr_Shadow_Builder_cc__
 
 //---------------------------------------------------------------------------//
-//                        end of amr_mesh/Shadow_CAR_CU_Mesh_Builder.cc
+//                        end of amr_mesh/Shadow_Builder.cc
 //---------------------------------------------------------------------------//

@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-// CAR_CU_Builder.cc
+// Builder.cc
 // B.T. Adams (bta@lanl.gov)
 // 18 May 99
 //
@@ -37,16 +37,16 @@
 //                          /                   \
 //                      ----                     ----
 //---------------------------------------------------------------------------//
-// @> CAR_CU_Builder class implementation file (developed from OS_Builder.cc)
+// @> Builder class implementation file (developed from OS_Builder.cc)
 /*! 
- * \file   amr_mesh/CAR_CU_Builder.cc
+ * \file   amr_mesh/Builder.cc
  * \author B.T. Adams
  * \date   Tue May 18 10:33:26 1999
  * \brief  Implementation file for CAR_CU_Builder class library.
  */
 //---------------------------------------------------------------------------//
 
-#include "CAR_CU_Builder.hh"
+#include "Builder.hh"
 #include "XYCoord_sys.hh"
 #include "XYZCoord_sys.hh"
 #include "ds++/Assert.hh"
@@ -942,5 +942,5 @@ void CAR_CU_Builder::FC_Nodes(int nnodes, const SP<RTT_Format> & rttMesh)
 } // end namespace rtt_amr
 
 //---------------------------------------------------------------------------//
-//                              end of CAR_CU_Builder.cc
+//                              end of Builder.cc
 //---------------------------------------------------------------------------//

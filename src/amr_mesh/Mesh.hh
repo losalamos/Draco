@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
-// CAR_CU_Mesh.hh
+// Mesh.hh
 // B.T. Adams (bta@lanl.gov)
 // 18 May 99
 /*! 
- * \file   amr_mesh/CAR_CU_Mesh.hh
+ * \file   amr_mesh/Mesh.hh
  * \author B.T. Adams
  * \date   Tue May 18 10:33:26 1999
  * \brief  Header file for CAR_CU_Mesh class library.
@@ -2212,5 +2212,5 @@ inline bool CAR_CU_Mesh::check_on_face(vector<double> & pos, int & cell,
 #endif                          // __amr_CAR_CU_Mesh_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of amr_mesh/CAR_CU_Mesh.hh
+//                              end of amr_mesh/Mesh.hh
 //---------------------------------------------------------------------------//

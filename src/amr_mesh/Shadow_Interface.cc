@@ -1,16 +1,16 @@
 //----------------------------------*-C++-*----------------------------------//
-// Shadow_CAR_CU_Interface.cc
+// Shadow_Interface.cc
 // B.T. Adams (bta@lanl.gov)
 // 27 Sept 99
 /*! 
- * \file   amr_mesh/Shadow_CAR_CU_Interface.cc
+ * \file   amr_mesh/Shadow_Interface.cc
  * \author B.T. Adams
  * \date   Mon 27 Sep 10:33:26 1999
  * \brief  Provides the C++ side of the shadow object interface functions to
  *         the Continuous Adaptive Refinement Cartesion Unstructured Mesh 
  *         Interface class for use with Fortran 90 codes. The complimentary 
  *         Fortran 90 shadow object interface functions that reference the 
- *         functions herein are provided in Shadow_CAR_CU_Interface.f90.
+ *         functions herein are provided in Shadow_Interface.f90.
  *         An example code is also provide to illustrate the usage of all of
  *         the shadow object interface functions to the amr_mesh package from
  *         a Fortran 90 code.
@@ -19,19 +19,19 @@
  *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.
  */
 //---------------------------------------------------------------------------//
-// @> Shadow_CAR_CU_Interface interface file
+// @> Shadow_Interface interface file
 //---------------------------------------------------------------------------//
 
-#ifndef __amr_Shadow_CAR_CU_Interface_cc__
-#define __amr_Shadow_CAR_CU_Interface_cc__
+#ifndef __amr_Shadow_Interface_cc__
+#define __amr_Shadow_Interface_cc__
 
-#include "CAR_CU_Interface.hh"
-#include "RTT_Format.hh"
-#include "Shadow_Opaque_Pointers.hh"
+#include "Interface.hh"
+#include "meshReaders/RTT_Format.hh"
+#include "ds++/opaquePointers.hh"
 #include <iostream>
 
 //===========================================================================//
-// Shadow_CAR_CU_Interface - 
+// Shadow_Interface - 
 //
 // Purpose : Provides shadow object interface functions to the Continuous 
 //           Adaptive Refinement Cartesion Unstructured Mesh Interface Class
@@ -51,7 +51,7 @@ using std::endl;
 // draco components
 using dsxx::SP;
 using rtt_format::RTT_Format;
-using rtt_shadow::opaque_pointers;
+using dsxx::opaque_pointers;
 
 extern "C" 
 {
@@ -666,8 +666,8 @@ extern "C"
 
 } // end namespace rtt_amr
 
-#endif                          // __amr_Shadow_CAR_CU_Interface_cc__
+#endif                          // __amr_Shadow_Interface_cc__
 
 //---------------------------------------------------------------------------//
-//                              end of amr_mesh/Shadow_CAR_CU_Interface.cc
+//                              end of amr_mesh/Shadow_Interface.cc
 //---------------------------------------------------------------------------//

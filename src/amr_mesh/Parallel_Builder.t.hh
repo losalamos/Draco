@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-// CAR_CU_Parallel_Builder.t.hh
+// Parallel_Builder.t.hh
 // Thomas M. Evans
 // Tue Apr 14 14:50:22 1998
 //---------------------------------------------------------------------------//
@@ -2067,5 +2067,5 @@ void Parallel_Builder<MT>::print(ostream &out) const
 } // end namespace rtt_amr
 
 //---------------------------------------------------------------------------//
-//                              end of amr_mesh/CAR_CU_Parallel_Builder.t.hh
+//                              end of amr_mesh/Parallel_Builder.t.hh
 //---------------------------------------------------------------------------//

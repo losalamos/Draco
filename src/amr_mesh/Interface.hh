@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
-// CAR_CU_Interface.hh
+// Interface.hh
 // B.T. Adams (bta@lanl.gov)
 // 18 May 99
 /*! 
- * \file   amr_mesh/CAR_CU_Interface.hh
+ * \file   amr_mesh/Interface.hh
  * \author B.T. Adams
  * \date   Tue May 18 10:33:26 1999
  * \brief  Header file for CAR_CU_Interface class library.
@@ -27,10 +27,10 @@
 // 
 //===========================================================================//
 
-#include "CAR_CU_Mesh.hh"
+#include "Mesh.hh"
 #include "imc/Global.hh"
 #include "ds++/SP.hh"
-#include "RTT_Format.hh"
+#include "meshReaders/RTT_Format.hh"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -450,5 +450,5 @@ inline CAR_CU_Interface::CAR_CU_Interface(const string &infile,
 
 
 //---------------------------------------------------------------------------//
-//                              end of amr_mesh/CAR_CU_Interface.hh
+//                              end of amr_mesh/Interface.hh
 //---------------------------------------------------------------------------//

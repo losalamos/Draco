@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
-// CAR_CU_Mesh.cc
+// Mesh.cc
 // B.T. Adams (bta@lanl.gov)
 // 18 May 99
 /*! 
- * \file   amr_mesh/CAR_CU_Mesh.cc
+ * \file   amr_mesh/Mesh.cc
  * \author B.T. Adams
  * \date   Tue May 18 10:33:26 1999
  * \brief  Implementation file for CAR_CU_Mesh class library.
@@ -12,7 +12,7 @@
 // @> CAR_CU_Mesh class implementation file (developed from OS_Mesh.cc)
 //---------------------------------------------------------------------------//
 
-#include "CAR_CU_Mesh.hh"
+#include "Mesh.hh"
 #include "mc/Constants.hh"
 #include <iomanip>
 
@@ -464,5 +464,5 @@ void CAR_CU_Mesh::print(ostream & output, int cell) const
 } // end namespace rtt_amr
 
 //---------------------------------------------------------------------------//
-//                              end of CAR_CU_Mesh.cc
+//                              end of Mesh.cc
 //---------------------------------------------------------------------------//
