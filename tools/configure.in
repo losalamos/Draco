@@ -1,3 +1,8 @@
+##---------------------------------------------------------------------------##
+## draco/tools/configure.in
+## $Id$
+##---------------------------------------------------------------------------##
+
 AC_INIT(launchtest)
 AC_CONFIG_AUX_DIR(../config)
 AC_DRACO_ARGS
@@ -14,4 +19,9 @@ installfiles="$libexec_files1 $libexec_files2 $bin_files"
 AC_SUBST(installdirs)
 AC_SUBST(installfiles)
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile draco)
+
+##---------------------------------------------------------------------------##
+## end of configure.in
+##---------------------------------------------------------------------------##
+
