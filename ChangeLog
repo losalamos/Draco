@@ -1,3 +1,17 @@
+1999-09-08  Thomas M. Evans  <tme@lanl.gov>
+
+	* templates: update templates to 1_1_0, added ChangeLog file to
+ 	templates directory.  In the future, each package in draco that
+	maintains its own numbered release tag, autodoc, templates,
+	config, c4, ds++, etc. should have their own ChangeLog files to
+	record package-wide changes.  The draco ChangeLog will only record 
+	draco-specific changes, releases, etc.  Of course, developers
+	should feel free to "mirror" any changes noted in the individual
+	package ChangeLogs to the draco ChangeLogs.  Even comments such
+	as, "made changes in templates" are effective, as a user could
+	simply peruse the templates ChangeLog file to see actual changes
+	made. 
+
 1999-09-03  Thomas M. Evans  <tme@lanl.gov>
 
 	* autodoc, Makefile.in: added autodoc directory for automatic
