@@ -12,8 +12,7 @@
 //===========================================================================//
 // class OS_Builder - 
 //
-// Purpose : builds an OS_Mesh object, parses the input file, 
-//           redistributes the Mesh for parallel purposes
+// Purpose : builds an OS_Mesh object
 //
 // revision history:
 // -----------------
@@ -30,6 +29,7 @@
 #include "imc/OS_Mesh.hh"
 #include "imc/OS_Interface.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 #include <vector>
 #include <string>
 
@@ -88,6 +88,8 @@ public:
 
 inline OS_Builder::OS_Builder(SP<OS_Interface> interface)
 {
+    Require (interface);
+
   // get data arrays from OS_Interface needed to build OS_Mesh
     coord_system = interface->get_coordinates();
     fine_edge    = interface->get_fine_edge();

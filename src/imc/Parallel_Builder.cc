@@ -1199,14 +1199,19 @@ void Parallel_Builder<MT>::build_cells(const MT &mesh,
       // get vertices from the global mesh
 	typename MT::CCVF_d cell_vert = mesh.get_vertices(global_cell);
 	Check (cell_vert.size() == dim);
+	int num_vert = cell_vert[0].size();
 
       // assign these vertices to the new IMC vertices and cell_pair
-	for (int d = 0; d < dim; d++)
-	    for (int i = 0; i < cell_vert[d].size(); i++)
+	for (int i = 0; i < num_vert; i++)
+	{
+	    for (int d = 0; d < dim; d++)
 	    {
 		vertex[d].push_back(cell_vert[d][i]);
-		cellpair[cell-1].push_back(vertex[d].size());
+		Check (num_vert == cell_vert[d].size());
 	    }
+	    cellpair[cell-1].push_back(vertex[0].size());
+	}
+	Check (cellpair[cell-1].size() == num_vert);
     }
 }
 
@@ -1605,7 +1610,8 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
     }
 
   // make and return the Mat_State to the host
-    host_mat = new Mat_State<MT>(density, T, dedt, sp_heat, analytic_sp_heat);
+    host_mat = new Mat_State<MT>(density, T, dedt, sp_heat,
+				 analytic_sp_heat); 
     Ensure (host_mat->num_cells() == mesh->num_cells());
     return host_mat;
 }
@@ -1657,7 +1663,7 @@ Parallel_Builder<MT>::recv_Mat(SP<MT> mesh)
     delete [] dedt_recv;
 
   // build and return the Mat_state
-    imc_mat = new Mat_State<MT>(density, T, dedt, sp_heat, analytic_sp_heat);
+    imc_mat = new Mat_State<MT>(density, T, dedt, sp_heat, analytic_sp_heat); 
     Ensure (imc_mat->num_cells() == num_cells);
     return imc_mat;
 }
@@ -1671,64 +1677,194 @@ template<class MT>
 template<class PT>
 SP<Communicator<PT> > Parallel_Builder<MT>::send_Communicator()
 {
-  // return communicator
-    SP<Communicator<PT> > comm;
-
   // first let's build a Communicator on each processor
-    for (int np = 0; np < nodes(); np++)
+    for (int np = 1; np < nodes(); np++)
     {
-      // get number of boundary cells on this processor
-	int num_cells = bound_cells[np].size();
-	vector<vector<int> > b_node(num_cells);
-	vector<vector<int> > b_cell(num_cells);
-	vector<int> com_nodes;
-	vector<bool> procs(nodes(), false);
+      // build a communicator on an IMC processor amd get its components 
+	SP<Communicator<PT> > comm  = build_Communicator<PT>(np);
+	vector<vector<int> > b_node = comm->get_b_node();
+	vector<vector<int> > b_cell = comm->get_b_cell();
+	vector<int> recv_nodes      = comm->get_recv_nodes();
+	vector<int> send_nodes      = comm->get_send_nodes();
 
-      // find the nodes this processor communicates with
-	int global_cell;
-	for (int i = 0; i < num_cells; i++)
+      // define c-style arrays for sending out
+	Check (b_node.size() == b_cell.size());
+	int bound_size = 0;
+	for (int i = 0; i < b_node.size(); i++)
 	{
-	  // global cell index of the boundary cell
-	    global_cell = bound_cells[np][i];
+	    bound_size += b_node[i].size();
+	    Check (b_node[i].size() == b_cell[i].size());
+	}
+	int *b_node_send = new int[bound_size];
+	int *b_cell_send = new int[bound_size];
+	int *b_num       = new int[b_node.size()];
+	int *nodes_send  = new int[recv_nodes.size() + send_nodes.size()];
+	int *sizes       = new int[4];
 
-	  // the procs that this cell is on
-	    b_node[i] = procs_per_cell[global_cell-1];
-	    b_cell[i].resize(b_node[i].size());
+      // assign sending arrays
 
-	  // loop over the nodes for this boundary cell and assign processors 
-	  // and local cell stuff
-	    int local_cell;
-	    int send_proc;
-	    for (int n = 0; n < b_node[i].size(); n++)
+      // assign nodes
+	for (int i = 0; i < recv_nodes.size(); i++)
+	    nodes_send[i] = recv_nodes[i];
+	for (int i = 0; i < send_nodes.size(); i++)
+	    nodes_send[i + recv_nodes.size()] = send_nodes[i];
+
+      // assign boundary cell info
+	int spacer = 0;
+	for (int i = 0; i < b_node.size(); i++)
+	{
+	    b_num[i] = b_node[i].size();
+	    for (int j = 0; j < b_node[i].size(); j++)
 	    {
-		send_proc        = b_node[i][n];
-		local_cell       = imc_cell(global_cell, send_proc);
-		procs[send_proc] = true;
-		b_cell[i][n]     = local_cell;
+		b_node_send[spacer] = b_node[i][j];
+		b_cell_send[spacer] = b_cell[i][j];
+		spacer++;
 	    }
 	}
+	Check (spacer == bound_size);
 
-      // loop over the nodes on the problem and see if we communicate with it
-	for (int n = 0; n < nodes(); n++)
-	    if (procs[n])
-		com_nodes.push_back(n);	
+      // assign sizes of things
+	sizes[0] = bound_size;
+	sizes[1] = recv_nodes.size();
+	sizes[2] = send_nodes.size();
+	sizes[3] = b_node.size();
 
-      // build the Communicator on the host
-	if (!np)
-	    comm = new Communiator<PT>(com_nodes, b_node, b_cell);
-	else
-	  // SEND THESE OUT::START HERE TOMORROW
+      // send the data out to the IMC processors
+	Send (sizes, 4, np, 42);
+	Send (b_node_send, bound_size, np, 43);
+	Send (b_cell_send, bound_size, np, 44);
+	Send (b_num, b_node.size(), np, 45);
+	Send (nodes_send, recv_nodes.size()+send_nodes.size(), np, 46);
+
+      // reclaim storage
+	delete [] b_node_send;
+	delete [] b_cell_send;
+	delete [] b_num;
+	delete [] nodes_send;
+	delete [] sizes;
     }
 
   // return the host communicator
+    SP<Communicator<PT> > host_comm = build_Communicator<PT>(0);
+    return host_comm;
+}
+
+//---------------------------------------------------------------------------//
+// receive a Communicator on each processor
+
+template<class MT>
+template<class PT>
+SP<Communicator<PT> > Parallel_Builder<MT>::recv_Communicator()
+{
+  // receive the sizes of object data needed for the Communicator
+    int *sizes = new int[4];
+    Recv (sizes, 4, 0, 42);
+    int bound_size = sizes[0];
+    int recv_size  = sizes[1];
+    int send_size  = sizes[2];
+    int num_bcells = sizes[3];
+    delete [] sizes;
+
+  // make objects necessary for a communicator
+    vector<vector<int> > b_node(num_bcells);
+    vector<vector<int> > b_cell(num_bcells);
+    vector<int> recv_nodes(recv_size);
+    vector<int> send_nodes(send_size);
+    int *b_node_recv = new int[bound_size];
+    int *b_cell_recv = new int[bound_size];
+    int *b_num       = new int[num_bcells];
+    int *nodes_recv  = new int[recv_size + send_size];
+
+  // assign data to these objects
+
+  // first do the receive and send nodes
+    for (int i = 0; i < recv_size; i++)
+	recv_nodes[i] = nodes_recv[i];
+    for (int i = 0; i < send_size; i++)
+	send_nodes[i] = nodes_recv[recv_size + 1];
+
+  // now do the boundary_nodes and cells
+    int index = 0;
+    for (int i = 0; i < num_bcells; i++)
+    {
+	b_node[i].resize(b_num[i]);
+	b_cell[i].resize(b_num[i]);
+	for (int j = 0; j < b_num[i]; j++)
+	{
+	    b_node[i][j] = b_node_recv[index];
+	    b_cell[i][j] = b_cell_recv[index];
+	    index++;
+	}
+    }
+    Check (index == bound_size);
+
+  // reclaim storage
+    delete [] b_node_recv;
+    delete [] b_cell_recv;
+    delete [] b_num;
+    delete [] nodes_recv;
+
+  // make new communicator
+    SP<Communicator<PT> > comm = new Communicator<PT>(recv_nodes, send_nodes, 
+						      b_node, b_cell);
     return comm;
 }
+
 
 //---------------------------------------------------------------------------//
 // Communicator passing implementation
 //---------------------------------------------------------------------------//
-// build the communicator for processor n
+// build the communicator on processor np, we may have to change this when we 
+// goto more general DD/rep modes
 
+template<class MT>
+template<class PT>
+SP<Communicator<PT> > Parallel_Builder<MT>::build_Communicator(int np)
+{
+  // return value
+    SP<Communicator<PT> > return_com;
+
+  // get number of boundary cells on this processor
+    int num_cells = bound_cells[np].size();
+    vector<vector<int> > b_node(num_cells);
+    vector<vector<int> > b_cell(num_cells);
+    vector<int> com_nodes;
+    vector<bool> procs(nodes(), false);
+
+  // find the nodes this processor communicates with
+    int global_cell;
+    for (int i = 0; i < num_cells; i++)
+    {
+      // global cell index of the boundary cell
+	global_cell = bound_cells[np][i];
+
+      // the procs that this cell is on
+	b_node[i] = procs_per_cell[global_cell-1];
+	b_cell[i].resize(b_node[i].size());
+
+      // loop over the nodes for this boundary cell and assign processors 
+      // and local cell stuff
+	int local_cell;
+	int send_proc;
+	for (int n = 0; n < b_node[i].size(); n++)
+	{
+	    send_proc        = b_node[i][n];
+	    local_cell       = imc_cell(global_cell, send_proc);
+	    procs[send_proc] = true;
+	    b_cell[i][n]     = local_cell;
+	}
+    }
+
+  // loop over the nodes on the problem and see if we communicate with it
+    for (int n = 0; n < nodes(); n++)
+	if (procs[n])
+	    com_nodes.push_back(n);
+
+  // return the communicator, at this point we assume one-to-one
+  // communication
+    return_com = new Communicator<PT>(com_nodes, com_nodes, b_node, b_cell);
+    return return_com;
+}
 
 //---------------------------------------------------------------------------//
 // diagnostics

@@ -25,6 +25,7 @@
 #include "imc/Particle_Buffer.hh"
 #include "ds++/SP.hh"
 #include <vector>
+#include <algorithm>
 
 IMCSPACE
 
@@ -33,6 +34,7 @@ using dsxx::SP;
 
 // std components
 using std::vector;
+using std::find;
 
 template<class PT>
 class Communicator
@@ -48,6 +50,9 @@ private:
     vector<int> last_node;
     vector<vector<int> > boundary_node;
     vector<vector<int> > boundary_cell;
+
+  // convert global->local nodes
+    inline int global_to_local(int) const;
 
   // class specific type-defs
     typedef typename Particle_Buffer<PT>::Bank Bank;
@@ -70,18 +75,30 @@ public:
     int num_send_nodes() const { return send_nodes.size(); }
     int num_recv_nodes() const { return recv_nodes.size(); }
     int num_bound_cells() const { return boundary_node.size(); }
+    const vector<vector<int> >& get_b_node() const { return boundary_node; }
+    const vector<vector<int> >& get_b_cell() const { return boundary_cell; }
+    const vector<int>& get_recv_nodes() const { return recv_nodes; }
+    const vector<int>& get_send_nodes() const { return send_nodes; }
 
   // checks on state of buffers
     int get_send_size() const;
     int get_recv_size() const;
-
-  // need a function to take a global_node index and convert it to a local
-  // node index!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 };
 
 //---------------------------------------------------------------------------//
 // inline functions for the Communicator
 //---------------------------------------------------------------------------//
+// convert a global node index to a local node index
+
+template<class PT>
+int Communicator<PT>::global_to_local(int global_index) const
+{
+    vector<int>::const_iterator itr = find(send_nodes.begin(), 
+					   send_nodes.end(), global_index);
+    Ensure (itr != send_nodes.end());
+    Ensure (*itr == global_index);
+    return itr - send_nodes.begin();
+}
 
 CSPACE
 

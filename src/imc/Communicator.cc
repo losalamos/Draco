@@ -7,11 +7,10 @@
 //---------------------------------------------------------------------------//
 
 #include "imc/Communicator.hh"
-#include <algorithm>
 
 IMCSPACE
 
-// stl components
+// std components
 using std::fill;
 
 //---------------------------------------------------------------------------//

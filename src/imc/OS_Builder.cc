@@ -9,7 +9,7 @@
 #include "imc/OS_Builder.hh"
 #include "imc/XYCoord_sys.hh"
 #include "imc/XYZCoord_sys.hh"
-#include <cassert>
+#include "ds++/Assert.hh"
 #include <iostream>
 
 IMCSPACE
@@ -62,7 +62,7 @@ SP<OS_Mesh> OS_Builder::build_2DMesh(SP<Coord_sys> coord, Layout &layout)
     int dimension  = coord->get_dim();
 
   // check some assertions
-    assert (layout.num_cells() == num_cells);
+    Check (layout.num_cells() == num_cells);
 
   // initialization variables for Mesh
     OS_Mesh::CCVF_d vertex(dimension);
@@ -124,7 +124,7 @@ SP<OS_Mesh> OS_Builder::build_3DMesh(SP<Coord_sys> coord, Layout &layout)
     int dimension  = coord->get_dim();
 
   // check some assertions
-    assert (layout.num_cells() == num_cells);
+    Check (layout.num_cells() == num_cells);
 
   // initialization variables for Mesh
     OS_Mesh::CCVF_d vertex(dimension);

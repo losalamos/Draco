@@ -18,6 +18,9 @@
 // revision history:
 // -----------------
 //  0) original
+//  1)  7-28-98 : fixed calculation of cell_pair data in build_cells() member 
+//                function; this error did not cause any transport errors 
+//                luckily
 // 
 //===========================================================================//
 
@@ -108,6 +111,9 @@ private:
     typename MT::CCVF_d recv_vertex();
     void send_cellpair(const typename MT::CCVF_i &, int);
     typename MT::CCVF_i recv_cellpair();
+
+  // Communicator functionality
+    template<class PT> SP<Communicator<PT> > build_Communicator(int);
 
 public:
   // default constructor, for non-host nodes
