@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mc/test/tstSPyramid_Mesh.cc
+ * \file   mc/test/tstSphyramid_Mesh.cc
  * \author Jeffery Densmore (again, stolen from tstRZWedge_Mesh.cc)
  * \date   Mon Nov 10 9:51:00 2003
  * \brief  
@@ -15,7 +15,7 @@
 #include "../Pyramid_Mesh.hh"
 #include "../XYZCoord_sys.hh"
 #include "../AMR_Layout.hh"
-#include "../Spyramid_Builder.hh"
+#include "../Sphyramid_Builder.hh"
 #include "../Math.hh"
 #include "../Release.hh"
 #include "viz/Ensight_Translator.hh"
@@ -381,12 +381,12 @@ void simple_one_cell_Pyramid()
 
 
 //---------------------------------------------------------------------------//
-// test the Spyramid_Mesh via the Spyramid_Builder
-void build_a_Spyramid()
+// test the Sphyramid_Mesh via the Sphyramid_Builder
+void build_a_Sphyramid()
 {
     using rtt_dsxx::SP;
     using rtt_mc_test::Parser;
-    using rtt_mc::Spyramid_Builder;
+    using rtt_mc::Sphyramid_Builder;
     using rtt_mc::Pyramid_Mesh;
     using std::vector;
     using std::string;
@@ -398,10 +398,10 @@ void build_a_Spyramid()
     using std::sin;
     using std::atan;
 
-    SP<Parser> parser(new Parser("Spyramid_Input"));
-    Spyramid_Builder builder(parser);
+    SP<Parser> parser(new Parser("Sphyramid_Input"));
+    Sphyramid_Builder builder(parser);
 
-    // check some of the Spyramid_Builder properties; before build_Mesh, the
+    // check some of the Sphyramid_Builder properties; before build_Mesh, the
     // coordinate system is one-dimensional.  After build_Mesh, it's 3D XYZ
 
     // test cell region data
@@ -433,7 +433,7 @@ void build_a_Spyramid()
 	if(builder.get_cells_in_zone(2) !=zone[1]) ITFAILS;
 
     }
-    //build a Spyramid mesh
+    //build a Sphyramid mesh
     SP<Pyramid_Mesh> mesh= builder.build_Mesh();
 
     //check defined surface source cells
@@ -470,7 +470,7 @@ void build_a_Spyramid()
     if(builder.num_cells() !=5) ITFAILS;
 
     // <<<< now do some checks on the mesh itself >>>>
-    // (this is a different mesh than the simple_one_cell_Spyramid_Mesh
+    // (this is a different mesh than the simple_one_cell_Sphyramid_Mesh
     
 
     // check that the mesh returns proper coordinate system information
@@ -929,8 +929,8 @@ int main(int argc, char *argv[])
 	// simple one-celled test problem
 	simple_one_cell_Pyramid();
 
-	// test the Spyramid mesh Builder
-	build_a_Spyramid();
+	// test the Sphyramid mesh Builder
+	build_a_Sphyramid();
     }
     catch (assertion &ass)
     {
@@ -947,18 +947,18 @@ int main(int argc, char *argv[])
 	cout <<     "*********************************************" << endl;
 	if (passed) 
 	{
-	    cout << "**** tstPyramid_Mesh Test: PASSED on " 
+	    cout << "**** tstSphyramid_Mesh Test: PASSED on " 
 		 << node() << endl;
 	}
 	cout <<     "*********************************************" << endl;
 	cout << endl;
     }
     
-    cout << "Done testing tstPyramid_Mesh on " << node() << endl;
+    cout << "Done testing tstSphyramid_Mesh on " << node() << endl;
     
     Finalize();
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstPyramid_Mesh.cc
+//                        end of tstSphyramid_Mesh.cc
 //---------------------------------------------------------------------------//

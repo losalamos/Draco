@@ -1,16 +1,16 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mc/Spyramid_Builder.cc
+ * \file   mc/Sphyramid_Builder.cc
  * \author Jeffery Densmore (stolen from RZWedge_builder.cc)
  * \date   Mon Nov  10 7:46:00 2003
- * \brief  Spyramid_Builder implementation file.
+ * \brief  Sphyramid_Builder implementation file.
  * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Spyramid_Builder.hh"
+#include "Sphyramid_Builder.hh"
 #include "XYZCoord_sys.hh"
 #include "Math.hh"
 
@@ -26,20 +26,20 @@ namespace rtt_mc
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Build a Spyramid mesh from data specified in the OS_Mesh format file.
+ * \brief Build a Sphyramid mesh from data specified in the OS_Mesh format file.
  * 
  * The builder takes data from the OS_Mesh input format that was parsed in
- * the constructor and builds a Spyramid mesh.  The builder checks for the
+ * the constructor and builds a Sphyramid mesh.  The builder checks for the
  * existence for the built mesh; thus, a builder can only build one mesh.  To
  * get extra copies of the mesh call the get_Mesh() accessor function.
  *
  *
  */
-Spyramid_Builder::SP_Mesh Spyramid_Builder::build_Mesh()
+Sphyramid_Builder::SP_Mesh Sphyramid_Builder::build_Mesh()
 {
     Require(!mesh);
     Insist(((coord_system =="r") || (coord_system=="R")),
-	   "You are using Spyramid_Builder, but coord_system is not R!");
+	   "You are using Sphyramid_Builder, but coord_system is not R!");
 
     // declare smart pointers
     SP_Coord_sys coord;
@@ -47,10 +47,10 @@ Spyramid_Builder::SP_Mesh Spyramid_Builder::build_Mesh()
 
     //build coordinate and layout objects
     coord  = build_Coord();
-    layout = build_Spyramid_Layout(*coord);
+    layout = build_Sphyramid_Layout(*coord);
 
-    // build the Spyramid_Mesh
-    mesh = build_Spyramid_Mesh(coord, *layout);
+    // build the Sphyramid_Mesh
+    mesh = build_Sphyramid_Mesh(coord, *layout);
 
     // calculate defined surface cells;
     calc_defined_surcells();
@@ -71,7 +71,7 @@ Spyramid_Builder::SP_Mesh Spyramid_Builder::build_Mesh()
  * \return cell-sized vector with each element the corresponding region
  */
 
-Spyramid_Builder::sf_int Spyramid_Builder::get_regions() const
+Sphyramid_Builder::sf_int Sphyramid_Builder::get_regions() const
 {
     using std::fill;
     using std::vector;
@@ -115,7 +115,7 @@ Spyramid_Builder::sf_int Spyramid_Builder::get_regions() const
  * \brief Return the list of defined surface cells.
  * 
  */
-Spyramid_Builder::vf_int Spyramid_Builder::get_defined_surcells() const
+Sphyramid_Builder::vf_int Sphyramid_Builder::get_defined_surcells() const
 {
     Require (mesh);
     return defined_surcells;
@@ -132,7 +132,7 @@ Spyramid_Builder::vf_int Spyramid_Builder::get_defined_surcells() const
  *
  */
 
-void Spyramid_Builder::parser()
+void Sphyramid_Builder::parser()
 {
 
     using std::pow;
@@ -168,7 +168,7 @@ void Spyramid_Builder::parser()
     // call sub-parser
    if (coord_system == "r" || coord_system == "R")
    {
-       // the boundary cond is always reflecting at r=0 for a Spyramid mesh
+       // the boundary cond is always reflecting at r=0 for a Sphyramid mesh
        bnd_cond[0] = "reflect";
 
        //parse mesh particulars
@@ -177,7 +177,7 @@ void Spyramid_Builder::parser()
    else if (coord_system == "xyz" || coord_system == "XYZ" ||
 	    coord_system == "xy" || coord_system == "XY" ||
 	    coord_system == "RZ" || coord_system == "rz")
-       Insist(0,"On input, Spyramid needs r or R coord_system!");
+       Insist(0,"On input, Sphyramid needs r or R coord_system!");
 
    //parse the source block that contains surface source information
    source_parser(input);
@@ -262,7 +262,7 @@ void Spyramid_Builder::parser()
  *
  */
 
-void Spyramid_Builder::parser1D(std_ifstream &in)
+void Sphyramid_Builder::parser1D(std_ifstream &in)
 {
 
     using std::fill;
@@ -356,7 +356,7 @@ void Spyramid_Builder::parser1D(std_ifstream &in)
 		in >> fine_ratio[i];
 		Require(fine_ratio[i] > 0.0);
 	    }
-	// unfolding angle for Spyramid_Mesh
+	// unfolding angle for Sphyramid_Mesh
 	if (keyword == "cone_angle_degrees:")
 	{
 	    Insist ((coord_system == "r") || (coord_system =="R"),
@@ -373,7 +373,7 @@ void Spyramid_Builder::parser1D(std_ifstream &in)
  * \brief  Parse source descritptions that are part of the mesh format
  * 
  */
-void Spyramid_Builder::source_parser(std_ifstream &in)
+void Sphyramid_Builder::source_parser(std_ifstream &in)
 {
     using std::fill;
 
@@ -475,15 +475,15 @@ void Spyramid_Builder::source_parser(std_ifstream &in)
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief build mesh specifically for Spyramid_Mesh 
+ * \brief build mesh specifically for Sphyramid_Mesh 
  * 
  * \param coord smart pointer to Coord_sys object
  * \param layout reference to AMR_layout object
  * \return smart pointer to built mesh
  */
 
-Spyramid_Builder::SP_Mesh
-Spyramid_Builder::build_Spyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout)
+Sphyramid_Builder::SP_Mesh
+Sphyramid_Builder::build_Sphyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout)
 {
     using global::pi;
     using std::pow;
@@ -543,7 +543,7 @@ Spyramid_Builder::build_Spyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout)
  * \return smart pointer to new Coord_sys object
  */
 
-Spyramid_Builder::SP_Coord_sys Spyramid_Builder::build_Coord() const
+Sphyramid_Builder::SP_Coord_sys Sphyramid_Builder::build_Coord() const
 {
     using rtt_dsxx::SP
 
@@ -554,7 +554,7 @@ Spyramid_Builder::SP_Coord_sys Spyramid_Builder::build_Coord() const
 	   coord_system !="rz"  || coord_system !="RZ");
     Check (coord_system == "r"  || coord_system =="R");
 
-    // the Spyramid mesh uses a 3D XYZ coordinate system
+    // the Sphyramid mesh uses a 3D XYZ coordinate system
     SP<XYZCoord_sys> xyzcoord(new XYZCoord_sys);
     coord=xyzcoord;
     
@@ -573,8 +573,8 @@ Spyramid_Builder::SP_Coord_sys Spyramid_Builder::build_Coord() const
  * \return smart pointer to new layout object
  */
 
-Spyramid_Builder::SP_Layout
-Spyramid_Builder::build_Spyramid_Layout(const Coord_sys &coord) const
+Sphyramid_Builder::SP_Layout
+Sphyramid_Builder::build_Sphyramid_Layout(const Coord_sys &coord) const
 {
     // set size of new Layout
     int size = fine_edge.size()-1;
@@ -583,12 +583,12 @@ Spyramid_Builder::build_Spyramid_Layout(const Coord_sys &coord) const
     SP_Layout layout(new AMR_Layout(size));
 
     // set number of faces for each cell in layout.  For the (OS)
-    // Spyramid mesh, the layout must be 3D XYZ, so there are 6 faces/cell.
+    // Sphyramid mesh, the layout must be 3D XYZ, so there are 6 faces/cell.
     for(int i=1;i<=size;i++)
 	layout->set_size(i,6);
 
     // assign cells and faces to Layout;
-    assignSpyramid_Layout(*layout);
+    assignSphyramid_Layout(*layout);
 
     // return built Layout
     return layout;
@@ -600,7 +600,7 @@ Spyramid_Builder::build_Spyramid_Layout(const Coord_sys &coord) const
  * \param layout reference to AMR_layout object
  */
 
-void Spyramid_Builder::assignSpyramid_Layout(AMR_Layout &layout) const
+void Sphyramid_Builder::assignSphyramid_Layout(AMR_Layout &layout) const
 {
 
     // 3D map of Mesh
@@ -624,7 +624,7 @@ void Spyramid_Builder::assignSpyramid_Layout(AMR_Layout &layout) const
 
     // low x boundary (always reflecting)
     Insist(bnd_cond[0] =="reflect",
-	   "Spyramid Mesh must be reflecting at the center!");
+	   "Sphyramid Mesh must be reflecting at the center!");
     layout(1,1,1)=1;
 
     // high x boundary
@@ -646,7 +646,7 @@ void Spyramid_Builder::assignSpyramid_Layout(AMR_Layout &layout) const
  * 
  */
 
-void Spyramid_Builder::zone_mapper()
+void Sphyramid_Builder::zone_mapper()
 {
     // determine number of zones and accumulated fine_cell data
     int num_cells =1;
@@ -678,7 +678,7 @@ void Spyramid_Builder::zone_mapper()
  *
  */
 
-void Spyramid_Builder::cell_zoner(int iz)
+void Sphyramid_Builder::cell_zoner(int iz)
 {
     // match a fine-cell to a zone for 1D meshes
 
@@ -717,7 +717,7 @@ void Spyramid_Builder::cell_zoner(int iz)
  * Surface source cell lists are only calculated for surface sources that do
  * not already have user-defined lists of cells.
  */
-void Spyramid_Builder::calc_defined_surcells()
+void Sphyramid_Builder::calc_defined_surcells()
 {
     Require (mesh);
     Require (mesh->full_Mesh());
@@ -757,7 +757,7 @@ void Spyramid_Builder::calc_defined_surcells()
 } // end namespace rtt_mc
 
 //---------------------------------------------------------------------------//
-//                 end of Spyramid_Builder.cc
+//                 end of Sphyramid_Builder.cc
 //---------------------------------------------------------------------------//
 
 

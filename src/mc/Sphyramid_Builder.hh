@@ -1,17 +1,17 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mc/Spyramid_Builder.hh
+ * \file   mc/Sphyramid_Builder.hh
  * \author Jeffery Densmore (stolen from RZWedge_Builder.hh)
  * \date   Mon Nov  10 7:39:00 2003
- * \brief  Spyramid_Builder class header file
+ * \brief  Sphyramid_Builder class header file
  * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Spyramid_Builder_hh__
-#define __mc_Spyramid_Builder_hh__
+#ifndef __mc_Sphyramid_Builder_hh__
+#define __mc_Sphyramid_Builder_hh__
 
 #include "Coord_sys.hh"
 #include "AMR_Layout.hh"
@@ -28,10 +28,10 @@ namespace rtt_mc
 
 //===========================================================================//
 /*!
- * \class Spyramid_Builder
+ * \class Sphyramid_Builder
  * \brief
  *
- * This class builds an instance of rtt_mc::Spyramid_Mesh.  It is basically
+ * This class builds an instance of rtt_mc::Sphyramid_Mesh.  It is basically
  * a copy of RZWedge_Builder.
  *
  */
@@ -41,7 +41,7 @@ namespace rtt_mc
 // 
 //===========================================================================//
 
-class Spyramid_Builder 
+class Sphyramid_Builder 
 {
   public:
     // Useful typedefs to std:: namespace members.
@@ -103,7 +103,7 @@ class Spyramid_Builder
     // Pointer to built Mesh.
     SP_Mesh mesh;
 
-    // Member functions for building Spyramid_Mesh
+    // Member functions for building Sphyramid_Mesh
 
     // Parse the mesh input file.
     void parser();
@@ -111,14 +111,14 @@ class Spyramid_Builder
     void source_parser(std_ifstream &in);
 
     // Build Layout helper functions.
-    SP_Layout build_Spyramid_Layout(const Coord_sys &coord) const;
-    void assignSpyramid_Layout(AMR_Layout &layout) const;
+    SP_Layout build_Sphyramid_Layout(const Coord_sys &coord) const;
+    void assignSphyramid_Layout(AMR_Layout &layout) const;
 
     // Build Coord_sys helper functions.
     SP_Coord_sys build_Coord() const;
 
     // Build Mesh helper functions
-    SP_Mesh build_Spyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout);
+    SP_Mesh build_Sphyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout);
 
     // Member functions for cell-zone mapping
     void zone_mapper();
@@ -128,12 +128,12 @@ class Spyramid_Builder
     void calc_defined_surcells();
 
     // hide copy constructor and assignment operators
-    Spyramid_Builder(const Spyramid_Builder &);
-    Spyramid_Builder & operator=(const Spyramid_Builder &);
+    Sphyramid_Builder(const Sphyramid_Builder &);
+    Sphyramid_Builder & operator=(const Sphyramid_Builder &);
 
   public:
     //constructor
-    template<class IT> explicit Spyramid_Builder(rtt_dsxx::SP<IT> interface);
+    template<class IT> explicit Sphyramid_Builder(rtt_dsxx::SP<IT> interface);
 
     //Build Mesh function.
     SP_Mesh build_Mesh();
@@ -164,12 +164,12 @@ class Spyramid_Builder
 };
 
 //---------------------------------------------------------------------------//
-// Templated functions for Spyramid_Builder
+// Templated functions for Sphyramid_Builder
 //---------------------------------------------------------------------------//
 // Constructor.
 
 template<class IT>
-Spyramid_Builder::Spyramid_Builder(rtt_dsxx::SP<IT> interface)
+Sphyramid_Builder::Sphyramid_Builder(rtt_dsxx::SP<IT> interface)
     :mesh_file(),
      coord_system(),
      alpha_degrees(),
@@ -178,7 +178,7 @@ Spyramid_Builder::Spyramid_Builder(rtt_dsxx::SP<IT> interface)
      accum_cells(),
      coarse_edge(),
      fine_edge(),
-     bnd_cond(2), // only 2 boundary conditions required in Spyramid mesh
+     bnd_cond(2), // only 2 boundary conditions required in Sphyramid mesh
      zone(),
      cell_zone(),
      regions(),
@@ -217,7 +217,7 @@ Spyramid_Builder::Spyramid_Builder(rtt_dsxx::SP<IT> interface)
  * \return cell-sized vector field
  */
 template<class T>
-std::vector<T> Spyramid_Builder::zone_cell_mapper(const std::vector<T> 
+std::vector<T> Sphyramid_Builder::zone_cell_mapper(const std::vector<T> 
 						  &zone_field) const
 {
     // we will use vector throughout this function
@@ -238,8 +238,8 @@ std::vector<T> Spyramid_Builder::zone_cell_mapper(const std::vector<T>
 
 } // end namespace rtt_mc
 
-#endif // __mc_Spyramid_Builder_hh__
+#endif // __mc_Sphyramid_Builder_hh__
 
 //---------------------------------------------------------------------------//
-//              end of mc/Spyramid_Builder.hh
+//              end of mc/Sphyramid_Builder.hh
 //---------------------------------------------------------------------------//
