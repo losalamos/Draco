@@ -530,7 +530,7 @@ void test_planck_integration()
     {
 	ostringstream message;
 	message.precision(10);
-	message << "Calculated a total normalized Planck integral of "
+	message << "Calculated a normalized Planck integral of "
 		<< setw(12) << setiosflags(ios::fixed) << int_1;
 	PASSMSG(message.str());
     }
@@ -538,7 +538,7 @@ void test_planck_integration()
     {
 	ostringstream message;
 	message.precision(10);
-	message << "Calculated a total normalized Planck integral of "
+	message << "Calculated a normalized Planck integral of "
 		<< setw(12) << setiosflags(ios::fixed) << int_1 
 		<< " instead of .00529316.";
 	FAILMSG(message.str());
@@ -549,7 +549,7 @@ void test_planck_integration()
     {
 	ostringstream message;
 	message.precision(10);
-	message << "Calculated a total normalized Planck integral of "
+	message << "Calculated a normalized Planck integral of "
 		<< setw(12) << setiosflags(ios::fixed) << int_2;
 	PASSMSG(message.str());
     }
@@ -557,7 +557,7 @@ void test_planck_integration()
     {
 	ostringstream message;
 	message.precision(10);
-	message << "Calculated a total normalized Planck integral of "
+	message << "Calculated a normalized Planck integral of "
 		<< setw(12) << setiosflags(ios::fixed) << int_2
 		<< " instead of 6.29674e-6.";
 	FAILMSG(message.str());
@@ -696,6 +696,7 @@ int main(int argc, char *argv[])
 	test_CDI();
 
 	test_planck_integration();
+
     }
     catch (rtt_dsxx::assertion &ass)
     {
