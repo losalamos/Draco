@@ -13,6 +13,7 @@
 #include <iostream>
 #include <iomanip>
 
+#include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
 #include "Quadrature.hh"
 #include "Q1DGaussLeg.hh"
@@ -23,61 +24,104 @@ namespace rtt_quadrature
 /*!
  * \brief Constructs a 1D Gauss Legendre quadrature object.
  *
+ * Calculation of GAUSS-LEGENDRE abscissas and weights for Gaussian
+ * Quadrature integration of polynomial functions.
+ *
+ * For normalized lower and upper limits of integration -1.0 & 1.0, and given
+ * n, this routine calculates, arrays xabsc(1:n) and weig(1:n) of length n,
+ * containing the abscissas and weights of the Gauss-Legendre n-point
+ * quadrature formula.  For detailed explanations finding weights &
+ * abscissas, see "Numerical Recipes in Fortran.
+ *
  * \param snOrder_ Integer specifying the order of the SN set to be
  *                 constructed. 
  * \param norm_    A normalization constant.  The sum of the quadrature
  *                 weights will be equal to this value (default = 2.0).
  */
 
-Q1DGaussLeg::Q1DGaussLeg( size_t n, double norm_ ) 
-    : Quadrature( n, norm_ ), numAngles( n )
+Q1DGaussLeg::Q1DGaussLeg( size_t numGaussPoints, double norm_ ) 
+    : Quadrature( numGaussPoints, norm_ ), 
+      numAngles( numGaussPoints )
 {
+    using rtt_dsxx::soft_equiv;
+
     // We require the sn_order to be greater than zero.
-    Require( n > 0 );
+    Require( numGaussPoints > 0 );
     // We require the normalization constant to be greater than zero.
     Require( norm > 0.0 );
 
     // size the member data vectors
-    mu.resize(n);
-    wt.resize(n);
+    mu.resize(numGaussPoints);
+    wt.resize(numGaussPoints);
 
-    double mu1 = -1.0;
-    double mu2 =  1.0;
+    double mu1 = -1.0;  // minimum value for mu
+    double mu2 =  1.0;  // maximum value for mu
 
-    size_t m = (n+1)/2;  // number of angles in half range.
+    // number of Gauss points in the half range.
+    // The roots are symmetric in the interval.  We only need to search for
+    // half of them.
+    unsigned const numHrGaussPoints( (numGaussPoints+1)/2 );
+
     double mu_m = 0.5 * (mu2+mu1);
     double mu_l = 0.5 * (mu2-mu1);
-    
-    for ( size_t i = 1; i <= m; ++i ) {
-	double z1, pp, z = cos( rtt_units::PI * ( i-0.25 ) / ( n+0.5 ));
-	do {
-	    double p1 = 1.0, p2 = 0.0;
-	    for ( size_t j=1; j<=n; j++ ) {
-		double p3 = p2;
-		p2 = p1;
-		p1 = (( 2.0*j - 1.0 ) * z * p2 - ( j - 1.0 ) * p3 ) / j;
-	    }
-	    pp = n * ( z*p1 - p2 ) / ( z * z - 1.0 );
-	    z1 = z;
-	    z = z1-p1/pp;
-	} while ( fabs( z-z1 ) > TOL );
+    double z1,pp;
 
-	// fill the vectors
-	mu[ i-1 ] = mu_m - mu_l * z;
-	wt[ i-1 ] = 2.0 * mu_l / (( 1.0 - z*z ) * pp*pp );
-	mu[ n-i ] = mu_m + mu_l * z;
-	wt[ n-i ] = wt[ i-1 ];
+    // Loop over the desired roots.
+    for ( size_t iroot=0; iroot<numHrGaussPoints; )
+    {
+	++iroot;
+
+	// Approximate the i-th root.
+	double z( cos( rtt_units::PI * ( iroot-0.25 ) 
+		       / ( numGaussPoints+0.5 )) );
+
+	do // Use Newton's method to refine the value for the i-th root.  
+	{
+	    double p1( 1.0 );
+	    double p2( 0.0 );
+	    double p3;
+
+	    // This loop represents the recurrence relation needed to obtain
+	    // the Legendre polynomial evaluated at z.
+	    for( unsigned j=0; j<numGaussPoints; )
+	    {
+		++j;
+		p3 = p2;
+		p2 = p1;
+		p1 = (( 2.0*j-1.0) * z * p2 - (j-1) * p3 ) / j;
+	    }
+	    
+	    // p1 is now the desired Legendre polynomial evaluated at z. We
+	    // next compute pp, its derivative, by a standard relation
+	    // involving also p2, the polynomial of one lower order.
+	    pp = numGaussPoints * (z*p1-p2)/(z*z-1.0);
+	    z1 = z;
+	    
+	    // Newton's Method
+	    z = z1 - p1/pp;   
+
+	} while( ! soft_equiv(z,z1) );
+
+	// Roots wil be between -1 and 1.0 and symmetric about the origin. 
+	mu[ iroot-1 ]              = -z;       
+	mu[ numGaussPoints-iroot ] = z;       
+
+	// Compute the associated weight and its symmetric counterpart.
+        wt[ iroot-1 ]              = 2.0/((1.0-z*z)*pp*pp); 
+        wt[ numGaussPoints-iroot ] = wt[iroot-1];
+    
     }	
 
     // Sanity Checks: 
-    // Verify that the 0th, 1st and 2nd moments integrate to 2, (0,0,0) and
+
+    // Verify that the 0th, 1st and 2nd moments integrate to 2, (0,0,0) and 
     // 2/3*((1,0,0),(0,1,0),(0,0,1)) respectively.
 
     double sumwt = 0.0;
     //    double gamma = 0.0;
     //    double zeta  = 0.0;
 
-    for ( size_t i = 0; i < n; ++i )
+    for ( size_t i = 0; i < numGaussPoints; ++i )
     {
 	sumwt += wt[i];
 	//	gamma += wt[i] * mu[i];
@@ -85,14 +129,14 @@ Q1DGaussLeg::Q1DGaussLeg( size_t n, double norm_ )
     }
 
     // The quadrature weights should sum to 2.0
-    Ensure( fabs(iDomega()-2.0) <= TOL );
+    Ensure( soft_equiv(iDomega(),2.0) );
     // The integral of mu over all angles should be zero.
-    Ensure( fabs(iOmegaDomega()[0]) <= TOL );
+    Ensure( soft_equiv(iOmegaDomega()[0],0.0) );
     // The integral of mu^2 should be 2/3.
-    Ensure( fabs(iOmegaOmegaDomega()[0]-2.0/3.0) <= TOL );
+    Ensure( soft_equiv(iOmegaOmegaDomega()[0],2.0/3.0) );
 
     // If norm != 2.0 then renormalize the weights to the required values. 
-    if ( fabs(norm-2.0) >= TOL ) 
+    if( soft_equiv(norm,2.0) ) 
     {
 	double c = norm/sumwt;
 	for ( size_t i=0; i < numAngles; ++i )
@@ -100,8 +144,8 @@ Q1DGaussLeg::Q1DGaussLeg( size_t n, double norm_ )
     }
     
     // make a copy of the data into the omega vector < vector < double > >
-    omega.resize( n );
-    for ( size_t i=0; i<n; ++i )
+    omega.resize( numGaussPoints );
+    for ( size_t i=0; i<numGaussPoints; ++i )
     {
 	// This is a 1D set.
 	omega[i].resize(1);
