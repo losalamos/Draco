@@ -1,5 +1,5 @@
 \documentclass{article}
-
+\usepackage{calc}
 \setlength{\hoffset}{0pt}
 \setlength{\textwidth}{6.5in}
 \setlength{\oddsidemargin}{0pt}
@@ -20,10 +20,13 @@
 \renewcommand{\section}[1]{\renewcommand{\KPAname}{#1}\KPAsection{#1}}
 
 % Key Process Activity environment
-\newcounter{activity}		% KPA counter
+\newcounter{activity}[section]		% KPA counter
+\newcounter{approach}[section]
+\newcounter{deployment}[section]
+\newcounter{result}[section]
+\newcounter{score}
 \newenvironment{KPAActivity}
 {
-    \setcounter{activity}{0} % reset counter
     {\bf Activity Indicators (rate your organization's capability
     on an integer scale from 0 to 10)} % header
     \begin{center}
@@ -32,10 +35,18 @@
 {
     \end{tabular}
     \end{center}
+    \setcounter{approach}{\value{approach}/\value{activity}}
+    \setcounter{deployment}{\value{deployment}/\value{activity}}
+    \setcounter{result}{\value{result}/\value{activity}}
 }
-\newcommand{\Activity}[2]
+\newcommand{\Activity}[4]
 {
-    \stepcounter{activity} #1 & \arabic{activity}. #2 \\ \hline
+    \stepcounter{activity} 
+    \setcounter{score}{(#1+#2+#3)/3}
+    \setcounter{approach}{\value{approach}+#1}
+    \setcounter{deployment}{\value{deployment}+#1}
+    \setcounter{result}{\value{result}+#1}
+    \arabic{score} & \arabic{activity}. #4 \\ \hline
 } % step counter, print score, text
 
 % Key Process Area Score
@@ -54,16 +65,24 @@
     \end{center}
 }
 
-\newcommand{\Approach}[2]{Approach to \KPAname & #1 & #2 \\ \hline} 
-\newcommand{\Deployment}[2]{Deployment of \KPAname & #1 & #2 \\ \hline} 
-\newcommand{\Results}[2]{Results Achieved in \KPAname & #1 & #2 \\
-	\hline}
+\newcommand{\Approach}[1]
+{
+    Approach to \KPAname & \arabic{approach} & #1 \\ \hline
+} 
+\newcommand{\Deployment}[1]
+{
+    Deployment of \KPAname & \arabic{deployment} & #1 \\ \hline
+}  
+\newcommand{\Results}[1]
+{
+    Results Achieved in \KPAname & \arabic{result} & #1 \\ \hline
+}
 
 \newenvironment{KPAComment}
 {
     {\bf Provide comments on other approaches, plans,
     or applicability of this process area to your organization's
-    environment.  Use a seperate sheet if prefered.}
+    environment.  Use a separate sheet if preferred.}
     \begin{center}
     \begin{tabular}{|p{6.50in}|} \hline
 }
@@ -101,128 +120,128 @@ Todd Urbatsch            & 7-3513           & tmonster@lanl.gov \\ \hline
 \section{Requirements Management}
 
 \begin{KPAActivity}
-\Activity{3}{The software engineering group reviews the allocated
+\Activity{3}{3}{3}{The software engineering group reviews the allocated
 requirements before they are incorporated into the software project.}
 % We do this informally now through team meetings and hallway
 % discussions, and are scheduling classes with Gerald Weinberg to do
 % formal technical reviews.  Handbook of Walkthroughs, Inspections, 
 % and Technical Reviews; Exploring Requirements
-\Activity{3}{The software engineering group used the allocated
+\Activity{3}{3}{3}{The software engineering group used the allocated
 requirements as the basis for software plans, work products, and
 activities.}
 % PIP exercise, MPW course.
-\Activity{3}{Changes to the allocated requirements are reviewed and
+\Activity{3}{3}{3}{Changes to the allocated requirements are reviewed and
 incorporated into the software project.}
 % Revision after Geoff's departure.
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{3}{Meetings set up by team to establish requirements, Memos
-documenting requirements, Weinburg's Exporing Requirements, Software
-guidlines (Meyer, Meyers, STL, Lakos), Software quality guidelines
+\Approach{Meetings set up by team to establish requirements, Memos
+documenting requirements, Weinberg's Exploring Requirements, Software
+guidelines (Meyer, Meyers, STL, Lakos), Software quality guidelines
 (LA-UR-5735), Configuration management guidelines (GNU standard, Build
 System Document)}
-\Deployment{3}{Memos documenting requirements}
-\Results{2}{Use by management for allocations, etc.}
+\Deployment{Memos documenting requirements}
+\Results{Use by management for allocations, etc.}
 \end{KPARate}
 
 \newpage
 \section{Software Project Planning}
 
 \begin{KPAActivity}
-\Activity{4}{The software engineering group participates on the
+\Activity{4}{4}{4}{The software engineering group participates on the
 project proposal team.}
 % MTP exercise, MPW.
-\Activity{3}{Software project planning is initiated in the early
+\Activity{3}{3}{3}{Software project planning is initiated in the early
 stages of, and in parallel with, the overall project planning.}
 % MTP exercise, MPW.
-\Activity{3}{The software engineering group participates with other
+\Activity{3}{3}{3}{The software engineering group participates with other
 affected groups in the overall project planning throughout the
 project's life.}
 % MTP exercise, MPW.
-\Activity{1}{Software project commitments made to individual groups
+\Activity{1}{1}{1}{Software project commitments made to individual groups
 external to the organization are reviewed with senior management
 according to a documented procedure.}
-\Activity{2}{A software life cycle with predefined stages of
+\Activity{2}{2}{2}{A software life cycle with predefined stages of
 manageable size is identified or defined.}
 % Looking at several, eg. SEL
-\Activity{3}{The project's software development plan is developed
+\Activity{3}{3}{3}{The project's software development plan is developed
 according to a documented procedure.}
-\Activity{3}{The plan for the software project is documented.}
-\Activity{3}{Software work products that are needed to establish
+\Activity{3}{3}{3}{The plan for the software project is documented.}
+\Activity{3}{3}{3}{Software work products that are needed to establish
 and maintain control of the software project are identified.}
-\Activity{1}{Estimates for the size of the software work products (or
+\Activity{1}{1}{1}{Estimates for the size of the software work products (or
 changes to the size of software work products) are derived according
 to a documented procedure.}
-\Activity{1}{Estimates for software project's effort and costs are
+\Activity{1}{1}{1}{Estimates for software project's effort and costs are
 derived according to a documented procedure.}
-\Activity{1}{Estimates for the project's critical computer
+\Activity{1}{1}{1}{Estimates for the project's critical computer
 resources are derived according to a documented procedure.}
-\Activity{2}{The project's software schedule is derived according
+\Activity{2}{2}{2}{The project's software schedule is derived according
 to a documented procedure.}
-\Activity{0}{The software risks associated with the cost,
+\Activity{0}{0}{0}{The software risks associated with the cost,
 resource, schedule, and technical aspects of the project are
 identified, assessed, and documented.}
-\Activity{1}{Plans for the project's software engineering
+\Activity{1}{1}{1}{Plans for the project's software engineering
 facilities and support tools are prepared.}
-\Activity{3}{Software planning data are recorded.}
-% Website, Denise.
+\Activity{3}{3}{3}{Software planning data are recorded.}
+% Web-site, Denise.
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{3}{Courses taken by several team members: 
+\Approach{Courses taken by several team members: 
              {\em Mastering Technical Projects}, Erika Jones \&
              Associates, Inc.;  
              {\em Mastering Projects Workshop}, True North pgs, Inc.;
              Staff for Project Management support}
-\Deployment{2}{Project planned as part of training course., MS-Project
+\Deployment{Project planned as part of training course., MS-Project
              plans (), project web site}
-\Results{1}{}
+\Results{}
 \end{KPARate}
 
 \newpage
 \section{Software Project Tracking and Oversight}
 
 \begin{KPAActivity}
-\Activity{3}{A documented software development plan is used for
+\Activity{3}{3}{3}{A documented software development plan is used for
 tracking the software activities and communicating status.}
 % Project plans
-\Activity{1}{The project's software development plan is revised
+\Activity{1}{1}{1}{The project's software development plan is revised
 according to a documented procedure.}
-\Activity{1}{Software project commitments and changes to
+\Activity{1}{1}{1}{Software project commitments and changes to
 commitments made to individuals and groups external to the
 organization are reviewed with senior management according to a
 documented procedure.}
-\Activity{3}{Approved changes to commitments that affect the
+\Activity{3}{3}{3}{Approved changes to commitments that affect the
 software project are communicated to the members of the software
 engineering group and other software-related groups.}
-\Activity{0}{The size of the software work products (or size of the
+\Activity{0}{0}{0}{The size of the software work products (or size of the
 changes to the software work products) are tracked, and corrective
 actions taken as necessary.}
-\Activity{3}{The project's software effort and costs are tracked,
+\Activity{3}{3}{3}{The project's software effort and costs are tracked,
 and corrective actions are taken as necessary.}
-\Activity{3}{The project's critical computer resources are tracked,
+\Activity{3}{3}{3}{The project's critical computer resources are tracked,
 and corrective actions are taken as necessary.}
-\Activity{3}{The project's software schedule is tracked, and
+\Activity{3}{3}{3}{The project's software schedule is tracked, and
 corrective actions are taken as necessary.}
-\Activity{3}{Software engineering technical activities are tracked,
+\Activity{3}{3}{3}{Software engineering technical activities are tracked,
 and corrective actions are taken as necessary.}
-\Activity{1}{The software risks associated with cost, resource,
+\Activity{1}{1}{1}{The software risks associated with cost, resource,
 schedule, and technical aspects of the project are tracked.}
-\Activity{1}{Actual measurement data and replanning data for the
+\Activity{1}{1}{1}{Actual measurement data and replanning data for the
 software project are recorded.}
-\Activity{2}{The software engineering group conducts periodic
+\Activity{2}{2}{2}{The software engineering group conducts periodic
 internal reviews to track technical progress, plans, performance, and
 issues against the software development plan.}
-\Activity{2}{Formal reviews to address the accomplishments and
+\Activity{2}{2}{2}{Formal reviews to address the accomplishments and
 results of the software project are conducted at selected project
 milestones according to a documented procedure.} 
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{1}{MS-Project plans(), project web site}
-\Deployment{1}{}
-\Results{0}{}
+\Approach{MS-Project plans(), project web site}
+\Deployment{}
+\Results{}
 \end{KPARate}
 
 \newpage
@@ -234,129 +253,129 @@ milestones according to a documented procedure.}
 %	CIC-19
 
 \begin{KPAActivity}
-\Activity{0}{The work to be subcontracted is defined and planned
+\Activity{0}{0}{0}{The work to be subcontracted is defined and planned
 according to a documented procedure.}
-\Activity{0}{The software subcontractor is selected , based on an
+\Activity{0}{0}{0}{The software subcontractor is selected , based on an
 evaluation of the subcontractor bidders' ability to perform the work,
 according to a documented procedure.}
-\Activity{5}{The contractual agreement between the prime contractor
+\Activity{5}{5}{5}{The contractual agreement between the prime contractor
 and the software subcontractor is used as the basis for managing the
 subcontract.}
 % Geoff's contract, SPRNG Contract  
-\Activity{0}{A documented subcontractor's software development plan is
+\Activity{0}{0}{0}{A documented subcontractor's software development plan is
 reviewed and approved by the prime contractor.}
-\Activity{0}{A documented and approved subcontractor's software
+\Activity{0}{0}{0}{A documented and approved subcontractor's software
 development plan is used for tracking the software activities and
 communication status.}
-\Activity{1}{Changes to the software subcontractor's statement of
+\Activity{1}{1}{1}{Changes to the software subcontractor's statement of
 work, subcontract terms and conditions, and other commitments are
 resolved according to a documented procedure.}
-\Activity{3}{The prime contractor's management conducts periodic
+\Activity{3}{3}{3}{The prime contractor's management conducts periodic
 status/coordination reviews with the software subcontractor's
 management.}
-\Activity{5}{Periodic technical reviews and interchanges are held with
+\Activity{5}{5}{5}{Periodic technical reviews and interchanges are held with
 the software subcontractor.}
 % Monthly progress reports from Furnish ala MPW pg 5-20, PIP pg 6-34
-\Activity{1}{Formal reviews to address the subcontractor's software
+\Activity{1}{1}{1}{Formal reviews to address the subcontractor's software
 engineering accomplishments and results are conducted at selected
 milestones according to a documented procedure.}
-\Activity{0}{The prime contractor's software quality assurance group
+\Activity{0}{0}{0}{The prime contractor's software quality assurance group
 monitors the subcontractor's software quality assurance activities
 according to a documented procedure.}
-\Activity{0}{The prime contractor's software configuration management
+\Activity{0}{0}{0}{The prime contractor's software configuration management
 group monitors the subcontractor's activities for software
 configuration management according to a documented procedure.}
-\Activity{3}{The prime contractor conducts acceptance testing as part
+\Activity{3}{3}{3}{The prime contractor conducts acceptance testing as part
 of the delivery of the subcontractor's software products according to
 a documented procedure.}
-\Activity{4}{The software subcontractor's performance is evaluated on
+\Activity{4}{4}{4}{The software subcontractor's performance is evaluated on
 a periodic basis, and the evaluation is reviewed with the
 subcontractor.}
 % Review of Furnish's contract.
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{2}{Statement of work contracts, monthly reports.}
-\Deployment{2}{}
-\Results{1}{}
+\Approach{Statement of work contracts, monthly reports.}
+\Deployment{}
+\Results{}
 \end{KPARate}
 
 \newpage
 \section{Software Quality Assurance}
 
 \begin{KPAActivity}
-\Activity{2}{An SQA plan is prepared for the software project
+\Activity{2}{2}{2}{An SQA plan is prepared for the software project
 according to a documented procedure.}
-\Activity{5}{The SQA group's activities are performed in accordance
+\Activity{5}{5}{5}{The SQA group's activities are performed in accordance
 with the SQA plan.}
 % Meyer, Lakos, ATM, Test Problems 
-\Activity{5}{The SQA group participates in the preparation and review
+\Activity{5}{5}{5}{The SQA group participates in the preparation and review
 of the project's software development plan, standards, and
 procedures.}
 % Meyer, Lakos, ATM, Test Problems 
-\Activity{4}{The SQA group reviews the software engineering activities
+\Activity{4}{4}{4}{The SQA group reviews the software engineering activities
 to verify compliance.}
-\Activity{6}{The SQA group audits designated software work products to
+\Activity{6}{6}{6}{The SQA group audits designated software work products to
 verify compliance.}
 % Meyer, Lakos, ATM, Test Problems 
-\Activity{6}{The SQA group periodically reports the results of its
+\Activity{6}{6}{6}{The SQA group periodically reports the results of its
 activities to the software engineering group.}
 % Meyer, Lakos, ATM, Test Problems 
-\Activity{4}{Deviations identified in the software activities and
+\Activity{4}{4}{4}{Deviations identified in the software activities and
 software work products are documented and handled according to a
 documented procedure.}
-\Activity{2}{The SQA group conducts periodic reviews of its activities
+\Activity{2}{2}{2}{The SQA group conducts periodic reviews of its activities
 and findings with the customer's SQA personnel, as appropriate.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{4}{SQA personnel sought by Management, Nightly regression
+\Approach{SQA personnel sought by Management, Nightly regression
              tests run (dejagnu), Failure tracking software installed
              (GNATS) , Standard test cases established, Levelized
              Design and Design by Contract used}
-\Deployment{4}{Tools consistently used}
-\Results{4}{Faults caught early, Few major faults in testing}
+\Deployment{Tools consistently used}
+\Results{Faults caught early, Few major faults in testing}
 \end{KPARate}
 
 \newpage
 \section{Software Configuration Management}
 
 \begin{KPAActivity}
-\Activity{4}{A SCM plan is prepared for each software project
+\Activity{4}{4}{4}{A SCM plan is prepared for each software project
 according to a documented procedure.}
-\Activity{4}{A documented and approved SCM plan is used as the basis
+\Activity{4}{4}{4}{A documented and approved SCM plan is used as the basis
 for performing the SCM activities.}
-\Activity{6}{A configuration management library system is established
+\Activity{6}{6}{6}{A configuration management library system is established
 as a repository for the software baseline.}
 % CVS
-\Activity{4}{The software work products to be placed under
+\Activity{4}{4}{4}{The software work products to be placed under
 configuration management are identified.}
-\Activity{3}{Change requests and problem reports for all configuration
+\Activity{3}{3}{3}{Change requests and problem reports for all configuration
 items/units are initiated, recorded, reviewed, approved, and tracked
 according to a documented procedure.}
-\Activity{2}{Changes to baselines are controlled according to a
+\Activity{2}{2}{2}{Changes to baselines are controlled according to a
 documented procedure.}
-\Activity{1}{Products from the software baseline library are created
+\Activity{1}{1}{1}{Products from the software baseline library are created
 and their release is controlled according to a documented procedure.}
-\Activity{1}{The status of configuration items/units is recorded
+\Activity{1}{1}{1}{The status of configuration items/units is recorded
 according to a documented procedure.}
-\Activity{5}{Standard reports documenting the SCM activities and the
+\Activity{5}{5}{5}{Standard reports documenting the SCM activities and the
 contents for the software baseline are developed and made available to
 affected groups and individuals.}
 % Draco Build document
-\Activity{1}{Software baseline audits are conducted according to a
+\Activity{1}{1}{1}{Software baseline audits are conducted according to a
 documented procedure.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{6}{Requirements, plans, documentation, and code under CVS.
+\Approach{Requirements, plans, documentation, and code under CVS.
              ChangeLogs used for change documentation.  All versions
              subject to nightly regression tests, tagged
              releases subject to standard test cases}
-\Deployment{7}{Approach consistently used in project. Project members
+\Deployment{Approach consistently used in project. Project members
              and Management automatically informed of configuration
              status.}
-\Results{6}{Code state and history available.  Milestones identifiable
+\Results{Code state and history available.  Milestones identifiable
             in tagged releases.}
 \end{KPARate}
 
@@ -364,82 +383,82 @@ documented procedure.}
 \section{Organization Process Focus}
 
 \begin{KPAActivity}
-\Activity{0}{The software process is assessed periodically, and action
+\Activity{0}{0}{0}{The software process is assessed periodically, and action
 plans are developed to address the assessment findings.}
-\Activity{0}{The organization develops and maintains a plan for its
+\Activity{0}{0}{0}{The organization develops and maintains a plan for its
 software process development and improvement activities.}
-\Activity{0}{The organization's and projects' activities for
+\Activity{0}{0}{0}{The organization's and projects' activities for
 developing and improving their software processes are coordinated at
 the organization level.}
-\Activity{2}{The use of the organization's software process
+\Activity{2}{2}{2}{The use of the organization's software process
 database is coordinated at the organizational level.}
-\Activity{0}{New processes, methods, and tools in limited use in
+\Activity{0}{0}{0}{New processes, methods, and tools in limited use in
 the organization are monitored, evaluated, and, where appropriate,
 transfered to the other parts of the organization.}
-\Activity{2}{Training for the organization's and projects' software
+\Activity{2}{2}{2}{Training for the organization's and projects' software
 processes is coordinated across the organization.}
-\Activity{0}{The groups involved in implementing the software
+\Activity{0}{0}{0}{The groups involved in implementing the software
 processes are informed of the organization's and projects' activities
 for software process development and improvement.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{0}{}
-\Deployment{0}{}
-\Results{0}{}
+\Approach{}
+\Deployment{}
+\Results{}
 \end{KPARate}
 
 \newpage
 \section{Organization Process Definition}
 
 \begin{KPAActivity}
-\Activity{0}{The organization's standard software process is
+\Activity{0}{0}{0}{The organization's standard software process is
 developed and maintained according to a documented procedure.}
-\Activity{0}{The organization's standard software process is
+\Activity{0}{0}{0}{The organization's standard software process is
 documented according to established organization standards.}
-\Activity{0}{Descriptions of software life cycles that are approved
+\Activity{0}{0}{0}{Descriptions of software life cycles that are approved
 for use by projects are documented and maintained.}
-\Activity{0}{Guideline and criteria for the project's tailoring of
+\Activity{0}{0}{0}{Guideline and criteria for the project's tailoring of
 the organization's standard software process are developed and
 maintained.}
-\Activity{1}{The organization's software process database is
+\Activity{1}{1}{1}{The organization's software process database is
 established and maintained.}
-\Activity{0}{A library of software process-related documentation is
+\Activity{0}{0}{0}{A library of software process-related documentation is
 established and maintained.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{0}{}
-\Deployment{0}{}
-\Results{0}{}
+\Approach{}
+\Deployment{}
+\Results{}
 \end{KPARate}
 
 \newpage
 \section{Training Program}
 
 \begin{KPAActivity}
-\Activity{0}{Each software project develops and maintains a training
+\Activity{0}{0}{0}{Each software project develops and maintains a training
 plan that specifies its training needs.}
-\Activity{0}{The organization's training plan is developed and
+\Activity{0}{0}{0}{The organization's training plan is developed and
 revised according to a documented procedure.}
-\Activity{0}{The training for the organization is performed in
+\Activity{0}{0}{0}{The training for the organization is performed in
 accordance with the organization's training plan.}
-\Activity{0}{Training courses prepared at the organization level are
+\Activity{0}{0}{0}{Training courses prepared at the organization level are
 developed and maintained according to organization standards.}
-\Activity{0}{A waiver procedure for required training is established
+\Activity{0}{0}{0}{A waiver procedure for required training is established
 and used to determine whether individuals already possess the
 knowledge and skills required to perform in their designated roles.}
-\Activity{0}{Records of training are maintained.}
+\Activity{0}{0}{0}{Records of training are maintained.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{0}{}
-\Deployment{0}{}
-\Results{0}{}
+\Approach{}
+\Deployment{}
+\Results{}
 \end{KPARate}
 
 \begin{KPAComment}
-Although we have no plan for tranning, there have been many formal and
+Although we have no plan for training, there have been many formal and
 informal courses associated with DRACO 99.  Formally, we have taken
 {\em Mastering Projects Workshop} and {\em Managing Technical
 Projects} courses; in the latter we used DRACO 99 as our course
@@ -450,128 +469,129 @@ threads, and analytic test problems.
 \section{Integrated Software Management}
 
 \begin{KPAActivity}
-\Activity{1}{The project's defined software process is revised
+\Activity{1}{1}{1}{The project's defined software process is revised
 according to a documented procedure.}
-\Activity{1}{Each project's defined software process is revised
+\Activity{1}{1}{1}{Each project's defined software process is revised
 according to a documented procedure.}
-\Activity{2}{The project's software development plan, which describes
+\Activity{2}{2}{2}{The project's software development plan, which describes
 the use of the project's defined software process, is developed and
 revised according to a documented procedure.}
-\Activity{3}{The software project is managed in accordance with the
+\Activity{3}{3}{3}{The software project is managed in accordance with the
 project's defined software process.}
-\Activity{1}{The organization's software process database is used for
+\Activity{1}{1}{1}{The organization's software process database is used for
 software planning and estimating.}
-\Activity{1}{The size of the software work products (or size of changes
+\Activity{1}{1}{1}{The size of the software work products (or size of changes
 to the software work products) is managed according to a documented
 procedure.}
-\Activity{1}{The project's software effort and costs are managed
+\Activity{1}{1}{1}{The project's software effort and costs are managed
 according to a documented procedure.}
-\Activity{1}{The project's critical computer resources are managed
+\Activity{1}{1}{1}{The project's critical computer resources are managed
 according to a documented procedure.}
-\Activity{1}{The critical dependencies and critical paths of the
+\Activity{1}{1}{1}{The critical dependencies and critical paths of the
 project's software schedule are managed according to a documented
 procedure.}
-\Activity{1}{The project's software risks are identified, assessed,
+\Activity{1}{1}{1}{The project's software risks are identified, assessed,
 documented, and managed according to a documented procedure.}
-\Activity{1}{Reviews of the software project are periodically performed
+\Activity{1}{1}{1}{Reviews of the software project are periodically performed
 to determine the actions needed to bring the software project's
 performance and results in line with the current and projected needs
 of the business, customer, and end users, as appropriate.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{1}{}
-\Deployment{1}{}
-\Results{1}{}
+\Approach{}
+\Deployment{}
+\Results{}
 \end{KPARate}
 
 \newpage
 \section{Software Product Engineering}
 
 \begin{KPAActivity}
-\Activity{3}{Appropriate software engineering methods and tools are
+\Activity{3}{3}{3}{Appropriate software engineering methods and tools are
 integrated into the project's defined software process.}
-\Activity{2}{The software requirements are developed, maintained,
+\Activity{2}{2}{2}{The software requirements are developed, maintained,
 documented, and verified by systematically analyzing the allocated
 requirements according to the project's defined software process.}
-\Activity{2}{The software design is developed, maintained, documented,
+\Activity{2}{2}{2}{The software design is developed, maintained, documented,
 and verified according to the project's defined software process, to
 accommodate the software requirements and to form the framework for
 coding.}
-\Activity{2}{The software code is developed, maintained, documented,
+\Activity{2}{2}{2}{The software code is developed, maintained, documented,
 and verified according to the project's defined software process, to
 implement the software requirements and software design.}
-\Activity{3}{Software testing is performed according to the project's
+\Activity{3}{3}{3}{Software testing is performed according to the project's
 defined software process.}
 % LA-UR-98-5735
-\Activity{3}{System and acceptance testing of the software are planned
+\Activity{3}{3}{3}{System and acceptance testing of the software are planned
 and performed to demonstrate that the software satisfies its
 requirements.}
-\Activity{3}{The documentation that will be used to operate and
+\Activity{3}{3}{3}{The documentation that will be used to operate and
 maintain the software is developed and maintained according to the
 project's defined software process.}
-\Activity{0}{Data on defects identified in peer reviews and testing are
+\Activity{0}{0}{0}{Data on defects identified in peer reviews and testing are
 collected and analyzed according to the project's defined software
 process.}
-\Activity{3}{Consistency is maintained across software work products,
+\Activity{3}{3}{3}{Consistency is maintained across software work products,
 including the software plans, process descriptions, allocated
 requirements, software requirements, software design, code, test
 plans, and test procedures.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{3}{}
-\Deployment{3}{}
-\Results{3}{}
+\Approach{}
+\Deployment{}
+\Results{}
 \end{KPARate}
 
+\end{document}
 \newpage
 \section{Intergroup Coordination}
 
 \begin{KPAActivity}
-\Activity{}{The software engineering group and the other engineering
+\Activity{}{}{}{The software engineering group and the other engineering
 groups participate with the customer and end users, as appropriate, to
 establish the system requirements.}
-\Activity{}{Representatives of the project's software engineering
+\Activity{}{}{}{Representatives of the project's software engineering
 group work with representatives of the other engineering groups to
 monitor and coordinate technical activities and resolve technical
 issues.}
-\Activity{}{A documented plan is used to communicate intergroup
+\Activity{}{}{}{A documented plan is used to communicate intergroup
 commitments and to coordinate and track the work performed.}
-\Activity{}{Critical dependencies between engineering groups are
+\Activity{}{}{}{Critical dependencies between engineering groups are
 identified, negotiated, and tracked according to a documented
 procedure.}
-\Activity{}{Work products produced as input to other engineering groups
+\Activity{}{}{}{Work products produced as input to other engineering groups
 are reviewed by representatives of the receiving groups to ensure that
 the work products meet their needs.}
-\Activity{}{Intergroup issues not resolvable by the individual
+\Activity{}{}{}{Intergroup issues not resolvable by the individual
 representatives of the project engineering groups are handled
 according to a documented procedure.}
-\Activity{}{Representatives of the project engineering groups conduct
+\Activity{}{}{}{Representatives of the project engineering groups conduct
 periodic technical reviews and interchanges.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{}{}
-\Deployment{}{}
-\Results{}{}
+\Approach{}
+\Deployment{}
+\Results{}
 \end{KPARate}
 
 \newpage
 \section{Peer Reviews}
 
 \begin{KPAActivity}
-\Activity{}{Peer reviews are planned, and the plans are documented.}
-\Activity{}{Peer reviews are performed according to a documented
+\Activity{}{}{}{Peer reviews are planned, and the plans are documented.}
+\Activity{}{}{}{Peer reviews are performed according to a documented
 procedure.}
-\Activity{}{Data on the conduct and results of the peer reviews are
+\Activity{}{}{}{Data on the conduct and results of the peer reviews are
 recorded.} 
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{}{}
-\Deployment{}{}
-\Results{}{}
+\Approach{}
+\Deployment{}
+\Results{}
 \end{KPARate}
 
 \newpage
@@ -580,28 +600,28 @@ recorded.}
 \section{Validation and Verification}
 
 \begin{KPAActivity}
-\Activity{}{V\&V implementation plan is known and followed by program
+\Activity{}{}{}{V\&V implementation plan is known and followed by program
 participants.}
-\Activity{}{Data validation activities are documented according to the
+\Activity{}{}{}{Data validation activities are documented according to the
 V\&V implementation plan.}
-\Activity{}{A documented test plan is followed at multiple phases of the
+\Activity{}{}{}{A documented test plan is followed at multiple phases of the
 V\&V effort.}
-\Activity{}{Validation requirements are documented.}
-\Activity{}{Testing is performed in accordance with documented test
+\Activity{}{}{}{Validation requirements are documented.}
+\Activity{}{}{}{Testing is performed in accordance with documented test
 plans, test cases, and detailed test procedures.}
-\Activity{}{Verification and validation is included as a software
+\Activity{}{}{}{Verification and validation is included as a software
 process element that contains a set of closely related tasks that are
 well defined and bounded.}
-\Activity{}{Verification and validation costs are specifically
+\Activity{}{}{}{Verification and validation costs are specifically
 identified as such in software product cost estimates.}
-\Activity{}{Peer reviews include verification and validation work
+\Activity{}{}{}{Peer reviews include verification and validation work
 products.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{}{}
-\Deployment{}{}
-\Results{}{}
+\Approach{}
+\Deployment{}
+\Results{}
 \end{KPARate}
 
 \end{document}
