@@ -21,7 +21,8 @@ AC_CONFIG_SUBDIRS(ds++ xm traits fourier)
 AC_CONFIG_SUBDIRS(units nml c4 rng)
 AC_CONFIG_SUBDIRS(stopwatch meshTest)
 AC_CONFIG_SUBDIRS(mesh POOMA_MT radphys linalg diffusion mc timestep)
-AC_CONFIG_SUBDIRS(imc matprops P1Diffusion)
+AC_CONFIG_SUBDIRS(matprops P1Diffusion)
+AC_CONFIG_SUBDIRS(imc)
 
 AC_OUTPUT(Makefile)
 
