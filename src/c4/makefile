@@ -84,11 +84,14 @@ include ../config/make.doc
 
 tstsrcs	:= $(wildcard t*.cc) c4run.cc
 
-tstsrcs := $(tstsrcs:tstSort.cc=)
+ifneq ($(c4),s2)
+tstsrcs := $(tstsrcs:tsr2.cc=)
+endif
 
 tstpretarg := $(pretarg)
 
 include ../config/make.tests
+
 
 # Go pick up the standard signature for makefiles.
 
