@@ -6,6 +6,7 @@
 // @> test driver for OS_Builder
 //---------------------------------------------------------------------------//
 
+#include "OS_Parser.hh"
 #include "OS_Builder.hh"
 #include "OS_Mesh.hh"
 #include "SP.hh"
@@ -14,11 +15,13 @@
 
 main()
 {
+    using IMC::OS_Parser;
     using IMC::OS_Builder;
     using IMC::OS_Mesh;
     using namespace std;
 
     SP<OS_Mesh> mesh;
+    vector<int> zones;
 
   // scoping blocks
     {
@@ -26,23 +29,33 @@ main()
 	cout << "Name the input file" << endl;
 	cin >> infile;
 	
+      // run the Parser
+	SP<OS_Parser> parser = new OS_Parser(infile);
+	parser->Parser();
+	zones = parser->Zone();
+
       // initialize the builder
-	OS_Builder build(infile);
+	OS_Builder build(parser);
 	mesh = build.Build_Mesh();
+
     }
 
     cout << "Coordinate System: " << mesh->Coord().Get_coord() << endl;
+    cout << "Mesh Size: " << mesh->Num_cells() << endl;
     int cell;
     cout << "Give a cell" << endl;
     cin >> cell;
     mesh->Print(cell);
     cout << endl;
-    cout << "Mesh Size: " << mesh->Num_cells() << endl;
-    cout << "Position of Cells:" << endl;
-    for (int i = 1; i <= mesh->Num_cells(); i++)
-	cout << i << " " << "(" << mesh->Pos(1,i) << "," << mesh->Pos(2,i)
-	     << ")" << endl;
-	    
+
+    for (int z = 1; z <= 6; z++)
+    {
+	cout << "Zone : " << z << endl;
+	for (int i = 1; i <= mesh->Num_cells(); i++)
+	    if (zones[i-1] == z)
+		cout << " " << i;
+	cout << endl;
+    }
 }
 
 //---------------------------------------------------------------------------//
