@@ -91,7 +91,7 @@ void Sweep3d::do_sweep( Input_edit &data,   Cross_section &xsec,
 
                 save_boundary( data, bsavv, bsavz, phij, phik );
 
-                // Compute leakages.
+                // Compute edge leakages for balance table.
 
                 cell_boundary_leakage( data, sn,   fh_i, fv_i,
                                        fz_i, phii, phij, phik  );
@@ -335,7 +335,7 @@ void Sweep3d::balance_eqn_with_fixup( Input_edit &data, Sn_constants &sn,
             siv = 2.0 * phi(j,k,iz) - phij(k);
             sif = 2.0 * phi(j,k,iz) - phik(j);
 
-            // Test for negative fluxes, if found, adjust temporary values
+            // Test for negative edge fluxes, if found, adjust temporary values
             // ql and dl, to account for setting the negative flux to zero.
             // After setting a flux to zero and adjusting other fluxes to
             // account for it, go back to make sure the change did not cause
@@ -414,7 +414,7 @@ void Sweep3d::cell_boundary_leakage( Input_edit &data, Sn_constants &sn,
                                      Mat3<REAL> &fz_i, Mat2<REAL> &phii,
                                      Mat1<REAL> &phij, Mat1<REAL> &phik  )
 {
-    // Compute leakages.
+    // Compute edge leakages for balance table.
 
     int j;    // loop variable for cells in the y-direction
     int k;    // loop variable for cells in the z-direction
