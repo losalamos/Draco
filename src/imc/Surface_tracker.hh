@@ -30,19 +30,25 @@ class Surface_Tally;
  * \class Surface_tracker
  * \brief
  *
- * Long description or discussion goes here.  Information about Doxygen
- * commands can be found at:
+ * Surface_tracker detects and tallies occasions when a path segment in
+ * Cartesian space crosses any of a collection of abstract surfaces. It also
+ * maintains the offical "inside / outside" status of a particle for each
+ * surface and uses this status in the correct determination of the streaming
+ * distance to each surface.
  *
- * Doxygen tutorial: http://www.stack.nl/~dimitri/doxygen/docblocks.html
- * Doxygen keywords: http://www.stack.nl/~dimitri/doxygen/commands.html
+ * Surfaces are held through a vector of smart pointers to the abstract base
+ * class Surface, which are provided in the constructor. This class uses the
+ * functions 
+ *    Surface::is_inside(vector, const vector&) and
+ *    Surface::distance_to(vector, const vector&, bool)
+ *
+ * The inside/outside status for a new particle is initialized via a call to
+ * Surface_tracker::initialize_status(const vector&, const vector&). This
+ * call should be performed with the intial position and direction of each
+ * particle that surface crossing tallies are desired for.
  *
  * \sa Surface_tracker.cc for detailed descriptions.
  *
- * Code Sample:
- * \code
- *     cout << "Hello, world." << endl;
- * \endcode
- */
 /*! 
  * \example imc/test/imc_test.cc 
  * 
@@ -50,7 +56,7 @@ class Surface_Tally;
  */
 // revision history:
 // -----------------
-// 0) original
+// 0) 25 June 1993  First complete version.
 // 
 //===========================================================================//
 
