@@ -33,7 +33,7 @@
 
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
-\refno{XTM:SDP-99-??? (U)}
+\refno{XTM-RN(U)99-006}
 \subject{Specification of the \concept{MT} Concept}
 
 %-------NO CHANGES
@@ -74,6 +74,7 @@
   R.M. Roberts, XTM MS D409\\ 
   S.A. Turner, XTM MS D409\\ 
   T.J. Urbatsch, XTM MS D409\\ 
+  XDO MS B218:\\ 
 }
 
 %%---------------------------------------------------------------------------%%
@@ -183,8 +184,15 @@ of cells) in any given direction.
     \comp{X::cctf<int>}.}
   \typeitem{Face centered discontinuous integer field}{X::fcdif}{A
     typedef for \comp{X::fcdtf<int>}.}
+  \typeitem{Node centered integer field}{X::ncif}{A typedef for
+    \comp{X::nctf<int>}.}
+  \typeitem{Vertex centered integer field}{X::vcif}{A typedef for
+    \comp{X::vctf<int>}.}
   \typeitem{Boundary specified integer field}{X::bsif}{A typedef for
     \comp{X::bstf<int>}.}
+  \typeitem{Cell centered vector scalar field}{X::ccvsf}{A typedef for
+    \comp{X::cctf<vec>}, where \comp{vec} is a model of
+    \concept{DoubleVec}.}
   \typeitem{Face centered discontinuous vector scalar
     field}{X::fcdvsf}{A typedef for \comp{X::fcdtf<vec>}, where
     \comp{vec} is a model of \concept{DoubleVec}.}
@@ -194,18 +202,21 @@ of cells) in any given direction.
   \typeitem{Vertex centered vector scalar field}{X::vcvsf}{A typedef
     for \comp{X::vctf<vec>}, where \comp{vec} is a model of
     \concept{DoubleVec}.}
-  \typeitem{Assign functor}{X::OpAssign}{A model of \concept{Assign
-      Op}.}
-  \typeitem{Assign with addition functor}{X::OpAddAssign}{A model of
-    \concept{Add Assign Op}.}
-  \typeitem{Assign with subtraction functor}{X::OpSubAssign}{A model
-    of \concept{Sub Assign Op}.}
-  \typeitem{Assign with multiplication functor}{X::OpMultAssign}{A
-    model of \concept{Mult Assign Op}.}
-  \typeitem{Assign with minimum functor}{X::OpMinAssign}{A model of
-    \concept{Min Assign Op}.}
-  \typeitem{Assign with maximum functor}{X::OpMaxAssign}{A model of
-    \concept{Max Assign Op}.}
+  \typeitem{Boundary specified vector scalar field}{X::bsvsf}{A typedef
+    for \comp{X::bstf<vec>}, where \comp{vec} is a model of
+    \concept{DoubleVec}.}
+  \typeitem{Assign tag}{X::OpAssign}{A model of \concept{Assign
+      Tag}.}
+  \typeitem{Assign with addition tag}{X::OpAddAssign}{A model of
+    \concept{Add Assign Tag}.}
+  \typeitem{Assign with subtraction tag}{X::OpSubAssign}{A model
+    of \concept{Sub Assign Tag}.}
+  \typeitem{Assign with multiplication tag}{X::OpMultAssign}{A
+    model of \concept{Mult Assign Tag}.}
+  \typeitem{Assign with minimum tag}{X::OpMinAssign}{A model of
+    \concept{Min Assign Tag}.}
+  \typeitem{Assign with maximum tag}{X::OpMaxAssign}{A model of
+    \concept{Max Assign Tag}.}
 \end{typelist}
 
 \subsubsection{Notation}
@@ -223,8 +234,8 @@ of cells) in any given direction.
   \comp{vt} & Object of type \comp{X::vctf<T>}. \\
   \comp{nt} & Object of type \comp{X::nctf<T>}. \\
   \comp{bt} & Object of type \comp{X::bstf<T>}. \\
-  \comp{Op} & A type that is a model of \concept{Binary Op}. \\
-  \comp{op} & Object of type \comp{Op}. \\
+  \comp{Tag} & A type that is a model of \concept{Scatter/Gather Tag}. \\
+  \comp{tag} & Object of type \comp{Tag}. \\
 \end{tabularx}
 
 \subsubsection{Definitions}
@@ -282,9 +293,37 @@ of cells) in any given direction.
     >{\setlength{\hsize}{1.6\hsize}}X}
      Return type: & \comp{size\cu type} \\
      Semantics: & Returns the total number of mesh cells in all
-     processes. \\
+     processes. Equivalent to \comp{a.get\cu ncx()*a.get\cu
+       ncy()*a.get\cu ncz()}. \\
      Postcondition: & \comp{0 <= a.get\cu ncells() <= a.get\cu
        total\cu ncells()}. \\
+     \end{tabularx}}
+  \expritem{Number of cells along x-axis}{a.get\cu ncx()}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & \comp{size\cu type} \\
+     Semantics: & Returns the number of mesh cells along the x-axis in
+     the full mesh. \\
+     Postcondition: & \comp{0 <= a.get\cu ncx() <= a.get\cu total\cu
+       ncells()}. \\
+     \end{tabularx}}
+  \expritem{Number of cells along y-axis}{a.get\cu ncy()}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & \comp{size\cu type} \\
+     Semantics: & Returns the number of mesh cells along the y-axis in
+     the full mesh. \\
+     Postcondition: & \comp{0 <= a.get\cu ncy() <= a.get\cu total\cu
+       ncells()}. \\
+     \end{tabularx}}
+  \expritem{Number of cells along z-axis}{a.get\cu ncz()}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & \comp{size\cu type} \\
+     Semantics: & Returns the number of mesh cells along the z-axis in
+     the full mesh. \\
+     Postcondition: & \comp{0 <= a.get\cu ncz() <= a.get\cu total\cu
+       ncells()}. \\
      \end{tabularx}}
   \expritem{$\Delta$x}{a.get\cu dx(c)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
@@ -425,33 +464,36 @@ of cells) in any given direction.
      vertices associated with that node. \\
      \end{tabularx}}
   \expritem{Cell centered to face centered scatter}
-    {X::scatter(ft, ct, op)}
+    {X::scatter(ft, ct, tag)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
      Type requirements: & \comp{ft} is mutable. \\
      Return type: & \comp{void} \\
      Preconditions: & \comp{ft.get\cu Mesh() == ct.get\cu Mesh()}. \\
-       & \comp{op()} is a valid expression between \comp{ft}'s value
-       type and \comp{ct}'s value type. \\
-     Semantics: & For each face value of \comp{ft}, \comp{op()} is
-     applied in series to the initial face value in \comp{ft} and to
-     each cell value in \comp{ct} located in a cell that is adjacent
-     to the face. The result is assigned back to the face in
-     \comp{ft}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ft}'s value type and \comp{ct}'s value
+       type. \\
+     Semantics: & For each face value of \comp{ft}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     face value in \comp{ft} and to each cell value in \comp{ct}
+     located in a cell that is adjacent to the face. The result is
+     assigned back to the face in \comp{ft}. \\
      \end{tabularx}}
   \expritem{Face centered to cell centered scatter}
-    {X::scatter(ct, ft, op)}
+    {X::scatter(ct, ft, tag)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
      Type requirements: & \comp{ct} is mutable. \\
      Return type: & \comp{void} \\
      Preconditions: & \comp{ct.get\cu Mesh() == ft.get\cu Mesh()}. \\
-       & \comp{op()} is a valid expression between \comp{ct}'s value
-       type and \comp{ft}'s value type. \\
-     Semantics: & For each cell value of \comp{ct}, \comp{op()} is
-     applied in series to the initial cell value in \comp{ct} and to
-     each face value in \comp{ft} located in the same cell. The result
-     is assigned back to the cell in \comp{ct}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ct}'s value type and \comp{ft}'s value
+       type. \\
+     Semantics: & For each cell value of \comp{ct}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     cell value in \comp{ct} and to each face value in \comp{ft}
+     located in the same cell. The result is assigned back to the cell
+     in \comp{ct}. \\
      \end{tabularx}}
   \expritem{Vertex centered to face centered scatter}
     {X::scatter(ft, vt, op)}
@@ -460,13 +502,14 @@ of cells) in any given direction.
      Type requirements: & \comp{ft} is mutable. \\
      Return type: & \comp{void} \\
      Preconditions: & \comp{ft.get\cu Mesh() == vt.get\cu Mesh()}. \\
-       & \comp{op()} is a valid expression between \comp{ft}'s value
-       type and \comp{vt}'s value type. \\
-     Semantics: & For each face value of \comp{ft}, \comp{op()} is
-     applied in series to the initial face value in \comp{ft} and to
-     each vertex value in \comp{vt} located in the same cell and
-     adjacent to the face. The result is assigned back to the face in
-     \comp{ft}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ft}'s value type and \comp{vt}'s value
+       type. \\
+     Semantics: & For each face value of \comp{ft}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     face value in \comp{ft} and to each vertex value in \comp{vt}
+     located in the same cell and adjacent to the face. The result is
+     assigned back to the face in \comp{ft}. \\
      \end{tabularx}}
   \expritem{Face centered to vertex centered scatter}
     {X::scatter(vt, ft, op)}
@@ -475,13 +518,14 @@ of cells) in any given direction.
      Type requirements: & \comp{vt} is mutable. \\
      Return type: & \comp{void} \\
      Preconditions: & \comp{vt.get\cu Mesh() == ft.get\cu Mesh()}. \\
-       & \comp{op()} is a valid expression between \comp{vt}'s value
-       type and \comp{ft}'s value type. \\
-     Semantics: & For each vertex value of \comp{vt}, \comp{op()} is
-     applied in series to the initial vertex value in \comp{vt} and to
-     each face value in \comp{ft} located in the same cell and
-     adjacent to the vertex. The result is assigned back to the vertex
-     in \comp{vt}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{vt}'s value type and \comp{ft}'s value
+       type. \\
+     Semantics: & For each vertex value of \comp{vt}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     vertex value in \comp{vt} and to each face value in \comp{ft}
+     located in the same cell and adjacent to the vertex. The result
+     is assigned back to the vertex in \comp{vt}. \\
      \end{tabularx}}
   \expritem{Vertex centered to node centered scatter}
     {X::scatter(nt, vt, op)}
@@ -490,12 +534,14 @@ of cells) in any given direction.
      Type requirements: & \comp{nt} is mutable. \\
      Return type: & \comp{void} \\
      Preconditions: & \comp{nt.get\cu Mesh() == vt.get\cu Mesh()}. \\
-       & \comp{op()} is a valid expression between \comp{nt}'s value
-       type and \comp{vt}'s value type. \\
-     Semantics: & For each node value of \comp{nt}, \comp{op()} is
-     applied in series to the initial node value in \comp{nt} and to
-     each vertex value in \comp{vt} adjacent to the node. The result
-     is assigned back to the node in \comp{nt}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{nt}'s value type and \comp{vt}'s value
+       type. \\
+     Semantics: & For each node value of \comp{nt}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     node value in \comp{nt} and to each vertex value in \comp{vt}
+     adjacent to the node. The result is assigned back to the node in
+     \comp{nt}. \\
      \end{tabularx}}
   \expritem{Vertex centered to cell centered scatter}
     {X::scatter(ct, vt, op)}
@@ -504,12 +550,14 @@ of cells) in any given direction.
      Type requirements: & \comp{ct} is mutable. \\
      Return type: & \comp{void} \\
      Preconditions: & \comp{ct.get\cu Mesh() == vt.get\cu Mesh()}. \\
-       & \comp{op()} is a valid expression between \comp{ct}'s value
-       type and \comp{vt}'s value type. \\
-     Semantics: & For each cell value of \comp{ct}, \comp{op()} is
-     applied in series to the initial cell value in \comp{ct} and to
-     each vertex value in \comp{vt} in the same cell. The result is
-     assigned back to the cell in \comp{ct}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ct}'s value type and \comp{vt}'s value
+       type. \\
+     Semantics: & For each cell value of \comp{ct}, the operation
+     associated with \comp{tag} is applied in series to the initial
+     cell value in \comp{ct} and to each vertex value in \comp{vt} in
+     the same cell. The result is assigned back to the cell in
+     \comp{ct}. \\
      \end{tabularx}}
   \expritem{Cell centered to face centered gather}
     {X::gather(ft, ct, op)}
@@ -518,12 +566,13 @@ of cells) in any given direction.
      Type requirements: & \comp{ft} is mutable. \\
      Return type: & \comp{void} \\
      Preconditions: & \comp{ft.get\cu Mesh() == ct.get\cu Mesh()}. \\
-       & \comp{op()} is a valid expression between \comp{ft}'s value
-       type and \comp{ct}'s value type. \\
-     Semantics: & For each face value of \comp{ft}, \comp{op()} is
-     applied between the initial face value in \comp{ft} and to the
-     cell value in \comp{ct} in the same cell. The result is assigned
-     back to the face in \comp{ft}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ft}'s value type and \comp{ct}'s value
+       type. \\
+     Semantics: & For each face value of \comp{ft}, the operation
+     associated with \comp{tag} is applied between the initial face
+     value in \comp{ft} and to the cell value in \comp{ct} in the same
+     cell. The result is assigned back to the face in \comp{ft}. \\
      \end{tabularx}}
   \expritem{Face centered to boundary specified gather}
     {X::gather(bt, ft, op)}
@@ -532,12 +581,14 @@ of cells) in any given direction.
      Type requirements: & \comp{bt} is mutable. \\
      Return type: & \comp{void} \\
      Preconditions: & \comp{bt.get\cu Mesh() == ft.get\cu Mesh()}. \\
-       & \comp{op()} is a valid expression between \comp{bt}'s value
-       type and \comp{ft}'s value type. \\
-     Semantics: & For each boundary value of \comp{bt}, \comp{op()} is
-     applied between the initial boundary value in \comp{bt} and to
-     the face value in \comp{ft} adjacent to it. The result is
-     assigned back to the boundary in \comp{bt}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{bt}'s value type and \comp{ft}'s value
+       type. \\
+     Semantics: & For each boundary value of \comp{bt}, the operation
+     associated with \comp{tag} is applied between the initial
+     boundary value in \comp{bt} and to the face value in \comp{ft}
+     adjacent to it. The result is assigned back to the boundary in
+     \comp{bt}. \\
      \end{tabularx}}
   \expritem{Boundary specified to face centered gather}
     {X::gather(ft, bt, op)}
@@ -546,12 +597,14 @@ of cells) in any given direction.
      Type requirements: & \comp{ft} is mutable. \\
      Return type: & \comp{void} \\
      Preconditions: & \comp{ft.get\cu Mesh() == bt.get\cu Mesh()}. \\
-       & \comp{op()} is a valid expression between \comp{ft}'s value
-       type and \comp{bt}'s value type. \\
-     Semantics: & For each face value of \comp{ft}, \comp{op()} is
-     applied between the initial face value in \comp{ft} and to the
-     boundary value in \comp{bt} adjacent to it. The result is
-     assigned back to the face in \comp{ft}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{ft}'s value type and \comp{bt}'s value
+       type. \\
+     Semantics: & For each face value of \comp{ft}, the operation
+     associated with \comp{tag} is applied between the initial face
+     value in \comp{ft} and to the boundary value in \comp{bt}
+     adjacent to it. The result is assigned back to the face in
+     \comp{ft}. \\
      \end{tabularx}}
   \expritem{Node centered to vertex centered gather}
     {X::gather(vt, nt, op)}
@@ -560,12 +613,13 @@ of cells) in any given direction.
      Type requirements: & \comp{vt} is mutable. \\
      Return type: & \comp{void} \\
      Preconditions: & \comp{vt.get\cu Mesh() == nt.get\cu Mesh()}. \\
-       & \comp{op()} is a valid expression between \comp{vt}'s value
-       type and \comp{nt}'s value type. \\
-     Semantics: & For each vertex value of \comp{vt}, \comp{op()} is
-     applied between the initial vertex value in \comp{vt} and to the
-     node value in \comp{nt} adjacent to it. The result is assigned
-     back to the vertex in \comp{vt}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{vt}'s value type and \comp{nt}'s value
+       type. \\
+     Semantics: & For each vertex value of \comp{vt}, the operation
+     associated with \comp{tag} is applied between the initial vertex
+     value in \comp{vt} and to the node value in \comp{nt} adjacent to
+     it. The result is assigned back to the vertex in \comp{vt}. \\
      \end{tabularx}}
   \expritem{Cell centered to vertex centered gather}
     {X::gather(vt, ct, op)}
@@ -574,12 +628,13 @@ of cells) in any given direction.
      Type requirements: & \comp{vt} is mutable. \\
      Return type: & \comp{void} \\
      Preconditions: & \comp{vt.get\cu Mesh() == ct.get\cu Mesh()}. \\
-       & \comp{op()} is a valid expression between \comp{vt}'s value
-       type and \comp{ct}'s value type. \\
-     Semantics: & For each vertex value of \comp{vt}, \comp{op()} is
-     applied between the initial vertex value in \comp{vt} and to the
-     cell value in \comp{ct} in the same cell. The result is assigned
-     back to the vertex in \comp{vt}. \\
+       & The operation associated with \comp{tag} is a valid
+       expression between \comp{vt}'s value type and \comp{ct}'s value
+       type. \\
+     Semantics: & For each vertex value of \comp{vt}, the operation
+     associated with \comp{tag} is applied between the initial vertex
+     value in \comp{vt} and to the cell value in \comp{ct} in the same
+     cell. The result is assigned back to the vertex in \comp{vt}. \\
      \end{tabularx}}
   \expritem{Face swaps}
     {X::swap\cu faces(ft1, ft2)}
@@ -610,12 +665,108 @@ of cells) in any given direction.
      Semantics: & The value returned is the sum of all values
      contained in \comp{ft} in all processes. \\
      \end{tabularx}}
+  \expritem{Node centered sum}
+    {X::sum(nt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{nt}. \\
+     Semantics: & The value returned is the sum of all values
+     contained in \comp{nt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Vertex centered sum}
+    {X::sum(vt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{vt}. \\
+     Semantics: & The value returned is the sum of all values
+     contained in \comp{vt} in all processes. \\
+     \end{tabularx}}
   \expritem{Boundary specified sum}
     {X::sum(bt)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
      Return type: & The value type of \comp{bt}. \\
      Semantics: & The value returned is the sum of all values
+     contained in \comp{bt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Cell centered minimum}
+    {X::min(ct)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{ct}. \\
+     Semantics: & The value returned is the minimum of all values
+     contained in \comp{ct} in all processes. \\
+     \end{tabularx}}
+  \expritem{Face centered minimum}
+    {X::min(ft)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{ft}. \\
+     Semantics: & The value returned is the minimum of all values
+     contained in \comp{ft} in all processes. \\
+     \end{tabularx}}
+  \expritem{Node centered minimum}
+    {X::min(nt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{nt}. \\
+     Semantics: & The value returned is the minimum of all values
+     contained in \comp{nt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Vertex centered minimum}
+    {X::min(vt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{vt}. \\
+     Semantics: & The value returned is the minimum of all values
+     contained in \comp{vt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Boundary specified minimum}
+    {X::min(bt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{bt}. \\
+     Semantics: & The value returned is the minimum of all values
+     contained in \comp{bt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Cell centered maximum}
+    {X::max(ct)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{ct}. \\
+     Semantics: & The value returned is the maximum of all values
+     contained in \comp{ct} in all processes. \\
+     \end{tabularx}}
+  \expritem{Face centered maximum}
+    {X::max(ft)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{ft}. \\
+     Semantics: & The value returned is the maximum of all values
+     contained in \comp{ft} in all processes. \\
+     \end{tabularx}}
+  \expritem{Node centered maximum}
+    {X::max(nt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{nt}. \\
+     Semantics: & The value returned is the maximum of all values
+     contained in \comp{nt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Vertex centered maximum}
+    {X::max(vt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{vt}. \\
+     Semantics: & The value returned is the maximum of all values
+     contained in \comp{vt} in all processes. \\
+     \end{tabularx}}
+  \expritem{Boundary specified maximum}
+    {X::max(bt)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & The value type of \comp{bt}. \\
+     Semantics: & The value returned is the maximum of all values
      contained in \comp{bt} in all processes. \\
      \end{tabularx}}
 \end{exprlist}
@@ -926,6 +1077,148 @@ A \concept{Max Assign Op} is a \concept{Default Constructible Binary
 The \comp{Mesh\cu XYZ::OpMaxAssign} class in Draco is a model of
 \concept{Max Assign Op}.
 
+\subsection{Scatter/Gather Tag}
+
+A \concept{Scatter/Gather Tag} is a concept that is used in
+association with the scatter and gather operations of \concept{MT}. It 
+is at least \concept{Default Constructible}, but in some
+implementations it may also be a \concept{Binary Op}.
+
+\subsubsection{Refinement of}
+\concept{Default Constructible} (Austern, page 84).
+
+\subsubsection{Associated Types}
+
+Each model of \concept{Scatter/Gather Tag} has a model of
+\concept{Binary Op} associated with it (in some implementations these
+will be the same type). This associated type may not actually be
+defined, but the semantics of its underlying operation must be.
+
+\subsubsection{Models}
+
+All of the \comp{Mesh\cu XYZ} \concept{Binary Op}'s in Draco are
+models of \concept{Scatter/Gather Tag}.
+
+\subsection{Assign Tag}
+
+An \concept{Assign Tag} is a \concept{Scatter/Gather Tag} that causes
+the \concept{MT} scatter/gather operations to use the semantics of
+\concept{Assign Op}.
+
+\subsubsection{Refinement of}
+\concept{Scatter/Gather Tag}.
+
+\subsubsection{Associated Types}
+
+A model of \concept{Assign Op}. Depending on implementation, this
+associated type may not be defined, but the semantics of its
+underlying operation must be.
+
+\subsubsection{Models}
+
+The \comp{Mesh\cu XYZ::OpAssign} class in Draco is a model of
+\concept{Assign Tag}.
+
+\subsection{Add Assign Tag}
+
+An \concept{Add Assign Tag} is a \concept{Scatter/Gather Tag} that
+causes the \concept{MT} scatter/gather operations to use the semantics
+of \concept{Add Assign Op}.
+
+\subsubsection{Refinement of}
+\concept{Scatter/Gather Tag}.
+
+\subsubsection{Associated Types}
+
+A model of \concept{Add Assign Op}. Depending on implementation, this
+associated type may not be defined, but the semantics of its
+underlying operation must be.
+
+\subsubsection{Models}
+
+The \comp{Mesh\cu XYZ::OpAddAssign} class in Draco is a model of
+\concept{Add Assign Tag}.
+
+\subsection{Sub Assign Tag}
+
+A \concept{Sub Assign Tag} is a \concept{Scatter/Gather Tag} that
+causes the \concept{MT} scatter/gather operations to use the semantics
+of \concept{Sub Assign Op}.
+
+\subsubsection{Refinement of}
+\concept{Scatter/Gather Tag}.
+
+\subsubsection{Associated Types}
+
+A model of \concept{Sub Assign Op}. Depending on implementation, this
+associated type may not be defined, but the semantics of its
+underlying operation must be.
+
+\subsubsection{Models}
+
+The \comp{Mesh\cu XYZ::OpSubAssign} class in Draco is a model of
+\concept{Sub Assign Tag}.
+
+\subsection{Mult Assign Tag}
+
+A \concept{Mult Assign Tag} is a \concept{Scatter/Gather Tag} that
+causes the \concept{MT} scatter/gather operations to use the semantics
+of \concept{Mult Assign Op}.
+
+\subsubsection{Refinement of}
+\concept{Scatter/Gather Tag}.
+
+\subsubsection{Associated Types}
+
+A model of \concept{Mult Assign Op}. Depending on implementation, this
+associated type may not be defined, but the semantics of its
+underlying operation must be.
+
+\subsubsection{Models}
+
+The \comp{Mesh\cu XYZ::OpMultAssign} class in Draco is a model of
+\concept{Mult Assign Tag}.
+
+\subsection{Min Assign Tag}
+
+A \concept{Min Assign Tag} is a \concept{Scatter/Gather Tag} that
+causes the \concept{MT} scatter/gather operations to use the semantics
+of \concept{Min Assign Op}.
+
+\subsubsection{Refinement of}
+\concept{Scatter/Gather Tag}.
+
+\subsubsection{Associated Types}
+
+A model of \concept{Min Assign Op}. Depending on implementation, this
+associated type may not be defined, but the semantics of its
+underlying operation must be.
+
+\subsubsection{Models}
+
+The \comp{Mesh\cu XYZ::OpMinAssign} class in Draco is a model of
+\concept{Min Assign Tag}.
+
+\subsection{Max Assign Tag}
+
+A \concept{Max Assign Tag} is a \concept{Scatter/Gather Tag} that
+causes the \concept{MT} scatter/gather operations to use the semantics
+of \concept{Max Assign Op}.
+
+\subsubsection{Refinement of}
+\concept{Scatter/Gather Tag}.
+
+\subsubsection{Associated Types}
+
+A model of \concept{Max Assign Op}. Depending on implementation, this
+associated type may not be defined, but the semantics of its
+underlying operation must be.
+
+\subsubsection{Models}
+
+The \comp{Mesh\cu XYZ::OpMaxAssign} class in Draco is a model of
+\concept{Max Assign Tag}.
+
 \subsection{Expression Enabled Container}
 
 An \concept{Expression Enabled Container} is a \concept{Container} for 
@@ -976,7 +1269,7 @@ following expressions must be valid.
      Type requirements: & \comp{a} is mutable. \\
      Return type: & \comp{X\&}. \\
      Precondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. ??? \\
+     an object of type \comp{T}. \\
      Postcondition: & \comp{a.size() == b.size()}, unless \comp{b} is
      an object of type \comp{T}. If \comp{b} is an object of type
      \comp{T}, then each element of \comp{a} is equal to \comp{b}.
@@ -989,7 +1282,7 @@ following expressions must be valid.
      Type requirements: & \comp{a} is mutable. \\
      Return type: & \comp{X\&}. \\
      Precondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. ??? \\
+     an object of type \comp{T}. \\
      Semantics: & Equivalent to \comp{T::operator+=} being applied to
      each element of \comp{a} with \comp{b}, if \comp{b} is an object
      of type \comp{T}. Otherwise equivalent to \comp{T::operator+=}
@@ -1004,7 +1297,7 @@ following expressions must be valid.
      Type requirements: & \comp{a} is mutable. \\
      Return type: & \comp{X\&}. \\
      Precondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. ??? \\
+     an object of type \comp{T}. \\
      Semantics: & Equivalent to \comp{T::operator-=} being applied to
      each element of \comp{a} with \comp{b}, if \comp{b} is an object
      of type \comp{T}. Otherwise equivalent to \comp{T::operator-=}
@@ -1019,7 +1312,7 @@ following expressions must be valid.
      Type requirements: & \comp{a} is mutable. \\
      Return type: & \comp{X\&}. \\
      Precondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. ??? \\
+     an object of type \comp{T}. \\
      Semantics: & Equivalent to \comp{T::operator*=} being applied to
      each element of \comp{a} with \comp{b}, if \comp{b} is an object
      of type \comp{T}. Otherwise equivalent to \comp{T::operator*=}
@@ -1034,7 +1327,7 @@ following expressions must be valid.
      Type requirements: & \comp{a} is mutable. \\
      Return type: & \comp{X\&}. \\
      Precondition: & \comp{a.size() == b.size()}, unless \comp{b} is
-     an object of type \comp{T}. ??? \\
+     an object of type \comp{T}. \\
      Semantics: & Equivalent to \comp{T::operator/=} being applied to
      each element of \comp{a} with \comp{b}, if \comp{b} is an object
      of type \comp{T}. Otherwise equivalent to \comp{T::operator/=}
@@ -1076,12 +1369,14 @@ following expressions must be valid.
   \expritem{Addition}{b + c}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{a} is mutable. \\
      Return type: & Undefined if either \comp{b} or \comp{c} is not an
      object of type \comp{T}. Semantically, though, it should behave
      as if it were \comp{X\&}. \\
-     Precondition: & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. ??? \\
+     Precondition: & Unless \comp{b} and \comp{c} are both objects of
+     type \comp{T}, this expression must be used in a statement that
+     contains one of the assignment operators. \\
+                   & \comp{b.size() == c.size()}, unless either
+     \comp{b} or \comp{c} is an object of type \comp{T}. \\
      Semantics: & Equivalent to \comp{T::operator+} being applied to
      each element of \comp{b} (or \comp{b} itself if \comp{b} is an
      object of type \comp{T}) with corresponding elements of \comp{c}
@@ -1091,12 +1386,14 @@ following expressions must be valid.
   \expritem{Subtraction}{b - c}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{a} is mutable. \\
      Return type: & Undefined if either \comp{b} or \comp{c} is not an
      object of type \comp{T}. Semantically, though, it should behave
      as if it were \comp{X\&}. \\
-     Precondition: & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. ??? \\
+     Precondition: & Unless \comp{b} and \comp{c} are both objects of
+     type \comp{T}, this expression must be used in a statement that
+     contains one of the assignment operators. \\
+                   & \comp{b.size() == c.size()}, unless either
+     \comp{b} or \comp{c} is an object of type \comp{T}. \\
      Semantics: & Equivalent to \comp{T::operator-} being applied to
      each element of \comp{b} (or \comp{b} itself if \comp{b} is an
      object of type \comp{T}) with corresponding elements of \comp{c}
@@ -1106,12 +1403,14 @@ following expressions must be valid.
   \expritem{Multiplication}{b * c}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{a} is mutable. \\
      Return type: & Undefined if either \comp{b} or \comp{c} is not an
      object of type \comp{T}. Semantically, though, it should behave
      as if it were \comp{X\&}. \\
-     Precondition: & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. ??? \\
+     Precondition: & Unless \comp{b} and \comp{c} are both objects of
+     type \comp{T}, this expression must be used in a statement that
+     contains one of the assignment operators. \\
+                   & \comp{b.size() == c.size()}, unless either
+     \comp{b} or \comp{c} is an object of type \comp{T}. \\
      Semantics: & Equivalent to \comp{T::operator*} being applied to
      each element of \comp{b} (or \comp{b} itself if \comp{b} is an
      object of type \comp{T}) with corresponding elements of \comp{c}
@@ -1121,13 +1420,340 @@ following expressions must be valid.
   \expritem{Division}{b / c}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
-     Type requirements: & \comp{a} is mutable. \\
      Return type: & Undefined if either \comp{b} or \comp{c} is not an
      object of type \comp{T}. Semantically, though, it should behave
      as if it were \comp{X\&}. \\
-     Precondition: & \comp{b.size() == c.size()}, unless either
-     \comp{b} or \comp{c} is an object of type \comp{T}. ??? \\
+     Precondition: & Unless \comp{b} and \comp{c} are both objects of
+     type \comp{T}, this expression must be used in a statement that
+     contains one of the assignment operators. \\
+                   & \comp{b.size() == c.size()}, unless either
+     \comp{b} or \comp{c} is an object of type \comp{T}. \\
      Semantics: & Equivalent to \comp{T::operator/} being applied to
+     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
+     object of type \comp{T}) with corresponding elements of \comp{c}
+     (or \comp{c} itself if \comp{c} is an object of type
+     \comp{T}). \\
+     \end{tabularx}}
+  \expritem{Arc cosine}{acos(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{acos()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Arc sine}{asin(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{asin()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Arc tangent}{atan(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{atan()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Arc tangent 2}{atan2(b,c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if either \comp{b} or \comp{c} is not an
+     object of type \comp{T}. Semantically, though, it should behave
+     as if it were \comp{X\&}. \\
+     Precondition: & Unless \comp{b} and \comp{c} are both objects of
+     type \comp{T}, this expression must be used in a statement that
+     contains one of the assignment operators. \\
+                   & \comp{b.size() == c.size()}, unless either
+     \comp{b} or \comp{c} is an object of type \comp{T}. \\
+     Semantics: & Equivalent to \comp{atan2()} being applied to
+     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
+     object of type \comp{T}) with corresponding elements of \comp{c}
+     (or \comp{c} itself if \comp{c} is an object of type
+     \comp{T}). \\
+     \end{tabularx}}
+  \expritem{Cosine}{cos(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{cos()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Sine}{sin(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{sin()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Tangent}{tan(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{tan()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Hyperbolic cosine}{cosh(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{cosh()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Hyperbolic sine}{sinh(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{sinh()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Hyperbolic tangent}{tanh(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{tanh()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Exponential}{exp(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{exp()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Logarithm}{log(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{log()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Base-10 logarithm}{log10(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{log10()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Power}{pow(b,c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if either \comp{b} or \comp{c} is not an
+     object of type \comp{T}. Semantically, though, it should behave
+     as if it were \comp{X\&}. \\
+     Precondition: & Unless \comp{b} and \comp{c} are both objects of
+     type \comp{T}, this expression must be used in a statement that
+     contains one of the assignment operators. \\
+                   & \comp{b.size() == c.size()}, unless either
+     \comp{b} or \comp{c} is an object of type \comp{T}. \\
+     Semantics: & Equivalent to \comp{pow()} being applied to
+     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
+     object of type \comp{T}) with corresponding elements of \comp{c}
+     (or \comp{c} itself if \comp{c} is an object of type
+     \comp{T}). \\
+     \end{tabularx}}
+  \expritem{Square root}{sqrt(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{sqrt()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Ceiling}{ceil(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{ceil()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Absolute value}{fabs(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{fabs()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Floor}{floor(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{floor()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Modulus}{fmod(b,c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if either \comp{b} or \comp{c} is not an
+     object of type \comp{T}. Semantically, though, it should behave
+     as if it were \comp{X\&}. \\
+     Precondition: & Unless \comp{b} and \comp{c} are both objects of
+     type \comp{T}, this expression must be used in a statement that
+     contains one of the assignment operators. \\
+                   & \comp{b.size() == c.size()}, unless either
+     \comp{b} or \comp{c} is an object of type \comp{T}. \\
+     Semantics: & Equivalent to \comp{fmod()} being applied to
+     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
+     object of type \comp{T}) with corresponding elements of \comp{c}
+     (or \comp{c} itself if \comp{c} is an object of type
+     \comp{T}). \\
+     \end{tabularx}}
+  \expritem{Minimum}{min(b,c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if either \comp{b} or \comp{c} is not an
+     object of type \comp{T}. Semantically, though, it should behave
+     as if it were \comp{X\&}. \\
+     Precondition: & Unless \comp{b} and \comp{c} are both objects of
+     type \comp{T}, this expression must be used in a statement that
+     contains one of the assignment operators. \\
+                   & \comp{b.size() == c.size()}, unless either
+     \comp{b} or \comp{c} is an object of type \comp{T}. \\
+     Semantics: & Equivalent to \comp{min()} being applied to
+     each element of \comp{b} (or \comp{b} itself if \comp{b} is an
+     object of type \comp{T}) with corresponding elements of \comp{c}
+     (or \comp{c} itself if \comp{c} is an object of type
+     \comp{T}). \\
+     \end{tabularx}}
+  \expritem{Maximum}{max(b,c)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if either \comp{b} or \comp{c} is not an
+     object of type \comp{T}. Semantically, though, it should behave
+     as if it were \comp{X\&}. \\
+     Precondition: & Unless \comp{b} and \comp{c} are both objects of
+     type \comp{T}, this expression must be used in a statement that
+     contains one of the assignment operators. \\
+                   & \comp{b.size() == c.size()}, unless either
+     \comp{b} or \comp{c} is an object of type \comp{T}. \\
+     Semantics: & Equivalent to \comp{max()} being applied to
      each element of \comp{b} (or \comp{b} itself if \comp{b} is an
      object of type \comp{T}) with corresponding elements of \comp{c}
      (or \comp{c} itself if \comp{c} is an object of type
