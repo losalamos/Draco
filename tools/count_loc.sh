@@ -50,21 +50,38 @@ latex_loc()
   awk '/^[ \t]*$/ || $1 ~ /%/ {next} {print}' $* | wc -l
 }
 
+#Count lines of code in a elisp file, stripping any blank lines
+#and/or comments
+elisp_loc()
+{
+  awk '/^[ \t]*$/ || $1 ~ /;;/ {next} {print}' $* | wc -l
+}
+
 #Define a fucntion which  lists the names of any 
 #shell script files
-list_scripts()
+list_shell_scripts()
 {
 for file in $*
 do 
-    if file $file | grep 'script' >/dev/null
+    if file $file | grep 'shell script' >/dev/null
     then
       echo $file
     fi
 done
 }
 
-#Define files to be excluded from the count
-excludes='! \( -name "*~" -o -name "#*" -o -name ".*" -o -name "configure*" \)'
+#Define a fucntion which  lists the names of any 
+#perl script files
+list_perl_scripts()
+{
+for file in $*
+do 
+    if file $file | grep 'perl script' >/dev/null
+    then
+      echo $file
+    fi
+done
+}
 
 #Get the command line arguments (if any)
 if [ $# = 0 ]
@@ -92,7 +109,7 @@ CODE_DIR=`(cd $TMP; pwd)`
 
 # Print the header
 echo
-echo "Counting lines of code -- " 
+echo "Counting lines of source code -- " 
 echo "Directory: " $CODE_DIR 
 echo "Date     : " `date`
 echo
@@ -103,13 +120,12 @@ cd $CODE_DIR
 #Define C++ files 
 # (Note: the output from the find command using this filter
 #        could be saved into a list to speed things up)
-cpp_filepat="\( -name '*.cc' -o -name '*.hh' $excludes \)"
 
 #------------------------- C++ Source Code ------------------------------
 
 #Scan for C++ source code
 echo "Total C++ source: "
-eval find . $cpp_filepat -exec cat {} \\\; |  cpp_loc
+find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' -exec cat {} \; |  cpp_loc
 echo
 
 #------------------------ C++ Test Code ----------------------------------
@@ -118,13 +134,13 @@ echo
 echo "C++ source in test directories: "
 for i in `find . -name test -type d -print`
 do
-  eval find '${i}' $cpp_filepat -exec cat {} \\\; 
+  find ${i} -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' -exec cat {} \; 
 done | cpp_loc
 echo
 
 #Scan for C++ Design-by-Contract specifications
 echo "C++ contract specifications:"
-for i in `eval find . $cpp_filepat -print` 
+for i in `find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' -print` 
 do
   awk '$1 ~ /Assert|Require|Ensure|Check|Insist/ {print}' ${i}
 done | cpp_loc
@@ -134,7 +150,7 @@ echo
 
 #Scan for C++ comments (finds both C and C++ style comments)
 echo "C++ comments:"
-for i in `eval find . $cpp_filepat -print`
+for i in `find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' -print`
 do 
   awk '$1~/\/\// {print} /\/\*/, /\*\// {print}' ${i}
 done | wc -l
@@ -142,32 +158,45 @@ echo
 
 #Scan for LaTeX source code
 echo 'LaTeX Documentation:'
-eval find . -name "*.tex"  $excludes -exec cat {} \\\; |  latex_loc
+find . -name "*.tex" ! -name '#*' -type f -exec cat {} \; |  latex_loc
 echo
 
 #Scan for html source
-html_pat="\( -name '*.html' -o -name '*.htm' -o -name '*.shml' $excludes \)"
 echo 'html source: '
-eval find . $html_pat -exec cat {} \\\; |  html_loc
+find . -type f \( -name '*.html' -o -name '*.htm' -o -name '*.shml'  \) ! -name '#*' -exec cat {} \; |  html_loc
 echo
 
 #------------------------ Scripts ----------------------------------
 
-#Scan for executable script source code
-# (includes Python, Perl, sh, bash, csh, but not Expect, nor Awk)
-echo Executable script source:
-files=`eval find . -type f -perm -100 $excludes -print`
-script_loc `list_scripts $files` /dev/null
+#Scan for executable script source code. 
+#(such as sh, bash, csh, etc.)
+echo Executable shell script source:
+files=`find . -type f -perm -100  ! -name 'configure' ! -name '*~' ! -name '#*' -print`
+script_loc `list_shell_scripts $files` /dev/null
+echo
+
+#Scan for Perl source code. 
+echo Executable Perl source:
+files=`find . -type f -perm -100  ! -name '*~' ! -name '#*' -print`
+script_loc `list_perl_scripts $files` /dev/null
 echo
 
 #Scan for Python source code
 echo "Python source:"
-eval find . -name "*.py" $excludes -exec cat {} \\\; | script_loc
+find . -name '*.py' ! -name '#*' -type f -exec cat {} \; | script_loc
 echo
 
 #Scan for Expect source code
 echo "Expect source:"
-eval find . -name "*.exp" $excludes -exec cat {} \\\; | script_loc
+find . -name '*.exp' ! -name '#*' -type f -exec cat {} \; | script_loc
 echo
+
+#------------------------ Templates ----------------------------------
+
+#Scan for Elisp source code
+echo "Elisp source:"
+find . -name '*.el' ! -name '#*' -type f  -exec cat {} \; | elisp_loc
+echo
+
 
 #################### end of count_loc.sh ######################################
