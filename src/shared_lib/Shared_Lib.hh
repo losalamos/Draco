@@ -52,7 +52,9 @@ namespace rtt_shared_lib
   unsupported platforms, the "else" block will throw an error at run time.
  */
 /*! 
- * \example shared_lib/test/tstShared_Lib.cc 
+ * \example shared_lib/test/tstShared_Lib.cc
+ *
+ * This example shows how classes may be created through shared objects.
 */
 //===========================================================================//
 

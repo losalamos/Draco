@@ -22,8 +22,11 @@
 #include <ds++/Soft_Equivalence.hh>
 #include "shared_lib_test.hh"
 
+#include "Foo_Base.hh"
+
 using namespace std;
 using namespace rtt_shared_lib;
+using rtt_shared_lib_test::Foo_Base;
 
 using rtt_dsxx::soft_equiv;
 
@@ -75,55 +78,64 @@ bool test_supported()
 
 void test_simple()
 {
-    // This lib must contain pow(double, double)
-    string math_lib_name("/usr/lib/libm.so");
+    string so_name("foo.so");
 
-    Shared_Lib math(math_lib_name);
+    Shared_Lib so_lib(so_name);
     
-    if ( math.get_file_name() != math_lib_name ) ITFAILS;
-    if ( not math.is_open() ) ITFAILS;
+    if ( so_lib.get_file_name() != so_name ) ITFAILS;
+    if ( ! so_lib.is_open() ) ITFAILS;
     
-    // FP is a pointer to a function that returns a double and takes two
-    // doubles as arguments.
-    typedef double (* FP)(double, double);
+    // Creator function pointer for Foo objects.
+    typedef Foo_Base* (* Creator)(double);
+    
+    // Destroyer function pointer for Foo objects.
+    typedef void (* Destroyer)(Foo_Base *);
 
-    // Grab pow(double, double)
-    FP my_pow = math.get_function<FP>("pow");
+    // Grab the creator function.
+    Creator my_creator = so_lib.get_function<Creator>("my_creator");
 
+    // Grab the destroyer function.
+    Destroyer my_destroyer = so_lib.get_function<Destroyer>("my_destroyer");
+
+    const double base = 4.1;
     const double x = 2.34342;
 
-    if ( not soft_equiv(my_pow(x, 2), x * x) ) ITFAILS;
+    // Create the Foo object and check it.
+    Foo_Base *foo = my_creator(base);
+    if ( ! foo ) ITFAILS;
+    if ( ! soft_equiv(foo->compute(x), x * x + base) ) ITFAILS;
 
     { // Test copy ctor
-	Shared_Lib sc(math);
+	Shared_Lib sc(so_lib);
 
-	if ( sc.get_file_name() != math_lib_name ) ITFAILS;
-	FP p = sc.get_function<FP>("pow");
-	if ( not soft_equiv(p(x, 2), x * x) ) ITFAILS;
+	if ( sc.get_file_name() != so_name ) ITFAILS;
+	Creator c = sc.get_function<Creator>("my_creator");
+	Destroyer d = sc.get_function<Destroyer>("my_destroyer");
+	Foo_Base *foo2 = c(base);
+	if ( ! foo2 ) ITFAILS;
+	if ( ! soft_equiv(foo2->compute(x), x * x + base) ) ITFAILS;
+	d(foo2);
     }
 
     { // Test assignment
 	Shared_Lib sc;
 
-	sc = math;
+	sc = so_lib;
 
-	if ( sc.get_file_name() != math_lib_name ) ITFAILS;
-	FP p = sc.get_function<FP>("pow");
-	if ( not soft_equiv(p(x, 2), x * x) ) ITFAILS;
+	if ( sc.get_file_name() != so_name ) ITFAILS;
+	Creator c = sc.get_function<Creator>("my_creator");
+	Destroyer d = sc.get_function<Destroyer>("my_destroyer");
+	Foo_Base *foo2 = c(base);
+	if ( ! foo2 ) ITFAILS;
+	if ( ! soft_equiv(foo2->compute(x), x * x + base) ) ITFAILS;
+	d(foo2);
     }
-
-    // Make sure everything is still working with original copy
-    
-    if ( math.get_file_name() != math_lib_name ) ITFAILS;
-    if ( not math.is_open() ) ITFAILS;
-    FP another_pow = math.get_function<FP>("pow");
-    if ( not soft_equiv(another_pow(x, 2), x * x) ) ITFAILS;
 
     { // check get_function of a function not in the library
         bool caught = false;
         try
         {
-	    FP no = math.get_function<FP>("not_in_math");
+	    Creator no = so_lib.get_function<Creator>("not_in_lib");
         }
         catch ( const rtt_dsxx::assertion &ass )
         {
@@ -135,6 +147,11 @@ void test_simple()
 
         if ( not caught ) ITFAILS;
     }
+
+    // Done with so_lib, so let's destroy foo and close so_lib.
+    my_destroyer(foo);
+    so_lib.close();
+    if ( so_lib.is_open() ) ITFAILS;
 
 #ifdef REQUIRE_ON
     { // check open() of an empty file name

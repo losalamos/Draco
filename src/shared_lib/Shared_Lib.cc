@@ -32,7 +32,7 @@ Shared_Lib::Shared_Lib(const std::string &file_name)
     // is_supported must be checked for all constructors.
     Insist(is_supported(), "Shared_Lib unsupported on this platform!");
     
-    if ( not file_name.empty() )
+    if ( ! file_name.empty() )
     {
 	open(file_name);
     }
@@ -77,6 +77,7 @@ void Shared_Lib::close()
     if ( is_open() )
     {
 	dlclose(d_handle);
+	d_handle = 0;
     }
 }
 
@@ -90,16 +91,21 @@ void Shared_Lib::close()
 */
 void Shared_Lib::open(const std::string &file_name)
 {
-    Require(not file_name.empty());
+    Require(! file_name.empty());
     
     close();
+
+    // RTLD_LAZY means symbols are resolved as they're needed.  We might want
+    // to make this an option, in the future.
     d_handle = dlopen(file_name.c_str(), RTLD_LAZY);
+    
     d_file_name = file_name;
 
-    if ( not is_open() )
+    if ( ! is_open() )
     {
 	std::ostringstream m;
-	m << "Shared_Lib::open(): Error opening shared file " << file_name;
+	m << "Shared_Lib::open(): Error opening shared file: " << file_name;
+	m << "\ndlerror reports: " << dlerror();
 	Insist(0, m.str());
     }
 }
@@ -121,12 +127,19 @@ void Shared_Lib::open(const std::string &file_name)
 void *Shared_Lib::do_dlsym(const std::string &name)
 {
     Require(is_open());
-    Require(not name.empty());
+    Require(! name.empty());
 
     void *f = dlsym(d_handle, name.c_str());
 
     char *error_msg = dlerror();
-    Insist(not error_msg, error_msg);
+    if ( error_msg )
+    {
+	std::ostringstream m;
+	m << "Shared_Lib::do_dlsym(): Error accessing symbol '" << name;
+	m << "' from file " << d_file_name;
+	m << "\ndlerror reports: " << error_msg;
+	Insist(0, error_msg);
+    }
 
     return f;
 }

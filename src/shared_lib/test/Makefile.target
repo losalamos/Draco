@@ -16,15 +16,19 @@ testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 
 thistestdep := libshared_lib_test${libsuffix}
 thistestlib := -L. -lshared_lib_test
-thistestlib_dep := shared_lib_test.o 
+thistestlib_dep := shared_lib_test.o Foo_Base.o
 
-${test_alltarget}: ${thistestdep} ${testdeps}
+${test_alltarget}: ${thistestdep} ${testdeps} foo.so
 
 %: %.o
 	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
 
 ${thistestdep}: ${thistestlib_dep} ${testdeps}
 	${AR} ${ARFLAGS} $@ ${thistestlib_dep} ${ARTESTLIBS}
+	${RANLIB} $@
+
+foo.so: creator_destroyer.o Foo.o
+	${AR} ${ARFLAGS} $@ creator_destroyer.o Foo.o
 	${RANLIB} $@
 
 objs += ${thistestdep}
