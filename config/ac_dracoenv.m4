@@ -580,6 +580,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    
        fi
 
+       # add COMPAQ ALASKA Specfic options
+       if test "${with_mpi}" = vendor ; then
+	   # define version check
+	   AC_DEFINE(MPI_VERSION_CHECK)
+       fi
+
        #
        # end of communication packages
        #

@@ -24,6 +24,9 @@
 /* Turn off C++ bindings */
 #undef MPI_NO_CPPBIND
 
+/* Add version check for Compaq ALASKA MPI releases */
+#undef MPI_VERSION_CHECK
+
 #endif                          /* __c4_config_h__ */
 
 /*---------------------------------------------------------------------------*/
