@@ -11,36 +11,25 @@
 
 #include "EospacException.hh"
 
-#include <iostream>
-
 namespace rtt_cdi_eospac
 {
     EospacException::EospacException( const std::string& in_what_arg )
 	throw() 
 	{
+	    // allocate space for the error message.
 	    int len = in_what_arg.length();
 	    message = new char [ len+1 ];
+	    
+	    // copy the string message to the char* data member.
 	    std::copy( in_what_arg.begin(), in_what_arg.end(), 
 		       message );
+
 	    // add a terminating character.
 	    message[ len ] = 0;
+
+	    // EospacException inherits from std::exception.  This
+	    // means that a std::exception is also thrown.
 	}
-
-//     EospacException::EospacException( int errorCode )
-// 	throw() 
-// 	{
-// 	    // All we have is a non-zero error code returned from the
-// 	    // EOSPAC library.  We now query EOSPAC for the associated 
-// 	    // error message
-
-
-// 	    int len = in_what_arg.length();
-// 	    message = new char [ len+1 ];
-// 	    std::copy( in_what_arg.begin(), in_what_arg.end(), 
-// 		       message );
-// 	    // add a terminating character.
-// 	    message[ len ] = 0;
-// 	}
 
     EospacException::~EospacException() throw()
 	{

@@ -18,17 +18,20 @@
 namespace rtt_cdi_eospac
 {
 
+    // Constructor.
+
     SesameTables::SesameTables()
 	: t301( 0 ), t303( 0 ), t304( 0 ), t306( 0 ), t502( 0 ), 
 	t503( 0 ), t504( 0 ), t505( 0 ), t601( 0 ), t602( 0 ), 
 	t603( 0 ), t604( 0 ), t605( 0 ), t411( 0 ), t412( 0 ),
-	t431( 0 ), numTabs( 37 )
+	t431( 0 ), numTables( 16 ), numReturnTypes( 37 )
 	{  
  	    // EOSPAC has 37 datatypes.  See
 	    // http://laurel.lanl.gov/XCI/PROJECTS/DATA/eos/
 	    // UsersDocument/HTML/EOSPAC.html#5.4 for details.
-	    RT2MatID.resize( numTabs );
 	}
+
+    // Set functions
 
     SesameTables& SesameTables::table301( int matID )
 	{
@@ -125,6 +128,8 @@ namespace rtt_cdi_eospac
 	    t431 = matID;
 	    return *this;
 	}
+
+    // Get Functions
 
     int SesameTables::matID( int returnType ) const
 	{

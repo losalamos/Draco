@@ -21,8 +21,30 @@ namespace rtt_cdi_eospac
     //===========================================================================//
     /*!
      * \class SesameTables
+     * 
+     * \brief This is a helper class for Eospac.  It tells Eospac what 
+     *        Sesame data is being requested and what lookup tables to 
+     *        use.
      *
+     * \sa The web page for <a 
+     *     href="http://laurel.lanl.gov/XCI/PROJECTS/DATA/eos/eos.html">EOSPAC</a>.
+     *
+     * \sa The web page for <a 
+     *     href="http://int.lanl.gov/projects/sdm/win/materials/">Eos
+     *     Material Identifiers</a>.  This web site also does dynamic
+     *     plotting of EoS values.
+     *
+     * Each sesame material definition has 16 data tables (actually
+     * material identifiers) that define its state.  At least one
+     * table must be defined for this to be a valid object.  This list 
+     * of tables is used by the Eospac constructor to determine what
+     * Sesame table data to cache.  There are 37 return types defined
+     * by EOSPAC.  Some data tables provide information for more than
+     * one return type.
+     *
+     * \example cdi_eospac/test/tEospac.cc
      */
+
     // revision history:
     // -----------------
     // 0) original
@@ -31,13 +53,23 @@ namespace rtt_cdi_eospac
     
     class SesameTables 
     {
-	
-	// NESTED CLASSES AND TYPEDEFS
-	
 	// DATA
 	
-	const int numTabs; // should be 37!
+	/*!
+	 * \brief There are 37 return types defined by EOSPAC.
+	 */
+	const int numReturnTypes; // should be 37
 
+	/*!
+	 * \brief There are 16 unique data tables defined by EOSPAC.
+	 */
+	const int numTables;      // should be 16
+
+	/*!
+	 * \brief These table numbers hold the associated material
+	 *        identifier associated with this material and
+	 *        requested data type. 
+	 */
 	int t301;  // Pressure, Temperature, Energy (total)
 	int t303;  // Pressure, Temperature, Energy (ion)
 	int t304;  // Pressure, Temperature, Energy (electron)
@@ -55,26 +87,27 @@ namespace rtt_cdi_eospac
 	int t412;  // freezing P, T, E
 	int t431;  // shear modulus
 
-	// Keep a mapping between EOSPAC returnTypes and the matIDs
-	// associated with each table.
-	std::vector< int > RT2MatID;
-	
       public:
 	
 	// CREATORS
 	
-	SesameTables();
-	//SesameTables(const SesameTables &rhs);
-	//~SesameTables();
-	
-	// MANIPULATORS
-	
-	//SesameTables& operator=(const SesameTables &rhs);
+	explicit SesameTables();
 	
 	// ACCESSORS
 
-	// set functions by table
+	// set functions
 
+	/*!
+	 * \brief The set functions assign a material identifier to
+	 *        the sesame table specified by the set function
+	 *        name. 
+	 *
+	 * These maybe set using the following conventsion
+	 * <pre>
+	 *    SesameTables SesTab();
+	 *    SesTab.table301( 3717 ).Cve( 23717)...
+	 *</pre>
+	 */
 	SesameTables& table301( int matID );
 	SesameTables& table303( int matID );
 	SesameTables& table304( int matID );
@@ -114,18 +147,26 @@ namespace rtt_cdi_eospac
 	    return table603( matID );
 	}
 
+	// Get functions
+	
+	/*!
+	 * \brief Return the material identifier associated with a
+	 *        Sesame return type.
+	 */
 	int matID( int returnType ) const;
 
+	// Return the number of tables (always 16).
 	int getNumTables() const 
 	{
-	    return numTabs;
+	    return numTables;
 	}
 
-      private:
-	
-	// IMPLEMENTATION
+	// Return the number of return types (always 37)
+	int getNumReturnTypes() const 
+	{
+	    return numReturnTypes;
+	}
 
-	void constructRT2MatID();
     };
     
 } // end namespace rtt_cdi_eospac

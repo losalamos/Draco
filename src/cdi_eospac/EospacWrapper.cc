@@ -9,28 +9,47 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+// cdi_eospac package
 #include "EospacWrapper.hh"
 
-// for DEBUG only
-#include <iostream>
+// DRACO Packages
+#include "ds++/Assert.hh"
 
 namespace rtt_cdi_eospac
 {
     namespace wrapper 
 	{
+	    //====================================================================
+	    /*! 
+	     * \brief C++ EOSPAC wrapper routines.
+	     *
+	     * The EOSPAC routines are written in FORTRAN.  The following
+	     * are C++ prototypes that mimic the F77 Gandolf functions.
+	     * Each of these routines flattens the data types and then
+	     * calls the Gandolf library's F77 functions.  
+	     */
+	    //====================================================================
 
+	    /*!
+	     * \brief Based on the requested returnTypes array, allocate
+	     * 	  space and cache the required EoS Tables in the array
+	     *    eosTable. 
+	     */
 	    int es1tabs( int numRegions,  int numReturnTypes, 
 			 int *returnTypes, int *matIDs, 
 			 int &eosTableLength, double **eosTable )
 		{
 		    // Make some assumptions
+		    
+		    // don't use log data.
 		    int *llog1 = new int [ numRegions*numReturnTypes ];
 		    for ( int i=0; i<numRegions*numReturnTypes; ++i )
-			llog1[i] = 0;  // don't use log data.
+			llog1[i] = 0; 
 		    
+		    // input integer of smoothing and splitting
 		    int *iopt   =  new int [ numRegions*numReturnTypes ];
 		    for ( int i=0; i<numRegions*numReturnTypes; ++i )
-			iopt[i] = 0;      // input integer of smoothing and splitting
+			iopt[i] = 0;   
 
 		    // options for cat-1 data (see http://laurel.lanl.gov/XCI
 		    // /PROJECTS/DATA/eos/UsersDocument/HTML/Overloaded_IOPT-Java1.1.html
@@ -40,12 +59,12 @@ namespace rtt_cdi_eospac
 		    int iprnt = 0;   // print to screen (not used)
 		    int idtab = 0;   // (not used)
 		    
-		    // Unit convertions:
+		    // Don't use unit convertions
 		    double *unitConversion = new double [ numReturnTypes * 3 ];
 		    for ( int i=0; i<numReturnTypes*3; ++i )
 			unitConversion[i] = 1.0;
 		    
-		    // Error reporting:
+		    // Error reporting.
 		    int *errorCodes = new int [ numReturnTypes * numRegions ];
 		    for ( int i=0; i<numReturnTypes*numRegions; ++i )
 			errorCodes[i] = 0;
@@ -75,9 +94,14 @@ namespace rtt_cdi_eospac
 		    return errorCode;
 		}
 	    
+	    /*!
+	     * \brief Return a text error message associated that is
+	     *        associated with an EOSPAC error code.
+	     */	  
 	    std::string es1errmsg( int errorCode )
 		{
 		    int len = 80;
+
 		    // use this string to init the errormessage (to avoid problems
 		    // with f90 interface).
 		    // offset by 1 so we dont' kill the trailing \0.
@@ -111,36 +135,40 @@ namespace rtt_cdi_eospac
 
 		    return errorMessage;
 		}
-	    
-	    int es1info( int &tableIndex, int &regionIndex, double **eosTable, int &llogs, 
+
+	    /*
+	     * \brief Retrieve information about the cached EoS data.
+	     */
+	    int es1info( int &tableIndex, double **eosTable, int &llogs, 
 			 int &matID, double &atomicNumber, double &atomicMass,
 			 double &density0 )
 		{
+		    // This is always uniquely unity for my
+		    // implementation of Eospac.
+		    int regionIndex=1;
+
+		    // Init the error code.
+		    int errorCode = 0;
+
 		    // throw this stuff away.
-		    int iname,ifile,errorCode;
-		    double xcnvt, ycnvt, fcnvt;
+		    int iname, ifile; 
+
+		    // we don't use unit conversions
+		    double xcnvt, ycnvt, fcnvt; 
 		    
-		    // Call the info routine
+		    // Call the fortran info routine
 		    es1info_( tableIndex, regionIndex,
 			      eosTable, iname, llogs,
 			      xcnvt, ycnvt, fcnvt, matID, atomicNumber, 
 			      atomicMass, density0, ifile, errorCode );
 		    
-		    //    if ( xcnvt != 1.0 || ycnvt != 1.0 || fcnvt != 1.0 )
-		    //{
-		    //	    std::cout << "Unit Conversions are not unity." << std::endl;
-		    //     std::cout << "   iname = " << iname << std::endl
-		    // 	 << "   ifile = " << ifile << std::endl
-		    // 	 << "   errorCode = " << errorCode << std::endl;
-		    
-		    // 	std::cout << "   xcnvt = " << xcnvt << std::endl
-		    // 	 << "   ycnvt = " << ycnvt << std::endl
-		    // 	 << "   fcnvt = " << fcnvt << std::endl << std::endl;
-		    //	}
-		    
 		    return errorCode;
 		}
 	    
+	    /*!
+	     * \brief Retrieve the table name associated with given
+	     *        tableIndex. 
+	     */
 	    std::string es1name( int &tableID )
 		{
 		    const int len = 80;
@@ -165,27 +193,52 @@ namespace rtt_cdi_eospac
 		    return tableName;
 		}
 	    
-	    int es1vals( int returnType, int &derivatives, int &interpolation, 
-			 double *eosTable, int eosTableLength, int regionIndex,
-			 double &xVals, double &yVals, double *returnVals, int &returnSize )
+	    /*!
+	     * \brief Retrive EoS values for this material (using the
+	     *        specified Sesame tables) corresponding to the
+	     *        specified density and temperature values.
+	     */
+	    int es1vals( const int c_returnType, const int c_derivatives, 
+			 const int c_interpolation, double *eosTable, 
+			 const int c_eosTableLength,
+			 const std::vector< double > &xVals, 
+			 const std::vector< double > &yVals, 
+			 double *returnVals, const int c_returnSize )
 		{
 		    // init some values
 		    int errorCode = 0;
+
+		    // For our implementation of EOSPAC regionIndex is 
+		    // always unity.
+		    int regionIndex = 1;
 		    
-		    int numZones = 1; // = xVals.size() =?= yVals.size()
+		    // xVals and yVals are a tuple so they must have
+		    // the same length.
+		    Assert ( xVals.size() == yVals.size() );
+		    int numZones = xVals.size();
+
 		    // Also returnVals should be (numZones,:) where : is determined by 
 		    // the value of derivatives and interpolation.
+		    int nvalsi = c_returnSize / numZones;
 		    
-		    int nvalsi = returnSize; // divided by xVals.size()
+		    // convert xVals and yVals into arrays.
+		    double *a_xVals = new double [ numZones ];
+		    double *a_yVals = new double [ numZones ];
 		    
-		    // convert xVals and yVals into an array.
-		    double *a_xVals = new double [1];
-		    double *a_yVals = new double [1];
-		    
-		    a_xVals[0] = xVals;
-		    a_yVals[0] = yVals;
-		    
-		    // Call the interpolation routine.
+		    std::copy( xVals.begin(), xVals.end(), a_xVals );
+		    std::copy( yVals.begin(), yVals.end(), a_yVals );
+
+		    // Remove "const-ness" from const int variables
+		    // Neither Fortran library nor the extern "C"
+		    // block know about "const" so the C++ compiler
+		    // cannot guarantee const-ness once this call is made.
+
+		    int returnType = c_returnType;
+		    int derivatives = c_derivatives;
+		    int interpolation = c_interpolation;
+		    int eosTableLength = c_eosTableLength;
+
+		    // Call the fortran interpolation routine.
 		    es1vals_( returnType, derivatives, interpolation, eosTable,
 			      eosTableLength, numZones, regionIndex, a_xVals, a_yVals,
 			      returnVals, nvalsi, errorCode );
@@ -197,11 +250,10 @@ namespace rtt_cdi_eospac
 		    return errorCode;
 		}
 	    
-	    
 	} // end namespace wrapper
 
 } // end namespace rtt_cdi_eospac
 
 //---------------------------------------------------------------------------//
-//                              end of EospacWrapper.cc
+// end of EospacWrapper.cc
 //---------------------------------------------------------------------------//

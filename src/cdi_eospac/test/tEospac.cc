@@ -9,35 +9,38 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+// cdi_gandolf dependencies
 #include "tEospac.hh"
-
 #include "../Eospac.hh"
 #include "../SesameTables.hh"
 #include "../Release.hh"
 
+// Draco dependencies
 #include "UnitTestFrame/PassFailStream.hh"
 #include "ds++/SP.hh"
 
-//#include <vector>
-
-// for debuging only.
-//#include <iomanip>
+// STL dependencies
 #include <iostream>
+
+// DEBUG dependencies
+#include <iomanip>
 
 // Unit Test Frame Stuff
 //----------------------------------------
-namespace rtt_UnitTestFrame {
+namespace rtt_UnitTestFrame 
+{
     rtt_dsxx::SP<TestApp> TestApp::create( int &argc, char *argv[],
-					   std::ostream& os_in ) {
-	return rtt_dsxx::SP<TestApp> ( 
-	    new rtt_cdi_eospac_test::tEospac( argc, argv, os_in ));
-    }
+					   std::ostream& os_in )
+	{
+	    return rtt_dsxx::SP<TestApp> ( 
+		new rtt_cdi_eospac_test::tEospac( argc, argv, os_in ) );
+	}
 } // end namespace rtt_UnitTestFrame
 
 // tEospac Stuff
 //--------------------------------------------------
-namespace rtt_cdi_eospac_test {
-    
+namespace rtt_cdi_eospac_test 
+{
     tEospac::tEospac( int argc, char *argv[], std::ostream& os_in )
 	: rtt_UnitTestFrame::TestApp( argc, argv, os_in )
 	{
@@ -51,11 +54,20 @@ namespace rtt_cdi_eospac_test {
     
     //===========================================================================
     /*!
-     * \brief
+     * \brief Tests the Eospac constructor and access routines.
      *
      * On the XDIV LAN the EOSPAC library is located at:
      *
      * /usr/local/codes/data/eos/eospac_5-30beta/lib/sgi/64bit/libeospac.a
+     *
+     * We have a slightly modified copy (added one routine to help
+     * C/F77 translation of character arrays) located at:
+     *
+     * /radtran/vendors/eospac/IRIX64/lib64/libeospac.a
+     *
+     * To use this package Draco must be compiled with the 
+     * --with-eospac-lib=/radtran/vendors/eospac/IRIX64/lib64 tag.
+     *
      */
     //===========================================================================
     std::string tEospac::runTest()
@@ -65,6 +77,20 @@ namespace rtt_cdi_eospac_test {
 		 << "Test of C++ code calling EOSPAC routines" 
 		 << std::endl << std::endl;
 
+
+	    // ---------------------------- //
+	    // Create a SesameTables object //
+	    // ---------------------------- //
+
+
+	    // The user must create a SesameTables object that links
+	    // material ID numbers to Sesame lookup tables for each
+	    // material used.  If the user needs heat capacity values
+	    // for Al then he/she must create a SesameTables object
+	    // for Aluminum and then assign an aluminum material ID
+	    // (e.g. 3717) to table304.  See the tests below for more
+	    // details. 
+
 	    // Set the material identifier
 	    // This one is for Aluminum (03717) 
 	    // Category-1 data (0) + Mat# 371 (Al) + Version # 7
@@ -72,27 +98,61 @@ namespace rtt_cdi_eospac_test {
 	    // See http://int.lanl.gov/projects/sdm/win/materials/ for 
 	    // material ID information.
 
-	    // or see http://int.lanl.gov/projects/sdm/win/materials/
-
 	    // This matID for Al has tables 101, 102, 201, 301, 304,
-	    // 305, 306 and 401.  I need table 304 to access Cve()
+	    // 305, 306 and 401.  I need table 304 to access Cve().
+
 	    const int Al3717 = 3717;
 
 	    // This matId for Al has tables 101, 102, 201, 601, 602,
 	    // 603 and 604.  I need table 601 for zfree.
+
 	    const int Al23714 = 23714;
 
-	    // Create a SesameTables object for Aluminum
+	    // Create a SesameTables object for Aluminum.
+
 	    rtt_cdi_eospac::SesameTables AlSt;
 
 	    // Assign matID Al3717 to Sesame Table 303 (used for Cvi)
 	    // We can also assign these tables when the Eospac object
-	    // is created (see example below):
+	    // is created (see example below).  Also assign matID
+	    // Al23714 to Sesame Table 603 (chie).
+
 	    AlSt.table303( Al3717 ).chie( Al23714 );
 
-	    // Create an Eospac object
+	    // Verify that the assignments were made correctly.
+
+	    // Cvi (returnType=8 & table=303) should point to matID
+	    // 3717.  The user should never need to access this
+	    // function.  However Eospac.cc does and we need to test
+	    // this funcitonality.
+
+	    if ( AlSt.matID( 8 ) != 3717 )
+		fail() << "AlSt.matID(8) points to the wrong matID.";
+
+	    // Chie (returnType=27 & table=303) should point to matID
+	    // 23714.  The user should never need to access this
+	    // function.  However Eospac.cc does and we need to test
+	    // this funcitonality.
+
+	    if ( AlSt.matID( 27 ) != 23714 )
+		fail() << "AlSt.matID(27) points to the wrong matID.";	    
+	    
+
+	    // ----------------------- //
+	    // Create an Eospac object //
+	    // ----------------------- //
+	    
+
+	    // An Eospac object allows the user to access EoS
+	    // information about a material that has been constructed 
+	    // in a SesameTable object.  The constructor for Eospac
+	    // takes one argument: a SesameTables object.
 	    
 	    rtt_dsxx::SP< rtt_cdi_eospac::Eospac > spEospac;
+
+	    // Try to instantiate the new Eospac object.
+	    // Simultaneously, we are assigned material IDs to more
+	    // SesameTable values.
 	    
 	    if ( spEospac = new rtt_cdi_eospac::Eospac( 
 		AlSt.Cve( Al3717 ).zfree( Al23714 ) ) )
@@ -103,64 +163,140 @@ namespace rtt_cdi_eospac_test {
 		    return "Unable to create SP to new Eospac object.";
 		}
 	    
-	    // Get an Electron internal energy value;
+	    // --------------------------- //
+	    // Test scalar access routines //
+	    // --------------------------- //
 
-	    double density = 1.0; // (Mg/m^3)
+	    // All of these tests request an EoS value given a single
+	    // temperature and a single density.
+
+	    // Retrieve an Electron internal energy value;
+
+	    double density     = 1.0;  // g/cm^3
 	    double temperature = 5800; // K
+
+	    double refValue = 1.052552479800656;  // kJ/g
 
 	    double specificElectronInternalEnergy =
 		spEospac->getSpecificElectronInternalEnergy(
 		    density, temperature );
 
-	    std::cout << "specificElectronInternalEnergy = " 
-		      << specificElectronInternalEnergy 
-		      << " kJ/g/K" << std::endl;
+	    if ( match( specificElectronInternalEnergy, refValue ) )
+		pass() << "getSpecificElectronInternalEnergy() test passed.";
+	    else
+		fail() << "getSpecificElectronInternalEnergy() test failed.";
 
-	    std::cout <<  std::endl <<  std::endl;
+	    // Retrieve an electron heat capacity (= dE/dT)	    
 
+	    refValue = 0.0002711658224638093; // kJ/g/K
+	    
 	    double heatCapacity =
 		spEospac->getElectronHeatCapacity( density, temperature );
 
-	    std::cout << "Electron based Heat Capacity = " 
-		      << heatCapacity << std::endl;
+	    if ( match(  heatCapacity, refValue ) )
+		pass() << "getElectronHeatCapacity() test passed.";
+	    else
+		fail() << "getElectronHeatCapacity() test failed.";
 
-	    std::cout <<  std::endl <<  std::endl;
+	    // Retrive an Ion Internal Energy
+
+	    refValue = 5.238217222081386; // kJ/g
 
 	    double specificIonInternalEnergy = 
 		spEospac->getSpecificIonInternalEnergy( density,
 							 temperature );
 
-	    std::cout << "specificIonInternalEnergy = " 
-		      << specificIonInternalEnergy 
-		      << " kJ/g/K" << std::endl;
+	    if ( match( specificIonInternalEnergy, refValue ) )
+		pass() << "getSpecificIonInternalEnergy() test passed.";
+	    else
+		fail() << "getSpecificIonInternalEnergy() test failed.";
 
+	    // Retrieve an ion based heat capacity
+
+	    refValue = 0.000581583274263501; // kJ/g/K
 
 	    heatCapacity =
 		spEospac->getIonHeatCapacity( density, temperature );
 	    
-	    std::cout << "Ion based Heat Capacity = " 
-		      << heatCapacity << std::endl;
-	    
-	    std::cout <<  std::endl <<  std::endl;
+	    if ( match( heatCapacity, refValue ) )
+		pass() << "getIonHeatCapacity() test passed.";
+	    else
+		fail() << "getIonHeatCapacity() test failed.";
 
-	    int nfree =
+	    // Retrieve the number of free electrons per ion
+
+	    refValue = 12.89854626207534; // electrons per ion
+
+	    double nfree =
 		spEospac->getNumFreeElectronsPerIon( 
 		    density, temperature );
 	    
-	    std::cout << "Num free electrons per ion = " 
-		      << nfree << std::endl;
-	    
-	    std::cout <<  std::endl <<  std::endl;
+	    if ( match( nfree, refValue ) )
+		pass() << "getNumFreeElectronsPerIon() test passed.";
+	    else
+		fail() << "getNumFreeElectronsPerIon() test failed.";
 
+	    // Retrieve the electron based thermal conductivity
+
+	    refValue = 1.389598060091371e+29; // 1/s/cm
 
 	    double chie = 
 		spEospac->getElectronBasedThermalConductivity(
 		    density, temperature );
+
+	    if ( match( chie, refValue ) )
+		pass() << "getElectronBasedThermalConductivity() test passed.";
+	    else
+		fail() << "getElectronBasedThermalConductivity() test failed.";
+
+	    // --------------------------- //
+	    // Test vector access routines //
+	    // --------------------------- //
+
+	    // Set up simple temp and density vectors.  vtemp(i) will
+	    // always be associated with vdensities(i).  In this case
+	    // both tuples have identical data so that the returned
+	    // results will also be identical.
+
+	    std::vector< double > vtemps(2);
+	    std::vector< double > vdensities(2);
 	    
-	    std::cout << "Electron based Thermal Conductivity (Chi-e) = " 
-		      << chie << std::endl;
+	    vtemps[0] = temperature;
+	    vtemps[1] = temperature;
+	    vdensities[0] = density;
+	    vdensities[1] = density;
 	    
-	    std::cout <<  std::endl <<  std::endl;
+	    // Retrieve electron based heat capacities for each set of 
+	    // (density, temperature) values.
+
+	    std::vector< double > vcve(2);
+	    vcve = spEospac->getElectronHeatCapacity( vdensities,
+						      vtemps );
+
+	    // Since the i=0 and i=1 tuples of density and temperature 
+	    // are identical the two returned heat capacities should
+	    // also match.
+
+	    if ( match( vcve[0], vcve[1] ) )
+		pass() << "getElectronHeatCapacity() test passed for "
+		       << "vector state values.";
+	    else
+		fail() << "getElectronHeatCapacity() test failed for "
+		       << "vector state values.";
+	    
+	    // This result should also match the scalar value
+	    // calculated above.
+
+	    heatCapacity =
+		spEospac->getElectronHeatCapacity( density,
+						   temperature );
+
+	    if ( match( vcve[0], heatCapacity ) )
+		pass() << "getElectronHeatCapacity() test passed for "
+		       << "vector state values.";
+	    else
+		fail() << "getElectronHeatCapacity() test failed for "
+		       << "vector state values.";
 
 
 	    // ---------------------- //
@@ -176,117 +312,38 @@ namespace rtt_cdi_eospac_test {
 	    
 	} // end of runTest()
     
-//     // ------------------------------------------ //
-//     // Compare Reference value to computed values //
-//     // ------------------------------------------ //
+    // ------------------------------------------ //
+    // Compare Reference value to computed values //
+    // ------------------------------------------ //
     
-//     bool tEospac::match( const double computedValue,
-// 			 const double referenceValue ) const
-// 	{
-// 	    // Start by assuming that the two quantities match exactly.
-// 	    bool em = true;
+    bool tEospac::match( const double computedValue,
+			 const double referenceValue ) const
+	{
+	    // Start by assuming that the two quantities match exactly.
+	    bool em = true;
 	    
-// 	    // Compare items up to 10 digits of accuracy.
+	    // Compare items up to 10 digits of accuracy.
 	    
-// 	    const double TOL = 1.0e-10;
+	    const double TOL = 1.0e-10;
 	    
-// 	    // Calculate the absolute value of the relative difference between 
-// 	    // the computed and reference values.
+	    // Calculate the absolute value of the relative difference between 
+	    // the computed and reference values.
 	    
-// 	    std::cout.precision(10);
-// 	    std::cout << "\t" << computedValue
-// 		      << "\t" << referenceValue << std::endl;
+	    std::cout.precision(16);
+	    std::cout << "\t" << computedValue
+		      << "\t" << referenceValue << std::endl;
 	    
-// 	    double reldiff = fabs( ( computedValue - referenceValue )
-// 				   / referenceValue );
+	    double reldiff = fabs( ( computedValue - referenceValue )
+				   / referenceValue );
 	    
-// 	    // If the comparison fails then change the value of "em" return
-// 	    // the result;
-// 	    if ( reldiff > TOL )
-// 		em = false;
+	    // If the comparison fails then change the value of "em" return
+	    // the result;
+	    if ( reldiff > TOL )
+		em = false;
 	    
-// 	    return em;    
+	    return em;    
 	    
-// 	} // end of tEospac::match( double, double )
-    
-//     // ------------- //
-//     // Match vectors //
-//     // ------------- //
-    
-//     bool tEospac::match( 
-// 	const std::vector< double >& computedValue, 
-// 	const std::vector< double >& referenceValue ) const
-// 	{
-// 	    // Start by assuming that the two quantities match exactly.
-// 	    bool em = true;
-	    
-// 	    // Compare items up to 10 digits of accuracy.
-// 	    const double TOL = 1.0e-10;
-	    
-// 	    // Test each item in the list
-// 	    double reldiff = 0.0;
-// 	    for ( int i=0; i<computedValue.size(); ++i )
-// 		{
-// 		    std::cout.precision(10);
-// 		    std::cout << "\t" << computedValue[i]
-// 			      << "\t" << referenceValue[i] << std::endl;
-		    
-// 		    reldiff = fabs( ( computedValue[i] - referenceValue[i] )
-// 				    / referenceValue[i] );
-// 		    // If the comparison fails then change the value of "em"
-// 		    // and exit the loop.
-		    
-// 		    // DEBUG: must #include <iomanip>
-// 		    //
-// 		    // 	    std::cout << std::setprecision(14) << "   "
-// 		    // 		      << computedValue[i] << "   "
-// 		    // 		      << referenceValue[i] << "   "
-// 		    // 		      << reldiff << std::endl;
-		    
-// 		    if ( reldiff > TOL )
-// 			{
-// 			    em = false;
-// 			    break;
-// 			}
-// 		}
-// 	    return em;
-// 	} 
-    
-//     // ------------------------ //
-//     // Match vectors of vectors //
-//     // ------------------------ //
-    
-//     bool tEospac::match( 
-// 	const std::vector< std::vector<double> >& computedValue, 
-// 	const std::vector< std::vector<double> >& referenceValue ) const 
-// 	{
-// 	    // Start by assuming that the two quantities match exactly.
-// 	    bool em = true;
-	    
-// 	    // Compare items up to 10 digits of accuracy.
-// 	    const double TOL = 1.0e-10;
-	    
-// 	    // Test each item in the list
-// 	    double reldiff = 0.0;
-// 	    for ( int i=0; i<computedValue.size(); ++i )
-// 		{
-// 		    for ( int j=0; j<computedValue[i].size(); ++j )
-// 			{
-
-// 			    std::cout.precision(10);
-// 			    std::cout << "\t" << computedValue[i][j]
-// 				      << "\t" << referenceValue[i][j] << std::endl;
-			    
-// 			    reldiff = fabs( ( computedValue[i][j] - referenceValue[i][j] )
-// 					    / referenceValue[i][j] );
-// 			    // If the comparison fails then change the value of "em"
-// 			    // and exit the loop.
-// 			    if ( reldiff > TOL ) {
-// 				em = false; break; }
-// 			}
-// 		}
-// 	    return em;
-// 	} 
+	} // end of tEospac::match( double, double )
     
 } // end namespace rtt_cdi_eospac_test
 
