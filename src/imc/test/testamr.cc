@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
 		opacity[i] = opacity[i] / (tev[i] * tev[i] * tev[i]);
 
 	  // call rage_imc
-	    rage_imc_(&cycle, &numcells, &g_numcells, vert, lay, &numbcells,
+	    milstone_(&cycle, &numcells, &g_numcells, vert, lay, &numbcells,
 		      b_proc, b_cell, dedt, tev, rev, rho, opacity, opacity,
 		      &dt, &elapsed, &implicit, &npnom, &npmax, &dnpdt,
 		      &seed, &buffer, global_cell, t4_slope, e_dep, rad_den);

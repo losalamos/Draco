@@ -45,7 +45,7 @@ Parallel_Source_Init<MT,PT>::Parallel_Source_Init(SP<IT> interface,
       esstot(0), ecen(mesh), ecentot(0), ncen(mesh), ncentot(0), nvol(mesh),
       nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0),
       eloss_cen(0), ew_vol(mesh), ew_ss(mesh), ew_cen(mesh), volrn(mesh),
-      ssrn(mesh), cenrn(mesh), t4_slope(mesh), 
+      ssrn(mesh), cenrn(mesh), t4_slope(mesh, interface->get_t4_slope()), 
       npwant(0)
 {
     Require (interface);
@@ -230,8 +230,8 @@ Parallel_Source_Init<MT,PT>::initialize(SP<MT> mesh,
 	comb_census(*mesh, *rcontrol); 
     Check(ncentot == census->size());
 
-  // calculate T4_slope (until CRESTONE works)
-    calc_t4_slope(*mesh, *state);
+    // calculate T4_slope (until host works)
+    // calc_t4_slope(*mesh, *state);
 
   // build the source
     SP<Source<MT> > source;

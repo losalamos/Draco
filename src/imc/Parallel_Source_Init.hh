@@ -21,11 +21,13 @@
 //
 // revision history:
 // -----------------
-// 0) original - only for Full Domain Decomposition. (Requires procs_per_cell
-//               which could be assembled from cells_per_proc and which
-//               divides numbers of particles to each processor and the
-//               random number stream number.  Some generality exists in
-//               the accumulation of energies.)
+//  0) original - only for Full Domain Decomposition. (Requires procs_per_cell
+//                which could be assembled from cells_per_proc and which
+//                divides numbers of particles to each processor and the
+//                random number stream number.  Some generality exists in
+//                the accumulation of energies.)
+//  1) 032699 : readded the T^4 slopes that are provided to the interface by
+//              the host code
 // 
 //===========================================================================//
 
