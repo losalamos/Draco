@@ -1003,7 +1003,7 @@ EOF
        has_libdir="yes"
    fi
 
-   for lib in viz rng c4 traits ds++
+   for lib in viz rng c4 traits ds++ meshReaders
    do
        # temporary string to keep line from getting too long
        draco_depends="\${libdir}/lib${lib}\${libsuffix}"

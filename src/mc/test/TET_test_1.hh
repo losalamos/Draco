@@ -40,7 +40,7 @@ bool fail(int line, char *file)
 // revision history:
 // -----------------
 //  0) original : Committed 2000-02-09
-//  1) 2000-04-03 : Rewrite to be consistent with meshReader classes.
+//  1) 2000-04-10 : Rewritten to be consistent with new meshReader classes.
 //___________________________________________________________________________//
 
 class TET_test_1
@@ -88,20 +88,44 @@ class TET_test_1
 
     std::vector< std::vector<int> > get_element_nodes()
     {
-        std::vector< std::vector<int> > cells_nodes;
-        cells_nodes.resize(2);
+        std::vector< std::vector<int> > elements_nodes;
+        elements_nodes.resize(8);
 
-        cells_nodes[0].push_back(0);
-        cells_nodes[0].push_back(1);
-        cells_nodes[0].push_back(2);
-        cells_nodes[0].push_back(4);
+        elements_nodes[0].push_back(0);
+        elements_nodes[0].push_back(4);
+        elements_nodes[0].push_back(2);
 
-        cells_nodes[1].push_back(2);
-        cells_nodes[1].push_back(1);
-        cells_nodes[1].push_back(4);
-        cells_nodes[1].push_back(3);
+        elements_nodes[1].push_back(0);
+        elements_nodes[1].push_back(1);
+        elements_nodes[1].push_back(4);
 
-        return cells_nodes;
+        elements_nodes[2].push_back(0);
+        elements_nodes[2].push_back(2);
+        elements_nodes[2].push_back(1);
+
+        elements_nodes[3].push_back(1);
+        elements_nodes[3].push_back(2);
+        elements_nodes[3].push_back(3);
+
+        elements_nodes[4].push_back(1);
+        elements_nodes[4].push_back(3);
+        elements_nodes[4].push_back(4);
+
+        elements_nodes[5].push_back(2);
+        elements_nodes[5].push_back(4);
+        elements_nodes[5].push_back(3);
+
+        elements_nodes[6].push_back(0);
+        elements_nodes[6].push_back(1);
+        elements_nodes[6].push_back(2);
+        elements_nodes[6].push_back(4);
+
+        elements_nodes[7].push_back(2);
+        elements_nodes[7].push_back(1);
+        elements_nodes[7].push_back(4);
+        elements_nodes[7].push_back(3);
+
+        return elements_nodes;
     }
 
     // TET_Builder no longer requires this function.

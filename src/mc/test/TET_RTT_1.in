@@ -30,7 +30,7 @@ dims                      ! dimensions block keyword
   nnode_flags       3  2  2  ! # of flags for each of the node_flag_types
   nnode_data        3        ! # of node data fields
 
-  nsides            7        ! # of sides
+  nsides            6        ! # of sides
   nside_types       1        ! #side types actually present in "side" block
   side_types        3        ! list of side type indexes used in "side" block
   nside_flag_types  1        ! # of side_flag_types
@@ -151,13 +151,12 @@ nodes                          ! nodes block keyword
 end_nodes                      ! end_nodes block keyword
 
 sides                    ! sides block keyword
-  1  3  2 3 5  2         ! side#, side type index, global node #, side flags
-  2  3  1 3 5  1         !
-  3  3  1 2 5  1         !
-  4  3  1 2 3  1         !
-  5  3  2 3 4  1         !
-  6  3  2 4 5  1         !
-  7  3  3 4 5  1         !
+  1  3  1 5 3  1         ! side#, side type index, global node #, side flags
+  2  3  1 2 5  1         !
+  3  3  1 3 2  1         !
+  4  3  2 3 4  1         !
+  5  3  2 4 5  1         !
+  6  3  3 5 4  1         !
 end_sides                ! end_sides block keyword
 
 cells                    ! cells block keyword
@@ -171,8 +170,6 @@ nodedat                  ! node data keyword
   3  1.0 2.5 2.7         !
   4  1.0 2.5 2.5         !
   5  1.0 2.5 2.5         !
-  6  1.0 2.5 2.5         !
-  7  1.0 2.5 2.5         !
 end_nodedat              ! end node data keyword
 
 sidedat                  ! side data keyword

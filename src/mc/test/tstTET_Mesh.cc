@@ -15,7 +15,7 @@
 //  2) 2000-02-09 : Extension to include instantiation from a generic interface
 //                  class, and tests based on a particular example of such an
 //                  interface class, contained in TET_test_1.hh.
-//  3) 2000-04-03 : Rewrite to be consistent with meshReader classes.
+//  3) 2000-04-10 : Rewritten to be consistent with new meshReader classes.
 
 #include "../TET_Mesh.hh"
 #include "../TET_Builder.hh"
@@ -26,6 +26,7 @@
 #include "c4/global.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
+#include "meshReaders/RTT_Format.hh"
 
 #include <iomanip>
 #include <vector>
@@ -44,6 +45,7 @@ using rtt_mc::sample_in_triangle;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
 using rtt_mc_test::TET_test_1;
+using rtt_meshReaders::RTT_Format;
 
 //! Typedef for scalar field of ThreeVectors.
 typedef std::vector<ThreeVector> SF_THREEVECTOR;
@@ -266,7 +268,7 @@ void Test_TET()
 
     // Later, add some vector position and direction tests here.
 
-    // Test interface ===> TET_Builder instantiation.
+    // Test interface ===> TET_Builder instantiation with hand-coded interface.
 
     SP<TET_test_1> interface(new TET_test_1());
     if (!interface)                                   ITFAILS;
@@ -299,6 +301,23 @@ void Test_TET()
     if (fabs(m_coords[4][0] - 0.5) > TET_epsilon)     ITFAILS;
     if (fabs(m_coords[4][1] - 0.5) > TET_epsilon)     ITFAILS;
     if (fabs(m_coords[4][2] - 1.0) > TET_epsilon)     ITFAILS;
+
+    // Test interface ===> TET_Builder instantiation with RTT_Format class.
+
+    SP<RTT_Format> reader_1(new RTT_Format("TET_RTT_1"));
+    if (!reader_1)                                       ITFAILS;
+
+    TET_Builder read_build_1(reader_1);
+
+    SP<TET_Mesh> mesh_ptr_3 = read_build_1.build_Mesh();
+    if (!mesh_ptr_3)                                     ITFAILS;
+
+    // Again, the pointers themselves should not be equal...
+    if (mesh_ptr_1 == mesh_ptr_3)                        ITFAILS;
+    if (mesh_ptr_2 == mesh_ptr_3)                        ITFAILS;
+
+    // ... but the meshes should be equal.
+    if (*mesh_ptr_1 != *mesh_ptr_3)                      ITFAILS;
 
 
 }   // end Test_TET()

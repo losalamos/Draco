@@ -16,8 +16,8 @@
 namespace rtt_mc
 {
 
-// using std::cerr;  // FOR DEBUGGING.
-// using std::endl;  // FOR DEBUGGING.
+using std::cerr;  // FOR DEBUGGING.
+using std::endl;  // FOR DEBUGGING.
 
 //___________________________________________________________________________//
 /*!
@@ -30,7 +30,7 @@ namespace rtt_mc
 //  0)   Original : Committed 2000-02-08
 //  1) 2000-02-12 : Completed namespace issues, bug fixes, and elimination
 //                  of using declarations.
-//  2) 2000-04-04 : Rewritten to be consistent with new meshReader classes.
+//  2) 2000-04-10 : Rewritten to be consistent with new meshReader classes.
 //
 //___________________________________________________________________________//
 
@@ -120,11 +120,22 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
 
     // Get data arrays from the interface for TET_Mesh objects.
     nodes_coords   = interface->get_node_coords();
-    cells_vertices = interface->get_element_nodes();
 
     // TET_Mesh objects are 3-D.
     for (int node_ = 0 ; node_ < nodes_coords.size() ; node_++)
         Check (nodes_coords[node_].size() == THREE);
+
+    cells_vertices = interface->get_element_nodes();
+
+    VF_INT::iterator first_cell = cells_vertices.begin();
+    for ( ; first_cell != cells_vertices.end() ; first_cell++)
+        if ((*first_cell).size() != THREE)
+            break;
+
+    Require (first_cell != cells_vertices.begin());
+    Require (first_cell != cells_vertices.end());
+
+    cells_vertices.erase(cells_vertices.begin(),first_cell);
 
     // TET_Mesh objects have four vertices.
     for (int cell_ = 0 ; cell_ < cells_vertices.size() ; cell_++)
