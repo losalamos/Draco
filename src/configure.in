@@ -28,7 +28,7 @@ AC_CONFIG_SUBDIRS(stdheaders ds++)
 ##---------------------------------------------------------------------------##
 
 AC_CONFIG_SUBDIRS(xm rng c4 units traits cdi meshReaders quadrature \
-                  stopwatch)
+                  stopwatch plot2D)
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 3

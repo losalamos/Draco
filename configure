@@ -137,6 +137,7 @@ fi
 
 
 
+
 ###-------------------------------------------------------------------------###
 ### include the DRACO argument macro
 ###-------------------------------------------------------------------------###
@@ -188,12 +189,6 @@ ac_help="$ac_help
   --with-mpi-inc[=DIR]    tell where MPI includes are (\${MPI_INC_DIR} by default)"
 ac_help="$ac_help
   --with-mpi-lib[=DIR]    tell where MPI libs are (\${MPI_LIB_DIR} by default)"
-ac_help="$ac_help
-  --enable-shmem          turn on shmem (off by default)"
-ac_help="$ac_help
-  --with-shmem-inc[=DIR]    tell where SHMEM includes are (\${SHMEM_INC_DIR} by default)"
-ac_help="$ac_help
-  --with-shmem-lib[=DIR]    tell where SHMEM libs are (\${SHMEM_LIB_DIR} by default)"
 ac_help="$ac_help
   --with-sprng[=lib]      determine the rng lib (lfg is default)"
 ac_help="$ac_help
@@ -919,129 +914,6 @@ EOF
 
                
             
-   	
-      # Check whether --enable-shmem or --disable-shmem was given.
-if test "${enable_shmem+set}" = set; then
-  enableval="$enable_shmem"
-  :
-fi
-
-
-      
-        
-   
- # Check whether --with-shmem-inc or --without-shmem-inc was given.
-if test "${with_shmem_inc+set}" = set; then
-  withval="$with_shmem_inc"
-  if test $with_shmem_inc != "no" ; then
-      if test $with_shmem_inc = "yes" ; then
-         # following eval needed to remove possible '\' from \${SHMEM_INC_DIR}
-         eval with_shmem_inc=\${SHMEM_INC_DIR}
-      fi
-
-      # this command removes double slashes and any trailing slash
-
-      with_shmem_inc=`eval echo "$with_shmem_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
-      if test "$with_shmem_inc:-null}" = "null" ; then
-         { echo "configure: error: --with-shmem-inc directory is unset" 1>&2; \
-           exit 1; }
-      fi
-      if test ! -d $with_shmem_inc ; then
-         { echo "configure: error: $with_shmem_inc: invalid directory" 1>&2; \
-           exit 1; }
-      fi
-
-      # this sets up the shell variable, with the name of the CPPtoken,
-      # and that we later will do an AC_SUBST on.
-      SHMEM_INC="${with_shmem_inc}/"
-
-      # this defines the CPP macro with the directory and single slash appended.
-      cat >> confdefs.h <<EOF
-#define SHMEM_INC ${with_shmem_inc}/
-EOF
-
-      # print a message to the users (that can be turned off with --silent)
-
-      echo "SHMEM_INC has been set to $SHMEM_INC" 1>&6
-
-   fi
-fi
-
-
-   
-
-   
-        
-   
- # Check whether --with-shmem-lib or --without-shmem-lib was given.
-if test "${with_shmem_lib+set}" = set; then
-  withval="$with_shmem_lib"
-  if test $with_shmem_lib != "no" ; then
-      if test $with_shmem_lib = "yes" ; then
-         # following eval needed to remove possible '\' from \${SHMEM_LIB_DIR}
-         eval with_shmem_lib=\${SHMEM_LIB_DIR}
-      fi
-
-      # this command removes double slashes and any trailing slash
-
-      with_shmem_lib=`eval echo "$with_shmem_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
-      if test "$with_shmem_lib:-null}" = "null" ; then
-         { echo "configure: error: --with-shmem-lib directory is unset" 1>&2; \
-           exit 1; }
-      fi
-      if test ! -d $with_shmem_lib ; then
-         { echo "configure: error: $with_shmem_lib: invalid directory" 1>&2; \
-           exit 1; }
-      fi
-
-      # this sets up the shell variable, with the name of the CPPtoken,
-      # and that we later will do an AC_SUBST on.
-      SHMEM_LIB="${with_shmem_lib}/"
-
-      # this defines the CPP macro with the directory and single slash appended.
-      cat >> confdefs.h <<EOF
-#define SHMEM_LIB ${with_shmem_lib}/
-EOF
-
-      # print a message to the users (that can be turned off with --silent)
-
-      echo "SHMEM_LIB has been set to $SHMEM_LIB" 1>&6
-
-   fi
-fi
-
-
-   
-
-
-   # define SHMEM include path
-   if test -n "${SHMEM_INC}" ; then
-       # remember that SHMEM_INC has the final slash
-       SHMEM_H="\"${SHMEM_INC}shmem.h\""
-   elif test -z "${SHMEM_INC}" ; then
-       SHMEM_H="<mpp/shmem.h>"
-   fi
-   
-   # we define SHMEM_H regardless of whether a PATH is set
-   cat >> confdefs.h <<EOF
-#define SHMEM_H ${SHMEM_H}
-EOF
-
-   # determine if this package is needed for testing or for the
-   # package
-   vendor_shmem=pkg
-	
-   # if the user sets SHMEM_INC or SHMEM_LIB and enable_shmem=no
-   # then turn on enable_shmem
-   if test "${enable_shmem:=no}" = no ; then
-       if test -n "${SHMEM_INC}" ; then
-	   enable_shmem='yes'
-       elif test -n "${SHMEM_LIB}" ; then
-	   enable_shmem='yes'
-       fi
-   fi
-
-      
    
       # Check whether --with-sprng or --without-sprng was given.
 if test "${with_sprng+set}" = set; then
@@ -1748,7 +1620,7 @@ subdirs="autodoc tools src doc"
 # Extract the first word of "autoconf", so it can be a program name with args.
 set dummy autoconf; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1752: checking for $ac_word" >&5
+echo "configure:1624: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_AUTOCONF'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1786,7 +1658,7 @@ for dir in $subdirs
    do
        if test -d ${srcdir}/${dir} ; then
 	   echo $ac_n "checking "configure in ${srcdir}/${dir}"""... $ac_c" 1>&6
-echo "configure:1790: checking "configure in ${srcdir}/${dir}"" >&5
+echo "configure:1662: checking "configure in ${srcdir}/${dir}"" >&5
 	   cd $srcdir/$dir
 	   if test -f configure ; then 
 	       echo "$ac_t"""exists"" 1>&6
@@ -1948,8 +1820,6 @@ s%@infodir@%$infodir%g
 s%@mandir@%$mandir%g
 s%@MPI_INC@%$MPI_INC%g
 s%@MPI_LIB@%$MPI_LIB%g
-s%@SHMEM_INC@%$SHMEM_INC%g
-s%@SHMEM_LIB@%$SHMEM_LIB%g
 s%@SPRNG_INC@%$SPRNG_INC%g
 s%@SPRNG_LIB@%$SPRNG_LIB%g
 s%@PCG_LIB@%$PCG_LIB%g
