@@ -1,3 +1,14 @@
+2002-08-12  Thomas M. Evans  <tme@lanl.gov>
+
+	* Particle_Buffer_Defs.h, Unset_Particle_Buffer_Defs.h,
+	Particle_Buffer.t.hh: Added #defines and #undef that are included
+	at the beginning and end of Particle_Buffer.t.hh
+	(Send_Particle_Buffer, Recv_Particle_Buffer) to add
+	Particle_Buffer<PT>:: scoping to the derived classes.  The COMPAQ
+	CXX-6_5_0 compiler seems to have problems scoping template base
+	classes.  This is a, relatively, non-itrusive work-around until
+	the bug is fixed.
+
 2002-05-09  Thomas M. Evans  <tme@lanl.gov>
 
 	* mc: released version mc-3_0_0. Lots of changes.  Upgraded to new

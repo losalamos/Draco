@@ -1,3 +1,21 @@
+2002-08-12  Thomas M. Evans  <tme@lanl.gov>
+
+	* Source_Builder_Defs.h, Unset_Source_Builder_Defs.h,
+	Particle_Defs.h, Unset_Particle_Defs.h, DD_Source_Builder.hh,
+	DD_Source_Builder.t.hh, Rep_Source_Builder.hh,
+	Rep_Source_Builder.t.hh, Gray_Particle.hh, Gray_Particle.t.hh,
+	Multigroup_Particle.hh, Multigroup_Particle.t.hh:  Added #define
+	and #undef header files that are included at the beginning and end
+	of each file to correct a Compaq CXX 6_5_0 bug.  These defs
+	redefine the protected and public data in a templated base class
+	to include the base class scoping in the derived class.  This
+	works around CXX's name mangling problem.
+
+	The #define's need to be #undef'd, especially at the end of
+	headers, to avoid name collision.  Remember, #define's do not obey
+	scoping rules; they will munge anything with the appropriate
+	name. 
+
 2002-05-09  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: released imc-3_0_0.  Lots of changes:
