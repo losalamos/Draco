@@ -33,18 +33,18 @@ BSwap<T>::BSwap( int _other_node, int sync /*=0*/ )
 	if (node < other_node) {
 
 	// Send salutation.
-	    C4_Send( &trash, 0, other_node, BS_Hello, group );
+	    Send( &trash, 0, other_node, BS_Hello, group );
 
 	// Wait for acknoledgement.
-	    C4_Recv( &trash, 0, other_node, BS_Hello, group );
+	    Recv( &trash, 0, other_node, BS_Hello, group );
 
 	} else if ( node > other_node ) {
 
 	// Wait for salutation.
-	    C4_Recv( &trash, 0, other_node, BS_Hello, group );
+	    Recv( &trash, 0, other_node, BS_Hello, group );
 
 	// Send acknoledgement.
-	    C4_Send( &trash, 0, other_node, BS_Hello, group );
+	    Send( &trash, 0, other_node, BS_Hello, group );
 
 	} else {
 
@@ -70,7 +70,8 @@ BSwap<T>::~BSwap()
 template<class T>
 void BSwap<T>::send( const T& d )
 {
-    C4_Send( (void *) &d, sizeof(d), other_node, BS_xmit, group );
+//     C4_Send( (void *) &d, sizeof(d), other_node, BS_xmit, group );
+    Send( &d, 1, other_node, BS_xmit, group );
 }
 
 //---------------------------------------------------------------------------//
@@ -80,7 +81,8 @@ void BSwap<T>::send( const T& d )
 template<class T>
 void BSwap<T>::recv( T& d )
 {
-    int len = C4_Recv( &d, sizeof(d), other_node, BS_xmit, group );
+// Needs attention.  Can we convert this to Recv( T *, ... ) ???
+    int len = Recv( (char *) &d, sizeof(d), other_node, BS_xmit, group );
 
     Assert( len == sizeof(d) );
 }

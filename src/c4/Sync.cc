@@ -17,7 +17,7 @@ C4_NAMESPACE_BEG
 HSync::HSync( int s /*=1*/ )
 {
     if (s)
-	C4_gsync();
+	gsync();
 }
 
 //---------------------------------------------------------------------------//
@@ -27,7 +27,7 @@ HSync::HSync( int s /*=1*/ )
 TSync::~TSync()
 {
     if (sync)
-	C4_gsync();
+	gsync();
 }
 
 C4_NAMESPACE_END

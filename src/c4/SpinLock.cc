@@ -19,7 +19,7 @@ SpinLock::SpinLock( int _lock /*=1*/ )
     : lock(_lock)
 {
     if (lock && node)
-	C4_Recv( &trash, 0, node-1, SL_Next, 0 );
+	Recv( &trash, 0, node-1, SL_Next, 0 );
 }
 
 //---------------------------------------------------------------------------//
@@ -30,7 +30,7 @@ SpinLock::SpinLock( int _lock /*=1*/ )
 SpinLock::~SpinLock()
 {
     if (lock && node < lastnode)
-	C4_Send( &trash, 0, node+1, SL_Next, 0 );
+	Send( &trash, 0, node+1, SL_Next, 0 );
 }
 
 C4_NAMESPACE_END
