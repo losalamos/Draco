@@ -13,15 +13,15 @@ need_c4		:= yes
 need_namelist	:= yes
 need_spdf	:= yes
 need_util	:= yes
-need_pooma	:= yes
+#need_pooma	:= yes
+need_mesh	:= yes
 need_pcg        := yes
-need_lapack     := yes
 
 # Go get the standard includeable makefile for Draco components.
 
 include ../../config/makefile
 
-srcs	= main.cc Quad_Params.cc Test_Prob.cc
+srcs	= main.cc Quad_Params.cc Test_Prob.cc Run_DB.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.
@@ -48,6 +48,8 @@ ifneq ($(dodeps),no)
 	(cd ../../spdf;   $(MAKE) $(subnj) dodeps=no)
 	(cd ../../util;   $(MAKE) $(subnj) dodeps=no)
 	(cd ../../linalg; $(MAKE) $(subnj) dodeps=no)
+	(cd ../../geom;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../../mesh;   $(MAKE) $(subnj) dodeps=no)
 endif
 
 $(dep_libutil):
