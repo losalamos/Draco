@@ -38,6 +38,10 @@ runregression ()
   
    LAMG_DEPEND_DIRS="src/LAMG src/LAMGDiffusionSolver"
 
+   # directories that depend of gandolf
+
+   GANDOLF_DEPEND_DIRS="src/cdi_gandolf"
+
    # Remove, create the target directory, and cd into it.
 
    echo rm -rf $TARGETDIR
@@ -75,6 +79,14 @@ runregression ()
       echo removing POOMA dependent directories: $POOMA_DEPEND_DIRS
       echo rm -rf $POOMA_DEPEND_DIRS
       rm -rf $POOMA_DEPEND_DIRS
+   fi
+
+   # remove directories that depend on gandolf if they can't be found.
+
+   if [ "$HAS_GANDOLFLIB" != "true" ] ; then
+      echo removing Gandolf dependent directories: $GANDOLF_DEPEND_DIRS
+      echo rm -rf $GANDOLF_DEPEND_DIRS
+      rm -rf $GANDOLF_DEPEND_DIRS
    fi
 
    # remove fourier stuff, period.
@@ -135,6 +147,7 @@ SunOS)
     PCG_LIBPATH_scalar=${VENDORS}/pcglib/${UNAME}/lib/serial
     PCG_LIBPATH_mpi=${VENDORS}/pcglib/${UNAME}/lib/mpi
     SPRNG_LIBPATH=${VENDORS}/sprng/${UNAME}
+    GANDOLF_LIBPATH=${VENDORS}/gandolf/${UNAME}/lib
 
     BITS="0"
     C4="scalar mpi"
@@ -143,10 +156,12 @@ IRIX64)
     PCG_LIB64PATH_scalar=${VENDORS}/pcglib/${UNAME}/lib64/serial
     PCG_LIB64PATH_mpi=${VENDORS}/pcglib/${UNAME}/lib64/mpi
     SPRNG_LIB64PATH=${VENDORS}/sprng/${UNAME}/lib64
+    GANDOLF_LIB64PATH=${VENDORS}/gandolf/${UNAME}/lib64
 
     PCG_LIBN32PATH_scalar=${VENDORS}/pcglib/${UNAME}/lib32/serial
     PCG_LIBN32PATH_mpi=${VENDORS}/pcglib/${UNAME}/lib32/mpi
     SPRNG_LIBN32PATH=${VENDORS}/sprng/${UNAME}/lib32
+    GANDOLF_LIBN32PATH=${VENDORS}/gandolf/${UNAME}/lib32
 
     BITS="64 N32"
     C4="scalar mpi"
@@ -156,6 +171,7 @@ IRIX64)
     PCG_LIBPATH_scalar=${VENDORS}/pcglib/${UNAME}/lib/serial
     PCG_LIBPATH_mpi=${VENDORS}/pcglib/${UNAME}/lib/mpi
     SPRNG_LIBPATH=${VENDORS}/sprng/${UNAME}
+    GANDOLF_LIBPATH=${VENDORS}/gandolf/${UNAME}/lib
 
     BITS="0"
     C4="scalar"
@@ -183,6 +199,7 @@ do
       HAS_SPRNGLIB="false"
       HAS_FOURIER="false"
       HAS_LAMG="false"
+      HAS_GANDOLF="false"
 
       CONFIGUREFLAGS="--with-c4=$c4"
 
@@ -192,6 +209,7 @@ do
       else
          eval PCG_LIBPATH='$PCG_LIB'$b'PATH_'$c4
          eval SPRNG_LIBPATH='$SPRNG_LIB'$b'PATH'
+         eval GANDOLF_LIBPATH='$GANDOLF_LIB'$b'PATH'
          TARGETDIR=$TARGETROOT/${c4}_$b/draco
       fi
 
@@ -227,6 +245,14 @@ do
            -a -f $SPRNG_LIBPATH/liblfg.a   ] ; then
          HAS_SPRNGLIB="true"
          CONFIGUREFLAGS="--with-sprng-lib=$SPRNG_LIBPATH --with-sprng-inc=$SPRNG_INCPATH $CONFIGUREFLAGS" 
+      fi
+
+      # Check if libgandolf.so is available
+
+      if [    -d $GANDOLF_LIBPATH \
+           -a -f $GANDOLF_LIBPATH/libgandolf.so ] ; then
+	 HAS_GANDOLF="true"
+	 CONFIGUREFLAGS="--with-gandolf-lib=$GANDOLF_LIBPATH $CONFIGUREFLAGS"
       fi
 
       # turn on N32 bit compilation if $b is N32
