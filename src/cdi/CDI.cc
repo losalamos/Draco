@@ -98,22 +98,31 @@ const double coeff    =   15.0 / (pi*pi*pi*pi);
 inline double taylor_series_planck(double x)
 {
     using std::numeric_limits;
-    using std::log10;
-    using std::ceil;
+    using std::log;
 
-    Require (x >= 0.0);
+    Require( x >= 0.0 );
 
     // Check for potential overflow errors:
 
     if( x > 1.0 )
     {
-	// This Taylor series expansion takes x to the 21st power.  The exponent
-	// of the final value will be log(x) + 21.  This needs to be less than
-	// the maximum exponent for double on this machine.
+	// This Taylor series expansion takes x to the 21st power.  We need
+	// to ensure that x is small enough so that x^21 is less than the
+	// largest double that can be represented on the current machine.
+
+	// The maximum double for the current machine is
+	double const maxDouble( numeric_limits<double>::max() );
+
+	// To be conservative assume that we are looking for x^22 so that we
+	// will now require that x^22 < maxDouble.  However, if x is too big
+	// this comparison will also result in an overflow.  We take the log
+	// of both sides we will have:
+	//
+	// Require( log( x^22 ) < log(maxDouble) );
+	//
+	// This can be simplified to avoid the overflow as follows:
 	
-	int const maxExponent = numeric_limits<double>::max_exponent10;
-	int const predictedExponent( 21 + static_cast<int>(ceil(log10(x))) );
-	Require ( predictedExponent < maxExponent ); // prevent overflow errors
+	Require( 22.0*log(x) < log(maxDouble) );
     }
 
     // calculate the 21-term Taylor series expansion for x
