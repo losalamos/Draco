@@ -83,6 +83,7 @@ MESH_LIB	= -L$(SRC_TOP)/mesh    -lmesh_$(env)
 3T_LIB		= -L$(SRC_TOP)/3T      -l3T_$(env)
 SN_LIB		= -L$(SRC_TOP)/sn      -lsn_$(env)
 IMCTEST_LIB     = -L$(SRC_TOP)/imctest -limctest_$(env)
+PYCXX_LIB	= -L$(SRC_TOP)/pycxx   -lpycxx_$(env)
 
 ifeq ($(need_util),yes)
 need_spdf	:= yes
@@ -220,6 +221,9 @@ LINK_LIBS	+= $(GEOM_LIB)
 endif
 ifeq ($(need_linalg),yes)
 LINK_LIBS	+= $(LINALG_LIB)
+endif
+ifeq ($(need_pycxx),yes)
+LINK_LIBS	+= $(PYCXX_LIB)
 endif
 ifeq ($(need_util),yes)
 LINK_LIBS	+= $(UTIL_LIB)
