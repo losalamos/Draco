@@ -20,6 +20,7 @@
 #include "diffusion/TestSolver.t.hh"
 #include "mesh/Mesh_XYZ.hh"
 #include "nml/Group.hh"
+#include "c4/global.hh"
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -49,6 +50,10 @@ inline void multiply(FT &b, const MAT &A, const FT &x)
 
 int main( int argc, char *argv[] )
 {
+    std::cout << "Calling C4::Init(...)" << std::endl;
+	
+    C4::Init(argc, argv);
+    
     using rtt_diffusion::TestSolver;
     using rtt_PCGDiffusionSolver::SolverP1Diff;
     using rtt_PCGDiffusionSolver::pcg_DB;
@@ -84,6 +89,9 @@ int main( int argc, char *argv[] )
 		  fCtor, solver, diff_db, tdb.tolerance, std::cout);
     tester.run();
 
+    std::cout << "Calling C4::Finalize()" << std::endl;
+    C4::Finalize();
+    
     return 0;
 }
 

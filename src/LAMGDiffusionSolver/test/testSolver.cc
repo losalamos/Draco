@@ -20,6 +20,7 @@
 #include "mesh/Mesh_XYZTraits.hh"
 #include "nml/Group.hh"
 #include "nml/Items.hh"
+#include "c4/global.hh"
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -65,6 +66,10 @@ inline rtt_LAMG::Options::Outlevel outlevel(int levout)
 
 int main( int argc, char *argv[] )
 {
+    std::cout << "Calling C4::Init(...)" << std::endl;
+	
+    C4::Init(argc, argv);
+    
     using rtt_diffusion::TestSolver;
     using rtt_LAMGDiffusionSolver::SolverP1Diff;
     typedef TestSolver<Mesh_XYZ,SolverP1Diff> Tester;
@@ -100,6 +105,9 @@ int main( int argc, char *argv[] )
 		  fCtor, solver, diff_db, tdb.tolerance, std::cout);
     tester.run();
 
+    std::cout << "Calling C4::Finalize()" << std::endl;
+    C4::Finalize();
+    
     return 0;
 }
 

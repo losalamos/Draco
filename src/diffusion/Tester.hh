@@ -57,16 +57,13 @@ class Tester
 	: name_m(name_in), argc_m(argc), argv_m(argv),
 	  os_m(os_in), passed_m(false)
     {
-	os() << "Calling C4::Init(...)" << std::endl;
-	
-	C4::Init( argc_m, argv_m );
+	// empty
     }
     
     //DEFAULTED: Tester(const Tester &rhs);
     virtual ~Tester()
     {
-	os() << "Calling C4::Finalize()" << std::endl;
-	C4::Finalize();
+	// empty
     }
 
     // MANIPULATORS
