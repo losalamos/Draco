@@ -717,7 +717,11 @@ void Parallel_Source_Init<MT,PT>::calc_ess()
     // loop over surface sources in problem
     for (int ss = 0; ss < ss_pos.size(); ss++)
     {
-	vector<int> surcells = ess.get_Mesh().get_surcells(ss_pos[ss]);
+        // surface src cells (local id) must be defined by the host
+	Check (defined_surcells[ss].size() > 0);
+	vector<int> surcells = defined_surcells[ss];
+	ess.get_Mesh().check_defined_surcells(ss_pos[ss], surcells);
+
 	for (int sc = 0; sc < surcells.size(); sc++)
 	{      
 	    // make sure this cell doesn't already have a surface source

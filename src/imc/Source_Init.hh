@@ -30,6 +30,7 @@
 //  4) 6-18-99 : Removed the post-comb census adjustment.  Verified on 
 //               five test problems.  Discussed in memo "Eliminating the 
 //               Post-Comb Census Adjustment," XTM:99-49(U), July 13, 1999.
+//  5) 10-6-99 : Added user-/host-defined surface source cells to calc_ess.
 // 
 //===========================================================================//
 
@@ -65,6 +66,7 @@ private:
     double rad_s_tend;
     vector<string> ss_pos;
     vector<double> ss_temp;
+    vector< vector<int> > defined_surcells;
     vector<double> rad_temp;
     double delta_t;
     int npmax;

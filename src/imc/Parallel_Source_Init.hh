@@ -43,6 +43,7 @@
 //              will have to reinstall this adjustment in the future with 
 //              more complexities to ensure reproducibility and to handle
 //              general rep/domain decomposition topologies. 
+//  5) 100799 : Added user-/host-defined surface source cells to calc_ess.
 // 
 //===========================================================================//
 
@@ -71,6 +72,7 @@ class Parallel_Source_Init
     double rad_s_tend;
     std::vector<std::string> ss_pos;
     std::vector<double> ss_temp;
+    vector< vector<int> > defined_surcells;
     std::vector<double> rad_temp;
     std::vector<int> global_cell;
     double delta_t;

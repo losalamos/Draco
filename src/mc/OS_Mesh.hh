@@ -177,7 +177,7 @@ class OS_Mesh
     const CCVF_d& get_vertex() const { return vertex; }
     const CCVF_i& get_cell_pair() const { return cell_pair; }
 
-    // required services for transport; 
+    // required services for transport and source; 
     int next_cell(int cell, int face) const { return layout(cell, face); }
     int get_cell(const vector<double> &) const;
     double get_db(const vector<double> &, const vector<double> &, int, 
@@ -187,6 +187,7 @@ class OS_Mesh
     inline double volume(int) const;
     inline double face_area(int, int) const;
     vector<int> get_surcells(string) const;
+    void check_defined_surcells(const string, const vector<int> &) const;
     int get_bndface(string, int) const;
     inline CCVF_d get_vertices(int, int) const;
     inline CCVF_d get_vertices(int) const;
