@@ -92,6 +92,8 @@ void Tally_Test()
     SP<OS_Mesh> mesh = mb.build_Mesh();
     Tally<OS_Mesh> t(mesh);
 
+    if (t.num_faces() != 4) ITFAILS;
+
     // there should be no random walk sub tally
     if (t.get_RW_Sub_Tally()) ITFAILS;
 
@@ -138,7 +140,7 @@ void Tally_Test()
 	    t.accum_n_killed();
 	    t.accum_ew_killed(i * 2.0);
 	    t.accum_n_escaped();
-	    t.accum_ew_escaped(i * 1.0);
+	    t.accum_ew_escaped(i * 1.0, 1 + (i % 4));  // Hit all four faces
 	    t.accum_n_bndcross();
 	    t.accum_n_reflections();
 	    t.get_RW_Sub_Tally()->accum_n_random_walks();
@@ -166,6 +168,7 @@ void Tally_Test()
 	    if (t.get_accum_n_bndcross() != pcount)        ITFAILS;
 	    if (t.get_accum_n_reflections() != pcount)     ITFAILS;
 	    if (st->get_accum_n_random_walks() != pcount)  ITFAILS;
+
 	}
     }
 
@@ -225,6 +228,11 @@ void Tally_Test()
     if (t.get_ew_escaped() != sum_i*ppcell)                  ITFAILS;
     if (t.num_cells() != 6)                                  ITFAILS;
 
+    double total_ew_escaped = 0.0;
+    for (int face = 1; face <=4; ++face) total_ew_escaped += t.get_ew_escaped(face);
+
+    if (!soft_equiv(total_ew_escaped, t.get_ew_escaped())) ITFAILS;
+    
     if (rtt_imc_test::passed)
 	PASSMSG("Tally tests ok.")
 }

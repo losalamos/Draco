@@ -573,7 +573,7 @@ void Particle<MT>::boundary_event(const MT  &mesh,
     if (descriptor == ESCAPE)
     {
 	tally.accum_n_escaped();
-	tally.accum_ew_escaped(ew);
+	tally.accum_ew_escaped(ew,face);
     }
 }
 

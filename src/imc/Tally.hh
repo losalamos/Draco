@@ -140,6 +140,8 @@ class Tally
     int    n_bndcross;
     int    n_reflections;
 
+    sf_double ew_escaped_per_face;
+
     // >>> SUB TALLY OBJECTS
     SP_RW_ST              rw_sub_tally;
     std::vector<SP_S_ST>  surface_sub_tallies;
@@ -200,7 +202,7 @@ class Tally
     void accum_n_escaped(const int n = 1) { Check(pos(n)); n_escaped += n; }
 
     //! Accumulate the amount of energy that escapes.
-    void accum_ew_escaped(const double ew) { Check(pos(ew)); ew_escaped += ew; }
+    void accum_ew_escaped(const double ew, int face);
     
     //! Accumulate the number of cell boundary crossings.
     void accum_n_bndcross(const int n = 1) { Check(pos(n)); n_bndcross += n; }
@@ -248,6 +250,8 @@ class Tally
 
     //! Get the amount of energy that escapes.
     double get_ew_escaped() const { return ew_escaped; }
+    
+    double get_ew_escaped(int face) const;
 
     //! Get the number of particles that escape.
     int get_accum_n_escaped() const { return n_escaped; }
@@ -260,6 +264,8 @@ class Tally
 
     //! Get the number of cells represented by this tally (on-processor).
     int num_cells() const { return energy_dep.get_Mesh().num_cells(); }
+
+    int num_faces() const { return ew_escaped_per_face.size(); }
 
     // Get the cell volume.
     inline double volume(int) const;
@@ -350,6 +356,43 @@ void Tally<MT>::assign_Surface_Sub_Tally(SP_S_ST tally)
 {
     surface_sub_tallies.resize(1, tally); 
 } 
+
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief accumulate escaped energy weight on a specific face
+ * 
+ * \param name description
+ * \return description
+ */
+template<typename MT>
+void Tally<MT>::accum_ew_escaped(double ew, int face)
+{
+    Check(pos(ew));
+    Check(face > 0);
+    Check(face <= ew_escaped_per_face.size());
+
+    ew_escaped_per_face[face-1] += ew;
+    ew_escaped += ew;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Get the tallied escaping energy weight for a face
+ * 
+ * \param face The face
+ * \return the tallied escaped energy weight
+ */
+template<typename MT>
+double Tally<MT>::get_ew_escaped(int face) const
+{
+    Check(face >  0);
+    Check(face <= ew_escaped_per_face.size());
+
+    return ew_escaped_per_face[face-1];
+}
+
+
 
 } // end of rtt_imc
 

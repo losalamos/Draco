@@ -57,7 +57,7 @@ AC_RUNTESTS(tstFrequency \
 
 # DRACO SETUP
 AC_DRACO_ENV
-AC_DRACO_AUTODOC
+AC_DRACO_AUTODOC(draco-4_3_0)
 
 # OUTPUTS
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \

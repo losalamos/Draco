@@ -46,7 +46,8 @@ Tally<MT>::Tally(SP_MT mesh)
       n_escaped(0),
       ew_escaped(0), 
       n_bndcross(0),
-      n_reflections(0)
+      n_reflections(0),
+      ew_escaped_per_face(2*(mesh->get_Coord().get_dim()))
 {
     Require (mesh);
 }
