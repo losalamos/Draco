@@ -19,7 +19,7 @@
 // class CAR_CU_Interface - 
 //
 // Purpose : parses a continuous adaptive refinement cartesian unstructured 
-//           mesh input file, interface between input file and IMCTEST package
+//           mesh input file, interface between input file and amr_mesh package
 //
 // revision history:
 // -----------------
@@ -28,7 +28,6 @@
 //===========================================================================//
 
 #include "Mesh.hh"
-#include "imc/Global.hh"
 #include "ds++/SP.hh"
 #include "meshReaders/RTT_Format.hh"
 #include <iostream>
@@ -58,9 +57,9 @@ using rtt_format::RTT_Format;
  *         implemented before the CAR_CU_Builder is instantiated and used to
  *         construct a CAR_CU_Mesh. A smart pointer to a CAR_CU_Interface 
  *         class object is also a required argument to the constructors for 
- *         the rtt_imc::Opacity_Builder and rtt_imc::Source_Init classes. 
+ *         the rtt_amr::Opacity_Builder and rtt_imc::Source_Init classes. 
  *         Finally, this class also contains the data needed to construct a
- *         rtt_imc::Mat_State class object. \ref rtt_amr_input documents and
+ *         rtt_amr::Mat_State class object. \ref rtt_amr_input documents and
  *         illustrates the required user input file structure.
  *
  *\sa The \ref amr_overview presents a summary of the capabilities and the

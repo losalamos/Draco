@@ -108,20 +108,20 @@ public:
  * \brief Returns the number of cells in the mesh.
  * \return Number of mesh cells. 
  */
-    int num_cells() const { return face_cell.size(); }
+    int get_num_cells() const { return face_cell.size(); }
 /*!
  * \brief Returns the number of faces for the specified cell.
  * \param  cell Cell number. 
  * \return Number of cell faces. 
  */
-    inline int num_faces(int cell) const;
+    inline int get_num_cell_faces(int cell) const;
 /*!
  * \brief Returns the number of cells adjacent to the specified cell face.
  * \param  cell Cell number. 
  * \param  face Cell face number. 
  * \return Number of cells adjacent to the cell face. 
  */
-    inline int num_adj(int cell, int face) const;
+    inline int get_num_adj_cells(int cell, int face) const;
 
   // diagnostic functions
 /*!
@@ -217,7 +217,7 @@ inline void Layout::set_adj_size(int cell_index, int face_index, int num_adj)
 //---------------------------------------------------------------------------//
 // return the number of faces for cell cell_index
 
-inline int Layout::num_faces(int cell_index) const
+inline int Layout::get_num_cell_faces(int cell_index) const
 {
     return face_cell[cell_index-1].size();
 }
@@ -225,7 +225,7 @@ inline int Layout::num_faces(int cell_index) const
 //---------------------------------------------------------------------------//
 // return the number of adjacent cells for face face_index of cell cell_index
 
-inline int Layout::num_adj(int cell_index, int face_index) const
+inline int Layout::get_num_adj_cells(int cell_index, int face_index) const
 {
     return face_cell[cell_index-1][face_index-1].size();
 }

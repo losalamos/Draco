@@ -13,7 +13,6 @@
 //---------------------------------------------------------------------------//
 
 #include "Mesh.hh"
-#include "mc/Constants.hh"
 #include <iomanip>
 
 namespace rtt_amr 
@@ -33,39 +32,35 @@ using std::ios;
 /*!
  * \brief Constructs a CAR_CU_Mesh class object (typically using objects that
  *        were created by a CAR_CU_Builder class object).
- * \param coord_ Smart pointer to an existing, initialized Coord_sys class 
- *               object.
  * \param layout_ An existing, initialized Layout class object.
- * \param vertex_ An existing, initialized NCVF_d type object containing the 
- *                mesh node vertex data.
- * \param cell_pair_ An existing, initialized CCVF_i type object containing 
- *                   the mesh cell-pair data.
- * \param generation_ An existing, initialized CCSF_i type object containing 
+ * \param node_coords_ An existing, initialized ncvf_d type object containing
+ *                     the mesh node coordinates data.
+ * \param cell_nodes_ An existing, initialized ccvf_i type object containing 
+ *                   the mesh cell-nodes data.
+ * \param generation_ An existing, initialized ccsf_i type object containing 
  *                   the mesh cell generation data.
  * \param submesh_ Status flag indicating that this is a submesh for parallel
  *                 execution (defaults to false). 
  */
-CAR_CU_Mesh::CAR_CU_Mesh(SP<Coord_sys> coord_, Layout & layout_, 
-   NCVF_d & vertex_, CCVF_i & cell_pair_,  CCSF_i & generation_,
-   bool submesh_) : coord(coord_), layout(layout_), vertex(vertex_), 
-   cell_pair(cell_pair_), generation(generation_), sur(coord->get_dim()), 
-   submesh(submesh_)
+CAR_CU_Mesh::CAR_CU_Mesh(Layout & layout_, ncvf_d & node_coords_, 
+			 ccvf_i & cell_nodes_,  ccsf_i & generation_,
+			 bool submesh_) : layout(layout_), 
+                         node_coords(node_coords_), cell_nodes(cell_nodes_), 
+                         generation(generation_), submesh(submesh_)
 {
-  // assertions to verify size of mesh and existence of a Layout and
-  // Coord_sys  
-    Check (coord);
-	
+  // assertions to verify size of mesh
+
   // variable initialization
-    int ncells = num_cells();
-    int dimension = coord->get_dim();
+    int ncells = get_num_cells();
+    int dimension = get_ndim();
     
   // dimension assertions
-    Check (dimension == vertex.size());
-    Check (dimension == sur.size());
-    
-  // calculate surface array
-    if (!submesh)
-	calc_surface();
+    Check (dimension == node_coords.size());
+
+  // mesh size assertions
+    Check (ncells == cell_nodes.size());
+      
+
 }
 
 //---------------------------------------------------------------------------//
@@ -86,27 +81,6 @@ bool CAR_CU_Mesh::compReal(const double & low_val, const double & high_val)
     return (fabs(high_val - low_val) > epsilon);
 }
 
-void CAR_CU_Mesh::calc_surface()
-{
-    // calculate an array of the dimensional surfaces which make up the 
-    // CAR_CU_Mesh
-
-    // loop to calculate surface array
-    for (int d = 0; d < coord->get_dim(); d++)
-    {
-	// define an array for dim which is sorted in ascending order
-	vector<double> sorted = vertex[d];
-	sort(sorted.begin(), sorted.end());
-
-	// loop over sorted array, appending new surfaces onto sur array
-	// using the compReal function to check for machine level equality
-	sur[d].push_back(sorted[0]);
-	for (int i = 1; i < sorted.size(); i++)
-	    if (compReal(sorted[i-1], sorted[i]))
-		sur[d].push_back(sorted[i]);
-    }
-}
-
 //---------------------------------------------------------------------------//
 // Public member functions
 //---------------------------------------------------------------------------//
@@ -117,41 +91,42 @@ void CAR_CU_Mesh::calc_surface()
  * \param r Coordinate values of point in space.
  * \return Cell number. 
  */
-int CAR_CU_Mesh::get_cell(const vector<double> &r) const
+int CAR_CU_Mesh::get_cell_from_coords(const vector<double> &r) const
 {
     Require (!submesh);
 
   // used variables
-    int dim         = coord->get_dim();
+    int dim         = get_ndim();
     int return_cell;
     int index;
 
-    // binary search of cell vertexes - vertex array is sorted with x varying 
-    // fastest, followed by y, and then z. find the first vertex "below" this
-    // point in space.
-    int high_index = vertex[0].size() - 1;
+    // binary search of cell node coordinates - node_coords array is sorted 
+    // with x varying fastest, followed by y, and then z. find the first 
+    // node "below" this point in space.
+    int high_index = node_coords[0].size() - 1;
     for (int i = dim; i >= 0; i--)
     {
         int low_index  = 0;
 	while ((high_index - low_index) > 1)
 	{
 	    index = (high_index + low_index) / 2;
-	    if (r[i] < vertex[i][index] && compReal(r[i],vertex[i][index]))
+	    if (r[i] < node_coords[i][index] && 
+		compReal(r[i],node_coords[i][index]))
 		high_index = index;
 	    else
 		low_index  = index;
 	}
 	high_index = index;
     }
-    // have the vertex index - find the cell that has this vertex at its
-    // negative x,y,z corner (first vertex), again using a binary search.
+    // have the node_coords index - find the cell that has this node at its
+    // negative x,y,z corner (first node_coords), again using a binary search.
 
     int low_index  = 0;
-    high_index = num_cells() - 1;
+    high_index = get_num_cells() - 1;
     while ((high_index - low_index) > 1)
     {
         return_cell = (high_index + low_index) / 2;
-	if (cell_pair[return_cell][0] - 1 < index)
+	if (cell_nodes[return_cell][0] - 1 < index)
 	    high_index = return_cell;
 	else
 	    low_index  = return_cell;
@@ -172,20 +147,20 @@ int CAR_CU_Mesh::get_cell(const vector<double> &r) const
  * \param face Cell face number at the nearest boundary (calculated). 
  * \return Distance to the nearest boundary. 
  */
-double CAR_CU_Mesh::get_db(const vector<double> & r, 
+double CAR_CU_Mesh::get_dist_2_bndry(const vector<double> & r, 
    const vector<double> & omega, int cell, int & face) const
 {
     using std::vector;
     using std::min_element;
-    using rtt_mc::global::huge;
+    const double huge = DBL_MAX;
     
   // calculate distance to the vec(r) boundaries
 
   // boundary distances over each coordinate direction
-    vector<double> dim_dist_boundary(coord->get_dim(), 0.0);
+    vector<double> dim_dist_boundary(get_ndim(), 0.0);
     
   // loop to get the distances to boundary in each coordinate direction
-    for (int i = 0; i < coord->get_dim(); i++)
+    for (int i = 0; i < get_ndim(); i++)
     {
       // define absolute dimension index
 	int d = i + 1;
@@ -194,9 +169,11 @@ double CAR_CU_Mesh::get_db(const vector<double> & r,
 	if (omega[i] == 0.0)
 	    dim_dist_boundary[i] = huge;
 	else if (omega[i] > 0.0)
-	    dim_dist_boundary[i] = (max(d, cell) - r[i]) / omega[i];
+	    dim_dist_boundary[i] = 
+	        (get_cell_max_coord(d, cell) - r[i]) / omega[i];
 	else
-	    dim_dist_boundary[i] = (min(d, cell) - r[i]) / omega[i];
+	    dim_dist_boundary[i] = 
+	        (get_cell_min_coord(d, cell) - r[i]) / omega[i];
     }
 
   // calculate the distance to boundary
@@ -271,8 +248,8 @@ vector<int> CAR_CU_Mesh::get_surcells(string boundary) const
     // index to the end of the boundary string. Allowed values for the 
     // boundary string are loz, loy, lox, hix, hiy, hiz.
     int end_ind = boundary.size() - 1;
-    // the vertex coordinate dimension index associated with the boundary 
-    // surface (-z = 2, -y = 1, -x = 0, +x = 0, +y = 1, +z = 2);
+    // the dimension index associated with the boundary surface 
+    // (-z = 2, -y = 1, -x = 0, +x = 0, +y = 1, +z = 2);
     int dim_ind = 0;
     // the value of the fixed coordinate along the face
     double value;
@@ -285,7 +262,7 @@ vector<int> CAR_CU_Mesh::get_surcells(string boundary) const
     // reset the starting cell number index and node index for positive faces.
     if (boundary[0] == 'h')
     {
-        cell_ind = num_cells() - 1;
+        cell_ind = get_num_cells() - 1;
 	if (boundary[end_ind] == 'x')
 	    node_ind = 1;
 	else if (boundary[end_ind] == 'y')
@@ -307,22 +284,23 @@ vector<int> CAR_CU_Mesh::get_surcells(string boundary) const
     // often this routine is called.
     if (boundary[end_ind] != 'z')
     {
-	value = vertex[dim_ind][cell_pair[cell_ind][node_ind] - 1];
-	for (int k = 0; k < num_cells(); k++)
+	value = node_coords[dim_ind][cell_nodes[cell_ind][node_ind] - 1];
+	for (int k = 0; k < get_num_cells(); k++)
 	{
-	    if (!compReal(vertex[dim_ind][cell_pair[k][node_ind] - 1],value))
+	    if (!compReal(node_coords[dim_ind][cell_nodes[k][node_ind] - 1],
+			  value))
 		return_list.push_back(k+1);
 	}
     }
     // only have to search the beginning (-z) and end (+z) of the last 
-    // column of the vertex vector since they are in ascending order.
+    // column of the node_coords vector since they are in ascending order.
     else
     {
         if (boundary[0] == 'l')
 	{
-	    value = vertex[dim_ind][cell_pair[cell_ind][node_ind] - 1];
-	    while (!compReal(vertex[dim_ind][cell_pair[cell_ind][node_ind] -1],
-		   value))
+	    value = node_coords[dim_ind][cell_nodes[cell_ind][node_ind] - 1];
+	    while (!compReal(node_coords[dim_ind]
+			     [cell_nodes[cell_ind][node_ind] -1], value))
 	    {
 	        return_list.push_back(cell_ind+1);
 		++cell_ind;
@@ -330,9 +308,9 @@ vector<int> CAR_CU_Mesh::get_surcells(string boundary) const
 	}
 	else
 	{
-	    value = vertex[dim_ind][cell_pair[cell_ind][node_ind] - 1];
-	    while (!compReal(vertex[dim_ind][cell_pair[cell_ind][node_ind]-1],
-		   value))
+	    value = node_coords[dim_ind][cell_nodes[cell_ind][node_ind] - 1];
+	    while (!compReal(node_coords[dim_ind]
+			     [cell_nodes[cell_ind][node_ind]-1], value))
 	    {
 	        return_list.push_back(cell_ind+1);
 		--cell_ind;
@@ -360,7 +338,7 @@ void CAR_CU_Mesh::check_defined_surcells(const string ss_face,
 					 const vector<int> &ss_list) const
 {
     // a weak check on number of surface cells
-    Check (ss_list.size() <= num_cells());
+    Check (ss_list.size() <= get_num_cells());
 
     for (int ss_indx = 0; ss_indx < ss_list.size(); ss_indx++)
     {
@@ -382,18 +360,14 @@ void CAR_CU_Mesh::check_defined_surcells(const string ss_face,
 
 bool CAR_CU_Mesh::operator==(const CAR_CU_Mesh & rhs) const
 {
-  // check to see that we have the same coordinate systems
-    if (coord != rhs.coord)
-	return false;
-
   // check to see that the Layouts are equal
     if (layout != rhs.layout)
 	return false;
 
   // check the vertices
-    if (vertex != rhs.vertex)
+    if (node_coords != rhs.node_coords)
 	return false;
-    if (cell_pair != rhs.cell_pair)
+    if (cell_nodes != rhs.cell_nodes)
 	return false;
 
   // if we haven't returned, then the two meshes must be equal
@@ -416,7 +390,7 @@ void CAR_CU_Mesh::print(ostream & output) const
     output << ">>> MESH <<<" << endl;
     output << "============" << endl;
 
-    for (int cell = 1; cell <= num_cells(); cell++)
+    for (int cell = 1; cell <= get_num_cells(); cell++)
 	print(output, cell);
 }
 
@@ -438,21 +412,21 @@ void CAR_CU_Mesh::print(ostream & output, int cell) const
     output << "---------------" << endl;
     output << "Dimensions "     << endl;
     output << "---------------" << endl;
-    if (coord->get_dim() == 2)
+    if (get_ndim() == 2)
     {
-	output << " x  : " << pos(1, cell) << endl;
-	output << " y  : " << pos(2, cell) << endl;
-    	output << " dx : " << dim(1, cell) << endl;
-	output << " dy : " << dim(2, cell) << endl;
+	output << " x  : " << get_cell_center_coord(1, cell) << endl;
+	output << " y  : " << get_cell_center_coord(2, cell) << endl;
+    	output << " dx : " << get_cell_width(1, cell) << endl;
+	output << " dy : " << get_cell_width(2, cell) << endl;
     }
     else
     {
-	output << " x  : " << pos(1, cell) << endl;
-	output << " y  : " << pos(2, cell) << endl;
-	output << " z  : " << pos(3, cell) << endl;
-    	output << " dx : " << dim(1, cell) << endl;
-	output << " dy : " << dim(2, cell) << endl;
-	output << " dz : " << dim(3, cell) << endl;
+	output << " x  : " << get_cell_center_coord(1, cell) << endl;
+	output << " y  : " << get_cell_center_coord(2, cell) << endl;
+	output << " z  : " << get_cell_center_coord(3, cell) << endl;
+    	output << " dx : " << get_cell_width(1, cell) << endl;
+	output << " dy : " << get_cell_width(2, cell) << endl;
+	output << " dz : " << get_cell_width(3, cell) << endl;
     }	
     output << "---------------" << endl;
     output << "Layout "         << endl;

@@ -47,8 +47,6 @@
 //---------------------------------------------------------------------------//
 
 #include "Builder.hh"
-#include "XYCoord_sys.hh"
-#include "XYZCoord_sys.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 #include <algorithm>
@@ -114,7 +112,6 @@ using std::plus;
 SP<CAR_CU_Mesh> CAR_CU_Builder::build_Mesh(const SP<RTT_Format> & rttMesh)
 {
   // declare smart pointers
-    SP<Coord_sys> coord;
     SP<Layout> layout;
     SP<CAR_CU_Mesh> return_mesh;
     
@@ -131,7 +128,7 @@ SP<CAR_CU_Mesh> CAR_CU_Builder::build_Mesh(const SP<RTT_Format> & rttMesh)
     int nsides_max = rttMesh->get_dims_nsides_max();
 
     // initialization variables for Mesh
-    CAR_CU_Mesh::CCSF_i generation(ncells);
+    CAR_CU_Mesh::ccsf_i generation(ncells);
     // set of cells in each generation
     vector<set<int> > gen_cells;
     // assign each cell to a generation and receive a vector of sets with the
@@ -182,23 +179,22 @@ SP<CAR_CU_Mesh> CAR_CU_Builder::build_Mesh(const SP<RTT_Format> & rttMesh)
     vector<int> node_map = map_Nodes(rttMesh);
     nnodes = node_map.size();
 
-    // input the existing node (vertex) coordinate values from the RTT Format
-    // data.
-    vertex.resize(ndim);
+    // input the existing node coordinate values from the RTT Format data.
+    node_coords.resize(ndim);
     for (int d = 0 ; d < ndim; d++)
     {
-        // resize vertex to accomodate the existing cell-corner nodes (the
+        // resize node_coords to accomodate the existing cell-corner nodes (the
         // vector could also be resized here to accomodate the face-centered 
         // nodes that will be subsequently created if FC_Nodes is called, but
         // some programs may not need this data so we don't do it here).
-        vertex[d].resize(nnodes);
+        node_coords[d].resize(nnodes);
         for (int node = 0; node < nnodes; node++)
-            vertex[d][node] = rttMesh->get_nodes_coords(node_map[node],d);
+            node_coords[d][node] = rttMesh->get_nodes_coords(node_map[node],d);
     }
 
-    // input the existing cell_pair data (nodes that make up a cell) from the 
+    // input the existing cell_nodes data (nodes that make up a cell) from the 
     // RTT Format data.
-    cell_pair.resize(ncells);
+    cell_nodes.resize(ncells);
     for (int cell = 0; cell < ncells; cell++)
     {
         // size the cell pair vector to accomodate the cell-corner nodes that
@@ -206,32 +202,31 @@ SP<CAR_CU_Mesh> CAR_CU_Builder::build_Mesh(const SP<RTT_Format> & rttMesh)
         // if face-centered nodes are subsequently created, but better to 
         // force a second resize than accomodate a lot of unneccessary storage
         // if these nodes are not needed).
-        cell_pair[cell].resize(nnodes_max);
+        cell_nodes[cell].resize(nnodes_max);
         for (int node = 0; node < nnodes_max; node++)
 	{
 	    int * new_node = lower_bound(node_map.begin(), node_map.end(),
 					 rttMesh->get_cells_nodes(cell, node));
-	    // cell_pair numbers are referenced relative to a start at one,
+	    // cell_nodes numbers are referenced relative to a start at one,
 	    // while the RTT Format data is referenced relative to a start at
 	    // zero;
-	    cell_pair[cell][node] = 1 + (new_node - node_map.begin());
+	    cell_nodes[cell][node] = 1 + (new_node - node_map.begin());
 	}
     }
     // done with the node_map vector;
     node_map.resize(0);
 
     // generate nodes that are centered on the cell faces, add them to the 
-    // cell_pairs vector, calculate their coordinates, and add these to the 
-    // vertex vector.
+    // cell_nodes vector, calculate their coordinates, and add these to the 
+    // node_coords vector.
     FC_Nodes(nnodes, rttMesh);
 
     // build mesh-independent objects
-    coord  = build_Coord();
-    layout = build_Layout(* coord, rttMesh);
+    layout = build_Layout(rttMesh);
 
     // create mesh
-    SP<CAR_CU_Mesh> mesh_return(new CAR_CU_Mesh(coord, * layout, vertex, 
-       cell_pair, generation));
+    SP<CAR_CU_Mesh> mesh_return(new CAR_CU_Mesh(* layout, node_coords, 
+       cell_nodes, generation));
 
     // clean up
     gen_cells.resize(0);
@@ -244,34 +239,10 @@ SP<CAR_CU_Mesh> CAR_CU_Builder::build_Mesh(const SP<RTT_Format> & rttMesh)
 }
 
 //---------------------------------------------------------------------------//
-// Coord_sys build member functions
-//---------------------------------------------------------------------------//
-
-SP<Coord_sys> CAR_CU_Builder::build_Coord()
-{
-  // build coordinate system
-    SP<Coord_sys> coord;
-    if (coord_system == "xy" || coord_system == "XY")
-    {
-	SP<XYCoord_sys> xycoord(new XYCoord_sys);
-	coord = xycoord;
-    }
-    else if (coord_system == "xyz" || coord_system == "XYZ")
-    {
-	SP<XYZCoord_sys> xyzcoord(new XYZCoord_sys);
-	coord = xyzcoord;
-    }
-
-    // return base class SP to a derived Coord_sys
-    return coord;
-}
-
-//---------------------------------------------------------------------------//
 // Layout build member functions
 //---------------------------------------------------------------------------//
 
-SP<Layout> CAR_CU_Builder::build_Layout(const Coord_sys & coord, 
-					const SP<RTT_Format> & rttMesh)
+SP<Layout> CAR_CU_Builder::build_Layout(const SP<RTT_Format> & rttMesh)
 {
     // Set up some useful RTT Format variables
     // total number of cells.
@@ -343,14 +314,14 @@ SP<Layout> CAR_CU_Builder::build_Layout(const Coord_sys & coord,
     bool debugging = false;
     if (debugging)
     {
-        int num_cells = local_layout.num_cells();
+        int num_cells = local_layout.get_num_cells();
 	for (int cell = 1; cell <= ncells; cell++)
 	{
-	    int num_faces = local_layout.num_faces(cell);
+	    int num_faces = local_layout.get_num_cell_faces(cell);
 	    for (int side = 1; side <= num_faces; side++)
 	    {
 	        cout << "cell " << cell << " side " << side << " adjacent ";
-		int num_adj = local_layout.num_adj(cell, side);
+		int num_adj = local_layout.get_num_adj_cells(cell, side);
 		for (int n = 1; n <= num_adj; n++)
 		    cout << " " << local_layout(cell, side, n);
 		cout <<  endl;
@@ -362,7 +333,7 @@ SP<Layout> CAR_CU_Builder::build_Layout(const Coord_sys & coord,
 }
 
 //---------------------------------------------------------------------------//
-// Assign each cell to a generation - modifies the gen_cells CCSF directly.
+// Assign each cell to a generation - modifies the gen_cells ccsf_i directly.
 //
 // This algorithm originally required two linear traverses through all of the 
 // cells, due to the inherently serial nature of initially determining the 
@@ -382,7 +353,7 @@ SP<Layout> CAR_CU_Builder::build_Layout(const Coord_sys & coord,
 // Toodles. 
 //---------------------------------------------------------------------------//
 
-vector<set<int> > CAR_CU_Builder::assign_Generations(CAR_CU_Mesh::CCSF_i & 
+vector<set<int> > CAR_CU_Builder::assign_Generations(CAR_CU_Mesh::ccsf_i & 
 				  cell_gens, const SP<RTT_Format> & rttMesh)
 {
     // Set up some useful RTT Format variables
@@ -848,15 +819,15 @@ vector<int> CAR_CU_Builder::map_Nodes(const SP<RTT_Format> & rttMesh)
 
 //---------------------------------------------------------------------------//
 // generate nodes that are centered on the cell faces, add them to the 
-// cell_pairs vector, calculate their coordinates, and add these to the 
-// vertex vector.
+// cell_nodes vector, calculate their coordinates, and add these to the 
+// node_coords vector.
 //---------------------------------------------------------------------------//
 
 /*!
  * \brief Generate nodes that are centered on the cell faces, adds them to the
- *        cell_pairs vector, calculates their coordinates, and adds the 
- *        coordinates to the vertex vector. Numbering of the face-centererd
- *        nodes begins after all of the cell corner nodes.
+ *        cell_nodes vector, calculates their coordinates, and adds the 
+ *        coordinates to the node_coords vector. The numbering of the 
+ *        face-centererd nodes begins after all of the cell corner nodes.
  * \param nnodes Total number of nodes (corner nodes only on input and both
  *               corner and face-centered nodes on output).
  * \param rttMesh Smart pointer to an existing, initialized RTT_Format
@@ -876,7 +847,7 @@ void CAR_CU_Builder::FC_Nodes(int nnodes, const SP<RTT_Format> & rttMesh)
 
     // determine the number of faces on the boundary of the problem in the 
     // positive x, y, and z directions. This information will be used to 
-    // resize the vertex vector
+    // resize the node_coords vector
     int bndryCellFaces = 0;
     for (int face = ndim; face < 2 * ndim; face++)
     {
@@ -888,30 +859,30 @@ void CAR_CU_Builder::FC_Nodes(int nnodes, const SP<RTT_Format> & rttMesh)
 	        ++bndryCellFaces;
 	}
     }
-    // resize the vertex vector to accomodate the face-centered nodes (before
-    // the value of nnodes is changed).
+    // resize the node_coords vector to accomodate the face-centered nodes
+    // (before the value of nnodes is changed).
     for (int d = 0 ; d < ndim; d++)
-	 vertex[d].resize(nnodes + ndim * ncells + bndryCellFaces);
+	 node_coords[d].resize(nnodes + ndim * ncells + bndryCellFaces);
 
     // We will assume that all of our cells have the same type, as defined
     // in the RTT Format file, so just consider cell 0 in the function call.
     int cellType = rttMesh->get_cells_type(0);
     // create face-centered nodes, calulate their coordinate values and save 
-    // in the vertex vector, and add the face centered values to the end of
-    // the cell definitions in the cell_pairs vector.
+    // in the node_coords vector, and add the face centered values to the end
+    // of the cell definitions in the cell_nodes vector.
     for (int cell = 0; cell < ncells; cell++)
     {
         // resize the cell pair vector to accomodate both the cell-corner nodes
         // that are defined in the RTT_Format file and the new face-centered 
         // nodes to be created.
-        cell_pair[cell].resize(nnodes_max + nsides_max);        
+        cell_nodes[cell].resize(nnodes_max + nsides_max);        
 	for (int face = 0; face < nsides_max; face++)
 	{
 	    if (face < nsides_max/2 || rttMesh->get_adjCell(cell, face) < 0)
 	    {
 	        // get the sorted nodes that define this cell face. The first
 	        // and last nodes in the set are on opposite corners of the 
-	        // face. Note that the node numbers stored in cell_pairs are
+	        // face. Note that the node numbers stored in cell_nodes are
 	        // referenced to a start at one while the RTT Format node 
 	        // numbers start at zero.
 	        const set<int> faceNodes = 
@@ -925,14 +896,14 @@ void CAR_CU_Builder::FC_Nodes(int nnodes, const SP<RTT_Format> & rttMesh)
 		vector<double> hi_coord = rttMesh->get_nodes_coords(hi_node);
 
 		for (int d = 0 ; d < ndim; d++)
-		    vertex[d][nnodes] = (lo_coord[d] + hi_coord[d])/2.0;
+		    node_coords[d][nnodes] = (lo_coord[d] + hi_coord[d])/2.0;
 		// numbering for the face-centered nodes to be created will 
 		// start after all of the cell-corner nodes and correspond to 
 		// faces -z, -y, -x, x, y, z. Note that unique face nodes are 
 		// NOT assigned to each cell (saves a lot of memory).
-		cell_pair[cell][nnodes_max + face] = ++nnodes;
+		cell_nodes[cell][nnodes_max + face] = ++nnodes;
 		if (face < nsides_max/2)
-		    cell_pair[cell][nnodes_max + face + ndim] = nnodes + ndim;
+		    cell_nodes[cell][nnodes_max + face + ndim] = nnodes + ndim;
 	    }
 	}
     }

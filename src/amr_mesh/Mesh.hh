@@ -26,9 +26,7 @@
 // 
 //===========================================================================//
 
-#include "mc/Coord_sys.hh"
 #include "Layout.hh"
-#include "rng/Sprng.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>
@@ -49,10 +47,8 @@ using std::ostream;
 using std::endl;
 using std::string;
 using std::multimap;
-using rtt_mc::Coord_sys;
 
 // draco namespaces
-using rtt_rng::Sprng;
 using rtt_dsxx::SP;
 
 /*!
@@ -725,79 +721,79 @@ class CAR_CU_Mesh
  * \brief Data structure for cell-centered scalar field double data (not a
  *        CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector<double> CCSF_d;
+    typedef vector<double> ccsf_d;
 /*!
  * \brief Data structure for cell-centered scalar field integer data (not a 
  *        CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector<int> CCSF_i;
+    typedef vector<int> ccsf_i;
 /*!
  * \brief Data structure for cell-centered scalar field boolean data (not a 
  *        CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector<bool> CCSF_b;
+    typedef vector<bool> ccsf_b;
 
 /*!
  * \brief Data structure for cell-centered vector field double data (not a 
  *         CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector< vector<double> > CCVF_d;
+    typedef vector< vector<double> > ccvf_d;
 /*!
  * \brief Data structure for cell-centered vector field integer data (not a 
  *        CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector< vector<int> > CCVF_i;
+    typedef vector< vector<int> > ccvf_i;
 
 /*!
  * \brief Data structure for face-centered scalar field double data (not a 
  *        CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector<double> FCSF_d;
+    typedef vector<double> fcsf_d;
 /*!
  * \brief Data structure for face-centered vector field integer data (not a 
  *        CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector<int> FCSF_i;
+    typedef vector<int> fcsf_i;
 
 /*!
  * \brief Data structure for face-centered discontinuous scalar field double 
  *        data (not a CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector<double> FCDSF_d;
+    typedef vector<double> fcdsf_d;
 /*!
  * \brief Data structure for face-centered discontinuous scalar field integer 
  *        data (not a CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector<int> FCDSF_i;
+    typedef vector<int> fcdsf_i;
 
 /*!
  * \brief Data structure for node-centered scalar field double data (not a 
  *        CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector<double> NCSF_d;
+    typedef vector<double> ncsf_d;
 /*!
  * \brief Data structure for node-centered scalar field integer data (not a 
  *        CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector<int> NCSF_i;
+    typedef vector<int> ncsf_i;
 
 /*!
  * \brief Data structure for node-centered vector field double data (not a 
  *        CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector< vector<double> > NCVF_d;
+    typedef vector< vector<double> > ncvf_d;
 /*!
  * \brief Data structure for node-centered vector field integer data (not a 
  *        CAR_CU_Mesh nested mesh field class).
  */
-    typedef vector< vector<int> > NCVF_i;
+    typedef vector< vector<int> > ncvf_i;
 
 /*!
  * \brief Data structure for localized node-centered vector field double 
  *        data (not a CAR_CU_Mesh nested mesh field class, and not yet 
  *        implemented).
  */
-    typedef multimap<int, vector<double> > LNCVF_d;
+    typedef multimap<int, vector<double> > lncvf_d;
 
     // temporary typedefs for compiling code until KCC 3.3+ is released
     // (retained herein for compatablity with historical codes).
@@ -833,11 +829,6 @@ class CAR_CU_Mesh
     typedef CCVF<int> CCVF_int;
 
   private:
-    // base class reference to a derived coord class
-/*!
- * \brief Smart pointer to the mesh Coord_sys class object.
- */
-    SP<Coord_sys> coord;
     // layout of mesh
 /*!
  * \brief The mesh Layout class object.
@@ -847,17 +838,12 @@ class CAR_CU_Mesh
 /*!
  * \brief The node coordinate values.
  */
-    NCVF_d vertex;
+    ncvf_d node_coords;
     // cell-pairings of cell to its vertices
 /*!
  * \brief The connections between cell faces.
  */
-    CCVF_i cell_pair;
-    // area of surfaces on each dimension
-/*!
- * \brief The area of surfaces on each spatial dimension.
- */
-    CCVF_d sur;
+    ccvf_i cell_nodes;
     // indicator whether this is a submesh
 /*!
  * \brief An indicator that this is a submesh for parallel processing.
@@ -867,13 +853,13 @@ class CAR_CU_Mesh
 /*!
  * \brief An indicator that the cells have been refined (not used).
  */
-    CCSF_b has_kids;
+    ccsf_b has_kids;
     // indicator for the level of cell refinement, with the original coarse
     // mesh input by the user assigned as zero. 
 /*!
  * \brief The cell generation (i.e., refinement) levels.
  */
-    CCSF_i generation;
+    ccsf_i generation;
 
     // private functions
 
@@ -886,12 +872,6 @@ class CAR_CU_Mesh
  *         abs(low_val- high_val) > epsilon (desired precision).
  */
     bool compReal(const double & low_val, const double & high_val) const;
-
-    // calculate a surface array from the vertices of the mesh
-/*!
- * \brief Calculates a surface array from the vertices of the mesh.
- */
-    void calc_surface();
 
     // private copy and assignment operators; can't copy or assign a mesh
 /*!
@@ -910,24 +890,24 @@ class CAR_CU_Mesh
 
   public:
     // generalized constructor for all mesh types
-    CAR_CU_Mesh(SP<Coord_sys> coord_, Layout & layout_, NCVF_d & vertex_, 
-		CCVF_i & cell_pair_, CCSF_i & generation_, 
-		bool submesh_ = false); 
+    CAR_CU_Mesh(Layout & layout_, ncvf_d & node_coords_, ccvf_i & cell_nodes_,
+		ccsf_i & generation_, bool submesh_ = false); 
 
     // mesh dimensionality functions
-    // Problem geometry dimension
+    // The problem geometry dimension (infered from the number of coordinate
+    // directions).
 /*!
  * \brief Returns the number of spatial dimensions for the mesh.
  * \return Number of spatial dimensions for the mesh. 
  */
-    int get_ndim() const { return coord->get_dim(); }
+    int get_ndim() const { return node_coords.size(); }
 
     // return number of cells
 /*!
  * \brief Returns the number of cells in the mesh.
  * \return Number of mesh cells. 
  */
-    int num_cells() const { return layout.num_cells(); }
+    int get_num_cells() const { return layout.get_num_cells(); }
 
     // return total number of nodes
 /*!
@@ -935,23 +915,24 @@ class CAR_CU_Mesh
  *        in the mesh.
  * \return Total number of nodes in the mesh. 
  */
-    int num_nodes() const { return vertex[0].size(); }
+    int get_num_nodes() const { return node_coords[0].size(); }
 
     // return number of cell-corner nodes
 /*!
  * \brief Returns the number of cell corner nodes in the mesh.
  * \return Number of cell corner nodes in the mesh. 
  */
-    int num_corner_nodes() const 
-    { return cell_pair[num_cells() - 1][static_cast<int>(pow(2.0, 
-					         coord->get_dim())) - 1]; }
+    int get_num_corner_nodes() const 
+    { return cell_nodes[get_num_cells() - 1][static_cast<int>(pow(2.0, 
+					         get_ndim())) - 1]; }
 
     // return number of face-centered nodes
 /*!
  * \brief Returns the number of cell face-centered nodes in the mesh.
  * \return Number of cell face-centered nodes in the mesh. 
  */
-    int num_face_nodes() const { return num_nodes() - num_corner_nodes(); }
+    int get_num_face_nodes() const 
+    { return get_num_nodes() - get_num_corner_nodes(); }
 
     // cell dimensionality functions
     // give the dimension and begin and end return the beginning and ending
@@ -962,14 +943,14 @@ class CAR_CU_Mesh
  * \param dir Coordinate direction (x=1, y=2, z =3).
  * \return Mimimum coordinate value. 
  */
-    inline double begin(int dir) const;
+    inline double get_mesh_min_coord(int dir) const;
 /*!
  * \brief Returns the maximum coordinate value along the specified direction
  *        for the entire mesh.
  * \param dir Coordinate direction (x=1, y=2, z =3).
  * \return Maximum coordinate value. 
  */
-    inline double end(int dir) const;
+    inline double get_mesh_max_coord(int dir) const;
 
     // find minimum and maximum dimension of cell
 /*!
@@ -979,7 +960,7 @@ class CAR_CU_Mesh
  * \param cell Cell number.
  * \return Mimimum coordinate value. 
  */
-    inline double min(int dir, int cell) const;
+    inline double get_cell_min_coord(int dir, int cell) const;
 /*!
  * \brief Returns the maximum coordinate value along the specified direction
  *        for the specified cell.
@@ -987,7 +968,7 @@ class CAR_CU_Mesh
  * \param cell Cell number.
  * \return Maximum coordinate value. 
  */
-    inline double max(int dir, int cell) const;
+    inline double get_cell_max_coord(int dir, int cell) const;
 
     // find centerpoint of cell and width of cell
 /*!
@@ -997,7 +978,7 @@ class CAR_CU_Mesh
  * \param cell Cell number.
  * \return Center-point coordinate value. 
  */
-    inline double pos(int dir, int cell) const;
+    inline double get_cell_center_coord(int dir, int cell) const;
 /*!
  * \brief Returns the cell width along the specified direction for the 
  *        specified cell.
@@ -1005,8 +986,8 @@ class CAR_CU_Mesh
  * \param cell Cell number.
  * \return Cell width. 
  */
-    double dim(int dir, int cell) const 
-    { return max(dir, cell) - min(dir, cell);} 
+    double get_cell_width(int dir, int cell) const 
+    { return get_cell_max_coord(dir, cell) - get_cell_min_coord(dir, cell);} 
 
     // diagnostic functions
     void print(ostream & output) const;
@@ -1027,30 +1008,20 @@ class CAR_CU_Mesh
  */
     const Layout & get_Layout() const { return layout; }
 /*!
- * \brief Returns a reference to the mesh Coord_sys class object.
- * \return Reference to the mesh Coord_sys class object. 
+ * \brief Returns a reference to the mesh node_coords ncvf_d type object.
+ * \return Reference to the mesh node_coords ncvf_d type object. 
  */
-    const Coord_sys & get_Coord() const { return * coord; }
+    const ncvf_d & get_node_coords() const { return node_coords; }
 /*!
- * \brief Returns a smart pointer to the mesh Coord_sys class object.
- * \return Smart pointer to the mesh Coord_sys class object. 
+ * \brief Returns a reference to the mesh cell_nodes ccvf_i type object.
+ * \return Reference to the mesh cell_nodes ccvf_i type object. 
  */
-    SP<Coord_sys> get_SPCoord() const { return coord; }
+    const ccvf_i & get_cell_nodes() const { return cell_nodes; }
 /*!
- * \brief Returns a reference to the mesh vertex NCVF_d type object.
- * \return Reference to the mesh vertex NCVF_d type object. 
+ * \brief Returns a reference to the mesh generation ccsf_i type object.
+ * \return Reference to the mesh generation ccsf_i type object. 
  */
-    const NCVF_d & get_vertex() const { return vertex; }
-/*!
- * \brief Returns a reference to the mesh cell_pair CCVF_i type object.
- * \return Reference to the mesh cell_pair CCVF_i type object. 
- */
-    const CCVF_i & get_cell_pair() const { return cell_pair; }
-/*!
- * \brief Returns a reference to the mesh generation CCSF_i type object.
- * \return Reference to the mesh generation CCSF_i type object. 
- */
-    const CCSF_i & get_generation() const { return generation; }
+    const ccsf_i & get_generation() const { return generation; }
 
     // required services for transport; 
 /*!
@@ -1059,8 +1030,8 @@ class CAR_CU_Mesh
  * \param face_index Face number.
  * \return Number of adjacent cells. 
  */
-    int num_adj(int cell_index, int face_index) const
-    { return layout.num_adj(cell_index, face_index);}
+    int get_num_adj_cells(int cell_index, int face_index) const
+    { return layout.get_num_adj_cells(cell_index, face_index);}
 /*!
  * \brief Returns the cell number of the specified adjacent cell for the 
  *        specified cell face.
@@ -1069,29 +1040,30 @@ class CAR_CU_Mesh
  * \param adjcell Adjacent cell (defaults to the first adjacent cell).
  * \return Adjacent cell number. 
  */
-    int next_cell(int cell, int face, int adjcell = 1) const 
+    int get_next_cell(int cell, int face, int adjcell = 1) const 
     { return layout(cell, face, adjcell); }
-    int get_cell(const vector<double> & r) const;
-    double get_db(const vector<double> & r, const vector<double> & omega, 
-		  int cell, int & face) const;
+    int get_cell_from_coords(const vector<double> & r) const;
+    double get_dist_2_bndry(const vector<double> & r, 
+			    const vector<double> & omega, int cell, 
+			    int & face) const;
 /*!
  * \brief Returns the node number of the specified cell node.
  * \param cell Cell number.
  * \param node Cell node index.
  * \return Node number. 
  */
-    int cell_node(int cell, int node) const
-    { return cell_pair[cell - 1][node - 1];}
+    int get_cell_node(int cell, int node) const
+    { return cell_nodes[cell - 1][node - 1];}
 /*!
  * \brief Returns the node number for the specified cell face.
  * \param cell Cell number.
  * \param face Cell face index.
  * \return Node number. 
  */
-    int cell_face_centered_node(int cell, int face) const
+    int get_cell_face_centered_node(int cell, int face) const
     {
         int offset = static_cast<int>(pow(2.0,get_ndim()));
-	return cell_pair[cell - 1][offset + face - 1];
+	return cell_nodes[cell - 1][offset + face - 1];
     }
 /*!
  * \brief Returns all of the nodes for the specified cell (i.e, both the 
@@ -1099,26 +1071,26 @@ class CAR_CU_Mesh
  * \param cell Cell number.
  * \return Cell nodes. 
  */
-    inline vector<int> cell_nodes(int cell) const;
+    inline vector<int> get_cell_nodes(int cell) const;
 /*!
  * \brief Returns all of the corner nodes for the specified cell.
  * \param cell Cell number.
  * \return Cell corner nodes. 
  */
-    inline vector<int> cell_corner_nodes(int cell) const;
+    inline vector<int> get_cell_corner_nodes(int cell) const;
 /*!
  * \brief Returns all of the face-centered nodes for the specified cell.
  * \param cell Cell number.
  * \return Cell face-centered nodes. 
  */
-    inline vector<int> cell_face_centered_nodes(int cell) const;
+    inline vector<int> get_cell_face_centered_nodes(int cell) const;
 /*!
  * \brief Returns all of the corner nodes for the specified cell face.
  * \param cell Cell number.
  * \param face Face number.
  * \return Node number.
  */
-    inline vector<int> cell_face_nodes(int cell, int face) const;
+    inline vector<int> get_cell_face_nodes(int cell, int face) const;
 /*!
  * \brief Returns the normalized components of the outward-directed normal 
  *        for the specified cell face.
@@ -1126,7 +1098,7 @@ class CAR_CU_Mesh
  * \param face Face number.
  * \return Outward-directed normal.
  */
-    inline vector<double> get_normal(int cell, int face) const;
+    inline vector<double> get_cell_face_normal(int cell, int face) const;
 /*!
  * \brief Returns the normalized components of the inward-directed normal 
  *        for the specified cell face.
@@ -1134,20 +1106,20 @@ class CAR_CU_Mesh
  * \param face Face number.
  * \return Inward-directed normal.
  */
-    inline vector<double> get_normal_in(int cell, int face) const;
+    inline vector<double> get_cell_face_normal_in(int cell, int face) const;
 /*!
  * \brief Returns the volume of the specified cell.
  * \param cell Cell number.
  * \return Cell volume. 
  */
-    inline double volume(int cell) const;
+    inline double get_cell_volume(int cell) const;
 /*!
  * \brief Returns the area of the specified cell face.
  * \param cell Cell number.
  * \param face Face number.
  * \return Cell face area. 
  */
-    inline double face_area(int cell, int face) const;
+    inline double get_cell_face_area(int cell, int face) const;
     vector<int> get_surcells(string boundary) const;
     void check_defined_surcells(const string, const vector<int> &) const;
     int get_bndface(string, int) const;
@@ -1156,7 +1128,7 @@ class CAR_CU_Mesh
  * \param node Node number.
  * \return Node coordinate values. 
  */
-    inline vector<double> get_vertex(int node) const;
+    inline vector<double> get_node_coords(int node) const;
 /*!
  * \brief Returns all of the corner node coordinate values for the specified 
  *        cell face.
@@ -1164,14 +1136,14 @@ class CAR_CU_Mesh
  * \param face Face number.
  * \return Coordinate values for the cell face nodes. 
  */
-    inline NCVF_d get_vertices(int cell, int face) const;
+    inline ncvf_d get_cell_nodes_coords(int cell, int face) const;
 /*!
  * \brief Returns all of the corner node coordinate values for the specified 
  *        cell.
  * \param cell Cell number.
  * \return Coordinate values for the cell corner nodes. 
  */
-    inline NCVF_d get_vertices(int cell) const;
+    inline ncvf_d get_cell_nodes_coords(int cell) const;
 /*!
  * \brief Returns the generation (i.e., refinement) level for the specified 
  *        cell.
@@ -1179,34 +1151,6 @@ class CAR_CU_Mesh
  * \return Cell generation level. 
  */
     inline int get_generation(int cell) const;
-/*!
- * \brief Randomly selects a spatial position within the specified cell.
- * \param cell Cell number.
- * \param random Random number.
- * \return Spatial position coordinate values. 
- */
-    inline vector<double> sample_pos(int cell, Sprng & random) const;
-/*!
- * \brief Randomly selects a spatial position within the specified cell with 
- *        a given linear function.
- * \param cell Cell number.
- * \param random Random number.
- * \param slope Linear function gradient.
- * \param center_pt Linear function "intercept" at the cell center-point.
- * \return Spatial position coordinate values. 
- */
-    inline vector<double> sample_pos(int cell, Sprng & random, 
-				     vector<double> slope, 
-				     double center_pt) const; 
-/*!
- * \brief Randomly selects a spatial position on the specified cell face.
- * \param cell Cell number.
- * \param face Face number.
- * \param random Random number.
- * \return Spatial position coordinate values. 
- */
-    inline vector<double> sample_pos_on_face(int cell, int face, 
-					     Sprng & random) const; 
 /*!
  * \brief Determines if a spatial position lies on the specified cell face.
  * \param pos Spatial position.
@@ -1258,7 +1202,7 @@ inline ostream & operator<<(ostream & output, const CAR_CU_Mesh & object)
 
 template<class T>
 inline CAR_CU_Mesh::CCSF<T>::CCSF(SP<CAR_CU_Mesh> mesh_) 
-    : mesh(mesh_), data(mesh->num_cells()) 
+    : mesh(mesh_), data(mesh->get_num_cells()) 
 {
     Require (mesh);
 }
@@ -1271,7 +1215,7 @@ inline CAR_CU_Mesh::CCSF<T>::CCSF(SP<CAR_CU_Mesh> mesh_,
    const vector<T> & array) : mesh(mesh_), data(array)
 {
     // make sure things are kosher
-    Ensure (data.size() == mesh->num_cells());
+    Ensure (data.size() == mesh->get_num_cells());
 }
 
 //---------------------------------------------------------------------------//
@@ -1288,7 +1232,7 @@ inline CAR_CU_Mesh::CCVF<T>::CCVF(SP<CAR_CU_Mesh> mesh_)
 
     // initialize data array
     for (int i = 0; i <  mesh->get_ndim(); i++)
-	data[i].resize(mesh->num_cells());
+	data[i].resize(mesh->get_num_cells());
 }
 
 template<class T>
@@ -1299,7 +1243,7 @@ inline CAR_CU_Mesh::CCVF<T>::CCVF(SP<CAR_CU_Mesh> mesh_, int size_)
 
     // initialize data array
     for (int i = 0; i <  data.size(); i++)
-	data[i].resize(mesh->num_cells());
+	data[i].resize(mesh->get_num_cells());
 }
 
 //---------------------------------------------------------------------------//
@@ -1315,7 +1259,7 @@ inline CAR_CU_Mesh::CCVF<T>::CCVF(SP<CAR_CU_Mesh> mesh_,
     Require (mesh);
 
     for (int s = 0; s < data.size(); s++)
-	Ensure (data[s].size() == mesh->num_cells());
+	Ensure (data[s].size() == mesh->get_num_cells());
 }
 
 //---------------------------------------------------------------------------//
@@ -1361,7 +1305,7 @@ inline vector<T> CAR_CU_Mesh::CCVF<T>::operator()(int cell) const
 
 template<class T>
 inline CAR_CU_Mesh::FCSF<T>::FCSF(SP<CAR_CU_Mesh> mesh_)
-    : mesh(mesh_), data(mesh->num_face_nodes())
+    : mesh(mesh_), data(mesh->get_num_face_nodes())
 {
     Require (mesh);
 }
@@ -1376,7 +1320,7 @@ inline CAR_CU_Mesh::FCSF<T>::FCSF(SP<CAR_CU_Mesh> mesh_,
 {
     Require (mesh);
     // check things out
-    Ensure (data.size() == mesh->num_face_nodes());
+    Ensure (data.size() == mesh->get_num_face_nodes());
 }
 
 //---------------------------------------------------------------------------//
@@ -1394,9 +1338,9 @@ inline const T & CAR_CU_Mesh::FCSF<T>::operator()(int face) const
 template<class T>
 inline const T & CAR_CU_Mesh::FCSF<T>::operator()(int cell, int face) const 
 {
-    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
-        mesh->get_Coord().get_dim())));
-    return data[index - mesh->num_corner_nodes() - 1]; 
+    int index = mesh->get_cell_node(cell, face + static_cast<int>(pow(2.0, 
+        get_ndim())));
+    return data[index - mesh->get_num_corner_nodes() - 1]; 
 }
 
 //---------------------------------------------------------------------------//
@@ -1414,9 +1358,9 @@ inline T & CAR_CU_Mesh::FCSF<T>::operator()(int face)
 template<class T>
 inline T & CAR_CU_Mesh::FCSF<T>::operator()(int cell, int face)
 {
-    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
-        mesh->get_Coord().get_dim())));
-    return data[index - mesh->num_corner_nodes() - 1];
+    int index = mesh->get_cell_node(cell, face + static_cast<int>(pow(2.0, 
+        mesh->get_ndim())));
+    return data[index - mesh->get_num_corner_nodes() - 1];
 }
 
 //---------------------------------------------------------------------------//
@@ -1426,13 +1370,13 @@ inline T & CAR_CU_Mesh::FCSF<T>::operator()(int cell, int face)
 
 template<class T>
 inline CAR_CU_Mesh::FCDSF<T>::FCDSF(SP<CAR_CU_Mesh> mesh_)
-    : mesh(mesh_), data(mesh->num_cells())
+    : mesh(mesh_), data(mesh->get_num_cells())
 {
     Require (mesh);
 
     // initialize data array
-    for (int i = 0; i <mesh->num_cells(); i++)
-	data[i].resize(2.0 * mesh->get_Coord().get_dim());
+    for (int i = 0; i <mesh->get_num_cells(); i++)
+	data[i].resize(2.0 * mesh->get_ndim());
 }
 
 //---------------------------------------------------------------------------//
@@ -1444,9 +1388,9 @@ inline CAR_CU_Mesh::FCDSF<T>::FCDSF(SP<CAR_CU_Mesh> mesh_,
     : mesh(mesh_), data(array)
 {
     // check things out
-    Ensure (data.size() == mesh->num_cells());
-    for (int i = 0; i < mesh->num_cells(); i++)
-	Ensure (data[i].size() == 2.0 * mesh->get_Coord().get_dim());
+    Ensure (data.size() == mesh->get_num_cells());
+    for (int i = 0; i < mesh->get_num_cells(); i++)
+	Ensure (data[i].size() == 2.0 * mesh->get_ndim());
 }
 
 //---------------------------------------------------------------------------//
@@ -1493,7 +1437,7 @@ inline vector<T> CAR_CU_Mesh::FCDSF<T>::operator()(int cell) const
 
 template<class T>
 inline CAR_CU_Mesh::FCVF<T>::FCVF(SP<CAR_CU_Mesh> mesh_)
-    : mesh(mesh_), data(mesh->num_face_nodes())
+    : mesh(mesh_), data(mesh->get_num_face_nodes())
 {
     Require (mesh);
 
@@ -1508,7 +1452,7 @@ inline CAR_CU_Mesh::FCVF<T>::FCVF(SP<CAR_CU_Mesh> mesh_)
 
 template<class T>
 inline CAR_CU_Mesh::FCVF<T>::FCVF(SP<CAR_CU_Mesh> mesh_, int vec_size)
-    : mesh(mesh_), data(mesh->num_face_nodes())
+    : mesh(mesh_), data(mesh->get_num_face_nodes())
 {
     Require (mesh);
 
@@ -1527,7 +1471,7 @@ inline CAR_CU_Mesh::FCVF<T>::FCVF(SP<CAR_CU_Mesh> mesh_,
 {
     Require (mesh);
     // check things out
-    Ensure (data.size() == mesh->num_face_nodes());
+    Ensure (data.size() == mesh->get_num_face_nodes());
 }
 
 //---------------------------------------------------------------------------//
@@ -1549,15 +1493,16 @@ inline const vector<T> & CAR_CU_Mesh::FCVF<T>::operator()(int cell,
     // declare return vector
     vector<T> x;
     
-    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
-        mesh->get_Coord().get_dim())));
+    int index = mesh->get_cell_node(cell, face + static_cast<int>(pow(2.0, 
+        get_ndim())));
 
     // loop through faces and make return vector for this cell
-    for (int i = 0; i < data[index - mesh->num_corner_nodes() - 1].size(); i++)
-	x.push_back(data[index - mesh->num_corner_nodes() - 1][i]);
+    for (int i = 0; i < data[index - mesh->get_num_corner_nodes() - 1].size();
+	 i++)
+	x.push_back(data[index - mesh->get_num_corner_nodes() - 1][i]);
 
     // return
-    Ensure (x.size() == data[index - mesh->num_corner_nodes() - 1].size());
+    Ensure (x.size() == data[index - mesh->get_num_corner_nodes() - 1].size());
     return x;
 }
 
@@ -1568,9 +1513,9 @@ template<class T>
 inline const T & CAR_CU_Mesh::FCVF<T>::operator()(int cell, int face, 
 						  int dim) const 
 {
-    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
-        mesh->get_Coord().get_dim())));
-    return data[index - mesh->num_corner_nodes() - 1][dim - 1]; 
+    int index = mesh->get_cell_node(cell, face + static_cast<int>(pow(2.0, 
+        get_ndim())));
+    return data[index - mesh->get_num_corner_nodes() - 1][dim - 1]; 
 }
 
 //---------------------------------------------------------------------------//
@@ -1591,15 +1536,16 @@ inline vector<T> & CAR_CU_Mesh::FCVF<T>::operator()(int cell, int face)
     // declare return vector
     vector<T> x;
     
-    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
-        mesh->get_Coord().get_dim())));
+    int index = mesh->get_cell_node(cell, face + static_cast<int>(pow(2.0, 
+        get_ndim())));
 
     // loop through faces and make return vector for this cell
-    for (int i = 0; i < data[index - mesh->num_corner_nodes() - 1].size(); i++)
-	x.push_back(data[index - mesh->num_corner_nodes() - 1][i]);
+    for (int i = 0; i < data[index - mesh->get_num_corner_nodes() - 1].size();
+	 i++)
+	x.push_back(data[index - mesh->get_num_corner_nodes() - 1][i]);
 
     // return
-    Ensure (x.size() == data[index - mesh->num_corner_nodes() - 1].size());
+    Ensure (x.size() == data[index - mesh->get_num_corner_nodes() - 1].size());
     return x;
 }
 
@@ -1609,9 +1555,9 @@ inline vector<T> & CAR_CU_Mesh::FCVF<T>::operator()(int cell, int face)
 template<class T>
 inline T & CAR_CU_Mesh::FCVF<T>::operator()(int cell, int face, int dim)
 {
-    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
-        mesh->get_Coord().get_dim())));
-    return data[index - mesh->num_corner_nodes() - 1][dim - 1];
+    int index = mesh->get_cell_node(cell, face + static_cast<int>(pow(2.0, 
+        mesh->get_ndim())));
+    return data[index - mesh->get_num_corner_nodes() - 1][dim - 1];
 }
 
 //---------------------------------------------------------------------------//
@@ -1621,7 +1567,7 @@ inline T & CAR_CU_Mesh::FCVF<T>::operator()(int cell, int face, int dim)
 
 template<class T>
 inline CAR_CU_Mesh::NCSF<T>::NCSF(SP<CAR_CU_Mesh> mesh_) 
-    : mesh(mesh_), data(mesh->num_nodes()) 
+    : mesh(mesh_), data(mesh->get_num_nodes()) 
 {
     Require (mesh);
 }
@@ -1636,8 +1582,8 @@ inline CAR_CU_Mesh::NCSF<T>::NCSF(SP<CAR_CU_Mesh> mesh_, int size_)
 {
     Require (mesh);
 
-    Ensure (data.size() == mesh->num_nodes() ||
-	    data.size() == mesh->num_corner_nodes())
+    Ensure (data.size() == mesh->get_num_nodes() ||
+	    data.size() == mesh->get_num_corner_nodes())
 }
 
 //---------------------------------------------------------------------------//
@@ -1649,8 +1595,8 @@ inline CAR_CU_Mesh::NCSF<T>::NCSF(SP<CAR_CU_Mesh> mesh_,
 {
     Require (mesh);
 
-    Ensure (data.size() == mesh->num_nodes() ||
-	    data.size() == mesh->num_corner_nodes())
+    Ensure (data.size() == mesh->get_num_nodes() ||
+	    data.size() == mesh->get_num_corner_nodes())
 }
 
 //---------------------------------------------------------------------------//
@@ -1661,7 +1607,7 @@ inline CAR_CU_Mesh::NCSF<T>::NCSF(SP<CAR_CU_Mesh> mesh_,
 
 template<class T>
 inline CAR_CU_Mesh::NCVF<T>::NCVF(SP<CAR_CU_Mesh> mesh_) 
-    : mesh(mesh_), data(mesh->num_nodes())
+    : mesh(mesh_), data(mesh->get_num_nodes())
 {
     Require (mesh);
 
@@ -1683,8 +1629,8 @@ inline CAR_CU_Mesh::NCVF<T>::NCVF(SP<CAR_CU_Mesh> mesh_, int size_1)
     for (int i = 0; i < size_1; i++)
 	data[i].resize(mesh->get_ndim());
 
-    Ensure (size_1 == mesh->num_nodes() ||
-	    size_1 == mesh->num_corner_nodes())
+    Ensure (size_1 == mesh->get_num_nodes() ||
+	    size_1 == mesh->get_num_corner_nodes())
 }
 
 //---------------------------------------------------------------------------//
@@ -1697,8 +1643,8 @@ inline CAR_CU_Mesh::NCVF<T>::NCVF(SP<CAR_CU_Mesh> mesh_, int size_1,
 {
     Require (mesh);
 
-    Ensure (size_1 == mesh->num_nodes() ||
-	    size_1 == mesh->num_corner_nodes())
+    Ensure (size_1 == mesh->get_num_nodes() ||
+	    size_1 == mesh->get_num_corner_nodes())
 
     // initialize data array
     for (int i = 0; i < size_1; i++)
@@ -1716,8 +1662,8 @@ inline CAR_CU_Mesh::NCVF<T>::NCVF(SP<CAR_CU_Mesh> mesh_,
 {
     Require (mesh);
 
-    Ensure (data.size() == mesh->num_nodes() ||
-	    data.size() == mesh->num_corner_nodes())
+    Ensure (data.size() == mesh->get_num_nodes() ||
+	    data.size() == mesh->get_num_corner_nodes())
 }
 
 //---------------------------------------------------------------------------//
@@ -1777,8 +1723,8 @@ inline CAR_CU_Mesh::LNCVF<K,T>::LNCVF(SP<CAR_CU_Mesh> mesh_,
     : mesh(mesh_), data(array)
 {
     // check things out
-    Ensure (data.size() == mesh->num_nodes());
-    int dim = mesh->get_Coord().get_dim();
+    Ensure (data.size() == mesh->get_num_nodes());
+    int dim = get_ndim();
     for (multimap<K, vector<T> >::const_iterator niter = data.begin();
 	 niter != data.end(); niter++)
 	Ensure (niter->second.size() == dim);
@@ -1817,23 +1763,23 @@ inline vector<T> CAR_CU_Mesh::LNCVF<K,T>::operator()(int node) const
 // CAR_CU_Mesh inline functions
 //---------------------------------------------------------------------------//
 
-inline double CAR_CU_Mesh::begin(int d) const 
+inline double CAR_CU_Mesh::get_mesh_min_coord(int d) const 
 {
     // find the minimum surface for d over the whole mesh
-    return * min_element(vertex[d - 1].begin(), vertex[d - 1].end()); 
+    return * min_element(node_coords[d - 1].begin(),node_coords[d - 1].end()); 
 }
 
 //---------------------------------------------------------------------------//
 
-inline double CAR_CU_Mesh::end(int d) const 
+inline double CAR_CU_Mesh::get_mesh_max_coord(int d) const 
 {
     // find the maximum surface for d over the whole mesh
-    return * max_element(vertex[d - 1].begin(), vertex[d - 1].end()); 
+    return * max_element(node_coords[d - 1].begin(),node_coords[d - 1].end()); 
 }
 
 //---------------------------------------------------------------------------//
 
-inline double CAR_CU_Mesh::pos(int d, int cell) const
+inline double CAR_CU_Mesh::get_cell_center_coord(int d, int cell) const
 {
     // find center position of cell
 
@@ -1842,24 +1788,24 @@ inline double CAR_CU_Mesh::pos(int d, int cell) const
 
     // loop over all vertices and take average value to get the center
     // point 
-    for (int i = 0; i < pow(2.0,coord->get_dim()); i++)
-	return_pos += vertex[d-1][cell_pair[cell-1][i]-1];
+    for (int i = 0; i < pow(2.0,get_ndim()); i++)
+	return_pos += node_coords[d-1][cell_nodes[cell-1][i]-1];
 
     // return value
-    return return_pos /  pow(2.0,coord->get_dim());     
+    return return_pos /  pow(2.0,get_ndim());     
 }
 
 //---------------------------------------------------------------------------//
 
-inline double CAR_CU_Mesh::min(int d, int cell) const 
+inline double CAR_CU_Mesh::get_cell_min_coord(int d, int cell) const 
 {	
     // find minimum dimension along d of cell
 
     // loop over all vertices and find the minimum
-    double minimum = vertex[d-1][cell_pair[cell-1][0]-1];
-    for (int i = 1; i < pow(2.0,coord->get_dim()); i++)
+    double minimum = node_coords[d-1][cell_nodes[cell-1][0]-1];
+    for (int i = 1; i < pow(2.0,get_ndim()); i++)
     {
-	double point = vertex[d-1][cell_pair[cell-1][i]-1];
+	double point = node_coords[d-1][cell_nodes[cell-1][i]-1];
 
 	// update the minimum value point
 	if (point < minimum)
@@ -1872,15 +1818,15 @@ inline double CAR_CU_Mesh::min(int d, int cell) const
 
 //---------------------------------------------------------------------------//
 
-inline double CAR_CU_Mesh::max(int d, int cell) const
+inline double CAR_CU_Mesh::get_cell_max_coord(int d, int cell) const
 {
     // find maximum dimension of cell
 
     // loop over all vertices and find the maximum
-    double maximum = vertex[d-1][cell_pair[cell-1][0]-1];
-    for (int i = 1; i < pow(2.0,coord->get_dim()); i++)
+    double maximum = node_coords[d-1][cell_nodes[cell-1][0]-1];
+    for (int i = 1; i < pow(2.0,get_ndim()); i++)
     {
-	double point = vertex[d-1][cell_pair[cell-1][i]-1];
+	double point = node_coords[d-1][cell_nodes[cell-1][i]-1];
 
 	// update the maximum value point
 	if (point > maximum)
@@ -1893,14 +1839,14 @@ inline double CAR_CU_Mesh::max(int d, int cell) const
 
 //---------------------------------------------------------------------------//
 
-inline double CAR_CU_Mesh::volume(int cell) const 
+inline double CAR_CU_Mesh::get_cell_volume(int cell) const 
 {
     // calculate volume of cell
 
     // loop through dimensions and get volume
     double volume = 1.0;
-    for (int d = 1; d <= coord->get_dim(); d++)
-	volume *= dim(d, cell);
+    for (int d = 1; d <= get_ndim(); d++)
+	volume *= get_cell_width(d, cell);
 
     // return volume
     return volume;
@@ -1908,19 +1854,19 @@ inline double CAR_CU_Mesh::volume(int cell) const
 
 //---------------------------------------------------------------------------//
 
-inline double CAR_CU_Mesh::face_area(int cell, int face) const 
+inline double CAR_CU_Mesh::get_cell_face_area(int cell, int face) const 
 {
     // calculate area of face on cell
 
     // loop through dimensions and multiply off-dimension widths
     double face_area = 1.0;
-    int dim_face_on = abs(face - coord->get_dim()) + 1 - 
-                      face/(coord->get_dim() + 1);
+    int dim_face_on = abs(face - get_ndim()) + 1 - 
+                      face/(get_ndim() + 1);
 
-    for (int d = 1; d <= coord->get_dim(); d++)
+    for (int d = 1; d <= get_ndim(); d++)
     {
 	if (d != dim_face_on)
-	    face_area *= dim(d, cell);
+	    face_area *= get_cell_width(d, cell);
     }
 
     // return face_area
@@ -1929,67 +1875,68 @@ inline double CAR_CU_Mesh::face_area(int cell, int face) const
 
 //---------------------------------------------------------------------------//
 
-inline vector<int> CAR_CU_Mesh::cell_nodes(int cell) const
+inline vector<int> CAR_CU_Mesh::get_cell_nodes(int cell) const
 {
     // Return the set of nodes that make up a cell, including both the corner
     // nodes and the face-centered nodes.
-    int nnodes = pow(2.0,coord->get_dim()) + 2.0 * coord->get_dim();
+    int nnodes = pow(2.0,get_ndim()) + 2.0 * get_ndim();
     vector<int> node_set(nnodes);
     for (int node = 0; node < nnodes; node++)
-        node_set[node] = cell_pair[cell - 1][node];
+        node_set[node] = cell_nodes[cell - 1][node];
 
     return node_set;
 }
 
 //---------------------------------------------------------------------------//
 
-inline vector<int> CAR_CU_Mesh::cell_corner_nodes(int cell) const
+inline vector<int> CAR_CU_Mesh::get_cell_corner_nodes(int cell) const
 {
     // Return the set of corner nodes that make up a cell.
-    int nnodes = pow(2.0,coord->get_dim());
+    int nnodes = pow(2.0,get_ndim());
     vector<int> node_set(nnodes);
     for (int node = 0; node < nnodes; node++)
-        node_set[node] = cell_pair[cell - 1][node];
+        node_set[node] = cell_nodes[cell - 1][node];
 
     return node_set;
 }
 
 //---------------------------------------------------------------------------//
 
-inline vector<int> CAR_CU_Mesh::cell_face_centered_nodes(int cell) const
+inline vector<int> CAR_CU_Mesh::get_cell_face_centered_nodes(int cell) const
 {
     // Return the set of face-centered nodes for a cell.
-    int nnodes = pow(2.0,coord->get_dim()) + 2.0 * coord->get_dim();
-    vector<int> node_set(2.0 * coord->get_dim());
-    for (int node = pow(2.0,coord->get_dim()); node < nnodes; node++)
-        node_set[node - pow(2.0,coord->get_dim())] = cell_pair[cell - 1][node];
+    int nnodes = pow(2.0,get_ndim()) + 2.0 * get_ndim();
+    vector<int> node_set(2.0 * get_ndim());
+    for (int node = pow(2.0,get_ndim()); node < nnodes; node++)
+        node_set[node - pow(2.0,get_ndim())] = 
+	    cell_nodes[cell - 1][node];
 
     return node_set;
 }
 
 //---------------------------------------------------------------------------//
 
-inline vector<int> CAR_CU_Mesh::cell_face_nodes(int cell, int face) const
+inline vector<int> CAR_CU_Mesh::get_cell_face_nodes(int cell, int face) const
 {
     // Return the set of nodes that make up a cell face
-    vector<int> node_set(pow(2.0,coord->get_dim() - 1));
+    vector<int> node_set(pow(2.0,get_ndim() - 1));
     // Correlations are based on cell faces indexed to start at zero
     --face;
 
     int node = face/3 + face/4 + 2 * (face/5);
-    node_set[0] = cell_pair[cell - 1][node];
+    node_set[0] = cell_nodes[cell - 1][node];
 
     node = ((face+1)%2) * (1 + face/2) + (face%2) * (4 + face/2);
-    node_set[1] = cell_pair[cell - 1][node];
+    node_set[1] = cell_nodes[cell - 1][node];
 
-    if (coord->get_dim() == 3)
+    if (get_ndim() == 3)
     {
         node = ((face+1)%2) * (3 * (1 + face/2) - 2 * (face/4)) +
 	       (face%2) * (5 + 2 * (face/3));
-        node_set[2] = cell_pair[cell - 1][node];
+        node_set[2] = cell_nodes[cell - 1][node];
 
         node = ((face+1)%2) * (face + 2) + (face%2) * face;
-        node_set[3] = cell_pair[cell - 1][node];
+        node_set[3] = cell_nodes[cell - 1][node];
     }
     // Reset the face value to the original input
     ++face;
@@ -1999,18 +1946,16 @@ inline vector<int> CAR_CU_Mesh::cell_face_nodes(int cell, int face) const
 
 //---------------------------------------------------------------------------//
 
-inline vector<double> CAR_CU_Mesh::get_normal(int cell, int face) const
+inline vector<double> CAR_CU_Mesh::get_cell_face_normal(int cell, int face) 
+    const
 {
-    // CAR_CU_Meshes do not require any functionality from Coord_sys to 
-    // calculate the outward normal, do simple return
-
-    // normal always has 3 components, use Get_sdim()
-    vector<double> normal(coord->get_sdim(), 0.0);
+    // normal always has 3 components
+    vector<double> normal(get_ndim(), 0.0);
 	
     // calculate normal based on face, (-z, -y, -x, +x, +y, +z), only
     // one coordinate is non-zero    
-    int index = abs(face - coord->get_dim()) - face/(coord->get_dim() + 1);
-    if (face <= coord->get_dim())
+    int index = abs(face - get_ndim()) - face/(get_ndim() + 1);
+    if (face <= get_ndim())
         normal[index] = -1.0;
     else
         normal[index] = 1.0;
@@ -2021,18 +1966,16 @@ inline vector<double> CAR_CU_Mesh::get_normal(int cell, int face) const
 
 //---------------------------------------------------------------------------//
 
-inline vector<double> CAR_CU_Mesh::get_normal_in(int cell, int face) const
+inline vector<double> CAR_CU_Mesh::get_cell_face_normal_in(int cell, int face)
+    const
 {
-    // CAR_CU_Meshes do not require any functionality from Coord_sys to 
-    // calculate the inward normal, do simple return
-
-    // normal always has 3 components, use Get_sdim()
-    vector<double> normal(coord->get_sdim(), 0.0);
+    // normal always has 3 components
+    vector<double> normal(get_ndim(), 0.0);
 	
     // calculate normal based on face, (-z, -y, -x, +x, +y, +z), only
     // one coordinate is non-zero    
-    int index = abs(face - coord->get_dim()) - face/(coord->get_dim() + 1);
-    if (face > coord->get_dim())
+    int index = abs(face - get_ndim()) - face/(get_ndim() + 1);
+    if (face > get_ndim())
         normal[index] = -1.0;
     else
         normal[index] = 1.0;
@@ -2044,15 +1987,15 @@ inline vector<double> CAR_CU_Mesh::get_normal_in(int cell, int face) const
 //---------------------------------------------------------------------------//
 // Return the node vertex
 
-inline vector<double> CAR_CU_Mesh::get_vertex(int node) const
+inline vector<double> CAR_CU_Mesh::get_node_coords(int node) const
 {
     // determine the vertices along a cell-face
 
     // return vertices
-    vector<double> ret_vert(coord->get_dim());
+    vector<double> ret_vert(get_ndim());
 
-    for (int d = 0; d < coord->get_dim(); d++)
-        ret_vert[d] = vertex[d][node-1];
+    for (int d = 0; d < get_ndim(); d++)
+        ret_vert[d] = node_coords[d][node-1];
 
     // return vector of vertices
     return ret_vert;
@@ -2061,26 +2004,27 @@ inline vector<double> CAR_CU_Mesh::get_vertex(int node) const
 //---------------------------------------------------------------------------//
 // calculate the vertices bounding a cell face
 
-inline CAR_CU_Mesh::NCVF_d CAR_CU_Mesh::get_vertices(int cell, int face) const
+inline CAR_CU_Mesh::ncvf_d CAR_CU_Mesh::get_cell_nodes_coords(int cell, 
+							      int face) const
 {
     // determine the vertices along a cell-face
 
     // return vertices
-    NCVF_d ret_vert(coord->get_dim());
+    ncvf_d ret_vert(get_ndim());
 
     // determine axis dimension of surface (x=1, y=2, z=3)
-    int axis = abs(face - coord->get_dim()) + 1 - face/(coord->get_dim() + 1);
+    int axis = abs(face - get_ndim()) + 1 - face/(get_ndim() + 1);
     double plane;
-    if (face <= coord->get_dim())
-	plane = min(axis, cell);
+    if (face <= get_ndim())
+	plane = get_cell_min_coord(axis, cell);
     else
-	plane = max(axis, cell);
+	plane = get_cell_max_coord(axis, cell);
 
     // loop over vertices in cell and get the vertices that are in the plane
-    for (int i = 0; i < pow(2.0,coord->get_dim()); i++)
-	if (plane == vertex[axis-1][cell_pair[cell-1][i]-1])
-	    for (int d = 0; d < coord->get_dim(); d++)
-		ret_vert[d].push_back(vertex[d][cell_pair[cell-1][i]-1]);
+    for (int i = 0; i < pow(2.0,get_ndim()); i++)
+	if (plane == node_coords[axis-1][cell_nodes[cell-1][i]-1])
+	    for (int d = 0; d < get_ndim(); d++)
+		ret_vert[d].push_back(node_coords[d][cell_nodes[cell-1][i]-1]);
 
     // return vector of vertices
     return ret_vert;
@@ -2089,17 +2033,17 @@ inline CAR_CU_Mesh::NCVF_d CAR_CU_Mesh::get_vertices(int cell, int face) const
 //---------------------------------------------------------------------------//
 // calculate the vertices bounding a cell
 
-inline CAR_CU_Mesh::NCVF_d CAR_CU_Mesh::get_vertices(int cell) const
+inline CAR_CU_Mesh::ncvf_d CAR_CU_Mesh::get_cell_nodes_coords(int cell) const
 {
     // determine the vertices bounding a cell
     
     // return vertices
-    NCVF_d ret_vert(coord->get_dim());
+    ncvf_d ret_vert(get_ndim());
 
     // loop over cell vertices and build the cell vertices
-    for (int i = 0; i < pow(2.0,coord->get_dim()); i++)
-	for (int d = 0; d < coord->get_dim(); d++)
-	    ret_vert[d].push_back(vertex[d][cell_pair[cell-1][i]-1]);
+    for (int i = 0; i < pow(2.0,get_ndim()); i++)
+	for (int d = 0; d < get_ndim(); d++)
+	    ret_vert[d].push_back(node_coords[d][cell_nodes[cell-1][i]-1]);
 
     // return vector of vertices
     return ret_vert;
@@ -2114,91 +2058,21 @@ inline int CAR_CU_Mesh::get_generation(int cell) const
 }
 
 //---------------------------------------------------------------------------//
-// sample the position uniformly in a cell
-
-inline vector<double> CAR_CU_Mesh::sample_pos(int cell, Sprng & random) const
-{
-    // assign minimums and maximums for cell dimensions
-    vector<double> vmin(coord->get_dim());
-    vector<double> vmax(coord->get_dim());
-
-    for (int d = 1; d <= coord->get_dim(); d++)
-    {
-	vmin[d-1] = min(d, cell);
-	vmax[d-1] = max(d, cell);
-    }
-
-    // use coord_sys to sample the location
-    vector<double> r = coord->sample_pos(vmin, vmax, random);
-
-    // return position vector
-    return r;
-}
-
-//---------------------------------------------------------------------------//
-// sample the position in a cell given a tilt (or other slope-like function)
-
-inline vector<double> CAR_CU_Mesh::sample_pos(int cell, Sprng & random, 
-					  vector<double> slope, 
-					  double center_pt) const
-{
-    // assign minimums and maximums for cells dimensions
-    vector<double> vmin(coord->get_dim());
-    vector<double> vmax(coord->get_dim());
-
-    for (int d = 1; d <= coord->get_dim(); d++)
-    {
-	vmin[d-1] = min(d, cell);
-	vmax[d-1] = max(d, cell);
-    }
-
-    // use coord_sys to sample the location
-    vector<double> r = coord->sample_pos(vmin, vmax, random, slope,
-					 center_pt);
-
-    // return position vector
-    return r;
-}
-
-//---------------------------------------------------------------------------//
-// sample a position on a face
-
-inline vector<double> CAR_CU_Mesh::sample_pos_on_face(int cell, int face, 
-						  Sprng & random) const
-{
-    // assign minimums and maximums for cell dimensions
-    vector<double> vmin(coord->get_dim());
-    vector<double> vmax(coord->get_dim());
-
-    for (int d = 1; d <= coord->get_dim(); d++)
-    {
-	vmin[d-1] = min(d, cell);
-	vmax[d-1] = max(d, cell);
-    }
-
-    // use coord_sys to sample the location
-    vector<double> r = coord->sample_pos_on_face(vmin, vmax, face, random);
-
-    // return position vector
-    return r;
-}
-
-//---------------------------------------------------------------------------//
 // check if a point lies on a face
 
 inline bool CAR_CU_Mesh::check_on_face(vector<double> & pos, int & cell, 
 				       int & face) const
 {
-    int off_face = abs(face - coord->get_dim()) + 1 - 
-                       face/(1 + coord->get_dim());
+    int off_face = abs(face - get_ndim()) + 1 - 
+                       face/(1 + get_ndim());
     int on_face = 1;
 
-    for (int d = 1; d <= coord->get_dim(); d++)
+    for (int d = 1; d <= get_ndim(); d++)
     {
 	if (d != off_face)
 	{
-	    double side_max = max(d, cell);
-	    double side_min = min(d, cell);
+	    double side_max = get_cell_max_coord(d, cell);
+	    double side_min = get_cell_min_coord(d, cell);
 	    // multiply integer by zero if this coordinate is not on the face
 	    on_face *= (pos[d-1] >= side_min && pos[d-1] <= side_max);
 	}

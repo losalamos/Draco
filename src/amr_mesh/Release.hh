@@ -112,27 +112,27 @@ namespace rtt_amr
  *    destructor are shadowed for the CAR_CU_Builder.
  *
  * 3) A smart pointer to the rtt_amr::CAR_CU_Interface class object is the 
- *    single argument to the rtt_imc::Opacity_Builder constructor, which 
- *    constructs an Opacity class object and returns its address. While these
- *    class objects are actually in the Draco implicit monte carlo (imc) 
- *    namespace, a shadow object interface for these C++ class objects is 
+ *    single argument to the rtt_amr::Opacity_Builder constructor, which 
+ *    constructs an Opacity class object and returns its address. These
+ *    class objects are derived from the Draco implicit monte carlo (imc) 
+ *    package a shadow object interface for these C++ class objects is 
  *    provided in the AMR mesh package so that Fortran 90 codes can construct
  *    and access the required Opacity data structure using the available data
  *    in the CAR_CU_Interface class object.
  *
  * 4) A smart pointer to a rtt_amr::CAR_CU_Mesh class object is the single 
  *    argument to the build_Mat public member function of the 
- *    rtt_imc::Opacity_Builder, which builds an rtt_imc::Mat_State class 
+ *    rtt_amr::Opacity_Builder, which builds an rtt_amr::Mat_State class 
  *    object and returns a smart pointer to the new Mat_State class object. 
- *    While the Mat_State class object is actually in the Draco implicit monte
- *    carlo (imc) namespace, a shadow object interface for this C++ class 
+ *    The Mat_State class object is derived from the Draco implicit monte
+ *    carlo (imc) package. A shadow object interface for this C++ class 
  *    object is provided in the AMR mesh package so that Fortran 90 codes can
  *    construct and access the required Mat_State data structure using the 
  *    available data in the CAR_CU_Mesh class object.
  *
  * 5) The rtt_amr::CAR_CU_Interface and rtt_amr::CAR_CU_Builder class objects
  *    may be eliminated by calling their associated destructors after the
- *    rtt_amr::CAR_CU_Mesh, rtt_imc::Opacity, rtt_imc::and Mat_State class 
+ *    rtt_amr::CAR_CU_Mesh, rtt_amr::Opacity, rtt_amr::and Mat_State class 
  *    objects have been constructed (assuming that any needed data in the 
  *    remainder of the CAR_CU_Interface class object has been retained in
  *    alternate data structures).
@@ -148,8 +148,7 @@ namespace rtt_amr
  *
  * <h3> Other Draco Packages </h3>
  * The AMR mesh package uses the Draco ds++ services library, the C4 
- * communication library, the meshReaders parsing library, the implicit monte
- * carlo (imc) library, and the mesh class (mc) library.
+ * communication library, and the meshReaders parsing library.
  */
 
 /*!

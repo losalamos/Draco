@@ -38,7 +38,7 @@ void Layout::print(ostream & output, int cell_index) const
     using std::endl;
     using std::setw;
       
-    int faces = num_faces(cell_index);
+    int faces = get_num_cell_faces(cell_index);
 
     // print the adjacent cell information for face indexed by face_index of 
     // cell indexed by cell_index
@@ -51,7 +51,7 @@ void Layout::print(ostream & output, int cell_index) const
     for (int face_index = 1; face_index <= faces; face_index++)
     {
         output << setw(4) << face_index;
-        int adjCells = num_adj(cell_index,face_index);
+        int adjCells = get_num_adj_cells(cell_index,face_index);
 	for (int adj = 1; adj <= adjCells; adj++)
 	    output << setw(9) << face_cell[cell_index-1][face_index-1][adj-1] 
 		   << endl;
@@ -64,7 +64,7 @@ void Layout::print(ostream & output, int cell_index) const
 //---------------------------------------------------------------------------//
 ostream & operator<<(ostream & output, const Layout & object)
 {
-    int num_cells = object.num_cells();
+    int num_cells = object.get_num_cells();
     for (int cell_index = 1; cell_index <= num_cells; cell_index++)
         object.print(output, cell_index);
     return output;

@@ -68,12 +68,11 @@ extern "C"
 //
 /*!
  * \brief Shadow object that constructs a CAR_CU_Builder class object from
- *        a Fortran 90 program call. This also constructs the Coord_sys, 
- *        Layout, and CAR_CU_Mesh class objects. The addresses (i.e., opaque
- *        pointers) of both the new CAR_CU_Builder and CAR_CU_Mesh class
- *        objects are set. The CAR_CU_Mesh class contains member functions 
- *        to return the addresses of the Coord and Layout class objects, if
- *        needed.
+ *        a Fortran 90 program call. This also constructs the Layout, and 
+ *        CAR_CU_Mesh class objects. The addresses (i.e., opaque pointers) 
+ *        of both the new CAR_CU_Builder and CAR_CU_Mesh class objects are 
+ *        set. The CAR_CU_Mesh class contains a member function to return 
+ *        the address of the Layout class object, if needed.
  * \param self Opaque pointer to the new CAR_CU_Builder class object 
  *             (returned).
  * \param itf_ptr Opaque pointer to an existing, initialized CAR_CU_Interface
@@ -85,10 +84,10 @@ extern "C"
  *                 (returned).
  */
     // Construct a CAR_CU_Builder class from a Fortran 90 program call.  This 
-    // also constructs the Coord_sys, Layout, and CAR_CU_Mesh class objects.
+    // also constructs the Layout, and CAR_CU_Mesh class objects. The
     // The addresses of both the new CAR_CU_Builder and CAR_CU_Mesh class 
     // objects are set. The CAR_CU_Mesh class contains member functions to 
-    // return the addresses of the Coord and Layout class objects, if needed.
+    // return the address of the Layout class objects, if needed.
     void construct_car_cu_mesh_builder_(long & self, long & itf_ptr, 
 					long & rttf_ptr, long & verbosity, 
 					long & mesh_ptr)

@@ -25,7 +25,6 @@
 //  0) original (developed from OS_Builder.hh)
 //===========================================================================//
 
-#include "mc/Coord_sys.hh"
 #include "Layout.hh"
 #include "Mesh.hh"
 #include "ds++/SP.hh"
@@ -56,10 +55,10 @@ using rtt_format::RTT_Format;
  *         function takes a smart pointer to an rtt_format::RTT_Format class 
  *         object as its single input and returns a smart pointer to the new 
  *         CAR_CU_Mesh class object. This member function calls the private 
- *         member functions assign_Generations, build_Coord, and build_Layout
- *         to construct CAR_CU_Mesh::CCSF_i type and Coord_sys and Layout 
- *         class objects, respectively. A CAR_CU_Mesh::NCVF_d type vertex 
- *         array and a CAR_CU_Mesh::CCVF_i type cell_pair array are generated 
+ *         member functions assign_Generations,and build_Layout to construct
+ *         CAR_CU_Mesh::ccsf_i type and Layout class objects, respectively.
+ *         A CAR_CU_Mesh::ncvf_d type node_coords  array and a 
+ *         CAR_CU_Mesh::ccvf_i type cell_nodes array are generated 
  *         directly. Each of these objects is required by the CAR_CU_Mesh 
  *         class constructor. The map_Nodes private member function is called 
  *         to eliminate superfluous node data that is present in the RTT_Format
@@ -84,35 +83,26 @@ private:
  * \brief The problem coordinate system (e.g., xyz).
  */
     string coord_system;
-  // vertex (node) coordinate array
+  // node coordinates array
 /*!
- * \brief The node coordinate values.
+ * \brief The coordinate values for each node.
  */
-    CAR_CU_Mesh::NCVF_d vertex;
-  // cell vertexes
+    CAR_CU_Mesh::ncvf_d node_coords;
+  // cell nodes
 /*!
- * \brief The connections between cell faces.
+ * \brief The nodes that comprise each cell.
  */
-    CAR_CU_Mesh::CCVF_i cell_pair;
+    CAR_CU_Mesh::ccvf_i cell_nodes;
 
   // member functions for building CAR_CU_Mesh
   // build Layout helper functions
 /*!
  * \brief Constructs a Layout class object.
- * \param coord An existing, initialized Coord_sys class object.
  * \param rttMesh Smart pointer to an existing, initialized RTT_Format
  *                class object.
  * \return Smart pointer to the new Layout class object.
  */
-    SP<Layout> build_Layout(const Coord_sys & coord, 
-			    const SP<RTT_Format> & rttMesh);
-
-  // build Coord_sys helper functions
-/*!
- * \brief Constructs a Coord_sys class object.
- * \return Smart pointer to the new Coord_sys class object.
- */
-    SP<Coord_sys> build_Coord();
+    SP<Layout> build_Layout(const SP<RTT_Format> & rttMesh);
 
   // assign cells to generation levels in cell_gens and return a vector of 
   // sets of the cells present in each generation (gen_cells);
@@ -123,7 +113,7 @@ private:
  * \param cell_gens Generation level of each cell (calculated).
  * \return Generation-specific cell sets.
  */
-    vector<set<int> > assign_Generations(CAR_CU_Mesh::CCSF_i & cell_gens, 
+    vector<set<int> > assign_Generations(CAR_CU_Mesh::ccsf_i & cell_gens, 
 					 const SP<RTT_Format> & rttMesh);
 
   // Establish a hiearchy for the mesh - modifies gen_cells directly and
@@ -179,13 +169,13 @@ private:
 
 
   // generate nodes that are centered on the cell faces, add them to the 
-  // cell_pairs vector, calculate their coordinates, and add these to the 
-  // vertex vector.
+  // cell_nodes vector, calculate their coordinates, and add these to the 
+  // node_coords vector.
 /*!
  * \brief Generate nodes that are centered on the cell faces, adds them to the
- *        cell_pairs vector, calculates their coordinates, and adds the 
- *        coordinates to the vertex vector. Numbering of the face-centererd
- *        nodes begins after all of the cell corner nodes.
+ *        cell_nodes vector, calculates their coordinates, and adds the 
+ *        coordinates to the node_coords vector. The numbering of the 
+ *        face-centered nodes begins after all of the cell corner nodes.
  * \param nnodes Total number of nodes (corner nodes only on input and both
  *               corner and face-centered nodes on output).
  * \param rttMesh Smart pointer to an existing, initialized RTT_Format
