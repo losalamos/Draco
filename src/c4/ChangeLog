@@ -1,3 +1,11 @@
+2005-02-18  Kelly Thompson  <kgt@lanl.gov>
+
+	* C4_MPI.cc (initialize): During initialize() make a call to
+	MPI_Wtick().  This synchronizes the clocks for Darwin's version of
+	mpich. It is not clear why this is required by Darwin's version of
+	mpich, but we have demonstrated that it is necessary for Darwin's
+	implementation. Thanks to Paul H. for figuring this one out.
+
 2005-01-31  Kelly Thompson  <kgt@lanl.gov>
 
 	* test/tstTime.cc: Changed order of include directives; Moved

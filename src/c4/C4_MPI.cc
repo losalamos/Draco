@@ -36,6 +36,9 @@ void initialize(int &argc, char **&argv)
 {
     int result = MPI_Init(&argc, &argv);
     Check (result == MPI_SUCCESS);
+
+    // Resync clocks for Darwin mpich
+    double foo( MPI_Wtick() );
 }
 
 //---------------------------------------------------------------------------//
