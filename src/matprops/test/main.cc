@@ -26,13 +26,13 @@ int main(int argc , char *argv[])
     {
 
 	for (int arg=1; arg < argc; arg++)
+	{
+	    if (std::string(argv[arg]) == "--version")
 	    {
-		if (std::string(argv[arg]) == "--version")
-		    {
-			version(argv[0]);
-			return 0;
-		    }
+		version(argv[0]);
+		return 0;
 	    }
+	}
 
     	void testBilinDoit();
 	testBilinDoit();
