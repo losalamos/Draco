@@ -221,15 +221,15 @@ void DD_Transporter<MT,PT>::trans_src_async(SP_PT_Diagnostic check,
     Check (!particle->status());
 
     // increment number of completed particles, if this one is done
-    if (particle->desc() == "census")
+    if (particle->get_descriptor() == PT::CENSUS)
 	num_done++;
-    else if (particle->desc() == "escape")
+    else if (particle->get_descriptor() == PT::ESCAPE)
 	num_done++;
-    else if (particle->desc() == "killed")
+    else if (particle->get_descriptor() == PT::KILLED)
 	num_done++;
    
     // if particle goes to census, write to new census bank
-    if (particle->desc() == "census")
+    if (particle->get_descriptor() == PT::CENSUS)
     {
 	// convert the particle cell index back to a global cell index
 	int local_cell  = particle->get_cell();
@@ -241,7 +241,7 @@ void DD_Transporter<MT,PT>::trans_src_async(SP_PT_Diagnostic check,
     }
     
     // if particle crosses a domain boundary, communicate the particle
-    if (particle->desc() == "cross_boundary")
+    if (particle->get_descriptor() == PT::CROSS_BOUNDARY)
         communicator->communicate(*buffer, particle);
 
     // The conditional has been commented out because too many MPI buffers
@@ -296,14 +296,14 @@ void DD_Transporter<MT,PT>::trans_domain_async(SP_PT_Diagnostic check,
     Check (!particle->status());
 
     // increment number of completed particles, if this one is done
-    if (particle->desc() == "census")
+    if (particle->get_descriptor() == PT::CENSUS)
 	num_done++;
-    else if (particle->desc() == "escape")
+    else if (particle->get_descriptor() == PT::ESCAPE)
 	num_done++;
-    else if (particle->desc() == "killed")
+    else if (particle->get_descriptor() == PT::KILLED)
 	num_done++;
 
-    if (particle->desc() == "census")
+    if (particle->get_descriptor() == PT::CENSUS)
     {
 	// convert the particle cell index back to a global cell index
 	int local_cell  = particle->get_cell();
@@ -314,7 +314,7 @@ void DD_Transporter<MT,PT>::trans_domain_async(SP_PT_Diagnostic check,
 	new_census_bank->push(particle);
     }
     
-    if (particle->desc() == "cross_boundary")
+    if (particle->get_descriptor() == PT::CROSS_BOUNDARY)
 	communicator->communicate(*buffer, particle);
   
     // during the source block, this statement could fill the bank such that

@@ -34,10 +34,6 @@ using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
 
-// some typedefs
-// typedef Particle<OS_Mesh> POS;
-// typedef Particle_Buffer<Particle<OS_Mesh> > PB;
-
 // passing condition
 bool passed = true;
 #define ITFAILS passed = rtt_imc_test::fail(__LINE__);
@@ -67,13 +63,13 @@ void Particle_Basics()
     POS pt(r, omega, ew, 100, rnd);
 
     // tests
-    if (pt.status() != true)      ITFAILS;
-    if (pt.get_ew() != 5.0)       ITFAILS;
-    if (pt.desc()   != "born")    ITFAILS;
-    if (pt.get_cell() != 100)     ITFAILS;
-    if (pt.get_omega()[0] != 0.0) ITFAILS;
-    if (pt.get_omega()[1] != 1.0) ITFAILS;
-    if (pt.get_omega()[2] != 0.0) ITFAILS;
+    if (pt.status() != true)              ITFAILS;
+    if (pt.get_ew() != 5.0)               ITFAILS;
+    if (pt.get_descriptor() != POS::BORN) ITFAILS;
+    if (pt.get_cell() != 100)             ITFAILS;
+    if (pt.get_omega()[0] != 0.0)         ITFAILS;
+    if (pt.get_omega()[1] != 1.0)         ITFAILS;
+    if (pt.get_omega()[2] != 0.0)         ITFAILS;
 
     // reset and check
     pt.kill_particle();
@@ -86,10 +82,10 @@ void Particle_Basics()
     Sprng rnd2 = control.get_rn(12);
     pt.set_random(rnd1);
     pt.set_time_left(.11);
-    pt.set_descriptor("test");
+    pt.set_descriptor(POS::SCATTER);
     pt.set_ew(11.0);
     pt.set_cell(30);
-    POS pt2(r, omega, 11.0, 30, rnd2, 1, .11, "test");
+    POS pt2(r, omega, 11.0, 30, rnd2, 1, .11, POS::SCATTER);
     if (pt != pt2) ITFAILS;
 }
 
@@ -99,6 +95,8 @@ void Particle_Basics()
 template <typename POS>
 void Particle_Pack()
 {
+    // typedef to nested Pack class so that static functions are usable
+    typedef typename POS::Pack POS_Pack;
 
     // Make a particle
     vector<double> r(3, 0.0);
@@ -111,18 +109,20 @@ void Particle_Pack()
     POS pt(r, omega, ew, cell, rnd);  // defaults for t_left and frac = 1.0
 
     // Check the status of Particle::Pack
-    if (POS::Pack::get_int_size()!=0)    ITFAILS;
-    if (POS::Pack::get_double_size()!=0) ITFAILS;
-    if (POS::Pack::get_char_size()!=0)   ITFAILS;
-    if (POS::Pack::get_setup())          ITFAILS;
+    if (POS_Pack::get_int_size()!=0)    ITFAILS;
+    if (POS_Pack::get_double_size()!=0) ITFAILS;
+    if (POS_Pack::get_char_size()!=0)   ITFAILS;
+    if (POS_Pack::get_setup())          ITFAILS;
 
     // Pack the particle
-    POS::SP_Pack packed(pt.pack());    // Get a smart pointer handle on the pack
+
+    // Get a smart pointer handle on the pack
+    typename POS::SP_Pack packed(pt.pack());   
 
     // Check the setup and buffer sized of Particle::Pack
-    if (POS::Pack::get_int_size()!=2)    ITFAILS;
-    if (POS::Pack::get_double_size()!=9) ITFAILS;
-    if (!POS::Pack::get_setup())         ITFAILS;
+    if (POS_Pack::get_int_size()!=2)    ITFAILS;
+    if (POS_Pack::get_double_size()!=9) ITFAILS;
+    if (!POS_Pack::get_setup())         ITFAILS;
 
     // Check that the packed data is correct
 
@@ -150,23 +150,22 @@ void Particle_Pack()
     // char data
 
     // Unpack the particle
-    POS::SP_Particle unpacked(packed->unpack());
+    typename POS::SP_Particle unpacked(packed->unpack());
 
     // check data of unpacked particle
-    if (unpacked->status() != true)      ITFAILS;
-    if (unpacked->get_ew() != ew)        ITFAILS;
-    if (unpacked->desc()   != "born")    ITFAILS;
-    if (unpacked->get_cell() != cell)    ITFAILS;
-    if (unpacked->get_omega()[0] != omega[0]) ITFAILS;
-    if (unpacked->get_omega()[1] != omega[1]) ITFAILS;
-    if (unpacked->get_omega()[2] != omega[2]) ITFAILS;
-    if (unpacked->get_r()[0] != r[0])    ITFAILS;
-    if (unpacked->get_r()[1] != r[1])    ITFAILS;
-    if (unpacked->get_r()[2] != r[2])    ITFAILS;
+    if (unpacked->status() != true)              ITFAILS;
+    if (unpacked->get_ew() != ew)                ITFAILS;
+    if (unpacked->get_descriptor() != POS::BORN) ITFAILS;
+    if (unpacked->get_cell() != cell)            ITFAILS;
+    if (unpacked->get_omega()[0] != omega[0])    ITFAILS;
+    if (unpacked->get_omega()[1] != omega[1])    ITFAILS;
+    if (unpacked->get_omega()[2] != omega[2])    ITFAILS;
+    if (unpacked->get_r()[0] != r[0])            ITFAILS;
+    if (unpacked->get_r()[1] != r[1])            ITFAILS;
+    if (unpacked->get_r()[2] != r[2])            ITFAILS;
 
     // Check to see that particles are identical
     if (*unpacked != pt) ITFAILS;
-
 }
 
 //---------------------------------------------------------------------------//
@@ -177,7 +176,7 @@ void Particle_Bank()
 {
 
     // make a bank to put particles into
-    Particle_Buffer<POS>::Bank bank;
+    typename Particle_Buffer<POS>::Bank bank;
 
     // make a bunch of particles
     for (int i = 1; i <= 5; i++)

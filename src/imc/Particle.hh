@@ -106,35 +106,51 @@ namespace rtt_imc
 //                have a different pointer pointing to the state data
 // 11)  4-29-99 : removed using declarations from namespace
 // 12) 18-AUG-00: updated surface() mesh.next_cell() to include the position
-//                vector for AMR support.
+//                vector for AMR support. 
 // 13) 28-AUG-00: modified the energy-weighted path length to account for a
-//                zero opacity. 
+//                zero opacity.  
 // 14) 27-APR-01: added pack struct and member function
-// 15) 30-MAY-01: added Descriptor enum to represent particle state, removed string 
-//                descriptor. See memo CCS-4:01-19(U)
+// 15) 30-MAY-01: added Descriptor enum to represent particle state, removed
+//                string descriptor. See memo CCS-4:01-19(U)
+// 16) 26-JUL-01: cleaned up file format; made get_descriptor return the
+//                enumeration value (integer)
 // 
 //===========================================================================//
 
 template<class MT>
 class Particle
 {
-    
-    enum Descriptor {BORN=1, CENSUS_BORN=2, BOUNDARY_BORN=3, VOL_EMISSION=4,
-		     SURFACE_SOURCE=5, 
-		     SCATTER=100, LOW_WEIGHT=101, EFF_SCATTER=102, THOM_SCATTER=103,
-		     REFLECTION=200, STREAM=201, ESCAPE=202, CROSS_BOUNDARY=203,
-		     ABSORPTION=204, BOUNDARY=205,		 
-		     CENSUS=300, KILLED=1000};
-    
   public: 
+    // >>> NESTED TYPES
 
+    // Descriptor enumeration for particle events.
+    enum Descriptor {BORN=1, 
+		     CENSUS_BORN=2, 
+		     BOUNDARY_BORN=3, 
+		     VOL_EMISSION=4,
+		     SURFACE_SOURCE=5, 
+		     SCATTER=100, 
+		     LOW_WEIGHT=101,
+		     EFF_SCATTER=102, 
+		     THOM_SCATTER=103, 
+		     REFLECTION=200, 
+		     STREAM=201, 
+		     ESCAPE=202, 
+		     CROSS_BOUNDARY=203, 
+		     ABSORPTION=204,
+		     BOUNDARY=205, 
+		     CENSUS=300, 
+		     KILLED=1000};
 
-    // Forward decleration of Pack class
+    // Forward declaration of Pack class
     struct Pack;
 
     // Public typedefs:
-    typedef rtt_dsxx::SP<Particle::Pack>     SP_Pack;
-    typedef rtt_dsxx::SP<Particle>           SP_Particle;
+    typedef rtt_dsxx::SP<Particle::Pack> SP_Pack;
+    typedef rtt_dsxx::SP<Particle>       SP_Particle;
+    typedef std::vector<double>          sf_double;
+    typedef rtt_rng::Sprng               Rnd_Type;
+    typedef std::string                  std_string;
 
     /*!
      * \class Particle::Diagnostic
@@ -170,18 +186,19 @@ class Particle
 
     // Friend declarations.
     friend class Diagnostic;
-    template<class PT> friend class Particle<PT>::Pack;
+    friend class Pack;
 
   private:
-    //>>> DATA
+    // >>> DATA
+
     // Particle energy-weight.
     double ew;
 
     // Particle location.
-    std::vector<double> r;
+    sf_double r;
 
     // Particle direction.
-    std::vector<double> omega;
+    sf_double omega;
 
     // Particle cell.
     int cell;
@@ -196,14 +213,13 @@ class Particle
     bool alive;
     
     // Event type descriptor.
-    //    std::string descriptor;
     int descriptor;
 
     // Random number object.
-    rtt_rng::Sprng random;
+    Rnd_Type random;
 
   private:
-    //>>> IMPLEMENTATION
+    // >>> IMPLEMENTATION
 
     // Stream a distance d.
     inline void stream(double);  
@@ -228,24 +244,45 @@ class Particle
 
   public:
     // Particle constructor.
-    inline Particle(std::vector<double>, std::vector<double>, double, int,
-		    rtt_rng::Sprng, double = 1, double = 1, 
-		    std::string = "born");
+    inline Particle(const sf_double &, const sf_double &, double, int,
+		    Rnd_Type, double = 1, double = 1, int = BORN);
 
-    // Null constructor required as kluge for the STL containers which need a
-    // default constructor, this calls an assert(0) so you can't use it.
-    Particle() { Insist (0, "You tried to default construct a Particle!"); }
-
-    //>>> TRANSPORT INTERFACE
+    // >>> TRANSPORT INTERFACE
 
     // IMC transport step.
     void transport(const MT &, const Opacity<MT> &, Tally<MT> &,
 		   rtt_dsxx::SP<Diagnostic> = rtt_dsxx::SP<Diagnostic>()); 
 
-    //>>> SERVICES
+    // >>> ACCESSORS
 
     //! Return the particle status.
     bool status() const { return alive; }
+
+    //! Get the particle's current cell index.
+    int get_cell() const { return cell; }
+
+    //! Get the particle's energy weight.
+    double get_ew() const { return ew; }
+
+    //! Get the particle's position.
+    const sf_double& get_r() const { return r; }
+
+    //! Get the particle's direction.
+    const sf_double& get_omega() const { return omega; }
+
+    //! Get the particle's random number object.
+    const Rnd_Type& get_random() const { return random; }
+
+    //! Get the particle descriptor.
+    int get_descriptor() const { return descriptor; }
+
+    //! Convert an integer descriptor into a string.
+    inline static std_string get_descriptor(int);
+    
+    //! Convert a string descriptor into an integer.
+    inline static int get_index(std_string);
+
+    // >>> SET FUNCTIONS
     
     //! Reset the particle status to alive (true).
     void reset_status() { alive = true; }
@@ -253,38 +290,36 @@ class Particle
     //! Set the particle status to dead (false).
     void kill_particle() { alive = false; }
 
-    // Accessors.
-    int get_cell() const { return cell; }
-    double get_ew() const { return ew; }
-    std::vector<double>   get_r() const { return r; }
-    std::vector<double>   get_omega() const { return omega; }
-    const rtt_rng::Sprng& get_random() const { return random; }
+    //! Set the particle's random number.
+    void set_random(const Rnd_Type &ran) { random = ran; }
 
-    // Set functions for sourcing particles.
-    void set_random(rtt_rng::Sprng &ran) { random = ran; }
+    //! Set the particle's time-left fraction.
     void set_time_left(double t) { time_left = t; }
-    //    void set_descriptor(std::string s) { descriptor = s; }
-    void set_descriptor(std::string s) { descriptor = get_index(s); }  /* Changed */
+
+    //! Set the particle's descriptor.
+    void set_descriptor(int desc) { descriptor = desc; }
+
+    //! Set the particle's energy weight.
     void set_ew(double new_ew) { ew = new_ew; }
+
+    //! Set the particle's cell index.
     void set_cell(int new_cell) { cell = new_cell; }
 
-    // Transport descriptors.
-    inline static int get_index(std::string);
-    inline static std::string get_descriptor(int);
-    //    std::string desc() const { return descriptor; } 
-    std::string desc() const { return get_descriptor(descriptor); } /* Changed */
+    // >>> DIAGNOSTIC FUNCTIONS
 
     // Public diagnostic services.
     void print(std::ostream &) const;
 
-    // Overloaded operators.
+    // Overloaded equals operator.
     bool operator==(const Particle<MT> &) const;
+
+    //! Overloaded not equals operator.
     bool operator!=(const Particle<MT> &p) const { return !(*this == p); } 
 
     // Pack function
     SP_Pack pack() const;
 
-};  // End of class Particle
+};
 
 //---------------------------------------------------------------------------//
 // overloaded operators
@@ -317,13 +352,23 @@ inline void Particle<MT>::Diagnostic::header() const
 // Particle<MT> constructor
 
 template<class MT>
-inline Particle<MT>::Particle(std::vector<double> r_, 
-			      std::vector<double> omega_, 
-			      double ew_, int cell_, 
-			      rtt_rng::Sprng random_, 
-			      double frac, double tleft, std::string desc)
-    : ew(ew_), r(r_), omega(omega_), cell(cell_), time_left(tleft), 
-      fraction(frac), alive(true), descriptor(get_index(desc)), random(random_)
+inline Particle<MT>::Particle(const sf_double& r_, 
+			      const sf_double& omega_, 
+			      double ew_,
+			      int cell_, 
+			      Rnd_Type random_, 
+			      double frac,
+			      double tleft, 
+			      int desc)
+    : ew(ew_), 
+      r(r_),
+      omega(omega_),
+      cell(cell_),
+      time_left(tleft), 
+      fraction(frac), 
+      alive(true), 
+      descriptor(desc),
+      random(random_)
 {
     // non-default particle constructor
     Ensure (r.size() < 4);

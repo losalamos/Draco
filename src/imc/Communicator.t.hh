@@ -257,8 +257,8 @@ void Communicator<PT>::flush_all(const Particle_Buffer<PT> &buffer)
 template<class PT>
 void Communicator<PT>::free(const Particle_Buffer<PT> &buffer)
 {
-    // loop through receive processors and free the buffers so that we can move 
-    // onward
+    // loop through receive processors and free the buffers so that we can
+    // move onward
     for (int i = 0; i < recv_buffer.size(); i++)
     {
 	Check (recv_buffer[i].n_part == 0);
@@ -267,9 +267,9 @@ void Communicator<PT>::free(const Particle_Buffer<PT> &buffer)
 }
 
 //---------------------------------------------------------------------------//
-// get the status (in use or free) of async recv Comm_Buffers
-// NOTE: this only properly checks for true conditions, that is ALL of the
-// recv_buffers are active
+// get the status (in use or free) of async recv Comm_Buffers NOTE: this only
+// properly checks for true conditions, that is ALL of the recv_buffers are
+// active
 
 template<class PT>
 bool Communicator<PT>::arecv_status(const Particle_Buffer<PT> &buffer)

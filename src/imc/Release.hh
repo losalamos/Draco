@@ -15,8 +15,8 @@
 //===========================================================================//
 /*!
  * \page imc_overview Overview of the IMC package
- * \version 2_1_0
- * \author Tom Evans, Todd Urbatsch
+ * \version 2_2_0
+ * \author Tom Evans, Todd Urbatsch, Mike Buksas
 
  * The imc package is a set of class that are used to perform cell-centered,
  * Fleck and Cummings Implicit Monte Carlo transport.  The imc package has

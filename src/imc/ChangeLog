@@ -1,3 +1,14 @@
+2001-07-30  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: Updated to imc-2_2_0.  This includes M. Buksas' mods to
+	Particle and Particle_Buffer that adds a Particle::Pack
+	capability.  It also separates the implementation of Particle from
+	Particle_Buffer.  T. Evans cleaned up the Particle class and
+	Particle_Buffer class.  These included cosmetic as well as
+	compiler (using typedef typename PT::Pack PT_Pack) constructs for
+	gnu g++.  Made the particle descriptor always use an enumeration
+	outside of the particle classes.
+
 2001-05-10  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: Updated to imc-2_1_0. This includes lots of small code

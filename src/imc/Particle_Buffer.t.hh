@@ -1,9 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// Particle_Buffer.t.hh
-// Thomas M. Evans
-// Tue May 12 14:34:34 1998
+/*!
+ * \file   imc/Particle_Buffer.t.hh
+ * \author Thomas M. Evans
+ * \date   Tue May 12 14:34:34 1998
+ * \brief  Particle_Buffer member function definitions.
+ */
 //---------------------------------------------------------------------------//
-// @> Particle_Buffer class implementation file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Particle_Buffer.hh"
@@ -40,27 +43,24 @@ template<class PT>
 template<class MT>
 Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon) 
 {
-    
-    /* Note: dsize is the size of the double data for the census. This
-       differs from the complete set of particle data by one double value
-       (time_left). Hence, we set dsize to _one_less_than_ the value returned
-       by Particle::Pack. Since, the communication buffers include all of the
-       double data in the particle, dsize+1 is passed to set_buffer
-    */
+    // Note: dsize is the size of the double data for the census. This
+    // differs from the complete set of particle data by one double value
+    // (time_left). Hence, we set dsize to _one_less_than_ the value returned
+    // by Particle::Pack. Since, the communication buffers include all of the
+    // double data in the particle, dsize+1 is passed to set_buffer
 
     // Call setup for Particle::Pack
-    PT::Pack::setup_buffer_sizes(mesh, rcon);
+    PT_Pack::setup_buffer_sizes(mesh, rcon);
 
     // Get sizes from Particle::Pack
-    dsize = PT::Pack::get_double_size()-1;  // -1 : See note above
-    isize = PT::Pack::get_int_size();
-    csize = PT::Pack::get_char_size();
+    dsize = PT_Pack::get_double_size()-1;  // -1 : See note above
+    isize = PT_Pack::get_int_size();
+    csize = PT_Pack::get_char_size();
 
     Check(dsize); Check(isize); Check(csize);
 
     // set the static buffer variables 
     set_buffer(dsize+1, isize, csize);      // +1 : See note above
-
 }
 
 //---------------------------------------------------------------------------//
@@ -71,17 +71,16 @@ Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon)
 template<class PT>
 Particle_Buffer<PT>::Particle_Buffer(int dimension, const Rnd_Control &rcon)
 {
-
-    /* Note: See comments for Particle_Buffer(const MT&, const Rnd_Control&)
-       above */
+    // Note: See comments for Particle_Buffer(const MT&, const Rnd_Control&)
+    // above
 
     // Call setup for Particle::Pack
-    PT::Pack::setup_buffer_sizes(dimension, rcon);
+    PT_Pack::setup_buffer_sizes(dimension, rcon);
 
     // Get sizes from Particle::Pack
-    dsize = PT::Pack::get_double_size()-1;
-    isize = PT::Pack::get_int_size();
-    csize = PT::Pack::get_char_size();
+    dsize = PT_Pack::get_double_size()-1;
+    isize = PT_Pack::get_int_size();
+    csize = PT_Pack::get_char_size();
 
     // set the static buffer variables
     set_buffer(dsize+1, isize, csize);  
@@ -136,9 +135,14 @@ Particle_Buffer<PT>::Census_Buffer::Census_Buffer()
 template<class PT> int Particle_Buffer<PT>::buffer_s = 1000;
 
 // size of doubles, ints, and chars in buffer
-template<class PT> int Particle_Buffer<PT>::buffer_d = buffer_s * PT::Pack::get_double_size();
-template<class PT> int Particle_Buffer<PT>::buffer_i = buffer_s * PT::Pack::get_int_size();
-template<class PT> int Particle_Buffer<PT>::buffer_c = buffer_s * PT::Pack::get_char_size();
+template<class PT> 
+int Particle_Buffer<PT>::buffer_d = buffer_s * PT_Pack::get_double_size();
+
+template<class PT> 
+int Particle_Buffer<PT>::buffer_i = buffer_s * PT_Pack::get_int_size();
+
+template<class PT>
+int Particle_Buffer<PT>::buffer_c = buffer_s * PT_Pack::get_char_size();
 
 //---------------------------------------------------------------------------//
 // set the buffers
@@ -176,9 +180,9 @@ void Particle_Buffer<PT>::set_buffer_size(int s)
     Require(s);
 
     // reset the buffer sizes
-    buffer_d = s*PT::Pack::get_double_size();
-    buffer_i = s*PT::Pack::get_int_size();
-    buffer_c = s*PT::Pack::get_char_size();
+    buffer_d = s*PT_Pack::get_double_size();
+    buffer_i = s*PT_Pack::get_int_size();
+    buffer_c = s*PT_Pack::get_char_size();
     buffer_s = s;
 }
 
@@ -192,7 +196,7 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
 				       const PT &particle) const
 {
     // create a packed version of the particle
-    PT::Pack packed(particle);
+    PT_Pack packed(particle);
     
     // now dump particle data to the census file
 
@@ -207,12 +211,12 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
     // write the output
     /* Note that we skip the first element of the double data. This is
        time_left, which is not included in the census */
-    cenfile.write(reinterpret_cast<const char *>(packed.double_begin()+1), dsize *
-		  sizeof(double));
-    cenfile.write(reinterpret_cast<const char *>(packed.int_begin()), isize *
-		  sizeof(int)); 
-    cenfile.write(reinterpret_cast<const char *>(packed.char_begin()), csize);
-
+    cenfile.write(reinterpret_cast<const char *>(packed.double_begin()+1),
+		  dsize * sizeof(double));
+    cenfile.write(reinterpret_cast<const char *>(packed.int_begin()),
+		  isize * sizeof(int)); 
+    cenfile.write(reinterpret_cast<const char *>(packed.char_begin()),
+		  csize);
 }
 
 //---------------------------------------------------------------------------//
@@ -577,7 +581,7 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
     int ic = buffer.n_part * csize;
     
     // create a packed version of the particle;
-    PT::Pack packed(particle);
+    PT_Pack packed(particle);
 
     // Check that the data sizes are consistent
     Check (packed.get_double_size() == dsize+1);
@@ -625,8 +629,8 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const
 	Check(c_data + csize   <= buffer.array_c + buffer_c);
 
 	// unpack the particle, make a pointer to it
-	SP<PT> particle(PT::Pack::unpack(dsize+1, d_data, isize, i_data, 
-					 csize, c_data)) ;
+	SP<PT> particle(PT_Pack::unpack(dsize+1, d_data, isize, i_data, 
+					csize, c_data)) ;
 
 	// add the Particle to the Bank and update the num_part counter
 	bank.push(particle);
@@ -651,7 +655,7 @@ SP<PT> Particle_Buffer<PT>::Census_Buffer::make_Particle() const
 
     // load particle data, set time_left to 1.0-->this will be adjusted in
     // the source
-    particle = new PT(r, omega, ew, cell, random, fraction, 1.0, "census");
+    particle = new PT(r, omega, ew, cell, random, fraction, 1.0, PT::CENSUS);
 
     return particle;
 }

@@ -275,7 +275,7 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_ss(double delta_t)
 
     // instantiate particle to return
     SP<PT> ss_particle(new PT(r, omega, ew, cell, rand, fraction, 
-			      time_left, "surface_source"));
+			      time_left, PT::SURFACE_SOURCE));
 
     // return the ss particle;
     return ss_particle;
@@ -310,7 +310,7 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_evol(double delta_t)
 
     // instantiate particle to return
     SP<PT> vol_particle(new PT(r, omega, ew, cell, rand, fraction, 
-			       time_left, "vol_emission")); 
+			       time_left, PT::VOL_EMISSION)); 
 
     return vol_particle;
 }
@@ -329,7 +329,7 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_census(double delta_t)
     // get the census particle from the Census buffer
     SP<PT> census_particle = census->top();
     census_particle->set_time_left(delta_t);
-    census_particle->set_descriptor("census_born");
+    census_particle->set_descriptor(PT::CENSUS_BORN);
 
     // remove the census particle from the bank
     census->pop();

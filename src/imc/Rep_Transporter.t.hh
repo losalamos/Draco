@@ -111,7 +111,7 @@ Rep_Transporter<MT,PT>::transport(double dt, int cycle, int print_f,
 	Check (!particle->status());
 	
 	// if census write to file
-	if (particle->desc() == "census")
+	if (particle->get_descriptor() == PT::CENSUS)
 	    new_census_bank->push(particle);
 
 	// message particle counter

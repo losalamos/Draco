@@ -1,20 +1,98 @@
 //----------------------------------*-C++-*----------------------------------//
-// Particle_Buffer.hh
-// Thomas M. Evans
-// Tue May 12 14:34:33 1998
+/*!
+ * \file   imc/Particle_Buffer.hh
+ * \author Thomas M. Evans
+ * \date   Tue May 12 14:34:33 1998
+ * \brief  Particle_Buffer and Particle_Stack header file.
+ */
 //---------------------------------------------------------------------------//
-// @> Particle_Buffer class header file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __imc_Particle_Buffer_hh__
 #define __imc_Particle_Buffer_hh__
 
+#include "c4/global.hh"
+#include "rng/Random.hh"
+#include "ds++/Assert.hh"
+#include "ds++/SP.hh"
+#include <iostream>
+#include <vector>
+
+namespace rtt_imc 
+{
+
 //===========================================================================//
-// class Particle_Buffer - 
-//
-// Purpose : Holds Particles for writing to census or transporting across a
-//           cell/processor boundary
-//
+/*!
+ * \class Particle_Stack
+ *
+ * \brief Stack class for holding particle types (PT).
+ *
+ * The Particle_Stack class is an implementation of a STL-like stack class.
+ * That is, storage is last-in-first-out.  The only difference is that it is
+ * defined on std::vector, and it provides and overloaded [] operator for
+ * subscripting access.
+ *
+ * This was originally implemented because of deficiencies in the KCC
+ * implementation of std::stack; however, we found that we needed the extra
+ * subscripting functionality.
+ *
+ */
+//===========================================================================//
+
+template<class PT>
+class Particle_Stack
+{
+  public:
+    // Typedefs.
+    typedef typename std::vector<PT>::value_type value_type;
+    typedef typename std::vector<PT>::size_type  size_type;
+
+  private:
+    // Container holding data in the stack.
+    std::vector<PT> c;
+
+  public:
+    //! Constructor.
+    explicit Particle_Stack(const std::vector<PT> &ct = std::vector<PT>()) 
+	: c(ct) {}
+    
+    //! Query if the stack is empty.
+    bool empty() const { return c.empty(); }
+    
+    //! Return the size of the stack.
+    size_type size() const { return c.size(); }
+    
+    //! Get a reference to the object on the top of the stack.
+    value_type& top() { return c.back(); } 
+
+    //! Get a const reference to the object on the top of the stack.
+    const value_type& top() const { return c.back(); }
+    
+    //! Push an object onto the top stack.
+    void push(const value_type &x) { c.push_back(x); }
+
+    //! Remove an object from the top of the stack.
+    void pop() { c.pop_back(); }
+
+    //! Overloaded operator [] for viewing elements sequentially.
+    const value_type& operator[](int i) const { return c[i]; }
+};
+
+//===========================================================================//
+/*!
+ * \class Particle_Buffer
+ *
+ * \brief Provides particle (PT) communication and persistence services.
+ *
+ * The Particle_Buffer class provides services for the following:
+ *
+ * \arg buffering particles for communication
+ * \arg sending and receiving particles
+ * \arg writing particles to disk
+ * \arg bank objects based on the Particle_Stack class
+ *
+ */
 // revision history:
 // -----------------
 //  0) original
@@ -29,179 +107,166 @@
 //                division error that hit us when we reduced the buffer size 
 //  5) 7-MAR-00 : added Census_Buffer::make_Particle() function that converts 
 //                a Census_Buffer object into a particle.
+//  6) 26-JUL-01: cleaned up file a little, add typedef typename PT::Pack
+//                PT_Pack; this typedef is needed because (I'm not 100% sure
+//                about the standard) some compilers (g++) have trouble with
+//                the syntax PT::Pack::static_function().  This may actually
+//                be part of the standard (the gnu developers think so) that
+//                KCC is allowing us to get away with.  So remember to use
+//                typenames. 
 //
-//===========================================================================//
-
-#include "c4/global.hh"
-#include "rng/Random.hh"
-#include "ds++/Assert.hh"
-#include "ds++/SP.hh"
-#include <iostream>
-#include <vector>
-
-namespace rtt_imc 
-{
-
-//===========================================================================//
-// class Particle_Stack - 
-// Temporary class to account for the KCC 3.3 parser/stack deficiency,
-// ie. the KCC 3.3 compiler expects the type to have ==, !=, <= etc defined.
-// These constraints should not be placed on the user-defined type. 
-// NOTE: The Particle_Stack class is now our preferred class because we have
-// added subscripting for sequential access for looking at the data
-//===========================================================================//
-
-template<class PT>
-class Particle_Stack
-{
-  public:
-    // typedefs
-    typedef typename std::vector<PT>::value_type value_type;
-    typedef typename std::vector<PT>::size_type size_type;
-
-  private:
-    // container
-    std::vector<PT> c;
-
-  public:
-    // constructor
-    explicit Particle_Stack(const std::vector<PT> &ct = std::vector<PT>()) 
-	: c(ct) {}
-    
-    // members
-    bool empty() const { return c.empty(); }
-    size_type size() const { return c.size(); }
-    value_type& top() { return c.back(); } 
-    const value_type& top() const { return c.back(); }
-    void push(const value_type &x) { c.push_back(x); }
-    void pop() { c.pop_back(); }
-
-    // overloaded operator () for viewing elements sequentially
-    const value_type& operator[](int i) const { return c[i]; }
-};
-
-//===========================================================================//
-// class Particle_Buffer
 //===========================================================================//
 
 template<class PT>
 class Particle_Buffer
 {
   public:
-    // abbreviated Particle data from census
+    // >>> NESTED TYPES
+
+    // Typedefs (this is needed to use static functions of a nested type
+    // where the primary type is a template parameter).
+    typedef typename PT::Pack   PT_Pack;
+    
+    // Other typedefs.
+    typedef std::vector<double> sf_double;
+    typedef rtt_rng::Sprng      Rnd_Type;
+    typedef rtt_dsxx::SP<PT>    SP_PT;
+    typedef std::istream        std_istream;
+    typedef std::ostream        std_ostream;
+
+    /*!
+     * \class Particle_Buffer::Census_Buffer
+     * \brief Hold the necessary data for census particles so they can be
+     *        written and read from disk.
+     */
     struct Census_Buffer
     {
-	// particle state
-	std::vector<double> r;
-	std::vector<double> omega;
-	double ew;
-	double fraction;
-	int cell;
-	rtt_rng::Sprng random;
+	// Particle state variables.
+	sf_double r;
+	sf_double omega;
+	double    ew;
+	double    fraction;
+	int       cell;
+	Rnd_Type  random;
 
-	// constructor
-	Census_Buffer(std::vector<double> &, std::vector<double> &, double,
-		      double, int, rtt_rng::Sprng);
-	// faux default constructor for STL
-	Census_Buffer();
+	// Constructor.
+	Census_Buffer(sf_double &, sf_double &, double, double, int,
+		      Rnd_Type);
 
-	// make into a Particle
-	rtt_dsxx::SP<PT> make_Particle() const;
+	// Make into a Particle.
+	SP_PT make_Particle() const;
     };
 
-    // particle buffer for async receives of particles
+    /*!
+     * \class Particle_Buffer::Comm_Buffer
+     * \brief Native data struct that holds particles for communication.
+     */
     struct Comm_Buffer
     {
-	// particle state buffers for receiving
+	// Particle state buffers for receiving.
 	double *array_d;
 	int    *array_i;
 	char   *array_c;
 
-	// C4_Req communication handles
+	// C4_Req communication handles.
 	C4::C4_Req comm_n;
 	C4::C4_Req comm_d;
 	C4::C4_Req comm_i;
 	C4::C4_Req comm_c;
 
-	// number of particles in the buffer
+	// Number of particles in the buffer.
 	int n_part;
 
-	// inline default constructor
+	// Constructor and destructor.
 	inline Comm_Buffer();
 	inline ~Comm_Buffer();
 
-	// inline Copy Constructor and assignment operators
+	// Copy Constructor and assignment operators.
 	inline Comm_Buffer(const Comm_Buffer &);
 	inline const Comm_Buffer& operator=(const Comm_Buffer &);
     };
 
-    // standard buffers for particles
-    typedef Particle_Stack<rtt_dsxx::SP<PT> > Census;
-    typedef Particle_Stack<rtt_dsxx::SP<PT> > Bank;
+    // Particle banks and containers.
+    typedef Particle_Stack<SP_PT> Census;
+    typedef Particle_Stack<SP_PT> Bank;
 
-    // standard buffers for Comm_Buffers
+    // Particle communication buffer containers.
     typedef std::vector<Comm_Buffer>    Comm_Vector;
     typedef Particle_Stack<Comm_Buffer> Comm_Bank;
 
   private:
-    // data of type double size (number of elements) saved to census
+    // >>> DATA
+
+    // Number of particle doubles that get saved to census (1 less than
+    // inflight). 
     int dsize;
-    // data of type int size (number of elements)
+
+    // Number of particle integers.
     int isize;
-    // data of type char size (number of bytes of random number state)
+    
+    // Number of particle characters.
     int csize;
 
-    // static buffer sizes
+    // Number of particles that can be buffered.
     static int buffer_s;
+
+    // Number of particle doubles in the buffer.
     static int buffer_d;
+
+    // Number of particle integers in the buffer.
     static int buffer_i;
+    
+    // Number of particle char in the buffer.
     static int buffer_c;
 
-    /* Invariants of the various buffer dimensions:
-
-       buffer_d = buffer_s * (dsize+1)
-       buffer_i = buffer_s *  isize
-       buffer_c = buffer_s *  csize 
-
-    */
-
-    static void set_buffer(int, int, int);       /* Move to private? */
-    static void set_buffer(int, int, int, int);  /* Move to private? */
-
+  private:
+    // >>> Implementation.
+    
+    // Buffer set functions.
+    static void set_buffer(int, int, int);       
+    static void set_buffer(int, int, int, int);
 
   public:
-    // Constructors
+    // Constructors.
     template<class MT>
-    Particle_Buffer(const MT &, const rtt_rng::Rnd_Control &); 
-    Particle_Buffer(int, const rtt_rng::Rnd_Control &);
-    Particle_Buffer(int, int, int);  /* Used in Milagro Parallel_Builder */
+    Particle_Buffer(const MT &, const Rnd_Type &); 
+    Particle_Buffer(int, const Rnd_Type &);
+    Particle_Buffer(int, int, int);
 
-    // buffer sizing and accessor functions
-    //    static void set_buffer(int, int, int);       /* Move to private? */
-    //    static void set_buffer(int, int, int, int);  /* Move to private? */
+    // >>> SET FUNCTIONS
+
+    //! Set the number of particles in the buffer.
     static void set_buffer_size(int);
-    static int get_buffer_d() { return buffer_d; }
-    static int get_buffer_i() { return buffer_i; }
-    static int get_buffer_c() { return buffer_c; }
-    static int get_buffer_s() { return buffer_s; }
 
-    // io functions
-    void write_census(std::ostream &, const PT &) const;
-    void write_census(std::ostream &, Comm_Buffer &) const;
-    rtt_dsxx::SP<Census_Buffer> read_census(std::istream &) const;
+    // >>> I/O FUNCTIONS.
 
-    // fill and get buffer functions
+    //! Write a census particle to disk.
+    void write_census(std_ostream &, const PT &) const;
+
+    //! Write a Comm_Buffer of particles to disk.
+    void write_census(std_ostream &, Comm_Buffer &) const;
+
+    //! Read a census particle from the disk.
+    rtt_dsxx::SP<Census_Buffer> read_census(std_istream &) const;
+
+    // >>> BUFFERING FUNCTIONS
+
+    //! Write a Census_Buffer particle to a Comm_Buffer.
     void buffer_census(Comm_Buffer &, const Census_Buffer &) const;
+
+    //! Write a particle to a Comm_Buffer.
     void buffer_particle(Comm_Buffer &, const PT &) const;
+
+    //! Add a Comm_Buffer of particles to a particle bank.
     void add_to_bank(Comm_Buffer &, Bank &) const;
 
-    // Particle send and receives
+    // >>> PARTICLE COMMUNICATION FUNCTIONS
 
-    // blocking
+    // Blocking send/receives.
     void send_buffer(Comm_Buffer &, int) const;
     rtt_dsxx::SP<Comm_Buffer> recv_buffer(int) const;
 
-    // async
+    // Non blocking send/receives.
     void asend_buffer(Comm_Buffer &, int) const;
     void post_arecv(Comm_Buffer &, int) const;
     void async_wait(Comm_Buffer &) const;
@@ -209,14 +274,34 @@ class Particle_Buffer
     void async_free(Comm_Buffer &) const;
     bool comm_status(Comm_Buffer &) const;
 
-    // accessor functions
+    // >>> ACCESSORS
+
+    //! Get the number of doubles in a (census) particle.
     int get_dsize() const { return dsize; } 
+
+    //! Get the number of doubles in a census particle.
+    int get_census_dsize()   const { return dsize; }
+
+    //! Get the number of doubles in an inflight particle.
+    int get_inflight_dsize() const { return dsize + 1; } 
+
+    //! Get the number of integers in a particle.
     int get_isize() const { return isize; }
+    
+    //! Get the number of characters in a particle.
     int get_csize() const { return csize; }
 
-    // Accessor for census doubles and in-flight doubles
-    int get_census_dsize()   const { return dsize; }
-    int get_inflight_dsize() const { return dsize + 1; } 
+    //! Get the number of doubles stored in the buffer.
+    static int get_buffer_d() { return buffer_d; }
+
+    //! Get the number of integers stored in the buffer.
+    static int get_buffer_i() { return buffer_i; }
+
+    //! Get the number of chars stored in the buffer.
+    static int get_buffer_c() { return buffer_c; }
+
+    //! Get the number of particles stored in the buffer.
+    static int get_buffer_s() { return buffer_s; }
 };
 
 //---------------------------------------------------------------------------//
