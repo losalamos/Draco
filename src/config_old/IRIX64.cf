@@ -10,30 +10,11 @@ mach	= sgi
 cmplr	=
 optns	=
 
-#ifeq ($(host),dixiebutte)
-#mach	= o2k
-#endif
-#ifeq ($(host),strawberry)
-#mach	= o2k
-#endif
-#ifeq ($(host),sugarloaf)
-#mach	= o2k
-#endif
-#ifeq ($(host),ironside)
-#mach	= o2k
-#endif
-
 PCG_LIB_DIR = $(HOME)/lib
 ifeq ($(host),twix)
 PCG_LIB_DIR = /v/local/lib
 endif
 
-#ifeq ($(mach),o2k)
-#PCG_LIB	= -L$(HOME)/lib -lpcg
-#LAPACK_LIB	= -lcomplib.sgimath
-#endif
-
-#PCG_LIB		= -L$(HOME)/lib -lpcg
 LAPACK_LIB	= -lcomplib.sgimath
 
 # Choose the default compiler.
