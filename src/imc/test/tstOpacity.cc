@@ -41,6 +41,7 @@ typedef Opacity<OS_Mesh> OOS;
 bool passed = true;
 #define ITFAILS passed = rtt_imc_test::fail(__LINE__);
 
+//---------------------------------------------------------------------------//
 // test Opacity Builder and Mat_State
 void Mat_Test()
 {
@@ -77,10 +78,10 @@ void Mat_Test()
 	if (m.get_spec_heat(i+3) != .2) ITFAILS;
     }
     
-    if (m.get_analytic_sp_heat() != "straight") ITFAILS;
-    if (m.num_cells() != 6)                     ITFAILS;
+    if (m.num_cells() != 6) ITFAILS;
 }
 
+//---------------------------------------------------------------------------//
 // test Opacity Builder, Mat_State, and Opacity
 void Opacity_Test()
 {
@@ -147,6 +148,8 @@ void Opacity_Test()
 	if (!soft_equiv(o.get_sigeffabs(i+3), eabsi3, 1.e-16))   ITFAILS; 
     }
 }
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {

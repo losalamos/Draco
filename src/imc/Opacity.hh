@@ -13,8 +13,6 @@
 #define __imc_Opacity_hh__
 
 #include "ds++/Assert.hh"
-#include <vector>
-#include <string>
 #include <iostream>
 
 namespace rtt_imc 
@@ -22,6 +20,9 @@ namespace rtt_imc
 
 //===========================================================================//
 /*!
+
+ * \class Opacity
+
  * \brief Opacity class for Fleck and Cumming's IMC.
 
  * The Opacity class stores the opacities necessary for one timestep of
@@ -86,7 +87,7 @@ class Opacity
     Opacity(const ccsf_double &, const ccsf_double &, const ccsf_double &, 
 	    const ccsf_double &);
 
-    //>>> ACCESSORS
+    // >>> ACCESSORS
 
     //! Get the absorption opacity in a cell in per cm.
     double get_sigma_abs(int cell) const { return sigma_abs(cell); }
@@ -103,7 +104,7 @@ class Opacity
     //! Get the number of cells that these opacities are stored in.
     int num_cells() const { return sigma_abs.get_Mesh().num_cells(); }
 
-    //>>> FLECK AND CUMMINGS OPACITY OPERATIONS
+    // >>> FLECK AND CUMMINGS OPACITY OPERATIONS
 
     //! Return the Fleck factor times the Planck opacity in a cell.
     double fplanck(int cell) const { return fleck(cell) * planck(cell); }

@@ -80,8 +80,7 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
     }
     
     // create Mat_State object
-    return_state = new Mat_State<MT>(rho, temp, dedt, sp_heat, 
-				     analytic_sp_heat);
+    return_state = new Mat_State<MT>(rho, temp, dedt, sp_heat);
 
     // return Mat_State SP
     return return_state;

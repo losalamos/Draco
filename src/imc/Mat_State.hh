@@ -1,28 +1,45 @@
 //----------------------------------*-C++-*----------------------------------//
-// Mat_State.hh
-// Thomas M. Evans
-// Mon Mar  9 16:06:28 1998
+/*!
+ * \file   imc/Mat_State.hh
+ * \author Thomas M. Evans
+ * \date   Mon Mar  9 16:06:28 1998
+ * \brief  Mat_State class header file
+ */
 //---------------------------------------------------------------------------//
-// @> Mat_State class header file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __imc_Mat_State_hh__
 #define __imc_Mat_State_hh__
 
-//===========================================================================//
-// class Mat_State - 
-//
-// Purpose : defines the material state of the medium, density and temperature
-//
-// revision history:
-// -----------------
-// 0) original
-// 
-//===========================================================================//
-
 #include "ds++/Assert.hh"
 #include <iostream>
-#include <string>
+
+//===========================================================================//
+/*!
+  
+ * \class Mat_State
+
+ * \brief Material state definition for Fleck and Cumming's IMC.
+
+ * The Mat_State class holds all of the required material state data required
+ * to perform a transport calculation over one timestep.  Like the
+ * rtt_imc::Opacity class, it is designed to be rebuilt each timestep as the
+ * material properties change.  The data provided is:
+
+ * \arg density in g/cc
+ * \arg temperature in keV
+ * \arg differential internal energy--heat capacity--(dE/dT) in Jerks/keV
+ * \arg specific heat capacity in Jerks/g/keV
+  
+ */
+// revision history:
+// -----------------
+// original
+// 20-MAR-2001 : cleaned up source code files with documentation
+// 
+// 
+//===========================================================================//
 
 namespace rtt_imc 
 {
@@ -30,37 +47,49 @@ namespace rtt_imc
 template<class MT>
 class Mat_State
 {
+  public:
+    // Useful typedefs
+    typedef std::string              std_string;
+    typedef typename MT::CCSF_double ccsf_double;
 
-private:
-  // data which defines the material state
-    typename MT::CCSF_double density;
-    typename MT::CCSF_double temperature;
-    typename MT::CCSF_double dedt;
-    typename MT::CCSF_double spec_heat;
-    std::string analytic_sp_heat;
-
-public:
-  // inline constructors
-    Mat_State(const typename MT::CCSF_double &, const typename
-	      MT::CCSF_double &, const typename MT::CCSF_double &,
-	      const typename MT::CCSF_double &, const std::string); 
+  private:
+    // Density in g/cc.
+    ccsf_double density;
     
-  // public member functions
+    // Material temperature in keV.
+    ccsf_double temperature;
 
-  // return values of material state data
-    double& get_rho(int cell) { return density(cell); }
+    // Differential internal energy in Jerks/keV.
+    ccsf_double dedt;
+
+    // Specific heat capacities in Jerks/g/keV.
+    ccsf_double spec_heat;
+
+  public:
+    // inline constructors
+    Mat_State(const ccsf_double &, const ccsf_double &, 
+	      const ccsf_double &, const ccsf_double &); 
+    
+    // >>> ACCESSORS
+    
+    //! Get the density in a cell in g/cc.
     double get_rho(int cell) const { return density(cell); }
-    double& get_T(int cell) { return temperature(cell); }
+    
+    //! Get the temperature in a cell.
     double get_T(int cell) const { return temperature(cell); }
-    double& get_dedt(int cell) { return dedt(cell); }
+
+    //! Get the differential internal energy in a cell in Jerks/keV.
     double get_dedt(int cell) const { return dedt(cell); }
+
+    //! Get the specific heat in Jerks/g/keV.
     double get_spec_heat(int cell) const { return spec_heat(cell); }
-    std::string get_analytic_sp_heat() const { return analytic_sp_heat; }
 
-  // get the number of cells in the mesh
-    inline int num_cells() const;
+    //! Get the number of cells in the mesh
+    int num_cells() const { return density.get_Mesh().num_cells(); }
 
-  // diagnostic functions (for printing)
+    // >>> DIAGNOSTICS
+
+    // Print out the material state..
     void print(std::ostream &, int) const;
 };
 
@@ -70,37 +99,6 @@ public:
 
 template<class MT>
 std::ostream& operator<<(std::ostream &, const Mat_State<MT> &);
-
-//---------------------------------------------------------------------------//
-// inline functions for Mat_State
-//---------------------------------------------------------------------------//
-// constructors
-
-template<class MT>
-Mat_State<MT>::Mat_State(const typename MT::CCSF_double &density_, 
-			 const typename MT::CCSF_double &temp_,
-			 const typename MT::CCSF_double &dedt_,
-			 const typename MT::CCSF_double &spec_heat_,
-			 const std::string analytic_sp_heat_)
-    : density(density_), temperature(temp_), dedt(dedt_), 
-      spec_heat(spec_heat_), analytic_sp_heat(analytic_sp_heat_)
-{
-    Ensure (density.get_Mesh() == temperature.get_Mesh());
-    Ensure (density.get_Mesh() == dedt.get_Mesh());
-    Ensure (density.get_Mesh() == spec_heat.get_Mesh());
-}
-
-//---------------------------------------------------------------------------//
-// return the num_cells
-
-template<class MT>
-inline int Mat_State<MT>::num_cells() const
-{
-  // return the number of cells
-    Check (density.get_Mesh().num_cells() ==
-	   temperature.get_Mesh().num_cells());
-    return density.get_Mesh().num_cells();
-}
 
 } // end namespace rtt_imc
 

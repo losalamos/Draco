@@ -1,9 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// Mat_State.t.hh
-// Thomas M. Evans
-// Mon Mar  9 16:06:28 1998
+/*!
+ * \file   imc/Mat_State.t.hh
+ * \author Thomas M. Evans
+ * \date   Mon Mar  9 16:06:28 1998
+ * \brief  Mat_State class member template function definitions.
+ */
 //---------------------------------------------------------------------------//
-// @> Mat_State class implementation file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Mat_State.hh"
@@ -12,7 +15,33 @@
 namespace rtt_imc 
 {
 
-using std::ostream;
+//---------------------------------------------------------------------------//
+// CONSTRUCTOR
+//---------------------------------------------------------------------------//
+/*!
+  
+ * \brief Mat_State constructor.
+
+ * \param density_ cell-centered field of material densities
+ * \param temp_ cell-centered field of material (electron) temperatures
+ * \param dedt_ cell-centered field of heat capacities
+ * \param spec_heat_ cell-centered field of specific heat capacities
+
+ */
+template<class MT>
+Mat_State<MT>::Mat_State(const ccsf_double &density_, 
+			 const ccsf_double &temp_,
+			 const ccsf_double &dedt_,
+			 const ccsf_double &spec_heat_)
+    : density(density_),
+      temperature(temp_), 
+      dedt(dedt_), 
+      spec_heat(spec_heat_)
+{
+    Ensure (density.get_Mesh() == temperature.get_Mesh());
+    Ensure (density.get_Mesh() == dedt.get_Mesh());
+    Ensure (density.get_Mesh() == spec_heat.get_Mesh());
+}
 
 //---------------------------------------------------------------------------//
 // public member functions
@@ -20,7 +49,7 @@ using std::ostream;
 // diagnostic for printing
 
 template<class MT>
-void Mat_State<MT>::print(ostream &output, int cell) const
+void Mat_State<MT>::print(std::ostream &output, int cell) const
 {
   // print out material state of cell
     using std::endl;
@@ -40,7 +69,7 @@ void Mat_State<MT>::print(ostream &output, int cell) const
 //---------------------------------------------------------------------------//
 
 template<class MT>
-ostream& operator<<(ostream &output, const Mat_State<MT> &object)
+std::ostream& operator<<(std::ostream &output, const Mat_State<MT> &object)
 {
   // print out opacities for all cells
     using std::endl;

@@ -246,7 +246,7 @@ void T4_slope_test_AMR()
     for (int i = 7; i <= 9; i++)
 	temps(i) = 3.0;
     SP<Mat_State<RZWedge_Mesh> > mat(new Mat_State<RZWedge_Mesh>
-				     (temps, temps, temps, temps, "x"));
+				     (temps, temps, temps, temps));
 
     // make a comm_patterns
     SP<Comm_Patterns> cp(new Comm_Patterns());
