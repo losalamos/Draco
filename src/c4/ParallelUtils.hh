@@ -35,7 +35,7 @@ void distribute_n(ForwardIterator1 first1, ForwardIterator1 last1,
 		  OutputIterator2 first2, Distance2 size2_in,
 		  std::forward_iterator_tag, std::output_iterator_tag)
 {
-    typedef std::iterator_traits<ForwardIterator1>::value_type value_type1;
+    typedef typename std::iterator_traits<ForwardIterator1>::value_type value_type1;
 
     int size2 = size2_in;
     int totalSize2 = size2;
@@ -176,7 +176,7 @@ template<class InputIterator, class OutputIterator>
 void collate(InputIterator first, InputIterator last, OutputIterator result,
 	     std::input_iterator_tag, std::output_iterator_tag)
 {
-    typedef std::iterator_traits<InputIterator>::value_type value_type;
+    typedef typename std::iterator_traits<InputIterator>::value_type value_type;
     // typedef std::iterator_traits<InputIterator>::difference_type diff_type;
     typedef int diff_type;
 
@@ -230,13 +230,14 @@ inline void collate(InputIterator first, InputIterator last,
  */
 
 template<class ForwardIterator, class OutputIterator>
-void broadcast(ForwardIterator first, ForwardIterator last,
-	       OutputIterator result, std::forward_iterator_tag,
-	       std::output_iterator_tag)
+void broadcast(ForwardIterator first,
+	       ForwardIterator last,
+	       OutputIterator result)
 {
-    typedef std::iterator_traits<ForwardIterator>::value_type value_type;
-    // typedef std::iterator_traits<ForwardIterator>::difference_type diff_type;
-    typedef int diff_type;
+    typedef typename std::iterator_traits<ForwardIterator>::value_type
+	value_type;
+    typedef typename std::iterator_traits<ForwardIterator>::difference_type 
+	diff_type;
 
     // Proc 0 does not copy any data into the result iterator.
     
@@ -266,20 +267,6 @@ void broadcast(ForwardIterator first, ForwardIterator last,
 
 	delete [] buf;
     }
-}
-
-/*!
- * Broadcast the range [first, last) from processor 0
- * into [result, ...) on all other processors.
- */
-
-template<class ForwardIterator, class OutputIterator>
-inline void broadcast(ForwardIterator first, ForwardIterator last,
-		    OutputIterator result)
-{
-    broadcast(first, last, result,
-	      std::iterator_traits<ForwardIterator>::iterator_category(),
-	      std::iterator_traits<OutputIterator>::iterator_category());
 }
 
 } // end namespace C4
