@@ -13,6 +13,7 @@
 #define __c4_test_hh__
 
 #include <iostream>
+#include <string>
 
 namespace rtt_c4_test
 {

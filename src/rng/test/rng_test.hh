@@ -13,6 +13,7 @@
 #define __rng_test_hh__
 
 #include <iostream>
+#include <string>
 
 namespace rtt_rng_test
 {

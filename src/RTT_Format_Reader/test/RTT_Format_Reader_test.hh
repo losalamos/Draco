@@ -13,6 +13,7 @@
 #define __RTT_Format_Reader_test_hh__
 
 #include <iostream>
+#include <string>
 
 namespace rtt_RTT_Format_Reader_test
 {

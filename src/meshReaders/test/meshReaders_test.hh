@@ -13,6 +13,7 @@
 #define __meshReaders_test_hh__
 
 #include <iostream>
+#include <string>
 
 namespace rtt_meshReaders_test
 {

@@ -13,6 +13,7 @@
 #define __quadrature_test_hh__
 
 #include <iostream>
+#include <string>
 
 namespace rtt_quadrature_test
 {

@@ -13,6 +13,7 @@
 #define __lapack_wrap_test_hh__
 
 #include <iostream>
+#include <string>
 
 namespace rtt_lapack_wrap_test
 {

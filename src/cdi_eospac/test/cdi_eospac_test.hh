@@ -13,6 +13,7 @@
 #define __cdi_eospac_test_hh__
 
 #include <vector>
+#include <string>
 
 namespace rtt_cdi_eospac_test
 {

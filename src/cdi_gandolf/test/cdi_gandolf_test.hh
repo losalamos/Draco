@@ -15,6 +15,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <string>
 
 namespace rtt_cdi_gandolf_test
 {
