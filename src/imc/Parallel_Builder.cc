@@ -68,7 +68,10 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
     SP<Coord_sys> coord = recv_Coord();
 
   // get Layout
-    Layout layout(0);
+    Layout layout = recv_Layout();
+
+    for (int i = 1; i <= layout.num_cells(); i++)
+	layout.print(cout,i);
 
   // get vertices and cell_pair
     typename MT::CCVF_a vertex(0);
@@ -143,14 +146,14 @@ SP<Coord_sys> Parallel_Builder<MT>::recv_Coord()
 // pass the Layout
 
 template<class MT>
-void send_Layout(const Layout &layout)
+void Parallel_Builder<MT>::send_Layout(const Layout &layout)
 {
   // set the Layout size
-    const int num_cells = layout.num_cells();
+    int num_cells = layout.num_cells();
 
   // calculate the number of faces on each cell and total size of the Layout
   // (layout_size = SUM_(i)^(num_cells) (num_faces[i]))
-    int num_faces[num_cells] = {0};
+    int *num_faces = new int[num_cells];
     int layout_size = 0;
     for (int i = 1; i <= num_cells; i++)
     {
@@ -187,7 +190,45 @@ void send_Layout(const Layout &layout)
   // delete dynamically allocated faces array
     delete [] faces;
 }
-   
+
+//---------------------------------------------------------------------------//
+// receive the Layout
+
+template<class MT>
+Layout Parallel_Builder<MT>::recv_Layout()
+{
+  // receive and build the Layout
+
+  // get the number of cells and size of the Layout
+    int num_cells;
+    int layout_size;
+    Recv (num_cells, 0);
+    Recv (layout_size, 0);
+
+  // make the Layout
+    Layout layout = num_cells;
+
+  // receive the Layout data arrays
+    int *num_faces = new int[num_cells];
+    int *faces = new int[layout_size];
+    Recv (num_faces, num_cells, 0);
+    Recv (faces, layout_size, 0);
+
+  // rebuild the Layout
+    int index = 0;
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	layout.set_size(cell, num_faces[cell-1]);
+	for (int i = 1; i <= num_faces[cell-1]; i++)
+	{
+	    layout(cell, i) = faces[index];
+	    index++;
+	}
+    }
+
+  // return the new Layout on this node
+    return layout;
+}
 
 CSPACE
 

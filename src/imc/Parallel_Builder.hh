@@ -37,7 +37,7 @@ private:
 
   // pass the Layout
     void send_Layout(const Layout &);
-    SP<Layout> recv_Layout();
+    Layout recv_Layout();
 
   // pass the coord_sys
     void send_Coord(const Coord_sys &);
