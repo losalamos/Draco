@@ -9,6 +9,8 @@
 #ifndef __c4_shmem_hh__
 #define __c4_shmem_hh__
 
+#include <pthread.h>
+
 #include "c4/tags.hh"
 
 #include "ds++/Assert.hh"
@@ -24,7 +26,7 @@ void C4_shm_dbg_1();
 //---------------------------------------------------------------------------//
 // C4_shmem API.
 
-void C4_Wait( int mid, int type );
+void C4_Wait( pthread_t& tid );
 
 //---------------------------------------------------------------------------//
 // Miscelaneous stuff.
