@@ -1,3 +1,7 @@
+2002-11-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* stdheaders: Release 1_3_0.  Added ceil to cmath.
+
 2002-05-08  Thomas M. Evans  <tme@lanl.gov>
 
 	* stdheaders: Release of stdheaders-1_2_0.  Added some new std
