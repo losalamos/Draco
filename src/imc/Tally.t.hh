@@ -15,6 +15,7 @@ namespace rtt_imc
 using std::setw;
 using std::ios;
 using std::setiosflags;
+using std::endl;
 
 //---------------------------------------------------------------------------//
 // constructors

@@ -17,7 +17,7 @@ namespace rtt_imc
 
 // Draco functions
 using rtt_rng::Sprng;
-using rtt_imc::global::pi;
+using rtt_mc::global::pi;
 
 // STL functions
 using std::ios;
@@ -166,41 +166,43 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 template<class MT, class PT>
 SP<PT> Source<MT, PT>::get_ss(double delta_t)
 {
+    // draco directives
+    using rtt_mc::global::pi;
 
-  // face on which surface source resides
+    // face on which surface source resides
     int face = fss(current_cell);
 
-  // get the random number object
+    // get the random number object
     Sprng rand = rcon->get_rn();
 
-  // sample location
+    // sample location
     vector<double> r = nss.get_Mesh().sample_pos_on_face
 	(current_cell, face, rand);
 
-  // find inward normal, sample direction, and add
+    // find inward normal, sample direction, and add
 
-  // normal distributed surface source
+    // normal distributed surface source
     vector<double> omega = nss.get_Mesh().get_normal_in(current_cell, face); 
     
-  // cosine distribution of surface source about normal
+    // cosine distribution of surface source about normal
     if (ss_dist == "cosine")
     {
 	double costheta = sqrt(rand.ran());
-	double phi = 2.0 * global::pi * rand.ran();
+	double phi = 2.0 * pi * rand.ran();
 	nss.get_Mesh().get_Coord().calc_omega(costheta, phi, omega);
     }
 
-  // complete description of surface source particle    
+    // complete description of surface source particle    
     double ew = ew_ss(current_cell);
     int cell = current_cell;
     double fraction = 1.0;
     double time_left = rand.ran() * delta_t;
 
-  // instantiate particle to return
+    // instantiate particle to return
     SP<PT> ss_particle = new PT(r, omega, ew, cell, rand, fraction, 
 				time_left);
 
-  // return the ss particle;
+    // return the ss particle;
     return ss_particle;
 }
 

@@ -19,7 +19,7 @@ AC_SPRNG_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(rng c4 ds++)
+AC_NEEDS_LIBS(mc rng c4 ds++)
 
 dnl-------------------------------------------------------------------------dnl
 dnl TEST DIRECTORY

@@ -20,9 +20,9 @@ using std::ios;
 using std::setiosflags;
 
 // services from IMC::Global namespace
-using global::pi;
-using global::c;
-using global::dot;
+using rtt_mc::global::pi;
+using rtt_mc::global::c;
+using rtt_mc::global::dot;
 
 //===========================================================================//
 // class Particle<MT>
@@ -73,7 +73,7 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
         d_boundary  = mesh.get_db(r, omega, cell, face);
 
       // distance to census (end of time step)
-	d_census = global::c * time_left;
+	d_census = rtt_mc::global::c * time_left;
 
       // detailed diagnostics
 	if (diagnostic)
@@ -180,7 +180,7 @@ bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
       // calculate theta and phi (isotropic)
         double costheta, phi;
         costheta = 1 - 2 * random.ran();
-        phi      = 2 * global::pi * random.ran();
+        phi      = 2 * rtt_mc::global::pi * random.ran();
 
       // get new direction cosines
         mesh.get_Coord().calc_omega(costheta, phi, omega);
@@ -199,7 +199,7 @@ void Particle<MT>::scatter(const MT &mesh)
   // calculate theta and phi (isotropic)
     double costheta, phi;
     costheta = 1 - 2 * random.ran();
-    phi      = 2 * global::pi * random.ran();
+    phi      = 2 * rtt_mc::global::pi * random.ran();
     
   // get new direction cosines
     mesh.get_Coord().calc_omega(costheta, phi, omega);
@@ -227,7 +227,7 @@ bool Particle<MT>::surface(const MT &mesh, int face)
       // reflection
 	descriptor            = "reflection";
 	vector<double> normal = mesh.get_normal(cell, face);
-	double factor         = global::dot(omega, normal);
+	double factor         = rtt_mc::global::dot(omega, normal);
 	for (int i = 0; i < mesh.get_Coord().get_sdim(); i++)
 	    omega[i] -= 2 * factor * normal[i];
 	cell = next_cell;

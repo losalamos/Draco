@@ -19,8 +19,8 @@ namespace rtt_imc
 
 // draco components
 using rtt_rng::Sprng;
-using global::min;
-using global::max;
+using rtt_mc::global::min;
+using rtt_mc::global::max;
 
 // STL components
 using std::pow;
@@ -310,29 +310,33 @@ template<class MT, class PT>
 void Source_Init<MT,PT>::calc_evol(const Opacity<MT> &opacity,
 				   const Mat_State<MT> &state, int cycle)
 {
-  // reset evoltot
+    // draco necessities
+    using rtt_mc::global::a;
+    using rtt_mc::global::c;
+
+    // reset evoltot
     evoltot = 0.0;
 
-  // calc volume source and tot volume source
-  // evol_net needed for temperature update
+    // calc volume source and tot volume source
+    // evol_net needed for temperature update
     for (int cell = 1; cell <= evol.get_Mesh().num_cells(); cell++)
     {
-      // calc cell centered volume source
-	evol_net(cell) = opacity.fplanck(cell) * global::a * global::c *
+	// calc cell centered volume source
+	evol_net(cell) = opacity.fplanck(cell) * a * c *
 	    pow(state.get_T(cell), 4) * evol.get_Mesh().volume(cell) * 
 	    delta_t;
 	evol(cell) = evol_net(cell) + 
 	    evol_ext[cell-1] * (1.0 - opacity.get_fleck(cell)) *  
 	    evol.get_Mesh().volume(cell) * delta_t;
 
-      // accumulate evoltot
+	// accumulate evoltot
 	evoltot += evol(cell);
     }
 
-  // calculate evol due to external radiation source
+    // calculate evol due to external radiation source
     if (rad_s_tend > 0.0)
     {
-      // calculate time duration [sh]
+	// calculate time duration [sh]
 	double duration;
 	double t_remain = rad_s_tend - (cycle - 1) * delta_t;
 	if (t_remain > delta_t)
@@ -340,10 +344,10 @@ void Source_Init<MT,PT>::calc_evol(const Opacity<MT> &opacity,
 	else 
 	    duration = t_remain;
 
-      // calculate radiation source energy and add to evol
+	// calculate radiation source energy and add to evol
 	if (duration > 0.0)
 	{
-	  // normalize volume integral of rad_source to 1
+	    // normalize volume integral of rad_source to 1
 	    double rad_volume = 0.0;
 	    for (int cell = 1; cell <= evol.get_Mesh().num_cells(); cell++)
 		rad_volume += rad_source[cell-1] * evol.get_Mesh().volume(cell);
@@ -366,28 +370,32 @@ void Source_Init<MT,PT>::calc_evol(const Opacity<MT> &opacity,
 template<class MT, class PT>
 void Source_Init<MT,PT>::calc_ess()
 {
-  // reset esstot
+    // draco necessities
+    using rtt_mc::global::a;
+    using rtt_mc::global::c;
+
+    // reset esstot
     esstot = 0.0;
 
-  // loop over surface sources in problem
+    // loop over surface sources in problem
     for (int ss = 0; ss < ss_pos.size(); ss++)
     {
 	vector<int> surcells = ess.get_Mesh().get_surcells(ss_pos[ss]);
 	for (int sc = 0; sc < surcells.size(); sc++)
 	{      
-	  // make sure this cell doesn't already have a surface source
+	    // make sure this cell doesn't already have a surface source
 	    Check (fss(surcells[sc]) == 0);
 
-	  // assign source face to surface source cell
+	    // assign source face to surface source cell
 	    fss(surcells[sc]) = fss.get_Mesh().
 		get_bndface(ss_pos[ss], surcells[sc]);
 
-	  // assign energy to surface source cell
-	    ess(surcells[sc]) = global::a * global::c * 0.25 *
+	    // assign energy to surface source cell
+	    ess(surcells[sc]) = a * c * 0.25 *
 		ess.get_Mesh().face_area(surcells[sc], fss(surcells[sc])) *
 		pow(ss_temp[ss],4) * delta_t;
 
-	  // accumulate esstot
+	    // accumulate esstot
 	    esstot += ess(surcells[sc]);
 	}
     }
@@ -399,17 +407,20 @@ void Source_Init<MT,PT>::calc_ess()
 template<class MT, class PT>
 void Source_Init<MT,PT>::calc_ecen()
 {
-      // reset ecentot
+    // draco stuff
+    using rtt_mc::global::a;
+
+    // reset ecentot
     ecentot = 0.0;
 
-  // calc census radiation energy in each cell and accumulate
+    // calc census radiation energy in each cell and accumulate
     for (int cell = 1; cell <= ecen.get_Mesh().num_cells(); cell++)
     {
-      // calc cell centered census radiation energy
-	ecen(cell) = global::a * ecen.get_Mesh().volume(cell) *
+	// calc cell centered census radiation energy
+	ecen(cell) = a * ecen.get_Mesh().volume(cell) *
 	    pow(rad_temp[cell-1], 4);
 
-      // accumulate evoltot
+	// accumulate evoltot
 	ecentot += ecen(cell);
     }
 }

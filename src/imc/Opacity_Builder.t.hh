@@ -111,30 +111,35 @@ template<class MT>
 SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
 						     SP<Mat_State<MT> > mat)
 {
+    // draco components
+    using rtt_mc::global::a;
+    using rtt_mc::global::c;
+
+    // DBC requirements
     Require (mesh);
     Require (mat);
     Require (mat->num_cells() == mesh->num_cells());
     Require (mesh->num_cells() == kappa.size());
     Require (mesh->num_cells() == kappa_thomson.size());
 
-  // return Opacity object
+    // return Opacity object
     SP< Opacity<MT> > return_opacity;
 
-  // number of cells
+    // number of cells
     int num_cells = mesh->num_cells();
 
-  // instantiate objects needed for Opacity build
+    // instantiate objects needed for Opacity build
     typename MT::CCSF_double sigma_abs(mesh);
     typename MT::CCSF_double sigma_thomson(mesh);
     typename MT::CCSF_double fleck(mesh);
 
-  // calculate and assign opacities to each cell
+    // calculate and assign opacities to each cell
     for (int cell = 1; cell <= num_cells; cell++)
     {
-      // get updated temperature from mat_state
+	// get updated temperature from mat_state
 	double T = mat->get_T(cell);
 
-      // calculate real absorption opacities
+	// calculate real absorption opacities
 	double den = mat->get_rho(cell);
 	if (analytic_opacity == "straight")
 	{
@@ -154,20 +159,19 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
 	else
 	    Check (0);
 
-      // calculate Fleck factor, for 1 group sigma_abs = planck
+	// calculate Fleck factor, for 1 group sigma_abs = planck
 	double dedt  = mat->get_dedt(cell);
 	Insist(dedt > 0, "The specific heat is <= 0!");
-	double beta  = 4.0 * global::a * T*T*T * mesh->volume(cell) / dedt;
-	double denom = implicitness * beta * global::c * delta_t *
-	    sigma_abs(cell);
+	double beta  = 4.0 * a * T*T*T * mesh->volume(cell) / dedt;
+	double denom = implicitness * beta * c * delta_t * sigma_abs(cell);
 	fleck(cell)  = 1.0 / (1.0 + denom);
     }
 
-  // create Opacity object
+    // create Opacity object
     return_opacity = new Opacity<MT>(sigma_abs, sigma_thomson, sigma_abs, 
 				     fleck);
 
-  // return Opacity SP
+    // return Opacity SP
     return return_opacity;
 }
 

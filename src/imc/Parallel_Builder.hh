@@ -35,8 +35,8 @@
 // 
 //===========================================================================//
 
-#include "Coord_sys.hh"
-#include "Layout.hh"
+#include "mc/Coord_sys.hh"
+#include "mc/Layout.hh"
 #include "Opacity.hh"
 #include "Source_Init.hh"
 #include "Particle_Buffer.hh"
@@ -107,13 +107,13 @@ private:
   // functionality for Mesh passing
 
   // build and pass the Layout
-    void send_Layout(Layout &);
-    Layout recv_Layout();
-    Layout build_Layout(const Layout &, int);
+    void send_Layout(rtt_mc::Layout &);
+    rtt_mc::Layout recv_Layout();
+    rtt_mc::Layout build_Layout(const rtt_mc::Layout &, int);
 
   // pass the coord_sys
-    void send_Coord(SP<Coord_sys>);
-    SP<Coord_sys> recv_Coord();
+    void send_Coord(SP<rtt_mc::Coord_sys>);
+    SP<rtt_mc::Coord_sys> recv_Coord();
   
   // pass the cells (vertices and cell pairings)
     void send_cells(const MT &, typename MT::CCVF_d &, 

@@ -21,8 +21,8 @@
 // 
 //===========================================================================//
 
-#include "Math.hh"
-#include "Constants.hh"
+#include "mc/Math.hh"
+#include "mc/Constants.hh"
 
 namespace rtt_imc 
 {

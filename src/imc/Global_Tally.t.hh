@@ -259,9 +259,9 @@ void Global_Tally<MT,PT>::print(ostream &out) const
     {	
 	out << setw(10) << i+1 << setw(15) << temperature[i] 
 	    << setw(15) << temperature[i] * dedt[i] << setw(15)
-	    << pow(ewpl[i] / 
-		   (global::a * global::c * delta_t * volume[i]), 0.25)
-	    << setw(15) << ewpl[i] / global::c / delta_t
+	    << pow(ewpl[i] / (rtt_mc::global::a * rtt_mc::global::c * delta_t
+			      * volume[i]), 0.25)
+	    << setw(15) << ewpl[i] / rtt_mc::global::c / delta_t
 	    << setw(15) << evol_net[i] << setw(15) << dedt[i] << endl;
     }
 

@@ -295,7 +295,7 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
     else // update particle energy-weight, time_left, and position.
     {
 	ew = new_ew;
-	time_left -= distance / global::c;
+	time_left -= distance / rtt_mc::global::c;
 	for (int i = 0; i <= r.size()-1; i++)
 	    r[i] = r[i] + distance * omega[i];
     }

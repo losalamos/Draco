@@ -7,8 +7,8 @@
 //---------------------------------------------------------------------------//
 
 #include "Parallel_Builder.hh"
-#include "XYCoord_sys.hh"
-#include "XYZCoord_sys.hh"
+#include "mc/XYCoord_sys.hh"
+#include "mc/XYZCoord_sys.hh"
 #include "Global.hh"
 #include <string>
 #include <iomanip>
@@ -21,8 +21,12 @@ namespace rtt_imc
 // draco necessities
 using C4::Send;
 using C4::Recv;
-using global::max;
-using global::min;
+using rtt_mc::global::max;
+using rtt_mc::global::min;
+using rtt_mc::Coord_sys;
+using rtt_mc::Layout;
+using rtt_mc::XYCoord_sys;
+using rtt_mc::XYZCoord_sys;
 
 // std necessities
 using std::string;
