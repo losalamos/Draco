@@ -1,0 +1,255 @@
+#!/usr/local/bin/perl
+# instantialyzer
+# Geoffrey Furnish
+# 22 May 1996
+#
+# @> INSTANTIALYZER == "C++ Template Instantiation Tool"
+#
+# $Log$
+# Revision 1.3  1997/01/24  20:34:18  furnish
+# Correct various bugs in template parameter substitution.
+#
+# Revision 1.2  1996/12/18  19:07:06  furnish
+# Introduce a new way of specifying template function instantiations.
+# The new way is to specify the prototype, plus the template argument
+# values.  This turns out to be much easier to use for big hairy
+# function declarations.
+#
+# Revision 1.1  1996/07/02  18:56:25  furnish
+# New script for performing automatic instantiation of template classes
+# and functions on a variety of compilers.
+#
+#
+###############################################################################
+
+# Obtain the user's option settings.
+
+require "importenv.pl";
+require "getopts.pl";
+
+&Getopts('m:vo:');
+
+$mode = $opt_m;
+$verbose = $opt_v;
+$outfile = $opt_o;
+
+print "instantialyzer\n" if $verbose;
+print "Using $mode mode.\n" if $verbose;
+
+foreach $i (0...$#ARGV) {
+    &process_file( $ARGV[$i] );
+}
+
+print "All done.\n" if $verbose;
+
+###############################################################################
+# Copy the input file to the output file, but modify the instantiation
+# requests to produce the right thing for each compiler.
+
+sub process_file {
+    local( $file ) = @_;
+
+    print "Processing file $file\n" if $verbose;
+
+    if ( $file =~ /(.*).pt$/ ) {
+	$base = $1;
+    } else {
+	die "Invalid file type: $file\n";
+    }
+
+    print "basename = $base\n" if $verbose;
+
+    unlink $outfile;
+    open( IN, "<$file" ) || die "Can't open input file $file.\n";
+    open( OUT, ">$outfile" ) ||
+	die "Can't open output file $outfile.\n";
+
+    while( <IN> ) {
+	if ( /^instantiate (\w+) (.*)/ ) {
+	    $type = $1;
+	    $item = $2;
+	    print "requested instantiation of a $type: $item\n" if $verbose;
+
+	  TYPE: {
+	      &instantiate_class( $item ), last if $1 =~ /class/;
+	      &instantiate_func(  $item ), last if $1 =~ /^func(tion)?$/;
+	      &instantiate_funcproto( $item ), last if $1 =~ /^funcproto$/;
+
+	      die "Unrecognized instantiation requested.\n";
+	  }
+
+	    next;
+	}
+
+	print OUT;
+    }
+
+    close IN, OUT;
+
+# Since $outfile is a generated file we do not want people editing it
+# by accident, thinking they are fixing a bug.  Instead, we mark it
+# unwritable, which will force them to edit the .pt file which is the
+# actual "source".
+
+    chmod 0444, $outfile;
+}
+
+###############################################################################
+# Hooray for the FSF, shame on the rest of you slobs.
+
+sub instantiate_class {
+    local( $c ) = @_;
+    print "trying to instantiate $c using mode $mode.\n" if $verbose;
+
+    $_ = $mode;
+  Compiler: {
+      /ansi/ && do { print OUT "template class $c;\n"; last; };
+      /gcc/  && do { print OUT "template class $c;\n"; last; };
+      /edg/  && do { print OUT "#pragma instantiate $c\n"; last; };
+      /ibm/  && do { print OUT "#pragma define ( $c )\n"; last; };
+      /dec/  && do { print OUT "#pragma define_template $c\n"; last; };
+
+      die "Unrecognized compiler mode $mode.\n";
+  }
+
+}
+
+###############################################################################
+# This one will be more work.  Grrr.
+
+sub instantiate_func {
+    local( $f ) = @_;
+    print "trying to instantiate $f\n" if $verbose;
+
+# Because of the blecherous DEC CXX compiler, we actually need the
+# user to tell us the template parameter for the function.
+# Consequently, we mandate the following form for the instantiation of
+# a template function:
+#      instantiate function T prototype
+# where T is the template parameter for the function, and prototype is
+# the function prototype with the value of T filled in.  Yes this is
+# redundant, but it is required b/c DEC CXX is different from all the
+# rest of the industry, and I cannot infer the template parameter
+# given only the function prototype.  T may be specified either as a
+# single word, or in order to handle the case of template parameters
+# with embedded template parameters, which require the closure "> >",
+# we also allow T to be specified as "...", which may contain embedded
+# spaces if needed.
+
+    if ( $f =~ /\"(.*)\"(.*)/ ) {
+	$template = $1;
+	$proto    = $2;
+    } elsif ( $f =~ /(\S+)\s(.*)/ ) {
+	$template = $1;
+	$proto    = $2;
+    } else {
+	die "Invalide template function instantiation syntax.\n";
+    }
+
+    &emit_function_instantiation( $proto, $template );
+}
+
+###############################################################################
+# This one will be more work.  Grrr.
+
+sub instantiate_funcproto {
+    local( $tmpldefs ) = @_;
+#    $verbose = 1;
+    print "trying to instantiate via prototype\n" if $verbose;
+
+    local( $proto ) = "";
+    local( $vals ) = "";
+
+    while( <IN> ) {
+	chop;
+	last if /^$/;		# Blank line terminates prototype.
+	$proto = "$proto$_ ";
+	last if /\)\s*$/;	# Close paren terminates prototype.
+    }
+
+    print "prototype is :$proto:\n" if $verbose; 
+
+    $first = 1;
+    foreach $kv ( split( /,/, $tmpldefs ) ) {
+	print "working with kv pair :$kv:\n" if $verbose;
+	if ( $kv =~ /^\s*(\w+)\s*=\s*(\w+)\s*$/ ) {
+	    $key = $1;
+	    $val = $2;
+	    print "processing key=$key, val=$val\n" if $verbose;
+
+	    if ($first) {
+		$vals = "$val ";
+	    } else {
+		$vals = "$vals,$val ";
+	    }
+
+	    # Loop until all template parameters have been replaced.
+
+	    do {
+		$initial = $proto;
+
+		# Perform substitution.  Use Perl's glorious
+		# backreferences to pick out only those tokens which
+		# are actually references to the template
+		# parameter(s).
+
+		$proto =~ s/([<,\(]\s*)$key(\s*>|\s*,|&?\s+[*&A-Za-z_])/\1$val\2/;
+
+	    } until $initial eq $proto;
+
+	    print "after substitution, proto=$proto\n" if $verbose;
+	}
+    }
+
+    &emit_function_instantiation( $proto, $vals )
+}
+
+###############################################################################
+# Emit the actual mumbo jumbo required to effect a function
+# instantiation for the specified compiler.
+
+sub emit_function_instantiation {
+    local( $proto, $template ) = @_;
+
+    print "Template parameter: $template\n" if $verbose;
+    print "Function prototype: $proto\n" if $verbose;
+
+    $_ = $mode;
+  Compiler: {
+      /gcc/ && do { print OUT "template $proto;\n"; last; };
+      /edg/ && do { print OUT "#pragma instantiate $proto\n"; last; };
+      /ibm/ && do { print OUT "$proto;\n"; last; };
+      /dec/ && do {
+
+	  print "Doing a function instantiation for DEC CXX\n" if $verbose;
+
+	  # DEC CXX has an exceptionally screwball syntax.  Grrr.  They
+	  # want just the function name, and the templating parameter.
+	  # They do /not/ want the full prototype.  Sheesh.  How the
+	  # heck they plan to handle overloading I have no idea.  The
+	  # others have a much more sensible plan.  Grrrrrr.
+
+	  # Start by trying to pull out the function name.  Have to
+	  # figure a way to drop the function return value, as well as
+	  # the arguments.  To make this easier, we'll punt on doing a
+	  # totally perfect parse, and just decree here that the
+	  # return value must not touch the function name, there must
+	  # be at least one space, so that the function name is the
+	  # last word before the arg list.
+
+	  if ( $proto =~ /(.*)\s(\w+|operator(\S+))\s*(\(.*\))/ ) {
+	      $name = $2;
+	      print "Function name is: $name\n" if $verbose;
+	      print OUT "#pragma define_template ${name} < ${template} >\n";
+	  }
+
+	  last;
+      };
+
+      die "Unrecognized compiler mode $mode.\n";
+  }
+}
+
+###############################################################################
+#                            end of instantialyzer
+###############################################################################
