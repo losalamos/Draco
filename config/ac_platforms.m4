@@ -933,6 +933,8 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
            g++) 
                AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
+               AC_MSG_NOTICE([g++ -ansi option set to allow long double type])
+               STRICTFLAG="$STRICTFLAG -Wno-long-double"
            ;;
   	   ibm)	
 	       AC_MSG_WARN("xlC set to allow long long")
@@ -957,7 +959,7 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        # Setup communications packages
        #
        AC_DBS_SETUP_COMM(mpich)
-	mpi_libs="-lpmpich++ -lpmpich -lmpich -lpmpich -lmpich -lz"
+	mpi_libs="-lmpich -lpmpich -lz"
 
        # 
        # setup lapack 
