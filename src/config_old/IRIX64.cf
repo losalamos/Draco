@@ -25,8 +25,8 @@ PCG_LIB		= -L$(HOME)/lib -lpcg
 LAPACK_LIB	= -lcomplib.sgimath
 endif
 
-# Currently KCC is the only choice.
-cxx	:= KCC
+# Currently KCC is hosed, so CC is the only workable choice.
+cxx	:= CC
 
 # Currently avoid the gui support, until we can get all the tools built.
 spartan	:= yes
@@ -42,7 +42,7 @@ ranlib	= /bin/true
 ifeq ($(cxx),KCC)
 
 CC	= cc
-CXX	= KCC -x -64 -mips4 --restrict --no_implicit_include
+CXX	= KCC -x -64 -mips4 --restrict #--no_implicit_include
 cmplr	= kai
 
 ifeq ($(kcc),old)
@@ -54,7 +54,8 @@ ifdef strict
 CXX += --strict
 endif
 
-DEFINES = -DPOOMA_KAI -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_HAS_TEMPLATED_COMPLEX -DPOOMA_USE_MEMBER_TEMPLATES
+#DEFINES = -DPOOMA_KAI -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_HAS_TEMPLATED_COMPLEX -DPOOMA_USE_MEMBER_TEMPLATES
+DEFINES = -DPOOMA_KAI -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_HAS_TEMPLATED_COMPLEX -DPOOMA_USE_MEMBER_TEMPLATES -DPOOMA_USE_PARTIAL_SPECIALIZATION
 DEBUG_FLAG	=
 
 MAKEDEPEND	= $(CXX) -M
@@ -137,8 +138,12 @@ endif				# Photon C++
 ifeq ($(cxx),CC)
 
 CC	= cc
-CXX	= CC -64 -mips4 -no_auto_include -LANG:ansi-for-init-scope=ON
+CXX	= CC -64 -mips4 -LANG:ansi-for-init-scope=ON
 cmplr	= sgi
+
+#DEFINES = -I/home/POOMA/stlport -DPOOMA_72BETA -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_NO_RESTRICT -DPOOMA_USE_MEMBER_TEMPLATES
+#DEFINES = -I$(HOME)/v/stl2 -DPOOMA_72BETA -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_NO_RESTRICT -DPOOMA_USE_MEMBER_TEMPLATES
+DEFINES = -I$(POOMA_ROOT)/src/stlport -DPOOMA_72BETA -DPOOMA_MPI -DPOOMA_GMAKE -DPOOMA_STDSTL -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_NO_RESTRICT -Drestrict= -DPOOMA_USE_MEMBER_TEMPLATES -DPOOMA_USE_PARTIAL_SPECIALIZATION
 
 DEBUG_FLAG	=
 
@@ -252,7 +257,8 @@ endif				# SGI C++
 
 POOMA_INC_FLAG	= -I$(POOMA_ROOT)/src
 POOMA_FLAGS	= $(POOMA_INC_FLAG) $(DEFINES)
-POOMA_LIB	= -L$(POOMA_ROOT)/lib/$(POOMA_ARCH) -lpooma
+POOMA_LIB_DIR	= $(POOMA_ROOT)/lib/$(POOMA_ARCH)
+POOMA_LIB	= -L$(POOMA_LIB_DIR) -lpooma
 
 env	:= $(mach)$(cmplr)$(optns)$(comm)
 
