@@ -20,7 +20,7 @@
  *
  * \author Todd Adams
  *
- * \version 1_0_0
+ * \version 1_1_0
  *
  * <h3> Introduction </h3>
  * The RTT_Format_Reader class consists of member functions that are used to 
