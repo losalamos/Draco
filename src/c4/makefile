@@ -50,6 +50,7 @@ endif
 
 pretarg = deps
 auxtarg = $(TEST_PROGS)
+resolve_libs = -L../ds++ -lds++_$(env)
 
 include ../config/make.lib
 
@@ -81,7 +82,7 @@ aux_clean := testclean
 testclean:
 	$(RM) t*_$(env)
 
-cc_files	:= $(libsrcs) $(tsrcs)
+cc_files	:= $(libsrcs) $(tstsrcs)
 
 include ../config/make.end
 
