@@ -203,6 +203,24 @@ double wall_clock_time();
  */
 double wall_clock_resolution();
 
+//---------------------------------------------------------------------------//
+// PROBE/WAIT FUNCTIONS
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief See if a message is pending.
+ * 
+ * \param source
+ * Processor from which a message may be pending.
+ * \param tag
+ * Tag for pending message.
+ * \param message_size
+ * On return, size of the pending message in bytes.
+ * \return \c true if a message from the specified processor with the
+ * specified tag is pending; \c false otherwise.
+ */
+
+bool probe(int source, int tag, int &message_size);
+
 } // end namespace rtt_c4
 
 #endif                          // __c4_C4_Functions_hh__

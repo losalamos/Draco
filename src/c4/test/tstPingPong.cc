@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "c4_test.hh"
+#include "../C4_Traits.hh"
 #include "../Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
@@ -23,11 +24,13 @@
 using namespace std;
 
 using rtt_c4::C4_Req;
+using rtt_c4::C4_Traits;
 using rtt_c4::send;
 using rtt_c4::receive;
 using rtt_c4::send_async;
 using rtt_c4::receive_async;
 using rtt_dsxx::soft_equiv;
+using rtt_c4::probe;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -263,6 +266,67 @@ void non_blocking_ping_pong()
 	PASSMSG(m.str());
     }
 }
+//---------------------------------------------------------------------------//
+
+void probe_ping_pong()
+{
+    if (rtt_c4::nodes() != 2) return;
+    
+    int   i = 0;
+    
+    int   ir = 0;
+
+    // send requests
+    C4_Req irs;
+
+    // receive requests
+    C4_Req irr;
+
+    // assign on node 0
+    if (rtt_c4::node() == 0)
+    {
+
+	// give values to the send data
+	i = 2;
+	
+	// send out data
+	send_async(irs, &i, 1, 1);
+    }
+
+    // receive and send on node 1
+    if (rtt_c4::node() == 1)
+    {
+	// test the probe function
+	for (;;)
+	{
+	    int message_size;
+	    if (probe(0, C4_Traits<int*>::tag, message_size))
+	    {
+		if (message_size==sizeof(int))
+		{
+		    PASSMSG("Probe returned correct size");
+		}
+		else
+		{
+		    FAILMSG("Probe returned WRONG size");
+		}
+		break;
+	    }
+	}
+
+	// post receives
+	receive_async(irr, &ir, 1, 0);
+    }
+
+    rtt_c4::global_barrier();
+
+    if (rtt_c4_test::passed)
+    {
+	ostringstream m;
+	m << "Probe communication ok on " << rtt_c4::node();
+	PASSMSG(m.str());
+    }
+}
 
 //---------------------------------------------------------------------------//
 
@@ -287,6 +351,8 @@ int main(int argc, char *argv[])
 	blocking_ping_pong();
 
 	non_blocking_ping_pong();
+
+	probe_ping_pong();
     }
     catch (rtt_dsxx::assertion &ass)
     {

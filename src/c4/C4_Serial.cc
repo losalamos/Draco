@@ -81,6 +81,17 @@ double wall_clock_resolution()
     return static_cast<double>(sysconf(_SC_CLK_TCK));
 }
 
+//---------------------------------------------------------------------------//
+// PROBE/WAIT FUNCTIONS
+//---------------------------------------------------------------------------//
+
+bool probe(int  /* source */, 
+	   int  /* tag */,
+	   int &/* message_size */)
+{    
+    return false;
+}
+
 } // end namespace rtt_c4
 
 #endif // C4_SCALAR

@@ -13,6 +13,9 @@
 
 #ifdef C4_MPI
 
+#include "C4_Functions.hh"
+#include "C4_Req.hh"
+
 #include "C4_MPI.hh"
 
 namespace rtt_c4
@@ -97,6 +100,29 @@ double wall_clock_time()
 double wall_clock_resolution()
 {
     return MPI_Wtick();
+}
+
+//---------------------------------------------------------------------------//
+// PROBE/WAIT FUNCTIONS
+//---------------------------------------------------------------------------//
+
+bool probe(int  source, 
+	   int  tag,
+	   int &message_size)
+{
+    Require(source>=0 && source<nodes());
+
+    int flag;
+    MPI_Status status;
+    
+    // post an MPI_Irecv (non-blocking receive)
+    MPI_Iprobe(source, tag, communicator, &flag, &status);
+
+    if (!flag) return false;
+
+    MPI_Get_count(&status, MPI_CHAR, &message_size);
+    
+    return true;
 }
 
 } // end namespace rtt_c4

@@ -1,3 +1,8 @@
+2003-04-22  Kent Budge  <kgbudge@tresosos.lanl.gov>
+
+	* C4_MPI.cc: Added a probe function to increase support for
+	asynchronous message passing.
+
 2003-04-18  Kent Budge  <kgbudge@tresosos.lanl.gov>
 
 	* ParallelUtils.hh: Added typename keywords to remove warnings;
