@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     if (!C4::node())
     {
 	std::cout << "**************************************" << std::endl;
-	std::cout << ">>> Welcome to IMCTEST version 1.0 <<<" << std::endl;
+	std::cout << ">>> Welcome to IMCTEST version 1.1 <<<" << std::endl;
 	std::cout << ">>> T.M. Evans and T.J. Urbatsch   <<<" << std::endl;
 	std::cout << ">>> Group XTM, LANL                <<<" << std::endl;
 	std::cout << "**************************************" << std::endl;
