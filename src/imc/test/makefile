@@ -33,8 +33,8 @@ srcs += testap.cc
 endif
 
 # AMR interface test
-ifeq ($(tst),a)
-srcs += testa.cc
+ifeq ($(tst),amr)
+srcs += testamr.cc
 endif
 
 # source init test
