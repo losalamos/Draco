@@ -98,6 +98,8 @@ C++.
 Retired Draco Package Synopsis
 ==============================
 
+radphys [radphys-retired]: Radiation physics models for coefficients.
+
 UnitTestFrame [UnitTestFrame-retired]: Testing framework.
 
 ConjGrad [ConjGrad-retired]: A conjugate gradient solver.

@@ -1,3 +1,8 @@
+2002-12-10  Thomas M. Evans  <tme@lanl.gov>
+
+	* radphys: Retired radphys (corresponded to radphys-1_5_0).  This
+	package simply was not standard compliant.
+
 2002-11-15  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: released draco-2_2_0.  This release includes the

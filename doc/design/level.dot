@@ -34,7 +34,6 @@ digraph draco_level {
     
     /* level 3 */
     viz [shape=box, label="viz"];
-    radphys [shape=box, label="radphys"];
     timestep [shape=box, label="timestep"];
     cdianal [shape=box, label="cdi_analytic"];
     cdieos [shape=box, label="cdi_eospac"];
@@ -52,7 +51,7 @@ digraph draco_level {
     /* dependencies */
     {rank=same; level1 stdheaders dsxx};
     {rank=same; level2 plot lapack stop traits xm c4 rng units meshread cdi quad};
-    {rank=same; level3 rttread viz radphys timestep cdianal cdieos cdigan pcg};
+    {rank=same; level3 rttread viz timestep cdianal cdieos cdigan pcg};
     {rank=same; level4 mc meshservice};
     {rank=same; level5 imc};
     
@@ -74,7 +73,6 @@ digraph draco_level {
     /* level 3 */
     viz         -> {traits dsxx};
     timestep    -> {c4 dsxx};
-    radphys     -> {units dsxx};
     pcg         -> {dsxx};
     pcg         -> {c4} [style=dotted];
     cdianal     -> {cdi dsxx};
