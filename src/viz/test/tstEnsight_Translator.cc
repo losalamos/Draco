@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   viz/test/tstEnsight_Translator.cc
+ * \file   viz/test/tstEnsightTranslator.cc
  * \author Thomas M. Evans
  * \date   Mon Jan 24 11:12:59 2000
  * \brief  Ensight_Translator test.
@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <stdlib.h> 
 
 using namespace std;
 using rtt_viz::Ensight_Translator;
@@ -119,6 +120,9 @@ int main(int argc, char *argv[])
     {
 	// tests
 	ensight_dump_test();
+	
+	// run python diff scrips
+	system("python ./tstEnsight_Diff.py");
     }
     catch(dsxx::assertion &ass)
     {
