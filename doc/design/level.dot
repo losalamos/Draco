@@ -10,8 +10,9 @@ digraph draco_level {
     level3 [shape=plaintext, label="Level 3:", fontsize=18];
     level4 [shape=plaintext, label="Level 4:", fontsize=18];
     level5 [shape=plaintext, label="Level 5:", fontsize=18];
+    level6 [shape=plaintext, label="Level 6:", fontsize=18];
     
-    level5 -> level4 -> level3 -> level2 -> level1 [style=invis];
+    level6 -> level5 -> level4 -> level3 -> level2 -> level1 [style=invis];
     
     /* packages */
 
@@ -51,15 +52,18 @@ digraph draco_level {
     meshread [shape=box, label="meshReaders"];
     
     /* level 5 */
-    meshservice [shape=box, label="meshReaders_Services"];
     rttread     [shape=box, label="RTT_Format_Reader"];
+    
+    /* level 6 */
+    meshservice [shape=box, label="meshReaders_Services"];
     
     /* dependencies */
     {rank=same; level1 stdheaders vlapack vpcg vmpi veospac  vgandolf vgrace vspring};
     {rank=same; level2 dsxx};
     {rank=same; level3 shlib plot lapack traits xm c4 rng units cdi quad meshelement};
     {rank=same; level4 viz timestep cdianal cdieos cdigan pcg meshread};
-    {rank=same; level5 rttread meshservice};
+    {rank=same; level5 rttread};
+    {rank=same; level6 meshservice};
     
     /* draco packages */
 
@@ -102,7 +106,10 @@ digraph draco_level {
     meshread    -> {meshelement};
 
     /* level 5 */
+    rttread     -> {meshread};           /* meshread: dsxx */
+
+    /* level 6 */
     meshservice -> {meshread};           /* meshread: dsxx */
     meshservice -> {rttread} [color="orange" style=dotted];
-    rttread     -> {meshread};           /* meshread: dsxx */
+
 }
