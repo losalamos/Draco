@@ -12,12 +12,9 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(stopwatch/config.h:config.h.in)
 package="stopwatch"
 
-dnl VENDOR SETUPS
-AC_MPI_SETUP(pkg)
-
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(c4 ds++)
+AC_NEEDS_LIBS(ds++)
 
 AC_RUNTESTS(ttimer tstopwatch, scalar)
 
