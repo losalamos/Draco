@@ -18,7 +18,7 @@
 #define NO_MMAP_AT_ALL
 #endif
 
-#if defined(__sgi)
+#if defined(__sgi) || defined(__sun)
 #define MAP_FILE 0
 #endif
 
