@@ -6,7 +6,7 @@ dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 dnl Copyright © 2003 The Regents of the University of California.
 dnl-------------------------------------------------------------------------dnl
-dnl configure.in for <pkg>
+dnl configure.ac for <pkg>
 dnl-------------------------------------------------------------------------dnl
 
 AC_INIT
@@ -37,6 +37,10 @@ dnl AC_PCGLIB_SETUP(pkg)
 dnl AC_TRILINOS_SETUP(pkg)
 dnl AC_LAPACK_SETUP(pkg)
 dnl AC_PARMETIS_SETUP(pkg)
+dnl AC_GSL_SETUP(pkg)
+dnl AC_BLACS_SETUP(pkg)
+dnl AC_SCALAPACK_SETUP(pkg)
+dnl AC_HYPRE_SETUP(pkg)
 
 dnl This macro should be uncommented if the current package is a Draco
 dnl client (i.e.: This package exists in Capsaicin, Milagro, etc.)
