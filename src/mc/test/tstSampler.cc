@@ -144,6 +144,64 @@ void sample_general_linear_test()
 	if (abs(bin[b]-func_value) > rough_eps*func_value) ITFAILS;
     }
 }
+//---------------------------------------------------------------------------//
+// test the function sample_xsquared
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Tests the sample_xsquared function on x^2 for x in [1,2]
+ *  
+ */
+void sample_xsquared_test()
+{
+    // set parameters
+    int num_samples = 10000;
+    int num_bins    = 100;
+    double avg_samples_per_bin = static_cast<double>(num_samples) / 
+	static_cast<double>(num_bins);
+
+    // a rough estimate of 4 sigma relative error
+    double rough_eps = 4.0 / sqrt(avg_samples_per_bin);
+
+    // make sampling bins
+    vector<double> bin(num_bins, 0.0);
+    int bindex = 0;
+
+    // make a random number generator controller, rng object
+    int seed = 1234567;
+    Rnd_Control rand_control(seed);
+    Sprng ran_object = rand_control.get_rn(10);
+
+    // problem data
+    double x_low=1.0;
+    double x_high=2.0;
+
+    // sample f(x)
+    double x;
+    for (int i = 0; i <= num_samples; i++)
+    {
+	x = rtt_mc::sampler::sample_xsquared(ran_object, x_low, x_high, 1.0);
+
+	// calculate bin index
+	bindex = static_cast<int>((x-x_low)*num_bins);
+	Check (bindex >= 0);
+	Check (bindex <  num_bins);
+	bin[bindex] += 1.0;
+    }
+
+    // normalize the bins
+    for (int b = 0; b < num_bins; b++)
+    {
+	bin[b] /= avg_samples_per_bin;
+    }
+
+    // check that bins replicate original pdf (to w/in roughly 4 sigma)
+    for (int b = 0; b < num_bins; b++)
+    {
+	x=(b+0.5)/num_bins+x_low;
+	double func_value = 3./7.*pow(x,2);
+	if (abs(bin[b]-func_value) > rough_eps*func_value) ITFAILS;
+    }
+}
 
 //---------------------------------------------------------------------------//
 // Test the sampling a frequency from a planckian distribution at kT.
@@ -396,6 +454,9 @@ int main(int argc, char *argv[])
 
         // test the sampling of a general linear pdf
 	sample_general_linear_test();
+
+	// test the sampling of a*x^2
+	sample_xsquared_test();
 
 	// test the sampling of a Planckian frequency
 	test_sampling_planckian_frequency();

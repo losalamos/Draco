@@ -25,6 +25,7 @@
 //               zero-valued function.
 // 2) 12-19-01 : added function sample_bin_from_discrete_cdf and its
 //               supporting function is_this_cdf_valid for DBC use.
+// 3) 11-18-03 : added function to sample from c*x^2 (JDD)
 //
 //===========================================================================//
 
@@ -98,6 +99,43 @@ inline double sample_general_linear(Ran ran, const double a, const double b,
     }
 
     Ensure (x >= a && x <= b);
+
+    return x;
+}
+//---------------------------------------------------------------------------//
+// SAMPLE_XSQUARED
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief sample x in [a,b] from the pdf f(x)=c*x^2, where c>0.  f(x) does
+ * not have to be normalized. The primary purpose of this function is to
+ * sample the x-position in a sphyramid cell when source tilting is not used.
+ * 
+ * \param ran random number object
+ * \param a lower extent of independent variable range.
+ * \param b upper extent of independent variable range.
+ * \param c constant in f(x)=cx^2;
+ * \return sampled indenpendent variable
+ */
+template<class Ran> 
+inline double sample_xsquared(Ran ran, const double a, const double b, 
+			      const double c)
+{
+    using std::pow;
+
+    Require (a < b);
+    Insist  (c > 0 , "Invalid form of c*x^2!");
+
+    // return value
+    double x;
+    
+    // calculate norm since f(x) may not be normalized
+    double norm=c*(b*b*b-a*a*a)/3.;
+
+    // sample x
+    x=pow(a*a*a+3.*ran.ran()*norm/c,1./3.);
+
+    Ensure (x >= a);
+    Ensure (x <= b);
 
     return x;
 }
