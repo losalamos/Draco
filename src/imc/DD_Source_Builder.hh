@@ -48,6 +48,8 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) original
+// 1) 19 Jun 2000 : added function recalc_census_ew_after_comb to better
+//                  conserve energy after doing our reproducible comb.
 // 
 //===========================================================================//
 

@@ -111,6 +111,8 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) original
+// 1) 19 Jun 2000 : added function reset_ew_in_census to allow for post-comb
+//                  census energy-weight readjustment.
 // 
 //===========================================================================//
 
