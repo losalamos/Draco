@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------//
 
 #include <iostream>
+#include <string>
 #include "DynArray.t.hh"
 
 namespace rtt_dsxx
