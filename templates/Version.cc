@@ -11,6 +11,8 @@
 
 namespace rtt_<spkg>
 {
+    using std::string;
+
   // function definition for Version, define the local version number for
   // this library in the form <spkg>_#.#.# in pkg_version variable
     const string version()
