@@ -43,10 +43,6 @@ int main( int argc, char *argv[] )
     int node = C4::node();
     int nodes = C4::nodes();
 
-    char buf[80];
-    sprintf( buf, "node %d, nodes=%d\n", node, nodes );
-    cout << buf << flush;
-
     if (node == 0)
 	cout << "Initiating baby solver test." << endl;
 
