@@ -11,6 +11,8 @@
 
 #include "c4/global_shmem.hh"
 
+#include <mpp/shmem.h>
+
 #define shmalloc malloc
 #define shfree free
 
@@ -152,7 +154,7 @@ static void C4_shm_init_pt2pt()
 	pe_msg_waiting[i] = 0;
 	pe_ready[i] = 1;
     }
-    C4_gsync();
+    gsync();
 }
 
 static Msg_Queue *msg_queue;
@@ -180,6 +182,7 @@ static void pull_msg_from_inbox( int source, void *buf, int msglen )
 
 static void mark_inbox_as_clear( int source )
 {
+#if 0
 // Clear my own msg_waiting flag, and tell soruce I'm ready to receive again.
 
 // Must do it in this order to avoid a race.
@@ -188,6 +191,7 @@ static void mark_inbox_as_clear( int source )
     int one=1;
     shmem_put( (long *) &pe_ready[C4_shm_mynode],
 	       (long *) &one, 1, source );
+#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -277,6 +281,7 @@ static int search_msg_queue( int source, void *buf, int size, int tag,
 
 static void mark_recv_req_inactive( int source, int mid )
 {
+#if 0
     Async_DB& adb = pe_async_recv_req[source][mid];
 
     adb.state = Inactive;
@@ -291,6 +296,7 @@ static void mark_recv_req_inactive( int source, int mid )
 
     Assert( pe_posted_recvs[source] >= 0 );
     Assert( pe_posted_recvs[source] <= pe_async_recv_reqs[source]-1 );
+#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -344,6 +350,11 @@ int group()
     return group;
 }
 
+void gsync()
+{
+    shmem_barrier_all();
+}
+
 //---------------------------------------------------------------------------//
 // MPI send/receive calls (basic set)
 //
@@ -364,8 +375,9 @@ int group()
 // Perform a normal (blocking) send.
 //---------------------------------------------------------------------------//
 
-int Send( void *buf, int size, int dest, int tag, int group )
+int SHM_Send( void *buf, int size, int dest, int tag, int group )
 {
+#if 0
 // Check to see if we can short circuit send this to an already pending async
 // receive posted by the dest node.
 
@@ -455,7 +467,7 @@ printf( "%d, pe_async_recvs_pending[%d]=%d\n",
 	shmem_put( (long *) &pe_msg_waiting[C4_shm_mynode],
 		   (long *) &one, 1, dest );
     }    
-
+#endif
     return C4_SUCCESS;
 }
 
@@ -463,7 +475,7 @@ printf( "%d, pe_async_recvs_pending[%d]=%d\n",
 // Perform a normal (blocking) receive.
 //---------------------------------------------------------------------------//
 
-int Recv( void *buf, int size, int source, int tag, int group )
+int SHM_Recv( void *buf, int size, int source, int tag, int group )
 {
     int msgtag, msglen = 0;
 
@@ -598,8 +610,9 @@ printf( "%d, match!\n", C4_shm_mynode );
 // Perform a non blocking send.
 //---------------------------------------------------------------------------//
 
-C4_Req C4_SendAsync( void *buf, int size, int dest, int tag, int group )
+C4_Req SHM_SendAsync( void *buf, int size, int dest, int tag, int group )
 {
+#if 0
 // Actually, I think I should just go ahead and allocate an mid right now,
 // b/c no matter what happens below, we still have to return the C4_Req in a
 // valid state, since the user will have to wait() on it anyway.
@@ -728,7 +741,8 @@ C4_Req C4_SendAsync( void *buf, int size, int dest, int tag, int group )
 // Post async send request with necessary data to remote node.
 
     throw( "Not able to post async send requests yet." );
-
+#endif
+    C4_Req r;
     return r;
 }
 
@@ -736,8 +750,9 @@ C4_Req C4_SendAsync( void *buf, int size, int dest, int tag, int group )
 // Perform a non blocking receive.
 //---------------------------------------------------------------------------//
 
-C4_Req C4_RecvAsync( void *buf, int size, int source, int tag, int group )
+C4_Req SHM_RecvAsync( void *buf, int size, int source, int tag, int group )
 {
+#if 0
     Assert( source == C4_Any_Source || 
 	    (source >= 0 && source < C4_shm_nodes) );
     Assert( size >= 0 );
@@ -886,7 +901,8 @@ printf( "%d pe_posted_recvs[%d]=%d\n", C4_shm_mynode, source,
 	pe_posted_recvs[source] );
 printf( "%d state=%d\n", C4_shm_mynode, adb.state );
 #endif
-
+#endif
+C4_Req r; 
     return r;
 }
 
@@ -897,18 +913,18 @@ printf( "%d state=%d\n", C4_shm_mynode, adb.state );
 // the implementations so that these go faster.
 //---------------------------------------------------------------------------//
 
-void C4_SendAsync( C4_Req& r, void *buf, int size, int dest, int tag, 
-		   int group /*=0*/ )
+void SHM_SendAsync( C4_Req& r, void *buf, int size, int dest, int tag, 
+		    int group /*=0*/ )
 {
 // Not checking that r is not in use, which is of course a concern...
-    r = C4_SendAsync( buf, size, dest, tag, group );
+    r = SHM_SendAsync( buf, size, dest, tag, group );
 }
 
-void C4_RecvAsync( C4_Req& r, void *buf, int size, int source, int tag, 
-		   int group /*=0*/ )
+void SHM_RecvAsync( C4_Req& r, void *buf, int size, int source, int tag, 
+		    int group /*=0*/ )
 {
 // Not checking that r is not in use, which is of course a concern...
-    r = C4_RecvAsync( buf, size, source, tag, group );
+    r = SHM_RecvAsync( buf, size, source, tag, group );
 }
 
 //---------------------------------------------------------------------------//
@@ -1047,7 +1063,7 @@ printf( "%d, async recv msg mid=%d, state=%d\n",
 	throw( "Unknown message type, something is /really/ hosed." );
     }
 }
-
+#if 0
 //---------------------------------------------------------------------------//
 // Send a buffer of integers.
 //---------------------------------------------------------------------------//
@@ -1113,7 +1129,7 @@ int C4_Recv( double *buf, int nels, int source, int group /*=0*/ )
 		       source, C4_double_ptr_Tag, group );
     return cnt/sizeof(double);
 }
-
+#endif
 //---------------------------------------------------------------------------//
 // Global reduction operations.
 //
@@ -1159,7 +1175,7 @@ static void C4_shm_init_scalar_work_arrays()
 	sr_pSync[i] = _SHMEM_SYNC_VALUE;
     }
 
-    C4_gsync();
+    gsync();
 }
 
 //---------------------------------------------------------------------------//
@@ -1167,7 +1183,7 @@ static void C4_shm_init_scalar_work_arrays()
 
 static int sr_i;
 
-void C4_gsum( int& x )
+void gsum( int& x )
 {
     sr_i = x;
 
@@ -1175,10 +1191,10 @@ void C4_gsum( int& x )
 			  sri_pWrk, sr_pSync );
     x = sr_i;
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gsum( long& x )
+void gsum( long& x )
 {
     sr_i = (int) x;		// Should be valid on an Alpha.
 
@@ -1187,12 +1203,12 @@ void C4_gsum( long& x )
 
     x = sr_i;
 
-    C4_gsync();
+    gsync();
 }
 
 static float sr_f;
 
-void C4_gsum( float& x )
+void gsum( float& x )
 {
     sr_f = x;
 
@@ -1201,12 +1217,12 @@ void C4_gsum( float& x )
 
     x = sr_f;
 
-    C4_gsync();
+    gsync();
 }
 
 static double sr_d;
 
-void C4_gsum( double& x )
+void gsum( double& x )
 {
     sr_d = x;
 
@@ -1215,7 +1231,7 @@ void C4_gsum( double& x )
 
     x = sr_d;
 
-    C4_gsync();
+    gsync();
 }
 
 #ifdef max
@@ -1231,7 +1247,7 @@ static int ari_sz = 0;
 static int *ari_pWrk = NULL;
 static int ari_Wsz = 0;
 
-void C4_gsum( int *px, int n )
+void gsum( int *px, int n )
 {
     int i;
     if (n < 1) return;
@@ -1268,12 +1284,12 @@ void C4_gsum( int *px, int n )
     for( i=0; i < n; i++ )
 	px[i] = ar_i[i];
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gsum( long *px, int n )
+void gsum( long *px, int n )
 {
-    C4_gsum( (int *) px, n );
+    gsum( (int *) px, n );
 }
 
 static float *ar_f = NULL;
@@ -1281,7 +1297,7 @@ static int arf_sz = 0;
 static float *arf_pWrk = NULL;
 static int arf_Wsz = 0;
 
-void C4_gsum( float *px, int n )
+void gsum( float *px, int n )
 {
     int i;
     if (n < 1) return;
@@ -1318,7 +1334,7 @@ void C4_gsum( float *px, int n )
     for( i=0; i < n; i++ )
 	px[i] = ar_f[i];
 
-    C4_gsync();
+    gsync();
 }
 
 static double *ar_d = NULL;
@@ -1326,7 +1342,7 @@ static int ard_sz = 0;
 static double *ard_pWrk = NULL;
 static int ard_Wsz = 0;
 
-void C4_gsum( double *px, int n )
+void gsum( double *px, int n )
 {
     int i;
     if (n < 1) return;
@@ -1363,13 +1379,13 @@ void C4_gsum( double *px, int n )
     for( i=0; i < n; i++ )
 	px[i] = ar_d[i];
 
-    C4_gsync();
+    gsync();
 }
 
 //---------------------------------------------------------------------------//
 // Min, scalar
 
-void C4_gmin( int& x )
+void gmin( int& x )
 {
     sr_i = x;
 
@@ -1377,10 +1393,10 @@ void C4_gmin( int& x )
 			  sri_pWrk, sr_pSync );
     x = sr_i;
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gmin( long& x )
+void gmin( long& x )
 {
     sr_i = (int) x;		// Should be valid on an Alpha.
 
@@ -1389,10 +1405,10 @@ void C4_gmin( long& x )
 
     x = sr_i;
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gmin( float& x )
+void gmin( float& x )
 {
     sr_f = x;
 
@@ -1401,10 +1417,10 @@ void C4_gmin( float& x )
 
     x = sr_f;
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gmin( double& x )
+void gmin( double& x )
 {
     sr_d = x;
 
@@ -1413,13 +1429,13 @@ void C4_gmin( double& x )
 
     x = sr_d;
 
-    C4_gsync();
+    gsync();
 }
 
 //---------------------------------------------------------------------------//
 // Min, array.
 
-void C4_gmin( int *px, int n )
+void gmin( int *px, int n )
 {
     int i;
     if (n < 1) return;
@@ -1456,15 +1472,15 @@ void C4_gmin( int *px, int n )
     for( i=0; i < n; i++ )
 	px[i] = ar_i[i];
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gmin( long *px, int n )
+void gmin( long *px, int n )
 {
-    C4_gmin( (int *) px, n );
+    gmin( (int *) px, n );
 }
 
-void C4_gmin( float *px, int n )
+void gmin( float *px, int n )
 {
     int i;
     if (n < 1) return;
@@ -1501,10 +1517,10 @@ void C4_gmin( float *px, int n )
     for( i=0; i < n; i++ )
 	px[i] = ar_f[i];
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gmin( double *px, int n )
+void gmin( double *px, int n )
 {
     int i;
     if (n < 1) return;
@@ -1541,13 +1557,13 @@ void C4_gmin( double *px, int n )
     for( i=0; i < n; i++ )
 	px[i] = ar_d[i];
 
-    C4_gsync();
+    gsync();
 }
 
 //---------------------------------------------------------------------------//
 // Max, scalar
 
-void C4_gmax( int& x )
+void gmax( int& x )
 {
     sr_i = x;
 
@@ -1555,10 +1571,10 @@ void C4_gmax( int& x )
 			  sri_pWrk, sr_pSync );
     x = sr_i;
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gmax( long& x )
+void gmax( long& x )
 {
     sr_i = (int) x;		// Should be valid on an Alpha.
 
@@ -1567,10 +1583,10 @@ void C4_gmax( long& x )
 
     x = sr_i;
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gmax( float& x )
+void gmax( float& x )
 {
     sr_f = x;
 
@@ -1579,10 +1595,10 @@ void C4_gmax( float& x )
 
     x = sr_f;
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gmax( double& x )
+void gmax( double& x )
 {
     sr_d = x;
 
@@ -1591,13 +1607,13 @@ void C4_gmax( double& x )
 
     x = sr_d;
 
-    C4_gsync();
+    gsync();
 }
 
 //---------------------------------------------------------------------------//
 // Max, array.
 
-void C4_gmax( int *px, int n )
+void gmax( int *px, int n )
 {
     int i;
     if (n < 1) return;
@@ -1634,16 +1650,16 @@ void C4_gmax( int *px, int n )
     for( i=0; i < n; i++ )
 	px[i] = ar_i[i];
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gmax( long *px, int n )
+void gmax( long *px, int n )
 {
-    C4_gmax( (int *) px, n );
+    gmax( (int *) px, n );
 }
 
 
-void C4_gmax( float *px, int n )
+void gmax( float *px, int n )
 {
     int i;
     if (n < 1) return;
@@ -1680,10 +1696,10 @@ void C4_gmax( float *px, int n )
     for( i=0; i < n; i++ )
 	px[i] = ar_f[i];
 
-    C4_gsync();
+    gsync();
 }
 
-void C4_gmax( double *px, int n )
+void gmax( double *px, int n )
 {
     int i;
     if (n < 1) return;
@@ -1720,7 +1736,7 @@ void C4_gmax( double *px, int n )
     for( i=0; i < n; i++ )
 	px[i] = ar_d[i];
 
-    C4_gsync();
+    gsync();
 }
 
 //---------------------------------------------------------------------------//
@@ -1728,9 +1744,10 @@ void C4_gmax( double *px, int n )
 
 void C4_shm_dbg_1()
 {
+#if 0
     static int seq;
     seq = 0;
-    C4_gsync();
+    gsync();
 
     if (C4_shm_mynode == 0) seq = 1;
 
@@ -1754,10 +1771,15 @@ void C4_shm_dbg_1()
 	shmem_put( (long *) &seq, (long *) &seq, 1, C4_shm_mynode+1 );
     }
 
-    C4_gsync();
+    gsync();
+#endif
 }
 
 C4_NAMESPACE_END
+
+#include "ds++/DynArray.cc"
+
+template class DynArray<C4::Msg_DB *>;
 
 //---------------------------------------------------------------------------//
 //                              end of global_shmem.cc
