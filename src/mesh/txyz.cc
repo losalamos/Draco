@@ -82,6 +82,8 @@ int main( int argc, char *argv[] )
         yvec = 2.;
         zvec = xvec + yvec;
         dotprod = Mesh_XYZ::vec3::dot(xvec, yvec);
+	if (dotprod < 5.999 || dotprod > 6.001)
+            cout << "Error in dot product" << endl;
     }
 
     {
@@ -217,6 +219,33 @@ int main( int argc, char *argv[] )
         oneFC = 1.;
         Mesh_XYZ::swap( swapFC, oneFC );
         //dump( swapFC, "swapFC, after" );
+    }
+
+    {
+        Mesh_XYZ::ccsf oneCC( spm );
+        oneCC = 1.;
+        double total;
+        total = Mesh_XYZ::sum(oneCC);
+        if (total < 63.999 || total > 64.001)
+            cout << "Error in global sum" << endl;
+    }
+
+    {
+        Mesh_XYZ::ccif oneCC( spm );
+        oneCC = 1;
+        int total;
+        total = Mesh_XYZ::sum(oneCC);
+        if (total != 64)
+            cout << "Error in global sum" << endl;
+    }
+
+    {
+        Mesh_XYZ::fcdsf oneFC( spm );
+        oneFC = 1.;
+        double total;
+        total = Mesh_XYZ::sum(oneFC);
+        if (total < 383.999 || total > 384.001)
+            cout << "Error in global sum" << endl;
     }
 
     {

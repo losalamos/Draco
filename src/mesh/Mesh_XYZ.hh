@@ -657,6 +657,12 @@ class Mesh_XYZ : private XYZ_Mapper
     template <class T>
     static void swap( fcdtf<T>& to, const fcdtf<T>& from );
 
+    template <class T>
+    static T sum( const cctf<T>& from );
+
+    template <class T>
+    static T sum( const fcdtf<T>& from );
+
     class OpAssign {
       public:
         template <class T1, class T2>

@@ -8,6 +8,7 @@
 
 #include "c4/global.hh"
 #include "c4/C4_Req.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
 
 template<class T>
@@ -15,14 +16,12 @@ void dump( const Mesh_XYZ::cctf<T>& data, char *name )
 {
     cout << "dumping a Mesh_XYZ::cctf: " << name << endl;
     {
-    //	HTSyncSpinLock h;
-	char buf[80];
-	for( int i=0; i < data.size(); i++ ) {
-        //	    sprintf( buf, "node %d, cell %d, value=%lf \n",
-        //		     C4::node(), i, data(i) );
-	    sprintf( buf, "cell %d, value=%lf \n",
-		     i, data(i) );
-	    cout << buf;
+        C4::HTSyncSpinLock h;
+        char buf[80];
+        for( int i=0; i < data.size(); i++ ) {
+            sprintf( buf, "node %d, cell %d, value=%lf \n",
+                     C4::node(), i, data(i) );
+            cout << buf;
 	}
     }
 }
@@ -32,15 +31,15 @@ void dump( const Mesh_XYZ::fcdtf<T>& data, char *name )
 {
     cout << "dumping a Mesh_XYZ::fcdtf: " << name << endl;
     {
-    //	HTSyncSpinLock h;
-	char buf[80];
-	for( int i=0; i < data.size()/6; i++ ) {
+        C4::HTSyncSpinLock h;
+        char buf[80];
+        for( int i=0; i < data.size()/6; i++ ) {
             for( int j=0; j < 6; j++ ) {
-	        sprintf( buf, "cell %d, face %d, value=%lf \n",
-		         i, j, data(i,j) );
+                sprintf( buf, "node %d, cell %d, face %d, value=%lf \n",
+                         C4::node(), i, j, data(i,j) );
                 cout << buf;
             }
-	}
+        }
     }
 }
 
@@ -746,6 +745,34 @@ void Mesh_XYZ::swap
           else
               to(i,j,k,5) = 0;
 	}
+}
+
+template <class T>
+T Mesh_XYZ::sum( const Mesh_XYZ::cctf<T>& from )
+{
+    T sum = 0;
+
+    for (Mesh_XYZ::cctf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        sum += *iter;
+
+    C4::gsum<T>(sum);
+
+    return sum;
+}
+
+template <class T>
+T Mesh_XYZ::sum( const Mesh_XYZ::fcdtf<T>& from )
+{
+    T sum = 0;
+
+    for (Mesh_XYZ::fcdtf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        sum += *iter;
+
+    C4::gsum<T>(sum);
+
+    return sum;
 }
 
 //---------------------------------------------------------------------------//
