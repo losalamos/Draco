@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+
+import os, sys, math, re
+
+sys.path.append('../../tools')
+
+from numdiff import Numdiff
+
+file1 = 'numdiff_f1'
+file2 = 'numdiff_f2'
+
+# Checks the stats for the differences between file1 and file2
+def checkStats(filesDiffer, stats, totalStrings, diffStrings):
+    passed = filesDiffer
+
+    passed = passed and (math.fabs(stats.maxAbs.abs - 0.3) < 1.0e-8)
+    passed = passed and (stats.maxAbs.lineNum == 1)
+    passed = passed and (stats.maxAbs.columnNum == 2)
+
+    passed = passed and (stats.totalFloats == 7)
+    passed = passed and (stats.diffFloats == 2)
+
+    passed = passed and (stats.totalStrings == totalStrings)
+    passed = passed and (stats.diffStrings == diffStrings)
+
+    if passed:
+        print 'PASSED'
+    else:
+        print 'FAILED'
+
+# Run as module
+
+# 1st test:
+
+print '\n********* MODULE MODE\n'
+
+ndiff = Numdiff(verbosity=0)
+
+(filesDiffer, stats) = ndiff.diff(file1, file2)
+checkStats(filesDiffer, stats, 11, 4)
+
+# 2nd test, add in skip the line
+
+ndiff.skip.append(re.compile('^skip.*'))
+(filesDiffer, stats) = ndiff.diff(file1, file2)
+checkStats(filesDiffer, stats, 7, 2)
+
+# Run as command-line script  (these don't report pass or fail)
+
+print '\n********* SCRIPT MODE\n'
+print '\n>>>>>>>>> Run with defaults options: \n'
+os.system('../numdiff.py %s %s' % (file1, file2))
+print '\n>>>>>>>>> Run with -v 2: \n'
+os.system('../numdiff.py -v 2 %s %s' % (file1, file2))
+print '\n>>>>>>>>> Run with --verbosity=2: \n'
+os.system('../numdiff.py --verbosity=2 %s %s' % (file1, file2))
