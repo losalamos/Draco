@@ -2,14 +2,14 @@
 /*!
  * \file   cdi_analytic/test/tstAnalytic_Gray_Opacity.cc
  * \author Thomas M. Evans
- * \date   Wed Aug 29 14:38:57 2001
+ * \date   Mon Sep 24 12:08:55 2001
  * \brief  Analytic_Gray_Opacity test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "CDI_Test.hh"
+#include "cdi_analytic_test.hh"
 #include "../Release.hh"
 #include "../Analytic_Gray_Opacity.hh"
 #include "../Analytic_Models.hh"
@@ -28,6 +28,8 @@
 
 using namespace std;
 
+using rtt_cdi_analytic_test::pass_msg;
+using rtt_cdi_analytic_test::fail_msg;
 using rtt_cdi_analytic::Analytic_Gray_Opacity;
 using rtt_cdi_analytic::Analytic_Opacity_Model;
 using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
@@ -36,9 +38,8 @@ using rtt_cdi::CDI;
 using rtt_cdi::GrayOpacity;
 using rtt_dsxx::SP;
 
-bool passed = true;
-#define ITFAILS passed = rtt_cdi_analytic_test::fail(__LINE__);
-
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 
 void constant_test()
@@ -172,7 +173,6 @@ void CDI_test()
 }
 
 //---------------------------------------------------------------------------//
-// main
 
 int main(int argc, char *argv[])
 {
@@ -180,40 +180,39 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_cdi_analytic::release()
+	    cout << argv[0] << ": version " << rtt_cdi_analytic::release() 
 		 << endl;
 	    return 0;
 	}
 
-    // some simple tests
     try
     {
+	// >>> UNIT TESTS
 	constant_test();
 	user_defined_test();
 	CDI_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "Caught: " << ass.what() << endl;
+	cout << "While testing tstAnalytic_Gray_Opacity, " << ass.what()
+	     << endl;
 	return 1;
     }
 
     // status of test
     cout << endl;
-    cout <<     "****************************************************" 
-	 << endl;
-    if (passed) 
+    cout <<     "*********************************************" << endl;
+    if (rtt_cdi_analytic_test::passed) 
     {
-        cout << "**** tstAnalytic_Gray_Opacity Self Test: PASSED ****" 
+        cout << "**** tstAnalytic_Gray_Opacity Test: PASSED" 
 	     << endl;
     }
-    cout <<     "****************************************************" 
-	 << endl;
+    cout <<     "*********************************************" << endl;
     cout << endl;
 
     cout << "Done testing tstAnalytic_Gray_Opacity." << endl;
-}
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstAnalytic_Gray_Opacity.cc
+//                        end of tstAnalytic_Gray_Opacity.cc
 //---------------------------------------------------------------------------//

@@ -1,10 +1,10 @@
 ###############################################################################
-# draco/src/mc/test Makefile.target
+# cdi_analytic/test Makefile.target
 # Thomas M. Evans
-# Fri Apr 16 15:45:08 1999
+# Mon Sep 24 12:12:25 2001
 # $Id$
 ###############################################################################
-# @> General Makefile.target for draco/src/mc/test
+# @> General Makefile.target for cdi_analytic/test
 ###############################################################################
 
 testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
@@ -12,9 +12,9 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-thistestdep := libCDI_Test${libsuffix}
-thistestlib := -L. -lCDI_Test
-thistestlib_dep := CDI_Test.o
+thistestdep := libcdi_analytic_test${libsuffix}
+thistestlib := -L. -lcdi_analytic_test
+thistestlib_dep := cdi_analytic_test.o 
 
 ${test_alltarget}: ${thistestdep} ${testdeps}
 
@@ -28,5 +28,5 @@ ${thistestdep}: ${thistestlib_dep} ${testdeps}
 objs += ${thistestdep}
 
 ###############################################################################
-#			 end of draco/src/mc/test Makefile.target
+#			 end of cdi_analytic/test Makefile.target
 ###############################################################################
