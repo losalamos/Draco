@@ -10,9 +10,6 @@ dnl-------------------------------------------------------------------------dnl
 AC_INIT(doxygen_config.in)
 AC_CONFIG_AUX_DIR(../config)
 
-dnl draco setup
-AC_DRACO_ENV
-
 dnl
 dnl doxygen setup
 dnl
@@ -22,7 +19,34 @@ AC_PATH_PROG(DOXYGEN_PATH, doxygen, null)
 
 # path to package directories which are sources for doxygen
 doxygen_src=${srcdir}/../src
-AC_SUBST(doxygen_src)
+
+# find sources
+dirs=`ls ../src`
+
+doxygen_input=''
+doxygen_examples=''
+
+for dir in $dirs;
+do
+   if test -d ../src/$dir ; then
+       doxygen_input="${doxygen_src}/${dir} ${doxygen_input}"
+       doxygen_examples="${doxygen_src}/${dir}/test ${doxygen_examples}"
+   fi
+done
+
+# check if we should build latex sources
+latex_yes_no='NO'
+if test "${enable_latex_doc:=no}" = yes ; then
+   latex_yes_no='YES'
+fi
+
+# find the release number
+number=`${prefix}/bin/draco --version`
+
+AC_SUBST(doxygen_input)
+AC_SUBST(doxygen_examples)
+AC_SUBST(latex_yes_no)
+AC_SUBST(number)
 
 AC_OUTPUT(Makefile doxygen_config header.html footer.html)
 
