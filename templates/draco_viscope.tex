@@ -1,21 +1,33 @@
 %%---------------------------------------------------------------------------%%
 %% <papername>.tex
 %% <user>
-%% Time-stamp: <02/06/05 09:15:50 tmonster>
+%% Time-stamp: <02/06/05 17:11:51 tmonster>
 %%---------------------------------------------------------------------------%%
 %%
-%% Project Vision and Scope Statements
-%%
+%% Project Vision Statement
+%% ------------------------
 %% A vision statement explains the project in terms of an end result.
 %% It clarifies where the project is going by answering the questions
 %%      -What?
 %%      -Why?
 %%      -How will we know the project is a success?
 %%
-%% A scope statement describes how a project will achieve its end-
+%% Project Scope Statement
+%% -----------------------
+%% A scope statement describes how a project will achieve its end
 %% result given limited resources.  It sets a project's boundaries by
 %% defining the balance between resources, constraints, and
 %% deliverables. 
+%%
+%% Critical Success Factors
+%% ------------------------
+%% What has to happen for success?  What cannot happen?
+%%
+%% Risk Assessment
+%% ---------------
+%% What is the probability of the occurence of each identified risk?
+%% What is the impact if it happens?  
+%%
 %%
 %%      ---adapted from David A. Schmaltz's ``Mastering Project Workshop: 
 %%         Participant Guide,'' True North pgs, Inc., P.O. Box 1532, 
@@ -48,7 +60,7 @@
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
 \refno{CCS-4:02-????(U)}
-\subject{Vision and Scope Statements for the ???????? Project}
+\subject{Vision and Scope Statements for the <papername> Project}
 
 %-------NO CHANGES
 \divisionname{Computer and Computational Sciences}
@@ -92,6 +104,7 @@
 -What are the observable and measurable criteria for success?
 
 
+\newpage
 \section*{Scope Statement}
 
 %%
@@ -124,6 +137,82 @@
                         Cost ---- Schedule
 
               \end{verbatim}
+
+
+\newpage
+\section*{Critical Success Factors}
+
+What has to happen for your project to be a success?  What cannot
+happen?
+
+What is the source of your critical success factor?
+\begin{itemize}
+  \item Business
+  \item People
+  \item Technology
+  \item Politics
+\end{itemize}
+
+Is the critical success factor a problem or dilemma?
+\begin{itemize}
+  \item A problem has a definite solution...solve it and move on.
+  \item A dilemma doesn't have a unique solution...deal with it now
+        and revisit it later.
+\end{itemize}
+
+How will you deal with the critical success factor?
+\begin{enumerate}
+  \item Resolve it now.
+  \item Factor into Plan.
+  \item Change Vision/Scope.
+  \item Other.
+\end{enumerate}
+
+\begin{table}[ht]
+  \begin{center}
+    \caption{Critical success factors for the <papername> Project.}
+    \label{tab:critical-success}
+    \begin{tabular}{|c|c|c|c|} 
+    \hline
+                       & Problem or & Strategy  &          \\
+    Factor             &  Dilemma   & (1,2,3,4) & Comments \\ 
+    \hline\hline
+    New method is bad. &  Dilemma   &    2      & probably doesn't
+                                                  resolve bnd layers \\
+    \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+\newpage
+\section*{Risk Assessment}
+
+Identify risks.  For each, estimate the likelihood (1-10) of
+occurrence and the impact (1-10) if it happens.  The product of these
+two values is a measure of the attention the risk deserves.
+
+\begin{table}[ht]
+  \begin{center}
+    \caption{Risk Assessment for the <papername> Project.}
+    \label{tab:risk}
+    \begin{tabular}{|c|c|c|c|c|} 
+    \hline
+    Risk               & Likelihood & Impact & Importance & Contingency\\ 
+    \hline\hline
+    Method doesn't     &    8       &   9    &    72      & if it's
+                                                            faster,
+                                                            combine
+                                                            with \\ 
+    resolve bnd layers &            &        &            & old
+                                                            method; if
+                                                            not,
+                                                            abandon \\
+    \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
 
 \closing
 \end{document}
