@@ -124,10 +124,12 @@ esac
 for c4 in $C4
 do
    TARGETDIR=$uname/$c4/draco
-   CONFIGUREFLAGS="--with-c4=$c4"
 
    for b in $BITS
    do
+
+      CONFIGUREFLAGS="--with-c4=$c4"
+
       if [ "X$b" != "X0" ] ; then
          eval PCG_LIBPATH='$PCG_LIB'$b'PATH'
          TARGETDIR=$uname/${c4}_$b/draco
