@@ -101,7 +101,7 @@ int C4_Recv( void *buf, int size, int source, int tag, int group )
 C4_Req C4_SendAsync( void *buf, int size, int dest, int tag, int group )
 {
     C4_Req r;
-    r.mid = isend( tag, (char *) buf, size, dest, group );
+    r.mid() = isend( tag, (char *) buf, size, dest, group );
     r.set();
     return r;
 }
@@ -115,9 +115,9 @@ C4_Req C4_RecvAsync( void *buf, int size, int source, int tag, int group )
     C4_Req r;
 
     if (source == C4_Any_Source)
-	r.mid = irecv( tag, (char *) buf, size );
+	r.mid() = irecv( tag, (char *) buf, size );
     else
-	r.mid = irecvx( tag, (char *) buf, size, source, group, msginfo );
+	r.mid() = irecvx( tag, (char *) buf, size, source, group, msginfo );
 
     r.set();
     return r;
@@ -131,7 +131,7 @@ void C4_SendAsync( C4_Req& r, void *buf, int size, int dest, int tag,
 		   int group /*=0*/ )
 {
 // Not checking that r is not in use, which is of course a concern...
-    r.mid = isend( tag, (char *) buf, size, dest, group );
+    r.mid() = isend( tag, (char *) buf, size, dest, group );
     r.set();
 }
 
@@ -144,9 +144,9 @@ void C4_RecvAsync( C4_Req& r, void *buf, int size, int source, int tag,
 {
 // Not checking that r is not in use, which is of course a concern...
     if (source == C4_Any_Source)
-	r.mid = irecv( tag, (char *) buf, size );
+	r.mid() = irecv( tag, (char *) buf, size );
     else
-	r.mid = irecvx( tag, (char *) buf, size, source, group, msginfo );
+	r.mid() = irecvx( tag, (char *) buf, size, source, group, msginfo );
 
     r.set();
 }

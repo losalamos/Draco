@@ -63,7 +63,7 @@ C4_Req SendAsync( const T *buf, int nels, int dest,
 {
     C4_Req r;
     MPI_Isend( (void *) buf, nels, mpi_traits<T>::element_type(),
-	       dest, tag, MPI_COMM_WORLD, &r.r );
+	       dest, tag, MPI_COMM_WORLD, &r.r() );
     r.set();
     return r;
 }
@@ -74,7 +74,7 @@ C4_Req RecvAsync( T *buf, int nels, int source,
 {
     C4_Req r;
     MPI_Irecv( (void *) buf, nels, mpi_traits<T>::element_type(),
-	       source, tag, MPI_COMM_WORLD, &r.r );
+	       source, tag, MPI_COMM_WORLD, &r.r() );
     r.set();
     return r;
 }
@@ -90,7 +90,7 @@ void SendAsync( C4_Req& r, const T *buf, int nels, int dest,
     Require( !r.inuse() );
     r.set();
     MPI_Isend( (void *) buf, nels, mpi_traits<T>::element_type(),
-	       dest, tag, MPI_COMM_WORLD, &r.r );
+	       dest, tag, MPI_COMM_WORLD, &r.r() );
 }
 
 template<class T>
@@ -100,7 +100,7 @@ void RecvAsync( C4_Req& r, T *buf, int nels, int source,
     Require( !r.inuse() );
     r.set();
     MPI_Irecv( (void *) buf, nels, mpi_traits<T>::element_type(),
-	       source, tag, MPI_COMM_WORLD, &r.r );
+	       source, tag, MPI_COMM_WORLD, &r.r() );
 }
 
 template<class T>

@@ -607,10 +607,10 @@ C4_Req SHM_SendAsync( void *buf, int size, int dest, int tag, int group )
 						tag, group );
     C4_Req r;
 
-    if (pthread_create( &r.thread, NULL, SHM_thread_send_async, mdb ))
+    if (pthread_create( &r.thread(), NULL, SHM_thread_send_async, mdb ))
 	printf( "%d unable to spawn send thread.", C4_shm_mynode );
 
-    r.type = Async_Send;
+    r.type() = Async_Send;
     r.set();
 
     return r;
@@ -636,10 +636,10 @@ C4_Req SHM_RecvAsync( void *buf, int size, int source, int tag, int group )
 						tag, group );
     C4_Req r;
 
-    if (pthread_create( &r.thread, NULL, SHM_thread_recv_async, mdb ))
+    if (pthread_create( &r.thread(), NULL, SHM_thread_recv_async, mdb ))
 	printf( "%d unable to spawn recv thread.\n", C4_shm_mynode );
 
-    r.type = Async_Recv;
+    r.type() = Async_Recv;
     r.set();
 
     return r;

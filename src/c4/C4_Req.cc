@@ -11,16 +11,17 @@
 #include "C4_Req.hh"
 #include "ds++/Assert.hh"
 
-C4_NAMESPACE_BEG
+namespace C4
+{
 
 //---------------------------------------------------------------------------//
 // Constructor.  Register a new non blocking message request.
 //---------------------------------------------------------------------------//
 
 C4_Req::C4_Req()
-    : assigned(0)
+    : p(new C4_ReqRefRep)
 {
-    p = new C4_ReqRefRep;
+    ++p->n;
 }
 
 //---------------------------------------------------------------------------//
@@ -28,19 +29,9 @@ C4_Req::C4_Req()
 //---------------------------------------------------------------------------//
 
 C4_Req::C4_Req( const C4_Req& req )
+    : p(req.p)
 {
-    assigned = req.assigned;
-
-    p = req.p;
-    p->n++;
-
-    PGN( mid = req.mid );
-    MPI( r = req.r );
-#ifdef C4_SHMEM
-    mid = req.mid;
-    thread = req.thread;
-    type = req.type;
-#endif
+    ++p->n;
 }
 
 //---------------------------------------------------------------------------//
@@ -50,11 +41,9 @@ C4_Req::C4_Req( const C4_Req& req )
 
 C4_Req::~C4_Req()
 {
-    p->n--;
-    if (!p->n) {
+    --p->n;
+    if (p->n <= 0)
 	delete p;
-	wait();
-    }
 }
 
 //---------------------------------------------------------------------------//
@@ -64,33 +53,41 @@ C4_Req::~C4_Req()
 
 C4_Req& C4_Req::operator=( const C4_Req& req )
 {
-    p->n--;
-    if (!p->n) {
+    --p->n;
+    if (p->n <= 0)
 	delete p;
-	wait();
-    }
-
-    assigned = req.assigned;
 
     p = req.p;
-    p->n++;
-
-    PGN( mid = req.mid );
-    MPI( r = req.r );
-#ifdef C4_SHMEM
-    mid = req.mid;
-    thread = req.thread;
-    type = req.type;
-#endif
+    ++p->n;
 
     return *this;
+}
+
+//---------------------------------------------------------------------------//
+// Constructor.  Register a new non blocking message request.
+//---------------------------------------------------------------------------//
+
+C4_ReqRefRep::C4_ReqRefRep()
+    : assigned(0), n(0)
+{
+    // empty
+}
+
+//---------------------------------------------------------------------------//
+// Destructor.  If we've been left holding the bag, make sure the message has
+// completed.  This should plug a wide class of potential programming errors.
+//---------------------------------------------------------------------------//
+
+C4_ReqRefRep::~C4_ReqRefRep()
+{
+    wait();
 }
 
 //---------------------------------------------------------------------------//
 // Wait for an asynchronous message to complete.
 //---------------------------------------------------------------------------//
 
-void C4_Req::wait()
+void C4_ReqRefRep::wait()
 {
     if (assigned) {
 	PGN( msgwait( mid ) );
@@ -108,7 +105,7 @@ void C4_Req::wait()
 // the handle must be reactivated to test for completeness or to wait on it
 //---------------------------------------------------------------------------//
 
-void C4_Req::free()
+void C4_ReqRefRep::free()
 {
 #ifdef C4_SHMEM
     throw "incomplete";
@@ -124,7 +121,7 @@ void C4_Req::free()
 // Tests for the completion of a non blocking operation.
 //---------------------------------------------------------------------------//
 
-bool C4_Req::complete()
+bool C4_ReqRefRep::complete()
 {
 #ifdef C4_SHMEM
     throw "incomplete";
@@ -147,7 +144,7 @@ bool C4_Req::complete()
 #endif
 }
 
-C4_NAMESPACE_END
+} // end namespace C4
 
 //---------------------------------------------------------------------------//
 //                              end of C4_Req.cc

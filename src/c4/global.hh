@@ -13,11 +13,15 @@
 #include <c4/config.h>
 
 #include "config.hh"
-#include "C4_Req.hh"
 #include "tags.hh"
 #include "c4_traits.hh"
 
-C4_NAMESPACE_BEG
+namespace C4
+{
+
+// Forward Reference
+
+class C4_Req;
 
 void Init( int& argc, char **& argv );
 void Finalize();
@@ -97,7 +101,7 @@ template<class T> void gmax( T *px, int n );
 double Wtime();
 double Wtick();
 
-C4_NAMESPACE_END
+} // end namespace C4
 
 //---------------------------------------------------------------------------//
 // Now include anything which might help a particular hardware abstraction
@@ -112,6 +116,10 @@ C4_NAMESPACE_END
 #ifdef C4_SCALAR
 #include "global_scalar.hh"
 #endif
+
+// For convenience let's include the C4_Req header
+
+#include "C4_Req.hh"
 
 #endif                          // __c4_global_hh__
 
