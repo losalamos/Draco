@@ -9,10 +9,9 @@
 #include "c4/global.hh"
 #include "c4/mpi_traits.hh"
 
-#include "ds++/DynArray.hh"
 #include "ds++/Assert.hh"
 
-using dsxx::DynArray;
+#include <algorithm>
 
 //---------------------------------------------------------------------------//
 // Miscellaneous
@@ -86,57 +85,76 @@ void gsync()
 template<class T> class mpi_ar_traits
 {
   public:
-    static DynArray<T> ar_buf;
+// A buffer, and its size, for use as a work array in MPI global array
+// reduction routines.
+
+    static T *ar_buf;
+    static int size;
+
+// This routine copies the input data into the work buffer needed by
+// subsequent calls to MPI global reduction routines.
+
+    static void load_buffer( const T *px, int n )
+    {
+        Assert( n >= 0 );
+
+        if (size < n)
+        {
+            delete[] ar_buf;
+            ar_buf = new T[n];
+            size = n;
+        }
+
+        std::copy( px, px+n, ar_buf );
+    }
 };
+
+template<class T> T * mpi_ar_traits<T>::ar_buf = 0;
+template<class T> int mpi_ar_traits<T>::size = 0;
 
 template<class T>
 void gsum( T *px, int n )
 {
-    Assert( n >= 0 );
-    T dummy = T();
+    mpi_ar_traits<T>::load_buffer( px, n );
 
-    mpi_ar_traits<T>::ar_buf[n-1] = dummy; // auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	mpi_ar_traits<T>::ar_buf[i] = px[i];
-
-    MPI_Allreduce( &mpi_ar_traits<T>::ar_buf[0], px, n,
+    MPI_Allreduce( mpi_ar_traits<T>::ar_buf, px, n,
 		   mpi_traits<T>::element_type(), MPI_SUM, MPI_COMM_WORLD );
+}
+
+template<class T>
+void gprod( T *px, int n )
+{
+    mpi_ar_traits<T>::load_buffer( px, n );
+
+    MPI_Allreduce( mpi_ar_traits<T>::ar_buf, px, n,
+		   mpi_traits<T>::element_type(), MPI_PROD, MPI_COMM_WORLD );
 }
 
 template<class T>
 void gmin( T *px, int n )
 {
-    Assert( n >= 0 );
-    T dummy = T();
+    mpi_ar_traits<T>::load_buffer( px, n );
 
-    mpi_ar_traits<T>::ar_buf[n-1] = dummy; // auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	mpi_ar_traits<T>::ar_buf[i] = px[i];
-
-    MPI_Allreduce( &mpi_ar_traits<T>::ar_buf[0], px, n,
+    MPI_Allreduce( mpi_ar_traits<T>::ar_buf, px, n,
 		   mpi_traits<T>::element_type(), MPI_MIN, MPI_COMM_WORLD );
 }
 
 template<class T>
 void gmax( T *px, int n )
 {
-    Assert( n >= 0 );
-    T dummy = T();
+    mpi_ar_traits<T>::load_buffer( px, n );
 
-    mpi_ar_traits<T>::ar_buf[n-1] = dummy; // auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	mpi_ar_traits<T>::ar_buf[i] = px[i];
-
-    MPI_Allreduce( &mpi_ar_traits<T>::ar_buf[0], px, n,
+    MPI_Allreduce( mpi_ar_traits<T>::ar_buf, px, n,
 		   mpi_traits<T>::element_type(), MPI_MAX, MPI_COMM_WORLD );
 }
-
-template<class T>
-DynArray<T> mpi_ar_traits<T>::ar_buf(10);
 
 template void gsum( int *px, int n );
 template void gsum( float *px, int n );
 template void gsum( double *px, int n );
+
+template void gprod( int *px, int n );
+template void gprod( float *px, int n );
+template void gprod( double *px, int n );
 
 template void gmin( int *px, int n );
 template void gmin( float *px, int n );
