@@ -29,7 +29,7 @@ int main( int argc, char *argv[] )
     ios::sync_with_stdio();
 #endif
 
-    C4_Init( argc, argv );
+    C4::Init( argc, argv );
 
     if (sync_type >= 0)
 	do_sync_test(sync_type);
@@ -40,7 +40,7 @@ int main( int argc, char *argv[] )
 	}
     }
 
-    C4_Finalize();
+    C4::Finalize();
     return 0;
 }
 
@@ -49,7 +49,7 @@ int main( int argc, char *argv[] )
 //---------------------------------------------------------------------------//
 
 #define DOBLOCK(SyncType) \
-    if (C4_node() == 0) \
+    if (C4::node() == 0) \
 	cout << "Testing: " << #SyncType << "\n\n" << flush; \
     gsync(); \
     cout << "Hello #1 from " << node() << endl << flush; \

@@ -18,18 +18,18 @@
 
 int main( int argc, char *argv[] )
 {
-    C4_Init( argc, argv );
+    C4::Init( argc, argv );
 
-    int node = C4_node();
-    int nodes = C4_nodes();
+    int node = C4::node();
+    int nodes = C4::nodes();
 
     cout << "Hello from " << node << endl;
 
-    C4_gsync();
+    C4::gsync();
 
     cout << "Hello again from " << node << endl;
 
-    C4_Finalize();
+    C4::Finalize();
     return 0;
 }
 

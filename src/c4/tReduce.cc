@@ -22,7 +22,7 @@ void tReduce_sum_int()
 	local_sum += i;
 
     global_sum = node;
-    C4_gsum(global_sum);
+    C4::gsum(global_sum);
 
     if (node == 0) {
 	if (local_sum == global_sum)
@@ -42,7 +42,7 @@ void tReduce_sum_long()
 	local_sum += i;
 
     global_sum = node;
-    C4_gsum(global_sum);
+    C4::gsum(global_sum);
 
     if (node == 0) {
 	if (local_sum == global_sum)
@@ -62,7 +62,7 @@ void tReduce_sum_float()
 	local_sum += i;
 
     global_sum = node;
-    C4_gsum(global_sum);
+    C4::gsum(global_sum);
 
     if (node == 0) {
 	if (local_sum == global_sum)
@@ -82,7 +82,7 @@ void tReduce_sum_double()
 	local_sum += i;
 
     global_sum = node;
-    C4_gsum(global_sum);
+    C4::gsum(global_sum);
 
     if (node == 0) {
 	if (local_sum == global_sum)
@@ -99,7 +99,7 @@ void tReduce_min_int()
     int local_min = -nodes+1, global_min;
 
     global_min = -node;
-    C4_gmin(global_min);
+    C4::gmin(global_min);
 
     if (node == 0) {
 	if (local_min == global_min)
@@ -116,7 +116,7 @@ void tReduce_min_long()
     long local_min = -nodes+1, global_min;
 
     global_min = -node;
-    C4_gmin(global_min);
+    C4::gmin(global_min);
 
     if (node == 0) {
 	if (local_min == global_min)
@@ -133,7 +133,7 @@ void tReduce_min_float()
     float local_min = -nodes+1, global_min;
 
     global_min = -node;
-    C4_gmin(global_min);
+    C4::gmin(global_min);
 
     if (node == 0) {
 	if (local_min == global_min)
@@ -150,7 +150,7 @@ void tReduce_min_double()
     double local_min = -nodes+1, global_min;
 
     global_min = -node;
-    C4_gmin(global_min);
+    C4::gmin(global_min);
 
     if (node == 0) {
 	if (local_min == global_min)
@@ -167,7 +167,7 @@ void tReduce_max_int()
     int local_max = nodes-1, global_max;
 
     global_max = node;
-    C4_gmax(global_max);
+    C4::gmax(global_max);
 
     if (node == 0) {
 	if (local_max == global_max)
@@ -184,7 +184,7 @@ void tReduce_max_long()
     long local_max = nodes-1, global_max;
 
     global_max = node;
-    C4_gmax(global_max);
+    C4::gmax(global_max);
 
     if (node == 0) {
 	if (local_max == global_max)
@@ -201,7 +201,7 @@ void tReduce_max_float()
     float local_max = nodes-1, global_max;
 
     global_max = node;
-    C4_gmax(global_max);
+    C4::gmax(global_max);
 
     if (node == 0) {
 	if (local_max == global_max)
@@ -218,7 +218,7 @@ void tReduce_max_double()
     double local_max = nodes-1, global_max;
 
     global_max = node;
-    C4_gmax(global_max);
+    C4::gmax(global_max);
 
     if (node == 0) {
 	if (local_max == global_max)
@@ -234,10 +234,10 @@ void tReduce_max_double()
 
 int main( int argc, char *argv[] )
 {
-    C4_Init( argc, argv );
+    C4::Init( argc, argv );
 
-    node = C4_node();
-    nodes = C4_nodes();
+    node = C4::node();
+    nodes = C4::nodes();
 
     tReduce_sum_int();
     tReduce_sum_long();
@@ -254,7 +254,7 @@ int main( int argc, char *argv[] )
     tReduce_max_float();
     tReduce_max_double();
 
-    C4_Finalize();
+    C4::Finalize();
     return 0;
 }
 

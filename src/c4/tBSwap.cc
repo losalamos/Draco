@@ -37,10 +37,10 @@ using namespace C4;
 
 int main( int argc, char *argv[] )
 {
-    C4_Init( argc, argv );
+    Init( argc, argv );
 
-    int node = C4_node();
-    int nodes = C4_nodes();
+    int node = C4::node();
+    int nodes = C4::nodes();
 
     cout << "Hello from " << node << endl;
 
@@ -66,8 +66,8 @@ int main( int argc, char *argv[] )
 	    cout << "2 to the 1 power is " << i << endl;
     }
 
-    C4_gsync();
-    C4_Finalize();
+    C4::gsync();
+    C4::Finalize();
     return 0;
 }
 
