@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <string>
+#include <typeinfo>
 
 using namespace rtt_dsxx;
 using namespace std;
