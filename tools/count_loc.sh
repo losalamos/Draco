@@ -103,14 +103,14 @@ cd $CODE_DIR
 #Define C++ files 
 # (Note: the output from the find command using this filter
 #        could be saved into a list to speed things up)
-cppfiles="\( -name '*.cc' -o -name '*.hh' $excludes \)"
+cpp_filepat="\( -name '*.cc' -o -name '*.hh' $excludes \)"
 
 #------------------------- C++ Source Code ------------------------------
 
 #Scan for C++ source code
-echo 'Total C++ source: '
-eval find . $cppfiles -exec cat {} \\\; |  cpp_loc
-echo 
+echo "Total C++ source: "
+eval find . $cpp_filepat -exec cat {} \\\; |  cpp_loc
+echo
 
 #------------------------ C++ Test Code ----------------------------------
 
@@ -118,13 +118,13 @@ echo
 echo "C++ source in test directories: "
 for i in `find . -name test -type d -print`
 do
-  eval find '${i}' $cppfiles -exec cat {} \\\; 
+  eval find '${i}' $cpp_filepat -exec cat {} \\\; 
 done | cpp_loc
 echo
 
 #Scan for C++ Design-by-Contract specifications
 echo "C++ contract specifications:"
-for i in `eval find . $cppfiles -print` 
+for i in `eval find . $cpp_filepat -print` 
 do
   awk '$1 ~ /Assert|Require|Ensure|Check|Insist/ {print}' ${i}
 done | cpp_loc
@@ -134,7 +134,7 @@ echo
 
 #Scan for C++ comments (finds both C and C++ style comments)
 echo "C++ comments:"
-for i in `eval find . $cppfiles -print`
+for i in `eval find . $cpp_filepat -print`
 do 
   awk '$1~/\/\// {print} /\/\*/, /\*\// {print}' ${i}
 done | wc -l
@@ -157,7 +157,7 @@ echo
 # (includes Python, Perl, sh, bash, csh, but not Expect, nor Awk)
 echo Executable script source:
 files=`eval find . -type f -perm -100 $excludes -print`
-script_loc `list_scripts $files`
+script_loc `list_scripts $files` /dev/null
 echo
 
 #Scan for Python source code
