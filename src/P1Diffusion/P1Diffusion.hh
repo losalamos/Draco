@@ -9,6 +9,7 @@
 #ifndef __P1Diffusion_P1Diffusion_hh__
 #define __P1Diffusion_P1Diffusion_hh__
 
+#include "P1Momentum.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include "diffusion/Diffusion_DB.hh"
@@ -29,7 +30,7 @@ namespace rtt_P1Diffusion
  // 
  //===========================================================================//
 
- template<class MT, class MS>
+ template<class MT, class MS, bool HASVELOCITY=true>
  class P1Diffusion
  {
 
@@ -42,11 +43,6 @@ namespace rtt_P1Diffusion
      typedef typename MT::fcdsf fcdsf;
      typedef typename MT::ccsf ccsf;
      typedef typename MT::bssf bssf;
-#ifdef P13T_MOMENTUM_DEPOSITION
-     typedef typename MT::ncvsf ncvsf;
-     typedef typename MT::vcvsf vcvsf;
-     typedef typename MT::vcsf vcsf;
-#endif
      typedef typename MT::FieldConstructor FieldConstructor;
 
      typedef rtt_traits::MatrixFactoryTraits<Matrix> MatFacTraits;
@@ -54,20 +50,20 @@ namespace rtt_P1Diffusion
    public:
 
      typedef MT MeshType;
+     typedef P1Momentum<MT,HASVELOCITY> P1Momentum;
      typedef ccsf  IntensityField;
      typedef fcdsf FluxField;
      typedef fcdsf DiscFluxField;
-#ifdef P13T_MOMENTUM_DEPOSITION
-     typedef ncvsf MomentumField;
-     typedef vcvsf DiscMomentumField;
-     typedef vcsf DiscKineticEnergyField;
-#endif
      typedef fcdsf DiffCoefField;
+     typedef typename P1Momentum::MomentumField MomentumField;
+     typedef typename P1Momentum::DiscMomentumField DiscMomentumField;
+     typedef typename P1Momentum::DiscKineticEnergyField DiscKineticEnergyField;
 
      // DATA
     
      dsxx::SP<MeshType> spm;
      dsxx::SP<MatrixSolver> spsolver;
+     dsxx::SP<P1Momentum> spmomentum;
      FieldConstructor fCtor;
      typename MatFacTraits::PreComputedState preComputedMatrixState;
 
@@ -94,22 +90,29 @@ namespace rtt_P1Diffusion
 		const ccsf &Q, const fcdsf &Fprime, const bssf &alpha,
 		const bssf &beta, const bssf &fb) const;
 
-#ifdef P13T_MOMENTUM_DEPOSITION
-     void discFluxToDiscMomentum(DiscMomentumField &result,
-				 const DiscFluxField &flux) const;
-
-     void dotProduct(DiscKineticEnergyField &result,
-		     const DiscMomentumField &vec1,
-		     const DiscMomentumField &vec2) const;
-     
-     void dotProduct(DiscKineticEnergyField &KEnergy,
-                     const DiscFluxField &sigmaF,
-                     const DiscMomentumField &velocity) const;
-#endif
-
      typename ccsf::value_type integrateOverVolume(const ccsf &field) const;
 
      typename fcdsf::value_type integrateOverBoundary(const fcdsf &field) const;
+
+    void discFluxToDiscMomentum(DiscMomentumField &result,
+				const DiscFluxField &flux) const
+    {
+	spmomentum->discFluxToDiscMomentum(result, flux);
+    }
+
+    void dotProduct(DiscKineticEnergyField &result,
+		    const DiscMomentumField &vec1,
+		    const DiscMomentumField &vec2) const
+    {
+	spmomentum->dotProduct(result, vec1, vec2);
+    }
+     
+    void dotProduct(DiscKineticEnergyField &KEnergy,
+		    const DiscFluxField &sigmaF,
+		    const DiscMomentumField &velocity) const
+    {
+	spmomentum->dotProduct(KEnergy, sigmaF, velocity);
+    }
 
    private:
     
