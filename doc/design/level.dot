@@ -10,16 +10,26 @@ digraph draco_level {
     level3 [shape=plaintext, label="Level 3:", fontsize=18];
     level4 [shape=plaintext, label="Level 4:", fontsize=18];
     level5 [shape=plaintext, label="Level 5:", fontsize=18];
+    level6 [shape=plaintext, label="Level 6:", fontsize=18];
     
-    level5 -> level4 -> level3 -> level2 -> level1 [style=invis];
+    level6 -> level5 -> level4 -> level3 -> level2 -> level1 [style=invis];
     
     /* packages */
-    
+
     /* level 1 */
-    dsxx [shape=box, label="ds++", width=8];
-    stdheaders [shape=box, label="stdheaders"];
-    
+    stdheaders [shape=box,     color=brown, label="stdheaders\n(Only when C++ compiler does not\nfully support C++ standard header files.)"];
+    vmpi       [shape=hexagon, color=green, label="MPI"];
+    vlapack    [shape=hexagon, color=green, label="LAPACK"];
+    vpcg       [shape=hexagon, color=green, label="PCG"];
+    vgandolf   [shape=hexagon, color=green, label="GANDOLF"];
+    veospac    [shape=hexagon, color=green, label="EOSPAC"];
+    vgrace     [shape=hexagon, color=green, label="XMGRACE"];
+    vspring    [shape=hexagon, color=green, label="SPRING"];
+        
     /* level 2 */
+    dsxx [shape=box, label="ds++", width=6];
+    
+    /* level 3 */
     traits [shape=box, label="traits"];
     xm [shape=box, label="xm"];
     c4 [shape=box, label="c4"];
@@ -31,7 +41,7 @@ digraph draco_level {
     plot [shape=box, label="plot2D"];
     lapack [shape=box, label="lapack_wrap"];
     
-    /* level 3 */
+    /* level 4 */
     viz [shape=box, label="viz"];
     timestep [shape=box, label="timestep"];
     cdianal [shape=box, label="cdi_analytic"];
@@ -40,51 +50,71 @@ digraph draco_level {
     pcg [shape=box, label="pcgWrap"];
     rttread [shape=box, label="RTT_Format_Reader"];
     
-    /* level 4 */
+    /* level 5 */
     mc [shape=box, label="mc"];
     meshservice [shape=box, label="meshReaders_Services"];
 
-    /* level 5 */
+    /* level 6 */
     imc [shape=box, label="imc"];
     
     /* dependencies */
-    {rank=same; level1 stdheaders dsxx};
-    {rank=same; level2 plot lapack traits xm c4 rng units meshread cdi quad};
-    {rank=same; level3 rttread viz timestep cdianal cdieos cdigan pcg};
-    {rank=same; level4 mc meshservice};
-    {rank=same; level5 imc};
+    {rank=same; level1 stdheaders vlapack vpcg vmpi veospac  vgandolf vgrace vspring};
+    {rank=same; level2 dsxx};
+    {rank=same; level3 plot lapack traits xm c4 rng units meshread cdi quad};
+    {rank=same; level4 rttread viz timestep cdianal cdieos cdigan pcg};
+    {rank=same; level5 mc meshservice};
+    {rank=same; level6 imc};
     
     /* draco packages */
+
+    /* NOTE:  hidden dependencies are in comments at the end of each line.
+     * For example if a package depends on c4 it implicitly depends on dsxx
+     * as well.  The dependency on dsxx is not shown explicitly on the
+     * graph. 
     
     /* level 2 */
+    dsxx -> {stdheaders}   [color="brown" style=dotted];
+    
+    /* level 3 */
     xm          -> {dsxx};
     units       -> {dsxx};
     traits      -> {dsxx};
     c4          -> {dsxx};
+    c4          -> {vmpi}    [color="green"];
     rng         -> {dsxx};
+    rng         -> {vspring} [color="green"];
     cdi         -> {dsxx};
     meshread    -> {dsxx};
     quad        -> {dsxx};
     plot        -> {dsxx};
+    plot        -> {vgrace}  [color="green"];
     lapack      -> {dsxx};
+    lapack      -> {vlapack} [color="green"];
     
-    /* level 3 */
-    viz         -> {traits dsxx};
-    timestep    -> {c4 dsxx};
-    pcg         -> {dsxx};
-    pcg         -> {c4} [style=dotted];
-    cdianal     -> {cdi dsxx};
-    cdieos      -> {cdi dsxx};
-    cdigan      -> {cdi dsxx};
-    rttread     -> {meshread dsxx};
-
     /* level 4 */
-    mc          -> {viz meshread rng c4 dsxx};
-    mc          -> {rttread} [style=dotted];
-    meshservice -> {meshread dsxx};
-    meshservice -> {rttread} [style=dotted];
+    viz         -> {traits};      /* traits: dsxx */
+    timestep    -> {c4};          /* c4      : dsxx */
+    pcg         -> {dsxx};
+    pcg         -> {vlapack vpcg} [color="green"];
+    pcg         -> {c4}           [color="orange" style=dotted];
+    cdianal     -> {cdi};         /* cdi     : dsxx */
+    cdieos      -> {cdi};         /* cdi     : dsxx */
+    cdieos      -> {veospac}      [color="green"]; 
+    cdigan      -> {cdi};         /* cdi     : dsxx */
+    cdigan      -> {vgandolf}     [color="green"];
+    rttread     -> {meshread};    /* meshread: dsxx */
 
     /* level 5 */
-    imc         -> {mc cdi rng c4 dsxx};
-    imc         -> {cdianal} [style=dotted];
+    mc          -> {viz meshread rng c4}; /* c4 : dsxx
+					     viz: traits */
+    mc          -> {rttread} [color="orange" style=dotted];
+    meshservice -> {meshread};           /* meshread: dsxx */
+    meshservice -> {rttread} [color="orange" style=dotted];
+
+    /* level 6 */
+    imc         -> {mc cdi};  /*  c4: dsxx
+				 viz: traits
+				  mc: rng viz meshReaders c4 */
+                     
+    imc         -> {cdianal} [color="orange" style=dotted];
 }
