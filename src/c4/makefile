@@ -70,6 +70,8 @@ tstsrcs	:= $(wildcard t*.cc) c4run.cc
 
 tstsrcs := $(tstsrcs:tstSort.cc=)
 
+tstpretarg := $(pretarg)
+
 include ../config/make.tests
 
 # Go pick up the standard signature for makefiles.
