@@ -14,6 +14,7 @@
 #include "ds++/SP.hh"
 #include "3T/Units.hh"
 #include <vector>
+#include <map>
 
 #ifndef BEGIN_NS_XTM
 #define BEGIN_NS_XTM namespace XTM  {
@@ -41,41 +42,59 @@ class InterpedMaterialProps
 
   public:
 
-    template<class FT>
-    class MaterialStateField;
+    template<class FT> class MaterialStateField;
 
   private:
 
     struct GroupedTable
     {
-	double              energy;
-	BilinearInterpTable table;
-	bool operator<(const GroupedTable &rhs) { return energy < rhs.energy; }
-	bool operator<(double rhs) { return energy < rhs; }
+	std::vector<double>              energyUpperbounds;
+	std::vector<double>              energyLowerbounds;
+	std::vector<BilinearInterpTable> tables;
+	
+	int numGroups() const { return tables.size(); }
+
+	const BilinearInterpTable &getTable(int groupNo) const
+	{
+	    return tables[groupNo-1];
+	}
+	BilinearInterpTable &getTable(int groupNo)
+	{
+	    return tables[groupNo-1];
+	}
     };
 	
+    struct MaterialTables
+    {
+	SP<BilinearInterpGrid>   spGrid;
+
+	GroupedTable             sigmaTotal;
+	GroupedTable             sigmaAbsorption;
+	GroupedTable             sigmaEmission;
+	BilinearInterpTable      electronIonCoupling;
+	BilinearInterpTable      electronConductionCoeff;
+	BilinearInterpTable      ionConductionCoeff;
+	BilinearInterpTable      electronSpecificHeat;
+	BilinearInterpTable      ionSpecificHeat;
+
+	const BilinearInterpGrid &getGrid() const { return *spGrid; }
+    };
+
+    typedef std::map<int, MaterialTables> MatTabMap;
+
     // DATA
 
   private:
     
     Units units;
 
-    BilinearInterpGrid               grid;
-    std::vector<GroupedTable>        sigmaTotal;
-    std::vector<GroupedTable>        sigmaAbsorption;
-    std::vector<GroupedTable>        sigmaEmission;
-    BilinearInterpTable              electronIonCoupling;
-    BilinearInterpTable              electronConductionCoeff;
-    BilinearInterpTable              ionConductionCoeff;
-    BilinearInterpTable              electronSpecificHeat;
-    BilinearInterpTable              ionSpecificHeat;
-
+    MatTabMap materials;
     
   public:
 
     // CREATORS
     
-    InterpedMaterialProps(MaterialPropsFactory &factory);
+    InterpedMaterialProps(Units units_, MaterialPropsFactory &factory);
 
     // MANIPULATORS
     
@@ -85,10 +104,11 @@ class InterpedMaterialProps
 
     Units getUnits() const { return units; }
 
-    template<class FT>
+    template<class FT, class FT2>
     MaterialStateField<FT> getMaterialState(const FT &density_,
 					    const FT &electronTemp_,
-					    const FT &ionTemp_) const;    
+					    const FT &ionTemp_,
+					    const FT2 &matId_) const;    
 
     //------------------------------------------------------------------------//
     // getSigmaTotal:
@@ -96,32 +116,93 @@ class InterpedMaterialProps
 
     template<class FT>
     void getSigmaTotal(const MaterialStateField<FT> &matState,
-		       int group, FT &results) const;
+		       int group, FT &results) const
+    {
+	getValuesFromMatTable(matState, group, &MaterialTables::sigmaTotal,
+			      results);
+    }
 
     template<class FT>
     void getSigmaTotal(const MaterialStateField<FT> &matState,
-		       double group, FT &results) const;
+		       double group, FT &results) const
+    {
+	// Not yet implemented
+	Assert(0);
+    }
 
     template<class FT>
     void getSigmaAbsorption(const MaterialStateField<FT> &matState,
-			    int group, FT &results) const;
+			    int group, FT &results) const
+    {
+	getValuesFromMatTable(matState, group, &MaterialTables::sigmaAbsorption,
+			      results);
+    }
 
     template<class FT>
     void getSigmaAbsorption(const MaterialStateField<FT> &matState,
-			    double group, FT &results) const;
+			    double group, FT &results) const
+    {
+	// Not yet implemented
+	Assert(0);
+    }
 
     template<class FT>
     void getSigmaEmission(const MaterialStateField<FT> &matState,
-			  int group, FT &results) const;
+			  int group, FT &results) const
+    {
+	getValuesFromMatTable(matState, group, &MaterialTables::sigmaEmission,
+			      results);
+    }
 
     template<class FT>
     void getSigmaEmission(const MaterialStateField<FT> &matState,
-			  double group, FT &results) const;
+			  double group, FT &results) const
+    {
+	// Not yet implemented
+	Assert(0);
+    }
 
     template<class FT>
     void getElectronIonCoupling(const MaterialStateField<FT> &matState,
-				FT &results) const;
+				FT &results) const
+    {
+	getValuesFromMatTable(matState, &MaterialTables::electronIonCoupling,
+			      results);
+    }
 
+    template<class FT>
+    void getElectronConductionCoeff(const MaterialStateField<FT> &matState,
+				    FT &results) const
+    {
+	getValuesFromMatTable(matState,
+			      &MaterialTables::electronConductionCoeff,
+			      results);
+    }
+
+    template<class FT>
+    void getIonConductionCoeff(const MaterialStateField<FT> &matState,
+			       FT &results) const
+    {
+	getValuesFromMatTable(matState, &MaterialTables::ionConductionCoeff,
+			      results);
+    }
+
+    template<class FT>
+    void getElectronSpecificHeat(const MaterialStateField<FT> &matState,
+				 FT &results) const
+    {
+	getValuesFromMatTable(matState, &MaterialTables::electronSpecificHeat,
+			      results);
+    }
+
+    template<class FT>
+    void getIonSpecificHeat(const MaterialStateField<FT> &matState,
+			    FT &results) const
+    {
+	getValuesFromMatTable(matState, &MaterialTables::ionSpecificHeat,
+			      results);
+    }
+    
     template<class FT>
     void getElectronTemperature(const MaterialStateField<FT> &matState,
 				FT &results) const;
@@ -131,24 +212,47 @@ class InterpedMaterialProps
 			   FT &results) const;
 
     template<class FT>
-    void getElectronConductionCoeff(const MaterialStateField<FT> &matState,
-				    FT &results) const;
+    void getDensity(const MaterialStateField<FT> &matState, FT &results) const;
 
-    template<class FT>
-    void getIonConductionCoeff(const MaterialStateField<FT> &matState,
-			       FT &results) const;
-
-    template<class FT>
-    void getElectronSpecificHeat(const MaterialStateField<FT> &matState,
-				 FT &results) const;
-
-    template<class FT>
-    void getIonSpecificHeat(const MaterialStateField<FT> &matState,
-			    FT &results) const;
-    
   private:
     
     // IMPLEMENTATION
+
+    const MaterialTables &getMaterialTables(int matId) const
+    {
+	MatTabMap::const_iterator matit = materials.find(matId);
+
+	// Make sure the material exists.
+	
+	Assert(matit != materials.end());
+
+	return (*matit).second;
+    }
+	
+    MaterialTables &getMaterialTables(int matId)
+    {
+	MatTabMap::iterator matit = materials.find(matId);
+
+	// Make sure the material exists.
+	
+	Assert(matit != materials.end());
+
+	return (*matit).second;
+    }
+
+    typedef MaterialTables::*GroupedTable PGroupedTable;
+    
+    template<class FT>
+    void getValuesFromMatTable(const MaterialStateField<FT> &matState,
+			       int group, PGroupedTable pTable,
+			       FT &results) const;
+
+    typedef MaterialTables::*BilinearInterpTable PBilinearInterpTable;
+    
+    template<class FT>
+    void getValuesFromMatTable(const MaterialStateField<FT> &matState,
+			       PBilinearInterpTable pTable,
+			       FT &results) const;
 };
 
 //===========================================================================//
@@ -159,22 +263,34 @@ template<class FT>
 class InterpedMaterialProps::MaterialStateField
 {
     friend class InterpedMaterialProps;
-    
+
   private:
+
+    int theSize;
     
-    const InterpedMaterialProps &matprops;
+    const InterpedMaterialProps               &matprops;
 
     std::vector<BilinearInterpTable::Memento> memento;
-    FT                                        density;
-    FT                                        electronTemp;
-    FT                                        ionTemp;
+    
+    std::vector<double>                       density;
+    std::vector<double>                       electronTemp;
+    std::vector<double>                       ionTemp;
+    std::vector<int>                          matId;
+	
 
   private:
 
+    template<class FT2>
     MaterialStateField(const InterpedMaterialProps &matprops_,
 		       const FT &density_, const FT &electronTemp_,
-		       const FT &ionTemp_);
+		       const FT &ionTemp_, const FT2 &matId_);
+
+    int size() { return theSize; }
     
+    double getDensity(int i) const { return density[i]; }
+    double getElectronTemp(int i) const { return electronTemp[i]; }
+    double getIonTemp(int i) const { return ionTemp[i]; }
+    double getMatId(int i) const { return matId[i]; }
 };
 
 END_NS_XTM  // namespace XTM

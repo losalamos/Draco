@@ -11,6 +11,7 @@
 
 #include "matprops/BilinearInterpGrid.hh"
 #include "ds++/Mat.hh"
+#include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <algorithm>
 #include <functional>
@@ -65,7 +66,7 @@ class BilinearInterpTable
 
     // The grid axis values on which to do the interpolation.
     
-    BilinearInterpGrid grid;
+    SP<BilinearInterpGrid> grid;
     
     // yvals is the 2-dimensional grid of tabulated y values.
 
@@ -77,6 +78,16 @@ class BilinearInterpTable
     
   public:
 
+    //------------------------------------------------------------------------//
+    // BilinearInterpTable:
+    //    Creates an empty table.
+    //------------------------------------------------------------------------//
+
+    BilinearInterpTable()
+    {
+	// *** empty ***
+    }
+    
     //------------------------------------------------------------------------//
     // BilinearInterpTable:
     //    Constructor supplying the two axes grids and the two-dimensional
@@ -104,7 +115,7 @@ class BilinearInterpTable
     //    table of evaluations.
     //------------------------------------------------------------------------//
 
-    BilinearInterpTable(const BilinearInterpGrid &grid_,
+    BilinearInterpTable(const SP<BilinearInterpGrid> &grid_,
 			const dsxx::Mat2<double> &yvals_);
     
     //------------------------------------------------------------------------//
@@ -114,7 +125,7 @@ class BilinearInterpTable
     //------------------------------------------------------------------------//
 
     template<class BinaryOperation>
-    inline BilinearInterpTable(const BilinearInterpGrid &grid_,
+    inline BilinearInterpTable(const SP<BilinearInterpGrid> &grid_,
 			       BinaryOperation binary_op);
     
     //=======================================================================//
@@ -130,11 +141,11 @@ class BilinearInterpTable
     template<class BinaryOperation>
     void setTable(BinaryOperation binary_op)
     {
-	Require(yvals.size() == grid.size());
+	Require(yvals.size() == grid->size());
 
-	for (int i=0; i<grid.dimension(1); i++)
-	    for (int j=0; j<grid.dimension(2); j++)
-		yvals(i,j) = binary_op(grid.x1(i), grid.x2(j));
+	for (int i=0; i<grid->dimension(1); i++)
+	    for (int j=0; j<grid->dimension(2); j++)
+		yvals(i,j) = binary_op(grid->x1(i), grid->x2(j));
     }
     
     //=======================================================================//
@@ -146,7 +157,7 @@ class BilinearInterpTable
     //    Return a const reference to the grid.
     //------------------------------------------------------------------------//
 
-    const BilinearInterpGrid &getGrid() const { return grid; }
+    const SP<BilinearInterpGrid> getGrid() const { return grid; }
     
     //------------------------------------------------------------------------//
     // interpolate:
@@ -239,9 +250,10 @@ inline
 BilinearInterpTable::BilinearInterpTable(const std::vector<double> &x1vals_,
 					 const std::vector<double> &x2vals_,
 					 BinaryOperation binary_op)
-    : grid(x1vals_, x2vals_), yvals(x1vals_.size(),x2vals_.size())
+    : grid(new BilinearInterpGrid(x1vals_, x2vals_)),
+      yvals(x1vals_.size(),x2vals_.size())
 {
-    Require(yvals.size() == grid.size());
+    Require(yvals.size() == grid->size());
 
     setTable(binary_op);
 }
@@ -253,11 +265,12 @@ BilinearInterpTable::BilinearInterpTable(const std::vector<double> &x1vals_,
 //------------------------------------------------------------------------//
 
 template<class BinaryOperation>
-inline BilinearInterpTable::BilinearInterpTable(const BilinearInterpGrid &grid_,
-						BinaryOperation binary_op)
-    : grid(grid_), yvals(grid_.dimension(1),grid_.dimension(2))
+inline
+BilinearInterpTable::BilinearInterpTable(const SP<BilinearInterpGrid> &grid_,
+					 BinaryOperation binary_op)
+    : grid(grid_), yvals(grid_->dimension(1),grid_->dimension(2))
 {
-    Require(yvals.size() == grid.size());
+    Require(yvals.size() == grid->size());
 
     setTable(binary_op);
 }
@@ -269,7 +282,7 @@ inline BilinearInterpTable::BilinearInterpTable(const BilinearInterpGrid &grid_,
 
 inline double BilinearInterpTable::interpolate(std::pair<double,double> p) const
 {
-    return interpolate(grid.getMemento(p.first, p.second));
+    return interpolate(grid->getMemento(p.first, p.second));
 }
     
 //------------------------------------------------------------------------//
@@ -279,7 +292,7 @@ inline double BilinearInterpTable::interpolate(std::pair<double,double> p) const
 
 inline double BilinearInterpTable::interpolate(double x1, double x2) const
 {
-    return interpolate(grid.getMemento(x1, x2));
+    return interpolate(grid->getMemento(x1, x2));
 }
 
 //------------------------------------------------------------------------//
@@ -290,10 +303,10 @@ inline double BilinearInterpTable::interpolate(double x1, double x2) const
 inline double BilinearInterpTable::interpolate(const Memento &memento) const
 {
     int j, k;
-    grid.getIndices(memento, j, k);
+    grid->getIndices(memento, j, k);
 
     double t, u;
-    grid.getCoefficients(memento, t, u);
+    grid->getCoefficients(memento, t, u);
     
     return (1-t)*(1-u) * yvals(j  ,k)
 	+  t*(1-u)     * yvals(j+1,k)

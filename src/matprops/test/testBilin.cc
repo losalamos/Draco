@@ -76,8 +76,10 @@ BilinearInterpTable getTable()
     return BilinearInterpTable(grid, mat);
 
 #else
-    
-    return BilinearInterpTable(grid, func);
+
+    SP<BilinearInterpGrid> spgrid(new BilinearInterpGrid(grid));
+
+    return BilinearInterpTable(spgrid, func);
     
 #endif
 }
@@ -96,10 +98,10 @@ void doit()
 
     // Load up the mementos
 
-    const BilinearInterpGrid &grid = biLinTable.getGrid();
+    const SP<BilinearInterpGrid> grid = biLinTable.getGrid();
 
     for (int i=0; i<sztest; i++)
-	mementos.push_back(grid.getMemento(testvals1[i], testvals2[i]));
+	mementos.push_back(grid->getMemento(testvals1[i], testvals2[i]));
     
     vector<double> results;
     
