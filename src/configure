@@ -271,8 +271,8 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="Makefile.in"
-ac_subdirs_all="$ac_subdirs_all tryit stdheaders ds++"
-ac_subdirs_all="$ac_subdirs_all xm rng c4 units traits cdi meshReaders quadrature stopwatch plot2D lapack_wrap"
+ac_subdirs_all="$ac_subdirs_all stdheaders ds++"
+ac_subdirs_all="$ac_subdirs_all xm rng c4 units traits cdi meshReaders quadrature plot2D lapack_wrap shared_lib"
 ac_subdirs_all="$ac_subdirs_all timestep pcgWrap viz cdi_eospac cdi_gandolf cdi_analytic RTT_Format_Reader"
 ac_subdirs_all="$ac_subdirs_all meshReaders_Services"
 ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB GSLCBLAS_INC GSLCBLAS_LIB TRILINOS_INC TRILINOS_LIB METIS_INC METIS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB subdirs LIBOBJS LTLIBOBJS'
@@ -2632,7 +2632,7 @@ fi;
 
 
 
-subdirs="$subdirs tryit stdheaders ds++"
+subdirs="$subdirs stdheaders ds++"
 
 
 ##---------------------------------------------------------------------------##
@@ -2642,7 +2642,7 @@ subdirs="$subdirs tryit stdheaders ds++"
 
 
 subdirs="$subdirs xm rng c4 units traits cdi meshReaders quadrature \
-                  stopwatch plot2D lapack_wrap"
+                  plot2D lapack_wrap shared_lib"
 
 
 ##---------------------------------------------------------------------------##

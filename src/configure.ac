@@ -25,14 +25,14 @@ AC_DRACO_ARGS
 ## LEVEL 1
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(tryit stdheaders ds++)
+AC_CONFIG_SUBDIRS(stdheaders ds++)
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 2
 ##---------------------------------------------------------------------------##
 
 AC_CONFIG_SUBDIRS(xm rng c4 units traits cdi meshReaders quadrature \
-                  stopwatch plot2D lapack_wrap)
+                  plot2D lapack_wrap shared_lib)
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 3
