@@ -14,10 +14,13 @@
 
 #include <vector>
 #include <string>
+#include "mesh_element/Element_Definition.hh"
 #include "Mesh_Reader.hh"
 
 namespace rtt_meshReaders
 {
+
+using rtt_mesh_element::Element_Definition;
  
 //===========================================================================//
 /*!
@@ -25,14 +28,12 @@ namespace rtt_meshReaders
  *
  * \brief Reads a CIC-19 Hex Mesh format mesh data file.
  *
- * \sa The rtt_meshReaders::Element_Definition class provides
+ * \sa The rtt_mesh_element::Element_Definition class provides
  *     information on the hex, quad, and line elements used in
  *     this class. The \ref rtt_meshreaders_overview page provides 
  *     an overview of the other utilities in the rtt_meshReaders 
  *     namespace. the \ref rtt_meshreaders_hexformat page provides
  *     a description of the Hex file format.
- *
- *
  */
 // revision history:
 // -----------------
@@ -128,9 +129,8 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     std::vector<std::vector<int> > get_element_nodes() const;
     bool invariant() const;
     std::map<std::string, std::set<int> > get_element_sets() const;
-    std::vector<Element_Definition::Element_Type> get_element_types() const;
-    std::vector<Element_Definition::Element_Type> get_unique_element_types() 
-        const;
+    std::vector< Element_Definition::Element_Type > get_element_types() const;
+    std::vector< Element_Definition::Element_Type > get_unique_element_types() const;
 
   private:
     

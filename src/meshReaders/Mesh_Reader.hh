@@ -16,10 +16,12 @@
 #include <set>
 #include <string>
 #include <map>
-#include "Element_Definition.hh"
+#include "mesh_element/Element_Definition.hh"
 
 namespace rtt_meshReaders
 {
+
+using rtt_mesh_element::Element_Definition;
  
 //===========================================================================//
 /*!

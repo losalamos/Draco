@@ -9,17 +9,17 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "meshReaders_test.hh"
-#include "TestHexMeshReader.hh"
-#include "../Hex_Mesh_Reader.hh"
-#include "../Element_Definition.hh"
-#include "../Release.hh"
-#include "ds++/Assert.hh"
-
 #include <iostream>
 #include <vector>
 #include <sstream>
 #include <cmath>
+
+#include "meshReaders_test.hh"
+#include "TestHexMeshReader.hh"
+#include "../Hex_Mesh_Reader.hh"
+#include "../Release.hh"
+#include "mesh_element/Element_Definition.hh"
+#include "ds++/Assert.hh"
 
 using namespace std;
 
@@ -392,9 +392,9 @@ bool check_element_types(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check Element Types.
-    typedef rtt_meshReaders::Element_Definition et;
+    typedef rtt_mesh_element::Element_Definition et;
     bool pass_et = true;
-    std::vector<rtt_meshReaders::Element_Definition::Element_Type>
+    std::vector<rtt_mesh_element::Element_Definition::Element_Type>
 	etypes = mesh.get_element_types();
     if (testid == "slab")
     { 
@@ -438,9 +438,9 @@ bool check_unique_element_types(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check Unique Element Types.
-    typedef rtt_meshReaders::Element_Definition et;
+    typedef rtt_mesh_element::Element_Definition et;
     bool pass_et = true;
-    std::vector<rtt_meshReaders::Element_Definition::Element_Type>
+    std::vector<rtt_mesh_element::Element_Definition::Element_Type>
 	etypes = mesh.get_unique_element_types();
     if (testid == "slab")
     { 

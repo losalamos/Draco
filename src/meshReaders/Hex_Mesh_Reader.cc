@@ -9,11 +9,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Hex_Mesh_Reader.hh"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "Hex_Mesh_Reader.hh"
 
 namespace rtt_meshReaders
 {
@@ -153,12 +153,12 @@ std::vector<std::vector<int> > Hex_Mesh_Reader::get_element_nodes() const
 }
 /*!
  * Returns an element type for each element in the mesh. Will
- * always be one of rtt_meshReaders::Element_Definition::NODE,
- * rtt_meshReaders::Element_Definition::BAR_2,
- * rtt_meshReaders::Element_Definition::QUAD_4,
- * or rtt_meshReaders::Element_Definition::HEXA_8.
+ * always be one of rtt_mesh_element::Element_Definition::NODE,
+ * rtt_mesh_element::Element_Definition::BAR_2,
+ * rtt_mesh_element::Element_Definition::QUAD_4,
+ * or rtt_mesh_element::Element_Definition::HEXA_8.
  */
-std::vector<Element_Definition::Element_Type> 
+std::vector< Element_Definition::Element_Type >
 Hex_Mesh_Reader::get_element_types() const
 {
     Element_Definition::Element_Type d1, d2;
@@ -188,12 +188,12 @@ Hex_Mesh_Reader::get_element_types() const
 }
 /*!
  * Returns the unique element types defined in the mesh. Will
- * always be one of rtt_meshReaders::Element_Definition::NODE,
- * rtt_meshReaders::Element_Definition::BAR_2,
- * rtt_meshReaders::Element_Definition::QUAD_4,
- * or rtt_meshReaders::Element_Definition::HEXA_8.
+ * always be one of rtt_mesh_element::Element_Definition::NODE,
+ * rtt_mesh_element::Element_Definition::BAR_2,
+ * rtt_mesh_element::Element_Definition::QUAD_4,
+ * or rtt_mesh_element::Element_Definition::HEXA_8.
  */
-std::vector<Element_Definition::Element_Type> 
+std::vector< Element_Definition::Element_Type >
 Hex_Mesh_Reader::get_unique_element_types() const
 {
     std::vector<Element_Definition::Element_Type> tmp;

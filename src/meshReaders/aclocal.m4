@@ -331,14 +331,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        AC_DEFINE(C4_MPI)
    fi
 
-   # if c4=mpi and with-mpi=no explicitly then 
-   # define them (mpi gets set to vendor by default)
-   if test "$with_c4" = mpi ; then
-       if test "$with_mpi" = no ; then
-	   with_mpi='vendor'
-       fi
-   fi
-   
    dnl
    dnl DBC SETUP
    dnl
@@ -2398,6 +2390,22 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        fi
 
        #
+       # add librt to LIBS if udm is used
+       #
+       AC_MSG_CHECKING("librt requirements")
+       if test -n "${vendor_udm}"; then
+	   
+	   # Add rt for g++
+	   if test "${CXX}" = g++ ; then
+	       LIBS="${LIBS} -lrt"
+	       AC_MSG_RESULT("-lrt added to LIBS")
+	   fi
+
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
        # finalize vendors
        #
        AC_VENDOR_FINALIZE
@@ -2511,7 +2519,8 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        if test "${with_mpi}" = vendor ; then
 
 	   # define mpi libraries
-	   mpi_libs='-lmpi'
+	   # note: mpi and mpio are separate libraries on compaqs
+	   mpi_libs='-lmpi -lmpio'
        
        # setup mpich
        elif test "${with_mpi}" = mpich ; then
@@ -2544,14 +2553,27 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
 
        #
-       # gandolf, eospac, pcg require -lfor on the link line.
+       # udm requires long long warnings to be disabled
+       #
+
+       if test -n "${vendor_udm}" ; then
+	   STRICTFLAG="${STRICTFLAG} -msg_disable nostdlonglong"
+	   STRICTFLAG="${STRICTFLAG} -msg_disable nostdlonglong"
+       fi
+
+       #
+       # end of udm setup
+       #
+
+       #
+       # gandolf, eospac, pcg, udm require -lfor on the link line.
        #
 
        AC_MSG_CHECKING("libfortran requirements")
        if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfor"
-          AC_MSG_RESULT("-lfor added to LIBS")
+          test -n "${vendor_pcg}" || test -n "${vendor_udm}"; then
+           LIBS="${LIBS} -lfor"
+           AC_MSG_RESULT("-lfor added to LIBS")
        else
 	   AC_MSG_RESULT("not needed")
        fi
@@ -2561,19 +2583,35 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
 
        #
-       # libpcg/libfmpi setup
+       # libpcg/libudm/libfmpi setup
        #
 
        AC_MSG_CHECKING("libfmpi requirements")
-       if test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfmpi"
-          AC_MSG_RESULT("-lfmpi added to LIBS")
+       if test -n "${vendor_pcg}" || test "${with_udm}" = mpi; then
+           LIBS="${LIBS} -lfmpi"
+           AC_MSG_RESULT("-lfmpi added to LIBS")
        else
 	   AC_MSG_RESULT("not needed")
        fi
 
        #
        # end of libpcg setup
+       #
+
+       #
+       # libudm/librmscall setup
+       #
+
+       AC_MSG_CHECKING("librmscall requirements")
+       if test -n "${vendor_udm}"; then
+          LIBS="${LIBS} -lrmscall"
+          AC_MSG_RESULT("-lrmscall added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # end of libudm setup
        #
 
        #
@@ -3149,6 +3187,14 @@ AC_DEFUN([AC_MPI_SETUP], [dnl
        if test -n "${MPI_INC}" ; then
 	   with_mpi='vendor'
        elif test -n "${MPI_LIB}" ; then
+	   with_mpi='vendor'
+       fi
+   fi
+   
+   # if c4=mpi and with-mpi=no explicitly then 
+   # define them (mpi gets set to vendor by default)
+   if test "$with_c4" = mpi ; then
+       if test "$with_mpi" = no ; then
 	   with_mpi='vendor'
        fi
    fi
@@ -3869,6 +3915,192 @@ AC_DEFUN([AC_SPICA_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_XERCES_SETUP
+dnl
+dnl XERCES LIBRARY SETUP
+dnl xerces is a required vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_XERCES_SETUP], [dnl
+
+   dnl define --with-xerces
+   AC_ARG_WITH(xerces,
+      [  --with-xerces[=lib]      determine the XERCES xml lib (xerces-c is default)])
+	
+   dnl define --with-xerces-inc and --with-xerces-lib
+   AC_WITH_DIR(xerces-inc, XERCES_INC, \${XERCES_INC_DIR},
+	       [tell where XERCES includes are])
+   AC_WITH_DIR(xerces-lib, XERCES_LIB, \${XERCES_LIB_DIR},
+	       [tell where XERCES libraries are])
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_xerces=$1
+
+   # default (xerces is set to xerces-c by default)
+   if test "${with_xerces:=xerces-c}" = yes ; then
+       with_xerces='xerces-c'
+   fi
+])
+
+
+AC_DEFUN([AC_XERCES_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_xerces}"; then
+
+       # include path
+       if test -n "${XERCES_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${XERCES_INC}"
+       fi
+   
+       # libraries
+       if test -n "${XERCES_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_xerces, -L${XERCES_LIB} -l${with_xerces})
+       elif test -z "${XERCES_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_xerces, -l${with_xerces})
+       fi
+
+       # add xerces directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${XERCES_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${XERCES_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_HDF5_SETUP
+dnl
+dnl HDF5 SETUP (on by default; 'mpi' if mpi in use, else 'serial')
+dnl HDF5 is a required vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_HDF5_SETUP], [dnl
+
+   dnl define --with-hdf5
+   AC_ARG_WITH(hdf5,
+      [  --with-hdf5=[serial,mpi]      determine hdf5 implementation (default:  'mpi' if mpi in use, else 'serial')])
+ 
+   dnl define --with-hdf5-inc
+   AC_WITH_DIR(hdf5-inc, HDF5_INC, \${HDF5_INC_DIR},
+	       [tell where HDF5 includes are])
+
+   dnl define --with-hdf5-lib
+   AC_WITH_DIR(hdf5-lib, HDF5_LIB, \${HDF5_LIB_DIR},
+	       [tell where HDF5 libraries are])
+
+   # default (mpi if mpi is in use, else serial)
+   if test "${with_hdf5:=no}" = yes ; then
+       if test "${with_mpi}" != no ; then
+	   with_hdf5='mpi'
+       else
+	   with_hdf5='serial'
+       fi
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_hdf5=$1
+
+])
+
+
+AC_DEFUN([AC_HDF5_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_hdf5}" ; then
+
+       # include path
+       if test -n "${HDF5_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HDF5_INC}"
+       fi
+
+       # library path
+       if test -n "${HDF5_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_hdf5, -L${HDF5_LIB} -lhdf5)
+       elif test -z "${HDF5_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_hdf5, -lhdf5)
+       fi
+
+       # add HDF5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_UDM_SETUP
+dnl
+dnl UDM SETUP (on by default; 'mpi' if mpi in use, else 'serial')
+dnl UDM is a required vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_UDM_SETUP], [dnl
+
+   dnl define --with-udm
+   AC_ARG_WITH(udm,
+      [  --with-udm=[serial,mpi]      determine udm implementation (default:  'mpi' if mpi in use, else 'serial')])
+ 
+   dnl define --with-udm-inc
+   AC_WITH_DIR(udm-inc, UDM_INC, \${UDM_INC_DIR},
+	       [tell where UDM includes are])
+
+   dnl define --with-udm-lib
+   AC_WITH_DIR(udm-lib, UDM_LIB, \${UDM_LIB_DIR},
+	       [tell where UDM libraries are])
+
+   # default (mpi if mpi is in use, else serial)
+   if test "${with_udm:=no}" = yes ; then
+       if test "${with_mpi}" != no ; then
+	   with_udm='mpi'
+       else
+	   with_udm='serial'
+       fi
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_udm=$1
+
+])
+
+
+AC_DEFUN([AC_UDM_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_udm}" ; then
+
+       # include path
+       if test -n "${UDM_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${UDM_INC}"
+           # set extra #define if using udm in parallel
+           if test "${with_udm}" = mpi ; then
+               AC_DEFINE(UDM_HAVE_PARALLEL)
+           fi
+       fi
+
+       # library path
+       if test -n "${UDM_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_udm, -L${UDM_LIB} -ludm)
+       elif test -z "${UDM_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_udm, -ludm)
+       fi
+
+       # add UDM directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${UDM_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${UDM_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_VENDOR_FINALIZE
 dnl
 dnl Run at the end of the environment setup to add defines required by
@@ -3895,6 +4127,10 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    AC_GRACE_FINALIZE
    AC_METIS_FINALIZE
    AC_SPICA_FINALIZE
+   AC_XERCES_FINALIZE
+
+   AC_UDM_FINALIZE
+   AC_HDF5_FINALIZE
 
    AC_GSL_FINALIZE
    AC_GSLCBLAS_FINALIZE
@@ -3943,6 +4179,9 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_EOSPAC5_SETUP(pkg)
    AC_GRACE_SETUP(pkg)
    AC_SPICA_SETUP(pkg)
+   AC_XERCES_SETUP(pkg)
+   AC_HDF5_SETUP(pkg)
+   AC_UDM_SETUP(pkg)
 ])
 
 dnl-------------------------------------------------------------------------dnl
