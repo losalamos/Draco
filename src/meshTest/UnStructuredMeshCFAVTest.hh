@@ -12,7 +12,7 @@
 #ifndef __meshTest_UnStructuredMeshCFAVTest_hh__
 #define __meshTest_UnStructuredMeshCFAVTest_hh__
 
-#include <list>
+#include "Tester.hh"
 #include <string>
 
 namespace rtt_meshTest
@@ -34,7 +34,7 @@ namespace rtt_meshTest
 //===========================================================================//
 
 template<class MTFactory>
-class UnStructuredMeshCFAVTest 
+class UnStructuredMeshCFAVTest  : public Tester
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -43,29 +43,22 @@ class UnStructuredMeshCFAVTest
     typedef typename MTFactory::Product MTFactoryProduct;
     typedef typename MT::FieldConstructor FieldConstructor;
 
-  public:
-
-    //! MsgList typedef is a list of pass/fail flags
-    //! and their associated messages.
-
-    typedef std::list< std::pair<bool, std::string> > MsgList;
-
   private:
     
     // DATA
+
+    Tester &parent_m;
     
     MTFactory &meshFactory_m;
 
-    MsgList msgList_m;
-    
   public:
 
     // CREATORS
 
     //! Constructor
     
-    UnStructuredMeshCFAVTest(MTFactory &meshFactory_in)
-	: meshFactory_m(meshFactory_in)
+    UnStructuredMeshCFAVTest(Tester &parent_in, MTFactory &meshFactory_in)
+	: parent_m(parent_in), meshFactory_m(meshFactory_in)
     {
 	/* empty */
     }
@@ -82,17 +75,36 @@ class UnStructuredMeshCFAVTest
     
     void run()
     {
+	setPassed(true);
 	UnStructuredMeshCFAVTest::TestsNotYetWritten();
     }
 
     // ACCESSORS
 
-    //! Returns a list of pass/fail flags, and their associated messages.
+    // PROTECTED MANIPULATORS
 
-    const MsgList &msgList() const { return msgList_m; }
-
-  private:
+    virtual void testassert(bool passed, const std::string &msg)
+    {
+	parent_m.testassert(passed, Name()+": "+msg);
+	if (!passed)
+	    setPassed(false);
+    }
     
+    virtual void testassert(bool passed, const std::string &msg,
+			    const std::string &file,
+			    const std::string &line)
+    {
+	Tester::testassert(passed, msg, file, line);
+    }
+    
+    virtual void testassert(bool passed, const std::string &msg,
+			    const std::string &file, int line)
+    {
+	Tester::testassert(passed, msg, file,line);
+    }
+    
+  private:
+
     // DISSALLOWED CREATORS
 
     UnStructuredMeshCFAVTest(const UnStructuredMeshCFAVTest &rhs);
@@ -102,11 +114,6 @@ class UnStructuredMeshCFAVTest
     UnStructuredMeshCFAVTest& operator=(const UnStructuredMeshCFAVTest &rhs);
 
     // IMPLEMENTATION
-
-    void addMsg(bool passed, const std::string &msg)
-    {
-	msgList_m.push_back(std::pair<bool, std::string>(passed, msg));
-    }
 };
 
 } // end namespace rtt_meshTest

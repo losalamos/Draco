@@ -61,7 +61,7 @@ namespace rtt_meshTest
 //===========================================================================//
 
 template<class MTFactory>
-class TestMTModel : private Tester
+class TestMTModel : public Tester
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -97,10 +97,6 @@ class TestMTModel : private Tester
     void run();
 
     // ACCESSORS
-
-    //! Returns success of previously ran run() method.
-    
-    Tester::passed;
     
   private:
     

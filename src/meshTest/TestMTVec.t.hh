@@ -20,19 +20,6 @@ namespace rtt_meshTest
 using std::endl;
 using std::iterator_traits;
 
-template<class MTFactory>
-void TestMTVec<MTFactory>::error(bool &passed, const std::string &msg)
-{
-    if (!passed)
-    {
-	os_m << "TestMTVec failed: " << msg << endl;
-	passed_m = false;
-    }
-
-    // reset the variable
-    passed = true;
-}
-
 //---------------------------------------------------------------------------//
 // Test the MT::ccvsf::value_type container according to the Random
 // Access Container requirements.
@@ -43,9 +30,9 @@ void TestMTVec<MTFactory>::run()
 {
     // Run the tests in this test class.
 
-    os_m << "Begin Running....... TestMTVec tests." << std::endl;
+    os() << "Begin Running....... TestMTVec tests." << std::endl;
 
-    passed_m = true;
+    setPassed(true);
     
     t1();
     t2();
@@ -56,7 +43,7 @@ void TestMTVec<MTFactory>::run()
     t7();
     t8();
 
-    os_m << "Completed Running... TestMTVec tests." << std::endl;
+    os() << "Completed Running... TestMTVec tests." << std::endl;
 }
 
 namespace NSTestMTVec
@@ -127,10 +114,10 @@ bool f9(const typename XVEC::const_reverse_iterator& x,
 template<class MTFactory>
 void TestMTVec<MTFactory>::t1()
 {
-    bool passed = true;
+    std::string test;
     const double value = 4.23;
     
-    os_m << "t1: beginning.\n";
+    os() << "t1: beginning.\n";
 
     {
 	// Test for required typedefs
@@ -159,31 +146,24 @@ void TestMTVec<MTFactory>::t1()
 
 	// Test the copy constructor.
 
-        passed &= NSTestMTVec::f1<XVEC>(x, XVEC(x));
-        XVEC y(x);
-        if (y != x)
-            passed = false;
-        if (y.size() != x.size())
-            passed = false;
-        XVEC z = x;
-        if (z != x)
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "copy constructor";
 	
-	error(passed, "copy constructor.");
+        testassert(NSTestMTVec::f1<XVEC>(x, XVEC(x)), test,
+		   __FILE__, __LINE__);
+	
+        XVEC y(x);
+        testassert(!(y != x), test, __FILE__, __LINE__);
+        testassert(!(y.size() != x.size()), test, __FILE__, __LINE__);
+        XVEC z = x;
+        testassert(!(z != x), test, __FILE__, __LINE__);
 
 	// Test assignment.
 
-        w = x;
-        if (w != x)
-            passed = false;
-        if (w.size() != x.size())
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "assignment";
 	
-	error(passed, "assignment.");
+        w = x;
+        testassert(!(w != x), test, __FILE__, __LINE__);
+        testassert(!(w.size() != x.size()), test, __FILE__, __LINE__);
     }
 
     {
@@ -198,33 +178,24 @@ void TestMTVec<MTFactory>::t1()
 
 	// Test equivalence relations.
 
-	y = x;
-	if (!(x == y))
-	    passed = false;
-	if ((x != y) != !(x == y))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "equivalence relations.";
 	
-	error(passed, "equivalence relations.");
+	y = x;
+	testassert(!(!(x == y)), test, __FILE__, __LINE__);
+	testassert(!((x != y) != !(x == y)), test, __FILE__, __LINE__);
 
 	// Invariants
+
+	test = "Invaiants.";
 
 	y = x;
 	z = y;
 	XVEC* yp = &y;
-	if ((yp == &y) && !(*yp == y))
-	    passed = false;
-	if (y != y)
-	    passed = false;
-	if ((x == y) && !(y == x))
-	    passed = false;
-	if (((x == y) && (y == z)) && !(x == z))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "Invaiants.");
+	testassert(!((yp == &y) && !(*yp == y)), test, __FILE__, __LINE__);
+	testassert(!(y != y), test, __FILE__, __LINE__);
+	testassert(!((x == y) && !(y == x)), test, __FILE__, __LINE__);
+	testassert(!(((x == y) && (y == z)) && !(x == z)), test,
+		   __FILE__, __LINE__);
     }
 
     {
@@ -239,50 +210,38 @@ void TestMTVec<MTFactory>::t1()
 
 	// Test ordering relations.
 
-	y = x;
-	if (x < y)
-	    passed = false;
-	if (x < y != std::lexicographical_compare(x.begin(),x.end(),
-						  y.begin(),y.end()))
-	    passed = false;
-	if (x > y != y < x)
-	    passed = false;
-	if (x <= y != !(y < x))
-	    passed = false;
-	if (x >= y != !(x < y))
-	    passed = false;
-
-	if (x < z)
-	    passed = false;
-	if (x > z != z < x)
-	    passed = false;
-	if (x <= z != !(z < x))
-	    passed = false;
-	if (x >= z != !(x < z))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "ordering relations.";
 	
-	error(passed, "ordering relations.");
+	y = x;
+	testassert(!(x < y), test, __FILE__, __LINE__);
+	testassert(!(x < y != std::lexicographical_compare(x.begin(),x.end(),
+							   y.begin(),y.end())),
+		   test, __FILE__, __LINE__);
+	testassert(!(x > y != y < x), test, __FILE__, __LINE__);
+	testassert(!(x <= y != !(y < x)), test, __FILE__, __LINE__);
+	testassert(!(x >= y != !(x < y)), test, __FILE__, __LINE__);
+
+	testassert(!(x < z), test, __FILE__, __LINE__);
+	testassert(!(x > z != z < x), test, __FILE__, __LINE__);
+	testassert(!(x <= z != !(z < x)), test, __FILE__, __LINE__);
+	testassert(!(x >= z != !(x < z)), test, __FILE__, __LINE__);
 
 	// Invariants
 
-	if (x < x)
-	    passed = false;
+	test = "ordering relation invariants.";
+
+	testassert(!(x < x), test, __FILE__, __LINE__);
+
 	y = x;
 	x[1] -= 1.;
-	if (x < y != !(y < x))
-	    passed = false;
+	testassert(!(x < y != !(y < x)), test, __FILE__, __LINE__);
+
 	z = y;
 	z[1] += 1.;
-	if (((x < y) && (y < z)) && !(x < z))
-	    passed = false;
+	testassert(!(((x < y) && (y < z)) && !(x < z)), test,
+		   __FILE__, __LINE__);
 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "ordering relation invariants.");
-
-   }
+    }
 
     {
 	// The following constructor is not required by the Random Access
@@ -308,26 +267,26 @@ void TestMTVec<MTFactory>::t1()
 	const XVEC cx = x;
 
 	// Test for required container member functions.
+
+	test = "required container member functions.";
 	
 	typename XVEC::iterator iter1 = x.begin();
 	typename XVEC::iterator iter2 = x.end();
-	if ((iter1 == iter2) != (x.size() == 0))
-	    passed = false;
+	testassert(!((iter1 == iter2) != (x.size() == 0)), test,
+		   __FILE__, __LINE__);
 
 	typename XVEC::const_iterator citer1 = cx.begin();
 	typename XVEC::const_iterator citer2 = cx.end();
-	if ((citer1 == citer2) != (cx.size() == 0))
-	    passed = false;
+	testassert(!((citer1 == citer2) != (cx.size() == 0)), test,
+		   __FILE__, __LINE__);
 
 	typename XVEC::size_type size;
 	typename XVEC::size_type max_size;
 	size = x.size();
 	max_size = x.max_size();
-	if (max_size < size)
-	    passed = false;
+	testassert(!(max_size < size), test, __FILE__, __LINE__);
 
-	if (x.empty() != (x.size() == 0))
-	    passed = false;
+	testassert(!(x.empty() != (x.size() == 0)), test, __FILE__, __LINE__);
 
 	x = y;
 	v = w;
@@ -336,8 +295,7 @@ void TestMTVec<MTFactory>::t1()
 	y = w;
 	w = tmp;
 
-	if (x != y || v != w)
-	    passed = false;
+	testassert(!(x != y || v != w), test, __FILE__, __LINE__);
 
 	for (typename XVEC::iterator iter = x.begin(); iter != x.end(); iter++)
 	    ;
@@ -345,13 +303,8 @@ void TestMTVec<MTFactory>::t1()
 	     iter++)
 	    ;
 
-	if (!(x.size() == std::distance(x.begin(),x.end())))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "required container member functions.");
-
+	testassert(!(!(x.size() == std::distance(x.begin(),x.end()))), test,
+		   __FILE__, __LINE__);
     }
 
     {
@@ -364,32 +317,34 @@ void TestMTVec<MTFactory>::t1()
 
 	// Test for required container member functions.
 
+	test = "required (reverse) container member functions.";
+	
 	typename XVEC::reverse_iterator iter1 = x.rbegin();
-	if (x.rbegin() != typename XVEC::reverse_iterator(x.end()))
-	    passed = false;
+	testassert(!(x.rbegin() != typename XVEC::reverse_iterator(x.end())),
+		   test, __FILE__, __LINE__);
+
 	typename XVEC::reverse_iterator iter2 = x.rend();
-	if (x.rend() != typename XVEC::reverse_iterator(x.begin()))
-	    passed = false;
-	if ((iter1 == iter2) != (x.size() == 0))
-	    passed = false;
+	testassert(!(x.rend() != typename XVEC::reverse_iterator(x.begin())),
+		   test, __FILE__, __LINE__);
+	testassert(!((iter1 == iter2) != (x.size() == 0)), test,
+		   __FILE__, __LINE__);
 
 	typename XVEC::const_reverse_iterator citer1 = cx.rbegin();
-	if (cx.rbegin() != typename XVEC::const_reverse_iterator(cx.end()))
-	    passed = false;
+	testassert(!(cx.rbegin() !=
+		     typename XVEC::const_reverse_iterator(cx.end())),
+		   test, __FILE__, __LINE__);
+	
 	typename XVEC::const_reverse_iterator citer2 = cx.rend();
-	if (cx.rend() != typename XVEC::const_reverse_iterator(cx.begin()))
-	    passed = false;
-	if ((citer1 == citer2) != (cx.size() == 0))
-	    passed = false;
+	testassert(!(cx.rend() !=
+		     typename XVEC::const_reverse_iterator(cx.begin())),
+		   test, __FILE__, __LINE__);
+	testassert(!((citer1 == citer2) != (cx.size() == 0)), test,
+		   __FILE__, __LINE__);
 
 	for (typename XVEC::reverse_iterator iter = x.rbegin();
 	     iter != x.rend(); iter++) {}
 	for (typename XVEC::const_reverse_iterator iter = cx.rbegin();
 	     iter != cx.rend(); iter++) {}
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "required (reverse) container member functions.");
 
     }
 
@@ -405,7 +360,7 @@ void TestMTVec<MTFactory>::t1()
 	x[0] = cx[1];
     }
 
-    os_m << "t1: end\n";
+    os() << "t1: end\n";
 }
 
 
@@ -414,10 +369,11 @@ void TestMTVec<MTFactory>::t1()
 template<class MTFactory>
 void TestMTVec<MTFactory>::t2()
 {
-    bool passed = true;
+    std::string test;
+    
     const double value = 4.23;
     
-    os_m << "t2: beginning.\n";
+    os() << "t2: beginning.\n";
 
     {
         typedef iterator_traits<typename XVEC::iterator>::value_type value_type;
@@ -437,35 +393,34 @@ void TestMTVec<MTFactory>::t2()
 
 	// Test the default constructor.
 
-        passed &= NSTestMTVec::f2<XVEC>(typename XVEC::iterator());
+	test = "iterator default constructor.";
+	
+        testassert(NSTestMTVec::f2<XVEC>(typename XVEC::iterator()),
+		   test, __FILE__, __LINE__);
+	
         typename XVEC::iterator iter1;
 
 	// Test the copy constructor.
 
-        iter1 = x.begin();
-        passed &= NSTestMTVec::f3<XVEC>(iter1, typename XVEC::iterator(iter1));
-        typename XVEC::iterator iter2(iter1);
-        if (iter2 != iter1)
-            passed = false;
-        typename XVEC::iterator iter3 = iter1;
-        if (iter3 != iter1)
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "iterator copy constructor.";
 	
-	error(passed, "iterator copy constructor.");
+        iter1 = x.begin();
+        testassert(NSTestMTVec::f3<XVEC>(iter1, typename XVEC::iterator(iter1)),
+		   test, __FILE__, __LINE__);
+	
+        typename XVEC::iterator iter2(iter1);
+        testassert(!(iter2 != iter1), test, __FILE__, __LINE__);
+
+        typename XVEC::iterator iter3 = iter1;
+        testassert(!(iter3 != iter1), test, __FILE__, __LINE__);
 
 	// Test assignment.
 
+	test = "iterator assignment.";
+
         typename XVEC::iterator iter4;
         iter4 = iter1;
-        if (iter4 != iter1)
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator assignment.");
-
+        testassert(!(iter4 != iter1), test, __FILE__, __LINE__);
     }
 
     {
@@ -479,33 +434,27 @@ void TestMTVec<MTFactory>::t2()
 
 	// Test equivalence relations.
 
-        iter2 = iter1;
-        if (!(iter1 == iter2))
-            passed = false;
-        if ((iter1 != iter2) != !(iter1 == iter2))
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "iterator equivalence relations.";
 	
-	error(passed, "iterator equivalence relations.");
+        iter2 = iter1;
+        testassert(!(!(iter1 == iter2)), test, __FILE__, __LINE__);
+        testassert(!((iter1 != iter2) != !(iter1 == iter2)), test,
+		   __FILE__, __LINE__);
 
 	// Invariants
 
+	test = "iterator invariants.";
+	
         iter2 = iter1;
         iter3 = iter2;
         typename XVEC::iterator* iter2p = &iter2;
-        if ((iter2p == &iter2) && !(*iter2p == iter2))
-            passed = false;
-        if (iter2 != iter2)
-            passed = false;
-        if ((iter1 == iter2) && !(iter2 == iter1))
-            passed = false;
-        if (((iter1 == iter2) && (iter2 == iter3)) && !(iter1 == iter3))
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator invariants.");
+        testassert(!((iter2p == &iter2) && !(*iter2p == iter2)), test,
+		   __FILE__, __LINE__);
+        testassert(!(iter2 != iter2), test, __FILE__, __LINE__);
+        testassert(!((iter1 == iter2) && !(iter2 == iter1)), test,
+		   __FILE__, __LINE__);
+        testassert(!(((iter1 == iter2) && (iter2 == iter3)) &&
+		     !(iter1 == iter3)), test, __FILE__, __LINE__);
     }
 
     {
@@ -519,48 +468,40 @@ void TestMTVec<MTFactory>::t2()
 
 	// Test ordering relations.
 
+	test = "iterator ordering relations.";
+	
         iter2 = iter1;
-        if (iter1 < iter2)
-            passed = false;
-        if (iter1 > iter2 != iter2 < iter1)
-            passed = false;
-        if (iter1 <= iter2 != !(iter2 < iter1))
-            passed = false;
-        if (iter1 >= iter2 != !(iter1 < iter2))
-            passed = false;
+        testassert(!(iter1 < iter2), test, __FILE__, __LINE__);
+        testassert(!(iter1 > iter2 != iter2 < iter1), test, __FILE__, __LINE__);
+        testassert(!(iter1 <= iter2 != !(iter2 < iter1)), test,
+		   __FILE__, __LINE__);
+        testassert(!(iter1 >= iter2 != !(iter1 < iter2)), test,
+		   __FILE__, __LINE__);
 
         iter3 = iter1;
         ++iter3;
-        if (iter3 < iter1)
-            passed = false;
-        if (iter3 > iter1 != iter1 < iter3)
-            passed = false;
-        if (iter3 <= iter1 != !(iter1 < iter3))
-            passed = false;
-        if (iter3 >= iter1 != !(iter3 < iter1))
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator ordering relations.");
+        testassert(!(iter3 < iter1), test, __FILE__, __LINE__);
+        testassert(!(iter3 > iter1 != iter1 < iter3), test, __FILE__, __LINE__);
+        testassert(!(iter3 <= iter1 != !(iter1 < iter3)), test,
+		   __FILE__, __LINE__);
+        testassert(!(iter3 >= iter1 != !(iter3 < iter1)), test,
+		   __FILE__, __LINE__);
 
 	// Invariants
 
-        if (iter1 < iter1)
-            passed = false;
+	test = "iterator ordering relation invariants.";
+	
+        testassert(!(iter1 < iter1), test, __FILE__, __LINE__);
+
         iter2 = iter1;
         iter2++;
-        if (iter1 < iter2 != !(iter2 < iter1))
-            passed = false;
+        testassert(!(iter1 < iter2 != !(iter2 < iter1)), test,
+		   __FILE__, __LINE__);
+
         iter3 = iter2;
         iter3++;
-        if (((iter1 < iter2) && (iter2 < iter3)) && !(iter1 < iter3))
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator ordering relation invariants.");
-
+        testassert(!(((iter1 < iter2) && (iter2 < iter3)) &&
+		     !(iter1 < iter3)), test, __FILE__, __LINE__);
     }
 
     {
@@ -576,15 +517,12 @@ void TestMTVec<MTFactory>::t2()
 
 	// Invariants
 
-	if ((!(iter1 < iter2) && !(iter2 < iter1) &&
-	     !(iter2 < iter3) && !(iter3 < iter2))
-	    && !(!(iter1 < iter3) && !(iter3 < iter1)))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "more iterator ordering relation invariants.";
 	
-	error(passed, "more iterator ordering relation invariants.");
-
+	testassert(!((!(iter1 < iter2) && !(iter2 < iter1) &&
+		      !(iter2 < iter3) && !(iter3 < iter2)) &&
+		     !(!(iter1 < iter3) && !(iter3 < iter1))), test,
+		   __FILE__, __LINE__);
     }
 
     {
@@ -599,16 +537,12 @@ void TestMTVec<MTFactory>::t2()
 
 	// Test dereferenceability.
 
-        if (*iter != *(x.begin()))
-            passed = false;
-        *iter = value - 1.;
-        if (*iter != value - 1.)
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "iterator dereferenceability.";
 	
-	error(passed, "iterator dereferenceability.");
+        testassert(!(*iter != *(x.begin())), test, __FILE__, __LINE__);
 
+        *iter = value - 1.;
+        testassert(!(*iter != value - 1.), test, __FILE__, __LINE__);
     }
 
     {
@@ -622,16 +556,14 @@ void TestMTVec<MTFactory>::t2()
 
 	// Invariant
 
-	if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-	    passed = false;
-	iter1++;
-	if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "iterator dereferenceability equivalence relations.";
 	
-	error(passed, "iterator dereferenceability equivalence relations.");
+	testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))), test,
+		   __FILE__, __LINE__);
 
+	iter1++;
+	testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))), test,
+		   __FILE__, __LINE__);
     }
 
     {
@@ -650,27 +582,21 @@ void TestMTVec<MTFactory>::t2()
 
 	// Test increments
 
+	test = "iterator increments.";
+	
 	++iter1;
 
 	iter1 = iter2;
 	iter1++;
 	++iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter2 = x.begin();
 	iter1 = iter2;
 	value_type t = *iter2;
 	++iter2;
-	if (*iter1++ != t)
-	    passed = false;
-	if (iter1 != iter2)
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator increments.");
-
+	testassert(!(*iter1++ != t), test, __FILE__, __LINE__);
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
     }
 
     {
@@ -682,15 +608,12 @@ void TestMTVec<MTFactory>::t2()
 	typename XVEC::iterator iter1 = x.begin();
 	typename XVEC::iterator iter2 = x.begin();
 
-	if (!(&iter1 == &++iter1))
-	    passed = false;
-	iter1 = iter2;
-	if (!(++iter1 == ++iter2))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "more iterator increments.";
 	
-	error(passed, "more iterator increments.");
+	testassert(!(!(&iter1 == &++iter1)), test, __FILE__, __LINE__);
+
+	iter1 = iter2;
+	testassert(!(!(++iter1 == ++iter2)), test, __FILE__, __LINE__);
     }
 
     {
@@ -707,48 +630,39 @@ void TestMTVec<MTFactory>::t2()
 
 	// Test decrements
 
+	test = "iterator decrements.";
+	
 	--iter1;
-	if (!(&iter1 == &--iter1))
-	    passed = false;
+	testassert(!(!(&iter1 == &--iter1)), test, __FILE__, __LINE__);
+
 	iter1 = iter2;
-	if (!(--iter1 == --iter2))
-	    passed = false;
+	testassert(!(!(--iter1 == --iter2)), test, __FILE__, __LINE__);
+
 	iter1 = iter2;
 	++iter1;
-	if (!(--iter1 == iter2))
-	    passed = false;
+	testassert(!(!(--iter1 == iter2)), test, __FILE__, __LINE__);
+
 
 	iter1 = x.end();
 	iter2 = iter1;
 	typename XVEC::iterator iter3 = iter2;
 	--iter2;
-	if (iter1-- != iter3)
-	    passed = false;
-	if (iter1 != iter2)
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator decrements.");
+	testassert(!(iter1-- != iter3), test, __FILE__, __LINE__);
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	// Invariants
 
+	test = "iterator decrement invariants.";
+	
 	iter1 = x.begin();
 	++iter1;
 	--iter1;
-	if (iter1 != x.begin())
-	    passed = false;
+	testassert(!(iter1 != x.begin()), test, __FILE__, __LINE__);
 
 	iter1 = x.end();
 	--iter1;
 	++iter1;
-	if (iter1 != x.end())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator decrement invariants.");
-
+	testassert(!(iter1 != x.end()), test, __FILE__, __LINE__);
     }
 
     {
@@ -769,137 +683,108 @@ void TestMTVec<MTFactory>::t2()
 
 	// Iterator addition
 
+	test = "iterator addition.";
+	
 	iter1 += 0;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 += 3;
 	++iter2;
 	++iter2;
 	++iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 += -3;
 	--iter2;
 	--iter2;
 	--iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 = x.begin();
 	iter2 = x.begin();
 	iter3 = iter1 + 3;
 	iter2 += 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != x.begin())
-	    passed = false;
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != x.begin()), test, __FILE__, __LINE__);
 
 	iter1 = x.begin();
 	iter2 = x.begin();
 	iter3 = 3 + iter1;
 	iter2 += 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != x.begin())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator addition.");
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != x.begin()), test, __FILE__, __LINE__);
 
 	// Iterator subtraction
 
+	test = "iterator subtraction.";
+	
 	iter1 = x.end();
 	iter2 = x.end();
 	iter1 -= 0;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 -= 3;
 	iter2 += -3;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 -= -3;
 	iter2 += -(-3);
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 = x.end();
 	iter2 = x.end();
 	iter3 = iter1 - 3;
 	iter2 -= 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != x.end())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator subtraction.");
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != x.end()), test, __FILE__, __LINE__);
 
 	// Iterator difference.
 
+	test = "iterator difference.";
+	
 	iter1 = x.begin();
 	iter2 = x.end();
 	difference_type d = iter2 - iter1;
-	if (!(iter2 == iter1 + d))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator difference.");
+	testassert(!(!(iter2 == iter1 + d)), test, __FILE__, __LINE__);
 
 	// Element access and assignment
 
+	test = "iterator element access and assignment.";
+	
 	iter1 = x.begin();
-	if (iter1[2] != *(iter1 + 2))
-	    passed = false;
+	testassert(!(iter1[2] != *(iter1 + 2)), test, __FILE__, __LINE__);
 
 	iter1[2] = 12.;
-	if (*(iter1 + 2) != 12.)
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator access and assignment.");
+	testassert(!(*(iter1 + 2) != 12.), test, __FILE__, __LINE__);
 
 	// Invariants
+
+	test = "iterator addition/subtraction invariants.";
 
 	iter1 = x.begin();
 	iter1 += 3;
 	iter1 -= 3;
-	if (iter1 != x.begin())
-	    passed = false;
+	testassert(!(iter1 != x.begin()), test, __FILE__, __LINE__);
+
 	iter2 = (iter1 + 3) - 3;
-	if (iter2 != x.begin())
-	    passed = false;
+	testassert(!(iter2 != x.begin()), test, __FILE__, __LINE__);
 
 	iter1 = x.end();
 	iter1 -= 3;
 	iter1 += 3;
-	if (iter1 != x.end())
-	    passed = false;
+	testassert(!(iter1 != x.end()), test, __FILE__, __LINE__);
+
 	iter2 = (iter1 - 3) + 3;
-	if (iter2 != x.end())
-	    passed = false;
+	testassert(!(iter2 != x.end()), test, __FILE__, __LINE__);
 
 	iter1 = x.begin();
 	iter2 = x.end();
-	if (!(iter2 == iter1 + (iter2 - iter1)))
-	    passed = false;
-	if (!(iter2 - iter1 >= 0))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "iterator addition/subtraction invariants.");
-
+	testassert(!(!(iter2 == iter1 + (iter2 - iter1))), test,
+		   __FILE__, __LINE__);
+	testassert(!(!(iter2 - iter1 >= 0)), test, __FILE__, __LINE__);
     }
 
-    os_m << "t2: end\n";
+    os() << "t2: end\n";
 }
 
 
@@ -908,9 +793,9 @@ void TestMTVec<MTFactory>::t2()
 template<class MTFactory>
 void TestMTVec<MTFactory>::t3()
 {
-    bool passed = true;
+    std::string test;
     
-    os_m << "t3: beginning.\n";
+    os() << "t3: beginning.\n";
 
     {
         typedef iterator_traits<typename XVEC::const_iterator>::value_type value_type;
@@ -932,36 +817,35 @@ void TestMTVec<MTFactory>::t3()
 
 	// Test the default constructor.
 
-        passed &= NSTestMTVec::f4<XVEC>(typename XVEC::const_iterator());
+	test = "const_iterator default constructor.";
+
+        testassert(NSTestMTVec::f4<XVEC>(typename XVEC::const_iterator()),
+		   test, __FILE__, __LINE__);
+	
         typename XVEC::const_iterator iter1;
 
 	// Test the copy constructor.
 
-        iter1 = cx.begin();
-        passed &= NSTestMTVec::f5<XVEC>(iter1,
-					typename XVEC::const_iterator(iter1));
-        typename XVEC::const_iterator iter2(iter1);
-        if (iter2 != iter1)
-            passed = false;
-        typename XVEC::const_iterator iter3 = iter1;
-        if (iter3 != iter1)
-            passed = false;
+	test = "const_iterator copy constructor.";
 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator copy constructor.");
+        iter1 = cx.begin();
+        testassert(NSTestMTVec::f5<XVEC>(iter1,
+					 typename XVEC::const_iterator(iter1)),
+		   test, __FILE__, __LINE__);
+
+        typename XVEC::const_iterator iter2(iter1);
+        testassert(!(iter2 != iter1), test, __FILE__, __LINE__);
+
+        typename XVEC::const_iterator iter3 = iter1;
+        testassert(!(iter3 != iter1), test, __FILE__, __LINE__);
 
 	// Test assignment.
 
+	test = "const_iterator assignment.";
+	
         typename XVEC::const_iterator iter4;
         iter4 = iter1;
-        if (iter4 != iter1)
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator assignment.");
-
+        testassert(!(iter4 != iter1), test, __FILE__, __LINE__);
     }
 
     {
@@ -977,33 +861,27 @@ void TestMTVec<MTFactory>::t3()
 
 	// Test equivalence relations.
 
-        iter2 = iter1;
-        if (!(iter1 == iter2))
-            passed = false;
-        if ((iter1 != iter2) != !(iter1 == iter2))
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "const_iterator equivalence relations.";
 	
-	error(passed, "const_iterator equivalence relations.");
+        iter2 = iter1;
+        testassert(!(!(iter1 == iter2)), test, __FILE__, __LINE__);
+        testassert(!((iter1 != iter2) != !(iter1 == iter2)), test,
+		   __FILE__, __LINE__);
 
 	// Invariants
 
+	test = "const_iterator invariants.";
+	
         iter2 = iter1;
         iter3 = iter2;
         typename XVEC::const_iterator* iter2p = &iter2;
-        if ((iter2p == &iter2) && !(*iter2p == iter2))
-            passed = false;
-        if (iter2 != iter2)
-            passed = false;
-        if ((iter1 == iter2) && !(iter2 == iter1))
-            passed = false;
-        if (((iter1 == iter2) && (iter2 == iter3)) && !(iter1 == iter3))
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator invariants.");
+        testassert(!((iter2p == &iter2) && !(*iter2p == iter2)), test,
+		   __FILE__, __LINE__);
+        testassert(!(iter2 != iter2), test, __FILE__, __LINE__);
+        testassert(!((iter1 == iter2) && !(iter2 == iter1)), test,
+		   __FILE__, __LINE__);
+        testassert(!(((iter1 == iter2) && (iter2 == iter3)) &&
+		     !(iter1 == iter3)), test, __FILE__, __LINE__);
     }
 
     {
@@ -1019,48 +897,40 @@ void TestMTVec<MTFactory>::t3()
 
 	// Test ordering relations.
 
+	test = "const_iterator ordering relations.";
+	
 	iter2 = iter1;
-	if (iter1 < iter2)
-	    passed = false;
-	if (iter1 > iter2 != iter2 < iter1)
-	    passed = false;
-	if (iter1 <= iter2 != !(iter2 < iter1))
-	    passed = false;
-	if (iter1 >= iter2 != !(iter1 < iter2))
-	    passed = false;
+	testassert(!(iter1 < iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 > iter2 != iter2 < iter1), test, __FILE__, __LINE__);
+	testassert(!(iter1 <= iter2 != !(iter2 < iter1)), test,
+		   __FILE__, __LINE__);
+	testassert(!(iter1 >= iter2 != !(iter1 < iter2)), test,
+		   __FILE__, __LINE__);
 
 	iter3 = iter1;
 	++iter3;
-	if (iter3 < iter1)
-	    passed = false;
-	if (iter3 > iter1 != iter1 < iter3)
-	    passed = false;
-	if (iter3 <= iter1 != !(iter1 < iter3))
-	    passed = false;
-	if (iter3 >= iter1 != !(iter3 < iter1))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator ordering relations.");
+	testassert(!(iter3 < iter1), test, __FILE__, __LINE__);
+	testassert(!(iter3 > iter1 != iter1 < iter3), test, __FILE__, __LINE__);
+	testassert(!(iter3 <= iter1 != !(iter1 < iter3)), test,
+		   __FILE__, __LINE__);
+	testassert(!(iter3 >= iter1 != !(iter3 < iter1)), test,
+		   __FILE__, __LINE__);
 
 	// Invariants
 
-	if (iter1 < iter1)
-	    passed = false;
+	test = "const_iterator ordering relation invariants.";
+	
+	testassert(!(iter1 < iter1), test, __FILE__, __LINE__);
+
 	iter2 = iter1;
 	iter2++;
-	if (iter1 < iter2 != !(iter2 < iter1))
-	    passed = false;
+	testassert(!(iter1 < iter2 != !(iter2 < iter1)), test,
+		   __FILE__, __LINE__);
+
 	iter3 = iter2;
 	iter3++;
-	if (((iter1 < iter2) && (iter2 < iter3)) && !(iter1 < iter3))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator ordering relation invariants.");
-
+	testassert(!(((iter1 < iter2) && (iter2 < iter3)) &&
+		     !(iter1 < iter3)), test, __FILE__, __LINE__);
     }
 
     {
@@ -1078,15 +948,12 @@ void TestMTVec<MTFactory>::t3()
 
 	// Invariants
 
-        if ((!(iter1 < iter2) && !(iter2 < iter1) &&
-             !(iter2 < iter3) && !(iter3 < iter2))
-	    && !(!(iter1 < iter3) && !(iter3 < iter1)))
-            passed = false;
+	test = "more const_iterator ordering relation invariants.";
 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "more const_iterator ordering relation invariants.");
-
+        testassert(!((!(iter1 < iter2) && !(iter2 < iter1) &&
+		      !(iter2 < iter3) && !(iter3 < iter2)) &&
+		     !(!(iter1 < iter3) && !(iter3 < iter1))), test,
+		   __FILE__, __LINE__);
     }
 
     {
@@ -1101,13 +968,9 @@ void TestMTVec<MTFactory>::t3()
 
 	// Test dereferenceability.
 
-	if (*iter != *(cx.begin()))
-	    passed = false;
+	test = "const_iterator dereferenceability.";
 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator dereferenceability.");
-
+	testassert(!(*iter != *(cx.begin())), test, __FILE__, __LINE__);
     }
 
     {
@@ -1123,20 +986,19 @@ void TestMTVec<MTFactory>::t3()
 
 	// Invariant
 
-	if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-	    passed = false;
-	iter1++;
-	if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "const_iterator dereferenceability equivalence relations.";
 	
-	error(passed, "const_iterator dereferenceability equivalence relations.");
+	testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))), test,
+		   __FILE__, __LINE__);
 
+	iter1++;
+	testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))), test,
+		   __FILE__, __LINE__);
     }
 
     {
-	typedef iterator_traits<typename XVEC::const_iterator>::value_type value_type;
+	typedef iterator_traits<typename XVEC::const_iterator>::value_type
+	    value_type;
 
 	// The following constructor is not required by the Random Access
 	// Container concept, but we need to get an object somehow.
@@ -1153,27 +1015,21 @@ void TestMTVec<MTFactory>::t3()
 
 	// Test increments
 
+	test = "const_iterator increments.";
+	
 	++iter1;
 
 	iter1 = iter2;
 	iter1++;
 	++iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter2 = cx.begin();
 	iter1 = iter2;
 	value_type t = *iter2;
 	++iter2;
-	if (*iter1++ != t)
-	    passed = false;
-	if (iter1 != iter2)
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator increments.");
-
+	testassert(!(*iter1++ != t), test, __FILE__, __LINE__);
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
     }
 
     {
@@ -1187,15 +1043,12 @@ void TestMTVec<MTFactory>::t3()
 	typename XVEC::const_iterator iter1 = cx.begin();
 	typename XVEC::const_iterator iter2 = cx.begin();
 
-	if (!(&iter1 == &++iter1))
-	    passed = false;
-	iter1 = iter2;
-	if (!(++iter1 == ++iter2))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "more const_iterator increments.";
 	
-	error(passed, "more const_iterator increments.");
+	testassert(!(!(&iter1 == &++iter1)), test, __FILE__, __LINE__);
+
+	iter1 = iter2;
+	testassert(!(!(++iter1 == ++iter2)), test, __FILE__, __LINE__);
     }
 
     {
@@ -1211,52 +1064,43 @@ void TestMTVec<MTFactory>::t3()
 	
 	// Test decrements
 
+	test = "const_iterator decrements.";
+	
 	--iter1;
-	if (!(&iter1 == &--iter1))
-	    passed = false;
+	testassert(!(!(&iter1 == &--iter1)), test, __FILE__, __LINE__);
+
 	iter1 = iter2;
-	if (!(--iter1 == --iter2))
-	    passed = false;
+	testassert(!(!(--iter1 == --iter2)), test, __FILE__, __LINE__);
+
 	iter1 = iter2;
 	++iter1;
-	if (!(--iter1 == iter2))
-	    passed = false;
+	testassert(!(!(--iter1 == iter2)), test, __FILE__, __LINE__);
 
 	iter1 = cx.end();
 	iter2 = iter1;
 	typename XVEC::const_iterator iter3 = iter2;
 	--iter2;
-	if (iter1-- != iter3)
-	    passed = false;
-	if (iter1 != iter2)
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator decrements.");
+	testassert(!(iter1-- != iter3), test, __FILE__, __LINE__);
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	// Invariants
 
+	test = "const_iterator decrement invariants.";
+	
 	iter1 = cx.begin();
 	++iter1;
 	--iter1;
-	if (iter1 != cx.begin())
-	    passed = false;
+	testassert(!(iter1 != cx.begin()), test, __FILE__, __LINE__);
 
 	iter1 = cx.end();
 	--iter1;
 	++iter1;
-	if (iter1 != cx.end())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator decrement invariants.");
-
+	testassert(!(iter1 != cx.end()), test, __FILE__, __LINE__);
     }
 
     {
-	typedef iterator_traits<typename XVEC::const_iterator>::value_type value_type;
+	typedef iterator_traits<typename XVEC::const_iterator>::value_type
+	    value_type;
 	typedef iterator_traits<typename XVEC::const_iterator>::difference_type
 	    difference_type;
 
@@ -1276,132 +1120,105 @@ void TestMTVec<MTFactory>::t3()
 
 	// Iterator addition
 
+	test = "const_iterator addition.";
+	
 	iter1 += 0;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 += 3;
 	++iter2;
 	++iter2;
 	++iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 += -3;
 	--iter2;
 	--iter2;
 	--iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 = cx.begin();
 	iter2 = cx.begin();
 	iter3 = iter1 + 3;
 	iter2 += 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != cx.begin())
-	    passed = false;
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != cx.begin()), test, __FILE__, __LINE__);
 
 	iter1 = cx.begin();
 	iter2 = cx.begin();
 	iter3 = 3 + iter1;
 	iter2 += 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != cx.begin())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator addition.");
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != cx.begin()), test, __FILE__, __LINE__);
 
 	// Iterator subtraction
 
+	test = "const_iterator subtraction.";
+	
 	iter1 = cx.end();
 	iter2 = cx.end();
 	iter1 -= 0;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 -= 3;
 	iter2 += -3;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 -= -3;
 	iter2 += -(-3);
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 = cx.end();
 	iter2 = cx.end();
 	iter3 = iter1 - 3;
 	iter2 -= 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != cx.end())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator subtraction.");
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != cx.end()), test, __FILE__, __LINE__);
 
 	// Iterator difference.
 
+	test = "const_iterator difference.";
+	
 	iter1 = cx.begin();
 	iter2 = cx.end();
 	difference_type d = iter2 - iter1;
-	if (!(iter2 == iter1 + d))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator difference.");
+	testassert(!(!(iter2 == iter1 + d)), test, __FILE__, __LINE__);
 
 	// Element access
 
-	iter1 = cx.begin();
-	if (iter1[2] != *(iter1 + 2))
-	    passed = false;
+	test = "const_iterator access.";
 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator access.");
+	iter1 = cx.begin();
+	testassert(!(iter1[2] != *(iter1 + 2)), test, __FILE__, __LINE__);
 
 	// Invariants
 
+	test = "const_iterator addition/subtraction invariants.";
+	
 	iter1 = cx.begin();
 	iter1 += 3;
 	iter1 -= 3;
-	if (iter1 != cx.begin())
-	    passed = false;
+	testassert(!(iter1 != cx.begin()), test, __FILE__, __LINE__);
+
 	iter2 = (iter1 + 3) - 3;
-	if (iter2 != cx.begin())
-	    passed = false;
+	testassert(!(iter2 != cx.begin()), test, __FILE__, __LINE__);
 
 	iter1 = cx.end();
 	iter1 -= 3;
 	iter1 += 3;
-	if (iter1 != cx.end())
-	    passed = false;
+	testassert(!(iter1 != cx.end()), test, __FILE__, __LINE__);
+
 	iter2 = (iter1 - 3) + 3;
-	if (iter2 != cx.end())
-	    passed = false;
+	testassert(!(iter2 != cx.end()), test, __FILE__, __LINE__);
 
 	iter1 = cx.begin();
 	iter2 = cx.end();
-	if (!(iter2 == iter1 + (iter2 - iter1)))
-	    passed = false;
-	if (!(iter2 - iter1 >= 0))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const_iterator addition/subtraction invariants.");
+	testassert(!(!(iter2 == iter1 + (iter2 - iter1))), test,
+		   __FILE__, __LINE__);
+	testassert(!(!(iter2 - iter1 >= 0)), test, __FILE__, __LINE__);
     }
 
-    os_m << "t3: end\n";
+    os() << "t3: end\n";
 }
 
 
@@ -1412,10 +1229,11 @@ void TestMTVec<MTFactory>::t3()
 template<class MTFactory>
 void TestMTVec<MTFactory>::t4()
 {
-    bool passed = true;
+    std::string test;
+    
     const double value = 4.23;
     
-    os_m << "t4: beginning.\n";
+    os() << "t4: beginning.\n";
 
     {
 	typedef typename XVEC::reverse_iterator XRI;
@@ -1437,35 +1255,36 @@ void TestMTVec<MTFactory>::t4()
 
 	// Test the default constructor.
 
-        passed &= NSTestMTVec::f6<XVEC>(typename XVEC::reverse_iterator());
+	test = "reverse iterator default constructor.";
+	
+        testassert(NSTestMTVec::f6<XVEC>(typename XVEC::reverse_iterator()),
+		   test, __FILE__, __LINE__);
+	
         typename XVEC::reverse_iterator iter1;
 
 	// Test the copy constructor.
 
-        iter1 = x.rbegin();
-        passed &= NSTestMTVec::f7<XVEC>(iter1,
-					typename XVEC::reverse_iterator(iter1));
-        typename XVEC::reverse_iterator iter2(iter1);
-        if (iter2 != iter1)
-            passed = false;
-        typename XVEC::reverse_iterator iter3 = iter1;
-        if (iter3 != iter1)
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "reverse iterator copy constructor.";
 	
-	error(passed, "reverse iterator copy constructor.");
+        iter1 = x.rbegin();
+        testassert(
+	    NSTestMTVec::f7<XVEC>(iter1,
+				  typename XVEC::reverse_iterator(iter1)),
+	    test, __FILE__, __LINE__);
+	
+        typename XVEC::reverse_iterator iter2(iter1);
+        testassert(!(iter2 != iter1), test, __FILE__, __LINE__);
+
+        typename XVEC::reverse_iterator iter3 = iter1;
+        testassert(!(iter3 != iter1), test, __FILE__, __LINE__);
 
 	// Test assignment.
 
+	test = "reverse iterator assignment.";
+	
         typename XVEC::reverse_iterator iter4;
         iter4 = iter1;
-        if (iter4 != iter1)
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator assignment.");
+        testassert(!(iter4 != iter1), test, __FILE__, __LINE__);
     }
 
     {
@@ -1479,33 +1298,27 @@ void TestMTVec<MTFactory>::t4()
 
 	// Test equivalence relations.
 
-        iter2 = iter1;
-        if (!(iter1 == iter2))
-            passed = false;
-        if ((iter1 != iter2) != !(iter1 == iter2))
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "reverse iterator equivalence relations.";
 	
-	error(passed, "reverse iterator equivalence relations.");
+        iter2 = iter1;
+        testassert(!(!(iter1 == iter2)), test, __FILE__, __LINE__);
+        testassert(!((iter1 != iter2) != !(iter1 == iter2)), test,
+		   __FILE__, __LINE__);
 
 	// Invariants
 
+	test = "reverse iterator invariants.";
+	
         iter2 = iter1;
         iter3 = iter2;
         typename XVEC::reverse_iterator* iter2p = &iter2;
-        if ((iter2p == &iter2) && !(*iter2p == iter2))
-            passed = false;
-        if (iter2 != iter2)
-            passed = false;
-        if ((iter1 == iter2) && !(iter2 == iter1))
-            passed = false;
-        if (((iter1 == iter2) && (iter2 == iter3)) && !(iter1 == iter3))
-            passed = false;
- 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator invariants.");
+        testassert(!((iter2p == &iter2) && !(*iter2p == iter2)), test,
+		   __FILE__, __LINE__);
+        testassert(!(iter2 != iter2), test, __FILE__, __LINE__);
+        testassert(!((iter1 == iter2) && !(iter2 == iter1)), test,
+		   __FILE__, __LINE__);
+        testassert(!(((iter1 == iter2) && (iter2 == iter3)) &&
+		     !(iter1 == iter3)), test, __FILE__, __LINE__);
     }
 
     {
@@ -1519,47 +1332,40 @@ void TestMTVec<MTFactory>::t4()
 
 	// Test ordering relations.
 
+	test = "reverse iterator ordering relations.";
+
 	iter2 = iter1;
-	if (iter1 < iter2)
-	    passed = false;
-	if (iter1 > iter2 != iter2 < iter1)
-	    passed = false;
-	if (iter1 <= iter2 != !(iter2 < iter1))
-	    passed = false;
-	if (iter1 >= iter2 != !(iter1 < iter2))
-	    passed = false;
+	testassert(!(iter1 < iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 > iter2 != iter2 < iter1), test, __FILE__, __LINE__);
+	testassert(!(iter1 <= iter2 != !(iter2 < iter1)), test,
+		   __FILE__, __LINE__);
+	testassert(!(iter1 >= iter2 != !(iter1 < iter2)), test,
+		   __FILE__, __LINE__);
 
 	iter3 = iter1;
 	++iter3;
-	if (iter3 < iter1)
-	    passed = false;
-	if (iter3 > iter1 != iter1 < iter3)
-	    passed = false;
-	if (iter3 <= iter1 != !(iter1 < iter3))
-	    passed = false;
-	if (iter3 >= iter1 != !(iter3 < iter1))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator ordering relations.");
+	testassert(!(iter3 < iter1), test, __FILE__, __LINE__);
+	testassert(!(iter3 > iter1 != iter1 < iter3), test, __FILE__, __LINE__);
+	testassert(!(iter3 <= iter1 != !(iter1 < iter3)), test,
+		   __FILE__, __LINE__);
+	testassert(!(iter3 >= iter1 != !(iter3 < iter1)), test,
+		   __FILE__, __LINE__);
 
 	// Invariants
 
-	if (iter1 < iter1)
-	    passed = false;
+	test = "reverse iterator ordering relation invariants.";
+	
+	testassert(!(iter1 < iter1), test, __FILE__, __LINE__);
+
 	iter2 = iter1;
 	iter2++;
-	if (iter1 < iter2 != !(iter2 < iter1))
-	    passed = false;
+	testassert(!(iter1 < iter2 != !(iter2 < iter1)), test,
+		   __FILE__, __LINE__);
+
 	iter3 = iter2;
 	iter3++;
-	if (((iter1 < iter2) && (iter2 < iter3)) && !(iter1 < iter3))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator ordering relation invariants.");
+	testassert(!(((iter1 < iter2) && (iter2 < iter3)) &&
+		     !(iter1 < iter3)), test, __FILE__, __LINE__);
     }
 
     {
@@ -1575,15 +1381,12 @@ void TestMTVec<MTFactory>::t4()
 
 	// Invariants
 
-        if ((!(iter1 < iter2) && !(iter2 < iter1) &&
-             !(iter2 < iter3) && !(iter3 < iter2))
-	    && !(!(iter1 < iter3) && !(iter3 < iter1)))
-            passed = false;
- 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "more reverse iterator ordering relation invariants.");
+	test = "more reverse iterator ordering relation invariants.";
 
+        testassert(!((!(iter1 < iter2) && !(iter2 < iter1) &&
+		      !(iter2 < iter3) && !(iter3 < iter2)) &&
+		     !(!(iter1 < iter3) && !(iter3 < iter1))), test,
+		   __FILE__, __LINE__);
    }
 
     {
@@ -1598,16 +1401,12 @@ void TestMTVec<MTFactory>::t4()
 
 	// Test dereferenceability.
 
-	if (*iter != *(x.begin()))
-	    passed = false;
-	*iter = value - 1.;
-	if (*iter != value - 1.)
-	    passed = false;
- 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator dereferenceability.");
+	test = "reverse iterator dereferenceability.";
 
+	testassert(!(*iter != *(x.begin())), test, __FILE__, __LINE__);
+
+	*iter = value - 1.;
+	testassert(!(*iter != value - 1.), test, __FILE__, __LINE__);
    }
 
     {
@@ -1621,17 +1420,14 @@ void TestMTVec<MTFactory>::t4()
 
 	// Invariant
 
-	if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-	    passed = false;
-	iter1++;
-	if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "reverse iterator dereferenceability equivalence relations.";
 	
-	error(passed,
-	      "reverse iterator dereferenceability equivalence relations.");
+	testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))), test,
+		   __FILE__, __LINE__);
 
+	iter1++;
+	testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))), test,
+		   __FILE__, __LINE__);
     }
 
     {
@@ -1650,27 +1446,21 @@ void TestMTVec<MTFactory>::t4()
 
 	// Test increments
 
+	test = "reverse iterator increments.";
+
 	++iter1;
 
 	iter1 = iter2;
 	iter1++;
 	++iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter2 = x.rbegin();
 	iter1 = iter2;
 	value_type t = *iter2;
 	++iter2;
-	if (*iter1++ != t)
-	    passed = false;
-	if (iter1 != iter2)
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator increments.");
-
+	testassert(!(*iter1++ != t), test, __FILE__, __LINE__);
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
     }
 
     {
@@ -1682,15 +1472,12 @@ void TestMTVec<MTFactory>::t4()
 	typename XVEC::reverse_iterator iter1 = x.rbegin();
 	typename XVEC::reverse_iterator iter2 = x.rbegin();
 
-	if (!(&iter1 == &++iter1))
-	    passed = false;
-	iter1 = iter2;
-	if (!(++iter1 == ++iter2))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "more reverse iterator increments.";
 	
-	error(passed, "more reverse iterator increments.");
+	testassert(!(!(&iter1 == &++iter1)), test, __FILE__, __LINE__);
+
+	iter1 = iter2;
+	testassert(!(!(++iter1 == ++iter2)), test, __FILE__, __LINE__);
     }
 
     {
@@ -1704,52 +1491,43 @@ void TestMTVec<MTFactory>::t4()
 
 	// Test decrements
 
+	test = "reverse iterator decrements.";
+	
 	--iter1;
-	if (!(&iter1 == &--iter1))
-	    passed = false;
+	testassert(!(!(&iter1 == &--iter1)), test, __FILE__, __LINE__);
+
 	iter1 = iter2;
-	if (!(--iter1 == --iter2))
-	    passed = false;
+	testassert(!(!(--iter1 == --iter2)), test, __FILE__, __LINE__);
+
 	iter1 = iter2;
 	++iter1;
-	if (!(--iter1 == iter2))
-	    passed = false;
+	testassert(!(!(--iter1 == iter2)), test, __FILE__, __LINE__);
 
 	iter1 = x.rend();
 	iter2 = iter1;
 	typename XVEC::reverse_iterator iter3 = iter2;
 	--iter2;
-	if (iter1-- != iter3)
-	    passed = false;
-	if (iter1 != iter2)
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator decrements.");
+	testassert(!(iter1-- != iter3), test, __FILE__, __LINE__);
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	// Invariants
 
+	test = "reverse iterator decrement invariants.";
+	
 	iter1 = x.rbegin();
 	++iter1;
 	--iter1;
-	if (iter1 != x.rbegin())
-	    passed = false;
+	testassert(!(iter1 != x.rbegin()), test, __FILE__, __LINE__);
 
 	iter1 = x.rend();
 	--iter1;
 	++iter1;
-	if (iter1 != x.rend())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator decrement invariants.");
-
+	testassert(!(iter1 != x.rend()), test, __FILE__, __LINE__);
     }
 
     {
-	typedef iterator_traits<typename XVEC::reverse_iterator>::difference_type
+	typedef
+	    iterator_traits<typename XVEC::reverse_iterator>::difference_type
 	    difference_type;
 
 	// The following constructor is not required by the Random Access
@@ -1766,137 +1544,108 @@ void TestMTVec<MTFactory>::t4()
 
 	// Iterator addition
 
+	test = "reverse iterator addition.";
+	
 	iter1 += 0;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 += 3;
 	++iter2;
 	++iter2;
 	++iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 += -3;
 	--iter2;
 	--iter2;
 	--iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 = x.rbegin();
 	iter2 = x.rbegin();
 	iter3 = iter1 + 3;
 	iter2 += 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != x.rbegin())
-	    passed = false;
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != x.rbegin()), test, __FILE__, __LINE__);
 
 	iter1 = x.rbegin();
 	iter2 = x.rbegin();
 	iter3 = 3 + iter1;
 	iter2 += 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != x.rbegin())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator addition.");
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != x.rbegin()), test, __FILE__, __LINE__);
 
 	// Iterator subtraction
+
+	test = "reverse iterator subtraction.";
 
 	iter1 = x.rend();
 	iter2 = x.rend();
 	iter1 -= 0;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 -= 3;
 	iter2 += -3;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 -= -3;
 	iter2 += -(-3);
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 = x.rend();
 	iter2 = x.rend();
 	iter3 = iter1 - 3;
 	iter2 -= 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != x.rend())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator subtraction.");
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != x.rend()), test, __FILE__, __LINE__);
 
 	// Iterator difference.
+
+	test = "reverse iterator difference.";
 
 	iter1 = x.rbegin();
 	iter2 = x.rend();
 	difference_type d = iter2 - iter1;
-	if (!(iter2 == iter1 + d))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator difference.");
+	testassert(!(!(iter2 == iter1 + d)), test, __FILE__, __LINE__);
 
 	// Element access and assignment
 
+	test = "reverse iterator access and assignment.";
+
 	iter1 = x.rbegin();
-	if (iter1[2] != *(iter1 + 2))
-	    passed = false;
+	testassert(!(iter1[2] != *(iter1 + 2)), test, __FILE__, __LINE__);
 
 	iter1[2] = 12.;
-	if (*(iter1 + 2) != 12.)
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator access and assignment.");
+	testassert(!(*(iter1 + 2) != 12.), test, __FILE__, __LINE__);
 
 	// Invariants
+
+	test = "reverse iterator addition/subtraction invariants.";
 
 	iter1 = x.rbegin();
 	iter1 += 3;
 	iter1 -= 3;
-	if (iter1 != x.rbegin())
-	    passed = false;
+	testassert(!(iter1 != x.rbegin()), test, __FILE__, __LINE__);
+
 	iter2 = (iter1 + 3) - 3;
-	if (iter2 != x.rbegin())
-	    passed = false;
+	testassert(!(iter2 != x.rbegin()), test, __FILE__, __LINE__);
 
 	iter1 = x.rend();
 	iter1 -= 3;
 	iter1 += 3;
-	if (iter1 != x.rend())
-	    passed = false;
+	testassert(!(iter1 != x.rend()), test, __FILE__, __LINE__);
+
 	iter2 = (iter1 - 3) + 3;
-	if (iter2 != x.rend())
-	    passed = false;
+	testassert(!(iter2 != x.rend()), test, __FILE__, __LINE__);
 
 	iter1 = x.rbegin();
 	iter2 = x.rend();
-	if (!(iter2 == iter1 + (iter2 - iter1)))
-	    passed = false;
-	if (!(iter2 - iter1 >= 0))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "reverse iterator addition/subtraction invariants.");
-
+	testassert(!(!(iter2 == iter1 + (iter2 - iter1))), test,
+		   __FILE__, __LINE__);
+	testassert(!(!(iter2 - iter1 >= 0)), test, __FILE__, __LINE__);
     }
 
-    os_m << "t4: end\n";
+    os() << "t4: end\n";
 }
 
 
@@ -1907,10 +1656,11 @@ void TestMTVec<MTFactory>::t4()
 template<class MTFactory>
 void TestMTVec<MTFactory>::t5()
 {
-    bool passed = true;
+    std::string test;
+    
     const double value = 4.23;
     
-    os_m << "t5: beginning.\n";
+    os() << "t5: beginning.\n";
 
     {
 	typedef typename XVEC::const_reverse_iterator XCRI;
@@ -1933,34 +1683,33 @@ void TestMTVec<MTFactory>::t5()
 
 	// Test the default constructor.
 
-        passed &= NSTestMTVec::f8<XVEC>(XCRI());
+	test = "const reverse iterator default constructor.";
+
+        testassert(NSTestMTVec::f8<XVEC>(XCRI()), test, __FILE__, __LINE__);
+	
         XCRI iter1;
 
 	// Test the copy constructor.
 
-        iter1 = cx.rbegin();
-        passed &= NSTestMTVec::f9<XVEC>(iter1, XCRI(iter1));
-        XCRI iter2(iter1);
-        if (iter2 != iter1)
-            passed = false;
-        XCRI iter3 = iter1;
-        if (iter3 != iter1)
-            passed = false;
+	test = "const reverse iterator copy constructor.";
 
-	// print error msg, set object passed state, and reset passed variable
+        iter1 = cx.rbegin();
+        testassert(NSTestMTVec::f9<XVEC>(iter1, XCRI(iter1)), test,
+		   __FILE__, __LINE__);
 	
-	error(passed, "const reverse iterator copy constructor.");
+        XCRI iter2(iter1);
+        testassert(!(iter2 != iter1), test, __FILE__, __LINE__);
+
+        XCRI iter3 = iter1;
+        testassert(!(iter3 != iter1), test, __FILE__, __LINE__);
 
 	// Test assignment.
 
+	test = "const reverse iterator assignment.";
+	
         XCRI iter4;
         iter4 = iter1;
-        if (iter4 != iter1)
-            passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator assignment.");
+        testassert(!(iter4 != iter1), test, __FILE__, __LINE__);
     }
 
     {
@@ -1976,33 +1725,27 @@ void TestMTVec<MTFactory>::t5()
 
 	// Test equivalence relations.
 
-        iter2 = iter1;
-        if (!(iter1 == iter2))
-            passed = false;
-        if ((iter1 != iter2) != !(iter1 == iter2))
-            passed = false;
+	test = "const reverse iterator equivalence relations.";
 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator equivalence relations.");
+        iter2 = iter1;
+        testassert(!(!(iter1 == iter2)), test, __FILE__, __LINE__);
+        testassert(!((iter1 != iter2) != !(iter1 == iter2)), test,
+		   __FILE__, __LINE__);
 
 	// Invariants
+
+	test = "const reverse iterator invariants.";
 
         iter2 = iter1;
         iter3 = iter2;
         typename XVEC::const_reverse_iterator* iter2p = &iter2;
-        if ((iter2p == &iter2) && !(*iter2p == iter2))
-            passed = false;
-        if (iter2 != iter2)
-            passed = false;
-        if ((iter1 == iter2) && !(iter2 == iter1))
-            passed = false;
-        if (((iter1 == iter2) && (iter2 == iter3)) && !(iter1 == iter3))
-            passed = false;
- 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator invariants.");
+        testassert(!((iter2p == &iter2) && !(*iter2p == iter2)), test,
+		   __FILE__, __LINE__);
+        testassert(!(iter2 != iter2), test, __FILE__, __LINE__);
+        testassert(!((iter1 == iter2) && !(iter2 == iter1)), test,
+		   __FILE__, __LINE__);
+        testassert(!(((iter1 == iter2) && (iter2 == iter3)) &&
+		     !(iter1 == iter3)), test, __FILE__, __LINE__);
     }
 
     {
@@ -2018,47 +1761,40 @@ void TestMTVec<MTFactory>::t5()
 
 	// Test ordering relations.
 
+	test = "const reverse iterator ordering relations.";
+
 	iter2 = iter1;
-	if (iter1 < iter2)
-	    passed = false;
-	if (iter1 > iter2 != iter2 < iter1)
-	    passed = false;
-	if (iter1 <= iter2 != !(iter2 < iter1))
-	    passed = false;
-	if (iter1 >= iter2 != !(iter1 < iter2))
-	    passed = false;
+	testassert(!(iter1 < iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 > iter2 != iter2 < iter1), test, __FILE__, __LINE__);
+	testassert(!(iter1 <= iter2 != !(iter2 < iter1)), test,
+		   __FILE__, __LINE__);
+	testassert(!(iter1 >= iter2 != !(iter1 < iter2)), test,
+		   __FILE__, __LINE__);
 
 	iter3 = iter1;
 	++iter3;
-	if (iter3 < iter1)
-	    passed = false;
-	if (iter3 > iter1 != iter1 < iter3)
-	    passed = false;
-	if (iter3 <= iter1 != !(iter1 < iter3))
-	    passed = false;
-	if (iter3 >= iter1 != !(iter3 < iter1))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator ordering relations.");
+	testassert(!(iter3 < iter1), test, __FILE__, __LINE__);
+	testassert(!(iter3 > iter1 != iter1 < iter3), test, __FILE__, __LINE__);
+	testassert(!(iter3 <= iter1 != !(iter1 < iter3)), test,
+		   __FILE__, __LINE__);
+	testassert(!(iter3 >= iter1 != !(iter3 < iter1)), test,
+		   __FILE__, __LINE__);
 
 	// Invariants
 
-	if (iter1 < iter1)
-	    passed = false;
+	test = "const reverse iterator ordering relation invariants.";
+	
+	testassert(!(iter1 < iter1), test, __FILE__, __LINE__);
+
 	iter2 = iter1;
 	iter2++;
-	if (iter1 < iter2 != !(iter2 < iter1))
-	    passed = false;
+	testassert(!(iter1 < iter2 != !(iter2 < iter1)), test,
+		   __FILE__, __LINE__);
+
 	iter3 = iter2;
 	iter3++;
-	if (((iter1 < iter2) && (iter2 < iter3)) && !(iter1 < iter3))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator ordering relation invariants.");
+	testassert(!(((iter1 < iter2) && (iter2 < iter3)) &&
+		     !(iter1 < iter3)), test, __FILE__, __LINE__);
     }
 
     {
@@ -2076,15 +1812,12 @@ void TestMTVec<MTFactory>::t5()
 
 	// Invariants
 
-        if ((!(iter1 < iter2) && !(iter2 < iter1) &&
-             !(iter2 < iter3) && !(iter3 < iter2))
-	    && !(!(iter1 < iter3) && !(iter3 < iter1)))
-            passed = false;
- 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "more const reverse iterator ordering relation invariants.");
+	test = "more const reverse iterator ordering relation invariants.";
 
+        testassert(!((!(iter1 < iter2) && !(iter2 < iter1) &&
+		      !(iter2 < iter3) && !(iter3 < iter2)) &&
+		     !(!(iter1 < iter3) && !(iter3 < iter1))),
+		   test, __FILE__, __LINE__);
     }
 
     {
@@ -2101,13 +1834,9 @@ void TestMTVec<MTFactory>::t5()
 
 	// Test dereferenceability.
 
-	if (*iter != *(cx.begin()))
-	    passed = false;
- 
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator dereferenceability.");
+	test = "const reverse iterator dereferenceability.";
 
+	testassert(!(*iter != *(cx.begin())), test, __FILE__, __LINE__);
     }
 
     {
@@ -2123,21 +1852,20 @@ void TestMTVec<MTFactory>::t5()
 
 	// Invariant
 
-	if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-	    passed = false;
+	test =
+	    "const reverse iterator dereferenceability equivalence relations.";
+
+	testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))), test,
+		   __FILE__, __LINE__);
+
 	iter1++;
-	if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed,
-	      "const reverse iterator dereferenceability equivalence relations.");
-
+	testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))), test,
+		   __FILE__, __LINE__);
     }
 
     {
-	typedef iterator_traits<typename XVEC::const_reverse_iterator>::value_type
+	typedef
+	    iterator_traits<typename XVEC::const_reverse_iterator>::value_type
 	    value_type;
 
 	// The following constructor is not required by the Random Access
@@ -2155,27 +1883,21 @@ void TestMTVec<MTFactory>::t5()
 
 	// Test increments
 
+	test = "const reverse iterator increments.";
+
 	++iter1;
 
 	iter1 = iter2;
 	iter1++;
 	++iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter2 = cx.rbegin();
 	iter1 = iter2;
 	value_type t = *iter2;
 	++iter2;
-	if (*iter1++ != t)
-	    passed = false;
-	if (iter1 != iter2)
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator increments.");
-
+	testassert(!(*iter1++ != t), test, __FILE__, __LINE__);
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
     }
 
     {
@@ -2189,15 +1911,12 @@ void TestMTVec<MTFactory>::t5()
 	typename XVEC::const_reverse_iterator iter1 = cx.rbegin();
 	typename XVEC::const_reverse_iterator iter2 = cx.rbegin();
 
-	if (!(&iter1 == &++iter1))
-	    passed = false;
-	iter1 = iter2;
-	if (!(++iter1 == ++iter2))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "more const reverse iterator increments.";
 	
-	error(passed, "more const reverse iterator increments.");
+	testassert(!(!(&iter1 == &++iter1)), test, __FILE__, __LINE__);
+
+	iter1 = iter2;
+	testassert(!(!(++iter1 == ++iter2)), test, __FILE__, __LINE__);
     }
 
     {
@@ -2213,48 +1932,38 @@ void TestMTVec<MTFactory>::t5()
 
 	// Test decrements
 
+	test = "const reverse iterator decrements.";
+
 	--iter1;
-	if (!(&iter1 == &--iter1))
-	    passed = false;
+	testassert(!(!(&iter1 == &--iter1)), test, __FILE__, __LINE__);
+
 	iter1 = iter2;
-	if (!(--iter1 == --iter2))
-	    passed = false;
+	testassert(!(!(--iter1 == --iter2)), test, __FILE__, __LINE__);
+
 	iter1 = iter2;
 	++iter1;
-	if (!(--iter1 == iter2))
-	    passed = false;
+	testassert(!(!(--iter1 == iter2)), test, __FILE__, __LINE__);
 
 	iter1 = cx.rend();
 	iter2 = iter1;
 	typename XVEC::const_reverse_iterator iter3 = iter2;
 	--iter2;
-	if (iter1-- != iter3)
-	    passed = false;
-	if (iter1 != iter2)
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator decrements.");
+	testassert(!(iter1-- != iter3), test, __FILE__, __LINE__);
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	// Invariants
 
+	test = "const reverse iterator decrement invariants.";
+	
 	iter1 = cx.rbegin();
 	++iter1;
 	--iter1;
-	if (iter1 != cx.rbegin())
-	    passed = false;
+	testassert(!(iter1 != cx.rbegin()), test, __FILE__, __LINE__);
 
 	iter1 = cx.rend();
 	--iter1;
 	++iter1;
-	if (iter1 != cx.rend())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator decrement invariants.");
-
+	testassert(!(iter1 != cx.rend()), test, __FILE__, __LINE__);
     }
 
     {
@@ -2279,134 +1988,105 @@ void TestMTVec<MTFactory>::t5()
 
 	// Iterator addition
 
+	test = "const reverse iterator addition.";
+
 	iter1 += 0;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 += 3;
 	++iter2;
 	++iter2;
 	++iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 += -3;
 	--iter2;
 	--iter2;
 	--iter2;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 = cx.rbegin();
 	iter2 = cx.rbegin();
 	iter3 = iter1 + 3;
 	iter2 += 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != cx.rbegin())
-	    passed = false;
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != cx.rbegin()), test, __FILE__, __LINE__);
 
 	iter1 = cx.rbegin();
 	iter2 = cx.rbegin();
 	iter3 = 3 + iter1;
 	iter2 += 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != cx.rbegin())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator addition.");
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != cx.rbegin()), test, __FILE__, __LINE__);
 
 	// Iterator subtraction
+
+	test = "const reverse iterator subtraction.";
 
 	iter1 = cx.rend();
 	iter2 = cx.rend();
 	iter1 -= 0;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 -= 3;
 	iter2 += -3;
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 -= -3;
 	iter2 += -(-3);
-	if (iter1 != iter2)
-	    passed = false;
+	testassert(!(iter1 != iter2), test, __FILE__, __LINE__);
 
 	iter1 = cx.rend();
 	iter2 = cx.rend();
 	iter3 = iter1 - 3;
 	iter2 -= 3;
-	if (iter3 != iter2)
-	    passed = false;
-	if (iter1 != cx.rend())
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator subtraction.");
+	testassert(!(iter3 != iter2), test, __FILE__, __LINE__);
+	testassert(!(iter1 != cx.rend()), test, __FILE__, __LINE__);
 
 	// Iterator difference.
 
+	test = "const reverse iterator difference.";
+	
 	iter1 = cx.rbegin();
 	iter2 = cx.rend();
 	difference_type d = iter2 - iter1;
-	if (!(iter2 == iter1 + d))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "const reverse iterator difference.");
+	testassert(!(!(iter2 == iter1 + d)), test, __FILE__, __LINE__);
 
 	// Element access
 
-	iter1 = cx.rbegin();
-	if (iter1[2] != *(iter1 + 2))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
+	test = "const reverse iterator access.";
 	
-	error(passed, "const reverse iterator access.");
+	iter1 = cx.rbegin();
+	testassert(!(iter1[2] != *(iter1 + 2)), test, __FILE__, __LINE__);
 
 	// Invariants
+
+	test = "const reverse iterator addition/subtraction invariants.";
 
 	iter1 = cx.rbegin();
 	iter1 += 3;
 	iter1 -= 3;
-	if (iter1 != cx.rbegin())
-	    passed = false;
+	testassert(!(iter1 != cx.rbegin()), test, __FILE__, __LINE__);
+
 	iter2 = (iter1 + 3) - 3;
-	if (iter2 != cx.rbegin())
-	    passed = false;
+	testassert(!(iter2 != cx.rbegin()), test, __FILE__, __LINE__);
 
 	iter1 = cx.rend();
 	iter1 -= 3;
 	iter1 += 3;
-	if (iter1 != cx.rend())
-	    passed = false;
+	testassert(!(iter1 != cx.rend()), test, __FILE__, __LINE__);
+
 	iter2 = (iter1 - 3) + 3;
-	if (iter2 != cx.rend())
-	    passed = false;
+	testassert(!(iter2 != cx.rend()), test, __FILE__, __LINE__);
 
 	iter1 = cx.rbegin();
 	iter2 = cx.rend();
-	if (!(iter2 == iter1 + (iter2 - iter1)))
-	    passed = false;
-	if (!(iter2 - iter1 >= 0))
-	    passed = false;
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed,
-	      "const reverse iterator addition/subtraction invariants.");
-
+	testassert(!(!(iter2 == iter1 + (iter2 - iter1))), test,
+		   __FILE__, __LINE__);
+	testassert(!(!(iter2 - iter1 >= 0)), test, __FILE__, __LINE__);
     }
 
-    os_m << "t5: end\n";
+    os() << "t5: end\n";
 }
 
 
@@ -2417,9 +2097,9 @@ void TestMTVec<MTFactory>::t5()
 template<class MTFactory>
 void TestMTVec<MTFactory>::t6()
 {
-    bool passed = true;
+    std::string test("conversions between mutable and const iterators.");
     
-    os_m << "t6: beginning.\n";
+    os() << "t6: beginning.\n";
 
     {
 	// The following constructor is not required by the Random Access
@@ -2433,22 +2113,18 @@ void TestMTVec<MTFactory>::t6()
         typename XVEC::const_reverse_iterator criter;
 
         citer = iter;
-        if (citer != x.begin())
-            passed = false;
+        testassert(!(citer != x.begin()), test, __FILE__, __LINE__);
 
 	// The static_cast below is currently required because of a compiler
 	// error.
 
         criter = riter;
-        if (criter != static_cast<typename XVEC::const_reverse_iterator>(x.rbegin()))
-            passed = false;
+        testassert(!(criter !=
+		     static_cast<typename XVEC::const_reverse_iterator>(
+			 x.rbegin())), test, __FILE__, __LINE__);
     }
 
-    // print error msg, set object passed state, and reset passed variable
-	
-    error(passed, "conversions between mutable and const iterators.");
-
-    os_m << "t6: end\n";
+    os() << "t6: end\n";
 }
 
 
@@ -2457,9 +2133,9 @@ void TestMTVec<MTFactory>::t6()
 template<class MTFactory>
 void TestMTVec<MTFactory>::t7()
 {
-    bool passed = true;
+    std::string test("DoubleVec requirements.");
     
-    os_m << "t7: beginning.\n";
+    os() << "t7: beginning.\n";
 
     {
 	// The following constructor is not required by the DoubleVec
@@ -2467,17 +2143,11 @@ void TestMTVec<MTFactory>::t7()
 
         XVEC x;
 
-        if (x.size() != x.max_size())
-            passed = false;
-        if (x.size() != 3)
-            passed = false;
+        testassert(!(x.size() != x.max_size()), test, __FILE__, __LINE__);
+        testassert(!(x.size() != 3), test, __FILE__, __LINE__);
     }
 
-    // print error msg, set object passed state, and reset passed variable
-	
-    error(passed, "DoubleVec requirements.");
-
-    os_m << "t7: end\n";
+    os() << "t7: end\n";
 }
 
 
@@ -2486,9 +2156,9 @@ void TestMTVec<MTFactory>::t7()
 template<class MTFactory>
 void TestMTVec<MTFactory>::t8()
 {
-    bool passed = true;
+    std::string test("simple binary operations with assignments.");
     
-    os_m << "t8: beginning.\n";
+    os() << "t8: beginning.\n";
 
     // Check the simple binary operations with assignments.
 
@@ -2505,23 +2175,19 @@ void TestMTVec<MTFactory>::t8()
         a = 1.;
         a += value;
         xiter = a.begin();
-        passed &= (*xiter == 1. + value);
+        testassert((*xiter == 1. + value), test, __FILE__, __LINE__);
 
         a -= value;
         xiter = a.begin();
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         a *= value;
         xiter = a.begin();
-        passed &= (*xiter == value);
+        testassert((*xiter == value), test, __FILE__, __LINE__);
 
         a /= value;
         xiter = a.begin();
-        passed &= (*xiter == 1.);
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "simple binary operations with assignments.");
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         int i = 0;
         for (typename XVEC::iterator iter = b.begin(); iter != b.end(); ++iter)
@@ -2541,78 +2207,74 @@ void TestMTVec<MTFactory>::t8()
         xiter = a.begin();
         ++xiter;
         ++xiter;
-        passed &= (*xiter == 6.);
+        testassert((*xiter == 6.), test, __FILE__, __LINE__);
 
         a -= b;
         xiter = a.begin();
         ++xiter;
         ++xiter;
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         a *= b;
         xiter = a.begin();
         ++xiter;
         ++xiter;
-        passed &= (*xiter == 5.);
+        testassert((*xiter == 5.), test, __FILE__, __LINE__);
 
         a /= b;
         xiter = a.begin();
         ++xiter;
         ++xiter;
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         a = b;
         xiter = a.begin();
         ++xiter;
         ++xiter;
-        passed &= (*xiter == 5.);
+        testassert((*xiter == 5.), test, __FILE__, __LINE__);
 
 
         a = b + c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 12.);
+        testassert((*xiter == 12.), test, __FILE__, __LINE__);
 
         a = b - c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == -6.);
+        testassert((*xiter == -6.), test, __FILE__, __LINE__);
 
         a = b * c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 27.);
+        testassert((*xiter == 27.), test, __FILE__, __LINE__);
 
         a = c / b;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 3.);
+        testassert((*xiter == 3.), test, __FILE__, __LINE__);
 
 
         a = 1.;
         a += b + c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 13.);
+        testassert((*xiter == 13.), test, __FILE__, __LINE__);
 
         a -= b + c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         a *= b + c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 12.);
+        testassert((*xiter == 12.), test, __FILE__, __LINE__);
 
         a /= b + c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 1.);
-
- 	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "more simple binary operations with assignments.");
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
    }
 
     // Check the simple unary operations with assignments.
@@ -2624,6 +2286,8 @@ void TestMTVec<MTFactory>::t8()
 
         XVEC a, b;
 
+	test = "simple unary operations with assignments.";
+	
         typename XVEC::iterator xiter1, xiter2;
 
         int i = 0;
@@ -2638,18 +2302,14 @@ void TestMTVec<MTFactory>::t8()
         xiter2 = b.begin();
         ++xiter1;
         ++xiter2;
-        passed &= (*xiter1 == *xiter2);
+        testassert((*xiter1 == *xiter2), test, __FILE__, __LINE__);
 
         a = -b;
         xiter1 = a.begin();
         xiter2 = b.begin();
         ++xiter1;
         ++xiter2;
-        passed &= (*xiter1 == -*xiter2);
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "simple unary operations with assignments.");
+        testassert((*xiter1 == -*xiter2), test, __FILE__, __LINE__);
     }
 
     // Check the other binary operations with assignments.
@@ -2663,46 +2323,44 @@ void TestMTVec<MTFactory>::t8()
 
         typename XVEC::iterator xiter;
 
+	test = "other binary operations with assignments.";
+
         a = 4.;
         b = 3.;
 
         c = pow( a, 3. );
         xiter = c.begin();
-        passed &= (*xiter == 64.);
+        testassert((*xiter == 64.), test, __FILE__, __LINE__);
 
         c = pow(a,b);
         xiter = c.begin();
-        passed &= (*xiter == 64.);
+        testassert((*xiter == 64.), test, __FILE__, __LINE__);
 
         a = 0.;
         b = 1.;
         c = atan2(a,b);
         xiter = c.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         a = 4.;
         b = 3.;
         c = min(a,b);
         xiter = c.begin();
-        passed &= (*xiter == 3.);
+        testassert((*xiter == 3.), test, __FILE__, __LINE__);
 
         c = max(a,b);
         xiter = c.begin();
-        passed &= (*xiter == 4.);
+        testassert((*xiter == 4.), test, __FILE__, __LINE__);
 
         b = 7.;
         c = fmod(b,a);
         xiter = c.begin();
-        passed &= (*xiter == 3.);
+        testassert((*xiter == 3.), test, __FILE__, __LINE__);
 
         b = 3.;
         c = pow(a,min(a,b));
         xiter = c.begin();
-        passed &= (*xiter == 64.);
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "other binary operations with assignments.");
+        testassert((*xiter == 64.), test, __FILE__, __LINE__);
     }
 
     // Check the other unary operations with assignments.
@@ -2716,86 +2374,84 @@ void TestMTVec<MTFactory>::t8()
 
         typename XVEC::iterator xiter;
 
+	test = "other unary operations with assignments.";
+	
         a = 0.;
 
         b = sin(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         b = cos(a);
         xiter = b.begin();
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         b = tan(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         b = asin(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         a = 1.;
         b = acos(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         a = 0.;
         b = atan(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         b = sinh(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         b = cosh(a);
         xiter = b.begin();
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         b = tanh(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         b = exp(a);
         xiter = b.begin();
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         a = exp(1.);
         b = log(a);
         xiter = b.begin();
-        passed &= (fabs(*xiter - 1.) < 0.00001);
+        testassert((fabs(*xiter - 1.) < 0.00001), test, __FILE__, __LINE__);
 
         a = 10.;
         b = log10(a);
         xiter = b.begin();
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         a = 9.;
         b = sqrt(a);
         xiter = b.begin();
-        passed &= (*xiter == 3.);
+        testassert((*xiter == 3.), test, __FILE__, __LINE__);
 
         a = 3.4;
         b = ceil(a);
         xiter = b.begin();
-        passed &= (*xiter == 4.);
+        testassert((*xiter == 4.), test, __FILE__, __LINE__);
 
         a = -3.4;
         b = fabs(a);
         xiter = b.begin();
-        passed &= (fabs(*xiter - 3.4) < 0.00001);
+        testassert((fabs(*xiter - 3.4) < 0.00001), test, __FILE__, __LINE__);
 
         a = 3.4;
         b = floor(a);
         xiter = b.begin();
-        passed &= (*xiter == 3.);
-
-	// print error msg, set object passed state, and reset passed variable
-	
-	error(passed, "other unary operations with assignments.");
+        testassert((*xiter == 3.), test, __FILE__, __LINE__);
     }
 
-    os_m << "t8: end\n";
+    os() << "t8: end\n";
 }
 
 } // end namespace rtt_meshTest

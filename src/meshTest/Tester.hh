@@ -12,8 +12,7 @@
 #ifndef __meshTest_Tester_hh__
 #define __meshTest_Tester_hh__
 
-#include <iostream>
-#include <sstream>
+#include <iosfwd>
 #include <string>
 
 namespace rtt_meshTest
@@ -58,33 +57,21 @@ class Tester
 
     // MANIPULATORS
     
-    void testassert(bool passed, const std::string &msg)
-    {
-	if (!passed)
-	{
-	    os_m << name_m << " failed: " << msg << std::endl;
-	    passed_m = false;
-	}
-    }
-
+    std::ostream &os() { return os_m; }
+    
+    virtual void testassert(bool passed, const std::string &msg);
+    
+    virtual void testassert(bool passed, const std::string &msg,
+			    const std::string &file, const std::string &line);
 
     void testassert(bool passed, const std::string &msg,
-		    const std::string &file, const std::string &line)
-    {
-	testassert(passed, msg + " in " + file + " line: " + line);
-    }
-
-    void testassert(bool passed, const std::string &msg,
-		    const std::string &file, int line)
-    {
-	std::ostringstream strline;
-	strline << line;
-	testassert(passed, msg, file, strline.str());
-    }
+		    const std::string &file, int line);
 
     // ACCESSORS
 
     bool passed() const { return passed_m; }
+
+    const std::string Name() const { return name_m; }
 
     // PROTECTED MANIPULATORS
     
@@ -97,8 +84,6 @@ class Tester
 	return oldpassed;
     }
 
-    std::ostream &os() { return os_m; }
-    
   private:
     
     // IMPLEMENTATION

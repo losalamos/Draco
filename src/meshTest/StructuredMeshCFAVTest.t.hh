@@ -23,8 +23,10 @@ namespace rtt_meshTest
 {
 template<class MTFactory>
 StructuredMeshCFAVTest<MTFactory>::
-StructuredMeshCFAVTest(MTFactory &meshFactory_in)
-    : meshFactory_m(meshFactory_in),
+StructuredMeshCFAVTest(Tester &parent_in, MTFactory &meshFactory_in)
+    : Tester("StructuredMeshCFAVTest", parent_in.os()),
+      parent_m(parent_in),
+      meshFactory_m(meshFactory_in),
       meshProduct_m(meshFactory_m.create()),
       mesh_m(meshProduct_m.mesh()),
       fCtor_m(meshProduct_m.fieldConstructor()),
@@ -62,33 +64,30 @@ StructuredMeshCFAVTest(MTFactory &meshFactory_in)
 template<class MTFactory>
 void StructuredMeshCFAVTest<MTFactory>::run()
 {
-    setMsgPrefix("");
-    addMsg(true, "Running t1().");
+    setPassed(true);
+    
+    os() << "Running t1()." << std::endl;
     
     t1();
 
     typedef typename MT::ConnFacesAroundVertices<typename MT::fcdif> ConnFcdif;
 
-    setMsgPrefix("");
-    addMsg(true, "Running t2<non-const>().");
+    os() << "Running t2<non-const>()." << std::endl;
     
     t2<ConnFcdif, ConnFcdif::iterator,
 	ConnFcdif::value_type::iterator>("non-const");
     
-    setMsgPrefix("");
-    addMsg(true, "Running t2<const>().");
+    os() << "Running t2<const>()." << std::endl;
     
     t2<const ConnFcdif, ConnFcdif::const_iterator,
 	ConnFcdif::value_type::const_iterator>("const");
     
-    setMsgPrefix("");
-    addMsg(true, "Running t3<non-const>().");
+    os() << "Running t3<non-const>()." << std::endl;
     
     t3<ConnFcdif, ConnFcdif::iterator,
 	ConnFcdif::value_type::iterator>("non-const");
     
-    setMsgPrefix("");
-    addMsg(true, "Running t3<const>().");
+    os() << "Running t3<const>()." << std::endl;
     
     t3<const ConnFcdif, ConnFcdif::const_iterator,
 	ConnFcdif::value_type::const_iterator>("const");
@@ -104,14 +103,14 @@ void StructuredMeshCFAVTest<MTFactory>::t1()
     // Test if the sizes of the vertex-centered field is the size we
     // think it should be.
 
-    setMsgPrefix("t1: ");
+    const std::string prefix("t1: ");
     
     if (vindices().size() != NumVerticesPerCell() * get_ncells())
     {
 	std::ostringstream ost;
 	ost << "Size of MT::vcif != " << NumVerticesPerCell()
 	    << " * ncells";
-	addMsg(false, ost.str());
+	testassert(false, prefix+ost.str(), __FILE__, __LINE__);
     }
     
     // Test if the sizes of the face-centered-disc field is the size we
@@ -122,7 +121,7 @@ void StructuredMeshCFAVTest<MTFactory>::t1()
 	std::ostringstream ost;
 	ost << "Size of MT::fcdif != " << NumFacesPerCell()
 	    << " * ncells";
-	addMsg(false, ost.str());
+	testassert(false, prefix+ost.str(), __FILE__, __LINE__);
     }
     
 }
@@ -135,7 +134,7 @@ template<class MTFactory>
 template<class CT, class CIT, class CVIT>
 void StructuredMeshCFAVTest<MTFactory>::t2(const std::string &constness)
 {
-    setMsgPrefix(std::string("t2<") + constness + ">: ");
+    const std::string prefix(std::string("t2<") + constness + ">: ");
     
     typename MT::fcdif ffield(fCtor_m);
     
@@ -148,9 +147,9 @@ void StructuredMeshCFAVTest<MTFactory>::t2(const std::string &constness)
 	== vindices().size();
     if (!samesize)
     {
-	addMsg(false,
-	       std::string("Size of ConnFacesAroundVertices<fcdif> field ") +
-	       " != size of vcif");
+	testassert(false,
+		   prefix + "Size of ConnFacesAroundVertices<fcdif> field " +
+		   " != size of vcif", __FILE__, __LINE__);
     }
 
     // Let's start the outter iteration, to check the inner iterations.
@@ -164,9 +163,10 @@ void StructuredMeshCFAVTest<MTFactory>::t2(const std::string &constness)
 	    == NumFacesPerVertex();
 	if (!correctSize)
 	{
-	    addMsg(false,
-		   std::string("Size of ConnFacesAroundVertices<fcdif> ")
-		   + "inner iteration != number of faces arround a vertex");
+	    testassert(false,
+		       prefix + "Size of ConnFacesAroundVertices<fcdif> "
+		       + "inner iteration != number of faces arround a vertex",
+		       __FILE__, __LINE__);
 	    return;
 	}
     }
@@ -180,7 +180,7 @@ template<class MTFactory>
 template<class CT, class CIT, class CVIT>
 void StructuredMeshCFAVTest<MTFactory>::t3(const std::string &constness)
 {
-    setMsgPrefix(std::string("t3<") + constness + ">: ");
+    const std::string prefix(std::string("t3<") + constness + ">: ");
 
     // Construct two data structures from the ConnFacesArroundVertices
     // construct.
@@ -215,7 +215,7 @@ void StructuredMeshCFAVTest<MTFactory>::t3(const std::string &constness)
 		ost << "Duplicate face, "
 		    << findex << ", found for vertex " << vindex;
 		
-		addMsg(false, ost.str());
+		testassert(false, prefix+ost.str(), __FILE__, __LINE__);
 		return;
 	    }
 	    
@@ -229,7 +229,7 @@ void StructuredMeshCFAVTest<MTFactory>::t3(const std::string &constness)
 		ost << "Duplicate vertex, "
 		    << vindex << ", found for face " << findex;
 		
-		addMsg(false, ost.str());
+		testassert(false, prefix+ost.str(), __FILE__, __LINE__);
 		return;
 	    }
 	}
@@ -239,8 +239,8 @@ void StructuredMeshCFAVTest<MTFactory>::t3(const std::string &constness)
     // agrees with the iteration of the vertex centered field.
     
     if (vi != vindices().end())
-	addMsg(false,
-	       "Conn outer iteration did not agree with vindice's iteration.");
+	testassert(false, prefix + "Conn outer iteration did " +
+		   "not agree with vindice's iteration.", __FILE__, __LINE__);
 
     // Check if this data structure signify the correct number of
     // faces per vertex.
@@ -270,6 +270,8 @@ void StructuredMeshCFAVTest<MTFactory>::
 checkConnectivity(const VecSetInt &facesArroundVertices,
 		  const VecSetInt &verticesArroundFaces)
 {
+    const std::string prefix("checkConnectivity");
+    
     // From the sets of vertices surrounding each face
     // derive the set of edges in the mesh.
 
@@ -285,7 +287,7 @@ checkConnectivity(const VecSetInt &facesArroundVertices,
 	    << ", expected number of edges: "
 	    << NumEdgesPerCell() * get_ncells();
 	
-	addMsg(false, ost.str());
+	testassert(false, prefix+ost.str(), __FILE__, __LINE__);
 	return;
     }
 
@@ -303,6 +305,8 @@ template<class MTFactory>
 std::set<Cell> StructuredMeshCFAVTest<MTFactory>::
 getEdgeSet(const VecSetInt &verticesArroundFaces)
 {
+    const std::string prefix("getEdgeSet");
+    
     // We shall loop over all of the vertex sets for each pair of faces
     // to determine the intersections of vertices for each pair.
     // The intersecting vertices for a pair of faces determine an edge.
@@ -342,13 +346,13 @@ getEdgeSet(const VecSetInt &verticesArroundFaces)
 				  std::ostream_iterator<int>(ost, ","));
 			ost << *last << ")"
 			    << " already inserted into edge set.";
-			addMsg(false, ost.str());
+			testassert(false, prefix+ost.str(), __FILE__, __LINE__);
 			return edgeSet;
 		    }
 		}
 		catch (const std::invalid_argument &exc)
 		{
-		    addMsg(false, exc.what());
+		    testassert(false, prefix+exc.what(), __FILE__, __LINE__);
 		    return edgeSet;
 		}
 	    }
@@ -383,6 +387,8 @@ template<class MTFactory>
 void StructuredMeshCFAVTest<MTFactory>::
 checkEdgeSetforVertexCount(const std::set<Cell> &edgeSet)
 {
+    const std::string prefix("checkEdgeSetforVertexCount");
+    
     // Check to make sure that each vertex shows up in the edge set
     // the correct number of times.
     // The correct number of times is equal to the dimension of the hex,
@@ -402,7 +408,9 @@ checkEdgeSetforVertexCount(const std::set<Cell> &edgeSet)
 	{
 	    if (*vit < 0 || *vit >= vindices().size())
 	    {
-		addMsg(false, "Found edge with illegal vertex number.");
+		testassert(false,
+			   prefix+"Found edge with illegal vertex number.",
+			   __FILE__, __LINE__);
 		return;
 	    }
 	    vrtxCount[*vit]++;
@@ -423,7 +431,7 @@ checkEdgeSetforVertexCount(const std::set<Cell> &edgeSet)
 	    << ") with wrong edge count. "
 	    << "Was " << *badVrtx
 	    << ", should have been " << Dimension() << ".";
-	addMsg(false, ost.str());
+	testassert(false, prefix+ost.str(), __FILE__, __LINE__);
     }
 }
 
@@ -436,6 +444,8 @@ void StructuredMeshCFAVTest<MTFactory>::checkSize(const VecSetInt &vecset,
 						  int size,
 						  const std::string &msg)
 {
+    const std::string prefix("checkSize");
+    
     // Check to make sure that each set, in this vector of sets, is the
     // expected size.
 
@@ -478,7 +488,7 @@ void StructuredMeshCFAVTest<MTFactory>::checkSize(const VecSetInt &vecset,
 	    << " with wrong size.  "
 	    << "Was " << badLoc->size()
 	    << ", should have been " << size << ".";
-	addMsg(false, ost.str());
+	testassert(false, prefix+ost.str(), __FILE__, __LINE__);
     }
 }
 

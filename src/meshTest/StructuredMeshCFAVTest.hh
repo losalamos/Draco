@@ -12,10 +12,10 @@
 #ifndef __meshTest_StructuredMeshCFAVTest_hh__
 #define __meshTest_StructuredMeshCFAVTest_hh__
 
+#include "Tester.hh"
 #include "Cell.hh"
 
 #include <vector>
-#include <list>
 #include <set>
 #include <string>
 
@@ -37,7 +37,7 @@ namespace rtt_meshTest
 // 
 //===========================================================================//
 template<class MTFactory>
-class StructuredMeshCFAVTest 
+class StructuredMeshCFAVTest : public Tester
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -45,20 +45,15 @@ class StructuredMeshCFAVTest
     typedef typename MTFactory::MT MT;
     typedef typename MTFactory::Product MTFactoryProduct;
     typedef typename MT::FieldConstructor FieldConstructor;
-
-    typedef std::vector< std::set<int> > VecSetInt;
-
-  public:
     
-    //! MsgList typedef is a list of pass/fail flags
-    //! and their associated messages.
-
-    typedef std::list< std::pair<bool, std::string> > MsgList;
+    typedef std::vector< std::set<int> > VecSetInt;
 
   private:
     
     // DATA
 
+    Tester &parent_m;
+    
     // The order of the following members are important to
     // the constructor.
     
@@ -69,9 +64,6 @@ class StructuredMeshCFAVTest
     typename MT::vcif vindices_m;
     typename MT::fcdif findices_m;
 
-    std::string msgPrefix_m;
-    MsgList msgList_m;
-    
   public:
 
     // STATIC METHODS
@@ -113,7 +105,7 @@ class StructuredMeshCFAVTest
     
     //! Constructor
 
-    StructuredMeshCFAVTest(MTFactory &meshFactory_in);
+    StructuredMeshCFAVTest(Tester &parent_in, MTFactory &meshFactory_in);
     
     //! Destructor
     
@@ -127,10 +119,30 @@ class StructuredMeshCFAVTest
 
     // ACCESSORS
 
-    //! Returns a list of pass/fail flags, and their associated messages.
+  protected:
 
-    const MsgList &msgList() const { return msgList_m; }
+    // PROTECTED MANIPULATORS
 
+    virtual void testassert(bool passed, const std::string &msg)
+    {
+	parent_m.testassert(passed, Name()+": "+msg);
+	if (!passed)
+	    setPassed(false);
+    }
+    
+    virtual void testassert(bool passed, const std::string &msg,
+			    const std::string &file,
+			    const std::string &line)
+    {
+	Tester::testassert(passed, msg, file, line);
+    }
+    
+    virtual void testassert(bool passed, const std::string &msg,
+			    const std::string &file, int line)
+    {
+	Tester::testassert(passed, msg, file,line);
+    }
+    
   private:
 
     // DISSALLOWED CREATORS
@@ -142,17 +154,6 @@ class StructuredMeshCFAVTest
     StructuredMeshCFAVTest& operator=(const StructuredMeshCFAVTest &rhs);
 
     // IMPLEMENTATION
-
-    void addMsg(bool passed, const std::string &msg)
-    {
-	msgList_m.push_back(std::pair<bool, std::string>(passed,
-							 msgPrefix_m+msg));
-    }
-
-    void setMsgPrefix(const std::string &prefix)
-    {
-	msgPrefix_m = prefix;
-    }
 
     int get_ncells() const { return mesh_m.get_ncells(); }
 

@@ -12,6 +12,8 @@
 #ifndef __meshTest_TestMTVec_hh__
 #define __meshTest_TestMTVec_hh__
 
+#include "Tester.hh"
+
 #include <iosfwd>
 #include <string>
 
@@ -60,7 +62,7 @@ namespace rtt_meshTest
 //===========================================================================//
 
 template<class MTFactory>
-class TestMTVec 
+class TestMTVec : public Tester
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -75,10 +77,6 @@ class TestMTVec
    // DATA
 
     MTFactory &meshFactory_m;
-    
-    std::ostream &os_m;
-    
-    bool passed_m;
 
   public:
 
@@ -87,8 +85,7 @@ class TestMTVec
     //! Constructor
     
     TestMTVec(MTFactory &meshFactory_in, std::ostream &os_in)
-	: meshFactory_m(meshFactory_in), os_m(os_in),
-	  passed_m(false)
+	: Tester("TestMTVec", os_in), meshFactory_m(meshFactory_in)
     {
 	/* empty */
     }
@@ -104,10 +101,6 @@ class TestMTVec
     void run();
 
     // ACCESSORS
-
-    //! Returns success of previously ran run() method.
-    
-    bool passed() const { return passed_m; }
     
   private:
     
@@ -120,8 +113,6 @@ class TestMTVec
     TestMTVec& operator=(const TestMTVec &rhs);
 
     // IMPLEMENTATION
-
-    void error(bool &passed, const std::string &msg);
 
     void t1();
     void t2();

@@ -10,6 +10,8 @@
 //---------------------------------------------------------------------------//
 
 #include "TestMTComm.hh"
+#include "Compare.hh"
+
 #include <iostream>
 #include <functional>
 #include <algorithm>
@@ -18,9 +20,41 @@ namespace rtt_meshTest
 {
 
 template<class T>
-inline std::binder2nd<std::not_equal_to<T> > notEqualTo(T val)
+struct NotNearlyEqualTo
+    : public std::unary_function<T, bool>
 {
-    return std::bind2nd(std::not_equal_to<T>(), val);
+    T val;
+    NearlyEqualTo<T> eqto;
+
+    NotNearlyEqualTo(T val_in)
+	: val(val_in), eqto()
+    {
+	/* empty */
+    }
+    NotNearlyEqualTo(T val_in, int ndigits)
+	: val(val_in), eqto(ndigits)
+    {
+	/* empty */
+    }
+    
+    bool operator()(T lhs) const
+    {
+	return !eqto(lhs,val);
+    }
+};
+
+#if 0
+template<class T>
+inline NotNearlyEqualTo<T> notNearlyEqualTo(T val)
+{
+    return NotNearlyEqualTo<T>(val);
+}
+#endif
+
+template<class T>
+inline NotNearlyEqualTo<T> notNearlyEqualTo(T val, int ndigits)
+{
+    return NotNearlyEqualTo<T>(val,ndigits);
 }
 
 template<class MTFactory>
@@ -30,6 +64,9 @@ void TestMTComm<MTFactory>::run()
 
     os() << "Begin Running....... TestMTComm tests." << std::endl;
 
+    os() << "Comparisons with " << NDigitsAccuracy()
+	 << " digits accuracy." << std::endl;
+    
     setPassed(true);
     
     t3();
@@ -73,7 +110,8 @@ void TestMTComm<MTFactory>::t3()
     f = 0.0;
     MT::scatter(f, c, MT::OpAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(1.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(1.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     test = "t3() failed testing MT::scatter(f, c, MT::OpAddAssign()).";
@@ -85,7 +123,8 @@ void TestMTComm<MTFactory>::t3()
     MT::gather(b, f, MT::OpAssign());
     MT::gather(f, b, MT::OpAddAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(2.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(2.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
 
     test = "t3() failed testing MT::scatter(f, c, MT::OpSubAssign()).";
@@ -97,7 +136,8 @@ void TestMTComm<MTFactory>::t3()
     MT::gather(b, f, MT::OpAssign());
     MT::gather(f, b, MT::OpAddAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(-2.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(-2.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     test = "t3() failed testing MT::scatter(f, c, MT::OpMultAssign()).";
@@ -109,7 +149,8 @@ void TestMTComm<MTFactory>::t3()
     MT::gather(b, f, MT::OpAssign());
     MT::gather(f, b, MT::OpMultAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(9.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(9.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     // Face centered to cell centered scatter
@@ -120,7 +161,8 @@ void TestMTComm<MTFactory>::t3()
     c = 0.0;
     MT::scatter(c, f, MT::OpAddAssign());
 
-    passed = c.end() == std::find_if(c.begin(), c.end(), notEqualTo(6.0));
+    passed = c.end() == std::find_if(c.begin(), c.end(),
+				     notNearlyEqualTo(6.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     test = "t3() failed testing MT::scatter(c, f, MT::OpMultAssign()).";
@@ -129,7 +171,8 @@ void TestMTComm<MTFactory>::t3()
     c = 1.0;
     MT::scatter(c, f, MT::OpMultAssign());
 
-    passed = c.end() == std::find_if(c.begin(), c.end(), notEqualTo(729.0));
+    passed = c.end() == std::find_if(c.begin(), c.end(),
+				     notNearlyEqualTo(729.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     // Vertex centered to face centered scatter
@@ -140,7 +183,8 @@ void TestMTComm<MTFactory>::t3()
     f = 0.0;
     MT::scatter(f, v, MT::OpAddAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(4.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(4.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     test = "t3() failed testing MT::scatter(f, v, MT::OpMultAssign()).";
@@ -149,7 +193,8 @@ void TestMTComm<MTFactory>::t3()
     f = 1.0;
     MT::scatter(f, v, MT::OpMultAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(81.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(81.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     // Face centered to vertex centered scatter
@@ -160,7 +205,8 @@ void TestMTComm<MTFactory>::t3()
     v = 0.0;
     MT::scatter(v, f, MT::OpAddAssign());
 
-    passed = v.end() == std::find_if(v.begin(), v.end(), notEqualTo(3.0));
+    passed = v.end() == std::find_if(v.begin(), v.end(),
+				     notNearlyEqualTo(3.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     // Vertex centered to node centered scatter
@@ -171,7 +217,8 @@ void TestMTComm<MTFactory>::t3()
     n = 0.0;
     MT::scatter(n, v, MT::OpAssign());
 
-    passed = n.end() == std::find_if(n.begin(), n.end(), notEqualTo(1.0));
+    passed = n.end() == std::find_if(n.begin(), n.end(),
+				     notNearlyEqualTo(1.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     test = "t3() failed testing MT::scatter(n, v, MT::OpMultAssign()).";
@@ -180,7 +227,8 @@ void TestMTComm<MTFactory>::t3()
     n = 1.0;
     MT::scatter(n, v, MT::OpMultAssign());
 
-    passed = n.end() == std::find_if(n.begin(), n.end(), notEqualTo(1.0));
+    passed = n.end() == std::find_if(n.begin(), n.end(),
+				     notNearlyEqualTo(1.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     // Vertex centered to cell centered scatter
@@ -191,7 +239,8 @@ void TestMTComm<MTFactory>::t3()
     c = 0.0;
     MT::scatter(c, v, MT::OpAddAssign());
 
-    passed = c.end() == std::find_if(c.begin(), c.end(), notEqualTo(8.0));
+    passed = c.end() == std::find_if(c.begin(), c.end(),
+				     notNearlyEqualTo(8.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     // Cell centered to face centered gather
@@ -202,7 +251,8 @@ void TestMTComm<MTFactory>::t3()
     f = 0.0;
     MT::gather(f, c, MT::OpAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(1.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(1.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     test = "t3() failed testing MT::gather(f, c, MT::OpMinAssign()).";
@@ -211,14 +261,16 @@ void TestMTComm<MTFactory>::t3()
     f = 3.0;
     MT::gather(f, c, MT::OpMinAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(3.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(3.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     c = 5.0;
     f = 6.0;
     MT::gather(f, c, MT::OpMinAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(5.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(5.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     test = "t3() failed testing MT::gather(f, c, MT::OpMaxAssign()).";
@@ -227,14 +279,16 @@ void TestMTComm<MTFactory>::t3()
     f = 3.0;
     MT::gather(f, c, MT::OpMaxAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(5.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(5.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     c = 5.0;
     f = 6.0;
     MT::gather(f, c, MT::OpMaxAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(6.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(6.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     // Face centered to boundary specified gather
@@ -245,7 +299,8 @@ void TestMTComm<MTFactory>::t3()
     b = 0.0;
     MT::gather(b, f, MT::OpAssign());
 
-    passed = b.end() == std::find_if(b.begin(), b.end(), notEqualTo(1.0));
+    passed = b.end() == std::find_if(b.begin(), b.end(),
+				     notNearlyEqualTo(1.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     // Boundary specified to face centered gather
@@ -258,7 +313,8 @@ void TestMTComm<MTFactory>::t3()
     b = 0.0;
     MT::gather(b, f, MT::OpAssign());
 
-    passed = b.end() == std::find_if(b.begin(), b.end(), notEqualTo(1.0));
+    passed = b.end() == std::find_if(b.begin(), b.end(),
+				     notNearlyEqualTo(1.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     // Node centered to vertex centered gather
@@ -269,7 +325,8 @@ void TestMTComm<MTFactory>::t3()
     v = 0.0;
     MT::gather(v, n, MT::OpAssign());
 
-    passed = v.end() == std::find_if(v.begin(), v.end(), notEqualTo(1.0));
+    passed = v.end() == std::find_if(v.begin(), v.end(),
+				     notNearlyEqualTo(1.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     test = "t3() failed testing MT::gather(v, n, MT::OpAddAssign()).";
@@ -278,7 +335,8 @@ void TestMTComm<MTFactory>::t3()
     v = 0.0;
     MT::gather(v, n, MT::OpAddAssign());
 
-    passed = v.end() == std::find_if(v.begin(), v.end(), notEqualTo(1.0));
+    passed = v.end() == std::find_if(v.begin(), v.end(),
+				     notNearlyEqualTo(1.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     // Cell centered to vertex centered gather
@@ -289,7 +347,8 @@ void TestMTComm<MTFactory>::t3()
     v = 0.0;
     MT::gather(v, c, MT::OpAssign());
 
-    passed = v.end() == std::find_if(v.begin(), v.end(), notEqualTo(1.0));
+    passed = v.end() == std::find_if(v.begin(), v.end(),
+				     notNearlyEqualTo(1.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     // Face swaps
@@ -302,13 +361,15 @@ void TestMTComm<MTFactory>::t3()
     b = 1.0;
     MT::gather(b, f, MT::OpAssign());
 
-    passed = b.end() == std::find_if(b.begin(), b.end(), notEqualTo(0.0));
+    passed = b.end() == std::find_if(b.begin(), b.end(),
+				     notNearlyEqualTo(0.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     b = 3.0;
     MT::gather(f, b, MT::OpAssign());
 
-    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(3.0));
+    passed = f.end() == std::find_if(f.begin(), f.end(),
+				     notNearlyEqualTo(3.0, NDigitsAccuracy()));
     testassert(passed, test, __FILE__, __LINE__);
     
     os() << "t3: end\n";
@@ -350,7 +411,7 @@ void TestMTComm<MTFactory>::t4()
 
     c = value;
     ccif::value_type csum = MT::sum(c);
-    testassert(!(csum != value*mesh.get_total_ncells()), test,
+    testassert(csum == value*mesh.get_total_ncells(), test,
 	       __FILE__, __LINE__);
     
     // Face centered sum
@@ -359,7 +420,7 @@ void TestMTComm<MTFactory>::t4()
     
     f = value;
     fcdif::value_type fsum = MT::sum(f);
-    testassert(!(fsum != value*6*mesh.get_total_ncells()), test,
+    testassert(fsum == value*6*mesh.get_total_ncells(), test,
 	       __FILE__, __LINE__);
     
     // Node centered sum
@@ -368,9 +429,8 @@ void TestMTComm<MTFactory>::t4()
     
     n = value;
     ncif::value_type nsum = MT::sum(n);
-    testassert(!(nsum !=
-		 value*((mesh.get_ncx() + 1)*(mesh.get_ncy() + 1)*
-			(mesh.get_ncz() + 1))), test, __FILE__, __LINE__);
+    testassert(nsum == value*((mesh.get_ncx() + 1)*(mesh.get_ncy() + 1)*
+			      (mesh.get_ncz() + 1)), test, __FILE__, __LINE__);
     
     // Vertex centered sum
 
@@ -378,7 +438,7 @@ void TestMTComm<MTFactory>::t4()
     
     v = value;
     vcif::value_type vsum = MT::sum(v);
-    testassert(!(vsum != value*8*mesh.get_total_ncells()), test,
+    testassert(vsum == value*8*mesh.get_total_ncells(), test,
 	       __FILE__, __LINE__);
     
     // Boundary specified sum
@@ -387,10 +447,9 @@ void TestMTComm<MTFactory>::t4()
     
     b = value;
     bsif::value_type bsum = MT::sum(b);
-    testassert(!(bsum !=
-		 value*2*((mesh.get_ncx()*mesh.get_ncy()) +
-			  (mesh.get_ncx()*mesh.get_ncz()) +
-			  (mesh.get_ncy()*mesh.get_ncz()))),
+    testassert(bsum == value*2*((mesh.get_ncx()*mesh.get_ncy()) +
+				(mesh.get_ncx()*mesh.get_ncz()) +
+				(mesh.get_ncy()*mesh.get_ncz())),
 	       test, __FILE__, __LINE__);
     
     // Cell centered minimum
@@ -404,7 +463,7 @@ void TestMTComm<MTFactory>::t4()
         ++value;
     }
     ccif::value_type cmin = MT::min(c);
-    testassert(!(cmin != 1), test, __FILE__, __LINE__);
+    testassert(cmin == 1, test, __FILE__, __LINE__);
     
     // Face centered minimum
 
@@ -417,7 +476,7 @@ void TestMTComm<MTFactory>::t4()
         ++value;
     }
     fcdif::value_type fmin = MT::min(f);
-    testassert(!(fmin != 1), test, __FILE__, __LINE__);
+    testassert(fmin == 1, test, __FILE__, __LINE__);
     
     // Node centered minimum
 
@@ -430,7 +489,7 @@ void TestMTComm<MTFactory>::t4()
         ++value;
     }
     ncif::value_type nmin = MT::min(n);
-    testassert(!(nmin != 1), test, __FILE__, __LINE__);
+    testassert(nmin == 1, test, __FILE__, __LINE__);
     
     // Vertex centered minimum
 
@@ -443,7 +502,7 @@ void TestMTComm<MTFactory>::t4()
         ++value;
     }
     vcif::value_type vmin = MT::min(v);
-    testassert(!(vmin != 1), test, __FILE__, __LINE__);
+    testassert(vmin == 1, test, __FILE__, __LINE__);
     
     // Boundary specified minimum
 
@@ -456,7 +515,7 @@ void TestMTComm<MTFactory>::t4()
         ++value;
     }
     bsif::value_type bmin = MT::min(b);
-    testassert(!(bmin != 1), test, __FILE__, __LINE__);
+    testassert(bmin == 1, test, __FILE__, __LINE__);
 
     // Cell centered maximum
 
@@ -469,7 +528,7 @@ void TestMTComm<MTFactory>::t4()
         --value;
     }
     ccif::value_type cmax = MT::max(c);
-    testassert(!(cmax != 1), test, __FILE__, __LINE__);
+    testassert(cmax == 1, test, __FILE__, __LINE__);
     
     // Face centered maximum
 
@@ -482,7 +541,7 @@ void TestMTComm<MTFactory>::t4()
         --value;
     }
     fcdif::value_type fmax = MT::max(f);
-    testassert(!(fmax != 1), test, __FILE__, __LINE__);
+    testassert(fmax == 1, test, __FILE__, __LINE__);
     
     // Node centered maximum
 
@@ -495,7 +554,7 @@ void TestMTComm<MTFactory>::t4()
         --value;
     }
     ncif::value_type nmax = MT::max(n);
-    testassert(!(nmax != 1), test, __FILE__, __LINE__);
+    testassert(nmax == 1, test, __FILE__, __LINE__);
     
     // Vertex centered maximum
 
@@ -508,7 +567,7 @@ void TestMTComm<MTFactory>::t4()
         --value;
     }
     vcif::value_type vmax = MT::max(v);
-    testassert(!(vmax != 1), test, __FILE__, __LINE__);
+    testassert(vmax == 1, test, __FILE__, __LINE__);
     
     // Boundary specified maximum
 
@@ -521,7 +580,7 @@ void TestMTComm<MTFactory>::t4()
         --value;
     }
     bsif::value_type bmax = MT::max(b);
-    testassert(!(bmax != 1), test, __FILE__, __LINE__);
+    testassert(bmax == 1, test, __FILE__, __LINE__);
     
     os() << "t4: end\n";
 }

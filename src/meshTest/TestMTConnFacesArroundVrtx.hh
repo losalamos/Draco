@@ -12,12 +12,14 @@
 #ifndef __meshTest_TestMTConnFacesArroundVrtx_hh__
 #define __meshTest_TestMTConnFacesArroundVrtx_hh__
 
+#include "Tester.hh"
+
 #include <string>
 #include <iosfwd>
 
 namespace rtt_meshTest
 {
- 
+
 //===========================================================================//
 /*!
  * \class TestMTConnFacesArroundVrtx
@@ -60,7 +62,7 @@ namespace rtt_meshTest
 //===========================================================================//
 
 template<class MTFactory>
-class TestMTConnFacesArroundVrtx 
+class TestMTConnFacesArroundVrtx : public Tester
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -72,14 +74,10 @@ class TestMTConnFacesArroundVrtx
     typedef typename MTFactory::Structured Structured;
     typedef typename MTFactory::UnStructured UnStructured;
     typedef typename MTFactory::Structuring Structuring;
-    
+
     // DATA
     
     MTFactory &meshFactory_m;
-    
-    std::ostream &os_m;
-    
-    bool passed_m;
 
   public:
 
@@ -88,8 +86,8 @@ class TestMTConnFacesArroundVrtx
     //! Constructor
     
     TestMTConnFacesArroundVrtx(MTFactory &meshFactory_in, std::ostream &os_in)
-	: meshFactory_m(meshFactory_in), os_m(os_in),
-	  passed_m(false)
+	: Tester("TestMTConnFacesArroundVrtx", os_in),
+	  meshFactory_m(meshFactory_in)
     {
 	/* empty */
     }
@@ -105,10 +103,6 @@ class TestMTConnFacesArroundVrtx
     void run();
 
     // ACCESSORS
-
-    //! Returns success of previously ran run() method.
-    
-    bool passed() const { return passed_m; }
     
   private:
     
@@ -121,8 +115,6 @@ class TestMTConnFacesArroundVrtx
     TestMTConnFacesArroundVrtx& operator=(const TestMTConnFacesArroundVrtx &rhs);
 
     // IMPLEMENTATION
-
-    void error(bool &passed, const std::string &msg);
 
     void run(Structured);
 

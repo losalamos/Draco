@@ -60,7 +60,7 @@ namespace rtt_meshTest
 //===========================================================================//
 
 template<class MTFactory>
-class TestMTComm : private Tester
+class TestMTComm : public Tester
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -71,6 +71,10 @@ class TestMTComm : private Tester
 
     // DATA
     
+    static const int DefaultNDigitsAccuracy = 5;
+    
+    int nDigitsAccuracy_m;
+
     MTFactory &meshFactory_m;
     
   public:
@@ -79,8 +83,10 @@ class TestMTComm : private Tester
 
     //! Constructor
     
-    TestMTComm(MTFactory &meshFactory_in, std::ostream &os_in)
-	: Tester("TestMTComm", os_in), meshFactory_m(meshFactory_in)
+    TestMTComm(MTFactory &meshFactory_in, std::ostream &os_in,
+	       int ndigits_in = DefaultNDigitsAccuracy)
+	: Tester("TestMTComm", os_in), nDigitsAccuracy_m(ndigits_in),
+	  meshFactory_m(meshFactory_in)
     {
 	/* empty */
     }
@@ -97,10 +103,8 @@ class TestMTComm : private Tester
 
     // ACCESSORS
 
-    //! Returns success of previously ran run() method.
-    
-    Tester::passed;
-    
+    int NDigitsAccuracy() const { return nDigitsAccuracy_m; }
+
   private:
     
     // DISSALLOWED CREATORS

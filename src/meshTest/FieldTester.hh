@@ -36,7 +36,7 @@ namespace rtt_meshTest
 //===========================================================================//
 
 template<class MT, class FGRP>
-class FieldTester : private Tester
+class FieldTester : public Tester
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -73,8 +73,6 @@ class FieldTester : private Tester
     void run();
 
     // ACCESSORS
-
-    bool passed() const { return Tester::passed(); }
 
   private:
     
