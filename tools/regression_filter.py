@@ -21,6 +21,16 @@ import re
 import string
 
 ##---------------------------------------------------------------------------##
+## Parse the test name
+##---------------------------------------------------------------------------##
+
+def get_test_name(key):
+
+    # key has form "package:test name"
+    i = string.find(key, ":")
+    return key[i+1:]
+
+##---------------------------------------------------------------------------##
 ## Set hostname where this filter is run
 ##---------------------------------------------------------------------------##
 
@@ -155,7 +165,7 @@ for line in lines:
     if match:
 
         # test key
-        key = match.group(1)
+        key = pkg_key + ":" + match.group(1)
 
         # add to list
         if test_list.count(key) == 0:
@@ -190,7 +200,7 @@ for line in lines:
 
     if match:
 
-        # determine passes in this test
+        # determine failures in this test
         nf = string.atoi(match.group(1))
         
         # add to the results
@@ -214,7 +224,6 @@ for line in lines:
 
         # add warning line number to list
         warn_line.append(ln)
-
 
 # determine whether there were any failures, warnings, or errors
 all_passed = (total_fails is 0) and \
@@ -256,9 +265,10 @@ for pkg in pkg_tests.keys():
     nc = 0
     nr = len(pkg_tests[pkg])
     for key in pkg_tests[pkg]:
-        nc      = nc + 1
-        results = tests[key]
-        print "%40s %8i %11i %9i" % (key, results[0], results[1],
+        nc        = nc + 1
+        results   = tests[key]
+        test_name = get_test_name(key)
+        print "%40s %8i %11i %9i" % (test_name, results[0], results[1],
                                       results[2])
 
         if nc < nr:
