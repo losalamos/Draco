@@ -16,11 +16,15 @@ namespace rtt_imc
 
 using std::string;
 
-// function definition for Release, define the local version number for
-// this library in the form imc_#.#.# in pkg_version variable
+/*!
+ * \return string of the release number
+ *
+ * Function definition for Release, define the local version number for
+ * this library in the form imc-\#_\#_\# in pkg_release variable
+ */
 const string release()
 {
-    string pkg_release = "@(#)imc-1_3_0a";
+    string pkg_release = "@(#)imc-2_0_0";
     return pkg_release;
 }
 

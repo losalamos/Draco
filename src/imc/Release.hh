@@ -15,7 +15,7 @@
 //===========================================================================//
 /*!
  * \page imc_overview Overview of the IMC package
- * \version 1_3_0
+ * \version 2_0_0
  * \author Tom Evans, Todd Urbatsch
 
  * The imc package is a set of class that are used to perform cell-centered,

@@ -1,3 +1,9 @@
+2000-12-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: Updated to imc-2_0_0.  This update includes all of our
+	major parallel redesign modifications.  It does not yet include
+	threads. 
+
 2000-08-24  Todd J. Urbatsch  <tmonster@lanl.gov>
 
 	* Source_Builder.t.hh, Source.t.hh: Added work-around capability
