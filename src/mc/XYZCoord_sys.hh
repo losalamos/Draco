@@ -1,20 +1,34 @@
 //----------------------------------*-C++-*----------------------------------//
-// XYZCoord_sys.hh
-// Thomas M. Evans
-// Fri Jan 30 16:45:36 1998
+/*!
+ * \file   mc/XYZCoord_sys.hh
+ * \author Thomas M. Evans
+ * \date   Fri Jan 30 16:45:36 1998
+ * \brief  XYZCoord_sys derived class header file
+ */
 //---------------------------------------------------------------------------//
-// @> XYZCoord_sys derived class header file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __mc_XYZCoord_sys_hh__
 #define __mc_XYZCoord_sys_hh__
 
+#include "Coord_sys.hh"
+#include "rng/Sprng.hh"
+#include "ds++/Assert.hh"
+#include <vector>
+#include <string>
+#include <cmath>
+
+namespace rtt_mc 
+{
+
 //===========================================================================//
-// class XYZCoord_sys - 
-//
-// Purpose : XYZ geometry coordinate system functions, derived
-//           class of Coord_sys
-//
+/*!
+ * \class XYZCoord_sys
+ *
+ * Derived class for \i XYZ coordinate systems.  Inherits the public
+ * interface from rtt_mc::Coord_sys.  
+ */
 // revision history:
 // -----------------
 //  0) original
@@ -29,126 +43,107 @@
 // 
 //===========================================================================//
 
-#include "Coord_sys.hh"
-#include "rng/Sprng.hh"
-#include "ds++/Assert.hh"
-#include <vector>
-#include <string>
-#include <cmath>
-
-namespace rtt_mc 
-{
-    
-using std::vector;
-using std::string;
-using std::sqrt;
-
-using rtt_rng::Sprng;
-
 class XYZCoord_sys : public Coord_sys
 {
-  // Begin_Doc xyzcoord_sys-int.tex
-  // Begin_Verbatim 
-
-public:
-  // default constructor for 3D meshes
+  public:
+    // Default constructor for 3D meshes.
     XYZCoord_sys() : Coord_sys(3) {}
 
-  // virtual functions
-    virtual string get_Coord() const { string c = "xyz"; return c; }
+    // >>> Virtual functions inherited for Coord_sys.
 
-    inline virtual vector<double> 
-    sample_pos(vector<double> &, vector<double> &, Sprng &) const;
+    // Return the coordinate system.
+    std_string get_Coord() const { std_string c = "xyz"; return c; }
+
+    // Sample positions in XYZ coordinate system.
+    inline sf_double sample_pos(sf_double &, sf_double &, rng_Sprng &) const; 
     
-    inline virtual vector<double> 
-    sample_pos(vector<double> &, vector<double> &, Sprng &, 
-	       vector<double> &, double) const;
+    inline sf_double sample_pos(sf_double &, sf_double &, rng_Sprng &, 
+				sf_double &, double) const;
     
-    inline virtual 
-    vector<double> sample_pos_on_face(vector<double> &, vector<double> &, 
-				      int, Sprng &) const; 
-    
-  // End_Verbatim 
-  // End_Doc 
+    inline sf_double sample_pos_on_face(sf_double &, sf_double &, 
+					int, rng_Sprng &) const; 
 };
 
 //---------------------------------------------------------------------------//
-// INLINE Functions
+// PUBLIC INTERFACE TO XYZ COORDINATE SYSTEM (inherited from Coord_sys)
 //---------------------------------------------------------------------------//
 // sample the position in an XYZ cell
 
-inline vector<double> 
-XYZCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
-			 Sprng &random) const
+Coord_sys::sf_double XYZCoord_sys::sample_pos(sf_double &min, 
+					      sf_double &max,
+					      rng_Sprng &random) const
 {
-  // make return vector
-    vector<double> r(3);
+    // make return vector
+    sf_double r(3);
 
-  // some assertions
+    // some assertions
     Check (min.size() == 3);
     Check (max.size() == 3);
 
     for (int d = 0; d < 3; d++)
     {
-      // do uniform sampling
+	// do uniform sampling
 	r[d] = (max[d] - min[d]) * random.ran() + min[d];
     }
 
-  // return assigned array
+    // return assigned array
     return r;
 }
 
 //---------------------------------------------------------------------------//
 // sample the position in a cell from a linear function
 
-inline vector<double> 
-XYZCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
-			 Sprng &random, vector<double> &slope, 
-			 double center_pt) const
+Coord_sys::sf_double XYZCoord_sys::sample_pos(sf_double &min, 
+					      sf_double &max,
+					      rng_Sprng &random, 
+					      sf_double &slope, 
+					      double center_pt) const
 {
-  // make return vector
-    vector<double> r(3);
+    // make return vector
+    sf_double r(3);
 
-  // some assertions
+    // some assertions
     Check (min.size() == 3);
     Check (max.size() == 3);
 
     for (int d = 0; d < 3; d++)
     {
-      // sample the linear function using linear-linear decomposition of
-      // y = mx + b (b is intercept on low side of cell)
+	// sample the linear function using linear-linear decomposition of
+	// y = mx + b (b is intercept on low side of cell)
 	double b = center_pt - slope[d] * (max[d] - min[d]) * 0.5;
 
-      // prob is the fractional area of the negative slope line
+	// prob is the fractional area of the negative slope line
 	double prob = 0.5 * b / center_pt;
 
-      // sample the dimension
+	// sample the dimension
 	if (random.ran() <= prob)
-	    r[d] = max[d] - (max[d] - min[d]) * sqrt(random.ran());
+	    r[d] = max[d] - (max[d] - min[d]) * std::sqrt(random.ran());
 	else
-	    r[d] = min[d] + (max[d] - min[d]) * sqrt(random.ran());
+	    r[d] = min[d] + (max[d] - min[d]) * std::sqrt(random.ran());
     }
 
-  // return assigned array
+    // return assigned array
     return r;
 }
 
 //---------------------------------------------------------------------------//
 // sample the position on an XYZ face
 
-inline vector<double> 
-XYZCoord_sys::sample_pos_on_face(vector<double> &min, vector<double> &max, 
-				 int face, Sprng &random) const
+Coord_sys::sf_double
+XYZCoord_sys::sample_pos_on_face(sf_double &min, 
+				 sf_double &max, 
+				 int face, 
+				 rng_Sprng &random) const
 {
-  // make return vector
-    vector<double> r(3);
+    // make return vector
+    sf_double r(3);
 
-  // some assertions
+    // some assertions
     Check (min.size() == 3);
     Check (max.size() == 3);
     Check (face >= 1 && face <= 6);
 
-  // distribute uniformly over face
+    // distribute uniformly over face
     if (face == 1)
     {
 	r[0] = min[0];
@@ -186,9 +181,10 @@ XYZCoord_sys::sample_pos_on_face(vector<double> &min, vector<double> &max,
 	r[2] = max[2];
     }
 
-  // return assigned array
+    // return assigned array
     return r;
 }
+
 } // end namespace rtt_mc
 
 #endif                          // __mc_XYZCoord_sys_hh__

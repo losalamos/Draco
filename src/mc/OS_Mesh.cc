@@ -1,9 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// OS_Mesh.cc
-// Thomas M. Evans
-// Tue Feb  3 16:50:13 1998
+/*!
+ * \file   mc/OS_Mesh.cc
+ * \author Thomas M. Evans
+ * \date   Tue Feb  3 16:50:13 1998
+ * \brief  OS_Mesh class implementation file.
+ */
 //---------------------------------------------------------------------------//
-// @> OS_Mesh class implementation file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "OS_Mesh.hh"
@@ -19,13 +22,24 @@ using std::sort;
 using std::endl;
 using std::setw;
 using std::ios;
+using std::vector;
+using std::fill;
+using std::min_element;
+using std::ostream;
+using std::pow;
+using std::endl;
+using std::string;
 
 //---------------------------------------------------------------------------//
-// constructors
+// CONSTRUCTOR
 //---------------------------------------------------------------------------//
 // default constructor
-OS_Mesh::OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_d &vertex_, 
-		 CCVF_i &cell_pair_, bool submesh_) 
+
+OS_Mesh::OS_Mesh(SP_Coord_sys coord_, 
+		 Layout &layout_, 
+		 vf_double &vertex_, 
+		 vf_int &cell_pair_, 
+		 bool submesh_) 
     : coord(coord_), layout(layout_), vertex(vertex_),
       cell_pair(cell_pair_), sur(coord->get_dim()), submesh(submesh_)
 {
@@ -50,12 +64,12 @@ OS_Mesh::OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_d &vertex_,
 }
 
 //---------------------------------------------------------------------------//
-// private member functions
+// PRIVATE IMPLEMENTATION
 //---------------------------------------------------------------------------//
+// calculate an array of the dimensional surfaces which make up the OS_Mesh
+
 void OS_Mesh::calc_surface()
 {
-    // calculate an array of the dimensional surfaces which make up the OS_Mesh
-
     // initialize mesh_size for assertion at end of function
     int mesh_size = 1;
 
@@ -83,11 +97,11 @@ void OS_Mesh::calc_surface()
 }
 
 //---------------------------------------------------------------------------//
-// member functions
+// PUBLIC INTERFACE FOR IMC
 //---------------------------------------------------------------------------//
 // do binary search on a cell
 
-int OS_Mesh::get_cell(const vector<double> &r) const
+int OS_Mesh::get_cell(const sf_double &r) const
 {
     Require (!submesh);
 
@@ -125,11 +139,9 @@ int OS_Mesh::get_cell(const vector<double> &r) const
 //---------------------------------------------------------------------------//
 // calculate the distance to boundary
 
-double OS_Mesh::get_db(const vector<double> &r, const vector<double> &omega,
-		       int cell, int &face) const
+double OS_Mesh::get_db(const sf_double &r, const sf_double &omega, int cell, 
+		       int &face) const
 {
-    using std::vector;
-    using std::min_element;
     using global::huge;
     
     // calculate distance to the vec(r) boundaries
@@ -171,7 +183,7 @@ double OS_Mesh::get_db(const vector<double> &r, const vector<double> &omega,
 //---------------------------------------------------------------------------//
 // return the face number for a given cell boundary
 
-int OS_Mesh::get_bndface(string boundary, int cell) const
+int OS_Mesh::get_bndface(std_string boundary, int cell) const
 {
     // return the face number for boundary on cell
 
@@ -198,7 +210,7 @@ int OS_Mesh::get_bndface(string boundary, int cell) const
 //---------------------------------------------------------------------------//
 // return a list of cells along a specified boundary
 
-vector<int> OS_Mesh::get_surcells(string boundary) const
+OS_Mesh::sf_int OS_Mesh::get_surcells(std::string boundary) const
 {
     Require (!submesh);
 
@@ -299,8 +311,8 @@ vector<int> OS_Mesh::get_surcells(string boundary) const
 // check that a user-/host-defined set of surface source cells actually
 // resides on the surface of the system (requires a vacuum bnd).
 
-bool OS_Mesh::check_defined_surcells(const string ss_face, 
-				     const vector<int> &ss_list) const
+bool OS_Mesh::check_defined_surcells(const std_string ss_face, 
+				     const sf_int &ss_list) const
 {
     // a weak check on number of surface cells
     Check (ss_list.size() <= num_cells());
@@ -350,7 +362,7 @@ bool OS_Mesh::operator==(const OS_Mesh &rhs) const
 //---------------------------------------------------------------------------//
 // return the cell type for each cell in the mesh
 
-vector<int> OS_Mesh::get_cell_types() const
+OS_Mesh::sf_int OS_Mesh::get_cell_types() const
 {
     vector<int> cell_type(layout.num_cells());
 
@@ -368,7 +380,7 @@ vector<int> OS_Mesh::get_cell_types() const
 //---------------------------------------------------------------------------//
 // get point coordinates [0:npoints-1, 0:ndim-1]
 
-vector<vector<double> > OS_Mesh::get_point_coord() const
+OS_Mesh::vf_double OS_Mesh::get_point_coord() const
 {
     int npoints = vertex[0].size();
     vector<vector<double> > return_coord(npoints);

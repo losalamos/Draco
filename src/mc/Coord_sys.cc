@@ -1,14 +1,16 @@
 //----------------------------------*-C++-*----------------------------------//
-// Coord_sys.cc
-// Thomas M. Evans
-// Fri Jan 30 16:45:37 1998
+/*!
+ * \file   mc/Coord_sys.cc
+ * \author Thomas M. Evans
+ * \date   Fri Jan 30 16:45:37 1998
+ * \brief  Coord_sys base class implementation file
+ */
 //---------------------------------------------------------------------------//
-// @> Coord_sys base class implementation file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Coord_sys.hh"
 #include "Constants.hh"
-#include <iostream>
 #include <cmath>
 
 namespace rtt_mc 
@@ -18,43 +20,46 @@ using global::pi;
 using std::cos;
 using std::sin;
 using std::sqrt;
+using std::vector;
+using std::string;
 
 //---------------------------------------------------------------------------//
-// virtual member functions
+// VIRTUAL MEMBER FUNCTIONS
 //---------------------------------------------------------------------------//
 // set Omega directions for 3D transport
 
-vector<double> Coord_sys::sample_dir(string dist, Sprng &random) const
+Coord_sys::sf_double Coord_sys::sample_dir(std_string dist, 
+					   rng_Sprng &random) const
 {
-  // make return vector
+    // make return vector
     vector<double> omega_(3);
 
-  // get direction cosines for different distributions
+    // get direction cosines for different distributions
     if (dist == "isotropic")
     {
-      // sample costheta and phi for 3D transport 
+	// sample costheta and phi for 3D transport 
 	double costheta, sintheta, phi;
 	costheta = 1 - 2 * random.ran();
 	sintheta = sqrt(1 - costheta * costheta);
 	phi      = 2 * pi * random.ran();
 
-      // calculate 3D direction cosines
+	// calculate 3D direction cosines
 	omega_[0] = sintheta * cos(phi);
 	omega_[1] = sintheta * sin(phi);
 	omega_[2] = costheta;
     }
 
-  // return vector
+    // return vector
     return omega_;
 }
 
 //---------------------------------------------------------------------------//
 // calculate Omega directions for 3D transport
 
-void Coord_sys::calc_omega(double costheta, double phi, vector<double> 
-			   &omega_) const
+void Coord_sys::calc_omega(double costheta, double phi, 
+			   sf_double &omega_) const
 {
-  // calculate new direction cosines
+    // calculate new direction cosines
     double sintheta = sqrt(1 - costheta * costheta);
     vector<double> old_dir;
     old_dir = omega_;

@@ -1,20 +1,45 @@
 //----------------------------------*-C++-*----------------------------------//
-// Coord_sys.hh
-// Thomas M. Evans
-// Fri Jan 30 16:36:51 1998
+/*!
+ * \file   mc/Coord_sys.hh
+ * \author Thomas M. Evans
+ * \date   Fri Jan 30 16:36:51 1998
+ * \brief  Coord_sys abstract base class header file
+ */
 //---------------------------------------------------------------------------//
-// @> Coord_sys abstract base class header file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __mc_Coord_sys_hh__
 #define __mc_Coord_sys_hh__
 
-//===========================================================================//
-// class Coord_sys - 
-//
-// Purpose : abstract base class which defines the coordinate system
-//           which the Mesh lives in
-//
+#include "rng/Sprng.hh"
+#include <vector>
+#include <string>
+
+namespace rtt_mc 
+{
+
+//===========================================================================/
+/*!
+ * \class Coord_sys
+ *
+ * Coordinate system abstract base class for use in mesh types for Monte
+ * Carlo applications.  The coordinate system family of classes provide a
+ * means for doing coordinate system dependent sampling.  In general, the
+ * coordinate system classes are used as components of mesh types; thus, they
+ * are not generally used outside of mesh classes.  For examples of this type
+ * of implementation see the rtt_mc::OS_Mesh class.
+ *
+ * Currently, a majority of these functions will only work in orthogonal
+ * meshes.  However, they can still be used for a whole class of orthogonal
+ * meshes: \i XYZ, \i XY, \i RZ, \i R. 
+ */
+/*!
+ * \example mc/test/tstCoord.cc
+ *
+ * Examples of coordinate system usage.  Normally these are used as
+ * components of class types. 
+ */
 // revision history:
 // -----------------
 //  0) original
@@ -28,74 +53,71 @@
 // 
 //===========================================================================//
 
-#include "rng/Sprng.hh"
-#include <vector>
-#include <string>
-
-namespace rtt_mc 
-{
-
-using std::vector;
-using std::string;
-using rtt_rng::Sprng;
-
 class Coord_sys
 {
+  public:
+    // STL Typedefs
+    typedef std::vector<int>    sf_int;
+    typedef std::vector<double> sf_double;
+    typedef std::string         std_string;
+    typedef rtt_rng::Sprng      rng_Sprng;
+
   private:
-    // dimension of system
+    // Dimension of system.
     const int dimension;
+
+    // Effective dimension of system (MC always tracks in 3-D).
     const int set_dimension;
 
-    // Begin_Doc coord_sys-int.tex 
-    // Begin_Verbatim 
-
   public:
-    // constructor for setting dimension of Coord_sys, inline
+    // Constructor for setting dimension of Coord_sys.
     Coord_sys(int dimension_) 
 	:dimension(dimension_), set_dimension(3) {}
 
-    // virtual destructor to insure correct behavior down inheritance chain
+    // Virtual destructor to insure correct behavior down inheritance chain.
     virtual ~Coord_sys() {}
 
-    // base class member functions
+    // >>> Base class member functions.
 
-    // we have two dimensionalities, a "real" dimension for the geometry and a
-    // "transport" dimension for MC transport which is inherently 3D
+    // We have two dimensionalities, a "real" dimension for the geometry and a
+    // "transport" dimension for MC transport which is inherently 3D.
     int get_dim() const { return dimension; } 
     int get_sdim() const { return set_dimension; }
 
-    // pure virtual functions
-    virtual string get_Coord() const = 0;
- 
-    virtual vector<double> 
-    sample_pos(vector<double> &, vector<double> &, Sprng &) const = 0;
+    // >>> Pure virtual functions.
 
-    virtual vector<double> 
-    sample_pos(vector<double> &, vector<double> &, Sprng &, 
-	       vector<double> &, double) const = 0;
+    // Return the coordinate system.
+    virtual std_string get_Coord() const = 0;
+ 
+    // Sample positions based on the Coordinate system.
+    virtual 
+    sf_double sample_pos(sf_double &, sf_double &, rng_Sprng &) const = 0; 
 
     virtual 
-    vector<double> sample_pos_on_face(vector<double> &, vector<double> &, 
-				      int, Sprng &) const = 0;
+    sf_double sample_pos(sf_double &, sf_double &, rng_Sprng &, sf_double &, 
+			 double) const = 0;
+    virtual 
+    sf_double sample_pos_on_face(sf_double &, sf_double &, 
+				 int, rng_Sprng &) const = 0;
 
-    // virtual functions
-    virtual vector<double> sample_dir(string, Sprng &) const;
-    virtual void calc_omega(double, double, vector<double> &) const;
+    // >>> Virtual functions.
 
-    // overloaded operators for equality
+    // Sample directions.
+    virtual sf_double sample_dir(std_string, rng_Sprng &) const;
+    virtual void calc_omega(double, double, sf_double &) const;
+
+    // Overloaded operators for equality.
     inline bool operator==(const Coord_sys &) const;
     bool operator!=(const Coord_sys &rhs) const { return !(*this == rhs); }
-
-    // End_Verbatim 
-    // End_Doc 
 };
 
 //---------------------------------------------------------------------------//
-// inline functions for Coord_sys
+// OVERLOADED EQUALITY OPERATORS
 //---------------------------------------------------------------------------//
 // equality of Coordinate systems, because the derived classes contain no
 // data we just have to worry about the base class type
-inline bool Coord_sys::operator==(const Coord_sys &rhs) const
+
+bool Coord_sys::operator==(const Coord_sys &rhs) const
 {
     if (dimension == rhs.dimension && set_dimension == rhs.set_dimension)
 	return true;

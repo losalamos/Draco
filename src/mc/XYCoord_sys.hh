@@ -1,20 +1,34 @@
 //----------------------------------*-C++-*----------------------------------//
-// XYCoord_sys.hh
-// Thomas M. Evans
-// Fri Jan 30 16:52:13 1998
+/*!
+ * \file   mc/XYCoord_sys.hh
+ * \author Thomas M. Evans
+ * \date   Fri Jan 30 16:52:13 1998
+ * \brief  XYCoord_sys derived class header file
+ */
 //---------------------------------------------------------------------------//
-// @> XYCoord_sys derived class header file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __mc_XYCoord_sys_hh__
 #define __mc_XYCoord_sys_hh__
 
+#include "Coord_sys.hh"
+#include "rng/Sprng.hh"
+#include "ds++/Assert.hh"
+#include <vector>
+#include <string>
+#include <cmath>
+
+namespace rtt_mc 
+{
+
 //===========================================================================//
-// class XYCoord_sys - 
-//
-// Purpose : XY geometry coordinate system functions, derived
-//           class of Coord_sys
-//
+/*!
+ * \class XYCoord_sys
+ *
+ * Derived class for \i XY coordinate systems.  Inherits the public interface
+ * from rtt_mc::Coord_sys.
+ */
 // revision history:
 // -----------------
 //  0) original
@@ -31,62 +45,39 @@
 //  8)  4-13-99 : moved to mc package
 // 
 //===========================================================================//
-
-#include "Coord_sys.hh"
-#include "rng/Sprng.hh"
-#include "ds++/Assert.hh"
-#include <vector>
-#include <string>
-#include <cmath>
-
-namespace rtt_mc 
-{
-
-using std::vector;
-using std::string;
-using std::sqrt;
-
-using rtt_rng::Sprng;
     
 class XYCoord_sys : public Coord_sys
 {
-    // Begin_Doc xycoord_sys-int.tex
-    // Begin_Verbatim 
-
   public:
-    // default constructor to set dimension of XY coordinate
-    // system, inline
+    // Default constructor fpr 2D meshes.
     XYCoord_sys() : Coord_sys(2) {}
 
-    // virtual functions
-    virtual string get_Coord() const { string c = "xy"; return c; }
+    // >>> Virtual functions inherited for Coord_sys.
 
-    inline virtual vector<double> 
-    sample_pos(vector<double> &, vector<double> &, Sprng &) const;
+    // Return the coordinate system.
+    std_string get_Coord() const { std_string c = "xy"; return c; }
 
-    inline virtual vector<double> 
-    sample_pos(vector<double> &, vector<double> &, Sprng &, 
-	       vector<double> &, double) const;
-
-    inline virtual 
-    vector<double> sample_pos_on_face(vector<double> &, vector<double> &, 
-				      int, Sprng &) const;
-	     
-    // End_Verbatim 
-    // End_Doc 
+    // Sample positions in XY coordinate system.
+    inline sf_double sample_pos(sf_double &, sf_double &, rng_Sprng &) const; 
+    
+    inline sf_double sample_pos(sf_double &, sf_double &, rng_Sprng &, 
+				sf_double &, double) const;
+    
+    inline sf_double sample_pos_on_face(sf_double &, sf_double &, 
+					int, rng_Sprng &) const; 
 };
 
 //---------------------------------------------------------------------------//
-// INLINE Functions
+// PUBLIC INTERFACE TO XYZ COORDINATE SYSTEM (inherited from Coord_sys)
 //---------------------------------------------------------------------------//
 // sample the position in an XY cell
 
-inline vector<double> 
-XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
-			Sprng &random) const
+Coord_sys::sf_double XYCoord_sys::sample_pos(sf_double &min, 
+					     sf_double &max,
+					     rng_Sprng &random) const
 {
     // make return vector
-    vector<double> r(2);
+    sf_double r(2);
 
     // some assertions
     Check (min.size() == 2);
@@ -105,13 +96,14 @@ XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
 //---------------------------------------------------------------------------//
 // sample the position in a cell from a linear function
 
-inline vector<double> 
-XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
-			Sprng &random, vector<double> &slope, 
-			double center_pt) const
+Coord_sys::sf_double XYCoord_sys::sample_pos(sf_double &min, 
+					     sf_double &max,
+					     rng_Sprng &random, 
+					     sf_double &slope, 
+					     double center_pt) const
 {
     // make return vector
-    vector<double> r(2);
+    sf_double r(2);
 
     // some assertions
     Check (min.size() == 2);
@@ -128,9 +120,9 @@ XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
 
 	// sample the dimension
 	if (random.ran() <= prob)
-	    r[d] = max[d] - (max[d] - min[d]) * sqrt(random.ran());
+	    r[d] = max[d] - (max[d] - min[d]) * std::sqrt(random.ran());
 	else
-	    r[d] = min[d] + (max[d] - min[d]) * sqrt(random.ran());
+	    r[d] = min[d] + (max[d] - min[d]) * std::sqrt(random.ran());
     }
 
     // return assigned array
@@ -140,12 +132,13 @@ XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
 //---------------------------------------------------------------------------//
 // sample the position on an XY face
 
-inline vector<double> 
-XYCoord_sys::sample_pos_on_face(vector<double> &min, vector<double> &max, 
-				int face, Sprng &random) const
+Coord_sys::sf_double XYCoord_sys::sample_pos_on_face(sf_double &min,
+						     sf_double &max, 
+						     int face, 
+						     rng_Sprng &random) const
 {
     // make return vector
-    vector<double> r(2);
+    sf_double r(2);
 
     // some assertions
     Check (min.size() == 2);
