@@ -412,7 +412,7 @@ inline void Particle<MT>::stream_implicit_capture(const Opacity<MT> &xs,
 						  Tally<MT> &tally,
 						  double distance)
 {
-    Check(distance)
+    Check(distance>=0)
 
     double argument = -xs.get_sigeffabs(cell) * distance;
 
@@ -451,7 +451,7 @@ template<class MT>
 inline void Particle<MT>::stream_analog_capture(Tally<MT> &tally, 
 						double distance)
 {
-    Check(distance)
+    Check(distance>=0)
 
     tally.accumulate_ewpl(cell, distance * ew);
 

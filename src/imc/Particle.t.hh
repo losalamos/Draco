@@ -226,10 +226,10 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	Check(d_collide>0);
 
 	// get distance-to-boundary and cell face
-	d_boundary = mesh.get_db(r, omega, cell, face);  Check(d_boundary);
+	d_boundary = mesh.get_db(r, omega, cell, face);  Check(d_boundary>=0);
 
 	// distance to census (end of time step)
-	d_census = rtt_mc::global::c * time_left;   Check(d_boundary);
+	d_census = rtt_mc::global::c * time_left;   Check(d_census);
 
 	// distance until cutoff weight is reached:
 	if (sigma_eff_abs == 0 || use_analog_absorption() )
