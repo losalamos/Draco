@@ -248,7 +248,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  *        cells in the mesh).
  * \return Number of cells in the mesh.
  */
-    int get_zone_size()  { return zone.size();}
+    int get_zone_size() const { return zone.size(); }
 /*!
  * \brief Returns the cell-based initial radiation temperature array.
  * \return Cell initial radiation temperatures.
@@ -264,7 +264,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \param cell Cell number.
  * \return Cell volumetric source.
  */
-    double get_evol_ext(int cell) const { return cell_evol[cell -1]; }
+    double get_evol_ext(int cell) const { return cell_evol[cell - 1]; }
 /*!
  * \brief Returns the cell-based external radiation source array.
  * \return Cell external radiation sources.
@@ -275,7 +275,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \param cell Cell number.
  * \return Cell external radiation source.
  */
-    double get_rad_source(int cell) const { return cell_rsrc[cell -1]; }
+    double get_rad_source(int cell) const { return cell_rsrc[cell - 1]; }
 /*!
  * \brief Returns the cut-off time for the external radiation sources.
  * \return The external radiation source cut-off time.
@@ -286,7 +286,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \brief Returns the number of a grouped surface source cell sets.
  * \return The number of grouped surface source cell sets.
  */
-    int get_ss_pos_size() { return ss_pos.size(); }
+    int get_ss_pos_size() const { return ss_pos.size(); }
     // return the position (lox, hix, etc.) of a set of grouped surface source 
     // cells
 /*!
@@ -295,7 +295,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \param surface Surface source cells set number.
  * \return Surface source cells set position.
  */
-    string get_ss_pos(int surface) { return ss_pos[surface - 1]; }
+    string get_ss_pos(int surface) const { return ss_pos[surface - 1]; }
     // return the positions (lox, hix, etc.) of the all of the grouped surface 
     // source cells
 /*!
@@ -303,7 +303,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  *        all of the specified sets of grouped surface source cells.
  * \return Surface source cells set positions.
  */
-    const vector<string> & get_ss_pos() const { return ss_pos; }
+    vector<string> get_ss_pos() const { return ss_pos; }
     // return the temperature of a set of the grouped surface source cells
 /*!
  * \brief Returns the temperature of the specified set of grouped surface 
@@ -311,7 +311,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \param surface Surface source cells set number.
  * \return Surface source cells set temperature.
  */
-    const double & get_ss_temp(int surface) const 
+    double get_ss_temp(int surface) const 
     { return ss_temp[surface - 1]; }
     // return the temperature of the all of the grouped surface source cells
 /*!
@@ -319,7 +319,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  *        sets.
  * \return Surface source cells set temperatures.
  */
-    const vector<double> & get_ss_temp() const { return ss_temp; }
+    vector<double> get_ss_temp() const { return ss_temp; }
     // return the number of grouped surface source cells in a given set
 /*!
  * \brief Returns the number of grouped surface source cells in the specified
@@ -327,7 +327,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \param surface Surface source cells set number.
  * \return The number of grouped surface source cells in the set.
  */
-    int get_ss_cells_size(int surface) 
+    int get_ss_cells_size(int surface) const
     { return defined_surcells[surface - 1].size(); }
     // return the defined surface source cells in a given set
 /*!
@@ -335,7 +335,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \param surface Surface source cells set number.
  * \return Surface source cells in the set.
  */
-    vector<int> get_defined_surcells(int surface) 
+    vector<int> get_defined_surcells(int surface) const
     {
         vector<int> source_set(defined_surcells[surface - 1].size());
 	for (int cell = 0; cell < defined_surcells[surface - 1].size(); cell++)
@@ -348,8 +348,8 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \brief Returns all of the surface source cell sets.
  * \return All surface source cell sets.
  */
-    const vector< vector<int> >& get_defined_surcells() const {
-	return defined_surcells; } 
+    vector<vector<int> > get_defined_surcells() const
+	{ return defined_surcells; } 
 /*!
  * \brief Returns the initial time step size.
  * \return The initial time step size.

@@ -20,13 +20,18 @@ dnl AC_PCGLIB_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(meshReaders ds++)
+AC_NEEDS_LIBS(c4 meshReaders ds++)
+AC_NEEDS_LIBS_TEST(UnitTestFrame)
+
+AC_RUNTESTS(TestAMRMesh, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
-          test/Makefile:../../config/Makefile.test.in)
+          test/Makefile:../../config/Makefile.test.in \
+	  test/str1:test/str1.in \
+	  test/str1.mesh:../meshReaders/test/rttamr.mesh.in)
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/amr_mesh configure.in

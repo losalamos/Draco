@@ -119,10 +119,10 @@ SP<RTT_Format> CAR_CU_Interface::parser_Mesh(ifstream &in)
     rad_temp.resize(rttMesh->get_dims_ncell_flags(matl_flag));
 
     // Assign a volume source to each cell, if present.
-    cell_evol.resize(ncells);
     int vol_src_flag = rttMesh->get_cell_flags_volume_src_flag_number();
     if (vol_src_flag >= 0)
     {
+        cell_evol.resize(ncells);
         // resize the volumetric source vector according to the number of
         // sources specified in the RTT Format file
         evol_ext.resize(rttMesh->get_dims_ncell_flags(vol_src_flag));
@@ -134,10 +134,10 @@ SP<RTT_Format> CAR_CU_Interface::parser_Mesh(ifstream &in)
         fill(cell_evol.begin(), cell_evol.end(), 0.0);
 
     // Assign a radiation source to each cell, if present.
-    cell_rsrc.resize(ncells);
     int rad_src_flag = rttMesh->get_cell_flags_radiation_src_flag_number();
     if (rad_src_flag >= 0)
     {
+        cell_rsrc.resize(ncells);
         // resize the radiation source vector according to the number of
         // sources specified in the RTT Format file
         rad_source.resize(rttMesh->get_dims_ncell_flags(rad_src_flag));
