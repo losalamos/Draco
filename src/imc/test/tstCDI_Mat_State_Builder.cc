@@ -464,6 +464,158 @@ void mg_cdi_mat_state_test()
 
 //---------------------------------------------------------------------------//
 
+void mg_cdi_diffusion_mat_state_test()
+{
+    // build a parser, mesh, and interface
+    SP<Parser>                   parser(new Parser("OS_Input"));
+    SP<OS_Builder>               mb(new OS_Builder(parser));
+    SP<OS_Mesh>                  mesh = mb->build_Mesh();
+
+    // build dummy interface with hybrid diffusion on and common mg opacities
+    // off
+    SP<IMC_CDI_Interface<PT> >   interface(new IMC_CDI_Interface<PT>(1));
+    
+    // pointer to a mat state builder
+    SP<Mat_State_Builder<MT,MG> > builder;
+
+    // make a CDI mat state builder
+    builder = new CDI_Mat_State_Builder<MT,MG>(interface);
+
+    // check typeinfo
+    if (typeid(*builder) != typeid(CDI_Mat_State_Builder<MT,MG>))   ITFAILS;
+    if (typeid(builder.bp()) != typeid(Mat_State_Builder<MT,MG> *)) ITFAILS;
+    if (typeid(*builder) == typeid(CDI_Mat_State_Builder<MT,G>))    ITFAILS;
+
+    // build mat classes
+    builder->build_mat_classes(mesh);
+
+    // build the mat objects
+    SP<MG>                     frequency = builder->get_Frequency();
+    SP<Mat_State<MT> >         mat_state = builder->get_Mat_State();
+    SP<Opacity<MT,MG> >        opacity   = builder->get_Opacity();
+    SP<Diffusion_Opacity<MT> > diff      = builder->get_Diffusion_Opacity();
+    if (!diff)                  ITFAILS;
+    if (diff->num_cells() != 6) ITFAILS;
+
+    // check the groups
+    vector<double> ref_groups(4);
+    ref_groups[0] = 0.01;
+    ref_groups[1] = 0.1;
+    ref_groups[2] = 1.0;
+    ref_groups[3] = 10.0;
+    {
+	vector<double> groups = frequency->get_group_boundaries();
+	if (!soft_equiv(groups.begin(), groups.end(), 
+			ref_groups.begin(), ref_groups.end())) ITFAILS;
+    }
+
+    // check the opacity
+    double int_Planck;
+    {
+	if (!soft_equiv(opacity->get_sigma_abs(1, 1), 5.0 * 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(1, 2), 1.5 * 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(1, 3), 0.5 * 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(2, 1), 3.0 * 2.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(2, 2), 1.3 * 2.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(2, 3), 0.3 * 2.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(3, 1), 5.0 * 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(3, 2), 1.5 * 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(3, 3), 0.5 * 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(4, 1), 4.0 * 3.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(4, 2), 1.4 * 3.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(4, 3), 0.4 * 3.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(5, 1), 5.0 * 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(5, 2), 1.5 * 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(5, 3), 0.5 * 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(6, 1), 4.0 * 2.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(6, 2), 1.4 * 2.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(6, 3), 0.4 * 2.0)) ITFAILS;
+
+	for (int c = 1; c <= 6; c++)
+	    for (int g = 1; g <= frequency->get_num_groups(); g++)
+		if (!soft_equiv(opacity->get_sigma_thomson(c,g), 
+				1.01*mat_state->get_rho(c))) ITFAILS;
+	
+	// check integrated norm Planck
+	int_Planck = CDI::integratePlanckSpectrum(0.01, 10.0, 3.0);
+	for (int c = 1; c <= 6; c++)
+	    if (!soft_equiv(opacity->get_integrated_norm_Planck(c),
+			    int_Planck)) ITFAILS;
+
+	// check effective cross sections in opacity and diffusion opacity
+	for (int c = 1; c < 6; c++)
+	{
+	    pair<double,double> b;
+	    double              sum = 0.0;
+	    vector<double>      ref_emission(3);
+	    for (int g = 1; g <= frequency->get_num_groups(); g++)
+	    {
+		b                 = frequency->get_group_boundaries(g);
+		sum              += opacity->get_sigma_abs(c,g) *
+		    CDI::integratePlanckSpectrum(b.first, b.second, 3.0);
+		ref_emission[g-1] = sum;
+	    }
+	    
+	    vector<double> emission = opacity->get_emission_group_cdf(c);
+
+	    if (!soft_equiv(emission.begin(), emission.end(),
+			    ref_emission.begin(), ref_emission.end())) ITFAILS;
+
+	    double planck = sum / opacity->get_integrated_norm_Planck(c);
+
+	    double beta   = 4.0 * rtt_mc::global::a * 27.0 * mesh->volume(c) /
+		mat_state->get_dedt(c);
+
+	    double fleck  = 1.0 / 
+		(1.0 + .001 * rtt_mc::global::c * beta * planck);  
+
+	    if (!soft_equiv(opacity->get_fleck(c), fleck)) ITFAILS;
+
+	    for (int g = 1; g <= frequency->get_num_groups(); g++)
+	    {
+		double effabs = opacity->get_sigma_abs(c,g) * fleck;
+		double effsct = opacity->get_sigma_abs(c,g) * (1.0-fleck);
+
+		if (!soft_equiv(opacity->get_sigeffscat(c,g),effsct)) ITFAILS;
+		if (!soft_equiv(opacity->get_sigeffabs(c,g),effabs))  ITFAILS;
+	    }
+
+	    // check Rosseland opacities in diffusion opacity
+	    double ros_sum         = 0.0;
+	    double inv_sig_ros_sum = 0.0;
+	    double r_g             = 0.0;
+	    double ros_ref         = 0.0;
+	    double T               = 3.0;
+	    for (int g = 1; g <= frequency->get_num_groups(); g++)
+	    {
+		b   = frequency->get_group_boundaries(g);
+		r_g = CDI::integrateRosselandSpectrum(b.first, b.second, T);
+
+		// sums (scattering is 1.01)
+		ros_sum         += r_g;
+		inv_sig_ros_sum += r_g / (opacity->get_sigma_abs(c, g) + 
+					  1.01 * mat_state->get_rho(c));
+	    }
+
+	    // check ros sum
+	    if (!soft_equiv(
+		    CDI::integrateRosselandSpectrum(0.01, 10.0, T),
+		    ros_sum)) ITFAILS;
+
+	    // calculate reference rosseland and compare
+	    ros_ref = ros_sum / inv_sig_ros_sum;
+
+	    // check it
+	    if (!soft_equiv(diff->get_Rosseland_opacity(c), ros_ref)) ITFAILS;
+	}
+    }
+
+    if (rtt_imc_test::passed)
+	PASSMSG("CDI Diffusion_Opacity passes all tests in MG test.");
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     rtt_c4::initialize(argc, argv);
@@ -489,6 +641,7 @@ int main(int argc, char *argv[])
 
 	// mg tests
 	mg_cdi_mat_state_test();
+	mg_cdi_diffusion_mat_state_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {
