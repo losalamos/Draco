@@ -73,6 +73,7 @@ string TestRTT_Format::runTest()
     pass(" Construct ") << 
 	"Read mesh without coreing in or firing an assertion." << endl;
     check_virtual(mesh);
+    check_header(mesh);
 
     // Report results of test.
     if (passed())
@@ -84,7 +85,7 @@ string TestRTT_Format::runTest()
 
 bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
 {
-    // Exercize the accessor functions for this mesh.
+    // Exercize the virtual accessor functions for this mesh.
 
     // Check node coords
     vector<vector<double> > coords = mesh.get_node_coords();
@@ -194,7 +195,7 @@ bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
 
     // Check title.
     string title = mesh.get_title();
-    string test_title = "RTT_format,version7.";
+    string test_title = "RTT_format mesh file definition, version 7.";
     os() << "Mesh title = " << title  << endl;
 
     if (title == test_title)
@@ -208,6 +209,63 @@ bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
 	pass(" Invariant ") << "Invoked invariant." << endl;
     else
 	pass(" Invariant ") << "Invariant not satisfied." << endl;
+
+     return true;
+}
+
+bool TestRTT_Format::check_header(const rtt_format::RTT_Format & mesh)
+{
+    // Check version.
+    if (mesh.get_header_version() == "v1.0.0")
+        pass(" Header Version ") << "Got header version." << endl;
+    else
+        fail(" Header Version ") << "Header version not obtained." << endl;
+
+    // Check title.
+    if (mesh.get_header_title() == 
+	"RTT_format mesh file definition, version 7.")
+        pass(" Header Title ") << "Got header title." << endl;
+    else
+        fail(" Header Title ") << "Header title not obtained." << endl;
+
+    // Check date.
+    if (mesh.get_header_date() == "24 Jul 97")
+        pass(" Header Date ") << "Got header date." << endl;
+    else
+        fail(" Header Date ") << "Header date not obtained." << endl;
+
+    // Check cycle.
+    if (mesh.get_header_cycle() == 1)
+        pass(" Header Cycle ") << "Got header cycle." << endl;
+    else
+        fail(" Header Cycle ") << "Header cycle not obtained." << endl;
+
+    // Check time.
+    if (mesh.get_header_time() == 0.0)
+        pass(" Header Time ") << "Got header time." << endl;
+    else
+        fail(" Header Time ") << "Header time not obtained." << endl;
+
+    // Check ncomments.
+    if (mesh.get_header_ncomments() == 3)
+        pass(" Header Ncomments ") << "Got header ncomments." << endl;
+    else
+        fail(" Header Ncomments ") << "Header ncomments not obtained." << endl;
+
+    // Check comments.
+    string test_comments[3]  = {"One tet mesh in an RTT mesh file format.",
+				"Date     : 24 Jul 97",
+				"Author(s): H. Trease, J.McGhee"};
+    bool got_comments = true;
+
+    for (int i= 0; i < 3; i++)
+        if (test_comments[i] != mesh.get_header_comments(i))
+	    got_comments = false;
+
+    if (got_comments)
+        pass(" Header Comments ") << "Got header comments." << endl;
+    else
+        fail(" Header Comments ") << "Header comments not obtained." << endl;
 
     return true;
 }

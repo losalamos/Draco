@@ -264,21 +264,39 @@ void RTT_Format::Header::readData(ifstream & meshfile)
 {
     string dummyString;
 
-    meshfile >> dummyString >> version;
+    meshfile >> dummyString;
     Insist(dummyString == "version",
 	   "Invalid mesh file: Header block missing version");
-    Insist(version == "v1.0.0", "Invalid mesh file: Wrong version");
     getline(meshfile, dummyString);
+    // strip leading blanks and trailing comments and blanks from the version.
+    if (dummyString.rfind("!") != string::npos)
+        dummyString.erase(dummyString.rfind("!"));
+    version = dummyString.substr(dummyString.find_first_not_of(" "),
+			         dummyString.find_last_not_of(" ") - 
+			         dummyString.find_first_not_of(" ") + 1);
+    Insist(version == "v1.0.0", "Invalid mesh file: Wrong version");
 
-    meshfile >> dummyString >> title;
+    meshfile >> dummyString;
     Insist(dummyString == "title",
 	   "Invalid mesh file: Header block missing title");
     getline(meshfile, dummyString);
+    // strip leading blanks and trailing comments and blanks from the title.
+    if (dummyString.rfind("!") != string::npos)
+        dummyString.erase(dummyString.rfind("!"));
+    title = dummyString.substr(dummyString.find_first_not_of(" "),
+			       dummyString.find_last_not_of(" ") - 
+			       dummyString.find_first_not_of(" ") + 1);
 
-    meshfile >> dummyString >> date;
+    meshfile >> dummyString;
     Insist(dummyString == "date",
 	   "Invalid mesh file: Header block missing date");
     getline(meshfile, dummyString);
+    // strip leading blanks and trailing comments and blanks from the date.
+    if (dummyString.rfind("!") != string::npos)
+        dummyString.erase(dummyString.rfind("!"));
+    date = dummyString.substr(dummyString.find_first_not_of(" "),
+			      dummyString.find_last_not_of(" ") - 
+			      dummyString.find_first_not_of(" ") + 1);
 
     meshfile >> dummyString >> cycle;
     Insist(dummyString == "cycle",
@@ -293,9 +311,19 @@ void RTT_Format::Header::readData(ifstream & meshfile)
     meshfile >> dummyString >> ncomments;
     Insist(dummyString == "ncomments",
 	   "Invalid mesh file: Header block missing ncomments");
+    getline(meshfile, dummyString);
     comments.resize(ncomments);
     for (int i = 0; i < ncomments; ++i)
+    {
 	getline(meshfile, comments[i]);
+	// strip leading blanks and trailing comments and blanks from the 
+	// comment lines.
+	if (comments[i].rfind("!") != string::npos)
+	    comments[i].erase(comments[i].rfind("!"));
+        comments[i]=comments[i].substr(comments[i].find_first_not_of(" "),
+				       comments[i].find_last_not_of(" ") -
+				       comments[i].find_first_not_of(" ")+1);
+    }
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 

@@ -3,7 +3,7 @@ rtt_ascii                                              ! magic cookie
 header	                                               ! header keyword
 
   version   v1.0.0                                     ! version number
-  title     RTT_format,version7.                       ! mesh title 
+  title     RTT_format mesh file definition, version 7.! mesh title 
   date      24 Jul 97                                  ! Date written
   cycle     1                                          ! Cycle number
   time      0.0                                        ! problem time
