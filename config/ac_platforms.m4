@@ -1,10 +1,15 @@
 dnl-------------------------------------------------------------------------dnl
 dnl ac_platforms.m4
-dnl defines platform-specfic environments
-dnl defines ASCI/CCS-4 specific platform defaults
 dnl
-dnl $Id$
+dnl Defines platform-specfic environments, including default vendor
+dnl settings for the CCS-4/ASC computer platforms.
+dnl
+dnl Thomas M. Evans
+dnl 2003/04/30 20:29:39
 dnl-------------------------------------------------------------------------dnl
+##---------------------------------------------------------------------------##
+## $Id$
+##---------------------------------------------------------------------------##
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DBS_PLATFORM_ENVIRONMENT
@@ -741,7 +746,6 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
    ;;
    esac
 ])
-
 
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_platforms.m4

@@ -1,16 +1,23 @@
 dnl-------------------------------------------------------------------------dnl
 dnl ac_dracoenv.m4
-dnl puts together the DRACO environments given the arguments from 
-dnl vendors (ac_vendors.m4) and DRACO (ac_dracoarg.m4)
 dnl
-dnl $Id$
+dnl Defines the Draco build system environment.  This is the main
+dnl configure function.
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:21
 dnl-------------------------------------------------------------------------dnl
+##---------------------------------------------------------------------------##
+## $Id$
+##---------------------------------------------------------------------------##
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DRACO_ENV
 dnl
-dnl usage: configure.in
-dnl puts together the DRACO compile-time environments
+dnl Assembles the Draco build system compile-time environment.  
+dnl It processes all of the options given to configure.  It does
+dnl NOT do any compile or link testing.  That functionality is
+dnl defined in ac_dracotests.m4.
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_ENV, [dnl

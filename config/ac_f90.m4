@@ -5,9 +5,7 @@ dnl 		Los Alamos National Laboratory
 dnl 	Date:	Sun Apr  2 12:33:41 MDT 2000
 dnl 
 dnl 	Copyright (c) 2000 Free Software Foundation
-dnl 
-dnl	$Id$
-dnl 
+
 dnl ========================================================================
 
 dnl NAME
@@ -47,6 +45,9 @@ dnl	F90FREE and F90FIXED correctly set for only a few known
 dnl	targets.  AC_F90_MOD can be confused by other files created
 dnl	during compilation.  As with other autoconf macros, any file
 dnl	named [Cc]onftest* will be overwritten!
+##---------------------------------------------------------------------------##
+## $Id$
+##---------------------------------------------------------------------------##
 
 dnl ### Selecting which language to use for testing
 dnl     See AC_LANG_C, AC_LANG_CPLUSPLUS, AC_LANG_FORTRAN77

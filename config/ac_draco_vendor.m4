@@ -1,9 +1,15 @@
 dnl-------------------------------------------------------------------------dnl
 dnl ac_draco_vendor.m4
-dnl macros for setting up draco as a vendor
 dnl
-dnl $Id$
+dnl Macros for setting up Draco as a vendor in clients that use the 
+dnl Draco build system.
+dnl
+dnl Thomas M. Evans
+dnl 2002/04/09 19:42:23
 dnl-------------------------------------------------------------------------dnl
+##---------------------------------------------------------------------------##
+## $Id$
+##---------------------------------------------------------------------------##
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DRACO_VENDOR_SETUP

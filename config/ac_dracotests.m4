@@ -1,8 +1,15 @@
 dnl-------------------------------------------------------------------------dnl
-dnl ac_dracotests.m4  
-dnl functions that run compiler/link tests after the draco 
-dnl environment has been configured
+dnl ac_dracotests.m4 
+dnl  
+dnl Macros that run compiler/link tests after the draco environment
+dnl has been configured.  These macros are called after AC_DRACO_ENV.
+dnl
+dnl Thomas M. Evans
+dnl 2003/04/30 20:29:39
 dnl-------------------------------------------------------------------------dnl
+##---------------------------------------------------------------------------##
+## $Id$
+##---------------------------------------------------------------------------##
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DETERMINE_WORD_TYPES

@@ -6,8 +6,6 @@ dnl 	Date:	Fri Apr 21 14:06:27 MDT 2000
 dnl 
 dnl 	Copyright (c) 2000 U. S. Department of Energy. All rights reserved.
 dnl 
-dnl  	$Id$
-dnl 
 dnl  ========================================================================
 
 dnl NAME
@@ -29,6 +27,9 @@ dnl	the gnu version by running ${GM4} --version
 dnl	AC_REQUIRE_GM4 ensures that GM4 has been found
 
 dnl  ========================================================================
+##---------------------------------------------------------------------------##
+## $Id$
+##---------------------------------------------------------------------------##
 
 AC_DEFUN(AC_PROG_GM4, [dnl
    AC_MSG_CHECKING(how to run the Gnu m4 preprocessor)

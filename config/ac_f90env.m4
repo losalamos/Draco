@@ -6,8 +6,6 @@ dnl 	Date:	Wed Apr 19 16:39:19 MDT 2000
 dnl 
 dnl 	Copyright (c) 2000 U. S. Department of Energy. All rights reserved.
 dnl 
-dnl	$Id$
-dnl 
 dnl ========================================================================
 
 dnl NAME
@@ -28,7 +26,11 @@ dnl     AC_F90_ENV set environment variables F90, F90FLAGS, F90EXT,
 dnl     F90FREE, F90FIXED, and MODFLAG for the compiler requested by 
 dnl     with_f90.  If no specific compiler is requested, guess a compiler 
 dnl     based on the target
-dnl ========================================================================
+dnl
+========================================================================
+##---------------------------------------------------------------------------##
+## $Id$ 
+##---------------------------------------------------------------------------##
 
 dnl ### Ensure with_f90 set
 AC_DEFUN(AC_WITH_F90, [dnl

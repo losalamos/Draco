@@ -1,9 +1,15 @@
 dnl-------------------------------------------------------------------------dnl
 dnl ac_vendors.m4
-dnl macros for each vendor that is used in DRACO
 dnl
-dnl $Id$
+dnl Macros for each vendor that is used supported by the Draco build
+dnl system.
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:22
 dnl-------------------------------------------------------------------------dnl
+##---------------------------------------------------------------------------##
+## $Id$
+##---------------------------------------------------------------------------##
 
 ##---------------------------------------------------------------------------##
 ## All vendor macros should take the following arguments:
