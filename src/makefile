@@ -25,6 +25,7 @@ all:
 	(cd mesh;    $(MAKE) $(subnj))
 	(cd 3T;      $(MAKE) $(subnj))
 	(cd sn;      $(MAKE) $(subnj))
+	(cd imctest; $(MAKE) $(subnj))
 #	(cd draco;   $(MAKE) $(subnj))
 
 #cleanall: clean
@@ -44,6 +45,7 @@ clean:
 	(cd mesh;    $(MAKE) clean cleanonly=yes)
 	(cd 3T;      $(MAKE) clean cleanonly=yes)
 	(cd sn;      $(MAKE) clean cleanonly=yes)
+	(cd imctest; $(MAKE) clean cleanonly=yes)
 #	(cd draco;   $(MAKE) clean cleanonly=yes)
 
 # The clean target has a pernicious failure mode.  If one of these
