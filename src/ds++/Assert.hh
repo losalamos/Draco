@@ -274,15 +274,15 @@ void insist( std::string const & cond,
 
 #if DBC & 1
 #define REQUIRE_ON
-#define Require(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
+#define Require(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
 #else
 #define Require(c) 
 #endif
 
 #if DBC & 2
 #define CHECK_ON
-#define Check(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
-#define Assert(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
+#define Check(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
+#define Assert(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
 #else
 #define Check(c) 
 #define Assert(c) 
@@ -290,14 +290,14 @@ void insist( std::string const & cond,
 
 #if DBC & 4
 #define REMEMBER_ON
-#define Ensure(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
-#define Remember(c) c;
+#define Ensure(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
+#define Remember(c) c
 #else
 #define Ensure(c) 
 #define Remember(c)
 #endif
 
-#define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ );
+#define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 
 #endif				// RTT_dsxx_Assert_HH
 
