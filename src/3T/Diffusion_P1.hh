@@ -49,7 +49,7 @@ class Diffusion_P1 : private MT::Coord_Mapper,
     fcdsf fdeltal;
 
     fcdsf Dprime,      Dtwidle, Dhat;
-    fcdsf Fprimeprime, Ftwidle, Fhat , F;
+    fcdsf Fprimeprime, Ftwidle, Fhat;
 
   public:
 
@@ -90,7 +90,8 @@ class Diffusion_P1 : private MT::Coord_Mapper,
     void solve_A_phi_equals_b( ccsf& phi );
 
     void calculate_new_F( const fcdsf& D, const fcdsf& Fprime,
-                          const bssf& f_b, const ccsf& phi );
+                          const bssf& f_b, const ccsf& phi,
+			  fcdsf& F );
 
     Banded_Matrix<double,7>& get_A() { return A; }
 };

@@ -25,7 +25,7 @@ Diffusion_P1<MT>::Diffusion_P1( const Diffusion_DB& diffdb,
       fdeltal( spm ),
 
       Dprime( spm ),      Dtwidle( spm ), Dhat( spm ),
-      Fprimeprime( spm ), Ftwidle( spm ), Fhat( spm ), F( spm )
+      Fprimeprime( spm ), Ftwidle( spm ), Fhat( spm )
 {
 // Fetch the face locations from the mesh.
     const Mat1<double>& xf = spm->get_xf();
@@ -122,7 +122,7 @@ void Diffusion_P1<MT>::solve( const fcdsf& D,
 // Calculate new values of F from phi, Dtwidle, Ftwidle, D and boundary
 // data. 
 
-    calculate_new_F( D, Fprime, f_b, phi );
+    calculate_new_F( D, Fprime, f_b, phi, F );
 }
 
 template<class MT>
@@ -630,7 +630,8 @@ void Diffusion_P1<MT>::solve_A_phi_equals_b( ccsf& phi )
 
 template<class MT>
 void Diffusion_P1<MT>::calculate_new_F( const fcdsf& D, const fcdsf& Fprime,
-                                        const bssf& f_b, const ccsf& phi )
+                                        const bssf& f_b, const ccsf& phi,
+					fcdsf& F )
 {
     F = 0.;                     // should be unnecessary...
 
