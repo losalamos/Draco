@@ -87,6 +87,11 @@ template<class T> void gsum( T *px, int n );
 template<class T> void gmin( T *px, int n );
 template<class T> void gmax( T *px, int n );
 
+// Timing
+
+double Wtime();
+double Wtick();
+
 C4_NAMESPACE_END
 
 //---------------------------------------------------------------------------//

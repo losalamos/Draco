@@ -9,6 +9,13 @@
 #ifndef __c4_global_mpi_hh__
 #define __c4_global_mpi_hh__
 
+namespace C4 {
+
+    inline double Wtime() { return MPI_Wtime(); }
+    inline double Wtick() { return MPI_Wtick(); }
+
+}
+
 #include "mpi_t.cc"
 
 #endif                          // __c4_global_mpi_hh__
