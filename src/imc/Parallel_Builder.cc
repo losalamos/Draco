@@ -16,6 +16,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <cassert>
 
 IMCSPACE
 
@@ -25,6 +26,7 @@ using C4::nodes;
 using C4::Send;
 using C4::Recv;
 using Global::max;
+using Global::min;
 
 // std necessities
 using std::vector;
@@ -34,7 +36,7 @@ using std::fill;
 //---------------------------------------------------------------------------//
 // constructors
 //---------------------------------------------------------------------------//
-// calls the topology build to determine the multi-processor topology
+// host node constructor that determines the toplogy on the IMC-nodes
 
 template<class MT>
 Parallel_Builder<MT>::Parallel_Builder(const MT &mesh, 
@@ -44,6 +46,16 @@ Parallel_Builder<MT>::Parallel_Builder(const MT &mesh,
   // calculate the parameters for splitting the problem amongst many
   // processors 
     parallel_params(sinit);
+}
+
+//---------------------------------------------------------------------------//
+// default constructor for IMC-nodes
+
+template<class MT>
+Parallel_Builder<MT>::Parallel_Builder()
+    : cells_per_proc(0), procs_per_cell(0) 
+{
+  // the IMC-nodes don't use this data
 }
 
 //---------------------------------------------------------------------------//
@@ -61,19 +73,57 @@ void Parallel_Builder<MT>::parallel_params(const Source_Init<MT> &sinit)
     int num_cells = procs_per_cell.size();
 
   // calculate the total capacity of all processors
+    int capacity       = min(num_cells * nodes(),
+			     sinit.get_capacity() * nodes());
     int total_capacity = sinit.get_capacity() * nodes();	
-    Check (total_capacity > num_cells);
+    assert (total_capacity >= num_cells);
+
+  // limits for DD, full replication, and DD/replication
+  // <<CONTINUE HERE>>
+    string parallel;
+    if (num_cells <= sinit.get_capacity())
+	parallel = "replication";
+    else if (num_cells == total_capacity)
+	parallel = "dd";
+    else
+	parallel = "dd/rep";
+
+  // loop to determine first estimate of cell replication for dd/rep
+    if (parallel == "dd/rep")
+    {
+	double factor;
+	int *replicates = new int(num_cells);
+	int    total_rep;
+	for (int cell = 1; cell <= num_cells; cell++)
+	{
+	    factor = static_cast<double>(sinit.get_ncen(cell) +
+					 sinit.get_nvol(cell) +
+					 sinit.get_nss(cell)) / 
+		(sinit.get_ncentot() + sinit.get_nsstot() + 
+		 sinit.get_nvoltot());
+	    replicates = static_cast<int>(factor * total_capacity);
+	    replicates = min(nodes(), max(1, replicates));
+	    total_rep += replicates;
+	}
+	int xtra_reps = total_capacity - total_rep;
+	assert (xtra_reps >= 0);
+    }
 
   // looping over cells to calculate salient quantities
     for (int cell = 1; cell <= num_cells; cell++)
     {
       // calculate number of time a cell is replicated
-	int nsource = sinit.get_ncen(cell) + sinit.get_nvol(cell) +
-	    sinit.get_nss(cell);
-	int nsourcetot = sinit.get_ncentot() + sinit.get_nsstot() +
-	    sinit.get_nvoltot(); 
-	int replicates = max(1, nsource / nsourcetot * total_capacity);
-
+	factor = static_cast<double>(sinit.get_ncen(cell) +
+				     sinit.get_nvol(cell) +
+				     sinit.get_nss(cell)) / 
+	    (sinit.get_ncentot() + sinit.get_nsstot() + 
+	     sinit.get_nvoltot());
+	replicates = static_cast<int>(factor * total_capacity);
+	replicates = min(nodes(), max(1, replicates));
+	if (replicates < nodes() && xtra_reps-- > 0) 
+	    replicates++;
+      // <<CONTINUE HERE>>
+      
       // loop over processors that take this cell
 	int nprocs_taking = 0;
 	int proc = 0;
@@ -88,7 +138,9 @@ void Parallel_Builder<MT>::parallel_params(const Source_Init<MT> &sinit)
 	    proc++;
 	}
 	Ensure (procs_per_cell[cell-1].size() > 0);
+	Ensure (procs_per_cell[cell-1].size() <= nodes());
     }
+    assert (xtra_reps == 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -582,12 +634,6 @@ SP<Opacity<MT> > Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
     return_opacity = new Opacity<MT>(sigma);
     return return_opacity;
 }
-
-//---------------------------------------------------------------------------//
-// 
-//---------------------------------------------------------------------------//
-
-
     
 CSPACE
 

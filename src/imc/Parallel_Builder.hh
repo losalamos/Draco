@@ -33,6 +33,7 @@ IMCSPACE
 template<class MT>
 class Parallel_Builder
 {
+    friend int main(int, char**);
 private:
   // topology data
     vector<vector<int> > cells_per_proc;
@@ -58,7 +59,10 @@ private:
     typename MT::CCVF_i recv_cellpair();
 
 public:
-  // default constructor
+  // default constructor, for non-host nodes
+    Parallel_Builder();
+    
+  // constructor for host-node
     Parallel_Builder(const MT &, const Source_Init<MT> &);
 
   // Mesh passing functionality
