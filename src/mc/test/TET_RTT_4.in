@@ -34,7 +34,7 @@ dims                           ! dimensions block keyword
   nside_types       1          ! #side types actually present in "side" block 
   side_types        3          ! list of side type indexes used in "side" block
   nside_flag_types  1          ! number of side_flag_types
-  nside_flags       2          ! number of flags for each of the side_flag_types
+  nside_flags       3          ! number of flags for each of the side_flag_types
   nside_data        0          ! number of side data fields
 
   ncells            1          ! total number of cells in the mesh
@@ -64,6 +64,7 @@ end_node_flags                 ! end node flags keyword
 
 side_flags                     ! side flags keyword
   1 boundary_conditions        ! 1st side flag type name
+    3 absent                   !
     1 reflective               ! side flag index, name
     2 vacuum                   ! end side flags keyword
 end_side_flags
