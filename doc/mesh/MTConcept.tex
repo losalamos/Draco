@@ -124,7 +124,8 @@ concept; in particular, any class adhering to the \concept{MT}
 requirements is a model of \concept{MT}. Since the mesh requirements
 of Solon are incorporated in the \concept{MT} concept, any model of
 \concept{MT} may be used in Solon with minimal integration effort,
-despite potentially radically different implementation details().
+despite potentially radically different implementation
+details~\cite{ro99}.
 
 The \concept{MT} concept (and the classes that are models of it) is a
 part of the larger Draco effort to define and implement \C++ components 
@@ -1678,6 +1679,36 @@ following expressions must be valid.
      \comp{ceil()} applied to corresponding elements of
      \comp{b}. \\
      \end{tabularx}}
+  \expritem{Absolute value}{abs(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{abs()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
+  \expritem{Absolute value}{labs(b)}
+    {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
+    >{\setlength{\hsize}{1.6\hsize}}X}
+     Return type: & Undefined if \comp{b} is not an object of type
+     \comp{T}. Semantically, though, it should behave as if it were
+     \comp{X\&}. \\
+     Precondition: & Unless \comp{b} is an object of type \comp{T},
+     this expression must be used in a statement that contains one of
+     the assignment operators. \\
+     Postcondition: & Unless \comp{b} is an object of type \comp{T},
+     the resulting expression should behave semantically as a
+     \comp{X\&} in which each element has been assigned the result of
+     \comp{labs()} applied to corresponding elements of
+     \comp{b}. \\
+     \end{tabularx}}
   \expritem{Absolute value}{fabs(b)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
@@ -1866,14 +1897,12 @@ An \concept{MTField} is an \concept{Expression Enabled Forward
 The requirements for the iterator types are strengthened. The
 iterators must iterate only over those parts of the field that are in
 the current process. In addition to the types defined in
-\concept{Expression Enabled Forward Container}, the following types
-are defined.
+\concept{Expression Enabled Forward Container}, the following type
+is defined.
 
 \begin{typelist}
   \typeitem{Mesh type}{M}{The type of the mesh object with respect to which 
     an \concept{MTField} is defined.}
-  \typeitem{Field constructor type}{M::FieldConstructor}{The argument
-    type for constructing an \concept{MTField}.}
 \end{typelist}
 
 \subsubsection{Notation}
