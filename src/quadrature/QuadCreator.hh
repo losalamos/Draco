@@ -12,9 +12,8 @@
 #ifndef __quadrature_QuadCreator_hh__
 #define __quadrature_QuadCreator_hh__
 
-#include "Quadrature.hh"
-
 #include "ds++/SP.hh"
+#include "Quadrature.hh"
 
 namespace rtt_quadrature
 {

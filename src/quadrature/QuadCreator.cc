@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   quadrature/Quadrature.cc
+ * \file   quadrature/QuadCreator.cc
  * \author Kelly Thompson
  * \date   Tue Feb 22 15:38:56 2000
  * \brief  \link rtt_quadrature::QuadCreator QuadCreator \endlink
@@ -21,12 +21,7 @@
 //      Added Insist() call when an unknown quad_type is specified.
 
 #include <iostream>
-#include <cmath>
-
-#include "Quadrature.hh"
 #include "QuadCreator.hh"
-
-#include "ds++/SP.hh"
 
 namespace rtt_quadrature
 {
