@@ -114,7 +114,7 @@ void test_streaming()
 
     tracker->initialize_status(position, direction);
 
-    const double distance = 5.0;
+    double distance = 5.0;
     const double ew = 1.0;
     const double sigma = 1.0;  
 
@@ -127,6 +127,34 @@ void test_streaming()
     if (!soft_equiv(tally.get_outward_tally(2)[3], exp(-3.0) ) ) ITFAILS;
     if (!soft_equiv(tally.get_outward_tally(3)[3], exp(-3.0) ) ) ITFAILS;
 
+    position[0] = -1.0;
+    position[1] =  0.0;
+    position[2] =  1.0;
+
+    direction[0] = 1.0;
+    direction[1] = 0.0;
+    direction[2] = 0.0;
+
+    tracker->initialize_status(position, direction);
+    tracker->tally_crossings(position, direction, distance, ew, sigma, tally);
+
+    // Stream
+    for (int i=0; i<3; ++i) position[i] += direction[i] * distance;
+
+    // Scatter toward (0,0,-1)
+    direction[0] = -2.0/sqrt(5.0);
+    direction[1] =  0.0;
+    direction[2] = -1.0/sqrt(5.0);
+
+    // New distance
+    distance = 2.0;
+
+    tracker->tally_crossings(position, direction, distance, ew, sigma, tally);
+
+    if (!soft_equiv(tally.get_outward_tally(2)[1], exp(-2.0) ) ) ITFAILS;
+    if (!soft_equiv(tally.get_outward_tally(3)[1], exp(-1.0-sqrt(5.0)))) ITFAILS;
+    if (!soft_equiv(tally.get_inward_tally(3) [1], exp(3.0-2*sqrt(5.0)))) ITFAILS;
+    
 }
 
 

@@ -23,8 +23,7 @@ namespace rtt_imc
 {
 
 Surface_tracker::Surface_tracker(
-    const vector<Surface_tracker::SP_Surface>& surfaces_
-    )
+    const vector<Surface_tracker::SP_Surface>& surfaces_)
     : surfaces(surfaces_),
       is_inside(surfaces_.size())
 { /* ... */ }
@@ -77,7 +76,7 @@ void Surface_tracker::tally_crossings(
 		
 		double crossing_ew = 
 		    initial_ew * exp(-sigma * crossing_distance);
-
+		
 		tally.add_to_tally(index, direction, is_inside[index], crossing_ew);
 
 		is_inside[index] = !is_inside[index];
