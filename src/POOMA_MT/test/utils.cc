@@ -13,7 +13,6 @@
 
 #include "meshTest/Release.hh"
 #include "../Release.hh"
-#include "TestRelease.hh"
 
 #include <fstream>
 
@@ -27,7 +26,6 @@ namespace rtt_POOMA_MT_test
 
 void version(const std::string &progname)
 {
-    cout << progname << ": version " << release() << endl;
     cout << "POOMA_MT: version " << rtt_POOMA_MT::release() << endl;
     cout << "meshTest: version " << rtt_meshTest::release() << endl;
 }
