@@ -59,7 +59,9 @@ CXXFLAGS = --keep_gen_c +K3 --one_per ${STRICTFLAG}
 
 CXX2LATEX = c++2latex
 
-all: postscript
+postscript:
+
+all: postscript expTraits
 
 expTraits.o: expTraits.hh UserVec.hh UserVecTraits.hh
 
@@ -108,6 +110,6 @@ config.status: configure
 	./config.status --recheck
 
 clean:
-	-rm expTraits expTraits.o
+	-rm expTraits expTraits.o expTraits.int.c
 	-rm *.ps *.dvi *.log *.aux *.bbl *.blg *.cfg
 	-rm -r ${dirstoclean}
