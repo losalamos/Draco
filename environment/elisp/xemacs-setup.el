@@ -2,92 +2,122 @@
 
 (message "working on xemacs-setup")
 
-; Make sure that the info package is loaded before we append 
-; to Info-directory-list.
+;;---------------------------------------------------------------------------;;
+; Make sure that the info package is loaded before we append to
+; Info-directory-list. 
+
 (require 'info)
 
-(if (file-directory-p "/usr/info/")
-    (setq Info-directory-list
-	  (cons "/usr/info/" Info-directory-list)))
+(defvar ccs4-info-dirs
+  (list 
+   (concat my-home-dir ".xemacs/info/")
+   "/codes/radtran/vendors/gsl/Linux/info/"
+   "/usr/local/autotools_2.13/info/"
+   "/usr/local/gcc-3.4.2/info/"
+   "/usr/local/cvs1.12/info/"
+   "/usr/info") 
+  "\nA list of directories that may contain GNU Info files.
+\nAppend to list by adding the following command in personal elisp script:
+\n\t (setq ccs4-info-dirs (cons \"/full/path/to/info/dir\") ")
 
-(defvar my-info-dir "nil")
-(if (file-directory-p my-info-dir)
-    (setq Info-directory-list
-	  (cons my-info-dir Info-directory-list)))
+;; Update Info-directory-list using directories provided by ccs4-info-dirs.
+(defun ccs4-append-info-dirs (ldirs)
+  (interactive)
+  (let ((dirlist ldirs))
+    (progn
+      ;; process least-imporant directories first.  This ensures that
+      ;; the first directory in the list "ccs4-env-dirs" become the
+      ;; first directory in the Info-directory-list.
+      (setq dirlist (reverse dirlist))
+      ;; Loop over all directories in the list provided.  Add valid
+      ;; elisp directories to the load path (prepend).
+      (while dirlist
+	(setq ldir (car dirlist))
+	(if (file-accessible-directory-p ldir)
+	    (setq Info-directory-list (cons ldir Info-directory-list)))
+	;; remove ldir from dirlist and continue the while-loop.
+	(setq dirlist (cdr-safe dirlist)))
+      ))
+  )
+(ccs4-append-info-dirs ccs4-info-dirs)
+
+;;---------------------------------------------------------------------------;;
 
 ;; Stuff for automatic creation of C++ files and classes.
 
-(defconst gmf-template-dir
-  (expand-file-name "~furnish/lisp/templates/")
-  "The directory where you keep your template files." )
+;(defconst gmf-template-dir
+;  (expand-file-name "~furnish/lisp/templates/")
+;  "The directory where you keep your template files." )
 
-(defun gmf-new-cc-file (name)
-  "Function to spontaneously setup a new C++ file."
-  (interactive "sBase Name: ")
+;(defun gmf-new-cc-file (name)
+;  "Function to spontaneously setup a new C++ file."
+;  (interactive "sBase Name: ")
 
-  (setq nfile (concat name ".cc"))
-  (setq tfile (concat gmf-template-dir "template.cc"))
-  (if (file-exists-p nfile)
-      (error "File %s already exists." nfile))
+;  (setq nfile (concat name ".cc"))
+;  (setq tfile (concat gmf-template-dir "template.cc"))
+;  (if (file-exists-p nfile)
+;      (error "File %s already exists." nfile))
 
-  (find-file nfile)
-  (insert-file-contents tfile)
+;  (find-file nfile)
+;  (insert-file-contents tfile)
 
-; Now perform customizations
+;; Now perform customizations
 
-  (goto-char (point-min))
-  (perform-replace "<basename>" name nil nil nil )
-  (goto-char (point-min))
-  (perform-replace "<date>" (current-time-string) nil nil nil )
+;  (goto-char (point-min))
+;  (perform-replace "<basename>" name nil nil nil )
+;  (goto-char (point-min))
+;  (perform-replace "<date>" (current-time-string) nil nil nil )
 
-  ; Now, hack out the <start> token, since we don't know what to do
-  ; for a genearal file.
-  (perform-replace "<start>" "" nil nil nil )
-)
+;  ; Now, hack out the <start> token, since we don't know what to do
+;  ; for a genearal file.
+;  (perform-replace "<start>" "" nil nil nil )
+;)
 
-(defun gmf-new-class (name)
-  (interactive "sClass name: ")
+;;---------------------------------------------------------------------------;;
+;(defun gmf-new-class (name)
+;  (interactive "sClass name: ")
 
-; Make sure we can create the new files.
+;; Make sure we can create the new files.
 
-  (setq  hfile (concat name ".h"))
-  (setq ccfile (concat name ".cc"))
-  (if (or (file-exists-p  hfile)
-	  (file-exists-p ccfile))
-      (error "Cannot create class %s, files already exist." name))
+;  (setq  hfile (concat name ".h"))
+;  (setq ccfile (concat name ".cc"))
+;  (if (or (file-exists-p  hfile)
+;	  (file-exists-p ccfile))
+;      (error "Cannot create class %s, files already exist." name))
 
-; Now locate the template files.
+;; Now locate the template files.
 
-  (setq  thfile (concat gmf-template-dir "template.h"))
-  (setq tccfile (concat gmf-template-dir "template.cc"))
-  (if (not (and (file-exists-p  thfile)
-		(file-exists-p tccfile)))
-      (error "Cannot access class template files."))
+;  (setq  thfile (concat gmf-template-dir "template.h"))
+;  (setq tccfile (concat gmf-template-dir "template.cc"))
+;  (if (not (and (file-exists-p  thfile)
+;		(file-exists-p tccfile)))
+;      (error "Cannot access class template files."))
 
-; Now try to copy the template files over.
+;; Now try to copy the template files over.
 
-  (copy-file  thfile  hfile)
-  (copy-file tccfile ccfile)
+;  (copy-file  thfile  hfile)
+;  (copy-file tccfile ccfile)
 
-; Now load the header and customize.
+;; Now load the header and customize.
 
-  (find-file hfile)
-  (perform-replace "<class>" name nil nil nil )
-  (goto-char (point-min))
-  (perform-replace "<date>" (current-time-string) nil nil nil )
+;  (find-file hfile)
+;  (perform-replace "<class>" name nil nil nil )
+;  (goto-char (point-min))
+;  (perform-replace "<date>" (current-time-string) nil nil nil )
 
-; Now load the cc file and customize.
+;; Now load the cc file and customize.
 
-  (find-file ccfile)
-  (perform-replace "<basename>" name nil nil nil )
-  (goto-char (point-min))
-  (perform-replace "<date>" (current-time-string) nil nil nil )
-  (goto-char (point-min))
+;  (find-file ccfile)
+;  (perform-replace "<basename>" name nil nil nil )
+;  (goto-char (point-min))
+;  (perform-replace "<date>" (current-time-string) nil nil nil )
+;  (goto-char (point-min))
 
-  ; Now, change the <start> token to include the header.
-  (perform-replace "<start>" "" nil nil nil )
-  (insert "#include \"" name ".h\"\n\n")
-)
+;  ; Now, change the <start> token to include the header.
+;  (perform-replace "<start>" "" nil nil nil )
+;  (insert "#include \"" name ".h\"\n\n")
+;)
+;;;---------------------------------------------------------------------------;;
 
 (defun gmf-new-itcl-method (name)
   "Construct a new [incr Tcl] method."
@@ -148,9 +178,6 @@
 
 ;; Set up automatic buffer variables
 
-;(define-key global-map [(control right)]  'forward-word)
-;(define-key global-map [(control left)]  'backward-word)
-
 (defun my-c-mode-common-hook ()
   (define-key c++-mode-map 'button3 'kill-region)
   )
@@ -191,27 +218,6 @@
 ;;; fast-lock-cache-directories.
 
 (add-hook 'font-lock-mode-hook 'turn-on-fast-lock)
-;(add-hook 'font-lock-mode-hook 'turn-on-lazy-shot)
-
-;(setq fast-lock-cache-directories '("/foo/bar/baz"))Examine
-
-;;; ********************
-;;; Load crypt, which is a package for automatically decoding and reencoding
-;;; files by various methods - for example, you can visit a .Z or .gz file,
-;;; edit it, and have it automatically re-compressed when you save it again.
-;;; 
-;(setq crypt-encryption-type 'pgp   ; default encryption mechanism
-;      crypt-confirm-password t	   ; make sure new passwords are correct
-;      crypt-never-ever-decrypt t  ; if you don't encrypt anything, set this to
-				   ; tell it not to assume that "binary" files
-				   ; are encrypted and require a password.
-;      )
-;(require 'crypt)
-
-
-;(setq gnus-nntp-server "newshost.cc.utexas.edu")
-;(setq gnus-nntp-server "winken.llnl.gov")
-;(setq gnus-nntp-server "newshost.lanl.gov")
 
 (require 'func-menu)
 (define-key global-map 'f12 'function-menu)
@@ -255,15 +261,6 @@
   (insert "//---------------------------------------------------------------------------//\n")
 )
 
-;(fset 'gmf-insert-class-doc
-;   [(control a) (control o) (control o) / / = = = = = = / / left left left = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = (control a) (control k) (control k) (control y) (control y) up (control o) / / space c l a s s space ])
-
-;(fset 'gmf-insert-function-doc
-;   [(control a) (control o) (control o) / / - - - - - - / / left left left - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - (control a) (control k) (control k) (control y) (control y) up (control o) / / space])
-
-;(fset 'gmf-insert-comment-divider
-;      [(control a) (control o) / / - - - - - - / / left left left - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - (control a)])
-
 ; ps-print customization stuff.
 
 (require 'ps-print)
@@ -275,26 +272,4 @@
 
 (require 'fl-keywords)
 
-; GNUS customization...
-
-;(add-hook 'gnus-startup-hook
-;          '(lambda ()
-;;	     ...
-;	     (progn
-;	       (font-lock-mode)
-;	       (set-face-foreground 'message-headers "red")
-;	       (set-face-foreground 'message-header-contents "orange")
-;	       (set-face-foreground 'message-cited-text "blue"))))
-
-; Dired customization
-
-;(add-hook 'dired-after-readin-hook 'font-lock-fontify-buffer)
-
-;;; ********************
-;;; resize-minibuffer-mode makes the minibuffer automatically
-;;; resize as necessary when it's too big to hold its contents.
-
-;(autoload 'resize-minibuffer-mode "rsz-minibuf" nil t)
-;(resize-minibuffer-mode)
-;(setq resize-minibuffer-window-exactly nil)
 
