@@ -469,10 +469,11 @@ void Source_Init<MT,PT>::write_initial_census(const MT &mesh,
 }
 
 //---------------------------------------------------------------------------//
-// comb the census
+// comb the census -- old way, doesn't reproduce with multiple processors
+// because the combing is order-dependent.
 	
 template<class MT, class PT>
-void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon) 
+void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon) 
 {
   // make double sure we have census particles to comb
     Require (census->size() > 0);
@@ -555,7 +556,136 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
 
     Require (fabs(ecencheck + eloss_cen - ecentot) < 1.0e-6 * ecentot);
 }
+//---------------------------------------------------------------------------//
+// comb the census -- different way, numcomb depends on particle's own
+// random number (thus, it is not order dependent).  perform a post-comb ew
+// adjustment if there is no unsampled census energy.
+	
+template<class MT, class PT>
+void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon) 
+{
+  // make double sure we have census particles to comb
+    Require (census->size() > 0);
 
+  // initialize number of (new, combed) census particles per cell
+    ncentot = 0;
+    for (int cell = 1; cell <= mesh.num_cells(); cell++)
+	ncen(cell) = 0;
+
+    double dbl_cen_part = 0.0;
+    int    numcomb = 0;
+    double ecencheck = 0.0;
+    int    cencell = 0;
+    double cenew = 0.0;
+
+  // add total census energy to eloss_cen, then take away as new census
+  // particles are combed.
+    eloss_cen += ecentot;
+
+  // make new census bank to hold combed census particles
+    SP<Particle_Buffer<PT>::Census> comb_census = new
+	Particle_Buffer<PT>::Census();
+
+    while (census->size())
+    {
+      // read census particle and get cencell, ew
+	SP<PT> particle = census->top();
+	census->pop();
+	cencell = particle->get_cell();
+	cenew   = particle->get_ew();
+	Sprng random = particle->get_random();
+		
+	if (ew_cen(cencell) > 0)
+	{
+	    dbl_cen_part = (cenew / ew_cen(cencell)) + random.ran();
+	    numcomb = static_cast<int>(dbl_cen_part);
+
+
+	  // create newly combed census particles
+	    if (numcomb > 0)
+	    {
+		particle->set_ew(ew_cen(cencell));
+		comb_census->push(particle);
+
+		if (numcomb > 1)
+		    for (int nc = 1; nc <= numcomb-1; nc++)
+		    {
+			SP<PT> another = particle;
+			Sprng nran = rcon.spawn(particle->get_random());
+			another->set_random(nran);
+			comb_census->push(another);
+		    }
+		   
+	      // add up newly combed census particles
+		ncen(cencell) += numcomb;
+		ncentot       += numcomb;
+
+	      // subtract newly combed particles from eloss_cen
+		eloss_cen -= numcomb * ew_cen(cencell);
+		ecencheck += numcomb * ew_cen(cencell);
+	    }
+	}
+    }
+
+  // Combing is a variance reduction technique. 
+  // 
+  // If there is imminent loss of census energy (unsampled), we must settle 
+  // for the statistical conservation of energy (to adjust the ew's with 
+  // imminent loss would bias the energy).  Unfortunately, energy loss
+  // propagates.  If there is no imminent loss, we may adjust the ew's for 
+  // exact conservation of energy and some degradation of variance reduction.
+  // The check for imminent loss may be loosened by checking on some minimal
+  // energy loss instead any nonzero loss.
+    bool imminent_loss = false;
+    for (int cell = 1; cell <= mesh.num_cells(); cell++)
+    {
+	if (ncen(cell) == 0 && ecen(cell) > 0)
+	    imminent_loss = true;
+    }
+
+    Check (census->size() == 0);
+    Check (comb_census->size() == ncentot);
+
+    if (imminent_loss)
+    {
+      // assign newly combed census to census
+	census = comb_census;
+    }
+    else
+    {
+      // post-comb ew adjustment: 
+      // read from comb_census, modify ew, push to census
+	for (int cell = 1; cell <= mesh.num_cells(); cell++)
+	{
+	    if (ncen(cell) > 0)
+	    {
+		ew_cen(cell) = ecen(cell) / ncen(cell);
+	    }
+	    else
+		ew_cen(cell) = 0.0;
+	}
+
+	eloss_cen += ecencheck;
+	ecencheck = 0.0;
+
+	while (comb_census->size() > 0)
+	{
+	    SP<PT> particle = comb_census->top();
+	    comb_census->pop();
+	    cencell = particle->get_cell();	
+	    particle->set_ew(ew_cen(cencell));
+	    census->push(particle);	  
+	    ecencheck += ew_cen(cencell);
+	    eloss_cen -= ew_cen(cencell);
+	}
+
+	Check (census->size() == ncentot);
+	Check (comb_census->size() == 0);
+    }
+
+    Require (fabs(ecencheck + eloss_cen - ecentot) < 1.0e-6 * ecentot);
+
+}
 //---------------------------------------------------------------------------//
 // calculate slope of T_electron^4 using temporarily calc'd  edge t^4's.
 

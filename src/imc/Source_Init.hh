@@ -18,6 +18,7 @@
 // revision history:
 // -----------------
 //  0) original
+//  1)  7-13-98: Added reproducible combing of census particles.
 // 
 //===========================================================================//
 
@@ -112,6 +113,7 @@ private:
 			     const Mat_State<MT> &, Rnd_Control &);
     void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &);
     void calc_source_numbers(const Opacity<MT> &, const int);
+    void old_comb_census(const MT &, Rnd_Control &);
     void comb_census(const MT &, Rnd_Control &);
 
   // initial census service functions

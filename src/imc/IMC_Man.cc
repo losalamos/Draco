@@ -391,8 +391,6 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
   // send the tallies to the master node
     if (node())
     {
-	cout << "On node " << node() << endl;
-
       // calculate the number of cells on this node
 	int num_cells = tally->num_cells();
 
@@ -515,9 +513,6 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	    ncenmaster += tally->get_new_ncen(cell);
 	    accumulate_ecen[global_cell-1] += tally->get_new_ecen(cell);
 	    ecenmaster += tally->get_new_ecen(cell);
-	    cout << "Master: ecen( " << cell << " ) = " 
-		 << tally->get_new_ecen(cell) << " accumulate_ecen = "
-		 << accumulate_ecen[global_cell-1] << endl;
 	    ecencheck += tally->get_new_ecen(cell);
 	    accumulate_ewpl[global_cell-1] += tally->get_accum_ewpl(cell);
 	}
@@ -526,8 +521,6 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
       // check total census energy on master node
 	Check (fabs(ecenmaster - tally->get_new_ecen_tot()) 
 	       < 1.0e-6 * tally->get_new_ecen_tot());
-	cout << "ecentot = " << ecentot << ", ecencheck = " << ecencheck 
-	     << " tot-check = " << ecentot - ecencheck << endl;
       // Check problem total census energy
 	Check (fabs(ecencheck - ecentot) < 1.0e-6 * ecentot);
 
