@@ -1,22 +1,37 @@
 //----------------------------------*-C++-*----------------------------------//
-// Layout.hh
-// Thomas M. Evans
-// Fri Jan 30 15:53:52 1998
+/*!
+ * \file   mc/Layout.hh
+ * \author Thomas M. Evans
+ * \date   Fri Jan 30 15:53:52 1998
+ * \brief  Layout class header file.
+ */
 //---------------------------------------------------------------------------//
-// @> Layout class header file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __mc_Layout_hh__
 #define __mc_Layout_hh__
 
+#include <iostream>
+#include <vector>
+
+namespace rtt_mc 
+{
+
 //===========================================================================//
-// class Layout - 
-//
-// Purpose : base class which describes the cell-face-cell interactions for 
-//           MC; Layout itself is independent of the geometry of the mesh
-//           but Mesh has to build it because Mesh can calculate the neighbor 
-//           info from the geometry
-//
+/*!
+ * \class Layout
+ *
+ * Class that describes the cell-face-cell connectivity for 1-to-1 cell
+ * meshes.  1-to-1 describes meshes whose cells each have only 1 cell
+ * neighbor across a face.  Layout itself is independent of the geometry of
+ * the mesh.  Thus it can be used to describe the connectivity in any
+ * structured or unstructered 1-to-1 mesh.
+ *
+ * This class is used primarily as a component class of valid mesh types.  It
+ * is not a general service class.  See rtt_mc::OS_Mesh and
+ * rtt_mc::OS_Builder to see how it is used in a mesh implementation.
+ */
 // revision history:
 // -----------------
 //  0) original
@@ -25,73 +40,61 @@
 // 
 //===========================================================================//
 
-#include <iostream>
-#include <vector>
-
-namespace rtt_mc 
-{
-
-// defined namespaces
-using std::ostream;
-using std::vector;
-
 class Layout
 {
-private:
-  // cell-face-cell array for transport between cells, Layout adjusts the
-  // cell and face indices to (cell-1) and (face-1)
-    vector< vector<int> > face_cell;
+  public:
+    // STL Typedefs
+    typedef std::vector<std::vector<int> > vf_int;
+    
+  private:
+    // Cell-face-cell array for transport between cells, Layout adjusts the
+    // cell and face indices to (cell-1) and (face-1).
+    vf_int face_cell;
 
-  // Begin_Doc layout-int.tex
-  // Begin_Verbatim 
-
-public:
-  // inline default constructor
+  public:
+    // Default constructor.
     Layout(int num_cells = 0) : face_cell(num_cells) {}
 
-  // set size member functions
+    // Set size member functions.
 
-  // set size of whole Layout and set size for number of faces in a
-  // particular cell
+    // Set size of whole Layout and set size for number of faces in a
+    // particular cell.
     void set_size(int num_cells) { face_cell.resize(num_cells); }
     inline void set_size(int, int);
 
-  // get size member functions
+    // Get size member functions.
     int num_cells() const { return face_cell.size(); }
     inline int num_faces(int) const;
 
-  // diagnostic functions
-    void print(ostream &, int) const;
+    // Diagnostic functions
+    void print(std::ostream &, int) const;
 
-  // overloaded subscripting operators for assignment and retrieval
+    // Overloaded subscripting operators for assignment and retrieval.
     inline int operator()(int, int) const;
     inline int& operator()(int, int);
 
-  // overloaded operators for equality
+    // Overloaded operators for equality.
     inline bool operator==(const Layout &) const;
     bool operator!=(const Layout &rhs) const { return !(*this == rhs); }
-
-  // End_Verbatim 
-  // End_Doc 
 };
 
 //---------------------------------------------------------------------------//
-// overloaded operators
+// OVERLOADED OPERATORS
 //---------------------------------------------------------------------------//
 // overload operator for stream output
 
-ostream& operator<<(ostream &, const Layout &);
+std::ostream& operator<<(std::ostream &, const Layout &);
 
 //---------------------------------------------------------------------------//
 // overload equality(==) operator for design-by-contract
 
-inline bool Layout::operator==(const Layout &rhs) const
+bool Layout::operator==(const Layout &rhs) const
 {
-  // if the data is equal, the Layouts are equal
+    // if the data is equal, the Layouts are equal
     if (face_cell == rhs.face_cell)
 	return true;
     
-  // if we haven't returned then the Layouts aren't equal
+    // if we haven't returned then the Layouts aren't equal
     return false;
 }
 
@@ -100,7 +103,7 @@ inline bool Layout::operator==(const Layout &rhs) const
 //---------------------------------------------------------------------------//
 // set the number of faces for cell cell_index
 
-inline void Layout::set_size(int cell_index, int num_faces)
+void Layout::set_size(int cell_index, int num_faces)
 {
     face_cell[cell_index-1].resize(num_faces);
 } 
@@ -108,7 +111,7 @@ inline void Layout::set_size(int cell_index, int num_faces)
 //---------------------------------------------------------------------------//
 // return the number of faces for cell cell_index
 
-inline int Layout::num_faces(int cell_index) const
+int Layout::num_faces(int cell_index) const
 {
     return face_cell[cell_index-1].size();
 }
@@ -116,7 +119,7 @@ inline int Layout::num_faces(int cell_index) const
 //---------------------------------------------------------------------------//
 // subscripting operator for data referencing
 
-inline int Layout::operator()(int cell_index, int face_index) const
+int Layout::operator()(int cell_index, int face_index) const
 {
     return face_cell[cell_index-1][face_index-1];
 }
@@ -124,7 +127,7 @@ inline int Layout::operator()(int cell_index, int face_index) const
 //---------------------------------------------------------------------------//
 // subscripting operator for data assignment
 
-inline int& Layout::operator()(int cell_index, int face_index)
+int& Layout::operator()(int cell_index, int face_index)
 {
     return face_cell[cell_index-1][face_index-1];
 }

@@ -1,9 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// Layout.cc
-// Thomas M. Evans
-// Fri Jan 30 15:53:52 1998
+/*!
+ * \file   mc/Layout.cc
+ * \author Thomas M. Evans
+ * \date   Fri Jan 30 15:53:52 1998
+ * \brief  Layout class implementation file
+ */
 //---------------------------------------------------------------------------//
-// @> Layout class implementation file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Layout.hh"
@@ -13,16 +16,12 @@ namespace rtt_mc
 {
 
 //---------------------------------------------------------------------------//
-// constructors
-//---------------------------------------------------------------------------//
-// defined inline
-
-//---------------------------------------------------------------------------//
 // public member functions
 //---------------------------------------------------------------------------//
 // print member function used for printing the cell-face-cell info.
 // for one particular cell
-void Layout::print(ostream &output, int cell_index) const
+
+void Layout::print(std::ostream &output, int cell_index) const
 {
     using std::endl;
     using std::setw;
@@ -45,7 +44,8 @@ void Layout::print(ostream &output, int cell_index) const
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
-ostream& operator<<(ostream &output, const Layout &object)
+
+std::ostream& operator<<(std::ostream &output, const Layout &object)
 {
     int num_cells = object.num_cells();
     for (int i = 1; i <= num_cells; i++)
