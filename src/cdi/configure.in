@@ -15,7 +15,6 @@ package="cdi"
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)
-AC_NEEDS_LIBS_TEST(UnitTestFrame)
 
 AC_RUNTESTS(tDummyOpacity tDummyEoS tCDI, scalar) 
 
