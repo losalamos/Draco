@@ -37,7 +37,7 @@ class Diffusion_XYZ : private MT::Coord_Mapper,
     SP< MatVec_3T< Diffusion_XYZ<MT> > > spmv;
     SP< PreCond< Diffusion_XYZ<MT> > > precond;
  
-    typedef typename MT::template cell_array<double> cell_array_double;
+    typedef typename MT::ccsf cell_array_double;
 //     typename MT::template cell_array<double> vc;
     cell_array_double vc;
 

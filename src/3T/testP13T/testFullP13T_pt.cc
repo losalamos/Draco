@@ -5,7 +5,7 @@
 #include "3T/Diffusion_P1.cc"
 #include "3T/P13T.cc"
 #include "radphys/RadiationPhysics.t.cc"
-#include "matprops/InterpedMaterialProps.cc"
+#include "matprops/InterpedMaterialProps.t.cc"
 
 using namespace XTM;
 
@@ -82,16 +82,18 @@ template void RadiationPhysics::
 
 typedef MT::ccsf ccsf;
 typedef MT::fcdsf fcdsf;
+typedef MT::ccif ccif;
+typedef MT::fcdif fcdif;
 
 typedef ccsf T1;
-typedef ccsf T2;
+typedef ccif T2;
 
 template
 MP::MaterialStateField<T1>
 MP::getMaterialState<T1, T2>(const T1 &, const T1 &, const T1 &,
 			     const T2 &) const;
 typedef fcdsf TT1;
-typedef fcdsf TT2;
+typedef fcdif TT2;
 
 template
 MP::MaterialStateField<TT1>

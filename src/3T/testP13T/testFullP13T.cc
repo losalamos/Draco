@@ -121,8 +121,10 @@ testFullP13T::testFullP13T(const string &infile)
 void testFullP13T::run() const
 {
     typedef MT::ccsf ccsf;
+    typedef MT::ccif ccif;
     typedef MT::fcdsf fcdsf;
-    typedef MT::bsbf bsbf;
+    typedef MT::fcdif fcdif;
+    typedef MT::bssf bssf;
 
     SP<MT> spmesh = spP13T->getMesh();
 
@@ -159,7 +161,8 @@ void testFullP13T::run() const
     ccsf TElect0(spmesh);
     ccsf TIon0(spmesh);
     ccsf density(spmesh);
-    ccsf matid(spmesh);
+    ccif matid(spmesh);
+    // ccsf matid(spmesh);
 
     TElect0 = pdb.Te;
     TIon0 = pdb.Ti;
@@ -172,7 +175,7 @@ void testFullP13T::run() const
     fcdsf TElectFC(spmesh);
     fcdsf TIonFC(spmesh);
     fcdsf densityFC(spmesh);
-    fcdsf matidFC(spmesh);
+    fcdif matidFC(spmesh);
 
     ccsf  oneCC(spmesh);
     oneCC = 1.0;
@@ -234,7 +237,7 @@ void testFullP13T::run() const
     ccsf QRad(spmesh);
     ccsf QElectron(spmesh);
     ccsf QIon(spmesh);
-    bsbf boundary(spmesh);
+    bssf boundary(spmesh);
     P13T<MT,MP,DS>::RadiationStateField newRadState(spmesh);
     ccsf electEnergyDep(spmesh);
     ccsf ionEnergyDep(spmesh);

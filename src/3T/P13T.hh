@@ -13,12 +13,7 @@
 #include "3T/P13TOptions.hh"
 #include <iosfwd>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
-BEGIN_NS_XTM
+namespace XTM {
 
 // FORWARD REFERENCES
 
@@ -57,7 +52,7 @@ class P13T
     typedef typename MeshType::ncvf ncvf;    // node-centered vector field
 #endif
     typedef typename MeshType::fcdsf fcdsf;  // face-centered discontinuous s.f.
-    typedef typename MeshType::bsbf bsbf;    // bndry-specified boundary field.
+    typedef typename MeshType::bssf bssf;    // bndry-specified boundary field.
 
     // The MaterialProperties knows the correct representation for the
     // material state field
@@ -160,10 +155,10 @@ class P13T
 		 const CCMaterialStateField &matStateCC,
 		 const FCMaterialStateField &matStateFC,
 		 const RadiationStateField &prevStateField,
-		 const ccsf QRad,
-		 const ccsf QElectron,
-		 const ccsf QIon,
-		 const bsbf boundary,
+		 const ccsf &QRad,
+		 const ccsf &QElectron,
+		 const ccsf &QIon,
+		 const bssf &boundary,
 		 DiffusionSolver &solver,
 		 RadiationStateField &resultsStateField,
 		 ccsf &electronEnergyDeposition,
@@ -207,12 +202,12 @@ class P13T
 			 const CCMaterialStateField &matStateCC,
 			 const FCMaterialStateField &matStateFC,
 			 const RadiationStateField &prevStateField,
-			 const ccsf QRad,
-			 const ccsf QElectron,
-			 const ccsf QIon,
-			 const ccsf TElectron,
-			 const ccsf TIon,
-			 const bsbf boundary,
+			 const ccsf &QRad,
+			 const ccsf &QElectron,
+			 const ccsf &QIon,
+			 const ccsf &TElectron,
+			 const ccsf &TIon,
+			 const bssf &boundary,
 			 DiffusionSolver &solver,
 			 RadiationStateField &resultsStateField) const;
     
@@ -320,7 +315,7 @@ inline std::ostream &operator<<(std::ostream &os, const P13T<MT, MP, DS> &rhs)
     return rhs.print(os);
 }
 
-END_NS_XTM  // namespace XTM
+} // namespace XTM
 
 #endif                          // __3T_P13T_hh__
 

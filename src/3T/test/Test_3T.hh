@@ -44,7 +44,7 @@ class Test_3T : public Test_Prob,
 
   public:
     typedef double NumT;
-    typedef typename MT::template cell_array<double> cell_array_double;
+    typedef typename MT::ccsf cell_array_double;
 
     Test_3T( const SP<MT>& spm_, const Run_DB& rdb,
              const Diffusion_DB& diffdb, const typename Problem::params& p,

@@ -31,9 +31,9 @@ template<class MT>
 class Diffusion_P1 : private MT::Coord_Mapper,
                      protected Diffusion_DB
 {
-    typedef typename MT::template cell_array<double> ccsf;
+    typedef typename MT::ccsf ccsf;
     typedef typename MT::fcdsf fcdsf;
-    typedef typename MT::template bssf<double> bssf;
+    typedef typename MT::bssf bssf;
 
     SP<MT> spm;
 
