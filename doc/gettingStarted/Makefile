@@ -12,11 +12,11 @@
 FILE := gettingStarted
 
 DRACO := ../..
-DRACOTEXINPUTS := ${DRACO}/doc/tex
+DRACOTEXINPUTS := ${DRACO}/environment/latex
 TEXINPUTSENVS := TEXINPUTS="${DRACOTEXINPUTS}:${TEXINPUTS}"
 
-LATEXENVS := ${TEXINPUTSENVS}
-LATEX := ${LATEXENVS} latex
+LATEX := ${TEXINPUTSENVS} latex
+DVIPS := ${TEXINPUTSENVS} dvips
 
 BIBTEXENVS := BSTINPUTS="${DRACOTEXINPUTS}:${BSTINPUTS}"
 BIBTEX := ${BIBTEXENVS} bibtex
@@ -44,7 +44,7 @@ pdf: postscript
 	ps2pdf ${FILE}.ps
 
 ${FILE}.ps: ${FILE}.dvi
-	dvips -o ${FILE}.ps ${FILE}.dvi
+	${DVIPS} -o ${FILE}.ps ${FILE}.dvi
 
 ${FILE}.dvi: ${FILE}.tex 
 	${LATEX} ${FILE}
