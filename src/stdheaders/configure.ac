@@ -18,7 +18,7 @@ AC_INSTALL_LIB
 
 dnl DRACO SETUP
 AC_DRACO_ENV
-AC_DRACO_AUTODOC(draco-5_0_0)
+AC_DRACO_AUTODOC(draco-5_1_0)
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in])
 AC_OUTPUT

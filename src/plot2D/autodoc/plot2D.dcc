@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \mainpage Overview of the plot2D package
-\version draco-5_0_0
+\version draco-5_1_0
 \author Rob Lowrie
 
 Generates 2D line plots via the Grace plotting program.

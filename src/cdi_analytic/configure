@@ -11926,7 +11926,7 @@ echo "${ECHO_T}${components}" >&6
 
 
    # find the release number
-   number=draco-5_0_0
+   number=draco-5_1_0
    echo "$as_me:$LINENO: checking \"component release number\"" >&5
 echo $ECHO_N "checking \"component release number\"... $ECHO_C" >&6
    echo "$as_me:$LINENO: result: $number" >&5
