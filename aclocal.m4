@@ -630,16 +630,14 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
        # include path
        if test -n "${TRILINOS_INC}"; then 
 	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}amesos    -I${TRILINOS_INC}aztecoo  -I${TRILINOS_INC}epetra"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}epetraext -I${TRILINOS_INC}ifpack   -I${TRILINOS_INC}komplex"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}nox       -I${TRILINOS_INC}triutils -I${TRILINOS_INC}y12m"
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
        fi
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils)
        elif test -z "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -ltriutils -ly12m)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -ltriutils)
        fi
 
        # add TRILINOS directory to VENDOR_LIB_DIRS

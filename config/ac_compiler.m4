@@ -289,9 +289,20 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    else
        GCC_BIN=`dirname ${GCC_BIN}`
        GCC_HOME=`dirname ${GCC_BIN}`
-       GCC_LIB_DIR="${GCC_HOME}/lib"
+
+       # Ensure that libraries exist at this location.  If we can't
+       # libstdc++.a at this location we leave GCC_LIB_DIR set to
+       # null and issue a warning.
+
+       if test -r ${GCC_HOME}/lib/libstdc++.a; then
+         GCC_LIB_DIR="${GCC_HOME}/lib"
+       fi
    fi
    AC_MSG_RESULT("${GCC_LIB_DIR}")
+
+   if test -z ${GCC_LIB_DIR}; then
+       AC_MSG_WARN("Could not determine location of gcc libraries. GCC_LIB_DIR is null")
+   fi
 
    # do compiler configuration
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
