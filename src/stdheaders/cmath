@@ -24,6 +24,7 @@ using ::sin;
 using ::cos;
 using ::tan;
 using ::log;
+using ::ceil;
 } /*namespace std*/
 
 #endif    /* __stdheaders_cmath__ */
