@@ -264,18 +264,20 @@ class InterpedMaterialProps::MaterialStateField
 {
     friend class InterpedMaterialProps;
 
+    typedef BilinearInterpTable::Memento Memento;
+    
   private:
 
     int theSize;
     
-    const InterpedMaterialProps               &matprops;
+    const InterpedMaterialProps  &matprops;
 
-    std::vector<BilinearInterpTable::Memento> memento;
+    std::vector<Memento>         memento;
     
-    std::vector<double>                       density;
-    std::vector<double>                       electronTemp;
-    std::vector<double>                       ionTemp;
-    std::vector<int>                          matId;
+    std::vector<double>          density;
+    std::vector<double>          electronTemp;
+    std::vector<double>          ionTemp;
+    std::vector<int>             matId;
 	
 
   private:
@@ -286,11 +288,13 @@ class InterpedMaterialProps::MaterialStateField
 		       const FT &ionTemp_, const FT2 &matId_);
 
     int size() { return theSize; }
+
+    const Memento &getMemento(int i) const { return memento[i]; }
     
-    double getDensity(int i) const { return density[i]; }
-    double getElectronTemp(int i) const { return electronTemp[i]; }
-    double getIonTemp(int i) const { return ionTemp[i]; }
-    double getMatId(int i) const { return matId[i]; }
+    const double &getDensity(int i) const { return density[i]; }
+    const double &getElectronTemp(int i) const { return electronTemp[i]; }
+    const double &getIonTemp(int i) const { return ionTemp[i]; }
+    const double &getMatId(int i) const { return matId[i]; }
 };
 
 END_NS_XTM  // namespace XTM
