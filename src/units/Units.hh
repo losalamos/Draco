@@ -9,15 +9,15 @@
 #ifndef __units_Units_hh__
 #define __units_Units_hh__
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
 #include "ds++/Assert.hh"
 #include "units/PhysicalConstants.hh"
 
 #include <cmath>
+
+#ifndef BEGIN_NS_XTM
+#define BEGIN_NS_XTM namespace XTM  {
+#define END_NS_XTM }
+#endif
 
 BEGIN_NS_XTM
     
@@ -133,40 +133,64 @@ class Units
     //    Convert function argument from user units and return it in SI units.
     //------------------------------------------------------------------------//
 
-    inline double ConvertLength(double length) const;
-    inline double ConvertMass(double mass) const;
-    inline double ConvertTime(double time) const;
-    inline double ConvertTemperature(double temperature) const;
+    template <class FT>
+    inline FT ConvertLength(const FT &length) const;
+    template <class FT>
+    inline FT ConvertMass(const FT &mass) const;
+    template <class FT>
+    inline FT ConvertTime(const FT &time) const;
+    template <class FT>
+    inline FT ConvertTemperature(const FT &temperature) const;
 
-    inline double ConvertLength(double length, int n) const;
-    inline double ConvertMass(double mass, int n) const;
-    inline double ConvertTime(double time, int n) const;
-    inline double ConvertTemperature(double temperature, int n) const;
-    inline double ConvertTemperature(double temperature, double dn) const;
+    template <class FT>
+    inline FT ConvertLength(const FT &length, int n) const;
+    template <class FT>
+    inline FT ConvertMass(const FT &mass, int n) const;
+    template <class FT>
+    inline FT ConvertTime(const FT &time, int n) const;
+    template <class FT>
+    inline FT ConvertTemperature(const FT &temperature, int n) const;
+    template <class FT>
+    inline FT ConvertTemperature(const FT &temperature, double dn) const;
 
-    inline double ConvertVelocity(double velocity) const;
-    inline double ConvertDensity(double density) const;
-    inline double ConvertEnergy(double energy) const;
+    template <class FT>
+    inline FT ConvertVelocity(const FT &velocity) const;
+    template <class FT>
+    inline FT ConvertDensity(const FT &density) const;
+    template <class FT>
+    inline FT ConvertEnergy(const FT &energy) const;
 
     //------------------------------------------------------------------------//
     // Invertxxx:
     //    Convert function argument from SI and return it in user units.
     //------------------------------------------------------------------------//
 
-    inline double InvertLength(double length) const;
-    inline double InvertMass(double mass) const;
-    inline double InvertTime(double time) const;
-    inline double InvertTemperature(double temperature) const;
+    template <class FT>
+    inline FT InvertLength(const FT &length) const;
+    template <class FT>
+    inline FT InvertMass(const FT &mass) const;
+    template <class FT>
+    inline FT InvertTime(const FT &time) const;
+    template <class FT>
+    inline FT InvertTemperature(const FT &temperature) const;
 
-    inline double InvertLength(double length, int n) const;
-    inline double InvertMass(double mass, int n) const;
-    inline double InvertTime(double time, int n) const;
-    inline double InvertTemperature(double temperature, int n) const;
-    inline double InvertTemperature(double temperature, double dn) const;
+    template <class FT>
+    inline FT InvertLength(const FT &length, int n) const;
+    template <class FT>
+    inline FT InvertMass(const FT &mass, int n) const;
+    template <class FT>
+    inline FT InvertTime(const FT &time, int n) const;
+    template <class FT>
+    inline FT InvertTemperature(const FT &temperature, int n) const;
+    template <class FT>
+    inline FT InvertTemperature(const FT &temperature, double dn) const;
 
-    inline double InvertVelocity(double velocity) const;
-    inline double InvertDensity(double density) const;
-    inline double InvertEnergy(double energy) const;
+    template <class FT>
+    inline FT InvertVelocity(const FT &velocity) const;
+    template <class FT>
+    inline FT InvertDensity(const FT &density) const;
+    template <class FT>
+    inline FT InvertEnergy(const FT &energy) const;
 
   protected:
     
@@ -209,7 +233,8 @@ inline bool Units::validUnits() const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertLength(double length) const
+template <class FT>
+inline FT Units::ConvertLength(const FT &length) const
 {
     return length * lengthConversion;
 }
@@ -219,7 +244,8 @@ inline double Units::ConvertLength(double length) const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertMass(double mass) const
+template <class FT>
+inline FT Units::ConvertMass(const FT &mass) const
 {
     return mass * massConversion;
 }
@@ -229,7 +255,8 @@ inline double Units::ConvertMass(double mass) const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertTime(double time) const
+template <class FT>
+inline FT Units::ConvertTime(const FT &time) const
 {
     return time * timeConversion;
 }
@@ -239,7 +266,8 @@ inline double Units::ConvertTime(double time) const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertTemperature(double temperature) const
+template <class FT>
+inline FT Units::ConvertTemperature(const FT &temperature) const
 {
     return temperature * temperatureConversion;
 }
@@ -249,7 +277,8 @@ inline double Units::ConvertTemperature(double temperature) const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertLength(double length, int n) const
+template <class FT>
+inline FT Units::ConvertLength(const FT &length, int n) const
 {
     return length * std::pow(lengthConversion, n);
 }
@@ -259,7 +288,8 @@ inline double Units::ConvertLength(double length, int n) const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertMass(double mass, int n) const
+template <class FT>
+inline FT Units::ConvertMass(const FT &mass, int n) const
 {
     return mass * std::pow(massConversion, n);
 }
@@ -269,7 +299,8 @@ inline double Units::ConvertMass(double mass, int n) const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertTime(double time, int n) const
+template <class FT>
+inline FT Units::ConvertTime(const FT &time, int n) const
 {
     return time * std::pow(timeConversion, n);
 }
@@ -279,7 +310,8 @@ inline double Units::ConvertTime(double time, int n) const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertTemperature(double temperature, int n) const
+template <class FT>
+inline FT Units::ConvertTemperature(const FT &temperature, int n) const
 {
     return temperature * std::pow(temperatureConversion, n);
 }
@@ -289,7 +321,8 @@ inline double Units::ConvertTemperature(double temperature, int n) const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertTemperature(double temperature, double dn) const
+template <class FT>
+inline FT Units::ConvertTemperature(const FT &temperature, double dn) const
 {
     return temperature * std::pow(temperatureConversion, dn);
 }
@@ -299,7 +332,8 @@ inline double Units::ConvertTemperature(double temperature, double dn) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertLength(double length) const
+template <class FT>
+inline FT Units::InvertLength(const FT &length) const
 {
     return length / lengthConversion;
 }
@@ -309,7 +343,8 @@ inline double Units::InvertLength(double length) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertMass(double mass) const
+template <class FT>
+inline FT Units::InvertMass(const FT &mass) const
 {
     return mass / massConversion;
 }
@@ -319,7 +354,8 @@ inline double Units::InvertMass(double mass) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertTime(double time) const
+template <class FT>
+inline FT Units::InvertTime(const FT &time) const
 {
     return time / timeConversion;
 }
@@ -329,7 +365,8 @@ inline double Units::InvertTime(double time) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertTemperature(double temperature) const
+template <class FT>
+inline FT Units::InvertTemperature(const FT &temperature) const
 {
     return temperature / temperatureConversion;
 }
@@ -339,7 +376,8 @@ inline double Units::InvertTemperature(double temperature) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertLength(double length, int n) const
+template <class FT>
+inline FT Units::InvertLength(const FT &length, int n) const
 {
     return length / std::pow(lengthConversion, n);
 }
@@ -349,7 +387,8 @@ inline double Units::InvertLength(double length, int n) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertMass(double mass, int n) const
+template <class FT>
+inline FT Units::InvertMass(const FT &mass, int n) const
 {
     return mass / std::pow(massConversion, n);
 }
@@ -359,7 +398,8 @@ inline double Units::InvertMass(double mass, int n) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertTime(double time, int n) const
+template <class FT>
+inline FT Units::InvertTime(const FT &time, int n) const
 {
     return time / std::pow(timeConversion, n);
 }
@@ -369,7 +409,8 @@ inline double Units::InvertTime(double time, int n) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertTemperature(double temperature, int n) const
+template <class FT>
+inline FT Units::InvertTemperature(const FT &temperature, int n) const
 {
     return temperature / std::pow(temperatureConversion, n);
 }
@@ -379,7 +420,8 @@ inline double Units::InvertTemperature(double temperature, int n) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertTemperature(double temperature, double dn) const
+template <class FT>
+inline FT Units::InvertTemperature(const FT &temperature, double dn) const
 {
     return temperature / std::pow(temperatureConversion, dn);
 }
@@ -389,9 +431,10 @@ inline double Units::InvertTemperature(double temperature, double dn) const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertVelocity(double velocity) const
+template <class FT>
+inline FT Units::ConvertVelocity(const FT &velocity) const
 {
-    return velocity * lengthConversion / timeConversion;
+    return velocity * (lengthConversion / timeConversion);
 }
 
 //---------------------------------------------------------------------------//
@@ -399,9 +442,10 @@ inline double Units::ConvertVelocity(double velocity) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertVelocity(double velocity) const
+template <class FT>
+inline FT Units::InvertVelocity(const FT &velocity) const
 {
-    return velocity * timeConversion / lengthConversion;
+    return velocity * (timeConversion / lengthConversion);
 }
 
 //---------------------------------------------------------------------------//
@@ -409,10 +453,11 @@ inline double Units::InvertVelocity(double velocity) const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertDensity(double density) const
+template <class FT>
+inline FT Units::ConvertDensity(const FT &density) const
 {
-    return density * massConversion /
-	(lengthConversion*lengthConversion*lengthConversion);
+    return density * (massConversion /
+		      (lengthConversion*lengthConversion*lengthConversion));
 }
 
 //---------------------------------------------------------------------------//
@@ -420,10 +465,11 @@ inline double Units::ConvertDensity(double density) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertDensity(double density) const
+template <class FT>
+inline FT Units::InvertDensity(const FT &density) const
 {
-    return density * (lengthConversion*lengthConversion*lengthConversion) /
-	massConversion;
+    return density * ((lengthConversion*lengthConversion*lengthConversion) /
+		      massConversion);
 }
 
 //---------------------------------------------------------------------------//
@@ -431,10 +477,11 @@ inline double Units::InvertDensity(double density) const
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::ConvertEnergy(double energy) const
+template <class FT>
+inline FT Units::ConvertEnergy(const FT &energy) const
 {
-    return energy * massConversion * lengthConversion*lengthConversion /
-	(timeConversion*timeConversion);
+    return energy * (massConversion * lengthConversion*lengthConversion /
+		     (timeConversion*timeConversion));
 }
 
 //---------------------------------------------------------------------------//
@@ -442,10 +489,11 @@ inline double Units::ConvertEnergy(double energy) const
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::InvertEnergy(double energy) const
+template <class FT>
+inline FT Units::InvertEnergy(const FT &energy) const
 {
-    return energy * (timeConversion*timeConversion) /
-	(massConversion * lengthConversion*lengthConversion);	
+    return energy * ((timeConversion*timeConversion) /
+		     (massConversion * lengthConversion*lengthConversion));	
 }
 
 END_NS_XTM  // namespace XTM
