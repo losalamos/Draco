@@ -63,7 +63,7 @@ void Particle<MT, RN>::source(vector<double> &r_, vector<double> &omega_,
 
 template<class MT, class RN>
 void Particle<MT, RN>::transport(const MT &mesh, const Opacity<MT> &xs, 
-				 SP<Diagnostic> diagnostic)
+				 Tally<MT> &tally, SP<Diagnostic> diagnostic)
 {
   // transport particle through mesh using regular IMC transport
 
@@ -127,7 +127,7 @@ void Particle<MT, RN>::transport(const MT &mesh, const Opacity<MT> &xs,
 //             alive = collide(mesh, xs);
 //         }
 
-	stream_IMC(xs, dist_stream);
+	stream_IMC(xs, tally, dist_stream);
 
 	if (descriptor == "scatter")
 	{

@@ -41,6 +41,7 @@
 
 #include "imctest/Names.hh"
 #include "imctest/Opacity.hh"
+#include "imctest/Tally.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <string>
@@ -129,7 +130,7 @@ private:
     inline void stream(double);  
 
   // stream a distance d
-    inline void stream_IMC(const Opacity<MT> &, double);
+    inline void stream_IMC(const Opacity<MT> &, Tally<MT> &, double);
 
   // collision, return a false if particle is absorbed
     bool collide(const MT &, const Opacity<MT> &);
@@ -163,7 +164,7 @@ public:
     void source(vector<double> &, vector<double> &, const MT &);
 
   // IMC transport step
-    void transport(const MT &, const Opacity<MT> &, 
+    void transport(const MT &, const Opacity<MT> &, Tally<MT> &,
 		   SP<Diagnostic> = SP<Diagnostic>());
 
   // other services
@@ -231,7 +232,7 @@ inline void Particle<MT, RN>::stream(double distance)
 }
 
 template<class MT, class RN>
-inline void Particle<MT, RN>::stream_IMC(const Opacity<MT> &xs,
+inline void Particle<MT, RN>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
 					 double distance)
 {
   // hardwire minimum energy weight fraction
@@ -245,13 +246,13 @@ inline void Particle<MT, RN>::stream_IMC(const Opacity<MT> &xs,
     double new_ew = ew * factor;
     double del_ew = ew - new_ew;
 
-  // Tally::deposit( del_ew, cell );
+    tally.deposit_energy( cell, del_ew );
 
     fraction *= factor;
 
     if (fraction < minwt_frac) // kill particle and deposit it energy
     {
-      // Tally::deposit( new_ew, cell );
+	tally.deposit_energy( cell, new_ew );
 	descriptor = "killed";
 	alive = false;
     }
