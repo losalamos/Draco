@@ -73,7 +73,7 @@
 
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
-\refno{CCS-4:01-??(U)}
+\refno{CCS-4:01-17(U)}
 \subject{EOSPAC Equation of State Package for \draco}
 
 %-------NO CHANGES
@@ -171,7 +171,7 @@ access to the following types of EOSPAC data:
 \item Temperature-based specific ion internal energy (kJ/g).
 \item Temperature-based specific ion heat capacity (kJ/g/keV).
 \item Average number of free electrons per ion.
-\item Temperature-based specific electron thernal conductivity ($s^{-1}cm^{-1}$).
+\item Temperature-based specific electron thermal conductivity ($s^{-1}cm^{-1}$).
 \end{itemize}
 
 This list of available queries will expand to include more data types.
@@ -247,7 +247,7 @@ copy of the Sesame tables.
 \label{SesameTables}
 
 Each Eospac object provides a single point of access for extracting
-(interpolating) equation of state data from the sesame table files
+(interpolating) equation of state data from the Sesame table files
 located on X-division machines.  These files may contain lookup
 tables that overlap each other (e.g.: different revisions of the same
 data, see \url{http://int.lanl.gov/projects/sdm/win/materials/} for
@@ -270,7 +270,7 @@ In Code Example \ref{codeExample:SesameTablesInstantiation} below we
 want to create a SesameTables object for Aluminum.  We initially
 declare the SesameTables object and name it \texttt{AlSt}.  However,
 it is not a useful object until we specify what state data we want to
-be able to query and which specific sesame tables to use for each
+be able to query and which specific Sesame tables to use for each
 lookup.  The types of data that are available from EOSPAC are listed
 in Table \ref{tab:SesameDataTypes} along with a brief description, the
 associated table category index and the Sesame catalog number.  This
@@ -410,7 +410,7 @@ Our code example below assumes that we only want to query for two
 types of EOS data: temperature-based electron internal energies
 (needed to obtain electron-based heat capacities, $C_{v_e} =
 \frac{\partial E_e} {\partial T}$) and the average number of free
-electrons per ion.  From Table \ref{tab:SesameDataTypes} we see that
+electrons per ion.  From Table \ref{tab:SesameDataTypes}, we see that
 we need to request the data types ``enelc'' and ``zfree3''.  This
 tells us what ``set'' functions to call to correctly configure
 \texttt{AlSt}, but we must still assign material/table identifiers
@@ -420,10 +420,10 @@ The table identifier for EOSPAC is an integer of the form:
 [\emph{table-category}][\emph{material-index}][\emph{table-version}].
 We can find these table identifiers by visiting
 \url{http://int.lanl.gov/projects/sdm/win/materials/} and searching on
-``aluminum''.  This search brings up a list of available sesame
+\emph{aluminum}.  This search brings up a list of available Sesame
 tables.  We quickly see that the \emph{material-index} for aluminum is
-371 and that there are several \emph{table-versions} available for
-each \emph{table-category}. From Table \ref{tab:SesameDataTypes} we
+371, and that there are several \emph{table-versions} available for
+each \emph{table-category}. From Table \ref{tab:SesameDataTypes}, we
 determine that we will need tables 304 (enelc) and 601 (zfree3).  In
 the code example, we choose the table identifiers 3717 and 23714,
 respectively, to meet our requirements.
@@ -442,12 +442,12 @@ documents for details).
 \subsection{General Use}
 
 All of the data types listed in Table \ref{tab:SesameDataTypes} are
-valid \emph{set} functions for SesameTables objects.  However the
-\texttt{cdi\_eospac} package only provides access routines for the data 
-types listed in \S\ref{intro} (\texttt{enelc}, \texttt{enion},
+valid \emph{set} functions for SesameTables objects.  However, the
+\texttt{cdi\_eospac} package only provides access routines for the
+data types listed in \S\ref{intro} (\texttt{enelc}, \texttt{enion},
 \texttt{zfree3}, and \texttt{tconde}).  As our needs expand this
 package will provide access all of the data types that EOSPAC knows
-about. 
+about.
 
 In some situations a SesameTables object will only be used once and so 
 an explicit instantiation may not be required.  The SesameTables
@@ -481,9 +481,9 @@ the interpolated values of the requested data type.
 Eospac objects inherit their interface from the EOS interface
 definitions declared in the cdi package (see cdi/EOS.hh).
 
-In this release of \texttt{cdi\_eospapc} no specialized smoothing of
-the data will preformed.  Additionally, all interpolation uses a
-bi-linear scheme.  If needed this package can be expanded to provide
+In this release of \texttt{cdi\_eospapc}, no specialized smoothing of
+the data will be preformed.  Additionally, all interpolation uses a
+bi-linear scheme.  If needed, this package can be expanded to provide
 some of the more advanced smoothing and interpolation schemes
 available in EOSPAC.
 
@@ -534,7 +534,7 @@ requested data tables.  The Eospac object will only be valid if the
 associated SesameTables object defines at least one data type.
 
 An example of instantiating an Eospac object is shown in Code Example
-\ref{codeExample:EospacInstantiation}.  In this example we declare a
+\ref{codeExample:EospacInstantiation}.  In this example, we declare a
 smart pointer to an Eospac object and then intantiate the Eospac
 object.  The single argument provided to the Eospac constructor is a
 SesameTables object generated \emph{on-the-fly}.  The user can also
@@ -567,13 +567,13 @@ and in the unit tests ``cdi\_eospac/test/tEospac'' and
 
 Some of the more commonly used member functions for Eospac are listed
 in Table \ref{tab:accessFunctions} below.  These access functions
-expect temperatures to be given in keV and densities to given in
+expect temperatures to be given in keV and densities to be given in
 g/cm$^3$.  The interpolated equation of state values returned by these
-member functions return values with the units specified in the table.
+member functions will have the units specified in the table.
 
 Eospac provides an associated set of vector access functions.  These
 member functions have the same name as those shown in
-Table \ref{tab:accessFunctions} but the temperature and density
+Table \ref{tab:accessFunctions}, but the temperature and density
 arguments have type \texttt{const~vector< double >\&} and the return
 type is a \texttt{vector< double >}.
 
@@ -743,9 +743,6 @@ main()
 
 \section{EospacException and EospacWrapper}
 
-There is no requirement for the client code to directly interact with
-either of these classes.
-
 The EospacWrapper routines provide access to the FORTRAN EOSPAC
 libraries.  This set of routines act as the interface between the
 FORTRAN library and the C++ objects that make up the
@@ -758,9 +755,9 @@ The client code may have some indirect interaction with the
 EospacException object if the client is interested in intercepting
 exceptions thrown by various routines in this package.  The client
 code should include a try block similar to the one shown in Code
-Example~\ref{codeExample:EospacInstantiation} when instantiating
-an Eospac object.
-
+Example~\ref{codeExample:EospacInstantiation} when instantiating an
+Eospac object.  There is no requirement for the client code to
+directly interact with either of these classes.
 
 
 %%---------------------------------------------------------------------------%%
