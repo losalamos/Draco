@@ -165,6 +165,9 @@ class StructuredMeshCFAVTest : public Tester
     template<class CT, class CIT, class CVIT>
     void t3(const std::string &constness);
 
+    template<class CT, class CIT, class CVIT>
+    void t4(const std::string &constness);
+
     typename MT::vcif &vindices() { return vindices_m; }
 
     typename MT::fcdif &findices() { return findices_m; }

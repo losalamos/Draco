@@ -15,6 +15,7 @@
 #include <sstream>
 #include <algorithm>
 #include <stdexcept>
+#include <cstdlib>
 
 //*****************************************
 // Constructor: StructuredMeshCFAVTest(...)
@@ -91,6 +92,16 @@ void StructuredMeshCFAVTest<MTFactory>::run()
     os() << "Running t3<const>()." << std::endl;
     
     t3<const ConnFcdif, ConnFcdif::const_iterator,
+	ConnFcdif::value_type::const_iterator>("const");
+
+    os() << "Running t4<non-const>()." << std::endl;
+    
+    t4<ConnFcdif, ConnFcdif::iterator,
+	ConnFcdif::value_type::iterator>("non-const");
+    
+    os() << "Running t4<const>()." << std::endl;
+    
+    t4<const ConnFcdif, ConnFcdif::const_iterator,
 	ConnFcdif::value_type::const_iterator>("const");
 }
 
@@ -260,6 +271,57 @@ void StructuredMeshCFAVTest<MTFactory>::t3(const std::string &constness)
     // as a structured mesh.
     
     checkConnectivity(facesArroundVertices, verticesArroundFaces);
+}
+
+//********
+// t4(...)
+//********
+
+template<class MTFactory>
+template<class CT, class CIT, class CVIT>
+void StructuredMeshCFAVTest<MTFactory>::t4(const std::string &constness)
+{
+    const std::string prefix(std::string("t4<") + constness + ">: ");
+
+    // Generate a cell-centered field of random integers.
+    // We will then gather the random integers to both a vertex
+    // and face centered field.
+    // If we are iterating constently between the vertex and face fields,
+    // then their iterators should always refer to the same cell-based
+    // random value.
+    
+    typename MT::ccif mcells(fCtor_m);
+    std::generate(mcells.begin(), mcells.end(), std::rand);
+
+    const typename MT::ccif &cells = mcells;
+
+    typename MT::vcif vertices(fCtor_m);
+    MT::gather(vertices, cells, MT::OpAssign());
+
+    typename MT::fcdif faces(fCtor_m);
+    MT::gather(faces, cells, MT::OpAssign());
+
+    CT connFaces(faces);
+    typename MT::vcif::const_iterator vi = vertices.begin();
+    
+    for (CIT cfi = connFaces.begin(); cfi != connFaces.end(); cfi++, vi++)
+    {
+	const int vcellno = *vi;
+	
+	for (CVIT cfivi = cfi->begin(); cfivi != cfi->end(); cfivi++)
+	{
+	    const int fcellno = *cfivi;
+            if (fcellno != vcellno)
+            {
+		testassert(false,
+                           "CFAV not iterating cells consistently "
+                           "with vcif fields"
+                           , __FILE__, __LINE__);
+		return;
+
+            }
+        }
+    }    
 }
 
 //***********************
