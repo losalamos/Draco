@@ -31,7 +31,7 @@ postscript: draco-release.ps
 dvi: draco-release.dvi
 
 draco-release.ps: draco-release.dvi
-	dvips -o draco-release.ps draco-release.dvi
+	dvips -t letter -Ppdf -o draco-release.ps draco-release.dvi
 
 draco-release.dvi: draco-release.tex 
 	${LATEX} draco-release
