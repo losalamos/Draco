@@ -14,6 +14,7 @@
 
 #include "Particle.hh"
 #include "mc/Sampler.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 namespace rtt_imc
 {
@@ -373,7 +374,6 @@ void Multigroup_Particle<MT>::stream_implicit_capture(
 
     // calculate multiplicative reduction in energy-weight
     double factor = exp(argument);
-    Check (factor >= minwt_frac);
 
     // calculate new energy weight; change in energy-weight
     double new_ew = ew * factor;
@@ -407,6 +407,8 @@ void Multigroup_Particle<MT>::stream_implicit_capture(
 
     // update the fraction of the particle's original weight
     fraction *= factor;
+    Check (fraction > minwt_frac || 
+	   rtt_dsxx::soft_equiv(fraction, minwt_frac));
 
     // update particle energy-weight
     ew = new_ew;
