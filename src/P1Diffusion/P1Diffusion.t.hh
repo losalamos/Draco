@@ -24,8 +24,8 @@ namespace rtt_P1Diffusion
  P1Diffusion<MT,MS>::P1Diffusion(const Diffusion_DB &diffdb,
 				 const SP<MT>& spm_,
 				 const SP<MS> &spsolver_,
-                                 const FieldConstructor &FC_)
-     : spm(spm_), spsolver(spsolver_), FC(FC_)
+                                 const FieldConstructor &fCtor_)
+     : spm(spm_), spsolver(spsolver_), fCtor(fCtor_)
  {
      // empty
  }
@@ -39,7 +39,7 @@ namespace rtt_P1Diffusion
  {
      // Get the cell lengths perpendicular to the face.
 
-     fcdsf deltaL(FC);
+     fcdsf deltaL(fCtor);
      spm->get_face_lengths(deltaL);
      
     // Cache swapped values of
@@ -51,23 +51,23 @@ namespace rtt_P1Diffusion
      // continuity, and the elimination of the face phi unknown.
      // (for internal and boundary faces)
     
-     fcdsf DEffOverDeltaL(FC);
+     fcdsf DEffOverDeltaL(fCtor);
      getDEffOverDeltaL(DEffOverDeltaL, D, alpha, beta);
 
     // Get the areas of each face.
     
-     fcdsf areas(FC);
+     fcdsf areas(fCtor);
      spm->get_face_areas(areas);
 
     // Store the off-diagonal elements of the matrix in a face-centered-
     // discontinous scalar field.
     
-     SP<fcdsf> spAOffDiagonal = new fcdsf(FC);
+     SP<fcdsf> spAOffDiagonal(new fcdsf(fCtor));
      *spAOffDiagonal = -1.0 * areas * DEffOverDeltaL;
     
     // Get the cell volumes.
     
-     ccsf volumes(FC);
+     ccsf volumes(fCtor);
      spm->get_cell_volumes(volumes);
 
     // Store the diagonal elements of the matrix in a cell-centered
@@ -77,7 +77,7 @@ namespace rtt_P1Diffusion
     // The other part of the diagonal elements includes the negative
     // sum over faces of the off-diagonal elements .
 
-     SP<ccsf> spADiagonal = new ccsf(FC);
+     SP<ccsf> spADiagonal(new ccsf(fCtor));
     
      *spADiagonal = volumes*sigma;
      MT::scatter(*spADiagonal, *spAOffDiagonal, MT::OpSubAssign());
@@ -86,20 +86,20 @@ namespace rtt_P1Diffusion
      // continuity, and the elimination of the face phi unknown.
      // (for internal and boundary faces)
     
-     fcdsf FprimeEff(FC);
+     fcdsf FprimeEff(fCtor);
      getFprimeEff(FprimeEff, Fprime, D, alpha, beta, fb);
     
     // The right hand side of the matrix equation is a cell-centered
     // scalar field.
 
-     ccsf brhs(FC);
+     ccsf brhs(fCtor);
 
      // This bracket is for scoping.
      {
 	 // Need a temporary face-centered field for continuing the rhs
 	 // calculation.
 	
-	 fcdsf bf(FC);
+	 fcdsf bf(fCtor);
 
 	 // The right hand side consists the volume multiplied by the source...
 	 // The rhs also consists of the negative sum over faces
@@ -128,37 +128,123 @@ namespace rtt_P1Diffusion
 #ifdef P13T_MOMENTUM_DEPOSITION
 
  template<class MT, class MS>
+ void
+ P1Diffusion<MT,MS>::discFluxToDiscMomentum(DiscMomentumField &result,
+					    const DiscFluxField &flux) const;
+ {
+     // This method moves the flux-like field from the DiscFluxField location
+     // to the DiscMomentumField location.
+
+     typedef typename MT::fcdvsf NormalsField;
+
+     NormalsField faceNormals(fCtor);
+     MT::get_face_normals(faceNormals);
+
+     // ConnFacesAroundVertices is a class that defines objects
+     // that will iterate through a face-centered field around each vertex,
+     // before going onto the next vertex's faces.
+
+     typedef typename MT::ConnFacesAroundVertices<const NormalsField>
+	 ConnNormals;
+     typedef typename MT::ConnFacesAroundVertices<const DiscFluxField> ConnFlux;
+
+     const ConnNormals connNormals(faceNormals);
+     const ConnFlux connFlux(flux);
+
+     // Make sure that everyone is the same size (in vertices).
+
+     Assert(std::distance(connNormals.begin(), connNormals.end()) ==
+	    std::distance(connFlux.begin(), connFlux.end()));
+     Assert(std::distance(connNormals.begin(), connNormals.end()) ==
+	    std::distance(result.begin(), result.end()));
+     
+     // Loop over vertices
+     
+     ConnNormals::const_iterator itNormVertex = connNormals.begin();
+     ConnFlux::const_iterator itFluxVertex = connFlux.begin();
+     DiscMomentumField::iterator itResult = result.begin();
+
+     while (itResult != result.end())
+     {
+	 // Make sure that everyone is the same size (in faces per vertex).
+	 
+	 Assert(std::distance((*itNormVertex).begin(),
+			      (*itNormVertex).end()) ==
+		std::distance((*itFluxVertex).begin(),
+			      (*itFluxVertex).end()));
+	 
+	 // Loop over faces per vertex
+	 
+	 Conn::value_type::const_iterator itNormFace = (*itNormVertex).begin();
+	 Conn::value_type::const_iterator itFluxFace = (*itFluxVertex).begin();
+
+	 while (itNormFace != (*itNormVertex).end())
+	 {
+	     typedef NormalsField::value_type NormVector;
+	     typedef DiscMomentumField::value_type ResultVector;
+	     typedef DiscFluxField::value_type FluxType;
+
+	     ResultVector &res = *itResult;
+	     const NormVector &norm = *itNormFace;
+	     const FluxType &flux = *itFluxFace;
+
+	     res[0] = norm[0]*flux;
+	     res[1] = norm[1]*flux;
+	     res[2] = norm[2]*flux;
+	     
+	     itNormFace++;
+	     itFluxFace++;
+	 }
+
+	 itResult++;
+	 itNormVertex++;
+	 itFluxVertex++;
+     }
+ }
+
+ template<class MT, class MS>
+ void P1Diffusion<MT,MS>::dotProduct(DiscKineticEnergyField &result,
+                                     const DiscMomentumField &vec1,
+                                     const DiscMomentumField &vec2) const
+ {
+     Assert(result.size() == vec1.size());
+     
+     DiscMomentumField::const_iterator iv1 = vec1.begin();
+     DiscMomentumField::const_iterator iv2 = vec2.begin();
+     DiscKineticEnergyField::iterator ir = result.begin();
+
+     while (ir != result.end())
+     {
+	 typedef DiscMomentumField::value_type> vector;	 
+	 typedef rtt_traits::vector_traits<vector> vtraits;
+
+	 *ir = vtraits::dot(*iv1, *iv2);
+
+	 ir++;
+	 iv1++;
+	 iv2++;
+     }
+ }
+
+ template<class MT, class MS>
  void P1Diffusion<MT,MS>::dotProduct(DiscKineticEnergyField &KEnergy,
                                      const DiscFluxField &sigmaF,
                                      const DiscMomentumField &velocity) const
  {
-     for (int c = 0; c < spm->get_ncells(); ++c)
-     {
-         KEnergy(c,0) = sigmaF(c,0)*velocity(c,0)[0]
-                      + sigmaF(c,2)*velocity(c,0)[1]
-                      + sigmaF(c,4)*velocity(c,0)[2];
-         KEnergy(c,1) = sigmaF(c,1)*velocity(c,1)[0]
-                      + sigmaF(c,2)*velocity(c,1)[1]
-                      + sigmaF(c,4)*velocity(c,1)[2];
-         KEnergy(c,2) = sigmaF(c,0)*velocity(c,2)[0]
-                      + sigmaF(c,3)*velocity(c,2)[1]
-                      + sigmaF(c,4)*velocity(c,2)[2];
-         KEnergy(c,3) = sigmaF(c,1)*velocity(c,3)[0]
-                      + sigmaF(c,3)*velocity(c,3)[1]
-                      + sigmaF(c,4)*velocity(c,3)[2];
-         KEnergy(c,4) = sigmaF(c,0)*velocity(c,4)[0]
-                      + sigmaF(c,2)*velocity(c,4)[1]
-                      + sigmaF(c,5)*velocity(c,4)[2];
-         KEnergy(c,5) = sigmaF(c,1)*velocity(c,5)[0]
-                      + sigmaF(c,2)*velocity(c,5)[1]
-                      + sigmaF(c,5)*velocity(c,5)[2];
-         KEnergy(c,6) = sigmaF(c,0)*velocity(c,6)[0]
-                      + sigmaF(c,3)*velocity(c,6)[1]
-                      + sigmaF(c,5)*velocity(c,6)[2];
-         KEnergy(c,7) = sigmaF(c,1)*velocity(c,7)[0]
-                      + sigmaF(c,3)*velocity(c,7)[1]
-                      + sigmaF(c,5)*velocity(c,7)[2];
-     }
+     Assert(KEnergy.size() == DiscMomentum.size());
+
+     // Move the flux-like field from the DiscFluxField location
+     // to the DiscMomentumField location.
+     
+     DiscMomentumField sigmaFAtMomentum(fCtor);
+     discFluxToDiscMomentum(sigmaFAtMomentum, sigmaF);
+
+     // KEnergy is the
+     // dot_product((sigma * Flux), velocity)
+     // at each vertex.
+
+     dotProduct(KEnergy, sigmaFAtMomentum, velocity);
+     
  }
 
 #endif
@@ -168,13 +254,13 @@ namespace rtt_P1Diffusion
 					     const fcdsf &Fprime,
 					     const fcdsf &deltaL) const
  {
-     spDSwap = new fcdsf(FC);
+     spDSwap = new fcdsf(fCtor);
      MT::swap_faces(*spDSwap, D);
 
-     spFprimeSwap = new fcdsf(FC);
+     spFprimeSwap = new fcdsf(fCtor);
      MT::swap_faces(*spFprimeSwap, Fprime);
 
-     spDeltaLSwap = new fcdsf(FC);
+     spDeltaLSwap = new fcdsf(fCtor);
      MT::swap_faces(*spDeltaLSwap, deltaL);
  }
 
@@ -194,7 +280,7 @@ namespace rtt_P1Diffusion
  {
      // Get the cell lengths perpendicular to the face.
 
-     fcdsf deltaL(FC);
+     fcdsf deltaL(fCtor);
      spm->get_face_lengths(deltaL);
     
     // Calculate the effective D/delta l on the faces due to flux
@@ -207,7 +293,7 @@ namespace rtt_P1Diffusion
      // continuity, and the elimination of the face phi unknown.
      // (boundary faces only)
     
-     bssf DEffOverDeltaLBndry(FC);
+     bssf DEffOverDeltaLBndry(fCtor);
      getDEffOverDeltaLBndry(DEffOverDeltaLBndry, D, deltaL, alpha, beta);
 
     // Combine the boundary term with interior term.
@@ -237,8 +323,8 @@ namespace rtt_P1Diffusion
  {
      // Need to strip off the boundary part of the D's and deltaL's.
 
-     bssf DBndry(FC);
-     bssf deltaLBndry(FC);
+     bssf DBndry(fCtor);
+     bssf deltaLBndry(fCtor);
 
      MT::gather(DBndry, D, MT::OpAssign());
      MT::gather(deltaLBndry, deltaL, MT::OpAssign());
@@ -257,7 +343,7 @@ namespace rtt_P1Diffusion
  {
      // Get the cell lengths perpendicular to the face.
 
-     fcdsf deltaL(FC);
+     fcdsf deltaL(fCtor);
      spm->get_face_lengths(deltaL);
     
     // Calculate the effective Fprime on the faces due to flux
@@ -270,7 +356,7 @@ namespace rtt_P1Diffusion
      // continuity, and the elimination of the face phi unknown.
      // (boundary faces only)
     
-     bssf FprimeEffBndry(FC);
+     bssf FprimeEffBndry(fCtor);
      getFprimeEffBndry(FprimeEffBndry, Fprime, D, deltaL, alpha, beta, fb);
 
     // Combine the boundary term with interior term.
@@ -306,9 +392,9 @@ namespace rtt_P1Diffusion
  {
      // Need to strip off the boundary part of the D's, Fprime's, and deltaL's.
 
-     bssf DBndry(FC);
-     bssf FprimeBndry(FC);
-     bssf deltaLBndry(FC);
+     bssf DBndry(fCtor);
+     bssf FprimeBndry(fCtor);
+     bssf deltaLBndry(fCtor);
 
      MT::gather(DBndry, D, MT::OpAssign());
      MT::gather(FprimeBndry, Fprime, MT::OpAssign());
@@ -327,7 +413,7 @@ namespace rtt_P1Diffusion
      // The sparse matrix can be constructed from the diagonal and
      // off-diagonal elements.
     
-     SP<Matrix> spMatrix = new Matrix(spm, spADiagonal, spAOffDiagonal, FC);
+     SP<Matrix> spMatrix(new Matrix(spm, spADiagonal, spAOffDiagonal, fCtor));
 
      // Solve the "matrix*phi = b" equations.
     
@@ -342,13 +428,13 @@ namespace rtt_P1Diffusion
  {
      // Get the cell-centered phi onto the faces.
 
-     fcdsf phiFC(FC);
+     fcdsf phiFC(fCtor);
      MT::gather(phiFC, phi, MT::OpAssign());
     
     // Get the values of phi from the opposite side of the face.
     // (Boundary face values will be zero-ed out by the swap.)
     
-     fcdsf phiFCSwap(FC);
+     fcdsf phiFCSwap(fCtor);
      MT::swap_faces(phiFCSwap, phiFC);
 
     // Calculate the new flux.

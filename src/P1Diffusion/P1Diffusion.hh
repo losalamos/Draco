@@ -64,7 +64,7 @@ namespace rtt_P1Diffusion
     
      dsxx::SP<MeshType> spm;
      dsxx::SP<MatrixSolver> spsolver;
-     FieldConstructor FC;
+     FieldConstructor fCtor;
 
      // Cache the swapped values to avoid too much communication.
      
@@ -78,7 +78,7 @@ namespace rtt_P1Diffusion
     
      P1Diffusion(const Diffusion_DB &diffdb, const dsxx::SP<MeshType>& spm_,
 		 const dsxx::SP<MatrixSolver> &spsolver_,
-                 const FieldConstructor &FC_);
+                 const FieldConstructor &fCtor_);
 
      // MANIPULATORS
     

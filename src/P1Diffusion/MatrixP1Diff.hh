@@ -52,7 +52,7 @@ namespace rtt_P1Diffusion
      SP<MT> spMesh;
      SP<const ccsf> spDiagonal;
      SP<const fcdsf> spOffDiagonal;
-     FieldConstructor FC;
+     FieldConstructor fCtor;
 
      // Mutable temporary data
 
@@ -69,15 +69,15 @@ namespace rtt_P1Diffusion
      MatrixP1Diff(const SP<MT> &spMesh_,
 		  const SP<const ccsf> &spDiagonal_,
 		  const SP<const fcdsf> &spOffDiagonal_,
-                  const FieldConstructor &FC_)
+                  const FieldConstructor &fCtor_)
 	 : spMesh(spMesh_), spDiagonal(spDiagonal_),
-	   spOffDiagonal(spOffDiagonal_), FC(FC_)
+	   spOffDiagonal(spOffDiagonal_), fCtor(fCtor_)
      {
-	 spxFC = new fcdsf(FC);
-	 spxSwap = new fcdsf(FC);
-	 spbFC = new fcdsf(FC);
-	 spbtmp = new ccsf(FC);
-	 spxtmp = new ccsf(FC);
+	 spxFC = new fcdsf(fCtor);
+	 spxSwap = new fcdsf(fCtor);
+	 spbFC = new fcdsf(fCtor);
+	 spbtmp = new ccsf(fCtor);
+	 spxtmp = new ccsf(fCtor);
      }
      
      // MANIPULATORS

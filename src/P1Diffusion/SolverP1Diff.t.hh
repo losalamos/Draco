@@ -26,10 +26,10 @@ namespace rtt_P1Diffusion
  void SolverP1Diff<MT>::solve(ccsf &phi, const SP<const Matrix> &spMatrix,
 			      const ccsf &brhs)
  {
-     SP<MatVec> spMatVec = new MatVec(spMatrix);
+     SP<MatVec> spMatVec(new MatVec(spMatrix));
      
      const int method = 1;
-     SP<PreCond> spPreCond = new PreCond(spMatrix, method);
+     SP<PreCond> spPreCond(new PreCond(spMatrix, method));
 
      // Now solve the matrix equation A.x = rhs.
 
