@@ -19,7 +19,7 @@
 
 #include "UnitTestFrame/PassFailStream.hh"
 
-#include "meshTest/Compare.hh"
+#include "Compare.hh"
 #include "ds++/Mat.hh"
 #include "c4/SpinLock.hh"
 
@@ -95,7 +95,7 @@ void TestConjGrad::runTestConjGradMatVec()
 	C4::HTSyncSpinLock ht;
 
 	const int ndigits = 2;
-	rtt_meshTest::NearlyEqualTo<double> nearEqual(ndigits);
+	NearlyEqualTo<double> nearEqual(ndigits);
 	
 	for (int ix=0; ix < nxs; ++ix)
 	    for (int iy=0; iy < nys; ++iy)
@@ -212,7 +212,7 @@ void TestConjGrad::runTestConjGrad(bool jacobiPrecon, bool comm)
 	C4::HTSyncSpinLock ht;
 
 	const int ndigits = 2;
-	rtt_meshTest::NearlyEqualTo<double> nearEqual(ndigits);
+	NearlyEqualTo<double> nearEqual(ndigits);
 	
 	for (int i = 0; i<nru; i++)
 	{

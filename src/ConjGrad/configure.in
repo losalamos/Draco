@@ -21,7 +21,7 @@ dnl AC_PCGLIB_SETUP(pkg)
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(traits c4 ds++)
-AC_NEEDS_LIBS_TEST(UnitTestFrame meshTest)
+AC_NEEDS_LIBS_TEST(UnitTestFrame)
 
 AC_RUNTESTS(TestConjGrad, 1 2 5)
 
