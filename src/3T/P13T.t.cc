@@ -648,7 +648,7 @@ void P13T<DS>::calcMomentumDeposition(
         DiscKineticEnergyField::iterator iter1 = velocity1.begin();
         DiscKineticEnergyField::iterator iter2 = velocity2.begin();
         DiscKineticEnergyField::iterator iter3 = velocity3.begin();
-        for (DiscMomentumField::iterator iter = vvelocity.begin();
+        for (DiscMomentumField::const_iterator iter = vvelocity.begin();
              iter != vvelocity.end(); iter++)
         {
             *iter1++ = vec::dot(*iter, e1);
@@ -700,9 +700,9 @@ void P13T<DS>::calcMomentumDeposition(
     MT::scatter ( momentum2, sigmaFe2, MT::OpAddAssign() );
     MT::scatter ( momentum3, sigmaFe3, MT::OpAddAssign() );
 
-    ncsf::iterator iter1 = momentum1.begin();
-    ncsf::iterator iter2 = momentum2.begin();
-    ncsf::iterator iter3 = momentum3.begin();
+    ncsf::const_iterator iter1 = momentum1.begin();
+    ncsf::const_iterator iter2 = momentum2.begin();
+    ncsf::const_iterator iter3 = momentum3.begin();
 
     for (MomentumField::iterator mom_iter = momentumDeposition.begin();
          mom_iter != momentumDeposition.end(); mom_iter++)
@@ -715,9 +715,9 @@ void P13T<DS>::calcMomentumDeposition(
 #ifdef SDP
     DiscMomentumField vc_momentum(spMesh);
     
-    DiscKineticEnergyField::iterator iter1 = sigmaFe1.begin();
-    DiscKineticEnergyField::iterator iter2 = sigmaFe2.begin();
-    DiscKineticEnergyField::iterator iter3 = sigmaFe3.begin();
+    DiscKineticEnergyField::const_iterator iter1 = sigmaFe1.begin();
+    DiscKineticEnergyField::const_iterator iter2 = sigmaFe2.begin();
+    DiscKineticEnergyField::const_iterator iter3 = sigmaFe3.begin();
 
     for (DiscMomentumField::iterator mom_iter = vc_momentum.begin();
          mom_iter != vc_momentum.end(); mom_iter++)

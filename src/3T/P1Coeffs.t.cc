@@ -235,7 +235,7 @@ namespace rtt_3T
          DiscFluxField::iterator iter1 = n1.begin();
          DiscFluxField::iterator iter2 = n2.begin();
          DiscFluxField::iterator iter3 = n3.begin();
-         for (fcdvsf::iterator iter = face_normals.begin();
+         for (fcdvsf::const_iterator iter = face_normals.begin();
               iter != face_normals.end(); iter++)
          {
              *iter1++ = vec::dot(*iter, e1);
@@ -249,7 +249,7 @@ namespace rtt_3T
      DiscKineticEnergyField velocity_sqrd(spMesh);
      {
          DiscKineticEnergyField::iterator itersq = velocity_sqrd.begin();
-         for (DiscMomentumField::iterator iter = vvelocity.begin();
+         for (DiscMomentumField::const_iterator iter = vvelocity.begin();
               iter != vvelocity.end(); iter++)
          {
              *itersq++ = vec::dot(*iter, *iter);
@@ -262,7 +262,7 @@ namespace rtt_3T
          DiscKineticEnergyField::iterator iter1 = velocity1.begin();
          DiscKineticEnergyField::iterator iter2 = velocity2.begin();
          DiscKineticEnergyField::iterator iter3 = velocity3.begin();
-         for (DiscMomentumField::iterator iter = vvelocity.begin();
+         for (DiscMomentumField::const_iterator iter = vvelocity.begin();
               iter != vvelocity.end(); iter++)
          {
              *iter1++ = vec::dot(*iter, e1);
