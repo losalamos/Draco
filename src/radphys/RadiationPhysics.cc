@@ -14,6 +14,10 @@
 #include <cmath>
 #include <limits>
 
+#include <iostream>
+using std::cerr;
+using std::endl;
+
 #ifndef BEGIN_NS_XTM
 #define BEGIN_NS_XTM namespace XTM  {
 #define END_NS_XTM }
@@ -123,6 +127,7 @@ void RadiationPhysics::getElectIonCoupling(const Field &density,
     Require(ContainerTraits<Field>::conformal(density, electIonCoupling));
     Require(ContainerTraits<Field>::conformal(TElectron, electIonCoupling));
     Require(ContainerTraits<Field>::conformal(z, electIonCoupling));
+    Require(abar > 0.0);
 
     // eic_constant IS A FUNCTION OF VARIOUS PHYSICAL CONSTANTS IN SI UNITS:
     // eic_constant = (avog_num**3)*sqrt(mass_elect)*(elect_chg**4)*1.e9/ & 
@@ -148,7 +153,14 @@ void RadiationPhysics::getElectIonCoupling(const Field &density,
     // Get the Electron-Ion Coulomb Log
 
     getElectIonCoulombLog(density, TElectron, z, abar, lambda_ei);
-    
+
+    cerr << "lambda_ei: " << lambda_ei << endl;
+    cerr << "eic_constant: " << eic_constant << endl;
+    cerr << "z: " << z << endl;
+    cerr << "abar: " << abar << endl;
+    cerr << "TElectron: " << TElectron << endl;
+    cerr << "density: " << density << endl;
+
     electIonCoupling = eic_constant * lambda_ei *
 	((z*z*z) / (abar*abar*abar)) * density / pow(TElectron, 1.5);
 }
@@ -176,7 +188,8 @@ void RadiationPhysics::getElectIonCoulombLog(const Field &density,
     Require(ContainerTraits<Field>::conformal(density, lambda_ei));
     Require(ContainerTraits<Field>::conformal(TElectron, lambda_ei));
     Require(ContainerTraits<Field>::conformal(z, lambda_ei));
-
+    Require(abar > 0.0);
+    
     const double Na = PhysicalConstants::avogadro;
     const double eV2K = PhysicalConstants::eV2K;
     
@@ -198,6 +211,8 @@ void RadiationPhysics::getElectIonCoulombLog(const Field &density,
 
     while(lit != CTF::end(lambda_ei))
     {
+	Require(*Tit > 0.0);
+
 	// Calculate formula switch-over point
 
 	bool lowTemp = *Tit <= 10.0*(*zit)*(*zit);
@@ -242,6 +257,7 @@ void RadiationPhysics::getElectronConductionCoeff(const Field &density,
     Require(ContainerTraits<Field>::conformal(density, electCondCoeff));
     Require(ContainerTraits<Field>::conformal(TElectron, electCondCoeff));
     Require(ContainerTraits<Field>::conformal(z, electCondCoeff));
+    Require(abar > 0.0);
 
     //.... ecc_constantSI IS A FUNCTION OF VARIOUS PHYSICAL CONSTANTS
     //     IN SI UNITS:
@@ -304,6 +320,7 @@ void RadiationPhysics::getElectElectCoulombLog(const Field &density,
     Require(ContainerTraits<Field>::conformal(density, lambda_ee));
     Require(ContainerTraits<Field>::conformal(TElectron, lambda_ee));
     Require(ContainerTraits<Field>::conformal(z, lambda_ee));
+    Require(abar > 0.0);
 
     const double Na = PhysicalConstants::avogadro;
     const double eV2K = PhysicalConstants::eV2K;
@@ -326,6 +343,8 @@ void RadiationPhysics::getElectElectCoulombLog(const Field &density,
 
     while(lit != CTF::end(lambda_ee))
     {
+	Require(*Tit > 0.0);
+
 	// Calculate formula switch-over point
 
 	bool lowTemp = *Tit <= 10.0;
@@ -417,6 +436,7 @@ void RadiationPhysics::getIonConductionCoeff(const Field &density,
     Require(ContainerTraits<Field>::conformal(density, ionCondCoeff));
     Require(ContainerTraits<Field>::conformal(TElectron, ionCondCoeff));
     Require(ContainerTraits<Field>::conformal(z, ionCondCoeff));
+    Require(abar > 0.0);
 
     //.... icc_constantSI IS A FUNCTION OF VARIOUS PHYSICAL CONSTANTS
     //     IN SI UNITS:
@@ -479,6 +499,7 @@ void RadiationPhysics::getIonIonCoulombLog(const Field &density,
     Require(ContainerTraits<Field>::conformal(density, lambda_ii));
     Require(ContainerTraits<Field>::conformal(TElectron, lambda_ii));
     Require(ContainerTraits<Field>::conformal(z, lambda_ii));
+    Require(abar > 0.0);
 
     const double Na = PhysicalConstants::avogadro;
     const double eV2K = PhysicalConstants::eV2K;
@@ -500,6 +521,8 @@ void RadiationPhysics::getIonIonCoulombLog(const Field &density,
 
     while(lit != CTF::end(lambda_ii))
     {
+	Require(*Tit > 0.0);
+
 	*lit = 23.0 - log(pow(*zit, 3.0)*sqrt(2.0*(*nit) / pow(*Tit, 3.0)));
 
 	*lit = (*lit < 1.0) ? 1.0 : *lit;
@@ -525,6 +548,7 @@ void RadiationPhysics::getIonGamma0(const Field &z, const Field &TElect,
     Require(ContainerTraits<Field>::conformal(z, gamma0));
     Require(ContainerTraits<Field>::conformal(TElect, gamma0));
     Require(ContainerTraits<Field>::conformal(TIon, gamma0));
+    Require(abar > 0.0);
 
     typedef ContainerTraits<Field> CTF;
     
