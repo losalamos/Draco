@@ -29,6 +29,10 @@
 #include <string>
 using std::string;
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 C4_NAMESPACE_BEG
 
 // defined in shmem_reduce.cc
@@ -1171,7 +1175,7 @@ C4_NAMESPACE_END
 
 #include "ds++/DynArray.t.hh"
 
-template class DynArray<C4::Msg_DB *>;
+template class dsxx::DynArray<C4::Msg_DB *>;
 
 #endif // C4_SHMEM
 
