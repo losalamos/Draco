@@ -105,6 +105,20 @@ class RadiationPhysics
     void getPlanckTemperatureDerivative(const Field &TElectron,
 					Field &dPlanckdT) const;
 
+    //------------------------------------------------------------------------//
+    // getElectIonCoupling:
+    //   Calculate the Electron-Ion Coupling function from the density,
+    //   electron temperature, free electrons per ion, average atomic weight.
+    //   The units for input and output are specified by the units
+    //   supplied to the class.
+    //   Exception: abar is in amu.
+    //------------------------------------------------------------------------//
+
+    template<class Field>
+    void getElectIonCoupling(const Field &density, const Field &TElectron,
+			     const Field &z, double abar,
+			     Field &electIonCoupling) const;
+
   private:
     
     // IMPLEMENTATION

@@ -142,6 +142,7 @@ class Units
     inline double ConvertMass(double mass, int n) const;
     inline double ConvertTime(double time, int n) const;
     inline double ConvertTemperature(double temperature, int n) const;
+    inline double ConvertTemperature(double temperature, double dn) const;
 
     inline double ConvertVelocity(double velocity) const;
     inline double ConvertDensity(double density) const;
@@ -161,6 +162,7 @@ class Units
     inline double InvertMass(double mass, int n) const;
     inline double InvertTime(double time, int n) const;
     inline double InvertTemperature(double temperature, int n) const;
+    inline double InvertTemperature(double temperature, double dn) const;
 
     inline double InvertVelocity(double velocity) const;
     inline double InvertDensity(double density) const;
@@ -283,6 +285,16 @@ inline double Units::ConvertTemperature(double temperature, int n) const
 }
 
 //---------------------------------------------------------------------------//
+// Convertxxx:
+//    Convert function argument from user units and return it in SI units.
+//---------------------------------------------------------------------------//
+
+inline double Units::ConvertTemperature(double temperature, double dn) const
+{
+    return temperature * std::pow(temperatureConversion, dn);
+}
+
+//---------------------------------------------------------------------------//
 // Invertxxx:
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
@@ -360,6 +372,16 @@ inline double Units::InvertTime(double time, int n) const
 inline double Units::InvertTemperature(double temperature, int n) const
 {
     return temperature / std::pow(temperatureConversion, n);
+}
+
+//---------------------------------------------------------------------------//
+// Invertxxx:
+//    Convert function argument from SI and return it in user units.
+//---------------------------------------------------------------------------//
+
+inline double Units::InvertTemperature(double temperature, double dn) const
+{
+    return temperature / std::pow(temperatureConversion, dn);
 }
 
 //---------------------------------------------------------------------------//

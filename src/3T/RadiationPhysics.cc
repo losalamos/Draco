@@ -88,6 +88,65 @@ void RadiationPhysics::getPlanckTemperatureDerivative(const Field &TElectron,
     dplanckdT = 4.0 * sb * TElectron*TElectron*TElectron;
 }
 
+//------------------------------------------------------------------------//
+// getElectIonCoupling:
+//   Calculate the Electron-Ion Coupling function from the density,
+//   electron temperature, free electrons per ion, average atomic weight.
+//   The units for input and output are specified by the units
+//   supplied to the class.
+//   Exception: abar is in amu.
+//------------------------------------------------------------------------//
+
+template<class Field>
+void RadiationPhysics::getElectIonCoupling(const Field &density,
+					   const Field &TElectron,
+					   const Field &z,
+					   const Field &abar,
+					   Field &electIonCoupling) const
+{
+    //.... CALCULATES ELECTRON-ION COUPLING COEFFICIENT
+    //     USING DEVELOPMENT OF L.D. LANDAU (1936). THIS TREATMENT
+    //     ASSUMES THAT THE MATERIAL IS AN IDEAL, CLASSICAL PLASMA, AND
+    //     THAT THE ELECTRON AND ION TEMPERATURES ARE WITHIN A
+    //     FACTOR OF 1836*abar OF EACH OTHER.
+
+    //.... REFERENCE: LANDAU AND LIFSHITZ, "PHYSICAL KINETICS", 
+    //                BUTTERWORTH-HEINEMANN, OXFORD 1995, SECTION 42
+
+    //                MIYAMOTO, "PLASMA PHYSICS FOR NUCLEAR FUSION",
+    //                MIT PRESS, 1989. SECTION 4.3
+
+    Require(density.size() == electIonCoupling.size());
+    Require(TElectron.size() == electIonCoupling.size());
+    Require(z.size() == electIonCoupling.size());
+
+    // eic_constant IS A FUNCTION OF VARIOUS PHYSICAL CONSTANTS IN SI UNITS:
+    // eic_constant = (avog_num**3)*sqrt(mass_elect)*(elect_chg**4)*1.e9/ & 
+    //                ( sqrt((2.*pi)**3)*(eps_zero**2)*sqrt(boltz_const) )
+
+    // eic_constantSI: (amu**3-m**5-sqrt(K)/kg-s**3)
+    
+    const double eic_constantSI = 2.993811e+22;
+
+    // Convert eic_constantSI to user's units using InvertXXX().
+
+    const double eic_constant =
+	units.InvertLength(
+		units.InvertTemperature(
+		    units.ConvertMass(units.ConvertTime(eic_constantSI, 3)),
+		    0.5),
+		5);
+
+    // I must initialize the field with something.
+    
+    Field lambda_ei = TElectron;
+
+    getElectIonCoulombLog(density, abar, z, TElectron, lambda_ei);
+    
+    electIonCoupling = eic_constant * lambda_ei *
+	((z*z*z) / (abar*abar*abar)) * density / pow(TElectron, 1.5);
+}
+
 END_NS_XTM  // namespace XTM
 
 //---------------------------------------------------------------------------//
