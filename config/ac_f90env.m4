@@ -381,7 +381,7 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
    # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
-       F90FLAGS="${F90FREE}"
+       F90FLAGS="${F90FREE} -assume byterecl"
 
        if test "${enable_debug:=no}" = yes
        then
