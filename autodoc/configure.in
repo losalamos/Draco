@@ -1,0 +1,31 @@
+dnl-------------------------------------------------------------------------dnl
+dnl draco/src/autodoc configure.in
+dnl Thomas M. Evans
+dnl Fri Sep  3 13:04:05 1999
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for autodoc
+dnl-------------------------------------------------------------------------dnl
+
+AC_INIT(doxygen_config.in)
+AC_CONFIG_AUX_DIR(../config)
+
+dnl draco setup
+AC_DRACO_ENV
+
+dnl
+dnl doxygen setup
+dnl
+
+# check for and as sign the path to doxygen
+AC_PATH_PROG(DOXYGEN_PATH, doxygen, null)   
+
+# path to package directories which are sources for doxygen
+doxygen_src=${srcdir}/../src
+AC_SUBST(doxygen_src)
+
+AC_OUTPUT(Makefile doxygen_config header.html footer.html)
+
+dnl-------------------------------------------------------------------------dnl
+dnl			 end of draco/src/autodoc configure.in
+dnl-------------------------------------------------------------------------dnl

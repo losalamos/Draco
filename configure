@@ -1184,7 +1184,7 @@ fi
 # The packages may depend on other packages to the left of them
 # in the list.
 
-subdirs="tools src doc"
+subdirs="autodoc tools src doc"
 
 trap '' 1 2 15
 cat > confcache <<\EOF
@@ -1468,7 +1468,7 @@ if test "$no_recursion" != yes; then
     esac
   done
 
-  for ac_config_dir in tools src doc; do
+  for ac_config_dir in autodoc tools src doc; do
 
     # Do not complain, so a configure script can configure whichever
     # parts of a large source tree are present.

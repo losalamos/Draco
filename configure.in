@@ -15,7 +15,7 @@ AC_DRACO_ARGS
 # The packages may depend on other packages to the left of them
 # in the list.
 
-AC_CONFIG_SUBDIRS(tools src doc)
+AC_CONFIG_SUBDIRS(autodoc tools src doc)
 AC_OUTPUT(Makefile)
 
 dnl-------------------------------------------------------------------------dnl

@@ -23,7 +23,7 @@ endif
 
 .PHONY : all install installdirs clean distclean mostlyclean maintainer-clean \
 	check uninstall forced-distclean forced-maintainer-clean \
-	dvi
+	dvi autodoc
 
 all: install
 
@@ -43,6 +43,15 @@ check:
 			(cd $${dir} && ${MAKE} install) || ${EXIT}; \
 		fi; \
 	done
+
+# autodoc target 
+
+autodoc:
+	@if test -d autodoc; then \
+		(cd autodoc && ${MAKE} $@) || ${EXIT}; \
+	else \
+		echo "No autodoc directory found!"; \
+	fi
 
 uninstall clean mostlyclean distclean maintainer-clean:
 	@for dir in ${subdirs} ; do \

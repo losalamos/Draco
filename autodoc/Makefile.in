@@ -1,0 +1,55 @@
+###############################################################################
+# draco/autodoc Makefile.in
+# Thomas M. Evans
+# Wed Sep  1 16:14:07 1999
+# $Id$
+###############################################################################
+# @> General Makefile.in for draco/autodoc
+###############################################################################
+
+# doxygen executable
+DOXYGEN = @DOXYGEN_PATH@
+
+INSTALL = @INSTALL@
+
+prefix = @prefix@
+srcdir = @srcdir@
+installdirs = ${prefix}/html ${prefix}/latex
+
+##---------------------------------------------------------------------------##
+
+.PHONY : html latex install autodoc
+
+autodoc: html
+
+html latex:
+	@if test ${DOXYGEN} = 'null'; then \
+		echo Doxygen not available; \
+	else \
+		${DOXYGEN} doxygen_config; \
+		cp ${srcdir}/html/draco.gif ${prefix}/html; \
+	fi
+
+install:
+
+##---------------------------------------------------------------------------##
+## clean targets
+
+clean: forced-clean
+
+forced-clean:
+	-rm -f ${prefix}/html/*
+	-rm -f ${prefix}/latex/*
+
+mostlyclean: clean
+
+distclean: mostlyclean forced-distclean
+
+forced-distclean:
+	-rm -f config.status config.cache config.log
+	-rm -f header.html footer.html doxygen_config
+	-rm -f Makefile
+
+###############################################################################
+#			 end of draco/autodoc Makefile.in
+###############################################################################
