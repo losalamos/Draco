@@ -1,104 +1,89 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   meshReaders/test/TestHexMeshReader.cc
- * \author John McGhee
- * \date   Thu Mar  9 08:54:59 2000
- * \brief  
+ * \author Thomas M. Evans
+ * \date   Tue Mar 26 16:37:01 2002
+ * \brief  Hex Mesh Reader test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "meshReaders_test.hh"
 #include "TestHexMeshReader.hh"
-#include "../Release.hh"
-#include "../Element_Definition.hh"
 #include "../Hex_Mesh_Reader.hh"
+#include "../Element_Definition.hh"
+#include "../Release.hh"
+#include "ds++/Assert.hh"
 
-#include "UnitTestFrame/PassFailStream.hh"
-#include <sstream>
 #include <iostream>
+#include <vector>
+#include <sstream>
 #include <cmath>
 
-using std::cout;
-using std::endl;
+using namespace std;
 
-namespace rtt_UnitTestFrame
-{
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
 
-rtt_dsxx::SP<TestApp> TestApp::create(int &argc, char *argv[],
-				      std::ostream& os_in)
-{
-    using rtt_dsxx::SP;
-    using rtt_meshReaders_test::TestHexMeshReader;
-    
-    return SP<TestApp>(new TestHexMeshReader(argc, argv, os_in));
-}
-
-} // end namespace rtt_UnitTestFrame
-
-namespace rtt_meshReaders_test
-{
-
-using std::string;
-using rtt_meshReaders::Hex_Mesh_Reader;
-
-TestHexMeshReader::TestHexMeshReader(int argc, char *argv[],
-					       std::ostream& os_in)
-
-    : rtt_UnitTestFrame::TestApp(argc, argv, os_in)
-{
-    os() << "Created TestHexMeshReader" << endl;
-}
-
-string TestHexMeshReader::version() const
-{
-    return rtt_meshReaders::release();
-}
-
-/*!
- * \brief Tests the CIC-19 Hex mesh format reader.
- *
- */
-string TestHexMeshReader::runTest()
+void runTest()
 {
     using rtt_meshReaders::Hex_Mesh_Reader;
 
-    os() << std::endl << "******* CIC-19 Hex Mesh Reader Tests *******" 
+    cout << std::endl << "******* CIC-19 Hex Mesh Reader Tests *******" 
 	 << std::endl;
     // Read and test a 1D mesh.
     std::string filename = "slab.mesh";
     Hex_Mesh_Reader mesh_1D(filename);
-    pass(" Construct 1D") << 
-	"Read a 1D mesh without coreing in or firing an assertion." 
-			  << std::endl;
-    check_mesh(mesh_1D, "slab");
+    {
+	ostringstream message;
+	message << 
+	    "Read a 1D mesh without coreing in or firing an assertion." 
+		<< std::endl;
+    }
+    rtt_meshReaders_test::check_mesh(mesh_1D, "slab");
 
     // Read and test a 2D mesh.
     filename = "quad.mesh";
     Hex_Mesh_Reader mesh_2D(filename);
-    pass(" Construct 2D ") << 
-    	"Read a 2D mesh without coreing in or firing an assertion." 
-			   << std::endl;
-    check_mesh(mesh_2D, "quad");
+    {
+	ostringstream message;
+	message << 
+	    "Read a 2D mesh without coreing in or firing an assertion." 
+		<< std::endl;
+    }
+    rtt_meshReaders_test::check_mesh(mesh_2D, "quad");
 
     // Read and test a 3D mesh.
     filename = "cube.mesh";
     Hex_Mesh_Reader mesh_3D(filename);
-    pass(" Construct 3D ") << 
-	"Read a 3D mesh without coreing in or firing an assertion." 
-			   << std::endl;
-    check_mesh(mesh_3D, "cube");
-    os() << endl;
+    {
+	ostringstream message;
+	message << 
+	    "Read a 3D mesh without coreing in or firing an assertion." 
+		<< std::endl;
+    }
+    rtt_meshReaders_test::check_mesh(mesh_3D, "cube");
+    cout << endl;
    
     // Report results of test.
-    if (passed())
+    if (rtt_meshReaders_test::passed)
     {
-	return "All tests passed.";
+	PASSMSG("All tests passed.");
     }
-    return "Some tests failed.";
+    else
+    {
+	FAILMSG("Some tests failed.");
+    }
 }
 
-bool TestHexMeshReader::check_mesh(
+//---------------------------------------------------------------------------//
+
+namespace rtt_meshReaders_test
+{
+
+bool check_mesh(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
 
@@ -119,18 +104,18 @@ bool TestHexMeshReader::check_mesh(
 	&& pass_in && pass_es && pass_et && pass_ut;
 }
 
-bool TestHexMeshReader::check_nodes(
+bool check_nodes(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check node coords -- Need to do a "fuzzy" check here, these are doubles!
     bool pass_nc = true;
     std::vector<std::vector<double> > point_c = mesh.get_node_coords();
-     if (testid == "slab") 
+    if (testid == "slab") 
  	pass_nc = 
  	    compare_double(point_c[0][0]  , 0. ) && 
 	    compare_double(point_c[10][0] , 2.5) && 
 	    compare_double(point_c[100][0], 25.);
-     else if (testid == "quad")
+    else if (testid == "quad")
  	pass_nc = 
  	    compare_double(point_c[0][0]  , 0.)   && 
 	    compare_double(point_c[10][0] , 12.5) && 
@@ -138,47 +123,61 @@ bool TestHexMeshReader::check_nodes(
  	    compare_double(point_c[0][1]  , 0.)   && 
 	    compare_double(point_c[10][1] , 0.)   && 
 	    compare_double(point_c[440][1], 25.);
-     else if (testid == "cube") 
-     {
-	 bool pass1 =
-	     compare_double(point_c[0][0]  , 0.)  &&
-	     compare_double(point_c[0][1]  , 0.)  && 
-	     compare_double(point_c[0][2]  , 0.)  ;
-	 bool pass2=  
-	     compare_double(point_c[10][0] , 0.8) && 
-	     compare_double(point_c[10][1] , 0.2) && 
-	     compare_double(point_c[10][2] , 0.)  ; 
-	 bool pass3=
-	     compare_double(point_c[215][0], 1.) &&
-	     compare_double(point_c[215][1], 1.) &&
-	     compare_double(point_c[215][2], 1.);
-	 pass_nc = pass1 && pass2 && pass3;
-     }
-     else
+    else if (testid == "cube") 
+    {
+	bool pass1 =
+	    compare_double(point_c[0][0]  , 0.)  &&
+	    compare_double(point_c[0][1]  , 0.)  && 
+	    compare_double(point_c[0][2]  , 0.)  ;
+	bool pass2=  
+	    compare_double(point_c[10][0] , 0.8) && 
+	    compare_double(point_c[10][1] , 0.2) && 
+	    compare_double(point_c[10][2] , 0.)  ; 
+	bool pass3=
+	    compare_double(point_c[215][0], 1.) &&
+	    compare_double(point_c[215][1], 1.) &&
+	    compare_double(point_c[215][2], 1.);
+	pass_nc = pass1 && pass2 && pass3;
+    }
+    else
  	Insist(false,"Unrecognized test id string!");
-     if (pass_nc) 
- 	pass(" Node Coordinates ") << "Got node coordinates." << std::endl;
-     else
- 	fail(" Node Coordinates ") << "Error in node coordinates." << 
-	    std::endl;	    
-     return pass_nc;
+    if (pass_nc) 
+    {
+	ostringstream message;
+	message << "Got node coordinates." << std::endl;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+ 	message << "Error in node coordinates." << std::endl;	    
+	FAILMSG(message.str());
+    }
+    return pass_nc;
 }
 
-bool TestHexMeshReader::check_node_units(
+bool check_node_units(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh)
 {     
     // Check coordinate units.
     std::string punits = mesh.get_node_coord_units();
     bool pass_cu = punits == "unknown";
     if (pass_cu)
-	pass(" Coordinate Units ") << "Got coordinate units." << std::endl;
+    {
+	ostringstream message;
+	message << "Got coordinate units." << std::endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(" Coordinate Units ") << "Error in coordinate units." <<
-	    std::endl;
+    {
+	ostringstream message;
+	message << "Error in coordinate units." << std::endl;   
+	FAILMSG(message.str());
+    }
     return pass_cu;
 }
 
-bool TestHexMeshReader::check_node_sets(
+bool check_node_sets(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check node sets.
@@ -199,26 +198,42 @@ bool TestHexMeshReader::check_node_sets(
     else
 	Insist(false,"Unrecognized test id string!");
     if (pass_ns)
-	pass(" Node Sets ") << "Got node sets." << std::endl;
+    {
+	ostringstream message;
+	message << "Got node sets." << std::endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(" Node Sets ") << "Error in node sets." << std::endl;
+    {
+	ostringstream message;
+	message << "Error in node sets." << std::endl;   
+	FAILMSG(message.str());
+    }
     return pass_ns;
 }
 
-bool TestHexMeshReader::check_title(
+bool check_title(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh)
 {
     // Check title.
     std::string title = mesh.get_title();
     bool pass_ti = title == "Untitled -- CIC-19 Hex Mesh";
     if (pass_ti)
-	pass(" Title ") << "Got title." << std::endl;
+    {
+	ostringstream message;
+	message << "Got title." << std::endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(" Title ") << "Error in title." << std::endl;
+    {
+	ostringstream message;
+	message << "Error in title." << std::endl;   
+	FAILMSG(message.str());
+    }
     return pass_ti;
 }
 
-bool TestHexMeshReader::check_element_nodes(
+bool check_element_nodes(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check element nodes.
@@ -277,25 +292,41 @@ bool TestHexMeshReader::check_element_nodes(
     else
 	Insist(false,"Unrecognized test id string!");
     if (pass_en) 
-	pass(" Element Nodes ") << "Got element nodes." << std::endl;
+    {
+	ostringstream message;
+	message << "Got element nodes." << std::endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(" Element Nodes ") << "Error in element nodes." << std::endl;
+    {
+	ostringstream message;
+	message << "Error in element nodes." << std::endl;   
+	FAILMSG(message.str());
+    }
     return pass_en;
 }
 
-bool TestHexMeshReader::check_invariant(
+bool check_invariant(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh)
 { 
     // Check invariant.
     bool invr = mesh.invariant();
     if ( invr)
-	pass(" Invariant ") << "Invoked invariant." << std::endl;
+    {
+	ostringstream message;
+	message << "Invoked invariant." << std::endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(" Invariant ") << "Invariant not satisfied." << std::endl;
+    {
+	ostringstream message;
+	message << "Invariant not satisfied." << std::endl;   
+	FAILMSG(message.str());
+    }
     return invr;
 }
 
-bool TestHexMeshReader::check_element_sets(
+bool check_element_sets(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     typedef std::map<std::string, std::set<int> > mt;
@@ -342,14 +373,22 @@ bool TestHexMeshReader::check_element_sets(
     else
 	Insist(false,"Unrecognized test id string!");
     if (pass_es)
-	pass(" Element Sets ") << "Got element sets." << std::endl;
+    {
+	ostringstream message;
+	message << "Got element sets." << std::endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(" Element Sets ") << "Error in element sets." << std::endl;
+    {
+	ostringstream message;
+	message << "Error in element sets." << std::endl;   
+	FAILMSG(message.str());
+    }
 
     return pass_es;
 }
 
-bool TestHexMeshReader::check_element_types(
+bool check_element_types(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check Element Types.
@@ -381,12 +420,21 @@ bool TestHexMeshReader::check_element_types(
     else
 	Insist(false,"Unrecognized test id string!");
     if (pass_et) 
-	pass(" Element Types ") << "Read Element Types." << std::endl;
+    {
+	ostringstream message;
+	message << "Read Element Types." << std::endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(" Element Types ") << "Error in Element Types." << std::endl;
+    {
+	ostringstream message;
+	message << "Error in Element Types." << std::endl;   
+	FAILMSG(message.str());
+    }
     return pass_et;
 }
-bool TestHexMeshReader::check_unique_element_types(
+
+bool check_unique_element_types(
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check Unique Element Types.
@@ -401,34 +449,40 @@ bool TestHexMeshReader::check_unique_element_types(
     else if (testid == "quad")
     {
 	pass_et = pass_et && (etypes[0] == et::NODE && etypes[1] == et::BAR_2
-	                  &&  etypes[2] == et::QUAD_4);
+			      &&  etypes[2] == et::QUAD_4);
     }
     else if (testid == "cube") 
     {
 	pass_et = pass_et && (etypes[0] == et::NODE && etypes[1] == et::BAR_2
-	                  &&  etypes[2] == et::QUAD_4 
-			  &&  etypes[3] == et::HEXA_8);
+			      &&  etypes[2] == et::QUAD_4 
+			      &&  etypes[3] == et::HEXA_8);
     }
     else
 	Insist(false,"Unrecognized test id string!");
     if (pass_et) 
-	pass(" Unique Element Types ") << "Read Unique Element Types." 
-				       << std::endl;
+    {
+	ostringstream message;
+	message << "Read Unique Element Types." << std::endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(" Unique Element Types ") << "Error in Unique Element Types." 
-				       << std::endl;
+    {
+	ostringstream message;
+	message << "Error in Unique Element Types." << std::endl;   
+	FAILMSG(message.str());
+    }
     return pass_et;
 }
 
-bool TestHexMeshReader::compare_double(const double &lhs, const double &rhs)
+bool compare_double(const double &lhs, const double &rhs)
 {
     // Note that this is only good for doubles close to one.
     return std::fabs(lhs-rhs) <= 0.00001;
 }
 
-bool TestHexMeshReader::check_map(const std::map<std::string, std::set<int> >
-			      &elmsets, const std::string &name, 
-			      const int &begin, const int &end) 
+bool check_map(const std::map<std::string, std::set<int> >
+	       &elmsets, const std::string &name, 
+	       const int &begin, const int &end) 
 {
     bool pass = true;
     typedef std::map<std::string, std::set<int> > mt;
@@ -452,9 +506,47 @@ bool TestHexMeshReader::check_map(const std::map<std::string, std::set<int> >
     return pass;
 }
 
-} // end namespace rtt_meshReaders_test
-
+}
 
 //---------------------------------------------------------------------------//
-//                              end of TestHexMeshReader.cc
+
+int main(int argc, char *argv[])
+{
+    // version tag
+    for (int arg = 1; arg < argc; arg++)
+	if (string(argv[arg]) == "--version")
+	{
+	    cout << argv[0] << ": version " << rtt_meshReaders::release() 
+		 << endl;
+	    return 0;
+	}
+
+    try
+    {
+	// >>> UNIT TESTS
+	runTest();
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing TestHexMeshReader, " << ass.what()
+	     << endl;
+	return 1;
+    }
+
+    // status of test
+    cout << endl;
+    cout <<     "*********************************************" << endl;
+    if (rtt_meshReaders_test::passed) 
+    {
+        cout << "**** TestHexMeshReader Test: PASSED" 
+	     << endl;
+    }
+    cout <<     "*********************************************" << endl;
+    cout << endl;
+
+    cout << "Done testing TestHexMeshReader." << endl;
+}   
+
+//---------------------------------------------------------------------------//
+//                        end of TestHexMeshReader.cc
 //---------------------------------------------------------------------------//

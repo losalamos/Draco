@@ -1,69 +1,32 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   meshReaders/test/TestElementDefinition.cc
- * \author John McGhee
- * \date   Fri Mar  3 08:41:46 2000
- * \brief  Implements the Element_Definition unit tests.
+ * \author Thomas M. Evans
+ * \date   Tue Mar 26 16:06:55 2002
+ * \brief  Test Element Definitions.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "meshReaders_test.hh"
 #include "TestElementDefinition.hh"
+#include "../Element_Definition.hh"
 #include "../Release.hh"
+#include "ds++/Assert.hh"
 
-#include "UnitTestFrame/PassFailStream.hh"
-#include <sstream>
 #include <iostream>
 #include <vector>
+#include <cmath>
+#include <sstream>
 
-using std::cout;
-using std::endl;
+using namespace std;
 
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
 
-namespace rtt_UnitTestFrame
-{
-
-rtt_dsxx::SP<TestApp> TestApp::create(int &argc, char *argv[],
-				      std::ostream& os_in)
-{
-    using rtt_dsxx::SP;
-    using rtt_meshReaders_test::TestElementDefinition;
-    
-    return SP<TestApp>(new TestElementDefinition(argc, argv, os_in));
-}
-
-} // end namespace rtt_UnitTestFrame
-
-namespace rtt_meshReaders_test
-{
-
-using std::string;
-using rtt_meshReaders::Element_Definition;
-
-TestElementDefinition::TestElementDefinition(int argc, char *argv[],
-					       std::ostream& os_in)
-
-    : rtt_UnitTestFrame::TestApp(argc, argv, os_in)
-{
-    os() << "Created TestElementDefinition" << endl;
-}
-
-string TestElementDefinition::version() const
-{
-    return rtt_meshReaders::release();
-}
-
-/*!
- * \brief Tests the element definitions.
- *
- * This class builds all the elements currently defined. Currently, the
- * only real check is that an assertion doesn't fire. The output of
- * the test has been verified by hand, but a comparison with "correct"
- * results needs to be automated. (jmm, 4 Mar 00)
- *
- */
-string TestElementDefinition::runTest()
+void runTest()
 {
     using rtt_meshReaders::Element_Definition;
 
@@ -88,44 +51,51 @@ string TestElementDefinition::runTest()
     type_list.push_back(Element_Definition::HEXA_27);
 
     std::vector<Element_Definition> elem_defs;
-    os() << endl << "Building Elements for Test ---" << endl << endl;
+    cout << endl << "Building Elements for Test ---" << endl << endl;
     for (int i=0; i< type_list.size(); i++)
     {
 	elem_defs.push_back( Element_Definition(type_list[i]) );
-	os() << elem_defs[i];
+	cout << elem_defs[i];
     }
-    os() << endl;
+    cout << endl;
 
-    os() << "Checking Elements ---" << endl << endl;
+    cout << "Checking Elements ---" << endl << endl;
 
-    test_node(elem_defs[0]);
-    test_bar_2(elem_defs[1]);
-    test_bar_3(elem_defs[2]);
-    test_tri_3(elem_defs[3]);
-    test_tri_6(elem_defs[4]);
-    test_quad_4(elem_defs[5]);
-    test_quad_8(elem_defs[6]);
-    test_quad_9(elem_defs[7]);
-    test_tetra_4(elem_defs[8]);
-    test_tetra_10(elem_defs[9]);
-    test_pyra_5(elem_defs[10]);
-    test_pyra_14(elem_defs[11]);
-    test_penta_6(elem_defs[12]);
-    test_penta_15(elem_defs[13]);
-    test_penta_18(elem_defs[14]);
-    test_hexa_8(elem_defs[15]);
-    test_hexa_20(elem_defs[16]);
-    test_hexa_27(elem_defs[17]);
+    rtt_meshReaders_test::test_node(elem_defs[0]);
+    rtt_meshReaders_test::test_bar_2(elem_defs[1]);
+    rtt_meshReaders_test::test_bar_3(elem_defs[2]);
+    rtt_meshReaders_test::test_tri_3(elem_defs[3]);
+    rtt_meshReaders_test::test_tri_6(elem_defs[4]);
+    rtt_meshReaders_test::test_quad_4(elem_defs[5]);
+    rtt_meshReaders_test::test_quad_8(elem_defs[6]);
+    rtt_meshReaders_test::test_quad_9(elem_defs[7]);
+    rtt_meshReaders_test::test_tetra_4(elem_defs[8]);
+    rtt_meshReaders_test::test_tetra_10(elem_defs[9]);
+    rtt_meshReaders_test::test_pyra_5(elem_defs[10]);
+    rtt_meshReaders_test::test_pyra_14(elem_defs[11]);
+    rtt_meshReaders_test::test_penta_6(elem_defs[12]);
+    rtt_meshReaders_test::test_penta_15(elem_defs[13]);
+    rtt_meshReaders_test::test_penta_18(elem_defs[14]);
+    rtt_meshReaders_test::test_hexa_8(elem_defs[15]);
+    rtt_meshReaders_test::test_hexa_20(elem_defs[16]);
+    rtt_meshReaders_test::test_hexa_27(elem_defs[17]);
 
-    if (passed())
+    if (rtt_meshReaders_test::passed)
     {
-	return "All tests passed.";
+	PASSMSG("All tests passed.");
     }
-    return "Some tests failed.";
+    else
+    {
+	FAILMSG("Some tests failed.");
+    }
 }
 
-bool TestElementDefinition::test_node(
-    const rtt_meshReaders::Element_Definition elem_def)
+//---------------------------------------------------------------------------//
+
+namespace rtt_meshReaders_test
+{
+
+bool test_node(const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the NODE element.
     using rtt_meshReaders::Element_Definition;
@@ -137,13 +107,21 @@ bool TestElementDefinition::test_node(
     ldum = ldum && elem_def.get_node_location(0) ==
 	Element_Definition::CORNER;
     if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    {
+	ostringstream message;
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_bar_2(
+bool test_bar_2(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the BAR_2 element.
@@ -169,14 +147,21 @@ bool TestElementDefinition::test_bar_2(
     ldum = ldum && elem_def.get_side_nodes(1) == 
 	std::vector<int>(s1,s1+size);
     if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    {
+	ostringstream message;
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-
-bool TestElementDefinition::test_bar_3(
+bool test_bar_3(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the BAR_3 element.
@@ -203,14 +188,22 @@ bool TestElementDefinition::test_bar_3(
 	std::vector<int>(s0,s0+size);
     ldum = ldum && elem_def.get_side_nodes(1) == 
 	std::vector<int>(s1,s1+size);
-    if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    if (ldum)
+    {
+	ostringstream message; 
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_tri_3(
+bool test_tri_3(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the TRI_3 element.
@@ -238,14 +231,22 @@ bool TestElementDefinition::test_tri_3(
 	std::vector<int>(s1,s1+size);
     ldum = ldum && elem_def.get_side_nodes(2) == 
 	std::vector<int>(s2,s2+size);
-    if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    if (ldum)
+    {
+	ostringstream message; 
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_tri_6(
+bool test_tri_6(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the element.
@@ -277,13 +278,21 @@ bool TestElementDefinition::test_tri_6(
     ldum = ldum && elem_def.get_side_nodes(2) == 
 	std::vector<int>(s2,s2+size);
     if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    {
+	ostringstream message;
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_quad_4(
+bool test_quad_4(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the QUAD_4 element.
@@ -315,13 +324,21 @@ bool TestElementDefinition::test_quad_4(
     ldum = ldum && elem_def.get_side_nodes(3) == 
 	std::vector<int>(s3,s3+size);
     if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    {
+	ostringstream message;
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_quad_8(
+bool test_quad_8(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the QUAD_8 element.
@@ -355,16 +372,22 @@ bool TestElementDefinition::test_quad_8(
 	std::vector<int>(s2,s2+size);
     ldum = ldum && elem_def.get_side_nodes(3) == 
 	std::vector<int>(s3,s3+size);
-    if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    if (ldum)
+    {
+	ostringstream message; 
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }   
 
-
-
-bool TestElementDefinition::test_quad_9(
+bool test_quad_9(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the QUAD_9 element.
@@ -400,14 +423,22 @@ bool TestElementDefinition::test_quad_9(
 	std::vector<int>(s2,s2+size);
     ldum = ldum && elem_def.get_side_nodes(3) == 
 	std::vector<int>(s3,s3+size);
-    if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    if (ldum)
+    {
+	ostringstream message; 
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_tetra_4(
+bool test_tetra_4(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the TETRA_4 element.
@@ -438,14 +469,22 @@ bool TestElementDefinition::test_tetra_4(
 	std::vector<int>(s2,s2+size);
     ldum = ldum && elem_def.get_side_nodes(3) == 
 	std::vector<int>(s3,s3+size);
-    if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    if (ldum)
+    {
+	ostringstream message; 
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_tetra_10(
+bool test_tetra_10(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the TETRA_10 element.
@@ -480,13 +519,21 @@ bool TestElementDefinition::test_tetra_10(
     ldum = ldum && elem_def.get_side_nodes(3) == 
 	std::vector<int>(s3,s3+size);
     if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    {
+	ostringstream message;
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_pyra_5(
+bool test_pyra_5(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the PYRA_5 element.
@@ -526,13 +573,21 @@ bool TestElementDefinition::test_pyra_5(
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
     if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    {
+	ostringstream message;
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_pyra_14(
+bool test_pyra_14(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the PYRA_14 element.
@@ -577,13 +632,21 @@ bool TestElementDefinition::test_pyra_14(
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
     if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    {
+	ostringstream message;
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_penta_6(
+bool test_penta_6(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the PENTA_6 element.
@@ -620,14 +683,22 @@ bool TestElementDefinition::test_penta_6(
 	std::vector<int>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
-    if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    if (ldum)
+    {
+	ostringstream message; 
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_penta_15(
+bool test_penta_15(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the PENTA_15 element.
@@ -667,14 +738,22 @@ bool TestElementDefinition::test_penta_15(
 	std::vector<int>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
-    if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    if (ldum)
+    {
+	ostringstream message; 
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_penta_18(
+bool test_penta_18(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the PENTA_18 element.
@@ -718,13 +797,21 @@ bool TestElementDefinition::test_penta_18(
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
     if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    {
+	ostringstream message;
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_hexa_8(
+bool test_hexa_8(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the HEXA_8 element.
@@ -761,13 +848,21 @@ bool TestElementDefinition::test_hexa_8(
     ldum = ldum && elem_def.get_side_nodes(5) == 
 	std::vector<int>(s5,s5+size);
     if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    {
+	ostringstream message;
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_hexa_20(
+bool test_hexa_20(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the HEXA_20 element.
@@ -807,13 +902,21 @@ bool TestElementDefinition::test_hexa_20(
     ldum = ldum && elem_def.get_side_nodes(5) == 
 	std::vector<int>(s5,s5+size);
     if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    {
+	ostringstream message;
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-bool TestElementDefinition::test_hexa_27(
+bool test_hexa_27(
     const rtt_meshReaders::Element_Definition elem_def)
 {
     // Test the HEXA_27 element.
@@ -858,16 +961,61 @@ bool TestElementDefinition::test_hexa_27(
     ldum = ldum && elem_def.get_side_nodes(5) == 
 	std::vector<int>(s5,s5+size);
     if (ldum) 
-	pass(ename) << ename << " Element OK." << endl;
+    {
+	ostringstream message;
+	message << ename << " Element OK." << endl;
+	PASSMSG(message.str());
+    }
     else
-	fail(ename) << "Error in " << ename << " Element." << endl;
+    {
+	ostringstream message;
+	message << "Error in " << ename << " Element." << endl;
+	FAILMSG(message.str());
+    }
     return ldum;
 }
 
-
-} // end namespace rtt_meshReaders_test
-
+}
 
 //---------------------------------------------------------------------------//
-//                              end of TestElementDefinition.cc
+
+int main(int argc, char *argv[])
+{
+    // version tag
+    for (int arg = 1; arg < argc; arg++)
+	if (string(argv[arg]) == "--version")
+	{
+	    cout << argv[0] << ": version " << rtt_meshReaders::release() 
+		 << endl;
+	    return 0;
+	}
+
+    try
+    {
+	// >>> UNIT TESTS
+	runTest();
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing TestElementDefinition, " << ass.what()
+	     << endl;
+	return 1;
+    }
+
+    // status of test
+    cout << endl;
+    cout <<     "*********************************************" << endl;
+    if (rtt_meshReaders_test::passed) 
+    {
+        cout << "**** TestElementDefinition Test: PASSED" 
+	     << endl;
+    }
+    cout <<     "*********************************************" << endl;
+    cout << endl;
+
+    cout << "Done testing TestElementDefinition." << endl;
+}   
+
+//---------------------------------------------------------------------------//
+//                        end of TestElementDefinition.cc
 //---------------------------------------------------------------------------//
