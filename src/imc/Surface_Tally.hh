@@ -35,10 +35,6 @@ class Azimuthal_Mesh;
  *
  * \sa Surface_Tally.cc for detailed descriptions.
  *
- * Code Sample:
- * \code
- *     cout << "Hello, world." << endl;
- * \endcode
  */
 /*! 
  * \example imc/test/imc_test.cc 
