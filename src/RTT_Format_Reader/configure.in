@@ -30,8 +30,7 @@ AC_DRACO_ENV
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in   \
           test/Makefile:../../config/Makefile.test.in \
-          test/rttdef.mesh:test/rttdef.mesh.in\
-	  test/rttamr.mesh:test/rttamr.mesh.in)
+          test/rttdef.mesh:test/rttdef.mesh.in)
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/RTT_Format_Reader configure.in
