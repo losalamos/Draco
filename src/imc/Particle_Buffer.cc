@@ -100,7 +100,8 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
   // write the output
     cenfile.write(reinterpret_cast<const char *>(ddata), dsize *
 		  sizeof(double));
-    cenfile.write(reinterpret_cast<const char *>(idata), isize * sizeof(int));
+    cenfile.write(reinterpret_cast<const char *>(idata), isize *
+		  sizeof(int)); 
     cenfile.write(reinterpret_cast<const char *>(rdata), csize);
 
   // reclaim dynamic memory
@@ -110,11 +111,80 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
 }
 
 //---------------------------------------------------------------------------//
-// read a single particle from an output
+// write a full Comm_Buffer to an output
+
+template<class PT>
+void Particle_Buffer<PT>::write_census(ostream &cenfile,
+				       Comm_Buffer &buffer) const
+{
+  // check for output file
+    if (!cenfile)
+	Insist(0, 
+	       "You tried to write census particles to a non-existent file!");
+
+  // determine number of particles in the buffer
+    int num_particles = buffer.n_part;
+    Check (num_particles > 0);
+
+  // make dynamically allocatable arrays
+    double *ddata = new double[dsize];
+    int    *idata = new int[isize];
+    char   *cdata = new char[csize];
+
+  // define indices for data
+    int id = 0;
+    int ii = 0;
+    int ic = 0;
+
+  // loop through comm_buffer and write the particle data to a census file
+    for (int n = 1; n <= num_particles; n++)
+    {
+      // get the double array data
+	for (int d = 0; d < dsize; d++)
+	    ddata[d] = buffer.array_d[d+id];
+
+      // get the int array data
+	for (int i = 0; i < isize; i++)
+	    idata[i] = buffer.array_i[i+ii];
+
+      // get the char array data
+	for (int c = 0; c < csize; c++)
+	    cdata[c] = buffer.array_c[c+ic];
+
+      // write the particle data
+	cenfile.write(reinterpret_cast<const char *>(ddata), dsize *
+		      sizeof(double));
+	cenfile.write(reinterpret_cast<const char *>(idata), isize *
+		      sizeof(int));
+	cenfile.write(reinterpret_cast<const char *>(cdata), csize);
+
+      // update the counters
+	id += dsize;
+	ii += isize;
+	ic += csize;
+	buffer.n_part--;
+
+      // asserts to make sure we haven't gone over
+	Check (id <= Global::buffer_d);
+	Check (ii <= Global::buffer_i);
+	Check (ic <= Global::buffer_c);
+    }
+
+  // recover storage
+    delete [] ddata;
+    delete [] idata;
+    delete [] cdata;
+
+  // reset the Comm_Buffer to 0
+    Ensure (buffer.n_part == 0);
+}
+
+//---------------------------------------------------------------------------//
+// read a single particle from an output and return a Census_Buffer
 
 template<class PT>
 SP<typename Particle_Buffer<PT>::Census_Buffer> 
-Particle_Buffer<PT>::read_census(istream &cenfile)
+Particle_Buffer<PT>::read_census(istream &cenfile) const
 {
   // make sure file exists
     Check (cenfile);
@@ -168,11 +238,38 @@ Particle_Buffer<PT>::read_census(istream &cenfile)
 }
 
 //---------------------------------------------------------------------------//
+// Particle send and receives
+//---------------------------------------------------------------------------//
+// do a block send of a Comm_Buffer
+
+template<class PT>
+void Particle_Buffer<PT>::send_buffer(Comm_Buffer &buffer, int proc) const
+{
+  // <<CONTINUE HERE>>
+}
+
+//---------------------------------------------------------------------------//
+// do a block recv of a Comm_Buffer
+
+template<class PT>
+SP<typename Particle_Buffer<PT>::Comm_Buffer> 
+Particle_Buffer<PT>::recv_buffer(int proc) const
+{
+  // return Comm_Buffer declaration
+    SP<Comm_Buffer> return_buffer;
+
+  // <<CONTINUE HERE>>
+
+  // return SP
+    return return_buffer;
+}
+
+//---------------------------------------------------------------------------//
 // Do an asyncronous send using C4
 
 template<class PT>
-void Particle_Buffer<PT>::send_bank(Comm_Buffer &buffer, int proc, 
-				    Comm_Bank &bank) const
+void Particle_Buffer<PT>::asend_bank(Comm_Buffer &buffer, int proc, 
+				     Comm_Bank &bank) const
 {
   // find out the number of Particles
     int num_part = bank.size();
@@ -230,7 +327,7 @@ void Particle_Buffer<PT>::send_bank(Comm_Buffer &buffer, int proc,
 // post async recives
 
 template<class PT>
-void Particle_Buffer<PT>::recv_bank(Comm_Buffer &buf, int proc) const
+void Particle_Buffer<PT>::arecv_bank(Comm_Buffer &buf, int proc) const
 {
   // post c4 async receives
     RecvAsync(buf.comm_n, &(buf.n_part), 1, proc, 100);
@@ -253,6 +350,28 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Comm_Bank &bank) const
 
   // make the new particle bank from the buffer
   // ...
+}
+
+//---------------------------------------------------------------------------//
+// Buffering functions
+//---------------------------------------------------------------------------//
+// add a Census_Buffer to a Comm_Buffer
+
+template<class PT>
+void Particle_Buffer<PT>::buffer_census(Comm_Buffer &comm, 
+					const Census_Buffer &census) const
+{
+  // <<CONTINUE HERE>>
+}
+
+//---------------------------------------------------------------------------//
+// add a Particle to a Comm_Buffer
+
+template<class PT>
+void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &comm,
+					  const PT &particle) const
+{
+  // <<CONTINUE HERE>>
 }
 
 CSPACE

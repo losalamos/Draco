@@ -26,9 +26,12 @@
 #include "imctest/Layout.hh"
 #include "imctest/Opacity.hh"
 #include "imctest/Source_Init.hh"
+#include "imctest/Particle_Buffer.hh"
 #include "ds++/SP.hh"
 
 IMCSPACE
+
+template<class MT> class Source;
 
 template<class MT>
 class Parallel_Builder
@@ -37,6 +40,13 @@ private:
   // topology data
     vector<vector<int> > cells_per_proc;
     vector<vector<int> > procs_per_cell;
+
+  // calculate topology map
+    void parallel_topology(const MT &, const Source_Init<MT> &);
+
+  // calculate parallel source distributions
+    template<class PT>
+    void dist_census(const Source_Init<MT> &, const Particle_Buffer<PT> &);
 
   // functionality for Mesh passing
 
@@ -61,8 +71,10 @@ public:
   // constructor for host-node
     Parallel_Builder(const MT &, const Source_Init<MT> &);
 
-  // calculate topology map
-    void parallel_params(const MT &, const Source_Init<MT> &);
+  // source functions
+    template<class PT> 
+    void send_Source(const Source_Init<MT> &, const Particle_Buffer<PT> &);
+    SP<Source<MT> > recv_Source();
 
   // Mesh passing functionality
     void send_Mesh(const MT &);

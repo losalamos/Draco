@@ -10,13 +10,15 @@
 #include "imctest/XYCoord_sys.hh"
 #include "imctest/XYZCoord_sys.hh"
 #include "imctest/Math.hh"
+#include "imctest/Constants.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <cstdio>
 #include <algorithm>
-#include <cassert>
 
 IMCSPACE
 
@@ -32,21 +34,23 @@ using Global::min;
 using std::vector;
 using std::string;
 using std::fill;
+using std::ofstream;
+using std::ifstream;
+using std::remove;
 
 //---------------------------------------------------------------------------//
 // constructors
 //---------------------------------------------------------------------------//
 // host node constructor that determines the toplogy on the IMC-nodes
 
-// template<class MT>
-// Parallel_Builder<MT>::Parallel_Builder(const MT &mesh, 
-// 				       const Source_Init<MT> &sinit)
-//     : cells_per_proc(nodes()), procs_per_cell(mesh.num_cells())
-// {
-//   // calculate the parameters for splitting the problem amongst many
-//   // processors 
-//   //  parallel_params(sinit);
-// }
+template<class MT>
+Parallel_Builder<MT>::Parallel_Builder(const MT &mesh, 
+				       const Source_Init<MT> &sinit)
+{
+  // calculate the parameters for splitting the problem amongst many
+  // processors 
+    parallel_topology(mesh, sinit);
+}
 
 //---------------------------------------------------------------------------//
 // default constructor for IMC-nodes
@@ -63,12 +67,12 @@ Parallel_Builder<MT>::Parallel_Builder()
 // calculate topology parameters to determine what cells go where
 
 template<class MT>
-void Parallel_Builder<MT>::parallel_params(const MT &mesh,
-					   const Source_Init<MT> &sinit)
+void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
+					     const Source_Init<MT> &sinit)
 {
   // make sure we have a Source_Init and Mesh
-    assert (&sinit);
-    assert (&mesh);
+    Require (&sinit);
+    Require (&mesh);
 
   // number of cells in the mesh
     int num_cells = mesh.num_cells();
@@ -79,12 +83,13 @@ void Parallel_Builder<MT>::parallel_params(const MT &mesh,
 
   // calculate the total capacity of all processors
     int total_capacity = sinit.get_capacity() * nodes();
-    assert (total_capacity >= num_cells);
+    Check (total_capacity >= num_cells);
 
   // do full replication / full DD / rep-DD
     if (num_cells <= sinit.get_capacity())
     {
       // do full replication as we can fit the whole mesh on each processor
+	std::cout << "** Doing full replication" << std::endl;
 	for (int proc = 0; proc < nodes(); proc++)
 	{
 	    for (int cell = 1; cell <= num_cells; cell++)
@@ -92,31 +97,36 @@ void Parallel_Builder<MT>::parallel_params(const MT &mesh,
 		procs_per_cell[cell-1].push_back(proc);
 		cells_per_proc[proc].push_back(cell);
 	    }
-	    assert (cells_per_proc[proc].size() == num_cells);
+	    Ensure (cells_per_proc[proc].size() == num_cells);
 	}
     }
     else if (num_cells == total_capacity)
     {
       // do full DD
+	std::cout << "** Doing full DD" << std::endl;
 	int cell = 1;
 	for (int proc = 0; proc < nodes(); proc++)
 	{
-	    int max_cell = 0;
-	    while (++max_cell <= sinit.get_capacity())
+	    int last_cell = 1;
+	    while (last_cell <= sinit.get_capacity())
 	    {
-		cells_per_proc[proc].push_back(cell++);
+		cells_per_proc[proc].push_back(cell);
 		procs_per_cell[cell-1].push_back(proc);
-		assert (procs_per_cell[cell-1].size() == 1);
+		Ensure (procs_per_cell[cell-1].size() == 1);
+		last_cell++;
+		cell++;
 	    }
-	    assert (procs_per_cell[proc].size() <= sinit.get_capacity());
+	    Ensure (procs_per_cell[proc].size() <= sinit.get_capacity());
 	}
     }
     else
     {
       // do DD/replication
 
+	std::cout << "** Doing general DD/rep" << std::endl;
       // set up variables for cell replication
-	int *cellrep = new int(num_cells);
+	vector<int> cellrep(num_cells);
+	fill(cellrep.begin(), cellrep.end(), 0);
 	double sfrac = 0;
 	int total_rep = 0;
 
@@ -176,31 +186,146 @@ void Parallel_Builder<MT>::parallel_params(const MT &mesh,
       // now we can do our DD/replication partitioning
 	for (int cell = 1; cell <= num_cells; cell++)
 	{
-	    std::cout << cell << std::endl;
-	    int max_rep = 0;
+	    int replicates = 1;
 	    for (int proc = 0; proc < nodes(); proc++)
 	    {
-		std::cout << cell << std::endl;
-		if (++max_rep <= cellrep[cell-1] && 
+		if (replicates <= cellrep[cell-1] && 
 		    cells_per_proc[proc].size() < sinit.get_capacity())
 		{
-		    std::cout << cell << std::endl;
 		    procs_per_cell[cell-1].push_back(proc);
-		    std::cout << cell << std::endl;
    		    cells_per_proc[proc].push_back(cell);
-		    std::cout << cell << std::endl << std::endl;
+		    replicates++;
 		}
- 		assert (cells_per_proc[proc].size() <= sinit.get_capacity());
+ 		Check (cells_per_proc[proc].size() <= sinit.get_capacity());
 	    }
- 	    assert (procs_per_cell[cell-1].size() > 0);
- 	    assert (procs_per_cell[cell-1].size() <= nodes());
+ 	    Ensure (procs_per_cell[cell-1].size() > 0);
+ 	    Ensure (procs_per_cell[cell-1].size() <= nodes());
 	}
-
-      // reclaim storage
-	delete [] cellrep;
     }
 }
 
+//---------------------------------------------------------------------------//
+// Source Distribution interface
+//---------------------------------------------------------------------------//
+// send the source to the IMC-topology processors
+
+template<class MT>
+template<class PT>
+void Parallel_Builder<MT>::send_Source(const Source_Init<MT> &sinit, 
+				       const Particle_Buffer<PT> &buffer)
+{
+  // first distribute the census
+    if (sinit.get_ncentot() > 0) 
+	dist_census(sinit, buffer);
+}
+
+//---------------------------------------------------------------------------//
+// source passing implementation
+//---------------------------------------------------------------------------//
+// distribute the census particles
+
+template<class MT>
+template<class PT>
+void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit, 
+				       const Particle_Buffer<PT> &buffer)
+{
+  // get number of cells
+    int num_cells = procs_per_cell.size();
+    Require (num_cells > 0);
+
+  // calculate census particle-to-processor data
+    vector<int> ncen2proc(num_cells);
+    vector<int> ncenleft(num_cells);
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	ncen2proc[cell-1] = sinit.get_ncen(cell) /
+	    procs_per_cell[cell-1].size();
+	ncenleft[cell-1] = sinit.get_ncen(cell) %
+	    procs_per_cell[cell-1].size();
+	Check (ncenleft[cell-1] < procs_per_cell[cell-1].size());
+    }
+
+  // calculate and send census to processors
+
+  // open host census file
+    ifstream host_census("census");
+    if (!host_census)
+	Insist(0, "The host did not provide an initial census file!");
+
+  // initialize counters for census read/write
+    int total_placed = 0;
+    int total_read = 0;
+    vector<int> num_placed_per_cell(num_cells);
+    vector<int> num_placed_per_proc(nodes());
+    vector<int> num_to_send(nodes());
+
+  // read census file and distribute to IMC_Procs
+
+  // necessary variables
+    int cell;
+    int offset;
+    int proc_index;
+    int proc_goto;
+
+  // Census Particle Buffers
+    SP<Particle_Buffer<PT>::Census_Buffer> cenpart;
+    vector<Particle_Buffer<PT>::Comm_Buffer> cen_buffer(nodes());
+
+  // loop to read census particles and send them
+    do
+    {
+	cenpart = buffer.read_census(host_census);
+	if (cenpart)
+	{
+	    total_read++;
+	    cell = cenpart->cell;
+
+	  // in a cell, total number of census particles after which the
+	  // leftover particles are placed
+	    offset = (ncen2proc[cell-1] + 1) * ncenleft[cell-1];
+
+	  // determine the processor to go to
+	    if (num_placed_per_cell[cell-1] < offset)
+		proc_index = num_placed_per_cell[cell-1] / 
+		    (ncen2proc[cell-1] + 1); 
+	    else
+		proc_index = (num_placed_per_cell[cell-1] - offset) / 
+		    ncen2proc[cell-1] + ncenleft[cell-1];
+	    proc_goto = procs_per_cell[cell-1][proc_index];
+	    buffer.buffer_census(cen_buffer[proc_goto], *cenpart);
+
+	  // increment some counters
+	    num_placed_per_cell[cell-1]++;
+	    num_placed_per_proc[proc_goto]++;
+	    total_placed++;
+	    num_to_send[proc_goto]++;
+
+	  // send these guys out
+	    if (num_to_send[proc_goto] == Global::buffer_s)
+	    {
+		buffer.send_buffer(cen_buffer[proc_goto], proc_goto);
+		cen_buffer[proc_goto].n_part = 0;
+		num_to_send[proc_goto] = 0;
+	    }
+	}
+    } while (cenpart);
+	    
+  // some Checks
+    Check (total_placed == sinit.get_ncentot());
+    Check (total_read == sinit.get_ncentot());
+
+  // send the guys off that haven't been sent yet
+    for (int proc = 0; proc < nodes(); proc++)
+    {
+	if (num_to_send[proc] > 0)
+	{
+	    buffer.send_buffer(cen_buffer[proc], proc_goto);
+	    cen_buffer[proc].n_part = 0;
+	    num_to_send[proc] = 0;  
+	}
+    }
+}
+	    
 //---------------------------------------------------------------------------//
 // Mesh passing interface
 //---------------------------------------------------------------------------//
@@ -253,8 +378,8 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
     typename MT::CCVF_i cell_pair = recv_cellpair();
 
   // build mesh
+  // SOLARIS MPICH fails at this point
     return_mesh = new MT(coord, layout, vertex, cell_pair);
-    std::cout << "Built MESH" << std::endl;
 
   // return mesh
     return return_mesh;

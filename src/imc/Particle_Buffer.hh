@@ -147,13 +147,24 @@ public:
 
   // io functions
     void write_census(ostream &, const PT &) const;
-    void write_census(const Census &) const;
-    SP<Census_Buffer> read_census(istream &);
+    void write_census(ostream &, Comm_Buffer &) const;
+    SP<Census_Buffer> read_census(istream &) const;
 
+  // fill buffer functions
+    void buffer_census(Comm_Buffer &, const Census_Buffer &) const;
+    void buffer_particle(Comm_Buffer &, const PT &) const;
+  
   // Particle send and receives
-    void send_bank(Comm_Buffer &, int, Comm_Bank &) const;
-    void recv_bank(Comm_Buffer &, int) const;
+
+  // blocking
+    void send_buffer(Comm_Buffer &, int) const;
+    SP<Comm_Buffer> recv_buffer(int) const;
+
+  // async
+    void asend_bank(Comm_Buffer &, int, Comm_Bank &) const;
+    void arecv_bank(Comm_Buffer &, int) const;
     void add_to_bank(Comm_Buffer &, Comm_Bank &) const;
+
 };
 
 //---------------------------------------------------------------------------//

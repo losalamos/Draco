@@ -121,7 +121,8 @@ void Source_Init<MT>::calc_initial_census(const MT &mesh,
     calc_ncen_init();
 
   // write out the initial census
-    write_initial_census(mesh, rcontrol);  
+    if (ncentot > 0)
+	write_initial_census(mesh, rcontrol);  
 }
 
 //---------------------------------------------------------------------------//

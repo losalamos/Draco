@@ -7,11 +7,20 @@
 //---------------------------------------------------------------------------//
 
 #include "imctest/OS_Mesh.hh"
+#include "imctest/Particle.hh"
 #include "Parallel_Builder.cc"
 
 IMCSPACE
 
 instantiate class Parallel_Builder<OS_Mesh>
+
+instantiate funcproto PT=Particle<OS_Mesh>, MT=OS_Mesh
+void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &, 
+				       const Particle_Buffer<PT> &)
+
+instantiate funcproto PT=Particle<OS_Mesh>, MT=OS_Mesh
+void Parallel_Builder<MT>::send_Source(const Source_Init<MT> &, 
+				       const Particle_Buffer<PT> &)
 
 CSPACE
 
