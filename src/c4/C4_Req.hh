@@ -62,6 +62,8 @@ class C4_Req {
     void clear()    { assigned = 0; }
 
     void wait();
+
+    int inuse() const { return assigned; }
 };
 
 C4_NAMESPACE_END
