@@ -1,0 +1,69 @@
+%%---------------------------------------------------------------------------%%
+%% imc-dev.tex
+%% Thomas M. Evans
+%%---------------------------------------------------------------------------%%
+\documentclass[12pt]{article}
+\usepackage{epsfig,graphicx}
+\usepackage{cite}
+\usepackage{tmath}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb}
+\usepackage{c++}
+\usepackage[mathcal]{euscript}
+\usepackage{fancycodes}
+
+%%---------------------------------------------------------------------------%%
+%% MARGIN ADJUSTMENTS
+%%---------------------------------------------------------------------------%%
+
+\setlength{\oddsidemargin}{0.0in}
+\setlength{\evensidemargin}{0.0in}
+\setlength{\textwidth}{6.5in}
+\setlength{\topmargin}{-.5in}
+\setlength{\headheight}{.25in}
+\setlength{\headsep}{.25in}
+\setlength{\textheight}{9.5in}
+
+%%---------------------------------------------------------------------------%%
+%% HEADER STUFF
+%%---------------------------------------------------------------------------%%
+
+\title{title}
+\author{T.M. Evans \\
+ X--TM, MS D409 \\ Los Alamos National Laboratory \\
+ Los Alamos, NM 87544 \\ tme@lanl.gov}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+
+\begin{document}
+\maketitle
+
+%%---------------------------------------------------------------------------%%
+%% BODY
+%%---------------------------------------------------------------------------%%
+
+\begin{abstract}
+...
+\end{abstract}
+
+\input{opacity-oo.cfg}
+
+\cdFramedFigure{opacity-int}{Opacity interface.}
+\cdFramedFigure{opacity-oo}{Opacity overloaded operators.}
+\cdFramedFigure{particle-int}{Particle interface.}
+\cdFramedFigure{particle-oo}{Particle interface.}
+
+%%---------------------------------------------------------------------------%%
+%% BIBLIOGRAPHY
+%%---------------------------------------------------------------------------%%
+
+\bibliographystyle{aip}
+\bibliography{/home/tme/...}
+
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of imc-dev.tex
+%%---------------------------------------------------------------------------%%
