@@ -15,6 +15,8 @@ acf90.ps: acf90.dvi
 
 acf90.dvi: acf90.tex
 	latex acf90.tex
+	bibtex acf90
+	latex acf90.tex
 	latex acf90.tex
 
 view: acf90.ps
