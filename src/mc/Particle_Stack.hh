@@ -12,6 +12,9 @@
 #ifndef __mc_Particle_Stack_hh__
 #define __mc_Particle_Stack_hh__
 
+#include "ds++/SP.hh"
+#include <vector>
+
 namespace rtt_mc
 {
 
