@@ -41,7 +41,7 @@ class Source
     // usefull typedefs
     typedef typename MT::template CCSF<int>      ccsf_int;
     typedef typename MT::template CCSF<double>   ccsf_double;
-    typedef typename Particle_Buffer<PT>::Census PB_Census
+    typedef typename Particle_Buffer<PT>::Census PB_Census;
     typedef rtt_dsxx::SP<PB_Census>              SP_Census;
     typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>   SP_Rnd_Control; 
     typedef rtt_dsxx::SP<Mat_State<MT> >         SP_Mat_State;
