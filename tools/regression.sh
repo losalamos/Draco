@@ -30,6 +30,10 @@ runregression ()
 
    POOMA_DEPEND_DIRS="src/POOMA_MT"
 
+   # directories that depend on fourier
+  
+   FOURIER_DEPEND_DIRS="src/fourier"
+
    # Remove, create the target directory, and cd into it.
 
    echo rm -rf $TARGETDIR
@@ -67,6 +71,14 @@ runregression ()
       echo removing POOMA dependent directories: $POOMA_DEPEND_DIRS
       echo rm -rf $POOMA_DEPEND_DIRS
       rm -rf $POOMA_DEPEND_DIRS
+   fi
+
+   # remove fourier stuff, period.
+
+   if [ "$HAS_FOURIER" != "true" ] ; then
+      echo removing fourier dependent directories: $FOURIER_DEPEND_DIRS
+      echo rm -rf $FOURIER_DEPEND_DIRS
+      rm -rf $FOURIER_DEPEND_DIRS 
    fi
 
    # Make the test runs
@@ -157,6 +169,7 @@ do
       HAS_POOMA="false"
       HAS_PCGLIB="false"
       HAS_SPRNGLIB="false"
+      HAS_FOURIER="false"
 
       CONFIGUREFLAGS="--with-c4=$c4"
 
