@@ -73,19 +73,20 @@ ifndef SRC_TOP
 SRC_TOP	= ..
 endif
 
-DS++_LIB	= -L$(SRC_TOP)/ds++    -lds++_$(env)
+DS++_LIB	= -L$(SRC_TOP)/ds++     -lds++_$(env)
 
-SPDF_LIB	= -L$(SRC_TOP)/spdf    -lspdf_$(env)
-UTIL_LIB	= -L$(SRC_TOP)/util    -lutil_$(env)
-LINALG_LIB	= -L$(SRC_TOP)/linalg  -llinalg_$(env)
-GEOM_LIB	= -L$(SRC_TOP)/geom    -lgeom_$(env)
-MESH_LIB	= -L$(SRC_TOP)/mesh    -lmesh_$(env)
-3T_LIB		= -L$(SRC_TOP)/3T      -l3T_$(env)
-matprops_LIB	= -L$(SRC_TOP)/matprops -lmatprops_$(env)
-SN_LIB		= -L$(SRC_TOP)/sn      -lsn_$(env)
-IMCTEST_LIB     = -L$(SRC_TOP)/imctest -limctest_$(env)
-PYCXX_LIB	= -L$(SRC_TOP)/pycxx   -lpycxx_$(env)
-RNG_LIB         = -L$(SRC_TOP)/rng     -lrng_$(env)
+SPDF_LIB	= -L$(SRC_TOP)/spdf     -lspdf_$(env)
+UTIL_LIB	= -L$(SRC_TOP)/util     -lutil_$(env)
+LINALG_LIB	= -L$(SRC_TOP)/linalg   -llinalg_$(env)
+GEOM_LIB	= -L$(SRC_TOP)/geom     -lgeom_$(env)
+MESH_LIB	= -L$(SRC_TOP)/mesh     -lmesh_$(env)
+3T_LIB		= -L$(SRC_TOP)/3T       -l3T_$(env)
+TIMESTEP_LIB 	= -L$(SRC_TOP)/timestep -ltimestep_$(env)
+MATPROPS_LIB	= -L$(SRC_TOP)/matprops -lmatprops_$(env)
+SN_LIB		= -L$(SRC_TOP)/sn       -lsn_$(env)
+IMCTEST_LIB     = -L$(SRC_TOP)/imctest  -limctest_$(env)
+PYCXX_LIB	= -L$(SRC_TOP)/pycxx    -lpycxx_$(env)
+RNG_LIB         = -L$(SRC_TOP)/rng      -lrng_$(env)
 
 ifeq ($(need_util),yes)
 need_spdf	:= yes
@@ -226,8 +227,11 @@ endif
 ifeq ($(need_3T),yes)
 LINK_LIBS	+= $(3T_LIB)
 endif
+ifeq ($(need_timestep),yes)
+LINK_LIBS	+= $(TIMESTEP_LIB)
+endif
 ifeq ($(need_matprops),yes)
-LINK_LIBS	+= $(matprops_LIB)
+LINK_LIBS	+= $(MATPROPS_LIB)
 endif
 ifeq ($(need_mesh),yes)
 LINK_LIBS	+= $(MESH_LIB)
@@ -297,6 +301,7 @@ dep_libgeom	= $(SRC_TOP)/geom/libgeom_$(env).$(lib_suffix)
 dep_libmesh	= $(SRC_TOP)/mesh/libmesh_$(env).$(lib_suffix)
 dep_liblinalg	= $(SRC_TOP)/linalg/liblinalg_$(env).$(lib_suffix)
 dep_lib3T	= $(SRC_TOP)/3T/lib3T_$(env).$(lib_suffix)
+dep_libtimestep	= $(SRC_TOP)/timestep/libtimestep_$(env).$(lib_suffix)
 dep_libmatprops	= $(SRC_TOP)/matprops/libmatprops_$(env).$(lib_suffix)
 dep_libimctest  = $(SRC_TOP)/imctest/libimctest_$(env).$(lib_suffix)
 dep_librng      = $(SRC_TOP)/rng/librng_$(env).$(lib_suffix)
