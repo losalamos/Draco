@@ -1,19 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mc/Pyramid_Mesh.cc
+ * \file   mc/Sphyramid_Mesh.cc
  * \author Jeffery Densmore (Stolen from RZWedge_Mesh.cc)
  * \date   Mon Oct  6 09:15:12 2003
- * \brief  Pyramid_Mesh implementation file.
+ * \brief  Sphyramid_Mesh implementation file.
  * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef rtt_mc_Pyramid_Mesh_cc
-#define rtt_mc_Pyramid_Mesch_cc
+#ifndef rtt_mc_Sphyramid_Mesh_cc
+#define rtt_mc_Sphyramid_Mesch_cc
 
-#include "Pyramid_Mesh.hh"
+#include "Sphyramid_Mesh.hh"
 //#include "XYZCoord_sys.hh"
 //#include "Constants.hh"
 #include "Math.hh"
@@ -31,12 +31,12 @@ namespace rtt_mc
 // CONSTRUCTOR
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Pyramid_Mesh constructor.
+ * \brief Sphyramid_Mesh constructor.
 
  * The constructor requires complete arguments of the constituent data
- * necessary to build a Pyramid_Mesh.  It is expected that an appropriate
+ * necessary to build a Sphyramid_Mesh.  It is expected that an appropriate
  * builder class will message general data through an interface to build the 
- * specific data structures needed by Pyramid_Mesh
+ * specific data structures needed by Sphyramid_Mesh
 
  * \param coord_ coordinate system smart pointer
 
@@ -45,12 +45,12 @@ namespace rtt_mc
  * \param cell_x_extents_ the x coordinates of each cell in the following
  * form: [cell][low x]; [cell][hi x];
 
- * \param beta_radians_ "angle" of pyramid in radians (not angle of spherical
+ * \param beta_radians_ "angle" of Sphyramid in radians (not angle of spherical
  * cone)
 
 */
 
-Pyramid_Mesh::Pyramid_Mesh(SP_Coord coord_,
+Sphyramid_Mesh::Sphyramid_Mesh(SP_Coord coord_,
 			   AMR_Layout &layout_,
 			   vf_double & cell_x_extents_,
 			   double beta_radians_)
@@ -66,7 +66,7 @@ Pyramid_Mesh::Pyramid_Mesh(SP_Coord coord_,
     Require (coord->get_dim() == 3);
     Require (coord->get_Coord() == std::string("xyz"));
     
-    // Make sure that the pyramid angle is postive and not obtuse
+    // Make sure that the Sphyramid angle is postive and not obtuse
     Require ((beta_radians>0.0) && (beta_radians <= pi/4.));
 
     // check that the cell-extents vector has num_cells elements
@@ -89,10 +89,10 @@ Pyramid_Mesh::Pyramid_Mesh(SP_Coord coord_,
 /*!
  * \brief Calculate wedge angle data once for use throughout calculation
  *
- * \param beta_radians "angle" of pyramid in degrees (not angle of spherical
+ * \param beta_radians "angle" of Sphyramid in degrees (not angle of spherical
  * cone)
  */
-void Pyramid_Mesh::calc_angle_data(const double beta_radians)
+void Sphyramid_Mesh::calc_angle_data(const double beta_radians)
 {
     using global::pi;
     using std::tan;
@@ -111,9 +111,9 @@ void Pyramid_Mesh::calc_angle_data(const double beta_radians)
 /*!
  * \brief Calculate and set the total (on-processor) volume of the mesh.
  *
- * \return total volume of on-processor Pyramid cells
+ * \return total volume of on-processor Sphyramid cells
  */
-void Pyramid_Mesh::calc_total_volume()
+void Sphyramid_Mesh::calc_total_volume()
 {
     Require (num_cells()>0);
 
@@ -139,7 +139,7 @@ void Pyramid_Mesh::calc_total_volume()
 
  * \return true if r is in cell; false otherwise
  */
-bool Pyramid_Mesh::in_cell(int cell, const sf_double &r) const
+bool Sphyramid_Mesh::in_cell(int cell, const sf_double &r) const
 {
     using rtt_mc::global::soft_equiv;
 
@@ -177,7 +177,7 @@ bool Pyramid_Mesh::in_cell(int cell, const sf_double &r) const
 // PUBLIC INTERFACE FOR IMC
 //---------------------------------------------------------------------------//
 /*!
- * \Brief Calculate minimum distance to boundary in an Pyramid_Mesh cell
+ * \Brief Calculate minimum distance to boundary in an Sphyramid_Mesh cell
  *
  * \param r position
  * \param omega direction
@@ -186,7 +186,7 @@ bool Pyramid_Mesh::in_cell(int cell, const sf_double &r) const
  * \return get_db minimum distance to boundary
  * \return face (in arguments) face corresponding to min dist-to-bndry
  */
-//double Pyramid_Mesh::get_db(const sf_double &r, const sf_double *omega,
+//double Sphyramid_Mesh::get_db(const sf_double &r, const sf_double *omega,
 //			    int cell, int &face) const
 //{
 //  using std::vector;
@@ -196,7 +196,7 @@ bool Pyramid_Mesh::in_cell(int cell, const sf_double &r) const
 //  Check (global::soft_equiv(dot(omega,omega),1.0, 1.0e-5));
 
     // set up 6 dists-to-bndry, initialize to huge value
-    // -- always 6 faces in an Pyramid_Mesh cell.
+    // -- always 6 faces in an Sphyramid_Mesh cell.
 //  vector<double> distance(6,global::Huge);
 
     // low x face (inner radial face) (internal index 0)
@@ -250,13 +250,13 @@ bool Pyramid_Mesh::in_cell(int cell, const sf_double &r) const
 //}
 //---------------------------------------------------------------------------//
 /*!
- * \brief Find cell in Pyramid_Mesh give position
+ * \brief Find cell in Sphyramid_Mesh give position
  *
  * \param r position
  * 
  * \return cell cell containing position r
  */
-int Pyramid_Mesh::get_cell(const sf_double &r) const
+int Sphyramid_Mesh::get_cell(const sf_double &r) const
 {
     // This is some algorithm that Todd and Tom made up.
     // I'm including it so I don't get yelled at.
@@ -296,7 +296,7 @@ int Pyramid_Mesh::get_cell(const sf_double &r) const
 //---------------------------------------------------------------------------//
 // return the face number for a given cell boundary (independent of cell)
 
-int Pyramid_Mesh::get_bndface(std_string boundary, int cell) const
+int Sphyramid_Mesh::get_bndface(std_string boundary, int cell) const
 {
     //return value
     int face;
@@ -322,7 +322,7 @@ int Pyramid_Mesh::get_bndface(std_string boundary, int cell) const
 //---------------------------------------------------------------------------//
 // return a list of cells along a specified boundary
 
-Pyramid_Mesh::sf_int Pyramid_Mesh::get_surcells(std::string boundary) const
+Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_surcells(std::string boundary) const
 {
 
     Require(coord->get_dim() == 3);
@@ -384,7 +384,7 @@ Pyramid_Mesh::sf_int Pyramid_Mesh::get_surcells(std::string boundary) const
  * be inside, and never on, the cell boundaries.
  *
  * As opposed to the OS_Mesh Implementation of this function, this function
- * actually tracks a distance equal to radius on the Pyramid_Mesh.  The
+ * actually tracks a distance equal to radius on the Sphyramid_Mesh.  The
  * returned normal is actally the direction of the ray when it reaches that
  * distance
  * 
@@ -397,7 +397,7 @@ Pyramid_Mesh::sf_int Pyramid_Mesh::get_surcells(std::string boundary) const
  * position on the surface of the sphere and the second element of the pair
  * is the normal of the sphere at that position
  */
-//Pyramid_Mesh::pair_sf_double Pyramid_Mesh::sample_random_walk_sphere(
+//Sphyramid_Mesh::pair_sf_double Sphyramid_Mesh::sample_random_walk_sphere(
 //    int cell,
 //    const sf_double & &origin,
 //    double radius,
@@ -484,7 +484,7 @@ Pyramid_Mesh::sf_int Pyramid_Mesh::get_surcells(std::string boundary) const
 // check that a user/host-defined set of surface source cells actually
 // resides on the surface of the system (requires a vacuum bnd).
 
-bool Pyramid_Mesh::check_defined_surcells(const std_string ss_face,
+bool Sphyramid_Mesh::check_defined_surcells(const std_string ss_face,
 					 const sf_int &ss_list) const
 {
     // a weak check on the number of surface cells
@@ -506,18 +506,18 @@ bool Pyramid_Mesh::check_defined_surcells(const std_string ss_face,
 }
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Calculate the vertices for a given Pyramid_Mesh cell.
+ * \brief Calculate the vertices for a given Sphyramid_Mesh cell.
  *
- * During normal use of the Pyramid_Mesh, the explicit cell vertices are not
- * required. However, they are needed for graphics dumps.  The Pyramid_Mesh
+ * During normal use of the Sphyramid_Mesh, the explicit cell vertices are not
+ * required. However, they are needed for graphics dumps.  The Sphyramid_Mesh
  * is always in 3-D XYZ geometry and always has eight vertices (the cell at
  * the radial center has four coincident vertices).
  * 
- * \param cell Pyramid_Mesh (global) cell number
+ * \param cell Sphyramid_Mesh (global) cell number
  *
  * \return vertices - the coordinates of the cell's eight vertices
  */
-Pyramid_Mesh::vf_double Pyramid_Mesh::get_vertices(int cell) const
+Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell) const
 {
     Require (cell>0 && cell <= num_cells());
     Require (coord->get_dim() == 3);
@@ -560,19 +560,19 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_vertices(int cell) const
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Calculate the vertices for a give face of a Pyramid_Mesh cell. 
+ * \brief Calculate the vertices for a give face of a Sphyramid_Mesh cell. 
  * 
- * During normal use of the Pyramid_Mesh, the explicit cell vertices are not
- * required. However, they are needed for graphics dumps.  The Pyramid_Mesh
+ * During normal use of the Sphyramid_Mesh, the explicit cell vertices are not
+ * required. However, they are needed for graphics dumps.  The Sphyramid_Mesh
  * is always in 3-D XYZ geometry and each face always has four vertices ( the
  * cell at the radial center has four coincident vertices).
  * 
- * \param cell Pyramid_Mesh (global) cell_number
+ * \param cell Sphyramid_Mesh (global) cell_number
  * \param face face of cell
  *
  * \return vertices of the coordinates of the four vertices defining a face
  */
-Pyramid_Mesh::vf_double Pyramid_Mesh::get_vertices(int cell, int face) const
+Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell, int face) const
 {
     Require (face> 0 && face <= 6);
     Require (cell>0 && cell<= layout.num_cells());
@@ -707,15 +707,15 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_vertices(int cell, int face) const
 // Interface for graphics dumps
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return turn cell type for each cell in the Pyramid_Mesh
+ * \brief Return turn cell type for each cell in the Sphyramid_Mesh
  */
-Pyramid_Mesh::sf_int Pyramid_Mesh::get_cell_types() const
+Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_cell_types() const
 {
     using std::fill;
 
     sf_int cell_type(layout.num_cells());
 
-    // all cells in a Pyramid_Mesh are general, 8-node hexahedrons
+    // all cells in a Sphyramid_Mesh are general, 8-node hexahedrons
     fill(cell_type.begin(),cell_type.end(),rtt_viz::eight_node_hexahedron);
 
     return cell_type;
@@ -724,13 +724,13 @@ Pyramid_Mesh::sf_int Pyramid_Mesh::get_cell_types() const
 /*! 
  * \brief Return the coordinates of all nodes in the mesh.
  * 
- * For each cell in the Pyramid_Mesh, the coordinates of all eight nodes are
+ * For each cell in the Sphyramid_Mesh, the coordinates of all eight nodes are
  * returned. Thus, all interior nodes are replicated twice.  This approach,
  * although memory-inefficient, is easier to code especially considering that
- * the Pyramid_Mesh does not already have the raw vertex data.
+ * the Sphyramid_Mesh does not already have the raw vertex data.
  *
  */
-Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
+Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_point_coord() const
 {
 
     // number of vertices is always 8; always 3D
@@ -781,7 +781,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
  * point coord
  *
  */
-//Pyramid_Mesh::vf_int Pyramid_Wedge::get_cell_pair() const
+//Sphyramid_Mesh::vf_int Sphyramid_Wedge::get_cell_pair() const
 //{
     // each cell points to eight vertices, this is ALWAYS a 3D mesh
 //  vf_int cp(layout.num_cells(), sf_int(8));
@@ -806,7 +806,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
 //---------------------------------------------------------------------------//
 // print out the whole mesh
 //---------------------------------------------------------------------------//
-//void Pyramid_Mesh::print(std::ostream &out) const
+//void Sphyramid_Mesh::print(std::ostream &out) const
 //{
 //  using std::setw;
 //  using std::setiosflag;
@@ -819,7 +819,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
 //  out << endl;
 
 //  out.precision(4);
-//  out << "--- Pyramid Angle ---" << endl;
+//  out << "--- Sphyramid Angle ---" << endl;
 //  out << setw(10) << setiosflags(ios::fixed)
 //<< beta_degrees << " degrees"<< endl;
 //  out << setw(10) << setiosflags(ios::fixed)
@@ -832,7 +832,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
 //}
 //---------------------------------------------------------------------------//
 // print individual cells
-//void Pyramid_Mesh::print(std::ostream &output, int cell) const
+//void Sphyramid_Mesh::print(std::ostream &output, int cell) const
 //{
 //  using std::endl;
 //  using std::setiosflags;
@@ -865,7 +865,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
 //---------------------------------------------------------------------------//
 // overloaded == for design-by-contract
 
-//bool Pyramid_Mesh::operator==(const Pyramid_Mesh &rhs) const
+//bool Sphyramid_Mesh::operator==(const Sphyramid_Mesh &rhs) const
 //{
 //  using rtt_mc::global::soft_equiv;
 
@@ -888,7 +888,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
 //---------------------------------------------------------------------------//
 // Overloaded output operator
 
-//std::ostream & operator<<(std::ostream & output, const Pyramid_Mesh &object)
+//std::ostream & operator<<(std::ostream & output, const Sphyramid_Mesh &object)
 //{
 //  object.print(output);
 //  return output;
@@ -913,7 +913,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
  * mesh, set this to NULL to produce an exact copy
 
  */
-//Pyramid_Mesh::SP_Pack Pyramid_Mesh::pack(const sf_int &current_to_new) const
+//Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new) const
 //{
 //  Require (current_to_new.size() == layout.num_cells() || 
 //     current_to_new.size() == 0);
@@ -1019,7 +1019,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
 //  delete [] extent_data;
 
     // make a packed mesh
-//  SP_Pack packed_mesh(new Pyramid_Mesh::Pack(size,data));
+//  SP_Pack packed_mesh(new Sphyramid_Mesh::Pack(size,data));
 
 //  Ensure (packed_mesh->get_num_packed_cells() == num_packed_cells);
 //  return packed_mesh;
@@ -1029,7 +1029,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
  * \brief Pack up the cell extents 
  *
  */
-//void Pyramid_Mesh::pack_extents(const sf_int &current_new,
+//void Sphyramid_Mesh::pack_extents(const sf_int &current_new,
 //			char *data,
 //			int size,
 //			int num_packed) const
@@ -1073,16 +1073,16 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
 /*!
  * \brief Constructor.
 
- * Construct a Pyramid_Mesh::Pack instance.  Once allocated mesh data is
- * given to the Pyramid_Mesh::Pack constructor in the form of a char*, the
+ * Construct a Sphyramid_Mesh::Pack instance.  Once allocated mesh data is
+ * given to the Sphyramid_Mesh::Pack constructor in the form of a char*, the
  * Pack object owns it.  When the Pack object goes out of scope it will clean
  * up the memory.  In general, Pack objects are only created by calling the
- * Pyramid_Mesh::pack() function.
+ * Sphyramid_Mesh::pack() function.
 
  * \param s size of char data stream
  * \param d pointer to char data stream
  */
-//Pyramid_Mesh::Pack::Pack(int s, char *d)
+//Sphyramid_Mesh::Pack::Pack(int s, char *d)
 //  :data(d),
 //   size(s)
 //{
@@ -1098,7 +1098,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
  * function calls and the like (wherever a copy constructor is called).
  * 
  */
-//Pyramid_Mesh::Pack::~Pack()
+//Sphyramid_Mesh::Pack::~Pack()
 //{
 //  delete [] data;
 //}
@@ -1108,7 +1108,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
  * \brief Get number of cells in the packed mesh.
  * 
  */
-//int Pyramid_Mesh::Pack::get_num_packed_cells() const
+//int Sphyramid_Mesh::Pack::get_num_packed_cells() const
 //{
 //  Require (size >= (3*sizeof(int) +sizeof(double)));
 
@@ -1127,12 +1127,12 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Unpack the Pyramid_Mesh.
+ * \brief Unpack the Sphyramid_Mesh.
  * 
- * Unpackes and returns a smart pointer to the new Pyramid_Mesh.
+ * Unpackes and returns a smart pointer to the new Sphyramid_Mesh.
  * \return smart pointer to the unpacked mesh
  */
-//Pyramid_Mesh::SP_Mesh Pyramid_Mesh::Pack::unpack const
+//Sphyramid_Mesh::SP_Mesh Sphyramid_Mesh::Pack::unpack const
 //{
 //  using rtt_dsxx::SP;
 
@@ -1182,7 +1182,7 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
 //  Ensure (unpacker.get_ptr() == size + data);
 
     // build the new mesh
-//  SP<Pyramid_Mesh> mesh(new Pyramid_Mesh(coor, *layout, cell_extents, beta));
+//  SP<Sphyramid_Mesh> mesh(new Sphyramid_Mesh(coor, *layout, cell_extents, beta));
 
 //  Ensure (mesh->num_cells() == num_packed_cells);
 //  Ensure (mesh->get_spatial_dimension() == coord->get_dim());
@@ -1194,8 +1194,8 @@ Pyramid_Mesh::vf_double Pyramid_Mesh::get_point_coord() const
 
 } // end namespace rtt_mc
 
-#endif                        // rtt_mc_Pyramid_Mesh_cc
+#endif                        // rtt_mc_Sphyramid_Mesh_cc
 
 //---------------------------------------------------------------------------//
-//                 end of Pyramid_Mesh.cc
+//                 end of Sphyramid_Mesh.cc
 //---------------------------------------------------------------------------//

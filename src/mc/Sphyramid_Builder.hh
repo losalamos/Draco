@@ -15,7 +15,7 @@
 
 #include "Coord_sys.hh"
 #include "AMR_Layout.hh"
-#include "Pyramid_Mesh.hh"
+#include "Sphyramid_Mesh.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>
@@ -32,7 +32,8 @@ namespace rtt_mc
  * \brief
  *
  * This class builds an instance of rtt_mc::Sphyramid_Mesh.  It is basically
- * a copy of RZWedge_Builder.
+ * a copy of RZWedge_Builder, with member functions changed to reflect new
+ * Sphyramid geometry.
  *
  */
 // revision history:
@@ -44,8 +45,8 @@ namespace rtt_mc
 class Sphyramid_Builder 
 {
   public:
-    // Useful typedefs to std:: namespace members.
-    typedef rtt_dsxx::SP<Pyramid_Mesh>          SP_Mesh;
+    // Useful typedefs.
+    typedef rtt_dsxx::SP<Sphyramid_Mesh>          SP_Mesh;
     typedef rtt_dsxx::SP<Coord_sys>             SP_Coord_sys;
     typedef rtt_dsxx::SP<AMR_Layout>            SP_Layout;
     typedef std::vector<int>                    sf_int;
@@ -57,7 +58,7 @@ class Sphyramid_Builder
     typedef std::ifstream                       std_ifstream;
 
   private:
-    // Data from Parser needed to build mesh.
+    // Data from parser needed to build mesh.
 
     // Input file.
     std_string mesh_file;
@@ -65,10 +66,10 @@ class Sphyramid_Builder
     // Coordinate system string.
     std_string coord_system;
 
-    // angle of spherical cone in degrees
+    // Angle of spherical cone in degrees
     double alpha_degrees;
     
-    //Number of fine cells per coarse cell.
+    // Number of fine cells per coarse cell.
     sf_int fine_cells;
 
     // Ratio for fine zoning within a coarse cell (next fine cell is "ratio"
@@ -112,7 +113,7 @@ class Sphyramid_Builder
 
     // Build Layout helper functions.
     SP_Layout build_Sphyramid_Layout(const Coord_sys &coord) const;
-    void assignSphyramid_Layout(AMR_Layout &layout) const;
+    void assign_Sphyramid_Layout(AMR_Layout &layout) const;
 
     // Build Coord_sys helper functions.
     SP_Coord_sys build_Coord() const;
@@ -155,7 +156,7 @@ class Sphyramid_Builder
     int get_num_zones() const { return cell_zone.size(); }
     sf_int get_cells_in_zone(int z) const { return cell_zone[z-1]; }
 
-    // Get the define surcells list a positions.
+    // Get the defined surcells list of positions.
     vf_int get_defined_surcells() const;
     sf_string get_ss_pos() const { return ss_pos; }
 

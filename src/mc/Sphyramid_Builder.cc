@@ -74,10 +74,9 @@ Sphyramid_Builder::SP_Mesh Sphyramid_Builder::build_Mesh()
 Sphyramid_Builder::sf_int Sphyramid_Builder::get_regions() const
 {
     using std::fill;
-    using std::vector;
 
     sf_int return_regions(zone.size());
-    vector<int>::const_iterator cell_itr;
+    sf_int::const_iterator cell_itr;
 
     // if no user defined regions given, simply return region 1 in each cell
     if (regions.size() ==1)
@@ -521,11 +520,11 @@ Sphyramid_Builder::build_Sphyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout)
 	cell_x_extents[cell][1]=fine_edge[xsur+1]*r_to_x;
     }
 
-    // calculate beta angle of pyramid
+    // calculate beta angle of Sphyramid
     double beta_radians=atan(sqrt(pi)/2.*tan(alpha_radians));
 
     // create mesh
-    SP_Mesh mesh_return(new Pyramid_Mesh(coord,layout,cell_x_extents,
+    SP_Mesh mesh_return(new Sphyramid_Mesh(coord,layout,cell_x_extents,
 					 beta_radians));
 
     // return mesh to builder
@@ -588,7 +587,7 @@ Sphyramid_Builder::build_Sphyramid_Layout(const Coord_sys &coord) const
 	layout->set_size(i,6);
 
     // assign cells and faces to Layout;
-    assignSphyramid_Layout(*layout);
+    assign_Sphyramid_Layout(*layout);
 
     // return built Layout
     return layout;
@@ -600,7 +599,7 @@ Sphyramid_Builder::build_Sphyramid_Layout(const Coord_sys &coord) const
  * \param layout reference to AMR_layout object
  */
 
-void Sphyramid_Builder::assignSphyramid_Layout(AMR_Layout &layout) const
+void Sphyramid_Builder::assign_Sphyramid_Layout(AMR_Layout &layout) const
 {
 
     // 3D map of Mesh
