@@ -42,45 +42,25 @@ class InterpedMaterialProps
 
   public:
 
+    // Forward declaration
+    
     template<class FT> class MaterialStateField;
 
   private:
 
-    struct GroupedTable
-    {
-	std::vector<double>              energyUpperbounds;
-	std::vector<double>              energyLowerbounds;
-	std::vector<BilinearInterpTable> tables;
-	
-	int numGroups() const { return tables.size(); }
+    // Forward declaration
+    
+    struct GroupedTable;
 
-	const BilinearInterpTable &getTable(int groupNo) const
-	{
-	    return tables[groupNo-1];
-	}
-	BilinearInterpTable &getTable(int groupNo)
-	{
-	    return tables[groupNo-1];
-	}
-    };
-	
-    struct MaterialTables
-    {
-	SP<BilinearInterpGrid>   spGrid;
+    // Forward declaration
+    
+    struct MaterialTables;
 
-	GroupedTable             sigmaTotal;
-	GroupedTable             sigmaAbsorption;
-	GroupedTable             sigmaEmission;
-	BilinearInterpTable      electronIonCoupling;
-	BilinearInterpTable      electronConductionCoeff;
-	BilinearInterpTable      ionConductionCoeff;
-	BilinearInterpTable      electronSpecificHeat;
-	BilinearInterpTable      ionSpecificHeat;
-
-	const BilinearInterpGrid &getGrid() const { return *spGrid; }
-    };
-
+    // Definine the type that contains a dictionary of material tables
+    // keyed via the integer material id number.
+    
     typedef std::map<int, MaterialTables> MatTabMap;
+
 
     // DATA
 
@@ -88,19 +68,29 @@ class InterpedMaterialProps
     
     Units units;
 
+    // This is the dictionary of material tables
+    // keyed via the integer material id number.
+    
     MatTabMap materials;
     
-  public:
 
     // CREATORS
     
+  public:
+
+#ifdef NOT_YET_DESIGNED
     InterpedMaterialProps(Units units_, MaterialPropsFactory &factory);
+#endif
+
 
     // MANIPULATORS
     
     // *** none ***
 
+
     // ACCESSORS
+
+  public:
 
     Units getUnits() const { return units; }
 
@@ -134,8 +124,8 @@ class InterpedMaterialProps
     void getSigmaAbsorption(const MaterialStateField<FT> &matState,
 			    int group, FT &results) const
     {
-	getValuesFromMatTable(matState, group, &MaterialTables::sigmaAbsorption,
-			      results);
+	getValuesFromMatTable(matState, group,
+			      &MaterialTables::getSigmaAbsorption, results);
     }
 
     template<class FT>
@@ -150,8 +140,8 @@ class InterpedMaterialProps
     void getSigmaEmission(const MaterialStateField<FT> &matState,
 			  int group, FT &results) const
     {
-	getValuesFromMatTable(matState, group, &MaterialTables::sigmaEmission,
-			      results);
+	getValuesFromMatTable(matState, group,
+			      &MaterialTables::getSigmaEmission, results);
     }
 
     template<class FT>
@@ -166,7 +156,7 @@ class InterpedMaterialProps
     void getElectronIonCoupling(const MaterialStateField<FT> &matState,
 				FT &results) const
     {
-	getValuesFromMatTable(matState, &MaterialTables::electronIonCoupling,
+	getValuesFromMatTable(matState, &MaterialTables::getElectronIonCoupling,
 			      results);
     }
 
@@ -175,7 +165,7 @@ class InterpedMaterialProps
 				    FT &results) const
     {
 	getValuesFromMatTable(matState,
-			      &MaterialTables::electronConductionCoeff,
+			      &MaterialTables::getElectronConductionCoeff,
 			      results);
     }
 
@@ -183,7 +173,7 @@ class InterpedMaterialProps
     void getIonConductionCoeff(const MaterialStateField<FT> &matState,
 			       FT &results) const
     {
-	getValuesFromMatTable(matState, &MaterialTables::ionConductionCoeff,
+	getValuesFromMatTable(matState, &MaterialTables::getIonConductionCoeff,
 			      results);
     }
 
@@ -191,7 +181,8 @@ class InterpedMaterialProps
     void getElectronSpecificHeat(const MaterialStateField<FT> &matState,
 				 FT &results) const
     {
-	getValuesFromMatTable(matState, &MaterialTables::electronSpecificHeat,
+	getValuesFromMatTable(matState,
+			      &MaterialTables::getElectronSpecificHeat,
 			      results);
     }
 
@@ -199,7 +190,7 @@ class InterpedMaterialProps
     void getIonSpecificHeat(const MaterialStateField<FT> &matState,
 			    FT &results) const
     {
-	getValuesFromMatTable(matState, &MaterialTables::ionSpecificHeat,
+	getValuesFromMatTable(matState, &MaterialTables::getIonSpecificHeat,
 			      results);
     }
     
@@ -214,40 +205,23 @@ class InterpedMaterialProps
     template<class FT>
     void getDensity(const MaterialStateField<FT> &matState, FT &results) const;
 
-  private:
-    
+
     // IMPLEMENTATION
 
-    const MaterialTables &getMaterialTables(int matId) const
-    {
-	MatTabMap::const_iterator matit = materials.find(matId);
-
-	// Make sure the material exists.
+  private:
+    
+    const MaterialTables &getMaterialTables(int matId) const;
 	
-	Assert(matit != materials.end());
+    MaterialTables &getMaterialTables(int matId);
 
-	return (*matit).second;
-    }
-	
-    MaterialTables &getMaterialTables(int matId)
-    {
-	MatTabMap::iterator matit = materials.find(matId);
-
-	// Make sure the material exists.
-	
-	Assert(matit != materials.end());
-
-	return (*matit).second;
-    }
-
-    typedef MaterialTables::*GroupedTable PGroupedTable;
+    typedef GroupedTable (MaterialTables::*PGroupedTable)();
     
     template<class FT>
     void getValuesFromMatTable(const MaterialStateField<FT> &matState,
 			       int group, PGroupedTable pTable,
 			       FT &results) const;
 
-    typedef MaterialTables::*BilinearInterpTable PBilinearInterpTable;
+    typedef BilinearInterpTable (MaterialTables::*PBilinearInterpTable)();
     
     template<class FT>
     void getValuesFromMatTable(const MaterialStateField<FT> &matState,
@@ -255,8 +229,99 @@ class InterpedMaterialProps
 			       FT &results) const;
 };
 
+//========================================================================//
+// class InterpedMaterialProps::GroupedTable
+//    This class is defined for material properties which vary
+//    by group or continuous energy.
+//    For energy, one must interpolate between groups (not yet implemented).
+//========================================================================//
+
+struct InterpedMaterialProps::GroupedTable
+{
+    // DATA
+
+    int ngroups;
+	
+	// all of these vectors are ngroups long.
+	
+    std::vector<double>              energyUpperbounds;
+    std::vector<double>              energyLowerbounds;
+    std::vector<BilinearInterpTable> tables;
+	
+    // ACCESSORS
+	
+    int numGroups() const { return ngroups; }
+
+    const BilinearInterpTable &getTable(int groupNo) const
+    {
+	return tables[groupNo-1];
+    }
+
+    // MANIPULATORS
+	
+    BilinearInterpTable &getTable(int groupNo)
+    {
+	return tables[groupNo-1];
+    }
+};
+
 //===========================================================================//
-// class MaterialStateField
+// class InterpedMaterialProps::MaterialTables
+//===========================================================================//
+
+struct InterpedMaterialProps::MaterialTables
+{
+    SP<BilinearInterpGrid>   spGrid;
+
+    GroupedTable             sigmaTotal;
+    GroupedTable             sigmaAbsorption;
+    GroupedTable             sigmaEmission;
+    BilinearInterpTable      electronIonCoupling;
+    BilinearInterpTable      electronConductionCoeff;
+    BilinearInterpTable      ionConductionCoeff;
+    BilinearInterpTable      electronSpecificHeat;
+    BilinearInterpTable      ionSpecificHeat;
+
+    const BilinearInterpGrid &getGrid() const
+    {
+	return *spGrid;
+    }
+    const GroupedTable &getSigmaTotal() const
+    {
+	return sigmaTotal;
+    }
+    const GroupedTable &getSigmaAbsorption() const
+    {
+	return sigmaAbsorption;
+    }
+    const GroupedTable &getSigmaEmission() const
+    {
+	return sigmaEmission;
+    }
+    const BilinearInterpTable &getElectronIonCoupling() const
+    {
+	return electronIonCoupling;
+    }
+    const BilinearInterpTable &getElectronConductionCoeff() const
+    {
+	return electronConductionCoeff;
+    }
+    const BilinearInterpTable &getIonConductionCoeff() const
+    {
+	return ionConductionCoeff;
+    }
+    const BilinearInterpTable &getElectronSpecificHeat() const
+    {
+	return electronSpecificHeat;
+    }
+    const BilinearInterpTable &getIonSpecificHeat() const
+    {
+	return ionSpecificHeat;
+    }
+};
+
+//===========================================================================//
+// class InterpedMaterialProps::MaterialStateField
 //===========================================================================//
 
 template<class FT>

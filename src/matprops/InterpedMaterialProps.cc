@@ -23,11 +23,13 @@ BEGIN_NS_XTM
 
 typedef InterpedMaterialProps IMP;
 
+#ifdef NOT_YET_DESIGNED
 IMP::InterpedMaterialProps(Units units_, MaterialPropsFactor &factory)
     : units(units_)
 {
     vector<double> energyGrid = factory.getEnergyGrid();
 }
+#endif
 
 template<class FT, class FT2>
 IMP::MaterialStateField<FT> IMP::getMaterialState(const FT &density_,
@@ -39,7 +41,8 @@ IMP::MaterialStateField<FT> IMP::getMaterialState(const FT &density_,
 				  ionTemp_, matId_);
 }
 
-template<class FT, class FT2>
+template<class FT>
+template<class FT2>
 IMP::MaterialStateField<FT>::MaterialStateField(const IMP &matprops_,
 						const FT &density_,
 						const FT &electronTemp_,
@@ -85,7 +88,7 @@ void IMP::getValuesFromMatTable(const MaterialStateField<FT> &matState,
     {
 	const MaterialTables &mattabs = getMaterialTables(matState.getMatId(i));
 
-	const GroupedTable &groupTable = mattabs.*pTable;
+	const GroupedTable &groupTable = (mattabs.*pTable)();
 	
 	// groups are 1-based
 
@@ -114,7 +117,7 @@ void IMP::getValuesFromMatTable(const MaterialStateField<FT> &matState,
     {
 	const MaterialTables &mattabs
 	    = getMaterialTables(matState.getMatId(i));
-	const BilinearInterpTable &table = mattabs.*pTable;
+	const BilinearInterpTable &table = (mattabs.*pTable)();
 	
 	table.interpolate(matState.getMemento(i), *resit++);
     }
@@ -156,6 +159,28 @@ void IMP::getDensity(const MaterialStateField<FT> &matState, FT &results) const
     
     for (int i=0; i < matState.size(); i++)
 	*resit++ = matState.getDensity(i);
+}
+
+const IMP::MaterialTables &IMP::getMaterialTables(int matId) const
+{
+    MatTabMap::const_iterator matit = materials.find(matId);
+
+    // Make sure the material exists.
+	
+    Assert(matit != materials.end());
+
+    return (*matit).second;
+}
+
+IMP::MaterialTables &IMP::getMaterialTables(int matId)
+{
+    MatTabMap::iterator matit = materials.find(matId);
+
+    // Make sure the material exists.
+	
+    Assert(matit != materials.end());
+
+    return (*matit).second;
 }
 
 END_NS_XTM  // namespace XTM
