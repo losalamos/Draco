@@ -168,13 +168,13 @@ namespace rtt_P1Diffusion
 					     const fcdsf &deltaL) const
  {
      spDSwap = new fcdsf(spm);
-     MT::swap(*spDSwap, D);
+     MT::swap_faces(*spDSwap, D);
 
      spFprimeSwap = new fcdsf(spm);
-     MT::swap(*spFprimeSwap, Fprime);
+     MT::swap_faces(*spFprimeSwap, Fprime);
 
      spDeltaLSwap = new fcdsf(spm);
-     MT::swap(*spDeltaLSwap, deltaL);
+     MT::swap_faces(*spDeltaLSwap, deltaL);
  }
 
  template<class MT, class MS>
@@ -348,7 +348,7 @@ namespace rtt_P1Diffusion
     // (Boundary face values will be zero-ed out by the swap.)
     
      fcdsf phiFCSwap(spm);
-     MT::swap(phiFCSwap, phiFC);
+     MT::swap_faces(phiFCSwap, phiFC);
 
     // Calculate the new flux.
     

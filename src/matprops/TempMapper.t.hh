@@ -71,7 +71,7 @@ namespace rtt_matprops
      // Get the temperatures in the cell adjacent to each face
 
      MT::fcdsf adjacentFaceTemp(spMesh);
-     MT::swap(adjacentFaceTemp, faceTempsAvg);
+     MT::swap_faces(adjacentFaceTemp, faceTempsAvg);
 
      MT::fcdsf::const_iterator aFTit = adjacentFaceTemp.begin();
      MT::fcdsf::const_iterator fTit = faceTempsAvg.begin();

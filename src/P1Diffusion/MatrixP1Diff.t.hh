@@ -18,7 +18,7 @@ namespace rtt_P1Diffusion
      b = *spDiagonal * x;
 
      MT::gather(*spxFC, x, MT::OpAssign());
-     MT::swap(*spxSwap, *spxFC);
+     MT::swap_faces(*spxSwap, *spxFC);
 
      *spbFC = *spOffDiagonal * (*spxSwap);
 
