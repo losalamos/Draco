@@ -51,21 +51,57 @@ Memento BilinearInterpGrid::getMemento(double x1, double x2) const
     if (x2vals[0] != x2)
 	k = lower_bound(x2vals.begin(), x2vals.end(), x2) - x2vals.begin() - 1;
 
-    // Assert that we are not doing an extrapolation
+    double t;
+    double u;
 
-    Assert(j >= 0);
-    Assert(j < x1vals.size()-1);
-    Assert(x1vals[j] <= x1);
-    Assert(x1vals[j+1] >= x1);
-    
-    Assert(k >= 0);
-    Assert(k < x2vals.size()-1);
-    Assert(x2vals[k] <= x2);
-    Assert(x2vals[k+1] >= x2);
-    
-    double t = (x1 - x1vals[j]) / (x1vals[j+1] - x1vals[j]);
-    double u = (x2 - x2vals[k]) / (x2vals[k+1] - x2vals[k]);
+    // With errorOnOutOfBounds == false we will flatten
+    // the table as if there were duplicate first
+    // and last y1 and y2 values at +/- infinity.
+	
+    if (!errorOnOutOfBounds && j < 0)
+    {
+	j = 0;
+	t = 0.0;
+    }
+    else if (!errorOnOutOfBounds && (j >= x1vals.size()-1))
+    {
+	j = x1vals.size()-2;
+	t = 1.0;
+    }
+    else
+    {
+	// Assert that we are not doing an extrapolation.
 
+	Assert(j >= 0);
+	Assert(j < x1vals.size()-1);
+	Assert(x1vals[j] <= x1);
+	Assert(x1vals[j+1] >= x1);
+
+	t = (x1 - x1vals[j]) / (x1vals[j+1] - x1vals[j]);
+    }
+	
+    if (!errorOnOutOfBounds && k < 0)
+    {
+	k = 0;
+	u = 0.0;
+    }
+    else if (!errorOnOutOfBounds && (k >= x2vals.size()-1))
+    {
+	k = x2vals.size()-2;
+	u = 1.0;
+    }
+    else
+    {
+	// Assert that we are not doing an extrapolation.
+
+	Assert(k >= 0);
+	Assert(k < x2vals.size()-1);
+	Assert(x2vals[k] <= x2);
+	Assert(x2vals[k+1] >= x2);
+
+	u = (x2 - x2vals[k]) / (x2vals[k+1] - x2vals[k]);
+    }
+    
     // These extra assertions also check that the x1vals and x2vals
     // vectors are ordered.
     

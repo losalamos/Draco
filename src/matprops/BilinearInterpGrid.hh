@@ -10,6 +10,7 @@
 #define __matprops_BilinearInterpGrid_hh__
 
 #include "ds++/Assert.hh"
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <functional>
@@ -63,6 +64,8 @@ class BilinearInterpGrid
     // DATA
 
   private:
+
+    bool errorOnOutOfBounds;
     
     // x1vals is the x1 axis of the 2-dimensional grid of tabulated y values.
 
@@ -81,7 +84,8 @@ class BilinearInterpGrid
     //    Creates an empty grid.
     //------------------------------------------------------------------------//
 
-    BilinearInterpGrid()
+    BilinearInterpGrid(bool errorOnOutOfBounds_ = true)
+	: errorOnOutOfBounds(errorOnOutOfBounds_)
     {
 	// *** empty ***
     }
@@ -93,8 +97,10 @@ class BilinearInterpGrid
     //------------------------------------------------------------------------//
 
     BilinearInterpGrid(const std::vector<double> &x1vals_,
-		       const std::vector<double> &x2vals_)
-	: x1vals(x1vals_), x2vals(x2vals_)
+		       const std::vector<double> &x2vals_,
+		       bool errorOnOutOfBounds_ = true)
+	: x1vals(x1vals_), x2vals(x2vals_),
+	  errorOnOutOfBounds(errorOnOutOfBounds_)
     {
 	Require(x1vals.size() >= 2);
 	Require(x2vals.size() >= 2);
@@ -179,6 +185,8 @@ class BilinearInterpGrid::Memento
 {
     friend class BilinearInterpGrid;
 
+    friend std::ostream &operator<<(std::ostream &os, const Memento &rhs);
+    
     //=======================================================================//
     // DATA
     //=======================================================================//
@@ -245,6 +253,16 @@ class BilinearInterpGrid::Memento
 //------------------------------------------------------------------------//
 //
 //------------------------------------------------------------------------//
+
+inline std::ostream &operator<<(std::ostream &os,
+				const BilinearInterpGrid::Memento &rhs)
+{
+    os << "(" << rhs.j << ","
+       << rhs.t << ","
+       << rhs.k << ","
+       << rhs.u << ")";
+    return os;
+}
 
 inline void BilinearInterpGrid::getIndices(const Memento &memento,
 					   int &j, int &k) const
