@@ -192,6 +192,7 @@ void mg_test()
 	    double rsum  = 0.0;
 	    double bssum = 0.0;
 	    double rssum = 0.0;
+	    double sssum = 0.0;
 	    double beta  = 0.0;
 	    double f     = 0.0;
 
@@ -212,6 +213,7 @@ void mg_test()
 		bsum += b;
 
 		rssum += r * 1.0 / (g);
+		sssum += r * 1.0 / .01;
 		bssum += b * g;
 
 		if (!soft_equiv(egc[g-1], bssum)) ITFAILS;
@@ -230,6 +232,33 @@ void mg_test()
 	    
 	    if (!soft_equiv(o->get_fleck(i), f))                      ITFAILS;
 	    if (!soft_equiv(d->get_Rosseland_opacity(i), rsum/rssum)) ITFAILS;
+	    if (!soft_equiv(d->get_gray_scattering(i), rsum/sssum))   ITFAILS;
+	}
+    }
+
+    // check when scattering is zero
+    {
+	for (int i = 1; i <= 6; i++)
+	    for (int g = 0; g < 2; g++)
+	    {
+		sct(i)[g] = 0.0;
+	    }
+    }
+    
+    // build opacity and diff opacity object
+    opacities = Opacity_Builder_Helper<MESH,MG>::build_Opacity(
+	mesh, frequency, mat, abs, sct, dt, imp, true);
+
+    if (!opacities.first)  ITFAILS;
+    if (!opacities.second) ITFAILS;
+
+    // check diffusion opacities
+    {
+	SP<Diffusion_Opacity<MESH> > d = opacities.second;
+	
+	for (int i = 1; i <= 6; i++)
+	{
+	    if (!soft_equiv(d->get_gray_scattering(i), 0.0)) ITFAILS;
 	}
     }
 

@@ -125,16 +125,18 @@ SP<Diffusion_Opacity<MT> > get_diff_opacity(SP<MT> mesh)
     // make data
     SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
     MT::CCSF<double> ross(mesh);
+    MT::CCSF<double> scat(mesh);
 
     for (int i = 1; i <= mesh->num_cells(); i++)
     {
 	fleck->fleck(i) = 1.0 / 2.5;
 	ross(i)         = 100.0 + static_cast<double>(i);
+	scat(i)         = 0.0;
     }
 
     // make the diffusion opacity
     SP<Diffusion_Opacity<MT> > diff(
-	new Diffusion_Opacity<MT>(fleck, ross));
+	new Diffusion_Opacity<MT>(fleck, ross, scat));
 					
     return diff;
 }

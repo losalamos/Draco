@@ -234,6 +234,7 @@ void gray_cdi_diffusion_mat_state_test()
     // a value of 1.1 + 1/T^3
     {
 	double opac_1 = 1.1 + 1.0 / 27.0;
+	double s      = 0.1;
 
 	if (!soft_equiv(diff->get_Rosseland_opacity(1), opac_1 * 1.0)) ITFAILS;
 	if (!soft_equiv(diff->get_Rosseland_opacity(2), opac_1 * 2.0)) ITFAILS;
@@ -241,6 +242,13 @@ void gray_cdi_diffusion_mat_state_test()
 	if (!soft_equiv(diff->get_Rosseland_opacity(4), opac_1 * 3.0)) ITFAILS;
 	if (!soft_equiv(diff->get_Rosseland_opacity(5), opac_1 * 1.0)) ITFAILS;
 	if (!soft_equiv(diff->get_Rosseland_opacity(6), opac_1 * 2.0)) ITFAILS;
+
+	if (!soft_equiv(diff->get_gray_scattering(1), s * 1.0)) ITFAILS;
+	if (!soft_equiv(diff->get_gray_scattering(2), s * 2.0)) ITFAILS;
+	if (!soft_equiv(diff->get_gray_scattering(3), s * 1.0)) ITFAILS;
+	if (!soft_equiv(diff->get_gray_scattering(4), s * 3.0)) ITFAILS;
+	if (!soft_equiv(diff->get_gray_scattering(5), s * 1.0)) ITFAILS;
+	if (!soft_equiv(diff->get_gray_scattering(6), s * 2.0)) ITFAILS;
 
 	for (int i = 1; i <= 6; i++)
 	{
@@ -537,6 +545,7 @@ void mg_cdi_diffusion_mat_state_test()
 	    // check Rosseland opacities in diffusion opacity
 	    double ros_sum         = 0.0;
 	    double inv_sig_ros_sum = 0.0;
+	    double inv_sct_ros_sum = 0.0;
 	    double r_g             = 0.0;
 	    double ros_ref         = 0.0;
 	    double T               = 3.0;
@@ -548,6 +557,7 @@ void mg_cdi_diffusion_mat_state_test()
 		// sums (scattering is 1.01)
 		ros_sum         += r_g;
 		inv_sig_ros_sum += r_g / (opacity->get_sigma_abs(c, g));
+		inv_sct_ros_sum += r_g / (opacity->get_sigma_thomson(c, g));
 	    }
 
 	    // check ros sum
@@ -560,6 +570,12 @@ void mg_cdi_diffusion_mat_state_test()
 
 	    // check it
 	    if (!soft_equiv(diff->get_Rosseland_opacity(c), ros_ref)) ITFAILS;
+
+	    // calculate reference scattering and compare
+	    ros_ref = ros_sum / inv_sct_ros_sum;
+
+	    // check it
+	    if (!soft_equiv(diff->get_gray_scattering(c), ros_ref)) ITFAILS;
 	}
     }
 

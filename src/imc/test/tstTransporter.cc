@@ -214,9 +214,9 @@ void check_rw_tallies<Gray,GPT>(SP<Tally<MT> > tally, int num_run)
     rtt_c4::global_sum(nrws);
 
     // check sums
-    if (!soft_equiv(erg_dep_tot, 0.91662873, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ew_escaped, 0.0444791, 1.e-6))  ITFAILS;
-    if (!soft_equiv(ecen_tot, 1.7061020756, 1.e-6))  ITFAILS;
+    if (!soft_equiv(erg_dep_tot, 0.91662919, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ew_escaped, 0.04447913, 1.e-6))  ITFAILS;
+    if (!soft_equiv(ecen_tot, 1.7061015068, 1.e-6))  ITFAILS;
     if (ncen_tot != 980)                             ITFAILS;
     if (neff_scat != 1012)                           ITFAILS;
     if (nbnd_cross != 179)                           ITFAILS;
@@ -258,14 +258,14 @@ void check_rw_tallies<MG,MGPT>(SP<Tally<MT> > tally, int num_run)
     rtt_c4::global_sum(nrws);
 
     // check sums
-    if (!soft_equiv(erg_dep_tot, 0.081354657, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ew_escaped, 0.0080186845, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ecen_tot, 0.278972203090, 1.e-6)) ITFAILS;
+    if (!soft_equiv(erg_dep_tot, 0.081283934, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ew_escaped, 0.0080145985, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ecen_tot, 0.279047012801, 1.e-6)) ITFAILS;
     if (ncen_tot != 970)                              ITFAILS;
-    if (neff_scat != 260)                             ITFAILS;
+    if (neff_scat != 258)                             ITFAILS;
     if (nbnd_cross != 193)                            ITFAILS;
     if (nescaped != 26)                               ITFAILS;
-    if (nrws   != 196)                                ITFAILS;
+    if (nrws   != 195)                                ITFAILS;
 
     // check num_run
     if (num_run != 996) ITFAILS;

@@ -238,16 +238,18 @@ SP<Diffusion_Opacity<RZWedge_Mesh> > get_diff_opacity(SP<RZWedge_Mesh> mesh)
     // make data
     SP<Fleck_Factors<RZWedge_Mesh> > fleck(new Fleck_Factors<RZWedge_Mesh>(mesh));
     RZWedge_Mesh::CCSF<double> ross(mesh);
+    RZWedge_Mesh::CCSF<double> scat(mesh);
 
     for (int i = 1; i <= mesh->num_cells(); i++)
     {
 	fleck->fleck(i) = 1.0 / 2.5;
 	ross(i)         = 100.0 + static_cast<double>(i);
+	scat(i)         = 0.0;
     }
 
     // make the diffusion opacity
     SP<Diffusion_Opacity<RZWedge_Mesh> > diff(
-	new Diffusion_Opacity<RZWedge_Mesh>(fleck, ross));
+	new Diffusion_Opacity<RZWedge_Mesh>(fleck, ross, scat));
 
     Ensure(diff);
 					
