@@ -3,9 +3,9 @@
 #
 
 $P13T
-	verbose=false nsteps=1000 dt=1.0e-3 dtMin=1.0e-3 dtMax=1.0e-1 
+	verbose=false nsteps=10000 dt=1.0e-6 dtMin=1.0e-6 dtMax=1.0e-2 
 	P1TauMultiplier=0.0 IsCoupledMaterial=true opacityFile="opac.inp" 
-	materialName="H" materialId=1 abar=1.0 kappa0=1 kappaPower=3 
+	materialName="H" materialId=1 abar=1.436 kappa0=10 kappaPower=3 
 	Te=1.0e-3 Ti=1.0e-3 rho=3.0 Qr=0.000000 Qe=0.000000 Qi=0.000000 
 	Qloc=-999 src_left=0.000000 src_right=0.000000 src_front=0.000000 
 	src_back=0.000000 src_bottom=0.000000 src_top=0.000000 Te_bottom=1.0 
@@ -22,8 +22,8 @@ $end
 
 
 $mesh
-	ncx=1 ncy=1 ncz=101 xmin=-.5 xmax=.5 ymin=-.5 ymax=.5 zmin=0.0 
-	zmax=10.0 dump_indicies=no dump_coords=no 
+	ncx=1 ncy=1 ncz=201 xmin=-.5 xmax=.5 ymin=-.5 ymax=.5 zmin=0.0 
+	zmax=1.0 dump_indicies=no dump_coords=no 
 $end
 
 
