@@ -319,7 +319,23 @@ class CDI
 
     // Integrate the normalized Planckian spectrum over all frequency groups.
     static double integratePlanckSpectrum(const double T);
+    
+    // Integrate the normalized Rosseland spectrum over a frequency group with gorup index given.
+    static double integrateRosselandSpectrum(const int groupIndex, const double T);
 
+    // Integrate the normalized Rosseland over a frequency range.
+    // this version wraps the CDI::integratePlanckSpectrum function
+    static double integrateRosselandSpectrum(const double lowf,const double hif, double T);
+
+   // Integrate the normalized Planckian and Rosseland over a frequency range.
+   // this version wraps the CDI::integratePlanckSpectrum function
+    static void integrateRosselandSpectrum(const double lowf,const double hif,const double T, double& PL, double& ROSL);
+   // Integrate the normalized Planckian and Rosseland over a frequency range.
+   // this version wraps the CDI::integratePlanckSpectrum function
+    static void integrate_Rosseland_Planckian_Spectrum(const double lowf,const double hif,const double T, double& PL, double& ROSL);
+   // Integrate the normalized Rosseland spectrum over a frequency group with gorup index given.
+   // and also pass the normalized Planckian
+    static void integrate_Rosseland_Planckian_Spectrum(const int groupIndex,const double T, double& PL, double& ROSL);
   private:
 	
     // IMPLEMENTATION

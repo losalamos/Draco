@@ -676,7 +676,211 @@ void test_planck_integration()
     }
 
 }
- 
+
+//---------------------------------------------------------------------------//
+
+void test_rosseland_integration()
+{
+    // catch our assertion
+    bool caught = false;
+    try
+    {
+	CDI::integrateRosselandSpectrum(0, 1.0);
+    }
+    catch(const rtt_dsxx::assertion &ass)
+    {
+	ostringstream message;
+	message << "Caught illegal Rosseland calculation exception: \n"
+		<< "\t" << ass.what();
+	PASSMSG(message.str());
+	caught = true;
+    }
+    if (!caught)
+    {
+	FAILMSG("Did not catch an exception for calculating Rosseland integral.");
+    }
+    // catch our assertion
+    caught = false;
+    double P,R;
+    try
+    {
+	CDI::integrate_Rosseland_Planckian_Spectrum(0, 1.0,P,R);
+    }
+    catch(const rtt_dsxx::assertion &ass)
+    {
+	ostringstream message;
+	message << "Caught illegal Rosseland and Planckian calculation exception: \n"
+		<< "\t" << ass.what();
+	PASSMSG(message.str());
+	caught = true;
+    }
+    if (!caught)
+    {
+	FAILMSG("Did not catch an exception for calculating Rosseland and Planckian integral.");
+    }
+
+    // check some planck integrals
+    double int_total = CDI::integrateRosselandSpectrum(0.,100.0, 1.0);
+    if (soft_equiv(int_total, 1.0, 1.0e-7))
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a total normalized Rosseland integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_total;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a total normalized Rosseland integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_total 
+		<< " instead of 1.0.";
+	FAILMSG(message.str());
+    }
+
+    double int_1 = CDI::integratePlanckSpectrum(0.1, 1.0,1.0);
+    if (soft_equiv(int_1, .0345683, 1.0e-5))
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a  normalized Planck integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_1;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a  normalized Planck integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_1 
+		<< " instead of .0345683";
+	FAILMSG(message.str());
+    }
+
+    double int_2 = CDI::integrateRosselandSpectrum(.1, 1.0,1.0);
+    if (soft_equiv(int_2, 0.01220025, 1.0e-5))
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a normalized Rosseland integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_2;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a  normalized Rosseland integral of "
+		<< setw(12) << setiosflags(ios::fixed) << int_2
+		<< " instead of 0.01220025";
+	FAILMSG(message.str());
+    }
+    
+    double PL,ROS;
+    CDI::integrateRosselandSpectrum(0.1, 1.0,1.0,PL,ROS);
+    if (soft_equiv(PL, .0345683, 1.e-5))
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a  normalized Planck integral for RosselandSpectrum"
+		<< setw(12) << setiosflags(ios::fixed) << int_2;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a  normalized Planck integral for RosselandSpectrum"
+		<< setw(12) << setiosflags(ios::fixed) << int_2
+		<< " instead of .0345683.";
+	FAILMSG(message.str());
+    }
+
+    if (soft_equiv(ROS, 0.01220025, 1.e-5))
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a  normalized Rosseland integral for RosselandSpectrum"
+		<< setw(12) << setiosflags(ios::fixed) << int_2;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a  normalized Rosseland integral for RosselandSpectrum"
+		<< setw(12) << setiosflags(ios::fixed) << int_2
+		<< " instead of 0.01220025.";
+	FAILMSG(message.str());
+    }
+
+    CDI::integrate_Rosseland_Planckian_Spectrum(0.1, 1.0,1.0,PL,ROS);
+    if (soft_equiv(PL, .0345683, 1.e-5))
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a  normalized Planck integral for RosselandPlanckianSpectrum"
+		<< setw(12) << setiosflags(ios::fixed) << int_2;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a normalized Planck integral for RosselandPlanckianSpectrum"
+		<< setw(12) << setiosflags(ios::fixed) << int_2
+		<< " instead of .0345683.";
+	FAILMSG(message.str());
+    }
+
+    if (soft_equiv(ROS, 0.01220025, 1.e-5))
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a  normalized Rosseland integral for RosselandPlanckianSpectrum"
+		<< setw(12) << setiosflags(ios::fixed) << int_2;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message.precision(10);
+	message << "Calculated a normalized Rosseland integral for RosselandPlanckianSpectrum"
+		<< setw(12) << setiosflags(ios::fixed) << int_2
+		<< " instead of 0.01220025.";
+	FAILMSG(message.str());
+    }
+
+    // test that a zero temperature returns a zero
+    if (soft_equiv(CDI::integrateRosselandSpectrum(0.0, 100.0, 0.0), 0.0))
+    {
+	PASSMSG("Rosseland integral from hnu=0 to 100 at T=0 is zero: good!");
+    }
+    else
+    {
+	FAILMSG("Rosseland integral from hnu=0 to 100 at T=0 is not zero: BAD!");
+    }
+    CDI::integrateRosselandSpectrum(0.0, 100.0, 0.0,PL,ROS);
+    if (soft_equiv(PL, 0.0))
+    {
+	PASSMSG("Rosseland call for Planck integral  at T=0 is zero: good!");
+    }
+    else
+    {
+	FAILMSG("Rosseland call for Planck integral at T=0 is not zero: BAD!");
+    }
+    if (soft_equiv(ROS, 0.0))
+    {
+	PASSMSG("Rosseland integral  at T=0 is zero: good!");
+    }
+    else
+    {
+	FAILMSG("Rosseland integral  at T=0 is not zero: BAD!");
+    }
+
+}
+
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -696,6 +900,8 @@ int main(int argc, char *argv[])
 	test_CDI();
 
 	test_planck_integration();
+
+	test_rosseland_integration();
 
     }
     catch (rtt_dsxx::assertion &ass)
