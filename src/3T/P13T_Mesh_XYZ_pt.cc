@@ -8,7 +8,7 @@
 
 #include "3T/P13T.t.cc"
 #include "P1Diffusion/SolverP1Diff.hh"
-#include "P1Diffusion/P1Diffusion.t.cc"
+#include "P1Diffusion/P1Diffusion.hh"
 #include "mesh/Mesh_XYZ.hh"
 
 typedef Mesh_XYZ MT;
