@@ -50,12 +50,14 @@ public:
   // member set and accessor functions
 
     double get_sigma(int cell) const { return sigma(cell); }
-    double get_planck(int cell) { return planck(cell); }
-    double get_fleck(int cell) { return fleck(cell); }
+    double get_planck(int cell) const { return planck(cell); }
+    double get_fleck(int cell) const { return fleck(cell); }
     int num_cells() const { return sigma.get_Mesh().num_cells(); }
 
   // operations
-    double fplanck(int cell) { return fleck(cell) * planck(cell); }
+    double fplanck(int cell) const { return fleck(cell) * planck(cell); }
+    inline double get_sigeffscat(int cell) const;
+    inline double get_sigeffabs(int cell) const;
 
   // diagnostic member functions
     void print(ostream &, int) const;
@@ -67,6 +69,22 @@ public:
 
 template<class MT>
 ostream& operator<<(ostream &, const Opacity<MT> &);
+
+//---------------------------------------------------------------------------//
+// inline member functions for Opacity
+//---------------------------------------------------------------------------//
+
+template<class MT>
+inline double Opacity<MT>::get_sigeffscat(int cell) const 
+{
+    return fleck(cell) * sigma(cell);
+}
+
+template<class MT>
+inline double Opacity<MT>::get_sigeffabs(int cell) const 
+{ 
+    return (1.0 - fleck(cell)) * sigma(cell);
+}
 
 CSPACE
 

@@ -11,7 +11,6 @@
 #include "imctest/Math.hh"
 #include <iostream>
 #include <iomanip>
-#include <cmath>
 
 IMCSPACE
 
@@ -21,10 +20,10 @@ using std::endl;
 using std::setw;
 using std::ios;
 using std::setiosflags;
-using std::log;
 
 // services from IMC::Global namespace
 using Global::pi;
+using Global::c;
 using Global::dot;
 
 //===========================================================================//
@@ -54,6 +53,9 @@ void Particle<MT>::source(vector<double> &r_, vector<double> &omega_,
   // sample initial direction (isotropic)
   // mesh.Coord().Set_omega(omega, random);
 
+    fraction = 1.0;
+    time_left = 1.0;
+
   // find particle cell
     cell = mesh.get_cell(r);
 }
@@ -78,36 +80,70 @@ void Particle<MT>::transport_IMC(const MT &mesh, const Opacity<MT> &xs,
   // transport loop, ended when alive = false
     while (alive)
     {
-      // dist-to-collision and dist-to-boundary definitions
-        double d_collision, d_boundary;
+      // dist-to-scatter, dist-to-boundary, and dist-to-census definitions
+        double d_scatter, d_boundary, d_census;
+	double dist_stream;
       // cell face definition
         int face = 0;
         
-      // sample distance-to-collision
-        d_collision = -log(random.ran()) / xs.get_sigma(cell);
+      // sample distance-to-scatter
+        d_scatter = -log(random.ran()) / xs.get_sigeffscat(cell);
 
       // get distance-to-boundary and cell face
         d_boundary  = mesh.get_db(r, omega, cell, face);
+
+      // distance to census (end of time step)
+	d_census = Global::c * time_left;
 
       // detailed diagnostics
 	if (diagnostic)
 	    if (diagnostic->detail_status())
 	    {
-		diagnostic->print_dist(d_collision, d_boundary, cell);
+		diagnostic->print_dist(d_scatter, d_boundary, d_census, cell);
 		diagnostic->print_xs(xs, cell);
 	    }
 
-      // streaming
-        if (d_collision <= d_boundary)
+      // IMC streaming
+
+	if (d_scatter < d_boundary && d_scatter < d_census)
+	{
+	    descriptor = "scatter";
+	    dist_stream = d_scatter;
+	}	
+	else if (d_boundary < d_scatter && d_boundary < d_census)
+	{
+	    descriptor = "boundary";
+	    dist_stream = d_boundary;
+	}
+	else 
+	{
+	    descriptor = "census";
+	    dist_stream = d_census;
+	}
+
+//       // streaming
+//         if (d_collision <= d_boundary)
+//         {
+//             stream(d_collision);
+//             alive = collide(mesh, xs);
+//         }
+
+	stream_IMC(xs, dist_stream);
+
+	if (descriptor == "scatter")
+	{
+	    scatter( mesh );
+	}
+
+	if (descriptor == "boundary")
         {
-            stream(d_collision);
-            alive = collide(mesh, xs);
-        }
-	else
-        {
-	  // stream to cell boundary and find next cell
-            stream(d_boundary);
 	    alive = surface(mesh, face);
+	}
+
+	if (descriptor == "census")
+	{
+	  //    write_to_census( cell, r, omega);
+	    alive = false;
 	}
 
       // do diagnostic print
@@ -150,6 +186,21 @@ bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
   // return outcome of the event
     return status;
 }
+
+// perform an isotropic effective scatter 
+
+template<class MT>
+void Particle<MT>::scatter(const MT &mesh)
+{   
+      // calculate theta and phi (isotropic)
+    double costheta, phi;
+    costheta = 1 - 2 * random.ran();
+    phi      = 2 * Global::pi * random.ran();
+
+  // get new direction cosines
+    mesh.get_Coord().calc_omega(costheta, phi, omega);
+}
+
 
 //---------------------------------------------------------------------------//
 // do surface crossings
@@ -248,6 +299,15 @@ void Particle<MT>::Diagnostic::print_alive(const Particle<MT> &particle) const
   // energy-weight, ew
     output << setw(20) << setiosflags(ios::right) << "Energy-weight: " 
            << setw(12) << particle.ew << endl;
+
+  // fraction of original weight
+    output << setw(20) << setiosflags(ios::right) << "Fraction: " 
+           << setw(12) << particle.fraction << endl;
+
+  // time remaining in this time step
+    output << setw(20) << setiosflags(ios::right) << "Time_Left: " 
+           << setw(12) << particle.time_left << endl;
+
     
     output << endl;
 }
@@ -282,20 +342,31 @@ void Particle<MT>::Diagnostic::print_dead(const Particle<MT> &particle) const
     output << setw(20) << setiosflags(ios::right) << "Last Energy-weight: "
 	   << setw(12) << particle.ew << endl;
 
+  // fraction of original weight
+    output << setw(20) << setiosflags(ios::right) << "Last Fraction: " 
+           << setw(12) << particle.fraction << endl;
+
+  // time remaining in this time step
+    output << setw(20) << setiosflags(ios::right) << "Last Time_Left: " 
+           << setw(12) << particle.time_left << endl;
+
     output << endl;
 }
 
 template<class MT>
-void Particle<MT>::Diagnostic::print_dist(double d_col, double d_bnd, 
-					  int cell) const
+void Particle<MT>::Diagnostic::print_dist(double d_scat, double d_bnd, 
+					  double d_cen, int cell) const
 {
   // do detailed diagnostic print of particle event distances
     output << setw(20) << setiosflags(ios::right) << "Present cell: "
 	   << setw(12) << cell << endl;
-    output << setw(20) << setiosflags(ios::right) << "Dist-collision: "
-	   << setw(12) << d_col << endl;
+    output << setw(20) << setiosflags(ios::right) << "Dist-scatter: "
+	   << setw(12) << d_scat << endl;
     output << setw(20) << setiosflags(ios::right) << "Dist-boundary: "
-	   << setw(12) << d_bnd << endl;
+	   << setw(12) << d_bnd << endl;   
+    output << setw(20) << setiosflags(ios::right) << "Dist-census: "
+	   << setw(12) << d_cen << endl;
+
 }
 
 template<class MT>
@@ -304,7 +375,9 @@ void Particle<MT>::Diagnostic::print_xs(const Opacity<MT> &xs,
 {
   // do detailed diagnostic print of particle event cross sections
     output << setw(20) << setiosflags(ios::right) << "Opacity: " 
-	   << setw(12) << xs.get_sigma(cell) << endl;
+	   << setw(12) << xs.get_sigma(cell) << "    Effective scatter: "
+	   << setw(12) << xs.get_sigeffscat(cell) << "    Effective absorption: " 
+	   << setw(12) << xs.get_sigeffabs(cell) << endl; 
 }
 
 CSPACE

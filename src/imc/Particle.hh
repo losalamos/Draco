@@ -29,6 +29,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <cmath>
 
 IMCSPACE
 
@@ -36,6 +37,8 @@ IMCSPACE
 using std::vector;
 using std::string;
 using std::ostream;
+using std::log;
+using std::exp;
 
 template<class MT>
 class Particle
@@ -61,7 +64,7 @@ public:
 	void print(const Particle<MT> &) const;
 	void print_alive(const Particle<MT> &) const;
 	void print_dead(const Particle<MT> &) const;
-	void print_dist(double, double, int) const;
+	void print_dist(double, double, double, int) const;
 	void print_xs(const Opacity<MT> &, int) const;
 
       // inline output formatters
@@ -81,6 +84,10 @@ private:
     vector<double> omega;
   // particle cell
     int cell;
+  // time remaining in this time step
+    double time_left;
+  // fraction of original energy weight
+    double fraction;
   // status of particle
     bool alive;
   // event type descriptor
@@ -92,10 +99,16 @@ private:
   // private particle service functions
 
   // stream a distance d
-    inline void stream(double);
+    inline void stream(double);  
+
+  // stream a distance d
+    inline void stream_IMC(const Opacity<MT> &, double);
 
   // collision, return a false if particle is absorbed
     bool collide(const MT &, const Opacity<MT> &);
+
+  // effective scatter
+    void scatter(const MT & );
 
   // surface crossings, return a false if particle escapes
     bool surface(const MT &, int);
@@ -153,7 +166,7 @@ template<class MT>
 inline Particle<MT>::Particle(const MT &mesh, long seed, double ew_)
     :ew(ew_), r(mesh.get_Coord().get_dim(), 0.0), 
      omega(mesh.get_Coord().get_sdim(), 0.0), cell(0), alive(true), 
-     descriptor("born"), random(seed)
+     descriptor("born"), random(seed), time_left(0), fraction(1)
 {
   // explicit constructor, Particle must be defined with a Mesh
 }
@@ -166,6 +179,38 @@ inline void Particle<MT>::stream(double distance)
 	r[i] = r[i] + distance * omega[i];
 }
 
+template<class MT>
+inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, double distance)
+{
+  // hardwire minimum energy weight fraction
+    double minwt_frac = 0.01;
+
+    double argument = -xs.get_sigeffabs(cell) * distance;
+    double min_arg = log(0.1 * minwt_frac);
+    if (argument < min_arg) argument = min_arg;
+
+    double factor = exp(argument);
+    double new_ew = ew * factor;
+    double del_ew = ew - new_ew;
+
+  // Tally::deposit( del_ew, cell );
+
+    fraction *= factor;
+
+    if (fraction < minwt_frac) // kill particle and deposit it energy
+    {
+      // Tally::deposit( new_ew, cell );
+	descriptor = "killed";
+	alive = false;
+    }
+    else // update particle energy-weight, time_left, and position.
+    {
+	ew = new_ew;
+	time_left -= distance / Global::c;
+	for (int i = 0; i <= r.size()-1; i++)
+	    r[i] = r[i] + distance * omega[i];
+    }
+}
 CSPACE
 
 #endif                          // __imctest_Particle_hh__
