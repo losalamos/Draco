@@ -1,0 +1,29 @@
+puts "Running tests of DS++ SP component."
+
+load_lib draco.exp
+
+global ENV
+
+puts "value of ENV is $ENV"
+
+puts "Running tstSP_$ENV"
+
+set output [exec tstSP_$ENV]
+
+foreach line [split $output \n] {
+    #puts "line is :$line:"
+
+    # Now parse the line to see if it represents a success or a failure.
+
+    if {[regexp "good" $line]} {
+	pass test
+    }
+    if {[regexp "bogus" $line]} {
+	fail test
+    }
+    if {[regexp "<<<<<" $line]} {
+	pass test
+    }
+}
+
+# All done with tests of tstSP_$(env)
