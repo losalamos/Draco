@@ -78,12 +78,14 @@ inline int Recv( T& data, int source,
 // Scalar.
 
 template<class T> void gsum( T& x );
+template<class T> void gprod( T& x );
 template<class T> void gmin( T& x );
 template<class T> void gmax( T& x );
 
 // Array.
 
 template<class T> void gsum( T *px, int n );
+template<class T> void gprod( T *px, int n );
 template<class T> void gmin( T *px, int n );
 template<class T> void gmax( T *px, int n );
 
