@@ -716,12 +716,12 @@ void Source_Builder<MT,PT>::reset_ew_in_census(const int &local_ncentot,
     // census is entirely unsampled.  The soft_equiv function can rigorously
     // treat the case when the "reference"==0; the converse is not
     // necessarily true.  Thus, we reverse the arguments to soft_equiv.
-    Check(global_ecentot_actual > 1.0e-14 &&
-	  check_global_ecentot+global_eloss_comb > 1.0 e-14 ?
-	  soft_equiv(global_ecentot_actual,
-		     check_global_ecentot_global_eloss_comb, 
-		     static_cast<double>(global_ncentot+1)*1.0e-14) :
-	  true);
+    Check ((global_ecentot_actual > 1.0e-14 &&
+	    check_global_ecentot+global_eloss_comb > 1.0e-14) ?
+	   soft_equiv(global_ecentot_actual,
+		      check_global_ecentot + global_eloss_comb, 
+		      static_cast<double>(global_ncentot+1)*1.0e-14) :
+	   true);
 }
 
 } // end of rtt_imc
