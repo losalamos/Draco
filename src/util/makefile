@@ -17,6 +17,7 @@ include ../config/makefile
 libsrcs = \
 	ADKey.cc \
 	ADFile.cc \
+	dump_nt.cc \
 	FileSet.cc \
 	Timer.cc \
 	persist.cc \

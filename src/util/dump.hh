@@ -34,6 +34,8 @@ void ADdump_Mat( ADFile *f, Mat3<T>& m, String id );
 template<class T>
 void ADdump_Mat( ADFile *f, Mat2<T>& m, String id );
 
+void dump( ADFile *f, char *buf, String id );
+
 //---------------------------------------------------------------------------//
 // Used to dump an Mat1<T> which is understood to be one field extent
 // wide on each processor.  For example, ak in phitor.
