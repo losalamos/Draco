@@ -163,6 +163,138 @@ for dir in $subdirs
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_DETERMINE_INT
+dnl
+dnl DETERMINE C++ DATA TYPE FOR A GIVEN INTEGER SIZE
+dnl eg. AC_DETERMINE_INT(4) sets the variable INTEGER_SIZE_TYPE to int
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DETERMINE_INT, [dnl
+
+   AC_MSG_CHECKING("C++ data type of integer of size $1 bytes")
+
+   # set the language to C++
+   AC_LANG_CPLUSPLUS
+
+   check_ints='false'
+   
+   # check to see if regular int does the job
+   AC_TRY_RUN([
+       int main()
+       {
+	   int p = 1;
+	   if (sizeof(int) == $1)
+	       p = 0;
+	   return p;
+       }], [INTEGER_SIZE_TYPE='int'], 
+	   [check_ints='true'])
+      
+   # check long int type if ints did not pass
+   if test "${check_ints}" = true ; then
+
+       AC_TRY_RUN([
+	   int main()
+	   {   
+	       int p = 1;
+	       if (sizeof(long) == $1)
+		   p = 0;
+	       return p;
+	   }], [check_ints='false';
+		INTEGER_SIZE_TYPE='long'], [])
+
+   fi  
+     
+   # check long long type if long did not pass
+   if test "${check_ints}" = true ; then
+
+       AC_TRY_RUN([
+	   int main()
+	   {   
+	       int p = 1;
+	       if (sizeof(long long) == $1)
+		   p = 0;
+	       return p;
+	   }], [check_ints='false';
+		INTEGER_SIZE_TYPE='long long'], [])
+
+   fi
+       
+   # error message because we haven't found a valid type
+   if test "${check_ints}" = true ; then
+       AC_MSG_RESULT("no match found")
+       AC_MSG_ERROR("no valid match for $2 found")
+   else
+       AC_MSG_RESULT("$INTEGER_SIZE_TYPE")
+   fi
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl DETERMINE C++ DATA TYPE FOR HOST_FLOAT
+dnl
+dnl DETERMINE C++ DATA TYPE FOR A GIVEN FLOAT SIZE
+dnl eg. AC_DETERMINE_FLOAT(8) sets the variable FLOAT_SIZE_TYPE to double
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DETERMINE_FLOAT, [dnl
+
+   AC_MSG_CHECKING("C++ data type of float of size $1 bytes")
+
+   # set the language to C++
+   AC_LANG_CPLUSPLUS
+
+   check_floats='false'
+   
+   # check to see if regular float does the job
+   AC_TRY_RUN([
+       int main()
+       {
+	   int p = 1;
+	   if (sizeof(float) == $1)
+	       p = 0;
+	   return p;
+       }], [FLOAT_SIZE_TYPE='float'], 
+	   [check_floats='true'])
+      
+   # check double type if float did not pass
+   if test "${check_floats}" = true ; then
+
+       AC_TRY_RUN([
+	   int main()
+	   {   
+	       int p = 1;
+	       if (sizeof(double) == $1)
+		   p = 0;
+	       return p;
+	   }], [check_floats='false';
+	        FLOAT_SIZE_TYPE='double'], [])
+
+   fi  
+     
+   # check long double type if double did not pass
+   if test "${check_floats}" = true ; then
+
+       AC_TRY_RUN([
+	   int main()
+	   {   
+	       int p = 1;
+	       if (sizeof(long double) == $1})
+		   p = 0;
+	       return p;
+	   }], [check_floats='false';
+	        FLOAT_SIZE_TYPE='long double'], [])
+
+   fi
+       
+   # error message because we haven't found a valid type
+   if test "${check_floats}" = true ; then
+       AC_MSG_RESULT("no match found")
+       AC_MSG_ERROR("no valid match for HOST_FLOATS found")
+   else
+       AC_MSG_RESULT("$FLOAT_SIZE_TYPE")
+   fi
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl end of ac_conf.m4
 dnl-------------------------------------------------------------------------dnl
 

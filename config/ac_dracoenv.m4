@@ -474,19 +474,27 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        if test "${with_mpi}" = vendor ; then
 	   # define no C++ bindings
 	   AC_DEFINE(MPI_NO_CPPBIND)
-
-	   # add suppression of long long errors if the compiler is
-	   # KCC 
-	   if test "${CXX}" = KCC && test "${enable_strict_ansi}" = yes ; then
-	       AC_MSG_WARN("KCC strict option set to allow long long type")
-	       AC_MSG_WARN("because of MPT mpi implementation!")
-	       STRICTFLAG="${STRICTFLAG} --diag_suppress 450"
-	   fi
        fi
 
        #
        # end of communication package setup
        #
+
+       #
+       # adjust strict flag for KCC
+       #
+
+       if test "${CXX}" = KCC && test "${enable_strict_ansi}" = yes ; then
+	   
+	   # if integer type is long long or vendor mpi is on then we
+	   # need to allow long long type
+	   if test "${with_mpi}" = vendor ||
+	       test "${INTEGER_SIZE_TYPE}" = 'long long'; then 
+		   AC_MSG_WARN("KCC strict option set to allow long long type")
+		   STRICTFLAG="${STRICTFLAG} --diag_suppress 450"
+	   fi
+
+       fi
 
        #
        # setup lapack
