@@ -100,11 +100,8 @@ Fp_t Shared_Lib::get_function(const std::string &name)
     // This cast is so evil, one must use an old-style cast.
     Fp_t f = Fp_t(dlsym(d_handle, name.c_str()));
 
-    char *check = dlerror();
-    if ( check != NULL )
-    {
-	Insist(0, check);
-    }
+    char *error_msg = dlerror();
+    Insist(not error_msg, error_msg);
 
     return f;
 }

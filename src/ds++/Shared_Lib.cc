@@ -25,7 +25,7 @@ namespace rtt_dsxx
   \brief Default constructor.
 
   \param file_name File name of the shared lib.  If empty, open() must be
-  called in order to use a shared lib.
+  called later in order to use a shared lib.
 */
 Shared_Lib::Shared_Lib(const std::string &file_name)
     : d_handle(0)
@@ -82,7 +82,11 @@ void Shared_Lib::close()
 
 //---------------------------------------------------------------------------//
 /*!
-  \brief Returns the handle to the shared library.
+  \brief Opens a shared library.
+
+  If a shared library is already open, that library is closed.
+
+  \param file_name The name of the shared lib.
 */
 void Shared_Lib::open(const std::string &file_name)
 {
