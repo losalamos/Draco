@@ -85,7 +85,7 @@ TIMESTEP_LIB 	= -L$(SRC_TOP)/timestep -ltimestep_$(env)
 UNITS_LIB	= -L$(SRC_TOP)/units    -lunits_$(env)
 MATPROPS_LIB	= -L$(SRC_TOP)/matprops -lmatprops_$(env)
 SN_LIB		= -L$(SRC_TOP)/sn       -lsn_$(env)
-IMCTEST_LIB     = -L$(SRC_TOP)/imctest  -limctest_$(env)
+IMC_LIB         = -L$(SRC_TOP)/imc      -limc_$(env)
 PYCXX_LIB	= -L$(SRC_TOP)/pycxx    -lpycxx_$(env)
 RNG_LIB         = -L$(SRC_TOP)/rng      -lrng_$(env)
 
@@ -108,7 +108,7 @@ ifeq ($(need_pcg),yes)
 need_lapack	:= yes
 endif
 
-ifeq ($(need_imctest),yes)
+ifeq ($(need_imc),yes)
 need_rng        := yes
 endif
 
@@ -219,8 +219,8 @@ endif
 ifeq ($(need_sn),yes)
 LINK_LIBS	+= $(SN_LIB)
 endif
-ifeq ($(need_imctest),yes)
-LINK_LIBS       += $(IMCTEST_LIB)
+ifeq ($(need_imc),yes)
+LINK_LIBS       += $(IMC_LIB)
 endif
 ifeq ($(need_rng),yes)
 LINK_LIBS       += $(RNG_LIB)
@@ -308,7 +308,7 @@ dep_lib3T	= $(SRC_TOP)/3T/lib3T_$(env).$(lib_suffix)
 dep_libtimestep	= $(SRC_TOP)/timestep/libtimestep_$(env).$(lib_suffix)
 dep_libunits	= $(SRC_TOP)/units/libunits_$(env).$(lib_suffix)
 dep_libmatprops	= $(SRC_TOP)/matprops/libmatprops_$(env).$(lib_suffix)
-dep_libimctest  = $(SRC_TOP)/imctest/libimctest_$(env).$(lib_suffix)
+dep_libimc      = $(SRC_TOP)/imc/libimc_$(env).$(lib_suffix)
 dep_librng      = $(SRC_TOP)/rng/librng_$(env).$(lib_suffix)
 
 #dep_libpooma	= $(POOMA_LIB_DIR)/libpooma.a

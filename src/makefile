@@ -28,7 +28,7 @@ all:
 	(cd matprops;$(MAKE) $(subnj))
 	(cd sn;      $(MAKE) $(subnj))
 	(cd rng;     $(MAKE) $(subnj))
-	(cd imctest; $(MAKE) $(subnj))
+	(cd imc;     $(MAKE) $(subnj))
 #	(cd draco;   $(MAKE) $(subnj))
 
 clean:
@@ -45,7 +45,7 @@ clean:
 	(cd matprops;$(MAKE) clean cleanonly=yes)
 	(cd sn;      $(MAKE) clean cleanonly=yes)
 	(cd rng;     $(MAKE) clean cleanonly=yes)
-	(cd imctest; $(MAKE) clean cleanonly=yes)
+	(cd imc;     $(MAKE) clean cleanonly=yes)
 	(cd pycxx;   $(MAKE) clean cleanonly=yes)
 	(cd pydraco; $(MAKE) clean cleanonly=yes)
 #	(cd draco;   $(MAKE) clean cleanonly=yes)

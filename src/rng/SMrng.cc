@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "rng/SMrng.hh"
-#include "imctest/Math.hh"
+#include "imc/Math.hh"
 #include <iostream>
 #include <fstream>
 
