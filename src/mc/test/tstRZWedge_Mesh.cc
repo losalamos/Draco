@@ -221,7 +221,8 @@ void simple_one_cell_RZWedge()
     }
 
     // does the mesh return the correct cell volume?
-    if (!soft_equiv(mesh->volume(1),1.0)) ITFAILS;
+    if (!soft_equiv(mesh->volume(1),         1.0)) ITFAILS;
+    if (!soft_equiv(mesh->get_total_volume(),1.0)) ITFAILS;
 
     // does the mesh return the correct face areas?
     if (!soft_equiv(mesh->face_area(1,1),0.0))            ITFAILS;
@@ -993,6 +994,8 @@ void build_an_RZWedge()
 	if (!soft_equiv(mesh->volume(cell+3),(2*cell-1)*pi*0.5)) ITFAILS;
     }
 
+    // does the mesh return the correct total volume?
+    if (!soft_equiv(mesh->get_total_volume(), 9.0*pi)) ITFAILS;
 
     // does the mesh return the correct face areas?
     if (!soft_equiv(mesh->face_area(1,1),0.0))             ITFAILS;
