@@ -15,6 +15,7 @@
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 #include <iostream>
 #include <vector>
@@ -22,8 +23,10 @@
 
 using namespace std;
 
-using rtt_mc::global::soft_equiv;
 using rtt_mc::global::integer_modulo;
+using rtt_mc::global::linear_interpolate;
+using rtt_mc::global::log_log_interpolate;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -70,6 +73,67 @@ void test_math()
 
 //---------------------------------------------------------------------------//
 
+void test_interpolate()
+{
+    // function y = 2.5 * x - 1.0
+
+    // define boundary points
+    double x1 = 1.0;
+    double y1 = 2.5 * x1 - 1.0;
+    double x2 = 3.0;
+    double y2 = 2.5 * x2 - 1.0;
+
+    double x   = 1.452;
+    double y   = linear_interpolate(x1, x2, y1, y2, x);
+    double ref = 2.5 * x - 1.0;
+
+    if (!soft_equiv(y, ref)) ITFAILS;
+
+    // try another one
+    x1 = 1.45;
+    y1 = 2.5 * x1 - 1.0;
+    x2 = 1.1;
+    y2 = 2.5 * x2 - 1.0;
+
+    x   = 1.33;
+    y   = linear_interpolate(x1, x2, y1, y2, x);
+    ref = 2.5 * x - 1.0;
+
+    if (!soft_equiv(y, ref)) ITFAILS;
+ 
+    if (rtt_mc_test::passed)
+	PASSMSG("Linear interpolation checks ok.");
+
+    // function y = 1.1 * x^(-3.2)
+
+    x1 = 1.0;
+    y1 = 1.1 * pow(x1, -3.2);
+    x2 = 1.2;
+    y2 = 1.1 * pow(x2, -3.2);
+
+    x   = 1.11;
+    y   = log_log_interpolate(x1, x2, y1, y2, x);
+    ref = 1.1 * pow(x, -3.2);
+
+    if (!soft_equiv(y, ref)) ITFAILS;
+
+    x1 = 3.31;
+    y1 = 1.1 * pow(x1, -3.2);
+    x2 = 2.12;
+    y2 = 1.1 * pow(x2, -3.2);
+
+    x   = 2.22;
+    y   = log_log_interpolate(x1, x2, y1, y2, x);
+    ref = 1.1 * pow(x, -3.2);
+
+    if (!soft_equiv(y, ref)) ITFAILS;
+ 
+    if (rtt_mc_test::passed)
+	PASSMSG("Log-log interpolation checks ok.");
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     C4::Init(argc, argv);
@@ -98,6 +162,9 @@ int main(int argc, char *argv[])
 
 	// test math functions
 	test_math();
+
+	// interpolate test
+	test_interpolate();
     }
     catch (rtt_dsxx::assertion &ass)
     {
