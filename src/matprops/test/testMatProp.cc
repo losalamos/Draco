@@ -102,6 +102,16 @@ void testMatProp()
     cout << "Electron Temperature: " << endl;
     print(cout, results, 10);
     
+    matstate.getElectronSpecificHeat(results);
+
+    cout << "Cv Elect: " << endl;
+    print(cout, results, 10);
+    
+    matstate.getIonSpecificHeat(results);
+
+    cout << "Cv Ion: " << endl;
+    print(cout, results, 10);
+    
     matstate.getSigmaTotal(1, results);
 
     cout << "SigmaTotal: " << endl;
