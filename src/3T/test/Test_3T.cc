@@ -9,6 +9,7 @@
 #include "3T/test/Test_3T.hh"
 
 #include <iostream.h>
+#include <algorithm>
 
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
@@ -110,7 +111,9 @@ void Test_3T<MT, Problem>::run()
     Mat1<double> yA( spm->get_yA() );
     Mat1<double> zA( spm->get_zA() );
 
-    Mat1<double> vc( spm->get_vc() );
+//    Mat1<double> vc( spm->get_vc() );
+    Mat1<double> vc( ncp );
+    std::copy( spm->get_vc().begin(), spm->get_vc().end(), vc.begin() );
 
     cout << "verbose = " << verbose << endl;
 
@@ -197,18 +200,25 @@ void Test_3T<MT, Problem>::run()
 
 	spd->solve( Df, r, dt, En, Eb );
 
+    // Grrr.  Make some more aliases
+
+        Mat1<double> EE_analytic( &E_analytic(0), ncp );
+        Mat1<double> EEn( &En(0), ncp );
+
     // Compute A . E_analytic = b_analytic
 
         Mat1<double> b_anal( ncp );
         b_anal = 0.;
-        spd->get_matvec()->MatVec( b_anal, E_analytic );
+//         spd->get_matvec()->MatVec( b_anal, E_analytic );
+        spd->get_matvec()->MatVec( b_anal, EE_analytic );
 
     // Compute the product of A and En to see how well it compares to r.
 	double r1 = 0.;
 	int pcgits = spd->get_matvec()->get_iterations();
 
 	Mat1<double> b( ncp );
-	spd->get_matvec()->MatVec( b, En );
+// 	spd->get_matvec()->MatVec( b, En );
+	spd->get_matvec()->MatVec( b, EEn );
 
 	for( int i=0; i < ncp; i++ ) {
 	    double d = b[i] - r[i];
