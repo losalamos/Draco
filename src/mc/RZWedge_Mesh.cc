@@ -29,6 +29,7 @@ using std::vector;
 using std::fill;
 using std::ostream;
 using std::string;
+using std::setiosflags;
 
 using global::pi;
 
@@ -530,9 +531,9 @@ void RZWedge_Mesh::print(ostream &out) const
     
     out.precision(4);
     out << "--- Wedge Angle --" << endl;
-    out << setw(10) << setiosflags(std::ios::fixed) 
+    out << setw(10) << setiosflags(ios::fixed) 
 	<< theta_degrees << " degrees" << endl;
-    out << setw(10) << setiosflags(std::ios::fixed)
+    out << setw(10) << setiosflags(ios::fixed)
 	<< theta_radians << " radians" << endl;
     out << "------------------" << endl;
     out << endl;
@@ -555,11 +556,11 @@ void RZWedge_Mesh::print(ostream &output, int cell) const
     output << "---------------" << endl;
 
     output.precision(4);
-    output << setw(10) << setiosflags(std::ios::scientific) 
+    output << setw(10) << setiosflags(ios::scientific) 
 	   << " x range:  [" << get_low_x(cell) << " , " 
 	   << get_high_x(cell) << "];  dx : " 
 	   << get_high_x(cell)-get_low_x(cell) << endl;
-    output << setw(10) << setiosflags(std::ios::scientific) 
+    output << setw(10) << setiosflags(ios::scientific) 
 	   << " z range:  [" << get_low_z(cell) << " , " 
 	   << get_high_z(cell) << "];  dz : " 
 	   << get_high_z(cell)-get_low_z(cell) << endl;
