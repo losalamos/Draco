@@ -18,6 +18,7 @@
 #include "imctest/Math.hh"
 #include "ds++/SP.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -53,6 +54,8 @@ void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
 	title = "0.dat";
     if (mynode == 1)
 	title = "1.dat";
+    if (mynode == 2)
+	title = "2.dat";
 
     ofstream output(title.c_str());
 
@@ -217,9 +220,12 @@ int main(int argc, char *argv[])
 	string infile;
 
 	if (mynode == 0)
-	    infile = "in2";
-	if (mynode == 1)
-	    infile = "in3";
+	    for (int i = 0; i < 100000; i++);
+	
+	{
+	    HTSyncSpinLock h;
+	    cout << "Input file on " << mynode << ": " << endl;
+	}
 
       // run the interface parser
 	SP<OS_Interface> interface = new OS_Interface(infile);
