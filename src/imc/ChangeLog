@@ -1,3 +1,8 @@
+2002-01-14  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* Frequency.hh:  Added the Frequency class, which holds a
+	gray/multigroup indicator and group structure.
+
 2002-01-11  Thomas M. Evans  <tme@lanl.gov>
 
 	* Particle_Buffer, Communicator, Comm_Builder: moved these classes
