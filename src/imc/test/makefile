@@ -23,8 +23,8 @@ srcs += testp.cc
 endif
 
 # build test driver
-ifeq ($(tst),b)
-srcs += testb.cc
+ifeq ($(tst),ap)
+srcs += testap.cc
 endif
 
 # more parallelism
