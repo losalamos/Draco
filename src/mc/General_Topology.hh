@@ -48,7 +48,14 @@ namespace rtt_mc
  * description that is one of the following:
  * \arg \b "replication": full replication of cells across processors
  * \arg \b "DD": full domain decomposition of cells across processors
- * \arg \b "DD/replication": hybrid scheme where some cells are replicated 
+ * \arg \b "DD/replication": hybrid scheme where some cells are replicated
+
+ * The General_Topology class pack() function can be used to return a
+ * rtt_dsxx::SP to a Topology::Pack object.  This object can be used to send
+ * topologies across processor space.  
+
+ * \sa \ref topology_pack_description "Topology class" for further details.
+
  */
 // revision history:
 // -----------------
@@ -59,6 +66,10 @@ namespace rtt_mc
 
 class General_Topology : public Topology
 {
+  public:
+    // Forward declaration of pack class.
+    struct Pack;
+
   private:
     // local_cells per processor list
     vf_int cells_per_proc;
@@ -70,7 +81,7 @@ class General_Topology : public Topology
     vf_int bound_cells;
 
   public:
-    // constructor
+    // Constructor
     General_Topology(const vf_int &, const vf_int &, const vf_int &, 
 		     const std_string &);  
     
@@ -105,6 +116,9 @@ class General_Topology : public Topology
 
     // Get a list of processors that a global cell is on.
     inline sf_int get_procs(int) const;
+
+    // Pack function
+    Topology::SP_Pack pack() const;
 
     // Diagnostics.
     void print(std::ostream &) const;
@@ -365,6 +379,61 @@ Topology::sf_int General_Topology::get_procs(int global_cell) const
     Require (global_cell > 0 && global_cell <= num_cells());
     return procs_per_cell[global_cell-1];
 }
+
+//===========================================================================//
+/*!
+ * \struct General_Topology::Pack
+ 
+ * \brief Pack and unpack a General_Topology instance into raw c-style
+ * data arrays.
+
+ * \sa \ref topology_pack_description "Topology class" for details on pack
+ * operations.  See the examples for usage.
+ 
+ */
+//===========================================================================//
+
+struct General_Topology::Pack : public Topology::Pack
+{
+  private:
+    // Data contained in the General Topology.
+    int *data;
+    int  size;
+    int  indicator;
+    
+    // Disallow assignment.
+    const Pack& operator=(const Pack &);
+    
+  public:
+    // Constructor.
+    Pack(int, int, int *);
+    
+    // Copy constructor.
+    Pack(const Pack &);
+    
+    // Destructor.
+    ~Pack();
+    
+    //>>> Accessors.
+
+    //! Get pointer to beginning of integer data stream.
+    const int* begin() const { return &data[0]; }
+
+    //! Get pointer to end of integer data stream.
+    const int* end() const { return &data[size]; }
+
+    //! Get size of integer data stream.
+    int get_size() const { return size; }
+
+    // Get parallel scheme descriptor.
+    std_string get_parallel_scheme() const;
+
+    //! Get parallel scheme indicator.
+    int get_parallel_scheme_indicator() const { return indicator; }
+    
+    // Unpack function.
+    SP_Topology unpack() const;
+};
 
 } // end namespace rtt_mc
 

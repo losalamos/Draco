@@ -44,6 +44,11 @@ namespace rtt_mc
  * result in a failure. In other words, the mesh looks identical on each
  * processor.  If some different type of full replication topology is desired
  * than the General_Topology class should be used.  
+
+ * The Rep_Topology class pack() function can be used to return a
+ * rtt_dsxx::SP to a Topology::Pack object.  This object can be used to send
+ * topologies across processor space.
+
  */
 // revision history:
 // -----------------
@@ -53,6 +58,10 @@ namespace rtt_mc
 
 class Rep_Topology : public Topology
 {
+  public:
+    // Forward declaration of pack class.
+    struct Pack;
+
   private:
     // number of global cells in the problem
     int global_cells;
@@ -98,6 +107,9 @@ class Rep_Topology : public Topology
 
     // Get a list of processors that a global cell is on.
     inline sf_int get_procs(int) const;
+
+    // Pack function.
+    Topology::SP_Pack pack() const;
 
     // Diagnostics.
     void print(std::ostream &) const;
@@ -152,6 +164,71 @@ int Rep_Topology::boundary_to_global(int boundary_cell, int proc) const
     Insist(0, "Not in rep!");
     return 0;
 }
+
+//===========================================================================//
+/*!
+ * \struct Rep_Topology::Pack
+ 
+ * \brief Pack and unpack a Rep_Topology instance into raw c-style data
+ * arrays.
+
+ * \sa \ref topology_pack_description "Topology class" for details on pack
+ * operations.  See the examples for usage.
+ 
+ */
+//===========================================================================//
+
+struct Rep_Topology::Pack : public Topology::Pack
+{
+  private:
+    // Data contained in the Rep Topology.
+    int *data;
+    
+    // Disallow assignment.
+    const Pack& operator=(const Pack &);
+    
+  public:
+    /*!
+     * \brief Constructor. 
+     *
+     * The Rep_Topology::Pack constructor takes an allocated pointer to an
+     * int that gives the size of the mesh.  This is a pointer to an int
+     * object, not an array of ints.  In other words, the int should be
+     * created with operator new(), not operator new[]().  Thus, it will be
+     * deleted with operator delete, not operator delete[]().  This is
+     * important to keep straight, memory errors could result otherwise.
+     *
+     * \param d pointer to an allocated int that defines the size of the
+     * global mesh..  
+     */
+    Pack(int *d) : data(d) { Ensure (*data > 0); }
+
+    //! Copy constructor.
+    Pack(const Pack &rhs) : data(new int(*rhs.data)) { Ensure (*data > 0); }
+
+    //! Destructor.
+    ~Pack() { delete data; }
+    
+    //>>> Accessors.
+
+    //! Get pointer to beginning of integer data stream.
+    const int* begin() const { return data; }
+
+    //! Get pointer to end of integer data stream.
+    const int* end() const { return data + 1; }
+
+    //! Get size of integer data stream.
+    int get_size() const { return 1; }
+
+    // Get parallel scheme descriptor.
+    std_string get_parallel_scheme() const { return "replication"; }
+
+    //! Get parallel scheme indicator.
+    int get_parallel_scheme_indicator() const { return 1; }
+    
+    // Unpack function.
+    SP_Topology unpack() const;
+};
 
 } // end namespace rtt_mc
 

@@ -31,6 +31,8 @@ using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_mc_test::Parser;
 using rtt_dsxx::SP;
+using C4::Send;
+using C4::Recv;
 
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__, __FILE__);
@@ -83,6 +85,44 @@ void test_Replication()
     // build and test SP<Topology> for replication
     SP<Topology> sprep(new Rep_Topology(mesh->num_cells()));
     if ( !rtt_mc_test::topology_replication_test(mesh, *sprep) ) ITFAILS;
+
+    // Packing test
+    if (C4::node() == 0)
+    {
+	// Pack Topology
+	SP<Topology::Pack> pack = rep.pack();
+
+	// Send out topology
+	for (int np = 1; np < C4::nodes(); np++)
+	{
+	    Send (pack->get_parallel_scheme_indicator(), np, 200);
+	    Send (pack->get_size(), np, 201);
+	    Send<int>(pack->begin(), pack->get_size(), np, 202);
+	}
+
+	SP<Topology> new_top = pack->unpack();
+	if (!rtt_mc_test::topology_replication_test(mesh, *new_top)) ITFAILS; 
+    }
+    else if (C4::node() != 0)
+    {
+	// receive topology components
+	int indicator;
+	int size;
+	Recv (indicator, 0, 200);
+	Recv (size, 0, 201);
+	
+	if (size != 1)      ITFAILS;
+	if (indicator != 1) ITFAILS;
+
+	int *data = new int;
+	Recv (data, size, 0, 202);
+
+	// build new pack object
+	Rep_Topology::Pack pack(data);
+
+	SP<Topology> new_top = pack.unpack();
+	if (!rtt_mc_test::topology_replication_test(mesh, *new_top)) ITFAILS; 
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -143,6 +183,39 @@ void test_DD()
 
     // test topology
     if ( !rtt_mc_test::topology_DD_test(mesh, topology) ) ITFAILS;
+
+
+    // Packing test
+    if (C4::node() == 0)
+    {
+	// Pack Topology
+	SP<Topology::Pack> pack = topology.pack();
+
+	// Send out topology
+	Send (pack->get_parallel_scheme_indicator(), 1, 100);
+	Send (pack->get_size(), 1, 101);
+	Send<int>(pack->begin(), pack->get_size(), 1, 102);
+
+	SP<Topology> new_top = pack->unpack();
+	if (!rtt_mc_test::topology_DD_test(mesh, *new_top) ) ITFAILS;
+    }
+    else if (C4::node() == 1)
+    {
+	// receive topology components
+	int indicator;
+	int size;
+	Recv (indicator, 0, 100);
+	Recv (size, 0, 101);
+
+	int *data = new int[size];
+	Recv (data, size, 0, 102);
+
+	// build new pack object
+	General_Topology::Pack pack(indicator, size, data);
+
+	SP<Topology> new_top = pack.unpack();
+	if (!rtt_mc_test::topology_DD_test(mesh, *new_top) ) ITFAILS;
+    }
 }
 
 //---------------------------------------------------------------------------//
