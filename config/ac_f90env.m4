@@ -145,11 +145,20 @@ AC_DEFUN(AC_COMPILER_XL_F90, [dnl
 
    # Check for working XL F90 compiler
 
-   AC_CHECK_PROG(F90, xlf95, xlf95, none)
-   if test "${F90}" != xlf95
-   then
-       AC_MSG_ERROR([not found])
-   fi
+  if test "${with_upslib:=no}" != "no"
+  then
+     AC_CHECK_PROG(F90, mpxlf95, mpxlf95, none)
+     if test "${F90}" != mpxlf95
+     then
+         AC_MSG_ERROR([not found])
+     fi
+  else
+     AC_CHECK_PROG(F90, xlf95, xlf95, none)
+     if test "${F90}" != xlf95
+     then
+         AC_MSG_ERROR([not found])
+     fi
+  fi
   
    # FREE, FIXED AND MODULE FLAGS
 
