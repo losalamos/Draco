@@ -127,7 +127,7 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
 	delta_t   = interface->get_delta_t();
 	max_cycle = interface->get_max_cycle();
 	print_f   = interface->get_printf();
-	rnd_con   = new Rnd_Control(9836592);
+	rnd_con   = new Rnd_Control(interface->get_seed());
 	Particle_Buffer<PT>::set_buffer_size(interface->get_buffer());
     }
 
@@ -219,7 +219,7 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
 		Send (buffer->get_csize(), i, 204);
 		Send (delta_t, i, 205);
 		Send (max_cycle, i, 206);
-		Send (print_f, i, 207);
+		Send (print_f, i, 207);	
 	    }
 	}
 
@@ -326,7 +326,7 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
 template<class MT, class BT, class IT, class PT>
 void IMC_Man<MT,BT,IT,PT>::step_IMC()
 {
-    cout << ">> Doing particle transport for cycle " << cycle
+    cerr << ">> Doing particle transport for cycle " << cycle
 	 << " on proc " << node() << endl;
 
   // make a new census Comm_Buffer on this node
@@ -362,7 +362,7 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
     }
 
   // finished with this timestep
-    cout << ">> Finished particle transport for cycle " << cycle
+    cerr << ">> Finished particle transport for cycle " << cycle
 	 << " on proc " << node() << endl;
 
   // now remove objects we no longer need

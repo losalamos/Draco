@@ -23,6 +23,7 @@
 //  2)   5-6-98 : added parser for source
 //  3)  6-16-98 : added material-necessary quantities to end-mat block
 //  4)  6-17-98 : added card for input of analytic opacities
+//  5)   7-1-98 : added input for RN seed and print frequency
 // 
 //===========================================================================//
 
@@ -87,6 +88,7 @@ private:
     int capacity;
     int print_f;
     int buffer;
+    int seed;
 
   // Parser member functions
 
@@ -142,6 +144,7 @@ public:
     int get_max_cycle() const { return max_cycle; }
     int get_printf() const { return print_f; }
     int get_buffer() const { return buffer; }
+    int get_seed() const { return seed; }
 };
 
 //---------------------------------------------------------------------------//
@@ -154,7 +157,7 @@ inline OS_Interface::OS_Interface(const string &infile)
       density(0), kappa(0), temperature(0), implicitness(0), 
       analytic_opacity("straight"), specific_heat(0), evol_ext(0), ss_pos(0), 
       ss_temp(0), rad_temp(0), delta_t(0), max_cycle(0), npmax(0), dnpdt(0), 
-      ss_dist("none"), capacity(0), print_f(Global::huge), buffer(1000)
+      ss_dist("none"), capacity(0), print_f(1), buffer(1000),  seed(9836592) 
 {}
 
 CSPACE

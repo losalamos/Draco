@@ -529,6 +529,8 @@ void OS_Interface::zone_source_parser(ifstream &in)
 	    in >> print_f;
 	if (keyword == "buffer_size:")
 	    in >> buffer;
+	if (keyword == "seed:")
+	    in >> seed;
     }   
   
   // do some assertions on the source variables
