@@ -273,14 +273,16 @@ void Tally_Builder_Test()
     if (nullt->get_RW_Sub_Tally())      ITFAILS;
     if (nullt->get_Surface_Sub_Tally()) ITFAILS;
 
+    if (nullt->get_num_surface_tallies() != 0) ITFAILS;
+
     // make an interface that has random walk and surfaces
     SP<tally_test::Interface> has(new tally_test::Interface(1, 1));
 
     Tally_Builder<OS_Mesh> hasb(has, groups);
     SP<Tally<OS_Mesh> > hast = hasb.build_Tally(mesh);
 
-    if (!hast->get_RW_Sub_Tally())      ITFAILS;
-    if (!hast->get_Surface_Sub_Tally()) ITFAILS;
+    if (!hast->get_RW_Sub_Tally())            ITFAILS;
+    if (hast->get_num_surface_tallies() != 5) ITFAILS;
 
     SP<Random_Walk_Sub_Tally> rw_tally = hast->get_RW_Sub_Tally();
 
@@ -292,6 +294,8 @@ void Tally_Builder_Test()
     for (int group = 1; group <= groups; ++group)
     {
 	SP<Surface_Sub_Tally> s_tally = hast->get_Surface_Sub_Tally(group);
+
+        if (!s_tally) ITFAILS;
 	
 	if (s_tally->get_number_surfaces() != 1)              ITFAILS;
 	if (s_tally->get_outward_weight_tally(1).size() != 4) ITFAILS;
