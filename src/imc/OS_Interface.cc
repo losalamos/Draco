@@ -319,6 +319,7 @@ void OS_Interface::zone_opacity_parser(ifstream &in)
 	    in >> data;
 	    density.resize(data);
 	    kappa.resize(data);
+	    kappa_thomson.resize(data);
 	    temperature.resize(data);
 	    specific_heat.resize(data);
 	}
@@ -327,6 +328,7 @@ void OS_Interface::zone_opacity_parser(ifstream &in)
 	  // Check that material data arrays have been sized previously
 	    Check (density.size() != 0);
 	    Check (density.size() == kappa.size());
+	    Check (density.size() == kappa_thomson.size());
 	    Check (density.size() == temperature.size());
 	    Check (density.size() == specific_heat.size());
 	  // input the material arrays
@@ -335,6 +337,7 @@ void OS_Interface::zone_opacity_parser(ifstream &in)
 		in >> data;
 		in >> density[data-1];
 		in >> kappa[data-1];
+		in >> kappa_thomson[data-1];
 		in >> temperature[data-1];
 		in >> specific_heat[data-1];
 	    }
@@ -579,6 +582,22 @@ vector<double> OS_Interface::get_kappa() const
 
   // return cell_k
     return cell_k;
+}
+
+//---------------------------------------------------------------------------//
+// map kappa_thomson to cell-based arrays
+
+vector<double> OS_Interface::get_kappa_thomson() const
+{
+  // make a return vector of the proper size
+    vector<double> cell_kt(zone.size());
+
+  // assign the values to cell_kt based on the zone and material
+    for (int cell = 1; cell <= cell_kt.size(); cell++)
+	cell_kt[cell-1] = kappa_thomson[mat_zone[zone[cell-1]-1]-1];
+
+  // return cell_k
+    return cell_kt;
 }
 
 //---------------------------------------------------------------------------//

@@ -40,6 +40,7 @@
 //  7)   7-6-98 : added functions to return particle information to needed
 //                services 
 //  8)   7-9-98 : added set functions (ew and random) for combing
+//  9) 07-28-98 : added Thomson scattering
 // 
 //===========================================================================//
 
@@ -306,6 +307,10 @@ inline int Particle<MT>::get_index(string desc)
 	return_value = 100;
     if (desc == "low_weight")
 	return_value = 101;
+    if (desc == "eff_scatter")
+	return_value = 102;
+    if (desc == "thom_scatter")
+	return_value = 103;
  
   // streaming descriptors
     if (desc == "reflection")
@@ -337,6 +342,10 @@ inline string Particle<MT>::get_descriptor(int index)
 	return_value = "scatter";
     if (index == 101)
 	return_value = "low_weight";
+    if (index == 102)
+	return_value = "eff_scatter";
+    if (index == 103)
+	return_value = "thom_scatter";
  
   // streaming descriptors
     if (index == 200)

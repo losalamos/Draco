@@ -98,7 +98,7 @@ void Source_Init<MT,PT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity,
     Require (rcontrol);
 
   // calculate number of particles this cycle
-    npwant = min(npmax, static_cast<int>(npnom + dnpdt * delta_t));
+    npwant = min(npmax, static_cast<int>(npnom + dnpdt*(cycle-1)*delta_t));
     Check (npwant != 0);
 
   // on first pass do initial census, on all cycles calc source energies 

@@ -19,6 +19,7 @@
 // 0) original
 // 1) 06-23-98  Added accumulation of new census information and 
 //              energy-weighted path length. 
+// 2) 07-28-98  Added accumulation of thomson scatters
 // 
 //===========================================================================//
 
@@ -50,6 +51,7 @@ private:
 
   // particle activity tallies, per cycle
     int n_effscat;
+    int n_thomscat;
     int n_killed;
     double ew_killed;
     int n_escaped;
@@ -62,8 +64,9 @@ public:
     explicit Tally(SP<MT> mesh) 
 	: energy_dep(mesh), energy_dep_tot(0.0), eweighted_pathlen(mesh), 
 	  census_energy(mesh), new_ecen_tot(0.0), new_ncen(mesh), 
-	  new_ncen_tot(0.0), n_effscat(0), n_killed(0), ew_killed(0.0),
-	  n_escaped(0), ew_escaped(0.0), n_bndcross(0), n_reflections(0){}
+	  new_ncen_tot(0.0), n_effscat(0), n_thomscat(0), n_killed(0), 
+	  ew_killed(0.0), n_escaped(0), ew_escaped(0.0), n_bndcross(0), 
+	  n_reflections(0){}
 
   // accumulate energy deposited
     void deposit_energy(const int cell, const double energy);
@@ -91,6 +94,7 @@ public:
 
   // accumulator functions for particle activity
     inline void accum_n_effscat();
+    inline void accum_n_thomscat();
     inline void accum_n_killed();
     inline void accum_ew_killed(const double ew);
     inline void accum_n_escaped();
@@ -174,6 +178,9 @@ inline int Tally<MT>::get_new_ncen_tot(){ return new_ncen_tot; }
 
 template<class MT>
 inline void Tally<MT>::accum_n_effscat(){ n_effscat += 1; }
+
+template<class MT>
+inline void Tally<MT>::accum_n_thomscat(){ n_thomscat += 1; }
 
 template<class MT>
 inline void Tally<MT>::accum_n_killed(){ n_killed += 1; }

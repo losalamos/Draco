@@ -64,8 +64,9 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
       // cell face definition
         int face = 0;
         
-      // sample distance-to-scatter
-	d_scatter = -log(random.ran()) / xs.get_sigeffscat(cell);
+      // sample distance-to-eff_scatter
+	d_scatter = -log(random.ran()) / 
+	    (xs.get_sigeffscat(cell) + xs.get_sigma_thomson(cell));
 
       // get distance-to-boundary and cell face
         d_boundary  = mesh.get_db(r, omega, cell, face);
@@ -82,8 +83,7 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 		diagnostic->print_xs(xs, cell);
 	    }
 
-      // IMC streaming
-
+      // determine limiting event
 	if (d_scatter < d_boundary && d_scatter < d_census)
 	{
 	    descriptor = "scatter";
@@ -100,11 +100,28 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	    dist_stream = d_census;
 	}
 
+      // IMC streaming
 	stream_IMC(xs, tally, dist_stream);
 
+      // scatter, effective or Thomson
 	if (descriptor == "scatter")
 	{
-	    tally.accum_n_effscat();
+	    if (xs.get_sigma_thomson(cell) > 0.0)
+	    {
+		if (random.ran() < xs.get_sigeffscat(cell) /
+		    (xs.get_sigeffscat(cell) + xs.get_sigma_thomson(cell)))
+		    descriptor = "eff_scatter";
+		else
+		    descriptor = "thom_scatter";
+	    }
+	    else
+		descriptor = "eff_scatter";
+
+	    if (descriptor == "eff_scatter")
+		tally.accum_n_effscat();
+	    else if (descriptor == "thom_scatter")
+		tally.accum_n_thomscat();
+
 	    scatter( mesh );
 	}
 
@@ -412,6 +429,8 @@ void Particle<MT>::Diagnostic::print_xs(const Opacity<MT> &xs,
 	   << setw(12) << xs.get_sigeffscat(cell) << endl; 
     output << setw(20) << setiosflags(ios::right) << "Eff. absorption: " 
 	   << setw(12) << xs.get_sigeffabs(cell)  << endl; 
+    output << setw(20) << setiosflags(ios::right) << "Thomson scatter: " 
+	   << setw(12) << xs.get_sigma_thomson(cell)  << endl; 
 }
 
 CSPACE

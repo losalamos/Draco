@@ -46,6 +46,7 @@ private:
   // data received from XX_Interface
     vector<double> density;
     vector<double> kappa;
+    vector<double> kappa_thomson;
     vector<double> temperature;
     vector<double> specific_heat;
     double implicitness;

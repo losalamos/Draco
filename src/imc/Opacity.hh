@@ -35,6 +35,9 @@ private:
   // sigma = kappa * rho
     typename MT::CCSF_double sigma_abs;
 
+  // sigma_thomson = kappa_thomson * rho
+    typename MT::CCSF_double sigma_thomson;
+
   // Plankian opacity
     typename MT::CCSF_double planck;
 
@@ -45,10 +48,12 @@ public:
   // opacity constructor
     inline Opacity(const typename MT::CCSF_double &,
 		   const typename MT::CCSF_double &,
+		   const typename MT::CCSF_double &,
 		   const typename MT::CCSF_double &);
 
   // member set and accessor functions
     double get_sigma_abs(int cell) const { return sigma_abs(cell); }
+    double get_sigma_thomson(int cell) const { return sigma_thomson(cell); }
     double get_planck(int cell) const { return planck(cell); }
     double get_fleck(int cell) const { return fleck(cell); }
     int num_cells() const { return sigma_abs.get_Mesh().num_cells(); }
@@ -76,9 +81,11 @@ ostream& operator<<(ostream &, const Opacity<MT> &);
 
 template<class MT>
 inline Opacity<MT>::Opacity(const typename MT::CCSF_double &sigma_abs_,
+			    const typename MT::CCSF_double &sigma_thomson_,
 			    const typename MT::CCSF_double &planck_,
 			    const typename MT::CCSF_double &fleck_)
-    : sigma_abs(sigma_abs_), planck(planck_), fleck(fleck_)
+    : sigma_abs(sigma_abs_), sigma_thomson(sigma_thomson_), planck(planck_), 
+      fleck(fleck_)
 {}
 
 //---------------------------------------------------------------------------//

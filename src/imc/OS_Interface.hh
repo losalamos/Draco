@@ -76,6 +76,7 @@ private:
     vector<int> mat_zone;
     vector<double> density;
     vector<double> kappa;
+    vector<double> kappa_thomson;
     vector<double> temperature;
     vector<double> specific_heat;
     double implicitness;
@@ -130,10 +131,20 @@ public:
     const OS_Mesh::CCVF_d& get_fine_edge() const { return fine_edge; }
     
   // public copy functions for Opacity<MT>
+// <<<<<<< OS_Interface.hh
+//     const vector<int>& get_zone() const { return zone; }
+//     const vector<int>& get_mat_zone() const { return mat_zone; }
+//     const vector<double>& get_density() const { return density; }
+//     const vector<double>& get_kappa() const { return kappa; }
+//     const vector<double>& get_kappa_thomson() const { return kappa_thomson; }
+//     const vector<double>& get_temperature() const { return temperature; }
+// =======
     vector<double> get_density() const;
     vector<double> get_kappa() const;
+    vector<double> get_kappa_thomson() const;
     vector<double> get_specific_heat() const;
     vector<double> get_temperature() const;
+// >>>>>>> 1.16
     double get_implicit() const { return implicitness; }
 
   // public copy functions for Source_Init<MT>
@@ -164,12 +175,12 @@ public:
 inline OS_Interface::OS_Interface(const string &infile)
     : input_file(infile), coord_system(""), fine_cells(0), accum_cells(0), 
       coarse_edge(0), fine_edge(0), bnd_cond(0), zone(0), mat_zone(0), 
-      density(0), kappa(0), temperature(0), implicitness(0), 
-      analytic_opacity("straight"), analytic_sp_heat("straight"),
-      specific_heat(0), evol_ext(0), rad_source(0), rad_s_tend(0), 
-      ss_pos(0), ss_temp(0), rad_temp(0), delta_t(0), max_cycle(0), 
-      npmax(0), dnpdt(0), ss_dist("none"), capacity(0), print_f(1), 
-      buffer(1000), seed(9836592) 
+      density(0), kappa(0), kappa_thomson(0), temperature(0), 
+      implicitness(0), analytic_opacity("straight"), 
+      analytic_sp_heat("straight"), specific_heat(0), evol_ext(0), 
+      rad_source(0), rad_s_tend(0), ss_pos(0), ss_temp(0), rad_temp(0), 
+      delta_t(0), max_cycle(0), npmax(0), dnpdt(0), ss_dist("none"), 
+      capacity(0), print_f(1), buffer(1000), seed(9836592) 
 {}
 
 CSPACE

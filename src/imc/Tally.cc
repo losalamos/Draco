@@ -74,6 +74,7 @@ void Tally<MT>::print(ostream &out) const
     out << setw(16) << " bnd crossings: " << setw(10) << n_bndcross 
 	<< setw(16) << " reflections: "   << setw(10) << n_reflections
 	<< setw(16) << " eff scatters: "  << setw(10) << n_effscat
+	<< setw(16) << " thomson scats: " << setw(10) << n_thomscat
 	<< endl;
 
     out << setw(16) << " killed: " << setw(10) << n_killed

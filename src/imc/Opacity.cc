@@ -29,7 +29,7 @@ void Opacity<MT>::print(ostream &output, int cell) const
     output.precision(4);
 
     output << setw(8) << cell << setw(15) << setiosflags(ios::scientific)
-	   << sigma_abs(cell) << endl;
+	   << sigma_abs(cell) << sigma_thomson(cell) << endl;
 }
 
 //---------------------------------------------------------------------------//
@@ -47,8 +47,9 @@ ostream& operator<<(ostream &output, const Opacity<MT> &object)
     using std::setiosflags;
 
     output << setw(8) << setiosflags(ios::right) << "Cell" 
-	   << setw(15) << "Opacity" << endl;
-    output << "-----------------------" << endl;
+	   << setw(15) << "Abs Opacity" 
+	   << setw(15) << "Thomson Opac" << endl;
+    output << "--------------------------------------" << endl;
 
     for (int i = 1; i <= object.num_cells(); i++)
         object.print(output, i);

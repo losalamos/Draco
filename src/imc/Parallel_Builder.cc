@@ -1418,6 +1418,7 @@ Parallel_Builder<MT>::send_Opacity(SP<MT> mesh, const Opacity<MT> &opacity)
   // data necessary to build Opacity on host
     SP<Opacity<MT> > host_opacity;
     typename MT::CCSF_double sigma(mesh);
+    typename MT::CCSF_double sigma_thomson(mesh);
     typename MT::CCSF_double planck(mesh);
     typename MT::CCSF_double fleck(mesh);
 
@@ -1428,9 +1429,10 @@ Parallel_Builder<MT>::send_Opacity(SP<MT> mesh, const Opacity<MT> &opacity)
 	int num_cells = cells_per_proc[np].size();
 
       // assign the Opacity data
-	double *sigma_send  = new double[num_cells];
-	double *planck_send = new double[num_cells];
-	double *fleck_send  = new double[num_cells];
+	double *sigma_send      = new double[num_cells];
+	double *sigma_thom_send = new double[num_cells];
+	double *planck_send     = new double[num_cells];
+	double *fleck_send      = new double[num_cells];
     
 	int global_cell;
 	for (int cell = 1; cell <= num_cells; cell++)
@@ -1439,9 +1441,10 @@ Parallel_Builder<MT>::send_Opacity(SP<MT> mesh, const Opacity<MT> &opacity)
 	    global_cell = cells_per_proc[np][cell-1];
 
 	  // assign the data
-	    sigma_send[cell-1]  = opacity.get_sigma_abs(global_cell); 
-	    planck_send[cell-1] = opacity.get_planck(global_cell); 
-	    fleck_send[cell-1]  = opacity.get_fleck(global_cell);
+	    sigma_send[cell-1]      = opacity.get_sigma_abs(global_cell); 
+	    sigma_thom_send[cell-1] = opacity.get_sigma_thomson(global_cell); 
+	    planck_send[cell-1]     = opacity.get_planck(global_cell); 
+	    fleck_send[cell-1]      = opacity.get_fleck(global_cell);
 	}
 
       // send the Opacity data to the IMC nodes
@@ -1449,6 +1452,7 @@ Parallel_Builder<MT>::send_Opacity(SP<MT> mesh, const Opacity<MT> &opacity)
 	{
 	    Send (num_cells, np, 20);
 	    Send (sigma_send, num_cells, np, 21);
+	    Send (sigma_thom_send, num_cells, np, 47);
 	    Send (planck_send, num_cells, np, 22);
 	    Send (fleck_send, num_cells, np, 23);
 	}
@@ -1462,20 +1466,22 @@ Parallel_Builder<MT>::send_Opacity(SP<MT> mesh, const Opacity<MT> &opacity)
 	  // assign the data
 	    for (int cell = 1; cell <= num_cells; cell++)
 	    {
-		sigma(cell)  = sigma_send[cell-1];
-		planck(cell) = planck_send[cell-1];
-		fleck(cell)  = fleck_send[cell-1];
+		sigma(cell)         = sigma_send[cell-1];
+		sigma_thomson(cell) = sigma_thom_send[cell-1];
+		planck(cell)        = planck_send[cell-1];
+		fleck(cell)         = fleck_send[cell-1];
 	    }
 	}
 
       // delete dynamic allocation
 	delete [] sigma_send;
+	delete [] sigma_thom_send;
 	delete [] planck_send;
 	delete [] fleck_send;
     }
     
   // make and return the Opacity to the host
-    host_opacity = new Opacity<MT>(sigma, planck, fleck);
+    host_opacity = new Opacity<MT>(sigma, sigma_thomson, planck, fleck);
     Ensure (host_opacity->num_cells() == mesh->num_cells());
     return host_opacity;
 }
@@ -1495,6 +1501,7 @@ SP<Opacity<MT> > Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
   // declare return opacity object
     SP< Opacity<MT> > imc_opacity;
     typename MT::CCSF_double sigma(mesh);
+    typename MT::CCSF_double sigma_thomson(mesh);
     typename MT::CCSF_double planck(mesh);
     typename MT::CCSF_double fleck(mesh);
 
@@ -1504,28 +1511,32 @@ SP<Opacity<MT> > Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
     Check (num_cells == mesh->num_cells());
 
   // receive data from host
-    double *rsigma  = new double[num_cells];
-    double *rplanck = new double[num_cells];
-    double *rfleck  = new double[num_cells];
+    double *rsigma      = new double[num_cells];
+    double *rsigma_thom = new double[num_cells];
+    double *rplanck     = new double[num_cells];
+    double *rfleck      = new double[num_cells];
     Recv (rsigma, num_cells, 0, 21);
+    Recv (rsigma_thom, num_cells, 0, 47);
     Recv (rplanck, num_cells, 0, 22);
     Recv (rfleck, num_cells, 0, 23);
 
   // assign to new Opacity objects
     for (int cell = 1; cell <= num_cells; cell++)
     {
-	sigma(cell)  = rsigma[cell-1];
-	planck(cell) = rplanck[cell-1];
-	fleck(cell)  = rfleck[cell-1];
+	sigma(cell)         = rsigma[cell-1];
+	sigma_thomson(cell) = rsigma_thom[cell-1];
+	planck(cell)        = rplanck[cell-1];
+	fleck(cell)         = rfleck[cell-1];
     }
 
   // reclaim dynamic memory
     delete [] rsigma;
+    delete [] rsigma_thom;
     delete [] rplanck;
     delete [] rfleck;
 
   // build and return new opacity object
-    imc_opacity = new Opacity<MT>(sigma, planck, fleck);
+    imc_opacity = new Opacity<MT>(sigma, sigma_thomson, planck, fleck);
     Ensure (imc_opacity->num_cells() == num_cells);
     return imc_opacity;
 }

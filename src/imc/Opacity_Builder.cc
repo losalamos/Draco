@@ -29,6 +29,7 @@ Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface)
   // assign data members from the interface parser
     density          = interface->get_density();
     kappa            = interface->get_kappa();
+    kappa_thomson    = interface->get_kappa_thomson();
     temperature      = interface->get_temperature();
     specific_heat    = interface->get_specific_heat();
     implicitness     = interface->get_implicit();	
@@ -102,6 +103,7 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
     Require (mat);
     Require (mat->num_cells() == mesh->num_cells());
     Require (mesh->num_cells() == kappa.size());
+    Require (mesh->num_cells() == kappa_thomson.size());
 
   // return Opacity object
     SP< Opacity<MT> > return_opacity;
@@ -111,6 +113,7 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
 
   // instantiate objects needed for Opacity build
     typename MT::CCSF_double sigma_abs(mesh);
+    typename MT::CCSF_double sigma_thomson(mesh);
     typename MT::CCSF_double fleck(mesh);
 
   // calculate and assign opacities to each cell
@@ -130,6 +133,13 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
 	double den      = mat->get_rho(cell);
 	sigma_abs(cell) = den * k;
 
+      // calculate Thomson scattering opacity
+	double kt = kappa_thomson[cell-1];
+	if (analytic_opacity == "opacity")
+	    sigma_thomson(cell) = kt;
+	else
+	    sigma_thomson(cell) = den * kt;
+
       // calculate Fleck factor, for 1 group sigma_abs = planck
 	double dedt  = mat->get_dedt(cell);
 	Insist(dedt > 0, "The specific heat is <= 0!");
@@ -140,7 +150,8 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
     }
 
   // create Opacity object
-    return_opacity = new Opacity<MT>(sigma_abs, sigma_abs, fleck);
+    return_opacity = new Opacity<MT>(sigma_abs, sigma_thomson, sigma_abs, 
+				     fleck);
 
   // return Opacity SP
     return return_opacity;
