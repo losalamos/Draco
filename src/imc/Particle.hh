@@ -12,7 +12,6 @@
 //===========================================================================//
 // class Particle - 
 //
-// Date created : 1-12-97
 // Purpose      : base class which creates and transports particles
 //                through a Mesh
 //
@@ -94,6 +93,10 @@ private:
     bool Collide(const MT &, const Opacity<MT> &);
   // surface crossings, return a false if particle escapes
     bool Surface(const MT &, int);
+
+  // have not yet defined copy constructors or assignment operators
+    Particle(const Particle<MT> &);
+    Particle<MT>& operator=(const Particle<MT> &);
 
 public:
   // default constructor, explicit to guarantee definition
