@@ -41,7 +41,7 @@ dnl
 
 dnl defines --with-f90
 AC_ARG_WITH(f90,[dnl
-  --with-f90[=XL,WorkShop,Fujitsu,Absoft,Cray,MIPS,Compaq]     choose an F90 compiler
+  --with-f90[=XL,Fujitsu,Lahey,Portland,Absoft,WorkShop,Cray,MIPS,Compaq]     choose an F90 compiler
 ])
 
 AC_DEFUN(AC_F90_ENV, [dnl
@@ -84,7 +84,7 @@ AC_DEFUN(AC_F90_ENV, [dnl
            AC_COMPILER_WORKSHOP_F90
        ;;
        i?86-pc-linux*)
-           AC_COMPILER_FUJITSU_F90
+           AC_COMPILER_LAHEY_F90
        ;;
        ymp-cray-unicos*)
           AC_COMPILER_CRAY_F90
