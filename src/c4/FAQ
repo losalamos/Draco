@@ -1,0 +1,241 @@
+File:		FAQ - Canonical Classes for Concurrency Control
+Author:		Geoffrey Furnish
+email:		furnish@dino.ph.utexas.edu
+Last Modified:	3 May 1995
+
+Section 0: General
+
+Section 1: Installation
+
+Section 2: Usage
+
+Section 3: Misc
+
+===============================================================================
+Section 0: General
+===============================================================================
+
+0.1: What is C4 for?
+
+C4 allows the C++ programmer to express parallel programs using high
+level abstractions for a variety of useful operations.  Instead of
+having to explicitly code every single interaction between processing
+nodes with message passing calls, some important patterns of
+communication can be handled through the use of provided C++ objects.
+Furthermore, C4 caries forward some of the ideas of C++ relating to
+strict type matching, into a parallel context.
+
+0.2 How mature is C4
+
+It works for me :-).  Your mileage may vary.
+
+0.3: What do I need to have in order to use C4?
+
+You need a multicomputer, one of the supported message passing
+libraries, a modern C++ compiler, and the DS++ library.
+
+The multicomputer can be either a physical parallel processor, or it
+can be a "network of workstations" using one of the supported parallel
+network programming environments.
+
+The C++ compiler must have reasonable support for C++ templates
+(mandatory) and should have reasonable support for C++ exceptions
+(desirable but not strictly required).  Cfront 3.0.2 and GCC 2.6+ are
+examples of acceptable compilers.
+
+DS++ is a library of C++ Data Structures.  C4 makes heavy use of DS++,
+so you will have to get DS++ and install it on your system in order to
+use C4.  C4 and DS++ are both available via anonymous ftp from
+dino.ph.utexas.edu:/furnish/<c4|ds++>-DATE.tar.gz. 
+
+0.4: What message passing API's are supported?
+
+MPI and NX.
+
+0.4: What specific systems has C4 been tested with?
+
+This is not a warranty (see COPYING.LIB), but C4 has been known to
+work on:
+	HP 900/7xx workstations running:
+		NXLib 1.3
+		LAM 5.2
+	Intel Paragon
+
+It is expected that C4 will also work on the T3D using the MPICH port
+recently announced, but this has not been positively tested at the
+time of this writing.
+
+0.5: Can I expect to use C4 without ever having to mess around in
+the source?
+
+Unlikely.  Expect bugs, plan to find them, and please send the patches
+back to me.
+
+0.6: Why is all the useful info in the FAQ?
+
+Because I'm too lazy/busy to write real prose.
+
+0.7: Why are releases designated by date instead of by some more
+conventional numbering scheme?
+
+Because I don't want my life to be dominated by release management for
+freeware.  I don't want to have to mess with the mania surrounding
+"preparing for the big x.0 release".  I will put up new versions of
+C4, denominated by their date of availability, as it seems sensible to
+me to do so.
+
+0.8: Are there any other sources of info on C4?
+
+There is a majordomo mailing list:
+
+	c4@dino.ph.utexas.edu
+
+Send a message with body "subscribe" to c4-request@dino.ph.utexas.edu
+to get going.  You can also use "index" and "get" commands to retrieve
+the archive, FAQ, etc.
+
+There is a WWW page at:
+
+	http://dino.ph.utexas.edu/~furnish/c4
+
+===============================================================================
+Section 1: Installation
+===============================================================================
+
+1.0:  What's zeroth?
+
+Obtain and install the DS++ package available on dino.  C4 uses this
+heavily.  You can't compile, much less link, untill you have DS++
+working.  But don't worry, neither DS++ nor C4 are much work to
+install.  Both are "just" libraries :-).
+
+1.1:  What's first?
+
+Unpack the distribution.  You can currently get it via anonymous ftp
+from dino.ph.utexas.edu.
+
+1.2: What's second?
+
+Make sure you understand the template instantiation process on your
+compiler.  *Thoroughly*.
+
+1.3: I don't understand template instantiation on my compiler.  Will
+you help me?
+
+No.  I am busy trying to get a degree, and don't have time or patience
+to hold your hand.  Unless you are sending $$$, in which case I am
+very sympathetic and helpful :-).
+
+1.4:  What's left?
+
+Edit the makefile.  Set CXX and CXXFLAGS.  Type make.  Be happy.
+Be sure to add to CXXFLAGS a -I option to point to where you have DS++
+installed.  
+
+1.5:  What are all those pt_*.cc files?
+
+See 1.2 above.  If your compiler can handle explicit template
+instantiation syntax (like GCC 2.6+), you may wish to add those files
+to the SRCS macro in the makefile.
+
+1.6:  How does C4/DS++ work with GCC?
+
+I recommend using GCC 2.6+, and compiling with
+-fno-implicit-templates, and then explicitly instantiating any
+templates you use.  That is what the pt_*.cc files do for me.  You
+may need different instances.
+
+1.7:  How do I preinstantiate a BSwap<foo> when foo is a class in some
+other directory, and is not known to the compiler when it builds C4?
+
+I suggest making a pt_foo.cc or foo_inst.cc, or whatever file in the
+directory where you compile foo.cc.  In that file, preinstantiate the
+BSwap<foo> class, and stuff the resulting object file in your library.
+
+But I digress.  Remember 1.2 above.
+
+1.8: What are these t*.cc files?
+
+Test programs I use to see if the C4 classes are working.
+
+1.9: Anything else?
+
+There are manpages in a man subdir.  You can put those somewhere if
+you want.  They are generated automatically by stripping comments from
+the source code.
+
+1.10: What's with the USAGE section in the man pages?  It doesn't make
+sense to me.
+
+C4/DS++ are developed in the context of my dissertation research.  I
+haven't had time to make the man page generator change the text for
+external distributions to be different from that used in our research
+group.  Basically you just need to give an appropriate -I to the
+compile phase, and if using Cfront, the same -I to the link phase
+(along with suitable -Lwherever and -lc4 -lds++).
+
+===============================================================================
+Section 2: Usage
+===============================================================================
+
+2.1: How do I use the C4 classes?
+
+Assuming you have accomplished 1.2 above, you just need to include the
+header file for the classes of interest, and then compile and link
+your code.
+
+2.2:  That's a trivialized response.  What do all these classes /do/?
+Etc.
+
+Read the source.  The t*.cc programs may provide some useful
+orientation.
+
+2.3: Can't you provide some more useful orientation in this section?
+
+Mmmm.  I'm working on a paper on C4, and also trying to graduate.
+We'll see what happens...
+
+===============================================================================
+Section 3: Misc
+===============================================================================
+
+3.1: What is NXLib, where do I get it, and how do I use it?
+
+NXLib is a workstation implementation of Intel's NX message passing
+library on the Paragon.  NXLib is available via anonymous ftp from:
+	ftpbode.informatik.tu-muenchen.de (131.159.0.156)
+You should get NXLIB/NXLibV1_1_4.tar.gz.  There is also a users guide.
+Web users check:
+http://wwwbode.informatik.tu-muenchen.de/~lamberts/NXLib/NXLib.html
+
+Use the NXLib vpCC compiler driver for CXX in the C4 makefile, and for
+compiling your own programs which will use C4 and NXLib.
+
+3.2: What is LAM, where do I get it, and how do I use it?
+
+LAM is a workstation implementation of MPI developed at the Ohio
+Supercomputer Center.  Distribution is via anonymous ftp from
+tbag.osc.edu under pub/lam.
+
+C4 has been used with a modified version of LAM 5.2.  The modification
+was to add a compiler driver for handling C++ compilation.  When you
+build/install LAM, you will find a program hcc, which they use to
+compile C programs for use in the LAM environment.  If you are using
+gcc for your native compiler, and configure hcc to invoke gcc, then
+you do not need to do anything else.  But if you need to compile your
+C++ programs with a sperate compiler from the one used for your C
+files, (such as CC instead of cc, or the like), then you may find it
+useful to create an hCC compiler driver for LAM.  This is trivially
+accomplished by duplicating what they do to make hcc, changing only
+the name of the subsequently invoked native compiler.  I will be
+communicating patches to this effect back to the LAM authors, but
+haven't gotten around to that up yet.  In any event, it is not big
+deal, you can do this much yourself.
+
+3.3: I'm using some other MPI implementation.  How do I use C++ with
+it?
+
+Beats me, ask whoever wrote/supplies it.  If they support C and
+Fortran, but not C++, you probably need to "nudge" them a bit :-).
+
+

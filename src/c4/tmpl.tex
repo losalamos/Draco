@@ -1,0 +1,42 @@
+\c LaTeXinfo template file.
+\c @> Autodoc template for libc4.tex
+
+\c autodoc outfile=libc4.tex
+\c autodoc uplevel=C4
+\c autodoc prior_node=Using libc4.a
+
+\node     C4, Namelist, Data Structures, Top
+\comment  node-name,  next,  previous,  up
+\chapter{Cannonincal Classes for Concurrency Control}
+\cindex{libc4.a}
+\cindex{Communication Library}
+
+Cannonical Classes for Concurrency Control is a library of C++ classes
+designed to ease the process of writing parallel programs on
+multicomputers.  A variety of convenience functions and classes are
+provided which provide robust interfaces to message passing services.
+In some cases the C4 objects and functions provide typesafe interfaces
+to simple functionality.  In other cases, they provide abstractions
+which the user may subclass and specialize.
+
+C4 is a ``wrapper library''.  See D. Schmidt, C++ Report, for an
+excellent introduction to the philosophy of C++ wrapper technology.
+Currently C4 provides wrappers for Intel's NX message passing library
+for Paragon supercomputers.  However, a port of C4 to MPI is underway
+and will be available eventually.
+
+The following sections introduce C4 and document the classes it
+provides. 
+
+\begin{menu}
+* Using libc4.a::      Linking and using the C4 class library.
+<CLASS_LIST_MENU>
+\end{menu}
+
+\node Using libc4.a, <FIRST_CLASS>, C4, C4
+\section{Using the C4 class library}
+\cindex{using C3}
+
+It's easy to use, just jump right in!
+
+<DUMP_CLASSES>

@@ -1,0 +1,101 @@
+#!/usr/bin/perl
+# Geoffrey Furnish
+# 3 May 1994
+#
+# A Perl script to manage preparation of C4 releases.
+
+print "C4 release preparation.\n\n";
+
+$tag = `date +%y%m%d`;
+chop $tag;
+
+print "Enter tag for release (default=$tag) : ";
+$ans = <STDIN>;
+chop $ans;
+
+$tag = $ans if $ans ne "";
+
+print "Constructing C4 release with tag $tag.\n";
+
+$dir = "/tmp/c4-$tag";
+
+# Make space in /tmp for building this release.  Delete any vestiges
+# of a prior build (like while this script is under development).
+
+system( "rm -rf $dir $dir.tar $dir.tar.gz" );
+mkdir( $dir, 0755 );
+mkdir( "$dir/man3", 0755 );
+
+# Now construct the release file tree.
+
+system( "cp README FAQ COPYING.LIB $dir" );
+system( "cp *.h *.cc $dir" );	# This could be changed to do the copyright insertion. 
+system( "cp mk.ex $dir/makefile" );
+
+system( "autodoc *.h *.cc" );
+system( "mv *.3 $dir/man3" );
+
+system( "rm $dir/DstArray.* $dir/pt_DstArray.cc $dir/man3/DstArray.3" );
+
+# Should do something to stuff the LGPL copyright notice into each
+# file.
+
+# Now let's build the HTML man pages and stuff them where they go.
+
+system( "rm -f ~/public_html/c4/man/*" );
+system( "rm -f ~/public_html/c4man.html" );
+
+# Begin constructing an HTML page for reaching each of the man pages.
+
+open( HTML, "> $ENV{'HOME'}/public_html/c4/c4man.html" ) || die "Can't open html page!\n";
+
+print HTML "<HTML>
+<HEAD>
+
+<TITLE>
+C4 Man Pages
+</TITLE>
+
+</HEAD>
+
+<BODY>
+<H1>Man Pages for the Canonical Classes for Concurrency Control</H1>
+
+The following man pages are available:
+
+<UL>
+";
+
+opendir( DIR, "$dir/man3" ) || die "Can't open man3\n";
+@filenames = readdir( DIR );
+closedir( DIR );
+
+for (@filenames) {
+    next unless /\.3$/;
+    print "Processing $_ to HTML\n";
+    system( "nroff -man $dir/man3/$_ | man2html > ~/public_html/c4/man/$_.html" );
+    print HTML "<LI> <A HREF=\"man/$_.html\"> $_ </A> </LI>\n";
+}
+
+# Finish up the controlling HTML page.
+
+print HTML "
+</UL>
+</BODY>
+
+</HTML>
+";
+
+close HTML;
+
+# Now tar it up and compress it.
+
+system( "(cd /tmp; tar cvf c4-$tag.tar c4-$tag)" );
+
+system( "gzip /tmp/c4-$tag.tar" );
+
+# Inform release coordinator of the status.
+
+print "Constructed C4 distribution file in /tmp:\n";
+system( "ls -l /tmp/c4-$tag.tar.gz" );
+print "You may now move it to it's final location.\n";
