@@ -43,6 +43,7 @@ AC_RUNTESTS(tstFrequency \
             tstRZ_Surface_tracking \
 	    tstParticle \
             tstParticle_trans \
+            tstIMC_Objects_Builder \
             tstTransporter, 1 2 4)
 
 # DRACO SETUP

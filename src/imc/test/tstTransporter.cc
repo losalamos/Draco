@@ -258,14 +258,14 @@ void check_rw_tallies<MG,MGPT>(SP<Tally<MT> > tally, int num_run)
     rtt_c4::global_sum(nrws);
 
     // check sums
-    if (!soft_equiv(erg_dep_tot, 0.081277207, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ew_escaped, 0.0080160309, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ecen_tot, 0.279052307092, 1.e-6)) ITFAILS;
+    if (!soft_equiv(erg_dep_tot, 0.081354657, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ew_escaped, 0.0080186845, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ecen_tot, 0.278972203090, 1.e-6)) ITFAILS;
     if (ncen_tot != 970)                              ITFAILS;
-    if (neff_scat != 252)                             ITFAILS;
+    if (neff_scat != 260)                             ITFAILS;
     if (nbnd_cross != 193)                            ITFAILS;
     if (nescaped != 26)                               ITFAILS;
-    if (nrws   != 201)                                ITFAILS;
+    if (nrws   != 196)                                ITFAILS;
 
     // check num_run
     if (num_run != 996) ITFAILS;

@@ -179,6 +179,8 @@ void mg_test()
     {
 	SP<Opacity<MESH,MG> > o = opacities.first;
 	if (o->get_Frequency()->get_num_groups() != 2) ITFAILS;
+
+	SP<Diffusion_Opacity<MESH> > d = opacities.second;
 	
 	for (int i = 1; i <= 6; i++)
 	{
@@ -209,7 +211,7 @@ void mg_test()
 		rsum += r;
 		bsum += b;
 
-		rssum += r * 1.0 / (g+0.01);
+		rssum += r * 1.0 / (g);
 		bssum += b * g;
 
 		if (!soft_equiv(egc[g-1], bssum)) ITFAILS;
@@ -226,7 +228,8 @@ void mg_test()
 	    beta = 4.0 * rtt_mc::global::a * 8.0 / (0.1 * mat->get_rho(i));
 	    f    = 1.0 / (1.0 + imp * beta * rtt_mc::global::c * dt * planck);
 	    
-	    if (!soft_equiv(o->get_fleck(i), f)) ITFAILS;
+	    if (!soft_equiv(o->get_fleck(i), f))                      ITFAILS;
+	    if (!soft_equiv(d->get_Rosseland_opacity(i), rsum/rssum)) ITFAILS;
 	}
     }
 

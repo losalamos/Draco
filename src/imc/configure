@@ -1589,6 +1589,7 @@ fi;
             tstRZ_Surface_tracking \
 	    tstParticle \
             tstParticle_trans \
+            tstIMC_Objects_Builder \
             tstTransporter"
 
 	test_nprocs="1 2 4"

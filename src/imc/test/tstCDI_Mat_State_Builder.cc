@@ -165,6 +165,7 @@ void gray_cdi_mat_state_test()
     if (rtt_imc_test::passed)
 	PASSMSG("CDI Opacity passes all tests in Gray test.");
 }
+
 //---------------------------------------------------------------------------//
 
 void gray_cdi_diffusion_mat_state_test()
@@ -178,57 +179,35 @@ void gray_cdi_diffusion_mat_state_test()
     SP<IMC_CDI_Interface<PT> >  interface(new IMC_CDI_Interface<PT>(1));
     
     // pointer to a mat state builder
-    SP<Mat_State_Builder<MT,G> > builder;
+    SP<Mat_State_Builder<MT,G> > builder;   
+    SP<Mat_State<MT> >           mat_state;
+    SP<Opacity<MT,G> >           opacity ;
+    SP<Diffusion_Opacity<MT> >   diff;
 
     // make a CDI mat state builder
     builder = new CDI_Mat_State_Builder<MT,G>(interface);
 
-    // build mat classes
-    builder->build_mat_classes(mesh);
-
-    // get opacity and mat state
-    SP<Mat_State<MT> >  mat_state = builder->get_Mat_State();
-    SP<Opacity<MT, G> > opacity   = builder->get_Opacity();
-
-    // get the diffusion opacities
-    SP<Diffusion_Opacity<MT> > diff = builder->get_Diffusion_Opacity();
-    if (!diff)                  ITFAILS;
-    if (diff->num_cells() != 6) ITFAILS;
-
-    // check the opacities, the rosseland opacities should be the absorption
-    // + scattering because these opacities are analytic
+    // build mat classes; this should fail with an assertion thrown because
+    // we do not define a Rosseland,absorption opacity
+#if DBC & 2
+    bool caught = false;
+    try
     {
-	double opac_s = 1.01;
-	double opac_1 = 100.0 / 27.0 + opac_s;
-	double opac_2 = 1.5 + opac_s;
-	double opac_3 = 1.0 + .1 * 3.0 + opac_s;
-
-	if (!soft_equiv(diff->get_Rosseland_opacity(1), opac_1 * 1.0)) ITFAILS;
-	if (!soft_equiv(diff->get_Rosseland_opacity(2), opac_3 * 2.0)) ITFAILS;
-	if (!soft_equiv(diff->get_Rosseland_opacity(3), opac_1 * 1.0)) ITFAILS;
-	if (!soft_equiv(diff->get_Rosseland_opacity(4), opac_2 * 3.0)) ITFAILS;
-	if (!soft_equiv(diff->get_Rosseland_opacity(5), opac_1 * 1.0)) ITFAILS;
-	if (!soft_equiv(diff->get_Rosseland_opacity(6), opac_2 * 2.0)) ITFAILS;
-
-	for (int i = 1; i <= 6; i++)
-	{
-	    double dedT = mat_state->get_dedt(i);
-	    double opac = opacity->get_sigma_abs(i);
-	    double fleck_ref   = 1.0 / 
-		(1.0 + 4.0*rtt_mc::global::a*rtt_mc::global::c*27.0*
-		 mesh->volume(i)*0.001/dedT*opac);
-
-	    if (!soft_equiv(diff->get_fleck(i), fleck_ref)) ITFAILS;
-	}
+	builder->build_mat_classes(mesh);
     }
-
-    if (rtt_imc_test::passed)
+    catch (const rtt_dsxx::assertion &ass)
     {
 	ostringstream m;
-	m << "CDI Diffusion_Opacity passes tests for interface with"
-	  << " analytic CDI opacity.";
+	m << "Good, caught assertion about undefined gray "
+	  << "Rosseland absorption opacity.";
 	PASSMSG(m.str());
+	caught = true;
     }
+    if (!caught)
+    {
+	FAILMSG("Did not catch Rosseland,absorption undefined error.");
+    }
+#endif
 
     // do test with rosseland opacities defined in the CDI
 
@@ -281,31 +260,6 @@ void gray_cdi_diffusion_mat_state_test()
 	m << "CDI Diffusion_Opacity passes tests for interface with"
 	  << " Rosseland CDI opacities defined.";
 	PASSMSG(m.str());
-    }
-
-    // now check that if the only gray opacities we have in CDI are Planck
-    // the problem should throw an assertion
-    SP<IMC_CDI_Diffusion_Interface<PT> > bad_interface(
-	new IMC_CDI_Diffusion_Interface<PT>("gray", true));
-    bool caught = false;
-    try
-    {
-	// make a new builder
-	builder = new CDI_Mat_State_Builder<MT,G>(bad_interface);
-	
-	// build mat classes
-	builder->build_mat_classes(mesh);	
-    }
-    catch (const rtt_dsxx::assertion &ass)
-    {
-	caught = true;
-	ostringstream m;
-	m << "Good, caught the following assertion, " << ass.what();
-	PASSMSG(m.str());
-    }
-    if (!caught)
-    {
-	FAILMSG("Failed to catch assertion in CDI_Mat_State_Builder.");
     }
     
     if (rtt_imc_test::passed)
@@ -593,8 +547,7 @@ void mg_cdi_diffusion_mat_state_test()
 
 		// sums (scattering is 1.01)
 		ros_sum         += r_g;
-		inv_sig_ros_sum += r_g / (opacity->get_sigma_abs(c, g) + 
-					  1.01 * mat_state->get_rho(c));
+		inv_sig_ros_sum += r_g / (opacity->get_sigma_abs(c, g));
 	    }
 
 	    // check ros sum

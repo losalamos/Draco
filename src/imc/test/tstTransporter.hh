@@ -192,12 +192,8 @@ RW_Interface<PT>::RW_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder> osb)
 	mat_data->specific_heat[i+mod] = .2;
 
 	// rosseland opacities
-	mat_data->rosseland_opacity[i] =
-	    mat_data->gray_absorption_opacity[i] +
-	    mat_data->gray_scattering_opacity[i];
-	mat_data->rosseland_opacity[i+mod] = 
-	    mat_data->gray_absorption_opacity[i+mod] +
-	    mat_data->gray_scattering_opacity[i+mod];
+	mat_data->rosseland_opacity[i]     = 100.5 * density[i];
+	mat_data->rosseland_opacity[i+mod] = 50.0 * density[i+mod];
 
 	// temperature
 	temperature[i]   = 1.0;

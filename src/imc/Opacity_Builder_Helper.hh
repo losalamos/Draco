@@ -40,6 +40,10 @@ namespace rtt_imc
  * classes and implements it.  We do this using a helper class instead of the
  * Mat_State_Builder base class because it is easier to specialize on FT
  * (Frequency Type) with a helper class.
+ *
+ * For gray specializations the helper builds Fleck factors.  For multigroup
+ * specializations the helper builds rtt_imc::Opacity and
+ * rtt_imc::Diffusion_Opacity objects.
  */
 /*!
  * \example imc/test/tstOpacity_Builder_Helper.cc
@@ -49,6 +53,8 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) (Fri Aug  8 16:18:04 2003) Thomas M. Evans: original
+// 1) 25-AUG-2003 : updated to integrate the Rosseland absorption opacity
+//                  instead of the Rosseland total opacity
 // 
 //===========================================================================//
 
@@ -281,10 +287,11 @@ Opacity_Builder_Helper<MT,Multigroup_Frequency>::build_Opacity(
 	    // assign to the cdf
 	    emission_group_cdf(cell)[g-1] = sig_p_sum;
 
-	    // absorption + scattering
-	    tot_sig_g = absorption(cell)[g-1] + scattering(cell)[g-1];
+	    // we calculate the rosseland absorption opacity, not the
+	    // rosseland total opacity
+	    tot_sig_g = absorption(cell)[g-1];
 	    
-	    // calculate numerator of Rosseland opacity
+	    // calculate numerator of Rosseland absorption opacity
 	    if (tot_sig_g == 0.0)
 	    {
 		inv_sig_r_sum += rtt_mc::global::huge;

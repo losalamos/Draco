@@ -31,7 +31,7 @@ namespace rtt_imc
  * the class are Fleck factors and gray Rosseland opacities (needed to
  * generate diffusion coefficients):
  * 
- * - Rosseland gray opacities (1/cm)
+ * - Rosseland gray absorption opacities (1/cm)
  * - fleck factors (dimensionaless)
  *
  * Also, the class can generate diffusion coefficients and the gray Rosseland
@@ -47,6 +47,7 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) original
+// 1) 25-AUG-03 : updated to 
 // 
 //===========================================================================//
 
@@ -79,7 +80,7 @@ class Diffusion_Opacity
     //! Get the Fleck factor in a cell.
     double get_fleck(int cell) const { return fleck->fleck(cell); }
 
-    //! Get the gray Rosseland opacity in a cell (1/cm).
+    //! Get the gray Rosseland absorption opacity in a cell (1/cm).
     double get_Rosseland_opacity(int c) const { return rosseland(c); }
 
     //! Get the Rosseland effective scattering opacity in a cell (1/cm).

@@ -52,15 +52,13 @@ template<class MT> class Fleck_Factors;
  * The CDIs \b must contain data for absorption and scattering. The
  * rtt_cdi::Model types for each are specified by the interface. If
  * Diffusion_Opacity objects need to be built then the data required depends
- * upon the frequency treatment.  For gray, if the CDIs have the Rosseland
- * total opacity set (rtt_cdi::Model == rtt_cdi::ROSSELAND and
- * rtt_cdi::Reaction == rtt_cdi::TOTAL) then that is used.  Otherwise, the
- * absorption and scattering opacities are added together to estimate the
- * Rosseland total opacity.  However, if the absorption opacity model is
- * rtt_cdi::PLANCK then an assertion is thrown.
+ * upon the frequency treatment:
  *
- * For multigroup, the Rosseland opacities are calculated by integrating over
- * each group as follows:
+ * \arg for gray, the CDIs must have the Rosseland absorption opacity defined
+ * (rtt_cdi::Model == ROSSELAND, rtt_cdi::Reaction == ABSORPTION).
+ *
+ * \arg for multigroup, the Rosseland opacities are calculated by integrating
+ * over each group as follows:
  * \f[
  * \frac{1}{\sigma_{R}} = \frac{\int(\sigma_{a}+\sigma_{s})
  * \frac{\partial B}{\partial T}}{\int\frac{\partial B}{\partial T}}
@@ -87,6 +85,8 @@ template<class MT> class Fleck_Factors;
 // 3) 08-AUG-2003 : updated to build diffusion opacities for mg problems
 // 4) 11-AUG-2003 : updated to use partial template specialization (like
 //                  Flat_Mat_State_Builder) instead of class specialization.
+// 5) 25-AUG-2003 : updated so that Rosseland absorption opacities are used
+//                  to build the Diffusion_Opacity
 // 
 //===========================================================================//
 

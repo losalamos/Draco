@@ -309,12 +309,8 @@ void CDI_Mat_State_Builder<MT,FT>::build_diff_opacity_gray(
     SP_CDI cdi;
 
     // reaction and model types
-    rtt_cdi::Reaction tot = rtt_cdi::TOTAL;
-    rtt_cdi::Reaction sct = rtt_cdi::SCATTERING;
     rtt_cdi::Reaction abs = rtt_cdi::ABSORPTION;
     rtt_cdi::Model    ros = rtt_cdi::ROSSELAND;
-    rtt_cdi::Model    mabs;
-    rtt_cdi::Model    msct;
 
     // loop through the cells and assign the opacities and fleck factor
     for (int cell = 1; cell <= num_cells; cell++)
@@ -333,35 +329,12 @@ void CDI_Mat_State_Builder<MT,FT>::build_diff_opacity_gray(
 	Check (T   >= 0.0);
 	Check (rho >  0.0);
 
-	// determine how to calculate the Rosseland opacity:
-	// (multiply by density to convert to /cm)
+	// the Rosseland absorption opacity must be defined in the CDI
+	Check (cdi->isGrayOpacitySet(ros, abs));
 	
-	// if the Rosseland total opacity is given then use it
-	if (cdi->isGrayOpacitySet(ros, tot))
-	{
-	    rosseland(cell) = cdi->gray(ros, tot)->getOpacity(T, rho) * rho;
-	}
-
-	// otherwise add the absorption and scattering together to estimate
-	// the Rosseland opacity (assuming that the absorption is not Planck)
-	else if (cdi_models[icdi].first != rtt_cdi::PLANCK)
-	{
-	    // get the models for the absorption and scattering
-	    mabs = static_cast<rtt_cdi::Model>(cdi_models[icdi].first);
-	    msct = static_cast<rtt_cdi::Model>(cdi_models[icdi].second);
-	    
-	    // now add scattering to absorption to get the Rosseland total
-	    rosseland(cell) = (cdi->gray(mabs, abs)->getOpacity(T, rho)  +
-			       cdi->gray(msct, sct)->getOpacity(T, rho)) * rho;
-	}
-
-	// if the only thing we are given is the Planck opacity for
-	// absorption then we fail
-	else
-	{
-	    throw rtt_dsxx::assertion(
-		"Cannot build Rosseland opacity from Planck absorption.");
-	}
+	// get the rosseland absorption from cdi
+	// (multiply by density to convert to /cm)
+	rosseland(cell) = cdi->gray(ros, abs)->getOpacity(T, rho) * rho;
 
 	Check (rosseland(cell) >= 0.0);
     }

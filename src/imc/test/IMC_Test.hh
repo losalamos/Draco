@@ -631,7 +631,7 @@ class IMC_CDI_Diffusion_Interface :
 
   public:
     // constructor -> the default processor capacity is 6 cells
-    IMC_CDI_Diffusion_Interface(const std::string &, bool = false);
+    IMC_CDI_Diffusion_Interface(const std::string &);
 
     // general interface
     double get_delta_t() const { return delta_t; }
@@ -674,8 +674,7 @@ class IMC_CDI_Diffusion_Interface :
 // constructor
 template<class PT>
 IMC_CDI_Diffusion_Interface<PT>::IMC_CDI_Diffusion_Interface(
-    const std::string &freq,
-    bool               bad) 
+    const std::string &freq) 
     : density(6),   
       temperature(6, 3.0), 
       implicitness(1.0), 
@@ -763,7 +762,7 @@ IMC_CDI_Diffusion_Interface<PT>::IMC_CDI_Diffusion_Interface(
 				    planck, rtt_cdi::ABSORPTION,
 				    rtt_cdi::PLANCK));
     SP<const GrayOpacity> gop_r(new Analytic_Gray_Opacity(
-				    ross, rtt_cdi::TOTAL,
+				    ross, rtt_cdi::ABSORPTION,
 				    rtt_cdi::ROSSELAND)); 
     SP<const GrayOpacity> gop_s(new Analytic_Gray_Opacity(
 				    scat, rtt_cdi::SCATTERING));
@@ -786,9 +785,8 @@ IMC_CDI_Diffusion_Interface<PT>::IMC_CDI_Diffusion_Interface(
     cdi_list[0]->setMultigroupOpacity(mgop_s);
     cdi_list[0]->setEoS(eos_1);
 
-    // do not set to test assertion throwing if bad
-    if (!bad)
-	cdi_list[0]->setGrayOpacity(gop_r);
+    // rosseland absorption opacity
+    cdi_list[0]->setGrayOpacity(gop_r);
 	      
     // now make models; depends if we are being used for gray or multigroup
     if (freq == "gray")
