@@ -799,6 +799,65 @@ AC_DEFUN([AC_SPICA_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_XERCES_SETUP
+dnl
+dnl XERCES LIBRARY SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_XERCES_SETUP], [dnl
+
+   dnl define --with-xerces
+   AC_ARG_WITH(xerces,
+      [  --with-xerces[=lib]      determine the XERCES xml lib (xerces-c is default)])
+	
+   dnl define --with-xerces-inc and --with-xerces-lib
+   AC_WITH_DIR(xerces-inc, XERCES_INC, \${XERCES_INC_DIR},
+	       [tell where XERCES includes are])
+   AC_WITH_DIR(xerces-lib, XERCES_LIB, \${XERCES_LIB_DIR},
+	       [tell where XERCES libraries are])
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_xerces=$1
+
+   # choices are with_xerces = lfg, lcg, yes, or no
+
+   # default (xerces is set to xerces-c by default)
+   if test "${with_xerces:=xerces-c}" = yes ; then
+       with_xerces='xerces-c'
+   fi
+
+])
+
+##---------------------------------------------------------------------------##
+
+AC_DEFUN([AC_XERCES_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_xerces}"; then
+
+       # include path
+       if test -n "${XERCES_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${XERCES_INC}"
+       fi
+   
+       # libraries
+       if test -n "${XERCES_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_xerces, -L${XERCES_LIB} -l${with_xerces})
+       elif test -z "${XERCES_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_xerces, -l${with_xerces})
+       fi
+
+       # add xerces directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${XERCES_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${XERCES_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_VENDOR_FINALIZE
 dnl
 dnl Run at the end of the environment setup to add defines required by
@@ -825,6 +884,7 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    AC_GRACE_FINALIZE
    AC_METIS_FINALIZE
    AC_SPICA_FINALIZE
+   AC_XERCES_FINALIZE
 
    AC_GSL_FINALIZE
    AC_GSLCBLAS_FINALIZE
@@ -873,6 +933,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_EOSPAC5_SETUP(pkg)
    AC_GRACE_SETUP(pkg)
    AC_SPICA_SETUP(pkg)
+   AC_XERCES_SETUP(pkg)
 ])
 
 dnl-------------------------------------------------------------------------dnl
