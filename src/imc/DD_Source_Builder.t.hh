@@ -103,7 +103,7 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     Require(num_cells == state->num_cells());
     Require(num_cells == opacity->num_cells());
 
-    // if we don't have a census, build it 
+    // if we don't have a census object, build it 
     if (!census)
 	calc_initial_census(mesh, state, opacity, rnd_control);
     else
@@ -126,10 +126,9 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     // calculate the number of source particles for all source particles
     calc_source_numbers();
 
-    // comb census
+    // comb census -- even if census is empty; must update local_ncen
     double eloss_comb = 0;
-    if (census->size() > 0)
-	comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb);
+    comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb);
 
     // calculate global values of energy loss and numbers of particles due
     // to combing the census

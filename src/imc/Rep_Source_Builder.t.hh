@@ -12,6 +12,7 @@
 #include "Rep_Source_Builder.hh"
 #include "Mesh_Operations.hh"
 #include "Global.hh"
+#include "mc/Parallel_Data_Operator.hh"
 #include "c4/global.hh"
 #include <iomanip>
 
@@ -21,6 +22,7 @@ namespace rtt_imc
 using C4::nodes;
 using C4::node;
 using rtt_dsxx::SP;
+using rtt_mc::Parallel_Data_Operator;
 
 using std::cout;
 using std::endl;
@@ -96,7 +98,7 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     Require(num_cells == state->num_cells());
     Require(num_cells == opacity->num_cells());
 
-    // if we don't have a census build it
+    // if we don't have a census object, build it
     if (!census)
 	calc_initial_census(mesh, state, opacity, rnd_control);
     else
@@ -113,10 +115,9 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     // calculate the number of source particles for all source particles
     calc_source_numbers();
 
-    // comb census
+    // comb census -- called even if census is empty; must update local_ncen
     double eloss_comb = 0;
-    if (census->size() > 0)
-	comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb);
+    comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb);
 
     // calculate global values of energy loss and numbers of particles due
     // to combing the census
