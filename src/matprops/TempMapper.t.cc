@@ -25,7 +25,7 @@ namespace rtt_matprops
  template<class MT>
  template<class FCV, class CCV, class OpAssignV>
  void TempMapper<MT>::tempCC2FC(FCV &faceTempsByMat, const CCV &cellTempsByMat,
-				const MT::ccsf &cellTempsAvg,
+				const typename MT::ccsf &cellTempsAvg,
 				const OpAssignV &opAssignV) const
  {
      // Copy the average CC temperatures to the cell faces.
@@ -64,8 +64,9 @@ namespace rtt_matprops
  }
 
  template<class MT>
- void TempMapper<MT>::calculateAlpha(MT::fcdsf &alpha,
-				     const MT::fcdsf &faceTempsAvg) const
+ void TempMapper<MT>::calculateAlpha(typename MT::fcdsf &alpha,
+				     const typename MT::fcdsf &faceTempsAvg)
+     const
  {
      // Get the temperatures in the cell adjacent to each face
 

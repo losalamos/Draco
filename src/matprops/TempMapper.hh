@@ -53,15 +53,15 @@ namespace rtt_matprops
      
      template<class FCV, class CCV, class OpAssignV>
      void tempCC2FC(FCV &faceTempsByMat, const CCV &cellTempsByMat,
-		    const MT::ccsf &cellTempsAvg,
+		    const typename MT::ccsf &cellTempsAvg,
 		    const OpAssignV &opAssignV) const;
 
    private:
     
      // IMPLEMENTATION
 
-     void calculateAlpha(MT::fcdsf &alpha,
-			 const MT::fcdsf &faceTempsAvg) const;
+     void calculateAlpha(typename MT::fcdsf &alpha,
+			 const typename MT::fcdsf &faceTempsAvg) const;
  };
 
 } // end namespace rtt_matprops
