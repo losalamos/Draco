@@ -53,7 +53,7 @@ struct DiffusionSelector
     typedef rtt_PCGDiffusionSolver::pcg_DB Options;
 
     template<class NML_GROUP, class TDB>
-    static Options create(const NML_GROUP &g, const TDB &tdb)
+    static Options create(NML_GROUP &g, const TDB &tdb)
     {
 	Options options("pcg");
 	options.setup_namelist(g);

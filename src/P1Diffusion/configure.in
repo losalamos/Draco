@@ -28,6 +28,7 @@ then
   AC_MSG_RESULT([PCGDiffusionSolver])
   AC_PCGLIB_SETUP(test)
   AC_DEFINE(SELECTOR_PCG_TEST)
+  AC_NEEDS_LIBS_TEST(PCGDiffusionSolver linalg)
 else
   AC_MSG_RESULT([ConjGradDiffusionSolver])
   AC_DEFINE(SELECTOR_CONJGRAD_TEST)
