@@ -18,6 +18,8 @@
 
 namespace rtt_cdi_gandolf {
 
+namespace wrapper {
+
 using std::string;
 using std::vector;
  
@@ -53,35 +55,6 @@ using std::vector;
   * \brief Maximum number of data keys per material.
   */
  const int maxKeys = 25;
-
- /*!
-  * \brief The maximum number of temperatures in the data grid.
-  */
- const int maxTemps = 10;
-
- /*!
-  * \brief The maximum number of densities in the data grid.
-  */
- const int maxDensities = 10;
-
- /*!
-  * \brief The maximum number of group energy boundaries in the data
-  *        grid.  The maximum number of energy groups is 
-  *        ( maxGroupBoundaries - 1).
-  */
- const int maxGroupBoundaries = 35;
-
- /*!
-  * \brief The maximum number of gray opacities in the data file.
-  */
- const int maxGrayOpacities = maxTemps * maxDensities;
-
- /*!
-  * \brief The maximum number of multigroup opacities in the data
-  *        file.
- */
- const int maxMGOpacities = 
-     maxGrayOpacities * ( maxGroupBoundaries - 1 );
 
 //===========================================================================//
 /*! 
@@ -286,9 +259,9 @@ using std::vector;
  * \return             target[]
  *
  */
-    void string2char( const string &source, char target[], 
-		      int targetLength );	
-
+//     void string2char( const string &source, char target[], 
+// 		      int targetLength );	
+} // end namepsace wrapper
 } // end namespace rtt_cdi_gandolf
 
 
@@ -320,22 +293,22 @@ using std::vector;
 
 extern "C" {
 
-    void extc_gmatids( char *cfname, long int *matids, long int &ckmat,
+    void extc_gmatids( const char *cfname, long int *matids, long int &ckmat,
 		       long int &nmat, long int &ier );
 
     // key_length is specified to be 24 by the Gandolf standard.  This 
     // variable is set in the rtt_cdi_gandolf namespace but since this 
     // "extern C" block is outside of that namespace we must specify
     // this length manually.
-    void extc_gkeys( char *cfname, long int &matid, 
-		     char keys[][rtt_cdi_gandolf::key_length],
+    void extc_gkeys( const char *cfname, long int &matid, 
+		     char keys[][rtt_cdi_gandolf::wrapper::key_length],
 		     long int &kkeys, long int &nkeys, long int &ier );
 
-    void extc_gchgrids( char *cfname, long int &matid, long int &nt,
+    void extc_gchgrids( const char *cfname, long int &matid, long int &nt,
 			long int &nrho, long int &nhnu, 
 			long int &ngray, long int &nmg, long int &ier );
 
-    void extc_ggetgray( char *cfname,  long int &matid, char *key, 
+    void extc_ggetgray( const char *cfname,  long int &matid, const char *key, 
 			double *temps, long int &kt,    long int &nt, 
 			double *rhos,  long int &krho,  long int &nrho,
 			double *gray,  long int &kgray, long int &ngray,
@@ -346,7 +319,7 @@ extern "C" {
 			 double *gray,  long int &ngray,
 			 double &tlog, double &rlog, double &ans );
 
-    void extc_ggetmg( char *cfname,   long int &matid, char *key, 
+    void extc_ggetmg( const char *cfname,   long int &matid, const char *key, 
 		      double *temps,  long int &kt,    long int &nt,
 		      double *rhos,   long int &krho,  long int &nrho,
 		      double *hnus,   long int &khnu,  long int &nhnu,

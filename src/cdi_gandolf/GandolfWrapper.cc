@@ -13,31 +13,55 @@
 
 #include "ds++/Assert.hh"
 
+#include <iostream>
+#include <cstring>
+
 namespace rtt_cdi_gandolf {
+
+namespace wrapper {
 
 using std::string;
 
-void string2char( const string &source, char target[], 
-		  int targetLength )
-    {
-	// If the target c-string is longer than the source string then 
-	// copy the string into the c-string and pad the extra cells
-	// with blanks.	
+// void string2char( const string &source, char target[], 
+// 		  int targetLength )
+//     {
+// 	// If the target c-string is longer than the source string then 
+// 	// copy the string into the c-string and pad the extra cells
+// 	// with blanks.	
 	
-	// If the target c-string is shorter than the source string
-	// then copy targetLength characters from the source string
-	// into the target string.
+// 	// If the target c-string is shorter than the source string
+// 	// then copy targetLength characters from the source string
+// 	// into the target string.
 
-	if ( targetLength >= source.length() ) {
-	    for ( int i=0; i < source.length(); ++i )
-		target[i] = source[i];
-	    for ( int i=source.length(); i < targetLength; ++i )
-		target[i] = ' ';
-	} else {
-	    for ( int i=0; i < targetLength; ++i )
-		target[i] = source[i];
-	}
-    }
+// 	if ( targetLength >= source.length() ) {
+// 	    for ( int i=0; i < source.length(); ++i )
+// 		target[i] = source[i];
+// 	    for ( int i=source.length(); i < targetLength; ++i )
+// 		target[i] = ' ';
+// 	} else {
+// 	    for ( int i=0; i < targetLength; ++i )
+// 		target[i] = source[i];
+// 	}
+//     }
+
+ const char *s2ccwp( const string &source, const int n )
+     {
+	 // remove const-ness
+	 string s1(source);
+	 // create a string of spaces
+	 string padding(n-source.size(), ' ');
+	 // append padding to the source string
+	 s1.append(padding);
+	 // create a c-string of the correct length;
+	 char *c1 = new char [n];  // MEMORY LEAK ????????
+	 // copy the data from s1 into c1
+ 	 for ( int i=0; i<n; ++i )
+ 	     c1[i] = s1[i];
+	 // append a string terminator.
+	 c1[79] = '\0';
+	 // return the new c-string
+	 return c1;	 
+     }
 
 
     //----------------------------------------//
@@ -50,17 +74,17 @@ void string2char( const string &source, char target[],
 	    // ----------------------------------------
 	    // Create simple flat data types
 	    // ----------------------------------------
-	    
+
 	    // copy filename into a char array;
 	    // also remove constness.
- 	    char cfname[maxDataFilenameLength];
-	    string2char( fname, cfname, maxDataFilenameLength );
-	    
+//   	    char cfname[maxDataFilenameLength];
+//  	    string2char( fname, cfname, maxDataFilenameLength );
+
 	    // create "long int" versions of variables.
-	    long int li_nmat = static_cast<long int>(nmat);
-	    long int li_ier  = static_cast<long int>(ier);
+	    long int li_nmat = nmat;
+	    long int li_ier  = ier;
 	    // also remove constness from kmat.
-	    long int li_kmat = static_cast<long int>(kmat); 
+	    long int li_kmat = kmat; 
 
 	    // we don't know the value of nmat until runtime so we
 	    // must dynamically allocate li_matids.
@@ -69,8 +93,9 @@ void string2char( const string &source, char target[],
 	    // --------------------------------------------------
 	    // call the Gandolf library function
 	    // --------------------------------------------------
-
-	    extc_gmatids( cfname, li_matids, li_kmat, li_nmat, li_ier );
+	    
+	    extc_gmatids( s2ccwp(fname,maxDataFilenameLength),
+			  li_matids, li_kmat, li_nmat, li_ier );
 
 	    // ----------------------------------------
 	    // Copy the data back into C++ data types
@@ -78,8 +103,8 @@ void string2char( const string &source, char target[],
 
 	    // update the function arguments from their "long int"
 	    // counterparts.  We don't update kmat since it is const. 
-	    ier  = static_cast<int>(li_ier);
-	    nmat = static_cast<int>(li_nmat);
+	    ier  = li_ier;
+	    nmat = li_nmat;
 	    matids.resize( nmat );
 	    std::copy( li_matids, li_matids+nmat, matids.begin() );
 	    
@@ -105,13 +130,13 @@ void string2char( const string &source, char target[],
 	    
 	    // copy filename into a char array;
 	    // also remove constness.
-	    char cfname[maxDataFilenameLength];
-	    string2char( fname, cfname, maxDataFilenameLength );
+// 	    char cfname[maxDataFilenameLength];
+// 	    string2char( fname, cfname, maxDataFilenameLength );
 
-	    long int li_matid = static_cast<long int>(matid); // const
-	    long int li_kkeys = static_cast<long int>(kkeys); // const
-	    long int li_nkeys = static_cast<long int>(nkeys);
-	    long int li_ier   = static_cast<long int>(ier);
+	    long int li_matid = matid; // const
+	    long int li_kkeys = kkeys; // const
+	    long int li_nkeys = nkeys;
+	    long int li_ier   = ier;
 
 	    // we do not know the value of numKeys until after we call 
 	    // gkeys() so we create the character array keys[][] to be 
@@ -122,8 +147,9 @@ void string2char( const string &source, char target[],
 	    // --------------------------------------------------
 	    // call the Gandolf library function
 	    // --------------------------------------------------
-
-	    extc_gkeys( cfname, li_matid, keys, li_kkeys, li_nkeys,
+	    
+	    extc_gkeys( s2ccwp(fname,maxDataFilenameLength),
+			li_matid, keys, li_kkeys, li_nkeys,
 			li_ier );
 
 	    // ----------------------------------------
@@ -132,8 +158,8 @@ void string2char( const string &source, char target[],
 
 	    // we don't modify matID or kkeys because these are const
 	    // values.
-	    nkeys = static_cast<int>(li_nkeys);	    
-	    ier   = static_cast<int>(li_ier);
+	    nkeys = li_nkeys;	    
+	    ier   = li_ier;
 
 	    vkeys.resize( nkeys );
 	    char key[key_length];
@@ -162,24 +188,25 @@ void string2char( const string &source, char target[],
 	    // Create simple flat data types
 	    // ----------------------------------------
 	    
-	    // copy filename into a char array;
-	    // also remove constness.
-	    char cfname[maxDataFilenameLength];
-	    string2char( fname, cfname, maxDataFilenameLength );
+// 	    // copy filename into a char array;
+// 	    // also remove constness.
+// 	    char cfname[maxDataFilenameLength];
+// 	    string2char( fname, cfname, maxDataFilenameLength );
 	    
-	    long int li_matid = static_cast<long int>(matid); // const
-	    long int li_nt    = static_cast<long int>(nt); 
-	    long int li_nrho  = static_cast<long int>(nrho);
-	    long int li_nhnu  = static_cast<long int>(nhnu);
-	    long int li_ngray = static_cast<long int>(ngray);
-	    long int li_nmg   = static_cast<long int>(nmg);
-	    long int li_ier   = static_cast<long int>(ier);
+	    long int li_matid = matid; // const
+	    long int li_nt    = nt; 
+	    long int li_nrho  = nrho;
+	    long int li_nhnu  = nhnu;
+	    long int li_ngray = ngray;
+	    long int li_nmg   = nmg;
+	    long int li_ier   = ier;
 
 	    // --------------------------------------------------
 	    // call the Gandolf library function
 	    // --------------------------------------------------
-
-	    extc_gchgrids( cfname, li_matid, li_nt, li_nrho, li_nhnu,
+	    
+	    extc_gchgrids( s2ccwp(fname,maxDataFilenameLength), 
+			   li_matid, li_nt, li_nrho, li_nhnu,
 			   li_ngray, li_nmg, li_ier );
 
 	    // ----------------------------------------
@@ -188,12 +215,12 @@ void string2char( const string &source, char target[],
 
 	    // copy data back into standard ojects.
 	    // we don't modify matID because it is a const value.
-	    nt    = static_cast<int>(li_nt);
-	    nrho  = static_cast<int>(li_nrho);
-	    nhnu  = static_cast<int>(li_nhnu);
-	    ngray = static_cast<int>(li_ngray);
-	    nmg   = static_cast<int>(li_nmg);
-	    ier   = static_cast<int>(li_ier);
+	    nt    = li_nt;
+	    nrho  = li_nrho;
+	    nhnu  = li_nhnu;
+	    ngray = li_ngray;
+	    nmg   = li_nmg;
+	    ier   = li_ier;
 
     } // end of gchgrids
 
@@ -213,21 +240,21 @@ void string2char( const string &source, char target[],
 
 	    // copy filename into a char array;
 	    // also remove constness.
-	    char cfname[maxDataFilenameLength];
-	    string2char( fname, cfname, maxDataFilenameLength );
+// 	    char cfname2[maxDataFilenameLength];
+// 	    string2char( fname, cfname, maxDataFilenameLength );
 
-	    char key[ key_length ];                           
-	    string2char( skey, key, key_length );
+// 	    char key[ key_length ];                           
+// 	    string2char( skey, key, key_length );
 	    
 	    // cast all integers as long integers before calling ggetgray.
-	    long int li_matid = static_cast<long int>(matid); // const
-	    long int li_kt    = static_cast<long int>(kt);    // const
-	    long int li_nt    = static_cast<long int>(nt);
-	    long int li_krho  = static_cast<long int>(krho);  // const
-	    long int li_nrho  = static_cast<long int>(nrho);
-	    long int li_kgray = static_cast<long int>(kgray); // const
-	    long int li_ngray = static_cast<long int>(ngray);
-	    long int li_ier   = static_cast<long int>(ier);
+	    long int li_matid = matid; // const
+	    long int li_kt    = kt;    // const
+	    long int li_nt    = nt;
+	    long int li_krho  = krho;  // const
+	    long int li_nrho  = nrho;
+	    long int li_kgray = kgray; // const
+	    long int li_ngray = ngray;
+	    long int li_ier   = ier;
 	    
 	    // Allocate memory for double arrays (temps,rhos,data).
 	    // These will be copied into vector<double> objects later.
@@ -239,7 +266,9 @@ void string2char( const string &source, char target[],
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_ggetgray( cfname,      li_matid, key, 
+	    extc_ggetgray( s2ccwp(fname,maxDataFilenameLength),
+			   li_matid, 
+			   s2ccwp(skey,key_length),
 			   array_temps, li_kt,    li_nt, 
 			   array_rhos,  li_krho,  li_nrho,
 			   array_data,  li_kgray, li_ngray,
@@ -249,10 +278,10 @@ void string2char( const string &source, char target[],
 	    // Copy the data back into C++ data types
 	    // ----------------------------------------
 
-	    nt    = static_cast<int>(li_nt);
-	    nrho  = static_cast<int>(li_nrho);
-	    ngray = static_cast<int>(li_ngray);
-	    ier   = static_cast<int>(li_ier);
+	    nt    = li_nt;
+	    nrho  = li_nrho;
+	    ngray = li_ngray;
+	    ier   = li_ier;
 
 	    temps.resize(nt);
 	    rhos.resize(nrho);
@@ -283,9 +312,9 @@ void string2char( const string &source, char target[],
 	    // ----------------------------------------
 
 	    // cast all integers as long integers before calling ggetgray.
-	    long int li_nt    = static_cast<long int>(nt);    // const
-	    long int li_nrho  = static_cast<long int>(nrho);  // const
-	    long int li_ngray = static_cast<long int>(ngray); // const
+	    long int li_nt    = nt;    // const
+	    long int li_nrho  = nrho;  // const
+	    long int li_ngray = ngray; // const
 	    double tlog = const_tlog;
 	    double rlog = const_rlog;
 
@@ -336,25 +365,25 @@ void string2char( const string &source, char target[],
 	    // Create simple flat data types
 	    // ----------------------------------------
 
-	    // copy filename into a char array;
-	    // also remove constness.
-	    char cfname[maxDataFilenameLength];
-	    string2char( fname, cfname, maxDataFilenameLength );
+// 	    // copy filename into a char array;
+// 	    // also remove constness.
+// 	    char cfname[maxDataFilenameLength];
+// 	    string2char( fname, cfname, maxDataFilenameLength );
 
-	    char key[ key_length ];                           
-	    string2char( skey, key, key_length);
+// 	    char key[ key_length ];                           
+// 	    string2char( skey, key, key_length);
 
 	    // cast all integers as long integers before calling ggetgray.
-	    long int li_matid = static_cast<long int>(matid); // const
-	    long int li_kt    = static_cast<long int>(kt);    // const
-	    long int li_nt    = static_cast<long int>(nt);
-	    long int li_krho  = static_cast<long int>(krho);  // const
-	    long int li_nrho  = static_cast<long int>(nrho);
-	    long int li_khnu  = static_cast<long int>(khnu);  // const
-	    long int li_nhnu  = static_cast<long int>(nhnu);
-	    long int li_kdata = static_cast<long int>(kdata); // const
-	    long int li_ndata = static_cast<long int>(ndata);
-	    long int li_ier   = static_cast<long int>(ier);
+	    long int li_matid = matid; // const
+	    long int li_kt    = kt;    // const
+	    long int li_nt    = nt;
+	    long int li_krho  = krho;  // const
+	    long int li_nrho  = nrho;
+	    long int li_khnu  = khnu;  // const
+	    long int li_nhnu  = nhnu;
+	    long int li_kdata = kdata; // const
+	    long int li_ndata = ndata;
+	    long int li_ier   = ier;
 	    
 	    // Allocate memory for double arrays (temps,rhos,data).
 	    // These will be copied into vector<double> objects later.
@@ -367,7 +396,9 @@ void string2char( const string &source, char target[],
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_ggetmg( cfname,      li_matid, key, 
+	    extc_ggetmg( s2ccwp(fname,maxDataFilenameLength),
+			 li_matid, 
+			 s2ccwp(skey,key_length),
 			 array_temps, li_kt,    li_nt, 
 			 array_rhos,  li_krho,  li_nrho,
 			 array_hnus,  li_khnu,  li_nhnu,
@@ -378,11 +409,11 @@ void string2char( const string &source, char target[],
 	    // Copy the data back into C++ data types
 	    // ----------------------------------------
 
-	    nt    = static_cast<int>(li_nt);
-	    nrho  = static_cast<int>(li_nrho);
-	    nhnu  = static_cast<int>(li_nhnu);
-	    ndata = static_cast<int>(li_ndata);
-	    ier   = static_cast<int>(li_ier);
+	    nt    = li_nt;
+	    nrho  = li_nrho;
+	    nhnu  = li_nhnu;
+	    ndata = li_ndata;
+	    ier   = li_ier;
 
 	    // resize data found in the Opacity object.
 	    temps.resize(nt);
@@ -423,10 +454,10 @@ void string2char( const string &source, char target[],
 
 	    // cast all integers as long integers before calling
 	    // ggetgray.  Also remove "const-ness".	    
-	    long int li_nt    = static_cast<long int>(nt);    // const
-	    long int li_nrho  = static_cast<long int>(nrho);  // const
-	    long int li_nhnu  = static_cast<long int>(nhnu);  // const 
-	    long int li_ndata = static_cast<long int>(ndata); // const
+	    long int li_nt    = nt;    // const
+	    long int li_nrho  = nrho;  // const
+	    long int li_nhnu  = nhnu;  // const 
+	    long int li_ndata = ndata; // const
 	    double tlog = const_tlog;
 	    double rlog = const_rlog;
 
@@ -467,6 +498,7 @@ void string2char( const string &source, char target[],
 
 	} // end of ginggrlog
 
+} // end namespace wrapper
 
 } // end namespace rtt_cdi_gandolf
 

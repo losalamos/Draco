@@ -25,13 +25,13 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
     : dataFilename ( _data_filename ), matID( _matid ),
     numMaterials( 0 ), numKeys( 0 ), numTemps( 0 ), numDensities( 0 ), 
     numGroupBoundaries( 0 ), numGrayOpacities( 0 ), numMGOpacities( 0 ),
-    grayRosselandTableLoaded( false ), mgRosselandTableLoaded( false)
+    grayRosselandTableLoaded( false ), mgRosselandTableLoaded( false )
 	  
     {
 	// Gandolf will only look at the first "maxDataFilenameLength"
 	// characters of the data filename.  We must require that the
 	// given name is less than "maxDataFilenameLength" characters.
-	Require( dataFilename.length() < maxDataFilenameLength );
+	Require( dataFilename.length() < wrapper::maxDataFilenameLength );
 
 	// local variables
 	vector<int> matIDs;
@@ -40,8 +40,8 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 	// This call to Gandolf validates the datafile and if
 	// successful returns a list of material identifiers for which 
 	// the materials that exist in the data file.
-	gmatids( dataFilename, matIDs, maxMaterials, numMaterials,
-		 errorCode ); 
+	wrapper::gmatids( dataFilename, matIDs, wrapper::maxMaterials,
+			  numMaterials, errorCode ); 
 
 	// Abort if Gandolf returned an error.
 	switch ( errorCode ) {
@@ -71,8 +71,8 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 	Require( key_available( matID, matIDs ) );
 
 	// Retrieve keys available for this material from data file.
-	gkeys( dataFilename, matID, vkeys, maxKeys, numKeys,
-	       errorCode );
+	wrapper::gkeys( dataFilename, matID, vkeys, wrapper::maxKeys,
+			numKeys, errorCode );
 
 	// Abort if Gandolf returns an error.
 	switch ( errorCode ) {
@@ -99,9 +99,9 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 	}
 
 	// Retrieve size of the data set.
-	gchgrids( dataFilename, matID, numTemps, numDensities,
-		  numGroupBoundaries, numGrayOpacities,
-		  numMGOpacities, errorCode );
+	wrapper::gchgrids( dataFilename, matID, numTemps, numDensities,
+			   numGroupBoundaries, numGrayOpacities,
+			   numMGOpacities, errorCode );
 
 	// Abort if Gandolf returns an error.
 	switch ( errorCode ) {
@@ -172,11 +172,17 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 		 
 		 // Retrieve the gray data 
 		 int errorCode;
-		 ggetgray( dataFilename, matID, skey, 
-			   logGrayTemperatures, maxTemps, numTemps,
-			   logGrayDensities, maxDensities, numDensities,
-			   logGrayOpacities, maxGrayOpacities, numGrayOpacities,
-			   errorCode );
+		 wrapper::ggetgray( dataFilename, matID, skey, 
+				    logGrayTemperatures, numTemps, numTemps,
+				    logGrayDensities, numDensities, numDensities,
+				    logGrayOpacities, numGrayOpacities, numGrayOpacities,
+				    errorCode );
+// 		 wrapper::ggetgray( dataFilename, matID, skey, 
+// 				    logGrayTemperatures, wrapper::maxTemps, numTemps,
+// 				    logGrayTemperatures, wrapper::maxTemps, numTemps,
+// 				    logGrayDensities, wrapper::maxDensities, numDensities,
+// 				    logGrayOpacities, wrapper::maxGrayOpacities, numGrayOpacities,
+// 				    errorCode );
 
 		 // abort if Gandolf returned an error.
 		 switch ( errorCode ) {
@@ -242,7 +248,7 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 
 	 // Send the opacity grid information to the interpolation routine.
 	 double grayOpacity;
-	 gintgrlog( logTemperatures, numTemps, logDensities, numDensities,
+	 wrapper::gintgrlog( logTemperatures, numTemps, logDensities, numDensities,
 		    logGrayOpacities, numGrayOpacities, 
 		    log(targetTemp), log(targetDensity), grayOpacity );
 	 
@@ -280,11 +286,17 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 		 
 		 // Retrieve the multi-group data
 		 int errorCode;
-		 ggetmg( dataFilename, matID, skey, 
-			 logMGtemperatures, maxTemps, numTemps,
-			 logMGdensities, maxDensities, numDensities,
-			 groupBoundaries, maxGroupBoundaries, numGroupBoundaries,
-			 logMGOpacities, maxMGOpacities, numMGOpacities,
+// 		 wrapper::ggetmg( dataFilename, matID, skey, 
+// 			 logMGtemperatures, wrapper::maxTemps, numTemps,
+// 			 logMGdensities, wrapper::maxDensities, numDensities,
+// 			 groupBoundaries, wrapper::maxGroupBoundaries, numGroupBoundaries,
+// 			 logMGOpacities, wrapper::maxMGOpacities, numMGOpacities,
+// 			 errorCode );
+		 wrapper::ggetmg( dataFilename, matID, skey, 
+			 logMGtemperatures, numTemps, numTemps,
+			 logMGdensities, numDensities, numDensities,
+			 groupBoundaries, numGroupBoundaries, numGroupBoundaries,
+			 logMGOpacities, numMGOpacities, numMGOpacities,
 			 errorCode );
 		 
 		 // abort if Gandolf returned an error.
@@ -353,8 +365,8 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 	 vector<double> MGOpacity( numGroupBoundaries-1 );
 
 	 // Send the opacity grid information to the interpolation routine.
-	 gintmglog( logTemperatures, numTemps, logDensities, numDensities,
-		    numGroupBoundaries,
+	 wrapper::gintmglog( logTemperatures, numTemps, logDensities,
+			     numDensities, numGroupBoundaries,
 		    logMGOpacities, numMGOpacities, 
 		    log(targetTemp), log(targetDensity), MGOpacity );
 
