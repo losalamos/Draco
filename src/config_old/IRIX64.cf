@@ -56,6 +56,8 @@ CC	= cc
 CXX	= KCC -x -mips4 --no_implicit_include --strict -D_POSIX_SOURCE
 cmplr	= kai
 
+LDSHARED = cc -64 -shared
+
 ifeq ($(kcc),old)
 CXX	= /home/POOMA/KAI64-arobison/KCC_BASE/bin/KCC -x --no_implicit_include
 cmplr	= kar
@@ -261,7 +263,7 @@ PYLIBS =	$(PYTHON_CFG_DIR)/libpython1.4.a
 #PYLIBS += -L$(PYTHON_BASE)/lib -ltk8.0 -ltcl8.0 -lX11
 
 PYLIBS = -L/v/furnish/junk/lib/python1.5/config -lpython1.5 \
-	-L /v/furnish/junk/lib -ltk8.0 -ltcl8.0 -lX11
+	-L /v/furnish/junk/lib -lPltk -lMatrix -ltk8.0 -ltcl8.0 -lX11
 
 # Now configure the PYTHONPATH
 
