@@ -52,7 +52,7 @@ else
 	$(RM) -rf $(env) 
 endif
 	$(RM) lib*_$(env).* x*_$(env)
-	$(RM) $(tstprogs)
+	$(RM) $(tstprogs) $(puretstprogs)
 	$(RM) -rf ii_files
 
 .env_$(env):
