@@ -88,8 +88,11 @@ A complication resulting from this requirement arises from each linear
 algebra package having different matrix representations.
 The diffusion solver
 must have a mechanism to generate matrices of differing representations
-using a common mechanism, the \MFT
-mechanism\cite{Austern99}\cite{Myers96}.%
+using a common mechanism.
+We propose using a \emph{traits} based
+ \MFT
+mechanism\cite{Austern99}\cite{Myers96}
+as this common mechanism.%
 \footnote{This leads to a pattern that I have named the
   \code{Factory Traits} pattern.
   It is basically a variation of \S Implementation \P 4
@@ -97,8 +100,8 @@ mechanism\cite{Austern99}\cite{Myers96}.%
   pattern\cite{Gamma95}.}
 
 These differing matrix representations result from requirements for
-the efficient storage and manipulation of matrix, depending on the structure
-of the linear system, and the solution algorithm.
+the efficient storage and manipulation of matrix
+of multiple linear system structures, and the solution algorithms.
 For example, the linear system resulting
 from a one-dimensional three-point standard
 diffusion stencil may best be represented by a tri-diagonal matrix.
@@ -164,27 +167,6 @@ that has been specialized for the desired linear algebra package matrix.
     MatrixFactoryTraits<NewMatrix>::create(myDracoMatrix);
 \end{ttfamily}
 
-At this point the issues of restricting matrix conversions come into
-play.
-We may have a linear system defined by the diffusion
-solver for a totally unstructured mesh, expressed by Draco's compressed row
-storage representation (CRS).
-In addition we could desire that we create a matrix defined for a
-nine-point structured linear system.
-In this case, depending on the intent of the designer of the
-\MFT specialization,
-we may not allow the creation of the nine-point structured matrix
-from Draco's CRS representation.
-Alternatively we could allow the creation
-of the nine-point matrix, subject to the CRS matrix having the same
-sparsity pattern as defined by the nine-point matrix.
-
-If the designer disallows the conversion, then the above line of code
-will result in a \emph{compile time} failure.
-If the designer allows the conversion, then the above line of code
-will result in a possible \emph{run time} failure, along with
-a thrown exception.
-
 The following main program demonstrates how the common
 \MFT mechanism is used.
 In this case the \code{DenseMatrixRep} is a Draco-defined matrix
@@ -211,6 +193,10 @@ to fail at \emph{compile time}
 if not specialized with the desired matrix representation.
 It tries to invoke its \code{BogusMethod} utility, which has purposely
 been left undefined.
+
+This mechanism is used to provide an not so subtle reminder to the
+linear algebra package integrator to specialize the \MFT class with
+the desired matrix representations.
 
 \subsection{MatrixFactoryTraits.hh}
 
@@ -243,7 +229,8 @@ that takes any other input argument type.
 The templated version of \code{create} is an inlined static member function
 that immediately converts its input argument to a \code{CRSMatrixRep}, and
 then calls the overloaded version of \code{create}.
-There is a compile-time means for limiting the appropriate input arguments, in
+This provides
+a compile-time means for limiting the appropriate input arguments, in
 that compiling code that contains \code{create} invocations with
 arguments that do not have conversions to \code{CRSMatrixRep} specified
 will result in compile-time errors.
