@@ -121,8 +121,8 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
 
 	if ( casefile ) {
 	    // then case file exists, so parse the dump times
-	    string key("number of steps:");
-	    string line;
+	    std_string key("number of steps:");
+	    std_string line;
 	    int num_steps = 0;
 
 	    for (;;) {
