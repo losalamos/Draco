@@ -16,7 +16,6 @@
 #include "../DD_Transporter.hh"
 #include "../Particle_Buffer.hh"
 #include "../Particle.hh"
-#include "../Topology_Builder.hh"
 #include "../Release.hh"
 #include "../Mat_State.hh"
 #include "../Opacity.hh"
@@ -51,7 +50,6 @@ using rtt_imc::Rep_Transporter;
 using rtt_imc::DD_Transporter;
 using rtt_imc::Particle_Buffer;
 using rtt_imc::Particle;
-using rtt_imc::Topology_Builder;
 using rtt_imc::Flat_Mat_State_Builder;
 using rtt_imc::Mat_State;
 using rtt_imc::Opacity;
@@ -175,12 +173,44 @@ void DD_transporter_test()
     // get the dummy interface with a capacity of 3 cells (2 processor)
     SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb, 3));
 
-    // build the Topology builder and full replication topology
+    // build a DD topology
     SP<Topology> topology;
     if (C4::node() == 0)
     {
-	Topology_Builder<OS_Mesh> tb(interface);
-	topology = tb.build_Topology(mesh);
+	if (mesh->num_cells() != 6) ITFAILS;
+	
+	// build a DD topology with cells 1,2,3 on proc 0 and cells 4,5,6 on
+	// proc 1; we will expand this when we expand the test in general
+	
+	Topology::vf_int cpp(2, vector<int>(3));
+	Topology::vf_int ppc(6, vector<int>(1));
+	Topology::vf_int bc(2, vector<int>(3));
+
+	// procs per cell
+	ppc[0][0] = 0;
+	ppc[1][0] = 0;
+	ppc[2][0] = 0;
+	ppc[3][0] = 1;
+	ppc[4][0] = 1;
+	ppc[5][0] = 1;
+
+	// cells per proc
+	cpp[0][0] = 1;
+	cpp[0][1] = 2;
+	cpp[0][2] = 3;
+	cpp[1][0] = 4;
+	cpp[1][1] = 5;
+	cpp[1][2] = 6;
+
+	// boundary cell data
+	bc[0][0] = 4;
+	bc[0][1] = 5;
+	bc[0][2] = 6;
+	bc[1][0] = 1;
+	bc[1][1] = 2;
+	bc[1][2] = 3;
+
+	topology = new General_Topology(cpp, ppc, bc, "DD");
 
 	// cast to general topology for sending
 	const General_Topology *gt = dynamic_cast

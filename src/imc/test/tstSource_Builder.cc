@@ -18,11 +18,9 @@
 #include "../Flat_Mat_State_Builder.hh"
 #include "../Opacity.hh"
 #include "../Mat_State.hh"
-#include "../Topology_Builder.hh"
 #include "../Source.hh"
 #include "../Release.hh"
 #include "../Particle.hh"
-#include "../Source_Init.hh"
 #include "../Global.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/General_Topology.hh"
@@ -53,9 +51,7 @@ using rtt_imc::Opacity;
 using rtt_imc::Flat_Mat_State_Builder;
 using rtt_imc::Mat_State;
 using rtt_imc::Source;
-using rtt_imc::Topology_Builder;
 using rtt_imc::Particle;
-using rtt_imc::Source_Init;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::General_Topology;
@@ -71,25 +67,6 @@ typedef SP<Particle<OS_Mesh> > SP_Particle;
 
 //---------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
-// source init test --> satisfies all topologies because source init must be
-// run with a full mesh
-
-void source_init_test()
-{
-    // build a FULL mesh --> this mesh will be fully replicated on all
-    // processors in the test
-    SP<Parser> parser(new Parser("OS_Input"));
-    SP<OS_Builder> mb(new OS_Builder(parser));
-    SP<OS_Mesh> mesh = mb->build_Mesh();
-
-    // build an interface to a six cell fully replicated mesh
-    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb));  
-
-    // build a Source_Init object->doesn't do anything yet
-    Source_Init<IMC_Flat_Interface, OS_Mesh> source_init(interface);
-}
-
 //---------------------------------------------------------------------------//
 // build source test for a full replication topology --> tests
 // Rep_Source_Builder 
@@ -107,10 +84,6 @@ void source_replication_test()
 
     // build an interface to a six cell fully replicated mesh
     SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb));
-
-    // build a Source_Init object; however, we haven't added this
-    // functionality yet so we don't do anything else with it
-    Source_Init<IMC_Flat_Interface, OS_Mesh> source_init(interface);
 
     // build a Topology: we do not use the Topology builder here because the
     // topology builder is designed to work on the host processor only -->
@@ -739,9 +712,6 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
-
-	// check source init -> independent of topology
-	source_init_test();
 
 	// full replication source test
 	source_replication_test();

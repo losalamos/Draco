@@ -19,7 +19,6 @@
 #include "../Rep_Source_Builder.t.hh"
 #include "../DD_Source_Builder.t.hh"
 #include "../Source.t.hh"
-#include "../Source_Init.t.hh"
 
 namespace rtt_imc
 {
@@ -43,8 +42,6 @@ template DD_Source_Builder<MT,PT>::DD_Source_Builder(SP_DD_IT, SP_MT,
 						     SP_TOP);
 
 template class Source<MT,PT>;
-
-template class Source_Init<rtt_imc_test::IMC_Flat_Interface, MT>;
 
 } // end namespace rtt_imc
 
