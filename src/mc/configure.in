@@ -36,10 +36,12 @@ AC_DRACO_ENV
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in \
           test/OS_Input:test/OS_Input.in \
+          test/TET_MODEL_1:test/TET_MODEL_1.in \
           test/TET_RTT_1:test/TET_RTT_1.in \
           test/TET_RTT_2:test/TET_RTT_2.in \
           test/TET_RTT_3:test/TET_RTT_3.in \
           test/TET_RTT_4:test/TET_RTT_4.in \
+          test/TET_RTT_5:test/TET_RTT_5.in \
           test/RZWedge_Input:test/RZWedge_Input.in)
 
 dnl-------------------------------------------------------------------------dnl
