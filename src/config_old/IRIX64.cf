@@ -80,7 +80,7 @@ endif
 # Assume KCC 3.3 unless told specifically otherwise.
 
 CC	= cc
-CXX	= KCC --one_per -mips4 $(R10k) $(STRICT) $(THREADS) -D_POSIX_C_SOURCE=199309L -D_POSIX_SOURCE
+CXX	= KCC --one_per -mips4 $(R10k) $(STRICT) $(THREADS) -D_POSIX_C_SOURCE=199309L -D_POSIX_SOURCE -DKAI_QUIET_PURIFY
 cmplr	= kcc
 
 ifeq ($(shared),yes)
