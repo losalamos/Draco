@@ -15,6 +15,8 @@ using namespace std;
 
 void t1()
 {
+    cout.setf(ios::floatfield, ios::fixed);
+    cout.precision(4);
     cout << "<< TEST 1 >>" << endl << endl;
 
     Rnd_Control rcon(493875348);
@@ -69,9 +71,11 @@ void t3()
 
     Sprng r1 = rcon.get_rn();
     Sprng rs = rcon.spawn(r1);
+    Sprng rt = rcon.spawn(r1);
     
     for (int i = 0; i < 5; i++)
-	cout << r1.ran() << " " << rs.ran() << endl;
+	cout << r1.ran() << "\t" << rs.ran() << "\t" << rt.ran() 
+             << endl;
 }
 
 void t4()

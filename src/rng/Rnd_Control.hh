@@ -53,7 +53,7 @@ public:
     Sprng get_rn(int);
 
   // spawn a new random number stream
-    Sprng spawn(Sprng &);
+    Sprng spawn(const Sprng &) const;
 
   // query for the number of random streams
     int get_num() const { return streamnum; }

@@ -79,7 +79,7 @@ Sprng Rnd_Control::get_rn(int snum)
 //---------------------------------------------------------------------------//
 // spawn a new random number stream
 
-Sprng Rnd_Control::spawn(Sprng &random)
+Sprng Rnd_Control::spawn(const Sprng &random) const
 {
   // declare variables necessary to spawn a stream
     int **newstream;
