@@ -13,12 +13,21 @@
 #ifndef rtt_imc_Extrinsic_Tracker_Builder_hh
 #define rtt_imc_Extrinsic_Tracker_Builder_hh 
 
+#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "mc/Surface.hh"
 #include "Extrinsic_Surface_Tracker.hh"
 #include "Surface_Tracking_Interface.hh"
 
-namespace rtt_mc { class Sphere; class RZWedge_Mesh;}
+// Forward declarations
+namespace rtt_mc 
+{ 
+
+class Sphere; 
+class Surface_Descriptor;
+class RZWedge_Mesh;
+
+}
 
 namespace rtt_imc
 {
@@ -39,39 +48,44 @@ namespace rtt_imc
 /*! 
  * \example imc/test/tstExtrinsic_Tracker
  * 
- * description of example
+ * Extrinsic_Tracker_Builder and Extrinsic_Surface_Tracker test.
  */
 // revision history:
 // -----------------
 // 0) (Thu Jul 17 13:16:13 2003) Mike Buksas: original
+// 1) 20-AUG-2003 : added templating on MT; this requires some specialization
+//                  in the sphere_intersects_cell function
 // 
 //===========================================================================//
 
+template<class MT>
 class Extrinsic_Tracker_Builder 
 {
   public:
 
     // NESTED CLASSES AND TYPEDEFS
     
-    typedef Surface_Tracking_Interface Interface;
+    typedef Surface_Tracking_Interface    Interface;
+    typedef rtt_dsxx::SP<Interface>       SP_Interface;
+    typedef Extrinsic_Surface_Tracker     Tracker;
+    typedef rtt_dsxx::SP<Tracker>         SP_Tracker;
+    typedef rtt_dsxx::SP<rtt_mc::Surface> SP_Surface;
 
     // CREATORS
     
-    //! construct from mesh and pointer to interface
-    Extrinsic_Tracker_Builder(const rtt_mc::RZWedge_Mesh &mesh,
-			      rtt_dsxx::SP<Surface_Tracking_Interface> interface);
+    //! Construct from mesh and pointer to interface.
+    Extrinsic_Tracker_Builder(const MT &, SP_Interface interface);
 
-    //! construct from mesh and interface
-    Extrinsic_Tracker_Builder(const rtt_mc::RZWedge_Mesh &mesh,
-			      const Surface_Tracking_Interface& interface);
+    //! Construct from mesh and interface.
+    Extrinsic_Tracker_Builder(const MT &, const Interface& interface);
 
-    //! destructor
+    //! Destructor.
     ~Extrinsic_Tracker_Builder() { /* ... */ }
 
     // ACCESSORS
 
-    //! Build and return the surface tracker
-    rtt_dsxx::SP<Extrinsic_Surface_Tracker> build_tracker();
+    //! Build and return the surface tracker on an MT.
+    SP_Tracker build_tracker();
 
     //! Get the surface containing status for a cell.
     inline bool get_cell_status (int cell) const;
@@ -82,49 +96,58 @@ class Extrinsic_Tracker_Builder
     //! Get the number of global surfaces
     int get_global_surfaces() const { return global_surface_number; }
 
-
   private:
 
     // DATA
-    int global_surface_number;
-    int local_surfaces;
-    int number_of_cells;
 
-    const rtt_mc::RZWedge_Mesh& mesh;
-    rtt_dsxx::SP<Extrinsic_Surface_Tracker> tracker;
+    // Const reference to a mesh.
+    const MT &mesh;
 
+    // Data used to build surface tracker.
+    int                                         number_of_cells;
+    int                                         global_surface_number;
     std::vector<rtt_dsxx::SP<rtt_mc::Surface> > surfaces;
-    std::vector<int> surface_indices;
-    std::vector<bool> surface_in_cell;
+    std::vector<int>                            surface_indices;
+    std::vector<bool>                           surface_in_cell;
 
     // IMPLEMENTATION
 
     // Construction
-    void construction_implementation(const Surface_Tracking_Interface& interface);
+    void construction_implementation(const Interface& interface);
 
     // General
     void process_surface(const rtt_mc::Surface_Descriptor &descriptor);
-    void add_surface_to_list(rtt_dsxx::SP<rtt_mc::Surface> surface);
+    void add_surface_to_list(SP_Surface surface);
     bool check_point(const rtt_mc::Surface& surface, double x, double z);
 
     // Sphere-centric
     void process_sphere(const rtt_mc::Surface_Descriptor &descriptor); 
     bool sphere_intersects_cell(const rtt_mc::Sphere& sphere, int cell);
     bool check_intersections(const rtt_mc::Sphere& sphere);
-
-
 };
 
 //---------------------------------------------------------------------------//
-// Inline functions
+// SPECIALIZED MEMBER FUNCTIONS
+// 
+// For each mesh type a specialization of sphere_intersects_cell() must be
+// provided.
 //---------------------------------------------------------------------------//
 
-bool Extrinsic_Tracker_Builder::get_cell_status(int cell) const
+// Specialization on RZWedge_Mesh.
+template<>
+bool Extrinsic_Tracker_Builder<rtt_mc::RZWedge_Mesh>::sphere_intersects_cell(
+    const rtt_mc::Sphere& sphere, int cell);
+
+//---------------------------------------------------------------------------//
+// INLINE FUNCTIONS
+//---------------------------------------------------------------------------//
+
+template<class MT>
+bool Extrinsic_Tracker_Builder<MT>::get_cell_status(int cell) const
 {
     Check(cell > 0); Check(cell <= number_of_cells);
 
     return surface_in_cell[cell-1];
-
 }
 
 } // end namespace rtt_imc

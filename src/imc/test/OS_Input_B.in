@@ -1,0 +1,25 @@
+c Test 2D OS_Mesh input file
+
+coord: xy
+end-title
+
+num_xcoarse: 1
+num_ycoarse: 2
+lox_bnd: reflect
+hix_bnd: vacuum
+loy_bnd: vacuum
+hiy_bnd: vacuum
+num_regions: 2
+num_zones_per_region: 1 1
+regions: 1 1
+regions: 2 2
+end-init
+
+xcoarse: 0 3
+num_xfine: 3
+ycoarse: -1 1 3
+num_yfine: 1 1
+end-mesh
+
+end-source
+

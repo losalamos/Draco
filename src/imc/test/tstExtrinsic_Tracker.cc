@@ -13,12 +13,15 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <sstream>
 
 #include "ds++/Assert.hh"
 #include "../Release.hh"
 #include "imc_test.hh"
 #include "mc/RZWedge_Mesh.hh"
 #include "mc/RZWedge_Builder.hh"
+#include "mc/OS_Mesh.hh"
+#include "mc/OS_Builder.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "IMC_Test.hh"
@@ -35,6 +38,8 @@ using namespace rtt_imc_test;
 
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
+
+typedef rtt_mc::RZWedge_Mesh RZ;
 
 //---------------------------------------------------------------------------//
 // Test interface implemetation
@@ -120,13 +125,13 @@ SP<RZWedge_Mesh> build_mesh()
 
 
 //---------------------------------------------------------------------------//
-SP<Extrinsic_Tracker_Builder> build_tracker_builder(
+SP<Extrinsic_Tracker_Builder<RZ> > build_tracker_builder(
     const RZWedge_Mesh& mesh,
     const Surface_Tracking_Interface& interface)
 {
 
-    SP<Extrinsic_Tracker_Builder> builder (
-	new Extrinsic_Tracker_Builder(mesh, interface) );
+    SP<Extrinsic_Tracker_Builder<RZ> > builder (
+	new Extrinsic_Tracker_Builder<RZ>(mesh, interface) );
 
     Ensure (builder);
 
@@ -138,7 +143,7 @@ SP<Extrinsic_Tracker_Builder> build_tracker_builder(
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_tracker()
+void test_RZWedge_Mesh_tracker()
 {
 
     SP<RZWedge_Mesh> mesh = build_mesh();
@@ -147,7 +152,8 @@ void test_tracker()
     double x3 = mesh->get_high_x(3);
     Surface_Tracking_Tester tester(x1,x3);
     
-    SP<Extrinsic_Tracker_Builder> builder = build_tracker_builder(*mesh, tester);
+    SP<Extrinsic_Tracker_Builder<RZ> > builder = 
+	build_tracker_builder(*mesh, tester);
 
     // Test the builder:
     if (builder->get_global_surfaces() != 4) ITFAILS;
@@ -206,6 +212,37 @@ void test_tracker()
 
 }
 
+//---------------------------------------------------------------------------//
+
+void test_OS_Mesh_tracker()
+{
+    // build a parser, mesh, and interface
+    SP<Parser>      parser(new Parser("OS_Input_B"));
+    SP<OS_Builder>  mb(new OS_Builder(parser));
+    SP<OS_Mesh>     mesh = mb->build_Mesh();
+
+    double x1 = 1.0;
+    double x3 = 2.0;
+    Surface_Tracking_Tester tester(x1,x3);
+
+    bool caught = false;
+    try
+    {
+	Extrinsic_Tracker_Builder<OS_Mesh> builder(*mesh, tester);
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	ostringstream m;
+	m << "Good, caught assertion, " << ass.what();
+	PASSMSG(m.str());
+	caught = true;
+    }
+
+    if (!caught)
+    {
+	FAILMSG("Failed to catch OS_Mesh assertion in builder.");
+    }
+}
 
 //---------------------------------------------------------------------------//
 
@@ -224,7 +261,8 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
-	test_tracker();
+	test_RZWedge_Mesh_tracker();
+	test_OS_Mesh_tracker();
     }
     catch (rtt_dsxx::assertion &ass)
     {

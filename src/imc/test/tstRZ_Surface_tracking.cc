@@ -130,7 +130,7 @@ SP<Extrinsic_Surface_Tracker> build_extrinsic_tracker(
     const Surface_Tracking_Interface& interface)
 {
 
-    Extrinsic_Tracker_Builder builder(mesh, interface);
+    Extrinsic_Tracker_Builder<RZWedge_Mesh> builder(mesh, interface);
 
     SP<Extrinsic_Surface_Tracker> tracker = builder.build_tracker();
 

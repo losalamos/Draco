@@ -38,10 +38,6 @@ namespace rtt_imc
  * tally crossings algorithms. 
  *
  */
-/*! 
- * 
- * description of example
- */
 // revision history:
 // -----------------
 // 0) (Mon Jul 14 16:19:43 2003) Mike Buksas: original
@@ -109,8 +105,11 @@ class Extrinsic_Surface_Tracker : public Surface_tracker
 
 //---------------------------------------------------------------------------//
 // Inline functions
-
-//! Return true if there is a surface in the given cell on the local mesh.
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return true if there is a surface in the given cell on the local
+ * mesh.
+ */
 bool Extrinsic_Surface_Tracker::surface_in_cell(int cell)
 {
     Check (cell >0 );  Check (cell <= number_cells);
