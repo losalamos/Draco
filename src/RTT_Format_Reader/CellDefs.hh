@@ -58,7 +58,6 @@ class CellDef
     void readDef(ifstream & meshfile);
     void redefineCellDef(const vector_int & new_side_types_, 
 			 const vector_vector_int & new_ordered_sides_);
-
   public:
 /*!
  * \brief  Returns the cell definition name.

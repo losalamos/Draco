@@ -136,7 +136,8 @@ void RTT_Format_Reader::readEndKeyword(ifstream & meshfile)
     std::getline(meshfile, dummyString);
 }
 /*!
- * \brief Transforms the RTT_Format data to an alternative format.
+ * \brief Transforms the RTT_Format data to an alternative coordinate-system 
+ *        independent format.
  * \param cell_side_types New side types for each of the existing cell 
  *        definitions.
  * \param cell_ordered_sides New ordered sides for each of the existing cell 

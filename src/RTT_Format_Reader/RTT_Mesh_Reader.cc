@@ -30,7 +30,7 @@ void RTT_Mesh_Reader::transform2CYGNUS()
     vector_vector_vector_int 
         cell_ordered_sides(rttMesh->get_dims_ncell_defs());
 
-    for (int cd = 0; cd < rttMesh->get_dims_ncell_defs(); cd ++)
+    for (int cd = 0; cd < rttMesh->get_dims_ncell_defs(); cd++)
     {
         string cell_name = rttMesh->get_cell_defs_name(cd);
 
@@ -79,7 +79,7 @@ void RTT_Mesh_Reader::transform2CYGNUS()
 /*!
  * \brief Returns the node numbers associated with each element (i.e., sides
  *        and cells).
- * \return The node number.
+ * \return The node numbers.
  */
 std::vector<std::vector<int> > RTT_Mesh_Reader::get_element_nodes() const
 {

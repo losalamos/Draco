@@ -77,7 +77,8 @@ void CellDefs::readEndKeyword(ifstream & meshfile)
 }
 /*!
  * \brief Changes the cell definitions specified in the RTT_Format file
- *        to an alternative cell definition (e.g., CYGNUS).
+ *        to an alternative coordinate-system independent cell definition 
+ *        (e.g., CYGNUS).
  * \param cell_side_types New side types for each of the existing cell 
  *        definitions.
  * \param cell_ordered_sides New ordered sides for each of the existing cell 
@@ -142,9 +143,10 @@ void CellDef::readDef(ifstream & meshfile)
 }
 /*!
  * \brief Changes the cell definitions specified in the RTT_Format file
- *        to an alternative cell definition (e.g., CYGNUS).
+ *        to an alternative coordinate-system independent cell definition 
+ *        (e.g., CYGNUS).
  * \param new_side_types New cell side types.
- * \param new_side_types New cell ordered sides.
+ * \param new_ordered_sides New cell ordered sides.
  */
 void CellDef::redefineCellDef(const vector_int & new_side_types, 
 			      const vector_vector_int & new_ordered_sides)
@@ -399,9 +401,16 @@ void CellDef::redefineCellDef(const vector_int & new_side_types,
 	    std::fill(old_node_count.begin(), old_node_count.end(), 0);
 	}
     }
-    // Assign the new side types and ordered sides to this cell definition.
+    // Assign the new side types, sides, and ordered sides to this cell 
+    // definition.
     side_types = new_side_types;
     ordered_sides = new_ordered_sides;
+    for (int i = 0; i < ordered_sides.size(); ++i)
+    {
+        sides[i].erase(sides[i].begin(), sides[i].end());
+	for (int n = 0; n < ordered_sides[i].size(); ++n)
+	    sides[i].insert(ordered_sides[i][n]);
+    }
 }
 
 } // end namespace rtt_RTT_Format_Reader
