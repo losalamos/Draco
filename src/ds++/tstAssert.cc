@@ -17,9 +17,10 @@ using namespace dsxx;
 
 void t1()
 {
+    cout << "t1: ";
     try {
 	Assert(0);
-	cout << "t1 passed through \"Assert(0)\"." << endl;
+	cout << "fell through \"Assert(0)\"." << endl;
     }
     catch( assertion& a ) {
 	cout << "a.what() = " << a.what() << endl;
@@ -35,9 +36,10 @@ void t1()
 
 void t2()
 {
+    cout << "t2: ";
     try {
 	Insist( 0, "You must be kidding!" );
-	cout << "t2 passed through \"Insist(0,...)\"." << endl;
+	cout << "fell  through \"Insist(0,...)\"." << endl;
     }
     catch( assertion& a ) {
 	cout << "a.what() = " << a.what() << endl;
