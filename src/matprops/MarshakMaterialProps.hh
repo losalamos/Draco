@@ -177,6 +177,19 @@ class MarshakMaterialProps::MaterialStateField
 	Assert(0);
     }
 
+    inline void getSigmaScattering(int group, FT &results) const
+    {
+	// the results are zero.
+	
+	std::fill(results.begin(), results.end(), 0);
+    }
+
+    void getSigmaScattering(double group, FT &results) const
+    {
+	// Not yet implemented
+	Assert(0);
+    }
+
     void getSigmaTotal(int group, FT &results) const
     {
 	getSigmaAbsorption(group, results);

@@ -372,6 +372,40 @@ bool FMPR::getSigmaAbsorption(MaterialId materialId, int group,
 }
 
 //------------------------------------------------------------------------//
+// getSigmaScattering:
+//   Return the scattering cross-section at the specified group for the
+//   material given by materialId.
+//   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//   If the fifi file parser cannot find the appropriate data keywords then
+//   return false.
+//   Units: (length^2/mass)
+//------------------------------------------------------------------------//
+
+bool FMPR::getSigmaScattering(MaterialId materialId, int group,
+			      Mat2<double> &dataMat)
+{
+    const MaterialInfo &matInfo = getMaterialInfo(materialId);
+
+    Require(dataMat.nx() == matInfo.getNumTemperatures());
+    Require(dataMat.ny() == matInfo.getNumDensities());
+
+    if (fifiParser.hasKeyword(matInfo.matid, "rsmg0"))
+    {
+	getSigma(matInfo, group, "rsmg0", dataMat);
+	return true;
+    }
+    else if (fifiParser.hasKeyword(matInfo.matid, "rsmg"))
+    {
+	getSigma(matInfo, group, "rsmg", dataMat);
+	return true;
+    }
+
+    return false;
+}
+
+//------------------------------------------------------------------------//
 // getSigmaTotal:
 //   Return the total cross-section at the specified group for the
 //   material given by materialId.

@@ -231,6 +231,29 @@ namespace rtt_matprops
  template <class UMCMP>
  template <class FT, class FT1, class FT2>
  void MultiMatCellMatProps<UMCMP>::
+ MaterialStateField<FT,FT1,FT2>::getSigmaScattering(const int group,
+						    FT &results) const
+{
+    Require(matState.size() == results.size());
+    int icell = 0;
+    for (FT::iterator resit = results.begin(); 
+	 resit != results.end(); resit++, icell++)
+    {
+	*resit = 0.;
+	int nmat = volumeFraction[icell].size();
+	std::vector<value_type1> sigtmp(nmat);
+	matState[icell].getSigmaScattering(group, sigtmp);
+	for (int imat = 0; imat < nmat; imat++)
+	{
+	    *resit += volumeFraction[icell][imat]*sigtmp[imat];
+	}
+    }
+}
+
+
+ template <class UMCMP>
+ template <class FT, class FT1, class FT2>
+ void MultiMatCellMatProps<UMCMP>::
  MaterialStateField<FT,FT1,FT2>::getSigmaTotal(const int group,
 					       FT &results) const
 {

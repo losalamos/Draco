@@ -268,6 +268,21 @@ class FifiMatPropsReader : public MaterialPropsReader
 				    dsxx::Mat2<double> &data);
 
     //------------------------------------------------------------------------//
+    // getSigmaScattering:
+    //   Return the scattering cross-section at the specified group for the
+    //   material given by materialId.
+    //   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+    //   The call to getMaterialInfo will throw an exception if the material
+    //   is not found.
+    //   If the fifi file parser cannot find the appropriate data keywords then
+    //   return false.
+    //   Units: (length^2/mass)
+    //------------------------------------------------------------------------//
+
+    virtual bool getSigmaScattering(MaterialId materialId, int group,
+				    dsxx::Mat2<double> &data);
+
+    //------------------------------------------------------------------------//
     // getSigmaEmission:
     //   Return the emission cross-section at the specified group for the
     //   material given by materialId.

@@ -250,6 +250,9 @@ namespace rtt_matprops {
      // returns absorption opacity (1/length)
      void getSigmaAbsorption(const int group, FT &results) const;
      
+     // returns scattering opacity (1/length)
+     void getSigmaScattering(const int group, FT &results) const;
+     
      // returns total opacity (1/length)
      void getSigmaTotal(const int group, FT &results) const;
 

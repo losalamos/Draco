@@ -255,6 +255,7 @@ struct InterpedMaterialProps::MaterialTables
 
     GroupedTable             sigmaTotal;
     GroupedTable             sigmaAbsorption;
+    GroupedTable             sigmaScattering;
     GroupedTable             sigmaEmission;
     BilinearInterpTable      electronIonCoupling;
     BilinearInterpTable      electronConductionCoeff;
@@ -270,6 +271,7 @@ struct InterpedMaterialProps::MaterialTables
 		   const dsxx::SP<BilinearInterpGrid> &spGrid_,
 		   const GroupedTable &sigmaTotal_,
 		   const GroupedTable &sigmaAbsorption_,
+		   const GroupedTable &sigmaScattering_,
 		   const GroupedTable &sigmaEmission_,
 		   const BilinearInterpTable &electronIonCoupling_,
 		   const BilinearInterpTable &electronConductionCoeff_,
@@ -280,6 +282,7 @@ struct InterpedMaterialProps::MaterialTables
 	  spGrid(spGrid_),
 	  sigmaTotal(sigmaTotal_),
           sigmaAbsorption(sigmaAbsorption_),
+          sigmaScattering(sigmaScattering_),
 	  sigmaEmission(sigmaEmission_),
           electronIonCoupling(electronIonCoupling_),
           electronConductionCoeff(electronConductionCoeff_),
@@ -311,6 +314,10 @@ struct InterpedMaterialProps::MaterialTables
     const GroupedTable &getSigmaAbsorption() const
     {
 	return sigmaAbsorption;
+    }
+    const GroupedTable &getSigmaScattering() const
+    {
+	return sigmaScattering;
     }
     const GroupedTable &getSigmaEmission() const
     {
@@ -440,6 +447,19 @@ class InterpedMaterialProps::MaterialStateField
     }
 
     void getSigmaAbsorption(double group, FT &results) const
+    {
+	// Not yet implemented
+	Assert(0);
+    }
+
+    void getSigmaScattering(int group, FT &results) const
+    {
+	getProps().interpolate(*this, group,
+			       &MaterialTables::getSigmaScattering,
+			       MultByDensity(*this), results);
+    }
+
+    void getSigmaScattering(double group, FT &results) const
     {
 	// Not yet implemented
 	Assert(0);

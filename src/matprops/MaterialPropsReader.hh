@@ -139,6 +139,19 @@ class MaterialPropsReader
 				    dsxx::Mat2<double> &data) = 0;
 
     //------------------------------------------------------------------------//
+    // getSigmaScattering:
+    //   Return the scattering cross-section at the specified group for the
+    //   material given by materialId.
+    //   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+    //   If the implementation cannot find the appropriate data then
+    //   return false.
+    //   Units: (length^2/mass)
+    //------------------------------------------------------------------------//
+
+    virtual bool getSigmaScattering(MaterialId materialId, int group,
+				    dsxx::Mat2<double> &data) = 0;
+
+    //------------------------------------------------------------------------//
     // getSigmaEmission:
     //   Return the emission cross-section at the specified group for the
     //   material given by materialId.

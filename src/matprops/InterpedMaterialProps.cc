@@ -90,6 +90,8 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 	dsxx::Mat2<double> data(tempGrid.size(), densityGrid.size(), 0.0);
 	vector<BilinearInterpTable> tables(numGroups);
 
+	// Read and load SigmaTotal interpolation table.
+	
 	for (int i=1; i<=numGroups; i++)
 	{
 	    if (reader.getSigmaTotal(materialId, i, data))
@@ -99,6 +101,8 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 	GroupedTable sigmaTotal(energyUpperbounds, energyLowerbounds,
 				tables);
 	
+	// Read and load SigmaAbsorption interpolation table.
+	
 	for (int i=1; i<=numGroups; i++)
 	{
 	    if (reader.getSigmaAbsorption(materialId, i, data))
@@ -107,6 +111,19 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 
 	GroupedTable sigmaAbsorption(energyUpperbounds, energyLowerbounds,
 				tables);
+	
+	// Read and load SigmaScattering interpolation table.
+	
+	for (int i=1; i<=numGroups; i++)
+	{
+	    if (reader.getSigmaScattering(materialId, i, data))
+		tables[i-1] = BilinearInterpTable(spGrid, data);
+	}
+
+	GroupedTable sigmaScattering(energyUpperbounds, energyLowerbounds,
+				tables);
+	
+	// Read and load SigmaEmission interpolation table.
 	
 	for (int i=1; i<=numGroups; i++)
 	{
@@ -147,6 +164,7 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 						    spGrid,
 						    sigmaTotal,
 						    sigmaAbsorption,
+						    sigmaScattering,
 						    sigmaEmission,
 						    electronIonCoupling,
 						    electronConductionCoeff,
