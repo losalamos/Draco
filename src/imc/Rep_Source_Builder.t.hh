@@ -89,7 +89,8 @@ Rep_Source_Builder<MT,PT>::SP_Source
 Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
 					SP_Mat_State state,
 					SP_Opacity opacity,
-					SP_Rnd_Control rnd_control)
+					SP_Rnd_Control rnd_control,
+					SP_Comm_Patterns patterns)
 {
     int num_cells = mesh->num_cells();
     Require(num_cells == state->num_cells());
@@ -127,7 +128,7 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
 
     // build Mesh_Operations class for source
     SP<Mesh_Operations<MT> > mesh_op
-	(new Mesh_Operations<MT>(mesh, state, topology)); 
+	(new Mesh_Operations<MT>(mesh, state, topology, patterns)); 
 
     // build the source --> the source gets a SP to the census on this
     // processor, this means that as particles are taken out of the source

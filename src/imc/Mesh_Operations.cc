@@ -34,7 +34,11 @@ Mesh_Operations<OS_Mesh>::Mesh_Operations(SP_Mesh mesh,
 					  SP_Comm_Patterns comm_patterns)
     : t4_slope(mesh)
 {
-    Require(mesh->num_cells() == topology->num_cells(C4::node()));
+    Require (mesh);
+    Require (state);
+    Require (topology);
+    Require (comm_patterns);
+    Require (mesh->num_cells() == topology->num_cells(C4::node()));
 
     // build the T^4 data based upon the topology
     if (topology->get_parallel_scheme() == "replication")

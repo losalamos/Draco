@@ -19,6 +19,7 @@
 #include "Mat_State.hh"
 #include "mc/Topology.hh"
 #include "mc/Parallel_Data_Operator.hh"
+#include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
 #include "ds++/SP.hh"
@@ -126,6 +127,7 @@ class Source_Builder
     typedef rtt_dsxx::SP<MT>                     SP_Mesh;
     typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>   SP_Rnd_Control;
     typedef rtt_dsxx::SP<rtt_mc::Topology>       SP_Topology;
+    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>  SP_Comm_Patterns;
     typedef std::vector<int>                     sf_int;
     typedef std::vector<std::vector<int> >       vf_int;
     typedef std::vector<double>                  sf_double;
@@ -288,7 +290,7 @@ class Source_Builder
 
     //! Build rtt_dsxx::SP to source.
     virtual SP_Source build_Source(SP_Mesh, SP_Mat_State, SP_Opacity,
-				   SP_Rnd_Control) = 0;
+				   SP_Rnd_Control, SP_Comm_Patterns) = 0;
 
     //! Build an initial census from initial radiation temperature.
     virtual void calc_initial_census(SP_Mesh, SP_Mat_State, SP_Opacity,

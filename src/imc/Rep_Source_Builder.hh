@@ -18,6 +18,7 @@
 #include "Opacity.hh"
 #include "Mat_State.hh"
 #include "mc/Topology.hh"
+#include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <vector>
@@ -60,6 +61,7 @@ class Rep_Source_Builder : public Source_Builder<MT,PT>
     typedef rtt_dsxx::SP<MT>                     SP_Mesh;
     typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>   SP_Rnd_Control; 
     typedef rtt_dsxx::SP<rtt_mc::Topology>       SP_Topology;
+    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>  SP_Comm_Patterns;
     typedef std::vector<int>                     sf_int;
     typedef std::vector<double>                  sf_double;
     typedef std::vector<std::string>             sf_string;
@@ -119,7 +121,7 @@ class Rep_Source_Builder : public Source_Builder<MT,PT>
 
     // Build source.
     SP_Source build_Source(SP_Mesh, SP_Mat_State, SP_Opacity,
-			   SP_Rnd_Control);
+			   SP_Rnd_Control, SP_Comm_Patterns);
 
     // Calculate the initial census.
     void calc_initial_census(SP_Mesh, SP_Mat_State, SP_Opacity,
