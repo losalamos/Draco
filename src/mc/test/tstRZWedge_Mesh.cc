@@ -469,10 +469,22 @@ void simple_one_cell_RZWedge()
     if (!soft_equiv(yavg, 0.0, 4.0*est_std_of_mean))  ITFAILS;
     if (!soft_equiv(zavg, 0.5, 4.0*est_std_of_mean))  ITFAILS;
 
-    // what is the average |y| given that x is uniform in (0,1)?  noting
-    // that, for any x, half the y's will lie under x/2, thus half the y's
-    // are under the line y=x/2, and the other half of the y's are between
-    // y=x/2 and y=x.  Integrating, then |y|_avg = int_0^1 (x/2) = 1/4
+    // what is the average |y| given that x is uniform in (0,1)?  
+    //
+    // 1) noting that, for any x, half the y's will lie under x/2, thus half
+    // the y's are under the line y=x/2, and the other half of the y's are
+    // between y=x/2 and y=x.  Integrating, then |y|_avg = int_0^1 (x/2) =
+    // 1/4.
+    //
+    // 2) You could also look at it in the following way: the expected value
+    // of x is 1/2 and, for x=1/2, the expected value of |y| is one-half of
+    // |y|=x or |y|=1/4.
+    //
+    // 3) From Grady Hughes: the physical interpretation of f(x,y) is that it
+    // is the density of sampled points.  For any given dx, there are equal
+    // amounts of points in a volume dx/x.  Thus, f(x,y)=C/x, where C=1.  The 
+    // average y is int_0^1 dx int_0^x dy y f(x,y) = int_0^1 dx 1/2 x^2/x =
+    // 1/4. 
     if (!soft_equiv(fabs_y_avg, 0.25, 4.0*est_std_of_mean))  ITFAILS;
     
     for (int bin = 0; bin < num_bins; bin++)
