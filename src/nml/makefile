@@ -84,6 +84,8 @@ ifneq ($(dodeps),no)
 	(cd ../ds++;   $(MAKE) $(subnj))
 endif
 
+resolve_libs	:= -L../ds++ -lds++_$(env)
+
 #-----------------------------------------------------------------------------#
 # There is a uniquely infuriating problem with HP/UX, whereby putting
 # a new .o into a large archive library takes forever and a day.
@@ -96,7 +98,7 @@ libnml_$(env).a: $(NMLLIB_OBJS)
 else
 libnml_$(env).a : $(NMLLIB_OBJS)
 	-rm -f $@
-	$(lib_cmd) $@ $(NMLLIB_OBJS)
+	$(lib_cmd) $@ $(NMLLIB_OBJS) $(resolve_libs)
 
 #	$(ar) qc $@ $(NMLLIB_OBJS)
 #	$(ranlib) $@
