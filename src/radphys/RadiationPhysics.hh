@@ -85,16 +85,19 @@ class RadiationPhysics
 
     //------------------------------------------------------------------------//
     // getRadConstant:
-    //     Calculate the constant, a, for Planck = aT^4, in the user's units.
+    //     Calculate the constant, a, for Planck = (a c / 4pi) T^4,
+    //     in the user's units.
+    //     a = 4 stefanBoltzmann / c
     //------------------------------------------------------------------------//
 
     inline double getRadConstant() const;
 
     //------------------------------------------------------------------------//
-    // getPlank:
+    // getPlanck:
     //   Calculate the planck function from the electron temperature.
     //   The units for input and output are specified by the units
     //   supplied to the class.
+    //   planck = stefanBoltzmann / pi * T^4
     //------------------------------------------------------------------------//
 
     template<class Field>
@@ -249,6 +252,7 @@ inline double RadiationPhysics::getLightSpeed() const
 // getRadConstant:
 //     Calculate the constant, a, for Planck = (a c / 4pi) T^4,
 //     in the user's units.
+//     a = 4 stefanBoltzmann / c
 //------------------------------------------------------------------------//
 
 inline double RadiationPhysics::getRadConstant() const
