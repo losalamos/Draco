@@ -1,5 +1,5 @@
 dnl-------------------------------------------------------------------------dnl
-dnl <pkg>/configure.in
+dnl <pkg>/configure.ac
 dnl <user>
 dnl <date>
 dnl $Id$
@@ -7,7 +7,8 @@ dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for <pkg>
 dnl-------------------------------------------------------------------------dnl
 
-AC_INIT(<start>)
+AC_INIT
+AC_CONFIG_SRCDIR([<start>])
 AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(<pkg>/config.h:config.h.in)
 package="<pkg>"
@@ -25,9 +26,10 @@ AC_NEEDS_LIBS(ds++)
 dnl DRACO SETUP
 AC_DRACO_ENV
 
-AC_OUTPUT(Makefile:../../config/Makefile.package.in \
-          test/Makefile:../../config/Makefile.test.in)
+AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
+                 test/Makefile:../../config/Makefile.test.in])
+AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl
-dnl			 end of <pkg>/configure.in
+dnl			 end of <pkg>/configure.ac
 dnl-------------------------------------------------------------------------dnl
