@@ -19,6 +19,7 @@ AC_INSTALL_LIB
 
 AC_RUNTESTS(tstCheck_Strings \
             tstAssert \
+            tstShared_Lib \
             tstSoft_Equiv \
             tstSP \
             tstRCF \
@@ -36,6 +37,9 @@ AC_RUNTESTS(tstCheck_Strings \
 
 AC_DRACO_ENV
 AC_DRACO_AUTODOC(draco-4_3_0)
+
+dnl Need libdl for dlopen, which is used by Shared_Lib.
+LIBS="$LIBS -ldl"
 
 dnl look for flexelint, dot and ps2pdf on Linux
 AC_PATH_PROG(FLEXELINT_PATH, lin, null, /usr/local/flexelint/bin )
