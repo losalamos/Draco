@@ -59,22 +59,11 @@
                   type(CAR_CU_Mesh_Builder), intent(inout) :: self
                   type(CAR_CU_Interface), intent(inout)    :: itf_class
                   integer                                  :: bool_verbose = 0
-                  integer                                  :: surface
                   if (itf_class%verbose)  bool_verbose = 1
 
                   call construct_car_cu_mesh_builder(self%this,         &
                        itf_class%this, itf_class%rtt_format,            &
                        bool_verbose, self%mesh)
-
-                  ! Set the number of cells per surface source in the
-                  ! interface class object
-                  allocate(itf_class%ss_cells(itf_class%ss_size))
-
-                  surface = 1
-                  do while (surface .le. itf_class%ss_size)
-                      itf_class%ss_cells = get_surf_src_size(itf_class,surface)
-                      surface = surface + 1
-                  end do
 
               end subroutine CAR_CU_Builder_construct
 

@@ -133,7 +133,7 @@ extern "C"
 	// Cast the long variable to int
 	int isize = static_cast<int>(ss_pos_size);
 
-	Insist(isize == interface->get_ss_pos_size(), 
+	Insist(isize == 3 * interface->get_ss_pos_size(), 
 	    "Invalid ss position size passed to get_car_cu_ss_pos_!");
 
 	vector<string> ss_pos = interface->get_ss_pos();

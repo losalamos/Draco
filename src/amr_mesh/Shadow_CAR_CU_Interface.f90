@@ -133,6 +133,7 @@
                   type(CAR_CU_Interface), intent(inout) :: self
                   integer                               :: bool_verbose = 0
                   integer :: test
+                  integer                               :: surface
                   if (self%verbose)  bool_verbose = 1
 
                   call construct_car_cu_interface(self%this,            &
@@ -140,6 +141,16 @@
 
                   ! Set the number of surface sources
                   self%ss_size = get_surf_src_size(self)
+
+                  ! Set the number of cells per surface source in the
+                  ! interface class object
+                  allocate(self%ss_cells(self%ss_size))
+
+                  surface = 1
+                  do while (surface .le. self%ss_size)
+                      self%ss_cells = get_surf_src_size(self,surface)
+                      surface = surface + 1
+                  end do
 
               end subroutine CAR_CU_Interface_construct
 
@@ -178,10 +189,23 @@
               function get_ss_pos(self)            result (data)
                   type(CAR_CU_Interface), intent(inout) :: self
                   character*3, dimension(self%ss_size)  :: data
+                  character*(3 * self%ss_size)          :: ret_data
                   integer                               :: data_size
+                  integer                               :: ss, index
 
-                  data_size = self%ss_size
-                  call get_car_cu_ss_pos(self%this, data, data_size)
+                  data_size = 3 * self%ss_size
+                  call get_car_cu_ss_pos(self%this, ret_data, data_size)
+
+                  ss = 1
+                  do while (ss .le. self%ss_size)
+                      index = 1
+                      do while (index .le. 3)
+                          data(ss)(index:index) =                       &
+                              ret_data(3*(ss -1) + index : 3*(ss -1) + index)
+                          index = index + 1
+                      end do
+                      ss = ss + 1
+                  end do
 
               end function get_ss_pos
 
@@ -199,7 +223,7 @@
 ! Return the surface source angular distribution.
               function get_ss_dist(self)           result (data)
                   type(CAR_CU_Interface), intent(inout) :: self
-                  character*8                           :: data
+                  character*6                           :: data
 
                   call get_car_cu_ss_dist(self%this, data)
 

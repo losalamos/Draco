@@ -154,10 +154,7 @@
 ! C++ Coord_sys, Layout, and CAR_CU_Mesh class objects. The address of the
 ! new CAR_CU_Mesh_Builder class object is set automatically while the address
 ! of the new CAR_CU_Mesh class object must be assigned with a seperate 
-! statement. Surface and volume source data is read by the CAR_CU_Mesh_Builder
-! class object from the RTT Format file. The CAR_CU_Mesh_Builder sets the 
-! number of cells per surface source in the CAR_CU_Interface class object
-! after this data has been input.
+! statement.
 !===========================================================================
 
           call construct_Mesh_Builder(mesh_builder_class, interface_class)
@@ -182,16 +179,18 @@
 !===========================================================================
 ! Retrieve the rest of the data that was read into the CAR_CU_Interface 
 ! class object but is not stored elsewhere within a C++ class and is needed 
-! for the transport calculations. The source data is read from the RTT Format 
-! file by the CAR_CU_Mesh_Builder class object, so the source data cannot be 
-! initialized until after the mesh builder has been executed. All other data 
-! is available immediately after the CAR_CU_Interface has been executed via 
-! its constructor (except the number of cells, which is needed to retrieve 
-! the volumetric and radiations sources). It is noted that the surface source 
-! cells definitions are currently limited to a single surface, since a ragged
+! for the transport calculations.  Most of this data is available immediately 
+! after the CAR_CU_Interface has been executed via its constructor (with the
+! exception of the number of cells, which is needed to retrieve the volumetric
+! and radiations sources). It is noted that the definition of the surface 
+! source cells is currently limited to a single surface, since a ragged
 ! right array derived-type would be required in Fortran 90 to do this 
 ! correctly.
 !===========================================================================
+          ! Set the last CAR_CU_Interface derived-type member ncells now that
+          ! we have the mesh member function to return the number of cells in
+          ! the mesh.
+          interface_class%ncells = get_num_cells(mesh_class)
 
           analytic_opacity = get_analytic_opacity(interface_class)
           analytic_specific_heat = get_analytic_specific_heat(interface_class)
@@ -233,9 +232,6 @@
               surface = surface + 1
           end do
 
-          ! Have to set this derived-type member to use whole mesh assignement
-          ! functions.
-          interface_class%ncells = get_num_cells(mesh_class)
           allocate(volume_src(interface_class%ncells))
           allocate(radiation_src(interface_class%ncells))
 
@@ -245,7 +241,7 @@
           radiation_src = get_rad_src(interface_class)
           rad_src_end_time = get_rad_src_tend(interface_class)
 
-          ! Set the volume and radiation source array elements on a cell
+          ! Set the volume and radiation source array elements on a cell by
           ! cell basis
           cell = 1
           do while (cell .le. interface_class%ncells)

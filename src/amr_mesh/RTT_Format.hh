@@ -309,6 +309,7 @@ class RTT_Format
 	}
         int get_boundary_flag_number() const 
 	{
+	    // Allow any combination of the phrase "boundary_conditions". 
 	    string bc("boundarycditBOUNDARYCDIT_");
 	    int boundary = -1;
 	    int length = 0;
@@ -328,13 +329,14 @@ class RTT_Format
 	}
         int get_surface_src_flag_number() const 
 	{
+	    // Allow any combination of the phrase "surface_source". 
 	    string surface("surfaceoSURFACEO_");
 	    int source = -1;
 	    int length = 0;
 	    for (int f = 0; f < dims.get_nside_flag_types(); f++)
 	    {
 	        string flag = flagTypes(f)->getFlagType();
-	        if ((flag[0] == 's' || flag[0] == 's') &&
+	        if ((flag[0] == 's' || flag[0] == 'S') &&
 		    flag.find_first_not_of(surface) == string::npos &&  
 		    flag.find_first_not_of(surface) >= length)
 		{
@@ -401,7 +403,8 @@ class RTT_Format
 	}
         int get_material_flag_number() const 
 	{
-	    string matl("materialMATERIAL");
+	    // Allow any combination of the phrase "material". 
+	    string matl("materilMATERIL");
 	    int material = -1;
 	    int length = 0;
 	    for (int f = 0; f < dims.get_ncell_flag_types(); f++)
@@ -420,6 +423,7 @@ class RTT_Format
 	}    
         int get_volume_src_flag_number() const 
 	{
+	    // Allow any combination of the phrase "volume_source". 
 	    string source("volumesrcVOLUMESRC_");
 	    int vol_src = -1;
 	    int length = 0;
@@ -438,6 +442,7 @@ class RTT_Format
 	}    
         int get_radiation_src_flag_number() const 
 	{
+	    // Allow any combination of the phrase "raditiation_source". 
 	    string source("raditonsuceRADITONSUCE_");
 	    int rad_src = -1;
 	    int length = 0;
@@ -717,6 +722,9 @@ class RTT_Format
 
         int get_boundary_flag_number() const 
 	{ return sideFlags.get_boundary_flag_number(); }
+
+        int get_surface_src_flag_number() const 
+	{ return sideFlags.get_surface_src_flag_number(); }
     };
 
     class Cells
@@ -756,10 +764,6 @@ class RTT_Format
 
 	int get_flags(int cell_numb,int flag_numb) const
 	{ return flags(cell_numb,flag_numb); }
-
-        int get_material_flag_number() const 
-	{ return cellFlags.get_material_flag_number(); }
-
     };
 
     class NodeData
@@ -846,7 +850,8 @@ class RTT_Format
         const Nodes & nodes;
         vector<vector<vector<int> > > adjCell;
         multimap<int, int> bndryFaces;
-      
+        multimap<int, vector<int> > Side_to_Cell_Face;
+
       public:
 	Connectivity(const Dims & dims_, const CellDefs & cellDefs_,
 		     const Cells & cells_, const Sides & sides_,
@@ -889,6 +894,32 @@ class RTT_Format
 		    ++citer;
 	    }
 	    return bndryFace;
+	}
+        int get_Cell_from_Side(int side) const
+	{
+	    multimap<int, vector<int> >::const_iterator sitr = 
+	        Side_to_Cell_Face.find(side);
+
+	    if (sitr != Side_to_Cell_Face.end())
+	    {
+	        vector<int> Cell_Face = sitr->second;
+		return Cell_Face[0];
+	    }
+	    else
+	        return -1;
+	}
+        int get_Cell_Face_from_Side(int side) const
+	{
+	    multimap<int, vector<int> >::const_iterator sitr = 
+	        Side_to_Cell_Face.find(side);
+
+	    if (sitr != Side_to_Cell_Face.end())
+	    {
+	        vector<int> Cell_Face = sitr->second;
+		return Cell_Face[1];
+	    }
+	    else
+	        return -1;
 	}
 
       private:
@@ -1091,6 +1122,12 @@ class RTT_Format
         { return spConnectivity->get_bndryCells(face); }
     bool check_bndryFace(int cell, int face) const
         { return spConnectivity->check_bndryFace(cell,face); }
+    int get_Cell_from_Side(int side) const
+        { return spConnectivity->get_Cell_from_Side(side); }
+
+    int get_Cell_Face_from_Side(int side) const
+        { return spConnectivity->get_Cell_Face_from_Side(side); }
+
     // IMPLEMENTATION
 
   private:

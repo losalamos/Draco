@@ -85,7 +85,6 @@ class CAR_CU_Interface
     double rad_s_tend;
     vector<string> ss_pos;
     vector<double> ss_temp;
-    vector<int> num_defined_surcells;
     vector< vector<int> > defined_surcells;
     vector<double> rad_temp;
     double delta_t;
@@ -158,14 +157,6 @@ class CAR_CU_Interface
     // return the number of grouped surface source cells in a given set
     int get_ss_cells_size(int surface) 
     { return defined_surcells[surface - 1].size(); }
-    void set_defined_surcells(vector< vector<int> > surcells) 
-    {
-        Insist(ss_pos.size() == surcells.size(),
-	       "Invalide surface cells definitions in set_defined_surcells!");
-
-        defined_surcells = surcells;
-	return; 
-    } 
     // return the defined surface source cells in a given set
     vector<int> get_defined_surcells(int surface) 
     {

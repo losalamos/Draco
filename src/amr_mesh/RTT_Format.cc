@@ -1888,13 +1888,17 @@ void RTT_Format::Connectivity::calcAdjacentCells()
 	    int side = sitr->second;
 	    // if the nodes that comprise this face also occur in the nodes
 	    // that define the sides, assign the negative of the boundary side 
-	    // flag as the adjacent cell.
+	    // flag as the adjacent cell. Correlate the cell face number to the
+	    // corresponding side number in Cell_Faces_to_Sides.
 	    if (globalSideNodes == globalFaceNodes)
 	    {
 		adjCell[cell][faceNum][0] = - sides.get_flags(side,boundary);
 		++sitr;
+		cell_faces[0] = cell;
+		cell_faces[1] = faceNum;
+		Side_to_Cell_Face.insert(make_pair(side, cell_faces));
 	    }
-	    // this face is the boundary between two unstructured cells. 
+	    // this face is the boundary between unstructured cells. 
 	    else
 	    {
 		int faceType = cellDef.get_side_types(faceNum);

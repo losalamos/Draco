@@ -142,6 +142,42 @@ SP<RTT_Format> CAR_CU_Interface::parser_Mesh(ifstream &in)
     else
         fill(cell_rsrc.begin(), cell_rsrc.end(), 0.0);
 
+    // Assign a surface source to the boundary cells, if present.
+    int surface_src_flag = rttMesh->get_side_flags_surface_src_flag_number();
+    if (surface_src_flag >= 0)
+    {
+        int num_ss = rttMesh->get_dims_nside_flags(surface_src_flag);
+        int null_flag_num = -1;
+        // Check for null surface source flag definitions so that they can be
+	// excluded from the defined_surcells and associated vectors.
+        for (int sf = 0; sf < num_ss; sf++)
+	{
+	    string null_flag = 
+	        rttMesh->get_side_flags_flag_name(surface_src_flag,sf);
+	    if ((null_flag[0] == 'n' || null_flag[0] == 'N') && 
+		 null_flag.find_first_not_of("noulsrceNOULSRCE") == 
+		 string::npos)
+	        null_flag_num = sf;
+	}
+	if (null_flag_num >= 0)
+	    --num_ss;
+
+        // resize the surface source vectors according to the number of
+        // sources specified in the RTT Format file
+        ss_pos.resize(num_ss);
+        ss_temp.resize(num_ss);
+	fill(ss_temp.begin(), ss_temp.end(), 0.0);
+	defined_surcells.resize(num_ss);        
+
+	for (int side = 0; side < rttMesh->get_dims_nsides(); side++)
+	{
+	    int cell = rttMesh->get_Cell_from_Side(side);
+	    int source = rttMesh->get_sides_flags(side, surface_src_flag);
+	    if (cell >= 0 && source - 1 != null_flag_num)
+	        defined_surcells[source - 1].push_back(cell);
+	}
+    }
+
     return rttMesh;
 }
 
@@ -273,12 +309,7 @@ void CAR_CU_Interface::zone_source_parser(ifstream &in)
 	if (keyword == "num_ss:")
 	{
 	    in >> data;
-	    ss_pos.resize(data);
-	    ss_temp.resize(data);
-	    fill(ss_temp.begin(), ss_temp.end(), 0.0);
-	    num_defined_surcells.resize(data);
-	    fill(num_defined_surcells.begin(), num_defined_surcells.end(), 0);
-	    defined_surcells.resize(data);
+	    Check (ss_pos.size() == data);
 	}
 	if (keyword == "sur_source:")
 	{
