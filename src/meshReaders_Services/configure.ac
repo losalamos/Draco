@@ -15,7 +15,9 @@ package="meshReaders_Services"
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(meshReaders ds++)
+AC_NEEDS_LIBS(meshReaders \
+              mesh_element \
+              ds++)
 AC_NEEDS_LIBS_TEST(RTT_Format_Reader)
 
 AC_RUNTESTS(TestmeshReadersServices, scalar)

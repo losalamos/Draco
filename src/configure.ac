@@ -31,7 +31,7 @@ AC_CONFIG_SUBDIRS(stdheaders ds++)
 ## LEVEL 2
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(xm rng c4 units traits cdi meshReaders quadrature \
+AC_CONFIG_SUBDIRS(xm rng c4 units traits cdi mesh_element quadrature \
                   plot2D lapack_wrap shared_lib)
 
 ##---------------------------------------------------------------------------##
@@ -39,13 +39,13 @@ AC_CONFIG_SUBDIRS(xm rng c4 units traits cdi meshReaders quadrature \
 ##---------------------------------------------------------------------------##
 
 AC_CONFIG_SUBDIRS(timestep pcgWrap viz cdi_eospac \
-                  cdi_gandolf cdi_analytic RTT_Format_Reader)
+                  cdi_gandolf cdi_analytic meshReaders)
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 4
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(meshReaders_Services)
+AC_CONFIG_SUBDIRS(RTT_Format_Reader meshReaders_Services)
 
 ##---------------------------------------------------------------------------##
 ## build the src/pkg configure scripts
@@ -56,5 +56,5 @@ AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl
-dnl			 end of draco/src/ configure.in
+dnl			 end of draco/src/configure.in
 dnl-------------------------------------------------------------------------dnl
