@@ -14,9 +14,16 @@ IMCSPACE
 
 // STL functions
 using std::ios;
+using Global::pi;
+using std::cos;
+using std::sin;
+using std::sqrt;
+
+
 using std::endl;
 using std::setiosflags;
 using std::setw;
+
 
 //---------------------------------------------------------------------------//
 // constructor
@@ -40,6 +47,103 @@ Source<MT, PT>::Source(typename MT::CCSF_int &vol_rnnum_,
     Check (vol_rnnum.get_Mesh() == nvol.get_Mesh());
     Check (nvol.get_Mesh()      == ss_rnnum.get_Mesh());
     Check (nvol.get_Mesh()      == nss.get_Mesh());
+
+  // nsrcdone_cell is the running number of source particles completed for a
+  // particular source type in a particular cell.  
+
+    nsrcdone_cell = 0;
+
+  // Begin with first cell
+    current_cell = 1;
+
+  // running totals of completed source particles, by type
+    nssdone  = 0;
+    nvoldone = 0;
+    ncendone = 0;
+}
+
+//---------------------------------------------------------------------------//
+// sample surface source particle
+
+// template<class MT, class PT>
+// SP<PT> IMC::Source<MT, PT>::get_ss()
+// {
+
+//   // face on which surface source resides
+//     int face = fss(current_cell);
+
+//   // sample location
+//     vector <double> r = mesh.sample_pos_on_face("uniform", current_cell,
+// 						face, Sprng &rand);
+
+//   // find inward normal, sample direction, and add
+//     vector <double> omega = mesh::get_in_normal(current_cell, face);
+//     double costheta = sqrt(rand.ran());
+//     double phi = 2.0 * Global::pi * rand.ran();
+//     mesh.get_Coord().calc_omega(costheta, phi, omega);
+
+//     double ew = ew_ss(current_cell);
+//     int cell = current_cell;
+//     double fraction = 1.0;
+//     double time_left = rand.ran() * delta_t;
+
+//   // instantiate particle to return
+//     SP<Particle<MT> > ss_particle(r, omega, ew, cell, rand, 
+// 				  fraction, time_left);
+
+//     return ss_particle;
+// }
+
+//---------------------------------------------------------------------------//
+// sample volume emission particle
+
+// template<class MT, class PT>
+// SP<PT> IMC::Source<MT, PT>::get_evol()
+// {
+
+//   // sample location
+//     vector <double> r = mesh.sample_pos("uniform", current_cell, 
+// 					Sprng &rand);
+
+//   // sample particle direction
+//     vector<double> omega = mesh.get_Coord().sample_dir("isotropic", rand);
+
+//     double ew = ew_vol(current_cell);
+//     int cell = current_cell;
+//     double fraction = 1.0;
+//     double time_left = rand.ran() * delta_t;
+
+//   // instantiate particle to return
+//     SP<Particle<MT> > vol_particle(r, omega, ew, cell, rand, 
+// 				  fraction, time_left);
+
+//     return vol_particle;
+// }
+
+//---------------------------------------------------------------------------//
+// read census particle
+
+// template<class MT, class PT>
+// SP<PT> IMC::Source<MT, PT>::get_census()
+// {
+
+//   // read census particle
+//     vector <double> r;
+//     vector <double> omega;
+//     double ew;
+//     int cell;
+//     double fraction;
+
+//   // time remaining is the entire time step
+//     double time_left = delta_t;
+
+//   // instantiate particle to return
+//     SP<Particle<MT> > cen_particle(r, omega, ew, cell, rand, 
+// 				   fraction, time_left);
+
+//     return census_particle;
+// }
+
 }
 
 //---------------------------------------------------------------------------//
