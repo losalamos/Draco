@@ -210,6 +210,15 @@ class EoS
     virtual std::vector< double > getElectronThermalConductivity(
 	const std::vector< double >& vtemperature,
 	const std::vector< double >& vdensity ) const = 0;
+
+    /*!
+     * \brief Interface for packing a derived EoS object.
+     *
+     * Note, the user hands the return value from this function to a derived
+     * EoS constructor.  Thus, even though one can pack a EoS through a base
+     * class pointer, the client must know the derived type when unpacking.
+     */
+    virtual std::vector<char> pack() const = 0;
 	
 }; // end of class EoS    
     

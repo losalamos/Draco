@@ -200,6 +200,9 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
      * \brief Returns the size of the density grid.
      */
     int getNumDensities() const { return numDensities; };
+
+    // Dummy pack function.
+    std::vector<char> pack() const { return std::vector<char>(); }
 	
 };
     

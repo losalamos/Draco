@@ -242,6 +242,9 @@ class DummyEoS : public rtt_cdi::EoS
 	const std::vector< double >& vtemperature,
 	const std::vector< double >& vdensity ) const;
 
+    // Dummy pack function.
+    std::vector<char> pack() const { return std::vector<char>(); }
+
 }; // end of class DummyEoS
     
 } // end namespace rtt_cdi_test

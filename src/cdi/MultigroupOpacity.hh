@@ -186,6 +186,16 @@ class MultigroupOpacity
      * ( getNumGroupBoundaries() - 1 ).
      */
     virtual int getNumGroups() const = 0;
+
+    /*!
+     * \brief Interface for packing a derived MultigroupOpacity object.
+     *
+     * Note, the user hands the return value from this function to a derived
+     * MultigroupOpacity constructor.  Thus, even though one can pack a
+     * MultigroupOpacity through a base class pointer, the client must know
+     * the derived type when unpacking.
+     */
+    virtual std::vector<char> pack() const = 0;
 	
 }; // end of class MultigroupOpacity
     

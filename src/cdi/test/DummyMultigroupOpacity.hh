@@ -351,6 +351,9 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     int getNumGroups() const {
 	return numGroupBoundaries - 1; };
 
+    // Dummy pack function.
+    std::vector<char> pack() const { return std::vector<char>(); }
+
 }; // end of class DummyMultigroupOpacity
 
 //---------------------------------------------------------------------------//

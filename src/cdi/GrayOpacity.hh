@@ -169,6 +169,16 @@ class GrayOpacity
      * \brief Returns the size of the density grid.
      */
     virtual int getNumDensities() const = 0;
+
+    /*!
+     * \brief Interface for packing a derived GrayOpacity object.
+     *
+     * Note, the user hands the return value from this function to a derived
+     * GrayOpacity constructor.  Thus, even though one can pack a GrayOpacity
+     * through a base class pointer, the client must know the derived type
+     * when unpacking.
+     */
+    virtual std::vector<char> pack() const = 0;
 	
 }; // end of class GrayOpacity
     
