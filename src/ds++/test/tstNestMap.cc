@@ -16,6 +16,8 @@ using std::endl;
 
 bool passed = true;
 
+template class NestMap<std::string, int>;
+
 void version(const std::string &progname)
 {
     std::string version = "1.0.0";
