@@ -10,6 +10,12 @@
 ## Usage:
 ##       1) enter package directory
 ##       2) python ../../tools/package_depends.py
+## You can add packages to explicitly print out the files that are
+## included, e.g.
+##       python ../../tools/package_depends.py ds++
+## would return (for a file that included SP.hh and Assert.hh):
+##       ds++::Assert.hh
+##       ds++::SP.hh
 ##---------------------------------------------------------------------------##
 
 ##---------------------------------------------------------------------------##
@@ -20,6 +26,7 @@ import os
 import glob
 import fnmatch
 import re
+import sys
 
 ##---------------------------------------------------------------------------##
 ## GLOBAL VARIABLES (PACKAGE NAME
@@ -31,6 +38,14 @@ pkg_name     = os.path.basename(pkg_dir)
 
 pkg_test_dir = pkg_dir + '/test'
 
+# check arguments
+i          = 1
+pkg_names  = []
+
+# add packages to print out dependencies
+for i in range(1,len(sys.argv)):
+    pkg_names.append(sys.argv[i])
+    
 ##---------------------------------------------------------------------------##
 ## FUNCTION: get a list of files associated with a classname
 ##---------------------------------------------------------------------------##
@@ -132,7 +147,38 @@ def output_total(draco_includes, test_includes):
     print ">>> Additional pkgs used in test"
     for pkg in test_pkgs:
         print pkg
+
+##---------------------------------------------------------------------------##
+## FUNCTION: print out packages include files
+##---------------------------------------------------------------------------##
+
+def output_pkg_files(draco_includes, test_includes):
+
+    print
+
+    # loop over requested packages
+    for pkg in pkg_names:
         
+        # pkg includes
+        for key in draco_includes.keys():
+
+            files = []
+            
+            for dep in draco_includes[key]:
+                pkg_match = re.search('([0-9A-Za-z+_]*)::.*', dep)
+
+                if pkg_match:
+                    p = pkg_match.group(1)
+
+                if p == pkg:
+                    files.append(dep)
+
+            if len(files) > 0:
+                print ">>> %s package includes in %s" % (pkg, key)
+                for f in files:
+                    print "    %s" % (f)
+            
+
 ##---------------------------------------------------------------------------##
 ## MAIN PROGRAM
 ##---------------------------------------------------------------------------##
@@ -185,6 +231,9 @@ if os.path.exists(pkg_test_dir):
     
 # write out data
 output_total(draco_includes, draco_test_includes)
+
+# write out packages
+output_pkg_files(draco_includes, draco_test_includes)
 
 ###############################################################################
 ##                            end of package_depends.py
