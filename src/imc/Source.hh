@@ -31,14 +31,6 @@
 namespace rtt_imc 
 {
 
-// draco components
-using rtt_rng::Rnd_Control;
-using dsxx::SP;
-
-// STL components
-using std::string;
-using std::ostream;
-
 template<class MT, class PT = Particle<MT> >
 class Source
 {
@@ -54,7 +46,7 @@ public:
     typename MT::CCSF_int nss;
     typename MT::CCSF_int fss;
     typename MT::CCSF_double ew_ss;
-    string ss_dist;
+    std::string ss_dist;
 
   // census bank
     typename Particle_Buffer<PT>::Census census;
@@ -77,13 +69,13 @@ public:
     int ncendone;
 
   // random number controller
-    SP<Rnd_Control> rcon;
+    dsxx::SP<rtt_rng::Rnd_Control> rcon;
 
   // Particle Buffer
     Particle_Buffer<PT> buffer;
 
   // Material State
-    SP<Mat_State<MT> > material;
+    dsxx::SP<Mat_State<MT> > material;
 
 public:
   // constructor
@@ -92,16 +84,16 @@ public:
 	   typename MT::CCSF_int &, typename MT::CCSF_int &, 
 	   typename MT::CCSF_int &, typename MT::CCSF_double &,
 	   typename Particle_Buffer<PT>::Census &,
-	   string, int, int, SP<Rnd_Control>, 
-	   const Particle_Buffer<PT> &, SP<Mat_State<MT> >);
+	   std::string, int, int, dsxx::SP<rtt_rng::Rnd_Control>, 
+	   const Particle_Buffer<PT> &, dsxx::SP<Mat_State<MT> >);
 
   // required services for Source
-    SP<PT> get_Source_Particle(double); 
+    dsxx::SP<PT> get_Source_Particle(double); 
 
   // Particle sources
-    SP<PT> get_census(double);
-    SP<PT> get_evol(double);
-    SP<PT> get_ss(double);
+    dsxx::SP<PT> get_census(double);
+    dsxx::SP<PT> get_evol(double);
+    dsxx::SP<PT> get_ss(double);
 
   // accessors
     int get_nvoltot() const { return nvoltot; }
@@ -109,7 +101,7 @@ public:
     int get_ncentot() const { return ncentot; }
 
   // source diagnostic
-    void print(ostream &) const;
+    void print(std::ostream &) const;
 
   // bool conversion
     inline operator bool() const;
@@ -132,7 +124,8 @@ inline Source<MT, PT>::operator bool() const
 // output ascii version of the source
 
 template<class MT, class PT>
-inline ostream& operator<<(ostream &output, const Source<MT,PT> &object)
+inline std::ostream& operator<<(std::ostream &output, 
+				const Source<MT,PT> &object) 
 {
     object.print(output);
     return output;

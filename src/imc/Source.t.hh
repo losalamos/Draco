@@ -11,13 +11,16 @@
 #include "ds++/Assert.hh"
 #include <iomanip>
 #include <cmath>
+#include <vector>
 
 namespace rtt_imc 
 {
 
 // Draco functions
 using rtt_rng::Sprng;
+using rtt_rng::Rnd_Control;
 using rtt_mc::global::pi;
+using dsxx::SP;
 
 // STL functions
 using std::ios;
@@ -28,6 +31,9 @@ using std::pow;
 using std::endl;
 using std::setiosflags;
 using std::setw;
+using std::string;
+using std::ostream;
+using std::vector;
 
 //---------------------------------------------------------------------------//
 // constructor
