@@ -307,16 +307,18 @@ class CDI
     static int getNumberFrequencyGroups();
 
     // Integrate the normalized Planckian over a frequency range.
-    static double integratePlanckSpectrum(double lowf, double hif, double T);
+    static double integratePlanckSpectrum(const double lowf, const double hif, 
+					  const double T); 
 
     // Integrate the normalized Planckian from 0 to x (hnu/kT).
-    static double integratePlanckSpectrum(double frequency, double T);
+    static double integratePlanckSpectrum(const double frequency, 
+					  const double T); 
 
     // Integrate the normalized Planckian spectrum over a frequency group.
-    static double integratePlanckSpectrum(int groupIndex, double T);
+    static double integratePlanckSpectrum(const int groupIndex, const double T);
 
     // Integrate the normalized Planckian spectrum over all frequency groups.
-    static double integratePlanckSpectrum(double T);
+    static double integratePlanckSpectrum(const double T);
 
   private:
 	

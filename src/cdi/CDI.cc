@@ -113,10 +113,10 @@ inline double taylor_series_planck(double x)
 	// The maximum double for the current machine is
 	double const maxDouble( numeric_limits<double>::max() );
 
-	// To be conservative assume that we are looking for x^22 so that we
+	// To be conservative, assume that we are looking for x^22 so that we
 	// will now require that x^22 < maxDouble.  However, if x is too big
-	// this comparison will also result in an overflow.  We take the log
-	// of both sides we will have:
+	// this comparison will also result in an overflow.  If we take the
+	// log of both sides, we will have:
 	//
 	// Require( log( x^22 ) < log(maxDouble) );
 	//
@@ -256,6 +256,16 @@ inline double polylog_series_minus_one_planck(double x)
  * In the limit of \f$T \rightarrow 0, b(T) \rightarrow 0, therefore we
  * return a hard zero for a temperature equal to a hard zero.
  *
+ * The integral is calculated using a polylogarithmic series approximation,
+ * except for low frequencies, where the Taylor series approximation is more
+ * accurate.  Each of the Taylor and polylogarithmic approximation has a
+ * positive trucation error, so they intersect above the correct solution;
+ * therefore, we always use the smaller one for a continuous concatenated
+ * function.  When both frequency bounds reside above the Planckian peak
+ * (above 2.822 T), we skip the Taylor series calculations and use the
+ * polylogarithmic series minus one (the minus one is for roundoff control).
+ *
+ *
  * \param lowFreq lower frequency bound in keV
  *
  * \param highFreq higher frequency bound in keV
@@ -265,40 +275,76 @@ inline double polylog_series_minus_one_planck(double x)
  * \return integrated normalized Plankian from x_low to x_high
  *
  */
-double CDI::integratePlanckSpectrum(double lowFreq, double highFreq, double T)
+double CDI::integratePlanckSpectrum(const double lowFreq, 
+				    const double highFreq, 
+				    const double T) 
 {
-    Require (lowFreq >= 0.0);
+    Require (lowFreq  >= 0.0);
     Require (highFreq >= lowFreq);
-    Require (T >= 0.0);
+    Require (T        >= 0.0);
 
     // return 0 if temperature is a hard zero
     if (T == 0.0)
 	return 0.0;
 
     // determine the upper and lower x
-    double lower_x = lowFreq  / T;
-    double upper_x = highFreq / T;
+    const double lower_x = lowFreq  / T;
+    const double upper_x = highFreq / T;
 
-    // determine the upper and lower bounds calculated by the taylor and
-    // polylogarithmic approximations
-    double lower_taylor  = taylor_series_planck(lower_x);
-    double upper_taylor  = taylor_series_planck(upper_x);
-    double lower_poly_m1 = polylog_series_minus_one_planck(lower_x);
-    double upper_poly_m1 = polylog_series_minus_one_planck(upper_x);
-    double lower_poly    = lower_poly_m1 + 1.0;
-    double upper_poly    = upper_poly_m1 + 1.0;
-
-    // determine the integral based on the upper and lower bounds
+    // initialize the return integral value
     double integral = 0.0;
 
-    if (lower_taylor < lower_poly && upper_taylor < upper_poly)
-	integral = upper_taylor - lower_taylor;
-    else if (lower_taylor < lower_poly && upper_taylor >= upper_poly)
-	integral = upper_poly - lower_taylor;
-    else 
-	integral = upper_poly_m1 - lower_poly_m1;
+    // determine the upper and lower bounds calculated by the 
+    // polylogarithmic approximations minus one
+    const double lower_poly_m1 = polylog_series_minus_one_planck(lower_x);
+    const double upper_poly_m1 = polylog_series_minus_one_planck(upper_x);
 
-    Ensure (integral >= 0.0 && integral <= 1.0);
+    // if both reduced frequencies are above the Planckian peak, 2.82144,
+    // bypass the Taylor series approximation and use only the
+    // polylogarithmic approximations minus one.
+    const double x_at_planck_peak = 2.822;
+
+    if (lower_x >= x_at_planck_peak)
+    {
+	integral = upper_poly_m1 - lower_poly_m1;
+    }
+
+    // otherwise, calculate the taylor and polylogarithmic approximations for
+    // the upper and lower bounds and use the appropriate ones.  Both have
+    // positive truncation errors, and they intersect above the true
+    // function, therefore we always use the minimum.  Using the minimum
+    // means that we do not have to explicitly calculate the intersection.
+    else
+    {
+	const double lower_taylor = taylor_series_planck(lower_x);
+	const double upper_taylor = taylor_series_planck(upper_x);
+	const double lower_poly   = lower_poly_m1 + 1.0;
+	const double upper_poly   = upper_poly_m1 + 1.0;
+
+	// both limits are below the intersection, so use Taylor for both
+	if ( upper_taylor < upper_poly )
+	{
+	    Check ( lower_taylor < lower_poly );
+	    integral = upper_taylor - lower_taylor;
+	}
+
+	// the limits straddle the intersection, use both Taylor and polylog
+	else if ( lower_taylor < lower_poly )
+	{
+	    Check ( upper_taylor >= upper_poly );
+	    integral = upper_poly - lower_taylor;
+	}
+
+	// both limits are above the intersection, so use polylog-1 for both
+	else 
+	{
+	    Check ( lower_taylor >= lower_poly );
+	    integral = upper_poly_m1 - lower_poly_m1;
+	}
+    }
+
+    Ensure ( integral >= 0.0 )
+    Ensure ( integral <= 1.0 );
 
     return integral;
 }
@@ -357,7 +403,7 @@ double CDI::integratePlanckSpectrum(double lowFreq, double highFreq, double T)
  * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
  *
  */
-double CDI::integratePlanckSpectrum(double frequency, double T)
+double CDI::integratePlanckSpectrum(const double frequency, const double T)
 {
     Require (T >= 0.0);
     Require (frequency >= 0.0);
@@ -428,7 +474,7 @@ double CDI::integratePlanckSpectrum(double frequency, double T)
  *                   by groupIndex.
  *
  */
-double CDI::integratePlanckSpectrum(int groupIndex, double T)
+double CDI::integratePlanckSpectrum(const int groupIndex, const double T)
 {
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
     Require (T >= 0.0);
@@ -507,7 +553,7 @@ double CDI::integratePlanckSpectrum(int groupIndex, double T)
  * \return integrated normalized Plankian over all frequency groups
  *
  */
-double CDI::integratePlanckSpectrum(double T)
+double CDI::integratePlanckSpectrum(const double T)
 {
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
     Require (T >= 0.0);
