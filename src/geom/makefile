@@ -21,17 +21,17 @@ libsrcs = \
 
 pretarg = deps
 resolve_libs = \
-	../c4/libc4_$(env).$(lib_suffix) \
-	../nml/libnml_$(env).$(lib_suffix) \
-	../ds++/libds++_$(env).$(lib_suffix)
+	-L../c4 -lc4_$(env) \
+	-L../nml -lnml_$(env) \
+	-L../ds++ -lds++_$(env)
 
 include ../config/make.lib
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../ds++; $(MAKE))
-	(cd ../nml;  $(MAKE) dodeps=no)
-	(cd ../c4;   $(MAKE) dodeps=no)
+	(cd ../ds++; $(MAKE) $(subnj))
+	(cd ../nml;  $(MAKE) $(subnj) dodeps=no)
+	(cd ../c4;   $(MAKE) $(subnj) dodeps=no)
 endif
 
 # Rules for building docs
