@@ -13,10 +13,10 @@
 
 
 #
-# runtest is an sh function that will be run later in this script
+# runregression is an sh function that will be run later in this script
 #
 
-runtest ()
+runregression ()
 {
    # directories that depend on sprnglib
 
@@ -121,19 +121,26 @@ esac
 
 # Create a serial build
 
+# remove the toplevel target directory
+
+TARGETROOT=$hostname
+echo rm -r $TARGETROOT
+rm -r $TARGETROOT
+
 for c4 in $C4
 do
-   TARGETDIR=$uname/$c4/draco
-
    for b in $BITS
    do
 
       CONFIGUREFLAGS="--with-c4=$c4"
 
-      if [ "X$b" != "X0" ] ; then
+      if [ "X$b" = "X0" ] ; then
+         TARGETDIR=$TARGETROOT/$c4/draco
+      else
          eval PCG_LIBPATH='$PCG_LIB'$b'PATH'
-         TARGETDIR=$uname/${c4}_$b/draco
+         TARGETDIR=$TARGETROOT/${c4}_$b/draco
       fi
+
 
       # Check if pcglib is available
 
@@ -150,7 +157,7 @@ do
 
       # run in subshell since cd is going on.
 
-      (runtest)
+      (runregression)
 
    done
 
