@@ -230,3 +230,20 @@ void IMP::MaterialStateField<FT>::getDensity(FT &results) const
 	*resit++ = getDensity(i);
 }
 
+//---------------------------------------------------------------------------//
+// getMatId:
+//    Return the density from the material state field.
+//---------------------------------------------------------------------------//
+
+template<class FT>
+template<class FT2>
+void IMP::MaterialStateField<FT>::getMatId(FT2 &results) const
+{
+    Require(size() == results.size());
+	
+    FT2::iterator resit = results.begin();
+    
+    for (int i=0; i < size(); i++)
+	*resit++ = getMatId(i);
+}
+

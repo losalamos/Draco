@@ -49,7 +49,7 @@ namespace rtt_matprops {
 
    private:
     
-     Units units;
+     XTM::Units units;
 
      double kappa0;
      double abar;
@@ -60,7 +60,7 @@ namespace rtt_matprops {
 
      // CREATORS
     
-     MarshakMaterialProps(const Units &units_,
+     MarshakMaterialProps(const XTM::Units &units_,
 			  double kappa0_=10.0, double abar_=1.0,
 			  int kappaPower_=3, double gamma_ = 5.0/3.0)
 	 : units(units_), kappa0(kappa0_), abar(abar_),
@@ -80,7 +80,7 @@ namespace rtt_matprops {
 
   public:
 
-    const Units &getUnits() const { return units; }
+    const XTM::Units &getUnits() const { return units; }
 
     //------------------------------------------------------------------------//
     // getMaterialState:
@@ -161,11 +161,13 @@ class MarshakMaterialProps::MaterialStateField
 
     const MarshakMaterialProps &getProps() const { return *pMatprops; }
     
-    const Units &getUnits() const { return getProps().getUnits(); }
+    const XTM::Units &getUnits() const { return getProps().getUnits(); }
 
     inline void getElectronTemperature(FT &results) const;
     inline void getIonTemperature(FT &results) const;
     inline void getDensity(FT &results) const;
+    template<class FT2>
+    inline void getMatId(FT2 &results) const;
 
     inline void getSigmaAbsorption(int group, FT &results) const;
 
@@ -274,6 +276,18 @@ void MPMSF<FT>::getDensity(FT &results) const
 }
 
 template<class FT>
+template<class FT2>
+void MPMSF<FT>::getMatId(FT2 &results) const
+{
+    Require(size() == results.size());
+	
+    FT2::iterator resit = results.begin();
+    
+    for (int i=0; i < size(); i++)
+	*resit++ = getMatId(i);
+}
+
+template<class FT>
 void MPMSF<FT>::getSigmaAbsorption(int group, FT &results) const
 {
     Require(size() == results.size());
@@ -291,15 +305,18 @@ template<class FT>
 void MPMSF<FT>::getElectronSpecificHeat(FT &results) const
 {
     Require(size() == results.size());
+
+    using XTM::PhysicalConstants::protonMassSI;
+    using XTM::PhysicalConstants::boltzmannSI;
     
     const double abar = pMatprops->abar;
     const double protonMass =
-	getUnits().InvertMass(PhysicalConstants::protonMassSI);
+	getUnits().InvertMass(protonMassSI);
     
     const double ionMass = abar * protonMass;
     
     const double gamma = pMatprops->gamma;
-    const double kSI = PhysicalConstants::boltzmannSI;
+    const double kSI = boltzmannSI;
 
     const double k = getUnits().InvertEnergy(
 	getUnits().ConvertTemperature(kSI));

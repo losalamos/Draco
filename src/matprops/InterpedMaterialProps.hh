@@ -419,6 +419,9 @@ class InterpedMaterialProps::MaterialStateField
 
     void getDensity(FT &results) const;
 
+    template<class FT2>
+    void getMatId(FT2 &results) const;
+
     void getSigmaTotal(int group, FT &results) const
     {
 	getProps().interpolate(*this, group, &MaterialTables::getSigmaTotal,
