@@ -16,10 +16,15 @@
 
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -30,11 +35,17 @@ namespace rtt_viz
 
 //===========================================================================//
 /*!
- * \enum FE_Cell_Types
+ * \enum Ensight_Cell_Types
  *
- * \brief Finite Element Cell Type indicators.
+ * \brief Supported Ensight cell types.
  *
- * This enumeration matches Finite Element methods to an index.
+ * Values from this enumeration are assigned (by the user) to each cell in
+ * the mesh through the rtt_viz::Ensight_Translator::ensight_dump() function
+ * input field argument iel_type.  See Section 2.5 (Figure 2-22) in the
+ * Ensight 6.2 user manual for further information on Ensight cell types.  
+ *
+ * \sa Ensight example page for examples of how this enumeration is used to
+ * generate the iel_type field.
  */
 //===========================================================================//
 
@@ -66,6 +77,64 @@ enum Ensight_Cell_Types
  * This class is used to create data dumps that are readable by EnSight.
  * Currently, only ASCII format dumps are supported.  The present incantation
  * of this class is a C++ version of the ensight_dump model from Dante.
+ *
+ * \anchor Ensight_Translator_strings
+ *
+ * A note about names: all strings containing names, be they problem names or
+ * data names, should not contain the following characters:
+ *
+ * \arg ( ) [ ] + - \@ space ! \# * ^ \$ /
+ *
+ * Names in the ensight translation are often used to create directories, so
+ * they must not have these characters in them.  Additionally, keep all names
+ * under 19 characters.  Finally, all names of data should be unique.
+ *
+ * \anchor Ensight_Translator_description
+ *
+ * Ensight_Translator is not a templated class; however, the member functions
+ * are templated on field types.  These types and there restrictions are as
+ * follows:
+ *
+ * \arg \b SSF (string scalar field) can be any field type that supports
+ * random access iterators and operator[] indexing
+ *
+ * \arg \b ISF (integer scalar field) can be any field type that supports
+ * random access iterators and operator[] indexing
+ *
+ * \arg \b IVF (integer vector field) uses the rtt_traits::Viz_Traits class
+ * to convert to i,j indexing to operator(int, int).  See the
+ * rtt_traits::Viz_Traits class to determine which 2D vector containers are
+ * specialized
+ *
+ * \arg \b FVF (floating point vector field) uses the rtt_traits::Viz_Traits
+ * class to convert to i,j indexing to operator(int, int).  See the
+ * rtt_traits::Viz_Traits class to determine which 2D vector containers are
+ * specialized
+ *
+ * The vector-field (VF) types will most commonly by dsxx::Mat2 or
+ * std::vector<std::vector> types.  Other types will require specialization
+ * in the rtt_traits::Viz_Traits class.
+ *
+ * Data dumped to Ensight will be stored in the directory prefix argument
+ * given to the constructor (Ensight_Translator::Ensight_Translator()).  The
+ * directory created will have the name "prefix"_ensight. The directory is
+ * placed in the path specified by the gd_wpath argument to the constructor.
+ * This directory must exist.
+ *
+ * To launch ensight: select the "prefix".case file that resides in the
+ * top-level ensight dump directory from the "file/Data (reader)" menu.  Set
+ * the data file "Format" option in Ensight to "case" and hit the "(Set)
+ * Geometry" button.  From there see the Ensight manual.
+ */
+/*!
+ * \example viz/test/tstEnsight_Translator.cc
+ *
+ * \anchor ensight_test
+ *
+ * Example usage of the Ensight_Translator class. A two part, 3-D, nine cell
+ * mesh graphics dump is performed.  Two vertex data field and two cell data
+ * fields are dumped.  After running the test look in testproblem_ensight to
+ * see the output.
  */
 // revision history:
 // -----------------
@@ -98,36 +167,83 @@ class Ensight_Translator
     // Timestep index.
     int ntime_current;
 
-    // Time values at each Ensight dump.
+    // Vector of dump_times.
     sf_double dump_times;
 
-    // Dump counter
+    // Dump counter.
     int igrdump_num;
+
+    // Ensight file prefixes.
+    std_string prefix;
+    std_string ens_prefix;
+
+    // Names of vertex data.
+    sf_string ens_vdata_names;
+    
+    // Names of cell data.
+    sf_string ens_cdata_names;
+
+    // Name of case file.
+    std_string case_filename;
+
+    // Name of geometry directory.
+    std_string geo_dir;
+
+    // Names of vdata directories.
+    sf_string vdata_dirs;
+
+    // Names of cdata directories.
+    sf_string cdata_dirs;
+
+    // >>> PRIVATE IMPLEMENTATION
+
+    // Write out case file.
+    void ensight_case(const double);
+
+    // Write out geometry file.
+    template<class IVF, class FVF>
+    void ensight_geom(const std_string &, const int, 
+		      const double, const double, 
+		      const rtt_traits::Viz_Traits<IVF> &,
+		      const rtt_traits::Viz_Traits<FVF> &,
+		      const sf_string &, const sf_int &, const sf_int &); 
+
+    // Write out vertex data.
+    template<class FVF>
+    void ensight_vrtx_data(const std_string &, 
+			   const rtt_traits::Viz_Traits<FVF> &);
+
+    // Write out cell data.
+    template<class FVF>
+    void ensight_cell_data(const std_string &,
+			   const rtt_traits::Viz_Traits<FVF> &,
+			   const sf_int &,
+			   const sf_int &, const sf_string &);
 
   public:
     // Constructor.
-    Ensight_Translator(int = 999);
+    template<class SSF>
+    Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
+		       const SSF &ens_vdata_names, 
+		       const SSF &ens_cdata_names); 
 
     // Do an Ensight_Dump.
     template<class ISF, class IVF, class SSF, class FVF>
-    void ensight_dump(const std_string &prefix, int icycle, double time,
-		      double dt, const std_string &gd_wpath,
-		      const IVF &ipar, const ISF &iel_type, 
-		      const ISF &rgn_index, const FVF &pt_coor,
-		      const FVF &ens_vrtx_data, const FVF &ens_cell_data,
-		      const SSF &ens_vdata_names, const SSF &ens_cdata_names, 
-		      const ISF &rgn_data, const SSF &rgn_name, 
-		      const ISF &iproc); 
-
+    void ensight_dump(int icycle, double time, double dt,
+		      const IVF &ipar_in, const ISF &iel_type, 
+		      const ISF &cell_rgn_index, const FVF &pt_coor_in,
+		      const FVF &ens_vrtx_data_in, 
+		      const FVF &ens_cell_data_in, const ISF &rgn_numbers, 
+		      const SSF &rgn_name); 
 };
+
+} // end namespace rtt_viz
 
 //---------------------------------------------------------------------------//
 // include template definitions so that template functions will be
 // automatically instantiated in client code
 
 #include "Ensight_Translator.t.hh"
-
-} // end namespace rtt_viz
 
 #endif                          // __viz_Ensight_Translator_hh__
 

@@ -14,6 +14,7 @@
 #include "../Release.hh"
 #include "ds++/Assert.hh"
 
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -28,33 +29,40 @@ bool passed = true;
 
 //---------------------------------------------------------------------------//
 
-void ensight_dump()
+void ensight_dump_test()
 {
-    // build an Ensight_Translator
-    Ensight_Translator translator(1000);
-
     // dimensions
-    int ncells   = 9; 
+    int ncells   = 27; 
     int nvert    = 64; 
     int ndim     = 3;
-    int ndata    = 1;
+    int ndata    = 2;
     int nhexvert = 8;
-    int nrgn     = 1;
+    int nrgn     = 2;
     
     // do an Ensight Dump
     vector<vector<int> >    ipar(ncells, vector<int>(nhexvert));
-    vector<vector<double> > ens_vrtx_data(nvert, vector<double>(ndata));
-    vector<vector<double> > ens_cell_data(ncells, vector<double>(ndata));
+    vector<vector<double> > ens_vrtx_data(nvert, vector<double>(ndata, 5.0)); 
+    vector<vector<double> > ens_cell_data(ncells, vector<double>(ndata, 10.));   
     vector<vector<double> > pt_coor(nvert, vector<double>(ndim));
   
     vector<int>    iel_type(ncells, 
-			    rtt_viz::eight_node_hexahedron);
+    			    rtt_viz::eight_node_hexahedron);
     vector<int>    rgn_index(ncells, 1);
-    vector<string> ens_vdata_names(ndata, "Temp");
+    vector<string> ens_vdata_names(ndata, "Temperatures");
     vector<string> ens_cdata_names(ndata, "Velocity");
-    vector<string> rgn_name(nrgn, "Problem");
+    vector<string> rgn_name(nrgn, "RGN_A");
     vector<int>    rgn_data(nrgn, 1);
-    vector<int>    iproc(ncells, 0);
+
+    // set region stuff
+    rgn_name[1] = "RGN_B";
+    rgn_data[1] = 2;
+    for (int i = 1; i < 5; i++)
+	rgn_index[i] = 2;
+    rgn_index[14] = 2;
+    rgn_index[15] = 2;
+    rgn_index[21] = 2;
+    ens_vdata_names[1] = "Densities";
+    ens_cdata_names[1] = "Pressure";
 
     string prefix   = "testproblem";
     int icycle      = 1;
@@ -62,10 +70,37 @@ void ensight_dump()
     double dt       = .01;
     string gd_wpath = ".";
 
-    translator.ensight_dump(prefix, icycle, time, dt, gd_wpath,
+    // make data
+    for (int i = 0; i < ndata; i++)
+    {
+	// cell data
+	for (int cell = 0; cell < ncells; cell++)
+	    ens_cell_data[cell][i] = 1 + cell;
+
+	// vrtx data
+	for (int v = 0; v < nvert; v++)
+	    ens_vrtx_data[v][i] = 1 + v;
+    }
+
+    // read cell data
+    ifstream input("cell_data");
+    for (int i = 0; i < pt_coor.size(); i++)
+	for (int j = 0; j < pt_coor[i].size(); j++)
+	    input >> pt_coor[i][j];
+    for (int i = 0; i < ipar.size(); i++)
+	for (int j = 0; j < ipar[i].size(); j++)
+	    input >> ipar[i][j];
+
+    // build an Ensight_Translator
+    Ensight_Translator translator(prefix, gd_wpath, ens_vdata_names,
+				  ens_cdata_names); 
+
+    translator.ensight_dump(icycle, time, dt,
 			    ipar, iel_type, rgn_index, pt_coor,
-			    ens_vrtx_data, ens_cell_data, ens_vdata_names,
-			    ens_cdata_names, rgn_data, rgn_name, iproc);
+			    ens_vrtx_data, ens_cell_data,
+			    rgn_data, rgn_name);
+
+    time = .05;
 }
 
 //---------------------------------------------------------------------------//
@@ -83,7 +118,7 @@ int main(int argc, char *argv[])
     try
     {
 	// tests
-	ensight_dump();
+	ensight_dump_test();
     }
     catch(dsxx::assertion &ass)
     {
