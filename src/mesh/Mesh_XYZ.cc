@@ -136,6 +136,17 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 	zF(c,2) = z; zF(c,3) = z;
 	zF(c,4) = z - dz2; zF(c,5) = z + dz2;
     }
+
+// Now initialize the diag offsets which are needed by clients employing
+// sparse matrices.
+
+    diags[3] = 0;
+    diags[4] = 1;
+    diags[5] = ncx;
+    diags[6] = ncx*ncy;
+    diags[2] = -diags[4];
+    diags[1] = -diags[5];
+    diags[0] = -diags[6];
 }
 
 #include "c4/global.hh"
