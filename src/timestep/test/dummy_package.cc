@@ -8,17 +8,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "dummy_package.hh"
-
-#include "../ts_manager.hh"
-
-#include "../field_ts_advisor.hh"
-
-#include "c4/global.hh"
-
 #include <vector>
-
-#include "test_utils.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "c4/global.hh"
+#include "../ts_manager.hh"
+#include "../field_ts_advisor.hh"
+#include "dummy_package.hh"
 
 using std::vector;
 
@@ -105,10 +100,20 @@ void dummy_package::advance_state()
 
 bool dummy_package::tests_passed() const
 {
-    const int nd = 5;
-    return compare_reals(1.371742e+00, sp_te->get_dt_rec(tsm),nd)
-        && compare_reals(1.496914e+00, sp_ti->get_dt_rec(tsm),nd)
-        && compare_reals(2.716049e+00, sp_ri->get_dt_rec(tsm),nd);
+    using rtt_dsxx::soft_equiv;
+
+    double const prec( 1.0e-5 );
+    double const ref1( 1.371742 );
+    double const ref2( 1.496914 );
+    double const ref3( 2.716049 );
+    
+    return soft_equiv( ref1, sp_te->get_dt_rec(tsm), prec )
+	&& soft_equiv( ref2, sp_ti->get_dt_rec(tsm), prec )
+	&& soft_equiv( ref3, sp_ri->get_dt_rec(tsm), prec );
+
+// compare_reals(1.371742e+00, sp_te->get_dt_rec(tsm),nd)
+//         && compare_reals(1.496914e+00, sp_ti->get_dt_rec(tsm),nd)
+//         && compare_reals(2.716049e+00, sp_ri->get_dt_rec(tsm),nd);
 }
 
 //---------------------------------------------------------------------------//

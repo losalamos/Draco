@@ -8,22 +8,16 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "test_timestep.hh"
-
+#include <iostream>
+#include <cmath>
+#include "ds++/Soft_Equivalence.hh"
+#include "c4/global.hh"
 #include "../ts_manager.hh"
 #include "../fixed_ts_advisor.hh"
 #include "../ratio_ts_advisor.hh"
 #include "../target_ts_advisor.hh"
 #include "../test/dummy_package.hh"
-#include "../test/test_utils.hh"
-
-#include "c4/global.hh"
-
-#include <iostream>
-#include <cmath>
-
-using std::cout;
-using std::endl;
+#include "test_timestep.hh"
 
 using namespace rtt_timestep;
 
@@ -39,8 +33,10 @@ test_timestep::~test_timestep()
 
 void test_timestep::execute_test()
 {
-
+    using std::cout;
+    using std::endl;
     using rtt_dsxx::SP;
+    using rtt_dsxx::soft_equiv;
 
     double graphics_time = 10.;
     double dt_min = 0.000001;
@@ -151,20 +147,31 @@ void test_timestep::execute_test()
 
 // Confirm that at least some of the output is correct.
 
-    int nd = 5;
+    double const prec( 1.0e-5 );
+    double const ref1( 3.345679 );
+    double const ref2( 1.234568 );
+    double const ref3( 1.371742 );
+    double const ref4( 1.000000e-06 );
+    double const ref5( 9.876543e-01 );
+    double const ref6( 1.0 );
+    double const ref7( 1.234568 );
+    double const ref8( 1.481481 );
+    double const ref9( 6.654321 );
+    double const ref10( 1.000000e+05 );
+
     bool passed = mngr.get_cycle() == icycle_last
-	&& compare_reals(3.345679e+00, mngr.get_time(),nd)
-	&& compare_reals(1.234568e+00, mngr.get_dt(),nd)
-	&& compare_reals(1.371742e+00, mngr.get_dt_new(),nd)
-	&& mngr.get_controlling_advisor() == "Electron Temperature"
-	&& compare_reals(1.000000e-06,sp_min->get_dt_rec(mngr),nd)
-	&& compare_reals(9.876543e-01,sp_llr->get_dt_rec(mngr),nd)
-	&& compare_reals(1.000000e+00,sp_ovr->get_dt_rec(mngr),nd)
-	&& compare_reals(1.234568e+00, sp_dt->get_dt_rec(mngr),nd)
-	&& compare_reals(1.481481e+00,sp_ulr->get_dt_rec(mngr),nd)
-	&& compare_reals(6.654321e+00, sp_gd->get_dt_rec(mngr),nd)
-	&& compare_reals(1.000000e+05,sp_max->get_dt_rec(mngr),nd)
-	&& xxx.tests_passed();
+ 	&& mngr.get_controlling_advisor() == "Electron Temperature"
+ 	&& xxx.tests_passed()
+	&& soft_equiv( ref1, mngr.get_time(), prec )
+	&& soft_equiv( ref2, mngr.get_dt(), prec )
+	&& soft_equiv( ref3, mngr.get_dt_new(), prec )
+	&& soft_equiv( ref4, sp_min->get_dt_rec(mngr), prec )
+	&& soft_equiv( ref5, sp_llr->get_dt_rec(mngr), prec )
+	&& soft_equiv( ref6, sp_ovr->get_dt_rec(mngr), prec )
+ 	&& soft_equiv( ref7, sp_dt->get_dt_rec(mngr),prec)
+ 	&& soft_equiv( ref8, sp_ulr->get_dt_rec(mngr),prec)
+ 	&& soft_equiv( ref9, sp_gd->get_dt_rec(mngr),prec)
+ 	&& soft_equiv( ref10,sp_max->get_dt_rec(mngr),prec);
 
     // Check to make sure all processes passed.
     
