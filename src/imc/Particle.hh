@@ -20,7 +20,7 @@
 #include "ds++/Assert.hh"
 #include <vector>
 #include <string>
-#include <iostream>
+#include <iostream> 
 #include <cmath>
 
 namespace rtt_imc 
@@ -114,7 +114,8 @@ namespace rtt_imc
 //                string descriptor. See memo CCS-4:01-19(U)
 // 16) 26-JUL-01: cleaned up file format; made get_descriptor return the
 //                enumeration value (integer)
-// 17) 17-SEP-01: added check on zero scattering cross section in transport()
+// 17) 24-SEP-01: switched to hybrid aborption behavior and added streaming
+//                to cutoff. See memo CCS-4:01-33(U)
 // 
 //===========================================================================//
 
@@ -134,6 +135,8 @@ class Particle
 		     LOW_WEIGHT=101,
 		     EFF_SCATTER=102, 
 		     THOM_SCATTER=103, 
+		     COLLISION=104, 
+		     CUTOFF=105,
 		     REFLECTION=200, 
 		     STREAM=201, 
 		     ESCAPE=202, 
@@ -142,6 +145,7 @@ class Particle
 		     BOUNDARY=205, 
 		     CENSUS=300, 
 		     KILLED=1000};
+
 
     // Forward declaration of Pack class
     struct Pack;
@@ -190,6 +194,12 @@ class Particle
     friend class Pack;
 
   private:
+
+    // >> PARAMERERS:
+
+    // Energy-weight cutoff between analog and implicit absorption
+    static const double minwt_frac;
+
     // >>> DATA
 
     // Particle energy-weight.
@@ -225,11 +235,13 @@ class Particle
     // Stream a distance d.
     inline void stream(double);  
 
-    // Stream a distance d.
-    inline void stream_IMC(const Opacity<MT> &, Tally<MT> &, double);
+    //! Perform streaming operations specific to particles undergoing
+    //implicit absorption
+    inline void stream_implicit_capture(const Opacity<MT> &, Tally<MT> &, double);
 
-    // Collision, return a false if particle is absorbed.
-    bool collide(const MT &, const Opacity<MT> &);
+    //! Perform streaming operations specific to particles undergoing analog
+    // absorption
+    inline void stream_analog_capture  (Tally<MT> &, double);
 
     // Effective scatter.
     void scatter(const MT & );
@@ -237,11 +249,17 @@ class Particle
     // Surface crossings, return a false if particle escapes.
     bool surface(const MT &, int);
 
-    // IMC transport step.
-    void trans_IMC(const MT &, const Opacity<MT> &);
-    
-    // DDMC transport step.
-    void trans_DDMC(const MT &, const Opacity<MT> &);
+    //! Check for energy-weight fraction below Implicit/Analog cutoff. 
+    bool use_analog_absorption() { return (fraction <= minwt_frac); }
+
+    //! Process a combined scattering/collision event
+    void collision_event(const MT&, Tally<MT>&, double, double, double);
+
+    //! Process a particle going into the census
+    void census_event(Tally<MT> &);
+
+    //! Process a particle crossing a boundary
+    void boundary_event(const MT&, Tally<MT>&, int);
 
   public:
     // Particle constructor.
@@ -390,14 +408,13 @@ inline void Particle<MT>::stream(double distance)
 //---------------------------------------------------------------------------//
 
 template<class MT>
-inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
-				     double distance)
+inline void Particle<MT>::stream_implicit_capture(const Opacity<MT> &xs, 
+						  Tally<MT> &tally,
+						  double distance)
 {
-    // hardwire minimum energy weight fraction; limit distance accordingly
-    double minwt_frac = 0.01;
-    double min_arg    = log(0.1 * minwt_frac);
+    Check(distance)
+
     double argument = -xs.get_sigeffabs(cell) * distance;
-    if (argument < min_arg) argument = min_arg;
 
     // calculate multiplicative reduction in energy-weight; 
     // calculate new energy weight; change in energy-weight
@@ -420,25 +437,29 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
     // update the fraction of the particle's original weight
     fraction *= factor;
 
-    // kill particle and deposit its energy if its fraction is too low;
-    // or update particle energy-weight, time_left, and position.
-    if (fraction < minwt_frac)
-    {
-	tally.deposit_energy( cell, new_ew );
-	tally.accum_n_killed();
-	tally.accum_ew_killed( new_ew );
-	tally.accumulate_momentum(cell, new_ew, omega);
-	descriptor = KILLED;
-	alive = false;
-    }
-    else
-    {
-	ew = new_ew;
-	time_left -= distance / rtt_mc::global::c;
-	for (int i = 0; i <= r.size()-1; i++)
-	    r[i] = r[i] + distance * omega[i];
-    }
+    // update particle energy-weight
+    ew = new_ew;
+
+    Check(ew)
+
+    // Physically transport the particle
+    stream(distance); 
+
 }
+
+template<class MT>
+inline void Particle<MT>::stream_analog_capture(Tally<MT> &tally, 
+						double distance)
+{
+    Check(distance)
+
+    tally.accumulate_ewpl(cell, distance * ew);
+
+    // Physically transport the particle
+    stream(distance); 
+}
+
+
 
 //---------------------------------------------------------------------------//
 // convert a particle event descriptor string into an int

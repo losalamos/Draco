@@ -41,19 +41,121 @@ using rtt_mc::global::dot;
 // constructors
 //---------------------------------------------------------------------------//
 // defined inline
-
 // Particle uses default copy constructors and assignment operators
 
-//---------------------------------------------------------------------------//
-// public transport member functions
-//---------------------------------------------------------------------------//
-// transport a particle
+// Parameter minwt_frac is the fractional energy-weight cutoff between
+// implicit and analog absorption behavior.
+template<class MT> const double Particle<MT>::minwt_frac = 0.01;
 
+//---------------------------------------------------------------------------//
+// Process a collision event
+template<class MT> 
+void Particle<MT>::collision_event(
+    const MT& mesh, Tally<MT> &tally, 
+    double prob_scatter, double prob_thomson_scatter, double prob_abs){
+
+    double rand_selector = random.ran();
+    
+    if (rand_selector < prob_scatter) 
+    { 
+	// Scatter
+	if (rand_selector < prob_thomson_scatter)
+	{ 
+	    // Thomson scatter
+	    descriptor = THOM_SCATTER;
+	    tally.accum_n_thomscat();
+	}
+	else
+	{ 
+	    // Effective scatter
+	    descriptor = EFF_SCATTER;
+	    tally.accum_n_effscat();
+	}
+	
+	// accumulate momentum from before the scatter
+	tally.accumulate_momentum(cell, ew, omega);
+	
+	// scatter the particle -- update direction cosines
+	scatter( mesh );
+	
+	// accumulate momentum from after the scatter
+	tally.accumulate_momentum(cell, -ew, omega);
+	
+    }
+    else if (rand_selector < prob_scatter + prob_abs)
+    { // Absorption
+	tally.deposit_energy( cell, ew );
+	tally.accum_n_killed();
+	tally.accum_ew_killed( ew );
+	tally.accumulate_momentum(cell, ew, omega);
+	descriptor = KILLED; 
+	alive=false;
+    }
+    else
+    {
+	Insist(0,"D'oh! Transport could not pick a random event!");
+    }
+    
+}
+
+//---------------------------------------------------------------------------//
+// Process a particle going into census
+template<class MT>
+void Particle<MT>::census_event(Tally<MT>& tally)
+{
+    tally.accumulate_cen_info( cell, ew );
+    alive = false;
+    Check(rtt_mc::global::soft_equiv(time_left, 0.0));
+    time_left = 0.0;
+}
+
+//---------------------------------------------------------------------------//
+// Process a boundary crossing event
+template<class MT>
+void Particle<MT>::boundary_event(const MT &mesh, Tally<MT>& tally, int face)
+{
+    tally.accum_n_bndcross();
+    alive = surface(mesh, face);
+    
+    if (descriptor == REFLECTION)
+	tally.accum_n_reflections();
+    
+    if (descriptor == ESCAPE)
+    {
+	tally.accum_n_escaped();
+	tally.accum_ew_escaped(ew);
+    }
+}
+
+
+//---------------------------------------------------------------------------//
 template<class MT>
 void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs, 
 			     Tally<MT> &tally, SP<Diagnostic> diagnostic)
 {
-    // transport particle through mesh using regular IMC transport
+    /* Transport Method
+
+       Particles undergo implicit absorption until their energy weight drops
+       below 0.01 of their original value. During this time their energy
+       weight decreases exponentialy. Once they attain the cutoff energy
+       weight they are explicitly absorbed and their energy weight remains
+       constant.
+
+       We unify some of the treatment of the two modes (analog and implicit
+       absorption) by defining sigma_analog_abs to be the actual effective
+       absorption for analog (light) particles and 0.0 for implicit (heavy)
+       particles. The total collision cross section is always
+       sigma_scatter+sigma_eff_abs.
+
+       To prevent the accumulation of particles with energy weights below the
+       cutoff point, particles stream no further than required to reach
+       cutoff if nothing else happens first. The distance to the cutoff is
+       computed from the current fractional energy weight and the effective
+       absorption in the current cell.
+
+    */
+    
+
     Require (alive);
 
     // initialize diagnostics
@@ -68,159 +170,173 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
     // transport loop, ended when alive = false
     while (alive)
     {
-	// dist-to-scatter, dist-to-boundary, and dist-to-census definitions
-        double d_scatter, d_boundary, d_census;
+	// distance to collision, boundary, census and cutoff defnintions
+        double d_collide, d_boundary, d_census, d_cutoff;
 
-	// distance to stream
-	double dist_stream;
+	// streaming distance definition
+	double d_stream;
 
 	// cell face definition
         int face = 0;
 
+	// event probability definitions
+	double prob_thomson_scatter, prob_scatter, prob_abs;
+
+	// intermediate cross section definitions:
+	double sigma_thomson_scatter, sigma_eff_scatter, sigma_eff_abs, 
+	    sigma_scatter, sigma_analog_abs, sigma_collide; 
+
+	sigma_thomson_scatter = xs.get_sigma_thomson(cell);
+	sigma_eff_scatter     = xs.get_sigeffscat(cell);
+	sigma_eff_abs         = xs.get_sigeffabs(cell);
+
+	sigma_scatter         = sigma_thomson_scatter + sigma_eff_scatter;
+
+	if (use_analog_absorption())
+ 	    sigma_analog_abs     = sigma_eff_abs;
+	else
+	    sigma_analog_abs     = 0.0;
+
+	sigma_collide = sigma_scatter + sigma_analog_abs;
+
+	Check(sigma_collide>=0);
+
 	// accumulate momentum deposition from volume emission particles
 	if (descriptor == VOL_EMISSION)
 	    tally.accumulate_momentum(cell, -ew, omega);
-
-	// total sctattering cross section 
-	double total_scat_xs = xs.get_sigeffscat(cell) + 
-	    xs.get_sigma_thomson(cell);
         
-	// sample distance-to-scatter (effective scatter + hardball)
-	if (total_scat_xs > 0.0)
-	    d_scatter = -log(random.ran()) / total_scat_xs;
-	else
-	    d_scatter = rtt_mc::global::huge;
-	Check (d_scatter >= 0.0);
+	// sample distance-to-scatter/absorption (effective scatter or hardball)
+	if (sigma_collide == 0 ) 
+	{
+	    d_collide = rtt_mc::global::huge;    
+
+	    prob_thomson_scatter = 0.0;
+	    prob_scatter         = 0.0;
+	    prob_abs             = 0.0;
+	}
+	else 
+	{
+	    d_collide = -log(random.ran()) / sigma_collide;
+
+	    prob_thomson_scatter = sigma_thomson_scatter / sigma_collide;
+	    prob_scatter         = sigma_scatter         / sigma_collide;
+	    prob_abs             = sigma_analog_abs      / sigma_collide;
+	}
+
+	Check(d_collide>0);
 
 	// get distance-to-boundary and cell face
-        d_boundary = mesh.get_db(r, omega, cell, face);
+	d_boundary = mesh.get_db(r, omega, cell, face);  Check(d_boundary);
 
 	// distance to census (end of time step)
-	d_census = rtt_mc::global::c * time_left;
+	d_census = rtt_mc::global::c * time_left;   Check(d_boundary);
+
+	// distance until cutoff weight is reached:
+	if (sigma_eff_abs == 0 || use_analog_absorption() )
+	{ 
+	    d_cutoff = rtt_mc::global::huge;
+	}
+	else
+	{
+	    d_cutoff = log(fraction/minwt_frac)/sigma_eff_abs;
+	}
+
+	Check(d_cutoff>0);
+
 
 	// detailed diagnostics
 	if (diagnostic)
 	    if (diagnostic->detail_status())
 	    {
-		diagnostic->print_dist(d_scatter, d_boundary, d_census,
-				       cell); 
+		diagnostic->print_dist(d_collide, d_boundary, d_census, cell); 
 		diagnostic->print_xs(xs, cell);
 	    }
 
+
 	// determine limiting event
-	if (d_scatter < d_boundary && d_scatter < d_census)
+	if      (d_collide < d_boundary  &&  d_collide < d_census   &&
+		 d_collide < d_cutoff  )
 	{
-	    descriptor = SCATTER;
-	    dist_stream = d_scatter;
+	    descriptor = COLLISION;
+	    d_stream = d_collide;
 	}	
-	else if (d_boundary < d_scatter && d_boundary < d_census)
+	else if (d_boundary < d_collide  &&  d_boundary < d_census  &&
+		 d_boundary < d_cutoff )
 	{
 	    descriptor = BOUNDARY;
-	    dist_stream = d_boundary;
+	    d_stream = d_boundary;
 	}
-	else 
+	else if (d_census < d_collide    &&  d_census < d_boundary  &&  
+		 d_census < d_cutoff   )
 	{
 	    descriptor = CENSUS;
-	    dist_stream = d_census;
+	    d_stream = d_census;
 	}
-
-	// IMC streaming
-	stream_IMC(xs, tally, dist_stream);
-
-	// scatter, effective or Thomson
-	if (descriptor == SCATTER)
+	else if (d_cutoff < d_collide    &&  d_cutoff < d_boundary  &&
+		 d_cutoff < d_census   )
 	{
-	    if (xs.get_sigma_thomson(cell) > 0.0)
-	    {
-		if (random.ran() < xs.get_sigeffscat(cell) /
-		    (xs.get_sigeffscat(cell) + xs.get_sigma_thomson(cell)))
-		    descriptor = EFF_SCATTER;
-		else
-		    descriptor = THOM_SCATTER;
-	    }
-	    else
-		descriptor = EFF_SCATTER;
-
-	    if (descriptor == EFF_SCATTER)
-		tally.accum_n_effscat();
-	    else if (descriptor == THOM_SCATTER)
-		tally.accum_n_thomscat();
-
-	    // accumulate momentum from before the scatter
-	    tally.accumulate_momentum(cell, ew, omega);
-
-	    // scatter the particle -- update direction cosines
-	    scatter( mesh );
-
-	    // accumulate momentum from after the scatter
-	    tally.accumulate_momentum(cell, -ew, omega);
+	    descriptor = CUTOFF;
+	    d_stream = d_cutoff;
 	}
-
-	if (descriptor == BOUNDARY)
-        {
-	    tally.accum_n_bndcross();
-	    alive = surface(mesh, face);
-
-	    if (descriptor == REFLECTION)
-		tally.accum_n_reflections();
-
-	    if (descriptor == ESCAPE)
-	    {
-		tally.accum_n_escaped();
-		tally.accum_ew_escaped(ew);
-	    }
-
-	}
-
-	if (descriptor == CENSUS)
+	else
 	{
-	    tally.accumulate_cen_info( cell, ew );
-	    alive = false;
-	    Check(rtt_mc::global::soft_equiv(time_left, 0.0));
-	    time_left = 0.0;
+	    Insist(0,"D'oh! Transport could not decide limiting event!");
 	}
 
-	// do diagnostic print
-	if (diagnostic)
-	    diagnostic->print(*this);
+
+	// Stream the particle, according to its status:
+	if (use_analog_absorption())
+	{
+	    // Light particle (analog) streaming.
+	    stream_analog_capture(tally, d_stream);          
+	}
+	else
+	{
+	    // Heavy particle (implicit) streaming
+	    stream_implicit_capture(xs, tally, d_stream);    
+	}
+
+
+	// Adjust the time remaining till the end of the time step
+	time_left -= d_stream / rtt_mc::global::c;
+
+
+	// Process collisions, boundary crossings, going to census or
+	// reaching cutoff events.
+	switch (descriptor) 
+	{
+
+	case COLLISION:
+
+	    collision_event(mesh, tally, prob_scatter, prob_thomson_scatter, 
+			    prob_abs);
+	    break;
+
+	case CUTOFF:
+
+	    Check(rtt_mc::global::soft_equiv(fraction, minwt_frac));
+	    // Ensure light weight from now on:
+	    fraction = minwt_frac * 0.5;  
+	    break;
+
+	case BOUNDARY:
+
+	    boundary_event(mesh, tally, face);
+	    break;
+
+	case CENSUS:
+	    census_event(tally);
+	    break;
+
+	}
+
     } 
 
     // !!! END OF TRANSPORT LOOP !!!
 }
-
 //---------------------------------------------------------------------------//
 // private transport member functions
 //---------------------------------------------------------------------------//
-// calculate everything about a collision
-
-template<class MT>
-bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
-{   
-    // status from collision
-    bool status;
-
-    // determine absorption or collision
-    if (random.ran() <= xs.get_sigma_abs(cell) / xs.get_sigma_abs(cell))
-    {
-	descriptor = ABSORPTION;
-        status = false;
-    }
-    else
-    {
-        status = true;
-        
-	// calculate theta and phi (isotropic)
-        double costheta, phi;
-        costheta = 1 - 2 * random.ran();
-        phi      = 2 * rtt_mc::global::pi * random.ran();
-
-	// get new direction cosines
-        mesh.get_Coord().calc_omega(costheta, phi, omega);
-    }
-
-    // return outcome of the event
-    return status;
-}
 
 //---------------------------------------------------------------------------//
 // perform an isotropic effective scatter 
@@ -749,7 +865,7 @@ Particle<MT>::SP_Particle Particle<MT>::Pack::unpack(
     delete [] bytes;
     
     return SP_Particle (new Particle(r, omega, ew, cell, random, frac, t_left));
-
+    
 }
 
 } // end namespace rtt_imc
