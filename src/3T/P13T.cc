@@ -157,11 +157,8 @@ initializeRadiationState(const MaterialStateField &matState,
 
     // The radiation field is set to the 4pi*planckian with no current flow.
 
-    radPhys.getPlanck(TElectron, resultsStateField.phi);
+    getBhat(radPhys, TElectron, resultsStateField.phi);
 
-    using XTM::PhysicalConstants::pi;
-    
-    resultsStateField.phi *= 4.0*pi;
     resultsStateField.F = 0.0;
 }
 
@@ -265,29 +262,48 @@ void P13T<MT, MP, DS>::solve(double dt,
 			    boundary, Tnp12Electron);
     }
 
-    // Calculate the new radiation state due to the radiation P1,
-    // electron and ion equations ***without*** the conduction equations.
-    
-    calcNewRadState(dt, groupNo, matState, prevStateField,
-		    QRad, QElectron, QIon,
-		    Tnp12Electron, Tnp12Ion,
-		    boundary,
-		    resultsStateField);
+    // deltaTElectron for radiation will
+    // be Te^n+1 - Te^n+1/2
 
-    // Calculate the delta electron temperature from the new radiation
-    // state, (Te^n+1 - Te^n+1/2).
+    // deltaTIon for radiation will
+    // be Ti^n+1 - Ti^n+1/2
     
     ccsf deltaTElectron(spMesh);
-    calcDeltaTElectron(dt, numGroups, matState, prevStateField, QElectron, QIon,
-		       Tnp12Electron, Tnp12Ion,
-		       resultsStateField, deltaTElectron);
-    
-    // Calculate the delta ion temperature from the delta electron
-    // temperature, (Ti^n+1 - Ti^n+1/2).
-    
     ccsf deltaTIon(spMesh);
-    calcDeltaTIon(dt, matState, prevStateField, QIon, Tnp12Electron, Tnp12Ion,
-		  deltaTElectron, deltaTIon);
+
+    if (options.wantRadiation())
+    {
+	// Calculate the new radiation state due to the radiation P1,
+	// electron and ion equations ***without*** the conduction equations.
+    
+	calcNewRadState(dt, groupNo, matState, prevStateField,
+			QRad, QElectron, QIon,
+			Tnp12Electron, Tnp12Ion,
+			boundary,
+			resultsStateField);
+
+	// Calculate the delta electron temperature from the new radiation
+	// state, (Te^n+1 - Te^n+1/2).
+    
+	calcDeltaTElectron(dt, numGroups, matState, prevStateField,
+			   QElectron, QIon,
+			   Tnp12Electron, Tnp12Ion,
+			   resultsStateField, deltaTElectron);
+    
+	// Calculate the delta ion temperature from the delta electron
+	// temperature, (Ti^n+1 - Ti^n+1/2).
+    
+	calcDeltaTIon(dt, matState, prevStateField, QIon,
+		      Tnp12Electron, Tnp12Ion,
+		      deltaTElectron, deltaTIon);
+    }
+    else
+    {
+	// The P1 equation is not being solved this time.
+	
+	deltaTElectron = 0.0;
+	deltaTIon = 0.0;
+    }
 
     // Now include the contribution from conduction.
     
@@ -408,7 +424,7 @@ calcP1Coeffs(double dt,
     const SP<MeshType> spMesh = spDiffSolver->getMesh();
 
     // Ask the material properties for sigma total.
-    // It is the material properties responsibility to do
+    // It is the material properties' responsibility to do
     // any averaging of temperatures, etc. to achieve the correct
     // resulting sigmaTotal.
 
@@ -446,18 +462,13 @@ calcP1Coeffs(double dt,
 
     // Calculated modified radiation source
 
-    // We need the Planckian.
+    // We need the Bhat.
 
-    ccsf planck(spMesh);
-    radPhys.getPlanck(TElectron, planck);
-
-    // We need our Planckian multiplied by 4pi
-
-    using XTM::PhysicalConstants::pi;
-    planck *= 4.0*pi;
-
-    QRadBar = tau*prevStateField.phi + (1.0 - nu)*sigmaEmission*planck
-	+ nu*QElecStar;
+    ccsf Bhat(spMesh);
+    getBhat(radPhys, TElectron, Bhat);
+    
+    QRadBar = tau*prevStateField.phi + (1.0 - nu)*sigmaEmission*Bhat
+	+ nu*QElecStar + QRad;
 
     // Calculate the "telegraph" term to the P1 equation.
 
@@ -467,7 +478,7 @@ calcP1Coeffs(double dt,
 
 //------------------------------------------------------------------------//
 // calcStarredFields:
-//    Calculate Qe*, Cv*, but not nu.
+//    Calculate Qe*, Cv*, and nu.
 //    These are needed to calculate other coefficients
 //    and delta temperatures.
 //------------------------------------------------------------------------//
@@ -486,7 +497,6 @@ void P13T<MT, MP, DS>::calcStarredFields(double dt,
 					 ccsf &CvStar,
 					 ccsf &nu) const
 {
-
     // Calculate Qe* and Cv*.
     // We will then calculate nu ourself.
     
@@ -498,19 +508,14 @@ void P13T<MT, MP, DS>::calcStarredFields(double dt,
 
     const SP<MeshType> spMesh = spDiffSolver->getMesh();
 
-    // Calculate the Planckian's temperature derivative.
+    // Calculate the 4pi*Planckian's temperature derivative.
 
-    ccsf dPlanckdT(spMesh);
-    radPhys.getPlanckTemperatureDerivative(TElectron, dPlanckdT);
-
-    // We need our Planckian multiplied by 4pi
-
-    using XTM::PhysicalConstants::pi;
-    dPlanckdT *= 4.0*pi;
+    ccsf dBhatdT(spMesh);
+    getdBhatdT(radPhys, TElectron, dBhatdT);
     
     // Calculate the "nu" used in the 3T modification of sigmaAbs
     
-    nu = dt * sigmaEmission * dPlanckdT / (CvStar + dt * dPlanckdT);
+    nu = dt * sigmaEmission * dBhatdT / (CvStar + dt * dBhatdT);
 
 }
 
@@ -612,25 +617,21 @@ void P13T<MT, MP, DS>::calcDeltaTElectron(double dt,
     ccsf sigmaAbs(spMesh);
     spProp->getSigmaAbsorption(matState, groupNo, sigmaAbs);
 
-    ccsf planck(spMesh);
-    radPhys.getPlanck(TElectron, planck);
+    // Get the 4pi*planckian and its temperature derivative
     
-    ccsf dPlanckdT(spMesh);
-    radPhys.getPlanckTemperatureDerivative(TElectron, dPlanckdT);
+    ccsf Bhat(spMesh);
+    ccsf dBhatdT(spMesh);
 
-    // The planckian and derivative must be multiplies by 4pi
-    
-    using XTM::PhysicalConstants::pi;
-    planck *= 4.0*pi;
-    dPlanckdT *= 4.0*pi;
-    
+    getBhat(radPhys, TElectron, Bhat);
+    getdBhatdT(radPhys, TElectron, dBhatdT);
+
     // Get shorthand for phi^n+1
     const ccsf &phi_np1 = resultsStateField.phi;
 
     // calculate delta T electron
     
-    deltaTelectron = dt * (sigmaAbs*phi_np1 - sigmaEmission*planck + QElecStar)
-	/ (CvStar + dt*sigmaEmission*dPlanckdT);
+    deltaTelectron = dt * (sigmaAbs*phi_np1 - sigmaEmission*Bhat + QElecStar)
+	/ (CvStar + dt*sigmaEmission*dBhatdT);
 }
 
 //------------------------------------------------------------------------//
@@ -666,6 +667,40 @@ void P13T<MT, MP, DS>::calcDeltaTIon(double dt,
     deltaTIon = dt * (gamma*(TElectron - TIon + deltaTelectron) + QIon)
 	/ (CvIon + dt*gamma);
 
+}
+
+//------------------------------------------------------------------------//
+// getBhat:
+//    get the 4pi*planckian
+//------------------------------------------------------------------------//
+
+template<class MT, class MP, class DS>
+void P13T<MT, MP, DS>::getBhat(const RadiationPhysics &radPhys,
+			       const ccsf &TElectron, ccsf &Bhat) const
+{
+    radPhys.getPlanck(TElectron, Bhat);
+
+    // We need our Planckian multiplied by 4pi
+
+    using XTM::PhysicalConstants::pi;
+    Bhat *= 4.0*pi;
+}
+
+//------------------------------------------------------------------------//
+// getdBhatdT:
+//    get the 4pi*dPlanckiandT
+//------------------------------------------------------------------------//
+
+template<class MT, class MP, class DS>
+void P13T<MT, MP, DS>::getdBhatdT(const RadiationPhysics &radPhys,
+				  const ccsf &TElectron, ccsf &dBhatdT) const
+{
+    radPhys.getPlanckTemperatureDerivative(TElectron, dBhatdT);
+
+    // We need our Planckian multiplied by 4pi
+
+    using XTM::PhysicalConstants::pi;
+    dBhatdT *= 4.0*pi;
 }
 
 END_NS_XTM  // namespace XTM

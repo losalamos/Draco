@@ -24,14 +24,17 @@ class P13TOptions {
 
     bool electronConduction;
     bool ionConduction;
+    bool radiation;
 
   public:
 
     // CREATORS
 
-    P13TOptions(bool electronConduction_, bool ionConduction_)
+    P13TOptions(bool electronConduction_, bool ionConduction_,
+		bool radiation_=true)
 	: electronConduction(electronConduction_),
-	  ionConduction(ionConduction_)
+	  ionConduction(ionConduction_),
+	  radiation(radiation_)
     {
 	// empty
     }
@@ -42,6 +45,7 @@ class P13TOptions {
 
     bool wantElectronConduction() const { return electronConduction; }
     bool wantIonConduction() const { return electronConduction; }
+    bool wantRadiation() const { return radiation; }
 };
 
 #endif                          // __3T_P13TOptions_hh__

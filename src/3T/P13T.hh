@@ -156,9 +156,25 @@ class P13T
     // IMPLEMENTATION
 
   private:
+ 
+    //------------------------------------------------------------------------//
+    // getBhat:
+    //    get the 4pi*planckian
+    //------------------------------------------------------------------------//
+
+    void getBhat(const RadiationPhysics &radPhys,
+		 const ccsf &TElectron, ccsf &Bhat) const;
     
     //------------------------------------------------------------------------//
-    // clacNewRadState:
+    // getdBhatdT:
+    //    get the 4pi*dPlanckiandT
+    //------------------------------------------------------------------------//
+
+    void getdBhatdT(const RadiationPhysics &radPhys,
+		    const ccsf &TElectron, ccsf &dBhatdT) const;
+
+    //------------------------------------------------------------------------//
+    // calcNewRadState:
     //     calculate the new radiation state using the previous state,
     //     material properties, and sources.
     //     This solves the coupled radiation, electron, and ion equations
