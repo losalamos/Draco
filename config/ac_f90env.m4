@@ -41,7 +41,7 @@ dnl
 
 dnl defines --with-f90
 AC_ARG_WITH(f90,[dnl
-  --with-f90[=XL,WorkShop,Fujitsu,Cray,MIPS,Compaq]     choose an F90 compiler
+  --with-f90[=XL,WorkShop,Fujitsu,Absoft,Cray,MIPS,Compaq]     choose an F90 compiler
 ])
 
 AC_DEFUN(AC_F90_ENV, [dnl
@@ -53,6 +53,9 @@ AC_DEFUN(AC_F90_ENV, [dnl
    ;;
    Fujitsu)
        AC_COMPILER_FUJITSU_F90
+   ;;
+   Absoft)
+	AC_COMPILER_ABSOFT_F90
    ;;
    WorkShop)
        AC_COMPILER_WORKSHOP_F90
@@ -142,7 +145,7 @@ AC_DEFUN(AC_COMPILER_XL_F90, [dnl
         trapflags="${trapflags} -qsigtrap"
         F90FLAGS="-g -d -C ${trapflags} -bloadmap:loadmap.dat ${F90FLAGS}"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    dnl end of AC_COMPILER_XL_F90
@@ -185,10 +188,49 @@ AC_DEFUN(AC_COMPILER_FUJITSU_F90, [dnl
    then
         F90FLAGS="-g -Haesu ${F90FLAGS}"
    else
-        F90FLAGS="-O ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    dnl end of AC_COMPILER_FUJITSU_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl ABSOFT F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
+
+   # Check for working Absoft F90 compiler
+
+   AC_CHECK_PROG(F90, f90, f90, none)
+
+   # Stupid Absoft Fortran does not have a version header
+  
+   # F90FREE, F90FIXED AND MODFLAG
+
+   F90FREE=''
+   F90FIXED=''
+   MODFLAG='-p'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+
+   # COMPILATION FLAGS
+
+   F90FLAGS=""
+
+   if test "${enable_debug:=no}" = yes
+   then
+        F90FLAGS="-g ${F90FLAGS}"
+   else
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+   fi
+
+   dnl end of AC_COMPILER_ABSOFT_F90
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -271,7 +313,7 @@ AC_DEFUN(AC_COMPILER_WORKSHOP_F90, [dnl
    then
         F90FLAGS="-g"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    dnl end of AC_COMPILER_WORKSHOP_F90
@@ -314,7 +356,7 @@ AC_DEFUN(AC_COMPILER_CRAY_F90, [dnl
    then
         F90FLAGS="-g ${F90FLAGS}"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    dnl end of AC_COMPILER_CRAY_F90
@@ -357,7 +399,7 @@ AC_DEFUN(AC_COMPILER_MIPS_F90, [dnl
    then
         F90FLAGS="-g ${F90FLAGS}"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    dnl end of AC_COMPILER_MIPS_F90
