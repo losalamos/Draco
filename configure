@@ -2,7 +2,7 @@
 
 ac_help="$ac_help
 dnl
-  --with-f90[=XL,WorkShop,Fujitsu,Absoft,Cray,MIPS,Compaq]     choose an F90 compiler
+  --with-f90[=XL,Fujitsu,Lahey,Portland,Absoft,WorkShop,Cray,MIPS,Compaq]     choose an F90 compiler
 "
 # Check whether --with-f90 or --without-f90 was given.
 if test "${with_f90+set}" = set; then
@@ -51,16 +51,18 @@ fi
 
 
 
-
-
-
-
  
 
 
 ###-------------------------------------------------------------------------###
 ### include the service macros used in configure.in scripts
 ###-------------------------------------------------------------------------###
+
+
+
+
+
+
 
 
 
@@ -1641,7 +1643,7 @@ subdirs="autodoc tools src doc"
 # Extract the first word of "autoconf", so it can be a program name with args.
 set dummy autoconf; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1645: checking for $ac_word" >&5
+echo "configure:1647: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_AUTOCONF'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1679,7 +1681,7 @@ for dir in $subdirs
    do
        if test -d ${srcdir}/${dir} ; then
 	   echo $ac_n "checking "configure in ${srcdir}/${dir}"""... $ac_c" 1>&6
-echo "configure:1683: checking "configure in ${srcdir}/${dir}"" >&5
+echo "configure:1685: checking "configure in ${srcdir}/${dir}"" >&5
 	   cd $srcdir/$dir
 	   if test -f configure ; then 
 	       echo "$ac_t"""exists"" 1>&6
