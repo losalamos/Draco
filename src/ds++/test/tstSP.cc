@@ -527,8 +527,7 @@ void fail_modes_test()
     {
 	caught = true;
 	ostringstream m;
-	m << "Good, caught the following exception, " << endl
-	  << ass.what();
+	m << "Good, caught null access on member function " << endl;
 	PASSMSG(m.str());
     }
     if (!caught)
@@ -556,8 +555,7 @@ void fail_modes_test()
     {
 	caught = true;
 	ostringstream m;
-	m << "Good, caught the following exception, " << endl
-	  << ass.what();
+	m << "Good, caught null access on member function " << endl;
 	PASSMSG(m.str());
     }
     if (!caught)
