@@ -11,6 +11,10 @@ $
 
 $mesh
 	ncx=2 ncy=2 ncz=2
+#	ncx=4 ncy=4 ncz=4
+#	ncx=8 ncy=8 ncz=8
+#	ncx=16 ncy=16 ncz=16
+#	ncx=32 ncy=32 ncz=32
 $
 
 $Quad_Params
@@ -80,7 +84,7 @@ $pcg
 	nwi=10000
 	nwf=10000000
 	ns2=10
-	zeta=0.001
+	zeta=1.0e-16
 	alpha=0.1
 $
 
