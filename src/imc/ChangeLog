@@ -1,3 +1,8 @@
+2004-04-07  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: updated to imc-4_0_0.  This tag release precludes the move
+	of imc to clubimc.
+
 2004-03-11  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: release as part of draco-4_3_0.  This version fully
