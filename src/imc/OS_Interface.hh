@@ -29,6 +29,7 @@
 //  8)  7-28-98 : changed get_temperature(), get_kappa(), get_specific_heat,
 //                and get_density() so that they return cell-sized arrays,
 //                now there is no need for get_zone() and get_mat_zone()
+//  9) 08-01-98 : added Thomson scattering
 // 
 //===========================================================================//
 
@@ -131,20 +132,13 @@ public:
     const OS_Mesh::CCVF_d& get_fine_edge() const { return fine_edge; }
     
   // public copy functions for Opacity<MT>
-// <<<<<<< OS_Interface.hh
-//     const vector<int>& get_zone() const { return zone; }
-//     const vector<int>& get_mat_zone() const { return mat_zone; }
-//     const vector<double>& get_density() const { return density; }
-//     const vector<double>& get_kappa() const { return kappa; }
-//     const vector<double>& get_kappa_thomson() const { return kappa_thomson; }
-//     const vector<double>& get_temperature() const { return temperature; }
-// =======
     vector<double> get_density() const;
     vector<double> get_kappa() const;
     vector<double> get_kappa_thomson() const;
     vector<double> get_specific_heat() const;
     vector<double> get_temperature() const;
-// >>>>>>> 1.16
+
+  // accessor function to get implicitness factor (Fleck's alpha)
     double get_implicit() const { return implicitness; }
 
   // public copy functions for Source_Init<MT>
