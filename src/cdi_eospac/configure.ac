@@ -37,7 +37,22 @@ mips-sgi-irix6.*)
    AC_DEFINE(V_INT, long)
    AC_DEFINE(V_FLOAT, double)
    AC_DEFINE(V_BOOL, long) 
-   dnl fix problems with lahey 6.2 and EOSPAC 5.35
+
+   dnl Lahey 6.2 and 6.0 are not compatible.  EOSPAC 5.35 libraries
+   dnl are built with 6.0.  If we are not using Lahey 6.2 provide a 
+   dnl configure time error.
+
+   AC_MSG_CHECKING("for EOSPAC v5.35 compatible version of F90")
+   cdi_eospac_lf95=`which lf95`
+   if test -z `echo ${cdi_eospac_lf95} | grep lf9562`; then
+      AC_MSG_RESULT("ok. found ${cdi_eospac_lf95}")
+   else
+      AC_MSG_RESULT("Lahey 6.2 (${cdi_eospac_lf95}) is not compatible with EOSPAC v5.35")
+      AC_MSG_ERROR("EOSPAC v5.35 is incompatible with ${cdi_eospac_lf95}.  Use Lahey 6.0 or 6.1 instead.")
+   fi
+
+   dnl Even if we are using Lahey 6.2, cdi_eospac will work if we link
+   dnl against the Lahey 6.0 libraries.
    dnl RPATH="${RPATH} -Xlinker -rpath /usr/local/lf9560/lib"
    ;;
 alpha*-dec-osf*)
