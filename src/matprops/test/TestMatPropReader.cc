@@ -30,7 +30,6 @@ TestMatPropReader::TestMatPropReader(const Units &units,
 				     const vector<int> &materialIds)
 {
     std::ifstream ifs(filename.c_str());
-
     FifiMatPropsReader reader(units, ifs);
 
     for (int i=0; i<materialIds.size(); i++)

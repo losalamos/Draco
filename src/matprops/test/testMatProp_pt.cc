@@ -22,13 +22,6 @@ typedef IMP::MaterialStateField<VD> MSF;
 template MSF IMP::getMaterialState(const VD &, const VD &, const VD &,
 				   const VI &) const;
 
-#include "radphys/RadiationPhysics.cc"
-
-template
-void RadiationPhysics::getElectIonCoupling(const double &, const double &,
-					   const double &, const double &,
-					   double &) const;
-
 //---------------------------------------------------------------------------//
 //                              end of testMatProp_pt.cc
 //---------------------------------------------------------------------------//

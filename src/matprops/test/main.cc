@@ -17,10 +17,21 @@ int main()
     {
 	void testBilinDoit();
 	testBilinDoit();
+
+	void testMatProp();
+	testMatProp();
     }
     catch (const dsxx::assertion &ass)
     {
 	cerr << "assert failed: " << ass.what() << endl;
+    }
+    catch (const std::exception &ass)
+    {
+	cerr << "exception: " << ass.what() << endl;
+    }
+    catch (...)
+    {
+	cerr << "unknown exception" << endl;
     }
 }
 
