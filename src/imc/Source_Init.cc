@@ -741,6 +741,7 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
     Require (fabs(ecencheck + eloss_cen - ecentot) <= 1.0e-6 * ecentot);
 
 }
+
 //---------------------------------------------------------------------------//
 // calculate slope of T_electron^4 using temporarily calc'd  edge t^4's.
 
