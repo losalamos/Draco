@@ -90,10 +90,10 @@ class Mesh_XYZ : private XYZ_Mapper
     typedef cctf<int> ccif;
     typedef gcctf<double> gccsf;
     typedef nctf<double> ncsf;
-    typedef nctf<tiny_vec<double, 3> > ncvf;
+    typedef nctf<tiny_vec<double, 3> > ncvsf;
     typedef vctf<double> vcsf;
     typedef gvctf<double> gvcsf;
-    typedef vctf<tiny_vec<double, 3> > vcvf;
+    typedef vctf<tiny_vec<double, 3> > vcvsf;
     typedef tiny_vec<double, 3> vec3;
 
 // Face centered discontinuous field
@@ -163,7 +163,7 @@ class Mesh_XYZ : private XYZ_Mapper
 
     typedef fcdtf<double> fcdsf;
     typedef fcdtf<int> fcdif;
-    typedef fcdtf<tiny_vec<double, 3> > fcdvf;
+    typedef fcdtf<tiny_vec<double, 3> > fcdvsf;
 
 // Guarded face centered discontinuous field
 // Has a value on each face in each cell.
@@ -707,7 +707,7 @@ class Mesh_XYZ : private XYZ_Mapper
     ccsf dX, dY, dZ;
     ccsf xC, yC, zC;
     fcdsf xF, yF, zF;
-    fcdvf face_norms;
+    fcdvsf face_norms;
     vec3 xhat, yhat, zhat;
 
     int diags[7];
@@ -754,7 +754,7 @@ class Mesh_XYZ : private XYZ_Mapper
     void get_yloc(fcdsf& yloc) const { yloc = yF; }
     void get_zloc(fcdsf& zloc) const { zloc = zF; }
 
-    const fcdvf& get_fn() const { return face_norms; }
+    const fcdvsf& get_fn() const { return face_norms; }
     void get_face_areas(fcdsf& fa) const;
     void get_face_lengths(fcdsf& fl) const;
 
@@ -764,6 +764,8 @@ class Mesh_XYZ : private XYZ_Mapper
 
     const ccsf& get_vc() const { return vc; }
     void get_cell_volumes(ccsf &vols) const { vols = vc; }
+    void get_vertex_volumes(vcsf &vols) const;
+    void get_node_volumes(ncsf &vols) const;
 
     const int *get_diag_offsets() const { return diags; }
 

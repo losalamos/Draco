@@ -208,11 +208,11 @@ int main( int argc, char *argv[] )
     }
 
     {
-        Mesh_XYZ::vcvf oneVCV( spm );
+        Mesh_XYZ::vcvsf oneVCV( spm );
         Mesh_XYZ::vec3 onevec;
         onevec = 1.0;
         oneVCV = onevec;
-        Mesh_XYZ::fcdvf fourFCV( spm );
+        Mesh_XYZ::fcdvsf fourFCV( spm );
         Mesh_XYZ::vec3 zerovec;
         zerovec = 0.0;
         fourFCV = zerovec;
@@ -323,7 +323,7 @@ int main( int argc, char *argv[] )
     }
 
     {
-        Mesh_XYZ::fcdvf face_normals( spm );
+        Mesh_XYZ::fcdvsf face_normals( spm );
         face_normals = spm->get_fn();
 
         Mesh_XYZ::fcdsf face_areas( spm );
@@ -353,6 +353,13 @@ int main( int argc, char *argv[] )
       {
         Mesh_XYZ::ccsf cell_volumes( spm );
         spm->get_cell_volumes(cell_volumes);
+        Mesh_XYZ::vcsf vertex_volumes( spm );
+        spm->get_vertex_volumes(vertex_volumes);
+        Mesh_XYZ::ncsf node_volumes( spm );
+        spm->get_node_volumes(node_volumes);
+        //dump( cell_volumes, "cell_volumes" );
+        //dump( vertex_volumes, "vertex_volumes" );
+        //dump( node_volumes, "node_volumes" );
       }
       catch (const dsxx::assertion &ass)
       {

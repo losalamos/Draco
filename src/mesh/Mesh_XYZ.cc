@@ -230,6 +230,19 @@ void Mesh_XYZ::get_face_lengths(fcdsf& fl) const
 	}
 }
 
+void Mesh_XYZ::get_vertex_volumes(vcsf& vols) const
+{
+    gather( vols, vc, Mesh_XYZ::OpAssign() );
+    vols /= 8.;
+}
+
+void Mesh_XYZ::get_node_volumes(ncsf& vols) const
+{
+    vcsf vertex_volumes(this);
+    get_vertex_volumes(vertex_volumes);
+    scatter( vols, vertex_volumes, Mesh_XYZ::OpAddAssign() );
+}
+
 //---------------------------------------------------------------------------//
 //                              end of Mesh_XYZ.cc
 //---------------------------------------------------------------------------//
