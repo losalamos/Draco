@@ -134,6 +134,11 @@ forced-distclean:
 	-rm -f header.html footer.html doxygen_config
 	-rm -f Makefile
 
+# any other hand-coded dependencies or any thing **additional** can
+# be put into Makefile.misc in the source directory
+
+-include ${srcdir}/Makefile.misc
+
 ###############################################################################
 #			 end of draco/autodoc Makefile.in
 ###############################################################################
