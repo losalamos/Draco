@@ -8,7 +8,9 @@
 
 #include "linalg/Banded_Matrix.hh"
 
+#include "c4/global.hh"
 #include "c4/SpinLock.hh"
+using namespace C4;
 
 #include <algorithm>
 #include <functional>
