@@ -39,7 +39,7 @@ AC_DEFUN(AC_WITH_F90, [dnl
 
    dnl defines --with-f90
    AC_ARG_WITH(f90,
-       [  --with-f90[=XL,Fujitsu,Lahey,Portland,Absoft,WorkShop,Cray,MIPS,Compaq,HP]
+       [  --with-f90[=XL,Fujitsu,Lahey,Portland,WorkShop,Cray,MIPS,Compaq,HP,Intel,NAG,Absoft]
                           choose an F90 compiler])
 ])
 
@@ -63,9 +63,6 @@ AC_DEFUN(AC_F90_ENV, [dnl
    Portland)
        AC_COMPILER_PORTLAND_F90
    ;;
-   Absoft)
-	AC_COMPILER_ABSOFT_F90
-   ;;
    WorkShop)
        AC_COMPILER_WORKSHOP_F90
    ;;
@@ -81,9 +78,21 @@ AC_DEFUN(AC_F90_ENV, [dnl
    HP)
        AC_COMPILER_HP_F90
    ;;
+   Intel)
+       AC_COMPILER_INTEL_F90
+   ;;
+   NAG)
+       AC_COMPILER_NAG_F90
+   ;;
+   Absoft)
+       AC_COMPILER_ABSOFT_F90
+   ;;
    yes)				# guess compiler from target platform
        case "${host}" in   
        rs6000-ibm-aix*)
+           AC_COMPILER_XL_F90
+       ;;
+       powerpc-ibm-aix*)
            AC_COMPILER_XL_F90
        ;;
        sparc-sun-solaris2.*)
@@ -102,6 +111,9 @@ AC_DEFUN(AC_F90_ENV, [dnl
           AC_COMPILER_COMPAQ_F90
        ;;
        alphaev67-dec*)
+          AC_COMPILER_COMPAQ_F90
+       ;;
+       alpha-dec*)
           AC_COMPILER_COMPAQ_F90
        ;;
        *hp-hpux*)
@@ -126,15 +138,15 @@ AC_DEFUN(AC_F90_ENV, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl IBM XLF90 COMPILER SETUP
+dnl IBM XLF95 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_COMPILER_XL_F90, [dnl
 
    # Check for working XL F90 compiler
 
-   AC_CHECK_PROG(F90, xlf90, xlf90, none)
-   if test "${F90}" != xlf90
+   AC_CHECK_PROG(F90, xlf95, xlf95, none)
+   if test "${F90}" != xlf95
    then
        AC_MSG_ERROR([not found])
    fi
@@ -156,7 +168,8 @@ AC_DEFUN(AC_COMPILER_XL_F90, [dnl
 
    if test "$F90FLAGS" = ""
    then
-       F90FLAGS="-qextchk -qhalt=s -qarch=pwr2 -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp ${F90FREE}"
+     # F90FLAGS="-qsuffix=f=f90 -qmaxmem=-1 -qextchk -qarch=pwr2 -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp -qhalt=s ${F90FREE}"
+       F90FLAGS="-qsuffix=f=f90 -qmaxmem=-1 -qextchk -qarch=auto -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp -qnosave -qlanglvl=95pure -qzerosize ${F90FREE}"
 
        if test "${enable_debug:=no}" = yes
        then
@@ -165,7 +178,8 @@ AC_DEFUN(AC_COMPILER_XL_F90, [dnl
 	   trapflags="${trapflags} -qsigtrap"
 	   F90FLAGS="-g -d -C ${trapflags} -bloadmap:loadmap.dat ${F90FLAGS}"
        else
-	   F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+	 # F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+	   F90FLAGS="-O3 ${F90FLAGS}"
        fi
    fi
 
@@ -219,47 +233,6 @@ AC_DEFUN(AC_COMPILER_FUJITSU_F90, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl ABSOFT F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
-
-   # Check for working Absoft F90 compiler
-
-   AC_CHECK_PROG(F90, f90, f90, none)
-
-   # Stupid Absoft Fortran does not have a version header
-  
-   # F90FREE, F90FIXED AND MODFLAG
-
-   F90FREE=''
-   F90FIXED=''
-   MODFLAG='-p'
-
-   # LINKER AND LIBRARY (AR)
-
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMNET
-   if test "$F90FLAGS" = ""
-   then
-       F90FLAGS="-X9 -Am ${F90FREE}"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	    F90FLAGS="-g -Haesu ${F90FLAGS}"
-       else
-	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_ABSOFT_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
 dnl LAHEY F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
@@ -277,8 +250,8 @@ AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
   
    # F90FREE, F90FIXED AND MODFLAG
 
-   F90FREE='-Free'
-   F90FIXED='-Fixed'
+   F90FREE='--nfix'
+   F90FIXED='--fix'
    MODFLAG='-I'
 
    # LINKER AND LIBRARY (AR)
@@ -292,13 +265,16 @@ AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
    # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
-       F90FLAGS="--f95 ${F90FREE}"
+     # F90FLAGS="--f95 ${F90FREE}"
+       F90FLAGS="--f95 --in --info --swm 8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
 
        if test "${enable_debug:=no}" = yes
        then
-	    F90FLAGS="-g --chk --trace ${F90FLAGS}"
+	  # F90FLAGS="-g --chk --trace ${F90FLAGS}"
+	    F90FLAGS="-g --ap --chk --pca --private --trap --wo ${F90FLAGS}"
        else
-	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+	  # F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+	    F90FLAGS="-O --ntrace ${F90FLAGS}"
        fi
    fi
 
@@ -359,8 +335,8 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
 
    # Check for working compaq F90 compiler
 
-   AC_CHECK_PROG(F90, f90, f90, none)
-   if test "${F90}" = f90 && ${F90} -version 2>&1 | grep "Compaq"
+   AC_CHECK_PROG(F90, f95, f95, none)
+   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Compaq"
    then
        :
    else
@@ -369,8 +345,8 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
   
    # F90FREE, F90FIXED AND MODFLAG
 
-   F90FREE='-free'
-   F90FIXED='-fixed'
+   F90FREE=''
+   F90FIXED=''
    MODFLAG='-I'
 
    # LINKER AND LIBRARY (AR)
@@ -384,13 +360,16 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
    # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
-       F90FLAGS="${F90FREE} -assume byterecl"
+     # F90FLAGS="${F90FREE} -assume byterecl"
+       F90FLAGS="${F90FREE} -assume byterecl -automatic -std -warn argument_checking -warn unused"
 
        if test "${enable_debug:=no}" = yes
        then
-	    F90FLAGS="-g ${F90FLAGS}"
+	  # F90FLAGS="-g ${F90FLAGS}"
+	    F90FLAGS="-g -check bounds -fpe2 ${F90FLAGS}"
        else
-	    F90FLAGS="-O ${F90FLAGS}"
+	  # F90FLAGS="-O ${F90FLAGS}"
+	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library fast -tune host ${F90FLAGS}"
        fi
    fi
 
@@ -520,13 +499,16 @@ AC_DEFUN(AC_COMPILER_MIPS_F90, [dnl
    # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
-	F90FLAGS="${F90FREE} -OPT:Olimit=0"
+	#F90FLAGS="${F90FREE} -OPT:Olimit=0"
+	F90FLAGS="${F90FREE} -mips4 -r10000 -DEBUG:fullwarn=ON:woff=878,938,1193,1438"
 
 	if test "${enable_debug:=no}" = yes
 	then
-	    F90FLAGS="-g ${F90FLAGS}"
+	  # F90FLAGS="-g ${F90FLAGS}"
+	    F90FLAGS="-g -check_bounds -DEBUG:trap_uninitialized=ON ${F90FLAGS}"
 	else
-	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+	  # F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+	    F90FLAGS="-O3 -OPT:IEEE_arithmetic=2:roundoff=2 ${F90FLAGS}"
 	fi
    fi
 
@@ -574,6 +556,133 @@ AC_DEFUN(AC_COMPILER_HP_F90, [dnl
    fi
 
    dnl end of AC_COMPILER_HP_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl INTEL F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_COMPILER_INTEL_F90, [dnl
+
+   # CHECK FOR WORKING INTEL F90 COMPILER
+   AC_CHECK_PROG(F90, ifc, ifc, none)
+   if test "${F90}" = ifc && ${F90} -V 2>&1 | grep "Intel"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
+   F90FREE='-FR'
+   F90FIXED='-FI'
+   MODFLAG='-I '
+   MODSUFFIX='mod'
+
+   # LINKER AND LIBRARY (AR)
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='-static'
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="${F90FREE} -e95"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g -C -implicitnone ${F90FLAGS}"
+       else
+	    F90FLAGS="-O3 -fno-alias -tpp7 -ipo -pad -align ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_INTEL_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl NAG F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_COMPILER_NAG_F90, [dnl
+
+   # CHECK FOR WORKING NAG F90 COMPILER
+   AC_CHECK_PROG(F90, f95, f95, none)
+   if test "${F90}" = f95 && ${F90} -V 2>&1 | grep "NAGWare"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
+   F90FREE='-free'
+   F90FIXED='-fixed'
+   MODFLAG='-I '
+
+   # LINKER AND LIBRARY (AR)
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='-unsharedf95'
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="${F90FREE} -colour -info -target=native"
+
+       if test "${enable_debug:=no}" = yes
+       then
+          # only use first line if memory error is suspected, too much output
+          #   otherwise
+	  # F90FLAGS="-g -C -mtrace=size -nan -u ${F90FLAGS}"
+	    F90FLAGS="-g -C -nan -u ${F90FLAGS}"
+       else
+	    F90FLAGS="-O4 ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_NAG_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl ABSOFT F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
+
+   # CHECK FOR WORKING ABSOFT F90 COMPILER
+   AC_CHECK_PROG(F90, f95, f95, none)
+  
+   # F90FREE, F90FIXED AND MODFLAG
+   F90FREE=''
+   F90FIXED=''
+   MODFLAG='-p '
+
+   # LINKER AND LIBRARY (AR)
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC=''
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="-cpu:host -en"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g -et -m0 -M399,1193,878 -Rb -Rc -Rs -Rp -trap=ALL ${F90FLAGS}"
+       else
+	    F90FLAGS="-O3 ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_ABSOFT_F90
 ])
 
 dnl ========================================================================

@@ -27,7 +27,7 @@ dnl     F90FLAGS, and LDFLAGS for test programs.
 
 dnl	AC_PROG_F90 determines a Fortran 90 compiler to use.  If F90
 dnl	is not already set in the environment, check for `f90', `F90',
-dnl     `f95', and `xlf90', in that order.  Set the output variable `F90' 
+dnl     `f95', and `xlf95', in that order.  Set the output variable `F90' 
 dnl     to the name of the compiler found. 
 
 dnl     If the output variable F90FLAGS was not already set, set it to
@@ -76,7 +76,7 @@ dnl ### Checks for programs
 AC_DEFUN(AC_PROG_F90, [dnl
    if test -z "$F90"
    then
-       AC_CHECK_PROGS(F90, f90 F90 f95 xlf90)
+       AC_CHECK_PROGS(F90, f90 F90 f95 xlf95)
        test -z "$F90" && AC_MSG_ERROR([no acceptable Fortran 90 compiler found in \$PATH])
    fi
    AC_PROG_F90_WORKS
