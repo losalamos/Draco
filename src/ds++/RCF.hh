@@ -40,6 +40,7 @@ namespace rtt_dsxx
  * The RCF is templated on Field_t (Field Type).  The field must
  * provide the following functions
  * - Field_t::Field_t(int n, value_type v);
+ * - Field_t::Field_t(const_iterator b, const_iterator e);
  * - const T& Field_t::operator[] const
  * - T& Field_t::operator[]
  * - size_type size() const
@@ -129,6 +130,9 @@ class RCF
     // Explicit constructor for type Field_t *.
     inline explicit RCF(Field_t *p_in);
 
+    // Range constructor.
+    inline RCF(const_iterator b, const_iterator e);
+
     // Assignment operator for type Field_t *.
     inline RCF<Field_t>& operator=(Field_t *p_in);
 
@@ -205,6 +209,23 @@ RCF<Field_t>::RCF(Field_t *p_in)
     : sp_field(p_in)
 {
     // nothing to check because this could be a NULL field pointer
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Range constructor.
+ *
+ * This constructor creates a new field, of size \a e - \a b,
+ * and initializes its values using the iterator range [\a b, \a e).
+ *
+ * \param b Starting iterator.
+ * \param e Ending iterator.
+ */
+template<class Field_t>
+RCF<Field_t>::RCF(const_iterator b,
+		  const_iterator e)
+{
+    sp_field = new Field_t(b, e);
 }
 
 //---------------------------------------------------------------------------//
@@ -344,6 +365,9 @@ class RCF<const Field_t>
     // Explicit constructor for type Field_t *.
     inline explicit RCF(Field_t *p_in);
 
+    // Range constructor.
+    inline RCF(const_iterator b, const_iterator e);
+
     // Assignment operator for type Field_t *.
     inline RCF<const Field_t>& operator=(Field_t *p_in);
 
@@ -408,6 +432,23 @@ RCF<const Field_t>::RCF(Field_t *p_in)
     : sp_field(p_in)
 {
     // nothing to check because this could be a NULL field pointer
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Range constructor.
+ *
+ * This constructor creates a new field, of size \a e - \a b,
+ * and initializes its values using the iterator range [\a b, \a e).
+ *
+ * \param b Starting iterator.
+ * \param e Ending iterator.
+ */
+template<class Field_t>
+RCF<const Field_t>::RCF(const_iterator b,
+			const_iterator e)
+{
+    sp_field = new Field_t(b, e);
 }
 
 //---------------------------------------------------------------------------//

@@ -113,6 +113,8 @@ void use_non_const_field(Field &f)
 //
 //   RCF()
 //   RCF(Field_t *)
+//   RCF(n, v)
+//   RCF(begin, end)
 //   operator=(Field_t *)
 //   begin() const
 //   end() const
@@ -189,6 +191,10 @@ void test_simple_construction_copy()
 
         if (y[0] != 1.1) ITFAILS;
         if (x[1] != 1.2) ITFAILS;
+
+	// check range constructor
+	RCF<dbl_field> z(x.begin(), x.end());
+        if (!soft_equiv(x.begin(), x.end(), z.begin(), z.end())) ITFAILS;
     }
 
     if (!sf.assigned()) ITFAILS;
