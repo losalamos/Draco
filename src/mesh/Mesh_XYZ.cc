@@ -40,11 +40,12 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 {
     char buf[80];
 
-    for( int i=0; i < ncp; i++ ) {
-	sprintf( buf, "node %d, i=%d, I(%d)=%d J(%d)=%d K(%d)=%d",
-		 node, i, i, I(i), i, J(i), i, K(i) );
-	cout << buf << endl;
-    }
+    if (dump_indicies)
+        for( int i=0; i < ncp; i++ ) {
+            sprintf( buf, "node %d, i=%d, I(%d)=%d J(%d)=%d K(%d)=%d",
+                     node, i, i, I(i), i, J(i), i, K(i) );
+            cout << buf << endl;
+        }
 
 // Allocate the arrays.
 
@@ -71,9 +72,11 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     for( int i=0; i < ncz; i++ )
 	zc(i) = zmin + (i+.5)*dz;
 
-    cout << "node " << node << " ncy=" << ncy << endl;
-    for( int i=0; i < ncy; i++ )
-	cout << "node " << node << " yc(" << i << ")=" << yc(i) << endl;
+    if (dump_coords) {
+        cout << "node " << node << " ncy=" << ncy << endl;
+        for( int i=0; i < ncy; i++ )
+            cout << "node " << node << " yc(" << i << ")=" << yc(i) << endl;
+    }
 
 // Initialize the face locations.
 
