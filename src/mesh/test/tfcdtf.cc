@@ -5,8 +5,8 @@
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
-// This program tests the MT::fcdtf container as a model of a Forward
-// Container.
+// This program tests the MT::fcdtf container as a model of a Face
+// Centered MTField.
 //---------------------------------------------------------------------------//
 
 #include "../Mesh_XYZ.hh"
@@ -54,6 +54,8 @@ class DoubleContainer
 
 typedef Mesh_XYZ MT;
 typedef MT::fcdtf<double> X;
+typedef MT::fcdtf<int> XI;
+typedef MT::fcdtf<long> XL;
 typedef MT::fcdtf<DoubleContainer> XDC;
 
 void f1(const X& x, X xcopy)
@@ -94,7 +96,7 @@ void t1()
 
     g.readgroup( "test.in" );
 
-    dsxx::SP<MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm = new MT( mdb );
 
     {
     // Test for required typedefs
@@ -231,7 +233,7 @@ void t1()
     }
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm), y(spm), v(spm), w(spm);
@@ -298,7 +300,7 @@ void t2()
 
     g.readgroup( "test.in" );
 
-    dsxx::SP<MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm = new MT( mdb );
 
     {
         typedef iterator_traits<X::iterator>::value_type value_type;
@@ -310,7 +312,7 @@ void t2()
     }
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -341,7 +343,7 @@ void t2()
     }
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -374,7 +376,7 @@ void t2()
     }
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -394,7 +396,7 @@ void t2()
     {
         DoubleContainer dc(value);
 
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         XDC x(spm);
@@ -410,7 +412,7 @@ void t2()
     }
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -431,7 +433,7 @@ void t2()
     {
         typedef iterator_traits<X::iterator>::value_type value_type;
 
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -467,7 +469,7 @@ void t2()
     }
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -502,7 +504,7 @@ void t3()
 
     g.readgroup( "test.in" );
 
-    dsxx::SP<MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm = new MT( mdb );
 
     {
         typedef iterator_traits<X::const_iterator>::value_type value_type;
@@ -515,7 +517,7 @@ void t3()
     }
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -547,7 +549,7 @@ void t3()
     }
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -581,7 +583,7 @@ void t3()
     }
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -599,7 +601,7 @@ void t3()
     {
         DoubleContainer dc(value);
 
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         XDC x(spm);
@@ -615,7 +617,7 @@ void t3()
     }
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -637,7 +639,7 @@ void t3()
     {
         typedef iterator_traits<X::const_iterator>::value_type value_type;
 
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -673,7 +675,7 @@ void t3()
     }
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -709,10 +711,10 @@ void t4()
 
     g.readgroup( "test.in" );
 
-    dsxx::SP<MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm = new MT( mdb );
 
     {
-    // The following constructor is not required by the Random Access
+    // The following constructor is not required by the Forward
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
@@ -727,6 +729,364 @@ void t4()
     }
 
     cout << "t4: end\n";
+}
+
+
+// Test the MTField requirements.
+
+void t5()
+{
+    cout << "t5: beginning.\n";
+
+    NML_Group g( "test" );
+
+    Mesh_DB mdb;
+    mdb.setup_namelist( g );
+
+    g.readgroup( "test.in" );
+
+    dsxx::SP<const MT> spm = new MT( mdb );
+
+    {
+    // The following constructor is not required by the MTField
+    // concept, but we need to get an object somehow.
+
+        X x(spm);
+        x = value;
+
+        // Test field construction
+
+        MT::FieldConstructor FC = x.get_FieldConstructor();
+        X y(FC);
+        if (x.get_Mesh() != y.get_Mesh())
+            passed = false;
+        if (x.get_Mesh() != *spm)
+            passed = false;
+
+        if (x.size() != x.max_size())
+            passed = false;
+    }
+
+    cout << "t5: end\n";
+}
+
+
+// Test the Expression Enabled Container requirements.
+
+void t6()
+{
+    cout << "t6: beginning.\n";
+
+    NML_Group g( "test" );
+
+    Mesh_DB mdb;
+    mdb.setup_namelist( g );
+
+    g.readgroup( "test.in" );
+
+    dsxx::SP<const MT> spm = new MT( mdb );
+
+    // Check the simple binary operations with assignments.
+
+    {
+    // The following constructor is not required by the Expression
+    // Enabled Container concept, but we need to get an object
+    // somehow.
+
+        X a(spm), b(spm), c(spm);
+
+        value = 2.0;
+        X::iterator xiter;
+
+        a = 1.;
+        a += value;
+        xiter = a.begin();
+        passed &= (*xiter == 1. + value);
+
+        a -= value;
+        xiter = a.begin();
+        passed &= (*xiter == 1.);
+
+        a *= value;
+        xiter = a.begin();
+        passed &= (*xiter == value);
+
+        a /= value;
+        xiter = a.begin();
+        passed &= (*xiter == 1.);
+
+
+        int i = 0;
+        for (X::iterator iter = b.begin(); iter != b.end(); ++iter)
+        {
+            *iter = 2*i + 1;
+             ++i;
+        }
+
+        i = 0;
+        for (X::iterator iter = c.begin(); iter != c.end(); ++iter)
+        {
+            *iter = 10. - i;
+             ++i;
+        }
+
+        a += b;
+        xiter = a.begin();
+        ++xiter;
+        ++xiter;
+        passed &= (*xiter == 6.);
+
+        a -= b;
+        xiter = a.begin();
+        ++xiter;
+        ++xiter;
+        passed &= (*xiter == 1.);
+
+        a *= b;
+        xiter = a.begin();
+        ++xiter;
+        ++xiter;
+        passed &= (*xiter == 5.);
+
+        a /= b;
+        xiter = a.begin();
+        ++xiter;
+        ++xiter;
+        passed &= (*xiter == 1.);
+
+        a = b;
+        xiter = a.begin();
+        ++xiter;
+        ++xiter;
+        passed &= (*xiter == 5.);
+
+
+        a = b + c;
+        xiter = a.begin();
+        ++xiter;
+        passed &= (*xiter == 12.);
+
+        a = b - c;
+        xiter = a.begin();
+        ++xiter;
+        passed &= (*xiter == -6.);
+
+        a = b * c;
+        xiter = a.begin();
+        ++xiter;
+        passed &= (*xiter == 27.);
+
+        a = c / b;
+        xiter = a.begin();
+        ++xiter;
+        passed &= (*xiter == 3.);
+
+
+        a = 1.;
+        a += b + c;
+        xiter = a.begin();
+        ++xiter;
+        passed &= (*xiter == 13.);
+
+        a -= b + c;
+        xiter = a.begin();
+        ++xiter;
+        passed &= (*xiter == 1.);
+
+        a *= b + c;
+        xiter = a.begin();
+        ++xiter;
+        passed &= (*xiter == 12.);
+
+        a /= b + c;
+        xiter = a.begin();
+        ++xiter;
+        passed &= (*xiter == 1.);
+    }
+
+    // Check the simple unary operations with assignments.
+
+    {
+    // The following constructor is not required by the Expression
+    // Enabled Container concept, but we need to get an object
+    // somehow.
+
+        X a(spm), b(spm);
+
+        X::iterator xiter1, xiter2;
+
+        int i = 0;
+        for (X::iterator iter = b.begin(); iter != b.end(); ++iter)
+        {
+            *iter = 2*i;
+             ++i;
+        }
+
+        a = +b;
+        xiter1 = a.begin();
+        xiter2 = b.begin();
+        ++xiter1;
+        ++xiter2;
+        passed &= (*xiter1 == *xiter2);
+
+        a = -b;
+        xiter1 = a.begin();
+        xiter2 = b.begin();
+        ++xiter1;
+        ++xiter2;
+        passed &= (*xiter1 == -*xiter2);
+    }
+
+    // Check the other binary operations with assignments.
+
+    {
+    // The following constructor is not required by the Expression
+    // Enabled Container concept, but we need to get an object
+    // somehow.
+
+        X a(spm), b(spm), c(spm);
+
+        X::iterator xiter;
+
+        a = 4.;
+        b = 3.;
+
+        c = pow( a, 3. );
+        xiter = c.begin();
+        passed &= (*xiter == 64.);
+
+        c = pow(a,b);
+        xiter = c.begin();
+        passed &= (*xiter == 64.);
+
+        a = 0.;
+        b = 1.;
+        c = atan2(a,b);
+        xiter = c.begin();
+        passed &= (*xiter == 0.);
+
+        a = 4.;
+        b = 3.;
+        c = min(a,b);
+        xiter = c.begin();
+        passed &= (*xiter == 3.);
+
+        c = max(a,b);
+        xiter = c.begin();
+        passed &= (*xiter == 4.);
+
+        b = 7.;
+        c = fmod(b,a);
+        xiter = c.begin();
+        passed &= (*xiter == 3.);
+
+        b = 3.;
+        c = pow(a,min(a,b));
+        xiter = c.begin();
+        passed &= (*xiter == 64.);
+    }
+
+    // Check the other unary operations with assignments.
+
+    {
+    // The following constructor is not required by the Expression
+    // Enabled Container concept, but we need to get an object
+    // somehow.
+
+        X a(spm), b(spm);
+        //XI ai(spm), bi(spm);
+        //XL al(spm), bl(spm);
+
+        X::iterator xiter;
+        //XI::iterator xiiter;
+        //XL::iterator xliter;
+
+        a = 0.;
+
+        b = sin(a);
+        xiter = b.begin();
+        passed &= (*xiter == 0.);
+
+        b = cos(a);
+        xiter = b.begin();
+        passed &= (*xiter == 1.);
+
+        b = tan(a);
+        xiter = b.begin();
+        passed &= (*xiter == 0.);
+
+        b = asin(a);
+        xiter = b.begin();
+        passed &= (*xiter == 0.);
+
+        a = 1.;
+        b = acos(a);
+        xiter = b.begin();
+        passed &= (*xiter == 0.);
+
+        a = 0.;
+        b = atan(a);
+        xiter = b.begin();
+        passed &= (*xiter == 0.);
+
+        b = sinh(a);
+        xiter = b.begin();
+        passed &= (*xiter == 0.);
+
+        b = cosh(a);
+        xiter = b.begin();
+        passed &= (*xiter == 1.);
+
+        b = tanh(a);
+        xiter = b.begin();
+        passed &= (*xiter == 0.);
+
+        b = exp(a);
+        xiter = b.begin();
+        passed &= (*xiter == 1.);
+
+        a = exp(1.);
+        b = log(a);
+        xiter = b.begin();
+        passed &= (fabs(*xiter - 1.) < 0.00001);
+
+        a = 10.;
+        b = log10(a);
+        xiter = b.begin();
+        passed &= (*xiter == 1.);
+
+        a = 9.;
+        b = sqrt(a);
+        xiter = b.begin();
+        passed &= (*xiter == 3.);
+
+        a = 3.4;
+        b = ceil(a);
+        xiter = b.begin();
+        passed &= (*xiter == 4.);
+
+        //ai = -3;
+        //bi = abs(ai);
+        //xiiter = bi.begin();
+        //passed &= (*xiiter == 3);
+
+        //al = -3;
+        //bl = labs(al);
+        //xliter = bl.begin();
+        //passed &= (*xliter == 3);
+
+        a = -3.4;
+        b = fabs(a);
+        xiter = b.begin();
+        passed &= (fabs(*xiter - 3.4) < 0.00001);
+
+        a = 3.4;
+        b = floor(a);
+        xiter = b.begin();
+        passed &= (*xiter == 3.);
+    }
+
+    cout << "t6: end\n";
 }
 
 
@@ -757,6 +1117,8 @@ int main( int argc, char *argv[] )
         t2();
         t3();
         t4();
+        t5();
+        t6();
     }
     catch( dsxx::assertion& a )
     {

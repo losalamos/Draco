@@ -110,19 +110,40 @@ void t2()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm = new MT( mdb );
     FieldConstructor FC = spm;
 
     {
-        dsxx::SP<MT> spm2 = new MT( mdb );
-        if (spm.bp() == spm2.bp())
+    // The following constructor is not required by the MT
+    // concept, but we need to get an object somehow.
+
+        dsxx::SP<const MT> spm1 = new MT( mdb );
+        dsxx::SP<const MT> spm2 = new MT( mdb );
+        dsxx::SP<const MT> spm3 = new MT( mdb );
+
+    // Test equivalence relations.
+
+        if (*spm1 == *spm2)
             passed = false;
-        if ((spm.bp() != spm2.bp()) != !(spm.bp() == spm2.bp()))
+        if ((*spm1 != *spm2) != !(*spm1 == *spm2))
             passed = false;
-        spm2 = spm;
-        if (!(spm.bp() == spm2.bp()))
+        spm2 = spm1;
+        if (!(*spm1 == *spm2))
             passed = false;
-        if ((spm.bp() != spm2.bp()) != !(spm.bp() == spm2.bp()))
+        if ((*spm1 != *spm2) != !(*spm1 == *spm2))
+            passed = false;
+
+    // Invariants
+
+        spm2 = spm1;
+        spm3 = spm2;
+        if ((spm2 == spm1) && !(*spm2 == *spm1))
+            passed = false;
+        if (*spm1 != *spm1)
+            passed = false;
+        if ((*spm1 == *spm2) && !(*spm2 == *spm1))
+            passed = false;
+        if (((*spm1 == *spm2) && (*spm2 == *spm3)) && !(*spm1 == *spm3))
             passed = false;
     }
 
@@ -189,7 +210,7 @@ void t3()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm = new MT( mdb );
     FieldConstructor FC = spm;
 
     ccsf c(FC);
@@ -451,7 +472,7 @@ void t4()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm = new MT( mdb );
     FieldConstructor FC = spm;
 
     ccif c(FC);
@@ -460,43 +481,43 @@ void t4()
     ncif n(FC);
     bsif b(FC);
 
-    int value;
+    int value = 3;
 
     // Cell centered sum
 
-    c = 3;
+    c = value;
     ccif::value_type csum = MT::sum(c);
-    if (csum != 3*spm->get_total_ncells())
+    if (csum != value*spm->get_total_ncells())
         passed = false;
 
     // Face centered sum
 
-    f = 3;
+    f = value;
     fcdif::value_type fsum = MT::sum(f);
-    if (fsum != 3*6*spm->get_total_ncells())
+    if (fsum != value*6*spm->get_total_ncells())
         passed = false;
 
     // Node centered sum
 
-    n = 3;
+    n = value;
     ncif::value_type nsum = MT::sum(n);
     if (nsum !=
-        3*((spm->get_ncx() + 1)*(spm->get_ncy() + 1)*(spm->get_ncz() + 1)))
+        value*((spm->get_ncx() + 1)*(spm->get_ncy() + 1)*(spm->get_ncz() + 1)))
         passed = false;
 
     // Vertex centered sum
 
-    v = 3;
+    v = value;
     vcif::value_type vsum = MT::sum(v);
-    if (vsum != 3*8*spm->get_total_ncells())
+    if (vsum != value*8*spm->get_total_ncells())
         passed = false;
 
     // Boundary specified sum
 
-    b = 3;
+    b = value;
     bsif::value_type bsum = MT::sum(b);
     if (bsum !=
-        3*2*((spm->get_ncx()*spm->get_ncy()) +
+        value*2*((spm->get_ncx()*spm->get_ncy()) +
              (spm->get_ncx()*spm->get_ncz()) +
              (spm->get_ncy()*spm->get_ncz())))
         passed = false;
