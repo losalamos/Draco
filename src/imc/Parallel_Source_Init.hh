@@ -38,6 +38,11 @@
 //              comb, so beware of checking to see if the census is empty
 //              after exiting Parallel_Source_Init; we manually reassign the
 //              persistant census in Host_Manager.
+//  4) 070699 : Eliminated the post-comb census adjustment; the way we were
+//              doing it was not reproducible with number of processors.  We
+//              will have to reinstall this adjustment in the future with 
+//              more complexities to ensure reproducibility and to handle
+//              general rep/domain decomposition topologies. 
 // 
 //===========================================================================//
 
