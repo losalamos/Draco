@@ -14,7 +14,7 @@
 
 // We must include GandolfOpacity.hh so that the following two
 // enumerated items are defined: { Model, Reaction } 
-#include "GandolfOpacity.hh"
+#include "cdi/OpacityCommon.hh"
 
 #include "ds++/SP.hh"
 
@@ -77,19 +77,19 @@ class GandolfDataTable
      *     specifies the data model.  Possible values are "Rosseland"
      *     or "Plank".
      */
-    const Model opacityModel;
+    const rtt_cdi::Model opacityModel;
 
     /*!
      * \brief An enumerated valued defined in GandolfOpacity.hh that
      *     specifies the reaction model.  Possible values are "Total", 
      *     "Absorption" or "Scattering".
      */
-    const Reaction opacityReaction;
+    const rtt_cdi::Reaction opacityReaction;
 
     /*!
      * \brief A list of keys that are known by the IPCRESS file.
      */
-    const std::vector<std::string>& vKnownKeys;
+    const std::vector< std::string >& vKnownKeys;
     
     /*!
      * \brief The IPCRESS material number assocated with the data
@@ -100,7 +100,7 @@ class GandolfDataTable
     /*!
      * \brief The GandolfFile object assocaiated with this data.
      */
-    const rtt_dsxx::SP<GandolfFile> spGandolfFile;
+    const rtt_dsxx::SP< GandolfFile > spGandolfFile;
 
 
     // Data Sizes:
@@ -139,11 +139,13 @@ class GandolfDataTable
      * \brief The temperature grid for this data set.
      */
     std::vector<double> logTemperatures;
+    std::vector<double> temperatures;
 
     /*!
      * \brief The density grid for this data set.
      */
     std::vector<double> logDensities;
+    std::vector<double> densities;
 
     /*!
      * \brief The energy group boundary grid for this data set.
@@ -197,12 +199,12 @@ class GandolfDataTable
      *     GandolfDataTable) objects may point to the same GandolfFile 
      *     object. 
      */    
-    GandolfDataTable( const std::string _opacityEnergyDescriptor,
-		      const Model _opacityModel, 
-		      const Reaction _opacityReaction,
-		      const std::vector<std::string>& _vKnownKeys,
+    GandolfDataTable( const std::string& _opacityEnergyDescriptor,
+		      const rtt_cdi::Model _opacityModel, 
+		      const rtt_cdi::Reaction _opacityReaction,
+		      const std::vector< std::string >& _vKnownKeys,
 		      const int _matID,
-		      const rtt_dsxx::SP<GandolfFile> _spGandolfFile );
+		      const rtt_dsxx::SP< GandolfFile > _spGandolfFile );
 
     // ACCESSORS
 
@@ -231,12 +233,16 @@ class GandolfDataTable
      */
     const std::vector<double>& getLogTemperatures() const { 
 	return logTemperatures; };
+    const std::vector<double>& getTemperatures() const { 
+	return temperatures; };
 
     /*!
      * \brief Retrieve the logarithmic density grid.
      */
     const std::vector<double>& getLogDensities() const {
 	return logDensities; };
+    const std::vector<double>& getDensities() const {
+	return densities; };
 
     /*!
      * \brief Retrieve the logarithmic opacity grid.
@@ -255,6 +261,13 @@ class GandolfDataTable
      */
     const std::string& getDataDescriptor() const {
 	return dataDescriptor; };
+
+    /*!
+     * \brief Return a "plain English" description of the energy
+     *     policy. 
+     */
+    const std::string& getEnergyPolicyDescriptor() const {
+	return opacityEnergyDescriptor; };
 
   private:
 

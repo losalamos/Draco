@@ -14,18 +14,11 @@
 
 #include "UnitTestFrame/TestApp.hh"
 #include "ds++/SP.hh"
-#include "cdi/Opacity.hh"
-#include "../GandolfOpacity.hh"
 
 #include <vector>
 
 namespace rtt_cdi_gandolf_test
 {
- 
-//     // forward declaration
-//     class rtt_cdi_gandolf::GrayOpacity;
-//     doesn't work!!!!!!!!!!!!
- 
 
 //===========================================================================//
 /*!
@@ -77,53 +70,94 @@ class tGandolfOpacity : public rtt_UnitTestFrame::TestApp
      *        decimal places. 
      */
     bool match( const double computedValue,
-		const double referenceValue ) const ;
+		const double referenceValue ) const;
 
     /*!
      * \brief Returns true if the elements of the two vectors are
      *        identical to 10 decimal places.
      */
-    bool match( const std::vector<double>& computedValue, 
-		const std::vector<double>& refereneceValue ) const;
+    bool match( const std::vector< double >& computedValue, 
+		const std::vector< double >& refereneceValue ) const;
 
     /*!
      * \brief Returns true if the two values are identical to 10
      *        decimal places. 
      */
     bool match( const std::vector< std::vector< double > >& computedValue,
-		const std::vector< std::vector< double > >& referenceValue ) const;
+ 		const std::vector< std::vector< double > >& referenceValue ) const;
 
     
     // The CDIGandolf tests have been broken down in to smaller test
-    // routines.  The prototypes for these routines are listed here.
-    void testEnergyBoundaryAccessor( 
-	const rtt_dsxx::SP<rtt_cdi_gandolf::MultigroupOpacity> spOpacity ); 
-    void testDensityGridAccessor( 
-	const rtt_dsxx::SP<rtt_cdi_gandolf::MultigroupOpacity> spOpacity ); 
-    void testTemperatureGridAccessor( 
-	const rtt_dsxx::SP<rtt_cdi_gandolf::MultigroupOpacity> spOpacity ); 
-    template < class temperatureType, class densityType, class TestValueType >
-    bool testMGPlankOpacityAccessorPassed(
-	const rtt_dsxx::SP<rtt_cdi_gandolf::MultigroupOpacity> spOpacity,
-	const temperatureType temperature,
-	const densityType density,
-	const TestValueType tabulatedValues );
-    template < class T1, class T2, class T3 >
-    bool testGrayPlankOpacityAccessorPassed(
-	const rtt_dsxx::SP<rtt_cdi_gandolf::GrayOpacity> spOpacity,
-	const T1 temperature, const T2 density,
-	const T3 tabulatedValue ); 
-    template < class temperatureType, class densityType, class TestValueType >
-    bool testMGRosselandOpacityAccessorPassed(
-	const rtt_dsxx::SP<rtt_cdi_gandolf::MultigroupOpacity> spOpacity,
-	const temperatureType temperature, const densityType density, 
-	const TestValueType tabulatedValues );
-    template < class T1, class T2, class T3 >
-    bool testGrayRosselandOpacityAccessorPassed(
-	const rtt_dsxx::SP<rtt_cdi_gandolf::GrayOpacity> spOpacity,
-	const T1 temperature, const T2 density, 
-	const T3 tabulatedValue ); 
+    // routines.  The prototypes for these routines are listed
+    // here.
+    
+   /*!
+     * \brief Test the getGroupBoundaries() accessor.
+     *
+     * \sa This test routine operates on the smart pointer to an
+     *     opacity object provided as an argument.  It assumes that
+     *     the OpacityObject has a Energy Group Structure with 13
+     *     entries:  { 0.01, 0.03, 0.07, 0.1, 0.3, 0.7, 1.0, 3.0, 7.0
+     *                 10.0, 30.0, 70.0, 100.0 } keV
+     */    
+    template< class opacityClassType >
+    void testEnergyBoundaryAccessor( const opacityClassType spOpacity ); 
 
+    /*!
+     * \brief Test the getDensityGrid() accessor.
+     *
+     * \sa This test routine operates on the smart pointer to an
+     *     opacity object provided as an argument.  It assumes that
+     *     the OpacityObject has a Density Grid with three entries 
+     *     { 0.1, 0.5, 1.0 } g/cm^3.
+     */
+    template< class opacityClassType >
+    void testDensityGridAccessor( const opacityClassType spOpacity ); 
+
+    /*!
+     * \brief Test the getTemperatureGrid() accessor.
+     *
+     * \sa This test routine operates on the smart pointer to an
+     *     opacity object provided as an argument.  It assumes that
+     *     the OpacityObject has a Temperature Grid with three entries 
+     *     { 0.1, 1.0, 10.0 } keV.
+     */
+    template< class opacityClassType >
+    void testTemperatureGridAccessor( const opacityClassType spOpacity ); 
+
+    /*!
+     * \brief Tests the getOpacity() function.
+     *
+     * \sa This templated function will use the getOpacity()
+     *     accessor for the class specified by spOpacity.  The opacity
+     *     values are interpolated using the information provided by
+     *     "temperature" and "density."  The value(s) returned from
+     *     the getOpacity() function is (are) assumed to be equal to
+     *     the type of "tabulatedValues."  The contents of "tabulated
+     *     Values" is then compared to the result of getOpacity().  If
+     *     the two values match then the test returns "true" otherwise
+     *     it returns "false."
+     *
+     * \param spOpacity A smart pointer to an Opacity object
+     *     (i.e.: GandolfGrayOpacity or GandolfMultigroupOpacity) 
+     *
+     * \param temperature A list of temperatures (or a single value).
+     *
+     * \param density A list of densities (or a single value).
+     *
+     * \param tabulatedValues A list of opacity values (or a single
+     *     value). that represent the exact values that should be
+     *     returned by getOpacity.  The type of "tabulatedValues" must 
+     *     match the type returned by getOpacity().
+     */
+    template < class temperatureType, class densityType, 
+	class testValueType, class opacityClassType >
+    bool opacityAccessorPassed(
+ 	const opacityClassType spOpacity,
+ 	const temperatureType temperature, 
+	const densityType density, 
+ 	const testValueType tabulatedValues );
+    
 };
 
 } // end namespace rtt_cdi_gandolf_test

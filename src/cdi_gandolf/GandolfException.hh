@@ -13,8 +13,6 @@
 #define __cdi_gandolf_GandolfException_hh__
 
 #include <string>
-// #include <sstream>
-// #include <iostream>
 
 namespace rtt_cdi_gandolf
 {

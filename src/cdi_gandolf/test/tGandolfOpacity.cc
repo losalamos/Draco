@@ -10,18 +10,18 @@
 //---------------------------------------------------------------------------//
 
 #include "tGandolfOpacity.hh"
-#include "../GandolfFile.hh"
-#include "../GandolfOpacity.hh"
-#include "../GandolfException.hh"
+#include "tGandolfOpacity.t.hh"
 #include "../Release.hh"
+
+#include "../GandolfGrayOpacity.hh"
+#include "../GandolfMultigroupOpacity.hh"
+#include "../GandolfFile.hh"
+#include "../GandolfException.hh"
 
 #include "UnitTestFrame/PassFailStream.hh"
 #include "ds++/SP.hh"
 
-//#include <iostream>
-//#include <vector>
-//#include <cmath>
-//#include <iomanip>
+#include <vector>
 
 // Unit Test Frame Stuff
 //----------------------------------------
@@ -37,19 +37,13 @@ namespace rtt_UnitTestFrame {
 //--------------------------------------------------
 namespace rtt_cdi_gandolf_test {
 
-using std::string;
-using std::cout;
-using std::endl;
-using std::vector;
-using rtt_dsxx::SP;
-
 tGandolfOpacity::tGandolfOpacity( int argc, char *argv[], std::ostream& os_in )
     : rtt_UnitTestFrame::TestApp( argc, argv, os_in )
 {
-    os() << "Created tGandolfOpacity" << endl;
+    os() << "Created tGandolfOpacity" << std::endl;
 }
 
-string tGandolfOpacity::version() const
+std::string tGandolfOpacity::version() const
 {
     return rtt_cdi_gandolf::release();
 }
@@ -73,16 +67,16 @@ string tGandolfOpacity::version() const
  *
  */
 //===========================================================================
-string tGandolfOpacity::runTest()
+std::string tGandolfOpacity::runTest()
 {
     // Gandolf data filename (IPCRESS format required)
-    string op_data_file = "Al_BeCu.ipcress";
+    std::string op_data_file = "Al_BeCu.ipcress";
     
     // ------------------------- //
     // Create GandolfFile object //
     // ------------------------- //
     
-    SP<rtt_cdi_gandolf::GandolfFile> spGFABC;
+    rtt_dsxx::SP< rtt_cdi_gandolf::GandolfFile > spGFABC;
 
     // Attempt to instantiate the object.
     try
@@ -119,18 +113,15 @@ string tGandolfOpacity::runTest()
     // Material identifier.  This data file has two materials: Al and
     // BeCu.  Al has the id tag "10001".
     const int matid=10001;
-    
-    // SP< rtt_cdi_gandolf::GandolfOpacity<rtt_cdi_gandolf::Gray> > spOpacity_Al;
-    SP< rtt_cdi_gandolf::GrayOpacity > spOp_Al_rgt;
-    
-    // Try to instantiate the Opacity object.
+
+    // Try to instantiate the Opacity object. (Rosseland, Gray Total
+    // for material 10001 in the IPCRESS file pointed to by spGFABC).
+    rtt_dsxx::SP< rtt_cdi::GrayOpacity > spOp_Al_rgt;
+
     try
 	{
-	    spOp_Al_rgt = new rtt_cdi_gandolf::GrayOpacity( 
-		spGFABC, 
-		matid,
-		rtt_cdi_gandolf::Rosseland, 
-		rtt_cdi_gandolf::Total );
+	    spOp_Al_rgt = new rtt_cdi_gandolf::GandolfGrayOpacity( 
+		spGFABC, matid,	rtt_cdi::Rosseland, rtt_cdi::Total );
 	}
     catch ( rtt_cdi_gandolf::GandolfException gerr )
 	// Alternatively, we could use:
@@ -157,25 +148,25 @@ string tGandolfOpacity::runTest()
     double density = 27.0; // g/cm^3
     double tabulatedGrayOpacity = 4271.7041147070677; // cm^2/g
     
-    if ( ! testGrayRosselandOpacityAccessorPassed( 
+    if ( ! opacityAccessorPassed( 
 	spOp_Al_rgt, temperature, density, tabulatedGrayOpacity ) )
-	return "testGrayRosselandOpacityAccessorPassed() failed.";
+	return "opacityAccessorPassed() failed.";
     
     // --------------- //
     // MG Opacity test //
     // --------------- //
 
     // Create a Multigroup Rosseland Total Opacity object (again for Al).
-    SP< rtt_cdi_gandolf::MultigroupOpacity > spOp_Al_rtmg;
+    rtt_dsxx::SP< rtt_cdi::MultigroupOpacity > spOp_Al_rtmg;
     
     // Try to instantiate the Opacity object.
     try
 	{
-	    spOp_Al_rtmg = new rtt_cdi_gandolf::MultigroupOpacity( 
+	    spOp_Al_rtmg = new rtt_cdi_gandolf::GandolfMultigroupOpacity( 
 		spGFABC, 
 		matid,
-		rtt_cdi_gandolf::Rosseland, 
-		rtt_cdi_gandolf::Total );
+		rtt_cdi::Rosseland, 
+		rtt_cdi::Total );
 	}
     catch ( rtt_cdi_gandolf::GandolfException gerr )
 	{
@@ -228,14 +219,14 @@ string tGandolfOpacity::runTest()
 	6.8907716134926735e+00
     }; // KeV, numGroups entries.
 
-    vector<double> tabulatedMGOpacity(numGroups);
+    std::vector< double > tabulatedMGOpacity( numGroups );
     std::copy( tabulatedMGOpacityArray, 
 	       tabulatedMGOpacityArray+numGroups,
 	       tabulatedMGOpacity.begin() );    
 
-    if ( ! testMGRosselandOpacityAccessorPassed( 
+    if ( ! opacityAccessorPassed( 
 	spOp_Al_rtmg, temperature, density, tabulatedMGOpacity ) )
-	return "testGrayRosselandOpacityAccessorPassed() failed.";
+	return "opacityAccessorPassed() failed.";
 
     // ----------------------------------------------- //
     // Test the data file "analyticOpacities.ipcress"  //
@@ -262,7 +253,7 @@ string tGandolfOpacity::runTest()
      // ------------------------- //
      
      // Create a smart pointer to a GandolfFile object
-     SP<rtt_cdi_gandolf::GandolfFile> spGFAnalytic;
+     rtt_dsxx::SP<rtt_cdi_gandolf::GandolfFile> spGFAnalytic;
 
      // Try to instantiate the object.
      try 
@@ -294,16 +285,17 @@ string tGandolfOpacity::runTest()
      // --------------------- //
 
      // Create a smart pointer to an Opacity object.
-      SP<rtt_cdi_gandolf::GrayOpacity> spOp_Analytic_ragray;
+     rtt_dsxx::SP< rtt_cdi::GrayOpacity > spOp_Analytic_ragray;
      
      // Try to instantiate the Opacity object.
      try 
 	 {
 	     spOp_Analytic_ragray
-		 = new rtt_cdi_gandolf::GrayOpacity( spGFAnalytic, 
-						     matid,
-						     rtt_cdi_gandolf::Rosseland,
-						     rtt_cdi_gandolf::Absorption );
+		 = new rtt_cdi_gandolf::GandolfGrayOpacity( 
+		     spGFAnalytic, 
+		     matid,
+		     rtt_cdi::Rosseland,
+		     rtt_cdi::Absorption );
 	 }
       catch ( rtt_cdi_gandolf::GandolfException gerr )
 	  // Alternatively, we could use:
@@ -329,26 +321,25 @@ string tGandolfOpacity::runTest()
       density = 1.0; // g/cm^3
       tabulatedGrayOpacity = density * pow( temperature, 4 );
       
-      if ( ! testGrayRosselandOpacityAccessorPassed( 
+      if ( ! opacityAccessorPassed( 
 	  spOp_Analytic_ragray, temperature, density,
 	  tabulatedGrayOpacity ) )
-	  return "testGrayRosselandOpacityAccessorPassed() failed.";
+	  return "opacityAccessorPassed() failed.";
      
       //---------------- //
       // MG Opacity test //
       //---------------- //
       
-      typedef rtt_cdi_gandolf::MultigroupOpacity MgOp;
-      typedef rtt_cdi_gandolf::GrayOpacity GrOp;
-
       // Create a smart pointer to an Opacity object.
-      SP<MgOp> spOp_Analytic_ramg;
+      rtt_dsxx::SP< rtt_cdi::MultigroupOpacity > spOp_Analytic_ramg;
      
       // Try to instantiate the Opacity object.
       try { spOp_Analytic_ramg
-		= new MgOp( 
-		    spGFAnalytic, matid, rtt_cdi_gandolf::Rosseland,
-		    rtt_cdi_gandolf::Absorption );
+		= new rtt_cdi_gandolf::GandolfMultigroupOpacity( 
+		    spGFAnalytic, 
+		    matid, 
+		    rtt_cdi::Rosseland,
+		    rtt_cdi::Absorption );
       } catch ( rtt_cdi_gandolf::GandolfException gerr ) {
 	  fail() << "Failed to create SP to new GandolfOpacity object for "
 		 << "Al_BeCu.ipcress data." << std::endl << "\t" << gerr.errorSummary();
@@ -368,11 +359,11 @@ string tGandolfOpacity::runTest()
       tabulatedMGOpacity.resize(12);
       for ( int i=0; i<numGroups; ++i )
 	  tabulatedMGOpacity[i] = density * pow( temperature, 4 ); // cm^2/gm
-
-      if ( ! testMGRosselandOpacityAccessorPassed( 
+      
+      if ( ! opacityAccessorPassed( 
 	  spOp_Analytic_ramg, temperature, density, tabulatedMGOpacity ) )
-	  return "testMGRosselandOpacityAccessorPassed() failed.";
-
+	  return "opacityAccessorPassed() failed.";
+      
       // ------------------------------------------------------------ //
       // Test the Plank routines using analyticOpacities.ipcress data //
       // ------------------------------------------------------------ //
@@ -392,13 +383,15 @@ string tGandolfOpacity::runTest()
       // ----------------- //
 
       // Create a smart pointer to an Opacity object.
-      SP<GrOp> spOp_Analytic_pgray;
+      rtt_dsxx::SP< rtt_cdi::GrayOpacity > spOp_Analytic_pgray;
      
       // Try to instantiate the Opacity object.
       try { spOp_Analytic_pgray
-		= new GrOp( 
-		    spGFAnalytic, matid, rtt_cdi_gandolf::Plank,
-		    rtt_cdi_gandolf::Total );
+		= new rtt_cdi_gandolf::GandolfGrayOpacity( 
+		    spGFAnalytic, 
+		    matid, 
+		    rtt_cdi::Plank,
+		    rtt_cdi::Total );
       } catch ( rtt_cdi_gandolf::GandolfException gerr ) {
 	  fail() << "Failed to create SP to new GandolfOpacity object for "
 		 << "Al_BeCu.ipcress data." << std::endl << "\t" << gerr.errorSummary();
@@ -414,7 +407,7 @@ string tGandolfOpacity::runTest()
       density = 0.7; // g/cm^3
       double tabulatedValue = density * pow( temperature, 4 ); // cm^2/g
       
-      if ( ! testGrayPlankOpacityAccessorPassed( spOp_Analytic_pgray,
+      if ( ! opacityAccessorPassed( spOp_Analytic_pgray,
 						 temperature, density,
 						 tabulatedValue ) )
 	  return "testGrayPlankOpacityAccessor() failed.";
@@ -424,13 +417,15 @@ string tGandolfOpacity::runTest()
       // --------------- //
 
       // Create a smart pointer to an Opacity object.
-      SP<MgOp> spOp_Analytic_pmg;
+      rtt_dsxx::SP< rtt_cdi::MultigroupOpacity > spOp_Analytic_pmg;
      
       // Try to instantiate the Opacity object.
       try { spOp_Analytic_pmg
-		= new MgOp( spGFAnalytic, matid,
-			    rtt_cdi_gandolf::Plank,
-			    rtt_cdi_gandolf::Total ); 
+		= new rtt_cdi_gandolf::GandolfMultigroupOpacity( 
+		    spGFAnalytic, 
+		    matid,
+		    rtt_cdi::Plank,
+		    rtt_cdi::Total ); 
       } catch ( rtt_cdi_gandolf::GandolfException gerr ) {
 	  fail() << "Failed to create SP to new GandolfOpacity object for "
 		 << "Al_BeCu.ipcress data." << std::endl << "\t" 
@@ -443,7 +438,7 @@ string tGandolfOpacity::runTest()
 	     << "for \"analyticOpacities.ipcress.\"";
 
       // Setup the test problem.
-
+      
       int ng=12;
       tabulatedMGOpacity.resize( ng );
       temperature = 0.4; // keV
@@ -452,57 +447,57 @@ string tGandolfOpacity::runTest()
 	  tabulatedMGOpacity[ig] = density * pow( temperature, 4 ); // cm^2/g
       
       // If this test fails then stop testing.
-      if ( ! testMGPlankOpacityAccessorPassed( spOp_Analytic_pmg, 
-					       temperature, density,
-					       tabulatedMGOpacity ) ) 
+      if ( ! opacityAccessorPassed( spOp_Analytic_pmg, 
+				    temperature, density,
+				    tabulatedMGOpacity ) ) 
 	  return "testMGPlankOpacityAccessor() failed.";
     
-    // ------------------------ //
-    // Access temperature grid. //
-    // ------------------------ //
+      // ------------------------ //
+      // Access temperature grid. //
+      // ------------------------ //
+      
+      testTemperatureGridAccessor( spOp_Analytic_pmg );
+      
+      // ------------------------ //
+      // Access the density grid. //
+      // ------------------------ //
+      
+      testDensityGridAccessor( spOp_Analytic_pmg );
     
-    testTemperatureGridAccessor( spOp_Analytic_pmg );
-    
-    // ------------------------ //
-    // Access the density grid. //
-    // ------------------------ //
-    
-    testDensityGridAccessor( spOp_Analytic_pmg );
-    
-    // ----------------------------- //
-    // Access the energy boundaries. //
-    // ----------------------------- //
-    
-    testEnergyBoundaryAccessor( spOp_Analytic_pmg );
-    
-    // ------------------------------------------------------------ //
-    // Test alternate (vector-based) accessors for getGrayRosseland //
-    // ------------------------------------------------------------ //
-
-    // ---------------------- //
-    // Vector of temperatures //
-    // ---------------------- //
-
-    vector<double> vtemperature(2);
-    vtemperature[0] = 0.5; // keV
-    vtemperature[1] = 0.7; // keV
-    density = 0.35; // g/cm^3
-
-    vector<double> vtabulatedGrayOpacity( vtemperature.size() );
-    for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
-	vtabulatedGrayOpacity[i] = density * pow ( vtemperature[i], 4 );
-
-    if ( ! testGrayRosselandOpacityAccessorPassed( 
-	spOp_Analytic_ragray, vtemperature, density,
-	vtabulatedGrayOpacity ) )
-	return "testGrayRosselandOpacityAccessorPassed() failed for a vector of temps.";
+      // ----------------------------- //
+      // Access the energy boundaries. //
+      // ----------------------------- //
+      
+      testEnergyBoundaryAccessor( spOp_Analytic_pmg );
+      
+      // ------------------------------------------------------------ //
+      // Test alternate (vector-based) accessors for getGrayRosseland //
+      // ------------------------------------------------------------ //
+      
+      // ---------------------- //
+      // Vector of temperatures //
+      // ---------------------- //
+      
+      std::vector<double> vtemperature(2);
+      vtemperature[0] = 0.5; // keV
+      vtemperature[1] = 0.7; // keV
+      density = 0.35; // g/cm^3
+      
+      std::vector<double> vtabulatedGrayOpacity( vtemperature.size() );
+      for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
+	  vtabulatedGrayOpacity[i] = density * pow ( vtemperature[i], 4 );
+      
+      if ( ! opacityAccessorPassed( 
+	  spOp_Analytic_ragray, vtemperature, density,
+	  vtabulatedGrayOpacity ) )
+	  return "opacityAccessorPassed() failed for a vector of temps.";
 
     // ---------------------- //
     // Vector of densities    //
     // ---------------------- //
     
     temperature = 0.3; //keV
-    vector<double> vdensity(3);
+    std::vector<double> vdensity(3);
     vdensity[0] = 0.2; // g/cm^3
     vdensity[1] = 0.4; // g/cm^3
     vdensity[2] = 0.6; // g/cm^3
@@ -511,32 +506,11 @@ string tGandolfOpacity::runTest()
     for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
 	vtabulatedGrayOpacity[i] = vdensity[i] * pow ( temperature, 4 );
 
-    if ( ! testGrayRosselandOpacityAccessorPassed( 
+    if ( ! opacityAccessorPassed( 
 	spOp_Analytic_ragray, temperature, vdensity,
 	vtabulatedGrayOpacity ) )
-	return "testGrayRosselandOpacityAccessorPassed() failed for a vector of densities.";
+	return "opacityAccessorPassed() failed for a vector of densities.";
     
-    // ------------------------------------------------ //
-    // Vector of temperatures and a vector of densities //
-    // ------------------------------------------------ //
-
-    // This functionality was removed from GandolfOpacity because
-    // there is no way to ensure that the 2D container is filled in
-    // the correct order.  Consider using the STL-like accessor.
-
-//     int nt = vtemperature.size();
-//     int nd = vdensity.size();
-//     vtabulatedGrayOpacity.resize( nt*nd ); 
-//     for ( int it=0; it<nt; ++it )
-// 	for ( int id=0; id< nd; ++id )
-// 	    vtabulatedGrayOpacity[it*nd+id] = 
-// 		vdensity[id] * pow ( vtemperature[it], 4 );
-
-//     if ( ! testGrayRosselandOpacityAccessorPassed( 
-// 	spOp_Analytic_ragray, vtemperature, vdensity,
-// 	vtabulatedGrayOpacity ) )
-// 	return "testGrayRosselandOpacityAccessorPassed() failed for a vector of temperatures x densities.";
-
     // -------------------------------------------------------- //
     // Test alternate (vector-based) accessors for getGrayPlank //
     // -------------------------------------------------------- //
@@ -554,10 +528,10 @@ string tGandolfOpacity::runTest()
     for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
 	vtabulatedGrayOpacity[i] = density * pow ( vtemperature[i], 4 );
 
-    if ( ! testGrayPlankOpacityAccessorPassed( 
+    if ( ! opacityAccessorPassed( 
 	spOp_Analytic_pgray, vtemperature, density,
 	vtabulatedGrayOpacity ) )
-	return "testGrayPlankOpacityAccessorPassed() failed for a vector of temps.";
+	return "opacityAccessorPassed() failed for a vector of temps.";
    
     // ------------------- //
     // Vector of densities //
@@ -573,31 +547,10 @@ string tGandolfOpacity::runTest()
     for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
 	vtabulatedGrayOpacity[i] = vdensity[i] * pow ( temperature, 4 );
 
-    if ( ! testGrayPlankOpacityAccessorPassed( 
+    if ( ! opacityAccessorPassed( 
 	spOp_Analytic_pgray, temperature, vdensity,
 	vtabulatedGrayOpacity  ) )
-	return "testGrayPlankOpacityAccessorPassed() failed for a vector of densities.";
-
-    // ------------------------------------------------ //
-    // Vector of temperatures and a vector of densities //
-    // ------------------------------------------------ //
-
-    // This functionality was removed from GandolfOpacity because
-    // there is no way to ensure that the 2D container is filled in
-    // the correct order. Consider using the STL-like accessor
-
-//     nt = vtemperature.size();
-//     nd = vdensity.size();
-//     vtabulatedGrayOpacity.resize( nt*nd ); 
-//     for ( int i=0; i< nt; ++i )
-// 	for ( int j=0; j< nd; ++j )
-// 	    vtabulatedGrayOpacity[i*nd+j] = 
-// 		vdensity[j] * pow ( vtemperature[i], 4 );
-    
-//     if ( ! testGrayPlankOpacityAccessorPassed(
-// 	spOp_Analytic_pgray, vtemperature, vdensity,
-// 	vtabulatedGrayOpacity ) )
-//  	return "testGrayPlankOpacityAccessorPassed() failed for a vector of temperatures x densities.";
+	return "opacityAccessorPassed() failed for a vector of densities.";
 
     // ---------------------------------------------------------- //
     // Test alternate (vector-based) accessors for getMGRosseland //
@@ -613,7 +566,7 @@ string tGandolfOpacity::runTest()
      density = 0.35; // g/cm^3
      ng = spOp_Analytic_ramg->getNumGroupBoundaries() - 1;
 
-     vector< vector< double > > vtabulatedMGOpacity( vtemperature.size() );
+     std::vector< std::vector< double > > vtabulatedMGOpacity( vtemperature.size() );
      for ( int i=0; i< vtemperature.size(); ++i )
 	 {
 	     vtabulatedMGOpacity[i].resize(ng);
@@ -622,10 +575,10 @@ string tGandolfOpacity::runTest()
 		     density * pow ( vtemperature[i], 4 );
 	 }
 
-     if ( ! testMGRosselandOpacityAccessorPassed( spOp_Analytic_ramg, 
-						  vtemperature, density,
-						  vtabulatedMGOpacity ) )
-	 return "testMGRosselandOpacityAccessorPassed() failed for a vector of temps.";
+     if ( ! opacityAccessorPassed( spOp_Analytic_ramg, 
+				   vtemperature, density,
+				   vtabulatedMGOpacity ) )
+	 return "opacityAccessorPassed() failed for a vector of temps.";
 
      // ------------------- //
      // Vector of densities //
@@ -646,36 +599,10 @@ string tGandolfOpacity::runTest()
 		     vdensity[i] * pow ( temperature, 4 );
 	 }
 
-     if ( ! testMGRosselandOpacityAccessorPassed( 
+     if ( ! opacityAccessorPassed( 
 	 spOp_Analytic_ramg, temperature, vdensity,
 	 vtabulatedMGOpacity ) )
-	 return "testMGRosselandOpacityAccessorPassed() failed for a vector of densities.";
-
-
-     // ------------------------------------------------ //
-     // Vector of temperatures and a vector of densities //
-     // ------------------------------------------------ //
-
-    // This functionality was removed from GandolfOpacity because
-    // there is no way to ensure that the 2D container is filled in
-    // the correct order.
-
-//      vtabulatedMGOpacity.resize( vtemperature.size() 
-// 				 * vdensity.size() );
-//      nd = vdensity.size();
-//      for ( int it=0; it<vtemperature.size(); ++it )
-// 	 for ( int id=0; id<nd; ++id )
-// 	     {
-// 		 vtabulatedMGOpacity[ it*nd + id ].resize(ng);
-// 		 for ( int ig=0; ig<ng; ++ig )
-// 		     vtabulatedMGOpacity[ it*nd + id ][ ig ] = 
-// 			 vdensity[id] * pow ( vtemperature[it], 4 );
-// 	     }
-
-//      if ( ! testMGRosselandOpacityAccessorPassed( 
-// 	 spOp_Analytic_ramg, vtemperature, vdensity,
-// 	 vtabulatedMGOpacity ) )
-// 	 return "testMGRosselandOpacityAccessorPassed() failed for a vector of temps and a vector of densities.";
+	 return "opacityAccessorPassed() failed for a vector of densities.";
 
     // ------------------------------------------------------ //
     // Test alternate (vector-based) accessors for getMGPlank //
@@ -700,10 +627,10 @@ string tGandolfOpacity::runTest()
 		     density * pow ( vtemperature[i], 4 );
 	 }
      
-     if ( ! testMGPlankOpacityAccessorPassed( 
+     if ( ! opacityAccessorPassed( 
 	 spOp_Analytic_pmg, vtemperature, density,
 	 vtabulatedMGOpacity ) )
-	 return "testMGPlankOpacityAccessorPassed() failed for a vector of temps.";
+	 return "opacityAccessorPassed() failed for a vector of temps.";
 
      // ------------------- //
      // Vector of densities //
@@ -724,177 +651,150 @@ string tGandolfOpacity::runTest()
 		     vdensity[i] * pow ( temperature, 4 );
 	 }
 
-     if ( ! testMGPlankOpacityAccessorPassed( 
+     if ( ! opacityAccessorPassed( 
 	 spOp_Analytic_pmg, temperature, vdensity,
 	 vtabulatedMGOpacity ) )
-	 return "testMGPlankOpacityAccessorPassed() failed for a vector of densities.";
+	 return "opacityAccessorPassed() failed for a vector of densities.";
 
+//      // ------------------------------------- //
+//      // Test the STL-like getOpacity accessor //
+//      // Using const iterators                 //
+//      // ------------------------------------- //
 
-     // ------------------------------------------------ //
-     // Vector of temperatures and a vector of densities //
-     // ------------------------------------------------ //
+//      vdensity.resize(6);
+//      vtemperature.resize(6);
 
-    // This functionality was removed from GandolfOpacity because
-    // there is no way to ensure that the 2D container is filled in
-    // the correct order.  Consider using the STL-like accessor.
+//      // (temperature,density) tuples.
 
-//      vtabulatedMGOpacity.resize( vtemperature.size() 
-// 				 * vdensity.size() );
-//      nd = vdensity.size();
-//      for ( int it=0; it<vtemperature.size(); ++it )
-// 	 for ( int id=0; id<nd; ++id )
-// 	     {
-// 		 vtabulatedMGOpacity[ it*nd + id ].resize(ng);
-// 		 for ( int ig=0; ig<ng; ++ig )
-// 		     vtabulatedMGOpacity[ it*nd + id][ ig ] = 
-// 			 vdensity[id] * pow ( vtemperature[it], 4 );
-// 	     }
+//      vtemperature[0] = 0.5; // keV
+//      vdensity[0] = 0.2; // g/cm^3
 
-//      if ( ! testMGPlankOpacityAccessorPassed( 
-// 	 spOp_Analytic_pmg, vtemperature, vdensity,
-// 	 vtabulatedMGOpacity ) )
-// 	 return "testMGPlankOpacityAccessorPassed() failed for a vector of temps and a vector of densities.";
+//      vtemperature[1] = 0.7; // keV
+//      vdensity[1] = 0.2; // g/cm^3
 
-     
-     // ------------------------------------- //
-     // Test the STL-like getOpacity accessor //
-     // Using const iterators                 //
-     // ------------------------------------- //
+//      vtemperature[2] = 0.5; // keV
+//      vdensity[2] = 0.4; // g/cm^3
 
-     vdensity.resize(6);
-     vtemperature.resize(6);
+//      vtemperature[3] = 0.7; // keV
+//      vdensity[3] = 0.4; // g/cm^3
 
-     // (temperature,density) tuples.
+//      vtemperature[4] = 0.5; // keV
+//      vdensity[4] = 0.6; // g/cm^3
 
-     vtemperature[0] = 0.5; // keV
-     vdensity[0] = 0.2; // g/cm^3
+//      vtemperature[5] = 0.7; // keV
+//      vdensity[5] = 0.6; // g/cm^3
 
-     vtemperature[1] = 0.7; // keV
-     vdensity[1] = 0.2; // g/cm^3
+//      const vector<double> cvdensity = vdensity;
+//      const vector<double> cvtemperature = vtemperature;
 
-     vtemperature[2] = 0.5; // keV
-     vdensity[2] = 0.4; // g/cm^3
+//      int nt = cvtemperature.size();
+//      int nd = cvdensity.size();
+//      vtabulatedGrayOpacity.resize( nt ); 
 
-     vtemperature[3] = 0.7; // keV
-     vdensity[3] = 0.4; // g/cm^3
+//      for ( int i=0; i<nt; ++i )
+// 	 vtabulatedGrayOpacity[i] = 
+// 	     cvdensity[i] * pow ( cvtemperature[i], 4 );
 
-     vtemperature[4] = 0.5; // keV
-     vdensity[4] = 0.6; // g/cm^3
+//      vector<double> graOp(nt);
 
-     vtemperature[5] = 0.7; // keV
-     vdensity[5] = 0.6; // g/cm^3
+//      spOp_Analytic_ragray->getOpacity( cvtemperature.begin(),
+// 				       cvtemperature.end(), 
+// 				       cvdensity.begin(),
+// 				       cvdensity.end(), 
+// 				       graOp.begin() );
+//      if ( match( graOp, vtabulatedGrayOpacity ) )
+// 	 pass() << spOp_Analytic_ragray->getDataDescriptor()
+// 		<< " opacity computation was good for "
+// 		<< spOp_Analytic_ragray->getDataFilename()
+// 		<< " (const-iterator accessor, temp x density).";
+//      else
+// 	 {
+// 	     fail() << spOp_Analytic_ragray->getDataDescriptor()
+// 		    << " opacity value is out of spec. for "
+// 		    << spOp_Analytic_ragray->getDataFilename()
+// 		    << " (non-const-iterator accessor, temp x density).";
+// 	     return false;
+// 	 }
 
-     const vector<double> cvdensity = vdensity;
-     const vector<double> cvtemperature = vtemperature;
+//      // ------------------------------------- //
+//      // Test the STL-like getOpacity accessor //
+//      // Using non-const iterator              //
+//      // ------------------------------------- //
 
-     int nt = cvtemperature.size();
-     int nd = cvdensity.size();
-     vtabulatedGrayOpacity.resize( nt ); 
+//      spOp_Analytic_ragray->getOpacity( vtemperature.begin(),
+// 				       vtemperature.end(), 
+// 				       vdensity.begin(),
+// 				       vdensity.end(), 
+// 				       graOp.begin() );
+//      if ( match( graOp, vtabulatedGrayOpacity ) )
+// 	 pass() << spOp_Analytic_ragray->getDataDescriptor()
+// 		<< " opacity computation was good for "
+// 		<< spOp_Analytic_ragray->getDataFilename()
+// 		<< " (non-const-iterator accessor, temp x density).";
+//      else
+// 	 {
+// 	     fail() << spOp_Analytic_ragray->getDataDescriptor()
+// 		    << " opacity value is out of spec. for "
+// 		    << spOp_Analytic_ragray->getDataFilename()
+// 		    << " (non-const-iterator accessor, temp x density).";
+// 	     return false;
+// 	 }
 
-     for ( int i=0; i<nt; ++i )
-	 vtabulatedGrayOpacity[i] = 
-	     cvdensity[i] * pow ( cvtemperature[i], 4 );
+//      // ------------------------------------- //
+//      // Test the STL-like getOpacity accessor //
+//      // const iterator (temperature only)     //
+//      // ------------------------------------- //
 
-     vector<double> graOp(nt);
+//      graOp.resize( nt );
+//      vtabulatedGrayOpacity.resize( nt );
+//      for ( int it=0; it<nt; ++it )
+// 	 vtabulatedGrayOpacity[it] = density * pow( vtemperature[it], 4 );
 
-     spOp_Analytic_ragray->getOpacity( cvtemperature.begin(),
-				       cvtemperature.end(), 
-				       cvdensity.begin(),
-				       cvdensity.end(), 
-				       graOp.begin() );
-     if ( match( graOp, vtabulatedGrayOpacity ) )
-	 pass() << spOp_Analytic_ragray->getDataDescriptor()
-		<< " opacity computation was good for "
-		<< spOp_Analytic_ragray->getDataFilename()
-		<< " (const-iterator accessor, temp x density).";
-     else
-	 {
-	     fail() << spOp_Analytic_ragray->getDataDescriptor()
-		    << " opacity value is out of spec. for "
-		    << spOp_Analytic_ragray->getDataFilename()
-		    << " (non-const-iterator accessor, temp x density).";
-	     return false;
-	 }
+//      spOp_Analytic_ragray->getOpacity( cvtemperature.begin(),
+// 				       cvtemperature.end(), 
+// 				       density,
+// 				       graOp.begin() );
+//      if ( match( graOp, vtabulatedGrayOpacity ) )
+// 	 pass() << spOp_Analytic_ragray->getDataDescriptor()
+// 		<< " opacity computation was good for "
+// 		<< spOp_Analytic_ragray->getDataFilename()
+// 		<< " (const iterator accessor, vtemps).";
+//      else
+// 	 {
+// 	     fail() << spOp_Analytic_ragray->getDataDescriptor()
+// 		    << " opacity value is out of spec. for "
+// 		    << spOp_Analytic_ragray->getDataFilename()
+// 		    << " (const iterator accessor, vtemps).";
+// 	     return false;
+// 	 }
 
-     // ------------------------------------- //
-     // Test the STL-like getOpacity accessor //
-     // Using non-const iterator              //
-     // ------------------------------------- //
+//      // ------------------------------------- //
+//      // Test the STL-like getOpacity accessor //
+//      // const iterator ( density only)        //
+//      // ------------------------------------- //
 
-     spOp_Analytic_ragray->getOpacity( vtemperature.begin(),
-				       vtemperature.end(), 
-				       vdensity.begin(),
-				       vdensity.end(), 
-				       graOp.begin() );
-     if ( match( graOp, vtabulatedGrayOpacity ) )
-	 pass() << spOp_Analytic_ragray->getDataDescriptor()
-		<< " opacity computation was good for "
-		<< spOp_Analytic_ragray->getDataFilename()
-		<< " (non-const-iterator accessor, temp x density).";
-     else
-	 {
-	     fail() << spOp_Analytic_ragray->getDataDescriptor()
-		    << " opacity value is out of spec. for "
-		    << spOp_Analytic_ragray->getDataFilename()
-		    << " (non-const-iterator accessor, temp x density).";
-	     return false;
-	 }
+//      graOp.resize( nd );
+//      vtabulatedGrayOpacity.resize( nd );
+//      for ( int id=0; id<nd; ++id )
+// 	 vtabulatedGrayOpacity[id] = vdensity[id] * pow( temperature, 4 );
 
-     // ------------------------------------- //
-     // Test the STL-like getOpacity accessor //
-     // const iterator (temperature only)     //
-     // ------------------------------------- //
-
-     graOp.resize( nt );
-     vtabulatedGrayOpacity.resize( nt );
-     for ( int it=0; it<nt; ++it )
-	 vtabulatedGrayOpacity[it] = density * pow( vtemperature[it], 4 );
-
-     spOp_Analytic_ragray->getOpacity( cvtemperature.begin(),
-				       cvtemperature.end(), 
-				       density,
-				       graOp.begin() );
-     if ( match( graOp, vtabulatedGrayOpacity ) )
-	 pass() << spOp_Analytic_ragray->getDataDescriptor()
-		<< " opacity computation was good for "
-		<< spOp_Analytic_ragray->getDataFilename()
-		<< " (const iterator accessor, vtemps).";
-     else
-	 {
-	     fail() << spOp_Analytic_ragray->getDataDescriptor()
-		    << " opacity value is out of spec. for "
-		    << spOp_Analytic_ragray->getDataFilename()
-		    << " (const iterator accessor, vtemps).";
-	     return false;
-	 }
-
-     // ------------------------------------- //
-     // Test the STL-like getOpacity accessor //
-     // const iterator ( density only)        //
-     // ------------------------------------- //
-
-     graOp.resize( nd );
-     vtabulatedGrayOpacity.resize( nd );
-     for ( int id=0; id<nd; ++id )
-	 vtabulatedGrayOpacity[id] = vdensity[id] * pow( temperature, 4 );
-
-     spOp_Analytic_ragray->getOpacity( temperature,
-				       cvdensity.begin(),
-				       cvdensity.end(), 
-				       graOp.begin() );
-     if ( match( graOp, vtabulatedGrayOpacity ) )
-	 pass() << spOp_Analytic_ragray->getDataDescriptor()
-		<< " opacity computation was good for "
-		<< spOp_Analytic_ragray->getDataFilename()
-		<< " (const iterator accessor, vdensity).";
-     else
-	 {
-	     fail() << spOp_Analytic_ragray->getDataDescriptor()
-		    << " opacity value is out of spec. for "
-		    << spOp_Analytic_ragray->getDataFilename()
-		    << " (const iterator accessor, vdensity).";
-	     return false;
-	 }
+//      spOp_Analytic_ragray->getOpacity( temperature,
+// 				       cvdensity.begin(),
+// 				       cvdensity.end(), 
+// 				       graOp.begin() );
+//      if ( match( graOp, vtabulatedGrayOpacity ) )
+// 	 pass() << spOp_Analytic_ragray->getDataDescriptor()
+// 		<< " opacity computation was good for "
+// 		<< spOp_Analytic_ragray->getDataFilename()
+// 		<< " (const iterator accessor, vdensity).";
+//      else
+// 	 {
+// 	     fail() << spOp_Analytic_ragray->getDataDescriptor()
+// 		    << " opacity value is out of spec. for "
+// 		    << spOp_Analytic_ragray->getDataFilename()
+// 		    << " (const iterator accessor, vdensity).";
+// 	     return false;
+// 	 }
 
 
 
@@ -912,7 +812,7 @@ string tGandolfOpacity::runTest()
 
 
 
-     //     fail() << "Test STL-like accessors for multigroup data!!!";
+//      //     fail() << "Test STL-like accessors for multigroup data!!!";
 
 
 
@@ -942,9 +842,9 @@ string tGandolfOpacity::runTest()
 
 } // end of runTest()
 
-//---------------------------------------------
-// Compare Reference value to computed values
-//---------------------------------------------
+// ------------------------------------------ //
+// Compare Reference value to computed values //
+// ------------------------------------------ //
 
 bool tGandolfOpacity::match( const double computedValue,
 			     const double referenceValue ) const
@@ -969,17 +869,15 @@ bool tGandolfOpacity::match( const double computedValue,
 
 } // end of tGandolfOpacity::match( double, double )
 
-bool tGandolfOpacity::match( const vector<double>& computedValue, 
-			     const vector<double>& referenceValue ) const
+bool tGandolfOpacity::match( 
+    const std::vector< double >& computedValue, 
+    const std::vector< double >& referenceValue ) const
 {
     // Start by assuming that the two quantities match exactly.
     bool em = true;
 
     // Compare items up to 10 digits of accuracy.
     const double TOL = 1.0e-10;
-
-//     std::cout << "size = " << computedValue.size() << std::endl
-// 	      << "size = " << referenceValue.size() << std::endl;
 
     // Test each item in the list
     double reldiff = 0.0;
@@ -989,10 +887,14 @@ bool tGandolfOpacity::match( const vector<double>& computedValue,
 			    / referenceValue[i] );
 	    // If the comparison fails then change the value of "em"
 	    // and exit the loop.
+
+// DEBUG: must #include <iomanip>
+//
 // 	    std::cout << std::setprecision(14) << "   "
 // 		      << computedValue[i] << "   "
 // 		      << referenceValue[i] << "   "
 // 		      << reldiff << std::endl;
+
 	    if ( reldiff > TOL )
 		{
 		    em = false;
@@ -1003,8 +905,8 @@ bool tGandolfOpacity::match( const vector<double>& computedValue,
 } // end of tGandolfOpacity::match( vector<double>, vector<double> )
 
 bool tGandolfOpacity::match( 
-    const vector< vector<double> >& computedValue, 
-    const vector< vector<double> >& referenceValue ) const 
+    const std::vector< std::vector<double> >& computedValue, 
+    const std::vector< std::vector<double> >& referenceValue ) const 
 {
     // Start by assuming that the two quantities match exactly.
     bool em = true;
@@ -1028,296 +930,6 @@ bool tGandolfOpacity::match(
 	}
     return em;
 } // end of tGandolfOpacity::match( vector<double>, vector<double> )
-
-// ---------------------------------------- //
-// Test the gray Rosseland opacity accessor // 
-// ---------------------------------------- //
-
-template < class temperatureType, class densityType, class opType >
-bool tGandolfOpacity::testGrayRosselandOpacityAccessorPassed(
-    const SP<rtt_cdi_gandolf::GrayOpacity> spOpacity, 
-    const temperatureType temperature, 
-    const densityType density, 
-    const opType tabulatedValue )
-{
-     opType grayRosselandOpacity
- 	= spOpacity->getOpacity( temperature, density );
-
-    // Make sure that the interpolated value matches previous
-    // interpolations. 
-
-    if ( match( grayRosselandOpacity, tabulatedValue ) )
-	pass() << spOpacity->getDataDescriptor()
-	       << " opacity computation was good for \n\t" 
-	       << "\"" << spOpacity->getDataFilename() << "\" data."; 
-    else
-	{
-	    fail() << spOpacity->getDataDescriptor()
-		   << " opacity value is out of spec. for \n\t"
-		   << "\"" << spOpacity->getDataFilename() << "\" data."; 
-	    return false;
-	}
-
-    // If we get here then the test passed.
-    return true;
-}
-
-// ---------------------------------------------- //
-// Test the multigroup Rosseland opacity accessor //
-// ---------------------------------------------- //
-
-template < class temperatureType, class densityType, class TestValueType >
-bool tGandolfOpacity::testMGRosselandOpacityAccessorPassed(
-    const SP<rtt_cdi_gandolf::MultigroupOpacity> spOpacity,
-    const temperatureType temperature, 
-    const densityType density,
-    const TestValueType tabulatedValues )
-{
-    // Interpolate the multigroup opacities.
-    TestValueType mgRosselandOpacity( tabulatedValues.size() );
-    mgRosselandOpacity
-	= spOpacity->getOpacity( temperature, density );
-
-    // Compare the interpolated value with previous interpolations:
-
-    if ( match( mgRosselandOpacity, tabulatedValues ) )
- 	pass() << spOpacity->getDataDescriptor()
-	       << " opacity computation was\n\t"
-	       << "good for the data obtained from the file " 
-	       << "\"" << spOpacity->getDataFilename() << "\".";
-    else 
-	{
-	    fail() << spOpacity->getDataDescriptor()
-		   << " opacity computation failed for \n\t"
-		   << "the data obtained from the file " 
-		   << "\"" << spOpacity->getDataFilename() << "\".";
-	    return false;
-	}
-
-    // If we get here the test has passed.
-    return true;
-
-} // end of tGandolfOpacity::testMGRosselandOpacityAccessorPassed( )
-
-// ------------------------------------ //
-// Test the gray Plank opacity accessor //
-// ------------------------------------ //
-template < class tempT, class denT, class opT >
-bool tGandolfOpacity::testGrayPlankOpacityAccessorPassed(
-    const SP<rtt_cdi_gandolf::GrayOpacity> spOpacity,
-    const tempT temperature, const denT density, const opT tabulatedValue )
-{
-    // Call the interpolation routine.
-    opT grayPlankOpacity 
-	= spOpacity->getOpacity( temperature, density );
-
-    // Make sure that the interpolated value matches previous
-    // interpolations. 
-    if ( match( grayPlankOpacity, tabulatedValue ) )
-	pass() << spOpacity->getDataDescriptor()
-	       << " opacity computation was good for "
-	       << spOpacity->getDataFilename();
-    else 
-	{
-	    fail() << spOpacity->getDataDescriptor()
-		   << "opacity value is out of spec. for "
-		   << spOpacity->getDataFilename();
-	    return false;
-	}
-    
-    // If we get here then the test passed.
-    return true;
-
-} // end of bool tGandolfOpacity::testGrayOpacityAccessorPassed( )
-
-// ------------------------------------------ //
-// Test the multigroup Plank Opacity accessor //
-// ------------------------------------------ //
-
-template < class temperatureType, class densityType, class TestValueType >
-bool tGandolfOpacity::testMGPlankOpacityAccessorPassed( 
-    const SP<rtt_cdi_gandolf::MultigroupOpacity> spOpacity,
-    const temperatureType temperature,
-    const densityType density,
-    const TestValueType tabulatedValues )
-{
-    TestValueType mgPlankOpacity( tabulatedValues.size() );
-    
-    // Interpolate the multigroup opacities.
-    try
-	{
-	    mgPlankOpacity
-		= spOpacity->getOpacity( temperature, density );
-	}
-    catch ( rtt_cdi_gandolf::ggetmgException gerr )
-	{
-	    fail() << std::endl << "\t" << gerr.errorSummary();
-	    return false;
-	}
-    catch ( rtt_cdi_gandolf::gkeysException gerr )
-    	{
-	    fail() << std::endl << "\t" << gerr.errorSummary();
-	    return false;
-	}
-    catch ( rtt_cdi_gandolf::GandolfException gerr )
-	{
-	    fail() << std::endl << "\t" << gerr.errorSummary();
-	    return false;
-	}
-
-    // Compare the interpolated value with previous interpolations:
-    if ( match( mgPlankOpacity, tabulatedValues ) )
-	pass() << "Multigroup Plank Opacity computation was good\n\t"
-	       << "for the data obtained from the file "
-	       << "\"" << spOpacity->getDataFilename() << "\"";
-    else
-	fail() << "Multigroup Plank Opacity computation failed for\n\t"
-	       << "the data obtained from the file " 
-	       << "\"" << spOpacity->getDataFilename() << "\".";
-
-    return true;
-
-} // end of void tGandolfOpacity::testMGOpacityAccessor( )
-
-// ---------------------------------- //
-// Test the Temperature Grid Accessor //
-// ---------------------------------- //
-
-void tGandolfOpacity::testTemperatureGridAccessor( 
-    const SP<rtt_cdi_gandolf::MultigroupOpacity> spOpacity )
-{
-    // Read the temperature grid from the IPCRESS file.     
-    vector<double> temps = spOpacity->getTemperatureGrid();
-    
-    // Verify that the size of the temperature grid looks right.  If
-    // it is the right size then compare the temperature grid data to 
-    // the data specified when we created the IPCRESS file using TOPS.
-    if ( temps.size() == spOpacity->getNumTemperatures() &&
-	 temps.size() == 3 )
-	{
-	    pass() << "The number of temperature points found in the data\n\t" 
-		   << "grid matches the number returned by the\n\t"
-		   << "getNumTemperatures() accessor.";
-	    
-	    // The grid specified by TOPS has 3 temperature points.
-	    vector<double> temps_ref( temps.size() );
-	    temps_ref[0] = 0.1;
-	    temps_ref[1] = 1.0;
-	    temps_ref[2] = 10.0;
-	    
-	    // Compare the grids.
-	    if ( match( temps, temps_ref ) )
-		pass() << "Temperature grid matches.";
-	    else
-		fail() << "Temperature grid did not match.";
-	}
-    else
-	{
-	    fail() << "The number of temperature points found in the data\n\t"
-		   << "grid does not match the number returned by the\n\t"
-		   << "getNumTemperatures() accessor.";
-	    fail() << "Did not test the results returned by\n\t"
-		   << "getTemperatureGrid().";
-	}
-    
-} // end of tGandolfOpacity::testTemperatureGridAccessor( )
-
-// ------------------------------ //
-// Test the Density Grid Accessor //
-// ------------------------------ //
-
-void tGandolfOpacity::testDensityGridAccessor( 
-    const SP<rtt_cdi_gandolf::MultigroupOpacity> spOpacity )
-{
-    // Read the grid from the IPCRESS file.     
-    vector<double> density = spOpacity->getDensityGrid();
-    
-    // Verify that the size of the density grid looks right.  If
-    // it is the right size then compare the density grid data to 
-    // the data specified when we created the IPCRESS file using TOPS.
-    if ( density.size() == 3 &&
-	 density.size() == spOpacity->getNumDensities() )
-	{
-	    pass() << "The number of density points found in the data\n\t"
-		   << "grid matches the number returned by the\n\t"
-		   << "getNumDensities() accessor.";
-	    
-	    // The grid specified by TOPS has 3 density points
-	    vector<double> density_ref( density.size() );
-	    density_ref[0] = 0.1;
-	    density_ref[1] = 0.5;
-	    density_ref[2] = 1.0;
-	    
-	    // Compare the grids.
-	    if ( match( density, density_ref ) )
-		pass() << "Density grid matches.";
-	    else
-		fail() << "Density grid did not match.";
-	}
-    else
-	{
-	    fail() << "The number of density points found in the data\n\t"
-		   << "grid does not match the number returned by the\n\t"
-		   << "getNumDensities() accessor.";
-	    fail() << "Did not test the results returned by\n\t"  
-		   << "getDensityGrid().";
-	}
-} // end of void tGandolfOpacity::testDensityGridAccessor( )
-
-// --------------------------------- //
-// Test the Energy Boundary Accessor //
-// --------------------------------- //
-
-void tGandolfOpacity::testEnergyBoundaryAccessor( 
-    const SP<rtt_cdi_gandolf::MultigroupOpacity> spOpacity )
-{
-    
-     // Read the grid from the IPCRESS file.     
-     vector<double> ebounds = spOpacity->getGroupBoundaries();
-
-     // Verify that the size of the group boundary grid looks right.  If
-     // it is the right size then compare the energy groups grid data to 
-     // the data specified when we created the IPCRESS file using TOPS.
-     if ( ebounds.size() == 13 &&
-	  ebounds.size() == spOpacity->getNumGroupBoundaries() )
-	 {
-	     pass() << "The number of energy boundary points found in the data\n\t"
-		    << "grid matches the number returned by the\n\t"
-		    << "getNumGroupBoundaries() accessor.";
-
-	     // The grid specified by TOPS has 13 energy boundaries.
-	     vector<double> ebounds_ref(ebounds.size());
-	     ebounds_ref[0] = 0.01;
-	     ebounds_ref[1] = 0.03;
-	     ebounds_ref[2] = 0.07;
-	     ebounds_ref[3] = 0.1;
-	     ebounds_ref[4] = 0.3;
-	     ebounds_ref[5] = 0.7;
-	     ebounds_ref[6] = 1.0;
-	     ebounds_ref[7] = 3.0;
-	     ebounds_ref[8] = 7.0;
-	     ebounds_ref[9] = 10.0;
-	     ebounds_ref[10] = 30.0;
-	     ebounds_ref[11] = 70.0;
-	     ebounds_ref[12] = 100.0;
-
-	     // Compare the grids.
-	     if ( match( ebounds, ebounds_ref ) )
-		 pass() << "Energy group boundary grid matches.";
-	     else
-		 fail() << "Energy group boundary grid did not match.";
-	     
-	 }
-     else
-	 {
-	     fail() << "The number of energy boundary points found in the data\n\t"
-		    << "grid does not match the number returned by the\n\t"
-		    << "getNumGroupBoundaries() accessor.";
-	     fail() << "Did not test the results returned by\n\t"  
-		    << "getGroupBoundaries().";
-	 }
-    
-} // end of testEnergyBoundaryAccessor( SP<Opacity> spOpacity )
 
 } // end namespace rtt_cdi_gandolf_test
 

@@ -7,7 +7,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for cdi_gandolf
 dnl-------------------------------------------------------------------------dnl
 
-AC_INIT(GandolfOpacity.hh)
+AC_INIT(GandolfGrayOpacity.hh)
 AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(cdi_gandolf/config.h:config.h.in)
 package="cdi_gandolf"
@@ -28,7 +28,7 @@ AC_MPI_SETUP(test)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(ds++)
+AC_NEEDS_LIBS(ds++ cdi)
 AC_NEEDS_LIBS_TEST(UnitTestFrame c4)
 
 dnl AC_RUNTESTS(tGandolfFile tGandolfOpacity, scalar)

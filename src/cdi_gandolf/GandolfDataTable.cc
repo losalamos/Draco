@@ -11,7 +11,7 @@
 
 #include "GandolfDataTable.hh"  // the associated header file.
 
-#include "GandolfOpacity.hh"    // defines Model and Reaction
+#include "cdi/OpacityCommon.hh" // defines Model and Reaction
                                 // enumerated values.
 
 #include "GandolfWrapper.hh"    // we call the wrapper routines.
@@ -72,12 +72,12 @@ namespace rtt_cdi_gandolf
      *     object.  
      */
     GandolfDataTable::GandolfDataTable( 
- 	const std::string _opacityEnergyDescriptor,
- 	const Model _opacityModel, 
-	const Reaction _opacityReaction,
+ 	const std::string& _opacityEnergyDescriptor,
+ 	const rtt_cdi::Model _opacityModel, 
+	const rtt_cdi::Reaction _opacityReaction,
 	const std::vector<std::string>& _vKnownKeys,
 	const int _matID,
-	const rtt_dsxx::SP<GandolfFile> _spGandolfFile )
+	const rtt_dsxx::SP< GandolfFile > _spGandolfFile )
 	: opacityEnergyDescriptor ( _opacityEnergyDescriptor ),
 	  opacityModel( _opacityModel ),
 	  opacityReaction( _opacityReaction ),
@@ -130,18 +130,18 @@ namespace rtt_cdi_gandolf
 	    if ( opacityEnergyDescriptor == "gray" )
 		{
 		    switch ( opacityModel ) {
-		    case ( Rosseland ) :
+		    case ( rtt_cdi::Rosseland ) :
 
 			switch ( opacityReaction ) {
-			case ( Total ) :
+			case ( rtt_cdi::Total ) :
 			    gandolfDataTypeKey = "rgray";
 			    dataDescriptor = "Gray Rosseland Total";
 			    break;
-			case ( Absorption ) :
+			case ( rtt_cdi::Absorption ) :
 			    gandolfDataTypeKey = "ragray";
 			    dataDescriptor = "Gray Rosseland Absorption";
 			    break;
-			case ( Scattering ) :
+			case ( rtt_cdi::Scattering ) :
 			    gandolfDataTypeKey = "rsgray";
 			    dataDescriptor = "Gray Rosseland Scattering";
 			    break;
@@ -151,18 +151,18 @@ namespace rtt_cdi_gandolf
 			}
 			break;
 
-		    case ( Plank ) :
+		    case ( rtt_cdi::Plank ) :
 			
 			switch ( opacityReaction ) {
-			case ( Total ) :
+			case ( rtt_cdi::Total ) :
 			    gandolfDataTypeKey = "pgray";
 			    dataDescriptor = "Gray Plank Total";
 			    break;
-			case ( Absorption ) :
+			case ( rtt_cdi::Absorption ) :
 			    gandolfDataTypeKey = "pagray";
 			    dataDescriptor = "Gray Plank Absorption";
 			    break;
-			case ( Scattering ) :
+			case ( rtt_cdi::Scattering ) :
 			    gandolfDataTypeKey = "psgray";
 			    dataDescriptor = "Gray Plank Scattering";
 			    break;
@@ -180,18 +180,18 @@ namespace rtt_cdi_gandolf
 	    else // "mg"
 		{
 		    switch ( opacityModel ) {
-		    case ( Rosseland ) :
+		    case ( rtt_cdi::Rosseland ) :
 
 			switch ( opacityReaction ) {
-			case ( Total ) :
+			case ( rtt_cdi::Total ) :
 			    gandolfDataTypeKey = "rtmg";
 			    dataDescriptor = "Multigroup Rosseland Total";
 			    break;
-			case ( Absorption ) :
+			case ( rtt_cdi::Absorption ) :
 			    gandolfDataTypeKey = "ramg";
 			    dataDescriptor = "Multigroup Rosseland Absorption";
 			    break;
-			case ( Scattering ) :
+			case ( rtt_cdi::Scattering ) :
 			    gandolfDataTypeKey = "rsmg";
 			    dataDescriptor = "Multigroup Rosseland Scattering";
 			    break;
@@ -201,18 +201,18 @@ namespace rtt_cdi_gandolf
 			}
 			break;
 			
-		    case ( Plank ) :
+		    case ( rtt_cdi::Plank ) :
 			
 			switch ( opacityReaction ) {
-			case ( Total ) :
+			case ( rtt_cdi::Total ) :
 			    gandolfDataTypeKey = "pmg";
 			    dataDescriptor = "Multigroup Plank Total";
 			    break;
-			case ( Absorption ) :
+			case ( rtt_cdi::Absorption ) :
 			    gandolfDataTypeKey = "pamg";
 			    dataDescriptor = "Multigroup Plank Absorption";
 			    break;
-			case ( Scattering ) :
+			case ( rtt_cdi::Scattering ) :
 			    gandolfDataTypeKey = "psmg";
 			    dataDescriptor = "Multigroup Plank Scattering";
 			    break;
@@ -272,7 +272,9 @@ namespace rtt_cdi_gandolf
 
 	    // Resize the data containers based on the newly loaded
 	    // size parameters.
+	    temperatures.resize( numTemperatures );
 	    logTemperatures.resize( numTemperatures );
+	    densities.resize( numDensities );
 	    logDensities.resize( numDensities );
 	    groupBoundaries.resize( numGroupBoundaries );
 	    logOpacities.resize( numOpacities );	    
@@ -295,8 +297,8 @@ namespace rtt_cdi_gandolf
 		    // groupBoundaries and logOpacities.
 		    wrapper::wggetmg( 
 			spGandolfFile->getDataFilename(), matID, gandolfDataTypeKey,
-			logTemperatures, numTemperatures, numTemperatures,
-			logDensities, numDensities, numDensities,
+			temperatures, numTemperatures, numTemperatures,
+			densities, numDensities, numDensities,
 			groupBoundaries, numGroupBoundaries, numGroupBoundaries,
 			logOpacities, numOpacities, numOpacities,
 			errorCode );
@@ -309,8 +311,8 @@ namespace rtt_cdi_gandolf
 		    // logOpacities.
 		    wrapper::wggetgray( 
 			spGandolfFile->getDataFilename(), matID, gandolfDataTypeKey,
-			logTemperatures, numTemperatures, numTemperatures,
-			logDensities, numDensities, numDensities,
+			temperatures, numTemperatures, numTemperatures,
+			densities, numDensities, numDensities,
 			logOpacities, numOpacities, numOpacities,
 			errorCode );
 		    // if the wrapper returned an error code the we need to
@@ -322,9 +324,9 @@ namespace rtt_cdi_gandolf
 	    // log form so we only store the logorithmic temperature,
 	    // density and opacity data.
 	    for ( int i=0; i<numTemperatures; ++i )
-		logTemperatures[i] = log( logTemperatures[i] );
+		logTemperatures[i] = log( temperatures[i] );
 	    for ( int i=0; i<numDensities; ++i )
-		logDensities[i] = log( logDensities[i] );
+		logDensities[i] = log( densities[i] );
 	    for ( int i=0; i<numOpacities; ++i )
 		logOpacities[i] = log( logOpacities[i] );
 	}
