@@ -816,13 +816,26 @@ class Mesh_XYZ : private XYZ_Mapper
         dsxx::Mat1<T> data;
 
       public:
-        typedef T value_type;
+	typedef T value_type;
+        typedef T& reference;
+        typedef const T& const_reference;
+        typedef typename dsxx::Mat1<T>::pointer pointer;
+        typedef typename dsxx::Mat1<T>::const_pointer const_pointer;
         typedef typename dsxx::Mat1<T>::iterator iterator;
         typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
+        typedef typename dsxx::Mat1<T>::difference_type
+                                        difference_type;
+        typedef typename dsxx::Mat1<T>::size_type size_type;
+        typedef typename dsxx::Mat1<T>::reverse_iterator
+                                        reverse_iterator;
+        typedef typename dsxx::Mat1<T>::const_reverse_iterator
+                                        const_reverse_iterator;
 
         tiny_vec() : data( N ) {}
 
-        tiny_vec& operator=( T x ) {data = x; return *this;}
+        tiny_vec( const tiny_vec& v ) : data( v.data ) {}
+
+        tiny_vec& operator=( T x ) { data = x; return *this; }
 
         static T dot( const tiny_vec<T,N>& x, const tiny_vec<T,N>& y)
         {
@@ -839,6 +852,8 @@ class Mesh_XYZ : private XYZ_Mapper
             return assign_from( x );
         }
 
+        tiny_vec& operator=( const tiny_vec& v ) { data = v.data; return *this; }
+
         T& operator() ( int i ) { return data(i); }
         const T& operator() ( int i ) const { return data(i); }
 
@@ -851,7 +866,24 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator begin() const { return data.begin(); }
         const_iterator end() const { return data.end(); }
 
-        int size() const { return data.size(); }
+        reverse_iterator rbegin() { return data.rbegin(); }
+        reverse_iterator rend() { return data.rend(); }
+
+        const_reverse_iterator rbegin() const { return data.rbegin(); }
+        const_reverse_iterator rend() const { return data.rend(); }
+
+        size_type size() const { return data.size(); }
+        size_type max_size() const { return size(); }
+        bool empty() const { return data.empty(); }
+
+        void swap ( tiny_vec& x ) { data.swap(x.data); }
+
+        bool operator==( const tiny_vec& x ) const;
+        bool operator!=( const tiny_vec& x ) const;
+        bool operator<( const tiny_vec& x ) const;
+        bool operator>( const tiny_vec& x ) const;
+        bool operator<=( const tiny_vec& x ) const;
+        bool operator>=( const tiny_vec& x ) const;
     };
 
   private:

@@ -316,6 +316,51 @@ bool Mesh_XYZ::bstf<T>::operator>=( const Mesh_XYZ::bstf<T>& x ) const
     return !(*this < x);
 }
 
+template<class T, int N>
+bool Mesh_XYZ::tiny_vec<T,N>::operator==( const Mesh_XYZ::tiny_vec<T,N>& x ) const
+{
+    if (this == &x)
+        return true;
+
+    if ( x.size() != this->size() )
+        return false;
+
+    if (x.data != this->data)
+        return false;
+
+    return true;
+}
+
+template<class T, int N>
+bool Mesh_XYZ::tiny_vec<T,N>::operator!=( const Mesh_XYZ::tiny_vec<T,N>& x ) const
+{
+    return !(*this == x);
+}
+
+template<class T, int N>
+bool Mesh_XYZ::tiny_vec<T,N>::operator<( const Mesh_XYZ::tiny_vec<T,N>& x ) const
+{
+    return this->data < x.data;
+}
+
+template<class T, int N>
+bool Mesh_XYZ::tiny_vec<T,N>::operator>( const Mesh_XYZ::tiny_vec<T,N>& x ) const
+{
+    return (x < *this);
+}
+
+template<class T, int N>
+bool Mesh_XYZ::tiny_vec<T,N>::operator<=( const Mesh_XYZ::tiny_vec<T,N>& x ) const
+{
+    return !(x < *this);
+}
+
+template<class T, int N>
+bool Mesh_XYZ::tiny_vec<T,N>::operator>=( const Mesh_XYZ::tiny_vec<T,N>& x ) const
+{
+    return !(*this < x);
+}
+
 template<class T>
 Mesh_XYZ::gcctf<T>& 
 Mesh_XYZ::gcctf<T>::operator=( const Mesh_XYZ::cctf<T>& c )
