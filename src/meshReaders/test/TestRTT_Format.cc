@@ -578,19 +578,19 @@ bool TestRTT_Format::check_node_flags(const rtt_meshReaders::RTT_Format & mesh,
     case DEFINED:
     case SORTED:
         flagTypes.push_back("node_type");
-	    num_name.push_back(make_pair(11,"interior"));
-	    num_name.push_back(make_pair(21,"dudded"));
-	    num_name.push_back(make_pair(6,"parent"));
+	    num_name.push_back(make_pair(11,string("interior")));
+	    num_name.push_back(make_pair(21,string("dudded")));
+	    num_name.push_back(make_pair(6,string("parent")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
 	flagTypes.push_back("boundary");
-	    num_name.push_back(make_pair(1,"reflective"));
-	    num_name.push_back(make_pair(4,"vacuum"));
+	    num_name.push_back(make_pair(1,string("reflective")));
+	    num_name.push_back(make_pair(4,string("vacuum")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
 	flagTypes.push_back("source");
-	    num_name.push_back(make_pair(101,"no_source"));
-	    num_name.push_back(make_pair(22,"rad_source"));
+	    num_name.push_back(make_pair(101,string("no_source")));
+	    num_name.push_back(make_pair(22,string("rad_source")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
 	break;
@@ -686,8 +686,8 @@ bool TestRTT_Format::check_side_flags(const rtt_meshReaders::RTT_Format & mesh,
     case DEFINED:
     case SORTED:
 	flagTypes.push_back("boundary");
-	    num_name.push_back(make_pair(1,"reflective"));
-	    num_name.push_back(make_pair(2,"vacuum"));
+	    num_name.push_back(make_pair(1,string("reflective")));
+	    num_name.push_back(make_pair(2,string("vacuum")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
 	    bndry = 0;
@@ -696,13 +696,13 @@ bool TestRTT_Format::check_side_flags(const rtt_meshReaders::RTT_Format & mesh,
 
     case AMR:
 	flagTypes.push_back("BNDRY");
-	    num_name.push_back(make_pair(1,"VACUU"));
-	    num_name.push_back(make_pair(2,"REFLE"));
+	    num_name.push_back(make_pair(1,string("VACUU")));
+	    num_name.push_back(make_pair(2,string("REFLE")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
 	flagTypes.push_back("SOURC");
-	    num_name.push_back(make_pair(1,"NULL"));
-	    num_name.push_back(make_pair(2,"LOX"));
+	    num_name.push_back(make_pair(1,string("NULL")));
+	    num_name.push_back(make_pair(2,string("LOX")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
 	    bndry = 0;
@@ -812,14 +812,14 @@ bool TestRTT_Format::check_cell_flags(const rtt_meshReaders::RTT_Format & mesh,
     case DEFINED:
     case SORTED:
         flagTypes.push_back("material");
-	    num_name.push_back(make_pair(1,"control_rod"));
-	    num_name.push_back(make_pair(2,"shield"));
+	    num_name.push_back(make_pair(1,string("control_rod")));
+	    num_name.push_back(make_pair(2,string("shield")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
 	    matl = 0;
 	flagTypes.push_back("rad_source");
-	    num_name.push_back(make_pair(1,"src_name1"));
-	    num_name.push_back(make_pair(2,"src_name2"));
+	    num_name.push_back(make_pair(1,string("src_name1")));
+	    num_name.push_back(make_pair(2,string("src_name2")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
 	    rsrc = 1;
@@ -828,7 +828,7 @@ bool TestRTT_Format::check_cell_flags(const rtt_meshReaders::RTT_Format & mesh,
 
     case AMR:
         flagTypes.push_back("MATL");
-	    num_name.push_back(make_pair(1,"CUBE"));
+	    num_name.push_back(make_pair(1,string("CUBE")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
 	    matl = 0;
@@ -2374,42 +2374,42 @@ bool TestRTT_Format::check_virtual(const rtt_meshReaders::RTT_Format & mesh,
 	element_types.push_back(rtt_meshReaders::Element_Definition::HEXA_8); 
 	// load the node sets
 	flag_nodes.insert(0);
-	node_sets.insert(make_pair("node_type/interior", flag_nodes));
+	node_sets.insert(make_pair(string("node_type/interior"), flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(1); flag_nodes.insert(2);
-	node_sets.insert(make_pair("node_type/dudded", flag_nodes));
+	node_sets.insert(make_pair(string("node_type/dudded"), flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(3);
-	node_sets.insert(make_pair("node_type/parent", flag_nodes));
+	node_sets.insert(make_pair(string("node_type/parent"), flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(0); flag_nodes.insert(1);
-	node_sets.insert(make_pair("boundary/reflective", flag_nodes));
+	node_sets.insert(make_pair(string("boundary/reflective"), flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(2); flag_nodes.insert(3);
-	node_sets.insert(make_pair("boundary/vacuum", flag_nodes));
+	node_sets.insert(make_pair(string("boundary/vacuum"), flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(0); flag_nodes.insert(1); flag_nodes.insert(2);
-	node_sets.insert(make_pair("source/no_source", flag_nodes));
+	node_sets.insert(make_pair(string("source/no_source"), flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(3);
-	node_sets.insert(make_pair("source/rad_source", flag_nodes));
+	node_sets.insert(make_pair(string("source/rad_source"), flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	// load the element (i.e., sides + cell) sets
 	flag_elements.insert(1); flag_elements.insert(2); 
 	    flag_elements.insert(3);
-	element_sets.insert(make_pair("boundary/reflective", flag_elements));
+	element_sets.insert(make_pair(string("boundary/reflective"), flag_elements));
 	flag_elements.erase(flag_elements.begin(),flag_elements.end());
 	flag_elements.insert(0);
-	element_sets.insert(make_pair("boundary/vacuum", flag_elements));
+	element_sets.insert(make_pair(string("boundary/vacuum"), flag_elements));
 	flag_elements.erase(flag_elements.begin(),flag_elements.end());
 	flag_elements.insert(4);
-	element_sets.insert(make_pair("material/control_rod", flag_elements));
+	element_sets.insert(make_pair(string("material/control_rod"), flag_elements));
 	flag_elements.erase(flag_elements.begin(),flag_elements.end());
-	element_sets.insert(make_pair("material/shield", flag_elements));
+	element_sets.insert(make_pair(string("material/shield"), flag_elements));
 	flag_elements.erase(flag_elements.begin(),flag_elements.end());
-	element_sets.insert(make_pair("rad_source/src_name1", flag_elements));
+	element_sets.insert(make_pair(string("rad_source/src_name1"), flag_elements));
 	flag_elements.insert(4);
-	element_sets.insert(make_pair("rad_source/src_name2", flag_elements));
+	element_sets.insert(make_pair(string("rad_source/src_name2"), flag_elements));
 	flag_elements.erase(flag_elements.begin(),flag_elements.end());
 	// set the mesh title
 	title = "RTT_format mesh file definition, version 7.";
