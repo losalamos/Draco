@@ -1,10 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstTET_Mesh.cc
-// H. Grady Hughes
-// Thu Jan 27 16:34:07 MST 2000
-// $Id$
-//---------------------------------------------------------------------------//
-// @> Test of TET_Mesh and TET_Builder
+/*!
+ * \file   mc/test/tstTET_Mesh.cc
+ * \author H. Grady Hughes
+ * \date   Thu Jan 27 16:34:07 MST 2000
+ * \brief  Tests for tetrahedral meshes and ThreeVectors.
+ */
 //---------------------------------------------------------------------------//
 
 #include "MC_Test.hh"
@@ -32,7 +32,7 @@ using dsxx::SP;
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__);
 
-// mesh proxy class
+//! Mesh proxy class
 class Mesh_Proxy
 {
   private:
@@ -42,8 +42,13 @@ class Mesh_Proxy
     const TET_Mesh& get_Mesh() const { return *mesh; }
 };
 
-// 2D Mesh Tests
-void Test_2D()
+// ThreeVector Tests
+void Test_ThreeVector()
+{
+}
+
+// TET_Mesh Tests
+void Test_TET()
 {
 }
 
@@ -67,8 +72,11 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
-    // 2D Mesh tests
-    Test_2D();
+    // ThreeVector tests
+    Test_ThreeVector();
+
+    // TET_Mesh tests
+    Test_TET();
 
     // status of test
     cout << endl;
