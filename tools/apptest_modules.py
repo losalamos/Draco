@@ -21,15 +21,14 @@ class AppTest:
 
     ##-----------------------------------------------------------------------##
     ## Initialize Data
-    def __init__( self, exec_head, num_procs, package_name,\
-                  input_deck ):
+    def __init__( self, num_procs, package_name, input_deck ):
         # Initialize some variables.
         self.fail_msg   = []
         self.num_passed = 0
         self.num_failed = 0
         self.workingdir = os.path.abspath(".") + "/"
         self.package_name = package_name
-        self.exec_head    = exec_head
+        self.exec_head    = ""
         self.num_procs    = num_procs
         # output from the binary code
         self.outfilename  = os.path.splitext(input_deck)[0] + ".stdout"
@@ -37,6 +36,20 @@ class AppTest:
         self.test_name    = os.path.basename(sys.argv[0])
         self.border_symbol = "*"
         self.box_width  = 60
+
+        # determine appropriate mpirun command:
+        # ----------------------------------------
+        arch = sys.platform
+        if arch == "linux2":
+            self.exec_head = "mpirun -np"
+        else:
+            print "apptest_modules.py does not know what mpirun to use."
+            print "please notify Kelly Thompson (kgt@lanl.gov) if you"
+            print "receive this message.  Please email him with the name"
+            print "of the machine where this error occured and provide"
+            print "the following variable information:"
+            print "\t sys.platform = %s"%arch
+            return            
         
         # check that directory containing benchmark data exists
         # and remove existing test output files and diff files.
@@ -208,6 +221,33 @@ class AppTest:
         self.outfile.writelines(self.output) # <scriptname>.stdout
         self.outfile.writelines(self.errors)
 
+    ##------------------------------------------------------------##
+    ## Soft Equivalence of 2 lists
+    ##------------------------------------------------------------##
+    def soft_equiv( self, listValue, listReference ):
+
+        # Fail if the length of the lists are not equal.
+        if len(listValue) != len(listReference):
+            return 0
+
+        # Loop through the lists, checking each value.
+        for i in xrange(0,len(listValue)):
+            if not self.soft_equiv( listValue[i], listReference[i] ):
+                return 0
+
+        # If we get here, then everything matches!
+        return 1
+
+    ##------------------------------------------------------------##
+    ## Soft Equivalence of 2 items
+    ##------------------------------------------------------------##
+    def soft_equiv( self, value, reference ):
+        precision = 1.0e-12
+        if ( math.fabs( value - reference ) < precision *
+             math.fabs(reference) ):
+            return 1
+        else:
+            return 0
 
 ##---------------------------------------------------------------------------##
 ## GMV data class
