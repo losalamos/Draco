@@ -26,7 +26,7 @@
 namespace rtt_format 
 {
 /*!
- * \brief  Gets the release number for the rtt_format package. 
+ * \brief  Gets the release number for the meshReaders package. 
  * \return release number as a string in the form "meshReaders-\#_\#_\#"
  */
     const std::string release();

@@ -1729,14 +1729,12 @@ class RTT_Format
  * The RTT_Format package consists of: private member functions that are used 
  * to parse a mesh file in the \ref rtt_format_defined and determine the mesh
  * connectivity, and public member functions that are used to access the data.
- * The RTT_Format package is distributed with the amr_mesh package because it 
- * was developed in conjunction with that package, but it's use is not limited
- * to that particular mesh type. The RTT_Format package was developed from the 
- * TychoMesh class that was originally developed by Shawn Pautz with the 
- * following additions:
+ * The RTT_Format package was developed from the TychoMesh class that was 
+ * originally developed by Shawn Pautz with the following additions:
  * <ul>
  *  <li> Extension of the tetrahedral-limited connectivity algorithm to 
- *       arbitrary cell definitions including amr capability,
+ *       arbitrary cell definitions including adaptive mesh refinement (amr)
+ *       capability,
  *  <li> Public accessor functions for all of the mesh file data,
  *  <li> Reassignment capability to allow the nodes, sides, and cells to be
  *       renumbered in ascending order based upon their coordinate values, 

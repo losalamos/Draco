@@ -21,14 +21,14 @@ namespace rtt_format
 using std::string;
 
 // function definition for Release, define the local version number for
-// this library in the form rtt_format_#.#.# in pkg_version variable
+// this library in the form meshReader-#.#.# in pkg_version variable
 const string release()
 {
-    string pkg_release = "@(#)rtt_format-1_0_0";
+    string pkg_release = "@(#)meshReaders-1_0_0";
     return pkg_release;
 }
 
-}  // end of rtt_format
+}  // end of rtt_format namespace
 
 //---------------------------------------------------------------------------//
 //                              end of Release.cc

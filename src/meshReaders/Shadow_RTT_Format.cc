@@ -18,9 +18,12 @@
 //
 // Purpose : Provides shadow interface functions to the RTT_Format class for 
 // use with Fortran 90 codes. Note that only a destructor is provided because
-// the CAR_CU_Interface and a CAR_CU_Build classes (which are shadowed) provide
-// full functionality to build an RTT_Format class object, parse an RTT_Format
-// mesh file, and build the mesh.
+// the Draco amr_mesh CAR_CU_Interface and a CAR_CU_Build classes (which are
+// shadowed) provide full functionality to build an RTT_Format class object,
+// parse an RTT_Format mesh file, and build the mesh. The shadow interface 
+// will probably be extended in the near future because the RTT_Format 
+// utilities have been removed from the amr_mesh package where they were 
+// originally developed.
 //
 // revision history:
 // -----------------
