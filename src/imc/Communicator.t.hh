@@ -350,6 +350,8 @@ void Communicator<PT>::print(std::ostream &out) const
 {
     using C4::node;
     using std::endl;
+    using std::ios;
+    using std::setw;
 
     out << endl;
     out << ">>> COMMUNICATOR <<<" << endl;
