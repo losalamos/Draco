@@ -25,23 +25,18 @@ namespace rtt_mc
  * \class Sphere
  * \brief
  *
- * Long description or discussion goes here.  Information about Doxygen
- * commands can be found at:
+ * Class Sphere implements the abstract interface of class Surface, making it
+ * appropiate for surface tracking
  *
- * Doxygen tutorial: http://www.stack.nl/~dimitri/doxygen/docblocks.html
- * Doxygen keywords: http://www.stack.nl/~dimitri/doxygen/commands.html
+ * The spheres are assumed to lie along the z axis. Hence they are described
+ * by the z value for the center and their radius.
  *
  * \sa Sphere.cc for detailed descriptions.
  *
- * Code Sample:
- * \code
- *     cout << "Hello, world." << endl;
- * \endcode
  */
 /*! 
- * \example mc/test/mc_test.cc 
+ * \example mc/test/tstSphere.cc
  * 
- * description of example
  */
 // revision history:
 // -----------------

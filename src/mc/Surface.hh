@@ -24,23 +24,15 @@ namespace rtt_mc
  * \class Surface
  * \brief
  *
- * Long description or discussion goes here.  Information about Doxygen
- * commands can be found at:
+ * Class Surface is an abstract base class which provides virtual functions
+ * required for surface tracking.
  *
- * Doxygen tutorial: http://www.stack.nl/~dimitri/doxygen/docblocks.html
- * Doxygen keywords: http://www.stack.nl/~dimitri/doxygen/commands.html
+ * The constructor, copy operators and destructor are all protected to
+ * provect unintended object slicing.
  *
- * \sa Surface.cc for detailed descriptions.
- *
- * Code Sample:
- * \code
- *     cout << "Hello, world." << endl;
- * \endcode
  */
 /*! 
- * \example mc/test/mc_test.cc 
  * 
- * description of example
  */
 // revision history:
 // -----------------
@@ -50,7 +42,7 @@ namespace rtt_mc
 
 class Surface 
 {
-  public:
+  protected:
 
     // NESTED CLASSES AND TYPEDEFS
 
