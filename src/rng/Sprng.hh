@@ -97,6 +97,7 @@ class Sprng
 
     // Number of this particular stream.
     int streamnum;
+    int *sid;
 
     // Size of the packed state
     static int packed_size;
@@ -105,24 +106,24 @@ class Sprng
     // Constructors
     inline Sprng(int *, int);
     inline Sprng(const Sprng &);
-    inline Sprng(const std::vector<char> &);
+    Sprng(const std::vector<char> &);
 
     // Destructor, reclaim memory from SPRNG library.
     inline ~Sprng();
 
     // Assignment operator.
-    inline Sprng& operator=(const Sprng &);
+    Sprng& operator=(const Sprng &);
 
     // Pack Sprng state.
-    inline std::vector<char> pack() const;
+    std::vector<char> pack() const;
    
     // >>> Services provided by Sprng class.
 
     // Get Random number.
-    double ran() const { return sprng(streamid->id); }
+    double ran() const { return sprng(sid); }
 
     // Return the ID and number.
-    int* get_id() const { return streamid->id; }
+    int* get_id() const { return sid; }
     int get_num() const { return streamnum; }
 
     // Return the packed size
@@ -132,8 +133,7 @@ class Sprng
     bool avg_test(int, double = .001) const;
 
     // Do a diagnostic.
-    void print() const { print_sprng(streamid->id); }
-
+    void print() const { print_sprng(sid); }
 };
 
 //---------------------------------------------------------------------------//
@@ -143,56 +143,18 @@ class Sprng
  * \brief Constructor.
  */
 Sprng::Sprng(int *idval, int number)
-    : streamid(new SprngValue(idval)), streamnum(number) {}
+    : streamid(new SprngValue(idval)), streamnum(number), sid(streamid->id) {}
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Copy constructor.
  */
 Sprng::Sprng(const Sprng &rhs)
-    : streamid(rhs.streamid), streamnum(rhs.streamnum)
+    : streamid(rhs.streamid), streamnum(rhs.streamnum), sid(streamid->id) 
 {
     ++streamid->refcount;
 }
 
-//---------------------------------------------------------------------------//
-/*!
- * \brief Unpacking constructor.
- */
-Sprng::Sprng(const std::vector<char> &packed)
-    : streamid(0), streamnum(0)
-{
-    Require (packed.size() >= 2 * sizeof(int));
-
-    // make an unpacker
-    rtt_dsxx::Unpacker u;
-    
-    // set the buffer
-    u.set_buffer(packed.size(), &packed[0]);
-
-    // unpack the stream num and size of state
-    int rng_size = 0;
-    u >> streamnum >> rng_size;
-    Check (streamnum >= 0);
-    Check (rng_size >= 0);
-
-    // unpack the random stream state
-    char *prng = new char[rng_size];
-    for (int i = 0; i < rng_size; i++)
-	u >> prng[i];
-
-    // now rebuild the sprng object
-    int *rnid = unpack_sprng(prng);
-
-    // now make a new streamid
-    streamid = new SprngValue(rnid);
-
-    // reclaim memory
-    delete [] prng;
-
-    Ensure (u.get_ptr() == &packed[0] + packed.size());
-    Ensure (streamid);
-}
 
 //---------------------------------------------------------------------------//
 /*!
@@ -204,63 +166,6 @@ Sprng::~Sprng()
 	delete streamid;
 }
 
-//---------------------------------------------------------------------------//
-/*!
- * \brief Pack a Sprng object into a vector<char>.
- */
-std::vector<char> Sprng::pack() const
-{
-    Require (streamid);
-    
-    // make a packer
-    rtt_dsxx::Packer p;
-
-    // first pack the random number object and determine the size
-    char *prng   = 0;
-    int rng_size = pack_sprng(streamid->id, &prng);
-    int size = rng_size + 2 * sizeof(int);
-    Check (prng);
-
-    // now set the buffer
-    std::vector<char> packed(size);
-    p.set_buffer(size, &packed[0]);
-
-    // pack the stream number and rng size
-    p << streamnum << rng_size;
-
-    // pack the stream state
-    for (int i = 0; i < rng_size; i++)
-	p << prng[i];
-
-    // free the prng buffer
-    std::free(prng);
-
-    Ensure (p.get_ptr() == &packed[0] + size);
-
-    return packed;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Assignment operator.
- */
-Sprng& Sprng::operator=(const Sprng &rhs)
-{
-    // check to see if the values are the same
-    if (streamid == rhs.streamid && streamnum == rhs.streamnum)
-	return *this;
-
-    // destroy this' value if it was the last random number in a particular
-    // stream 
-    if (--streamid->refcount == 0)
-	delete streamid;
-
-    // do assignment
-    streamid  = rhs.streamid;
-    streamnum = rhs.streamnum; 
-    ++streamid->refcount;
-    return *this;
-}
 
 
 } // end namespace rtt_rng

@@ -23,6 +23,106 @@ using std::fabs;
 int Sprng::packed_size = 0;
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Unpacking constructor.
+ */
+Sprng::Sprng(const std::vector<char> &packed)
+    : streamid(0), streamnum(0), sid(0)
+{
+    Require (packed.size() >= 2 * sizeof(int));
+
+    // make an unpacker
+    rtt_dsxx::Unpacker u;
+    
+    // set the buffer
+    u.set_buffer(packed.size(), &packed[0]);
+
+    // unpack the stream num and size of state
+    int rng_size = 0;
+    u >> streamnum >> rng_size;
+    Check (streamnum >= 0);
+    Check (rng_size >= 0);
+
+    // unpack the random stream state
+    char *prng = new char[rng_size];
+    for (int i = 0; i < rng_size; i++)
+	u >> prng[i];
+
+    // now rebuild the sprng object
+    int *rnid = unpack_sprng(prng);
+
+    // now make a new streamid
+    streamid = new SprngValue(rnid);
+    sid = streamid->id;
+
+    // reclaim memory
+    delete [] prng;
+
+    Ensure (u.get_ptr() == &packed[0] + packed.size());
+    Ensure (streamid);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Pack a Sprng object into a vector<char>.
+ */
+std::vector<char> Sprng::pack() const
+{
+    Require (streamid);
+    
+    // make a packer
+    rtt_dsxx::Packer p;
+
+    // first pack the random number object and determine the size
+    char *prng   = 0;
+    int rng_size = pack_sprng(sid, &prng);
+    int size     = rng_size + 2 * sizeof(int);
+    Check (prng);
+
+    // now set the buffer
+    std::vector<char> packed(size);
+    p.set_buffer(size, &packed[0]);
+
+    // pack the stream number and rng size
+    p << streamnum << rng_size;
+
+    // pack the stream state
+    for (int i = 0; i < rng_size; i++)
+	p << prng[i];
+
+    // free the prng buffer
+    std::free(prng);
+
+    Ensure (p.get_ptr() == &packed[0] + size);
+
+    return packed;
+}
+
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Assignment operator.
+ */
+Sprng& Sprng::operator=(const Sprng &rhs)
+{
+    // check to see if the values are the same
+    if (streamid == rhs.streamid && streamnum == rhs.streamnum)
+	return *this;
+
+    // destroy this' value if it was the last random number in a particular
+    // stream 
+    if (--streamid->refcount == 0)
+	delete streamid;
+
+    // do assignment
+    streamid  = rhs.streamid;
+    streamnum = rhs.streamnum; 
+    sid = streamid->id;
+    ++streamid->refcount;
+    return *this;
+}
+
+//---------------------------------------------------------------------------//
 // diagnostic tests
 //---------------------------------------------------------------------------//
 // calculate the average for n deviates, should succeed
