@@ -45,16 +45,13 @@ class Sides
     vector_int sideType;
     vector_vector_int nodes;
     vector_vector_int flags;
-    // This vector is a map from the input side numbers (vector index) to
-    // the sorted side number (stored value)
-    vector_int sort_map;
 
   public:
     Sides(const SideFlags & sideFlags_, const Dims & dims_,
 	  const CellDefs & cellDefs_, const Nodes & nodesClass_) : 
         sideFlags(sideFlags_), dims(dims_), cellDefs(cellDefs_), 
 	nodesClass(nodesClass_), sideType(dims.get_nsides()),
-	nodes(dims.get_nsides()),sort_map(0), 
+	nodes(dims.get_nsides()),
 	flags(dims.get_nsides(), vector_int(dims.get_nside_flag_types())) {}
     ~Sides() {}
 
@@ -64,12 +61,8 @@ class Sides
     void readKeyword(ifstream & meshfile);
     void readData(ifstream & meshfile);
     void readEndKeyword(ifstream & meshfile);
-    // Note that these arguements are passed by value for internal use
-    // in a sorting routine.
-    static bool compareVectorInt(vector_int low_value, vector_int high_value);
 
   public:
-    void sortData();
 /*!
  * \brief Returns the side type associated with the specified side.
  * \param side_numb Side number.
@@ -111,13 +104,6 @@ class Sides
  */
     int get_boundary_flag_number() const 
     { return sideFlags.get_boundary_flag_number(); }
-/*!
- * \brief Returns the new side number after sorting has been performed when
- *        the renumber flag is set true.
- * \param side_numb Original side number.
- * \return New node number.
- */
-    int get_map(int side_numb) const { return sort_map[side_numb];}
 };
 
 } // end namespace rtt_RTT_Format_Reader

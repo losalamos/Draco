@@ -64,14 +64,11 @@ class Dims
     vector_int ncell_flags;
     int ncell_data;
 
-    // flag to indicate node, side, and cell renumbering is performed.
-    bool renumber;
-
   public:
     Dims() { ncells = 0; }
     ~Dims() {}
 
-    void readDims(ifstream & meshfile, const bool & renumber);
+    void readDims(ifstream & meshfile);
 
   private:
     void readKeyword(ifstream & meshfile);
@@ -219,14 +216,6 @@ class Dims
  */
     int get_ncell_data() const { return ncell_data; }
 
-    // renumbering flag
-/*!
- * \brief Returns the status of the flag indicating that the node, side, and 
- *        cell numbers are to be reassigned in ascending order based upon 
- *        their node coordinates (x, y, and then z).
- * \return The status of the renumbering flag.
- */
-    bool get_renumber() const { return renumber; }
 /*!
  * \brief Validates the specified side type.
  * \param sidetype Side type number.

@@ -45,16 +45,13 @@ class Cells
     vector_int cellType;
     vector_vector_int nodes;
     vector_vector_int flags;
-    // This vector is a map from the input cell numbers (vector index) to
-    // the sorted cell number (stored value)
-    vector_int sort_map;
 
   public:
     Cells(const CellFlags & cellFlags_, const Dims & dims_,
 	  const CellDefs & cellDefs_, const Nodes & nodesClass_) :
 	 cellFlags(cellFlags_), dims(dims_), cellDefs(cellDefs_),
          nodesClass(nodesClass_), cellType(dims.get_ncells()),
-         nodes(dims.get_ncells()), sort_map(0), flags(dims.get_ncells(), 
+         nodes(dims.get_ncells()), flags(dims.get_ncells(), 
          vector_int(dims.get_ncell_flag_types())) {}
     ~Cells() {}
 
@@ -66,7 +63,6 @@ class Cells
     void readEndKeyword(ifstream & meshfile);
 
   public:
-    void sortData();
 /*!
  * \brief Returns the cell type associated with the specified cell.
  * \param cell_numb Cell number.
@@ -101,13 +97,6 @@ class Cells
  */
     int get_flags(int cell_numb,int flag_numb) const
     { return flags[cell_numb][flag_numb]; }
-/*!
- * \brief Returns the new cell number after sorting has been performed when
- *        the renumber flag is set true.
- * \param cell_numb Original cell number.
- * \return New cell number.
- */
-    int get_map(int cell_numb) const { return sort_map[cell_numb];}
 };
 
 } // end namespace rtt_RTT_Format_Reader

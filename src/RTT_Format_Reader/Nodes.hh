@@ -43,14 +43,11 @@ class Nodes
     vector_vector_dbl coords;
     vector_int parents;
     vector_vector_int flags;
-    // This vector is a map from the input node numbers (vector index) to
-    // the sorted node number (stored value)
-    vector_int sort_map;
 
   public:
     Nodes(const NodeFlags & nodeFlags_, const Dims & dims_) : 
         nodeFlags(nodeFlags_), dims(dims_), coords(dims.get_nnodes(), 
-	vector_dbl(dims.get_ndim())), parents(dims.get_nnodes()), sort_map(0),
+	vector_dbl(dims.get_ndim())), parents(dims.get_nnodes()),
 	flags(dims.get_nnodes(), vector_int(dims.get_nnode_flag_types())) {}
     ~Nodes() {}
 
@@ -60,11 +57,8 @@ class Nodes
     void readKeyword(ifstream & meshfile);
     void readData(ifstream & meshfile);
     void readEndKeyword(ifstream & meshfile);
-    static bool compareXYZ(const vector_dbl & low_value,
-			   const vector_dbl & high_value);
 
   public:
-    void sortData();
 /*!
  * \brief Returns the coordinate values for each of the nodes.
  * \return The coordinate values for the nodes.
@@ -86,12 +80,6 @@ class Nodes
     double get_coords(int node_numb, int coord_index) const
     { return coords[node_numb][coord_index]; }
 /*!
- * \brief Returns the node number that has the specified coordinate values.
- * \param node_coords Coordinate values.
- * \return The node number.
- */
-    int get_node(vector_dbl node_coords) const;
-/*!
  * \brief Returns the node parent for the specified node.
  * \param node_numb Node number.
  * \return The node parent.
@@ -105,13 +93,6 @@ class Nodes
  */
     int get_flags(int node_numb, int flag_numb) const
     { return flags[node_numb][flag_numb]; }
-/*!
- * \brief Returns the new node number after sorting has been performed when
- *        the renumber flag is set true.
- * \param node_numb Original node number.
- * \return New node number.
- */
-    int get_map(int node_numb) const { return sort_map[node_numb];}
 };
 
 } // end namespace rtt_RTT_Format_Reader

@@ -55,7 +55,6 @@ class NodeData
     void readEndKeyword(ifstream & meshfile);
 
   public:
-    void sortData();
 /*!
  * \brief Returns all of the data field values for each of the nodes.
  * \return The data field values for each of the nodes.

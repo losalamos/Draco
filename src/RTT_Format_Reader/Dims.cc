@@ -21,13 +21,9 @@ namespace rtt_RTT_Format_Reader
  * \brief Parses the dims (dimensions) data block from the mesh file via 
  *        calls to private member functions.
  * \param meshfile Mesh file name.
- * \param renumber Turns the option to reassign the node, side, and cell 
- *        numbers based upon coordinates in ascending order (x, y, and then z)
- *        on and off (defaults to no renumbering).
  */
-void Dims::readDims(ifstream & meshfile, const bool & renumber_)
+void Dims::readDims(ifstream & meshfile)
 {
-    renumber = renumber_;
     readKeyword(meshfile);
     readUnits(meshfile);
     readCellDefs(meshfile);

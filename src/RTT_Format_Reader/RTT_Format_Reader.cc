@@ -20,14 +20,10 @@ namespace rtt_RTT_Format_Reader
 /*!
  * \brief Constructs an RTT_Format_Reader object and parses the mesh data.
  * \param RTT_File Mesh file name.
- * \param renumber Turns the option to reassign the node, side, and cell 
- *        numbers based upon coordinates in ascending order (x, y, and then z)
- *        on and off (default is no renumbering).
  */
-RTT_Format_Reader::RTT_Format_Reader(const string & RTT_File, 
-				     const bool & renumber)
+RTT_Format_Reader::RTT_Format_Reader(const string & RTT_File)
 {
-    readMesh(RTT_File,renumber);
+    readMesh(RTT_File);
 }
 /*!
  * \brief Parses the mesh file data via calls to the member data class objects
@@ -37,8 +33,7 @@ RTT_Format_Reader::RTT_Format_Reader(const string & RTT_File,
  *        numbers based upon coordinates in ascending order (x, y, and then z)
  *        on and off (defaults to no renumbering).
  */
-void RTT_Format_Reader::readMesh(const string & RTT_File, 
-				 const bool & renumber)
+void RTT_Format_Reader::readMesh(const string & RTT_File)
 {
     const char * file = RTT_File.c_str();
     ifstream meshfile(file, std::ios::in);
@@ -51,7 +46,7 @@ void RTT_Format_Reader::readMesh(const string & RTT_File,
     {
         readKeyword(meshfile);
         header.readHeader(meshfile);
-        dims.readDims(meshfile,renumber);
+        dims.readDims(meshfile);
         createMembers();
         readFlagBlocks(meshfile);
         readDataIDs(meshfile);
@@ -70,16 +65,6 @@ void RTT_Format_Reader::readMesh(const string & RTT_File,
         Insist(false, as.what());
     }
 
-    if (renumber)
-    {
-        spCellDefs->sortData();
-        spNodes->sortData();
-        spSides->sortData();
-        spCells->sortData();
-        spNodeData->sortData();
-        spSideData->sortData();
-        spCellData->sortData();
-    }
 }
 /*!
  * \brief Reads and validates the magic cookie at the beginning of the mesh 
@@ -154,5 +139,5 @@ void RTT_Format_Reader::readEndKeyword(ifstream & meshfile)
 } // end namespace rtt_RTT_Format_Reader
 
 //---------------------------------------------------------------------------//
-//                            end of RTT_Format_Reader.cc
+//                    end of RTT_Format_Reader/RTT_Format_Reader.cc
 //---------------------------------------------------------------------------//

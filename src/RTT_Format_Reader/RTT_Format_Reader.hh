@@ -86,7 +86,7 @@ class RTT_Format_Reader
   public:
 
     // Constructors
-    RTT_Format_Reader(const string & RTT_File, const bool & renumber = false);
+    RTT_Format_Reader(const string & RTT_File);
 /*!
  * \brief Destroys an RTT_Format_Reader class object
  */
@@ -269,15 +269,6 @@ class RTT_Format_Reader
  * \return The number of cell data fields.
  */
     int get_dims_ncell_data() const { return dims.get_ncell_data(); }
-
-    // dimensions renumbering flag
-/*!
- * \brief Returns the status of the flag indicating that the node, side, and 
- *        cell numbers are to be reassigned in ascending order based upon 
- *        their node coordinates (x, y, and then z).
- * \return The status of the renumbering flag.
- */
-    bool get_dims_renumber() const { return dims.get_renumber(); }
 
     // node flags access
 /*!
@@ -540,13 +531,6 @@ class RTT_Format_Reader
     double get_nodes_coords(int node_numb, int coord_index) const
     { return spNodes->get_coords(node_numb, coord_index); }
 /*!
- * \brief Returns the node number that has the specified coordinate values.
- * \param node_coords Coordinate values.
- * \return The node number.
- */
-    int get_nodes_node(vector_dbl node_coords) const
-        { return spNodes->get_node(node_coords); }
-/*!
  * \brief Returns the node parent for the specified node.
  * \param node_numb Node number.
  * \return The node parent.
@@ -561,15 +545,6 @@ class RTT_Format_Reader
  */
     int get_nodes_flags(int node_numb, int flag_numb) const
     { return spNodes->get_flags(node_numb, flag_numb); }
-
-/*!
- * \brief Returns the new node number after sorting has been performed when
- *        the renumber flag is set true.
- * \param node_numb Original node number.
- * \return New node number.
- */
-    int get_nodes_map(int node_numb) const
-    { return spNodes->get_map(node_numb);}
 
     // sides access
 /*!
@@ -609,14 +584,6 @@ class RTT_Format_Reader
  */
     int get_sides_flags(int side_numb,int flag_numb) const
     { return spSides->get_flags(side_numb, flag_numb); }
-/*!
- * \brief Returns the new side number after sorting has been performed when
- *        the renumber flag is set true.
- * \param side_numb Original side number.
- * \return New node number.
- */
-    int get_sides_map(int side_numb) const
-    { return spSides->get_map(side_numb);}
 
     // cells access
 /*!
@@ -656,14 +623,6 @@ class RTT_Format_Reader
  */
     int get_cells_flags(int cell_numb,int flag_numb) const
     { return spCells->get_flags(cell_numb, flag_numb); }
-/*!
- * \brief Returns the new cell number after sorting has been performed when
- *        the renumber flag is set true.
- * \param cell_numb Original cell number.
- * \return New cell number.
- */
-    int get_cells_map(int cell_numb) const
-    { return spCells->get_map(cell_numb);}
 
     // node_data access
 /*!
@@ -738,7 +697,7 @@ class RTT_Format_Reader
 
   private:
     
-    void readMesh (const string & RTT_file, const bool & renumber);
+    void readMesh (const string & RTT_file);
     void readKeyword(ifstream & meshfile);
     void createMembers();
     void readFlagBlocks(ifstream & meshfile);
@@ -748,7 +707,7 @@ class RTT_Format_Reader
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif                          // __RTT_Format_Reader_hh__
+#endif                          // __RTT_Format_Reader_RTT_Format_Reader_hh__
 
 //---------------------------------------------------------------------------//
 //                end of RTT_Format_Reader/RTT_Format_Reader.hh

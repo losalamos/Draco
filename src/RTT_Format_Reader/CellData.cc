@@ -73,21 +73,6 @@ void CellData::readEndKeyword(ifstream & meshfile)
 	   "Invalid mesh file: celldat block missing end");
     std::getline(meshfile, dummyString);       // read and discard blank line.
 }
-/*!
- * \brief Maps the cell_data into the new cell numbering scheme when node, 
- *        side, and cell renumbering has been implemented.
- * \param meshfile Mesh file name.
- */
-void CellData::sortData()
-{
-    vector_vector_dbl orig_data = data;
-
-    for (int i = 0; i < dims.get_ncells(); ++i)
-    {
-	for (int j = 0; j < dims.get_ncell_data(); ++j)
-	    data[cellsClass.get_map(i)][j] = orig_data[i][j];
-    }
-}
 
 } // end namespace rtt_RTT_Format_Reader
 

@@ -57,19 +57,10 @@ const std::string release();
  * <h3> Intended Usage </h3>
  * The RTT_Format_Reader class constructor automatically parses the specified 
  * input file via a call to the private member functions readMesh. The mesh 
- * data can then be accessed using the public member accessor functions. A 
- * second, optional argument to the RTT_Format_Reader class can be used to 
- * specify renumbering of the nodes, sides, and cells. The class constructor 
- * defaults to no renumbering, but runtime testing indicates that there is a 
- * significant DECREASE in the total time required to read and connect the 
- * mesh if a continuous adaptive refinement mesh is used with a few thousand 
- * cells or more and the renumbering option is implemented. This behaviour
- * results from the fact that a bilinear search routine can be used to connect
- * adjacent cells with different refinement levels when renumbering is 
- * implemented, while a linear search of all the nodes must be performed 
- * otherwise.The RTT_Format_Reader class contains several data members that 
- * are classes that corresponding to the organization of the data blocks in 
- * the \ref rtt_format_defined, with the addition of two member data classes:
+ * data can then be accessed using the public member accessor functions. The 
+ * RTT_Format_Reader class contains several data members that are classes
+ * corresponding to the organization of the data blocks in the \ref 
+ * rtt_format_defined, with the addition of two member data classes:
  * <ul>
  *  <li> rtt_RTT_Format_Reader::Header
  *  <li> rtt_RTT_Format_Reader::Dims (dimensions)
@@ -104,8 +95,8 @@ const std::string release();
 /*!
  * \page rtt_format_defined RTT Format File Structure
  * The following example "mesh" documents the format of the RTT file and 
- * explains the associated nomenclature. Graphical depictions of the \ref 
- * rtt_stdcell and \ref rtt_sortcell are provided via the links.
+ * explains the associated nomenclature. A graphical depiction of the \ref 
+ * rtt_stdcell is  provided via the links.
  *
  * \include RTT_Format.defined
  */
@@ -131,26 +122,6 @@ const std::string release();
  *
  */
 
-/*!
- * \page rtt_sortcell RTT Format Renumbered Cell Definitions for AMR
- * The RTT_Format_Reader side set renumbered for AMR is depicted on this page.
- * Note that the "right hand rule" is used to return the direction of the 
- * outward-directed normal when the nodes are traversed in the order that
- * is specified in the side set node ordering. The cell definitions assume 
- * the orientation relative to the coordinate system that is indicated in the 
- * figures.
- *
- * <center>
- *   <table>
- *     <tr>
- *       <td align=center valign=center>
- *         <img src="../../draco/src/RTT_Format_Reader/doc/sortcell.jpg"> 
- *       </td>
- *     </tr>
- *   </table>
- * </center>
- *
- */
 //---------------------------------------------------------------------------//
 //                              end of RTT_Format_Reader/Release.hh
 //---------------------------------------------------------------------------//
