@@ -9,7 +9,15 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#ifndef __<spkg>_<class>_t_hh__
+#define __<spkg>_<class>_t_hh__
 
+namespace rtt_<spkg>
+{
+
+} // end namespace rtt_<spkg>
+
+#endif                          // __<spkg>_<class>_t_hh__
 
 //---------------------------------------------------------------------------//
 //                        end of <pkg>/<basename>.t.hh
