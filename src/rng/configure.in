@@ -19,7 +19,7 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)
 
 # TESTS
-AC_RUNTESTS(tstSprng, scalar)
+AC_RUNTESTS(tstSprng tstRnd_Control, scalar)
 
 # DRACO SETUP
 AC_DRACO_ENV

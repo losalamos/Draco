@@ -61,24 +61,32 @@ class Rnd_Control
   private:
     // seed for initialization of random number streams
     int seed;
+
     // total number of streams
     int number;
+
     // number of current stream
     int streamnum;
+
     // control parameter for stream inits
     int parameter;
+
     // size of packed stream state
     int size;
 
+  private:
+    // >>> Implementation.
+    inline Sprng make_random_number_generator() const;
+
   public:
-    // constructor
+    // Constructor.
     Rnd_Control(int, int = 1000000000, int = 0, int = 1);
 
-    // create Sprng objects
+    // Create Sprng objects.
     Sprng get_rn();
     Sprng get_rn(int);
 
-    // spawn a new random number object
+    // Spawn a new random number object.
     Sprng spawn(const Sprng &) const;
 
     //! Query for the current random number stream index.
@@ -96,6 +104,29 @@ class Rnd_Control
     //! Return the total number of current streams set.
     int get_number() const { return number; }
 };
+
+//---------------------------------------------------------------------------//
+// INLINE FUNCTIONS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Make a Sprng random number object.
+ *
+ * This function is used by the public interface to get a Sprng random number
+ * object.
+ */
+Sprng Rnd_Control::make_random_number_generator() const 
+{
+    Require (streamnum <= number);
+
+    // declare a stream
+    int *id = init_sprng(streamnum, number, seed, parameter);
+
+    // create a new Rnd object
+    Sprng random(id, streamnum);
+
+    // return the object
+    return random; 
+}
 
 } // end namespace rtt_rng
 

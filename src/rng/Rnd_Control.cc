@@ -12,6 +12,7 @@
 #include "Rnd_Control.hh"
 #include "ds++/Assert.hh"
 #include <cstdlib>
+#include <vector>
 
 // header file for SPRNG package
 #include <rng/config.h>
@@ -19,8 +20,6 @@
 
 namespace rtt_rng 
 {
-
-using std::free;
 
 //---------------------------------------------------------------------------//
 // CONSTRUCTOR
@@ -40,21 +39,20 @@ using std::free;
 Rnd_Control::Rnd_Control(int s, int n, int sn, int p)
     : seed(s), number(n), streamnum(sn), parameter(p)
 {
-    // calculate the size of a stored random number state
-    int  *id;
-    char *buffer;
+    Require (streamnum <= number);
 
-    // operations
-    id   = init_sprng(0, number, seed, parameter);
-    size = pack_sprng(id, &buffer);
-    
-    // deallocate memory
-    free(buffer);
-    free_sprng(id);
+    // make a spring object and pack it to determine the size
+    Sprng temp = make_random_number_generator();
+
+    // pack it and set size
+    std::vector<char> pack = temp.pack();
+    size                   = pack.size();
+    Check (size >= 0);
+    Check (streamnum == sn);
 }
 
 //---------------------------------------------------------------------------//
-// member functions
+// MEMBER FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
  * \brief Create a Sprng random number object at the current stream index.
@@ -69,11 +67,10 @@ Rnd_Control::Rnd_Control(int s, int n, int sn, int p)
  */
 Sprng Rnd_Control::get_rn()
 {
-    // declare a stream
-    int *id = init_sprng(streamnum, number, seed, parameter);
+    Require (streamnum <= number);
 
     // create a new Rnd object
-    Sprng random(id, streamnum);
+    Sprng random = make_random_number_generator();
 
     // advance the counter
     streamnum++;
@@ -97,14 +94,13 @@ Sprng Rnd_Control::get_rn()
  */
 Sprng Rnd_Control::get_rn(int snum)
 {
+    Require (snum <= number);
+
     // reset streamnum
     streamnum = snum;
 
-    // declare a stream
-    int *id = init_sprng(streamnum, number, seed, parameter);
-
     // create a new Rnd object
-    Sprng random(id, streamnum);
+    Sprng random = make_random_number_generator();
 
     // advance the counter
     streamnum++;
@@ -146,7 +142,7 @@ Sprng Rnd_Control::spawn(const Sprng &random) const
     Sprng ran(newstream[0], random.get_num());
 
     // free some memory
-    free(newstream);
+    std::free(newstream);
 
     // return the new random object
     return ran;
