@@ -19,7 +19,7 @@
 // If it does not have expression templates (the default assumption)
 // then the ECT::Glom static method will glom Draco's XM expression
 //  machinery onto it.
-// If it does have expression templates already, and has defined it's
+// If it does have expression templates already, and has defined its
 // own specialization of ExpEngineTraits (as UserVec has done in
 // UserVecTraits.hh) then ECT::Glom will do just about nothing.
 
