@@ -31,7 +31,8 @@ AC_DRACO_ENV
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in \
-          test/OS_Input:test/OS_Input.in)
+          test/OS_Input:test/OS_Input.in \
+          test/TET_RTT_1:test/TET_RTT_1.in)
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/mc configure.in
