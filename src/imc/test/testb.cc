@@ -17,6 +17,7 @@
 #include "imctest/Random.hh"
 #include "imctest/Math.hh"
 #include "ds++/SP.hh"
+#include "c4/global.hh"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -34,6 +35,11 @@ using IMC::Random;
 using IMC::Particle_Stack;
 using IMC::Global::operator<<;
 using namespace std;
+using namespace C4;
+
+// declare node
+int mynode;
+int mynodes;
 
 template<class MT>
 void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
@@ -41,7 +47,14 @@ void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
 {
   // do some diagnostic checks
 
-    ofstream output("try.dat");
+    string title;
+
+    if (mynode == 0) 
+	title = "0.dat";
+    if (mynode == 1)
+	title = "1.dat";
+
+    ofstream output(title.c_str());
 
     output << "Coordinate System: " << mesh.get_Coord().get_Coord() << endl;
     output << "Mesh Size: " << mesh.num_cells() << endl;
@@ -186,8 +199,14 @@ void Run_Particle(const MT &mesh, const Opacity<MT> &opacity,
     assert (!particle.status());
 }
 
-main()
+int main(int argc, char *argv[])
 {
+
+  // init C4 stuff
+    Init(argc, argv);
+    mynode  = C4::node();
+    mynodes = C4::nodes();
+
   // declare geometry and material stuff
     SP<OS_Mesh> mesh;
     SP< Mat_State<OS_Mesh> > mat_state;
@@ -196,8 +215,11 @@ main()
   // scoping blocks for build-stuff
     {
 	string infile;
-	cout << "Name the input file" << endl;
-	cin >> infile;
+
+	if (mynode == 0)
+	    infile = "in2";
+	if (mynode == 1)
+	    infile = "in3";
 
       // run the interface parser
 	SP<OS_Interface> interface = new OS_Interface(infile);
@@ -217,26 +239,28 @@ main()
     Builder_diagnostic(*mesh, *mat_state, *opacity);
   // Surface_diagnostic(*mesh);
 
-//
-// tally object
-//
+  //
+  // tally object
+  //
 
   //	SP<Tally<OS_Mesh> > tally = new Tally<OS_Mesh>(mesh);
-
-
+    
+    
   // Particle diagnostics
-      // long seed = -345632;
-      // Run_Particle(*mesh, *opacity, *tally, seed);
-      // Bank_Particle(*mesh, *opacity, *tally);
-
-      // for ( int i = 1; i <= mesh->num_cells(); i++)
-      // {
-      //	cout << "Cell " << i << ":  energy_dep = " <<
-      //	    tally->get_energy_dep(i) << endl;
-      // }
-      // cout << " Total energy deposited = " 
-      //      << tally->get_energy_dep_tot() << endl;
-
+  // long seed = -345632;
+  // Run_Particle(*mesh, *opacity, *tally, seed);
+  // Bank_Particle(*mesh, *opacity, *tally);
+    
+  // for ( int i = 1; i <= mesh->num_cells(); i++)
+  // {
+  //	cout << "Cell " << i << ":  energy_dep = " <<
+  //	    tally->get_energy_dep(i) << endl;
+  // }
+  // cout << " Total energy deposited = " 
+  //      << tally->get_energy_dep_tot() << endl;
+    
+  // c4 end
+    Finalize();
 }
 
 
