@@ -130,7 +130,7 @@ namespace rtt_P1Diffusion
  template<class MT, class MS>
  void
  P1Diffusion<MT,MS>::discFluxToDiscMomentum(DiscMomentumField &result,
-					    const DiscFluxField &flux) const;
+					    const DiscFluxField &flux) const
  {
      // This method moves the flux-like field from the DiscFluxField location
      // to the DiscMomentumField location.
@@ -138,14 +138,13 @@ namespace rtt_P1Diffusion
      typedef typename MT::fcdvsf NormalsField;
 
      NormalsField faceNormals(fCtor);
-     MT::get_face_normals(faceNormals);
+     faceNormals.get_Mesh().get_face_normals(faceNormals);
 
      // ConnFacesAroundVertices is a class that defines objects
      // that will iterate through a face-centered field around each vertex,
      // before going onto the next vertex's faces.
 
-     typedef typename MT::ConnFacesAroundVertices<const NormalsField>
-	 ConnNormals;
+     typedef typename MT::ConnFacesAroundVertices<NormalsField> ConnNormals;
      typedef typename MT::ConnFacesAroundVertices<const DiscFluxField> ConnFlux;
 
      const ConnNormals connNormals(faceNormals);
@@ -175,8 +174,10 @@ namespace rtt_P1Diffusion
 	 
 	 // Loop over faces per vertex
 	 
-	 Conn::value_type::const_iterator itNormFace = (*itNormVertex).begin();
-	 Conn::value_type::const_iterator itFluxFace = (*itFluxVertex).begin();
+	 ConnNormals::value_type::const_iterator itNormFace =
+	     (*itNormVertex).begin();
+	 ConnFlux::value_type::const_iterator itFluxFace =
+	     (*itFluxVertex).begin();
 
 	 while (itNormFace != (*itNormVertex).end())
 	 {
@@ -215,7 +216,7 @@ namespace rtt_P1Diffusion
 
      while (ir != result.end())
      {
-	 typedef DiscMomentumField::value_type> vector;	 
+	 typedef DiscMomentumField::value_type vector;	 
 	 typedef rtt_traits::vector_traits<vector> vtraits;
 
 	 *ir = vtraits::dot(*iv1, *iv2);
@@ -231,7 +232,7 @@ namespace rtt_P1Diffusion
                                      const DiscFluxField &sigmaF,
                                      const DiscMomentumField &velocity) const
  {
-     Assert(KEnergy.size() == DiscMomentum.size());
+     Assert(KEnergy.size() == velocity.size());
 
      // Move the flux-like field from the DiscFluxField location
      // to the DiscMomentumField location.

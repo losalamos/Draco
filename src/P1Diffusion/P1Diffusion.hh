@@ -89,6 +89,13 @@ namespace rtt_P1Diffusion
 		const bssf &beta, const bssf &fb) const;
 
 #ifdef P13T_MOMENTUM_DEPOSITION
+     void discFluxToDiscMomentum(DiscMomentumField &result,
+				 const DiscFluxField &flux) const;
+
+     void dotProduct(DiscKineticEnergyField &result,
+		     const DiscMomentumField &vec1,
+		     const DiscMomentumField &vec2) const;
+     
      void dotProduct(DiscKineticEnergyField &KEnergy,
                      const DiscFluxField &sigmaF,
                      const DiscMomentumField &velocity) const;

@@ -115,22 +115,14 @@ class const_MeshXYZConnFAVIterator;
 
 template<class FaceField>
 class MeshXYZConnFAVIterator
-    : public std::iterator<std::forward_iterator_tag, int,
-      NSVertex::Vertex<FaceField>, NSVertex::Vertex<FaceField> *,
+    : public std::iterator<std::forward_iterator_tag,
+      NSVertex::Vertex<FaceField>, typename FaceField::difference_type,
+      NSVertex::Vertex<FaceField> *,
       NSVertex::Vertex<FaceField> &>,
       public MeshXYZConnFAVIterator_base<FaceField>
 {
     friend class const_MeshXYZConnFAVIterator<FaceField>;
 
-#if 0
-    typedef std::iterator<std::forward_iterator_tag, int,
-      NSVertex::Vertex<FaceField>, NSVertex::Vertex<FaceField> *,
-	NSVertex::Vertex<FaceField> &> Iterator;
-
-    typedef typename Iterator::reference reference;
-    typedef typename Iterator::pointer pointer;
-#endif
-    
   public:
 
     MeshXYZConnFAVIterator(FaceField &field_, int cellIndex_, int vertexIndex_)
@@ -160,8 +152,9 @@ class MeshXYZConnFAVIterator
     
 template<class FaceField>
 class const_MeshXYZConnFAVIterator
-    : public std::iterator<std::forward_iterator_tag, int,
-      NSVertex::Vertex<FaceField>, const NSVertex::Vertex<FaceField>*,
+    : public std::iterator<std::forward_iterator_tag,
+      NSVertex::Vertex<FaceField>, typename FaceField::difference_type,
+      const NSVertex::Vertex<FaceField>*,
       const NSVertex::Vertex<FaceField>&>,
       public MeshXYZConnFAVIterator_base<FaceField>
 {
