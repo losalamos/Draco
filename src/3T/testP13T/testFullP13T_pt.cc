@@ -4,7 +4,7 @@
 
 #include "3T/Diffusion_P1.cc"
 #include "3T/P13T.cc"
-#include "radphys/RadiationPhysics.cc"
+#include "radphys/RadiationPhysics.t.cc"
 #include "matprops/InterpedMaterialProps.cc"
 
 using namespace XTM;
