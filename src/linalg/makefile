@@ -8,7 +8,7 @@
 
 pkg := linalg
 
-need_gtslib = yes
+need_util = yes
 
 ###############################################################################
 # Go get the standard includeable makefile for DRACO components.
@@ -32,7 +32,7 @@ tmplsrcs =
 ###############################################################################
 # Get the library built, minding our various other targets too.
 
-pretarg = 
+pretarg = deps
 auxtarg = 
 resolve_libs = \
 	../util/libutil_$(env).$(lib_suffix) \
@@ -42,6 +42,23 @@ resolve_libs = \
 	../ds++/libds++_$(env).$(lib_suffix)
 
 include ../config/make.lib
+
+deps:
+ifneq ($(dodeps),no)
+	(cd ../ds++; $(MAKE))
+	(cd ../nml;  $(MAKE) dodeps=no)
+	(cd ../c4;   $(MAKE) dodeps=no)
+	(cd ../spdf; $(MAKE) dodeps=no)
+	(cd ../util; $(MAKE) dodeps=no)
+endif
+
+###############################################################################
+# The test programs.
+
+tstsrcs	:= $(wildcard t*.cc)
+tstpretarg := $(pretarg)
+
+include ../config/make.tests
 
 ###############################################################################
 # Perstalyser targets.
@@ -58,7 +75,7 @@ include ../config/make.doc
 ###############################################################################
 # Go pick up the standard signature for makefiles.
 
-cc_files := $(libsrcs)
+cc_files := $(libsrcs) $(tstsrcs)
 
 include ../config/make.end
 
