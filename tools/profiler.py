@@ -1,4 +1,4 @@
-#! /usr/local/bin/python
+#! /usr/bin/python
 ###############################################################################
 ## profiler.py
 ## Mike Buksas
@@ -105,7 +105,7 @@ def parse_arguments(arguments):
 
     # Parse the argument list:
     try:
-        options, executable = getopt.getopt(arguments, 'n:o:vh',
+        options, executable = getopt.getopt(arguments[1:], 'n:o:vh',
                                             ['verbose', 'help'])
     except getopt.GetoptError:
         sys.exit('ERROR: Bad option or missing argument.')
@@ -126,6 +126,9 @@ def parse_arguments(arguments):
         if option[0] == '-v' or option[0] == '--verbose':
             verbose = 1
                 
+    if (not executable):
+        sys.exit('ERROR: No executable given')
+
     return trials, output_name, executable
             
 
@@ -213,7 +216,7 @@ def profiler(arguments):
 ## Main Program:
 ##---------------------------------------------------------------------------##
 
-if __name__ == '__main__': profiler(sys.argv[1:])
+if __name__ == '__main__': profiler(sys.argv)
 
 
 
