@@ -191,6 +191,24 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #
 
        #
+       # setup scalapack
+       #
+       
+       AC_MSG_CHECKING("for extra scalapack library requirements.")
+       if test -n "${vendor_scalapack}"; then
+           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	   extra_scalapack_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           LIBS="${LIBS} ${extra_scalapack_libs}"
+           AC_MSG_RESULT("${extra_scalapack_libs}")
+       else
+           AC_MSG_RESULT("none.")
+       fi
+
+       #
+       # end of eospac
+       #
+
+       #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
        #
        AC_MSG_CHECKING("libg2c requirements")

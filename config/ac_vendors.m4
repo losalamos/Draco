@@ -363,7 +363,7 @@ AC_DEFUN([AC_TRILINOS_SETUP], [dnl
 
    dnl define --with-trilinos
    AC_ARG_WITH(trilinos,
-      [  --with-trilinos=[lib]    determine the trilinos implementation (aztecoo is default])
+      [  --with-trilinos=[lib]    determine the trilinos implementation (aztecoo is default)])
  
    dnl define --with-trilinos-inc
    AC_WITH_DIR(trilinos-inc, TRILINOS_INC, \${TRILINOS_INC_DIR},
@@ -407,6 +407,171 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
        # add TRILINOS directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${TRILINOS_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_SCALAPACK_SETUP
+dnl
+dnl SCALAPACK SETUP 
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_SCALAPACK_SETUP], [dnl
+
+   dnl define --with-scalapack
+   AC_ARG_WITH(scalapack,
+      [  --with-scalapack=[scalapack] ])
+ 
+   dnl define --with-scalapack-lib
+   AC_WITH_DIR(scalapack-lib, SCALAPACK_LIB, \${SCALAPACK_LIB_DIR},
+	       [tell where SCALAPACK libraries are])
+
+   # set default value of scalapack includes and libs
+   if test "${with_scalapack:=scalapack}" = yes ; then
+       with_scalapack='scalapack'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_scalapack=$1
+
+])
+
+##---------------------------------------------------------------------------##
+
+AC_DEFUN([AC_SCALAPACK_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_scalapack}" ; then
+
+       # no includes for scalapack
+
+       # library path
+       if test -n "${SCALAPACK_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_scalapack, -L${SCALAPACK_LIB} -lscalapack)
+       elif test -z "${SCALAPACK_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_scalapack, -lscalapack)
+       fi
+
+       # add SCALAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SCALAPACK_LIB}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_BLACS_SETUP
+dnl
+dnl BLACS SETUP 
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_BLACS_SETUP], [dnl
+
+   dnl define --with-blacs
+   AC_ARG_WITH(blacs,
+      [  --with-blacs=[blacs] ])
+ 
+   dnl define --with-blacs-lib
+   AC_WITH_DIR(blacs-lib, BLACS_LIB, \${BLACS_LIB_DIR},
+	       [tell where BLACS libraries are])
+
+   # set default value of blacs includes and libs
+   if test "${with_blacs:=blacs}" = yes ; then
+       with_blacs='blacs'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_blacs=$1
+
+])
+
+##---------------------------------------------------------------------------##
+
+AC_DEFUN([AC_BLACS_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_blacs}" ; then
+
+       # no includes for blacs
+
+       # library path
+       if test -n "${BLACS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_blacs, -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs)
+       elif test -z "${BLACS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_blacs, -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs)
+       fi
+
+       # add BLACS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
+
+   fi
+
+])
+dnl-------------------------------------------------------------------------dnl
+dnl AC_HYPRE_SETUP
+dnl
+dnl HYPRE SETUP 
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_HYPRE_SETUP], [dnl
+
+   dnl define --with-hypre
+   AC_ARG_WITH(hypre,
+      [  --with-hypre=[hypre] ])
+ 
+   dnl define --with-hypre-inc
+   AC_WITH_DIR(hypre-inc, HYPRE_INC, \${HYPRE_INC_DIR},
+	       [tell where HYPRE includes are])
+
+   dnl define --with-hypre-lib
+   AC_WITH_DIR(hypre-lib, HYPRE_LIB, \${HYPRE_LIB_DIR},
+	       [tell where HYPRE libraries are])
+
+   # set default value of hypre includes and libs
+   if test "${with_hypre:=hypre}" = yes ; then
+       with_hypre='hypre'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_hypre=$1
+
+])
+
+##---------------------------------------------------------------------------##
+
+AC_DEFUN([AC_HYPRE_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_hypre}" ; then
+
+       # include path
+       if test -n "${HYPRE_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HYPRE_INC}"
+       fi
+
+       # library path
+       if test -n "${HYPRE_LIB}" ; then
+
+	   AC_VENDORLIB_SETUP(vendor_hypre, -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities)
+
+       elif test -z "${HYPRE_LIB}" ; then
+
+	   AC_VENDORLIB_SETUP(vendor_hypre, -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities)
+
+       fi
+
+       # add HYPRE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HYPRE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HYPRE_INC}"
 
    fi
 
@@ -1061,7 +1226,9 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
 
    AC_AZTEC_FINALIZE
    AC_PCG_FINALIZE
-
+   AC_HYPRE_FINALIZE
+   AC_SCALAPACK_FINALIZE
+   AC_BLACS_FINALIZE
    AC_LAPACK_FINALIZE
    AC_EOSPAC5_FINALIZE
    AC_GANDOLF_FINALIZE
