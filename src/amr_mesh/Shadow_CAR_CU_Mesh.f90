@@ -28,13 +28,10 @@
 ! Constructors and destructors
 !===========================================================================
 
-          public :: destruct_Mesh_Class, construct_int_CCSF_Class,      &
-                    destruct_int_CCSF_Class, construct_real_CCSF_Class, &
-                    destruct_real_CCSF_Class, construct_int_FCSF_Class, &
-                    destruct_int_FCSF_Class, construct_real_FCSF_Class, &
-                    destruct_real_FCSF_Class, construct_int_FCDSF_Class,&
-                    destruct_int_FCDSF_Class,construct_real_FCDSF_Class,&
-                    destruct_real_FCDSF_Class
+          public :: destruct_Mesh_Class, construct_CCSF_Class,          &
+                    destruct_CCSF_Class, construct_FCSF_Class,          &
+                    destruct_FCSF_Class, construct_FCDSF_Class,         &
+                    destruct_FCDSF_Class
 
 !===========================================================================
 ! General mesh scalar accessor functions
@@ -73,30 +70,9 @@
 !===========================================================================
 ! Mesh field accessor functions
 !===========================================================================
-! CCSF class objects
 
-          public :: get_integer_CCSF, get_integer_CCSF_cell,            &
-                    set_integer_CCSF, set_integer_CCSF_cell,            &
-                    get_real_CCSF, get_real_CCSF_cell, set_real_CCSF,   &
-                    set_real_CCSF_cell
-
-! FCSF class objects
-
-          public :: get_integer_FCSF, get_integer_FCSF_cell,            &
-                    get_integer_FCSF_cell_face, set_integer_FCSF,       &
-                    set_integer_FCSF_cell, set_integer_FCSF_cell_face,  &
-                    get_real_FCSF, get_real_FCSF_cell,                  &
-                    get_real_FCSF_cell_face, set_real_FCSF,             &
-                    set_real_FCSF_cell, set_real_FCSF_cell_face
-
-! FCDSF class objects
-
-          public :: get_integer_FCDSF, get_integer_FCDSF_cell,          &
-                    get_integer_FCDSF_cell_face, set_integer_FCDSF,     &
-                    set_integer_FCDSF_cell, set_integer_FCDSF_cell_face,&
-                    get_real_FCDSF, get_real_FCDSF_cell,                &
-                    get_real_FCDSF_cell_face, set_real_FCDSF,           &
-                    set_real_FCDSF_cell, set_real_FCDSF_cell_face
+          public :: get_CCSF, set_CCSF, get_FCSF, set_FCSF, get_FCDSF, &
+                    set_FCDSF
 
 !===========================================================================
 ! Class type definitions
@@ -145,55 +121,37 @@
               module procedure CAR_CU_Mesh_destruct
           end interface
 
-          interface construct_int_CCSF_Class
+          interface construct_CCSF_Class
               module procedure int_CCSF_construct
-          end interface
-
-          interface destruct_int_CCSF_Class
-              module procedure int_CCSF_destruct
-          end interface
-
-          interface construct_real_CCSF_Class
               module procedure real_CCSF_construct
-          end interface
+         end interface
 
-          interface destruct_real_CCSF_Class
+          interface destruct_CCSF_Class
+              module procedure int_CCSF_destruct
               module procedure real_CCSF_destruct
           end interface
 
-          interface construct_int_FCSF_Class
+          interface construct_FCSF_Class
               module procedure int_FCSF_construct
-          end interface
-
-          interface destruct_int_FCSF_Class
-              module procedure int_FCSF_destruct
-          end interface
-
-          interface construct_real_FCSF_Class
               module procedure real_FCSF_construct
           end interface
 
-          interface destruct_real_FCSF_Class
+          interface destruct_FCSF_Class
+              module procedure int_FCSF_destruct
               module procedure real_FCSF_destruct
           end interface
 
-          interface construct_int_FCDSF_Class
+          interface construct_FCDSF_Class
               module procedure int_FCDSF_construct
-          end interface
-
-          interface destruct_int_FCDSF_Class
-              module procedure int_FCDSF_destruct
-          end interface
-
-          interface construct_real_FCDSF_Class
               module procedure real_FCDSF_construct
           end interface
 
-          interface destruct_real_FCDSF_Class
+          interface destruct_FCDSF_Class
+              module procedure int_FCDSF_destruct
               module procedure real_FCDSF_destruct
           end interface
 
-         interface get_dimension
+          interface get_dimension
               module procedure get_dimension
           end interface
 
@@ -305,131 +263,53 @@
               module procedure get_cell_generation
           end interface
 
-          interface get_integer_CCSF
-              module procedure get_integer_CCSF
-          end interface
-
-          interface get_integer_CCSF_cell
+          interface get_CCSF
+              module procedure get_integer_CCSF_all
               module procedure get_integer_CCSF_cell
-          end interface
-
-          interface set_integer_CCSF
-              module procedure set_integer_CCSF
-          end interface
-
-          interface set_integer_CCSF_cell
-              module procedure set_integer_CCSF_cell
-          end interface
-
-          interface get_real_CCSF
-              module procedure get_real_CCSF
-          end interface
-
-          interface get_real_CCSF_cell
+              module procedure get_real_CCSF_all
               module procedure get_real_CCSF_cell
           end interface
 
-          interface set_real_CCSF
-              module procedure set_real_CCSF
-          end interface
-
-          interface set_real_CCSF_cell
+          interface set_CCSF
+              module procedure set_integer_CCSF_all
+              module procedure set_integer_CCSF_cell
+              module procedure set_real_CCSF_all
               module procedure set_real_CCSF_cell
           end interface
 
-          interface get_integer_FCSF
-              module procedure get_integer_FCSF
-          end interface
-
-          interface get_integer_FCSF_cell
+          interface get_FCSF
+              module procedure get_integer_FCSF_all
               module procedure get_integer_FCSF_cell
-          end interface
-
-          interface get_integer_FCSF_cell_face
               module procedure get_integer_FCSF_cell_face
-          end interface
-
-          interface set_integer_FCSF
-              module procedure set_integer_FCSF
-          end interface
-
-          interface set_integer_FCSF_cell
-              module procedure set_integer_FCSF_cell
-          end interface
-
-          interface set_integer_FCSF_cell_face
-              module procedure set_integer_FCSF_cell_face
-          end interface
-
-          interface get_real_FCSF
-              module procedure get_real_FCSF
-          end interface
-
-          interface get_real_FCSF_cell
+              module procedure get_real_FCSF_all
               module procedure get_real_FCSF_cell
-          end interface
-
-          interface get_real_FCSF_cell_face
               module procedure get_real_FCSF_cell_face
           end interface
 
-          interface set_real_FCSF
-              module procedure set_real_FCSF
-          end interface
-
-          interface set_real_FCSF_cell
+          interface set_FCSF
+              module procedure set_integer_FCSF_all
+              module procedure set_integer_FCSF_cell
+              module procedure set_integer_FCSF_cell_face
+              module procedure set_real_FCSF_all
               module procedure set_real_FCSF_cell
-          end interface
-
-          interface set_real_FCSF_cell_face
               module procedure set_real_FCSF_cell_face
           end interface
 
-          interface get_integer_FCDSF
-              module procedure get_integer_FCDSF
-          end interface
-
-          interface get_integer_FCDSF_cell
+          interface get_FCDSF
+              module procedure get_integer_FCDSF_all
               module procedure get_integer_FCDSF_cell
-          end interface
-
-          interface get_integer_FCDSF_cell_face
               module procedure get_integer_FCDSF_cell_face
-          end interface
-
-          interface set_integer_FCDSF
-              module procedure set_integer_FCDSF
-          end interface
-
-          interface set_integer_FCDSF_cell
-              module procedure set_integer_FCDSF_cell
-          end interface
-
-          interface set_integer_FCDSF_cell_face
-              module procedure set_integer_FCDSF_cell_face
-          end interface
-
-          interface get_real_FCDSF
-              module procedure get_real_FCDSF
-          end interface
-
-          interface get_real_FCDSF_cell
+              module procedure get_real_FCDSF_all
               module procedure get_real_FCDSF_cell
-          end interface
-
-          interface get_real_FCDSF_cell_face
               module procedure get_real_FCDSF_cell_face
           end interface
 
-          interface set_real_FCDSF
-              module procedure set_real_FCDSF
-          end interface
-
-          interface set_real_FCDSF_cell
+          interface set_FCDSF
+              module procedure set_integer_FCDSF_all
+              module procedure set_integer_FCDSF_cell
+              module procedure set_integer_FCDSF_cell_face
+              module procedure set_real_FCDSF_all
               module procedure set_real_FCDSF_cell
-          end interface
-
-          interface set_real_FCDSF_cell_face
               module procedure set_real_FCDSF_cell_face
           end interface
 
@@ -1040,7 +920,7 @@
 ! integer CCSF class objects
 !===========================================================================
 ! Return an entire C++ CAR_CU_Mesh integer CCSF class object (self).
-              function get_integer_CCSF(self)    result(data)
+              function get_integer_CCSF_all(self)    result(data)
                   type(integer_CCSF), intent(in)                :: self
                   integer, dimension(get_num_cells(self%mesh))  :: data
                   integer                                       :: data_size
@@ -1049,7 +929,7 @@
                   call get_mesh_ccsf_i(self%mesh%this, self%this, data, &
                                        data_size)
 
-              end function get_integer_CCSF
+              end function get_integer_CCSF_all
 
 ! Return a cell value from a C++ CAR_CU_Mesh integer CCSF class object (self).
               function get_integer_CCSF_cell(self, cell)      result(data)
@@ -1064,7 +944,7 @@
 
 ! Set an entire C++ CAR_CU_Mesh integer CCSF class object (self) (can also
 ! be done at initialization using the constructor).
-              subroutine set_integer_CCSF(self, data)
+              subroutine set_integer_CCSF_all(self, data)
                   type(integer_CCSF), intent(in)                :: self
                   integer, intent(in),                                  &
                            dimension(get_num_cells(self%mesh))  :: data
@@ -1074,7 +954,7 @@
                   call set_mesh_ccsf_i(self%mesh%this, self%this, data, &
                                        data_size)
 
-              end subroutine set_integer_CCSF
+              end subroutine set_integer_CCSF_all
 
 ! Set a cell value for a C++ CAR_CU_Mesh integer CCSF class object (self).
               subroutine set_integer_CCSF_cell(self, cell, data)
@@ -1091,7 +971,7 @@
 ! double CCSF class objects
 !===========================================================================
 ! Return an entire C++ CAR_CU_Mesh double CCSF class object (self).
-              function get_real_CCSF(self)       result(data)
+              function get_real_CCSF_all(self)       result(data)
                   type(real_CCSF), intent(in)                   :: self
                   real*8, dimension(get_num_cells(self%mesh))   :: data
                   integer                                       :: data_size
@@ -1100,7 +980,7 @@
                   call get_mesh_ccsf_d(self%mesh%this, self%this, data, &
                                        data_size)
 
-              end function get_real_CCSF
+              end function get_real_CCSF_all
 
 ! Return a cell value from a C++ CAR_CU_Mesh double CCSF class object (self).
               function get_real_CCSF_cell(self, cell)     result(data)
@@ -1115,7 +995,7 @@
 
 ! Set an entire C++ CAR_CU_Mesh double CCSF class object (self) (can also
 ! be done at initialization using the constructor).
-              subroutine set_real_CCSF(self, data)
+              subroutine set_real_CCSF_all(self, data)
                   type(real_CCSF), intent(in)                   :: self
                   real*8, intent(in),                                   &
                           dimension(get_num_cells(self%mesh))   :: data
@@ -1125,7 +1005,7 @@
                   call set_mesh_ccsf_d(self%mesh%this, self%this, data, &
                                        data_size)
 
-              end subroutine set_real_CCSF
+              end subroutine set_real_CCSF_all
 
 ! Set a cell value from a C++ CAR_CU_Mesh double CCSF class object (self).
               subroutine set_real_CCSF_cell(self, cell, data)
@@ -1142,7 +1022,7 @@
 ! integer FCSF class objects
 !===========================================================================
 ! Return an entire C++ CAR_CU_Mesh integer FCSF class object (self).
-              function get_integer_FCSF(self)    result(data)
+              function get_integer_FCSF_all(self)    result(data)
                   type(integer_FCSF), intent(in)                :: self
                   integer, dimension(get_num_face_nodes(self%mesh)) :: data
                   integer                                       :: data_size
@@ -1151,7 +1031,7 @@
                   call get_mesh_fcsf_i(self%mesh%this, self%this, data, &
                                        data_size)
 
-              end function get_integer_FCSF
+              end function get_integer_FCSF_all
 
 ! Return all of the face values for a cell in a C++ CAR_CU_Mesh integer FCSF 
 ! class object (self).
@@ -1182,7 +1062,7 @@
 
 ! Set an entire C++ CAR_CU_Mesh integer FCSF class object (self) (can also
 ! be done at initialization using the constructor).
-              subroutine set_integer_FCSF(self, data)
+              subroutine set_integer_FCSF_all(self, data)
                   type(integer_FCSF), intent(in)                   :: self
                   integer, intent(in),                                  &
                            dimension(get_num_face_nodes(self%mesh)):: data
@@ -1192,7 +1072,7 @@
                   call set_mesh_fcsf_i(self%mesh%this, self%this, data, &
                                        data_size)
 
-              end subroutine set_integer_FCSF
+              end subroutine set_integer_FCSF_all
 
 ! Set all of the face values for a cell in a C++ CAR_CU_Mesh integer FCSF class
 ! object (self).
@@ -1224,7 +1104,7 @@
 ! double FCSF class objects
 !===========================================================================
 ! Return an entire C++ CAR_CU_Mesh double FCSF class object (self).
-              function get_real_FCSF(self)                  result(data)
+              function get_real_FCSF_all(self)                  result(data)
                   type(real_FCSF), intent(in)                      :: self
                   real*8, dimension(get_num_face_nodes(self%mesh)) :: data
                   integer                                          :: data_size
@@ -1233,7 +1113,7 @@
                   call get_mesh_fcsf_d(self%mesh%this, self%this, data, &
                                        data_size)
 
-              end function get_real_FCSF
+              end function get_real_FCSF_all
 
 ! Return all of the face values for a cell in a C++ CAR_CU_Mesh double FCSF 
 ! class object (self).
@@ -1263,7 +1143,7 @@
 
 ! Set an entire C++ CAR_CU_Mesh double FCSF class object (self) (can also
 ! be done at initialization using the constructor).
-              subroutine set_real_FCSF(self, data)
+              subroutine set_real_FCSF_all(self, data)
                   type(real_FCSF), intent(in)                   :: self
                   real*8, intent(in),                                   &
                           dimension(get_num_face_nodes(self%mesh)) :: data
@@ -1273,7 +1153,7 @@
                   call set_mesh_fcsf_d(self%mesh%this, self%this, data, &
                                        data_size)
 
-              end subroutine set_real_FCSF
+              end subroutine set_real_FCSF_all
 
 ! Set all of the face values for a cell in a C++ CAR_CU_Mesh double FCSF class
 ! object (self).
@@ -1305,7 +1185,7 @@
 ! integer FCDSF class objects
 !===========================================================================
 ! Return an entire C++ CAR_CU_Mesh integer FCDSF class object (self).
-              function get_integer_FCDSF(self)                 result(data)
+              function get_integer_FCDSF_all(self)                 result(data)
                   type(integer_FCDSF), intent(in)                  :: self
                   integer, dimension(get_num_cells(self%mesh),          &
                                      2 * get_dimension(self%mesh)) :: data
@@ -1331,7 +1211,7 @@
                       cell = cell + 1
                   end do
 
-              end function get_integer_FCDSF
+              end function get_integer_FCDSF_all
 
 ! Return all of the face values for a cell in a C++ CAR_CU_Mesh integer FCDSF 
 ! class object (self).
@@ -1362,7 +1242,7 @@
 
 ! Set an entire C++ CAR_CU_Mesh integer FCDSF class object (self) (can also
 ! be done at initialization using the constructor).
-              subroutine set_integer_FCDSF(self, data)
+              subroutine set_integer_FCDSF_all(self, data)
                   type(integer_FCDSF), intent(in)                  :: self
                   integer, intent(in),                                  &
                            dimension(get_num_cells(self%mesh),          &
@@ -1388,7 +1268,7 @@
                   call set_mesh_fcdsf_i(self%mesh%this, self%this,      &
                                         ret_data, data_size)
 
-              end subroutine set_integer_FCDSF
+              end subroutine set_integer_FCDSF_all
 
 ! Set all of the face values for a cell in a C++ CAR_CU_Mesh integer FCDSF 
 ! class object (self).
@@ -1421,7 +1301,7 @@
 ! double FCDSF class objects
 !===========================================================================
 ! Return an entire C++ CAR_CU_Mesh double FCDSF class object (self).
-              function get_real_FCDSF(self)                   result(data)
+              function get_real_FCDSF_all(self)                   result(data)
                   type(real_FCDSF), intent(in)                    :: self
                   real*8, dimension(get_num_cells(self%mesh),           &
                                     2 * get_dimension(self%mesh)) :: data
@@ -1447,7 +1327,7 @@
                       cell = cell + 1
                   end do
 
-              end function get_real_FCDSF
+              end function get_real_FCDSF_all
 
 ! Return all of the face values for a cell in a C++ CAR_CU_Mesh double FCDSF 
 ! class object (self).
@@ -1477,7 +1357,7 @@
 
 ! Set an entire C++ CAR_CU_Mesh double FCDSF class object (self) (can also
 ! be done at initialization using the constructor).
-              subroutine set_real_FCDSF(self, data)
+              subroutine set_real_FCDSF_all(self, data)
                   type(real_FCDSF), intent(in)                    :: self
                   real*8, intent(in),                                   &
                           dimension(get_num_cells(self%mesh),           &
@@ -1487,10 +1367,6 @@
                   integer                                         :: data_size
                   integer                                         :: cell,face
 
-                  data_size = get_num_cells(self%mesh) *                &
-                              2 * get_dimension(self%mesh)
-                  call set_mesh_fcdsf_d(self%mesh%this, self%this,      &
-                                        ret_data, data_size)
                   cell = 1
                   do while(cell .le. get_num_cells(self%mesh))
                       face = 1
@@ -1502,7 +1378,12 @@
                       cell = cell + 1
                   end do
 
-              end subroutine set_real_FCDSF
+                  data_size = get_num_cells(self%mesh) *                &
+                              2 * get_dimension(self%mesh)
+                  call set_mesh_fcdsf_d(self%mesh%this, self%this,      &
+                                        ret_data, data_size)
+
+              end subroutine set_real_FCDSF_all
 
 ! Set all of the face values for a cell in a C++ CAR_CU_Mesh double FCDSF class
 ! object (self).

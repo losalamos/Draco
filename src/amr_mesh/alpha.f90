@@ -162,12 +162,12 @@
           allocate(dis_face_nodes_area(ncells, 2 * ndims))
 
           ! Build some uninitialized mesh fields
-          call construct_int_CCSF_Class(mesh_class,     int_CCSF_1)
-          call construct_real_CCSF_Class(mesh_class,   real_CCSF_1)
-          call construct_int_FCSF_Class(mesh_class,     int_FCSF_1)
-          call construct_real_FCSF_Class(mesh_class,   real_FCSF_1)
-          call construct_int_FCDSF_Class(mesh_class,   int_FCDSF_1)
-          call construct_real_FCDSF_Class(mesh_class, real_FCDSF_1)
+          call construct_CCSF_Class(mesh_class,  int_CCSF_1)
+          call construct_CCSF_Class(mesh_class, real_CCSF_1)
+          call construct_FCSF_Class(mesh_class,  int_FCSF_1)
+          call construct_FCSF_Class(mesh_class, real_FCSF_1)
+          call construct_FCDSF_Class(mesh_class,  int_FCDSF_1)
+          call construct_FCDSF_Class(mesh_class, real_FCDSF_1)
 
           ! Test functions that return large arrays
           nodes_vertices = get_vertices(mesh_class)
@@ -199,42 +199,29 @@
                   cell_faces_specific_node(face) =                      &
                       get_cell_face_centered_node(mesh_class, cell, face)
 
-                  call set_integer_FCSF_cell_face(int_FCSF_1, cell,     &
-                                                  face, generation(cell))
-                  generation(cell) =                                    &
-                      get_integer_FCSF_cell_face(int_FCSF_1, cell, face)
-                  call set_real_FCSF_cell_face(real_FCSF_1, cell, face, &
-                                               volume(cell))
-                  volume(cell) =                                        &
-                      get_real_FCSF_cell_face(real_FCSF_1, cell, face)
+                  call set_FCSF(int_FCSF_1, cell, face, generation(cell))
+                  generation(cell) = get_FCSF(int_FCSF_1, cell, face)
+                  call set_FCSF(real_FCSF_1,cell,face,volume(cell))
+                  volume(cell) = get_FCSF(real_FCSF_1, cell, face)
 
-                  call set_integer_FCDSF_cell_face(int_FCDSF_1, cell,   &
-                                                  face, generation(cell))
-                  generation(cell) =                                    &
-                      get_integer_FCDSF_cell_face(int_FCDSF_1,cell,face)
-                  call set_real_FCDSF_cell_face(real_FCDSF_1, cell,     &
-                                                face, volume(cell))
-                  volume(cell) =                                        &
-                      get_real_FCDSF_cell_face(real_FCDSF_1, cell, face)
+                  call set_FCDSF(int_FCDSF_1, cell, face, generation(cell))
+                  generation(cell) = get_FCDSF(int_FCDSF_1, cell, face)
+                  call set_FCDSF(real_FCDSF_1, cell, face, volume(cell))
+                  volume(cell) = get_FCDSF(real_FCDSF_1, cell, face)
 
                   face = face + 1
               end do
 
               ! Test functions that treat all of a single cell's faces
-              call set_integer_FCSF_cell(int_FCSF_1,cell,               &
-                                         cell_faces_centered_node)
-              cell_faces_centered_node =                                &
-                  get_integer_FCSF_cell(int_FCSF_1, cell)
-              call set_real_FCSF_cell(real_FCSF_1, cell, cell_faces_area)
-              cell_faces_area = get_real_FCSF_cell(real_FCSF_1, cell)
+              call set_FCSF(int_FCSF_1, cell, cell_faces_centered_node)
+              cell_faces_centered_node = get_FCSF(int_FCSF_1, cell)
+              call set_FCSF(real_FCSF_1, cell, cell_faces_area)
+              cell_faces_area = get_FCSF(real_FCSF_1, cell)
 
-              call set_integer_FCDSF_cell(int_FCDSF_1,cell,             &
-                                          cell_faces_centered_node)
-              cell_faces_centered_node =                                &
-                  get_integer_FCDSF_cell(int_FCDSF_1, cell)
-              call set_real_FCDSF_cell(real_FCDSF_1,cell,cell_faces_area)
-              cell_faces_area = get_real_FCDSF_cell(real_FCDSF_1, cell)
-
+              call set_FCDSF(int_FCDSF_1,cell,cell_faces_centered_node)
+              cell_faces_centered_node = get_FCDSF(int_FCDSF_1, cell)
+              call set_FCDSF(real_FCDSF_1,cell,cell_faces_area)
+              cell_faces_area = get_FCDSF(real_FCDSF_1, cell)
 
               ! Test direction-dependent cell values
               dir = 1
@@ -277,10 +264,10 @@
               end do
 
               ! Test mesh field cell-dependent assignment and query operators
-              call set_integer_CCSF_cell(int_CCSF_1, cell, generation(cell))
-              generation(cell) = get_integer_CCSF_cell(int_CCSF_1, cell)
-              call set_real_CCSF_cell(real_CCSF_1, cell, volume(cell))
-              volume(cell) = get_real_CCSF_cell(real_CCSF_1, cell)
+              call set_CCSF(int_CCSF_1, cell, generation(cell))
+              generation(cell) = get_CCSF(int_CCSF_1, cell)
+              call set_CCSF(real_CCSF_1, cell, volume(cell))
+              volume(cell) = get_CCSF(real_CCSF_1, cell)
 
               ! It takes too long to do this for all of the cells just for 
               ! testing
@@ -291,8 +278,8 @@
           end do
 
           ! Build some initialized mesh fields
-          call construct_int_CCSF_Class(mesh_class,   int_CCSF_2, generation)
-          call construct_real_CCSF_Class(mesh_class, real_CCSF_2, volume)
+          call construct_CCSF_Class(mesh_class,   int_CCSF_2, generation)
+          call construct_CCSF_Class(mesh_class,  real_CCSF_2, volume)
 
           node = 1
           cell = 1
@@ -301,10 +288,10 @@
               face_nodes_area(node) = cell_faces_area(cell)
               node = node + 1
           end do
-          call construct_int_FCSF_Class(mesh_class,    int_FCSF_2,     &
-                                        face_generation)
-          call construct_real_FCSF_Class(mesh_class,   real_FCSF_2,    &
-                                         face_nodes_area)
+
+          call construct_FCSF_Class(mesh_class,  int_FCSF_2, face_generation)
+          call construct_FCSF_Class(mesh_class, real_FCSF_2, face_nodes_area)
+
           node = 1
           cell = 1
           do while (cell .le. ncells)
@@ -315,27 +302,27 @@
               end do
               cell = cell + 1
           end do
-          call construct_int_FCDSF_Class(mesh_class,   int_FCDSF_2,    &
+
+          call construct_FCDSF_Class(mesh_class,  int_FCDSF_2,          &
                                          dis_face_generation)
-          call construct_real_FCDSF_Class(mesh_class, real_FCDSF_2,    &
+          call construct_FCDSF_Class(mesh_class, real_FCDSF_2,          &
                                           dis_face_nodes_area)
 
-
           ! Test mesh field assignment and query operators
-          call set_integer_CCSF(int_CCSF_1, generation)
-          generation = get_integer_CCSF(int_CCSF_1)
-          call set_real_CCSF(real_CCSF_1, volume)
-          volume = get_real_CCSF(real_CCSF_1)
+          call set_CCSF(int_CCSF_1, generation)
+          generation = get_CCSF(int_CCSF_1)
+          call set_CCSF(real_CCSF_1, volume)
+          volume = get_CCSF(real_CCSF_1)
 
-          call set_integer_FCSF(int_FCSF_1, face_generation)
-          face_generation = get_integer_FCSF(int_FCSF_1)
-          call set_real_FCSF(real_FCSF_1, face_nodes_area)
-          face_nodes_area  = get_real_FCSF(real_FCSF_1)
+          call set_FCSF(int_FCSF_1, face_generation)
+          face_generation = get_FCSF(int_FCSF_1)
+          call set_FCSF(real_FCSF_1, face_nodes_area)
+          face_nodes_area  = get_FCSF(real_FCSF_1)
 
-          call set_integer_FCDSF(int_FCDSF_1, dis_face_generation)
-          dis_face_generation = get_integer_FCDSF(int_FCDSF_1)
-          call set_real_FCDSF(real_FCDSF_1, dis_face_nodes_area)
-          dis_face_nodes_area = get_real_FCDSF(real_FCDSF_1)
+          call set_FCDSF(int_FCDSF_1, dis_face_generation)
+          dis_face_generation = get_FCDSF(int_FCDSF_1)
+          call set_FCDSF(real_FCDSF_1, dis_face_nodes_area)
+          dis_face_nodes_area = get_FCDSF(real_FCDSF_1)
 
           ! Deallocate memory for test variable arrays
           ! Cell-centered values
@@ -380,20 +367,20 @@
 ! We are done.
 !===========================================================================
 
-          call destruct_int_CCSF_Class( int_CCSF_1)
-          call destruct_int_CCSF_Class( int_CCSF_2)
-          call destruct_real_CCSF_Class(real_CCSF_1)
-          call destruct_real_CCSF_Class(real_CCSF_2)
+          call destruct_CCSF_Class(int_CCSF_1)
+          call destruct_CCSF_Class(int_CCSF_2)
+          call destruct_CCSF_Class(real_CCSF_1)
+          call destruct_CCSF_Class(real_CCSF_2)
 
-          call destruct_int_FCSF_Class( int_FCSF_1)
-          call destruct_int_FCSF_Class( int_FCSF_2)
-          call destruct_real_FCSF_Class(real_FCSF_1)
-          call destruct_real_FCSF_Class(real_FCSF_2)
+          call destruct_FCSF_Class(int_FCSF_1)
+          call destruct_FCSF_Class(int_FCSF_2)
+          call destruct_FCSF_Class(real_FCSF_1)
+          call destruct_FCSF_Class(real_FCSF_2)
 
-          call destruct_int_FCDSF_Class( int_FCDSF_1)
-          call destruct_int_FCDSF_Class( int_FCDSF_2)
-          call destruct_real_FCDSF_Class(real_FCDSF_1)
-          call destruct_real_FCDSF_Class(real_FCDSF_2)
+          call destruct_FCDSF_Class(int_FCDSF_1)
+          call destruct_FCDSF_Class(int_FCDSF_2)
+          call destruct_FCDSF_Class(real_FCDSF_1)
+          call destruct_FCDSF_Class(real_FCDSF_2)
 
           call destruct_Mesh_Class(mesh_class)
 
