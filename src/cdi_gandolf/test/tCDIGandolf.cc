@@ -131,7 +131,7 @@ string tCDIGandolf::runTest()
     double temperature = 0.1; // keV
     double density = 27.0; // g/cm^3
     double tabulatedGrayOpacity = 4271.7041147070677; // cm^2/g
-    
+
     if ( ! testGrayRosselandOpacityAccessorPassed( 
 	spOpacityABC, temperature, density, tabulatedGrayOpacity ) )
 	return "testGrayRosselandOpacityAccessorPassed() failed.";
@@ -408,7 +408,6 @@ string tCDIGandolf::runTest()
 
     skey = "ragray"; // Do not include the scattering cross section in 
                      // the reported values.
-
     if ( ! testGrayRosselandOpacityAccessorPassed( 
 	spOpacityAnalytic, temperature, vdensity,
 	vtabulatedGrayOpacity, skey ) )
@@ -428,7 +427,6 @@ string tCDIGandolf::runTest()
     
     skey = "ragray"; // Do not include the scattering cross section in 
                      // the reported values.
-
     if ( ! testGrayRosselandOpacityAccessorPassed( 
 	spOpacityAnalytic, vtemperature, vdensity,
 	vtabulatedGrayOpacity, skey ) )
@@ -917,11 +915,6 @@ void tCDIGandolf::testTemperatureGridAccessor(
 		 pass() << "Temperature grid matches.";
 	     else
 		 fail() << "Temperature grid did not match.";
-	     
-	     // cout << "Temperature Grid (keV):" << endl << endl;
-	     // for ( int i=0; i<temps.size(); ++i )
-	     //   cout << "   T[" << i << "] = " << temps[i] << endl;
-	     
 	 }
      else
 	 {
@@ -965,10 +958,6 @@ void tCDIGandolf::testDensityGridAccessor(
 		pass() << "Density grid matches.";
 	    else
 		fail() << "Density grid did not match.";
-	    
-// 	     cout << "Density Grid (g/cm^3):" << endl << endl;
-// 	     for ( int i=0; i<density.size(); ++i )
-// 		 cout << "   rho[" << i << "] = " << density[i] << endl;
 	}
     else
 	{
