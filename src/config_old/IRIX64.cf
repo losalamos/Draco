@@ -23,10 +23,13 @@ ifeq ($(host),ironside)
 mach	= o2k
 endif
 
-ifeq ($(mach),o2k)
+#ifeq ($(mach),o2k)
+#PCG_LIB	= -L$(HOME)/lib -lpcg
+#LAPACK_LIB	= -lcomplib.sgimath
+#endif
+
 PCG_LIB		= -L$(HOME)/lib -lpcg
 LAPACK_LIB	= -lcomplib.sgimath
-endif
 
 # Currently KCC is hosed, so CC is the only workable choice.
 cxx	:= CC
