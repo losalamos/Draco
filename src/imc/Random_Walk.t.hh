@@ -125,15 +125,15 @@ bool Random_Walk<MT>::do_a_random_walk(int    cell,
  * \param time_left time left until end of time step; updated by random walk 
  * \param random particle random number generator
  * \param to_census set to true if random walk particle goes to census
- * \return elapsed time during random walk
+ * \return elapsed time during random walk and distance travelled 
  */
 template<class MT>
-double Random_Walk<MT>::random_walk(sf_double   &r,
-				    sf_double   &omega,
-				    double      &time_left,
-				    int          cell,
-				    Rnd_Type     random,
-				    bool        &to_census)
+std::pair<double,double> Random_Walk<MT>::random_walk(sf_double   &r,
+						      sf_double   &omega,
+						      double      &time_left,
+						      int          cell,
+						      Rnd_Type     random,
+						      bool        &to_census)
 {
     Require (rw_set);
     Require (time_left > 0.0);
@@ -141,8 +141,8 @@ double Random_Walk<MT>::random_walk(sf_double   &r,
     Require (cell > 0);
     Require (cell <= mesh->num_cells());
 
-    // elapsed time during random walk
-    double elapsed_time = 0.0;
+    // elapsed time during random walk and distance travelled
+    pair_double time_radius = std::make_pair(0.0, 0.0);
 
     // random walk diffusion coefficient
     double D = diff_opacity->get_random_walk_D(cell);
@@ -156,20 +156,17 @@ double Random_Walk<MT>::random_walk(sf_double   &r,
     // sample to see if particle escapes
     double ran = random.ran();
 
-    // radius of sphere that the particle resides on
-    double radius = 0.0;
-
     // if particle escapes then sample a position on the sphere and update
     // time left
     if (ran <= P_escape)
     {
 	// determine the time spent in transport
-	elapsed_time = table.get_elapsed_time(D, rw_radius, ran);
-	time_left   -= elapsed_time; 
+	time_radius.first = table.get_elapsed_time(D, rw_radius, ran);
+	time_left        -= time_radius.first; 
 	Check (time_left >= 0.0);
 
 	// the particle sits on the surface of the random walk sphere
-	radius = rw_radius;
+	time_radius.second = rw_radius;
 
 	// particle does not goto census
 	to_census = false;
@@ -185,13 +182,13 @@ double Random_Walk<MT>::random_walk(sf_double   &r,
 	ran = random.ran();
 
 	// now determine the radius of the sphere the particle lives on
-	radius = table.get_radius(time_left, D, rw_radius, ran);
-	Check (radius >= 0.0);
-	Check (radius <= rw_radius);
+	time_radius.second = table.get_radius(time_left, D, rw_radius, ran);
+	Check (time_radius.second >= 0.0);
+	Check (time_radius.second <= rw_radius);
 
 	// the particle time_left is zero and the elapsed time is time_left
-	elapsed_time = time_left;
-	time_left    = 0.0;
+	time_radius.first = time_left;
+	time_left         = 0.0;
 
 	// particle goes to census
 	to_census = true;
@@ -199,7 +196,7 @@ double Random_Walk<MT>::random_walk(sf_double   &r,
 
     // now sample a new particle position on the sphere
     std::pair<sf_double, sf_double> r_and_normal = 
-	mesh->sample_pos_on_sphere(cell, r, radius, random);
+	mesh->sample_pos_on_sphere(cell, r, time_radius.second, random);
 
     // assign the particle position
     r = r_and_normal.first;
@@ -217,7 +214,7 @@ double Random_Walk<MT>::random_walk(sf_double   &r,
     rw_set = false;
 
     // return elapsed time
-    return elapsed_time;
+    return time_radius;
 }
 
 } // end namespace rtt_imc

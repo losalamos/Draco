@@ -4,6 +4,7 @@
  * \author Todd J. Urbatsch
  * \date   Mon Apr  6 14:38:03 1998
  * \brief  IMC Tally class header file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,6 +13,7 @@
 #ifndef rtt_imc_Tally_hh
 #define rtt_imc_Tally_hh
 
+#include "Random_Walk_Sub_Tally.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <vector>
@@ -36,6 +38,20 @@ namespace rtt_imc
  * information is tallied using the acumulate_cen_info function.  Finally,
  * the Tally class provides accumulate (prefixed by accum_) functions for a
  * host of edit data about the particle transport history.
+ *
+ * \subsection sub_tally Sub Tally Concept
+ *
+ * As we add new features to the IMC package, we require new tally
+ * quantities.  These are added through a \e sub \e tally concept.  Sub tally
+ * objects (e.g. rtt_imc::Random_Walk_Sub_Tally) can be requested from the
+ * tally object.  These requests return rtt_dsxx::SP objects; thus, they can
+ * be checked for existence of a given sub-tally.  The sub tally objects
+ * themselves provide the appropriate interfaces for the types of data that
+ * they tally.  The existing sub tally objects are:
+ * - rtt_imc::Random_Walk_Sub_Tally
+ * .
+ * Sub tally objects are created using create functions for each sub tally.
+ * They are requested using get function for each sub tally.
  *
  * Nothing about the Tally class is data parallel.  The Tally is designed to
  * be created on each processor that particle transport occurs.  The tallies
@@ -68,6 +84,8 @@ namespace rtt_imc
 //                momentum only in problem spatial dimensions, not based on
 //                the dimension of the direction vector (which is always 3-D) 
 // 8) 21-MAY-03 : added random walk number accumulation to tally
+// 9) 24-JUN-03 : updated inline functions; added more checks; added 
+//                sub tally calss aggregation
 //
 //===========================================================================//
 
@@ -76,11 +94,19 @@ class Tally
 {
   public:
     // Useful typedefs
-    typedef rtt_dsxx::SP<MT>       SP_MT;
-    typedef std::vector<double>    sf_double;
-    typedef std::vector<sf_double> vf_double;
+    typedef rtt_dsxx::SP<MT>                    SP_MT;
+    typedef rtt_dsxx::SP<Random_Walk_Sub_Tally> SP_RW_ST;
+    typedef std::vector<double>                 sf_double;
+    typedef std::vector<sf_double>              vf_double;
+
+  private:
+    // >>> IMPLEMENTATION
+
+    //! Check that tallied data is positive.
+    template<class T> bool pos(const T d) const { return d >= 0.0; }
     
   private:
+    // >>> DATA
 
     // Energy deposition field and totals.
     typename MT::CCSF_double energy_dep;
@@ -109,13 +135,25 @@ class Tally
     double ew_escaped;
     int    n_bndcross;
     int    n_reflections;
-    int    n_random_walks;
+
+    // >>> SUB TALLY OBJECTS
+    SP_RW_ST rw_sub_tally;
 
   public:
     // Tally constructor.
     explicit Tally(rtt_dsxx::SP<MT>);
 
-    //>>> TALLY ACCUMULATION FUNCTIONS
+    // >>> SUB TALLY CREATORS
+
+    //! Create a Random_Walk_Sub_Tally.
+    void create_RW_Sub_Tally() { rw_sub_tally = new Random_Walk_Sub_Tally(); }
+
+    // >>> SUB TALLY ACCESSORS
+    
+    //! Get a Random_Walk_Sub_Tally.
+    SP_RW_ST get_RW_Sub_Tally() const { return rw_sub_tally; }
+
+    // >>> TALLY ACCUMULATION FUNCTIONS
 
     // Deposit energy.
     void deposit_energy(const int cell, const double energy);
@@ -130,31 +168,28 @@ class Tally
     void accumulate_cen_info(const int, const double, const int = 1);
 
     //! Accumulate the number of effective scatters.
-    void accum_n_effscat(const int n = 1) { n_effscat += n; }
+    void accum_n_effscat(const int n = 1) { Check(pos(n)); n_effscat += n; }
     
     //! Accumulate the number of particle (isotropic) scatters.
-    void accum_n_thomscat(const int n = 1) { n_thomscat += n; }
+    void accum_n_thomscat(const int n = 1) {Check(pos(n));  n_thomscat += n; }
 
     //! Accumulate the number of particles that are killed.
-    void accum_n_killed(const int n = 1) { n_killed += n; }
+    void accum_n_killed(const int n = 1) { Check(pos(n)); n_killed += n; }
 
     //! Accumulate the ammount of energy from killed particles.
-    void accum_ew_killed(const double ew) { ew_killed += ew; }
+    void accum_ew_killed(const double ew) { Check(pos(ew)); ew_killed += ew; }
 
     //! Accumulate the number of particles that escape.
-    void accum_n_escaped(const int n = 1) { n_escaped += n; }
+    void accum_n_escaped(const int n = 1) { Check(pos(n)); n_escaped += n; }
 
     //! Accumulate the amount of energy that escapes.
-    void accum_ew_escaped(const double ew) { ew_escaped += ew; }
+    void accum_ew_escaped(const double ew) { Check(pos(ew)); ew_escaped += ew; }
     
     //! Accumulate the number of cell boundary crossings.
-    void accum_n_bndcross(const int n = 1) { n_bndcross += n; }
+    void accum_n_bndcross(const int n = 1) { Check(pos(n)); n_bndcross += n; }
 
-    //! Accumulate the number of reflections made by particles.
-    void accum_n_reflections(const int n = 1) { n_reflections += n; } 
-
-    //! Accumulate the number of random walks made by particles.
-    void accum_n_random_walks(const int n = 1) { n_random_walks += n; }
+    // Accumulate the number of reflections made by particles.
+    inline void accum_n_reflections(const int n = 1); 
 
     //>>> ACCESSORS
 
@@ -206,9 +241,6 @@ class Tally
     //! Get the number of reflections made by particles.
     int get_accum_n_reflections() const { return n_reflections; }
 
-    //! Get the number of random walks made by particles.
-    int get_accum_n_random_walks() const { return n_random_walks; }
-
     //! Get the number of cells represented by this tally (on-processor).
     int num_cells() const { return energy_dep.get_Mesh().num_cells(); }
 
@@ -232,7 +264,7 @@ std::ostream& operator<<(std::ostream &out, const Tally<MT> &object)
 }
 
 //---------------------------------------------------------------------------//
-// inline member functions for Tally
+// INLINE MEMBER FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
  * \brief Get the cell volume.
@@ -245,7 +277,18 @@ double Tally<MT>::volume(int cell) const
     return energy_dep.get_Mesh().volume(cell);
 }
 
-} // end namespace rtt_imc
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Accumulate the number of reflections made by particles.
+ */
+template<class MT>
+void Tally<MT>::accum_n_reflections(const int n)
+{
+    Check (pos(n));
+    n_reflections += n;
+}
+
+} // end of rtt_imc
 
 #endif                          // rtt_imc_Tally_hh
 

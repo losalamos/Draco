@@ -196,7 +196,7 @@ void check_rw_tallies<Gray,GPT>(SP<Tally<MT> > tally, int num_run)
     int    neff_scat   = tally->get_accum_n_effscat();
     int    nbnd_cross  = tally->get_accum_n_bndcross();
     int    nescaped    = tally->get_accum_n_escaped();
-    int    nrws        = tally->get_accum_n_random_walks();
+    int    nrws        = tally->get_RW_Sub_Tally()->get_accum_n_random_walks();
 
     // do sums
     rtt_c4::global_sum(ew_escaped);
@@ -386,6 +386,9 @@ void rep_transporter_random_walk_run_test()
     // build a tally
     SP<Tally<MT> > tally(new Tally<MT>(mesh));
 
+    // create a random walk
+    tally->create_RW_Sub_Tally();
+
     // build a "NULL" communicator
     SP<Communicator<PT> > comm;
 
@@ -409,7 +412,8 @@ void rep_transporter_random_walk_run_test()
 	ostringstream message;
 	message << "Finished replication transport cycle for " 
 		<< typeid(FT).name() << " and " << typeid(PT).name()
-		<< " that did " << tally->get_accum_n_random_walks()
+		<< " that did " 
+		<< tally->get_RW_Sub_Tally()->get_accum_n_random_walks()
 		<< " random walks" << endl;
 	PASSMSG(message.str().c_str());
     }

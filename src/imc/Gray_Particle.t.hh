@@ -10,6 +10,11 @@
 //---------------------------------------------------------------------------//
 
 #include "Gray_Particle.hh"
+#include "Random_Walk_Sub_Tally.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include <cmath>
+#include <limits>
+#include <utility>
 
 namespace rtt_imc
 {
@@ -486,6 +491,7 @@ void Gray_Particle<MT>::rw_transport(
     SP_Diagnostic                     diagnostic)
 {
     Require (Base::alive);
+    Require (tally.get_RW_Sub_Tally());
 
     // initialize diagnostics
     if (diagnostic)
@@ -515,9 +521,6 @@ void Gray_Particle<MT>::rw_transport(
 
     // are we doing random walk on this step
     bool do_a_random_walk;
-
-    // time taken during a random walk
-    double rw_time;
   
     // !!! BEGIN TRANSPORT LOOP !!!
 
@@ -592,6 +595,9 @@ void Gray_Particle<MT>::rw_transport(
 	    // get the size of the random walk sphere
 	    rw_radius = mesh.get_orthogonal_dist_to_bnd(r, cell);
 	    Check (rw_radius >= 0.0);
+
+	    // tally rw sphere radius
+	    tally.get_RW_Sub_Tally()->accum_sphere_radii(rw_radius);
 
 	    // check to see if the random walk conditions are valid
 	    do_a_random_walk = random_walk->do_a_random_walk(
@@ -669,16 +675,20 @@ void Gray_Particle<MT>::rw_transport(
 	    bool to_census;
 
 	    // do a random walk
-	    rw_time = random_walk->random_walk(Base::r, Base::omega, 
-					       Base::time_left, Base::cell, 
-					       *Base::random, to_census);
+	    std::pair<double,double> time_radius = random_walk->random_walk(
+		Base::r, Base::omega, Base::time_left, Base::cell, 
+		*Base::random, to_census);
+
+	    // tally optical length of random walk
+	    tally.get_RW_Sub_Tally()->accum_step_length(
+		time_radius.second * sigma_collide);
 
 	    // set descriptor if particle goes to census
 	    if (to_census)
 		Base::descriptor = Base::CENSUS;
 
 	    // process the random walk absorption
-	    random_walk_event(rw_time, tally, xs);
+	    random_walk_event(time_radius.first, tally, xs);
 	}
 	else
 	{
@@ -843,7 +853,7 @@ void Gray_Particle<MT>::random_walk_event(
     tally.deposit_energy(Base::cell, delta_ew);
 
     // tally random walk event
-    tally.accum_n_random_walks();
+    tally.get_RW_Sub_Tally()->accum_n_random_walks();
 
     // tally energy-weighted path-length
     tally.accumulate_ewpl(Base::cell, delta_ew /

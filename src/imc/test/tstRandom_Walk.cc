@@ -657,6 +657,8 @@ void random_walk_test()
     vector<double> r(3);
     vector<double> o(3);
 
+    pair<double, double> time_left;
+
     // check do_a_random_walk function
     // Ross = 100 + cell_index
     {
@@ -707,7 +709,8 @@ void random_walk_test()
 	d = table.get_radius(tleft, D, radius, rngr.ran());
 	
 	// do the random walk
-	telap = rw.random_walk(r, o, tleft, 1, rng, toc);
+	time_left = rw.random_walk(r, o, tleft, 1, rng, toc);
+	telap     = time_left.first;
 
 	if (!toc)                      ITFAILS;
 	if (!soft_equiv(tleft, 0.0))   ITFAILS;
@@ -782,7 +785,8 @@ void random_walk_test()
 	cout << "Random number is         : " << ran << endl;
 
 	// the particle makes it to the surface of the sphere
-	telap = rw.random_walk(r, o, tleft, 11, rng, toc);
+	time_left = rw.random_walk(r, o, tleft, 11, rng, toc);
+	telap     = time_left.first;
 
 	if (toc)                               ITFAILS;
 	if (!soft_equiv(telap + tleft, 0.001)) ITFAILS;

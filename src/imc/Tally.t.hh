@@ -4,6 +4,7 @@
  * \author Todd J. Urbatsch
  * \date   Mon Apr  6 14:38:03 1998
  * \brief  Tally class template member function definitions.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -45,8 +46,7 @@ Tally<MT>::Tally(SP_MT mesh)
       n_escaped(0),
       ew_escaped(0), 
       n_bndcross(0),
-      n_reflections(0),
-      n_random_walks(0)
+      n_reflections(0)
 {
     Require (mesh);
 }
@@ -64,6 +64,11 @@ Tally<MT>::Tally(SP_MT mesh)
 template<class MT>
 void Tally<MT>::deposit_energy(const int cell, const double energy)
 {
+    Require (cell > 0);
+    Require (cell <= energy_dep.get_Mesh().num_cells());
+
+    Check (pos(energy));
+
     energy_dep(cell) += energy;
     energy_dep_tot   += energy;
 }
@@ -77,9 +82,13 @@ void Tally<MT>::deposit_energy(const int cell, const double energy)
 
  */
 template<class MT>
-void Tally<MT>::accumulate_momentum(const int cell, const double energy_wt, 
+void Tally<MT>::accumulate_momentum(const int        cell, 
+				    const double     energy_wt, 
 				    const sf_double &omega)
 {
+    Require (cell > 0);
+    Require (cell <= energy_dep.get_Mesh().num_cells());
+
     Check (omega.size() >= momentum_dep.size());
 
     // do momentum deposition only in coordinate dimensions supplied by mesh, 
@@ -110,6 +119,10 @@ void Tally<MT>::accumulate_momentum(const int cell, const double energy_wt,
 template<class MT>
 void Tally<MT>::accumulate_ewpl(const int cell, const double ewpl)
 {
+    Require (cell > 0);
+    Require (cell <= energy_dep.get_Mesh().num_cells());
+    
+    Check (pos(ewpl));
     eweighted_pathlen(cell) += ewpl;
 }
 
@@ -130,9 +143,16 @@ void Tally<MT>::accumulate_ewpl(const int cell, const double ewpl)
 
  */
 template<class MT>
-void Tally<MT>::accumulate_cen_info(const int cell, const double new_ecen,
-				    const int num_new_ncen)
+void Tally<MT>::accumulate_cen_info(const int    cell,
+				    const double new_ecen,
+				    const int    num_new_ncen)
 {
+    Require (cell > 0);
+    Require (cell <= energy_dep.get_Mesh().num_cells());
+
+    Check (pos(new_ecen));
+    Check (pos(num_new_ncen));
+
     census_energy(cell) += new_ecen;
     new_ecen_tot        += new_ecen;
     new_ncen(cell)      += num_new_ncen;
@@ -195,7 +215,6 @@ void Tally<MT>::print(std::ostream &out) const
     out << endl;
     out << setw(16) << " bnd crossings: " << setw(10) << n_bndcross 
 	<< setw(16) << " reflections: "   << setw(10) << n_reflections
-	<< setw(16) << " random walks: "   << setw(10) << n_random_walks
 	<< setw(16) << " eff scatters: "  << setw(10) << n_effscat
 	<< setw(16) << " thomson scats: " << setw(10) << n_thomscat
 	<< endl;
@@ -213,9 +232,8 @@ void Tally<MT>::print(std::ostream &out) const
  * \brief Print particle transport statistics (over a cycle).
 
  * This function prints out particle transport statistics including number of
- * boundary crossings, number of reflections, number of random walks, number
- * of effective scatters, number killed, number escaped, and number to
- * census.
+ * boundary crossings, number of reflections, number of effective scatters,
+ * number killed, number escaped, and number to census.
 
  * \param out ostream to print data to
 
@@ -231,7 +249,6 @@ void Tally<MT>::cycle_print(std::ostream &out) const
     out << endl;
     out << setw(16) << " bnd crossings: " << setw(10) << n_bndcross 
 	<< setw(16) << " reflections: "   << setw(10) << n_reflections
-	<< setw(16) << " random walks: "   << setw(10) << n_random_walks
 	<< setw(16) << " eff scatters: "  << setw(10) << n_effscat
 	<< endl;
 

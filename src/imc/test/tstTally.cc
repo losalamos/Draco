@@ -13,6 +13,7 @@
 #include "IMC_Test.hh"
 #include "../Release.hh"
 #include "../Tally.hh"
+#include "../Random_Walk_Sub_Tally.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "c4/global.hh"
@@ -29,6 +30,7 @@ using rtt_imc_test::Parser;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_imc::Tally;
+using rtt_imc::Random_Walk_Sub_Tally;
 using rtt_dsxx::SP;
 using std::pow;
 using rtt_mc::global::soft_equiv;
@@ -44,6 +46,13 @@ void Tally_Test()
     OS_Builder mb(parser);
     SP<OS_Mesh> mesh = mb.build_Mesh();
     Tally<OS_Mesh> t(mesh);
+
+    // there should be no random walk sub tally
+    if (t.get_RW_Sub_Tally()) ITFAILS;
+
+    // now create a random walk sub_tally
+    t.create_RW_Sub_Tally();
+    if (!t.get_RW_Sub_Tally()) ITFAILS;
     
     if (t.num_cells() != 6) ITFAILS;
 
@@ -60,6 +69,8 @@ void Tally_Test()
 
     // particle count (j-th particle in cell i)
     int pcount = 0;
+
+    SP<Random_Walk_Sub_Tally> st = t.get_RW_Sub_Tally();
 	
     // add some stuff and check the tally
     for (int j = 1; j <= 2; j++)
@@ -84,7 +95,9 @@ void Tally_Test()
 	    t.accum_ew_escaped(i * 1.0);
 	    t.accum_n_bndcross();
 	    t.accum_n_reflections();
-	    t.accum_n_random_walks();
+	    t.get_RW_Sub_Tally()->accum_n_random_walks();
+	    st->accum_sphere_radii(1.1);
+	    st->accum_step_length(0.9);
 
 	    // momentum checks - hardwired for 2 dimensions, 2 depositions
 	    omega[0] = (1.0 - pow(-1.0,j))/2.0;
@@ -106,8 +119,7 @@ void Tally_Test()
 	    if (t.get_accum_n_escaped() != pcount)         ITFAILS;
 	    if (t.get_accum_n_bndcross() != pcount)        ITFAILS;
 	    if (t.get_accum_n_reflections() != pcount)     ITFAILS;
-	    if (t.get_accum_n_random_walks() != pcount)    ITFAILS;
-
+	    if (st->get_accum_n_random_walks() != pcount)  ITFAILS;
 	}
     }
 
@@ -118,15 +130,28 @@ void Tally_Test()
     t.accum_n_escaped(2);
     t.accum_n_bndcross(3);
     t.accum_n_reflections(6);
-    t.accum_n_random_walks(11);
+    st->accum_n_random_walks(11);
 
-    if (t.get_accum_n_effscat() != pcount + 5)       ITFAILS;
-    if (t.get_accum_n_thomscat() != pcount + 20)     ITFAILS;
-    if (t.get_accum_n_killed() != pcount + 10)       ITFAILS;
-    if (t.get_accum_n_escaped() != pcount + 2)       ITFAILS;
-    if (t.get_accum_n_bndcross() != pcount + 3)      ITFAILS;
-    if (t.get_accum_n_reflections() != pcount + 6)   ITFAILS;
-    if (t.get_accum_n_random_walks() != pcount + 11) ITFAILS;
+    if (t.get_accum_n_effscat() != pcount + 5)        ITFAILS;
+    if (t.get_accum_n_thomscat() != pcount + 20)      ITFAILS;
+    if (t.get_accum_n_killed() != pcount + 10)        ITFAILS;
+    if (t.get_accum_n_escaped() != pcount + 2)        ITFAILS;
+    if (t.get_accum_n_bndcross() != pcount + 3)       ITFAILS;
+    if (t.get_accum_n_reflections() != pcount + 6)    ITFAILS;
+
+    if (t.get_RW_Sub_Tally()->get_accum_n_random_walks() != pcount + 11)
+	ITFAILS;
+
+    if (!soft_equiv(t.get_RW_Sub_Tally()->get_accum_step_lengths(),
+		    pcount * 0.9)) 
+	ITFAILS;
+
+    if (t.get_RW_Sub_Tally()->get_accum_n_spheres() != pcount) ITFAILS;
+    
+
+    if (!soft_equiv(t.get_RW_Sub_Tally()->get_accum_sphere_radii(),
+		    pcount * 1.1)) 
+	ITFAILS;
 
     for (int i = 1; i <= mesh->num_cells(); i++)
 	t.accumulate_cen_info(i, i*1.0, i);

@@ -16,6 +16,7 @@
 #include "Diffusion_Opacity.hh"
 #include "ds++/SP.hh"
 #include <vector>
+#include <utility>
 
 // Forward declarations.
 namespace rtt_rng
@@ -120,6 +121,7 @@ class Random_Walk : public Hybrid_Diffusion
     typedef rtt_rng::Sprng                       Rnd_Type;
     typedef rtt_dsxx::SP<Rnd_Type>               SP_Rnd_Type;
     typedef rtt_dsxx::SP<MT>                     SP_Mesh;
+    typedef std::pair<double, double>            pair_double;
 
   private:
     // >>> DATA
@@ -151,8 +153,8 @@ class Random_Walk : public Hybrid_Diffusion
     bool do_a_random_walk(int, double, double, double);
 
     // Do a random walk.
-    double random_walk(sf_double &, sf_double &, double &, int, 
-		       Rnd_Type, bool &);
+    pair_double random_walk(sf_double &, sf_double &, double &, int, 
+			    Rnd_Type, bool &);
 
     // >>> QUERY FUNCTIONS
 };

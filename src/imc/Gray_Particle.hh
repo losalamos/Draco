@@ -14,9 +14,6 @@
 
 #include "Particle.hh"
 #include "Random_Walk.hh"
-#include "ds++/Soft_Equivalence.hh"
-#include <cmath>
-#include <limits>
 
 namespace rtt_imc
 {
@@ -36,6 +33,7 @@ class Gray_Frequency;
 // 1) 10-FEB-03 : removed #define's for Base class scoping; added real
 //                scoping
 // 2) 18-FEB-03 : added random walk version of transport function
+// 3) 24-JUN-03 : updated for new sub tally concept in Tally<MT>
 // 
 //===========================================================================//
 
