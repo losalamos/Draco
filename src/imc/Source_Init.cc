@@ -836,8 +836,8 @@ void Source_Init<MT,PT>::calc_t4_slope(const MT &mesh,
 template<class MT, class PT>
 void Source_Init<MT,PT>::print(ostream &out) const
 {
-    out << "*** SOURCE INITIALIZATION ***" << endl;
-    out << "-----------------------------" << endl;
+    out << ">>> SOURCE INITIALIZATION <<<" << endl;
+    out << "=============================" << endl;
 
   // give them the particulars of the source init
     out << setw(35) << setiosflags(ios::right) 
@@ -854,15 +854,17 @@ void Source_Init<MT,PT>::print(ostream &out) const
 
     out << endl << " ** Source Energies ** " << endl;
     out.precision(3);
-    out << setiosflags(ios::fixed);
+    out.setf(ios::fixed, ios::floatfield);
     out << setw(10) << setiosflags(ios::right) << "Cell"
         << setw(15) << setiosflags(ios::right) << "Volume ew"
-        << setw(15) << setiosflags(ios::right) << "Surface ew" << endl;
+        << setw(15) << setiosflags(ios::right) << "Surface ew" 
+	<< setw(15) << setiosflags(ios::right) << "Census ew (est)" << endl;
     for (int i = 1; i <= ew_vol.get_Mesh().num_cells(); i++)
         out << setw(10) << i << setw(15) << ew_vol(i) << setw(15)
-            << ew_ss(i) << endl;	
+            << ew_ss(i) << setw(15) << ew_cen(i) << endl;	
+    
+    out << "=============================" << endl;
 
-    out << "-----------------------------" << endl;
 }
 
 CSPACE

@@ -178,15 +178,16 @@ public:
     double get_eloss_cen() const { return eloss_cen; }
 
   // diagnostic functions
-    void print(ostream &)const;
+    void print(ostream &) const;
 };
 
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
 
-template<class MT>
-inline ostream& operator<<(ostream &out, const Source_Init<MT> &object)
+template<class MT, class PT>
+inline ostream& operator<<(ostream &out, 
+			   const Source_Init<MT,PT> &object)
 {
     object.print(out);
     return out;

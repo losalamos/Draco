@@ -28,6 +28,7 @@ using std::endl;
 using std::setw;
 using std::ios;
 using std::fabs;
+using std::setiosflags;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -42,10 +43,11 @@ Parallel_Source_Init<MT,PT>::Parallel_Source_Init(SP<IT> interface,
       esstot(0), ecen(mesh), ecentot(0), ncen(mesh), ncentot(0), nvol(mesh),
       nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0),
       eloss_cen(0), ew_vol(mesh), ew_ss(mesh), ew_cen(mesh), volrn(mesh),
-      ssrn(mesh), cenrn(mesh)
+      ssrn(mesh), cenrn(mesh), npwant(0)
 {
     Require (interface);
     Require (mesh);
+    Require (!census);
 
   // get data from MT_Interface
     evol_ext         = interface->get_evol_ext();
@@ -64,12 +66,19 @@ Parallel_Source_Init<MT,PT>::Parallel_Source_Init(SP<IT> interface,
     cycle            = interface->get_cycle();
     global_cell      = interface->get_global_cells();
 
+  // assign the census
+    census = IT::get_census();
+
   // some assertions
     Check (num_global_cells >= mesh->num_cells());
     Check (num_global_cells > 0);
     Check (nodes() > 0);
     Check (global_cell.size() == mesh->num_cells());
     Check (rad_temp.size() == mesh->num_cells());
+
+  // get number of particles to transport
+    npwant = min(npmax, static_cast<int>(npnom + dnpdt*elapsed_t));
+    Check (npwant > 0);
 
   // on master processor initialize global vectors
     if (!node())
@@ -90,6 +99,20 @@ Parallel_Source_Init<MT,PT>::Parallel_Source_Init(SP<IT> interface,
 	global_cenrn.resize(num_global_cells);
 	global_volrn.resize(num_global_cells);
 	global_ssrn.resize(num_global_cells);
+
+      // initialize global data
+	fill(global_ecen.begin(), global_ecen.end(), 0.0);
+	fill(global_evol.begin(), global_evol.end(), 0.0);
+	fill(global_ess.begin(), global_ess.end(), 0.0);
+	fill(global_ncen.begin(), global_ncen.end(), 0);
+	fill(global_nvol.begin(), global_nvol.end(), 0);
+	fill(global_nss.begin(), global_nss.end(), 0);
+	fill(global_ew_cen.begin(), global_ew_cen.end(), 0.0);
+	fill(global_ew_vol.begin(), global_ew_vol.end(), 0.0);
+	fill(global_ew_ss.begin(), global_ew_ss.end(), 0.0);
+	fill(global_cenrn.begin(), global_cenrn.end(), 0);
+	fill(global_volrn.begin(), global_volrn.end(), 0);
+	fill(global_ssrn.begin(), global_ssrn.end(), 0);
 	
       // initialize global variables
 	global_ecentot   = 0;
@@ -98,6 +121,9 @@ Parallel_Source_Init<MT,PT>::Parallel_Source_Init(SP<IT> interface,
 	global_eloss_cen = 0;
 	global_eloss_vol = 0;
 	global_eloss_ss  = 0;
+	global_ncentot   = 0;
+	global_nvoltot   = 0;
+	global_nsstot    = 0;
     }
 }
 
@@ -106,7 +132,7 @@ Parallel_Source_Init<MT,PT>::Parallel_Source_Init(SP<IT> interface,
 //---------------------------------------------------------------------------//
 // calculate the initial census
 
-template<class MT, class PT> void 
+template<class MT, class PT> SP<typename Particle_Buffer<PT>::Census>
 Parallel_Source_Init<MT,PT>::calc_initial_census(SP<MT> mesh, 
 						 SP<Opacity<MT> > opacity, 
 						 SP<Mat_State<MT> > state,  
@@ -146,17 +172,21 @@ Parallel_Source_Init<MT,PT>::calc_initial_census(SP<MT> mesh,
 
   // write out the initial census on this processor
     if (ncentot > 0)
-	write_initial_census(*mesh, *rcontrol);  
+	write_initial_census(*mesh, *rcontrol);
+
+  // return the census
+    Ensure (census);
+    return census;
 }
 
 //---------------------------------------------------------------------------//
 // parallel source initializer
 
-template<class MT, class PT>
-void Parallel_Source_Init<MT,PT>::initialize(SP<MT> mesh, 
-					     SP<Opacity<MT> > opacity, 
-					     SP<Mat_State<MT> > state, 
-					     SP<Rnd_Control> rcontrol)
+template<class MT, class PT> SP<typename Particle_Buffer<PT>::Census>
+Parallel_Source_Init<MT,PT>::initialize(SP<MT> mesh, 
+					SP<Opacity<MT> > opacity, 
+					SP<Mat_State<MT> > state, 
+					SP<Rnd_Control> rcontrol)
 {
   // check to make sure objects exist on each processor
     Require (mesh);
@@ -196,6 +226,9 @@ void Parallel_Source_Init<MT,PT>::initialize(SP<MT> mesh,
 	comb_census(*mesh, *rcontrol); 
 
     Ensure (ncentot == census->size());
+
+  // return combed census
+    return census;
 }
 
 //---------------------------------------------------------------------------//
@@ -361,7 +394,7 @@ void Parallel_Source_Init<MT,PT>::comb_census(const MT &mesh,
 	Check (comb_census->size() == 0);
     }
 
-    Require (fabs(ecencheck + eloss_cen - ecentot) <= 1.0e-6 * ecentot);
+    Ensure (fabs(ecencheck + eloss_cen - ecentot) <= 1.0e-6 * ecentot);
 }
 
 //---------------------------------------------------------------------------//
@@ -384,10 +417,6 @@ Parallel_Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity)
   // calculate total source energy
     double global_etot = global_evoltot + global_esstot + global_ecentot;
     Insist (global_etot != 0, "You must specify some source!");
-
-  // calculate number of particles this cycle
-    npwant = min(npmax, static_cast<int>(npnom + dnpdt*elapsed_t));
-    Check (npwant != 0);
 
     int  nptryfor = npwant;
     bool retry    = true;
@@ -454,6 +483,7 @@ Parallel_Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity)
 		global_nss[cell] = 0;
 	}
 
+      // convergence condition
 	if (numtot > npwant  &&  ntry < 100  &&  nptryfor > 1)
 	    nptryfor -= (numtot - npwant);
 	else
@@ -592,7 +622,7 @@ void Parallel_Source_Init<MT,PT>::calc_ncen_init()
 
       // check to see we haven't exceeded total particles for this cycle
 	if (global_ncentot > ncenwant  &&  ntry < 100  &&  ncenguess > 1)
-	    ncenguess -= (ncentot - ncenwant);
+	    ncenguess -= (global_ncentot - ncenwant);
 	else
 	    retry = false;
     }
@@ -878,6 +908,7 @@ void Parallel_Source_Init<MT,PT>::recv_source_energies(const MT &mesh)
     }
 
   // Add contributions from the master's cells
+    cells_on_proc[0].resize(num_cells);
     for (int nc = 1; nc <= num_cells; nc++)
     {
 	int gcell = global_cell[nc-1];
@@ -905,6 +936,8 @@ void Parallel_Source_Init<MT,PT>::recv_source_energies(const MT &mesh)
 	global_evoltot += global_evol[gc];
 	global_esstot  += global_ess[gc];
     }
+    
+    Ensure (global_ecentot + global_evoltot + global_esstot);
 }
 
 //---------------------------------------------------------------------------//
@@ -917,7 +950,7 @@ void Parallel_Source_Init<MT,PT>::send_source_numbers(const MT &mesh)
     Check(!node());
 
   // loop over other processors
-    for (int p_send = 1; p_send <= nodes(); p_send++)
+    for (int p_send = 1; p_send < nodes(); p_send++)
     {
 	int ncells_on_proc = cells_on_proc[p_send].size();
 
@@ -936,14 +969,14 @@ void Parallel_Source_Init<MT,PT>::send_source_numbers(const MT &mesh)
 	for (int nc = 0; nc < ncells_on_proc; nc++)
 	{
 	    int gcell = cells_on_proc[p_send][nc];
-	    ncen_send[nc]   = global_ncen[gcell];
-	    nvol_send[nc]   = global_nvol[gcell];
-	    nss_send[nc]    = global_nss[gcell];
-	    ew_cen_send[nc] = global_ew_cen[gcell];
-	    ew_vol_send[nc] = global_ew_cen[gcell];
-	    ew_ss_send[nc]  = global_ew_ss[gcell];
-	    ssrn_send[nc]   = global_ssrn[gcell];
-	    volrn_send[nc]  = global_volrn[gcell];
+	    ncen_send[nc]   = global_ncen[gcell-1];
+	    nvol_send[nc]   = global_nvol[gcell-1];
+	    nss_send[nc]    = global_nss[gcell-1];
+	    ew_cen_send[nc] = global_ew_cen[gcell-1];
+	    ew_vol_send[nc] = global_ew_cen[gcell-1];
+	    ew_ss_send[nc]  = global_ew_ss[gcell-1];
+	    ssrn_send[nc]   = global_ssrn[gcell-1];
+	    volrn_send[nc]  = global_volrn[gcell-1];
 	}
 
       // send source number info to IMC-processors
@@ -967,19 +1000,28 @@ void Parallel_Source_Init<MT,PT>::send_source_numbers(const MT &mesh)
 	delete [] volrn_send;
     }
 
-  // assign data on master processor
+  // assign data on master processor and accumulate totals on master
+    ncentot = 0;
+    nvoltot = 0;
+    nsstot  = 0;
     int ncells_on_proc = mesh.num_cells();
     for (int nc = 1; nc <= ncells_on_proc; nc++)
     {
+      // assign global_cell data to local data
 	int gcell  = cells_on_proc[0][nc-1];
-	ncen(nc)   = global_ncen[gcell];
-	nvol(nc)   = global_nvol[gcell];
-	nss(nc)    = global_nss[gcell];
-	ew_cen(nc) = global_ew_cen[gcell];
-	ew_vol(nc) = global_ew_cen[gcell];
-	ew_ss(nc)  = global_ew_ss[gcell];
-	ssrn(nc)   = global_ssrn[gcell];
-	volrn(nc)  = global_volrn[gcell];
+	ncen(nc)   = global_ncen[gcell-1];
+	nvol(nc)   = global_nvol[gcell-1];
+	nss(nc)    = global_nss[gcell-1];
+	ew_cen(nc) = global_ew_cen[gcell-1];
+	ew_vol(nc) = global_ew_cen[gcell-1];
+	ew_ss(nc)  = global_ew_ss[gcell-1];
+	ssrn(nc)   = global_ssrn[gcell-1];
+	volrn(nc)  = global_volrn[gcell-1];
+
+      // accumulate totals on master
+	ncentot += ncen(nc);
+	nvoltot += nvol(nc);
+	nsstot  += nss(nc);
     }
 }
 
@@ -1090,6 +1132,11 @@ void Parallel_Source_Init<MT,PT>::recv_census_numbers(const MT &mesh)
     delete [] ncen_recv;
     delete [] ew_cen_recv;
     delete [] cenrn_recv;
+
+  // accumulate totals on this processor
+    ncentot = 0;
+    for (int cell = 1; cell <= num_cells; cell++)
+	ncentot += ncen(cell);
 }
 
 //---------------------------------------------------------------------------//
@@ -1102,7 +1149,7 @@ void Parallel_Source_Init<MT,PT>::send_census_numbers(const MT &mesh)
     Check(!node());
 
   // loop over other processors
-    for (int p_send = 1; p_send <= nodes(); p_send++)
+    for (int p_send = 1; p_send < nodes(); p_send++)
     {
 	int ncells_on_proc = cells_on_proc[p_send].size();
 
@@ -1116,9 +1163,9 @@ void Parallel_Source_Init<MT,PT>::send_census_numbers(const MT &mesh)
 	for (int nc = 0; nc < ncells_on_proc; nc++)
 	{
 	    int gcell       = cells_on_proc[p_send][nc];
-	    ncen_send[nc]   = global_ncen[gcell];
-	    ew_cen_send[nc] = global_ew_cen[gcell];
-	    cenrn_send[nc]  = global_cenrn[gcell];
+	    ncen_send[nc]   = global_ncen[gcell-1];
+	    ew_cen_send[nc] = global_ew_cen[gcell-1];
+	    cenrn_send[nc]  = global_cenrn[gcell-1];
 	}
 
       // send source number info to IMC-processors
@@ -1133,14 +1180,57 @@ void Parallel_Source_Init<MT,PT>::send_census_numbers(const MT &mesh)
     }
 
   // assign data on master processor
+    ncentot = 0;
     int ncells_on_proc = mesh.num_cells();
     for (int nc = 1; nc <= ncells_on_proc; nc++)
     {
+      // map global census data to master processor cells
 	int gcell  = cells_on_proc[0][nc-1];
-	ncen(nc)   = global_ncen[gcell];
-	ew_cen(nc) = global_ew_cen[gcell];
-	cenrn(nc)  = global_cenrn[gcell];
+	ncen(nc)   = global_ncen[gcell-1];
+	ew_cen(nc) = global_ew_cen[gcell-1];
+	cenrn(nc)  = global_cenrn[gcell-1];
+
+      // accumulate census totals
+	ncentot += ncen(nc);
     }
+}
+
+//---------------------------------------------------------------------------//
+// diagnostic functions for Parallel_Source_Init
+//---------------------------------------------------------------------------//
+// print out the Source_Initialization GLOBAL data
+
+template<class MT, class PT>
+void Parallel_Source_Init<MT,PT>::print(ostream &out) const
+{
+    out << ">>> PARALLEL SOURCE INITIALIZATION <<<" << endl;
+    out << "======================================" << endl;
+
+  // give them the particulars of the source init
+    out << setw(35) << setiosflags(ios::right) 
+	<< "Number of particles requested: " << setw(10) << npnom << endl;
+    out << setw(35) << setiosflags(ios::right)
+	<< "Total number calculated: " << setw(10) << npwant << endl;
+    out << " ** Breakdown ** " << endl;
+    out << setw(28) << "Census Particles (est): " << setw(10)
+	<< global_ncentot << endl;
+    out << setw(28) << "Volume Particles: " << setw(10)
+	<< global_nvoltot << endl;
+    out << setw(28) << "Surface Particles: " << setw(10)
+	<< global_nsstot << endl;
+
+    out << endl << " ** Source Energies ** " << endl;
+    out.precision(4);
+    out.setf(ios::scientific, ios::floatfield);
+    out << setw(10) << setiosflags(ios::right) << "Cell"
+        << setw(15) << setiosflags(ios::right) << "Volume ew"
+        << setw(15) << setiosflags(ios::right) << "Surface ew"  
+	<< setw(15) << setiosflags(ios::right) << "Census ew" << endl;
+    for (int i = 1; i <= num_global_cells; i++)
+        out << setw(10) << i << setw(15) << global_ew_vol[i-1] << setw(15)
+            << global_ew_ss[i-1] << setw(15) << global_ew_cen[i-1] << endl;	
+
+    out << "======================================" << endl;
 }
 
 CSPACE

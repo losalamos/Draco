@@ -30,7 +30,8 @@ void rage_imc_(int *imc_ncycle, int *local_numtop, int *global_numtop,
 	       double *imc_rev, double *imc_rho, double *imc_mua_n,
 	       double *imc_mut_n, double *imc_dt, double *imc_time, 
 	       double *imc_implicitness, int *imc_np_nom, int *imc_np_max, 
-	       double *imc_dnpdt, int *imc_random_seed, int *imc_buffer_size)
+	       double *imc_dnpdt, int *imc_random_seed, 
+	       int *imc_buffer_size, int *global_cells)
 {
   // stl components
     using std::cout;
@@ -70,12 +71,13 @@ void rage_imc_(int *imc_ncycle, int *local_numtop, int *global_numtop,
 
   // make arguments struct
     AMR_Interface::Arguments arg(imc_node_coord, imc_layout, b_proc, b_cell,
-				 imc_cv, imc_rho, imc_mua_n, imc_tev,
-				 imc_rev, *local_numtop, *num_b_cells,
-				 *imc_implicitness, *imc_dt, *imc_time,
-				 *imc_dnpdt, *imc_np_nom, *imc_np_max, 0.0,
-				 *imc_random_seed, *imc_buffer_size, 0,
-				 *imc_ncycle, *global_numtop);
+				 global_cells, imc_cv, imc_rho, imc_mua_n,
+				 imc_tev, imc_rev, *local_numtop,
+				 *global_numtop, *num_b_cells,
+				 *imc_implicitness, *imc_dt,  
+				 *imc_time, *imc_dnpdt, *imc_np_nom,
+				 *imc_np_max, 0.0, *imc_random_seed,
+				 *imc_buffer_size, 0, *imc_ncycle);
 
   // make a Rage manager and run IMC
     Host_Manager<OS_Mesh, AMR_Builder, AMR_Interface> rage_mgr(*imc_ncycle);
@@ -104,22 +106,29 @@ IMCSPACE
 // Arguments constructor
 //---------------------------------------------------------------------------//
 
-AMR_Interface::Arguments::Arguments(const double *nc, const int *l, 
-				    const int *bp, const int *bc, 
-				    const double *de, const double *r,
-				    const double *op_abs, const double *t,
-				    const double *re, int numc,
-				    int numbc, double imp, double dt,
-				    double et, double dndt, int nnom, 
-				    int nmax, double rst, int s, int b, 
-				    int pf, int cycle_, int gnumc)
-    : node_coord(nc), layout(l), b_proc(bp), b_cell(bc), dedt(de), rho(r),
-      opacity_abs(op_abs), tev(t), rev(re), num_cells(numc),
-      num_b_cells(numbc), implicitness(imp), delta_t(dt), elapsed_t(et),
-      dnpdt(dndt), npnom(nnom), npmax(nmax), rad_s_tend(rst), seed(s), 
-      buffer(b), print_f(pf), cycle(cycle_), global_num_cells(gnumc) 
+AMR_Interface::Arguments::Arguments(const double *node_coord_, 
+				    const int *layout_, 
+				    const int *b_proc_, const int *b_cell_,
+				    const int *global_cell_, 
+				    const double *dedt_, const double *rho_, 
+				    const double *opacity_abs_, 
+				    const double *tev_, const double *rev_, 
+				    int num_cells_, int global_num_cells_,
+				    int num_b_cells_, double implicitness_, 
+				    double delta_t_, double elapsed_t_,
+				    double dnpdt_, int npnom_, int npmax_, 
+				    double rad_s_tend_, int seed_, 
+				    int buffer_, int print_f_, int cycle_)
+    : node_coord(node_coord_), layout(layout_), b_proc(b_proc_),
+      b_cell(b_cell_), global_cell(global_cell_), dedt(dedt_), rho(rho_),
+      opacity_abs(opacity_abs_), tev(tev_), rev(rev_), num_cells(num_cells_), 
+      global_num_cells(global_num_cells_), num_b_cells(num_b_cells_),
+      implicitness(implicitness_), delta_t(delta_t_), elapsed_t(elapsed_t_),
+      dnpdt(dnpdt_), npnom(npnom_), npmax(npmax_), rad_s_tend(rad_s_tend_),
+      seed(seed_), buffer(buffer_), print_f(print_f_), cycle(cycle_)
 {
     Require (num_cells != 0);
+    Require (num_cells <= global_num_cells);
 }
 
 //---------------------------------------------------------------------------//

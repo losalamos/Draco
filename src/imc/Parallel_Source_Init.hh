@@ -176,38 +176,27 @@ public:
     template<class IT> Parallel_Source_Init(SP<IT>, SP<MT>);
 
   // initial census function
-    void calc_initial_census(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
-			     SP<Rnd_Control>);
+    Census_SP calc_initial_census(SP<MT>, SP<Opacity<MT> >,
+				  SP<Mat_State<MT> >, SP<Rnd_Control>);
 
   // source initialyzer function
-    void initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
-		    SP<Rnd_Control>);
+    Census_SP initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
+			 SP<Rnd_Control>);
 
-  // set and get functions for census stuff
-    inline void set_census(Census_SP);
-    inline Census_SP get_census() const;
+  // diagnostic functions
+    void print(ostream &) const;
 };
 
 //---------------------------------------------------------------------------//
-// inline functions for Parallel_Source_Init
+// overloaded operators
 //---------------------------------------------------------------------------//
-// set the census for updates between cycles
 
-template<class MT, class PT> inline 
-void Parallel_Source_Init<MT,PT>::set_census(Census_SP census_)
+template<class MT, class PT>
+inline ostream& operator<<(ostream &out, 
+			   const Parallel_Source_Init<MT,PT> &object)
 {
-  // we must update this with a valid census
-    Require (census_);
-    census = census_;
-}
-
-//---------------------------------------------------------------------------//
-// return the census
-
-template<class MT, class PT> inline Parallel_Source_Init<MT,PT>::Census_SP 
-Parallel_Source_Init<MT,PT>::get_census() const 
-{
-    return census;
+    object.print(out);
+    return out;
 }
 
 CSPACE

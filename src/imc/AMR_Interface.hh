@@ -39,7 +39,7 @@ extern "C"
     extern void rage_imc_(int *, int *, int *, double *, int *, int *, int *, 
 			  int *, double *, double *, double *, double *, 
 			  double *, double *, double *, double *, double *, 
-			  int *, int *, double *, int *, int *);
+			  int *, int *, double *, int *, int *, int *);
 }
 
 //---------------------------------------------------------------------------//
@@ -96,9 +96,10 @@ public:
 
       // constructor
 	Arguments(const double *, const int *, const int *, const int *,
-		  const double *, const double *, const double *, const
-		  double *, const double *, int, int, double, double, double, 
-		  double, int, int, double, int, int, int, int, int); 
+		  const int *, const double *, const double *, 
+		  const double *, const double *, const double *, int, int,
+		  int, double, double, double, double, int, int, double, int, 
+		  int, int, int);
     };
 
 private:

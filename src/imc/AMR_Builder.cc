@@ -34,7 +34,7 @@ AMR_Builder::AMR_Builder(SP<AMR_Interface> interface)
 
   // hardwired coordinate system
     coord_sys = "xyz";
-    int dimension    = coord_sys.size();
+    int dimension = coord_sys.size();
 
   // assign this data to our vectors
     int laysize = num_cells * dimension * 2;

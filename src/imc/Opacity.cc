@@ -28,7 +28,7 @@ void Opacity<MT>::print(ostream &output, int cell) const
     output.precision(4);
 
     output << setw(8) << cell << setw(15) << setiosflags(ios::scientific)
-	   << sigma_abs(cell) << sigma_thomson(cell) << endl;
+	   << sigma_abs(cell) << setw(15) << sigma_thomson(cell) << endl;
 }
 
 //---------------------------------------------------------------------------//
