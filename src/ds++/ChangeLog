@@ -1,0 +1,7 @@
+2000-02-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* ., test: updated to release ds++-1_1_0.  This release primarily
+ 	takes into account the namespace change from dsxx:: to rtt_dsxx::
+ 	Namespaces are now consistent in ds++. Also, some new functions
+ 	(Check_Strings) have been added.
+
