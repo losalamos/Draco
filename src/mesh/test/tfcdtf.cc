@@ -780,8 +780,8 @@ void t5()
 
         // Test field construction
 
-        MT::FieldConstructor FC = x.get_FieldConstructor();
-        X y(FC);
+        MT::FieldConstructor fCtor = x.get_FieldConstructor();
+        X y(fCtor);
         if (x.get_Mesh() != y.get_Mesh())
             passed = false;
         if (x.get_Mesh() != *spm)

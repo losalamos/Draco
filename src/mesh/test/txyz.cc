@@ -111,8 +111,9 @@ void t2()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
+
     dsxx::SP<const MT> spm(new MT( mdb ));
-    FieldConstructor FC = spm;
+    FieldConstructor fCtor = spm;
 
     {
     // The following constructor is not required by the MT
@@ -164,11 +165,11 @@ void t2()
     if (!(ncz <= total_ncells))
         passed = false;
 
-    ccsf c(FC);
-    fcdsf f(FC);
-    fcdvsf fv(FC);
-    vcsf v(FC);
-    ncsf n(FC);
+    ccsf c(fCtor);
+    fcdsf f(fCtor);
+    fcdvsf fv(fCtor);
+    vcsf v(fCtor);
+    ncsf n(fCtor);
 
     spm->get_dx(c);
     spm->get_dy(c);
@@ -211,15 +212,16 @@ void t3()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<const MT> spm(new MT( mdb ));
-    FieldConstructor FC = spm;
 
-    ccsf c(FC);
-    fcdsf f(FC);
-    fcdsf f2(FC);
-    vcsf v(FC);
-    ncsf n(FC);
-    bssf b(FC);
+    dsxx::SP<const MT> spm(new MT( mdb ));
+    FieldConstructor fCtor = spm;
+
+    ccsf c(fCtor);
+    fcdsf f(fCtor);
+    fcdsf f2(fCtor);
+    vcsf v(fCtor);
+    ncsf n(fCtor);
+    bssf b(fCtor);
 
     // Cell centered to face centered scatter
 
@@ -473,14 +475,15 @@ void t4()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<const MT> spm(new MT( mdb ));
-    FieldConstructor FC = spm;
 
-    ccif c(FC);
-    fcdif f(FC);
-    vcif v(FC);
-    ncif n(FC);
-    bsif b(FC);
+    dsxx::SP<const MT> spm(new MT( mdb ));
+    FieldConstructor fCtor = spm;
+
+    ccif c(fCtor);
+    fcdif f(fCtor);
+    vcif v(fCtor);
+    ncif n(fCtor);
+    bsif b(fCtor);
 
     int value = 3;
 
