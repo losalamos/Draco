@@ -29,6 +29,12 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-pcg-lib[=DIR]    tell where PCG libraries are (\${PCG_LIB_DIR} by default)"
 ac_help="$ac_help
+  --with-aztec=[lib]      determine the aztec lib (aztec is the default"
+ac_help="$ac_help
+  --with-aztec-inc[=DIR]    tell where AZTEC includes are (\${AZTEC_INC_DIR} by default)"
+ac_help="$ac_help
+  --with-aztec-lib[=DIR]    tell where AZTEC libraries are (\${AZTEC_LIB_DIR} by default)"
+ac_help="$ac_help
   --with-lapack=[vendor,atlas]
                           determine LAPACK implementation (vendor default)"
 ac_help="$ac_help
@@ -1002,6 +1008,160 @@ fi
 
          
    
+      # Check whether --with-aztec or --without-aztec was given.
+if test "${with_aztec+set}" = set; then
+  withval="$with_aztec"
+  :
+fi
+
+ 
+      
+        
+   
+ # Check whether --with-aztec-inc or --without-aztec-inc was given.
+if test "${with_aztec_inc+set}" = set; then
+  withval="$with_aztec_inc"
+  if test $with_aztec_inc != "no" ; then
+      if test $with_aztec_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${AZTEC_INC_DIR}
+         eval with_aztec_inc=\${AZTEC_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_aztec_inc=`eval echo "$with_aztec_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_aztec_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-aztec-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_aztec_inc ; then
+         { echo "configure: error: $with_aztec_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      AZTEC_INC="${with_aztec_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >> confdefs.h <<EOF
+#define AZTEC_INC ${with_aztec_inc}/
+EOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "AZTEC_INC has been set to $AZTEC_INC" 1>&6
+
+   fi
+fi
+
+
+   
+
+
+      
+        
+   
+ # Check whether --with-aztec-lib or --without-aztec-lib was given.
+if test "${with_aztec_lib+set}" = set; then
+  withval="$with_aztec_lib"
+  if test $with_aztec_lib != "no" ; then
+      if test $with_aztec_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${AZTEC_LIB_DIR}
+         eval with_aztec_lib=\${AZTEC_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_aztec_lib=`eval echo "$with_aztec_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_aztec_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-aztec-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_aztec_lib ; then
+         { echo "configure: error: $with_aztec_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      AZTEC_LIB="${with_aztec_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >> confdefs.h <<EOF
+#define AZTEC_LIB ${with_aztec_lib}/
+EOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "AZTEC_LIB has been set to $AZTEC_LIB" 1>&6
+
+   fi
+fi
+
+
+   
+
+
+   # set default value of aztec includes and libs
+   if test "${with_aztec:=aztec}" = yes ; then
+       with_aztec='aztec'
+   fi
+
+   # define AZTEC include path
+   if test -n "${AZTEC_INC}" ; then
+       # remember that AZTEC_INC has the final slash
+       AZTEC_H="\"${AZTEC_INC}az_aztec.h\""
+       AZTEC_DEFS_H="\"${AZTEC_INC}az_aztec_defs.h\""
+   elif test -z "${AZTEC_INC}" ; then
+       AZTEC_H="<az_aztec.h>"
+       AZTEC_DEFS_H="<az_aztec_defs.h>"
+   fi
+   
+   # we define AZTEC_H regardless of whether a PATH is set
+   cat >> confdefs.h <<EOF
+#define AZTEC_H ${AZTEC_H}
+EOF
+   cat >> confdefs.h <<EOF
+#define AZTEC_DEFS_H ${AZTEC_DEFS_H}
+EOF
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_aztec=pkg
+
+   # set up the libraries
+   if test "${with_aztec}" != no ; then
+       if test -n "${AZTEC_LIB}" ; then
+	   
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -L${AZTEC_LIB} -l${with_aztec} are the directories added 
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   fi
+
+       elif test -z "${AZTEC_LIB}" ; then
+	   
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -l${with_aztec} are the directories added 
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_aztec}"
+   fi
+
+       fi
+   fi
+
+   # add AZTEC directory to VENDOR_DIRS
+   VENDOR_DIRS="${AZTEC_LIB} ${VENDOR_DIRS}"
+
+
+   
       # Check whether --with-lapack or --without-lapack was given.
 if test "${with_lapack+set}" = set; then
   withval="$with_lapack"
@@ -1646,7 +1806,7 @@ fi
       # Extract the first word of "python", so it can be a program name with args.
 set dummy python; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1650: checking for $ac_word" >&5
+echo "configure:1810: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_PYTHON_PATH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1686,7 +1846,7 @@ fi
       # Extract the first word of "perl", so it can be a program name with args.
 set dummy perl; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1690: checking for $ac_word" >&5
+echo "configure:1850: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_PERL_PATH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1726,7 +1886,7 @@ fi
       # Extract the first word of "cvs", so it can be a program name with args.
 set dummy cvs; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1730: checking for $ac_word" >&5
+echo "configure:1890: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_CVS_PATH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1768,7 +1928,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1772: checking for $ac_word" >&5
+echo "configure:1932: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_GHOSTVIEW'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1807,7 +1967,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1811: checking for $ac_word" >&5
+echo "configure:1971: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_LATEX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1847,7 +2007,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1851: checking for $ac_word" >&5
+echo "configure:2011: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_BIBTEX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1887,7 +2047,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1891: checking for $ac_word" >&5
+echo "configure:2051: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_XDVI'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1927,7 +2087,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1931: checking for $ac_word" >&5
+echo "configure:2091: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_DVIPS'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1967,7 +2127,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1971: checking for $ac_word" >&5
+echo "configure:2131: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_LP'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2029,7 +2189,7 @@ subdirs="tools src autodoc"
 # Extract the first word of "autoconf", so it can be a program name with args.
 set dummy autoconf; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2033: checking for $ac_word" >&5
+echo "configure:2193: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_AUTOCONF'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2067,7 +2227,7 @@ for dir in $subdirs
    do
        if test -d ${srcdir}/${dir} ; then
 	   echo $ac_n "checking "configure in ${srcdir}/${dir}"""... $ac_c" 1>&6
-echo "configure:2071: checking "configure in ${srcdir}/${dir}"" >&5
+echo "configure:2231: checking "configure in ${srcdir}/${dir}"" >&5
 	   cd $srcdir/$dir
 	   if test -f configure ; then 
 	       echo "$ac_t"""exists"" 1>&6
@@ -2232,6 +2392,8 @@ s%@MPI_LIB@%$MPI_LIB%g
 s%@SPRNG_INC@%$SPRNG_INC%g
 s%@SPRNG_LIB@%$SPRNG_LIB%g
 s%@PCG_LIB@%$PCG_LIB%g
+s%@AZTEC_INC@%$AZTEC_INC%g
+s%@AZTEC_LIB@%$AZTEC_LIB%g
 s%@LAPACK_LIB@%$LAPACK_LIB%g
 s%@GANDOLF_LIB@%$GANDOLF_LIB%g
 s%@EOSPAC5_LIB@%$EOSPAC5_LIB%g
