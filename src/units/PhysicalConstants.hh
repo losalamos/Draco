@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! \file   PhysicalConstants.hh
- *  \author Randy M. Roberts
+ *  \author Kelly Thompson
  *  \brief  Provide a single place where physical constants (pi, speed of
  *          light, etc) are defined.
- *  \date   Thu Mar 19 10:04:52 1998
+ *  \date   Fri Nov 07 10:04:52 2003
  *  \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
@@ -27,21 +27,25 @@ namespace rtt_units
  * constants in the current UnitSystem.
  *
  * \sa rtt_units::UnitSystem
- *
- * \example test/tstPhysicalConstants.cc
- *
+ * \sa rtt_units::UnitSystemType
+ * \sa UnitSystemEnums.hh
+ * \sa rtt_units::FundUnit
  * \sa Nuclide Chart
- * 
+ *
  * Code Sample: 
  *
- * <code> 
- * UnitSystem u( UnitSystem::getAstroUnits() );
+ * \verbatim
+ * UnitSystem u( UnitSystem().getAstroUnits() );
  * PhyscialConstants pc( u );
  * double mass   = 1.0; // grams (AstroPhysics mass units).
  * double energy = mass * pc.c() * pc.c();  // E = mc^2 where energy is in
  *                                          // AstroPhysics units.
- * </code>
+ * \endverbatim
  *
+ * Example 
+ * \example test/tstPhysicalConstants.cc
+ * This is the unit regression test for the PhysicalConstants class.  It
+ * demonstrates typical usage.
  */
 //==============================================================================
 
@@ -49,10 +53,8 @@ class PhysicalConstants
 {
   public:
     
-    //! default constructor use SI units (kg, m, seconds, degree K)
+    // Constructors.
     PhysicalConstants();
-    
-    //! constuctor based on rtt_units:UnitSystem
     explicit PhysicalConstants( UnitSystem const & u );
 
     //! \todo Make electronCharge and Avaragodo adjustable based on units.
@@ -65,58 +67,72 @@ class PhysicalConstants
 
     //! accesses Avogadro's number (1/mole)
     static double avogadro()         { return AVOGADRO; }
+    //! see avogadro()
     static double Na()               { return avogadro(); }
 
     //! access the Planck constant (units of energy-time)
     double planck()                  const { return d_planck; }
+    //! see planck()
     double h()                       const { return planck(); }
 
     //! access the Gas constant (units of energy/mol/temp)
     double gasConstant()             const { return d_gasConstant; }
+    //! see gasConstant()
     double R()                       const { return gasConstant(); }
 
     //! accesses the Boltzmann constant (Energy/Temp)
     double boltzmann()               const { return d_boltzmann; }
+    //! see boltzmann()
     double k()                       const { return boltzmann(); }
 
     //! accesses the electron charge (Charge)
     double electronCharge()          const { return d_electronCharge; }
+    //! see electronCharge()
     double e()                       const { return electronCharge(); }
 
     //! accesses the speed of light (units of velocity)
     double speedOfLight()            const { return d_cLight; }
+    //! see speedOfLight()
     double c()                       const { return speedOfLight(); }
 
     //! accesses the StefanBoltzmann constant (Work/Area/Temp^4 )
     double stefanBoltzmann()         const { return d_stefanBoltzmann; }
+    //! see stefanBoltzmann()
     double sigma()                   const { return stefanBoltzmann(); }
 
     //! accesses the gravitational constant
     double gravitationalConstant()   const { return d_gravitationalConstant; }
+    //! see gravitationalConstant()
     double G()                       const { return gravitationalConstant(); }
 
     //! access the acceleration due to gravity (standard).
     double accelerationFromGravity() const { return d_accelerationFromGravity; }
+    //! see accelerationFromGravity()
     double g()                       const { return accelerationFromGravity(); }
 
     //! access the Faraday constant
     double faradayConstant()         const { return d_faradayConstant; }
+    //! see faradayConstant()
     double F()                       const { return faradayConstant(); }
 
     //! access the Permeability of vacuum (free space)
     double permeabilityOfVacuum()    const { return d_permeabilityOfVacuum; }
+    //! see permeabilityOfVacuum()
     double mu0()                     const { return permeabilityOfVacuum(); }
 
     //! accesses the permittivity of free space (units of force/length)
     double permittivityOfFreeSpace() const { return d_permittivityOfFreeSpace; }
+    //! see permittivityOfFreeSpace() 
     double epsi0()                   const { return permittivityOfFreeSpace(); }
 
     //! accesses the electron mass (units of mass)
     double electronMass()            const { return d_electronMass; }
+    //! see electronMass()
     double me()                      const { return electronMass(); }
 
     //! accesses the proton mass (units of mass)
     double protonMass()              const { return d_protonMass; }
+    //! see protonMass()
     double mp()                      const { return protonMass(); }
 
   private:

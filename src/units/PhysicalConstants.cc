@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! \file   PhysicalConstants.cc
- *  \author Randy M. Roberts
+ *  \author Kelly Thompson
  *  \brief  Provide a single place where physical constants (pi, speed of
- *          light, etc) are defined.
- *  \date   Thu Mar 19 10:04:52 1998
+ *          light, etc) are defined for the local UnitSystem.
+ *  \date   Mon Nov 10 09:24:55 2003
  *  \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
@@ -15,7 +15,11 @@
 namespace rtt_units
 {
 
-//! \brief default constructor use SI units (kg, m, seconds, degree K)
+/*!
+ * \brief Default constructor provides physical constants with SI units (kg,
+ *        m, seconds, degree K, amp, radian, mole).
+ * \return A PhysicalConstants object.
+ */
 PhysicalConstants::PhysicalConstants()
     : d_planck         ( planckSI ),
       d_gasConstant    ( gasConstantSI ),
@@ -34,7 +38,13 @@ PhysicalConstants::PhysicalConstants()
     // empty
 }
 
-//! \brief constuctor based on rtt_units::UnitSystem
+/*!
+ * \brief Constuctor that creates a set of PhysicalConstants using the
+ *        provided rtt_units::UnitSystem.
+ * \param u A complete UnitSystem.  PhysicalConstants will be formed and
+ *        returned using these units (CGS, SI, etc.)
+ * \return A PhysicalConstants object.
+ */
 PhysicalConstants::PhysicalConstants( UnitSystem const & u )
     : d_planck          ( planckSI  * u.e() * u.t() ),
       d_gasConstant     ( gasConstantSI * u.e() / u.T() ),
