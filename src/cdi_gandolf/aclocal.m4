@@ -382,16 +382,14 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
        # include path
        if test -n "${TRILINOS_INC}"; then 
 	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}amesos    -I${TRILINOS_INC}aztecoo  -I${TRILINOS_INC}epetra"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}epetraext -I${TRILINOS_INC}ifpack   -I${TRILINOS_INC}komplex"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}nox       -I${TRILINOS_INC}triutils -I${TRILINOS_INC}y12m"
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
        fi
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils)
        elif test -z "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -ltriutils -ly12m)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -ltriutils)
        fi
 
        # add TRILINOS directory to VENDOR_LIB_DIRS
@@ -2716,9 +2714,20 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    else
        GCC_BIN=`dirname ${GCC_BIN}`
        GCC_HOME=`dirname ${GCC_BIN}`
-       GCC_LIB_DIR="${GCC_HOME}/lib"
+
+       # Ensure that libraries exist at this location.  If we can't
+       # libstdc++.a at this location we leave GCC_LIB_DIR set to
+       # null and issue a warning.
+
+       if test -r ${GCC_HOME}/lib/libstdc++.a; then
+         GCC_LIB_DIR="${GCC_HOME}/lib"
+       fi
    fi
    AC_MSG_RESULT("${GCC_LIB_DIR}")
+
+   if test -z ${GCC_LIB_DIR}; then
+       AC_MSG_WARN("Could not determine location of gcc libraries. GCC_LIB_DIR is null")
+   fi
 
    # do compiler configuration
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
@@ -2781,7 +2790,9 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    # add -rpath for the compiler library (G++ as LD does not do this
    # automatically); this, unfortunately, may become host dependent
    # in the future
-   RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
+   if test -n "${GCC_LIB_DIR}"; then
+       RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
+   fi
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
@@ -3207,7 +3218,8 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        
        AC_MSG_CHECKING("for extra eospac library requirements.")
        if test -n "${vendor_eospac}"; then
-	   extra_eospac_libs="-L/usr/local/lf9562/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
            LIBS="${LIBS} ${extra_eospac_libs}"
            AC_MSG_RESULT("${extra_eospac_libs}")
        else
@@ -3614,11 +3626,13 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        #
-       # gandolf and eospac requires -lfortran on the link line.
+       # gandolf, pcg and eospac requires -lfortran on the link line.
        #
 
        AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ; then
+       if test -n "${vendor_gandolf}" || \
+          test -n "${vendor_eospac}"  || \
+          test -n "${vendor_pcg}" ; then
           LIBS="${LIBS} -lfortran"
           AC_MSG_RESULT("-lfortran added to LIBS")
        else
@@ -3626,7 +3640,23 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
        
        #
-       # end of gandolf/libfortran setup
+       # end of libfortran setup (gandolf, eospac, pcg)
+       #
+
+       #
+       # pcg requires -lperfex on the link line.
+       #
+
+       AC_MSG_CHECKING("libperfex requirements")
+       if test -n "${vendor_pcg}" ; then
+          LIBS="${LIBS} -lperfex"
+          AC_MSG_RESULT("-lperfex added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+       
+       #
+       # end of libfortran setup (gandolf, eospac, pcg)
        #
 
        #

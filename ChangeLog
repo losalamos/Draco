@@ -1,7 +1,52 @@
+2003-12-22  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: release draco-4_2_0.  This is a minor release, as such it
+	does not have a release memo associated with it.  In summary, the
+	changes are:
+
+		- added code test coverage to doc/code_stats; this data
+		  will be provided in future release notes
+		- changes in ds++ classes as a result of KT's elint work;
+		  these changes do not affect the package interface
+		- imc has several changes; chief among these are full
+		  surface tally integration
+		- mc has the sphyramid mesh added
+		- the units package has been redesigned
+
+	This version of draco has been tested successfully with gcc-3.3.2.
+		
+	This draco release includes the following packages:
+	
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_eospac
+		cdi_gandolf
+		ds++
+		imc
+		lapack_wrap
+		mc
+		meshReaders
+		meshReaders_Services
+		pcgWrap
+		plot2D
+		quadrature
+		rng
+		stdheaders
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	The forthcoming changes in draco will include moving the mc and
+	imc packages into a Jayenne project source directory.
+
 2003-09-22  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: release draco-4_1_0.  This is a minor release, as such it
-	does not have a release memo associated with it.  In summary the
+	does not have a release memo associated with it.  In summary, the
 	changes are:
 
 		- updated compaq LAPACK/BLAS numerics library in DBS

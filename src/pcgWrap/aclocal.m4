@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.2 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -2790,7 +2790,9 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    # add -rpath for the compiler library (G++ as LD does not do this
    # automatically); this, unfortunately, may become host dependent
    # in the future
-   RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
+   if test -n "${GCC_LIB_DIR}"; then
+       RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
+   fi
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then

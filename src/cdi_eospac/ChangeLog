@@ -1,3 +1,12 @@
+2004-01-13  Thomas M. Evans  <tme@lanl.gov>
+
+	* cdi_eospac: in release draco-4_2_0 cdi_eospac only works with
+	the Lahey 6.0 F90 compiler.  configure.ac checks that lahey 6.0 is
+	loaded and throws an error if not.  This is an issue with EOSPAC
+	and not cdi_eospac.  It should be resolved when the next version
+	of EOSPAC is release.  However, the new version will have a
+	different interface that will require cdi_eospac refactoring.
+
 2002-12-11  Thomas M. Evans  <tme@lanl.gov>
 
 	* cdi_eospac: release 1_2_0.  Fixes in configure.in for Compaq

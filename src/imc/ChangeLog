@@ -1,3 +1,9 @@
+2004-01-13  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: release as part of draco-4_2_0.  This version has surface
+	tallies [in both gray and multigroup].  Also, (Mesh_Operations)
+	has a specialization for the Sphyramid_Mesh.
+
 2003-09-22  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: released as part of draco-4_1_0.

@@ -1,3 +1,8 @@
+2004-01-13  Thomas M. Evans  <tme@lanl.gov>
+
+	* mc: tagged as part of draco-4_2_0.  This version has surface
+	tally infrastructure and the sphyramid mesh.
+
 2003-09-05  Thomas M. Evans  <tme@lanl.gov>
 
 	* mc: tagged as part of draco-4_0_0.  Full support for Random Walk

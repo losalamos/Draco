@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.2 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1814,7 +1814,9 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    # add -rpath for the compiler library (G++ as LD does not do this
    # automatically); this, unfortunately, may become host dependent
    # in the future
-   RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
+   if test -n "${GCC_LIB_DIR}"; then
+       RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
+   fi
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
@@ -2648,11 +2650,13 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        #
-       # gandolf and eospac requires -lfortran on the link line.
+       # gandolf, pcg and eospac requires -lfortran on the link line.
        #
 
        AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ; then
+       if test -n "${vendor_gandolf}" || \
+          test -n "${vendor_eospac}"  || \
+          test -n "${vendor_pcg}" ; then
           LIBS="${LIBS} -lfortran"
           AC_MSG_RESULT("-lfortran added to LIBS")
        else
@@ -2660,7 +2664,23 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
        
        #
-       # end of gandolf/libfortran setup
+       # end of libfortran setup (gandolf, eospac, pcg)
+       #
+
+       #
+       # pcg requires -lperfex on the link line.
+       #
+
+       AC_MSG_CHECKING("libperfex requirements")
+       if test -n "${vendor_pcg}" ; then
+          LIBS="${LIBS} -lperfex"
+          AC_MSG_RESULT("-lperfex added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+       
+       #
+       # end of libfortran setup (gandolf, eospac, pcg)
        #
 
        #
