@@ -1,3 +1,36 @@
 $Id$
 
-Empty right now, but should have stuff in it.
+Draco is an object-oriented component library geared towards
+numerically intensive, radiation (particle) transport applications.
+It consists of semi-independent packages and a robust build system.
+The packages in draco provide a set of components that can be used by
+multiple clients to build transport codes.  The build system can also
+be extracted for use in clients.
+
+Draco contains two sets of components.  Active components are
+currently used and maintained.  Retired packages are no longer in use
+by any clients.  Retired packages can be recovered from cvs by using
+the tag <package>-retired.
+
+A brief description of the packages in draco follows.
+
+Active Draco Package Synopsis
+=============================
+
+rng [draco/src/rng]: A random number generator package.  It uses the
+SPRNG (http://www.ncsa.uiuc.edu/Apps/SPRNG/) random number library.
+This is essentially a wrapper to the SPRNG library.
+
+mc [draco/src/mc]: A low-level Monte Carlo support package.  This
+package contains meshes and service classes that can be used for
+linear and non-linear Monte Carlo transport.
+
+imc [draco/src/imc]: A Implicit Monte Carlo (imc) component library.
+This package contains a set of components including particles,
+sources, and tallies that can be used to build IMC codes.
+
+Retired Draco Package Synopsis
+==============================
+
+meshTest [meshTest-retired]: A test mesh that can be used to test
+other draco components that require a Mesh Type.
