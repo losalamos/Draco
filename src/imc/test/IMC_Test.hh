@@ -65,6 +65,7 @@ class IMC_Interface :
     // data for the Opacity and Mat_State
     sf_double  density;
     sf_double  kappa;
+    sf_double  kappa_offset;
     sf_double  kappa_thomson;
     sf_double  temperature;
     sf_double  specific_heat;
@@ -91,6 +92,7 @@ class IMC_Interface :
     // public interface for Opacity_Builder
     sf_double get_density() const {return density;}
     sf_double get_kappa() const {return kappa;}
+    sf_double get_kappa_offset() const {return kappa_offset;}
     sf_double get_kappa_thomson() const {return kappa_thomson;}
     sf_double get_specific_heat() const {return specific_heat;}
     sf_double get_temperature() const {return temperature;}
@@ -129,6 +131,7 @@ IMC_Interface::IMC_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder> osb,
        builder(osb),
        density(6), 
        kappa(6), 
+       kappa_offset(6), 
        kappa_thomson(6), 
        temperature(6),
        specific_heat(6), 
@@ -155,6 +158,10 @@ IMC_Interface::IMC_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder> osb,
 	// kappa (in cm^2/g)
 	kappa[i]     = .1;
 	kappa[i+3]   = .01;
+	
+	// kappa_offset (in cm^2/g)
+	kappa_offset[i]    = 0.0;
+	kappa_offset[i+3]  = 0.0;
 	
 	// kappa thomson
 	kappa_thomson[i]   = .5;

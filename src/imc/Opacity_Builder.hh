@@ -20,6 +20,7 @@
 //  1)  7-28-98 : converted density, kappa, temperature, and specific_heat to 
 //                cell-based arrays in the Interface, ie. we no longer need
 //                zone or mat_zone
+//  2)  7-31-01 : added analytic opacity offset, kappa_offset (tju)
 // 
 //===========================================================================//
 
@@ -45,6 +46,7 @@ class Opacity_Builder
     // data received from XX_Interface
     std::vector<double> density;
     std::vector<double> kappa;
+    std::vector<double> kappa_offset;
     std::vector<double> kappa_thomson;
     std::vector<double> temperature;
     std::vector<double> specific_heat;
@@ -82,6 +84,7 @@ Opacity_Builder<MT>::Opacity_Builder(rtt_dsxx::SP<IT> interface)
     // assign data members from the interface parser
     density          = interface->get_density();
     kappa            = interface->get_kappa();
+    kappa_offset     = interface->get_kappa_offset();
     kappa_thomson    = interface->get_kappa_thomson();
     temperature      = interface->get_temperature();
     specific_heat    = interface->get_specific_heat();

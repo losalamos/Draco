@@ -101,8 +101,9 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
     // DBC requirements
     Require (mesh);
     Require (mat);
-    Require (mat->num_cells() == mesh->num_cells());
+    Require (mat->num_cells()  == mesh->num_cells());
     Require (mesh->num_cells() == kappa.size());
+    Require (mesh->num_cells() == kappa_offset.size());
     Require (mesh->num_cells() == kappa_thomson.size());
 
     // return Opacity object
@@ -119,6 +120,9 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
     // calculate and assign opacities to each cell
     for (int cell = 1; cell <= num_cells; cell++)
     {
+	// index into kappa's
+	int cc = cell - 1;
+
 	// get updated temperature from mat_state
 	double T = mat->get_T(cell);
 
@@ -126,18 +130,25 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
 	double den = mat->get_rho(cell);
 	if (analytic_opacity == "straight")
 	{
-	    sigma_abs(cell)     = kappa[cell-1] * den;
-	    sigma_thomson(cell) = kappa_thomson[cell-1] * den;
+	    sigma_abs(cell)     = (kappa_offset[cc] + kappa[cc]) * den;  
+	    sigma_thomson(cell) = kappa_thomson[cc] * den;
 	}
 	else if (analytic_opacity == "tcube")
 	{
-	    sigma_abs(cell)     = kappa[cell-1] / (T*T*T) * den;
-	    sigma_thomson(cell) = kappa_thomson[cell-1] * den;
+	    Check (T > 0.0);
+	    sigma_abs(cell)     = (kappa_offset[cc] + kappa[cc]/(T*T*T)) * den;
+	    sigma_thomson(cell) = kappa_thomson[cc] * den;
+	}
+	else if (analytic_opacity == "tlinear")
+	{
+	    Check (T > 0.0);
+	    sigma_abs(cell)     = (kappa_offset[cc] + kappa[cc]/T) * den;
+	    sigma_thomson(cell) = kappa_thomson[cc] * den;
 	}
 	else if (analytic_opacity == "opacity")
 	{
-	    sigma_abs(cell)     = kappa[cell-1];
-	    sigma_thomson(cell) = kappa_thomson[cell-1];
+	    sigma_abs(cell)     = kappa_offset[cc] + kappa[cc];
+	    sigma_thomson(cell) = kappa_thomson[cc];
 	}
 	else
 	    Check (0);

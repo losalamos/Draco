@@ -357,6 +357,7 @@ IMC_DD_Interface::IMC_DD_Interface(int capacity_)
     : Interface<Particle<OS_Mesh> >(),
       density(capacity_), 
       kappa(capacity_), 
+      kappa_offset(capacity_), 
       kappa_thomson(capacity_), 
       temperature(capacity_),
       specific_heat(capacity_), 
@@ -386,6 +387,9 @@ IMC_DD_Interface::IMC_DD_Interface(int capacity_)
 	// kappa (in cm^2/g)
 	kappa[i] = 2 * C4::node() + i + 1.0;
 	
+	// kappa_offset (in cm^2/g)
+	kappa_offset[i] = 0.0;
+
 	// kappa thomson
 	kappa_thomson[i] = 2.0 * (C4::node() + i + 1.0);
 

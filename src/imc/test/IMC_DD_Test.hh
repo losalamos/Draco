@@ -60,6 +60,7 @@ class IMC_DD_Interface :
     // data for the Opacity and Mat_State
     sf_double  density;
     sf_double  kappa;
+    sf_double  kappa_offset;
     sf_double  kappa_thomson;
     sf_double  temperature;
     sf_double  specific_heat;
@@ -86,6 +87,7 @@ class IMC_DD_Interface :
     // public interface for Opacity_Builder
     sf_double get_density() const {return density;}
     sf_double get_kappa() const {return kappa;}
+    sf_double get_kappa_offset() const {return kappa_offset;}
     sf_double get_kappa_thomson() const {return kappa_thomson;}
     sf_double get_specific_heat() const {return specific_heat;}
     sf_double get_temperature() const {return temperature;}

@@ -41,6 +41,7 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) original
+// 1) 31 Jul 2001 : Added kappa_offset (tju)
 // 
 //===========================================================================//
 
@@ -77,6 +78,7 @@ class Interface
 
     // Opacity data.
     virtual sf_double get_kappa() const = 0;
+    virtual sf_double get_kappa_offset() const = 0;
     virtual sf_double get_kappa_thomson() const = 0;
     virtual sf_double get_specific_heat() const = 0;
 
