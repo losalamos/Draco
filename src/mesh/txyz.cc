@@ -28,7 +28,7 @@ int main( int argc, char *argv[] )
 
     g.readgroup( "test.in" );
 
-    SP<Mesh_XYZ> spm = new Mesh_XYZ( mdb );
+    dsxx::SP<Mesh_XYZ> spm = new Mesh_XYZ( mdb );
 
     cout << "t2: passed" << endl;
 
