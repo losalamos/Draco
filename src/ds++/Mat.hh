@@ -252,8 +252,8 @@ class Mat1 {
 
     bool operator<( const Mat1& m ) const
     {
-        return lexicographical_compare(this->begin(), this->end(), m.begin(), 
-				       m.end());
+        return std::lexicographical_compare(this->begin(), this->end(), 
+					    m.begin(), m.end());
     }
 
     bool operator>( const Mat1& m ) const
@@ -643,8 +643,8 @@ class Mat2 {
 
     bool operator<( const Mat2& m ) const
     {
-        return lexicographical_compare(this->begin(), this->end(), m.begin(), 
-				       m.end());
+        return std::lexicographical_compare(this->begin(), this->end(), 
+					    m.begin(), m.end());
     }
 
     bool operator>( const Mat2& m ) const
@@ -1064,8 +1064,8 @@ class Mat3 {
 
     bool operator<( const Mat3& m ) const
     {
-        return lexicographical_compare(this->begin(), this->end(), m.begin(), 
-				       m.end());
+        return std::lexicographical_compare(this->begin(), this->end(), 
+					    m.begin(), m.end());
     }
 
     bool operator>( const Mat3& m ) const
@@ -1500,8 +1500,8 @@ class Mat4 {
 
     bool operator<( const Mat4& m ) const
     {
-        return lexicographical_compare(this->begin(), this->end(), m.begin(), 
-				       m.end());
+        return std::lexicographical_compare(this->begin(), this->end(), 
+					    m.begin(), m.end());
     }
 
     bool operator>( const Mat4& m ) const
@@ -2003,8 +2003,8 @@ class Mat5 {
 
     bool operator<( const Mat5& m ) const
     {
-        return lexicographical_compare(this->begin(), this->end(), m.begin(), 
-				       m.end());
+        return std::lexicographical_compare(this->begin(), this->end(), 
+					    m.begin(), m.end());
     }
 
     bool operator>( const Mat5& m ) const
