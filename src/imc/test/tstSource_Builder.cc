@@ -560,17 +560,8 @@ void source_DD_test()
 
     // <<<<<< INITIAL CENSUS ENERGY >>>>>>>>
 
-    // check the on-processor total census energy only if there is no global
-    // energy loss 
-    if (soft_equiv(source_builder.get_eloss_cen(), 0.0, 1.0e-12))
-    {
-	double sb_local_ecen = source_builder.get_initial_census_energy();
-	if (!soft_equiv(sb_local_ecen, ref_ecentot, 1.0e-12))        ITFAILS;
-    }	    
-
     // global census energy check
     double global_ecentot = source_builder.get_initial_census_energy();
-    C4::gsum(global_ecentot);
     double ref_global_ecentot = ref_ecentot;
     C4::gsum(ref_global_ecentot);
     double check_ecentot = global_ecentot + source_builder.get_eloss_cen(); 
