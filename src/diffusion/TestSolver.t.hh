@@ -13,6 +13,8 @@
 #include "P1Matrix.hh"
 #include "ds++/SP.hh"
 
+#include <cmath>
+
 namespace rtt_diffusion
 {
 
