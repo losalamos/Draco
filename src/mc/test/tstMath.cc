@@ -22,6 +22,7 @@
 using namespace std;
 
 using rtt_mc::global::soft_equiv;
+using rtt_mc::global::mod_with_2e9;
 
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__);
@@ -54,6 +55,13 @@ void test_math()
     if ( soft_equiv(-1.0e-10, zero)) ITFAILS;
     if (!soft_equiv(-1.0e-35, zero)) ITFAILS;
     if (!soft_equiv( 1.0e-35, zero)) ITFAILS;
+
+    // test the mod_with_2e9 function
+    if (mod_with_2e9(895)        != 895)        ITFAILS;
+    if (mod_with_2e9(1999999999) != 1999999999) ITFAILS;
+    if (mod_with_2e9(2000000000) != 0)          ITFAILS;
+    if (mod_with_2e9(2000003091) != 3091)       ITFAILS;
+
 }
 
 //---------------------------------------------------------------------------//
