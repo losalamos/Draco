@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \mainpage Overview of the quadrature package
-\version draco-5_1_0
+\version draco-5_2_0
 \author Kelly Thompson
 
 The quadrature package provides services related to the angular
