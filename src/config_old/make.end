@@ -78,7 +78,9 @@ incldeps	:= no
 endif
 
 ifneq ($(incldeps),no)
+ifneq ($(cc_files),)
 -include $(cc_files:%.cc=.d.%_$(env))
+endif
 ifdef preinstantiate
 ifneq ($(ptcc_files),)
 -include $(ptcc_files:.%.cc=.d.%)
