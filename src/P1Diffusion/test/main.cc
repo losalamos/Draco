@@ -80,6 +80,8 @@ int main(int argc, char *argv[])
 	g.readgroup("testP1Diffusion.in");
 	g.writegroup("testP1Diffusion.out");
 
+	mdb.resize();
+	
 	SP<MT> spMesh(new MT(mdb));
 	rtt_P1Diffusion_test::testP1Diffusion<MT> testP1(spMesh, spMesh,
 							 tdb.D, tdb.sigma,

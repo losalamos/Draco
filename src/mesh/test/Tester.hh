@@ -66,7 +66,8 @@ class Tester
 	    rtt_mesh::Mesh_DB mdb;
 	    mdb.setup_namelist( g );
 	    g.readgroup( filename.c_str() );
-
+	    mdb.resize();
+	    
 	    factory_m = new FACTORY(mdb);
 	    std::cout << "Factory created in Tester" << std::endl;
 	}

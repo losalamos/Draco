@@ -89,6 +89,8 @@ int main( int argc, char *argv[] )
     g.readgroup("testLAMGDiffusionSolver.in");
     g.writegroup("testLAMGDiffusionSolver.out");
 
+    mdb.resize();
+    
     rtt_dsxx::SP<Mesh_XYZ> spmesh(new Mesh_XYZ(mdb));
 
     const Mesh_XYZ::FieldConstructor &fCtor = spmesh;

@@ -31,6 +31,7 @@ Mesh_XYZFactory getMTFactory(const std::string &filename)
     Mesh_XYZFactory::Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( filename.c_str() );
+    mdb.resize();
     
     std::cout << "Factory created in Tester" << std::endl;
 
