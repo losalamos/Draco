@@ -18,7 +18,15 @@ libsrcs = inner.cc sweep3d.cc
 
 # Get the library built, minding our various other targets too.
 
+pretarg = deps
+resolve_libs = -L../ds++ -lds++_$(env)
+
 include ../config/make.lib
+
+deps:
+ifneq ($(dodeps),no)
+	(cd ../ds++; $(MAKE) $(subnj))
+endif
 
 # Rules for building docs
 
