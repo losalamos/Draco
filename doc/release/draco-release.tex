@@ -26,7 +26,7 @@
 \newcommand{\dsxx}{{\normalfont\normalsize\scshape ds\raisebox{.2ex}
   {\scriptsize ++}}}
 
-\newcommand{\stable}{{\normalfont\normalsize\texttt latest\_stable}}
+\newcommand{\stable}{{\normalfont\normalsize\texttt last\_stable}}
 
 %%---------------------------------------------------------------------------%%
 %% BEGIN DOCUMENT
@@ -39,7 +39,7 @@
 
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
-\refno{XTM:TME-97-??? (U)}
+\refno{XTM:TME-99-??? (U)}
 \subject{Draco Release Policy and Procedures}
 
 %-------NO CHANGES
@@ -95,13 +95,14 @@ The purpose of this memo is to outline the release policy and
 procedures for \draco\ and \draco\ packages.  These procedures should
 also apply to \draco-modeled code projects including \solon\ and
 \milagro.  \draco\ products are version-controlled by {\bf cvs} tags.
-Thus, releases of a particular code are simply shipped by using an
-appropriate \texttt{cvs export} command.
+Thus, releases of a particular code are shipped using an appropriate
+\texttt{cvs export} command.
 
-This memo consists of two primary sections plus an Overview
-(\S~\ref{sec:overview}) and Summary (\S~\ref{sec:summary}).
-Section~\ref{sec:policy} outlines \draco\ release policies.  This
-section contains information on the following topics:
+This memo consists of two primary sections, \S~\ref{sec:policy} and
+\ref{sec:procedures}, plus an Overview (\S~\ref{sec:overview}) and
+Summary (\S~\ref{sec:summary}).  Section~\ref{sec:policy} outlines
+\draco\ release policies.  It contains information on the following
+topics:
 \begin{enumerate}
 \item the release policy for \draco-components;
 \item the release policy for \draco;
@@ -127,17 +128,22 @@ manual~\cite{cvs} to become intimate with its controls and use.
 \section{Overview}
 \label{sec:overview}
 
-The general release policy in \draco\ is to separate the package
-release number from the \draco\ release number.  This allows \draco\ 
-to have regular releases without waiting for individual packages to
-get to the next release point.  For example, if the \dsxx\ package is
-migrating from \texttt{ds++-1\_5\_0} to \texttt{ds++-1\_6\_0} when
-\draco\ is ready for release, the \draco\ team can release a version
-of \draco\ that includes \texttt{ds++-1\_5\_0}.  If \draco\ releases
-are required to wait for all of its packages to move forward to the
-next release point then \draco\ would never be shipped.  Separating
-the \draco\ and \draco\ package release numbers eases the pressure on
-\draco\ package developers who would otherwise delay \draco\ releases.
+Historically, \draco\ evolved as a loose collection of individual
+packages bound by a common build system.  While \draco\ is more
+tightly integrated in its present incarnation, \draco\ development
+still concentrates on individual packages.  Thus, the general release
+policy in \draco\ is to separate the package release number from the
+\draco\ release number.  This allows \draco\ to have regular releases
+without waiting for individual packages to get to the next release
+point.  For example, if the \dsxx\ package is migrating from
+\texttt{ds++-1\_5\_0} to \texttt{ds++-1\_6\_0} when \draco\ is ready
+for release, the \draco\ team can release a version of \draco\ that
+includes \texttt{ds++-1\_5\_0}.  If \draco\ releases are required to
+wait for all of its packages to move forward to the next release point
+then the release of \draco\ would be unnecessarily delayed.
+Separating the \draco\ and \draco\ package release numbers eases the
+pressure on \draco\ package developers who might otherwise delay
+\draco\ releases.
 
 A typical release of \draco\ is illustrated in
 Fig.~\ref{fig:drelease}.  Each package in \draco\ is at a closure
@@ -147,10 +153,13 @@ Fig.~\ref{fig:drelease}.  Each package in \draco\ is at a closure
     number formats are explained in \S~\ref{sec:rel_num}.}
   \label{fig:drelease}
 \end{figure}
-point commensurate with the \draco\ release.  This entails easy access
-for bug fixes for a particular version of \draco.  Release dates for
-\draco\ and \draco\ packages are decided by \draco\ project
-developers as explained in \S~\ref{sec:policy}.
+point that is indicated by a release tag. At the time of the \draco\ 
+release, the package numbered release tag is concurrent with a
+\stable\ tag.  The \stable\ tag indicates that the package is in a
+stable, robust condition.  This provides a simple model for bug fixes
+and forward development.  Release dates for \draco\ and \draco\ 
+packages are decided by \draco\ project developers as explained in
+\S~\ref{sec:policy}.
 
 %%---------------------------------------------------------------------------%%
  
@@ -158,34 +167,33 @@ developers as explained in \S~\ref{sec:policy}.
 \label{sec:policy}
 
 The \draco\ release policy is a set of general requirements that
-control the process of software release in the \draco\ code system.
+controls the process of software release in the \draco\ code system.
 To start, we will write down the software release policies for \draco.
 Afterwards, we describe these policies in more detail.  The policies
-dictating \draco\ process are purposely not meticulously defined.
-Because the \draco\ development team is small, only a small set of
-general policies are required.  Additionally, these policies may be
-waived in specific circumstances by pervue of the \draco\ development
-team.
+dictating the \draco\ release process are purposely sparse.  Because
+the \draco\ development team is small, only a small set of general
+policies are required.  Additionally, these policies may be waived in
+special circumstances by the \draco\ development team.
 
 The \draco\ release policies are the following:
 \begin{enumerate}
-\item Each file in \draco\ will have, at a minimum, two tags, a
+\item Each file in \draco\ will have a minimum of two common tags, a
   \draco-level tag and a \stable\ tag.  The \stable\ tag is a
   ``pointer-like'' tag that points to the latest stable release of a
-  particular \draco\ component.  The \draco\ tag is a numbered release 
+  particular \draco\ component.  The \draco\ tag is a numbered release
   tag that refers to a fully-stable, released version of \draco.
-\item Package files will have numbered release tags in addition to the 
-  common tags.
-\item \draco build-system components (\texttt{config/},
+\item Package files in \texttt{draco/src/} will have numbered release
+  tags in addition to the common tags.
+\item \draco\ build-system components (\texttt{config/},
   \texttt{tools/}, and \texttt{templates/}) will have numbered release
   tags in addition to the common tags.
 \item Additional \draco\ components such as \texttt{doc/} and
   \texttt{draco\_www} may or may not have tags in addition to the
   common tags.  This is a discretionary policy of the \draco\ team and 
-  principle developers of the component.
-\item \draco\ release dates are determined by the \draco development
+  principal developers of the component.
+\item \draco\ release dates are determined by the \draco\ development
   team.  To qualify for numbered release the following conditions must 
-  be satsfied:
+  be satisfied:
   \begin{itemize}
   \item All components in \draco\ must be in a tagged \stable\
     condition.
@@ -193,11 +201,10 @@ The \draco\ release policies are the following:
     should be at a numbered release.
   \item All components must pass their respective suite of
     regression tests.
-  \item All \draco\ developers that have contributed to any
-    components since the last release should comply with the release
-    date.
+  \item All \draco\ developers that have contributed to any components
+    since the last release should agree with the release date.
   \end{itemize}
-\item For a component to be placed in a \stable\ condition the
+\item For a component to be placed in a \stable\ state the
   following conditions must be satisfied:
   \begin{itemize}
   \item The component must pass its regression tests.
@@ -213,20 +220,137 @@ The \draco\ release policies are the following:
 \item \draco\ code packages should have a \texttt{release()} function
   that can be called from the package library.  This function returns
   a \texttt{std::string} of the numbered release tag.
-\item No non-\draco\ tags should exist on \draco\ components that sit
+\item No non-\draco\ tags should exist in \draco\ components that sit
   under the \texttt{draco/} directory in \texttt{\$CVSROOT}.
 \end{enumerate}
 We will now explain these policies in more detail.
 
 \subsection{Draco Tagging Strategy}
+\label{sec:stable-tag}
 
-To implement the policies layed out above, we have developed the
-\stable\ tag.  Consider Fig.~\ref{fig:tag-strategy}.
- 
+To implement the policies laid out above, we have developed the
+\stable\ tag.  Consider a fictional representation of \draco\ as
+illustrated in Fig.~\ref{fig:tag-strategy}.  The \stable\ tag is used
+\begin{figure}
+  \centerline{\includegraphics[width=6.5in]{tag-strategy.eps}}
+  \caption{{\bf cvs} tagging history for a fictional representation of 
+    \draco.  The \stable\ tag always points to the last stable release 
+    of a particular package.}
+  \label{fig:tag-strategy}
+\end{figure}
+to point to the last viable version of each package.  By viable, we
+mean that when the \stable\ tag was assigned, the package
+\begin{enumerate}
+\item passed its regression tests,
+\item passed the regression tests of all packages that depend on the
+  component.
+\end{enumerate}
+Thus, by checking out a \stable\ tagged version of code, one is
+nearly guaranteed that the package works the way that the code
+developers designed it.
+
+There are some subtleties involved with the \stable\ tag that should
+be explained.  First, the \stable\ tag is intended for the timely
+resolution of code conflicts.  Assume that developer A is working on
+\dsxx\ and developer B is working on \cfour\ as illustrated in
+Fig.~\ref{fig:ab}.  B checks out the \stable\ version of \dsxx\ and
+\begin{figure}
+  \centerline{\includegraphics[width=5in]{AB.eps}}
+  \caption{Illustration of \stable\ conflicts between packages.}
+  \label{fig:ab}
+\end{figure}
+begins to modify \cfour.  In the meantime A checks out, modifies,
+tests, and updates \dsxx\ to a new \stable\ version.  Furthermore, A
+has properly followed \draco\ policy by testing the \stable\ version
+of \cfour\ with his/her new head revision of \dsxx.  What can happen
+in this instance is that the new \stable\ \dsxx\ can break B's head
+revision of \cfour.  However, this is exactly the point of using
+\stable\ tags during development.  In the process of bringing
+respective versions of packages to a \stable, releasable state,
+developers working on complimentary packages are forced to communicate
+with each other to resolve code conflicts.  The nefarious condition of
+resolving multiple conflicts between many packages before a release,
+which results when many developers work independently, is avoided.
+This policy should drastically improve the stability and efficiency of
+the \draco\ development cycle.
+
+As a follow-up to the above example, we note that the development
+system in \draco\ has several indicators for spotting possible
+conflicts.  The first is {\bf cvs}.  Both A and B should know from
+commit logs that \dsxx\ and \cfour\ are in a development stage.
+Additionally, personal communication within the group should let all
+developers know who is working on what.  Thus, the \stable\ tagging
+policy is simply one of a number of redundant checks that ensures
+quality and stability in \draco.
+
+The stable tag also significantly reduces the complexity of releasing
+\draco.  As explained in \S~\ref{sec:procedures}, a \draco\ release is 
+performed by checking out all of the \stable\ components of \draco.  A 
+final test needs to be run to ensure that all the regression tests
+pass.  \draco\ can then be given a new release tag.
+
+Finally, we reemphasize that the \stable\ tag should be concurrent
+with a numbered release, either at the \draco\ level or at the \draco\ 
+component level.  For example, \draco\ packages have their own
+numbered release tags; the \stable\ tag will always point to the last
+numbered release of a particular package.  \draco\ components that do
+not have separate numbered release tags are only ``stable'' at the
+point of the last \draco\ numbered release.  Components that do not
+have numbered release tags separate from the main \draco\ tag are not
+meant to change much from one \draco\ release to the next.  Components
+in this category include files under the main \draco\ directory such
+as \texttt{configure.in}, \texttt{README.draco}, and so forth.
+
+\subsection{Draco Components}
+
+\draco\ components include both files contained in a subdirectory and
+free files.  Free files include the build-system infrastructure files
+under \texttt{draco/}, \texttt{draco/src/}, and \texttt{draco/doc/}.
+Packages under the \texttt{draco/src/} directory are components.  The
+\texttt{draco/config/} directory is a component.  All \draco\ 
+components have a minimum of two tags, a \stable\ tag and a
+\draco-level tag.  Certain components, including packages and
+\texttt{draco/config/}, have their own numbered tags in addition to
+the two aforementioned tags.  Additional components may or may not
+have numbered release tags depending upon their purpose.  The decision
+about whether to provide a numbered tag for these additional \draco\ 
+components is determined by the \draco\ development team on a
+case-by-case basis.
+
+All subdirectories in \texttt{draco/src/} are packages.  These
+directories constitute the main product of \draco.  Each package has,
+in addition to a \stable\ tag and \draco\ tag, an individual numbered
+release tag.  The format of this tag is detailed in
+\S~\ref{sec:rel_num}.  Also, major release numbers on the tags should
+concur with the {\bf cvs} major revision numbers.  See
+\S~\ref{sec:rel_num} for details.
+
+Each package in \draco\ should conform to the policies stated above.
+A few points of illucidation about these policies follow.  First, all 
+packages should provide a library function called \texttt{release()}
+that has the following prototype:
+\begin{verbatim}
+     const std::string release();
+\end{verbatim}
+The definition of this function should be compiled into a package
+library.  In other words, \texttt{release()} is not to be an inline
+function.  Using the \texttt{release()} function, clients of the
+package can dynamically determine its release number.
+
 %%---------------------------------------------------------------------------%%
 
 \section{Draco Release Procedures}
 \label{sec:procedures}
+
+In \S~\ref{sec:policy} we have defined a loose set of policies that
+dictate code development in \draco.  In this section we shall proceed
+to define procedures for accomplishing those policies.  First, we
+shall define a common numbering convention for \draco\ releases.  We
+shall continue by defining procedures for tagging \draco\ components
+as \stable.  We follow by showing how to tag numbered \draco\ 
+components.  In this section, particular emphasis will be given to
+tagging \draco\ packages.  A final section explains bug fixes and
+branching.
 
 \subsection{Release Numbers}
 \label{sec:rel_num}
@@ -237,119 +361,188 @@ special circumstances as decided by the \draco\ development team.
 \draco\ code releases are numbered according to the following scheme:
 \begin{equation}
   \boldsymbol
-  \langle\mathit{pkg\_name}\rangle\_
-  \langle\mathit{major}\rangle.
-  \langle\mathit{minor}\rangle.
+  \langle\mathit{name}\rangle-
+  \langle\mathit{major}\rangle\_
+  \langle\mathit{minor}\rangle\_
   \langle\mathit{branch}\rangle\; .
   \notag
 \end{equation}
-In the above, $\langle\mathit{pkg\_name}\rangle$ is the name of the
-package, and $\langle\mathit{major}\rangle$ and
-$\langle\mathit{minor}\rangle$ are the major and minor version
-numbers, respectively. Bug fixes to a particular package version are
-done using {\bf cvs} branches.  A release of such a branch is noted by
+In the above, $\langle\mathit{name}\rangle$ is the name of the
+component, and $\langle\mathit{major}\rangle$ and
+$\langle\mathit{minor}\rangle$ are the major and minor release
+numbers, respectively. Bug fixes to a particular package release utilize
+{\bf cvs} branches.  A release of such a branch is noted by
 $\langle\mathit{branch}\rangle$.  Release numbers are not decimal
-numbers.  For example, \texttt{draco\_1.32.0} is the thirty-second
-minor revision of version~1 of \draco.  Examples of some release
+numbers.  For example, \texttt{draco-1\_32\_0} is the thirty-second
+minor revision of release~1 of \draco.  Examples of some release
 numbers are given below.
 \begin{center}
   \begin{tabular}{ll}
-    \texttt{ds++\_1.32.0} & major version~1, minor version~32 of the
+    \texttt{ds++-1\_32\_0} & major release~1, minor release~32 of the
     \dsxx\ package \\
-    \texttt{c4\_4.12.3} & the third bug fix to major version~4, minor
-    version~12 of the \cfour\ package \\
+    \texttt{c4-4\_12\_3} & the third bug fix to major release~4, minor
+    release~12 of the \cfour\ package \\
+    \texttt{config-1\_3\_0} & major release~1, minor release~3 of the
+    \texttt{draco/config/} component\\
   \end{tabular}
 \end{center}
 
-Version numbers are assigned at the discretion of the package
-developer.  Minor updates to a major version should be indicated by
-increasing the minor version number.  Major changes or releases are
-indicated by the major version number.  The package developer decides
+Release numbers are assigned at the discretion of the package
+developer.  Minor updates to a major release should be indicated by
+increasing the minor release number.  Major changes or releases are
+indicated by the major release number.  The package developer decides
 whether a release is a major or minor revision.  The only requirement
-is that the version numbers increase monotonically.  Additionally,
-when updating to a new major version, the minor version number should
-be reset to zero.  Thus, when moving from \texttt{c4\_1.109.0} to
-version~2 of \cfour, the new version number should be
-\texttt{c4\_2.0.0}.
+is that the release numbers increase monotonically. 
 
-\subsection{Tagging Draco Packages}
-
-Version numbers of the source code are handled by {\bf cvs}.  Tagging
-a \draco\ package involves two steps:
-\begin{enumerate}
-\item updating the version number in the \texttt{Version.cc} code
-  file;
-\item tagging all of the source using {\bf cvs}.
-\end{enumerate}
-We will quickly explain these steps.
-
-Each \draco\ package contains the source code \texttt{Version.hh} and
-\texttt{Version.cc}.  This component contains the free-function
-\texttt{version()} that returns the version number of the
-package\footnote{The \texttt{version()} function is wrapped in the
-  package namespace to avoid global namespace contamination.}.  This
-can be used in code to confirm the version number of a particular
-package library.  The version number is assigned in the
-\texttt{version()} function definition.  This string must be updated
-when package versions are released.
-
-The second step in releasing a \draco\ package is to tag the package
-source code.  This is performed by the following {\bf cvs} command:
+When updating to a new major release, the minor release number should
+be reset to zero.  Thus, when moving from \texttt{c4-1\_109\_0} to
+release~2 of \cfour, the new release number should be
+\texttt{c4-2\_0\_0}.  Additionally, we stated in \S~\ref{sec:policy}
+that the major release numbers in \draco\ tags should correspond to
+the {\bf cvs} major revision number.  Thus, in the preceding example,
+all of the files in \cfour\ should have their {\bf cvs} revision
+numbers updated to 2.0.  To accomplish this, simply attach \texttt{-r
+  2.0} to the {\bf cvs} commit line:
 \begin{verbatim}
-     cvs tag pkg_#.#.#
+     cvs commit -r 2.0
 \end{verbatim}
-The above command works while in the package directory.  To tag the
-package at a higher directory level, simply append the package
-directory name.  See the GNU {\bf cvs} manual for more information.
+This command will commit any changes to the source and will update 
+the revision numbers of all files to 2.0.  This step should precede
+the tagging command.
 
-\subsection{Tagging Draco}
+\subsection{Tagging \stable}
+
+The \stable\ tag is a floating tag.  That is, when a file is modified
+to a new \stable\ condition, the \stable\ tag must be moved from the
+previous file revision to the current file revision.  {\bf cvs} easily 
+accomplishes this service.  To tag a new revision of an existing file
+as \stable, perform the following command:
+\begin{verbatim}
+     cvs tag -F last_stable
+\end{verbatim}
+This command will overwrite the preceding \stable\ tag on the current
+revision of the file(s).
+
+\subsection{Numbered Tags}
 
 Each \draco\ release consists of a series of tagged (released)
-packages.  Thus, tagging a \draco\ release involves updating each
-project directory to the appropriate version and then tagging all of
-\draco\ with a release tag.  For example, consider the \draco\ release 
-illustrated in Fig.~\ref{fig:drelease}.  We want to make \draco\
-release \texttt{draco\_1.3.0}.  This release should contain the
-following packages:
+components.  Thus, tagging a \draco\ release involves updating each
+component to the \stable\ state and then tagging all of \draco\ with a
+release tag.  At the \draco\ component level, components that require
+numbered tags should be brought to a \stable\ condition and tagged
+with an appropriate number using the following command:
 \begin{verbatim}
-     ds++_2.1.0
-     c4_1.4.1
-     xm_4.1.0
-     rng_1.3.0
+     cvs tag <name>-#_#_#
 \end{verbatim}
-Note that one bug fix has been committed to \cfour.  Since the initial
-time of these package releases, a \cfour\ developer has begun working
-on version~1.5 and a \dsxx\ developer has begun work on version~2.2.
-Thus, the current versions of these packages in {\bf cvs} must be
-reverted back to the release points. This is performed by the
-following series of {\bf cvs} commands:
-\begin{verbatim}
-     cvs checkout draco
-     cd draco/src
-     cvs update -r ds++_2.1.0 ds++
-     cvs update -r c4_1.4.1 c4
-     cvs update -r xm_4.1.0 xm
-     cvs update -r rng_1.3.0 rng
-\end{verbatim}
-These commands will insure that each package is in the proper state.
-All that remains is to tag \draco\ itself.  This is accomplished
-through {\bf cvs} using:
-\begin{verbatim}
-     cvs tag draco_1.3.0
-\end{verbatim}
-As before, this command assumes that one is in the \draco\ top-level
-directory.  
+We look at some examples below.
 
-On a final note, \draco-modeled systems such as \solon and \milagro\
-are tagged in a similar manner.  However, the decision on whether to
-tag sub-packages of these systems is left to the system developer.
-For code systems that contain many sub-packages, separating package
-and system level tags may be required.  For systems that contain few
-source components, one tag may suffice.  The only requirement for
-\draco-modeled projects is that they contain a system-level tag.
-Thus, \milagro\ is required, at a minimum, to have a
-\texttt{milagro\_1.0.0} tag.  Any additional tags are left to the
-discretion of the project development team.
+First, let us examine some \draco\ components.  Consider a scenario in
+which the \texttt{draco/config/} directory is modified between \draco\ 
+release \texttt{draco-1\_1\_0} and \texttt{draco-1\_2\_0}.  The
+\stable\ release of \texttt{draco/config/} corresponds to
+\texttt{config-1\_12\_0}.  We want to modify \texttt{draco/config/}
+and release \texttt{config-1\_13\_0}.  This is accomplished by the
+following procedure:
+\begin{enumerate}
+\item Modify and commit files in \texttt{draco/config/}\ .
+\item Perform regression tests with the rest of \draco\ in a \stable\ 
+  condition using the following:
+\begin{verbatim}
+     cvs checkout -r last_stable draco
+     cd draco/config
+     cvs update -A
+\end{verbatim}
+  The \texttt{-A} option removes the \stable\ tag from
+  \texttt{draco/config/} thus updating this directory to the head
+  revision.  One can then perform regression tests with the rest of
+  \draco\ in its \stable\ condition.  Additionally, one may update the 
+  rest of \draco\ to a \stable\ state:
+\begin{verbatim}
+     cvs update -r last_stable draco
+     cd draco/config
+     cvs update -A
+\end{verbatim}
+  However, one must ensure that all updates to \texttt{draco/config/}
+  have been committed; otherwise, they will be lost in the update.
+\item Continuing, if the regression tests pass we can update the tags
+  on the component:
+\begin{verbatim}
+     cvs tag -F last_stable
+     cvs tag config-1_13_0
+\end{verbatim}
+\end{enumerate}
+This procedure satisfies all of the \draco\ policies.  The code was
+modified from a \stable\ state.  The code was tested against the
+\stable\ releases of all dependent components.  Finally, the release
+tag number was updated concurrently with the new \stable\ tag.
+
+Now we consider a full \draco\ release.  We want to update \draco\
+from \texttt{draco-1\_12\_0} to \texttt{draco-2\_0\_0}.  Let us look
+in detail at the steps that this update entails:
+\begin{enumerate}
+\item Modify any components from the \stable\ release of \draco.
+\item Checkout a \stable\ version of \draco\ using
+\begin{verbatim}
+     cvs checkout -r last_stable draco
+\end{verbatim}
+  Alternatively, an update can be performed to the \stable\ condition
+  if \draco\ is already checked out:
+\begin{verbatim}
+     cvs update -r last_stable -d draco
+\end{verbatim}
+\item Run all regression tests on the \stable\ version of \draco.
+  Assemble the development team to fix any conflicts.  Usage of the
+  \stable\ tag described in \S~\ref{sec:stable-tag} should drastically 
+  reduce the possibility of any possible conflicts at this stage;
+  however, this does provide one final check that guarantees the
+  integrity of the release.
+\item Update the {\bf cvs} revision numbers of all \draco\ components
+  to revision number 2.0:
+\begin{verbatim}
+     cd draco
+     cvs commit -r 2.0
+\end{verbatim}
+\item Update the \stable\ tag.  For a minor revision change this step
+  would not be necessary; however, since we committed all of the
+  \draco\ components by updating the {\bf cvs} revision numbers to
+  2.0, this step is required.
+\begin{verbatim}
+     cvs tag -F last_stable
+\end{verbatim}
+\item Tag the \draco\ release
+\begin{verbatim}
+     cvs tag draco-2_0_0
+\end{verbatim}
+\end{enumerate}
+Note that this example is an extraordinary case where the major
+release of \draco\ is updated.  Normally, we would not have to re-tag
+the \draco\ components as \stable.  Remember, whenever the major
+release number is advanced the \stable\ tag must be reapplied to the
+component.
+
+On a final note, \draco-modeled systems such as \solon\ and \milagro\ 
+should be tagged in a similar manner.  However, the decision on
+whether to tag sub-packages of these systems is left to the system
+developer.  For code systems that contain many sub-packages,
+separating package and system level tags may be required.  For systems
+that contain few source components, one tag may suffice.  The only
+requirement for \draco-modeled projects is that they contain a
+system-level tag.  Thus, \milagro\ is required, at a minimum, to have
+a \texttt{milagro\_1.0.0} tag.  Any additional tags are left to the
+discretion of the project development team.  Remember, if the project
+uses \draco\ build system components, it cannot tag any of them with a
+non-\draco\ tag.
+
+\subsection{Draco Package Concerns}
+
+In addition to tagging \draco\ packages with individual numbered
+release tags, the \texttt{release()} function definition requires an
+update.  When creating a new package directory in \draco\ through the
+XEmacs command \texttt{draco-package}~\cite{xtm:9909}, two files are
+created, \texttt{Release.hh} and \texttt{Release.cc}, that
+automatically declare and define the \texttt{release()} function.
+When updating a package number, the release number in
+\texttt{Release.cc} must be updated to reflect the new release.
 
 \subsection{Bug Fixes}
 
@@ -369,7 +562,7 @@ following {\bf cvs} commands are used:
      cd draco/src/c4
      cvs tag -b c4_1.9.1
 \end{verbatim}
-This creates a branch to \cfour\ version~1.4.  If the bug fix is
+This creates a branch to \cfour\ release~1.4.  If the bug fix is
 required in a \draco\ release, \draco\ should be re-released with the
 appropriate branch number.  For example, to include \texttt{c4\_1.9.1}
 in a \draco\ release we tag \draco\ using:
@@ -378,10 +571,14 @@ in a \draco\ release we tag \draco\ using:
      cd draco/src
      cvs update -r c4_1.9.1 c4
      cd ..
+     (run regression tests)
      cvs tag draco_1.4.1
 \end{verbatim}
 Thus, \draco\ itself is not put on a branch.  The branch number on
-\draco\ versions indicates bug fixes in \draco\ packages.
+\draco\ versions indicates bug fixes in \draco\ packages.  Also note
+that branches are, by definition, never in a \stable\ state.  Branches
+are used for bug fixes only.  Thus, a \stable\ version will always be
+farther down the revision tree than a branch.
 
 Additional fixes of bugs on package branches should be tagged using
 \texttt{cvs tag c4\_1.9.2}.  Thus, to make a tag to this \cfour\ 
@@ -391,12 +588,13 @@ version use the following commands:
      cd draco/src
      cvs tag c4_1.9.2 c4
      cd ..
+     (run regression tests)
      cvs tag draco_1.4.2
 \end{verbatim}
 We note that {\bf cvs} branches automatically release code to the end
 of the branch.  Hence, \texttt{cvs checkout -r c4\_1.9.1 c4} will
 automatically give the sources at the end of the \cfour\ branch
-connected to version~1.9.  We add tags to clarify the development and
+connected to release~1.9.  We add tags to clarify the development and
 bug tracking process in \draco\ even though they may not be strictly
 necessary in all cases.  For more information on branches, see
 Chapter~5 of the {\bf cvs} manual.
@@ -406,8 +604,20 @@ Chapter~5 of the {\bf cvs} manual.
 \section{Summary}
 \label{sec:summary}
 
-We have explained the tagging and release procedure for \draco\ 
-projects in group XTM.  As with all \draco\ procedures, exceptions to
+The basic procedures explained in this document are robust.  However,
+all procedures could benefit from future enhancements.  A list of
+desired improvements to the \draco\ release procedures are:
+\begin{itemize}
+\item Release numbers in the \texttt{Release.cc} could be updated
+  auto-magically through a script in the {\bf cvs} file
+  \texttt{taginfo}.
+\item {\bf cvs} major revision numbers could be updated auto-magically
+  when the major release numbers on the tag are advanced.
+\end{itemize}
+These topics are noted for future consideration.
+
+We have explained the release policies and procedures for \draco\ 
+projects in group XTM.  As with all \draco\ policies, exceptions to
 the standard rules are acceptable pending review by \draco\ team
 members.  These procedures have been reviewed and are part of the
 \draco\ development process.
