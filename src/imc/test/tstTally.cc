@@ -13,7 +13,6 @@
 #include "IMC_Test.hh"
 #include "../Release.hh"
 #include "../Tally.hh"
-#include "../Random_Walk_Sub_Tally.hh"
 #include "../Tally_Builder.hh"
 #include "../Surface_Tracking_Interface.hh"
 #include "mc/OS_Mesh.hh"
@@ -36,6 +35,7 @@ using rtt_mc::Surface_Descriptor;
 using rtt_imc::Tally;
 using rtt_imc::Tally_Builder;
 using rtt_imc::Random_Walk_Sub_Tally;
+using rtt_imc::Surface_Sub_Tally;
 using rtt_dsxx::SP;
 using std::pow;
 using rtt_mc::global::soft_equiv;
@@ -43,6 +43,9 @@ using rtt_mc::global::soft_equiv;
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
+
+namespace tally_test
+{
 
 class Interface : public rtt_imc::Surface_Tracking_Interface
 {
@@ -54,7 +57,12 @@ class Interface : public rtt_imc::Surface_Tracking_Interface
 
   public:
    
-
+    Interface(int h, int s) : surfaces(s), hybrid(h), cosines(3)
+    {
+	cosines[0] = -0.5;
+	cosines[1] = 0.0;
+	cosines[2] = 0.5;
+    }
 
     int get_hybrid_diffusion_method() const { return hybrid; }
     int number_of_surfaces() const { return surfaces.size(); }
@@ -69,6 +77,8 @@ class Interface : public rtt_imc::Surface_Tracking_Interface
 	return cosines;
     }  
 };
+
+}
 
 //---------------------------------------------------------------------------//
 
@@ -221,8 +231,67 @@ void Tally_Test()
 
 void Tally_Builder_Test()
 {
+    // make a mesh and tally
+    SP<Parser> parser(new Parser("OS_Input"));
+    OS_Builder mb(parser);
+    SP<OS_Mesh> mesh = mb.build_Mesh();
+
+    // make an interface that has no random walk or surfaces
+    SP<tally_test::Interface> null(new tally_test::Interface(0, 0));
+
+    Tally_Builder<OS_Mesh> nullb(null);
+    SP<Tally<OS_Mesh> > nullt = nullb.build_Tally(mesh);
+
+    if (!nullt)                  ITFAILS;
+    if (nullt->num_cells() != 6) ITFAILS;
+
+    // all tallies should be null
+    for (int i = 1; i <= 6; i++)
+    {
+	if (nullt->get_energy_dep(i) != 0) ITFAILS;
+	if (nullt->get_accum_ewpl(i) != 0) ITFAILS;
+	if (nullt->get_new_ecen(i) != 0)   ITFAILS;
+	if (nullt->get_new_ncen(i) != 0)   ITFAILS;
+    }
+
+    if (nullt->get_energy_dep_tot() != 0)      ITFAILS;
+    if (nullt->get_new_ecen_tot() != 0)        ITFAILS;
+    if (nullt->get_new_ncen_tot() != 0)        ITFAILS;
+    if (nullt->get_accum_n_effscat() != 0)     ITFAILS;
+    if (nullt->get_accum_n_thomscat() != 0)    ITFAILS;
+    if (nullt->get_accum_n_killed() != 0)      ITFAILS;
+    if (nullt->get_accum_ew_killed() != 0)     ITFAILS;
+    if (nullt->get_ew_escaped() != 0)          ITFAILS;
+    if (nullt->get_accum_n_escaped() != 0)     ITFAILS;
+    if (nullt->get_accum_n_bndcross() != 0)    ITFAILS;
+    if (nullt->get_accum_n_reflections() != 0) ITFAILS;
+
+    if (nullt->get_RW_Sub_Tally())      ITFAILS;
+    if (nullt->get_Surface_Sub_Tally()) ITFAILS;
+
+    // make an interface that has random walk and surfaces
+    SP<tally_test::Interface> has(new tally_test::Interface(1, 1));
+
+    Tally_Builder<OS_Mesh> hasb(has);
+    SP<Tally<OS_Mesh> > hast = hasb.build_Tally(mesh);
+
+    if (!hast->get_RW_Sub_Tally())      ITFAILS;
+    if (!hast->get_Surface_Sub_Tally()) ITFAILS;
+
+    SP<Surface_Sub_Tally>     s_tally  = hast->get_Surface_Sub_Tally();
+    SP<Random_Walk_Sub_Tally> rw_tally = hast->get_RW_Sub_Tally();
+
+    if (rw_tally->get_accum_n_random_walks() != 0) ITFAILS;
+    if (rw_tally->get_accum_n_spheres() != 0)      ITFAILS;
+    if (rw_tally->get_accum_sphere_radii() != 0.0) ITFAILS;
+    if (rw_tally->get_accum_step_lengths() != 0.0) ITFAILS;
+
+    if (s_tally->get_number_surfaces() != 1)              ITFAILS;
+    if (s_tally->get_outward_weight_tally(1).size() != 4) ITFAILS;
+    if (s_tally->get_mesh_size() != 4 )                   ITFAILS;
+
     if (rtt_imc_test::passed)
-	PASSMSG("Tally_Builder tests ok.")
+	PASSMSG("Tally_Builder tests ok.");
 }
 
 //---------------------------------------------------------------------------//

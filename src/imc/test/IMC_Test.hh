@@ -7,16 +7,18 @@
 // @> Some services we will need to test the imc packages
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_test_IMC_Test_hh__
-#define __imc_test_IMC_Test_hh__
+#ifndef rtt_imc_test_IMC_Test_hh
+#define rtt_imc_test_IMC_Test_hh
 
 #include "../Interface.hh"
 #include "../Flat_Data_Interface.hh"
 #include "../CDI_Data_Interface.hh"
+#include "../Surface_Tracking_Interface.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "mc/General_Topology.hh"
 #include "mc/RZWedge_Mesh.hh"
+#include "mc/Surface_Descriptor.hh"
 #include "cdi_analytic/Analytic_Models.hh"
 #include "cdi_analytic/Analytic_Gray_Opacity.hh"
 #include "cdi_analytic/Analytic_Multigroup_Opacity.hh"
@@ -61,7 +63,8 @@ class Parser
 template<class PT>
 class IMC_Flat_Interface :
 	public rtt_imc::Interface<PT>,
-	public rtt_imc::Flat_Data_Interface
+	public rtt_imc::Flat_Data_Interface,
+	public rtt_imc::Surface_Tracking_Interface
 {
   public:
     // Useful typedefs
@@ -73,6 +76,7 @@ class IMC_Flat_Interface :
     typedef rtt_dsxx::SP<rtt_imc::Flat_Data_Container>       SP_Data;
     typedef typename rtt_mc::Particle_Containers<PT>::Census Census;
     typedef rtt_dsxx::SP<Census>                             SP_Census;
+    typedef std::vector<rtt_mc::Surface_Descriptor>          sf_Surfaces;
 
   private:
     // sp to OS_Builder
@@ -93,6 +97,10 @@ class IMC_Flat_Interface :
     sf_double rad_temp;
     sf_double ss_temp;
     sf_string ss_desc;
+
+    // surface data
+    sf_double   cosines;
+    sf_Surfaces surfaces;
 
   public:
     // constructor
@@ -126,6 +134,11 @@ class IMC_Flat_Interface :
     SP_Census get_census() const { return SP_Census(); }
     double get_ecen(int cell) const { return double(0); }
     double get_ecentot() const { return double(0); }
+
+    // public interface defined by Surface tracking interface
+    int number_of_surfaces() const { return surfaces.size(); }
+    const sf_Surfaces& get_surface_data() const { return surfaces; }
+    const sf_double& get_bin_cosines() const { return cosines; }
 };
 
 //---------------------------------------------------------------------------//
@@ -150,7 +163,9 @@ IMC_Flat_Interface<PT>::IMC_Flat_Interface(
       rad_temp(osb->num_cells()),
       ss_temp(2),
       ss_desc(2, "standard"),
-      hybrid_model(hmodel)
+      hybrid_model(hmodel),
+      surfaces(1),
+      cosines(3)
 {   
     if (osb->num_cells() % 2 != 0)
 	throw rtt_dsxx::assertion("Non-even celled test mesh.");
@@ -256,6 +271,16 @@ IMC_Flat_Interface<PT>::IMC_Flat_Interface(
 
     ss_temp[0] = 20.0;
     ss_temp[1] = 0.0;
+
+    // surfaces
+    surfaces[0].type = rtt_mc::Surface_Descriptor::SPHERE;
+    surfaces[0].data.resize(2);
+    surfaces[0].data[0] = 1.0;
+    surfaces[0].data[1] = 2.0;
+
+    cosines[0] = -0.5;
+    cosines[1] = 0.0;
+    cosines[2] = 0.5;
 }
 
 //---------------------------------------------------------------------------//
@@ -277,7 +302,8 @@ std::vector<std::vector<int> > IMC_Flat_Interface<PT>::get_defined_surcells()
 template<class PT>
 class IMC_CDI_Interface :
 	public rtt_imc::Interface<PT>,
-	public rtt_imc::CDI_Data_Interface
+	public rtt_imc::CDI_Data_Interface,
+	public rtt_imc::Surface_Tracking_Interface
 {
   public:
     typedef rtt_dsxx::SP<rtt_cdi::CDI>                       SP_CDI;
@@ -291,6 +317,7 @@ class IMC_CDI_Interface :
     typedef std::vector<sf_int>                              vf_int;
     typedef typename rtt_mc::Particle_Containers<PT>::Census Census;
     typedef rtt_dsxx::SP<Census>                             SP_Census;
+    typedef std::vector<rtt_mc::Surface_Descriptor>          sf_Surfaces;
 
 
   private:
@@ -304,6 +331,18 @@ class IMC_CDI_Interface :
     sf_int        cdi_map;
     sf_CDI        cdi_list;
     sf_model_pair cdi_models;
+
+    // data for the source builder
+    double    elapsed_t;
+    sf_double evol_ext;
+    sf_double rad_source;
+    sf_double rad_temp;
+    sf_double ss_temp;
+    sf_string ss_desc;
+
+    // surface data
+    sf_double   cosines;
+    sf_Surfaces surfaces;
 
   public:
     // constructor -> the default processor capacity is 6 cells
@@ -324,23 +363,28 @@ class IMC_CDI_Interface :
     sf_model_pair get_CDI_models() const { return cdi_models; }
 
     // public interface for Source_Builder
-    double get_elapsed_t() const { return double(); }
-    sf_double get_evol_ext() const { return sf_double(); }
-    double get_rad_s_tend() const { return double(); }
-    sf_double get_rad_source() const { return sf_double(); }
-    sf_double get_rad_temp() const { return sf_double(); }
+    double get_elapsed_t() const { return elapsed_t; }
+    sf_double get_evol_ext() const { return evol_ext; }
+    double get_rad_s_tend() const { return double(.1); }
+    sf_double get_rad_source() const { return rad_source; }
+    sf_double get_rad_temp() const { return rad_temp; }
     sf_string get_ss_pos() const { return sf_string(); }
-    sf_double get_ss_temp() const { return sf_double(); }
+    sf_double get_ss_temp() const { return ss_temp; }
     vf_int get_defined_surcells() const { return vf_int(); }
-    int get_npnom() const { return int(); }
-    int get_npmax() const { return int(); }
+    int get_npnom() const { return int(1000); }
+    int get_npmax() const { return int(1000); }
     double get_dnpdt() const { return double(0); }
-    int get_cycle() const { return int(); }
-    std_string get_ss_dist() const { return std_string(); }
-    sf_string get_ss_desc() const { return sf_string(); }
+    int get_cycle() const { return int(1); }
+    std_string get_ss_dist() const { return "cosine"; }
+    sf_string get_ss_desc() const { return ss_desc; }
     SP_Census get_census() const { return SP_Census(); }
-    double get_ecen(int cell) const { return double(); }
-    double get_ecentot() const { return double(); }
+    double get_ecen(int cell) const { return double(0); }
+    double get_ecentot() const { return double(0); }
+
+    // public interface defined by Surface tracking interface
+    int number_of_surfaces() const { return surfaces.size(); }
+    const sf_Surfaces& get_surface_data() const { return surfaces; }
+    const sf_double& get_bin_cosines() const { return cosines; }
 };
 
 //---------------------------------------------------------------------------//
@@ -349,16 +393,23 @@ class IMC_CDI_Interface :
 
 // constructor
 template<class PT>
-IMC_CDI_Interface<PT>::IMC_CDI_Interface(int hybrid) 
-    : 
-      density(6),   
+IMC_CDI_Interface<PT>::IMC_CDI_Interface(int hybrid)
+    : density(6),   
       temperature(6, 3.0), 
       implicitness(1.0), 
       delta_t(.001),
       cdi_map(6),
       cdi_list(3),
       cdi_models(3),
-      hybrid_model(hybrid)
+      hybrid_model(hybrid),
+      elapsed_t(.001),
+      evol_ext(6),
+      rad_source(6),
+      rad_temp(6),
+      ss_temp(),
+      ss_desc(),
+      surfaces(),
+      cosines()
 {  
     using rtt_cdi_analytic::Analytic_Gray_Opacity;
     using rtt_cdi_analytic::Analytic_Multigroup_Opacity;
@@ -531,6 +582,14 @@ IMC_CDI_Interface<PT>::IMC_CDI_Interface(int hybrid)
 
     cdi_models[2].first  = gop_3->getModelType();
     cdi_models[2].second = gop_s->getModelType();
+
+    // make the Source_Builder stuff
+    for (int i = 0; i < 6; i++)
+    {
+	evol_ext[i]   = 100;
+	rad_source[i] = 200;
+	rad_temp[i]   = 10.0;
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -800,7 +859,7 @@ inline rtt_dsxx::SP<rtt_mc::Topology> recv_TOP()
 
 } // end namespace rtt_imc_test
 
-#endif                          // __imc_test_IMC_Test_hh__
+#endif                          // rtt_imc_test_IMC_Test_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/test/IMC_Test.hh

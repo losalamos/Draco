@@ -543,7 +543,7 @@ void mg_cdi_diffusion_mat_state_test()
 			    int_Planck)) ITFAILS;
 
 	// check effective cross sections in opacity and diffusion opacity
-	for (int c = 1; c < 6; c++)
+	for (int c = 1; c <= 6; c++)
 	{
 	    pair<double,double> b;
 	    double              sum = 0.0;
