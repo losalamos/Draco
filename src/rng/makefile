@@ -21,7 +21,7 @@ include ../config/makefile
 # libsrcs = code to be compiled, if using instantialyzer only include
 #           nonsrc
 
-nonsrc  = SMrng.cc Rnd_Control.cc
+nonsrc  = Random.cc SMrng.cc Rnd_Control.cc
 
 tempsrc =
 

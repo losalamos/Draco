@@ -61,6 +61,10 @@ public:
 
   // query size of packed random number state
     int get_size() const { return size; }
+
+  // get the seed value and total number of current streams set here
+    int get_seed() const { return seed; }
+    int get_number() const { return number; }
 };
 
 CSPACE

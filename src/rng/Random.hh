@@ -24,7 +24,6 @@
 #include "rng/Rnd_Control.hh"
 #include "rng/Sprng.hh"
 #include "sprng.h"
-#include <cstdlib>
 
 RNGSPACE
 
@@ -33,6 +32,12 @@ RNGSPACE
 //---------------------------------------------------------------------------//
 
 const int max_buffer = MAX_PACKED_LENGTH;
+
+//---------------------------------------------------------------------------//
+// variables useful for RNG users
+//---------------------------------------------------------------------------//
+
+extern int rn_stream;
 
 CSPACE
 
