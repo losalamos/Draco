@@ -12,7 +12,7 @@
 #include "ds_test.hh"
 #include "../Release.hh"
 #include "../Soft_Equivalence.hh"
-#include "ds++/Assert.hh"
+#include "../Assert.hh"
 
 #include <iostream>
 #include <vector>
