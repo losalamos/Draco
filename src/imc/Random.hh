@@ -75,7 +75,10 @@ public:
     double Test_avg(int num);
 };
 
+//---------------------------------------------------------------------------//
 // overloaded operators
+//---------------------------------------------------------------------------//
+
 inline ostream& operator<<(ostream &output, Random &object)
 {
     output << object.Ran() << std::endl;

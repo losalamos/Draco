@@ -30,8 +30,9 @@ using IMC::Particle;
 using IMC::Random;
 using namespace std;
 
-void Builder_diagnostic(const OS_Mesh &mesh, const Mat_State<OS_Mesh> &mat,
-			const Opacity<OS_Mesh> &opacity)
+template<class MT>
+void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
+			const Opacity<MT> &opacity)
 {
   // do some diagnostic checks
 
@@ -54,6 +55,48 @@ void Builder_diagnostic(const OS_Mesh &mesh, const Mat_State<OS_Mesh> &mat,
     output << "Mesh:      " << mesh.Num_cells() << endl;
     output << "Opacity:   " << opacity.Num_cells() << endl;
     output << "Mat_State: " << mat.Num_cells() << endl;
+}
+
+template<class MT>
+void Run_Particle(const MT &mesh, const Opacity<MT> &opacity, long seed)
+{
+  // transport a particle
+
+  // set diagnostics
+    
+    ofstream output("history", ios::app);
+    SP<Particle<MT>::Diagnostic> check = 
+	new Particle<MT>::Diagnostic(output, true);
+
+  // initialize particle
+    Particle<MT> particle(mesh, seed, 1.0, 10.0);
+    assert (particle.Status());
+
+  // origin and source
+    
+    vector<double> origin(mesh.Coord().Get_dim());   
+    vector<double> source(mesh.Coord().Get_sdim());
+
+    for (int i = 0; i < origin.size(); i++)
+    {
+	cout << "Origin " << i+1 << ": ";
+	cin >> origin[i];
+    }
+    for (int i = 0; i < source.size(); i++)
+    {
+	cout << "Omega " << i+1 << ": ";
+	cin >> source[i];
+    }
+    cout << endl;
+    
+  // source
+    particle.Source(origin, source, mesh);
+
+  // transport
+    particle.Transport(mesh, opacity, check);
+
+  // assert that particle is indeed dead
+    assert (!particle.Status());
 }
 
 main()
@@ -86,45 +129,13 @@ main()
   // mesh diagnostics
     Builder_diagnostic(*mesh, *mat_state, *opacity);
 
-  // transport a particle
+    for (int cell = 1; cell <= mesh->Num_cells(); cell++)
+	cout << cell << " " << mesh->Volume(cell) << endl;
 
-  // set diagnostics
-    
-    ofstream output("history");
-    SP<Particle<OS_Mesh>::Diagnostic> check = 
-	new Particle<OS_Mesh>::Diagnostic(output, true);
-
-  // initialize particle
-    long seed = -345632;
-    Particle<OS_Mesh> particle(*mesh, seed, 1.0, 10.0);
-    assert (particle.Status());
-
-  // origin and source
-    
-    vector<double> origin(mesh->Coord().Get_dim());   
-    vector<double> source(mesh->Coord().Get_sdim());
-
-    for (int i = 0; i < origin.size(); i++)
-    {
-	cout << "Origin " << i+1 << ": ";
-	cin >> origin[i];
-    }
-    for (int i = 0; i < source.size(); i++)
-    {
-	cout << "Omega " << i+1 << ": ";
-	cin >> source[i];
-    }
-    cout << endl;
-    
-  // source
-    particle.Source(origin, source, *mesh);
-
-  // transport
-    particle.Transport(*mesh, *opacity, check);
-
-  // assert that particle is indeed dead
-    assert (!particle.Status());
+//     long seed = -345632;
+//     Run_Particle(*mesh, *opacity, seed);
 }
+
 
 //---------------------------------------------------------------------------//
 //                              end of testb.cc

@@ -41,7 +41,7 @@ const double epsilon = DBL_EPSILON;
 // Physical constants
 //---------------------------------------------------------------------------//
 // radiation constant
-const double a = 0.01372
+const double a = 0.01372;
 
 // speed of light (m/s)
 const double c = 2.99792458e8;
