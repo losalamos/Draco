@@ -14,6 +14,9 @@
 #include "../Particle.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
+#include "mc/General_Topology.hh"
+#include "c4/global.hh"
+#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <vector>
@@ -192,6 +195,130 @@ std::string IMC_Interface::get_analytic_sp_heat() const
 std::vector<std::vector<int> > IMC_Interface::get_defined_surcells() const
 {
     return builder->get_defined_surcells();
+}
+
+//===========================================================================//
+// SEND/RECEIVE GENERAL DD TOPOLOGY
+//===========================================================================//
+// send out a DD Topology
+
+inline void send_TOP(const rtt_mc::General_Topology &topology)
+{
+    Require (C4::node() == 0);
+
+    // get General Topology data
+    rtt_mc::Topology::vf_int cpp = topology.get_cells_per_proc();
+    rtt_mc::Topology::vf_int ppc = topology.get_procs_per_cell();
+    rtt_mc::Topology::vf_int bc  = topology.get_bound_cells();
+
+    int size = 0;
+    for (int i = 0; i < cpp.size(); i++)
+	size += cpp[i].size();
+    for (int i = 0; i < ppc.size(); i++)
+	size += ppc[i].size();
+    for (int i = 0; i < bc.size(); i++)
+	size += bc[i].size();
+	    
+    int *idata = new int[size];
+    int *jdata = new int[cpp.size() + ppc.size() + bc.size()];
+	
+    int ic = 0;
+    int jc = 0;
+    for (int i = 0; i < cpp.size(); i++)
+    {
+	jdata[jc++] = cpp[i].size();
+	for (int j = 0; j < cpp[i].size(); j++)
+	    idata[ic++] = cpp[i][j];
+    }
+
+    for (int i = 0; i < ppc.size(); i++)
+    {
+	jdata[jc++] = ppc[i].size();
+	for (int j = 0; j < ppc[i].size(); j++)
+	    idata[ic++] = ppc[i][j];
+    }
+
+    for (int i = 0; i < bc.size(); i++)
+    {
+	jdata[jc++] = bc[i].size();
+	for (int j = 0; j < bc[i].size(); j++)
+	    idata[ic++] = bc[i][j];
+    }
+
+    Check (ic == size);
+    Check (jc == cpp.size() + ppc.size() + bc.size());
+
+    C4::Send<int>(cpp.size(), 1, 100);
+    C4::Send<int>(ppc.size(), 1, 101);
+    C4::Send<int>(bc.size(),  1, 102);
+    C4::Send<int>(size,       1, 103);
+    C4::Send<int>(jdata, jc, 1, 104);
+    C4::Send<int>(idata, ic, 1, 105);
+
+    delete [] idata;
+    delete [] jdata;   
+}
+
+//---------------------------------------------------------------------------//
+// receive a DD_Topology
+
+inline rtt_dsxx::SP<rtt_mc::Topology> recv_TOP() 
+{
+    Require (C4::node());
+
+    int cpp_size;
+    int ppc_size;
+    int bc_size;
+    int size;
+
+    C4::Recv(cpp_size, 0, 100);
+    C4::Recv(ppc_size, 0, 101);
+    C4::Recv(bc_size,  0, 102);
+    C4::Recv(size,     0, 103);
+
+    int *idata = new int[size];
+    int *jdata = new int[cpp_size + ppc_size + bc_size];
+
+    C4::Recv(jdata, cpp_size + ppc_size + bc_size, 0, 104);
+    C4::Recv(idata, size, 0, 105);
+
+    rtt_mc::Topology::vf_int cpp(cpp_size);
+    rtt_mc::Topology::vf_int ppc(ppc_size);
+    rtt_mc::Topology::vf_int bc(bc_size);
+
+    int jc = 0; 
+    int ic = 0;
+    for (int i = 0; i < cpp.size(); i++)
+    {
+	cpp[i].resize(jdata[jc++]);
+	for (int j = 0; j < cpp[i].size(); j++)
+	    cpp[i][j] = idata[ic++];
+    }
+
+    for (int i = 0; i < ppc.size(); i++)
+    {
+	ppc[i].resize(jdata[jc++]);
+	for (int j = 0; j < ppc[i].size(); j++)
+	    ppc[i][j] = idata[ic++];
+    }
+
+    for (int i = 0; i < bc.size(); i++)
+    {
+	bc[i].resize(jdata[jc++]);
+	for (int j = 0; j < bc[i].size(); j++)
+	    bc[i][j] = idata[ic++];
+    }
+
+    Check (ic == size);
+    Check (jc == cpp_size + ppc_size + bc_size);
+
+    rtt_dsxx::SP<rtt_mc::Topology> return_top;
+    return_top = new rtt_mc::General_Topology(cpp,ppc,bc,"DD");
+
+    delete [] idata;
+    delete [] jdata;
+
+    return return_top;
 }
 
 } // end namespace rtt_imc_test

@@ -12,10 +12,13 @@
 #include "IMC_Test.hh"
 #include "../Transporter.hh"
 #include "../Rep_Transporter.hh"
+#include "../DD_Transporter.hh"
 #include "../Particle_Buffer.hh"
 #include "../Particle.hh"
+#include "../Topology_Builder.hh"
 #include "../Release.hh"
 #include "mc/Rep_Topology.hh"
+#include "mc/General_Topology.hh"
 #include "mc/OS_Builder.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/Parallel_Data_Operator.hh"
@@ -35,10 +38,13 @@ using rtt_imc_test::IMC_Interface;
 using rtt_imc_test::Parser;
 using rtt_imc::Transporter;
 using rtt_imc::Rep_Transporter;
+using rtt_imc::DD_Transporter;
 using rtt_imc::Particle_Buffer;
 using rtt_imc::Particle;
+using rtt_imc::Topology_Builder;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
+using rtt_mc::General_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_mc::Parallel_Data_Operator;
@@ -66,6 +72,68 @@ void rep_transporter_test()
     // build a replication transporter
     SP<Transporter<MT,PT> > transporter;
     transporter = new Rep_Transporter<MT,PT>(topology);
+
+    // should be full rep transporter
+    if (transporter->type() != "replication") ITFAILS;
+
+    // transporter should not be ready
+    if (transporter->ready()) ITFAILS;
+}
+
+//---------------------------------------------------------------------------//
+
+template<class MT, class PT>
+void DD_transporter_test()
+{
+    // only perform this test on two processors
+    if (C4::nodes() != 2) 
+	return;
+    
+    // build a FULL mesh --> this mesh will be fully replicated on all
+    // processors in the test
+    SP<Parser> parser(new Parser("OS_Input"));
+    SP<OS_Builder> mb(new OS_Builder(parser));
+    SP<OS_Mesh> mesh = mb->build_Mesh();
+
+    // get the dummy interface with a capacity of 3 cells (2 processor)
+    SP<IMC_Interface> interface(new IMC_Interface(mb, 3));
+
+    // build the Topology builder and full replication topology
+    SP<Topology> topology;
+    if (C4::node() == 0)
+    {
+	Topology_Builder<OS_Mesh> tb(interface);
+	topology = tb.build_Topology(mesh);
+
+	// cast to general topology for sending
+	const General_Topology *gt = dynamic_cast
+	    <General_Topology *>(topology.bp());
+	if (!gt) ITFAILS;
+
+	rtt_imc_test::send_TOP(*gt);
+    }
+    if (C4::node())
+    {
+	// receive the topology
+	topology = rtt_imc_test::recv_TOP();
+    }
+
+    // check to make sure Topology is full DD
+    if (topology->get_parallel_scheme() != "DD") ITFAILS;
+
+    // make a Particle_Buffer
+    Rnd_Control rcon(324235);
+    SP<Particle_Buffer<PT> > buffer(new Particle_Buffer<PT>(*mesh, rcon));
+
+    // build a DD transporter
+    SP<Transporter<MT,PT> > transporter;
+    transporter = new DD_Transporter<MT,PT>(topology, buffer);
+
+    // should be full DD transporter
+    if (transporter->type() != "DD") ITFAILS;
+
+    // transporter should not be ready
+    if (transporter->ready()) ITFAILS;
 }
 
 //---------------------------------------------------------------------------//
@@ -90,6 +158,7 @@ int main(int argc, char *argv[])
     try
     {
 	rep_transporter_test<OS_Mesh,Particle<OS_Mesh> >();
+	DD_transporter_test<OS_Mesh, Particle<OS_Mesh> >();
     }
     catch (const rtt_dsxx::assertion &ass)
     {

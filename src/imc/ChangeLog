@@ -1,3 +1,9 @@
+2000-04-19  Thomas M. Evans  <tme@lanl.gov>
+
+	* DD_Transporter.*: Full and General DD class to handle a single
+	timestep of IMC F&C transport on domain decomposed parallel mesh
+	topologies.
+
 2000-04-18  Thomas M. Evans  <tme@lanl.gov>
 
 	* Transporter.*, Rep_Transporter.*: Transporter class to handle a

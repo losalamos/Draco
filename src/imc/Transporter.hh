@@ -73,7 +73,7 @@ class Transporter
     virtual void unset() = 0;
 
     //! Do transport for one time cycle.
-    virtual SP_Census transport(double, int) = 0;
+    virtual SP_Census transport(double, int, int, int, bool) = 0;
 
     //! Determine type of transporter.
     virtual std_string type() const = 0;

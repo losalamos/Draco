@@ -13,7 +13,10 @@
 #define __imc_Rep_Transporter_t_hh__
 
 #include "Rep_Transporter.hh"
+#include "c4/global.hh"
 #include "ds++/Assert.hh"
+#include <iostream>
+#include <iomanip>
 
 namespace rtt_imc
 {
@@ -44,6 +47,87 @@ Rep_Transporter<MT,PT>::Rep_Transporter(SP_Topology top)
     // check the topology
     Insist (topology->get_parallel_scheme() == "replication", 
 	    "Invalid topology assigned to Transporter!");
+}
+
+//---------------------------------------------------------------------------//
+// IMC FULL REPLICATION TRANSPORT
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Do IMC, full replication transport.
+ 
+ * This does F&C IMC transport for one timestep.  The new census created
+ * during the timestep is returned.  All fundamental objects are unset at the
+ * end of the transport step.
+
+ * \param dt timestep size
+ * \param cycle current cycle
+ * \param print_f particle notification frequency
+ * \param num_to_run total number of particles to run across all processors
+ * \param verbose do verbose messaging
+
+ * \return census for this timestep
+
+ */
+template<class MT, class PT>
+Rep_Transporter<MT,PT>::SP_Census 
+Rep_Transporter<MT,PT>::transport(double dt, int cycle, int print_f, 
+				  int num_to_run, bool verbose) 
+{
+    using std::cerr;
+    using std::cout;
+    using std::endl;
+    using std::setw;
+
+    Require (ready());    
+    
+    cerr << ">> Doing transport for cycle " << cycle
+	 << " on proc " << C4::node() << " using full replication." << endl;
+
+    // make a new census Comm_Buffer on this node
+    SP_Census new_census_bank(new Particle_Buffer<PT>::Census());
+
+    // particle history diagnostic
+    SP<typename PT::Diagnostic> check;
+    if (verbose)
+	check = new PT::Diagnostic(cout, true); 
+
+    // get source particles and run them to completion
+    int counter = 0;
+    while (*source)
+    {
+	// get a particle from the source
+	SP<PT> particle =
+	    source->get_Source_Particle(dt); 
+	Check (particle->status());
+
+	// transport the particle
+	particle->transport(*mesh, *opacity, *tally, check);
+	counter++;
+
+	// after the particle is no longer active take appropriate action
+	Check (!particle->status());
+	
+	// if census write to file
+	if (particle->desc() == "census")
+	    new_census_bank->push(particle);
+
+	// message particle counter
+	if (!(counter % print_f)) 
+	    cerr << setw(10) << counter << " particles run on proc " 
+		 << C4::node() << endl;
+    }
+
+    // finished with this timestep
+    cerr << ">> Finished particle transport for cycle "
+	 << cycle << " on proc " << C4::node() << endl;
+    
+    // unset the transport stuff
+    unset();
+    
+    Ensure (!ready());
+    Ensure (new_census_bank);
+
+    return new_census_bank;
 }
 
 //---------------------------------------------------------------------------//
