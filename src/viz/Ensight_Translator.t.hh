@@ -459,11 +459,11 @@ write_geom(const int                          part_num,
     int nvertices = vertices.size();
 
     // output part number and names
-    d_geom_out << "part\n" 
-	       << part_num << '\n' 
-	       << part_name << '\n'
-	       << "coordinates\n"
-	       << nvertices << '\n';
+    d_geom_out << "part" << endl;
+    d_geom_out << part_num << endl;
+    d_geom_out << part_name << endl;
+    d_geom_out << "coordinates" << endl;
+    d_geom_out << nvertices << endl; // #vertices in this part
     
     // output the global vertex indices and form ens_vertex.
     // Enight demands that vertices be numbered from 1 to the number of
@@ -473,7 +473,7 @@ write_geom(const int                          part_num,
     std::map<int, int> ens_vertex;
     for ( int i = 0; i < nvertices; ++i )
     {
-	d_geom_out << g_vrtx_indices[vertices[i]] << '\n';
+	d_geom_out << g_vrtx_indices[vertices[i]] << endl;
 
 	// add 1 because ipar and Ensight demand indices that start at 1.
 	ens_vertex[vertices[i]+1] = i+1;
@@ -482,14 +482,14 @@ write_geom(const int                          part_num,
     // output the coordinates
     for ( int idim = 0; idim < ndim; idim++ )
 	for ( int i = 0; i < nvertices; ++i )
-	    d_geom_out << pt_coor(vertices[i], idim) << '\n';
+	    d_geom_out << pt_coor(vertices[i], idim) << endl;
     
     // ensight expects coordinates for three dimensions, so fill any
     // remaining dimensions with zeroes
     double zero = 0.0;
     for ( int idim = ndim; idim < 3; idim++ )
 	for ( int i = 0; i < nvertices; ++i )
-	    d_geom_out << zero << '\n';
+	    d_geom_out << zero << endl;
     
     // for each cell type, dump the local vertex indices for each cell.
     for (int type = 0; type < d_num_cell_types; type++)
@@ -499,22 +499,21 @@ write_geom(const int                          part_num,
 	
 	if (num_elem > 0)
 	{
-	    d_geom_out << d_cell_names[type] << '\n'
-		       << num_elem << '\n';
+	    d_geom_out << d_cell_names[type] << endl;
+	    d_geom_out << num_elem << endl;
 	    
 	    for ( int i = 0; i < num_elem; ++i )
-		d_geom_out << g_cell_indices[c[i]] << '\n';
+		d_geom_out << g_cell_indices[c[i]] << endl;
 	    
 	    for ( int i = 0; i < num_elem; ++i )
 	    {
 		Check(ipar.ncols(c[i]) == d_vrtx_cnt[type]);
 		for (int j = 0; j < d_vrtx_cnt[type]; j++)
 		    d_geom_out << ens_vertex[ipar(c[i],j)];
-		d_geom_out << '\n';
+		d_geom_out << endl;
 	    }
 	}
     } // done looping over cell types
-    d_geom_out.flush();
 }
 
 //---------------------------------------------------------------------------//
@@ -544,15 +543,13 @@ write_vrtx_data(const int                          part_num,
 
 	Insist(vout.is_open(), err.c_str());
 
-	vout << "part\n"
-	     << part_num << '\n'
-	     << "coordinates\n";
+	vout << "part" << endl;
+	vout << part_num << endl;
+	vout << "coordinates" << endl;
 
 	for ( int i = 0; i < nvertices; ++i )
-	    vout << vrtx_data(vertices[i], nvd) << '\n';
-	vout.flush();
+	    vout << vrtx_data(vertices[i], nvd) << endl;
     }
-
 }
 
 //---------------------------------------------------------------------------//
@@ -582,8 +579,8 @@ write_cell_data(const int                          part_num,
 
 	Insist(cellout.is_open(), err.c_str());
 
-	cellout << "part\n"
-		<< part_num << '\n';
+	cellout << "part" << endl;
+	cellout << part_num << endl;
 	    
 	// loop over ensight cell types
 	for (int type = 0; type < d_num_cell_types; type++)
@@ -596,16 +593,14 @@ write_cell_data(const int                          part_num,
 	    if (num_elem > 0)
 	    {
 		// printout cell-type name
-		cellout << d_cell_names[type] << '\n';
+		cellout << d_cell_names[type] << endl;
 
 		// print out data
 		for (int i = 0; i < num_elem; ++i)
-		    cellout << cell_data(c[i], ncd) << '\n';
+		    cellout << cell_data(c[i], ncd) << endl;
 	    }
 	} 
-	cellout.flush();
     }
-
 }
 
 } // end of rtt_viz

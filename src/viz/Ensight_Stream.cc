@@ -30,7 +30,7 @@ Ensight_Stream& endl(Ensight_Stream &s)
     Require(s.d_stream.is_open());
     
     if ( ! s.d_binary )
-	s.d_stream << std::endl;
+	s.d_stream << '\n';
 
     Require(s.d_stream.good());
     
