@@ -90,6 +90,21 @@ namespace rtt_cdi_eospac
      * ion and a few other things.
      */
 
+    /*!
+     * \bug On Linux there is a problem with eospac5.35 when linked with FORTRAN
+     * libraries other than those provided with Lahey 6.00c.  The default F90
+     * compiler on our Linux systems is now Lahey 6.2b.  When this package is
+     * linked against eospac and the Lahey 6.2b libraries some eospac calls
+     * return incorrect values.  This appears to be a deficiency in either
+     * EOSPAC5 or Lahey f90.  As a work around the configure.ac file for this
+     * package prepends RPATH with the location of the Lahey 6.00c
+     * libraries.  This hack appears to correct the problem but is not a
+     * satisfactory long term solution.  It may be that we must wait for
+     * EOSPAC6 to be released before this can be resolved.  EOSPAC6 will not
+     * include any FORTRAN code.  This bug is listed on SourceForge with ID
+     * 2271. (http://sourceforge-web.lanl.gov/tracker/?func=detail&atid=341&aid=2271&group_id=321)
+     */
+
     // Todo:
     // --------------------
     // 1. Add STL like accessors.
