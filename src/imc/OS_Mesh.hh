@@ -35,6 +35,8 @@
 //                contract purposes
 //  7)  6-10-98 : added constructors to CCSF and CCVF for taking a vector to
 //                initialize the field
+//  8)  6-11-98 : added get_normal_in public member function; slightly 
+//                modified from get_normal to give the inward normal
 // 
 //===========================================================================//
 
@@ -206,6 +208,7 @@ public:
     double get_db(const vector<double> &, const vector<double> &, int, 
 		  int &) const;
     inline vector<double> get_normal(int, int) const;
+    inline vector<double> get_normal_in(int, int) const;
     inline double volume(int) const;
     vector<int> get_surcells(string) const;
     int get_bndface(string, int) const;
@@ -401,7 +404,7 @@ inline double OS_Mesh::volume(int cell) const
 inline vector<double> OS_Mesh::get_normal(int cell, int face) const
 {
   // OS_Meshes do not require any functionality from Coord_sys to 
-  // calculate the normal, do simple return
+  // calculate the outward normal, do simple return
 
   // normal always has 3 components, use Get_sdim()
     vector<double> normal(coord->get_sdim(), 0.0);
@@ -409,6 +412,24 @@ inline vector<double> OS_Mesh::get_normal(int cell, int face) const
   // calculate normal based on face, (-x, +x, -y, +y, -z, +z), only
   // one coordinate is non-zero    
     normal[(face-1)/2] = pow(-1.0, face);
+
+  // return the normal
+    return normal;
+}
+
+//---------------------------------------------------------------------------//
+
+inline vector<double> OS_Mesh::get_normal_in(int cell, int face) const
+{
+  // OS_Meshes do not require any functionality from Coord_sys to 
+  // calculate the inward normal, do simple return
+
+  // normal always has 3 components, use Get_sdim()
+    vector<double> normal(coord->get_sdim(), 0.0);
+	
+  // calculate normal based on face, (-x, +x, -y, +y, -z, +z), only
+  // one coordinate is non-zero    
+    normal[(face-1)/2] = pow(-1.0, face-1);
 
   // return the normal
     return normal;
