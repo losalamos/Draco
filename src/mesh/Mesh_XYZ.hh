@@ -96,7 +96,7 @@ class Mesh_XYZ : private XYZ_Mapper
     typedef Mesh_DB Mesh_DB;
 
     typedef XYZ_Mapper::size_type size_type;
-    typedef dsxx::SP<Mesh_XYZ> FieldConstructor;
+    typedef dsxx::SP<const Mesh_XYZ> FieldConstructor;
 
     typedef cctf<double> ccsf;
     typedef fcdtf<double> fcdsf;
@@ -128,10 +128,11 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	dsxx::Mat2<T> data;
         const Mesh_XYZ* mesh;
+        FieldConstructor spm;
 
 	fcdtf( const Mesh_XYZ *m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncells(), 6 ), mesh( m )
+	      data( m->get_ncells(), 6 ), mesh( m ), spm( 0 )
 	{}
 
       public:
@@ -145,14 +146,20 @@ class Mesh_XYZ : private XYZ_Mapper
         typedef typename dsxx::Mat2<T>::difference_type difference_type;
         typedef typename dsxx::Mat2<T>::size_type size_type;
 
-	fcdtf( const dsxx::SP<Mesh_XYZ>& m )
-	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncells(), 6 ), mesh( m.bp() )
+	fcdtf( const FieldConstructor& spm_ )
+	    : XYZ_Mapper( spm_->get_Mesh_DB() ),
+	      data( spm_->get_ncells(), 6 ), mesh( spm_.bp() ), spm( spm_ )
 	{}
+
+	fcdtf( const fcdtf& f ) 
+          : XYZ_Mapper( f.get_Mesh_DB() ),
+            data( f.data ), mesh( f.mesh ), spm( f.spm ) {}
 
         ~fcdtf() {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
+
+        const FieldConstructor& get_FieldConstructor() const { return spm; }
 
 	fcdtf& operator=( T x ) { data = x; return *this; }
 
@@ -188,7 +195,7 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator end() const { return data.end(); }
 
         size_type size() const { return data.size(); }
-        size_type max_size() const { return data.max_size(); }
+        size_type max_size() const { return data.size(); }
         bool empty() const { return data.empty(); }
 
         void swap ( fcdtf& x ) { data.swap(x.data); }
@@ -209,18 +216,19 @@ class Mesh_XYZ : private XYZ_Mapper
                    public xm::Indexable< T, gfcdtf<T> > {
 	dsxx::Mat4<T> data;
         const Mesh_XYZ* mesh;
+        FieldConstructor spm;
 
       public:
         typedef typename dsxx::Mat4<T>::iterator iterator;
         typedef typename dsxx::Mat4<T>::const_iterator const_iterator;
 
-	gfcdtf( const dsxx::SP<Mesh_XYZ>& m )
-	    : XYZ_Mapper( m->get_Mesh_DB() ),
+	gfcdtf( const FieldConstructor& spm_ )
+	    : XYZ_Mapper( spm_->get_Mesh_DB() ),
 	      data( dsxx::Bounds( 0, 5 ),
                     dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
                     dsxx::Bounds( zoff - 1, zoff + nczp ) ),
-              mesh( m.bp() )
+              mesh( spm_.bp() ), spm( spm_ )
 	{}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
@@ -228,14 +236,14 @@ class Mesh_XYZ : private XYZ_Mapper
         gfcdtf<T>& operator=( const fcdtf<T>& c );
         void update_gfcdtf();
 
-        gfcdtf<T>( const fcdtf<T>& c )
-            : XYZ_Mapper( c.get_Mesh_DB() ),
+        gfcdtf<T>( const fcdtf<T>& f )
+            : XYZ_Mapper( f.get_Mesh_DB() ),
               data( dsxx::Bounds( 0, 5 ),
                     dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
                     dsxx::Bounds( zoff - 1, zoff + nczp ) ),
-              mesh( c.mesh )
-        { *this = c; }
+              mesh( f.mesh ), spm( f.spm )
+        { *this = f; }
 
     // i, j, k == global xyz cell indicies
     // f == face index
@@ -271,10 +279,11 @@ class Mesh_XYZ : private XYZ_Mapper
     {
         dsxx::Mat1<T> data;
         const Mesh_XYZ* mesh;
+        FieldConstructor spm;
 
 	cctf( const Mesh_XYZ *m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
-            data( m->get_ncells() ), mesh( m )
+            data( m->get_ncells() ), mesh( m ), spm( 0 )
         {}
 
       public:
@@ -288,13 +297,19 @@ class Mesh_XYZ : private XYZ_Mapper
         typedef typename dsxx::Mat1<T>::difference_type difference_type;
         typedef typename dsxx::Mat1<T>::size_type size_type;
 
-	cctf( const dsxx::SP<Mesh_XYZ>& m ) 
-          : XYZ_Mapper( m->get_Mesh_DB() ),
-            data( m->get_ncells() ), mesh( m.bp() ) {}
+	cctf( const FieldConstructor& spm_ ) 
+          : XYZ_Mapper( spm_->get_Mesh_DB() ),
+            data( spm_->get_ncells() ), mesh( spm_.bp() ), spm( spm_ ) {}
+
+	cctf( const cctf& c ) 
+          : XYZ_Mapper( c.get_Mesh_DB() ),
+            data( c.data ), mesh( c.mesh ), spm( c.spm ) {}
 
         ~cctf() {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
+
+        const FieldConstructor& get_FieldConstructor() const { return spm; }
 
         cctf& operator=( T x )
         {
@@ -330,7 +345,7 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator end() const { return data.end(); }
 
         size_type size() const { return data.size(); }
-        size_type max_size() const { return data.max_size(); }
+        size_type max_size() const { return data.size(); }
         bool empty() const { return data.empty(); }
 
         void swap ( cctf& x ) { data.swap(x.data); }
@@ -356,17 +371,18 @@ class Mesh_XYZ : private XYZ_Mapper
     {
         dsxx::Mat3<T> data;
         const Mesh_XYZ* mesh;
+        FieldConstructor spm;
 
       public:
         typedef typename dsxx::Mat3<T>::iterator iterator;
         typedef typename dsxx::Mat3<T>::const_iterator const_iterator;
 
-        gcctf( const dsxx::SP<Mesh_XYZ>& m )
-            : XYZ_Mapper( m->get_Mesh_DB() ),
+        gcctf( const FieldConstructor& spm_ )
+            : XYZ_Mapper( spm_->get_Mesh_DB() ),
               data( dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
                     dsxx::Bounds( zoff - 1, zoff + nczp ) ),
-              mesh( m.bp() )
+              mesh( spm_.bp() ), spm( spm_ )
         {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
@@ -379,7 +395,7 @@ class Mesh_XYZ : private XYZ_Mapper
               data( dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
                     dsxx::Bounds( zoff - 1, zoff + nczp ) ),
-              mesh( c.mesh )
+              mesh( c.mesh ), spm( c.spm )
         { *this = c; }
 
         const T& operator()( int i, int j, int k ) const
@@ -409,11 +425,12 @@ class Mesh_XYZ : private XYZ_Mapper
     {
         dsxx::Mat1<T> data;
         const Mesh_XYZ* mesh;
+        FieldConstructor spm;
 
 	nctf( const Mesh_XYZ *m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
             data( (m->get_ncx()+1)*(m->get_ncy()+1)*(m->get_nczp()+1) ),
-            mesh( m )
+            mesh( m ), spm( 0 )
         {}
 
       public:
@@ -427,14 +444,20 @@ class Mesh_XYZ : private XYZ_Mapper
         typedef typename dsxx::Mat1<T>::difference_type difference_type;
         typedef typename dsxx::Mat1<T>::size_type size_type;
 
-	nctf( const dsxx::SP<Mesh_XYZ>& m ) 
-          : XYZ_Mapper( m->get_Mesh_DB() ),
-            data( (m->get_ncx()+1)*(m->get_ncy()+1)*(m->get_nczp()+1) ),
-            mesh( m.bp() ) {}
+	nctf( const FieldConstructor& spm_ ) 
+          : XYZ_Mapper( spm_->get_Mesh_DB() ),
+            data( (spm_->get_ncx()+1)*(spm_->get_ncy()+1)*(spm_->get_nczp()+1) ),
+            mesh( spm_.bp() ), spm( spm_ ) {}
+
+	nctf( const nctf& n ) 
+          : XYZ_Mapper( n.get_Mesh_DB() ),
+            data( n.data ), mesh( n.mesh ), spm( n.spm ) {}
 
         ~nctf() {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
+
+        const FieldConstructor& get_FieldConstructor() const { return spm; }
 
         nctf& operator=( T x )
         {
@@ -470,7 +493,7 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator end() const { return data.end(); }
 
         size_type size() const { return data.size(); }
-        size_type max_size() const { return data.max_size(); }
+        size_type max_size() const { return data.size(); }
         bool empty() const { return data.empty(); }
 
         void swap ( nctf& x ) { data.swap(x.data); }
@@ -496,10 +519,11 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	dsxx::Mat2<T> data;
         const Mesh_XYZ* mesh;
+        FieldConstructor spm;
 
 	vctf( const Mesh_XYZ *m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncells(), 8 ), mesh( m )
+	      data( m->get_ncells(), 8 ), mesh( m ), spm( 0 )
 	{}
 
       public:
@@ -513,14 +537,20 @@ class Mesh_XYZ : private XYZ_Mapper
         typedef typename dsxx::Mat2<T>::difference_type difference_type;
         typedef typename dsxx::Mat2<T>::size_type size_type;
 
-	vctf( const dsxx::SP<Mesh_XYZ>& m )
-	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncells(), 8 ), mesh( m.bp() )
+	vctf( const FieldConstructor& spm_ )
+	    : XYZ_Mapper( spm_->get_Mesh_DB() ),
+	      data( spm_->get_ncells(), 8 ), mesh( spm_.bp() ), spm( spm_ )
 	{}
+
+	vctf( const vctf& v ) 
+          : XYZ_Mapper( v.get_Mesh_DB() ),
+            data( v.data ), mesh( v.mesh ), spm( v.spm ) {}
 
         ~vctf() {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
+
+        const FieldConstructor& get_FieldConstructor() const { return spm; }
 
 	vctf& operator=( T x ) { data = x; return *this; }
 
@@ -556,7 +586,7 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator end() const { return data.end(); }
 
         size_type size() const { return data.size(); }
-        size_type max_size() const { return data.max_size(); }
+        size_type max_size() const { return data.size(); }
         bool empty() const { return data.empty(); }
 
         void swap ( vctf& x ) { data.swap(x.data); }
@@ -577,18 +607,19 @@ class Mesh_XYZ : private XYZ_Mapper
                   public xm::Indexable< T, gvctf<T> > {
 	dsxx::Mat4<T> data;
         const Mesh_XYZ* mesh;
+        FieldConstructor spm;
 
       public:
         typedef typename dsxx::Mat4<T>::iterator iterator;
         typedef typename dsxx::Mat4<T>::const_iterator const_iterator;
 
-	gvctf( const dsxx::SP<Mesh_XYZ>& m )
-	    : XYZ_Mapper( m->get_Mesh_DB() ),
+	gvctf( const FieldConstructor& spm_ )
+	    : XYZ_Mapper( spm_->get_Mesh_DB() ),
 	      data( dsxx::Bounds( 0, 7 ),
                     dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
                     dsxx::Bounds( zoff - 1, zoff + nczp ) ),
-              mesh( m.bp() )
+              mesh( spm_.bp() ), spm( spm_ )
 	{}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
@@ -596,14 +627,14 @@ class Mesh_XYZ : private XYZ_Mapper
         gvctf<T>& operator=( const vctf<T>& c );
         void update_gvctf();
 
-        gvctf<T>( const vctf<T>& c )
-            : XYZ_Mapper( c.get_Mesh_DB() ),
+        gvctf<T>( const vctf<T>& v )
+            : XYZ_Mapper( v.get_Mesh_DB() ),
               data( dsxx::Bounds( 0, 7 ),
                     dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
                     dsxx::Bounds( zoff - 1, zoff + nczp ) ),
-              mesh( c.mesh )
-        { *this = c; }
+              mesh( v.mesh ), spm( v.spm )
+        { *this = v; }
 
     // i, j, k == global xyz cell indicies
     // v == vertex index
@@ -638,9 +669,10 @@ class Mesh_XYZ : private XYZ_Mapper
 
         fcdtf<T> data;
         const Mesh_XYZ* mesh;
+        FieldConstructor spm;
 
         bstf ( const Mesh_XYZ *m )
-            : XYZ_Mapper( m->get_Mesh_DB() ), data( m ), mesh( m )
+            : XYZ_Mapper( m->get_Mesh_DB() ), data( m ), mesh( m ), spm( 0 )
 	{}
 
         void next_element( int& i, int& j, int& k, int& f) const;
@@ -721,13 +753,20 @@ class Mesh_XYZ : private XYZ_Mapper
             iterator& operator=( const iterator& iter );
 	};
 
-        bstf( const dsxx::SP<Mesh_XYZ>& m )
-            : XYZ_Mapper( m->get_Mesh_DB() ), data( m ), mesh( m.bp() )
+        bstf( const FieldConstructor& spm_ )
+            : XYZ_Mapper( spm_->get_Mesh_DB() ), data( spm_ ),
+              mesh( spm_.bp() ), spm( spm_ )
 	{}
+
+	bstf( const bstf& b ) 
+          : XYZ_Mapper( b.get_Mesh_DB() ),
+            data( b.data ), mesh( b.mesh ), spm( b.spm ) {}
 
         ~bstf() {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
+
+        const FieldConstructor& get_FieldConstructor() const { return spm; }
 
         bstf& operator=( T x );
 
@@ -753,7 +792,7 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator end() const;
 
         size_type size() const;
-        size_type max_size() const { return data.max_size(); }
+        size_type max_size() const { return size(); }
         bool empty() const { return data.empty(); }
 
         void swap ( bstf& x ) { data.swap(x.data); }
