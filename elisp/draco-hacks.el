@@ -58,6 +58,24 @@
 ;;---------------------------------------------------------------------------;;
 ;; Query for the pkg name, with guessed default.
 
+(defun draco-pkg-doc-header ()
+  "Function to get a pkg name from pkg/autodoc directory"
+  ;;(setq pkg " ")
+  ;;(read-from-minibuffer "Package name: " (substring pkg 1)))
+  (setq dir (expand-file-name ".."))
+  (setq parent (expand-file-name "../.."))
+  
+  ;; Figure out the difference in length between dir and parent,
+  ;; subtract one (for the "/"), and negate, in order to get that many
+  ;; chars off the end of dir.
+  (setq dlen (- (length dir) (length parent)))
+  (setq xlen (* (- dlen 1) -1))
+  
+  (read-from-minibuffer "Package doc name: " (substring dir xlen)))
+
+;;---------------------------------------------------------------------------;;
+;; Query for the pkg name, with guessed default.
+
 (defun draco-pkg-in-test-header ()
   "Function to get a pkg/test directory name"
   ;;(setq pkg " ")
@@ -197,16 +215,17 @@ templates directory is found then try (my-templates-directory)."
 ;;---------------------------------------------------------------------------;;
 ;;  1) setting up a package                              [draco-package]
 ;;  2) setting up a package test                         [draco-package-test]
-;;  3) setting up a C++ translation unit                 [draco-class]
-;;  4) setting up a C++ header                           [draco-cc-head]
-;;  5) setting up a C++ header.in                        [draco-cc-headin]
-;;  6) setting up a C header                             [draco-c-head]
-;;  7) setting up a C header.in                          [draco-c-headin]
-;;  8) setting up a C++ implementation file (.cc,.t.hh)  [draco-cc-imp]
-;;  9) setting up a C++ instantiation file (_pt.cc)      [draco-cc-pt]
-;; 10) setting up a python file                          [draco-python]
-;; 11) setting up a specialized makefile                 [draco-make]
-;; 12) setting up a test executable                      [draco-cc-test]
+;;  3) setting up a package autodoc dir                  [draco-package-doc]
+;;  4) setting up a C++ translation unit                 [draco-class]
+;;  5) setting up a C++ header                           [draco-cc-head]
+;;  6) setting up a C++ header.in                        [draco-cc-headin]
+;;  7) setting up a C header                             [draco-c-head]
+;;  8) setting up a C header.in                          [draco-c-headin]
+;;  9) setting up a C++ implementation file (.cc,.t.hh)  [draco-cc-imp]
+;; 10) setting up a C++ instantiation file (_pt.cc)      [draco-cc-pt]
+;; 11) setting up a python file                          [draco-python]
+;; 12) setting up a specialized makefile                 [draco-make]
+;; 13) setting up a test executable                      [draco-cc-test]
 
 ;;---------------------------------------------------------------------------;;
 ;; set up a draco package environment
@@ -439,6 +458,58 @@ templates directory is found then try (my-templates-directory)."
 	 
 	 ;; insert the goodies into the new makefile
 	 (find-file makefile)
+	 (perform-replace "<user>" (user-full-name) nil nil nil )
+	 (goto-char (point-min))
+	 (perform-replace "<pkg>" pkg nil nil nil )
+	 (goto-char (point-min))
+	 (perform-replace "<date>"  (current-time-string) nil nil nil)
+	 (goto-char (point-min))
+	 (perform-replace "<spkg>" spkg nil nil nil )
+	 (goto-char (point-min))
+	 (perform-replace "<start>" "" nil nil nil )))
+  )
+
+;;---------------------------------------------------------------------------;;
+;; set up a draco package autodoc environment
+
+(defun draco-package-doc ()
+  "Function to set up a draco package autodoc directory with stuff"
+
+  (interactive)
+
+  ;; the files that we will place into all package autodoc directories are:
+  ;;
+  ;; 1) mainpage.dcc
+  ;;
+  ;; these files are based on templates in the draco/templates
+  ;; directory that can be accessed using the rtt-templates() elisp 
+  ;; function
+
+  ;; first find templates directory
+  (setq tempdir (rtt-templates))
+
+  ;; now get the header for this pkg
+  (setq pkg (draco-pkg-doc-header))
+
+  ;; now get the safe pkg name
+  (setq spkg (draco-safe-pkg pkg))
+
+  ;; now we get the files that the directory does not currently have
+  (setq mainpage (concat spkg ".dcc"))
+
+  ;;
+  ;; get the mainpage
+  ;;
+  (cond ((not (file-exists-p mainpage))
+	 (setq tempmain (concat tempdir "/mainpage.dcc"))
+	 (if (file-exists-p mainpage);
+	     (error "mainpage already exists." mainpage))
+	 
+	 (find-file mainpage)
+	 (insert-file-contents tempmain)
+	 
+	 ;; insert the goodies into the new makefile
+	 (find-file mainpage)
 	 (perform-replace "<user>" (user-full-name) nil nil nil )
 	 (goto-char (point-min))
 	 (perform-replace "<pkg>" pkg nil nil nil )

@@ -56,6 +56,7 @@
 ;	      ("Draco"
 	       ["New C++ package" draco-package t]
 	       ["New C++ package/test" draco-package-test t]
+               ["New C++ package/autodoc" draco-package-doc t]
 	       ["New C++ unit test executable" draco-cc-test t]
 ;	       )
 	      ("Dante"
