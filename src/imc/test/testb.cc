@@ -23,6 +23,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstdlib>
 
 using IMC::OS_Interface;
 using IMC::OS_Builder;
@@ -102,33 +103,38 @@ void Surface_diagnostic(const MT &mesh)
 }
 
 template<class MT>
-void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Tally<MT> &tally)
+void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Tally<MT> &tally,
+		   Rnd_Control &rcon)
 {
   // test particle copying and backing
 
-  // random number seed
-    long seed = -3495784;
-
   // make and copy particle
 
-    Particle<MT, SMrng> part1(mesh, seed, 1.0);
-    Particle<MT, SMrng> part2(mesh, -3423, 10.0);
-    Particle<MT, SMrng> part3(part2);
+    Sprng ran1 = rcon.get_rn();
+    Sprng ran2 = rcon.get_rn();
 
-    vector<double> r(2);
-    vector<double> o(3);
-    r[0] = 1.0;
-    r[1] = -1.0;
-    o[1] = 1.0;
-    part1.source(r,o,mesh);
-    part2.source(r,o,mesh);
-    part3 = part1;
+    vector<double> r1(2), r2(2);
+    vector<double> o1(3), o2(3);
+
+    r1[0] = 1.0;
+    r1[1] = -1.0;
+    r1[2] = 1.0;
+    r2 = r1;
+    r2[0] = 1.5;
+    
+    o1[0] = 1.0;
+    o2[1] = 1.0;
+
+    Particle<MT> part1(r1, o1, 10.0, mesh.get_cell(r1), ran1);
+    Particle<MT> part2(r2, o2, 1.0, mesh.get_cell(r2), ran2);
+    Particle<MT> part3(part2);
+
     Particle<MT, SMrng> part4(part2);
 
     SP<Particle<MT, SMrng>::Diagnostic> check = 
 	new Particle<MT, SMrng>::Diagnostic(cout, true);
 
-    Particle_Stack<Particle<MT, SMrng> >::Bank sbank;
+    Particle_Stack<Particle<MT> >::Bank sbank;
     sbank.push(part1);
     cout << sbank.size() << endl;
     sbank.push(part2);
@@ -138,58 +144,77 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Tally<MT> &tally)
     sbank.push(part4);
     cout << sbank.size() << endl;
 
-    part1.transport(mesh, xs, tally, check);
-
     sbank.pop();
     cout << sbank.size() << endl;
-    Particle<MT, SMrng> part5 = sbank.top();
+    Particle<MT> part5 = sbank.top();
     sbank.pop();
     cout << sbank.size() << endl;
     cout << part5;	
-    
-    part5.transport(mesh, xs, tally, check);
 }
 
 template<class MT>
-void Run_Particle(const MT &mesh, const Opacity<MT> &opacity, 
-                  Tally<MT> &tally, long seed)
+void write_part(const MT &mesh, Rnd_Control &rcon)
 {
-  // transport a particle
+  // test io attributes of Particle
 
-  // set diagnostic
-    ofstream output("history", ios::app);
-    SP<Particle<MT, SMrng>::Diagnostic> check = 
-	new Particle<MT, SMrng>::Diagnostic(output, true);
+  // first make a particle
+    vector<double> r(2, 5.0), dir(3, 0.0);
+    dir[0] = 1.0;
+    Particle<MT> part1(r, dir, 10.0, 1, rcon.get_rn());
+    dir[1] = 1.0;
+    dir[0] = 0.0;
+    r[1] = 3.2;
+    Particle<MT> part2(r, dir, 2.1, 32, rcon.get_rn());
 
-  // initialize particle
-    Particle<MT, SMrng> particle(mesh, seed, 1.0);
-    Check (particle.status());
+    cout << part1 << endl;
+    cout << part2 << endl;
 
-  // origin and source
+  // write particles
+    ofstream outfile("part.out");
+    part1.write_to_census(outfile);
+    part2.write_to_census(outfile);
+}
+
+template<class MT>
+void read_part(const MT &mesh, Rnd_Control &rcon)
+{
+  // test io attributes of Particle
     
-    vector<double> origin(mesh.get_Coord().get_dim());   
-    vector<double> source(mesh.get_Coord().get_sdim());
+  // open file and get all the particles
+    ifstream infile("part.out", ios::in);
 
-    for (int i = 0; i < origin.size(); i++)
+    while (!infile.eof())
     {
-	cout << "Origin " << i+1 << ": ";
-	cin >> origin[i];
-    }
-    for (int i = 0; i < source.size(); i++)
-    {
-	cout << "Omega " << i+1 << ": ";
-	cin >> source[i];
-    }
-    cout << endl;
+      // read in particle data
+	double read_send[8];
     
-  // source
-    particle.source(origin, source, mesh);
+	infile.read(reinterpret_cast<char *>(read_send), 
+		    8 * sizeof(double));
+	Check (!infile.eof());
 
-  // transport
-    particle.transport(mesh, opacity, tally, check);
+	int cell;
+	infile.read(reinterpret_cast<char *>(&cell), sizeof(int));
+	Check(!infile.eof());
+    
+	vector<double> r(mesh.get_Coord().get_dim());
+	vector<double> omega(mesh.get_Coord().get_sdim());
+	int index = 0;
+	for (int i = 0; i < r.size(); i++)
+	    r[i] = read_send[index++];
+	for (int i = 0; i < omega.size(); i++)
+	    omega[i] = read_send[index++];
+	double ew = read_send[index++];
+	double fraction = read_send[index++];
 
-  // Check that particle is indeed dead
-    Check (!particle.status());
+	Particle<MT> part(r, omega, ew, cell, rcon.get_rn(), fraction);
+
+	cout << part << endl;
+
+      // reclaim memory
+    }
+
+  // delete file
+  // std::remove("part.out");
 }
 
 int main(int argc, char *argv[])
@@ -228,6 +253,8 @@ int main(int argc, char *argv[])
 
       // mesh diagnostics
 	Builder_diagnostic(*mesh, *mat_state, *opacity);
+	write_part(*mesh, *rcon);
+     	read_part(*mesh, *rcon);
     }
     catch (const assertion &ass)
     {
