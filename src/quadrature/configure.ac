@@ -1,10 +1,10 @@
 dnl-------------------------------------------------------------------------dnl
-dnl draco/src/quadrature/configure.in
+dnl File draco/src/quadrature configure.ac
 dnl Kelly Thompson
 dnl Tue Feb 22 09:48:39 2000
 dnl $Id$
 dnl-------------------------------------------------------------------------dnl
-dnl @> configure.in for quadrature
+dnl @> configure.ac for quadrature
 dnl-------------------------------------------------------------------------dnl
 
 dnl Everthing between AC_INIT and AC_OUTPUT will be used to created
@@ -36,6 +36,12 @@ dnl The text string that will identify this package to the build
 dnl system. 
 package="quadrature"
 
+dnl
+dnl VENDOR DEPENDENCIES
+dnl 
+dnl Register vendors dependencies for this component
+AC_GSL_SETUP(pkg)
+
 dnl Append this directory to a list of header install locations.
 AC_INSTALL_HEADERS
 
@@ -65,5 +71,5 @@ AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
 AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl
-dnl		 end of draco/src/quadrature configure.in
+dnl		 end of draco/src/quadrature configure.ac
 dnl-------------------------------------------------------------------------dnl

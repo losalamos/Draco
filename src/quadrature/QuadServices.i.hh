@@ -13,6 +13,8 @@
 #ifndef quadrature_QuadServices_i_hh
 #define quadrature_QuadServices_i_hh
 
+#include <iostream>
+
 #include "QuadServices.hh"
 
 namespace rtt_quadrature
@@ -56,6 +58,32 @@ T QuadServices::factorial( T const k ) const
     else 
 	return  k * factorial(k-1);
 }
+
+//---------------------------------------------------------------------------//
+
+template< typename T >
+void QuadServices::print_matrix( std::string    const & matrix_name,
+				 std::vector<T> const & x,
+				 std::vector<unsigned> const & dims ) const
+{
+    using std::cout;
+    using std::endl;
+    using std::string;
+
+    unsigned pad_len( matrix_name.length()+2 );
+    string padding( pad_len, ' ' );
+    cout << matrix_name << " =";
+    for( unsigned i=0; i<dims[0]; ++i )
+    {
+	if( i != 0 ) cout << padding;
+	cout << "{ ";
+	for( unsigned j=0; j<dims[1]-1; ++j )
+	    cout << x[j+dims[0]*i] << ", ";
+	cout << x[dims[1]-1+dims[0]*i] << " }." << endl;
+    }
+    return;
+}
+
 
 } // end namespace rtt_quadrature
 

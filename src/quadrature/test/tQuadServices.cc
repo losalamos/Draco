@@ -131,15 +131,8 @@ void quadrature_test()
 
      vector<double> const M( qs.getM() );
      unsigned const numMoments( M.size()/n_ang );
-     cout << "iang momt value" << endl
-	  << "---- ---- --------------------------------" <<endl;
-     for( unsigned m=0; m<n_ang; ++m )
-	 for( unsigned n=0; n<numMoments; ++n )
-	     cout << "  " << m << "    " << n << "   "
-		  << M[ n + m*numMoments ] << endl;
 
-
-    return;
+     return;
 } // end of quadrature_test
 
 //---------------------------------------------------------------------------//

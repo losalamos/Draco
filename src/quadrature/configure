@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="Quadrature.hh"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir number doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS GSL_INC GSL_LIB latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir number doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -839,6 +839,9 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-gsl=lib      determine the gsl lib (gsl and gskcbkas are the defaults
+  --with-gsl-inc=DIR    tell where GSL includes are (\${GSL_INC_DIR} by default)
+  --with-gsl-lib=DIR    tell where GSL libraries are (\${GSL_LIB_DIR} by default)
   --with-lib-prefix=library prefix
                           give prefix to libraries (default rtt_)
   --with-c4=scalar,mpi,shmem
@@ -1310,6 +1313,113 @@ ac_configure="$SHELL $ac_aux_dir/configure" # This should be Cygnus configure.
 
 
 package="quadrature"
+
+
+
+# Check whether --with-gsl or --without-gsl was given.
+if test "${with_gsl+set}" = set; then
+  withval="$with_gsl"
+
+fi;
+
+
+
+
+
+# Check whether --with-gsl-inc or --without-gsl-inc was given.
+if test "${with_gsl_inc+set}" = set; then
+  withval="$with_gsl_inc"
+  if test $with_gsl_inc != "no" ; then
+      if test $with_gsl_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${GSL_INC_DIR}
+         eval with_gsl_inc=\${GSL_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_gsl_inc=`eval echo "$with_gsl_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_gsl_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-gsl-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_gsl_inc ; then
+         { echo "configure: error: $with_gsl_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      GSL_INC="${with_gsl_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define GSL_INC ${with_gsl_inc}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "GSL_INC has been set to $GSL_INC" 1>&6
+
+   fi
+fi;
+
+
+
+
+
+
+
+
+# Check whether --with-gsl-lib or --without-gsl-lib was given.
+if test "${with_gsl_lib+set}" = set; then
+  withval="$with_gsl_lib"
+  if test $with_gsl_lib != "no" ; then
+      if test $with_gsl_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${GSL_LIB_DIR}
+         eval with_gsl_lib=\${GSL_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_gsl_lib=`eval echo "$with_gsl_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_gsl_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-gsl-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_gsl_lib ; then
+         { echo "configure: error: $with_gsl_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      GSL_LIB="${with_gsl_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define GSL_LIB ${with_gsl_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "GSL_LIB has been set to $GSL_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # set default value of gsl includes and libs
+   if test "${with_gsl:=gsl}" = yes ; then
+       with_gsl='gsl'
+   fi
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_gsl=pkg
+
+
 
     install_headers="\${installheaders}"
    installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
@@ -6443,23 +6553,23 @@ _ACEOF
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
    fi
 
        fi
@@ -7399,23 +7509,23 @@ _ACEOF
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
    fi
 
        fi
@@ -8452,23 +8562,23 @@ _ACEOF
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
    fi
 
        fi
@@ -9455,23 +9565,23 @@ _ACEOF
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
    fi
 
        fi
@@ -10462,23 +10572,23 @@ _ACEOF
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
    fi
 
        fi
@@ -11346,23 +11456,23 @@ _ACEOF
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
    fi
 
        fi
@@ -12450,23 +12560,23 @@ _ACEOF
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # -l${with_gsl} -lgslcblas are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
    fi
 
        fi
@@ -13494,6 +13604,8 @@ s,@ECHO_C@,$ECHO_C,;t t
 s,@ECHO_N@,$ECHO_N,;t t
 s,@ECHO_T@,$ECHO_T,;t t
 s,@LIBS@,$LIBS,;t t
+s,@GSL_INC@,$GSL_INC,;t t
+s,@GSL_LIB@,$GSL_LIB,;t t
 s,@latex_yes_no@,$latex_yes_no,;t t
 s,@doxygen_output_top@,$doxygen_output_top,;t t
 s,@build@,$build,;t t

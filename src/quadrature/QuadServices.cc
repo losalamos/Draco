@@ -10,13 +10,20 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-
 #include <vector>
 #include <cmath>
 #include <sstream>
+
+// Vendor software
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_sf_legendre.h>
+
+// Draco software
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
+
 #include "QuadServices.hh"
 
 #include <iostream>
@@ -26,25 +33,148 @@ namespace rtt_quadrature
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Default constructor assumes numMoments == 1.
- * \param spQuad_     a smart pointer to a Quadrature object.
- * \param numMoments_ the number of moments used to represent the moment
- *                    space. 
+ * \brief Default constructor builds square D and M operators using Morel's
+ * Galerkin-Sn heuristic. 
+ * \param spQuad_ a smart pointer to a Quadrature object.
  */
-QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > spQuad_)
-    : spQuad( spQuad_ ), 
+QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_ )
+    : spQuad(     spQuad_ ), 
       numMoments( spQuad->getNumAngles() ),
-      Mmatrix( computeM() ),
-      Dmatrix( computeD() )	
-    { /* empty */ }
+      n2lk(       compute_n2lk() ),
+      Mmatrix(    computeM() ),
+      Dmatrix(    computeD() )	
+{ 
+    using rtt_dsxx::soft_equiv;
+    using rtt_units::PI;
+
+    Ensure( factorial(0) == 1 );
+    Ensure( factorial(1) == 1 );
+    Ensure( factorial(2) == 2 );
+    Ensure( factorial(3) == 6 );
+    Ensure( factorial(4) == 24 );
+
+    Ensure( kronecker_delta(0,0) == 1 );
+    Ensure( kronecker_delta(1,0) == 0 );
+    Ensure( kronecker_delta(1,1) == 1 );
+    Ensure( kronecker_delta(0,1) == 0 );
+    Ensure( kronecker_delta(-1,0) == 0 );
+
+    Ensure( soft_equiv( compute_clk( 0, 0 ), 1.0 ));
+    Ensure( soft_equiv( compute_clk( 1, -1 ), 1.0 ));
+    Ensure( soft_equiv( compute_clk( 1, 0 ), 1.0 ));
+    Ensure( soft_equiv( compute_clk( 1, 1 ), 1.0 ));
+
+    double const mu1( std::sqrt(2.0)/2.0 );
+    double const mu2( std::sqrt(3.0)/3.0 );
+    Ensure( soft_equiv( compute_azimuthalAngle( 1.0, 0.0, 0.0 ), 0.0 ) );
+    // Ensure( compute_azimuthalAngle( mu1, mu1, 0.0 ) == 0.0 );
+    Ensure( soft_equiv( compute_azimuthalAngle( mu2, mu2, mu2 ), PI/4.0 )  );
+    Ensure( soft_equiv( compute_azimuthalAngle( mu2, -1.0*mu2, mu2 ), 3.0*PI/4.0 )  );
+    Ensure( soft_equiv( compute_azimuthalAngle( mu2, -1.0*mu2, -1.0*mu2 ), 5.0*PI/4.0 )  );
+    Ensure( soft_equiv( compute_azimuthalAngle( mu2, mu2, -1.0*mu2 ), 7.0*PI/4.0 )  );
+
+    Check( soft_equiv(gsl_sf_legendre_Plm( 0, 0, 0.5 ), 1.0 ));
+    Check( soft_equiv(gsl_sf_legendre_Plm( 1, 0, 0.5 ), 0.5 ));
+    Check( soft_equiv(gsl_sf_legendre_Plm( 1, 1, mu2 ), -1.0*std::sqrt(1.0-mu2*mu2) ));
+    Check( soft_equiv(gsl_sf_legendre_Plm( 2, 2, mu2 ), 3.0*(1.0-mu2*mu2) ));
+
+    Check( n2lk[0].first == 0 );
+    Check( n2lk[1].first == 1 );
+    Check( n2lk[2].first == 1 );
+    Check( n2lk[3].first == 1 );
+    Check( n2lk[4].first == 2 );
+    Check( n2lk[5].first == 2 );
+    Check( n2lk[6].first == 2 );
+    Check( n2lk[7].first == 3 );
+
+    Check( n2lk[0].second == 0 );
+    Check( n2lk[1].second == -1 );
+    Check( n2lk[2].second == 0 );
+    Check( n2lk[3].second == 1 );
+    Check( n2lk[4].second == -2 );
+    Check( n2lk[5].second == -1 );
+    Check( n2lk[6].second == 1 );
+    Check( n2lk[7].second == -2 );
+
+//---------------------------------------------------------------------------//
+
+    std::vector< unsigned > dims;
+    dims.push_back( spQuad->getNumAngles() );
+    dims.push_back( numMoments );
+    print_matrix( "Mmatrix", Mmatrix, dims );
+
+    Ensure( D_equals_M_inverse() );
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Constructor that allows the user to pick the (k,l) moments to use.
+ * \param spQuad_     a smart pointer to a Quadrature object.
+ * \param lkMoments_  vector of tuples that maps from index n to (k,l).
+ */
+QuadServices::QuadServices( 
+    rtt_dsxx::SP< const Quadrature > const   spQuad_,
+    std::vector< lk_index >          const & lkMoments_ )
+    : spQuad(     spQuad_ ), 
+      numMoments( lkMoments_.size() ),
+      n2lk(       lkMoments_ ),
+      Mmatrix(    computeM() ),
+      Dmatrix(    computeD() )	
+{ 
+    Ensure( D_equals_M_inverse() );
+}
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Compute the discrete-to-moment matrix. D = inverse(M).
+ * \brief Compute the discrete-to-moment matrix. 
+ *
+ * D = inverse(M).  This private function is called by the constuctor.
  */
 std::vector< double > QuadServices::computeD() const
 {
-    std::vector< double > Dmatrix( Mmatrix );
+    int n( numMoments );
+    int m( spQuad->getNumAngles() );
+
+    // create a copy of Mmatrix to use a temp space.
+    std::vector< double > M( Mmatrix );
+    std::vector< double > Dmatrix( n*m );
+
+    // Create GSL matrix views of our M and D matrices.
+    // LU will get a copy of M.  This matrix will be decomposed into LU. 
+    gsl_matrix_view LU = gsl_matrix_view_array( &M[0],       m, n );
+    gsl_matrix_view D  = gsl_matrix_view_array( &Dmatrix[0], m, n );
+
+    // Create some local space for the permutation matrix.
+    gsl_permutation *p = gsl_permutation_alloc( m );
+
+    // Store information aobut sign changes in this variable.
+    int signum(0);
+
+    // Factorize the square matrix M into the LU decomposition PM = LU.  On
+    // output the diagonal and upper triangular part of the input matrix M
+    // contain the matrix U.  The lower triangular part of the input matrix
+    // (excluding the diagonal) contains L. The diagonal elements of L are
+    // unity, and are not stored.
+    //
+    // The permutation matrix P is encoded in the permutation p.  The j-th
+    // column of the matrix P is given by the k-th column of the identity,
+    // where k=p[j] thej-th element of the permutation vector.  The sign of
+    // the permutation is given by signum.  It has the value \f$ (-1)^n \f$,
+    // where n is the number of interchanges in the permutation.
+    //
+    // The algorithm used in the decomposition is Gaussian Elimination with
+    // partial pivoting (Golub & Van Loan, Matrix Computations, Algorithm
+    // 3.4.1).
+    
+    int result = gsl_linalg_LU_decomp( &LU.matrix, p, &signum );
+    Check( result == 0 );
+
+    // Compute the inverse of the matrix LU from its LU decomposition (LU,p),
+    // storing the results in the matrix Dmatrix.  The inverse is computed by
+    // solving the system (LU) x = b for each column of the identity matrix.
+
+    result = gsl_linalg_LU_invert( &LU.matrix, p, &D.matrix );
+    Check( result == 0 );
 
     return Dmatrix;
 }
@@ -52,389 +182,300 @@ std::vector< double > QuadServices::computeD() const
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Create the M array (moment-to-discrete matrix).
+ * \return The moment-to-discrete matrix.
+ *
+ * This private member function is called by the constructor. 
  * 
- * \param name description
- * \return The moment-to-discrete matrix, cYnm(num_moments*num_angles)
- *
- * The M array is actually (2\ell+1)/sum_wts * cYnm(n,m).
- *
- * \f[
- * cY_{(\ell,k),m} = \left[ \frac{(\ell - | k|)!}{(\ell+ | k |)!} (2 -
- * \delta_{k,0}) \right] Y_{\ell,k}(\Omega_m),
- * \f]
- *
- * where \f$ Y_{\ell,k}(\Omega_m) \f$ is the real part of the
- * \f$(\ell,k)^{th}\f$ spherical harmonic, evaluated at the 
- * \f$ m^{th} \f$ direction, \f$ \delta_{k,0} = 1 \f$ if \f$ k=0, \f$
- * otherwise it is 0, and \f$ (j)! \f$ represents a factorial. 
- *
- * The indexing of the cYnm array requires some additional description.  The
- * m index represents the M discrete directions defined by the quadrature
- * set.  The n index represents the index tuple \f$ (\ell,k) \f$ so that we
- * have the following ordering:
- *
- *      n    \ell    l
- *     -------------
- *      1    0    0
- *      2    1   -1
- *      3    1    0
- *      4    1    1
- *      5    2   -2  etc.
+ * The moment-to-discrete matrix will be num_moments by num_angles in size.
+ * If the default constructor is used num_moments == num_angles. 
  */
 std::vector< double > QuadServices::computeM() const
 {
     unsigned const numAngles( spQuad->getNumAngles() );
     unsigned const dim(       spQuad->dimensionality() );
+    double sumwt( 0.0 );
+    for( size_t m=0; m<numAngles; ++m )
+	sumwt += spQuad->getWt(m);
 
+    // resize the M matrix.
     std::vector< double > Mmatrix( numAngles*numMoments, -9999.0 );
 
-    // loop over the (l,k) spherical harmonics indices. n = foo(l,k)
-    // Use Morel's scheme for picking the (l,k) pairs. Ref: Jim Morel, "A
-    // Hybrid Collocation-Galerkin-Sn Method for Solving the Boltzmann
-    // Transport Equation," NS&E 101, (1989).
-
-    if( dim == 1 )
+    for( unsigned n=0; n<numMoments; ++n )
     {
-	computeM_1D( Mmatrix );
-	return Mmatrix;
+	unsigned const ell ( n2lk[n].first  );
+	int      const k   ( n2lk[n].second ); 
+	double   const norm( (2*ell+1)/sumwt );
+	double   const clk ( compute_clk(ell,k) );
+	
+	// Loop over all angles that use these values.
+	for( unsigned m=0; m<numAngles; ++m )
+	    Mmatrix[ n + m*numMoments ] 
+		= norm * clk * spherical_harmonic(m,ell,k);
     }
-
-    // p84)  2-D XY
-    else if( dim == 2 )
-    {
-	computeM_2D( Mmatrix );
-	return Mmatrix;
-    }
-
-    // p85)  3-D XYZ
-    else if( dim == 3 )
-    {
-	computeM_3D( Mmatrix );
-	return Mmatrix;
-    }
-
-    else
-    {
-	std::ostringstream msg;
-	msg << "FATAL ERROR in QuadServices::computeM().\n" 
-	    << "\tThis class does not know how to build the "
-	    << "moment-to-discrete matrix for quadrature set \"\n"
-	    << spQuad->name() << "\"." << std::endl;
-	    Insist( false, msg.str() );
-    }
-
-    // should never get here
     return Mmatrix;
 }
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Compute the M matrix for 3D quadrature sets
- * \param Mmatrix the Moment-to-Discrete matrix
- * --------------------------------------------------------------
- * Use all moments for ell=0,...,N-1, k=-ell,...,ell
- * Plus                ell=N,         k<0
- * Plus                ell=N,         k>0, k odd
- * Plus                ell=N+1,       k<0, k even
- * ---------------------------------------------------------------
- */
-void QuadServices::computeM_3D( std::vector< double > & Mmatrix ) const
-{
-    unsigned const snOrder(   spQuad->getSnOrder()   );
-    unsigned n(0);
-
-    // ell=0,...,(N-1) and k=-ell,...,ell
-    for( unsigned ell=0; ell<snOrder; ++ell)
-	for( int k(-1*ell); std::fabs(k) <= ell; ++k, ++n )
-	    cYnm( Mmatrix, n, k, ell );
-    { 
-    // ell=N and k<0
-	unsigned ell( snOrder );
-	for( int k(-1*ell); k<0; ++k, ++n )
-	    cYnm( Mmatrix, n, k, ell );
-
-    // ell=N, k>0, k odd
-	for( int k=1; k<=ell; k+=2, ++n )
-	    cYnm( Mmatrix, n, k, ell );    
-    }
-    { 
-    // ell=N+1 and k<0, k even
-	unsigned ell( snOrder+1 );
-	for( int k(-1*ell+1); k<0; k+=2, ++n )
-	    cYnm( Mmatrix, n, k, ell );    
-    }
-    Ensure( n == numMoments );
-    return;
-}
-
-//---------------------------------------------------------------------------//
-/*! 
- * \brief Compute the M matrix for 2D quadrature sets
- * \param Mmatrix the Moment-to-Discrete matrix
- * --------------------------------------------------------------
- * Use all moments for ell=0,...,N-1, k=0,...,ell
- * Plus                ell=N,         k=0,...,ell, k odd.
- * ---------------------------------------------------------------
- */
-void QuadServices::computeM_2D( std::vector< double > & Mmatrix ) const
-{
-    unsigned const snOrder( spQuad->getSnOrder() );
-    unsigned n(0);
-
-    // ell=0,...,(N-1) and k=0,...,ell
-    for( unsigned ell=0; ell<snOrder; ++ell)
-	for( int k(0); k <= ell; ++k, ++n )
-	    cYnm( Mmatrix, n, k, ell );
-    { 
-    // ell=N and k>0 and k odd
-	unsigned ell( snOrder );
-	for( int k=1; k<=ell; k+=2, ++n )
-	    cYnm( Mmatrix, n, k, ell );
-    }
-    Ensure( n == numMoments );
-    return;
-}
-
-//---------------------------------------------------------------------------//
-/*! 
- * \brief Compute the M matrix for 1D quadrature sets
- * \param Mmatrix the Moment-to-Discrete matrix
- * --------------------------------------------------------------
- * Use all moments for ell=0,...,N-1, k=0
- * ---------------------------------------------------------------
- */
-void QuadServices::computeM_1D( std::vector< double > & Mmatrix ) const
-{
-    unsigned const snOrder( spQuad->getSnOrder() );
-    unsigned n(0);
-
-    // ell=0,...,(N-1) and k=0
-    int k(0); // k is always zero for 1D.
-    for( unsigned ell=0; ell<snOrder; ++ell, ++n)
-	cYnm( Mmatrix, n, k, ell );
-
-    Ensure( n == numMoments );
-    return;
-}
-
-//---------------------------------------------------------------------------//
-/*! 
- * \brief Compute the (ell,k) spherical harmonic evaluated at Omega_m.
- * 
- * \param ell The ell index for the current spherical harmonic function.
- * \param k The k index for the current spherical harmonic function. 
+ * \brief Compute the \f$ (\ell,k) \f$ spherical harmonic evaluated at \f$
+ * \Omega_m \f$.
  * \param m The index for the current discrete angle.
- * \return The (ell,k) sphercial harmonic evaluated at Omeaga_m. 
+ * \param ell The \f$ \ell \f$ index for the current spherical harmonic function.
+ * \param k The k index for the current spherical harmonic function. 
+ * \return The \f$ (\ell,k) \f$ sphercial harmonic evaluated at \f$ \Omega_m. \f$
+ *
+ * \sa <a
+ * href="http://mathworld.wolfram.com/SphericalHarmonic.html">Mathworld's
+ * entry for Spherical Harmonic</a>.
  */
-double QuadServices::spherical_harmonic( unsigned const ell, 
-					 int      const k,
-					 unsigned const m ) const
+double QuadServices::spherical_harmonic( unsigned const m, 
+					 unsigned const ell,
+					 int      const k   ) const
 {
-    using rtt_units::PI;
-    using rtt_dsxx::soft_equiv;
-
-    Require( abs(k) <= ell );
-    Require( ell < spQuad->getNumAngles() );
-    Require( m < spQuad->getNumAngles() );
+    Require( std::abs(k) <= ell );
+    Require( m           <  spQuad->getNumAngles() );
 
     unsigned const dim( spQuad->dimensionality() );
     double   const mu ( spQuad->getMu(m) );
     double   const eta( dim>1 ? spQuad->getEta(m) : 0.0 );
-    double   const xi ( dim>2 ? spQuad->getXi(m)  : 0.0 );
+    double   const xi ( dim>2 ? spQuad->getXi( m) : 0.0 );
 
     // Compute the azimuthal angle.
-    double theta;
-    if( soft_equiv( eta, 0.0 ) )
-	theta = PI/2;
+    double const azimuthalAngle( compute_azimuthalAngle( mu, eta, xi ) );
+    
+    double sphHarm(0.0);
+    if( k < 0 )
+	sphHarm = gsl_sf_legendre_Plm( ell, std::abs(k), mu )
+	    * sin( std::abs(k) * azimuthalAngle );
+    else
+	sphHarm = gsl_sf_legendre_Plm( ell, k, mu ) 
+	    * cos( ell * azimuthalAngle );
+    
+    return sphHarm;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute the Azimuthal angle for the current quadrature direction.
+ */
+double QuadServices::compute_azimuthalAngle( double const mu,
+					     double const eta,
+					     double const xi ) const
+{
+    using rtt_units::PI;
+    using rtt_dsxx::soft_equiv;
+
+    Require( std::abs(mu)  <= 1.0 );
+    Require( std::abs(eta) <= 1.0 );
+    Require( std::abs(xi)  <= 1.0 );
+
+    // For 1D sets, we define this angle to be zero.
+    if( soft_equiv( eta, 0.0 ) ) return 0.0;
+
+    // For 2D sets, reconstruct xi from known information: 
+    // xi*xi = 1.0 - eta*eta - mu*mu
+    // Always use positive value for xi.
+    double local_xi( xi );
+    if( soft_equiv( local_xi,  0.0 ) )
+	local_xi = std::sqrt( 1.0 - mu*mu - eta*eta );
+
+    double azimuthalAngle(999.0);
+
+    if( local_xi > 0.0 )
+    {
+	if( eta > 0.0 )
+	    azimuthalAngle = atan(xi/eta);
+	else
+	    azimuthalAngle = PI - atan(xi/std::abs(eta));
+    } 
     else 
     {
-	if( eta >= 0 )
-	    theta = atan(xi/eta);
+	if( eta > 0 )
+	    azimuthalAngle = 2*PI - atan(std::abs(xi)/eta);
 	else
-	    theta = atan(xi/eta) + PI;
+	    azimuthalAngle = PI + atan(xi/eta);
     }
 
     // ensure that theta is in the range 0...2*PI.
-    if( theta < 0 )
-	theta += 2*PI;
-    Check( theta >= 0 );
-    Check( theta <= 2*PI );
+    Ensure( azimuthalAngle >= 0 );
+    Ensure( azimuthalAngle <= 2*PI );
     
-    return legendre_polynomial(ell,std::abs(k),mu) * cos( std::abs(k)*theta );
+    return azimuthalAngle;
 }
+
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Compute the (ell,k) associated Legendre polynomial evaluated at
- * mu_m. 
- * \param ell
- * \param k
- * \param mu_m
- * \return The (ell,k) associated Legendre polynomial evaluated at mu_m.
- * 
- * The associated Legendre polynomials, P_{ell,k}(x), are solutions to the
- * associated Legendre differential equation, where ell is a positive integer
- * and k = 0, ..., ell.  They can be given in terms of the unassociated
- * polynomials by:
- *
- * \f[
- * P^k_ell(x) = (-1)^k(1-x^2)^{k/2}\frac{d^k}{dx^k}P_ell(x),
- * \f]
- * or equivalently, 
- * \f[
- * P^k_ell(x) = \frac{(-1)^k}{2^ellk
- *             !}(1-x^2)^{k/2}\frac{d^{ell+k}}{dx^{ell+k}}(x^2-1)^ell.
- * \f]
- *
- * where \f$ P_ell(x) \f$ are the unassociated Legendre polynomials.
- *
- * Associated polynomials are sometimes called Ferrers' functions (Sansone
- * 1991, p. 246). If m=0, they reduce to the unassociated polynomials.  The
- * associated Legendre functions are part of the <a
- * href="http://mathworld.wolfram.com/SphericalHarmonic.html">spherical
- * harmonics</a>, which are the solution of <a
- * href="http://mathworld.wolfram.com/LaplacesEquation.html">Laplace's
- * equation</a> in spherical coordinates.  They are orthogonal over W(x)=1
- * with the weighting funciton 1.
- * 
- * The associated Legendre Polynomials obey the following recurrence
- * relation:
- * 
- * \f[
- * (ell-k)P^k_ell(x) = x(2ell-1)P^k_{ell-1}(x) - (k+k-1)P^k_{ell-2}(x).
- * \f]
- *
- * An identity relating associated polynomials with negative k to the
- * corresponding functions with positive k is:
- *
- * \f[
- * P^{-k}_ell(x) = (-1)^k\frac{(ell-k)!}{(ell+k)!P^k_ell(x)}.
- * \f]
- *
- * Also,
- *
- * \f[
- * P^ell_ell(x) = (-1)^ell (2ell-1)!! (1-x^2)^{ell/2},
- * \f]
- *
- * and 
- *
- * \f[
- * P^ell_{ell+1}(x) = x (2ell+1)P^ell_ell(x).
- * \f]
- *
- * Including the factor of (-1)^k, the first few associated Legendre
- * polynomials are:
- * 
- * P^0_0(x) = 1
- * P^0_1(x) = x
- * P^1_1(x) = 1(1-x^2)^0.5
- * P^0_2(x) = 0.5 ( 3x^2 - 1 )
- * P^1_2(x) = -3x (1-x^2)^0.5
- * P^2_2(x) = 3(1-x^2)
- * etc.
- *
- * \sa http://mathworld.wolfram.com/LegendrePolynomial.html
- * 
- * \bug replace with gnu scientific library function gsl_sf_legendre ?
+ * \brief Compute the c(l,k) spherical harmonics coefficient.
  */
-double QuadServices::legendre_polynomial( unsigned const ell, 
-					  unsigned const k,
-					  double   const x ) const
+double QuadServices::compute_clk( unsigned const ell, int const k ) const
 {
-    Require( k <= ell );
-
-    // P_{0,0}(x) is defined to be 1.0.
-    double pll(1.0);  // l==0
-
-    if( k > 0 )
-    {
-	double somx2 = sqrt((1-x)*(1+x));
-	double fact = 1.0;
-	for( unsigned i=0; i<k; ++i )
-	{
-	    pll  *= -1.0*fact*somx2;
-	    fact += 2.0;
-	}
-    }
-
-    if( ell==k ) 
-	return pll;
-    else
-    {
-	// Compute P{k, k+1}
-	double pllp1 = x * (2*k+1) * pll;
-	
-	if( ell == (k+1) )
-	    return pllp1;
-	else
-	{
-	    double pkk;
-	    for( unsigned kk=k+2; kk < ell; ++kk )
-	    {
-		pkk = (x*(2*kk-1)*pllp1-(kk+k-1)*pll)/(kk-k);
-		pll = pllp1;
-		pllp1 = pkk;
-	    }
-	    return pkk;
-	}
-    }
-}
-
-//---------------------------------------------------------------------------//
-/*! 
- * \brief Compute the gamma(k,l) coefficient
- * 
- * \param name description
- * \return description
- */
-double QuadServices::gamma( int k, unsigned ell ) const
-{
-    return std::sqrt( 2 - kronecker_delta(k,0) 
+    return std::sqrt( ( 2 - kronecker_delta(k,0) ) 
 		      * factorial( ell - std::abs(k) )
-		      / factorial( ell + std::abs(k) ) );
+		      / ( 1.0 * factorial( ell + std::abs(k) ) ) );
 }
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Compute the beta(l) coefficient
- * 
- * \param name description
- * \return description
+ * \brief Multiply M and D and compare the result to the identity matrix.
+ * \return true if M = D^(-1), otherwise false.
  */
-double QuadServices::beta( unsigned ell ) const
+bool QuadServices::D_equals_M_inverse() const
 {
-    return ( 2*ell+1 ) / spQuad->getNorm();
+    using rtt_dsxx::soft_equiv;
+    using std::cout;
+    using std::endl;
+
+    int n( numMoments );
+    int m( spQuad->getNumAngles() );
+    int nm( std::min(n,m) );
+
+    // create non-const versions of M and D.
+    std::vector< double > Marray( Mmatrix );
+    std::vector< double > Darray( Dmatrix );
+    std::vector< double > Iarray( nm*nm, -999.0 );
+    gsl_matrix_view M = gsl_matrix_view_array( &Marray[0], m, n );
+    gsl_matrix_view D = gsl_matrix_view_array( &Darray[0], n, m );
+    gsl_matrix_view I = gsl_matrix_view_array( &Iarray[0], nm, nm );
+    
+    // Compute the matrix-matrix product and sum:
+    //
+    // I = alpha * op1(M) * op2(D) + beta*I
+    //
+    // where op1 is one of:
+    //    CblasNoTrans    <-->    Use M as provided.
+    //    CblasTrans      <-->    Transpose M before multiplication.
+    //    CblasConjTRans  <-->    Hermitian transpose M before mult.
+    CBLAS_TRANSPOSE_t op( CblasNoTrans );
+    double alpha(1.0);
+    double beta( 0.0);
+    
+    gsl_blas_dgemm( op, op, alpha, &M.matrix, &D.matrix, beta, &I.matrix );
+
+    for( unsigned i=0; i<nm; ++i )
+	// cout << Iarray[ i ] << endl;
+	if( ! soft_equiv( Iarray[ i + i*nm ], 1.0 ) ) return false;
+
+    return true;
 }
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Compute the (n,m)-th entry of the Mmatrix.
- * 
- * \param Mmatrix the Moment-to-discrete matrix
- * \param n What column in the Mmatrix are we working on?
- * \param k The index n corresponds to the tuple (k,ell).
- * \param ell The index n corresponds to the tuple (k,ell).
+ * \brief Creates a mapping between moment index n and the index pair (k,l).
+ *
+ * This function computes the mapping as specified by Morel in "A Hybrid
+ * Collocation-Galerkin-Sn Method for Solving the Boltzmann Transport
+ * Equation." 
  */
-void QuadServices::cYnm( std::vector< double > & Mmatrix,
-			   unsigned n, int k, unsigned ell ) const
+std::vector< QuadServices::lk_index > QuadServices::compute_n2lk() const
 {
-    Check(n<numMoments);
+    unsigned const dim( spQuad->dimensionality() );
 
+    if ( dim == 3 ) return compute_n2lk_3D();
+    if ( dim == 2 ) return compute_n2lk_2D();
+    Check( dim == 1 );
+    return compute_n2lk_1D();
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Creates a mapping between moment index n and the index pair (k,l).
+ */
+std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_3D() const
+{
     unsigned const numAngles( spQuad->getNumAngles() );
-    double   const b( beta( ell ) );
-    double   const g( gamma( k, ell ) );
+    unsigned const snOrder(   spQuad->getSnOrder()   );
+    unsigned n(0);
+    
+    std::vector< lk_index > result;
 
-    // Loop over all angles that use these values.
-    for( unsigned m=0; m<numAngles; ++m )
+    // Choose: l= 0, ..., N-1, k = -l, ..., l
+    for( unsigned ell=0; ell< snOrder; ++ell )
+	for( int k(-1*ell); std::fabs(k) <= ell; ++k, ++n )
+	    result.push_back( lk_index(ell,k) );
+
+    // Add ell=N and k<0
     {
-	Mmatrix[ m + n*numAngles ] 
-	    = b * g * spherical_harmonic(ell,k,m); 
+	unsigned ell( snOrder );
+	for( int k(-1*ell); k<0; ++k, ++n )
+	    result.push_back( lk_index(ell,k) );
     }
+
+    // Add ell=N, k>0, k odd
+    {
+	unsigned ell( snOrder );
+	for( int k=1; k<=ell; k+=2, ++n )
+	    result.push_back( lk_index(ell,k) );
+    }
+
+    // Add ell=N+1 and k<0, k even
+    {
+	unsigned ell( snOrder+1 );
+	for( int k(-1*ell+1); k<0; k+=2, ++n )
+	    result.push_back( lk_index(ell,k) );
+    }
+
+    Ensure( n == numMoments );
+    Ensure( result.size() == numMoments );
+    return result;
 }
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Creates a mapping between moment index n and the index pair (k,l).
+ */
+std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_2D() const
+{
+    unsigned const numAngles( spQuad->getNumAngles() );
+    unsigned const snOrder(   spQuad->getSnOrder()   );
+    unsigned n(0);
+    
+    std::vector< lk_index > result;
+    
+    // Choose: l= 0, ..., N-1, k = 0, ..., l
+    for( unsigned ell=0; ell< snOrder; ++ell )
+	for( int k=0; k<= ell; ++k, ++n )
+	    result.push_back( lk_index(ell,k) );
+
+    // Add ell=N and k>0, k odd
+    {
+	unsigned ell( snOrder );
+	for( int k=1; k<=ell; k+=2, ++n )
+	    result.push_back( lk_index(ell,k) );
+    }
+
+    Ensure( n == numMoments );
+    Ensure( result.size() == numMoments );
+    return result;
+}
+
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Creates a mapping between moment index n and the index pair (k,l).
+ */
+std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_1D() const
+{
+    unsigned const numAngles( spQuad->getNumAngles() );
+    unsigned const snOrder(   spQuad->getSnOrder()   );
+    unsigned n(0);
+    
+    std::vector< lk_index > result;
+    
+    // Choose: l= 0, ..., N-1, k = 0
+    int k(0); // k is always zero for 1D.
+    for( unsigned ell=0; ell<snOrder; ++ell, ++n )
+	result.push_back( lk_index(ell,k) );
+
+    Ensure( n == numMoments );
+    Ensure( result.size() == numMoments );
+    return result;
+}
+
 
 } // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------//
 //                 end of QuadServices.cc
 //---------------------------------------------------------------------------//
+
