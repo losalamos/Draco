@@ -845,9 +845,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    # configure options
    AC_SUBST(configure_command)dnl
 
-   # namelist package (nml) generation   
-   AC_SUBST(NMLGEN)dnl
-
    dnl end of AC_DRACO_ENV
 ])
 
