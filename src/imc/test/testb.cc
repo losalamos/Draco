@@ -183,38 +183,18 @@ void read_part(const MT &mesh, Rnd_Control &rcon)
   // open file and get all the particles
     ifstream infile("part.out", ios::in);
 
-    while (!infile.eof())
+    Particle<MT>::Particle_Buffer buffer(mesh.get_Coord().get_dim());
+
+    while (buffer.read(infile))
     {
-      // read in particle data
-	double read_send[8];
-    
-	infile.read(reinterpret_cast<char *>(read_send), 
-		    8 * sizeof(double));
-	Check (!infile.eof());
-
-	int cell;
-	infile.read(reinterpret_cast<char *>(&cell), sizeof(int));
-	Check(!infile.eof());
-    
-	vector<double> r(mesh.get_Coord().get_dim());
-	vector<double> omega(mesh.get_Coord().get_sdim());
-	int index = 0;
-	for (int i = 0; i < r.size(); i++)
-	    r[i] = read_send[index++];
-	for (int i = 0; i < omega.size(); i++)
-	    omega[i] = read_send[index++];
-	double ew = read_send[index++];
-	double fraction = read_send[index++];
-
-	Particle<MT> part(r, omega, ew, cell, rcon.get_rn(), fraction);
-
+	Particle<MT> part(buffer.get_r(), buffer.get_omega(),
+			  buffer.get_ew(), buffer.get_cell(), rcon.get_rn(),
+			  buffer.get_frac());
 	cout << part << endl;
-
-      // reclaim memory
     }
 
   // delete file
-  // std::remove("part.out");
+    std::remove("part.out");
 }
 
 int main(int argc, char *argv[])
