@@ -77,7 +77,7 @@ class Sphyramid_Mesh
     typedef std::pair<sf_double, sf_double>    pair_sf_double;
 
     // Handy typedefs for Sphyramid_Mesh dependent classes
-    typedef CCSF<double>   CCSF_double;
+    typedef CCSF<double>                       CCSF_double;
 
   private:
     // Base class reference to a derived coordinate system class
@@ -859,12 +859,12 @@ template<class T> class Sphyramid_Mesh::CCSF
 {
   public:
     // STL style typedefs.
-    typedef T value_type;
-    typedef T& reference;
-    typedef const T& const_reference;
-    typedef typename std::vector<T>::iterator iterator;
+    typedef T                                       value_type;
+    typedef T&                                      reference;
+    typedef const T&                                const_reference;
+    typedef typename std::vector<T>::iterator       iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
-    typedef typename std::vector<T>::size_type size_type;
+    typedef typename std::vector<T>::size_type      size_type;
 
   private:
     // SP back to Sphyramid_Mesh.
@@ -913,7 +913,7 @@ Sphyramid_Mesh::CCSF<T>::CCSF(SP_Mesh mesh_)
     : mesh(mesh_), data(mesh->num_cells()) 
 {
     Require (this->mesh);
-    Ensure  (!empty());
+    Ensure  (!(this->empty()));
 }
 //---------------------------------------------------------------------------//
 // constructor for automatic initialization
@@ -923,7 +923,7 @@ Sphyramid_Mesh::CCSF<T>::CCSF(SP_Mesh mesh_, const std::vector<T> &array)
 {
     Require (this->mesh)
     Ensure  (this->data.size() == this->mesh->num_cells());
-    Ensure  (!empty());
+    Ensure  (!(this->empty()));
 }
 
 //===========================================================================//
@@ -959,6 +959,9 @@ template<class T> class Sphyramid_Mesh::CCVF
     // Subscripting.
     inline const T& operator()(int dim, int cell) const;
     inline T& operator()(int dim, int cell);
+
+    // getting a CC vector in a cell
+    inline std::vector<T> operator()(int cell) const;
 
     // STL style functions.    
     inline iterator begin(int i);
@@ -1003,6 +1006,24 @@ template<class T>
 T& Sphyramid_Mesh::CCVF<T>::operator()(int dim, int cell)
 {
     return this->data[dim-1][cell-1];
+}
+//---------------------------------------------------------------------------//
+// vector return overload()
+template<class T>
+std::vector<T> Sphyramid_Mesh::CCVF<T>::operator() (int cell) const
+{
+    // declare return vector
+    std::vector<T> x;
+   
+    // loop through dimensions and make_return vector for this cell
+    for (int i = 0; i < data.size(); i++)
+    {
+	x.push_back(data[i][cell-1]);
+    }
+
+    // return
+    Ensure (x.size() == data.size());
+    return x;
 }
 //---------------------------------------------------------------------------//
 // STL style functionality for CCVF fields
