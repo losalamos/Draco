@@ -4965,8 +4965,9 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
        ARFLAGS='cr'
    fi
 
-   ARLIBS=''
-   ARTESTLIBS=''
+   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+   ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
 
    # COMPILATION FLAGS
 
@@ -5143,8 +5144,9 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
        ARFLAGS='cr'
    fi
 
-   ARLIBS=''
-   ARTESTLIBS=''
+   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+   ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
 
    # COMPILATION FLAGS
 
@@ -5319,8 +5321,9 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
        ARFLAGS='cr'
    fi
 
-   ARLIBS=''
-   ARTESTLIBS=''
+   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+   ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
 
    # COMPILATION FLAGS
 
