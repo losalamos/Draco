@@ -25,7 +25,7 @@
           implicit none
 
           private
-          public :: construct_Builder_Class, destruct_Builder_Class
+          public :: construct_Builder, destruct_Builder
 
 !===========================================================================
 !
@@ -44,11 +44,11 @@
 ! 
 !===========================================================================
 
-          interface construct_Builder_Class
+          interface construct_Builder
               module procedure CAR_CU_Builder_construct
           end interface
 
-          interface destruct_Builder_Class
+          interface destruct_Builder
               module procedure CAR_CU_Builder_destruct
           end interface
 

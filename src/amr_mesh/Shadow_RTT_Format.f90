@@ -26,7 +26,7 @@
           implicit none
 
           private
-          public :: destruct_RTT_Format_Class
+          public :: destruct_RTT_Format
 
 !===========================================================================
 !
@@ -44,7 +44,7 @@
 ! 
 !===========================================================================
 
-          interface destruct_RTT_Format_Class
+          interface destruct_RTT_Format
               module procedure CAR_CU_RTT_Format_destruct
           end interface
 

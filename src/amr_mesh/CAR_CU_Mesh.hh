@@ -242,10 +242,10 @@ class CAR_CU_Mesh
 	// getting a NCVF vector
 	inline vector<T> operator()(int) const;
 
-        // return the size of the NCSF leading index
+        // return the size of the NCVF leading index
         int get_size_1() {return data.size();}
 
-        // return the size of the NCSF trailing index
+        // return the size of the NCVF trailing index
         int get_size_2() {return data[0].size();}
     };
 
@@ -743,7 +743,7 @@ inline CAR_CU_Mesh::NCVF<T>::NCVF(SP<CAR_CU_Mesh> mesh_)
     Require (mesh);
 
     // initialize data array
-    for (int i = 0; i < size_; i++)
+    for (int i = 0; i < data.size(); i++)
 	data[i].resize(mesh->get_ndim());
 }
 

@@ -22,7 +22,7 @@
           implicit none
 
           private
-          public :: construct_Interface_Class, destruct_Interface_Class
+          public :: construct_Interface, destruct_Interface
 
 !===========================================================================
 !
@@ -43,11 +43,11 @@
 ! 
 !===========================================================================
 
-          interface construct_Interface_Class
+          interface construct_Interface
               module procedure CAR_CU_Interface_construct
           end interface
 
-          interface destruct_Interface_Class
+          interface destruct_Interface
               module procedure CAR_CU_Interface_destruct
           end interface
 

@@ -28,12 +28,11 @@
 ! Constructors and destructors
 !===========================================================================
 
-          public :: destruct_Mesh_Class, construct_CCSF_Class,          &
-                    destruct_CCSF_Class, construct_CCVF_Class,          &
-                    destruct_CCVF_Class, construct_FCSF_Class,          &
-                    destruct_FCSF_Class, construct_FCDSF_Class,         &
-                    destruct_FCDSF_Class, construct_NCSF_Class,         &
-                    destruct_NCSF_Class
+          public ::  destruct_Mesh,  construct_CCSF,  destruct_CCSF,     &
+                    construct_CCVF,   destruct_CCVF, construct_FCSF,     &
+                     destruct_FCSF, construct_FCDSF, destruct_FCDSF,     &
+                    construct_NCSF,   destruct_NCSF, construct_NCVF,     &
+                     destruct_NCVF
 
 !===========================================================================
 ! General mesh scalar accessor functions
@@ -74,7 +73,8 @@
 !===========================================================================
 
           public :: get_CCSF, set_CCSF, get_CCVF, set_CCVF, get_FCSF,   &
-                    set_FCSF, get_FCDSF, set_FCDSF, get_NCSF, set_NCSF
+                    set_FCSF, get_FCDSF, set_FCDSF, get_NCSF, set_NCSF, &
+                    get_NCVF, set_NCVF
 
 !===========================================================================
 ! Class type definitions
@@ -138,67 +138,94 @@
               integer             :: vec_size
           end type real_NCSF
 
+          type, public :: integer_NCVF
+              integer             :: this
+              type(CAR_CU_Mesh)   :: mesh            
+              integer             :: vec_size_1
+              integer             :: vec_size_2
+          end type integer_NCVF
+
+          type, public :: real_NCVF
+              integer             :: this
+              type(CAR_CU_Mesh)   :: mesh
+              integer             :: vec_size_1
+              integer             :: vec_size_2
+          end type real_NCVF
 
 !===========================================================================
 ! Define interfaces
 !===========================================================================
 
-          interface destruct_Mesh_Class
+          interface destruct_Mesh
               module procedure CAR_CU_Mesh_destruct
           end interface
 
-          interface construct_CCSF_Class
+          interface construct_CCSF
               module procedure  int_CCSF_construct
               module procedure real_CCSF_construct
           end interface
 
-          interface destruct_CCSF_Class
+          interface destruct_CCSF
               module procedure  int_CCSF_destruct
               module procedure real_CCSF_destruct
           end interface
 
-          interface construct_CCVF_Class
+          interface construct_CCVF
               module procedure  int_CCVF_construct
               module procedure  int_CCVF_arb_construct
               module procedure real_CCVF_construct
               module procedure real_CCVF_arb_construct
           end interface
 
-          interface destruct_CCVF_Class
+          interface destruct_CCVF
               module procedure  int_CCVF_destruct
               module procedure real_CCVF_destruct
           end interface
 
-          interface construct_FCSF_Class
+          interface construct_FCSF
               module procedure  int_FCSF_construct
               module procedure real_FCSF_construct
           end interface
 
-          interface destruct_FCSF_Class
+          interface destruct_FCSF
               module procedure  int_FCSF_destruct
               module procedure real_FCSF_destruct
           end interface
 
-          interface construct_FCDSF_Class
+          interface construct_FCDSF
               module procedure  int_FCDSF_construct
               module procedure real_FCDSF_construct
           end interface
 
-          interface destruct_FCDSF_Class
+          interface destruct_FCDSF
               module procedure  int_FCDSF_destruct
               module procedure real_FCDSF_destruct
           end interface
 
-          interface construct_NCSF_Class
-              module procedure  int_NCSF_construct_all
+          interface construct_NCSF
+              module procedure  int_NCSF_construct_def
               module procedure  int_NCSF_construct_arb
-              module procedure real_NCSF_construct_all
+              module procedure real_NCSF_construct_def
               module procedure real_NCSF_construct_arb
           end interface
 
-          interface destruct_NCSF_Class
+          interface destruct_NCSF
               module procedure  int_NCSF_destruct
               module procedure real_NCSF_destruct
+          end interface
+
+          interface construct_NCVF
+              module procedure  int_NCVF_construct_def
+              module procedure  int_NCVF_construct_arb_1
+              module procedure  int_NCVF_construct_arb_2
+              module procedure real_NCVF_construct_def
+              module procedure real_NCVF_construct_arb_1
+              module procedure real_NCVF_construct_arb_2
+          end interface
+
+          interface destruct_NCVF
+              module procedure  int_NCVF_destruct
+              module procedure real_NCVF_destruct
           end interface
 
           interface get_num_dims
@@ -393,6 +420,24 @@
               module procedure set_integer_NCSF_node
               module procedure set_real_NCSF_all
               module procedure set_real_NCSF_node
+          end interface
+
+          interface get_NCVF
+              module procedure get_integer_NCVF_all
+              module procedure get_integer_NCVF_node
+              module procedure get_integer_NCVF_node_dim
+              module procedure get_real_NCVF_all
+              module procedure get_real_NCVF_node
+              module procedure get_real_NCVF_node_dim
+          end interface
+
+          interface set_NCVF
+              module procedure set_integer_NCVF_all
+              module procedure set_integer_NCVF_node
+              module procedure set_integer_NCVF_node_dim
+              module procedure set_real_NCVF_all
+              module procedure set_real_NCVF_node
+              module procedure set_real_NCVF_node_dim
           end interface
 
           contains
@@ -768,7 +813,7 @@
 ! the corner and face-centered nodes. Initialization can be performed by 
 ! including the optional data argument. An uninitialized NCSF is created if 
 ! this argument is not specified.
-              subroutine int_NCSF_construct_all(mesh, self, data)
+              subroutine int_NCSF_construct_def(mesh, self, data)
                   type(CAR_CU_Mesh),  intent(in)           :: mesh
                   type(integer_NCSF), intent(inout)        :: self
                   integer, intent(in), optional,                        &
@@ -784,12 +829,12 @@
                   self%mesh = mesh
                   self%vec_size = vec_size
 
-              end subroutine int_NCSF_construct_all
+              end subroutine int_NCSF_construct_def
 
 ! Construct a C++ CAR_CU_Mesh integer NCSF class object (self) including 
-! either the corner or face nodes. Initialization can be performed by 
-! including the optional data argument. An uninitialized NCSF is created if 
-! this argument is not specified.
+! only the corner nodes. Initialization can be performed by including the 
+! optional data argument. An uninitialized NCSF is created if this argument
+! is not specified.
               subroutine int_NCSF_construct_arb(mesh, self, vec_size, data)
                   type(CAR_CU_Mesh),  intent(in)                    :: mesh
                   type(integer_NCSF), intent(inout)                 :: self
@@ -820,7 +865,7 @@
 ! including the optional data argument. An uninitialized NCSF is created if 
 ! this argument is not specified.
 
-              subroutine real_NCSF_construct_all(mesh, self, data)
+              subroutine real_NCSF_construct_def(mesh, self, data)
                   type(CAR_CU_Mesh), intent(in)            :: mesh
                   type(real_NCSF),   intent(inout)         :: self
                   real*8, intent(in), optional,                         &
@@ -835,12 +880,13 @@
                   self%mesh = mesh
                   self%vec_size = vec_size
 
-              end subroutine real_NCSF_construct_all
+              end subroutine real_NCSF_construct_def
 
-! Construct a C++ CAR_CU_Mesh real NCSF class object (self) including either
-! the corner or face-centered nodes. Initialization can be performed by 
-! including the optional data argument. An uninitialized NCSF is created if 
-! this argument is not specified.
+! Construct a C++ CAR_CU_Mesh real NCSF class object (self) including only
+! the corner nodes. Initialization can be performed by including the optional
+! data argument. An uninitialized NCSF is created if this argument is not 
+! specified.
+
               subroutine real_NCSF_construct_arb(mesh, self, vec_size, data)
                   type(CAR_CU_Mesh), intent(in)                     :: mesh
                   type(real_NCSF),   intent(inout)                  :: self
@@ -863,6 +909,268 @@
                   call destruct_mesh_ncsf_d(self%this)
 
               end subroutine real_NCSF_destruct
+
+! Construct a C++ CAR_CU_Mesh integer NCVF class object (self) including both
+! the corner and face-centered nodes with the size of the second array index 
+! defaulted to be equal to the problem geometry dimension. Initialization can 
+! be performed by including the optional data argument. An uninitialized NCVF 
+! is created if this argument is not specified.
+
+              subroutine int_NCVF_construct_def(mesh, self, data)
+                  type(CAR_CU_Mesh),  intent(in)           :: mesh
+                  type(integer_NCVF), intent(inout)        :: self
+                  integer, intent(in), optional,                        &
+                           dimension(get_num_nodes(mesh),               &
+                                     get_num_dims(mesh))   :: data
+                  integer, dimension(get_num_nodes(mesh) *              &
+                                     get_num_dims(mesh))   :: ret_data
+                  integer                                  :: data_size = 0
+                  integer                                  :: size_1, size_2
+                  integer                                  :: node, dim
+
+                  size_1 = get_num_nodes(mesh)
+                  size_2 = get_num_dims(mesh)
+                  if (present(data)) then
+                      node = 1
+                      do while(node .le. get_num_nodes(mesh))
+                          dim = 1
+                          do while (dim .le. get_num_dims(mesh))
+                              ret_data(get_num_dims(mesh) *             &
+                                  (node-1) + dim) = data(node, dim)
+                              dim = dim + 1
+                          end do
+                          node = node + 1
+                      end do
+                      data_size = size_1 * size_2
+                  end if
+
+                  call construct_mesh_ncvf_i(mesh%this, self%this,      &
+                                             ret_data, data_size,       &
+                                             size_1, size_2)
+                  self%mesh = mesh
+                  self%vec_size_1 = size_1
+                  self%vec_size_2 = size_2
+
+              end subroutine int_NCVF_construct_def
+
+! Construct a C++ CAR_CU_Mesh integer NCVF class object (self) including 
+! only the corner nodes with the size of the second array index defaulted 
+! to be equal to the problem geometry dimension. Initialization can be 
+! performed by including the optional data argument. An uninitialized NCVF 
+! is created if this argument is not specified.
+
+              subroutine int_NCVF_construct_arb_1(mesh, self, size_1, data)
+                  type(CAR_CU_Mesh),  intent(in)                  :: mesh
+                  type(integer_NCVF), intent(inout)               :: self
+                  integer, intent(in)                             :: size_1
+                  integer, intent(in), optional,                        &
+                           dimension(size_1, get_num_dims(mesh))  :: data
+                  integer, dimension(size_1 * get_num_dims(mesh)) :: ret_data
+                  integer                                    :: data_size = 0
+                  integer                                         :: size_2
+                  integer                                         :: node, dim
+
+                  size_2 = get_num_dims(mesh)
+                  if (present(data)) then
+                      node = 1
+                      do while(node .le. size_1)
+                          dim = 1
+                          do while (dim .le. get_num_dims(mesh))
+                              ret_data(get_num_dims(mesh) *             &
+                                  (node-1) + dim) = data(node, dim)
+                              dim = dim + 1
+                          end do
+                          node = node + 1
+                      end do
+                      data_size = size_1 * size_2
+                  end if
+
+                  call construct_mesh_ncvf_i(mesh%this, self%this,      &
+                                             ret_data, data_size,       &
+                                             size_1, size_2)
+                  self%mesh = mesh
+                  self%vec_size_1 = size_1
+                  self%vec_size_2 = size_2
+
+              end subroutine int_NCVF_construct_arb_1
+
+! Construct a C++ CAR_CU_Mesh integer NCVF class object (self) including 
+! only the corner nodes with the size of the second array index specifed
+! as size_2. Initialization can be performed by including the optional data 
+! argument. An uninitialized NCVF is created if this argument is not specified.
+
+              subroutine int_NCVF_construct_arb_2(mesh, self, size_1,   &
+                                                  size_2, data)
+                  type(CAR_CU_Mesh),  intent(in)      :: mesh
+                  type(integer_NCVF), intent(inout)   :: self
+                  integer, intent(in)                 :: size_1, size_2
+                  integer, intent(in), optional,                        &
+                           dimension(size_1, size_2)  :: data
+                  integer, dimension(size_1 * size_2) :: ret_data
+                  integer                             :: data_size = 0
+                  integer                             :: node, dim
+
+                  if (present(data)) then
+                      node = 1
+                      do while(node .le. size_1)
+                          dim = 1
+                          do while (dim .le. size_2)
+                              ret_data(size_2 * (node-1) + dim) =       &
+                                  data(node, dim)
+                              dim = dim + 1
+                          end do
+                          node = node + 1
+                      end do
+                      data_size = size_1 * size_2
+                  end if
+
+                  call construct_mesh_ncvf_i(mesh%this, self%this,      &
+                                             ret_data, data_size,       &
+                                             size_1, size_2)
+                  self%mesh = mesh
+                  self%vec_size_1 = size_1
+                  self%vec_size_2 = size_2
+
+              end subroutine int_NCVF_construct_arb_2
+
+! Destroy a C++ CAR_CU_Mesh int NCVF class object (self).
+              subroutine int_NCVF_destruct(self)
+                  type(integer_NCVF), intent(inout) :: self
+
+                  call destruct_mesh_ncvf_i(self%this)
+
+              end subroutine int_NCVF_destruct
+
+! Construct a C++ CAR_CU_Mesh real NCVF class object (self) including both
+! the corner and face-centered nodes with the size of the second array index 
+! defaulted to be equal to the problem geometry dimension. Initialization can 
+! be performed by including the optional data argument. An uninitialized NCVF 
+! is created if this argument is not specified.
+
+              subroutine real_NCVF_construct_def(mesh, self, data)
+                  type(CAR_CU_Mesh), intent(in)           :: mesh
+                  type(real_NCVF),   intent(inout)        :: self
+                  real*8, intent(in), optional,                         &
+                          dimension(get_num_nodes(mesh),                &
+                                    get_num_dims(mesh))   :: data
+                  real*8, dimension(get_num_nodes(mesh) *               &
+                                    get_num_dims(mesh))   :: ret_data
+                  integer                                 :: data_size = 0
+                  integer                                 :: size_1, size_2
+                  integer                                 :: node, dim
+
+                  size_1 = get_num_nodes(mesh)
+                  size_2 = get_num_dims(mesh)
+                  if (present(data)) then
+                      node = 1
+                      do while(node .le. get_num_nodes(mesh))
+                          dim = 1
+                          do while (dim .le. get_num_dims(mesh))
+                              ret_data(get_num_dims(mesh) *             &
+                                  (node-1) + dim) = data(node, dim)
+                              dim = dim + 1
+                          end do
+                          node = node + 1
+                      end do
+                      data_size = size_1 * size_2
+                  end if
+
+                  call construct_mesh_ncvf_d(mesh%this, self%this,      &
+                                             ret_data, data_size,       &
+                                             size_1, size_2)
+                  self%mesh = mesh
+                  self%vec_size_1 = size_1
+                  self%vec_size_2 = size_2
+
+              end subroutine real_NCVF_construct_def
+
+! Construct a C++ CAR_CU_Mesh real NCVF class object (self) including only
+! the corner nodes with the size of the second array index defaulted 
+! to be equal to the problem geometry dimension. Initialization can be 
+! performed by including the optional data argument. An uninitialized NCVF 
+! is created if this argument is not specified.
+
+              subroutine real_NCVF_construct_arb_1(mesh, self, size_1, data)
+                  type(CAR_CU_Mesh), intent(in)                  :: mesh
+                  type(real_NCVF),   intent(inout)               :: self
+                  integer, intent(in)                            :: size_1
+                  real*8, intent(in), optional,                        &
+                          dimension(size_1, get_num_dims(mesh))  :: data
+                  real*8, dimension(size_1 * get_num_dims(mesh)) :: ret_data
+                  integer                                    :: data_size = 0
+                  integer                                        :: size_2
+                  integer                                        :: node, dim
+
+                  size_2 = get_num_dims(mesh)
+                  if (present(data)) then
+                      node = 1
+                      do while(node .le. size_1)
+                          dim = 1
+                          do while (dim .le. get_num_dims(mesh))
+                              ret_data(get_num_dims(mesh) *             &
+                                  (node-1) + dim) = data(node, dim)
+                              dim = dim + 1
+                          end do
+                          node = node + 1
+                      end do
+                      data_size = size_1 * size_2
+                  end if
+
+                  call construct_mesh_ncvf_d(mesh%this, self%this,      &
+                                             ret_data, data_size,       &
+                                             size_1, size_2)
+                  self%mesh = mesh
+                  self%vec_size_1 = size_1
+                  self%vec_size_2 = size_2
+
+              end subroutine real_NCVF_construct_arb_1
+
+! Construct a C++ CAR_CU_Mesh integer NCVF class object (self) including 
+! only the corner nodes with the size of the second array index specifed
+! as size_2. Initialization can be performed by including the optional data 
+! argument. An uninitialized NCVF is created if this argument is not specified.
+
+              subroutine real_NCVF_construct_arb_2(mesh, self, size_1,  &
+                                                   size_2, data)
+                  type(CAR_CU_Mesh),  intent(in)     :: mesh
+                  type(real_NCVF), intent(inout)     :: self
+                  integer, intent(in)                :: size_1, size_2
+                  real*8, intent(in), optional,                         &
+                          dimension(size_1, size_2)  :: data
+                  real*8, dimension(size_1 * size_2) :: ret_data
+                  integer                            :: data_size = 0
+                  integer                            :: node, dim
+
+                  if (present(data)) then
+                      node = 1
+                      do while(node .le. size_1)
+                          dim = 1
+                          do while (dim .le. size_2)
+                              ret_data(size_2 * (node-1) + dim) =       &
+                                  data(node, dim)
+                              dim = dim + 1
+                          end do
+                          node = node + 1
+                      end do
+                      data_size = size_1 * size_2
+                  end if
+
+                  call construct_mesh_ncvf_d(mesh%this, self%this,      &
+                                             ret_data, data_size,       &
+                                             size_1, size_2)
+                  self%mesh = mesh
+                  self%vec_size_1 = size_1
+                  self%vec_size_2 = size_2
+
+              end subroutine real_NCVF_construct_arb_2
+
+! Destroy a C++ CAR_CU_Mesh real NCVF class object (self).
+              subroutine real_NCVF_destruct(self)
+                  type(real_NCVF), intent(inout) :: self
+
+                  call destruct_mesh_ncvf_d(self%this)
+
+              end subroutine real_NCVF_destruct
 
 !===========================================================================
 ! General mesh scalar accessor functions
@@ -2088,8 +2396,238 @@
 
               end subroutine set_real_NCSF_node
 
-      end module CAR_CU_Mesh_Class
+!===========================================================================
+! integer NCVF class objects
+!===========================================================================
+! Return an entire C++ CAR_CU_Mesh integer NCVF class object (self).
+              function get_integer_NCVF_all(self)           result(data)
+                  type(integer_NCVF), intent(in)                :: self
+                  integer, dimension(self%vec_size_1,                   &
+                                     self%vec_size_2)           :: data
+                  integer, dimension(self%vec_size_1 *                  &
+                                     self%vec_size_2)           :: ret_data
+                  integer                                       :: data_size
+                  integer                                       :: node, dim
 
+                  data_size = self%vec_size_1 * self%vec_size_2
+                  call get_mesh_ncvf_i(self%mesh%this, self%this,       &
+                                       ret_data, data_size)
+
+                  node = 1
+                  do while(node .le. self%vec_size_1)
+                      dim = 1
+                      do while (dim .le. self%vec_size_2)
+                          data(node, dim) =                             &
+                              ret_data(self%vec_size_2 * (node-1) + dim)
+                          dim = dim + 1
+                      end do
+                  node = node + 1
+                  end do
+
+              end function get_integer_NCVF_all
+
+! Return all of the dim values for a node from a C++ CAR_CU_Mesh integer NCVF 
+! class object (self).
+              function get_integer_NCVF_node(self, node) result(data)
+                  type(integer_NCVF), intent(in)             :: self
+                  integer, intent(in)                        :: node
+                  integer, dimension(self%vec_size_2)        :: data
+                  integer                                    :: data_size
+
+                  data_size = self%vec_size_2
+                  call get_mesh_ncvf_i_node(self%mesh%this, self%this,  &
+                                            node, data, data_size)
+
+              end function get_integer_NCVF_node
+
+! Return the dim value for a node from a C++ CAR_CU_Mesh integer NCVF class 
+! object (self).
+              function get_integer_NCVF_node_dim(self, node, dim) result(data)
+                  type(integer_NCVF), intent(in)                  :: self
+                  integer, intent(in)                             :: node, dim
+                  integer                                         :: data
+
+                  call get_mesh_ncvf_i_node_dim(self%mesh%this,         &
+                                                self%this, node, dim, data)
+
+              end function get_integer_NCVF_node_dim
+
+! Set an entire C++ CAR_CU_Mesh integer NCVF class object (self) (can also
+! be done at initialization using the constructor).
+              subroutine set_integer_NCVF_all(self, data)
+                  type(integer_NCVF), intent(in)                :: self
+                  integer, intent(in),                                  &
+                           dimension(self%vec_size_1,                   &
+                                     self%vec_size_2)           :: data
+                  integer, dimension(self%vec_size_1 *                  &
+                                     self%vec_size_2)           :: ret_data
+                  integer                                       :: data_size
+                  integer                                       :: node, dim
+
+                  node = 1
+                  do while(node .le. self%vec_size_1)
+                      dim = 1
+                      do while (dim .le. self%vec_size_2)
+                          ret_data(self%vec_size_2 * (node-1) + dim)    &
+                              = data(node, dim)
+                          dim = dim + 1
+                      end do
+                      node = node + 1
+                  end do
+
+                  data_size = self%vec_size_1 * self%vec_size_2
+                  call set_mesh_ncvf_i(self%mesh%this, self%this,       &
+                                       ret_data, data_size)
+
+              end subroutine set_integer_NCVF_all
+
+! Set all of the dim values for a node from a C++ CAR_CU_Mesh integer NCVF 
+! class object (self).
+
+              subroutine set_integer_NCVF_node(self, node, data)
+                  type(integer_NCVF), intent(in)           :: self
+                  integer, intent(in)                      :: node
+                  integer, intent(in),                                  &
+                           dimension(self%vec_size_2)      :: data
+                  integer                                  :: data_size
+
+                  data_size = self%vec_size_2
+                  call set_mesh_ncvf_i_node(self%mesh%this, self%this,  &
+                                            node, data, data_size)
+
+              end subroutine set_integer_NCVF_node
+
+! Set the dim value for a node from a C++ CAR_CU_Mesh integer NCVF class 
+! object (self).
+              subroutine set_integer_NCVF_node_dim(self, node, dim, data)
+                  type(integer_NCVF), intent(in)                  :: self
+                  integer, intent(in)                             :: node, dim
+                  integer, intent(in)                             :: data
+
+                  call set_mesh_ncvf_i_node_dim(self%mesh%this,         &
+                                                self%this, node, dim, data)
+
+              end subroutine set_integer_NCVF_node_dim
+
+!===========================================================================
+! double NCVF class objects
+!===========================================================================
+! Return an entire C++ CAR_CU_Mesh real NCVF class object (self).
+              function get_real_NCVF_all(self)              result(data)
+                  type(real_NCVF), intent(in)                   :: self
+                  real*8, dimension(self%vec_size_1,                   &
+                                     self%vec_size_2)           :: data
+                  real*8, dimension(self%vec_size_1 *                  &
+                                     self%vec_size_2)           :: ret_data
+                  integer                                       :: data_size
+                  integer                                       :: node, dim
+
+                  data_size = self%vec_size_1 * self%vec_size_2
+                  call get_mesh_ncvf_d(self%mesh%this, self%this,      &
+                                       ret_data, data_size)
+
+                  node = 1
+                  do while(node .le. self%vec_size_1)
+                      dim = 1
+                      do while (dim .le. self%vec_size_2)
+                          data(node, dim) =                            &
+                              ret_data(self%vec_size_2 * (node-1) + dim)
+                          dim = dim + 1
+                      end do
+                  node = node + 1
+                  end do
+
+              end function get_real_NCVF_all
+
+! Return all of the dim values for a node from a C++ CAR_CU_Mesh real NCVF 
+! class object (self).
+              function get_real_NCVF_node(self, node) result(data)
+                  type(real_NCVF), intent(in)                :: self
+                  integer, intent(in)                        :: node
+                  real*8, dimension(self%vec_size_2)         :: data
+                  integer                                    :: data_size
+
+                  data_size = self%vec_size_2
+                  call get_mesh_ncvf_d_node(self%mesh%this, self%this,  &
+                                            node, data, data_size)
+
+              end function get_real_NCVF_node
+
+! Return the dim value for a node from a C++ CAR_CU_Mesh real NCVF class 
+! object (self).
+              function get_real_NCVF_node_dim(self, node, dim) result(data)
+                  type(real_NCVF), intent(in)                     :: self
+                  integer, intent(in)                             :: node, dim
+                  real*8                                          :: data
+
+                  call get_mesh_ncvf_d_node_dim(self%mesh%this,         &
+                                                self%this, node, dim, data)
+
+              end function get_real_NCVF_node_dim
+
+! Set an entire C++ CAR_CU_Mesh real NCVF class object (self) (can also
+! be done at initialization using the constructor).
+              subroutine set_real_NCVF_all(self, data)
+                  type(real_NCVF), intent(in)                   :: self
+                  real*8, intent(in),                                   &
+                           dimension(self%vec_size_1,                   &
+                                     self%vec_size_2)           :: data
+                  real*8,                                               &
+                           dimension(self%vec_size_1 *                  &
+                                     self%vec_size_2)           :: ret_data
+                  integer                                       :: data_size
+                  integer                                       :: node, dim
+
+                  node = 1
+                  do while(node .le. self%vec_size_1)
+                      dim = 1
+                      do while (dim .le. self%vec_size_2)
+                          ret_data(self%vec_size_2 * (node-1) + dim) =  &
+                              data(node, dim)
+                          dim = dim + 1
+                      end do
+                  node = node + 1
+                  end do
+
+                  data_size = self%vec_size_1 * self%vec_size_2
+                  call set_mesh_ncvf_d(self%mesh%this, self%this,       &
+                                       ret_data, data_size)
+
+              end subroutine set_real_NCVF_all
+
+! Set all of the dim values for a node from a C++ CAR_CU_Mesh real NCVF 
+! class object (self).
+
+              subroutine set_real_NCVF_node(self, node, data)
+                  type(real_NCVF), intent(in)              :: self
+                  integer, intent(in)                      :: node
+                  real*8, intent(in),                                   &
+                          dimension(self%vec_size_2)       :: data
+                  integer                                  :: data_size
+
+                  data_size = self%vec_size_2
+                  call set_mesh_ncvf_d_node(self%mesh%this, self%this,  &
+                                            node, data, data_size)
+
+              end subroutine set_real_NCVF_node
+
+! Set the dim value for a node from a C++ CAR_CU_Mesh real NCVF class 
+! object (self).
+              subroutine set_real_NCVF_node_dim(self, node, dim, data)
+                  type(real_NCVF), intent(in)                     :: self
+                  integer, intent(in)                             :: node, dim
+                  real*8, intent(in)                              :: data
+
+                  call set_mesh_ncvf_d_node_dim(self%mesh%this,         &
+                                                self%this, node, dim, data)
+
+              end subroutine set_real_NCVF_node_dim
+
+!---------------------------------------------------------------------------
+!                              end of CAR_CU_Mesh module
+!---------------------------------------------------------------------------
+
+      end module CAR_CU_Mesh_Class
 
 !---------------------------------------------------------------------------
 !                              end of amr_mesh/Shadow_CAR_CU_Mesh.f90
