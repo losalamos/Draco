@@ -1,3 +1,9 @@
+2003-02-13  Thomas M. Evans  <tme@lanl.gov>
+
+	* Particle_Buffer_Defs/Unset_Particle_Buffer_Defs.h: Removed these
+	files and added explicit scoping in the derived Particle_Buffer
+	classes.  This is part of the standard (14.6.2).
+
 2002-11-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* mc: Updated to mc-3_2_0.  Standard-compliancy changes dictated
