@@ -851,7 +851,7 @@ EOF
        has_libdir="yes"
    fi
 
-   for lib in ds++ c4
+   for lib in c4 ds++
    do
        # temporary string to keep line from getting too long
        draco_depends="\${libdir}/lib${lib}\${libsuffix}"
