@@ -77,25 +77,16 @@ CXX	= KCC -x -32 --no_implicit_include $(STRICT) -D_POSIX_SOURCE
 cmplr	= k32
 endif
 
-ifeq ($(beta),yes)
-CXX	= /v/furnish/kcc33pb/KCC_BASE/bin/KCC $(STRICT) --no_implicit_include -D_POSIX_SOURCE
-cmplr	= kcc33pb
-endif
-
-ifeq ($(gamma),yes)
-CXX	= /v/furnish/kcc33g/KCC_BASE/bin/KCC $(STRICT) --no_implicit_include -D_POSIX_SOURCE --one_instantiation_per_object
-cmplr	= kcc33g
-endif
-
-ifeq ($(delta),yes)
-CXX	= /v/furnish/kcc3.3delta/KCC_BASE/bin/KCC $(STRICT) --no_implicit_include -D_POSIX_SOURCE --one_instantiation_per_object -Bstatic
-cmplr	= kcc33d
-endif
-
 ifeq ($(epsilon),yes)
-CXX	= /v/furnish/kcc3.3epsilon/KCC_BASE/bin/KCC $(STRICT) --no_implicit_include -D_POSIX_SOURCE --one_instantiation_per_object -64
-#CXX	= /v/furnish/kcc3.3epsilon/KCC_BASE/bin/KCC $(STRICT) --no_implicit_include -D_POSIX_SOURCE 
+CXX	= /v/furnish/kcc3.3epsilon/KCC_BASE/bin/KCC $(STRICT) -D_POSIX_SOURCE --one_instantiation_per_object -64
+#CXX	= /v/furnish/kcc3.3epsilon/KCC_BASE/bin/KCC $(STRICT) -D_POSIX_SOURCE 
 cmplr	= kcc33e
+endif
+
+ifeq ($(zeta),yes)
+CXX	= /v/furnish/kcc3.3zeta/KCC_BASE/bin/KCC $(STRICT) -D_POSIX_SOURCE --one_instantiation_per_object -64
+#CXX	= /v/furnish/kcc3.3zeta/KCC_BASE/bin/KCC $(STRICT) -D_POSIX_SOURCE 
+cmplr	= kcc33z
 endif
 
 LDSHARED = cc -64 -shared
