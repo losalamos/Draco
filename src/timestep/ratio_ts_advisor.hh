@@ -1,15 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
-// ratio_ts_advisor.hh
-// John McGhee
-// Thu Apr  2 14:06:18 1998
-//---------------------------------------------------------------------------//
-// @> Defines the ratio time-step advisor.
-//---------------------------------------------------------------------------//
-
-/*! 
- * \file
+/*!
+ * \file timestep/ratio_ts_advisor.hh
+ * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
+ * \date  Thu Apr  2 14:06:18 1998 
  * \brief Defines the ratio time-step advisor.
  */
+//---------------------------------------------------------------------------//
 
 #ifndef __timestep_ratio_ts_advisor_hh__
 #define __timestep_ratio_ts_advisor_hh__
@@ -19,21 +15,17 @@
 namespace rtt_timestep {
 
 //===========================================================================//
-//! Calculates a new timestep as a ratio of the current time-step
-/*!
- * \author <a href="http://www.lanl.gov/home/mcghee">
- *  John McGhee</a>
- *
- * \date Thu Apr  2 14:06:18 1998 
+/*! 
+ * \brief Calculates a new timestep as a ratio of the current time-step
  *
  * \sa The ts_manager class provides a means to manage this advisor.
- * The \ref overview page gives a summary of the Draco time step control
- * utilities. 
+ * The \ref timestep_overview page gives a summary of the Draco time
+ * step control utilities. 
  *
  * This class provides a means to calculate a
  * new timestep as a ratio of the current time-step. This is useful to
  * limit the rate of change in the time-step from one time cycle to the 
- *  next. The recommendation for the new time step is computed as 
+ * next. The recommendation for the new time step is computed as 
  * current_dt*ratio. 
  */ 
 //===========================================================================//

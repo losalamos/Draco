@@ -1,24 +1,13 @@
 //----------------------------------*-C++-*----------------------------------//
-// ts_manager.hh
-// John McGhee
-// Mon Apr  6 17:22:53 1998
-//---------------------------------------------------------------------------//
-// @> Defines a manager utility for time-step advisors.
-//---------------------------------------------------------------------------//
-
 /*! 
- * \file
- * \brief Defines a manager utility for time-step advisors.
- *
- * \author <a href="http://www.lanl.gov/home/mcghee">
- *  John McGhee</a>
- *
+ * \file timestep/ts_manager.hh
+ * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
  * \date Mon Apr  6 17:22:53 1998
- *
+ * \brief Defines a manager utility for time-step advisors.
  */
-
+//---------------------------------------------------------------------------/
 /*!
- * \example main.cc
+ * \example timestep/test/main.cc
  * The following code provides an example of how to use the timestep manager
  * utility.
  * \include test_timestep.hh
@@ -26,7 +15,7 @@
  */
 
 /*!
- * \example dummy_package.cc
+ * \example timestep/test/dummy_package.cc
  * The following code provides a dummy package for use with the
  * test_timestep example.
  * \include dummy_package.hh
@@ -34,7 +23,7 @@
  */
 
 /*!
- * \example test_timestep.out
+ * \example timestep/test/test_timestep.out
  * The following code is a sample output from the test_timestep example.
  * It contains representative output from most of the printing and summary
  * I/O utilities.
@@ -52,22 +41,15 @@
 
 #include <string>
 
-//! RTT time step namespace
-/*!
- * Provides namspace protection for the Draco (RTT) time step 
- * control utilities.
- *\sa The ts_manager and ts_advisor classes provide most of the
- *    functionality of the namspace. The \ref overview page presents
- *    a summary of the capabilities provided within the namespace.
- */
+
 namespace rtt_timestep {
 
 //===========================================================================//
 //! Manages a list of time-step advisors.
 /*!
  * \sa  The ts_advisor class provides the advisors to be registerd
- *      the the ts_manager class. Also, the \ref overview page provides
- *      useful info.
+ *      the the ts_manager class. Also, the \ref timestep_overview 
+ *      page provides useful info.
  *
  * Calculates a new timestep based on the 
  * recommended time-steps of its component advisors (i.e. electron energy,

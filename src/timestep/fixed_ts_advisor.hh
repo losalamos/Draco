@@ -1,12 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file fixed_ts_advisor.hh
- * \brief Defines the fixed time-step advisor.
- *
- * \author <a href="http://www.lanl.gov/home/mcghee">
- *  John McGhee</a>
- *
+ * \file timestep/fixed_ts_advisor.hh
+ * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
  * \date Thu Apr  2 14:06:18 1998
+ * \brief Defines the fixed time-step advisor.
  */
 //---------------------------------------------------------------------------//
 
@@ -23,8 +20,8 @@ namespace rtt_timestep {
  *        into the time-step calculation.
  *
  * \sa The ts_manager class provides a means to manage this advisor.
- * The \ref overview page gives a summary of the Draco time step control
- * utilities. 
+ * The \ref timestep_overview page gives a summary of the Draco time 
+ * step control utilities. 
  *
  * This is useful to set min and max timesteps, or to force a
  * timestep, etc. The recommendation for the new timestep is

@@ -1,28 +1,22 @@
 //----------------------------------*-C++-*----------------------------------//
-// Release.hh
-// Randy M. Roberts
-// Fri Aug 27 10:33:26 1999
-// $Id$
+/*! 
+ * \file   timestep/Release.hh
+ * \author John M. McGhee
+ * \date   Fri Aug 27 10:33:26 1999
+ * \brief  Header file for timestep library release function.
+ */
 //---------------------------------------------------------------------------//
-// @> Release function for timestep library
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_Release_hh__
 #define __timestep_Release_hh__
 
 //===========================================================================//
-// namespace version - 
-//
-// Purpose : Return the version of timestep; 
-// this can be used to get exact version information in codes that 
-// use timestep
-// 
-//===========================================================================//
-
 /*!
- * \page overview Overview of the Draco Time Step Manager
+ * \page timestep_overview Overview of the Draco Time Step Manager
  *
- * \version 1.0.1
+ * \version 1_0_1
  *
  * <h3> Introduction </h3>
  * The classes contained in the rtt_timestep name space are designed
@@ -98,8 +92,21 @@
 
 #include <string>
 
+/*!
+ * \brief RTT time step namespace.
+ *
+ * Provides namspace protection for the Draco (RTT) time step 
+ * control utilities.
+ *\sa The ts_manager and ts_advisor classes provide most of the
+ *    functionality of the namspace. The \ref timestep_overview page presents
+ *    a summary of the capabilities provided within the namespace.
+ */
 namespace rtt_timestep 
 {
+/*!
+ * \brief  Gets the release number for the timestep package. 
+ * \return release number as a string in the form "timestep-#_#_#"
+ */
     const std::string release();
 }
 

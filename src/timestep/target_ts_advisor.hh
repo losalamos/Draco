@@ -1,15 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
-// target_ts_advisor.hh
-// John McGhee
-// Thu Apr  2 14:06:18 1998
-//---------------------------------------------------------------------------//
-// @> Defines the target time-step advisor.
-//---------------------------------------------------------------------------//
-
-/*! 
- * \file
- * \brief Defines the field time-step advisor.
+/*!
+ * \file timestep/target_ts_advisor.hh
+ * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
+ * \date Thu Apr  2 14:06:18 1998
+ * \brief Defines the target time-step advisor.
  */
+//---------------------------------------------------------------------------//
 
 #ifndef __timestep_target_ts_advisor_hh__
 #define __timestep_target_ts_advisor_hh__
@@ -19,16 +15,13 @@
 namespace rtt_timestep {
 
 //===========================================================================//
-//! Calculates a new time-step required to hit some "target" problem time.
 /*!
- * \author <a href="http://www.lanl.gov/home/mcghee">
- *  John McGhee</a>
- *
- * \date Thu Apr  2 14:06:18 1998
+ * \brief  Calculates a new time-step required to hit some "target" 
+ * problem time.
  *
  * \sa The ts_manager class provides a means to manage this advisor.
- * The \ref overview page gives a summary of the Draco time step control
- * utilities. 
+ * The \ref timestep_overview page gives a summary of the Draco time 
+ * step control utilities. 
  *
  * This class provides a means to calculate 
  * a new time-step required to hit some "target" problem time. This
