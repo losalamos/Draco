@@ -148,7 +148,7 @@ namespace
 template<class MT, class UMCMP>
 testFullP13T<MT,UMCMP>::testFullP13T(const testFullP13T_DB &tdb_,
 				  const Diffusion_DB &diffdb_,
-				  const MT::Mesh_DB &mdb,
+				  const typename MT::Mesh_DB &mdb,
 				  const pcg_DB &pcg_db_)
     : diffdb(diffdb_), pcg_db(pcg_db_), tdb(tdb_)
 {

@@ -82,10 +82,10 @@ namespace XTM {
      typedef typename MT::bssf  bssf;
      typedef typename MT::ncvsf ncvsf;
 
-     typedef typename MT::cctf  < std::vector<double  > > ccvsf;
-     typedef typename MT::fcdtf < std::vector<double  > > fcdvsf;
-     typedef typename MT::cctf  < std::vector<int     > > ccvif;
-     typedef typename MT::fcdtf < std::vector<int     > > fcdvif;
+     typedef typename MT:: template cctf  < std::vector<double  > > ccvsf;
+     typedef typename MT:: template fcdtf < std::vector<double  > > fcdvsf;
+     typedef typename MT:: template cctf  < std::vector<int     > > ccvif;
+     typedef typename MT:: template fcdtf < std::vector<int     > > fcdvif;
      
      typedef typename MP:: template MaterialStateField<ccsf, ccvsf, ccvif> MatStateCC;
      typedef typename MP:: template MaterialStateField<fcdsf, fcdvsf, fcdvif> MatStateFC;
