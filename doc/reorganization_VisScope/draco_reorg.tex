@@ -1,0 +1,232 @@
+%%---------------------------------------------------------------------------%%
+%% <papername>.tex
+%% <user>
+%% Time-stamp: <02/07/29 19:03:54 tmonster>
+%%---------------------------------------------------------------------------%%
+%%
+%% Project Vision Statement
+%% ------------------------
+%% A vision statement explains the project in terms of an end result.
+%% It clarifies where the project is going by answering the questions
+%%      -What?
+%%      -Why?
+%%      -How will we know the project is a success?
+%%
+%% Project Scope Statement
+%% -----------------------
+%% A scope statement describes how a project will achieve its end
+%% result given limited resources.  It sets a project's boundaries by
+%% defining the balance between resources, constraints, and
+%% deliverables. 
+%%
+%% Critical Success Factors
+%% ------------------------
+%% What has to happen for success?  What cannot happen?
+%%
+%% Risk Assessment
+%% ---------------
+%% What is the probability of the occurence of each identified risk?
+%% What is the impact if it happens?  
+%%
+%%
+%%      ---used with permission and adapted from David A. Schmaltz's 
+%%         ``Mastering Projects Workshop: Participant Guide,'' 
+%%         True North pgs, Inc., P.O. Box 1532,  Walla Walla, WA 99362, 
+%%         projectcommunity.com, Rev. 6, August 2001, copyright.
+%%
+%%
+%% Project Tracking
+%% ----------------
+%% Track actual results and performance with plans. 
+%% 
+%%    -Did you change the vision or scope of your project?
+%%    -How well did you identify critical success factors?
+%%    -What risks did your project realize? ...
+%%    -How well were you able to estimate delivery dates?
+%%    -What corrective action was taken?
+%%    -What lessons have you learned?
+%%  
+%% The addition of project tracking to the vision and scope statement
+%% makes it a living document that is revisited at the completion of
+%% the project and whenever risks are realized or vision and scope
+%% change. 
+%%
+%%      ---project tracking section adapted from a LANL ASC Internal 
+%%         Assessment of the Jayenne Code Project (CCS-4) by Vicki
+%%         Clark and Barbara Hoffbauer (CCN-12).  July 22, 2003. 
+%%
+%%
+%%---------------------------------------------------------------------------%%
+\documentclass[11pt]{nmemo}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{tmadd,tmath}
+\usepackage{cite}
+
+%%---------------------------------------------------------------------------%%
+%% DEFINE SPECIFIC ENVIRONMENTS HERE
+%%---------------------------------------------------------------------------%%
+%\newcommand{\elfit}{\ensuremath{\operatorname{Im}(-1/\epsilon(\vq,\omega)}}
+%\msection{}-->section commands
+%\tradem{}  -->add TM subscript to entry
+%\ucatm{}   -->add trademark footnote about entry
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\toms{Distribution}
+%\toms{Joe Sixpak/XTM, MS B226}
+\refno{CCS-4:02-????(U)}
+\subject{Vision and Scope Statements for the Draco Reorganization Project}
+
+%-------NO CHANGES
+\divisionname{Computer and Computational Sciences}
+\groupname{CCS-4:Transport Methods Group}
+\fromms{<user>/CCS-4, MS D409}
+\phone{(505)66?--????}
+\originator{fml}
+\typist{fml}
+\date{\today}
+%-------NO CHANGES
+
+%-------OPTIONS
+%\reference{NPB Star Reimbursable Project}
+%\thru{P. D. Soran, XTM, MS B226}
+%\enc{list}      
+%\attachments{list}
+%\cy{list}
+%\encas
+%\attachmentas
+%\attachmentsas 
+%-------OPTIONS
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+\distribution {}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN VISION STATEMENT
+%%---------------------------------------------------------------------------%%
+
+\opening
+
+\section*{Vision Statement}
+
+The Draco Reorganization project will produce a new oragnization of
+Draco and Jayenne software components.
+
+We are undertaking this project to ease management and deployment of
+Draco and Jayenne code projects. 
+
+Some observable criteria for success:
+
+\begin{itemize}
+\item Faster delivery of consistent versions of Jayenne applications on
+  multiple platforms.
+\item Fewer unnecesary re-deployments of components which have not
+  changed (e.g. stable Draco components) 
+\item More developer happiness.
+\end{itemize}
+
+\newpage
+\section*{Scope Statement}
+
+%%
+%% Include those of the following elements that apply to your project
+%%
+
+\subsection*{Product of the Project}
+
+Various parts of the existing Draco system and Jayeene applications
+will be affected by this reorganization. We note some of the
+objectives here:
+
+\begin{itemize}
+\item Move source control into SourceForge.
+\item Promote {\tt draco/mc} and {\tt draco/imc} to Jayenne-level
+  projects, or create an appropiate intermediate layer.
+\item Create a central repository for bibliographic information that
+  is uniformly accessible to documents across various projects.
+\item Create a uniform location for automatically generated code
+  documentation. Organize the documentation to facilitate linking
+  across projects.
+\item Create a system for deployment of jayenne builds which use
+  consistent draco library components. 
+\item Add a profiling system which functions in a similar manner to
+  the regression and unit tests. (This will allow for simple
+  monitoring of the performace impact of changes in the code)
+\end{itemize}
+
+\subsection*{Quality of the Product}
+
+The resulting draco and jayenne projects must retain the ability to
+configure and deploy code across multiple platforms. 
+
+\newpage
+\section*{Critical Success Factors}
+
+This project will be considered a success when it is in active use by
+developers on multiple platforms.
+
+\newpage
+\section*{Risk Assessment}
+
+Identify risks.  For each, estimate the likelihood (1-10) of
+occurrence and the impact (1-10) if it happens.  The product of these
+two values is a measure of the attention the risk deserves.
+
+\begin{table}[ht]
+  \begin{center}
+    \caption{Risk Assessment for the Draco Reorganization Project.}
+    \label{tab:risk}
+    \begin{tabular}{|p{4.5cm}|c|c|c|p{4.5cm}|} 
+    \hline
+    Risk               & Likelihood & Impact & Importance & Contingency\\ 
+    \hline\hline
+    Reorg fails to deliver adequate benefit for time invested. 
+    & 2 & 4 & 8 & Scale back on optional activities. Get back to
+    work. \\
+    \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+\newpage
+\section*{Project Tracking}
+
+Track actual results and performance with plans.
+
+   Did you change the vision or scope of your project? 
+   
+   How well did you identify critical success factors?  What lessons
+   have you learned?
+ 
+   What risks did your project realize?  How well did you estimate the
+   likelihood and impact of the realized risks?  Did you encounter
+   unforseen risks?  What lessons have you learned?
+ 
+   How well were you able to estimate delivery dates?  What lessons
+   have you learned?
+
+   What corrective action was taken?
+   
+   How will you improve the vision and scope statements for future
+   projects?
+
+\closing
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of <papername>.tex
+%%---------------------------------------------------------------------------%%
+
