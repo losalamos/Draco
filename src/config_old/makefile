@@ -75,9 +75,15 @@ endif
 
 DS++_LIB	= -L$(SRC_TOP)/ds++ -lds++_$(env)
 
+SPDF_LIB	= -L$(SRC_TOP)/spdf -lspdf_$(env)
 UTIL_LIB	= -L$(SRC_TOP)/util -lutil_$(env)
 GEOM_LIB	= -L$(SRC_TOP)/geom -lgeom_$(env)
 MESH_LIB	= -L$(SRC_TOP)/mesh -lmesh_$(env)
+
+ifeq ($(need_util),yes)
+need_spdf	:= yes
+need_c4		:= yes
+endif
 
 ifeq ($(need_mesh),yes)
 need_geom := yes
@@ -194,6 +200,9 @@ endif
 ifeq ($(need_util),yes)
 LINK_LIBS	+= $(UTIL_LIB)
 endif
+ifeq ($(need_spdf),yes)
+LINK_LIBS	+= $(SPDF_LIB)
+endif
 ifeq ($(need_namelist),yes)
 LINK_LIBS	+= $(NML_LIBS)
 endif
@@ -228,6 +237,8 @@ dep_libds++	= $(SRC_TOP)/ds++/libds++_$(env).$(lib_suffix)
 dep_libnml	= $(SRC_TOP)/nml/libnml_$(env).$(lib_suffix)
 dep_libnmltk	= $(SRC_TOP)/nml/libnmltk_$(env).$(lib_suffix)
 dep_libc4	= $(SRC_TOP)/c4/libc4_$(env).$(lib_suffix)
+dep_libspdf	= $(SRC_TOP)/spdf/libspdf_$(env).$(lib_suffix)
+dep_libutil	= $(SRC_TOP)/util/libutil_$(env).$(lib_suffix)
 dep_libgeom	= $(SRC_TOP)/geom/libgeom_$(env).$(lib_suffix)
 dep_libmesh	= $(SRC_TOP)/mesh/libmesh_$(env).$(lib_suffix)
 
