@@ -17,6 +17,7 @@ include ../config/makefile
 #libsrcs	= \
 #	charTable.cc \
 #	String.cc
+libsrcs	= Assert.cc
 
 # Files which implement template classes, needed for C-front style
 # compilers. 
