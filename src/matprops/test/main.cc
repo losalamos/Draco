@@ -6,6 +6,8 @@
 // @> Driver for the matprops test routines.
 //---------------------------------------------------------------------------//
 
+#include "c4/global.hh"
+
 #include "ds++/Assert.hh"
 #include <iostream>
 #include "testMmcMatProp.hh"
@@ -24,12 +26,15 @@ int main(int argc , char *argv[])
 {
     try
     {
-
+	C4::Init( argc, argv );
+	
 	for (int arg=1; arg < argc; arg++)
 	{
 	    if (std::string(argv[arg]) == "--version")
 	    {
-		version(argv[0]);
+		if (C4::node() == 0)
+		    version(argv[0]);
+		C4::Finalize();
 		return 0;
 	    }
 	}
@@ -46,16 +51,22 @@ int main(int argc , char *argv[])
     }
     catch (const dsxx::assertion &ass)
     {
-	cerr << "assert failed: " << ass.what() << endl;
+	cerr << "Test: FAILED: assertion: " << ass.what() << endl;
     }
     catch (const std::exception &ass)
     {
-	cerr << "exception: " << ass.what() << endl;
+	cerr << "Test: FAILED: exception: " << ass.what() << endl;
     }
     catch (...)
     {
-	cerr << "unknown exception" << endl;
+	cerr << "Test: FAILED: unknown exception" << endl;
     }
+
+    cout << "Done testing matprops.\n";
+
+    C4::Finalize();
+
+    return 0;
 }
 
 //---------------------------------------------------------------------------//

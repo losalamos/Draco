@@ -15,7 +15,12 @@ package="matprops"
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
+
+AC_MPI_SETUP(test)
+AC_SHMEM_SETUP(test)
+
 AC_NEEDS_LIBS(radphys units ds++)
+AC_NEEDS_LIBS_TEST(c4)
 
 AC_RUNTESTS(matprops, 1 2)
 AC_DRACO_ENV

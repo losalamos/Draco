@@ -12,7 +12,8 @@
 // using std::cerr;
 // using std::endl;
 
-using rtt_matprops::BilinearInterpTable;
+namespace rtt_matprops
+{
 
 typedef BilinearInterpTable::Memento Memento;
 
@@ -45,7 +46,9 @@ BilinearInterpTable::BilinearInterpTable(const dsxx::SP<BilinearInterpGrid> &gri
     Require(yvals.get_xlen() == grid->size(1));
     Require(yvals.get_ylen() == grid->size(2));
 }
-    
+
+}  // end namespace rtt_matprops
+
 //---------------------------------------------------------------------------//
 //                              end of BilinearInterpTable.cc
 //---------------------------------------------------------------------------//
