@@ -85,6 +85,10 @@
   J.S. Warsa, XTM MS D409\\
   C.J. Gesh, XTM MS D409\\
   W.D. Hawkins, XTM MS D409\\
+  B.T. Adams, XTM MS D409 \\
+  M.L. Alme, XTM MS D409\\
+  J.C. Gulick, XTM D409\\
+  K.G. Thompson, XCI, MS F663\\
   R.B. Lowrie, XHM MS D413 
   }
 
@@ -139,18 +143,20 @@ John McGhee has documented the timestep package.
 
 \subsection{Overview}
 
-\doxy\ can be used on any C++ source file
+\doxy\ can be used on any \C++ source file
 without any modifications to the source at all.  
 \doxy\ groks \C++ and extracts considerable information from the *.hh
-file without any active intervention on the part of the developer.
+and *.cc files without any active intervention on the part of the developer.
 In addition to this information, the developer may also flag certain
 comment blocks for inclusion in the documentation, if desired.
 The only additional burden this places on the code author is to 
 remember and occasionally use a dozen or so
-simple comments. Both html (with links)
+special comment keywords. Both html (with links)
 and \LaTeX\ output is automatically produced directly from the source code.
 Example code can be included verbatim. If desired, both  html tags and \LaTeX\
-formulas can be included directly in the source code comments. 
+formulas can be included directly in the source code comments.  The following
+sub-sections provide a brief primer on \doxy. We encourage everyone to peruse
+the \doxy\ manual for more details.
 
 \subsection{Special Comment Blocks}
 \label{sec:spcom}
@@ -196,6 +202,8 @@ keywords that we have found to be most useful.
   example.
 \item \verb+\include+ {\em filename} Includes {\em filename} verbatim at the
   point of reference.
+\item \verb+\ref+ {\em title} Makes a link or reference 
+  to the argument {\em title}.
 \item \verb+\page+ {\em reference title} Places the comment block in which
   it appears in the documentation as a separate page with title {\em
     title}. You can refer to and create a link to the page using {\em
@@ -207,7 +215,7 @@ keywords that we have found to be most useful.
 If found within a special comment block 
 as defined in section \S~\ref{sec:spcom} above, \doxy\ 
 recognizes a multitude of html commands. These
-commands are used directly in the html document, and are converted appropriately for
+commands are used directly in the html document and are converted appropriately for
 the \LaTeX\ output. 
 For example, if the phrase: 
 \begin{verbatim}
@@ -224,7 +232,7 @@ For example, the phrase
 documentation as $\sqrt{x_2-x_1)^2+(y_2-y_1)^2}$.
 These two
 features make it possible to create a fairly sophisticated document, if desired.
-See the manual for more details.
+Again, ee the manual for more details.
 
 
 %%---------------------------------------------------------------------------%%
@@ -242,15 +250,17 @@ output and a \texttt{draco/autodoc/latex}
 directory to hold \doxy\ \LaTeX\ output. 
 
 \subsection{Usage}
+
 To run \doxy\ simply cd into the \texttt{draco/autodoc} directory and type:
 \begin{verbatim} 
      PATH/doxygen draco.config
 \end{verbatim}
+The documentation is then produced and stored in the
+html and \LaTeX\ directories.
 Currently ``PATH'' is \texttt{/scratch/tme/bin} and \doxy\
 can only be executed from a SGI platform. These details may
 change in the future. 
-A html and \LaTeX\ directory will be produced with your documentation 
-inside. 
+
 
 \subsection{\doxy\ Configuration File}
 \label{sec:config}
@@ -263,11 +273,10 @@ may require modification.
 The configuration options available to users are well
 documented in the \doxy\ manual. Some of the configuration file 
 variables which may be of interest are briefly discussed below:
-
 \begin{description}
 \item[\ttfamily PROJECT\_NUMBER] This tag gives the release number of
   the documentation.  It must be updated when the documentation is released.
-  See  Ref~\cite{xtm:9936} for details on release numbers.
+  See  section \S~\ref{sec:spcom} for details on release numbers.
 \item[\ttfamily INPUT] The user must define which files and/or
   directories should be  examined by \doxy\ for documentation.  
 \item [\ttfamily FILE\_PATTERNS] One or more wildcard patterns to be
@@ -277,27 +286,42 @@ variables which may be of interest are briefly discussed below:
 \item [\ttfamily EXCLUDE\_PATTERNS] One or more wildcard patterns to be
   excluded from the INPUT directories.
 \item [\ttfamily EXAMPLE\_PATH] This tag lists one or more files and/or
-  directories that contain example code.
+  directories that contain the files to be referenced using
+  the \verb+\example+ keyword.
 \item [\ttfamily INCLUDE\_PATH] This tag lists one or more 
-  directories that contain files to be included in the documentation.
-
+  directories that contain the files to be referenced using the
+ \verb+\include+ keyword.
 \end{description}
 
+Developers can use the current \texttt{config.draco} as a template for
+any changes that are required. In most cases, this will consist of
+simply adding a new path or file to the INPUT, EXAMPLE\_PATH and/or 
+INCLUDE\_PATH definitions.
+
+
+
 \subsection{Release and Tagging Procedures}
+\label{sec:reltag}
 Prior to releasing a \draco\ package, 
 \doxy\ should be run, thus assuring that the documentation is in sync
 with the source code. Alternatively, we could include documentation
 production as part of the \draco\ build, but this would require
 \doxy\ to be installed on all platforms on which we expect to build
-\draco.  We feel that this too restrictive. Also, we feel that
+\draco.  We feel that this is too restrictive. Also, we feel that
 the package documentation should be available to the user immediately
-upon checkout.
+upon checkout. We will consider the \texttt{autodoc} directory as 
+a package unto itself that depends on all the other packages in 
+\draco. As such it will have \verb+autodoc-#_#_#+, \verb+last_stable+, and
+\verb+draco+ tags as described in Ref~\cite{xtm:9936}. The PROJECT\_NUMBER
+definition in \texttt{draco/autodoc/draco.config} should be set to
+the value given in \verb+autodoc-#_#_#+.
+
 
 \subsection{New Templates and Files}
 
 Tom Evans is installing new *.cc and *.hh templates in the \draco\ 
 templates directory to support \doxy\ requirements. These templates
-will be available in the usual manner as described in Ref~\cite{xtm:9909}
+will be available in the usual manner as described in Ref~\cite{xtm:9909}.
 There will also be
 a \doxy\ configuration file, and standard
 header and footer files for \doxy\ html output installed in the 
@@ -312,10 +336,12 @@ be run periodically to bring the documentation into sync with with the
 source code. 
 Each package developer will be responsible for running
  \doxy\ when their packages are updated.
-Also the version number in the \texttt{draco/autodoc//config.draco}
-file will need to be periodically updated to reflect the current version number.
+Also the PROJECT\_NUMBER definition in the \texttt{draco/autodoc/config.draco}
+file will need to be periodically updated to reflect the current 
+\texttt{autodoc} version number.
 The resulting output should be tagged and committed to
-CVS using the same procedures as for the source code. Note that
+CVS using the same procedures as for the source code as detailed in
+ Ref~\cite{xtm:9936}. Note that
 \doxy\ may create gif images as part of the html generation
 process. To prevent possible difficulties with CVS, these image files
  should be added to the repository using the CVS ``-kb'' option. 
@@ -342,6 +368,10 @@ following standards for consideration:
   should have at least a brief description.
 \item Each public member should have descriptions of its input
   parameters and return values.
+\item Using the \doxy\
+ \verb+\page+ command, each package should provide a brief overview of the 
+ purpose, design and contents of the package  in the package
+ \texttt{release.hh} file.
 \end{itemize}
 
 We feel that these guidelines, together with the information that
@@ -355,9 +385,9 @@ encouraged to provide more than the absolute minimum.
 
 The \draco\ \doxy\ documentation system can be used as a model for
 the setup of automatic documentation of other software systems. 
-Alteration will be 
+Alterations will be 
 required to the \texttt{<system>/autodoc/<system>.config} files, and
-to the \texttt{html} header and footer files. 
+to the \texttt{<system>/autodoc/} html header and footer files. 
 
 
 \subsection{Linking to Draco HTML Documentation from Other Systems}
@@ -419,7 +449,7 @@ location of the draco \texttt{html} directory.
 The \texttt{installdox} script will modify all of the \milagro\ \texttt{.html}
 files so that the links point to the correct locations.    The dates of the
 copied tag files
-can be used to determine the currency of the references to other packages.
+can be used to determine the currency of the references to other code systems.
 Of course, the \texttt{.html} files must actually exist at the stated location
 for the links created by \texttt{installdox} to actually work.
 
@@ -434,24 +464,27 @@ can easily be added at a later date if desired.
 Note that the documentation for 
 any system ``A'' that uses system ``B's'' B.tag file will have to be
 updated when B.tag is changed. This update consists of getting the updated
-tag file and running \texttt{installdox} again. 
+tag file and running \doxy\ and \texttt{installdox} again. 
 Ideally, there should be some way to detect that documentation
 or tag files are out of date, and to automatically rebuild the
 documentation if required.  For the present at least, no such automatic
 feature is in place, and we elect to rely
-on the diligence and dedication of the individual package developers to 
-assure that the documentation is kept up to date. 
+on the diligence and dedication of the individual system developers to 
+assure that their html documentation links are kept up to date. 
 
 
 %%---------------------------------------------------------------------------%%
 
 \section{Example}
 
-Nothing is as instructive as a good example, so here is a copy of
-one of the header files from the \timestep\ utility. Of course,
-there is more than one way to accomplish this, but this is one way.
-Additionally, both the \rng\ and \timestep\ packages have been
-autodocumented.  Feel free to use these as examples. 
+A good example is always instructive, so here is a copy of
+one of the \doxy\ documented header files from the \timestep\ utility.
+Of course, this example represents only one of an infinite number of ways
+to document this file, but it should provide some idea of how \doxy\
+can be used.
+
+For additional samples, both the \rng\ and \timestep\ packages have been
+autodocumented.  
 
 \begin{verbatim}
 //----------------------------------*-C++-*----------------------------------//
