@@ -1,5 +1,16 @@
+%  ========================================================================  %
+% 
+%       Author: Mark G. Gray
+%               Los Alamos National Laboratory
+%       Date:   Wed Feb  3 12:20:05 MST 1999
+% 
+%       Copyright (c) 1999 U. S. Department of Energy. All rights reserved.
+% 
+%       $Id$
+% 
+%  ========================================================================  %
 \documentclass{article}
-\usepackage{calc}
+\usepackage{calc, ifthen}
 \setlength{\hoffset}{0pt}
 \setlength{\textwidth}{6.5in}
 \setlength{\oddsidemargin}{0pt}
@@ -10,6 +21,7 @@
 \renewcommand{\thesection}
 {
     KPA.
+%    \ifthenelse{\value{section} < 10}{0}{}
     \ifnum \value{section}<10 0\fi
     \arabic{section}
 }
@@ -24,6 +36,7 @@
 \newcounter{approach}[section]
 \newcounter{deployment}[section]
 \newcounter{result}[section]
+\newcounter{NA}[section]
 \newcounter{score}
 \newenvironment{KPAActivity}
 {
@@ -35,18 +48,26 @@
 {
     \end{tabular}
     \end{center}
-    \setcounter{approach}{\value{approach}/\value{activity}}
-    \setcounter{deployment}{\value{deployment}/\value{activity}}
-    \setcounter{result}{\value{result}/\value{activity}}
+    \setcounter{approach}{\value{approach}/(\value{activity}-\value{NA})}
+    \setcounter{deployment}{\value{deployment}/(\value{activity}-\value{NA})}
+    \setcounter{result}{\value{result}/(\value{activity}-\value{NA})}
 }
+
+% \Activity{Approach score}{Deployment score}{Results score}{Description}
 \newcommand{\Activity}[4]
 {
-    \stepcounter{activity} 
-    \setcounter{score}{(#1+#2+#3)/3}
-    \setcounter{approach}{\value{approach}+#1}
-    \setcounter{deployment}{\value{deployment}+#1}
-    \setcounter{result}{\value{result}+#1}
-    \arabic{score} & \arabic{activity}. #4 \\ \hline
+    \stepcounter{activity}
+    \ifthenelse{\equal{N}{#1}}
+    {
+	\stepcounter{NA}
+	N/A & \arabic{activity}. #4 \\ \hline
+    }{
+        \setcounter{score}{(#1+#2+#3)/3}
+        \setcounter{approach}{\value{approach}+#1}
+        \setcounter{deployment}{\value{deployment}+#2}
+        \setcounter{result}{\value{result}+#3}
+        \arabic{score} & \arabic{activity}. #4 \\ \hline
+    }
 } % step counter, print score, text
 
 % Key Process Area Score
@@ -65,14 +86,19 @@
     \end{center}
 }
 
+% \Approach{Evidence}
 \newcommand{\Approach}[1]
 {
     Approach to \KPAname & \arabic{approach} & #1 \\ \hline
 } 
+
+% \Deployment{Evidence}
 \newcommand{\Deployment}[1]
 {
     Deployment of \KPAname & \arabic{deployment} & #1 \\ \hline
-}  
+}
+
+% \Results{Evidence}
 \newcommand{\Results}[1]
 {
     Results Achieved in \KPAname & \arabic{result} & #1 \\ \hline
@@ -102,17 +128,17 @@
 \parbox{35ex}{X--TM, MS D409\\
 Los Alamos National Laboratory\\
 Los Alamos, NM 87545\\
-FAX 5-5538\\}
+FAX: (505)665-5538\\}
 
 \begin{tabular}{|l|r|l|} \hline
 {\bf Respondents' Names} & {\bf Work Phone} & {\bf E-mail} \\ \hline
-John McGhee              & 7-9552           & mcghee@lanl.gov \\
-Denise Archuleta         & 5-1855           & dga@lanl.gov \\
-Mark Gray                & 7-5341           & gray@lanl.gov \\
-Randy Roberts            & 5-4285           & rsqrd@lanl.gov \\
-Shawn Pautz              & 7-9138           & pautz@lanl.gov \\
-Tom Evans                & 5-3677           & tme@lanl.gov \\
-Todd Urbatsch            & 7-3513           & tmonster@lanl.gov \\ \hline
+John McGhee              & (505)667-9552    & mcghee@lanl.gov \\
+Denise Archuleta         & (505)665-1855    & dga@lanl.gov \\
+Mark Gray                & (505)667-5341    & gray@lanl.gov \\
+Randy Roberts            & (505)665-4285    & rsqrd@lanl.gov \\
+Shawn Pautz              & (505)667-9138    & pautz@lanl.gov \\
+Tom Evans                & (505)665-3677    & tme@lanl.gov \\
+Todd Urbatsch            & (505)667-3513    & tmonster@lanl.gov \\ \hline
 \end{tabular}
 \end{center}
 
@@ -136,10 +162,24 @@ incorporated into the software project.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{Meetings set up by team to establish requirements, Memos
-documenting requirements, Weinberg's Exploring Requirements, Software
-guidelines (Meyer, Meyers, STL, Lakos), Software quality guidelines
-(LA-UR-5735), Configuration management guidelines (GNU standard, Build
+\Approach{Meetings set up by team to establish requirements; Memos
+documenting requirements; Daniel P. Freedman and Gerald M. Weinberg, {\em
+              Exploring Requirements: Quality Before Design}, New
+              York, NY: Dorset House Publishing, 1989; Software
+guidelines: John Lakos, {\em Large Scale C++ Software Design},
+              Reading, MA: Addison-Wesley Publishing, 1996;
+              Matthew H. Austern, {\em Generic Programming and the
+              STL}, Reading, MA: Addison-Wesley Publishing, 1998;
+              Bertrand Meyer, {\em Object-Oriented Software
+              Construction}, Upper Saddle River, NJ: Prentice Hall
+	      PTR, 1997ISO/IEC 14882; GNU Coding Standards (9 September 1996); 
+	      POSIX 199309; Scott Meyers, {\em Effective C++},
+              Reading, MA: Addison-Wesley Publishing, 1997; Scott
+              Meyers, {\em More Effective C++}, Reading, MA:
+              Addison-Wesley Publishing, 1996
+; Software quality guidelines: Analytic Test Method; LA-UR-98-5735; LA-1709; LAMS-2421;
+              LA-UR-96-1799
+; Configuration management guidelines (GNU standard, Build
 System Document)}
 \Deployment{Memos documenting requirements}
 \Results{Use by management for allocations, etc.}
@@ -329,11 +369,14 @@ and findings with the customer's SQA personnel, as appropriate.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{SQA personnel sought by Management, Nightly regression
-             tests run (dejagnu), Failure tracking software installed
-             (GNATS) , Standard test cases established, Levelized
+\Approach{SQA personnel sought by Management; Nightly regression
+             tests run (dejagnu); Failure tracking software installed
+             (GNATS); Standard test cases: Analytic Test Method,
+             LA-UR-98-5735; LA-1709; LAMS-2421, LA-UR-96-1799; Levelized
              Design and Design by Contract used}
-\Deployment{Tools consistently used}
+\Deployment{Tools consistently used: 988 contract specifications in
+             27406 lines of code, regression test logs, analytic
+             test results}
 \Results{Faults caught early, Few major faults in testing}
 \end{KPARate}
 
@@ -544,52 +587,59 @@ plans, and test procedures.}
 \Results{}
 \end{KPARate}
 
-\end{document}
 \newpage
 \section{Intergroup Coordination}
 
 \begin{KPAActivity}
-\Activity{}{}{}{The software engineering group and the other engineering
+\Activity{5}{3}{3}{The software engineering group and the other engineering
 groups participate with the customer and end users, as appropriate, to
 establish the system requirements.}
-\Activity{}{}{}{Representatives of the project's software engineering
+\Activity{5}{3}{2}{Representatives of the project's software engineering
 group work with representatives of the other engineering groups to
 monitor and coordinate technical activities and resolve technical
 issues.}
-\Activity{}{}{}{A documented plan is used to communicate intergroup
+\Activity{2}{1}{1}{A documented plan is used to communicate intergroup
 commitments and to coordinate and track the work performed.}
-\Activity{}{}{}{Critical dependencies between engineering groups are
+\Activity{2}{0}{0}{Critical dependencies between engineering groups are
 identified, negotiated, and tracked according to a documented
 procedure.}
-\Activity{}{}{}{Work products produced as input to other engineering groups
+\Activity{2}{2}{2}{Work products produced as input to other engineering groups
 are reviewed by representatives of the receiving groups to ensure that
 the work products meet their needs.}
-\Activity{}{}{}{Intergroup issues not resolvable by the individual
+\Activity{1}{0}{0}{Intergroup issues not resolvable by the individual
 representatives of the project engineering groups are handled
 according to a documented procedure.}
-\Activity{}{}{}{Representatives of the project engineering groups conduct
+\Activity{2}{1}{1}{Representatives of the project engineering groups conduct
 periodic technical reviews and interchanges.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{}
-\Deployment{}
-\Results{}
+\Approach{Our management has been strongly proactive in promoting
+intergroup coordination.  We have had numerous meetings (e.g. the
+biweekly X-TM--ASCI Project meeting) and produced several memos in an
+attempt to coordinate our efforts with other groups.}
+\Deployment{We have been generally unable to obtain the cooperation of the
+groups we work with.}
+\Results{As a result of our inablility to obtain the cooperation of
+others we have seen (at best) inconsistent results.}
 \end{KPARate}
 
 \newpage
 \section{Peer Reviews}
 
 \begin{KPAActivity}
-\Activity{}{}{}{Peer reviews are planned, and the plans are documented.}
-\Activity{}{}{}{Peer reviews are performed according to a documented
+\Activity{3}{0}{0}{Peer reviews are planned, and the plans are documented.}
+\Activity{3}{1}{1}{Peer reviews are performed according to a documented
 procedure.}
-\Activity{}{}{}{Data on the conduct and results of the peer reviews are
+\Activity{3}{1}{1}{Data on the conduct and results of the peer reviews are
 recorded.} 
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{}
+\Approach{We have requested formal technical review classes from
+CIC-12.  They have arranged classes taught by Gerald Weinberg based on
+his book {\em Handbook of Walkthroughs, Inspections, and Technical
+Reviews: Evaluating programs, Projects, and Products}} 
 \Deployment{}
 \Results{}
 \end{KPARate}
@@ -600,28 +650,47 @@ recorded.}
 \section{Validation and Verification}
 
 \begin{KPAActivity}
-\Activity{}{}{}{V\&V implementation plan is known and followed by program
+\Activity{6}{5}{5}{V\&V implementation plan is known and followed by program
 participants.}
-\Activity{}{}{}{Data validation activities are documented according to the
+\Activity{N}{}{}{Data validation activities are documented according to the
 V\&V implementation plan.}
-\Activity{}{}{}{A documented test plan is followed at multiple phases of the
+\Activity{6}{4}{4}{A documented test plan is followed at multiple phases of the
 V\&V effort.}
-\Activity{}{}{}{Validation requirements are documented.}
-\Activity{}{}{}{Testing is performed in accordance with documented test
+\Activity{N}{}{}{Validation requirements are documented.}
+\Activity{6}{4}{4}{Testing is performed in accordance with documented test
 plans, test cases, and detailed test procedures.}
-\Activity{}{}{}{Verification and validation is included as a software
+\Activity{4}{2}{2}{Verification and validation is included as a software
 process element that contains a set of closely related tasks that are
 well defined and bounded.}
-\Activity{}{}{}{Verification and validation costs are specifically
+\Activity{2}{2}{2}{Verification and validation costs are specifically
 identified as such in software product cost estimates.}
-\Activity{}{}{}{Peer reviews include verification and validation work
+\Activity{6}{4}{4}{Peer reviews include verification and validation work
 products.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{}
-\Deployment{}
+\Approach{John Lakos, {\em Large Scale C++ Software Design},
+              Reading, MA: Addison-Wesley Publishing, 1996;
+              Matthew H. Austern, {\em Generic Programming and the
+              STL}, Reading, MA: Addison-Wesley Publishing, 1998;
+              Bertrand Meyer, {\em Object-Oriented Software
+              Construction}, Upper Saddle River, NJ: Prentice Hall
+	      PTR, 1997; Analytic Test Method; LA-UR-98-5735; 
+	      LA-1709; LAMS-2421;
+              LA-UR-96-1799 }
+\Deployment{988 contract specifications in 27406 lines of code, }
 \Results{}
 \end{KPARate}
 
+\begin{KPAComment}
+{\bf Note to Team Leaders from GER: This is a new KPA added at the
+request of DOE.  It was written by the folks at INEEL.  The official
+Capability Maturity Model does not have this KPA.}
+
+We are keenly aware of our verificiation obligations; we feel that
+X-CI is responsible for validation.  Hence KPAs 2 and 4 are not
+applicable to us.
+\end{KPAComment}
 \end{document}
+
+%  ========================================================================  %
