@@ -1,7 +1,0 @@
-1. If a callback modifies the set of blocks, or items in a block,
-   chaos can result.  We need this ability, so it should not be
-   dissabled.  But need to think of a way to prevent inconsistent
-   situations.  For example, if a block is removed after the blocks
-   window is up, then certainly we should refuse to pop up the block,
-   and maybe we should somehow dynamically change the interface.  Have
-   to give this some serious thought.
