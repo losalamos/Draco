@@ -1454,8 +1454,6 @@ In general, developers using the DBS (see \ref pkg) will only be
 required to use the "public" macros.  The "private" macros are
 maintained by DBS architects.
   
-
-
 */
 
 //---------------------------------------------------------------------------//

@@ -42,6 +42,11 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    ])
 
    #
+   # add autodoc directory to doxygen input
+   # 
+   rel_doxygen_input="$rel_doxygen_input:$rel_doxygen_input/autodoc"
+
+   #
    # use relative paths for tag files also
    #
    components=''
