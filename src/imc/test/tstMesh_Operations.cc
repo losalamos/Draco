@@ -33,6 +33,9 @@
 #include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "mc/Layout.hh"
+#include "mc/XYZCoord_sys.hh"
+#include "mc/Coord_sys.hh"
 
 #include <iostream>
 #include <string>
@@ -472,6 +475,288 @@ void Sphyramid_replicate()
 }
 
 //---------------------------------------------------------------------------//
+void Sphyramid_DD()
+{    
+    // run only with 4 nodes
+    if(C4::nodes() != 4)
+    {
+	return;
+    }
+
+    // stuff we need to run Mesh_Operations
+    SP<Sphyramid_Mesh>             mesh;
+    SP<Topology>                   topology;
+    SP<Mat_State<Sphyramid_Mesh> > mat;
+    SP<Comm_Patterns>              comm_patterns;
+
+    // build mesh on each processor (5 cells total)
+    using rtt_mc::Layout;
+    using rtt_mc::Coord_sys;
+    using rtt_mc::XYZCoord_sys;
+    
+    // processor 0 - cell 1
+    if(C4::node() == 0)
+    {
+	
+	SP<Coord_sys> cs(new XYZCoord_sys());
+
+	// build layout
+	Layout lay(1);
+	
+	lay.set_size(1,6);
+	lay(1,1) = 1;
+	lay(1,2) = -1;
+	lay(1,3) = 1;
+	lay(1,4) = 1;
+	lay(1,5) = 1;
+	lay(1,6) = 1;
+
+	// build extents
+	vector< vector<double> > extents(1);
+	extents[0].resize(2);
+	extents[0][0]=0.0;
+	extents[0][1]=1.0;
+
+	mesh = new Sphyramid_Mesh(cs, lay, extents, 0.1, true);
+
+    }
+    // processor 1 -- cell 2
+    else if(C4::node() == 1)
+    {
+	SP<Coord_sys> cs(new XYZCoord_sys());
+
+	// build layout
+	Layout lay(1);
+	
+	lay.set_size(1,6);
+	lay(1,1) = -1;
+	lay(1,2) = -2;
+	lay(1,3) = 1;
+	lay(1,4) = 1;
+	lay(1,5) = 1;
+	lay(1,6) = 1;
+
+	// build extents
+	vector< vector<double> > extents(1);
+	extents[0].resize(2);
+	extents[0][0]=1.0;
+	extents[0][1]=2.0;
+
+	mesh = new Sphyramid_Mesh(cs, lay, extents, 0.1, true);
+    }	
+    // processor 2 -- cells 3 and 4
+    else if(C4::node() == 2)
+    {
+	SP<Coord_sys> cs(new XYZCoord_sys());
+
+	// build layout
+	Layout lay(2);
+	
+	lay.set_size(1,6);
+	lay(1,1) = -1;
+	lay(1,2) = 2;
+	lay(1,3) = 1;
+	lay(1,4) = 1;
+	lay(1,5) = 1;
+	lay(1,6) = 1;
+
+	lay.set_size(2,6);
+	lay(2,1) = 1;
+	lay(2,2) = -2;
+	lay(2,3) = 2;
+	lay(2,4) = 2;
+	lay(2,5) = 2;
+	lay(2,6) = 2;
+
+	// build extents
+	vector< vector<double> > extents(2);
+	extents[0].resize(2);
+	extents[0][0]=2.0;
+	extents[0][1]=3.0;
+
+	extents[1].resize(2);
+	extents[1][0]=3.0;
+	extents[1][1]=4.0;
+
+	mesh = new Sphyramid_Mesh(cs, lay, extents, 0.1, true);
+    }
+ 
+    // processor 3 -- cell 5
+    else if(C4::node() == 3)
+    {
+	SP<Coord_sys> cs(new XYZCoord_sys());
+
+	// build layout
+	Layout lay(1);
+	
+	lay.set_size(1,6);
+	lay(1,1) = -1;
+	lay(1,2) = 0;
+	lay(1,3) = 1;
+	lay(1,4) = 1;
+	lay(1,5) = 1;
+	lay(1,6) = 1;
+
+	// build extents
+	vector< vector<double> > extents(1);
+	extents[0].resize(2);
+	extents[0][0]=4.0;
+	extents[0][1]=5.0;
+
+	mesh = new Sphyramid_Mesh(cs, lay, extents, 0.1, true);
+    }
+    else
+    {
+	ITFAILS;
+    }
+   
+    // make topology data
+    {
+	using rtt_mc::General_Topology;
+
+	vector< vector<int> > cpp(4);
+	vector< vector<int> > ppc(5, vector<int>(1));
+	vector< vector<int> > bc(4);
+    
+	// cells-per-proc data
+	cpp[0].resize(1);
+	cpp[0][0] = 1;
+
+	cpp[1].resize(1);
+	cpp[1][0] = 2;
+    
+	cpp[2].resize(2);
+	cpp[2][0] = 3;
+	cpp[2][1] = 4;
+    
+	cpp[3].resize(1);
+	cpp[3][0]=5;
+    
+	// procs-per-cell data
+	ppc[0][0] = 0;
+	ppc[1][0] = 1;
+	ppc[2][0] = 2;
+	ppc[3][0] = 2;
+	ppc[4][0] = 3;
+
+    	// boundary cell data
+	bc[0].resize(1);
+	bc[0][0] = 2;
+
+	bc[1].resize(2);
+	bc[1][0] = 1;
+	bc[1][1] = 3;
+    
+	bc[2].resize(2);
+	bc[2][0] = 2;
+	bc[2][1] = 5;
+    
+	bc[3].resize(1);
+	bc[3][0] = 4;
+
+	topology = new General_Topology(cpp, ppc, bc, "DD");
+    }
+
+    // build Mat_State with Temperatures 1,2,3,4,5
+    {
+	Sphyramid_Mesh::CCSF_double x(mesh);
+	Sphyramid_Mesh::CCSF_double temp(mesh);
+
+	if (C4::node() == 0)
+	{
+	    temp[0] = 1.0;
+	}
+	else if (C4::node() == 1)
+	{
+	    temp[0] = 2.0;
+	}
+	else if (C4::node() == 2)
+	{
+	    temp[0] = 3.0;
+	    temp[1] = 4.0;
+	}
+	else if (C4::node() == 3)
+	{
+	    temp[0] = 5.0;
+	}
+	else
+	{
+	    ITFAILS;
+	}
+
+	mat= new Mat_State<Sphyramid_Mesh>(x,temp,x);
+    }
+    
+    // make comm patterns
+    comm_patterns = new Comm_Patterns();
+    comm_patterns->calc_patterns(topology);
+
+    // build a Mesh_Operations object
+    Mesh_Operations<Sphyramid_Mesh> 
+	mesh_op(mesh, mat, topology, comm_patterns);
+
+    // get the slopes
+    Sphyramid_Mesh::CCVF<double> slopes = mesh_op.get_t4_slope();
+    if (slopes.size() != 3)  ITFAILS;
+    
+    // check the value of each slope
+    if (C4::node() == 0)
+    {	
+	if (slopes.size(1) != 1)          ITFAILS;
+	if (slopes(1,1)    != 0.0)        ITFAILS;
+	
+	if (slopes.size(2) != 1)          ITFAILS;
+	if (slopes(2,1)    != 0.0)        ITFAILS;
+	
+	if (slopes.size(3)  != 1)         ITFAILS;
+	if (slopes(3,1)     != 0.0)       ITFAILS;
+    }
+    else if (C4::node() == 1)
+    {	
+	if (slopes.size(1) != 1)          ITFAILS;
+	if (soft_equiv(slopes(1,1), 4.0)) ITFAILS;
+	
+	if (slopes.size(2) != 1)          ITFAILS;
+	if (slopes(2,1)    != 0.0)        ITFAILS;
+	
+	if (slopes.size(3) != 1)          ITFAILS;
+	if (slopes(3,1)    != 0.0)        ITFAILS;
+    }
+    else if (C4::node() == 2)
+    {	
+	if (slopes.size(1) != 2)            ITFAILS;
+	if (soft_equiv(slopes(1,1), 124.0)) ITFAILS;
+	if (soft_equiv(slopes(1,2), 272.0)) ITFAILS;
+		
+	if (slopes.size(2) != 2)            ITFAILS;
+	if (slopes(2,1)    != 0.0)          ITFAILS;
+	if (slopes(2,2)    != 0.0)          ITFAILS;
+
+	if (slopes.size(3) != 2)            ITFAILS;
+	if (slopes(3,1)    != 0.0)          ITFAILS;
+	if (slopes(3,2)    != 0.0)          ITFAILS;
+    }
+    else if (C4::node() == 3)
+    {	
+	if (slopes.size(1) != 1)            ITFAILS;
+	if (soft_equiv(slopes(1,1), 369.0)) ITFAILS;
+	
+	if (slopes.size(2) != 1)            ITFAILS;
+	if (slopes(2,1)    != 0.0)          ITFAILS;
+	
+	if (slopes.size(3) != 1)            ITFAILS;
+	if (slopes(3,1)    != 0.0)          ITFAILS;
+    }
+    else
+    {
+	ITFAILS;
+    }
+    
+    if (rtt_imc_test::passed)
+	PASSMSG("T4 slopes ok for Sphyramid DD.");
+}
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
@@ -500,6 +785,7 @@ int main(int argc, char *argv[])
 
 	// run Sphyramid tests
 	Sphyramid_replicate();
+	Sphyramid_DD();
     }
     catch (rtt_dsxx::assertion &ass)
     {

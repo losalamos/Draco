@@ -221,7 +221,6 @@ class Mesh_Operations<rtt_mc::Sphyramid_Mesh>
   private: 
     // typedefs
     typedef std::vector<double>                       sf_double;
-    //typedef std::vector<std::vector<double> >         vf_double;
     typedef mesh_type::CCVF<double>                   ccvf_double;
     typedef rtt_dsxx::SP<mesh_type>                   SP_Mesh;
     typedef rtt_dsxx::SP<rtt_mc::Topology>            SP_Topology;
@@ -236,7 +235,8 @@ class Mesh_Operations<rtt_mc::Sphyramid_Mesh>
 
     // Calculate T^4 slope values in different topologies.
     void build_replication_T4_slope(SP_Mat_State mat_state);
-    //void build_DD_T4_slope(SP_Mat_State, SP_Topology, SP_Comm_Patterns);
+    void build_DD_T4_slope(SP_Mat_State mat_state, SP_Topology topology, 
+			   SP_Comm_Patterns com_pat);
 
   public:
     // Constructor.
