@@ -54,8 +54,9 @@ eval find $proj \
 	! -path \*CVS/\* ! -name .cvsignore ! -name \*~ \
 	! -path \*/.\*depend ! -name .d.\* ! -name .env_\* \
 	! -name .nml_\* ! -name .pt\* ! -name .dkcc.\* \
+	! -name .nmlgen ! -name .prstgen \
 	! -path \*config/.pooma.\* \
-	! -path \*/ii_files/\* \
+	! -path \*/ii_files/\* ! -path \*/KCC_files/\* \
 	! -name \*_prs.cc ! -name \*.flc \
 	! -path \*__pt__\*.c \
 	! -name \*.dat ! -name \*.log ! -name run.log.\* ! -name \*.out \
