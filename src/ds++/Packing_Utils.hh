@@ -253,22 +253,22 @@ class Unpacker
     unsigned int stream_size;
     
     // Pointer (mutable) into data stream.
-    pointer ptr;
+    const_pointer ptr;
 
     // Pointers to begin and end of buffers.
-    pointer begin_ptr;
-    pointer end_ptr;
+    const_pointer begin_ptr;
+    const_pointer end_ptr;
 
   public:
     //! Constructor.
     Unpacker() : stream_size(0), ptr(0), begin_ptr(0), end_ptr(0) {/*...*/} 
 
     // Set the buffer.
-    inline void set_buffer(unsigned int, pointer);
+    inline void set_buffer(unsigned int, const_pointer);
 
     // Unpack value from buffer.
     template<class T> inline void unpack(T &);
-
+    
     // >>> ACCESSORS
 
     //! Get a pointer to the current position of the data stream.
@@ -306,10 +306,10 @@ class Unpacker
  * the Unpacker::get_ptr, Unpacker::begin, and Unpacker::end functions).
 
  * \param size_in size of the buffer
- * \param buffer pointer to the char * buffer
+ * \param buffer const_pointer to the char * buffer
 
  */
-void Unpacker::set_buffer(unsigned int size_in, pointer buffer)
+void Unpacker::set_buffer(unsigned int size_in, const_pointer buffer)
 {
     Require (buffer);
     
@@ -328,7 +328,7 @@ void Unpacker::set_buffer(unsigned int size_in, pointer buffer)
  * by Unpacker::set_buffer.  It advances the pointer (iterator) location to
  * the next location automatically.  It uses the sizeof(T) operator to get
  * the size of the data; thus, only data where sizeof() has meaning will be
- * properly read from the buffer.
+ * properly read from the buffer.POLYNOMIAL_Specific_Heat_ANALYTIC_EoS_MODEL
 
  * Unpacker::unpack() does bounds checking to ensure that the buffer and
  * buffer size defined by Unpacker::set_buffer are consistent.  This
