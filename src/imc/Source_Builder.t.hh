@@ -628,7 +628,7 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
  */
 template<class MT, class PT>
 void Source_Builder<MT,PT>::reset_ew_in_census(const int &local_ncentot,
-					       double &global_eloss_comb,
+					       double &global_eloss_cen,
 					       const double &global_ecentot)
 {
     // check consistency of the census size and local_ncentot
@@ -642,7 +642,7 @@ void Source_Builder<MT,PT>::reset_ew_in_census(const int &local_ncentot,
     SP_Census updated_census(new Particle_Buffer<PT>::Census());
 
     // initialize local, global energy loss due to the ew readjustment.
-    // hopefully the global_incremental_eloss takes global_eloss_comb closer
+    // hopefully the global_incremental_eloss takes global_eloss_cen closer
     // to zero!
     double incremental_eloss        = 0.0;
     double global_incremental_eloss = 0.0;
@@ -688,13 +688,13 @@ void Source_Builder<MT,PT>::reset_ew_in_census(const int &local_ncentot,
     C4::gsum(global_incremental_eloss);
 
     // update the global census energy loss 
-    global_eloss_comb += global_incremental_eloss;
+    global_eloss_cen += global_incremental_eloss;
 
     // sum up all processors' check_ecentot and test 
     check_global_ecentot = check_ecentot;
     C4::gsum(check_global_ecentot);
 
-    Check(rtt_mc::global::soft_equiv(check_global_ecentot+global_eloss_comb,
+    Check(rtt_mc::global::soft_equiv(check_global_ecentot+global_eloss_cen,
 				     global_ecentot,
 				     static_cast<double>(global_ncentot+1) *
 				     1.0e-14));

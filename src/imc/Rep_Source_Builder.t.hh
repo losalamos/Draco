@@ -133,10 +133,12 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
    // recalculate and reset the census particles' energy-weights
     recalc_census_ew_after_comb(mesh, max_dead_rand_id, dead_census,
 				global_eloss_comb); 
-    reset_ew_in_census(local_ncentot, global_eloss_comb, ecentot); 
 
     // add energy loss from the comb to the global census energy loss
     global_eloss_cen += global_eloss_comb;
+
+    // reset the census particles' energy-weights
+    reset_ew_in_census(local_ncentot, global_eloss_cen, ecentot); 
 
     // build Mesh_Operations class for source
     SP<Mesh_Operations<MT> > mesh_op

@@ -151,12 +151,12 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     global_ncentot = local_ncentot;
     C4::gsum(global_ncentot);
 
-    // reset the census particles' energy-weights
-    reset_ew_in_census(local_ncentot, global_eloss_comb, global_ecentot);
-
     // add energy loss from the comb to the global census energy loss
     global_eloss_cen += global_eloss_comb;
     
+    // reset the census particles' energy-weights
+    reset_ew_in_census(local_ncentot, global_eloss_cen, global_ecentot);
+
     // build Mesh_Operations class for source
     SP<Mesh_Operations<MT> > mesh_op
 	(new Mesh_Operations<MT>(mesh, state, topology, patterns)); 
