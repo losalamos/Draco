@@ -193,8 +193,43 @@ AC_DEFUN(AC_COMPILER_FUJITSU_F90, [dnl
    ARLIBS=
    F90STATIC='-static-flib'
 
-   # COMPILATION FLAGS
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+        F90FLAGS="-g -Haesu ${F90FLAGS}"
+   else
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+   fi
 
+   dnl end of AC_COMPILER_FUJITSU_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl ABSOFT F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
+
+   # Check for working Fujitsu F90 compiler
+
+   AC_CHECK_PROG(F90, f90, f90, none)
+
+   # Stupid Absoft Fortran does not have a version header
+  
+   # F90FREE, F90FIXED AND MODFLAG
+
+   F90FREE=''
+   F90FIXED=''
+   MODFLAG='-p'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMNET
    if test "$F90FLAGS" = ""
    then
        F90FLAGS="-X9 -Am ${F90FREE}"
@@ -207,7 +242,7 @@ AC_DEFUN(AC_COMPILER_FUJITSU_F90, [dnl
        fi
    fi
 
-   dnl end of AC_COMPILER_FUJITSU_F90
+   dnl end of AC_COMPILER_ABSOFT_F90
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -240,8 +275,7 @@ AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
    ARLIBS=
    F90STATIC='-static-flib'
 
-   # COMPILATION FLAGS
-
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
        F90FLAGS="--f95 ${F90FREE}"
@@ -287,8 +321,7 @@ AC_DEFUN(AC_COMPILER_PORTLAND_F90, [dnl
    ARLIBS=
    F90STATIC=
 
-   # COMPILATION FLAGS
-
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
        F90FLAGS="${F90FREE}"
@@ -329,8 +362,7 @@ AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
    ARFLAGS=
    ARLIBS=
 
-   # COMPILATION FLAGS
-
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
        F90FLAGS=""
@@ -376,8 +408,7 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
    ARLIBS=
    F90STATIC='-non_shared'
 
-   # COMPILATION FLAGS
-
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
        F90FLAGS="${F90FREE}"
@@ -422,8 +453,7 @@ AC_DEFUN(AC_COMPILER_WORKSHOP_F90, [dnl
    ARFLAGS=
    ARLIBS=
 
-   # Set COMPILATION FLAGS
-
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
        F90FLAGS="${F90FREE}"
@@ -468,8 +498,7 @@ AC_DEFUN(AC_COMPILER_CRAY_F90, [dnl
    ARFLAGS=
    ARLIBS=
 
-   # COMPILATION FLAGS
-
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
        F90FLAGS="${F90FREE}"
@@ -514,8 +543,7 @@ AC_DEFUN(AC_COMPILER_MIPS_F90, [dnl
    ARFLAGS=
    ARLIBS=
 
-   # COMPILATION FLAGS
-
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
 	F90FLAGS="${F90FREE} -OPT:Olimit=0"
@@ -532,7 +560,3 @@ AC_DEFUN(AC_COMPILER_MIPS_F90, [dnl
 ])
 
 dnl ========================================================================
-
-
-
-
