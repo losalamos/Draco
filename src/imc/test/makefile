@@ -15,7 +15,22 @@ need_c4         := yes
 
 include ../../config/makefile
 
-srcs    = testp.cc
+srcs = 
+
+# parallel test driver
+ifeq ($(tst),p)
+srcs += testp.cc
+endif
+
+# build test driver
+ifeq ($(tst),b)
+srcs += testb.cc
+endif
+
+# 64-bit build test
+ifeq ($(tst),64)
+srcs += ts64.cc
+endif
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.
