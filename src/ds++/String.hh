@@ -13,7 +13,7 @@
 
 #include <iosfwd>
 
-#include <string.h>
+#include <cstring>
 
 NAMESPACE_DS_BEG
 
@@ -58,37 +58,37 @@ class String {
   friend std::istream& operator>>( std::istream& s, String& x );
 
   friend inline int operator==( const String& x, const String& y )
-    { return strcmp( x.p->s, y.p->s ) == 0; }
+    { return std::strcmp( x.p->s, y.p->s ) == 0; }
   friend inline int operator==( const String& x, const char *s )
-    { return strcmp( x.p->s, s ) == 0; }
+    { return std::strcmp( x.p->s, s ) == 0; }
     
   friend inline int operator!=( const String& x, const String& y )
-    { return strcmp( x.p->s, y.p->s ) != 0; }
+    { return std::strcmp( x.p->s, y.p->s ) != 0; }
   friend inline int operator!=( const String& x, const char *s )
-    { return strcmp( x.p->s, s ) != 0; }
+    { return std::strcmp( x.p->s, s ) != 0; }
     
 // These relational operators work fine on ASCII machines, but if you
 // have EBCDIC or some such, these probably don't do what you want.
     
   friend inline int operator<( const String& x, const String& y )
-    { return strcmp( x.p->s, y.p->s ) < 0; }
+    { return std::strcmp( x.p->s, y.p->s ) < 0; }
   friend inline int operator<( const String& x, const char *s )
-    { return strcmp( x.p->s, s ) < 0; }
+    { return std::strcmp( x.p->s, s ) < 0; }
     
   friend inline int operator<=( const String& x, const String& y )
-    { return strcmp( x.p->s, y.p->s ) <= 0; }
+    { return std::strcmp( x.p->s, y.p->s ) <= 0; }
   friend inline int operator<=( const String& x, const char *s )
-    { return strcmp( x.p->s, s ) <= 0; }
+    { return std::strcmp( x.p->s, s ) <= 0; }
     
   friend inline int operator>( const String& x, const String& y )
-    { return strcmp( x.p->s, y.p->s ) > 0; }
+    { return std::strcmp( x.p->s, y.p->s ) > 0; }
   friend inline int operator>( const String& x, const char *s )
-    { return strcmp( x.p->s, s ) > 0; }
+    { return std::strcmp( x.p->s, s ) > 0; }
     
   friend inline int operator>=( const String& x, const String& y )
-    { return strcmp( x.p->s, y.p->s ) >= 0; }
+    { return std::strcmp( x.p->s, y.p->s ) >= 0; }
   friend inline int operator>=( const String& x, const char *s )
-    { return strcmp( x.p->s, s ) >= 0; }
+    { return std::strcmp( x.p->s, s ) >= 0; }
     
 // Now some operators for doing concatenation and such.
     

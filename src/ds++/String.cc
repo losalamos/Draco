@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "String.hh"
-#include <string.h>
+#include <cstring>
 
 #include "Assert.hh"
 
@@ -73,10 +73,10 @@ String::String( const String& s )
 
 String::String( const char *s )
 {
-    int len = strlen(s);
+    int len = std::strlen(s);
     p = new srep(len+1);
     p->len = len;
-    strcpy( p->s, s );
+    std::strcpy( p->s, s );
 }
 
 //---------------------------------------------------------------------------//
@@ -132,7 +132,7 @@ String& String::operator=( const char c )
 
 String& String::operator=( const char *s )
 {
-    int newlen = strlen(s);
+    int newlen = std::strlen(s);
     int newsz  = newlen +1;
 
     if ( p->n > 1 ) {		// disconnect self
@@ -146,7 +146,7 @@ String& String::operator=( const char *s )
       }
 
     p->len = newlen;
-    strcpy( p->s, s );
+    std::strcpy( p->s, s );
     return *this;
 }
 
@@ -184,7 +184,7 @@ char& String::operator[]( int i )
     if (p->n > 1) {		// Then we must disconnect.
 	p->n--;
 	srep *np = new srep(p->len + 1);
-	strcpy( np->s, p->s );
+	std::strcpy( np->s, p->s );
 	np->len = p->len;
 	p = np;
     }
@@ -262,8 +262,8 @@ String& String::operator+=( const String& s )
 // Get new srep, and initialize with right values
 
 	srep *ps = new srep( p->len + slen + 1 );
-	strcpy( ps->s, p->s );
-	strcpy( ps->s + p->len, s.p->s ); // faster than strcat.
+	std::strcpy( ps->s, p->s );
+	std::strcpy( ps->s + p->len, s.p->s ); // faster than strcat.
 	ps->len = p->len + slen;
 
 // Set new srep and go home.
@@ -280,7 +280,7 @@ String& String::operator+=( const String& s )
 
 	if ( p->sz > 2*p->len ) { // There's already enough space.
 
-	    strncpy( p->s + p->len, p->s, p->len );
+	    std::strncpy( p->s + p->len, p->s, p->len );
 	    p->len *= 2;
 	    p->s[p->len] = '\0';
 	    return *this;
@@ -289,8 +289,8 @@ String& String::operator+=( const String& s )
 
 	    srep *ps = new srep( 2*p->len + 1 );
 	    ps->len = 2*p->len;
-	    strcpy( ps->s, p->s );
-	    strcat( ps->s, p->s );
+	    std::strcpy( ps->s, p->s );
+	    std::strcat( ps->s, p->s );
 	    delete p;
 	    p = ps;
 	    return *this;
@@ -305,8 +305,8 @@ String& String::operator+=( const String& s )
 
 	srep *ps = new srep( p->len + slen + 1 );
 	ps->len = p->len + slen;
-	strcpy( ps->s, p->s );
-	strcat( ps->s, s.p->s );
+	std::strcpy( ps->s, p->s );
+	std::strcat( ps->s, s.p->s );
 	delete p;		// since no one will be using it.
 	p = ps; 
 	return *this;
@@ -314,7 +314,7 @@ String& String::operator+=( const String& s )
     } else {			// We already have enough space.
 
 	p->len += slen;
-	strcat( p->s, s.p->s );
+	std::strcat( p->s, s.p->s );
 	return *this;
     }
 }
@@ -325,15 +325,15 @@ String& String::operator+=( const String& s )
 
 String& String::operator+=( const char *s )
 {
-    int slen = strlen(s);
+    int slen = std::strlen(s);
 
     if ( p->n > 1 ) {		// Shared on entry.
 	p->n--;			// Disconnect self.
 
 	srep *ps = new srep( p->len + slen + 1 );
 	ps->len = p->len + slen;
-	strcpy( ps->s, p->s );
-	strcpy( ps->s + p->len, s );	// faster than strcat.
+	std::strcpy( ps->s, p->s );
+	std::strcpy( ps->s + p->len, s );	// faster than strcat.
 	p = ps;
 	return *this;
     }
@@ -341,15 +341,15 @@ String& String::operator+=( const char *s )
     if ( p->len + slen >= p->sz ) { // then we need more space.
 	srep *ps = new srep( p->len + slen + 1 );
 	ps->len = p->len + slen;
-	strcpy( ps->s, p->s );
-	strcpy( ps->s + p->len, s ); // faster than strcat.
+	std::strcpy( ps->s, p->s );
+	std::strcpy( ps->s + p->len, s ); // faster than strcat.
 	delete p;
 	p = ps;
 	return *this;
 
     } else {
 
-	strcpy( p->s + p->len, s );
+	std::strcpy( p->s + p->len, s );
 	p->len += slen;
 	return *this;
     }
@@ -366,7 +366,7 @@ String& String::operator+=( const char c )
 
 	srep *ps = new srep( p->len + 5 + 1 );
 	ps->len = p->len + 1;
-	strcpy( ps->s, p->s );
+	std::strcpy( ps->s, p->s );
 	ps->s[p->len] = c;
 	ps->s[p->len + 1] = '\0';
 	p = ps;
@@ -376,7 +376,7 @@ String& String::operator+=( const char c )
     if ( p->len + 1 >= p->sz ) { // then we need more space.
 	srep *ps = new srep( p->len + 5 + 1 );
 	ps->len = p->len + 1;
-	strcpy( ps->s, p->s );
+	std::strcpy( ps->s, p->s );
 	ps->s[p->len] = c;
 	ps->s[p->len + 1] = '\0';
 	delete p;
