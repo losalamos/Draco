@@ -155,10 +155,11 @@ public:
     void write_census(ostream &, Comm_Buffer &) const;
     SP<Census_Buffer> read_census(istream &) const;
 
-  // fill buffer functions
+  // fill and get buffer functions
     void buffer_census(Comm_Buffer &, const Census_Buffer &) const;
     void buffer_particle(Comm_Buffer &, const PT &) const;
-  
+    void add_to_bank(Comm_Buffer &, Comm_Bank &) const;
+
   // Particle send and receives
 
   // blocking
@@ -166,10 +167,10 @@ public:
     SP<Comm_Buffer> recv_buffer(int) const;
 
   // async
-    void asend_bank(Comm_Buffer &, int, Comm_Bank &) const;
-    void arecv_bank(Comm_Buffer &, int) const;
-    void add_to_bank(Comm_Buffer &, Comm_Bank &) const;
-
+    void asend_buffer(Comm_Buffer &, int, Comm_Bank &) const;
+    void asend_buffer(Comm_Buffer &, int) const;
+    void post_arecv(Comm_Buffer &, int) const;
+    void arecv_buffer(Comm_Buffer &) const;
 };
 
 //---------------------------------------------------------------------------//

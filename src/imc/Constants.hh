@@ -20,6 +20,8 @@
 //  1)   2-4-98 : added huge and epsilon constants
 //  2)  3-20-98 : split former Global class into Constants and Math
 //                namespaces, moved Global namespace inside of IMC namespace
+//
+//  3)   6-5-98 : added variables that are needed Globally
 // 
 //===========================================================================//
 
@@ -29,6 +31,12 @@
 
 IMCSPACE
 GLOBALSPACE
+
+//---------------------------------------------------------------------------//
+// PROBLEM VARIABLES
+//---------------------------------------------------------------------------//
+
+extern int rn_stream;
 
 //---------------------------------------------------------------------------//
 // FUNDAMENTAL CONSTANTS
@@ -41,6 +49,7 @@ const double epsilon = DBL_EPSILON;
 //---------------------------------------------------------------------------//
 // MAXIMUM BUFFER SIZES
 //---------------------------------------------------------------------------//
+
 // maximum number of Particles in a stack
 const int buffer_s = 1000;
 

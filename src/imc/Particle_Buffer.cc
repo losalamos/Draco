@@ -139,9 +139,10 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
   // loop through comm_buffer and write the particle data to a census file
     for (int n = 1; n <= num_particles; n++)
     {
-      // get the double array data
+      // get the double array data, add 1 because Comm_Buffer includes
+      // time_left in its info
 	for (int d = 0; d < dsize; d++)
-	    ddata[d] = buffer.array_d[d+id];
+	    ddata[d] = buffer.array_d[d+id+1];
 
       // get the int array data
 	for (int i = 0; i < isize; i++)
@@ -159,7 +160,7 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
 	cenfile.write(reinterpret_cast<const char *>(cdata), csize);
 
       // update the counters
-	id += dsize;
+	id += dsize + 1;
 	ii += isize;
 	ic += csize;
 	buffer.n_part--;
@@ -273,11 +274,11 @@ Particle_Buffer<PT>::recv_buffer(int proc) const
 }
 
 //---------------------------------------------------------------------------//
-// Do an asyncronous send using C4
+// Do an asyncronous send using C4 on a Comm_Bank of Particles
 
 template<class PT>
-void Particle_Buffer<PT>::asend_bank(Comm_Buffer &buffer, int proc, 
-				     Comm_Bank &bank) const
+void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc, 
+				       Comm_Bank &bank) const
 {
   // find out the number of Particles
     int num_part = bank.size();
@@ -297,9 +298,9 @@ void Particle_Buffer<PT>::asend_bank(Comm_Buffer &buffer, int proc,
     while (bank.size())
     {
       // get the double info from the particle
+	array_d[id++] = bank.top().time_left;
 	array_d[id++] = bank.top().ew;
 	array_d[id++] = bank.top().fraction;
-	array_d[id++] = bank.top().time_left;
 	for (int j = 0; j < bank.top().omega.size(); j++)
 	    array_d[id++] = bank.top().omega[j];
 	for (int j = 0; j < bank.top().r.size(); j++)
@@ -332,10 +333,23 @@ void Particle_Buffer<PT>::asend_bank(Comm_Buffer &buffer, int proc,
 }
     
 //---------------------------------------------------------------------------//
-// post async recives
+// do an async send of a Comm_Buffer
 
 template<class PT>
-void Particle_Buffer<PT>::arecv_bank(Comm_Buffer &buf, int proc) const
+void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc) const
+{
+  // async send this Comm_Buffer
+    SendAsync(buffer.comm_n, &buffer.n_part, 1, proc, 100);
+    SendAsync(buffer.comm_d, &buffer.array_d[0], Global::buffer_d, proc, 101);
+    SendAsync(buffer.comm_i, &buffer.array_i[0], Global::buffer_i, proc, 102);
+    SendAsync(buffer.comm_c, &buffer.array_c[0], Global::buffer_c, proc, 103);
+}
+
+//---------------------------------------------------------------------------//
+// post async receives
+
+template<class PT>
+void Particle_Buffer<PT>::post_arecv(Comm_Buffer &buf, int proc) const
 {
   // post c4 async receives
     RecvAsync(buf.comm_n, &buf.n_part, 1, proc, 100);
@@ -345,19 +359,16 @@ void Particle_Buffer<PT>::arecv_bank(Comm_Buffer &buf, int proc) const
 }
 
 //---------------------------------------------------------------------------//
-// use the filled buffer to create a new bank of particles
+// post waits on the receives to fill up a Comm_Buffer
 
 template<class PT> void 
-Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Comm_Bank &bank) const
+Particle_Buffer<PT>::arecv_buffer(Comm_Buffer &buffer) const
 {
   // wait on recieve buffers to make sure they are full
     buffer.comm_n.wait();
     buffer.comm_d.wait();
     buffer.comm_i.wait();
     buffer.comm_c.wait();
-
-  // make the new particle bank from the buffer
-  // ...
 }
 
 //---------------------------------------------------------------------------//
@@ -369,7 +380,48 @@ template<class PT>
 void Particle_Buffer<PT>::buffer_census(Comm_Buffer &comm, 
 					const Census_Buffer &census) const
 {
-  // <<CONTINUE HERE>>
+  // check to make sure this Comm_Buffer isn't full
+    Require (comm.n_part < Global::buffer_s);
+
+  // calculate indices for the buffer
+    int id = comm.n_part * (dsize + 1);
+    int ii = comm.n_part * isize;
+    int ic = comm.n_part * csize;
+
+  // add one Census_Buffer particle to the buffer
+  
+  // start with the double data, time_left is not part of the census, but is
+  // part of the Comm_Buffer, any Census_Particle will have a time_left of 1
+    comm.array_d[id++] = 1;
+    comm.array_d[id++] = census.ew;
+    comm.array_d[id++] = census.fraction;
+    for (int i = 0; i < census.omega.size(); i++)
+	comm.array_d[id++] = census.omega[i];
+    for (int i = 0; i < census.r.size(); i++)
+	comm.array_d[id++] = census.r[i];
+    Check (id - comm.n_part * (dsize+1) == (dsize+1));
+
+  // do the int data
+    comm.array_i[ii++] = census.cell;
+    comm.array_i[ii++] = census.random.get_num();
+    Check (ii - comm.n_part * isize == isize);
+
+  // do the char data
+    char *bytes;
+    int size = pack_sprng(census.random.get_id(), &bytes);
+    Check (size == csize);
+    for (int i = 0; i < csize; i++)
+	comm.array_c[ic++] = bytes[i];
+    std::free(bytes);
+    Check (ic - comm.n_part * csize == csize);
+  
+  // update the n_particles
+    comm.n_part++;
+
+  // do some assertions
+    Ensure (id <= Global::buffer_d);
+    Ensure (ii <= Global::buffer_i);
+    Ensure (ic <= Global::buffer_c);
 }
 
 //---------------------------------------------------------------------------//
@@ -391,9 +443,9 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
   // add one particle to the buffer
 
   // start with the double data
+    buffer.array_d[id++] = particle.time_left;
     buffer.array_d[id++] = particle.ew;
     buffer.array_d[id++] = particle.fraction;
-    buffer.array_d[id++] = particle.time_left;
     for (int i = 0; i < particle.omega.size(); i++)
 	buffer.array_d[id++] = particle.omega[i];
     for (int i = 0; i < particle.r.size(); i++)
@@ -421,6 +473,68 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
     Ensure (id <= Global::buffer_d);
     Ensure (ii <= Global::buffer_i);
     Ensure (ic <= Global::buffer_c);
+}
+
+//---------------------------------------------------------------------------//
+// make a Particle bank out of a Comm_Buffer
+
+template<class PT> void 
+Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Comm_Bank &bank) const 
+{
+  // get the number of Particles in the Comm_Buffer
+    int num_part = buffer.n_part;
+    Require (num_part <= Global::buffer_s);
+
+  // set buffer counters
+    int id = 0;
+    int ii = 0;
+    int ic = 0;
+
+  // loop through Comm_Buffer and add the Particles to the Comm_Bank
+    for (int n = 1; n <= num_part; n++)
+    {
+      // make the Particle data
+
+      // double data
+	double t_left = buffer.array_d[id++];
+	double ew     = buffer.array_d[id++];
+	double frac   = buffer.array_d[id++];
+	vector<double> r;
+	vector<double> omega;
+	for (int i = 0; i < 3; i++)
+	    omega.push_back(buffer.array_d[id++]);
+	for (int i = 0; i < (dsize-5); i++)
+	    r.push_back(buffer.array_d[id++]);
+	Check (omega.size() == 3);
+	Check (r.size() == (dsize-5));
+
+      // int data
+	int cell = buffer.array_i[ii++];
+	int rnum = buffer.array_i[ii++];
+
+      // char data
+	char *bytes = new char[csize];
+	for (int i = 0; i < csize; i++)
+	    bytes[i] = buffer.array_c[ic++];
+	int *rnid = unpack_sprng(bytes);
+	Sprng random(rnid, rnum);
+	delete [] bytes;
+
+      // check to make sure we haven't gone over
+	Check (id <= Global::buffer_d);
+	Check (ii <= Global::buffer_i);
+	Check (ic <= Global::buffer_c);
+
+      // make the Particle
+	PT particle(r, omega, ew, cell, random, frac, t_left);
+
+      // add the Particle to the Comm_Bank and update the num_part counter
+	bank.push(particle);
+	buffer.n_part--;
+    }
+
+  // the buffer should now be empty
+    Ensure (buffer.n_part == 0);
 }
 
 CSPACE

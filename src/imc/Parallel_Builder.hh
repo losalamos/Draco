@@ -45,8 +45,13 @@ private:
     void parallel_topology(const MT &, const Source_Init<MT> &);
 
   // calculate parallel source distributions
+
+  // distribute the census
     template<class PT>
     void dist_census(const Source_Init<MT> &, const Particle_Buffer<PT> &);
+
+  // distribute the volume source
+    void dist_vol(const Source_Init<MT> &);
 
   // functionality for Mesh passing
 

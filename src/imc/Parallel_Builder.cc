@@ -217,6 +217,10 @@ void Parallel_Builder<MT>::send_Source(const Source_Init<MT> &sinit,
   // first distribute the census
     if (sinit.get_ncentot() > 0) 
 	dist_census(sinit, buffer);
+
+  // next do the volume source
+    if (sinit.get_nvoltot() > 0)
+	dist_vol(sinit);
 }
 
 //---------------------------------------------------------------------------//
@@ -325,7 +329,24 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
 	}
     }
 }
+
+//---------------------------------------------------------------------------//
+// distribute the volume source stuff
 	    
+template<class MT>
+void Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
+{
+  // find the number of cells
+    int num_cells = procs_per_cell.size();
+    Require (num_cells > 0);
+
+  // make the volume source counter
+    vector<int> nvol(num_cells);
+    vector<int> nvol_xtra(num_cells);
+
+  // <<CONTINUE HERE>>
+}
+
 //---------------------------------------------------------------------------//
 // Mesh passing interface
 //---------------------------------------------------------------------------//

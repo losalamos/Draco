@@ -173,6 +173,7 @@ public:
     string desc() const { return descriptor; }
     inline static int get_index(string);
     inline static string get_descriptor(int);
+    Sprng& get_random() { return random; }
 
   // public diagnostic services
     void print(ostream &) const;

@@ -38,7 +38,7 @@ using RNG::Rnd_Control;
 using std::ifstream;
 using std::string;
 
-template<class MT>
+template<class MT, class PT=Particle<MT> >
 class Source
 {
 private:
@@ -62,7 +62,7 @@ private:
     SP<Rnd_Control> rcon;
 
   // Particle Buffer
-    Particle_Buffer<Particle<MT> > buffer;
+    Particle_Buffer<PT> buffer;
 
 public:
   // constructor
@@ -71,12 +71,12 @@ public:
 	   int, int, SP<Rnd_Control>);
 
   // required services for Source
-    inline SP<Particle<MT> > get_Particle(); 
+    inline SP<PT> get_Particle(); 
 
   // Particle sources
-    SP<Particle<MT> > get_census();
-    SP<Particle<MT> > get_evol();
-    SP<Particle<MT> > get_ss();
+    SP<PT> get_census();
+    SP<PT> get_evol();
+    SP<PT> get_ss();
 };
 
 CSPACE

@@ -22,7 +22,8 @@ include ../config/makefile
 # libsrcs = code to be compiled, if using instantialyzer only include
 #           nonsrc
 
-nonsrc  = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Interface.cc Coord_sys.cc
+nonsrc  = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Interface.cc Coord_sys.cc \
+          Constants.cc
 
 tempsrc = 
 
