@@ -15,11 +15,7 @@
 
 // Floating-point precision (default is double)
 
-#ifdef SINGLE_PRECISION
-#define REAL              float
-#else
 #define REAL              double
-#endif
 
 #endif                          // __sn_test_snpp_hh__
 
