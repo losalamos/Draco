@@ -18,6 +18,8 @@ srcdir     = @srcdir@
 # pacakage top source directory
 package_top_srcdir = @package_top_srcdir@
 
+curdir = $(shell pwd)
+
 # get the relative directory between the top_srcdir and the srcdir
 reldir := $(shell echo "${srcdir}" | sed s%${top_srcdir}%% | sed 's%/[^/]*%../%g')
 ifeq (,${reldir})
