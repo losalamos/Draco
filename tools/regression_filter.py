@@ -377,11 +377,13 @@ for line in lines:
 	match = coverage_begin_report.search(line)
 	if match:
 	    coverage_recording_report = 1
+	    continue
 
 	# Stop recording the output when we see this tag.
 	match = coverage_end_report.search(line)
 	if match:
 	    coverage_recording_report = 0
+	    continue
 
 	# Record the coverage report into the variable "coverage_dir_report".
 	if coverage_recording_report:
@@ -506,7 +508,7 @@ print "Date    : %s" % (date_tag_str)
 print "Log file: %s" % (log_tag_str)
 print "Script  : %s" % (script_tag_str)
 print "Options : %s" % (options_str)
-print "Run time: %s (HH:MM:SS\n" % (elapsed_time_str)
+print "Run time: %s (HH:MM:SS)\n" % (elapsed_time_str)
 
 if coverage_analysis:
     print_coverage_report( coverage_dir_report, log_tag_str)
