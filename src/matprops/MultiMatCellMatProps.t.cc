@@ -27,6 +27,7 @@ MaterialStateField( const MultiMatCellMatProps<UMCMP> &matprops_,
     Require(density_.size() == volumeFraction_.size());
     Require(density_.size() == matId_.size());
 // Loop over cells.
+
     FT1::const_iterator etit  = electronTemp_.begin();
     FT1::const_iterator itit  = ionTemp_.begin();
     FT1::const_iterator vfit  = volumeFraction_.begin();
@@ -35,9 +36,17 @@ MaterialStateField( const MultiMatCellMatProps<UMCMP> &matprops_,
 	 denit != density_.end(); denit++, etit++, 
 	     itit++, vfit++, midit++)
     {
+	using std::vector;
+	typedef FT2::value_type::value_type value_type2;
+
+	vector<value_type1> density((*denit).begin(), (*denit).end());
+	vector<value_type1> electronTemp((*etit).begin(), (*etit).end());
+	vector<value_type1> ionTemp((*itit).begin(), (*itit).end());
+	vector<value_type2> matId((*midit).begin(), (*midit).end());
+
     // Load a material state field for this cell.
 	matState.push_back(matprops_.spumcmp->getMaterialState(
-	    *denit,*etit,*itit,*midit));
+	    density, electronTemp, ionTemp, matId));
     // Check to be sure that the input for this cell has a 
     // material count consistent with the other input.
 	Require( (*vfit).size() == (*denit).size() );
