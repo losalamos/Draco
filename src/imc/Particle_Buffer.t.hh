@@ -450,8 +450,7 @@ template<class PT>
 void Particle_Buffer<PT>::async_free(Comm_Buffer &buffer) const
 {
     // free the C4_Req objects from Async posts, note that these must be
-    // reassigned with a post request before they can be received or tested
-    // (async_wait() and async_check())
+    // reassigned with a post request before they can be received or tested 
     buffer.comm_n.free();
     buffer.comm_d.free();
     buffer.comm_i.free();
