@@ -2,13 +2,16 @@
 
 ac_help="$ac_help
 dnl
-  --with-f90[=XL,Fujitsu,Lahey,Portland,Absoft,WorkShop,Cray,MIPS,Compaq]     choose an F90 compiler
+  --with-f90[=XL,Fujitsu,Lahey,Portland,Absoft,WorkShop,Cray,MIPS,Compaq,HP]     choose an F90 compiler
 "
 # Check whether --with-f90 or --without-f90 was given.
 if test "${with_f90+set}" = set; then
   withval="$with_f90"
   :
 fi
+
+
+
 
 
 
@@ -217,7 +220,7 @@ ac_help="$ac_help
   --enable-shared         turn on shared libraries (.a default)"
 ac_help="$ac_help
   --with-cxx[=kcc,cc,guide]                                    
-                          choose a c++ compiler (KCC is default)"
+                          choose a c++ compiler"
 ac_help="$ac_help
   --enable-static-ld      use (.a) libraries if possible"
 ac_help="$ac_help
@@ -1586,8 +1589,8 @@ if test "${with_cxx+set}" = set; then
 fi
 
 
-      if test "${with_cxx:=kcc}" = yes ; then
-       with_cxx='kcc'
+      if test "${with_cxx}" = yes ; then
+       with_cxx='gcc'
    fi
 
          
@@ -1739,7 +1742,7 @@ subdirs="autodoc tools src doc"
 # Extract the first word of "autoconf", so it can be a program name with args.
 set dummy autoconf; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1743: checking for $ac_word" >&5
+echo "configure:1746: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_AUTOCONF'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1777,7 +1780,7 @@ for dir in $subdirs
    do
        if test -d ${srcdir}/${dir} ; then
 	   echo $ac_n "checking "configure in ${srcdir}/${dir}"""... $ac_c" 1>&6
-echo "configure:1781: checking "configure in ${srcdir}/${dir}"" >&5
+echo "configure:1784: checking "configure in ${srcdir}/${dir}"" >&5
 	   cd $srcdir/$dir
 	   if test -f configure ; then 
 	       echo "$ac_t"""exists"" 1>&6

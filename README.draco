@@ -64,6 +64,17 @@ the package available you must specify
 Retired Draco Package Synopsis
 ==============================
 
+UnitTestFrame [UnitTestFrame-retired]: Testing framework.
+
+ConjGrad [ConjGrad-retired]: A conjugate gradient solver.
+
+amr_mesh [amr_mesh-retired]: An amr mesh implementation.
+
+amr_mesh_fort [amr_mesh_fort-retired]: Fortran shadows to amr_mesh.
+
+meshReaders_fort [meshReaders_fort-retired]: Fortran shadow to
+meshReaders.
+
 meshTest [meshTest-retired]: A test mesh that can be used to test
 other draco components that require a Mesh Type.
 
