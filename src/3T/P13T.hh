@@ -95,8 +95,7 @@ class P13T
 
     // CREATORS
 
-    P13T(const P13TOptions &options_,
-	 const SP<MeshType> &spMesh_);
+    P13T(const P13TOptions &options_, const SP<MeshType> &spMesh_);
     P13T(const P13T<MT,MP,DS>& );
     ~P13T();
 

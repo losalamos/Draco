@@ -150,11 +150,6 @@ P13T<MT, MP, DS>::solveElectConduction(double dt,
     Require(dt > 0.0);
     Require(matStateCC.getUnits() == matStateFC.getUnits());
     
-    // This is a one-group problem
-
-    int groupNo = 1;
-    int numGroups = 1;
-
     // Let's save the temperatures at time t^n.
     
     ccsf TnElectron(spMesh);
@@ -212,11 +207,6 @@ P13T<MT, MP, DS>::solveIonConduction(double dt,
     Require(dt > 0.0);
     Require(matStateCC.getUnits() == matStateFC.getUnits());
     
-    // This is a one-group problem
-
-    int groupNo = 1;
-    int numGroups = 1;
-
     // Let's save the temperatures at time t^n.
     
     ccsf TnIon(spMesh);

@@ -75,7 +75,7 @@ class DiffusionSolverStub
 	       FluxField &resultsFlux) const;
 
     void solve(const fcdsf &diffCoeff, const ccsf &removalCoeff,
-	       const ccsf &source, const bsbf &boundary, ccsf &results) const;
+	       const ccsf &source, ccsf &results) const;
 
   private:
     

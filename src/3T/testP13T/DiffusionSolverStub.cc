@@ -32,7 +32,6 @@ template<class MT>
 void DiffusionSolverStub<MT>::solve(const fcdsf &diffCoeff,
 				    const ccsf &removalCoeff,
 				    const ccsf &source,
-				    const bsbf &boundary,
 				    ccsf &results) const
 {
     results = source / removalCoeff;

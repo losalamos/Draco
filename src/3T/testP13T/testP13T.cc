@@ -24,24 +24,15 @@ using std::endl;
 #include <vector>
 using std::vector;
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
-BEGIN_NS_XTM
+using namespace XTM;
     
 testP13T::testP13T()
 {
     SP<MT> spmesh = new MT;
     
-    SP<DS> spdiffSolver = new DS(spmesh);
-    
-    Units units = Units::getAstroPhysUnits();
+    P13TOptions options;
 
-    P13TOptions options(false, false);
-
-    spP13T = new P13T(options, spdiffSolver);
+    spP13T = new P13T<MT,MP,DS>(options, spmesh);
 }
 
 void testP13T::solve() const
@@ -84,7 +75,7 @@ void testP13T::solve() const
     
     MP::MaterialStateField<fcdsf> matStateFC = matStateCC;
     
-    P13T::RadiationStateField radState(spmesh);
+    P13T<MT,MP,DS>::RadiationStateField radState(spmesh);
 
     spP13T->initializeRadiationState(matStateCC, radState);
 
@@ -123,7 +114,7 @@ void testP13T::solve() const
     ccsf QElectron(spmesh);
     ccsf QIon(spmesh);
     bsbf boundary(spmesh);
-    P13T::RadiationStateField newRadState(spmesh);
+    P13T<MT,MP,DS>::RadiationStateField newRadState(spmesh);
     ccsf electEnergyDep(spmesh);
     ccsf ionEnergyDep(spmesh);
     ncvf momDep(spmesh);
@@ -133,9 +124,11 @@ void testP13T::solve() const
     QIon = 4.25;
     boundary = 0.0;
 
-    spP13T->solve(dt, matStateCC, matStateFC, radState, QRad, QElectron, QIon,
-		  boundary, newRadState, electEnergyDep, ionEnergyDep,
-		  /* momDep, */ TElec, TIon);
+    DS diffSolver(spmesh);
+    
+    spP13T->solve3T(dt, matStateCC, matStateFC, radState, QRad, QElectron, QIon,
+		    boundary, diffSolver, newRadState,
+		    electEnergyDep, ionEnergyDep, /* momDep, */ TElec, TIon);
 
     const RadiationPhysics radPhys(matProp.getUnits());
     double c = radPhys.getLightSpeed();
@@ -154,8 +147,6 @@ void testP13T::solve() const
     cout << "TElectron: " << TElec << endl;
     cout << "TIon: " << TIon << endl;
 }
-
-END_NS_XTM  // namespace XTM
 
 //---------------------------------------------------------------------------//
 //                              end of testP13T.cc

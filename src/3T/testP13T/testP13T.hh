@@ -42,15 +42,14 @@ class testP13T
     // NESTED CLASSES AND TYPEDEFS
 
     typedef MeshTypeStub MT;
-    // typedef MaterialPropertiesStub<MT> MP;
     typedef InterpedMaterialProps MP;
     typedef DiffusionSolverStub<MT> DS;
     
-    typedef P13T<MT,MP,DS> P13T;
+    // typedef P13T<MT,MP,DS> P13T;
     
     // DATA
 
-    SP< P13T > spP13T;
+    SP< P13T<MT,MP,DS> > spP13T;
     
   public:
 
