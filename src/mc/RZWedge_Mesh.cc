@@ -13,25 +13,15 @@
 #define __mc_RZWedge_Mesh_cc__
 
 #include "RZWedge_Mesh.hh"
+#include "XYZCoord_sys.hh"
 #include "Constants.hh"
 #include "viz/Ensight_Translator.hh"
 #include <iostream>
 #include <iomanip>
+#include <typeinfo>
 
 namespace rtt_mc
 {
-
-using std::vector;
-using std::endl;
-using std::setw;
-using std::ios;
-using std::vector;
-using std::fill;
-using std::ostream;
-using std::string;
-using std::setiosflags;
-
-using global::pi;
 
 //---------------------------------------------------------------------------//
 // CONSTRUCTOR
@@ -105,7 +95,6 @@ void RZWedge_Mesh::calc_wedge_angle_data(const double theta_degrees)
     tan_half_theta    = std::tan(half_theta);
     sin_half_theta    = std::sin(half_theta);
     cos_half_theta    = std::cos(half_theta);
-
 }
 
 //---------------------------------------------------------------------------//
@@ -171,6 +160,7 @@ bool RZWedge_Mesh::in_cell(int cell, const sf_double &r) const
 double RZWedge_Mesh::get_db(const sf_double &r, const sf_double &omega, 
 			    int cell, int &face) const
 {
+    using std::vector;
     using global::dot;
 
     Require (r.size() == 3);
@@ -311,6 +301,8 @@ int RZWedge_Mesh::get_bndface(std_string boundary, int cell) const
 
 RZWedge_Mesh::sf_int RZWedge_Mesh::get_surcells(std::string boundary) const
 {
+    using std::vector;
+
     Require (!submesh);
     Require (coord->get_dim() == 3);
 
@@ -725,14 +717,14 @@ RZWedge_Mesh::vf_double RZWedge_Mesh::get_vertices(int cell, int face) const
 }
 
 //---------------------------------------------------------------------------//
-// functions required for graphics dumps
+// Interface for graphics dumps
 //---------------------------------------------------------------------------//
 /*!
  * \brief Return the cell type for each cell in the RZWedge_Mesh
  */
 RZWedge_Mesh::sf_int RZWedge_Mesh::get_cell_types() const
 {
-    vector<int> cell_type(layout.num_cells());
+    std::vector<int> cell_type(layout.num_cells());
 
     // all cells in an RZWedge_Mesh are general, 8-node hexedrons
     std::fill(cell_type.begin(), cell_type.end(),
@@ -753,6 +745,8 @@ RZWedge_Mesh::sf_int RZWedge_Mesh::get_cell_types() const
  */
 RZWedge_Mesh::vf_double RZWedge_Mesh::get_point_coord() const
 {
+    using std::vector;
+
     // number of vertices per cell is always 8; always 3D
     const int num_verts_cell = 8;
     double vert_index;
@@ -826,8 +820,13 @@ RZWedge_Mesh::vf_int RZWedge_Mesh::get_cell_pair() const
 //---------------------------------------------------------------------------//
 // print out the whole mesh
 
-void RZWedge_Mesh::print(ostream &out) const
+void RZWedge_Mesh::print(std::ostream &out) const
 {
+    using std::setw;
+    using std::setiosflags;
+    using std::ios;
+    using std::endl;
+
     out << endl;
     out << ">>> MESH <<<" << endl;
     out << "============" << endl;
@@ -849,8 +848,13 @@ void RZWedge_Mesh::print(ostream &out) const
 //---------------------------------------------------------------------------//
 // print individual cells
 
-void RZWedge_Mesh::print(ostream &output, int cell) const
+void RZWedge_Mesh::print(std::ostream &output, int cell) const
 {
+    using std::endl;
+    using std::setiosflags;
+    using std::setw;
+    using std::ios;
+
     // print out content info for one cell
     output << "+++++++++++++++" << endl;
     output << "---------------" << endl;
@@ -915,6 +919,368 @@ std::ostream& operator<<(std::ostream &output, const RZWedge_Mesh &object)
     return output;
 }
 
+//---------------------------------------------------------------------------//
+// Mesh Packing Interface
+//---------------------------------------------------------------------------//
+/*!
+
+ * \brief Pack up a mesh into a Pack struct for communication and
+ * persistence.
+
+ * The cell list provides the cells to pack up.  It also is a map from a full
+ * mesh to a spatially decomposed mesh.  Thus, the packed mesh will only
+ * contain cells in the cell list with the provided mappings.
+
+ * The packer will not produce an "exact" copy of the mesh even if the
+ * current_mesh_to_new_mesh mapping is one to one.  It will produce an
+ * equivalent copy (the internal data will be organized differently), and
+ * operator== will fail on such a comparison.  To produce an exact copy, call
+ * pack without any arguments.
+ 
+ * \param current_mesh_to_new_mesh list of cells to include in the packed
+ * mesh, set this to NULL to produce an exact copy
+
+ */
+RZWedge_Mesh::SP_Pack RZWedge_Mesh::pack(const sf_int &current_to_new) const
+{
+    Require (current_to_new.size() == layout.num_cells() ||
+	     current_to_new.size() == 0);
+
+    // determine whether this is exact replication or sub-packing
+    sf_int current_to_new_replicate;
+    bool   replicate;
+    if (current_to_new.size() == 0)
+    {
+	replicate = true;
+	current_to_new_replicate.resize(layout.num_cells());
+	
+	for (int cell = 1; cell <= layout.num_cells(); cell++)
+	    current_to_new_replicate[cell-1] = cell;
+    }
+    else 
+    {
+	replicate = false;
+    }
+    
+    // the coordinate system is always XYZ
+    Ensure (typeid(*coord) == typeid(XYZCoord_sys));
+
+    // packup layout data
+    AMR_Layout::SP_Pack packed_layout;
+    int                 layout_size;
+    int                 num_packed_cells;
+
+    // packed extents data
+    int   extent_size = 0;
+    char *extent_data = 0;
+
+    // pack up the mesh
+    if (replicate)
+    {
+	// packup the layout
+	packed_layout = layout.pack(current_to_new_replicate);
+	layout_size   = packed_layout->get_size();
+	Check (layout_size >= 1);
+
+	// number of packed cells in this mesh
+	num_packed_cells = packed_layout->get_num_packed_cells();
+	Check (num_packed_cells == layout.num_cells());
+
+	// calculate extent size
+	extent_size = (4 * num_packed_cells) * sizeof(double);
+	extent_data = new char[extent_size];
+
+	// pack extents
+	pack_extents(current_to_new_replicate, extent_data, extent_size,
+		     num_packed_cells);
+    }
+    else
+    {
+	// packup the layout
+	packed_layout = layout.pack(current_to_new);
+	layout_size   = packed_layout->get_size();
+	Check (layout_size >= 1);
+
+	// number of packed cells in this mesh
+	num_packed_cells = packed_layout->get_num_packed_cells();
+	Check (num_packed_cells <= layout.num_cells());
+
+	// calculate extent size
+	extent_size = (4 * num_packed_cells) * sizeof(double);
+	extent_data = new char[extent_size];
+	
+	// pack extents
+	pack_extents(current_to_new, extent_data, extent_size,
+		     num_packed_cells);
+    }
+    Check (num_packed_cells >= 0 && num_packed_cells <= layout.num_cells());
+    Check (extent_size == (num_packed_cells * 4) * sizeof(double));
+    Check (extent_data != 0);
+
+    // now pack up the mesh
+    
+    // ints (1-size of packed layout; 1-num_packed_cells; packed layout)
+    int total_ints    = (2 + layout_size) * sizeof(int);
+    
+    // doubles (1-theta angle)
+    int total_doubles = 1 * sizeof(double);
+
+    // chars
+    int total_chars   = extent_size;
+
+    // allocate space
+    int   size = total_ints + total_doubles + total_chars;
+    char *data = new char[size];
+
+    // iterator for packing data
+    const char *itor = 0;
+    int          ctr = 0;
+
+    // pack up the mesh
+
+    // pack the number of packed cells
+    itor = reinterpret_cast<const char *>(&num_packed_cells);
+    for (int i = 0; i < sizeof(int); i++)
+	data[ctr++] = itor[i];
+
+    // pack up the layout size
+    itor = reinterpret_cast<const char *>(&layout_size);
+    for (int i = 0; i < sizeof(int); i++)
+	data[ctr++] = itor[i];
+
+    // pack up the layout
+    itor = reinterpret_cast<const char *>(packed_layout->begin());
+    for (int i = 0; i < layout_size * sizeof(int); i++)
+	data[ctr++] = itor[i];
+    
+    // pack up the angle
+    itor = reinterpret_cast<const char *>(&theta_degrees);
+    for (int i = 0; i < sizeof(double); i++)
+	data[ctr++] = itor[i];
+
+    // pack up the extents
+    for (int i = 0; i < extent_size; i++)
+	data[ctr++] = extent_data[i];
+
+    Ensure (ctr == size);
+
+    // clean up some memory
+    delete [] extent_data;
+
+    // make a packed mesh
+    SP_Pack packed_mesh(new RZWedge_Mesh::Pack(size, data));
+
+    Ensure (packed_mesh->get_num_packed_cells() == num_packed_cells);
+    return packed_mesh;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+  
+ * \brief Pack up the cell extents.
+
+ */
+void RZWedge_Mesh::pack_extents(const sf_int &current_new,
+				char *data,
+				int   size,
+				int   num_packed) const
+{
+    Require (current_new.size() == layout.num_cells());
+    Require (cell_xz_extents.size() == layout.num_cells());
+    Require (data != 0);
+    Require (size == num_packed * 4 * sizeof(double));
+    
+    // loop through cells and create the new cell extents
+    vf_double extents(num_packed, sf_double(4));
+    for (int ncell, cell = 0; cell < cell_xz_extents.size(); cell++)
+    {
+	// find the new cell
+	ncell = current_new[cell];
+	
+	if (ncell > 0)
+	{
+	    Check (ncell <= num_packed);
+	    Check (extents[ncell-1].size() == cell_xz_extents[cell].size());
+
+	    // add the extents to the new cell extents
+	    for (int i = 0; i < extents[ncell-1].size(); i++)
+		extents[ncell-1][i] = cell_xz_extents[cell][i];
+	}
+    }
+
+    // now pack up the extents
+    double    extent = 0;
+    int          ctr = 0;
+    const char *itor = 0;
+    for (int i = 0; i < extents.size(); i++)
+	for (int j = 0; j < extents[i].size(); j++)
+	{
+	    extent = extents[i][j];
+	    itor   = reinterpret_cast<const char*>(&extent);
+	    for (int k = 0; k < sizeof(double); k++)
+		data[ctr++] = itor[k];
+	}
+
+    Ensure (ctr == size);
+} 
+
+//===========================================================================//
+// RZWEDGE_MESH::PACK DEFINITIONS
+//===========================================================================//
+/*!
+ * \brief Constructor.
+
+ * Construct a RZWedge_Mesh::Pack instance.  Once allocated mesh data is
+ * given to the RZWedge_Mesh::Pack constructor in the form of a char*, the
+ * Pack object owns it.  When the Pack object goes out of scope it will clean
+ * up the memory.  In general, Pack objects are only created by calling the
+ * RZWedge_Mesh::pack() function.
+
+ * \param s size of char data stream
+ * \param d pointer to char data stream
+
+ */
+RZWedge_Mesh::Pack::Pack(int s, char *d)
+    : data(d),
+      size(s)
+{
+    Require (size >= (3 * sizeof(int) + sizeof(double)));
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Copy constructor.
+
+ * Do copy construction while preserving memory.  This is not a reference
+ * counted class so data is copied from one class to the other during
+ * function calls and the like (wherever a copy constructor is called).
+
+ */
+RZWedge_Mesh::Pack::Pack(const Pack &rhs)
+    : data(new char[rhs.size]),
+      size(rhs.size)
+{
+    // fill up new data array
+    for (int i = 0; i < size; i++)
+	data[i] = rhs.data[i];
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Destructor.
+
+ * Cleans up memory when the Pack object goes out of scope.  Once allocated
+ * pointers are given to the Pack object the Pack object takes control of
+ * them.
+
+ */
+RZWedge_Mesh::Pack::~Pack()
+{
+    delete [] data;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Get number of cells in the packed mesh.
+ */
+int RZWedge_Mesh::Pack::get_num_packed_cells() const
+{
+    Require (size >= (3 * sizeof(int) + sizeof(double)));
+
+    int   num_cells = 0;
+    char *itor      = reinterpret_cast<char*>(&num_cells);
+
+    for (int i = 0; i < sizeof(int); i++)
+	itor[i] = data[i];
+    
+    Ensure (num_cells >= 0);
+    return num_cells;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Unpack the RZWedge_Mesh.
+
+ * Unpacks and returns a smart pointer to the new RZWedge_Mesh.
+
+ * \return smart pointer to the unpacked mesh
+
+ */
+RZWedge_Mesh::SP_Mesh RZWedge_Mesh::Pack::unpack() const
+{
+    using rtt_dsxx::SP;
+
+    Require (size >= (3 * sizeof(int) + sizeof(double)));
+
+    // make counter and iterator
+    int    ctr = 0;
+    char *itor = 0;
+
+    // build an XYZ coordinate system
+    SP<Coord_sys> coord(new XYZCoord_sys());
+
+    // determine the number of packed cells
+    int num_packed_cells = 0;
+    itor                 = reinterpret_cast<char *>(&num_packed_cells);
+    for (int i = 0; i < sizeof(int); i++)
+	itor[i] = data[ctr++];
+    Check (num_packed_cells >= 0);
+
+    // UNPACK THE LAYOUT
+    int layout_size  = 0;
+    itor             = reinterpret_cast<char *>(&layout_size);
+    for (int i = 0; i < sizeof(int); i++)
+	itor[i] = data[ctr++];
+
+    // don't need to reclaim this memory because we are giving it to the
+    // layout packer
+    int *layout_data = new int[layout_size];
+    itor             = reinterpret_cast<char *>(layout_data);
+    for (int i = 0; i < layout_size * sizeof(int); i++)
+	itor[i] = data[ctr++];
+
+    AMR_Layout::Pack packed_layout(layout_size, layout_data);
+    SP<AMR_Layout> layout = packed_layout.unpack();
+    Check (layout->num_cells() == num_packed_cells);
+
+    // GET THETA (degrees)
+    double theta = 0;
+    itor         = reinterpret_cast<char *>(&theta);
+    for (int i = 0; i < sizeof(double); i++)
+	itor[i] = data[ctr++]; 
+    Check (theta > 0);
+
+    // UNPACK THE EXTENTS
+    int   extent_size   = num_packed_cells * 4 * sizeof(double);
+    int   num_extents   = num_packed_cells * 4;
+    double *extent_data = new double[num_extents];
+    itor                = reinterpret_cast<char *>(extent_data);
+    for (int i = 0; i < extent_size; i++)
+	itor[i] = data[ctr++];
+
+    // build the new cell extents
+    int       cectr = 0;
+    vf_double cell_extents(num_packed_cells, sf_double(4));
+    for (int i = 0; i < cell_extents.size(); i++)
+	for (int j = 0; j < cell_extents[i].size(); j++)
+	    cell_extents[i][j] = extent_data[cectr++];
+    Check (cectr++ == num_extents);
+    
+    // reclaim memory
+    delete [] extent_data;
+
+    Ensure (ctr == size); 
+    
+    // build the new mesh
+    SP<RZWedge_Mesh> mesh(new RZWedge_Mesh(coord, *layout, cell_extents,          
+					   theta, true));
+
+    Ensure (mesh->num_cells() == num_packed_cells);
+    Ensure (mesh->get_spatial_dimension() == coord->get_dim());
+    Ensure (!mesh->full_Mesh());
+
+    return mesh;
+}
 
 } // end namespace rtt_mc
 

@@ -1111,7 +1111,7 @@ EOF
 	test_alltarget="$test_alltarget tstMath tstCoord tstLayout tstOSMesh tstFields \
             tstTopology tstParallel_Data_Op tstTET_Mesh \
             tstSampler tstRZWedge_Mesh tstComm_Patterns \
-            tstOSMesh_Pack"
+            tstOSMesh_Pack tstRZWedge_Mesh_Pack"
         
 	test_nprocs="1 2 4"
 

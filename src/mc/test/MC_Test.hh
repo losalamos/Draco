@@ -50,20 +50,6 @@ class Parser
 };
 
 //===========================================================================//
-// Parser (RZWedge_Mesh)
-//===========================================================================//
-
-class Parser_RZ
-{
-  public:
-    // constructor
-    Parser_RZ() {/*...*/}
-    
-    // public copy functions for Mesh
-    std::string get_mesh_file() const { return "RZWedge_Input"; }
-};
-
-//===========================================================================//
 // Topology class tests
 //===========================================================================//
 // Full replication topology test --> uses base class reference to derived
@@ -90,7 +76,7 @@ bool topology_DD_test(rtt_dsxx::SP<rtt_mc::OS_Mesh> mesh,
 	    |     |     |11|12|
             |  7  |  8  |__|__| 
 	    |     |     |  |  |  
-	r   |     |     |9 |10| (where x = r/(sqrt(phi/sinphi)cos(phi/2))
+	r   |     |     |9 |10| (where r = x/(sqrt(phi/sinphi)cos(phi/2))
 	    |_____|_____|__|__|
    grad = 0 |     |  |  |     | 0
 	    |     |4 |5 |     |

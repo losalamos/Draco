@@ -364,7 +364,7 @@ OS_Mesh::SP_Pack OS_Mesh::pack(const sf_int &current_mesh_to_new_mesh) const
     Require (current_mesh_to_new_mesh.size() <= layout.num_cells() ||
 	     current_mesh_to_new_mesh.size() == 0);
 
-    // reference to new mesh
+    // determine if the mesh is replicated or not
     sf_int current_to_new_replicate;
     bool   replicate;
     if (current_mesh_to_new_mesh.size() == 0)

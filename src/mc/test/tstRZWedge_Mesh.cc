@@ -29,7 +29,7 @@
 
 using namespace std;
 
-using rtt_mc_test::Parser_RZ;
+using rtt_mc_test::Parser;
 using rtt_mc_test::make_RZWedge_Mesh_AMR;
 using rtt_mc::XYZCoord_sys;
 using rtt_mc::AMR_Layout;
@@ -706,7 +706,7 @@ void simple_one_cell_RZWedge()
 void build_an_RZWedge()
 {
     // make a builder from parsing the RZWedge input
-    SP<Parser_RZ> parser(new Parser_RZ());
+    SP<Parser> parser(new Parser("RZWedge_Input"));
     RZWedge_Builder builder(parser);
 
     // check some of the RZWedge_Builder properties; before build_Mesh, the

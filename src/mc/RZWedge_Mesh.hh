@@ -64,25 +64,31 @@ namespace rtt_mc
 // 31-AUG-2000 : added get_spatial_dimension() function
 // 22-MAR-2001 : fixed checks for low (high) boundaries on slope for
 //               ::sample_pos; made them a little less restrictive
+// 02-MAY-2001 : added packer struct and class
 // 
 //===========================================================================//
 
 class RZWedge_Mesh 
 {
   public:
-    // typedefs used throughout RZWedge_Mesh class
+    // Forward declaration of pack class.
+    struct Pack;
+
+    // Forward declarations of cell-centered fields.
+    template<class T> class CCSF;
+    template<class T> class CCVF;       
+    
+  public:
+    // Typedefs used throughout RZWedge_Mesh class.
     typedef rtt_dsxx::SP<RZWedge_Mesh>        SP_Mesh;
     typedef rtt_dsxx::SP<Coord_sys>           SP_Coord;
+    typedef rtt_dsxx::SP<RZWedge_Mesh::Pack>  SP_Pack;
     typedef rtt_rng::Sprng                    rng_Sprng;
     typedef std::vector<int>                  sf_int;
     typedef std::vector<std::vector<int> >    vf_int;
     typedef std::vector<double>               sf_double;
     typedef std::vector<std::vector<double> > vf_double;
     typedef std::string                       std_string;
-
-    // forward declarations of cell-centered fields
-    template<class T> class CCSF;
-    template<class T> class CCVF;   
 
     // Handy typedefs to CC fields (not formally needed in KCC3.3+).
     typedef CCSF<double>     CCSF_double;
@@ -92,11 +98,11 @@ class RZWedge_Mesh
     typedef CCSF<std_string> CCSF_string;
 
   private:
-    // base class reference to a derived coordinate system class
+    // Base class reference to a derived coordinate system class
     // (the RZWedge_Mesh is always three-dimensional, Cartesian)
     SP_Coord coord;
 
-    // layout (cell connectivity) of mesh
+    // Layout (cell connectivity) of mesh
     AMR_Layout layout;
 
     // vector<vector> of x- and z-extents of each cell
@@ -105,16 +111,19 @@ class RZWedge_Mesh
     // Indicator whether this is a submesh 
     bool submesh;
 
-    // wedge angle data; precalculated 
+    // Wedge angle data; precalculated 
     double theta_radians;
     double theta_degrees;
     double tan_half_theta;
     double sin_half_theta;
     double cos_half_theta;
 
-    // >>> private implementations
+    // >>> Private implementations
 
-    // function to calculate frequently used wedge data
+    // Pack up the cell extents
+    void pack_extents(const sf_int &, char *, int, int) const;
+
+    // Function to calculate frequently used wedge data
     void calc_wedge_angle_data(const double);
    
     // Private copy and assignment operators (can't copy or assign a mesh).
@@ -181,6 +190,9 @@ class RZWedge_Mesh
     bool check_defined_surcells(const std_string, const sf_int &) const;
     inline sf_int get_neighbors(int) const;
     bool full_Mesh() const { return !submesh; }
+
+    // Pack function.
+    SP_Pack pack(const sf_int & = sf_int()) const;
 
     // Overloaded operators.
     bool operator==(const RZWedge_Mesh &) const;
@@ -348,7 +360,7 @@ int RZWedge_Mesh::next_cell(int cell, int coarse_face, const sf_double &r)
 	    Check (soft_equiv(r[2], cell_xz_extents[cell-1][coarse_face-3], 
 			      1.e-6));
 
-	    // if the x position is greater than the midpoint than we move in 
+	    // if the x position is greater than the midpoint than we move in
 	    // cell index 2, else we move into cell index 1
 	    if (r[0] > get_x_midpoint(cell))
 		cell_across = layout(cell, coarse_face, 2);
@@ -778,6 +790,54 @@ RZWedge_Mesh::sf_int RZWedge_Mesh::get_neighbors(int cell) const
     Check (neighbors.size() >= 6 && neighbors.size() <= 10);
     return neighbors;
 }
+
+//===========================================================================//
+/*!
+ * \struct RZWedge_Mesh::Pack
+
+ * \brief Pack and unpack an RZWedge_Mesh instance into raw c-style data
+ * arrays.
+
+ */
+//===========================================================================//
+
+struct RZWedge_Mesh::Pack
+{
+  private:
+    // Data contained in the mesh.
+    char *data;
+    int   size;
+
+    // Disallow assignment.
+    const Pack& operator=(const Pack &);
+
+  public:
+    // Constructor.
+    Pack(int, char *);
+
+    // Copy constructor.
+    Pack(const Pack &);
+
+    // Destructor.
+    ~Pack();
+
+    // >>> Accessors
+    
+    //! Get pointer to beginning of char data stream.
+    const char* begin() const { return &data[0]; }
+    
+    //! Get pointer to end of char data stream.
+    const char* end() const { return &data[size]; }
+
+    //! Return the number of cells in the packed mesh.
+    int get_num_packed_cells() const;
+
+    //! Get size of data stream.
+    int get_size() const { return size; }
+
+    // Unpack function.
+    SP_Mesh unpack() const;
+};
 
 //===========================================================================//
 // class RZWedge_Mesh::CCSF (copied from class OS_Mesh::CCSF)
