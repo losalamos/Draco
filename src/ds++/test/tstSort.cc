@@ -8,10 +8,12 @@
 
 #include "../Sort.hh"
 
-#include <iostream.h>
+#include <iostream>
 
 #include <stdlib.h>
 #include <stdarg.h>
+
+using namespace std;
 
 void test_HeapSort()
 {
@@ -35,7 +37,7 @@ void test_index()
     int i;
 
     for( i=0; i < 10; i++ )
-	v[i] = 10. * drand48();
+	v[i] = static_cast<int>(10. * drand48());
 
     cout << "Starting data is:\n";
     for( i=0; i < 10; i++ )
@@ -60,6 +62,8 @@ main( int argc, char *argv[] )
     test_index();
 
     cout << "Done.\n";
+
+    cout << "tstSort Test: passed" << endl;
 }
 
 //---------------------------------------------------------------------------//

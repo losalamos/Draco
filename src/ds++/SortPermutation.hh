@@ -162,7 +162,7 @@ class SortPermutation
 	: indexTable_m(std::distance(first, last)),
 	  rankTable_m(indexTable_m.size())
     {
-	typedef std::iterator_traits<IT>::value_type value_type;
+	typedef typename std::iterator_traits<IT>::value_type value_type;
 	createPermutation(first, last, std::less<value_type>());
     }
 
