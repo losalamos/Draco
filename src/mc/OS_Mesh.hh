@@ -84,6 +84,7 @@ namespace rtt_mc
 // 17) 20-DEC-99: added STL random access iterator functionality to CCVF
 // 18) 27-JAN-00: added get_cell_types for graphics data dumping
 // 19) 18-AUG-00: added new signature for next_cell function
+// 20) 31-AUG-00: added get_spatial_dimension() function
 // 
 //===========================================================================//
     
@@ -184,6 +185,7 @@ class OS_Mesh
     vf_double get_point_coord() const;
 
     // Required services for transport and source.
+    int get_spatial_dimension() const { return coord->get_dim(); }
     inline int next_cell(int, int, const sf_double & = sf_double()) const;
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &, const sf_double &, int, int &) const; 

@@ -61,6 +61,7 @@ namespace rtt_mc
 //               incorrectly being weighted by the z dimension; also added
 //               in_cell() test function to determine if a set of coordinates 
 //               is in a cell
+// 31-AUG-2000 : added get_spatial_dimension() function
 // 
 //===========================================================================//
 
@@ -160,6 +161,7 @@ class RZWedge_Mesh
     vf_int get_cell_pair() const;
 
     // Required services for transport and source.
+    int get_spatial_dimension() const { return 3; }
     inline int next_cell(int, int, const sf_double & = sf_double(3)) const;
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &, const sf_double &, int, int &) const;
