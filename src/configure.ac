@@ -38,8 +38,16 @@ AC_CONFIG_SUBDIRS(xm rng c4 units traits cdi mesh_element quadrature \
 ## LEVEL 3
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(timestep pcgWrap viz cdi_eospac \
+AC_CONFIG_SUBDIRS(timestep pcgWrap viz \
                   cdi_gandolf cdi_analytic meshReaders)
+dnl
+dnl Kelly Thompson 12 January 2005
+dnl Removed cdi_eospac from list of packages to build and test because
+dnl EOSPAC-5.35 is not fully compatible with Lahey 6.2.  See SF
+dnl tracker at https://sourceforge-web.lanl.gov/tracker/?aid=4566.
+dnl
+dnl cdi_eospac \
+dnl
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 4
