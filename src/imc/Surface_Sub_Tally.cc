@@ -19,21 +19,31 @@ using std::vector;
 namespace rtt_imc
 {
 
+//---------------------------------------------------------------------------//
 Surface_Sub_Tally::Surface_Sub_Tally(SP<Azimuthal_Mesh> az_mesh, int surfaces_)
     : azimuthal_mesh(az_mesh),
-      mesh_size(az_mesh->size()),
-      surfaces(surfaces_),
       tallies(2 * surfaces_),
-      tally(2 * surfaces_)
+      surfaces(surfaces_),
+      weight_tally(2 * surfaces_),
+      count_tally(2 * surfaces_),
+      mesh_size( az_mesh->size() )
 {
 
     Require(surfaces > 0)
     Require(azimuthal_mesh);
 
     // Initialize the size of each individual tally.
-    for (int i = 0; i != tallies; ++i) tally[i].resize(mesh_size, 0.0);
+    for (int i = 0; i != tallies; ++i) 
+    {
+	weight_tally[i].resize(mesh_size, 0.0);
+	count_tally[i].resize(mesh_size, 0);
+    }
 
 }
+
+//---------------------------------------------------------------------------//
+Surface_Sub_Tally::~Surface_Sub_Tally() { /* ... */ }
+
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -64,43 +74,78 @@ void Surface_Sub_Tally::add_to_tally(int surface, const vector<double>& directio
     
     Require ( bin > 1); Require (bin <= mesh_size);
 
-    tally[surface_index][bin_index] += ew;
+    weight_tally[surface_index][bin_index] += ew;
+    count_tally[surface_index][bin_index] += 1;
 
 }
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Return the vector of outward tally data for a given surface.
+ * \brief Return the vector of outward weight data for a given surface.
  * 
  * \param surface The surface number. 1-based.
  * \return const vector<double> continaing the per-bin information.
  */
-const std::vector<double>& Surface_Sub_Tally::get_outward_tally(int surface) const
+const std::vector<double>& Surface_Sub_Tally::get_outward_weight_tally(int surface)
+    const
 {
     Check (surface > 0);  Check(surface <= surfaces);
 
     int surface_index = 2 * (surface - 1) + 1;
-    return tally[surface_index];
+    return weight_tally[surface_index];
 
 }
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Return the vector of inward tally data for a given surface.
+ * \brief Return the vector of inward weight data for a given surface.
  * 
  * \param surface The surface number. 1-based.
  * \return const vector<double> containing the per-bin information.
  */
-const std::vector<double>& Surface_Sub_Tally::get_inward_tally(int surface) const
+const std::vector<double>& Surface_Sub_Tally::get_inward_weight_tally(int surface)
+    const
 {
     Check (surface > 0);  Check(surface <= surfaces);
 
     int surface_index = 2 * (surface - 1) ;
-    return tally[surface_index];
+    return weight_tally[surface_index];
 
 }
 
-Surface_Sub_Tally::~Surface_Sub_Tally() { /* ... */ }
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Return the vector of outward count data for a given surface.
+ * 
+ * \param surface The surface number. 1-based.
+ * \return const vector<double> continaing the per-bin information.
+ */
+const std::vector<int>& Surface_Sub_Tally::get_outward_count_tally(int surface)
+    const
+{
+    Check (surface > 0);  Check(surface <= surfaces);
+
+    int surface_index = 2 * (surface - 1) + 1;
+    return count_tally[surface_index];
+
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Return the vector of inward count data for a given surface.
+ * 
+ * \param surface The surface number. 1-based.
+ * \return const vector<double> containing the per-bin information.
+ */
+const std::vector<int>& Surface_Sub_Tally::get_inward_count_tally(int surface)
+    const
+{
+    Check (surface > 0);  Check(surface <= surfaces);
+
+    int surface_index = 2 * (surface - 1) ;
+    return count_tally[surface_index];
+
+}
 
 
 } // end namespace rtt_imc

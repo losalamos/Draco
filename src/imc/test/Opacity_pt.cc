@@ -31,6 +31,10 @@ template class Mat_State<OS_MT>;
 
 // RZWedge_Mesh instantiations
 
+template class Opacity<RZ_MT, Gray_Frequency>;
+
+template class Opacity<RZ_MT, Multigroup_Frequency>;
+
 template class Mat_State<RZ_MT>;
 
 } // end namespace rtt_imc

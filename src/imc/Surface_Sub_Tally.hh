@@ -75,14 +75,29 @@ class Surface_Sub_Tally
 
     // ACCESSORS
 
-    //! Access the outward tally for a given surface #
-    const std::vector<double>& get_outward_tally(int surface) const;
+    //! Access the outward weight tally for a given surface #
+    const std::vector<double>& get_outward_weight_tally(int surface) const;
 
-    //! Access the inward tally for a given surface #
-    const std::vector<double>& get_inward_tally (int surface) const;
+    //! Access the inward weight tally for a given surface #
+    const std::vector<double>& get_inward_weight_tally (int surface) const;
 
-    //! Access the entire tally.
-    const std::vector<std::vector<double> >& get_tally() const { return tally; }
+    //! Access the outward count tally for a given surface #
+    const std::vector<int>& get_outward_count_tally(int surface) const;
+
+    //! Access the inward count tally for a given surface #
+    const std::vector<int>& get_inward_count_tally (int surface) const;
+
+    //! Access the entire weight tally.
+    inline const std::vector<std::vector<double> >& get_weight_tally() const; 
+
+    //! Access the entire count tally.
+    inline const std::vector<std::vector<int> >& get_count_tally() const; 
+
+    //! Access the weight tallied for a surface and bin
+    inline double weight(int surface, bool outward, int bin) const;
+
+    //! Access the crossing countfor a surface and bin
+    inline int crossings(int surface, bool outward, int bin) const;
 
     //! Get the number of surfaces
     int get_number_surfaces() const { return surfaces; } 
@@ -94,14 +109,76 @@ class Surface_Sub_Tally
 
     // DATA
 
-    rtt_dsxx::SP<Azimuthal_Mesh> azimuthal_mesh;
-    std::vector<std::vector<double> > tally;
+    rtt_dsxx::SP<Azimuthal_Mesh>      azimuthal_mesh;
+    std::vector<std::vector<double> > weight_tally;
+    std::vector<std::vector<int>    > count_tally;
     int mesh_size;   //!< number of bins in the azimuthal mesh
     int surfaces;    //!< number of surfaces
     int tallies;     //!< number of tallies
 
+    // Implementation
+
+    inline int get_surface_index(int surface, bool is_outward) const;
+
 
 };
+
+
+//---------------------------------------------------------------------------//
+// Inline accessors:
+//---------------------------------------------------------------------------//
+
+const std::vector<std::vector<double> >& Surface_Sub_Tally::get_weight_tally() 
+    const
+{ return weight_tally; }
+
+const std::vector<std::vector<int> >& Surface_Sub_Tally::get_count_tally() 
+    const
+{ return count_tally; }
+
+//---------------------------------------------------------------------------//
+double Surface_Sub_Tally::weight(int surface, bool outward, int bin) const
+{
+
+    Check (bin > 0); Check(bin <= mesh_size);
+    int surface_index = get_surface_index(surface, outward);
+    int bin_index = bin - 1;
+
+    return weight_tally[surface_index][bin_index];
+}
+
+//---------------------------------------------------------------------------//
+int Surface_Sub_Tally::crossings(int surface, bool outward, int bin) const
+{
+
+    Check (bin > 0); Check(bin <= mesh_size);
+    int surface_index = get_surface_index(surface, outward);
+    int bin_index = bin - 1;
+
+    return count_tally[surface_index][bin_index];
+}
+
+//---------------------------------------------------------------------------//
+// Inline implementation
+//---------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Takes a 1-based surface index and outward bool and computes
+ * internal surface index
+ * 
+ * \param surface 1-based surface number
+ * \param outward boolean true if outward direction is desires
+ * \return internally used index for the tally
+ */
+int Surface_Sub_Tally::get_surface_index(int surface, bool is_outward) const
+{
+    Check(surface > 0); Check(surface <= surfaces);
+    int surface_index = 2 * (surface - 1) + static_cast<int>(is_outward);
+    Ensure(surface_index >= 0); Ensure(surface_index < tallies);
+    return surface_index;
+}
+
 
 } // end namespace rtt_imc
 

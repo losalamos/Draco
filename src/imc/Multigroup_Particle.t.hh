@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Jan 29 13:31:05 2002
  * \brief  Multigroup_Particle implementation.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -75,12 +76,14 @@ int Multigroup_Particle<MT>::get_packed_particle_size(
  * current cell.
  */
 template<class MT>
-void Multigroup_Particle<MT>::transport(const MT         &mesh, 
-					const MG_Opacity &xs, 
-					Tally<MT>        &tally,
-					SP_Random_Walk    random_walk,
-					SP_Diagnostic     diagnostic)
+void Multigroup_Particle<MT>::transport(const MT          &mesh, 
+					const MG_Opacity  &xs, 
+					Tally<MT>         &tally,
+					SP_Random_Walk     random_walk,
+					SP_Surface_tracker surface_tracker,
+					SP_Diagnostic      diagnostic)
 {
+
     Require (Base::alive);
 
     // initialize diagnostics
@@ -89,6 +92,9 @@ void Multigroup_Particle<MT>::transport(const MT         &mesh,
 	diagnostic->header();
 	diagnostic->print(*this);
     }
+
+    if (surface_tracker) 
+	surface_tracker->initialize_status(Base::r, Base::omega);
   
     // !!! BEGIN TRANSPORT LOOP !!!
 
@@ -214,7 +220,7 @@ void Multigroup_Particle<MT>::transport(const MT         &mesh,
 
 
 	// Stream the particle, according to its status:
-	Base::stream_and_capture(tally, sigma_eff_abs, d_stream);
+	Base::stream_and_capture(tally, surface_tracker, sigma_eff_abs, d_stream);
 
 	// Process collisions, boundary crossings, going to census or
 	// reaching cutoff events.

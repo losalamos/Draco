@@ -41,9 +41,7 @@ SP<Surface_tracker> build_test_surface_tracker()
     vector<SP<Surface> > surfaces;
 
     surfaces.push_back( SP<Sphere>( new Sphere( 0.0, 1.0) ) );
-
     surfaces.push_back( SP<Sphere>( new Sphere( 1.0, 1.0) ) );
-
     surfaces.push_back( SP<Sphere>( new Sphere(-1.0, 3.0) ) );
 
     SP<Surface_tracker> tracker(new Surface_tracker(surfaces));
@@ -160,7 +158,6 @@ void test_streaming()
     if (!soft_equiv(tally.get_inward_tally(3) [1], exp(3.0-2*sqrt(5.0)))) ITFAILS;
     
 }
-
 
 //---------------------------------------------------------------------------//
 

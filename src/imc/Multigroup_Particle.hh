@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Jan 29 13:31:05 2002
  * \brief  Multigroup_Particle class definition.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,6 +15,7 @@
 
 #include "Particle.hh"
 #include "Random_Walk.hh"
+#include "Surface_tracker.hh"
 #include "mc/Sampler.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cmath>
@@ -50,6 +52,7 @@ class Multigroup_Particle : public Particle<MT>
     typedef std::string                      std_string;
     typedef Opacity<MT,Multigroup_Frequency> MG_Opacity;
     typedef rtt_dsxx::SP<Random_Walk<MT> >   SP_Random_Walk;
+    typedef rtt_dsxx::SP<Surface_tracker>    SP_Surface_tracker;
 
     // >>> NESTED TYPES
 
@@ -105,8 +108,9 @@ class Multigroup_Particle : public Particle<MT>
     // >>> TRANSPORT INTERFACE
 
     // IMC transport step.
-    void transport(const MT &, const MG_Opacity &, 
-		   Tally<MT> &, SP_Random_Walk = SP_Random_Walk(),
+    void transport(const MT &, const MG_Opacity &, Tally<MT> &, 
+		   SP_Random_Walk = SP_Random_Walk(),
+		   SP_Surface_tracker = SP_Surface_tracker(),
 		   SP_Diagnostic = SP_Diagnostic()); 
 
     // >>> ACCESSORS

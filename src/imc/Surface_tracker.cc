@@ -25,7 +25,7 @@ namespace rtt_imc
 
 Surface_tracker::Surface_tracker(
     const vector<Surface_tracker::SP_Surface>& surfaces_)
-    : surfaces(surfaces_),
+    : surface_list(surfaces_),
       is_inside(surfaces_.size())
 { 
 
@@ -53,8 +53,8 @@ void Surface_tracker::initialize_status(const std::vector<double>& position,
 {
 
     vector<bool>::iterator status = is_inside.begin();
-    for (surface_iterator surface = surfaces.begin();
-	 surface != surfaces.end();
+    for (surface_iterator surface = surface_list.begin();
+	 surface != surface_list.end();
 	 ++surface, ++status)
     {
 	*status = (*surface)->is_inside(position, direction);
@@ -97,8 +97,8 @@ void Surface_tracker::tally_crossings_implicit_abs(
     for (int i=0; i!=3; ++i) final_position[i] += distance * direction[i];
 
     int index = 0;
-    for (surface_iterator surface = surfaces.begin();
-	 surface != surfaces.end();
+    for (surface_iterator surface = surface_list.begin();
+	 surface != surface_list.end();
 	 ++surface, ++index)
     {
 
@@ -160,8 +160,8 @@ void Surface_tracker::tally_crossings_analog_abs(
     for (int i=0; i!=3; ++i) final_position[i] += distance * direction[i];
 
     int surface_index = 0;
-    for (surface_iterator surface = surfaces.begin();
-	 surface != surfaces.end();
+    for (surface_iterator surface = surface_list.begin();
+	 surface != surface_list.end();
 	 ++surface, ++surface_index)
     {
 

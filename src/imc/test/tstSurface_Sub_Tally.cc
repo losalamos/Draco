@@ -41,7 +41,7 @@ void test()
     Surface_Sub_Tally surface_tally(az_mesh, 1);
 
     if (surface_tally.get_number_surfaces() != 1) ITFAILS;
-    if (surface_tally.get_outward_tally(1).size() != 4) ITFAILS;
+    if (surface_tally.get_outward_weight_tally(1).size() != 4) ITFAILS;
     if (surface_tally.get_mesh_size() != 4 ) ITFAILS;
 
     vector<double> direction(3);
@@ -51,7 +51,7 @@ void test()
 
     surface_tally.add_to_tally(0, direction, true, 1.0);
 
-    if ( !soft_equiv( surface_tally.get_outward_tally(1)[3], 1.0 ) ) ITFAILS;
+    if ( !soft_equiv( surface_tally.get_outward_weight_tally(1)[3], 1.0 ) ) ITFAILS;
 
     direction[0] = std::sqrt( 1.0 - 0.1 * 0.1);
     direction[1] =  0.0;
@@ -59,7 +59,8 @@ void test()
 
     surface_tally.add_to_tally(0, direction, false, 0.5);
 
-    if (!soft_equiv( surface_tally.get_inward_tally(1)[1], 0.5 ) ) ITFAILS;
+    if (!soft_equiv( surface_tally.weight(1,false,2), 0.5 ) ) ITFAILS;
+    if (surface_tally.crossings(1,false,2) != 1) ITFAILS;
 
 }
 

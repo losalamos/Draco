@@ -35,7 +35,11 @@ AC_RUNTESTS(tstFrequency \
 	    tstParticle \
             tstParticle_trans \
             tstTransporter \
-            tstRandom_Walk , 1 2 4)
+            tstRandom_Walk \
+            tstAzimuthal_Mesh \
+            tstSurface_Sub_Tally \
+            tstSurface_tracker \
+            tstRZ_Surface_tracking, 1 2 4)
 
 # DRACO SETUP
 AC_DRACO_ENV
@@ -44,7 +48,8 @@ AC_DRACO_ENV
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in\
                  test/OS_Input:test/OS_Input.in\
-	         test/OS_Input_3D:test/OS_Input_3D.in])
+	         test/OS_Input_3D:test/OS_Input_3D.in\
+                 test/RZWedge_Input:test/RZWedge_Input.in])
 AC_OUTPUT 
 
 dnl-------------------------------------------------------------------------dnl

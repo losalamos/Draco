@@ -20,6 +20,7 @@ typedef rtt_mc::OS_Mesh      MT;
 typedef rtt_mc::RZWedge_Mesh RZMT;
 
 template class Random_Walk<MT>;
+template class Random_Walk<RZMT>;
 
 } // end namespace rtt_imc
 

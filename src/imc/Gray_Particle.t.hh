@@ -12,6 +12,8 @@
 
 #include "Gray_Particle.hh"
 #include "Random_Walk_Sub_Tally.hh"
+#include "Surface_Sub_Tally.hh"
+#include "Surface_tracker.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cmath>
 #include <limits>
@@ -199,6 +201,7 @@ void Gray_Particle<MT>::transport(
     const Opacity<MT,Gray_Frequency> &xs, 
     Tally<MT>                        &tally, 
     SP_Random_Walk                    random_walk,
+    SP_Surface_tracker                surface_tracker,
     SP_Diagnostic                     diagnostic)
 {
     Require (Base::cell > 0);
@@ -213,7 +216,7 @@ void Gray_Particle<MT>::transport(
 
     // otherwise run simple transport
     else
-	straight_transport(mesh, xs, tally, diagnostic);
+	straight_transport(mesh, xs, tally, surface_tracker, diagnostic);
 
     Ensure (!Base::alive);
 }
@@ -279,6 +282,7 @@ void Gray_Particle<MT>::straight_transport(
     const MT                         &mesh, 
     const Opacity<MT,Gray_Frequency> &xs, 
     Tally<MT>                        &tally, 
+    SP_Surface_tracker                surface_tracker,
     SP_Diagnostic                     diagnostic)
 {
     Require (Base::alive);
@@ -289,6 +293,9 @@ void Gray_Particle<MT>::straight_transport(
 	diagnostic->header();
 	diagnostic->print(*this);
     }
+
+    if (surface_tracker) 
+	surface_tracker->initialize_status(Base::r, Base::omega);
 
     // distance to collision, boundary, census and cutoff definitions
     double d_collide, d_boundary, d_census, d_cutoff;
@@ -420,7 +427,8 @@ void Gray_Particle<MT>::straight_transport(
 
 	// Stream the particle, according to its status:
 
-	Base::stream_and_capture(tally, sigma_eff_abs, d_stream);
+	Base::stream_and_capture(tally, surface_tracker, 
+				 sigma_eff_abs, d_stream);
 
 	// Process collisions, boundary crossings, going to census or
 	// reaching cutoff events.
@@ -486,6 +494,9 @@ void Gray_Particle<MT>::rw_transport(
 {
     Require (Base::alive);
     Require (tally.get_RW_Sub_Tally());
+
+    // Empty surface-tracker pointer. Initialize only once
+    static SP_Surface_tracker surface_tracker = SP_Surface_tracker();
 
     // initialize diagnostics
     if (diagnostic)
@@ -687,7 +698,8 @@ void Gray_Particle<MT>::rw_transport(
 	else
 	{
 	    // Stream the particle, according to its status:
-	    Base::stream_and_capture(tally, sigma_eff_abs, d_stream);
+	    Base::stream_and_capture(tally, surface_tracker,
+				     sigma_eff_abs, d_stream);
 
 	}
 

@@ -4,6 +4,7 @@
  * \author Thomas M. Evans, Todd J. Urbatsch and Mike Buksas
  * \date   Fri Jan 30 17:04:24 1998
  * \brief  Particle class header file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,6 +15,7 @@
 
 #include "Opacity.hh"
 #include "Tally.hh"
+#include "Surface_tracker.hh"
 #include "Global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
@@ -192,10 +194,11 @@ class Particle
     };
 
     // Useful typedefs.
-    typedef std::vector<double>      sf_double;
-    typedef rtt_rng::Sprng           Rnd_Type;
-    typedef rtt_dsxx::SP<Rnd_Type>   SP_Rnd_Type;
-    typedef std::string              std_string;
+    typedef std::vector<double>          sf_double;
+    typedef rtt_rng::Sprng               Rnd_Type;
+    typedef rtt_dsxx::SP<Rnd_Type>       SP_Rnd_Type;
+    typedef std::string                  std_string;
+    typedef rtt_dsxx::SP<Surface_tracker>SP_Surface_tracker;
     
     // friend declarations
     friend class Diagnostic;
@@ -267,6 +270,7 @@ class Particle
 
     // Dispatch to correct streaming method
     inline void stream_and_capture(Tally<MT>& tally, 
+				   SP_Surface_tracker surface_tracker,
 				   double sigma_eff_abs, double dstream);
 
   public:
@@ -484,19 +488,33 @@ void Particle<MT>::stream_implicit_capture(
  * \brief Dispatch to correct streaming operation
  */
 template <typename MT>
-void Particle<MT>::stream_and_capture(Tally<MT> &tally, 
-				      double     sigma_eff_abs,
-				      double     d_stream)
+void Particle<MT>::stream_and_capture(Tally<MT>         &tally, 
+				      SP_Surface_tracker surface_tracker,
+				      double             sigma_eff_abs,
+				      double             d_stream)
 {
 
     if (use_analog_absorption())
     {
 	// Light particle (analog) streaming.
-	stream_analog_capture(tally, d_stream);          
+	if (surface_tracker) 
+	    surface_tracker->tally_crossings_analog_abs(
+		r, omega, d_stream, ew, 
+		*(tally.get_Surface_Sub_Tally()) 
+		);
+          
+	stream_analog_capture(tally, d_stream);
+
     }
     else
     {
 	// Heavy particle (implicit) streaming
+	if (surface_tracker) 
+	    surface_tracker->tally_crossings_implicit_abs(
+		r, omega, d_stream, ew, sigma_eff_abs,
+		*(tally.get_Surface_Sub_Tally()) 
+		);
+          
 	stream_implicit_capture(sigma_eff_abs, tally, d_stream);    
     }
     

@@ -107,11 +107,13 @@ class Surface_tracker
 
     bool get_inside(int i) const { return is_inside[i]; }
 
+    int surfaces() const { return surface_list.size(); }
+
   private:
 
     // DATA
 
-    std::vector<SP_Surface> surfaces;
+    std::vector<SP_Surface> surface_list;
     std::vector<bool> is_inside;
 
 };

@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Jan  7 18:41:29 2002
  * \brief  Particle test.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,6 +17,7 @@
 #include "../Multigroup_Particle.hh"
 #include "../Opacity.hh"
 #include "../Tally.hh"
+#include "../Surface_tracker.hh"
 #include "../Global.hh"
 #include "../Frequency.hh"
 #include "../Fleck_Factors.hh"
@@ -38,6 +40,7 @@ using rtt_imc::Gray_Particle;
 using rtt_imc::Multigroup_Particle;
 using rtt_imc::Opacity;
 using rtt_imc::Tally;
+using rtt_imc::Surface_tracker;
 using rtt_imc::Fleck_Factors;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
