@@ -77,16 +77,13 @@ class Mesh_XYZ : private XYZ_Mapper
 {
   public:
 
-// Face centered discontinuous scalar field
-// Has a value on each face in each cell.
-    
-    template<class T>
-    class cell_array;
+    template<class T> class cell_array;
+    template<class T> class guarded_cell_array;
 
     typedef cell_array<double> ccsf;
-    
-    template<class T>
-    class guarded_cell_array;
+
+// Face centered discontinuous scalar field
+// Has a value on each face in each cell.
 
     class fcdsf : private XYZ_Mapper,
                   public xm::Indexable<double,fcdsf> {
@@ -282,7 +279,39 @@ class Mesh_XYZ : private XYZ_Mapper
     };
 
     template<class T>
-    class bssf {};
+    class bssf : private XYZ_Mapper
+    {
+        Mat2<double> f0, f1, f2, f3, f4, f5;
+      public:
+        bssf( SP<Mesh_XYZ>& spm )
+            : XYZ_Mapper( spm->Get_Mesh_DB() ),
+              f0( ncy, ncz ), f1( ncy, ncz ),
+              f2( ncx, ncz ), f3( ncx, ncz ),
+              f4( nxc, ncy ), f5( ncx, ncy )
+        {}
+
+        Mat2<double>& face( int f )
+        {
+            if (f == 0) return f0;
+            if (f == 1) return f1;
+            if (f == 2) return f2;
+            if (f == 3) return f3;
+            if (f == 4) return f4;
+            if (f == 5) return f5;
+            throw "f out of range!";
+        }
+
+        const Mat2<double>& face( int f ) const
+        {
+            if (f == 0) return f0;
+            if (f == 1) return f1;
+            if (f == 2) return f2;
+            if (f == 3) return f3;
+            if (f == 4) return f4;
+            if (f == 5) return f5;
+            throw "f out of range!";
+        }
+    };
 
     typedef bssf<double> bsbf;
 
