@@ -363,7 +363,7 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
 
    AC_MSG_RESULT("GNU g++ compiler flags set")
 
-   dnl end of AC_DRACO_EGCS
+   dnl end of AC_DRACO_GNU_GCC
 ])
 
 dnl-------------------------------------------------------------------------dnl
