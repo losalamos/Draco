@@ -28,7 +28,7 @@ void version(const std::string &progname)
 Mesh_XYZFactory getMTFactory(const std::string &filename)
 {
     NML_Group g( "test" );
-    Mesh_DB mdb;
+    Mesh_XYZFactory::Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( filename.c_str() );
     

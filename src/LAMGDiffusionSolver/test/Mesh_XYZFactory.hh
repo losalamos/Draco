@@ -35,6 +35,7 @@ class Mesh_XYZFactory
   public:
 
     typedef Mesh_XYZ MT;
+    typedef Mesh_XYZ::Mesh_DB Mesh_DB;
 
     // Nested Product Class to be defined below.
     

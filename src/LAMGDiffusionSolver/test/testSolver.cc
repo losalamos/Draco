@@ -82,7 +82,7 @@ int main( int argc, char *argv[] )
     Test_DB tdb;
     tdb.setup_namelist(g);
     
-    Mesh_DB mdb;
+    Mesh_XYZ::Mesh_DB mdb;
     
     mdb.setup_namelist(g);
     
