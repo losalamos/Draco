@@ -21,9 +21,13 @@ else
   EXIT = exit
 endif
 
+##---------------------------------------------------------------------------##
+## TARGETS AND RULES
+##---------------------------------------------------------------------------##
+
 .PHONY : all install installdirs clean distclean mostlyclean maintainer-clean \
 	check uninstall forced-distclean forced-maintainer-clean \
-	dvi autodoc
+	dvi autodoc configure reconfigure
 
 all: install
 
@@ -53,27 +57,44 @@ autodoc:
 		echo "No autodoc directory found!"; \
 	fi
 
+##---------------------------------------------------------------------------##
+## Configure targets
+
+# first we configure in the top-level directory; then we go into each
+# subdir and handle things
+configure:
+	@echo "Rebuilding ${srcdir}/aclocal.m4"
+	@cd ${srcdir} && aclocal -I config
+	@echo "Rebuilding ${top_srcdir}/configure"
+	@cd ${srcdir} && autoconf
+	@./config.status --recheck
+	@./config.status
+	@for dir in ${subdirs} ; do \
+		if test -d "$${dir}" ; then \
+			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
+		fi; \
+	done
+
+# first we reconfigure in the top-level directory; then we go into
+# each subdir and handle things
+reconfigure: 
+	@./config.status --recheck
+	@./config.status
+	@for dir in ${subdirs} ; do \
+		if test -d "$${dir}" ; then \
+			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
+		fi; \
+	done
+
+##---------------------------------------------------------------------------##
+## Clean targets
+
 uninstall clean mostlyclean distclean maintainer-clean:
 	@for dir in ${subdirs} ; do \
 		if test -d "$${dir}" ; then \
 			(cd $${dir} && ${MAKE} $@); \
 		fi \
 	done
-
-# Makefile depends on all of the M4 files in the config directory
-
-configfiles := aclocal.m4 ac_local.m4 ac_conf.m4 ac_vendors.m4 ac_dracoarg.m4 \
- ac_dracoenv.m4
-configfiles := $(addprefix config/, ${configfiles})
-
-${srcdir}/configure: configure.in ${configfiles}
-	cd ${srcdir} && autoconf --localdir=./config
-
-Makefile: Makefile.in config.status
-	./config.status
-
-config.status: configure
-	./config.status --recheck
 
 distclean: forced-distclean
 forced-distclean:

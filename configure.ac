@@ -1,18 +1,19 @@
-gdnl-------------------------------------------------------------------------dnl
+dnl-------------------------------------------------------------------------dnl
 dnl draco/ configure.in
 dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for draco/
 dnl-------------------------------------------------------------------------dnl
 
-AC_INIT(README.draco)
+AC_INIT
+AC_CONFIG_SRCDIR([README.draco])
 AC_CONFIG_AUX_DIR(config)
 
 AC_ALL_VENDORS_SETUP
 AC_DRACO_ARGS
 
 # find common tools
-AC_CHECK_TOOLS
+AC_DRACO_CHECK_TOOLS
 
 # define fortran
 AC_WITH_F90
@@ -23,9 +24,12 @@ AC_WITH_F90
 
 AC_CONFIG_SUBDIRS(tools src autodoc)
 
-AC_BUILD_CONFIGURES(.)
+# Variable that we output (this places the Env variables in the 
+# configure --help)
+AC_DBS_VAR_SUBSTITUTIONS
 
-AC_OUTPUT(Makefile)
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/ configure.in
