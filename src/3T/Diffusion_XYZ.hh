@@ -12,6 +12,8 @@
 #include "ds++/SP.hh"
 #include "ds++/Mat.hh"
 
+using dsxx::Mat2;
+
 #include "linalg/PCG_Ctrl.hh"
 
 #include "3T/MatVec_3T.hh"
