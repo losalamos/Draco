@@ -72,9 +72,10 @@ AMR_Layout::AMR_Layout(int num_cells, int num_faces)
  * This function returns a Layout::Pack object containing a packed Layout.
  * The client specifies a list of cells to include in the packed layout.
  * Each cell in the current layout must be addressed.  For example, if there
- * are 4 cells in the layout, but only 2 are desired in the packed layout,
+ * are 10 cells in the layout, but only 2 are desired in the packed layout,
  * the map should have 10 entries.  Boundary cells must be addressed in a
- * consistent manner.
+ * consistent manner.  Cells which do not exist in the new layout should be
+ * given an index of zero (or any negative integer).
 
  * If the layout contains boundary cells (indicated with a negative integer
  * index), the mapping must be one-to-one.  The layout packer has no way to
@@ -291,7 +292,7 @@ AMR_Layout::Pack::Pack(int s, int *d)
     : data(d),
       size(s)
 {
-    // nothing more to do here
+    Require (size >= 1);
 }
 
 //---------------------------------------------------------------------------//
@@ -328,7 +329,7 @@ AMR_Layout::Pack::~Pack()
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Unpack the AMR_Layout
+ * \brief Unpack the AMR_Layout.
 
  * Unpacks and returns a smart pointer to the new layout.
 

@@ -149,10 +149,9 @@ void Mesh_2D()
 
     OS_Mesh &m = *m1;
 
-    // the SPs should not be equal, also because of SPs to the Coord_sys
-    // inside of mesh, the meshes are not identically equal
+    // the SPs should not be equal
     if (m1 == m2)   ITFAILS; 
-    if (*m1 == *m2) ITFAILS;
+    if (*m1 != *m2) ITFAILS;
 
     // the m1A and m2B meshes should equal their progenitors
     if (m1 != m1A) ITFAILS;

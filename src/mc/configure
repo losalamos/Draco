@@ -1110,10 +1110,10 @@ EOF
 
 	test_alltarget="$test_alltarget tstMath tstCoord tstLayout tstOSMesh tstFields \
             tstTopology tstParallel_Data_Op tstTET_Mesh \
-            tstSampler tstRZWedge_Mesh tstComm_Patterns"
+            tstSampler tstRZWedge_Mesh tstComm_Patterns \
+            tstOSMesh_Pack"
         
-	test_nprocs="\
-            1 2 4"
+	test_nprocs="1 2 4"
 
 	if test -z "${test_nprocs}" ; then
 	    { echo "configure: error: "No procs choosen for the tests!"" 1>&2; exit 1; }
@@ -5225,6 +5225,7 @@ ac_given_INSTALL="$INSTALL"
 trap 'rm -fr `echo "Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in \
           test/OS_Input:test/OS_Input.in \
+	  test/OS_Input_3D:test/OS_Input_3D.in \
           test/TET_MODEL_1:test/TET_MODEL_1.in \
           test/TET_RTT_1:test/TET_RTT_1.in \
           test/TET_RTT_2:test/TET_RTT_2.in \
@@ -5385,6 +5386,7 @@ cat >> $CONFIG_STATUS <<EOF
 CONFIG_FILES=\${CONFIG_FILES-"Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in \
           test/OS_Input:test/OS_Input.in \
+	  test/OS_Input_3D:test/OS_Input_3D.in \
           test/TET_MODEL_1:test/TET_MODEL_1.in \
           test/TET_RTT_1:test/TET_RTT_1.in \
           test/TET_RTT_2:test/TET_RTT_2.in \

@@ -85,25 +85,31 @@ namespace rtt_mc
 // 18) 27-JAN-00: added get_cell_types for graphics data dumping
 // 19) 18-AUG-00: added new signature for next_cell function
 // 20) 31-AUG-00: added get_spatial_dimension() function
+// 21) 17-APR-01: added Pack function
 // 
 //===========================================================================//
     
 class OS_Mesh
 {
   public:
+    // Forward declaration of pack class.
+    struct Pack;
+
+    // Forward Declarations of cell centered fields.
+    template<class T> class CCSF;
+    template<class T> class CCVF;
+
+  public:
     // Useful typdefs to std:: namespace members.
     typedef rtt_dsxx::SP<OS_Mesh>             SP_Mesh;
     typedef rtt_dsxx::SP<Coord_sys>           SP_Coord_sys;
+    typedef rtt_dsxx::SP<OS_Mesh::Pack>       SP_Pack;
     typedef rtt_rng::Sprng                    rng_Sprng;
     typedef std::vector<int>                  sf_int;
     typedef std::vector<std::vector<int> >    vf_int;
     typedef std::vector<double>               sf_double;
     typedef std::vector<std::vector<double> > vf_double;
     typedef std::string                       std_string;
-
-    // Forward Declarations of cell centered fields.
-    template<class T> class CCSF;
-    template<class T> class CCVF;
    
     // Handy typedefs to CC fields (not formally needed in KCC3.3+).
     typedef CCSF<double>     CCSF_double;
@@ -135,6 +141,10 @@ class OS_Mesh
 
     // Calculate a surface array from the vertices of the mesh.
     void calc_surface();
+
+    // Packing functions
+    char* pack_mesh_data(int &, const vf_double &, const vf_int &) const;
+    void  pack_compressed(const sf_int &, vf_double &, vf_int &) const;
 
     // Private copy and assignment operators; can't copy or assign a mesh.
     OS_Mesh(const OS_Mesh &);
@@ -203,6 +213,9 @@ class OS_Mesh
     inline sf_double sample_pos_on_face(int, int, rng_Sprng &)	const;
     inline sf_int get_neighbors(int) const;
     bool full_Mesh() const { return !submesh; }
+
+    // Pack function.
+    SP_Pack pack(const sf_int & = sf_int()) const;
 
     // Overloaded operators.
     bool operator==(const OS_Mesh &) const;
@@ -502,6 +515,53 @@ OS_Mesh::sf_int OS_Mesh::get_neighbors(int cell) const
 
     return neighbors;
 }
+
+//===========================================================================//
+/*!
+ * \struct OS_Mesh::Pack
+
+ * \brief Pack and unpack an OS_Mesh instance into raw c-style data arrays.
+
+ */
+//===========================================================================//
+
+struct OS_Mesh::Pack
+{
+  private:
+    // Data contained in the mesh.
+    char *data;
+    int   size;
+
+    // Disallow assignment.
+    const Pack& operator=(const Pack &);
+
+  public:
+    // Constructor.
+    Pack(int, char *);
+
+    // Copy constructor.
+    Pack(const Pack &);
+
+    // Destructor.
+    ~Pack();
+
+    // >>> Accessors
+    
+    //! Get pointer to beginning of char data stream.
+    const char* begin() const { return &data[0]; }
+    
+    //! Get pointer to end of char data stream.
+    const char* end() const { return &data[size]; }
+
+    //! Return the number of cells in the packed mesh.
+    int get_num_packed_cells() const;
+
+    //! Get size of data stream.
+    int get_size() const { return size; }
+
+    // Unpack function.
+    SP_Mesh unpack() const;
+};
 
 //===========================================================================//
 // class OS_Mesh::CCSF

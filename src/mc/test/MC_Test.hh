@@ -37,12 +37,16 @@ bool fail(int line, char *file);
 
 class Parser
 {
+  private:
+    std::string mesh_file;
+
   public:
     // constructor
-    Parser() {/*...*/}
+    Parser() : mesh_file("OS_Input") {/*...*/}
+    Parser(const std::string &f) : mesh_file(f) {/*...*/}
     
     // public copy functions for Mesh
-    std::string get_mesh_file() const { return "OS_Input"; }
+    std::string get_mesh_file() const { return mesh_file; }
 };
 
 //===========================================================================//

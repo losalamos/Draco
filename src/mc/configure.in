@@ -27,8 +27,8 @@ AC_NEEDS_LIBS_TEST(RTT_Format_Reader)
 dnl runtesting
 AC_RUNTESTS(tstMath tstCoord tstLayout tstOSMesh tstFields \
             tstTopology tstParallel_Data_Op tstTET_Mesh \
-            tstSampler tstRZWedge_Mesh tstComm_Patterns, \
-            1 2 4)
+            tstSampler tstRZWedge_Mesh tstComm_Patterns \
+            tstOSMesh_Pack, 1 2 4)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
@@ -36,6 +36,7 @@ AC_DRACO_ENV
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in \
           test/OS_Input:test/OS_Input.in \
+	  test/OS_Input_3D:test/OS_Input_3D.in \
           test/TET_MODEL_1:test/TET_MODEL_1.in \
           test/TET_RTT_1:test/TET_RTT_1.in \
           test/TET_RTT_2:test/TET_RTT_2.in \
