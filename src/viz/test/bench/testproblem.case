@@ -12,8 +12,9 @@ VARIABLE
 
 TIME
 time set:                 1
-number of steps:          1
+number of steps:          2
 filename start number:    1
 filename increment:       1
 time values:           
  1.00000e-02
+ 5.00000e-02

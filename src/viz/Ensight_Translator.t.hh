@@ -24,37 +24,51 @@ namespace rtt_viz
  * Ensight data directories are created in the constructor based upon the
  * values of prefix_in and gd_wpath and the data names in ens_vdata_names_in
  * and ens_cdata_names_in.  Files are overwritten at runtime.  However,
- * directories are not purged.
+ * directories are not purged. This default behavior can be overturned by
+ * providing a non-zero dump_times_in parameter argument.  In this case, the
+ * directories and their contents \b are \b not overwritten at runtime.
+ * Instead, the graphics manager will continue with the next timestep entry
+ * given to the ensight_dump function.  This feature is intended for use with
+ * restarts. Details on the dump_times_in parameter are given below.
  *
  * \param prefix_in std_string giving the name of the problem
  * \param gd_wpath directory where dumps are stored
  * \param ens_vdata_names_in string field containing vertex data names
- * \param ens_cdata_names_in string field containing cell data names 
+ * \param ens_cdata_names_in string field containing cell data names
+ * \param dump_times_in optional input dump-times data, if this is non-zero *
+ * than ensight directories are NOT rebuilt and the case file assumes to have
+ * the entries of the dump_times_in already.  The ensight_dumps will start
+ * with the next additional timestep.
  *
  * \sa \ref Ensight_Translator_description "Ensight_Translator class" 
  * for details about SSF templated field types.  
  *
  * \sa \ref Ensight_Translator_strings "Ensight_Translator class" for
- * details about restrictions on names (strings).
- */
+ * details about restrictions on names (strings).  */
 template<class SSF>
 Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
 				       const std_string &gd_wpath,
 				       const SSF &ens_vdata_names_in,
-				       const SSF &ens_cdata_names_in)
+				       const SSF &ens_cdata_names_in,
+				       const sf_double &dump_times_in)
     : num_ensight_cell_types(15),
       ensight_cell_names(num_ensight_cell_types),
       vrtx_cnt(num_ensight_cell_types),
       cell_type_index(num_ensight_cell_types),
-      ntime_current(0),
-      dump_times(0),
-      igrdump_num(0),
+      dump_times(dump_times_in),
       prefix(prefix_in),
       ens_vdata_names(ens_vdata_names_in.size()),
       ens_cdata_names(ens_cdata_names_in.size()),
       vdata_dirs(ens_vdata_names.size()),
       cdata_dirs(ens_cdata_names.size())
 {
+    // Determine whether this is an original graphics startup or a
+    // continuation; if this is a continuation we will not rebuild the
+    // directories and we assume that previous data is in place.
+    bool graphics_continue = false;
+    if (!dump_times.empty())
+	graphics_continue = true;
+
     // Assign values to ensight_cell_names. These are
     // the official "Ensight" names that must be used in 
     // the Ensight file.
@@ -113,20 +127,24 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
     // calculate file prefixes and mkdir
    
     // create the ensight directory name (ens_prefix)
-    ens_prefix = gd_wpath + "/" + prefix + "_ensight"; 
+    ens_prefix = gd_wpath + "/" + prefix + "_ensight";
 
-    // remove old ensight directory
-    std::ostringstream rm_ensight;
-    rm_ensight << "rm -rf " << ens_prefix;
-    system(rm_ensight.str().c_str());
+    // build the ensight directory if this is not a continuation
+    if (!graphics_continue)
+    { 
+	// remove old ensight directory
+	std::ostringstream rm_ensight;
+	rm_ensight << "rm -rf " << ens_prefix;
+	system(rm_ensight.str().c_str());
 
-    // build the ensight directory
-    int err = mkdir(ens_prefix.c_str(), ENSIGHT_DIR_MODE);
-    if (err == -1)
-    {
-	std::ostringstream dir_error;
-	dir_error << "Error opening ensight directory: " << strerror(errno);
-	Insist (0,  dir_error.str().c_str());
+	int err = mkdir(ens_prefix.c_str(), ENSIGHT_DIR_MODE);
+	if (err == -1)
+	{
+	    std::ostringstream dir_error;
+	    dir_error << "Error opening ensight directory: " 
+		      << strerror(errno);
+	    Insist (0,  dir_error.str().c_str());
+	}
     }
 
     // fill cell centered and vertex data names from input fields
@@ -205,9 +223,11 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
     // calculate case file filename
     case_filename = ens_prefix + "/" + prefix + ".case";
 
-    // calculate and make the geometry directory
+    // calculate and make the geometry directory if this is not a
+    // continuation
     geo_dir = ens_prefix + "/geo";
-    mkdir(geo_dir.c_str(), ENSIGHT_DIR_MODE);
+    if (!graphics_continue)
+	mkdir(geo_dir.c_str(), ENSIGHT_DIR_MODE);
 
     // make data directory names and directories
     Check (ens_vdata_names.size() == vdata_dirs.size());
@@ -215,12 +235,18 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
     for (int i = 0; i < ens_vdata_names.size(); i++)
     {
 	vdata_dirs[i] = ens_prefix + "/" + ens_vdata_names[i];
-	mkdir(vdata_dirs[i].c_str(), ENSIGHT_DIR_MODE);
+	
+	// if this is not a continuation make the directory
+	if (!graphics_continue)
+	    mkdir(vdata_dirs[i].c_str(), ENSIGHT_DIR_MODE);
     }
     for (int i = 0; i < ens_cdata_names.size(); i++)
     {
 	cdata_dirs[i] = ens_prefix + "/" + ens_cdata_names[i];
-	mkdir(cdata_dirs[i].c_str(), ENSIGHT_DIR_MODE);
+
+	// if this is not a continuation make the directory
+	if (!graphics_continue)
+	    mkdir(cdata_dirs[i].c_str(), ENSIGHT_DIR_MODE);
     }   
 }
 
@@ -303,10 +329,9 @@ void Ensight_Translator::ensight_dump(int icycle,
 
     // >>> PREPARE DATA TO SET ENSIGHT OUTPUT
 
-    // Increment dump counter adn add dump time
-    igrdump_num++;
+    // Increment local dump counter and add dump time
     dump_times.push_back(time);
-    Check (igrdump_num == dump_times.size());
+    int igrdump_num = dump_times.size();
     Check (igrdump_num < 10000);
 
     // load traits for vector field types

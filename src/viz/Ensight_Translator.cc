@@ -61,7 +61,8 @@ void Ensight_Translator::ensight_case(const double)
     // write out the time block
     caseout << "TIME" << endl;
     caseout << "time set:              " << setw(4) << "   1" << endl;
-    caseout << "number of steps:       " << setw(4) << igrdump_num << endl;
+    caseout << "number of steps:       " << setw(4) << dump_times.size() 
+	    << endl;
     caseout << "filename start number: " << setw(4) << "   1" << endl;
     caseout << "filename increment:    " << setw(4) << "   1" << endl;
     caseout << "time values:           " << endl;

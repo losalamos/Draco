@@ -154,6 +154,8 @@ class Ensight_Translator
     typedef std::string                std_string;
 
   private:
+    // >>> DATA
+
     // Number of Ensight cell types.
     int num_ensight_cell_types;
 
@@ -166,14 +168,8 @@ class Ensight_Translator
     // Cell types.
     sf_int cell_type_index;
 
-    // Timestep index.
-    int ntime_current;
-
     // Vector of dump_times.
     sf_double dump_times;
-
-    // Dump counter.
-    int igrdump_num;
 
     // Ensight file prefixes.
     std_string prefix;
@@ -197,6 +193,7 @@ class Ensight_Translator
     // Names of cdata directories.
     sf_string cdata_dirs;
 
+  private:
     // >>> PRIVATE IMPLEMENTATION
 
     // Write out case file.
@@ -227,7 +224,8 @@ class Ensight_Translator
     template<class SSF>
     Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
 		       const SSF &ens_vdata_names, 
-		       const SSF &ens_cdata_names); 
+		       const SSF &ens_cdata_names, 
+		       const sf_double & = sf_double()); 
 
     // Do an Ensight_Dump.
     template<class ISF, class IVF, class SSF, class FVF>
@@ -237,6 +235,11 @@ class Ensight_Translator
 		      const FVF &ens_vrtx_data_in, 
 		      const FVF &ens_cell_data_in, const ISF &rgn_numbers, 
 		      const SSF &rgn_name); 
+
+    // >>> ACCESSORS
+
+    //! Get the list of dump times.
+    const sf_double& get_dump_times() const { return dump_times; }
 };
 
 } // end namespace rtt_viz

@@ -101,7 +101,31 @@ void ensight_dump_test()
 			    ens_vrtx_data, ens_cell_data,
 			    rgn_data, rgn_name);
 
-    time = .05;
+    vector<double> dump_times = translator.get_dump_times();
+    if (dump_times.size() != 1) ITFAILS;
+    if (dump_times[0] != .01)   ITFAILS;
+
+    // build another ensight translator; this should overwrite the existing
+    // directories
+    Ensight_Translator translator2(prefix, gd_wpath, ens_vdata_names,
+				   ens_cdata_names); 
+    
+    translator2.ensight_dump(icycle, time, dt,
+			     ipar, iel_type, rgn_index, pt_coor,
+			     ens_vrtx_data, ens_cell_data,
+			     rgn_data, rgn_name);
+
+    // build another ensight translator from the existing dump times list;
+    // thus we will not overwrite the existing directories
+
+    Ensight_Translator translator3(prefix, gd_wpath, ens_vdata_names,
+				   ens_cdata_names, dump_times); 
+    
+    // now add another dump to the existing data
+    translator3.ensight_dump(2, .05, dt,
+			     ipar, iel_type, rgn_index, pt_coor,
+			     ens_vrtx_data, ens_cell_data,
+			     rgn_data, rgn_name);    
 }
 
 //---------------------------------------------------------------------------//
