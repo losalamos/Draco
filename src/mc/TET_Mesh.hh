@@ -16,6 +16,7 @@
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
+#include "viz/Ensight_Translator.hh"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -24,18 +25,6 @@
 
 namespace rtt_mc
 {
-
-// stl namespaces
-using std::fill;
-using std::min_element;
-using std::ostream;
-using std::pow;
-using std::endl;
-using std::string;
-
-// draco namespaces
-using rtt_rng::Sprng;
-using rtt_dsxx::SP;
 
 //___________________________________________________________________________//
 /*!
@@ -98,7 +87,7 @@ class TET_Mesh
     // Beginning of private data of class TET_Mesh.
 
     //! Base class reference to a derived coordinate system class.
-    SP<Coord_sys> coord;
+    rtt_dsxx::SP<Coord_sys> coord;
 
     // Layout of mesh.
     Layout layout;
@@ -134,9 +123,11 @@ class TET_Mesh
     //_____________________________________//
     // End of private data of class TET_Mesh.
 
+    //! \brief Make sure that an external cell number is valid.
     void Valid(int cell) const
     { Require ( cell >= 1 && cell <= cells_vertices.size() ); }
 
+    //! \brief Make sure that external cell and face numbers are valid.
     void Valid(int cell, int face) const
     {
         Require ( cell >= 1 && cell <= cells_vertices.size() );
@@ -150,7 +141,8 @@ class TET_Mesh
  public:
 
     //! TET_Mesh constructor.
-    TET_Mesh(SP<Coord_sys>,Layout &,SF_THREEVECTOR &,VF_INT &,bool = false);
+    TET_Mesh(rtt_dsxx::SP<Coord_sys>, Layout &, SF_THREEVECTOR &, VF_INT &,
+        bool = false);
 
     //! Forward declaration of cell-centered scalar fields.
     template<class T> class CCSF;
@@ -158,7 +150,7 @@ class TET_Mesh
     //! Forward declaration of cell-centered vector fields.
     template<class T> class CCVF;
 
-    //! Return the number of cells in the mesh.
+    //! \brief Return the number of cells in the mesh.
     int num_cells() const { return layout.num_cells(); }
 
     // Determine whether a given position is inside a given cell.
@@ -167,6 +159,7 @@ class TET_Mesh
     //___________________________________________________//
     // Services required by all mesh types used in JAYENNE.
 
+    //! \brief Cell on the other side of "face" from "cell"
     int next_cell(int cell, int face) const
     { Valid(cell, face); return layout(cell, face); }
 
@@ -180,22 +173,22 @@ class TET_Mesh
 
     double face_area(int, int) const;
 
-    const SF_INT get_surcells(string) const;
+    const SF_INT get_surcells(std::string) const;
 
-    int get_bndface(string, int) const;
+    int get_bndface(std::string, int) const;
 
     const VF_DOUBLE get_vertices(int) const;
 
     const VF_DOUBLE get_vertices(int, int) const;
 
-    const SF_DOUBLE sample_pos(int, Sprng &) const;
+    const SF_DOUBLE sample_pos(int, rtt_rng::Sprng &) const;
 
-    const SF_DOUBLE sample_pos(int, Sprng &, SF_DOUBLE,
+    const SF_DOUBLE sample_pos(int, rtt_rng::Sprng &, SF_DOUBLE,
                      double) const;
 
-    const SF_DOUBLE sample_pos_on_face(int, int, Sprng &) const;
+    const SF_DOUBLE sample_pos_on_face(int, int, rtt_rng::Sprng &) const;
 
-    //! Return a vector<int> list of a cell's neighbors.
+    //! \brief Return a vector<int> list of a cell's neighbors.
     const SF_INT get_neighbors(int cell) const
     {
         Valid(cell);
@@ -214,6 +207,35 @@ class TET_Mesh
     //_____________________________________//
     // End of required JAYENNE mesh services.
 
+    //____________________________________//
+    // Services required for graphics dumps.
+
+    //! \brief Return the cell type for each cell in the mesh.
+    SF_INT get_cell_types() const
+    {
+        SF_INT cell_type(layout.num_cells());
+        std::fill(cell_type.begin(), cell_type.end(),
+            rtt_viz::four_node_tetrahedron);
+
+        return cell_type;
+    }
+
+    //! \brief Return vertex vectors [0..#vertices] [0..2]
+    VF_DOUBLE get_point_coord() const
+    {
+        VF_DOUBLE return_coords(vertex_vector.size());
+        for (int v_ = 0 ; v_ < vertex_vector.size() ; v_++)
+        {
+            return_coords[v_].push_back(vertex_vector[v_].get_x());
+            return_coords[v_].push_back(vertex_vector[v_].get_y());
+            return_coords[v_].push_back(vertex_vector[v_].get_z());
+        }
+        return return_coords;
+    }
+
+    //_____________________________//
+    // End of graphics dump services.
+
     // Find the cell comtaining a given position.
     int get_cell(const SF_DOUBLE &) const;
 
@@ -222,9 +244,9 @@ class TET_Mesh
 
     // References to imbedded objects and data required for Parallel_Building.
     // More may be added later.
-    const Layout&    get_Layout() const  { return layout; }
-    const Coord_sys& get_Coord() const   { return *coord; }
-    SP<Coord_sys>    get_SPCoord() const { return coord; }
+    const Layout&           get_Layout() const  { return layout; }
+    const Coord_sys&        get_Coord() const   { return *coord; }
+    rtt_dsxx::SP<Coord_sys> get_SPCoord() const { return coord; }
 
 };  // end class TET_Mesh
 
@@ -257,7 +279,7 @@ class TET_Mesh::CCSF
     typedef typename std::vector<T>::size_type size_type;
 
     //! Smart pointer back to underlying TET_Mesh.
-    SP<TET_Mesh> mesh;
+    rtt_dsxx::SP<TET_Mesh> mesh;
 
     //! Data in scalar field  --  one object per cell.
     std::vector<T> data;
@@ -265,10 +287,10 @@ class TET_Mesh::CCSF
  public:
 
     // Inline explicit constructor.
-    inline explicit CCSF(SP<TET_Mesh>);
+    inline explicit CCSF(rtt_dsxx::SP<TET_Mesh>);
 
     // Constructor for automatic initialization.
-    inline CCSF(SP<TET_Mesh>, const std::vector<T> &);
+    inline CCSF(rtt_dsxx::SP<TET_Mesh>, const std::vector<T> &);
 
     //! Return reference to mesh.
     const TET_Mesh& get_Mesh() const { return *mesh; }
@@ -320,7 +342,7 @@ class TET_Mesh::CCSF
  * \param mesh_ Smart pointer to the underlying mesh for this scalar field.
  */
 template<class T>
-inline TET_Mesh::CCSF<T>::CCSF(SP<TET_Mesh> mesh_)
+inline TET_Mesh::CCSF<T>::CCSF(rtt_dsxx::SP<TET_Mesh> mesh_)
     : mesh(mesh_), data(mesh->num_cells())
 {
     Require (mesh);
@@ -336,8 +358,8 @@ inline TET_Mesh::CCSF<T>::CCSF(SP<TET_Mesh> mesh_)
  * Constructor for automatic initialization.
  */
 template<class T>
-inline TET_Mesh::CCSF<T>::CCSF(SP<TET_Mesh> mesh_, const std::vector<T> &array)
-    : mesh(mesh_), data(array)
+inline TET_Mesh::CCSF<T>::CCSF(rtt_dsxx::SP<TET_Mesh> mesh_,
+    const std::vector<T> &array) : mesh(mesh_), data(array)
 {
     Require (mesh);
     Ensure  (data.size() == mesh->num_cells());
@@ -377,7 +399,7 @@ class TET_Mesh::CCVF
     typedef typename std::vector<T>::size_type size_type;
 
     //! Smart pointer back to underlying TET_Mesh.
-    SP<TET_Mesh> mesh;
+    rtt_dsxx::SP<TET_Mesh> mesh;
 
     //! Data in vector field  --  one object per (dimension, cell) pairing.
     std::vector< std::vector<T> > data;
@@ -385,10 +407,10 @@ class TET_Mesh::CCVF
  public:
 
     // Inline explicit constructor.
-    inline explicit CCVF(SP<TET_Mesh>);
+    inline explicit CCVF(rtt_dsxx::SP<TET_Mesh>);
 
     // Constructor for automatic initialization.
-    inline CCVF(SP<TET_Mesh>, const std::vector< std::vector<T> > &);
+    inline CCVF(rtt_dsxx::SP<TET_Mesh>, const std::vector< std::vector<T> > &);
 
     //! Return reference to mesh.
     const TET_Mesh& get_Mesh() const { return *mesh; }
@@ -461,7 +483,7 @@ class TET_Mesh::CCVF
  * \param mesh_ Smart pointer to the underlying mesh for this vector field.
  */
 template<class T>
-inline TET_Mesh::CCVF<T>::CCVF(SP<TET_Mesh> mesh_)
+inline TET_Mesh::CCVF<T>::CCVF(rtt_dsxx::SP<TET_Mesh> mesh_)
     : mesh(mesh_), data(mesh->get_Coord().get_dim())
 {
     Require (mesh);
@@ -480,7 +502,7 @@ inline TET_Mesh::CCVF<T>::CCVF(SP<TET_Mesh> mesh_)
  * Constructor for automatic initialization.
  */
 template<class T>
-inline TET_Mesh::CCVF<T>::CCVF(SP<TET_Mesh> mesh_,
+inline TET_Mesh::CCVF<T>::CCVF(rtt_dsxx::SP<TET_Mesh> mesh_,
                   const std::vector< std::vector<T> > &array)
     : mesh(mesh_), data(array)
 {

@@ -23,7 +23,7 @@ namespace rtt_mc
  * \param cells_vertices_ Internal identifiers of the four vertices of cells.
  * \param submesh_        Submesh indicator flag.
  */
-TET_Mesh::TET_Mesh(SP<Coord_sys> coord_, Layout & layout_,
+TET_Mesh::TET_Mesh(rtt_dsxx::SP<Coord_sys> coord_, Layout & layout_,
     SF_THREEVECTOR & vertex_vector_, VF_INT & cells_vertices_, bool submesh_)
     : coord(coord_), layout(layout_), vertex_vector(vertex_vector_),
       cells_vertices(cells_vertices_), submesh(submesh_)
@@ -31,7 +31,7 @@ TET_Mesh::TET_Mesh(SP<Coord_sys> coord_, Layout & layout_,
     // For a TET_Mesh, there must be an XYZ coordinate system.
     Check (coord);
     Check (THREE == coord->get_dim());
-    Check (string("xyz") == coord->get_Coord());
+    Check (std::string("xyz") == coord->get_Coord());
 
     // Confirm consistency of layout and cells_vertices.
     Check (layout.num_cells() == cells_vertices.size());
@@ -221,7 +221,7 @@ double TET_Mesh::get_db(const SF_DOUBLE &position, const SF_DOUBLE &omega,
                 dist.push_back(global::huge);
         }
 
-    SF_DOUBLE::iterator itor = min_element(dist.begin(),dist.end());
+    SF_DOUBLE::iterator itor = std::min_element(dist.begin(),dist.end());
 
     double dist_min = *itor;
     Ensure ( dist_min > 0.0 && dist_min < global::huge );
@@ -413,7 +413,8 @@ const TET_Mesh::VF_DOUBLE TET_Mesh::get_vertices(int cell, int face) const
  * \param random The random-number generator, used as random.ran()
  * \return       Scalar_field[dim#] == sampled coordinate along dim#-axis.
  */
-const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell, Sprng &random) const
+const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
+    rtt_rng::Sprng &random) const
 {
     Valid(cell);
     int cell_ = cell - 1;
@@ -432,7 +433,7 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell, Sprng &random) const
 
     return rtt_mc::sample_in_triangle(A, B, C, random).convert();
 
-}   // end TET_Mesh::sample_pos(int,Sprng &)
+}   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &)
 
 //___________________________________________________________________________//
 /*!
@@ -443,15 +444,15 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell, Sprng &random) const
  * \param center_pt Reference location for tilt or slope-like function.
  * \return          Scalar_field[dim#] == sampled coordinate along dim#-axis.
  */
-const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell, Sprng &random,
-    SF_DOUBLE slope, double center_pt) const
+const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
+    rtt_rng::Sprng &random, SF_DOUBLE slope, double center_pt) const
 {
     // QUESTION: Should "slope" be "const SF_DOUBLE &slope" ?
     // IMPLEMENTATION LATER.  For the moment, ignore the tilt.
 
     return TET_Mesh::sample_pos(cell, random);  // Uniform sampling.
 
-}   // end TET_Mesh::sample_pos(int,Sprng &,SF_DOUBLE,double)
+}   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &,SF_DOUBLE,double)
 
 //___________________________________________________________________________//
 /*!
@@ -462,7 +463,7 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell, Sprng &random,
  * \return       Scalar_field[dim#] == sampled coordinate along dim#-axis.
  */
 const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos_on_face(int cell, int face,
-    Sprng &random) const
+    rtt_rng::Sprng &random) const
 {
     Valid(cell, face);
     int cell_ = cell - 1;
@@ -494,7 +495,7 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos_on_face(int cell, int face,
                               vertex_vector[cells_vertices[cell_][vc]],
                               random).convert();
 
-}   // end TET_Mesh::sample_pos_on_face(int,int,Sprng &)
+}   // end TET_Mesh::sample_pos_on_face(int,int,rtt_rng::Sprng &)
 
 //___________________________________________________________________________//
 /*!
@@ -580,7 +581,7 @@ double TET_Mesh::get_min_db(const SF_DOUBLE &position, int cell) const
                 N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ));
         }
 
-    SF_DOUBLE::iterator itor = min_element(dist.begin(),dist.end());
+    SF_DOUBLE::iterator itor = std::min_element(dist.begin(),dist.end());
 
     double dist_min = *itor;
     Ensure ( dist_min > 0.0 && dist_min < global::huge );

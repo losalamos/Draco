@@ -19,10 +19,6 @@ namespace rtt_mc
 // using std::cerr;  // FOR DEBUGGING.
 // using std::endl;  // FOR DEBUGGING.
 
-// draco namespaces
-using rtt_rng::Sprng;
-using rtt_dsxx::SP;
-
 //___________________________________________________________________________//
 /*!
  * \class TET_Builder
@@ -95,10 +91,10 @@ class TET_Builder
 
     //! Explicit constructor, templated on Interface Type.
     template<class IT>
-    explicit TET_Builder(SP<IT>);
+    explicit TET_Builder(rtt_dsxx::SP<IT>);
 
     //! Build a TET_Mesh, using TET_Builder's private data.
-    SP<TET_Mesh> build_Mesh();
+    rtt_dsxx::SP<TET_Mesh> build_Mesh();
 
 };  // end class TET_Builder
 
@@ -108,7 +104,7 @@ class TET_Builder
  * \param interface Smart pointer to an instance of an Interface Type.
  */
 template<class IT>
-TET_Builder::TET_Builder(SP<IT> interface)
+TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
 {
     Require (interface);
 
@@ -159,7 +155,7 @@ TET_Builder::TET_Builder(SP<IT> interface)
         }
     }
 
-}   // end TET_Builder::TET_Builder(SP<IT>)
+}   // end TET_Builder::TET_Builder(rtt_dsxx::SP<IT>)
 
 }   // end namespace rtt_mc
 

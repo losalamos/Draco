@@ -15,10 +15,10 @@ namespace rtt_mc
 {
 
 //! Build a TET_Mesh, using TET_Builder's private data.
-SP<TET_Mesh> TET_Builder::build_Mesh()
+rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
 {
     // Create first constructor argument: coord.
-    SP<Coord_sys> coord(new XYZCoord_sys);
+    rtt_dsxx::SP<Coord_sys> coord(new XYZCoord_sys);
 
     // Create second constructor argument: layout.
     Layout layout(cells_vertices.size());
@@ -95,8 +95,8 @@ SP<TET_Mesh> TET_Builder::build_Mesh()
 
     // Remaining constructor arguments (cells_vertices, submesh) already made.
 
-    // Instantiate and return SP to the new TET_Mesh.
-    SP<TET_Mesh> mesh_ptr(new
+    // Instantiate and return Smart Pointer to the new TET_Mesh.
+    rtt_dsxx::SP<TET_Mesh> mesh_ptr(new
         TET_Mesh(coord, layout, vertex_vector, cells_vertices, submesh));
 
     return mesh_ptr;
