@@ -198,7 +198,7 @@ dnl dracoenv to define the FOUR_BYTE_FLOAT_TYPE macro to the appropriate C++
 dnl data type
 dnl-------------------------------------------------------------------------dnl
 
-   AC_DEFUN(AC_DEFINE_FOUR_BYTE_FLOAT_TYPE, [dnl
+AC_DEFUN(AC_DEFINE_FOUR_BYTE_FLOAT_TYPE, [dnl
 
    def_four_byte_float_type='true'
 
