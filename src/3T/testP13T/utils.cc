@@ -8,7 +8,7 @@
 
 #include "3T/testP13T/utils.hh"
 
-#include <strstream>
+#include <sstream>
 #include <iomanip>
 #include <string>
 
@@ -19,7 +19,7 @@ namespace rtt_3T_testP13T
 			 const std::string &suffix, int number,
 			 int fieldwidth)
  {
-     std::ostrstream oss;
+     std::ostringstream oss;
      oss << prefix
 	 << std::setw(fieldwidth) << std::setfill('0') << number
 	 << suffix
