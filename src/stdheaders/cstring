@@ -21,6 +21,7 @@ using ::strcmp;
 using ::strlen;
 using ::memcpy;
 using ::strerror;
+using ::strtok;
 
 } /*namespace std*/
 

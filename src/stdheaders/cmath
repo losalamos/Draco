@@ -23,6 +23,7 @@ using ::asin;
 using ::sin;
 using ::cos;
 using ::tan;
+using ::log;
 } /*namespace std*/
 
 #endif    /* __stdheaders_cmath__ */
