@@ -72,13 +72,13 @@ class Opacity
     /*!
      * \breif Returns the opacity data filename.
      */
-    virtual string const getDataFilename() = 0;
+    virtual string const getDataFilename() const = 0;
 
     /*!
      * \breif Return a vector material ID's found in the opacity data
      *        file.
      */
-    virtual vector<int> const getMatIDs() = 0;
+    virtual vector<int> const getMatIDs() const = 0;
 
     /*!
      * \breif Returns a single opacity value for the prescribed
