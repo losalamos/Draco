@@ -208,7 +208,7 @@ void Source_Builder<MT,FT,PT>::calc_ess(const Opacity<MT,FT> &opacity)
 		ess(local_cell) = a * c * 0.25 *
 		    ess.get_Mesh().face_area
 		    (local_cell, ss_face_in_cell(local_cell)) * 
-		    pow(ss_temp[ss],4) * 
+		    std::pow(ss_temp[ss],4) * 
 		    opacity.get_integrated_norm_Planck(ss_temp[ss]) * delta_t;
 
 		// accumulate esstot
@@ -246,7 +246,7 @@ void Source_Builder<MT,FT,PT>::calc_initial_ecen(
     {
 	// calc cell centered census radiation energy
 	ecen(cell) = a * ecen.get_Mesh().volume(cell) *
-	    pow(rad_temp[cell-1], 4) * 
+	    std::pow(rad_temp[cell-1], 4) * 
 	    opacity.get_integrated_norm_Planck(rad_temp[cell-1]);
 
 	// accumulate ecentot on-processor

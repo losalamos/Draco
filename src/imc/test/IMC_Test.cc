@@ -33,6 +33,9 @@ rtt_dsxx::SP<rtt_mc::RZWedge_Mesh> make_RZWedge_Mesh_AMR(double phi)
     using rtt_mc::XYZCoord_sys;
     using rtt_mc::AMR_Layout;
     using rtt_dsxx::SP;
+    using std::sqrt;
+    using std::sin;
+    using std::cos;
 
     double rphi = phi * pi / 180.0;
     
@@ -114,7 +117,7 @@ rtt_dsxx::SP<rtt_mc::RZWedge_Mesh> make_RZWedge_Mesh_AMR(double phi)
     vf_double xz(9, sf_double(4));
     vf_double rz(9, sf_double(4));
     {
-	double rconv = sqrt(rphi/sin(rphi))*cos(rphi/2);
+	double rconv = std::sqrt(rphi/std::sin(rphi))*std::cos(rphi/2);
 
 	rz[0][0] = 0/rconv;
 	rz[0][1] = 1/rconv;

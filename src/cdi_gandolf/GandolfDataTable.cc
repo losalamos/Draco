@@ -321,11 +321,11 @@ namespace rtt_cdi_gandolf
 	    // log form so we only store the logorithmic temperature,
 	    // density and opacity data.
 	    for ( int i=0; i<numTemperatures; ++i )
-		logTemperatures[i] = log( temperatures[i] );
+		logTemperatures[i] = std::log( temperatures[i] );
 	    for ( int i=0; i<numDensities; ++i )
-		logDensities[i] = log( densities[i] );
+		logDensities[i] = std::log( densities[i] );
 	    for ( int i=0; i<numOpacities; ++i )
-		logOpacities[i] = log( logOpacities[i] );
+		logOpacities[i] = std::log( logOpacities[i] );
 	}
 
     /*! 

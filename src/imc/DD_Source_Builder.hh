@@ -108,7 +108,8 @@ class DD_Source_Builder : public Source_Builder<MT,FT,PT>
     double global_eloss_cen; 
   
     // Calculate the local random number stream IDs
-    void calc_fullDD_rn_fields(const int, ccsf_int &, int &, ccsf_int &, int);
+    void calc_fullDD_rn_fields(const int, ccsf_int &, int &, ccsf_int &, 
+			       const int);
 
     // Calculate the initial number of census particles for full DD topology.
     void calc_initial_ncen(ccsf_int &);

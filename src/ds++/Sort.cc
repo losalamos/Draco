@@ -8,7 +8,9 @@
 
 #include "Sort.hh"
 
-#include <iostream.h>
+#include <iostream>
+
+using namespace std;
 
 // Implement the various sort functions.
 

@@ -138,7 +138,7 @@ void Gray_Particle<MT>::transport(
 	}
 	else 
 	{
-	    d_collide = -log(random->ran()) / sigma_collide;
+	    d_collide = -std::log(random->ran()) / sigma_collide;
 
 	    prob_thomson_scatter = sigma_thomson_scatter / sigma_collide;
 	    prob_scatter         = sigma_scatter         / sigma_collide;
@@ -160,7 +160,7 @@ void Gray_Particle<MT>::transport(
 	}
 	else
 	{
-	    d_cutoff = log(fraction/minwt_frac)/sigma_eff_abs;
+	    d_cutoff = std::log(fraction/minwt_frac)/sigma_eff_abs;
 	}
 
 	Check(d_cutoff>0);

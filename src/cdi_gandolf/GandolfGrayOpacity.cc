@@ -228,8 +228,8 @@ double GandolfGrayOpacity::getOpacity(
 			     spGandolfDataTable->getNumDensities(),
 			     spGandolfDataTable->getLogOpacities(), 
 			     spGandolfDataTable->getNumOpacities(),
-			     log(targetTemperature),
-			     log(targetDensity) );
+			     std::log(targetTemperature),
+			     std::log(targetDensity) );
     return opacity;
 }
     
@@ -253,8 +253,8 @@ std::vector< double > GandolfGrayOpacity::getOpacity(
 				 spGandolfDataTable->getNumDensities(),
 				 spGandolfDataTable->getLogOpacities(), 
 				 spGandolfDataTable->getNumOpacities(),
-				 log(targetTemperature[i]),
-				 log(targetDensity) );
+				 std::log(targetTemperature[i]),
+				 std::log(targetDensity) );
     return opacity;
 }
 
@@ -278,8 +278,8 @@ std::vector< double > GandolfGrayOpacity::getOpacity(
 				 spGandolfDataTable->getNumDensities(),
 				 spGandolfDataTable->getLogOpacities(), 
 				 spGandolfDataTable->getNumOpacities(),
-				 log(targetTemperature),
-				 log(targetDensity[i]) );
+				 std::log(targetTemperature),
+				 std::log(targetDensity[i]) );
     return opacity;
 }
     

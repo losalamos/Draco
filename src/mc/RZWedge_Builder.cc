@@ -16,6 +16,7 @@
 #include "Math.hh"
 
 #include <algorithm>
+#include <cmath>
 
 namespace rtt_mc 
 {
@@ -127,6 +128,8 @@ RZWedge_Builder::vf_int RZWedge_Builder::get_defined_surcells() const
 
 void RZWedge_Builder::parser()
 {
+    using std::fabs;
+
     // first open the input file
     const char *file = mesh_file.c_str();
     std_ifstream input(file);
@@ -231,7 +234,7 @@ void RZWedge_Builder::parser()
 	    else 
 		first_fine_cell_width = (1.0-fine_ratio[d][i]) *
 		    coarse_cell_width /
-		    (1.0-pow(fine_ratio[d][i],fine_cells[d][i])); 
+		    (1.0-std::pow(fine_ratio[d][i],fine_cells[d][i])); 
 
 	    // initialize the offset from the low edge of the coarse cell
 	    double coarse_offset = 0.0;
@@ -247,7 +250,7 @@ void RZWedge_Builder::parser()
 		if (fine_ratio[d][i] == 1.0)
 		    coarse_offset = j * first_fine_cell_width;
 		else
-		    coarse_offset += pow(fine_ratio[d][i],j-1) *
+		    coarse_offset += std::pow(fine_ratio[d][i],j-1) *
 			first_fine_cell_width; 
 		fine_edge[d][ifine] = coarse_edge[d][i] + coarse_offset;
 	    }
@@ -267,7 +270,7 @@ void RZWedge_Builder::parser()
 		check_last_w = coarse_cell_width / fine_cells[d][i];
 	    else
 		check_last_w = (1.0-inv_ratio) * coarse_cell_width /
-		    (1.0-pow(inv_ratio,fine_cells[d][i]));
+		    (1.0-std::pow(inv_ratio,fine_cells[d][i]));
 	    Check (fabs(last_width - check_last_w) < 1.0e-5 * last_width);
 	}
 

@@ -153,11 +153,11 @@ namespace rtt_cdi_gandolf {
 		for ( int i=0; i<nkeys; ++i )
 		    {
 			// copy all 24 characters of keys[i] into key.
-			strncpy( key, bjkeys[i], key_length );
+			std::strncpy( key, bjkeys[i], key_length );
 			// kill trailing whitespace.
-			strtok( key, " " );
+			std::strtok( key, " " );
 			// store the keyword in a vector.
-			vkeys[i].assign( key, 0, strlen(key) );
+			vkeys[i].assign( key, 0, std::strlen(key) );
 		    }
 
 		return ier;

@@ -15,6 +15,7 @@
 #include "Particle.hh"
 #include "mc/Sampler.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <cmath>
 
 namespace rtt_imc
 {
@@ -373,7 +374,7 @@ void Multigroup_Particle<MT>::stream_implicit_capture(
     double argument = -xs.get_sigeffabs(cell, group_index) * distance;
 
     // calculate multiplicative reduction in energy-weight
-    double factor = exp(argument);
+    double factor = std::exp(argument);
 
     // calculate new energy weight; change in energy-weight
     double new_ew = ew * factor;

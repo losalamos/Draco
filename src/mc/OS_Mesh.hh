@@ -363,7 +363,7 @@ OS_Mesh::sf_double OS_Mesh::get_normal(int cell, int face) const
 	
     // calculate normal based on face, (-x, +x, -y, +y, -z, +z), only
     // one coordinate is non-zero    
-    normal[(face-1)/2] = pow(-1.0, face);
+    normal[(face-1)/2] = std::pow(-1.0, face);
 
     // return the normal
     return normal;
@@ -381,7 +381,7 @@ OS_Mesh::sf_double OS_Mesh::get_normal_in(int cell, int face) const
 	
     // calculate normal based on face, (-x, +x, -y, +y, -z, +z), only
     // one coordinate is non-zero    
-    normal[(face-1)/2] = pow(-1.0, face-1);
+    normal[(face-1)/2] = std::pow(-1.0, face-1);
 
     // return the normal
     return normal;
