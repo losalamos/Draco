@@ -4042,8 +4042,6 @@ AC_DEFUN(AC_FIND_TOP_SRC, [dnl
    fi
 ])
 
-
-
 dnl-------------------------------------------------------------------------dnl
 dnl DO VARIABLE SUBSTITUTIONS ON AC_OUTPUT
 dnl
