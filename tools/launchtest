@@ -1,4 +1,107 @@
 #! /bin/sh
+##---------------------------------------------------------------------------##
+## launchtest
+## Thomas M. Evans, Draco Project Team
+## $Id$
+##---------------------------------------------------------------------------##
+## A script to launch regression tests through dejagnu.  The options
+## passed to launchtest are set by configure.  Launchtest launches
+## programs using the following format:
+##
+##   launchtest --${exe_type} --${parallel} ${executable} ${exe_options}
+## 
+## where:
+##       ${exe_type} is the executable format; python and binary
+##                   are currently supported
+##       ${parallel} is the parallel setup; --mpi n and --shmem n,
+##                   where n is the number of processors are 
+##                   currently supported
+##       ${executable} is the executable name
+##       ${exe_options} are any command-line options passed to the
+##                      executable (ie. --version)
+##
+## thus, launchtest --python --mpi 3 /user/local/bin/x translates to:
+##
+##   python /user/local/bin/x --procs 3 2>&1
+##
+## For a binary, launchtest --binary --mpi 2 /usr/local/bin/exe -i testin
+## translates to:
+##
+##   mpirun -np 2 /usr/local/bin/exe -i testin 2>&1
+##
+## This script is for the sole purpose of running dejagnu regression
+## tests, the executable type can be set in configure.in by the
+## AC_TESTEXE() macro; binary is the default.  The parallel and 
+## exe_options are set by configure.  Additional executable formats
+## are easily added by modifying this script.  Thus, to add perl, we 
+## simply have to add to this script and not to the ac_dracoenv.m4.
+##---------------------------------------------------------------------------##
 
-exec $* 2>&1
+##---------------------------------------------------------------------------##
+## variable definitions for parsing the command line
 
+exe='binary'
+mpi='no'
+shmem='no'
+procs='0'
+next='option'
+parallel='no'
+
+##---------------------------------------------------------------------------##
+## command line actions
+
+for variable in $*
+    do
+    
+    # assign variables
+    if test "$next" == 'proc' ; then
+	procs=$variable
+	next='option'
+    elif test "$next" == 'exe_options' ; then
+	exe_options="${exe_options} ${variable}"
+    elif test "$variable" == '--python' ; then
+	exe='python'
+    elif test "$variable" == '--binary' ; then
+	exe='binary'
+    elif test "$variable" == '--mpi' ; then
+	mpi='yes'
+	parallel='yes'
+	next='proc'
+    elif test "$variable" == '--shmem' ; then
+	shmem='yes'
+	parallel='yes'
+	next='proc'
+    else
+	executable=$variable
+	next='exe_options'
+    fi
+done
+
+##---------------------------------------------------------------------------##
+## translate the executable line
+
+if test "$exe" == 'python'; then
+    if test "$parallel" == 'no' ; then
+	test_exec="python $executable --scalar $exe_options"
+    elif test "$parallel" == 'yes' ; then
+	test_exec="python $executable --procs $procs $exe_options"
+    fi
+elif test "$exe" == 'binary'; then
+    if test "$parallel" == 'no' ; then
+	test_exec="$executable $exe_options"
+    elif test "$parallel" == 'yes'; then
+	if test "$mpi" == 'yes'; then
+	    test_exec="mpirun -np $procs $executable $exe_options"
+	elif test "$shmem" == 'yes'; then
+	    test_exec="$executable -npes $procs $exe_options"
+	fi
+    fi
+else
+    echo "No valid executable type specified!"
+    exit 1
+fi
+
+##---------------------------------------------------------------------------##
+## execute the test
+
+exec $test_exec 2>&1
