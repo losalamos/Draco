@@ -1,0 +1,21 @@
+puts "Running test of mesh component."
+
+load_lib draco.exp
+
+global ENV
+
+puts "value of ENV is $ENV"
+
+puts "Running txyz_$ENV"
+
+set output [exec ./txyz_$ENV]
+
+# Check the output of t1
+
+if {[regexp "PASSED" $output]} {
+    pass mesh
+} else {
+    fail mesh
+}
+
+# All done with tests of mesh package.
