@@ -34,10 +34,11 @@ class Opacity
 {
 private:
   // cell-centered array opacities
-    typename MT::CCSF sigma;
+    typename MT::CCSF<double> sigma;
 public:
   // opacity constructor
-    explicit Opacity(const typename MT::CCSF &sigma_) : sigma(sigma_) {}
+    explicit Opacity(const typename MT::CCSF<double> &sigma_) 
+	: sigma(sigma_) {}
 
   // member set and accessor functions
     double& Sigma(int cell) { return sigma(cell); }

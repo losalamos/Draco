@@ -33,9 +33,9 @@ class Opacity_Builder
 {
 private:
   // density, temperature, and opacity cell-centered fields
-    typename MT::CCSF rho;
-    typename MT::CCSF temp;
-    typename MT::CCSF opacity;
+    typename MT::CCSF<double> rho;
+    typename MT::CCSF<double> temp;
+    typename MT::CCSF<double> opacity;
 
   // data received from XX_Interface
     vector<int> zone;

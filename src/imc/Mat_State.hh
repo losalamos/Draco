@@ -34,13 +34,13 @@ class Mat_State
 {
 private:
   // data which defines the material state
-    typename MT::CCSF density;
-    typename MT::CCSF temperature;
+    typename MT::CCSF<double> density;
+    typename MT::CCSF<double> temperature;
 
 public:
   // explicit constructor
-    explicit Mat_State(const typename MT::CCSF &density_, const typename
-		       MT::CCSF &temperature_)
+    explicit Mat_State(const typename MT::CCSF<double> &density_, 
+		       const typename MT::CCSF<double> &temperature_)
 	: density(density_), temperature(temperature_)
     {}
 

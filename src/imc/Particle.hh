@@ -50,14 +50,29 @@ public:
     private:
       // stream output is sent to
 	ostream &output;
+      // boolean for detailed diagnostic
+	bool detail;
     public:
       // constructor
-	Diagnostic(ostream &output_) : output(output_) {}
+	Diagnostic(ostream &output_, bool detail_ = false) 
+	    : output(output_), detail(detail_) {}
+
+      // switches
+	bool Detail() const { return detail; }
 
       // diagnostic print functions
 	void Print(const Particle<MT> &) const;
 	void Print_alive(const Particle<MT> &) const;
 	void Print_dead(const Particle<MT> &) const;
+	void Print_dist(double, double, int) const;
+	void Print_xs(const Opacity<MT> &, int) const;
+
+      // inline output formatters
+	void Header() const 
+	{ 
+	    output << "*** PARTICLE HISTORY ***" << endl; 
+	    output << "------------------------" << endl;
+	}
     };
 	
 private:
@@ -99,10 +114,14 @@ private:
     Particle<MT>& operator=(const Particle<MT> &);
 
 public:
-  // default constructor, explicit to guarantee definition
-  // of coord. sys during Particle instantiation
-    explicit Particle(const MT &, int, double = 0, double = 0);
-
+  // default constructor
+    explicit Particle(const MT &mesh, long seed, double weight_, 
+		      double energy_)
+	:weight(weight_), energy(energy_), r(mesh.Coord().Get_dim(), 0.0), 
+	 omega(mesh.Coord().Get_sdim(), 0.0), cell(0), alive(true), 
+	 descriptor("born"), random(seed)
+    {}
+    
   // transport member functions
     void Source(vector<double> &, vector<double> &, const MT &);
     void Transport(const MT &, const Opacity<MT> &, 

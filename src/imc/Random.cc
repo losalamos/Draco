@@ -8,8 +8,13 @@
 
 #include "imctest/Random.hh"
 #include "imctest/Global.hh"
+#include <iostream>
+#include <fstream>
 
 IMCSPACE
+
+using std::cout;
+using std::endl;
 
 //---------------------------------------------------------------------------//
 // public member functions
@@ -63,6 +68,9 @@ double Random::ran()
     mj = ma[inext] - ma[inextp];
     if (mj < mz) mj += mbig;
     ma[inext] = mj;
+
+	cout << static_cast<double>(mj)*fac << endl;
+
     return static_cast<double>(mj) * fac;
 }
 

@@ -72,6 +72,7 @@ public:
   // class definitions of the cell-centered fields: neither of these classes
   // require copy constructors or assignment operators as the SP<> and 
   // vector<> classes can do assignment
+    template<class T>
     class CCSF
     {
     private:
@@ -79,22 +80,23 @@ public:
       // number of cells, etc.
 	SP<OS_Mesh> mesh;
       // data in field
-	CCSF_a data;
+	vector<T> data;
     public:
       // inline explicit constructor, must give a OS_Mesh,
       // no copy or operator+ needed
 	explicit CCSF(SP<OS_Mesh> mesh_)
-	    : mesh(mesh_), data(mesh->Num_cells(), 0.0)
+	    : mesh(mesh_), data(mesh->Num_cells())
 	{ }
 
       // return reference to mesh
 	const OS_Mesh& Mesh() const { return *mesh; }
 
       // subscripting
-	double operator()(int cell) const { return data[cell-1]; }
-	double& operator()(int cell_index) { return data[cell_index-1]; }
+	T operator()(int cell) const { return data[cell-1]; }
+	T& operator()(int cell_index) { return data[cell_index-1]; }
     };  
 
+    template<class T>
     class CCVF
     {
     private:
@@ -103,7 +105,7 @@ public:
 	SP<OS_Mesh> mesh;
       // the data array is data(dimension,num_cells) where
       // dimension is 1 (1-D), 2 (2-D), or 3 (3-D)
-	CCVF_a data;
+	vector< vector<T> > data;
     public:
       // inline explicit constructor, must give a OS_Mesh,
       // no copy or assignment operator needed
@@ -119,11 +121,11 @@ public:
 	const OS_Mesh& Mesh() const { return *mesh; }
 
       // subscripting
-	double operator()(int dim, int cell) const 
+	T operator()(int dim, int cell) const 
 	{
 	    return data[dim-1][cell-1]; 
 	}
-	double& operator()(int dim, int cell)
+	T& operator()(int dim, int cell)
 	{
 	    return data[dim-1][cell-1];
 	}

@@ -28,23 +28,7 @@ using Global::Dot;
 //---------------------------------------------------------------------------//
 // constructors
 //---------------------------------------------------------------------------//
-// default constructor, explicit definition of Particle required to
-// guarantee that the Particle is defined by a Mesh;
-// vectors handle their own dynamic memory
-template<class MT>
-Particle<MT>::Particle(const MT &mesh, int seed, double weight_, 
-		       double energy_)
-    :weight(weight_), energy(energy_), r(mesh.Coord().Get_dim(), 0.0), 
-     omega(mesh.Coord().Get_sdim(), 0.0), cell(0), alive(true), 
-     descriptor("born"), random(seed)
-{
-  // the syntax for initialization of the vector is equivalent to:
-  // vector<double> r(dimension, 0.0),
-  // which means, "make a vector of type double of dimension
-  // initialized with all zeroes--the vectors must be
-  // initialized by 0.0 because if the arguments match the iterator
-  // constructor will be called instead, see Stroustrup pg. 450
-}
+// default constructor defined inline
 
 // need to write assignment operators and copy constructors to take care of
 // the random number
@@ -80,7 +64,10 @@ void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs,
 
   // initialize diagnostics
     if (diagnostic)
+    {
+	diagnostic->Header();
 	diagnostic->Print(*this);
+    }
   
   // !!! BEGIN TRANSPORT LOOP !!!
 
@@ -98,6 +85,14 @@ void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs,
       // get distance-to-boundary and cell face
         d_boundary  = mesh.Get_db(r, omega, cell, face);
 
+      // detailed diagnostics
+	if (diagnostic)
+	    if (diagnostic->Detail())
+	    {
+		diagnostic->Print_dist(d_collision, d_boundary, cell);
+		diagnostic->Print_xs(xs, cell);
+	    }
+
       // streaming
         if (d_collision <= d_boundary)
         {
@@ -110,7 +105,7 @@ void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs,
             Stream(d_boundary);
 	    alive = Surface(mesh, face);
 	}
-	
+
       // do diagnostic print
 	if (diagnostic)
 	    diagnostic->Print(*this);
@@ -224,7 +219,7 @@ template<class MT>
 void Particle<MT>::Diagnostic::Print_alive(const Particle<MT> &particle) const 
 {
   // print active particle (alive = true)
-    output << "Particle is alive." << endl;
+    output << " -- Particle is alive -- " << endl;
 
   // event
     output << setw(20) << setiosflags(ios::right) << "Event: " 
@@ -261,7 +256,7 @@ template<class MT>
 void Particle<MT>::Diagnostic::Print_dead(const Particle<MT> &particle) const
 {
   // print dead particle (alive = false)
-    output << "Particle is dead." << endl;
+    output << " -- Particle is dead -- " << endl;
 
   // event
     output << setw(20) << setiosflags(ios::right) << "Event: " 
@@ -292,6 +287,28 @@ void Particle<MT>::Diagnostic::Print_dead(const Particle<MT> &particle) const
 	   << setw(12) << particle.weight << endl;
 
     output << endl;
+}
+
+template<class MT>
+void Particle<MT>::Diagnostic::Print_dist(double d_col, double d_bnd, 
+					  int cell) const
+{
+  // do detailed diagnostic print of particle event distances
+    output << setw(20) << setiosflags(ios::right) << "Present cell: "
+	   << setw(12) << cell << endl;
+    output << setw(20) << setiosflags(ios::right) << "Dist-collision: "
+	   << setw(12) << d_col << endl;
+    output << setw(20) << setiosflags(ios::right) << "Dist-boundary: "
+	   << setw(12) << d_bnd << endl;
+}
+
+template<class MT>
+void Particle<MT>::Diagnostic::Print_xs(const Opacity<MT> &xs,
+					int cell) const
+{
+  // do detailed diagnostic print of particle event cross sections
+    output << setw(20) << setiosflags(ios::right) << "Opacity: " 
+	   << setw(12) << xs.Sigma(cell) << endl;
 }
 
 CSPACE
