@@ -6,13 +6,12 @@
 
 (require 'font-lock)
 
-(make-face 'font-lock-kull-macros-face)
-
-(defconst c++-font-lock-keywords-gmf
-  '(
-    ("\\<\\(Check\\|Require\\|Ensure\\|Remember\\|Assert\\|Insist\\)\\>" 1 font-lock-kull-macros-face)
-    ))
-
-(setq c++-font-lock-keywords (cons c++-font-lock-keywords c++-font-lock-keywords-gmf))
+(defun add-draco-dbc-font-lock-keywords ()
+  (setq font-lock-keywords
+	(append
+	 '(("\\<\\(Check\\|Ensure\\|Insist\\|Require\\)\\>"
+	    0 font-lock-warning-face t))
+	 c++-font-lock-keywords-2)))
 
 (provide 'fl-keywords)
+

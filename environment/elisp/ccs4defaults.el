@@ -27,8 +27,49 @@
 ;; ========================================
 
 (defvar my-home-dir (concat (getenv "HOME") "/"))
+
+;; CCS-4 directories
+;; ========================================
+
+;; The standard Draco environment files should be installed at 
+;; /codes/radtran/vendors/environment in the directories:
+;;
+;;    elisp       XEmacs elisp scripts and settings
+;;    templates   Templates for new documents
+;;    bibfiles
+;;    bibtex
+;;    latex
+;;    tex
+;;    
+(defvar ccs4-env-dir nil
+"\nDirectory that contains Draco environment files.
+   - elisp       Subdirectory that contains XEmacs elisp scripts that
+                 support the Draco development environment.
+   - bibfiles    Subdirectory that contains LaTeX bibfiles for the
+                 Draco development environment.
+   - bibtex      Subdirectory that contains LaTeX style sheets for the
+                 Draco development environment.
+   - bin
+   - doc
+   - latex       Subdirectory that contains LaTeX style sheets for the
+                 Draco development environment.
+   - share
+   - templates   Subdirectory that contains templates that support
+                 rapid development of C++ source files.  These
+                 templates are used when the user selects 
+                 \"New file ...\" from the XEmacs RTT menu.
+   - tex         currently empty.")
+
+(defvar ccs4-elisp-dir nil
+"\nDirectory containing standard CC4 or Draco elisp code.")
+
+(defvar ccs4-templates-dir nil
+"\nDirectory containing source code templates that are to be
+used with the Draco elisp code (RTT Menu).")
+
 (defvar ccs4-env-dirs
       (list (concat my-home-dir "draco/environment/")
+	(concat my-home-dir "capsaicin/environment/")	
 	    (concat my-home-dir ".xemacs/")
 	    "/usr/projects/draco/environment/"
 	    "/codes/radtran/vendors/environment/" )
@@ -146,53 +187,6 @@ will be overridden for some modes\n
    c++-mode:
    Additional keywords will be highlighted with color.
    (e.g.: Insist, Ensure, ...).")
-
-
-;; CCS-4 directories
-;; ========================================
-
-;; The standard Draco environment files should be installed at 
-;; /codes/radtran/vendors/environment in the directories:
-;;
-;;    elisp       XEmacs elisp scripts and settings
-;;    templates   Templates for new documents
-;;    bibfiles
-;;    bibtex
-;;    latex
-;;    tex
-;;    
-(defvar ccs4-env-dir "/codes/radtran/vendors/environment/"
-"\nDirectory that contains Draco environment files.
-   - elisp       Subdirectory that contains XEmacs elisp scripts that
-                 support the Draco development environment.
-   - bibfiles    Subdirectory that contains LaTeX bibfiles for the
-                 Draco development environment.
-   - bibtex      Subdirectory that contains LaTeX style sheets for the
-                 Draco development environment.
-   - bin
-   - doc
-   - latex       Subdirectory that contains LaTeX style sheets for the
-                 Draco development environment.
-   - share
-   - templates   Subdirectory that contains templates that support
-                 rapid development of C++ source files.  These
-                 templates are used when the user selects 
-                 \"New file ...\" from the XEmacs RTT menu.
-   - tex         currently empty.")
-
-;; If the user specified value or the default value does not exist then
-;; 1) look at the default location.
-;; 2) print an error message.
-(if (not (file-accessible-directory-p ccs4-env-dir))
-    (if (file-accessible-directory-p "/usr/projects/draco/environment/")
-	(setq ccs4-env-dir "/usr/projects/draco/environment/")
-      (error (concat "Unable to find ccs4-env-dir = " ccs4-env-dir))))
-
-(defvar ccs4-elisp-dir (concat ccs4-env-dir "elisp/")
-"\nDirectory containing standard CC4 or Draco elisp code.")
-(defvar ccs4-templates-dir (concat ccs4-env-dir "templates/")
-"\nDirectory containing source code templates that are to be
-used with the Draco elisp code (RTT Menu).")
 
 ;; Define a verbose load-library function
 ;; ========================================

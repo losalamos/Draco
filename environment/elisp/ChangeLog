@@ -1,3 +1,43 @@
+2004-11-30  Kelly Thompson  <kgt@lanl.gov>
+
+	* ccs4defaults.el: Moved defvar code to top of file so that
+	  ccs4-elisp-dir doesn't get clobbered.
+
+	* fl-keywords.el: Updated code that fontifies Draco DbC
+	  keywords. This hack is not 100% what Tom and I wanted.  It does
+	  fontify the DbC keywords -- including when these keywords are
+	  used in a comment block.
+
+	* Config-pkg.el (draco-init-cc-mode): Add hook by default so that
+	  DbC keywords are highlighted by font-lock.
+
+	* Config-pkg.el: Changed a few setq comands to defvar commands to
+	  reduce the number of warnings about undefined variables when
+	  byte-compiling this file.
+
+2004-11-12  Kelly Thompson  <kgt@lanl.gov>
+
+	* ccs4defaults.el: Simplified the mechanism for including this
+	  file.  Updated the comments to reflect this change.  Now, we
+	  only need to add the following command to users's
+	  .xemacs/init.el file:
+
+	  (load-library "/path/to/draco/environment/elisp/ccs4defaults.el")
+
+	* ccs4defaults.el (ccs4-env-dirs): New variable that contains a
+	  list of directories where Draco elisp code might be found.  This
+	  list is parsed to setup the CCS-4 elisp environment.
+
+	* ccs4defaults.el: de-select doxymacs-mode if doxymacs.el is not
+	  found. 
+
+	* ccs4defaults.el: Moved setup of Info-directory-list to
+	  xemacs-setup.el. 
+
+	* xemacs-setup.el: Update elisp that sets the Info-directory-list
+  	  environment.  Also, comment out some gmf code that is not being
+	  used.
+
 2004-09-22  Kelly Thompson  <kgt@lanl.gov>
 
 	* Config-pkg.el: By default, turn on doxymacs-mode. The doxymacs

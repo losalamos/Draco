@@ -220,6 +220,8 @@ auto-mode-alist."
 		      ("\\.h$"   . c-mode)   ; to edit C code
  		      ("\\.dot$" . c-mode)  ; for dot files
 		      ) auto-mode-alist))
+	(require 'fl-keywords)
+	(add-hook 'c-mode-common-hook 'add-draco-dbc-font-lock-keywords)
       (add-hook 'c++-mode-hook 'turn-on-font-lock)
       (add-hook 'c++-mode-hook 'turn-on-auto-fill)
       (add-hook 'c-mode-hook 'turn-on-font-lock)
@@ -289,7 +291,7 @@ auto-mode-alist."
 	     ("\\.fm4$"  . f90-mode)
 	     ) auto-mode-alist))
     ;; let .F denone Fortran and not freeze files
-    (setq crypt-freeze-vs-fortran nil)
+    (defvar crypt-freeze-vs-fortran nil)
     (add-hook 'f90-mode-hook 'turn-on-auto-fill)))
 
 (if want-f90-mode (draco-init-f90-mode))
@@ -316,7 +318,7 @@ auto-mode-alist."
 	     ("\\.fh$"   . fortran-mode)
 	     ) auto-mode-alist))
     ;; let .F denone Fortran and not freeze files
-    (setq crypt-freeze-vs-fortran nil)
+    (defvar crypt-freeze-vs-fortran nil)
     (add-hook 'fortran-mode-hook 'turn-on-auto-fill)))
   
 (if want-fortran-mode (draco-init-fortran-mode))
@@ -440,18 +442,18 @@ auto-mode-alist and set up some customizations for RTT."
 					  "honeydew" (current-buffer))
 		     (set-face-foreground 'modeline 
 					  "black"   (current-buffer)))))
-    (setq cvs-erase-input-buffer        nil
-	  cvs-inhibit-copyright-message t  )
+    (defvar cvs-erase-input-buffer        nil)
+    (defvar cvs-inhibit-copyright-message t  )
     ; If this variable is set to any non-nil value
     ; `cvs-mode-remove-handled' will be called every time you check in
     ; files, after the check-in is ready. See section 5.11 Removing handled
     ; entries.
-    (setq cvs-auto-remove-handled t)
+    (defvar cvs-auto-remove-handled t)
 
     ; If this variable is set to any non-nil value, directories that do not
     ; contain any files to be checked in will not be listed in the `*cvs*'
     ; buffer. 
-    (setq cvs-auto-remove-handled-directories t)
+    (defvar cvs-auto-remove-handled-directories t)
     (require 'pcl-cvs)
     (define-key global-map [(meta shift f5)]
       'cvs-mode-add-change-log-entry-other-window)
