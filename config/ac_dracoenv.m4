@@ -453,6 +453,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        if test "${enable_shared}" = yes; then
 	   DRACO_LIBS="-rpath \${libdir} ${DRACO_LIBS}"
 	   PKG_LIBS="-rpath .. ${PKG_LIBS}"
+	   LDFLAGS="-rpath . ${LDFLAGS}"
        fi
    ;;
    sparc-sun-solaris2.*)
