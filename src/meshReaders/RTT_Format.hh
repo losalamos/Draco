@@ -1082,39 +1082,6 @@ class RTT_Format : public Mesh_Reader
     ~RTT_Format() {}
 
     // ACCESSORS
-    // Virutal accessor function definitions based on the Mesh_Readers
-    // abstract base class.
-/*!
- * \brief Returns the coordinate values for each of the nodes read from the 
- *        mesh file node data.
- * \return The coordinate values for the nodes.
- */
-    virtual vector<vector<double> > get_node_coords() const
-	{ return spNodes->get_coords(); }
-/*!
- * \brief Returns the problem coordinate units (e.g, cm) read from the mesh 
- *        file dimension data.
- * \return Mesh file coordinate units.
- */
-    virtual string get_node_coord_units() const 
-        { return dims.get_coor_units(); }
-
-    virtual vector<vector<int> > get_element_nodes() const;
-
-    virtual vector<Element_Definition::Element_Type> get_element_types() const;
-
-    virtual map<string, set<int> > get_node_sets() const;
-
-    virtual map<string, set<int> > get_element_sets() const;
-/*!
- * \brief Returns the title read from the mesh file header.
- * \return Mesh file title.
- */
-    virtual string get_title() const
-        { return header.get_title(); }
-
-    virtual bool invariant() const;
-
     // header data access
 /*!
  * \brief Returns the version number read from the mesh file header.
@@ -1734,6 +1701,39 @@ class RTT_Format : public Mesh_Reader
  */
     int get_cells_map(int cell_numb) const
         { return spCells->get_map(cell_numb);}
+
+    // Virutal accessor function definitions based on the Mesh_Readers
+    // abstract base class.
+/*!
+ * \brief Returns the coordinate values for each of the nodes read from the 
+ *        mesh file node data.
+ * \return The coordinate values for the nodes.
+ */
+    virtual vector<vector<double> > get_node_coords() const
+	{ return spNodes->get_coords(); }
+/*!
+ * \brief Returns the problem coordinate units (e.g, cm) read from the mesh 
+ *        file dimension data.
+ * \return Mesh file coordinate units.
+ */
+    virtual string get_node_coord_units() const 
+        { return dims.get_coor_units(); }
+
+    virtual vector<vector<int> > get_element_nodes() const;
+
+    virtual vector<Element_Definition::Element_Type> get_element_types() const;
+
+    virtual map<string, set<int> > get_node_sets() const;
+
+    virtual map<string, set<int> > get_element_sets() const;
+/*!
+ * \brief Returns the title read from the mesh file header.
+ * \return Mesh file title.
+ */
+    virtual string get_title() const
+        { return header.get_title(); }
+
+    virtual bool invariant() const;
 
     // connectivity access
 /*!

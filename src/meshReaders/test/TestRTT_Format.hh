@@ -61,7 +61,6 @@ class TestRTT_Format : public rtt_UnitTestFrame::TestApp
     
   private:
 
-    bool check_virtual(const rtt_meshReaders::RTT_Format & mesh);
     bool check_header(const rtt_meshReaders::RTT_Format & mesh);
     bool check_dims(const rtt_meshReaders::RTT_Format & mesh);
     bool check_node_flags(const rtt_meshReaders::RTT_Format & mesh);
@@ -77,6 +76,7 @@ class TestRTT_Format : public rtt_UnitTestFrame::TestApp
     bool check_node_data(const rtt_meshReaders::RTT_Format & mesh);
     bool check_side_data(const rtt_meshReaders::RTT_Format & mesh);
     bool check_cell_data(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_virtual(const rtt_meshReaders::RTT_Format & mesh);
     bool check_connectivity(const rtt_meshReaders::RTT_Format & mesh);
 
     // IMPLEMENTATION

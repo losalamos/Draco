@@ -72,10 +72,11 @@ string TestRTT_Format::runTest()
     RTT_Format mesh(filename);
     pass(" Construct ") << 
 	"Read mesh without coreing in or firing an assertion." << endl;
-    check_virtual(mesh);
+
     check_header(mesh);
     check_dims(mesh);
     check_node_flags(mesh);
+    check_virtual(mesh);
 
     // Report results of test.
     if (passed())
