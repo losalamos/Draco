@@ -44,11 +44,16 @@ namespace rtt_mc
  */
 // revision history:
 // -----------------
-//  0)   Original : Committed 2000_01_27.
-//  1) 2000_01_28 : Added public functions to TET_Mesh:
+//  0)   Original : Committed 2000-01-27.
+//  1) 2000-01-28 : Added public functions to TET_Mesh:
 //                          bool   in_cell(const SF_DOUBLE &, int);
 //                          int    get_cell(const SF_DOUBLE &);
 //                          double get_min_db(const SF_DOUBLE &, int);
+//  2) 2000-01-30 : Added subscripting, iterators, size, and empty functions
+//                  to class TET_Mesh::CCVF.
+//  3) 2000-02-12 : Added TET_Mesh member functions get_cell_types() and
+//                  get_point_coord() for Ensight support.  Also completed all
+//                  namespace issues and elimination of using declarations.
 //
 //___________________________________________________________________________//
 

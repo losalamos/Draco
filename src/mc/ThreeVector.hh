@@ -28,7 +28,7 @@ using rtt_rng::Sprng;
  */
 // revision history:
 // -----------------
-//  0) original : Committed 2000_01_27.
+//  0) original : Committed 2000-01-27.
 //___________________________________________________________________________//
 
 class ThreeVector

@@ -1,28 +1,52 @@
+2000-02-12  H. Grady Hughes  <hgh@lanl.gov>
+
+	* TET_Mesh.hh, TET_Mesh.cc, TET_Builder.hh, TET_Builder.cc:
+	Added TET_Mesh member functions get_cell_types() and get_point_coord()
+	for Ensight support.  Also eliminated all using declarations from
+	TET_Mesh and TET_Builder.
+
 2000-02-09  H. Grady Hughes  <hgh@lanl.gov>
 
-    * TET_Builder.hh, TET_Builder.cc, test/TET_test_1.hh, and
-    test/tstTET_Mesh.cc:
-    Initial commit of TET_test_1.hh, an example of a TET_Mesh
-    Interface Type class, and extension of tstTET_Mesh.cc to
-    include instantiation from that <IT> class.  Also corrected
-    some out-of-range index errors in TET_Builder.
+	* TET_Builder.hh, TET_Builder.cc, test/TET_test_1.hh, and
+	test/tstTET_Mesh.cc:
+	Initial commit of TET_test_1.hh, an example of a TET_Mesh
+	Interface Type class, and extension of tstTET_Mesh.cc to
+	include instantiation from that <IT> class.  Also corrected
+	some out-of-range index errors in TET_Builder.
 
 2000-02-08  H. Grady Hughes  <hgh@lanl.gov>
 
-    * TET_Builder.hh, TET_Builder.cc:
-    Initial commit of components for the TET_Mesh builder class.
+	* TET_Builder.hh, TET_Builder.cc:
+	Initial commit of components for the TET_Mesh builder class.
+
+2000-02-07  H. Grady Hughes  <hgh@lanl.gov>
+
+	* test/tstTET_Mesh.cc:
+	Added many tests of TET_Mesh functions, for a "hand-coded" test mesh.
 
 2000-02-02  Thomas M. Evans  <tme@lanl.gov>
 
 	* Layout*, *Coord_sys*, OS_Mesh*, OS_Builder*: removed using
 	declarations from file scope.  Also, removed any references to
-	MT::CCSF_a, MT::CCSF_i, MT::CCVF_d, and MT::CCVF_i.  This has some 
+	MT::CCSF_a, MT::CCSF_i, MT::CCVF_d, and MT::CCVF_i.  This has some
 	downfield repurcussions (Parallel_Builder).
+
+2000-01-30  H. Grady Hughes <hgh@lanl.gov>
+
+	* TET_Mesh.hh:
+	Added subscripting, iterators, size, and empty functions to
+	class TET_Mesh::CCVF.
+
+2000-01-28  H. Grady Hughes <hgh@lanl.gov>
+
+	* TET_Mesh.hh, TET_Mesh.cc, test/tstTET_Mesh.cc:
+	Added in_cell(), get_cell(), and get_min_db() functions to TET_Mesh.
+	Also, initial commit of tstTET_Mesh.
 
 2000-01-27  H. Grady Hughes <hgh@lanl.gov>
 
-    * TET_Mesh.hh, TET_Mesh.cc, ThreeVector.hh:
-    Initial commit of components for the TET_Mesh.
+	* TET_Mesh.hh, TET_Mesh.cc, ThreeVector.hh:
+	Initial commit of components for the TET_Mesh.
 
 1999-12-14  Thomas M. Evans  <tme@lanl.gov>
 
@@ -36,7 +60,7 @@
 1999-11-19  Thomas M. Evans  <tme@lanl.gov>
 
 	* Topology.*, test/tstTopology.cc: added a Topology class that
- 	describes mesh decomposition.  Additionally, added a component
+	describes mesh decomposition.  Additionally, added a component
 	test for it.  At this juncture the test only works for full
 	replication cases.  We had to add c4 to the mc dependency list to
 	accomodate node information in Topology.

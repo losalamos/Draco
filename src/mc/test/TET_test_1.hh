@@ -39,7 +39,7 @@ bool fail(int line, char *file)
  */
 // revision history:
 // -----------------
-//  0) original : Committed 2000_02_09
+//  0) original : Committed 2000-02-09
 //___________________________________________________________________________//
 
 class TET_test_1

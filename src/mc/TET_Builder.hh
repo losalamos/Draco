@@ -27,7 +27,9 @@ namespace rtt_mc
  */
 // revision history:
 // -----------------
-//  0)   Original : Committed 
+//  0)   Original : Committed 2000-02-08
+//  1) 2000-02-12 : Completed namespace issues, bug fixes, and elimination
+//                  of using declarations.
 //
 //___________________________________________________________________________//
 

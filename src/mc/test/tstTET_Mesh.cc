@@ -7,6 +7,15 @@
  */
 //---------------------------------------------------------------------------//
 
+// revision history:
+// -----------------
+//  0) original   : Committed 2000-01-28
+//  1) 2000-02-07 : Added many tests of TET_Mesh functions, for a "hand-coded"
+//                  test mesh.
+//  2) 2000-02-09 : Extension to include instantiation from a generic interface
+//                  class, and tests based on a particular example of such an
+//                  interface class, contained in TET_test_1.hh.
+
 #include "../TET_Mesh.hh"
 #include "../TET_Builder.hh"
 #include "../Layout.hh"
