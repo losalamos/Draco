@@ -339,14 +339,14 @@ void Mesh_2D()
 	r[0] = -0.6;
 	r[1] = 0.9;
 	ref  = 0.1;
-	d    = m.get_min_axial_distance(r, 1);
+	d    = m.get_orthogonal_dist_to_bnd(r, 1);
 	
 	if (!soft_equiv(d, ref)) ITFAILS;
 
 	r[0] = -0.6;
 	r[1] = -0.2;
 	ref  = 0.4;
-	d    = m.get_min_axial_distance(r, 1);
+	d    = m.get_orthogonal_dist_to_bnd(r, 1);
 	
 	if (!soft_equiv(d, ref)) ITFAILS;
 
@@ -354,7 +354,7 @@ void Mesh_2D()
 	r[0] = 0.5;
 	r[1] = -0.5;
 	ref  = 0.5;
-	d    = m.get_min_axial_distance(r, 2);
+	d    = m.get_orthogonal_dist_to_bnd(r, 2);
 	
 	if (!soft_equiv(d, ref)) ITFAILS;
 	
@@ -362,7 +362,7 @@ void Mesh_2D()
 	r[0] = 0.11;
 	r[1] = 2.8;
 	ref  = 0.11;
-	d    = m.get_min_axial_distance(r, 5);
+	d    = m.get_orthogonal_dist_to_bnd(r, 5);
 	
 	if (!soft_equiv(d, ref)) ITFAILS;
     }

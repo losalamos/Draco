@@ -104,6 +104,9 @@ template<class PT> class Particle_IO;
 //                typenames. 
 //  7) 21-DEC-01: moved to mc; massive cleanup, removed census particle and
 //                comm_buffer
+//  8) 10-FEB-03: removed COMPAQ scoping sets because we have found out that
+//                this is what the standard dictates; thus we have added base
+//                class scoping in the derived classes
 //
 //===========================================================================//
 
@@ -290,6 +293,10 @@ bool Particle_Buffer<PT>::comm_status() const
 template<class PT>
 class Recv_Particle_Buffer : public Particle_Buffer<PT>
 {
+  private:
+    // Base class typedef for scoping operations.
+    typedef Particle_Buffer<PT> Base;
+
   public:
     // Constructor.
     Recv_Particle_Buffer() {/*...*/}
@@ -317,6 +324,10 @@ class Recv_Particle_Buffer : public Particle_Buffer<PT>
 template<class PT>
 class Send_Particle_Buffer : public Particle_Buffer<PT>
 {
+  private:
+    // Base class typedef for scoping operations.
+    typedef Particle_Buffer<PT> Base;
+
   public:
     // Constructor.
     Send_Particle_Buffer() {/*...*/}

@@ -12,9 +12,6 @@
 /* 8 byte integer type */
 #undef EIGHT_BYTE_INT_TYPE
 
-/* Platform tags for scoping rules */
-#undef MC_COMPAQ
-
 #endif                          /* __mc_config_h__ */
 
 /*---------------------------------------------------------------------------*/

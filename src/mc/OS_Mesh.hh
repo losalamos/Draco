@@ -209,7 +209,7 @@ class OS_Mesh
     inline int next_cell(int, int, const sf_double & = sf_double()) const;
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &, const sf_double &, int, int &) const; 
-    inline double get_min_axial_distance(const sf_double &, int) const;
+    inline double get_orthogonal_dist_to_bnd(const sf_double &, int) const;
     inline sf_double get_normal(int, int) const;
     inline sf_double get_normal_in(int, int) const;
     inline double volume(int) const;
@@ -596,10 +596,10 @@ OS_Mesh::sf_int OS_Mesh::get_neighbors(int cell) const
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return the minimum axial distance in a cell.
+ * \brief Return the minimum distance to a cell boundary.
  */
-double OS_Mesh::get_min_axial_distance(const sf_double &r, 
-				       int              cell) const
+double OS_Mesh::get_orthogonal_dist_to_bnd(const sf_double &r, 
+					   int              cell) const
 {
     Require (cell > 0 && cell <= layout.num_cells());
     Require (r.size() == coord->get_dim());

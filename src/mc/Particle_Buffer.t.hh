@@ -269,12 +269,6 @@ void Particle_Buffer<PT>::async_free()
 }
 
 //===========================================================================//
-// INCLUDE DEFINITIONS TO ADD BASE CLASS SCOPING FOR SOME PLATFORMS
-//===========================================================================//
-
-#include "Particle_Buffer_Defs.h"
-
-//===========================================================================//
 // RECV_PARTICLE_BUFFER DERIVED CLASS FUNCTIONS
 //===========================================================================//
 //---------------------------------------------------------------------------//
@@ -293,18 +287,19 @@ void Recv_Particle_Buffer<PT>::recv_buffer(int proc)
     using C4::Recv;
 
     // buffer must be empty
-    Insist (is_empty(), "Tried to receive particles in a non-empty buffer.");
+    Insist (Base::is_empty(), 
+	    "Tried to receive particles in a non-empty buffer.");
 
     // receive the ints
-    Recv <int> (&int_data[0], 2, proc, 100);
-    Check (int_data[0] >= 0);
-    Check (int_data[1] >= 0);
+    Recv <int> (&Base::int_data[0], 2, proc, 100);
+    Check (Base::int_data[0] >= 0);
+    Check (Base::int_data[1] >= 0);
 
     // resize the buffer
-    packed_particles.resize(int_data[1]);
+    Base::packed_particles.resize(Base::int_data[1]);
 
     // receive the buffer
-    Recv <char> (&packed_particles[0], int_data[1], proc, 101);
+    Recv <char> (&Base::packed_particles[0], Base::int_data[1], proc, 101);
 }
     
 //---------------------------------------------------------------------------//
@@ -326,20 +321,21 @@ void Recv_Particle_Buffer<PT>::post_arecv(int proc)
     using C4::RecvAsync;
 
     // buffer must be empty
-    Insist (is_empty(), "Tried to post receive in a non-empty buffer.");
+    Insist (Base::is_empty(), 
+	    "Tried to post receive in a non-empty buffer.");
 
     // resize the buffer to max size, for async receives the buffer size is
     // set to max, the actual data copied into the buffer on a receive is
     // given by int_data[1]
-    packed_particles.resize(get_size_packed_particle() * 
-			    get_maximum_num_particles());
+    Base::packed_particles.resize(
+	Base::get_size_packed_particle() * Base::get_maximum_num_particles());
 
     // post receives for int data
-    RecvAsync(comm_int, &int_data[0], 2, proc, 100);
+    RecvAsync(Base::comm_int, &Base::int_data[0], 2, proc, 100);
     
     // post receives for the buffer
-    RecvAsync(comm_char, &packed_particles[0], packed_particles.size(), 
-	      proc, 101);
+    RecvAsync(Base::comm_char, &Base::packed_particles[0], 
+	      Base::packed_particles.size(), proc, 101);
 }
 
 //---------------------------------------------------------------------------//
@@ -354,12 +350,14 @@ template<class PT>
 void Recv_Particle_Buffer<PT>::async_wait()
 {
     // wait on receive buffers to make sure they are full
-    comm_int.wait();
-    comm_char.wait();
+    Base::comm_int.wait();
+    Base::comm_char.wait();
 
-    Ensure (int_data[1] <= packed_particles.size());
-    Ensure (int_data[0] >= 0 && int_data[0] <= get_maximum_num_particles());
-    Ensure (int_data[0] * get_size_packed_particle() == int_data[1]);
+    Ensure (Base::int_data[1] <= Base::packed_particles.size());
+    Ensure (Base::int_data[0] >= 0 && 
+	    Base::int_data[0] <= Base::get_maximum_num_particles());
+    Ensure (Base::int_data[0] * Base::get_size_packed_particle() == 
+	    Base::int_data[1]);
 }
 
 //---------------------------------------------------------------------------//
@@ -385,7 +383,7 @@ bool Recv_Particle_Buffer<PT>::async_check()
     {
 	// check comm_int
 	if (arrived[0] == 0)
-	    if (comm_int.complete())
+	    if (Base::comm_int.complete())
 	    {
 		arrived[0] = 1;
 		total++;
@@ -393,7 +391,7 @@ bool Recv_Particle_Buffer<PT>::async_check()
 	
 	// check comm_char
 	if (arrived[1] == 0)
-	    if (comm_char.complete())
+	    if (Base::comm_char.complete())
 	    {
 		arrived[1] = 1;
 		total++;
@@ -427,15 +425,15 @@ void Send_Particle_Buffer<PT>::send_buffer(int proc)
     using C4::Send;
 
     // send out the integer data
-    Send <int>(&int_data[0], 2, proc, 100);
+    Send <int>(&Base::int_data[0], 2, proc, 100);
     
     // send out the buffer
-    Send <char>(&packed_particles[0], int_data[1], proc, 101);
+    Send <char>(&Base::packed_particles[0], Base::int_data[1], proc, 101);
 
     // empty the Particle_Buffer
-    empty_buffer();
+    Base::empty_buffer();
 
-    Ensure (is_empty());
+    Ensure (Base::is_empty());
 }
 
 //---------------------------------------------------------------------------//
@@ -455,10 +453,11 @@ void Send_Particle_Buffer<PT>::post_asend(int proc)
     using C4::SendAsync;
 
     // send out the integer data
-    SendAsync(comm_int, &int_data[0], 2, proc, 100);
+    SendAsync(Base::comm_int, &Base::int_data[0], 2, proc, 100);
     
     // send out the buffer
-    SendAsync(comm_char, &packed_particles[0], int_data[1], proc, 101);
+    SendAsync(Base::comm_char, &Base::packed_particles[0], Base::int_data[1],
+	      proc, 101);
 }
 
 //---------------------------------------------------------------------------//
@@ -473,13 +472,13 @@ template<class PT>
 void Send_Particle_Buffer<PT>::async_wait()
 {
     // wait on receive buffers to make sure they are full
-    comm_int.wait();
-    comm_char.wait();
+    Base::comm_int.wait();
+    Base::comm_char.wait();
 
     // empty the buffer
-    empty_buffer();
+    Base::empty_buffer();
 
-    Ensure (is_empty());
+    Ensure (Base::is_empty());
 }
 
 //---------------------------------------------------------------------------//
@@ -506,7 +505,7 @@ bool Send_Particle_Buffer<PT>::async_check()
     {
 	// check comm_int
 	if (arrived[0] == 0)
-	    if (comm_int.complete())
+	    if (Base::comm_int.complete())
 	    {
 		arrived[0] = 1;
 		total++;
@@ -514,7 +513,7 @@ bool Send_Particle_Buffer<PT>::async_check()
 	
 	// check comm_char
 	if (arrived[1] == 0)
-	    if (comm_char.complete())
+	    if (Base::comm_char.complete())
 	    {
 		arrived[1] = 1;
 		total++;
@@ -529,14 +528,10 @@ bool Send_Particle_Buffer<PT>::async_check()
 
     // if the operation is complete, empty the buffer
     if (total)
-	empty_buffer();
+	Base::empty_buffer();
 
     return total;
 }
-
-
-// Unset scoping rules.
-#include "Unset_Particle_Buffer_Defs.h"
 
 } // end namespace rtt_mc
 
