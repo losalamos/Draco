@@ -3,7 +3,7 @@
  * \file   cdi_gandolf/tCDIGandolf.hh
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:26:24 2000
- * \brief  
+ * \brief  Header file for tCDIGandolf.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,9 +14,13 @@
 
 #include "UnitTestFrame/TestApp.hh"
 
+#include <vector>
+
 namespace rtt_cdi_gandolf_test
 {
  
+using std::vector;
+
 //===========================================================================//
 /*!
  * \class tCDIGandolf
@@ -61,13 +65,21 @@ class tCDIGandolf : public rtt_UnitTestFrame::TestApp
   private:
     
     // IMPLEMENTATION
+    
+    /*!
+     * \brief Returns true if the elements of the two vectors are
+     *        identical to 10 decimal places.
+     */
+    bool match( const vector<double> computedValue, 
+		const vector<double> refereneceValue );
+    
+    /*!
+     * \brief Returns true if the two values are identical to 10
+     *        decimal places. 
+     */
+    bool match( const double computedValue,
+		const double referenceValue );
 };
-
-    // ==================================================
-    // ==================================================
-    // Implement a dummy MatProps Class here???
-    // ==================================================
-    // ==================================================
 
 } // end namespace rtt_cdi_gandolf_test
 

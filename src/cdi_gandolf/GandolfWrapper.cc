@@ -14,14 +14,10 @@
 #include "ds++/Assert.hh"
 
 #include <string>
-#include <iostream>
-#include <iomanip>
 
 namespace rtt_cdi_gandolf {
 
-    using std::cout;
-    using std::endl;
-    using std::string;
+using std::string;
 
     //----------------------------------------//
     //                gmatids                 //
@@ -30,8 +26,6 @@ namespace rtt_cdi_gandolf {
     void gmatids( const std::string &fname , int matids[], 
 		  const int kmat, int &nmat, int &ier ) 
 	{
-	    //	    cout << "In GandolfWrapper::gmatids()" << endl;
-
 	    // Gandolf will not accept a filename that is longer that
 	    // 80 chars in length.	  
 	    int len = fname.length();
@@ -58,36 +52,8 @@ namespace rtt_cdi_gandolf {
 	    for ( int i=0; i<kmat; ++i )
 		li_matids[i] = static_cast<long int>(matids[i]);
 
-// 	    cout << "We have the following values before calling extc_gmatids:" << endl
-// 		 << "   cfname = ";
-// 	    for ( int i=0; i<len; ++i ) 
-// 		cout << cfname[i];
-// 	    cout << endl;
-// 	    for ( int i=0; i<li_kmat; ++i)
-// 		cout << "   li_matids[" << i << "] = " << li_matids[i] << endl;
-// 	    cout << "   li_kmat = " << li_kmat << endl
-// 		 << "   li_nmat = " << li_nmat << endl
-// 		 << "   li_ier  = " << li_ier  << endl
-// 		 << endl;
-
-
-
 	    // call the Gandolf library function
 	    extc_gmatids( cfname, li_matids, li_kmat, li_nmat, li_ier );
-
-
-
-	    //	    cout << "     Back from extc_gmatids:" << endl;
-// 	    cout << "   cfname = ";
-// 	    for ( int i=0; i<len; ++i ) 
-// 		cout << cfname[i];
-// 	    cout << endl;
-// 	    for ( int i=0; i<li_kmat; ++i)
-// 		cout << "   li_matids[" << i << "] = " << li_matids[i] << endl;
-// 	    cout << "   li_kmat = " << li_kmat << endl
-// 		 << "   li_nmat = " << li_nmat << endl
-// 		 << "   li_ier  = " << li_ier  << endl
-// 		 << endl;
 
 	    // Abort if Gandolf returns an error.
 
@@ -138,8 +104,6 @@ namespace rtt_cdi_gandolf {
 		char keys[][key_length],
 		const int kkeys, int &nkeys, int &ier)
 	{
-	    //	    cout << "In GandolfWrapper::gkeys()." << endl;
-	    
 	    // Gandolf will not accept a filename that is longer that
 	    // 80 chars in length.	  
 	    int len = fname.length();
@@ -162,8 +126,6 @@ namespace rtt_cdi_gandolf {
 	    // call the Gandolf library function
 	    extc_gkeys( cfname, li_matid, keys, li_kkeys, li_nkeys,
 			li_ier );
-
-	    //	    cout << "     Back from extc_gkeys:" << endl;
 
 	    // Abort if Gandolf returns an error.
 	    switch ( li_ier ) {
@@ -195,23 +157,6 @@ namespace rtt_cdi_gandolf {
 	    nkeys = static_cast<int>(li_nkeys);	    
 	    ier   = static_cast<int>(li_ier);
 
-// 	    cout << "   cfname = ";
-// 	    for ( int i=0; i<len; ++i ) 
-// 		cout << cfname[i];
-// 	    cout << endl;
-// 	    cout << "   li_matid = " << li_matid << endl;
-// 	    cout << "   li_kkeys = " << li_kkeys << endl
-// 		 << "   li_nkeys = " << li_nkeys << endl
-// 		 << "   li_ier   = " << li_ier  << endl
-// 		 << endl;
-// 	    for ( int i=0; i<nkeys; ++i ) {
-// 		    cout << "   key[" << i << "] = ";
-// 		    for ( int j=0; j<key_length; ++j)
-// 			cout << keys[i][j];
-// 		    cout << endl; }
-// 	    cout << endl;
-
-
 	} // end of gkeys
 
 
@@ -223,8 +168,6 @@ namespace rtt_cdi_gandolf {
 		   int &nt, int &nrho, int &nhnu, int &ngray, int &nmg,
 		   int &ier )
 	{
-	    //	    cout << "In GandolfWrapper::gchgrids()." << endl;
-	    
 	    // Gandolf will not accept a filename that is longer that
 	    // 80 chars in length.	  
 	    int len = fname.length();
@@ -250,8 +193,6 @@ namespace rtt_cdi_gandolf {
 	    // call the Gandolf library function
 	    extc_gchgrids( cfname, li_matid, li_nt, li_nrho, li_nhnu,
 			   li_ngray, li_nmg, li_ier );
-
-	    //	    cout << "     Back from extc_gchgrids:" << endl;
 
 	    // Abort if Gandolf returns an error.
 	    switch ( li_ier ) {
@@ -295,20 +236,6 @@ namespace rtt_cdi_gandolf {
 	    nmg   = static_cast<int>(li_nmg);
 	    ier   = static_cast<int>(li_ier);
 
-// 	    cout << "   cfname = ";
-// 	    for ( int i=0; i<len; ++i ) 
-// 		cout << cfname[i];
-// 	    cout << endl;
-// 	    cout << "   li_matid = " << li_matid << endl;
-// 	    cout << "   li_nt    = " << li_nt    << endl
-// 		 << "   li_nrho  = " << li_nrho  << endl
-// 		 << "   li_nhnu  = " << li_nhnu  << endl
-// 		 << "   li_ngray = " << li_ngray << endl
-// 		 << "   li_nmg   = " << li_nmg   << endl
-// 		 << "   li_ier   = " << li_ier   << endl
-// 		 << endl;
-// 	    cout << endl;
-
     } // end of gchgrids
 
     //----------------------------------------//
@@ -321,8 +248,6 @@ namespace rtt_cdi_gandolf {
 		   vector<double> &data,  const int &kgray, int &ngray,
 		   int &ier )
 	{
-	    //	    cout << "In GandolfWrapper::ggetgray()." << endl;
-	    
 	    // Gandolf will not accept a filename that is longer that
 	    // 80 chars in length.	  
 	    int len = fname.length();
@@ -360,8 +285,6 @@ namespace rtt_cdi_gandolf {
 			   array_data,  li_kgray, li_ngray,
 			   li_ier );
 	    
-	    //	    cout << "     Back from extc_ggetgray:" << endl;
-
 	    // abort if Gandolf returned an error.
 	    switch ( li_ier ) {
 	    case 0: // no errors
@@ -406,25 +329,6 @@ namespace rtt_cdi_gandolf {
 	    std::copy( array_rhos,  array_rhos+nrho,  rhos.begin()  );
 	    std::copy( array_data,  array_data+ngray, data.begin()  );
 
-// 	    cout << endl
-// 		 << "Tabulated values from the IPCRESS file:" << endl;
-// 	    cout << endl;
-// 	    for( int i=0; i<nt; ++i)
-// 		cout << "temps[" << i << "] = " 
-// 		     << std::scientific << std::setprecision(2)
-// 		     << temps[i] << " keV" << endl;
-// 	    cout << endl;
-// 	    for( int i=0; i<nrho; ++i)
-// 		cout << "rhos[" << i << "] = " 
-// 		     << std::setw(4)
-// 		     << rhos[i] << " g/cm^3" << endl;
-// 	    cout << endl;
-// 	    for( int i=0; i<ngray; ++i)
-// 		cout << "rss[" << i << "] = " 
-// 		     << std::scientific << std::setprecision(8)
-// 		     << data[i] << " cm^2/g" << endl;
-// 	    cout << endl;
-
 	    delete [] array_temps;
 	    delete [] array_rhos;
 	    delete [] array_data;
@@ -441,8 +345,6 @@ namespace rtt_cdi_gandolf {
 		    const double &const_tlog, const double &const_rlog, 
 		    double &ans )
  	{
-	    //	    cout << "In GandolfWrapper::gintgrlog()." << endl;
-	    
 	    // cast all integers as long integers before calling ggetgray.
 	    long int li_nt    = static_cast<long int>(nt);    // const
 	    long int li_nrho  = static_cast<long int>(nrho);  // const
@@ -465,8 +367,6 @@ namespace rtt_cdi_gandolf {
 	    extc_gintgrlog( array_temps, li_nt, array_rhos, li_nrho,
 			    array_data, li_ngray, tlog, rlog, ans );
 	    
-	    //	    cout << "     Back from extc_gintgrlog:" << endl;
-
 	    // Gandolf does not return an error code for this function.
 
 	    // copy flat data structures back into 
@@ -492,8 +392,6 @@ namespace rtt_cdi_gandolf {
 		 vector<double> &data,  const int &kdata, int &ndata,
 		 int &ier )
 	{
-	    //	    cout << "In GandolfWrapper::ggetmg()." << endl;
-	    
 	    // Gandolf will not accept a filename that is longer that
 	    // 80 chars in length.	  
 	    int len = fname.length();
@@ -535,8 +433,6 @@ namespace rtt_cdi_gandolf {
 			 array_data,  li_kdata, li_ndata,
 			 li_ier );
 	    
-	    //	    cout << "     Back from extc_ggetmg:" << endl;
-
 	    // abort if Gandolf returned an error.
 	    switch ( li_ier ) {
 	    case 0: // no errors
@@ -585,25 +481,6 @@ namespace rtt_cdi_gandolf {
 	    std::copy( array_hnus,  array_hnus+nhnu,  hnus.begin()  );
 	    std::copy( array_data,  array_data+ndata, data.begin()  );
 
-// 	    cout << endl
-// 		 << "Tabulated values from the IPCRESS file:" << endl;
-// 	    cout << endl;
-// 	    for( int i=0; i<nt; ++i)
-// 		cout << "temps[" << i << "] = " 
-// 		     << std::scientific << std::setprecision(2)
-// 		     << temps[i] << " keV" << endl;
-// 	    cout << endl;
-// 	    for( int i=0; i<nrho; ++i)
-// 		cout << "rhos[" << i << "] = " 
-// 		     << std::setw(4)
-// 		     << rhos[i] << " g/cm^3" << endl;
-// 	    cout << endl;
-// 	    for( int i=0; i<ndata; ++i)
-// 		cout << "rss[" << i << "] = " 
-// 		     << std::scientific << std::setprecision(8)
-// 		     << data[i] << " cm^2/g" << endl;
-// 	    cout << endl;
-
 	    delete [] array_temps;
 	    delete [] array_rhos;
 	    delete [] array_hnus;
@@ -622,8 +499,6 @@ namespace rtt_cdi_gandolf {
 		    const double &const_tlog, const double &const_rlog, 
 		    vector<double> &ansmg )
  	{
-	    //	    cout << "In GandolfWrapper::gintmglog()." << endl;
-	    
 	    int ngroups = nhnu-1;
 
 	    // cast all integers as long integers before calling
@@ -654,8 +529,6 @@ namespace rtt_cdi_gandolf {
 			    li_nhnu, array_data, li_ndata, tlog, rlog,
 			    array_ansmg ); 
 	    
-	    //	    cout << "     Back from extc_gintmglog:" << endl;
-
 	    // Gandolf does not return an error code for this function.
 
 	    // copy flat data structures back into standard data
