@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page quadrature_overview Overview of the quadrature package
+ * \mainpage Overview of the quadrature package
  * \version 1_0_0
  * \author  Kelly Thompson
  * 

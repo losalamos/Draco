@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page stdheaders_overview Overview of the stdheaders package
+ * \mainpage Overview of the stdheaders package
  * \version 1_0_0
  * \author Michelle Murillo and Tom Evans
  * 

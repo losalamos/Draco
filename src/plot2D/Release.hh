@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page plot2D_overview Overview of the plot2D package
+ * \mainpage plot2D_overview Overview of the plot2D package
  * \version 1_0_0
  * \author Rob Lowrie
  *

@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page rtt_meshreaders_overview Overview of the Draco Mesh Reader Package
+ * \mainpage Overview of the Draco Mesh Reader Package
  *
  * \version 1_2_0
  *

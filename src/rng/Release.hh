@@ -16,7 +16,7 @@
 
 //===========================================================================//
 /*!
- * \page rng_overview Overview of the RNG package
+ * \mainpage Overview of the RNG package
  * \version 1_4_0
  * \author Tom Evans, Todd Urbatsch
  *
