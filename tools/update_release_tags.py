@@ -40,6 +40,33 @@ def get_dirs(homedir):
     return rdirs
 
 ##---------------------------------------------------------------------------##
+## REPLACE TAG
+##---------------------------------------------------------------------------##
+
+def update_tag(file):
+
+    # return if file doesn't exist
+    if not os.path.isfile(file):
+        return
+
+    # filename
+    f = os.path.basename(file)
+
+    # reset counter
+    count = 0
+
+    # open configure.ac
+    lines = open(file).read()
+
+    # subexpressions
+    (match, count) = re.subn(old_tag, new_tag, lines)
+
+    if count > 0:
+        new_file = open(file, 'w')
+        new_file.write(match)
+        print ">>> Replaced tag in %s" % (file)
+
+##---------------------------------------------------------------------------##
 ## MAIN PROGRAM
 ##---------------------------------------------------------------------------##
 
@@ -70,33 +97,17 @@ print ">>> Preparing to replace %s with %s" % (old_tag, new_tag)
 # loop through directories and do replacement
 for d in rdirs:
 
+    # pkg name
+    pkg = os.path.basename(d)
+
     file  = d + "/Release.cc"
     file2 = d + "/configure.ac"
+    file3 = d + "/autodoc/" + pkg + ".dcc"
 
-    # open Release.cc
-    lines = open(file).read()
-
-    # subexpressions
-    (match, count) = re.subn(old_tag, new_tag, lines)
-
-    if count > 0:
-        new_file = open(file, 'w')
-        new_file.write(match)
-        print ">>> Replaced tag in directory %s/Release.cc" % (d)
-
-    # reset counter
-    count = 0
-
-    # open configure.ac
-    lines = open(file2).read()
-
-    # subexpressions
-    (match, count) = re.subn(old_tag, new_tag, lines)
-
-    if count > 0:
-        new_file = open(file2, 'w')
-        new_file.write(match)
-        print ">>> Replaced tag in directory %s/configure.ac" % (d)
+    # fix tag
+    update_tag(file)
+    update_tag(file2)
+    update_tag(file3)
     
 ###############################################################################
 ##                            end of update_release_tags.py
