@@ -23,10 +23,7 @@ class XYZ_Quadratic : private Quad_Params
 {
 
   public:
-//     XYZ_Quadratic();
-//     XYZ_Quadratic( const XYZ_Quadratic& );
-//     ~XYZ_Quadratic();
-//     XYZ_Quadratic& operator=( const XYZ_Quadratic& );
+    XYZ_Quadratic( const Quad_Params& q ) : Quad_Params(q) {}
 
     double Et( double t ) const { return et0 + et1*t; }
     double Ex( double x ) const { return ex0 + ex1*x + ex2*x*x; }
