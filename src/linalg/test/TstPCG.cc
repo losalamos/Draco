@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 
 #include "nml/Group.hh"
 #include "nml/Items.hh"
@@ -18,6 +19,7 @@
 #include "../PCG_MatVec.hh"
 #include "../PCG_PreCond.hh"
 
+#include "test_utils.hh"
 #include "tstpcg_DB.hh"
 #include "TstPCG_MatVec.hh"
 #include "TstPCG_PreCond.hh"
@@ -42,14 +44,14 @@ int main( int argc, char *argv[] )
 
 // Provide for output of a version number
     for (int arg=1; arg < argc; arg++)
+    {
+	if (std::string(argv[arg]) == "--version")
 	{
-	    if (std::string(argv[arg]) == "--version")
-		{
-		    version(argv[0]);
-		    C4::Finalize();
-		    return 0;
-		}
+	    version(argv[0]);
+	    C4::Finalize();
+	    return 0;
 	}
+    }
 
 // Initialize some local variables
     int node  = C4::node();
@@ -96,6 +98,32 @@ int main( int argc, char *argv[] )
     b = h*h;
 
     pcg_ctrl.pcg_fe( x, b, pcg_matvec, pcg_precond );
+
+    // evaluate the results to see if it converged.
+    
+    Mat1<double> res(nru);
+
+    // Get the results.
+    
+    pcg_matvec->MatVec(res, x);
+
+    // The residual is the results minus the rhs.
+
+    {
+	C4::HTSyncSpinLock ht;
+
+	const int ndigits = 2;
+	
+	for (int i = 0; i<nru; i++)
+	{
+	    using rtt_linalg::compare_reals;
+	    using rtt_linalg::testMsg;
+	    std::cout << res[i] << " " << b[i]
+		      << " ---> "
+		      << testMsg(compare_reals(res[i], b[i], ndigits))
+		      << std::endl;
+	}
+    }
 
 // Wrap up C4.
     C4::Finalize();
