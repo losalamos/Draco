@@ -15,6 +15,7 @@
 #include "Opacity.hh"
 #include "Tally.hh"
 #include "Global.hh"
+#include "Global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
@@ -23,6 +24,8 @@
 #include <string>
 #include <iostream> 
 #include <cmath>
+#include <iomanip>
+#include <algorithm>
 
 namespace rtt_imc 
 {
@@ -69,14 +72,14 @@ namespace rtt_imc
  * before they can be transported.  The reset_status() function allows a user
  * to "turn on" a particle.
 
- */
+*/
 /*!
  * \example imc/test/tstParticle.cc
 
  * Example usage of the rtt_imc::Particle and rtt_imc::Particle_Buffer
  * classes.
 
- */
+*/
 // revision history:
 // -----------------
 //  0) original
@@ -123,6 +126,7 @@ namespace rtt_imc
 // 18) 20-DEC-01: redesigned the pack infrastructure
 // 19) 09-JAN-02: updated particle to work with new Particle_Buffer; added
 //                packed size calculation static function
+// 20) 29-JAN-02: added Gray_Particle and Multigroup_Particle
 //===========================================================================//
 
 template<class MT>
@@ -153,48 +157,50 @@ class Particle
 		     CENSUS=300, 
 		     KILLED=1000};
 
-    // Useful typedefs.
-    typedef std::vector<double>      sf_double;
-    typedef rtt_rng::Sprng           Rnd_Type;
-    typedef rtt_dsxx::SP<Rnd_Type>   SP_Rnd_Type;
-    typedef std::string              std_string;
-
     /*!
      * \class Particle::Diagnostic
      * \brief Diagnostic class for tracking particle histories.
      */
     class Diagnostic
     {
-      private:
+      protected:
 	// Stream output is sent to.
 	std::ostream &output;
-
+    
 	// Boolean for detailed diagnostic.
 	bool detail;
-
+    
       public:
 	//! Constructor.
-	Diagnostic(std::ostream &output_, bool detail_ = false) 
+	Diagnostic(std::ostream &output_, bool detail_) 
 	    : output(output_), detail(detail_) {}
 
+	//! Destructor for inheritance chain.
+	virtual ~Diagnostic() {/*...*/}
+    
 	//! Access detail switch (true gives more destail in printouts). 
 	bool detail_status() const { return detail; }
-
+    
 	// Diagnostic print functions.
-	void print(const Particle<MT> &) const;
-	void print_alive(const Particle<MT> &) const;
-	void print_dead(const Particle<MT> &) const;
-	void print_dist(double, double, double, int) const;
-	void print_xs(const Opacity<MT> &, int) const;
-
+	virtual void print(const Particle<MT> &) const;
+	virtual void print_alive(const Particle<MT> &) const;
+	virtual void print_dead(const Particle<MT> &) const;
+	virtual void print_dist(double, double, double, int) const;
+    
 	//! Inline output formatters
 	inline void header() const;
     };
 
-    // Friend declarations.
+    // Useful typedefs.
+    typedef std::vector<double>      sf_double;
+    typedef rtt_rng::Sprng           Rnd_Type;
+    typedef rtt_dsxx::SP<Rnd_Type>   SP_Rnd_Type;
+    typedef std::string              std_string;
+    
+    // friend declarations
     friend class Diagnostic;
 
-  private:
+  protected:
 
     // >> PARAMERERS:
 
@@ -230,53 +236,43 @@ class Particle
     // Random number object.
     SP_Rnd_Type random;
 
-  private:
+  protected:
+
     // >>> IMPLEMENTATION
 
     // Stream a distance d.
     inline void stream(double);  
 
-    //! Perform streaming operations specific to particles undergoing
-    //implicit absorption
-    inline void stream_implicit_capture(const Opacity<MT> &, Tally<MT> &, 
-					double);
-
-    //! Perform streaming operations specific to particles undergoing analog
+    // Perform streaming operations specific to particles undergoing analog
     // absorption
     inline void stream_analog_capture  (Tally<MT> &, double);
 
-    // Effective scatter.
-    void scatter(const MT & );
-
     // Surface crossings, return a false if particle escapes.
-    bool surface(const MT &, int);
+    inline bool surface(const MT &, int);
 
     //! Check for energy-weight fraction below Implicit/Analog cutoff. 
     bool use_analog_absorption() { return (fraction <= minwt_frac); }
 
-    //! Process a combined scattering/collision event
-    void collision_event(const MT&, Tally<MT>&, double, double, double);
+    // Process a particle going into the census
+    inline void census_event(Tally<MT> &);
 
-    //! Process a particle going into the census
-    void census_event(Tally<MT> &);
+    // Process a particle crossing a boundary
+    inline void boundary_event(const MT&, Tally<MT>&, int);
 
-    //! Process a particle crossing a boundary
-    void boundary_event(const MT&, Tally<MT>&, int);
+    // Perform an isotropic scatter.
+    inline void scatter(const MT &);
 
   public:
     // Particle constructor.
     inline Particle(const sf_double &, const sf_double &, double, int,
 		    Rnd_Type, double = 1, double = 1, int = BORN);
 
-    // Unpacking constructor.
-    inline Particle(const std::vector<char> &);
+    //! Default constructor.
+    Particle() {/*...*/}
 
-    // >>> TRANSPORT INTERFACE
-
-    // IMC transport step.
-    void transport(const MT &, const Opacity<MT> &, Tally<MT> &,
-		   rtt_dsxx::SP<Diagnostic> = rtt_dsxx::SP<Diagnostic>()); 
-
+    //! Virtual destructor.
+    virtual inline ~Particle() = 0;
+		      
     // >>> ACCESSORS
 
     //! Return the particle status.
@@ -306,9 +302,6 @@ class Particle
     //! Convert a string descriptor into an integer.
     static int convert_string_to_descriptor(std_string);
 
-    // Get the size of the packed particle.
-    static int get_packed_particle_size(int, const rtt_rng::Rnd_Control &);
-
     // >>> SET FUNCTIONS
     
     //! Reset the particle status to alive (true).
@@ -333,27 +326,17 @@ class Particle
     void set_cell(int new_cell) { cell = new_cell; }
 
     // >>> DIAGNOSTIC FUNCTIONS
-
-    // Public diagnostic services.
-    void print(std::ostream &) const;
-
-    // Overloaded equals operator.
-    bool operator==(const Particle<MT> &) const;
-
-    //! Overloaded not equals operator.
-    bool operator!=(const Particle<MT> &p) const { return !(*this == p); } 
-
-    // Pack function
-    inline std::vector<char> pack() const;
+    virtual void print(std::ostream &) const;
 };
 
 //---------------------------------------------------------------------------//
 // OVERLOADED OPERATORS
 //---------------------------------------------------------------------------//
-// output ascii version of Particle
-
+/*!
+ * \brief Output a particle.
+ */
 template<class MT>
-std::ostream& operator<<(std::ostream &output, 
+std::ostream& operator<<(std::ostream       &output, 
 			 const Particle<MT> &object)
 {
     object.print(output);
@@ -361,22 +344,22 @@ std::ostream& operator<<(std::ostream &output,
 }
 
 //---------------------------------------------------------------------------//
-// PARTICLE<MT> INLINE FUNCTIONS
+// INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
- * \brief Regular particle constructor.
+ * \brief Base class Particle constructor.
  *
  * The constructor is declared inline for optimization purposes.
  */
 template<class MT>
-Particle<MT>::Particle(const sf_double& r_, 
-		       const sf_double& omega_, 
-		       double ew_,
-		       int cell_, 
-		       Rnd_Type random_, 
-		       double frac,
-		       double tleft, 
-		       int desc)
+Particle<MT>::Particle(const sf_double &r_, 
+		       const sf_double &omega_, 
+		       double           ew_,
+		       int              cell_, 
+		       Rnd_Type         random_, 
+		       double           frac,
+		       double           tleft, 
+		       int              desc)
     : ew(ew_), 
       r(r_),
       omega(omega_),
@@ -388,123 +371,22 @@ Particle<MT>::Particle(const sf_double& r_,
       random(new Rnd_Type(random_))
 {
     // non-default particle constructor
-    Ensure (r.size() < 4);
-    Ensure (omega.size() == 3);
-    Ensure (cell > 0);
+    Check (r.size() < 4);
+    Check (omega.size() == 3);
+    Check (cell > 0);
+}
+
+//---------------------------------------------------------------------------//
+
+template<class MT>
+Particle<MT>::~Particle()
+{
 }
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Unpacking constructor.
- *
- * This constructor is used to unpack a particle that has been packed with
- * the Particle::pack() function.
- *
- * It is declared inline for optimization.
+ * \brief Move particle a distance.
  */
-template<class MT>
-Particle<MT>::Particle(const std::vector<char> &packed)
-{
-    Require (packed.size() >= 3 * sizeof(int) + 6 * sizeof(double));
-
-    // make an unpacker
-    rtt_dsxx::Unpacker u;
-    
-    // set it
-    u.set_buffer(packed.size(), &packed[0]);
-
-    // unpack the spatial dimension of the particle
-    int dimension = 0;
-    u >> dimension;
-    Check (dimension > 0 && dimension <= 3);
-
-    // size the dimension and direction 
-    r.resize(dimension);
-    omega.resize(3);
-
-    // unpack the position
-    for (int i = 0; i < dimension; i++)
-	u >> r[i];
-
-    // unpack the rest of the data
-    u >> omega[0] >> omega[1] >> omega[2] >> cell >> ew >> time_left
-      >> fraction;
-    Check (time_left >= 0.0);
-    Check (fraction  >= 0.0);
-    Check (cell      >  0);
-    Check (ew        >= 0.0);
-
-    // get the size of the RN state
-    int size_rn = 0;
-    u >> size_rn;
-    Check (size_rn > 0);
-
-    // make a packed rn vector
-    std::vector<char> prn(size_rn);
-
-    // unpack the rn state
-    for (int i = 0; i < size_rn; i++)
-	u >> prn[i];
-
-    // rebuild the rn state
-    random = new Rnd_Type(prn);
-    Check (random->get_num() >= 0);
-    Check (random->get_id());
-
-    // assign the descriptor and status
-    descriptor = UNPACKED;
-    alive      = true;
-    
-    Ensure (status());
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Pack a particle into a char stream for communication and
- * persistence. 
- */
-template<class MT>
-std::vector<char> Particle<MT>::pack() const
-{
-    Require (omega.size() == 3);
-
-    // make a packer
-    rtt_dsxx::Packer p;
-
-    // first pack the random number state
-    std::vector<char> prn = random->pack();
-
-    // determine the size of the packed particle: 1 int for cell, + 1 int for
-    // size of packed RN state + 1 int for dimension of space; dimension +
-    // 6 doubles; + size of RN state chars
-    int size = 3 * sizeof(int) + (r.size() + 6) * sizeof(double) + prn.size();
-
-    // set the packed buffer
-    std::vector<char> packed(size);
-    p.set_buffer(size, &packed[0]);
-
-    // pack the spatial dimension
-    p << static_cast<int>(r.size());
-    
-    // pack the dimension
-    for (int i = 0; i < r.size(); i++)
-	p << r[i];
-    
-    // pack the rest of the data
-    p << omega[0] << omega[1] << omega[2] << cell << ew << time_left
-      << fraction;
-
-    // pack the RN state
-    p << static_cast<int>(prn.size());
-    for (int i = 0; i < prn.size(); i++)
-	p << prn[i];
-
-    Ensure (p.get_ptr() == &packed[0] + size);
-    return packed;
-}
-
-//---------------------------------------------------------------------------//
-
 template<class MT>
 void Particle<MT>::stream(double distance)
 {
@@ -514,60 +396,148 @@ void Particle<MT>::stream(double distance)
 }
 
 //---------------------------------------------------------------------------//
-
+/*!
+ * \brief Stream the particle during analog transport.
+ */
 template<class MT>
-void Particle<MT>::stream_implicit_capture(const Opacity<MT> &xs, 
-					   Tally<MT> &tally,
-					   double distance)
+void Particle<MT>::stream_analog_capture(Tally<MT> &tally, double distance)
 {
-    Check(distance>=0)
+    Check(distance >= 0);
 
-    double argument = -xs.get_sigeffabs(cell) * distance;
-
-    // calculate multiplicative reduction in energy-weight; 
-    // calculate new energy weight; change in energy-weight
-    double factor = exp(argument);
-    double new_ew = ew * factor;
-    double del_ew = ew - new_ew;
-
-    // accumulate tallies from time-rate absorption.  ewpl ==
-    // energy-weighted-path-length = int_0^d e^(-sig*x) dx =
-    // (1/sig)ew(1-e^(-sig*x)), or if sig=0, ewpl = ew*d.
-    tally.deposit_energy( cell, del_ew );
-    tally.accumulate_momentum(cell, del_ew, omega);
-    if (xs.get_sigeffabs(cell) > 0)
-	tally.accumulate_ewpl(cell, del_ew / xs.get_sigeffabs(cell) );
-    else if (xs.get_sigeffabs(cell) == 0)
-	tally.accumulate_ewpl(cell, distance * ew);
-    else if (xs.get_sigeffabs(cell) < 0)
-	Insist (0, "Effective absorption is negative!");
-
-    // update the fraction of the particle's original weight
-    fraction *= factor;
-
-    // update particle energy-weight
-    ew = new_ew;
-
-    Check(ew)
-
-    // Physically transport the particle
-    stream(distance); 
-
-}
-
-//---------------------------------------------------------------------------//
-
-template<class MT>
-void Particle<MT>::stream_analog_capture(Tally<MT> &tally, 
-						double distance)
-{
-    Check(distance>=0)
-
+    // accumulate the energy-weighted pathlength
     tally.accumulate_ewpl(cell, distance * ew);
 
     // Physically transport the particle
     stream(distance); 
 }
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Process a particle going into census.
+ */
+template<class MT>
+void Particle<MT>::census_event(Tally<MT> &tally)
+{
+    // tally census data about the particle
+    tally.accumulate_cen_info( cell, ew );
+    
+    // set status to dead
+    alive = false;
+
+    Check(rtt_mc::global::soft_equiv(time_left, 0.0));
+
+    // set time left to identically zero
+    time_left = 0.0;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Process a boundary crossing event.
+ */
+template<class MT>
+void Particle<MT>::boundary_event(const MT  &mesh, 
+				  Tally<MT> &tally, 
+				  int        face)
+{
+    // tally the boundary crossing
+    tally.accum_n_bndcross();
+
+    // determine the status at the surface
+    alive = surface(mesh, face);
+    
+    // tally the reflection
+    if (descriptor == REFLECTION)
+	tally.accum_n_reflections();
+    
+    // tally the escape
+    if (descriptor == ESCAPE)
+    {
+	tally.accum_n_escaped();
+	tally.accum_ew_escaped(ew);
+    }
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Handle surface crossing.
+ *
+ * \return false if particle leaves system
+ */
+template<class MT>
+bool Particle<MT>::surface(const MT &mesh, int face)
+{
+    using std::vector;
+
+    // handle particles at a surface
+
+    // status from surface crossing
+    bool status;
+
+    // determine the next cell
+    int next_cell = mesh.next_cell(cell, face, r);
+
+    // determine descriptor and outcome of this event
+
+    if (next_cell == cell)
+    {
+	// reflection
+	descriptor            = REFLECTION;
+	vector<double> normal = mesh.get_normal(cell, face);
+	Check (normal.size() == 3);
+	
+	// specularly reflect angle
+	double factor = rtt_mc::global::dot(omega, normal);
+	for (int i = 0; i < 3; i++)
+	    omega[i] -= 2 * factor * normal[i];
+	cell = next_cell;
+    }
+    else if (next_cell == 0)
+    {
+	// escape
+	descriptor = ESCAPE;
+	cell       = next_cell;
+    }
+    else if (next_cell < 0)
+    {
+	// domain boundary crossing
+	descriptor = CROSS_BOUNDARY;
+	cell       = next_cell;
+    }
+    else 
+    {
+	// continue streaming
+	descriptor = STREAM;
+	cell       = next_cell;
+    }
+
+    // return outcome of the event
+    if (next_cell <= 0)
+	status = false;
+    else 
+	status = true;	    
+    return status;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Perform an isotropic scatter.
+ */
+template<class MT>
+void Particle<MT>::scatter(const MT &mesh)
+{   
+    // calculate theta and phi (isotropic)
+    double costheta = 1.0 - 2.0 * random->ran();
+    double phi      = 2.0 * rtt_mc::global::pi * random->ran();
+    
+    // get new direction cosines
+    mesh.get_Coord().calc_omega(costheta, phi, omega);
+}
+
+//---------------------------------------------------------------------------//
+// INCLUDE Particle.t.hh SO AUTOMATIC INSTANTIATION WILL WORK 
+//---------------------------------------------------------------------------//
+
+#include "Particle.t.hh"
 
 } // end namespace rtt_imc
 

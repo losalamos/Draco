@@ -4,38 +4,36 @@
  * \author Thomas M. Evans, Todd J. Urbatsch, Mike Buksas
  * \date   Fri Jan 30 17:04:24 1998
  * \brief  Particle class implementation file.
+ *
+ * This file is included in the Particle.hh header file so that the Particle
+ * base class does not have to be explicitly instantiated.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Particle.hh"
-#include "Global.hh"
-#include <iomanip>
-#include <algorithm>
-
-namespace rtt_imc 
-{
-
 //===========================================================================//
-// PARTICLE<MT> FUNCTIONS
+// PARTICLE<MT,FT> FUNCTIONS
 //===========================================================================//
 
 //---------------------------------------------------------------------------//
 // STATIC MEMBER VARIABLES
 //---------------------------------------------------------------------------//
-
-// Parameter minwt_frac is the fractional energy-weight cutoff between
-// implicit and analog absorption behavior.
+/*!
+ *
+ * \brief Parameter minwt_frac is the fractional energy-weight cutoff between
+ * implicit and analog absorption behavior.
+ */
 template<class MT> const double Particle<MT>::minwt_frac = 0.01;
 
 //---------------------------------------------------------------------------//
 // STATIC FUNCTIONS
 //---------------------------------------------------------------------------//
-// convert a particle event descriptor string into an int
-
+/*!
+ * \brief Convert a particle event descriptor string into an int.
+ */
 template<class MT>
-int Particle<MT>::convert_string_to_descriptor(std::string desc)
+int Particle<MT>::convert_string_to_descriptor(std_string desc)
 {
     // declare return type
     int return_value;
@@ -91,8 +89,9 @@ int Particle<MT>::convert_string_to_descriptor(std::string desc)
 }
 
 //---------------------------------------------------------------------------//
-// convert an int into a particle event descriptor
-   
+/*!
+ * \brief Convert an int into a particle event descriptor.
+ */
 template<class MT>
 std::string Particle<MT>::convert_descriptor_to_string(int index)
 {
@@ -167,403 +166,11 @@ std::string Particle<MT>::convert_descriptor_to_string(int index)
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Calculate and return the size of the packed particle.
- * 
- * \param dimension spatial dimension of the problem
- * \param control rtt_rng::Rnd_Control object
- */
-template<class MT>
-int Particle<MT>::get_packed_particle_size(int dimension,
-					   const rtt_rng::Rnd_Control &control)
-{
-    Require (dimension > 0 && dimension <= 3);
-
-    // determine the size of the packed random number
-    int size_rn   = control.get_size();
-    Check (size_rn > 0);
-    
-    // calculate size: int for dimension, int for cell, int for size_rn;
-    // dimension doubles for position, 3 doubles for omega, 1 double for ew,
-    // 1 double for time_left, 1 double for fraction; size_rn characters for
-    // random number state
-    int size = 3 * sizeof(int) + (dimension + 6) * sizeof(double) + size_rn;
-    
-    return size;
-}
-
-//---------------------------------------------------------------------------//
-// PUBLIC FUNCTIONS
-//---------------------------------------------------------------------------//
-/*!
- * \brief Do a transport step for the particle.
- *
- * This transports a particle until it leaves the mesh, goes to census, or
- * gets killed.
- *
- * \p Transport Method
- *
- * Particles undergo implicit absorption until their energy weight drops
- * below 0.01 of their original value. During this time their energy weight
- * decreases exponentialy. Once they attain the cutoff energy weight they are
- * explicitly absorbed and their energy weight remains constant.
- *
- * We unify some of the treatment of the two modes (analog and implicit
- * absorption) by defining sigma_analog_abs to be the actual effective
- * absorption for analog (light) particles and 0.0 for implicit (heavy)
- * particles. The total collision cross section is always
- * sigma_scatter+sigma_eff_abs.
- *
- * To prevent the accumulation of particles with energy weights below the
- * cutoff point, particles stream no further than required to reach cutoff if
- * nothing else happens first. The distance to the cutoff is computed from
- * the current fractional energy weight and the effective absorption in the
- * current cell.
- */
-template<class MT>
-void Particle<MT>::transport(const MT &mesh, 
-			     const Opacity<MT> &xs, 
-			     Tally<MT> &tally, 
-			     rtt_dsxx::SP<Diagnostic> diagnostic)
-{
-    Require (alive);
-
-    // initialize diagnostics
-    if (diagnostic)
-    {
-	diagnostic->header();
-	diagnostic->print(*this);
-    }
-  
-    // !!! BEGIN TRANSPORT LOOP !!!
-
-    // transport loop, ended when alive = false
-    while (alive)
-    {
-	// distance to collision, boundary, census and cutoff defnintions
-        double d_collide, d_boundary, d_census, d_cutoff;
-
-	// streaming distance definition
-	double d_stream;
-
-	// cell face definition
-        int face = 0;
-
-	// event probability definitions
-	double prob_thomson_scatter, prob_scatter, prob_abs;
-
-	// intermediate cross section definitions:
-	double sigma_thomson_scatter, sigma_eff_scatter, sigma_eff_abs, 
-	    sigma_scatter, sigma_analog_abs, sigma_collide; 
-
-	sigma_thomson_scatter = xs.get_sigma_thomson(cell);
-	sigma_eff_scatter     = xs.get_sigeffscat(cell);
-	sigma_eff_abs         = xs.get_sigeffabs(cell);
-
-	sigma_scatter         = sigma_thomson_scatter + sigma_eff_scatter;
-
-	if (use_analog_absorption())
- 	    sigma_analog_abs     = sigma_eff_abs;
-	else
-	    sigma_analog_abs     = 0.0;
-
-	sigma_collide = sigma_scatter + sigma_analog_abs;
-
-	Check(sigma_collide>=0);
-
-	// accumulate momentum deposition from volume emission particles
-	if (descriptor == VOL_EMISSION)
-	    tally.accumulate_momentum(cell, -ew, omega);
-        
-	// sample distance-to-scatter/absorption (effective scatter or hardball)
-	if (sigma_collide == 0 ) 
-	{
-	    d_collide = rtt_mc::global::huge;    
-
-	    prob_thomson_scatter = 0.0;
-	    prob_scatter         = 0.0;
-	    prob_abs             = 0.0;
-	}
-	else 
-	{
-	    d_collide = -log(random->ran()) / sigma_collide;
-
-	    prob_thomson_scatter = sigma_thomson_scatter / sigma_collide;
-	    prob_scatter         = sigma_scatter         / sigma_collide;
-	    prob_abs             = sigma_analog_abs      / sigma_collide;
-	}
-
-	Check(d_collide>0);
-
-	// get distance-to-boundary and cell face
-	d_boundary = mesh.get_db(r, omega, cell, face);  Check(d_boundary>=0);
-
-	// distance to census (end of time step)
-	d_census = rtt_mc::global::c * time_left;   Check(d_census);
-
-	// distance until cutoff weight is reached:
-	if (sigma_eff_abs == 0 || use_analog_absorption() )
-	{ 
-	    d_cutoff = rtt_mc::global::huge;
-	}
-	else
-	{
-	    d_cutoff = log(fraction/minwt_frac)/sigma_eff_abs;
-	}
-
-	Check(d_cutoff>0);
-
-
-	// detailed diagnostics
-	if (diagnostic)
-	    if (diagnostic->detail_status())
-	    {
-		diagnostic->print_dist(d_collide, d_boundary, d_census, cell); 
-		diagnostic->print_xs(xs, cell);
-	    }
-
-
-	// determine limiting event
-	if      (d_collide < d_boundary  &&  d_collide < d_census   &&
-		 d_collide < d_cutoff  )
-	{
-	    descriptor = COLLISION;
-	    d_stream = d_collide;
-	}	
-	else if (d_boundary < d_collide  &&  d_boundary < d_census  &&
-		 d_boundary < d_cutoff )
-	{
-	    descriptor = BOUNDARY;
-	    d_stream = d_boundary;
-	}
-	else if (d_census < d_collide    &&  d_census < d_boundary  &&  
-		 d_census < d_cutoff   )
-	{
-	    descriptor = CENSUS;
-	    d_stream = d_census;
-	}
-	else if (d_cutoff < d_collide    &&  d_cutoff < d_boundary  &&
-		 d_cutoff < d_census   )
-	{
-	    descriptor = CUTOFF;
-	    d_stream = d_cutoff;
-	}
-	else
-	{
-	    Insist(0,"D'oh! Transport could not decide limiting event!");
-	}
-
-
-	// Stream the particle, according to its status:
-	if (use_analog_absorption())
-	{
-	    // Light particle (analog) streaming.
-	    stream_analog_capture(tally, d_stream);          
-	}
-	else
-	{
-	    // Heavy particle (implicit) streaming
-	    stream_implicit_capture(xs, tally, d_stream);    
-	}
-
-
-	// Adjust the time remaining till the end of the time step
-	time_left -= d_stream / rtt_mc::global::c;
-
-
-	// Process collisions, boundary crossings, going to census or
-	// reaching cutoff events.
-	switch (descriptor) 
-	{
-
-	case COLLISION:
-
-	    collision_event(mesh, tally, prob_scatter, prob_thomson_scatter, 
-			    prob_abs);
-	    break;
-
-	case CUTOFF:
-
-	    Check(rtt_mc::global::soft_equiv(fraction, minwt_frac));
-	    // Ensure light weight from now on:
-	    fraction = minwt_frac * 0.5;  
-	    break;
-
-	case BOUNDARY:
-
-	    boundary_event(mesh, tally, face);
-	    break;
-
-	case CENSUS:
-	    census_event(tally);
-	    break;
-
-	}
-
-    } 
-
-    // !!! END OF TRANSPORT LOOP !!!
-}
-
-//---------------------------------------------------------------------------//
-// PRIVATE TRANSPORT MEMBER FUNCTIONS
-//---------------------------------------------------------------------------//
-// Process a collision event
-
-template<class MT> 
-void Particle<MT>::collision_event(
-    const MT& mesh, Tally<MT> &tally, 
-    double prob_scatter, double prob_thomson_scatter, double prob_abs){
-
-    double rand_selector = random->ran();
-    
-    if (rand_selector < prob_scatter) 
-    { 
-	// Scatter
-	if (rand_selector < prob_thomson_scatter)
-	{ 
-	    // Thomson scatter
-	    descriptor = THOM_SCATTER;
-	    tally.accum_n_thomscat();
-	}
-	else
-	{ 
-	    // Effective scatter
-	    descriptor = EFF_SCATTER;
-	    tally.accum_n_effscat();
-	}
-	
-	// accumulate momentum from before the scatter
-	tally.accumulate_momentum(cell, ew, omega);
-	
-	// scatter the particle -- update direction cosines
-	scatter( mesh );
-	
-	// accumulate momentum from after the scatter
-	tally.accumulate_momentum(cell, -ew, omega);
-	
-    }
-    else if (rand_selector < prob_scatter + prob_abs)
-    { // Absorption
-	tally.deposit_energy( cell, ew );
-	tally.accum_n_killed();
-	tally.accum_ew_killed( ew );
-	tally.accumulate_momentum(cell, ew, omega);
-	descriptor = KILLED; 
-	alive=false;
-    }
-    else
-    {
-	Insist(0,"D'oh! Transport could not pick a random event!");
-    }   
-}
-
-//---------------------------------------------------------------------------//
-// Process a particle going into census
-
-template<class MT>
-void Particle<MT>::census_event(Tally<MT>& tally)
-{
-    tally.accumulate_cen_info( cell, ew );
-    alive = false;
-    Check(rtt_mc::global::soft_equiv(time_left, 0.0));
-    time_left = 0.0;
-}
-
-//---------------------------------------------------------------------------//
-// Process a boundary crossing event
-
-template<class MT>
-void Particle<MT>::boundary_event(const MT &mesh, Tally<MT>& tally, int face)
-{
-    tally.accum_n_bndcross();
-    alive = surface(mesh, face);
-    
-    if (descriptor == REFLECTION)
-	tally.accum_n_reflections();
-    
-    if (descriptor == ESCAPE)
-    {
-	tally.accum_n_escaped();
-	tally.accum_ew_escaped(ew);
-    }
-}
-
-//---------------------------------------------------------------------------//
-// perform an isotropic effective scatter 
-
-template<class MT>
-void Particle<MT>::scatter(const MT &mesh)
-{   
-    // calculate theta and phi (isotropic)
-    double costheta, phi;
-    costheta = 1 - 2 * random->ran();
-    phi      = 2 * rtt_mc::global::pi * random->ran();
-    
-    // get new direction cosines
-    mesh.get_Coord().calc_omega(costheta, phi, omega);
-}
-
-//---------------------------------------------------------------------------//
-// do surface crossings
-
-template<class MT>
-bool Particle<MT>::surface(const MT &mesh, int face)
-{
-    using std::vector;
-
-    // handle particles at a surface
-
-    // status from surface crossing
-    bool status;
-
-    // determine the next cell
-    int next_cell = mesh.next_cell(cell, face, r);
-
-    // determine descriptor and outcome of this event
-
-    if (next_cell == cell)
-    {
-	// reflection
-	descriptor            = REFLECTION;
-	vector<double> normal = mesh.get_normal(cell, face);
-	double factor         = rtt_mc::global::dot(omega, normal);
-	for (int i = 0; i < mesh.get_Coord().get_sdim(); i++)
-	    omega[i] -= 2 * factor * normal[i];
-	cell = next_cell;
-    }
-    else if (next_cell == 0)
-    {
-	// escape
-	descriptor = ESCAPE;
-	cell       = next_cell;
-    }
-    else if (next_cell < 0)
-    {
-	// domain boundary crossing
-	descriptor = CROSS_BOUNDARY;
-	cell       = next_cell;
-    }
-    else 
-    {
-	// continue streaming
-	descriptor = STREAM;
-	cell       = next_cell;
-    }
-
-    // return outcome of the event
-    if (next_cell <= 0)
-	status = false;
-    else 
-	status = true;	    
-    return status;
-}
-
-//---------------------------------------------------------------------------//
 // DIAGNOSTIC MEMBER FUNCTIONS
 //---------------------------------------------------------------------------//
-// print out a particle to some stream
-
+/*!
+ * \brief Print out a particle to some stream.
+ */
 template<class MT>
 void Particle<MT>::print(std::ostream &output) const
 {
@@ -600,40 +207,6 @@ void Particle<MT>::print(std::ostream &output) const
            << setw(12) << ew << endl;
 }
 
-//---------------------------------------------------------------------------//
-// OVERLOADED OPERATORS
-//---------------------------------------------------------------------------//
-// test Particle equality, remember, this simply checks to see if the Sprng
-// random number object has the same streamnum, not ID pointer
-
-template<class MT>
-bool Particle<MT>::operator==(const Particle<MT> &rhs) const
-{
-    // check particle data
-    if (ew != rhs.ew)
-	return false;
-    else if (r != rhs.r)
-	return false;
-    else if (omega != rhs.omega)
-	return false;
-    else if (cell != rhs.cell)
-	return false;
-    else if (time_left != rhs.time_left)
-	return false;
-    else if (fraction != rhs.fraction)
-	return false;
-    else if (alive != rhs.alive)
-	return false;
-    else if (descriptor != rhs.descriptor)
-	return false;
-
-    if (random->get_num() != rhs.random->get_num())
-	return false;
-
-    // if all these things check out then the particles are equal
-    return true;
-}
-
 //===========================================================================//
 // CLASS PARTICLE<MT>::DIAGNOSTIC
 //===========================================================================//
@@ -648,7 +221,8 @@ void Particle<MT>::Diagnostic::header() const
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Particle<MT>::Diagnostic::print(const Particle<MT> &particle)  const
+void Particle<MT>::Diagnostic::print(const Particle<MT> &particle)
+    const
 {
     using std::ios; 
 
@@ -666,8 +240,7 @@ void Particle<MT>::Diagnostic::print(const Particle<MT> &particle)  const
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Particle<MT>::Diagnostic::print_alive(const Particle<MT> 
-					   &particle) const 
+void Particle<MT>::Diagnostic::print_alive(const Particle<MT> &particle) const 
 {
     using std::endl;
     using std::ios;
@@ -716,8 +289,7 @@ void Particle<MT>::Diagnostic::print_alive(const Particle<MT>
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Particle<MT>::Diagnostic::print_dead(const Particle<MT> 
-					  &particle) const
+void Particle<MT>::Diagnostic::print_dead(const Particle<MT> &particle) const
 {
     using std::endl;
     using std::ios;
@@ -766,8 +338,10 @@ void Particle<MT>::Diagnostic::print_dead(const Particle<MT>
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Particle<MT>::Diagnostic::print_dist(double d_scat, double d_bnd, 
-					  double d_cen, int cell) const
+void Particle<MT>::Diagnostic::print_dist(double d_scat, 
+					  double d_bnd, 
+					  double d_cen, 
+					  int    cell) const
 {
     using std::ios;
     using std::setw;
@@ -783,30 +357,6 @@ void Particle<MT>::Diagnostic::print_dist(double d_scat, double d_bnd,
     output << setw(20) << setiosflags(ios::right) << "Dist-census: "
 	   << setw(12) << d_cen << endl;
 }
-
-//---------------------------------------------------------------------------//
-
-template<class MT>
-void Particle<MT>::Diagnostic::print_xs(const Opacity<MT> &xs,
-					int cell) const
-{
-    using std::setw;
-    using std::endl;
-    using std::ios;
-    using std::setiosflags;
-
-    // do detailed diagnostic print of particle event cross sections
-    output << setw(20) << setiosflags(ios::right) << "Opacity: " 
-	   << setw(12) << xs.get_sigma_abs(cell)  << endl;
-    output << setw(20) << setiosflags(ios::right) << "Eff. scatter: "
-	   << setw(12) << xs.get_sigeffscat(cell) << endl; 
-    output << setw(20) << setiosflags(ios::right) << "Eff. absorption: " 
-	   << setw(12) << xs.get_sigeffabs(cell)  << endl; 
-    output << setw(20) << setiosflags(ios::right) << "Thomson scatter: " 
-	   << setw(12) << xs.get_sigma_thomson(cell)  << endl; 
-}
-
-} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
 //                              end of Particle.t.hh
