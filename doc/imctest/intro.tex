@@ -4,20 +4,39 @@
 
 \section{Introduction}
 
-The \imctest package represents a first step towards the development
-of \milagro.  In this sense, \imctest may be considered an early
-release of \milagro.  The goals of \imctest are:
+The \imctest\ package represents a first step towards the development
+of \milagro.  In this sense, \imctest\ may be considered an early
+release of \milagro.  The goals of \imctest\ are:
 \begin{enumerate}
-\item develop an extensible C++ object-oriented/generic design;
+\item develop an extensible \cpp\ object-oriented/generic design;
 \item test the implementation of the IMC algorithm on several simple
   test problems;
 \item test the parallel performance of IMC on several platforms.
 \end{enumerate}
-The object-oriented/generic design of \imctest will ensure an easy
-transition to the full \milagro package.  The improvements and
-additions that are required to promote \imctest to \milagro include:
+The object-oriented/generic design of \imctest\ will ensure an easy
+transition to the full \milagro\ package.  The improvements and
+additions that are required to promote \imctest\ to \milagro\ include:
 \begin{enumerate}
 \item interfaces to various host-codes;
 \item improved physics;
 \item new mesh types and geometries;
 \end{enumerate}
+The classes and data structures in \imctest\ are easily extensible;
+thus, the classes used in \imctest\ should work in \milagro. For more
+information, the \jayenne\ code development plan is described in
+detail in Ref.~\citen{xtm:rn98xxx}.
+
+The purpose of this manual is to document the code structure of the
+\imctest\ package for users of the \imctest\ library.  In essence, this
+manual contains the following information:
+\begin{itemize}
+\item a listing and description of the classes and data structures
+  which comprise the \imctest\ library;
+\item descriptions of the interactions between classes and types in
+  \imctest;
+\item descriptions of the interfaces for each class in \imctest.
+\end{itemize}
+The information presented herein will facilitate easy usage of the
+\imctest\ library by code developers in X-division.  It will also serve
+as a reference for users of the code.
+
