@@ -212,6 +212,8 @@ auto-mode-alist."
 		      ("\\.cc$"  . c++-mode)
                       ("\\.pt$"  . c++-mode)
 		      ("\\.hh$"  . c++-mode)
+		      ("\\.hpp$"  . c++-mode)
+		      ("\\.cpp$"  . c++-mode)
                       ("\\.hh.in$" . c++-mode)
 		      ("\\.h.in$"  . c-mode)
 		      ("\\.c$"   . c-mode)   ; to edit C code
