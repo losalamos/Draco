@@ -257,14 +257,14 @@ void Ensight_Translator::ensight_case()
 
     // write the pointer to the node variables
     for (int i = 0; i < d_ens_vdata_names.size(); i++)
-	caseout << " scalar per node:    1  " << setw(19)
+	caseout << "scalar per node:    1  " << setw(19)
 		<< setiosflags(ios::left)
 		<< d_ens_vdata_names[i] << setw(4) << " "
 		<< "./" << d_ens_vdata_names[i] << "/data.****" << endl;
 
     // write the pointer to the cell variables
     for (int i = 0; i < d_ens_cdata_names.size(); i++)
-	caseout << " scalar per element: 1  " << setw(19)
+	caseout << "scalar per element: 1  " << setw(19)
 		<< setiosflags(ios::left)
 		<< d_ens_cdata_names[i] << setw(4) << " "
 		<< "./" << d_ens_cdata_names[i] << "/data.****" << endl;
