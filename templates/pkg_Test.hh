@@ -13,6 +13,7 @@
 #define __<spkg>_hh__
 
 #include <iostream>
+#include <string>
 
 namespace rtt_<spkg>
 {
