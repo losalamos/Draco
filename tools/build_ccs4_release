@@ -80,6 +80,10 @@ for arg in $cmd_args; do
        echo " "
     ;;
 
+   --enable-shared)
+       enable_shared="--enable-shared"
+    ;;
+
    --client=*)
         clientname=`echo $arg | sed -e 's/.*=//'`
         echo "$arg"
@@ -116,11 +120,33 @@ for arg in $cmd_args; do
         echo "    --keep-build-dir     Do not remove the build tree after install and"
 	echo "            testing is complete.  The default behavior is to remove the "
 	echo "            build tree."
+	echo "    --enable-shared      Create/Use shared libraries (.so).  The default"
+        echo "            is to create/use static libraries (.a)."
+        echo "    --client=<name>      This option is not currently used."
 	echo " "
         exit
     ;;
     esac
 done
+
+## Check parameters
+
+## if this is a Draco client (--with-draco specified) then check the
+## draco libs to ensure that both Draco and Client use the same type
+## of libraries (shared vs static).
+if test -n $withdraco; then
+   libext=`ls $dracodir/lib/lib*ds++.* | sed -e 's/.*[.]//'`
+   if test -z $enable_shared && test "$libext" = "so"; then
+      echo " "
+      echo "ERROR: --enable-shared not specified but Draco libs appear to be shared libs."
+      exit
+   fi
+   if test -n $enable_shared && test "$libext" = "a"; then
+      echo " "
+      echo "ERROR: --enable-shared specified by Draco libs appear to be static."
+      exit
+   fi
+fi
 
 ## determine install directory names
 arch=`uname`
@@ -222,7 +248,7 @@ cd $pkg_debug
 mkdir d
 cd d
 
-OPTIONS="--enable-shared $withdraco"
+OPTIONS="$enable_shared $withdraco"
 $pkg_src/configure --prefix=$pkg_debug $VENDORS $OPTIONS
 gmake nj=2
 
@@ -248,7 +274,7 @@ cd $pkg_opt
 mkdir d
 cd d
 
-OPTIONS="--with-opt=3 --disable-debug --with-dbc=0 --enable-shared $withdraco"
+OPTIONS="--with-opt=3 --disable-debug --with-dbc=0 $enable_shared $withdraco"
 $pkg_src/configure --prefix=$pkg_opt $VENDORS $OPTIONS
 gmake nj=2
 
