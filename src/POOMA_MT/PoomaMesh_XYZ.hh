@@ -1057,6 +1057,11 @@ class PoomaMesh_XYZ
     const Layout_t& get_Layout() const { return *FLayout_m; }
     Layout_t&       get_Layout()       { return *FLayout_m; }
 
+    bool operator==(const PoomaMesh_XYZ& rhs) const
+    {
+	return &rhs == this;
+    }
+
     int get_ncx() const { return ncx_m; }
     int get_ncy() const { return ncy_m; }
     int get_ncz() const { return ncz_m; }
