@@ -741,7 +741,7 @@ EOF
    done
 
 
-	test_alltarget="$test_alltarget tstCoord tstOSMesh"
+	test_alltarget="$test_alltarget tstCoord tstOSMesh tstFields"
         
 	test_nprocs="scalar"
 

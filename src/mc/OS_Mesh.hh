@@ -44,6 +44,12 @@
 // 11)   7-6-98 : added submesh indicator for domain decomposition problems
 // 12)   7-8-98 : added new get_vertices(int cell) member   
 // 13)  4-13-99 : moved to mc package
+// 14)   7-6-99 : moved CC field definitions to a location after the OS_Mesh
+//                definition to improve readability; made the CCSF class STL
+//                compliant (ie. it now has iterators that can be used to 
+//                navigate through the class)-->we can now use the algorithms 
+//                provided by the STL to do operations on CCSF fields, also
+//                this move presupposes the use of Randy's matprops class
 // 
 //===========================================================================//
 
@@ -83,57 +89,9 @@ class OS_Mesh
     // class definitions of the cell-centered fields: neither of these classes
     // require copy constructors or assignment operators as the SP<> and 
     // vector<> classes can do assignment
-    template<class T>
-    class CCSF
-    {
-      private:
-	// SP back to OS_Mesh 
-	SP<OS_Mesh> mesh;
-	// data in field, (num_cells)
-	vector<T> data;
 
-      public:
-	// inline explicit constructor
-	inline explicit CCSF(SP<OS_Mesh>);
-
-	// additional constructors
-	inline CCSF(SP<OS_Mesh>, const vector<T> &);
-
-	// return reference to mesh
-	const OS_Mesh& get_Mesh() const { return *mesh; }
-
-	// subscripting
-	const T& operator()(int cell) const { return data[cell-1]; }
-	T& operator()(int cell) { return data[cell-1]; }
-    };  
-
-    template<class T>
-    class CCVF
-    {
-      private:
-
-	// SP back to OS_Mesh
-	SP<OS_Mesh> mesh;
-	// 2-D field vector, (dimension, num_cells)
-	vector< vector<T> > data;
-
-      public:
-	// inline explicit constructor
-	inline explicit CCVF(SP<OS_Mesh>);
-
-	// additional constructors
-	inline CCVF(SP<OS_Mesh>, const vector<vector<T> > &);
-
-	// return reference to mesh
-	const OS_Mesh& get_Mesh() const { return *mesh; }
-
-	// subscripting
-	inline const T& operator()(int, int) const;
-	inline T& operator()(int, int);
-
-	// getting a CC vector
-	inline vector<T> operator()(int) const;
-    };  
+    template<class T> class CCSF;
+    template<class T> class CCVF;
 
     // useful typedefs used when working with a mesh
     typedef vector<double> CCSF_a;
@@ -253,95 +211,6 @@ inline ostream& operator<<(ostream &output, const OS_Mesh &object)
 {
     object.print(output);
     return output;
-}
-
-//---------------------------------------------------------------------------//
-// OS_Mesh::CCSF inline functions
-//---------------------------------------------------------------------------//
-// CCSF explicit constructor
-
-template<class T>
-inline OS_Mesh::CCSF<T>::CCSF(SP<OS_Mesh> mesh_) 
-    : mesh(mesh_), data(mesh->num_cells()) 
-{
-    Require (mesh);
-}
-
-//---------------------------------------------------------------------------//
-// constructor for automatic initialization
-
-template<class T>
-inline OS_Mesh::CCSF<T>::CCSF(SP<OS_Mesh> mesh_, const vector<T> &array)
-    : mesh(mesh_), data(array)
-{
-    // make sure things are kosher
-    Ensure (data.size() == mesh->num_cells());
-}
-
-//---------------------------------------------------------------------------//
-// OS_Mesh::CCVF inline functions
-//---------------------------------------------------------------------------//
-// CCVF explicit constructor
-
-template<class T>
-inline OS_Mesh::CCVF<T>::CCVF(SP<OS_Mesh> mesh_)
-    : mesh(mesh_), data(mesh->get_Coord().get_dim())
-{
-    Require (mesh);
-
-    // initialize data array
-    for (int i = 0; i < mesh->get_Coord().get_dim(); i++)
-	data[i].resize(mesh->num_cells());
-}
-
-//---------------------------------------------------------------------------//
-// constructor for automatic initialization
-
-template<class T>
-inline OS_Mesh::CCVF<T>::CCVF(SP<OS_Mesh> mesh_, 
-			      const vector<vector<T> > &array)
-    : mesh(mesh_), data(array)
-{
-    // check things out
-    Ensure (data.size() == mesh->get_Coord().get_dim());
-    for (int dim = 0; dim < mesh->get_Coord().get_dim(); dim++)
-	Ensure (data[dim].size() == mesh->num_cells());
-}
-
-//---------------------------------------------------------------------------//
-// constant overloaded ()
-
-template<class T>
-inline const T& OS_Mesh::CCVF<T>::operator()(int dim, int cell) const 
-{
-    return data[dim-1][cell-1]; 
-}
-
-//---------------------------------------------------------------------------//
-// assignment overloaded ()
-
-template<class T>
-inline T& OS_Mesh::CCVF<T>::operator()(int dim, int cell)
-{
-    return data[dim-1][cell-1];
-}
-
-//---------------------------------------------------------------------------//
-// vector return overload()
-
-template<class T>
-inline vector<T> OS_Mesh::CCVF<T>::operator()(int cell) const
-{
-    // declare return vector
-    vector<T> x;
-    
-    // loop through dimensions and make return vector for this cell
-    for (int i = 0; i < data.size(); i++)
-	x.push_back(data[i][cell-1]);
-
-    // return
-    Ensure (x.size() == data.size());
-    return x;
 }
 
 //---------------------------------------------------------------------------//
@@ -608,6 +477,191 @@ inline vector<double> OS_Mesh::sample_pos_on_face(int cell, int face,
     // return position vector
     return r;
 }
+
+//===========================================================================//
+// class OS_Mesh::CCSF
+//
+// cell-centered scalar fields
+// Note: we can't build empty fields (ie. the mesh has to have at least 1
+// cell 
+//===========================================================================//
+
+template<class T>
+class OS_Mesh::CCSF
+{
+  public:
+    // STL style typedefs
+    typedef T value_type;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef typename std::vector<T>::pointer pointer;
+    typedef typename std::vector<T>::const_pointer const_pointer;
+    typedef typename std::vector<T>::iterator iterator;
+    typedef typename std::vector<T>::const_iterator const_iterator;
+    typedef typename std::vector<T>::size_type size_type;
+
+  private:
+    // SP back to OS_Mesh 
+    SP<OS_Mesh> mesh;
+    // data in field, (num_cells)
+    vector<T> data;
+
+  public:
+    // inline explicit constructor
+    inline explicit CCSF(SP<OS_Mesh>);
+
+    // additional constructors
+    inline CCSF(SP<OS_Mesh>, const vector<T> &);
+
+    // return reference to mesh
+    const OS_Mesh& get_Mesh() const { return *mesh; }
+
+    // subscripting
+
+    // we use () to indicate absolute cell number and [] to indicate
+    // vector-style (0:n-1) indexing
+    const_reference operator()(int cell) const { return data[cell-1]; }
+    reference operator()(int cell) { return data[cell-1]; }
+ 
+    const_reference operator[](int index) const { return data[index]; }
+    reference operator[](int index) { return data[index]; }
+
+    // STL style functions
+    iterator begin() { return data.begin(); }
+    const_iterator begin() const { return data.begin(); }
+    
+    iterator end() { return data.end(); }
+    const_iterator end() const {return data.end();}
+    
+    size_type size() const { return data.size(); }
+    bool empty() const { return data.empty(); }
+}; 
+
+//---------------------------------------------------------------------------//
+// OS_Mesh::CCSF inline functions
+//---------------------------------------------------------------------------//
+// CCSF explicit constructor
+
+template<class T>
+inline OS_Mesh::CCSF<T>::CCSF(SP<OS_Mesh> mesh_) 
+    : mesh(mesh_), data(mesh->num_cells()) 
+{
+    Require (mesh);
+    Ensure  (!empty());
+}
+
+//---------------------------------------------------------------------------//
+// constructor for automatic initialization
+
+template<class T>
+inline OS_Mesh::CCSF<T>::CCSF(SP<OS_Mesh> mesh_, const vector<T> &array)
+    : mesh(mesh_), data(array)
+{
+    Require (mesh)
+    Ensure  (data.size() == mesh->num_cells());
+    Ensure  (!empty());
+}
+
+
+//===========================================================================//
+// class OS_Mesh::CCVF
+//
+// cell-centered vector fields
+//===========================================================================//
+
+template<class T>
+class OS_Mesh::CCVF
+{
+  private:
+
+    // SP back to OS_Mesh
+    SP<OS_Mesh> mesh;
+    // 2-D field vector, (dimension, num_cells)
+    vector< vector<T> > data;
+
+  public:
+    // inline explicit constructor
+    inline explicit CCVF(SP<OS_Mesh>);
+
+    // additional constructors
+    inline CCVF(SP<OS_Mesh>, const vector<vector<T> > &);
+
+    // return reference to mesh
+    const OS_Mesh& get_Mesh() const { return *mesh; }
+
+    // subscripting
+    inline const T& operator()(int, int) const;
+    inline T& operator()(int, int);
+
+    // getting a CC vector
+    inline vector<T> operator()(int) const;
+}; 
+
+//---------------------------------------------------------------------------//
+// OS_Mesh::CCVF inline functions
+//---------------------------------------------------------------------------//
+// CCVF explicit constructor
+
+template<class T>
+inline OS_Mesh::CCVF<T>::CCVF(SP<OS_Mesh> mesh_)
+    : mesh(mesh_), data(mesh->get_Coord().get_dim())
+{
+    Require (mesh);
+
+    // initialize data array
+    for (int i = 0; i < mesh->get_Coord().get_dim(); i++)
+	data[i].resize(mesh->num_cells());
+}
+
+//---------------------------------------------------------------------------//
+// constructor for automatic initialization
+
+template<class T>
+inline OS_Mesh::CCVF<T>::CCVF(SP<OS_Mesh> mesh_, 
+			      const vector<vector<T> > &array)
+    : mesh(mesh_), data(array)
+{
+    // check things out
+    Ensure (data.size() == mesh->get_Coord().get_dim());
+    for (int dim = 0; dim < mesh->get_Coord().get_dim(); dim++)
+	Ensure (data[dim].size() == mesh->num_cells());
+}
+
+//---------------------------------------------------------------------------//
+// constant overloaded ()
+
+template<class T>
+inline const T& OS_Mesh::CCVF<T>::operator()(int dim, int cell) const 
+{
+    return data[dim-1][cell-1]; 
+}
+
+//---------------------------------------------------------------------------//
+// assignment overloaded ()
+
+template<class T>
+inline T& OS_Mesh::CCVF<T>::operator()(int dim, int cell)
+{
+    return data[dim-1][cell-1];
+}
+
+//---------------------------------------------------------------------------//
+// vector return overload()
+
+template<class T>
+inline vector<T> OS_Mesh::CCVF<T>::operator()(int cell) const
+{
+    // declare return vector
+    vector<T> x;
+    
+    // loop through dimensions and make return vector for this cell
+    for (int i = 0; i < data.size(); i++)
+	x.push_back(data[i][cell-1]);
+
+    // return
+    Ensure (x.size() == data.size());
+    return x;
+} 
 
 } // end namespace rtt_mc
 

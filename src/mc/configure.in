@@ -23,7 +23,7 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(rng ds++)
 
 dnl runtesting
-AC_RUNTESTS(tstCoord tstOSMesh, scalar)
+AC_RUNTESTS(tstCoord tstOSMesh tstFields, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
