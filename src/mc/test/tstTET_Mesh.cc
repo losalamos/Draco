@@ -58,13 +58,13 @@ void Test_ThreeVector()
 {
     int num = 5;
     int *idr = init_sprng(0, num, seed, 1);
+    double TRI_epsilon = 0.0001;
     Sprng random(idr, 0);
 
     // Test sampling in a triangle.
 
     int numm = 10000;
     double factor = 36.0/static_cast<double>(numm);
-    double eps_triang = 0.0001;
 
     ThreeVector A(100.0,10.0,0.0);
     ThreeVector B(112.0,10.0,0.0);
@@ -97,8 +97,8 @@ void Test_ThreeVector()
     if (count[5][2] != 0.0)                        ITFAILS;
     if (count[5][3] != 0.0)                        ITFAILS;
     if (count[5][4] != 0.0)                        ITFAILS;
-    if (fabs(count[5][5] - 0.5544) > eps_triang)   ITFAILS;
-    if (fabs(count[5][6] - 0.5040) > eps_triang)   ITFAILS;
+    if (fabs(count[5][5] - 0.5544) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[5][6] - 0.5040) > TRI_epsilon)  ITFAILS;
     if (count[5][7] != 0.0)                        ITFAILS;
     if (count[5][8] != 0.0)                        ITFAILS;
     if (count[5][9] != 0.0)                        ITFAILS;
@@ -108,10 +108,10 @@ void Test_ThreeVector()
     if (count[4][1] != 0.0)                        ITFAILS;
     if (count[4][2] != 0.0)                        ITFAILS;
     if (count[4][3] != 0.0)                        ITFAILS;
-    if (fabs(count[4][4] - 0.4968) > eps_triang)   ITFAILS;
-    if (fabs(count[4][5] - 1.0476) > eps_triang)   ITFAILS;
-    if (fabs(count[4][6] - 1.0368) > eps_triang)   ITFAILS;
-    if (fabs(count[4][7] - 0.5040) > eps_triang)   ITFAILS;
+    if (fabs(count[4][4] - 0.4968) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[4][5] - 1.0476) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[4][6] - 1.0368) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[4][7] - 0.5040) > TRI_epsilon)  ITFAILS;
     if (count[4][8] != 0.0)                        ITFAILS;
     if (count[4][9] != 0.0)                        ITFAILS;
     if (count[4][10] != 0.0)                       ITFAILS;
@@ -119,51 +119,51 @@ void Test_ThreeVector()
     if (count[3][0] != 0.0)                        ITFAILS;
     if (count[3][1] != 0.0)                        ITFAILS;
     if (count[3][2] != 0.0)                        ITFAILS;
-    if (fabs(count[3][3] - 0.5220) > eps_triang)   ITFAILS;
-    if (fabs(count[3][4] - 0.9792) > eps_triang)   ITFAILS;
-    if (fabs(count[3][5] - 0.9396) > eps_triang)   ITFAILS;
-    if (fabs(count[3][6] - 0.9504) > eps_triang)   ITFAILS;
-    if (fabs(count[3][7] - 1.0260) > eps_triang)   ITFAILS;
-    if (fabs(count[3][8] - 0.5184) > eps_triang)   ITFAILS;
+    if (fabs(count[3][3] - 0.5220) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[3][4] - 0.9792) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[3][5] - 0.9396) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[3][6] - 0.9504) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[3][7] - 1.0260) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[3][8] - 0.5184) > TRI_epsilon)  ITFAILS;
     if (count[3][9] != 0.0)                        ITFAILS;
     if (count[3][10] != 0.0)                       ITFAILS;
     if (count[3][11] != 0.0)                       ITFAILS;
     if (count[2][0] != 0.0)                        ITFAILS;
     if (count[2][1] != 0.0)                        ITFAILS;
-    if (fabs(count[2][2] - 0.4932) > eps_triang)   ITFAILS;
-    if (fabs(count[2][3] - 0.9972) > eps_triang)   ITFAILS;
-    if (fabs(count[2][4] - 1.0800) > eps_triang)   ITFAILS;
-    if (fabs(count[2][5] - 1.0872) > eps_triang)   ITFAILS;
-    if (fabs(count[2][6] - 1.0404) > eps_triang)   ITFAILS;
-    if (fabs(count[2][7] - 0.9324) > eps_triang)   ITFAILS;
-    if (fabs(count[2][8] - 1.0368) > eps_triang)   ITFAILS;
-    if (fabs(count[2][9] - 0.5508) > eps_triang)   ITFAILS;
+    if (fabs(count[2][2] - 0.4932) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[2][3] - 0.9972) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[2][4] - 1.0800) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[2][5] - 1.0872) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[2][6] - 1.0404) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[2][7] - 0.9324) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[2][8] - 1.0368) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[2][9] - 0.5508) > TRI_epsilon)  ITFAILS;
     if (count[2][10] != 0.0)                       ITFAILS;
     if (count[2][11] != 0.0)                       ITFAILS;
     if (count[1][0] != 0.0)                        ITFAILS;
-    if (fabs(count[1][1] - 0.4752) > eps_triang)   ITFAILS;
-    if (fabs(count[1][2] - 1.0116) > eps_triang)   ITFAILS;
-    if (fabs(count[1][3] - 1.0044) > eps_triang)   ITFAILS;
-    if (fabs(count[1][4] - 0.9684) > eps_triang)   ITFAILS;
-    if (fabs(count[1][5] - 1.0188) > eps_triang)   ITFAILS;
-    if (fabs(count[1][6] - 0.9324) > eps_triang)   ITFAILS;
-    if (fabs(count[1][7] - 1.0080) > eps_triang)   ITFAILS;
-    if (fabs(count[1][8] - 1.0044) > eps_triang)   ITFAILS;
-    if (fabs(count[1][9] - 0.8424) > eps_triang)   ITFAILS;
-    if (fabs(count[1][10] - 0.5076) > eps_triang)  ITFAILS;
+    if (fabs(count[1][1] - 0.4752) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[1][2] - 1.0116) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[1][3] - 1.0044) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[1][4] - 0.9684) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[1][5] - 1.0188) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[1][6] - 0.9324) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[1][7] - 1.0080) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[1][8] - 1.0044) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[1][9] - 0.8424) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[1][10] - 0.5076) > TRI_epsilon) ITFAILS;
     if (count[1][11] != 0.0)                       ITFAILS;
-    if (fabs(count[0][0] - 0.5184) > eps_triang)   ITFAILS;
-    if (fabs(count[0][1] - 0.9216) > eps_triang)   ITFAILS;
-    if (fabs(count[0][2] - 0.9180) > eps_triang)   ITFAILS;
-    if (fabs(count[0][3] - 1.0872) > eps_triang)   ITFAILS;
-    if (fabs(count[0][4] - 1.0080) > eps_triang)   ITFAILS;
-    if (fabs(count[0][5] - 0.9900) > eps_triang)   ITFAILS;
-    if (fabs(count[0][6] - 0.9540) > eps_triang)   ITFAILS;
-    if (fabs(count[0][7] - 1.0188) > eps_triang)   ITFAILS;
-    if (fabs(count[0][8] - 1.0044) > eps_triang)   ITFAILS;
-    if (fabs(count[0][9] - 1.0548) > eps_triang)   ITFAILS;
-    if (fabs(count[0][10] - 0.9936) > eps_triang)  ITFAILS;
-    if (fabs(count[0][11] - 0.4608) > eps_triang)  ITFAILS;
+    if (fabs(count[0][0] - 0.5184) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[0][1] - 0.9216) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[0][2] - 0.9180) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[0][3] - 1.0872) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[0][4] - 1.0080) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[0][5] - 0.9900) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[0][6] - 0.9540) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[0][7] - 1.0188) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[0][8] - 1.0044) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[0][9] - 1.0548) > TRI_epsilon)  ITFAILS;
+    if (fabs(count[0][10] - 0.9936) > TRI_epsilon) ITFAILS;
+    if (fabs(count[0][11] - 0.4608) > TRI_epsilon) ITFAILS;
 
 //  Beginning:  a way to see these results ordered on the page.
 //  cout.setf(ios::fixed);
@@ -183,6 +183,7 @@ void Test_ThreeVector()
 // TET_Mesh Tests
 void Test_TET()
 {
+    double TET_epsilon = 0.0000000001;
     SP<Coord_sys> coor(new XYZCoord_sys());
     if (!coor)                     ITFAILS;
 
@@ -196,22 +197,19 @@ void Test_TET()
 
     VF_INT cells_ver(2);
 
+    cells_ver[0].push_back(0);
     cells_ver[0].push_back(1);
     cells_ver[0].push_back(2);
-    cells_ver[0].push_back(3);
-    cells_ver[0].push_back(5);
+    cells_ver[0].push_back(4);
 
     cells_ver[1].push_back(2);
+    cells_ver[1].push_back(1);
     cells_ver[1].push_back(3);
     cells_ver[1].push_back(4);
-    cells_ver[1].push_back(5);
 
     if (cells_ver.size() != 2)      ITFAILS;
     if (cells_ver[0].size() != 4)   ITFAILS;
     if (cells_ver[1].size() != 4)   ITFAILS;
-
-    // BEFORE constructing layout, reconcile vertex order.
-    // We will do this later.
 
     Layout layo;
     layo.set_size(2);
@@ -225,9 +223,33 @@ void Test_TET()
     layo(1,1) = 2;
     layo(2,3) = 1;
 
-//  SP<TET_Mesh> mesh_ptr(new TET_Mesh(coor, layo, vertex_vec, cells_ver));
-//  if ( !mesh_ptr )                  ITFAILS;
-//  if ( !mesh_ptr->full_Mesh() )     ITFAILS;
+    SP<TET_Mesh> mesh_ptr_1(new TET_Mesh(coor, layo, vertex_vec, cells_ver));
+
+    if ( !mesh_ptr_1 )                                                 ITFAILS;
+    if ( !mesh_ptr_1->full_Mesh() )                                    ITFAILS;
+
+    if ( mesh_ptr_1->next_cell(1,1) != 2 )                             ITFAILS;
+    if ( mesh_ptr_1->next_cell(1,2) != 0 )                             ITFAILS;
+    if ( mesh_ptr_1->next_cell(1,3) != 0 )                             ITFAILS;
+    if ( mesh_ptr_1->next_cell(1,4) != 0 )                             ITFAILS;
+
+    if ( mesh_ptr_1->next_cell(2,1) != 0 )                             ITFAILS;
+    if ( mesh_ptr_1->next_cell(2,2) != 0 )                             ITFAILS;
+    if ( mesh_ptr_1->next_cell(2,3) != 1 )                             ITFAILS;
+    if ( mesh_ptr_1->next_cell(2,4) != 0 )                             ITFAILS;
+
+    if (fabs(1.0 - 6.0*mesh_ptr_1->volume(1)) > TET_epsilon)           ITFAILS;
+    if (fabs(1.0 - 6.0*mesh_ptr_1->volume(2)) > TET_epsilon)           ITFAILS;
+
+    if (fabs(0.707106781187-mesh_ptr_1->face_area(1,1)) > TET_epsilon) ITFAILS;
+    if (fabs(0.559016994375-mesh_ptr_1->face_area(1,2)) > TET_epsilon) ITFAILS;
+    if (fabs(0.559016994375-mesh_ptr_1->face_area(1,3)) > TET_epsilon) ITFAILS;
+    if (fabs(0.5 - mesh_ptr_1->face_area(1,4)) > TET_epsilon)          ITFAILS;
+
+    if (fabs(0.559016994375-mesh_ptr_1->face_area(2,1)) > TET_epsilon) ITFAILS;
+    if (fabs(0.559016994375-mesh_ptr_1->face_area(1,2)) > TET_epsilon) ITFAILS;
+    if (fabs(0.707106781187-mesh_ptr_1->face_area(2,3)) > TET_epsilon) ITFAILS;
+    if (fabs(0.5 - mesh_ptr_1->face_area(1,4)) > TET_epsilon)          ITFAILS;
 
 
 }
