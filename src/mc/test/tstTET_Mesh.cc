@@ -345,7 +345,7 @@ void Test_TET()
     int *idr = init_sprng(0, num, seed, 1);
     Sprng random(idr, 0);
 
-    int numm = 1000000;
+    int numm = 100000;
     double factor = 500.0/(3.0*static_cast<double>(numm));
 
     double count[10][10][10];
@@ -370,9 +370,9 @@ void Test_TET()
         int yy = static_cast<int>(10.0*R[1]);
         int zz = static_cast<int>(10.0*R[2]);
 
-        if (xx < 0 || xx > 9)               ITFAILS;
-        if (yy < 0 || yy > 9)               ITFAILS;
-        if (zz < 0 || zz > 9)               ITFAILS;
+        if (xx < 0 || xx > 9)                           ITFAILS;
+        if (yy < 0 || yy > 9)                           ITFAILS;
+        if (zz < 0 || zz > 9)                           ITFAILS;
 
         count[xx][yy][zz] += 1.;
     }
@@ -380,12 +380,32 @@ void Test_TET()
     y_cent /= static_cast<double>(numm);
     z_cent /= static_cast<double>(numm);
 
-cout << "Centroid: " << x_cent << ", " << y_cent << ", " << z_cent << endl;
+    if (fabs(x_cent - 0.375357) > MID_epsilon)          ITFAILS;
+    if (fabs(y_cent - 0.374783) > MID_epsilon)          ITFAILS;
+    if (fabs(z_cent - 0.249045) > MID_epsilon)          ITFAILS;
 
     for (int xx = 0; xx < 10 ; xx++)
         for (int yy = 0; yy < 10 ; yy++)
             for (int zz = 0; zz < 10 ; zz++)
                 count[xx][yy][zz] *= factor;
+
+    if (fabs(count[1][6][0] - 1.01500) > MID_epsilon)   ITFAILS;
+    if (fabs(count[0][8][1] - 0.23333) > MID_epsilon)   ITFAILS;
+    if (fabs(count[5][4][2] - 0.54000) > MID_epsilon)   ITFAILS;
+    if (fabs(count[8][1][3] - 0.04167) > MID_epsilon)   ITFAILS;
+    if (fabs(count[2][7][4] - 0.31167) > MID_epsilon)   ITFAILS;
+    if (fabs(count[5][3][5] - 0.94333) > MID_epsilon)   ITFAILS;
+    if (fabs(count[4][4][6] - 1.00333) > MID_epsilon)   ITFAILS;
+    if (fabs(count[3][6][7] - 0.02667) > MID_epsilon)   ITFAILS;
+    if (fabs(count[4][4][8] - 0.50833) > MID_epsilon)   ITFAILS;
+    if (fabs(count[4][4][9] - 0.11167) > MID_epsilon)   ITFAILS;
+
+    if (count[1][9][0] != 0.0)                          ITFAILS;
+    if (count[4][6][3] != 0.0)                          ITFAILS;
+    if (count[5][2][7] != 0.0)                          ITFAILS;
+    if (count[3][4][9] != 0.0)                          ITFAILS;
+
+
 
 //  Beginning:  a way to see these results ordered on the page.
     cout.setf(ios::fixed);
@@ -400,10 +420,6 @@ cout << "Centroid: " << x_cent << ", " << y_cent << ", " << z_cent << endl;
        cout << endl << endl;
     }
 //  End:  a way to see these results ordered on the page.
-
-    // cells outside the sampled tet should have no counts.
-
-
 
 
     // End of test sampling in a tethedron.
