@@ -359,7 +359,7 @@ double CDI::integratePlanckSpectrum(const double lowFreq,
 	}
     }
 
-    Ensure ( integral >= 0.0 )
+    Ensure ( integral >= 0.0 );
     Ensure ( integral <= 1.0 );
 
     return integral;

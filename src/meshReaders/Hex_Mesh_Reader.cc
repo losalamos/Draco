@@ -36,7 +36,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     // Read in the dimensions of the problem.
     meshfile >> npoints >> ncells >> nvrtx >> nvrpf >> ndim >> nvb_faces
 	     >> nrb_faces >> nmat;
-    Insist(check_dims(),"Error in Mesh Dimension data!")
+    Insist(check_dims(),"Error in Mesh Dimension data!");
 	
     // Read the point coordinates data.
     point_coords.resize(npoints);
