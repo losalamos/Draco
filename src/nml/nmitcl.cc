@@ -79,10 +79,10 @@ int nmltk_Init( Tcl_Interp *interp )
 // Now run the NML library Tcl initiailzation code.
 
     static char initCmd[] =
-        "if [file exists $nml_library/init.nml] {\n\
-	     source $nml_library/init.nml\n\
+        "if [file exists $nml_library/init.nml.tcl] {\n\
+	     source $nml_library/init.nml.tcl\n\
          } else {\n\
-             set msg \"can't find $nml_library/init.nml\\n\"\n\
+             set msg \"can't find $nml_library/init.nml.tcl\\n\"\n\
              append msg \"Perhaps your GTS build environment is not \\n\"\n\
              append msg \"configured correctly or you need to \\n\"\n\
              append msg \"set your NML_LIBRARY environment variable?\"\n\

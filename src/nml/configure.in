@@ -7,7 +7,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for ds++
 dnl-------------------------------------------------------------------------dnl
 
-AC_INIT(init.nml)
+AC_INIT(init.nml.tcl)
 AC_CONFIG_AUX_DIR(../../config)
 package="nml"
 

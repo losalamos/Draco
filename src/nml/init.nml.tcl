@@ -1,4 +1,4 @@
-# init.nml
+# init.nml.tcl
 # Geoffrey Furnish
 # 16 September 1995
 
