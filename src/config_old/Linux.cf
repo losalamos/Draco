@@ -14,6 +14,10 @@ cxx	:= KCC
 c4	:= no
 #strict	:= yes
 
+ifndef DBC
+DBC	= 7
+endif
+
 # Currently avoid the gui support, until we can get all the tools built.
 spartan	:= yes
 
@@ -32,7 +36,7 @@ LAPACK_LIB	= -llapack -lblas -lf2c
 ifeq ($(cxx),KCC)
 
 CC	= gcc
-CXX	= KCC -x --restrict --no_implicit_include
+CXX	= KCC -x --no_implicit_include
 cmplr	= kai
 
 ifdef strict
@@ -100,25 +104,30 @@ endif
 
 ifeq ($(opt),1)
 optns		= o1
-ASSERT_FLAG	= -DNOASSERT
+DBC		= 1
+#ASSERT_FLAG	= -DNOASSERT
 cxx_opt		= +K1 -O1
 endif
 
 ifeq ($(opt),2)
 optns		= o2
-ASSERT_FLAG	= -DNOASSERT
+DBC		= 0
+#ASSERT_FLAG	= -DNOASSERT
 cxx_opt		= +K2 -O2
 endif
 
 ifeq ($(opt),3)
 optns		= o3
-ASSERT_FLAG	= -DNOASSERT
+DBC		= 0
+#ASSERT_FLAG	= -DNOASSERT
 cxx_opt		= +K3 -O3
 endif
 
 CXX	+= $(cxx_opt)
 
 endif				# Photon C++
+
+ASSERT_FLAG = -DDBC=$(DBC)
 
 #POOMA_INC_FLAG	= -I$(POOMA_ROOT)/src
 #POOMA_FLAGS	= $(POOMA_INC_FLAG) $(DEFINES)
