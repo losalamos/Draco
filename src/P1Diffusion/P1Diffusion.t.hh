@@ -440,10 +440,10 @@ P1Diffusion<MT,MS,HV>::getP1Matrix(const fcdsf &D, const fcdsf &DEffOverDeltaL,
 }
 
 template<class MT, class MS, bool HV>
-const std::list<std::pair<std::string,rtt_stopwatch::Timer *> >
+const std::list<std::pair<std::string, rtt_stopwatch::Timer *> >
 P1Diffusion<MT,MS,HV>::timers()
 {
-    typedef std::pair<std::string,rtt_stopwatch::Timer *> pair;
+    typedef std::pair<std::string,Timer *> pair;
     std::list<pair> list;
     list.push_back(pair("assemble", &assembleTimer_m));
     list.push_back(pair("rhs", &rhsTimer_m));
@@ -456,7 +456,7 @@ template<class MT, class MS, bool HV>
 const std::list<std::pair<std::string, const rtt_stopwatch::Timer *> >
 P1Diffusion<MT,MS,HV>::timers() const
 {
-    typedef std::pair<std::string,const rtt_stopwatch::Timer *> pair;
+    typedef std::pair<std::string,const Timer *> pair;
     std::list<pair> list;
     list.push_back(pair("assemble", &assembleTimer_m));
     list.push_back(pair("rhs", &rhsTimer_m));

@@ -58,6 +58,8 @@ namespace rtt_P1Diffusion
 
      typedef rtt_traits::MatrixFactoryTraits<Matrix> MatFacTraits;
      typedef rtt_diffusion::P1Matrix<MT> P1Matrix;
+
+     typedef rtt_stopwatch::Timer Timer;
      
    public:
 
@@ -85,10 +87,10 @@ namespace rtt_P1Diffusion
      typename MatFacTraits::PreComputedState preComputedMatrixState;
      bool jacobiScale;
 
-     rtt_stopwatch::Timer assembleTimer_m;
-     rtt_stopwatch::Timer rhsTimer_m;
-     rtt_stopwatch::Timer matSolverTimer_m;
-     rtt_stopwatch::Timer newFluxTimer_m;
+     Timer assembleTimer_m;
+     Timer rhsTimer_m;
+     Timer matSolverTimer_m;
+     Timer newFluxTimer_m;
      
      // Cache the swapped values to avoid too much communication.
      
@@ -111,13 +113,14 @@ namespace rtt_P1Diffusion
 		const ccsf &Q, const fcdsf &Fprime, const bssf &alpha,
 		const bssf &beta, const bssf &fb);
 
-     const std::list<std::pair<std::string,rtt_stopwatch::Timer *> > timers();
+     const std::list<std::pair<std::string,Timer *> > timers();
 
      // ACCESSORS
 
      typename ccsf::value_type integrateOverVolume(const ccsf &field) const;
 
-     typename fcdsf::value_type integrateOverBoundary(const fcdsf &field) const;
+     typename fcdsf::value_type
+     integrateOverBoundary(const fcdsf &field) const;
 
      void discFluxToDiscMomentum(DiscMomentumField &result,
                                  const DiscFluxField &flux) const
@@ -139,9 +142,7 @@ namespace rtt_P1Diffusion
          spmomentum->dotProduct(KEnergy, sigmaF, velocity);
      }
 
-     const
-     std::list<std::pair<std::string,const rtt_stopwatch::Timer *> >
-     timers() const;
+     const std::list<std::pair<std::string,const Timer *> > timers() const;
      
    private:
     
