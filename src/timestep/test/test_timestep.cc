@@ -40,7 +40,7 @@ test_timestep::~test_timestep()
 void test_timestep::execute_test()
 {
 
-    using dsxx::SP;
+    using rtt_dsxx::SP;
 
     double graphics_time = 10.;
     double dt_min = 0.000001;

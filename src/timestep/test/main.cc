@@ -55,7 +55,7 @@ int main (int argc, char *argv[])
 	C4::Finalize();
 	return 0;
     }
-    catch (const dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &ass)
     {
 	cerr << "assert failed: " << ass.what() << endl;
     }

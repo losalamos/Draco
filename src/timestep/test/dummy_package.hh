@@ -38,9 +38,9 @@ class dummy_package {
   private:
 
     rtt_timestep::ts_manager &tsm;
-    dsxx::SP<rtt_timestep::field_ts_advisor> sp_te;
-    dsxx::SP<rtt_timestep::field_ts_advisor> sp_ti;
-    dsxx::SP<rtt_timestep::field_ts_advisor> sp_ri; 
+    rtt_dsxx::SP<rtt_timestep::field_ts_advisor> sp_te;
+    rtt_dsxx::SP<rtt_timestep::field_ts_advisor> sp_ti;
+    rtt_dsxx::SP<rtt_timestep::field_ts_advisor> sp_ri; 
 
 
 // CREATORS
