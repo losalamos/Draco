@@ -17,7 +17,10 @@
 #include "PreCondP1Diff.hh"
 
 #include "ConjGrad/ConjGrad.hh"
+#include "ConjGrad/ConjGradTraits.hh"
 #include "ds++/SP.hh"
+
+#include <iostream>
 
 namespace rtt_ConjGradDiffusionSolver
 {
@@ -52,24 +55,50 @@ class SolverP1Diff
     typedef PreCondP1Diff<Matrix> PreCond;
     typedef typename ccsf::value_type value_type;
 
+    struct Options
+    {
+	int maxIters;
+	double eps;
+	bool verbose;
+	Options(int maxIters_in, double eps_in, bool verbose_in=true)
+	    : maxIters(maxIters_in), eps(eps_in), verbose(verbose_in)
+	{
+	    // empty
+	}
+    };
+
   private:
 
     // DATA
     
     SP<const MT> spMesh;
     FieldConstructor fCtor;
-    int maxIters;
-    double eps;
-
+    Options options;
+    
   public:
 
     // CREATORS
     
     SolverP1Diff(const SP<const MT>& spMesh_in,
 		 const FieldConstructor &fCtor_in,
-		 int maxIters_in, double eps_in)
-	: spMesh(spMesh_in), fCtor(fCtor_in), maxIters(maxIters_in),
-	  eps(eps_in)
+		 int maxIters_in, double eps_in, bool verbose_in=true)
+	: spMesh(spMesh_in), fCtor(fCtor_in), options(maxIters_in, eps_in,
+						      verbose_in)
+    {
+	// empty
+    }
+    
+    SolverP1Diff(const SP<const MT>& spMesh_in,
+		 const FieldConstructor &fCtor_in,
+		 const Options &options_in)
+	: spMesh(spMesh_in), fCtor(fCtor_in), options(options_in)
+    {
+	// empty
+    }
+    
+    SolverP1Diff(const SP<const MT>& spMesh_in,
+		 const Options &options_in)
+	: spMesh(spMesh_in), fCtor(spMesh_in), options(options_in)
     {
 	// empty
     }
@@ -87,8 +116,15 @@ class SolverP1Diff
 	int iter;
 	ccsf r(fCtor);
 	using rtt_ConjGrad::conjGrad;
-	conjGrad(phi, iter, brhs, MatVec(spMatrix), maxIters, eps,
-		 PreCond(spMatrix), r);
+	conjGrad(phi, iter, brhs, MatVec(spMatrix), options.maxIters,
+		 options.eps, PreCond(spMatrix), r);
+	if (options.verbose)
+	    std::cout << "SolverP1Diff: " << iter << " iterations, "
+		      << "||r||: "
+		      << rtt_ConjGrad::ConjGradTraits<ccsf>::Norm()(r)
+		      << ", ||b||: "
+		      << rtt_ConjGrad::ConjGradTraits<ccsf>::Norm()(brhs)
+		      << std::endl;
     }
 
     // ACCESSORS
