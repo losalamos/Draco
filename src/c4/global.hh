@@ -81,11 +81,11 @@ template<class T> void gsum( T& x );
 template<class T> void gmin( T& x );
 template<class T> void gmax( T& x );
 
-// Vector.
+// Array.
 
-template<class T> void gsum( T *px, int n, T dummy =T() );
-template<class T> void gmin( T *px, int n, T dummy =T() );
-template<class T> void gmax( T *px, int n, T dummy =T() );
+template<class T> void gsum( T *px, int n );
+template<class T> void gmin( T *px, int n );
+template<class T> void gmax( T *px, int n );
 
 C4_NAMESPACE_END
 
