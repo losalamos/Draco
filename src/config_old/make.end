@@ -48,7 +48,7 @@ clean: $(aux_clean)
 ifeq ($(wipestate),no)
 	$(RM) -f $(env)/*.o
 else
-	$(RM) .d.*_$(env)  .dkcc.*
+	$(RM) .d.*_$(env)  .dkcc.*_$(env)
 	$(RM) -rf $(env) 
 endif
 	$(RM) lib*_$(env).* x*_$(env)
