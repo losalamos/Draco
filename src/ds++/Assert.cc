@@ -22,10 +22,12 @@ namespace rtt_dsxx
 //---------------------------------------------------------------------------//
 // Build the error string (PRIVATE)
 //---------------------------------------------------------------------------//
-string assertion::build_message( std::string const &cond, 
-				 std::string const &file, 
-				 int         const line ) const
+std::string assertion::build_message( std::string const &cond, 
+				      std::string const &file, 
+				      int         const line ) const
 {
+    using std::string;
+
     std::ostringstream myMessage;
     myMessage << "Assertion: "
 	      << string( cond )

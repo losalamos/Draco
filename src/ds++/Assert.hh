@@ -17,7 +17,7 @@
 #include <string>
 
 // add ds++ package configure
-#include <ds++/config>
+#include <ds++/config.h>
 
 namespace rtt_dsxx
 {
@@ -227,22 +227,33 @@ void insist( std::string const cond,
  * \def Require(condition)
  * 
  * Pre-condition checking macro.  On when DBC & 1 is true.
- *\
+ */
 /*!
  * \def Check(condition)
  * 
  * Intra-scope checking macro.  On when DBC & 2 is true.
- *\
+ */
 /*!
  * \def Ensure(condition)
  * 
  * Post-condition checking macro.  On when DBC & 4 is true.
- *\
+ */
+/*!
+ * \def Remember(code)
+ * 
+ * Add code to compilable code.  Used in the following manner:
+ * \code
+ *     Remember (int old = x;)
+ *     // ...
+ *     Ensure (x == old);
+ * \endcode
+ * On when DBC & 4 is true.
+ */
 /*!
  * \def Insist(condition, message)
  * 
  * Inviolate check macro.  Insist is always on.
- *\
+ */
 //---------------------------------------------------------------------------//
 
 #if !defined(DBC)
@@ -265,8 +276,10 @@ void insist( std::string const cond,
 
 #if DBC & 4
 #define Ensure(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
+#define Remember(c) c;
 #else
 #define Ensure(c) 
+#define Remember(c)
 #endif
 
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ );

@@ -12,7 +12,6 @@
 #include "ds_test.hh"
 #include "../Assert.hh"
 #include "../Release.hh"
-#include "ds++/Assert.hh"
 
 #include <iostream>
 #include <vector>
@@ -179,6 +178,9 @@ void tcheck()
 
 void tensure()
 {
+    int x = 0;
+    Remember(x = 5);
+
     std::cout << "t-Ensure test: ";
     try {
 	Ensure(0);
@@ -200,6 +202,12 @@ void tensure()
 	std::cout << "passed\n";
 #endif
     }
+
+#if DBC & 4
+    if (x != 5) ITFAILS;
+#else
+    if (x != 0) ITFAILS;
+#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -248,12 +256,6 @@ void tinsist()
     catch(...) {
 	std::cout << "failed\n";
     }
-}
-
-void version(const std::string &progname)
-{
-    std::string version = "1.0.0";
-    std::cout << progname << ": version " << version << std::endl;
 }
 
 //---------------------------------------------------------------------------//
