@@ -25,6 +25,7 @@
 #include "mc/OS_Builder.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/Parallel_Data_Operator.hh"
+#include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
 #include "ds++/SP.hh"
@@ -51,6 +52,7 @@ using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
+using rtt_mc::Comm_Patterns;
 using rtt_mc::Parallel_Data_Operator;
 using rtt_rng::Rnd_Control;
 using rtt_dsxx::SP;
@@ -108,6 +110,10 @@ void source_replication_test()
     SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
     Parallel_Data_Operator pop(topology);
 
+    // build a comm_patterns
+    SP<Comm_Patterns> patterns(new Comm_Patterns());
+    patterns->calc_patterns(topology);
+
     // build a Mat_State and Opacity
     Opacity_Builder<OS_Mesh> ob(interface);
     SP<Mat_State<OS_Mesh> > mat    = ob.build_Mat(mesh);
@@ -118,7 +124,8 @@ void source_replication_test()
 
     // build the source
     SP<Source<OS_Mesh> > source = source_builder.build_Source(mesh, mat,
-							      opacity, rcon);
+							      opacity, rcon,
+							      patterns);
 
     // get the global numbers for each species
     int global_nsstot  = source_builder.get_nsstot();
