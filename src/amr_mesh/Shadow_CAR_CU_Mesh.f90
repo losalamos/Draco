@@ -25,12 +25,15 @@
 
           private
           public :: destruct_Mesh_Class, get_dimension, get_num_cells,  &
-                    get_num_nodes, get_num_corner_nodes,                &
+                    get_num_nodes, get_num_corner_nodes, get_cell_node, &
                     get_num_face_nodes, get_num_adj, get_next_cell,     &
+                    get_cell_nodes, get_cell_corner_nodes,              &
+                    get_cell_face_centered_nodes, get_cell_face_nodes,  &
                     get_cell_volume, get_cell_face_area,                &
                     get_mesh_min_coord, get_mesh_max_coord,             &
                     get_cell_min_coord, get_cell_max_coord,             &
-                    get_cell_mid_coord, get_cell_generation
+                    get_cell_mid_coord, get_cell_generation,            &
+                    get_cell_face_centered_node
 
 !===========================================================================
 !
@@ -78,6 +81,30 @@
 
           interface get_next_cell
               module procedure get_next_cell
+          end interface
+
+          interface get_cell_node
+              module procedure get_cell_node
+          end interface
+
+          interface get_cell_face_centered_node
+              module procedure get_cell_face_centered_node
+          end interface
+
+          interface get_cell_nodes
+              module procedure get_cell_nodes
+          end interface
+
+          interface get_cell_corner_nodes
+              module procedure get_cell_corner_nodes
+          end interface
+
+          interface get_cell_face_centered_nodes
+              module procedure get_cell_face_centered_nodes
+          end interface
+
+          interface get_cell_face_nodes
+              module procedure get_cell_face_nodes
           end interface
 
           interface get_cell_volume
@@ -202,13 +229,86 @@
                   if (.not. present(index)) then
                       call get_mesh_next_cell(self%this,cell,face,adj_cell)
                   else
-                      call get_mesh_next_indexed_cell(self%this, cell,  &
+                      call get_mesh_next_specific_cell(self%this, cell,  &
                                                       face, index, adj_cell)
                   end if 
 
               end function get_next_cell
 
-! Return the cell volume in the mesh (self).
+! Return the cell node specified by the index.
+              function get_cell_node(self, cell, node_index) result(node)
+                  type(CAR_CU_Mesh), intent(in) :: self
+                  integer, intent(in)           :: cell, node_index
+                  integer                       :: node
+
+                  call get_mesh_cell_node(self%this, cell, node_index, node)
+
+              end function get_cell_node
+
+! Return the face-centered cell node specified by the face.
+              function get_cell_face_centered_node(self, cell, face)     &
+                  result(node)
+                  type(CAR_CU_Mesh), intent(in) :: self
+                  integer, intent(in)           :: cell, face
+                  integer                       :: node
+
+                  call get_mesh_cell_face_cen_node(self%this, cell, face, node)
+
+              end function get_cell_face_centered_node
+
+
+! Return the set of nodes that make up a cell, including both the corner nodes
+! and the face-centered nodes.
+              function get_cell_nodes(self, cell) result(nodes)
+                  type(CAR_CU_Mesh), intent(in) :: self
+                  integer, intent(in)           :: cell
+                  integer, dimension(2**get_dimension(self) +            &
+                                     2*get_dimension(self)) :: nodes
+                  integer                       :: nsize
+
+                  nsize = (2**get_dimension(self) + 2*get_dimension(self))
+                  call get_mesh_cell_nodes(self%this, cell, nodes, nsize)
+
+              end function get_cell_nodes
+
+! Return the set of cell corner nodes.
+              function get_cell_corner_nodes(self, cell) result(nodes)
+                  type(CAR_CU_Mesh), intent(in)              :: self
+                  integer, intent(in)                        :: cell
+                  integer, dimension(2**get_dimension(self)) :: nodes
+                  integer                                    :: nsize
+
+                  nsize = 2**get_dimension(self)
+                  call get_mesh_cell_corner_nodes(self%this,cell,nodes,nsize)
+
+              end function get_cell_corner_nodes
+
+! Return the set of cell face-centered nodes.
+              function get_cell_face_centered_nodes(self, cell) result(nodes)
+                  type(CAR_CU_Mesh), intent(in)              :: self
+                  integer, intent(in)                        :: cell
+                  integer, dimension(2*get_dimension(self))  :: nodes
+                  integer                                    :: nsize
+
+                  nsize = 2*get_dimension(self)
+                  call get_mesh_cell_face_cen_nodes(self%this,cell,nodes,nsize)
+
+              end function get_cell_face_centered_nodes
+
+! Return the set of nodes that comprise a cell face.
+              function get_cell_face_nodes(self, cell, face) result(nodes)
+                  type(CAR_CU_Mesh), intent(in)                   :: self
+                  integer, intent(in)                             :: cell, face
+                  integer, dimension(2**(get_dimension(self)-1))  :: nodes
+                  integer                                         :: nsize
+
+                  nsize = 2**(get_dimension(self) - 1)
+                  call get_mesh_cell_face_nodes(self%this,cell,face,    &
+                                                nodes,nsize)
+
+              end function get_cell_face_nodes
+
+! Return the volume of the cell in the mesh (self).
               real function get_cell_volume(self, cell) result(volume)
                   type(CAR_CU_Mesh), intent(in) :: self
                   integer, intent(in)           :: cell
@@ -218,7 +318,7 @@
 
               end function get_cell_volume
 
-! Return the cell face area in the mesh (self).
+! Return the face area of the cell in the mesh (self).
               real function get_cell_face_area(self, cell, face) result(area)
                   type(CAR_CU_Mesh), intent(in) :: self
                   integer, intent(in)           :: cell, face

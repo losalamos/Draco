@@ -391,6 +391,17 @@ class CAR_CU_Mesh
     int get_cell(const vector<double> &) const;
     double get_db(const vector<double> &, const vector<double> &, int, 
 		  int &) const;
+    int cell_node(int cell, int node) const
+    { return cell_pair[cell - 1][node - 1];}
+    int cell_face_centered_node(int cell, int face) const
+    {
+        int offset = static_cast<int>(pow(2.0,get_ndim()));
+	return cell_pair[cell - 1][offset + face - 1];
+    }
+    inline vector<int> cell_nodes(int cell) const;
+    inline vector<int> cell_corner_nodes(int cell) const;
+    inline vector<int> cell_face_centered_nodes(int cell) const;
+    inline vector<int> cell_face_nodes(int cell, int face) const;
     inline vector<double> get_normal(int, int) const;
     inline vector<double> get_normal_in(int, int) const;
     inline double volume(int) const;
@@ -942,6 +953,76 @@ inline double CAR_CU_Mesh::face_area(int cell, int face) const
 
     // return face_area
     return face_area;
+}
+
+//---------------------------------------------------------------------------//
+
+inline vector<int> CAR_CU_Mesh::cell_nodes(int cell) const
+{
+    // Return the set of nodes that make up a cell, including both the corner
+    // nodes and the face-centered nodes.
+    int nnodes = pow(2.0,coord->get_dim()) + 2.0 * coord->get_dim();
+    vector<int> node_set(nnodes);
+    for (int node = 0; node < nnodes; node++)
+        node_set[node] = cell_pair[cell - 1][node];
+
+    return node_set;
+}
+
+//---------------------------------------------------------------------------//
+
+inline vector<int> CAR_CU_Mesh::cell_corner_nodes(int cell) const
+{
+    // Return the set of corner nodes that make up a cell.
+    int nnodes = pow(2.0,coord->get_dim());
+    vector<int> node_set(nnodes);
+    for (int node = 0; node < nnodes; node++)
+        node_set[node] = cell_pair[cell - 1][node];
+
+    return node_set;
+}
+
+//---------------------------------------------------------------------------//
+
+inline vector<int> CAR_CU_Mesh::cell_face_centered_nodes(int cell) const
+{
+    // Return the set of face-centered nodes for a cell.
+    int nnodes = pow(2.0,coord->get_dim()) + 2.0 * coord->get_dim();
+    vector<int> node_set(2.0 * coord->get_dim());
+    for (int node = pow(2.0,coord->get_dim()); node < nnodes; node++)
+        node_set[node - pow(2.0,coord->get_dim())] = cell_pair[cell - 1][node];
+
+    return node_set;
+}
+
+//---------------------------------------------------------------------------//
+
+inline vector<int> CAR_CU_Mesh::cell_face_nodes(int cell, int face) const
+{
+    // Return the set of nodes that make up a cell face
+    vector<int> node_set(pow(2.0,coord->get_dim() - 1));
+    // Correlations are based on cell faces indexed to start at zero
+    --face;
+
+    int node = face/3 + face/4 + 2 * (face/5);
+    node_set[0] = cell_pair[cell - 1][node];
+
+    node = ((face+1)%2) * (1 + face/2) + (face%2) * (4 + face/2);
+    node_set[1] = cell_pair[cell - 1][node];
+
+    if (coord->get_dim() == 3)
+    {
+        node = ((face+1)%2) * (3 * (1 + face/2) - 2 * (face/4)) +
+	       (face%2) * (5 + 2 * (face/3));
+        node_set[2] = cell_pair[cell - 1][node];
+
+        node = ((face+1)%2) * (face + 2) + (face%2) * face;
+        node_set[3] = cell_pair[cell - 1][node];
+    }
+    // Reset the face value to the original input
+    ++face;
+
+    return node_set;
 }
 
 //---------------------------------------------------------------------------//

@@ -11,6 +11,7 @@
 
 #include "CAR_CU_Mesh.hh"
 #include "Shadow_Opaque_Pointers.hh"
+#include "ds++/Assert.hh"
 #include <iostream>
 
 //===========================================================================//
@@ -116,6 +117,11 @@ extern "C"
 	int icell = static_cast<int>(cell);
 	int iface = static_cast<int>(face);	
 
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_num_adj_!");
+	Insist(iface > 0 && iface <= 2 * mesh->get_ndim(), 
+	       "Invalid face number passed to get_mesh_num_adj_!");
+
 	num_adj = mesh->num_adj(icell, iface);
     }
 
@@ -130,14 +136,19 @@ extern "C"
 	int icell = static_cast<int>(cell);
 	int iface = static_cast<int>(face);
 
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_next_cell_!");
+	Insist(iface > 0 && iface <= 2 * mesh->get_ndim(), 
+	       "Invalid face number passed to get_mesh_next_cell_!");
+
 	adj_cell = mesh->next_cell(icell, iface);
     }
 
     // Return the nth (index) cell that is adjacent to this cell face in the
     // mesh (self). This function is called for cells that are adjacent to 
     // multiple cells.
-    void get_mesh_next_indexed_cell_(long & self, long & cell, long & face, 
-				     long & index, long & adj_cell)
+    void get_mesh_next_specific_cell_(long & self, long & cell, long & face, 
+				      long & index, long & adj_cell)
     {
 	// Get the address of the CAR_CU_Mesh class object (self).
 	SP<CAR_CU_Mesh> mesh = 
@@ -147,20 +158,177 @@ extern "C"
 	int iface = static_cast<int>(face);
 	int iindex = static_cast<int>(index);	
 
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_next_specific_cell_!");
+	Insist(iface > 0 && iface <= 2 * mesh->get_ndim(), 
+	       "Invalid face number passed to get_mesh_next_specific_cell_!");
+
 	adj_cell = mesh->next_cell(icell, iface, iindex);
     }
 
-    // Return the cell volume in the mesh (self).
+    // Return the cell node specified by the index.
+    void get_mesh_cell_node_(long & self, long & cell, long & node_index, 
+                              long & node)
+    {
+	// Get the address of the CAR_CU_Mesh class object (self).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell);
+	int ind = static_cast<int>(node_index);
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_cell_node_!");
+	Insist(ind > 0 && ind <= (2 * mesh->get_ndim() + 
+				  pow(2.0,mesh->get_ndim())),
+	       "Invalid node index passed to get_mesh_cell_node_!");
+
+	node = mesh->cell_node(icell,ind);
+    }
+
+    // Return the face_centered cell node specified by the face.
+    void get_mesh_cell_face_cen_node_(long & self, long & cell, long & face, 
+                              long & node)
+    {
+	// Get the address of the CAR_CU_Mesh class object (self).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell);
+	int iface = static_cast<int>(face);
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_cell_node_!");
+	Insist(iface > 0 && iface <= 2 * mesh->get_ndim(), 
+	       "Invalid face number passed to get_mesh_face_cen_node_!");
+
+	node = mesh->cell_node(icell,iface);
+    }
+
+    // Return the set of nodes that make up a cell, including both the corner
+    // nodes and the face-centered nodes.
+    void get_mesh_cell_nodes_(long & self, long & cell, long & nodes, 
+                              long & nodes_size)
+    {
+	// Get the address of the CAR_CU_Mesh class object (self).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell);
+	long * nodes_array = & nodes;
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_cell_nodes_!");
+
+	vector<int> node_set = mesh->cell_nodes(icell);
+
+	Insist(nodes_size == node_set.size(), 
+	       "Illegal number of cell nodes (corner + face-centered!");
+
+	for (int node_index = 0; node_index < node_set.size(); node_index++)
+	{
+	    * nodes_array = node_set[node_index];
+	    ++nodes_array;
+	}
+    }
+
+    // Return the set of corner nodes for a cell.
+    void get_mesh_cell_corner_nodes_(long & self, long & cell, long & nodes, 
+				     long & nodes_size)
+    {
+	// Get the address of the CAR_CU_Mesh class object (self).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell);
+	long * nodes_array = & nodes;
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_cell_corner_nodes_!");
+
+	vector<int> node_set = mesh->cell_corner_nodes(icell);
+
+	Insist(nodes_size == node_set.size(), 
+	       "Illegal number of corner cell nodes!");
+
+	for (int node_index = 0; node_index < node_set.size(); node_index++)
+	{
+	    * nodes_array = node_set[node_index];
+	    ++nodes_array;
+	}
+    }
+
+    // Return the set of face-centered nodes for a cell.
+    void get_mesh_cell_face_cen_nodes_(long & self, long & cell, long & nodes,
+				       long & nodes_size)
+    {
+	// Get the address of the CAR_CU_Mesh class object (self).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell);
+	long * nodes_array = & nodes;
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell passed in get_mesh_cell_face_centered_nodes_!");
+
+	vector<int> node_set = mesh->cell_face_centered_nodes(icell);
+
+	Insist(nodes_size == node_set.size(), 
+	       "Illegal number of face-centered cell nodes!");
+
+	for (int node_index = 0; node_index < node_set.size(); node_index++)
+	{
+	    * nodes_array = node_set[node_index];
+	    ++nodes_array;
+	}
+    }
+
+    // Return the set of face-centered nodes for a cell.
+    void get_mesh_cell_face_nodes_(long & self, long & cell, long & face,
+				    long & nodes, long & nodes_size)
+    {
+	// Get the address of the CAR_CU_Mesh class object (self).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell);
+	int iface = static_cast<int>(face);
+	long * nodes_array = & nodes;
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_cell_face_nodes_!");
+	Insist(iface > 0 && iface <= 2 * mesh->get_ndim(), 
+	       "Invalid face number passed to get_mesh_face_nodes_!");
+
+	vector<int> node_set = mesh->cell_face_nodes(icell, iface);
+
+	Insist(nodes_size == node_set.size(), 
+	       "Illegal number of cell face nodes!");
+
+	for (int node_index = 0; node_index < node_set.size(); node_index++)
+	{
+	    * nodes_array = node_set[node_index];
+	    ++nodes_array;
+	}
+    }
+
+    // Return the volume of the cell in the mesh (self).
     void get_mesh_cell_volume_(long & self, long & cell, double & vol)
     {
 	// Get the address of the CAR_CU_Mesh class object (self).
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell);
 
-	vol = mesh->volume(static_cast<int>(cell));
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_cell_volume_!");
+
+	vol = mesh->volume(icell);
     }
 
-    // Return the cell face area in the mesh (self).
+    // Return the face area of the cell in the mesh (self).
     void get_mesh_cell_face_area_(long & self, long & cell, long & face,
 				  double & area)
     {
@@ -170,6 +338,11 @@ extern "C"
 	// Cast the long variables to integer
 	int icell = static_cast<int>(cell);
 	int iface = static_cast<int>(face);
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_cell_face_area_!");
+	Insist(iface > 0 && iface <= 2 * mesh->get_ndim(), 
+	       "Invalid face number passed to get_mesh_cell_face_area_!");
 
 	area = mesh->face_area(icell, iface);
     }
@@ -182,8 +355,13 @@ extern "C"
 	// Get the address of the CAR_CU_Mesh class object (self).
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
+	int idirection = static_cast<int>(direction);
 
-	minimum_value = mesh->begin(static_cast<int>(direction));
+	Insist(idirection > 0 && idirection <= mesh->get_ndim(), 
+	       "Invalid direction passed to get_mesh_min_coordinates_!");
+
+	minimum_value = mesh->begin(idirection);
     }
 
     // Return the maximum coordinate value in a given direction for the mesh
@@ -194,8 +372,13 @@ extern "C"
 	// Get the address of the CAR_CU_Mesh class object (self).
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
+	int idirection = static_cast<int>(direction);
 
-	maximum_value = mesh->end(static_cast<int>(direction));
+	Insist(idirection > 0 && idirection <= mesh->get_ndim(), 
+	       "Invalid direction passed to get_mesh_max_coordinates_!");
+
+	maximum_value = mesh->end(idirection);
     }
 
     // Return the minimum coordinate value in a given direction for the cell 
@@ -210,6 +393,11 @@ extern "C"
 	int icell = static_cast<int>(cell);
 	int idir = static_cast<int>(direction);
 
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_cell_min_coord_!");
+	Insist(idir > 0 && idir <= mesh->get_ndim(), 
+	       "Invalid direction passed to get_mesh_cell_min_coord_!");
+
 	minimum_value = mesh->min(idir, icell);
     }
 
@@ -221,8 +409,14 @@ extern "C"
 	// Get the address of the CAR_CU_Mesh class object (self).
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
 	int icell = static_cast<int>(cell);
 	int idir = static_cast<int>(direction);
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_cellmax_coord_!");
+	Insist(idir > 0 && idir <= mesh->get_ndim(), 
+	       "Invalid direction passed to get_mesh_cell_max_coord_!");
 
 	maximum_value = mesh->max(idir, icell);
     }
@@ -235,8 +429,14 @@ extern "C"
 	// Get the address of the CAR_CU_Mesh class object (self).
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
 	int icell = static_cast<int>(cell);
 	int idir = static_cast<int>(direction);
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_cell_mid_coord_!");
+	Insist(idir > 0 && idir <= mesh->get_ndim(), 
+	       "Invalid direction passed to get_mesh_cell_mid_coord_!");
 
 	midpoint_value = mesh->pos(idir, icell);
     }
@@ -247,8 +447,13 @@ extern "C"
 	// Get the address of the CAR_CU_Mesh class object (self).
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell);
 
-	generation = mesh->get_generation(static_cast<int>(cell));
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to get_mesh_cell_generation_!");
+
+	generation = mesh->get_generation(icell);
     }
 
 } // end extern "C"
