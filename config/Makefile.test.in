@@ -9,38 +9,26 @@
 
 # @configure_input@
 
-# source directories: top_srcdir is the toplevel and srcdir is the
-# package
+# source directories: top_srcdir is the top directory for this
+# component. srcdir is the current source directory.
 
 top_srcdir = @top_srcdir@
 srcdir     = @srcdir@
 
-# current directory: directory that make is actually in
-curdir := $(shell pwd)
+# pacakage top source directory
+package_top_srcdir = @package_top_srcdir@
 
 # get the relative directory between the top_srcdir and the srcdir
-
 reldir := $(shell echo "${srcdir}" | sed s%${top_srcdir}%% | sed 's%/[^/]*%../%g')
 ifeq (,${reldir})
   reldir := "."
 endif
-# get the relative directory to the config files (relative to ${top_srcdir}).
 
-rel_config_dir := $(shell ( cd ${top_srcdir} ; \
-	tmp="" ; \
-	while test ! -d config ; \
-	do \
-	   cd .. ; \
-	   tmp=$$tmp../ ; \
-	done ; \
-	echo $$tmp ) )config
+# Get the config directory from the package root.
+config_dir = ${package_top_srcdir}/config
 
-# get the config directory
-config_dir = $(shell cd ${top_srcdir}/${rel_config_dir}; pwd)
-
-# pkg_config directory
-home_src_dir    = $(shell cd ${config_dir}/..; pwd)
-pkg_config_dir  = ${home_src_dir}/pkg_config
+# get the pkg_config directory and include statement
+pkg_config_dir  = ${package_top_srcdir}/pkg_config
 pkg_config_inc := $(shell if test -d ${pkg_config_dir}; then \
                     echo "-I ${pkg_config_dir}"; fi)
 
@@ -289,12 +277,12 @@ uninstall:
 
 ## configuration files: Makefile depends on all of the M4 files in the
 ## config directory and the pkg_config directory
-configfiles := $(wildcard ${top_srcdir}/${rel_config_dir}/*.m4) \
-	$(wildcard ${top_srcdir}/${rel_config_dir}/../pkg_config/*.m4)
+configfiles := $(wildcard ${config_dir}/*.m4) \
+	$(wildcard ${pkg_config_dir}/*.m4)
 
 configure: 
 	@echo "Rebuilding ${top_srcdir}/aclocal.m4"
-	@cd ${top_srcdir} && aclocal -I ${rel_config_dir} ${pkg_config_inc}
+	@cd ${top_srcdir} && aclocal -I ${config_dir} ${pkg_config_inc}
 	@echo "Rebuilding ${top_srcdir}/configure"
 	@cd ${top_srcdir} && autoconf
 	@cd ${reldir} && ./config.status --recheck

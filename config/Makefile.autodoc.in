@@ -7,6 +7,8 @@
 # @> General Makefile.in for draco/autodoc
 ###############################################################################
 
+# @configure_input@
+
 # Automatic autoconf variables:
 top_srcdir = @top_srcdir@
 srcdir = @srcdir@
@@ -27,10 +29,10 @@ doxygen_output = @doxygen_output@
 package_top_srcdir = @package_top_srcdir@
 
 # Get the config directory from the package root.
-config_dir = $(shell cd ${package_top_srcdir}/config; pwd)
+config_dir = ${package_top_srcdir}/config
 
 # Get the autodoc directory from the package root
-top_autodoc_dir = $(shell cd ${package_top_srcdir}/autodoc; pwd)
+top_autodoc_dir = ${package_top_srcdir}/autodoc
 
 # Build lists of image files and support files in the top autodoc
 # directory and the local autodoc directory. The local directory files
