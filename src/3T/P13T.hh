@@ -35,6 +35,11 @@ namespace rtt_3T {
 
  using XTM::RadiationPhysics;
 
+ // forward reference
+ 
+ template<class DS>
+ class CrossSectionMapper;
+ 
  //===========================================================================//
  // class P13T - 
  // Three Temperature, 3T, P1 and conduction package.
@@ -59,6 +64,8 @@ namespace rtt_3T {
      typedef rtt_timestep::ts_manager ts_manager;
      typedef rtt_timestep::field_ts_advisor field_ts_advisor;
 
+     typedef CrossSectionMapper<DS> CrossSectionMapper;
+     
      // Longhand type names.
     
      typedef DS DiffusionSolver;
@@ -116,6 +123,8 @@ namespace rtt_3T {
      dsxx::SP<field_ts_advisor> spElecCondTsAdvisor; // Elec conduction advisor
      dsxx::SP<field_ts_advisor> spIonCondTsAdvisor;  // Ion conduction advisor
 
+     const dsxx::SP<const CrossSectionMapper> spCrossSectionMapper;
+     
      // FORBIDDEN METHODS
      
    private:
@@ -132,8 +141,10 @@ namespace rtt_3T {
 
      // CREATORS
 
-     P13T(const P13TOptions &options_, const dsxx::SP<MeshType> &spMesh_);
      P13T(const P13TOptions &options_, const dsxx::SP<MeshType> &spMesh_,
+	  const dsxx::SP<const CrossSectionMapper> &spCrossSectionMapper_);
+     P13T(const P13TOptions &options_, const dsxx::SP<MeshType> &spMesh_,
+	  const dsxx::SP<const CrossSectionMapper> &spCrossSectionMapper_,
 	  dsxx::SP<ts_manager> &spTsManager_);
      ~P13T();
 
@@ -281,6 +292,14 @@ namespace rtt_3T {
                                  const ncvsf &velocity,
                                  const int groupNo) const;
 
+     //-----------------------------------------------------------------------//
+     // mapCrossSections:
+     //    Use the cross section mapper to create vertex centered
+     //    cross sections.
+     //-----------------------------------------------------------------------//
+
+     void mapCrossSections(DiscKineticEnergyField &vcSigma,
+			   const fcdsf &fcSigma) const;     
  };
 
 } // namespace rtt_3T

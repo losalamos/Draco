@@ -12,6 +12,7 @@
 #include "timestep/ts_manager.hh"
 #include "timestep/field_ts_advisor.hh"
 #include "matprops/MaterialProperties.hh"
+#include "3T/CrossSectionMapper.hh"
 #include <cmath>
 
 #include <iostream>
@@ -29,8 +30,10 @@ namespace rtt_3T
 //---------------------------------------------------------------------------//
 
 template<class DS>
-P13T<DS>::P13T(const P13TOptions &options_, const dsxx::SP<MeshType> &spMesh_)
-    : options(options_), spMesh(spMesh_)
+P13T<DS>::P13T(const P13TOptions &options_, const dsxx::SP<MeshType> &spMesh_,
+	  const dsxx::SP<const CrossSectionMapper> &spCrossSectionMapper_)
+    : options(options_), spMesh(spMesh_),
+      spCrossSectionMapper(spCrossSectionMapper_)
 {
     // empty
 }
@@ -42,8 +45,10 @@ P13T<DS>::P13T(const P13TOptions &options_, const dsxx::SP<MeshType> &spMesh_)
 
 template<class DS>
 P13T<DS>::P13T(const P13TOptions &options_, const dsxx::SP<MeshType> &spMesh_,
+	       const dsxx::SP<const CrossSectionMapper> &spCrossSectionMapper_,
 	       dsxx::SP<ts_manager> &spTsManager_)
-    : options(options_), spMesh(spMesh_), spTsManager(spTsManager_)
+    : options(options_), spMesh(spMesh_),
+      spCrossSectionMapper(spCrossSectionMapper_), spTsManager(spTsManager_)
 {
     // Set up timestep advisors, and add them to the manager.
 
@@ -316,7 +321,7 @@ void P13T<DS>::solveIonConduction(ccsf &ionEnergyDeposition,
 //---------------------------------------------------------------------------//
 // solve3T:
 //     Solve for the new radiation field, the electron/ion energy depositions,
-//     and the momentom deposition.
+//     and the momentum deposition.
 //---------------------------------------------------------------------------//
     
 template<class DS>
@@ -580,9 +585,17 @@ void P13T<DS>::calcMomentumDeposition(
 
     fcdsf fcSigmaTotal(spMesh);
     matprops.getSigmaTotal(groupNo, fcSigmaTotal);
-    DiscKineticEnergyField vcSigmaTotal(spMesh);
+
     // obtain the vertex centered cross sections here
 
+    DiscKineticEnergyField vcSigmaTotal(spMesh);
+
+    //fill vcSigmaTotal here
+
+    std::cerr << "before mapCrossSections" << std::endl;    
+    mapCrossSections(vcSigmaTotal, fcSigmaTotal);
+    std::cerr << "after mapCrossSections" << std::endl;    
+    
     // Obtain unit vectors
 
     DiscMomentumField e1Field( spMesh );
@@ -738,6 +751,19 @@ void P13T<DS>::getdBhatdT(ccsf &dBhatdT,
 
     using XTM::PhysicalConstants::pi;
     dBhatdT *= 4.0*pi;
+}
+
+//-----------------------------------------------------------------------//
+// mapCrossSections:
+//    Use the cross section mapper to create vertex centered
+//    cross sections.
+//-----------------------------------------------------------------------//
+
+template<class DS>
+void P13T<DS>::mapCrossSections(DiscKineticEnergyField &vcSigma,
+				const fcdsf &fcSigma) const
+{
+    spCrossSectionMapper->mapCrossSections(vcSigma, fcSigma);
 }
 
 } // end namespace rtt_3T

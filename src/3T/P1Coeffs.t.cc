@@ -170,13 +170,28 @@ namespace rtt_3T
 
      fcdsf fcSigmaAbs(spMesh);
      matprops.getSigmaAbsorption(groupNo, fcSigmaAbs);
+     
      fcdsf fcSigmaScatter(spMesh);
      matprops.getSigmaScattering(groupNo, fcSigmaScatter);
+     
+     // obtain the vertex centered cross sections here
+
      DiscKineticEnergyField vcSigmaTotal(spMesh);
      DiscKineticEnergyField vcSigmaAbs(spMesh);
      DiscKineticEnergyField vcSigmaScattering(spMesh);
-     // obtain the vertex centered cross sections here
 
+     //fill vcSigma's here
+
+     // a nested scope
+     {
+	 fcdsf fcSigmaTotal(spMesh);
+	 matprops.getSigmaTotal(groupNo, fcSigmaTotal);
+
+	 p13T.mapCrossSections(vcSigmaTotal, fcSigmaTotal);
+     }
+     p13T.mapCrossSections(vcSigmaAbs, fcSigmaAbs);
+     p13T.mapCrossSections(vcSigmaScattering, fcSigmaScatter);
+     
      // Obtain unit vectors
 
      DiscMomentumField::value_type e1;
