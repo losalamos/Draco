@@ -12,6 +12,8 @@
 #include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
 
+#include <algorithm>
+
 template<class T>
 void dump( const Mesh_XYZ::cctf<T>& data, char *name )
 {
@@ -469,6 +471,38 @@ void Mesh_XYZ::gvctf<T>::update_gvctf()
 
     if (node < lastnode)
         Send<T>( &data(0,0,0,zoff+nczp-1), 8*ncx*ncy, node+1 );
+}
+
+template<class T>
+Mesh_XYZ::gnctf<T>& 
+Mesh_XYZ::gnctf<T>::operator=( const Mesh_XYZ::nctf<T>& n )
+{
+    // Copy the nctf's data into the first part of the
+    // gnctf's data.
+    
+    std::copy(n.data.begin(), n.data.end(), data.begin());
+
+    // Update the last part of the gnctf's data using
+    // interprocess communication.
+    
+    update_gnctf();
+    
+    return *this;
+}
+
+template<class T>
+void Mesh_XYZ::gnctf<T>::update_gnctf()
+{
+    using namespace C4;
+    C4_Req rcv;
+
+    gnctf &self = *this;
+
+    if (node < lastnode)
+        RecvAsync( rcv, &self(0,0,zoff+nczp), (ncx+1)*(ncy+1), node+1 );
+
+    if (node > 0)
+        Send<T>( &self(0,0,zoff), (ncx+1)*(ncy+1), node-1 );
 }
 
 template<class T>
@@ -1038,6 +1072,9 @@ void Mesh_XYZ::scatter
 ( Mesh_XYZ::nctf<T1>& to, const Mesh_XYZ::vctf<T2>& from, const Op& op )
 {
     Mesh_XYZ::gvctf<T2> gfrom(from);
+
+    const int bound = (C4::node() == (C4::nodes()-1)) ? 1 : 0;
+    
     for ( int i = 0; i < from.ncx; ++i )
       for ( int j = 0; j < from.ncy; ++j )
       {
@@ -1048,7 +1085,7 @@ void Mesh_XYZ::scatter
               op(to(i,j+1,from.zoff), gfrom(i,j,from.zoff-1,6));
               op(to(i+1,j+1,from.zoff), gfrom(i,j,from.zoff-1,7));
           }
-          for ( int k = from.zoff; k < from.zoff + from.nczp; ++k )
+          for ( int k = from.zoff; k < from.zoff + from.nczp + bound - 1; ++k )
           {
               op(to(i,j,k), gfrom(i,j,k,0));
               op(to(i+1,j,k), gfrom(i,j,k,1));
@@ -1058,17 +1095,6 @@ void Mesh_XYZ::scatter
               op(to(i+1,j,k+1), gfrom(i,j,k,5));
               op(to(i,j+1,k+1), gfrom(i,j,k,6));
               op(to(i+1,j+1,k+1), gfrom(i,j,k,7));
-          }
-          if (from.zoff + from.nczp != from.ncz)
-          {
-              op(to(i,j,from.zoff + from.nczp),
-                 gfrom(i,j,from.zoff + from.nczp,0));
-              op(to(i+1,j,from.zoff + from.nczp),
-                 gfrom(i,j,from.zoff + from.nczp,1));
-              op(to(i,j+1,from.zoff + from.nczp),
-                 gfrom(i,j,from.zoff + from.nczp,2));
-              op(to(i+1,j+1,from.zoff + from.nczp),
-                 gfrom(i,j,from.zoff + from.nczp,3));
           }
       }
 }
@@ -1173,18 +1199,20 @@ template <class T1, class T2, class Op>
 void Mesh_XYZ::gather
 ( Mesh_XYZ::vctf<T1>& to, const Mesh_XYZ::nctf<T2>& from, const Op& op )
 {
+    const Mesh_XYZ::gnctf<T2> gfrom(from);
+    
     for ( int i = 0; i < to.ncx; ++i )
       for ( int j = 0; j < to.ncy; ++j )
         for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
         {
-            op(to(i,j,k,0), from(i,j,k));
-            op(to(i,j,k,1), from(i+1,j,k));
-            op(to(i,j,k,2), from(i,j+1,k));
-            op(to(i,j,k,3), from(i+1,j+1,k));
-            op(to(i,j,k,4), from(i,j,k+1));
-            op(to(i,j,k,5), from(i+1,j,k+1));
-            op(to(i,j,k,6), from(i,j+1,k+1));
-            op(to(i,j,k,7), from(i+1,j+1,k+1));
+            op(to(i,j,k,0), gfrom(i,j,k));
+            op(to(i,j,k,1), gfrom(i+1,j,k));
+            op(to(i,j,k,2), gfrom(i,j+1,k));
+            op(to(i,j,k,3), gfrom(i+1,j+1,k));
+            op(to(i,j,k,4), gfrom(i,j,k+1));
+            op(to(i,j,k,5), gfrom(i+1,j,k+1));
+            op(to(i,j,k,6), gfrom(i,j+1,k+1));
+            op(to(i,j,k,7), gfrom(i+1,j+1,k+1));
         }
 }
 
@@ -1267,17 +1295,10 @@ template <class T>
 T Mesh_XYZ::sum( const Mesh_XYZ::nctf<T>& from )
 {
     T sum = 0;
-    int bound;
 
-    if (C4::node() == (C4::nodes()-1))
-        bound = 1;
-    else
-        bound = 0;
-
-    for ( int i = 0; i <= from.ncx; ++i )
-      for ( int j = 0; j <= from.ncy; ++j )
-        for ( int k = from.zoff; k < from.zoff + from.nczp + bound; ++k )
-          sum += from(i,j,k);
+    for (Mesh_XYZ::nctf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        sum += *iter;
 
     C4::gsum<T>(sum);
 

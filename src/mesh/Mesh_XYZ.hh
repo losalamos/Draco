@@ -98,6 +98,7 @@ class Mesh_XYZ : private XYZ_Mapper
     template<class T> class fcdtf;
     template<class T> class gfcdtf;
     template<class T> class nctf;
+    template<class T> class gnctf;
     template<class T> class vctf;
     template<class T> class gvctf;
     template<class T> class bstf;
@@ -468,9 +469,24 @@ class Mesh_XYZ : private XYZ_Mapper
         const Mesh_XYZ* mesh;
         FieldConstructor spm;
 
+	static int calcSize(const Mesh_XYZ &m)
+	{
+	    const int bound = (C4::node() == (C4::nodes()-1)) ? 1 : 0;
+	    return (m.get_ncx()+1)*(m.get_ncy()+1)*(m.get_nczp()+bound);
+	}
+
+	bool inRange(int i, int j, int k) const
+	{
+	    const int bound = (C4::node() == (C4::nodes()-1)) ? 1 : 0;
+	    bool inRng = i >= 0 && i < (ncx + 1);
+	    inRng = inRng && j >= 0 && j < (ncy + 1);
+	    inRng = inRng && k >= 0 && k < (nczp + bound);
+	    return inRng;
+	}
+
 	nctf( const Mesh_XYZ *m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
-            data( (m->get_ncx()+1)*(m->get_ncy()+1)*(m->get_nczp()+1) ),
+            data( calcSize(*m) ),
             mesh( m ), spm( 0 )
         {}
 
@@ -487,7 +503,7 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	nctf( const FieldConstructor& spm_ ) 
           : XYZ_Mapper( spm_->get_Mesh_DB() ),
-            data( (spm_->get_ncx()+1)*(spm_->get_ncy()+1)*(spm_->get_nczp()+1) ),
+            data( calcSize(*spm_) ),
             mesh( spm_.bp() ), spm( spm_ ) {}
 
 	nctf( const nctf& n ) 
@@ -523,10 +539,12 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	T& operator()( int i, int j, int k )
 	{
+	    Assert(inRange(i,j,k-zoff));
 	    return data( i+(ncx+1)*(j+(ncy+1)*(k-zoff)) );
 	}
 	const T& operator()( int i, int j, int k ) const 
 	{
+	    Assert(inRange(i,j,k-zoff));
 	    return data( i+(ncx+1)*(j+(ncy+1)*(k-zoff)) );
 	}
 
@@ -551,6 +569,96 @@ class Mesh_XYZ : private XYZ_Mapper
         bool operator>( const nctf& x ) const;
         bool operator<=( const nctf& x ) const;
         bool operator>=( const nctf& x ) const;
+
+	friend class Mesh_XYZ;
+	friend class gnctf<T>;
+    };
+
+// Guarded node centered field
+// Has a value at each node.
+
+    template<class T>
+    class gnctf : private XYZ_Mapper,
+		  public xm::Indexable< T, gnctf<T> >
+    {
+        rtt_dsxx::Mat1<T> data;
+        const Mesh_XYZ* mesh;
+        FieldConstructor spm;
+
+	static int calcSize(const Mesh_XYZ &m)
+	{
+	    return (m.get_ncx()+1)*(m.get_ncy()+1)*(m.get_nczp()+1);
+	}
+
+	bool inRange(int i, int j, int k) const
+	{
+	    bool inRng = i >= 0 && i < (ncx + 1);
+	    inRng = inRng && j >= 0 && j < (ncy + 1);
+	    inRng = inRng && k >= 0 && k < (nczp + 1);
+	    return inRng;
+	}
+
+      public:
+	typedef T value_type;
+        typedef T& reference;
+        typedef const T& const_reference;
+        typedef typename rtt_dsxx::Mat1<T>::pointer pointer;
+        typedef typename rtt_dsxx::Mat1<T>::const_pointer const_pointer;
+        typedef typename rtt_dsxx::Mat1<T>::iterator iterator;
+        typedef typename rtt_dsxx::Mat1<T>::const_iterator const_iterator;
+        typedef typename rtt_dsxx::Mat1<T>::difference_type difference_type;
+        typedef typename rtt_dsxx::Mat1<T>::size_type size_type;
+
+	gnctf( const FieldConstructor& spm_ ) 
+	    : XYZ_Mapper( spm_->get_Mesh_DB() ),
+	      data( calcSize(*spm_) ),
+	      mesh( spm_.bp() ), spm( spm_ ) {}
+
+        gnctf<T>& operator=( const nctf<T>& n );
+        void update_gnctf();
+
+	gnctf( const nctf<T>& n )
+	    : XYZ_Mapper( n.get_Mesh_DB() ),
+              data( calcSize(*n.mesh) ),
+	      mesh( n.mesh ), spm( n.spm )
+	{
+	    *this = n;
+	}
+
+        ~gnctf() {}
+
+        const Mesh_XYZ& get_Mesh() const { return *mesh; }
+
+        const FieldConstructor& get_FieldConstructor() const { return spm; }
+
+        const T& operator()( int i ) const { return data(i); }
+        T& operator()( int i ) { return data(i); }
+
+	T& operator()( int i, int j, int k )
+	{
+	    Assert(inRange(i,j,k-zoff));
+	    return data( i+(ncx+1)*(j+(ncy+1)*(k-zoff)) );
+	}
+	const T& operator()( int i, int j, int k ) const 
+	{
+	    Assert(inRange(i,j,k-zoff));
+	    return data( i+(ncx+1)*(j+(ncy+1)*(k-zoff)) );
+	}
+
+        const T& operator[]( int i ) const { return data(i); }
+        T& operator[]( int i ) { return data(i); }
+
+        iterator begin() { return data.begin(); }
+        iterator end() { return data.end(); }
+
+        const_iterator begin() const { return data.begin(); }
+        const_iterator end() const { return data.end(); }
+
+        size_type size() const { return data.size(); }
+        size_type max_size() const { return data.size(); }
+        bool empty() const { return data.empty(); }
+
+        void swap ( gnctf& x ) { data.swap(x.data); }
 
 	friend class Mesh_XYZ;
     };
