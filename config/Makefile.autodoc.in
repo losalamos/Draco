@@ -47,12 +47,14 @@ support_files := $(wildcard ${autodoc_dir}/*.png)\
 
 # We deduce the targets from the source files, because we do not have
 # dependency information for the resulting documentation.
-html_support_targets := $(subst ${autodoc_dir},	${doxygen_html_output},	${support_files}) 
+html_support_targets := $(subst ${autodoc_dir},\
+                          ${doxygen_html_output}, ${support_files})
 
 # If we're using pdfLaTeX, all of these image formats are supported
 # natively. Otherwise, we'll need to do some conversion. 
 # XXX This need to made conditional on do-latex.
-latex_support_targets := $(subst ${autodoc_dir},${doxygen_latex_output},${support_files})
+latex_support_targets := $(subst ${autodoc_dir},\
+                           ${doxygen_latex_output},${support_files})
 
 ##---------------------------------------------------------------------------##
 
