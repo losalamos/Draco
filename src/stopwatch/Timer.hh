@@ -65,6 +65,9 @@ class Timer
 
     void start();
     void stop();
+    void reset();
+
+    Timer &operator+=(const Timer &rhs);
     
     // ACCESSORS
 
