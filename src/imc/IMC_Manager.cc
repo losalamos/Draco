@@ -97,6 +97,7 @@ void IMC_Manager<MT,BT,IT,PT>::execute_IMC(char *argv)
 	    step_IMC_rep();
 	else if (parallel_scheme == "DD")
 	    step_IMC_dd();
+         // step_IMC_async();
 	else 
 	    Check (0);
 
@@ -181,6 +182,8 @@ void IMC_Manager<MT,BT,IT,PT>::host_init(char *argv)
     
   // initialize the source
     source_init->initialize(mesh, opacity, mat_state, rnd_con, cycle); 
+    num_to_run = source_init->get_nsstot() + source_init->get_nvoltot() 
+      + source_init->get_ncentot();
     if (verbose)
 	cout << " ** Did the source initialization on node " << node()
 	     << endl; 
@@ -516,6 +519,106 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC_dd()
     Ensure (!communicator);
 }
 
+
+//---------------------------------------------------------------------------//
+// Run particles asyncronously for one time step on a decomposed mesh.
+// Uses num_done (killed) to determine when done. Idea from Rathkopf/Brown/.
+
+template<class MT, class BT, class IT, class PT>
+void IMC_Manager<MT,BT,IT,PT>::step_IMC_async()
+{
+    Require (communicator);
+
+    cerr << ">> Doing transport for cycle " << cycle << " on proc " 
+	 << node() << " using " << parallel_scheme << "." << endl;
+
+  // particle history diagnostic
+    SP<PT::Diagnostic> check;
+    if (verbose)
+        check = new PT::Diagnostic(cout, true); 
+
+  // make a census and communication bank on this node
+    new_census_bank = new Particle_Buffer<PT>::Census();
+    Bank bank;
+
+  // post arecvs to communicating processors
+    communicator->post(*buffer);
+
+  // post arecvs from each node to master and from master to all nodes
+    post_step_arecvs();
+
+  // initialize `finished' status to false
+    finished = 0;
+
+  // initialize total and source particle counters
+    num_run  = 0;
+    nsrc_run = 0;
+    num_done = 0;
+
+  // transport particles
+    while (!finished)
+    {
+      // transport a source particle and any incoming particles
+	if (*source)
+	    trans_src_async(check, bank);
+	
+      // transport an incoming particle from another domain (processor)
+	else if (bank.size())
+	    trans_domain_async(check, bank);
+
+      // if send-buffers are not empty, flush them
+	else if (communicator->get_send_size())
+	    communicator->flush(*buffer);
+
+      // receive particles as second-to-last option
+	else if (communicator->arecv_post(*buffer, bank))
+	{
+	    int bsize = bank.size();
+	    Check (bank.size() > 0);
+	}
+
+      // report num_done back to master; see if we are finished
+	else
+	    update();
+    }
+    
+  // complete the asynchronous recvs (last comm w/out posting new recvs)
+    complete_step_arecvs();
+    
+  // clean up receive buffers 
+    Check (!communicator->get_send_size());
+    Check (!bank.size());
+    communicator->asend_end(*buffer);
+    communicator->arecv_end(*buffer);
+    Check (!communicator->arecv_status(*buffer));
+    Check (!communicator->asend_status(*buffer));
+
+  // finished with this timestep
+    cerr << ">> Finished particle transport for cycle " << cycle
+	 << " on proc " << node() << endl;
+
+  // now remove objects we no longer need
+    kill (source);
+    kill (mat_state);
+    kill (opacity);
+    kill (mesh);
+    kill (communicator);
+
+  // object inventory
+    Ensure (rnd_con);
+    Ensure (buffer);
+    Ensure (parallel_builder);
+    Ensure (tally);	
+    Ensure (new_census_bank);
+    Ensure (!source);
+    Ensure (!mat_state);
+    Ensure (!opacity);
+    Ensure (!source_init);
+    Ensure (!mesh);
+    Ensure (!new_census_buffer);
+    Ensure (!communicator);
+}
+
 //---------------------------------------------------------------------------//
 // SPECIAL DD PRIVATE TRANSPORT FUNCTIONS
 //---------------------------------------------------------------------------//
@@ -609,6 +712,233 @@ void IMC_Manager<MT,BT,IT,PT>::dd_Particle_transport(SP<PT> particle,
 	     << node()   << endl;
 
     Ensure (communicator->arecv_status(*buffer));
+}
+
+
+//---------------------------------------------------------------------------//
+// run a source particle and, possibly, incoming particles
+
+template<class MT, class BT, class IT, class PT>
+void IMC_Manager<MT,BT,IT,PT>::trans_src_async(SP<typename PT::Diagnostic>
+					       check, typename 
+					       Particle_Buffer<PT>::Bank & bank)
+{
+  // get a source particle
+    SP<PT> particle = source->get_Source_Particle(delta_t);
+    Check (particle->status());
+
+  // transport the particle; update counters
+    particle->transport(*mesh, *opacity, *tally, check);
+    num_run++;
+    nsrc_run++;
+    
+  // particle is no longer active
+    Check (!particle->status());
+
+  // increment number of completed particles, if this one is done
+    if (particle->desc() == "census")
+	num_done++;
+    else if (particle->desc() == "escape")
+	num_done++;
+    else if (particle->desc() == "killed")
+	num_done++;
+   
+  // if particle goes to census, write to new census bank
+    if (particle->desc() == "census")
+    {
+      // convert the particle cell index back to a global cell index
+	int local_cell  = particle->get_cell();
+	int global_cell = parallel_builder->master_cell(local_cell);
+	particle->set_cell(global_cell);
+	
+      // push particle to census
+	new_census_bank->push(particle);
+    }
+    
+  // if particle crosses a domain boundary, communicate the particle
+    if (particle->desc() == "cross_boundary")
+        communicator->communicate(*buffer, particle);
+
+  // if we have transported the same number of particles as the buffer 
+  // size; then check on, receive, and transport the incoming buffer
+    if (!(nsrc_run % Particle_Buffer<PT>::get_buffer_s()))
+        if (communicator->arecv_post(*buffer, bank))
+	  while (bank.size())
+	    trans_domain_async(check, bank);
+
+  // message particle counter
+    if (!(nsrc_run % print_f)) 
+	cerr << "Ran " << setw(10) << nsrc_run << " source (and " << setw(10)
+	     << (num_run - nsrc_run) << " incoming) particles on proc " 
+	     << node() << endl;
+}
+
+//---------------------------------------------------------------------------//
+// run an incoming particle and, possibly, check for more incoming particles
+
+template<class MT, class BT, class IT, class PT>
+void IMC_Manager<MT,BT,IT,PT>::trans_domain_async(SP<typename PT::Diagnostic>
+						  check, typename
+						  Particle_Buffer<PT>::Bank 
+						  & bank)
+{
+  // get a particle from the bank and activate it
+    SP<PT> particle = bank.top();
+    bank.pop();
+    particle->reset_status();
+    
+  // transport the particle
+    particle->transport(*mesh, *opacity, *tally, check);
+    num_run++;
+    
+  // particle is no longer active; take further action accordingly
+    Check (!particle->status());
+
+  // increment number of completed particles, if this one is done
+    if (particle->desc() == "census")
+	num_done++;
+    else if (particle->desc() == "escape")
+	num_done++;
+    else if (particle->desc() == "killed")
+	num_done++;
+
+    if (particle->desc() == "census")
+    {
+      // convert the particle cell index back to a global cell index
+	int local_cell  = particle->get_cell();
+	int global_cell = parallel_builder->master_cell(local_cell);
+	particle->set_cell(global_cell);
+	
+      // push particle to census
+	new_census_bank->push(particle);
+    }
+    
+    if (particle->desc() == "cross_boundary")
+	communicator->communicate(*buffer, particle);
+  
+  // during source block, this statement may allow 
+  // all incoming particles to be run
+    if (!(num_run % Particle_Buffer<PT>::get_buffer_s()))
+	 communicator->arecv_post(*buffer, bank);
+
+  // message particle counter
+    if (!(num_run % print_f)) 
+	cerr << "Total of " << setw(10) << num_run 
+	     << " particles run on proc " << node() << endl; 
+}
+
+//---------------------------------------------------------------------------//
+// Communicate num_done from IMC nodes to Master, check whether finished.-tju 
+
+template<class MT, class BT, class IT, class PT>
+void IMC_Manager<MT,BT,IT,PT>::update()
+{
+    if (node())
+    {
+      // if IMC node has completed any particles, inform master
+	if (num_done > 0)
+	{
+	    C4_Req sender = SendAsync(&num_done, 1, 0, 500);
+	    sender.wait();
+	    num_done = 0;
+	}
+
+      // Check on "finished" status from master
+	if (rcv501_fin.complete())
+	{
+	    Check (recv_finished == 1);
+	    finished = recv_finished;
+	  // won't post new receive; should be finished
+	}
+    }
+    else if (!node())
+    {
+      // make sure (probably too late) num_to_run is reasonable
+        Require (num_to_run > 0);
+
+      // see if the master has completed the last particle,
+	if (num_done == num_to_run)
+	    finished = 1;
+
+      // check if any IMC nodes have finished more particles
+	int i = 0;
+	while (!finished && ++i < nodes())
+	    if (rcv500_ndone[i-1].complete())
+	    {
+		Check (recv_num_done[i-1] > 0);
+		num_done += recv_num_done[i-1];
+		Check (num_done <= num_to_run);
+		rcv500_ndone[i-1] = RecvAsync(&recv_num_done[i-1], 1, i, 500);
+		if (num_done == num_to_run)
+		    finished = 1;
+	    }
+	
+      // master sends 'finished' to all other nodes.
+	if (finished)
+	    for (int i = 1; i < nodes(); i++)
+	    {
+		C4_Req sender = SendAsync(&finished, 1, i, 501);
+		sender.wait();
+	    }
+    }
+}
+
+
+//---------------------------------------------------------------------------//
+// post asynchronous step_IMC_async receives
+
+template<class MT, class BT, class IT, class PT>
+void IMC_Manager<MT,BT,IT,PT>::post_step_arecvs()
+{
+  // master
+    if (!node())
+    {
+      // resize C4 request tags to number of other nodes
+	rcv500_ndone.resize(nodes()-1);
+
+      // resize flags from other nodes
+	recv_num_done.resize(nodes()-1);
+
+      // post first receives to all other nodes
+	for (int i = 1; i < nodes(); i++)
+	{
+	    rcv500_ndone[i-1] = RecvAsync(&recv_num_done[i-1], 1, i, 500);
+	}
+    }
+
+  // IMC nodes
+    else if (node())
+    {
+      // post first (and only) `receive' to the master
+	rcv501_fin = RecvAsync(&recv_finished, 1, 0, 501);
+    }
+}
+
+//---------------------------------------------------------------------------//
+// complete asynchronous step_IMC_async receives
+
+template<class MT, class BT, class IT, class PT>
+void IMC_Manager<MT,BT,IT,PT>::complete_step_arecvs()
+{
+  // IMC nodes
+    if (node())
+    {
+      // IMC nodes sending final "num_done" to master   
+	num_done = 0;
+	C4_Req sender = SendAsync(&num_done, 1, 0, 500);
+	sender.wait();
+    }
+
+  // master
+    else if (!node())
+    {
+        int r500count = 0;
+
+      // receive final "num_done" from IMC nodes
+	for (int i = 1; i < nodes(); i++)
+	    while (!rcv500_ndone[i-1].complete())
+		r500count++;
+    }
 }
 
 //---------------------------------------------------------------------------//

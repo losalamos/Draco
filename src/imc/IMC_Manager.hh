@@ -129,6 +129,32 @@ private:
   // verbosity switch
     bool verbose;
 
+  // flags and counters for tju's step_IMC_async
+    int finished;
+    int num_to_run;
+    int num_done;
+    int num_run;
+    int nsrc_run;
+
+  // C4 requestors for tju's step_IMC_async
+    vector<C4_Req> rcv500_ndone;
+    C4_Req         rcv501_fin;
+
+  // master's vectors for num_done in tju's step_IMC_async
+    vector<int> recv_num_done;
+
+  // IMC-nodes' flag for finished status in tju's step_IMC_async
+    int recv_finished;
+
+  // private member functions for step_IMC_async
+    void trans_src_async(SP<typename PT::Diagnostic>, 
+			 typename Particle_Buffer<PT>::Bank &);
+    void trans_domain_async(SP<typename PT::Diagnostic>, 
+			    typename Particle_Buffer<PT>::Bank &);
+    void update();
+    void post_step_arecvs();
+    void complete_step_arecvs();
+
   // DD transport functions
     void dd_loop(Bank &, SP<PT_Diagnostic>, int &, DD_Comm &); 
     void dd_Particle_transport(SP<PT>, SP<PT_Diagnostic>, Bank &, int &,
@@ -157,6 +183,7 @@ public:
   // run the problem for one time-cycle
     void step_IMC_rep();
     void step_IMC_dd();
+    void step_IMC_async();
 
   // do collect stuff at the end of the timestep
     void regroup();
@@ -204,7 +231,7 @@ inline int IMC_Manager<MT,BT,IT,PT>::get_scheme(string ps) const
 }
 
 //---------------------------------------------------------------------------//
-// convert an int back into an integer
+// convert an int back into a string
 
 template<class MT, class BT, class IT, class PT>
 inline string IMC_Manager<MT,BT,IT,PT>::get_scheme(int ps) const
