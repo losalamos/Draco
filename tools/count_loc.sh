@@ -12,7 +12,8 @@
 #       If [dir] is absent, then the current directory is examined.
 #       Attempts are made to find all files of certain types and
 #       to strip out comments and blank lines, however this
-#       should not be considered to be exhaustive.
+#       should not be considered to be exhaustive. Ignores
+#       files with names beginning with "#" or ending with "~".
 #
 #       Author: Mark G. Gray, Randy M. Roberts, John M. McGhee
 #               Los Alamos National Laboratory
@@ -30,28 +31,28 @@ cpp_loc()
 }
 
 #Count lines of code in a script file, stripping any blank lines 
-#and/or comments
+#and/or comments. Comment character is "#".
 script_loc()
 {
   awk '/^[ \t]*$/ || $1 ~ /#/ {next} {print}' $* | wc -l
 }
 
 #Count lines of code in a html file, stripping any blank lines
-#and the first line of any comments
+#and the first line of any comments. Comment character is "<!--".
 html_loc()
 {
   awk '/^[ \t]*$/ || $1 ~ /<!--/ {next} {print}' $* | wc -l
 }
 
 #Count lines of code in a tex file, stripping any blank lines
-#and/or comments
+#and/or comments. Comment character is "%".
 latex_loc()
 {
   awk '/^[ \t]*$/ || $1 ~ /%/ {next} {print}' $* | wc -l
 }
 
 #Count lines of code in a elisp file, stripping any blank lines
-#and/or comments
+#and/or comments. Comment character is ";;".
 elisp_loc()
 {
   awk '/^[ \t]*$/ || $1 ~ /;;/ {next} {print}' $* | wc -l
@@ -117,15 +118,12 @@ echo
 # Go to the directory to be scanned.
 cd $CODE_DIR
 
-#Define C++ files 
-# (Note: the output from the find command using this filter
-#        could be saved into a list to speed things up)
-
 #------------------------- C++ Source Code ------------------------------
 
 #Scan for C++ source code
 echo "Total C++ source: "
-find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' -exec cat {} \; |  cpp_loc
+find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
+       -exec cat {} \; |  cpp_loc 
 echo
 
 #------------------------ C++ Test Code ----------------------------------
@@ -134,13 +132,15 @@ echo
 echo "C++ source in test directories: "
 for i in `find . -name test -type d -print`
 do
-  find ${i} -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' -exec cat {} \; 
+  find ${i} -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
+            -exec cat {} \; 
 done | cpp_loc
 echo
 
 #Scan for C++ Design-by-Contract specifications
 echo "C++ contract specifications:"
-for i in `find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' -print` 
+for i in `find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
+          -print` 
 do
   awk '$1 ~ /Assert|Require|Ensure|Check|Insist/ {print}' ${i}
 done | cpp_loc
@@ -150,7 +150,8 @@ echo
 
 #Scan for C++ comments (finds both C and C++ style comments)
 echo "C++ comments:"
-for i in `find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' -print`
+for i in `find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
+          -print`
 do 
   awk '$1~/\/\// {print} /\/\*/, /\*\// {print}' ${i}
 done | wc -l
@@ -163,15 +164,17 @@ echo
 
 #Scan for html source
 echo 'html source: '
-find . -type f \( -name '*.html' -o -name '*.htm' -o -name '*.shml'  \) ! -name '#*' -exec cat {} \; |  html_loc
+find . -type f \( -name '*.html' -o -name '*.htm' -o -name '*.shml'  \) \
+       ! -name '#*' -exec cat {} \; |  html_loc
 echo
 
-#------------------------ Scripts ----------------------------------
+#------------------------ Scripts ----------------------------------------
 
-#Scan for executable script source code. 
+#Scan for executable shell script source code. 
 #(such as sh, bash, csh, etc.)
 echo Executable shell script source:
-files=`find . -type f -perm -100  ! -name 'configure' ! -name '*~' ! -name '#*' -print`
+files=`find . -type f -perm -100  ! -name 'configure' \
+      ! -name '*~' ! -name '#*' -print`
 script_loc `list_shell_scripts $files` /dev/null
 echo
 
@@ -191,7 +194,7 @@ echo "Expect source:"
 find . -name '*.exp' ! -name '#*' -type f -exec cat {} \; | script_loc
 echo
 
-#------------------------ Templates ----------------------------------
+#------------------------ Templates --------------------------------------
 
 #Scan for Elisp source code
 echo "Elisp source:"
