@@ -246,13 +246,14 @@ void Source_Init<MT>::calc_ess()
 	  // make sure this cell doesn't already have a surface source
 	    Check (fss(surcells[sc]) == 0);
 
-	  // assign energy to surface source cell
-	    ess(surcells[sc]) = Global::a * Global::c * 0.25 * 
-		pow(ss_temp[ss],4) * delta_t;
-
 	  // assign source face to surface source cell
 	    fss(surcells[sc]) = fss.get_Mesh().
 		get_bndface(ss_pos[ss], surcells[sc]);
+
+	  // assign energy to surface source cell
+	    ess(surcells[sc]) = Global::a * Global::c * 0.25 *
+		ess.get_Mesh().face_area(surcells[sc], fss(surcells[sc])) *
+		pow(ss_temp[ss],4) * delta_t;
 
 	  // accumulate esstot
 	    esstot += ess(surcells[sc]);

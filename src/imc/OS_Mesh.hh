@@ -217,6 +217,7 @@ public:
     inline vector<double> get_normal(int, int) const;
     inline vector<double> get_normal_in(int, int) const;
     inline double volume(int) const;
+    inline double face_area(int, int) const;
     vector<int> get_surcells(string) const;
     int get_bndface(string, int) const;
     inline CCVF_a get_vertices(int, int) const;
@@ -424,6 +425,25 @@ inline double OS_Mesh::volume(int cell) const
 
   // return volume
     return volume;
+}
+
+//---------------------------------------------------------------------------//
+
+inline double OS_Mesh::face_area(int cell, int face) const 
+{
+  // calculate area of face on cell
+
+  // loop through dimensions and multiply off-dimension widths
+    double face_area = 1.0;
+    int dim_face_on = (face + 1) / 2;
+    for (int d = 1; d <= coord->get_dim(); d++)
+    {
+	if (d != dim_face_on)
+	    face_area *= dim(d, cell);
+    }
+
+  // return face_area
+    return face_area;
 }
 
 //---------------------------------------------------------------------------//
