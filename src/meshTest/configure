@@ -2338,7 +2338,7 @@ EOF
 
        # shmem (not available on suns)
        if test "${enable_shmem}" = yes ; then
-	   { echo "configure: error: "We don't support shmem on linux!"" 1>&2; exit 1; }
+	   { echo "configure: error: "We do not support shmem on linux!"" 1>&2; exit 1; }
        fi
 
        #
@@ -2419,7 +2419,7 @@ EOF
 
 	   fi
        elif test "${with_mpi}" = mpich ; then
-	   { echo "configure: error: "We don't support mpich on the SGI yet!"" 1>&2; exit 1; }
+	   { echo "configure: error: "We do not support mpich on the SGI yet!"" 1>&2; exit 1; }
        fi
 
        # setup for shmem support
@@ -2499,7 +2499,7 @@ EOF
        # setup for mpi support
        # we only support mpich on sgis       
        if test "${with_mpi}" = vendor ; then
-	   { echo "configure: error: "We don't support vendor mpi on the SUN yet!"" 1>&2; exit 1; }
+	   { echo "configure: error: "We do not support vendor mpi on the SUN yet!"" 1>&2; exit 1; }
        elif test "${with_mpi}" = mpich ; then
 	   
 	   # define sun-required libraries for mpich, v 1.0 (this
@@ -2534,7 +2534,7 @@ EOF
 
        # shmem (not available on suns)
        if test "${enable_shmem}" = yes ; then
-	   { echo "configure: error: "We don't support shmem on suns!"" 1>&2; exit 1; }
+	   { echo "configure: error: "We do not support shmem on suns!"" 1>&2; exit 1; }
        fi
 
        #
