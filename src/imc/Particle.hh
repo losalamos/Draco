@@ -272,23 +272,29 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
 template<class MT>
 inline int Particle<MT>::get_index(string desc)
 {
+  // declare return type
+    int return_value;
+
   // collision event descriptors
     if (desc == "scatter")
-	return 100;
+	return_value = 100;
     if (desc == "low_weight")
-	return 101;
+	return_value = 101;
  
   // streaming descriptors
     if (desc == "reflection")
-	return 200;
+	return_value = 200;
     if (desc == "stream")
-	return 201;
+	return_value = 201;
     if (desc == "escape")
-	return 202;
+	return_value = 202;
 
   // time and census descriptors
     if (desc == "census")
-	return 300;
+	return_value = 300;
+
+  // return
+    return return_value;
 }
 
 //---------------------------------------------------------------------------//
@@ -297,23 +303,29 @@ inline int Particle<MT>::get_index(string desc)
 template<class MT>
 inline string Particle<MT>::get_descriptor(int index)
 {
+  // declare return type
+    string return_value;
+
   // collision event descriptors
     if (index == 100)
-	return "scatter";
+	return_value = "scatter";
     if (index == 101)
-	return "low_weight";
+	return_value = "low_weight";
  
   // streaming descriptors
     if (index == 200)
-	return "reflection";
+	return_value = "reflection";
     if (index == 201)
-	return "stream";
+	return_value = "stream";
     if (index == 202)
-	return "escape";
+	return_value = "escape";
 
   // time and census descriptors
     if (index == 300)
-	return "census";
+	return_value = "census";
+
+  // return
+    return return_value;
 }
 
 CSPACE

@@ -3,7 +3,7 @@
 // Thomas M. Evans
 // Fri Jan 30 17:04:24 1998
 //---------------------------------------------------------------------------//
-// @> source file for Particle class
+// @> Particle class implementation file
 //---------------------------------------------------------------------------//
 
 #include "imctest/Particle.hh"
