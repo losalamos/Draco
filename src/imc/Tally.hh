@@ -34,7 +34,7 @@ namespace rtt_imc
 template<class MT>
 class Tally 
 {
-private:
+  private:
     typename MT::CCSF_double energy_dep;
     double energy_dep_tot;
 
@@ -47,7 +47,7 @@ private:
 
     typename MT::CCSF_double evol_net;
 
-  // particle activity tallies, per cycle
+    // particle activity tallies, per cycle
     int n_effscat;
     int n_thomscat;
     int n_killed;
@@ -57,39 +57,39 @@ private:
     int n_bndcross;
     int n_reflections;
 
-public:
-  // Tally constructor
+  public:
+    // Tally constructor.
     explicit Tally(dsxx::SP<MT>);
 
-  // Tally constructor that gets evol_net
+    // Tally constructor that gets evol_net.
     Tally(dsxx::SP<MT>, typename MT::CCSF_double);
 
-  // accumulate energy deposited
+    // accumulate energy deposited
     void deposit_energy(const int cell, const double energy);
 
-  // access energy deposited for a cell, total.
-    inline double get_energy_dep(const int cell);
-    inline double get_energy_dep_tot();
-    double get_evol_net(int cell) { return evol_net(cell); }
+    // access energy deposited for a cell, total.
+    inline double get_energy_dep(const int cell) const;
+    inline double get_energy_dep_tot() const;
+    double get_evol_net(int cell) const { return evol_net(cell); }
 
-  // accumulate energy-weighted path length
+    // accumulate energy-weighted path length
     void accumulate_ewpl(const int cell, const double ewpl);
 
-  // accumulate new census energy and numbers of particles
+    // accumulate new census energy and numbers of particles
     void accumulate_cen_info(const int cell, const double new_ecen);
 
-  // access accumulated energy-weighted path length per cell
-    inline double get_accum_ewpl(const int cell);
+    // access accumulated energy-weighted path length per cell
+    inline double get_accum_ewpl(const int cell) const;
 
-  // access accumulated new census energy per cell, total
-    inline double get_new_ecen(const int cell);
-    inline double get_new_ecen_tot();
+    // access accumulated new census energy per cell, total
+    inline double get_new_ecen(const int cell) const;
+    inline double get_new_ecen_tot() const;
 
-  // access accumulated numbers of new census particles per cell, total
-    inline int get_new_ncen(const int cell);
-    inline int get_new_ncen_tot();
+    // access accumulated numbers of new census particles per cell, total
+    inline int get_new_ncen(const int cell) const;
+    inline int get_new_ncen_tot() const;
 
-  // accumulator functions for particle activity
+    // accumulator functions for particle activity
     inline void accum_n_effscat();
     inline void accum_n_thomscat();
     inline void accum_n_killed();
@@ -99,14 +99,14 @@ public:
     inline void accum_n_bndcross();
     inline void accum_n_reflections();
 
-  // access accumulated particle activity tallies
+    // access accumulated particle activity tallies
     double get_ew_escaped() const { return ew_escaped; }
 
-  // accessors
+    // accessors
     int num_cells() const { return energy_dep.get_Mesh().num_cells(); }
     inline double volume(int) const;
 
-  // diagnostics for tally
+    // diagnostics for tally
     void print(std::ostream &) const;
     void cycle_print(std::ostream &) const;
 };
@@ -127,7 +127,7 @@ std::ostream& operator<<(std::ostream &out, const Tally<MT> &object)
 //---------------------------------------------------------------------------//
 
 template<class MT>
-inline double Tally<MT>::get_energy_dep(const int cell)
+inline double Tally<MT>::get_energy_dep(const int cell) const
 {
     return energy_dep(cell);
 }
@@ -135,12 +135,15 @@ inline double Tally<MT>::get_energy_dep(const int cell)
 //---------------------------------------------------------------------------//
 
 template<class MT>
-inline double Tally<MT>::get_energy_dep_tot(){ return energy_dep_tot; }
+inline double Tally<MT>::get_energy_dep_tot() const
+{ 
+    return energy_dep_tot; 
+}
 
 //---------------------------------------------------------------------------//
 
 template<class MT>
-inline double Tally<MT>::get_accum_ewpl(const int cell)
+inline double Tally<MT>::get_accum_ewpl(const int cell) const
 {
     return eweighted_pathlen(cell);
 }
@@ -148,7 +151,7 @@ inline double Tally<MT>::get_accum_ewpl(const int cell)
 //---------------------------------------------------------------------------//
 
 template<class MT>
-inline double Tally<MT>::get_new_ecen(const int cell)
+inline double Tally<MT>::get_new_ecen(const int cell) const
 {
     return census_energy(cell);
 }
@@ -156,12 +159,15 @@ inline double Tally<MT>::get_new_ecen(const int cell)
 //---------------------------------------------------------------------------//
 
 template<class MT>
-inline double Tally<MT>::get_new_ecen_tot(){ return new_ecen_tot; }
+inline double Tally<MT>::get_new_ecen_tot() const
+{
+    return new_ecen_tot; 
+}
 
 //---------------------------------------------------------------------------//
 
 template<class MT>
-inline int Tally<MT>::get_new_ncen(const int cell)
+inline int Tally<MT>::get_new_ncen(const int cell) const
 {
     return new_ncen(cell);
 }
@@ -169,7 +175,10 @@ inline int Tally<MT>::get_new_ncen(const int cell)
 //---------------------------------------------------------------------------//
 
 template<class MT>
-inline int Tally<MT>::get_new_ncen_tot(){ return new_ncen_tot; }
+inline int Tally<MT>::get_new_ncen_tot() const
+{ 
+    return new_ncen_tot; 
+}
 
 //---------------------------------------------------------------------------//
 // inline accumulator function for particle activity

@@ -71,7 +71,7 @@ Source<MT, PT>::Source(ccsf_int &vol_rnnum_,
       material(mat_state), 
       mesh_op(operations)
 {
-  // some assertions
+    // some assertions
     Check (vol_rnnum.get_Mesh() == nvol.get_Mesh());
     Check (nvol.get_Mesh()      == ss_rnnum.get_Mesh());
     Check (nvol.get_Mesh()      == nss.get_Mesh());
@@ -79,14 +79,14 @@ Source<MT, PT>::Source(ccsf_int &vol_rnnum_,
     Check (nvol.get_Mesh()      == fss.get_Mesh());
     Check (nvol.get_Mesh()      == ew_ss.get_Mesh());
 
-  // nsrcdone_cell is the running number of source particles completed for a
-  // particular source type in a particular cell.  
+    // nsrcdone_cell is the running number of source particles completed for a
+    // particular source type in a particular cell.  
     nsrcdone_cell = 0;
 
-  // Begin with first cell
+    // Begin with first cell
     current_cell = 1;
 
-  // running totals of completed source particles, by type
+    // running totals of completed source particles, by type
     nssdone  = 0;
     nvoldone = 0;
     ncendone = 0;
@@ -102,10 +102,10 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 {
     bool sampled = false;
 
-  // instantiate particle to return
+    // instantiate particle to return
     SP<PT> source_particle;
 
-  // do all surface source particles, one-by-one
+    // do all surface source particles, one-by-one
     while (!sampled && nssdone < nsstot)
     {
 	if (nsrcdone_cell < nss(current_cell))
@@ -133,7 +133,7 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 	}
     }
 
-  // do all volume emission particles, one-by-one
+    // do all volume emission particles, one-by-one
     while (!sampled && nvoldone < nvoltot)
     {
 	if (nsrcdone_cell < nvol(current_cell))
@@ -161,18 +161,18 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 	}
     }
 
-  // do all census particles, one-by-one
+    // do all census particles, one-by-one
     while (!sampled && ncendone < ncentot)
     {
-	    source_particle = get_census(delta_t);
-	    sampled = true;
-	    ncendone++;
+	source_particle = get_census(delta_t);
+	sampled = true;
+	ncendone++;
     }
 
     Ensure (sampled);
     Ensure (source_particle->status());
     
-  // return the particle
+    // return the particle
     return source_particle;
 }
 
@@ -228,14 +228,14 @@ SP<PT> Source<MT, PT>::get_ss(double delta_t)
 template<class MT, class PT>
 SP<PT> Source<MT, PT>::get_evol(double delta_t)
 {
-  // get the random number object
+    // get the random number object
     Sprng rand = rcon->get_rn();
 
-  // sample location using tilt
+    // sample location using tilt
     double t4 = pow(material->get_T(current_cell), 4);
     vector<double> r = mesh_op->sample_pos_tilt(current_cell, t4, rand);
 
-  // sample particle direction
+    // sample particle direction
     vector<double> omega = nvol.get_Mesh().get_Coord().
 	sample_dir("isotropic", rand); 
  
@@ -244,7 +244,7 @@ SP<PT> Source<MT, PT>::get_evol(double delta_t)
     double fraction  = 1.0;
     double time_left = rand.ran() * delta_t;
 
-  // instantiate particle to return
+    // instantiate particle to return
     SP<PT> vol_particle(new PT(r, omega, ew, cell, rand, fraction, 
 			       time_left)); 
 
@@ -259,18 +259,18 @@ SP<PT> Source<MT, PT>::get_census(double delta_t)
 {
     Require (census->size() > 0);
 
-  // get the census particle from the Census buffer
+    // get the census particle from the Census buffer
     SP<PT> census_particle = census->top();
     census_particle->set_time_left(delta_t);
     census_particle->set_descriptor("from_census");
 
-  // remove the census particle from the bank
+    // remove the census particle from the bank
     census->pop();
 
-  // make sure the particle is active
+    // make sure the particle is active
     census_particle->reset_status();
 
-  // return the particle
+    // return the particle
     return census_particle;
 }
 
@@ -286,7 +286,7 @@ void Source<MT, PT>::print(ostream &out) const
     out << ">>> SOURCE DATA <<<" << endl;
     out << "===================" << endl;
 
-  // numbers of each type of particle
+    // numbers of each type of particle
     out << setw(25) << setiosflags(ios::right) << "Census Particles: "
 	<< setw(10) << ncentot << endl;
     out << setw(25) << setiosflags(ios::right) << "Volume Particles: "
@@ -294,7 +294,7 @@ void Source<MT, PT>::print(ostream &out) const
     out << setw(25) << setiosflags(ios::right) << "Surface Particles: "
 	<< setw(10) << nsstot << endl;
 
-  // lets look at the number of particles in each cell
+    // lets look at the number of particles in each cell
     out << endl << " ** Sources **" << endl;
     out << setw(10) << " " << setw(15) << setiosflags(ios::right)
 	<< "Volume" << setw(5) << " " << setw(15) << setiosflags(ios::right)
@@ -309,7 +309,7 @@ void Source<MT, PT>::print(ostream &out) const
 	    << setw(10) << vol_rnnum(i)  << setw(10) << nss(i)
 	    << setw(10) << ss_rnnum(i)   << endl;
 
-  // lets look at the energy weight in each cell
+    // lets look at the energy weight in each cell
     out << endl << " ** Source Energy ** " << endl;
     out << setw(10) << setiosflags(ios::right) << "Cell" 
 	<< setw(15) << setiosflags(ios::right) << "Volume ew" 

@@ -66,7 +66,7 @@ class Rep_Source_Builder : public Source_Builder<MT,PT>
     typedef std::string                                    std_string;
     typedef typename MT::CCSF_double                       ccsf_double;
     typedef typename MT::CCSF_int                          ccsf_int;
-    typedef typename MT::CCVF_double                       ccvf_double;
+    typedef typename MT::CCVF_double                       ccvf_double;             
 
   private:
     // Data fields unique or more properly defined for full Replication
@@ -131,6 +131,9 @@ class Rep_Source_Builder : public Source_Builder<MT,PT>
 
     //! Get global, total number of volume emission particles on processor.
     int get_nvoltot() const { return global_nvoltot; }
+
+    //! Get global number of volume emission particles / cell on processor.
+    int get_nvol(int cell) const { return global_nvol(cell); }
     
     //! Get global energy loss in surface source on processor.
     double get_eloss_ss() const { return global_eloss_ss; } 

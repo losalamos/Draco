@@ -20,6 +20,7 @@
 #include "mc/Topology.hh"
 #include "mc/Parallel_Data_Operator.hh"
 #include "rng/Random.hh"
+#include "c4/global.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <string>
@@ -287,6 +288,9 @@ class Source_Builder
     virtual void calc_initial_census(SP_Mesh, SP_Mat_State, SP_Opacity,
 				     SP_Rnd_Control) = 0;
 
+    //! Get the number of cells accessed by the Source_Builder on processor.
+    int num_cells() const { return topology->num_cells(C4::node()); }
+
     // ACCESSOR FOR CENSUS
 
     //! Get a dsxx::SP to the census.
@@ -302,7 +306,7 @@ class Source_Builder
     //! Get total volume emission energy on processor.
     double get_evoltot() const { return evoltot; } 
 
-    //! Get material volume emission source energy per cell on processor.
+    //! Get global material volume emission source energy/cell on processor.
     double get_mat_vol_src(int cell) const { return mat_vol_src(cell); } 
 
     //! Get total material volume emission source energy on processor.
@@ -314,6 +318,9 @@ class Source_Builder
     //! Get total surface source energy on processor.
     double get_esstot() const { return esstot; }
 
+    //! Get total initial census energy on processor.
+    double get_initial_census_energy() const { return ecentot; }
+
     // Topology dependent data.  This data could be either global or local
     // depending upon the topology.  The data that is returned lives in the
     // derived class.
@@ -323,6 +330,9 @@ class Source_Builder
 
     //! Get total number of volume emission particles - toplogy dependent.
     virtual int get_nvoltot() const = 0;
+
+    //! Get number of volume emission particles / cell - topology dependent.
+    virtual int get_nvol(int) const = 0;
     
     //! Get energy loss in surface source - topology dependent.
     virtual double get_eloss_ss() const = 0;

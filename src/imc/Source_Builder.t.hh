@@ -12,7 +12,6 @@
 #include "Source_Builder.hh"
 #include "Particle.hh"
 #include "Global.hh"
-#include "c4/global.hh"
 #include "ds++/Assert.hh"
 #include <cmath>
 
