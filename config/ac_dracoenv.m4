@@ -260,10 +260,13 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
            test_launch='\$$objdir/'"${tool}"
 	   test_nprocs="1"
        elif test "$with_c4" = mpi ; then
-	   test_launch='mpirun -np \$$NPROCS \$$objdir/'"${tool}"
+	   test_launch='--mpi \$$NPROCS \$$objdir/'"${tool}"
        elif test "$with_c4" = shmem ; then
-	   test_launch='\$$objdir/'"${tool}"' -npes \$$NPROCS'
+	   test_launch='--shmem \$$NPROCS \$$objdir/'"${tool}"
        fi
+       
+       # add the proper executable tag to test_launch
+       test_launch="--${test_exe:=binary} ${test_launch}"
 
        test_output_files="$test_output_files $tool.sum $tool.log"
        site_exp="$site_exp 'set ${tool}name \"${test_launch}\"'"

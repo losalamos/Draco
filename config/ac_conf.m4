@@ -62,6 +62,19 @@ AC_DEFUN(AC_RUNTESTS, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_TESTEXE
+dnl
+dnl determines what type of executable the tests are, for example, you 
+dnl can set the executable to some scripting extension, like python.
+dnl the default is an executable binary
+dnl options are PYTHON
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_TESTEXE, [dnl
+   test_exe="$1"
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_INSTALL_EXECUTABLE
 dnl
 dnl where executables will be installed
