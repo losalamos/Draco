@@ -37,18 +37,19 @@ namespace rtt_P1Diffusion_test
 
  template<class MT>
  testP1Diffusion<MT>::testP1Diffusion(const dsxx::SP<MT> &spMesh_,
+				      const FieldConstructor &fCtor_,
 				      double D_, double sigma_, double q_,
 				      double fTop_, double fBot_,
 				      const Diffusion_DB &diffdb_,
 				      const pcg_DB &pcg_db_)
-     : spMesh(spMesh_), D(D_), sigma(sigma_), q(q_), fTop(fTop_), fBot(fBot_),
-       diffdb(diffdb_), pcg_db(pcg_db_)
+     : spMesh(spMesh_), fCtor(fCtor_), D(D_), sigma(sigma_), q(q_),
+       fTop(fTop_), fBot(fBot_), diffdb(diffdb_), pcg_db(pcg_db_)
  {
      nx = spMesh->get_ncx();
      ny = spMesh->get_ncy();
      nz = spMesh->get_ncz();
 
-     fcdsf zloc(spMesh);
+     fcdsf zloc(fCtor);
      spMesh->get_zloc(zloc);
 	 
      zBot = zloc(0,0,0,4);
@@ -70,34 +71,34 @@ namespace rtt_P1Diffusion_test
  template<class MT>
  void testP1Diffusion<MT>::run()
  {
-     SP<MatrixSolver> spMatrixSolver(new MatrixSolver(spMesh, pcg_db));
+     SP<MatrixSolver> spMatrixSolver(new MatrixSolver(fCtor, pcg_db));
      SP<DiffSolver> spDiffSolver(new DiffSolver(diffdb, spMesh,
-						spMatrixSolver));
+						spMatrixSolver, fCtor));
 
-     fcdsf DFC(spMesh);
+     fcdsf DFC(fCtor);
      DFC = D;
 
-     ccsf sigmaCC(spMesh);
+     ccsf sigmaCC(fCtor);
      sigmaCC = sigma;
 
-     ccsf QCC(spMesh);
+     ccsf QCC(fCtor);
      getSource(QCC);
 
-     fcdsf Fprime(spMesh);
+     fcdsf Fprime(fCtor);
      Fprime = 0.0;
 
-     bssf alpha(spMesh);
-     bssf beta(spMesh);
-     bssf f(spMesh);
+     bssf alpha(fCtor);
+     bssf beta(fCtor);
+     bssf f(fCtor);
 
      setBoundary(alpha, beta, f);
      
-     ccsf phi(spMesh);
-     fcdsf F(spMesh);
+     ccsf phi(fCtor);
+     fcdsf F(fCtor);
 
      spDiffSolver->solve(phi, F, DFC, sigmaCC, QCC, Fprime, alpha, beta, f);
 
-     ccsf phi0(spMesh);
+     ccsf phi0(fCtor);
      getPhi(phi0);
 
      double error = 0.0;
@@ -118,7 +119,7 @@ namespace rtt_P1Diffusion_test
      std::cout << "phi(nz-1), F(nz-1): " << phi[nz-1] << " " << F(0,0,nz-1,5)
 	       << std::endl;
 
-     ccsf zc(spMesh);
+     ccsf zc(fCtor);
      spMesh->get_zloc(zc);
      std::ofstream ofs("testP1Diffusion.dat");
      for (int i=0; i<phi.size(); i++)
@@ -178,7 +179,7 @@ namespace rtt_P1Diffusion_test
  template<class MT>
  void testP1Diffusion<MT>::getSource(ccsf &Qsrc) const
  {
-     ccsf zc(spMesh);
+     ccsf zc(fCtor);
      spMesh->get_zloc(zc);
 
      for (int i=0; i<Qsrc.size(); i++)
@@ -191,7 +192,7 @@ namespace rtt_P1Diffusion_test
  template<class MT>
  void testP1Diffusion<MT>::getPhi(ccsf &phi) const
  {
-     ccsf zc(spMesh);
+     ccsf zc(fCtor);
      spMesh->get_zloc(zc);
 
      for (int i=0; i<phi.size(); i++)

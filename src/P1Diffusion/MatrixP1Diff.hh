@@ -49,7 +49,6 @@ namespace rtt_P1Diffusion
 
    private:
      
-     SP<MT> spMesh;
      SP<const ccsf> spDiagonal;
      SP<const fcdsf> spOffDiagonal;
      FieldConstructor fCtor;
@@ -66,12 +65,11 @@ namespace rtt_P1Diffusion
 
      // CREATORS
     
-     MatrixP1Diff(const SP<MT> &spMesh_,
+     MatrixP1Diff(const FieldConstructor &fCtor_, 
 		  const SP<const ccsf> &spDiagonal_,
-		  const SP<const fcdsf> &spOffDiagonal_,
-                  const FieldConstructor &fCtor_)
-	 : spMesh(spMesh_), spDiagonal(spDiagonal_),
-	   spOffDiagonal(spOffDiagonal_), fCtor(fCtor_)
+		  const SP<const fcdsf> &spOffDiagonal_)
+	 : fCtor(fCtor_), spDiagonal(spDiagonal_),
+	   spOffDiagonal(spOffDiagonal_)
      {
 	 spxFC = new fcdsf(fCtor);
 	 spxSwap = new fcdsf(fCtor);

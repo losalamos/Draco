@@ -414,7 +414,7 @@ namespace rtt_P1Diffusion
      // The sparse matrix can be constructed from the diagonal and
      // off-diagonal elements.
     
-     SP<Matrix> spMatrix(new Matrix(spm, spADiagonal, spAOffDiagonal, fCtor));
+     SP<Matrix> spMatrix(new Matrix(fCtor, spADiagonal, spAOffDiagonal));
 
      // Solve the "matrix*phi = b" equations.
     

@@ -76,7 +76,8 @@ int main(int argc, char *argv[])
     testSolve.run();
 
     SP<MT> spMesh(new MT(mdb));
-    rtt_P1Diffusion_test::testP1Diffusion<MT> testP1(spMesh, tdb.D, tdb.sigma,
+    rtt_P1Diffusion_test::testP1Diffusion<MT> testP1(spMesh, spMesh,
+						     tdb.D, tdb.sigma,
 						     tdb.q, tdb.fTop, tdb.fBot,
 						     diffdb, pcg_db);
     testP1.run();

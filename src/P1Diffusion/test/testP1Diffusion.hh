@@ -25,6 +25,8 @@ namespace rtt_P1Diffusion_test
      typedef MS MatrixSolver;
      typedef rtt_P1Diffusion::P1Diffusion<MT, MS> DiffSolver;
 
+     typedef typename MT::FieldConstructor FieldConstructor;
+     
      typedef typename MT::ccsf ccsf;
      typedef typename MT::fcdsf fcdsf;
      typedef typename MT::bssf bssf;
@@ -45,6 +47,7 @@ namespace rtt_P1Diffusion_test
      double B;
 
      dsxx::SP<MT> spMesh;
+     FieldConstructor fCtor;
      Diffusion_DB diffdb;
      pcg_DB pcg_db;
 
@@ -55,6 +58,7 @@ namespace rtt_P1Diffusion_test
    public:
 
      testP1Diffusion(const dsxx::SP<MT> &spMesh_,
+		     const FieldConstructor &fCtor_,
 		     double D_, double sigma_, double q_,
 		     double fTop_, double fBot_,
 		     const Diffusion_DB &diffdb_,
