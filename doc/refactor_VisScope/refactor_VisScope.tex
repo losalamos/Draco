@@ -177,7 +177,27 @@ global mesh or which only contain the necessary local information
 about the neighbors of a given mesh. We seek to improve the topology
 class to make this distinction more explicit.
 
-Milagro stuff....
+The Milagro interface has accquired some unusual features which make
+it ripe for refactoring. Principal among these are:
+
+\begin{itemize}
+\item {\tt Global\_Tally} both {\em is an} interface and {\em uses} an
+  interface in its construction. This is awkward and absoures the
+  intended useage of the class.
+
+\item The {\tt Global\_Tally} is {\em indiscriminate} in the type of the
+interface it will accept via a template argument. This is contrary to
+the very purpose of using abstract interfaces.
+
+\item The {\tt Global\_Tally} class is poorly named, since it holds much
+more than tallies.
+
+\item The {\tt Interface} and {\tt Global\_Tally} both have large
+  interfaces which are the union of interfaces required by other
+  objects. This strongly suggests that the data they contain cound be
+  better encapsulated.
+
+\end{itemize}
 
 \subsection*{Quality of the Product}
 
@@ -201,12 +221,6 @@ feature prompted changes in multiple, widely seperated, parts of the
 code. This feature was perhaps especially difficult in this regard. We
 should be on the lookout for ways to minimize the disruptive impact of
 similarly cross-cutting features.
-
-\subsection*{Delivery Date}
-
-\subsection*{Trade-offs}
-             E.g., higher product quality implies later delivery date.
-
 
 \newpage
 \section*{Critical Success Factors}
