@@ -16,7 +16,8 @@
 #include "imc/Source_Init.hh"
 #include "imc/Particle_Buffer.hh"
 #include "imc/Particle.hh"
-#include "rng/Rnd_Control.hh"
+#include "imc/Constants.hh"
+#include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include "c4/global.hh"
@@ -27,6 +28,7 @@
 #include <sstream>
 #include <string>
 #include <algorithm>
+#include <cstdio>
 
 using IMC::OS_Interface;
 using IMC::OS_Builder;
@@ -38,7 +40,9 @@ using IMC::Parallel_Builder;
 using IMC::Source_Init;
 using IMC::Particle_Buffer;
 using IMC::Particle;
+using IMC::Global::rn_stream;
 using RNG::Rnd_Control;
+using RNG::Sprng;
 using namespace std;
 using namespace C4;
 
@@ -116,24 +120,30 @@ void Builder_diagnostic(const MT &mesh,	const Opacity<MT> &opacity)
 }
 
 template<class MT, class PT>
-void comm_particle(const MT &mesh,
-		   const Particle_Buffer<PT> &buffer, 
-		   Rnd_Control &rcon)
+void comm_particle1(const MT &mesh,
+		    const Particle_Buffer<PT> &buffer, 
+		    Rnd_Control &rcon)
 {
   // lets do stuff on the host
     if (!mynode)
     {    
-	cout << endl << ">> Particle Comm_Buffer blocking send/recv test"
+	cout << endl << ">> Particle Comm_Buffer blocking send/recv test 1"
 	     << endl;
 
       // let's make some particles
 	vector<double> r(mesh.get_Coord().get_dim(), 1.0);
 	vector<double> omega(mesh.get_Coord().get_sdim(), 0.0);
-	PT p1(r, omega, 1.0, 1, rcon.get_rn());
+	Sprng ran1 = rcon.get_rn();
+	Sprng ran2 = rcon.get_rn();
+	Sprng ran3 = rcon.get_rn();
+	for (int i = 1; i <= 10; i++) ran1.ran();
+	for (int i = 1; i <= 10; i++) ran2.ran();
+	for (int i = 1; i <= 10; i++) ran3.ran();
+	PT p1(r, omega, 1.0, 1, ran1);
 	fill(r.begin(), r.end(), 2.0);
-	PT p2(r, omega, 2.0, 2, rcon.get_rn());
+	PT p2(r, omega, 2.0, 2, ran2);
 	fill(r.begin(), r.end(), 3.0);
-	PT p3(r, omega, 3.0, 3, rcon.get_rn());
+	PT p3(r, omega, 3.0, 3, ran3);
 
       // lets dump them
 	cout << "** Printing Particles on node " << mynode << endl;
@@ -145,7 +155,7 @@ void comm_particle(const MT &mesh,
 	Particle_Buffer<PT>::Comm_Buffer cbuf;
 	buffer.buffer_particle(cbuf, p1);
 	buffer.buffer_particle(cbuf, p2);
-	buffer.buffer_particle(cbuf, p3);
+ 	buffer.buffer_particle(cbuf, p3);
 
       // lets send them
 	for (int np = 1; np < mynodes; np++) 
@@ -162,11 +172,170 @@ void comm_particle(const MT &mesh,
 	
       // let's receive the buffers
 	rbuf = buffer.recv_buffer(0);
-	cout << "** We received a buffer with " << rbuf->n_part 
-	     << " particles from node " << 0 << endl;
+	cout << "** We received a buffer on " << mynode << " with " 
+	     << rbuf->n_part << " particles from node " << 0 << endl;
+
+      // write the buffers to census files
+	ostringstream stitle;
+	stitle << "census." << mynode;
+	string title = stitle.str();
+	
+	ofstream cenout(title.c_str());
+	buffer.write_census(cenout, *rbuf);
+	cout << "** Wrote the file " << title << " on node " << mynode
+	     << endl;
     }
 
-  // <<CONTINUE TESTING OF PARTICLE_BUFFER HERE>>
+  // lets open the census files and see what we've got
+    HTSyncSpinLock h;
+    {
+	ostringstream stitle;
+	stitle << "census." << mynode;
+	string title = stitle.str();
+
+	ifstream infile(title.c_str());
+
+	if (!infile == false)
+	{
+	    cout << "** Opening census file " << title << " on node " 
+		 << mynode << endl;
+
+	  // read particles
+	    SP<Particle_Buffer<PT>::Census_Buffer> cenpart;
+	    cout << "** Printing Particles on node " << mynode 
+		 << endl;
+	    do
+	    {
+		cenpart = buffer.read_census(infile);
+		if (cenpart)
+		{
+		    PT part(cenpart->r, cenpart->omega, cenpart->ew,
+			    cenpart->cell, cenpart->random,
+			    cenpart->fraction);
+		    cout << part << endl << endl;
+
+		  // random number check
+		    rcon.set_num(cenpart->random.get_num());
+		    Sprng rand = rcon.get_rn();
+		    cout << "The following should match:" << endl;
+		    cout << "---------------------------" << endl;
+		    for (int i = 1; i <= 20; i++)
+		    {
+			if (i <= 10)
+			    rand.ran();
+			else
+			{
+			    cout.precision(4);
+			    cout << setw(10) << rand.ran() << setw(10)
+				 << cenpart->random.ran() << endl;
+			}
+		    }
+		    cout << "---------------------------" << endl << endl;
+		}
+	    } while (cenpart);
+
+	  // closing Census file
+	    remove(title.c_str());
+	    cout << "** Removing file " << title << " on node " << mynode 
+		 << endl;
+	}  
+    }	    
+}
+
+template<class MT, class PT>
+void comm_particle2(const MT &mesh,
+		    const Particle_Buffer<PT> &buffer, 
+		    Rnd_Control &rcon)
+{
+  // lets do stuff on the host
+    if (!mynode)
+    {    
+	cout << endl << ">> Particle Comm_Buffer blocking send/recv test 2"
+	     << endl;
+
+      // let's make some particles
+	vector<double> r(mesh.get_Coord().get_dim(), 10.0);
+	vector<double> omega(mesh.get_Coord().get_sdim(), 0.0);
+	Sprng ran1 = rcon.get_rn();
+	Sprng ran2 = rcon.get_rn();
+	Sprng ran3 = rcon.get_rn();
+	for (int i = 1; i <= 10; i++) ran1.ran();
+	for (int i = 1; i <= 10; i++) ran2.ran();
+	for (int i = 1; i <= 10; i++) ran3.ran();
+	PT p1(r, omega, 10.0, 10, ran1);
+	fill(r.begin(), r.end(), 20.0);
+	PT p2(r, omega, 20.0, 20, ran2);
+	fill(r.begin(), r.end(), 30.0);
+	PT p3(r, omega, 30.0, 30, ran3);
+
+      // lets dump them
+	cout << "** Printing Particles on node " << mynode << endl;
+	cout << p1 << p2 << p3 << endl;
+
+      // lets buffer them
+	cout << "** Putting Particles in a Comm_Buffer on node " 
+	     << mynode << endl;
+	Particle_Buffer<PT>::Comm_Buffer cbuf;
+	buffer.buffer_particle(cbuf, p1);
+	buffer.buffer_particle(cbuf, p2);
+ 	buffer.buffer_particle(cbuf, p3);
+
+      // lets send them
+	for (int np = 1; np < mynodes; np++) 
+	{
+	    buffer.send_buffer(cbuf, np);
+	    cout << "** Sent buffer to node " << np << endl;
+	}
+    }
+
+  // lets get stuff from the host
+    if (mynode)
+    {
+	SP<Particle_Buffer<PT>::Comm_Buffer> rbuf;
+	
+      // let's receive the buffers
+	rbuf = buffer.recv_buffer(0);
+	cout << "** We received a buffer on " << mynode << " with " 
+	     << rbuf->n_part << " particles from node " << 0 << endl;
+
+      // let's put them into a bank
+	Particle_Buffer<PT>::Comm_Bank bank;
+	buffer.add_to_bank(*rbuf, bank);
+	cout << "** We made a Particle Bank on node " << mynode << endl;
+
+      // let's get the guys out of the bank and check'em out
+	while (bank.size() > 0)
+	{
+	  // print out the particle
+	    PT &particle = bank.top();
+	    cout << "** Getting particle out of bank on node " << mynode
+		 << endl;
+	    cout << particle << endl;
+
+	  // do a random number check
+	    rcon.set_num(particle.get_random().get_num());
+	    Sprng rand = rcon.get_rn();
+	    cout << "The following should match:" << endl;
+	    cout << "---------------------------" << endl;
+	    for (int i = 1; i <= 20; i++)
+	    {
+		if (i <= 10)
+		    rand.ran();
+		else
+		{
+		    cout.precision(4);
+		    cout << setw(10) << rand.ran() << setw(10)
+			 << particle.get_random().ran() << endl;
+		}
+	    }
+	    cout << "---------------------------" << endl << endl;
+	    
+	    bank.pop();
+	    cout << "** There are now " << bank.size() 
+		 << " particles left in the bank on node " << mynode
+		 << endl;
+	}
+    }
 }
 
 int main(int argc, char *argv[])
@@ -251,7 +420,11 @@ int main(int argc, char *argv[])
   	if (mesh) 
 	{
   	    Builder_diagnostic(*mesh, *opacity);
-	    comm_particle(*mesh, *buffer, *rcon);
+	    comm_particle1(*mesh, *buffer, *rcon);
+	    comm_particle2(*mesh, *buffer, *rcon);
+	cout << rn_stream << endl;	
+	rn_stream++;
+	cout << rn_stream << endl;
 	}
     }
     catch (const dsxx::assertion &ass)
