@@ -17,7 +17,7 @@ namespace rtt_stopwatch
   // this library in the form stopwatch_#.#.# in pkg_version variable
     const string release()
     {
-	string pkg_release = "@(#)stopwatch-1_1_0";
+	string pkg_release = "@(#)stopwatch-1_2_0";
 	return pkg_release;
     }
 }  // end of rtt_stopwatch
