@@ -154,9 +154,9 @@ void sample_general_linear_test()
 void sample_xsquared_test()
 {
     // set parameters
-    int num_samples = 10000;
-    int num_bins    = 100;
-    double avg_samples_per_bin = static_cast<double>(num_samples) / 
+    int num_samples  = 10000;
+    int num_bins     = 100;
+    double avg_samples_per_bin = static_cast<double>(num_samples)/
 	static_cast<double>(num_bins);
 
     // a rough estimate of 4 sigma relative error
@@ -171,15 +171,20 @@ void sample_xsquared_test()
     Rnd_Control rand_control(seed);
     Sprng ran_object = rand_control.get_rn(10);
 
-    // problem data
-    double x_low=1.0;
-    double x_high=2.0;
 
+    // >>> sample from x^2 for x in [1,2] <<<
+
+    // problem data
+    double x_low     = 1.0;
+    double x_high    = 2.0;
+    double bin_width = (x_high-x_low)/num_bins;
+    double norm      = (x_high*x_high*x_high-x_low*x_low*x_low)/3;
+    
     // sample f(x)
     double x;
     for (int i = 0; i <= num_samples; i++)
     {
-	x = rtt_mc::sampler::sample_xsquared(ran_object, x_low, x_high, 1.0);
+	x = rtt_mc::sampler::sample_xsquared(ran_object, x_low, x_high);
 
 	// calculate bin index
 	bindex = static_cast<int>((x-x_low)*num_bins);
@@ -191,17 +196,234 @@ void sample_xsquared_test()
     // normalize the bins
     for (int b = 0; b < num_bins; b++)
     {
-	bin[b] /= avg_samples_per_bin;
+	bin[b] /= (bin_width*num_samples);
     }
 
     // check that bins replicate original pdf (to w/in roughly 4 sigma)
     for (int b = 0; b < num_bins; b++)
     {
-	x=(b+0.5)/num_bins+x_low;
-	double func_value = 3./7.*pow(x,2);
+	x=x_low+(b+0.5)*bin_width;
+	double func_value = pow(x,2)/norm;
 	if (abs(bin[b]-func_value) > rough_eps*func_value) ITFAILS;
     }
 }
+//---------------------------------------------------------------------------//
+// test the fucntion sample_cubic
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief tests the sample_cubic function on three problems that mimic a
+ * Sphyramid_Mesh Cell
+ * 
+ */
+void sample_cubic_test()
+{
+    using std::pow;
+
+    // set parameters
+    int num_samples = 1000000;
+    int num_bins    = 50;
+    double avg_samples_per_bin = static_cast<double>(num_samples)/
+	static_cast<double>(num_bins);
+
+    // a rough estimate of 4 sigma relative error
+    double rough_eps = 4.0/sqrt(avg_samples_per_bin);
+
+    // make sampling bins
+    vector<double> bin(num_bins, 0.0);
+    int bindex = 0;
+
+    // make a random number generator controller, rng object
+    int seed = 1234567;
+    Rnd_Control rand_control(seed);
+    Sprng ran_object = rand_control.get_rn(1);
+
+    // >>> test problem 1 <<<
+    {
+	// problem data
+	double x_low  = 10;
+	double x_high = 11;
+	double U_low  = 1;
+	double U_high = 11;
+
+	double delta_U   = U_high-U_low;
+	double delta_x   = x_high-x_low;
+	double bin_width = delta_x/num_bins;
+
+	double C1 = delta_U/delta_x;
+	double C2 = U_low-C1*x_low;
+	double C3 = 0;
+	double C4 = 0;
+
+	// calculate norm
+	double norm = C1*(pow(x_high,4)-pow(x_low,4))/4.;
+	norm       += C2*(pow(x_high,3)-pow(x_low,3))/3.;
+	norm       += C3*(x_high*x_high-x_low*x_low)/2.;
+	norm       += C4*delta_x;
+
+	// calculate max
+	double fmax = C1*pow(x_high,3)+C2*pow(x_high,2)+C3*x_high+C4;
+	
+	// sample f(x)
+	double x;
+	for (int i = 0; i <= num_samples; i++)
+	{
+	    x = rtt_mc::sampler::sample_cubic(ran_object, x_low, x_high, C1,
+					      C2, C3, C4, fmax);
+
+	    // calculate bin index
+	    bindex = static_cast<int>((x-x_low)*num_bins);
+	    Check (bindex >= 0);
+	    Check (bindex <  num_bins);
+	    bin[bindex] += 1.0;
+	}
+	// normalixe the bins
+	for (int b = 0; b < num_bins; b++)
+	{
+	    bin[b] /= (bin_width*num_samples);
+	}
+
+
+	// check that bins replicate original pdf (to w/in roughly 4 sigma)
+	for (int b = 0; b < num_bins; b++)
+	{
+	    x=x_low+(b+0.5)*bin_width;
+	    double func_value = C1*x*x*x+C2*x*x+C3*x+C4;
+	    func_value/=norm;
+	    if (abs(bin[b]-func_value) > rough_eps*func_value) ITFAILS;
+	    
+	}
+    }
+
+    // >>> test problem 2 <<<
+
+    // reset bins
+    for (int b = 0; b < num_bins; b++)
+	bin[b] = 0.0;
+    
+    {
+	// problem data
+	double x_low  = 10;
+	double x_high = 11;
+	double U_low  = 20;
+	double U_high = 10;
+
+	double delta_U   = U_high-U_low;
+	double delta_x   = x_high-x_low;
+	double bin_width = delta_x/num_bins;
+
+	double C1 = delta_U/delta_x;
+	double C2 = U_low-C1*x_low;
+	double C3 = 0;
+	double C4 = 0;
+
+	// calculate norm
+	double norm = C1*(pow(x_high,4)-pow(x_low,4))/4.;
+	norm       += C2*(pow(x_high,3)-pow(x_low,3))/3.;
+	norm       += C3*(x_high*x_high-x_low*x_low)/2.;
+	norm       += C4*delta_x;
+
+	// calculate max
+	double fmax = C1*pow(x_low,3)+C2*pow(x_low,2)+C3*x_low+C4;
+	
+	// sample f(x)
+	double x;
+	for (int i = 0; i <= num_samples; i++)
+	{
+	    x = rtt_mc::sampler::sample_cubic(ran_object, x_low, x_high, C1,
+					      C2, C3, C4, fmax);
+
+	    // calculate bin index
+	    bindex = static_cast<int>((x-x_low)*num_bins);
+	    Check (bindex >= 0);
+	    Check (bindex <  num_bins);
+	    bin[bindex] += 1.0;
+	}
+	// normalixe the bins
+	for (int b = 0; b < num_bins; b++)
+	{
+	    bin[b] /=(bin_width*num_samples);
+	}
+
+	// check that bins replicate original pdf (to w/in roughly 4 sigma)
+	for (int b = 0; b < num_bins; b++)
+	{
+	    x=x_low+(b+0.5)*bin_width;
+	    double func_value = C1*x*x*x+C2*x*x+C3*x+C4;
+	    func_value/=norm;
+	    if (abs(bin[b]-func_value) > rough_eps*func_value) ITFAILS;
+	   
+	}
+    }
+
+    // >>> test problem 3 <<<
+
+    // reset bins
+    for (int b = 0; b < num_bins; b++)
+	bin[b] = 0.0;
+    
+    {
+	// problem data
+	double x_low  = 0.0;
+	double x_high = 1.0;
+	double U_low  = 1.0;
+	double U_high = 0.0;
+
+	double delta_U   = U_high-U_low;
+	double delta_x   = x_high-x_low;
+	double bin_width = delta_x/num_bins;
+
+	double C1 = delta_U/delta_x;
+	double C2 = U_low-C1*x_low;
+	double C3 = 0;
+	double C4 = 0;
+
+	// calculate norm
+	double norm = C1*(pow(x_high,4)-pow(x_low,4))/4.;
+	norm       += C2*(pow(x_high,3)-pow(x_low,3))/3.;
+	norm       += C3*(x_high*x_high-x_low*x_low)/2.;
+	norm       += C4*delta_x;
+
+	// calculate max
+	double xmax = -(2./3.)*C2/C1;
+	double fmax = C1*pow(xmax,3)+C2*pow(xmax,2)+C3*xmax+C4;
+	
+	// sample f(x)
+	double x;
+	for (int i = 0; i <= num_samples; i++)
+	{
+	    x = rtt_mc::sampler::sample_cubic(ran_object, x_low, x_high, C1,
+					      C2, C3, C4, fmax);
+
+	    // calculate bin index
+	    bindex = static_cast<int>((x-x_low)*num_bins);
+	    Check (bindex >= 0);
+	    Check (bindex <  num_bins);
+	    bin[bindex] += 1.0;
+	}
+	// normalize the bins
+	for (int b = 0; b < num_bins; b++)
+	{
+	    bin[b] /=(bin_width*num_samples);
+	}
+
+
+
+	// check that bins replicate original pdf (to w/in roughly 4 sigma)
+	// skip the first 5 bins, this pdf has a tail...
+	for (int b = 5; b < num_bins; b++)
+	{
+	    x=x_low+(b+0.5)*bin_width;
+	    double func_value = C1*x*x*x+C2*x*x+C3*x+C4;
+	    func_value/=norm;
+	    if (abs(bin[b]-func_value) > rough_eps*func_value) ITFAILS;
+	    
+	}
+    }
+
+    return;
+}
+
+
 
 //---------------------------------------------------------------------------//
 // Test the sampling a frequency from a planckian distribution at kT.
@@ -455,8 +677,11 @@ int main(int argc, char *argv[])
         // test the sampling of a general linear pdf
 	sample_general_linear_test();
 
-	// test the sampling of a*x^2
+	// test the sampling of x^2
 	sample_xsquared_test();
+
+	// test the sampling of a cubic polynomial
+	sample_cubic_test();
 
 	// test the sampling of a Planckian frequency
 	test_sampling_planckian_frequency();

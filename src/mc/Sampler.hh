@@ -25,7 +25,9 @@
 //               zero-valued function.
 // 2) 12-19-01 : added function sample_bin_from_discrete_cdf and its
 //               supporting function is_this_cdf_valid for DBC use.
-// 3) 11-18-03 : added function to sample from c*x^2 (JDD)
+// 3) 11-18-03 : added function to sample from x^2 (JDD).
+// 4) 11-19-03 : added function to sample from a cubic polynomial using
+//               rejection sampling (JDD).
 //
 //===========================================================================//
 
@@ -106,39 +108,90 @@ inline double sample_general_linear(Ran ran, const double a, const double b,
 // SAMPLE_XSQUARED
 //---------------------------------------------------------------------------//
 /*! 
- * \brief sample x in [a,b] from the pdf f(x)=c*x^2, where c>0.  f(x) does
+ * \brief sample x in [a,b] from the pdf f(x)=x^2.  f(x) does
  * not have to be normalized. The primary purpose of this function is to
  * sample the x-position in a sphyramid cell when source tilting is not used.
  * 
  * \param ran random number object
  * \param a lower extent of independent variable range.
  * \param b upper extent of independent variable range.
- * \param c constant in f(x)=cx^2;
  * \return sampled indenpendent variable
  */
 template<class Ran> 
-inline double sample_xsquared(Ran ran, const double a, const double b, 
-			      const double c)
+inline double sample_xsquared(Ran ran, const double a, const double b)
 {
     using std::pow;
 
     Require (a < b);
-    Insist  (c > 0 , "Invalid form of c*x^2!");
 
     // return value
     double x;
     
     // calculate norm since f(x) may not be normalized
-    double norm=c*(b*b*b-a*a*a)/3.;
+    double norm = (b*b*b-a*a*a)/3.;
 
     // sample x
-    x=pow(a*a*a+3.*ran.ran()*norm/c,1./3.);
+    x = pow(a*a*a+3.*ran.ran()*norm,1./3.);
 
     Ensure (x >= a);
     Ensure (x <= b);
 
     return x;
 }
+//---------------------------------------------------------------------------//
+// SAMPLE_CUBIC
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief sample x in [a,b] from the pdf f(x)=C1*x^3+C2*x^2+C3*x+C4.  f(x)
+ * need not be normalized.  This function uses rejection sampling to sample
+ * x.  Thus user must supply a maximum value of the dependent variable for
+ * rejection, as this function cannot calculate it on its own.  
+ * The primary purpose of this function is to sample the x-position in a
+ * sphyramid cell when source titling is used.
+ * 
+ * \param ran random number object
+ * \param a lower extent of independent variable range
+ * \param b upper extent of independent variable range
+ * \param C1 coefficient of x^3 term
+ * \param C2 coefficient of x^2 term
+ * \param C3 coefficient of x term
+ * \param C4 constant term
+ * \param fmax maximum value of f(x) (for use in rejection sampling)
+ * \return sampled independent variable
+ */
+template<class Ran>
+inline double sample_cubic(Ran ran, const double a, const double b, 
+			   const double C1, const double C2, const double C3,
+			   const double C4, const double fmax)
+{
+    Require (a < b);
+
+    // return value
+    double x;
+
+    // value of f (for rejection)
+    double f;
+
+    // sample until x not rejected
+    bool done = false;
+    while (!done)
+    {
+	// sample x
+	x = a+(b-a)*ran.ran();
+
+	// sample f
+	f = fmax*ran.ran();
+
+	// reject
+	if (f < (C1*x*x*x+C2*x*x+C3*x+C4)) done = true;
+    }
+
+    Ensure (x >= a);
+    Ensure (x <= b);
+
+    return x;
+}
+
 
 //---------------------------------------------------------------------------//
 // SAMPLE_PLANCKIAN_FREQUENCY

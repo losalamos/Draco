@@ -498,7 +498,7 @@ double Sphyramid_Mesh::face_area(int cell, int face) const
 /*! 
  * \brief Sample a position uniformly in an Sphyramid_Mesh cell
  * the form of the (unormalized) pdf is
- * f(x)=tan_beta*tan_beta*x*x x_low<x<x_high
+ * f(x)=x^2 x_low<x<x_high
  * 
  * \param cell cell number
  * \param random random number object
@@ -525,12 +525,9 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
     double hiy = hix*this->tan_beta;
     Check (loy >= 0.0);
     Check (hiy >= 0.0);
-
-    // calculate pdf coefficient(i.e. (tan_beta)^2)
-    double coeff = this->tan_beta*this->tan_beta;
     
     // sample x uniformly in cell
-    position[0] = rtt_mc::sampler::sample_xsquared(random, lox, hix, coeff);
+    position[0] = rtt_mc::sampler::sample_xsquared(random, lox, hix);
     
     // sample y and z value
     double pos_y = position[0]*this->tan_beta;
