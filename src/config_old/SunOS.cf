@@ -44,6 +44,14 @@ CXX_DEPEND_FLAG	= $(CXXFLAGS)
 
 preinstantiate	:= yes
 
+ifndef strict
+strict := no
+endif
+
+ifeq ($(strict),yes)
+CXX	+= --strict
+endif
+
 ifndef kcc_deps
 kcc_deps := yes
 endif
