@@ -27,13 +27,14 @@ AC_CONFIG_SUBDIRS(stdheaders ds++)
 ## LEVEL 2
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(xm rng c4 units traits cdi meshReaders quadrature)
+AC_CONFIG_SUBDIRS(xm rng c4 units traits cdi meshReaders quadrature \
+                  stopwatch)
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 3
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(timestep pcgWrap stopwatch radphys viz cdi_eospac \
+AC_CONFIG_SUBDIRS(timestep pcgWrap radphys viz cdi_eospac \
                   cdi_gandolf cdi_analytic RTT_Format_Reader)
 
 ##---------------------------------------------------------------------------##
