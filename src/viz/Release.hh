@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page viz_overview Overview of the viz package
+ * \mainpage Overview of the viz package
  * \version 1_1_0
  * \author T.M. Evans and J. McGhee
  * 

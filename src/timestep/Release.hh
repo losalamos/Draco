@@ -38,7 +38,7 @@ namespace rtt_timestep
 
 
 /*!
- * \page timestep_overview Overview of the Draco Time Step Manager
+ * \mainpage Overview of the Draco Time Step Manager
  *
  * \version 1_1_0
  *

@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page traits_overview Overview of the traits package
+ * \mainpage Overview of the traits package
  * \version 1_0_0
  * \author Randy Roberts and T.M. Evans
  * 

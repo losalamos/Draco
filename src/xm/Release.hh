@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page xm_overview Overview of the xm package
+ * \mainpage Overview of the xm package
  * \version
  * \author
  * 

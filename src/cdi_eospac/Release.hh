@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page cdi_eospac_overview Overview of the cdi_eospac package
+ * \mainpage Overview of the cdi_eospac package
  * \version 1_0_1
  * \author Kelly Thompson
  * 

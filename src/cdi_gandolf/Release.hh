@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page cdi_gandolf_overview Overview of the cdi_gandolf package
+ * \mainpage Overview of the cdi_gandolf package
  * \version 1_0_0
  * \author Kelly Thompson
  * 

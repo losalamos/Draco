@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page units_overview Overview of the units package
+ * \mainpage Overview of the units package
  * \version 2.0
  * \author Kelly Thompson
  *

@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page cdi_analytic_overview Overview of the cdi_analytic package
+ * \mainpage Overview of the cdi_analytic package
  * \version 1_1_0
  * \author Tom Evans and Todd Urbatsch
  * 
