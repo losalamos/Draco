@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 	  // do the source initialization
 	    sinit = new Source_Init<OS_Mesh>(interface, mesh);
 	    sinit->initialize(mesh, opacity, mat_state, rcon, 1);
-            cout << "** Initialized source on host " << mynode << endl;
+            cout << "** Initialized source on host " << mynode << endl;	
             cout << endl;
 	}
 
@@ -162,7 +162,9 @@ int main(int argc, char *argv[])
             pcomm->send_Mesh(*mesh);
 	    pcomm->send_Opacity(*opacity);
 	    source = pcomm->send_Source(mesh, *sinit, *buffer, rcon);
-	    cout << endl << node() << *source;
+	    cout << *sinit << endl;
+	    cout << " ** Source on node " << mynode << endl;
+	    cout << endl << *source;
 	}
 	
   	if (mynode)
@@ -179,7 +181,8 @@ int main(int argc, char *argv[])
 
           // get the source for this node
 	    source  = pcomm->recv_Source(mesh, rcon, *buffer);
-	    cout << endl << node() << *source;
+	    cout << " ** Source on node " << mynode << endl;	    
+	    cout << endl << *source;
   	}
     }
     catch (const dsxx::assertion &ass)
