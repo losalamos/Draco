@@ -1,13 +1,26 @@
+2000-04-18  H. Grady Hughes  <hgh@lanl.gov>
+
+    * TET_Mesh.cc, ThreeVector.hh, test/tstTET_Mesh.cc,
+    test/TET_RTT_2.in: Changed direction of vector in lin_comb() in
+    ThreeVector.hh, correcting a bug in sample_pos() in TET_Mesh;
+    added another regression test to test/tstTET_Mesh.cc; installed
+    a new RTT-format test file for later regression testing.
+
 2000-04-18  Thomas M. Evans  <tme@lanl.gov>
 
 	* mc: Released version mc-1_2_0.
 
 2000-04-13  Todd J. Urbatsch <tmonster@lanl.gov>
 	
-	* RZWedge_Mesh.hh, RZWedge_Mesh.cc, test/tstRZWedge_Mesh.cc: Added 
+	* RZWedge_Mesh.hh, RZWedge_Mesh.cc, test/tstRZWedge_Mesh.cc: Added
 	the RZWedge_Mesh class and a thorough test of a simple, one-cell
 	RZWedge_Mesh.  It has a full, structured-mesh capability.  Still
 	needs a builder, updated face references, and AMR capability.
+
+2000-04-06  H. Grady Hughes  <hgh@lanl.gov>
+
+    * test/TET_RTT_1.in: Added an RTT-format test file for testing
+    interfaces for the TET_Builder class.
 
 2000-04-04  H. Grady Hughes  <hgh@lanl.gov>
 
