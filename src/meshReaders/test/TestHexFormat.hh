@@ -13,6 +13,7 @@
 #define __meshReaders_test_TestHexFormat_hh__
 
 #include "UnitTestFrame/TestApp.hh"
+#include "../Hex_Format.hh"
 
 namespace rtt_meshReaders_test
 {
@@ -59,6 +60,8 @@ class TestHexFormat : public rtt_UnitTestFrame::TestApp
     std::string runTest();
     
   private:
+
+    bool check_mesh(const rtt_meshReaders::Hex_Format &mesh);
     
     // IMPLEMENTATION
 };
