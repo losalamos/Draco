@@ -20,9 +20,6 @@ using std::endl;
 #include <vector>
 #include <sstream>
 
-static double TOL = 1.0e-14;
-
-
 // Unit Test Frame Stuff
 //----------------------------------------
 namespace rtt_UnitTestFrame {
@@ -57,43 +54,88 @@ string tQuadrature::version() const
     return rtt_quadrature::release();
 }
 
+
+// To add a quadrature to this test the following items must be changed:
+//    add new enumeration to Qid[] array.
+//    add new mu[0] value to mu0[] array.
+//    verify nquads is set to the correct number of quadrature sets being
+//       tested. 
 string tQuadrature::runTest()
 {
-    //    fail() << "tQuadrature::runTest failed.";
+    // double precesion values will be tested for correctness against this
+    // tolerance. 
+    static const double TOL = 1.0e-9;
 
-    // Quadrature sets tested
+    // create an object that is responsible for creating quadrature objects.
+    rtt_quadrature::QuadCreator QuadratureCreator;
+
+    // we will only look at S4 Sets in this test.
+    int sn_order = 4;
+
+    // total number of quadrature sets to be tested.
+    const int nquads = 2;
+
+    // Declare an enumeration object that specifies the Quadrature set to be
+    // tested.
+
+    // Quadrature sets to be tested:
     //
     // #   Qid        Description
     // -   --------   ------------
     // 0   GaussLeg   1D Gauss Legendre
     // 1   LevelSym   3D Level Symmetric
 
-    // Set the quadrature identifier and the Sn order.
+    rtt_quadrature::QuadCreator::Qid
+	qid[nquads] = { rtt_quadrature::QuadCreator::GaussLeg,
+		   rtt_quadrature::QuadCreator::LevelSym  };
 
-    int sn_order = 4;
-    rtt_quadrature::QuadCreator::Qid qid 
-    	= rtt_quadrature::QuadCreator::LevelSym; // QuadCreator::GaussLeg;
+    // mu0 holds mu for the first direction for each quadrature set tested.
+    double mu0[nquads] = { 0.8611363116,
+		      -0.350021174581541 };
+    
+    // loop over quadrature types to be tested.
 
-    if ( qid != 1 ) fail() << "Setting QuadCreator::Qid enumeration failed.";
+    for ( int ix = 0; ix < nquads; ++ix ) {
+	
+	// Verify that the enumeration value matches its int value.
+	if ( qid[ix] != ix ) {
+	    fail() << "Setting QuadCreator::Qid enumeration failed.";
+	    break;
+	} else {
+	    // Create the quadrature object.
+	    rtt_dsxx::SP<rtt_quadrature::Quadrature> quad 
+		= QuadratureCreator.QuadCreate( qid[ix], sn_order );
+	    // print the name of the quadrature set that we are testing.
+	    cout << "\nTesting the "  << quad->name() 
+		 << "Quadrature set." << endl;
+	    cout << "   Sn Order         = " << quad->getSnOrder() << endl;
+	    cout << "   Number of Angles = " << quad->getNumAngles() << endl;
 
-    // create an object that is responsible for creating quadrature objects.
-    rtt_quadrature::QuadCreator QuadratureCreator;
+	    // If the object was constructed sucessfully then we continue
+	    // with the tests.
+	    if ( ! quad )
+		fail() << "QuadCreator failed to create a new quadrature set.";
+	    else {
+		// get the mu vector
+		vector<double> mu = quad->getMu();
+		// get the omega vector for direction m=1.
+		vector<double> omega_1 = quad->getOmega(1);
+		if ( mu.size() != quad->getNumAngles() )
+		    fail() << "The direction vector has the wrong length.";
+		else if ( fabs( mu[0] + mu0[ix] ) >= TOL ) 
+		    fail() << "mu[0] has the wrong value."; 
+		else if ( fabs( mu[1] - omega_1[0] ) >= TOL )
+		    fail() << "mu[1] != omega_1[0].";
+		else {
+		    quad->display();
+		    cout << endl << endl; // end of this quadrature type
+		}
+	    }
+	}
+    }
 
-    // Now create an actual quadrature object.
-    rtt_quadrature::Quadrature *quad 
-	= QuadratureCreator.QuadCreate( qid, sn_order );
-    if ( ! quad )
-	fail() << "QuadCreator failed to create a new quadrature set.";
-    else {
-
-	// test the quadrature set.
-	vector<double> mu = quad->getmu();
-	if ( mu.size() != (sn_order+2)*sn_order )
-	    fail() << "The direction vector has the wrong length.";
-	else if ( fabs(mu[0]-0.350021) <= TOL ) 
-	    fail() << "mu[0] has the wrong value.";
-
-    } // end of ( ! quad )
+    // Print the test result.
+    // ----------------------------------------
 
     if (passed()) {
 	pass() << "All tests passed.";

@@ -2,7 +2,7 @@
 /*!
  * \file   Quadrature/tQuadrature.hh
  * \author Kelly Thompson
- * \date   Mon Mar  6 13:41:03 2000
+ * \date   Mon Mar 6 13:41:03 2000
  * \brief  
  */
 //---------------------------------------------------------------------------//
@@ -19,12 +19,19 @@ namespace rtt_quadrature_test
  
 //===========================================================================//
 /*!
- * \class tQuadrature.hh
+ * \class tQuadrature
  *
+ * \brief A class used to test the QuadCreator and Quadrature classes.  It is 
+ * inheireted from Randy's UnitTestFrame::TestApp.
  */
 // revision history:
 // -----------------
 // 0) original
+// 1) 3-17-2000 a) Added comments (some in Doxygen format).
+//              b) Changed the test program to loop over a sequence of
+//                 quadrature types performing the same tests on each
+//                 object. 
+//              c) Implemented use of ds++/Assert class.
 // 
 //===========================================================================//
 
