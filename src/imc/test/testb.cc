@@ -81,6 +81,7 @@ main()
 	opacity   = opacity_build.Build_Opacity();
     }
 
+  // mesh diagnostics
     Builder_diagnostic(*mesh, *mat_state, *opacity);
 
   // transport a particle
