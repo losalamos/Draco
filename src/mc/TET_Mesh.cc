@@ -150,7 +150,7 @@ const ThreeVector TET_Mesh::get_inward_cross(int cell_, int face_) const
  * The external number "cell" is checked for validity, then converted to
  * cell_ = cell - 1 for internal use.
  */
-bool TET_Mesh::in_cell(const SF_DOUBLE &position, int cell) const
+bool TET_Mesh::in_open_cell(const SF_DOUBLE &position, int cell) const
 {
     Valid(cell);
     int cell_ = cell - 1;
@@ -168,7 +168,37 @@ bool TET_Mesh::in_cell(const SF_DOUBLE &position, int cell) const
     // If position is "inside" every face, it is inside the cell.
     return true;
 
-}   // end TET_Mesh::in_cell(const SF_DOUBLE &, int)
+}   // end TET_Mesh::in_open_cell(const SF_DOUBLE &, int)
+
+//___________________________________________________________________________//
+/*!
+ * \brief          Determine if a position is in or on the boundary of a cell.
+ * \param position XYZ-position as STL vector.
+ * \param cell     External number of cell.
+ * \return         True if position is in the cell or on the boundary.
+ *
+ * The external number "cell" is checked for validity, then converted to
+ * cell_ = cell - 1 for internal use.
+ */
+bool TET_Mesh::in_closed_cell(const SF_DOUBLE &position, int cell) const
+{
+    Valid(cell);
+    int cell_ = cell - 1;
+
+    ThreeVector XYZ(position);
+
+    for (int f_ = 0 ; f_ < FOUR ; f_++)
+        {
+            ThreeVector N = get_outward_cross(cell_, f_);
+            int v_ = (f_ + 1) % FOUR;  // any vertex on the face.
+
+            if ( N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ) < 0.0 )
+                return false;
+        }
+    // If position is "inside-or-on" every face, it is in the closed cell.
+    return true;
+
+}   // end TET_Mesh::in_closed_cell(const SF_DOUBLE &, int)
 
 //___________________________________________________________________________//
 /*!
@@ -545,7 +575,7 @@ int TET_Mesh::get_cell(const SF_DOUBLE &position) const
     int ret_cell = 0;
 
     for (int cell = 1 ; cell <= num_cells() ; cell++)
-        if ( in_cell(position, cell) )
+        if ( in_open_cell(position, cell) )
             ret_cell = cell;
 
     Ensure (ret_cell > 0);

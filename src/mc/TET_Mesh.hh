@@ -54,6 +54,8 @@ namespace rtt_mc
 //  3) 2000-02-12 : Added TET_Mesh member functions get_cell_types() and
 //                  get_point_coord() for Ensight support.  Also completed all
 //                  namespace issues and elimination of using declarations.
+//  4) 2000-04-25 : Renamed in_cell() to in_open_cell() and added the related
+//                  function in_closed_cell().
 //
 //___________________________________________________________________________//
 
@@ -159,7 +161,10 @@ class TET_Mesh
     int num_cells() const { return layout.num_cells(); }
 
     // Determine whether a given position is inside a given cell.
-    bool in_cell(const SF_DOUBLE &, int) const;
+    bool in_open_cell(const SF_DOUBLE &, int) const;
+
+    // Similarly, inside a cell or on its boundary.
+    bool in_closed_cell(const SF_DOUBLE &, int) const;
 
     //___________________________________________________//
     // Services required by all mesh types used in JAYENNE.

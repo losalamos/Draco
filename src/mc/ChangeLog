@@ -1,3 +1,7 @@
+2000-04-25  H. Grady Hughes  <hgh@lanl.gov>
+    * TET_Mesh.cc, TET_Mesh.hh: Renamed in_cell() to in_open_cell()
+    and added the related function in_closed_cell().
+
 2000-04-18  H. Grady Hughes  <hgh@lanl.gov>
 
     * TET_Mesh.cc, ThreeVector.hh, test/tstTET_Mesh.cc,
