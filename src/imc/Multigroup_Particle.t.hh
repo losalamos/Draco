@@ -425,7 +425,7 @@ void Multigroup_Particle<MT>::straight_transport(
 
 	// Stream the particle, according to its status:
 	Base::stream_and_capture(tally, surface_tracker, sigma_eff_abs,
-				 d_stream);
+				 d_stream, group_index);
 
 	// Process collisions, boundary crossings, going to census or
 	// reaching cutoff events.
@@ -715,7 +715,7 @@ void Multigroup_Particle<MT>::rw_transport(
 	{
 	    // Stream the particle, according to its status:
 	    Base::stream_and_capture(tally, surface_tracker, sigma_eff_abs,
-				     d_stream);
+				     d_stream, group_index);
 	}
 
 	// Process collisions, boundary crossings, going to census or

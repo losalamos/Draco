@@ -59,15 +59,17 @@ class Tally_Builder
     // >>> DATA
 
     // Smart pointer to the surface sub tally.
-    SP_Surface_Sub_Tally sur_sub_tally;
+    std::vector<SP_Surface_Sub_Tally> surface_sub_tallies;
 
     // Smart pointer to randomw walk sub tally.
     SP_RW_Sub_Tally rw_sub_tally;
 
+    int energy_groups;
+
   public:
     // Constructor.
     template<class IT>
-    Tally_Builder(rtt_dsxx::SP<IT>);
+    Tally_Builder(rtt_dsxx::SP<IT>, int groups = 1);
 
     // >>> PUBLIC INTERFACE
 
@@ -96,9 +98,11 @@ class Tally_Builder
  */
 template<class MT>
 template<class IT>
-Tally_Builder<MT>::Tally_Builder(rtt_dsxx::SP<IT> interface)
+Tally_Builder<MT>::Tally_Builder(rtt_dsxx::SP<IT> interface, int groups) :
+    energy_groups(groups)
 {
     Require (interface);
+    Require (energy_groups > 0);
 
     // build the surface sub tally
     if (interface->number_of_surfaces())
@@ -106,10 +110,14 @@ Tally_Builder<MT>::Tally_Builder(rtt_dsxx::SP<IT> interface)
 	// build an Azimuthal_Mesh
 	SP_Azimuthal_Mesh az_mesh(new Azimuthal_Mesh(*interface));
 
-	// build the surface sub tally
-	sur_sub_tally = new Surface_Sub_Tally(az_mesh, *interface);
+	// build the surface sub tallies
+	surface_sub_tallies.resize(energy_groups);
 
-	Check (sur_sub_tally);
+	for (int group = 0; group < groups; ++group)
+	{
+	    surface_sub_tallies[group] = new Surface_Sub_Tally(az_mesh, *interface);
+	    Check (surface_sub_tallies[group]);
+	}
     }
 
     // build the random walk sub tally

@@ -275,8 +275,8 @@ class Particle
     inline void scatter(const MT &);
 
     // Dispatch to correct streaming method.
-    inline void stream_and_capture(Tally<MT> &, SP_Surface_tracker, double, 
-				   double);
+    inline void stream_and_capture(Tally<MT> &, SP_Surface_tracker, double sigma, 
+				   double distance, int group = 1);
 
   public:
     // Particle constructor.
@@ -498,7 +498,8 @@ template <typename MT>
 void Particle<MT>::stream_and_capture(Tally<MT>         &tally, 
 				      SP_Surface_tracker surface_tracker,
 				      double             sigma_eff_abs,
-				      double             d_stream)
+				      double             d_stream,
+				      int                group_index)
 {
 
     if (use_analog_absorption())

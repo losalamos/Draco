@@ -140,7 +140,7 @@ class Tally
 
     // >>> SUB TALLY OBJECTS
     SP_RW_ST rw_sub_tally;
-    SP_S_ST  surface_sub_tally;
+    std::vector<SP_S_ST>  surface_sub_tallies;
 
   public:
     // Tally constructor.
@@ -151,8 +151,14 @@ class Tally
     //! Assign a Random_Walk_Sub_Tally.
     void assign_RW_Sub_Tally(SP_RW_ST tally) { rw_sub_tally = tally; }
 
+    //! Assign a vector of Surface_Sub_Tally
+    void assign_Surface_Sub_Tally(const std::vector<SP_S_ST>& tallies) 
+    { 
+	surface_sub_tallies = tallies; 
+    }
+
     //! Assign a Surface_Sub_Tally
-    void assign_Surface_Sub_Tally(SP_S_ST tally) { surface_sub_tally = tally; }
+    void assign_Surface_Sub_Tally(SP_S_ST tally) { surface_sub_tallies.resize(1,tally); }
 
     // >>> SUB TALLY ACCESSORS
     
@@ -160,7 +166,7 @@ class Tally
     SP_RW_ST get_RW_Sub_Tally() const { return rw_sub_tally; }
     
     //! Get a Surface_Sub_Tally
-    SP_S_ST get_Surface_Sub_Tally() const { return surface_sub_tally; }
+    SP_S_ST get_Surface_Sub_Tally(int group = 1) const;
 
     // >>> TALLY ACCUMULATION FUNCTIONS
 
@@ -296,6 +302,31 @@ void Tally<MT>::accum_n_reflections(const int n)
     Check (pos(n));
     n_reflections += n;
 }
+
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Get the surface sub-tally for the designated group, or the only one
+ * for multigroup.
+ * 
+ * \param group The group index
+ * \return Smart pointer to the surface sub-tally
+ */
+template<class MT>
+typename Tally<MT>::SP_S_ST Tally<MT>::get_Surface_Sub_Tally(int group) const 
+{
+    Check ( group >= 1);
+
+    if (surface_sub_tallies.size() > 0)
+    {
+	Check ( group <= surface_sub_tallies.size() );
+	return surface_sub_tallies[group-1]; 
+    }
+    else return SP_S_ST(0);
+
+}
+
+
 
 } // end of rtt_imc
 

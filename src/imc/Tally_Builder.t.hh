@@ -40,7 +40,7 @@ Tally_Builder<MT>::build_Tally(SP_Mesh mesh)
     // assign sub tallies (these will be null if not required by the
     // interface)
     tally->assign_RW_Sub_Tally(rw_sub_tally);
-    tally->assign_Surface_Sub_Tally(sur_sub_tally);
+    tally->assign_Surface_Sub_Tally(surface_sub_tallies);
 
     Ensure (tally);
     return tally;

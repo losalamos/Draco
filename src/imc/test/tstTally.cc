@@ -231,6 +231,8 @@ void Tally_Test()
 
 void Tally_Builder_Test()
 {
+    const int groups = 5;
+
     // make a mesh and tally
     SP<Parser> parser(new Parser("OS_Input"));
     OS_Builder mb(parser);
@@ -239,7 +241,7 @@ void Tally_Builder_Test()
     // make an interface that has no random walk or surfaces
     SP<tally_test::Interface> null(new tally_test::Interface(0, 0));
 
-    Tally_Builder<OS_Mesh> nullb(null);
+    Tally_Builder<OS_Mesh> nullb(null, groups);
     SP<Tally<OS_Mesh> > nullt = nullb.build_Tally(mesh);
 
     if (!nullt)                  ITFAILS;
@@ -272,13 +274,12 @@ void Tally_Builder_Test()
     // make an interface that has random walk and surfaces
     SP<tally_test::Interface> has(new tally_test::Interface(1, 1));
 
-    Tally_Builder<OS_Mesh> hasb(has);
+    Tally_Builder<OS_Mesh> hasb(has, groups);
     SP<Tally<OS_Mesh> > hast = hasb.build_Tally(mesh);
 
     if (!hast->get_RW_Sub_Tally())      ITFAILS;
     if (!hast->get_Surface_Sub_Tally()) ITFAILS;
 
-    SP<Surface_Sub_Tally>     s_tally  = hast->get_Surface_Sub_Tally();
     SP<Random_Walk_Sub_Tally> rw_tally = hast->get_RW_Sub_Tally();
 
     if (rw_tally->get_accum_n_random_walks() != 0) ITFAILS;
@@ -286,10 +287,15 @@ void Tally_Builder_Test()
     if (rw_tally->get_accum_sphere_radii() != 0.0) ITFAILS;
     if (rw_tally->get_accum_step_lengths() != 0.0) ITFAILS;
 
-    if (s_tally->get_number_surfaces() != 1)              ITFAILS;
-    if (s_tally->get_outward_weight_tally(1).size() != 4) ITFAILS;
-    if (s_tally->get_mesh_size() != 4 )                   ITFAILS;
-
+    for (int group = 1; group <= groups; ++group)
+    {
+	SP<Surface_Sub_Tally> s_tally = hast->get_Surface_Sub_Tally(group);
+	
+	if (s_tally->get_number_surfaces() != 1)              ITFAILS;
+	if (s_tally->get_outward_weight_tally(1).size() != 4) ITFAILS;
+	if (s_tally->get_mesh_size() != 4 )                   ITFAILS;
+    }
+	
     if (rtt_imc_test::passed)
 	PASSMSG("Tally_Builder tests ok.");
 }

@@ -226,11 +226,16 @@ void IMC_Objects_Builder<IT,MT,FT,PT>::build_tally_object(SP_Mesh mesh)
 {
     Require (interface);
     Require (mesh);
+    Require (frequency);
 
     Require (!tally);
 
     // make a tally builder
-    Tally_Builder<MT> builder(interface);
+    int groups = frequency->get_num_groups();
+    if (groups == 0) groups = 1;
+
+    Check(groups > 0)
+    Tally_Builder<MT> builder(interface, groups);
     
     // build the tally
     tally = builder.build_Tally(mesh);
