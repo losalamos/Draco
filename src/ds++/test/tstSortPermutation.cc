@@ -55,7 +55,7 @@ void printStatus(const std::string &name, bool passed)
 }
 
 template<class IT>
-bool testit(const std::string &name, IT first, IT last)
+inline bool testit(const std::string &name, IT first, IT last)
 {
     rtt_dsxx::SortPermutation lfsp(first, last);
     
@@ -90,7 +90,7 @@ bool testit(const std::string &name, IT first, IT last)
 }
 
 template<class IT, class CMP>
-bool testit(const std::string &name, IT first, IT last, const CMP &comp)
+inline bool testit(const std::string &name, IT first, IT last, const CMP &comp)
 {
     rtt_dsxx::SortPermutation lfsp(first, last, comp);
 
