@@ -14,7 +14,7 @@ using std::endl;
 
 #include "../SP.hh"
 
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 // autodoc: noprint foo
 

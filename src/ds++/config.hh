@@ -9,7 +9,7 @@
 #ifndef __ds_config_hh__
 #define __ds_config_hh__
 
-#define NAMESPACE_DS_BEG namespace dsxx {
+#define NAMESPACE_DS_BEG namespace rtt_dsxx {
 #define NAMESPACE_DS_END }
 
 #endif                          // __ds_config_hh__

@@ -7,7 +7,7 @@
 #include <iostream>
 #include "DynArray.t.hh"
 
-namespace dsxx
+namespace rtt_dsxx
 {
 
 template class DynArray<int>;
@@ -42,4 +42,4 @@ template std::ostream& operator<<( std::ostream& os,
 template class DynArray<DynArray<int> >;
 template class DynArray<DynArray<char> >;
 
-} // namespace dsxx
+} // namespace rtt_dsxx

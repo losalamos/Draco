@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "../Assert.hh"
-using namespace dsxx;
+using namespace rtt_dsxx;
 
 #include <iostream>
 #include <string>

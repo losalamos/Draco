@@ -11,7 +11,7 @@
 #include <iostream>
 #include <string>
 
-using namespace dsxx;
+using namespace rtt_dsxx;
 using namespace std;
 
 //---------------------------------------------------------------------------//

@@ -22,7 +22,7 @@ using std::flush;
 
 #include "../Mat.hh"
 
-using namespace dsxx;
+using namespace rtt_dsxx;
 
 template<class T, class A>
 void ikv1( Mat1<T,A>& x )

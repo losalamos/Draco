@@ -48,8 +48,8 @@ class DoubleContainer
 // requirements.
 //---------------------------------------------------------------------------//
 
-typedef dsxx::Mat4<double> X;
-typedef dsxx::Mat4<DoubleContainer> XDC;
+typedef rtt_dsxx::Mat4<double> X;
+typedef rtt_dsxx::Mat4<DoubleContainer> XDC;
 
 void f1(const X& x, const X& xcopy)
 {
@@ -2099,7 +2099,7 @@ int main( int argc, char *argv[] )
         t5();
         t6();
     }
-    catch( dsxx::assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 	cout << "Failed assertion: " << a.what() << endl;
     }

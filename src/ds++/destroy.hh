@@ -12,7 +12,7 @@
 
 #include <iterator>
 
-namespace dsxx
+namespace rtt_dsxx
 {
  
 //===========================================================================//
@@ -35,7 +35,7 @@ namespace dsxx
 	    Destroy(&*first);
     }
 
-} // end namespace dsxx
+} // end namespace rtt_dsxx
 
 #endif                          // __ds_destroy_hh__
 

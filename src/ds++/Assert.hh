@@ -106,21 +106,21 @@ NAMESPACE_DS_END
 #endif
 
 #if DBC & 1
-#define Require(c) if (!(c)) dsxx::toss_cookies( #c, __FILE__, __LINE__ );
+#define Require(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
 #else
 #define Require(c) 
 #endif
 
 #if DBC & 2
-#define Check(c) if (!(c)) dsxx::toss_cookies( #c, __FILE__, __LINE__ );
-#define Assert(c) if (!(c)) dsxx::toss_cookies( #c, __FILE__, __LINE__ );
+#define Check(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
+#define Assert(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
 #else
 #define Check(c) 
 #define Assert(c) 
 #endif
 
 #if DBC & 4
-#define Ensure(c) if (!(c)) dsxx::toss_cookies( #c, __FILE__, __LINE__ );
+#define Ensure(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
 #else
 #define Ensure(c) 
 #endif
@@ -133,7 +133,7 @@ NAMESPACE_DS_END
 // corrected, providing a corrective hint.
 //---------------------------------------------------------------------------//
 
-#define Insist(c,m) if (!(c)) dsxx::insist( #c, m, __FILE__, __LINE__ );
+#define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ );
 
 //---------------------------------------------------------------------------//
 // NOTE:  We provide a way to eliminate assertions, but not insistings.  The

@@ -28,7 +28,7 @@
  *\sa Mark G. Gray, Randy M. Roberts, and Tom Evans, Scientific Programming,
  *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.
  */
-namespace dsxx
+namespace rtt_dsxx
 {
 
 
@@ -165,6 +165,6 @@ class opaque_pointers
 
 #include "opaquePointers.t.hh"
 
-} // end namespace dsxx
+} // end namespace rtt_dsxx
 
 #endif

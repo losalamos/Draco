@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
 	// tests
 	Check_Strings_test();
     }
-    catch(dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion &ass)
     {
 	std::cout << "Failure on Assertion: " << ass.what() << std::endl;
 	return 1;

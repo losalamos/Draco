@@ -103,7 +103,7 @@ struct strings_equal
  *         characters were found.
  *
  * \sa     Other string checking utilities are available in
- *         dsxx::check_string_lengths, and dsxx::check_strings_unique.
+ *         rtt_dsxx::check_string_lengths, and rtt_dsxx::check_strings_unique.
  *
  */
 template<class IT>
@@ -149,7 +149,7 @@ std::vector<IT>  check_string_chars( IT first, IT last,
  *         out-of-range lengths were found.
  *
  * \sa     Other string checking utilities are available in
- *         dsxx::check_string_chars, and dsxx::check_strings_unique.
+ *         rtt_dsxx::check_string_chars, and rtt_dsxx::check_strings_unique.
  *
  */
 template<class IT>
@@ -190,7 +190,7 @@ std::vector<IT>  check_string_lengths( IT first, IT last,
  *         in the range first:last-1 are unique.
  *
  * \sa     Other string checking utilities are available in
- *         dsxx::check_string_chars, and dsxx::check_string_lengths.
+ *         rtt_dsxx::check_string_chars, and rtt_dsxx::check_string_lengths.
  *
  */
 template<class IT>
