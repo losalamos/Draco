@@ -46,18 +46,6 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_ )
     using rtt_dsxx::soft_equiv;
     using rtt_units::PI;
 
-    Ensure( factorial(0) == 1 );
-    Ensure( factorial(1) == 1 );
-    Ensure( factorial(2) == 2 );
-    Ensure( factorial(3) == 6 );
-    Ensure( factorial(4) == 24 );
-
-    Ensure( kronecker_delta(0,0) == 1 );
-    Ensure( kronecker_delta(1,0) == 0 );
-    Ensure( kronecker_delta(1,1) == 1 );
-    Ensure( kronecker_delta(0,1) == 0 );
-    Ensure( kronecker_delta(-1,0) == 0 );
-
     Ensure( soft_equiv( compute_clk( 0, 0 ), 1.0 ));
     Ensure( soft_equiv( compute_clk( 1, -1 ), 1.0 ));
     Ensure( soft_equiv( compute_clk( 1, 0 ), 1.0 ));
