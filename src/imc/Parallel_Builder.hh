@@ -44,6 +44,7 @@ IMCSPACE
 using C4::node;
 using C4::nodes;
 using RNG::Rnd_Control;
+using dsxx::SP;
 
 // std stuff
 using std::vector;

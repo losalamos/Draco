@@ -21,12 +21,12 @@
 //===========================================================================//
 
 #include "imc/Names.hh"
-#include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 
 IMCSPACE
 
+// stl components
 using std::ostream;
 
 template<class MT>

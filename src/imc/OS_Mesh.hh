@@ -60,7 +60,7 @@
 
 IMCSPACE
 
-// defined namespaces
+// stl namespaces
 using std::vector;
 using std::fill;
 using std::min_element;
@@ -73,6 +73,7 @@ using std::string;
 
 // draco namespaces
 using RNG::Sprng;
+using dsxx::SP;
     
 class OS_Mesh
 {

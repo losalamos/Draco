@@ -71,6 +71,7 @@ using std::exp;
 
 // DRACO classes used in Particle
 using RNG::Sprng;
+using dsxx::SP;
 
 template<class MT>
 class Particle

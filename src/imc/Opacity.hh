@@ -22,7 +22,6 @@
 //===========================================================================//
 
 #include "imc/Names.hh"
-#include "ds++/SP.hh"
 #include <iostream>
 
 IMCSPACE

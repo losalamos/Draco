@@ -29,7 +29,11 @@
 
 IMCSPACE
 
+// stl components
 using std::string;
+
+// draco components
+using dsxx::SP;
 
 template<class MT>
 class Opacity_Builder

@@ -45,6 +45,7 @@ using IMC::Particle;
 using IMC::Source;
 using RNG::Rnd_Control;
 using RNG::Sprng;
+using dsxx::SP;
 using namespace std;
 using namespace C4;
 

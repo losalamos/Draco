@@ -39,6 +39,7 @@ IMCSPACE
 
 // draco components
 using RNG::Rnd_Control;
+using dsxx::SP;
 
 // template manager on: MT=mesh type; BT=mesh builder type; IT=interface
 // type; PT=particle type

@@ -13,6 +13,8 @@
 
 IMCSPACE
 
+using dsxx::SP;
+
 instantiate class Opacity_Builder<OS_Mesh>
 
 instantiate funcproto MT=OS_Mesh, IT=OS_Interface

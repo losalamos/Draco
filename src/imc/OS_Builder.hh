@@ -35,8 +35,12 @@
 
 IMCSPACE
 
+// stl components
 using std::vector;
 using std::string;
+
+// draco components
+using dsxx::SP;
 
 class OS_Builder
 {

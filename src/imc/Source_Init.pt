@@ -13,6 +13,8 @@
 
 IMCSPACE
 
+using dsxx::SP;
+
 instantiate class Source_Init<OS_Mesh>
 
 instantiate funcproto MT=OS_Mesh, IT=OS_Interface, PT=Particle<OS_Mesh>

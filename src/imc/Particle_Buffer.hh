@@ -48,6 +48,7 @@ using C4::SendAsync;
 using C4::RecvAsync;
 using C4::Send;
 using C4::Recv;
+using dsxx::SP;
 
 // STL components
 using std::vector;

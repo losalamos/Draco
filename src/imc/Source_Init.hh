@@ -36,6 +36,7 @@ IMCSPACE
 
 // draco components
 using RNG::Rnd_Control;
+using dsxx::SP;
 
 // STL components
 using std::string;

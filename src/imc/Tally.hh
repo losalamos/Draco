@@ -28,12 +28,15 @@
 
 IMCSPACE
 
+// stl components
 using std::ostream;
+
+// draco components
+using dsxx::SP;
 
 template<class MT>
 class Tally 
 {
-
 private:
     typename MT::CCSF_double energy_dep;
     double energy_dep_tot;

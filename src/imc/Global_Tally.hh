@@ -33,8 +33,12 @@
 
 IMCSPACE
 
+// stl components
 using std::vector;
 using std::ostream;
+
+// draco components
+using dsxx::SP;
 
 template<class MT, class PT = Particle<MT> >
 class Global_Tally 
