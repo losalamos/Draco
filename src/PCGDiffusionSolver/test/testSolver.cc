@@ -68,7 +68,7 @@ int main( int argc, char *argv[] )
     Test_DB tdb;
     tdb.setup_namelist(g);
     
-    Mesh_DB mdb;
+    rtt_mesh::Mesh_DB mdb;
     pcg_DB pcg_db("pcg");
     
     mdb.setup_namelist(g);
