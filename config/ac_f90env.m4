@@ -145,16 +145,19 @@ AC_DEFUN(AC_COMPILER_XL_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS="-qextchk -qhalt=s -qarch=pwr2 -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp ${F90FREE}"
-
-   if test "${enable_debug:=no}" = yes
+   if test "$F90FLAGS" = ""
    then
-        trapflags="-qinitauto=FF"
-        trapflags="${trapflags} -qflttrap=overflow:underflow:zerodivide:invalid:enable"
-        trapflags="${trapflags} -qsigtrap"
-        F90FLAGS="-g -d -C ${trapflags} -bloadmap:loadmap.dat ${F90FLAGS}"
-   else
-        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       F90FLAGS="-qextchk -qhalt=s -qarch=pwr2 -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp ${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	   trapflags="-qinitauto=FF"
+	   trapflags="${trapflags} -qflttrap=overflow:underflow:zerodivide:invalid:enable"
+	   trapflags="${trapflags} -qsigtrap"
+	   F90FLAGS="-g -d -C ${trapflags} -bloadmap:loadmap.dat ${F90FLAGS}"
+       else
+	   F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
    fi
 
    dnl end of AC_COMPILER_XL_F90
@@ -192,13 +195,16 @@ AC_DEFUN(AC_COMPILER_FUJITSU_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS="-X9 -Am ${F90FREE}"
-
-   if test "${enable_debug:=no}" = yes
+   if test "$F90FLAGS" = ""
    then
-        F90FLAGS="-g -Haesu ${F90FLAGS}"
-   else
-        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       F90FLAGS="-X9 -Am ${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g -Haesu ${F90FLAGS}"
+       else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
    fi
 
    dnl end of AC_COMPILER_FUJITSU_F90
@@ -236,13 +242,16 @@ AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS="--f95 ${F90FREE}"
-
-   if test "${enable_debug:=no}" = yes
+   if test "$F90FLAGS" = ""
    then
-        F90FLAGS="-g --chk(aesux) --chkglobal ${F90FLAGS}"
-   else
-        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       F90FLAGS="--f95 ${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g --chk(aesux) --chkglobal ${F90FLAGS}"
+       else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
    fi
 
    dnl end of AC_COMPILER_LAHEY_F90
@@ -280,13 +289,16 @@ AC_DEFUN(AC_COMPILER_PORTLAND_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS="${F90FREE}"
-
-   if test "${enable_debug:=no}" = yes
+   if test "$F90FLAGS" = ""
    then
-        F90FLAGS="-g -Mbounds -Mchkptr ${F90FLAGS}"
-   else
-        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       F90FLAGS="${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g -Mbounds -Mchkptr ${F90FLAGS}"
+       else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
    fi
 
    dnl end of AC_COMPILER_PORTLAND_F90
@@ -319,13 +331,16 @@ AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS=""
-
-   if test "${enable_debug:=no}" = yes
+   if test "$F90FLAGS" = ""
    then
-        F90FLAGS="-g ${F90FLAGS}"
-   else
-        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       F90FLAGS=""
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g ${F90FLAGS}"
+       else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
    fi
 
    dnl end of AC_COMPILER_ABSOFT_F90
@@ -363,13 +378,16 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS="${F90FREE}"
-
-   if test "${enable_debug:=no}" = yes
+   if test "$F90FLAGS" = ""
    then
-        F90FLAGS="-g ${F90FLAGS}"
-   else
-        F90FLAGS="-O ${F90FLAGS}"
+       F90FLAGS="${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g ${F90FLAGS}"
+       else
+	    F90FLAGS="-O ${F90FLAGS}"
+       fi
    fi
 
    dnl end of AC_COMPILER_COMPAQ_F90
@@ -406,13 +424,16 @@ AC_DEFUN(AC_COMPILER_WORKSHOP_F90, [dnl
 
    # Set COMPILATION FLAGS
 
-   F90FLAGS="${F90FREE}"
-
-   if test "${enable_debug:=no}" = yes
+   if test "$F90FLAGS" = ""
    then
-        F90FLAGS="-g"
-   else
-        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       F90FLAGS="${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g"
+       else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
    fi
 
    dnl end of AC_COMPILER_WORKSHOP_F90
@@ -449,13 +470,16 @@ AC_DEFUN(AC_COMPILER_CRAY_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS="${F90FREE}"
-
-   if test "${enable_debug:=no}" = yes
+   if test "$F90FLAGS" = ""
    then
-        F90FLAGS="-g ${F90FLAGS}"
-   else
-        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       F90FLAGS="${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	   F90FLAGS="-g ${F90FLAGS}"
+       else
+	   F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
    fi
 
    dnl end of AC_COMPILER_CRAY_F90
@@ -492,13 +516,16 @@ AC_DEFUN(AC_COMPILER_MIPS_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS="${F90FREE} -OPT:Olimit=0"
-
-   if test "${enable_debug:=no}" = yes
+   if test "$F90FLAGS" = ""
    then
-        F90FLAGS="-g ${F90FLAGS}"
-   else
-        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+	F90FLAGS="${F90FREE} -OPT:Olimit=0"
+
+	if test "${enable_debug:=no}" = yes
+	then
+	    F90FLAGS="-g ${F90FLAGS}"
+	else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+	fi
    fi
 
    dnl end of AC_COMPILER_MIPS_F90
