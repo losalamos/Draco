@@ -51,12 +51,12 @@ private:
   // original seed value
     const long seed;
 
-  // don't allow assignment or copying
-    Random(const Random &rhs);
-    Random& operator=(const Random &rhs);
 public:
   // must give seed to Random number object
     explicit inline Random(long);
+ 
+  // overloaded assignment operators
+    inline const Random& operator=(const Random &rhs);
 
   // get Random number function
     double ran();
@@ -74,10 +74,26 @@ public:
 // overloaded operators
 //---------------------------------------------------------------------------//
 
+// overloaded stream operator
 inline ostream& operator<<(ostream &output, Random &object)
 {
-    output << object.ran() << std::endl;
+    output << object.ran();
     return output;
+}
+
+//---------------------------------------------------------------------------//
+
+inline const Random& Random::operator=(const Random &rhs)
+{
+  // overloaded assignment operator
+    inext  = rhs.inext;
+    inextp = rhs.inextp;
+    ma     = rhs.ma;
+    iff    = rhs.iff;
+    idum   = rhs.idum;
+    count  = rhs.count;
+
+    return *this;
 }
 
 //---------------------------------------------------------------------------//

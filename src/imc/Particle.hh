@@ -17,8 +17,18 @@
 //
 // revision history:
 // -----------------
-// 0) original
-// 1) 2-3-98: made Particle a class template parameterized on Mesh_type
+//  0) original
+//  1)   2-3-98 : made Particle a class template parameterized on Mesh_type
+//  2)   4-3-98 : added Particle-Stack struct; added friendship to list and 
+//                stack stl template classes.  If add stacks based on other
+//                stl containers don't forget to add friendship in Particle 
+// 
+//===========================================================================//
+
+//===========================================================================//
+// struct Particle_Stack - 
+//
+// Purpose : holds stl types for buffers for Particle types
 // 
 //===========================================================================//
 
@@ -30,6 +40,8 @@
 #include <string>
 #include <iostream>
 #include <cmath>
+#include <stack>
+#include <list>
 
 IMCSPACE
 
@@ -39,11 +51,21 @@ using std::string;
 using std::ostream;
 using std::log;
 using std::exp;
+using std::stack;
+using std::list;
+
+template<class MT> class Particle;
+
+template<class MT>
+struct Particle_Stack
+{
+    typedef stack<Particle<MT>, list<Particle<MT> > > Bank;
+};
 
 template<class MT>
 class Particle
 {
-public:
+public: 
   // nested diagnostic class
     class Diagnostic
     {
@@ -52,6 +74,7 @@ public:
 	ostream &output;
       // boolean for detailed diagnostic
 	bool detail;
+
     public:
       // constructor
 	Diagnostic(ostream &output_, bool detail_ = false) 
@@ -73,9 +96,10 @@ public:
 
   // friends and such
     friend class Diagnostic;
+    template<class T, class C> friend class stack;
+    template<class T, class A> friend class list;
 
 private:
-
   // particle energy-weight
     double ew;
   // particle location
@@ -113,9 +137,12 @@ private:
   // surface crossings, return a false if particle escapes
     bool surface(const MT &, int);
 
+  // null constructor usable only be friends of the class
+    Particle();
+
   // have not yet defined copy constructors or assignment operators
-    Particle(const Particle<MT> &);
-    Particle<MT>& operator=(const Particle<MT> &);
+  // Particle(const Particle<MT> &);
+  // Particle<MT>& operator=(const Particle<MT> &);
 
 public:
   // explicit constructor
@@ -145,7 +172,11 @@ public:
 //---------------------------------------------------------------------------//
 
 template<class MT>
-ostream& operator<<(ostream &, const Particle<MT> &);
+inline ostream& operator<<(ostream &output, Particle<MT> &object)
+{
+    object.print(output);
+    return output;
+}
 
 //---------------------------------------------------------------------------//
 // inline functions for Particle

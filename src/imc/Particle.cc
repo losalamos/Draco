@@ -35,8 +35,7 @@ using Global::dot;
 //---------------------------------------------------------------------------//
 // defined inline
 
-// need to write assignment operators and copy constructors to take care of
-// the random number
+// Particle uses default copy constructors and assignment operators
 
 //---------------------------------------------------------------------------//
 // public transport member functions
@@ -187,6 +186,7 @@ bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
     return status;
 }
 
+//---------------------------------------------------------------------------//
 // perform an isotropic effective scatter 
 
 template<class MT>
@@ -246,9 +246,43 @@ bool Particle<MT>::surface(const MT &mesh, int face)
 }
 
 //---------------------------------------------------------------------------//
+
+template<class MT>
+void Particle<MT>::print(ostream &output) const
+{
+  // set precisions
+    output.precision(3);
+    output << setiosflags(ios::fixed);
+    
+    output << "*** PARTICLE DATA ***" << endl; 
+    output << "---------------------" << endl;
+    
+  // coordinates
+    output << setw(20) << setiosflags(ios::right) << "Coordinates: ";
+    for (int i = 0; i < r.size(); i++)
+	output << setw(12) << r[i] << " ";
+    output << endl;
+    
+  // direction
+    output << setw(20) << setiosflags(ios::right) << "Direction: ";
+    for (int i = 0; i < omega.size(); i++)
+	output << setw(12) << omega[i] << " ";
+    output << endl;
+    
+  // cell
+    output << setw(20) << setiosflags(ios::right) << "Cell: " << setw(12) 
+	   << cell << endl;
+    
+  // energy-weight, ew
+    output << setw(20) << setiosflags(ios::right) << "Energy-weight: " 
+           << setw(12) << ew << endl;
+}
+
+//---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
 
+    
 //===========================================================================//
 // class Particle<MT>::Diagnostic
 //===========================================================================//
@@ -256,6 +290,7 @@ bool Particle<MT>::surface(const MT &mesh, int face)
 //---------------------------------------------------------------------------//
 // public diagnostic member functions
 //---------------------------------------------------------------------------//
+
 template<class MT>
 void Particle<MT>::Diagnostic::print(const Particle<MT> &particle) const
 {
@@ -269,6 +304,8 @@ void Particle<MT>::Diagnostic::print(const Particle<MT> &particle) const
     else
 	print_dead(particle);
 }
+
+//---------------------------------------------------------------------------//
 
 template<class MT>
 void Particle<MT>::Diagnostic::print_alive(const Particle<MT> &particle) const 
@@ -307,10 +344,11 @@ void Particle<MT>::Diagnostic::print_alive(const Particle<MT> &particle) const
   // time remaining in this time step
     output << setw(20) << setiosflags(ios::right) << "Time_Left: " 
            << setw(12) << particle.time_left << endl;
-
     
     output << endl;
 }
+
+//---------------------------------------------------------------------------//
 
 template<class MT>
 void Particle<MT>::Diagnostic::print_dead(const Particle<MT> &particle) const
@@ -353,6 +391,8 @@ void Particle<MT>::Diagnostic::print_dead(const Particle<MT> &particle) const
     output << endl;
 }
 
+//---------------------------------------------------------------------------//
+
 template<class MT>
 void Particle<MT>::Diagnostic::print_dist(double d_scat, double d_bnd, 
 					  double d_cen, int cell) const
@@ -368,6 +408,8 @@ void Particle<MT>::Diagnostic::print_dist(double d_scat, double d_bnd,
 	   << setw(12) << d_cen << endl;
 
 }
+
+//---------------------------------------------------------------------------//
 
 template<class MT>
 void Particle<MT>::Diagnostic::print_xs(const Opacity<MT> &xs,
