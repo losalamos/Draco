@@ -19,6 +19,7 @@ using std::setw;
 using std::ios;
 using std::ofstream;
 using std::string;
+using std::setiosflags;
 
 //---------------------------------------------------------------------------//
 // CREATEFILENAMES PRIVATE
@@ -261,12 +262,14 @@ void Ensight_Translator::ensight_case(const double)
     // write the pointer to the node variables
     for (int i = 0; i < ens_vdata_names.size(); i++)
 	caseout << " scalar per node:    1  " << setw(19)
+		<< setiosflags(ios::left)
 		<< ens_vdata_names[i] << setw(4) << " "
 		<< "./" << ens_vdata_names[i] << "/data.****" << endl;
 
     // write the pointer to the cell variables
     for (int i = 0; i < ens_cdata_names.size(); i++)
-	caseout << " scalar per element: 1  " << setw(19) 
+	caseout << " scalar per element: 1  " << setw(19)
+		<< setiosflags(ios::left)
 		<< ens_cdata_names[i] << setw(4) << " "
 		<< "./" << ens_cdata_names[i] << "/data.****" << endl;
 
@@ -274,8 +277,8 @@ void Ensight_Translator::ensight_case(const double)
     // write out the time block
     caseout << "TIME" << endl;
     caseout << "time set:              " << setw(4) << "   1" << endl;
-    caseout << "number of steps:       " << setw(4) << dump_times.size() 
-	    << endl;
+    caseout << "number of steps:       " << setw(4) << setiosflags(ios::right) 
+	    << dump_times.size() << endl;
     caseout << "filename start number: " << setw(4) << "   1" << endl;
     caseout << "filename increment:    " << setw(4) << "   1" << endl;
     caseout << "time values:           " << endl;
@@ -284,7 +287,8 @@ void Ensight_Translator::ensight_case(const double)
     caseout.precision(5);
     caseout.setf(ios::scientific, ios::floatfield);
     for (int i = 0; i < dump_times.size(); i++)
-	caseout << setw(12) << dump_times[i] << endl;
+	caseout << setw(12) << setiosflags(ios::right) << dump_times[i] 
+		<< endl;
 }
 
 } // end of rtt_viz
