@@ -72,6 +72,7 @@ namespace rtt_mc
 //                 TET_Mesh class.  The TET_Mesh class no longer has knowledge
 //                 of element_sets.  New diagnostic functions print_node_sets,
 //                 print_side_sets, and print_cell_sets are added to TET_Mesh.
+//  8) 2000-06-19: Corrected a major bug in get_db() and get_min_db().
 //
 //___________________________________________________________________________//
 

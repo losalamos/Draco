@@ -1,3 +1,9 @@
+2000-06-19  H. Grady Hughes  <hgh@lanl.gov>
+
+	* TET_Mesh.cc, test/tstTET_Mesh.cc: Corrected a major bug in the
+	get_db() and get_min_db() services of TET_Mesh, and added a new
+	regression test for the two services.
+
 2000-06-16  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Builder.hh, configure.in, test/Makefile.misc,

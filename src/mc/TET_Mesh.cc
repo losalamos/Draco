@@ -252,10 +252,10 @@ double TET_Mesh::get_db(const SF_DOUBLE &position, const SF_DOUBLE &omega,
             int v = (f_ + 1) % FOUR;  // any vertex on the face.
 
             if (denom > 0.0)
-                dist.push_back(N.dot(
-                    vertex_vector[cells_vertices[cell_][v]] - XYZ)/denom);
+                dist[f_] = N.dot(vertex_vector[cells_vertices[cell_][v]] - XYZ)
+                           /denom;
             else
-                dist.push_back(global::huge);
+                dist[f_] = global::huge;
         }
 
     SF_DOUBLE::iterator itor = std::min_element(dist.begin(),dist.end());
@@ -692,6 +692,9 @@ int TET_Mesh::get_cell(const SF_DOUBLE &position) const
  * The external number "cell" is checked for validity, then converted to
  * cell_ = cell - 1 for internal use.  However, "cell" and the for-loop
  * index "face" are passed unmodified to get_normal(cell, face).
+ *
+ * It is not checked that "position" is actually in "cell".
+ *
  */
 double TET_Mesh::get_min_db(const SF_DOUBLE &position, int cell) const
 {
@@ -706,8 +709,8 @@ double TET_Mesh::get_min_db(const SF_DOUBLE &position, int cell) const
             ThreeVector N(get_normal(cell, face));
             int v_ = face % FOUR;  // any vertex on the face.
 
-            dist.push_back(
-                N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ));
+            dist[face-1] = 
+                N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ);
         }
 
     SF_DOUBLE::iterator itor = std::min_element(dist.begin(),dist.end());

@@ -28,6 +28,8 @@
 //                 TET_Mesh class.  The TET_Mesh class no longer has knowledge
 //                 of element_sets.  New diagnostic functions print_node_sets,
 //                 print_side_sets, and print_cell_sets are added to TET_Mesh.
+//  6) 2000-06-19: Added a regression test for the get_db() and get_min_db()
+//                 services of the TET_Mesh class.
 //
 //___________________________________________________________________________//
 
@@ -470,6 +472,20 @@ mesh_ptr_1->print_cell_sets(cerr);
 
     // ... but the meshes should be equal.
     if (*mesh_ptr_H != *mesh_ptr_1)                      ITFAILS;
+
+    // Test get_db() and get_min_db().
+    SF_DOUBLE R1;
+    SF_DOUBLE V1;
+    int I1;
+
+    R1.push_back(0.5); R1.push_back(0.4); R1.push_back(0.4);
+    V1.push_back(0.0); V1.push_back(-0.6); V1.push_back(-0.8);
+
+    if (fabs(mesh_ptr_1->get_db(R1,V1,1,I1) - 0.5) > TET_epsilon)  ITFAILS;
+    if (I1 != 4)                                                   ITFAILS;
+
+    if (fabs(mesh_ptr_1->get_min_db(R1,1) - 0.0707106781187) > TET_epsilon)
+                                                                   ITFAILS;
 
     // Test sampling in a tethedron.
 
