@@ -7,6 +7,16 @@
 // @> 
 //---------------------------------------------------------------------------//
 
+// revision history:
+// -----------------
+// 1.1) Original
+// ...  ...
+// 1.5) Added a pass() call for each quadrature set tested.
+//      QuadCreator.quadCreate member function name changed to lower
+//         case.
+//      Moved "using" statements inside of namespace.
+//      Added "using std::fabs".
+
 #include "tQuadrature.hh"
 #include "../Quadrature.hh"
 #include "../QuadCreator.hh"
@@ -17,31 +27,31 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-
-using rtt_dsxx::SP;
-using rtt_quadrature::QuadCreator;
-using rtt_quadrature::Quadrature;
+#include <cmath>
 
 // Unit Test Frame Stuff
 //----------------------------------------
 namespace rtt_UnitTestFrame {
-    SP<TestApp> TestApp::create( int &argc, char *argv[],
-				 std::ostream& os_in ) {
-	    using rtt_quadrature_test::tQuadrature;
-	    return SP<TestApp> ( new tQuadrature( argc, argv, os_in ));
+    rtt_dsxx::SP<TestApp> TestApp::create( int &argc, char *argv[],
+					   std::ostream& os_in ) {
+	using rtt_quadrature_test::tQuadrature;
+	return rtt_dsxx::SP<TestApp> ( new tQuadrature( argc, argv, os_in ));
     }
 } // end namespace rtt_UnitTestFrame
 
 
 // tQuadrature Stuff
 //----------------------------------------
-
 namespace rtt_quadrature_test {
 
 using std::vector;
 using std::string;
 using std::cout;
 using std::endl;
+using std::fabs;
+using rtt_dsxx::SP;
+using rtt_quadrature::QuadCreator;
+using rtt_quadrature::Quadrature;
 
 tQuadrature::tQuadrature( int argc, char *argv[], std::ostream& os_in )
     : rtt_UnitTestFrame::TestApp( argc, argv, os_in )
@@ -68,8 +78,6 @@ string tQuadrature::runTest()
 
     // create an object that is responsible for creating quadrature objects.
     QuadCreator QuadratureCreator;
-//     pass(" Instantiate QuadCreator") 
-// 	<< "Successfully instantiated a QuadCreator object." << endl;
     
     // we will only look at S4 Sets in this test.
     int sn_order = 4;
@@ -106,10 +114,11 @@ string tQuadrature::runTest()
 	    break;
 	} else {
 	    // Instantiate the quadrature object.
-	    spQuad = QuadratureCreator.QuadCreate( qid[ix], sn_order ); 
+	    spQuad = QuadratureCreator.quadCreate( qid[ix], sn_order ); 
 
 	    // print the name of the quadrature set that we are testing.
-	    cout << "\nTesting the "  << spQuad->name() 
+	    string qname = spQuad->name();
+	    cout << "\nTesting the "  << qname
 		 << "Quadrature set." << endl;
 	    cout << "   Sn Order         = " << spQuad->getSnOrder() << endl;
 	    cout << "   Number of Angles = " << spQuad->getNumAngles() << endl;
@@ -134,6 +143,7 @@ string tQuadrature::runTest()
 		    cout << endl << endl; // end of this quadrature type
 		}
 	    }
+	    pass() << "Passed all tests for the " << qname << " quadrature set.";
 	}
     }
 

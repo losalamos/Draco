@@ -26,12 +26,12 @@ namespace rtt_quadrature_test
  */
 // revision history:
 // -----------------
-// 0) original
-// 1) 3-17-2000 a) Added comments (some in Doxygen format).
-//              b) Changed the test program to loop over a sequence of
-//                 quadrature types performing the same tests on each
-//                 object. 
-//              c) Implemented use of ds++/Assert class.
+// 1.1) Original
+// 1.2) Added comments (some in Doxygen format).
+//      Changed the test program to loop over a sequence of quadrature
+//         types performing the same tests on each object. 
+//      Implemented use of ds++/Assert class.
+//           
 // 
 //===========================================================================//
 
