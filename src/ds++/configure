@@ -5683,13 +5683,13 @@ echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        #
-       # If we want dlopen, 1) add libdl to LIBS;
+       # If dlopen is specified, 1) add libdl to LIBS;
        # 2) add -fPIC to compile flags.
        #
        echo "$as_me:$LINENO: checking \"libdl requirements\"" >&5
 echo $ECHO_N "checking \"libdl requirements\"... $ECHO_C" >&6
        if test -n "${vendor_dlopen}" ; then
-          if test "${with_dlopen}" = yes ; then
+          if test "${enable_dlopen}" = yes ; then
 	      LIBS="${LIBS} -ldl"
 	      CFLAGS="${CFLAGS} -fPIC"
 	      CXXFLAGS="${CXXFLAGS} -fPIC"

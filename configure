@@ -823,6 +823,7 @@ if test -n "$ac_init_help"; then
 Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-dlopen          Enable dlopen (default: on if --enable-shared, off otherwise)
   --enable-shared         turn on shared libraries (.a default)
   --enable-static-ld      use (.a) libraries if possible
   --disable-strict-ansi   turn off strict ansi compliance
@@ -882,8 +883,6 @@ Optional Packages:
   --with-udm=serial,mpi      determine udm implementation (default:  'mpi' if mpi in use, else 'serial')
   --with-udm-inc=DIR    tell where UDM includes are (\${UDM_INC_DIR} by default)
   --with-udm-lib=DIR    tell where UDM libraries are (\${UDM_LIB_DIR} by default)
-  --with-dlopen=on/off
-	                  Turn dlopen on or off (on by default).
   --with-lib-prefix=library prefix
                           give prefix to libraries (default rtt_)
   --with-c4=scalar,mpi,shmem
@@ -2915,34 +2914,39 @@ fi;
 
 
 
-
-# Check whether --with-dlopen or --without-dlopen was given.
-if test "${with_dlopen+set}" = set; then
-  withval="$with_dlopen"
+      # Check whether --enable-dlopen or --disable-dlopen was given.
+if test "${enable_dlopen+set}" = set; then
+  enableval="$enable_dlopen"
 
 fi;
 
    # determine if this package is needed for testing or for the
-   # package
+   # package.
    vendor_dlopen=pkg
 
-   # set default value for with_dlopen, which is yes
-   if test "${with_dlopen:=yes}" != no ; then
-       with_dlopen=yes
-   fi
-
-   # turn off dlopen if not using shared libraries
-   if test "${enable_shared}" != yes ; then
-       if test "${with_dlopen}" = yes ; then
-	   { echo "$as_me:$LINENO: WARNING: \"Must specify --enable-shared when using --with-dlopen.\"" >&5
-echo "$as_me: WARNING: \"Must specify --enable-shared when using --with-dlopen.\"" >&2;}
-           { echo "$as_me:$LINENO: WARNING: \"Turning off dlopen.\"" >&5
-echo "$as_me: WARNING: \"Turning off dlopen.\"" >&2;}
+   # set default value for enable_dlopen, which is the value of enable_shared.
+   if test "${enable_shared}" = yes ; then
+       if test "${enable_dlopen:=yes}" != no ; then
+	   enable_dlopen=yes
        fi
-       with_dlopen=no
+   else
+       if test "${enable_dlopen:=no}" != no ; then
+	   enable_dlopen=yes
+       fi
    fi
 
-   if test "${with_dlopen}" = yes ; then
+   # turn off dlopen if not using shared libraries.
+   if test "${enable_shared}" != yes ; then
+       if test "${enable_dlopen}" = yes ; then
+	   { echo "$as_me:$LINENO: WARNING: \"Must specify --enable-shared when using --enable-dlopen.\"" >&5
+echo "$as_me: WARNING: \"Must specify --enable-shared when using --enable-dlopen.\"" >&2;}
+           { echo "$as_me:$LINENO: WARNING: \"   dlopen disabled.\"" >&5
+echo "$as_me: WARNING: \"   dlopen disabled.\"" >&2;}
+       fi
+       enable_dlopen=no
+   fi
+
+   if test "${enable_dlopen}" = yes ; then
        cat >>confdefs.h <<\_ACEOF
 #define USE_DLOPEN 1
 _ACEOF

@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1248,30 +1248,35 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DLOPEN_SETUP], [dnl
 
-   dnl define --with-dlopen
-   AC_ARG_WITH(dlopen,
-      [  --with-dlopen=[on/off] 
-	                  Turn dlopen on or off (on by default).])
+   dnl define --enable-dlopen
+   AC_ARG_ENABLE(dlopen,
+      [  --enable-dlopen          Enable dlopen (default: on if --enable-shared, off otherwise)])
 
    # determine if this package is needed for testing or for the
-   # package
+   # package.
    vendor_dlopen=$1 
 
-   # set default value for with_dlopen, which is yes
-   if test "${with_dlopen:=yes}" != no ; then 
-       with_dlopen=yes
-   fi
-
-   # turn off dlopen if not using shared libraries
-   if test "${enable_shared}" != yes ; then
-       if test "${with_dlopen}" = yes ; then
-	   AC_MSG_WARN("Must specify --enable-shared when using --with-dlopen.")
-           AC_MSG_WARN("Turning off dlopen.")
+   # set default value for enable_dlopen, which is the value of enable_shared.
+   if test "${enable_shared}" = yes ; then
+       if test "${enable_dlopen:=yes}" != no ; then 
+	   enable_dlopen=yes
        fi
-       with_dlopen=no
+   else
+       if test "${enable_dlopen:=no}" != no ; then 
+	   enable_dlopen=yes
+       fi
    fi
 
-   if test "${with_dlopen}" = yes ; then
+   # turn off dlopen if not using shared libraries.
+   if test "${enable_shared}" != yes ; then
+       if test "${enable_dlopen}" = yes ; then
+	   AC_MSG_WARN("Must specify --enable-shared when using --enable-dlopen.")
+           AC_MSG_WARN("   dlopen disabled.")
+       fi
+       enable_dlopen=no
+   fi
+
+   if test "${enable_dlopen}" = yes ; then
        AC_DEFINE(USE_DLOPEN)
    fi
 ]) 
