@@ -32,8 +32,7 @@ AC_DEFUN(AC_DRACO_KCC, [dnl
 
    # --one_per flag
    if test "${enable_one_per:=yes}" = yes ; then
-       # yes there is an extra space before the flag
-       ONEPERFLAG=" --one_per"
+       ONEPERFLAG="--one_per"
    fi
 
    # optimization level
@@ -55,18 +54,13 @@ AC_DEFUN(AC_DRACO_KCC, [dnl
    PARALLEL_FLAG="--parallel_build \${nj}"
 
    # final compiler additions
-   # yes there is no space before the flag
+   CXXFLAGS="${CXXFLAGS} ${ONEPERFLAG}"
 
-   CXXFLAGS="${CXXFLAGS}${ONEPERFLAG}"
-
-   # For version 3.3 of KCC the strict and thread_safe
-   # cannot be used together (in general).
-
-   if test "$with_c4" = shmem ; then
-       CXXFLAGS="${CXXFLAGS} --thread_safe"
-       STRICTFLAG=""
-       LDFLAGS="${LDFLAGS} --thread_safe --static_libKCC"
-   fi
+   # make thread_safe the default option
+   CFLAGS="--thread_safe ${CFLAGS}"
+   CXXFLAGS="--thread_safe ${CXXFLAGS}"
+   ARFLAGS="--thread_safe ${ARFLAGS}"
+   LDFLAGS="--thread_safe ${LDFLAGS}"
 
    AC_MSG_RESULT("KCC compiler flags set")
    
