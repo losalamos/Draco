@@ -26,6 +26,8 @@ int seed = 493875348;
 bool passed = true;
 #define ITFAILS passed = rtt_rng_test::fail(__LINE__);
 
+//---------------------------------------------------------------------------//
+
 void ran_test()
 {
     // data for random numbers
@@ -53,6 +55,8 @@ void ran_test()
 	if (fabs(ran1.ran() - ran3.ran()) > eps) ITFAILS;
 }
 
+//---------------------------------------------------------------------------//
+
 void sprng_test()
 {
     int num  = 5;
@@ -64,7 +68,7 @@ void sprng_test()
     // now make some sprngs
     Sprng ranr(idr, 0);
     Sprng ran1(id1, 0);
-    Sprng ran2(id1, 0);
+    Sprng ran2(ran1);
     Sprng ran3(ran1);
 
     // get some reference numbers
@@ -93,6 +97,8 @@ void sprng_test()
     if (ranr.get_id() != id1) ITFAILS;
 }
 
+//---------------------------------------------------------------------------//
+
 void spawn_test()
 {
 //     int **news;
@@ -105,6 +111,8 @@ void spawn_test()
     
 //     free_sprng(news[0]);
 }
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
