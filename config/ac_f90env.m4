@@ -72,7 +72,7 @@ AC_DEFUN(AC_F90_ENV, [dnl
    MIPS)
        AC_COMPILER_MIPS_F90
    ;;
-   COMPAQ)
+   Compaq)
        AC_COMPILER_COMPAQ_F90
    ;;
    yes)				# guess compiler from target platform
@@ -93,6 +93,9 @@ AC_DEFUN(AC_F90_ENV, [dnl
           AC_COMPILER_MIPS_F90
        ;;
        i??86-pc-cygwin*)
+          AC_COMPILER_COMPAQ_F90
+       ;;
+       alphaev67-dec*)
           AC_COMPILER_COMPAQ_F90
        ;;
        *)
@@ -337,7 +340,7 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
    # Check for working compaq F90 compiler
 
    AC_CHECK_PROG(F90, f90, f90, none)
-   if test "${F90}" = f90 && ${F90} 2>&1 | grep "Compaq"
+   if test "${F90}" = f90 && ${F90} -version 2>&1 | grep "Compaq"
    then
        :
    else
@@ -346,9 +349,9 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
   
    # F90FREE, F90FIXED AND MODFLAG
 
-   F90FREE='/free'
-   F90FIXED='/fixed'
-   MODFLAG='/module'
+   F90FREE='-free'
+   F90FIXED='-fixed'
+   MODFLAG='-I'
 
    # LINKER AND LIBRARY (AR)
 
@@ -356,6 +359,7 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
    AR='ar'
    ARFLAGS=
    ARLIBS=
+   F90STATIC=
 
    # COMPILATION FLAGS
 
@@ -363,9 +367,9 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
 
    if test "${enable_debug:=no}" = yes
    then
-        F90FLAGS="/debug ${F90FLAGS}"
+        F90FLAGS="-g ${F90FLAGS}"
    else
-        F90FLAGS="/optimize:1 ${F90FLAGS}"
+        F90FLAGS="-O ${F90FLAGS}"
    fi
 
    dnl end of AC_COMPILER_COMPAQ_F90
