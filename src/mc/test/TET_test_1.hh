@@ -44,6 +44,7 @@ bool fail(int line, char *file)
 // -----------------
 //  0) original : Committed 2000-02-09
 //  1) 2000-04-10 : Rewritten to be consistent with new meshReader classes.
+//  2) 2000-04-26 : Now uses get_element_types() from meshReader class.
 //___________________________________________________________________________//
 
 class TET_test_1
@@ -103,28 +104,28 @@ class TET_test_1
         elements_nodes[1].push_back(4);
 
         elements_nodes[2].push_back(0);
-        elements_nodes[2].push_back(2);
         elements_nodes[2].push_back(1);
+        elements_nodes[2].push_back(2);
+        elements_nodes[2].push_back(4);
 
-        elements_nodes[3].push_back(1);
+        elements_nodes[3].push_back(0);
         elements_nodes[3].push_back(2);
-        elements_nodes[3].push_back(3);
+        elements_nodes[3].push_back(1);
 
         elements_nodes[4].push_back(1);
+        elements_nodes[4].push_back(2);
         elements_nodes[4].push_back(3);
-        elements_nodes[4].push_back(4);
 
-        elements_nodes[5].push_back(2);
-        elements_nodes[5].push_back(4);
+        elements_nodes[5].push_back(1);
         elements_nodes[5].push_back(3);
+        elements_nodes[5].push_back(4);
 
-        elements_nodes[6].push_back(0);
-        elements_nodes[6].push_back(1);
         elements_nodes[6].push_back(2);
+        elements_nodes[6].push_back(1);
         elements_nodes[6].push_back(4);
+        elements_nodes[6].push_back(3);
 
         elements_nodes[7].push_back(2);
-        elements_nodes[7].push_back(1);
         elements_nodes[7].push_back(4);
         elements_nodes[7].push_back(3);
 
@@ -137,12 +138,12 @@ class TET_test_1
 
         element_types.push_back(Element_Definition::TRI_3);
         element_types.push_back(Element_Definition::TRI_3);
-        element_types.push_back(Element_Definition::TRI_3);
+        element_types.push_back(Element_Definition::TETRA_4);
         element_types.push_back(Element_Definition::TRI_3);
         element_types.push_back(Element_Definition::TRI_3);
         element_types.push_back(Element_Definition::TRI_3);
         element_types.push_back(Element_Definition::TETRA_4);
-        element_types.push_back(Element_Definition::TETRA_4);
+        element_types.push_back(Element_Definition::TRI_3);
 
         return element_types;
     }

@@ -56,6 +56,8 @@ namespace rtt_mc
 //                  namespace issues and elimination of using declarations.
 //  4) 2000-04-25 : Renamed in_cell() to in_open_cell() and added the related
 //                  function in_closed_cell().
+//  5) 2000-04-26 : Added private data VF_INT sides_vertices, and dealt with
+//                  sides_vertices in the public constructor.
 //
 //___________________________________________________________________________//
 
@@ -124,6 +126,20 @@ class TET_Mesh
      */
     VF_INT cells_vertices;
 
+    /*!
+     * sides_vertices[side#][side_vertex#] == internal numbers of the three
+     * vertices belonging to the given side, labeled side#.
+     *
+     * side# == (0, 1, 2, 3, 4, ...) for an internal list of all sides.
+     *
+     * side_vertex# == (0, 1, 2) for each triangular side.
+     *
+     * No assumptions are currently made about the relation of any given side
+     * to any particular cell face, nor about the ordering of the vertices of
+     * a side.
+     */
+    VF_INT sides_vertices;
+
     //! Flag to indicate whether this is a submesh.
     bool submesh;
 
@@ -149,7 +165,7 @@ class TET_Mesh
 
     //! TET_Mesh constructor.
     TET_Mesh(rtt_dsxx::SP<Coord_sys>, Layout &, SF_THREEVECTOR &, VF_INT &,
-        bool = false);
+        VF_INT &, bool = false);
 
     //! Forward declaration of cell-centered scalar fields.
     template<class T> class CCSF;

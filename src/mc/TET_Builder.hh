@@ -34,6 +34,9 @@ using std::endl;  // FOR DEBUGGING.
 //  1) 2000-02-12 : Completed namespace issues, bug fixes, and elimination
 //                  of using declarations.
 //  2) 2000-04-10 : Rewritten to be consistent with new meshReader classes.
+//  3) 2000-04-26 : Modified to construct VF_INT sides_vertices, new private
+//                  TET_Mesh data, and to make use of get_element_nodes() and
+//                  get_element_types() from the Mesh_Reader base class.
 //
 //___________________________________________________________________________//
 
@@ -87,6 +90,16 @@ class TET_Builder
      */
     VF_INT cells_vertices;
 
+    /*!
+     * Nodes bounding each side: sides_vertices[s][0..2] == internal # of node.
+     * No assumptions are currently made about the relation of any given side
+     * to any particular cell face, nor about the ordering of the vertices of
+     * a side.
+     * The interface (e.g. file reader) is expected to provide internal numbers
+     * of the bounding nodes, so no adjustment is needed on construction.
+     */
+    VF_INT sides_vertices;
+
     //! Flag to indicate whether this is a submesh.
     bool submesh;
 
@@ -133,29 +146,37 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
     std::vector<Element_Definition::Element_Type> element_types =
         interface->get_element_types();
 
-    // This can be improved by keeping a separate sides_vertices later.
-    cells_vertices = interface->get_element_nodes();
-cerr << cells_vertices.size() << " cells_vertices size." << endl;
-cerr << element_types.size() << " element_types size." << endl;
+    VF_INT element_nodes = interface->get_element_nodes();
 
-    Check (element_types.size() == cells_vertices.size());
+    Check (element_types.size() == element_nodes.size());
 
-for (int i = 0 ; i < element_types.size() ; i++)
-cerr << "Type " << element_types[i] << "   with " << cells_vertices[i].size() << " nodes." << endl;
+    int num_cells = 0;
+    int num_sides = 0;
 
-    VF_INT::iterator first_cell = cells_vertices.begin();
-    for ( ; first_cell != cells_vertices.end() ; first_cell++)
-        if ((*first_cell).size() != THREE)
-            break;
+    for (int elem = 0 ; elem < element_types.size() ; elem++)
+        if (element_types[elem] == Element_Definition::TETRA_4)
+            num_cells++;
+        else if (element_types[elem] == Element_Definition::TRI_3)
+            num_sides++;
+        else
+            Check (element_types[elem] == Element_Definition::NODE ||
+                   element_types[elem] == Element_Definition::BAR_2);
 
-    Require (first_cell != cells_vertices.begin());
-    Require (first_cell != cells_vertices.end());
+    cells_vertices.resize(num_cells);
+    sides_vertices.resize(num_sides);
 
-    cells_vertices.erase(cells_vertices.begin(),first_cell);
-
-    // TET_Mesh objects have four vertices.
-    for (int cell_ = 0 ; cell_ < cells_vertices.size() ; cell_++)
-        Check (cells_vertices[cell_].size() == FOUR);
+    for (int elem = 0, cell_ = 0, side_ = 0 ;
+             elem < element_types.size() ; elem++)
+        if (element_types[elem] == Element_Definition::TETRA_4)
+            {
+                cells_vertices[cell_] = element_nodes[elem];
+                cell_++;
+            }
+        else if (element_types[elem] == Element_Definition::TRI_3)
+            {
+                sides_vertices[side_] = element_nodes[elem];
+                side_++;
+            }
 
     parent.resize(nodes_coords.size());
     for (int node_ = 0 ; node_ < nodes_coords.size() ; node_++)
@@ -169,6 +190,16 @@ cerr << "Type " << element_types[i] << "   with " << cells_vertices[i].size() <<
         {
             Ensure ( cells_vertices[cell_][ver_] >= 0 );
             Ensure ( cells_vertices[cell_][ver_] < nodes_coords.size() );
+        }
+
+    // To be properly constructed, sides_vertices[][] must contain the
+    // internal numbers of the three bounding vertices of the sides.
+
+    for (int side_ = 0 ; side_ < sides_vertices.size() ; side_++)
+        for (int ver_ = 0 ; ver_ < THREE ; ver_++)
+        {
+            Ensure ( sides_vertices[side_][ver_] >= 0 );
+            Ensure ( sides_vertices[side_][ver_] < nodes_coords.size() );
         }
 
     // To be properly constructed, cells_vertices[][] must be in a predefined

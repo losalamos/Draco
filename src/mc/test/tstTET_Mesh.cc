@@ -245,6 +245,32 @@ void Test_TET()
     if (cells_ver[0].size() != 4)   ITFAILS;
     if (cells_ver[1].size() != 4)   ITFAILS;
 
+    VF_INT sides_ver(6);
+
+    sides_ver[0].push_back(0);
+    sides_ver[0].push_back(4);
+    sides_ver[0].push_back(2);
+
+    sides_ver[1].push_back(0);
+    sides_ver[1].push_back(1);
+    sides_ver[1].push_back(4);
+
+    sides_ver[2].push_back(0);
+    sides_ver[2].push_back(2);
+    sides_ver[2].push_back(1);
+
+    sides_ver[3].push_back(1);
+    sides_ver[3].push_back(2);
+    sides_ver[3].push_back(3);
+
+    sides_ver[4].push_back(1);
+    sides_ver[4].push_back(3);
+    sides_ver[4].push_back(4);
+
+    sides_ver[5].push_back(2);
+    sides_ver[5].push_back(4);
+    sides_ver[5].push_back(3);
+
     Layout layo;
     layo.set_size(2);
     layo.set_size(1,4);
@@ -257,7 +283,7 @@ void Test_TET()
     layo(1,1) = 2;
     layo(2,3) = 1;
 
-    SP<TET_Mesh> mesh_ptr_H(new TET_Mesh(coor, layo, vertex_vec, cells_ver));
+    SP<TET_Mesh> mesh_ptr_H(new TET_Mesh(coor, layo, vertex_vec, cells_ver, sides_ver));
 
     if ( !mesh_ptr_H )                                                 ITFAILS;
     if ( !mesh_ptr_H->full_Mesh() )                                    ITFAILS;
@@ -408,17 +434,17 @@ void Test_TET()
 
 
 //  Beginning:  a way to see these results ordered on the page.
-    cout.setf(ios::fixed);
-    cout.precision(5);
-  
-    for (int zz = 0 ; zz < 10 ; zz++) {
-       for (int yy = 9 ; yy >= 0 ; yy--) {
-           for (int xx = 0; xx < 10; xx++)
-               cout << setw(10) << count[xx][yy][zz];
-           cout << endl;
-       }
-       cout << endl << endl;
-    }
+//  cout.setf(ios::fixed);
+//  cout.precision(5);
+//
+//  for (int zz = 0 ; zz < 10 ; zz++) {
+//     for (int yy = 9 ; yy >= 0 ; yy--) {
+//         for (int xx = 0; xx < 10; xx++)
+//             cout << setw(10) << count[xx][yy][zz];
+//         cout << endl;
+//     }
+//     cout << endl << endl;
+//  }
 //  End:  a way to see these results ordered on the page.
 
 

@@ -21,12 +21,15 @@ namespace rtt_mc
  * \param layout_         Layout of mesh.
  * \param vertex_vector_  ThreeVector vertices in a list of all vertices.
  * \param cells_vertices_ Internal identifiers of the four vertices of cells.
+ * \param sides_vertices_ Internal identifiers of the three vertices of sides.
  * \param submesh_        Submesh indicator flag.
  */
 TET_Mesh::TET_Mesh(rtt_dsxx::SP<Coord_sys> coord_, Layout & layout_,
-    SF_THREEVECTOR & vertex_vector_, VF_INT & cells_vertices_, bool submesh_)
+    SF_THREEVECTOR & vertex_vector_, VF_INT & cells_vertices_,
+    VF_INT & sides_vertices_, bool submesh_)
     : coord(coord_), layout(layout_), vertex_vector(vertex_vector_),
-      cells_vertices(cells_vertices_), submesh(submesh_)
+      cells_vertices(cells_vertices_), sides_vertices(sides_vertices_),
+      submesh(submesh_)
 {
     // For a TET_Mesh, there must be an XYZ coordinate system.
     Check (coord);
@@ -550,6 +553,10 @@ bool TET_Mesh::operator==(const TET_Mesh &rhs) const
 
     // Verify the identities of the vertices of each cell.
     if (cells_vertices != rhs.cells_vertices)
+        return false;
+
+    // Verify the identities of the vertices of each side.
+    if (sides_vertices != rhs.sides_vertices)
         return false;
 
     // if we haven't returned, then the two meshes must be equal
