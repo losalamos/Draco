@@ -135,19 +135,24 @@ int main(int argc, char *argv[])
 	  // run the interface parser
 	    SP<OS_Interface> interface = new OS_Interface(infile);
 	    interface->parser();
+            cout << "Read input file on host " << mynode << endl;
 
 	  // initialize the mesh builder and build mesh
 	    OS_Builder os_build(interface);
 	    mesh = os_build.build_Mesh();
+            cout << "Built mesh on host " << mynode << endl;
 
 	  // initialize the Opacity builder and build state 
 	    Opacity_Builder<OS_Mesh> opacity_build(interface, mesh);
 	    mat_state = opacity_build.build_Mat();
 	    opacity   = opacity_build.build_Opacity();
+            cout << "Built opacities on host " << mynode << endl;
 
 	  // do the source initialization
 	    sinit = new Source_Init<OS_Mesh>(interface, mesh);
 	    sinit->initialize(mesh, opacity, mat_state, rcon, 1);
+            cout << "Initialized source on host " << mynode << endl;
+            cout << endl;
 	}
 
       // make parallel builder object to do send/receives of objects
@@ -162,21 +167,21 @@ int main(int argc, char *argv[])
 	    Builder_diagnostic(*mesh, *mat_state, *opacity);
 	    
 	  // print out salient quantities from Parallel_Builder
-	    for (int i = 0; i < nodes(); i++)
-		cout << setw(10) << i << setw(10) 
-		     << pcomm->cells_per_proc[i].size() << endl;
+	  // for (int i = 0; i < nodes(); i++)
+	//cout << setw(10) << i << setw(10) 
+	//     << pcomm->cells_per_proc[i].size() << endl;
 	}
 	
-	if (mynode)
-	{	
-	  // make parallel builder object to receive objects
-	    pcomm = new Parallel_Builder<OS_Mesh>();
-	    mesh    = pcomm->recv_Mesh();
-	    opacity = pcomm->recv_Opacity(mesh);
-	}
-    
-	if (mesh) 
-	    Builder_diagnostic(*mesh, *opacity);
+//	if (mynode)
+//	{	
+//	  // make parallel builder object to receive objects
+//	    pcomm = new Parallel_Builder<OS_Mesh>();
+//	    mesh    = pcomm->recv_Mesh();
+//	    opacity = pcomm->recv_Opacity(mesh);
+//	}
+//   
+//	if (mesh) 
+//	    Builder_diagnostic(*mesh, *opacity);
 
     }
     catch (const dsxx::assertion &ass)

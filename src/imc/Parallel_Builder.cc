@@ -67,80 +67,152 @@ template<class MT>
 void Parallel_Builder<MT>::parallel_params(const Source_Init<MT> &sinit)
 {
   // make sure we have a Source_Init
-    Require (&sinit);
+    assert (&sinit);
 
   // number of cells in the mesh
     int num_cells = procs_per_cell.size();
 
   // calculate the total capacity of all processors
-    int capacity       = min(num_cells * nodes(),
-			     sinit.get_capacity() * nodes());
-    int total_capacity = sinit.get_capacity() * nodes();	
+    int total_capacity = sinit.get_capacity() * nodes();
     assert (total_capacity >= num_cells);
 
-  // limits for DD, full replication, and DD/replication
-  // <<CONTINUE HERE>>
-    string parallel;
+  // do full replication / full DD / rep-DD
     if (num_cells <= sinit.get_capacity())
-	parallel = "replication";
-    else if (num_cells == total_capacity)
-	parallel = "dd";
-    else
-	parallel = "dd/rep";
-
-  // loop to determine first estimate of cell replication for dd/rep
-    if (parallel == "dd/rep")
     {
-	double factor;
-	int *replicates = new int(num_cells);
-	int    total_rep;
+      // do full replication as we can fit the whole mesh on each processor
+	for (int proc = 0; proc < nodes(); proc++)
+	{
+	    for (int cell = 1; cell <= num_cells; cell++)
+	    {
+		procs_per_cell[cell-1].push_back(proc);
+		cells_per_proc[proc].push_back(cell);
+	    }
+	    assert (cells_per_proc[proc].size() == num_cells);
+	}
+    }
+    else if (num_cells == total_capacity)
+    {
+      // do full DD
+	int cell = 1;
+	for (int proc = 0; proc < nodes(); proc++)
+	{
+	    int max_cell = 0;
+	    while (++max_cell <= sinit.get_capacity())
+	    {
+		cells_per_proc[proc].push_back(cell++);
+		procs_per_cell[cell-1].push_back(proc);
+		assert (procs_per_cell[cell-1].size() == 1);
+	    }
+	    assert (procs_per_cell[proc].size() <= sinit.get_capacity());
+	}
+    }
+    else
+    {
+      // do DD/replication
+
+      // set up variables for cell replication
+	int *cellrep = new int(num_cells);
+	double sfrac = 0;
+	int total_rep = 0;
+	int below_limit = 0;
+	int avg_add = 0;
+
+      // loop for first estimate of cell replication
 	for (int cell = 1; cell <= num_cells; cell++)
 	{
-	    factor = static_cast<double>(sinit.get_ncen(cell) +
-					 sinit.get_nvol(cell) +
-					 sinit.get_nss(cell)) / 
+	  // calculate the source fraction
+	    sfrac = static_cast<double>(sinit.get_ncen(cell) +
+					sinit.get_nvol(cell) +
+					sinit.get_nss(cell)) / 
 		(sinit.get_ncentot() + sinit.get_nsstot() + 
 		 sinit.get_nvoltot());
-	    replicates = static_cast<int>(factor * total_capacity);
-	    replicates = min(nodes(), max(1, replicates));
-	    total_rep += replicates;
+
+	  // estimate the number of cell replicates where the number must be
+	  // >=1 and <=number of processors
+	    cellrep[cell-1] = min(nodes(), max(1, static_cast<int>
+					       (sfrac * total_capacity)));
+	    total_rep += cellrep[cell-1];
+
+	  // tally the number of cells which are replicated below the
+	  // max. limit (number of processors)
+	    if (cellrep[cell-1] < nodes())
+		below_limit++;
 	}
+
+      // calculate amount of extra capacity still available
 	int xtra_reps = total_capacity - total_rep;
 	assert (xtra_reps >= 0);
-    }
 
-  // looping over cells to calculate salient quantities
-    for (int cell = 1; cell <= num_cells; cell++)
-    {
-      // calculate number of time a cell is replicated
-	factor = static_cast<double>(sinit.get_ncen(cell) +
-				     sinit.get_nvol(cell) +
-				     sinit.get_nss(cell)) / 
-	    (sinit.get_ncentot() + sinit.get_nsstot() + 
-	     sinit.get_nvoltot());
-	replicates = static_cast<int>(factor * total_capacity);
-	replicates = min(nodes(), max(1, replicates));
-	if (replicates < nodes() && xtra_reps-- > 0) 
-	    replicates++;
-      // <<CONTINUE HERE>>
-      
-      // loop over processors that take this cell
-	int nprocs_taking = 0;
-	int proc = 0;
-	while (proc < nodes() && nprocs_taking < replicates)
+      // loop until xtra_capacity is gone
+	while (xtra_reps)
 	{
-	    if (cells_per_proc[proc].size() < sinit.get_capacity())
+	  // determine the average number of additional replicates for each
+	  // cell
+	    avg_add = xtra_reps / below_limit;
+	    avg_add = avg_add < 1 ? 1 : avg_add;
+	  
+	  // reset our counters
+	    total_rep = 0;
+	    below_limit = 0;
+
+	  // loop through cells and add additional replicates
+	    int cell = 1;
+	    double add;
+	    while (total_rep < total_capacity && cell <= num_cells)
 	    {
-		cells_per_proc[proc].push_back(cell);
-		procs_per_cell[cell-1].push_back(proc);
-		nprocs_taking++;
+	      // determine the ammount we will add
+		add = min(nodes() - cellrep[cell-1], avg_add);
+
+	      // update counters and cell replicates
+		cellrep[cell-1] += add;
+		total_rep += cellrep[cell-1];
+		if (cellrep[cell-1] < nodes())
+		    below_limit++;
+		
+	      // make sure we haven't gone over
+		if (total_rep > total_capacity)
+		{
+		    while (total_rep > total_capacity)
+		    {
+			cellrep[cell-1]--;
+			total_rep--;
+		    }
+		}
+
+	      // update cell counter
+		cell++;
 	    }
-	    proc++;
+
+	  // calculate amoutn of extra capacity still available
+	    xtra_reps = total_capacity - total_rep;
+	    assert (xtra_reps >= 0);
 	}
-	Ensure (procs_per_cell[cell-1].size() > 0);
-	Ensure (procs_per_cell[cell-1].size() <= nodes());
+      
+	std::cout << "I GOT THIS FAR" << std::endl;
+      // <<CONTINUE HERE>>
+      // I THINK OUR ERROR IS SOMEWHERE DOWN HERE!!!
+      // now we can do our DD/replication partitioning
+	for (int cell = 1; cell <= num_cells; cell++)
+	{
+	    int max_rep = 0;
+	    for (int proc = 0; proc < nodes(); proc++)
+	    {
+		if (++max_rep <= cellrep[cell-1] && 
+		    cells_per_proc[proc].size() < sinit.get_capacity())
+		{
+		    std::cout << proc << " " << cell << std::endl;
+		    cells_per_proc[proc].push_back(cell);
+		    procs_per_cell[cell-1].push_back(proc);
+		}
+		assert (cells_per_proc[proc].size() <= sinit.get_capacity());
+	    }
+	    assert (procs_per_cell[cell-1].size() > 0);
+	    assert (procs_per_cell[cell-1].size() <= nodes());
+	}
+
+      // reclaim storage
+	delete [] cellrep;
     }
-    assert (xtra_reps == 0);
 }
 
 //---------------------------------------------------------------------------//
