@@ -44,6 +44,36 @@ class DoubleContainer
         data = dc.data;
         return *this;
     }
+    
+    bool operator==(const DoubleContainer& dc)
+    {
+	return data == dc.data;
+    }
+
+    bool operator!=(const DoubleContainer& dc)
+    {
+	return data != dc.data;
+    }
+
+    bool operator<(const DoubleContainer& dc)
+    {
+	return data < dc.data;
+    }
+    
+    bool operator<=(const DoubleContainer& dc)
+    {
+	return data <= dc.data;
+    }
+
+    bool operator>(const DoubleContainer& dc)
+    {
+	return data > dc.data;
+    }
+    
+    bool operator>=(const DoubleContainer& dc)
+    {
+	return data >= dc.data;
+    }
 };
 
 } // end namespace rtt_meshTest
