@@ -44,6 +44,10 @@ private:
   // dimension of system
     const int dimension;
     const int set_dimension;
+
+  // Begin_Doc coord_sys-int.tex 
+  // Begin_Verbatim 
+
 public:
   // constructor for setting dimension of Coord_sys, inline
     Coord_sys(int dimension_) 
@@ -64,6 +68,9 @@ public:
 
     virtual void set_omega(vector<double> &, Random &) const;
     virtual void calc_omega(double, double, vector<double> &) const;
+
+  // End_Verbatim 
+  // End_Doc 
 };
 
 CSPACE

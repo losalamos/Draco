@@ -170,6 +170,12 @@ public:
 
     void print(ostream &, int) const;
 
+  // End_Verbatim 
+  // End_Doc 
+
+  // Begin_Doc os_mesh-rint.tex
+  // Begin_Verbatim 
+
   // required services: 
 
   // 1) get the cell across a face;

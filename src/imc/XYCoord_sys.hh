@@ -42,6 +42,9 @@ using std::string;
     
 class XYCoord_sys : public Coord_sys
 {
+  // Begin_Doc xycoord_sys-int.tex
+  // Begin_Verbatim 
+
 public:
    // default constructor to set dimension of XY coordinate
   // system, inline
@@ -49,6 +52,9 @@ public:
 
   // virtual functions
     virtual string get_Coord() const { string c = "xy"; return c; }
+
+  // End_Verbatim 
+  // End_Doc 
 };
 
 CSPACE

@@ -35,12 +35,18 @@ using std::string;
 
 class XYZCoord_sys : public Coord_sys
 {
+  // Begin_Doc xyzcoord_sys-int.tex
+  // Begin_Verbatim 
+
 public:
   // default constructor for 3D meshes
     XYZCoord_sys() : Coord_sys(3) {}
 
   // virtual functions
     virtual string get_Coord() const { string c = "xyz"; return c; }
+
+  // End_Verbatim 
+  // End_Doc 
 };
 
 CSPACE

@@ -40,6 +40,10 @@ private:
   // cell-face-cell array for transport between cells, Layout adjusts the
   // cell and face indices to (cell-1) and (face-1)
     vector< vector<int> > face_cell;
+
+  // Begin_Doc layout-int.tex
+  // Begin_Verbatim 
+
 public:
   // inline default constructor, can give the total number of
   // cells as an argument; no copy constructor or assignment
@@ -61,6 +65,9 @@ public:
   // overloaded subscripting operators for assignment and retrieval
     inline int operator()(int, int) const;
     inline int& operator()(int, int);
+
+  // End_Verbatim 
+  // End_Doc 
 };
 
 //---------------------------------------------------------------------------//
