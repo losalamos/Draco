@@ -96,8 +96,8 @@ class Parallel_Data_Operator
 
     // Create boundary cell data fields in a spatially decomposed topology.
     template<class T> 
-    void gather_bnd_cell_data(SP_Topology, SP_Comm_Patterns, 
-			      const std::vector<T> &, std::vector<T> &);
+    void gather_bnd_cell_data(SP_Comm_Patterns, const std::vector<T> &, 
+			      std::vector<T> &);
 };
 
 //---------------------------------------------------------------------------//
@@ -419,19 +419,18 @@ struct Parallel_Data_Operator::Data_Distributed
  * \arg each processor receives the data for its boundary cells and writes it
  * into a local boundary cell field
 
- * \arg topology spatially decomposed topology
+ * The Topology must be spatially decomposed (not full replication).
 
- * \arg pattern active Comm_Patterns object, the patterns must be set
+ * \param pattern active Comm_Patterns object, the patterns must be set
 
- * \arg local_data vector of local data on processor that will be sent to
+ * \param local_data vector of local data on processor that will be sent to
  * other processors according to the Comm_Patterns
 
- * \arg bc_data empty boundary cell field that will be filled
+ * \param bc_data empty boundary cell field that will be filled
 
  */
 template<class T> void
-Parallel_Data_Operator::gather_bnd_cell_data(SP_Topology topology,
-					     SP_Comm_Patterns pattern,
+Parallel_Data_Operator::gather_bnd_cell_data(SP_Comm_Patterns pattern,
 					     const std::vector<T> &local_data, 
 					     std::vector<T> &bc_data)
 {
