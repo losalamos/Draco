@@ -94,10 +94,6 @@ namespace rtt_dsxx
  *
  * rtt_dsxx::RCF usage example.
  */
-// revision history:
-// -----------------
-// 0) (Mon Jan 26 15:12:22 2004) Thomas M. Evans: original
-// 
 //===========================================================================//
 
 template<class Field_t>
