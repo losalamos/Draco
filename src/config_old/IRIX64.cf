@@ -51,31 +51,34 @@ ifndef DBC
 DBC	= 7
 endif
 
+ifndef c4
+c4	:= no
+endif
+
 #-----------------------------------------------------------------------------#
 # Kuck and Associates C++
 
 ifeq ($(cxx),KCC)
 
+ifneq ($(c4),shmem)
+STRICT	= --strict
+endif
+
 CC	= cc
-CXX	= KCC -x -mips4 --no_implicit_include --strict -D_POSIX_SOURCE
+CXX	= KCC -x -mips4 --no_implicit_include $(STRICT) -D_POSIX_SOURCE
 cmplr	= kai
 
 ifeq ($(bits),32)
-CXX	= KCC -x -32 --no_implicit_include --strict -D_POSIX_SOURCE
+CXX	= KCC -x -32 --no_implicit_include $(STRICT) -D_POSIX_SOURCE
 cmplr	= k32
 endif
 
 ifeq ($(beta),yes)
-CXX	= /v/furnish/kcc33pb/KCC_BASE/bin/KCC --strict --no_implicit_include -D_POSIX_SOURCE
+CXX	= /v/furnish/kcc33pb/KCC_BASE/bin/KCC $(STRICT) --no_implicit_include -D_POSIX_SOURCE
 cmplr	= kcc33pb
 endif
 
 LDSHARED = cc -64 -shared
-
-ifeq ($(kcc),old)
-CXX	= /home/POOMA/KAI64-arobison/KCC_BASE/bin/KCC -x --no_implicit_include
-cmplr	= kar
-endif
 
 #DEFINES = -DPOOMA_KAI -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_HAS_TEMPLATED_COMPLEX -DPOOMA_USE_MEMBER_TEMPLATES
 DEFINES = -DPOOMA_KAI -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_HAS_TEMPLATED_COMPLEX -DPOOMA_USE_MEMBER_TEMPLATES -DPOOMA_USE_PARTIAL_SPECIALIZATION
@@ -102,10 +105,19 @@ ifeq ($(c4),no)
 SYS_FLAGS = -DNOMPI
 comm	:=
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_f77_sgi_64
-else
-comm	:= c4
-SYS_FLAGS = 
+endif
+
+ifeq ($(c4),mpi)
+comm	:= c4m
+SYS_FLAGS = -DC4_MPI
 SYS_LIBS = -lmpi
+PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77_sgi_64
+endif
+
+ifeq ($(c4),shmem)
+comm	:= c4s
+SYS_FLAGS = -DC4_SHMEM
+SYS_LIBS = -lsma
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77_sgi_64
 endif
 
