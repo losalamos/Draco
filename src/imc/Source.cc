@@ -151,8 +151,10 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 	    ncendone++;
     }
 
-    Check (sampled);
-
+    Ensure (sampled);
+    Ensure (source_particle->status());
+    
+  // return the particle
     return source_particle;
 }
 
@@ -240,9 +242,14 @@ SP<PT> Source<MT, PT>::get_census(double delta_t)
 
   // get the census particle from the Census buffer
     SP<PT> census_particle = census.top();
+    census_particle->set_time_left(delta_t);
+    census_particle->set_descriptor("from_census");
 
   // remove the census particle from the bank
     census.pop();
+
+  // make sure the particle is active
+    census_particle->reset_status();
 
   // return the particle
     return census_particle;

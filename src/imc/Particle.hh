@@ -174,6 +174,10 @@ public:
     inline static int get_index(string);
     inline static string get_descriptor(int);
     Sprng& get_random() { return random; }
+    int get_cell() const { return cell; }
+    void set_time_left(double t) { time_left = t; }
+    void set_descriptor(string s) { descriptor = s; }
+    void reset_status() { alive = true; }
 
   // public diagnostic services
     void print(ostream &) const;

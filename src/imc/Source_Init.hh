@@ -25,6 +25,8 @@
 #include "imc/Opacity.hh"
 #include "imc/Mat_State.hh"
 #include "rng/Random.hh"
+#include "imc/Particle.hh"
+#include "imc/Particle_Buffer.hh"
 #include "ds++/SP.hh"
 #include <string>
 #include <iostream>
@@ -40,10 +42,10 @@ using std::string;
 using std::vector;
 using std::ostream;
 
-template<class MT>
+template<class MT, class PT = Particle<MT> >
 class Source_Init
 {
-public:
+private:
   // data received from MT_Interface
     vector<double> evol_ext;
     vector<string> ss_pos;
@@ -77,6 +79,7 @@ public:
   // number of census particles per cell
     typename MT::CCSF_int ncen;
     int ncentot;
+    SP<typename Particle_Buffer<PT>::Census> census;
 
   // number of surface source and volume source particles
     typename MT::CCSF_int nvol;
@@ -128,10 +131,8 @@ public:
 
   // accessor functions for Parallel_Builder
     int get_capacity() const { return capacity; }
-    int get_ncentot() const { return ncentot; }
     int get_nsstot() const { return nsstot; }
     int get_nvoltot() const { return nvoltot; }
-    int get_ncen(int cell) const { return ncen(cell); }
     int get_nvol(int cell) const { return nvol(cell); }
     int get_nss(int cell) const { return nss(cell); }
     int get_fss(int cell) const { return fss(cell); }
@@ -140,6 +141,15 @@ public:
     double get_ew_ss(int cell) const { return ew_ss(cell); }
     string get_ss_dist() const { return ss_dist; }
     double get_evol_net(int cell) const { return evol_net(cell); }
+    int num_cells() const { return ncen.get_Mesh().num_cells(); }
+
+  // set and get functions for census stuff
+    void set_ncen(int cell, int num) { ncen(cell) = num; }
+    int get_ncen(int cell) const { return ncen(cell); }
+    void set_ncentot(int num) { ncentot = num; }
+    int get_ncentot() const { return ncentot; }
+    inline void set_census(SP<typename Particle_Buffer<PT>::Census>);
+    inline SP<typename Particle_Buffer<PT>::Census> get_census() const;	
 
   // diagnostic functions
     void print(ostream &)const;
@@ -159,10 +169,32 @@ inline ostream& operator<<(ostream &out, const Source_Init<MT> &object)
 //---------------------------------------------------------------------------//
 // inline functions for source_init
 //---------------------------------------------------------------------------//
+// set the census for updates between cycles
+
+template<class MT, class PT> inline 
+void Source_Init<MT,PT>::set_census(SP<typename Particle_Buffer<PT>::Census> 
+				    census_)
+{
+  // we must update this with a valid census
+    Require (census_);
+    census = census_;
+}
+
+//---------------------------------------------------------------------------//
+// return the census
+
+template<class MT, class PT> inline
+SP<typename Particle_Buffer<PT>::Census> Source_Init<MT,PT>::get_census()
+    const
+{
+    return census;
+}
+
+//---------------------------------------------------------------------------//
 // return the slope of the temperature to the 4th power in each cell
 
-template<class MT>
-inline double Source_Init<MT>::get_t4_slope(int dim, int cell) const 
+template<class MT, class PT>
+inline double Source_Init<MT,PT>::get_t4_slope(int dim, int cell) const 
 { 
     return t4_slope(dim, cell); 
 }

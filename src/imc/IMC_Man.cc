@@ -10,6 +10,7 @@
 #include "ds++/Assert.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -33,6 +34,7 @@ using std::string;
 using std::ios;
 using std::setiosflags;
 using std::setw;
+using std::fill;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -44,15 +46,23 @@ IMC_Man<MT,BT,IT,PT>::IMC_Man(bool verbose_)
     : delta_t(0), cycle(0), max_cycle(0), verbose(verbose_)
 {
   // all the SPs should be null defined
+
+  // objects used by all processors
     Check (!mesh);
     Check (!opacity);
     Check (!mat_state);
     Check (!rnd_con);
     Check (!parallel_builder);
     Check (!buffer);
+    Check (!source);
+    Check (!tally);
+
+  // objects used only by the host
     Check (!source_init);
     Check (!global_state);
-    Check (!tally);
+
+  // objects used to control the census
+    Check (!new_census);
 }
 
 //---------------------------------------------------------------------------//
@@ -90,8 +100,8 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
     {
 	delta_t   = interface->get_delta_t();
 	max_cycle = interface->get_max_cycle();
-	rnd_con = new Rnd_Control(9836592);
-	Particle_Buffer<PT>::set_buffer_size(100000);
+	rnd_con   = new Rnd_Control(9836592);
+	Particle_Buffer<PT>::set_buffer_size(1000000);
     }
 
   // initialize the mesh builder and build mesh
@@ -120,13 +130,19 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
 		 << endl; 
     }
 
-  // do the source initialization
+  // prepare to do the source initialization
     source_init = new Source_Init<MT>(interface, mesh);
-    source_init->initialize(mesh, opacity, mat_state, rnd_con, cycle);
+
+  // update the Source with census info from the last cycle
+    if (global_state)
+	global_state->update_Source_Init(*source_init);
+
+  // do source initialization
+    source_init->initialize(mesh, opacity, mat_state, rnd_con, cycle); 
     if (verbose)
 	cout << " ** Did the source initialization on node " << node()
 	     << endl;
-
+    
   // make a Global_Buffer to hold T, Cv, evol_net, etc, for all time
     if (!global_state)
 	global_state = new Global_Buffer<MT>(*mesh, *mat_state,
@@ -149,14 +165,14 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
 	Require (mesh);
 	Require (opacity);
 	Require (mat_state);
-	Require (global_state);
+	Require (rnd_con);
 	Require (source_init);
 	Require (global_state);
 
       // make the Parallel Builder and Particle Buffer on the first cycle
 	if (!parallel_builder)
 	{
-	    parallel_builder = new Parallel_Builder<MT>(*mesh, *source_init); 
+	    parallel_builder = new Parallel_Builder<MT>(*mesh, *source_init);
 	    buffer           = new Particle_Buffer<PT>(*mesh, *rnd_con);
 
 	  // make sure the global mesh is perserved here
@@ -236,8 +252,17 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
     Ensure (parallel_builder);
     Ensure (rnd_con);
     Ensure (tally);
+
+  // objects we shouldn't have
     Ensure (!source_init);
-    Ensure (delta_t > 0);
+    Ensure (!new_census);
+
+  // ensure we have times straight
+    Ensure (delta_t   > 0);
+    Ensure (max_cycle > 0);
+
+  // make sure the Global_State census is empty
+    Ensure (global_state->get_census()->size() == 0);
 
   // print a message indicating success
     if (verbose)
@@ -312,21 +337,30 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	int num_cells = tally->num_cells();
 
       // make allocatable arrays for tally data
-	double *tally_send = new double[num_cells];
+	double *edep_send = new double[num_cells];
+	int *ncen_send    = new int[num_cells];
 
       // assign tally data to arrays
+	int ncentot = 0;
 	for (int i = 0; i < num_cells; i++)
-	    tally_send[i] = tally->get_energy_dep(i+1);
+	{
+	    edep_send[i] = tally->get_energy_dep(i+1);
+	    ncen_send[i] = tally->get_new_ncen(i+1);
+	    ncentot     += ncen_send[i];
+	}
+	Check (ncentot == tally->get_new_ncen_tot());
 
       // send tally to master
 	Send (num_cells, 0, 300);
-	Send (tally_send, num_cells, 0, 301);
+	Send (edep_send, num_cells, 0, 301);
+	Send (ncen_send, num_cells, 0, 302);
 
       // send back the Census buffers created on the processor
 	buffer->send_buffer(*new_census, 0);
 
       // release memory
-	delete [] tally_send;
+	delete [] edep_send;
+	delete [] ncen_send;
 	kill (tally);
 	kill (new_census);
     }
@@ -335,48 +369,66 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
     if (!node())
     {
       // accumulated tally data from all processors
-	vector<double> accumulate_tally(global_state->num_cells(), 0.0);
-	ofstream cenfile("census");
+	vector<double> accumulate_edep(global_state->num_cells(), 0.0);
+	vector<int> accumulate_ncen(global_state->num_cells());
+	fill (accumulate_ncen.begin(), accumulate_ncen.end(), 0);
+
+      // census container that is presently in the Global_State
+	SP<Particle_Buffer<PT>::Census> census = global_state->get_census();
+	Check (census->size() == 0);
 
       // loop through processors and get stuff
+	int ncentot = 0;
 	for (int i = 1; i < nodes(); i++)
 	{
 	    int num_cells;
 	    Recv (num_cells, i, 300);
 	    Check (num_cells == parallel_builder->num_cells(i));
-	    double *tally_recv = new double[num_cells];
-	    Recv (tally_recv, num_cells, i, 301);
+	    double *edep_recv = new double[num_cells];
+	    int *ncen_recv    = new int[num_cells];
+	    Recv (edep_recv, num_cells, i, 301);
+	    Recv (ncen_recv, num_cells, i, 302);
 
 	  // assign data to accumulate_tally by looping over IMC cells
 	    for (int cell = 1; cell <= num_cells; cell++)
 	    {
 		int global_cell = parallel_builder->master_cell(cell, i);
-		accumulate_tally[global_cell-1] += tally_recv[cell-1];
+		accumulate_edep[global_cell-1] += edep_recv[cell-1];
+		accumulate_ncen[global_cell-1] += ncen_recv[cell-1];
 	    }
 
 	  // reclaim storage
-	    delete [] tally_recv;
+	    delete [] edep_recv;
+	    delete [] ncen_recv;
 	    
 	  // receive the census particles from the remote processors
 	    SP<Particle_Buffer<PT>::Comm_Buffer> temp_buffer = 
 		buffer->recv_buffer(i);
+	    ncentot += temp_buffer->n_part;
 
-	  // write the buffers to an output file
-	    buffer->write_census(cenfile, *temp_buffer);
+	  // write the buffers to the census container
+	    buffer->add_to_bank(*temp_buffer, *census);
 	}
      
       // add the results from the master processor
+	int ncenmaster = 0;
 	for (int cell = 1; cell <= tally->num_cells(); cell++)
 	{
 	    int global_cell = parallel_builder->master_cell(cell, 0);
-	    accumulate_tally[global_cell-1] += tally->get_energy_dep(cell);
+	    accumulate_edep[global_cell-1] += tally->get_energy_dep(cell);
+	    accumulate_ncen[global_cell-1] += tally->get_new_ncen(cell);
+	    ncenmaster += tally->get_new_ncen(cell);
 	}
+	Check (ncenmaster == tally->get_new_ncen_tot());
 
-      // write the master processor census buffer to the census file
-	buffer->write_census(cenfile, *new_census);
+      // write the master processor census buffer to the census container
+	ncentot += new_census->n_part;
+	buffer->add_to_bank(*new_census, *census);
+	Check (ncentot == census->size());
 
       // update the global state
-	global_state->update_T(accumulate_tally);
+	global_state->update_T(accumulate_edep);
+	global_state->update_cen(accumulate_ncen);
 
       // print out the timestep results
 	cout << endl;

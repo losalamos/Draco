@@ -118,7 +118,7 @@ public:
   // source passing functionality
     template<class PT> SP<Source<MT> > 
     send_Source(SP<MT>, SP<Mat_State<MT> >, SP<Rnd_Control>, 
-		const Source_Init<MT> &, const Particle_Buffer<PT> &); 
+		const Source_Init<MT> &, const Particle_Buffer<PT> &);  
     template<class PT> SP<Source<MT> > 
     recv_Source(SP<MT>, SP<Mat_State<MT> >, SP<Rnd_Control>,
 		const Particle_Buffer<PT> &); 

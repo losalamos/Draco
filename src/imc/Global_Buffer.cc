@@ -20,21 +20,29 @@ using std::setw;
 // constructor
 //---------------------------------------------------------------------------//
 
-template<class MT>
-Global_Buffer<MT>::Global_Buffer(const MT &mesh, const Mat_State<MT>
-				 &material, const Source_Init<MT> &source)
+template<class MT, class PT>
+Global_Buffer<MT,PT>::Global_Buffer(const MT &mesh, const Mat_State<MT>
+				    &material, const Source_Init<MT> &source)
     : temperature(mesh.num_cells()), Cv(mesh.num_cells()),
-      evol_net(mesh.num_cells()) 
+      evol_net(mesh.num_cells()) , ncen(mesh.num_cells()),
+      ecen(mesh.num_cells()) 
 {
     Require (mesh.num_cells() == material.num_cells());
 
   // assign the data
+    int ncentot = 0;
     for (int cell = 1; cell <= mesh.num_cells(); cell++)
     {
 	temperature[cell-1] = material.get_T(cell);
 	Cv[cell-1]          = material.get_Cv(cell);
 	evol_net[cell-1]    = source.get_evol_net(cell);
+	ncen[cell-1]        = source.get_ncen(cell);
+	ncentot            += ncen[cell-1];
     }
+    census = source.get_census();
+    
+    Ensure (census);
+    Ensure (census->size() == ncentot);
 }
 
 //---------------------------------------------------------------------------//
@@ -42,8 +50,8 @@ Global_Buffer<MT>::Global_Buffer(const MT &mesh, const Mat_State<MT>
 //---------------------------------------------------------------------------//
 // update the material temperatures
 
-template<class MT>
-void Global_Buffer<MT>::update_T(const vector<double> &tally)
+template<class MT, class PT>
+void Global_Buffer<MT,PT>::update_T(const vector<double> &tally)
 {
     Require (tally.size() == temperature.size());
 
@@ -59,10 +67,23 @@ void Global_Buffer<MT>::update_T(const vector<double> &tally)
 }
 
 //---------------------------------------------------------------------------//
+// update the number of census particles per cell
+
+template<class MT, class PT>
+void Global_Buffer<MT,PT>::update_cen(const vector<int> &cell_census)
+{
+    Require (cell_census.size() == ncen.size());
+    
+  // get new nunbers of census particles per cell
+    for (int i = 0; i < ncen.size(); i++)
+	ncen[i]  = cell_census[i];
+}
+
+//---------------------------------------------------------------------------//
 // update a mat_state
 
-template<class MT>
-void Global_Buffer<MT>::update_Mat(Mat_State<MT> &mat) const
+template<class MT, class PT>
+void Global_Buffer<MT,PT>::update_Mat(Mat_State<MT> &mat) const
 {
     Require (num_cells() == mat.num_cells());
 
@@ -72,12 +93,27 @@ void Global_Buffer<MT>::update_Mat(Mat_State<MT> &mat) const
 }
 
 //---------------------------------------------------------------------------//
+// update the census part of Source_Init
+
+template<class MT, class PT>
+void Global_Buffer<MT,PT>::update_Source_Init(Source_Init<MT> &source) const 
+{
+    Require (num_cells() == source.num_cells());
+
+  // update the census part of Source_Init
+    for (int cell = 1; cell <= num_cells(); cell++)
+	source.set_ncen(cell, ncen[cell-1]);
+    source.set_ncentot(census->size());
+    source.set_census(census);
+}
+
+//---------------------------------------------------------------------------//
 // print diagnostics
 //---------------------------------------------------------------------------//
 // output the Global Buffer
 
-template<class MT>
-void Global_Buffer<MT>::print(ostream &out) const
+template<class MT, class PT>
+void Global_Buffer<MT,PT>::print(ostream &out) const
 {
     out << setw(10) << setiosflags(ios::right) << "Cell"
 	<< setw(20) << setiosflags(ios::right) << "Temperature"
@@ -89,6 +125,8 @@ void Global_Buffer<MT>::print(ostream &out) const
     {	
 	out << setw(10) << i+1 << setw(20) << temperature[i] << endl;
     }
+    out << setw(20) << setiosflags(ios::right) << "Census particles: "
+	<< setw(10) << census->size() << endl;
 }
 
 CSPACE

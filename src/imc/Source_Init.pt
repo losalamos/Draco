@@ -15,8 +15,8 @@ IMCSPACE
 
 instantiate class Source_Init<OS_Mesh>
 
-instantiate funcproto MT=OS_Mesh, IT=OS_Interface
-Source_Init<MT>::Source_Init(SP<IT>, SP<MT>)
+instantiate funcproto MT=OS_Mesh, IT=OS_Interface, PT=Particle<OS_Mesh>
+Source_Init<MT,PT>::Source_Init(SP<IT>, SP<MT>)
 
 CSPACE
 

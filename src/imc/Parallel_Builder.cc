@@ -411,10 +411,10 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
 
   // calculate and send census to processors
 
-  // open host census file
-    ifstream host_census("census");
-    if (!host_census)
-	Insist(0, "The host did not provide an initial census file!");
+  // get the census buffer
+    SP<Particle_Buffer<PT>::Census> old_census = sinit.get_census();
+    Check (old_census);
+    Check (old_census->size() == sinit.get_ncentot());
 
   // initialize counters for census read/write
     int total_placed = 0;
@@ -432,59 +432,59 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
     int proc_goto;
 
   // Census Particle Buffers
-    SP<Particle_Buffer<PT>::Census_Buffer> cenpart;
     vector<Particle_Buffer<PT>::Comm_Buffer> cen_buffer(nodes());
 
   // loop to read census particles and send them
-    do
+    while (old_census->size());
     {
-	cenpart = buffer.read_census(host_census);
-	if (cenpart)
+      // get a particle from the old census
+	SP<PT> particle = old_census->top();
+	old_census->pop();
+	total_read++;
+
+      // determine the cell for this particle
+	cell = particle->get_cell();
+
+      // in a cell, total number of census particles after which the
+      // leftover particles are placed
+	offset = (ncen2proc[cell-1] + 1) * ncenleft[cell-1];
+
+      // determine the processor to go to
+	if (num_placed_per_cell[cell-1] < offset)
+	    proc_index = num_placed_per_cell[cell-1] / 
+		(ncen2proc[cell-1] + 1); 
+	else
+	    proc_index = (num_placed_per_cell[cell-1] - offset) / 
+		ncen2proc[cell-1] + ncenleft[cell-1];
+	proc_goto = procs_per_cell[cell-1][proc_index];
+	buffer.buffer_particle(cen_buffer[proc_goto], *particle);
+
+      // increment some counters
+	num_placed_per_cell[cell-1]++;
+	num_placed_per_proc[proc_goto]++;
+	total_placed++;
+	num_to_send[proc_goto]++;
+
+      // send these guys out
+	if (num_to_send[proc_goto] ==
+	    Particle_Buffer<PT>::get_buffer_s())
 	{
-	    total_read++;
-	    cell = cenpart->cell;
-
-	  // in a cell, total number of census particles after which the
-	  // leftover particles are placed
-	    offset = (ncen2proc[cell-1] + 1) * ncenleft[cell-1];
-
-	  // determine the processor to go to
-	    if (num_placed_per_cell[cell-1] < offset)
-		proc_index = num_placed_per_cell[cell-1] / 
-		    (ncen2proc[cell-1] + 1); 
-	    else
-		proc_index = (num_placed_per_cell[cell-1] - offset) / 
-		    ncen2proc[cell-1] + ncenleft[cell-1];
-	    proc_goto = procs_per_cell[cell-1][proc_index];
-	    buffer.buffer_census(cen_buffer[proc_goto], *cenpart);
-
-	  // increment some counters
-	    num_placed_per_cell[cell-1]++;
-	    num_placed_per_proc[proc_goto]++;
-	    total_placed++;
-	    num_to_send[proc_goto]++;
-
-	  // send these guys out
-	    if (num_to_send[proc_goto] ==
-		Particle_Buffer<PT>::get_buffer_s())
+	    if (!proc_goto)
 	    {
-		if (!proc_goto)
-		{
-		  // if we are on the host fill up the census bank
-		    buffer.add_to_bank(cen_buffer[proc_goto], census_bank);
-		    Check (cen_buffer[proc_goto].n_part == 0);
-		    num_to_send[proc_goto] = 0;
-		}
-		else
-		{
-		  // if we are on an IMC processor send these guys
-		    buffer.send_buffer(cen_buffer[proc_goto], proc_goto);
-		    cen_buffer[proc_goto].n_part = 0;
-		    num_to_send[proc_goto] = 0;
-		}
+	      // if we are on the host fill up the census bank
+		buffer.add_to_bank(cen_buffer[proc_goto], census_bank);
+		Check (cen_buffer[proc_goto].n_part == 0);
+		num_to_send[proc_goto] = 0;
+	    }
+	    else
+	    {
+	      // if we are on an IMC processor send these guys
+		buffer.send_buffer(cen_buffer[proc_goto], proc_goto);
+		cen_buffer[proc_goto].n_part = 0;
+		num_to_send[proc_goto] = 0;
 	    }
 	}
-    } while (cenpart);
+    }
 	    
   // some Checks
     Check (total_placed == sinit.get_ncentot());
@@ -516,6 +516,9 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
 	Check (cen_buffer[proc].n_part == 0);
 	buffer.send_buffer(cen_buffer[proc], proc);
     }
+
+  // the old census should now be zero
+    Ensure (old_census->size() == 0);
 }
 
 //---------------------------------------------------------------------------//

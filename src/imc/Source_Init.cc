@@ -8,8 +8,6 @@
 
 #include "imc/Source_Init.hh"
 #include "imc/Global.hh"
-#include "imc/Particle.hh"
-#include "imc/Particle_Buffer.hh"
 #include "rng/Sprng.hh"
 #include "ds++/Assert.hh"
 #include <cmath>
@@ -35,9 +33,9 @@ using std::endl;
 //---------------------------------------------------------------------------//
 // initialization of member data in general constructor
 
-template<class MT>
+template<class MT, class PT>
 template<class IT>
-Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
+Source_Init<MT,PT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     : evol(mesh), evol_net(mesh), evoltot(0), ess(mesh), fss(mesh), 
       esstot(0), erad(mesh), eradtot(0), ncen(mesh), ncentot(0), nvol(mesh),
       nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), 
@@ -82,16 +80,16 @@ Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
 //---------------------------------------------------------------------------//
 // source initialyzer -- this is the main guy
 
-template<class MT>
-void Source_Init<MT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity, 
-				 SP<Mat_State<MT> > state, 
-				 SP<Rnd_Control> rcontrol, int cycle)
+template<class MT, class PT>
+void Source_Init<MT,PT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity, 
+				    SP<Mat_State<MT> > state, 
+				    SP<Rnd_Control> rcontrol, int cycle)
 {
   // check to make sure objects exist
-    Check (mesh);
-    Check (opacity);
-    Check (state);
-    Check (rcontrol);
+    Require (mesh);
+    Require (opacity);
+    Require (state);
+    Require (rcontrol);
 
   // calculate number of particles this cycle
     npwant = min(npmax, static_cast<int>(npnom + dnpdt * delta_t));
@@ -108,19 +106,27 @@ void Source_Init<MT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity,
 
   // calculate the slopes of T_electron^4
     calc_t4_slope(*mesh, *state);
+
+  // make sure a Census has been created
+    Ensure (census);
+    Ensure (ncentot == census->size());
 }
 
 //---------------------------------------------------------------------------//
 // private member functions used in Initialize
 //---------------------------------------------------------------------------//
 
-template<class MT>
-void Source_Init<MT>::calc_initial_census(const MT &mesh,
-					  const Opacity<MT> &opacity,
-					  const Mat_State<MT> &state,
-					  Rnd_Control &rcontrol)
+template<class MT, class PT>
+void Source_Init<MT,PT>::calc_initial_census(const MT &mesh,
+					     const Opacity<MT> &opacity,
+					     const Mat_State<MT> &state,
+					     Rnd_Control &rcontrol)
 {
   // calculate and write the initial census source
+    Require (!census);
+
+  // make the Census 
+    census = new Particle_Buffer<PT>::Census();
 
   // calc volume emission and surface source energies
     calc_source_energies(opacity, state);
@@ -138,9 +144,9 @@ void Source_Init<MT>::calc_initial_census(const MT &mesh,
 
 //---------------------------------------------------------------------------//
 
-template<class MT>
-void Source_Init<MT>::calc_source_energies(const Opacity<MT> &opacity, 
-					   const Mat_State<MT> &state)
+template<class MT, class PT>
+void Source_Init<MT,PT>::calc_source_energies(const Opacity<MT> &opacity, 
+					      const Mat_State<MT> &state)
 {
   // calc volume emission energy per cell, total
     calc_evol(opacity, state);
@@ -151,8 +157,8 @@ void Source_Init<MT>::calc_source_energies(const Opacity<MT> &opacity,
 
 //---------------------------------------------------------------------------//
 
-template<class MT>
-void Source_Init<MT>::calc_source_numbers(const Opacity<MT> &opacity)
+template<class MT, class PT>
+void Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity)
 {
   // for ss and volume emission, calculate numbers of particles, energy
   // weight, and energy loss due to inadequate sampling
@@ -207,9 +213,9 @@ void Source_Init<MT>::calc_source_numbers(const Opacity<MT> &opacity)
 // private member functions which calculate source parameters
 //---------------------------------------------------------------------------//
 
-template<class MT>
-void Source_Init<MT>::calc_evol(const Opacity<MT> &opacity,
-				const Mat_State<MT> &state)
+template<class MT, class PT>
+void Source_Init<MT,PT>::calc_evol(const Opacity<MT> &opacity,
+				   const Mat_State<MT> &state)
 {
   // reset evoltot
     evoltot = 0.0;
@@ -231,8 +237,8 @@ void Source_Init<MT>::calc_evol(const Opacity<MT> &opacity,
 //---------------------------------------------------------------------------//
 // caculate the total surface source and the surface source in each cell
     
-template<class MT>
-void Source_Init<MT>::calc_ess()
+template<class MT, class PT>
+void Source_Init<MT,PT>::calc_ess()
 {
   // reset esstot
     esstot = 0.0;
@@ -264,8 +270,8 @@ void Source_Init<MT>::calc_ess()
 //---------------------------------------------------------------------------//
 // calculate radiation energy in each cell and total radiation energy
 
-template<class MT>
-void Source_Init<MT>::calc_erad()
+template<class MT, class PT>
+void Source_Init<MT,PT>::calc_erad()
 {
       // reset eradtot
     eradtot = 0.0;
@@ -285,8 +291,8 @@ void Source_Init<MT>::calc_erad()
 //---------------------------------------------------------------------------//
 // calculate initial census particles per cell and total
 
-template<class MT>
-void Source_Init<MT>::calc_ncen_init()
+template<class MT, class PT>
+void Source_Init<MT,PT>::calc_ncen_init()
 {
   // first guess at census particles per cell
     Insist ((evoltot+esstot+eradtot) != 0, "You must specify some source!");
@@ -331,13 +337,10 @@ void Source_Init<MT>::calc_ncen_init()
 //---------------------------------------------------------------------------//
 // write the initial census
 	
-template<class MT>
-void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
+template<class MT, class PT>
+void Source_Init<MT,PT>::write_initial_census(const MT &mesh, 
+					      Rnd_Control &rcon) 
 {
-  // open census file and make Particle Buffer
-    ofstream cen_file("census");
-    Particle_Buffer<Particle<MT> > buffer(mesh, rcon);
-
   // we should not have made any Random numbers yet
     Require (RNG::rn_stream == 0);
 
@@ -361,10 +364,10 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 	    double ew = erad(cell) / ncen(cell);
 
 	  // create Particle
-	    Particle<MT> particle(r, omega, ew, cell, random);
+	    SP<PT> particle = new PT(r, omega, ew, cell, random);
 	    
-	  // write particle
-	    buffer.write_census(cen_file, particle);
+	  // write particle to census
+	    census->push(particle);
 	}
 
   // update the rn_stream constant
@@ -372,14 +375,15 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 
   // a final assertion
     Ensure (RNG::rn_stream == ncentot);
+    Ensure (census->size() == ncentot);
 }
 
 //---------------------------------------------------------------------------//
 // calculate slope of T_electron^4 using temporarily calc'd  edge t^4's.
 
-template<class MT>
-void Source_Init<MT>::calc_t4_slope(const MT &mesh, 
-				    const Mat_State<MT> &state)
+template<class MT, class PT>
+void Source_Init<MT,PT>::calc_t4_slope(const MT &mesh, 
+				       const Mat_State<MT> &state)
 {
     double t4_low;
     double t4_high;
@@ -467,8 +471,8 @@ void Source_Init<MT>::calc_t4_slope(const MT &mesh,
 //---------------------------------------------------------------------------//
 // print out the Source Initialization 
 
-template<class MT>
-void Source_Init<MT>::print(ostream &out) const
+template<class MT, class PT>
+void Source_Init<MT,PT>::print(ostream &out) const
 {
     out << "*** SOURCE INITIALIZATION ***" << endl;
     out << "-----------------------------" << endl;
