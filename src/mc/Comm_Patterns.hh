@@ -28,8 +28,8 @@ namespace rtt_mc
  * \brief Determine boundary cell communication patterns.
 
  * The Comm_Patterns class determines the boundary cell relationships between
- * domain discretized, spatial topologies.  In essence, the Comm_Patterns
- * give the following information:
+ * processors in a domain-decomposed topology.  The Comm_Patterns give the
+ * following information:
  
  * \arg what processors this processor shares boundary cells with;
  
@@ -39,14 +39,13 @@ namespace rtt_mc
  * \arg what cells another processor contains that this processor needs
  * information about
 
- * Essentially, the Comm_Patterns defines information that the processor
- * needs to do \i gather/scatter type operations.  This type of information
- * is only required in spatially domain decomposed topologies.  The
- * information contained in this class is closely related to the information
- * contained in the Topology classes.  However, the information contained
- * here is related to very specific topology-like information. Also, parallel
- * communication is required to generate the information; thus it belongs in
- * its own class.
+ * The Comm_Patterns class defines information that the processor needs for
+ * \i gather/scatter type operations.  This type of information is only
+ * required in spatially domain decomposed topologies.  The information
+ * contained in this class is closely related to the information contained in
+ * the Topology classes.  However, the information contained here is related
+ * to very specific topology-like information. Also, parallel communication
+ * is required to generate the information; thus it belongs in its own class.
 
  * Accessor functions to Comm_Patterns are in the form of constant iterators
  * to std::map data.  As such, the user can access the data by iterating
@@ -54,12 +53,12 @@ namespace rtt_mc
  * accessed by iterator->first and the cell list by iterator->second[i].
  * Because all accessor functions to this data in Comm_Patterns are const,
  * only map::const_iterator types are returned.  This ensures that clients
- * cannot modify the Comm_Patterns data through the iterators.  However, the
- * iterators themselves can be modified (ie Comm_Patterns::const_iterator i;
- * i++; is valid).  In summary, all accessing of the Comm_Patterns must be
- * done through const_iterator; expressions of the type
- * Comm_Patterns::iterator i = object.get_recv_begin() will be flagged as an
- * error at compile time.  See the examples for usage.
+ * cannot modify the Comm_Patterns data through the iterators. All accessing
+ * of the Comm_Patterns must be done through const_iterator; expressions of
+ * the type Comm_Patterns::iterator i = object.get_recv_begin() will be
+ * flagged as an error at compile time.  However, the iterators themselves
+ * can be modified (ie Comm_Patterns::const_iterator i; i++; is valid).  See
+ * the examples for usage.
 
  */
 /*!

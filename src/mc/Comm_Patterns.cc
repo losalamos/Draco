@@ -34,7 +34,7 @@ using std::vector;
  * \brief Build communication patterns between processor's boundary cells.
 
  * This function uses the Topology class to determine what processors a
- * processor interfacts with across its processor boundary. It calculates two
+ * processor interacts with across its processor boundary. It calculates two
  * information maps:
 
  * \arg map of processor/boundary cell data that the processor sends out to
@@ -43,10 +43,10 @@ using std::vector;
  * \arg map of processor/boundary cell data that the processor receives from
  * other processors.
 
- * The former data map is a list of boundary cells that live on other
- * processors.  For the current processor to perform work, it needs to know
- * where it can get data on the boundary cells.  This field tells it what
- * data will come from what processors.  The later field tells the current
+ * The former data map, or field, is a list of boundary cells that live on
+ * other processors.  For a processor to perform work, it needs to know where
+ * it can get data for its boundary cells.  This field tells it from which
+ * cells and processors data will come.  The latter field tells the current
  * processor what data it owns that it needs to send out to other processors
  * so that they may do their boundary work.  The former field requires
  * communication to calculate.  The later field can be calculated without
@@ -55,8 +55,8 @@ using std::vector;
  * We support three basic topology types: replication, DD, DD/replication.
  * If the topology is replication then no data is set because there are no
  * boundary cells.  If the topology is DD/replication then an assertion is
- * thrown because we do not support that topology fully yet.  Data maps for
- * full DD topologies are calculated.
+ * thrown because we do not support that topology fully yet.  Currently, only
+ * data maps for full DD topologies are calculated.
 
  */
 void Comm_Patterns::calc_patterns(SP_Topology topology)
@@ -71,14 +71,14 @@ void Comm_Patterns::calc_patterns(SP_Topology topology)
     {
 	// there are no boundary cells so we don't do anything here
 	Ensure (send_query_map.empty());
-	Ensure (send_query_map.empty());
+	Ensure (recv_query_map.empty());
 
 	return;
     }
     else if (topology->get_parallel_scheme() == "DD")
     {
 	// we can use a simple function to calculate the boundary cell maps
-	// because we have exact one-one communication
+	// because we have exact one-to-one communication
 	calc_recv_map_DD(topology);
 
 	// do the requisite communication to calculate the send maps after
@@ -131,7 +131,7 @@ void Comm_Patterns::calc_recv_map_DD(SP_Topology topology)
 	// determine global cell index of the boundary cell
 	global_cell = topology->boundary_to_global(bc, C4::node());
 
-	// find out what processor its on; for full DD each cell is only on
+	// find out what processor it's on; for full DD each cell is only on
 	// one processor so the vector list of cells that is returned from
 	// topology will only have one element in it
 	processor = topology->get_procs(global_cell).front();
@@ -142,7 +142,7 @@ void Comm_Patterns::calc_recv_map_DD(SP_Topology topology)
 	insert_indicator = recv_query_map.insert(entry);
 
 	// if the data wasn't inserted because this processor key already
-	// exists in the map then add teh cell to the processor cell data
+	// exists in the map then add the cell to the processor cell data
 	// listing
 	if (!insert_indicator.second)
 	    recv_query_map[processor].push_back(global_cell);
@@ -155,7 +155,7 @@ void Comm_Patterns::calc_recv_map_DD(SP_Topology topology)
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Calcualte send_query_map patterns for DD topologies.
+ * \brief Calculate send_query_map patterns for DD topologies.
  */
 void Comm_Patterns::calc_send_map_DD(SP_Topology topology)
 {
@@ -173,9 +173,9 @@ void Comm_Patterns::calc_send_map_DD(SP_Topology topology)
     vector<C4_Req> size_recv(num_bproc);
     vector<C4_Req> cells_recv(num_bproc);
 
-    // data that we receive from the processors we communicate with telling
-    // us the number of cells that are on this processor that they need
-    // information about and what (global)cells those are
+    // information that we receive from the processors we communicate with
+    // telling us the number of cells that are on this processor that they
+    // need information about and what (global)cells those are
     vector<int>   number_of_cells(num_bproc);
     vector<int *> list_of_cells(num_bproc);
 
@@ -183,7 +183,7 @@ void Comm_Patterns::calc_send_map_DD(SP_Topology topology)
     const_iterator recv_begin = recv_query_map.begin();
     const_iterator recv_end   = recv_query_map.end();
 
-    // post receives from other processors for the number of cells that they
+    // post receives to other processors for the number of cells that they
     // require information about and send out to those processors the number
     // of cells that we need information from them about
     int index = 0;
@@ -192,11 +192,11 @@ void Comm_Patterns::calc_send_map_DD(SP_Topology topology)
     for (const_iterator i = recv_begin; i != recv_end; i++)
     {
 	// determine the processor that we are communicating with and the
-	// number of cells that reside on that processor
+	// number of our boundary cells that reside on that processor
 	processor  = i->first;
 	query_size = i->second.size();
 
-	// post receives from that processor
+	// post receive to that processor
 	RecvAsync(size_recv[index], &number_of_cells[index], 1, processor,
 		  600);
 
@@ -228,7 +228,7 @@ void Comm_Patterns::calc_send_map_DD(SP_Topology topology)
     Check (finished == size_recv.size());
 
     // post receives for the list of cells that we will receive from each
-    // processor; send out the list of cell data that we require from each
+    // processor; send out the list of cells that we require from each
     // processor
     index = 0;
     for (const_iterator i = recv_begin; i != recv_end; i++)
@@ -259,7 +259,7 @@ void Comm_Patterns::calc_send_map_DD(SP_Topology topology)
     }
     Check (index == recv_query_map.size());
 
-    // data we will need to make the send_query_map
+    // information we will need to make the send_query_map
     const_iterator       iter;
     proc_pair            entry;   
     pair<iterator, bool> insert_indicator;
