@@ -196,7 +196,7 @@ public:
     inline double volume(int) const;
     vector<int> get_surcells(string) const;
     int get_bndface(string, int) const;
-    inline vector<double> get_vertices(int, int) const;
+    inline CCVF_a get_vertices(int, int) const;
 
   // End_Verbatim 
   // End_Doc 
@@ -320,11 +320,40 @@ inline vector<double> OS_Mesh::get_normal(int cell, int face) const
     vector<double> normal(coord->get_sdim(), 0.0);
 	
   // calculate normal based on face, (-x, +x, -y, +y, -z, +z), only
-  // one coordinate is non-zero
+  // one coordinate is non-zero    
     normal[(face-1)/2] = pow(-1.0, face);
 
   // return the normal
     return normal;
+}
+
+inline OS_Mesh::CCVF_a OS_Mesh::get_vertices(int cell, int face) const
+{
+  // determine the vertices along a cell-face
+
+  // return vertices
+    CCVF_a ret_vert(coord->get_dim());
+
+  // determine axis dimension of surface (x=1, y=2, z=3)
+    int axis = (face + 1)/2;
+    double plane;
+    if (2*axis - 1 == face)
+	plane = min(axis, cell);
+    else
+	plane = max(axis, cell);
+
+  // loop over vertices in cell and get the vertices that are in the plane
+    for (int i = 0; i < cell_pair[cell-1].size(); i++)
+	if (plane == vertex[axis-1][cell_pair[cell-1][i]-1])
+	    for (int d = 0; d < coord->get_dim(); d++)
+		ret_vert[d].push_back(vertex[d][cell_pair[cell-1][i]-1]);
+
+  // asserts
+    for (int d = 0; d < coord->get_dim(); d++)
+	assert (ret_vert[0].size() == ret_vert[d].size());
+
+  // return vector of vertices
+    return ret_vert;
 }
 
 CSPACE

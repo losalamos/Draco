@@ -48,7 +48,8 @@ private:
     double evoltot;
 
   // surface source variables
-    typename MT::CCVF<double> ess;
+    typename MT::CCSF<double> ess;
+    typename MT::CCSF<int> fss;
     double esstot;
 
 

@@ -42,9 +42,9 @@ class OS_Builder
 {
 private:
   // data from Parser needed to build mesh
-    
-  // SP to interface object
-    SP<OS_Interface> interface;
+
+  // coordinate system string
+    string coord_system;
   // number of fine_cells along each dimension
     OS_Mesh::CCVF_a fine_edge;
   // boundary conditions
@@ -63,14 +63,32 @@ private:
   // build Mesh helper functions
     SP<OS_Mesh> build_2DMesh(SP<Coord_sys>, Layout &);
     SP<OS_Mesh> build_3DMesh(SP<Coord_sys>, Layout &);
+
+  // Begin_Doc os_builder-int.tex
+  // Begin_Verbatim 
+
 public:
   // constructor
-    explicit OS_Builder(SP<OS_Interface> interface_) 
-	: interface(interface_), fine_edge(0), bnd_cond(0) {}
+    inline explicit OS_Builder(SP<OS_Interface>);
 
   // build Mesh member functions
     SP<OS_Mesh> build_Mesh();
+    
+  // End_Verbatim 
+  // End_Doc 
 };
+
+//---------------------------------------------------------------------------//
+// inline functions for OS_Builder
+//---------------------------------------------------------------------------//
+
+inline OS_Builder::OS_Builder(SP<OS_Interface> interface)
+{
+  // get data arrays from OS_Interface needed to build OS_Mesh
+    coord_system = interface->get_coordinates();
+    fine_edge    = interface->get_fine_edge();
+    bnd_cond     = interface->get_boundaries();
+}
 
 CSPACE
 

@@ -44,6 +44,9 @@ private:
     vector<double> kappa;
     vector<double> temperature;
 
+  // Begin_Doc opacity_builder-int.tex
+  // Begin_Verbatim 
+
 public:
   // templated explicit constructor depends on interface type (IT)
     template<class IT>
@@ -56,6 +59,9 @@ public:
     
   // build Opacity helper functions
     SP< Opacity<MT> > build_Opacity();	
+
+  // End_Verbatim 
+  // End_Doc 
 };
     
 CSPACE

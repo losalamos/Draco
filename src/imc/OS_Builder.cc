@@ -31,10 +31,6 @@ SP<OS_Mesh> OS_Builder::build_Mesh()
     SP<Coord_sys> coord;
     SP<Layout> layout;
     SP<OS_Mesh> return_mesh;
-
-  // get data arrays from OS_Interface needed to build OS_Mesh
-    fine_edge = interface->get_fine_edge();
-    bnd_cond  = interface->get_boundaries();
     
   // build mesh-independent objects
     coord  = build_Coord();
@@ -190,9 +186,6 @@ SP<OS_Mesh> OS_Builder::build_3DMesh(SP<Coord_sys> coord, Layout &layout)
 //---------------------------------------------------------------------------//
 SP<Coord_sys> OS_Builder::build_Coord()
 {
-  // get coordinate system from OS_Interface
-    string coord_system = interface->get_coordinates();
-
   // build coordinate system
     SP<Coord_sys> coord;
     if (coord_system == "xy" || coord_system == "XY")

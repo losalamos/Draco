@@ -134,20 +134,31 @@ void Source_Init<MT>::calc_evol(const Opacity<MT> &opacity,
 template<class MT>
 void Source_Init<MT>::calc_ess()
 {
-  // variables
-    int dimension = ess.Mesh().Coord().Get_dim();
-    int num_cells = ess.Mesh().Num_cells();
+  // caculate the total surface source and the surface source in each cell
     
-  // calculate bnd surfaces
-    for (int i = 0; i < ss_pos.size(); i++)
+  // reset esstot
+
+  // loop over surface sources in problem
+    for (int ss = 0; ss < ss_pos.size(); ss++)
     {
-      // get cells along specified boundary surface
-	vector<int> ss_cells = ess.Mesh().Get_surcells(ss_pos[i]);
+	vector<int> surcells = ess.get_Mesh().get_surcells(ss_pos[ss]);
+	for (int sc = 0; sc < surcells.size(); sc++)
+	{      
+	  // make sure this cell doesn't already have a surface source
+	    assert (fss(surcells[sc]) == 0);
 
-      // calculate the ss_temp in each of those cells and accumulate
-	for (int j = 0; j < ss_cells.size(); j++)
+	  // assign energy to surface source cell
+	    ess(surcells[sc]) = ss_temp[ss];
 
-	
+	  // assign source face to surface source cell
+	    fss(surcells[sc]) = fss.get_Mesh().
+		get_bndface(ss_pos[ss], surcells[sc]);
+
+	  // accumulate esstot
+	    esstot += ess(surcells[sc]);
+	}
+    }
+}   
 
 CSPACE
 
