@@ -151,7 +151,8 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 
 #include "c4/global.hh"
 
-void dump( const Mesh_XYZ::cell_array& data, char *name )
+template<class T>
+void dump( const Mesh_XYZ::cell_array<T>& data, char *name )
 {
     cout << "dumping a Mesh_XYZ::cell_array: " << name << endl;
     {

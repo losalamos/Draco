@@ -131,38 +131,38 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator end() const { return data.end(); }
 
         int size() const { return data.size(); }
-
     };
 
-    class cell_array : public xm::Indexable<double,cell_array>
+    template<class T>
+    class cell_array : public xm::Indexable< T, cell_array<T> >
     {
-        Mat1<double> data;
+        Mat1<T> data;
 
 	cell_array( const Mesh_XYZ *m ) : data( m->get_ncp() ) {}
 
       public:
-        typedef dsxx::Mat1<double>::iterator iterator;
-        typedef dsxx::Mat1<double>::const_iterator const_iterator;
+        typedef dsxx::Mat1<T>::iterator iterator;
+        typedef dsxx::Mat1<T>::const_iterator const_iterator;
 
 	cell_array( const SP<Mesh_XYZ>& m ) : data( m->get_ncp() ) {}
 
-        cell_array& operator=( double x )
+        cell_array& operator=( T x )
         {
             data = x;
             return *this;
         }
 
         template<class X>
-        cell_array& operator=( const xm::Xpr< double, X, cell_array >& x )
+        cell_array& operator=( const xm::Xpr< T, X, cell_array >& x )
         {
             return assign_from( x );
         }
 
-        double operator()( int i ) const { return data(i); }
-        double& operator()( int i ) { return data(i); }
+        T operator()( int i ) const { return data(i); }
+        T& operator()( int i ) { return data(i); }
 
-        double operator[]( int i ) const { return data(i); }
-        double& operator[]( int i ) { return data(i); }
+        T operator[]( int i ) const { return data(i); }
+        T& operator[]( int i ) { return data(i); }
 
         iterator begin() { return data.begin(); }
         iterator end() { return data.end(); }
@@ -179,7 +179,7 @@ class Mesh_XYZ : private XYZ_Mapper
     Mat1<double> xc, yc, zc;
     Mat1<double> xf, yf, zf;
     double       dx, dy, dz;
-    cell_array vc;
+    cell_array<double> vc;
     Mat1<double> xA, yA, zA;
 
     fcdsf xF, yF, zF;
@@ -216,12 +216,13 @@ class Mesh_XYZ : private XYZ_Mapper
     const Mat1<double>& get_yA() const { return yA; }
     const Mat1<double>& get_zA() const { return zA; }
 
-    const cell_array& get_vc() const { return vc; }
+    const cell_array<double>& get_vc() const { return vc; }
 
     const int *get_diag_offsets() const { return diags; }
 };
 
-void dump( const Mesh_XYZ::cell_array& data, char *name );
+template<class T>
+void dump( const Mesh_XYZ::cell_array<T>& data, char *name );
 
 #endif                          // __mesh_Mesh_XYZ_hh__
 
