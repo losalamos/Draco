@@ -1,4 +1,4 @@
-This is TeX, Version 3.14159 (C version 6.1) (format=latex 98.2.23)  26 AUG 1999 17:07
+This is TeX, Version 3.14159 (C version 6.1) (format=latex 98.2.23)  27 AUG 1999 11:05
 **lanl82699.tex
 (lanl82699.tex
 LaTeX2e <1995/12/01> patch level 1
@@ -172,7 +172,7 @@ Overfull \hbox (16.99544pt too wide) in paragraph at lines 69--69
 
 [1
 
-] [2] (lanl82699.aux) ) 
+] [2] [3] (lanl82699.aux) ) 
 Here is how much of TeX's memory you used:
  1557 strings out of 10912
  15943 string characters out of 72308
@@ -182,4 +182,4 @@ Here is how much of TeX's memory you used:
  14 hyphenation exceptions out of 607
  28i,11n,24p,313b,265s stack positions out of 300i,40n,60p,3000b,4000s
 
-Output written on lanl82699.dvi (2 pages, 5444 bytes).
+Output written on lanl82699.dvi (3 pages, 6552 bytes).
