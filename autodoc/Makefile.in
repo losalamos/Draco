@@ -14,6 +14,7 @@ INSTALL = @INSTALL@
 
 prefix = @prefix@
 srcdir = @srcdir@
+doxygen_extras = @doxygen_extras@
 installdirs = ${prefix}/html ${prefix}/latex
 
 ##---------------------------------------------------------------------------##
@@ -30,6 +31,18 @@ html latex:
 		cp ${srcdir}/html/draco.gif ${prefix}/html; \
                 cp ${srcdir}/html/doxygen.png ${prefix}/html; \
 	        cp ${srcdir}/html/draco.css ${prefix}/html; \
+		for dir in ${doxygen_extras}; \
+		do \
+			files=`ls $${dir}` ; \
+			dir_name=`dirname $${dir}` ; \
+			base_name=`basename $${dir_name}` ; \
+			mkdir -p ${prefix}/html/$${base_name}; \
+			for file in $${files} ; \
+			do \
+				cp -f $${dir}/$${file} \
+				  ${prefix}/html/$${base_name}/; \
+			done \
+		done \
 	fi
 
 install:
@@ -57,8 +70,8 @@ reconfigure:
 clean: forced-clean
 
 forced-clean:
-	-rm -f ${prefix}/html/*
-	-rm -f ${prefix}/latex/*
+	-rm -rf ${prefix}/html/*
+	-rm -rf ${prefix}/latex/*
 
 mostlyclean: clean
 

@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="doxygen_config.in"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS DOXYGEN_PATH doxygen_input doxygen_examples latex_yes_no dotpath number LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS DOXYGEN_PATH doxygen_input doxygen_examples doxygen_extras latex_yes_no dotpath number LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1274,6 +1274,7 @@ fi
 doxygen_input=''
 doxygen_examples=''
 doxygen_dirs=''
+doxygen_extras=''
 
 for dir in $dirs;
 do
@@ -1281,6 +1282,9 @@ do
        doxygen_dirs="${dir} ${doxygen_dirs}"
        doxygen_input="${doxygen_src}/${dir} ${doxygen_input}"
        doxygen_examples="${doxygen_src}/${dir}/test ${doxygen_examples}"
+       if test -d $doxygen_src/$dir/autodoc ; then
+          doxygen_extras="${doxygen_src}/${dir}/autodoc ${doxygen_extras}"
+       fi
    fi
 done
 
@@ -1311,6 +1315,7 @@ echo $ECHO_N "checking \"draco release number\"... $ECHO_C" >&6
 number=`/bin/sh ../tools/draco --version`
 echo "$as_me:$LINENO: result: $number" >&5
 echo "${ECHO_T}$number" >&6
+
 
 
 
@@ -1959,6 +1964,7 @@ s,@LIBS@,$LIBS,;t t
 s,@DOXYGEN_PATH@,$DOXYGEN_PATH,;t t
 s,@doxygen_input@,$doxygen_input,;t t
 s,@doxygen_examples@,$doxygen_examples,;t t
+s,@doxygen_extras@,$doxygen_extras,;t t
 s,@latex_yes_no@,$latex_yes_no,;t t
 s,@dotpath@,$dotpath,;t t
 s,@number@,$number,;t t

@@ -35,6 +35,7 @@ fi
 doxygen_input=''
 doxygen_examples=''
 doxygen_dirs=''
+doxygen_extras=''
 
 for dir in $dirs;
 do
@@ -42,6 +43,9 @@ do
        doxygen_dirs="${dir} ${doxygen_dirs}"
        doxygen_input="${doxygen_src}/${dir} ${doxygen_input}"
        doxygen_examples="${doxygen_src}/${dir}/test ${doxygen_examples}"
+       if test -d $doxygen_src/$dir/autodoc ; then
+          doxygen_extras="${doxygen_src}/${dir}/autodoc ${doxygen_extras}"
+       fi
    fi
 done
 
@@ -72,6 +76,7 @@ AC_MSG_RESULT($number)
 
 AC_SUBST(doxygen_input)
 AC_SUBST(doxygen_examples)
+AC_SUBST(doxygen_extras)
 AC_SUBST(latex_yes_no)
 AC_SUBST(dotpath)
 AC_SUBST(number)
