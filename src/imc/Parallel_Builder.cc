@@ -942,9 +942,9 @@ SP<MT> Parallel_Builder<MT>::send_Mesh(const MT &mesh)
   // let us pass the vertex and cell_pairings, ie. the cells
     send_cells(mesh, host_vertex, host_cell_pair);
 
-  // build the new mesh on the host
+  // build the new mesh on the host, we assume it is a submesh
     host_mesh = new OS_Mesh(host_coord, host_layout, host_vertex,
-			    host_cell_pair);
+			    host_cell_pair, true);
     return host_mesh;
 }
 
@@ -973,9 +973,9 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
     typename MT::CCVF_d vertex    = recv_vertex();
     typename MT::CCVF_i cell_pair = recv_cellpair();
 
-  // build mesh
+  // build mesh, we assume that this is a submesh!!!
   // SOLARIS MPICH fails at this point
-    return_mesh = new MT(coord, layout, vertex, cell_pair);
+    return_mesh = new MT(coord, layout, vertex, cell_pair, true);
 
   // return mesh
     return return_mesh;
