@@ -37,7 +37,7 @@ class T3_MatVec : public PCG_MatVec<T>, private C4::NodeInfo {
     ~T3_MatVec();
 
 // Get A somehow else.  Then compute b = A x.
-    void MatVec( Mat1<T>& b, Mat1<T>& x );
+    void MatVec( Mat1<T>& b, const Mat1<T>& x );
 
     int get_iterations() const { return its; }
 };

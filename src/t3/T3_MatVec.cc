@@ -62,7 +62,7 @@ T3_MatVec<T>::T3_MatVec( Test_Prob *p )
 //---------------------------------------------------------------------------//
 
 template<class T>
-void T3_MatVec<T>::MatVec( Mat1<T>& b, Mat1<T>&x )
+void T3_MatVec<T>::MatVec( Mat1<T>& b, const Mat1<T>& x )
 {
     its++;
     char buf[80];
