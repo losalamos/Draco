@@ -38,12 +38,12 @@ void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
 
     ofstream output("try.dat");
 
-    output << "Coordinate System: " << mesh.Coord().Get_coord() << endl;
-    output << "Mesh Size: " << mesh.Num_cells() << endl;
+    output << "Coordinate System: " << mesh.get_Coord().get_Coord() << endl;
+    output << "Mesh Size: " << mesh.num_cells() << endl;
     output << endl;
 
-    for (int cell = 1; cell <= mesh.Num_cells(); cell++)
-	mesh.Print(output, cell);
+    for (int cell = 1; cell <= mesh.num_cells(); cell++)
+	mesh.print(output, cell);
     output << endl;
 
     output << mat;
@@ -52,9 +52,9 @@ void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
     output << opacity;
     output << endl;
 
-    output << "Mesh:      " << mesh.Num_cells() << endl;
-    output << "Opacity:   " << opacity.Num_cells() << endl;
-    output << "Mat_State: " << mat.Num_cells() << endl;
+    output << "Mesh:      " << mesh.num_cells() << endl;
+    output << "Opacity:   " << opacity.num_cells() << endl;
+    output << "Mat_State: " << mat.num_cells() << endl;
 }
 
 template<class MT>
@@ -69,13 +69,13 @@ void Run_Particle(const MT &mesh, const Opacity<MT> &opacity, long seed)
 	new Particle<MT>::Diagnostic(output, true);
 
   // initialize particle
-    Particle<MT> particle(mesh, seed, 1.0, 10.0);
-    assert (particle.Status());
+    Particle<MT> particle(mesh, seed, 1.0);
+    assert (particle.status());
 
   // origin and source
     
-    vector<double> origin(mesh.Coord().Get_dim());   
-    vector<double> source(mesh.Coord().Get_sdim());
+    vector<double> origin(mesh.get_Coord().get_dim());   
+    vector<double> source(mesh.get_Coord().get_sdim());
 
     for (int i = 0; i < origin.size(); i++)
     {
@@ -90,13 +90,13 @@ void Run_Particle(const MT &mesh, const Opacity<MT> &opacity, long seed)
     cout << endl;
     
   // source
-    particle.Source(origin, source, mesh);
+    particle.source(origin, source, mesh);
 
   // transport
-    particle.Transport(mesh, opacity, check);
+    particle.transport_IMC(mesh, opacity, check);
 
   // assert that particle is indeed dead
-    assert (!particle.Status());
+    assert (!particle.status());
 }
 
 main()
@@ -114,26 +114,26 @@ main()
 
       // run the interface parser
 	SP<OS_Interface> interface = new OS_Interface(infile);
-	interface->Parser();
+	interface->parser();
 
       // initialize the mesh builder and build mesh
 	OS_Builder os_build(interface);
-	mesh = os_build.Build_Mesh();
+	mesh = os_build.build_Mesh();
 
       // initialize the Opacity builder and build state 
 	Opacity_Builder<OS_Mesh> opacity_build(interface, mesh);
-	mat_state = opacity_build.Build_Mat();
-	opacity   = opacity_build.Build_Opacity();
+	mat_state = opacity_build.build_Mat();
+	opacity   = opacity_build.build_Opacity();
     }
 
   // mesh diagnostics
     Builder_diagnostic(*mesh, *mat_state, *opacity);
 
-    for (int cell = 1; cell <= mesh->Num_cells(); cell++)
-	cout << cell << " " << mesh->Volume(cell) << endl;
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	cout << cell << " " << mesh->volume(cell) << endl;
 
-//     long seed = -345632;
-//     Run_Particle(*mesh, *opacity, seed);
+    long seed = -345632;
+    Run_Particle(*mesh, *opacity, seed);
 }
 
 
