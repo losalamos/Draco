@@ -12,8 +12,8 @@
 //===========================================================================//
 // class OS_Builder - 
 //
-// Purpose      : builds an OS_Mesh object, parses the input file, 
-//                redistributes the Mesh for parallel purposes
+// Purpose : builds an OS_Mesh object, parses the input file, 
+//           redistributes the Mesh for parallel purposes
 //
 // revision history:
 // -----------------
@@ -46,23 +46,22 @@ private:
   // number of fine cells per coarse cell
     vector< vector<int> > fine_cells;
   // coarse edges
-    vector< vector<double> > coarse_edge;
+    OS_Mesh::CCVF_a coarse_edge;
   // fine cell edges
-    vector< vector<double> > fine_edge;
+    OS_Mesh::CCVF_a fine_edge;
   // boundary conditions
     vector<string> bnd_cond;
 
   // Parser member functions
+    void parser();
     void parser2D(ifstream &);
     void parser3D(ifstream &);
   // build Layout helper functions
-    SP<Layout> buildLayout(const Coord_sys &coord);
+    SP<Layout> buildLayout(const Coord_sys &);
     void Assign2D(Layout &);
     void Assign3D(Layout &);
   // build Coord_sys helper functions
     SP<Coord_sys> buildCoord();
-    SP<Coord_sys> buildXY();
-    SP<Coord_sys> buildXYZ();
   // build Mesh helper functions
     SP<OS_Mesh> build2DMesh(SP<Coord_sys>, const Layout &);
     SP<OS_Mesh> build3DMesh(SP<Coord_sys>, const Layout &);
@@ -71,8 +70,7 @@ public:
 	: input_file(infile), coord_system(""), fine_cells(0), 
 	  coarse_edge(0), fine_edge(0), bnd_cond(0)
     {}
-    SP<OS_Mesh> buildMesh();    
-    void parser();
+    SP<OS_Mesh> buildMesh();
 };
 
 CSPACE
