@@ -27,7 +27,7 @@ using rtt_plot2D::Plot2D;
 using rtt_plot2D::SetProps;
 
 void pause();
-void tstPlot2D();
+void tstPlot2D(const bool batch);
 int main(int argc, char *argv[]);
 
 //---------------------------------------------------------------------------//
@@ -40,13 +40,9 @@ void pause()
 //---------------------------------------------------------------------------//
 //---------------------------------------------------------------------------//
 void
-tstPlot2D()
+tstPlot2D(const bool batch)
 {
     string paramFile("tstPlot2D.par");
-
-    // Set batch to false if you want to call up the GUI
-    const bool batch = true;
-    //const bool batch = false;
 
     const int numGraphs = 3; // number of graphs in plot
     const int n = 10; // number of points in each set
@@ -91,7 +87,7 @@ tstPlot2D()
     // file.
 
     SetProps prop;
-    prop.line.color = 2; // red
+    prop.line.color = rtt_plot2D::COLOR_RED;
     p.setProps(0, 0, prop); // of graph 0, set 0
 
     if ( ! batch ) {
@@ -168,12 +164,17 @@ tstPlot2D()
 int
 main(int argc, char *argv[])
 {
+    bool batch = true;
+    
     // version tag
     for (int arg = 1; arg < argc; arg++) {
         if (string(argv[arg]) == "--version") {
             cout << argv[0] << ": version " << rtt_plot2D::release() << endl;
             return 0;
         }
+        else if (string(argv[arg]) == "--gui") {
+	    batch = false;
+	}
     }
 
     cout << endl;
@@ -181,7 +182,7 @@ main(int argc, char *argv[])
  
     try {
         // tests
-        tstPlot2D();
+        tstPlot2D(batch);
  
         // run python diff scrips
         system("python ./tstPlot2D_Diff.py");
