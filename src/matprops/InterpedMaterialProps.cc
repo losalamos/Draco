@@ -7,8 +7,11 @@
 //---------------------------------------------------------------------------//
 
 #include "matprops/InterpedMaterialProps.hh"
+
 #include "matprops/BilinearInterpGrid.hh"
 #include "matprops/BilinearInterpTable.hh"
+#include "matprops/MaterialPropsReader.hh"
+
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>
@@ -23,13 +26,106 @@ BEGIN_NS_XTM
 
 typedef InterpedMaterialProps IMP;
 
-#ifdef NOT_YET_DESIGNED
-IMP::InterpedMaterialProps(Units units_, MaterialPropsFactor &factory)
+IMP::InterpedMaterialProps(Units units_, const MaterialPropsReader &reader)
     : units(units_)
 {
-    vector<double> energyGrid = factory.getEnergyGrid();
+    int materialId;
+    
+    while (reader.getNextMaterial(materialId))
+    {
+	// Make sure that this materialId
+	// has not been used before.
+
+	Assert(materials.find(materialId) == materials.end());
+
+	vector<double> tempGrid;
+	vector<double> densityGrid;
+	reader.getTemperatureGrid(materialId, tempGrid);
+	reader.getDensityGrid(materialId, densityGrid);
+
+	SP<BilinearInterpGrid> spGrid(new BilinearInterpGrid(tempGrid,
+							     densityGrid));
+	int numGroups;
+	reader.getNumGroups(materialId, numGroups);
+
+	vector<double> energyUpperbounds(numGroups);
+	vector<double> energyLowerbounds(numGroups);
+
+	for (int i=0; i<numGroups; i++)
+	{
+	    reader.getEnergyUpperbounds(materialId, i, energyUpperbounds[i]);
+	    reader.getEnergyLowerbounds(materialId, i, energyLowerbounds[i]);
+	}
+
+	dsxx::Mat2<double> data(tempGrid.size(), densityGrid.size(), 0.0);
+	vector<BilinearInterpTable> tables(numGroups);
+
+	for (int i=0; i<numGroups; i++)
+	{
+	    reader.getSigmaTotal(materialId, i, data);
+
+	    tables[i] = BilinearInterpTable(spGrid, data);
+	}
+
+	GroupedTable sigmaTotal(energyUpperbounds, energyLowerbounds,
+				tables);
+	
+	for (int i=0; i<numGroups; i++)
+	{
+	    reader.getSigmaAbsorption(materialId, i, data);
+
+	    tables[i] = BilinearInterpTable(spGrid, data);
+	}
+
+	GroupedTable sigmaAbsorption(energyUpperbounds, energyLowerbounds,
+				tables);
+	
+	for (int i=0; i<numGroups; i++)
+	{
+	    reader.getSigmaEmission(materialId, i, data);
+
+	    tables[i] = BilinearInterpTable(spGrid, data);
+	}
+
+	GroupedTable sigmaEmission(energyUpperbounds, energyLowerbounds,
+				tables);
+
+	reader.getElectronIonCoupling(materialId, data);
+	BilinearInterpTable electronIonCoupling(spGrid, data);
+	
+	reader.getElectronConductionCoeff(materialId, data);
+	BilinearInterpTable electronConductionCoeff(spGrid, data);
+	
+	reader.getIonConductionCoeff(materialId, data);
+	BilinearInterpTable ionConductionCoeff(spGrid, data);
+	
+	reader.getElectronSpecificHeat(materialId, data);
+	BilinearInterpTable electronSpecificHeat(spGrid, data);
+	
+	reader.getIonSpecificHeat(materialId, data);
+	BilinearInterpTable ionSpecificHeat(spGrid, data);
+
+	typedef MatTabMap::value_type ValuePair;
+
+	std::pair<MatTabMap::iterator, bool> retval;
+
+	retval =
+	    materials.insert(ValuePair(materialId,
+				       MaterialTables(spGrid,
+						      sigmaTotal,
+						      sigmaAbsorption,
+						      sigmaEmission,
+						      electronIonCoupling,
+						      electronConductionCoeff,
+						      ionConductionCoeff,
+						      electronSpecificHeat,
+						      ionSpecificHeat)));
+	// Make sure the insertion succeeded.
+	
+	Assert(retval.second);
+	
+    }  // Loop over materials
 }
-#endif
 
 template<class FT, class FT2>
 IMP::MaterialStateField<FT> IMP::getMaterialState(const FT &density_,

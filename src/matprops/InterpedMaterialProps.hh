@@ -22,7 +22,12 @@
 #endif
 
 BEGIN_NS_XTM
-    
+
+// Forward Reference
+
+class MaterialPropsReader;
+
+
 //===========================================================================//
 // class InterpedMaterialProps - 
 //
@@ -78,9 +83,7 @@ class InterpedMaterialProps
     
   public:
 
-#ifdef NOT_YET_DESIGNED
-    InterpedMaterialProps(Units units_, MaterialPropsFactory &factory);
-#endif
+    InterpedMaterialProps(Units units_, const MaterialPropsReader &reader);
 
 
     // MANIPULATORS
@@ -242,12 +245,27 @@ struct InterpedMaterialProps::GroupedTable
 
     int ngroups;
 	
-	// all of these vectors are ngroups long.
+    // all of these vectors are ngroups long.
 	
     std::vector<double>              energyUpperbounds;
     std::vector<double>              energyLowerbounds;
     std::vector<BilinearInterpTable> tables;
-	
+
+    // CREATORS
+
+    GroupedTable() : ngroups(0) {};
+    
+    GroupedTable(const std::vector<double> &energyUpperbounds_,
+		 const std::vector<double> &energyLowerbounds_,
+		 const std::vector<BilinearInterpTable> tables_)
+	: energyUpperbounds(energyUpperbounds_),
+	  energyLowerbounds(energyLowerbounds_), tables(tables_)
+    {
+	ngroups = energyUpperbounds.size();
+	Require(energyLowerbounds.size() == ngroups);
+	Require(tables.size() == ngroups);
+    }
+    
     // ACCESSORS
 	
     int numGroups() const { return ngroups; }
@@ -281,6 +299,30 @@ struct InterpedMaterialProps::MaterialTables
     BilinearInterpTable      ionConductionCoeff;
     BilinearInterpTable      electronSpecificHeat;
     BilinearInterpTable      ionSpecificHeat;
+
+    MaterialTables() {};
+    
+    MaterialTables(const SP<BilinearInterpGrid> &spGrid_,
+		   const GroupedTable &sigmaTotal_,
+		   const GroupedTable &sigmaAbsorption_,
+		   const GroupedTable &sigmaEmission_,
+		   const BilinearInterpTable &electronIonCoupling_,
+		   const BilinearInterpTable &electronConductionCoeff_,
+		   const BilinearInterpTable &ionConductionCoeff_,
+		   const BilinearInterpTable &electronSpecificHeat_,
+		   const BilinearInterpTable &ionSpecificHeat_)
+	: spGrid(spGrid_),
+	  sigmaTotal(sigmaTotal_),
+          sigmaAbsorption(sigmaAbsorption_),
+	  sigmaEmission(sigmaEmission_),
+          electronIonCoupling(electronIonCoupling_),
+          electronConductionCoeff(electronConductionCoeff_),
+          ionConductionCoeff(ionConductionCoeff_),
+          electronSpecificHeat(electronSpecificHeat_),
+          ionSpecificHeat(ionSpecificHeat_)
+    {
+	// **empty
+    }
 
     const BilinearInterpGrid &getGrid() const
     {
