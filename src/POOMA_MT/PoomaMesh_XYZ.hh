@@ -30,6 +30,7 @@
 #include "Field/GuardCellSizes.h"
 
 // XTM headers
+#include "VektorHelper.hh"
 #include "ds++/config.hh"
 #include "ds++/SP.hh"
 
@@ -166,6 +167,10 @@ class PoomaMesh_XYZ
 	typedef int difference_type;
 	typedef unsigned int size_type;
 
+	// typedefs for reverse_iterators
+	typedef std::reverse_iterator<iterator> reverse_iterator;
+	typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+	
 	// constructors
 	vec() {}
 	vec(const double& x) : Vektor<double,3>(x) {}
@@ -180,23 +185,43 @@ class PoomaMesh_XYZ
         // iterators
         iterator begin(void)
         {
-            iterator p = X;
+	    vec &self = *this;
+            iterator p = &(self[0]);
             return p;
         }
         iterator end(void)
         {
-            iterator p = X + 3;
+            iterator p = begin() + 3;
             return p;
         }
         const_iterator begin(void) const
         {
-            const_iterator p = X;
+	    vec &self = const_cast<vec&>(*this);
+            const_iterator p = &(self[0]);
             return p;
         }
         const_iterator end(void) const
         {
-            const_iterator p = X + 3;
+            const_iterator p = begin() + 3;
             return p;
+        }
+
+        // reverse iterators
+        reverse_iterator rbegin(void)
+        {
+            return reverse_iterator(end());
+        }
+        reverse_iterator rend(void)
+        {
+            return reverse_iterator(begin());
+        }
+        const_reverse_iterator rbegin(void) const
+        {
+            return const_reverse_iterator(end());
+        }
+        const_reverse_iterator rend(void) const
+        {
+            return const_reverse_iterator(begin());
         }
 
         // accessors
@@ -479,6 +504,11 @@ class PoomaMesh_XYZ
         {
             return *bfi_m;
         }
+	// member
+	T* operator->() const
+	{
+	    return &(*bfi_m);
+	}
 
         // comparisons
         bool operator==(const cctf_iterator<T>& rhs) const
@@ -544,6 +574,8 @@ class PoomaMesh_XYZ
         }
         // dereference
         const T& operator*() const { return (*bfi_m); }
+	// member
+	const T* operator->() const { return &(*bfi_m); }
 
         // comparisons
         bool operator==(const cctf_const_iterator<T>& rhs) const
@@ -639,6 +671,34 @@ class PoomaMesh_XYZ
             assign(*this,x);
             return *this;
         }
+	// AddAssign
+	template <class Expr>
+	fcdtf<T>& operator+=(const Expr &expr)
+	{
+	    *this = *this + expr;
+	    return *this;
+	}
+	// SubAssign
+	template <class Expr>
+	fcdtf<T>& operator-=(const Expr &expr)
+	{
+	    *this = *this - expr;
+	    return *this;
+	}
+	// MulAssign
+	template <class Expr>
+	fcdtf<T>& operator*=(const Expr &expr)
+	{
+	    *this = *this * expr;
+	    return *this;
+	}
+	// DivAssign
+	template <class Expr>
+	fcdtf<T>& operator/=(const Expr &expr)
+	{
+	    *this = *this / expr;
+	    return *this;
+	}
         
         // face accessors
         // i, j, k == global xyz cell indices
@@ -836,6 +896,8 @@ class PoomaMesh_XYZ
         }
         // dereference
         T& operator*() const { return (*bfi_m)(face_m); }
+        // member
+        T* operator->() const { return &((*bfi_m)(face_m)); }
 
         // comparisons
         bool operator==(const fcdtf_iterator<T>& rhs) const
@@ -934,6 +996,8 @@ class PoomaMesh_XYZ
         }
         // dereference
         const T& operator*() const { return (*bfi_m)(face_m); }
+	// member
+        const T* operator->() const { return &((*bfi_m)(face_m)); }
 
         // comparisons
         bool operator==(const fcdtf_const_iterator<T>& rhs) const
@@ -1033,6 +1097,34 @@ class PoomaMesh_XYZ
 	template <class B>
 	bstf<T>& operator=(const PETE_Expr<B>& x) {
 	    assign(*this,x);
+	    return *this;
+	}
+	// AddAssign
+	template <class Expr>
+	bstf<T>& operator+=(const Expr &expr)
+	{
+	    *this = *this + expr;
+	    return *this;
+	}
+	// SubAssign
+	template <class Expr>
+	bstf<T>& operator-=(const Expr &expr)
+	{
+	    *this = *this - expr;
+	    return *this;
+	}
+	// MulAssign
+	template <class Expr>
+	bstf<T>& operator*=(const Expr &expr)
+	{
+	    *this = *this * expr;
+	    return *this;
+	}
+	// DivAssign
+	template <class Expr>
+	bstf<T>& operator/=(const Expr &expr)
+	{
+	    *this = *this / expr;
 	    return *this;
 	}
 
@@ -1311,6 +1403,8 @@ class PoomaMesh_XYZ
         }
         // dereference
         T& operator*() const { return (*bfi_m)(face_m); }
+        // member
+        T* operator->() const { return &((*bfi_m)(face_m)); }
 
         // comparisons
         bool operator==(const bstf_iterator<T>& rhs) const
@@ -1434,6 +1528,8 @@ class PoomaMesh_XYZ
 	}
 	// dereference
 	const T& operator*() const { return (*bfi_m)(face_m); }
+	// member
+	const T* operator->() const { return &((*bfi_m)(face_m)); }
 
 	// comparisons
 	bool operator==(const bstf_const_iterator<T>& rhs) const
@@ -1722,6 +1818,11 @@ class PoomaMesh_XYZ
 	{
 	    return *bfi_m;
 	}
+	// member
+	T* operator->() const
+	{
+	    return &(*bfi_m);
+	}
 	
 	// comparisons
 	bool operator==(const nctf_iterator<T>& rhs) const
@@ -1787,6 +1888,8 @@ class PoomaMesh_XYZ
 	}
 	// dereference
 	const T& operator*() const { return (*bfi_m); }
+	// member
+	const T* operator->() const { return &(*bfi_m); }
 
 	// comparisons
 	bool operator==(const nctf_const_iterator<T>& rhs) const
@@ -1880,6 +1983,34 @@ class PoomaMesh_XYZ
 	vctf<T>& operator=(const PETE_Expr<B>& x)
 	{
 	    assign(*this,x);
+	    return *this;
+	}
+	// AddAssign
+	template <class Expr>
+	vctf<T>& operator+=(const Expr &expr)
+	{
+	    *this = *this + expr;
+	    return *this;
+	}
+	// SubAssign
+	template <class Expr>
+	vctf<T>& operator-=(const Expr &expr)
+	{
+	    *this = *this - expr;
+	    return *this;
+	}
+	// MulAssign
+	template <class Expr>
+	vctf<T>& operator*=(const Expr &expr)
+	{
+	    *this = *this * expr;
+	    return *this;
+	}
+	// DivAssign
+	template <class Expr>
+	vctf<T>& operator/=(const Expr &expr)
+	{
+	    *this = *this / expr;
 	    return *this;
 	}
 	
@@ -2061,6 +2192,8 @@ class PoomaMesh_XYZ
 	}
 	// dereference
 	T& operator*() const { return (*bfi_m)(vertex_m); }
+	// member
+	T* operator->() const { return &((*bfi_m)(vertex_m)); }
 
 	// comparisons
 	bool operator==(const vctf_iterator<T>& rhs) const
@@ -2139,6 +2272,8 @@ class PoomaMesh_XYZ
 	}
 	// dereference
 	const T& operator*() const { return (*bfi_m)(vertex_m); }
+	// member
+	const T* operator->() const { return &((*bfi_m)(vertex_m)); }
 	
 	// comparisons
 	bool operator==(const vctf_const_iterator<T>& rhs) const
@@ -2278,6 +2413,8 @@ class PoomaMesh_XYZ
 
 	// dereference
 	VertexProxy<FT>& operator*() const { return proxy_m; }
+	// member
+	VertexProxy<FT>* operator->() const { return &proxy_m; }
 
 	// comparisons
 	bool operator==(const CFAV_iterator<FT>& rhs) const
@@ -2369,6 +2506,8 @@ class PoomaMesh_XYZ
 
 	// dereference
 	const VertexProxy<FT>& operator*() const { return proxy_m; }
+	// member
+	const VertexProxy<FT>* operator->() const { return &proxy_m; }
 
 	// comparisons
 	bool operator==(const CFAV_const_iterator<FT>& rhs) const
@@ -2437,6 +2576,12 @@ class PoomaMesh_XYZ
 		return proxy_m.field_m(proxy_m.cell_m,
 				       proxy_m.faces_m.dat[face_m]);
 	    }
+	    // member
+	    typename iterator::pointer operator->() const
+	    {
+		return &(proxy_m.field_m(proxy_m.cell_m,
+					 proxy_m.faces_m.dat[face_m]));
+	    }
 
 	    // increment
 	    iterator& operator++()
@@ -2482,6 +2627,12 @@ class PoomaMesh_XYZ
 	    {
 		return proxy_m.field_m(proxy_m.cell_m,
 				       proxy_m.faces_m.dat[face_m]);
+	    }
+	    // member
+	    const value_type* operator->() const
+	    {
+		return &(proxy_m.field_m(proxy_m.cell_m,
+					 proxy_m.faces_m.dat[face_m]));
 	    }
 	
 	    // increment
@@ -2610,6 +2761,7 @@ class PoomaMesh_XYZ
   public:
 
     // constructors
+#if 0
     PoomaMesh_XYZ(int* const ncells,
 		  typename Mesh::MeshValue_t* const cwidth,
 		  e_dim_tag* decomp)
@@ -2641,6 +2793,7 @@ class PoomaMesh_XYZ
 	initializeCellVolumes();
 	initializeCellSurfaceNormals();
     }
+#endif
     PoomaMesh_XYZ(int* const ncells,
 		  typename Mesh::MeshValue_t** const cwidth,
 		  e_dim_tag* decomp)

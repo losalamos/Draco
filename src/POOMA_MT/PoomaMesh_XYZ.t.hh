@@ -6,7 +6,6 @@
 // @> Definitions for PoomaMesh_XYZ
 //---------------------------------------------------------------------------//
 
-
 template <class Mesh>
 template <class T1, class T2, class Op>
 void

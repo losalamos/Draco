@@ -849,7 +849,7 @@ EOF
        has_libdir="yes"
    fi
 
-   for lib in nml c4 ds++
+   for lib in c4 ds++
    do
        # temporary string to keep line from getting too long
        draco_depends="\${libdir}/lib${lib}\${libsuffix}"
@@ -2722,6 +2722,18 @@ fi
 echo $ac_n "checking for pooma root directory""... $ac_c" 1>&6
 echo "configure:2724: checking for pooma root directory" >&5
 echo "$ac_t""${with_pooma_root}" 1>&6
+
+vendor_pooma="pkg"
+
+   # vendor_pooma is the vendor_<> tag (equals pkg or test)
+   # -L${with_pooma_root}/lib/${with_pooma} -lpooma are the directories added 
+
+   if test "${vendor_pooma}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${with_pooma_root}/lib/${with_pooma} -lpooma"
+   elif test "${vendor_pooma}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${with_pooma_root}/lib/${with_pooma} -lpooma"
+   fi
+
 
 
 trap '' 1 2 15
