@@ -9697,13 +9697,18 @@ echo "$as_me: error: \"Cannot figure out the platform or host!\"" >&2;}
 
    temp_dir=$srcdir
    echo $temp_dir
-   while test ! -d $temp_dir/config ; do
+   while test -d $temp_dir -a ! -d $temp_dir/config ; do
        temp_dir="${temp_dir}/.."
-       echo "RUNNING: $temp_dir"
    done
-   package_top_srcdir=`cd $temp_dir; pwd;`
-   echo "$as_me:$LINENO: result: Package top source directory: $package_top_srcdir" >&5
+   if test -d $temp_dir; then
+       package_top_srcdir=`cd $temp_dir; pwd;`
+       echo "$as_me:$LINENO: result: Package top source directory: $package_top_srcdir" >&5
 echo "${ECHO_T}Package top source directory: $package_top_srcdir" >&6
+   else
+       { { echo "$as_me:$LINENO: error: 'Could not find package top source directory'" >&5
+echo "$as_me: error: 'Could not find package top source directory'" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
 
 
 

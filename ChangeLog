@@ -1,3 +1,9 @@
+2004-04-13  Thomas M. Evans  <tme@lanl.gov>
+
+	* src/Makefile.in: Because of upgrades to
+	config/Makefile.dep.general, we can now do full parallel builds
+	[including parallel dependency builds].
+
 2004-04-08  Thomas M. Evans  <tme@lanl.gov>
 
 	* mc, imc: Moved these packages to CLUBIMC library.  The last
