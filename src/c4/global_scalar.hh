@@ -11,6 +11,10 @@
 
 C4_NAMESPACE_BEG
 
+//---------------------------------------------------------------------------//
+// Blocking send and receive functions.
+//---------------------------------------------------------------------------//
+
 template<class T>
 int Send( const T *buf, int nels, int dest,
 	  int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
@@ -23,6 +27,44 @@ int Recv( T *buf, int nels, int source,
 	  int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
 {
     return 0;
+}
+
+//---------------------------------------------------------------------------//
+// Asynchronous send and recive functions, returning a request handle.
+//---------------------------------------------------------------------------//
+
+template<class T>
+C4_Req SendAsync( const T *buf, int nels, int dest,
+		  int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
+{
+    C4_Req r;
+    return r;
+}
+
+template<class T>
+C4_Req RecvAsync( T *buf, int nels, int source,
+		  int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
+{
+    C4_Req r;
+    return r;
+}
+
+//---------------------------------------------------------------------------//
+// Asynchronous send and recive functions, using a provided request handle.
+//---------------------------------------------------------------------------//
+
+template<class T>
+void SendAsync( C4_Req& r, const T *buf, int nels, int dest,
+		int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
+{
+    Require( !r.inuse() );
+}
+
+template<class T>
+void RecvAsync( C4_Req& r, T *buf, int nels, int source,
+		int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
+{
+    Require( !r.inuse() );
 }
 
 C4_NAMESPACE_END
