@@ -23,7 +23,7 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++ c4 LAMG)
 AC_NEEDS_LIBS_TEST(mesh nml diffusion)
 
-AC_RUNTESTS(testMatrixGen, 1 2 5)
+AC_RUNTESTS(testMatrixGen testSolver, 1 2 5)
 
 dnl DRACO SETUP
 AC_DRACO_ENV

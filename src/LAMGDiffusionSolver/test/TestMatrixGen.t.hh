@@ -57,16 +57,18 @@ void TestMatrixGen<MTFactory>::runTest()
 
     TESTASSERT(totalMatrixElements == expectedNumEntries);
 
+    dsxx::SP<Matrix> spMatrix;
+
     typedef typename MT::ccsf ccsf;
-    dsxx::SP<ccsf> spADiagonal(new ccsf(fCtor));
-    setDiagonal(*spADiagonal);
+    ccsf ADiagonal(fCtor);
+    setDiagonal(ADiagonal);
 
     typedef typename MT::fcdsf fcdsf;
-    dsxx::SP<fcdsf> spAOffDiagonal(new fcdsf(fCtor));
-    setOffDiagonal(*spAOffDiagonal);
+    fcdsf AOffDiagonal(fCtor);
+    setOffDiagonal(AOffDiagonal);
     
-    rtt_diffusion::P1Matrix<MT> p1Mat(fCtor, spADiagonal, spAOffDiagonal);
-    dsxx::SP<Matrix> spMatrix(MatFacTraits::create(p1Mat, pcms));
+    rtt_diffusion::P1Matrix<MT> p1Mat(fCtor, ADiagonal, AOffDiagonal);
+    spMatrix = MatFacTraits::create(p1Mat, pcms);
 
     int nrows = spMatrix->nrows();
     std::vector<double> x(nrows, 1.0);
@@ -83,7 +85,7 @@ void TestMatrixGen<MTFactory>::runTest()
 	std::cout << std::flush;
     } // scope
 
-    verifyMultiplication(b, mesh, *spADiagonal, *spAOffDiagonal, x);
+    verifyMultiplication(b, mesh, ADiagonal, AOffDiagonal, x);
 }
 
 template<class MTFactory>

@@ -736,7 +736,7 @@ EOF
    done
 
 
-	test_alltarget="$test_alltarget testMatrixGen"
+	test_alltarget="$test_alltarget testMatrixGen testSolver"
         
 	test_nprocs="1 2 5"
 

@@ -23,30 +23,37 @@ operator*(const rtt_LAMGDiffusionSolver::MatrixP1Diff &A,
 	  const rtt_LAMG::CompressedRowStorage::DMat1 &x_in);
 
 template<class FT>
-FT operator*(const rtt_LAMGDiffusionSolver::MatrixP1Diff &A, const FT &x_in)
+void multiply(FT &b_out, const rtt_LAMGDiffusionSolver::MatrixP1Diff &A,
+	      const FT &x_in)
 {
     typedef rtt_LAMG::CompressedRowStorage::DMat1 DMat1;
 
     DMat1 x(x_in.size());
     std::copy(x_in.begin(), x_in.end(), x.begin());
 
-    std::cout << "In templated operator*(): x = " << std::endl;
+    std::cout << "In templated multiply: x = " << std::endl;
     std::copy(x.begin(), x.end(),
 	      std::ostream_iterator<DMat1::value_type>(std::cout, ","));
     std::cout << std::endl;
 
     DMat1 b = A * x;
 
-    std::cout << "In templated operator*(): b = " << std::endl;
+    std::cout << "In templated multiply: b = " << std::endl;
     std::copy(b.begin(), b.end(),
 	      std::ostream_iterator<DMat1::value_type>(std::cout, ","));
     std::cout << std::endl;
     
-    FT ret(b.size());
-    std::copy(b.begin(), b.end(), ret.begin());
-    return ret;
+    std::copy(b.begin(), b.end(), b_out.begin());
 }
 
+template<class FT>
+FT operator*(const rtt_LAMGDiffusionSolver::MatrixP1Diff &A, const FT &x_in)
+{
+    FT b(x_in.size());
+    multiply(b, A, x_in);
+    return b;
+}
+	      
 } // end namespace rtt_LAMGDiffusionSolver_test
 
 #endif                          // __LAMGDiffusionSolver_test_MatrixP1DiffUtils_hh__

@@ -52,25 +52,22 @@ class MatrixFactoryTraits<rtt_LAMGDiffusionSolver::MatrixP1Diff>
 
     template<class MT>
     static
-    PreComputedState preComputeState(const typename MT::FieldConstructor &rep,
+    PreComputedState preComputeState(const typename MT::FieldConstructor &fCtor,
 				     const MT &mesh)
     {
 	// Return the needed precomputed state.
 	
-	return PreComputedState(rep, mesh);
+	return PreComputedState(fCtor, mesh);
     }
 
     template<class MT>
     static Matrix *create(const rtt_diffusion::P1Matrix<MT> &rep,
 			  const PreComputedState &state)
     {
-	dsxx::SP<const typename MT::ccsf> spADiag = rep.spADiagonal();
-	dsxx::SP<const typename MT::fcdsf> spAOffDiag = rep.spAOffDiagonal();
-
 	typedef rtt_LAMG::CompressedRowStorage CRS;
 	CRS crs(state.rowPointer(), state.colIndex(),
-		state.val(spADiag->begin(), spADiag->end(),
-			  spAOffDiag->begin(), spAOffDiag->end()));
+		state.val(rep.diagonal().begin(), rep.diagonal().end(),
+			  rep.offDiagonal().begin(), rep.offDiagonal().end()));
 	return new Matrix(crs);
     }
 

@@ -42,6 +42,12 @@ class SolverP1Diff
 
     // NESTED CLASSES AND TYPEDEFS
 
+  public:
+
+    typedef MatrixP1Diff Matrix;
+
+  private:
+
     // DATA
 
     rtt_LAMG::Solver linsolver;
@@ -66,7 +72,7 @@ class SolverP1Diff
 	       const FT &b)
     {
 	Require(x.size() == b.size());
-	linsolver.solve(x, spMatrix->lamgMatrixDcsrR(), b);
+	linsolver.solve(x, spMatrix->crs(), b);
     }
 
     //DEFAULTED: SolverP1Diff& operator=(const SolverP1Diff &rhs);
