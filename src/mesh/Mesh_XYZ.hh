@@ -141,8 +141,8 @@ class Mesh_XYZ : private XYZ_Mapper
 	cell_array( const Mesh_XYZ *m ) : data( m->get_ncp() ) {}
 
       public:
-        typedef dsxx::Mat1<T>::iterator iterator;
-        typedef dsxx::Mat1<T>::const_iterator const_iterator;
+        typedef typename dsxx::Mat1<T>::iterator iterator;
+        typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
 
 	cell_array( const SP<Mesh_XYZ>& m ) : data( m->get_ncp() ) {}
 
