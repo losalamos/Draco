@@ -1827,7 +1827,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    # we use the install script provided with autoconf on all machines
    INSTALL='${config_dir}/install-sh -c'
-   INSTALL_DATA='${INSTALL} -m 444'
+   INSTALL_DATA='${INSTALL} -m 644'
 
    dnl
    dnl C4 OPERATIONS
