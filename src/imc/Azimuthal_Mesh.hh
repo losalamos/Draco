@@ -18,6 +18,8 @@
 namespace rtt_imc
 {
 
+class Surface_Tracking_Interface;
+
 //===========================================================================//
 /*!
  * \class Azimuthal_Mesh
@@ -54,6 +56,9 @@ class Azimuthal_Mesh
     
     //! default constructor
     Azimuthal_Mesh(const std::vector<double>& cosines);
+
+    //! construct from a Surface_Tracking_Interface
+    Azimuthal_Mesh(const Surface_Tracking_Interface& interface);
 
     //! destructor
     ~Azimuthal_Mesh() { /* ... */ }

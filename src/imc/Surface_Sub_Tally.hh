@@ -20,6 +20,7 @@ namespace rtt_imc
 {
 
 class Azimuthal_Mesh;
+class Surface_Tracking_Interface;
 
 //===========================================================================//
 /*!
@@ -31,15 +32,21 @@ class Azimuthal_Mesh;
  * energy weight, per azimuthal bin, per surface, per direction
  * (inward/outward).
  *
+ * The number of surfaces argument in one of the constructors is the global
+ * number of surfaces. This distinction is important in domain decomposed
+ * settings where the number of surfaces present on different domains are
+ * likely to be different than the global number.
+ *
  * The azimuthal bins are defined by a Azimuthal_Mesh object. A smart pointer
- * to the object and the number of surfaces to tally over are requied at
- * construction. 
+ * to the this object is requied at construction. The second argument is
+ * either the global number of surfaces or an implementation of
+ * Surface_Tracking_Interface. 
  *
  * \sa Surface_Sub_Tally.cc for detailed descriptions.
  *
  */
 /*! 
- * \example imc/test/imc_test.cc 
+ * \example imc/test/tstSurface_Sub_Tally.cc
  * 
  * description of example
  */
@@ -55,8 +62,12 @@ class Surface_Sub_Tally
 
     // CREATORS
     
-    //! Constructor
+    //! Construct from the mesh and number of surfaces
     Surface_Sub_Tally(rtt_dsxx::SP<Azimuthal_Mesh> az_mesh, int surfaces);
+
+    //! Construct fomr the mesh and the Surface_Tracking_Interface
+    Surface_Sub_Tally(rtt_dsxx::SP<Azimuthal_Mesh> az_mesh,
+		      const Surface_Tracking_Interface& interface);
 
     //! Destructor
     ~Surface_Sub_Tally();
@@ -122,10 +133,12 @@ class Surface_Sub_Tally
 // Inline accessors:
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
 const std::vector<std::vector<double> >& Surface_Sub_Tally::get_weight_tally() 
     const
 { return weight_tally; }
 
+//---------------------------------------------------------------------------//
 const std::vector<std::vector<int> >& Surface_Sub_Tally::get_count_tally() 
     const
 { return count_tally; }

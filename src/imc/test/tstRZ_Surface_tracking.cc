@@ -116,13 +116,10 @@ SP<RZWedge_Mesh> build_an_RZWedge()
 
 }
 
-SP<Azimuthal_Mesh> build_an_az_mesh()
+SP<Azimuthal_Mesh> build_an_az_mesh(const Surface_Tracking_Interface &interface)
 {
 
-    double cosine_values[3] = { -0.5*sqrt(2.0), 0, 0.5*sqrt(2.0) };
-    vector<double> cosines(cosine_values, cosine_values+3);
-
-    SP<Azimuthal_Mesh> az_mesh ( new Azimuthal_Mesh(cosines) );
+    SP<Azimuthal_Mesh> az_mesh ( new Azimuthal_Mesh(interface) );
 
     Ensure (az_mesh);
 
@@ -130,12 +127,12 @@ SP<Azimuthal_Mesh> build_an_az_mesh()
 }
 
 
-SP<Extrinsic_Surface_Tracker> build_extrinsic_tracker(const RZWedge_Mesh& mesh)
+SP<Extrinsic_Surface_Tracker> build_extrinsic_tracker(
+    const RZWedge_Mesh& mesh,
+    const Surface_Tracking_Interface& interface)
 {
 
-    SP<Surface_Tracking_Tester> tester ( new Surface_Tracking_Tester() );
-
-    Extrinsic_Tracker_Builder builder(mesh, tester);
+    Extrinsic_Tracker_Builder builder(mesh, interface);
 
     SP<Extrinsic_Surface_Tracker> tracker = builder.build_tracker();
 
@@ -280,20 +277,21 @@ void test_gray_particle_straight()
 	std::cout << "\t z: " << mesh->get_low_z(cell) << "," 
 		  << mesh->get_high_z(cell) << std::endl << std::endl;
     }
-    
 
+    // Make an test interface object
+    Surface_Tracking_Tester tester;
+    
     // Make an azimuthal mesh
-    SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh();
+    SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh(tester);
 
     // Make a surface-tracker
-    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh);
+    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh, tester);
 
     // Make a tally
     SP<Tally<RZWedge_Mesh> > tally ( new Tally<RZWedge_Mesh>(mesh) );
 
     // Make a surface tracking sub-tally
-    int surfaces = tracker->surfaces();
-    SP<Surface_Sub_Tally> surface_tally ( new Surface_Sub_Tally(az_mesh, surfaces));
+    SP<Surface_Sub_Tally> surface_tally ( new Surface_Sub_Tally(az_mesh, tester));
     tally->assign_Surface_Sub_Tally(surface_tally);
 
     // Make a gray opacity
@@ -365,21 +363,23 @@ void test_gray_particle_straight()
 void test_gray_particle_rw()
 {
 
+    // Make an test interface object
+    Surface_Tracking_Tester tester;
+
     // Make a mesh
     SP<RZWedge_Mesh> mesh = build_an_RZWedge();
 
     // Make an azimuthal mesh
-    SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh();
+    SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh(tester);
 
     // Make a surface-tracker
-    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh);
+    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh, tester);
 
     // Make a tally
     SP<Tally<RZWedge_Mesh> > tally ( new Tally<RZWedge_Mesh>(mesh) );
 
     // Make a surface tracking sub-tally
-    int surfaces = tracker->surfaces();
-    SP<Surface_Sub_Tally> surface_tally ( new Surface_Sub_Tally(az_mesh, surfaces));
+    SP<Surface_Sub_Tally> surface_tally ( new Surface_Sub_Tally(az_mesh, tester));
     tally->assign_Surface_Sub_Tally(surface_tally);
     tally->create_RW_Sub_Tally();
 
@@ -457,21 +457,23 @@ void test_gray_particle_rw()
 void test_mg_particle()
 {
 
+    // Make an test interface object
+    Surface_Tracking_Tester tester;
+
     // Make a mesh
     SP<RZWedge_Mesh> mesh = build_an_RZWedge();
 
     // Make an azimuthal mesh
-    SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh();
+    SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh(tester);
 
     // Make a surface-tracker
-    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh);
+    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh, tester);
 
     // Make a tally
     SP<Tally<RZWedge_Mesh> > tally ( new Tally<RZWedge_Mesh>(mesh) );
 
     // Make a surface tracking sub-tally
-    int surfaces = tracker->surfaces();
-    SP<Surface_Sub_Tally> surface_tally ( new Surface_Sub_Tally(az_mesh, surfaces));
+    SP<Surface_Sub_Tally> surface_tally ( new Surface_Sub_Tally(az_mesh, tester));
     tally->assign_Surface_Sub_Tally(surface_tally);
 
     // Make a multigroup opacity

@@ -85,7 +85,7 @@ Surface_Tracking_Tester::Surface_Tracking_Tester(double small, double large)
     descriptor[3].data[0] = 2.0;
     descriptor[3].data[1] = large_radius;
 
-    double bin_data[3] = {-0.5*sqrt(2.0), 0.0, 0.5*sqrt(2.0)};
+    double bin_data[3] = {-0.5, 0.0, 0.5};
     bin_cosines.assign(bin_data, bin_data+3);
 }
 
@@ -93,20 +93,16 @@ Surface_Tracking_Tester::Surface_Tracking_Tester(double small, double large)
 // BUILDERS
 //---------------------------------------------------------------------------//
 
-Surface_Sub_Tally make_surface_tally()
+Surface_Sub_Tally make_surface_tally(const Surface_Tracking_Interface& interface)
 {
 
-    double c[3] = {-0.5, 0.0, 0.5};
-    vector<double> cosines(c, c+3);
-
-    SP<Azimuthal_Mesh> mesh ( new Azimuthal_Mesh( cosines ) );
-
-    // The highest surface index number is 4:
-    return Surface_Sub_Tally(mesh, 4);
+    SP<Azimuthal_Mesh> mesh ( new Azimuthal_Mesh( interface ) );
+    return Surface_Sub_Tally(mesh, interface);
 
 }
 
 
+//---------------------------------------------------------------------------//
 SP<RZWedge_Mesh> build_mesh()
 {
 
@@ -123,16 +119,14 @@ SP<RZWedge_Mesh> build_mesh()
 }
 
 
-SP<Extrinsic_Tracker_Builder> build_tracker_builder(const RZWedge_Mesh& mesh)
+//---------------------------------------------------------------------------//
+SP<Extrinsic_Tracker_Builder> build_tracker_builder(
+    const RZWedge_Mesh& mesh,
+    const Surface_Tracking_Interface& interface)
 {
 
-    double x1 = mesh.get_high_x(1);
-    double x3 = mesh.get_high_x(3);
-
-    SP<Surface_Tracking_Tester> tester ( new Surface_Tracking_Tester(x1,x3) );
-
     SP<Extrinsic_Tracker_Builder> builder (
-	new Extrinsic_Tracker_Builder(mesh, tester) );
+	new Extrinsic_Tracker_Builder(mesh, interface) );
 
     Ensure (builder);
 
@@ -140,36 +134,24 @@ SP<Extrinsic_Tracker_Builder> build_tracker_builder(const RZWedge_Mesh& mesh)
 
 }
 
-SP<Extrinsic_Surface_Tracker> build_tracker(Extrinsic_Tracker_Builder& builder)
-{
-
-    SP<Extrinsic_Surface_Tracker> tracker = builder.build_tracker();
-
-    Ensure(tracker);
-
-    return tracker;
-
-}
-
-
-
-
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_tracker_builder()
+void test_tracker()
 {
 
     SP<RZWedge_Mesh> mesh = build_mesh();
 
-    SP<Extrinsic_Tracker_Builder> builder = build_tracker_builder(*mesh);
+    double x1 = mesh->get_high_x(1);
+    double x3 = mesh->get_high_x(3);
+    Surface_Tracking_Tester tester(x1,x3);
+    
+    SP<Extrinsic_Tracker_Builder> builder = build_tracker_builder(*mesh, tester);
 
+    // Test the builder:
     if (builder->get_global_surfaces() != 4) ITFAILS;
-
     if (builder->get_local_surfaces()  != 3) ITFAILS;
-
     if (builder->get_cell_status(1) != true)  ITFAILS;
     if (builder->get_cell_status(2) != true)  ITFAILS;
     if (builder->get_cell_status(3) != true)  ITFAILS;
@@ -177,26 +159,15 @@ void test_tracker_builder()
     if (builder->get_cell_status(5) != false) ITFAILS;
     if (builder->get_cell_status(6) != true)  ITFAILS;
 
-}
-
-
-void test_tracker()
-{
-
-    SP<RZWedge_Mesh> mesh = build_mesh();
-
-    SP<Extrinsic_Tracker_Builder> builder = build_tracker_builder(*mesh);
-
     SP<Extrinsic_Surface_Tracker> tracker = builder->build_tracker();
 
+    // Test the tracker
     if (tracker->surface_in_cell(1) != true)  ITFAILS;
     if (tracker->surface_in_cell(2) != true)  ITFAILS;
     if (tracker->surface_in_cell(3) != true)  ITFAILS;
     if (tracker->surface_in_cell(4) != true)  ITFAILS;
     if (tracker->surface_in_cell(5) != false) ITFAILS;
     if (tracker->surface_in_cell(6) != true)  ITFAILS;
-
-    double x1 = mesh->get_high_x(1);
 
     vector<double> position(3);
     position[0]  = x1*0.5; position[1]  = 0.0; position[2]  = 0.0;
@@ -211,7 +182,7 @@ void test_tracker()
     int cell = mesh->get_cell(position);  
     if (cell != 1) ITFAILS;
 
-    Surface_Sub_Tally tally (make_surface_tally() );
+    Surface_Sub_Tally tally ( make_surface_tally(tester) );
 
     tracker->initialize_status(position, direction);
 
@@ -253,8 +224,6 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
-	test_tracker_builder();
-
 	test_tracker();
     }
     catch (rtt_dsxx::assertion &ass)

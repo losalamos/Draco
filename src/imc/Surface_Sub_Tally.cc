@@ -12,6 +12,7 @@
 
 #include "Surface_Sub_Tally.hh"
 #include "Azimuthal_Mesh.hh"
+#include "Surface_Tracking_Interface.hh"
 
 using rtt_dsxx::SP;
 using std::vector;
@@ -20,6 +21,14 @@ namespace rtt_imc
 {
 
 //---------------------------------------------------------------------------//
+/*! 
+ * \brief Construct a surface sub-tally from the mesh and the global number
+ * of surfaces
+ * 
+ * \param az_mesh The azimuthal mesh
+ * \param surfaces_ The global number of surfaces
+ *
+ */
 Surface_Sub_Tally::Surface_Sub_Tally(SP<Azimuthal_Mesh> az_mesh, int surfaces_)
     : azimuthal_mesh(az_mesh),
       tallies(2 * surfaces_),
@@ -28,6 +37,38 @@ Surface_Sub_Tally::Surface_Sub_Tally(SP<Azimuthal_Mesh> az_mesh, int surfaces_)
       count_tally(2 * surfaces_),
       mesh_size( az_mesh->size() )
 {
+
+    Require(surfaces > 0)
+    Require(azimuthal_mesh);
+
+    // Initialize the size of each individual tally.
+    for (int i = 0; i != tallies; ++i) 
+    {
+	weight_tally[i].resize(mesh_size, 0.0);
+	count_tally[i].resize(mesh_size, 0);
+    }
+
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Construct a surface sub-tally from the mesh and the global number
+ * of surfaces
+ * 
+ * \param az_mesh The azimuthal mesh
+ * \param surfaces_ The global number of surfaces
+ *
+ */
+Surface_Sub_Tally::Surface_Sub_Tally(SP<Azimuthal_Mesh> az_mesh, 
+				     const Surface_Tracking_Interface& interface)
+    : azimuthal_mesh(az_mesh),
+      mesh_size( az_mesh->size() )
+{
+
+    surfaces = interface.number_of_surfaces();
+    tallies = 2 * surfaces;
+    weight_tally.resize(tallies);
+    count_tally.resize(tallies);
 
     Require(surfaces > 0)
     Require(azimuthal_mesh);

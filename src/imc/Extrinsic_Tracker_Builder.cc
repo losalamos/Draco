@@ -24,37 +24,55 @@ using std::vector;
 namespace rtt_imc
 {
 
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Construct an Extrinsic_Tracker_Builder using a RZWedge_Mesh and a
+ * smart pointer to the Surface_Tracking_Interface
+ * 
+ * \param mesh_ The RZWedge_Mesh object
+ * \param interface A Smart pointer to an implementation of
+ * Surface_Tracking_Interface
+ */
 Extrinsic_Tracker_Builder::Extrinsic_Tracker_Builder(
     const RZWedge_Mesh& mesh_,
-    SP<Surface_Tracking_Interface> interface) :
-    mesh(mesh_),
-    number_of_cells(mesh_.num_cells()),
-    global_surface_number(0),
-    local_surfaces(0),
-    surfaces(),
-    surface_indices(),
-    surface_in_cell(mesh_.num_cells())
+    SP<Surface_Tracking_Interface> interface) 
+    : mesh(mesh_),
+      number_of_cells(mesh_.num_cells()),
+      global_surface_number(0),
+      local_surfaces(0),
+      surfaces(),
+      surface_indices(),
+      surface_in_cell(mesh_.num_cells())
 { 
 
-    int given_surface_number = interface->number_of_surfaces();
-
-    for (int surface = 1; surface <= given_surface_number; ++surface)
-    {
-
-	global_surface_number++;
-
-	const Surface_Descriptor& descriptor = 
-	    interface->get_surface(surface);
-	
-	process_surface( descriptor );
-	
-    }
-
-    Check(global_surface_number = given_surface_number);
+    construction_implementation(*interface);
     
-
 }
 						     
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Construct an Extrinsic_Tracker_Builder using an RZWedge_Mesh and a
+ * Surface_Tracking_Interface
+ * 
+ * \param mesh_ The RZWedge_Mesh object
+ * \param interface An implementation of Surface_Tracking_Interface
+ */
+Extrinsic_Tracker_Builder::Extrinsic_Tracker_Builder(
+    const RZWedge_Mesh& mesh_,
+    const Surface_Tracking_Interface& interface)
+    : mesh(mesh_),
+      number_of_cells(mesh_.num_cells()),
+      global_surface_number(0),
+      local_surfaces(0),
+      surfaces(),
+      surface_indices(),
+      surface_in_cell(mesh_.num_cells())
+{
+
+    construction_implementation(interface);
+
+}
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Builds and returns the surface tracker. Stops accumulation of
@@ -67,10 +85,9 @@ SP<Extrinsic_Surface_Tracker> Extrinsic_Tracker_Builder::build_tracker()
     if (!tracker);
     {
 
-	tracker = 
-	    new Extrinsic_Surface_Tracker(surfaces, surface_indices, 
-					  surface_in_cell
-		);
+	tracker = new Extrinsic_Surface_Tracker(
+	    surfaces, surface_indices, surface_in_cell
+	    );
 
     }
 
@@ -86,6 +103,31 @@ SP<Extrinsic_Surface_Tracker> Extrinsic_Tracker_Builder::build_tracker()
 //---------------------------------------------------------------------------//
 // Implementation:
 //---------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------//
+// Implement the steps common to both constructors
+void Extrinsic_Tracker_Builder::construction_implementation(
+    const Surface_Tracking_Interface& interface)
+{
+
+    int given_surface_number = interface.number_of_surfaces();
+
+    for (int surface = 1; surface <= given_surface_number; ++surface)
+    {
+
+	global_surface_number++;
+
+	const Surface_Descriptor& descriptor = 
+	    interface.get_surface(surface);
+	
+	process_surface( descriptor );
+	
+    }
+
+    Check(global_surface_number = given_surface_number);
+
+}
+
 
 //---------------------------------------------------------------------------//
 // Process a new surface:

@@ -11,6 +11,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Azimuthal_Mesh.hh" 
+#include "Surface_Tracking_Interface.hh"
 #include "ds++/Assert.hh"
 
 using std::vector;
@@ -41,6 +42,29 @@ Azimuthal_Mesh::Azimuthal_Mesh(const vector<double>& cosines)
     Require( bin_cosines.size() == bins+1 );
     Ensure( check_cosines() );
 
+}
+
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Construct Azimuthal_Mesh from a Surface_Tracking_Interface
+ * 
+ * \param interface An object implementing Surface_Tracking_Interface
+ */
+Azimuthal_Mesh::Azimuthal_Mesh(const Surface_Tracking_Interface& interface)
+    : bin_cosines(1, -1.0)
+{
+
+    const vector<double>& cosines ( interface.get_bin_cosines() );
+    bins = cosines.size() + 1;
+
+    Check (cosines.size() > 0);
+
+    std::copy(cosines.begin(), cosines.end(), std::back_inserter(bin_cosines));
+    bin_cosines.push_back(1.0);
+
+    Require( bin_cosines.size() == bins+1 );
+    Ensure ( check_cosines() );
 }
 
 //---------------------------------------------------------------------------//

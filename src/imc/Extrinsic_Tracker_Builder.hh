@@ -57,9 +57,13 @@ class Extrinsic_Tracker_Builder
 
     // CREATORS
     
-    //! constructor
+    //! construct from mesh and pointer to interface
     Extrinsic_Tracker_Builder(const rtt_mc::RZWedge_Mesh &mesh,
 			      rtt_dsxx::SP<Surface_Tracking_Interface> interface);
+
+    //! construct from mesh and interface
+    Extrinsic_Tracker_Builder(const rtt_mc::RZWedge_Mesh &mesh,
+			      const Surface_Tracking_Interface& interface);
 
     //! destructor
     ~Extrinsic_Tracker_Builder() { /* ... */ }
@@ -94,6 +98,9 @@ class Extrinsic_Tracker_Builder
     std::vector<bool> surface_in_cell;
 
     // IMPLEMENTATION
+
+    // Construction
+    void construction_implementation(const Surface_Tracking_Interface& interface);
 
     // General
     void process_surface(const rtt_mc::Surface_Descriptor &descriptor);
