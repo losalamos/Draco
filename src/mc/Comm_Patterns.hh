@@ -106,7 +106,7 @@ class Comm_Patterns
 
   public:
     //! Constructor.
-    Comm_Patterns() {};
+    Comm_Patterns() {}
     
     // Calculate communication patterns.
     void calc_patterns(SP_Topology);
