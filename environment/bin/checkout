@@ -23,6 +23,8 @@ Options:
                not given, extract it from the tagname as package-###.
 -d <dir>       Create <dir> to hold the checked out sources, instead
                of a directory based on the pacakge name,
+-e             Export sources, instead of checking them out. (No CVS
+               dirs). Cannot be used with head version.
 -n  --dry-run  Causes the cvs command to be printed but not executed.
 -h  --help     Prints this message and exits.
 -l  --list     Lists the available packages for checkout and exits.
@@ -33,15 +35,14 @@ Examples:
   > checkout draco 4_1_0     # Checks out release 4_1_0 of draco
   > checkout -r draco-4_1_0  # Ditto
 
-  # Checks out the Camel_Norton branch of Uncle Mcflux. Note that the
-  # package name is not optional:
   > checkout -r Camel_Norton uncleMcFlux
+  # Checks out the Camel_Norton branch of Uncle Mcflux. Note that the
+  # package name is not optional as it does not appear in the tag.
 
-  # Checks out the tools component of draco into directory draco/tools:
   > checkout draco/tools
+  # Checks out the tools component of draco into directory draco/tools.
 
-  # Ditto, but into directory tools:
-  checkout draco/tools -d tools
+  checkout draco/tools -d tools      # Ditto, but into directory tools.
 """
 
 from Utils import disambiguate, AmbiguousKeyError, padlist
@@ -61,7 +62,7 @@ def list_packages(): print "Available Packages:", package_list
 username =  os.environ['LOGNAME']
 
 try:
-    options, words = getopt.getopt(sys.argv[1:], 'r:d:hnl', \
+    options, words = getopt.getopt(sys.argv[1:], 'r:d:hnle', \
                                    ['help','dry-run', 'list'])
 except getopt.GetoptError:
     sys.exit('ERROR: bad option or missing argument')
@@ -70,10 +71,10 @@ except getopt.GetoptError:
 options = dict(options)
 
 tag = ''
-package_component = ''
 package = ''
 archive = ''
 directory = ''
+command = 'checkout'
 dry_run = False;
 
 if '-h' in options or '--help' in options:
@@ -101,6 +102,9 @@ if '-l' in options or '--list' in options:
 if '-d' in options:
     directory = options['-d']
 
+if '-e' in options:
+    command = 'export'
+
 # If we don't have a package, try and get it from the remaining
 # arguments:
 
@@ -118,14 +122,14 @@ if not package:
     except AmbiguousKeyError:
         sys.exit("ERROR: Ambiguous package name.")
 
-    # Disambuguation should prevent this:
+    # Disambuguation of pacakge name should prevent this:
     if not package in package_archive.keys():
         sys.exit("ERROR: Unrecognized package name: %s" % package)
     
 
 # If we don't have a tag yet, look for a version number in the
 # arguments. If we find one, make a tag from it. Otherwize, leave the
-# tag field empty to denote the head version.
+# tag field empty. This will cause cvs to default to the head version.
 
 if not tag:
     try:
@@ -137,12 +141,12 @@ if not tag:
 
 
 # Build the cvs command:
-if tag: tag = "-r %s" % tag
 
+if tag:       tag = "-r %s" % tag
 if directory: directory = "-d %s" % directory;
 
-command = "cvs -z9 -d:ext:%s@sf.lanl.gov:/cvsroot/%s co %s %s %s" % \
-          (username, archive, directory, tag, package_name)
+command = "cvs -z9 -d:ext:%s@sf.lanl.gov:/cvsroot/%s %s %s %s %s" % \
+          (username, archive, command, directory, tag, package_name)
 
 print "Executing: %s" % command
 
@@ -150,6 +154,4 @@ if not dry_run:
     command_out = os.popen(command)
     output = command_out.read()
     print output
-
-
 
