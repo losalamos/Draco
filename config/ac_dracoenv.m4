@@ -169,8 +169,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl determine which compiler we are using
 
    # do tests of --with-cxx, see if the compiler exists and then call
-   # the proper setup function, we default to the GNU EGCS compiler 
-   # that is defined by g++ (c++) and gcc under EGCS
+   # the proper setup function
    
    if test "${with_cxx}" = kcc ; then
        AC_CHECK_PROG(CXX, KCC, KCC)
@@ -179,14 +178,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   CC='KCC --c'
 	   AC_DRACO_KCC
        else
-	   AC_MSG_WARN(cannot find KCC trying for CC)
-	   AC_PROG_CXX
-	   AC_PROG_CC
-	   if test "${CXX}" = CC && test "${CC}" = cc ; then
-	       AC_DRACO_CC
-	   else
-	       AC_DRACO_EGCS
-	   fi
+	   AC_MSG_ERROR("Did not find KCC compiler!")
        fi
 
    elif test "${with_cxx}" = guide ; then
@@ -196,16 +188,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        if test "${CXX}" = guidec++ && test "${CC}" = guidec ; then 
 	   AC_DRACO_GUIDE
        else
-	   AC_MSG_WARN(cannot find guide trying for KCC)
-	   AC_CHECK_PROG(CXX, KCC, KCC)
-	   if test "${CXX}" = KCC ; then
-	       CC='KCC --c'
-	       AC_DRACO_KCC
-	   else
-	       AC_PROG_CXX
-	       AC_PROG_CC
-	       AC_DRACO_EGCS
-	   fi
+	   AC_MSG_ERROR("Did not find Guide compiler!")
        fi
 
    elif test "${with_cxx}" = cc ; then
@@ -215,30 +198,21 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        if test "${CXX}" = CC && test "${CC}" = cc ; then
 	   AC_DRACO_CC
        else 
-	   AC_MSG_WARN(cannot find CC trying EGCS)
-	   AC_PROG_CXX
-	   AC_PROG_CC
-	   AC_DRACO_EGCS
+	   AC_MSG_ERROR("Did not find CC compiler!")
        fi
 
-   elif test "${with_cxx}" = egcs ; then 
-       AC_PROG_CXX
-       AC_PROG_CC
-       AC_DRACO_EGCS
+   elif test "${with_cxx}" = gnu ; then 
+       AC_CHECK_PROG(CXX, g++, g++)
+       AC_CHECK_PROG(CC, gcc, gcc)
 
+       if test "${CXX}" = g++ && test "${CC}" = gcc ; then
+	   AC_DRACO_GNU_GCC
+       else
+	   AC_MSG_ERROR("Did not find gnu c++ compiler!")
+       fi
    fi
-   
-   # check to see that we have a C++ compiler defined, throw an error
-   # if not
-   if test "${CXX}" = KCC || test "${CXX}" = CC  || \
-      test "${CXX}" = g++ || test "${CXX}" = c++ || \
-      test "${CXX}" = guidec++ ; then
-	   found_cxx='good'
-   fi
-   
-   if test "${found_cxx}" != good ; then
-       AC_MSG_ERROR("No valid C++ Compiler Found!")
-   fi
+
+   # do draco standard headers
 
    AC_MSG_CHECKING("for draco standard headers")
    if test "${enable_draco_stdhdrs:=no}" != no ; then
@@ -364,7 +338,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
-	   LDFLAGS="-rpath \${CURDIR}:\${CURDIR}/..:\${libdir} ${LDFLAGS}"
+	   LDFLAGS="-rpath \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
 	   RANLIB=':'
        fi
    ;;
@@ -473,7 +447,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
-	   LDFLAGS="-rpath \${CURDIR}:\${CURDIR}/..:\${libdir} ${LDFLAGS}"
+	   LDFLAGS="-rpath \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
        fi
    ;;
    sparc-sun-solaris2.*)
@@ -526,7 +500,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # set -R when building shared library executables
        if test "${enable_shared}" = yes; then
-	   LDFLAGS="-R \${CURDIR}:\${CURDIR}/..:\${libdir} ${LDFLAGS}"
+	   LDFLAGS="-R \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
 	   RANLIB=':'
        fi
    ;;

@@ -200,43 +200,79 @@ AC_DEFUN(AC_DRACO_CC, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl EGCS COMPILER SETUP
+dnl GNU COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_EGCS, [dnl
+AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
 
+   # finding path of gcc compiler
+   AC_PATH_PROG(GCC_BIN, g++, null)
+
+   AC_MSG_CHECKING("Setting library path of GNU compiler")
+   if test "${GCC_BIN}" = null ; then
+       GCC_LIB_DIR='/usr/lib'
+   else
+       GCC_BIN=`dirname ${GCC_BIN}`
+       GCC_HOME=`dirname ${GCC_BIN}`
+       GCC_LIB_DIR="${GCC_HOME}/lib"
+   fi
+   AC_MSG_RESULT("${GCC_LIB_DIR}")
+
+   # do compiler configuration
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
    # LINKER AND LIBRARY (AR)
    LD='${CXX}'
    AR='ar'
    ARFLAGS='cr'
-#   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-#   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+   ARLIBS=''
+   ARTESTLIBS=''
 
    # COMPILATION FLAGS
 
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-ansi"
+       STRICTFLAG="-ansi -fhonor-std -Wnon-virtual-dtor"
    fi
 
    # optimization level
-   if test "${enable_debug:=no}" = yes && \
-      test "${with_opt:=0}" != 0 ; then
-      CXXFLAGS="${CXXFLAGS} -g"
-      CFLAGS="${CFLAGS} -g"
+   # gcc allows -g with -O (like KCC)
+    
+   # defaults
+   if test "${enable_debug:=yes}" = yes ; then
+       gcc_debug_flag='-g'
    fi
+   CXXFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
+   CFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
+
+   # add inlining if optimization is 01, 02 (it is on by default for
+   # 03)
+   if test "${with_opt}" = 1 || test "${with_opt}" = 2 ||
+      test "${with_opt}" = 3 ; then
+       CXXFLAGS="${CXXFLAGS} -finline-functions"
+       CFLAGS="${CFLAGS} -finline-functions"
+   fi
+
+   # LINK FLAGS
+
+   # add -rpath for the compiler library (G++ as LD does not do this
+   # automatically); this, unfortunately, may become host dependent
+   # in the future
+   LDFLAGS="${LDFLAGS} -Xlinker -rpath ${GCC_LIB_DIR}"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
        LDFLAGS="${LDFLAGS} -Bstatic"
    fi
 
-   AC_MSG_RESULT("EGCS compiler flags set")
+   AC_MSG_RESULT("GNU g++ compiler flags set")
 
    dnl end of AC_DRACO_EGCS
 ])
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_compiler.m4
+dnl-------------------------------------------------------------------------dnl
 
 builtin(include, ac_f90.m4)dnl AC_LANG_FORTRAN90 and AC_PROG_F90
 
