@@ -1,3 +1,10 @@
+2000-12-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* c4: Updated to c4-1_4_0.  This release is primarily due to
+	R. Roberts enhancements to (C4_Req). These enhancements were
+	performed on 3-JUN-00.  They added full reference counting to the
+	(C4_Req) class.
+
 2000-04-18  Thomas M. Evans  <tme@lanl.gov>
 
 	* c4: update to release c4-1_3_0.  This release removed all

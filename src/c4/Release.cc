@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// Release.cc
-// Randy M. Roberts
-// Thu Jul 15 09:41:09 1999
-// $Id$
+/*!
+ * \file   c4/Release.cc
+ * \author Randy M. Roberts, Thomas M. Evans
+ * \date   Thu Jul 15 09:41:09 1999
+ * \brief  Release function implementation for c4 library.
+ */
 //---------------------------------------------------------------------------//
-// @> Release function implementation for c4 library
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Release.hh"
@@ -14,11 +16,15 @@ namespace rtt_c4
 
 using std::string;
 
-// function definition for Release, define the local version number for
-// this library in the form c4-#_#_# in pkg_version variable
+/*!
+ * \return string of the release number
+ *
+ * Function definition for Release, define the local version number for
+ * this library in the form c4-\#_\#_\# in pkg_release variable
+ */
 const string release()
 {
-    string pkg_release = "@(#)c4-1_3_0";
+    string pkg_release = "@(#)c4-1_4_0";
     return pkg_release;
 }
 
