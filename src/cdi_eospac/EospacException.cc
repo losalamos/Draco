@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "EospacException.hh"
+#include <algorithm>
 
 namespace rtt_cdi_eospac
 {

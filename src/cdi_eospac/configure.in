@@ -41,28 +41,26 @@ case $host in
 mips-sgi-irix6.*)
    if test -n "${EOSPACK_LIB}" ; then
        VENDOR_LIBS="-rpath ${EOSPACK_LIB} ${VENDOR_LIBS}"
-       AC_DEFINE(V_INT, int)
-       AC_DEFINE(V_FLOAT, double)
-       AC_DEFINE(V_BOOL, int)
    fi
-;;
+   AC_DEFINE(V_INT, int)
+   AC_DEFINE(V_FLOAT, double)
+   AC_DEFINE(V_BOOL, int);;
+*-pc-linux-gnu)
 dnl No LINUX libs yet.
-dnl *-pc-linux-gnu)
 dnl   if test -n "${EOSPACK_LIB}" ; then
-dnl       VENDOR_LIBS="-rpath ${EOSPACK_LIB} ${VENDOR_LIBS}"
-dnl       AC_DEFINE(V_INT, int)
-dnl       AC_DEFINE(V_FLOAT, double)
-dnl       AC_DEFINE(V_BOOL, int)
+dnl VENDOR_LIBS="-rpath ${EOSPACK_LIB} ${VENDOR_LIBS}"
 dnl   fi
-dnl;;
+   AC_DEFINE(V_INT, long)
+   AC_DEFINE(V_FLOAT, double)
+   AC_DEFINE(V_BOOL, long)
+;;
 sparc-sun-solaris2.*)
    if test -n "${EOSPACK_LIB}" ; then
        VENDOR_LIBS="-rpath ${EOSPACK_LIB} ${VENDOR_LIBS}"
-       V_INT=long
-       V_FLOAT=double
-       V_BOOL=long
    fi
-;;
+   AC_DEFINE(V_INT, long)
+   AC_DEFINE(V_FLOAT, double)
+   AC_DEFINE(V_BOOL, long);;
 esac
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
