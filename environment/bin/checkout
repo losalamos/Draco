@@ -45,7 +45,7 @@ Examples:
   checkout draco/tools -d tools      # Ditto, but into directory tools.
 """
 
-from Utils import disambiguate, AmbiguousKeyError, padlist
+from Utils import disambiguate, AmbiguousKeyError, InvalidKeyError, padlist
 import sys, os, getopt
 
 package_archive = {'draco'      :'draco',
@@ -70,10 +70,11 @@ except getopt.GetoptError:
 # Convert options into a dictionary for easier key lookup.
 options = dict(options)
 
-tag = ''
+tag =       options.get('-r','')
+directory = options.get('-d','')
+
 package = ''
 archive = ''
-directory = ''
 command = 'checkout'
 dry_run = False;
 
@@ -81,9 +82,6 @@ if '-h' in options or '--help' in options:
     print __doc__
     list_packages()
     sys.exit()
-
-if '-r' in options:
-    tag = options['-r']
 
     # Attempt to find package name
     package = tag.split('-')[0];
@@ -98,9 +96,6 @@ if '-n' in options or '--dry-run' in options:
 if '-l' in options or '--list' in options:
     list_packages()
     sys.exit()
-
-if '-d' in options:
-    directory = options['-d']
 
 if '-e' in options:
     command = 'export'
@@ -121,15 +116,18 @@ if not package:
         sys.exit("ERROR: No package name given.")
     except AmbiguousKeyError:
         sys.exit("ERROR: Ambiguous package name.")
+    except InvalidKeyError:
+        sys.exit("ERROR: Unrecognized package name.")
 
-    # Disambuguation of pacakge name should prevent this:
-    if not package in package_archive.keys():
-        sys.exit("ERROR: Unrecognized package name: %s" % package)
+# Disambuguation of pacakge name should prevent this:
+if not package in package_archive.keys():
+    sys.exit("ERROR: Unrecognized package name: %s" % package)
     
 
-# If we don't have a tag yet, look for a version number in the
-# arguments. If we find one, make a tag from it. Otherwize, leave the
-# tag field empty. This will cause cvs to default to the head version.
+# If we don't have a tag yet, look for a version number in the second
+# argument position. If we find one, make a tag from it. Otherwize,
+# leave the tag field empty. This will cause cvs to default to the
+# head version.
 
 if not tag:
     try:
@@ -148,7 +146,7 @@ if directory: directory = "-d %s" % directory;
 command = "cvs -z9 -d:ext:%s@sf.lanl.gov:/cvsroot/%s %s %s %s %s" % \
           (username, archive, command, directory, tag, package_name)
 
-print "Executing: %s" % command
+print "%s" % command
 
 if not dry_run:
     command_out = os.popen(command)
