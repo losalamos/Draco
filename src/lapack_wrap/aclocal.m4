@@ -904,6 +904,34 @@ AC_DEFUN(AC_VENDORLIB_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_FIND_TOP_SRC(1,2)
+dnl 
+dnl Find the top source directory of the package by searching upward
+dnl from the argument directory. The top source directory is defined
+dnl as the one with a 'config' sub-directory.
+dnl
+dnl Note: This function will run forever if the pacakge top source
+dnl directory is not somewhere above the argument directory.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_FIND_TOP_SRC, [dnl
+   
+   # $1 is the component's source directory
+   # $2 is the variable to store the package's main source directory in.
+
+   temp_dir=$1
+   echo $temp_dir
+   while test ! -d $temp_dir/config ; do   
+       temp_dir="${temp_dir}/.."
+       echo "RUNNING: $temp_dir"
+   done
+   $2=`cd $temp_dir; pwd;`
+   AC_MSG_RESULT([Package top source directory: $$2])
+])
+
+
+
+dnl-------------------------------------------------------------------------dnl
 dnl DO VARIABLE SUBSTITUTIONS ON AC_OUTPUT
 dnl
 dnl These are all the variable substitutions used within the draco
@@ -981,6 +1009,10 @@ AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
 
    # configure options
    AC_SUBST(configure_command)dnl
+
+   # directories in source tree
+   AC_SUBST(package_top_srcdir)
+   
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -1548,6 +1580,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        fi
    done
 
+   # Define the package-level source directory (e.g. draco)
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+
    dnl
    dnl ENVIRONMENT SUBSTITUTIONS
    dnl
@@ -1556,6 +1591,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    dnl end of AC_DRACO_ENV
 ])
+
 
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_dracoenv.m4
@@ -2821,7 +2857,7 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
 
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-ansi -Wnon-virtual-dtor -Wreturn-type"
+       STRICTFLAG="-ansi -Wnon-virtual-dtor -Wreturn-type -pedantic"
    fi
 
    # optimization level
@@ -2846,7 +2882,7 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
 
        # default is to have debug flag on when opt=0
        if test "${enable_debug:=yes}" = yes ; then
-	   gcc_opt_flags="-g3 ${gcc_opt_flags}"
+	   gcc_opt_flags="-g ${gcc_opt_flags}"
        fi
 
    fi
@@ -3201,14 +3237,43 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
        fi
 
+       #   
+       # LONG LONG on Linux
        #
-       # setup linux strict if the compiler is KCC (also turn off the
-       # warnings about long long being non-standard)
-       #
-       if test "${CXX}" = KCC && test -n "${STRICTFLAG}" ; then
-	   AC_MSG_WARN("Linux KCC strict option set to allow long long type!")
-	   STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
+       
+       # always allow long long in strict ansi mode (if possible)
+       
+       if test -n "${STRICTFLAG}"; then
+
+           case $CXX in
+
+           # GNU g++
+           g++) 
+               AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
+               STRICTFLAG="$STRICTFLAG -Wno-long-long"
+           ;;
+
+           # KCC
+           KCC)
+
+               # setup linux strict if the compiler is KCC (also turn
+               # off the warnings about long long being non-standard)
+               AC_MSG_NOTICE([Linux KCC strict option set to allow long long type!])
+               STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
+           ;;
+
+           # catchall
+           *) 
+               # do nothing
+           ;;
+
+           esac
+
        fi
+
+       # 
+       # end of LONG LONG setup
+       #
 
        #
        # add thread safety if we are using KCC on linux
@@ -3289,8 +3354,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        AC_MSG_CHECKING("for extra eospac library requirements.")
        if test -n "${vendor_eospac}"; then
            lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfccx86_6a"
-#	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
            LIBS="${LIBS} ${extra_eospac_libs}"
            AC_MSG_RESULT("${extra_eospac_libs}")
        else
@@ -4158,30 +4222,36 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_DRACO_AUTODOC], [dnl
 
    #
-   # path to package directories which are sources for doxygen
+   # paths of package directories which are sources for doxygen
    #
 
-   doxygen_input=${srcdir}
-   doxygen_examples=${srcdir}/test
+   doxygen_input=`cd ${srcdir}; pwd`
+   doxygen_examples=`cd ${srcdir}/test; pwd`
    localdir=`pwd`/autodoc
-   doxygen_output=${prefix}/html/${package}
+
+   # XXX This will change with new destination definition.
+   doxygen_output_top="${prefix}/html"
+   doxygen_output="${doxygen_output_top}/${package}"
 
    #
-   # covert to relative paths
+   # compute relative paths from localdir
    #
 
-   adl_COMPUTE_RELATIVE_PATH([localdir],[doxygen_output],[rel_doxygen_output])
-   adl_COMPUTE_RELATIVE_PATH([localdir],[doxygen_examples],[rel_doxygen_examples])
-   adl_COMPUTE_RELATIVE_PATH([localdir],[doxygen_input],[rel_doxygen_input])
+   adl_COMPUTE_RELATIVE_PATHS([\
+      localdir:doxygen_output:rel_doxygen_output \
+      localdir:doxygen_examples:rel_doxygen_examples \
+      localdir:doxygen_input:rel_doxygen_input\
+   ])
 
+   #
    # use relative paths for tag files also
-
+   #
    components=''
    AC_MSG_CHECKING([for Doxygen component dependencies])
    for comp in ${DRACO_COMPONENTS}; do
        components="${components} ${comp}"
-       TAGFILES="${TAGFILES} ${prefix}/html/${comp}.tag"
-       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${prefix}/html/${comp}.tag = ../${comp}\""
+       TAGFILES="${TAGFILES} ${doxygen_output_top}/${comp}.tag"
+       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${doxygen_output_top}/${comp}.tag = ../${comp}\""
    done
    AC_MSG_RESULT([${components}])
 
@@ -4192,16 +4262,18 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    fi
 
    # find the release number
-   number='null'
-   AC_MSG_CHECKING("draco release number")
-   number=`/bin/sh ../../tools/draco --version`
+   number=$1
+   AC_MSG_CHECKING("component release number")
    AC_MSG_RESULT($number)
 
-   AC_SUBST(doxygen_input)
+   AC_SUBST(doxygen_output)
    AC_SUBST(doxygen_examples)
+   AC_SUBST(doxygen_input)
+
    AC_SUBST(rel_doxygen_output)
    AC_SUBST(rel_doxygen_examples)
    AC_SUBST(rel_doxygen_input)
+
    AC_SUBST(latex_yes_no)
    AC_SUBST(dotpath)
    AC_SUBST(number)
@@ -4213,6 +4285,21 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
 
 ])
 
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_doxygen.m4
+dnl-------------------------------------------------------------------------dnl
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl ac_utils.m4
+dnl
+dnl Macros to perform useful functions
+dnl
+dnl Mike Buksas
+dnl-------------------------------------------------------------------------dnl
+
+dnl Functions taken from:
 dnl http://www.gnu.org/software/ac-archive/htmldoc/relpaths.html
 dnl
 
@@ -4314,7 +4401,6 @@ while test "[$]_lcl_tmp" != ''; do
   fi
 done])
 
-
 dnl adl_RECURSIVE_EVAL(VALUE, RESULT)
 dnl =================================
 dnl Interpolate the VALUE in loop until it doesn't change,
@@ -4331,8 +4417,27 @@ $2=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
      done
      echo "[$]_lcl_receval")`])
 
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_doxygen.m4
-dnl-------------------------------------------------------------------------dnl
+
+
+dnl Available from the GNU Autoconf Macro Archive at:
+dnl http://www.gnu.org/software/ac-archive/htmldoc/normpath.html
+dnl
+AC_DEFUN([adl_NORMALIZE_PATH],
+[case ":[$]$1:" in
+# change empty paths to '.'
+  ::) $1='.' ;;
+# strip trailing slashes
+  :*[[\\/]]:) $1=`echo "[$]$1" | sed 's,[[\\/]]*[$],,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case ifelse($2,,"[$]$1",$2) in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1/,g'` ;;
+esac])
+
+
 
 
