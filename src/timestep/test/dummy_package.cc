@@ -15,13 +15,11 @@
 #include "../field_ts_advisor.hh"
 #include "dummy_package.hh"
 
-using std::vector;
-
 using namespace rtt_timestep;
 
-vector<double> operator*(double lhs, const vector<double> &rhs)
+std::vector<double> operator*(double lhs, const std::vector<double> &rhs)
 {
-    vector<double> results(rhs.size());
+    std::vector<double> results(rhs.size());
 
     for (int i=0; i<rhs.size(); i++)
 	results[i] = lhs*rhs[i];
@@ -77,12 +75,12 @@ void dummy_package::advance_state()
     const int sizea = sizeaArray;
     const double *a1 = a1Array;
     
-    vector<double> te_old(a1,a1+sizea);
-    vector<double> te_new = 1.09*te_old;
-    vector<double> ti_old=0.97*te_old;
-    vector<double> ti_new=1.05*te_old;
-    vector<double> ri_old=1.10*te_old;
-    vector<double> ri_new=1.15*te_old;
+    std::vector<double> te_old(a1,a1+sizea);
+    std::vector<double> te_new = 1.09*te_old;
+    std::vector<double> ti_old=0.97*te_old;
+    std::vector<double> ti_new=1.05*te_old;
+    std::vector<double> ri_old=1.10*te_old;
+    std::vector<double> ri_new=1.15*te_old;
 
 // Set a floor for the electron temperature controller, to
 // execcize this method. Just accelpt the default floor on the
@@ -96,6 +94,8 @@ void dummy_package::advance_state()
     sp_te -> update_tstep(tsm, te_old, te_new);
     sp_ti -> update_tstep(tsm, ti_old, ti_new);
     sp_ri -> update_tstep(tsm, ri_old, ri_new);
+
+    return;
 }
 
 bool dummy_package::tests_passed() const
@@ -110,10 +110,6 @@ bool dummy_package::tests_passed() const
     return soft_equiv( ref1, sp_te->get_dt_rec(tsm), prec )
 	&& soft_equiv( ref2, sp_ti->get_dt_rec(tsm), prec )
 	&& soft_equiv( ref3, sp_ri->get_dt_rec(tsm), prec );
-
-// compare_reals(1.371742e+00, sp_te->get_dt_rec(tsm),nd)
-//         && compare_reals(1.496914e+00, sp_ti->get_dt_rec(tsm),nd)
-//         && compare_reals(2.716049e+00, sp_ri->get_dt_rec(tsm),nd);
 }
 
 //---------------------------------------------------------------------------//

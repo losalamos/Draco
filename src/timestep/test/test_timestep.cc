@@ -197,6 +197,11 @@ void test_timestep::execute_test()
 	cout <<     "*********************************************" << endl;
 	cout << endl;
     }
+    
+    // create a global barrier to ensure that the PASS/FAIL msg is created
+    // before we leave this routine.
+    C4::gsync();
+    return;
 }
 
 
