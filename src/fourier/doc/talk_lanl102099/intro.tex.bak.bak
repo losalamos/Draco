@@ -1,0 +1,53 @@
+\baselineskip=0.29in
+
+%%%%%%
+% Page
+%%%%%%
+\newpage
+
+\mbox{ }
+\vskip0.5in
+{\Huge
+\begin{center}
+{\bf Motivation} 
+\end{center}
+}
+\vskip0.5in
+\noindent
+{\Huge
+\begin{itemize}
+ \item {\bf Provide an easily extensible Fourier analysis 
+            environment for the Draco component library}
+ \item {\bf Speed up the developement of new methods
+            by reducing the time necessary to do Fourier analysis}
+\end{itemize}
+}
+\vskip2.0in
+
+
+\baselineskip=0.29in
+
+%%%%%%
+% Page
+%%%%%%
+\newpage
+
+
+\mbox{ }
+\vskip0.5in
+{\Huge
+\begin{center}
+{\bf Introduction}
+\end{center}
+}
+\vskip0.5in
+{\Huge
+\begin{itemize}
+ \item {\bf A Fourier analysis package for Draco has been created}
+ \item {\bf Provides the ability to Fourier analyze various methods
+            and acceleration techniques quickly and easily}
+ \item {\bf The Draco Fourier package will help reduce the time needed 
+            for the developement of new methods and acceleration techniques}
+\end{itemize}
+}
+\vskip2.0in

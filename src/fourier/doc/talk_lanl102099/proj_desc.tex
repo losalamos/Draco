@@ -1,0 +1,131 @@
+\baselineskip=0.29in
+
+%%%%%%
+% Page
+%%%%%%
+\newpage
+\noindent
+
+\mbox{ }
+\vskip0.5in
+{\Huge
+\begin{center}
+{\bf Project Description}
+\end{center}
+}
+\vskip0.5in
+{\Huge
+\noindent
+{\bf Requirements and Current State:}
+}
+\vskip0.5in
+{\Huge
+\begin{itemize}
+ \item {\bf Technical}
+ \item {\bf Software}
+ \item {\bf Testing}
+\end{itemize}
+}
+\vskip2.0in
+
+
+\baselineskip=0.29in
+\newpage 
+\mbox{ }
+\vskip1.0in 
+
+%%%%%%
+% Page
+%%%%%%
+\noindent
+
+{\Huge
+\begin{center}
+{\bf Technical Requirements}\\
+{\bf and Current State}
+\end{center}
+}
+\vskip0.5in
+{\Huge
+\begin{itemize}
+\item {\bf 1-D (2-D) Fourier analysis capability}
+\item {\bf ${\rho}$ vs. ${\Delta}_x, {\Delta}_y$ and ${\rho}$
+           vs. ${\lambda}_x, {\lambda}_y$}
+\item {\bf Automatic graphical output}
+\item {\bf User-supplied class for supplying iteration matrix}
+\item {\bf Easily extensible for any transport method and associated
+           acceleration}
+\item {\bf Robust and easily implemented linear algebra routines}
+\end{itemize}
+}
+\vskip2.0in
+
+
+
+\baselineskip=0.29in
+\newpage 
+\mbox{ }
+\vskip0.25in 
+
+%%%%%%
+% Page
+%%%%%%
+\noindent
+
+{\Huge
+\begin{center}
+{\bf Software Requirements}\\
+{\bf and Current State}
+\end{center}
+}
+\vskip0.5in
+{\Huge
+\begin{itemize}
+ \item {\bf Four main software components:}
+  {\Large
+  \begin{enumerate}
+   \item {\bf Preprocessor}
+   \item {\bf Iteration Matrix}
+   \item {\bf Eigen Solver}
+   \item {\bf Postprocessor}
+  \end{enumerate}
+  }
+ \item {\bf Written in C++ using many of the concepts of the
+            language}
+ \item {\bf Easily extensible format for adding new discretizations and 
+            acceleration techniques}
+ \item {\bf Heavily asserted for run time operation verification (DBC)}
+ \item {\bf Uses MTL/BLAIS/Lapack/BLAS for linear algebra manipulation}
+ \item {\bf Uses PGPLOT for immediate graphical results}
+\end{itemize}
+}
+\vskip2.0in
+
+\baselineskip=0.29in
+\newpage 
+\mbox{ }
+\vskip0.5in 
+
+%%%%%%
+% Page
+%%%%%%
+\noindent
+
+{\Huge
+\begin{center}
+{\bf Testing Requirements}\\
+{\bf and Current State}
+\end{center}
+}
+\vskip0.5in
+{\Huge
+\begin{itemize}
+\item {\bf Package verified by comparing to known solutions}
+\item {\bf Initial tests involved LLD/SCB accelerated with ``Modified
+           4-Step'' DSA}
+\item {\bf Testing still needed for 2-D component of the package}
+\item {\bf Currently testing re-usability of package}
+\end{itemize}
+}
+
+\vskip2.0in
