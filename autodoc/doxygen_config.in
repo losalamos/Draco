@@ -210,7 +210,8 @@ TAB_SIZE             = 8
 
 INPUT                 = \
  @doxygen_src@/timestep @doxygen_src@/rng \
- @doxygen_src@/meshTest @doxygen_src@/cdi
+ @doxygen_src@/meshTest @doxygen_src@/cdi \
+ @doxygen_src@/cdi_gandolf
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -250,7 +251,7 @@ EXAMPLE_PATH         = \
  @doxygen_src@/rng/test         @doxygen_src@/stopwatch/test \
  @doxygen_src@/timestep/test    @doxygen_src@/xm/test        \
  @doxygen_src@/fourier/test     @doxygen_src@/meshReaders/test \
- @doxygen_src@/cdi/test
+ @doxygen_src@/cdi/test         @doxygen_src@/cdi_gandolf/test
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
