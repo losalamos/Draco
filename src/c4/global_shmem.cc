@@ -6,10 +6,13 @@
 // @> Global C4 functions for Cray SHMEM.
 //---------------------------------------------------------------------------//
 
-#include "DynArray.hh"
-#include "Assert.hh"
+#include "ds++/DynArray.hh"
+#include "ds++/Assert.hh"
 
 #include "c4/global_shmem.hh"
+
+#define shmalloc malloc
+#define shfree free
 
 //---------------------------------------------------------------------------//
 // Miscellaneous
@@ -17,6 +20,8 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
+
+C4_NAMESPACE_BEG
 
 static void C4_shm_init_scalar_work_arrays();
 static void C4_shm_init_pt2pt();
@@ -290,7 +295,7 @@ static void mark_recv_req_inactive( int source, int mid )
 
 //---------------------------------------------------------------------------//
 
-void C4_Init( int& argc, char **& argv )
+void Init( int& argc, char **& argv )
 {
     C4_shm_mynode = _my_pe();
     C4_shm_nodes = _num_pes();
@@ -304,13 +309,13 @@ void C4_Init( int& argc, char **& argv )
     shmem_set_cache_inv();
 }
 
-void C4_Finalize()
+void Finalize()
 {
 // Whaddya think?  Should I shmem_free the symmetric data buffer?  heh heh.
 
 // Check that the shmalloc books haven't been hosed.
 
-    Assert( !shmalloc_check(0) );
+//    Assert( !shmalloc_check(0) );
 
     shfree( pe_msg_waiting );
     shfree( pe_ready );
@@ -320,20 +325,20 @@ void C4_Finalize()
 
 // Check that the shmalloc books haven't been hosed.  Again, just to be sure.
 
-    Assert( !shmalloc_check(0) );
+//    Assert( !shmalloc_check(0) );
 }
 
-int C4_node()
+int node()
 {
     return C4_shm_mynode;
 }
 
-int C4_nodes()
+int nodes()
 {
     return C4_shm_nodes;
 }
 
-int C4_group()
+int group()
 {
     int group = 0;
     return group;
@@ -359,7 +364,7 @@ int C4_group()
 // Perform a normal (blocking) send.
 //---------------------------------------------------------------------------//
 
-int C4_Send( void *buf, int size, int dest, int tag, int group )
+int Send( void *buf, int size, int dest, int tag, int group )
 {
 // Check to see if we can short circuit send this to an already pending async
 // receive posted by the dest node.
@@ -458,7 +463,7 @@ printf( "%d, pe_async_recvs_pending[%d]=%d\n",
 // Perform a normal (blocking) receive.
 //---------------------------------------------------------------------------//
 
-int C4_Recv( void *buf, int size, int source, int tag, int group )
+int Recv( void *buf, int size, int source, int tag, int group )
 {
     int msgtag, msglen = 0;
 
@@ -1751,6 +1756,8 @@ void C4_shm_dbg_1()
 
     C4_gsync();
 }
+
+C4_NAMESPACE_END
 
 //---------------------------------------------------------------------------//
 //                              end of global_shmem.cc
