@@ -31,7 +31,8 @@ void Mat_State<MT>::print(ostream &output, int cell) const
     output.precision(4);
     
     output << setw(8) << cell << setw(15) << setiosflags(ios::scientific)
-	   << density(cell) << setw(15) << temperature(cell) << endl;
+	   << density(cell) << setw(15) << temperature(cell) << setw(15) 
+	   << dedt(cell) << setw(15) << spec_heat(cell) << endl;
 } 
 
 //---------------------------------------------------------------------------//
@@ -48,8 +49,10 @@ ostream& operator<<(ostream &output, const Mat_State<MT> &object)
     using std::setiosflags;
     
     output << setw(8)  << setiosflags(ios::right) << "Cell" 
-	   << setw(15) << "Density" << setw(15) << "Temp" << endl;
-    output << "--------------------------------------" << endl;
+	   << setw(15) << "Density" << setw(15) << "Temp" 
+	   << setw(15) << "dEdT" << setw(15) << "Cv" << endl;
+    output << "--------------------------------------"
+	   << "------------------------------" << endl;
 
     for (int i = 1; i <= object.num_cells(); i++)
 	object.print(output, i);
