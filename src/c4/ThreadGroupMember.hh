@@ -12,6 +12,8 @@
 #include "config.hh"
 #include "ThreadControl.hh"
 
+#include "ds++/Assert.hh"
+
 #include <pthread.h>
 
 C4_NAMESPACE_BEG
@@ -105,6 +107,10 @@ class ThreadGroupMember {
 
     template<class T>
     void gsum( T *px, int n ) const;
+
+    int lock()   const { return pthread_mutex_lock( &tcb->mutex ); }
+    int unlock() const { return pthread_mutex_unlock( &tcb->mutex ); }
+
 };
 
 C4_NAMESPACE_END
