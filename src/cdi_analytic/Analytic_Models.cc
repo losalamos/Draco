@@ -99,7 +99,7 @@ Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
     const sf_char &packed)
 {
     // size of stream
-    int size = sizeof(int) + 5 * sizeof(double);
+    int size = sizeof(int) + 4 * sizeof(double);
 
     Require (packed.size() == size);
 
@@ -116,7 +116,7 @@ Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
 	    "Tried to unpack the wrong type in Polynomial_Analytic_Opacity_Model");
 	
     // unpack the data
-    unpacker >> a >> b >> c >> d >> e;
+    unpacker >> a >> b >> c >> d;
 
     Ensure (unpacker.get_ptr() == unpacker.end());
 }
@@ -130,8 +130,8 @@ Polynomial_Analytic_Opacity_Model::pack() const
     // get the registered indicator 
     int indicator = POLYNOMIAL_ANALYTIC_OPACITY_MODEL;
 
-    // caculate the size in bytes: indicator + 5 * double
-    int size = sizeof(int) + 5 * sizeof(double);
+    // caculate the size in bytes: indicator + 4 * double
+    int size = sizeof(int) + 4 * sizeof(double);
 
     // make a vector of the appropriate size
     sf_char pdata(size);
@@ -150,7 +150,6 @@ Polynomial_Analytic_Opacity_Model::pack() const
     packer << b;
     packer << c;
     packer << d;
-    packer << e;
 
     // Check the size
     Ensure (packer.get_ptr() == &pdata[0] + size);
@@ -164,12 +163,11 @@ Polynomial_Analytic_Opacity_Model::pack() const
 Analytic_Opacity_Model::sf_double
 Polynomial_Analytic_Opacity_Model::get_parameters() const
 {
-    sf_double p(5);
+    sf_double p(4);
     p[0] = a;
     p[1] = b;
     p[2] = c;
     p[3] = d;
-    p[4] = e;
 
     return p;
 }

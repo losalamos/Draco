@@ -148,37 +148,34 @@ class Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
  *
  * The opacity is defined:
  *
- * \arg opacity = (a + b * T^c) * d * rho^e
+ * \arg opacity = (a + b * T^c) * rho^d
  *
  * where the coefficients have the following units:
  *
- * \arg a = [cm^2/g]
- * \arg b = [keV^(-c) cm^2/g]
- * \arg d = [cm^3/g]
+ * \arg a = [cm^2/g * (cm^3/g)^d]
+ * \arg b = [keV^(-c) * cm^2/g * (cm^3/g)^d]
  *
  */
 class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
 {
   private: 
     // Coefficients
-    double a;  // constant [cm^2/g]
-    double b;  // temperature multiplier [keV^(-c) cm^2/g]
+    double a;  // constant [cm^2/g * (cm^3/g)^d]
+    double b;  // temperature multiplier [keV^(-c) * cm^2/g * (cm^3/g)^d]
     double c;  // temperature power
-    double d;  // density multiplier [cm^3/g]
-    double e;  // density power
+    double d;  // density power
 
   public:
     /*!
      * \brief Constructor.
-     * \param a_ constant [cm^2/g]
-     * \param b_ temperature multiplier [keV^(-c) cm^2/g]
+     * \param a_ constant [cm^2/g (cm^3/g)^d]
+     * \param b_ temperature multiplier [keV^(-c) cm^2/g (cm^3/g)^d]
      * \param c_ temperature power
-     * \param d_ density multiplier [cm^3/g]
-     * \param e_ density power
+     * \param d_ density power
      */
     Polynomial_Analytic_Opacity_Model(double a_, double b_, double c_,
-				      double d_, double e_)
-	: a(a_), b(b_), c(c_), d(d_), e(e_)
+				      double d_)
+	: a(a_), b(b_), c(c_), d(d_)
     {
 	/*...*/
     }
@@ -190,12 +187,12 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
     double calculate_opacity(double T, double rho) const
     {
 	Require (c < 0.0 ? T > 0.0 : T >= 0.0);
-	Require (rho >= 0.0);
+	Require (rho > 0.0);
 
 	double T_power   = std::pow(T, c);
-	double rho_power = std::pow(rho, e);
+	double rho_power = std::pow(rho, d);
 
-	double opacity   = (a + b * T_power) * d * rho_power;
+	double opacity   = (a + b * T_power) * rho_power;
 
 	Ensure (opacity >= 0.0);
 	return opacity;

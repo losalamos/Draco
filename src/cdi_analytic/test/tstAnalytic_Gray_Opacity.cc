@@ -154,7 +154,7 @@ void CDI_test()
 
     // lets make two models
     SP<Analytic_Opacity_Model> amodel
-	(new Polynomial_Analytic_Opacity_Model(0.0,100.0,-3.0,1.0,0.0));
+	(new Polynomial_Analytic_Opacity_Model(0.0,100.0,-3.0,0.0));
     SP<Analytic_Opacity_Model> smodel
 	(new Constant_Analytic_Opacity_Model(1.0));
 
@@ -211,7 +211,7 @@ void packing_test()
     {
 	// lets make two models
 	SP<Analytic_Opacity_Model> amodel
-	    (new Polynomial_Analytic_Opacity_Model(0.0,100.0,-3.0,1.0,0.0));
+	    (new Polynomial_Analytic_Opacity_Model(0.0,100.0,-3.0,0.0));
 	
 	Analytic_Gray_Opacity absorption(amodel, rtt_cdi::ABSORPTION);
 
