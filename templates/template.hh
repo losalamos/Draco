@@ -28,6 +28,8 @@ namespace rtt_<spkg>
  * Doxygen tutorial: http://www.stack.nl/~dimitri/doxygen/docblocks.html
  * Doxygen keywords: http://www.stack.nl/~dimitri/doxygen/commands.html
  *
+ * \sa <class>.cc for detailed descriptions.
+ *
  * Code Sample:
  * \code
  *     cout << "Hello, world." << endl;
@@ -46,71 +48,35 @@ namespace rtt_<spkg>
 
 class <class> 
 {
+  public:
 
     // NESTED CLASSES AND TYPEDEFS
 
-  public:
-
-    // ----------------------------------------
     // CREATORS
-    // ----------------------------------------
     
-    //! constructors
+    //! default constructors
     <class>();
+
+    //! copy constructor
     <class>(const <class> &rhs);
 
     //! destructor
     ~<class>();
 
-    // ----------------------------------------
     // MANIPULATORS
-    // ----------------------------------------
     
-    /*!
-     * \brief Assignment operator for <class>
-     *
-     * This will create a copy of the instantiated object.  For now the
-     * assignment operator has been disabled because we have a prototype with
-     * no definition.  This prevents the compiler from creating a default
-     * assignment operator.
-     * 
-     * \param rhs The object that is being copies
-     * \return <class> A copy of the original object.
-     */
+    //! Assignment operator for <class>
     <class>& operator=(const <class> &rhs);
 
-    // ----------------------------------------
     // ACCESSORS
-    // ----------------------------------------
-
-    /*
-     * \brief Short description
-     *
-     * Long description
-     *
-     * \param c description goes here.
-     * \return description goes here.
-     *
-     * \example test/mytest.cc
-     */
-    // int dummy_accessor( int c ) const;
 
   private:
-    
-    // ----------------------------------------
+
+    // NESTED CLASSES AND TYPEDEFS
+
     // IMPLEMENTATION
-    // ----------------------------------------
 
-    // ----------------------------------------
     // DATA
-    // ----------------------------------------
-
-    /*
-     * \brief short description
-     *
-     * Long description here.  
-     */
-    // int dummy_data;
 
 };
 
