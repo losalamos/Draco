@@ -10,7 +10,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "QuadServices.i.hh"
+#include "QuadServices.hh"
 
 namespace rtt_quadrature
 {
