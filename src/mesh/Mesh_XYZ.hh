@@ -123,7 +123,6 @@ class Mesh_XYZ : private XYZ_Mapper
     // that will iterate through a face-centered field around each vertex,
     // before going onto the next vertex's faces.
 
-#if 1
     template<class FaceField>
     class ConnFacesAroundVertices
 	: public rtt_mesh::MeshXYZConnFacesAroundVertices<FaceField>
@@ -138,14 +137,6 @@ class Mesh_XYZ : private XYZ_Mapper
 	    // empty
 	}
     };
-#else
-    template<class FaceField>
-    class ConnFacesAroundVertices
-	: public vctf<rtt_mesh::NSVertex::Vertex<FaceField> >
-    {
-	friend class Mesh_XYZ;
-    };
-#endif
 
 // Face centered discontinuous field
 // Has a value on each face in each cell.
@@ -1155,6 +1146,9 @@ template<class T>
 void dump( const Mesh_XYZ::vctf<T>& data, char *name );
 
 #include "Mesh_XYZ.t.hh"
+
+// Get the ContainerTraits for this class.
+#include "Mesh_XYZTraits.hh"
 
 #endif                          // __mesh_Mesh_XYZ_hh__
 

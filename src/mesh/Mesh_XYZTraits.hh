@@ -58,6 +58,16 @@ class ContainerTraits<Mesh_XYZ::cctf<T1> >
     }
 };
 
+template<class T1, class T2>
+class ContainerTraits<Mesh_XYZ::cctf<T1>, Mesh_XYZ::cctf<T2> >
+{
+    static inline bool conformal(const Mesh_XYZ::cctf<T1> &a,
+				 const Mesh_XYZ::cctf<T2> &b)
+    {
+	return a.get_Mesh() == b.get_Mesh();
+    }
+};
+
 template<class T1>
 class ContainerTraits<Mesh_XYZ::fcdtf<T1> >
 {
@@ -82,6 +92,55 @@ class ContainerTraits<Mesh_XYZ::fcdtf<T1> >
     }
     static inline bool conformal(const Mesh_XYZ::fcdtf<T1> &a,
 				 const Mesh_XYZ::fcdtf<T1> &b)
+    {
+	return a.get_Mesh() == b.get_Mesh();
+    }
+};
+
+template<class T1, class T2>
+class ContainerTraits<Mesh_XYZ::fcdtf<T1>, Mesh_XYZ::fcdtf<T2> >
+{
+    static inline bool conformal(const Mesh_XYZ::fcdtf<T1> &a,
+				 const Mesh_XYZ::fcdtf<T2> &b)
+    {
+	return a.get_Mesh() == b.get_Mesh();
+    }
+};
+
+template<class T1>
+class ContainerTraits<Mesh_XYZ::bstf<T1> >
+{
+  public:
+    typedef typename Mesh_XYZ::bstf<T1>::iterator iterator;
+    typedef typename Mesh_XYZ::bstf<T1>::const_iterator const_iterator;
+    static inline iterator begin(Mesh_XYZ::bstf<T1> &a)
+    {
+	return a.begin();
+    }
+    static inline const_iterator begin(const Mesh_XYZ::bstf<T1> &a)
+    {
+	return a.begin();
+    }
+    static inline iterator end(Mesh_XYZ::bstf<T1> &a)
+    {
+	return a.end();
+    }
+    static inline const_iterator end(const Mesh_XYZ::bstf<T1> &a)
+    {
+	return a.end();
+    }
+    static inline bool conformal(const Mesh_XYZ::bstf<T1> &a,
+				 const Mesh_XYZ::bstf<T1> &b)
+    {
+	return a.get_Mesh() == b.get_Mesh();
+    }
+};
+
+template<class T1, class T2>
+class ContainerTraits<Mesh_XYZ::bstf<T1>, Mesh_XYZ::bstf<T2> >
+{
+    static inline bool conformal(const Mesh_XYZ::bstf<T1> &a,
+				 const Mesh_XYZ::bstf<T2> &b)
     {
 	return a.get_Mesh() == b.get_Mesh();
     }
