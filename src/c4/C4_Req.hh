@@ -63,6 +63,7 @@ class C4_Req {
     void clear()    { assigned = 0; }
 
     void wait();
+    void free();
 
     bool complete();
 

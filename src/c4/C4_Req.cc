@@ -103,7 +103,24 @@ void C4_Req::wait()
 }
 
 //---------------------------------------------------------------------------//
-// Tests for the completeion of a non blocking operation.
+// Free request handle for a posted asynchronous receive, note: once freed
+// the handle must be reactivated to test for completeness or to wait on it
+//---------------------------------------------------------------------------//
+
+void C4_Req::free()
+{
+#ifdef C4_SHMEM
+    throw "incomplete";
+#endif
+#ifdef C4_MPI
+    if (assigned)
+	MPI_Request_free( &r );
+#endif
+    clear();
+}
+
+//---------------------------------------------------------------------------//
+// Tests for the completion of a non blocking operation.
 //---------------------------------------------------------------------------//
 
 bool C4_Req::complete()
@@ -113,7 +130,8 @@ bool C4_Req::complete()
 #endif
 #ifdef C4_MPI
     int flag;
-    MPI_Test( &r, &flag, &s );
+    if (assigned)
+        MPI_Test( &r, &flag, &s );
     return flag;
 #endif
 #ifdef C4_SCALAR
