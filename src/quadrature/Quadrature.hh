@@ -21,9 +21,6 @@ namespace rtt_quadrature
 using std::vector;
 using std::string;
 
-//! The numerical constant PI.
-const double PI = 3.14159265358979323846;
-
 //! Tol specifies how accurately we compare two double values.
 const double TOL = 1.0e-13;
 

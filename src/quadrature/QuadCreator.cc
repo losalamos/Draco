@@ -22,6 +22,9 @@
 
 #include <iostream>
 #include <cmath>
+
+#include "units/PhysicalConstants.hh"
+
 #include "QuadCreator.hh"
 
 namespace rtt_quadrature
@@ -56,12 +59,12 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 	    break;
 	    
 	case LevelSym2D:
-	    if ( fabs(norm) <= TOL ) norm = 2.0*PI;
+	    if ( fabs(norm) <= TOL ) norm = 2.0*rtt_units::PI;
 	    spQuad = new Q2DLevelSym( sn_order, norm );
 	    break;
 	    
 	case LevelSym:
-	    if ( fabs(norm) <= TOL ) norm = 4.0*PI;
+	    if ( fabs(norm) <= TOL ) norm = 4.0*rtt_units::PI;
 	    spQuad = new Q3DLevelSym( sn_order, norm );
 	    break;
 	    

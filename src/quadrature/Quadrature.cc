@@ -21,6 +21,8 @@
 #include <iomanip>
 #include <cmath>
 
+#include "units/PhysicalConstants.hh"
+
 #include "Quadrature.hh"
 
 namespace rtt_quadrature
@@ -158,7 +160,7 @@ Q1DGaussLeg::Q1DGaussLeg( size_t n, double norm_ )
     double mu_l = 0.5 * (mu2-mu1);
     
     for ( size_t i = 1; i <= m; ++i ) {
-	double z1, pp, z = cos( PI * ( i-0.25 ) / ( n+0.5 ));
+	double z1, pp, z = cos( rtt_units::PI * ( i-0.25 ) / ( n+0.5 ));
 	do {
 	    double p1 = 1.0, p2 = 0.0;
 	    for ( size_t j=1; j<=n; j++ ) {
