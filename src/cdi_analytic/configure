@@ -4333,20 +4333,33 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # optimization level
    # gcc allows -g with -O (like KCC)
 
-   # defaults
-   if test "${enable_debug:=yes}" = yes ; then
-       gcc_debug_flag='-g'
-   fi
-   CXXFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
-   CFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
+   # set opt level in flags
+   gcc_opt_flags="-O${with_opt:=0}"
 
-   # add inlining if optimization is 01, 02 (it is on by default for
-   # 03)
-   if test "${with_opt}" = 1 || test "${with_opt}" = 2 ||
-      test "${with_opt}" = 3 ; then
-       CXXFLAGS="${CXXFLAGS} -finline-functions"
-       CFLAGS="${CFLAGS} -finline-functions"
+   # set up compiler when optimized
+   if test "${with_opt}" != 0; then
+
+       # set up inlining when optimization is on
+       gcc_opt_flags="-finline-functions ${gcc_opt_flags}"
+
+       # turn off debug flag by default if not requested explicitly
+       if test "${enable_debug:=no}" = yes ; then
+	   gcc_opt_flags="-g ${gcc_opt_flags}"
+       fi
+
+   # set up compiler when not optimized
+   else
+
+       # default is to have debug flag on when opt=0
+       if test "${enable_debug:=yes}" = yes ; then
+	   gcc_opt_flags="-g ${gcc_opt_flags}"
+       fi
+
    fi
+
+   # add opt flags
+   CXXFLAGS="${gcc_opt_flags} ${CXXFLAGS}"
+   CFLAGS="${gcc_opt_flags} ${CFLAGS}"
 
    # RPATH FLAGS
 
