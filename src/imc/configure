@@ -1630,7 +1630,11 @@ fi;
 	    tstParticle \
             tstParticle_trans \
             tstTransporter \
-            tstRandom_Walk "
+            tstRandom_Walk \
+            tstAzimuthal_Mesh \
+            tstSurface_Sub_Tally \
+            tstSurface_tracker \
+            tstRZ_Surface_tracking"
 
 	test_nprocs="1 2 4"
 

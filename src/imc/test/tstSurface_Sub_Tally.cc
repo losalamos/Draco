@@ -49,7 +49,7 @@ void test()
     direction[1] = 0.0;
     direction[2] = std::sqrt(2.0)/2.0;
 
-    surface_tally.add_to_tally(0, direction, true, 1.0);
+    surface_tally.add_to_tally(1, direction, true, 1.0);
 
     if ( !soft_equiv( surface_tally.get_outward_weight_tally(1)[3], 1.0 ) ) ITFAILS;
 
@@ -57,7 +57,7 @@ void test()
     direction[1] =  0.0;
     direction[2] = -0.1;
 
-    surface_tally.add_to_tally(0, direction, false, 0.5);
+    surface_tally.add_to_tally(1, direction, false, 0.5);
 
     if (!soft_equiv( surface_tally.weight(1,false,2), 0.5 ) ) ITFAILS;
     if (surface_tally.crossings(1,false,2) != 1) ITFAILS;

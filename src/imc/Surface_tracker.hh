@@ -73,8 +73,12 @@ class Surface_tracker
 
     // CREATORS
     
-    //! default constructors
+    //! Construct with a list of surfaces
     Surface_tracker(const std::vector<SP_Surface>& surfaces);
+
+    //! Construct with a list of surfaces and tally indices
+    Surface_tracker(const std::vector<SP_Surface>& surfaces,
+		    const std::vector<int>& tally_indices);
 
     //! copy constructor
     Surface_tracker(const Surface_tracker &rhs);
@@ -107,6 +111,8 @@ class Surface_tracker
 
     bool get_inside(int i) const { return is_inside[i]; }
 
+    bool get_surface_in_cell(int cell) const;
+
     int surfaces() const { return surface_list.size(); }
 
   private:
@@ -114,6 +120,7 @@ class Surface_tracker
     // DATA
 
     std::vector<SP_Surface> surface_list;
+    std::vector<int> tally_indices;
     std::vector<bool> is_inside;
 
 };

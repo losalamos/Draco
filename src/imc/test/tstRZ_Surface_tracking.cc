@@ -96,6 +96,8 @@ SP<Surface_tracker> build_a_surface_tracker()
 
 }
 
+
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Create a gray opacity with sigma = 1.0 everywhere on the given mesh
@@ -192,6 +194,17 @@ void test_gray_particle()
     // Make a mesh
     SP<RZWedge_Mesh> mesh = build_an_RZWedge();
 
+    std::cout << "Num cells: " << mesh->num_cells() << std::endl;
+    for (int cell = 1; cell <= mesh->num_cells(); ++cell)
+    {
+	std::cout << "Cell: " << cell << std::endl;
+	std::cout << "\t x: " << mesh->get_low_x(cell) << "," 
+		  << mesh->get_high_x(cell) << std::endl;
+	std::cout << "\t z: " << mesh->get_low_z(cell) << "," 
+		  << mesh->get_high_z(cell) << std::endl << std::endl;
+    }
+    
+
     // Make an azimuthal mesh
     SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh();
 
@@ -263,10 +276,10 @@ void test_gray_particle()
     if (!soft_equiv(surface_tally->weight(2, true,  4) , exp(-2.0-sqrt(3.0))))
 	ITFAILS;
 
-    if (surface_tally->crossings(2,false,4) != 1 ) ITFAILS;
-    if (surface_tally->crossings(1,true ,4) != 1 ) ITFAILS;
-    if (surface_tally->crossings(3,true ,4) != 1 ) ITFAILS;
-    if (surface_tally->crossings(2,true ,4) != 1 ) ITFAILS;
+    if (surface_tally->crossings(2, false, 4) != 1 ) ITFAILS;
+    if (surface_tally->crossings(1, true , 4) != 1 ) ITFAILS;
+    if (surface_tally->crossings(3, true , 4) != 1 ) ITFAILS;
+    if (surface_tally->crossings(2, true , 4) != 1 ) ITFAILS;
 
 
 }
@@ -345,10 +358,10 @@ void test_mg_particle()
     if (!soft_equiv(surface_tally->weight(2, true,  4) , 1.0))
 	ITFAILS;
 
-    if (surface_tally->crossings(2,false,4) != 1 ) ITFAILS;
-    if (surface_tally->crossings(1,true ,4) != 1 ) ITFAILS;
-    if (surface_tally->crossings(3,true ,4) != 1 ) ITFAILS;
-    if (surface_tally->crossings(2,true ,4) != 1 ) ITFAILS;
+    if (surface_tally->crossings(2, false, 4) != 1 ) ITFAILS;
+    if (surface_tally->crossings(1, true , 4) != 1 ) ITFAILS;
+    if (surface_tally->crossings(3, true , 4) != 1 ) ITFAILS;
+    if (surface_tally->crossings(2, true , 4) != 1 ) ITFAILS;
 }
 
 

@@ -15,8 +15,10 @@
 
 #include <iostream>
 #include <cmath>
+#include <functional>
+#include <algorithm>
 
-using std::vector;
+using namespace std;
 using rtt_dsxx::SP;
 using rtt_mc::Surface;
 
@@ -26,11 +28,46 @@ namespace rtt_imc
 Surface_tracker::Surface_tracker(
     const vector<Surface_tracker::SP_Surface>& surfaces_)
     : surface_list(surfaces_),
-      is_inside(surfaces_.size())
+      is_inside(surfaces_.size()),
+      tally_indices(surfaces_.size())
 { 
 
     Require(is_inside.size() > 0);
+    
+    int index = 1;
+    for (vector<int>::iterator tally_index = tally_indices.begin();
+	 tally_index != tally_indices.end(); 
+	 ++tally_index)
+	*tally_index = index++;
+	
 
+}
+
+Surface_tracker::Surface_tracker(
+    const vector<Surface_tracker::SP_Surface>& surfaces_,
+    const vector<int>& tally_indices_)
+    : surface_list(surfaces_),
+      is_inside(surfaces_.size()),
+      tally_indices(tally_indices_)
+{
+
+    // Make sure index list is the same size:
+    Require( tally_indices.size() == surface_list.size() );
+
+    // Make sure tally indices are positive:
+    Require (
+	find_if( tally_indices.begin(), tally_indices.end(),
+		 bind2nd(less_equal<int>(), 0) ) == 
+	tally_indices.end() 
+	) ;
+    
+    // Make sure tally indices are increasing:
+    Require (
+	adjacent_find( tally_indices.begin(), tally_indices.end(),
+		       greater_equal<int>()) == 
+	tally_indices.end() 
+	);
+    
 }
 
 
@@ -96,10 +133,10 @@ void Surface_tracker::tally_crossings_implicit_abs(
     vector<double> final_position(position);
     for (int i=0; i!=3; ++i) final_position[i] += distance * direction[i];
 
-    int index = 0;
+    int surface_index = 0;
     for (surface_iterator surface = surface_list.begin();
 	 surface != surface_list.end();
-	 ++surface, ++index)
+	 ++surface, ++surface_index)
     {
 
 	bool ends_inside = (*surface)->is_inside(final_position, direction);
@@ -107,24 +144,27 @@ void Surface_tracker::tally_crossings_implicit_abs(
 	do // while is_inside != ends_inside
 	{
 	    double crossing_distance =
-		(*surface)->distance_to(position, direction, is_inside[index]);
+		(*surface)->distance_to(position, direction, 
+					is_inside[surface_index]);
 
 	    Check(distance > 0);
 
-	    if (crossing_distance <= distance || is_inside[index] != ends_inside)
+	    if (crossing_distance <= distance || is_inside[surface_index] != 
+		ends_inside)
 	    {
 		
 		double crossing_ew = 
 		    initial_ew * exp(-sigma * crossing_distance);
 		
-		tally.add_to_tally(index, direction, is_inside[index], 
+		tally.add_to_tally(tally_indices[surface_index], 
+				   direction, is_inside[surface_index], 
 				   crossing_ew);
 
-		is_inside[index] = !is_inside[index];
+		is_inside[surface_index] = !is_inside[surface_index];
 
 	    }
 
-	} while (is_inside[index] != ends_inside);
+	} while (is_inside[surface_index] != ends_inside);
 
     }
     
@@ -179,8 +219,8 @@ void Surface_tracker::tally_crossings_analog_abs(
 		is_inside[surface_index] != ends_inside)
 	    {
 		
-		tally.add_to_tally(surface_index, direction, 
-				   is_inside[surface_index], ew);
+		tally.add_to_tally(tally_indices[surface_index], 
+				   direction, is_inside[surface_index], ew);
 
 		is_inside[surface_index] = !is_inside[surface_index];
 

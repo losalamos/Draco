@@ -50,7 +50,7 @@ Surface_Sub_Tally::~Surface_Sub_Tally() { /* ... */ }
  * \brief Add a surface crossing to the tally for the given surface
  *
  *
- * \param surface Which surface is crossed. Zero-based.
+ * \param surface Which surface is crossed. 1-based.
  * \param direction Direction of the particle at crossing
  * \param is_outward True, if the particle is crossing outward
  * \param ew Energy-weight of the particle at the point of crossing.
@@ -61,10 +61,11 @@ void Surface_Sub_Tally::add_to_tally(int surface, const vector<double>& directio
 {
 
     Check ( ew > 0 );
-    Check ( surface >= 0 ); Check ( surface < surfaces );
+    Check ( surface > 0 ); Check ( surface <= surfaces );
 
     // Compute the index of the surface & direction in the tally.
-    int surface_index = 2 * surface + static_cast<int>(is_outward);
+    //    int surface_index = 2 * surface + static_cast<int>(is_outward);
+    int surface_index = get_surface_index(surface, is_outward);
 
     // Get the bin from the mesh object
     int bin = azimuthal_mesh->find_bin(direction);
