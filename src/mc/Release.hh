@@ -15,7 +15,7 @@
 //===========================================================================//
 /*!
  * \page mc_overview Overview of the MC package
- * \version 2_1_0
+ * \version 2_2_0
  * \author Tom Evans, Todd Urbatsch
  
  * The mc package is a set of general Monte Carlo (mc) components that can be

@@ -1,3 +1,9 @@
+2001-07-30  Thomas M. Evans  <tme@lanl.gov>
+
+	* mc: Release mc-2_2_0.  This release includes the use of
+	Packing_Utils (rtt_dsxx) in OS_Mesh::pack and RZWedge_Mesh::pack
+	along with some cleanup for the gnu g++ compiler.
+
 2001-05-10  Thomas M. Evans  <tme@lanl.gov>
 
 	* mc: Release of mc-2_1_0.  This update includes the addition of
