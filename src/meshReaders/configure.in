@@ -33,7 +33,8 @@ AC_OUTPUT(Makefile:../../config/Makefile.package.in   \
 	  test/cube.mesh:test/cube.mesh.in \
 	  test/quad.mesh:test/quad.mesh.in \
  	  test/slab.mesh:test/slab.mesh.in \
-          test/rttdef.mesh:test/rttdef.mesh.in)
+          test/rttdef.mesh:test/rttdef.mesh.in\
+	  test/rttamr.mesh:test/rttamr.mesh.in)
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/meshReaders configure.in

@@ -328,7 +328,6 @@ void RTT_Format::Header::readData(ifstream & meshfile)
 				       comments[i].find_last_not_of(" ") -
 				       comments[i].find_first_not_of(" ")+1);
     }
-    getline(meshfile, dummyString);            // read and discard blank line.
 }
 
 /*!
@@ -1549,12 +1548,12 @@ void RTT_Format::Nodes::sortData()
     {
         for (int i = 0; i < dims.get_nnodes(); ++i)
 	{
-	    cout << i << " " << sort_map[i] << " " << parents[i] << " ";
-	    for (int j = 0; j < dims.get_ndim(); ++j)
-	        cout << coords[i][j] << " ";
-	    for (int f = 0; f < dims.get_nnode_flag_types(); ++f)
-	        cout << flags[i][f];
-	    cout << endl;
+	  cout << i << " " << sort_map[i] << " " << parents[i] << " ";
+	  for (int j = 0; j < dims.get_ndim(); ++j)
+	      cout << coords[i][j] << " ";
+	  for (int f = 0; f < dims.get_nnode_flag_types(); ++f)
+	      cout << flags[i][f];
+	  cout << endl;
 	}
     }
     // free memory
@@ -1968,7 +1967,7 @@ void RTT_Format::Cells::sortData()
 	    for (int j = 0; j < cellDefs.get_nnodes(cellType[i]); ++j)
 	        cout << nodes[i][j] << " ";
 	    for (int f = 0; f < dims.get_ncell_flag_types(); ++f)
-	        cout << flags[i][f];
+		cout << flags[i][f];
 	    cout << endl;
 	}
     }

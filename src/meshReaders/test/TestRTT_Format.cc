@@ -67,8 +67,9 @@ string TestRTT_Format::runTest()
 {
     // New meshes added to this test will have to be added to the enumeration
     // Meshes in the header file.
-    const int MAX_MESHES = 2;
-    string filename[MAX_MESHES] = {"rttdef.mesh", "rttdef.mesh"};
+    const int MAX_MESHES = 3;
+    string filename[MAX_MESHES] = {"rttdef.mesh", "rttdef.mesh", 
+				   "rttamr.mesh"};
     Meshes mesh_type;
     bool renumber;
 
@@ -80,6 +81,7 @@ string TestRTT_Format::runTest()
         switch (mesh_number)
 	{
 	case(1):
+	case(2):
 	    renumber = true;
 	    break;
 
@@ -149,6 +151,17 @@ string TestRTT_Format::runTest()
 	    all_passed = all_passed && check_side_data(mesh, mesh_type);
 	    all_passed = all_passed && check_cell_data(mesh, mesh_type);
 	    break;
+	// Test a fairly simple AMR mesh (enum AMR). Just read it in,
+	// verify some data, and connect it. That's enough!
+	case (2):
+	    mesh_type = AMR;
+	    all_passed = all_passed && check_header(mesh, mesh_type);
+	    all_passed = all_passed && check_dims(mesh, mesh_type);
+	    all_passed = all_passed && check_side_flags(mesh, mesh_type);
+	    all_passed = all_passed && check_cell_flags(mesh, mesh_type);
+	    all_passed = all_passed && check_renumber(mesh, mesh_type);
+	    all_passed = all_passed && check_connectivity(mesh, mesh_type);
+	    break;
 
 	default:
 	    fail("runTest") << "Invalid mesh type encountered." << endl;
@@ -193,7 +206,16 @@ bool TestRTT_Format::check_header(const rtt_meshReaders::RTT_Format & mesh,
 	comments.push_back("Author(s): H. Trease, J.McGhee");
 	break;
 
-    default:
+     case AMR:
+        version = "v1.0.0";
+	title = "StrCube";
+	date = "11-Aug-99";
+	cycle = 1;
+	time = 0.0;
+	ncomments = 0;
+	break;
+
+   default:
         fail("check_header") << "Invalid mesh type encountered." << endl;
 	all_passed = false;
 	return all_passed;
@@ -308,7 +330,7 @@ bool TestRTT_Format::check_dims(const rtt_meshReaders::RTT_Format & mesh,
 	    side_types.push_back(2);
 	nside_flag_types = 1;
 	    nside_flags.push_back(2);
-	nside_data =2;
+	nside_data = 2;
 	ncells = 1;
 	ncell_types = 1;
 	    // All cell types are decremented relative to the value in the
@@ -318,6 +340,38 @@ bool TestRTT_Format::check_dims(const rtt_meshReaders::RTT_Format & mesh,
 	    ncell_flags.push_back(2);
 	    ncell_flags.push_back(2);
 	ncell_data = 1;
+	break;
+
+    case AMR:
+	coor_units = "cm";
+	prob_time_units= "s";
+        ncell_defs = 4;
+	nnodes_max = 8;
+	nsides_max = 6;
+	nnodes_side_max = 4;
+	ndim = 3;
+	ndim_topo = 3;
+	nnodes = 342;
+	nnode_flag_types = 0;
+	    nnode_flags.push_back(0); 
+	nnode_data = 0;
+	nsides = 96;
+	nside_types = 1;
+	    // All side types are decremented relative to the value in the
+	    // input file for zero indexing.
+	    side_types.push_back(2);
+	nside_flag_types = 2;
+	    nside_flags.push_back(2);
+	    nside_flags.push_back(2);
+	nside_data = 0;
+	ncells = 57;
+	ncell_types = 1;
+	    // All cell types are decremented relative to the value in the
+	    // input file for zero indexing.
+	    cell_types.push_back(3);
+	ncell_flag_types = 1;
+	    ncell_flags.push_back(1);
+	ncell_data = 0;
 	break;
 
     default:
@@ -640,6 +694,20 @@ bool TestRTT_Format::check_side_flags(const rtt_meshReaders::RTT_Format & mesh,
 	    src = -1;
 	break;
 
+    case AMR:
+	flagTypes.push_back("BNDRY");
+	    num_name.push_back(make_pair(1,"VACUU"));
+	    num_name.push_back(make_pair(2,"REFLE"));
+	    flag_num_name.push_back(num_name);
+	    num_name.resize(0);
+	flagTypes.push_back("SOURC");
+	    num_name.push_back(make_pair(1,"NULL"));
+	    num_name.push_back(make_pair(2,"LOX"));
+	    flag_num_name.push_back(num_name);
+	    num_name.resize(0);
+	    bndry = 0;
+	    src = 1;
+	break;
     default:
         fail("check_side_flags") << "Invalid mesh type encountered." << endl;
 	all_passed = false;
@@ -756,6 +824,16 @@ bool TestRTT_Format::check_cell_flags(const rtt_meshReaders::RTT_Format & mesh,
 	    num_name.resize(0);
 	    rsrc = 1;
 	vsrc = -1;
+	break;
+
+    case AMR:
+        flagTypes.push_back("MATL");
+	    num_name.push_back(make_pair(1,"CUBE"));
+	    flag_num_name.push_back(num_name);
+	    num_name.resize(0);
+	    matl = 0;
+	vsrc = -1;
+	rsrc = -1;
 	break;
 
     default:
@@ -1450,6 +1528,174 @@ bool TestRTT_Format::check_renumber(const rtt_meshReaders::RTT_Format & mesh,
         node_map[0] = 0; node_map[1] = 3; node_map[2] = 2; node_map[3] = 1; 
         side_map[0] = 3; side_map[1] = 0; side_map[2] = 1; side_map[3] = 2; 
         cell_map[0] = 0; 
+	break;
+
+    case AMR:
+        node_map[0] = 0; node_map[1] = 2; node_map[2] = 4; 
+        node_map[3] = 6; node_map[4] = 14; node_map[5] = 16; 
+	node_map[6] = 18; node_map[7] = 20; node_map[8] = 28; 
+	node_map[9] = 30; node_map[10] = 32; node_map[11] = 34;
+	node_map[12] = 42; node_map[13] = 44; node_map[14] = 46;
+	node_map[15] = 48; node_map[16] = 98; node_map[17] = 100; 
+	node_map[18] = 102; node_map[19] = 104; node_map[20] = 112; 
+	node_map[21] = 114; node_map[22] = 116; node_map[23] = 118;
+	node_map[24] = 126; node_map[25] = 128; node_map[26] = 130; 
+	node_map[27] = 132; node_map[28] = 140; node_map[29] = 142;
+	node_map[30] = 144; node_map[31] = 146; node_map[32] = 195; 
+	node_map[33] = 197; node_map[34] = 199; node_map[35] = 201; 
+	node_map[36] = 209; node_map[37] = 211; node_map[38] = 213; 
+	node_map[39] = 215; node_map[40] = 223; node_map[41] = 225; 
+	node_map[42] = 227; node_map[43] = 229; node_map[44] = 237; 
+	node_map[45] = 239; node_map[46] = 241; node_map[47] = 243; 
+	node_map[48] = 293; node_map[49] = 295; node_map[50] = 297; 
+	node_map[51] = 299; node_map[52] = 307; node_map[53] = 309; 
+	node_map[54] = 311; node_map[55] = 313; node_map[56] = 321; 
+	node_map[57] = 323; node_map[58] = 325; node_map[59] = 327; 
+	node_map[60] = 335; node_map[61] = 337; node_map[62] = 339; 
+	node_map[63] = 341; node_map[64] = 292; node_map[65] = 285;
+	node_map[66] = 334; node_map[67] = 291; node_map[68] = 284;
+	node_map[69] = 333; node_map[70] = 340; node_map[71] = 290; 
+	node_map[72] = 283; node_map[73] = 332; node_map[74] = 289;
+	node_map[75] = 282; node_map[76] = 331; node_map[77] = 338;
+	node_map[78] = 288; node_map[79] = 281; node_map[80] = 330;
+	node_map[81] = 287; node_map[82] = 286; node_map[83] = 280; 
+	node_map[84] = 279; node_map[85] = 329; node_map[86] = 328; 
+	node_map[87] = 336; node_map[88] = 278;	node_map[89] = 271; 
+	node_map[90] = 320; node_map[91] = 277;	node_map[92] = 270;
+	node_map[93] = 319; node_map[94] = 326; node_map[95] = 276; 
+	node_map[96] = 269; node_map[97] = 318; node_map[98] = 275; 
+	node_map[99] = 268; node_map[100] = 317; node_map[101] = 324;
+	node_map[102] = 274; node_map[103] = 267; node_map[104] = 316;
+	node_map[105] = 273; node_map[106] = 272; node_map[107] = 266;
+	node_map[108] = 265; node_map[109] = 315; node_map[110] = 314;
+	node_map[111] = 322; node_map[112] = 264; node_map[113] = 257;
+	node_map[114] = 250; node_map[115] = 306; node_map[116] = 263;
+	node_map[117] = 256; node_map[118] = 249; node_map[119] = 305;
+	node_map[120] = 312; node_map[121] = 298; node_map[122] = 262;
+	node_map[123] = 255; node_map[124] = 248; node_map[125] = 304;
+	node_map[126] = 261; node_map[127] = 254; node_map[128] = 247;
+	node_map[129] = 303; node_map[130] = 310; node_map[131] = 296;
+	node_map[132] = 260; node_map[133] = 253; node_map[134] = 246;
+	node_map[135] = 302; node_map[136] = 259; node_map[137] = 258;
+	node_map[138] = 252; node_map[139] = 245; node_map[140] = 251;
+	node_map[141] = 244; node_map[142] = 301; node_map[143] = 300;
+	node_map[144] = 308; node_map[145] = 294; node_map[146] = 194;
+	node_map[147] = 187; node_map[148] = 24; node_map[149] = 31;
+	node_map[150] = 79; node_map[151] = 72; node_map[152] = 23;
+	node_map[153] = 78; node_map[154] = 77; node_map[155] = 71; 
+	node_map[156] = 70; node_map[157] = 22; node_map[158] = 21; 
+	node_map[159] = 29; node_map[160] = 69; node_map[161] = 62;
+	node_map[162] = 55; node_map[163] = 13; node_map[164] = 68;
+	node_map[165] = 61; node_map[166] = 54; node_map[167] = 12; 
+	node_map[168] = 19; node_map[169] = 5; node_map[170] = 67;
+	node_map[171] = 60; node_map[172] = 53; node_map[173] = 11; 
+	node_map[174] = 66; node_map[175] = 59; node_map[176] = 52;
+	node_map[177] = 10; node_map[178] = 17; node_map[179] = 3;
+	node_map[180] = 65; node_map[181] = 58; node_map[182] = 51;
+	node_map[183] = 9; node_map[184] = 64; node_map[185] = 63;
+	node_map[186] = 57; node_map[187] = 50; node_map[188] = 56;
+	node_map[189] = 49; node_map[190] = 8; node_map[191] = 7;
+	node_map[192] = 15; node_map[193] = 1; node_map[194] = 73; 
+	node_map[195] = 80; node_map[196] = 25; node_map[197] = 74;
+	node_map[198] = 81; node_map[199] = 33; node_map[200] = 26; 
+	node_map[201] = 75; node_map[202] = 82; node_map[203] = 27;
+	node_map[204] = 76; node_map[205] = 83; node_map[206] = 43;
+	node_map[207] = 35; node_map[208] = 36; node_map[209] = 84; 
+	node_map[210] = 85; node_map[211] = 91; node_map[212] = 92; 
+	node_map[213] = 37; node_map[214] = 86; node_map[215] = 93;
+	node_map[216] = 45; node_map[217] = 38; node_map[218] = 87;
+	node_map[219] = 94; node_map[220] = 39; node_map[221] = 88;
+	node_map[222] = 95; node_map[223] = 47; node_map[224] = 40;
+	node_map[225] = 89; node_map[226] = 96; node_map[227] = 41; 
+	node_map[228] = 90; node_map[229] = 97; node_map[230] = 147;
+	node_map[231] = 154; node_map[232] = 148; node_map[233] = 155;
+	node_map[234] = 161; node_map[235] = 162; node_map[236] = 149;
+	node_map[237] = 156; node_map[238] = 163; node_map[239] = 150;
+	node_map[240] = 157; node_map[241] = 164; node_map[242] = 151; 
+	node_map[243] = 158; node_map[244] = 165; node_map[245] = 152; 
+	node_map[246] = 159; node_map[247] = 166; node_map[248] = 153; 
+	node_map[249] = 160; node_map[250] = 167; node_map[251] = 168; 
+	node_map[252] = 169; node_map[253] = 174; node_map[254] = 175;
+	node_map[255] = 170; node_map[256] = 176; node_map[257] = 171;
+	node_map[258] = 172; node_map[259] = 178; node_map[260] = 179;
+	node_map[261] = 173; node_map[262] = 180; node_map[263] = 181;
+	node_map[264] = 182; node_map[265] = 188; node_map[266] = 189; 
+	node_map[267] = 183; node_map[268] = 190; node_map[269] = 177;
+	node_map[270] = 184; node_map[271] = 191; node_map[272] = 185;
+	node_map[273] = 192; node_map[274] = 186; node_map[275] = 193;
+	node_map[276] = 219; node_map[277] = 122; node_map[278] = 129;
+	node_map[279] = 121; node_map[280] = 120; node_map[281] = 119;
+	node_map[282] = 127; node_map[283] = 111; node_map[284] = 110;
+	node_map[285] = 117; node_map[286] = 103; node_map[287] = 109;
+	node_map[288] = 108; node_map[289] = 115; node_map[290] = 101;
+	node_map[291] = 107; node_map[292] = 106; node_map[293] = 105;
+	node_map[294] = 113; node_map[295] = 99; node_map[296] = 123;
+	node_map[297] = 131; node_map[298] = 124; node_map[299] = 125;
+	node_map[300] = 141; node_map[301] = 133; node_map[302] = 134;
+	node_map[303] = 135; node_map[304] = 143; node_map[305] = 136;
+	node_map[306] = 137; node_map[307] = 145; node_map[308] = 138;
+	node_map[309] = 139; node_map[310] = 196; node_map[311] = 210;
+	node_map[312] = 202; node_map[313] = 203; node_map[314] = 204;
+	node_map[315] = 198; node_map[316] = 212; node_map[317] = 205;
+	node_map[318] = 206; node_map[319] = 200; node_map[320] = 214;
+	node_map[321] = 207; node_map[322] = 208; node_map[323] = 224;
+	node_map[324] = 216; node_map[325] = 217; node_map[326] = 218;
+	node_map[327] = 228; node_map[328] = 220; node_map[329] = 221;
+	node_map[330] = 222; node_map[331] = 238; node_map[332] = 230;
+	node_map[333] = 231; node_map[334] = 232; node_map[335] = 226;
+	node_map[336] = 240; node_map[337] = 233; node_map[338] = 234;
+	node_map[339] = 242; node_map[340] = 235; node_map[341] = 236;
+	side_map[0] = 75; side_map[1] = 79; side_map[2] = 95; 
+	side_map[3] = 78; side_map[4] = 94; side_map[5] = 77; 
+	side_map[6] = 93; side_map[7] = 76; side_map[8] = 92; 
+	side_map[9] = 74; side_map[10] = 73; side_map[11] = 71;
+	side_map[12] = 91; side_map[13] = 87; side_map[14] = 90;
+	side_map[15] = 86; side_map[16] = 89; side_map[17] = 85;
+	side_map[18] = 88; side_map[19] = 72; side_map[20] = 84;
+	side_map[21] = 70; side_map[22] = 69; side_map[23] = 83;
+	side_map[24] = 68; side_map[25] = 82; side_map[26] = 67;
+	side_map[27] = 81; side_map[28] = 66; side_map[29] = 80;
+	side_map[30] = 64; side_map[31] = 65; side_map[32] = 59;
+	side_map[33] = 43; side_map[34] = 63; side_map[35] = 47;
+	side_map[36] = 62; side_map[37] = 46; side_map[38] = 61;
+	side_map[39] = 45; side_map[40] = 60; side_map[41] = 44;
+	side_map[42] = 58; side_map[43] = 42; side_map[44] = 57;
+	side_map[45] = 41; side_map[46] = 55; side_map[47] = 39;
+	side_map[48] = 56; side_map[49] = 40; side_map[50] = 54;
+	side_map[51] = 38; side_map[52] = 53; side_map[53] = 37;
+	side_map[54] = 52; side_map[55] = 36; side_map[56] = 51;
+	side_map[57] = 35; side_map[58] = 50; side_map[59] = 34;
+	side_map[60] = 48; side_map[61] = 49; side_map[62] = 32;
+	side_map[63] = 33; side_map[64] = 27; side_map[65] = 31;
+	side_map[66] = 26; side_map[67] = 30; side_map[68] = 25;
+	side_map[69] = 29; side_map[70] = 24; side_map[71] = 28; 
+	side_map[72] = 22; side_map[73] = 23; side_map[74] = 21; 
+	side_map[75] = 15; side_map[76] = 20; side_map[77] = 14;
+	side_map[78] = 19; side_map[79] = 13; side_map[80] = 18;
+	side_map[81] = 12; side_map[82] = 16; side_map[83] = 17;
+	side_map[84] = 10; side_map[85] = 11; side_map[86] = 9;
+	side_map[87] = 7; side_map[88] = 8; side_map[89] = 5;
+	side_map[90] = 6; side_map[91] = 3; side_map[92] = 4;
+	side_map[93] = 0; side_map[94] = 1; side_map[95] = 2;
+	cell_map[0] = 0; cell_map[1] = 1; cell_map[2] = 2; 
+	cell_map[3] = 3; cell_map[4] = 4; cell_map[5] = 8; 
+	cell_map[6] = 5; cell_map[7] = 9; cell_map[8] = 6;
+	cell_map[9] = 10; cell_map[10] = 7; cell_map[11] = 11;
+	cell_map[12] = 12; cell_map[13] = 13; cell_map[14] = 14;
+	cell_map[15] = 15; cell_map[16] = 16; cell_map[17] = 29;
+	cell_map[18] = 17; cell_map[19] = 30; cell_map[20] = 18;
+	cell_map[21] = 31; cell_map[22] = 19; cell_map[23] = 32;
+	cell_map[24] = 20; cell_map[25] = 33; cell_map[26] = 23;
+	cell_map[27] = 35; cell_map[28] = 21; cell_map[29] = 22;
+	cell_map[30] = 34; cell_map[31] = 24; cell_map[32] = 36;
+	cell_map[33] = 25; cell_map[34] = 37; cell_map[35] = 26;
+	cell_map[36] = 38; cell_map[37] = 27; cell_map[38] = 39;
+	cell_map[39] = 28; cell_map[40] = 40; cell_map[41] = 41;
+	cell_map[42] = 42; cell_map[43] = 43; cell_map[44] = 44;
+	cell_map[45] = 45; cell_map[46] = 49; cell_map[47] = 46;
+	cell_map[48] = 50; cell_map[49] = 47; cell_map[50] = 51;
+	cell_map[51] = 48; cell_map[52] = 52; cell_map[53] = 53;
+	cell_map[54] = 54; cell_map[55] = 55; cell_map[56] = 56;
 	break;
 
     default:
@@ -2245,7 +2491,6 @@ bool TestRTT_Format::check_connectivity(const rtt_meshReaders::RTT_Format &
     // Rest of these variables are for the user to specify the tests to be
     // performed (i.e., the user has to initialize them in a case).
     vector<int> cells_to_check; // Probably don't want to check every cell.
-    vector<int> sides_to_check; // Probably don't want to check every side.
     vector<int> bndryFacesCount;
     vector<int> cell_face(2,0);
     
@@ -2260,8 +2505,6 @@ bool TestRTT_Format::check_connectivity(const rtt_meshReaders::RTT_Format &
 	    int cell = cells_to_check[c];
 	    int cell_type = mesh.get_cells_type(cell);
 	    int cell_sides = mesh.get_cell_defs_nsides(cell_type);
-	    for (int s = 0; s < cell_sides; s++)
-	        sides_to_check.push_back(s); // only four sides
 	    adjacent_cell[c].resize(cell_sides);
 	}
 	// All of the "adjacent cells" are boundaries for this case, and the
@@ -2285,14 +2528,133 @@ bool TestRTT_Format::check_connectivity(const rtt_meshReaders::RTT_Format &
 	// Side_to_Cell_Face correlates the sides data in the RTT_Format file
 	// with the equivalent cell face. The side is the key and the cell and
 	// face number form a vector that is the data value. Only the  subset
-	// of the multimap that is entered here will be checked. 
+	// of the multimap that is entered here will be checked.
+	for (int s = 0; s < 4; s++)
+	{
+	    Side_to_Cell_Face.insert(make_pair(s,cell_face));
+	    ++cell_face[1];
+	}
+	break;
+
+    case AMR:
+        cells_to_check.push_back(0); cells_to_check.push_back(9);
+	cells_to_check.push_back(19); cells_to_check.push_back(21);
+	cells_to_check.push_back(29); cells_to_check.push_back(39);
+	cells_to_check.push_back(49); cells_to_check.push_back(56);
+	adjacent_cell.resize(cells_to_check.size());
+	// Resize the adjacent cell vector for the number of sides per cell.
+	for (int c = 0; c < cells_to_check.size(); c++)
+	{
+	    int cell = cells_to_check[c];
+	    int cell_type = mesh.get_cells_type(cell);
+	    int cell_sides = mesh.get_cell_defs_nsides(cell_type);
+	    adjacent_cell[c].resize(cell_sides);
+	}
+	// Specify the "adjacent cells". The adjacent cell is returned as the 
+	// negative of the boundary flag # for cell on the outer boundary.
+	// Cell 0.
+	adjacent_cell[0][0].push_back(-2); adjacent_cell[0][1].push_back(-2);
+	adjacent_cell[0][2].push_back(-2); adjacent_cell[0][3].push_back(1); 
+	adjacent_cell[0][4].push_back(4); adjacent_cell[0][5].push_back(16);
+	// Cell 9.
+	adjacent_cell[1][0].push_back(-2); adjacent_cell[1][1].push_back(5);
+	adjacent_cell[1][2].push_back(8); adjacent_cell[1][3].push_back(10); 
+	adjacent_cell[1][4].push_back(13); adjacent_cell[1][5].push_back(21);
+	// Cell 19.
+	adjacent_cell[2][0].push_back(3); adjacent_cell[2][1].push_back(-2);
+	adjacent_cell[2][2].push_back(18); adjacent_cell[2][3].push_back(-2);
+ 	adjacent_cell[2][4].push_back(22); adjacent_cell[2][5].push_back(32);
+	// Cell 21. This cell is the junction between generations on every 
+	// face (i.e, four adjacent cells per cell face).
+	adjacent_cell[3][0].push_back(5); adjacent_cell[3][0].push_back(6); 
+	adjacent_cell[3][0].push_back(9); adjacent_cell[3][0].push_back(10);
+	adjacent_cell[3][1].push_back(17); adjacent_cell[3][1].push_back(18);
+	adjacent_cell[3][1].push_back(30); adjacent_cell[3][1].push_back(31);
+	adjacent_cell[3][2].push_back(20); adjacent_cell[3][2].push_back(23);
+	adjacent_cell[3][2].push_back(33); adjacent_cell[3][2].push_back(35);
+	adjacent_cell[3][3].push_back(22); adjacent_cell[3][3].push_back(24);
+	adjacent_cell[3][3].push_back(34); adjacent_cell[3][3].push_back(36);
+ 	adjacent_cell[3][4].push_back(26); adjacent_cell[3][4].push_back(27);
+	adjacent_cell[3][4].push_back(38); adjacent_cell[3][4].push_back(39);
+	adjacent_cell[3][5].push_back(46); adjacent_cell[3][5].push_back(47);
+	adjacent_cell[3][5].push_back(50); adjacent_cell[3][5].push_back(51);
+	// Cell 29.
+	adjacent_cell[4][0].push_back(16); adjacent_cell[4][1].push_back(-2);
+	adjacent_cell[4][2].push_back(-2); adjacent_cell[4][3].push_back(30);
+ 	adjacent_cell[4][4].push_back(33); adjacent_cell[4][5].push_back(41);
+	// Cell 39.
+	adjacent_cell[5][0].push_back(27); adjacent_cell[5][1].push_back(21);
+	adjacent_cell[5][2].push_back(38); adjacent_cell[5][3].push_back(40);
+ 	adjacent_cell[5][4].push_back(-2); adjacent_cell[5][5].push_back(55);
+	// Cell 49.
+	adjacent_cell[6][0].push_back(35); adjacent_cell[6][1].push_back(45);
+	adjacent_cell[6][2].push_back(-2); adjacent_cell[6][3].push_back(50);
+ 	adjacent_cell[6][4].push_back(53); adjacent_cell[6][5].push_back(-2);
+	// Cell 56.
+	adjacent_cell[7][0].push_back(40); adjacent_cell[7][1].push_back(52);
+	adjacent_cell[7][2].push_back(55); adjacent_cell[7][3].push_back(-2);
+ 	adjacent_cell[7][4].push_back(-2); adjacent_cell[7][5].push_back(-2);
+	// bndryFaces pairs are keyed on face number (i.e., 0 - 5 for a hex) to
+	// the cell number as a value and contain all the faces that are either
+	// on the outer geometric boundary of the problem or a junction between
+	// cells with differing refinement levels in an AMR mesh. Only the
+	// subset of the multimap that is entered here will be checked. 
+	bndryFaces.insert(make_pair(0,0)); bndryFaces.insert(make_pair(1,0));
+	bndryFaces.insert(make_pair(2,0));
+	bndryFaces.insert(make_pair(0,9)); 
+	bndryFaces.insert(make_pair(1,19)); bndryFaces.insert(make_pair(3,19));
+	bndryFaces.insert(make_pair(0,21)); bndryFaces.insert(make_pair(1,21));
+	bndryFaces.insert(make_pair(2,21)); bndryFaces.insert(make_pair(3,21));
+	bndryFaces.insert(make_pair(4,21)); bndryFaces.insert(make_pair(5,21));
+	bndryFaces.insert(make_pair(5,5)); bndryFaces.insert(make_pair(5,6));
+	bndryFaces.insert(make_pair(5,9)); bndryFaces.insert(make_pair(5,10));
+	bndryFaces.insert(make_pair(4,17)); bndryFaces.insert(make_pair(4,18));
+	bndryFaces.insert(make_pair(4,30)); bndryFaces.insert(make_pair(4,31));
+	bndryFaces.insert(make_pair(3,20)); bndryFaces.insert(make_pair(3,23));
+	bndryFaces.insert(make_pair(3,33)); bndryFaces.insert(make_pair(3,35));
+	bndryFaces.insert(make_pair(2,22)); bndryFaces.insert(make_pair(2,24));
+	bndryFaces.insert(make_pair(2,34)); bndryFaces.insert(make_pair(2,36));
+	bndryFaces.insert(make_pair(1,26)); bndryFaces.insert(make_pair(1,27));
+	bndryFaces.insert(make_pair(1,38)); bndryFaces.insert(make_pair(1,39));
+	bndryFaces.insert(make_pair(0,46)); bndryFaces.insert(make_pair(0,47));
+	bndryFaces.insert(make_pair(0,50)); bndryFaces.insert(make_pair(0,51));
+	bndryFaces.insert(make_pair(1,29)); bndryFaces.insert(make_pair(2,29));
+	bndryFaces.insert(make_pair(4,39));
+	bndryFaces.insert(make_pair(2,49)); bndryFaces.insert(make_pair(5,49));
+	bndryFaces.insert(make_pair(3,56)); bndryFaces.insert(make_pair(4,56));
+	bndryFaces.insert(make_pair(5,56));
+	// bndryFacesCount is input to check the number of cells that have 
+	// faces that occur on the boundaries. The int values to be entered
+	// here correspond to the entire mesh. 
+	bndryFacesCount.resize(6); // Six faces for a tet.
+	bndryFacesCount[0] = bndryFacesCount[1] = bndryFacesCount[2] =
+	bndryFacesCount[3] = bndryFacesCount[4] = bndryFacesCount[5] = 21;
+	// Side_to_Cell_Face correlates the sides data in the RTT_Format file
+	// with the equivalent cell face. The side is the key and the cell and
+	// face number form a vector that is the data value. Only the  subset
+	// of the multimap that is entered here will be checked.
+	cell_face[0] = 0; cell_face[1] = 0; 
 	Side_to_Cell_Face.insert(make_pair(0,cell_face));
-	cell_face[1] = 1;
-	Side_to_Cell_Face.insert(make_pair(1,cell_face));
-	cell_face[1] = 2;
-	Side_to_Cell_Face.insert(make_pair(2,cell_face));
-	cell_face[1] = 3;
-	Side_to_Cell_Face.insert(make_pair(3,cell_face));
+	cell_face[1] = 1; Side_to_Cell_Face.insert(make_pair(1,cell_face));
+	cell_face[1] = 2; Side_to_Cell_Face.insert(make_pair(2,cell_face));
+	cell_face[0] = 9; cell_face[1] = 0; 
+	    Side_to_Cell_Face.insert(make_pair(18,cell_face));
+	cell_face[0] = 19; cell_face[1] = 1; 
+	    Side_to_Cell_Face.insert(make_pair(36,cell_face));
+	cell_face[1] = 3; Side_to_Cell_Face.insert(make_pair(37,cell_face));
+	cell_face[0] = 29; cell_face[1] = 1; 
+	    Side_to_Cell_Face.insert(make_pair(48,cell_face));
+	cell_face[1] = 2; Side_to_Cell_Face.insert(make_pair(49,cell_face));
+	cell_face[0] = 39; cell_face[1] = 4; 
+	    Side_to_Cell_Face.insert(make_pair(62,cell_face));
+	cell_face[0] = 49; cell_face[1] = 2; 
+	    Side_to_Cell_Face.insert(make_pair(72,cell_face));
+	cell_face[1] = 5; Side_to_Cell_Face.insert(make_pair(88,cell_face));
+	cell_face[0] = 56; cell_face[1] = 3; 
+	    Side_to_Cell_Face.insert(make_pair(75,cell_face));
+	cell_face[1] = 4; Side_to_Cell_Face.insert(make_pair(79,cell_face));
+	cell_face[1] = 5; Side_to_Cell_Face.insert(make_pair(95,cell_face));
+	
 	break;
 
     default:
@@ -2307,8 +2669,8 @@ bool TestRTT_Format::check_connectivity(const rtt_meshReaders::RTT_Format &
     for (int c = 0; c < cells_to_check.size(); c++)
     {
         int cell = cells_to_check[c];
-	for (int f = 0; f < adjacent_cell[cell].size(); f++)
-	    if (adjacent_cell[cell][f].size() != mesh.get_adjCell_size(cell,f))
+	for (int f = 0; f < adjacent_cell[c].size(); f++)
+	    if (adjacent_cell[c][f].size() != mesh.get_adjCell_size(cell,f))
 	        got_adj_cell_size = false;
     }
     if (!got_adj_cell_size)
@@ -2324,9 +2686,9 @@ bool TestRTT_Format::check_connectivity(const rtt_meshReaders::RTT_Format &
     for (int c = 0; c < cells_to_check.size(); c++)
     {
         int cell = cells_to_check[c];
-	for (int f = 0; f < adjacent_cell[cell].size(); f++)
-	    for (int a = 0; a < adjacent_cell[cell][f].size(); a++) 
-	        if (adjacent_cell[cell][f][a] != mesh.get_adjCell(cell,f,a))
+	for (int f = 0; f < adjacent_cell[c].size(); f++)
+	    for (int a = 0; a < adjacent_cell[c][f].size(); a++) 
+	        if (adjacent_cell[c][f][a] != mesh.get_adjCell(cell,f,a))
 	        got_adj_cell = false;
     }
     if (!got_adj_cell)

@@ -62,7 +62,7 @@ class TestRTT_Format : public rtt_UnitTestFrame::TestApp
   private:
 
     // DATA
-    enum Meshes {DEFINED, SORTED};
+    enum Meshes {DEFINED, SORTED, AMR};
     // All nested class accessor function tests with the exception of 
     // check_header and check_dims require that the Dims data has been
     // properly processed, and use the verify_Dims member function to 

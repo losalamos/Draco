@@ -3818,7 +3818,8 @@ trap 'rm -fr `echo "Makefile:../../config/Makefile.package.in   \
 	  test/cube.mesh:test/cube.mesh.in \
 	  test/quad.mesh:test/quad.mesh.in \
  	  test/slab.mesh:test/slab.mesh.in \
-          test/rttdef.mesh:test/rttdef.mesh.in meshReaders/config.h:config.h.in" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+          test/rttdef.mesh:test/rttdef.mesh.in\
+	  test/rttamr.mesh:test/rttamr.mesh.in meshReaders/config.h:config.h.in" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -3956,7 +3957,8 @@ CONFIG_FILES=\${CONFIG_FILES-"Makefile:../../config/Makefile.package.in   \
 	  test/cube.mesh:test/cube.mesh.in \
 	  test/quad.mesh:test/quad.mesh.in \
  	  test/slab.mesh:test/slab.mesh.in \
-          test/rttdef.mesh:test/rttdef.mesh.in"}
+          test/rttdef.mesh:test/rttdef.mesh.in\
+	  test/rttamr.mesh:test/rttamr.mesh.in"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then
