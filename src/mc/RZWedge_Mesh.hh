@@ -549,7 +549,7 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
     hif = hiz * high_w;
 
     // sample z 
-    position[2] = rtt_mc::sampler::sample_general_linear(random, lox, hix,
+    position[2] = rtt_mc::sampler::sample_general_linear(random, loz, hiz,
 							 lof, hif);
 
     // Check that sampled position is within cell

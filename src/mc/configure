@@ -3987,7 +3987,8 @@ trap 'rm -fr `echo "Makefile:../../config/Makefile.package.in \
           test/TET_RTT_1:test/TET_RTT_1.in \
           test/TET_RTT_2:test/TET_RTT_2.in \
           test/TET_RTT_3:test/TET_RTT_3.in \
-          test/TET_RTT_4:test/TET_RTT_4.in mc/config.h:config.h.in" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+          test/TET_RTT_4:test/TET_RTT_4.in \
+          test/RZWedge_Input:test/RZWedge_Input.in mc/config.h:config.h.in" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -4128,7 +4129,8 @@ CONFIG_FILES=\${CONFIG_FILES-"Makefile:../../config/Makefile.package.in \
           test/TET_RTT_1:test/TET_RTT_1.in \
           test/TET_RTT_2:test/TET_RTT_2.in \
           test/TET_RTT_3:test/TET_RTT_3.in \
-          test/TET_RTT_4:test/TET_RTT_4.in"}
+          test/TET_RTT_4:test/TET_RTT_4.in \
+          test/RZWedge_Input:test/RZWedge_Input.in"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then
