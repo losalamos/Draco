@@ -69,11 +69,14 @@ int CDI::getNumberFrequencyGroups()
 
 //---------------------------------------------------------------------------//
 
-// nested namespace that holds the Taylor series coefficients of the
-// normalized Planckian
+// nested unnamed namespace that holds data and services used by the
+// Planckian integration routines.  The data in this namespace is accessible
+// by the methods in this file only (internal linkage).
 
 namespace
 {
+
+// constants used in the Taylor series expansion of the Planckian.
 const double coeff_3  =    1.0 / 3.0;
 const double coeff_4  =   -1.0 / 8.0;
 const double coeff_5  =    1.0 / 60.0;
@@ -169,6 +172,97 @@ inline double polylog_series_minus_one_planck(double x)
 //---------------------------------------------------------------------------//
 /*!
  *
+ * \brief Integrate the Planckian spectrum over a frequency range.
+ *
+ * This function integrates the normalized Plankian that is defined:
+ *
+ * b(x) = 15/pi^4 * x^3 / (e^x - 1)
+ *
+ * where 
+ *
+ * x = (h nu) / (kT)
+ * 
+ * and 
+ * 
+ * B(nu, T)dnu = acT^4/4pi * b(x)dx
+ * 
+ * where B(nu, T) is the Plankian and is defined
+ *
+ * B(nu, T) = 2hnu^3/c^2 (e^hnu/kt - 1)^-1
+ *
+ * The normalized Plankian, integrated from 0 to infinity, equals
+ * one. However, depending upon the maximum and minimum group boundaries, the
+ * normalized Planck function may integrate to something less than one.
+ *
+ * This function performs the following integration:
+ *
+ *      Int_(x_low)^(x_high) b(x) dx
+ *
+ * where x_low is calculated from the input low frequency bound and x_high is
+ * calculated from the input high frequency bound.  This integration uses the
+ * method of B. Clark (JCP (70)/2, 1987).  We use a 10-term Polylogarithmic
+ * expansion for the normalized Planckian, except in the low-x limit, where
+ * we use a 21-term Taylor series expansion.
+ *
+ * The user is responsible for applying the appropriate constants to the
+ * result of this integration.  For example, to make the result of this
+ * integration equivalent to
+ *
+ *      Int_(nu_low)^{nu_high) B(nu,T) dnu
+ * 
+ * then you must multiply by a factor of acT^4/4pi where a is the radiation
+ * constant.  If you want to evaluate expressions like the following:
+ *
+ *      Int_(4pi)Int_(nu_low)^{nu_high) B(nu,T) dnu domega
+ *
+ * then you must multiply by acT^4.
+ *
+ * \param lowFreq lower frequency bound in keV
+ *
+ * \param highFreq higher frequency bound in keV
+ *
+ * \param T the temperature in keV (must be greater than 0.0)
+ * 
+ * \return integrated normalized Plankian from x_low to x_high
+ *
+ */
+double CDI::integratePlanckSpectrum(double lowFreq, double highFreq, double T)
+{
+    Require (lowFreq >= 0.0);
+    Require (highFreq >= lowFreq);
+    Require (T > 0.0);
+
+    // determine the upper and lower x
+    double lower_x = lowFreq  / T;
+    double upper_x = highFreq / T;
+
+    // determine the upper and lower bounds calculated by the taylor and
+    // polylogarithmic approximations
+    double lower_taylor  = taylor_series_planck(lower_x);
+    double upper_taylor  = taylor_series_planck(upper_x);
+    double lower_poly_m1 = polylog_series_minus_one_planck(lower_x);
+    double upper_poly_m1 = polylog_series_minus_one_planck(upper_x);
+    double lower_poly    = lower_poly_m1 + 1.0;
+    double upper_poly    = upper_poly_m1 + 1.0;
+
+    // determine the integral based on the upper and lower bounds
+    double integral = 0.0;
+
+    if (lower_taylor < lower_poly && upper_taylor < upper_poly)
+	integral = upper_taylor - lower_taylor;
+    else if (lower_taylor < lower_poly && upper_taylor >= upper_poly)
+	integral = upper_poly - lower_taylor;
+    else 
+	integral = upper_poly_m1 - lower_poly_m1;
+	  
+    Ensure (integral >= 0.0 && integral <= 1.0);
+
+    return integral;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ *
  * \brief Integrate the normalized Planckian spectrum from 0 to x (hnu/kT).
  *
  * This function integrates the normalized Plankian that is defined:
@@ -220,23 +314,8 @@ double CDI::integratePlanckSpectrum(double frequency, double T)
     Require (T > 0.0);
     Require (frequency >= 0.0);
 
-    // first determine the normalized frequency
-    double x = frequency / T;
-
-    // get the taylor and polylogarithmic series for x; if x is in the
-    // polylogarithmic limit we will have to add one because 0.0 is ALWAYS in
-    // the taylor series limit
-    double taylor = taylor_series_planck(x);
-    double poly   = polylog_series_minus_one_planck(x) + 1.0;
-
-    // compare the Taylor series and Polylogarithmic series to determine the
-    // integral
-    double integral = 0.0;
-
-    if (taylor < poly)
-	integral = taylor;
-    else 
-	integral = poly;
+    // calculate the integral
+    double integral = integratePlanckSpectrum(0.0, frequency, T);
       
     Ensure (integral >= 0.0 && integral <= 1.0);
 
@@ -311,28 +390,81 @@ double CDI::integratePlanckSpectrum(int groupIndex, double T)
     double upper_bound = frequencyGroupBoundaries[groupIndex];
     Check (upper_bound > lower_bound);
 
-    // determine the upper and lower x
-    double lower_x = lower_bound / T;
-    double upper_x = upper_bound / T;
+    // calculate the integral over the frequency group
+    double integral = integratePlanckSpectrum(lower_bound, upper_bound, T);
+	  
+    Ensure (integral > 0.0 && integral <= 1.0);
 
-    // determine the upper and lower bounds calculated by the taylor and
-    // polylogarithmic approximations
-    double lower_taylor  = taylor_series_planck(lower_x);
-    double upper_taylor  = taylor_series_planck(upper_x);
-    double lower_poly_m1 = polylog_series_minus_one_planck(lower_x);
-    double upper_poly_m1 = polylog_series_minus_one_planck(upper_x);
-    double lower_poly    = lower_poly_m1 + 1.0;
-    double upper_poly    = upper_poly_m1 + 1.0;
+    return integral;
+}
 
-    // determine the integral based on the upper and lower bounds
-    double integral = 0.0;
+//---------------------------------------------------------------------------//
+/*!
+ *
+ * \brief Integrate the Planckian spectrum over all frequency groups.
+ *
+ * This function integrates the normalized Plankian that is defined:
+ *
+ * b(x) = 15/pi^4 * x^3 / (e^x - 1)
+ *
+ * where 
+ *
+ * x = (h nu) / (kT)
+ * 
+ * and 
+ * 
+ * B(nu, T)dnu = acT^4/4pi * b(x)dx
+ * 
+ * where B(nu, T) is the Plankian and is defined
+ *
+ * B(nu, T) = 2hnu^3/c^2 (e^hnu/kt - 1)^-1
+ *
+ * The normalized Plankian, integrated from 0 to infinity, equals
+ * one. However, depending upon the maximum and minimum group boundaries, the
+ * normalized Planck function may integrate to something less than one.
+ *
+ * This function performs the following integration:
+ *
+ *      Int_(x_1)^(x_N) b(x) dx
+ *
+ * where x_1 is the low frequency bound and x_N is the high frequency bound
+ * of the multigroup data set.  This integration uses the method of B. Clark
+ * (JCP (70)/2, 1987).  We use a 10-term Polylogarithmic expansion for the
+ * normalized Planckian, except in the low-x limit, where we use a 21-term
+ * Taylor series expansion.
+ *
+ * The user is responsible for applying the appropriate constants to the
+ * result of this integration.  For example, to make the result of this
+ * integration equivalent to
+ *
+ *      Int_(nu_1)^{nu_N) B(nu,T) dnu
+ * 
+ * then you must multiply by a factor of acT^4/4pi where a is the radiation
+ * constant.  If you want to evaluate expressions like the following:
+ *
+ *      Int_(4pi)Int_(nu_1)^{nu_N) B(nu,T) dnu domega
+ *
+ * then you must multiply by acT^4.
+ *
+ * If no groups are defined then an exception is thrown.
+ *
+ * \param T the temperature in keV (must be greater than 0.0)
+ * 
+ * \return integrated normalized Plankian over all frequency groups
+ *
+ */
+double CDI::integratePlanckSpectrum(double T)
+{
+    Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
+    Require (T > 0.0);
 
-    if (lower_taylor < lower_poly && upper_taylor < upper_poly)
-	integral = upper_taylor - lower_taylor;
-    else if (lower_taylor < lower_poly && upper_taylor >= upper_poly)
-	integral = upper_poly - lower_taylor;
-    else 
-	integral = upper_poly_m1 - lower_poly_m1;
+    // first determine the group boundaries for groupIndex
+    double lower_bound = frequencyGroupBoundaries.front();
+    double upper_bound = frequencyGroupBoundaries.back();
+    Check (upper_bound > lower_bound);
+
+    // calculate the integral 
+    double integral = integratePlanckSpectrum(lower_bound, upper_bound, T);
 	  
     Ensure (integral > 0.0 && integral <= 1.0);
 

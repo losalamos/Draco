@@ -60,6 +60,30 @@ namespace rtt_cdi
  * Including CDI.hh in the client file will automatically include all of the
  * pertinent cdi headers and definitions (rtt_cdi::GrayOpacity,
  * rtt_cdi::MultigroupOpacity, EoS, rtt_cdi::Model, rtt_cdi::Reaction).
+ * 
+ * CDI also contains static services that allow a client to integrate the
+ * (normalized) Planckian.  Three overloaded functions perform this service:
+ *
+ * \arg integratePlanckSpectrum(double lowFreq, double highFreq, double T)
+ * \arg integratePlanckSpectrum(double freq, double T)
+ * \arg integratePlanckSpectrum(int groupIndex, double T);
+ * \arg integratePlanckSpectrum(double T);
+ *
+ * The first two forms can be called (CDI::integratePlanckSpectrum())
+ * anytime.  They simply integrate the normalized Planckian over a frequency
+ * range; the second form uses a default lower bound of 0.0.  The next two
+ * forms may only be called after the multigroup frequency boundaries have
+ * been set.  These boundaries are set after a call, from any CDI object, to
+ * setMultigroupOpacity().  The frequency boundaries are stored statically.
+ * After an initial call by any CDI object of setMultigroupOpacity(), the
+ * frequency bounds are checked to make sure they do not change.  Changing
+ * the boundaries throws an exception.  Thus, clients are allowed to view the
+ * group structure through any multigroup data set
+ * (cdi.mg()->getGroupBoundaries()) or "globally" by calling
+ * CDI::getFrequencyGroupBoundaries().  The context of usage dictates which
+ * type of call to make; the result is invariant.  See the test (tCDI.cc) for
+ * usage examples of the CDI Plankian integration routines.
+ *
  */
 /*!
  * \example cdi/test/tCDI.cc
@@ -281,6 +305,9 @@ class CDI
      * \brief Return the number of frequency groups.
      */
     static int getNumberFrequencyGroups();
+
+    // Integrate the normalized Planckian over a frequency range.
+    static double integratePlanckSpectrum(double lowf, double hif, double T);
 
     // Integrate the normalized Planckian from 0 to x (hnu/kT).
     static double integratePlanckSpectrum(double frequency, double T);

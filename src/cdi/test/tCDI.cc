@@ -529,6 +529,9 @@ void test_planck_integration()
     double int_0 = CDI::integratePlanckSpectrum(0.0, 10.0);
     if (!soft_equiv(int_0, 0.0, 1.e-6)) ITFAILS;
 
+    double int_range = CDI::integratePlanckSpectrum(.1, 1.0, 1.0);
+    if (!soft_equiv(int_range, 0.0345683, 3.e-5)) ITFAILS;
+
     // catch an illegal group assertion
     CDI cdi;
     SP<const MultigroupOpacity> mg(
@@ -541,6 +544,8 @@ void test_planck_integration()
     double g1_integral = CDI::integratePlanckSpectrum(1, 1.0);
     double g2_integral = CDI::integratePlanckSpectrum(2, 1.0);
     double g3_integral = CDI::integratePlanckSpectrum(3, 1.0);
+
+    double g_total     = CDI::integratePlanckSpectrum(1.0);
 
     if (soft_equiv(g1_integral, 0.00528686, 1.e-6))
     {
@@ -567,6 +572,15 @@ void test_planck_integration()
     else
     {
 	FAILMSG("Group 3 integral fails tolerance.");
+    }
+    
+    if (soft_equiv(g_total, 0.999994, 1.e-6))
+    {
+	PASSMSG("Total integral over groups within tolerance.");
+    }
+    else
+    {
+	FAILMSG("Total integral over groups fails tolerance.");
     }
 }
  
