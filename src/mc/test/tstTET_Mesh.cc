@@ -30,6 +30,9 @@
 //                 print_side_sets, and print_cell_sets are added to TET_Mesh.
 //  6) 2000-06-19: Added a regression test for the get_db() and get_min_db()
 //                 services of the TET_Mesh class.
+//  7) 2000-07-23: Initial tests of TET_Mesh::sample_pos() for linearly
+//                 interpolated temperature**4 given the temperatures**4 on the
+//                 vertices of the cells.
 //
 //___________________________________________________________________________//
 
@@ -86,6 +89,24 @@ int num = 5;
 
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__);
+
+// Experiment with CPU timing.
+//_TIMING_+#include <unistd.h>
+//_TIMING_+#include <sys/times.h>
+//_TIMING_+float etime(float a[2])
+//_TIMING_+{
+//_TIMING_+ static int first_call = 1;
+//_TIMING_+ static float ticks;
+//_TIMING_+ struct tms buffer;
+//_TIMING_+ if(first_call){
+//_TIMING_+   first_call = 0;
+//_TIMING_+   ticks = (float)sysconf(_SC_CLK_TCK);
+//_TIMING_+  }
+//_TIMING_+ times(&buffer);
+//_TIMING_+ a[0] = ((float)buffer.tms_utime)/ticks;
+//_TIMING_+ a[1] = ((float)buffer.tms_stime)/ticks;
+//_TIMING_+ return (a[0]+a[1]);
+//_TIMING_+}
 
 //! Mesh proxy class
 class Mesh_Proxy
@@ -516,6 +537,13 @@ mesh_ptr_1->print_cell_sets(cerr);
 
     // Test sampling in a tethedron.
 
+// Experiment with CPU timing.
+//_TIMING_+float t[2];
+//_TIMING_+float t0 = etime(t);
+//_TIMING_+cerr << "First call = " << t0 << endl;
+//_TIMING_+float t1 = etime(t);
+//_TIMING_+cerr << "Next call = " << t1 << endl;
+
     int *idr = init_sprng(0, num, seed, 1);
     Sprng random(idr, 0);
 
@@ -550,51 +578,204 @@ mesh_ptr_1->print_cell_sets(cerr);
 
         count[xx][yy][zz] += 1.;
     }
+
+//_TIMING_+float t2 = etime(t);
+//_TIMING_+cerr << "Last call = " << t2 << endl;
+//_TIMING_+cerr << "Diff = " << t2-t1 << endl;
+
     x_cent /= static_cast<double>(numm);
     y_cent /= static_cast<double>(numm);
     z_cent /= static_cast<double>(numm);
 
-    if (fabs(x_cent - 0.375357) > MID_epsilon)          ITFAILS;
-    if (fabs(y_cent - 0.374783) > MID_epsilon)          ITFAILS;
-    if (fabs(z_cent - 0.249045) > MID_epsilon)          ITFAILS;
+//  cerr << "x_cent = " << x_cent << endl;
+//  cerr << "y_cent = " << y_cent << endl;
+//  cerr << "z_cent = " << z_cent << endl;
+
+    if (fabs(x_cent - 0.374902) > MID_epsilon)          ITFAILS;
+    if (fabs(y_cent - 0.374776) > MID_epsilon)          ITFAILS;
+    if (fabs(z_cent - 0.249794) > MID_epsilon)          ITFAILS;
 
     for (int xx = 0; xx < 10 ; xx++)
         for (int yy = 0; yy < 10 ; yy++)
             for (int zz = 0; zz < 10 ; zz++)
                 count[xx][yy][zz] *= factor;
 
-    if (fabs(count[1][6][0] - 1.01500) > MID_epsilon)   ITFAILS;
-    if (fabs(count[0][8][1] - 0.23333) > MID_epsilon)   ITFAILS;
-    if (fabs(count[5][4][2] - 0.54000) > MID_epsilon)   ITFAILS;
-    if (fabs(count[8][1][3] - 0.04167) > MID_epsilon)   ITFAILS;
-    if (fabs(count[2][7][4] - 0.31167) > MID_epsilon)   ITFAILS;
-    if (fabs(count[5][3][5] - 0.94333) > MID_epsilon)   ITFAILS;
-    if (fabs(count[4][4][6] - 1.00333) > MID_epsilon)   ITFAILS;
-    if (fabs(count[3][6][7] - 0.02667) > MID_epsilon)   ITFAILS;
-    if (fabs(count[4][4][8] - 0.50833) > MID_epsilon)   ITFAILS;
-    if (fabs(count[4][4][9] - 0.11167) > MID_epsilon)   ITFAILS;
+// How to generate some test answers.
+// cerr << "count[1][6][0] = " << count[1][6][0] << endl;
+// cerr << "count[0][8][1] = " << count[0][8][1] << endl;
+// cerr << "count[5][4][2] = " << count[5][4][2] << endl;
+// cerr << "count[8][1][3] = " << count[8][1][3] << endl;
+// cerr << "count[2][7][4] = " << count[2][7][4] << endl;
+// cerr << "count[5][3][5] = " << count[5][3][5] << endl;
+// cerr << "count[4][4][6] = " << count[4][4][6] << endl;
+// cerr << "count[3][6][7] = " << count[3][6][7] << endl;
+// cerr << "count[4][4][8] = " << count[4][4][8] << endl;
+// cerr << "count[4][4][9] = " << count[4][4][9] << endl;
+// cerr << "================" << endl;
 
-    if (count[1][9][0] != 0.0)                          ITFAILS;
-    if (count[4][6][3] != 0.0)                          ITFAILS;
-    if (count[5][2][7] != 0.0)                          ITFAILS;
-    if (count[3][4][9] != 0.0)                          ITFAILS;
+    if (fabs(count[1][6][0] - 1.01167) > MID_epsilon)     ITFAILS;
+    if (fabs(count[0][8][1] - 0.238333) > MID_epsilon)    ITFAILS;
+    if (fabs(count[5][4][2] - 0.475) > MID_epsilon)       ITFAILS;
+    if (fabs(count[8][1][3] - 0.0383333) > MID_epsilon)   ITFAILS;
+    if (fabs(count[2][7][4] - 0.278333) > MID_epsilon)    ITFAILS;
+    if (fabs(count[5][3][5] - 0.991667) > MID_epsilon)    ITFAILS;
+    if (fabs(count[4][4][6] - 0.971667) > MID_epsilon)    ITFAILS;
+    if (fabs(count[3][6][7] - 0.04) > MID_epsilon)        ITFAILS;
+    if (fabs(count[4][4][8] - 0.58) > MID_epsilon)        ITFAILS;
+    if (fabs(count[4][4][9] - 0.08) > MID_epsilon)        ITFAILS;
 
-
+    if (count[1][9][0] != 0.0)                            ITFAILS;
+    if (count[4][6][3] != 0.0)                            ITFAILS;
+    if (count[5][2][7] != 0.0)                            ITFAILS;
+    if (count[3][4][9] != 0.0)                            ITFAILS;
 
 //  Beginning:  a way to see these results ordered on the page.
-//  cout.setf(ios::fixed);
-//  cout.precision(5);
-//
-//  for (int zz = 0 ; zz < 10 ; zz++) {
-//     for (int yy = 9 ; yy >= 0 ; yy--) {
-//         for (int xx = 0; xx < 10; xx++)
-//             cout << setw(10) << count[xx][yy][zz];
-//         cout << endl;
-//     }
-//     cout << endl << endl;
-//  }
+//__+cout.setf(ios::fixed);
+//__+cout.precision(5);
+//__+for (int zz = 0 ; zz < 10 ; zz++) {
+//__+    for (int yy = 9 ; yy >= 0 ; yy--) {
+//__+        for (int xx = 0; xx < 10; xx++)
+//__+            cout << setw(10) << count[xx][yy][zz];
+//__+        cout << endl;
+//__+    }
+//__+    cout << endl << endl;
+//__+}
+//__+cout << "-----------------------------------------------\n";
 //  End:  a way to see these results ordered on the page.
 
+    SF_DOUBLE T4(4);
+
+    // First test for T**4 interpolated sampling.
+    T4[0] = T4[1] = T4[2] = 0.928571428571;
+    T4[3] = 2.35714285714;
+
+    for (int x = 0; x < 10 ; x++)
+       for (int y = 0; y < 10 ; y++)
+           for (int z = 0; z < 10 ; z++)
+               count[x][y][z] = 0.;
+
+//_TIMING_+t1 = etime(t);
+//_TIMING_+cerr << "Next call = " << t1 << endl;
+
+    for (int i = 0 ; i < numm ; i++)
+    {
+        SF_DOUBLE R = mesh_ptr_1->sample_pos(1,random,T4);
+
+        int xx = static_cast<int>(10.0*R[0]);
+        int yy = static_cast<int>(10.0*R[1]);
+        int zz = static_cast<int>(10.0*R[2]);
+
+        if (xx < 0 || xx > 9)                           ITFAILS;
+        if (yy < 0 || yy > 9)                           ITFAILS;
+        if (zz < 0 || zz > 9)                           ITFAILS;
+
+        count[xx][yy][zz] += 1.;
+    }
+
+//_TIMING_+t2 = etime(t);
+//_TIMING_+cerr << "Last call = " << t2 << endl;
+//_TIMING_+cerr << "Diff = " << t2-t1 << endl;
+
+    for (int xx = 0; xx < 10 ; xx++)
+        for (int yy = 0; yy < 10 ; yy++)
+            for (int zz = 0; zz < 10 ; zz++)
+                count[xx][yy][zz] *= factor;
+
+    if (fabs(count[1][6][0] - 0.75) > MID_epsilon)        ITFAILS;
+    if (fabs(count[0][8][1] - 0.221667) > MID_epsilon)    ITFAILS;
+    if (fabs(count[5][4][2] - 0.48) > MID_epsilon)        ITFAILS;
+    if (fabs(count[8][1][3] - 0.0483333) > MID_epsilon)   ITFAILS;
+    if (fabs(count[2][7][4] - 0.338333) > MID_epsilon)    ITFAILS;
+    if (fabs(count[5][3][5] - 1.37167) > MID_epsilon)     ITFAILS;
+    if (fabs(count[4][4][6] - 1.47667) > MID_epsilon)     ITFAILS;
+    if (fabs(count[3][6][7] - 0.0516667) > MID_epsilon)   ITFAILS;
+    if (fabs(count[4][4][8] - 0.935) > MID_epsilon)       ITFAILS;
+    if (fabs(count[4][4][9] - 0.151667) > MID_epsilon)    ITFAILS;
+
+    if (count[1][9][0] != 0.0)                            ITFAILS;
+    if (count[4][6][3] != 0.0)                            ITFAILS;
+    if (count[5][2][7] != 0.0)                            ITFAILS;
+    if (count[3][4][9] != 0.0)                            ITFAILS;
+
+//  Beginning:  a way to see these results ordered on the page.
+//__+cout.setf(ios::fixed);
+//__+cout.precision(5);
+//__+for (int zz = 0 ; zz < 10 ; zz++) {
+//__+    for (int yy = 9 ; yy >= 0 ; yy--) {
+//__+        for (int xx = 0; xx < 10; xx++)
+//__+            cout << setw(10) << count[xx][yy][zz];
+//__+        cout << endl;
+//__+    }
+//__+    cout << endl << endl;
+//__+}
+//__+cout << "-----------------------------------------------\n";
+//  End:  a way to see these results ordered on the page.
+
+    // Second test for T**4 interpolated sampling.
+    T4[0] = T4[1] = T4[2] = 2.07142857143;
+    T4[3] = 0.642857142857;
+
+    for (int x = 0; x < 10 ; x++)
+       for (int y = 0; y < 10 ; y++)
+           for (int z = 0; z < 10 ; z++)
+               count[x][y][z] = 0.;
+
+//_TIMING_+t1 = etime(t);
+//_TIMING_+cerr << "Next call = " << t1 << endl;
+
+    for (int i = 0 ; i < numm ; i++)
+    {
+        SF_DOUBLE R = mesh_ptr_1->sample_pos(1,random,T4);
+
+        int xx = static_cast<int>(10.0*R[0]);
+        int yy = static_cast<int>(10.0*R[1]);
+        int zz = static_cast<int>(10.0*R[2]);
+
+        if (xx < 0 || xx > 9)                           ITFAILS;
+        if (yy < 0 || yy > 9)                           ITFAILS;
+        if (zz < 0 || zz > 9)                           ITFAILS;
+
+        count[xx][yy][zz] += 1.;
+    }
+
+//_TIMING_+t2 = etime(t);
+//_TIMING_+cerr << "Last call = " << t2 << endl;
+//_TIMING_+cerr << "Diff = " << t2-t1 << endl;
+
+    for (int xx = 0; xx < 10 ; xx++)
+        for (int yy = 0; yy < 10 ; yy++)
+            for (int zz = 0; zz < 10 ; zz++)
+                count[xx][yy][zz] *= factor;
+
+    if (fabs(count[1][6][0] - 1.175) > MID_epsilon)       ITFAILS;
+    if (fabs(count[0][8][1] - 0.266667) > MID_epsilon)    ITFAILS;
+    if (fabs(count[5][4][2] - 0.498333) > MID_epsilon)    ITFAILS;
+    if (fabs(count[8][1][3] - 0.0383333) > MID_epsilon)   ITFAILS;
+    if (fabs(count[2][7][4] - 0.231667) > MID_epsilon)    ITFAILS;
+    if (fabs(count[5][3][5] - 0.75) > MID_epsilon)        ITFAILS;
+    if (fabs(count[4][4][6] - 0.653333) > MID_epsilon)    ITFAILS;
+    if (fabs(count[3][6][7] - 0.0316667) > MID_epsilon)   ITFAILS;
+    if (fabs(count[4][4][8] - 0.29) > MID_epsilon)        ITFAILS;
+    if (fabs(count[4][4][9] - 0.0466667) > MID_epsilon)   ITFAILS;
+
+    if (count[1][9][0] != 0.0)                            ITFAILS;
+    if (count[4][6][3] != 0.0)                            ITFAILS;
+    if (count[5][2][7] != 0.0)                            ITFAILS;
+    if (count[3][4][9] != 0.0)                            ITFAILS;
+
+//  Beginning:  a way to see these results ordered on the page.
+//__+cout.setf(ios::fixed);
+//__+cout.precision(5);
+//__+for (int zz = 0 ; zz < 10 ; zz++) {
+//__+    for (int yy = 9 ; yy >= 0 ; yy--) {
+//__+        for (int xx = 0; xx < 10; xx++)
+//__+            cout << setw(10) << count[xx][yy][zz];
+//__+        cout << endl;
+//__+    }
+//__+    cout << endl << endl;
+//__+}
+//__+cout << "-----------------------------------------------\n";
+//  End:  a way to see these results ordered on the page.
 
     // End of test sampling in a tethedron.
 
@@ -686,19 +867,19 @@ int main(int argc, char *argv[])
 
     // this is a serial test
     if (C4::node())
-    {
-	C4::Finalize();
-	return 0;
-    }
+        {
+            C4::Finalize();
+            return 0;
+        }
 
     // version tag
     for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_mc::release() << endl;
-	    C4::Finalize();
-	    return 0;
-	}
+        if (string(argv[arg]) == "--version")
+            {
+                cout << argv[0] << ": version " << rtt_mc::release() << endl;
+                C4::Finalize();
+                return 0;
+            }
 
     // ThreeVector tests
     Test_ThreeVector();
@@ -710,9 +891,7 @@ int main(int argc, char *argv[])
     cout << endl;
     cout <<     "************************************" << endl;
     if (passed)
-    {
         cout << "**** TET_Mesh Self Test: PASSED ****" << endl;
-    }
     cout <<     "************************************" << endl;
     cout << endl;
 
