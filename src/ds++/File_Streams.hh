@@ -216,10 +216,10 @@ File_Output& File_Output::operator<<(const T i)
     }
     else // ascii mode
     {
-	if ( d_last_was_char ) d_stream << std::endl;
+	if ( d_last_was_char ) d_stream << '\n';
 
 	d_last_was_char = false;
-	d_stream << i << std::endl;
+	d_stream << i << '\n';
     }
 
     Ensure(d_stream.good());
