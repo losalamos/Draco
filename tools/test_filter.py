@@ -47,9 +47,10 @@ num_proc = procmatch.group(1)
 testlog  = testname + "-%s.log" % (num_proc)
 
 ## define counters
-pass_count  = 0
-fail_count  = 0
-xfail_count = 0
+pass_count   = 0
+fail_count   = 0
+xfail_count  = 0
+assert_count = 0
 
 ## search through the lines and look for phrase messages
 for line in lines:
@@ -65,6 +66,10 @@ for line in lines:
     # expected failures
     xmatch = re.search(r'test:\s*expected\s*fail', line, re.IGNORECASE)
     if xmatch: xfail_count = xfail_count + 1
+
+    # assertions
+    amatch = re.search(r'Assertion:', line, re.IGNORECASE)
+    if amatch: assert_count = assert_count + 1
 
 ## print messages to stdout
 output_label = "========== %s Output Summary =============" % (testname) 
@@ -93,6 +98,10 @@ if pass_count == 0 and (fail_count+xfail_count) == 0:
 if xfail_count > 0:
     print "  WARNING: Test exhibited %d expected failure(s)" % (xfail_count)
     print "  WARNING: Examine %s for details!" % (testlog)
+
+if assert_count > 0:
+    print "  ERROR: Test exhibited %d caught assertion(s)" % (assert_count)
+    print "  ERROR: Examine %s for details!" % (testlog)
 
 print border
 print

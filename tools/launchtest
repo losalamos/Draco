@@ -111,6 +111,7 @@ echo "* Name       : $executable"
 echo "* Processors : $procs"
 echo "* Type       : $exe"
 echo "****************************************"
+echo "********* PROBLEM OUTPUT BELOW *********"
 echo 
 
 ##---------------------------------------------------------------------------##
