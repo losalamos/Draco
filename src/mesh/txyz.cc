@@ -35,11 +35,16 @@ int main( int argc, char *argv[] )
     {
         Mesh_XYZ* m1 = new Mesh_XYZ( mdb );
         Mesh_XYZ* m2 = new Mesh_XYZ( mdb );
+        Mesh_XYZ* temp;
         if (*m1 == *m2)
             cout << "error: same mesh" << endl;
+        temp = m1;
         m1 = m2;
         if (!(*m1 == *m2))
             cout << "error: different meshes" << endl;
+
+        delete temp;
+        delete m2;
     }
 
     {

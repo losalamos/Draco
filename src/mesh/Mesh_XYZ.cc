@@ -180,11 +180,11 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 // Initialize the face normals
 
     for( int c=0; c < ncp; c++ ) {
-        face_norms(c,0) = -1.*xhat;
+        face_norms(c,0) = -xhat;
         face_norms(c,1) = xhat;
-        face_norms(c,2) = -1.*yhat;
+        face_norms(c,2) = -yhat;
         face_norms(c,3) = yhat;
-        face_norms(c,4) = -1.*zhat;
+        face_norms(c,4) = -zhat;
         face_norms(c,5) = zhat;
     }
 
