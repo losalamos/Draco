@@ -1,0 +1,19 @@
+#!/bin/sh
+
+for env in $*; do
+    echo "wiping environment $env"
+
+    rm */.d.*_$env
+    rm */.dkcc.*_$env
+    rm -f */.pt*_${env}*
+    rm -rf */$env
+    rm */.env_$env
+    rm */lib*_${env}.*
+
+    # clean up the main executables
+
+    # Clean up test executables from various directories.
+
+    rm ds++/tst*_${env}
+    rm c4/t*_${env}
+done
