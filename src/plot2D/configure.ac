@@ -33,7 +33,8 @@ if test "${XMGRACE_PATH}" = null; then
 fi
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
-                 test/Makefile:../../config/Makefile.test.in])
+                 test/Makefile:../../config/Makefile.test.in \
+                 test/tstPlot2D_Diff.py:test/python/tstPlot2D_Diff.py.in])
 AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl

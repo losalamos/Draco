@@ -194,10 +194,11 @@ main(int argc, char *argv[])
         tstPlot2D(batch);
  
         // run python diff scrips
-        system("python ./tstPlot2D_Diff.py");
+        if (system("python ./tstPlot2D_Diff.py"))
+	    throw rtt_dsxx::assertion ("Python script failed.");
     }
     catch(rtt_dsxx::assertion &ass) {
-        cout << "Assertion failure on " << ass.what() << endl;
+        cout << "Assertion: " << ass.what() << endl;
 	cout << "Better luck next time!" << endl;
         return 1;
     }

@@ -9610,7 +9610,7 @@ echo "$as_me: error: \"No valid xmgrace found!\"" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
-                    ac_config_files="$ac_config_files Makefile:../../config/Makefile.package.in test/Makefile:../../config/Makefile.test.in"
+                              ac_config_files="$ac_config_files Makefile:../../config/Makefile.package.in test/Makefile:../../config/Makefile.test.in test/tstPlot2D_Diff.py:test/python/tstPlot2D_Diff.py.in"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -10137,6 +10137,7 @@ do
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile:../../config/Makefile.package.in" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile:../../config/Makefile.test.in" ;;
+  "test/tstPlot2D_Diff.py" ) CONFIG_FILES="$CONFIG_FILES test/tstPlot2D_Diff.py:test/python/tstPlot2D_Diff.py.in" ;;
   "plot2D/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS plot2D/config.h:config.h.in" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
