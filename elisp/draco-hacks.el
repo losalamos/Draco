@@ -495,7 +495,7 @@ templates directory is found then try (my-templates-directory)."
   (setq spkg (draco-safe-pkg pkg))
 
   ;; now we get the files that the directory does not currently have
-  (setq mainpage (concat spkg ".dcc"))
+  (setq mainpage (concat pkg ".dcc"))
 
   ;;
   ;; get the mainpage
