@@ -118,6 +118,14 @@ class File_Output
 
     // Overloaded output for type char.
     File_Output& operator<<(const char c);
+
+  private:
+
+    // NOT IMPLEMENTED.
+
+    // ofstream doesn't implemenet copy ctor and assignment, so we won't either.
+    File_Output(const File_Output &);
+    File_Output &operator=(const File_Output &);
 };
 
 //===========================================================================//
@@ -177,6 +185,14 @@ class File_Input
 
     // Overloaded input for type char.
     File_Input& operator>>(char &c);
+
+  private:
+
+    // NOT IMPLEMENTED
+
+    // ifstream doesn't implemenet copy ctor and assignment, so we won't either.
+    File_Input(const File_Input &);
+    File_Input &operator=(const File_Input &);
 };
 
 //---------------------------------------------------------------------------//

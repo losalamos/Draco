@@ -17,7 +17,7 @@ namespace
 
 // Define a string to indicate that a file was written in binary mode.
 // This string should be one that is unlikely to be used by a client.
-static const std::string BINARY_FILE_HEADER = "bInArYfIlE_CCS-4_is_a_geekdom";
+static const std::string BINARY_FILE_HEADER = "bInArYfIlE_rtt_dsxx_File_Streams";
 
 }
 
