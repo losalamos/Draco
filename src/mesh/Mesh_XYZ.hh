@@ -284,10 +284,10 @@ class Mesh_XYZ : private XYZ_Mapper
         Mat2<double> f0, f1, f2, f3, f4, f5;
       public:
         bssf( SP<Mesh_XYZ>& spm )
-            : XYZ_Mapper( spm->Get_Mesh_DB() ),
+            : XYZ_Mapper( spm->get_Mesh_DB() ),
               f0( ncy, ncz ), f1( ncy, ncz ),
               f2( ncx, ncz ), f3( ncx, ncz ),
-              f4( nxc, ncy ), f5( ncx, ncy )
+              f4( ncx, ncy ), f5( ncx, ncy )
         {}
 
         Mat2<double>& face( int f )
