@@ -20,7 +20,7 @@ libsrcs = \
 	NodeInfo.cc \
         SpinLock.cc \
 	Sync.cc \
-        global.cc \
+        global_nt.cc \
 	C4_Req.cc
 
 #	DeepBSwap.cc

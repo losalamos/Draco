@@ -135,7 +135,7 @@ void RecvAsync( C4_Req& r, void *buf, int size, int source, int tag,
     r.set();
     MPI_Irecv( buf, size, MPI_BYTE, source, tag, MPI_COMM_WORLD, &r.r );
 }
-
+#if 0
 //---------------------------------------------------------------------------//
 // Send a buffer of integers.
 //---------------------------------------------------------------------------//
@@ -210,6 +210,7 @@ int Recv( double *buf, int nels, int source, int group /*=0*/ )
     MPI_Get_count( &status, MPI_FLOAT, &cnt );
     return cnt;
 }
+#endif
 
 //---------------------------------------------------------------------------//
 // Global reduction operations.
