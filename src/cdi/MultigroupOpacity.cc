@@ -13,7 +13,17 @@
 
 namespace rtt_cdi
 {
-    // empty
+
+    /*!
+     * \brief Default Opacity() destructor.
+     *
+     * This is required to correctly release memory when any
+     * object derived from MultigroupOpacity is destroyed.
+     */
+     MultigroupOpacity::~MultigroupOpacity()
+	 {
+	     // empty
+	 }
 
 } // end namespace rtt_cdi
 

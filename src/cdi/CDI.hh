@@ -19,6 +19,7 @@ namespace rtt_cdi
 
     class GrayOpacity;
     class MultigroupOpacity;
+//    class EOS;
 
 //===========================================================================//
 /*!
@@ -27,17 +28,21 @@ namespace rtt_cdi
  * \brief This class provides a Common Data Interface (CDI) to Atomic, 
  *        Nuclear and Equation of State (EOS) data.
  *
- * \sa The client must first instantiate concrete Opacity, Nuclear and EOS 
- *     classes that are derived from the abstract classes found in the CDI
- *     package.  A CDI object is then created using these concrete classes 
- *     as constructor parameters.  Each CDI object will provide access to
- *     data for <b><i>one<i><b> material.
+ * The client must first instantiate concrete Opacity, Nuclear and EOS 
+ * classes that are derived from the abstract classes found in the CDI
+ * package.  A CDI object is then created using these concrete classes 
+ * as constructor parameters.  Each CDI object will provide access to
+ * data for <b><i>one</i></b> material.  This material may be a
+ * mixture (e.g. water) if that mixture has been defined in the
+ * underlying data tables.  However, CDI will not mix data table entries
+ * to create a new material.  This type of mixing should be done by a
+ * seperate package or the client code.
  * <p>
- *     Since this header file does not include the definitions for
- *     GrayOpacity or MultigroupOpacity, the calling routine must include
- *     these header files.  If the calling routine does not make use of
- *     one of these classes then it's definition file does not need to be
- *     included, however this will result in the compile-time warning:
+ * Since this header file does not include the definitions for
+ * GrayOpacity or MultigroupOpacity, the calling routine must include
+ * these header files.  If the calling routine does not make use of
+ * one of these classes then it's definition file does not need to be
+ * included, however this will result in the compile-time warning:
  * <pre>
  *       line 69: warning: delete of pointer to incomplete class
  *  	    delete p;
@@ -49,7 +54,7 @@ namespace rtt_cdi
 /*!
  * \example cdi/test/tCDI.cc
  *
- * \sa This test code provides an example of how to use CDI to access an
+ * This test code provides an example of how to use CDI to access an
  *     user defined opacity class.  We have created an opacity class
  *     called dummyOpacity that is used in the creation of a CDI object.
  *     The CDI object is then used to obtain obacity data (via
@@ -71,7 +76,7 @@ class CDI
     /*!
      * \brief Smart pointer to the GrayOpacity object.
      *
-     * \sa spGrayOpacity is a smart pointer that links a CDI object to
+     * spGrayOpacity is a smart pointer that links a CDI object to
      *     an GrayOpacity object (any type of gray opacity - Gandolf,
      *     EOSPAC, Analytic, etc.).  The pointer is established in the
      *     CDI constructor. 
@@ -81,24 +86,23 @@ class CDI
     /*!
      * \brief Smart pointer to the MultigroupOpacity object.
      *
-     * \sa spMultigroupOpacity is a smart pointer that links a CDI
+     * spMultigroupOpacity is a smart pointer that links a CDI
      *     object to an MultigroupOpacity object (any type of gray
      *     opacity - Gandolf, EOSPAC, Analytic, etc.).  The pointer is
      *     established in the CDI constructor. 
      */
     const rtt_dsxx::SP< MultigroupOpacity > spMultigroupOpacity;
     
-    /*!
-     * \brief Smart pointer to the EOS object.
-     *
-     * \sa spEOS is a smart pointer that links a CDI object to an 
-     *     EOS object (any type of gray opacity - Gandolf, EOSPAC,  
-     *     Analytic, etc.).  The pointer is established in the CDI
-     *     constructor. 
-     *
-     * EOS objects have not yet been implemented in the CDI.
-     */
-    // const rtt_dsxx::SP<EOS> spEOS;
+//     Smart pointer to the EOS object.
+//     
+//       spEOS is a smart pointer that links a CDI object to an 
+//           EOS object (any type of gray opacity - Gandolf, EOSPAC,  
+//           Analytic, etc.).  The pointer is established in the CDI
+//           constructor. 
+//     
+//       EOS objects have not yet been implemented in the CDI.
+//     
+//    const rtt_dsxx::SP<EOS> spEOS;
     
   public:
 
@@ -109,7 +113,7 @@ class CDI
      *        itself to Opacity, Nuclear, and EOS Data objects for a
      *        single material.
      *
-     * \sa Currently, CDI only interfaces opacity data (either gray or 
+     * Currently, CDI only interfaces opacity data (either gray or 
      *     multigroup).  There are a number of constructors.  The
      *     variation in constructors allows CDI objects to be
      *     instatiated with different sets of components.
@@ -129,11 +133,11 @@ class CDI
      *     must be careful to ensure that a single CDI object allows
      *     access to data for a single material!
      *
-     * \param _spGrayOpacity A smart pointer object to a GrayOpacity
+     * \param spGrayOpacity A smart pointer object to a GrayOpacity
      *        class.  The GrayOpacity class must be derived from the
      *        abstract class found in the CDI package.
      *
-     * \param _spMultigroupOpacity A smart pointer object to a
+     * \param spMultigroupOpacity A smart pointer object to a
      *        MultigroupOpacity class.  The MultigroupOpacity class
      *        must be derived from the abstract class found in the CDI
      *        package. 
@@ -141,26 +145,45 @@ class CDI
      * \return A CDI object.  A CDI object will be able to access the 
      *         data for a single material
      */
-     CDI( const rtt_dsxx::SP< GrayOpacity > _spGrayOpacity );
-     CDI( const rtt_dsxx::SP< MultigroupOpacity > _spMultigroupOpacity );
-     CDI( const rtt_dsxx::SP< GrayOpacity > _spGrayOpacity, 
-	  const rtt_dsxx::SP< MultigroupOpacity > _spMultigroupOpacity );
+     CDI( const rtt_dsxx::SP< GrayOpacity > spGrayOpacity, 
+	  const rtt_dsxx::SP< MultigroupOpacity > spMultigroupOpacity );
+    /*!
+     * \brief CDI constructor
+     *
+     * This constructor creates a CDI that only contains hooks to
+     * access gray opacity data.
+     *
+     * \sa More details can be found in the comments for other CDI
+     *     constructors. 
+     */
+     CDI( const rtt_dsxx::SP< GrayOpacity > spGrayOpacity );
+
+    /*!
+     * \brief CDI constructor
+     *
+     * This constructor creates a CDI that only contains hooks to
+     * access multigroup opacity data.
+     *
+     * \sa More details can be found in the comments for other CDI
+     *     constructors. 
+     */
+     CDI( const rtt_dsxx::SP< MultigroupOpacity > spMultigroupOpacity );
     
     /*!
      * \brief Destructor for CDI objects.
      *
-     * \sa We include a destructor for the CDI class so that, if
+     * We include a destructor for the CDI class so that, if
      *     another object inherits from CDI, the derived object
      *     correctly destroys the CDI base class.
      */
-    virtual ~CDI() {};
+    virtual ~CDI();
 
     // ACCESSORS
 
     /*!
      * \brief This fuction returns the GrayOpacity object.
      *
-     * \sa This provides the CDI with the full functionality of the
+     * This provides the CDI with the full functionality of the
      *     interface defined in GrayOpacity.hh.  For example, the host 
      *     code could make the following call:<br>
      * <pre>
@@ -172,7 +195,7 @@ class CDI
     /*!
      * \brief This fuction returns the MultigroupOpacity object.
      *
-     * \sa This provides the CDI with the full functionality of the
+     * This provides the CDI with the full functionality of the
      *     interface defined in MultigroupOpacity.hh.  For example,
      *     the host code could make the following call:<br>
      * <pre>

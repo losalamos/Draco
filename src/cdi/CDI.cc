@@ -43,6 +43,11 @@ CDI::CDI(  const rtt_dsxx::SP< GrayOpacity > _spGrayOpacity,
 	// empty
     }
 
+ CDI::~CDI() 
+     {
+	 // empty
+     }
+
     // --------- //  
     // Accessors //
     // --------- //

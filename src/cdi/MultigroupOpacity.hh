@@ -27,7 +27,7 @@ namespace rtt_cdi
  * \brief This is a pure virtual class that defines a standard
  * interface for all derived MultigroupOpacity objects.
  *
- * \sa  Any derived MultigroupOpacity object must provide as a minimum 
+ *   Any derived MultigroupOpacity object must provide as a minimum 
  * the functionality outlined in this routine.  This functionality
  * includes access to the data grid and the ability to return
  * interpolated opacity values.
@@ -59,7 +59,7 @@ class MultigroupOpacity
      * This is required to correctly release memory when any
      * object derived from MultigroupOpacity is destroyed.
      */
-     virtual ~MultigroupOpacity() {};
+     virtual ~MultigroupOpacity();
 
     // --------- //
     // Accessors //
@@ -70,10 +70,10 @@ class MultigroupOpacity
      *     single opacity for each group) that correspond to the
      *     provided temperature and density. 
      *
-     * \parameter targetTemperature The temperature value for which
+     * \param targetTemperature The temperature value for which
      *     these opacity values are being requested (keV).
      *
-     * \parameter targetDensity The density value for which these opacity 
+     * \param targetDensity The density value for which these opacity 
      *     values are being requested (g/cm^3)
      *
      * \return A vector of opacities (a single opacity for each group).
@@ -87,10 +87,10 @@ class MultigroupOpacity
      *     opacity vectors that correspond to the provided vector of
      *     temperatures and a single density value.
      *
-     * \parameter targetTemperature A vector of temperature values for
+     * \param targetTemperature A vector of temperature values for
      *     which opacity values are being requested (keV).
      *
-     * \parameter targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity 
      *     value is being requested (g/cm^3).
      *
      * \return A vector of multigroup opacity vectors (cm^2/g).
@@ -104,10 +104,10 @@ class MultigroupOpacity
      *     opacity vectors that correspond to the provided vector of
      *     densities and a single temperature value.
      *
-     * \parameter targetTemperature The temperature value for which an 
+     * \param targetTemperature The temperature value for which an 
      *     opacity value is being requested (keV).
      *
-     * \parameter targetDensity A vector of density values for which
+     * \param targetDensity A vector of density values for which
      *     opacity values are being requested (g/cm^3).
      *
      * \return A vector of multigroup opacity vectors (cm^2/g).

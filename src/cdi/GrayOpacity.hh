@@ -28,7 +28,7 @@ namespace rtt_cdi
  * \brief This is a pure virtual class that defines a standard
  *  interface for all derived GrayOpacity objects. 
  *
- * \sa Any derived GrayOpacity object must provide as a minumum the
+ * Any derived GrayOpacity object must provide as a minumum the
  * functionality outlined in this routine.  This functionality
  * includes access to the data grid and the ability to return
  * interpolated opacity values.
@@ -60,7 +60,7 @@ class GrayOpacity
      * This is required to correctly release memory when any
      * object derived from GrayOpacity is destroyed.
      */
-    virtual ~GrayOpacity() {};
+    virtual ~GrayOpacity();
 
     // --------- //
     // Accessors //
@@ -70,10 +70,10 @@ class GrayOpacity
      * \brief Opacity accessor that returns a single opacity that 
      *     corresponds to the provided temperature and density.
      *
-     * \parameter targetTemperature The temperature value for which an
+     * \param targetTemperature The temperature value for which an
      *     opacity value is being requested (keV).
      *
-     * \parameter targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity 
      *     value is being requested (g/cm^3).
      *
      * \return A single interpolated opacity (cm^2/g).
@@ -87,10 +87,10 @@ class GrayOpacity
      *     correspond to the provided vector of temperatures and a
      *     single density value. 
      *
-     * \parameter targetTemperature A vector of temperature values for
+     * \param targetTemperature A vector of temperature values for
      *     which opacity values are being requested (keV).
      *
-     * \parameter targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity 
      *     value is being requested (g/cm^3).
      *
      * \return A vector of opacities (cm^2/g).
@@ -104,10 +104,10 @@ class GrayOpacity
      *     that correspond to the provided vector of densities and a
      *     single temperature value. 
      *
-     * \parameter targetTemperature The temperature value for which an 
+     * \param targetTemperature The temperature value for which an 
      *     opacity value is being requested (keV).
      *
-     * \parameter targetDensity A vector of density values for which
+     * \param targetDensity A vector of density values for which
      *     opacity values are being requested (g/cm^3).
      *
      * \return A vector of opacities (cm^2/g).

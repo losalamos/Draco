@@ -26,8 +26,8 @@ namespace rtt_cdi
      */
     enum Model
     {
-	Rosseland,
-	Plank
+	Rosseland, /*!< use Rosseland mean opacities. */
+	Plank      /*!< use Plank mean opacities. */
     };
 
     /*!

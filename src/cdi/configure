@@ -836,7 +836,7 @@ EOF
    done
 
    DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
-   for lib in UnitTestFrame c4
+   for lib in UnitTestFrame
    do
        # temporary string to keep line from getting too long
        draco_test_depends="\${libdir}/lib${lib}\${libsuffix}"
