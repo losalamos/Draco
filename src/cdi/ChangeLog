@@ -1,6 +1,7 @@
 2002-05-08  Thomas M. Evans  <tme@lanl.gov>
 
-	* cdi: Release 1_2_0.
+	* cdi: Release 1_2_0.  Added some DBC to CDI for large-FP number
+	checks.  STD compliance in the tests.
 
 2002-03-18  Todd J. Urbatsch  <tmonster@lanl.gov>
 

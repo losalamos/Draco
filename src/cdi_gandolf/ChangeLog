@@ -1,3 +1,8 @@
+2002-12-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* cdi_gandolf: release 1_3_0.  Added std:: namespace to
+	GandolfGrayOpacity.hh and GandolfMultigroupOpacity.hh.
+
 2002-05-09  Thomas M. Evans  <tme@lanl.gov>
 
 	* cdi_gandolf: released cdi_gandolf-1_2_0. Added some std::
