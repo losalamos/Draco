@@ -31,16 +31,16 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    C4::Init(argc, argv);
+    rtt_c4::initialize(argc, argv);
 
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    if (C4::node() == 0)
+	    if (rtt_c4::node() == 0)
 		cout << argv[0] << ": version " << rtt_<pkg>::release() 
 		     << endl;
-	    C4::Finalize();
+	    rtt_c4::finalize();
 	    return 0;
 	}
 
@@ -52,12 +52,12 @@ int main(int argc, char *argv[])
     {
 	cout << "While testing <class>, " << ass.what()
 	     << endl;
-	C4::Finalize();
+	rtt_c4::finalize();
 	return 1;
     }
 
     {
-	C4::HTSyncSpinLock slock;
+	rtt_c4::HTSyncSpinLock slock;
 
 	// status of test
 	cout << endl;
@@ -65,17 +65,17 @@ int main(int argc, char *argv[])
 	if (rtt_<spkg>::passed) 
 	{
 	    cout << "**** <class> Test: PASSED on " 
-		 << C4::node() << endl;
+		 << rtt_c4::node() << endl;
 	}
 	cout <<     "*********************************************" << endl;
 	cout << endl;
     }
     
-    C4::gsync();
+    rtt_c4::global_barrier();
 
-    cout << "Done testing <class> on " << C4::node() << endl;
+    cout << "Done testing <class> on " << rtt_c4::node() << endl;
     
-    C4::Finalize();
+    rtt_c4::finalize();
 }   
 
 //---------------------------------------------------------------------------//
