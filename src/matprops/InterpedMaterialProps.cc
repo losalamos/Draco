@@ -96,6 +96,8 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 	{
 	    if (reader.getSigmaTotal(materialId, i, data))
 		tables[i-1] = BilinearInterpTable(spGrid, data);
+            else
+                tables[i-1] = BilinearInterpTable();
 	}
 
 	GroupedTable sigmaTotal(energyUpperbounds, energyLowerbounds,
@@ -107,6 +109,8 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 	{
 	    if (reader.getSigmaAbsorption(materialId, i, data))
 		tables[i-1] = BilinearInterpTable(spGrid, data);
+            else
+                tables[i-1] = BilinearInterpTable();
 	}
 
 	GroupedTable sigmaAbsorption(energyUpperbounds, energyLowerbounds,
@@ -118,6 +122,8 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 	{
 	    if (reader.getSigmaScattering(materialId, i, data))
 		tables[i-1] = BilinearInterpTable(spGrid, data);
+            else
+                tables[i-1] = BilinearInterpTable();
 	}
 
 	GroupedTable sigmaScattering(energyUpperbounds, energyLowerbounds,
@@ -129,6 +135,8 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 	{
 	    if (reader.getSigmaEmission(materialId, i, data))
 		tables[i-1] = BilinearInterpTable(spGrid, data);
+            else
+                tables[i-1] = BilinearInterpTable();
 	}
 
 	GroupedTable sigmaEmission(energyUpperbounds, energyLowerbounds,
