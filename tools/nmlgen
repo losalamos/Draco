@@ -126,7 +126,7 @@ while( <> ) {
     }
 
     if ( $_[0] eq "DynArray<int>" ) {
-	print  H_FILE "    dsxx::DynArray<int> $_[1];\n";
+	print  H_FILE "    rtt_dsxx::DynArray<int> $_[1];\n";
 	print CC_FILE "    N_DynArray_int( $_[1], \"$_[2]\" ),\n";
 	next;
     }
@@ -144,7 +144,7 @@ while( <> ) {
     }
 
     if ( $_[0] eq "String" ) {
-	print  H_FILE "    dsxx::String $_[1];\n";
+	print  H_FILE "    rtt_dsxx::String $_[1];\n";
 	if ( $_[2] ne "\"\"" ) {
 	    print CC_FILE "    N_String( $_[1], \"$_[2]\" ),\n";
 	} else {
