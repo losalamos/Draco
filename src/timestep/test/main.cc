@@ -11,18 +11,26 @@
 
 #include "ds++/Assert.hh"
 
+#include "c4/global.hh"
+
 #include <iostream>
 using std::cerr;
 using std::endl;
 
-int main ()
+int main (int argc, char *argv[])
 {
     try
     {
-	test_timestep tester;
+	C4::Init(argc, argv);
 
-	tester.execute_test();
+	// Create a nested scope since tester may be doing C4 stuff in its dtor.
+	{
+	    test_timestep tester;
 
+	    tester.execute_test();
+	}
+
+	C4::Finalize();
 	return 0;
     }
     catch (const dsxx::assertion &ass)

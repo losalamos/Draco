@@ -15,6 +15,8 @@
 #include "timestep/test/dummy_package.hh"
 #include "timestep/test/test_utils.hh"
 
+#include "c4/global.hh"
+
 #include <iostream>
 #include <cmath>
 
@@ -161,21 +163,31 @@ void test_timestep::execute_test()
 	&& compare_reals(6.654321e+00, sp_gd->get_dt_rec(mngr),nd)
 	&& compare_reals(1.000000e+05,sp_max->get_dt_rec(mngr),nd)
 	&& xxx.tests_passed();
-	
+
+    // Check to make sure all processes passed.
+    
+    int npassed = passed ? 1 : 0;
+    C4::gsum(npassed);
+
+    passed = npassed == C4::nodes();
+    
 // Print the status of the test.
 
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (passed) 
+    if (C4::node() == 0)
     {
-	cout << "**** Time-step Manager Self Test: PASSED ****" << endl;
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (passed) 
+	{
+	    cout << "**** Time-step Manager Self Test: PASSED ****" << endl;
+	}
+	else
+	{
+	    cout << "**** Time-step Manager Self Test: FAILED ****" << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
     }
-    else
-    {
-	cout << "**** Time-step Manager Self Test: FAILED ****" << endl;
-    }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
 }
 
 

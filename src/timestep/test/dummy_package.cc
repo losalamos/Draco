@@ -12,6 +12,8 @@
 
 #include "timestep/field_ts_advisor.hh"
 
+#include "c4/global.hh"
+
 #include <vector>
 
 #include "timestep/test/test_utils.hh"
@@ -65,12 +67,19 @@ dummy_package::~dummy_package()
 
 void dummy_package::advance_state()
 {
+    // RMR The following code does not adequately cover
+    // all of the possible failure modes.
+    // Please update this method with fuller coverage.
 
-// Create a set of dummy arrays to serve as control fields for
-// use in exercizing the various advisors.
+    // Create a set of dummy arrays to serve as control fields for
+    // use in exercizing the various advisors.
 
-    const double a1[] = {1., 10., 11., 3., 2., 5., 5., 6.7};
-    int sizea = sizeof(a1)/sizeof(a1[0]);
+    const double a1Array[] = {1., 10., 11., 3., 2., 5., 5., 6.7};
+    const int sizeaArray = sizeof(a1Array)/sizeof(a1Array[0]);
+
+    const int sizea = sizeaArray;
+    const double *a1 = a1Array;
+    
     vector<double> te_old(a1,a1+sizea);
     vector<double> te_new = 1.09*te_old;
     vector<double> ti_old=0.97*te_old;

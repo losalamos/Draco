@@ -11,7 +11,7 @@ pkg	:= timestep
 SRC_TOP = ../..
 
 #need_linalg    := yes
-#need_c4	:= yes
+need_c4		:= yes
 #need_namelist	:= yes
 #need_spdf	:= yes
 #need_util	:= yes
