@@ -239,6 +239,8 @@ void t6()
     cout << "t6: start\n";
 
     UserVec<float> a(sz), b(sz);
+    UserVec<int> ai(sz), bi(sz);
+    UserVec<long> al(sz), bl(sz);
 
     a = 0.;
 
@@ -289,6 +291,14 @@ void t6()
     a = 3.4;
     b = ceil(a);
     passed &= (b[0] == 4.);
+
+    ai = -3;
+    bi = abs(ai);
+    passed &= (bi[0] == 3);
+
+    al = -3;
+    bl = labs(al);
+    passed &= (bl[0] == 3);
 
     a = -3.4;
     b = fabs(a);
