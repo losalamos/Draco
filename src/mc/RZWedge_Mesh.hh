@@ -162,6 +162,7 @@ class RZWedge_Mesh
     inline sf_double sample_pos(int, rng_Sprng &, sf_double, double) const;
     inline sf_double sample_pos_on_face(int, int, rng_Sprng &) const;
     int get_bndface(std_string, int) const;
+    sf_int get_surcells(std_string) const;
     bool check_defined_surcells(const std_string, const sf_int &) const;
     inline sf_int get_neighbors(int) const;
     bool full_Mesh() const { return !submesh; }

@@ -260,6 +260,209 @@ int RZWedge_Mesh::get_bndface(std_string boundary, int cell) const
 }
 
 //---------------------------------------------------------------------------//
+// return a list of cells along a specified boundary
+
+RZWedge_Mesh::sf_int RZWedge_Mesh::get_surcells(std::string boundary) const
+{
+    Require (!submesh);
+    Require (coord->get_dim() == 3);
+
+    // make return vector containing a list of cells along specified boundary
+    vector<int> return_list;
+
+    // verify our assumption that cell 1 is in the low x, low z position
+    Insist ((layout(1,1).size() == 1) && (layout(1,5).size() == 1) &&
+	    (layout(1,3).size() == 1) && (layout(1,4).size() == 1),
+	    "Cell 1 should not see refinement on outer boundary and sides!");  
+    Insist ((layout(1,1,1)==1) && (layout(1,3,1)==1) && (layout(1,4,1)==1), 
+	    "Cell 1 is not reflecting on inside and sides!");
+    Insist ((layout(1,5,1) == 0) || (layout(1,5,1) == 1), 
+	    "Cell 1 does not have an appropriate outer b.c.!");
+
+    // calculate the cells along the...
+    // ...the high r boundary
+    if ((boundary == "hix") || (boundary == "hir"))
+    {
+	// first, work our way along the low z edge to the (high x, low z) cell 
+	int start_cell = 1;
+	while (layout(start_cell,2,1) != start_cell && 
+	       layout(start_cell,2,1) != 0)
+	{
+	    // get the next cell along the low z edge
+	    int next_cell = layout(start_cell,2,1);
+
+	    // ridiculous, unnecessary checks on the next cell 
+	    Check (next_cell != 0 && next_cell != start_cell);
+	    Check (next_cell > 0 && next_cell <= layout.num_cells());
+
+	    // check that the cell has reflecting wedge attributes
+	    Check ((layout(next_cell,3,1) == next_cell) &&
+		   (layout(next_cell,4,1) == next_cell)); 
+
+	    // check that the low z edge is on a boundary
+	    Check ((layout(next_cell,5,1) == next_cell) ||
+		   (layout(next_cell,5,1) == 0));
+
+	    // the next cell is okay
+	    start_cell = next_cell;
+	}
+
+	// we have the high x starting cell; start filling surface cell list
+	int current_cell = start_cell;
+	return_list.push_back(current_cell);
+
+	// how many neighbors are there to the high z side?
+	int num_cells_hiz = layout.num_cells_across(current_cell,6);
+	Check (num_cells_hiz == 1 || num_cells_hiz == 2);
+
+	// keep including the next cell to the high x direction until b.c.
+	while (layout(current_cell,2,num_cells_hiz) != current_cell  &&
+	       layout(current_cell,2,1) != 0) 
+	{
+	    // next cell to put into surface cell list
+	    int next_cell = layout(current_cell,6,num_cells_hiz);
+
+	    // check that the cell is not outside the system (moot)
+	    Check (next_cell != 0 && next_cell != current_cell);
+
+	    // is the next cell a reasonable cell number?
+	    Check (next_cell > 0 && next_cell <= layout.num_cells());
+
+	    // check that the next cell is on the high r boundary
+	    Check ((layout(next_cell,2,1) == next_cell) ||
+		   (layout(next_cell,2,1) == 0)); 
+
+	    // check that the cell has reflecting wedge attributes
+	    Check ((layout(next_cell,3,1) == next_cell) &&
+		   (layout(next_cell,4,1) == next_cell)); 
+
+	    // accept the next cell and put it into the list
+	    current_cell = next_cell;
+	    return_list.push_back(current_cell);
+
+	    // get the number of neighbors on the high z side
+	    num_cells_hiz = layout.num_cells_across(current_cell,6);
+	    Check ((num_cells_hiz == 1) || (num_cells_hiz == 2));
+	}
+
+	// check the size of the surface cell list
+	Check (return_list.size() > 0);
+	Check (return_list.size() <= layout.num_cells()); 
+    }
+
+    // ...the low z boundary
+    else if (boundary == "loz")
+    {
+	// include cell 1
+	int current_cell = 1;
+	return_list.push_back(current_cell);
+
+	// keep including the next cell to the high x direction until b.c.
+	while (layout(current_cell,2,1) != current_cell &&
+	       layout(current_cell,2,1) != 0) 
+	{
+	    // next cell to put into surface cell list
+	    int next_cell = layout(current_cell,2,1);
+
+	    // check that the cell is not outside the system (moot)
+	    Check (next_cell != 0 && next_cell != current_cell);
+
+	    // is the next cell a reasonable cell number?
+	    Check (next_cell > 0 && next_cell <= layout.num_cells());
+
+	    // check that the next cell is on the low z boundary
+	    Check ((layout(next_cell,5,1) == next_cell) ||
+		   (layout(next_cell,5,1) == 0)); 
+
+	    // check that the cell has reflecting wedge attributes
+	    Check ((layout(next_cell,3,1) == next_cell) &&
+		   (layout(next_cell,4,1) == next_cell)); 
+
+	    // accept the next cell and put it into the list
+	    current_cell = next_cell;
+	    return_list.push_back(current_cell);
+	}
+
+	// check the size of the surface cell list
+	Check (return_list.size() > 0);
+	Check (return_list.size() <= layout.num_cells()); 
+    }
+
+    // ...the high z boundary
+    else if (boundary == "hiz")
+    {
+	// first, work our way along the low x edge to the low x, high z cell 
+	int start_cell = 1;
+	while (layout(start_cell,6,1) != start_cell && 
+	       layout(start_cell,6,1) != 0)
+	{
+	    // get the next cell along the low x edge
+	    int next_cell = layout(start_cell,6,1);
+
+	    // ridiculous, unnecessary checks on the next cell 
+	    Check (next_cell != 0 && next_cell != start_cell);
+	    Check (next_cell > 0 && next_cell <= layout.num_cells());
+
+	    // check that the cell has reflecting wedge attributes
+	    Check ((layout(next_cell,3,1) == next_cell) &&
+		   (layout(next_cell,4,1) == next_cell) &&
+		   (layout(next_cell,1,1) == next_cell)); 
+
+	    // the next cell is okay
+	    start_cell = next_cell;
+	}
+
+	// we have the high z starting cell; start filling surface cell list
+	int current_cell = start_cell;
+	return_list.push_back(current_cell);
+
+	// how many neighbors are there to the high x side?
+	int num_cells_hir = layout.num_cells_across(current_cell,2);
+	Check (num_cells_hir == 1 || num_cells_hir == 2);
+
+	// keep including the next cell to the high x direction until b.c.
+	while (layout(current_cell,2,num_cells_hir) != current_cell  &&
+	       layout(current_cell,2,1) != 0) 
+	{
+	    // next cell to put into surface cell list
+	    int next_cell = layout(current_cell,2,num_cells_hir);
+
+	    // check that the cell is not outside the system (moot)
+	    Check (next_cell != 0 && next_cell != current_cell);
+
+	    // is the next cell a reasonable cell number?
+	    Check (next_cell > 0 && next_cell <= layout.num_cells());
+
+	    // check that the next cell is on the high z boundary
+	    Check ((layout(next_cell,6,1) == next_cell) ||
+		   (layout(next_cell,6,1) == 0)); 
+
+	    // check that the cell has reflecting wedge attributes
+	    Check ((layout(next_cell,3,1) == next_cell) &&
+		   (layout(next_cell,4,1) == next_cell)); 
+
+	    // accept the next cell and put it into the list
+	    current_cell = next_cell;
+	    return_list.push_back(current_cell);
+
+	    // get the number of neighbors on the high x side
+	    num_cells_hir = layout.num_cells_across(current_cell,2);
+	    Check ((num_cells_hir == 1) || (num_cells_hir == 2));
+	}
+
+	// check the size of the surface cell list
+	Check (return_list.size() > 0);
+	Check (return_list.size() <= layout.num_cells()); 
+	    
+    }
+    else
+	Insist(0, "Unknown or invalid (lor/x,loy,hiy) surf in get_surcells!") 
+
+    // return vector
+    return return_list;
+}
+
+//---------------------------------------------------------------------------//
 // check that a user-/host-defined set of surface source cells actually
 // resides on the surface of the system (requires a vacuum bnd).
 
