@@ -16,9 +16,6 @@ package="PCGDiffusionSolver"
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 
-dnl No longer any libs to install
-dnl AC_INSTALL_LIB
-
 AC_NEEDS_LIBS(linalg nml c4 ds++)
 AC_NEEDS_LIBS_TEST(mesh diffusion)
 
