@@ -59,11 +59,8 @@ void C4_shm_init_scalar_work_arrays()
 }
 
 const int ar_data_size = 256;
-#if ar_data_suze/2 + 1 > _SHMEM_REDUCE_MIN_WRKDATA_SIZE
-const int ar_pWrk_size = ar_data_size/2 +1
-#else
-const int ar_pWrk_size = _SHMEM_REDUCE_MIN_WRKDATA_SIZE;
-#endif
+const int ar_pWrk_size =(ar_data_size/2 + 1 > _SHMEM_REDUCE_MIN_WRKDATA_SIZE ?
+                         ar_data_size/2 + 1 : _SHMEM_REDUCE_MIN_WRKDATA_SIZE);
 
 template<class T> class shm_ar_helper
 {
