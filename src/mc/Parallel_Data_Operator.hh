@@ -197,33 +197,43 @@ void Parallel_Data_Operator::global_sum(T *begin, T *end)
  * Op type.  The Op type provides a functor class (Data_Decomposed,
  * Data_Distributed, Data_Replicated) that describes how data should be
  * mapped across processors in certain topologies.  The following list
- * describes the data combinations: \arg \b "replication"/Data_Replicated
- * local_field is copied directly into the global_field, it is assumed that
- * the local_fields are the same on each processor; \arg \b
- * "replication"/Data_Decomposed the local_field is copied into the global
- * field on each processor, the global_fields are subsequently summed across
- * all processors; \arg \b "DD"/Data_Distributed local_fields are mapped into
- * the appropriate cells on the global_field on each processor, the
- * global_fields are then summed across all processors; \arg \b
- * "DD/replication"/Data_Decomposed first the local_field data is mapped into
- * local copies of the global_field on each processor, the global_fields are
- * then summed-up across all processors; \arg \b
- * "DD/replication"/Data_Replicated first the local_field data is mapped into
- * local copies of the global_field on each processor, the global_fields are
- * then mapped across all processors with replicated cells being assigned the
- * proper value and non-replicated cells communicating its results to all
- * other processors.
- *
+ * describes the data combinations:
+
+ * \arg \b "replication"/Data_Replicated * local_field is copied directly
+ * into the global_field, it is assumed that * the local_fields are the same
+ * on each processor;
+
+ * \arg \b * "replication"/Data_Decomposed the local_field is copied into the
+ * global * field on each processor, the global_fields are subsequently
+ * summed across * all processors;
+
+ * \arg \b "DD"/Data_Distributed local_fields are mapped into the appropriate
+ * cells on the global_field on each processor, the global_fields are then
+ * summed across all processors;
+
+ * \arg \b "DD/replication"/Data_Decomposed first the local_field data is
+ * mapped into local copies of the global_field on each processor, the
+ * global_fields are then summed-up across all processors;
+
+ * \arg \b "DD/replication"/Data_Replicated first the local_field data is
+ * mapped into local copies of the global_field on each processor, the
+ * global_fields are then mapped across all processors with replicated cells
+ * being assigned the proper value and non-replicated cells communicating its
+ * results to all other processors.
+ 
  * The Parallel_Data_Operator knows the problem topology.  The user must
  * specify an appropriate nested operations functor class when calling this
  * function.  The choices are Parallel_Data_Operator::Data_Replicated,
  * Parallel_Data_Operator::Data_Decomposed, and
  * Parallel_Data_Operator::Data_Distributed.  See the examples for info.
- *
- * \param local_field local field data on a processor 
+ 
+ * \param local_field local field data on a processor
+
  * \param global_field mutable global field data sized to the number of
  * global cells
- * \param mapping nested operations functor class (see above) 
+
+ * \param mapping nested operations functor class (see above)
+
  */
 template<class FT, class GT, class Op>
 void Parallel_Data_Operator::local_to_global(FT &local_field,
