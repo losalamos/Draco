@@ -36,9 +36,15 @@ AC_RUNTESTS(tstConfig tstMath tstCoord tstLayout tstOSMesh \
 dnl DRACO SETUP
 AC_DRACO_ENV
 
+dnl ASCI WHITE TEST WORK-AROUND
+AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND
+
 dnl do eight byte word setup
 AC_DETERMINE_WORD_TYPES
 AC_CHECK_EIGHT_BYTE_INT_TYPE
+
+dnl ASCI WHITE TEST WORK-AROUND
+AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in \

@@ -1138,6 +1138,39 @@ AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND
+dnl
+dnl changes compiler from newmpxlC to newxlC so that tests can be run
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND], [dnl
+
+   # change compiler
+   if test "${CXX}" = newmpxlC; then
+       white_compiler='newmpxlC'
+       CXX='newxlC'
+       AC_MSG_WARN("Changing to ${CXX} compiler for configure tests.")
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND
+dnl
+dnl changes compiler back to newmpxlC
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND], [dnl
+
+   # change compiler back
+   if test "${white_compiler}" = newmpxlC; then
+       CXX='newmpxlC'
+       AC_MSG_WARN("Changing back to ${CXX} compiler.")
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl end of ac_conf.m4
 dnl-------------------------------------------------------------------------dnl
 
@@ -1231,7 +1264,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        libsuffix='.a'
    fi
 
-   dnl										      
+   dnl      
    dnl POSIX SOURCE
    dnl
 
@@ -2459,13 +2492,27 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 
    elif test "${with_cxx}" = asciwhite ; then 
 
-       AC_CHECK_PROG(CXX, newxlC, newxlC)
-       AC_CHECK_PROG(CC, newxlc, newxlc)
+       # asci white uses different executables depending upon
+       # the mpi setup; so we check to see if mpi is on 
+       # and set the executable appropriately 
 
-       if test "${CXX}" = newxlC ; then
+       # mpi is on, use newmpxlC
+       if test -n "${vendor_mpi}" && test "${with_mpi}" = vendor; then
+	   AC_CHECK_PROG(CXX, newmpxlC, newmpxlC)
+	   AC_CHECK_PROG(CC, newmpxlc, newmpxlc)
+
+       # scalar build, use newxlC
+       else
+	   AC_CHECK_PROG(CXX, newxlC, newxlC)
+	   AC_CHECK_PROG(CC, newxlc, newxlc)
+
+       fi
+
+       # check to make sure compiler is valid
+       if test "${CXX}" = newxlC || test "${CXX}" = newmpxlC ; then
 	   AC_DRACO_IBM_VISUAL_AGE
        else
-	   AC_MSG_ERROR("Did not find ASCI White newxlC compiler!")
+	   AC_MSG_ERROR("Did not find ASCI White new(mp)xlC compiler!")
        fi
 
    else
@@ -2854,11 +2901,19 @@ AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -G -o'
 
-       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+       # when AR=newmpxlC we need to add /lib/crt0.o to 
+       # avoid p_argcx and p_argvx link error when building libs
+       if test "${AR}" = newmpxlC ; then
+	   ARLIBS='/lib/crt0.o'
+	   ARTESTLIBS='/lib/crt0.o'
+       fi
+
+       ARLIBS="${ARLIBS} \${DRACO_LIBS} \${VENDOR_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${PKG_LIBS} \${DRACO_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${DRACO_LIBS}\${VENDOR_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
@@ -3008,9 +3063,6 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	   ARFLAGS="--thread_safe ${ARFLAGS}"
 	   LDFLAGS="--thread_safe ${LDFLAGS}"
        fi
-
-       # determine word sizes
-       # AC_DETERMINE_WORD_SIZES
 
        #
        # setup communication packages
@@ -3572,82 +3624,59 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
        # setup communication packages
        #
-       
-       # setup vendor mpi
-       if test "${with_mpi}" = vendor ; then
+       if test -n "${vendor_mpi}"; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi -lmpi_r)
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi -lmpi_r)
-	   fi
+	   # setup vendor mpi
+	   if test "${with_mpi}" = vendor ; then
 
-	   # now turn on long long support if we are using the 
-	   # visual age compiler
-	   if test "${with_cxx}" = ibm || 
-	      test "${with_cxx}" = asciwhite ; then
+	       # on asciwhite the newmpxlC compiler script takes care
+	       # of loading the mpi libraries
 
-	       if test "${enable_strict_ansi}"; then
-		   AC_MSG_WARN("xlC set to allow long long")
-		   STRICTFLAG="-qlanglvl=extended"
-		   CFLAGS="${CFLAGS} -qlonglong"
-		   CXXFLAGS="${CXXFLAGS} -qlonglong"
+	       # set up libraries if we are on ibm
+	       if test "${with_cxx}" = ibm; then
+		   if test -n "${MPI_LIB}" ; then
+		       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
+		   elif test -z "${MPI_LIB}" ; then
+		       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
+		   fi
 	       fi
 
-	   fi   
+	       # now turn on long long support if we are using the 
+	       # visual age compiler
+	       if test "${with_cxx}" = ibm || 
+	          test "${with_cxx}" = asciwhite ; then
+
+		   if test "${enable_strict_ansi}"; then
+		       AC_MSG_WARN("xlC set to allow long long")
+		       STRICTFLAG="-qlanglvl=extended"
+		       CFLAGS="${CFLAGS} -qlonglong"
+		       CXXFLAGS="${CXXFLAGS} -qlonglong"
+		   fi
+
+	       fi   
        
-       # setup mpich
-       elif test "${with_mpi}" = mpich ; then
+	   # setup mpich
+	   elif test "${with_mpi}" = mpich ; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpich)
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpich)
-	   fi
+	       # set up libraries (the headers are already set)
+	       if test -n "${MPI_LIB}" ; then
+		   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpich)
+	       elif test -z "${MPI_LIB}" ; then
+		   AC_VENDORLIB_SETUP(vendor_mpi, -lmpich)
+	       fi
    
-       fi
+	   fi
 
+       fi
        #
        # end of communication packages
        #
 
        #
-       # setup lapack
+       # OTHER VENDORS
        #
 
-       if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -ldxml)
-	   elif test -z "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -ldxml)
-	   fi
-
-       fi
-
-       #
-       # end of lapack setup
-       #
-
-       #
-       # gandolf, eospac, pcg require -lfor on the link line.
-       #
-
-       AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfor"
-          AC_MSG_RESULT("-lfor added to LIBS") 
-       else
-	   AC_MSG_RESULT("not needed")
-       fi
-
-       #
-       # end of gandolf/libfortran setup
-       #
+       # we don't have the other vendors setup explicitly 
 
        # RPATH is derived from -L, don't need explicit setup
 
@@ -3761,6 +3790,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_platforms.m4
 dnl-------------------------------------------------------------------------dnl
+
 dnl-------------------------------------------------------------------------dnl
 dnl ac_dracotests.m4 
 dnl  
@@ -3890,15 +3920,19 @@ AC_DEFUN([AC_CHECK_EIGHT_BYTE_INT_TYPE], [dnl
 	   if test "${with_cxx}" = ibm || 
 	      test "${with_cxx}" = asciwhite ; then
 
-	       # long long is already on when we use vendor mpi
-	       
-	       if test "${with_mpi}" != vendor &&
-	          test "${enable_strict_ansi}"; then
-
-		   AC_MSG_RESULT("xlC set to allow long long")
-		   STRICTFLAG="-qlanglvl=extended"
-		   CFLAGS="${CFLAGS} -qlonglong"
-		   CXXFLAGS="${CXXFLAGS} -qlonglong"
+	       # if the code package is serial we need to turn on long
+	       # long or if mpi is on, but is not the vendor then
+	       # we need long long
+	       if test -z "${vendor_mpi}" || test "${with_mpi}" != vendor; then
+	          
+		   if test "${enable_strict_ansi}"; then
+		       AC_MSG_RESULT("xlC set to allow long long")
+		       STRICTFLAG="-qlanglvl=extended"
+		       CFLAGS="${CFLAGS} -qlonglong"
+		       CXXFLAGS="${CXXFLAGS} -qlonglong" 
+		   else
+		       AC_MSG_RESULT("long long - no additional mods needed on $host/${CXX}") 
+		   fi
 	   
 	       else
 		   AC_MSG_RESULT("long long - no additional mods needed on $host/${CXX}")

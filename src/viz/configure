@@ -4727,11 +4727,19 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -G -o'
 
-       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+       # when AR=newmpxlC we need to add /lib/crt0.o to
+       # avoid p_argcx and p_argvx link error when building libs
+       if test "${AR}" = newmpxlC ; then
+	   ARLIBS='/lib/crt0.o'
+	   ARTESTLIBS='/lib/crt0.o'
+       fi
+
+       ARLIBS="${ARLIBS} \${DRACO_LIBS} \${VENDOR_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${PKG_LIBS} \${DRACO_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${DRACO_LIBS}\${VENDOR_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
@@ -4818,7 +4826,86 @@ echo "$as_me: error: \"Did not find IBM Visual Age xlC compiler!\"" >&2;}
 
    elif test "${with_cxx}" = asciwhite ; then
 
-       # Extract the first word of "newxlC", so it can be a program name with args.
+       # asci white uses different executables depending upon
+       # the mpi setup; so we check to see if mpi is on
+       # and set the executable appropriately
+
+       # mpi is on, use newmpxlC
+       if test -n "${vendor_mpi}" && test "${with_mpi}" = vendor; then
+	   # Extract the first word of "newmpxlC", so it can be a program name with args.
+set dummy newmpxlC; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_CXX+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$CXX"; then
+  ac_cv_prog_CXX="$CXX" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CXX="newmpxlC"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+CXX=$ac_cv_prog_CXX
+if test -n "$CXX"; then
+  echo "$as_me:$LINENO: result: $CXX" >&5
+echo "${ECHO_T}$CXX" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+	   # Extract the first word of "newmpxlc", so it can be a program name with args.
+set dummy newmpxlc; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_CC+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$CC"; then
+  ac_cv_prog_CC="$CC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CC="newmpxlc"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+CC=$ac_cv_prog_CC
+if test -n "$CC"; then
+  echo "$as_me:$LINENO: result: $CC" >&5
+echo "${ECHO_T}$CC" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+
+       # scalar build, use newxlC
+       else
+	   # Extract the first word of "newxlC", so it can be a program name with args.
 set dummy newxlC; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
@@ -4853,7 +4940,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-       # Extract the first word of "newxlc", so it can be a program name with args.
+	   # Extract the first word of "newxlc", so it can be a program name with args.
 set dummy newxlc; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
@@ -4889,7 +4976,10 @@ echo "${ECHO_T}no" >&6
 fi
 
 
-       if test "${CXX}" = newxlC ; then
+       fi
+
+       # check to make sure compiler is valid
+       if test "${CXX}" = newxlC || test "${CXX}" = newmpxlC ; then
 
    echo "$as_me:$LINENO: checking \"configuration of ${CXX}/${CC} compilers\"" >&5
 echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >&6
@@ -4902,11 +4992,19 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -G -o'
 
-       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+       # when AR=newmpxlC we need to add /lib/crt0.o to
+       # avoid p_argcx and p_argvx link error when building libs
+       if test "${AR}" = newmpxlC ; then
+	   ARLIBS='/lib/crt0.o'
+	   ARTESTLIBS='/lib/crt0.o'
+       fi
+
+       ARLIBS="${ARLIBS} \${DRACO_LIBS} \${VENDOR_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${PKG_LIBS} \${DRACO_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${DRACO_LIBS}\${VENDOR_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
@@ -4986,8 +5084,8 @@ echo "${ECHO_T}\"${CXX} compiler flags set\"" >&6
 
 
        else
-	   { { echo "$as_me:$LINENO: error: \"Did not find ASCI White newxlC compiler!\"" >&5
-echo "$as_me: error: \"Did not find ASCI White newxlC compiler!\"" >&2;}
+	   { { echo "$as_me:$LINENO: error: \"Did not find ASCI White new(mp)xlC compiler!\"" >&5
+echo "$as_me: error: \"Did not find ASCI White new(mp)xlC compiler!\"" >&2;}
    { (exit 1); exit 1; }; }
        fi
 
@@ -5225,9 +5323,6 @@ echo "$as_me: WARNING: \"Linux KCC strict option set to allow long long type!\""
 	   ARFLAGS="--thread_safe ${ARFLAGS}"
 	   LDFLAGS="--thread_safe ${LDFLAGS}"
        fi
-
-       # determine word sizes
-       # AC_DETERMINE_WORD_SIZES
 
        #
        # setup communication packages
@@ -6009,55 +6104,61 @@ _ACEOF
        #
        # setup communication packages
        #
+       if test -n "${vendor_mpi}"; then
 
-       # setup vendor mpi
-       if test "${with_mpi}" = vendor ; then
+	   # setup vendor mpi
+	   if test "${with_mpi}" = vendor ; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
+	       # on asciwhite the newmpxlC compiler script takes care
+	       # of loading the mpi libraries
 
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPI_LIB} -lmpi -lmpi_r are the directories added
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpi -lmpi_r"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpi -lmpi_r"
-   fi
-
-	   elif test -z "${MPI_LIB}" ; then
+	       # set up libraries if we are on ibm
+	       if test "${with_cxx}" = ibm; then
+		   if test -n "${MPI_LIB}" ; then
 
    # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -lmpi -lmpi_r are the directories added
+   # -L${MPI_LIB} -lmpi are the directories added
 
    if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lmpi -lmpi_r"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpi"
    elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpi -lmpi_r"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpi"
    fi
 
-	   fi
+		   elif test -z "${MPI_LIB}" ; then
 
-	   # now turn on long long support if we are using the
-	   # visual age compiler
-	   if test "${with_cxx}" = ibm ||
-	      test "${with_cxx}" = asciwhite ; then
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # -lmpi are the directories added
 
-	       if test "${enable_strict_ansi}"; then
-		   { echo "$as_me:$LINENO: WARNING: \"xlC set to allow long long\"" >&5
-echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
-		   STRICTFLAG="-qlanglvl=extended"
-		   CFLAGS="${CFLAGS} -qlonglong"
-		   CXXFLAGS="${CXXFLAGS} -qlonglong"
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lmpi"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpi"
+   fi
+
+		   fi
 	       fi
 
-	   fi
+	       # now turn on long long support if we are using the
+	       # visual age compiler
+	       if test "${with_cxx}" = ibm ||
+	          test "${with_cxx}" = asciwhite ; then
 
-       # setup mpich
-       elif test "${with_mpi}" = mpich ; then
+		   if test "${enable_strict_ansi}"; then
+		       { echo "$as_me:$LINENO: WARNING: \"xlC set to allow long long\"" >&5
+echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
+		       STRICTFLAG="-qlanglvl=extended"
+		       CFLAGS="${CFLAGS} -qlonglong"
+		       CXXFLAGS="${CXXFLAGS} -qlonglong"
+		   fi
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
+	       fi
+
+	   # setup mpich
+	   elif test "${with_mpi}" = mpich ; then
+
+	       # set up libraries (the headers are already set)
+	       if test -n "${MPI_LIB}" ; then
 
    # vendor_mpi is the vendor_<> tag (equals pkg or test)
    # -L${MPI_LIB} -lmpich are the directories added
@@ -6068,7 +6169,7 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpich"
    fi
 
-	   elif test -z "${MPI_LIB}" ; then
+	       elif test -z "${MPI_LIB}" ; then
 
    # vendor_mpi is the vendor_<> tag (equals pkg or test)
    # -lmpich are the directories added
@@ -6079,70 +6180,20 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpich"
    fi
 
+	       fi
+
 	   fi
 
        fi
-
        #
        # end of communication packages
        #
 
        #
-       # setup lapack
+       # OTHER VENDORS
        #
 
-       if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -L${LAPACK_LIB} -ldxml are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} -ldxml"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} -ldxml"
-   fi
-
-	   elif test -z "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -ldxml are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -ldxml"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -ldxml"
-   fi
-
-	   fi
-
-       fi
-
-       #
-       # end of lapack setup
-       #
-
-       #
-       # gandolf, eospac, pcg require -lfor on the link line.
-       #
-
-       echo "$as_me:$LINENO: checking \"libfortran requirements\"" >&5
-echo $ECHO_N "checking \"libfortran requirements\"... $ECHO_C" >&6
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfor"
-          echo "$as_me:$LINENO: result: \"-lfor added to LIBS\"" >&5
-echo "${ECHO_T}\"-lfor added to LIBS\"" >&6
-       else
-	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
-echo "${ECHO_T}\"not needed\"" >&6
-       fi
-
-       #
-       # end of gandolf/libfortran setup
-       #
+       # we don't have the other vendors setup explicitly
 
        # RPATH is derived from -L, don't need explicit setup
 
