@@ -125,7 +125,7 @@ been considering adopting such a system for some time.
 
 Recently, Tom Evans has evaluated several automatic documentation
 systems including DOC++, PERCEPS, KDOC, and \doxy\ .  For \draco\ 
-automatic documentation purposes, \doxy\ is deemed to be clearly the
+automatic documentation purposes, \doxy\ is deemed to be the
 package of choice. There are several reasons for this. Among these are
 ease of use and installation, a plethora of clever and useful
 features, good documentation (the package documented itself!), active
@@ -141,11 +141,12 @@ John McGhee has documented the \timestep\ package.
 
 \section{How to Use \doxy\ }
 
-\doxy\ can be used on any \C++ source file
-without any modifications to the source at all.  
-\doxy\ groks \C++ and extracts considerable information from the *.hh
+ 
+\doxy\ parses any valid \C++ source code and extracts considerable information from the *.hh
 and *.cc files without any active intervention on the part of the developer.
-In addition to this information, the developer may also flag certain
+Thus, \doxy\ can be used on any \C++ source file
+without any modifications to the source at all. 
+However, the developer may also flag certain
 comment blocks for inclusion in the documentation, if desired.
 The only additional burden this places on the code author is to 
 remember and occasionally use a few
@@ -159,9 +160,9 @@ the \doxy\ manual for more details.
 \subsection{Special Comment Blocks}
 \label{sec:spcom}
 
-If the developer wishes to provide extra commentary, 
-a few simple special comment characters are available to extract additional 
-documentation directly from the source code comment blocks.
+Within the source code files, 
+\doxy\ recognizes specially flagged comment blocks as information
+that is to be included in the code documentation.
 The fundamental key that \doxy\ uses to flag source code text for
 extraction is the C-style comment character followed by an exclamation
 point. For example:
@@ -172,8 +173,7 @@ point. For example:
       *
       */
 \end{verbatim}
-This is all that is required from the code developer to get everything
-in the comment block into the documentation. \doxy\ automatically associates
+\doxy\ automatically associates
 the special comment block with the class/member that immediately follows the 
 comment block in the source. Alternatively, you can put the comment block
 anywhere in any file and mark it with a special keyword to associate it
@@ -192,6 +192,7 @@ keywords that we have found to be most useful.
 \item \verb+\file+ The file name.
 \item \verb+\author+ The author.
 \item \verb+\date+ The date.
+\item \verb+\version+ A version number.
 \item \verb+\brief+ A pithy ``one line'' description.
 \item \verb+\param+ An input parameter.
 \item \verb+\return+ The return value.
@@ -242,7 +243,7 @@ We elect to include documentation
 production as part of the \draco\ build. This assures that the
 documentation is consistent with whatever version of \draco\ is
 checked out. It also minimizes the amount of data that is stored on
-the CVS repository. However, this does require
+the CVS repository. However, this approach requires
 \doxy\ to be installed on all platforms on which we expect to build
 \draco\ documentation.  We do not feel that this is overly restrictive.
 Most of the platforms in question will be in the X-TM LAN and will have ready 
@@ -268,9 +269,9 @@ documentation (See section \S~\ref{sec:www})
 
 \subsection{Changes to \draco\ Build System}
 
-We should probably make the necessary changes to the \draco\
+Ultimately, we desire to make the necessary changes to the \draco\
 build system to support \doxy\ documentation builds, installs, cleans,
-etc. in a general way. In the meantime, 
+etc. in a general way. For the present, 
 we will create and store a small document generation 
 script called \texttt{gendoc}. This 
 script will basically execute the following commands:
@@ -284,7 +285,7 @@ change in the future.
 
 \subsection{Building the Documentation}
 
-To produce documentation, first checkout a working copy of \draco\, then
+To produce documentation, first checkout a working copy of \draco, then
 execute the \texttt{gendoc} script.
 When the script is executed, 
 the documentation is produced and stored in the
@@ -331,25 +332,24 @@ simply adding a new path or file to the INPUT, EXAMPLE\_PATH and/or
 INCLUDE\_PATH definitions.
 
 
-\subsection{Release and Tagging Procedures}
+\subsection{Tagging and Release Procedures}
 \label{sec:reltag}
-Prior to release and tagging a package (Ref~\cite{xtm:9936}), it is 
+Prior to tagging and release of a package as described in Ref~\cite{xtm:9936},
+ it is 
 the responsibility of the package developer is to make sure that any \doxy\
 comments that are present in the source are in fact consistent with the
 source code. \doxy\ is not magic. If incorrect comments are provided with
 the source, then the documentation produced from those comments will also
 be incorrect.
 
-\subsection{Identification of Documentation}
-
-Note that the date in the footer of the \doxy\ \texttt{html} and \LaTeX\
-pages
-simply refers to the date/time that the documentation was produced by \doxy\, 
+As described in section \S~\ref{sec:std} below, 
+the developer will provide 
+the appropriate package version number in the standard \doxy\ comments in the 
+package \texttt{Release.hh} file.
+Note that the date which appears in the footer of the \doxy\ 
+\texttt{html} and \LaTeX\ pages
+simply refers to the date/time that the documentation was produced by \doxy, 
 and has nothing to do with the version of the documentation.
-
-Using the \doxy\  \verb+\version+ keyword, we will provide 
-a version number for each package in standard \doxy\ comments in the 
-\texttt{Release.hh} file (See section \S~\ref{sec:std}).
 
 \subsection{\draco\ WWW Site}
 \label{sec:www}
@@ -379,18 +379,20 @@ only minimal documentation standards are required.  We propose the
 following standards for consideration:
 
 \begin{itemize}
-\item Each file should have the author, date and brief description
+ \item Using the \doxy\
+  \verb+\page+ keyword, each package should provide a version number and
+  a brief overview of the package purpose, design and contents in the package
+  \texttt{Release.hh} file. This page should be titled ``{\em package} Overview''
+  for easy identification. The version number should be documented using
+  the \doxy\ \verb+\version+ keyword.
+ \item Each file should have the author, date and brief description
   information completed as provided for in the *.cc and *.hh \draco\ 
   file templates.
-\item Each namespace, class, and associated public members
+ \item Each namespace, class, and associated public members
   should have at least a brief description.
-\item Using the \doxy\ \verb+\param+ and \verb+\return+ keywords,
-  each public member should have descriptions of its input
-  parameters and return values.
-\item Using the \doxy\
- \verb+\page+ command, each package should provide a version number and
- a brief overview of the package purpose, design and contents in the package
- \texttt{Release.hh} file.
+ \item Using the \doxy\ \verb+\param+ and \verb+\return+ keywords,
+  each public member should at least have descriptions of its input
+  parameters and return value.
 \end{itemize}
 
 We feel that these guidelines, together with the information that
@@ -404,9 +406,10 @@ encouraged to provide more than the absolute minimum.
 
 The \draco\ \doxy\ documentation system can be used as a model for
 the setup of automatic documentation of other software systems. 
-Alterations will be 
-required to the \texttt{<system>/autodoc/<system>.config} files, and
-to the \texttt{<system>/autodoc/} \texttt{html} header and footer files. 
+Alterations of 
+the \doxy\ \texttt{config} file, and
+the \texttt{html} header and footer files will be required to meet
+the particular requirements of each system.
 
 
 \subsection{Linking to \draco\ HTML Documentation from Other Systems}
@@ -617,6 +620,18 @@ class fixed_ts_advisor : public ts_advisor {
 
 %%---------------------------------------------------------------------------%%
 
+\section{Possible Future Improvements}
+
+Several improvements may be implemented in the future. 
+Ultimately, it may be desirable  to make changes to the \draco\
+build system to support \doxy\ documentation builds, installs, cleans,
+etc. in a general way. 
+Also, it may be desirable to create a ``pkgcommit'' srcipt to manage
+version numbers and automatically update the package Release.hh version
+number information. 
+
+%%---------------------------------------------------------------------------%%
+
 \section{Closing}
 
 In closing, we would like to emphasize that \doxy\ is
@@ -627,7 +642,8 @@ any modifications to the source at all. However, we would encourage
 all \draco\ developers to take the small amount of time required to
 retrofit their existing code to take advantage of the special features
 that \doxy\ offers.  Also, we recommend that all new code developed in
-\draco\ make use of \doxy\ capabilites.
+\draco\ make use of \doxy\ capabilites, and that the documentation 
+standards presented in section \S~\ref{sec:std} above be adopoted.
 
 \bibliographystyle{rnote}
 \bibliography{../bib/draco}
