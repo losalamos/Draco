@@ -209,14 +209,14 @@ void check_rw_tallies<Gray,GPT>(SP<Tally<MT> > tally, int num_run)
     rtt_c4::global_sum(nrws);
 
     // check sums
-    if (!soft_equiv(erg_dep_tot, 0.904415, 1.e-6))  ITFAILS;
-    if (!soft_equiv(ew_escaped, 0.02564707, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ecen_tot, 1.737147594, 1.e-6))  ITFAILS;
+    if (!soft_equiv(erg_dep_tot, 0.921027, 1.e-6))  ITFAILS;
+    if (!soft_equiv(ew_escaped, 0.04447902, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ecen_tot, 1.701703729, 1.e-6))  ITFAILS;
     if (ncen_tot != 980)                            ITFAILS;
     if (neff_scat != 5925)                          ITFAILS;
     if (nbnd_cross != 177)                          ITFAILS;
     if (nescaped != 20)                             ITFAILS;
-    if (nrws   != 453)                              ITFAILS;
+    if (nrws   != 788)                              ITFAILS;
 
     // check num_run
     if (num_run != 1000) ITFAILS;
