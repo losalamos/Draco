@@ -40,7 +40,7 @@
 #include "c4/global.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
-#include "meshReaders/RTT_Format.hh"
+#include "meshReaders/RTT_Mesh_Reader.hh"
 
 #include <iomanip>
 #include <vector>
@@ -61,7 +61,7 @@ using rtt_mc::sample_in_triangle;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
 using rtt_mc_test::TET_test_1;
-using rtt_meshReaders::RTT_Format;
+using rtt_meshReaders::RTT_Mesh_Reader;
 
 //! Typedef for scalar field of ThreeVectors.
 typedef std::vector<ThreeVector> SF_THREEVECTOR;
@@ -448,12 +448,12 @@ mesh_ptr_0->print_cell_sets(cerr);
     if (fabs(m_coords[4][1] - 0.5) > TET_epsilon)     ITFAILS;
     if (fabs(m_coords[4][2] - 1.0) > TET_epsilon)     ITFAILS;
 
-    // Test interface ===> TET_Builder instantiation with RTT_Format class.
+    // Test interface ===> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should also be the same 2-tet pyramid as in mesh_ptr_H.
 
 cerr << "Ready for mesh_ptr_1." << endl;
 
-    SP<RTT_Format> reader_1(new RTT_Format("TET_RTT_1"));
+    SP<RTT_Mesh_Reader> reader_1(new RTT_Mesh_Reader("TET_RTT_1"));
     if (!reader_1)                                       ITFAILS;
 
     TET_Builder read_build_1(reader_1);
@@ -555,12 +555,12 @@ mesh_ptr_1->print_cell_sets(cerr);
 
     // End of test sampling in a tethedron.
 
-    // Test interface ===> TET_Builder instantiation with RTT_Format class.
+    // Test interface ===> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should be the 96-tet cube from Todd Wareing.
 
 cerr << "Ready for mesh_ptr_2." << endl;
 
-    SP<RTT_Format> reader_2(new RTT_Format("TET_RTT_2"));
+    SP<RTT_Mesh_Reader> reader_2(new RTT_Mesh_Reader("TET_RTT_2"));
     if (!reader_2)                                       ITFAILS;
 
     TET_Builder read_build_2(reader_2);
@@ -581,12 +581,12 @@ mesh_ptr_2->print_cell_sets(cerr);
     if (*mesh_ptr_0 == *mesh_ptr_2)                      ITFAILS;
     if (*mesh_ptr_1 == *mesh_ptr_2)                      ITFAILS;
 
-    // Test interface ===> TET_Builder instantiation with RTT_Format class.
+    // Test interface ===> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should be the one-tet case from the definition file.
 
 cerr << "Ready for mesh_ptr_3." << endl;
 
-    SP<RTT_Format> reader_3(new RTT_Format("TET_RTT_3"));
+    SP<RTT_Mesh_Reader> reader_3(new RTT_Mesh_Reader("TET_RTT_3"));
     if (!reader_3)                                       ITFAILS;
 
     TET_Builder read_build_3(reader_3);

@@ -22,6 +22,8 @@ AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(viz meshReaders rng c4 traits ds++)
 
+AC_NEEDS_LIBS_TEST(RTT_Format_Reader)
+
 dnl runtesting
 AC_RUNTESTS(tstMath tstCoord tstOSMesh tstFields tstTopology \
             tstParallel_Data_Op tstTET_Mesh tstSampler \
