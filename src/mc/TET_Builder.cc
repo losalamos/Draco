@@ -30,62 +30,56 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
     for (int c = 1; c <= cells_vertices.size(); ++c)
         layout.set_size(c,FOUR);
 
-    int see_intersect[FOUR];         // Could actually be THREE.
-    SetInt Face;
+    SF_INT neighbors_found(cells_vertices.size(),0);
+    VF_INT cells_vert_parent(cells_vertices);
+    for (int c = 0 ; c < cells_vertices.size() ; ++c)
+        for (int v = 0 ; v < cells_vertices[c].size() ; ++v)
+            cells_vert_parent[c][v] = parent[cells_vertices[c][v]];
 
-    for (int L_cell = 0; L_cell < cells_vertices.size() - 1; ++L_cell)
+    for (int L_cell = 0 ; L_cell < cells_vertices.size() - 1 ; ++L_cell)
     {
-        // Load L_total with all four vertices of L_cell.
-        SetInt L_total;
-        for (int v = 0; v < FOUR; ++v)
-            L_total.insert(parent[cells_vertices[L_cell][v]]);
+        if (neighbors_found[L_cell] == FOUR)
+            continue;
 
         for (int R_cell = L_cell + 1; R_cell < cells_vertices.size(); ++R_cell)
         {
-            // Load R_total with all four vertices of R_cell.
-            SetInt R_total;
-            for (int v = 0; v < FOUR; ++v)
-                R_total.insert(parent[cells_vertices[R_cell][v]]);
+            if (neighbors_found[R_cell] == FOUR)
+                continue;
 
-            int* end_intersect = std::set_intersection(L_total.begin(),
-                    L_total.end(),R_total.begin(),R_total.end(),see_intersect);
-            int N = end_intersect - see_intersect;
-            Check (N >= 0 && N < FOUR);
+            int count = 0;
+            SF_INT L_hits(FOUR, -1);
 
-            if (N == THREE)                         // Common face detected.
+            for (int lv = 0 ; lv < FOUR ; ++lv)
             {
-                int face_found = -1;                // Work on L_cell neighbor.
-                for (int v = 0; v < FOUR && face_found < 0; ++v)
+                SF_INT::iterator R_itr = std::find(
+                            cells_vert_parent[R_cell].begin(),
+                            cells_vert_parent[R_cell].end(),
+                            cells_vert_parent[L_cell][lv]);
+
+                if (R_itr != cells_vert_parent[R_cell].end())
                 {
-                    for (int f = 1 ; f <= THREE ; ++f)
-                        Face.insert(parent[cells_vertices[L_cell][(f+v) % FOUR]]);
-
-                    if (std::includes(R_total.begin(),R_total.end(),
-                                      Face.begin(),Face.end()))
-                        face_found = v;
-
-                    Face.erase(Face.begin(),Face.end());
+                    ++count;
+                    L_hits[lv] = R_itr - cells_vert_parent[R_cell].begin();
                 }
-                Check (face_found >= 0 && face_found < FOUR);
-
-                layout(L_cell + 1, face_found + 1) = R_cell + 1;
-
-                face_found = -1;                    // Work on R_cell neighbor.
-                for (int v = 0; v < FOUR && face_found < 0; ++v)
-                {
-                    for (int f = 1 ; f <= THREE ; ++f)
-                        Face.insert(parent[cells_vertices[R_cell][(f+v) % FOUR]]);
-
-                    if (std::includes(L_total.begin(),L_total.end(),
-                                      Face.begin(),Face.end()))
-                        face_found = v;
-
-                    Face.erase(Face.begin(),Face.end());
-                }
-                Check (face_found >= 0 && face_found < FOUR);
-
-                layout(R_cell + 1, face_found + 1) = L_cell + 1;
             }
+            if (count == THREE)
+            {
+                ++neighbors_found[L_cell];
+                SF_INT::iterator L_itr = std::find(L_hits.begin(),
+                                                    L_hits.end(), -1);
+                int v = L_itr - L_hits.begin();
+                layout(L_cell + 1, v + 1) = R_cell + 1;
+
+                for (int rv = 0 ; rv < FOUR ; ++rv)
+                    if (std::find(L_hits.begin(), L_hits.end(), rv)
+                                               == L_hits.end())
+                    {
+                        ++neighbors_found[R_cell];
+                        layout(R_cell + 1, rv + 1) = L_cell + 1;
+                        break;
+                    }
+            }
+
         }
     }
 
