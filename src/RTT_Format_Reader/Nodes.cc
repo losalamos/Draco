@@ -40,6 +40,34 @@ void Nodes::readKeyword(ifstream & meshfile)
 	   "Invalid mesh file: nodes block missing");
     std::getline(meshfile, dummyString);
 }
+
+/*!
+ * \brief Read next integer value from mesh file, skipping comments.
+ * \param meshfile Input file stream for meshfile.
+ * \return the next integer in the meshfile.
+ */
+int Nodes::readNextInt( ifstream & meshfile )
+{
+    int retVal(0);
+    string dummyString;
+    bool commentLine = true;
+    while( commentLine ) 
+    {
+	meshfile >> dummyString;
+	if( dummyString.rfind("!") == string::npos )
+	{
+	    commentLine = false;
+	    retVal = atoi( dummyString.c_str() );
+	}
+	else
+	{ // Dump everything from here to the end of the line.
+	    std::getline( meshfile, dummyString );
+	    commentLine = true;
+	}
+    }
+    return retVal;
+}
+
 /*!
  * \brief Reads and validates the nodes block data.
  * \param meshfile Mesh file name.
@@ -51,7 +79,8 @@ void Nodes::readData(ifstream & meshfile)
 
     for (unsigned i = 0; i < dims.get_nnodes(); ++i)
     {
-	meshfile >> nodeNum;
+	nodeNum = readNextInt( meshfile );
+	// meshfile >> nodeNum;
 	Insist(nodeNum == i+1,
 	       "Invalid mesh file: node index out of order");
 	Check(i<coords.size());

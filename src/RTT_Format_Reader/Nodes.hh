@@ -15,12 +15,13 @@
 #ifndef __RTT_Format_Reader_Nodes_hh__
 #define __RTT_Format_Reader_Nodes_hh__
 
-#include "Dims.hh"
-#include "NodeFlags.hh"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
+#include "Dims.hh"
+#include "NodeFlags.hh"
+
 
 namespace rtt_RTT_Format_Reader
 {
@@ -52,6 +53,7 @@ class Nodes
     ~Nodes() {}
 
     void readNodes(ifstream & meshfile);
+    static int readNextInt( ifstream & meshfile );
 
   private:
     void readKeyword(ifstream & meshfile);

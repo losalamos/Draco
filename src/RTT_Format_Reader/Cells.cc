@@ -50,7 +50,8 @@ void Cells::readData(ifstream & meshfile)
 
     for (unsigned i = 0; i < dims.get_ncells(); ++i)
     {
-	meshfile >> cellNum;
+	cellNum = Nodes::readNextInt( meshfile );	
+	// meshfile >> cellNum;
 	Insist(cellNum == i+1, "Invalid mesh file: cell index out of order");
 	Check(i<cellType.size());
 	meshfile >> cellType[i];

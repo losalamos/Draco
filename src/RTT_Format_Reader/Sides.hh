@@ -1,7 +1,4 @@
 //----------------------------------*-C++-*----------------------------------//
-// Sides.hh
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/Sides.hh
  * \author B.T. Adams
@@ -9,20 +6,20 @@
  * \brief  Header file for RTT_Format_Reader/Sides class.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_Sides_hh__
 #define __RTT_Format_Reader_Sides_hh__
 
-#include "Dims.hh"
-#include "SideFlags.hh"
-#include "CellDefs.hh"
-#include "Nodes.hh"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
+#include "Dims.hh"
+#include "SideFlags.hh"
+#include "CellDefs.hh"
+#include "Nodes.hh"
 
 namespace rtt_RTT_Format_Reader
 {

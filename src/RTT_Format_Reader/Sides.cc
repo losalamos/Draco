@@ -1,7 +1,4 @@
 //----------------------------------*-C++-*--------------------------------//
-// Sides.cc
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/Sides.cc
  * \author B.T. Adams
@@ -9,7 +6,7 @@
  * \brief  Implementation file for RTT_Format_Reader/Sides class.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Sides.hh"
@@ -49,9 +46,10 @@ void Sides::readData(ifstream & meshfile)
     string dummyString;
     int sideNum;
 
-    for (unsigned i = 0; i < dims.get_nsides(); ++i)
+    for( unsigned i = 0; i < dims.get_nsides(); ++i )
     {
-	meshfile >> sideNum;
+	sideNum = Nodes::readNextInt( meshfile );	
+	// meshfile >> sideNum;
 	Insist(sideNum == i+1,
 	       "Invalid mesh file: side index out of order");
 	Check(i<sideType.size());
