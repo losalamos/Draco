@@ -17,7 +17,7 @@
 #include "ds++/Assert.hh"
 #include <vector>
 
-#include <mc/Config.h>
+#include <mc/config.h>
 
 namespace rtt_mc 
 {
