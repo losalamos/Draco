@@ -91,6 +91,9 @@ Rep_Transporter<MT,PT>::transport(double dt, int cycle, int print_f,
     if (verbose)
 	check = new PT::Diagnostic(cout, true); 
 
+    // begin timing the transport on this processor
+    double trans_begin = C4::Wtime();
+
     // get source particles and run them to completion
     int counter = 0;
     while (*source)
@@ -117,9 +120,14 @@ Rep_Transporter<MT,PT>::transport(double dt, int cycle, int print_f,
 		 << C4::node() << endl;
     }
 
+    // stop timing the transport on this processor
+    double trans_end = C4::Wtime();
+
     // finished with this timestep
-    cerr << ">> Finished particle transport for cycle "
-	 << cycle << " on proc " << C4::node() << endl;
+    cerr << ">> Finished transporting " << counter 
+         << " particles for cycle "
+	 << cycle << " on proc " << C4::node() 
+	 << " in " << trans_end - trans_begin << " seconds." << endl;
     
     // unset the transport stuff
     unset();

@@ -130,6 +130,9 @@ DD_Transporter<MT,PT>::transport(double dt, int cycle_in, int print_f_in,
     // post arecvs from each node to master and from master to all nodes
     post_step_arecvs();
 
+    // begin timing the transport on this processor
+    double trans_begin = C4::Wtime();
+
     // transport particles
     while (!finished)
     {
@@ -157,6 +160,9 @@ DD_Transporter<MT,PT>::transport(double dt, int cycle_in, int print_f_in,
 	    update();
     }
 
+    // stop timing the transport on this processor
+    double trans_end = C4::Wtime();
+
     // synchronize before wrapping this cycle up
     C4::gsync();
     
@@ -173,7 +179,8 @@ DD_Transporter<MT,PT>::transport(double dt, int cycle_in, int print_f_in,
 
     // finished with this timestep
     cerr << ">> Finished particle transport for cycle " 
-	 << cycle << " on proc " << C4::node() << endl;
+	 << cycle << " on proc " << C4::node() << " in " 
+	 << trans_end - trans_begin << " seconds." << endl;
 
     // unset the transport stuff
     unset();
