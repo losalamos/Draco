@@ -17,9 +17,13 @@ dnl AC_MPI_SETUP(pkg)
 dnl AC_SHMEM_SETUP(pkg)
 AC_SPRNG_SETUP(pkg)
 
+dnl installation
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(rng ds++)
+
+dnl runtesting
+AC_RUNTESTS(tstCoord tstOSMesh, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV

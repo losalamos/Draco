@@ -50,15 +50,15 @@ using rtt_rng::Sprng;
     
 class XYCoord_sys : public Coord_sys
 {
-  // Begin_Doc xycoord_sys-int.tex
-  // Begin_Verbatim 
+    // Begin_Doc xycoord_sys-int.tex
+    // Begin_Verbatim 
 
-public:
-   // default constructor to set dimension of XY coordinate
-  // system, inline
+  public:
+    // default constructor to set dimension of XY coordinate
+    // system, inline
     XYCoord_sys() : Coord_sys(2) {}
 
-  // virtual functions
+    // virtual functions
     virtual string get_Coord() const { string c = "xy"; return c; }
 
     inline virtual vector<double> 
@@ -72,8 +72,8 @@ public:
     vector<double> sample_pos_on_face(vector<double> &, vector<double> &, 
 				      int, Sprng &) const;
 	     
-  // End_Verbatim 
-  // End_Doc 
+    // End_Verbatim 
+    // End_Doc 
 };
 
 //---------------------------------------------------------------------------//
@@ -85,20 +85,20 @@ inline vector<double>
 XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
 			Sprng &random) const
 {
-  // make return vector
+    // make return vector
     vector<double> r(2);
 
-  // some assertions
+    // some assertions
     Check (min.size() == 2);
     Check (max.size() == 2);
 
     for (int d = 0; d < 2; d++)
     {
-      // uniform sampling of position
+	// uniform sampling of position
 	r[d] = (max[d] - min[d]) * random.ran() + min[d];
     }
 
-  // return assigned array
+    // return assigned array
     return r;
 }
 
@@ -110,30 +110,30 @@ XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
 			Sprng &random, vector<double> &slope, 
 			double center_pt) const
 {
-  // make return vector
+    // make return vector
     vector<double> r(2);
 
-  // some assertions
+    // some assertions
     Check (min.size() == 2);
     Check (max.size() == 2);
 
     for (int d = 0; d < 2; d++)
     {
-      // sample the linear function using linear-linear decomposition of
-      // y = mx + b (b is intercept on low side of cell)
+	// sample the linear function using linear-linear decomposition of
+	// y = mx + b (b is intercept on low side of cell)
 	double b = center_pt - slope[d] * (max[d] - min[d]) * 0.5;
 
-      // prob is the fractional area of the negative slope line
+	// prob is the fractional area of the negative slope line
 	double prob = .5 * b / center_pt;
 
-      // sample the dimension
+	// sample the dimension
 	if (random.ran() <= prob)
 	    r[d] = max[d] - (max[d] - min[d]) * sqrt(random.ran());
 	else
 	    r[d] = min[d] + (max[d] - min[d]) * sqrt(random.ran());
     }
 
-  // return assigned array
+    // return assigned array
     return r;
 }
 
@@ -144,15 +144,15 @@ inline vector<double>
 XYCoord_sys::sample_pos_on_face(vector<double> &min, vector<double> &max, 
 				int face, Sprng &random) const
 {
-  // make return vector
+    // make return vector
     vector<double> r(2);
 
-  // some assertions
+    // some assertions
     Check (min.size() == 2);
     Check (max.size() == 2);
     Check (face >= 1 && face <= 4);
 
-  // distribute uniformly over face
+    // distribute uniformly over face
     if (face == 1)
     {
 	r[0] = min[0];
@@ -174,7 +174,7 @@ XYCoord_sys::sample_pos_on_face(vector<double> &min, vector<double> &max,
 	r[1] = max[1];
     }
 
-  // return assigned array
+    // return assigned array
     return r;
 }
 

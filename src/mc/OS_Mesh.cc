@@ -53,32 +53,32 @@ OS_Mesh::OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_d &vertex_,
 //---------------------------------------------------------------------------//
 void OS_Mesh::calc_surface()
 {
-  // calculate an array of the dimensional surfaces which make up the OS_Mesh
+    // calculate an array of the dimensional surfaces which make up the OS_Mesh
 
-  // initialize mesh_size for assertion at end of function
+    // initialize mesh_size for assertion at end of function
     int mesh_size = 1;
 
-  // loop to calculate surface array
+    // loop to calculate surface array
     for (int d = 0; d < coord->get_dim(); d++)
     {
-      // define an array for dim which is sorted in ascending order
+	// define an array for dim which is sorted in ascending order
 	vector<double> sorted = vertex[d];
 	sort(sorted.begin(), sorted.end());
 
-      // loop over sorted array, appending new surfaces onto sur array, watch 
-      // out for possible machine error (especially when merging host codes)
-      // in the sorted[i] > sorted[i-1] comparison!!!
+	// loop over sorted array, appending new surfaces onto sur array, watch 
+	// out for possible machine error (especially when merging host codes)
+	// in the sorted[i] > sorted[i-1] comparison!!!
 	sur[d].push_back(sorted[0]);
 	for (int i = 1; i < sorted.size(); i++)
 	    if (sorted[i] > sorted[i-1])
 		sur[d].push_back(sorted[i]);
 
-      // calculate mesh_size by dimension
+	// calculate mesh_size by dimension
 	mesh_size *= (sur[d].size() - 1);
     }
     
-  // assert mesh size
-    Check (num_cells() == mesh_size);
+    // assert mesh size
+    Require (num_cells() == mesh_size);
 }
 
 //---------------------------------------------------------------------------//

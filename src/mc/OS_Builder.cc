@@ -102,7 +102,7 @@ SP<OS_Mesh> OS_Builder::build_2DMesh(SP<Coord_sys> coord, Layout &layout)
 	}
 
   // create mesh
-    SP<OS_Mesh> mesh_return = new OS_Mesh(coord, layout, vertex, cell_pair);
+    SP<OS_Mesh> mesh_return(new OS_Mesh(coord, layout, vertex, cell_pair));
 
   // return mesh to builder
     return mesh_return;
@@ -178,7 +178,7 @@ SP<OS_Mesh> OS_Builder::build_3DMesh(SP<Coord_sys> coord, Layout &layout)
 	    }
 
   // create mesh
-    SP<OS_Mesh> mesh_return = new OS_Mesh(coord, layout, vertex, cell_pair);
+    SP<OS_Mesh> mesh_return(new OS_Mesh(coord, layout, vertex, cell_pair));
 
   // return mesh to builder
     return mesh_return;
@@ -194,12 +194,12 @@ SP<Coord_sys> OS_Builder::build_Coord()
     SP<Coord_sys> coord;
     if (coord_system == "xy" || coord_system == "XY")
     {
-	SP<XYCoord_sys> xycoord = new XYCoord_sys;
+	SP<XYCoord_sys> xycoord(new XYCoord_sys);
 	coord = xycoord;
     }
     else if (coord_system == "xyz" || coord_system == "XYZ")
     {
-	SP<XYZCoord_sys> xyzcoord = new XYZCoord_sys;
+	SP<XYZCoord_sys> xyzcoord(new XYZCoord_sys);
 	coord = xyzcoord;
     }
 
@@ -217,7 +217,7 @@ SP<Layout> OS_Builder::build_Layout(const Coord_sys &coord)
     int size = 1;
     for (int d = 0; d < coord.get_dim(); d++)
 	size *= fine_edge[d].size() - 1;
-    SP<Layout> layout = new Layout(size);
+    SP<Layout> layout(new Layout(size));
 
   // set number of faces for each cell in Layout, for OS Meshes this is two
   // times the dimension of the Mesh, ie. a 2D mesh cell has 4 faces

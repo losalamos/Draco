@@ -49,7 +49,7 @@ inline ostream& operator<<(ostream &output, const vector<VT> &object)
 
     int size = object.size();
     for (int i = 0; i < size; i++)
-	output << setw(5) << i << setw(10) << object[i] << endl;
+	output << setw(5) << i << "\t" << object[i] << endl;
     return output;
 }
 

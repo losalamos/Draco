@@ -41,30 +41,30 @@ using rtt_rng::Sprng;
 
 class Coord_sys
 {
-private:
-  // dimension of system
+  private:
+    // dimension of system
     const int dimension;
     const int set_dimension;
 
-  // Begin_Doc coord_sys-int.tex 
-  // Begin_Verbatim 
+    // Begin_Doc coord_sys-int.tex 
+    // Begin_Verbatim 
 
-public:
-  // constructor for setting dimension of Coord_sys, inline
+  public:
+    // constructor for setting dimension of Coord_sys, inline
     Coord_sys(int dimension_) 
 	:dimension(dimension_), set_dimension(3) {}
 
-  // virtual destructor to insure correct behavior down inheritance chain
+    // virtual destructor to insure correct behavior down inheritance chain
     virtual ~Coord_sys() {}
 
-  // base class member functions
+    // base class member functions
 
-  // we have two dimensionalities, a "real" dimension for the geometry and a
-  // "transport" dimension for MC transport which is inherently 3D
+    // we have two dimensionalities, a "real" dimension for the geometry and a
+    // "transport" dimension for MC transport which is inherently 3D
     int get_dim() const { return dimension; } 
     int get_sdim() const { return set_dimension; }
 
-  // pure virtual functions
+    // pure virtual functions
     virtual string get_Coord() const = 0;
  
     virtual vector<double> 
@@ -78,14 +78,29 @@ public:
     vector<double> sample_pos_on_face(vector<double> &, vector<double> &, 
 				      int, Sprng &) const = 0;
 
-  // virtual functions
+    // virtual functions
     virtual vector<double> sample_dir(string, Sprng &) const;
     virtual void calc_omega(double, double, vector<double> &) const;
 
+    // overloaded operators for equality
+    inline bool operator==(const Coord_sys &) const;
+    bool operator!=(const Coord_sys &rhs) const { return !(*this == rhs); }
 
-  // End_Verbatim 
-  // End_Doc 
+    // End_Verbatim 
+    // End_Doc 
 };
+
+//---------------------------------------------------------------------------//
+// inline functions for Coord_sys
+//---------------------------------------------------------------------------//
+// equality of Coordinate systems, because the derived classes contain no
+// data we just have to worry about the base class type
+inline bool Coord_sys::operator==(const Coord_sys &rhs) const
+{
+    if (dimension == rhs.dimension && set_dimension == rhs.set_dimension)
+	return true;
+    return false;
+}
 
 } // end namespace rtt_mc
 
