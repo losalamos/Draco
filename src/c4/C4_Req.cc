@@ -29,8 +29,11 @@ C4_Req::C4_Req()
 //---------------------------------------------------------------------------//
 
 C4_Req::C4_Req( const C4_Req& req )
-    : p(req.p)
 {
+    if (req.inuse())
+        p = req.p;
+    else
+        p = new C4_ReqRefRep;
     ++p->n;
 }
 
@@ -57,7 +60,11 @@ C4_Req& C4_Req::operator=( const C4_Req& req )
     if (p->n <= 0)
 	delete p;
 
-    p = req.p;
+    if (req.inuse())
+        p = req.p;
+    else
+        p = new C4_ReqRefRep;
+
     ++p->n;
 
     return *this;

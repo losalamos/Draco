@@ -64,15 +64,17 @@ class C4_ReqRefRep {
 
   public:
     
-    void set()      { assigned = 1; }
-    void clear()    { assigned = 0; }
-
     void wait();
     void free();
 
     bool complete();
 
     int inuse() const { return assigned; }
+
+  private:
+    
+    void set()      { assigned = 1; }
+    void clear()    { assigned = 0; }
 };
 
 //===========================================================================//
@@ -97,9 +99,6 @@ class C4_Req {
     ~C4_Req();
     C4_Req& operator=( const C4_Req& req );
 
-    void set()      { p->set(); }
-    void clear()    { p->clear(); }
-
     void wait()     { p->wait(); }
     void free()     { p->free(); }
 
@@ -108,6 +107,9 @@ class C4_Req {
     int inuse() const { return p->inuse(); }
 
   private:
+
+    void set()      { p->set(); }
+    void clear()    { p->clear(); }
 
     // Private access to the C4_ReqRefRep internals.
 
