@@ -110,6 +110,7 @@ script_tag = re.compile(r'.*>>>\s*REGRESSION\s*SCRIPT\s*:\s*(.+)', re.IGNORECASE
 options_tag= re.compile(r'.*>>>\s*OPTIONAL\s*ARGS\s*:\s*(.+)', re.IGNORECASE)
 log_tag    = re.compile(r'.*>>>\s*REGRESSION\s*LOG\s*:\s*(.+)', re.IGNORECASE)
 date_tag   = re.compile(r'.*>>>\s*DATE\s*:\s*(.+)', re.IGNORECASE)
+elapsed_time_tag = re.compile(r'.*>>>\s*Elapsed Time\s*:\s*(\d\d[:]\d\d[:]\d\d)',re.IGNORECASE)
 
 # The following expressions are ignored:
 lahey     = re.compile(r'Encountered 0 errors, 0 warnings in file.*',re.IGNORECASE)
@@ -158,6 +159,7 @@ script_tag_str = ''
 log_tag_str    = ''
 date_tag_str   = ''
 options_tag_str = ''
+elapsed_time_str = ''
 
 # initialize search keys
 key     = ''
@@ -235,6 +237,10 @@ for line in lines:
     match = date_tag.search(line)
     if match:
         date_tag_str = match.group(1)
+
+    match = elapsed_time_tag.search(line)
+    if match:
+        elapsed_time_str = match.group(1)
 
     # search on package
     match = package.search(line)
@@ -322,15 +328,35 @@ all_passed = (total_fails is 0) and \
              (len(warn_log) is 0) and \
              (len(error_log) is 0)
 
+# Provide more information about command line arguments
+options_str=''
+m=re.search('[-][a]',options_tag_str)
+if m:
+    options_str += "-a (AppTest mode) "
+m=re.search('[-][s]',options_tag_str)
+if m:
+    options_str += "-s (STLPort mode) "
+m=re.search('[-][c]',options_tag_str)
+if m:
+    options_str += "-c (Coverage analysis mode) "
+
+if options_str=='':
+    options_str = "(none)"
+
+
 # print out test results
 
-print "Regression output from %s package."   % (pkg_tag_str)
-print "Regression filter run on machine %s." % (hostname)
-print "Date: %s."                            % (date_tag_str)
-print "Regression log stored in %s:%s."      % (reg_host_str, log_tag_str)
-print "Regression run from script %s:%s %s." % (reg_host_str,
-                                                script_tag_str,
-                                                options_tag_str)
+print "Regression output from package  : %s" % (pkg_tag_str)
+print "Regression filter run on machine: %s" % (hostname)
+print "Date                            : %s" % (date_tag_str)
+#print "Regression log stored in        : %s:%s." % (reg_host_str, log_tag_str)
+#print "Regression run from script %s:%s %s." % (reg_host_str,
+#                                                script_tag_str,
+#                                                options_tag_str)
+print "Regression log stored in        : %s" % (log_tag_str)
+print "Regression run from script      : %s" % (script_tag_str)
+print "Command line options            : %s" % (options_str)
+print "Elapsed time (HH:MM:SS)         : %s" % (elapsed_time_str)
 print
 print "Test Summary for All Packages :",
 
