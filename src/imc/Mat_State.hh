@@ -23,11 +23,13 @@
 #include "imc/Names.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
+#include <string>
 
 IMCSPACE
 
 // stl components
 using std::ostream;
+using std::string;
 
 template<class MT>
 class Mat_State
@@ -38,11 +40,14 @@ private:
     typename MT::CCSF_double density;
     typename MT::CCSF_double temperature;
     typename MT::CCSF_double dedt;
+    typename MT::CCSF_double spec_heat;
+    string analytic_sp_heat;
 
 public:
   // inline constructors
     inline Mat_State(const typename MT::CCSF_double &, const typename
-		     MT::CCSF_double &, const typename MT::CCSF_double &);
+		     MT::CCSF_double &, const typename MT::CCSF_double &,
+		     const typename MT::CCSF_double &, const string);
 
   // public member functions
 
@@ -53,6 +58,8 @@ public:
     double get_T(int cell) const { return temperature(cell); }
     double& get_dedt(int cell) { return dedt(cell); }
     double get_dedt(int cell) const { return dedt(cell); }
+    double get_spec_heat(int cell) const { return spec_heat(cell); }
+    string get_analytic_sp_heat() const { return analytic_sp_heat; }
 
   // get the number of cells in the mesh
     inline int num_cells() const;
@@ -76,8 +83,11 @@ ostream& operator<<(ostream &, const Mat_State<MT> &);
 template<class MT>
 inline Mat_State<MT>::Mat_State(const typename MT::CCSF_double &density_, 
 				const typename MT::CCSF_double &temp_,
-				const typename MT::CCSF_double &dedt_)
-    : density(density_), temperature(temp_), dedt(dedt_) 
+				const typename MT::CCSF_double &dedt_,
+				const typename MT::CCSF_double &spec_heat_,
+				const string analytic_sp_heat_)
+    : density(density_), temperature(temp_), dedt(dedt_), 
+      spec_heat(spec_heat_), analytic_sp_heat(analytic_sp_heat_)
 {}
 
 //---------------------------------------------------------------------------//

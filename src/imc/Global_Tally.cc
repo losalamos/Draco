@@ -26,8 +26,9 @@ template<class MT, class PT>
 Global_Tally<MT,PT>::Global_Tally(const MT &mesh, const Mat_State<MT>
 				  &material, const Source_Init<MT> &source)
     : temperature(mesh.num_cells()), volume(mesh.num_cells()),
-      dedt(mesh.num_cells()), e_elec_tot(0), delta_t(0), eint_initial(0), 
-      eint_begin(0), eint_end(0), e_in_probtot(0),
+      e_elec_tot(0), delta_t(0), dedt(mesh.num_cells()), 
+      spec_heat(mesh.num_cells()), analytic_sp_heat("straight"), 
+      eint_initial(0), eint_begin(0), eint_end(0), e_in_probtot(0),
       e_esc_probtot(0), e_loss_probtot(0), evol_net(mesh.num_cells()),   
       evoltot(0), evolext(0), nvoltot(0), ncen(mesh.num_cells()), ncentot(0),  
       ncenrun(0), eradtot_b(0), eradtot_e(0), ecen(mesh.num_cells()),
@@ -42,11 +43,13 @@ Global_Tally<MT,PT>::Global_Tally(const MT &mesh, const Mat_State<MT>
     {
 	temperature[cell-1] = material.get_T(cell);
 	dedt[cell-1]        = material.get_dedt(cell);
+	spec_heat[cell-1]   = material.get_spec_heat(cell);
 	ncen[cell-1]        = source.get_ncen(cell);
 	ncentot            += ncen[cell-1];
     }
     census    = source.get_census();
     eradtot_e = source.get_ecentot();
+    analytic_sp_heat = material.get_analytic_sp_heat();
 
   // do the initial internal energy calculation
     set_energy_begin(source);
@@ -65,6 +68,9 @@ template<class MT, class PT>
 void Global_Tally<MT,PT>::set_T(const vector<double> &tally)
 {
     Require (tally.size() == temperature.size());
+    Require (temperature.size() == dedt.size());
+    Require (dedt.size() == spec_heat.size());
+    Require (spec_heat.size() == volume.size());
 
   // update cell temperatures
     e_elec_tot = 0.0;
@@ -77,6 +83,13 @@ void Global_Tally<MT,PT>::set_T(const vector<double> &tally)
 	temperature[i] += delta_E / dedt[i];
 	e_elec_tot     += temperature[i] * dedt[i];
     }
+
+  // update dedt, if necessary (if it is temperature-dependent)
+    if (analytic_sp_heat == "tcube")   
+	for (int i = 0; i < dedt.size(); i++)
+	    dedt[i] = spec_heat[i] * volume[i] *
+		temperature[i] * temperature[i] *
+		temperature[i];
 }
 
 //---------------------------------------------------------------------------//
@@ -193,6 +206,11 @@ void Global_Tally<MT,PT>::update_Mat(Mat_State<MT> &mat) const
   // update the temperatures in the Mat_State
     for (int cell = 1; cell <= num_cells(); cell++)
 	mat.get_T(cell) = temperature[cell-1];
+
+  // update dedt (heat capacity) if it is temperature dependent
+    if (analytic_sp_heat == "tcube")
+	for (int cell = 1; cell <= num_cells(); cell++)
+	    mat.get_dedt(cell) = dedt[cell-1];
 }
 
 //---------------------------------------------------------------------------//

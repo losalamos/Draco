@@ -62,15 +62,17 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
     typename MT::CCSF_double rho(mesh);
     typename MT::CCSF_double temp(mesh);
     typename MT::CCSF_double dedt(mesh);
+    typename MT::CCSF_double sp_heat(mesh);
 
   // assign density and temperature to each cell
     for (int cell = 1; cell <= num_cells; cell++)
     {
-	double den  = density[mat_zone[zone[cell-1]-1]-1];
-	double T    = temperature[mat_zone[zone[cell-1]-1]-1];
-	double heat = specific_heat[mat_zone[zone[cell-1]-1]-1];
-	rho(cell)   = den;
-	temp(cell)  = T;
+	double den    = density[mat_zone[zone[cell-1]-1]-1];
+	double T      = temperature[mat_zone[zone[cell-1]-1]-1];
+	double heat   = specific_heat[mat_zone[zone[cell-1]-1]-1];
+	rho(cell)     = den;
+	temp(cell)    = T;
+	sp_heat(cell) = heat;
         if (analytic_sp_heat == "straight")
           // specific heat units: [jks/g/keV]
 	    dedt(cell) = heat * mesh->volume(cell) * den;
@@ -80,7 +82,8 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
     }
     
   // create Mat_State object
-    return_state = new Mat_State<MT>(rho, temp, dedt);
+    return_state = new Mat_State<MT>(rho, temp, dedt, sp_heat, 
+				     analytic_sp_heat);
 
   // return Mat_State SP
     return return_state;

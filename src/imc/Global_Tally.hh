@@ -47,9 +47,13 @@ private:
   // tally info
     vector<double> temperature;
     vector<double> volume;
-    vector<double> dedt;
     double e_elec_tot;
     double delta_t;
+
+  // material state quantities
+    vector<double> dedt;
+    vector<double> spec_heat;
+    string analytic_sp_heat;
 
   // problem energies
 

@@ -1541,10 +1541,13 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
     Require (mat.num_cells() == procs_per_cell.size());
 
   // data necessary to build Mat_State on host
+  // specific heat is not needed here, since dedt is current and valid
     SP<Mat_State<MT> > host_mat;
     typename MT::CCSF_double density(mesh);
     typename MT::CCSF_double T(mesh);
     typename MT::CCSF_double dedt(mesh);
+    typename MT::CCSF_double sp_heat(mesh);
+    string analytic_sp_heat = "straight";
 
   // loop over procs and send out the Mat_States
     for (int np = 0; np < nodes(); np++)
@@ -1591,6 +1594,7 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
 		density(cell) = density_send[cell-1];
 		T(cell)       = T_send[cell-1];
 		dedt(cell)    = dedt_send[cell-1];
+		sp_heat(cell) = 0.0;
 	    }
 	}
 
@@ -1601,7 +1605,7 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
     }
 
   // make and return the Mat_State to the host
-    host_mat = new Mat_State<MT>(density, T, dedt);
+    host_mat = new Mat_State<MT>(density, T, dedt, sp_heat, analytic_sp_heat);
     Ensure (host_mat->num_cells() == mesh->num_cells());
     return host_mat;
 }
@@ -1617,10 +1621,13 @@ Parallel_Builder<MT>::recv_Mat(SP<MT> mesh)
     Require (mesh);
 
   // declare the return Mat_State
+  // specific heat is needed only to construct Mat_State
     SP<Mat_State<MT> > imc_mat;
     typename MT::CCSF_double density(mesh);
     typename MT::CCSF_double T(mesh);
     typename MT::CCSF_double dedt(mesh);
+    typename MT::CCSF_double sp_heat(mesh);
+    string analytic_sp_heat = "straight";
 
   // get the num_cells from the host
     int num_cells;
@@ -1641,6 +1648,7 @@ Parallel_Builder<MT>::recv_Mat(SP<MT> mesh)
 	density(cell) = density_recv[cell-1];
 	T(cell)       = T_recv[cell-1];
 	dedt(cell)    = dedt_recv[cell-1];
+	sp_heat(cell) = 0.0;
     }
 
   // release the dynamic storage
@@ -1649,7 +1657,7 @@ Parallel_Builder<MT>::recv_Mat(SP<MT> mesh)
     delete [] dedt_recv;
 
   // build and return the Mat_state
-    imc_mat = new Mat_State<MT>(density, T, dedt);
+    imc_mat = new Mat_State<MT>(density, T, dedt, sp_heat, analytic_sp_heat);
     Ensure (imc_mat->num_cells() == num_cells);
     return imc_mat;
 }
