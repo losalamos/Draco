@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   imc/DD_Transporter.t.hh
- * \author Thomas M. Evans
+ * \author Todd J. Urbatsch and Thomas M. Evans
  * \date   Wed Apr 19 15:37:14 2000
  * \brief  DD_Transporter template definitions.
  */
@@ -237,12 +237,22 @@ void DD_Transporter<MT,PT>::trans_src_async(SP_PT_Diagnostic check,
     if (particle->desc() == "cross_boundary")
         communicator->communicate(*buffer, particle);
 
-    // if we have transported the same number of particles as the buffer 
-    // size; then check on, receive, and transport the incoming buffer
-    if (!(nsrc_run % Particle_Buffer<PT>::get_buffer_s()))
-        if (communicator->arecv_post(*buffer, bank))
-	    while (bank.size())
-		trans_domain_async(check, bank, new_census_bank);
+    // The conditional has been commented out because too many MPI buffers
+    // were building up.  To check the incoming buffer for every source
+    // particle is probably too inefficient but more robust.  Maybe it should
+    // be checked every max(1,0.01*buffer_size/nprocs) or something more
+    // optimal between 1 and buffer_size.  For now, we'll do it after every
+    // particle. 
+    // 
+    // >>> clip <<< 
+    // if we have transported the same number of particles as the buffer
+    // size;  then... if (!(nsrc_run % Particle_Buffer<PT>::get_buffer_s()))
+    // >>> clip <<<
+    //
+    // check on, receive, and transport the incoming buffer
+    if (communicator->arecv_post(*buffer, bank))
+	while (bank.size())
+	    trans_domain_async(check, bank, new_census_bank);
     
     // message particle counter
     if (!(nsrc_run % print_f)) 
@@ -300,10 +310,17 @@ void DD_Transporter<MT,PT>::trans_domain_async(SP_PT_Diagnostic check,
     if (particle->desc() == "cross_boundary")
 	communicator->communicate(*buffer, particle);
   
-    // during source block, this statement may allow 
-    // all incoming particles to be run
-    if (!(num_run % Particle_Buffer<PT>::get_buffer_s()))
-	communicator->arecv_post(*buffer, bank);
+    // during the source block, this statement could fill the bank such that
+    // all incoming particles are run before another source particle is run.
+    // As in trans_src_async, checking for incoming particles after running
+    // num_run particles was building up too many buffers.  Thus, we have
+    // commented out the conditional such that we check for incoming
+    // particles after every incoming particle is run.  Checking so
+    // frequently is more inefficient, but seems to be more robust.  Ideally, 
+    // we would want to check at some optimal frequency, somewhere between 1
+    // and buffer_size.  
+    // if (!(num_run % Particle_Buffer<PT>::get_buffer_s()))
+    communicator->arecv_post(*buffer, bank);
 
     // message particle counter
     if (!(num_run % print_f)) 

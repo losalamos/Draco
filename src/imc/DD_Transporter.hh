@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   imc/DD_Transporter.hh
- * \author Thomas M. Evans
+ * \author Todd J. Urbatsch and Thomas M. Evans
  * \date   Wed Apr 19 15:37:14 2000
  * \brief  DD_Transporter header file.
  */
@@ -35,6 +35,10 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) original
+// 1) 07-24-00 : Incoming buffers are now checked after every single
+//               transported particle instead of after every buffer_size
+//               particles are run.  This is more robust, but maybe less
+//               efficient .
 // 
 //===========================================================================//
 
