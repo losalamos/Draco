@@ -6,12 +6,13 @@
 
 require "getopts.pl";
 
-&Getopts('e:o:i:v');
+&Getopts('e:o:i:vp');
 
 $env = $opt_e;
 $infile = $opt_i;
 $outfile = $opt_o;
 $verbose = $opt_v;
+$prune = $opt_p;
 
 $infile =~ /\.dkcc\.(.*)_$env/;
 $component = $1;
@@ -22,6 +23,8 @@ open( INFILE, "< $infile" ) || die "Can't open $infile for input.";
 open( OUTFILE, "> $outfile" ) || die "Can't open $outfile for output.";
 
 while( <INFILE> ) {
+  next if $prune && /:\s+\/usr/;
+
     if (/^\.pt_(\w+)_$env.o:(.*)/) {
 	print OUTFILE "$env/pt_$1.o:$2\n";
     }
