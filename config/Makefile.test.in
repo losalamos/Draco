@@ -193,11 +193,13 @@ install:
 
 uninstall:
 
+##---------------------------------------------------------------------------##
+## dependencies in the build system
 # Makefile depends on all of the M4 files in the config directory
+## and the pkg_config directory
 
-configfiles := aclocal.m4 ac_local.m4 ac_conf.m4 ac_vendors.m4 ac_dracoarg.m4 \
- ac_dracoenv.m4 ac_compiler.m4
-configfiles := $(addprefix ${top_srcdir}/${rel_config_dir}/, ${configfiles})
+configfiles := $(wildcard ${top_srcdir}/${rel_config_dir}/*.m4) \
+	$(wildcard ${top_srcdir}/${rel_config_dir}/../pkg_config/*.m4)
 
 ${top_srcdir}/configure: configure.in ${configfiles}
 	cd ${top_srcdir} && autoconf --localdir=${rel_config_dir}
