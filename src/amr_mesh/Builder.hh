@@ -46,15 +46,15 @@ using std::multimap;
 using rtt_dsxx::SP;
 
 // RTT_Format input file class
-using rtt_format::RTT_Format;
+using rtt_meshReaders::RTT_Format;
 
 /*!
  * \brief  The continuous adaptive refinement (CAR) Cartesion unstructured 
  *         (CU) Builder class provides member functions that can be used to
  *         construct a CAR_CU_Mesh class object. The build_Mesh public member
- *         function takes a smart pointer to an rtt_format::RTT_Format class 
- *         object as its single input and returns a smart pointer to the new 
- *         CAR_CU_Mesh class object. This member function calls the private 
+ *         function takes a smart pointer to an rtt_meshReaders::RTT_Format 
+ *         class object as its single input and returns a smart pointer to the
+ *         new CAR_CU_Mesh class object. This member function calls the private
  *         member functions assign_Generations,and build_Layout to construct
  *         CAR_CU_Mesh::ccsf_i type and Layout class objects, respectively.
  *         A CAR_CU_Mesh::ncvf_d type node_coords  array and a 

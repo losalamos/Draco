@@ -28,14 +28,14 @@ rtt_dsxx::SP<TestApp> TestApp::create(int &argc, char *argv[],
 				      std::ostream& os_in)
 {
     using rtt_dsxx::SP;
-    using rtt_format_test::TestRTT_Format;
+    using rtt_meshReaders_test::TestRTT_Format;
     
     return SP<TestApp>(new TestRTT_Format(argc, argv, os_in));
 }
 
 } // end namespace rtt_UnitTestFrame
 
-namespace rtt_format_test
+namespace rtt_meshReaders_test
 {
 
 using std::cout;
@@ -46,7 +46,7 @@ using std::map;
 using std::set;
 using std::ostream;
 using std::fill;
-using rtt_format::RTT_Format;
+using rtt_meshReaders::RTT_Format;
 
 TestRTT_Format::TestRTT_Format(int argc, char * argv[], ostream & os_in)
 
@@ -85,7 +85,7 @@ string TestRTT_Format::runTest()
     return "Some tests failed.";
 }
 
-bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
+bool TestRTT_Format::check_virtual(const rtt_meshReaders::RTT_Format & mesh)
 {
     // Exercize the virtual accessor functions for this mesh.
     bool all_passed = true;
@@ -229,7 +229,7 @@ bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
     return all_passed;
 }
 
-bool TestRTT_Format::check_header(const rtt_format::RTT_Format & mesh)
+bool TestRTT_Format::check_header(const rtt_meshReaders::RTT_Format & mesh)
 {
     // Exercize the header accessor functions for this mesh.
     bool all_passed = true;
@@ -302,7 +302,7 @@ bool TestRTT_Format::check_header(const rtt_format::RTT_Format & mesh)
     return all_passed;
 }
 
-bool TestRTT_Format::check_dims(const rtt_format::RTT_Format & mesh)
+bool TestRTT_Format::check_dims(const rtt_meshReaders::RTT_Format & mesh)
 {
     // Exercize the dims accessor functions for this mesh.
     bool all_passed = true;
@@ -500,7 +500,7 @@ bool TestRTT_Format::check_dims(const rtt_format::RTT_Format & mesh)
     return all_passed;
 }
 
-bool TestRTT_Format::check_node_flags(const rtt_format::RTT_Format & mesh)
+bool TestRTT_Format::check_node_flags(const rtt_meshReaders::RTT_Format & mesh)
 {
     // Exercize the node_flags accessor functions for this mesh.
     bool all_passed = true;
@@ -585,7 +585,7 @@ bool TestRTT_Format::check_node_flags(const rtt_format::RTT_Format & mesh)
     return all_passed;
 }
 
-} // end namespace rtt_format_test
+} // end namespace rtt_meshReaders_test
 
 
 //---------------------------------------------------------------------------//

@@ -31,7 +31,7 @@
 // 
 //===========================================================================//
 
-namespace rtt_format
+namespace rtt_meshReaders
 {
 
 // draco components
@@ -63,7 +63,7 @@ extern "C"
 } // end extern "C"
 
 
-} // end namespace rtt_format
+} // end namespace rtt_meshReaders
 
 #endif                          // __rtt_format_Shadow_RTT_Format_cc__
 

@@ -15,7 +15,7 @@
 #include "UnitTestFrame/TestApp.hh"
 #include "../RTT_Format.hh"
 
-namespace rtt_format_test
+namespace rtt_meshReaders_test
 {
  
 //===========================================================================//
@@ -61,28 +61,28 @@ class TestRTT_Format : public rtt_UnitTestFrame::TestApp
     
   private:
 
-    bool check_virtual(const rtt_format::RTT_Format & mesh);
-    bool check_header(const rtt_format::RTT_Format & mesh);
-    bool check_dims(const rtt_format::RTT_Format & mesh);
-    bool check_node_flags(const rtt_format::RTT_Format & mesh);
-    bool check_side_flags(const rtt_format::RTT_Format & mesh);
-    bool check_cell_flags(const rtt_format::RTT_Format & mesh);
-    bool check_node_data_ids(const rtt_format::RTT_Format & mesh);
-    bool check_side_data_ids(const rtt_format::RTT_Format & mesh);
-    bool check_cell_data_ids(const rtt_format::RTT_Format & mesh);
-    bool check_cell_defs(const rtt_format::RTT_Format & mesh);
-    bool check_nodes(const rtt_format::RTT_Format & mesh);
-    bool check_sides(const rtt_format::RTT_Format & mesh);
-    bool check_cells(const rtt_format::RTT_Format & mesh);
-    bool check_node_data(const rtt_format::RTT_Format & mesh);
-    bool check_side_data(const rtt_format::RTT_Format & mesh);
-    bool check_cell_data(const rtt_format::RTT_Format & mesh);
-    bool check_connectivity(const rtt_format::RTT_Format & mesh);
+    bool check_virtual(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_header(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_dims(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_node_flags(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_side_flags(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_cell_flags(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_node_data_ids(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_side_data_ids(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_cell_data_ids(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_cell_defs(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_nodes(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_sides(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_cells(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_node_data(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_side_data(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_cell_data(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_connectivity(const rtt_meshReaders::RTT_Format & mesh);
 
     // IMPLEMENTATION
 };
 
-} // end namespace rtt_format_test
+} // end namespace rtt_meshReaders_test
 
 #endif                // __meshReaders_test_TestRTT_Format_hh__
 

@@ -46,19 +46,20 @@ using std::ifstream;
 // draco components
 using rtt_dsxx::SP;
 
-using rtt_format::RTT_Format;
+using rtt_meshReaders::RTT_Format;
 
 /*!
  * \brief  The continuous adaptive refinement (CAR) Cartesion unstructured 
  *         (CU) Interface class provides member functions that can be used to
  *         both read a user-input file and parse a mesh file in the \ref 
- *         rtt_format_defined by constructing an rtt_format::RTT_Format class 
- *         object. The CAR_CU_Interface serves as a "preprocessor" to be 
- *         implemented before the CAR_CU_Builder is instantiated and used to
- *         construct a CAR_CU_Mesh. A smart pointer to a CAR_CU_Interface 
- *         class object is also a required argument to the constructors for 
- *         the rtt_amr::Opacity_Builder and rtt_imc::Source_Init classes. 
- *         Finally, this class also contains the data needed to construct a
+ *         rtt_meshReaders_defined by constructing an 
+ *         rtt_meshReaders::RTT_Format class object. The CAR_CU_Interface 
+ *         serves as a "preprocessor" to be implemented before the 
+ *         CAR_CU_Builder is instantiated and used to construct a CAR_CU_Mesh.
+ *         A smart pointer to a CAR_CU_Interface class object is also a
+ *         required argument to the constructors for the 
+ *         rtt_amr::Opacity_Builder and rtt_imc::Source_Init classes. Finally,
+ *         this class also contains the data needed to construct a
  *         rtt_amr::Mat_State class object. \ref rtt_amr_input documents and
  *         illustrates the required user input file structure.
  *
@@ -127,7 +128,7 @@ class CAR_CU_Interface
  * \brief Private member function that parses the title-block of the 
  *        user-input file and the entire RTT_Format mesh file that is 
  *        designated therein. The latter is accomplished by constructing 
- *        an rtt_format::RTT_Format class object. The constructor for the
+ *        an rtt_meshReaders::RTT_Format class object. The constructor for the
  *        RTT_Format class automatically invokes member functions to both 
  *        parse the mesh file and determine the mesh connectivity.
  * \param infile An ifstream class object that is attached to the user-input 
@@ -182,10 +183,10 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
 /*!
  * \brief Controls the parsing of both the user-input and RTT_Format mesh 
  *        files. The latter is accomplished via a call to the parser_Mesh 
- *        private member function, which constructs an rtt_Format::RTT_Format
- *        class object. The constructor for the RTT_Format class automatically 
- *        invokes member functions to both parse the mesh file and determine 
- *        the mesh connectivity.
+ *        private member function, which constructs an 
+ *        rtt_meshReaders::RTT_Format class object. The constructor for the 
+ *        RTT_Format class automatically invokes member functions to both 
+ *        parse the mesh file and determine the mesh connectivity.
  * \return Smart pointer to the new RTT_Format class object.
  */
     SP<RTT_Format> parser();

@@ -64,7 +64,7 @@ using std::min;
 using std::max;
 using std::greater;
 
-namespace rtt_format
+namespace rtt_meshReaders
 {
 /*!
  * \brief Constructs an RTT_Format class object and instantiates and executes
@@ -2754,7 +2754,7 @@ bool RTT_Format::invariant() const
     return test;
 }
 
-} // end namespace rtt_format
+} // end namespace rtt_meshReaders
 
 //---------------------------------------------------------------------------//
 //                              end of RTT_Format.cc

@@ -25,8 +25,6 @@
 #include <vector>
 #include <map>
 
-using rtt_meshReaders::Mesh_Reader;
-using rtt_meshReaders::Element_Definition;
 using std::string;
 using std::set;
 using std::ifstream;
@@ -35,16 +33,7 @@ using std::multimap;
 using std::map;
 using rtt_dsxx::SP;
 
-/*!
- * \brief RTT format namespace.
- *
- * Provides namespace protection for the Draco RTT format utilities used to
- * parse mesh files in the \ref rtt_format_defined and connect the mesh.
- *
- *\sa The \ref rtt_format_overview page presents a summary of the capabilities
- *    provided within the namespace.
- */
-namespace rtt_format
+namespace rtt_meshReaders
 {
  
 //===========================================================================//
@@ -1828,20 +1817,20 @@ class RTT_Format : public Mesh_Reader
     void calculateConnectivity();
 };
 
-} // end namespace rtt_format
+} // end namespace rtt_meshReaders
 
 #endif                          // __RTT_Format_hh__
 
 /*!
- * \page rtt_format_overview Overview of the RTT_Format package
+ * \page rtt_format_overview Overview of the RTT_Format class
  *
  * \version 1_0_0
  *
  * <h3> Introduction </h3>
- * The RTT_Format package consists of: private member functions that are used 
+ * The RTT_Format class consists of: private member functions that are used 
  * to parse a mesh file in the \ref rtt_format_defined and determine the mesh
  * connectivity, and public member functions that are used to access the data.
- * The RTT_Format package was developed from the TychoMesh class that was 
+ * The RTT_Format class was developed from the TychoMesh class that was 
  * originally developed by Shawn Pautz with the following additions:
  * <ul>
  *  <li> Extension of the tetrahedral-limited connectivity algorithm to 
@@ -1871,25 +1860,25 @@ class RTT_Format : public Mesh_Reader
  * rtt_format_defined with the additions of some base classes and the 
  * Connectivity class:
  * <ul>
- *  <li> rtt_format::RTT_Format::Header
- *  <li> rtt_format::RTT_Format::Dims (dimensions)
- *  <li> rtt_format::RTT_Format::Flags (base class of NodeFlags, SideFlags,
- *                               and CellFlags)
- *  <li> rtt_format::RTT_Format::NodeFlags
- *  <li> rtt_format::RTT_Format::SideFlags
- *  <li> rtt_format::RTT_Format::CellFlags
- *  <li> rtt_format::RTT_Format::NodeDataIDs
- *  <li> rtt_format::RTT_Format::SideDataIDs
- *  <li> rtt_format::RTT_Format::CellDataIDs
- *  <li> rtt_format::RTT_Format::CellDef (base class of CellDefs)
- *  <li> rtt_format::RTT_Format::CellDefs (cell definitions)
- *  <li> rtt_format::RTT_Format::Nodes
- *  <li> rtt_format::RTT_Format::Sides
- *  <li> rtt_format::RTT_Format::Cells
- *  <li> rtt_format::RTT_Format::NodeData
- *  <li> rtt_format::RTT_Format::SideData
- *  <li> rtt_format::RTT_Format::CellData
- *  <li> rtt_format::RTT_Format::Connectivity
+ *  <li> rtt_meshReaders::RTT_Format::Header
+ *  <li> rtt_meshReaders::RTT_Format::Dims (dimensions)
+ *  <li> rtt_meshReaders::RTT_Format::Flags (base class of NodeFlags, 
+ *                                    SideFlags, and CellFlags)
+ *  <li> rtt_meshReaders::RTT_Format::NodeFlags
+ *  <li> rtt_meshReaders::RTT_Format::SideFlags
+ *  <li> rtt_meshReaders::RTT_Format::CellFlags
+ *  <li> rtt_meshReaders::RTT_Format::NodeDataIDs
+ *  <li> rtt_meshReaders::RTT_Format::SideDataIDs
+ *  <li> rtt_meshReaders::RTT_Format::CellDataIDs
+ *  <li> rtt_meshReaders::RTT_Format::CellDef (base class of CellDefs)
+ *  <li> rtt_meshReaders::RTT_Format::CellDefs (cell definitions)
+ *  <li> rtt_meshReaders::RTT_Format::Nodes
+ *  <li> rtt_meshReaders::RTT_Format::Sides
+ *  <li> rtt_meshReaders::RTT_Format::Cells
+ *  <li> rtt_meshReaders::RTT_Format::NodeData
+ *  <li> rtt_meshReaders::RTT_Format::SideData
+ *  <li> rtt_meshReaders::RTT_Format::CellData
+ *  <li> rtt_meshReaders::RTT_Format::Connectivity
  * </ul> 
  * These contained classes provide a convenient grouping of the mesh data, and
  * the RTT_Format public member accessor functions reflect the name of the 

@@ -51,7 +51,7 @@ using std::endl;
 // draco components
 using rtt_dsxx::SP;
 using rtt_dsxx::opaque_pointers;
-using rtt_format::RTT_Format;
+using rtt_meshReaders::RTT_Format;
 
 extern "C" 
 {
