@@ -190,6 +190,116 @@ AC_DEFUN(AC_AZTEC_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_GSL_SETUP
+dnl
+dnl GSL SETUP (on by default)
+dnl GSL is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_GSL_SETUP, [dnl
+
+   dnl define --with-gsl
+   AC_ARG_WITH(gsl,
+      [  --with-gsl=[lib]      determine the gsl lib (gsl is the default])
+ 
+   dnl define --with-gsl-inc
+   AC_WITH_DIR(gsl-inc, GSL_INC, \${GSL_INC_DIR},
+	       [tell where GSL includes are])
+
+   dnl define --with-gsl-lib
+   AC_WITH_DIR(gsl-lib, GSL_LIB, \${GSL_LIB_DIR},
+	       [tell where GSL libraries are])
+
+   # set default value of gsl includes and libs
+   if test "${with_gsl:=gsl}" = yes ; then
+       with_gsl='gsl'
+   fi
+
+   # define GSL include path
+   if test -n "${GSL_INC}" ; then
+       # remember that GSL_INC has the final slash
+       GSL_H="\"${GSL_INC}az_gsl.h\""
+       GSL_DEFS_H="\"${GSL_INC}az_gsl_defs.h\""
+   elif test -z "${GSL_INC}" ; then
+       GSL_H="<az_gsl.h>"
+       GSL_DEFS_H="<az_gsl_defs.h>"
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_gsl=$1
+
+   # set up the libraries
+   if test "${with_gsl}" != no ; then
+       if test -n "${GSL_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} -l${with_gsl})
+       elif test -z "${GSL_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_gsl, -l${with_gsl})
+       fi
+   fi
+
+   # add GSL directory to VENDOR_DIRS
+   VENDOR_DIRS="${GSL_LIB} ${VENDOR_DIRS}"
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_GSLCBLAS_SETUP
+dnl
+dnl GSLCBLAS SETUP (on by default)
+dnl GSLCBLAS is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_GSLCBLAS_SETUP, [dnl
+
+   dnl define --with-gslcblas
+   AC_ARG_WITH(gslcblas,
+      [  --with-gslcblas=[lib]      determine the gslcblas lib (gslcblas is the default])
+ 
+   dnl define --with-gslcblas-inc
+   AC_WITH_DIR(gslcblas-inc, GSLCBLAS_INC, \${GSLCBLAS_INC_DIR},
+	       [tell where GSLCBLAS includes are])
+
+   dnl define --with-gslcblas-lib
+   AC_WITH_DIR(gslcblas-lib, GSLCBLAS_LIB, \${GSLCBLAS_LIB_DIR},
+	       [tell where GSLCBLAS libraries are])
+
+   # set default value of gslcblas includes and libs
+   if test "${with_gslcblas:=gslcblas}" = yes ; then
+       with_gslcblas='gslcblas'
+   fi
+
+   # define GSLCBLAS include path
+   if test -n "${GSLCBLAS_INC}" ; then
+       # remember that GSLCBLAS_INC has the final slash
+       GSLCBLAS_H="\"${GSLCBLAS_INC}az_gslcblas.h\""
+       GSLCBLAS_DEFS_H="\"${GSLCBLAS_INC}az_gslcblas_defs.h\""
+   elif test -z "${GSLCBLAS_INC}" ; then
+       GSLCBLAS_H="<az_gslcblas.h>"
+       GSLCBLAS_DEFS_H="<az_gslcblas_defs.h>"
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_gslcblas=$1
+
+   # set up the libraries
+   if test "${with_gslcblas}" != no ; then
+       if test -n "${GSLCBLAS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_gslcblas, -L${GSLCBLAS_LIB} -l${with_gslcblas})
+       elif test -z "${GSLCBLAS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_gslcblas, -l${with_gslcblas})
+       fi
+   fi
+
+   # add GSLCBLAS directory to VENDOR_DIRS
+   VENDOR_DIRS="${GSLCBLAS_LIB} ${VENDOR_DIRS}"
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_TRILINOS_SETUP
 dnl
 dnl TRILINOS SETUP (on by default)
@@ -538,6 +648,31 @@ AC_DEFUN([AC_VENDOR_DEFINES], [dnl
    fi
 
    # *****
+   # GSL
+   # *****
+   if test -n "${vendor_gsl}"; then 
+       # define gsl include paths
+       AC_DEFINE_UNQUOTED(GSL_H, ${GSL_H})dnl
+       AC_DEFINE_UNQUOTED(GSL_DEFS_H, ${GSL_DEFS_H})dnl
+
+       # add to defines
+       defines="${defines} ${GSL_H} ${GSL_DEFS_H}"
+   fi
+
+   # *****
+   # GSLCBLAS
+   # *****
+   if test -n "${vendor_gslcblas}"; then 
+       # define gslcblas include paths
+       AC_DEFINE_UNQUOTED(GSLCBLAS_H, ${GSLCBLAS_H})dnl
+       AC_DEFINE_UNQUOTED(GSLCBLAS_DEFS_H, ${GSLCBLAS_DEFS_H})dnl
+
+       # add to defines
+       defines="${defines} ${GSLCBLAS_H} ${GSLCBLAS_DEFS_H}"
+   fi
+
+
+   # *****
    # TRILINOS
    # *****
    if test -n "${vendor_trilinos}"; then 
@@ -603,6 +738,8 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_SPRNG_SETUP(pkg)
    AC_PCG_SETUP(pkg)
    AC_AZTEC_SETUP(pkg)
+   AC_GSL_SETUP(pkg)
+   AC_GSLCBLAS_SETUP(pkg)
    AC_TRILINOS_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
    AC_GANDOLF_SETUP(pkg)
