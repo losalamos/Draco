@@ -122,7 +122,7 @@ namespace rtt_cdi_gandolf {
 		// maxKeys long.  This array will later be copied into the
 		// vector vkeys that is returned to the calling program.
 		
-		char keys[maxKeys][key_length];
+		// char keys[maxKeys][key_length];
 		// char (*keys)[key_length] = new char[maxKeys][key_length];
 		// delete [] keys;
 		
