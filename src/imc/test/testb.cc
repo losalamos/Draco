@@ -90,10 +90,10 @@ main()
     
     ofstream output("history");
     SP<Particle<OS_Mesh>::Diagnostic> check = 
-	new Particle<OS_Mesh>::Diagnostic(output);
+	new Particle<OS_Mesh>::Diagnostic(output, true);
 
   // initialize particle
-    int seed = -18374;
+    long seed = -395723;
     Particle<OS_Mesh> particle(*mesh, seed, 1.0, 10.0);
     assert (particle.Status());
 
