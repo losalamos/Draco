@@ -43,6 +43,8 @@ bool pass_msg(const std::string &);
 
 bool fail_msg(const std::string &);
 
+void unit_test(const bool pass, int line, char *file);
+
 //---------------------------------------------------------------------------//
 // PASSING CONDITIONALS
 //---------------------------------------------------------------------------//
@@ -64,7 +66,8 @@ extern bool passed;
 #define FAILURE    rtt_<spkg>::fail(__LINE__, __FILE__);
 #define PASSMSG(a) rtt_<spkg>::pass_msg(a);
 #define FAILMSG(a) rtt_<spkg>::fail_msg(a);
-
+#define UNIT_TEST(x) rtt_<spkg>::unit_test(x, __LINE__, __FILE__)
+    
 #endif // rtt_<spkg>_test_hh
 
 //---------------------------------------------------------------------------//
