@@ -14,6 +14,7 @@
 #define rtt_dsxx_File_Streams_hh
 
 #include <fstream>
+#include <sstream>
 #include <string>
 #include "Assert.hh"
 
