@@ -3,7 +3,7 @@
 // Geoffrey Furnish
 // Mon Jul 13 22:48:24 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Test ThreadGroup and ThreadGroupMember classes.
 //---------------------------------------------------------------------------//
 
 #include "c4/ThreadGroup.cc"
@@ -34,6 +34,10 @@ class X : public C4::ThreadGroupMember
         int s = thread;
         gsum(s);
         printf( "Thread %d, sum of thread id's is %d\n", thread, s );
+
+        s = thread+101;
+        gmin(s);
+        printf( "Thread %d, min of operands is %d\n", thread, s );
 
         x = 1000000 * (rand() & 7);
 
