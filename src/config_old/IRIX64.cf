@@ -84,8 +84,10 @@ endif
 
 CC	= cc
 CXX	= KCC --one_per -mips4 --backend -r10000 \
-		$(STRICT) -D_POSIX_SOURCE --backend -Wl,-woff,84
+		$(STRICT) -D_POSIX_SOURCE
 cmplr	= kcc
+
+SYS_LINK_FLAGS	:=  --backend -Wl,-woff,84,-woff,85
 
 ifeq ($(bits),32)
 CXX	+= -32
@@ -151,7 +153,7 @@ endif
 
 ifdef nj
 lib_cmd	:= $(CXX) --parallel_build $(nj) -o
-SYS_LINK_FLAGS	:= --parallel_build $(nj)
+SYS_LINK_FLAGS	+= --parallel_build $(nj)
 else
 lib_cmd	:= $(CXX) -o
 endif
