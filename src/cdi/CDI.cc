@@ -13,6 +13,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cmath>
+#include <limits>
 
 namespace rtt_cdi
 {
@@ -96,7 +97,24 @@ const double coeff    =   15.0 / (pi*pi*pi*pi);
 // integral given x
 inline double taylor_series_planck(double x)
 {
+    using std::numeric_limits;
+    using std::log10;
+    using std::ceil;
+
     Require (x >= 0.0);
+
+    // Check for potential overflow errors:
+
+    if( x > 1.0 )
+    {
+	// This Taylor series expansion takes x to the 21st power.  The exponent
+	// of the final value will be log(x) + 21.  This needs to be less than
+	// the maximum exponent for double on this machine.
+	
+	int const maxExponent = numeric_limits<double>::max_exponent10;
+	int const predictedExponent( 21 + static_cast<int>(ceil(log10(x))) );
+	Require ( predictedExponent < maxExponent ); // prevent overflow errors
+    }
 
     // calculate the 21-term Taylor series expansion for x
     double xsqrd  = x * x;
