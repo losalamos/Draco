@@ -375,10 +375,6 @@ if len(error_log) or len(warn_log):
 print_logfile_entries(use_short, error_log, "errors")
 print_logfile_entries(use_short, warn_log, "warnings")
 
-# print correspondance for short output
-if use_short:
-    print
-    print "***** Correspondance *****"
 
 ###############################################################################
 ##                            end of regression_filter.py
