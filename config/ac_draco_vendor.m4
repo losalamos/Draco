@@ -15,14 +15,15 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_DRACO_VENDOR_SETUP
 dnl
 dnl Setup macro that allows draco to be defined as a vendor.
-dnl This should be called in a draco-client configure.in as follows:
+dnl This should be called in a draco-client configure.ac as follows:
 dnl
 dnl AC_DRACO_VENDOR_SETUP
 dnl
 dnl AC_NEEDS_LIBS(pkg_components)
 dnl AC_NEEDS_LIBS_DRACO(cdi ds++)
 dnl
-dnl That is, it must be called before AC_NEEDS_LIBS_DRACO.
+dnl That is the library dependency ordering is important.  A link line
+dnl will be created -lpkg_components -lcdi -lds++.                    
 dnl
 dnl Three options are defined that tell configure where draco includes
 dnl and libraries are located:
@@ -39,7 +40,7 @@ dnl --prefix is used as the draco directory.  The default location (if
 dnl --with-draco is not called at all) is /usr/local.  Of course, this
 dnl can be overwritten for the lib and include directories by using 
 dnl --with-draco-lib and/or --with-draco-inc (libexec is found in the
-dnl directory set by --with-draco-lib (in libexec instead of lib.
+dnl directory set by --with-draco-lib (in libexec instead of lib)).
 dnl
 dnl A final option is:
 dnl
@@ -147,7 +148,7 @@ dnl AC_NEEDS_LIBS_DRACO
 dnl
 dnl add DRACO libraries necessary for a package
 dnl this MACRO must be called after AC_NEEDS_LIBS
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_NEEDS_LIBS_DRACO, [dnl
@@ -176,7 +177,7 @@ dnl AC_NEEDS_LIBS_TEST_DRACO
 dnl
 dnl add DRACO libraries necessary for testing a package
 dnl this MACRO must be called after AC_NEEDS_LIBS_TEST
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_NEEDS_LIBS_TEST_DRACO, [dnl
