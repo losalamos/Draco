@@ -42,7 +42,7 @@ extern "C"
 //---------------------------------------------------------------------------//
 
     // Destroy a RTT_Format class object from a Fortran 90 program call.
-    void destruct_car_cu_rtt_format_(long & self)
+    void destruct_rtt_format_(long & self)
     {
 	// Get the address of the RTT_Format class object (self).
 	SP<RTT_Format> rttMesh = 

@@ -22,7 +22,7 @@
 !===========================================================================
 
           USE CAR_CU_Interface_Class
-          USE CAR_CU_RTT_Format_Class
+          USE RTT_Format_Class
           USE CAR_CU_Mesh_Builder_Class
           USE CAR_CU_Mesh_Class
           USE CAR_CU_Opacity_Builder_Class
@@ -34,7 +34,7 @@
           integer narg, iargc, fnlgth
 
           type(CAR_CU_Interface)           :: interface_class
-          type(CAR_CU_RTT_Format)          :: rtt_format_class
+          type(RTT_Format)          :: rtt_format_class
           type(CAR_CU_Mesh_Builder)        :: mesh_builder_class
           type(CAR_CU_Mesh)                :: mesh_class
           type(CAR_CU_Opacity_Builder)     :: opacity_builder_class
@@ -248,7 +248,7 @@
 
 !===========================================================================
 ! Get rid of the CAR_CU_Opacity_Builder, CAR_CU_Mesh_Builder, 
-! CAR_CU_RTT_Format, and CAR_CU_Interface class objects since they are no 
+! RTT_Format, and CAR_CU_Interface class objects since they are no 
 ! longer needed. 
 !===========================================================================
 
