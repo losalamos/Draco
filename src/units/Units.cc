@@ -30,6 +30,14 @@ Units XTM::operator/(const Units &op1, const Units &op2)
 		 op1.temperatureConversion / op2.temperatureConversion);
 }
 
+bool XTM::operator==(const Units &op1, const Units &op2)
+{
+    return op1.lengthConversion == op2.lengthConversion &&
+		 op1.massConversion == op2.massConversion &&
+		 op1.timeConversion == op2.timeConversion &&
+		 op1.temperatureConversion == op2.temperatureConversion;
+}
+
 //---------------------------------------------------------------------------//
 //                              end of Units.cc
 //---------------------------------------------------------------------------//

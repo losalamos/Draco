@@ -46,6 +46,7 @@ class Units
     // FRIENDS
 
     friend Units operator/(const Units &op1, const Units &op2);
+    friend bool operator==(const Units &op1, const Units &op2);
 
     // DATA
 
