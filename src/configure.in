@@ -41,7 +41,7 @@ AC_CONFIG_SUBDIRS(timestep pcgWrap stopwatch quadrature radphys \
 ## LEVEL 4
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(RTT_Format_Reader amr_mesh)
+AC_CONFIG_SUBDIRS(RTT_Format_Reader)
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 5

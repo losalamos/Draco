@@ -14,7 +14,7 @@
 		level 3: timestep pcgWrap stopwatch quadrature radphys
 			 ConjGrad meshReaders viz cdi_eospac 
 			 cdi_gandolf cdi_analytic
-		level 4: RTT_Format_Reader amr_mesh
+		level 4: RTT_Format_Reader
 		level 5: mc meshReaders_Services
 		level 6: imc
 
