@@ -31,6 +31,10 @@ class X : public C4::ThreadGroupMember
 
         gsync();
 
+        int s = thread;
+        gsum(s);
+        printf( "Thread %d, sum of thread id's is %d\n", thread, s );
+
         x = 1000000 * (rand() & 7);
 
         for( int i=0; i < x; i++ )
