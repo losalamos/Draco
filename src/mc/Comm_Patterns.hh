@@ -128,6 +128,12 @@ class Comm_Patterns
 
     //! Get iterator to end of receive data map.
     const_iterator get_recv_end() const { return recv_query_map.end(); }
+
+    //! Get iterator to beginning of send data map.
+    const_iterator get_send_begin() const { return send_query_map.begin(); }
+    
+    //! Get iterator to end of send data map.
+    const_iterator get_send_end() const { return send_query_map.end(); }
 };
 
 } // end namespace rtt_mc

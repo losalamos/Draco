@@ -130,96 +130,190 @@ void DD_Comm_Patterns()
     // nothing should be set yet
     if (cp) ITFAILS;
 
-    // calculate comm_patterns
-    cp.calc_patterns(topology);
-
-    // receive comm_patterns
-
-    Comm_Patterns::const_iterator ritor = cp.get_recv_begin();
-
-    // do some checks
-    if (C4::node() == 0)
+    // do three permutations of calculating the comm patterns to make sure
+    // replication through cycles doesn't F@*% things up
+    for (int run = 1; run <= 3; run++)
     {
-	if (cp.get_num_recv_procs() != 2) ITFAILS;
+	// calculate comm_patterns
+	cp.calc_patterns(topology);
+	if (!cp) ITFAILS;
+
+	// receive comm_patterns
+
+	Comm_Patterns::const_iterator ritor = cp.get_recv_begin();
+
+	// do some checks
+	if (C4::node() == 0)
+	{
+	    if (cp.get_num_recv_procs() != 2) ITFAILS;
 	
-	// go through map
+	    // go through map
 
-	if (ritor->first != 1)         ITFAILS;
-	if (ritor->second.size() != 2) ITFAILS; 
-	if (ritor->second[0] != 3)     ITFAILS;
-	if (ritor->second[1] != 4)     ITFAILS;
-	ritor++;
+	    if (ritor->first != 1)         ITFAILS;
+	    if (ritor->second.size() != 2) ITFAILS; 
+	    if (ritor->second[0] != 3)     ITFAILS;
+	    if (ritor->second[1] != 4)     ITFAILS;
+	    ritor++;
 
-	if (ritor->first != 2)         ITFAILS;
-	if (ritor->second.size() != 1) ITFAILS; 
-	if (ritor->second[0] != 5)     ITFAILS;
-	ritor++;
-    }
-    else if (C4::node() == 1)
-    {
-	if (cp.get_num_recv_procs() != 3) ITFAILS;
+	    if (ritor->first != 2)         ITFAILS;
+	    if (ritor->second.size() != 1) ITFAILS; 
+	    if (ritor->second[0] != 5)     ITFAILS;
+	    ritor++;
+	}
+	else if (C4::node() == 1)
+	{
+	    if (cp.get_num_recv_procs() != 3) ITFAILS;
 	
-	// go through map
+	    // go through map
 
-	if (ritor->first != 0)         ITFAILS;
-	if (ritor->second.size() != 2) ITFAILS; 
-	if (ritor->second[0] != 1)     ITFAILS;
-	if (ritor->second[1] != 2)     ITFAILS;
-	ritor++;
+	    if (ritor->first != 0)         ITFAILS;
+	    if (ritor->second.size() != 2) ITFAILS; 
+	    if (ritor->second[0] != 1)     ITFAILS;
+	    if (ritor->second[1] != 2)     ITFAILS;
+	    ritor++;
 
-	if (ritor->first != 2)         ITFAILS;
-	if (ritor->second.size() != 2) ITFAILS; 
-	if (ritor->second[0] != 5)     ITFAILS;
-	if (ritor->second[1] != 6)     ITFAILS;
-	ritor++;
+	    if (ritor->first != 2)         ITFAILS;
+	    if (ritor->second.size() != 2) ITFAILS; 
+	    if (ritor->second[0] != 5)     ITFAILS;
+	    if (ritor->second[1] != 6)     ITFAILS;
+	    ritor++;
 
-	if (ritor->first != 3)         ITFAILS;
-	if (ritor->second.size() != 1) ITFAILS;  
-	if (ritor->second[0] != 7)     ITFAILS;
-	ritor++;
-    }
-    else if (C4::node() == 2)
-    {
-	if (cp.get_num_recv_procs() != 3) ITFAILS;
+	    if (ritor->first != 3)         ITFAILS;
+	    if (ritor->second.size() != 1) ITFAILS;  
+	    if (ritor->second[0] != 7)     ITFAILS;
+	    ritor++;
+	}
+	else if (C4::node() == 2)
+	{
+	    if (cp.get_num_recv_procs() != 3) ITFAILS;
 	
-	// go through map
+	    // go through map
 
-	if (ritor->first != 0)         ITFAILS;
-	if (ritor->second.size() != 1) ITFAILS;
-	if (ritor->second[0] != 2)     ITFAILS;
-	ritor++;
+	    if (ritor->first != 0)         ITFAILS;
+	    if (ritor->second.size() != 1) ITFAILS;
+	    if (ritor->second[0] != 2)     ITFAILS;
+	    ritor++;
 
-	if (ritor->first != 1)         ITFAILS;
-	if (ritor->second.size() != 2) ITFAILS; 
-	if (ritor->second[0] != 3)     ITFAILS;
-	if (ritor->second[1] != 4)     ITFAILS;
-	ritor++;
+	    if (ritor->first != 1)         ITFAILS;
+	    if (ritor->second.size() != 2) ITFAILS; 
+	    if (ritor->second[0] != 3)     ITFAILS;
+	    if (ritor->second[1] != 4)     ITFAILS;
+	    ritor++;
 
-	if (ritor->first != 3)         ITFAILS;
-	if (ritor->second.size() != 2) ITFAILS;  
-	if (ritor->second[0] != 8)     ITFAILS;  
-	if (ritor->second[1] != 9)     ITFAILS;
-	ritor++;
-    }
-    else if (C4::node() == 3)
-    {
-	if (cp.get_num_recv_procs() != 2) ITFAILS;
+	    if (ritor->first != 3)         ITFAILS;
+	    if (ritor->second.size() != 2) ITFAILS;  
+	    if (ritor->second[0] != 8)     ITFAILS;  
+	    if (ritor->second[1] != 9)     ITFAILS;
+	    ritor++;
+	}
+	else if (C4::node() == 3)
+	{
+	    if (cp.get_num_recv_procs() != 2) ITFAILS;
 	
-	// go through map
+	    // go through map
 
-	if (ritor->first != 1)         ITFAILS;
-	if (ritor->second.size() != 1) ITFAILS;
-	if (ritor->second[0] != 4)     ITFAILS;
-	ritor++;
+	    if (ritor->first != 1)         ITFAILS;
+	    if (ritor->second.size() != 1) ITFAILS;
+	    if (ritor->second[0] != 4)     ITFAILS;
+	    ritor++;
 
-	if (ritor->first != 2)         ITFAILS;
-	if (ritor->second.size() != 2) ITFAILS; 
-	if (ritor->second[0] != 5)     ITFAILS;
-	if (ritor->second[1] != 6)     ITFAILS;
-	ritor++;
+	    if (ritor->first != 2)         ITFAILS;
+	    if (ritor->second.size() != 2) ITFAILS; 
+	    if (ritor->second[0] != 5)     ITFAILS;
+	    if (ritor->second[1] != 6)     ITFAILS;
+	    ritor++;
+	}
+
+	if (ritor != cp.get_recv_end()) ITFAILS;
+
+	// send comm patterns
+
+	Comm_Patterns::const_iterator sitor = cp.get_send_begin();
+
+	// do some checks
+	if (C4::node() == 0)
+	{
+	    if (cp.get_num_send_procs() != 2) ITFAILS;
+	
+	    // go through map
+
+	    if (sitor->first != 1)         ITFAILS;
+	    if (sitor->second.size() != 2) ITFAILS; 
+	    if (sitor->second[0] != 1)     ITFAILS;
+	    if (sitor->second[1] != 2)     ITFAILS;
+	    sitor++;
+
+	    if (sitor->first != 2)         ITFAILS;
+	    if (sitor->second.size() != 1) ITFAILS; 
+	    if (sitor->second[0] != 2)     ITFAILS;
+	    sitor++;
+	}
+	else if (C4::node() == 1)
+	{
+	    if (cp.get_num_send_procs() != 3) ITFAILS;
+	
+	    // go through map
+
+	    if (sitor->first != 0)         ITFAILS;
+	    if (sitor->second.size() != 2) ITFAILS; 
+	    if (sitor->second[0] != 3)     ITFAILS;
+	    if (sitor->second[1] != 4)     ITFAILS;
+	    sitor++;
+
+	    if (sitor->first != 2)         ITFAILS;
+	    if (sitor->second.size() != 2) ITFAILS; 
+	    if (sitor->second[0] != 3)     ITFAILS;
+	    if (sitor->second[1] != 4)     ITFAILS;
+	    sitor++;
+
+	    if (sitor->first != 3)         ITFAILS;
+	    if (sitor->second.size() != 1) ITFAILS;  
+	    if (sitor->second[0] != 4)     ITFAILS;
+	    sitor++;
+	}
+	else if (C4::node() == 2)
+	{
+	    if (cp.get_num_send_procs() != 3) ITFAILS;
+	
+	    // go through map
+
+	    if (sitor->first != 0)         ITFAILS;
+	    if (sitor->second.size() != 1) ITFAILS;
+	    if (sitor->second[0] != 5)     ITFAILS;
+	    sitor++;
+
+	    if (sitor->first != 1)         ITFAILS;
+	    if (sitor->second.size() != 2) ITFAILS; 
+	    if (sitor->second[0] != 5)     ITFAILS;
+	    if (sitor->second[1] != 6)     ITFAILS;
+	    sitor++;
+
+	    if (sitor->first != 3)         ITFAILS;
+	    if (sitor->second.size() != 2) ITFAILS;  
+	    if (sitor->second[0] != 5)     ITFAILS;  
+	    if (sitor->second[1] != 6)     ITFAILS;
+	    sitor++;
+	}
+	else if (C4::node() == 3)
+	{
+	    if (cp.get_num_send_procs() != 2) ITFAILS;
+	
+	    // go through map
+
+	    if (sitor->first != 1)         ITFAILS;
+	    if (sitor->second.size() != 1) ITFAILS;
+	    if (sitor->second[0] != 7)     ITFAILS;
+	    sitor++;
+
+	    if (sitor->first != 2)         ITFAILS;
+	    if (sitor->second.size() != 2) ITFAILS; 
+	    if (sitor->second[0] != 8)     ITFAILS;
+	    if (sitor->second[1] != 9)     ITFAILS;
+	    sitor++;
+	}
+
+	if (sitor != cp.get_send_end()) ITFAILS;
     }
-
-    if (ritor != cp.get_recv_end()) ITFAILS;
 }
 
 //---------------------------------------------------------------------------//

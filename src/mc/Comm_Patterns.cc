@@ -12,6 +12,7 @@
 #include "Comm_Patterns.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
+#include <iostream>
 
 namespace rtt_mc
 {
@@ -84,7 +85,7 @@ void Comm_Patterns::calc_patterns(SP_Topology topology)
 	// the recv_query_map has been calculated
 	calc_send_map_DD(topology);
 
-	// Ensure (recv_query_map.size() == send_query_map.size());;
+	Ensure (recv_query_map.size() == send_query_map.size());;
     }
     else if (topology->get_parallel_scheme() == "DD/replication")
     {
@@ -266,7 +267,7 @@ void Comm_Patterns::calc_send_map_DD(SP_Topology topology)
     // receive the cell lists from the processors that we communicate with
     // and build the send_query_map
     finished = 0;
-    while (finished < cells_recv.size());
+    while (finished < cells_recv.size())
     {
 	// assign the iterator to the recv_query_map to the beginning
 	// location
@@ -289,9 +290,31 @@ void Comm_Patterns::calc_send_map_DD(SP_Topology topology)
 		finished++;
 		Check (!cells_recv[i].inuse());
 		Check (!cells_recv[i].complete());
+
+		// write the list of cells to the entry
+		entry.second.resize(number_of_cells[i]);
+		for (int cell = 0; cell < entry.second.size(); cell++)
+		    entry.second[cell] = list_of_cells[i][cell];
+		delete [] list_of_cells[i];
+
+		// add the entry to the send_query_map
+		insert_indicator = send_query_map.insert(entry);
+		Check (insert_indicator.second);
 	    }
+
+	    // advance processor map
+	    iter++;
 	}
+	Check (iter == recv_end);
     }
+    Check (finished == cells_recv.size());
+
+    // the send_query_map should not be empty because there must be at least
+    // one boundary cell
+    Ensure (!send_query_map.empty());
+
+    // get all processors to the same place before proceeding
+    C4::gsync();
 }
 
 //---------------------------------------------------------------------------//
