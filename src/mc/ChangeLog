@@ -1,3 +1,10 @@
+2000-02-02  Thomas M. Evans  <tme@lanl.gov>
+
+	* Layout*, *Coord_sys*, OS_Mesh*, OS_Builder*: removed using
+	declarations from file scope.  Also, removed any references to
+	MT::CCSF_a, MT::CCSF_i, MT::CCVF_d, and MT::CCVF_i.  This has some 
+	downfield repurcussions (Parallel_Builder).
+
 2000-01-27  H. Grady Hughes <hgh@lanl.gov>
 
     * TET_Mesh.hh, TET_Mesh.cc, ThreeVector.hh:
