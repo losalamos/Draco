@@ -109,6 +109,7 @@ class RCF
     typedef typename Field_t::size_type      size_type;
     typedef typename Field_t::iterator       iterator;
     typedef typename Field_t::const_iterator const_iterator;
+    typedef Field_t                          Field;
 
   private: 
     // >>> DATA
@@ -301,6 +302,7 @@ class RCF<const Field_t>
     typedef typename Field_t::value_type     value_type;
     typedef typename Field_t::size_type      size_type;
     typedef typename Field_t::const_iterator const_iterator;
+    typedef Field_t                          Field;
 
   private: 
     // >>> DATA
