@@ -12,44 +12,21 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-${test_alltarget}: ${testdeps}
+thistestdep     := libIMC_Test${libsuffix}
+thistestlib     := -L. -lIMC_Test
+thistestlib_src := $(wildcard ${srcdir}/*_pt.cc)
+thistestlib_dep := $(notdir $(patsubst %.cc, %.o, ${thistestlib_src}))\
+                   IMC_Test.o IMC_DD_Test.o
 
-tstOpacity_dep = tstOpacity.o tstOpacity_pt.o
-tstTally_dep = tstTally.o tstTally_pt.o
-tstParticle_dep = tstParticle.o tstParticle_pt.o tstTally_pt.o
-tstTopology_Builder_dep = tstTopology_Builder.o \
-                          tstTopology_Builder_pt.o 
-tstSource_Builder_dep = tstSource_Builder.o tstSource_Builder_pt.o \
-                        tstOpacity_pt.o
-tstMesh_Operations_dep = tstMesh_Operations.o tstOpacity_pt.o IMC_Test.o
-tstTransporter_dep = tstTransporter.o tstTransporter_pt.o \
-                     tstParticle_pt.o tstTally_pt.o \
-                     tstTopology_Builder_pt.o
-tstCommunicator_dep = tstCommunicator.o tstCommunicator_pt.o
+${test_alltarget}: ${thistestdep} ${testdeps}
 
-tstOpacity: ${tstOpacity_dep}
-	${LD} ${LDFLAGS} -o $@ ${tstOpacity_dep} ${testlibs}
+%: %.o
+	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
 
-tstTally: ${tstTally_dep}
-	${LD} ${LDFLAGS} -o $@ ${tstTally_dep} ${testlibs}
+${thistestdep}: ${thistestlib_dep} ${testdeps}
+	${LD} ${LDFLAGS} -o $@ ${thistestlib_dep} ${testlibs}
 
-tstParticle: ${tstParticle_dep}
-	${LD} ${LDFLAGS} -o $@ ${tstParticle_dep} ${testlibs}
-
-tstTopology_Builder: ${tstTopology_Builder_dep}
-	${LD} ${LDFLAGS} -o $@ ${tstTopology_Builder_dep} ${testlibs}
-
-tstSource_Builder: ${tstSource_Builder_dep}
-	${LD} ${LDFLAGS} -o $@ ${tstSource_Builder_dep} ${testlibs}
-
-tstMesh_Operations: ${tstMesh_Operations_dep}
-	${LD} ${LDFLAGS} -o $@ ${tstMesh_Operations_dep} ${testlibs}
-
-tstTransporter: ${tstTransporter_dep}
-	${LD} ${LDFLAGS} -o $@ ${tstTransporter_dep} ${testlibs}
-
-tstCommunicator: ${tstCommunicator_dep}
-	${LD} ${LDFLAGS} -o $@ ${tstCommunicator_dep} ${testlibs}
+objs += ${thistestdep}
 
 ###############################################################################
 #			 end of draco/src/imc/test Makefile.target

@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstTally_pt.cc
-// Thomas M. Evans
-// Wed Apr 28 16:09:30 1999
-// $Id$
+/*!
+ * \file   imc/test/Tally_pt.cc
+ * \author Thomas M. Evans
+ * \date   Fri Aug 18 16:20:15 2000
+ * \brief  Tally class instantiations.
+ */
 //---------------------------------------------------------------------------//
-// @> Instantiation of Tally
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "mc/OS_Mesh.hh"
@@ -20,8 +22,9 @@ using std::iostream;
 template class Tally<OS_Mesh>;
 template ostream& operator<<(ostream &, const Tally<OS_Mesh> &);
 
-} // end of rtt_imc
+} // end namespace rtt_imc
+
 
 //---------------------------------------------------------------------------//
-//                              end of tstTally_pt.cc
+//                              end of Tally_pt.cc
 //---------------------------------------------------------------------------//

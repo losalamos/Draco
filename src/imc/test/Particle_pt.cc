@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstParticle_pt.cc
-// Thomas M. Evans
-// Thu Apr 29 15:35:23 1999
-// $Id$
+/*!
+ * \file   imc/test/Particle_pt.cc
+ * \author Thomas M. Evans
+ * \date   Fri Aug 18 16:14:04 2000
+ * \brief  Particle class instantiations.
+ */
 //---------------------------------------------------------------------------//
-// @> Particle and Particle_Buffer instantiations
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "mc/OS_Mesh.hh"
@@ -15,22 +17,18 @@
 namespace rtt_imc
 {
 
-using rtt_mc::OS_Mesh;
-using rtt_rng::Rnd_Control;
+typedef rtt_mc::OS_Mesh       MT;
+typedef rtt_imc::Particle<MT> PT;
+typedef rtt_rng::Rnd_Control  RC;
 
-// particle class instantiation
+template class Particle<MT>;
 
-template class Particle<OS_Mesh>;
+template class Particle_Buffer<PT>;
 
-// random number class instantiation
+template Particle_Buffer<PT>::Particle_Buffer(const MT &, const RC &);
 
-template class Particle_Buffer<Particle<OS_Mesh> >;
-
-template
-Particle_Buffer<Particle<OS_Mesh> >::Particle_Buffer(const OS_Mesh &, 
-						     const Rnd_Control &);
-}  // end of namespace rtt_imc
+} // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
-//                              end of tstParticle_pt.cc
+//                              end of Particle_pt.cc
 //---------------------------------------------------------------------------//
