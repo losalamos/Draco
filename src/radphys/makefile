@@ -16,7 +16,7 @@ include ../config/makefile
 
 # Put non template code here
 
-libsrcs = RadiationPhysics.cc
+libsrcs = RadiationPhysics.cc radphys_pt.cc
 
 # Get the library built, minding our various other targets too.
 

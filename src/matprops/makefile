@@ -21,7 +21,8 @@ CXXFLAGS += -DDBC=7
 
 libsrcs = BilinearInterpTable.cc BilinearInterpGrid.cc \
           FifiParser.cc FifiMatPropsReader.cc InterpedMaterialProps.cc \
-          matprops_pt.cc TempMapper_pt.cc
+          TempMapper_pt.cc InterpedMaterialProps_pt.cc  \
+	  MarshakMaterialProps_pt.cc
 
 # Get the library built, minding our various other targets too.
 

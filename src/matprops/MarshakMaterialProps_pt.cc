@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-// testFullP13T_MMP_pt.cc
+// MarshakMaterialProps_pt.cc
 // John McGhee
 // Fri Oct  9 09:42:52 1998
 //---------------------------------------------------------------------------//
@@ -27,10 +27,14 @@ typedef Mesh_XYZ::fcdtf<std::vector<int> > U6;
 namespace {
  void func1()
  {
+     // std::vector<double> v = std::vector<double>();
      dsxx::Mat1<std::vector<double> > mymat(5);
  }
 }
 #endif
+
+// Instantiate for codes that are using MultiMatCellMatProps of
+// MarshakMaterialProps
 
 template
 class MultiMatCellMatProps<UMCMP1>::MaterialStateField<U1, U2, U3>;
@@ -38,16 +42,6 @@ class MultiMatCellMatProps<UMCMP1>::MaterialStateField<U1, U2, U3>;
 template
 class MultiMatCellMatProps<UMCMP1>::MaterialStateField<U4, U5, U6>;
 
-#include "matprops/InterpedMaterialProps.hh"
-
-typedef InterpedMaterialProps UMCMP2;
-
-template
-class MultiMatCellMatProps<UMCMP2>::MaterialStateField<U1, U2, U3>;
-
-template
-class MultiMatCellMatProps<UMCMP2>::MaterialStateField<U4, U5, U6>;
-
 //---------------------------------------------------------------------------//
-//                              end of testFullP13T_MMP_pt.cc
+//                              end of MarshakMaterialProps_pt.cc
 //---------------------------------------------------------------------------//
