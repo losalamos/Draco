@@ -45,9 +45,6 @@ class Mesh_DB
 
     // Public data to imitate NML
 
-    bool dump_indicies;
-    bool dump_coords;
-
     int ncx;
     int ncy;
     int ncz;
@@ -65,25 +62,27 @@ class Mesh_DB
 
     Mesh_DB(int _ncx=10, int _ncy=10, int _ncz=10,
 	    double xmin_in=0.0, double xmax_in=1.0, double ymin_in=0.0,
-	    double ymax_in=1.0, double zmin_in=0.0, double zmax_in=1.0,
-	    bool dumpi_in=false, bool dumpc_in=false);
+	    double ymax_in=1.0, double zmin_in=0.0, double zmax_in=1.0);
 
     Mesh_DB(const rtt_dsxx::Mat1<double> &dx_in,
 	    const rtt_dsxx::Mat1<double> &dy_in,
     	    const rtt_dsxx::Mat1<double> &dz_in,
 	    int ncx_in, int ncy_in, int ncz_in,
     	    double xmin_in=0.0, double xmax_in=1.0, double ymin_in=0.0,
-    	    double ymax_in=1.0, double zmin_in=0.0, double zmax_in=1.0,
-	    bool dumpi_in=false, bool dumpc_in=false);
+    	    double ymax_in=1.0, double zmin_in=0.0, double zmax_in=1.0);
 
     //Mesh_DB(const Mesh_DB &rhs);
     //    ~Mesh_DB();
 
     // MANIPULATORS
     
+    void resize();
+
     // Mesh_DB& operator=(const Mesh_DB &rhs);
 
     // ACCESSORS
+
+    bool isValid() const;
 
   private:
     

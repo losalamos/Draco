@@ -20,9 +20,6 @@ double	ymax		1.
 double	zmin		0.
 double	zmax		1.
 
-bool	dump_indicies	no	# Emit I(c), J(c), etc?
-bool	dump_coords	no	# Emit xc(c), yc(c), etc?
-
 #-----------------------------------------------------------------------------#
 #				end of Mesh.nml
 #-----------------------------------------------------------------------------#

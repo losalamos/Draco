@@ -15,8 +15,10 @@ using namespace C4;
 #include <iostream.h>
 
 XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb_in )
-    : mdb(mdb_in), ncx(mdb.ncx), ncy(mdb.ncy), ncz(mdb.ncz)
+    : ncx(mdb_in.ncx), ncy(mdb_in.ncy), ncz(mdb_in.ncz), mdb(mdb_in)
 {
+    Insist(mdb.isValid(), "Invalid mdb used to initialize XYZ_Mapper.");
+    
     nct = ncx * ncy * ncz;
     nxy = ncx * ncy;
 
@@ -55,15 +57,6 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb_in )
       xF( this ), yF( this ), zF( this ),
       face_norms( this )
 {
-    char buf[80];
-
-    if (mdb.dump_indicies)
-        for( int i=0; i < ncp; i++ ) {
-            sprintf( buf, "node %d, i=%d, I(%d)=%d J(%d)=%d K(%d)=%d",
-                     node, i, i, I(i), i, J(i), i, K(i) );
-            cout << buf << endl;
-        }
-
 // Allocate the arrays.
 
     xc = rtt_dsxx::Mat1<double>( ncx );
@@ -87,12 +80,6 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb_in )
 	yc(i) = yc(i-1) + (mdb.dy[i]+mdb.dy[i-1])/2.0;
     for( int i=1; i < ncz; i++ )
 	zc(i) = zc(i-1) + (mdb.dz[i]+mdb.dz[i-1])/2.0;
-
-    if (mdb.dump_coords) {
-        cout << "node " << node << " ncy=" << ncy << endl;
-        for( int i=0; i < ncy; i++ )
-            cout << "node " << node << " yc(" << i << ")=" << yc(i) << endl;
-    }
 
 // Initialize the face locations.
 
