@@ -65,7 +65,7 @@ PCG_Ctrl<T>::PCG_Ctrl( pcg_DB& pcg_db, int _nru )
     fparm(pcg::ALPHA)  = alpha;
 
 // Print control parameters.
-    print_params();
+//    print_params();
 }
 
 //---------------------------------------------------------------------------//
