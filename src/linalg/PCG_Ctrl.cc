@@ -147,6 +147,11 @@ void PCG_Ctrl<T>::it_method( Mat1<T>& x, Mat1<T>& b, Mat1<T>& xex )
 		     &iwk(0), &fwk(0), &iparm(1), &fparm(1), ier );
 	imatvec = pcg::TRUE;
     }
+    else if( itmeth == pcg::CG ) {
+	pcg::xcgr( ijob, ireq, &x(0), &xex(0), &b(0), iva, ivql, ivqr,
+		   &iwk(0), &fwk(0), &iparm(1), &fparm(1), ier );
+	imatvec = pcg::TRUE;
+    }
     else {
 	throw("Need to choose a valid pcg iterative method.");
     }
@@ -172,9 +177,6 @@ void PCG_Ctrl<T>::set_nwi()
     if( itmeth == pcg::IOM      ) nwi = 100;
     if( itmeth == pcg::CG       ) nwi = 100;
     if( itmeth == pcg::BCG      ) nwi = 100;
-    if( itmeth == 91            ) nwi = 100;
-    if( itmeth == 92            ) nwi = 100;
-    if( itmeth == 96            ) nwi = 100;
 
     if( malloc == pcg::TRUE     ) nwi = 1;
 }
@@ -201,8 +203,6 @@ void PCG_Ctrl<T>::set_nwf()
     if( itmeth == pcg::TFQMR    ) nwfit = 16 + nrup2*18;
     if( itmeth == pcg::CG       ) nwfit = 12 + nrup2*5;
     if( itmeth == pcg::BCG      ) nwfit = 12 + nrup2*9;
-    if( itmeth == 91            ) nwfit =  7 + nrup2*5;
-    if( itmeth == 92            ) nwfit = 15 + nrup2*13;
     if( iqside >= pcg::QRIGHT ) {
 	if( itmeth == pcg::GMRES   ) nwfit = 31 + nrup2*(2*ns2+8) + ns2*9
 					   + ns2*ns2;
@@ -211,8 +211,6 @@ void PCG_Ctrl<T>::set_nwf()
 	if( itmeth == pcg::OMIN    ) nwfit = 13 + nrup2*(3*ns1+5) + ns1;
 	if( itmeth == pcg::ORES    ) nwfit = 12 + nrup2*(4*ns1+6) + ns1;
 	if( itmeth == pcg::IOM     ) nwfit = 31 + nrup2*(3*ns1+9) + ns1*5;
-	if( itmeth == 96           ) nwfit = 31 + nrup2*(2*ns2+8) + ns2*9
-					   + ns2*ns2;
     }        
     else {
 	if( itmeth == pcg::GMRES   ) nwfit = 31 + nrup2*(1*ns2+4) + ns2*9
@@ -222,8 +220,6 @@ void PCG_Ctrl<T>::set_nwf()
 	if( itmeth == pcg::OMIN    ) nwfit = 13 + nrup2*(2*ns1+3) + ns1;
 	if( itmeth == pcg::ORES    ) nwfit = 12 + nrup2*(2*ns1+4) + ns1;
 	if( itmeth == pcg::IOM     ) nwfit = 31 + nrup2*(2*ns1+7) + ns1*5;
-	if( itmeth == 96           ) nwfit = 31 + nrup2*(1*ns2+4) + ns2*9
-					   + ns2*ns2;
     }
 
     if( istats == 1 ) nwfstat = 20 + nrup2*4;

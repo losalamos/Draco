@@ -21,6 +21,7 @@ void xdfalt( int *iparm, double          *fparm );
 void xdfalt( int *iparm, complex<float>  *fparm );
 void xdfalt( int *iparm, complex<double> *fparm );
 
+// Basic iterative method.
 void xbasr ( int& ijob, int& ireq,
 	     float *x, float *xex, float *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
@@ -42,6 +43,7 @@ void xbasr ( int& ijob, int& ireq,
 	     complex<double> *fwk, int *iparm, complex<double> *fparm,
 	     int& ier );
 
+// Restarted GMRES.
 void xgmrsr( int& ijob, int& ireq,
 	     float *x, float *xex, float *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
@@ -58,6 +60,28 @@ void xgmrsr( int& ijob, int& ireq,
 	     complex<float> *fwk, int *iparm, complex<float> *fparm,
 	     int& ier );
 void xgmrsr( int& ijob, int& ireq,
+	     complex<double> *x, complex<double> *xex, complex<double> *b,
+	     int& iva, int& ivql, int& ivqr, int *iwk,
+	     complex<double> *fwk, int *iparm, complex<double> *fparm,
+	     int& ier );
+
+// Conjugate gradient.
+void xcgr  ( int& ijob, int& ireq,
+	     float *x, float *xex, float *b,
+	     int& iva, int& ivql, int& ivqr, int *iwk,
+	     float *fwk, int *iparm, float *fparm,
+	     int& ier );
+void xcgr  ( int& ijob, int& ireq,
+	     double *x, double *xex, double *b,
+	     int& iva, int& ivql, int& ivqr, int *iwk,
+	     double *fwk, int *iparm, double *fparm,
+	     int& ier );
+void xcgr  ( int& ijob, int& ireq,
+	     complex<float> *x, complex<float> *xex, complex<float> *b,
+	     int& iva, int& ivql, int& ivqr, int *iwk,
+	     complex<float> *fwk, int *iparm, complex<float> *fparm,
+	     int& ier );
+void xcgr  ( int& ijob, int& ireq,
 	     complex<double> *x, complex<double> *xex, complex<double> *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     complex<double> *fwk, int *iparm, complex<double> *fparm,
@@ -117,6 +141,11 @@ PCG_NAMESPACE_END
 #define dgmrsr dgmrsr_
 #define cgmrsr cgmrsr_
 #define zgmrsr zgmrsr_
+
+#define scgr   scgr_
+#define dcgr   dcgr_
+#define ccgr   ccgr_
+#define zcgr   zcgr_
 #endif
 
 // Function prototypes for PCG f77 subroutines.
@@ -127,6 +156,7 @@ extern "C" {
     void cdfalt( int *iparm, complex<float>  *fparm );
     void zdfalt( int *iparm, complex<double> *fparm );
 
+// Basic iterative method.
     void sbasr ( int& ijob, int& ireq,
 		 float *x, float *xex, float *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
@@ -148,6 +178,7 @@ extern "C" {
 		 complex<double> *fwk, int *iparm, complex<double> *fparm,
 		 int& ier );
 
+// Restarted GMRES.
     void sgmrsr( int& ijob, int& ireq,
 		 float *x, float *xex, float *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
@@ -164,6 +195,28 @@ extern "C" {
 		 complex<float> *fwk, int *iparm, complex<float> *fparm,
 		 int& ier );
     void zgmrsr( int& ijob, int& ireq,
+		 complex<double> *x, complex<double> *xex, complex<double> *b,
+		 int& iva, int& ivql, int& ivqr, int *iwk,
+		 complex<double> *fwk, int *iparm, complex<double> *fparm,
+		 int& ier );
+
+// Conjugate gradient.
+    void scgr  ( int& ijob, int& ireq,
+		 float *x, float *xex, float *b,
+		 int& iva, int& ivql, int& ivqr, int *iwk,
+		 float *fwk, int *iparm, float *fparm,
+		 int& ier );
+    void dcgr  ( int& ijob, int& ireq,
+		 double *x, double *xex, double *b,
+		 int& iva, int& ivql, int& ivqr, int *iwk,
+		 double *fwk, int *iparm, double *fparm,
+		 int& ier );
+    void ccgr  ( int& ijob, int& ireq,
+		 complex<float> *x, complex<float> *xex, complex<float> *b,
+		 int& iva, int& ivql, int& ivqr, int *iwk,
+		 complex<float> *fwk, int *iparm, complex<float> *fparm,
+		 int& ier );
+    void zcgr  ( int& ijob, int& ireq,
 		 complex<double> *x, complex<double> *xex, complex<double> *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 complex<double> *fwk, int *iparm, complex<double> *fparm,
