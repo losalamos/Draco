@@ -1,6 +1,7 @@
 !../../../draco/src/imc/test
 !../../../draco/src/RTT_Format_Reader/test
 !../../../draco/src/mc/test
+!../../../draco/src/c4/test
 !../../../draco/src/cdi/test
 !../../../draco/src/cdi_analytic/test
 !../../../draco/src/cdi_eospac/test
