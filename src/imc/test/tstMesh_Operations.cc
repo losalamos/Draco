@@ -1,14 +1,15 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/tstMesh_Operations.cc
+ * \file   imc/test/tstMesh_Operations.cc
  * \author Thomas M. Evans
- * \date   Mon Dec 20 16:44:16 1999
- * \brief  Mesh_Operations test file.
+ * \date   Wed Nov 14 17:04:34 2001
+ * \brief  Mesh_Operations test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "imc_test.hh"
 #include "IMC_Test.hh"
 #include "DD_Mesh.hh"
 #include "../Mesh_Operations.hh"
@@ -27,6 +28,7 @@
 #include "mc/Sampler.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
@@ -56,15 +58,10 @@ using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
 
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_imc_test::fail(__LINE__);
-
-//===========================================================================//
-// OS_MESH SPECIALIZATION
-//===========================================================================//
-
 //---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
+
 // Test T4 slope tilt
 
 void T4_slope_test()
@@ -346,7 +343,6 @@ void T4_slope_test_AMR()
 }
 
 //---------------------------------------------------------------------------//
-// main
 
 int main(int argc, char *argv[])
 {
@@ -356,15 +352,16 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    if (C4::node() == 0)
-		cout << argv[0] << ": version " << rtt_imc::release() 
-		     << endl; 
+	    cout << argv[0] << ": version " << rtt_imc::release() 
+		 << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
     try
     {
+	// >>> UNIT TESTS
+
 	// run test on each processor for OS_Mesh
 	T4_slope_test();
 	T4_slope_test_DD();
@@ -374,28 +371,34 @@ int main(int argc, char *argv[])
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "Test: assertion failure at line " 
-	     << ass.what() << endl;
+	cout << "While testing tstMesh_Operations, " << ass.what()
+	     << endl;
 	C4::Finalize();
 	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "*******************************************" << endl; 
-    if (passed) 
     {
-        cout << "**** Mesh_Operations Self Test: PASSED on " 
-	     << C4::node() << endl;
+	C4::HTSyncSpinLock slock;
+
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_imc_test::passed) 
+	{
+	    cout << "**** tstMesh_Operations Test: PASSED on" 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
     }
-    cout <<     "*******************************************" << endl;
-    cout << endl;
+    
+    C4::gsync();
 
-    cout << "Done testing Mesh_Operations on node: " << C4::node() << endl;
-
+    cout << "Done testing tstMesh_Operations on " << C4::node() << endl;
+    
     C4::Finalize();
-}
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstMesh_Operations.cc
+//                        end of tstMesh_Operations.cc
 //---------------------------------------------------------------------------//

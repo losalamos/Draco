@@ -2,13 +2,14 @@
 /*!
  * \file   imc/test/tstSource_Builder.cc
  * \author Thomas M. Evans
- * \date   Wed Dec  8 16:39:33 1999
- * \brief  Source_Builder test file.
+ * \date   Wed Nov 14 17:09:04 2001
+ * \brief  Source_Builder and Source tests.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "imc_test.hh"
 #include "IMC_Test.hh"
 #include "IMC_DD_Test.hh"
 #include "../Source_Builder.hh"
@@ -32,6 +33,7 @@
 #include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/SP.hh"
 
 #include <vector>
@@ -67,10 +69,8 @@ using rtt_dsxx::SP;
 
 typedef SP<Particle<OS_Mesh> > SP_Particle;
 
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_imc_test::fail(__LINE__);
-
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 // source init test --> satisfies all topologies because source init must be
 // run with a full mesh
@@ -131,9 +131,8 @@ void source_replication_test()
     Rep_Source_Builder<OS_Mesh> source_builder(interface, mesh, topology);
 
     // build the source
-    SP<Source<OS_Mesh,Particle<OS_Mesh> > > source = source_builder.build_Source(mesh, mat,
-										 opacity, rcon,
-										 patterns);
+    SP<Source<OS_Mesh,Particle<OS_Mesh> > > source = 
+	source_builder.build_Source(mesh, mat, opacity, rcon, patterns);
 
     // get the global numbers for each species
     int global_nsstot  = source_builder.get_nsstot();
@@ -471,9 +470,8 @@ void source_DD_test()
     DD_Source_Builder<OS_Mesh> source_builder(interface, mesh, topology);
 
     // build the source
-    SP<Source<OS_Mesh, Particle<OS_Mesh> > > source = source_builder.build_Source(mesh, mat,
-										  opacity, rcon,
-										  patterns); 
+    SP<Source<OS_Mesh, Particle<OS_Mesh> > > source = 
+	source_builder.build_Source(mesh, mat, opacity, rcon, patterns); 
 
     // <<<<<< SET REFERENCE VARIABLES >>>>>>
 
@@ -519,7 +517,8 @@ void source_DD_test()
 	ref_ecentot    += ref_ecen[c];
     }
 	
-    // <<<<<< CHECK LOCAL VOLUME EMISSION ENERGY >>>>>>>>
+    // <<<<<< CHECK LOCAL VOLUME EMISSION ENERGY >>>>>>>> 
+
     // check net volume emission (each proc has 2 cells, except proc 3 has 3)
     if (mesh->num_cells() > 0)
 	if (!soft_equiv(ref_evolnet[0],source_builder.get_evol_net(1)))
@@ -531,7 +530,8 @@ void source_DD_test()
 	if (!soft_equiv(ref_evolnet[2],source_builder.get_evol_net(3)))
 	    ITFAILS; 
 
-    // do processor-dependent evol checks only if there is no global energy loss
+    // do processor-dependent evol checks only if there is no global energy
+    // loss
     double evol_loss     = source_builder.get_eloss_vol();
     double check_evoltot = source_builder.get_evoltot();
     if (soft_equiv(evol_loss, 0.0, 1.0e-12))
@@ -719,9 +719,7 @@ void source_DD_test()
     if (*source) ITFAILS;
 }
 
-
 //---------------------------------------------------------------------------//
-// main
 
 int main(int argc, char *argv[])
 {
@@ -731,38 +729,55 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    if (C4::node() == 0)
-		cout << argv[0] << ": version " << rtt_imc::release() 
-		     << endl; 
+	    cout << argv[0] << ": version " << rtt_imc::release() 
+		 << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
-    // check source init -> independent of topology
-    source_init_test();
-
-    // full replication source test
-    source_replication_test();
-
-    // source builder test on full domain decomposition 
-    source_DD_test();
-
-    // status of test
-    cout << endl;
-    cout <<     "******************************************" << endl; 
-    if (passed) 
+    try
     {
-        cout << "**** Source_Builder Self Test: PASSED on " 
-	     << C4::node() << endl;
+	// >>> UNIT TESTS
+
+	// check source init -> independent of topology
+	source_init_test();
+
+	// full replication source test
+	source_replication_test();
+
+	// source builder test on full domain decomposition 
+	source_DD_test();
     }
-    cout <<     "******************************************" << endl;
-    cout << endl;
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing tstSource_Builder, " << ass.what()
+	     << endl;
+	C4::Finalize();
+	return 1;
+    }
 
-    cout << "Done testing Source_Builder on node: " << C4::node() << endl;
+    {
+	C4::HTSyncSpinLock slock;
 
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_imc_test::passed) 
+	{
+	    cout << "**** tstSource_Builder Test: PASSED on" 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
+    }
+    
+    C4::gsync();
+
+    cout << "Done testing tstSource_Builder on " << C4::node() << endl;
+    
     C4::Finalize();
-}
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstSource_Builder.cc
+//                        end of tstSource_Builder.cc
 //---------------------------------------------------------------------------//

@@ -1,14 +1,15 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/tstTransporter.cc
+ * \file   imc/test/tstTransporter.cc
  * \author Thomas M. Evans
- * \date   Mon Apr 17 11:29:58 2000
- * \brief  Transporter class testing file.
+ * \date   Wed Nov 14 17:15:17 2001
+ * \brief  Transporter classes test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "imc_test.hh"
 #include "IMC_Test.hh"
 #include "../Transporter.hh"
 #include "../Rep_Transporter.hh"
@@ -32,6 +33,7 @@
 #include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 
@@ -71,10 +73,8 @@ using rtt_dsxx::SP;
 typedef Mat_State<OS_Mesh> OS_Mat;
 typedef Opacity<OS_Mesh>   OS_Opacity;
 
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_imc_test::fail(__LINE__);
-
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 
 template<class MT, class PT>
@@ -133,9 +133,8 @@ void rep_transporter_run_test()
     Rep_Source_Builder<OS_Mesh> source_builder(interface, mesh, topology);
 
     // build the source
-    SP<Source<OS_Mesh, Particle<OS_Mesh> > > source = source_builder.build_Source(mesh, mat,
-										  opacity, rcon,
-										  patterns);
+    SP<Source<OS_Mesh, Particle<OS_Mesh> > > source = 
+	source_builder.build_Source(mesh, mat, opacity, rcon, patterns);
 
     cout << source->get_num_source_particles() << endl;
 
@@ -215,7 +214,6 @@ void DD_transporter_test()
 }
 
 //---------------------------------------------------------------------------//
-// main
 
 int main(int argc, char *argv[])
 {
@@ -225,52 +223,52 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    if (C4::node() == 0)
-		cout << argv[0] << ": version " << rtt_imc::release() 
-		     << endl; 
+	    cout << argv[0] << ": version " << rtt_imc::release() 
+		 << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
-    // tests
     try
     {
+	// >>> UNIT TESTS
+
 	rep_transporter_test<OS_Mesh,Particle<OS_Mesh> >();
 	DD_transporter_test<OS_Mesh, Particle<OS_Mesh> >();
 
 	// run some particles
 	rep_transporter_run_test<OS_Mesh,Particle<OS_Mesh> >();
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &ass)
     {
-	cout << "Test: assertion failure at line " 
-	     << ass.what() << endl;
-	C4::Finalize();
-	return 1;
-    }
-    catch(...)
-    {
-	cout << "HELP ME" << endl;
+	cout << "While testing tstTransporter, " << ass.what()
+	     << endl;
 	C4::Finalize();
 	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "***************************************" << endl; 
-    if (passed) 
     {
-        cout << "**** Transporter Self Test: PASSED on " 
-	     << C4::node() << endl;
+	C4::HTSyncSpinLock slock;
+
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_imc_test::passed) 
+	{
+	    cout << "**** tstTransporter Test: PASSED on" 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
     }
-    cout <<     "***************************************" << endl;
-    cout << endl;
+    
+    C4::gsync();
 
-    cout << "Done testing Transporter on node: " << C4::node() << endl;
-
+    cout << "Done testing tstTransporter on " << C4::node() << endl;
+    
     C4::Finalize();
-}
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstTransporter.cc
+//                        end of tstTransporter.cc
 //---------------------------------------------------------------------------//

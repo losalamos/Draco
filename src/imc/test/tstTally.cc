@@ -1,18 +1,22 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstTally.cc
-// Thomas M. Evans and Todd J. Urbatsch
-// Wed Apr 28 13:09:29 1999
+/*!
+ * \file   imc/test/tstTally.cc
+ * \author Thomas M. Evans
+ * \date   Wed Nov 14 17:11:40 2001
+ * \brief  Tally test.
+ */
+//---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-// @> Test of Tally class operations
-//---------------------------------------------------------------------------//
 
+#include "imc_test.hh"
 #include "IMC_Test.hh"
 #include "../Release.hh"
 #include "../Tally.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "mc/Math.hh"
 
 #include <iostream>
@@ -29,10 +33,8 @@ using rtt_dsxx::SP;
 using std::pow;
 using rtt_mc::global::soft_equiv;
 
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_imc_test::fail(__LINE__);
-
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 
 void Tally_Test()
@@ -94,7 +96,8 @@ void Tally_Test()
 	    if (t.get_new_ecen(i) != j * i * 30)       ITFAILS;
 	    if (t.get_new_ncen(i) != j * 1)            ITFAILS;
 
-	    if (t.get_accum_ew_killed() != ((j-1)*const_sum_i+sum_i)*2.0) ITFAILS;
+	    if (t.get_accum_ew_killed() != ((j-1)*const_sum_i+sum_i)*2.0) 
+		ITFAILS;
 
 	    if (t.get_accum_n_effscat() != pcount)         ITFAILS;
 	    if (t.get_accum_n_thomscat() != pcount)        ITFAILS;
@@ -153,7 +156,6 @@ void Tally_Test()
 
 int main(int argc, char *argv[])
 {
-    // C4 Init
     C4::Init(argc, argv);
 
     // this is essentially a scalar test
@@ -163,34 +165,53 @@ int main(int argc, char *argv[])
 	return 0;
     }
 
-    // Tally tests
-    Tally_Test();
-
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_imc::release() << endl;
+	    cout << argv[0] << ": version " << rtt_imc::release() 
+		 << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
-    // status of test
-    cout << endl;
-    cout <<     "*********************************" << endl;
-    if (passed) 
+    try
     {
-        cout << "**** Tally Self Test: PASSED ****" << endl;
+	// >>> UNIT TESTS
+
+	// Tally tests
+	Tally_Test();
     }
-    cout <<     "*********************************" << endl;
-    cout << endl;
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing tstTally, " << ass.what()
+	     << endl;
+	C4::Finalize();
+	return 1;
+    }
 
-    cout << "Done testing Tally." << endl;
+    {
+	C4::HTSyncSpinLock slock;
 
-    // C4 end
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_imc_test::passed) 
+	{
+	    cout << "**** tstTally Test: PASSED on" 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
+    }
+    
+    C4::gsync();
+
+    cout << "Done testing tstTally on " << C4::node() << endl;
+    
     C4::Finalize();
 }   
 
 //---------------------------------------------------------------------------//
-//                              end of tstTally.cc
+//                        end of tstTally.cc
 //---------------------------------------------------------------------------//

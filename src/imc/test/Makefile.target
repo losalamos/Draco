@@ -16,7 +16,7 @@ thistestdep     := libIMC_Test${libsuffix}
 thistestlib     := -L. -lIMC_Test
 thistestlib_src := $(wildcard ${srcdir}/*_pt.cc)
 thistestlib_dep := $(notdir $(patsubst %.cc, %.o, ${thistestlib_src}))\
-                   IMC_Test.o IMC_DD_Test.o
+                   IMC_Test.o IMC_DD_Test.o imc_test.o
 
 ${test_alltarget}: ${thistestdep} ${testdeps}
 

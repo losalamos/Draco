@@ -27,16 +27,6 @@ namespace rtt_imc_test
 {
 
 //===========================================================================//
-// FAILURE LIMIT
-//===========================================================================//
-
-inline bool fail(int line)
-{
-    std::cout << "Test: failed on line " << line << std::endl;
-    return false;
-}
-
-//===========================================================================//
 // PARSER CLASS FOR MESH BUILDERS
 //===========================================================================//
 // make a simple parser class that tells mesh builders the name of the mesh

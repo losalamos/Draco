@@ -1,12 +1,15 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstParticle.cc
-// Thomas M. Evans
-// Wed Apr 28 13:08:25 1999
+/*!
+ * \file   imc/test/tstParticle.cc
+ * \author Thomas M. Evans
+ * \date   Wed Nov 14 17:07:23 2001
+ * \brief  Particle and Particle_Buffer tests.
+ */
+//---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-// @> Particle and Particle_Buffer Checks
-//---------------------------------------------------------------------------//
 
+#include "imc_test.hh"
 #include "IMC_Test.hh"
 #include "../Particle.hh"
 #include "../Particle_Buffer.hh"
@@ -16,6 +19,7 @@
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
@@ -34,18 +38,14 @@ using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
 
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_imc_test::fail(__LINE__);
-
 // some global usefulness
 int seed = 934223421;
 Rnd_Control control(seed);
 int proc;
 int procs;
 
-// Particle tests
-
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 // easy test
 
@@ -447,29 +447,29 @@ void Particle_Comm_Async()
 }
 
 //---------------------------------------------------------------------------//
-// main
 
 int main(int argc, char *argv[])
 {
-    // C4 Init
     C4::Init(argc, argv);
+
+    // proc definitions
     proc  = C4::node();
     procs = C4::nodes();
-    
+
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    if (proc == 0)
-		cout << argv[0] << ": version " << rtt_imc::release() 
-		     << endl; 
+	    cout << argv[0] << ": version " << rtt_imc::release() 
+		 << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
-    // lets do the tests and catch assertions
     try
     {
+	// >>> UNIT TESTS
+
 	// Particle tests 
 	Particle_Basics<Particle<OS_Mesh> >();
 	C4::gsync();
@@ -485,36 +485,37 @@ int main(int argc, char *argv[])
 	
 	Particle_Comm_Async<Particle<OS_Mesh> >();
 	C4::gsync();
-	
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &ass)
     {
-	cout << "Test: assertion failure at line " 
-	     << ass.what() << endl;
-	return 1;
-    }
-    catch(...)
-    {
-	cout << "HELP ME" << endl;
+	cout << "While testing tstParticle, " << ass.what()
+	     << endl;
+	C4::Finalize();
 	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "************************************" << endl;
-    if (passed) 
     {
-        cout << "**** Particle Self Test: PASSED on " << C4::node() << endl; 
+	C4::HTSyncSpinLock slock;
+
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_imc_test::passed) 
+	{
+	    cout << "**** tstParticle Test: PASSED on" 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
     }
-    cout <<     "************************************" << endl;
-    cout << endl;
+    
+    C4::gsync();
 
-    cout << "Done testing Particle on node: " << proc << endl;
-
-    // C4 end
+    cout << "Done testing tstParticle on " << C4::node() << endl;
+    
     C4::Finalize();
 }   
 
 //---------------------------------------------------------------------------//
-//                              end of tstParticle.cc
+//                        end of tstParticle.cc
 //---------------------------------------------------------------------------//

@@ -2,13 +2,14 @@
 /*!
  * \file   imc/test/tstCommunicator.cc
  * \author Thomas M. Evans
- * \date   Wed Jun  7 13:01:49 2000
- * \brief  Communicator and Comm_Builder test file.
+ * \date   Wed Nov 14 17:02:07 2001
+ * \brief  Communicator and Comm_Builder tests.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "imc_test.hh"
 #include "IMC_Test.hh"
 #include "DD_Mesh.hh"
 #include "../Particle.hh"
@@ -21,12 +22,13 @@
 #include "mc/OS_Mesh.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
 #include <iostream>
-#include <string>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -44,10 +46,8 @@ using rtt_dsxx::SP;
 
 typedef Particle<OS_Mesh> PT;
 
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_imc_test::fail(__LINE__);
-
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 // test Rep Communicator
 
@@ -317,7 +317,6 @@ void DD_Comm()
 }
 
 //---------------------------------------------------------------------------//
-// main
 
 int main(int argc, char *argv[])
 {
@@ -327,15 +326,16 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    if (C4::node() == 0)
-		cout << argv[0] << ": version " << rtt_imc::release() 
-		     << endl; 
+	    cout << argv[0] << ": version " << rtt_imc::release() 
+		 << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
     try
     {
+	// >>> UNIT TESTS
+
 	// rep test
 	Rep_Comm_Check();
 
@@ -345,28 +345,34 @@ int main(int argc, char *argv[])
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "Test: assertion failure at line " 
-	     << ass.what() << endl;
+	cout << "While testing tstCommunicator, " << ass.what()
+	     << endl;
 	C4::Finalize();
 	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "****************************************" << endl; 
-    if (passed) 
     {
-        cout << "**** Communicator Self Test: PASSED on " 
-	     << C4::node() << endl;
+	C4::HTSyncSpinLock slock;
+
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_imc_test::passed) 
+	{
+	    cout << "**** tstCommunicator Test: PASSED on" 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
     }
-    cout <<     "****************************************" << endl;
-    cout << endl;
+    
+    C4::gsync();
 
-    cout << "Done testing Communicator on node: " << C4::node() << endl;
-
+    cout << "Done testing tstCommunicator on " << C4::node() << endl;
+    
     C4::Finalize();
-}
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstCommunicator.cc
+//                        end of tstCommunicator.cc
 //---------------------------------------------------------------------------//

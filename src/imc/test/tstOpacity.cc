@@ -1,12 +1,15 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstOpacity.cc
-// Thomas M. Evans
-// Tue Apr 27 11:25:56 1999
+/*!
+ * \file   imc/test/tstOpacity.cc
+ * \author Thomas M. Evans
+ * \date   Wed Nov 14 17:05:50 2001
+ * \brief  Opacity and Mat_State tests.
+ */
+//---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-// @> test of the Opacity, Mat_State and Opacity builder classes
-//---------------------------------------------------------------------------//
 
+#include "imc_test.hh"
 #include "IMC_Test.hh"
 #include "../Opacity_Builder.hh"
 #include "../Opacity.hh"
@@ -16,6 +19,8 @@
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
+#include "ds++/SP.hh"
 
 #include <iostream>
 #include <string>
@@ -37,10 +42,8 @@ using rtt_dsxx::SP;
 typedef Mat_State<OS_Mesh> MSOS;
 typedef Opacity<OS_Mesh> OOS;
 
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_imc_test::fail(__LINE__);
-
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 // test Opacity Builder and Mat_State
 void Mat_Test()
@@ -153,7 +156,6 @@ void Opacity_Test()
 
 int main(int argc, char *argv[])
 {
-    // C4 Init
     C4::Init(argc, argv);
 
     // this is essentially a scalar test
@@ -167,33 +169,52 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_imc::release() << endl;
+	    cout << argv[0] << ": version " << rtt_imc::release() 
+		 << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
-    // mat state test
-    Mat_Test();
-
-    // opacity test
-    Opacity_Test();
-
-    // status of test
-    cout << endl;
-    cout <<     "***********************************" << endl;
-    if (passed) 
+    try
     {
-        cout << "**** Opacity Self Test: PASSED ****" << endl;
+	// >>> UNIT TESTS
+
+	// mat state test
+	Mat_Test();
+
+	// opacity test
+	Opacity_Test();
     }
-    cout <<     "***********************************" << endl;
-    cout << endl;
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing tstOpacity, " << ass.what()
+	     << endl;
+	C4::Finalize();
+	return 1;
+    }
 
-    cout << "Done testing Opacity." << endl;
+    {
+	C4::HTSyncSpinLock slock;
 
-    // C4 end
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_imc_test::passed) 
+	{
+	    cout << "**** tstOpacity Test: PASSED on" 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
+    }
+    
+    C4::gsync();
+
+    cout << "Done testing tstOpacity on " << C4::node() << endl;
+    
     C4::Finalize();
 }   
 
 //---------------------------------------------------------------------------//
-//                              end of tstOpacity.cc
+//                        end of tstOpacity.cc
 //---------------------------------------------------------------------------//

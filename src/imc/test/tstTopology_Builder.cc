@@ -2,13 +2,14 @@
 /*!
  * \file   imc/test/tstTopology_Builder.cc
  * \author Thomas M. Evans
- * \date   Tue Nov 30 10:29:48 1999
- * \brief  Topology_Builder class component test.
+ * \date   Wed Nov 14 17:12:55 2001
+ * \brief  Topology_Builder test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "imc_test.hh"
 #include "IMC_Test.hh"
 #include "../Topology_Builder.hh"
 #include "../Release.hh"
@@ -18,6 +19,7 @@
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
@@ -38,10 +40,8 @@ using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_dsxx::SP;
 
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_imc_test::fail(__LINE__);
-
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 // build and test a full replication Topology built by Topology_Builder
 
@@ -165,7 +165,6 @@ void DD_test()
 }
 
 //---------------------------------------------------------------------------//
-// main
 
 int main(int argc, char *argv[])
 {
@@ -175,39 +174,56 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    if (C4::node() == 0)
-		cout << argv[0] << ": version " << rtt_imc::release() 
-		     << endl; 
+	    cout << argv[0] << ": version " << rtt_imc::release() 
+		 << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
-    // Topology_Builder is a serial node object builder
-    if (!C4::node())
+    try
     {
-	// full replication test
-	replication_test();
+	// >>> UNIT TESTS
+
+	// Topology_Builder is a serial node object builder
+	if (!C4::node())
+	{
+	    // full replication test
+	    replication_test();
 	
-	// full DD test
-	DD_test();
+	    // full DD test
+	    DD_test();
+	}
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "********************************************" << endl; 
-    if (passed) 
+    catch (rtt_dsxx::assertion &ass)
     {
-        cout << "**** Topology_Builder Self Test: PASSED on " 
-	     << C4::node() << endl;
+	cout << "While testing tstTopology_Builder, " << ass.what()
+	     << endl;
+	C4::Finalize();
+	return 1;
     }
-    cout <<     "********************************************" << endl;
-    cout << endl;
 
-    cout << "Done testing Topology_Builder on node: " << C4::node() << endl;
+    {
+	C4::HTSyncSpinLock slock;
 
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_imc_test::passed) 
+	{
+	    cout << "**** tstTopology_Builder Test: PASSED on" 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
+    }
+    
+    C4::gsync();
+
+    cout << "Done testing tstTopology_Builder on " << C4::node() << endl;
+    
     C4::Finalize();
-}
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstTopology_Builder.cc
+//                        end of tstTopology_Builder.cc
 //---------------------------------------------------------------------------//
