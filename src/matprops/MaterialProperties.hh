@@ -79,6 +79,9 @@ namespace rtt_matprops
      virtual void getSigmaAbsorption(int groupNo, ccsf &results) const = 0;
      virtual void getSigmaAbsorption(int groupNo, fcdsf &results) const = 0;
      
+     virtual void getSigmaScattering(int groupNo, ccsf &results) const = 0;
+     virtual void getSigmaScattering(int groupNo, fcdsf &results) const = 0;
+     
      virtual void getSigmaEmission(int groupNo, ccsf &results) const = 0;
      virtual void getSigmaEmission(int groupNo, fcdsf &results) const = 0;
 
