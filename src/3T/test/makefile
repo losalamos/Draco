@@ -39,9 +39,14 @@ endif
 objs	= $(srcs:%.cc=$(env)/%.o) \
 		$(ptcc_files:.%_$(env).cc=$(env)/%.o)
 
-default: main_$(env)
+default: main
 
-main_$(env) : deps $(objs) \
+main: deps main_$(env)
+	@echo 
+	@echo "main target has been built"
+	@echo 
+
+main_$(env) : $(objs) \
 	$(dep_lib3T) $(dep_libmesh) $(dep_libgeom) $(dep_liblinalg) \
 	$(dep_libutil) $(dep_libspdf) $(dep_libnml) $(dep_libc4) $(dep_libds++)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
