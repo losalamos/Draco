@@ -26,6 +26,7 @@
 //  4)  3-17-98 : because of a dumb-ass oversight on my part, we don't need
 //                a transform for 2D XY, it has been removed
 //  5)   5-5-98 : added sample_pos virtual function
+//  6)  6-10-98 : added sample_pos_on_face virtual function
 // 
 //===========================================================================//
 
@@ -57,6 +58,9 @@ public:
     virtual string get_Coord() const { string c = "xy"; return c; }
     inline virtual vector<double> sample_pos(string, vector<double>,
 					     vector<double>, Sprng &) const;
+    inline virtual vector<double> sample_pos_on_face(string, vector<double>,
+						     vector<double>, int, 
+						     Sprng &) const;
 	     
   // End_Verbatim 
   // End_Doc 
@@ -84,6 +88,52 @@ XYCoord_sys::sample_pos(string dist, vector<double> min, vector<double> max,
 	if (dist == "uniform")
 	    r[d] = (max[d] - min[d]) * random.ran() + min[d];
       // add others as needed
+    }
+
+  // return assigned array
+    return r;
+}
+
+
+//---------------------------------------------------------------------------//
+// sample the position on an XY face
+
+inline vector<double> 
+XYCoord_sys::sample_pos_on_face(string dist, vector<double> min, 
+				vector<double> max, int face, 
+				Sprng &random) const
+{
+  // make return vector
+    vector<double> r(2);
+
+  // some assertions
+    Check (min.size() == 2);
+    Check (max.size() == 2);
+    Check (face >= 1 && face <= 4);
+
+  // distribute uniformly over face
+    if (dist == "uniform")
+    {
+	if (face == 1)
+	{
+	    r[0] = min[0];
+	    r[1] = (max[1] - min[1]) * random.ran() + min[1];
+	}
+	else if (face == 2)
+	{
+	    r[0] = max[0];
+	    r[1] = (max[1] - min[1]) * random.ran() + min[1];
+	}
+	else if (face == 3)
+	{
+	    r[0] = (max[0] - min[0]) * random.ran() + min[0];
+	    r[1] = min[1];
+	}
+	else if (face == 4)
+	{
+	    r[0] = (max[0] - min[0]) * random.ran() + min[0];
+	    r[1] = max[1];
+	}
     }
 
   // return assigned array

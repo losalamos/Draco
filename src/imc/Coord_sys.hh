@@ -71,6 +71,10 @@ public:
     virtual vector<double> sample_dir(string, Sprng &) const;
     virtual void calc_omega(double, double, vector<double> &) const;
 
+    virtual vector<double> sample_pos_on_face(string, vector<double>, 
+					      vector<double>, int,
+					      Sprng &) const = 0;
+
   // End_Verbatim 
   // End_Doc 
 };

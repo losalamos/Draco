@@ -23,6 +23,7 @@
 //                they are the same for XY and XYZ transport
 //  3)  3-16-98 : reserve calc_normal function for later if need be
 //  4)   5-5-98 : added sample_pos virtual function
+//  5)  6-10-98 : added sample_pos_on_face virtual function
 // 
 //===========================================================================//
 
@@ -53,6 +54,10 @@ public:
     virtual string get_Coord() const { string c = "xyz"; return c; }
     inline virtual vector<double> sample_pos(string, vector<double>,
 					     vector<double>, Sprng &) const;
+    inline virtual vector<double> sample_pos_on_face(string, vector<double>,
+						     vector<double>, int, 
+						     Sprng &) const;
+	     
 	     
   // End_Verbatim 
   // End_Doc 
@@ -86,6 +91,67 @@ XYZCoord_sys::sample_pos(string dist, vector<double> min, vector<double> max,
     return r;
 }
 
+
+//---------------------------------------------------------------------------//
+// sample the position on an XYZ face
+
+inline vector<double> 
+XYZCoord_sys::sample_pos_on_face(string dist, vector<double> min, 
+				 vector<double> max, int face, 
+				 Sprng &random) const
+{
+  // make return vector
+    vector<double> r(3);
+
+  // some assertions
+    Check (min.size() == 3);
+    Check (max.size() == 3);
+    Check (face >= 1 && face <= 6);
+
+  // distribute uniformly over face
+    if (dist == "uniform")
+    {
+	if (face == 1)
+	{
+	    r[0] = min[0];
+	    r[1] = (max[1] - min[1]) * random.ran() + min[1];
+	    r[2] = (max[2] - min[2]) * random.ran() + min[2];
+	}
+	else if (face == 2)
+	{
+	    r[0] = max[0];
+	    r[1] = (max[1] - min[1]) * random.ran() + min[1];
+	    r[2] = (max[2] - min[2]) * random.ran() + min[2];
+	}
+	else if (face == 3)
+	{
+	    r[0] = (max[0] - min[0]) * random.ran() + min[0];
+	    r[1] = min[1];
+	    r[2] = (max[2] - min[2]) * random.ran() + min[2];
+	}
+	else if (face == 4)
+	{
+	    r[0] = (max[0] - min[0]) * random.ran() + min[0];
+	    r[1] = max[1];
+	    r[2] = (max[2] - min[2]) * random.ran() + min[2];
+	}
+	else if (face == 5)
+	{
+	    r[0] = (max[0] - min[0]) * random.ran() + min[0];
+	    r[1] = (max[1] - min[1]) * random.ran() + min[1];
+	    r[2] = min[2];
+	}
+	else if (face == 6)
+	{
+	    r[0] = (max[0] - min[0]) * random.ran() + min[0];
+	    r[1] = (max[1] - min[1]) * random.ran() + min[1];
+	    r[2] = max[2];
+	}
+    }
+
+  // return assigned array
+    return r;
+}
 CSPACE
 
 #endif                          // __imc_XYZCoord_sys_hh__
