@@ -103,6 +103,7 @@
 ;; Buffer management
 
 (define-key global-map [(f7)]               'rtt-save-and-kill)
+(define-key global-map [(shift f7)]         'delete-window)
 (define-key global-map [(control f7)]       'kill-this-buffer)
 (define-key global-map [(f8)]               'rtt-previous-buffer)
 (define-key global-map [(control f8)]       'rtt-find-companion-file)
