@@ -35,7 +35,9 @@ bool passed = true;
 // BT = builder type (OS_Builder)
 // MT = mesh type (OS_Mesh)
 
+//---------------------------------------------------------------------------//
 // cell-centered scalar fields - basic test of functionality
+
 template<class MT>
 void test_CCSF(SP<MT> mesh)
 {
@@ -85,7 +87,46 @@ void test_CCSF(SP<MT> mesh)
     }
 }
 
+//---------------------------------------------------------------------------//
+// cell-centered vector fields - basic test of functionality
+
+template<class MT>
+void test_CCVF(SP<MT> mesh)
+{
+    typename MT::CCVF<double> field(mesh);
+    if (field.empty())             ITFAILS;
+    if (field.size() != 2)         ITFAILS;
+    if (field.get_Mesh() != *mesh) ITFAILS;
+
+    // fill up the field
+    typename MT::CCSF<double>::iterator itor;
+    double value = 10;
+    for (int i = 1; i <= field.size(); i++)
+    {
+	if (field.size(i) != mesh->num_cells()) ITFAILS;
+
+	for (itor = field.begin(i); itor != field.end(i); itor++)
+	    *itor = value * i;
+    }
+
+    // check the field
+    for (int i = 1; i <= field.size(); i++)
+	for (int j = 1; j <= field.size(i); j++)
+	    if (field(i,j) != value * i) ITFAILS;
+
+    // check an algorithm
+    field(1, 3) = 12;
+    typename MT::CCSF<double>::iterator find_itor;
+    
+    find_itor = find(field.begin(1), field.end(1), 12);
+
+    if (*find_itor != 12)                ITFAILS;
+    if (find_itor != field.begin(1) + 2) ITFAILS;
+}
+
+//---------------------------------------------------------------------------//
 // cell-centered scalar fields - test of STL algortihm compatibility
+
 template<class MT>
 void test_CCSF_STL(SP<MT> mesh)
 {
@@ -118,6 +159,9 @@ void test_CCSF_STL(SP<MT> mesh)
 	if (*var != 10.0) ITFAILS;
 }
 
+//---------------------------------------------------------------------------//
+// main
+
 int main(int argc, char *argv[])
 {
     C4::Init(argc, argv);
@@ -147,6 +191,7 @@ int main(int argc, char *argv[])
 
     // run the tests
     test_CCSF(mesh);
+    test_CCVF(mesh);
     test_CCSF_STL(mesh);
 
     // status of test

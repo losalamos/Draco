@@ -1,3 +1,12 @@
+1999-12-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* Parallel_Data_Operator.*, /test/tstParallel_Data_Operator.*:
+	added a parallel data operations class for performing parallel
+	field operations based on a particular topology.
+
+	* test/tstTopology.cc: full testing for General_Topology and
+	Rep_Topology classes.
+
 1999-11-19  Thomas M. Evans  <tme@lanl.gov>
 
 	* Topology.*, test/tstTopology.cc: added a Topology class that

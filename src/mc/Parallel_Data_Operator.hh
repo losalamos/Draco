@@ -17,6 +17,8 @@
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
+#include <iterator>
+
 namespace rtt_mc
 {
  
@@ -42,6 +44,14 @@ namespace rtt_mc
  * This class also contains two equivalence-type functions to check data
  * across processor space.  These are intended to be used for DBC checking.
  */
+/*!
+ * \example mc/test/tstParallel_Data_Op.cc
+ *
+ * Example usages of the Parallel_Data_Operator class.  In particular, note
+ * how in functions test_mapping_DD() and test_mapping_replication() the
+ * nested operation classes are used to determine the mapping for various
+ * data fields in parallel topologies.  
+ */
 // revision history:
 // -----------------
 // 0) original
@@ -53,6 +63,11 @@ class Parallel_Data_Operator
   public:
     // some typedefs used in this class
     typedef dsxx::SP<Topology> SP_Topology;
+
+    // nested operations classes
+    struct Data_Replicated;
+    struct Data_Decomposed;
+    struct Data_Distributed;
 
   private:
     //! Smart pointer to a topology class.
@@ -69,6 +84,10 @@ class Parallel_Data_Operator
     // Do a global sum of a global mesh-sized field.
     template<class IT> void global_sum(IT begin, IT end);
     template<class T>  void global_sum(T *, T *);
+
+    // Map local data fields to global data fields.
+    template<class FT, class Op>
+    void local_to_global(FT &local, FT &global, Op);
 };
 
 //---------------------------------------------------------------------------//
@@ -156,6 +175,219 @@ void Parallel_Data_Operator::global_sum(T *begin, T *end)
     // do a gsum
     C4::gsum(begin, size);
 }
+
+//---------------------------------------------------------------------------//
+// LOCAL-TO-GLOBAL MAPPING OPERATIONS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Map local data fields to global data fields.
+
+ * This function takes a local field and maps the data to a global field
+ * across all processors.  The function is templated on field type (FT) and
+ * Op type.  The Op type provides a functor class (Data_Decomposed,
+ * Data_Distributed, Data_Replicated) that describes how data should be
+ * mapped across processors in certain topologies.  The following list
+ * describes the data combinations: \arg \b "replication"/Data_Replicated
+ * local_field is copied directly into the global_field, it is assumed that
+ * the local_fields are the same on each processor; \arg \b
+ * "replication"/Data_Decomposed the local_field is copied into the global
+ * field on each processor, the global_fields are subsequently summed across
+ * all processors; \arg \b "DD"/Data_Distributed local_fields are mapped into
+ * the appropriate cells on the global_field on each processor, the
+ * global_fields are then summed across all processors; \arg \b
+ * "DD/replication"/Data_Decomposed first the local_field data is mapped into
+ * local copies of the global_field on each processor, the global_fields are
+ * then summed-up across all processors; \arg \b
+ * "DD/replication"/Data_Replicated first the local_field data is mapped into
+ * local copies of the global_field on each processor, the global_fields are
+ * then mapped across all processors with replicated cells being assigned the
+ * proper value and non-replicated cells communicating its results to all
+ * other processors.
+ *
+ * The Parallel_Data_Operator knows the problem topology.  The user must
+ * specify an appropriate nested operations functor class when calling this
+ * function.  The choices are Parallel_Data_Operator::Data_Replicated,
+ * Parallel_Data_Operator::Data_Decomposed, and
+ * Parallel_Data_Operator::Data_Distributed.  See the examples for info.
+ *
+ * \param local_field local field data on a processor 
+ * \param global_field mutable global field data sized to the number of
+ * global cells
+ * \param mapping nested operations functor class (see above) 
+ */
+template<class FT, class Op>
+void Parallel_Data_Operator::local_to_global(FT &local_field,
+					     FT &global_field,
+					     Op mapping)
+{
+    // the global field should be equal to the number of global cells and
+    // exists on every processor
+    Require(global_field.size() == topology->num_cells());
+
+    // if topology is replication we do a simple copy
+    if (topology->get_parallel_scheme() == "replication")
+    {
+	// the local field and global field should be the same size for
+	// replication topologies
+	Check(local_field.size() == global_field.size());
+
+	// perform the local-global mapping depending upon the data-type
+	mapping(local_field, global_field, *this);
+    }
+    else if (topology->get_parallel_scheme() == "DD")
+    {
+	Check(local_field.size() == topology->num_cells(C4::node()));
+
+	// iterators for local field
+	typename FT::iterator begin  = local_field.begin();
+	typename FT::iterator end    = local_field.end();
+	
+	// iterators for global field
+	typename FT::iterator global_begin = global_field.begin();
+	typename FT::iterator global_end   = global_field.end();
+	
+	// iterators for reading/writing
+	typename FT::iterator itr;
+	typename FT::iterator global;
+
+	// local and global cell indices
+	int local_cell;
+	int global_cell;
+
+	// sweep through local cells and add them to the appropriate point in 
+	// the local processor version of the global field
+	for (itr = begin; itr != end; itr++)
+	{
+	    // calculate the local cell index
+	    local_cell = (itr - begin) + 1;
+	    Check(local_cell > 0 && local_cell <= local_field.size());
+
+	    // calculate the global cell index
+	    global_cell = topology->global_cell(local_cell);
+	    
+	    // calculate the global cell iterator position corresponding to
+	    // the global_cell -> we require a random access iterator type in 
+	    // order to perform iterator::difference_type + iterator addition
+	    global = (global_cell - 1) + global_begin;
+	    Check(global >= global_begin && global < global_end);
+
+	    // assign the local cell value to the global cell value
+	    *global = *itr;
+	}
+
+	// now do a summation over all processors of the local versions of
+	// the global fields
+	global_sum(global_begin, global_end);
+    }
+    else 
+    {
+	Insist(0, "Haven't done the rest yet!");
+    }
+}
+
+//---------------------------------------------------------------------------//
+// NESTED OPERATIONS CLASSES
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Nested operations functor class for data-replicated data.
+ */
+struct Parallel_Data_Operator::Data_Replicated
+{
+    // operator for performing data replicated operations in full replication 
+    // topoogies
+    template<class FT>
+    void operator()(FT &local_field, FT &global_field, 
+		    Parallel_Data_Operator data_op)
+    {	
+	Require (local_field.size() == global_field.size());
+
+	typename FT::iterator begin  = local_field.begin();
+	typename FT::iterator end    = local_field.end();
+	typename FT::iterator global = global_field.begin();
+
+	// on each processor assign local data into global data
+	for (typename FT::iterator itr = begin; itr != end; itr++)
+	{
+	    *global = *itr;
+	    global++;
+	}
+    }
+    
+    template<class FT>
+    void operator()(FT &local_field, FT &global_field, SP_Topology top, 
+		    Parallel_Data_Operator data_op)
+    {
+	// this will be a combination of data_distributed and data_replicated 
+	// operations
+
+	// first do a data distributed (full DD-like) operation locally
+
+	// second cannot do a blind global sum: for cells that only live on
+	// one processor, do a gsum(), for cells that are replicated, assign
+	// if they are on the processor, communicate to processors that don't 
+	// have the cell --> then check on the global_field
+    }
+};
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Nested operations functor class for data-decomposed data.
+ */
+struct Parallel_Data_Operator::Data_Decomposed
+{
+    // operator for performing data decomposed operations in full repliation
+    // topologies 
+    template<class FT>
+    void operator()(FT &local_field, FT &global_field, 
+		    Parallel_Data_Operator data_op)
+    {	
+	Require (local_field.size() == global_field.size());
+
+	typename FT::iterator local_begin  = local_field.begin();
+	typename FT::iterator local_end    = local_field.end();
+	
+	typename FT::iterator global       = global_field.begin();
+	typename FT::iterator global_begin = global_field.begin();
+	typename FT::iterator global_end   = global_field.end();
+
+	typename FT::iterator itr;
+
+	// on each processor assign local data into global data
+	for (itr = local_begin; itr != local_end; itr++) 
+	{
+	    *global = *itr;
+	    global++;
+	}
+
+	// sum up global data
+	data_op.global_sum(global_begin, global_end);
+    }
+
+    template<class FT>
+    void operator()(FT &local_field, FT &global_field, SP_Topology top, 
+		    Parallel_Data_Operator data_op)
+    {
+	// this will be a combination of data_distributed and data_decomposed 
+	// operations
+
+	// first do a data distributed (full DD-like) operation locally
+
+	// second do a blind global_sum
+    }
+};
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Nested operations functor class for data-distributed data.
+ */
+struct Parallel_Data_Operator::Data_Distributed
+{
+    template<class FT>
+    void operator()(FT &local, FT &global, Parallel_Data_Operator data_op)
+    {
+	// Do nothing
+    }
+};
 
 } // end namespace rtt_mc
 

@@ -11,6 +11,7 @@
 
 #include "MC_Test.hh"
 #include "../Rep_Topology.hh"
+#include "../General_Topology.hh"
 #include "../Parallel_Data_Operator.hh"
 #include "../OS_Builder.hh"
 #include "../OS_Mesh.hh"
@@ -28,6 +29,7 @@ using namespace std;
 
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
+using rtt_mc::General_Topology;
 using rtt_mc::Parallel_Data_Operator;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
@@ -285,6 +287,123 @@ void timing()
 }
 
 //---------------------------------------------------------------------------//
+// TEST LOCAL-GLOBAL MAPPING
+//---------------------------------------------------------------------------//
+
+void test_mapping_replication()
+{
+    // get an OS_Mesh (2D 6 cells)
+    SP<MC_Interface> interface(new MC_Interface());
+    OS_Builder builder(interface);
+    SP<OS_Mesh> mesh = builder.build_Mesh();
+    
+    // build a full replication topology
+    SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
+    
+    // build a Parallel_Data_Operator
+    Parallel_Data_Operator pdop(topology);
+
+    // make a MT::CCSF field
+    ccsf_int local(mesh);
+    ccsf_int global(mesh);
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	local(cell) = 10;
+
+    // Do a local_global mapping with data-replicated data
+    pdop.local_to_global(local, global,
+			 Parallel_Data_Operator::Data_Replicated()); 
+
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	if (global(cell) != local(cell)) ITFAILS;
+
+    // Do a local_global mapping with data-decomposed data
+    pdop.local_to_global(local, global,
+			 Parallel_Data_Operator::Data_Decomposed()); 
+
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	if (global(cell) != local(cell) * C4::nodes()) ITFAILS;
+
+    // check local data
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	if (local(cell) != 10) ITFAILS;
+}
+
+void test_mapping_DD()
+{
+    // only perform this test on two processors
+    if (C4::nodes() != 2) 
+	return;
+
+    // get an OS_Mesh (2D 6 cells)
+    SP<MC_Interface> interface(new MC_Interface());
+    OS_Builder builder(interface);
+    SP<OS_Mesh> mesh = builder.build_Mesh();
+
+    // build a topology based on full DD
+    Topology::vf_int cpp(C4::nodes());
+    Topology::vf_int ppc(mesh->num_cells());
+    Topology::vf_int bc(C4::nodes());
+
+    // fill up cells per processor array
+    cpp[0].resize(3);
+    cpp[1].resize(3);
+
+    cpp[0][0] = 1;
+    cpp[0][1] = 2;
+    cpp[0][2] = 3;
+    cpp[1][0] = 4;
+    cpp[1][1] = 5;
+    cpp[1][2] = 6;
+
+    // fill up processor per cells array
+    for (int i = 0; i < ppc.size(); i++)
+	ppc[i].resize(1);
+
+    ppc[0][0] = 0;
+    ppc[1][0] = 0;
+    ppc[2][0] = 0;
+    ppc[3][0] = 1;
+    ppc[4][0] = 1;
+    ppc[5][0] = 1;
+
+    // fill up boundary cells array
+    bc[0].resize(3);
+    bc[1].resize(3);
+    
+    bc[0][0] = 4;
+    bc[0][1] = 5;
+    bc[0][2] = 6;   
+    bc[1][0] = 1;
+    bc[1][1] = 2;
+    bc[1][2] = 3;
+
+    // build topology
+    SP<Topology> topology(new General_Topology(cpp, ppc, bc, "DD")); 
+    
+    // build a Parallel_Data_Operator
+    Parallel_Data_Operator pdop(topology);
+
+    // make fields
+    vector<int> local(3, C4::node() + 1);
+    vector<int> global(6);
+    
+    pdop.local_to_global(local, global,
+			 Parallel_Data_Operator::Data_Distributed()); 
+
+    // check value of global data
+    if (global[0] != 1) ITFAILS;
+    if (global[1] != 1) ITFAILS;
+    if (global[2] != 1) ITFAILS;
+    if (global[3] != 2) ITFAILS;
+    if (global[4] != 2) ITFAILS;
+    if (global[5] != 2) ITFAILS;
+
+    // make sure local data unchanged
+    for (int i = 0; i < local.size(); i++)
+	if (local[i] != C4::node() + 1) ITFAILS;
+}
+
+//---------------------------------------------------------------------------//
 // MAIN
 //---------------------------------------------------------------------------//
 
@@ -315,6 +434,10 @@ int main(int argc, char *argv[])
     test_equivalence(10, 11);           // int
     test_equivalence(10.0001, 11.0001); // double
     test_equivalence(10.0001, 10.0002); // double
+
+    // test local-global cell mapping
+    test_mapping_replication();
+    test_mapping_DD();
 
     // status of test
     cout << endl;

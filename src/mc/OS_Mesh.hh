@@ -54,7 +54,8 @@
 //                vector<int> that contains the neighbors of a cell.
 // 16) 29-NOV-99: added full_Mesh() function that returns the value of
 //                submesh, used for determining whether a mesh is a master
-//                (global) mesh or some sort of decomposed mesh
+//                (global) mesh or some sort of decomposed 
+// 17) 20-DEC-99: added STL random access iterator functionality to CCVF
 // 
 //===========================================================================//
 
@@ -593,8 +594,18 @@ inline OS_Mesh::CCSF<T>::CCSF(SP<OS_Mesh> mesh_, const vector<T> &array)
 template<class T>
 class OS_Mesh::CCVF
 {
+  public:
+    // STL style typedefs
+    typedef T value_type;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef typename std::vector<T>::pointer pointer;
+    typedef typename std::vector<T>::const_pointer const_pointer;
+    typedef typename std::vector<T>::iterator iterator;
+    typedef typename std::vector<T>::const_iterator const_iterator;
+    typedef typename std::vector<T>::size_type size_type;
+    
   private:
-
     // SP back to OS_Mesh
     SP<OS_Mesh> mesh;
     // 2-D field vector, (dimension, num_cells)
@@ -616,6 +627,22 @@ class OS_Mesh::CCVF
 
     // getting a CC vector
     inline vector<T> operator()(int) const;
+
+    // STL style functions
+    iterator begin() { return data.begin(); }
+    const_iterator begin() const { return data.begin(); }
+    inline iterator begin(int i);
+    inline const_iterator begin(int i) const;
+    
+    iterator end() { return data.end(); }
+    const_iterator end() const { return data.end();}
+    inline iterator end(int i);
+    inline const_iterator end(int i) const;
+    
+    size_type size() const { return data.size(); }
+    bool empty() const { return data.empty(); }
+    inline size_type size(int i) const;
+    inline bool empty(int i) const;
 }; 
 
 //---------------------------------------------------------------------------//
@@ -683,6 +710,52 @@ inline vector<T> OS_Mesh::CCVF<T>::operator()(int cell) const
     Ensure (x.size() == data.size());
     return x;
 } 
+
+//---------------------------------------------------------------------------//
+// STL style functionality for CCVF fields
+
+template<class T>
+inline OS_Mesh::CCVF<T>::iterator OS_Mesh::CCVF<T>::begin(int i)
+{
+    Require(i > 0 && i <= data.size());
+    return data[i-1].begin();
+}
+
+template<class T>
+inline OS_Mesh::CCVF<T>::const_iterator OS_Mesh::CCVF<T>::begin(int i) const
+{
+    Require(i > 0 && i <= data.size());
+    return data[i-1].begin();
+}
+
+template<class T>
+inline OS_Mesh::CCVF<T>::iterator OS_Mesh::CCVF<T>::end(int i)
+{
+    Require(i > 0 && i <= data.size());
+    return data[i-1].end();
+}
+
+template<class T>
+inline OS_Mesh::CCVF<T>::const_iterator OS_Mesh::CCVF<T>::end(int i) const
+{
+    Require(i > 0 && i <= data.size());
+    return data[i-1].end();
+}
+
+template<class T>
+inline OS_Mesh::CCVF<T>::size_type OS_Mesh::CCVF<T>::size(int i) const
+{
+    Require(i > 0 && i <= data.size());
+    return data[i-1].size();
+}
+
+
+template<class T>
+inline bool OS_Mesh::CCVF<T>::empty(int i) const
+{
+    Require(i > 0 && i <= data.size());
+    return data[i-1].empty();
+}
 
 } // end namespace rtt_mc
 
