@@ -1,9 +1,9 @@
 1999-09-08  Thomas M. Evans  <tme@lanl.gov>
 
-	* templates: added new comment characters for doxygen, I have
-	updated the templates package to templates-1_1_0.  Note, to
-	properly use these templates the elisp package rtt-elisp_v13 is
-	required. 
+	* *.cc, *.hh, *.t.hh: added new comment characters for doxygen, I
+ 	have updated the templates package to templates-1_1_0.  Note, to
+ 	properly use these templates the elisp package rtt-elisp_v13 is
+ 	required.
 	
 $Id$
 
