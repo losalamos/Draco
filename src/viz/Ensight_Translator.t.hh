@@ -345,9 +345,9 @@ void Ensight_Translator::ensight_dump(int icycle,
 
     // announce the graphics dump
     std::cout << ">>> ENSIGHT GRAPHICS DUMP: icycle= " << icycle 
-	      << " time= " << time << " dt= " << dt << endl
+	      << " time= " << time << " dt= " << dt << std::endl
 	      << "dir= " << ens_prefix << ", dump_number= " 
-	      << igrdump_num << endl;
+	      << igrdump_num << std::endl;
 
     // create the parts list
     vector<int>::const_iterator find_location_c;
