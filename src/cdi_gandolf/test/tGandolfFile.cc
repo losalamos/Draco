@@ -74,6 +74,7 @@ void gandolf_file_test()
     {
 	FAILMSG(GandError.what());
 	FAILMSG(GandError.errorSummary());
+	return;
     }
 
     // Test the new object to verify the constructor and accessors.
