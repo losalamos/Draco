@@ -21,7 +21,7 @@ AC_NEEDS_LIBS(ds++)
 AC_NEEDS_LIBS_TEST(UnitTestFrame c4)
 
 dnl AC_RUNTESTS(tCDI, serial)
-AC_RUNTESTS(tCDI, 1) 
+AC_RUNTESTS(tDummyOpacity tCDI, 1) 
 
 dnl DRACO SETUP
 AC_DRACO_ENV
