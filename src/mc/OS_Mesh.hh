@@ -448,8 +448,7 @@ OS_Mesh::sf_double OS_Mesh::sample_pos(int cell, rng_Sprng &random,
     }
 
     // use coord_sys to sample the location
-    sf_double r = coord->sample_pos(vmin, vmax, random, slope,
-					 center_pt);
+    sf_double r = coord->sample_pos(vmin, vmax, random, slope, center_pt);
 
     // return position vector
     return r;
