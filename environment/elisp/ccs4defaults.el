@@ -7,13 +7,17 @@
 ;;========================================
 ;; HOW TO USE:
 ;;
-;; In the file ${HOME}/.xemacs/init.el add the line:
+;; In the file ${HOME}/.xemacs/init.el add one of the following lines
+;; (use the line that has the correct path for your machine)
 ;;
-;; (setq ccs4-env-dir "/codes/radtran/vendors/environment/")
-;; (setq ccs4-elisp-dir (concat ccs4-env-dir "elisp/"))
-;; (if (file-accessible-directory-p ccs4-elisp-dir)
-;;     (setq load-path (cons ccs4-elisp-dir load-path)))
-;; (require 'ccs4defaults)
+;; CCS2/4 Linux:
+;; (load-library "/codes/radtran/vendors/environment/elisp/ccs4defaults.el")
+;;
+;; ICN Machines: 
+;; (load-library "/usr/projects/draco/environment/elisp/ccs4defaults.el")
+;;
+;; Use personal checkout of Draco:
+;; (load-library "/path/to/draco/environment/elisp/ccs4defaults.el")
 ;;
 ;; NOTE: ALL defvar values may be overriden in users's init.el.
 ;;========================================
@@ -23,9 +27,49 @@
 ;; ========================================
 
 (defvar my-home-dir (concat (getenv "HOME") "/"))
-(defvar my-elisp-dir (concat my-home-dir ".xemacs/"))
-(defvar my-templates-dir (concat my-elisp-dir "templates/"))
-(defvar my-info-dir (concat my-elisp-dir "info/"))
+(defvar ccs4-env-dirs
+      (list (concat my-home-dir "draco/environment/")
+	    (concat my-home-dir ".xemacs/")
+	    "/usr/projects/draco/environment/"
+	    "/codes/radtran/vendors/environment/" )
+"\nList of directories that will be prepended to the load-path
+if they exist.  The directories <dir>/elisp will also be 
+examined and prepended to the the load-path if they exist.
+\nAdd to this list by using the following command in personal 
+elisp files:
+\n\t(setq ccs4-env-dirs (cons \"/path/to/extra/dir/\"))")
+
+;; Update load path using ccs4-env-dirs. Also, set ccs4-elisp-dir
+(let ((dirlist ccs4-env-dirs))
+  (progn
+    ;; process least-imporant directories first.  This ensures that
+    ;; the first directory in the list "ccs4-env-dirs" become the
+    ;; first directory in the load-path.
+    (setq dirlist (reverse dirlist))
+    ;; Loop over all directories in the list provided.  Add valid
+    ;; elisp directories to the load path (prepend).
+    (while dirlist
+      (setq ldir (car dirlist))
+      (if (file-accessible-directory-p ldir)
+	  (setq load-path (cons ldir load-path)))
+      (if (file-accessible-directory-p (concat ldir "elisp/"))
+	  (setq load-path (cons (concat ldir "elisp/") load-path)))
+      ;; If we find the ccs4defauls.el file in this directory then set
+      ;; this directory to be the ccs4-elisp-dir
+      (if (file-readable-p (concat ldir "elisp/ccs4defaults.el"))
+	  (progn	
+	    (setq ccs4-env-dir ldir)
+	    (setq ccs4-elisp-dir (concat ldir "elisp/"))
+	    (setq ccs4-templates-dir (concat ldir "templates/"))
+	    ))
+      ;; Set extra Info paths:
+      (if (file-accessible-directory-p (concat ldir "info/"))
+	  (setq Info-directory-list (cons (concat ldir "info/")
+					  Info-directory-list )))
+		
+      ;; remove ldir from dirlist and continue the while-loop.
+      (setq dirlist (cdr-safe dirlist)))
+    ))
 
 ;; Default items for setup
 ;; To override these defaults add code to ~/.xemacs/init.el that has
@@ -90,6 +134,11 @@ Default key bindings are:
    - C-c d m will insert a blank multiline Doxygen comment.
    - C-c d s will insert a blank singleline Doxygen comment.")
 
+;; if we can't find doxymacs.el then turn this mode off.
+(if (file-installed-p "doxymacs.el")
+    (setq want-doxymacs-mode t)
+  (setq want-doxymacs-mode nil))
+
 ; fonts
 (defvar want-rtt-font-lock-keywords t
 "\nIf non-nil, the default set of keywords used by font-lock
@@ -145,16 +194,6 @@ will be overridden for some modes\n
 "\nDirectory containing source code templates that are to be
 used with the Draco elisp code (RTT Menu).")
 
-;; Add CCS-4 xemacs directories to load path
-;; Assumes that ccs4-elisp-dir is valid
-
-(setq load-path (cons ccs4-elisp-dir load-path))
-(defvar Info-directory-list my-info-dir)
-
-(if (not (file-accessible-directory-p my-templates-dir))
-    (if (file-accessible-directory-p ccs4-templates-dir)
-	(setq my-templates-dir ccs4-templates-dir)))
-
 ;; Define a verbose load-library function
 ;; ========================================
 
@@ -172,7 +211,7 @@ and continue."
 
 (cond ((string-match "XEmacs\\|Lucid" emacs-version)
 ; load tme's settings first then over ride some of them with my own.
-; all of these files live in my-elisp-dir
+; all of these files live in ccs4-elisp-dir
 
        ;; Draco setup
        (if (file-accessible-directory-p ccs4-elisp-dir)
