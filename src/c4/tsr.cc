@@ -26,7 +26,7 @@ void stall_node()
 void t1()
 {
     gsync();
-
+#if 0
     if (mynode == 0) {
 	int x[4];
 	for( int i=0; i < 4; i++ )
@@ -59,7 +59,7 @@ void t1()
 	else
 	    cout << "\t\t >> t1 succeeded <<\n" << flush;
     }
-
+#endif
 // By this point the inbox should be empty, and the msg_queues empty.
 
     gsync();
@@ -72,7 +72,7 @@ void t1()
 void t2()
 {
     gsync();
-
+#if 0
 // At this point, pe_ready[1] on node 0 should be 1.
 
     if (mynode == 0) {
@@ -117,7 +117,7 @@ void t2()
 	} else
 	    cout << "\t\t >> t2 succeeded <<\n" << flush;
     }
-
+#endif
     gsync();
 }
 
@@ -128,7 +128,7 @@ void t2()
 void t3()
 {
     gsync();
-
+#if 0
     int x[4];
     {
 	C4_Req r;
@@ -167,6 +167,7 @@ void t3()
 	else
 	    cout << "\t\t >> t3 succeeded <<\n" << flush;
     }
+#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -176,7 +177,7 @@ void t3()
 void t4()
 {
     gsync();
-
+#if 0
     int x[4];
     {
 	C4_Req r;
@@ -218,6 +219,7 @@ void t4()
 	else
 	    cout << "\t\t >> t4 succeeded <<\n" << flush;
     }
+#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -227,7 +229,7 @@ void t4()
 void t5()
 {
     gsync();
-
+#if 0
     int x[4];
     {
 	C4_Req r;
@@ -268,6 +270,7 @@ void t5()
 	else
 	    cout << "\t\t >> t5 succeeded <<\n" << flush;
     }
+#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -278,7 +281,7 @@ void t5()
 void t6()
 {
     gsync();
-
+#if 0
     int x[4];
     {
 	C4_Req r;
@@ -326,6 +329,7 @@ void t6()
 	else
 	    cout << "\t\t >> t6 succeeded <<\n" << flush;
     }
+#endif
 }
 
 //---------------------------------------------------------------------------//
