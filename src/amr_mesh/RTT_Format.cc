@@ -25,6 +25,12 @@
 // an area of lesser refinement if sorting has been performed, while a linear
 // search of all the nodes must be performed otherwise.
 // 7 June 99
+/*! 
+ * \file   amr_mesh/RTT_Format.cc
+ * \author Shawn Pautz/B.T. Adams
+ * \date   Mon Jun 7 10:33:26 1999
+ * \brief  Implementation file for RTT_Format library.
+ */
 //---------------------------------------------------------------------------//
 // @> 
 //---------------------------------------------------------------------------//
@@ -60,7 +66,17 @@ using std::greater;
 
 namespace rtt_format
 {
-
+/*!
+ * \brief Constructs an RTT_Format class object and instantiates and executes
+ *        the readMesh and calculateConnectivity nested classes used to parse
+ *        the mesh data and determine the mesh connectivity, respectively. 
+ *        Accessor functions are provided for all of the remaining member 
+ *        classes to allow data retrieval.
+ * \param RTT_File Mesh file name.
+ * \param renumber Turns the option to reassign the node, side, and cell 
+ *        numbers based upon coordinates in ascending order (x, y, and then z)
+ *        on and off (defaults to no renumbering).
+ */
 RTT_Format::RTT_Format(const string & RTT_File, const bool & renumber)
 {
     if (C4::node() == 0)
@@ -70,12 +86,28 @@ RTT_Format::RTT_Format(const string & RTT_File, const bool & renumber)
     }
 }
 
+/*!
+ * \brief RTT_Format class private member function that instantiates a 
+ *        Connectivity class object, resulting in a call to this class's
+ *        calcAdjacentCells private member function to determine the mesh 
+ *        connectivity.
+ */
 void RTT_Format::calculateConnectivity()
 {
     spConnectivity = new Connectivity(dims, * spCellDefs, * spCells, 
 				      * spSides, * spNodes);
 }
 
+/*!
+ * \brief RTT_Format class private member function that instantiates the 
+ *        majority of the RTT_Format nested class objects via a call to the 
+ *        createMembers private member function and parses the mesh file data
+ *        via calls to the nested class "read" member functions.
+ * \param RTT_File Mesh file name.
+ * \param renumber Turns the option to reassign the node, side, and cell 
+ *        numbers based upon coordinates in ascending order (x, y, and then z)
+ *        on and off (defaults to no renumbering).
+ */
 void RTT_Format::readMesh(const string & RTT_File, const bool & renumber)
 {
     if (C4::node() == 0)
@@ -112,6 +144,11 @@ void RTT_Format::readMesh(const string & RTT_File, const bool & renumber)
     }
 }
 
+/*!
+ * \brief RTT_Format class private member function that is used to read and 
+ *        validate the magic cookie at the beginning of the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -121,6 +158,10 @@ void RTT_Format::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format class private member function that instantiates the 
+ *        majority of the RTT_Format nested class objects.
+ */
 void RTT_Format::createMembers()
 {
     spNodeFlags = new NodeFlags(dims);
@@ -138,6 +179,11 @@ void RTT_Format::createMembers()
     spCellData = new CellData(dims, * spNodes);
 }
 
+/*!
+ * \brief RTT_Format class private member function that is used to read the 
+ *        node, side, and cell flag blocks from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::readFlagBlocks(ifstream & meshfile)
 {
     spNodeFlags->readNodeFlags(meshfile);
@@ -145,6 +191,11 @@ void RTT_Format::readFlagBlocks(ifstream & meshfile)
     spCellFlags->readCellFlags(meshfile);
 }
 
+/*!
+ * \brief RTT_Format class private member function that is used to read the 
+ *        node, side, and cell data id blocks from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::readDataIDs(ifstream & meshfile)
 {
     spNodeDataIds->readDataIDs(meshfile);
@@ -152,6 +203,11 @@ void RTT_Format::readDataIDs(ifstream & meshfile)
     spCellDataIds->readDataIDs(meshfile);
 }
 
+/*!
+ * \brief RTT_Format class private member function used to read and validate 
+ *        the end_rtt_mesh keyword at the end of the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -162,6 +218,11 @@ void RTT_Format::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::Header class public member function that is used to 
+ *        parse the header data block from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Header::readHeader(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -169,6 +230,11 @@ void RTT_Format::Header::readHeader(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::Header private member function used to read and validate
+ *        the header block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Header::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -178,6 +244,11 @@ void RTT_Format::Header::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::Header private member function used to read and validate
+ *        the header block data from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Header::readData(ifstream & meshfile)
 {
     string dummyString;
@@ -217,6 +288,11 @@ void RTT_Format::Header::readData(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::Header private member function used to read and validate
+ *        the end_header block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Header::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -227,6 +303,14 @@ void RTT_Format::Header::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::Dims class public member function that is used to 
+ *        parse the dims (dimensions) data block from the mesh file.
+ * \param meshfile Mesh file name.
+ * \param renumber Turns the option to reassign the node, side, and cell 
+ *        numbers based upon coordinates in ascending order (x, y, and then z)
+ *        on and off (defaults to no renumbering).
+ */
 void RTT_Format::Dims::readDims(ifstream & meshfile, const bool & renumber_)
 {
     renumber = renumber_;
@@ -240,15 +324,27 @@ void RTT_Format::Dims::readDims(ifstream & meshfile, const bool & renumber_)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::Dims class private member function that is used to 
+ *        read and validate the dims (dimensions) block keyword from the 
+ *        mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Dims::readKeyword(ifstream & meshfile)
 {
     string dummyString;
 
     meshfile >> dummyString;
-    Insist(dummyString == "dims", "Invalid mesh file: Dimension block missing");
+    Insist(dummyString == "dims","Invalid mesh file: Dimension block missing");
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::Dims class private member function that is used to 
+ *        read and validate the dims (dimensions) coordinate and time units
+ *        from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Dims::readUnits(ifstream & meshfile)
 {
     string dummyString;
@@ -264,6 +360,12 @@ void RTT_Format::Dims::readUnits(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::Dims class private member function that is used to 
+ *        read and validate the dims (dimensions) cell definition data 
+ *        from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Dims::readCellDefs(ifstream & meshfile)
 {
     string dummyString;
@@ -289,6 +391,12 @@ void RTT_Format::Dims::readCellDefs(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::Dims class private member function that is used to 
+ *        read and validate the dims (dimensions) spatial and topological 
+ *        dimension data from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Dims::readDimensions(ifstream & meshfile)
 {
     string dummyString;
@@ -304,6 +412,11 @@ void RTT_Format::Dims::readDimensions(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::Dims class private member function that is used to 
+ *        read and validate the dims (dimensions) node data from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Dims::readNodes(ifstream & meshfile)
 {
     string dummyString;
@@ -333,6 +446,11 @@ void RTT_Format::Dims::readNodes(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::Dims class private member function that is used to 
+ *        read and validate the dims (dimensions) side data from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Dims::readSides(ifstream & meshfile)
 {
     string dummyString;
@@ -379,6 +497,11 @@ void RTT_Format::Dims::readSides(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::Dims class private member function that is used to 
+ *        read and validate the dims (dimensions) cell data from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Dims::readCells(ifstream & meshfile)
 {
     string dummyString;
@@ -425,6 +548,11 @@ void RTT_Format::Dims::readCells(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::Dims private member function that is used to read
+ *        and validate the end_dims block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Dims::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -435,6 +563,11 @@ void RTT_Format::Dims::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::NodeFlags class public member function that is used to 
+ *        parse the node_flags data block from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeFlags::readNodeFlags(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -442,6 +575,11 @@ void RTT_Format::NodeFlags::readNodeFlags(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::NodeFlags class private member function that is used to 
+ *        read and validate the node_flags block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeFlags::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -452,6 +590,13 @@ void RTT_Format::NodeFlags::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::NodeFlags class private member function that is used to 
+ *        instantiate the needed Flags class objects and read and validate the 
+ *        node_flags block data from the mesh file via calls to the nested 
+ *        Flags class object readFlags public member function.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeFlags::readFlagTypes(ifstream & meshfile)
 {
     int flagTypeNum;
@@ -472,6 +617,11 @@ void RTT_Format::NodeFlags::readFlagTypes(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::NodeFlags class private member function used to read and
+ *        validate the end_node_flags block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeFlags::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -482,6 +632,11 @@ void RTT_Format::NodeFlags::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::SideFlags class public member function that is used to 
+ *        parse the side_flags data block from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideFlags::readSideFlags(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -489,6 +644,11 @@ void RTT_Format::SideFlags::readSideFlags(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::SideFlags class private member function that is used to 
+ *        read and validate the side_flags block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideFlags::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -499,6 +659,13 @@ void RTT_Format::SideFlags::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::SideFlags class private member function that is used to 
+ *        instantiate the needed Flags class objects and read and validate the 
+ *        side_flags block data from the mesh file via calls to the nested 
+ *        Flags class object readFlags public member function.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideFlags::readFlagTypes(ifstream & meshfile)
 {
     int flagTypeNum;
@@ -519,6 +686,12 @@ void RTT_Format::SideFlags::readFlagTypes(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::SideFlags class private member function that is used to 
+ *        read and validate the end_side_flags block keyword from the mesh 
+ *        file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideFlags::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -529,6 +702,11 @@ void RTT_Format::SideFlags::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::CellFlags class public member function that is used to 
+ *        parse the cell_flags data block from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellFlags::readCellFlags(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -536,6 +714,11 @@ void RTT_Format::CellFlags::readCellFlags(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::CellFlags class private member function that is used to 
+ *        read and validate the cell_flags block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellFlags::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -546,6 +729,14 @@ void RTT_Format::CellFlags::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+
+/*!
+ * \brief RTT_Format::CellFlags class private member function that is used to 
+ *        instantiate the needed Flags class objects and read and validate the 
+ *        cell_flags block data from the mesh file via calls to the nested 
+ *        Flags class object readFlags public member function.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellFlags::readFlagTypes(ifstream & meshfile)
 {
     int flagTypeNum;
@@ -566,6 +757,12 @@ void RTT_Format::CellFlags::readFlagTypes(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::CellFlags class private member function that is used to 
+ *        read and validate the end_cell_flags block keyword from the mesh 
+ *        file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellFlags::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -576,6 +773,12 @@ void RTT_Format::CellFlags::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::Flags class public member function that is used by the
+ *        NodeFlags, SideFlags, and CellFlags class objects to parse the flag
+ *        numbers and names from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Flags::readFlags(ifstream & meshfile)
 {
     string dummyString;
@@ -587,6 +790,11 @@ void RTT_Format::Flags::readFlags(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::NodeDataIDs class public member function that is used 
+ *        to parse the node_data_ids data block from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeDataIDs::readDataIDs(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -594,6 +802,12 @@ void RTT_Format::NodeDataIDs::readDataIDs(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::NodeDataIDs class private member function that is used
+ *        to read and validate the node_data_ids block keyword from the mesh 
+ *        file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeDataIDs::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -604,6 +818,12 @@ void RTT_Format::NodeDataIDs::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::NodeDataIDs class private member function that is used
+ *        to read and validate the node_data_ids block data from the mesh 
+ *        file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeDataIDs::readData(ifstream & meshfile)
 {
     int dataIDNum;
@@ -618,6 +838,12 @@ void RTT_Format::NodeDataIDs::readData(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::NodeDataIDs class private member function that is used
+ *        to read and validate the end_node_data_ids block keyword from the 
+ *        mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeDataIDs::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -628,6 +854,11 @@ void RTT_Format::NodeDataIDs::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::SideDataIDs class public member function that is used 
+ *        to parse the side_data_ids data block from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideDataIDs::readDataIDs(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -635,6 +866,12 @@ void RTT_Format::SideDataIDs::readDataIDs(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::SideDataIDs class private member function that is used
+ *        to read and validate the side_data_ids block keyword from the mesh 
+ *        file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideDataIDs::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -645,6 +882,12 @@ void RTT_Format::SideDataIDs::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::SideDataIDs class private member function that is used
+ *        to read and validate the side_data_ids block data from the mesh 
+ *        file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideDataIDs::readData(ifstream & meshfile)
 {
     int dataIDNum;
@@ -659,6 +902,12 @@ void RTT_Format::SideDataIDs::readData(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::SideDataIDs class private member function that is used 
+ *        to read and validate the end_side_data_ids block keyword from the 
+ *        mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideDataIDs::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -669,6 +918,11 @@ void RTT_Format::SideDataIDs::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::CellDataIDs class public member function that is used 
+ *        to parse the cell_data_ids data block from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellDataIDs::readDataIDs(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -676,6 +930,12 @@ void RTT_Format::CellDataIDs::readDataIDs(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::CellDataIDs class private member function that is used
+ *        to read and validate the cell_data_ids block keyword from the mesh 
+ *        file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellDataIDs::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -686,6 +946,12 @@ void RTT_Format::CellDataIDs::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::CellDataIDs class private member function that is used
+ *        to read and validate the cell_data_ids block data from the mesh 
+ *        file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellDataIDs::readData(ifstream & meshfile)
 {
     int dataIDNum;
@@ -700,6 +966,12 @@ void RTT_Format::CellDataIDs::readData(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::CellDataIDs class private member function that is used
+ *        to read and validate the end_cell_data_ids block keyword from the 
+ *        mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellDataIDs::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -710,6 +982,12 @@ void RTT_Format::CellDataIDs::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::CellDefs class public member function that is used 
+ *        to parse the cell_defs (cell definitions) data block from the mesh 
+ *        file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellDefs::readCellDefs(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -717,6 +995,12 @@ void RTT_Format::CellDefs::readCellDefs(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::CellDefs class private member function that is used
+ *        to read and validate the cell_defs block (cell definitions) keyword 
+ *        from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellDefs::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -727,6 +1011,19 @@ void RTT_Format::CellDefs::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+
+/*!
+ * \brief RTT_Format::CellDefs class private member function that is used to 
+ *        instantiate the needed CellDef class objects and read and validate 
+ *        the cell_defs (cell definitions) block data from the mesh file via 
+ *        calls to the nested CellDef class object readDef public member 
+ *        function. The CellDef class object sortData public member function
+ *        is also called to redefine the cells with the nodes and sides 
+ *        numbered in ascending order based upon their coordinates (x, y, and
+ *        then z) if this option has been selected in the RTT_Format class 
+ *        constructor.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellDefs::readDefs(ifstream & meshfile)
 {
     int cellDefNum;
@@ -748,6 +1045,14 @@ void RTT_Format::CellDefs::readDefs(ifstream & meshfile)
         sortData();
 }
 
+/*!
+ * \brief RTT_Format::CellDefs class private member function that is used to 
+ *        redefine the cells with the nodes and sides numbered in ascending 
+ *        order based upon their coordinates  (x, y, and then z) when this 
+ *        option is selected in the RTT_Format class constructor via calls to 
+ *        the nested CellDef class sortData private member function.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellDefs::sortData()
 {
     for (int i = 0; i < dims.get_ncell_defs(); ++i)
@@ -756,6 +1061,12 @@ void RTT_Format::CellDefs::sortData()
     }
 }
 
+/*!
+ * \brief RTT_Format::CellDefs class private member function that is used 
+ *        to read and validate the end_cell_defs block keyword from the mesh 
+ *        file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellDefs::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -766,6 +1077,13 @@ void RTT_Format::CellDefs::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::CellDef class public member function that is used by 
+ *        the CellDefs class objects to parse the number of nodes and sides
+ *        per cell, the side type indices, and the nodes for each side from 
+ *        the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellDef::readDef(ifstream & meshfile)
 {
     string dummyString;
@@ -806,6 +1124,16 @@ void RTT_Format::CellDef::readDef(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::CellDef class public member function that is used to 
+ *        redefine the cells with the nodes and sides numbered in ascending 
+ *        order based upon their coordinates (x, y, and then z) when this 
+ *        option is selected in the RTT_Format class constructor. Note that 
+ *        this cell definition scheme has the distinct advantage that the 
+ *        nodes are inherently in increasing integer order. This eliminates
+ *        any need to derive a coordinate transform from the standard cell
+ *        definitions.
+ */
 void RTT_Format::CellDef::sortData()
 {
     // The cell definitions built into ICEM do not correspond to our node
@@ -814,7 +1142,7 @@ void RTT_Format::CellDef::sortData()
     // takes heavy advantage of the C++ rules of truncating integer division.
     // Note that our cell definition scheme has the distinct advantage that
     // the nodes are inherently in increasing integer order. This eliminates
-    // any need to define a coordinate transform from the user-input cell
+    // any need to derive a coordinate transform from the user-input cell
     // definitions.  
 
     ordered_sides.resize(nsides);
@@ -1017,6 +1345,11 @@ void RTT_Format::CellDef::sortData()
     }
 }
 
+/*!
+ * \brief RTT_Format::Nodes class public member function that is used to
+ *        parse the nodes block data from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Nodes::readNodes(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -1024,6 +1357,11 @@ void RTT_Format::Nodes::readNodes(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::Nodes class private member function that is used to read
+ *        and validate the nodes block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Nodes::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1034,6 +1372,14 @@ void RTT_Format::Nodes::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::Nodes class private member function that is used to read
+ *        and validate the nodes block data from the mesh file. The sortData 
+ *        private member function is also called to renumber the nodes in 
+ *        ascending order based upon their coordinates (x, y, and then z) if 
+ *        this option has been selected in the RTT_Format class constructor.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Nodes::readData(ifstream & meshfile)
 {
     string dummyString;
@@ -1063,8 +1409,17 @@ void RTT_Format::Nodes::readData(ifstream & meshfile)
         sortData();
 }
 
+/*!
+ * \brief RTT_Format::Nodes class private member function that is used to 
+ *        compare real coordinate values for equality while considering
+ *        machine precision. 
+ * \param low_val Coordinates that are assumed to be at the lower value.
+ * \param high_val Coordinates that are assumed to be at the higher value.
+ * \return high_val > low_val && 
+ *         abs(low_val- high_val) > epsilon (desired precision).
+ */
 bool RTT_Format::Nodes::sortXYZ(const vector<double> & low_val, 
-				  const vector<double> & high_val)
+				const vector<double> & high_val)
 {
     // require agreement to six significant figures for equality. Note that
     // Shawn's tet mesh only agrees to four significant digits.
@@ -1097,6 +1452,12 @@ bool RTT_Format::Nodes::sortXYZ(const vector<double> & low_val,
     return sorted;
 }
 
+/*!
+ * \brief RTT_Format::Nodes class private member function that is used to 
+ *        renumber the nodes in ascending order based upon their coordinates
+ *        (x, y, and then z) when this option has been selected in the 
+ *        RTT_Format class constructor.
+ */
 void RTT_Format::Nodes::sortData()
 {
     vector<vector<double> > sort_vector(dims.get_nnodes(),dims.get_ndim());
@@ -1186,6 +1547,11 @@ void RTT_Format::Nodes::sortData()
     temp_flags.resize(0);
 }
 
+/*!
+ * \brief RTT_Format::Nodes class private member function that is used to read
+ *        and validate the end_nodes block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Nodes::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1196,6 +1562,12 @@ void RTT_Format::Nodes::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::Nodes public member function that is used to determine 
+ *        a node number based upon the specified coordinate values.
+ * \param node_coords Coordinate values.
+ * \return The node number.
+ */
 int RTT_Format::Nodes::get_node(vector<double> node_coords) const
 {
     const double EPSILON = 1.0e-06;
@@ -1252,6 +1624,11 @@ int RTT_Format::Nodes::get_node(vector<double> node_coords) const
     return node_number;
 }
 
+/*!
+ * \brief RTT_Format::Sides class public member function that is used to
+ *        parse the sides block data from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Sides::readSides(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -1259,6 +1636,11 @@ void RTT_Format::Sides::readSides(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::Sides class private member function that is used to read
+ *        and validate the sides block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Sides::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1269,6 +1651,14 @@ void RTT_Format::Sides::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::Sides class private member function that is used to read
+ *        and validate the sides block data from the mesh file. The sortData 
+ *        private member function is also called to renumber the sides in 
+ *        ascending order based upon their node numbers if this option has 
+ *        been selected in the RTT_Format class constructor.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Sides::readData(ifstream & meshfile)
 {
     string dummyString;
@@ -1302,6 +1692,14 @@ void RTT_Format::Sides::readData(ifstream & meshfile)
         sortData();
 }
 
+
+/*!
+ * \brief RTT_Format::Sides class private member function that is used to 
+ *        compare two integer vectors for equality. 
+ * \param low_val Integer vector that is assumed to be the lower value.
+ * \param high_val Integer vector that is assumed to be the higher value.
+ * \return high_val > low_val.
+ */
 bool RTT_Format::Sides::sortXYZ(vector<int> low_val, vector<int> high_val)
 {
     // compare two integer vectors to determine which contains the lowest 
@@ -1313,6 +1711,12 @@ bool RTT_Format::Sides::sortXYZ(vector<int> low_val, vector<int> high_val)
     return (low_val < high_val);
 }
 
+/*!
+ * \brief RTT_Format::Sides class private member function that is used to 
+ *        renumber the sides in ascending order based upon their node numbers
+ *        when this option has been selected in the RTT_Format class 
+ *        constructor.
+ */
 void RTT_Format::Sides::sortData()
 {
     vector<vector<int> > sort_vector(dims.get_nsides(),1);
@@ -1405,6 +1809,11 @@ void RTT_Format::Sides::sortData()
     temp_flags.resize(0);
 }
 
+/*!
+ * \brief RTT_Format::Sides class private member function that is used to read
+ *        and validate the end_sides block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Sides::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1415,6 +1824,11 @@ void RTT_Format::Sides::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::Cells class public member function that is used to
+ *        parse the cells block data from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Cells::readCells(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -1422,6 +1836,11 @@ void RTT_Format::Cells::readCells(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::Cells class private member function that is used to read
+ *        and validate the cells block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Cells::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1432,6 +1851,14 @@ void RTT_Format::Cells::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::Cells class private member function that is used to read
+ *        and validate the cells block data from the mesh file. The sortData 
+ *        private member function is also called to renumber the cells in 
+ *        ascending order based upon their node numbers if this option has 
+ *        been selected in the RTT_Format class constructor.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Cells::readData(ifstream & meshfile)
 {
     string dummyString;
@@ -1465,6 +1892,12 @@ void RTT_Format::Cells::readData(ifstream & meshfile)
         sortData();
 }
 
+/*!
+ * \brief RTT_Format::Cells class private member function that is used to 
+ *        renumber the cells in ascending order based upon their node numbers
+ *        when this option has been selected in the RTT_Format class 
+ *        constructor.
+ */
 void RTT_Format::Cells::sortData()
 {
     vector<vector<int> > sort_vector(dims.get_ncells(),1);
@@ -1559,6 +1992,11 @@ void RTT_Format::Cells::sortData()
     temp_flags.resize(0);
 }
 
+/*!
+ * \brief RTT_Format::Cells class private member function that is used to read
+ *        and validate the end_cells block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::Cells::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1569,6 +2007,15 @@ void RTT_Format::Cells::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::NodeData class public member function that is used to
+ *        parse the node data block data from the mesh file. Either the 
+ *        readData or the sortData private member function is called based 
+ *        upon the status of the flag designating that the nodes are to be 
+ *        renumbered in ascending order based upon their coordinates (x, y, 
+ *        and then z).
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeData::readNodeData(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -1582,6 +2029,11 @@ void RTT_Format::NodeData::readNodeData(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::NodeData class private member function that is used to 
+ *        read and validate the nodedat block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeData::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1592,6 +2044,11 @@ void RTT_Format::NodeData::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::NodeData class private member function that is used to 
+ *        read and validate the node data block data from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeData::readData(ifstream & meshfile)
 {
     string dummyString;
@@ -1608,6 +2065,13 @@ void RTT_Format::NodeData::readData(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::NodeData class private member function that is used to 
+ *        read and validate the node data block data from the mesh file and 
+ *        map the data into the new node numbering scheme that was invoked via
+ *        the RTT_Format class constructor.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeData::sortData(ifstream & meshfile)
 {
     string dummyString;
@@ -1624,6 +2088,11 @@ void RTT_Format::NodeData::sortData(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::NodeData class private member function that is used to 
+ *        read and validate the end_nodedat block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::NodeData::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1634,6 +2103,14 @@ void RTT_Format::NodeData::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::SideData class public member function that is used to
+ *        parse the side data block data from the mesh file. Either the 
+ *        readData or the sortData private member function is called based 
+ *        upon the status of the flag designating that the sides are to be 
+ *        renumbered in ascending order based upon their node numbers.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideData::readSideData(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -1647,6 +2124,11 @@ void RTT_Format::SideData::readSideData(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::SideData class private member function that is used to 
+ *        read and validate the sidedat block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideData::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1657,6 +2139,11 @@ void RTT_Format::SideData::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::SideData class private member function that is used to 
+ *        read and validate the side data block data from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideData::readData(ifstream & meshfile)
 {
     string dummyString;
@@ -1673,6 +2160,13 @@ void RTT_Format::SideData::readData(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::SideData class private member function that is used to 
+ *        read and validate the side data block data from the mesh file and 
+ *        map the data into the new side numbering scheme that was invoked via
+ *        the RTT_Format class constructor.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideData::sortData(ifstream & meshfile)
 {
     string dummyString;
@@ -1689,6 +2183,11 @@ void RTT_Format::SideData::sortData(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::SideData class private member function that is used to 
+ *        read and validate the end_sidedat block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::SideData::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1699,6 +2198,14 @@ void RTT_Format::SideData::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief RTT_Format::CellData class public member function that is used to
+ *        parse the cell data block data from the mesh file. Either the 
+ *        readData or the sortData private member function is called based 
+ *        upon the status of the flag designating that the cells are to be 
+ *        renumbered in ascending order based upon their node numbers.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellData::readCellData(ifstream & meshfile)
 {
     readKeyword(meshfile);
@@ -1712,6 +2219,11 @@ void RTT_Format::CellData::readCellData(ifstream & meshfile)
     readEndKeyword(meshfile);
 }
 
+/*!
+ * \brief RTT_Format::CellData class private member function that is used to 
+ *        read and validate the celldat block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellData::readKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1722,6 +2234,11 @@ void RTT_Format::CellData::readKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);
 }
 
+/*!
+ * \brief RTT_Format::CellData class private member function that is used to 
+ *        read and validate the cell data block data from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellData::readData(ifstream & meshfile)
 {
     string dummyString;
@@ -1738,6 +2255,13 @@ void RTT_Format::CellData::readData(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::CellData class private member function that is used to 
+ *        read and validate the cell data block data from the mesh file and 
+ *        map the data into the new cell numbering scheme that was invoked via
+ *        the RTT_Format class constructor.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellData::sortData(ifstream & meshfile)
 {
     string dummyString;
@@ -1754,6 +2278,11 @@ void RTT_Format::CellData::sortData(ifstream & meshfile)
     }
 }
 
+/*!
+ * \brief RTT_Format::CellData class private member function that is used to 
+ *        read and validate the end_celldat block keyword from the mesh file.
+ * \param meshfile Mesh file name.
+ */
 void RTT_Format::CellData::readEndKeyword(ifstream & meshfile)
 {
     string dummyString;
@@ -1764,6 +2293,16 @@ void RTT_Format::CellData::readEndKeyword(ifstream & meshfile)
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
+/*!
+ * \brief Constructs a Connectivity class object and calls the 
+ *        calcAdjacentCells private class member function to determine the 
+ *        mesh connectivity.
+ * \param dims_ RTT_Format Dims class object.
+ * \param cellDefs_ RTT_Format CellDefs nested class object.
+ * \param cells_ RTT_Format Cells nested class object.
+ * \param sides_ RTT_Format Sides nested class object.
+ * \param nodes_ RTT_Format Nodes nested class object.
+ */
 RTT_Format::Connectivity::Connectivity(const Dims & dims_, 
     const CellDefs & cellDefs_, const Cells & cells_, const Sides & sides_,
     const Nodes & nodes_)
@@ -1774,6 +2313,11 @@ RTT_Format::Connectivity::Connectivity(const Dims & dims_,
     calcAdjacentCells();
 }
 
+/*!
+ * \brief Determines the mesh connectivity using existing and accessible 
+ *        Dims, CellDefs, Nodes, Sides, and Cells RTT_Format nested class 
+ *        objects.
+ */
 void RTT_Format::Connectivity::calcAdjacentCells()
 {
     multimap<set<int>, int> faceCells;

@@ -2,6 +2,12 @@
 // RTT_Format.hh
 // Shawn Pautz (TychoMesh.cc original) / B.T. Adams (Extended to RTT_Format.hh)
 // 7 June 99
+/*! 
+ * \file   amr_mesh/RTT_Format.hh
+ * \author Shawn Pautz/B.T. Adams
+ * \date   Mon Jun 7 10:33:26 1999
+ * \brief  Header file for RTT_Format library.
+ */
 //---------------------------------------------------------------------------//
 // @> 
 //---------------------------------------------------------------------------//
@@ -26,13 +32,32 @@ using std::vector;
 using std::multimap;
 using dsxx::SP;
 
+/*!
+ * \brief RTT format namespace.
+ *
+ * Provides namespace protection for the Draco (RTT) format utilities used to
+ * parse mesh files in the \ref rtt_format_defined and connect the mesh.
+ *
+ *\sa The \ref rtt_format_overview page presents a summary of the capabilities
+ *    provided within the namespace.
+ */
 namespace rtt_format
 {
  
 //===========================================================================//
 // class RTT_Format - 
 //
-// Purpose : A generalized input routine to read an RTT Format mesh file.
+/*!
+ * \brief  A generalized input routine to parse an RTT Format mesh file and
+ *         determine the associated connectivity.
+ *
+ *\sa The RTT_Format class constructor automatically instantiates and executes
+ *    the readMesh and calculateConnectivity member classes used to parse the 
+ *    mesh data and determine the mesh connectivity, respectively. Accessor 
+ *    functions are provided for all of the remaining member classes to allow 
+ *    data retrieval. The \ref rtt_format_overview page presents a summary of 
+ *    the capabilities provided within the namespace.
+ */ 
 //
 // revision history:
 // -----------------
@@ -42,7 +67,10 @@ namespace rtt_format
 
 class RTT_Format 
 {
-
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and 
+ *        accessing the data contained in the header section of the mesh file.
+ */
     // NESTED CLASSES AND TYPEDEFS
 
   public:
@@ -80,6 +108,11 @@ class RTT_Format
 
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and 
+ *        accessing the data contained in the dimensions section of the mesh 
+ *        file.
+ */
     class Dims
     {
 	string coor_units;
@@ -175,6 +208,11 @@ class RTT_Format
 	      != std::find(cell_types.begin(), cell_types.end(), celltype); }
     };
 
+/*!
+ * \brief RTT_Format nested base class member that controls parsing, storing, 
+ *        and accessing the data contained in the node, side, and cell flag 
+ *        sections of the mesh file.
+ */
     class Flags
     {
 	int nflags;
@@ -200,6 +238,11 @@ class RTT_Format
         int getFlagSize() const {return nflags;}
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the node flags section of the mesh 
+ *        file.
+ */
     class NodeFlags
     {
 	const Dims & dims;
@@ -254,6 +297,11 @@ class RTT_Format
 	}
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the side flags section of the mesh 
+ *        file.
+ */
     class SideFlags
     {
 	const Dims & dims;
@@ -348,6 +396,11 @@ class RTT_Format
 	}
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the cell flags section of the mesh 
+ *        file.
+ */
     class CellFlags
     {
 	const Dims & dims;
@@ -460,7 +513,11 @@ class RTT_Format
 	    return rad_src;
 	}    
     };
-
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the node data ids section of the mesh 
+ *        file.
+ */
     class NodeDataIDs
     {
 	const Dims & dims;
@@ -495,6 +552,11 @@ class RTT_Format
 	}
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the side data ids section of the mesh 
+ *        file.
+ */
     class SideDataIDs
     {
 	const Dims & dims;
@@ -529,6 +591,11 @@ class RTT_Format
 	}
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the cell data ids section of the mesh 
+ *        file.
+ */
     class CellDataIDs
     {
 	const Dims & dims;
@@ -565,6 +632,11 @@ class RTT_Format
 
     class CellDefs;
 
+/*!
+ * \brief RTT_Format nested base class member that controls parsing, storing, 
+ *        and accessing the data contained in the cell definition section of 
+ *        the mesh file.
+ */
     class CellDef
     {
 	const CellDefs & cellDefs;
@@ -593,6 +665,11 @@ class RTT_Format
 	{ return ordered_sides[s]; }
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data contained in the cell definition section of the 
+ *        mesh file.
+ */
     class CellDefs
     {
 	const Dims & dims;
@@ -626,6 +703,10 @@ class RTT_Format
 
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the nodes section of the mesh file.
+ */
     class Nodes
     {
 	const NodeFlags & nodeFlags;
@@ -680,6 +761,10 @@ class RTT_Format
 	{ return sort_map[cell_numb];}
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the sides section of the mesh file.
+ */
     class Sides
     {
 	const SideFlags & sideFlags;
@@ -727,6 +812,10 @@ class RTT_Format
 	{ return sideFlags.get_surface_src_flag_number(); }
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the cells section of the mesh file.
+ */
     class Cells
     {
 	const CellFlags & cellFlags;
@@ -766,6 +855,11 @@ class RTT_Format
 	{ return flags(cell_numb,flag_numb); }
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the node data section of the mesh 
+ *        file.
+ */
     class NodeData
     {
 	const Dims & dims;
@@ -791,6 +885,11 @@ class RTT_Format
 	{ return data(node_numb,data_index); }
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the side data section of the mesh 
+ *        file.
+ */
     class SideData
     {
 	const Dims & dims;
@@ -816,6 +915,11 @@ class RTT_Format
 	{ return data(side_numb,data_index); }
     };
 
+/*!
+ * \brief RTT_Format nested class member that controls parsing, storing, and
+ *        accessing the data specific to the cell data section of the mesh 
+ *        file.
+ */
     class CellData
     {
 	const Dims & dims;
@@ -841,6 +945,10 @@ class RTT_Format
 	{ return data(cell_numb,data_index); }
     };
 
+/*!
+ * \brief RTT_Format nested class member that determines the mesh connectivity
+ *        from the input mesh file data.
+ */
     class Connectivity
     {
 	const Dims & dims;
@@ -951,180 +1059,648 @@ class RTT_Format
     // Constructors
     RTT_Format(const string & RTT_File, const bool & renumber);
 
+/*!
+ * \brief Destroys an RTT_Format class object
+ */
     // Destructors
     ~RTT_Format() {}
 
     // ACCESSORS
     // header data access
+/*!
+ * \brief Returns the version number read from the mesh file header.
+ * \return Mesh file version number.
+ */
     string get_header_version() const { return header.get_version(); }
+/*!
+ * \brief Returns the title read from the mesh file header.
+ * \return Mesh file title.
+ */
     string get_header_title() const { return header.get_title(); }
+/*!
+ * \brief Returns the date read from the mesh file header.
+ * \return Date the mesh file was generated.
+ */
     string get_header_date() const { return header.get_date(); }
+/*!
+ * \brief Returns the cycle number read from the mesh file header.
+ * \return Cycle number associated with the data in the mesh file.
+ */
     int get_header_cycle() const { return header.get_cycle(); }
+/*!
+ * \brief Returns the problem time read from the mesh file header.
+ * \return Problem time associated with the data in the mesh file.
+ */
     double get_header_time() const { return header.get_time(); }
+/*!
+ * \brief Returns the number of comment lines read from the mesh file header.
+ * \return The number of comment lines contained in the mesh file.
+ */
     int get_header_ncomments() const { return header.get_ncomments(); }	
+/*!
+ * \brief Returns the specified comment line read from the mesh file header.
+ * \param i Line number of the comment to be returned.
+ * \return The specified comment line contained in the mesh file.
+ */
     string get_header_comments(int i) const { return header.get_comments(i); }
 
     // dimensions units and cell definition data access
+/*!
+ * \brief Returns the problem coordinate units (e.g, cm) read from the mesh 
+ *        file dimension data.
+ * \return Mesh file coordinate units.
+ */
     string get_dims_coor_units() const { return dims.get_coor_units(); }
+/*!
+ * \brief Returns the problem time units (e.g, shakes) read from the mesh 
+ *        file dimension data.
+ * \return Mesh file time units.
+ */
     string get_dims_prob_time_units() const 
     { return dims.get_prob_time_units(); }
+/*!
+ * \brief Returns the total number of cell type definitions read from the mesh 
+ *        file dimension data.
+ * \return The number of unique cell definitions in the mesh file.
+ */
     int get_dims_ncell_defs() const { return dims.get_ncell_defs(); }
+/*!
+ * \brief Returns the maximum number of nodes per cell type read from the mesh 
+ *        file dimension data.
+ * \return The maximum number of nodes per cell type.
+ */
     int get_dims_nnodes_max() const { return dims.get_nnodes_max(); }
+/*!
+ * \brief Returns the maximum number of sides per cell type read from the mesh 
+ *        file dimension data.
+ * \return The maximum number of sides per cell type.
+ */
     int get_dims_nsides_max() const { return dims.get_nsides_max(); }
+/*!
+ * \brief Returns the maximum number of nodes per cell side read from the mesh 
+ *        file dimension data.
+ * \return The maximum number of nodes per cell side.
+ */
     int get_dims_nnodes_side_max() const { return dims.get_nnodes_side_max(); }
 
     // dimensions node data access
+/*!
+ * \brief Returns the number of spatial dimensions read from the mesh file 
+ *        dimension data.
+ * \return The number of spatial dimensions in the mesh.
+ */
     int get_dims_ndim() const { return dims.get_ndim(); }
+/*!
+ * \brief Returns the number of topological dimensions read from the mesh file 
+ *        dimension data.
+ * \return The number of topological dimensions.
+ */
     int get_dims_ndim_topo() const { return dims.get_ndim_topo(); }
+/*!
+ * \brief Returns the number of nodes read from the mesh file dimension data.
+ * \return The number of nodes in the mesh.
+ */
     int get_dims_nnodes() const { return dims.get_nnodes(); }
+/*!
+ * \brief Returns the number of node flag types read from the mesh file 
+ *        dimension data.
+ * \return The number of node flag types.
+ */
     int get_dims_nnode_flag_types() const 
     { return dims.get_nnode_flag_types(); }
+/*!
+ * \brief Returns the number of node flags for the specified node flag type
+ *        read from the mesh file dimension data.
+ * \param i Node flag type number.
+ * \return The number of node flags for the specified flag type number.
+ */
     int get_dims_nnode_flags(int i) const { return dims.get_nnode_flags(i); }
+/*!
+ * \brief Returns the number of node data fields read from the mesh file 
+ *        dimension data.
+ * \return The number of node data fields.
+ */
     int get_dims_nnode_data() const { return dims.get_nnode_data(); }
 
     // dimensions side data access
+/*!
+ * \brief Returns the number of sides read from the mesh file dimension data.
+ * \return The number of sides in the mesh.
+ */
     int get_dims_nsides() const { return dims.get_nsides(); }
+/*!
+ * \brief Returns the number of side types that are present in the "sides"
+ *        block read from the mesh file dimension data.
+ * \return The number of side types that are present in the "sides" block.
+ */
     int get_dims_nside_types() const { return dims.get_nside_types(); }
+/*!
+ * \brief Returns the side type index for the specified side type read from 
+ *        the mesh file dimension data.
+ * \param i Side type number.
+ * \return The side type index for the specified side type.
+ */
     int get_dims_side_types(int i) const  { return  dims.get_side_types(i); }
+/*!
+ * \brief Returns the number of side flag types read from the mesh file 
+ *        dimension data.
+ * \return The number of side flag types.
+ */
     int get_dims_nside_flag_types() const 
     { return dims.get_nside_flag_types(); }
+/*!
+ * \brief Returns the number of side flags for the specified side flag type
+ *        read from the mesh file dimension data.
+ * \param i Side flag type number.
+ * \return The number of side flags for the specified flag type number.
+ */
     int get_dims_nside_flags(int i) const { return dims.get_nside_flags(i); }
+/*!
+ * \brief Returns the number of side data fields read from the mesh file 
+ *        dimension data.
+ * \return The number of side data fields.
+ */
     int get_dims_nside_data() const { return dims.get_nside_data(); }
 
     // dimensions cell data access
+/*!
+ * \brief Returns the number of cells read from the mesh file dimension data.
+ * \return The number of cells in the mesh.
+ */
     int get_dims_ncells() const { return dims.get_ncells(); }
+/*!
+ * \brief Returns the number of cell types that are present in the "cells"
+ *        block read from the mesh file dimension data.
+ * \return The number of cell types that are present in the "cells" block.
+ */
     int get_dims_ncell_types() const { return dims.get_ncell_types(); }    
+/*!
+ * \brief Returns the cell type index for the specified cell type read from 
+ *        the mesh file dimension data.
+ * \param i Cell type number.
+ * \return The cell type index for the specified cell type.
+ */
     int get_dims_cell_types(int i)  const { return dims.get_cell_types(i); }
+/*!
+ * \brief Returns the number of cell flag types read from the mesh file 
+ *        dimension data.
+ * \return The number of cell flag types.
+ */
     int get_dims_ncell_flag_types() const 
     { return dims.get_ncell_flag_types(); }
+/*!
+ * \brief Returns the number of cell flags for the specified cell flag type
+ *        read from the mesh file dimension data.
+ * \param i Cell flag type number.
+ * \return The number of cell flags for the specified flag type number.
+ */
     int get_dims_ncell_flags(int i) const { return dims.get_ncell_flags(i); }
+/*!
+ * \brief Returns the number of cell data fields read from the mesh file 
+ *        dimension data.
+ * \return The number of cell data fields.
+ */
     int get_dims_ncell_data() const { return dims.get_ncell_data(); }
 
     // dimensions renumbering flag
+/*!
+ * \brief Returns the status of the flag indicating that the node, side, and 
+ *        cell numbers are to be reassigned based upon coordinates in ascending
+ *        order (x, y, and then z).
+ * \return The status of the renumbering flag.
+ */
     bool get_dims_renumber() const { return dims.get_renumber(); }
 
     // node flags access
+/*!
+ * \brief Returns the name of specified node flag type read from the mesh file
+ *        node_flags data.
+ * \param flagtype Node flag type number.
+ * \return The name of the specified node flag type.
+ */
     string get_node_flags_flag_type(int flagtype) const 
 	{ return spNodeFlags->get_flag_type(flagtype); }
+/*!
+ * \brief Returns the node flag number associated with the specified node flag
+ *        type and node flag index read from the mesh file node_flags data.
+ * \param flagtype Node flag type number.
+ * \param flag_index Node flag index.
+ * \return The node flag number.
+ */
     int get_node_flags_flag_number(int flagtype, int flag_index) const 
 	{ return spNodeFlags->get_flag_number(flagtype, flag_index); }
+/*!
+ * \brief Returns the number of node flags for the specified node flag type 
+ *        read from the mesh file node_flags data.
+ * \param flagtype Node flag type number.
+ * \return The number of node flags.
+ */
     int get_node_flags_flag_size(int flagtype) const 
 	{ return spNodeFlags->get_flag_size(flagtype); }
+/*!
+ * \brief Returns the node flag name associated with the specified node flag
+ *        type and node flag type index from the mesh file node_flags data.
+ * \param flagtype Node flag type number.
+ * \param flag_index Node flag index.
+ * \return The node flag name.
+ */
     string get_node_flags_flag_name(int flagtype, int flag_index) const 
 	{ return spNodeFlags->get_flag_name(flagtype, flag_index); }
 
     // side flags access
+/*!
+ * \brief Returns the name of specified side flag type read from the mesh file
+ *        side_flags data.
+ * \param flagtype Side flag type number.
+ * \return The name of the specified side flag type.
+ */
     string get_side_flags_flag_type(int flagtype) const 
 	{ return spSideFlags->get_flag_type(flagtype); }
+/*!
+ * \brief Returns the side flag number associated with the specified side flag
+ *        type and side flag index read from the mesh file side_flags data.
+ * \param flagtype Side flag type number.
+ * \param flag_index Side flag index.
+ * \return The side flag number.
+ */
     int get_side_flags_flag_number(int flagtype, int flag_index) const 
 	{ return spSideFlags->get_flag_number(flagtype, flag_index); }
+/*!
+ * \brief Returns the number of side flags for the specified side flag type
+ *        read from the mesh file side_flags data.
+ * \param flagtype Side flag type number.
+ * \return The number of side flags.
+ */
     int get_side_flags_flag_size(int flagtype) const 
 	{ return spSideFlags->get_flag_size(flagtype); }
+/*!
+ * \brief Returns the side flag name associated with the specified side flag
+ *        index and side flag type read from the mesh file side_flags data.
+ * \param flagtype Side flag type number.
+ * \param flag_index Side flag index.
+ * \return The side flag name.
+ */
     string get_side_flags_flag_name(int flagtype, int flag_index) const 
 	{ return spSideFlags->get_flag_name(flagtype, flag_index); }
+/*!
+ * \brief Returns the index to the required side flag type that contains the 
+ *        problem boundary conditions read from the mesh file side_flags data.
+ * \return The index to the boundary conditions side flag type.
+ */
     int get_side_flags_boundary_flag_number() const 
 	{ return spSideFlags->get_boundary_flag_number(); }
+/*!
+ * \brief Returns the index to the optional side flag type that contains the 
+ *        problem external sources read from the mesh file side_flags data.
+ * \return The index to the external source side flag type.
+ */
     int get_side_flags_surface_src_flag_number() const 
 	{ return spSideFlags->get_surface_src_flag_number(); }
 
     // cell flags access
+/*!
+ * \brief Returns the name of specified cell flag type read from the mesh file
+ *        cell_flags data.
+ * \param flagtype Cell flag type number.
+ * \return The name of the specified cell flag type.
+ */
     string get_cell_flags_flag_type(int flagtype) const 
 	{ return spCellFlags->get_flag_type(flagtype); }
+/*!
+ * \brief Returns the cell flag number associated with the specified cell flag
+ *        type and cell flag index read from the mesh file cell_flags data.
+ * \param flagtype Cell flag type number.
+ * \param flag_index Cell flag index.
+ * \return The cell flag number.
+ */
     int get_cell_flags_flag_number(int flagtype, int flag_index) const 
 	{ return spCellFlags->get_flag_number(flagtype, flag_index); }
+/*!
+ * \brief Returns the number of cell flags for the specified cell flag type
+ *        read from the mesh file cell_flags data.
+ * \param flagtype Cell flag type number.
+ * \return The number of cell flags.
+ */
     int get_cell_flags_flag_size(int flagtype) const 
 	{ return spCellFlags->get_flag_size(flagtype); }
+/*!
+ * \brief Returns the cell flag name associated with the specified cell flag
+ *        type and cell flag index read from the mesh file cell_flags data.
+ * \param flagtype Cell flag type number.
+ * \param flag_index Cell flag index.
+ * \return The cell flag name.
+ */
     string get_cell_flags_flag_name(int flagtype, int flag_index) const 
 	{ return spCellFlags->get_flag_name( flagtype, flag_index); }
+/*!
+ * \brief Returns the index to the required cell flag type that contains the 
+ *        cell materials read from the mesh file cell_flags data.
+ * \return The index to the material cell flag type.
+ */
     int get_cell_flags_material_flag_number() const 
 	{ return spCellFlags->get_material_flag_number(); }
+/*!
+ * \brief Returns the index to the optional cell flag type that contains the 
+ *        cell volumetric sources read from the mesh file cell_flags data.
+ * \return The index to the volumetric source cell flag type.
+ */
     int get_cell_flags_volume_src_flag_number() const 
 	{ return spCellFlags->get_volume_src_flag_number(); }
+/*!
+ * \brief Returns the index to the optional cell flag type that contains the 
+ *        cell radiation sources read from the mesh file cell_flags data.
+ * \return The index to the radiation source cell flag type.
+ */
     int get_cell_flags_radiation_src_flag_number() const 
 	{ return spCellFlags->get_radiation_src_flag_number(); }
 
     // node data ids access
+/*!
+ * \brief Returns the specified node_data_id name read from the mesh file 
+ *        node_data_id data.
+ * \param id_numb node_data_id index number.
+ * \return The node_data_id name.
+ */
     string get_node_data_id_name(int id_numb) const 
 	{ return spNodeDataIds->get_data_id_name(id_numb) ; }
+/*!
+ * \brief Returns the units associated with the specified node_data_id read 
+ *        from the mesh file node_data_id data.
+ * \param id_numb node_data_id index number.
+ * \return The node_data_id units.
+ */
     string get_node_data_id_units(int id_numb) const 
 	{ return spNodeDataIds->get_data_id_units(id_numb); }
 
     // side data ids access
+/*!
+ * \brief Returns the specified side_data_id name read from the mesh file 
+ *        side_data_id data.
+ * \param id_numb side_data_id index number.
+ * \return The side_data_id name.
+ */
     string get_side_data_id_name(int id_numb) const 
 	{ return spSideDataIds->get_data_id_name(id_numb) ; }
+/*!
+ * \brief Returns the units associated with the specified side_data_id read 
+ *        from the mesh file side_data_id data.
+ * \param id_numb side_data_id index number.
+ * \return The side_data_id units.
+ */
     string get_side_data_id_units(int id_numb) const 
 	{ return spSideDataIds->get_data_id_units(id_numb); }
 
     // cell data ids access
+/*!
+ * \brief Returns the specified cell_data_id name read from the mesh file 
+ *        cell_data_id data.
+ * \param id_numb cell_data_id index number.
+ * \return The cell_data_id name.
+ */
     string get_cell_data_id_name(int id_numb) const 
 	{ return spCellDataIds->get_data_id_name(id_numb) ; }
+/*!
+ * \brief Returns the units associated with the specified cell_data_id read 
+ *        from the mesh file cell_data_id data.
+ * \param id_numb cell_data_id index number.
+ * \return The cell_data_id units.
+ */
     string get_cell_data_id_units(int id_numb) const 
 	{ return spCellDataIds->get_data_id_units(id_numb); }
 
     // cell definitions access
+/*!
+ * \brief Returns the name of the specified cell definition read from the mesh
+ *        file cell_defs data.
+ * \param i Cell definition index number.
+ * \return The cell definition name.
+ */
     string get_cell_defs_name(int i) const { return spCellDefs->get_name(i); }
+/*!
+ * \brief Returns the number of nodes associated with the specified cell 
+ *        definition read from the mesh file cell_defs data.
+ * \param i Cell definition index number.
+ * \return The number of nodes comprising the cell definition.
+ */
     int get_cell_defs_nnodes(int i) const { return spCellDefs->get_nnodes(i); }
+/*!
+ * \brief Returns the number of sides associated with the specified cell 
+ *        definition read from the mesh file cell_defs data.
+ * \param i Cell definition index number.
+ * \return The number of sides comprising the cell definition.
+ */
     int get_cell_defs_nsides(int i) const { return spCellDefs->get_nsides(i); }
+/*!
+ * \brief Returns the side type number associated with the specified side 
+ *        index and cell definition read from the mesh file cell_defs data.
+ * \param i Cell definition index number.
+ * \param s Side index number.
+ * \return The side type number.
+ */
     int get_cell_defs_side_types(int i, int s) const 
         { return spCellDefs->get_side_types(i,s); }
+/*!
+ * \brief Returns the side definition associated with the specified cell 
+ *        definition and side index read from the mesh file cell_defs data 
+ *        with the returned cell-node indexes in sorted order.
+ * \param i Cell definition index number.
+ * \param s Side index number.
+ * \return The side definition (i.e., the cell-node indexes that comprise the 
+ *         side in sorted order).
+ */
     const set<int> & get_cell_defs_side(int i, int s) const 
         { return spCellDefs->get_side(i,s); }
+/*!
+ * \brief Returns the side definition associated with the specified cell  
+ *        definition and side index read from the mesh file cell_defs data 
+ *        with the returned cell-node indexes ordered to preserve the right 
+ *        hand rule for the outward-directed normal).
+ * \param i Cell definition index number.
+ * \param s Side index number.
+ * \return The side definition (i.e., the cell-node indexes that comprise the 
+ *         side ordered to preserve the right hand rule for the 
+ *         outward-directed normal).
+ */
     const vector<int> & get_cell_defs_ordered_side(int i, int s) const 
 	{ return spCellDefs->get_ordered_side(i,s); }
 
     // nodes access
+/*!
+ * \brief Returns the coordinate value for the specified node and direction 
+ *        (i.e., x, y, and z) read from the mesh file node data.
+ * \param node_numb Node number.
+ * \param coord_index Coordinate index number (x = 0, y = 1, etc.).
+ * \return The node coordinate value.
+ */
     double get_nodes_coords(int node_numb, int coord_index) const
 	{ return spNodes->get_coords(node_numb, coord_index); }
-
+/*!
+ * \brief Returns all of the coordinate values for the specified node read 
+ *        from the mesh file node data.
+ * \param node_numb Node number.
+ * \return The node coordinate values.
+ */
     vector<double> get_nodes_coords(int node_numb) const
 	{ return spNodes->get_coords(node_numb); }
 
+/*!
+ * \brief Returns the node number that has the specified coordinate values.
+ * \param node_coords Coordinate values.
+ * \return The node number.
+ */
     int get_nodes_node(vector<double> node_coords) const
         { return spNodes->get_node(node_coords); }
-
+/*!
+ * \brief Returns the node parent for the specified node read from the mesh 
+ *        file node data.
+ * \param node_numb Node number.
+ * \return The node parent.
+ */
     int get_nodes_parents(int node_numb) const
 	{ return spNodes->get_parents(node_numb); }
-
+/*!
+ * \brief Returns the node flag for the specified node and flag read from the 
+ *        mesh file node data.
+ * \param node_numb Node number.
+ * \param flag_numb Node flag number.
+ * \return The node flag.
+ */
     int get_nodes_flags(int node_numb, int flag_numb) const
 	{ return spNodes->get_flags(node_numb, flag_numb); }
 
+/*!
+ * \brief Returns the new node number after sorting has been performed when
+ *        the renumber flag is set true.
+ * \param node_numb Original node number.
+ * \return New node number.
+ */
     int get_nodes_map(int node_numb) const
         { return spNodes->get_map(node_numb);}
 
     // sides access
+/*!
+ * \brief Returns the side type associated with the specified side read from 
+ *        the mesh file side data.
+ * \param side_numb Side number.
+ * \return The side type.
+ */
     int get_sides_type(int side_numb) const
 	{ return spSides->get_type(side_numb); }
-
+/*!
+ * \brief Returns the node number associated with the specified side and 
+ *        side-node index read from the mesh file side data.
+ * \param side_numb Side number.
+ * \param node_numb Side-node index number.
+ * \return The node number.
+ */
     int get_sides_nodes(int side_numb,int node_numb) const
 	{ return spSides->get_nodes(side_numb, node_numb); }
-
+/*!
+ * \brief Returns the side flag for the specified side and flag read from the 
+ *        mesh file side data.
+ * \param side_numb Side number.
+ * \param flag_numb Side flag number.
+ * \return The side flag.
+ */
     int get_sides_flags(int side_numb,int flag_numb) const
 	{ return spSides->get_flags(side_numb, flag_numb); }
 
     // cells access
+/*!
+ * \brief Returns the cell type associated with the specified cell read from 
+ *        the mesh file cell data.
+ * \param cell_numb Cell number.
+ * \return The cell type.
+ */
     int get_cells_type(int cell_numb) const
 	{ return spCells->get_type(cell_numb); }
 
+/*!
+ * \brief Returns the node number associated with the specified cell and 
+ *        cell-node index read from the mesh file cell data.
+ * \param cell_numb Cell number.
+ * \param node_numb Cell-node index number.
+ * \return The node number.
+ */
     int get_cells_nodes(int cell_numb,int node_numb) const
 	{ return spCells->get_nodes(cell_numb, node_numb); }
-
+/*!
+ * \brief Returns the cell flag for the specified cell and flag read from the 
+ *        mesh file cell data.
+ * \param cell_numb Cell number.
+ * \param flag_numb Cell flag number.
+ * \return The cell flag.
+ */
     int get_cells_flags(int cell_numb,int flag_numb) const
 	{ return spCells->get_flags(cell_numb, flag_numb); }
 
     // connectivity access
+/*!
+ * \brief Returns the number of the cell adjacent to the specified cell, face,
+ *        and optional adjacent cell index (to allow multiple cells to connect
+ *        to a single cell face for AMR type meshes).
+ * \param cell Cell number.
+ * \param face Face number.
+ * \param adjcell Adjacent cell number (defaults to 0).
+ * \return The adjacent cell number.
+ */
     int get_adjCell(int cell, int face, int adjcell = 0) const
         { return spConnectivity->get_adjCell(cell, face, adjcell); }
+/*!
+ * \brief Returns the number of cells adjacent to the specified cell face 
+ *        (allows multiple cells to connect to a single cell face for AMR type
+ *         meshes).
+ * \param cell Cell number.
+ * \param face Face number.
+ * \return The number of adjacent cells.
+ */
     int get_adjCell_size(int cell, int face) const
         { return spConnectivity->get_adjCell_size(cell,face); }
+/*!
+ * \brief Returns the number of boundary faces (i.e., faces that are either
+ *        on the outer boundary of the problem geometry or a connection between
+ *        cells with different refinement levels in an AMR mesh) with the 
+ *        specified face number
+ * \param face Face number.
+ * \return The number of boundary faces.
+ */
     int get_bndryFaces_count(int face) const
 	{ return spConnectivity->get_bndryFaces_count(face); }
+/*!
+ * \brief Returns the cells that have boundary faces (i.e., faces that are 
+ *        either on the outer boundary of the problem geometry or a connection
+ *        between cells with different refinement levels in an AMR mesh) with 
+ *        the 
+ *        specified face number
+ * \param face Face number.
+ * \return The cells with these boundary faces.
+ */
     set<int> get_bndryCells(int face) const
         { return spConnectivity->get_bndryCells(face); }
+/*!
+ * \brief Returns true if the specified cell face is a boundary face (i.e., 
+ *        a faces that is either on the outer boundary of the problem geometry
+ *        or a connection between cells with different refinement levels in an
+ *        AMR mesh).
+ * \param cell Cell number.
+ * \param face Face number.
+ * \return Boundary face status.
+ */
     bool check_bndryFace(int cell, int face) const
         { return spConnectivity->check_bndryFace(cell,face); }
+/*!
+ * \brief Returns the cell number associated with the specified side number.
+ * \param side Side number.
+ * \return The cell number.
+ */
     int get_Cell_from_Side(int side) const
         { return spConnectivity->get_Cell_from_Side(side); }
-
+/*!
+ * \brief Returns the cell face number associated with the specified side 
+ *        number.
+ * \param side Side number.
+ * \return The face number.
+ */
     int get_Cell_Face_from_Side(int side) const
         { return spConnectivity->get_Cell_Face_from_Side(side); }
 
@@ -1144,6 +1720,78 @@ class RTT_Format
 } // end namespace rtt_format
 
 #endif                          // __RTT_Format_hh__
+
+/*!
+ * \page rtt_format_overview Overview of the RTT_Format package
+ *
+ * \version 1_0_0
+ *
+ * <h3> Introduction </h3>
+ * The RTT_Format package consists of: private member functions that are used 
+ * to parse a mesh file in the \ref rtt_format_defined and determine the mesh
+ * connectivity, and public member functions to access the relevant data. The
+ * RTT_Format package is distributed with the amr_mesh package because it was
+ * developed in conjunction with that package, but it's use is not limited to 
+ * that particular mesh type. The RTT_Format package was developed from the 
+ * TychoMesh class that was originally developed by Shawn Pautz with the 
+ * following additions:
+ * <ul>
+ *  <li> Extension of the tetrahedral-limited connectivity algorithm to 
+ *       arbitrary cell definitions including amr capability,
+ *  <li> Public accessor functions for all of the mesh file data,
+ *  <li> Reassignment capability to allow the nodes, sides, and cells to be
+ *       renumbered, based upon their coordinate values, in ascending order 
+ *       with x increasing first, then y, and finally z.
+ * </ul> 
+ *
+ * <h3> Intended Usage </h3>
+ * The RTT_Format class constructor automatically parses the specified input
+ * file and determines the mesh connectivity via calls to the private member 
+ * functions readMesh and calculateConnectivity, respectively. The mesh data 
+ * can then be accessed using the public member accessor functions. A second, 
+ * optional argument to the RTT_Format class can be used to specify 
+ * renumbering. The class constructor defaults to no renumbering, but runtime 
+ * testing indicates that there is a significant DECREASE in the time required
+ * to read and connect the mesh if a continuous adaptive refinement mesh is 
+ * used with a few thousand cells or more and renumbering is implemented. This
+ * behaviour results from the fact that a bilinear search routine can be used 
+ * to connect adjacent cells with different refinement levels, while a linear 
+ * search of all the nodes must be performed otherwise. The RTT_Format class 
+ * contains several nested classes that correspond to the structure and 
+ * organization of the RTT_Format File definition plus some base classes and 
+ * the Connectivity class:
+ * <ul>
+ *  <li> Header
+ *  <li> Dims (dimensions)
+ *  <li> Flags (base class of NodeFlags, SideFlags, and CellFlags)
+ *  <li> NodeFlags
+ *  <li> SideFlags
+ *  <li> CellFlags
+ *  <li> NodeDataIDs
+ *  <li> SideDataIDs
+ *  <li> CellDataIDs
+ *  <li> CellDef (base class of CellDefs)
+ *  <li> CellDefs (cell definitions)
+ *  <li> Nodes
+ *  <li> Sides
+ *  <li> Cells
+ *  <li> NodeData
+ *  <li> SideData
+ *  <li> CellData
+ *  <li> Connectivity
+ * </ul> 
+ * These contained classes provide a convenient grouping of the mesh data, and
+ * accessor functions reflect the name of the relevant contained class.
+ *
+ */
+
+/*!
+ * \page rtt_format_defined RTT Format File Structure
+ * The following example "mesh" documents the format of the RTT file and 
+ * explains the associated nomenclature.
+ *
+ * \include RTT_Format.defined
+ */
 
 //---------------------------------------------------------------------------//
 //                              end of RTT_Format.hh
