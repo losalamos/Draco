@@ -23,10 +23,10 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    # path to package directories which are sources for doxygen
    #
 
-   doxygen_input=${srcdir}
-   doxygen_examples=${srcdir}/test
+   doxygen_input=`cd ${srcdir}; pwd`
+   doxygen_examples=`cd ${srcdir}/test; pwd`
    localdir=`pwd`/autodoc
-   doxygen_output=${prefix}/html/${package}
+   doxygen_output=`cd ${prefix}/html/${package}; pwd`
 
    #
    # covert to relative paths
@@ -54,9 +54,8 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    fi
 
    # find the release number
-   number='null'
-   AC_MSG_CHECKING("draco release number")
-   number=`/bin/sh ../../tools/draco --version`
+   number=$1
+   AC_MSG_CHECKING("component release number")
    AC_MSG_RESULT($number)
 
    AC_SUBST(doxygen_input)
@@ -181,7 +180,6 @@ while test "[$]_lcl_tmp" != ''; do
      $3="../[$]$3"
   fi
 done])
-
 
 dnl adl_RECURSIVE_EVAL(VALUE, RESULT)
 dnl =================================
