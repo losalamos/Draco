@@ -41,6 +41,8 @@
 #define protected public
 #endif
 
+NAMESPACE_DS_BEG
+
 //===========================================================================//
 // class Mat1 - A 1-d container.
 
@@ -1253,6 +1255,8 @@ class Mat4 {
 	nx = xlen; ny = ylen; nz = zlen; nw = wlen;
     }
 };
+
+NAMESPACE_DS_END
 
 #ifdef TEST_MAT
 #undef class
