@@ -82,19 +82,19 @@ digraph draco_level {
     units       -> {dsxx};
     traits      -> {dsxx};
     c4          -> {dsxx};
-    c4          -> {vmpi}    [color="green"];
+    c4          -> {vmpi}         [color="green"];
     rng         -> {dsxx};
-    rng         -> {vspring} [color="green"];
+    rng         -> {vspring}      [color="green"];
     cdi         -> {dsxx};
     meshelement -> {dsxx};
     quad        -> {dsxx};
-    quad        -> {vgsl}    [color="green"];
+    quad        -> {vgsl vlapack} [color="green"];
     plot        -> {dsxx};
-    plot        -> {vgrace}  [color="green"];
+    plot        -> {vgrace}       [color="green"];
     lapack      -> {dsxx};
-    lapack      -> {vlapack} [color="green"];
+    lapack      -> {vlapack}      [color="green"];
     shlib       -> {dsxx};
-    shlib       -> {vdlopen} [color="green"];
+    shlib       -> {vdlopen}      [color="green"];
     
     /* level 4 */
     viz         -> {traits};      /* traits: dsxx */
