@@ -144,37 +144,40 @@
 ! C++ Coord_sys, Layout, and CAR_CU_Mesh class objects. The address of the
 ! new CAR_CU_Mesh_Builder class object is set automatically while the address
 ! of the new CAR_CU_Mesh class object must be assigned with a seperate 
-! statement. Also need to set the surface source data before the
-! CAR_CU_Mesh_Builder class object is destroyed. This is currently limited to
-! a single surface source definition, since a ragged-right array type would
-! be required to do this correctly.
+! statement. Surface and volume source data is read by the CAR_CU_Mesh_Builder
+! class object from the RTT Format file.
 !===========================================================================
 
           call construct_Mesh_Builder(mesh_builder_class, interface_class)
           mesh_class%this = mesh_builder_class%mesh
 
-          num_surface_sources = get_surface_source_size(mesh_builder_class)
+!===========================================================================
+! Pick up the rest of the data read into the CAR_CU_Interface class object 
+! that is not stored elsewhere and is needed for the transport calculations.
+! The surface source data is read by the CAR_CU_Mesh_Builder class object,
+! so this has to be done after the mesh builder is executed. The surface 
+! source cells definitions are currently limited to a single surface, since 
+! a ragged-right array type would be required to do this correctly.
+!===========================================================================
+
+          num_surface_sources = get_surface_source_size(interface_class)
           allocate(surface_source_pos(num_surface_sources))
           allocate(num_surface_source_cells(num_surface_sources))
           surface = 1
           do while (surface .le. num_surface_sources)
               surface_source_pos(surface) =                             &
-                  get_surface_source_pos(mesh_builder_class, surface)
+                  get_surface_source_pos(interface_class, surface)
               surface = surface + 1
           end do
 
           surface = 1
-          cell = 1
           do while (surface .le. num_surface_sources)
               num_surface_source_cells(surface) =                       &
-                  get_surface_source_size(mesh_builder_class, surface)
+                  get_surface_source_size(interface_class, surface)
               allocate(surface_source_cells(num_surface_source_cells(surface)))
-              do while(cell .le. num_surface_source_cells(surface))
-                  surface_source_cells =                                &
-                      get_surface_source_cells(mesh_builder_class,      &
-                           surface, num_surface_source_cells(surface))
-                  cell = cell + 1
-              end do
+              surface_source_cells =                                    &
+                  get_surface_source_cells(interface_class, surface,    &
+                                           num_surface_source_cells(surface))
               surface = surface + 1
           end do
 

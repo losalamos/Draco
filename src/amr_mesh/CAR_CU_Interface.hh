@@ -137,8 +137,18 @@ class CAR_CU_Interface
     vector<double> get_evol_ext() const;
     vector<double> get_rad_source() const;
     double get_rad_s_tend() const { return rad_s_tend; }
-    const vector<string>& get_ss_pos() const { return ss_pos; }
-    const vector<double>& get_ss_temp() const { return ss_temp; }
+    // return the number of grouped surface source cell sets
+    int get_ss_pos_size() { return ss_pos.size(); }
+    // return the position (lox, hix, etc.) of a set of grouped surface source 
+    // cells
+    string get_ss_pos(int surface) { return ss_pos[surface - 1]; }
+    // return the positions (lox, hix, etc.) of the all of the grouped surface 
+    // source cells
+    const vector<string> & get_ss_pos() const { return ss_pos; }
+    const vector<double> & get_ss_temp() const { return ss_temp; }
+    // return the number of grouped surface source cells in a given set
+    int get_ss_cells_size(int surface) 
+    { return defined_surcells[surface - 1].size(); }
     void set_defined_surcells(vector< vector<int> > surcells) 
     {
         Insist(ss_pos.size() == surcells.size(),
@@ -147,6 +157,16 @@ class CAR_CU_Interface
         defined_surcells = surcells;
 	return; 
     } 
+    // return the defined surface source cells in a given set
+    vector<int> get_defined_surcells(int surface) 
+    {
+        vector<int> source_set(defined_surcells[surface - 1].size());
+	for (int cell = 0; cell < defined_surcells[surface - 1].size(); cell++)
+	    source_set[cell] = defined_surcells[surface - 1][cell];
+
+        return source_set; 
+    }
+    // return all of the defined surface cell sets.
     const vector< vector<int> >& get_defined_surcells() const {
 	return defined_surcells; } 
     vector<double> get_rad_temp() const;

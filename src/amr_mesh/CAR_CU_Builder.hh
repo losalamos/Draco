@@ -106,28 +106,9 @@ public:
 
   // build Mesh member functions
     SP<CAR_CU_Mesh> build_Mesh(const SP<RTT_Format> & rttMesh);
-    
-  // return the number of grouped surface source cells
-    int get_ss_size() { return ss_pos.size(); }
-  // return the number of grouped surface source cells in a given set
-    int get_ss_size(int surface) 
-    { return defined_surcells[surface - 1].size(); }
-  // return the position (lox, hix, etc.) of a set of grouped surface source 
-  // cells
-     string get_ss_pos(int surface) { return ss_pos[surface - 1]; }
-  // return the positions (lox, hix, etc.) of the all of the grouped surface 
-  // source cells
-    vector<string> get_ss_pos() { return ss_pos; }
-  // return the defined surface source cells in a given set
-    vector<int> get_defined_surcells(int surface) 
-    {
-        vector<int> source_set(defined_surcells[surface - 1].size());
-	for (int cell = 0; cell < defined_surcells[surface - 1].size(); cell++)
-	    source_set[cell] = defined_surcells[surface - 1][cell];
 
-        return source_set; 
-    }
-  // return all of the defined surface cells read from the RTT Format file
+  // return all of the defined surface cell sets that were read from the 
+  // RTT Format file
     vector<vector<int> > get_defined_surcells() { return defined_surcells; }
 
   // End_Verbatim 
