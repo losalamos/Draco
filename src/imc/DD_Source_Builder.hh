@@ -13,21 +13,7 @@
 #define __imc_DD_Source_Builder_hh__
 
 #include "Source_Builder.hh"
-#include "Source.hh"
-#include "Opacity.hh"
-#include "Mat_State.hh"
-#include "Global.hh"
-#include "mc/Particle_Stack.hh"
-#include "mc/Topology.hh"
-#include "mc/Comm_Patterns.hh"
-#include "rng/Random.hh"
-#include "ds++/SP.hh"
-#include "ds++/Assert.hh"
-
-#include <vector>
-#include <string>
-#include <iostream>
-
+#include "ds++/Soft_Equivalence.hh"
 
 namespace rtt_imc
 {
@@ -56,30 +42,31 @@ namespace rtt_imc
 // 3) 07 Jan 2002 : moved constructor to header file so that automatic
 //                  instantiation will work; updated to work with new
 //                  Particle_Stack 
+// 5) 05-FEB-2002 : updated for multigroup
 //===========================================================================//
 
-template<class MT, class PT = Particle<MT> >
-class DD_Source_Builder : public Source_Builder<MT,PT>
+template<class MT, class FT, class PT>
+class DD_Source_Builder : public Source_Builder<MT,FT,PT>
 {
   public:
     // typedefs used in the inheritance chain
-    typedef rtt_dsxx::SP<Source<MT,PT> >                SP_Source;
-    typedef typename rtt_mc::Particle_Stack<PT>::Census Census;
-    typedef rtt_dsxx::SP<Census>                        SP_Census;
-    typedef rtt_dsxx::SP<Opacity<MT> >                  SP_Opacity;
-    typedef rtt_dsxx::SP<Mat_State<MT> >                SP_Mat_State;
-    typedef rtt_dsxx::SP<MT>                            SP_Mesh;
-    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>          SP_Rnd_Control; 
-    typedef rtt_dsxx::SP<rtt_mc::Topology>              SP_Topology;
-    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>         SP_Comm_Patterns;
-    typedef std::vector<int>                            sf_int;
-    typedef std::vector<double>                         sf_double;
-    typedef std::vector<std::string>                    sf_string;
-    typedef std::vector<std::vector<double> >           vf_double;
-    typedef std::string                                 std_string;
-    typedef typename MT::CCSF_double                    ccsf_double;
-    typedef typename MT::CCSF_int                       ccsf_int;
-    typedef typename MT::CCVF_double                    ccvf_double;             
+    typedef rtt_dsxx::SP<Source<MT,FT,PT> >                  SP_Source;
+    typedef typename rtt_mc::Particle_Containers<PT>::Census Census;
+    typedef rtt_dsxx::SP<Census>                             SP_Census;
+    typedef rtt_dsxx::SP<Opacity<MT,FT> >                    SP_Opacity;
+    typedef rtt_dsxx::SP<Mat_State<MT> >                     SP_Mat_State;
+    typedef rtt_dsxx::SP<MT>                                 SP_Mesh;
+    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>               SP_Rnd_Control; 
+    typedef rtt_dsxx::SP<rtt_mc::Topology>                   SP_Topology;
+    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>              SP_Comm_Patterns;
+    typedef std::vector<int>                                 sf_int;
+    typedef std::vector<double>                              sf_double;
+    typedef std::vector<std::string>                         sf_string;
+    typedef std::vector<std::vector<double> >                vf_double;
+    typedef std::string                                      std_string;
+    typedef typename MT::template CCSF<double>               ccsf_double;
+    typedef typename MT::template CCSF<int>                  ccsf_int;
+    typedef typename MT::template CCVF<double>               ccvf_double;       
 
   private:
     // Data fields unique or more properly defined for full DD topologies.
@@ -177,8 +164,8 @@ class DD_Source_Builder : public Source_Builder<MT,PT>
 // INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
 
-template<class MT, class PT>
-double DD_Source_Builder<MT,PT>::get_initial_census_energy() const
+template<class MT, class FT, class PT>
+double DD_Source_Builder<MT,FT,PT>::get_initial_census_energy() const
 {
     double energy = ecentot;
     C4::gsum(energy);
@@ -191,12 +178,12 @@ double DD_Source_Builder<MT,PT>::get_initial_census_energy() const
 /*!
  * \brief Constructor for DD_Source_Builder.
  */
-template<class MT, class PT>
+template<class MT, class FT, class PT>
 template<class IT>
-DD_Source_Builder<MT,PT>::DD_Source_Builder(rtt_dsxx::SP<IT> interface, 
-					    SP_Mesh mesh, 
-					    SP_Topology top)
-    : Source_Builder<MT,PT>(interface, mesh, top),
+DD_Source_Builder<MT,FT,PT>::DD_Source_Builder(rtt_dsxx::SP<IT> interface, 
+					       SP_Mesh          mesh, 
+					       SP_Topology      top)
+    : Source_Builder<MT,FT,PT>(interface, mesh, top),
     local_ncen(mesh),
     local_ncentot(0),
     local_eloss_cen(0),

@@ -13,10 +13,12 @@
 #define __imc_Gray_Particle_hh__
 
 #include "Particle.hh"
-#include "Frequency.hh"
 
 namespace rtt_imc
 {
+
+// Forward declarations
+class Gray_Frequency;
  
 //===========================================================================//
 /*!

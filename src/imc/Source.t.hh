@@ -10,7 +10,15 @@
 //---------------------------------------------------------------------------//
 
 #include "Source.hh"
-#include "Global.hh"
+#include "Mat_State.hh"
+#include "Mesh_Operations.hh"
+#include "Gray_Particle.hh"
+#include "Multigroup_Particle.hh"
+#include "Opacity.hh"
+#include "mc/Particle_Stack.hh"
+#include "mc/Topology.hh"
+#include "mc/Sampler.hh"
+#include "rng/Random.hh"
 #include "ds++/Assert.hh"
 #include <iomanip>
 #include <cmath>
@@ -62,23 +70,31 @@ namespace rtt_imc
 
  * \param top topology
 
+ * \param opacity_ smart pointer to the opacity
+
+ * \param data Frequency_Sampling_Data object that hold the probabilities for
+ * sampling a straight Planckian when FT=Multigroup_Frequency (ie. the
+ * calculation is multigroup)
+
  */
-template<class MT, class PT>
-Source<MT, PT>::Source(ccsf_int &vol_rnnum_, 
-		       ccsf_int &nvol_,
-		       ccsf_double &ew_vol_,
-		       ccsf_int &ss_rnnum_, 
-		       ccsf_int &nss_, 
-		       ccsf_int &fss_,
-		       ccsf_double &ew_ss_,
-		       SP_Census census_,
-		       std::string ssd, 
-		       int nvoltot_, 
-		       int nsstot_,
-		       SP_Rnd_Control rcon_, 
-		       SP_Mat_State mat_state,
-		       SP_Mesh_Op operations,
-		       SP_Topology top) 
+template<class MT, class FT, class PT>
+Source<MT,FT,PT>::Source(ccsf_int                             &vol_rnnum_, 
+			 ccsf_int                             &nvol_,
+			 ccsf_double                          &ew_vol_,
+			 ccsf_int                             &ss_rnnum_, 
+			 ccsf_int                             &nss_, 
+			 ccsf_int                             &fss_,
+			 ccsf_double                          &ew_ss_,
+			 SP_Census                             census_,
+			 std::string                           ssd, 
+			 int                                   nvoltot_, 
+			 int                                   nsstot_,
+			 SP_Rnd_Control                        rcon_, 
+			 SP_Mat_State                          mat_state,
+			 SP_Mesh_Op                            operations,
+			 SP_Topology                           top,
+			 SP_Opacity                            opacity_,
+			 const Frequency_Sampling_Data<MT,FT> &data) 
     : vol_rnnum(vol_rnnum_),
       nvol(nvol_), 
       ew_vol(ew_vol_), 
@@ -94,9 +110,13 @@ Source<MT, PT>::Source(ccsf_int &vol_rnnum_,
       rcon(rcon_),
       material(mat_state), 
       mesh_op(operations),
-      topology(top)
+      topology(top),
+      opacity(opacity_),
+      freq_samp_data(data)
 {
     Require (topology);
+    Require (material);
+    Require (opacity);
 
     // some assertions
     Check (vol_rnnum.get_Mesh() == nvol.get_Mesh());
@@ -105,6 +125,7 @@ Source<MT, PT>::Source(ccsf_int &vol_rnnum_,
     Check (nvol.get_Mesh()      == ew_vol.get_Mesh());
     Check (nvol.get_Mesh()      == fss.get_Mesh());
     Check (nvol.get_Mesh()      == ew_ss.get_Mesh());
+    Check (opacity->num_cells() == material->num_cells());
 
     // nsrcdone_cell is the running number of source particles completed for
     // a particular source type in a particular cell.
@@ -138,11 +159,12 @@ Source<MT, PT>::Source(ccsf_int &vol_rnnum_,
  * \return source particle
 
  */
-template<class MT, class PT>
-rtt_dsxx::SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
+template<class MT, class FT, class PT>
+rtt_dsxx::SP<PT> Source<MT,FT,PT>::get_Source_Particle(double delta_t)
 {
     using rtt_dsxx::SP;
 
+    // sampled flag
     bool sampled = false;
 
     // instantiate particle to return
@@ -157,7 +179,7 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 					       nsrcdone_cell);  
 	    rcon->set_num(rn_str_id);
 	    source_particle = get_ss(delta_t);
-	    sampled = true;
+	    sampled         = true;
 	    nsrcdone_cell++;
 	    nssdone++;
 	    if (nssdone == nsstot)
@@ -172,7 +194,8 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 	    nsrcdone_cell = 0;
 	    if (current_cell > nss.get_Mesh().num_cells())
 	    {
-		Check (nssdone == nsstot);
+		Insist (nssdone == nsstot,
+			"Missed some surface source particles.");
 		current_cell = 1;
 	    }
 	}
@@ -187,7 +210,7 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 					       nsrcdone_cell);
 	    rcon->set_num(rn_str_id);
 	    source_particle = get_evol(delta_t);
-	    sampled = true;
+	    sampled         = true;
 	    nsrcdone_cell++;
 	    nvoldone++;
 	    if (nvoldone == nvoltot)
@@ -202,7 +225,8 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 	    nsrcdone_cell = 0;
 	    if (current_cell > nvol.get_Mesh().num_cells())
 	    {
-		Check (nvoldone == nvoltot);
+		Insist (nvoldone == nvoltot,
+			"Missed some volume source particles.");
 		current_cell = 1;
 	    }
 	}
@@ -212,7 +236,7 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
     while (!sampled && ncendone < ncentot)
     {
 	source_particle = get_census(delta_t);
-	sampled = true;
+	sampled         = true;
 	ncendone++;
     }
 
@@ -230,9 +254,10 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 /*!
  * \brief Create a surface source particle.
  */
-template<class MT, class PT>
-rtt_dsxx::SP<PT> Source<MT, PT>::get_ss(double delta_t)
+template<class MT, class FT, class PT>
+rtt_dsxx::SP<PT> Source<MT,FT,PT>::get_ss(double delta_t)
 {
+    using rtt_imc::global::Type_Switch;
     using rtt_mc::global::pi;
     using rtt_rng::Sprng;
     using rtt_dsxx::SP;
@@ -272,8 +297,9 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_ss(double delta_t)
     double time_left = rand.ran() * delta_t;
 
     // instantiate particle to return
-    SP<PT> ss_particle(new PT(r, omega, ew, cell, rand, fraction, 
-			      time_left, PT::SURFACE_SOURCE));
+    SP<PT> ss_particle = make_ss_particle<Type_Switch<PT>::Type>(
+	Type_Switch<FT>(), Type_Switch<PT>(), r, omega, ew, cell, rand, 
+	fraction, time_left);
 
     // return the ss particle;
     return ss_particle;
@@ -283,9 +309,10 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_ss(double delta_t)
 /*!
  * \brief Create a volume source particle.
  */
-template<class MT, class PT>
-rtt_dsxx::SP<PT> Source<MT, PT>::get_evol(double delta_t)
+template<class MT, class FT, class PT>
+rtt_dsxx::SP<PT> Source<MT,FT,PT>::get_evol(double delta_t)
 {
+    using rtt_imc::global::Type_Switch;
     using rtt_rng::Sprng;
     using rtt_dsxx::SP;
     using std::vector;
@@ -307,8 +334,9 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_evol(double delta_t)
     double time_left = rand.ran() * delta_t;
 
     // instantiate particle to return
-    SP<PT> vol_particle(new PT(r, omega, ew, cell, rand, fraction, 
-			       time_left, PT::VOL_EMISSION)); 
+    SP<PT> vol_particle = make_vol_particle<Type_Switch<PT>::Type>(
+	Type_Switch<FT>(), Type_Switch<PT>(), r, omega, ew, cell, rand, 
+	fraction, time_left);
 
     return vol_particle;
 }
@@ -317,8 +345,8 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_evol(double delta_t)
 /*!
  * \brief Create a census particle.
  */
-template<class MT, class PT>
-rtt_dsxx::SP<PT> Source<MT, PT>::get_census(double delta_t)
+template<class MT, class FT, class PT>
+rtt_dsxx::SP<PT> Source<MT,FT,PT>::get_census(double delta_t)
 {
     using rtt_dsxx::SP;
 
@@ -347,6 +375,163 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_census(double delta_t)
 }
 
 //---------------------------------------------------------------------------//
+// PRIVATE PARTIAL SPECIALIZATIONS ON FREQUENCY AND PARTICLE TYPE
+//---------------------------------------------------------------------------//
+// Specialization of make_ss_particle for Gray_Particle type.
+
+template<class MT, class FT, class PT>
+template<class Stop_Explicit_Instantiation>
+Source<MT,FT,PT>::SP_Gray_PT Source<MT,FT,PT>::make_ss_particle(
+    Switch_Gray,
+    Switch_Gray_PT,
+    const sf_double      &r,
+    const sf_double      &omega,
+    const double          ew,
+    int                   cell,
+    const rtt_rng::Sprng &random,
+    const double          fraction,
+    const double          time_left)
+{
+    using rtt_dsxx::SP;
+
+    SP_Gray_PT particle(new Gray_PT(r, omega, ew, cell, random, fraction, 
+				    time_left, PT::SURFACE_SOURCE));
+
+    Check (particle);
+    return particle;
+}
+
+//---------------------------------------------------------------------------//
+// Specialization of make_ss_particle for Multigroup_Particle type.
+
+template<class MT, class FT, class PT>
+template<class Stop_Explicit_Instantiation>
+Source<MT,FT,PT>::SP_MG_PT Source<MT,FT,PT>::make_ss_particle(
+    Switch_MG,
+    Switch_MG_PT,
+    const sf_double      &r,
+    const sf_double      &omega,
+    const double          ew,
+    int                   cell,
+    const rtt_rng::Sprng &random,
+    const double          fraction,
+    const double          time_left)
+{
+    using rtt_mc::sampler::sample_planckian_frequency;
+    using rtt_dsxx::SP;
+
+    // sample group from Planckian
+    int group   = 0;
+    int counter = 0;
+    double freq = 0.0;
+
+    while (group == 0)
+    {
+	freq   = sample_planckian_frequency(random, material->get_T(cell));
+	group  = opacity->get_Frequency()->find_group_given_a_freq(freq);
+
+	// advance counter
+	counter++;
+
+	Insist (counter < 100, "Unable to sample group.");
+    }
+
+    SP_MG_PT particle(new MG_PT(r, omega, ew, cell, random, group,
+				fraction, time_left, PT::SURFACE_SOURCE));
+
+    Check (particle);
+    return particle;
+}
+
+//---------------------------------------------------------------------------//
+// Specialization of make_vol_particle for Gray_Particle type.
+
+template<class MT, class FT, class PT>
+template<class Stop_Explicit_Instantiation>
+Source<MT,FT,PT>::SP_Gray_PT Source<MT,FT,PT>::make_vol_particle(
+    Switch_Gray,
+    Switch_Gray_PT,
+    const sf_double      &r,
+    const sf_double      &omega,
+    const double          ew,
+    int                   cell,
+    const rtt_rng::Sprng &random,
+    const double          fraction,
+    const double          time_left)
+{
+    using rtt_dsxx::SP;
+
+    SP_Gray_PT particle(new Gray_PT(r, omega, ew, cell, random, fraction,
+				    time_left, PT::VOL_EMISSION));
+
+    Check (particle);
+    return particle;
+}
+
+//---------------------------------------------------------------------------//
+// Specialization of make_vol_particle for Multigroup_Particle type.
+
+template<class MT, class FT, class PT>
+template<class Stop_Explicit_Instantiation>
+Source<MT,FT,PT>::SP_MG_PT Source<MT,FT,PT>::make_vol_particle(
+    Switch_MG,
+    Switch_MG_PT,
+    const sf_double      &r,
+    const sf_double      &omega,
+    const double          ew,
+    int                   cell,
+    const rtt_rng::Sprng &random,
+    const double          fraction,
+    const double          time_left)
+{
+    using rtt_mc::sampler::sample_planckian_frequency;
+    using rtt_mc::sampler::sample_bin_from_discrete_cdf;
+    using rtt_dsxx::SP;
+
+    // sample to determine if we should sample from the Planckian or sample
+    // from sigma * Planckian (opacity-weighted Planckian)
+    double ran = random.ran();
+    int group  = 0;
+    
+    // sample from straight Planckian
+    if (ran < freq_samp_data.prob_of_straight_Planck_emission(cell))
+    {
+	// sample group from Planckian
+	int counter = 0;
+	double freq = 0.0;
+
+	while (group == 0)
+	{
+	    freq   = sample_planckian_frequency(random, material->get_T(cell));
+	    group  = opacity->get_Frequency()->find_group_given_a_freq(freq);
+
+	    // advance counter
+	    counter++;
+
+	    Insist (counter < 100, "Unable to sample group.");
+	}
+    }
+
+    // sample from opacity weighted Planckian cdf
+    else
+    {
+	// get the group index
+	group = sample_bin_from_discrete_cdf(
+	    random, opacity->get_emission_group_cdf(cell));
+
+	Check (group > 0);
+	Check (group <= opacity->get_Frequency()->get_num_groups());
+    }
+
+    // make the particle
+    SP_MG_PT particle(new MG_PT(r, omega, ew, cell, random, group,
+				fraction, time_left, PT::VOL_EMISSION));
+
+    Check (particle);
+    return particle;
+}
+
+//---------------------------------------------------------------------------//
 // DIAGNOSTICS
 //---------------------------------------------------------------------------//
 /*!
@@ -355,8 +540,8 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_census(double delta_t)
  * \param out ostream output
 
  */
-template<class MT, class PT>
-void Source<MT, PT>::print(std::ostream &out) const
+template<class MT, class FT, class PT>
+void Source<MT,FT,PT>::print(std::ostream &out) const
 {
     using std::ios;
     using std::setiosflags;

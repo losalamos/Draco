@@ -12,9 +12,8 @@
 #include "DD_Source_Builder.hh"
 #include "Mesh_Operations.hh"
 #include "c4/global.hh"
-#include "mc/Math.hh"
-#include "mc/Parallel_Data_Operator.hh"
-#include <iomanip>
+#include "mc/Comm_Patterns.hh"
+#include "rng/Random.hh"
 #include <numeric>
 
 namespace rtt_imc
@@ -23,13 +22,16 @@ namespace rtt_imc
 //---------------------------------------------------------------------------//
 // BUILD THE SOURCE ON THIS DD TOPOLOGY
 //---------------------------------------------------------------------------//
-template<class MT, class PT>
-DD_Source_Builder<MT,PT>::SP_Source
-DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
-				       SP_Mat_State state,
-				       SP_Opacity opacity,
-				       SP_Rnd_Control rnd_control,
-				       SP_Comm_Patterns patterns)
+/*!
+ * \brief Build a source in a Domain Decomposed parallel topology.
+ */
+template<class MT, class FT, class PT>
+DD_Source_Builder<MT,FT,PT>::SP_Source
+DD_Source_Builder<MT,FT,PT>::build_Source(SP_Mesh          mesh,
+				          SP_Mat_State     state,
+					  SP_Opacity       opacity,
+					  SP_Rnd_Control   rnd_control,
+					  SP_Comm_Patterns patterns)
 {
     int num_cells = mesh->num_cells();
     Require(num_cells == state->num_cells());
@@ -103,18 +105,16 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     // processor, this means that as particles are taken out of the source
     // the "master" census (in a global_state object) on processor is emptied 
     // as well
-    SP_Source source(new Source<MT,PT>(volrn, local_nvol, ew_vol, ssrn,
-				       local_nss, ss_face_in_cell, ew_ss, 
-				       census, ss_dist, local_nvoltot,
-				       local_nsstot, rnd_control, state,
-				       mesh_op, topology));
+    SP_Source source(new Source<MT,FT,PT>(volrn, local_nvol, ew_vol, ssrn,
+					  local_nss, ss_face_in_cell, ew_ss, 
+					  census, ss_dist, local_nvoltot,
+					  local_nsstot, rnd_control, state,
+					  mesh_op, topology, opacity, 
+					  freq_samp_data));
 
     // return the source
     return source;
 }
-
-
-
 
 //---------------------------------------------------------------------------//
 // CALCULATE INITIAL CENSUS
@@ -140,11 +140,11 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
  * via communication.
  * 
  */
-template<class MT, class PT>
-void DD_Source_Builder<MT,PT>::calc_initial_census(SP_Mesh mesh, 
-						   SP_Mat_State state, 
-						   SP_Opacity opacity,
-						   SP_Rnd_Control rcontrol)
+template<class MT, class FT, class PT>
+void DD_Source_Builder<MT,FT,PT>::calc_initial_census(SP_Mesh        mesh, 
+						      SP_Mat_State   state, 
+						      SP_Opacity     opacity,
+						      SP_Rnd_Control rcontrol)
 {
     Require(!census);
 
@@ -172,7 +172,7 @@ void DD_Source_Builder<MT,PT>::calc_initial_census(SP_Mesh mesh,
     Check (parallel_data_op.check_global_equiv(global_esstot));
 
     // calculate local initial census energy
-    calc_initial_ecen();
+    calc_initial_ecen(*opacity);
 
     // calculate global initial census energy
     global_ecentot = ecentot;
@@ -186,10 +186,13 @@ void DD_Source_Builder<MT,PT>::calc_initial_census(SP_Mesh mesh,
     // calculate local (Data_Distributed) number of census particles per cell
     calc_initial_ncen(cenrn);
 
+    // get the frequency
+    rtt_dsxx::SP<FT> frequency = opacity->get_Frequency();
+
     // write out the initial census (local, same for all topologies)
     if (local_ncentot > 0)
-	write_initial_census(mesh, rcontrol, local_ncen, local_ncentot,
-			     cenrn); 
+	write_initial_census(mesh, rcontrol, *frequency, *state,
+			     local_ncen, local_ncentot, cenrn); 
 }
 
 //---------------------------------------------------------------------------//
@@ -207,8 +210,8 @@ void DD_Source_Builder<MT,PT>::calc_initial_census(SP_Mesh mesh,
  * for the initial census particles. 
  *
  */
-template<class MT, class PT>
-void DD_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
+template<class MT, class FT, class PT>
+void DD_Source_Builder<MT,FT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 {
     // The problem must have a nonzero source
     Insist ((global_evoltot + global_esstot + global_ecentot) != 0, 
@@ -324,12 +327,12 @@ void DD_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
  * quantities are "Data_Distributed.")
  * 
  */
-template<class MT, class PT>
-void DD_Source_Builder<MT,PT>::recalc_census_ew_after_comb(
-    SP_Mesh mesh,
-    ccsf_int &max_dead_rand_id, 
-    SP_Census dead_census,
-    double &global_eloss_comb)
+template<class MT, class FT, class PT>
+void DD_Source_Builder<MT,FT,PT>::recalc_census_ew_after_comb(
+    SP_Mesh    mesh,
+    ccsf_int  &max_dead_rand_id, 
+    SP_Census  dead_census,
+    double    &global_eloss_comb)
 {
     using rtt_rng::Sprng;
 
@@ -418,8 +421,8 @@ void DD_Source_Builder<MT,PT>::recalc_census_ew_after_comb(
  * even if the census has just been created.  The census is combed \b every
  * cycle.
  */
-template<class MT, class PT>
-void DD_Source_Builder<MT,PT>::calc_source_numbers()
+template<class MT, class FT, class PT>
+void DD_Source_Builder<MT,FT,PT>::calc_source_numbers()
 {
     Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
 
@@ -583,13 +586,13 @@ void DD_Source_Builder<MT,PT>::calc_source_numbers()
  * species -- used as a check.
  *
  */
-template<class MT, class PT> 
-void DD_Source_Builder<MT,PT>::calc_fullDD_rn_fields(
-    const int global_numcells, 
-    ccsf_int &local_n_field,
-    int &next_avail_rn, 
-    ccsf_int &rn_field, 
-    const int global_ntot)
+template<class MT, class FT, class PT> 
+void DD_Source_Builder<MT,FT,PT>::calc_fullDD_rn_fields(
+    const int  global_numcells, 
+    ccsf_int  &local_n_field,
+    int       &next_avail_rn, 
+    ccsf_int  &rn_field, 
+    const int  global_ntot)
 {
     using rtt_mc::Parallel_Data_Operator;
     using std::accumulate;
@@ -606,8 +609,9 @@ void DD_Source_Builder<MT,PT>::calc_fullDD_rn_fields(
     sf_int global_n_field(global_numcells, 0);
 
     // map local source numbers into temporary global vector
-    parallel_data_op.local_to_global(local_n_field, global_n_field,
-				     Parallel_Data_Operator::Data_Distributed());
+    parallel_data_op.local_to_global(
+	local_n_field, global_n_field,
+	Parallel_Data_Operator::Data_Distributed());
 
     // check the sum of the global source numbers vector
     Check (global_ntot == accumulate(global_n_field.begin(),

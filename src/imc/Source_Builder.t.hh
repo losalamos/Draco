@@ -12,6 +12,8 @@
 #include "Source_Builder.hh"
 #include "Gray_Particle.hh"
 #include "Multigroup_Particle.hh"
+#include "Frequency.hh"
+#include "mc/Particle_Stack.hh"
 #include "rng/Random.hh"
 #include "mc/Sampler.hh"
 
@@ -444,7 +446,7 @@ Source_Builder<MT,FT,PT>::make_particle(
     }
 
     SP<Multigroup_Particle<MT> > particle(
-	new Gray_Particle<MT>(r, omega, ew, global_cell, random, group));
+	new Multigroup_Particle<MT>(r, omega, ew, global_cell, random, group));
 
     Check (particle);
     return particle;

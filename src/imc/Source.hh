@@ -12,30 +12,88 @@
 #ifndef __imc_Source_hh__
 #define __imc_Source_hh__
 
-#include "Particle.hh"
-#include "Mat_State.hh"
-#include "Mesh_Operations.hh"
-#include "mc/Particle_Stack.hh"
-#include "mc/Topology.hh"
-#include "rng/Random.hh"
+#include "Global.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <string>
+#include <vector>
+
+namespace rtt_rng
+{
+
+// Forward declarations.
+class Sprng;
+class Rnd_Control;
+
+}
+
+namespace rtt_mc
+{
+
+// Forward declarations.
+class Topology;
+template<class PT> class Particle_Containers;
+
+}
 
 namespace rtt_imc 
 {
 
+// Forward declarations.
+class Gray_Frequency;
+class Multigroup_Frequency;
+template<class MT> class Gray_Particle;
+template<class MT> class Multigroup_Particle;
+template<class MT> class Mat_State;
+template<class MT> class Mesh_Operations;
+template<class MT, class FT> class Opacity;
+
+//===========================================================================//
+/*!
+ * \class Frequency_Sampling_Data
+ *
+ * \brief Frequency-dependent sampling struct.
+ *
+ * This class holds data that is used by source and source builder
+ * specializations on frequency type (Gray_Frequency, Multigroup_Frequency).
+ */
+//===========================================================================//
+
+template<class MT, class FT>
+struct Frequency_Sampling_Data
+{
+    typedef rtt_dsxx::SP<MT> SP_Mesh;
+
+    Frequency_Sampling_Data(SP_Mesh mesh) {/*...*/}
+};
+
+//---------------------------------------------------------------------------//
+
+template<class MT>
+struct Frequency_Sampling_Data<MT, Multigroup_Frequency>
+{
+    typedef rtt_dsxx::SP<MT>                   SP_Mesh;
+    typedef typename MT::template CCSF<double> ccsf_double;
+
+    // Probability that a volume emission source particle is emitted from an
+    // opacity weighted Planckian as opposed to a straight Planckian.
+    ccsf_double prob_of_straight_Planck_emission;
+
+    Frequency_Sampling_Data(SP_Mesh mesh)
+	: prob_of_straight_Planck_emission(mesh) {/*...*/}
+};
+
 //===========================================================================//
 /*!
  * \class Source
- 
+ *
  * \brief Get source particles for IMC transport.
-
+ *
  * The Source class generates the next rtt_imc::Particle object when queried
  * with the get_Source_Particle() function.  The Source has an overloaded
  * bool() operator that allows the user to query when the source is active or
  * empty.
-
+ *
  */
 // revision history:
 // -----------------
@@ -49,22 +107,33 @@ namespace rtt_imc
 // 4) 14-DEC-00: added accessor to get the total number of source particles 
 //               contained in this source
 // 5) 31-JUL-01: used INTEGER_MODULO_1E9 from rtt_mc for random num. stream
+// 6) 05-FEB-02: updated for multigroup
 // 
 //===========================================================================//
 
-template<class MT, class PT = Particle<MT> >
+template<class MT, class FT, class PT>
 class Source
 {
   public:
     // Usefull typedefs
-    typedef typename MT::template CCSF<int>             ccsf_int;
-    typedef typename MT::template CCSF<double>          ccsf_double;
-    typedef rtt_dsxx::SP<rtt_mc::Topology>              SP_Topology;
-    typedef typename rtt_mc::Particle_Stack<PT>::Census PB_Census;
-    typedef rtt_dsxx::SP<PB_Census>                     SP_Census;
-    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>          SP_Rnd_Control; 
-    typedef rtt_dsxx::SP<Mat_State<MT> >                SP_Mat_State;
-    typedef rtt_dsxx::SP<Mesh_Operations<MT> >          SP_Mesh_Op; 
+    typedef typename MT::template CCSF<int>                    ccsf_int;
+    typedef typename MT::template CCSF<double>                 ccsf_double;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>                     SP_Topology;
+    typedef typename rtt_mc::Particle_Containers<PT>::Census   PB_Census;
+    typedef rtt_dsxx::SP<PB_Census>                            SP_Census;
+    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>                 SP_Rnd_Control; 
+    typedef rtt_dsxx::SP<Mat_State<MT> >                       SP_Mat_State;
+    typedef rtt_dsxx::SP<Opacity<MT,FT> >                      SP_Opacity;
+    typedef rtt_dsxx::SP<Mesh_Operations<MT> >                 SP_Mesh_Op;
+    typedef Gray_Particle<MT>                                  Gray_PT;
+    typedef Multigroup_Particle<MT>                            MG_PT;
+    typedef rtt_dsxx::SP<Gray_PT>                              SP_Gray_PT;
+    typedef rtt_dsxx::SP<MG_PT>                                SP_MG_PT;
+    typedef rtt_imc::global::Type_Switch<Gray_Frequency>       Switch_Gray;
+    typedef rtt_imc::global::Type_Switch<Multigroup_Frequency> Switch_MG;
+    typedef rtt_imc::global::Type_Switch<Gray_PT>              Switch_Gray_PT;
+    typedef rtt_imc::global::Type_Switch<MG_PT>                Switch_MG_PT;
+    typedef std::vector<double>                                sf_double;
 
   private:
     // >>> DATA
@@ -112,9 +181,16 @@ class Source
     // Material State.
     SP_Mat_State material;
 
+    // Opacity
+    SP_Opacity opacity;
+
     // Mesh_Operations class for performing volume emission sampling with T^4
     // tilts.
     SP_Mesh_Op mesh_op;
+
+    // Probabilities for sampling a volume emission source that is emitted
+    // from a straight Planckian.
+    Frequency_Sampling_Data<MT,FT> freq_samp_data;
 
   private:
     // >>> PRIVATE IMPLEMENTATION
@@ -124,11 +200,40 @@ class Source
     rtt_dsxx::SP<PT> get_evol(double);
     rtt_dsxx::SP<PT> get_ss(double);
 
+    // Make a Gray_Particle for surface source.
+    template<class Stop_Explicit_Instantiation>
+    SP_Gray_PT make_ss_particle(Switch_Gray, Switch_Gray_PT, 
+				const sf_double &, const sf_double &,
+				const double, int, const rtt_rng::Sprng &,
+				const double, const double);
+
+    // Make a Multigroup_Particle for surface source.
+    template<class Stop_Explicit_Instantiation>
+    SP_MG_PT make_ss_particle(Switch_MG, Switch_MG_PT, 
+			      const sf_double &, const sf_double &,
+			      const double, int, const rtt_rng::Sprng &,
+			      const double, const double);
+
+    // Make a Gray_Particle for surface source.
+    template<class Stop_Explicit_Instantiation>
+    SP_Gray_PT make_vol_particle(Switch_Gray, Switch_Gray_PT, 
+				 const sf_double &, const sf_double &,
+				 const double, int, const rtt_rng::Sprng &,
+				 const double, const double);
+
+    // Make a Multigroup_Particle for surface source.
+    template<class Stop_Explicit_Instantiation>
+    SP_MG_PT make_vol_particle(Switch_MG, Switch_MG_PT, 
+			       const sf_double &, const sf_double &,
+			       const double, int, const rtt_rng::Sprng &,
+			       const double, const double);
+
   public:
     // Constructor.
     Source(ccsf_int &, ccsf_int &, ccsf_double &, ccsf_int &, ccsf_int &, 
 	   ccsf_int &, ccsf_double &, SP_Census, std::string, int, int, 
-	   SP_Rnd_Control, SP_Mat_State, SP_Mesh_Op, SP_Topology);
+	   SP_Rnd_Control, SP_Mat_State, SP_Mesh_Op, SP_Topology, 
+	   SP_Opacity, const Frequency_Sampling_Data<MT,FT> &);
 
     // Primary source service, get a source particle.
     rtt_dsxx::SP<PT> get_Source_Particle(double); 
@@ -160,13 +265,13 @@ class Source
 //---------------------------------------------------------------------------//
 /*!
 
- * \brief Boolean conversion operator for source object.
+* \brief Boolean conversion operator for source object.
 
- * \return true if source particles exist; false if the source is empty
+* \return true if source particles exist; false if the source is empty
 
- */
-template<class MT, class PT>
-Source<MT, PT>::operator bool() const
+*/
+template<class MT, class FT, class PT>
+Source<MT,FT,PT>::operator bool() const
 {
     return (ncentot != ncendone || nsstot != nssdone || nvoltot != nvoldone);
 }
@@ -174,18 +279,18 @@ Source<MT, PT>::operator bool() const
 //---------------------------------------------------------------------------//
 /*!
  
- * \brief Get the total number of source particles in this source object.
+* \brief Get the total number of source particles in this source object.
 
- * This function returns the total number of source particles initially
- * contained in this source object. It is the sum of all three source
- * species: volume, surface source, and census.
+* This function returns the total number of source particles initially
+* contained in this source object. It is the sum of all three source
+* species: volume, surface source, and census.
 
- * \return the sum of the volume, surface source, and census particles
- * contained in this source object.
+* \return the sum of the volume, surface source, and census particles
+* contained in this source object.
  
- */
-template<class MT, class PT>
-int Source<MT,PT>::get_num_source_particles() const
+*/
+template<class MT, class FT, class PT>
+int Source<MT,FT,PT>::get_num_source_particles() const
 {
     return nvoltot + nsstot + ncentot;
 }
@@ -195,9 +300,9 @@ int Source<MT,PT>::get_num_source_particles() const
 //---------------------------------------------------------------------------//
 // output ascii version of the source
 
-template<class MT, class PT>
+template<class MT, class FT, class PT>
 inline std::ostream& operator<<(std::ostream &output, 
-				const Source<MT,PT> &object) 
+				const Source<MT,FT,PT> &object) 
 {
     object.print(output);
     return output;

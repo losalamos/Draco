@@ -13,12 +13,14 @@
 #define __imc_Multigroup_Particle_hh__
 
 #include "Particle.hh"
-#include "Frequency.hh"
 #include "mc/Sampler.hh"
 
 namespace rtt_imc
 {
  
+// Forward declarations.
+class Multigroup_Frequency;
+
 //===========================================================================//
 /*!
  * \class Multigroup_Particle

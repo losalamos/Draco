@@ -17,8 +17,6 @@
 #include "Source.hh"
 #include "Mat_State.hh"
 #include "Opacity.hh"
-#include "Frequency.hh"
-#include "mc/Particle_Stack.hh"
 #include "mc/Topology.hh"
 #include "mc/Parallel_Data_Operator.hh"
 #include "c4/global.hh"
@@ -43,12 +41,15 @@ namespace rtt_mc
 
 // Forward declarations.
 class Comm_Patterns;
+template<class PT> class Particle_Containers;
 
 }
 
 namespace rtt_imc
 {
 
+class Gray_Frequency;
+class Multigroup_Frequency;
 template<class MT> class Gray_Particle;
 template<class MT> class Multigroup_Particle;
  
@@ -151,7 +152,7 @@ class Source_Builder
 {
   public:
     // typedefs used in the inheritance chain
-    typedef rtt_dsxx::SP<Source<MT,PT> >          SP_Source;
+    typedef rtt_dsxx::SP<Source<MT,FT,PT> >       SP_Source;
     typedef rtt_mc::Particle_Containers<PT>       Containers;
     typedef typename Containers::Census           Census;
     typedef rtt_dsxx::SP<Census>                  SP_Census;

@@ -11,10 +11,8 @@
 
 #include "Rep_Source_Builder.hh"
 #include "Mesh_Operations.hh"
-#include "Global.hh"
-#include "mc/Parallel_Data_Operator.hh"
-#include "c4/global.hh"
-#include <iomanip>
+#include "mc/Comm_Patterns.hh"
+#include "rng/Random.hh"
 
 namespace rtt_imc
 {
@@ -22,14 +20,16 @@ namespace rtt_imc
 //---------------------------------------------------------------------------//
 // SOURCE BUILDER MAIN INTERFACE FUNCTIONS
 //---------------------------------------------------------------------------//
-
-template<class MT, class PT>
-Rep_Source_Builder<MT,PT>::SP_Source
-Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
-					SP_Mat_State state,
-					SP_Opacity opacity,
-					SP_Rnd_Control rnd_control,
-					SP_Comm_Patterns patterns)
+/*!
+ * \brief Build the source in a full replication parallel topology.
+ */
+template<class MT, class FT, class PT>
+Rep_Source_Builder<MT,FT,PT>::SP_Source
+Rep_Source_Builder<MT,FT,PT>::build_Source(SP_Mesh          mesh,
+					   SP_Mat_State     state,
+					   SP_Opacity       opacity,
+					   SP_Rnd_Control   rnd_control,
+					   SP_Comm_Patterns patterns)
 {
     int num_cells = mesh->num_cells();
     Require(num_cells == state->num_cells());
@@ -91,11 +91,12 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     // processor, this means that as particles are taken out of the source
     // the "master" census (in a global_state object) on processor is emptied 
     // as well
-    SP_Source source(new Source<MT,PT>(volrn, local_nvol, ew_vol, ssrn,
-				       local_nss, ss_face_in_cell, ew_ss, 
-				       census, ss_dist, local_nvoltot,
-				       local_nsstot, rnd_control, state,
-				       mesh_op, topology));
+    SP_Source source(new Source<MT,FT,PT>(volrn, local_nvol, ew_vol, ssrn,
+					  local_nss, ss_face_in_cell, ew_ss, 
+					  census, ss_dist, local_nvoltot,
+					  local_nsstot, rnd_control, state,
+					  mesh_op, topology, opacity, 
+					  freq_samp_data));
 
     // return the source
     return source;
@@ -118,12 +119,14 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
  * rtt_dsxx::SP to the completed census may be accessed through the
  * Source_Builder::get_census() function. 
  */
-template<class MT, class PT>
-void Rep_Source_Builder<MT,PT>::calc_initial_census(SP_Mesh mesh,
-						    SP_Mat_State state, 
-						    SP_Opacity opacity,
-						    SP_Rnd_Control rcontrol)
+template<class MT, class FT, class PT>
+void Rep_Source_Builder<MT,FT,PT>::calc_initial_census(SP_Mesh        mesh,
+						       SP_Mat_State   state, 
+						       SP_Opacity     opacity,
+						       SP_Rnd_Control rcontrol)
 {
+    using rtt_dsxx::SP;
+
     Require(!census);
 
     // make the census
@@ -138,7 +141,7 @@ void Rep_Source_Builder<MT,PT>::calc_initial_census(SP_Mesh mesh,
     Check(parallel_data_op.check_global_equiv(esstot));
     
     // calculate local (Data_Replicated) values of initial census energy
-    calc_initial_ecen();
+    calc_initial_ecen(*opacity);
     Check(parallel_data_op.check_global_equiv(ecentot));
 
     // make a local, global-mesh sized, field holding the census random
@@ -148,10 +151,13 @@ void Rep_Source_Builder<MT,PT>::calc_initial_census(SP_Mesh mesh,
     // calculate local (Data_Replicated) number of census particles per cell
     calc_initial_ncen(cenrn);
 
+    // get the frequency
+    SP<FT> frequency = opacity->get_Frequency();
+
     // write out the initial census
     if (local_ncentot > 0)
-	write_initial_census(mesh, rcontrol, local_ncen, local_ncentot,
-			     cenrn);   
+	write_initial_census(mesh, rcontrol, *frequency, *state,
+			     local_ncen, local_ncentot, cenrn);   
 }
 
 //===========================================================================//
@@ -174,8 +180,8 @@ void Rep_Source_Builder<MT,PT>::calc_initial_census(SP_Mesh mesh,
  * \param cenrn temporary, mutable, local field of initial census random
  * number IDs 
  */
-template<class MT, class PT>
-void Rep_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
+template<class MT, class FT, class PT>
+void Rep_Source_Builder<MT,FT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 {
     // require that the global source energies are not zero
     Insist ((evoltot+esstot+ecentot) != 0, "You must specify some source!");
@@ -292,12 +298,12 @@ void Rep_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
  *                          combing; this loss will be decreased by the
  *                          energy of any resurrected census particles.
  *  */
-template<class MT, class PT>
-void Rep_Source_Builder<MT,PT>::recalc_census_ew_after_comb(
-    SP_Mesh mesh,
-    ccsf_int &max_dead_rand_id, 
-    SP_Census dead_census,
-    double &global_eloss_comb)
+template<class MT, class FT, class PT>
+void Rep_Source_Builder<MT,FT,PT>::recalc_census_ew_after_comb(
+    SP_Mesh    mesh,
+    ccsf_int  &max_dead_rand_id, 
+    SP_Census  dead_census,
+    double    &global_eloss_comb)
 {
     using rtt_mc::Parallel_Data_Operator;
     using rtt_rng::Sprng;
@@ -366,8 +372,10 @@ void Rep_Source_Builder<MT,PT>::recalc_census_ew_after_comb(
 	for (int cell = 1; cell <= mesh->num_cells(); cell++)
 	    global_ncen(cell) = local_ncen(cell);
 
-	parallel_data_op.local_to_global(local_ncen, global_ncen,
-					 Parallel_Data_Operator::Data_Decomposed());
+	parallel_data_op.local_to_global(
+	    local_ncen, global_ncen, 
+	    Parallel_Data_Operator::Data_Decomposed());
+
 	// update the total
 	global_ncentot += num_resurrected;
 
@@ -409,8 +417,8 @@ void Rep_Source_Builder<MT,PT>::recalc_census_ew_after_comb(
  * even if the census has just been created.  The census is combed \b every
  * cycle.
  */
-template<class MT, class PT>
-void Rep_Source_Builder<MT,PT>::calc_source_numbers()
+template<class MT, class FT, class PT>
+void Rep_Source_Builder<MT,FT,PT>::calc_source_numbers()
 {
     Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
 
@@ -545,14 +553,14 @@ void Rep_Source_Builder<MT,PT>::calc_source_numbers()
  *                       particles for a particular species on processor
  * \param rn_field       mutable field of starting random number stream IDs
  */
-template<class MT, class PT> 
-void Rep_Source_Builder<MT,PT>::calc_num_part_and_rn_fields(
+template<class MT, class FT, class PT> 
+void Rep_Source_Builder<MT,FT,PT>::calc_num_part_and_rn_fields(
     const ccsf_int &global_n_field,
-    const int global_numtot,
-    int &next_avail_rn,
-    ccsf_int &local_n_field,
-    int &local_numtot, 
-    ccsf_int &rn_field)
+    const int       global_numtot,
+    int            &next_avail_rn,
+    ccsf_int       &local_n_field,
+    int            &local_numtot, 
+    ccsf_int       &rn_field)
 {
     // requirements
     int num_cells = global_n_field.size();
