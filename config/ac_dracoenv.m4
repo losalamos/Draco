@@ -358,8 +358,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
        AC_MSG_CHECKING("libg2c requirements")
-       if test -n "${with_lapack}" || test -n "${with_pcg}" ||
-	  test -n "${with_gandolf}"; then
+       if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||
+	  test -n "${vendor_gandolf}"; then
 	   LIBS="${LIBS} -lg2c"
 	   AC_MSG_RESULT("-lg2c added to LIBS")
        else
@@ -478,7 +478,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # setup lapack
        #
 
-       #PCGLIB EXTRAS
        if test "${with_lapack}" = vendor ; then
 
 	   # if an lapack location was defined use it
