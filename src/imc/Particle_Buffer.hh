@@ -202,6 +202,7 @@ public:
     void async_wait(Comm_Buffer &) const;
     bool async_check(Comm_Buffer &) const;
     void async_free(Comm_Buffer &) const;
+    bool comm_status(Comm_Buffer &) const;
 
   // accessor functions
     int get_dsize() const { return dsize; } 

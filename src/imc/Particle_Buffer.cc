@@ -414,6 +414,25 @@ void Particle_Buffer<PT>::async_free(Comm_Buffer &buffer) const
 }
 
 //---------------------------------------------------------------------------//
+// check to see if the C4_Req objects are in use or not
+
+template<class PT>
+bool Particle_Buffer<PT>::comm_status(Comm_Buffer &buffer) const
+{
+    if (!buffer.comm_n.inuse())
+	return false;
+    else if (!buffer.comm_d.inuse())
+	return false;
+    else if (!buffer.comm_i.inuse())
+	return false;
+    else if (!buffer.comm_c.inuse())
+	return false;
+
+  // if we haven't returned then these are still active
+    return true;
+}
+
+//---------------------------------------------------------------------------//
 // Buffering functions
 //---------------------------------------------------------------------------//
 // add a Census_Buffer to a Comm_Buffer
