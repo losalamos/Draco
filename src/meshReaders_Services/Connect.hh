@@ -21,6 +21,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <cmath>
 
 namespace rtt_meshReaders_Services
 {
@@ -77,7 +78,7 @@ class Connect
     Connect() { /* empty */ } 
 /*!
  * \brief Constructs a Connect class object which determines the 
- *        mesh connectivity via a call to a private memember function.
+ *        mesh connectivity via a call to a private member function.
  * \param mesh_reader_ meshReaders class object.
  * \param bndry_flags_ Flags used to indicate boundary conditions.
  * \param flag_numbs_ Flag numbers associated with the bndry_flags.

@@ -17,7 +17,6 @@
 #include "ds++/Assert.hh"
 #include <utility>
 #include <iterator>
-#include <cmath>
 #include <algorithm>
 
 namespace rtt_meshReaders_Services
