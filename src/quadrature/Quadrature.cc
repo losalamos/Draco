@@ -46,62 +46,20 @@ using std::setprecision;
 
 // Functions that return quadrature directions and weights.
 
-const vector<double>& Quadrature::getEta() const { 
-    Insist( dimensionality() >= 2,
-	    "The quadrature set must have at least 2 dimensions to return eta.");
-    return eta;
-}
-
-const vector<double>& Quadrature::getXi() const { 
-    Insist( dimensionality() >= 3,
-	    "The quadrature set must have at least 3 dimensions to return xi.");
-    return xi;
-}
-
-double Quadrature::getMu( const int m ) const {
-    // Angle index m must be greater than zero and less than numAngles.
-    Require( m >= 0 && m < getNumAngles() );             
-    // Die if the vector mu appears to be the wrong size.
-    Check( mu.size() >= m );       
-    return mu[m];
-}
-
-double Quadrature::getEta( const int m ) const {
-    Insist( dimensionality() >= 2,
-       "The quadrature set must have at least 2 dimensions to return eta.");
-    // Angle index m must be greater than zero and less than numAngles.
-    Require( m >= 0 && m < getNumAngles() ); 
-    return eta[m];
-}
-
-double Quadrature::getXi( const int m ) const {
-    Insist( dimensionality() >= 3,
-       "The quadrature set must have at least 3 dimensions to return xi.");
-    // Angle index m must be greater than zero and less than numAngles.
-    Require( m >= 0 && m < getNumAngles() ); 
-    return xi[m];
-}
-
-double Quadrature::getWt( const int m ) const {
-    // Angle index m must be greater than zero and less than numAngles.
-    Require( m >= 0 && m < getNumAngles() ); 
-    return wt[m];
-}
-
-vector<double> Quadrature::getOmega( const int m ) const {
-    vector<double> omega(3);
-    Require( m >= 0 && m < getNumAngles() );
-    omega[0] = mu[m];
-    if ( dimensionality() >= 2 )
-	omega[1] = eta[m];
-    else
-	omega[1] = 0.0;  // no eta or xi values in 1D!
-    if ( dimensionality() >= 3 )
-	omega[2] = xi[m];
-    else
-	omega[2] = 0.0;  // no eta or xi values in 1D!
-    return omega;
-}
+// vector<double> Quadrature::getOmega( const int m ) const {
+//     vector<double> omega(3);
+//     Require( m >= 0 && m < getNumAngles() );
+//     omega[0] = mu[m];
+//     if ( dimensionality() >= 2 )
+// 	omega[1] = eta[m];
+//     else
+// 	omega[1] = 0.0;  // no eta or xi values in 1D!
+//     if ( dimensionality() >= 3 )
+// 	omega[2] = xi[m];
+//     else
+// 	omega[2] = 0.0;  // no eta or xi values in 1D!
+//     return omega;
+// }
 
 // Functions that test the validity of the quadrature set.
 
@@ -244,7 +202,17 @@ Q1DGaussLeg::Q1DGaussLeg( int n, double norm_ )
 	for ( int i=0; i < numAngles; ++i )
 	    wt[i] = c * wt[i];
     }
-}
+    
+    // make a copy of the data into the omega vector < vector < double > >
+    omega.resize( n );
+    for ( int i=0; i<n; ++i )
+	{
+	    // This is a 1D set.
+	    omega[i].resize(1);
+	    omega[i][0] = mu[i];
+	}
+
+} // end of Q1DGaussLeg() constructor.
 
 void Q1DGaussLeg::display() const {
     cout << endl << "The Quadrature directions and weights are:" 
@@ -273,8 +241,10 @@ Q3DLevelSym::Q3DLevelSym( int sn_order_, double norm_ )
 { 
     Require ( snOrder > 0 );
     Require ( norm > 0.0 );
-    Insist ( snOrder%2 == 0, "LS Quad must have an even SN order." );
-    Insist ( snOrder >= 2 && snOrder <= 24, "LS Quad must have a SN order between 2 and 24." );
+    // Insist ( snOrder%2 == 0, "LS Quad must have an even SN order." );
+    Require ( snOrder%2 == 0 );
+    // Insist ( snOrder >= 2 && snOrder <= 24, "LS Quad must have a SN order between 2 and 24." );
+    Require ( snOrder >= 2 && snOrder <= 24 );
 
     // The number of quadrature levels is equal to the requested SN order.
     int m, levels = snOrder;
@@ -648,7 +618,19 @@ Q3DLevelSym::Q3DLevelSym( int sn_order_, double norm_ )
     Ensure( fabs(iood[6]) <= TOL ); // xi*mu
     Ensure( fabs(iood[7]) <= TOL ); // xi*eta
     Ensure( fabs(iood[8]-norm/3.0) <= TOL ); // xi*xi
-}
+
+    // Copy quadrature data { mu, eta, xi } into the vector omega.
+    omega.resize( numAngles );
+    int ndims = dimensionality();
+    for ( int i=0; i<numAngles; ++i )
+	{
+	    omega[i].resize( ndims );
+	    omega[i][0] = mu[i];
+	    omega[i][1] = eta[i];
+	    omega[i][2] = xi[i];
+	}
+
+} // end of Q3LevelSym() constructor.
 
 void Q3DLevelSym::display() const {
     cout << endl << "The Quadrature directions and weights are:" 

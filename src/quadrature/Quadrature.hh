@@ -15,6 +15,13 @@
 #include <vector>
 #include <string>
 
+#include "ds++/Assert.hh"
+// Require(cond) -- check input vals
+// Ensure(cond)  -- check output vals
+// Check(cond) or Assert(cond) -- other checks
+// Insist(cond,msg) -- Always checks, others can be turned off with compile
+//                     option.
+
 namespace rtt_quadrature
 {
 
@@ -112,7 +119,7 @@ class Quadrature
      * theta is the azimuthal angle.
      * phi is the polar angle.
      */
-    const vector<double>& getMu() { return mu; }
+    const vector<double>& getMu() const { return mu; }
 
     /*!
      * \brief Return the eta vector.
@@ -123,7 +130,12 @@ class Quadrature
      *
      * See comments for getMu().
      */
-    const vector<double>& getEta() const;
+    const vector<double>& getEta() const 
+    {
+	// The quadrature set must have at least 2 dimensions to return eta.
+	Require( dimensionality() >= 2 );
+	return eta;
+    }
 
     /*!
      * \brief Return the xi vector.
@@ -134,7 +146,11 @@ class Quadrature
      *
      * See comments for getMu().
      */
-    const vector<double>& getXi() const; // { return xi; };
+    const vector<double>& getXi() const 
+    {
+	Require( dimensionality() >= 3 );
+	return xi;
+    }
 
     /*!
      * \brief Return the wt vector.
@@ -158,7 +174,14 @@ class Quadrature
      *          (0,numAngles). 
      */
     // const double getMu ????
-    double getMu( const int ) const;
+    double getMu( const int m ) const
+    {
+	// Angle index m must be greater than zero and less than numAngles.
+	Require( m >= 0 && m < getNumAngles() );             
+	// Die if the vector mu appears to be the wrong size.
+	Check( mu.size() >= m );       
+	return mu[m];
+    }
 
     /*!
      * \brief Return the eta component of the direction Omega_m.
@@ -172,7 +195,14 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    double getEta( const int ) const;
+    double getEta( const int m ) const
+    {
+	// The quadrature set must have at least 2 dimensions to return eta.
+	Require( dimensionality() >= 2 );
+	// Angle index m must be greater than zero and less than numAngles.
+	Require( m >= 0 && m < getNumAngles() ); 
+	return eta[m];
+    }
 
     /*!
      * \brief Return the xi component of the direction Omega_m.
@@ -186,7 +216,14 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    double getXi( const int ) const;
+    double getXi( const int m ) const
+    {
+	// The quadrature set must have at least 3 dimensions to return xi.
+	Require( dimensionality() >= 3 );
+	// Angle index m must be greater than zero and less than numAngles.
+	Require( m >= 0 && m < getNumAngles() ); 
+	return xi[m];
+    }
 
     /*!
      * \brief Return the weight associated with the direction Omega_m.
@@ -199,7 +236,12 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    double getWt( const int ) const;
+    double getWt( const int m ) const
+    {
+	// Angle index m must be greater than zero and less than numAngles.
+	Require( m >= 0 && m < getNumAngles() ); 
+	return wt[m];
+    }
 
     /*!
      * \brief Returns the Omega vector for all directions.
@@ -208,7 +250,10 @@ class Quadrature
      * vector of doubles that together represent the m-th discrete
      * direction. 
      */
-//     virtual const vector< vector<double> >& getOmega() const = 0;
+    const vector< vector<double> > &getOmega() const 
+    {
+	return omega;
+    }
 
     /*!
      * \brief Returns the Omega vector for a single direction.
@@ -219,7 +264,11 @@ class Quadrature
      * \param m The direction index must be contained in the range
      * (0,numAngles). 
      */
-    vector<double> getOmega( const int ) const;
+    const vector<double> &getOmega( const int m ) const
+    {
+	Require ( m>=0 && m < getNumAngles() );
+	return omega[m];
+    }
 
     /*!
      * \brief Returns the number of directions in the current quadrature set.
@@ -311,6 +360,7 @@ class Quadrature
     vector<double> eta; // will be an empty vector for all 1D sets.
     vector<double> xi;  // will be an empty vector for all 1D and 2D sets.
     vector<double> wt;
+    vector< vector< double > > omega;
 };
 
 //===========================================================================//
