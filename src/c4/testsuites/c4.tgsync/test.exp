@@ -13,7 +13,6 @@ if {$Serial} { set maxprocs 1 } else { set maxprocs 8 }
 
 proc runit {np args} {
     set output [c4run $np $args]
-    # puts "output is :$output:"
 
     set lines [split $output \n]
 
@@ -21,11 +20,16 @@ proc runit {np args} {
     set y [lrange $lines $np [expr 2 * $np - 1]]
 
     foreach line $x {
-	if {![regexp "Hello from" $line]} { return 0 }
+	if {![regexp "Hello from" $line]} {
+	   puts "output is \"$output\""
+	   return 0
+        }
     }
 
     foreach line $y {
-	if {![regexp "Hello again from" $line]} { return 0 }
+	if {![regexp "Hello again from" $line]} {
+	   puts "output is \"$output\""
+	   return 0 }
     }
 
     return 1
