@@ -1,3 +1,8 @@
+2001-12-17  Thomas M. Evans  <tme@lanl.gov>
+
+	* stdheaders: Release stdheaders-1_1_0.  Removal of configure and
+	some improvements to configure.in are only changes.
+
 2001-07-30  Thomas M. Evans  <tme@lanl.gov>
 
 	* stdheaders: Release stdheaders-1_0_0.  First release.
