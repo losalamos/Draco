@@ -85,9 +85,10 @@ template<class T> class mpi_ar_traits
 };
 
 template<class T>
-void gsum( T *px, int n, T dummy /*=T()*/ )
+void gsum( T *px, int n )
 {
     Assert( n >= 0 );
+    T dummy = T();
 
     mpi_ar_traits<T>::ar_buf[n-1] = dummy; // auto expand the buffer.
     for( int i=0; i < n; i++ )
@@ -98,9 +99,10 @@ void gsum( T *px, int n, T dummy /*=T()*/ )
 }
 
 template<class T>
-void gmin( T *px, int n, T dummy /*=T()*/ )
+void gmin( T *px, int n )
 {
     Assert( n >= 0 );
+    T dummy = T();
 
     mpi_ar_traits<T>::ar_buf[n-1] = dummy; // auto expand the buffer.
     for( int i=0; i < n; i++ )
@@ -111,9 +113,10 @@ void gmin( T *px, int n, T dummy /*=T()*/ )
 }
 
 template<class T>
-void gmax( T *px, int n, T dummy /*=T()*/ )
+void gmax( T *px, int n )
 {
     Assert( n >= 0 );
+    T dummy = T();
 
     mpi_ar_traits<T>::ar_buf[n-1] = dummy; // auto expand the buffer.
     for( int i=0; i < n; i++ )
@@ -126,17 +129,17 @@ void gmax( T *px, int n, T dummy /*=T()*/ )
 template<class T>
 DynArray<T> mpi_ar_traits<T>::ar_buf(10);
 
-template void gsum( int *px, int n, int dummy );
-template void gsum( float *px, int n, float dummy );
-template void gsum( double *px, int n, double dummy );
+template void gsum( int *px, int n );
+template void gsum( float *px, int n );
+template void gsum( double *px, int n );
 
-template void gmin( int *px, int n, int dummy );
-template void gmin( float *px, int n, float dummy );
-template void gmin( double *px, int n, double dummy );
+template void gmin( int *px, int n );
+template void gmin( float *px, int n );
+template void gmin( double *px, int n );
 
-template void gmax( int *px, int n, int dummy );
-template void gmax( float *px, int n, float dummy );
-template void gmax( double *px, int n, double dummy );
+template void gmax( int *px, int n );
+template void gmax( float *px, int n );
+template void gmax( double *px, int n );
 
 C4_NAMESPACE_END
 
