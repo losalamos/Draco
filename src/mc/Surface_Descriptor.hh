@@ -49,6 +49,12 @@ struct Surface_Descriptor
     Surface_Type type;
     std::vector<double> data;
 
+    //! Default constructor
+    Surface_Descriptor() { /* ... */ }
+
+    //! Destructor
+    ~Surface_Descriptor() { /* ... */ }
+
     //! Constructor
     Surface_Descriptor(int type, const std::vector<double>& data);
 
