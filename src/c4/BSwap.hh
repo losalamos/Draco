@@ -34,7 +34,7 @@ class BSwap : public NodeInfo {
 
     int other_node;
 
-    enum { BS_Hello = 35465,
+    enum { BS_Hello = 32760,
 	   BS_xmit };
 
   public:
