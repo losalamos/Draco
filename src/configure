@@ -1190,13 +1190,13 @@ subdirs="ds++ xm fourier"
 
 subdirs="ds++ xm fourier traits units nml c4 rng"
 
-subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest"
+subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest viz"
 
-subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest mesh POOMA_MT radphys linalg diffusion mc timestep"
+subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg diffusion mc timestep"
 
-subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest mesh POOMA_MT radphys linalg diffusion mc timestep matprops P1Diffusion"
+subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg diffusion mc timestep matprops P1Diffusion"
 
-subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest mesh POOMA_MT radphys linalg diffusion mc timestep matprops P1Diffusion imc"
+subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg diffusion mc timestep matprops P1Diffusion imc"
 
 
 trap '' 1 2 15
@@ -1481,7 +1481,7 @@ if test "$no_recursion" != yes; then
     esac
   done
 
-  for ac_config_dir in ds++ xm fourier traits units nml c4 rng stopwatch meshTest mesh POOMA_MT radphys linalg diffusion mc timestep matprops P1Diffusion imc; do
+  for ac_config_dir in ds++ xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg diffusion mc timestep matprops P1Diffusion imc; do
 
     # Do not complain, so a configure script can configure whichever
     # parts of a large source tree are present.
