@@ -163,10 +163,10 @@ void RadiationPhysics::getElectIonCoulombLog(const Field &density,
 
     typedef ContainerTraits<Field> CTF;
 
-    CTF::iterator lit = CTF::begin(lambda_ei);
-    CTF::const_iterator Tit = CTF::begin(TElect_eV);
-    CTF::const_iterator nit = CTF::begin(neCGS);
-    CTF::const_iterator zit = CTF::begin(z);
+    typename CTF::iterator lit = CTF::begin(lambda_ei);
+    typename CTF::const_iterator Tit = CTF::begin(TElect_eV);
+    typename CTF::const_iterator nit = CTF::begin(neCGS);
+    typename CTF::const_iterator zit = CTF::begin(z);
 
     while(lit != CTF::end(lambda_ei))
     {
@@ -306,10 +306,10 @@ void RadiationPhysics::getElectElectCoulombLog(const Field &density,
 
     typedef ContainerTraits<Field> CTF;
 
-    CTF::iterator lit = CTF::begin(lambda_ee);    
-    CTF::const_iterator Tit = CTF::begin(TElect_eV);
-    CTF::const_iterator	nit = CTF::begin(neCGS);
-    CTF::const_iterator	zit = CTF::begin(z);
+    typename CTF::iterator       lit = CTF::begin(lambda_ee);    
+    typename CTF::const_iterator Tit = CTF::begin(TElect_eV);
+    typename CTF::const_iterator nit = CTF::begin(neCGS);
+    typename CTF::const_iterator zit = CTF::begin(z);
 
     while(lit != CTF::end(lambda_ee))
     {
@@ -353,8 +353,8 @@ void RadiationPhysics::getElectronGamma0(const Field &z, Field &gamma0) const
 
     typedef ContainerTraits<Field> CTF;
     
-    CTF::const_iterator zit = CTF::begin(z);
-    CTF::iterator git = CTF::begin(gamma0);
+    typename CTF::const_iterator zit = CTF::begin(z);
+    typename CTF::iterator git = CTF::begin(gamma0);
     
     while (zit != CTF::end(z))
     {
@@ -495,10 +495,10 @@ void RadiationPhysics::getIonIonCoulombLog(const Field &density,
 
     typedef ContainerTraits<Field> CTF;
 
-    CTF::iterator lit = CTF::begin(lambda_ii);
-    CTF::const_iterator	Tit = CTF::begin(TElect_eV);
-    CTF::const_iterator	nit = CTF::begin(niCGS);
-    CTF::const_iterator	zit = CTF::begin(z);
+    typename CTF::iterator       lit = CTF::begin(lambda_ii);
+    typename CTF::const_iterator Tit = CTF::begin(TElect_eV);
+    typename CTF::const_iterator nit = CTF::begin(niCGS);
+    typename CTF::const_iterator zit = CTF::begin(z);
 
     while(lit != CTF::end(lambda_ii))
     {
@@ -541,10 +541,10 @@ void RadiationPhysics::getIonGamma0(const Field &z, const Field &TElect,
 
     typedef ContainerTraits<Field> CTF;
     
-    CTF::const_iterator zit = CTF::begin(z);
-    CTF::const_iterator teit = CTF::begin(TElect);
-    CTF::const_iterator tiit = CTF::begin(TIon);
-    CTF::iterator git = CTF::begin(gamma0);
+    typename CTF::const_iterator zit = CTF::begin(z);
+    typename CTF::const_iterator teit = CTF::begin(TElect);
+    typename CTF::const_iterator tiit = CTF::begin(TIon);
+    typename CTF::iterator git = CTF::begin(gamma0);
     
     while (zit != CTF::end(z))
     {
