@@ -1,9 +1,12 @@
-1999-11-05  Todd J. Urbatsch  <tmonster@lanl.gov>
+1999-11-12  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* : Updated to imc-1_2_0. 
+
+1999-11-10  Todd J. Urbatsch  <tmonster@lanl.gov>
 
 	* Global_Tally.t.hh, Global_Tally.hh, Source_Init.t.hh,
 	Source_Init.hh: 1) Corrected Initial Material Energy Edit 2) Added 
-	material volume source -- time-explicit portion.  Updated to
-	imc-1_2_0. 
+	material volume source -- time-explicit portion. 
 
 1999-10-15  Thomas M. Evans  <tme@lanl.gov>
 
