@@ -219,8 +219,8 @@ inline std::ostream& operator<<(std::ostream &output,
 template<class MT>
 inline void Particle<MT>::Diagnostic::header() const 
 { 
-    output << "*** PARTICLE HISTORY ***" << endl; 
-    output << "------------------------" << endl;
+    output << "*** PARTICLE HISTORY ***" << std::endl; 
+    output << "------------------------" << std::endl;
 }
 
 //---------------------------------------------------------------------------//
