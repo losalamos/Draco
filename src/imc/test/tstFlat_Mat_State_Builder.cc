@@ -370,7 +370,7 @@ void mg_flat_mat_state_test()
 			    int_Planck)) ITFAILS;
 
 	// check effective cross sections
-	for (int c = 1; c < 6; c++)
+	for (int c = 1; c <= 6; c++)
 	{
 	    pair<double,double> b;
 	    double              sum = 0.0;
@@ -416,6 +416,153 @@ void mg_flat_mat_state_test()
 
 //---------------------------------------------------------------------------//
 
+void mg_flat_diffusion_mat_state_test()
+{
+    // build a parser, mesh, and interface
+    SP<Parser>                  parser(new Parser("OS_Input"));
+    SP<OS_Builder>              mb(new OS_Builder(parser));
+    SP<OS_Mesh>                 mesh = mb->build_Mesh();
+    SP<IMC_Flat_Interface<PT> > interface(new IMC_Flat_Interface<PT>(mb, 0, 1));
+    
+    // pointer to a mat state builder
+    SP<Mat_State_Builder<MT,MG> > builder;
+
+    // make a flat mat state builder
+    builder = new Flat_Mat_State_Builder<MT,MG>(interface);
+
+    // build objects
+    builder->build_mat_classes(mesh);
+
+    // get the opacity and mat states
+    SP<MG>                     frequency = builder->get_Frequency();
+    SP<Mat_State<MT> >         mat_state = builder->get_Mat_State();
+    SP<Opacity<MT,MG> >        opacity   = builder->get_Opacity();
+    SP<Diffusion_Opacity<MT> > diff      = builder->get_Diffusion_Opacity();
+    if (!diff)                  ITFAILS;
+    if (diff->num_cells() != 6) ITFAILS;
+
+    // check the groups
+    vector<double> ref_groups(4);
+    ref_groups[0] = 0.01;
+    ref_groups[1] = 0.1;
+    ref_groups[2] = 15.0;
+    ref_groups[3] = 100.0;
+    {
+	vector<double> groups = frequency->get_group_boundaries();
+	if (!soft_equiv(groups.begin(), groups.end(), 
+			ref_groups.begin(), ref_groups.end())) ITFAILS;
+    }
+
+    // check the opacities
+    double int_Planck;
+    {
+	if (!soft_equiv(opacity->get_sigma_abs(1, 1), 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(1, 2), 0.5)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(1, 3), 0.1)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(2, 1), 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(2, 2), 0.5)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(2, 3), 0.1)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(3, 1), 1.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(3, 2), 0.5)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(3, 3), 0.1)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(4, 1), 2.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(4, 2), 1.5)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(4, 3), 1.1)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(5, 1), 2.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(5, 2), 1.5)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(5, 3), 1.1)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(6, 1), 2.0)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(6, 2), 1.5)) ITFAILS;
+	if (!soft_equiv(opacity->get_sigma_abs(6, 3), 1.1)) ITFAILS;
+
+	for (int c = 1; c <= 6; c++)
+	    for (int g = 1; g <= frequency->get_num_groups(); g++)
+		if (!soft_equiv(opacity->get_sigma_thomson(c,g), 0.0)) 
+		    ITFAILS;
+
+	int_Planck = CDI::integratePlanckSpectrum(0.01, 100.0, 10.0);
+	for (int c = 1; c <= 3; c++)
+	    if (!soft_equiv(opacity->get_integrated_norm_Planck(c),
+			    int_Planck)) ITFAILS;
+
+	int_Planck = CDI::integratePlanckSpectrum(0.01, 100.0, 20.0);
+	for (int c = 4; c <= 6; c++)
+	    if (!soft_equiv(opacity->get_integrated_norm_Planck(c),
+			    int_Planck)) ITFAILS;
+
+	// check effective cross sections in opacity and diffusion opacity
+	for (int c = 1; c <= 6; c++)
+	{
+	    pair<double,double> b;
+	    double              sum = 0.0;
+	    vector<double>      ref_emission(3);
+	    double              T = mat_state->get_T(c);
+	    for (int g = 1; g <= frequency->get_num_groups(); g++)
+	    {
+		b                 = frequency->get_group_boundaries(g);
+		sum              += opacity->get_sigma_abs(c,g) *
+		    CDI::integratePlanckSpectrum(b.first, b.second, T);
+		ref_emission[g-1] = sum;
+	    }
+	    
+	    vector<double> emission = opacity->get_emission_group_cdf(c);
+
+	    if (!soft_equiv(emission.begin(), emission.end(),
+			    ref_emission.begin(), ref_emission.end())) ITFAILS;
+
+	    double planck = sum / opacity->get_integrated_norm_Planck(c);
+
+	    double beta   = 4.0 * rtt_mc::global::a * T*T*T * mesh->volume(c) /
+		mat_state->get_dedt(c);
+
+	    double fleck  = 1.0 / 
+		(1.0 + .001 * rtt_mc::global::c * beta * planck);  
+
+	    if (!soft_equiv(diff->get_fleck(c), fleck)) ITFAILS;
+
+	    for (int g = 1; g <= frequency->get_num_groups(); g++)
+	    {
+		double effabs = opacity->get_sigma_abs(c,g) * fleck;
+		double effsct = opacity->get_sigma_abs(c,g) * (1.0-fleck);
+
+		if (!soft_equiv(opacity->get_sigeffscat(c,g),effsct)) ITFAILS;
+		if (!soft_equiv(opacity->get_sigeffabs(c,g),effabs))  ITFAILS;
+	    }
+
+	    // check Rosseland opacities in diffusion opacity
+	    double ros_sum         = 0.0;
+	    double inv_sig_ros_sum = 0.0;
+	    double r_g             = 0.0;
+	    double ros_ref         = 0.0;
+	    for (int g = 1; g <= frequency->get_num_groups(); g++)
+	    {
+		b   = frequency->get_group_boundaries(g);
+		r_g = CDI::integrateRosselandSpectrum(b.first, b.second, T);
+
+		// sums (scattering is zero)
+		ros_sum         += r_g;
+		inv_sig_ros_sum += r_g / opacity->get_sigma_abs(c, g);
+	    }
+
+	    // check ros sum
+	    if (!soft_equiv(
+		    CDI::integrateRosselandSpectrum(0.01, 100.0, T),
+		    ros_sum)) ITFAILS;
+
+	    // calculate reference rosseland and compare
+	    ros_ref = ros_sum / inv_sig_ros_sum;
+
+	    // check it
+	    if (!soft_equiv(diff->get_Rosseland_opacity(c), ros_ref)) ITFAILS;
+	}
+    }
+
+    if (rtt_imc_test::passed)
+	PASSMSG("Flat Diffusion_Opacity passes all tests in MG test.");
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     rtt_c4::initialize(argc, argv);
@@ -441,6 +588,7 @@ int main(int argc, char *argv[])
 
 	// mg tests
 	mg_flat_mat_state_test();
+	mg_flat_diffusion_mat_state_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {

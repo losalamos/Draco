@@ -273,6 +273,8 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG, SP_Mesh mesh)
     typename MT::template CCSF<sf_double> scattering(
 	mesh, flat_data->mg_scattering_opacity);
 
+    typename MT::template CCSF<double>    rosseland(mesh);
+
     typename MT::template CCSF<double>    integrated_norm_planck(mesh);
 
     typename MT::template CCSF<sf_double> emission_group_cdf(mesh);
@@ -283,18 +285,27 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG, SP_Mesh mesh)
 
     // variables needed to calculate the fleck factor and integrated Planck
     // functions 
-    double planck = 0.0;
-    double dedT   = 0.0;
-    double volume = 0.0;
-    double beta   = 0.0;
-    double T      = 0.0;
-    double b_g    = 0.0;
+    double planck        = 0.0;
+    double dedT          = 0.0;
+    double volume        = 0.0;
+    double beta          = 0.0;
+    double T             = 0.0;
+    double b_g           = 0.0;
+    double r_g           = 0.0;
+    double b_sum         = 0.0;
+    double r_sum         = 0.0;
+    double sig_p_sum     = 0.0;
+    double inv_sig_r_sum = 0.0;
+    double tot_sig_g     = 0.0;
 
     // loop through cells and build the integrated normalized Planck
     for (int cell = 1; cell <= num_cells; cell++)
     {
 	// initialize summation of sigma * b_g over the cell
-	double sum = 0.0;
+	sig_p_sum = 0.0;
+
+	// initialize summation of 1/sigma * r_g over the cell
+	inv_sig_r_sum = 0.0;
 
 	// resize to the number of groups
 	emission_group_cdf(cell).resize(num_groups);
@@ -320,21 +331,44 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG, SP_Mesh mesh)
 	    // get the group boundaries
 	    pair<double,double> bounds = frequency->get_group_boundaries(g);
 
-	    // integrate the normalized Planckian over the group
-	    b_g = CDI::integratePlanckSpectrum(bounds.first, bounds.second,
-					       mat_state->get_T(cell)); 
+	    // integrate the normalized Planckian and Rosseland functions
+	    // over the group
+	    CDI::integrate_Rosseland_Planckian_Spectrum(bounds.first, 
+							bounds.second,
+							mat_state->get_T(cell),
+							b_g,
+							r_g);
 
 	    // multiply by the absorption opacity and sum
-	    sum += b_g * absorption(cell)[g-1];
+	    sig_p_sum += b_g * absorption(cell)[g-1];
 
 	    // assign to the cdf
-	    emission_group_cdf(cell)[g-1] = sum;
+	    emission_group_cdf(cell)[g-1] = sig_p_sum;
+
+	    // absorption + scattering
+	    tot_sig_g = absorption(cell)[g-1] + scattering(cell)[g-1];
+	    
+	    // calculate numerator of Rosseland opacity
+	    if (tot_sig_g == 0.0)
+	    {
+		inv_sig_r_sum += rtt_mc::global::huge;
+	    }
+	    else
+	    {
+		inv_sig_r_sum += r_g / tot_sig_g;
+	    }
 	}
 
-	// integrate the unnormalized Planckian
-	integrated_norm_planck(cell) = CDI::integratePlanckSpectrum(
+	// integrate the unnormalized Planckian and Rosseland over the group
+	// spectrum 
+	CDI::integrate_Rosseland_Planckian_Spectrum(
 	    frequency->get_group_boundaries().front(),
-	    frequency->get_group_boundaries().back(), mat_state->get_T(cell));
+	    frequency->get_group_boundaries().back(), 
+	    mat_state->get_T(cell),
+	    b_sum, r_sum);
+
+	// assign the Planckian integral to the integrated_norm_planck
+	integrated_norm_planck(cell) = b_sum;
 	Check (integrated_norm_planck(cell) >= 0.0);
 
 	// calculate the Planckian opacity
@@ -355,6 +389,10 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG, SP_Mesh mesh)
 	}
 	Check (planck >= 0.0);
 
+	// build the rosseland opacity
+	Check (inv_sig_r_sum > 0.0);
+	rosseland(cell) = r_sum / inv_sig_r_sum;
+
 	// calculate beta (4aT^3/Cv)
 	beta = 4.0 * a * T*T*T * volume / dedT;
 	
@@ -368,6 +406,15 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG, SP_Mesh mesh)
     return_opacity = new Opacity<MT, Multigroup_Frequency>(
 	frequency, absorption, scattering, fleck, integrated_norm_planck, 
 	emission_group_cdf);
+
+    // build the Diffusion_Opacity
+    if (build_diffusion_opacity)
+    {
+	// make the diffusion opacity
+	diff_opacity = new Diffusion_Opacity<MT>(fleck, rosseland);
+	Ensure (diff_opacity);
+	Ensure (diff_opacity->num_cells() == mesh->num_cells());
+    }
 
     Ensure (return_opacity);
     Ensure (return_opacity->num_cells() == mesh->num_cells());

@@ -59,7 +59,7 @@ namespace rtt_imc
  * For multigroup, the Rosseland opacities are calculated by integrating over
  * each group as follows:
  * \f[
- * \frac{1}{\sigma_{R}} = \frac{\int(\sigma_{a}+\sigma_{s})
+ * \frac{1}{\sigma_{R}} = \frac{\int\frac{1}{(\sigma_{a}+\sigma_{s})}
  * \frac{\partial B}{\partial T}}{\int\frac{\partial B}{\partial T}}
  * \f]  
  *
@@ -81,6 +81,7 @@ namespace rtt_imc
 // 0) original
 // 1) 20-FEB-2003 : updated to use new Mat_State_Builder interface
 // 2) 13-MAR-2003 : updated to build diffusion opacities for gray problems
+// 3) 28-JUL-2003 : updated to build diffusion opacities for mg problems
 // 
 //===========================================================================//
 
