@@ -9,6 +9,7 @@
 #include "3T/testP13T/testP13T.hh"
 #include "ds++/Assert.hh"
 
+#include <stdexcep>
 #include <iostream>
 using std::cerr;
 using std::endl;
@@ -35,6 +36,11 @@ int main()
     catch (const dsxx::assertion &ass)
     {
 	cerr << "caught assertion exception: " << ass.what() << endl;
+	return 1;
+    }
+    catch (const std::runtime_error &rtx)
+    {
+	cerr << "caught assertion exception: " << rtx.what() << endl;
 	return 1;
     }
     catch (...)
