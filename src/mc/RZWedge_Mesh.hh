@@ -44,7 +44,11 @@ namespace rtt_mc
  * and -theta/2).
 
  * The RZWedge_Mesh is fully AMR compatible and it uses the AMR_Layout class
- * internally to support this functionality.
+ * internally to support this functionality.  The AMR_Layout must have the
+ * following coarse face ordering: (lo x, hi x, lo y, hi y, lo z, hi z).
+ * Across a coarse face the cells are ordered low to high.  Thus, across the
+ * hi z coarse face index 1 must point to the low x cell and index 2 must
+ * point to the high x cell.
  
  */
 // revision history:
