@@ -12,9 +12,12 @@
 #include <stdlib.h>
 
 namespace std {
+
 using ::rand;
 using ::free;
 using ::exit;
+using ::labs;
+
 } /*namespace std*/
 
 
