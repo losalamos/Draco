@@ -1,3 +1,12 @@
+2002-05-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: released imc-3_0_0.  Lots of changes:
+		
+		- Multigroup added.
+		- new particle communication services added and moved to
+		  mc 
+		- compiler updates
+
 2002-03-18  Todd J. Urbatsch  <tmonster@lanl.gov>
 
 	* imc: surface source (ss) energy calculations now correctly
