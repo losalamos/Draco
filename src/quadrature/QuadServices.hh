@@ -21,6 +21,12 @@
 namespace rtt_quadrature
 {
 
+//! \bug move to ds++
+template< typename T > T kronecker_delta( T const, T const );
+
+//! \bug move to ds++
+template< typename T > T factorial( T const );
+
 class QuadServices 
 {
   public:
@@ -74,18 +80,14 @@ class QuadServices
 		       std::vector<T>        const & x,
 		       std::vector<unsigned> const & dims ) const;
     
+    //! \brief Return the (l,k) index pair associated with moment index n.
+    lk_index lkPair( unsigned n ) const { Require( n<numMoments ); return n2lk[n]; }
 
   private:
 
     // NESTED CLASSES AND TYPEDEFS
 
     // IMPLEMENTATION
-
-    //! \bug move to ds++
-    template< typename T > T kronecker_delta( T const, T const ) const;
-    
-    //! \bug move to ds++
-    template< typename T > T factorial( T const ) const;
 
     //! Compute the (k,ell) spherical harmonic evaluated at Omega_m.
     double spherical_harmonic( unsigned const m,
