@@ -405,6 +405,67 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_METIS_SETUP
+dnl
+dnl METIS SETUP (on by default)
+dnl METIS is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_METIS_SETUP], [dnl
+
+   dnl define --with-metis
+   AC_ARG_WITH(metis,
+      [  --with-metis=[lib]    the metis implementation])
+ 
+   dnl define --with-metis-inc
+   AC_WITH_DIR(metis-inc, METIS_INC, \${METIS_INC_DIR},
+	       [tell where METIS includes are])
+
+   dnl define --with-metis-lib
+   AC_WITH_DIR(metis-lib, METIS_LIB, \${METIS_LIB_DIR},
+	       [tell where METIS libraries are])
+
+   # set default value of metis includes and libs
+   if test "${with_metis:=metis}" = yes ; then
+       with_metis='metis'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_metis=$1
+
+])
+
+##---------------------------------------------------------------------------##
+
+AC_DEFUN([AC_METIS_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_metis}" ; then
+
+       # include path
+       if test -n "${METIS_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${METIS_INC}"
+       fi
+
+       # library path
+       if test -n "${METIS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_metis, -L${METIS_LIB} -l${with_metis})
+       elif test -z "${METIS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_metis, -l${with_metis})
+       fi
+
+       # add METIS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${METIS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${METIS_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_PCG_SETUP
 dnl
 dnl PCG LIBRARY SETUP (on by default)
@@ -706,6 +767,7 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    AC_GANDOLF_FINALIZE
    AC_SPRNG_FINALIZE
    AC_GRACE_FINALIZE
+   AC_METIS_FINALIZE
 
    AC_GSL_FINALIZE
    AC_GSLCBLAS_FINALIZE
@@ -748,6 +810,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_GSL_SETUP(pkg)
    AC_GSLCBLAS_SETUP(pkg)
    AC_TRILINOS_SETUP(pkg)
+   AC_METIS_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
    AC_GANDOLF_SETUP(pkg)
    AC_EOSPAC5_SETUP(pkg)
