@@ -235,6 +235,7 @@ class Particle
     // Accessors.
     int get_cell() const { return cell; }
     double get_ew() const { return ew; }
+    std::vector<double>   get_r() const { return r; }
     std::vector<double>   get_omega() const { return omega; }
     const rtt_rng::Sprng& get_random() const { return random; }
 

@@ -56,6 +56,9 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
 	double heat   = specific_heat[cell-1];
 	rho(cell)     = den;
 	temp(cell)    = T;
+
+	Check (heat > 0);
+
         if (analytic_sp_heat == "straight")
 	{
 	    // specific heat units: [jks/g/keV]
