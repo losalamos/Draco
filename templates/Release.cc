@@ -1,27 +1,27 @@
 //----------------------------------*-C++-*----------------------------------//
-// Version.cc
+// Release.cc
 // <user>
 // <date>
 // $Id$
 //---------------------------------------------------------------------------//
-// @> Version function implementation for <pkg> library
+// @> Release function implementation for <pkg> library
 //---------------------------------------------------------------------------//
 
-#include "Version.hh"
+#include "Release.hh"
 
 namespace rtt_<spkg>
 {
     using std::string;
 
-  // function definition for Version, define the local version number for
+  // function definition for Release, define the local version number for
   // this library in the form <spkg>_#.#.# in pkg_version variable
-    const string version()
+    const string release()
     {
-	string pkg_version = "<spkg>_<start>#.#.#";
-	return pkg_version;
+	string pkg_release = "<spkg>_<start>#.#.#";
+	return pkg_release;
     }
 }
 
 //---------------------------------------------------------------------------//
-//                              end of Version.cc
+//                              end of Release.cc
 //---------------------------------------------------------------------------//

@@ -1,14 +1,14 @@
 //----------------------------------*-C++-*----------------------------------//
-// Version.hh
+// Release.hh
 // <user>
 // <date>
 // $Id$
 //---------------------------------------------------------------------------//
-// @> Version function for <pkg> library
+// @> Release function for <pkg> library
 //---------------------------------------------------------------------------//
 
-#ifndef __<spkg>_Version_hh__
-#define __<spkg>_Version_hh__
+#ifndef __<spkg>_Release_hh__
+#define __<spkg>_Release_hh__
 
 //===========================================================================//
 // namespace version - 
@@ -23,11 +23,11 @@
 
 namespace rtt_<spkg> 
 {
-    const std::string version();
+    const std::string release();
 }
 
-#endif                          // __<spkg>_Version_hh__
+#endif                          // __<spkg>_Release_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of Version.hh
+//                              end of Release.hh
 //---------------------------------------------------------------------------//
