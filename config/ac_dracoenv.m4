@@ -18,6 +18,13 @@ builtin(include, ac_gm4.m4)dnl GNU m4 macros
 
 AC_DEFUN(AC_DRACO_ENV, [dnl
 
+   dnl 
+   dnl MAKE INSTALLS READ-ONLY
+   dnl
+       
+   # no need to run AC_SUBST because it is done automagically by autoconf
+   INSTALL_DATA="\${INSTALL} -m 444"
+
    dnl
    dnl CONFIGURE ARGUMENTS
    dnl
