@@ -3,7 +3,9 @@
 // Geoffrey M. Furnish
 // Wed May 13 09:53:44 1998
 //---------------------------------------------------------------------------//
-// @> 
+
+//---------------------------------------------------------------------------//
+// This program tests the Mesh_XYZ class as a model of MT.
 //---------------------------------------------------------------------------//
 
 #include "../Mesh_XYZ.hh"
@@ -14,6 +16,158 @@
 
 #include <iostream>
 using namespace std;
+
+bool passed = true;
+
+typedef Mesh_XYZ MT;
+
+// The following class exists to test the MT field types with a
+// non-trivial type.
+
+class DoubleContainer
+{
+  public:
+    double data;
+
+    DoubleContainer() : data(0.) {}
+
+    DoubleContainer(double _data) : data(_data) {}
+
+    DoubleContainer(const DoubleContainer& dc) : data(dc.data) {}
+
+    DoubleContainer& operator=(const DoubleContainer& dc)
+    {
+        data = dc.data;
+        return *this;
+    }
+};
+
+
+
+// Test the required MT typedefs
+
+void t1()
+{
+    cout << "t1: beginning.\n";
+
+    typedef MT::size_type size_type;
+    typedef MT::FieldConstructor FieldConstructor;
+
+    typedef MT::cctf<DoubleContainer> ccDCf;
+    typedef MT::fcdtf<DoubleContainer> fcdDCf;
+    typedef MT::nctf<DoubleContainer> ncDCf;
+    typedef MT::vctf<DoubleContainer> vcDCf;
+    typedef MT::bstf<DoubleContainer> bsDCf;
+
+    typedef MT::ccsf ccsf;
+    typedef MT::fcdsf fcdsf;
+    typedef MT::ncsf ncsf;
+    typedef MT::vcsf vcsf;
+    typedef MT::bssf bssf;
+
+    typedef MT::ccif ccif;
+    typedef MT::fcdif fcdif;
+    typedef MT::ncif ncif;
+    typedef MT::vcif vcif;
+    typedef MT::bsif bsif;
+
+    typedef MT::ccvsf ccvsf;
+    typedef MT::fcdvsf fcdvsf;
+    typedef MT::ncvsf ncvsf;
+    typedef MT::vcvsf vcvsf;
+    typedef MT::bsvsf bsvsf;
+
+    typedef MT::OpAssign OpAssign;
+    typedef MT::OpAddAssign OpAddAssign;
+    typedef MT::OpSubAssign OpSubAssign;
+    typedef MT::OpMultAssign OpMultAssign;
+    typedef MT::OpMinAssign OpMinAssign;
+    typedef MT::OpMaxAssign OpMaxAssign;
+
+    cout << "t1: end\n";
+}
+
+
+
+// Test the general MT functions
+
+void t2()
+{
+    cout << "t2: beginning.\n";
+
+    typedef MT::size_type size_type;
+    typedef MT::FieldConstructor FieldConstructor;
+    typedef MT::ccsf ccsf;
+    typedef MT::fcdsf fcdsf;
+    typedef MT::ncsf ncsf;
+    typedef MT::vcsf vcsf;
+    typedef MT::fcdvsf fcdvsf;
+
+    // The following constructor is not required by the MT
+    // concept, but we need to get an object somehow.
+
+    NML_Group g( "test" );
+    Mesh_DB mdb;
+    mdb.setup_namelist( g );
+    g.readgroup( "test.in" );
+    dsxx::SP<MT> spm = new MT( mdb );
+    FieldConstructor FC = spm;
+
+    {
+        dsxx::SP<MT> spm2 = new MT( mdb );
+        if (spm.bp() == spm2.bp())
+            passed = false;
+        if ((spm.bp() != spm2.bp()) != !(spm.bp() == spm2.bp()))
+            passed = false;
+        spm2 = spm;
+        if (!(spm.bp() == spm2.bp()))
+            passed = false;
+        if ((spm.bp() != spm2.bp()) != !(spm.bp() == spm2.bp()))
+            passed = false;
+    }
+
+    size_type ncells = spm->get_ncells();
+    size_type total_ncells = spm->get_total_ncells();
+    size_type ncx = spm->get_ncx();
+    size_type ncy = spm->get_ncy();
+    size_type ncz = spm->get_ncz();
+    if (!(ncells <= total_ncells))
+        passed = false;
+    if (total_ncells != ncx*ncy*ncz)
+        passed = false;
+    if (!(ncx <= total_ncells))
+        passed = false;
+    if (!(ncy <= total_ncells))
+        passed = false;
+    if (!(ncz <= total_ncells))
+        passed = false;
+
+    ccsf c(FC);
+    fcdsf f(FC);
+    fcdvsf fv(FC);
+    vcsf v(FC);
+    ncsf n(FC);
+
+    spm->get_dx(c);
+    spm->get_dy(c);
+    spm->get_dz(c);
+    spm->get_xloc(c);
+    spm->get_yloc(c);
+    spm->get_zloc(c);
+    spm->get_xloc(f);
+    spm->get_yloc(f);
+    spm->get_zloc(f);
+    spm->get_face_normals(fv);
+    spm->get_face_areas(f);
+    spm->get_face_lengths(f);
+    spm->get_cell_volumes(c);
+    spm->get_vertex_volumes(v);
+    spm->get_node_volumes(n);
+
+    cout << "t2: end\n";
+}
+
+
 
 void version(const std::string &progname)
 {
@@ -35,397 +189,33 @@ int main( int argc, char *argv[] )
 	}
     }
     
-    cout << "t1: test: passed\n";
+    cout << "Initiating test of the Mesh_XYZ model of the MT concept.\n";
 
-    NML_Group g( "test" );
-
-    Mesh_DB mdb;
-    mdb.setup_namelist( g );
-
-    g.readgroup( "test.in" );
-
-    dsxx::SP<Mesh_XYZ> spm = new Mesh_XYZ( mdb );
-
-    cout << "t2: test: passed" << endl;
-
-    {
-        Mesh_XYZ* m1 = new Mesh_XYZ( mdb );
-        Mesh_XYZ* m2 = new Mesh_XYZ( mdb );
-        Mesh_XYZ* temp;
-        if (*m1 == *m2)
-            cout << "error: same mesh" << endl;
-        temp = m1;
-        m1 = m2;
-        if (!(*m1 == *m2))
-            cout << "error: different meshes" << endl;
-
-        delete temp;
-        delete m2;
+    try {
+        t1();
+        t2();
     }
-
+    catch( dsxx::assertion& a )
     {
-        Mesh_XYZ::ccsf x( spm ), y( spm ), z( spm );
-        x = 1.;
-        y = 2.;
-        z = x + y;
-        Mesh_XYZ m = x.get_Mesh();
-    }
-
-    {
-        Mesh_XYZ::ccif xi( spm ), yi( spm ), zi( spm );
-        xi = 1;
-        yi = 2;
-        zi = xi + yi;
-        Mesh_XYZ m = xi.get_Mesh();
-    }
-
-    {
-        Mesh_XYZ::fcdsf xf( spm ), yf( spm ), zf( spm );
-        xf = 1.;
-        yf = xf;
-        zf = xf + yf;
-        zf = xf - yf;
-        Mesh_XYZ m = xf.get_Mesh();
-    }
-
-    {
-        Mesh_XYZ::ncsf xn( spm ), yn( spm ), zn( spm );
-        xn = 1.;
-        yn = 2.;
-        zn = xn + yn;
-        Mesh_XYZ m = xn.get_Mesh();
-    }
-
-    {
-        Mesh_XYZ::vcsf xv( spm ), yv( spm ), zv( spm );
-        xv = 1.;
-        yv = 2.;
-        zv = xv + yv;
-        Mesh_XYZ m = xv.get_Mesh();
-    }
-
-    {
-        Mesh_XYZ::vec3 xvec, yvec, zvec;
-        double dotprod;
-        xvec = 1.;
-        yvec = 2.;
-        zvec = xvec + yvec;
-        dotprod = Mesh_XYZ::vec3::dot(xvec, yvec);
-	if (dotprod < 5.999 || dotprod > 6.001)
-            cout << "Error in dot product" << endl;
-    }
-
-    {
-        Mesh_XYZ::vcvsf oneVCV( spm );
-        for (Mesh_XYZ::vcvsf::iterator iter = oneVCV.begin();
-             iter != oneVCV.end(); ++iter)
-        {
-            (*iter)(0) = 1.;
-            (*iter)(1) = 0.;
-            (*iter)(2) = 0.;
-        }
-    }
-
-    {
-        Mesh_XYZ::gccsf xgc( spm );
-        Mesh_XYZ::ccsf x( spm );
-        x = 1.;
-        xgc = x;
-        Mesh_XYZ m = xgc.get_Mesh();
-    }
-
-    {
-        Mesh_XYZ::gfcdsf xgf( spm );
-        Mesh_XYZ::fcdsf xf( spm );
-        xf = 1.;
-        xgf = xf;
-        Mesh_XYZ m = xgf.get_Mesh();
-    }
-
-    {
-        Mesh_XYZ::gvcsf xgv( spm );
-        Mesh_XYZ::vcsf xv( spm );
-        xv = 1.;
-        xgv = xv;
-        Mesh_XYZ m = xgv.get_Mesh();
-    }
-
-    {
-      try
-      {
-        Mesh_XYZ::bssf xb( spm ), yb( spm ), zb( spm );
-        xb = 1.;
-        yb = 2.;
-        zb = xb + yb;
-        Mesh_XYZ m = xb.get_Mesh();
-        for (Mesh_XYZ::bssf::iterator iter = xb.begin();
-             iter != xb.end(); ++iter)
-            *iter = 6.;
-        for (Mesh_XYZ::bssf::const_iterator iter = zb.begin();
-             iter != zb.end(); ++iter)
-	    if (*iter < 2.999 || *iter > 3.001)
-                cout << "Error in boundary treatment" << endl;
-
-        const Mesh_XYZ::bssf cxb( spm );
-        Mesh_XYZ::bssf::iterator iter = xb.begin();
-        for (Mesh_XYZ::bssf::const_iterator citer = cxb.begin();
-             citer != cxb.end(); ++citer, ++iter)
-            *iter = *citer;
-
-        Mesh_XYZ::bssf ab( spm );
-        iter = ab.begin();
-        *iter = 1.;
-        iter++;
-        *iter = 0.;
-        iter = ab.begin();
-        if (*iter++ != 1.)
-            cout << "Error in bssf::iterator operator++(int)" << endl;
-      }
-      catch (const dsxx::assertion &ass)
-      {
-        std::cerr << "Caught dsxx::assertion bssf: '"
-	          << ass.what() << "'." << endl;
-      }
-    }
-
-    {
-        Mesh_XYZ::ccsf oneCC( spm );
-        oneCC = 1.0;
-        //dump( oneCC, "oneCC, before" );
-        Mesh_XYZ::fcdsf twoFC( spm );
-        twoFC = 0.0;
-        //dump( twoFC, "twoFC, before" );
-        Mesh_XYZ::scatter ( twoFC, oneCC, Mesh_XYZ::OpAddAssign() );
-        //dump( oneCC, "oneCC, after" );
-        //dump( twoFC, "twoFC, after" );
-    }
-
-    {
-        Mesh_XYZ::ccsf threeCC( spm );
-        threeCC = 3.0;
-        //dump( threeCC, "threeCC, before" );
-        Mesh_XYZ::fcdsf nineFC( spm );
-        nineFC = 1.0;
-        //dump( nineFC, "nineFC, before" );
-        Mesh_XYZ::scatter ( nineFC, threeCC, Mesh_XYZ::OpMultAssign() );
-        //dump( threeCC, "threeCC, after" );
-        //dump( nineFC, "nineFC, after" );
-    }
-
-    {
-        Mesh_XYZ::fcdsf oneFC( spm );
-        oneFC = 1.0;
-        Mesh_XYZ::ccsf sixCC( spm );
-        sixCC = 0.0;
-        Mesh_XYZ::scatter ( sixCC, oneFC, Mesh_XYZ::OpAddAssign() );
-        //dump( sixCC, "sixCC, after" );
-    }
-
-    {
-        Mesh_XYZ::fcdsf threeFC( spm );
-        threeFC = 3.0;
-        Mesh_XYZ::ccsf CC729( spm );
-        CC729 = 1.0;
-        Mesh_XYZ::scatter ( CC729, threeFC, Mesh_XYZ::OpMultAssign() );
-        //dump( CC729, "CC729, after" );
-    }
-
-    {
-        Mesh_XYZ::vcsf oneVC( spm );
-        oneVC = 1.0;
-        Mesh_XYZ::fcdsf fourFC( spm );
-        fourFC = 0.0;
-        Mesh_XYZ::scatter ( fourFC, oneVC, Mesh_XYZ::OpAddAssign() );
-        //dump( fourFC, "fourFC, after" );
-    }
-
-    {
-        Mesh_XYZ::vcsf threeVC( spm );
-        threeVC = 3.0;
-        Mesh_XYZ::fcdsf FC81( spm );
-        FC81 = 1.0;
-        Mesh_XYZ::scatter ( FC81, threeVC, Mesh_XYZ::OpMultAssign() );
-        //dump( FC81, "FC81, after" );
-    }
-
-    {
-        Mesh_XYZ::vcvsf oneVCV( spm );
-        Mesh_XYZ::vec3 onevec;
-        onevec = 1.0;
-        oneVCV = onevec;
-        Mesh_XYZ::fcdvsf fourFCV( spm );
-        Mesh_XYZ::vec3 zerovec;
-        zerovec = 0.0;
-        fourFCV = zerovec;
-        Mesh_XYZ::scatter( fourFCV, oneVCV, Mesh_XYZ::OpAddAssign() );
-    }
-
-    {
-        Mesh_XYZ::fcdsf oneFC( spm );
-        oneFC = 1.0;
-        Mesh_XYZ::vcsf threeVC( spm );
-        threeVC = 0.0;
-        Mesh_XYZ::scatter ( threeVC, oneFC, Mesh_XYZ::OpAddAssign() );
-        //dump( threeVC, "threeVC, after" );
-    }
-
-    {
-        Mesh_XYZ::ncsf eightNC( spm );
-        eightNC = 0.0;
-        Mesh_XYZ::vcsf oneVC( spm );
-        oneVC = 1.0;
-        Mesh_XYZ::scatter ( eightNC, oneVC, Mesh_XYZ::OpAddAssign() );
-        //dump( eightNC, "eightNC, after" );
-    }
-
-    {
-        Mesh_XYZ::ccsf eightCC( spm );
-        eightCC = 0.0;
-        Mesh_XYZ::vcsf oneVC( spm );
-        oneVC = 1.0;
-        Mesh_XYZ::scatter ( eightCC, oneVC, Mesh_XYZ::OpAddAssign() );
-        //dump( eightCC, "eightCC, after" );
-    }
-
-    {
-        Mesh_XYZ::fcdsf oneFC( spm );
-        oneFC = 0.0;
-        Mesh_XYZ::ccsf oneCC( spm );
-        oneCC = 1.0;
-        Mesh_XYZ::gather ( oneFC, oneCC, Mesh_XYZ::OpAddAssign() );
-        //dump( oneFC, "oneFC, after" );
-    }
-
-    {
-        Mesh_XYZ::bssf oneBS( spm );
-        oneBS = 0.;
-        Mesh_XYZ::fcdsf oneFC( spm );
-        oneFC = 1.;
-        Mesh_XYZ::gather( oneBS, oneFC, Mesh_XYZ::OpAssign() );
-        oneFC = 0.;
-        Mesh_XYZ::gather( oneFC, oneBS, Mesh_XYZ::OpAssign() );
-        //dump( oneFC, "oneFC, after" );
-    }
-
-    {
-        Mesh_XYZ::vcsf oneVC( spm );
-        oneVC = 0.0;
-        Mesh_XYZ::ncsf oneNC( spm );
-        oneNC = 1.0;
-        Mesh_XYZ::gather ( oneVC, oneNC, Mesh_XYZ::OpAddAssign() );
-        //dump( oneNC, "oneNC, after" );
-        //dump( oneVC, "oneVC, after" );
-    }
-
-    {
-        Mesh_XYZ::vcsf oneVC( spm );
-        oneVC = 0.0;
-        Mesh_XYZ::ccsf oneCC( spm );
-        oneCC = 1.0;
-        Mesh_XYZ::gather ( oneVC, oneCC, Mesh_XYZ::OpAddAssign() );
-        //dump( oneCC, "oneCC, after" );
-        //dump( oneVC, "oneVC, after" );
-    }
-
-    {
-        Mesh_XYZ::fcdsf swapFC( spm );
-        swapFC = 0.;
-        Mesh_XYZ::fcdsf oneFC( spm );
-        oneFC = 1.;
-        Mesh_XYZ::swap( swapFC, oneFC );
-        //dump( swapFC, "swapFC, after" );
-    }
-
-    {
-        Mesh_XYZ::ccsf oneCC( spm );
-        oneCC = 1.;
-        double total;
-        total = Mesh_XYZ::sum(oneCC);
-        if (total < 63.999 || total > 64.001)
-            cout << "Error in global sum" << endl;
-    }
-
-    {
-        Mesh_XYZ::ccif oneCC( spm );
-        oneCC = 1;
-        int total;
-        total = Mesh_XYZ::sum(oneCC);
-        if (total != 64)
-            cout << "Error in global sum" << endl;
-    }
-
-    {
-        Mesh_XYZ::fcdsf oneFC( spm );
-        oneFC = 1.;
-        double total;
-        total = Mesh_XYZ::sum(oneFC);
-        if (total < 383.999 || total > 384.001)
-            cout << "Error in global sum" << endl;
-    }
-
-    {
-        Mesh_XYZ::bssf oneBS( spm );
-        oneBS = 1.;
-        double total;
-        total = Mesh_XYZ::sum(oneBS);
-        if (total < 95.999 || total > 96.001)
-            cout << "Error in global sum" << endl;
-    }
-
-    {
-        Mesh_XYZ::fcdvsf face_normals( spm );
-        face_normals = spm->get_fn();
-
-        Mesh_XYZ::fcdsf face_areas( spm );
-        spm->get_face_areas(face_areas);
-
-        Mesh_XYZ::fcdsf face_lengths( spm );
-        spm->get_face_lengths(face_lengths);
-
-        Mesh_XYZ::fcdsf face_locs( spm );
-        spm->get_xloc(face_locs);
-        spm->get_yloc(face_locs);
-        spm->get_zloc(face_locs);
-    }
-
-    {
-        Mesh_XYZ::ccsf cell_locs( spm );
-        spm->get_xloc(cell_locs);
-        spm->get_yloc(cell_locs);
-        spm->get_zloc(cell_locs);
-
-        Mesh_XYZ::ccsf cell_deltas( spm );
-        spm->get_dx(cell_deltas);
-        spm->get_dy(cell_deltas);
-        spm->get_dz(cell_deltas);
-
-      try
-      {
-        Mesh_XYZ::ccsf cell_volumes( spm );
-        spm->get_cell_volumes(cell_volumes);
-        Mesh_XYZ::vcsf vertex_volumes( spm );
-        spm->get_vertex_volumes(vertex_volumes);
-        Mesh_XYZ::ncsf node_volumes( spm );
-        spm->get_node_volumes(node_volumes);
-        //dump( cell_volumes, "cell_volumes" );
-        //dump( vertex_volumes, "vertex_volumes" );
-        //dump( node_volumes, "node_volumes" );
-      }
-      catch (const dsxx::assertion &ass)
-      {
-        std::cerr << "Caught dsxx::assertion cell_volumes: '"
-	          << ass.what() << "'." << endl;
-      }
+	cout << "Failed assertion: " << a.what() << endl;
     }
 
 // Print the status of the test.
 
-    if (C4::node() == 0)
+    cout << endl;
+    cout <<     "************************************" << endl;
+    if (passed) 
     {
-        cout << "TEST: PASSED" << endl;
+        cout << "**** Mesh_XYZ Self Test: PASSED ****" << endl;
     }
+    else
+    {
+        cout << "**** Mesh_XYZ Self Test: FAILED ****" << endl;
+    }
+    cout <<     "************************************" << endl;
+    cout << endl;
 
-    cout << "Finalizing" << endl;
+    cout << "Done testing Mesh_XYZ.\n";
 
     C4::Finalize();
 
