@@ -39,23 +39,17 @@ using rtt_format::RTT_Format;
 extern "C" 
 {
 
-    void construct_car_cu_interface_(long & self, long & infile, 
-				     long & length, long & verbosity, 
-				     long & rttFormat)
+    void construct_car_cu_interface_(long & self, char * file, 
+				     int & verbosity, long & rttFormat)
     {
-        char * file_ptr = reinterpret_cast<char *>(infile);
-	int name_length = * reinterpret_cast<int *>(length);
-	bool verbose = * reinterpret_cast<int *>(verbosity);
-	string file;
-
-	for (int c = 0; c < name_length; c++)
-	    file.insert(c, file_ptr + c);
-	cout << file << endl;
+        string infile = file;
+	bool verbose = verbosity;
+	cout << infile << endl;
 	cout << verbose << endl;
-	SP<CAR_CU_Interface> interface(new CAR_CU_Interface(file,verbose));
+	SP<CAR_CU_Interface> interface(new CAR_CU_Interface(infile, verbose));
 	SP<RTT_Format> rttMesh = interface->parser();
 	if (verbose)
-	    cout << " ** Read input file " << file << endl;
+	    cout << " ** Read input file " << infile << endl;
 
 	self = reinterpret_cast<long>( & interface);
 	rttFormat = reinterpret_cast<long>( & rttMesh);
