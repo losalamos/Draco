@@ -1,7 +1,7 @@
 %%---------------------------------------------------------------------------%%
 %% draco-autodoc.tex
 %% John McGhee
-%% Time-stamp: <99/08/05 17:43:22 mcghee>
+%% Time-stamp: <99/08/05 18:51:53 mcghee>
 %%---------------------------------------------------------------------------%%
 \documentclass[11pt]{nmemo}
 \usepackage[centertags]{amsmath}
@@ -85,8 +85,8 @@ W.D. Hawkins, XTM MS D409}
 
 The GNU Public License C++ automatic code documentation system \doxy\
 has been installed
-on /n/skiathos for use by the \draco\ team. This memo describes how to
-set up and use \doxy\. Also, some suggestions are made as to minimal
+for use by the \draco\ team. This memo describes how to
+set up and use \doxy\ .  Also, some suggestions are made as to minimal
 documentation standards.
 
 \section{Introduction}
@@ -96,34 +96,89 @@ the GNU Public License.
  A user's manual and other information is available on-line at:
 \begin{verbatim} http://www.stack.nl/~dimitri/doxygen/ \end{verbatim}
 
-Tom Evans has evaluated several automatic documentation systems over
-the past few weeks including DOC++, PERCEPS, KDOC, and \doxy\. 
-For Draco autodoc purposes, \doxy\ is deemed to be clearly the 
-package of choice. Ease of use and installation, a plethora of features,
-good documentation (the package documented itself!), and still
-under active development with a responsive author.
+Good documentation is critical to any code development effort.
+The advantages of automatic documentation systems are many. 
+The documentation  and the code are more difficult to get out of sync, 
+the documentation is conveniently located with the code, and
+code developers are encouraged
+to include liberal explanations in their comments.
+Draco has been considering adopting such a system for some time.
 
-\section{How to use \doxy\}
+
+Recently, Tom Evans has evaluated several automatic documentation systems
+including DOC++, PERCEPS, KDOC, and \doxy\ . 
+For Draco automatic documentation purposes, \doxy\ is deemed to be clearly the 
+package of choice. There are several reasons for this. Among these are
+ease of use and installation; a plethora of clever and useful features;
+good documentation (the package documented itself!);
+active development and support from a responsive author; and 
+minimal overhead requirements on the code developer.
+
+
+This evaluation is based on direct experince using \doxy to document
+two existing \draco packages.
+Tom has documented the rng package and I have documented the timestep
+package.
+Let me emphasize that this is an easy and painless way to document your
+code. Tom and I have both found the process addictive, the more comments
+you put in, the more you want to put in.
+
+\section{How to use \doxy\ }
+
+\subsection{Overview}
+\doxy\ uses a few simple special comment characters to extract code
+documentation directly from the source code. The only additional burden
+on the code author is to remember and occasionally use a dozen or so
+simple comments. After the source code is commented, both html (with links)
+and latex output is automatically produced directly from the source code.
+Example code can be included verbatim. If desired, both  html tags, and latex
+formulas can be included directly in the source code comments. In addition,
+\doxy\ groks C++ and extracts considerable information from the *.hh
+file, even if the developer does not include any comments at all.
 
 \subsection{Special Comment Blocks}
-\subsection{A Few Keywords}
 
-file, author, date, param, return, sa, anchor, ref
+The fundamental key that \doxy\ uses to flag a block of comments for
+extraction is the C-style comment character followed by an exclamation
+point. For example:\begin{verbatim}
+
+/*!
+ *
+ * This text (without the asterisks) will appear in the documentation!
+ *
+ */
+
+\end{verbatim}
+
+This is all that is required from the code developer to get everyting
+in the comment block into the documentation.
+
+\subsection{A Few Major Keywords}
+
+There are currently approximately 60 \doxy\ keywords that can be used to produce a
+very fancy document. We will briefly describe the major ones that we have
+found to be most useful. The interested reader is referred to the \doxy\
+manual for additional details.
+
+file, author, date, param, return, sa, anchor, ref, example, include, brief
 
 
 
 \section{Draco Installation Strategy}
   \subsection{New Templates}
-  Tom is installing new .cc and .hh templates in the draco elisp
+  Tom Evans is installing new *.cc and *.hh templates in the \draco\ elisp
 directory to support \doxy\ requirements. There will also be a
-template for the \doxy\ configuration file.
+templates for a standard \doxy\ configuration file, and standard header
+and footer files for \doxy\ html output.
   \subsection{Tag Files}
 Relative Paths are supported.
 
   \subsection{Location of \doxy\ Output}
 
-Each package developer will run 
-  \subsection{\doxy Configuration File}
+Each package developer will run \doxy\ in it's respective directory. 
+\doxy\ will create html and latex sub-directories to contain the
+html and latex documentation output. This will need to 
+  \subsection{\doxy\ Configuration File}
   Each package in \draco\ will have a \doxy\ configuration file.
   \subsection{Draco WWW Site}
 When checking out the \draco\ web site,
@@ -132,8 +187,121 @@ from each package directory in \draco\.
 
 \section{Documentation Standards}
 
+\section{Example}
+Nothing is as instructive as a good example, so here is a copy of
+one of the header files from the timestep utility. Of course,
+there is more than one way to accomplish this, but this is one way.
 
 
+\begin{verbatim}
+//----------------------------------*-C++-*----------------------------------//
+/*! 
+ * \file fixed_ts_advisor.hh
+ * \brief Defines the fixed time-step advisor.
+ *
+ * \author <a href="http://www.lanl.gov/home/mcghee">
+ *  John McGhee</a>
+ *
+ * \date Thu Apr  2 14:06:18 1998
+ */
+//---------------------------------------------------------------------------//
+
+#ifndef __timestep_fixed_ts_advisor_hh__
+#define __timestep_fixed_ts_advisor_hh__
+
+#include "ts_advisor.hh"
+
+namespace rtt_timestep {
+
+//===========================================================================//
+/*!
+ * \brief Introduces a user defined fixed value 
+ *        into the time-step calculation.
+ *
+ * \sa The ts_manager class provides a means to manage this advisor.
+ * The \ref overview page gives a summary of the Draco time step control
+ * utilities. 
+ *
+ * This is useful to set min and max timesteps, or to force a
+ * timestep, etc. The recommendation for the new timestep is
+ * simply the user input value. 
+ */ 
+//===========================================================================//
+class fixed_ts_advisor : public ts_advisor {
+
+  // DATA
+
+  private:
+    /*!
+     * \brief Value used to oompute a fixed advisor recommended timestep.
+     */
+    double fixed_value; 
+   
+// CREATORS
+
+  public:
+
+    /*!
+     * \brief Constructs a fixed time-step advisor.
+     * \param name_ A unique name for the advisor.
+     * \param usage_ How the advisor is to be used.
+     * \param const_value_ The desired value for the timestep.
+     * \param active_ Turns the advisor on/off.
+     */
+    fixed_ts_advisor( 
+        const std::string &name_  = std::string("Unlabeled"),
+        const usage_flag usage_ = max, 
+        const double const_value_ = large(),
+        const bool active_ = true);
+
+    /*!
+     * \brief Destroys a fixed time-step advisor.
+     */
+    ~fixed_ts_advisor();
+
+// MANIPULATORS
+    
+    /*!
+     * \brief Sets the fixed value.
+     * \param value_ The fixed value.
+     */
+    void set_fixed_value(const double value_ = large())
+    { 
+        fixed_value = value_;
+    }
+
+// ACCESSORS
+
+    /*!
+     * \brief Returns the time-step recommended by a fixed  advisor.
+     * \param tsm The time step manager in which the advisor resides.
+     * \return The recommended timestep.
+     */
+    double get_dt_rec(const ts_manager &tsm) const;
+    
+    /*! 
+      \brief Prints the state of a fixed advisor.
+      \return Prints the internal state of the advisor to std out.
+     */
+    void print_state() const;
+    
+    /*! 
+      \brief Fixed advisor invariant function.
+      \return True if the invariant is satisfied.
+     */
+    bool invariant_satisfied() const;
+
+};
+
+} // end of rtt_timestep namespace
+
+#endif                          // __timestep_fixed_ts_advisor_hh__
+
+//---------------------------------------------------------------------------//
+//                              end of fixed_ts_advisor.hh
+//---------------------------------------------------------------------------//
+
+\end{verbatim}
 
 \closing
 \end{document}
