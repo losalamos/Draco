@@ -176,6 +176,9 @@ class GandolfOpacity : public rtt_cdi::Opacity
      */
     bool mgPlankTableLoaded;
 
+    bool scatterOnly;
+    bool absorptionOnly;
+
   public:
 
     // CREATORS

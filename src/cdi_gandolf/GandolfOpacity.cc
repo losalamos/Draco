@@ -32,7 +32,8 @@ GandolfOpacity::GandolfOpacity(
       numDensities( 0 ), numGroupBoundaries( 0 ), 
       numGrayOpacities( 0 ), numMGOpacities( 0 ),
       grayRosselandTableLoaded( false ), mgRosselandTableLoaded( false ),
-      grayPlankTableLoaded( false ), mgPlankTableLoaded( false )
+      grayPlankTableLoaded( false ), mgPlankTableLoaded( false ),
+      scatterOnly( false ), absorptionOnly( false )
     {
 	const std::vector<int> matids = spGandolfFile->getMatIDs();
 	if ( ! key_available( matID, matids ) )
@@ -71,7 +72,6 @@ GandolfOpacity::GandolfOpacity(
      {
 	 return spGandolfFile->getDataFilename();
      }
-
 
 /*!
  * \brief Return a Rosseland Mean Gray Opacity value for the user
@@ -422,25 +422,47 @@ std::vector<double> GandolfOpacity::getDensityGrid() const
 	if ( ! key_available( skey, vkeys ) )
 	    throw gkeysException( -2 );
 
+	// Determine if the cached data table needs to be reloaded.
+	bool reloadTable = false;
+	if ( ! grayTableLoaded )
+	    {
+// 		std::cout << "   grayTableLoaded = 0 --> forcing reload" << std::endl;
+		reloadTable = true;
+	    }
+	else // check for special data types (total vs abs-only).
+	    {
+
+		if ( scatterOnly )
+		    {
+			if ( skey != "rsgray" && skey != "psgray" )
+			    reloadTable = true;
+		    }
+		if ( absorptionOnly )
+		    {
+// 			std::cout << "   absorptionOnly = 1,  skey = " 
+// 				  << skey << std::endl;
+			if ( skey != "ragray" && skey != "pagray" )
+			    reloadTable = true;
+		    }
+// 		std::cout << "   reloadTable = " << reloadTable << std::endl;
+
+	    }
+
 	// Resize member containers and fill them with opacity grid
 	// data from the data file.  We only need to load this table
 	// once. 
-	if ( ! grayTableLoaded )
+	if ( reloadTable )
 	    {
+// 		std::cout << "   Reloading Table..." << std::endl;
+		
 		// Resize opacity member data as needed
 		logGrayOpacities.resize(numGrayOpacities);
-		
-		// I'm not sure if the temperature/density grid is identical
-		// for the MG and the Gray set.  To be safe I will load the
-		// Gray temp/density grid into different arrays and compare.
-		std::vector<double> logGrayTemperatures(numTemps);
-		std::vector<double> logGrayDensities(numDensities);
 		
 		// Retrieve the gray data 
 		int errorCode;
 		wrapper::wggetgray( spGandolfFile->getDataFilename(), matID, skey, 
-				    logGrayTemperatures, numTemps, numTemps,
-				    logGrayDensities, numDensities, numDensities,
+				    logTemperatures, numTemps, numTemps,
+				    logDensities, numDensities, numDensities,
 				    logGrayOpacities, numGrayOpacities, numGrayOpacities,
 				    errorCode );
 		
@@ -452,29 +474,12 @@ std::vector<double> GandolfOpacity::getDensityGrid() const
 		// temperature, density and opacity data. 
 		
 		for ( int i=0; i<numTemps; ++i )
-		    logGrayTemperatures[i] = log( logGrayTemperatures[i] );
+		    logTemperatures[i] = log( logTemperatures[i] );
 		for ( int i=0; i<numDensities; ++i )
-		    logGrayDensities[i] = log( logGrayDensities[i] );
+		    logDensities[i] = log( logDensities[i] );
 		for ( int i=0; i<numGrayOpacities; ++i )
 		    logGrayOpacities[i] = log( logGrayOpacities[i] );
 
-		// if we have previously loaded the multigroup
-		// Rosseland opacity table then compare the
-		// temperature and density grids.
-		bool otherTableLoaded = anyTableLoaded() &&
-		    ( ! grayTableLoaded );
-		if ( otherTableLoaded )
-		    {
-			Ensure( isSame( logGrayTemperatures, 
-					logTemperatures ) );
-			Ensure( isSame( logGrayDensities,
-					logDensities ) );
-		    }
-		else
-		    {
-			logTemperatures = logGrayTemperatures;
-			logDensities = logGrayDensities;
-		    }
 		// set all tableLoaded vars to false
 		grayRosselandTableLoaded = false;
 		mgRosselandTableLoaded = false;
@@ -482,6 +487,17 @@ std::vector<double> GandolfOpacity::getDensityGrid() const
 		mgPlankTableLoaded = false;
 		// set the currently loaded table to true.
 		grayTableLoaded = true;
+
+		scatterOnly = false;
+		absorptionOnly = false;
+
+		if ( skey == "ragray" ||
+		     skey == "pagray" )
+		    absorptionOnly = true;
+
+		if ( skey == "rsgray" ||
+		     skey == "psgray" )
+		    scatterOnly = true;
 		
 	    } // end if ( ! tableLoaded )
 
@@ -507,26 +523,36 @@ std::vector<double> GandolfOpacity::getMG( const std::string &skey,
 	if( ! key_available( skey, vkeys ) )
 	    throw gkeysException( -2 );
 
+	// Determine if the cached data table needs to be reloaded.
+	bool reloadTable = false;
+	if ( ! mgTableLoaded )
+	    reloadTable = true;
+	else // check for special data types (total vs abs-only).
+	    {
+		if ( scatterOnly )
+		    if ( skey != "rsmg" && skey != "psmg" )
+			reloadTable = true;
+		if ( absorptionOnly )
+		    if ( skey != "ramg" && skey != "pamg" )
+			reloadTable = true;
+	    }
+
 	// Resize member containers and fill them with opacity grid
 	// data from the data file.  We only need to load this table
 	// once. 
-	if ( ! mgTableLoaded ) 
+	if ( reloadTable ) 
 	    {
+		std::cout << "Reloading Table..." << std::endl;
+
 		// Resize opacity member data as needed
 		groupBoundaries.resize( numGroupBoundaries );
 		logMGOpacities.resize( numMGOpacities );
 
-		// I'm not sure if the temperature/density grid is identical
-		// for the MG and the Gray set.  To be safe I will load the
-		// MG temp/density grid into different arrays and compare.
-		std::vector<double> logMGtemperatures(numTemps);
-		std::vector<double> logMGdensities(numDensities);
-		 
 		// Retrieve the multi-group data
 		int errorCode;
 		wrapper::wggetmg( spGandolfFile->getDataFilename(),
-				  matID, skey, logMGtemperatures,
-				  numTemps, numTemps, logMGdensities,
+				  matID, skey, logTemperatures,
+				  numTemps, numTemps, logDensities,
 				  numDensities, numDensities,
 				  groupBoundaries, numGroupBoundaries,
 				  numGroupBoundaries, logMGOpacities,
@@ -541,29 +567,11 @@ std::vector<double> GandolfOpacity::getMG( const std::string &skey,
 		// temperature, density and opacity data. 
 		
 		for ( int i=0; i<numTemps; ++i)
-		    logMGtemperatures[i] = log( logMGtemperatures[i] );
+		    logTemperatures[i] = log( logTemperatures[i] );
 		for ( int i=0; i<numDensities; ++i)
-		    logMGdensities[i] = log( logMGdensities[i] );
+		    logDensities[i] = log( logDensities[i] );
 		for ( int i=0; i<numMGOpacities; ++i)
 		    logMGOpacities[i] = log( logMGOpacities[i] );
-		
-		// if we have previously loaded the gray
-		// opacity table then compare the temperature and
-		// density grids.
-		bool otherTableLoaded = anyTableLoaded() && 
-		    ( ! mgTableLoaded );
-		if ( otherTableLoaded ) 
-		    {
-			Ensure( isSame( logMGtemperatures,
-					logTemperatures ) );
-			Ensure( isSame( logMGdensities, 
-					logDensities    ) ) ;
-		    }
-		else
-		    {
-			logTemperatures = logMGtemperatures;
-			logDensities    = logMGdensities;
-		    }
 		
 		// set all tableLoaded vars to false
 		grayRosselandTableLoaded = false;
@@ -573,6 +581,16 @@ std::vector<double> GandolfOpacity::getMG( const std::string &skey,
 		// set the currently loaded table to true.
 		mgTableLoaded = true;
 
+		scatterOnly = false;
+		absorptionOnly = false;
+
+		if ( skey == "ramg" ||
+		     skey == "pamg" )
+		    absorptionOnly = true;
+
+		if ( skey == "rsmg" ||
+		     skey == "psmg" )
+		    scatterOnly = true;
 	     }
 	
 	// Send the opacity grid information to the interpolation routine.
