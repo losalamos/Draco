@@ -132,6 +132,62 @@ void test_mpi_comm_dup()
 
 //---------------------------------------------------------------------------//
 
+void test_comm_dup()
+{
+    // we only run this test scalar
+#ifdef C4_SCALAR
+
+    int node = rtt_c4::node();
+
+    // now dup the communicator on each processor
+    rtt_c4::inherit(node);
+
+    // check the number of nodes
+    if (rtt_c4::nodes() != 1) ITFAILS;
+
+    rtt_c4::free_inherited_comm();
+
+    // check the number of nodes
+    if (rtt_c4::nodes() != 1) ITFAILS;
+
+    if (rtt_c4_test::passed)
+	PASSMSG("Scalar Comm duplication/free works ok.");
+
+#endif
+
+    // check duping/freeing MPI_COMM_WORLD
+#ifdef C4_MPI
+
+    int nodes = rtt_c4::nodes();
+
+    rtt_c4::inherit(MPI_COMM_WORLD);
+
+    if (rtt_c4::nodes() != nodes) ITFAILS;
+
+    // try a global sum to check
+    int x = 10;
+    rtt_c4::global_sum(x);
+    if (x != 10 * nodes) ITFAILS;
+
+    rtt_c4::free_inherited_comm();
+
+    // we should be back to comm world
+    if (rtt_c4::nodes() != nodes) ITFAILS;
+
+    // try a global sum to check
+    int y = 20;
+    rtt_c4::global_sum(y);
+    if (y != 20 * nodes) ITFAILS;
+
+    if (rtt_c4_test::passed)
+	PASSMSG("MPI_COMM_WORLD Comm duplication/free works ok."); 
+    
+#endif
+}
+
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     rtt_c4::initialize(argc, argv);
@@ -151,7 +207,9 @@ int main(int argc, char *argv[])
     {
 	// >>> UNIT TESTS
 	if (rtt_c4::nodes() == 4)
-	    test_mpi_comm_dup();    
+	    test_mpi_comm_dup();
+
+	test_comm_dup();
     }
     catch (rtt_dsxx::assertion &ass)
     {
