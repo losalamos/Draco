@@ -280,12 +280,17 @@ change in the future.
 
 \subsection{Building the Documentation}
 
-To produce documentation, checkout a working copy of \draco\ 
-and configure normally as described in  Ref~\cite{draco-build}. Then
-execute the following commands in your build directory:
+To produce documentation, first checkout a working copy of \draco\ 
+and configure normally as described in  Ref~\cite{draco-build}.
+Then execute the following commands in your build directory:
 \begin{verbatim} 
      cd draco/autodoc
      gmake 
+\end{verbatim}
+or,
+\begin{verbatim} 
+     cd draco
+     gmake autodoc
 \end{verbatim}
 The documentation will be produced and stored in the
 \texttt{html} and \LaTeX\ directories in the install location.
@@ -299,8 +304,12 @@ If the source code is subsequently changed for some reason,
 \doxy\ should be run again, thus assuring that the documentation 
 remains in sync with the source code.
 
-Documentation will also be produced as part of a normal build
-from the top level \texttt{draco} directory. 
+Note that documentation is not automatically produced as part of 
+a standard \draco\ build operation from the top level \texttt{draco} 
+directory. Documentation is produce only on the direct request 
+of the developer using the procedure described above. This prevents
+the production of unwanted documentation, saving time and disk space.
+
 
 \subsection{\doxy\ Configuration File}
 \label{sec:config}
@@ -638,7 +647,8 @@ class fixed_ts_advisor : public ts_advisor {
 
 Several improvements may be implemented in the future. 
 Ultimately, it may be desirable  to make changes to the \draco\
-build system to support \doxy\ documentation dependencies.
+build system to support  \doxy\ documentation dependencies, and
+to support separate \doxy\ build and install operations.
 Also, it may be desirable to create a ``pkgcommit'' srcipt to manage
 version numbers and automatically update the package Release.hh version
 number information. 
