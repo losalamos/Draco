@@ -38,7 +38,7 @@ Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     : evol(mesh), evoltot(0), ess(mesh), fss(mesh), esstot(0), erad(mesh), 
       eradtot(0), ncen(mesh), ncentot(0), nvol(mesh), nss(mesh),
       nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), ew_vol(mesh),
-      ew_ss(mesh)
+      ew_ss(mesh), t4_slope(mesh)
 {
   // get values from interface
     evol_ext = interface->get_evol_ext();
@@ -97,6 +97,9 @@ void Source_Init<MT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity,
 	
   // calculate source numbers
     calc_source_numbers();
+
+  // calculate the slopes of T_electron^4
+    calc_t4_slope(*mesh, *state);
 }
 
 //---------------------------------------------------------------------------//
@@ -343,6 +346,88 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 	  // write particle
 	    buffer.write_census(cen_file, particle);
 	}
+}
+
+//---------------------------------------------------------------------------//
+// calculate slope of T_electron^4 using temporarily calc'd  edge t^4's.
+
+template<class MT>
+void Source_Init<MT>::calc_t4_slope(const MT &mesh, 
+				    const Mat_State<MT> &state)
+{
+    double t4_low;
+    double t4_high;
+    double delta_r;
+
+    for (int cell = 1; cell <= mesh.num_cells(); cell++)
+    {
+	double t4 = pow(state.get_T(cell), 4);
+	for ( int coord = 1; coord <= mesh.get_Coord().get_dim(); coord++)
+	{
+	    int face_low  = 2*coord - 1;
+	    int face_high = 2*coord;
+	    int cell_low  = mesh.next_cell(cell, face_low);
+	    int cell_high = mesh.next_cell(cell, face_high);
+
+	  // set slope to zero if either side is radiatively reflecting
+	    if (cell_low == cell || cell_high == cell)
+		t4_slope(coord, cell) = 0.0;
+
+	  // set slope to zero if both sides are radiatively vacuum
+	    else if (cell_low == 0 && cell_high == 0)
+		t4_slope(coord, cell) = 0.0;
+
+	  // if low side is vacuum, use only two t^4's
+	    else if (cell_low == 0)
+	    {
+		t4_high = pow(state.get_T(cell_high), 4);
+		delta_r = 0.5 * (mesh.dim(coord, cell) + 
+				 mesh.dim(coord, cell_high));
+
+		t4_slope(coord, cell) = (t4_high - t4) / delta_r;
+
+	      // make sure slope isn't too large so as to give a negative
+	      // t4_low.  If so, limit slope so t4_low is zero.
+		t4_low = t4 - t4_slope(coord, cell)*0.5*mesh.dim(coord, cell);
+		if (t4_low < 0.0)
+		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell);
+	    }
+
+	  // if high side is vacuum, use only two t^4's
+	    else if (cell_high == 0)
+	    {
+		t4_low = pow(state.get_T(cell_low), 4);
+		delta_r = 0.5 * (mesh.dim(coord, cell) + mesh.dim(coord, cell_low));
+
+		t4_slope(coord, cell) = (t4 - t4_low) / delta_r;
+
+	      // make sure slope isn't too large so as to give a negative
+	      // t4_high.  If so, limit slope so t4_high is zero.
+		t4_high = t4 + t4_slope(coord,cell)*0.5*mesh.dim(coord, cell);
+		if (t4_high < 0.0)
+		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell);
+	    }
+
+	  // no conditions on calculating slope; just do it
+	    else
+	    {
+		t4_low  = pow(state.get_T(cell_low),  4);
+		t4_high = pow(state.get_T(cell_high), 4);
+
+		double low_slope = (t4 - t4_low) /
+		    (0.5 * (mesh.dim(coord, cell_low) + mesh.dim(coord, cell)) );
+
+		double high_slope = (t4_high - t4) /
+		    (0.5 * (mesh.dim(coord, cell) + mesh.dim(coord, cell_high)) );
+
+		double t4_lo_edge = t4 - low_slope  * 0.5 * mesh.dim(coord, cell);
+		double t4_hi_edge = t4 + high_slope * 0.5 * mesh.dim(coord, cell);
+
+		t4_slope(coord, cell) = (t4_hi_edge - t4_lo_edge) / 
+		                         mesh.dim(coord, cell);
+	    }
+	}
+    }
 }
 
 CSPACE

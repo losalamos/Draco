@@ -27,6 +27,7 @@
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <string>
+#include <vector>
 
 IMCSPACE
 
@@ -35,6 +36,7 @@ using RNG::Rnd_Control;
 
 // STL components
 using std::string;
+using std::vector;
 
 template<class MT>
 class Source_Init
@@ -89,11 +91,14 @@ private:
   // maximum number of cells capable of fitting on a processor
     int capacity;
 
+  // slope of T_electron^4 in a cell -- using neighboring values
+    typename MT::CCVF_double t4_slope;
+
   // private member functions used to calc initial source information
 
   // number of source particles, census, source energies, number of volume
   // and surface sources
-    void calc_initial_census(const MT &,const Opacity<MT> &, 
+    void calc_initial_census(const MT &, const Opacity<MT> &, 
 			     const Mat_State<MT> &, Rnd_Control &);
     void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &);
     void calc_source_numbers();
@@ -104,6 +109,9 @@ private:
     void calc_erad();
     void calc_ncen_init();
     void write_initial_census(const MT &, Rnd_Control &);
+
+  // calculate slope of T_electron^4 for volume emission
+    void calc_t4_slope(const MT &, const Mat_State<MT> &);
 
 public:
   // constructor
@@ -121,6 +129,8 @@ public:
     int get_ncen(int cell) const { return ncen(cell); }
     int get_nvol(int cell) const { return nvol(cell); }
     int get_nss(int cell) const { return nss(cell); }
+    double get_t4_slope(int coord, int cell) const { 
+	return t4_slope(coord, cell); }
 };
 
 CSPACE
