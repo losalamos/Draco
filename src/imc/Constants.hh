@@ -22,6 +22,8 @@
 //                namespaces, moved Global namespace inside of IMC namespace
 //
 //  3)   6-5-98 : added variables that are needed Globally
+//  4)   6-8-98 : reorganized so that all Global stuff is called from
+//                Global.hh and the variables are placed in Global.cc
 // 
 //===========================================================================//
 
@@ -33,34 +35,12 @@ IMCSPACE
 GLOBALSPACE
 
 //---------------------------------------------------------------------------//
-// PROBLEM VARIABLES
-//---------------------------------------------------------------------------//
-
-extern int rn_stream;
-
-//---------------------------------------------------------------------------//
 // FUNDAMENTAL CONSTANTS
 //---------------------------------------------------------------------------//
 
 const double pi = 2.0 * std::asin(1.0);
 const double huge = DBL_MAX;
 const double epsilon = DBL_EPSILON;
-
-//---------------------------------------------------------------------------//
-// MAXIMUM BUFFER SIZES
-//---------------------------------------------------------------------------//
-
-// maximum number of Particles in a stack
-const int buffer_s = 1000;
-
-// maximum size of Particle double stack
-const int buffer_d = buffer_s * (3 + 3 + 1 + 1 + 1);
-
-// maximum size of Particle int stack
-const int buffer_i = buffer_s * (1 + 1);
-
-// maximum size of Particle char stack
-const int buffer_c = buffer_s * (500);
 
 //---------------------------------------------------------------------------//
 // Physical constants
@@ -71,7 +51,6 @@ const double a = 0.01372;
 
 // speed of light (m/s)
 const double c = 2.99792458e8;
-
 
 CSPACE
 CSPACE

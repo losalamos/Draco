@@ -24,7 +24,7 @@
 //===========================================================================//
 
 #include "imc/Names.hh"
-#include "imc/Constants.hh"
+#include "imc/Global.hh"
 #include "c4/global.hh"
 #include "rng/Random.hh"
 #include "ds++/Assert.hh"
@@ -116,9 +116,9 @@ public:
     struct Comm_Buffer
     {
       // particle state buffers for receiving
-	double array_d[Global::buffer_d];
-	int    array_i[Global::buffer_i];
-	char   array_c[Global::buffer_c];
+	double *array_d;
+	int    *array_i;
+	char   *array_c;
 
       // C4_Req communication handles
 	C4_Req comm_n;
@@ -130,7 +130,12 @@ public:
 	int n_part;
 
       // inline default constructor
-	inline Comm_Buffer() : n_part(0) {}
+	inline Comm_Buffer();
+	inline ~Comm_Buffer();
+
+      // inline Copy Constructor and assignment operators
+	inline Comm_Buffer(const Comm_Buffer &);
+	inline const Comm_Buffer& operator=(const Comm_Buffer &);
     };
 
   // standard buffers for particles
@@ -174,8 +179,84 @@ public:
 };
 
 //---------------------------------------------------------------------------//
-// INLINE FUNCTIONS FOR PARTICLE BUFFER
+// INLINE FUNCTIONS FOR PARTICLE BUFFER<PT>::Comm_Buffer
 //---------------------------------------------------------------------------//
+// default constructor
+
+template<class PT>
+inline Particle_Buffer<PT>::Comm_Buffer::Comm_Buffer()
+    : array_d(new double[Global::buffer_d]), 
+      array_i(new int[Global::buffer_i]),
+      array_c(new char[Global::buffer_c]),
+      n_part(0)
+{
+  // dynamically sized values to the Globally determined buffer sizes
+}
+
+//---------------------------------------------------------------------------//
+// destructor to reclaim our memory
+
+template<class PT>
+inline Particle_Buffer<PT>::Comm_Buffer::~Comm_Buffer()
+{
+  // get back our dynamically allocated memory
+    delete [] array_d;
+    delete [] array_i;
+    delete [] array_c;
+}
+
+//---------------------------------------------------------------------------//
+// copy constructor
+
+template<class PT>
+inline Particle_Buffer<PT>::Comm_Buffer::Comm_Buffer(const Comm_Buffer &rhs)
+    : array_d(new double[Global::buffer_d]), 
+      array_i(new int[Global::buffer_i]),
+      array_c(new char[Global::buffer_c]),
+      n_part(rhs.n_part)
+{
+  // copy double data
+    for (int i = 0; i < Global::buffer_d; i++)
+	array_d[i] = rhs.array_d[i];
+
+  // copy int data
+    for (int i = 0; i < Global::buffer_i; i++)
+	array_i[i] = rhs.array_i[i];
+
+  // copy char data
+    for (int i = 0; i < Global::buffer_c; i++)
+	array_c[i] = rhs.array_c[i];
+}
+
+//---------------------------------------------------------------------------//
+// overloaded assignment operator
+
+template<class PT>
+inline const typename Particle_Buffer<PT>::Comm_Buffer&
+Particle_Buffer<PT>::Comm_Buffer::operator=(const Comm_Buffer &rhs)
+{
+  // check to see if they are the same buffer
+    if (&rhs == this)
+	return *this;
+
+  // we know that these objects are the same size, just do the assignment
+    n_part = rhs.n_part;
+
+  // copy double data
+    for (int i = 0; i < Global::buffer_d; i++)
+	array_d[i] = rhs.array_d[i];
+
+  // copy int data
+    for (int i = 0; i < Global::buffer_i; i++)
+	array_i[i] = rhs.array_i[i];
+
+  // copy char data
+    for (int i = 0; i < Global::buffer_c; i++)
+	array_c[i] = rhs.array_c[i];
+
+  // return for concatenated calls
+    return *this;
+}
 
 CSPACE
 

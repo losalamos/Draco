@@ -89,7 +89,7 @@ public:
 	const OS_Mesh& get_Mesh() const { return *mesh; }
 
       // subscripting
-	T operator()(int cell) const { return data[cell-1]; }
+	const T& operator()(int cell) const { return data[cell-1]; }
 	T& operator()(int cell) { return data[cell-1]; }
     };  
 
@@ -112,7 +112,7 @@ public:
 	const OS_Mesh& get_Mesh() const { return *mesh; }
 
       // subscripting
-	inline T operator()(int, int) const;
+	inline const T& operator()(int, int) const;
 	inline T& operator()(int, int);
     };  
 
@@ -244,7 +244,7 @@ inline OS_Mesh::CCVF<T>::CCVF(SP<OS_Mesh> mesh_)
 //---------------------------------------------------------------------------//
 
 template<class T>
-inline T OS_Mesh::CCVF<T>::operator()(int dim, int cell) const 
+inline const T& OS_Mesh::CCVF<T>::operator()(int dim, int cell) const 
 {
     return data[dim-1][cell-1]; 
 }

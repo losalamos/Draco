@@ -23,7 +23,7 @@ include ../config/makefile
 #           nonsrc
 
 nonsrc  = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Interface.cc Coord_sys.cc \
-          Constants.cc
+          Global.cc
 
 tempsrc = 
 

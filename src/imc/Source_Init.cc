@@ -7,8 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imc/Source_Init.hh"
-#include "imc/Constants.hh"
-#include "imc/Math.hh"
+#include "imc/Global.hh"
 #include "imc/Particle.hh"
 #include "imc/Particle_Buffer.hh"
 #include "rng/Sprng.hh"
@@ -321,6 +320,9 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
     ofstream cen_file("census");
     Particle_Buffer<Particle<MT> > buffer(mesh, rcon);
 
+  // we should not have made any Random numbers yet
+    Require (Global::rn_stream == 0);
+
   // loop over cells
     for (int cell = 1; cell <= mesh.num_cells(); cell++)
 	for (int i = 1; i <= ncen(cell); i++)
@@ -346,6 +348,12 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 	  // write particle
 	    buffer.write_census(cen_file, particle);
 	}
+
+  // update the rn_stream constant
+    Global::rn_stream = rcon.get_num();
+
+  // a final assertion
+    Ensure (Global::rn_stream == ncentot);
 }
 
 //---------------------------------------------------------------------------//
@@ -388,22 +396,24 @@ void Source_Init<MT>::calc_t4_slope(const MT &mesh,
 
 	      // make sure slope isn't too large so as to give a negative
 	      // t4_low.  If so, limit slope so t4_low is zero.
-		t4_low = t4 - t4_slope(coord, cell)*0.5*mesh.dim(coord, cell);
+		t4_low = t4 - t4_slope(coord, cell) * 0.5 * 
+		    mesh.dim(coord, cell); 
 		if (t4_low < 0.0)
-		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell);
+		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell); 
 	    }
 
 	  // if high side is vacuum, use only two t^4's
 	    else if (cell_high == 0)
 	    {
 		t4_low = pow(state.get_T(cell_low), 4);
-		delta_r = 0.5 * (mesh.dim(coord, cell) + mesh.dim(coord, cell_low));
-
+		delta_r = 0.5 * (mesh.dim(coord, cell) + 
+				 mesh.dim(coord, cell_low));
 		t4_slope(coord, cell) = (t4 - t4_low) / delta_r;
 
 	      // make sure slope isn't too large so as to give a negative
 	      // t4_high.  If so, limit slope so t4_high is zero.
-		t4_high = t4 + t4_slope(coord,cell)*0.5*mesh.dim(coord, cell);
+		t4_high = t4 + t4_slope(coord,cell) * 0.5 * 
+		    mesh.dim(coord, cell); 
 		if (t4_high < 0.0)
 		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell);
 	    }
@@ -415,13 +425,17 @@ void Source_Init<MT>::calc_t4_slope(const MT &mesh,
 		t4_high = pow(state.get_T(cell_high), 4);
 
 		double low_slope = (t4 - t4_low) /
-		    (0.5 * (mesh.dim(coord, cell_low) + mesh.dim(coord, cell)) );
+		    (0.5 * (mesh.dim(coord, cell_low) +
+			    mesh.dim(coord, cell)) );
 
 		double high_slope = (t4_high - t4) /
-		    (0.5 * (mesh.dim(coord, cell) + mesh.dim(coord, cell_high)) );
+		    (0.5 * (mesh.dim(coord, cell) +
+			    mesh.dim(coord, cell_high)) );
 
-		double t4_lo_edge = t4 - low_slope  * 0.5 * mesh.dim(coord, cell);
-		double t4_hi_edge = t4 + high_slope * 0.5 * mesh.dim(coord, cell);
+		double t4_lo_edge = t4 - low_slope  * 0.5 * 
+		    mesh.dim(coord, cell);
+		double t4_hi_edge = t4 + high_slope * 0.5 *
+		    mesh.dim(coord, cell);
 
 		t4_slope(coord, cell) = (t4_hi_edge - t4_lo_edge) / 
 		                         mesh.dim(coord, cell);

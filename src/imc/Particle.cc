@@ -7,8 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imc/Particle.hh"
-#include "imc/Constants.hh"
-#include "imc/Math.hh"
+#include "imc/Global.hh"
 #include <iomanip>
 
 IMCSPACE

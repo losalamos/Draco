@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imc/OS_Mesh.hh"
-#include "imc/Constants.hh"
+#include "imc/Global.hh"
 #include <iomanip>
 
 IMCSPACE

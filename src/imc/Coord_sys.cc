@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imc/Coord_sys.hh"
-#include "imc/Constants.hh"
+#include "imc/Global.hh"
 #include <iostream>
 #include <cmath>
 

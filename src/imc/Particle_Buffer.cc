@@ -290,9 +290,9 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc,
     int ic = 0;
 
   // define arrays for buffering
-    double array_d[Global::buffer_d];
-    int    array_i[Global::buffer_i];
-    char   array_c[Global::buffer_c];
+    double *array_d = new double[Global::buffer_d];
+    int    *array_i = new int[Global::buffer_i];
+    char   *array_c = new char[Global::buffer_c];
 
   // loop through particles and get the goods
     while (bank.size())
@@ -330,6 +330,11 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc,
     SendAsync(buffer.comm_d, &array_d[0], Global::buffer_d, proc, 101);
     SendAsync(buffer.comm_i, &array_i[0], Global::buffer_i, proc, 102);
     SendAsync(buffer.comm_c, &array_c[0], Global::buffer_c, proc, 103);
+
+  // reclaim our memory
+    delete [] array_d;
+    delete [] array_i;
+    delete [] array_c;
 }
     
 //---------------------------------------------------------------------------//

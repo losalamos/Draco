@@ -9,8 +9,7 @@
 #include "imc/Parallel_Builder.hh"
 #include "imc/XYCoord_sys.hh"
 #include "imc/XYZCoord_sys.hh"
-#include "imc/Math.hh"
-#include "imc/Constants.hh"
+#include "imc/Global.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
 #include <string>
@@ -96,6 +95,7 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
 	    {
 		procs_per_cell[cell-1].push_back(proc);
 		cells_per_proc[proc].push_back(cell);
+		Ensure (procs_per_cell[cell-1].size() <= nodes());
 	    }
 	    Ensure (cells_per_proc[proc].size() == num_cells);
 	}
@@ -214,6 +214,9 @@ template<class PT>
 void Parallel_Builder<MT>::send_Source(const Source_Init<MT> &sinit, 
 				       const Particle_Buffer<PT> &buffer)
 {
+  // check that we are on the host node only
+    Check (!node());
+
   // first distribute the census
     if (sinit.get_ncentot() > 0) 
 	dist_census(sinit, buffer);
@@ -340,11 +343,25 @@ void Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
     int num_cells = procs_per_cell.size();
     Require (num_cells > 0);
 
-  // make the volume source counter
+  // make the volume source counters
     vector<int> nvol(num_cells);
     vector<int> nvol_xtra(num_cells);
+    vector<int> streamnum(num_cells);
+    int counter = Global::rn_stream;
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	nvol[cell-1] = sinit.get_nvol(cell) / procs_per_cell[cell-1].size();
+	nvol_xtra[cell-1] = sinit.get_nvol(cell) % 
+	    procs_per_cell[cell-1].size();
+	streamnum[cell-1] = counter;
+	counter += sinit.get_nvol(cell);
+	Check (nvol_xtra[cell-1] < procs_per_cell[cell-1].size());
+    }
 
-  // <<CONTINUE HERE>>
+  // loop over processors and make the send info
+  // check       v
+    for (int i = 0; i < nodes(); i++)
+      // << CONTINUE HERE >>
 }
 
 //---------------------------------------------------------------------------//
