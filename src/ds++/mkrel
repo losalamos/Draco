@@ -1,0 +1,93 @@
+#!/bin/sh
+# makrel
+# Geoffrey Furnish
+# 10 April 1995
+#
+# This script file is used to make a release of the C++ Data
+# Structures Library.
+
+# Now find out what the version id string for this release is going to
+# be. 
+
+echo "Enter tag for release (default=`date +%y%m%d`) : \c"
+read ans
+
+tag=${ans:=`date +%y%m%d`}
+
+dir=/tmp/ds++-$tag
+
+# Make space in /tmp for building this release.  Delete any vestiges
+# of a prior build (like while this script is under development).
+
+rm -rf $dir $dir.tar.gz
+mkdir $dir
+mkdir $dir/man
+
+# Now construct the release file tree.
+
+cp *.h *.cc README FAQ COPYING.LIB $dir
+cp mk.ex $dir/makefile
+
+rm $dir/Sort.h $dir/Sort.cc $dir/Sort_inst.cc $dir/tstSort.cc
+
+autodoc *.h *.cc
+mv *.3 $dir/man
+
+# Should do something to stuff the LGPL copyright notice into each
+# file.
+
+# Now let's build the HTML man pages and stuff them where they go.
+
+rm -f ~/public_html/ds++/man/*
+
+# Begin constructing an HTML page for reaching each of the man pages.
+
+cat >ds++man.html <<End
+<HTML>
+<HEAD>
+
+<TITLE>
+DS++ Man Pages
+</TITLE>
+
+</HEAD>
+
+<BODY>
+<H1>Man Pages for the C++ Data Structures Library</H1>
+
+The following man pages are available:
+
+<UL>
+End
+
+for page in $dir/man/*.3; do
+    echo "Processing $page to HTML"
+    base=`basename $page`
+    nroff -man $page | man2html > ~/public_html/ds++/man/$base.html
+    cat >>ds++man.html <<End
+<LI> <A HREF="man/$base.html"> $base  </A> </LI>
+End
+done
+
+# Finish up the controlling HTML page.
+
+cat >>ds++man.html <<End
+</UL>
+</BODY>
+
+</HTML>
+End
+
+mv ds++man.html ~/public_html/ds++
+
+# Now tar it up and compress it.
+
+(cd /tmp; tar cvf ds++-$tag.tar ds++-$tag)
+
+gzip /tmp/ds++-$tag.tar
+
+# Inform release coordinator of the status.
+
+echo "Constructed DS++ distribution file in /tmp:"
+ls -l /tmp/ds++-$tag.tar.gz
+echo "You may now move it to it's final location."

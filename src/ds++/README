@@ -1,0 +1,41 @@
+File:		README
+Author:		Geoffrey Furnish
+Date:		17 January 1994
+
+This directory holds the C++ Data Structures Library, libds++.a.
+
+The intent here is that I will collect a variety of useful data
+structure classes and keep them here.  This is in an effort to "do
+something" about the complete lack of a standard set of classes for
+C++.  Many C++ libraries exist, but most are commercial, and many of
+the compiler vendors don't supply any class library at all.  There is
+libg++, but it requires the GNU compiler, which is also not available
+on many machines (like Cray's, for instantce).  USL's SC is good, but
+some Cfront vendors, like SUN, don't provide it.
+
+It all adds up to being a major source of exasperation.  There
+basically is no good, free (or even widely available, where "widely"
+means "on all the machines I use") class library of generally useful
+data structures for C++.
+
+This directory, then, will contain my own growing collection of such
+things.  I hate reinventing the wheel, but at least I'm going to make
+mine so it rolls :-).
+
+Fair Use:
+
+This library is provided under the terms of the GNU Library General
+Public License (LGPL).  Details are found in the file COPYING.LIB in
+this directory.  The LGPL applies to all files in this directory, and
+no further per-file legal attributions will be made.
+
+Use of the LGPL is intended to allow free use of this software.  It
+was also chosen in preference to the standard GPL, so as not to
+preclude use in commercial contexts.  The LGPL, like the GPL requires
+that source be provided on request, but it also permits the binary
+representations of these files to be distributed as long as source is
+provided.  This is a complete non-issue in the context of templated
+C++ source code, since both the headers and the implementation files
+must be available in order for the template instantiation mechanism to
+work anyway.
+

@@ -1,0 +1,138 @@
+\c LaTeXinfo template file.
+
+\c autodoc outfile=libds++.tex
+\c autodoc uplevel=Data Structures
+\c autodoc prior_node=Using libds++.a
+
+\node    Data Structures, C4, GTS Library, Top
+\comment  node-name,  next,  previous,  up
+\chapter{The GTS C++ Data Structures Library}
+\cindex{libds++.a}
+\cindex{GTS C++ Data Structures class library}
+
+This chapter describes the C++ data structures class library used by
+GTS.  We discuss what it has, why it is here, how to use it, and the
+specifics of each available class.
+
+\begin{menu}
+* Overview and Motivation::	Why this library exists.
+* Using libds++.a::		Using the C++ data structures class library.
+<CLASS_LIST_MENU>
+\end{menu}
+
+\node Overview and Motivation, Using libds++.a, Data Structures, Data Structures
+\section{Why this library exists}
+\cindex{why use data structures in C++}
+
+C++ enables the encapsulation of code and data into reusable software
+components, called objects.  The conventional wisdom is that once an
+object is created and debugged, it can be reused essentially without
+modification for the indefiinite future.
+
+This basic concept of encapsulation is further extended in a couple of
+orthogonal directions by various features of the C++ language.  First
+off, there is inheritance, which allows the creation of new data types
+(classes/objects) which resue previously created classes without
+having to do much to integrate with the prior code.  That is, a class
+derived from another inherits all the capabilities of the base class
+merely by ``signing up''.  No modification to the base class is
+required to allow derivation.  (Some class designers may anticpate
+derivation, and provide some facilities with derivation in mind).
+
+Secondly there is composition, in which new classes can be defined in
+terms of some unspecified other class, which is not known until
+program link time.  This facility, called paramaterized types is
+supported by the C++ concept of template classes.  Templates can be
+used in many ways, but perhaps the most common example of their use is
+in the construction of container classes.  Templated container classes
+are classes which ``contain'' other classes, and provide certain
+access semantics, such as stacks, lists, etc.
+
+An entire culture of C++ usage and idiomatic expression has grown up
+around these concepts.  Unfortunately there is virtually no
+signficant standardization going on in the area of reusable software
+components like there is for the language syntax itself.
+Consequently, although there is getting to be a lot of general
+understanding and experience with class library construction and use
+in the C++ community, there is not any sort of a ``standard class
+library'' for C++.
+
+Numerous class libraries exist on the net.  Most available at the time
+of this writing, however, were designed early in the history of C++,
+and are not designed to exploit modern idiomatic expression,
+particularly templates.  The GNU libg++, for instance, must use a
+seperate program to generate a class definiton for container classes,
+based on a source prescription and a requested contained type.  NIHCL
+is built in the Smalltalk model.  Essentially each of hte main class
+libraries has its own set of limitations and annoying design goals.
+
+The closest thing to a standard library, as far as this author is
+concerned at the time of this writing is the USL Standard Components.
+These are heavily template based, and provide most of the useful data
+structures.  Unfortunately they are expensive, and most compiler
+vendors do not supply them.
+
+Even LEDA, the Library of Efficient Data types and Algorithms was a
+dissappointment to this author.  Although its feature list and general
+design philosophy were appealing, it proved to be quite unwieldy in
+its interaction with diverse systems, in this author's experience.
+
+Consequently, after considerable exasperation, I decided to simply
+start writing my own general data structures class library.  This
+chapter describes that library in detail.  The essential design goals
+are to:
+\begin{itemize}
+
+\item	Provide a meaninful subset of the useful data structures that
+C++ programs want/need.
+
+\item	Provide them in template form, so that easy composition of the
+supplied library classes with the user's own private classes is
+supported. 
+
+\item	Code them in a way which makes them useable with a wide
+spectrum of C++ compilers, avoiding dependencies on the oddities of
+the system header files of one particular operating system.
+
+\item	Support use in embedded systems where POSIX featues like the
+regular expression system calls may not be available.
+\end{itemize}
+
+Once this library has matured a little, I may think of making it
+available to the general C++ community.
+
+\node Using libds++.a, <FIRST_CLASS>, Overview and Motivation, Data Structures
+\section{Using the C++ data structures class library}
+\cindex{using the data structures class library}
+
+The C++ data structures class library is a set of classes which
+implement a variety of basic data types useful for general data
+processing requirements.  The library is named libds.a.  It is a unix
+archive format library.  It exists in the gts/src/ds directory, and is
+built by the makefile in that directory.
+
+To use the library you must include in your program the header files
+for the classes you wish to use.  For example, to use the String
+class, you would include the line:
+\begin{verbatim}
+    #include <String.h>
+\end{verbatim}
+into your code.  
+
+On the compile line, you will need to use a -I flag to tell the C++
+compiler where to find the header files.  The -Idir should point to
+gts/src/ds, using either an absolute unix pathname, or a relative
+pathname from the directory where you are compiling your program.
+
+On  the link line, you must specify -lds.  This tells the compiler
+where to find all the external object code used by your program.
+
+Finally, even during the link step, you need to tell the compiler
+where to find the include files.  This is because some of the classes
+are implemented using C++ templates, and cfront derived compilers (of
+which almost all vendor compilers are) need to have this info at link
+time in order to find all the template instantiation code.  This is
+kind of annoying, but if you bundle it into a makefile, it is not too
+bad.
+
+<DUMP_CLASSES>

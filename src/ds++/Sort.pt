@@ -1,0 +1,16 @@
+//----------------------------------*-C++-*----------------------------------//
+// Sort.pt
+// Dave Nystrom
+// 13 January 1997
+//---------------------------------------------------------------------------//
+
+#include "Sort.cc"
+
+instantiate function int void HeapSort( int, int * )
+instantiate function int void index( int n, int *v, int *idx )
+
+instantiate function float void HeapSort( int, float * )
+instantiate function float void index( int n, float *v, int *idx )
+
+instantiate function double void HeapSort( int, double * )
+instantiate function double void index( int n, double *v, int *idx )
