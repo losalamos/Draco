@@ -604,6 +604,26 @@ void Particle<MT>::random_walk_event(const double  rw_time,
     // check the exponent against the minimum allowed
     if (exponent > std::numeric_limits<double>::min_exponent)
 	weight_factor = std::exp(exponent);
+    
+    // update the particle weight fraction
+    fraction *= weight_factor;
+
+    // check to see if the particle has dropped below the minimum weight
+    // fraction; if the particle is below the minimum weight fraction we will
+    // dump its energy weight into the cell and kill it; the diffuse nature
+    // of the cell justifies skipping analog tracking below the cutoff
+    if (fraction < minwt_frac)
+    {
+	weight_factor = 0.0;
+	
+	// tally killed data
+	tally.accum_n_killed();
+	tally.accum_ew_killed(ew);
+
+	// set descriptor and particle status
+	alive      = false;
+	descriptor = KILLED;
+    }
 
     // adjust weight
     double new_ew   = weight_factor * ew;
@@ -633,9 +653,6 @@ void Particle<MT>::random_walk_event(const double  rw_time,
     {
 	throw rtt_dsxx::assertion("Gray absorption opacity is zero.");
     }
-    
-    // update the particle weight fraction
-    fraction *= weight_factor;
    
     // update particle energy weight
     ew = new_ew;

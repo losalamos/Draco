@@ -711,6 +711,11 @@ void Gray_Particle<MT>::rw_transport(
 	switch (Base::descriptor) 
 	{
 
+	case Base::KILLED:
+	    
+	    Check (!Base::alive);
+	    break;
+
 	case Base::RANDOM_WALK:
 
 	    // we have already processed the event
