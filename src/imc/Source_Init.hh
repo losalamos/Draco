@@ -39,26 +39,40 @@ private:
     vector<double> evol_ext;
     vector<string> ss_pos;
     vector<double> ss_temp;
-    double delta_t
+    vector<double> rad_temp;
+    double delta_t;
+    int npmax;
+    double dnpdt;
     
   // source initialization data
 
+  // number of particles for this cycle
+    int npwant;
+
   // volume source variables
-    typename MT::CCSF<double> evol;
+    typename MT::CCSF_double evol;
     double evoltot;
 
   // surface source variables
-    typename MT::CCSF<double> ess;
-    typename MT::CCSF<int> fss;
+    typename MT::CCSF_double ess;
+    typename MT::CCSF_int fss;
     double esstot;
 
+  // radiation energy variables
+    typename MT::CCSF_double erad;
+    double eradtot;
+
+  // number of census particles per cell
+    typename MT::CCSF_int ncen;
+    int ncentot;
 
   // private member functions used to calc initial source information
 
   // number of source particles, census, source energies, number of volume
   // and surface sources
     void calc_num_part();
-    void calc_initial_census(const Opacity<MT> &, const Mat_State<MT> &);
+    void calc_initial_census(const MT &,const Opacity<MT> &, 
+			     const Mat_State<MT> &);
     void calc_source_energies();
     void calc_source_numbers();
 
@@ -67,14 +81,14 @@ private:
     void calc_ess();
     void calc_erad();
     void calc_ncen_init();
-    void write_initial_census();
+    void write_initial_census(const MT &);
 
 public:
     template<class IT>
     explicit Source_Init(SP<IT>, SP<MT>);
 
   // source initialyzer function
-    void initialize(const Opacity<MT> &, const Mat_State<MT> &);
+    void initialize(const MT &, const Opacity<MT> &, const Mat_State<MT> &);
 
 CSPACE
 

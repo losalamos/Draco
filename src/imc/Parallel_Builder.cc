@@ -432,9 +432,12 @@ typename MT::CCVF_i Parallel_Builder<MT>::recv_cellpair()
 // send the Opacity object
 
 template<class MT>
-void Parallel_Builder<MT>::send_Opacity(const Opacity &opacity)
+void Parallel_Builder<MT>::send_Opacity(const Opacity<MT> &opacity)
 {
   // send out the Opacities, one component at a time
+
+  // assure that we are on the host node
+    Check (!node());
 
   // determine the number of cells
     int num_cells = opacity.num_cells();
@@ -470,9 +473,15 @@ void Parallel_Builder<MT>::send_Opacity(const Opacity &opacity)
 // receive the Opacity object
 
 template<class MT>
-SP<Opacity> Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
+SP<Opacity<MT> > Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
 {
   // receive and rebuild the Opacity object
+
+  // assure we are on receive nodes
+    Check (node());
+
+  // declare return opacity object
+    SP< Opacity<MT> > return_opacity;
 
   // check to make sure we have a valid mesh pointer
     Check (mesh);
@@ -483,6 +492,36 @@ SP<Opacity> Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
 
   // check to make sure our meshes are of proper size
     Check (num_cells == mesh->num_cells());
+
+  // make new Opacity objects
+    typename MT::CCSF_double sigma(mesh);
+    typename MT::CCSF_double planck(mesh);
+    typename MT::CCSF_double fleck(mesh);
+
+  // receive data from host
+    double *rsigma  = new double[num_cells];
+    double *rplanck = new double[num_cells];
+    double *rfleck  = new double[num_cells];
+    Recv (rsigma, num_cells, 0, 21);
+    Recv (rplanck, num_cells, 0, 22);
+    Recv (rfleck, num_cells, 0, 23);
+
+  // assign to new Opacity objects
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	sigma(cell)  = rsigma[cell-1];
+	planck(cell) = rplanck[cell-1];
+	fleck(cell)  = rfleck[cell-1];
+    }
+
+  // reclaim dynamic memory
+    delete [] rsigma;
+    delete [] rplanck;
+    delete [] rfleck;
+
+  // build and return new opacity object
+    return_opacity = new Opacity<MT>(sigma);
+    return return_opacity;
 }
     
 CSPACE

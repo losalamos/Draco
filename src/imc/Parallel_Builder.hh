@@ -59,8 +59,8 @@ public:
     SP<MT> recv_Mesh();
 
   // Opacity passing functionality
-    void send_Opacity(const Opacity &);
-    SP<Opacity> recv_Opacity(SP<MT>);
+    void send_Opacity(const Opacity<MT> &);
+    SP<Opacity<MT> > recv_Opacity(SP<MT>);
 };
 
 CSPACE

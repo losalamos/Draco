@@ -32,6 +32,7 @@ IMCSPACE
 GLOBALSPACE
 
 using std::vector;
+using std::ostream;
 
 //---------------------------------------------------------------------------//
 // OVERLOADED OPERATORS

@@ -85,7 +85,7 @@ public:
 
       // subscripting
 	T operator()(int cell) const { return data[cell-1]; }
-	T& operator()(int cell_index) { return data[cell_index-1]; }
+	T& operator()(int cell) { return data[cell-1]; }
     };  
 
     template<class T>

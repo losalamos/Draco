@@ -10,18 +10,21 @@
 #include "imctest/Constants.hh"
 #include "imctest/Math.hh"
 #include <cmath>
+#include <iostream>
+#include <fstream>
 
 IMCSPACE
 
-using Global::Min;
+using Global::min;
 using std::pow;
+using std::ofstream;
 
 //---------------------------------------------------------------------------//
 // public member functions
 //---------------------------------------------------------------------------//
 // source initialyzer -- this is the main guy
 template<class MT>
-void Source_Init<MT>::initialize(const Opacity<MT> &opacity,
+void Source_Init<MT>::initialize(const MT &mesh, const Opacity<MT> &opacity,
 				 const Mat_State<MT> &state)
 {
   // calculate number of particles
@@ -29,7 +32,7 @@ void Source_Init<MT>::initialize(const Opacity<MT> &opacity,
 
   // on first pass do initial source census
     if (cycle == 1)
-	calc_initial_census(opacity, state);
+	calc_initial_census(mesh, opacity, state);
 
   // calculate source energies
     calc_source_energies();
@@ -46,13 +49,14 @@ template<class MT>
 void Source_Init<MT>::calc_num_part()
 {
   // calculate the number of particles used in the timestep
-    npwant = min(npmax, npwant + dupdt * delta_t);
+    npwant = min(npmax, npwant + dnpdt * delta_t);
 }
 
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Source_Init<MT>::calc_initial_census(const Opacity<MT> &opacity,
+void Source_Init<MT>::calc_initial_census(const MT &mesh,
+					  const Opacity<MT> &opacity,
 					  const Mat_State<MT> &state)
 {
   // calculate and write the initial census source
@@ -70,7 +74,7 @@ void Source_Init<MT>::calc_initial_census(const Opacity<MT> &opacity,
     calc_ncen_init();
 
   // write out the initial census
-    write_initial_census();
+    write_initial_census(mesh);
 }
 
 //---------------------------------------------------------------------------//
@@ -92,8 +96,8 @@ void calc_source_numbers()
 {
   // calculate numbers of different quantities necessary for the source
 
-    nsource    = npwant - ncensus;
-    esource    = evoltot - esstot;
+    nsource    = npwant - ncentot;
+    esource    = evoltot + esstot;
     part_per_e = nsource / esource;
 
   // calculate volume source number
@@ -130,13 +134,13 @@ void Source_Init<MT>::calc_evol(const Opacity<MT> &opacity,
 }
 
 //---------------------------------------------------------------------------//
-
+// caculate the total surface source and the surface source in each cell
+    
 template<class MT>
 void Source_Init<MT>::calc_ess()
 {
-  // caculate the total surface source and the surface source in each cell
-    
   // reset esstot
+    esstot = 0.0;
 
   // loop over surface sources in problem
     for (int ss = 0; ss < ss_pos.size(); ss++)
@@ -159,6 +163,72 @@ void Source_Init<MT>::calc_ess()
 	}
     }
 }   
+
+//---------------------------------------------------------------------------//
+// calculate radiation energy in each cell and total radiation energy
+
+template<class MT>
+void Source_Init<MT>::calc_erad()
+{
+      // reset evoltot
+    eradtot = 0.0;
+
+  // calc radiation energy in each cell and accumulate total radiation energy 
+    for (int cell = 1; cell <= erad.get_Mesh().num_cells(); cell++)
+    {
+      // calc cell centered radiation energy
+	erad(cell) = Global::a * erad.get_Mesh().volume(cell) *
+	    pow(rad_temp[cell-1], 4);
+
+      // accumulate evoltot
+	eradtot += erad(cell);
+    }
+}
+
+//---------------------------------------------------------------------------//
+// calculate initial census particles per cell and total
+
+template<class MT>
+void Source_Init<MT>::calc_ncen_init()
+{
+  // first guess at census particles per cell
+    int ncenguess = eradtot / (evoltot + esstot + eradtot) * npwant;
+
+  // particles per unit energy
+    double part_per_e = ncenguess / eradtot;
+
+  // attempt to make all census particles have the same energy weight,
+  // iterate
+    bool retry = true;
+    while (retry)
+    {
+      // calculate census particles per cell
+	ncentot = 0;
+	for (int cell = 1; cell <= ncen.get_Mesh().num_cells(); cell++)
+	{
+	    ncen(cell) = static_cast<int>(erad(cell)*part_per_e+0.5);
+	    ncentot += ncen(cell);
+	}
+
+      // check to see we haven't exceeded total particles for this cycle
+	if (ncentot <= npwant)
+	    retry = false;
+	else
+	    part_per_e = (ncenguess - (ncentot-npwant)) / eradtot;
+    }
+}
+
+//---------------------------------------------------------------------------//
+// write the initial census
+	
+template<class MT>
+void Source_Init<MT>::write_initial_census(const MT &mesh)
+{
+  // open census file
+    ofstream cen_file("census");
+
+  // 
+
 
 CSPACE
 
