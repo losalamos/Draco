@@ -33,8 +33,14 @@
 //  6) 2000-06-19: Added a regression test for the get_db() and get_min_db()
 //                 services of the TET_Mesh class.
 //  7) 2000-07-23: Initial tests of TET_Mesh::sample_pos() for linearly
-//                 interpolated temperature**4 given the temperatures**4 on the
-//                 vertices of the cells.
+//                 interpolated temperature**4 given the temperatures**4 on
+//                 the vertices of the cells.
+//  8) 2000-11-30: Include-file and using-declaration for Ensight_Translator.
+//                 Replace locally generated output (cerr) test file with
+//                 ifstream/ostringstream technique for in-memory comparison
+//                 with the predicted outputs, thus increasing coverage for
+//                 regression tests.  Added tests for get_cell_pair() member
+//                 function of TET_Mesh class.
 //
 //___________________________________________________________________________//
 
@@ -44,6 +50,7 @@
 #include "../XYZCoord_sys.hh"
 #include "../Release.hh"
 #include "TET_test_1.hh"
+#include "viz/Ensight_Translator.hh"
 #include "c4/global.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
@@ -52,6 +59,8 @@
 #include <iomanip>
 #include <vector>
 #include <cmath>
+#include <sstream>
+#include <fstream>
 #include <string>
 #include <set>
 #include <map>
@@ -65,6 +74,7 @@ using rtt_mc::TET_Mesh;
 using rtt_mc::TET_Builder;
 using rtt_mc::ThreeVector;
 using rtt_mc::sample_in_triangle;
+using rtt_viz::Ensight_Translator;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
 using rtt_mc_test::TET_test_1;
@@ -85,30 +95,15 @@ typedef std::set<int> SetInt;
 //! Typedef for a map linking strings to sets of integers.
 typedef std::map< std::string, SetInt > MAP_String_SetInt;
 
+// Collect output for comparison to previously prepared file.
+ostringstream theOutput;
+
 double MID_epsilon = 0.0001;
 int seed = 493875348;
 int num = 5;
 
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__);
-
-// Experiment with CPU timing.
-//_TIMING_+#include <unistd.h>
-//_TIMING_+#include <sys/times.h>
-//_TIMING_+float etime(float a[2])
-//_TIMING_+{
-//_TIMING_+ static int first_call = 1;
-//_TIMING_+ static float ticks;
-//_TIMING_+ struct tms buffer;
-//_TIMING_+ if(first_call){
-//_TIMING_+   first_call = 0;
-//_TIMING_+   ticks = (float)sysconf(_SC_CLK_TCK);
-//_TIMING_+  }
-//_TIMING_+ times(&buffer);
-//_TIMING_+ a[0] = ((float)buffer.tms_utime)/ticks;
-//_TIMING_+ a[1] = ((float)buffer.tms_stime)/ticks;
-//_TIMING_+ return (a[0]+a[1]);
-//_TIMING_+}
 
 //! Mesh proxy class
 class Mesh_Proxy
@@ -241,17 +236,17 @@ void Test_ThreeVector()
     if (fabs(count[0][10] - 0.9936) > MID_epsilon) ITFAILS;
     if (fabs(count[0][11] - 0.4608) > MID_epsilon) ITFAILS;
 
-//  Beginning:  a way to see these results ordered on the page.
-//  cout.setf(ios::fixed);
-//  cout.precision(5);
-//
-//  for (int yy = 5 ; yy >= 0 ; yy--) {
-//      for (int xx = 0; xx < 12; xx++)
-//          cout << setw(10) << count[yy][xx];
-//      cout << endl;
-//  }
-//  cout << endl << endl;
-//  End:  a way to see these results ordered on the page.
+    //  Beginning:  a way to see these results ordered on the page.
+    //  cout.setf(ios::fixed);
+    //  cout.precision(5);
+    //
+    //  for (int yy = 5 ; yy >= 0 ; yy--) {
+    //      for (int xx = 0; xx < 12; xx++)
+    //          cout << setw(10) << count[yy][xx];
+    //      cout << endl;
+    //  }
+    //  cout << endl << endl;
+    //  End:  a way to see these results ordered on the page.
 
     // End of test sampling in a triangle.
 
@@ -395,12 +390,19 @@ void Test_TET()
     if (cells_ver[0].size() != 4)   ITFAILS;
     if (cells_ver[1].size() != 4)   ITFAILS;
 
-
-cerr << "Ready for mesh_ptr_H." << endl;
+    theOutput << "Ready for mesh_ptr_H." << endl;
 
     SP<TET_Mesh> mesh_ptr_H(new TET_Mesh(titl, coor, layo, vertex_vec,
-    node_coord_unit, node_set, side_set, cell_set, sides_ver, cells_ver));
-mesh_ptr_H->print_mesh(cerr);
+        node_coord_unit, node_set, side_set, cell_set, sides_ver, cells_ver));
+    mesh_ptr_H->print_mesh(theOutput);
+    theOutput << "BEGIN get_cell_pair\n";
+
+    VF_INT cell_pair_H = mesh_ptr_H->get_cell_pair();
+
+    for (int i = 0; i < cell_pair_H.size() ; ++i)
+        for (int j = 0 ; j < cell_pair_H[i].size() ; ++j)
+            theOutput << cell_pair_H[i][j] << "\n";
+    theOutput << "END get_cell_pair\n";
 
     if ( !mesh_ptr_H )                                                 ITFAILS;
     if ( !mesh_ptr_H->full_Mesh() )                                    ITFAILS;
@@ -433,7 +435,7 @@ mesh_ptr_H->print_mesh(cerr);
     // Test interface ---> TET_Builder instantiation with hand-coded interface.
     // This mesh should be the same 2-tet pyramid as in mesh_ptr_H.
 
-cerr << "Ready for mesh_ptr_0." << endl;
+    theOutput << "Ready for mesh_ptr_0." << endl;
 
     SP<TET_test_1> interface(new TET_test_1());
     if (!interface)                                   ITFAILS;
@@ -441,7 +443,16 @@ cerr << "Ready for mesh_ptr_0." << endl;
     TET_Builder builder(interface);
 
     SP<TET_Mesh> mesh_ptr_0 = builder.build_Mesh();
-mesh_ptr_0->print_mesh(cerr);
+    mesh_ptr_0->print_mesh(theOutput);
+    theOutput << "BEGIN get_cell_pair\n";
+
+    VF_INT cell_pair_0 = mesh_ptr_0->get_cell_pair();
+
+    for (int i = 0; i < cell_pair_0.size() ; ++i)
+        for (int j = 0 ; j < cell_pair_0[i].size() ; ++j)
+            theOutput << cell_pair_0[i][j] << "\n";
+    theOutput << "END get_cell_pair\n";
+
     if (!mesh_ptr_0)                                  ITFAILS;
 
     // The pointers themselves should not be equal...
@@ -471,7 +482,7 @@ mesh_ptr_0->print_mesh(cerr);
     // Test interface ---> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should also be the same 2-tet pyramid as in mesh_ptr_H.
 
-cerr << "Ready for mesh_ptr_1." << endl;
+    theOutput << "Ready for mesh_ptr_1." << endl;
 
     SP<RTT_Mesh_Reader> reader_1(new RTT_Mesh_Reader("TET_RTT_1"));
     if (!reader_1)                                       ITFAILS;
@@ -479,7 +490,15 @@ cerr << "Ready for mesh_ptr_1." << endl;
     TET_Builder read_build_1(reader_1);
 
     SP<TET_Mesh> mesh_ptr_1 = read_build_1.build_Mesh();
-mesh_ptr_1->print_mesh(cerr);
+    mesh_ptr_1->print_mesh(theOutput);
+    theOutput << "BEGIN get_cell_pair\n";
+
+    VF_INT cell_pair_1 = mesh_ptr_1->get_cell_pair();
+
+    for (int i = 0; i < cell_pair_1.size() ; ++i)
+        for (int j = 0 ; j < cell_pair_1[i].size() ; ++j)
+            theOutput << cell_pair_1[i][j] << "\n";
+    theOutput << "END get_cell_pair\n";
     if (!mesh_ptr_1)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...
@@ -532,13 +551,6 @@ mesh_ptr_1->print_mesh(cerr);
 
     // Test sampling in a tethedron.
 
-// Experiment with CPU timing.
-//_TIMING_+float t[2];
-//_TIMING_+float t0 = etime(t);
-//_TIMING_+cerr << "First call = " << t0 << endl;
-//_TIMING_+float t1 = etime(t);
-//_TIMING_+cerr << "Next call = " << t1 << endl;
-
     int *idr = init_sprng(0, num, seed, 1);
     Sprng random(idr, 0);
 
@@ -547,9 +559,9 @@ mesh_ptr_1->print_mesh(cerr);
 
     double count[10][10][10];
     for (int x = 0; x < 10 ; x++)
-       for (int y = 0; y < 10 ; y++)
-           for (int z = 0; z < 10 ; z++)
-               count[x][y][z] = 0.;
+        for (int y = 0; y < 10 ; y++)
+            for (int z = 0; z < 10 ; z++)
+                count[x][y][z] = 0.;
 
     double x_cent = 0.0;
     double y_cent = 0.0;
@@ -574,17 +586,13 @@ mesh_ptr_1->print_mesh(cerr);
         count[xx][yy][zz] += 1.;
     }
 
-//_TIMING_+float t2 = etime(t);
-//_TIMING_+cerr << "Last call = " << t2 << endl;
-//_TIMING_+cerr << "Diff = " << t2-t1 << endl;
-
     x_cent /= static_cast<double>(numm);
     y_cent /= static_cast<double>(numm);
     z_cent /= static_cast<double>(numm);
 
-//  cerr << "x_cent = " << x_cent << endl;
-//  cerr << "y_cent = " << y_cent << endl;
-//  cerr << "z_cent = " << z_cent << endl;
+    // theOutput << "x_cent = " << x_cent << endl;
+    // theOutput << "y_cent = " << y_cent << endl;
+    // theOutput << "z_cent = " << z_cent << endl;
 
     if (fabs(x_cent - 0.374902) > MID_epsilon)          ITFAILS;
     if (fabs(y_cent - 0.374776) > MID_epsilon)          ITFAILS;
@@ -595,18 +603,18 @@ mesh_ptr_1->print_mesh(cerr);
             for (int zz = 0; zz < 10 ; zz++)
                 count[xx][yy][zz] *= factor;
 
-// How to generate some test answers.
-// cerr << "count[1][6][0] = " << count[1][6][0] << endl;
-// cerr << "count[0][8][1] = " << count[0][8][1] << endl;
-// cerr << "count[5][4][2] = " << count[5][4][2] << endl;
-// cerr << "count[8][1][3] = " << count[8][1][3] << endl;
-// cerr << "count[2][7][4] = " << count[2][7][4] << endl;
-// cerr << "count[5][3][5] = " << count[5][3][5] << endl;
-// cerr << "count[4][4][6] = " << count[4][4][6] << endl;
-// cerr << "count[3][6][7] = " << count[3][6][7] << endl;
-// cerr << "count[4][4][8] = " << count[4][4][8] << endl;
-// cerr << "count[4][4][9] = " << count[4][4][9] << endl;
-// cerr << "----------------" << endl;
+    // How to generate some test answers.
+    // theOutput << "count[1][6][0] = " << count[1][6][0] << endl;
+    // theOutput << "count[0][8][1] = " << count[0][8][1] << endl;
+    // theOutput << "count[5][4][2] = " << count[5][4][2] << endl;
+    // theOutput << "count[8][1][3] = " << count[8][1][3] << endl;
+    // theOutput << "count[2][7][4] = " << count[2][7][4] << endl;
+    // theOutput << "count[5][3][5] = " << count[5][3][5] << endl;
+    // theOutput << "count[4][4][6] = " << count[4][4][6] << endl;
+    // theOutput << "count[3][6][7] = " << count[3][6][7] << endl;
+    // theOutput << "count[4][4][8] = " << count[4][4][8] << endl;
+    // theOutput << "count[4][4][9] = " << count[4][4][9] << endl;
+    // theOutput << "----------------" << endl;
 
     if (fabs(count[1][6][0] - 1.01167) > MID_epsilon)     ITFAILS;
     if (fabs(count[0][8][1] - 0.238333) > MID_epsilon)    ITFAILS;
@@ -624,19 +632,19 @@ mesh_ptr_1->print_mesh(cerr);
     if (count[5][2][7] != 0.0)                            ITFAILS;
     if (count[3][4][9] != 0.0)                            ITFAILS;
 
-//  Beginning:  a way to see these results ordered on the page.
-//__+cout.setf(ios::fixed);
-//__+cout.precision(5);
-//__+for (int zz = 0 ; zz < 10 ; zz++) {
-//__+    for (int yy = 9 ; yy >= 0 ; yy--) {
-//__+        for (int xx = 0; xx < 10; xx++)
-//__+            cout << setw(10) << count[xx][yy][zz];
-//__+        cout << endl;
-//__+    }
-//__+    cout << endl << endl;
-//__+}
-//__+cout << "-----------------------------------------------\n";
-//  End:  a way to see these results ordered on the page.
+    //  Beginning:  a way to see these results ordered on the page.
+    //  cout.setf(ios::fixed);
+    //  cout.precision(5);
+    //  for (int zz = 0 ; zz < 10 ; zz++) {
+    //      for (int yy = 9 ; yy >= 0 ; yy--) {
+    //          for (int xx = 0; xx < 10; xx++)
+    //              cout << setw(10) << count[xx][yy][zz];
+    //          cout << endl;
+    //      }
+    //      cout << endl << endl;
+    //  }
+    //  cout << "-----------------------------------------------\n";
+    //  End:  a way to see these results ordered on the page.
 
     SF_DOUBLE T4(4);
 
@@ -645,12 +653,9 @@ mesh_ptr_1->print_mesh(cerr);
     T4[3] = 2.35714285714;
 
     for (int x = 0; x < 10 ; x++)
-       for (int y = 0; y < 10 ; y++)
-           for (int z = 0; z < 10 ; z++)
-               count[x][y][z] = 0.;
-
-//_TIMING_+t1 = etime(t);
-//_TIMING_+cerr << "Next call = " << t1 << endl;
+        for (int y = 0; y < 10 ; y++)
+            for (int z = 0; z < 10 ; z++)
+                count[x][y][z] = 0.;
 
     for (int i = 0 ; i < numm ; i++)
     {
@@ -666,10 +671,6 @@ mesh_ptr_1->print_mesh(cerr);
 
         count[xx][yy][zz] += 1.;
     }
-
-//_TIMING_+t2 = etime(t);
-//_TIMING_+cerr << "Last call = " << t2 << endl;
-//_TIMING_+cerr << "Diff = " << t2-t1 << endl;
 
     for (int xx = 0; xx < 10 ; xx++)
         for (int yy = 0; yy < 10 ; yy++)
@@ -692,31 +693,28 @@ mesh_ptr_1->print_mesh(cerr);
     if (count[5][2][7] != 0.0)                            ITFAILS;
     if (count[3][4][9] != 0.0)                            ITFAILS;
 
-//  Beginning:  a way to see these results ordered on the page.
-//__+cout.setf(ios::fixed);
-//__+cout.precision(5);
-//__+for (int zz = 0 ; zz < 10 ; zz++) {
-//__+    for (int yy = 9 ; yy >= 0 ; yy--) {
-//__+        for (int xx = 0; xx < 10; xx++)
-//__+            cout << setw(10) << count[xx][yy][zz];
-//__+        cout << endl;
-//__+    }
-//__+    cout << endl << endl;
-//__+}
-//__+cout << "-----------------------------------------------\n";
-//  End:  a way to see these results ordered on the page.
+    //  Beginning:  a way to see these results ordered on the page.
+    //  cout.setf(ios::fixed);
+    //  cout.precision(5);
+    //  for (int zz = 0 ; zz < 10 ; zz++) {
+    //      for (int yy = 9 ; yy >= 0 ; yy--) {
+    //          for (int xx = 0; xx < 10; xx++)
+    //              cout << setw(10) << count[xx][yy][zz];
+    //          cout << endl;
+    //      }
+    //      cout << endl << endl;
+    //  }
+    //  cout << "-----------------------------------------------\n";
+    //  End:  a way to see these results ordered on the page.
 
     // Second test for T**4 interpolated sampling.
     T4[0] = T4[1] = T4[2] = 2.07142857143;
     T4[3] = 0.642857142857;
 
     for (int x = 0; x < 10 ; x++)
-       for (int y = 0; y < 10 ; y++)
-           for (int z = 0; z < 10 ; z++)
-               count[x][y][z] = 0.;
-
-//_TIMING_+t1 = etime(t);
-//_TIMING_+cerr << "Next call = " << t1 << endl;
+        for (int y = 0; y < 10 ; y++)
+            for (int z = 0; z < 10 ; z++)
+                count[x][y][z] = 0.;
 
     for (int i = 0 ; i < numm ; i++)
     {
@@ -732,10 +730,6 @@ mesh_ptr_1->print_mesh(cerr);
 
         count[xx][yy][zz] += 1.;
     }
-
-//_TIMING_+t2 = etime(t);
-//_TIMING_+cerr << "Last call = " << t2 << endl;
-//_TIMING_+cerr << "Diff = " << t2-t1 << endl;
 
     for (int xx = 0; xx < 10 ; xx++)
         for (int yy = 0; yy < 10 ; yy++)
@@ -758,26 +752,26 @@ mesh_ptr_1->print_mesh(cerr);
     if (count[5][2][7] != 0.0)                            ITFAILS;
     if (count[3][4][9] != 0.0)                            ITFAILS;
 
-//  Beginning:  a way to see these results ordered on the page.
-//__+cout.setf(ios::fixed);
-//__+cout.precision(5);
-//__+for (int zz = 0 ; zz < 10 ; zz++) {
-//__+    for (int yy = 9 ; yy >= 0 ; yy--) {
-//__+        for (int xx = 0; xx < 10; xx++)
-//__+            cout << setw(10) << count[xx][yy][zz];
-//__+        cout << endl;
-//__+    }
-//__+    cout << endl << endl;
-//__+}
-//__+cout << "-----------------------------------------------\n";
-//  End:  a way to see these results ordered on the page.
+    //  Beginning:  a way to see these results ordered on the page.
+    //  cout.setf(ios::fixed);
+    //  cout.precision(5);
+    //  for (int zz = 0 ; zz < 10 ; zz++) {
+    //      for (int yy = 9 ; yy >= 0 ; yy--) {
+    //          for (int xx = 0; xx < 10; xx++)
+    //              cout << setw(10) << count[xx][yy][zz];
+    //          cout << endl;
+    //      }
+    //      cout << endl << endl;
+    //  }
+    //  cout << "-----------------------------------------------\n";
+    //  End:  a way to see these results ordered on the page.
 
     // End of test sampling in a tethedron.
 
     // Test interface ---> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should be the 96-tet cube from Todd Wareing.
 
-cerr << "Ready for mesh_ptr_2." << endl;
+    theOutput << "Ready for mesh_ptr_2." << endl;
 
     SP<RTT_Mesh_Reader> reader_2(new RTT_Mesh_Reader("TET_RTT_2"));
     if (!reader_2)                                       ITFAILS;
@@ -785,7 +779,15 @@ cerr << "Ready for mesh_ptr_2." << endl;
     TET_Builder read_build_2(reader_2);
 
     SP<TET_Mesh> mesh_ptr_2 = read_build_2.build_Mesh();
-mesh_ptr_2->print_mesh(cerr);
+    mesh_ptr_2->print_mesh(theOutput);
+    theOutput << "BEGIN get_cell_pair\n";
+
+    VF_INT cell_pair_2 = mesh_ptr_2->get_cell_pair();
+
+    for (int i = 0; i < cell_pair_2.size() ; ++i)
+        for (int j = 0 ; j < cell_pair_2[i].size() ; ++j)
+            theOutput << cell_pair_2[i][j] << "\n";
+    theOutput << "END get_cell_pair\n";
     if (!mesh_ptr_2)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...
@@ -798,10 +800,32 @@ mesh_ptr_2->print_mesh(cerr);
     if (*mesh_ptr_0 == *mesh_ptr_2)                      ITFAILS;
     if (*mesh_ptr_1 == *mesh_ptr_2)                      ITFAILS;
 
+//    {
+//        SP<TET_Mesh> mesh = mesh_ptr_2;
+//        vector<string> vn;
+//        vector<string> cn(1, "TEMP");
+//        Ensight_Translator trans("TET", ".", vn, cn);
+//
+//        vector<int>             rgn(mesh->num_cells(), 1);
+//        vector<int>             rgn_num(1, 1);
+//        vector<string>          rgn_nam(1, "A");
+//        vector<vector<double> > vd;
+//        vector<vector<double> > cd(mesh->num_cells(), vector<double>(1));
+//
+//        for (int i = 0; i < cd.size(); i++)
+//            cd[i][0] = i+1;
+//
+//        trans.ensight_dump(1, 0.0, .01,
+//               mesh->get_cell_pair(),
+//               mesh->get_cell_types(), rgn,
+//               mesh->get_point_coord(), vd, cd, rgn_num,
+//               rgn_nam);
+//    }
+
     // Test interface ---> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should be the one-tet case from the definition file.
 
-cerr << "Ready for mesh_ptr_3." << endl;
+    theOutput << "Ready for mesh_ptr_3." << endl;
 
     SP<RTT_Mesh_Reader> reader_3(new RTT_Mesh_Reader("TET_RTT_3"));
     if (!reader_3)                                       ITFAILS;
@@ -809,7 +833,15 @@ cerr << "Ready for mesh_ptr_3." << endl;
     TET_Builder read_build_3(reader_3);
 
     SP<TET_Mesh> mesh_ptr_3 = read_build_3.build_Mesh();
-mesh_ptr_3->print_mesh(cerr);
+    mesh_ptr_3->print_mesh(theOutput);
+    theOutput << "BEGIN get_cell_pair\n";
+
+    VF_INT cell_pair_3 = mesh_ptr_3->get_cell_pair();
+
+    for (int i = 0; i < cell_pair_3.size() ; ++i)
+        for (int j = 0 ; j < cell_pair_3[i].size() ; ++j)
+            theOutput << cell_pair_3[i][j] << "\n";
+    theOutput << "END get_cell_pair\n";
     if (!mesh_ptr_3)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...
@@ -824,7 +856,7 @@ mesh_ptr_3->print_mesh(cerr);
     if (*mesh_ptr_1 == *mesh_ptr_3)                      ITFAILS;
     if (*mesh_ptr_2 == *mesh_ptr_3)                      ITFAILS;
 
-cerr << "Ready for mesh_ptr_4." << endl;
+    theOutput << "Ready for mesh_ptr_4." << endl;
 
     SP<RTT_Mesh_Reader> reader_4(new RTT_Mesh_Reader("TET_RTT_4"));
     if (!reader_4)                                       ITFAILS;
@@ -832,7 +864,15 @@ cerr << "Ready for mesh_ptr_4." << endl;
     TET_Builder read_build_4(reader_4);
 
     SP<TET_Mesh> mesh_ptr_4 = read_build_4.build_Mesh();
-mesh_ptr_4->print_mesh(cerr);
+    mesh_ptr_4->print_mesh(theOutput);
+    theOutput << "BEGIN get_cell_pair\n";
+
+    VF_INT cell_pair_4 = mesh_ptr_4->get_cell_pair();
+
+    for (int i = 0; i < cell_pair_4.size() ; ++i)
+        for (int j = 0 ; j < cell_pair_4[i].size() ; ++j)
+            theOutput << cell_pair_4[i][j] << "\n";
+    theOutput << "END get_cell_pair\n";
     if (!mesh_ptr_4)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...
@@ -846,6 +886,23 @@ mesh_ptr_4->print_mesh(cerr);
     if (*mesh_ptr_0 == *mesh_ptr_4)                      ITFAILS;
     if (*mesh_ptr_1 == *mesh_ptr_4)                      ITFAILS;
     if (*mesh_ptr_2 == *mesh_ptr_4)                      ITFAILS;
+
+//    theOutput << "Ready for mesh_ptr_5." << endl;
+//
+//    SP<RTT_Mesh_Reader> reader_5(new RTT_Mesh_Reader("TET_RTT_5"));
+//    if (!reader_5)                                       ITFAILS;
+//
+//    TET_Builder read_build_5(reader_5);
+//
+//    SP<TET_Mesh> mesh_ptr_5 = read_build_5.build_Mesh();
+//    theOutput << "BEGIN get_cell_pair\n";
+//
+//    VF_INT cell_pair_5 = mesh_ptr_5->get_cell_pair();
+//
+//    for (int i = 0; i < cell_pair_5.size() ; ++i)
+//        for (int j = 0 ; j < cell_pair_5[i].size() ; ++j)
+//            theOutput << cell_pair_5[i][j] << "\n";
+//    theOutput << "END get_cell_pair\n";
 
 }   // end Test_TET()
 
@@ -870,20 +927,31 @@ int main(int argc, char *argv[])
                 return 0;
             }
 
+    ifstream fileModel("TET_MODEL_1");
+    ostringstream theModel;
+    char c_model;
+    while ((c_model = fileModel.get()) != EOF)
+        theModel << c_model;
+    fileModel.close();
+
     // ThreeVector tests
     Test_ThreeVector();
 
     // TET_Mesh tests
     Test_TET();
 
+    if (theOutput.str() != theModel.str())                         ITFAILS;
+
     // status of test
+    if (theOutput.str() != theModel.str())
+        cout << theOutput.str();
+
     cout << endl;
     cout <<     "************************************" << endl;
     if (passed)
         cout << "**** TET_Mesh Self Test: PASSED ****" << endl;
     cout <<     "************************************" << endl;
     cout << endl;
-
     cout << "Done testing TET_Mesh." << endl;
 
     C4::Finalize();
