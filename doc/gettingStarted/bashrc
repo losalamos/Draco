@@ -3,6 +3,15 @@
 ## .bashrc - my bash configuration file upon bash login
 ##---------------------------------------------------------------------------##
 
+##----------------------------------------##
+# If this is a non interactive shell then
+# don't process this rc file
+##----------------------------------------##
+
+if [ $TERM = dumb ]; then
+   return 0
+else
+
 #----------------------------------------#
 # Only do this section of code once!     #
 #----------------------------------------#
@@ -53,25 +62,22 @@ if [ -z $BASHRCDONE ]; then
         export KAI_SERIAL=1081
         export KAI_CODEKEY=kkkllklkkklnchllenllnebb
         export KAI_PATH=/usr/local/bin
+    elif [ $target = ios ]; then
+        export KCC_LICENSE=CXP-1084-NLK-897168-66195
     fi
     
-    #----------------------------------------#
-    # GNATS - bug tracking software          #
-    #----------------------------------------#
-
-    GNATS_DIR=/n/skiathos/radtran/gnats
-    GNATS_PATH=${GNATS_DIR}/$(uname)/bin:${GNATS_DIR}/$(uname)/libexec/gnats
-    GNATS_MANPATH=${GNATS_DIR}/man
-    GNATS_INFOPATH=${GNATS_DIR}/info
-    export GNATS_ELISP_DIR=${GNATS_DIR}/share/emacs/lisp/$(uname)
-    export GNATS_ROOT=${GNATS_DIR}/lib/gnats/gnats-db
-
     #----------------------------------------#
     #                  CVS                   #
     #----------------------------------------#
 
-    export CVSROOT=/n/skiathos/radtran/cvsroot
-    export CVSEDITOR=xesh
+    export CVSEDITOR=xemacs
+    if [ "`uname`" = IRIX64 ] ; then
+        # Force CVS to use SSH authentication from IRIX machines
+        export CVS_RSH=ssh
+        export CVSROOT=kellyt@ios:/radtran/cvsroot
+    elif [ "`uname`" = Linux ] ; then
+        export CVSROOT=/radtran/cvsroot    
+    fi
 
     #----------------------------------------#
     #              Python 1.5                #
@@ -93,7 +99,7 @@ if [ -z $BASHRCDONE ]; then
 
     # MAN PATH
     if [ "`uname`" = IRIX64 ] ; then
-        MYMANPATH=/scratch/tme/man:
+       MYMANPATH=/scratch/tme/man:
     fi
     MANPATH=$MYMANPATH:$GNATS_MANPATH:$MANPATH
 
@@ -102,7 +108,7 @@ if [ -z $BASHRCDONE ]; then
 
     # LOAD PATH
     if [ "`uname`" = IRIX64 ] ; then
-    MYLOADPATH=/scratch/tme/lib
+       MYLOADPATH=/scratch/tme/lib
     fi
 
     #-------------------------------------------#
@@ -115,6 +121,41 @@ fi
 ##---------------------------------------------------------------------------##
 ## User code starts here (Aliases, prompts, umask, more envs, etc.)
 ##---------------------------------------------------------------------------##
+# draco and tycho stuff
+# I'm working with Gandolf so those libs are included.
+# I'm not working with any packages that need PCGLIB or MPI.
+extradirs="c4 imc mc rng fourier POOMA_MT \
+ConjGrad ConjGradDiffusionSolver LAMG LAMGDiffusionSolver \
+P1Diffusion PCGDiffusionSolver RTT_Format_Reader amr_mesh \
+amr_mesh_fort diffusion linalg matprops mesh meshReaders \
+meshReaders_fort meshReaders_Services meshTest nml quadrature \
+radphys sn stdheaders stopwatch timestep traits units viz xm"
+alias killextras='cd src; rm -rf $extradirs; cd ..' 
+if [ "`uname`" = IRIX64 ] ; then
+    export VENDORS='/n/skiathos/radtran/vendors'
+    # Gandolf only
+    vlibs0="--with-gandolf-lib=${VENDORS}/gandolf/IRIX64/lib64"
+    alias dracoconfig='../../draco/draco_config .. $vlibs0; killextras'
+    # Gandolf + PCG
+    vlibs1="--with-pcglib-lib=${VENDORS}/pcglib/$(uname) $vlibs"
+    alias pcgdracoconfig='../../draco/draco_config .. $vlibs1; killextras'
+    # Gandolf + PCG + MPI
+    vlibs2="--with-c4=mpi $vlibs"
+    alias mpipcgdracoconfig='../../draco/draco_config .. $vlibs2; killextras'
+elif [ "`uname`" = Linux ] ; then
+    export VENDORS='/radtran/vendors'
+    # Gandolf only
+    vlibs0="--with-gandolf-lib=${VENDORS}/gandolf/$(uname)"
+    alias dracoconfig='../../draco/draco_config .. $vlibs0; killextras'
+    # No PCG for Linux
+    # vlibs1="--with-pcglib-lib=${VENDORS}/pcglib/$(uname) $vlibs0"
+    # alias pcgdracoconfig='../../draco/draco_config .. $vlibs1; killextras'
+    # Gandolf + MPI
+    vlibs2="--with-c4=mpi $vlibs0"
+    alias mpipcgdracoconfig='../../draco/draco_config .. $vlibs2; killextras'
+
+# end of TERM /= dumb block (most of this file)
+fi 
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc
