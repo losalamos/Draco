@@ -106,10 +106,10 @@ class QuadServices
     std::vector< double > computeD() const;
 
     //! Helper functions to compute coefficients
-   inline double compute_clk( unsigned k, int ell ) const;
-   inline double compute_azimuthalAngle( double const mu,
-	  			         double const eta,
-				         double const xi ) const;
+    double compute_clk( unsigned const ell, int const k ) const;
+    double compute_azimuthalAngle( double const mu,
+				   double const eta,
+				   double const xi ) const;
 
     //! Checks
     bool D_equals_M_inverse() const;

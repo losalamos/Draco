@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <cmath>
 
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
@@ -72,7 +73,7 @@ Q1DGaussLeg::Q1DGaussLeg( size_t numGaussPoints, double norm_ )
 	++iroot;
 
 	// Approximate the i-th root.
-	double z( cos( rtt_units::PI * ( iroot-0.25 ) 
+	double z( std::cos( rtt_units::PI * ( iroot-0.25 ) 
 		       / ( numGaussPoints+0.5 )) );
 
 	do // Use Newton's method to refine the value for the i-th root.  

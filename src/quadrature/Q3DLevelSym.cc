@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <cmath>
 
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
@@ -386,7 +387,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
     
     // Evaluate xi for all octants
     for( size_t n=0;n<=numAngles/2-1;++n)
-	xi[n] = sqrt(1.0-(mu[n]*mu[n]+eta[n]*eta[n]));
+	xi[n] = std::sqrt(1.0-(mu[n]*mu[n]+eta[n]*eta[n]));
     
     for(size_t n=0;n<=numAngles/2-1;++n)
 	xi[n+numAngles/2] = -xi[n];

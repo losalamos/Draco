@@ -258,10 +258,10 @@ double QuadServices::spherical_harmonic( unsigned const m,
     double sphHarm(0.0);
     if( k < 0 )
 	sphHarm = gsl_sf_legendre_Plm( ell, std::abs(k), mu )
-	    * sin( std::abs(k) * azimuthalAngle );
+	    * std::sin( std::abs(k) * azimuthalAngle );
     else
 	sphHarm = gsl_sf_legendre_Plm( ell, k, mu ) 
-	    * cos( k * azimuthalAngle );
+	    * std::cos( k * azimuthalAngle );
     
     return sphHarm;
 }
@@ -296,16 +296,16 @@ double QuadServices::compute_azimuthalAngle( double const mu,
     if( local_xi > 0.0 )
     {
 	if( eta > 0.0 )
-	    azimuthalAngle = atan(xi/eta);
+	    azimuthalAngle = std::atan(xi/eta);
 	else
-	    azimuthalAngle = PI - atan(xi/std::abs(eta));
+	    azimuthalAngle = PI - std::atan(xi/std::abs(eta));
     } 
     else 
     {
 	if( eta > 0 )
-	    azimuthalAngle = 2*PI - atan(std::abs(xi)/eta);
+	    azimuthalAngle = 2*PI - std::atan(std::abs(xi)/eta);
 	else
-	    azimuthalAngle = PI + atan(xi/eta);
+	    azimuthalAngle = PI + std::atan(xi/eta);
     }
 
     // ensure that theta is in the range 0...2*PI.
@@ -400,13 +400,13 @@ std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_3D() const
 
     // Choose: l= 0, ..., N-1, k = -l, ..., l
     for( unsigned ell=0; ell< snOrder; ++ell )
-	for( int k(-1*ell); std::fabs(k) <= ell; ++k, ++n )
+	for( int k(-1*static_cast<int>(ell)); std::abs(k) <= ell; ++k, ++n )
 	    result.push_back( lk_index(ell,k) );
 
     // Add ell=N and k<0
     {
 	unsigned ell( snOrder );
-	for( int k(-1*ell); k<0; ++k, ++n )
+	for( int k(-1*static_cast<int>(ell)); k<0; ++k, ++n )
 	    result.push_back( lk_index(ell,k) );
     }
 
@@ -420,7 +420,7 @@ std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_3D() const
     // Add ell=N+1 and k<0, k even
     {
 	unsigned ell( snOrder+1 );
-	for( int k(-1*ell+1); k<0; k+=2, ++n )
+	for( int k(-1*static_cast<int>(ell)+1); k<0; k+=2, ++n )
 	    result.push_back( lk_index(ell,k) );
     }
 
