@@ -116,6 +116,8 @@ namespace rtt_imc
 // 2) 03-JUL-00   : made get_initial_census_energy a virtual function because
 //                  in DD topologies ecentot is a local value and in full
 //                  replication it is a global value
+// 3) 24 Aug 2000 : added capability for the random number stream ID's to
+//                  wrap around 2e9.
 // 
 //===========================================================================//
 

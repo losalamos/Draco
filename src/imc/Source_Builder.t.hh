@@ -104,8 +104,7 @@ Source_Builder<MT,PT>::Source_Builder(SP<IT> interface, SP_Mesh mesh,
     // rn_stream starts back with rn_stream=0.  If numgen in the rng package
     // is something less than 2e9, it will fail first when asked for rnstream 
     // >= numgen.
-    int two_billion = 2e9;
-    rtt_rng::rn_stream = rtt_rng::rn_stream % two_billion;
+    rtt_rng::rn_stream = rtt_mc::global::mod_with_2e9(rtt_rng::rn_stream);
     
     int num_cells = mesh->num_cells();
 
@@ -435,10 +434,8 @@ void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh,
 	for (int i = 1; i <= ncen(cell); i++)
 	{
 	    // make a new random number for delivery to Particle
-	    int two_billion = 2e9;
-	    int rn_str_id = (cenrn(cell) + i - 1) % two_billion;
+	    int rn_str_id = rtt_mc::global::mod_with_2e9(cenrn(cell) + i-1); 
 	    Sprng random = rcon->get_rn(rn_str_id);
-	    // Sprng random = rcon->get_rn(cenrn(cell) + i - 1);
 	    
 	    // sample particle location
 	    vector<double> r = mesh->sample_pos(cell, random);

@@ -1,3 +1,15 @@
+2000-08-24  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* Source_Builder.t.hh, Source.t.hh: Added work-around capability
+ 	for the random number stream ID's to wrap seamlessly around 2e9.
+  	In effect, we can run more than 2e9 particles while retaining
+ 	reproducibility, all at the cost of repeating rn_streams after 2e9
+ 	particles.  At the beginning of each cycle, the rn_stream is
+ 	modulo'd with 2e9.  When each source particle begins, its
+ 	rn_stream is modulo'd with 2e9.  Thus, rn_stream=2e9 becomes
+ 	rn_stream=0. When SPRNG is updated to allow for rn_stream>2e9, we
+	can dump this work-around.  
+
 2000-06-28  Todd J. Urbatsch  <tmonster@lanl.gov>
 
 	* Source_Builder.*, DD_Source_Builder.*, Rep_Source_Builder.*:

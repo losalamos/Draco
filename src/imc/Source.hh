@@ -43,6 +43,8 @@ namespace rtt_imc
 //               class that does volume emission sampling using the tilt
 // 2) 03-JUL-00: added Topology member data to map census particles from 
 //               global cells to local cells
+// 3) 24-AUG-00: added work-around capability for random number streams to
+//               wrap around 2e9 seamlessly.
 // 
 //===========================================================================//
 
