@@ -25,8 +25,7 @@ AC_CONFIG_SUBDIRS(mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader)
 AC_CONFIG_SUBDIRS(mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver)
-AC_CONFIG_SUBDIRS(P1Diffusion)
-AC_CONFIG_SUBDIRS(imc)
+AC_CONFIG_SUBDIRS(P1Diffusion imc)
 
 AC_OUTPUT(Makefile)
 

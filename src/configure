@@ -1300,11 +1300,6 @@ subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwa
 subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
                   quadrature mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
-                  ConjGradDiffusionSolver P1Diffusion"
-
-subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
-                  quadrature mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
-                  timestep RTT_Format_Reader mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver P1Diffusion imc"
 
 
