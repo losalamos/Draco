@@ -39,10 +39,10 @@ ${dependfiles}:
 	@-rm -f $<
 
 %.u: %.cc
-	@${CXX} -M -qsyntaxonly ${CPPFLAGS} $<
+	@${CXX} -M -w -qsyntaxonly ${CPPFLAGS} $<
 
 %.u: %.c
-	@${CC} -M -qsyntaxonly ${CPPFLAGS} $<
+	@${CC} -M -w -qsyntaxonly ${CPPFLAGS} $<
 
 ###############################################################################
 #			 end of dependency rules Makefile.dep.xlC

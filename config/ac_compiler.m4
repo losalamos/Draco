@@ -42,7 +42,7 @@ AC_DEFUN(AC_CPP_ENV, [dnl
    # IBM ASCI WHITE -> newxlC (use --with-cxx=ibm for regular SP2)
    *ibm-aix*)
        if test -z "${with_cxx}" ; then
-	   with_cxx='asciwhite'
+	   with_cxx='ibm'
        fi
    ;;
 
