@@ -31,7 +31,7 @@ void pcg::xdfalt( int *iparm, complex<double> *fparm ) {
 //---------------------------------------------------------------------------//
 
 void pcg::xbasr ( int& ijob, int& ireq,
-		  float *x, float *xex, float *b,
+		  float *x, float *xex, const float *b,
 		  int& iva, int& ivql, int& ivqr, int *iwk,
 		  float *fwk, int *iparm, float *fparm,
 		  int& ier ) {
@@ -39,7 +39,7 @@ void pcg::xbasr ( int& ijob, int& ireq,
 	   ier );
 }
 void pcg::xbasr ( int& ijob, int& ireq,
-		  double *x, double *xex, double *b,
+		  double *x, double *xex, const double *b,
 		  int& iva, int& ivql, int& ivqr, int *iwk,
 		  double *fwk, int *iparm, double *fparm,
 		  int& ier ) {
@@ -47,7 +47,7 @@ void pcg::xbasr ( int& ijob, int& ireq,
 	   ier );
 }
 void pcg::xbasr ( int& ijob, int& ireq,
-		  complex<float> *x, complex<float> *xex, complex<float> *b,
+		  complex<float> *x, complex<float> *xex, const complex<float> *b,
 		  int& iva, int& ivql, int& ivqr, int *iwk,
 		  complex<float> *fwk, int *iparm, complex<float> *fparm,
 		  int& ier ) {
@@ -55,7 +55,7 @@ void pcg::xbasr ( int& ijob, int& ireq,
 	   ier );
 }
 void pcg::xbasr ( int& ijob, int& ireq,
-		  complex<double> *x, complex<double> *xex, complex<double> *b,
+		  complex<double> *x, complex<double> *xex, const complex<double> *b,
 		  int& iva, int& ivql, int& ivqr, int *iwk,
 		  complex<double> *fwk, int *iparm, complex<double> *fparm,
 		  int& ier ) {
@@ -68,7 +68,7 @@ void pcg::xbasr ( int& ijob, int& ireq,
 //---------------------------------------------------------------------------//
 
 void pcg::xgmrsr( int& ijob, int& ireq,
-		  float *x, float *xex, float *b,
+		  float *x, float *xex, const float *b,
 		  int& iva, int& ivql, int& ivqr, int *iwk,
 		  float *fwk, int *iparm, float *fparm,
 		  int& ier ) {
@@ -76,7 +76,7 @@ void pcg::xgmrsr( int& ijob, int& ireq,
 	    ier );
 }
 void pcg::xgmrsr( int& ijob, int& ireq,
-		  double *x, double *xex, double *b,
+		  double *x, double *xex, const double *b,
 		  int& iva, int& ivql, int& ivqr, int *iwk,
 		  double *fwk, int *iparm, double *fparm,
 		  int& ier ) {
@@ -84,7 +84,7 @@ void pcg::xgmrsr( int& ijob, int& ireq,
 	    ier );
 }
 void pcg::xgmrsr( int& ijob, int& ireq,
-		  complex<float> *x, complex<float> *xex, complex<float> *b,
+		  complex<float> *x, complex<float> *xex, const complex<float> *b,
 		  int& iva, int& ivql, int& ivqr, int *iwk,
 		  complex<float> *fwk, int *iparm, complex<float> *fparm,
 		  int& ier ) {
@@ -92,7 +92,7 @@ void pcg::xgmrsr( int& ijob, int& ireq,
 	    ier );
 }
 void pcg::xgmrsr( int& ijob, int& ireq,
-		  complex<double> *x, complex<double> *xex, complex<double> *b,
+		  complex<double> *x, complex<double> *xex, const complex<double> *b,
 		  int& iva, int& ivql, int& ivqr, int *iwk,
 		  complex<double> *fwk, int *iparm, complex<double> *fparm,
 		  int& ier ) {
@@ -105,7 +105,7 @@ void pcg::xgmrsr( int& ijob, int& ireq,
 //---------------------------------------------------------------------------//
 
 void pcg::xcgr( int& ijob, int& ireq,
-		float *x, float *xex, float *b,
+		float *x, float *xex, const float *b,
 		int& iva, int& ivql, int& ivqr, int *iwk,
 		float *fwk, int *iparm, float *fparm,
 		int& ier ) {
@@ -113,7 +113,7 @@ void pcg::xcgr( int& ijob, int& ireq,
 	  ier );
 }
 void pcg::xcgr( int& ijob, int& ireq,
-		double *x, double *xex, double *b,
+		double *x, double *xex, const double *b,
 		int& iva, int& ivql, int& ivqr, int *iwk,
 		double *fwk, int *iparm, double *fparm,
 		int& ier ) {
@@ -121,7 +121,7 @@ void pcg::xcgr( int& ijob, int& ireq,
 	  ier );
 }
 void pcg::xcgr( int& ijob, int& ireq,
-		complex<float> *x, complex<float> *xex, complex<float> *b,
+		complex<float> *x, complex<float> *xex, const complex<float> *b,
 		int& iva, int& ivql, int& ivqr, int *iwk,
 		complex<float> *fwk, int *iparm, complex<float> *fparm,
 		int& ier ) {
@@ -129,7 +129,7 @@ void pcg::xcgr( int& ijob, int& ireq,
 	  ier );
 }
 void pcg::xcgr( int& ijob, int& ireq,
-		complex<double> *x, complex<double> *xex, complex<double> *b,
+		complex<double> *x, complex<double> *xex, const complex<double> *b,
 		int& iva, int& ivql, int& ivqr, int *iwk,
 		complex<double> *fwk, int *iparm, complex<double> *fparm,
 		int& ier ) {

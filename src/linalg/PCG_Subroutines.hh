@@ -23,66 +23,66 @@ void xdfalt( int *iparm, complex<double> *fparm );
 
 // Basic iterative method.
 void xbasr ( int& ijob, int& ireq,
-	     float *x, float *xex, float *b,
+	     float *x, float *xex, const float *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     float *fwk, int *iparm, float *fparm,
 	     int& ier );
 void xbasr ( int& ijob, int& ireq,
-	     double *x, double *xex, double *b,
+	     double *x, double *xex, const double *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     double *fwk, int *iparm, double *fparm,
 	     int& ier );
 void xbasr ( int& ijob, int& ireq,
-	     complex<float> *x, complex<float> *xex, complex<float> *b,
+	     complex<float> *x, complex<float> *xex, const complex<float> *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     complex<float> *fwk, int *iparm, complex<float> *fparm,
 	     int& ier );
 void xbasr ( int& ijob, int& ireq,
-	     complex<double> *x, complex<double> *xex, complex<double> *b,
+	     complex<double> *x, complex<double> *xex, const complex<double> *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     complex<double> *fwk, int *iparm, complex<double> *fparm,
 	     int& ier );
 
 // Restarted GMRES.
 void xgmrsr( int& ijob, int& ireq,
-	     float *x, float *xex, float *b,
+	     float *x, float *xex, const float *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     float *fwk, int *iparm, float *fparm,
 	     int& ier );
 void xgmrsr( int& ijob, int& ireq,
-	     double *x, double *xex, double *b,
+	     double *x, double *xex, const double *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     double *fwk, int *iparm, double *fparm,
 	     int& ier );
 void xgmrsr( int& ijob, int& ireq,
-	     complex<float> *x, complex<float> *xex, complex<float> *b,
+	     complex<float> *x, complex<float> *xex, const complex<float> *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     complex<float> *fwk, int *iparm, complex<float> *fparm,
 	     int& ier );
 void xgmrsr( int& ijob, int& ireq,
-	     complex<double> *x, complex<double> *xex, complex<double> *b,
+	     complex<double> *x, complex<double> *xex, const complex<double> *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     complex<double> *fwk, int *iparm, complex<double> *fparm,
 	     int& ier );
 
 // Conjugate gradient.
 void xcgr  ( int& ijob, int& ireq,
-	     float *x, float *xex, float *b,
+	     float *x, float *xex, const float *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     float *fwk, int *iparm, float *fparm,
 	     int& ier );
 void xcgr  ( int& ijob, int& ireq,
-	     double *x, double *xex, double *b,
+	     double *x, double *xex, const double *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     double *fwk, int *iparm, double *fparm,
 	     int& ier );
 void xcgr  ( int& ijob, int& ireq,
-	     complex<float> *x, complex<float> *xex, complex<float> *b,
+	     complex<float> *x, complex<float> *xex, const complex<float> *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     complex<float> *fwk, int *iparm, complex<float> *fparm,
 	     int& ier );
 void xcgr  ( int& ijob, int& ireq,
-	     complex<double> *x, complex<double> *xex, complex<double> *b,
+	     complex<double> *x, complex<double> *xex, const complex<double> *b,
 	     int& iva, int& ivql, int& ivqr, int *iwk,
 	     complex<double> *fwk, int *iparm, complex<double> *fparm,
 	     int& ier );
@@ -158,66 +158,66 @@ extern "C" {
 
 // Basic iterative method.
     void sbasr ( int& ijob, int& ireq,
-		 float *x, float *xex, float *b,
+		 float *x, float *xex, const float *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 float *fwk, int *iparm, float *fparm,
 		 int& ier );
     void dbasr ( int& ijob, int& ireq,
-		 double *x, double *xex, double *b,
+		 double *x, double *xex, const double *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 double *fwk, int *iparm, double *fparm,
 		 int& ier );
     void cbasr ( int& ijob, int& ireq,
-		 complex<float> *x, complex<float> *xex, complex<float> *b,
+		 complex<float> *x, complex<float> *xex, const complex<float> *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 complex<float> *fwk, int *iparm, complex<float> *fparm,
 		 int& ier );
     void zbasr ( int& ijob, int& ireq,
-		 complex<double> *x, complex<double> *xex, complex<double> *b,
+		 complex<double> *x, complex<double> *xex, const complex<double> *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 complex<double> *fwk, int *iparm, complex<double> *fparm,
 		 int& ier );
 
 // Restarted GMRES.
     void sgmrsr( int& ijob, int& ireq,
-		 float *x, float *xex, float *b,
+		 float *x, float *xex, const float *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 float *fwk, int *iparm, float *fparm,
 		 int& ier );
     void dgmrsr( int& ijob, int& ireq,
-		 double *x, double *xex, double *b,
+		 double *x, double *xex, const double *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 double *fwk, int *iparm, double *fparm,
 		 int& ier );
     void cgmrsr( int& ijob, int& ireq,
-		 complex<float> *x, complex<float> *xex, complex<float> *b,
+		 complex<float> *x, complex<float> *xex, const complex<float> *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 complex<float> *fwk, int *iparm, complex<float> *fparm,
 		 int& ier );
     void zgmrsr( int& ijob, int& ireq,
-		 complex<double> *x, complex<double> *xex, complex<double> *b,
+		 complex<double> *x, complex<double> *xex, const complex<double> *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 complex<double> *fwk, int *iparm, complex<double> *fparm,
 		 int& ier );
 
 // Conjugate gradient.
     void scgr  ( int& ijob, int& ireq,
-		 float *x, float *xex, float *b,
+		 float *x, float *xex, const float *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 float *fwk, int *iparm, float *fparm,
 		 int& ier );
     void dcgr  ( int& ijob, int& ireq,
-		 double *x, double *xex, double *b,
+		 double *x, double *xex, const double *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 double *fwk, int *iparm, double *fparm,
 		 int& ier );
     void ccgr  ( int& ijob, int& ireq,
-		 complex<float> *x, complex<float> *xex, complex<float> *b,
+		 complex<float> *x, complex<float> *xex, const complex<float> *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 complex<float> *fwk, int *iparm, complex<float> *fparm,
 		 int& ier );
     void zcgr  ( int& ijob, int& ireq,
-		 complex<double> *x, complex<double> *xex, complex<double> *b,
+		 complex<double> *x, complex<double> *xex, const complex<double> *b,
 		 int& iva, int& ivql, int& ivqr, int *iwk,
 		 complex<double> *fwk, int *iparm, complex<double> *fparm,
 		 int& ier );
