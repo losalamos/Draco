@@ -6,12 +6,12 @@ namespace rtt_test {
 
 class Test
 {
-private:
+  private:
     // some data
     int x;
     double y;
     
-public:
+  public:
     // constructor
     Test();
     
