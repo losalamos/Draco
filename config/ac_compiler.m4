@@ -136,10 +136,10 @@ AC_DEFUN(AC_DRACO_GUIDE, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl CC COMPILER SETUP
+dnl SGI CC COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_CC, [dnl
+AC_DEFUN(AC_DRACO_SGI_CC, [dnl
 
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
@@ -276,6 +276,75 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    AC_MSG_RESULT("GNU g++ compiler flags set")
 
    dnl end of AC_DRACO_EGCS
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl COMPAQ CXX COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
+
+   dnl 6-FEB-02 NEED TO ADD MODS !!!!!!
+
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # CXX SPECIFIC FLAGS
+   dirstoclean='cxx_repository'
+
+   # LINKER AND LIBRARY (AR)
+   LD='${CXX}'
+
+   # if shared then ar is gcc
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-shared -o'
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
+   # ARLIBS='${DRACO_LIBS}'
+   # ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+   ARLIBS='$(wildcard cxx_repository/*)'
+   ARTESTLIBS='$(wildcard cxx_repository/*)'
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       # STRICTFLAG="-model ansi -std strict_ansi"
+       STRICTFLAG="-std strict_ansi"
+   fi
+
+   # make sure we always use the standard IO stream
+   CPPFLAGS="${CPPFLAGS} -D__USE_STD_IOSTREAM" 
+
+   # optimization level
+    
+   # defaults
+   if test "${enable_debug:=yes}" = yes ; then
+       gcc_debug_flag='-g'
+   fi
+   CXXFLAGS="${CXXFLAGS} ${gcc_debug_flag} -O${with_opt:=0}"
+   CFLAGS="${CFLAGS} ${gcc_debug_flag} -O${with_opt:=0}"
+
+   # add ieee flag
+   CXXFLAGS="${CXXFLAGS} -ieee"
+
+   # turn off implicit inclusion
+   CXXFLAGS="${CXXFLAGS} -noimplicit_include"
+
+   # static linking option
+   if test "${enable_static_ld}" = yes ; then
+       LDFLAGS="${LDFLAGS} -non_shared"
+   fi
+
+   # add thread safe linkage
+   LDFLAGS="${LDFLAGS}" # -pthread"
+
+   AC_MSG_RESULT("CXX Compaq compiler flags set")
+   
+   dnl end of AC_DRACO_COMPAQ_CXX
 ])
 
 dnl-------------------------------------------------------------------------dnl

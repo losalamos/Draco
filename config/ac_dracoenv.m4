@@ -38,6 +38,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_DRACO_ARGS
 
    dnl
+   dnl first find the system
+   dnl
+
+   AC_CANONICAL_SYSTEM
+
+   dnl
    dnl RUN AC_PROG_INSTALL
    dnl
 
@@ -166,12 +172,17 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl set up a default compiler
    case $host in
    mips-sgi-irix6.*)   
-       if test -z $with_cxx ; then
+       if test -z "${with_cxx}" ; then
 	   with_cxx='cc'
        fi
    ;;
+   alpha-dec-osf*)
+       if test -z "${with_cxx}" ; then
+	   with_cxx='compaq'
+       fi
+   ;;
    *)
-       if test -z $with_cxx ; then
+       if test -z "${with_cxx}" ; then
 	   with_cxx='gcc'
        fi
    ;;
@@ -202,14 +213,14 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_MSG_ERROR("Did not find Guide compiler!")
        fi
 
-   elif test "${with_cxx}" = cc ; then
+   elif test "${with_cxx}" = sgi ; then
        AC_CHECK_PROG(CXX, CC, CC)
        AC_CHECK_PROG(CC, cc, cc)  
 
        if test "${CXX}" = CC && test "${CC}" = cc ; then
-	   AC_DRACO_CC
+	   AC_DRACO_SGI_CC
        else 
-	   AC_MSG_ERROR("Did not find CC compiler!")
+	   AC_MSG_ERROR("Did not find SGI CC compiler!")
        fi
 
    elif test "${with_cxx}" = gcc ; then 
@@ -220,6 +231,16 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_DRACO_GNU_GCC
        else
 	   AC_MSG_ERROR("Did not find gnu c++ compiler!")
+       fi
+
+   elif test "${with_cxx}" = compaq ; then
+       AC_CHECK_PROG(CXX, cxx, cxx)
+       AC_CHECK_PROG(CC, cc, cc)
+
+       if test "${CXX}" = cxx && test "${CC}" = cc ; then
+	   AC_DRACO_COMPAQ_CXX
+       else
+	   AC_MSG_ERROR("Did not find Compaq cxx compiler!")
        fi
    fi
 
@@ -615,6 +636,17 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	       LDFLAGS="-rpath \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
 	   fi
 
+       fi
+   ;;
+   alpha-dec-osf*)
+       # posix source defines, by default we set posix on 
+       if test "${with_posix:=no}" = yes ; then
+	   with_posix='199309L'
+       fi
+
+       if test "${with_posix}" != no ; then
+	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
+	   AC_DEFINE(_POSIX_SOURCE)
        fi
    ;;
    sparc-sun-solaris2.*)
