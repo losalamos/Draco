@@ -131,10 +131,15 @@ dnl usage: configure.in
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_NEEDS_LIBS_DRACO, [dnl
-   if test ${has_draco_libdir:=no} != "yes" &&
-      test -z "${draco_in_prefix}" ; then
-       DRACO_LIBS="${DRACO_LIBS} -L${DRACO_LIB}"
+   if test ${has_draco_libdir:=no} != "yes" ; then
+       
        has_draco_libdir="yes"
+
+       if test ${has_libdir} != "yes" ||
+	  test ${draco_in_prefix} != "true" ; then
+	       DRACO_LIBS="${DRACO_LIBS} -L${DRACO_LIB}"
+       fi
+
    fi
 
    for lib in $1
