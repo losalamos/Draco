@@ -89,15 +89,16 @@ bool Element_Definition::invariant_satisfied() const
     else
     {
 	Ensure(dimension > 0); 
+	Ensure(dimension < 4);
 	Ensure(number_of_nodes > dimension);
 	Ensure(number_of_sides <= number_of_nodes);
 	Ensure(number_of_sides > dimension); 
 	Ensure(elem_defs.size() > 0);
     }
     
-    Ensure(side_type.size() == number_of_sides);
+    Ensure(side_type.size()  == number_of_sides);
     Ensure(side_nodes.size() == number_of_sides);
-    Ensure(node_loc.size() == number_of_nodes);
+    Ensure(node_loc.size()   == number_of_nodes);
     
     for (int i=0; i < elem_defs.size(); i++)
 	Ensure(elem_defs[i].dimension == dimension-1);
@@ -603,7 +604,6 @@ void Element_Definition::construct_hexa()
 
 std::ostream& Element_Definition::print(std::ostream &os_out) const
 {
-    std::vector<int> tmp;
     os_out << "Element Type   : " << get_type() << std::endl;
     os_out << "Element Name   : " << get_name() << std::endl;
     os_out << "Number of Nodes: " << get_number_of_nodes() <<
@@ -621,6 +621,7 @@ std::ostream& Element_Definition::print(std::ostream &os_out) const
 	    os_out << get_side_type(j).get_name() << " ";
 	os_out << std::endl;
 	
+	std::vector<int> tmp;
 	os_out << "Side Nodes     : " << std::endl;
 	for (int j=0; j<get_number_of_sides(); j++)
 	{

@@ -113,10 +113,10 @@ class Element_Definition
      *
      */
     enum Node_Location {
-	CORNER,
-	EDGE,
-	FACE,
-	CELL
+	CORNER, /*!< Terminates one or more edges of an element. */
+	EDGE,   /*!< Located in the interior of a 1D element. */
+	FACE,   /*!< Located in the interior of a 2D element. */
+	CELL    /*!< Located in the interior of a 3D element. */
     };
     
     /*!
@@ -186,9 +186,9 @@ class Element_Definition
     /*!
      * \brief Constructor for the Element_Definition class.
      *
-     * \param name_ The element type to be constructed.
+     * \param type_ The element type to be constructed.
      */
-    Element_Definition(const Element_Type &name_);
+    Element_Definition(const Element_Type &type_);
 
     // Defaulted
     // Element_Definition(const Element_Definition &rhs)
@@ -361,7 +361,7 @@ class Element_Definition
     std::ostream &print(std::ostream &os_out) const;
 
     /*!
-     * \brief Define convienience ostream insertor.
+     * \brief Define convenience ostream inserter.
      *
      */
     friend std::ostream &operator<<(std::ostream &os, const
