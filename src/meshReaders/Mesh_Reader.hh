@@ -44,13 +44,17 @@ class Mesh_Reader
 
     // CREATORS
     
-    Mesh_Reader();
-    Mesh_Reader(const Mesh_Reader &rhs);
-    ~Mesh_Reader();
+    //Defaulted: Mesh_Reader();
+    //Defaulted: Mesh_Reader(const Mesh_Reader &rhs);
+
+    virtual ~Mesh_Reader() 
+    {
+	//Empty
+    }
 
     // MANIPULATORS
     
-    Mesh_Reader& operator=(const Mesh_Reader &rhs);
+    //Defaulted: Mesh_Reader& operator=(const Mesh_Reader &rhs);
 
     // ACCESSORS
 
