@@ -2718,7 +2718,8 @@ done
 ac_given_srcdir=$srcdir
 ac_given_INSTALL="$INSTALL"
 
-trap 'rm -fr `echo "Makefile:../../config/Makefile.package.in fourier/config.h:config.h.in" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+trap 'rm -fr `echo "Makefile:../../config/Makefile.package.in \
+	  test/Makefile:../../config/Makefile.test.in fourier/config.h:config.h.in" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -2840,7 +2841,8 @@ EOF
 
 cat >> $CONFIG_STATUS <<EOF
 
-CONFIG_FILES=\${CONFIG_FILES-"Makefile:../../config/Makefile.package.in"}
+CONFIG_FILES=\${CONFIG_FILES-"Makefile:../../config/Makefile.package.in \
+	  test/Makefile:../../config/Makefile.test.in"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then

@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-// fourier.t.hh
+// fourier.hh
 // John Gulick
 // Tue Aug  3 13:44:08 1999
 // $Id$
@@ -24,8 +24,8 @@
 #include <algorithm>
 #include <assert.h>
 #include <complex>
-#include "gauss.t.hh"
-#include "matrix.t.hh"
+#include "gauss.hh"
+#include "matrix.hh"
 #include "cpgplot.h"
 
 using namespace std;
@@ -79,5 +79,5 @@ void solve();
 #endif
 
 //---------------------------------------------------------------------------//
-//                              end of fourier.t.hh
+//                              end of fourier.hh
 //---------------------------------------------------------------------------//

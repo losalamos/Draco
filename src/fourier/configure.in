@@ -108,9 +108,8 @@ fi
 dnl DRACO SETUP
 AC_DRACO_ENV
 
-AC_OUTPUT(Makefile:../../config/Makefile.package.in)
-dnl AC_OUTPUT(Makefile:../../config/Makefile.package.in \
-dnl          test/Makefile:../../config/Makefile.test.in)
+AC_OUTPUT(Makefile:../../config/Makefile.package.in \
+	  test/Makefile:../../config/Makefile.test.in)
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/fourier configure.in

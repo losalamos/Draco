@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-// matrix.t.hh
+// matrix.hh
 // John Gulick
 // Fri Aug  6 09:51:26 1999
 // $Id$
@@ -30,7 +30,7 @@
 #include "mtl/utils.h"
 #include "mtl/mtl.h"
 #include "mtl/matrix.h"
-#include "gauss.t.hh"
+#include "gauss.hh"
 
 
 using namespace std;
@@ -85,5 +85,5 @@ class Matrix
 #endif
 
 //---------------------------------------------------------------------------//
-//                              end of Matrix.t.hh
+//                              end of Matrix.hh
 //---------------------------------------------------------------------------//

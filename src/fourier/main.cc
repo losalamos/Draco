@@ -8,7 +8,7 @@
 
 #ifndef main_H
 #define main_H
-#include "fourier.t.hh"
+#include "fourier.hh"
 
 int main ()
 {
