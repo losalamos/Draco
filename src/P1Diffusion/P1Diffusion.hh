@@ -41,13 +41,20 @@ namespace rtt_P1Diffusion
      typedef typename MT::fcdsf fcdsf;
      typedef typename MT::ccsf ccsf;
      typedef typename MT::bssf bssf;
+     typedef typename MT::ncvsf ncvsf;
+     typedef typename MT::vcvsf vcvsf;
+     typedef typename MT::vcsf vcsf;
 
    public:
 
      typedef MT MeshType;
      typedef fcdsf FluxField;
      typedef fcdsf DiscFluxField;
-     
+     typedef ncvsf MomentumField;
+     typedef vcvsf DiscMomentumField;
+     typedef fcdsf DiffCoefField;
+     typedef vcsf DiscKineticEnergyField;
+
      // DATA
     
      dsxx::SP<MeshType> spm;
@@ -73,6 +80,10 @@ namespace rtt_P1Diffusion
      void solve(ccsf &phi, fcdsf &F, const fcdsf &D, const ccsf &sigma,
 		const ccsf &Q, const fcdsf &Fprime, const bssf &alpha,
 		const bssf &beta, const bssf &fb) const;
+
+     void dotProduct(DiscKineticEnergyField &KEnergy,
+                     const DiscFluxField &sigmaF,
+                     const DiscMomentumField &velocity) const;
 
    private:
     
