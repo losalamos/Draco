@@ -9,6 +9,7 @@
 #include "c4/global.hh"
 
 #include <iostream.h>
+#include <typeinfo>
 
 int node, nodes;
 
