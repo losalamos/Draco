@@ -18,29 +18,53 @@ using std::vector;
 namespace rtt_imc
 {
 
-Surface_Tally::Surface_Tally(SP<Azimuthal_Mesh> az_mesh)
-    : the_mesh(az_mesh), 
+Surface_Tally::Surface_Tally(SP<Azimuthal_Mesh> az_mesh, int surfaces_)
+    : the_mesh(az_mesh),
       mesh_size(az_mesh->size()),
-      inward(az_mesh->size()),
-      outward(az_mesh->size())
+      surfaces(surfaces_),
+      tallies(2 * surfaces_),
+      tally(2 * surfaces_)
 {
 
+    Require(surfaces > 0)
     Require(the_mesh);
+
+    for (int i = 0; i != tallies; ++i) tally[i].resize(mesh_size, 0.0);
 
 }
 
-void Surface_Tally::add_to_tally(const vector<double>& direction,
+void Surface_Tally::add_to_tally(int surface, const vector<double>& direction,
 				 bool is_outward, double ew)
 {
 
     Check ( ew > 0 );
+    Check ( surface >= 0 ); Check ( surface < surfaces );
 
+    int surface_index = 2 * surface + static_cast<int>(is_outward);
     int bin = the_mesh->find_bin(direction);
+    int bin_index = bin - 1;
     
-    Require ( bin >= 1); Require (bin <= mesh_size);
+    Require ( bin > 1); Require (bin <= mesh_size);
 
-    if (is_outward) outward[--bin] += ew;
-    else inward[--bin] += ew;
+    tally[surface_index][bin_index] += ew;
+
+}
+
+const vector<double>& Surface_Tally::get_outward_tally(int surface) const
+{
+    Check (surface > 0);  Check(surface <= surfaces);
+
+    int surface_index = 2 * (surface - 1) + 1;
+    return tally[surface_index];
+
+}
+
+const vector<double>& Surface_Tally::get_inward_tally(int surface) const
+{
+    Check (surface > 0);  Check(surface <= surfaces);
+
+    int surface_index = 2 * (surface - 1) ;
+    return tally[surface_index];
 
 }
 

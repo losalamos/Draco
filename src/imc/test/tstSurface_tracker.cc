@@ -17,6 +17,7 @@
 #include "../Release.hh"
 #include "imc_test.hh"
 
+#include "ds++/Soft_Equivalence.hh"
 #include "mc/Sphere.hh"
 #include "mc/Surface.hh"
 #include "../Azimuthal_Mesh.hh"
@@ -58,7 +59,7 @@ Surface_Tally make_surface_tally()
 
     SP<Azimuthal_Mesh> mesh ( new Azimuthal_Mesh(cosines ) );
 
-    return Surface_Tally(mesh);
+    return Surface_Tally(mesh, 3);
 
 }
 
@@ -121,8 +122,10 @@ void test_streaming()
     
     tracker->tally_crossings(position, direction, distance, ew, sigma, tally);
 
-    vector<double> outward ( tally.get_outward_tally() );
-    vector<double> inward  ( tally.get_inward_tally()  );
+    if (!soft_equiv(tally.get_outward_tally(1)[3], exp(-2.0) ) ) ITFAILS;
+    if (!soft_equiv(tally.get_inward_tally (2)[3], exp(-1.0) ) ) ITFAILS;
+    if (!soft_equiv(tally.get_outward_tally(2)[3], exp(-3.0) ) ) ITFAILS;
+    if (!soft_equiv(tally.get_outward_tally(3)[3], exp(-3.0) ) ) ITFAILS;
 
 }
 

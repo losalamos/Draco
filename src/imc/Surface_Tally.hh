@@ -60,7 +60,7 @@ class Surface_Tally
     // CREATORS
     
     //! default constructors
-    Surface_Tally(rtt_dsxx::SP<Azimuthal_Mesh> az_mesh);
+    Surface_Tally(rtt_dsxx::SP<Azimuthal_Mesh> az_mesh, int surfaces);
 
     //! copy constructor
     Surface_Tally(const Surface_Tally &rhs);
@@ -73,14 +73,17 @@ class Surface_Tally
     //! Assignment operator for Surface_Tally
     Surface_Tally& operator=(const Surface_Tally &rhs);
 
-    void add_to_tally(const std::vector<double>& direction, 
-		      bool outward, 
-		      double ew);
+    void add_to_tally(int surface, const std::vector<double>& direction, 
+		      bool outward, double ew);
 
     // ACCESSORS
 
-    const std::vector<double>& get_outward_tally() { return outward; }
-    const std::vector<double>& get_inward_tally() { return inward; }
+    const std::vector<double>& get_outward_tally(int surface) const;
+    const std::vector<double>& get_inward_tally (int surface) const;
+    const std::vector<std::vector<double> > get_tally() const { return tally; }
+
+    int get_number_surfaces() const { return surfaces; }
+    int get_mesh_size() const { return mesh_size; }
 
   private:
 
@@ -91,10 +94,11 @@ class Surface_Tally
     // DATA
 
     rtt_dsxx::SP<Azimuthal_Mesh> the_mesh;
+    std::vector<std::vector<double> > tally;
     int mesh_size;
+    int surfaces;
+    int tallies;
 
-    std::vector<double> inward;
-    std::vector<double> outward;
 
 };
 

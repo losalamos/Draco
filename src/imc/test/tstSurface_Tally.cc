@@ -38,26 +38,28 @@ void test()
 
     SP<Azimuthal_Mesh> az_mesh ( new Azimuthal_Mesh(cosines) );
 
-    Surface_Tally surface_tally(az_mesh);
+    Surface_Tally surface_tally(az_mesh, 1);
 
-    if (surface_tally.get_outward_tally().size() != 4) ITFAILS;
+    if (surface_tally.get_number_surfaces() != 1) ITFAILS;
+    if (surface_tally.get_outward_tally(1).size() != 4) ITFAILS;
+    if (surface_tally.get_mesh_size() != 4 ) ITFAILS;
 
     vector<double> direction(3);
     direction[0] = std::sqrt(2.0)/2.0;
     direction[1] = 0.0;
     direction[2] = std::sqrt(2.0)/2.0;
 
-    surface_tally.add_to_tally(direction, true, 1.0);
+    surface_tally.add_to_tally(1, direction, true, 1.0);
 
-    if ( !soft_equiv( surface_tally.get_outward_tally()[3], 1.0 ) ) ITFAILS;
+    if ( !soft_equiv( surface_tally.get_outward_tally(1)[3], 1.0 ) ) ITFAILS;
 
     direction[0] = std::sqrt( 1.0 - 0.1 * 0.1);
     direction[1] =  0.0;
     direction[2] = -0.1;
 
-    surface_tally.add_to_tally(direction, false, 0.5);
+    surface_tally.add_to_tally(1, direction, false, 0.5);
 
-    if (!soft_equiv( surface_tally.get_inward_tally()[1], 0.5 ) ) ITFAILS;
+    if (!soft_equiv( surface_tally.get_inward_tally(1)[1], 0.5 ) ) ITFAILS;
 
 }
 

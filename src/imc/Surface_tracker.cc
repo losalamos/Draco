@@ -57,10 +57,10 @@ void Surface_tracker::tally_crossings(
     vector<double> final_position(position);
     for (int i=0; i!=3; ++i) final_position[i] += distance * direction[i];
 
-    int i = 0;
+    int index = 0;
     for (surface_iterator surface = surfaces.begin();
 	 surface != surfaces.end();
-	 ++surface, ++i)
+	 ++surface, ++index)
     {
 
 	while (1)
@@ -68,29 +68,23 @@ void Surface_tracker::tally_crossings(
 	    bool ends_inside = (*surface)->is_inside(final_position, direction);
 	    
 	    double crossing_distance =
-		(*surface)->distance_to(position, direction, is_inside[i]);
+		(*surface)->distance_to(position, direction, is_inside[index]);
 
 	    Check(distance > 0);
 
-	    if (crossing_distance <= distance || is_inside[i] != ends_inside)
+	    if (crossing_distance <= distance || is_inside[index] != ends_inside)
 	    {
 		
 		double crossing_ew = 
 		    initial_ew * exp(-sigma * crossing_distance);
 
-		std::cout << "Ray crossed surface " << i 
-			  << " with energy weight: " << crossing_ew 
-			  << " at distance: " << crossing_distance 
-			  << " going " << (is_inside[i] ? "outward" : "inward")
-			  << "." << std::endl;
+		tally.add_to_tally(index, direction, is_inside[index], crossing_ew);
 
-		tally.add_to_tally(direction, is_inside[i], crossing_ew);
-
-		is_inside[i] = !is_inside[i];
+		is_inside[index] = !is_inside[index];
 
 	    }
 
-	    if (is_inside[i] == ends_inside) break; // out of while loop
+	    if (is_inside[index] == ends_inside) break; // out of while loop
 
 	}
 
