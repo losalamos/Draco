@@ -12,7 +12,7 @@
 
 #include "mc_test.hh"
 #include "MC_Test.hh"
-#include "../Pyramid_Mesh.hh"
+#include "../Sphyramid_Mesh.hh"
 #include "../XYZCoord_sys.hh"
 #include "../AMR_Layout.hh"
 #include "../Sphyramid_Builder.hh"
@@ -35,12 +35,12 @@
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
-void simple_one_cell_Pyramid()
+void simple_one_cell_Sphyramid()
 {
     using rtt_dsxx::SP;
     using rtt_mc::XYZCoord_sys;
     using rtt_mc::AMR_Layout;
-    using rtt_mc::Pyramid_Mesh;
+    using rtt_mc::Sphyramid_Mesh;
     using std::string;
     using std::vector;
     using rtt_dsxx::soft_equiv;
@@ -89,14 +89,14 @@ void simple_one_cell_Pyramid()
 	cell_x_extents[cell-1][1]=1.0; //high x
     }
 
-    // set pyramid_angle
+    // set Sphyramid_angle
     double beta_radians=0.725153345774; // alpha_degrees=45
     
     // calculate tan(beta), you'll need it
     double tan_beta = tan(beta_radians);
 
     // build a mesh object
-    SP<Pyramid_Mesh> mesh(new Pyramid_Mesh(coord,layout,cell_x_extents, 
+    SP<Sphyramid_Mesh> mesh(new Sphyramid_Mesh(coord,layout,cell_x_extents, 
 					   beta_radians));
     
     // check that the mesh returns proper coordinate system information
@@ -376,7 +376,7 @@ void simple_one_cell_Pyramid()
 
 
     if(rtt_mc_test::passed)
-	PASSMSG("Pyramid_Mesh simple_one_cell  problem o.k");
+	PASSMSG("Sphyramid_Mesh simple_one_cell  problem o.k");
 }
 
 
@@ -387,7 +387,7 @@ void build_a_Sphyramid()
     using rtt_dsxx::SP;
     using rtt_mc_test::Parser;
     using rtt_mc::Sphyramid_Builder;
-    using rtt_mc::Pyramid_Mesh;
+    using rtt_mc::Sphyramid_Mesh;
     using std::vector;
     using std::string;
     using rtt_mc::global::pi;
@@ -401,8 +401,7 @@ void build_a_Sphyramid()
     SP<Parser> parser(new Parser("Sphyramid_Input"));
     Sphyramid_Builder builder(parser);
 
-    // check some of the Sphyramid_Builder properties; before build_Mesh, the
-    // coordinate system is one-dimensional.  After build_Mesh, it's 3D XYZ
+    // check some of the Sphyramid_Builder properties.
 
     // test cell region data
     {
@@ -434,7 +433,7 @@ void build_a_Sphyramid()
 
     }
     //build a Sphyramid mesh
-    SP<Pyramid_Mesh> mesh= builder.build_Mesh();
+    SP<Sphyramid_Mesh> mesh= builder.build_Mesh();
 
     //check defined surface source cells
     {
@@ -468,6 +467,11 @@ void build_a_Sphyramid()
 
     // check number of cells
     if(builder.num_cells() !=5) ITFAILS;
+
+    // check get_Mesh
+    SP<Sphyramid_Mesh> same_mesh=builder.get_Mesh();
+    if(same_mesh!=mesh) ITFAILS;
+
 
     // <<<< now do some checks on the mesh itself >>>>
     // (this is a different mesh than the simple_one_cell_Sphyramid_Mesh
@@ -927,14 +931,14 @@ int main(int argc, char *argv[])
     {
 	// >>> UNIT TESTS
 	// simple one-celled test problem
-	simple_one_cell_Pyramid();
+	simple_one_cell_Sphyramid();
 
 	// test the Sphyramid mesh Builder
 	build_a_Sphyramid();
     }
     catch (assertion &ass)
     {
-	cout << "While testing tstPyramid_Mesh, " << ass.what()
+	cout << "While testing tstSphyramid_Mesh, " << ass.what()
 	     << endl;
 	Finalize();
 	return 1;
