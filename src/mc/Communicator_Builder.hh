@@ -1,19 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mc/Comm_Builder.hh
+ * \file   mc/Communicator_Builder.hh
  * \author Thomas M. Evans
  * \date   Tue Jun  1 17:01:44 1999
- * \brief  Comm_Builder header file.
+ * \brief  Communicator_Builder header file.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Comm_Builder_hh__
-#define __mc_Comm_Builder_hh__
+#ifndef __mc_Communicator_Builder_hh__
+#define __mc_Communicator_Builder_hh__
 
 #include "Communicator.hh"
-#include "mc/Topology.hh"
+#include "Topology.hh"
 #include "ds++/SP.hh"
 #include <vector>
 
@@ -22,29 +22,30 @@ namespace rtt_mc
  
 //===========================================================================//
 /*!
- * \class Comm_Builder
+ * \class Communicator_Builder
 
  * \brief Build a rtt_mc::Communicator using the rtt_mc::Topology class.
 
- * The Comm_Builder builds rtt_mc::Communicator objects using the
+ * The Communicator_Builder builds rtt_mc::Communicator objects using the
  * rtt_mc::Topology class.  Because the Topology class contains all the
  * information needed by the Communicator to determine where particles go
- * when they cross processor boundaries, the Comm_Builder does not have to
- * perform any communication.  Thus, the Communicator is built on each
- * processor in parallel.
+ * when they cross processor boundaries, the Communicator_Builder does not
+ * have to perform any communication.  Thus, the Communicator is built on
+ * each processor in parallel.
  
  */
 // revision history:
 // -----------------
 // 0) original
+// 1) 01/07/02 : moved to mc; changed name to Communicator_Builder
 // 
 //===========================================================================//
 
 template<class PT>
-class Comm_Builder 
+class Communicator_Builder 
 {
   public:
-    // Usefull typedefs in Comm_Builder.
+    // Usefull typedefs in Communicator_Builder.
     typedef rtt_dsxx::SP<Communicator<PT> > SP_Communicator;
     typedef rtt_dsxx::SP<rtt_mc::Topology>  SP_Topology;
     typedef std::vector<int>                sf_int;
@@ -56,7 +57,7 @@ class Comm_Builder
 
   public:
     // default constructor
-    Comm_Builder() {}
+    Communicator_Builder() {}
 
     // Deprecated build service for use with certain host codes. 
     SP_Communicator build_Communicator(const sf_int &, const sf_int &);
@@ -67,8 +68,8 @@ class Comm_Builder
 
 } // end namespace rtt_mc
 
-#endif                          // __mc_Comm_Builder_hh__
+#endif                          // __mc_Communicator_Builder_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of mc/Comm_Builder.hh
+//                              end of mc/Communicator_Builder.hh
 //---------------------------------------------------------------------------//

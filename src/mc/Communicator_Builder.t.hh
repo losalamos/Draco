@@ -1,15 +1,15 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mc/Comm_Builder.t.hh
+ * \file   mc/Communicator_Builder.t.hh
  * \author Thomas M. Evans
  * \date   Thu Jan  3 17:00:09 2002
- * \brief  Comm_Builder member definitions.
+ * \brief  Communicator_Builder member definitions.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Comm_Builder.hh"
+#include "Communicator_Builder.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
 
@@ -22,11 +22,11 @@ namespace rtt_mc
 /*!
  * \brief Build a Communicator object using the rtt_mc::Topology.
 
- * This is the primary service of the Comm_Builder class.  Given a valid
- * rtt_mc::Topology, this function returns a rtt_dsxx::SP to a Communicator.
- * If the Topology is full replication then a Communicator is unnecessary and
- * a null SP is returned.  For full DD and DD/replication topologies a fully
- * defined Communicator is returned.
+ * This is the primary service of the Communicator_Builder class.  Given a
+ * valid rtt_mc::Topology, this function returns a rtt_dsxx::SP to a
+ * Communicator.  If the Topology is full replication then a Communicator is
+ * unnecessary and a null SP is returned.  For full DD and DD/replication
+ * topologies a fully defined Communicator is returned.
 
  * \param topology smart pointer to a rtt_mc::Topology
 
@@ -35,8 +35,8 @@ namespace rtt_mc
 
  */
 template<class PT>
-Comm_Builder<PT>::SP_Communicator 
-Comm_Builder<PT>::build_Communicator(SP_Topology topology)
+Communicator_Builder<PT>::SP_Communicator 
+Communicator_Builder<PT>::build_Communicator(SP_Topology topology)
 {
     Require (topology);
 
@@ -59,7 +59,7 @@ Comm_Builder<PT>::build_Communicator(SP_Topology topology)
     }
     else 
     {
-	Insist (0, "Invalid topology given in Comm_Builder!");
+	Insist (0, "Invalid topology given in Communicator_Builder!");
     }
 
     // return the communicator
@@ -80,9 +80,9 @@ Comm_Builder<PT>::build_Communicator(SP_Topology topology)
  * Clients should use the build_Communicator(SP_Topology) instead.
 
  */
-template<class PT> Comm_Builder<PT>::SP_Communicator 
-Comm_Builder<PT>::build_Communicator(const sf_int &b_node,
-				     const sf_int &b_cell)
+template<class PT> Communicator_Builder<PT>::SP_Communicator 
+Communicator_Builder<PT>::build_Communicator(const sf_int &b_node,
+					     const sf_int &b_cell)
 {
     using std::vector;
 
@@ -148,8 +148,8 @@ Comm_Builder<PT>::build_Communicator(const sf_int &b_node,
  * \brief Build a communicator in DD topologies.
  */
 template<class PT>
-Comm_Builder<PT>::SP_Communicator 
-Comm_Builder<PT>::build_DD_Comm(SP_Topology topology)
+Communicator_Builder<PT>::SP_Communicator 
+Communicator_Builder<PT>::build_DD_Comm(SP_Topology topology)
 {
     using std::vector;
 
@@ -224,5 +224,5 @@ Comm_Builder<PT>::build_DD_Comm(SP_Topology topology)
 } // end namespace rtt_mc
 
 //---------------------------------------------------------------------------//
-//                        end of mc/Comm_Builder.t.hh
+//                        end of mc/Communicator_Builder.t.hh
 //---------------------------------------------------------------------------//

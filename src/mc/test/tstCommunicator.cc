@@ -15,7 +15,7 @@
 #include "../Particle_Buffer.hh"
 #include "../Particle_Stack.hh"
 #include "../Communicator.hh"
-#include "../Comm_Builder.hh"
+#include "../Communicator_Builder.hh"
 #include "../Release.hh"
 #include "mc/General_Topology.hh"
 #include "mc/Rep_Topology.hh"
@@ -36,7 +36,7 @@ using namespace std;
 
 using rtt_mc::Particle_Buffer;
 using rtt_mc::Particle_Stack;
-using rtt_mc::Comm_Builder;
+using rtt_mc::Communicator_Builder;
 using rtt_mc::Communicator;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
@@ -60,7 +60,7 @@ void Rep_Comm_Check()
     SP<Topology> topology(new Rep_Topology(9));
 
     // now build a communicator, the returned communicator should be null
-    Comm_Builder<PT> builder;
+    Communicator_Builder<PT> builder;
     SP<Communicator<PT> > comm = builder.build_Communicator(topology);
     if (comm) ITFAILS;
 
@@ -83,7 +83,7 @@ void DD_Comm_build()
     SP<Topology> topology = rtt_mc_test::build_Topology();
 
     // make a comm builder
-    Comm_Builder<PT> builder;
+    Communicator_Builder<PT> builder;
 
     // make a communicator
     SP<Communicator<PT> > communicator =
@@ -219,7 +219,7 @@ void DD_Comm_build()
     }
 
     if (rtt_mc_test::passed)
-	PASSMSG("DD Comm_Builder/Communicator check ok.");
+	PASSMSG("DD Communicator_Builder/Communicator check ok.");
 }
 
 // //---------------------------------------------------------------------------//
@@ -259,7 +259,7 @@ void DD_Comm_transport()
     Particle_Buffer<PT>::set_maximum_num_particles(2);
 
     // make a comm builder
-    Comm_Builder<PT> builder;
+    Communicator_Builder<PT> builder;
 
     // make a communicator
     SP<Communicator<PT> > communicator =
@@ -426,7 +426,7 @@ void DD_Comm_simple()
     Particle_Buffer<PT>::set_maximum_num_particles(2);
 
     // make a comm builder
-    Comm_Builder<PT> builder;
+    Communicator_Builder<PT> builder;
 
     // make a communicator
     SP<Communicator<PT> > communicator = builder.build_Communicator(topology);

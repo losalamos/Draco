@@ -25,7 +25,7 @@ ${thistestdep}: ${thistestlib_dep} ${testdeps}
 	${AR} ${ARFLAGS} $@ ${thistestlib_dep} ${ARTESTLIBS}
 	${RANLIB} $@
 
-objs += ${thistestdep}
+objs += ${thistestdep} particles empty_file
 
 ###############################################################################
 #			 end of mc/test Makefile.target

@@ -12,7 +12,8 @@
 #include "MC_Test.hh"
 #include "../Particle_Buffer.t.hh"
 #include "../Communicator.t.hh"
-#include "../Comm_Builder.t.hh"
+#include "../Communicator_Builder.t.hh"
+#include "../Particle_IO.t.hh"
 
 namespace rtt_mc
 {
@@ -25,7 +26,9 @@ template class Send_Particle_Buffer<PT>;
 
 template class Communicator<PT>;
 
-template class Comm_Builder<PT>;
+template class Communicator_Builder<PT>;
+
+template class Particle_IO<PT>;
 
 } // end namespace rtt_mc
 
