@@ -3,7 +3,7 @@
 // Thomas M. Evans
 // Fri Jan 30 16:36:51 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Coord_sys abstract base class header file
 //---------------------------------------------------------------------------//
 
 #ifndef __imctest_Coord_sys_hh__
@@ -12,9 +12,8 @@
 //===========================================================================//
 // class Coord_sys - 
 //
-// Date created : 1-10-97
-// Purpose      : abstract base class which defines the coordinate system
-//                which the Mesh lives in
+// Purpose : abstract base class which defines the coordinate system
+//           which the Mesh lives in
 //
 // revision history:
 // -----------------
@@ -24,10 +23,12 @@
 
 #include "Names.hh"
 #include <vector>
+#include <string>
 
 IMCSPACE
 
 using std::vector;
+using std::string;
 
 class Random;
 
@@ -42,6 +43,7 @@ public:
 	:dimension(dimension_) {}
     int getDim() const { return dimension; } 
   // virtual functions utilized by each derived class
+    virtual string getCoord() const = 0;
     virtual void setOmega(vector<double> &, Random &) const = 0;
     virtual void calcOmega(double, double, vector<double> &) const = 0;
 };

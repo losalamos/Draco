@@ -3,7 +3,7 @@
 // Thomas M. Evans
 // Fri Jan 30 15:53:52 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Layout class header file
 //---------------------------------------------------------------------------//
 
 #ifndef __imctest_Layout_hh__
@@ -12,12 +12,11 @@
 //===========================================================================//
 // class Layout - 
 //
-// Date created : 1-14-97
-// Purpose      : base class which describes the cell-face-cell inter-
-//                actions for IMC; Layout itself is independent of
-//                the geometry of the mesh but Mesh has to build it
-//                because Mesh can calculate the neighbor info from
-//                the geometry
+// Purpose : base class which describes the cell-face-cell inter-
+//           actions for IMC; Layout itself is independent of
+//           the geometry of the mesh but Mesh has to build it
+//           because Mesh can calculate the neighbor info from
+//           the geometry
 //
 // revision history:
 // -----------------

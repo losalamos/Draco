@@ -40,7 +40,8 @@ SP<OS_Mesh> OS_Builder::buildMesh()
     if (dim == 2)
 	return_mesh = build2DMesh(coord, *layout);
     else if (dim == 3)
-	return_mesh = build3DMesh(coord, *layout);
+      //	return_mesh = build3DMesh(coord, *layout);
+	return_mesh = 0;
     return return_mesh;
 }
 
@@ -57,11 +58,36 @@ SP<OS_Mesh> OS_Builder::build2DMesh(SP<Coord_sys> coord, const Layout
     int num_xcells = num_xsur - 1;
     int num_ycells = num_ysur - 1;
     int cell       = 0;
+    int dimension  = coord->getDim();
 
   // initialization variables for Mesh
     OS_Mesh::CCVF_a pos(2);
     OS_Mesh::CCVF_a dim(2);
     OS_Mesh::CCF_i  index(num_cells);
+
+  // size position and dimension arrays
+    for (int d = 1; d <= dimension; d++)
+    {
+	pos[d-1].resize(num_cells);
+	dim[d-1].resize(num_cells);
+    }
+
+  // set position and dimension arrays
+    for (int i = 1; i <= num_xcells; i++)
+	for (int j = 1; j <= num_ycells; j++)
+	{
+	    cell           = 1 + (i-1) + num_xcells * (j-1);
+	    pos[0][cell-1] = (fine_edge[0][i-1] + fine_edge[0][i]) / 2.0;
+	    pos[1][cell-1] = (fine_edge[1][j-1] + fine_edge[1][j]) / 2.0;
+	    dim[0][cell-1] = fine_edge[0][i] - fine_edge[0][i-1];
+	    dim[1][cell-1] = fine_edge[1][j] - fine_edge[1][j-1];
+	    index[cell-1]  = cell;
+	}
+
+  // return mesh to builder
+    SP<OS_Mesh> mesh_return = new OS_Mesh(coord, layout, pos, dim, fine_edge,
+					  index);
+    return mesh_return;
 }
 
 //---------------------------------------------------------------------------//

@@ -12,7 +12,7 @@
 //===========================================================================//
 // class OS_Mesh - 
 //
-// Purpose      : Orthogonal-Structured Mesh Class
+// Purpose : Orthogonal-Structured Mesh Class
 //
 // revision history:
 // -----------------
@@ -146,13 +146,18 @@ public:
 	  sur(sur_), index(index_)
     {}
   // member functions
+  // helper functions
     const Layout& Layout() const { return layout; }
     const Coord_sys& Coord() const { return *coord; }
-    double begin(int dim) const { return sur[dim-1].front(); }
-    double end(int dim) const { return sur[dim-1].back(); }
+    double Begin(int d) const { return sur[d-1].front(); }
+    double End(int d) const { return sur[d-1].back(); }
+    double Pos(int d, int cell) const { return pos[d-1][cell-1]; }
+    double Dim(int d, int cell) const { return dim[d-1][cell-1]; }
+    void Print(int) const;
+  // required services
     int getCell(vector<double> &) const;
     double getDb(vector<double> &, vector<double> &, int, int &) const;
-    void print(int) const;
+
 };
 
 CSPACE

@@ -92,7 +92,7 @@ double OS_Mesh::getDb(vector<double> &r, vector<double> &omega,
     return dist_boundary;
 }
 
-void OS_Mesh::print(int cell) const
+void OS_Mesh::Print(int cell) const
 {
     using std::cout;
     using std::endl;
@@ -120,7 +120,7 @@ void OS_Mesh::print(int cell) const
 	cout << " dz : " << dim[2][cell-1] << endl;
     }	
     cout << "---------------" << endl;
-    cout << "Layout      : " << endl;
+    cout << "Layout      :  " << endl;
     layout.print(cell);
     cout << "+++++++++++++++" << endl;
 }

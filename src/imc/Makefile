@@ -10,7 +10,7 @@ RM = rm -r
 # MAIN DRIVER PROGRAM
 
 all: Particle.o XYCoord_sys.o XYZCoord_sys.o Layout.o OS_Mesh.o \
-     Random.o
+     Random.o OS_Builder.o Random.o Opacity.o
 
 # CLASS MODULES
 
@@ -39,7 +39,7 @@ Opacity.o: Opacity.cc Opacity.hh OS_Mesh.hh Layout.hh Names.hh
 	${CC} -c Opacity.cc ${INCLUDE} ${OPTIONS}
 
 OS_Builder.o: OS_Builder.cc OS_Builder.hh OS_Mesh.hh Layout.hh \
-              Coord_sys.hh Names.hh
+              Coord_sys.hh Names.hh XYCoord_sys.hh XYZCoord_sys.hh
 	${CC} -c OS_Builder.cc ${INCLUDE} ${OPTIONS}
 
 # UTILITIES
@@ -54,8 +54,16 @@ cleankcc:
 
 testm: testm.o XYCoord_sys.o XYZCoord_sys.o OS_Mesh.o Layout.o Random.o
 	${CC} -o testm testm.o XYCoord_sys.o XYZCoord_sys.o \
- 	         OS_Mesh.o Layout.o Random.o ${LIB} ${OPTIONS}
+                 OS_Mesh.o Layout.o Random.o ${LIB} ${OPTIONS}
 
 testm.o: testm.cc Global.hh Layout.hh XYCoord_sys.hh XYZCoord_sys.hh \
          Random.hh
 	${CC} -c testm.cc ${INCLUDE} ${OPTIONS}
+
+testb: testb.o OS_Builder.o OS_Mesh.o XYCoord_sys.o XYZCoord_sys.o \
+       Layout.o Random.o
+	${CC} -o testb testb.o OS_Builder.o OS_Mesh.o XYCoord_sys.o \
+                 XYZCoord_sys.o Layout.o Random.o ${LIB} ${OPTIONS}
+
+testb.o: testb.cc OS_Builder.hh OS_Mesh.hh
+	${CC} -c testb.cc ${INCLUDE} ${OPTIONS}

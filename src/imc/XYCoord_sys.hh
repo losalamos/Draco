@@ -3,7 +3,7 @@
 // Thomas M. Evans
 // Fri Jan 30 16:52:13 1998
 //---------------------------------------------------------------------------//
-// @> XYCoord_sys class header file
+// @> XYCoord_sys derived class header file
 //---------------------------------------------------------------------------//
 
 #ifndef __imctest_XYCoord_sys_hh__
@@ -12,12 +12,13 @@
 //===========================================================================//
 // class XYCoord_sys - 
 //
-// Purpose      : XY geometry coordinate system functions, derived
-//                class of Coord_sys
+// Purpose : XY geometry coordinate system functions, derived
+//           class of Coord_sys
 //
 // revision history:
 // -----------------
 // 0) original
+// 2-18-98) added getCoord() function for debugging
 // 
 //===========================================================================//
 
@@ -36,6 +37,7 @@ public:
   // system, inline
     XYCoord_sys() : Coord_sys(2) {}
   // virtual functions
+    virtual string getCoord() const { string c = "xy"; return c; }
     virtual void setOmega(vector<double> &, Random &) const;
     virtual void calcOmega(double, double, vector<double> &) const;
 };
