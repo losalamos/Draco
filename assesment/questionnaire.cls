@@ -38,9 +38,9 @@
 }
 
 % Squrill away Key Process Area name for use in KPARate
-\newcommand{\KPAname}{}
-\let\KPAsection=\section
-\renewcommand{\section}[1]{\renewcommand{\KPAname}{#1}\KPAsection{#1}}
+\newcommand{\KPA@name}{}
+\let\KPA@section=\section
+\renewcommand{\section}[1]{\renewcommand{\KPA@name}{#1}\KPA@section{#1}}
 
 % Key Process Activity environment
 \newcounter{activity}[section]		% KPA counter
@@ -66,7 +66,7 @@
     \setcounter{result}{\value{result}/\value{activity}}
     \setcounter{total}{\value{total}/\value{activity}}
     \setcounter{total}{\value{total}/3}
-    The average score for this KPA is \arabic{total}.
+    The average score for \KPA@name\ is \arabic{total}.
 }
 
 % \Activity{Approach score}{Deployment score}{Results score}{Description}
@@ -105,19 +105,19 @@
 % \Approach{Evidence}
 \newcommand{\Approach}[1]
 {
-    Approach to \KPAname & \arabic{approach} & #1 \\ \hline
+    Approach to \KPA@name & \arabic{approach} & #1 \\ \hline
 } 
 
 % \Deployment{Evidence}
 \newcommand{\Deployment}[1]
 {
-    Deployment of \KPAname & \arabic{deployment} & #1 \\ \hline
+    Deployment of \KPA@name & \arabic{deployment} & #1 \\ \hline
 }
 
 % \Results{Evidence}
 \newcommand{\Results}[1]
 {
-    Results Achieved in \KPAname & \arabic{result} & #1 \\ \hline
+    Results Achieved in \KPA@name & \arabic{result} & #1 \\ \hline
 }
 
 \newenvironment{KPAComment}
