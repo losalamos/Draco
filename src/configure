@@ -1193,13 +1193,13 @@ subdirs="ds++ xm fourier"
 
 subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng"
 
-subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders"
+subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders quadrature"
 
-subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders mesh POOMA_MT radphys linalg LAMG diffusion mc timestep"
+subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders quadrature mesh POOMA_MT radphys linalg LAMG diffusion mc timestep"
 
-subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion"
+subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders quadrature mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion"
 
-subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion imc"
+subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders quadrature mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion imc"
 
 
 trap '' 1 2 15
@@ -1486,7 +1486,7 @@ if test "$no_recursion" != yes; then
     esac
   done
 
-  for ac_config_dir in ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion imc; do
+  for ac_config_dir in ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders quadrature mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion imc; do
 
     # Do not complain, so a configure script can configure whichever
     # parts of a large source tree are present.
