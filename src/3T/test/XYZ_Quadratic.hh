@@ -23,6 +23,8 @@ class XYZ_Quadratic : private Quad_Params
 {
 
   public:
+    typedef Quad_Params params;
+
     XYZ_Quadratic( const Quad_Params& q ) : Quad_Params(q) {}
 
     double Et( double t ) const { return et0 + et1*t; }
