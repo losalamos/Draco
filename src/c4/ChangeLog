@@ -1,3 +1,9 @@
+2001-07-30  Thomas M. Evans  <tme@lanl.gov>
+
+	* c4: Updated to c4-1_5_0.  This release adds the ParallelUtils
+	component.  It also adds type long to the mpi_traits list.  Some
+	antiquated files are removed.
+
 2000-12-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* c4: Updated to c4-1_4_0.  This release is primarily due to
