@@ -51,7 +51,7 @@ class DoubleContainer
 typedef dsxx::Mat4<double> X;
 typedef dsxx::Mat4<DoubleContainer> XDC;
 
-void f1(const X& x, X xcopy)
+void f1(const X& x, const X& xcopy)
 {
     if (xcopy != x)
         passed = false;
@@ -59,33 +59,34 @@ void f1(const X& x, X xcopy)
         passed = false;
 }
 
-void f2(X::iterator x) {}
+void f2(const X::iterator& x) {}
 
-void f3(const X::iterator& x, X::iterator xcopy)
+void f3(const X::iterator& x, const X::iterator& xcopy)
 {
     if (xcopy != x)
         passed = false;
 }
 
-void f4(X::const_iterator x) {}
+void f4(const X::const_iterator& x) {}
 
-void f5(const X::const_iterator& x, X::const_iterator xcopy)
+void f5(const X::const_iterator& x, const X::const_iterator& xcopy)
 {
     if (xcopy != x)
         passed = false;
 }
 
-void f6(X::reverse_iterator x) {}
+void f6(const X::reverse_iterator& x) {}
 
-void f7(const X::reverse_iterator& x, X::reverse_iterator xcopy)
+void f7(const X::reverse_iterator& x, const X::reverse_iterator& xcopy)
 {
     if (xcopy != x)
         passed = false;
 }
 
-void f8(X::const_reverse_iterator x) {}
+void f8(const X::const_reverse_iterator& x) {}
 
-void f9(const X::const_reverse_iterator& x, X::const_reverse_iterator xcopy)
+void f9(const X::const_reverse_iterator& x,
+        const X::const_reverse_iterator& xcopy)
 {
     if (xcopy != x)
         passed = false;
