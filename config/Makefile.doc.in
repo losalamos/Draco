@@ -95,6 +95,8 @@ XDVI = @XDVI@
 XDVIFLAGS = @XDVIFLAGS@
 LP = @LP@
 LPFLAGS = @LPFLAGS@
+DOTCMD = @DOTCMD@
+PS2PDF = @PS2PDF@
 
 libsuffix = @libsuffix@
 installdirs = 
@@ -115,7 +117,7 @@ TEXINPUTSENV := TEXINPUTS="${srcdir}:${DRACOTEXINPUTS}:${TEXINPUTS}"
 LATEXCMD  := ${TEXINPUTSENV} ${LATEX}
 BIBTEXCMD := ${TEXINPUTSENV} ${BIBTEX}
 DVIPSCMD  := ${TEXINPUTSENV} ${DVIPS}
-XDVICMD  := ${TEXINPUTSENV} ${XDVI}
+XDVICMD   := ${TEXINPUTSENV} ${XDVI}
 
 # if the source developer wants to over override what sources and objects
 # are to be made then create a Makefile.srcs file that lives in the source
@@ -124,10 +126,17 @@ XDVICMD  := ${TEXINPUTSENV} ${XDVI}
 
 ifeq (,$(wildcard ${srcdir}/Makefile.srcs))
 
-  texsrc  := ${srcdir}/${package}.tex
+#   texsrc  := ${srcdir}/${package}.tex
+  texsrc  := $(wildcard ${srcdir}/*.tex)
   texdvi  := $(notdir $(patsubst %.tex,%.dvi,${texsrc}))
   texps   := $(notdir $(patsubst %.tex,%.ps,${texsrc}))
   texlog  := $(notdir $(patsubst %.tex,%.log,${texsrc}))
+
+  dotsrc  := $(wildcard ${srcdir}/*.dot)
+  dotps   := $(notdir $(patsubst %.dot,%.ps,${dotsrc}))
+
+  allps   := ${texps} ${dotps}
+  allpdf  := $(notdir $(patsubst %.ps,%.pdf,${allps}))
 
 else
 
@@ -143,7 +152,7 @@ endif
 	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
 	forced-clean reconfigure view doc xdvi print
 
-all: ${texps}
+all: ${allps}
 
 doc: ${texps}
 
@@ -163,11 +172,21 @@ ${texps}: ${texdvi}
 
 ${texdvi}: ${texsrc}
 
+${dotps}: ${dotsrc}
+
 %.dvi: ${srcdir}/%.tex
 	${LATEXCMD} ${LATEXFLAGS} $<
 	-${BIBTEXCMD} ${BIBTEXFLAGS} $(basename $@)
 	${LATEXCMD} ${LATEXFLAGS} $<
 	${LATEXCMD} ${LATEXFLAGS} $<
+
+%.ps: ${srcdir}/%.dot
+	@${DOTCMD} -Tps -o $@ $<
+
+pdf: ${allpdf}
+
+%.pdf: %.ps
+	${PS2PDF} $<
 
 installdirs: ${installdirs}
 
@@ -188,29 +207,20 @@ uninstall:
 configfiles := $(wildcard ${top_srcdir}/${rel_config_dir}/*.m4) \
 	$(wildcard ${top_srcdir}/${rel_config_dir}/../pkg_config/*.m4)
 
-${top_srcdir}/configure: ${top_srcdir}/configure.in ${configfiles}
-	@echo 1>&2 "****************************************************"
-	@echo 1>&2 "***      WARNING: configure is out of date       ***"
-	@echo 1>&2 "***      You may need to rerun autoconf          ***"
-	@echo 1>&2 "***      in the source directory by running      ***"
-	@echo 1>&2 "***      ${MAKE} reconfigure                     ***"
-	@echo 1>&2 "****************************************************"
+configure: 
+	@echo "Rebuilding ${top_srcdir}/aclocal.m4"
+	@cd ${top_srcdir} && aclocal -I ${rel_config_dir} ${pkg_config_inc}
+	@echo "Rebuilding ${top_srcdir}/configure"
+	@cd ${top_srcdir} && autoconf
+	@cd ${reldir} && ./config.status --recheck
+	@cd ${reldir} && ./config.status
 
 reconfigure:
-	@echo 1>&2 "Running ${MAKE} reconfigure..."
-	cd ${top_srcdir} && autoconf --localdir=${rel_config_dir}
+	@cd ${reldir} && ./config.status --recheck
+	@cd ${reldir} && ./config.status
 
-Makefile: ${top_srcdir}/${rel_config_dir}/Makefile.doc.in ${reldir}/config.status
-	(cd ${reldir} && if test -x ./config.status ; then ./config.status ; fi)
-
-${reldir}/config.status: ${top_srcdir}/configure
-	(cd ${reldir} && if test -x ./config.status ; then \
-		./config.status --recheck ; fi)
-
-%: ${srcdir}/%.in
-	(cd ${reldir} && if test -x ./config.status ; then \
-	  CONFIG_FILES=doc/$@:doc/$(notdir $<) \
-	      CONFIG_HEADERS= ./config.status; fi)
+##---------------------------------------------------------------------------##
+## clean rules
 
 clean:
 	-rm -f .tmp?
