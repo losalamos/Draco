@@ -42,13 +42,15 @@ namespace rtt_quadrature
  */
 // revision history:
 // -----------------
-// 0) original
-// 1) 3-17-2000 Implemented use of smart pointers (QuadCreator::QuadCreate
-//              now returns a smartpointer instead of a normal pointer.) 
-//              Added/modified comments (both DOxygen and normal).
-//              Forced the default value for "norm" to be zero.  If it is
-//              zero then "QuadCreate" will set norm to an appropriate
-//              default based on the dimensionality of the quadrature set.
+// 1.1) original
+// 1.2) Implemented use of smart pointers (QuadCreator::QuadCreate now
+//         returns a smartpointer instead of a normal pointer.)
+//      Added/modified comments (both DOxygen and normal). 
+//      Forced the default value for "norm" to be zero.  If it is zero
+//         then "QuadCreate" will set norm to an appropriate default
+//         based on the dimensionality of the quadrature set.
+// 1.3) Renamed member function "QuadCreate" to start with a lower
+//         case letter ("quadCreate").
 // 
 //===========================================================================//
 
@@ -76,7 +78,7 @@ class QuadCreator
     // CREATORS
 
     /*!
-     * \brief QuadCreate constructs a Quadrature object.
+     * \brief quadCreate constructs a Quadrature object.
      *
      * The Quad creator only requires 1 parameter -- the quadrature
      * identifier (see QuadCreator::Qid).  The two addtional parameters can
@@ -102,9 +104,8 @@ class QuadCreator
     // norm and sn_order are optional variables.  sn_order always defaults to 
     // 4 but the default value for norm is based on the dimensionality of the 
     // quadrature set and its default value is set in the member function
-    // QuadCreator::QuadCreate().
     virtual rtt_dsxx::SP<Quadrature> 
-          QuadCreate( Qid quad_type, int sn_order = 4, double norm = 0.0 );
+          quadCreate( Qid quad_type, int sn_order = 4, double norm = 0.0 );
     //    QuadCreator(const QuadCreator &rhs);
     //   ~QuadCreator();
 

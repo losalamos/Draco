@@ -22,6 +22,7 @@ using std::vector;
 using std::string;
 
 const double PI = 3.14159265358979323846;
+const double TOL = 1.0e-12;
 
 //===========================================================================//
 /*!
@@ -44,20 +45,18 @@ const double PI = 3.14159265358979323846;
 // revision history:
 // -----------------
 // 0) original
-// 1) 3-17-2000 a) Added lots of comments.
-//              b) Changed "getmu()" to "getMu()" because Tycho was already 
-//                 using the 2nd convention.
-//              c) Added several accessors: getEta(), getXi(), getWt(), 
-//                 getMu(int), getEta(int), getXi(int), getWt(int),
-//                 getOmega(int), name(), dimensionality(),getSnOrder().
-//              d) Implemented clients ability to specify norm == sumwt.
-//              e) Added checks to verify that 
-//                 Integral(dOmega) = sumwt
-//                 Integral(Omega*dOmega) = (0,0,0)
-//                 Integral(Omega*Omega*dOmega) 
-//                    = norm/3 * ((1,0,0),(0,1,0),(0,0,1))
-//              f) Added use of the ds++/Assert class.
-//
+// 1) Added lots of comments.
+//    Changed "getmu()" to "getMu()" because Tycho was already using
+//       the 2nd convention. 
+//    Added several accessors: getEta(), getXi(), getWt(), getMu(int),
+//       getEta(int), getXi(int), getWt(int), getOmega(int), name(),
+//       dimensionality(),getSnOrder(). 
+//    Implemented clients ability to specify norm == sumwt.
+//    Added checks to verify that 
+//       Integral(dOmega) = norm
+//       Integral(Omega*dOmega) = (0,0,0)
+//       Integral(Omega*Omega*dOmega) = norm/3 * ((1,0,0),(0,1,0),(0,0,1))
+//    Added use of the ds++/Assert class.
 // 
 //===========================================================================//
 
@@ -103,7 +102,7 @@ class Quadrature
      * theta is the azimuthal angle.
      * phi is the polar angle.
      */
-    const vector<double>& getMu() { return mu; };
+    const vector<double>& getMu() { return mu; }
 
     /*!
      * \brief Return the eta vector.
@@ -135,7 +134,7 @@ class Quadrature
      *
      * See comments for getMu().
      */
-    const vector<double>& getWt() { return wt; };
+    const vector<double>& getWt() { return wt; }
 
     /*!
      * \brief Return the mu component of the direction Omega_m.
@@ -226,7 +225,7 @@ class Quadrature
      * \brief The sum of the quadrature weights will be normalized so
      *        that they sum to this value.
      */
-    double getNorm() const { return norm; };
+    double getNorm() const { return norm; }
 
     /*!
      * \brief Returns a string containing the name of the quadrature set.
@@ -284,28 +283,23 @@ class Quadrature
     vector<double> iOmegaOmegaDomega() const;
 
 
-    // Other accessors that may be needed:
+    // Other accessors that may be needed in the future.
     //
-    // virtual int getLevels() = 0;
     // virtual int getNumAnglesPerOctant() = 0;
 
   protected:
 
     // DATA
 
-    int snOrder;    // defaults to 4.
-    double norm;    // 1D: defaults to 2.0.
-                    // 2D: defaults to 2*pi.
-                    // 3D: defaults to 4*pi.
-//  int numAngles;  // Varies for different quadratures.
-                    // 1D Gauss Legendre == snOrder.
-                    // 3D Level Symmetric == (snOrder+2)*snOrder.
+    const int snOrder; // defaults to 4.
+    const double norm; // 1D: defaults to 2.0.
+                       // 2D: defaults to 2*pi.
+                       // 3D: defaults to 4*pi.
 
     // Quadrature directions and weights.
-    // The length of each vector will be numAngles.
     vector<double> mu;
     vector<double> eta; // will be an empty vector for all 1D sets.
-    vector<double> xi;  // will be an empty vector for all 1D  and 2D sets.
+    vector<double> xi;  // will be an empty vector for all 1D and 2D sets.
     vector<double> wt;
 };
 
@@ -358,11 +352,11 @@ class Q1DGaussLeg : public Quadrature
     // These functions override the virtual member functions specifed in the
     // parent class Quadrature.
     
-    int getNumAngles()   const { return numAngles; };
+    int getNumAngles()   const { return numAngles; }
     void display()       const;
-    string name()        const { return "1D Gauss Legendre"; };
-    int dimensionality() const { return 1; };
-    int getSnOrder()     const { return snOrder; };
+    string name()        const { return "1D Gauss Legendre"; }
+    int dimensionality() const { return 1; }
+    int getSnOrder()     const { return snOrder; }
 
   private:
     
@@ -420,15 +414,15 @@ class Q3DLevelSym : public Quadrature
     // These functions override the virtual member functions specifed in the
     // parent class Quadrature.
 
-    int getNumAngles()   const { return numAngles; };
+    int getNumAngles()   const { return numAngles; }
     void display()       const;
-    string name()        const { return "3D Level Symmetric"; };
-    int dimensionality() const { return 3; };
-    int getSnOrder()     const { return snOrder; };
+    string name()        const { return "3D Level Symmetric"; }
+    int dimensionality() const { return 3; }
+    int getSnOrder()     const { return snOrder; }
     /*!
      * \brief Returns the number of xi levels in the quadrature set.
      */
-    int getLevels()      const { return snOrder; };
+    int getLevels()      const { return snOrder; }
 
   private:
     
