@@ -14,7 +14,6 @@
 #define quadrature_QuadServices_i_hh
 
 #include <iostream>
-#include "QuadServices.hh"
 
 namespace rtt_quadrature
 {
@@ -60,6 +59,15 @@ T QuadServices::factorial( T const k ) const
 
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Pretty print vector<T> as 2D matrix.
+ * \param matrix_name A string that will be printed as an identifier for this
+ *        matrix.
+ * \param x The vector<T> that we want to print in a 2D format.
+ * \param dims A length 2 vector that contains the dimensions of x.
+ * \return void
+ */
 template< typename T >
 void QuadServices::print_matrix( std::string    const & matrix_name,
 				 std::vector<T> const & x,
@@ -68,6 +76,8 @@ void QuadServices::print_matrix( std::string    const & matrix_name,
     using std::cout;
     using std::endl;
     using std::string;
+
+    Require( dims[0]*dims[1] == x.size() );
 
     unsigned pad_len( matrix_name.length()+2 );
     string padding( pad_len, ' ' );
@@ -80,6 +90,7 @@ void QuadServices::print_matrix( std::string    const & matrix_name,
 	    cout << x[j+dims[0]*i] << ", ";
 	cout << x[dims[1]-1+dims[0]*i] << " }." << endl;
     }
+    cout << endl;
     return;
 }
 
