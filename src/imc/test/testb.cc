@@ -85,6 +85,12 @@ main()
 
   // transport a particle
 
+  // set diagnostics
+    
+    ofstream output("history");
+    SP<Particle<OS_Mesh>::Diagnostic> check = 
+	new Particle<OS_Mesh>::Diagnostic(output);
+
   // initialize particle
     int seed = -18374;
     Particle<OS_Mesh> particle(*mesh, seed, 1.0, 10.0);
@@ -111,7 +117,7 @@ main()
     particle.Source(origin, source, *mesh);
 
   // transport
-    particle.Transport(*mesh, *opacity);
+    particle.Transport(*mesh, *opacity, check);
 
   // assert that particle is indeed dead
     assert (!particle.Status());
