@@ -1,3 +1,8 @@
+2000-12-03  H. Grady Hughes  <hgh@lanl.gov>
+
+	* TET_Builder.cc: Another, slightly faster version of the
+	connectivity builder.
+
 2000-12-01  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Builder.cc, test/TET_MODEL_1.in, test/TET_RTT_5.in,
