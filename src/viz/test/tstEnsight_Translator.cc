@@ -92,9 +92,10 @@ void ensight_dump_test()
 	for (int j = 0; j < ipar[i].size(); j++)
 	    input >> ipar[i][j];
 
-    // build an Ensight_Translator
+    // build an Ensight_Translator (make sure it overwrites any existing
+    // stuff) 
     Ensight_Translator translator(prefix, gd_wpath, ens_vdata_names,
-				  ens_cdata_names); 
+				  ens_cdata_names, true); 
 
     translator.ensight_dump(icycle, time, dt,
 			    ipar, iel_type, rgn_index, pt_coor,
@@ -108,7 +109,7 @@ void ensight_dump_test()
     // build another ensight translator; this should overwrite the existing
     // directories
     Ensight_Translator translator2(prefix, gd_wpath, ens_vdata_names,
-				   ens_cdata_names); 
+				   ens_cdata_names, true); 
     
     translator2.ensight_dump(icycle, time, dt,
 			     ipar, iel_type, rgn_index, pt_coor,
@@ -119,7 +120,7 @@ void ensight_dump_test()
     // thus we will not overwrite the existing directories
 
     Ensight_Translator translator3(prefix, gd_wpath, ens_vdata_names,
- 				   ens_cdata_names, dump_times); 
+ 				   ens_cdata_names); 
     
     // now add another dump to the existing data
     translator3.ensight_dump(2, .05, dt,
@@ -127,7 +128,7 @@ void ensight_dump_test()
 			     ens_vrtx_data, ens_cell_data,
 			     rgn_data, rgn_name);    
 
-    // test of alternative constructor that parses dump_times
+    // make yet a fourth translator that will append (explicitly)
     Ensight_Translator translator4(prefix, gd_wpath, ens_vdata_names,
 				   ens_cdata_names, false); 
     

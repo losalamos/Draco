@@ -18,70 +18,12 @@ namespace rtt_viz
 /*!
  * \brief Constructor for Ensight_Translator.
  *
- * \anchor Ensight_Translator_Constructor
- *
- * The constructor automatically knows the number of Ensight cell types (15),
- * and it sets data dependent upon this variable appropriately.
- *
- * Ensight data directories are created in the constructor based upon the
- * values of prefix_in and gd_wpath and the data names in ens_vdata_names_in
- * and ens_cdata_names_in.  Files are overwritten at runtime.  However,
- * directories are not purged. This default behavior can be overturned by
- * providing a non-zero dump_times_in parameter argument.  In this case, the
- * directories and their contents \b are \b not overwritten at runtime.
- * Instead, the graphics manager will continue with the next timestep entry
- * given to the ensight_dump function.  This feature is intended for use with
- * restarts. Details on the dump_times_in parameter are given below.
- *
- * \param prefix std_string giving the name of the problem
- * \param gd_wpath directory where dumps are stored
- * \param ens_vdata_names_in string field containing vertex data names
- * \param ens_cdata_names_in string field containing cell data names
- * \param dump_times_in optional input dump-times data, if this is non-zero *
- * than ensight directories are NOT rebuilt and the case file assumes to have
- * the entries of the dump_times_in already.  The ensight_dumps will start
- * with the next additional timestep.
- * \param static_geom_in optional input that if true, geometry is assumed
- * the same across all calls to Ensight_Translator::ensight_dump.
- *
- * \sa \ref Ensight_Translator_description "Ensight_Translator class" 
- * for details about SSF templated field types.  
- *
- * \sa \ref Ensight_Translator_strings "Ensight_Translator class" for
- * details about restrictions on names (strings).  */
-template<class SSF>
-Ensight_Translator::Ensight_Translator(const std_string &prefix,
-				       const std_string &gd_wpath,
-				       const SSF &ens_vdata_names_in,
-				       const SSF &ens_cdata_names_in,
-				       const sf_double &dump_times_in,
-				       const bool static_geom_in)
-    : ens_vdata_names(ens_vdata_names_in),
-      ens_cdata_names(ens_cdata_names_in),
-      dump_times(dump_times_in),
-      static_geom(static_geom_in)
-{
-    createFilenames(prefix, gd_wpath);
-
-    // Determine whether this is an original graphics startup or a
-    // continuation; if this is a continuation we will not rebuild the
-    // directories and we assume that previous data is in place.
-    bool graphics_continue = false;
-    if (!dump_times.empty())
-	graphics_continue = true;
-
-    initialize(graphics_continue);
-}
-//---------------------------------------------------------------------------//
-// CONSTRUCTOR, ALTERNATIVE
-//---------------------------------------------------------------------------//
-/*!
- * \brief Alternative constructor for Ensight_Translator.
- *
- * This constructor differs from
- * \ref Ensight_Translator_Constructor "the constructor above" in that
- * instead of specifying \a dump_times,  the parameter \a overwrite is
- * specified.
+ * This constructor builds an Ensight_Translator.  The behavior of the
+ * (existing) ensight dump files is controlled by the overwrite parameter.
+ * If this is true, any existing ensight dumps (with the same problem name)
+ * will be overwritten.  If overwrite is false then the ensight dumps are
+ * appended.  The ensight case files are parsed to get the dump times if
+ * overwrite is false.
  *
  * \param prefix std_string giving the name of the problem
  * \param gd_wpath directory where dumps are stored
@@ -91,25 +33,22 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
  * directory is to be appended to or overwritten.  If true, overwrites the
  * existing ensight directory.  If false, and the ensight directory exists,
  * the case file is appended to.  In either case, if the ensight directory
- * does not exist it is created.
+ * does not exist it is created.  The default for overwrite is false.
  * \param static_geom_in optional input that if true, geometry is assumed
  * the same across all calls to Ensight_Translator::ensight_dump.
- *
- * In the future, we might also want to parse the data names.
- * Ideally \a overwrite would default to false, but
- * then this conflicts with the other constructor.
  */
 template<class SSF>
 Ensight_Translator::Ensight_Translator(const std_string &prefix,
 				       const std_string &gd_wpath,
-				       const SSF &ens_vdata_names_in,
-				       const SSF &ens_cdata_names_in,
-				       const bool overwrite,
-				       const bool static_geom_in)
+				       const SSF        &ens_vdata_names_in,
+				       const SSF        &ens_cdata_names_in,
+				       const bool        overwrite,
+				       const bool        static_geom_in)
     : ens_vdata_names(ens_vdata_names_in),
       ens_cdata_names(ens_cdata_names_in),
       static_geom(static_geom_in)
 {
+    Require (dump_times.empty());
     createFilenames(prefix, gd_wpath);
     
     bool graphics_continue = false; // default behavior
@@ -223,9 +162,9 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
  * \sa Examples page for more details about how to do Ensight dumps.
  */
 template<class ISF, class IVF, class SSF, class FVF>
-void Ensight_Translator::ensight_dump(int icycle,
-				      double time,
-				      double dt, 
+void Ensight_Translator::ensight_dump(int        icycle,
+				      double     time,
+				      double     dt, 
 				      const IVF &ipar_in,
 				      const ISF &iel_type,
 				      const ISF &cell_rgn_index,
@@ -411,15 +350,16 @@ void Ensight_Translator::ensight_dump(int icycle,
  * \brief Write out data to ensight geometry file.
  */
 template<class IVF, class FVF> void 
-Ensight_Translator::ensight_geom(const std_string &ens_postfix,
-				 const int icycle,
-				 const double time,
-				 const double dt,
-				 const rtt_traits::Viz_Traits<IVF> &ipar, 
-				 const rtt_traits::Viz_Traits<FVF> &pt_coor,
-				 const sf_string &part_names,
-				 const sf_int &index_cell, 
-				 const sf_int &ptr_index_cell)
+Ensight_Translator::ensight_geom(
+    const std_string                  &ens_postfix,
+    const int                          icycle,
+    const double                       time,
+    const double                       dt,
+    const rtt_traits::Viz_Traits<IVF> &ipar, 
+    const rtt_traits::Viz_Traits<FVF> &pt_coor,
+    const sf_string                   &part_names,
+    const sf_int                      &index_cell, 
+    const sf_int                      &ptr_index_cell)
 {
     using std::ofstream;
     using std::setw;
@@ -530,9 +470,10 @@ Ensight_Translator::ensight_geom(const std_string &ens_postfix,
 /*!
  * \brief Write out data to ensight vertex data.
  */
-template<class FVF> void Ensight_Translator::ensight_vrtx_data
-(const std_string &ens_postfix,
- const rtt_traits::Viz_Traits<FVF> &ens_vrtx_data)
+template<class FVF> 
+void Ensight_Translator::ensight_vrtx_data(
+    const std_string                  &ens_postfix,
+    const rtt_traits::Viz_Traits<FVF> &ens_vrtx_data)
 {
     using std::ofstream;
     using std::endl;
@@ -582,12 +523,13 @@ template<class FVF> void Ensight_Translator::ensight_vrtx_data
 /*!
  * \brief Write out data to ensight cell data.
  */
-template<class FVF> void Ensight_Translator::ensight_cell_data
-(const std_string &ens_postfix,
- const rtt_traits::Viz_Traits<FVF> &ens_cell_data,
- const sf_int &index_cell,
- const sf_int &ptr_index_cell,
- const sf_string &part_names)
+template<class FVF> 
+void Ensight_Translator::ensight_cell_data(
+    const std_string                  &ens_postfix,
+    const rtt_traits::Viz_Traits<FVF> &ens_cell_data,
+    const sf_int                      &index_cell,
+    const sf_int                      &ptr_index_cell,
+    const sf_string                   &part_names)
 {
     using std::ofstream;
     using std::endl;

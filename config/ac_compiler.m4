@@ -533,15 +533,18 @@ AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+
+       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
-   fi
 
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-   ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+       ARLIBS=''
+       ARTESTLIBS=''
+   fi
 
    # COMPILATION FLAGS
 
@@ -596,7 +599,7 @@ AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
    CFLAGS="${CFLAGS} ${xlC_opt_flags}"
 
    # set template stuff
-   CXXFLAGS="${CXXFLAGS} -qnotempinc"
+   CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
    
    # allow long long types
    CXXFLAGS="${CXXFLAGS} -qlonglong"

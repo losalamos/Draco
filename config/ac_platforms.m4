@@ -387,8 +387,10 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ; then
           LIBS="${LIBS} -lfortran"
           AC_MSG_RESULT("-lfortran added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
        fi
-
+       
        #
        # end of gandolf/libfortran setup
        #
@@ -505,6 +507,8 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
           test -n "${vendor_pcg}"; then
           LIBS="${LIBS} -lfor"
           AC_MSG_RESULT("-lfor added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
        fi
 
        #
@@ -631,7 +635,9 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
           test -n "${vendor_pcg}"; then
           LIBS="${LIBS} -lfor"
-          AC_MSG_RESULT("-lfor added to LIBS")
+          AC_MSG_RESULT("-lfor added to LIBS") 
+       else
+	   AC_MSG_RESULT("not needed")
        fi
 
        #

@@ -5102,15 +5102,18 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+
+       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
-   fi
 
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-   ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+       ARLIBS=''
+       ARTESTLIBS=''
+   fi
 
    # COMPILATION FLAGS
 
@@ -5165,7 +5168,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    CFLAGS="${CFLAGS} ${xlC_opt_flags}"
 
    # set template stuff
-   CXXFLAGS="${CXXFLAGS} -qnotempinc"
+   CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
 
    # allow long long types
    CXXFLAGS="${CXXFLAGS} -qlonglong"
@@ -5281,15 +5284,18 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+
+       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
-   fi
 
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-   ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+       ARLIBS=''
+       ARTESTLIBS=''
+   fi
 
    # COMPILATION FLAGS
 
@@ -5344,7 +5350,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    CFLAGS="${CFLAGS} ${xlC_opt_flags}"
 
    # set template stuff
-   CXXFLAGS="${CXXFLAGS} -qnotempinc"
+   CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
 
    # allow long long types
    CXXFLAGS="${CXXFLAGS} -qlonglong"
@@ -5458,15 +5464,18 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+
+       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
-   fi
 
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-   ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+       ARLIBS=''
+       ARTESTLIBS=''
+   fi
 
    # COMPILATION FLAGS
 
@@ -5521,7 +5530,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    CFLAGS="${CFLAGS} ${xlC_opt_flags}"
 
    # set template stuff
-   CXXFLAGS="${CXXFLAGS} -qnotempinc"
+   CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
 
    # allow long long types
    CXXFLAGS="${CXXFLAGS} -qlonglong"
@@ -6247,6 +6256,9 @@ echo $ECHO_N "checking \"libfortran requirements\"... $ECHO_C" >&6
           LIBS="${LIBS} -lfortran"
           echo "$as_me:$LINENO: result: \"-lfortran added to LIBS\"" >&5
 echo "${ECHO_T}\"-lfortran added to LIBS\"" >&6
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        #
@@ -6432,6 +6444,9 @@ echo $ECHO_N "checking \"libfortran requirements\"... $ECHO_C" >&6
           LIBS="${LIBS} -lfor"
           echo "$as_me:$LINENO: result: \"-lfor added to LIBS\"" >&5
 echo "${ECHO_T}\"-lfor added to LIBS\"" >&6
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        #
@@ -6623,6 +6638,9 @@ echo $ECHO_N "checking \"libfortran requirements\"... $ECHO_C" >&6
           LIBS="${LIBS} -lfor"
           echo "$as_me:$LINENO: result: \"-lfor added to LIBS\"" >&5
 echo "${ECHO_T}\"-lfor added to LIBS\"" >&6
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        #

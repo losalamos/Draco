@@ -30,10 +30,8 @@ using std::setiosflags;
  * \param prefix std_string giving the name of the problem
  * \param gd_wpath directory where dumps are stored
  */
-void
-Ensight_Translator::
-createFilenames(const std_string &prefix,
-		const std_string &gd_wpath)
+void Ensight_Translator::createFilenames(const std_string &prefix,
+					 const std_string &gd_wpath)
 {
     // ensight directory name
     ens_prefix = gd_wpath + "/" + prefix + "_ensight";
@@ -51,9 +49,7 @@ createFilenames(const std_string &prefix,
  * \param graphics_continue If true, use existing ensight directory.
  * If false, create or wipe out the existing directory.
  */
-void
-Ensight_Translator::
-initialize(const bool graphics_continue)
+void Ensight_Translator::initialize(const bool graphics_continue)
 {
     using std::strerror;
 

@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __viz_Ensight_Translator_hh__
-#define __viz_Ensight_Translator_hh__
+#ifndef rtt_viz_Ensight_Translator_hh
+#define rtt_viz_Ensight_Translator_hh
 
 #include "traits/Viz_Traits.hh"
 #include "ds++/Assert.hh"
@@ -142,6 +142,9 @@ enum Ensight_Cell_Types
 // revision history:
 // -----------------
 // 0) original
+// 1) 05-APR-03 : removed constructors where the dump_times are arguments;
+//                these were confusing and they were causing trouble on the
+//                IBM platforms because of a bug in xlC
 // 
 //===========================================================================//
 
@@ -236,15 +239,7 @@ class Ensight_Translator
     Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
 		       const SSF &ens_vdata_names, 
 		       const SSF &ens_cdata_names, 
-		       const sf_double & = sf_double(),
-		       const bool static_geom_in = false);
-    
-    // Alternative constructor (parses dump_times)
-    template<class SSF>
-    Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
-		       const SSF &ens_vdata_names, 
-		       const SSF &ens_cdata_names, 
-		       const bool overwrite,
+		       const bool overwrite = false,
 		       const bool static_geom_in = false); 
 
     // Do an Ensight_Dump.
@@ -270,7 +265,7 @@ class Ensight_Translator
 
 #include "Ensight_Translator.t.hh"
 
-#endif                          // __viz_Ensight_Translator_hh__
+#endif                          // rtt_viz_Ensight_Translator_hh
 
 //---------------------------------------------------------------------------//
 //                              end of viz/Ensight_Translator.hh

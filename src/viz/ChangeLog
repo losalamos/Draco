@@ -1,3 +1,12 @@
+2003-05-06  Thomas M. Evans  <tme@lanl.gov>
+
+	* Ensight_Translator: got rid of constructors where the dump_times
+	are arguments; these were confusing and they were causing trouble
+	on the IBM platforms because of a bug in xlC.  Now there is one
+	simple constructor available that allows you to overwrite the
+	existing ensight directory.  The default is to append, not
+	overwrite. 
+
 2002-05-09  Thomas M. Evans  <tme@lanl.gov>
 
 	* viz: released version 1_3_0.  Updated Ensight_Translator to

@@ -139,10 +139,10 @@ class TET_Mesh
     typedef std::map< std::string, SetInt > MAP_String_SetInt;
 
     //! The TET_Mesh is inherently 3-dimensional and its faces have 3 vertices.
-    static const int THREE = 3;
+    static const int THREE;
 
     //! A TET_Mesh cell always has 4 faces and 4 vertices.
-    static const int FOUR = 4;
+    static const int FOUR;
 
     //___________________________________________//
     // Beginning of private data of class TET_Mesh.

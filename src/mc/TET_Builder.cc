@@ -27,6 +27,13 @@ using std::endl;
 using std::set;
 using std::make_pair;
 
+//---------------------------------------------------------------------------//
+// STATIC MEMBERS
+//---------------------------------------------------------------------------//
+
+const int TET_Builder::THREE = 3;
+const int TET_Builder::FOUR  = 4;
+
 //! Build a TET_Mesh, using TET_Builder's private data.
 TET_Builder::SP_Mesh TET_Builder::build_Mesh()
 {
