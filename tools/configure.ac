@@ -4,7 +4,7 @@
 ##---------------------------------------------------------------------------##
 
 AC_INIT
-AC_CONFIG_SRCDIR([launchtest])
+AC_CONFIG_SRCDIR([launchtest.in])
 AC_CONFIG_AUX_DIR(../config)
 AC_DRACO_ARGS
 

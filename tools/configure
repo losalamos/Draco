@@ -270,7 +270,7 @@ PACKAGE_VERSION=
 PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
-ac_unique_file="launchtest"
+ac_unique_file="launchtest.in"
 ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS latex_yes_no doxygen_output_top configure_command installdirs installfiles INSTALL INSTALL_DATA LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
@@ -1488,6 +1488,7 @@ installdirs='${libexecdir} ${bindir}'
 libexec_files="\${libexecdir}/launchtest"
 libexec_files="\${libexecdir}/test_filter.py ${libexec_files}"
 libexec_files="\${libexecdir}/apptest_modules.py ${libexec_files}"
+libexec_files="\${libexecdir}/mpijob ${libexec_files}"
 
 # draco information script
 bin_files='${bindir}/draco'
@@ -1516,7 +1517,7 @@ configure_command="$0 $*"
 
 
 
-                                        ac_config_files="$ac_config_files Makefile draco check_coverage check_package_coverage"
+                                                  ac_config_files="$ac_config_files Makefile launchtest draco check_coverage check_package_coverage"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -2068,6 +2069,7 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "launchtest" ) CONFIG_FILES="$CONFIG_FILES launchtest" ;;
   "draco" ) CONFIG_FILES="$CONFIG_FILES draco" ;;
   "check_coverage" ) CONFIG_FILES="$CONFIG_FILES check_coverage" ;;
   "check_package_coverage" ) CONFIG_FILES="$CONFIG_FILES check_package_coverage" ;;
