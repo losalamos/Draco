@@ -54,14 +54,15 @@ class Mesh_Reader
 
     // ACCESSORS
 
-    virtual std::vector<std::vector<double> > get_node_coord() const;
-    virtual std::string get_node_coord_units() const;
-    virtual std::vector<std::vector<int> > get_element_nodes() const;
-    virtual std::vector<Element_Definition::Element_Type> get_element_types() const;
-    virtual std::map<std::string, std::set<int> > get_node_sets() const;
-    virtual std::map<std::string, std::set<int> > get_element_sets() const;
-    virtual std::string get_title() const;
-    virtual bool invariant() const;
+    virtual std::vector<std::vector<double> > get_node_coords() const = 0;
+    virtual std::string get_node_coord_units() const = 0;
+    virtual std::vector<std::vector<int> > get_element_nodes() const = 0;
+    virtual std::vector<Element_Definition::Element_Type> get_element_types() 
+        const = 0;
+    virtual std::map<std::string, std::set<int> > get_node_sets() const = 0;
+    virtual std::map<std::string, std::set<int> > get_element_sets() const = 0;
+    virtual std::string get_title() const = 0;
+    virtual bool invariant() const = 0;
 
   private:
     
