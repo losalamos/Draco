@@ -37,16 +37,18 @@ namespace rtt_imc
  *
  * Source_Builder is an abstract base class used to create source builder
  * inheritance hierarchies.  In short, Source_Builder builds an IMC source on
- * processor.  The derived classes of Source_Builder are: \arg
- * rtt_imc::Rep_Source_Builder for full replication sources; \arg
+ * processor.  The derived classes of Source_Builder are: 
+ *
+ * \arg rtt_imc::Rep_Source_Builder for full replication sources; \arg
  * rtt_imc::DD_Source_Builder for full domain decomposition sources; \arg
- * rtt_imc::Serial_Source_Builder for serial sources.  Rep_Source_Builder
- * defaults to serial when run on one processor.  Serial_Source_Builder is
- * simply an optimized version of Rep_Source_Builder for 1 processor
- * (non-communication) compilations.  Thus, we have full replication, full
- * DD, DD/replication, and serial derived classes.  Functionality common to
- * all types of source builders exists in the base class as non-virtual
- * functions.
+ * rtt_imc::Serial_Source_Builder for serial sources.
+ *
+ * Rep_Source_Builder defaults to serial when run on one processor.
+ * Serial_Source_Builder is simply an optimized version of Rep_Source_Builder
+ * for 1 processor (non-communication) compilations.  Thus, we have full
+ * replication, full DD, DD/replication, and serial derived classes.
+ * Functionality common to all types of source builders exists in the base
+ * class as non-virtual functions.
  *
  * Source_Builder and Source_Builder hierarchies are templated on mesh and
  * particle type.  By default, the particle type is rtt_imc::Particle.
@@ -97,7 +99,7 @@ namespace rtt_imc
  * data.  The data could be global or local depending upon the topology.
  * Virtual functions are used to access source data that live in derived
  * classes.  Accordingly, this data is also global or local depending upon
- * the topology.
+ * the topology.  
  */
 /*!
  * \example imc/test/tstSource_Builder.cc
