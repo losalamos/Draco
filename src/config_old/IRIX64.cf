@@ -55,6 +55,10 @@ ifndef c4
 c4	:= no
 endif
 
+ifndef sprng
+sprng   := lcg
+endif
+
 #-----------------------------------------------------------------------------#
 # Kuck and Associates C++
 
@@ -82,7 +86,7 @@ cmplr	= k32
 endif
 
 ifeq ($(eta),yes)
-KCC	= /v/furnish/kcc3.3eta/KCC_BASE/bin/KCC -mips4 --backend -r10000 \
+KCC	= /home/furnish/kcc3.3eta/KCC_BASE/bin/KCC -mips4 --backend -r10000 \
 $(STRICT) -D_POSIX_SOURCE --one_per --backend -Wl,-woff,84	
 
 ifeq ($(bits),32)
@@ -137,6 +141,13 @@ comm	:= c4s
 SYS_FLAGS = -DC4_SHMEM
 SYS_LIBS = -lsma
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77_sgi_64
+endif
+
+ifeq ($(need_sprng), yes)
+SYS_FLAGS += -I/home/tme/lib/sprng/SRC
+ifeq ($(sprng),lcg)
+SYS_LIBS += -L/home/tme/lib/sprng/sgi32 -llcg
+endif
 endif
 
 ifeq ($(perfex),on)

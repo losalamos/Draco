@@ -24,7 +24,9 @@ spartan	:= yes
 c4	:= no
 
 # Default set of SPRNG library to Lagged Fibonaci Generator
+ifndef sprng
 sprng      := lfg
+endif
 
 # Tools which are independent of the compiler
 
