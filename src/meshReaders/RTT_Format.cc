@@ -136,7 +136,7 @@ void RTT_Format::readMesh(const string & RTT_File, const bool & renumber)
 	    spCellData->readCellData(meshfile);
 	    readEndKeyword(meshfile);
 	}
-	catch (dsxx::assertion as)
+	catch (rtt_dsxx::assertion as)
 	{
 	    cout << "Assertion thrown: " << as.what() << endl;
 	    Insist(false, as.what());
@@ -435,7 +435,7 @@ void RTT_Format::Dims::readNodes(ifstream & meshfile)
     meshfile >> dummyString;
     Insist(dummyString == "nnode_flags",
 	   "Invalid mesh file: Dimension block missing nnode_flags");
-    for (dsxx::Mat1<int>::iterator iter = nnode_flags.begin();
+    for (rtt_dsxx::Mat1<int>::iterator iter = nnode_flags.begin();
 	 iter < nnode_flags.end(); ++iter)
 	meshfile >> *iter;
     getline(meshfile, dummyString);
@@ -469,7 +469,7 @@ void RTT_Format::Dims::readSides(ifstream & meshfile)
     meshfile >> dummyString;
     Insist(dummyString == "side_types",
 	   "Invalid mesh file: Dimension block missing side_types");
-    for (dsxx::Mat1<int>::iterator iter = side_types.begin();
+    for (rtt_dsxx::Mat1<int>::iterator iter = side_types.begin();
 	 iter < side_types.end(); ++iter)
     {
 	meshfile >> *iter;
@@ -486,7 +486,7 @@ void RTT_Format::Dims::readSides(ifstream & meshfile)
     meshfile >> dummyString;
     Insist(dummyString == "nside_flags",
 	   "Invalid mesh file: Dimension block missing nside_flags");
-    for (dsxx::Mat1<int>::iterator iter = nside_flags.begin();
+    for (rtt_dsxx::Mat1<int>::iterator iter = nside_flags.begin();
 	 iter < nside_flags.end(); ++iter)
 	meshfile >> *iter;
     getline(meshfile, dummyString);
@@ -520,7 +520,7 @@ void RTT_Format::Dims::readCells(ifstream & meshfile)
     meshfile >> dummyString;
     Insist(dummyString == "cell_types",
 	   "Invalid mesh file: Dimension block missing cell_types");
-    for (dsxx::Mat1<int>::iterator iter = cell_types.begin();
+    for (rtt_dsxx::Mat1<int>::iterator iter = cell_types.begin();
 	 iter < cell_types.end(); ++iter)
     {
 	meshfile >> *iter;
@@ -537,7 +537,7 @@ void RTT_Format::Dims::readCells(ifstream & meshfile)
     meshfile >> dummyString;
     Insist(dummyString == "ncell_flags",
 	   "Invalid mesh file: Dimension block missing ncell_flags");
-    for (dsxx::Mat1<int>::iterator iter = ncell_flags.begin();
+    for (rtt_dsxx::Mat1<int>::iterator iter = ncell_flags.begin();
 	 iter < ncell_flags.end(); ++iter)
 	meshfile >> *iter;
     getline(meshfile, dummyString);

@@ -83,7 +83,7 @@ class RTT_Format
 	int cycle;
 	double time;
         int ncomments;
-	dsxx::Mat1<string> comments;
+	rtt_dsxx::Mat1<string> comments;
 
       public:
 	Header() {}
@@ -128,21 +128,21 @@ class RTT_Format
 
 	int nnodes;
 	int nnode_flag_types;
-	dsxx::Mat1<int> nnode_flags;
+	rtt_dsxx::Mat1<int> nnode_flags;
 	int nnode_data;
 
 	int nsides;
 	int nside_types;
-	dsxx::Mat1<int> side_types;
+	rtt_dsxx::Mat1<int> side_types;
 	int nside_flag_types;
-	dsxx::Mat1<int> nside_flags;
+	rtt_dsxx::Mat1<int> nside_flags;
 	int nside_data;
 
 	int ncells;
 	int ncell_types;
-	dsxx::Mat1<int> cell_types;
+	rtt_dsxx::Mat1<int> cell_types;
 	int ncell_flag_types;
-	dsxx::Mat1<int> ncell_flags;
+	rtt_dsxx::Mat1<int> ncell_flags;
 	int ncell_data;
 
         // flag to indicate node, side, and cell renumbering is performed.
@@ -217,8 +217,8 @@ class RTT_Format
     {
 	int nflags;
 	string name;
-	dsxx::Mat1<int> flag_nums;
-	dsxx::Mat1<string> flag_names;
+	rtt_dsxx::Mat1<int> flag_nums;
+	rtt_dsxx::Mat1<string> flag_names;
 
       public:
 	Flags(int nflags_, const string & name_)
@@ -246,7 +246,7 @@ class RTT_Format
     class NodeFlags
     {
 	const Dims & dims;
-	dsxx::Mat1<dsxx::SP<Flags> > flagTypes;
+	rtt_dsxx::Mat1<rtt_dsxx::SP<Flags> > flagTypes;
 
       public:
 	NodeFlags(const Dims & dims_)
@@ -305,7 +305,7 @@ class RTT_Format
     class SideFlags
     {
 	const Dims & dims;
-	dsxx::Mat1<dsxx::SP<Flags> > flagTypes;
+	rtt_dsxx::Mat1<rtt_dsxx::SP<Flags> > flagTypes;
 
       public:
 	SideFlags(const Dims & dims_)
@@ -404,7 +404,7 @@ class RTT_Format
     class CellFlags
     {
 	const Dims & dims;
-	dsxx::Mat1<dsxx::SP<Flags> > flagTypes;
+	rtt_dsxx::Mat1<rtt_dsxx::SP<Flags> > flagTypes;
 
       public:
 	CellFlags(const Dims & dims_)
@@ -521,8 +521,8 @@ class RTT_Format
     class NodeDataIDs
     {
 	const Dims & dims;
-	dsxx::Mat1<string> names;
-	dsxx::Mat1<string> units;
+	rtt_dsxx::Mat1<string> names;
+	rtt_dsxx::Mat1<string> units;
 
       public:
 	NodeDataIDs(const Dims & dims_)
@@ -560,8 +560,8 @@ class RTT_Format
     class SideDataIDs
     {
 	const Dims & dims;
-	dsxx::Mat1<string> names;
-	dsxx::Mat1<string> units;
+	rtt_dsxx::Mat1<string> names;
+	rtt_dsxx::Mat1<string> units;
 
       public:
 	SideDataIDs(const Dims & dims_)
@@ -599,8 +599,8 @@ class RTT_Format
     class CellDataIDs
     {
 	const Dims & dims;
-	dsxx::Mat1<string> names;
-	dsxx::Mat1<string> units;
+	rtt_dsxx::Mat1<string> names;
+	rtt_dsxx::Mat1<string> units;
 
       public:
 	CellDataIDs(const Dims & dims_)
@@ -643,8 +643,8 @@ class RTT_Format
 	const string name;
 	int nnodes;
 	int nsides;
-	dsxx::Mat1<int> side_types;
-	dsxx::Mat1<set<int> > sides;
+	rtt_dsxx::Mat1<int> side_types;
+	rtt_dsxx::Mat1<set<int> > sides;
         // Add the capability to maintain the sense of the outward normals.
         vector<vector<int> > ordered_sides;
 
@@ -673,7 +673,7 @@ class RTT_Format
     class CellDefs
     {
 	const Dims & dims;
-	dsxx::Mat1<dsxx::SP<CellDef> > defs;
+	rtt_dsxx::Mat1<rtt_dsxx::SP<CellDef> > defs;
 
       public:
 	CellDefs(const Dims & dims_)
@@ -711,9 +711,9 @@ class RTT_Format
     {
 	const NodeFlags & nodeFlags;
 	const Dims & dims;
-	dsxx::Mat2<double> coords;
-	dsxx::Mat1<int> parents;
-	dsxx::Mat2<int> flags;
+	rtt_dsxx::Mat2<double> coords;
+	rtt_dsxx::Mat1<int> parents;
+	rtt_dsxx::Mat2<int> flags;
         // This vector is a map from the input node numbers (vector index) to
         // the sorted node number (stored value)
         vector<int> sort_map;
@@ -771,9 +771,9 @@ class RTT_Format
 	const Dims & dims;
 	const CellDefs & cellDefs;
         const Nodes & ptrNodes;
-	dsxx::Mat1<int> sideType;
-	dsxx::Mat2<int> nodes;
-	dsxx::Mat2<int> flags;
+	rtt_dsxx::Mat1<int> sideType;
+	rtt_dsxx::Mat2<int> nodes;
+	rtt_dsxx::Mat2<int> flags;
 
       public:
 	Sides(const SideFlags & sideFlags_, const Dims & dims_,
@@ -822,9 +822,9 @@ class RTT_Format
 	const Dims & dims;
 	const CellDefs & cellDefs;
         const Nodes & ptrNodes;
-	dsxx::Mat1<int> cellType;
-	dsxx::Mat2<int> nodes;
-	dsxx::Mat2<int> flags;
+	rtt_dsxx::Mat1<int> cellType;
+	rtt_dsxx::Mat2<int> nodes;
+	rtt_dsxx::Mat2<int> flags;
 
       public:
 	Cells(const CellFlags & cellFlags_, const Dims & dims_,
@@ -863,7 +863,7 @@ class RTT_Format
     class NodeData
     {
 	const Dims & dims;
-	dsxx::Mat2<double> data;
+	rtt_dsxx::Mat2<double> data;
         const Nodes & ptrNodes;
 
       public:
@@ -893,7 +893,7 @@ class RTT_Format
     class SideData
     {
 	const Dims & dims;
-	dsxx::Mat2<double> data; 
+	rtt_dsxx::Mat2<double> data; 
         const Nodes & ptrNodes;
 
       public:
@@ -923,7 +923,7 @@ class RTT_Format
     class CellData
     {
 	const Dims & dims;
-	dsxx::Mat2<double> data; 
+	rtt_dsxx::Mat2<double> data; 
         const Nodes & ptrNodes;
 
       public:
