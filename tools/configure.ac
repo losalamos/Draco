@@ -3,7 +3,8 @@
 ## $Id$
 ##---------------------------------------------------------------------------##
 
-AC_INIT(launchtest)
+AC_INIT
+AC_CONFIG_SRCDIR([launchtest])
 AC_CONFIG_AUX_DIR(../config)
 AC_DRACO_ARGS
 
@@ -40,7 +41,8 @@ AC_SUBST(installfiles)
 AC_SUBST(INSTALL)
 AC_SUBST(INSTALL_DATA)
 
-AC_OUTPUT(Makefile draco check_coverage)
+AC_CONFIG_FILES([Makefile draco check_coverage])
+AC_OUTPUT
 
 ##---------------------------------------------------------------------------##
 ## end of configure.in

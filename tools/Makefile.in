@@ -41,9 +41,13 @@ else
   EXIT = exit
 endif
 
+##---------------------------------------------------------------------------##
+## RULES AND TARGETS
+##---------------------------------------------------------------------------##
+
 .PHONY : all install installdirs clean distclean mostlyclean maintainer-clean \
 	check uninstall forced-distclean forced-maintainer-clean \
-	dvi
+	dvi configure reconfigure
 
 all: install
 
@@ -72,20 +76,31 @@ ${includedir}/${package}/%: %
 ${includedir}/${package}/config.h: config.h
 	${INSTALL_DATA} $< $@
 
-# Makefile depends on all of the M4 files in the config directory
+##---------------------------------------------------------------------------##
+## Build system targets and rules
 
-configfiles := aclocal.m4 ac_local.m4 ac_conf.m4 ac_vendors.m4 ac_dracoarg.m4 \
- ac_dracoenv.m4
-configfiles := $(addprefix ${top_srcdir}/../config/, ${configfiles})
+## configuration files: Makefile depends on all of the M4 files in the
+## config directory and the pkg_config directory
+configfiles := $(wildcard ${top_srcdir}/${rel_config_dir}/*.m4) \
+	$(wildcard ${top_srcdir}/${rel_config_dir}/../pkg_config/*.m4)
 
-${top_srcdir}/configure: configure.in ${configfiles}
-	cd ${top_srcdir} && autoconf --localdir=../config
+configure:
+	@echo "Rebuilding ${top_srcdir}/aclocal.m4"
+	@cd ${top_srcdir} && aclocal -I ../config
+	@echo "Rebuilding ${top_srcdir}/configure"
+	@cd ${top_srcdir} && autoconf
+	@./config.status --recheck
+	@./config.status
 
-Makefile: Makefile.in config.status
-	./config.status
+reconfigure: 
+	@./config.status --recheck
+	@./config.status
 
-config.status: configure
-	./config.status --recheck
+##---------------------------------------------------------------------------##
+## Clean rules
+
+clean:
+	-rm -f ${installfiles}
 
 distclean: forced-distclean
 forced-distclean:
