@@ -451,8 +451,6 @@ int main(int argc, char *argv[])
     }
 
     {
-	C4::HTSyncSpinLock slock;
-
 	// status of test
 	cout << endl;
 	cout <<     "*********************************************" << endl;
@@ -464,8 +462,6 @@ int main(int argc, char *argv[])
 	cout <<     "*********************************************" << endl;
 	cout << endl;
     }
-    
-    C4::gsync();
 
     cout << "Done testing tstOSMesh on " << C4::node() << endl;
     

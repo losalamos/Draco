@@ -968,13 +968,6 @@ int main(int argc, char *argv[])
     clock_t t_1 = clock();
 #endif
 
-    // this is a serial test
-    if (C4::node())
-    {
-	C4::Finalize();
-	return 0;
-    }
-
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
@@ -988,26 +981,30 @@ int main(int argc, char *argv[])
 
     try
     {
-	// >>> UNIT TESTS
+	// this is a serial test, only run on one processor
+	if (C4::nodes() == 1)
+	{
+	    // >>> UNIT TESTS
 
-	ifstream fileModel("TET_MODEL_1");
-	ostringstream theModel;
-	char c_model;
-	while (fileModel.get(c_model))
-	    theModel.put(c_model);
-	fileModel.close();
+	    ifstream fileModel("TET_MODEL_1");
+	    ostringstream theModel;
+	    char c_model;
+	    while (fileModel.get(c_model))
+		theModel.put(c_model);
+	    fileModel.close();
 
-	// ThreeVector tests
-	Test_ThreeVector();
+	    // ThreeVector tests
+	    Test_ThreeVector();
 
-	// TET_Mesh tests
-	Test_TET();
+	    // TET_Mesh tests
+	    Test_TET();
 
-	if (theOutput.str() != theModel.str()) ITFAILS;
+	    if (theOutput.str() != theModel.str()) ITFAILS;
 
-	// status of test
-	if (theOutput.str() != theModel.str())
-	    cout << theOutput.str();
+	    // status of test
+	    if (theOutput.str() != theModel.str())
+		cout << theOutput.str();
+	}
     }
     catch (rtt_dsxx::assertion &ass)
     {
@@ -1028,8 +1025,6 @@ int main(int argc, char *argv[])
     }
 
     {
-	C4::HTSyncSpinLock slock;
-
 	// status of test
 	cout << endl;
 	cout <<     "*********************************************" << endl;
@@ -1041,8 +1036,6 @@ int main(int argc, char *argv[])
 	cout <<     "*********************************************" << endl;
 	cout << endl;
     }
-    
-    C4::gsync();
 
     cout << "Done testing tstTET_Mesh on " << C4::node() << endl;
 

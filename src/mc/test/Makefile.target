@@ -14,7 +14,7 @@ testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 
 thistestdep := libmc_test${libsuffix}
 thistestlib := -L. -lmc_test
-thistestlib_dep := mc_test.o DD_Mesh.o MC_Test.o
+thistestlib_dep := mc_test.o DD_Mesh.o MC_Test.o PT_Instantiations_pt.o
 
 ${test_alltarget}: ${thistestdep} ${testdeps}
 

@@ -15,6 +15,7 @@
 #include "../OS_Mesh.hh"
 #include "../Topology.hh"
 #include "../RZWedge_Mesh.hh"
+#include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <vector>
 
@@ -82,6 +83,41 @@ rtt_dsxx::SP<rtt_mc::RZWedge_Mesh> make_RZWedge_Mesh_AMR(double phi);
 
 typedef std::vector<double>    sf_double;
 typedef std::vector<sf_double> vf_double;
+
+//===========================================================================//
+// PARTICLE CLASS FOR TESTING PARTICLE BUFFER
+//===========================================================================//
+
+int get_particle_size(rtt_rng::Rnd_Control);
+
+class Dummy_Particle
+{
+  private:
+    // Particle data.
+    double                       w;
+    int                          cell;
+
+    rtt_dsxx::SP<rtt_rng::Sprng> random;
+
+  public:
+    // Constructor.
+    Dummy_Particle(int, double, rtt_rng::Sprng);
+
+    // Unpacking constructor.
+    Dummy_Particle(const std::vector<char> &);
+
+    // Packing function.
+    std::vector<char> pack() const;
+
+    // >>> ACCESSORS
+
+    double                get_wt()   const { return w; }
+    int                   get_cell() const { return cell; }
+    const rtt_rng::Sprng& get_rn()   const { return *random; }
+
+    // >>> TRANSPORT
+    void transport(int = 0, double = 0.0, int = 0);
+};
 
 } // end namespace rtt_mc_test
 

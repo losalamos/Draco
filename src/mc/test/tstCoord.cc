@@ -10,7 +10,6 @@
 //---------------------------------------------------------------------------//
 
 #include "mc_test.hh"
-#include "MC_Test.hh"
 #include "../Coord_sys.hh"
 #include "../XYCoord_sys.hh"
 #include "../XYZCoord_sys.hh"
@@ -246,8 +245,6 @@ int main(int argc, char *argv[])
     }
 
     {
-	C4::HTSyncSpinLock slock;
-
 	// status of test
 	cout << endl;
 	cout <<     "*********************************************" << endl;
@@ -259,8 +256,6 @@ int main(int argc, char *argv[])
 	cout <<     "*********************************************" << endl;
 	cout << endl;
     }
-    
-    C4::gsync();
 
     cout << "Done testing tstCoord on " << C4::node() << endl;
     

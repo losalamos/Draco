@@ -10,13 +10,15 @@
 //---------------------------------------------------------------------------//
 
 #include "mc_test.hh"
-#include "MC_Test.hh"
 #include "../Sampler.hh"
 #include "../Release.hh"
+#include "../Constants.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
+#include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 #include <iostream>
 #include <vector>
@@ -27,7 +29,7 @@ using namespace std;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
-using rtt_mc::global::soft_equiv;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -413,8 +415,6 @@ int main(int argc, char *argv[])
     }
 
     {
-	C4::HTSyncSpinLock slock;
-
 	// status of test
 	cout << endl;
 	cout <<     "*********************************************" << endl;
@@ -426,8 +426,6 @@ int main(int argc, char *argv[])
 	cout <<     "*********************************************" << endl;
 	cout << endl;
     }
-    
-    C4::gsync();
 
     cout << "Done testing tstSampler on " << C4::node() << endl;
     

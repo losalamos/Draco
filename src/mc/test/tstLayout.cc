@@ -9,8 +9,6 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "MC_Test.hh"
-#include "MC_Test.hh"
 #include "mc_test.hh"
 #include "../AMR_Layout.hh"
 #include "../Layout.hh"

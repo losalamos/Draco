@@ -10,7 +10,6 @@
 //---------------------------------------------------------------------------//
 
 #include "mc_test.hh"
-#include "MC_Test.hh"
 #include "DD_Mesh.hh"
 #include "../Release.hh"
 #include "../Comm_Patterns.hh"

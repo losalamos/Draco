@@ -15,6 +15,7 @@
 #include "../XYZCoord_sys.hh"
 #include "../Constants.hh"
 #include "c4/global.hh"
+#include "ds++/Packing_Utils.hh"
 #include <iostream>
 #include <string>
 #include <cmath>
@@ -460,6 +461,91 @@ SP<RZWedge_Mesh> make_RZWedge_Mesh_AMR(double phi)
     Check (mesh->full_Mesh());
 
     return mesh;
+}
+
+//===========================================================================//
+// PARTICLE CLASS FOR TESTING PARTICLE BUFFER
+//===========================================================================//
+
+int get_particle_size(rtt_rng::Rnd_Control con)
+{
+    // make and pack a dummy particle to determine the size
+    rtt_rng::Sprng s = con.get_rn(0);
+
+    Dummy_Particle dp(0, 0.0, s);
+    std::vector<char> p = dp.pack();
+
+    return p.size();
+}
+
+// Constructor.
+
+Dummy_Particle::Dummy_Particle(int c_in, double w_in, rtt_rng::Sprng ran)
+    : w(w_in),
+      cell(c_in),
+      random(new rtt_rng::Sprng(ran))
+{
+    Ensure (random);
+}
+
+//---------------------------------------------------------------------------//
+// Unpacking constructor.
+
+Dummy_Particle::Dummy_Particle(const std::vector<char> &packed)
+{
+    rtt_dsxx::Unpacker u;
+    u.set_buffer(packed.size(), &packed[0]);
+
+    // unpack stuff
+    u >> w >> cell;
+    
+    int r_size;
+    u >> r_size;
+    vector<char> rpck(r_size);
+
+    for (int i = 0; i < r_size; i++)
+	u >> rpck[i];
+
+    random = new rtt_rng::Sprng(rpck);
+    Ensure (u.get_ptr() == &packed[0] + packed.size());
+}
+
+//---------------------------------------------------------------------------//
+// Pack it.
+
+std::vector<char> Dummy_Particle::pack() const 
+{
+    using std::vector;
+
+    // pack the random number state
+    vector<char> rpck = random->pack();
+
+    // size
+    int size = 2 * sizeof(int) + 1 * sizeof(double) + rpck.size();
+
+    vector<char> packed(size);
+    rtt_dsxx::Packer p;
+    p.set_buffer(size, &packed[0]);
+
+    p << w << cell << static_cast<int>(rpck.size());
+    for (int i = 0; i < rpck.size(); i++)
+	p << rpck[i];
+
+    Ensure (p.get_ptr() == &packed[0] + size);
+    return packed;
+}
+
+//---------------------------------------------------------------------------//
+// Faux transport
+
+void Dummy_Particle::transport(int cell_increment, double wt_increment, 
+			       int num_ran_increment)
+{
+    w    += wt_increment;
+    cell += cell_increment;
+
+    for (int i = 0; i < num_ran_increment; i++)
+	random->ran();
 }
 
 } // end namespace rtt_mc_test
