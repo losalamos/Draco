@@ -1,1 +1,9 @@
 include ../Makefile.POOMA
+
+../Makefile.POOMA: ${top_srcdir}/Makefile.POOMA.in
+	(cd ..; CONFIG_FILES=Makefile.POOMA:Makefile.POOMA.in \
+		CONFIG_HEADERS= ./config.status)
+
+# Make sure the input is up to date.
+
+check: test.in

@@ -12,6 +12,10 @@
 
 // include files
 
+// Configuration includes
+
+#include <POOMA_MT/config.h>
+
 // POOMA headers
 #include "Index/Index.h"
 #include "Index/NDIndex.h"
@@ -1296,7 +1300,7 @@ class PoomaMesh_XYZ
                 if (face_m==6) nextCell();
                 if (bfi_m != bfend_m) {
                     bfi_m.GetCurrentLocation(loc);
-                    OK = bsf_m->checkIndices(loc[0], loc[1], loc[2], face_m);
+                    OK = bsf.checkIndices(loc[0], loc[1], loc[2], face_m);
                 }
                 else {
                     // at end, so just mark it OK

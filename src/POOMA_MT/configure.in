@@ -6,34 +6,44 @@ dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for POOMA_MT
 dnl-------------------------------------------------------------------------dnl
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
 
-AC_INIT()
+AC_INIT(PoomaMesh_XYZ.hh)
 AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(POOMA_MT/config.h:config.h.in)
 package="POOMA_MT"
 
-dnl VENDOR SETUPS
-AC_MPI_SETUP(pkg)
-dnl AC_SHMEM_SETUP(pkg)
-dnl AC_SPRNG_SETUP(pkg)
-dnl AC_PCGLIB_SETUP(pkg)
-
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-dnl AC_NEEDS_LIBS(ds++)
 
-dnl DRACO SETUP
+AC_MPI_SETUP(pkg)
+AC_SHMEM_SETUP(pkg)
+
+AC_NEEDS_LIBS(nml c4 ds++)
+AC_NEEDS_LIBS_TEST(meshTest)
+AC_RUNTESTS(tcfav tcctf tfcdtf tnctf tvctf txyz tbstf tvec, 1 3)
+
+dnl turn off strict checking in this package
+enable_strict_ansi=no
+
 AC_DRACO_ENV
 
 AC_ARG_WITH(pooma,
       [  --with-pooma=[POOMA_ARCH] \${POOMA_ARCH} by default])
 
-if test "${with_pooma:=no}" = yes ; then 
+if test "${with_pooma:=no}" = yes ; then
+   if test -z "${POOMA_ARCH}" ; then
+      AC_MSG_ERROR([Environment variable POOMA_ARCH must be set if]
+		 [ --with-pooma does not specifiy architecture.])
+   fi
    with_pooma="$POOMA_ARCH"
 elif test "${with_pooma}" = no ; then
-   echo "Must set --with-pooma and --with-pooma-root"
-   exit 1
+   AC_MSG_ERROR([Must set --with-pooma and --with-pooma-root])
 fi
+
+AC_MSG_CHECKING(for pooma)
+AC_MSG_RESULT(architecture: ${with_pooma})
 
 POOMA_ARCH="${with_pooma}"
 
@@ -41,16 +51,19 @@ AC_WITH_DIR(pooma-root, POOMA_ROOT, \${POOMA_ROOT},
             [tell where POOMA is])
 
 if test "${with_pooma_root:=no}" = no ; then
-   echo "Must set --with-pooma and --with-pooma-root"
-   exit 1
+   AC_MSG_ERROR([Must set --with-pooma and --with-pooma-root])
 fi
+
+AC_MSG_CHECKING(for pooma root directory)
+AC_MSG_RESULT(${with_pooma_root})
 
 AC_SUBST(POOMA_ROOT)dnl
 AC_SUBST(POOMA_ARCH)dnl
 
 AC_OUTPUT(Makefile.POOMA \
           Makefile:../../config/Makefile.package.in \
-          test/Makefile:../../config/Makefile.test.in)
+          test/Makefile:../../config/Makefile.test.in\
+          test/test.in:test/test.in.in)
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/POOMA_MT configure.in

@@ -34,9 +34,12 @@ POOMA_MT/PoomaDefines.h: ${POOMA_ROOT}/lib/${POOMA_ARCH}/PoomaVersions.h
 	rm ./tmp0
 
 clean: forced-MakfilePoomaClean
+mostlyclean: clean forced-MakfilePoomaMostlyClean
 
 forced-MakfilePoomaClean:
-	-rm Makefile.POOMA
 	-rm POOMA_MT/PoomaDefines.h
 
-.PHONY: forced-MakfilePoomaClean
+forced-MakfilePoomaMostlyClean:
+	-rm Makefile.POOMA
+
+.PHONY: forced-MakfilePoomaClean forced-MakfilePoomaMostlyClean
