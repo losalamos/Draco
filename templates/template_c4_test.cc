@@ -39,7 +39,8 @@ int main(int argc, char *argv[])
 	if (string(argv[arg]) == "--version")
 	{
 	    if (rtt_c4::node() == 0)
-		cout << argv[0] << ": version " << rtt_<pkg>::release() 
+		cout << argv[0] << ": version " 
+		     << rtt_<pkg>::release() 
 		     << endl;
 	    rtt_c4::finalize();
 	    return 0;

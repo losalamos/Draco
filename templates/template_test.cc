@@ -50,13 +50,15 @@ int main(int argc, char *argv[])
 
     // status of test
     std::cout << std::endl;
-    std::cout <<     "*********************************************" << std::endl;
+    std::cout <<     "*********************************************" 
+	      << std::endl;
     if (rtt_<spkg>::passed) 
     {
         std::cout << "**** <class> Test: PASSED" 
 		  << std::endl;
     }
-    std::cout <<     "*********************************************" << std::endl;
+    std::cout <<     "*********************************************" 
+	      << std::endl;
     std::cout << std::endl;
     
     std::cout << "Done testing <class>." << std::endl;
