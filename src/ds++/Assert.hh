@@ -189,36 +189,48 @@ void insist( std::string const & cond,
 /*!
  * \page Draco_DBC Using the Draco Design-by-Contract Macros
  *
+ * \section ddbc Using the Draco Design-by-Contract Macros
+ *
  * The assertion macros are intended to be used for validating preconditions
  * which must be true in order for following code to be correct, etc.  For
- * example, Assert( x > 0. ); y = sqrt(x); If the assertion fails, the code
- * should just bomb.  Philosophically, it should be used to feret out bugs
- * in preceding code, making sure that prior results are within reasonable
- * bounds before proceeding to use those results in further computation,
- * etc.
+ * example, 
+ * 
+ * \code 
+ * Assert( x > 0. ); 
+ * y = sqrt(x); 
+ * \endcode
+ * 
+ * If the assertion fails, the code should just bomb.  Philosophically, it
+ * should be used to feret out bugs in preceding code, making sure that prior
+ * results are within reasonable bounds before proceeding to use those
+ * results in further computation, etc.
  * 
  * These macros are provided to support the Design By Contract formalism.
  * The activation of each macro is keyed off a bit in the DBC macro which can 
  * be specified on the command line:
- *    Bit     DBC macro affected
- *     0       Require
- *     1       Check
- *     2       Ensure
- * So for instance, -DDBC=7 turns them all on, -DDBC=0 turns them all
- * off, and -DDBC=1 turns on Require but turns off Check and Ensure.  The
- * default is to have them all enabled.
+\verbatim
+     Bit     DBC macro affected
+     ---     ------------------
+      0      Require
+      1      Check
+      2      Ensure
+\endverbatim
+ * 
+ * So for instance, \c -DDBC=7 turns them all on, \c -DDBC=0 turns them all
+ * off, and \c -DDBC=1 turns on \c Require but turns off \c Check and \c
+ * Ensure.  The default is to have them all enabled.
  *
- * The Insist macro is akin to the Assert macro, but it provides the
+ * The \c Insist macro is akin to the \c Assert macro, but it provides the
  * opportunity to specify an instructive message.  The idea here is that you
  * should use Insist for checking things which are more or less under user
  * control.  If the user makes a poor choice, we "insist" that it be
  * corrected, providing a corrective hint.
  * 
  * \note We provide a way to eliminate assertions, but not insistings.  The
- * idea is that Assert is used to perform sanity checks during program
+ * idea is that \c Assert is used to perform sanity checks during program
  * development, which you might want to eliminate during production runs for
  * performance sake.  Insist is used for things which really really must be
- * true, such as "the file must've been opened", etc.  So, use Assert for
+ * true, such as "the file must've been opened", etc.  So, use \c Assert for
  * things which you want taken out of production codes (like, the check might
  * inhibit inlining or something like that), but use Insist for those things
  * you want checked even in a production code.
