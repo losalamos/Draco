@@ -493,7 +493,6 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
 						 sf_double slope, 
 						 double center_pt ) const
 {
-    using global::soft_equiv;
     using global::max;
 
     Require (cell > 0 && cell <= num_cells());
@@ -515,12 +514,12 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
     // set low_w and high_w to zero if it is less than zero
     if (low_w < 0)
     {
-	Check (soft_equiv(low_w, 0.0));
+	Check (low_w > -1.e-12);
 	low_w = 0.0;
     }
     if (high_w < 0)
     {
-	Check (soft_equiv(high_w, 0.0));
+	Check (high_w > -1.e-12);
 	high_w = 0.0;
     }
 
@@ -558,12 +557,12 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
     // set low_w and high_w to zero if it is less than zero
     if (low_w < 0)
     {
-	Check (soft_equiv(low_w, 0.0));
+	Check (low_w > -1.e-12);
 	low_w = 0.0;
     }
     if (high_w < 0)
     {
-	Check (soft_equiv(high_w, 0.0));
+	Check (high_w > -1.e-12);
 	high_w = 0.0;
     }
 
