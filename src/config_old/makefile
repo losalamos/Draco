@@ -83,11 +83,16 @@ MESH_LIB	= -L$(SRC_TOP)/mesh     -lmesh_$(env)
 3T_LIB		= -L$(SRC_TOP)/3T       -l3T_$(env)
 TIMESTEP_LIB 	= -L$(SRC_TOP)/timestep -ltimestep_$(env)
 UNITS_LIB	= -L$(SRC_TOP)/units    -lunits_$(env)
+RADPHYS_LIB	= -L$(SRC_TOP)/radphys  -lradphys_$(env)
 MATPROPS_LIB	= -L$(SRC_TOP)/matprops -lmatprops_$(env)
 SN_LIB		= -L$(SRC_TOP)/sn       -lsn_$(env)
 IMC_LIB         = -L$(SRC_TOP)/imc      -limc_$(env)
 PYCXX_LIB	= -L$(SRC_TOP)/pycxx    -lpycxx_$(env)
 RNG_LIB         = -L$(SRC_TOP)/rng      -lrng_$(env)
+
+ifeq ($(need_radphys),yes)
+need_units	:= yes
+endif
 
 ifeq ($(need_util),yes)
 need_spdf	:= yes
@@ -210,7 +215,9 @@ C++ = $(CXX)
 C++FLAGS = $(CXXFLAGS)
 
 #-----------------------------------------------------------------------------#
-# Now construct the macro used for linking programs.
+# Now construct the macro used for linking programs.  Note that it is
+# imperative that this be constructed in the proper order.  If x has a 
+# dependency on y, then x must occur before y in the link line!
 
 LINK_LIBS	:=
 ifdef SYS_LINK_FLAGS
@@ -230,6 +237,9 @@ LINK_LIBS	+= $(MATPROPS_LIB)
 endif
 ifeq ($(need_3T),yes)
 LINK_LIBS	+= $(3T_LIB)
+endif
+ifeq ($(need_radphys),yes)
+LINK_LIBS	+= $(RADPHYS_LIB)
 endif
 ifeq ($(need_units),yes)
 LINK_LIBS	+= $(UNITS_LIB)
@@ -307,6 +317,7 @@ dep_liblinalg	= $(SRC_TOP)/linalg/liblinalg_$(env).$(lib_suffix)
 dep_lib3T	= $(SRC_TOP)/3T/lib3T_$(env).$(lib_suffix)
 dep_libtimestep	= $(SRC_TOP)/timestep/libtimestep_$(env).$(lib_suffix)
 dep_libunits	= $(SRC_TOP)/units/libunits_$(env).$(lib_suffix)
+dep_libradphys	= $(SRC_TOP)/radphys/libradphys_$(env).$(lib_suffix)
 dep_libmatprops	= $(SRC_TOP)/matprops/libmatprops_$(env).$(lib_suffix)
 dep_libimc      = $(SRC_TOP)/imc/libimc_$(env).$(lib_suffix)
 dep_librng      = $(SRC_TOP)/rng/librng_$(env).$(lib_suffix)
