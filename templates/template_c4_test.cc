@@ -10,15 +10,15 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "<spkg>.hh"
-#include "../Release.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
-#include "ds++/Assert.hh"
-
 #include <iostream>
 #include <vector>
 #include <cmath>
+
+#include "ds++/Assert.hh"
+#include "c4/global.hh"
+#include "c4/SpinLock.hh"
+#include "../Release.hh"
+#include "<spkg>.hh"
 
 using namespace std;
 
