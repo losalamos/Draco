@@ -44,10 +44,21 @@ CDI::CDI( SP<Opacity> _spOpacity ) :
     // Return the interpolated Rosseland Gray Opacity for the specified 
     // temperature and density.
     //----------------------------------------------------------------------
-    double CDI::getGrayOpacity( const double temp, const double density )
+    double CDI::getGrayOpacity( const double temp, 
+				const double density )
 	{
 	    double grayOpacity = spOpacity->getGray( temp, density );
 	    return grayOpacity;
+	}
+
+    // Return the interpolated Rosseland Gray Opacity for the specified 
+    // temperature and density.
+    //----------------------------------------------------------------------
+    vector<double> CDI::getMGOpacity( const double temp, 
+				      const double density )
+	{
+	    vector<double> MGOpacity = spOpacity->getMG( temp, density );
+	    return MGOpacity;
 	}
 
 } // end namespace rtt_cdi

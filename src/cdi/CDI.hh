@@ -68,9 +68,16 @@ class CDI
 
     // ACCESSORS
 
-    double getGrayOpacity( const double temp, const double density );
+    double getGrayOpacity( const double temp, 
+			   const double density );
 
-    string getOpacityDataFilename() { return spOpacity->getDataFilename(); };
+    vector<double> getMGOpacity( const double temp,
+				 const double density );
+
+    string getOpacityDataFilename() 
+    { 
+	return spOpacity->getDataFilename(); 
+    };
 
     vector<int> getMatIDs();
 

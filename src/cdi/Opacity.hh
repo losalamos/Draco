@@ -52,13 +52,13 @@ class Opacity
     Opacity() 
     {
 	// empty
-	cout << "In Opacity::Opacity() constructor." << endl;
+	//cout << "In Opacity::Opacity() constructor." << endl;
     }
     //defaulted Opacity(const CDI &rhs);
     virtual ~Opacity()
     {
 	// empty
-	cout << "Destroying Opacity Object." << endl << endl;
+	//cout << "Destroying Opacity Object." << endl << endl;
     }
 
     // MANIPULATORS
@@ -71,7 +71,11 @@ class Opacity
 
     virtual vector<int> getMatIDs() = 0;
 
-    virtual double getGray( const double temp, const double density ) = 0;       
+    virtual double getGray( const double temp, 
+			    const double density ) = 0;       
+
+    virtual vector<double> getMG( const double temp, 
+				  const double density ) = 0;       
 
     //  protected:     
 
