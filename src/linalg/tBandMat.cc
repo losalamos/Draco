@@ -13,6 +13,21 @@
 #include "c4/SpinLock.hh"
 using namespace C4;
 
+#include <iostream>
+using namespace std;
+
+//---------------------------------------------------------------------------//
+// Indicate the success or failure of a test.
+//---------------------------------------------------------------------------//
+
+void report( const char *test, bool sf )
+{
+    if (sf)
+	cout << test << ": passed\n";
+    else
+	cout << test << ": failed\n";
+}
+
 struct layout
 {
     int nro, nrp, nrt;
@@ -64,6 +79,46 @@ void t1()
     setup_layout( l, 8 );
 
     Banded_Matrix<int,3> m( l, doff );
+
+// Build up a 3-diagonal identity matrix.  And you wonder why we need 3
+// diagonals to test the identity multiplyer :-)...
+
+    for( int i=0; i < l.nrp; i++ ) {
+	m(0,i) = 0;
+	m(1,i) = 1;
+	m(2,i) = 0;
+    }
+
+    Mat1<int> x(l.nrp), b(l.nrp);
+
+// Initialize x;
+    for( int i=0; i < l.nrp; i++ ) {
+	x(i) = l.nro + i;
+	b(i) = 99;
+    }
+
+    m.multiply( x, b );
+
+    cout << flush; gsync();
+
+// Compare b with known correct answer.
+
+    {
+	HTSyncSpinLock h;
+
+	for( int i=0; i < l.nrp; i++ )
+	    cout << "nro+i=" << l.nro+i
+		 << "  x(i)=" << x(i)
+		 << "  b(i)=" << b(i) << endl;
+    }
+
+    int sf = 1;
+    for( int i=0; i < l.nrp; i++ )
+	if (x(i) != b(i)) sf = 0;
+    gsum(sf);
+
+    if (node() == 0)
+	report( "t1", sf == nodes() );
 }
 
 int main( int argc, char *argv[] )
@@ -73,7 +128,13 @@ int main( int argc, char *argv[] )
     if (node() == 0)
 	cout << "Testing the Banded_Matrix clas.\n";
 
-    t1();
+    try {
+	t1();
+    }
+    catch( assertion& a )
+    {
+	cout << "Node " << node() << " caught assertion: " << a.what() << endl;
+    }
 
     if (node() == 0)
 	cout << "Testing complete.\n";
