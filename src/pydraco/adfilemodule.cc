@@ -23,6 +23,8 @@ static PyObject *ErrorObject;
 
 #include "util/ADFile.hh"
 
+using namespace dsxx;
+
 class pyadfile {
     PyObject_HEAD
     ADFile *f;
