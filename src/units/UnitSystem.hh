@@ -185,9 +185,9 @@ class UnitSystem
     //! Return the conversion factor for force
     double f() const { return this->M() * this->L()/std::pow(this->t(),2); }
     //! Return the conversion factor for energy
-    double e() const { return this->M() * std::pow(this->L(),2)/pow(this->t(),2); }
+    double e() const { return this->M() * std::pow(this->L(),2)/std::pow(this->t(),2); }
     //! Return the conversion factor for power
-    double p() const { return this->M() * std::pow(this->L(),2)/pow(this->t(),3); }
+    double p() const { return this->M() * std::pow(this->L(),2)/std::pow(this->t(),3); }
 
     // CLASS IMPLEMENTATION
     

@@ -52,14 +52,14 @@ PhysicalConstants::PhysicalConstants( UnitSystem const & u )
       d_electronCharge  ( electronChargeSI ),
       d_cLight          ( cLightSI * u.v() ),
       d_stefanBoltzmann ( 
-	  stefanBoltzmannSI * u.p() / pow(u.L(),2) / pow(u.T(),4) ),
+	  stefanBoltzmannSI * u.p() / std::pow(u.L(),2) / std::pow(u.T(),4) ),
       d_gravitationalConstant( 
-	  gravitationalConstantSI * u.f() * pow(u.L(),2) / pow(u.M(),2) ),
+	  gravitationalConstantSI * u.f() * std::pow(u.L(),2) / std::pow(u.M(),2) ),
       d_accelerationFromGravity( accelerationFromGravitySI * u.a() ),
       d_faradayConstant( AVOGADRO * d_electronCharge ),
       d_permeabilityOfVacuum( permeabilityOfVacuumSI / u.L() ),
       d_permittivityOfFreeSpace( 
-	  1.0 / d_permeabilityOfVacuum / pow(d_cLight,2) ),
+	  1.0 / d_permeabilityOfVacuum / std::pow(d_cLight,2) ),
       d_electronMass    ( electronMassSI * u.M() ),
       d_protonMass      ( protonMassSI   * u.M() )
 {
