@@ -1,4 +1,4 @@
-###############################################################################
+s###############################################################################
 # draco/config Makefile.package.in
 # Thomas M. Evans
 # Wed Feb  3 16:36:55 1999
@@ -368,22 +368,23 @@ maintainer-clean distclean mostlyclean clean:
 	fi
 
 clean: forced-clean
-forced-clean:
+forced-clean: uninstall
+	-rm -rf ${prefix}/include/${package}
 	-rm -f bin/${package} ${objs} lib${LIB_PREFIX}${package}${libsuffix}
 	-rm -f ${dependfiles}
 	-rm -f lex.yy.c y.output y.tab.c y.tab.h
 	-rm -f .tmp?
-	-rm -r ${dirstoclean}
+	-rm -rf ${dirstoclean}
 	-rmdir bin
 
 mostlyclean: clean forced-mostlyclean
 forced-mostlyclean:
-	-rm *.o *.d
+	-rm -f *.o *.d
 
 distclean: mostlyclean forced-distclean
 forced-distclean:
-	-rm config.status config.cache config.log
-	-rm ${package}/*.h ${package}/*.hh ${package}/stamp-h Makefile
+	-rm -f config.status config.cache config.log
+	-rm -f ${package}/*.h ${package}/*.hh ${package}/stamp-h Makefile
 	-rm -rf bin
 
 # maintainer-clean does not delete "configure"

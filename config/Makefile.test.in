@@ -331,18 +331,18 @@ include ${dependfiles}
 endif
 
 clean:
-	-rm ${test_alltarget} ${objs} ${dependfiles}
+	-rm -f ${test_alltarget} ${objs} ${dependfiles}
 	-rm -f lex.yy.c y.output y.tab.c y.tab.h
 	-rm -f .tmp?
 	-rm -f ${test_output_files}
-	-rm -r ${dirstoclean}
+	-rm -rf ${dirstoclean}
 
 distclean: mostlyclean
-	-rm config.status config.cache config.log config.h stamp-h Makefile
+	-rm -f config.status config.cache config.log config.h stamp-h Makefile
 	-rm -f site.exp
 
 mostlyclean: clean
-	-rm *.o *.d
+	-rm -f *.o *.d
 
 # maintainer-clean does not delete "configure"
 
