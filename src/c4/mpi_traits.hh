@@ -45,6 +45,11 @@ template<> class mpi_traits<double> {
     static MPI_Datatype element_type() { return MPI_DOUBLE; }
 };
 
+template<> class mpi_traits<long> {
+  public:
+    static MPI_Datatype element_type() { return MPI_LONG; }
+};
+
 C4_NAMESPACE_END
 
 #endif                          // __c4_mpi_traits_hh__
