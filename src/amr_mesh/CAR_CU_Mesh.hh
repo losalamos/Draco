@@ -90,7 +90,7 @@ class CAR_CU_Mesh
       public:
 	// inline explicit constructor
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh cell-centered scalar field 
+ * \brief Constructs an uninitialized CAR_CU_Mesh cell-centered scalar field 
  *        (CCSF) class object sized to the number of cells in the mesh.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
  */
@@ -98,11 +98,11 @@ class CAR_CU_Mesh
 
 	// additional constructors
 /*!
- * \brief Constucts an initialized CAR_CU_Mesh cell-centered scalar field 
+ * \brief Constructs an initialized CAR_CU_Mesh cell-centered scalar field 
  *        (CCSF) class object sized to the number of cells in the mesh.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
- * \param array CCSF initialization data vector (must be sized to the number 
- *              of cells in the mesh).
+ * \param array CCSF initialization data of type T (must be sized to the 
+ *              number of cells in the mesh).
  */
 	inline CCSF(SP<CAR_CU_Mesh> mesh, const vector<T> & array);
 
@@ -118,14 +118,14 @@ class CAR_CU_Mesh
 /*!
  * \brief Overloaded operator to return the CCSF data value for the specified 
  *        cell.
- * \param cell Cell.
+ * \param cell Cell number.
  * \return CCSF data value of type T.
  */
 	const T & operator()(int cell) const { return data[cell-1]; }
 /*!
  * \brief Overloaded operator to assign a data value to the specified CCSF
  *        cell.
- * \param cell Cell.
+ * \param cell Cell number.
  * \return CCSF data value of type T.
  */
 	T & operator()(int cell) { return data[cell-1]; }
@@ -149,9 +149,9 @@ class CAR_CU_Mesh
 	// inline explicit constructor (default the leading index vector size
         // to the problem geometry dimension)
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh cell-centered vector field 
- *        (CCVF) class object with the vector leading index defaulted to the
- *        number of spatial dimensions and the second index sized to the 
+ * \brief Constructs an uninitialized CAR_CU_Mesh cell-centered vector field 
+ *        (CCVF) class object with the vector leading index size defaulted to
+ *        the number of spatial dimensions and the second index sized to the 
  *        number of cells in the mesh.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object.
  */
@@ -159,22 +159,22 @@ class CAR_CU_Mesh
 
 	// inline explicit constructor (arbitry leading index vector size)
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh cell-centered vector field 
- *        (CCVF) class object with the vector leading index arbitrary and the 
- *        second index sized to the number of cells in the mesh.
+ * \brief Constructs an uninitialized CAR_CU_Mesh cell-centered vector field 
+ *        (CCVF) class object with the vector leading index size arbitrary 
+ *        and the second index sized to the number of cells in the mesh.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object.
- * \param size Leading vector size.
+ * \param size Vector leading index size.
  */
 	inline explicit CCVF(SP<CAR_CU_Mesh> mesh, int size);
 
 	// additional constructors
 /*!
- * \brief Constucts an initialized CAR_CU_Mesh cell-centered vector field 
+ * \brief Constructs an initialized CAR_CU_Mesh cell-centered vector field 
  *        (CCVF) class object with the vector leading index arbitrary and the 
  *        second index sized to the number of cells in the mesh.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object.
- * \param array CCVF initialization data (second index must be sized to the 
- *              number of cells in the mesh).
+ * \param array CCVF initialization data of type T (second index must be sized
+ *              to the number of cells in the mesh).
  */
 	inline CCVF(SP<CAR_CU_Mesh> mesh, const vector<vector<T> > & array);
 
@@ -190,16 +190,16 @@ class CAR_CU_Mesh
 /*!
  * \brief Overloaded operator to return the CCVF data value for the specified 
  *        leading index element and cell. 
- * \param dim Leading index element.
- * \param cell Cell.
+ * \param dim Leading index element number.
+ * \param cell Cell number.
  * \return CCVF data value of type T.
  */
 	inline const T & operator()(int dim, int cell) const;
 /*!
  * \brief Overloaded operator to assign a data value to the specified CCVF
  *        leading index element and cell. 
- * \param dim Leading index element.
- * \param cell Cell.
+ * \param dim Leading index element number.
+ * \param cell Cell number.
  * \return CCVF data value of type T.
  */
 	inline T & operator()(int dim, int cell);
@@ -208,7 +208,7 @@ class CAR_CU_Mesh
 /*!
  * \brief Overloaded operator to return all of the CCVF leading index data 
  *        values for the specified cell. 
- * \param cell Cell.
+ * \param cell Cell number.
  * \return CCVF data values of type T.
  */
 	inline vector<T> operator()(int cell) const;
@@ -238,7 +238,7 @@ class CAR_CU_Mesh
       public:
 	// inline explicit constructor
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh face-centered scalar field 
+ * \brief Constructs an uninitialized CAR_CU_Mesh face-centered scalar field 
  *        (FCSF) class object sized to the number of unique cell faces in the 
  *        mesh.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
@@ -247,12 +247,12 @@ class CAR_CU_Mesh
 
 	// additional constructors
 /*!
- * \brief Constucts an initialized CAR_CU_Mesh face-centered scalar field 
+ * \brief Constructs an initialized CAR_CU_Mesh face-centered scalar field 
  *        (FCSF) class object sized to the number of unique cell faces in 
  *        the mesh.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
- * \param array FCSF initialization data vector (must be sized to the number 
- *              of unique cell faces in the mesh).
+ * \param array FCSF initialization data of type T (must be sized to the 
+ *              number of unique cell faces in the mesh).
  */
 	inline FCSF(SP<CAR_CU_Mesh> mesh, const vector<T> & array);
 
@@ -316,8 +316,8 @@ class CAR_CU_Mesh
       public:
 	// inline explicit constructor
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh face-centered discontinuous
- *        scalar field FCDSF) class object with the leading index sized to 
+ * \brief Constructs an uninitialized CAR_CU_Mesh face-centered discontinuous
+ *        scalar field (FCDSF) class object with the leading index sized to 
  *        the number of cells in the mesh and the trailing index sized to the 
  *        number of faces per cell.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
@@ -326,12 +326,12 @@ class CAR_CU_Mesh
 
 	// additional constructors
 /*!
- * \brief Constucts an initialized CAR_CU_Mesh face-centered discontinuous
+ * \brief Constructs an initialized CAR_CU_Mesh face-centered discontinuous
  *        scalar field (FCDSF) class object with the leading index sized to
  *        the number of cells in the mesh and the trailing index sized to
  *        the number of faces per cell.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
- * \param array FCDSF initialization data vector (must be sized with the 
+ * \param array FCDSF initialization data of type T (must be sized with the 
  *        leading index equal to the number of cells in the mesh and the 
  *        trailing index sized to the number of faces per cell).
  */
@@ -367,7 +367,7 @@ class CAR_CU_Mesh
 /*!
  * \brief Overloaded operator to return all of the FCDSF face values for the 
  *        specified cell. 
- * \param cell Cell.
+ * \param cell Cell number.
  * \return FCDSF data values of type T.
  */
 	inline vector<T> operator()(int cell) const;
@@ -389,7 +389,7 @@ class CAR_CU_Mesh
       public:
 	// inline explicit constructor
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh face-centered vector field 
+ * \brief Constructs an uninitialized CAR_CU_Mesh face-centered vector field 
  *        (FCVF) class object with the vector leading index sized to the 
  *        number of unique cell faces in the mesh and the second index size 
  *        defaulted to the number of spatial dimensions.
@@ -399,7 +399,7 @@ class CAR_CU_Mesh
 
 	// inline explicit constructor
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh face-centered vector field 
+ * \brief Constructs an uninitialized CAR_CU_Mesh face-centered vector field 
  *        (FCVF) class object with the vector leading index sized to the 
  *        number of unique cell faces in the mesh and the second index size
  *        arbitrary.
@@ -411,13 +411,13 @@ class CAR_CU_Mesh
 	// additional constructors
 	// inline explicit constructor
 /*!
- * \brief Constucts an initialized CAR_CU_Mesh face-centered vector field 
+ * \brief Constructs an initialized CAR_CU_Mesh face-centered vector field 
  *        (FCVF) class object with the vector leading index sized to the 
  *        number of unique cell faces in the mesh and the second index size
  *        arbitrary.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object.
- * \param array FCVF initialization data (leading index must be sized to the 
- *              number of unique cell faces in the mesh).
+ * \param array FCVF initialization data of type T (the leading index must be
+ *              sized to the number of unique cell faces in the mesh).
  */
 	inline FCVF(SP<CAR_CU_Mesh> mesh, const vector<vector<T> > & array);
 
@@ -432,19 +432,19 @@ class CAR_CU_Mesh
 	// subscripting
 /*!
  * \brief Overloaded operator to return the FCVF data value for the specified 
- *        cell face trailing index element. 
+ *        cell face trailing index element number. 
  * \param cell Cell number.
  * \param face Face number.
- * \param dim Trailing index element.
+ * \param dim Trailing index element number.
  * \return FCVF data value of type T.
  */
 	inline const T & operator()(int cell, int face, int dim) const;
 /*!
  * \brief Overloaded operator to assign a data value to the specified FCVF 
- *        cell face trailing index element. 
+ *        cell face trailing index element number. 
  * \param cell Cell number.
  * \param face Face number.
- * \param dim Trailing index element.
+ * \param dim Trailing index element number.
  * \return FCVF data value of type T.
  */
 	inline T & operator()(int cell, int face, int dim);
@@ -504,7 +504,7 @@ class CAR_CU_Mesh
 	// inline explicit constructor (default vector size to the number of
         // nodes)
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh node-centered scalar field 
+ * \brief Constructs an uninitialized CAR_CU_Mesh node-centered scalar field 
  *        (NCSF) class object sized to the number of nodes (i.e., corner and
  *        face-centered) in the mesh.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
@@ -514,26 +514,26 @@ class CAR_CU_Mesh
 	// inline explicit constructor (semi-arbitrary vector size to allow 
         // exclusion of the face-centered nodes)
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh node-centered scalar field 
- *        (NCSF) class object of semi-arbitrary size (must be either total
+ * \brief Constructs an uninitialized CAR_CU_Mesh node-centered scalar field 
+ *        (NCSF) class object of semi-arbitrary size (must be either the total
  *        number of nodes in the mesh or the number of corner nodes in the
  *        mesh).
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
- * \param size NCSF size (must be either total number of nodes in the mesh 
+ * \param size NCSF size (must be either the total number of nodes in the mesh 
  *             or the number of corner nodes in the mesh).
  */
 	inline explicit NCSF(SP<CAR_CU_Mesh> mesh, int size);
 
 	// additional constructors
 /*!
- * \brief Constucts an initialized CAR_CU_Mesh node-centered scalar field 
- *        (NCSF) class object of semi-arbitrary size (must be either total
- *        number of nodes in the mesh or the number of corner nodes in the
- *        mesh).
+ * \brief Constructs an initialized CAR_CU_Mesh node-centered scalar field 
+ *        (NCSF) class object of semi-arbitrary size (must be either the 
+ *        total number of nodes in the mesh or the number of corner nodes in 
+ *        the mesh).
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
- * \param array NCSF initilization data (must be sized to either the total 
- *              number of nodes in the mesh or the number of corner nodes 
- *              in the mesh).
+ * \param array NCSF initilization data of type T (must be sized to either 
+ *              the total number of nodes in the mesh or the number of corner 
+ *              nodes in the mesh).
  */
 	inline NCSF(SP<CAR_CU_Mesh> mesh, const vector<T> & array);
 
@@ -588,10 +588,10 @@ class CAR_CU_Mesh
 	// inline explicit constructor (default vector size to the number of
         // nodes by the problem geometry dimension)
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh node-centered scalar field 
+ * \brief Constructs an uninitialized CAR_CU_Mesh node-centered scalar field 
  *        (NCVF) class object with the leading index sized to the number of 
  *        nodes (i.e., corner and face-centered) in the mesh and the trailing
- *        index sized to the number of spatial dimensions.
+ *        index size defaulted to the number of spatial dimensions.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
  */
 	inline explicit NCVF(SP<CAR_CU_Mesh> mesh);
@@ -599,41 +599,42 @@ class CAR_CU_Mesh
 	// inline explicit constructor (semi-arbitrary leading vector size, 
         // default trailing vector size to the number of geometry dimensions
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh node-centered scalar field 
+ * \brief Constructs an uninitialized CAR_CU_Mesh node-centered scalar field 
  *        (NCVF) class object with the leading index semi-arbitrary (i.e., 
  *        sized to the either total number of nodes in the mesh or the number
- *        of corner nodes in the mesh) and the trailing index sized to the 
- *        number of spatial dimensions.
+ *        of corner nodes in the mesh) and the trailing index size defaulted
+ *        to the number of spatial dimensions.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
- * \param size_1 NCVF leading index size (must be either total number of nodes
- *               in the mesh or the number of corner nodes in the mesh).
+ * \param size_1 NCVF leading index size (must be either the total number of 
+ *               nodes in the mesh or the number of corner nodes in the mesh).
  */
 	inline explicit NCVF(SP<CAR_CU_Mesh> mesh, int size_1);
 
 	// inline explicit constructor (semi-arbitrary leading vector size 
         // and arbitrary trailing vector size)
 /*!
- * \brief Constucts an uninitialized CAR_CU_Mesh node-centered scalar field 
+ * \brief Constructs an uninitialized CAR_CU_Mesh node-centered scalar field 
  *        (NCVF) class object with the leading index semi-arbitrary (i.e., 
- *        sized to the either total number of nodes in the mesh or the number
- *        of corner nodes in the mesh) and the trailing index size arbitrary.
+ *        sized to the either the total number of nodes in the mesh or the 
+ *        number of corner nodes in the mesh) and the trailing index size 
+ *        arbitrary.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
- * \param size_1 NCVF leading index size (must be either total number of nodes
- *               in the mesh or the number of corner nodes in the mesh).
+ * \param size_1 NCVF leading index size (must be either the total number of 
+ *               nodes in the mesh or the number of corner nodes in the mesh).
  * \param size_2 NCVF trailing index size.
  */
 	inline explicit NCVF(SP<CAR_CU_Mesh> mesh, int size_1, int size_2);
 
 	// additional constructors
 /*!
- * \brief Constucts an initialized CAR_CU_Mesh node-centered scalar field 
+ * \brief Constructs an initialized CAR_CU_Mesh node-centered scalar field 
  *        (NCVF) class object with the leading index semi-arbitrary (i.e., 
  *        sized to the either total number of nodes in the mesh or the number
  *        of corner nodes in the mesh) and the trailing index size arbitrary.
  * \param mesh Smart pointer to the current CAR_CU_Mesh class object
- * \param array NCVF initialization data (leading index size must be either 
- *        the total number of nodes in the mesh or the number of corner nodes 
- *        in the mesh).
+ * \param array NCVF initialization data of type T (leading index size must 
+ *              be either the total number of nodes in the mesh or the number 
+ *              of corner nodes in the mesh).
  */
 	inline NCVF(SP<CAR_CU_Mesh> mesh, const vector<vector<T> > & array);
 
@@ -648,17 +649,17 @@ class CAR_CU_Mesh
 	// subscripting
 /*!
  * \brief Overloaded operator to return the NCVF data value for the specified 
- *        node trailing index element. 
+ *        node trailing index element number. 
  * \param node Node number.
- * \param dim Trailing index element.
+ * \param dim Trailing index element number.
  * \return NCVF data value of type T.
  */
 	inline const T & operator()(int node, int dim) const;
 /*!
  * \brief Overloaded operator to assign a data value to the specified NCVF
- *        node trailing index element. 
+ *        node trailing index element number. 
  * \param node Node number.
- * \param dim Trailing index element.
+ * \param dim Trailing index element number.
  * \return NCVF data value of type T.
  */
 	inline T & operator()(int node, int dim);
@@ -806,27 +807,27 @@ class CAR_CU_Mesh
  */
     typedef CCSF<double> CCSF_double;
 /*!
- * \brief CAR_CU_Mesh nested cell-centered scalar field (CCSF) class with 
+ * \brief CAR_CU_Mesh nested cell-centered scalar mesh field (CCSF) class with 
  *        integer data.
  */
     typedef CCSF<int> CCSF_int;
 /*!
- * \brief CAR_CU_Mesh nested cell-centered scalar field (CCSF) class with 
+ * \brief CAR_CU_Mesh nested cell-centered scalar mesh field (CCSF) class with 
  *        boolean data.
  */
     typedef CCSF<bool> CCSF_bool;
 /*!
- * \brief CAR_CU_Mesh nested cell-centered scalar field (CCSF) class with 
+ * \brief CAR_CU_Mesh nested cell-centered scalar mesh field (CCSF) class with 
  *        string data.
  */
     typedef CCSF<string> CCSF_string;
 /*!
- * \brief CAR_CU_Mesh nested cell-centered vector field (CCVF) class with 
+ * \brief CAR_CU_Mesh nested cell-centered vector mesh field (CCVF) class with 
  *        double data.
  */
     typedef CCVF<double> CCVF_double;
 /*!
- * \brief CAR_CU_Mesh nested cell-centered vector field (CCVF) class with 
+ * \brief CAR_CU_Mesh nested cell-centered vector mesh field (CCVF) class with 
  *        integer data.
  */
     typedef CCVF<int> CCVF_int;
@@ -931,17 +932,17 @@ class CAR_CU_Mesh
     // find minimum and maximum dimension of cell
 /*!
  * \brief Returns the minimum coordinate value along a given direction for
- *        a single cell.
+ *        the specified cell.
  * \param dir Coordinate direction (x=1, y=2, z =3).
- * \param cell Cell.
+ * \param cell Cell number.
  * \return Mimimum coordinate value. 
  */
     inline double min(int dir, int cell) const;
 /*!
  * \brief Returns the maximum coordinate value along a given direction for
- *        a single cell.
+ *        the specified cell.
  * \param dir Coordinate direction (x=1, y=2, z =3).
- * \param cell Cell.
+ * \param cell Cell number.
  * \return Maximum coordinate value. 
  */
     inline double max(int dir, int cell) const;
@@ -949,24 +950,25 @@ class CAR_CU_Mesh
     // find centerpoint of cell and width of cell
 /*!
  * \brief Returns the center-point coordinate value along a given direction 
- *        for a single cell.
+ *        for the specified cell.
  * \param dir Coordinate direction (x=1, y=2, z =3).
- * \param cell Cell.
+ * \param cell Cell number.
  * \return Center-point coordinate value. 
  */
     inline double pos(int dir, int cell) const;
 /*!
- * \brief Returns the cell width along a given direction for a single cell.
+ * \brief Returns the cell width along a given direction for the specified 
+ *        cell.
  * \param dir Coordinate direction (x=1, y=2, z =3).
- * \param cell Cell.
+ * \param cell Cell number.
  * \return Cell width. 
  */
     double dim(int dir, int cell) const 
     { return max(dir, cell) - min(dir, cell);} 
 
     // diagnostic functions
-    void print(ostream & out) const;
-    void print(ostream & out, int cell) const;
+    void print(ostream & output) const;
+    void print(ostream & output, int cell) const;
 
     // End_Verbatim 
     // End_Doc 
@@ -1011,8 +1013,8 @@ class CAR_CU_Mesh
     // required services for transport; 
 /*!
  * \brief Returns the number of cells adjacent to the specified cell face.
- * \param cell_index Cell.
- * \param face_index Face.
+ * \param cell_index Cell number.
+ * \param face_index Face number.
  * \return Number of adjacent cells. 
  */
     int num_adj(int cell_index, int face_index) const
@@ -1020,8 +1022,8 @@ class CAR_CU_Mesh
 /*!
  * \brief Returns the cell number of the specified adjacent cell for the 
  *        specified cell face.
- * \param cell Cell.
- * \param face Face.
+ * \param cell Cell number.
+ * \param face Face number.
  * \param adjcell Adjacent cell (defaults to the first adjacent cell).
  * \return Adjacent cell number. 
  */
@@ -1032,7 +1034,7 @@ class CAR_CU_Mesh
 		  int cell, int & face) const;
 /*!
  * \brief Returns the node number of the specified cell node.
- * \param cell Cell.
+ * \param cell Cell number.
  * \param node Cell node index.
  * \return Node number. 
  */
@@ -1040,7 +1042,7 @@ class CAR_CU_Mesh
     { return cell_pair[cell - 1][node - 1];}
 /*!
  * \brief Returns the node number for the specified cell face.
- * \param cell Cell.
+ * \param cell Cell number.
  * \param face Cell face index.
  * \return Node number. 
  */
@@ -1052,55 +1054,55 @@ class CAR_CU_Mesh
 /*!
  * \brief Returns all of the nodes for the specified cell (i.e, both the 
  *        corner nodes and the face-centered nodes).
- * \param cell Cell.
+ * \param cell Cell number.
  * \return Cell nodes. 
  */
     inline vector<int> cell_nodes(int cell) const;
 /*!
  * \brief Returns all of the corner nodes for the specified cell.
- * \param cell Cell.
+ * \param cell Cell number.
  * \return Cell corner nodes. 
  */
     inline vector<int> cell_corner_nodes(int cell) const;
 /*!
  * \brief Returns all of the face-centered nodes for the specified cell.
- * \param cell Cell.
+ * \param cell Cell number.
  * \return Cell face-centered nodes. 
  */
     inline vector<int> cell_face_centered_nodes(int cell) const;
 /*!
  * \brief Returns all of the corner nodes for the specified cell face.
- * \param cell Cell.
- * \param face Face.
+ * \param cell Cell number.
+ * \param face Face number.
  * \return Node number.
  */
     inline vector<int> cell_face_nodes(int cell, int face) const;
 /*!
  * \brief Returns the normalized components of the outward-directed normal 
  *        for the specified cell face.
- * \param cell Cell.
- * \param face Face.
+ * \param cell Cell number.
+ * \param face Face number.
  * \return Outward-directed normal.
  */
     inline vector<double> get_normal(int cell, int face) const;
 /*!
  * \brief Returns the normalized components of the inward-directed normal 
  *        for the specified cell face.
- * \param cell Cell.
- * \param face Face.
+ * \param cell Cell number.
+ * \param face Face number.
  * \return Inward-directed normal.
  */
     inline vector<double> get_normal_in(int cell, int face) const;
 /*!
  * \brief Returns the volume of the specified cell.
- * \param cell Cell.
+ * \param cell Cell number.
  * \return Cell volume. 
  */
     inline double volume(int cell) const;
 /*!
  * \brief Returns the area of the specified cell face.
- * \param cell Cell.
- * \param face Face.
+ * \param cell Cell number.
+ * \param face Face number.
  * \return Cell face area. 
  */
     inline double face_area(int cell, int face) const;
@@ -1109,46 +1111,46 @@ class CAR_CU_Mesh
     int get_bndface(string, int) const;
 /*!
  * \brief Returns the coordinate values for the specified node.
- * \param node Node.
+ * \param node Node number.
  * \return Node coordinate values. 
  */
     inline vector<double> get_vertex(int node) const;
 /*!
  * \brief Returns all of the corner node coordinate values for the specified 
  *        cell face.
- * \param cell Cell.
- * \param face Face.
- * \return Node coordinate values. 
+ * \param cell Cell number.
+ * \param face Face number.
+ * \return Coordinate values for the cell face nodes. 
  */
     inline NCVF_d get_vertices(int cell, int face) const;
 /*!
  * \brief Returns all of the corner node coordinate values for the specified 
  *        cell.
- * \param cell Cell.
- * \return Node coordinate values. 
+ * \param cell Cell number.
+ * \return Coordinate values for the cell corner nodes. 
  */
     inline NCVF_d get_vertices(int cell) const;
 /*!
  * \brief Returns the generation (i.e., refinement) level for the specified 
  *        cell.
- * \param cell Cell.
+ * \param cell Cell number.
  * \return Cell generation level. 
  */
     inline int get_generation(int cell) const;
 /*!
  * \brief Randomly selects a spatial position within the specified cell.
- * \param cell Cell.
+ * \param cell Cell number.
  * \param random Random number.
  * \return Spatial position coordinate values. 
  */
     inline vector<double> sample_pos(int cell, Sprng & random) const;
 /*!
  * \brief Randomly selects a spatial position within the specified cell with 
- *        a given linear gradient function.
- * \param cell Cell.
+ *        a given linear function.
+ * \param cell Cell number.
  * \param random Random number.
- * \param slope Gradient.
- * \param center_pt Linear "intercept" at the cell center-point.
+ * \param slope Linear function gradient.
+ * \param center_pt Linear function "intercept" at the cell center-point.
  * \return Spatial position coordinate values. 
  */
     inline vector<double> sample_pos(int cell, Sprng & random, 
@@ -1156,8 +1158,8 @@ class CAR_CU_Mesh
 				     double center_pt) const; 
 /*!
  * \brief Randomly selects a spatial position on the specified cell face.
- * \param cell Cell.
- * \param face Face.
+ * \param cell Cell number.
+ * \param face Face number.
  * \param random Random number.
  * \return Spatial position coordinate values. 
  */
@@ -1166,8 +1168,8 @@ class CAR_CU_Mesh
 /*!
  * \brief Determines if a spatial position lies on the specified cell face.
  * \param pos Spatial position.
- * \param cell Cell.
- * \param face Face.
+ * \param cell Cell number.
+ * \param face Face number.
  * \return Status of the spatial position relative to the cell face. 
  */
     inline bool check_on_face(vector<double> & pos, int & cell, 
@@ -1196,7 +1198,7 @@ class CAR_CU_Mesh
 //---------------------------------------------------------------------------//
 
 /*!
- * \brief Overloaded stream-extraction operator for mesh output.
+ * \brief Overloaded stream-insertion operator for mesh output.
  * \param output Stream-output class object.
  * \param object CAR_CU_Mesh class object.
  * \return Reference to output.

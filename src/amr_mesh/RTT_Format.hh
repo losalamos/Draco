@@ -1729,10 +1729,10 @@ class RTT_Format
  * <h3> Introduction </h3>
  * The RTT_Format package consists of: private member functions that are used 
  * to parse a mesh file in the \ref rtt_format_defined and determine the mesh
- * connectivity, and public member functions to access the relevant data. The
- * RTT_Format package is distributed with the amr_mesh package because it was
- * developed in conjunction with that package, but it's use is not limited to 
- * that particular mesh type. The RTT_Format package was developed from the 
+ * connectivity, and public member functions that are used to access the data.
+ * The RTT_Format package is distributed with the amr_mesh package because it 
+ * was developed in conjunction with that package, but it's use is not limited
+ * to that particular mesh type. The RTT_Format package was developed from the 
  * TychoMesh class that was originally developed by Shawn Pautz with the 
  * following additions:
  * <ul>
@@ -1740,7 +1740,7 @@ class RTT_Format
  *       arbitrary cell definitions including amr capability,
  *  <li> Public accessor functions for all of the mesh file data,
  *  <li> Reassignment capability to allow the nodes, sides, and cells to be
- *       renumbered, based upon their coordinate values, in ascending order 
+ *       renumbered in ascending order based upon their coordinate values, 
  *       with x increasing first, then y, and finally z.
  * </ul> 
  *
@@ -1751,15 +1751,16 @@ class RTT_Format
  * can then be accessed using the public member accessor functions. A second, 
  * optional argument to the RTT_Format class can be used to specify 
  * renumbering. The class constructor defaults to no renumbering, but runtime 
- * testing indicates that there is a significant DECREASE in the time required
- * to read and connect the mesh if a continuous adaptive refinement mesh is 
- * used with a few thousand cells or more and renumbering is implemented. This
- * behaviour results from the fact that a bilinear search routine can be used 
- * to connect adjacent cells with different refinement levels, while a linear 
- * search of all the nodes must be performed otherwise. The RTT_Format class 
- * contains several nested classes that correspond to the structure and 
- * organization of the RTT_Format File definition plus some base classes and 
- * the Connectivity class:
+ * testing indicates that there is a significant DECREASE in the total time 
+ * required to read and connect the mesh if a continuous adaptive refinement
+ * mesh is used with a few thousand cells or more and the renumbering option 
+ * is implemented. This behaviour results from the fact that a bilinear search
+ * routine can be used to connect adjacent cells with different refinement 
+ * levels when renumbering is implemented, while a linear search of all the
+ * nodes must be performed otherwise. The RTT_Format class contains several
+ * nested classes that correspond primarily to the organization of the \ref
+ * rtt_format_defined with the additions of some base classes and the 
+ * Connectivity class:
  * <ul>
  *  <li> Header
  *  <li> Dims (dimensions)
@@ -1781,7 +1782,8 @@ class RTT_Format
  *  <li> Connectivity
  * </ul> 
  * These contained classes provide a convenient grouping of the mesh data, and
- * accessor functions reflect the name of the relevant contained class.
+ * the RTT_Format public memeber accessor functions reflect the name of the 
+ * associated nested class.
  *
  */
 
@@ -1821,8 +1823,8 @@ class RTT_Format
  * that the "right hand rule" is used to return the direction of the 
  * outward-directed normal when the nodes are traversed in the order that
  * is specified in the side set node ordering. The cell definitions assume 
- * the orientation relative to the system coordinate system that is indicated 
- * in the figures.
+ * the orientation relative to the coordinate system that is indicated in the 
+ * figures.
  *
  * <center>
  *   <table>

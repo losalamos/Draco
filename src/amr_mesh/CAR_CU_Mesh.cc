@@ -2,6 +2,12 @@
 // CAR_CU_Mesh.cc
 // B.T. Adams (bta@lanl.gov)
 // 18 May 99
+/*! 
+ * \file   amr_mesh/CAR_CU_Mesh.cc
+ * \author B.T. Adams
+ * \date   Tue May 18 10:33:26 1999
+ * \brief  Implementation file for CAR_CU_Mesh class library.
+ */
 //---------------------------------------------------------------------------//
 // @> CAR_CU_Mesh class implementation file (developed from OS_Mesh.cc)
 //---------------------------------------------------------------------------//
@@ -35,7 +41,7 @@ using std::ios;
  * \param cell_pair_ An existing, initialized CCVF_i type object containing 
  *                   the mesh cell-pair data.
  * \param generation_ An existing, initialized CCSF_i type object containing 
- *                   the mesh generation data.
+ *                   the mesh cell generation data.
  * \param submesh_ Status flag indicating that this is a submesh for parallel
  *                 execution (defaults to false). 
  */
@@ -69,7 +75,7 @@ bool CAR_CU_Mesh::compReal(const double & low_val, const double & high_val)
     const
 {
     // require agreement to six significant figures for equality (set by
-    // exponent of EPSILON).
+    // the exponent of EPSILON).
     const double EPSILON = 1.0e-06;
     double epsilon;
     if (low_val != 0 && high_val != 0)
@@ -102,7 +108,7 @@ void CAR_CU_Mesh::calc_surface()
 }
 
 //---------------------------------------------------------------------------//
-// member functions
+// Public member functions
 //---------------------------------------------------------------------------//
 // do binary search on a cell
 
@@ -158,13 +164,13 @@ int CAR_CU_Mesh::get_cell(const vector<double> &r) const
 // calculate the distance to boundary
 
 /*!
- * \brief Returns the distance to nearest boundary for the specified point in 
- *        space in the specified cell and direction.
+ * \brief Returns the distance to the nearest boundary in the specified cell 
+ *        and direction for the specified point in space.
  * \param r Coordinate values of point in space.
  * \param omega Direction.
- * \param cell Cell. 
+ * \param cell Cell number. 
  * \param face Cell face number at the nearest boundary (calculated). 
- * \return Distance to nearest boundary. 
+ * \return Distance to the nearest boundary. 
  */
 double CAR_CU_Mesh::get_db(const vector<double> & r, 
    const vector<double> & omega, int cell, int & face) const
@@ -213,8 +219,9 @@ double CAR_CU_Mesh::get_db(const vector<double> & r,
 // return the face number for a given cell boundary
 
 /*!
- * \brief Returns the face number that corresponds to the specified side.
- * \param boundary Side (lox, loy, loz, hix, hiy, hiz).
+ * \brief Returns the face number that corresponds to the specified boundary
+ *        side.
+ * \param boundary Boundary side (either lox, loy, loz, hix, hiy, or hiz).
  * \param cell Cell (not used).
  * \return Face number. 
  */
@@ -248,8 +255,8 @@ int CAR_CU_Mesh::get_bndface(string boundary, int cell) const
 // return a list of cells along a specified boundary
 
 /*!
- * \brief Returns a list of cells along a specified boundary.
- * \param boundary Boundary (lox, loy, loz, hix, hiy, hiz).
+ * \brief Returns a list of cells along the specified boundary.
+ * \param boundary Boundary (either lox, loy, loz, hix, hiy, or hiz).
  * \return Surface cell numbers. 
  */
 vector<int> CAR_CU_Mesh::get_surcells(string boundary) const
@@ -346,7 +353,7 @@ vector<int> CAR_CU_Mesh::get_surcells(string boundary) const
  * \brief Checks to insure that user-defined surface source cells actually
  *        reside on the specified face and are on the outer boundary of the 
  *        problem.
- * \param ss_face Boundary side (lox, loy, loz, hix, hiy, hiz).
+ * \param ss_face Boundary side (either lox, loy, loz, hix, hiy, or hiz).
  * \param ss_list Surface source cells.
  */
 void CAR_CU_Mesh::check_defined_surcells(const string ss_face, 
@@ -373,7 +380,7 @@ void CAR_CU_Mesh::check_defined_surcells(const string ss_face,
 //---------------------------------------------------------------------------//
 // overloaded == for design-by-contract
 
-bool CAR_CU_Mesh::operator==(const CAR_CU_Mesh &rhs) const
+bool CAR_CU_Mesh::operator==(const CAR_CU_Mesh & rhs) const
 {
   // check to see that we have the same coordinate systems
     if (coord != rhs.coord)
@@ -401,16 +408,16 @@ bool CAR_CU_Mesh::operator==(const CAR_CU_Mesh &rhs) const
 /*!
  * \brief Diagnostic member function used to print out the cell center-point 
  *        coordinate values and widths for the entire mesh.
- * \param out Stream-output class object.
+ * \param output Stream-output class object.
  */
-void CAR_CU_Mesh::print(ostream & out) const
+void CAR_CU_Mesh::print(ostream & output) const
 {
-    out << endl;
-    out << ">>> MESH <<<" << endl;
-    out << "============" << endl;
+    output << endl;
+    output << ">>> MESH <<<" << endl;
+    output << "============" << endl;
 
     for (int cell = 1; cell <= num_cells(); cell++)
-	print(out, cell);
+	print(output, cell);
 }
 
 //---------------------------------------------------------------------------//
@@ -419,8 +426,8 @@ void CAR_CU_Mesh::print(ostream & out) const
 /*!
  * \brief Diagnostic member function used to print out the center-point 
  *        coordinate values and width for the specified cell.
- * \param out Stream-output class object.
- * \param cell Cell.
+ * \param output Stream-output class object.
+ * \param cell Cell number.
  */
 void CAR_CU_Mesh::print(ostream & output, int cell) const
 {

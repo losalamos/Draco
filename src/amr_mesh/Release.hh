@@ -60,7 +60,7 @@ namespace rtt_amr
  * The AMR mesh package has been used in conjunction with both the C++ milagro
  * (implicit monte carlo) code and the F90 zatharus/centuari (P1 Diffusion 
  * with variable eddington factor correction) code. The CAR_CU_Mesh class 
- * contains several field member classes including:
+ * contains several mesh field member classes including:
  * <ul>
  *  <li> Cell-Centered Scalar Field (CCSF)
  *  <li> Cell-Centered Vector Field (CCVF)
@@ -89,8 +89,9 @@ namespace rtt_amr
  *    must be invoked directly within the calling program, while these 
  *    functions are invoked automatically by the shadow object interface of 
  *    the CAR_CU_Interface class constructor when it is called from a Fortran 
- *    code. The CAR_CU_Interface data accessor functions are also shadowed so 
- *    that the remainder of the input data is available.
+ *    90 code. The CAR_CU_Interface data accessor functions are also shadowed 
+ *    so that the remainder of the input data is available to the calling 
+ *    program.
  *
  * 2) A CAR_CU_Builder class object is instantiated by the main program. The
  *    mesh builder contains the build_Mesh member function that constructs the

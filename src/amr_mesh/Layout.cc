@@ -2,6 +2,12 @@
 // Layout.cc
 // Todd Adams
 // Thu 23 Sept 15:53:52 1998
+/*! 
+ * \file   amr_mesh/Layout.cc
+ * \author B.T. Adams
+ * \date   Wed Sep 15 10:33:26 1999
+ * \brief  Implementation file for Layout class library.
+ */
 //---------------------------------------------------------------------------//
 // @> Layout class implementation file - this file should really be moved 
 // back to mc. It was modified from the original for AMR meshes to allow a
@@ -51,23 +57,6 @@ void Layout::print(ostream & output, int cell_index) const
 		   << endl;
     }
     output << "=============" << endl;
-}
-
-//---------------------------------------------------------------------------//
-// overloaded operators
-//---------------------------------------------------------------------------//
-/*!
- * \brief Overloaded stream-extraction operator for layout output.
- * \param output Stream-output class object.
- * \param object Layout class object.
- * \return Reference to output.
- */
-ostream & operator<<(ostream & output, const Layout & object)
-{
-    int num_cells = object.num_cells();
-    for (int cell_index = 1; cell_index <= num_cells; cell_index++)
-        object.print(output, cell_index);
-    return output;
 }
 
 } // end namespace rtt_amr

@@ -2,6 +2,12 @@
 // XYCoord_sys.hh
 // Thomas M. Evans
 // Fri Jan 30 16:52:13 1998
+/*! 
+ * \file   amr_mesh/XYCoord_sys.hh
+ * \author Thomas M. Evans
+ * \date   Fri Jan 30 16:52:13 1998
+ * \brief  Header file for XYCoord_sys class library.
+ */
 //---------------------------------------------------------------------------//
 // @> XYCoord_sys derived class header file
 //---------------------------------------------------------------------------//
@@ -29,6 +35,7 @@
 //  6)  6-10-98 : added sample_pos_on_face virtual function
 //  7)  6-12-98 : changed interface to sample_pos()
 //  8)  4-13-99 : moved to mc package
+//  9)  5-21-99 : Modified for AMR mesh topology. Moved to amr_mesh package.
 // 
 //===========================================================================//
 
@@ -48,6 +55,18 @@ using std::sqrt;
 
 using rtt_rng::Sprng;
     
+/*!
+ * \brief  XYCoord_sys is a base class that is used to define a 
+ *         two-dimensional Cartesian coordinate system and provide some 
+ *         basic cell sampling member functions needed for implicit monte 
+ *         carlo (imc). The derived mc/Coord_sys class inherits functionality 
+ *         from the base XYCoord_sys class.
+ *
+ *\sa The XYCoord_sys class is used by both the OS_Mesh and CAR_CU_Mesh 
+ *    classes. An \ref amr_overview is provided to describe the basic 
+ *    functionality of that particular mesh class (which is also very similar 
+ *    to the functionality of the OS_Mesh class from which it was derived).
+ */     
 class XYCoord_sys : public Coord_sys
 {
     // Begin_Doc xycoord_sys-int.tex
@@ -56,21 +75,55 @@ class XYCoord_sys : public Coord_sys
   public:
     // default constructor to set dimension of XY coordinate
     // system, inline
+/*!
+ * \brief Constructs an XYCoord_sys class object and sets the number of 
+ *        spatial dimensions for the derived Coord_sys class object.
+ */
     XYCoord_sys() : Coord_sys(2) {}
 
     // virtual functions
+/*!
+ * \brief Returns the coordinate system (i.e, xy).
+ */
     virtual string get_Coord() const { string c = "xy"; return c; }
 
+/*!
+ * \brief Randomly selects a spatial position within a region of space.
+ * \param vmin Minimum coordinate values.
+ * \param vmax Maximum coordinate values.
+ * \param random Random number.
+ * \return Spatial position coordinate values. 
+ */
     inline virtual vector<double> 
-    sample_pos(vector<double> &, vector<double> &, Sprng &) const;
+    sample_pos(vector<double> & vmin, vector<double> & vmax, 
+	       Sprng & random) const;
 
+/*!
+ * \brief Randomly selects a spatial position within a region of space with 
+ *        a given linear function.
+ * \param vmin Minimum coordinate values.
+ * \param vmax Maximum coordinate values.
+ * \param random Random number.
+ * \param slope Linear function gradient.
+ * \param center_pt Linear function "intercept" at the cell center-point.
+ * \return Spatial position coordinate values. 
+ */
     inline virtual vector<double> 
-    sample_pos(vector<double> &, vector<double> &, Sprng &, 
-	       vector<double> &, double) const;
+    sample_pos(vector<double> & vmin, vector<double> & vmax, Sprng & random, 
+	       vector<double> & slope, double center_pt) const;
 
+/*!
+ * \brief Randomly selects a spatial position within a linear region of space.
+ * \param vmin Minimum coordinate values.
+ * \param vmax Maximum coordinate values.
+ * \param vmax Cell face (line) number.
+ * \param random Random number.
+ * \return Spatial position coordinate values. 
+ */
     inline virtual 
-    vector<double> sample_pos_on_face(vector<double> &, vector<double> &, 
-				      int, Sprng &) const;
+    vector<double> sample_pos_on_face(vector<double> & vmin, 
+				      vector<double> & vmax, int face, 
+				      Sprng & random) const;
 	     
     // End_Verbatim 
     // End_Doc 
@@ -82,8 +135,8 @@ class XYCoord_sys : public Coord_sys
 // sample the position in an XY cell
 
 inline vector<double> 
-XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
-			Sprng &random) const
+XYCoord_sys::sample_pos(vector<double> & min, vector<double> & max,
+			Sprng & random) const
 {
     // make return vector
     vector<double> r(2);
@@ -106,8 +159,8 @@ XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
 // sample the position in a cell from a linear function
 
 inline vector<double> 
-XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
-			Sprng &random, vector<double> &slope, 
+XYCoord_sys::sample_pos(vector<double> & min, vector<double> & max,
+			Sprng & random, vector<double> & slope, 
 			double center_pt) const
 {
     // make return vector
@@ -141,8 +194,8 @@ XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
 // sample the position on an XY face
 
 inline vector<double> 
-XYCoord_sys::sample_pos_on_face(vector<double> &min, vector<double> &max, 
-				int face, Sprng &random) const
+XYCoord_sys::sample_pos_on_face(vector<double> & min, vector<double> & max, 
+				int face, Sprng & random) const
 {
     // make return vector
     vector<double> r(2);
