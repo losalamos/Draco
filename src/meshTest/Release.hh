@@ -1,22 +1,35 @@
 //----------------------------------*-C++-*----------------------------------//
-// Release.hh
-// Randy M. Roberts
-// Fri Aug 20 13:04:58 1999
-// $Id$
+/*!
+ * \file   meshTest/Release.hh
+ * \author Randy M. Roberts
+ * \date   Wed Sep 22 15:24:01 1999
+ * \brief  Release function for meshTest system
+ */
 //---------------------------------------------------------------------------//
-// @> Release function for meshTest library
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __meshTest_Release_hh__
 #define __meshTest_Release_hh__
 
 //===========================================================================//
-// namespace version - 
-//
-// Purpose : Return the version of meshTest; 
-// this can be used to get exact version information in codes that 
-// use meshTest
-// 
+/*!
+ * \page meshTest_overview Overview of the meshTest system
+ * \version 1_0_0x
+ * \author Shawn Pautz, Randy M. Roberts
+ *
+ * The meshTest system is used to test a Mesh MT's services.
+ */
+//===========================================================================///
+/*!
+ * \namespace rtt_meshTest
+ *
+ * \brief Namespace that contains the meshTest package classes and variables.
+ *
+ * The rtt_meshTest namespace contains all classes and variables necessary to
+ * use the meshTest system.  This system is used to test Mesh MT's adherence
+ * to the MT service requirements.
+ */
 //===========================================================================//
 
 #include <string>

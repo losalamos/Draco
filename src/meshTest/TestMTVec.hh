@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// TestMTVec.hh
-// Randy M. Roberts
-// Fri Aug 20 09:11:42 1999
-// $Id$
+/*!
+ * \file   meshTest/TestMTVec.hh
+ * \author Shawn Pautz, Randy M. Roberts
+ * \date   Fri Aug 20 09:11:42 1999
+ * \brief  Header file fort the TestMTVec class.
+ */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __meshTest_TestMTVec_hh__
@@ -17,11 +19,40 @@ namespace rtt_meshTest
 {
  
 //===========================================================================//
-// class TestMTVec - 
-//
-// Purpose :  Test the MT::ccvsf::value_type container according to the Random
-//            Access Container requirements.
-//
+/*!
+ * \class TestMTVec
+ *
+ * \brief Test the MT::ccvsf::value_type container according to the Random
+ *            Access Container requirements.
+ *
+ * The TestMTVec class is templated on an MTFactory.
+ * The MTFactory is used to create coupled instances of meshes and field
+ * constructors, along with typedefs that determine whether the mesh is
+ * structured or unstructured.
+ *
+ * Required MTFactory services include:
+ *
+ * MTFactory::MT -- The mesh type
+ *
+ * MTFactory::FieldConstructor -- The field constructor type.
+ *
+ * MTFactory::Product -- A class that is returned by the MTFactroy::create()
+ * method.  This class is responsible for returning references to the mesh
+ * and field constructor via the mesh() and fieldConstructor() methods,
+ * respectively.
+ *
+ * MTFactory::Structured -- A tag that, if used, implies that the mesh
+ * is a structured mesh.
+ *
+ * MTFactory::UnStructured -- A tag that, if used, implies that the mesh
+ * is an unstructured mesh.
+ *
+ * MTFactory::Structuring -- A typedef to either, Structured, or UnStructured,
+ * used to determine whether the mesh is actually one or the other.
+ *
+ * MTFactory::Product MTFactory::create() -- The method that returns a new
+ * pair of meshes and field constructors.
+ */
 // revision history:
 // -----------------
 // 0) original
@@ -52,6 +83,8 @@ class TestMTVec
   public:
 
     // CREATORS
+
+    //! Constructor
     
     TestMTVec(MTFactory &meshFactory_in, std::ostream &os_in)
 	: meshFactory_m(meshFactory_in), os_m(os_in),
@@ -59,15 +92,21 @@ class TestMTVec
     {
 	/* empty */
     }
+
+    //! Destructor
     
     ~TestMTVec() { /* empty */ }
 
     // MANIPULATORS
 
+    //! Main interface to testing class.
+    
     void run();
 
     // ACCESSORS
 
+    //! Returns success of previously ran run() method.
+    
     bool passed() const { return passed_m; }
     
   private:

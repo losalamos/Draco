@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// TestMTModel.t.hh
-// Randy M. Roberts
-// Fri Aug 20 09:11:42 1999
-// $Id$
+/*!
+ * \file   meshTest/TestMTModel.t.hh
+ * \author Shawn Pautz, Randy M. Roberts
+ * \date   Fri Aug 20 09:11:42 1999
+ * \brief  Implementation file for the TestMTModel class.
+ */
 //---------------------------------------------------------------------------//
-// @> Test the MT Model for its compliance with the MT Concept.
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "TestMTModel.hh"

@@ -19,11 +19,11 @@ using rtt_mesh_test::Mesh_XYZFactory;
 
 typedef TestMTFields<Mesh_XYZFactory> Tester;
 
-template class FieldTester<Mesh_XYZFactory::MT, Tester::BSTF>;
-template class FieldTester<Mesh_XYZFactory::MT, Tester::CCTF>;
-template class FieldTester<Mesh_XYZFactory::MT, Tester::FCDTF>;
-template class FieldTester<Mesh_XYZFactory::MT, Tester::NCTF>;
-template class FieldTester<Mesh_XYZFactory::MT, Tester::VCTF>;
+template void FieldTester<Mesh_XYZFactory::MT, Tester::BSTF>::run();
+template void FieldTester<Mesh_XYZFactory::MT, Tester::CCTF>::run();
+template void FieldTester<Mesh_XYZFactory::MT, Tester::FCDTF>::run();
+template void FieldTester<Mesh_XYZFactory::MT, Tester::NCTF>::run();
+template void FieldTester<Mesh_XYZFactory::MT, Tester::VCTF>::run();
 
 //---------------------------------------------------------------------------//
 //                              end of FieldTester_pt.cc

@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// TestMTComm.hh
-// Randy M. Roberts
-// Mon Aug 23 15:09:07 1999
-// $Id$
+/*!
+ * \file   meshTest/TestMTComm.hh
+ * \author Randy M. Roberts
+ * \date   Mon Aug 23 15:09:07 1999
+ * \brief  Header file for the TestMTComm class.
+ */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __meshTest_TestMTComm_hh__
@@ -14,10 +16,40 @@ namespace rtt_meshTest
 {
  
 //===========================================================================//
-// class TestMTComm - 
-//
-// Purpose :This class tests the communications part of a given MT for
-//          the "Solon" MT concept.
+/*!
+ * \class TestMTComm
+ *
+ * \brief This class tests the communications part of a given MT for
+ * the "Solon" MT concept.
+ *
+ * The TestMTComm class is templated on an MTFactory.
+ * The MTFactory is used to create coupled instances of meshes and field
+ * constructors, along with typedefs that determine whether the mesh is
+ * structured or unstructured.
+ *
+ * Required MTFactory services include:
+ *
+ * MTFactory::MT -- The mesh type
+ *
+ * MTFactory::FieldConstructor -- The field constructor type.
+ *
+ * MTFactory::Product -- A class that is returned by the MTFactroy::create()
+ * method.  This class is responsible for returning references to the mesh
+ * and field constructor via the mesh() and fieldConstructor() methods,
+ * respectively.
+ *
+ * MTFactory::Structured -- A tag that, if used, implies that the mesh
+ * is a structured mesh.
+ *
+ * MTFactory::UnStructured -- A tag that, if used, implies that the mesh
+ * is an unstructured mesh.
+ *
+ * MTFactory::Structuring -- A typedef to either, Structured, or UnStructured,
+ * used to determine whether the mesh is actually one or the other.
+ *
+ * MTFactory::Product MTFactory::create() -- The method that returns a new
+ * pair of meshes and field constructors.
+ */
 //
 // revision history:
 // -----------------
@@ -46,6 +78,8 @@ class TestMTComm
   public:
 
     // CREATORS
+
+    //! Constructor
     
     TestMTComm(MTFactory &meshFactory_in, std::ostream &os_in)
 	: meshFactory_m(meshFactory_in), os_m(os_in),
@@ -54,14 +88,20 @@ class TestMTComm
 	/* empty */
     }
     
+    //! Destructor
+    
     ~TestMTComm() { /* empty */ }
 
     // MANIPULATORS
+    
+    //! Main interface to testing class.
     
     void run();
 
     // ACCESSORS
 
+    //! Returns success of previously ran run() method.
+    
     bool passed() const { return passed_m; }
     
   private:

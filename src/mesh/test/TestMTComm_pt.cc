@@ -15,7 +15,7 @@
 using rtt_meshTest::TestMTComm;
 using rtt_mesh_test::Mesh_XYZFactory;
 
-template class TestMTComm<Mesh_XYZFactory>;
+template void TestMTComm<Mesh_XYZFactory>::run();
 
 //---------------------------------------------------------------------------//
 //                              end of TestMTComm_pt.cc

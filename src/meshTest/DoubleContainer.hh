@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// DoubleContainer.hh
-// Randy M. Roberts
-// Mon Aug 23 16:30:39 1999
-// $Id$
+/*!
+ * \file   meshTest/DoubleContainer.hh
+ * \author Shawn Pautz, Randy M. Roberts
+ * \date   Mon Aug 23 16:30:39 1999
+ * \brief  Header and implementation file for DoubleContainer class.
+ */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __meshTest_DoubleContainer_hh__
@@ -14,10 +16,11 @@ namespace rtt_meshTest
 {
  
 //===========================================================================//
-// class DoubleContainer - 
-//
-// Purpose :  The following class exists to test the MT field types with a
-//            non-trivial type.
+/*! \class DoubleContainer
+ *
+ * \brief The following class exists to test the MT field types with a
+ *            non-trivial type.
+ */
 //
 // revision history:
 // -----------------

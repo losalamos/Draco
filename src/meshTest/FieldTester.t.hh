@@ -1,15 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// FieldTester.t.hh
-// Randy M. Roberts
-// Mon Aug 23 16:49:40 1999
+/*!
+ * \file   meshTest/FieldTester.t.hh
+ * \author Shawn Pautz, Randy M. Roberts
+ * \date   Mon Aug 23 16:49:40 1999
+ * \brief  Implementation file for the FieldTester class.
+ */
+//---------------------------------------------------------------------------//
 // $Id$
-//---------------------------------------------------------------------------//
-// @> 
-//---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-// This program tests the MT::fcdtf container as a model of a Face
-// Centered MTField.
 //---------------------------------------------------------------------------//
 
 #include "FieldTester.hh"
@@ -25,7 +22,7 @@ using std::endl;
 using std::iterator_traits;
 
 //---------------------------------------------------------------------------//
-// Test the MT::fcdtf container according to the Forward Container
+// Test the MT::"container" container according to the Forward Container
 // requirements.
 //---------------------------------------------------------------------------//
 

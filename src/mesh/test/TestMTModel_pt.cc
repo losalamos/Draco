@@ -15,7 +15,7 @@
 using rtt_meshTest::TestMTModel;
 using rtt_mesh_test::Mesh_XYZFactory;
 
-template class TestMTModel<Mesh_XYZFactory>;
+template void TestMTModel<Mesh_XYZFactory>::run();
 
 //---------------------------------------------------------------------------//
 //                              end of TestMTModel_pt.cc

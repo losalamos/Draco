@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// TestMTComm.t.hh
-// Randy M. Roberts
-// Mon Aug 23 15:09:07 1999
-// $Id$
+/*!
+ * \file   meshTest/TestMTComm.t.hh
+ * \author Randy M. Roberts
+ * \date   Mon Aug 23 15:09:07 1999
+ * \brief  Implementation file for the TestMTComm class.
+ */
 //---------------------------------------------------------------------------//
-// @> Test the MT Model for its communication methods as an MT Concept.
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "TestMTComm.hh"

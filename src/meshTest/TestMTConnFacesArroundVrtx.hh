@@ -1,32 +1,30 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   meshTest/TestMTFields.hh
- * \author Shawn Pautz, Randy M. Roberts
- * \date   Mon Aug 23 16:49:16 1999
- * \brief  Header file for the TestMTFields class.
+ * \file   meshTest/TestMTConnFacesArroundVrtx.hh
+ * \author Randy M. Roberts
+ * \date   Fri Sep 10 12:55:42 1999
+ * \brief  Header file for the TestMTConnFacesArroundVrtx class.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __meshTest_TestMTFields_hh__
-#define __meshTest_TestMTFields_hh__
+#ifndef __meshTest_TestMTConnFacesArroundVrtx_hh__
+#define __meshTest_TestMTConnFacesArroundVrtx_hh__
 
-#include "FieldGroup.hh"
-#include "DoubleContainer.hh"
-
-#include <iosfwd>
 #include <string>
+#include <iosfwd>
 
 namespace rtt_meshTest
 {
  
 //===========================================================================//
 /*!
- * \class TestMTFields
- * \brief Main interface to testing the nested field class services.
+ * \class TestMTConnFacesArroundVrtx
  *
- * The TestMTFields class is templated on an MTFactory.
+ * \brief Main interface to testing the MT::ConnFacesArroundVerices service.
+ *
+ * The TestMTConnFacesArroundVrtx class is templated on an MTFactory.
  * The MTFactory is used to create coupled instances of meshes and field
  * constructors, along with typedefs that determine whether the mesh is
  * structured or unstructured.
@@ -54,6 +52,7 @@ namespace rtt_meshTest
  * MTFactory::Product MTFactory::create() -- The method that returns a new
  * pair of meshes and field constructors.
  */
+//
 // revision history:
 // -----------------
 // 0) original
@@ -61,7 +60,7 @@ namespace rtt_meshTest
 //===========================================================================//
 
 template<class MTFactory>
-class TestMTFields 
+class TestMTConnFacesArroundVrtx 
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -70,47 +69,12 @@ class TestMTFields
     typedef typename MTFactory::Product MTFactoryProduct;
     typedef typename MT::FieldConstructor FieldConstructor;
 
-  public:
-
-    //! This typedef is in lieu of compiler support for template template
-    //! arguments.
-    
-    typedef FieldGroup<typename MT::template bstf<double>,
-	typename MT::template bstf<int>, typename MT::template bstf<long>,
-	typename MT::template bstf <DoubleContainer> > BSTF;
-    
-    //! This typedef is in lieu of compiler support for template template
-    //! arguments.
-    
-    typedef FieldGroup<typename MT::template cctf<double>,
-	typename MT::template cctf<int>, typename MT::template cctf<long>,
-	typename MT::template cctf<DoubleContainer> > CCTF;
-    
-    //! This typedef is in lieu of compiler support for template template
-    //! arguments.
-    
-    typedef FieldGroup<typename MT::template fcdtf<double>,
-	typename MT::template fcdtf<int>, typename MT::template fcdtf<long>,
-	typename MT::template fcdtf<DoubleContainer> > FCDTF;
-    
-    //! This typedef is in lieu of compiler support for template template
-    //! arguments.
-    
-    typedef FieldGroup<typename MT::template nctf<double>,
-	typename MT::template nctf<int>, typename MT::template nctf<long>,
-	typename MT::template nctf<DoubleContainer> > NCTF;
-    
-    //! This typedef is in lieu of compiler support for template template
-    //! arguments.
-    
-    typedef FieldGroup<typename MT::template vctf<double>,
-	typename MT::template vctf<int>, typename MT::template vctf<long>,
-	typename MT::template vctf<DoubleContainer> > VCTF;
+    typedef typename MTFactory::Structured Structured;
+    typedef typename MTFactory::UnStructured UnStructured;
+    typedef typename MTFactory::Structuring Structuring;
     
     // DATA
-
-  private:
-
+    
     MTFactory &meshFactory_m;
     
     std::ostream &os_m;
@@ -120,10 +84,10 @@ class TestMTFields
   public:
 
     // CREATORS
-    
+
     //! Constructor
     
-    TestMTFields(MTFactory &meshFactory_in, std::ostream &os_in)
+    TestMTConnFacesArroundVrtx(MTFactory &meshFactory_in, std::ostream &os_in)
 	: meshFactory_m(meshFactory_in), os_m(os_in),
 	  passed_m(false)
     {
@@ -132,38 +96,44 @@ class TestMTFields
 
     //! Destructor
     
-    ~TestMTFields() { /* empty */ }
+    ~TestMTConnFacesArroundVrtx() { /* empty */ }
 
     // MANIPULATORS
 
-    //! Primary interface into this class.
+    //! Main interface to testing class.
     
-    template<class FGRP>
-    void run(const std::string &name_in);
-    
+    void run();
+
     // ACCESSORS
 
     //! Returns success of previously ran run() method.
     
     bool passed() const { return passed_m; }
-
+    
   private:
     
     // DISSALLOWED CREATORS
 
-    TestMTFields(const TestMTFields &rhs);
+    TestMTConnFacesArroundVrtx(const TestMTConnFacesArroundVrtx &rhs);
 
     // DISSALLOWED MANIPULATORS
     
-    TestMTFields& operator=(const TestMTFields &rhs);
+    TestMTConnFacesArroundVrtx& operator=(const TestMTConnFacesArroundVrtx &rhs);
 
     // IMPLEMENTATION
+
+    void error(bool &passed, const std::string &msg);
+
+    void run(Structured);
+
+    void run(UnStructured);
+
 };
 
 } // end namespace rtt_meshTest
 
-#endif                          // __meshTest_TestMTFields_hh__
+#endif                          // __meshTest_TestMTConnFacesArroundVrtx_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of meshTest/TestMTFields.hh
+//                              end of meshTest/TestMTConnFacesArroundVrtx.hh
 //---------------------------------------------------------------------------//

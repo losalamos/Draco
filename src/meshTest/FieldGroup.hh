@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// FieldGroup.hh
-// Randy M. Roberts
-// Mon Aug 23 17:43:11 1999
-// $Id$
+/*!
+ * \file   meshTest/FieldGroup.hh
+ * \author Randy M. Roberts
+ * \date   Mon Aug 23 17:43:11 1999
+ * \brief  Header file for the FieldGroup class.
+ */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __meshTest_FieldGroup_hh__
@@ -14,10 +16,11 @@ namespace rtt_meshTest
 {
  
 //===========================================================================//
-// class FieldGroup - 
-//
-// Purpose :
-//
+/*!
+ * \class FieldGroup
+ * \brief This class exists because our compiler does not yet support
+ *        template template arguments.
+ */
 // revision history:
 // -----------------
 // 0) original

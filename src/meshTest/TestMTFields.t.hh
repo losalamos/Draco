@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// TestMTFields.t.hh
-// Randy M. Roberts
-// Mon Aug 23 16:49:16 1999
-// $Id$
+/*!
+ * \file   meshTest/TestMTFields.t.hh
+ * \author Shawn Pautz, Randy M. Roberts
+ * \date   Mon Aug 23 16:49:16 1999
+ * \brief  Implementation file for the TestMTFields class.
+ */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "TestMTFields.hh"

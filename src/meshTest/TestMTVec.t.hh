@@ -1,12 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// TestMTVec.t.hh
-// Shawn Pautz
-// Wed Dec 23 17:00:00 1998
+/*!
+ * \file   meshTest/TestMTVec.t.hh
+ * \author Shawn Pautz, Randy M. Roberts
+ * \date   Wed Dec 23 17:00:00 1998
+ * \brief  Implementation file fort the TestMTVec class.
+ */
 //---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-// This program tests the MT::ccvsf::value_type container as a model
-// of a DoubleVec.
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "TestMTVec.hh"

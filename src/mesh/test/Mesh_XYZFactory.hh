@@ -34,26 +34,22 @@ class Mesh_XYZFactory
   public:
 
     typedef Mesh_XYZ MT;
+
+    // Nested Product Class to be defined below.
     
-    class Product
-    {
-	dsxx::SP<Mesh_XYZ> spmesh_m;
-	Mesh_XYZ::FieldConstructor fCtor_m;
-	
-      public:
-	
-	Product(const dsxx::SP<Mesh_XYZ> &spmesh_in)
-	    : spmesh_m(spmesh_in), fCtor_m(spmesh_in)
-	{
-	    // empty
-	}
-	
-	Mesh_XYZ &mesh() { return *spmesh_m; }
-	Mesh_XYZ::FieldConstructor &fieldConstructor()
-	{
-	    return fCtor_m;
-	}
-    };
+    class Product;
+
+    // These classes are tags required by some clients.
+
+    struct Structured { /* empty */ };
+    struct UnStructured { /* empty */ };
+
+    // This Structuring typedef is used for the client to switch,
+    // at compile time, between which methods are instantiated and invoked.
+    //
+    // This particular mesh factory produces a "Structured" mesh.
+    
+    typedef Structured Structuring;
 
   private:
     
@@ -62,6 +58,10 @@ class Mesh_XYZFactory
     const Mesh_DB &mdb_m;
     
   public:
+
+    // STATIC METHODS
+
+    static int Dimension() { return 3; }
 
     // CREATORS
     
@@ -80,10 +80,7 @@ class Mesh_XYZFactory
     
     // ACCESSORS
 
-    Product create() const
-    {
-	return Product(dsxx::SP<Mesh_XYZ>(new Mesh_XYZ(mdb_m)));
-    }
+    inline Product create() const;
 
   private:
     
@@ -97,6 +94,36 @@ class Mesh_XYZFactory
 
     // IMPLEMENTATION
 };
+
+// Class that contains both a mesh and a field constructor.
+
+class Mesh_XYZFactory::Product
+{
+    dsxx::SP<Mesh_XYZ> spmesh_m;
+    Mesh_XYZ::FieldConstructor fCtor_m;
+	
+  public:
+	
+    Product(const dsxx::SP<Mesh_XYZ> &spmesh_in)
+	: spmesh_m(spmesh_in), fCtor_m(spmesh_in)
+    {
+	// empty
+    }
+	
+    Mesh_XYZ &mesh() { return *spmesh_m; }
+    Mesh_XYZ::FieldConstructor &fieldConstructor()
+    {
+	return fCtor_m;
+    }
+};
+
+// This inline function must be defined after nested Product class
+// is defined.
+
+inline Mesh_XYZFactory::Product Mesh_XYZFactory::create() const
+{
+    return Product(dsxx::SP<Mesh_XYZ>(new Mesh_XYZ(mdb_m)));
+}
 
 } // end namespace rtt_mesh_test
 

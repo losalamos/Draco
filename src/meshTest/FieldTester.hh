@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// FieldTester.hh
-// Randy M. Roberts
-// Mon Aug 23 16:49:40 1999
-// $Id$
+/*!
+ * \file   meshTest/FieldTester.hh
+ * \author Shawn Pautz, Randy M. Roberts
+ * \date   Mon Aug 23 16:49:40 1999
+ * \brief  Header file for the FieldTester class.
+ */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __meshTest_FieldTester_hh__
@@ -16,7 +18,11 @@ namespace rtt_meshTest
 {
  
 //===========================================================================//
-// class FieldTester - 
+/*!
+ * \class FieldTester
+ * \brief Class used by TestMTFields in order to test compliance
+ *  of MT nested containers to the concepts needed by "Solon."
+ */
 //
 // Purpose :
 //
