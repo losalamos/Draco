@@ -456,6 +456,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   # add suppression of long long errors if the compiler is
 	   # KCC 
 	   if test "${CXX}" = KCC && test "${enable_strict_ansi}" = yes ; then
+	       AC_MSG_WARN("KCC strict option set to allow long long type")
+	       AC_MSG_WARN("because of MPT mpi implementation!")
 	       STRICTFLAG="${STRICTFLAG} --diag_suppress 450"
 	   fi
        fi
