@@ -53,6 +53,7 @@ else
 endif
 	$(RM) lib*_$(env).* x*_$(env)
 	$(RM) $(tstprogs)
+	$(RM) -rf ii_files
 
 .env_$(env):
 	@if [ ! -d $(env) ]; then mkdir $(env); fi;
