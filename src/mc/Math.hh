@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 // Math.hh
-// Thomas M. Evans
+// Thomas M. Evans and Todd J. Urbatsch
 // Fri Mar 20 13:20:50 1998
 //---------------------------------------------------------------------------//
 // @> MC::global namespace math functions
@@ -19,6 +19,7 @@
 // 0) original
 // 1) 04-13-99 : moved into mc package 
 // 2) 08-04-00 : modified soft_equiv to handle comparisons to zero.
+// 3) 08-24-00 : added mod_with_2e9 function.
 //
 //===========================================================================//
 
@@ -174,6 +175,23 @@ inline T max(T A, T B)
 {
     return A > B ? A : B;
 }
+
+//---------------------------------------------------------------------------//
+// modulo a nonnegative integer with 2e9 
+
+inline int mod_with_2e9(const int value)
+{
+    Require (value >= 0);
+
+    int two_billion = 2e9;
+    int mod_value = value % two_billion;
+    
+    Ensure (mod_value < two_billion);
+    Ensure (mod_value >= 0);
+
+    return mod_value;
+}
+
 
 } // end namespace global
 } // end namespace rtt_mc
