@@ -8,6 +8,7 @@
 
 #include "Tally.hh"
 #include <iomanip>
+#include <vector>
 
 namespace rtt_imc 
 {
@@ -18,6 +19,7 @@ using std::ios;
 using std::setiosflags;
 using std::endl;
 using std::ostream;
+using std::vector;
 
 using rtt_dsxx::SP;
 
@@ -28,10 +30,11 @@ using rtt_dsxx::SP;
 
 template<class MT>
 Tally<MT>::Tally(SP<MT> mesh)
-    : energy_dep(mesh), energy_dep_tot(0), eweighted_pathlen(mesh),
-      census_energy(mesh), new_ecen_tot(0), new_ncen(mesh), new_ncen_tot(0),
-      evol_net(mesh), n_effscat(0), n_thomscat(0), n_killed(0), ew_killed(0), 
-      n_escaped(0), ew_escaped(0), n_bndcross(0), n_reflections(0)
+    : energy_dep(mesh), energy_dep_tot(0), momentum_dep(mesh),
+      eweighted_pathlen(mesh), census_energy(mesh), new_ecen_tot(0), 
+      new_ncen(mesh), new_ncen_tot(0), evol_net(mesh), n_effscat(0), 
+      n_thomscat(0), n_killed(0), ew_killed(0), n_escaped(0), ew_escaped(0), 
+      n_bndcross(0), n_reflections(0)
 {}
 
 //---------------------------------------------------------------------------//
@@ -39,11 +42,11 @@ Tally<MT>::Tally(SP<MT> mesh)
 
 template<class MT>
 Tally<MT>::Tally(SP<MT> mesh, typename MT::CCSF_double evol_net_)
-    : energy_dep(mesh), energy_dep_tot(0), eweighted_pathlen(mesh),
-      census_energy(mesh), new_ecen_tot(0), new_ncen(mesh), new_ncen_tot(0),
-      evol_net(evol_net_), n_effscat(0), n_thomscat(0), n_killed(0), 
-      ew_killed(0), n_escaped(0), ew_escaped(0), n_bndcross(0), 
-      n_reflections(0)
+    : energy_dep(mesh), energy_dep_tot(0), momentum_dep(mesh),
+      eweighted_pathlen(mesh), census_energy(mesh), new_ecen_tot(0), 
+      new_ncen(mesh), new_ncen_tot(0), evol_net(evol_net_), n_effscat(0), 
+      n_thomscat(0), n_killed(0), ew_killed(0), n_escaped(0), ew_escaped(0), 
+      n_bndcross(0), n_reflections(0)
 {
     Ensure (*mesh == evol_net.get_Mesh());
 }
@@ -58,6 +61,17 @@ void Tally<MT>::deposit_energy(const int cell, const double energy)
     energy_dep(cell) += energy;
     energy_dep_tot   += energy;
 }
+
+template<class MT>
+void Tally<MT>::accumulate_momentum(const int cell, const double energy_wt, 
+				    const vector<double> omega)
+{
+    Check (omega.size() == momentum_dep.size());
+
+    for (int dim = 1; dim <= omega.size(); dim++)
+	momentum_dep(dim, cell) += energy_wt * omega[dim-1];
+}
+
 
 template<class MT>
 void Tally<MT>::accumulate_ewpl(const int cell, const double ewpl)
@@ -97,6 +111,21 @@ void Tally<MT>::print(ostream &out) const
 	    << setw(15) << setiosflags(ios::scientific) << census_energy(i) 
 	    << setw(15) << setiosflags(ios::scientific) << new_ncen(i) 
 	    << endl;
+
+    out << setw(8)  << setiosflags(ios::right) << "Cell"
+	<< setw(20) << "momentum deposition"   << endl;
+    out << "------------------------------------" 
+	<< "------------------------------------" << endl;
+
+    out.precision(4);
+    for (int i = 1; i <= momentum_dep.get_Mesh().num_cells(); i++)
+    {
+	out << setw(8) << i;
+	for (int dim = 1; dim <= momentum_dep.size(); dim++)
+	    out << setw(15) << setiosflags(ios::scientific) 
+		<< momentum_dep(dim, i);
+	out << endl;
+    }
 
     out << endl;
     out << "Total new census energy: " 

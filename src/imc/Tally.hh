@@ -1,7 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
-// Tally.hh
-// Todd J. Urbatsch
-// Mon Apr  6 14:38:03 1998
+/*!
+ * \file   imc/Tally.hh
+ * \author Todd J. Urbatsch
+ * \date   Mon Apr  6 14:38:03 1998
+ * \brief  IMC Tally class header file.
+ */
 //---------------------------------------------------------------------------//
 // @> Tally class header file
 //---------------------------------------------------------------------------//
@@ -22,11 +25,13 @@
 // 2) 07-28-98  Added accumulation of thomson scatters
 // 3) 08-31-98  Added cell volume accessor function 
 // 4) 08-31-98  Added additional constructor for evol_net storage
+// 5) 04-19-00  Added momentum deposition, accumulators, accessors.
 // 
 //===========================================================================//
 
 #include "ds++/SP.hh"
 #include <iostream>
+#include <vector>
 
 namespace rtt_imc 
 {
@@ -37,6 +42,8 @@ class Tally
   private:
     typename MT::CCSF_double energy_dep;
     double energy_dep_tot;
+
+    typename MT::CCVF_double momentum_dep;
 
     typename MT::CCSF_double eweighted_pathlen;
     typename MT::CCSF_double census_energy;
@@ -71,6 +78,13 @@ class Tally
     inline double get_energy_dep(const int cell) const;
     inline double get_energy_dep_tot() const;
     double get_evol_net(int cell) const { return evol_net(cell); }
+
+    // accumulate momentum deposition
+    void accumulate_momentum(const int cell, const double energy_wt, 
+			     const std::vector<double> omega);
+
+    // access momentum deposition
+    inline std::vector<double> get_momentum_dep(const int cell) const;
 
     // accumulate energy-weighted path length
     void accumulate_ewpl(const int cell, const double ewpl);
@@ -138,6 +152,14 @@ template<class MT>
 inline double Tally<MT>::get_energy_dep_tot() const
 { 
     return energy_dep_tot; 
+}
+
+//---------------------------------------------------------------------------//
+
+template<class MT>
+inline std::vector<double> Tally<MT>::get_momentum_dep(const int cell) const
+{
+    return momentum_dep(cell); 
 }
 
 //---------------------------------------------------------------------------//
