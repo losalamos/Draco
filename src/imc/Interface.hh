@@ -13,7 +13,6 @@
 #define __imc_Interface_hh__
 
 #include "ds++/SP.hh"
-#include "matprops/InterpedMaterialProps.hh"
 #include <vector>
 #include <string>
 
@@ -83,10 +82,6 @@ class Interface
    
     // timestep
     virtual double get_delta_t() const = 0;
-
-    // material data
-    virtual int_vec get_material_id() const = 0;
-    virtual SP_Matprop get_matprops() const = 0;
 
     // functions required by Source_Init and Parallel_Source_Init
 
