@@ -1,6 +1,6 @@
 # Grace project file
 #
-@version 50110
+@version 50114
 @page size 792, 612
 @page scroll 5%
 @page inout 5%
@@ -45,7 +45,7 @@
 @default font 0
 @default char size 1.000000
 @default symbol size 1.000000
-@default sformat "%16.8g"
+@default sformat "%.8g"
 @background color 0
 @page background fill on
 @timestamp off
@@ -54,7 +54,7 @@
 @timestamp rot 0
 @timestamp font 0
 @timestamp char size 1.000000
-@timestamp def "Thu Sep  4 15:33:44 2003"
+@timestamp def "Wed Apr 28 19:43:47 2004"
 @r0 off
 @link r0 to g0
 @r0 type above
@@ -101,15 +101,15 @@
 @g0 fixedpoint format general general
 @g0 fixedpoint prec 6, 6
 @with g0
-@    world xmin 0
-@    world xmax 23
-@    world ymin 1
-@    world ymax 10000
+@    world xmin 0.75
+@    world xmax 4.25
+@    world ymin 8000
+@    world ymax 25000
 @    stack world 0, 0, 0, 0
 @    znorm 1
 @    view xmin 0.150000
 @    view xmax 1.150000
-@    view ymin 0.250000
+@    view ymin 0.150000
 @    view ymax 0.850000
 @    title ""
 @    title font 0
@@ -120,7 +120,7 @@
 @    subtitle size 1.000000
 @    subtitle color 1
 @    xaxes scale Normal
-@    yaxes scale Logarithmic
+@    yaxes scale Normal
 @    xaxes invert off
 @    yaxes invert off
 @    xaxis  on
@@ -138,7 +138,7 @@
 @    xaxis  label color 1
 @    xaxis  label place normal
 @    xaxis  tick on
-@    xaxis  tick major 5
+@    xaxis  tick major 1
 @    xaxis  tick minor ticks 1
 @    xaxis  tick default 6
 @    xaxis  tick place rounded true
@@ -146,7 +146,7 @@
 @    xaxis  tick major size 1.000000
 @    xaxis  tick major color 1
 @    xaxis  tick major linewidth 1.0
-@    xaxis  tick major linestyle 0
+@    xaxis  tick major linestyle 1
 @    xaxis  tick major grid off
 @    xaxis  tick minor color 1
 @    xaxis  tick minor linewidth 1.0
@@ -159,7 +159,7 @@
 @    xaxis  ticklabel formula ""
 @    xaxis  ticklabel append ""
 @    xaxis  ticklabel prepend ""
-@    xaxis  ticklabel angle 90
+@    xaxis  ticklabel angle 0
 @    xaxis  ticklabel skip 0
 @    xaxis  ticklabel stagger 0
 @    xaxis  ticklabel place normal
@@ -174,51 +174,15 @@
 @    xaxis  ticklabel color 1
 @    xaxis  tick place both
 @    xaxis  tick spec type both
-@    xaxis  tick spec 22
-@    xaxis  tick major 0,                1
-@    xaxis  ticklabel 0, "c4"
-@    xaxis  tick major 1,                2
-@    xaxis  ticklabel 1, "cdi"
-@    xaxis  tick major 2,                3
-@    xaxis  ticklabel 2, "cdi_analytic"
-@    xaxis  tick major 3,                4
-@    xaxis  ticklabel 3, "cdi_eospac"
-@    xaxis  tick major 4,                5
-@    xaxis  ticklabel 4, "cdi_gandolf"
-@    xaxis  tick major 5,                6
-@    xaxis  ticklabel 5, "ds++"
-@    xaxis  tick major 6,                7
-@    xaxis  ticklabel 6, "imc"
-@    xaxis  tick major 7,                8
-@    xaxis  ticklabel 7, "lapack_wrap"
-@    xaxis  tick major 8,                9
-@    xaxis  ticklabel 8, "mc"
-@    xaxis  tick major 9,               10
-@    xaxis  ticklabel 9, "meshReaders"
-@    xaxis  tick major 10,               11
-@    xaxis  ticklabel 10, "meshReaders_Services"
-@    xaxis  tick major 11,               12
-@    xaxis  ticklabel 11, "pcgWrap"
-@    xaxis  tick major 12,               13
-@    xaxis  ticklabel 12, "plot2D"
-@    xaxis  tick major 13,               14
-@    xaxis  ticklabel 13, "quadrature"
-@    xaxis  tick major 14,               15
-@    xaxis  ticklabel 14, "rng"
-@    xaxis  tick major 15,               16
-@    xaxis  ticklabel 15, "RTT_Format_Reader"
-@    xaxis  tick major 16,               17
-@    xaxis  ticklabel 16, "stdheaders"
-@    xaxis  tick major 17,               18
-@    xaxis  ticklabel 17, "timestep"
-@    xaxis  tick major 18,               19
-@    xaxis  ticklabel 18, "traits"
-@    xaxis  tick major 19,               20
-@    xaxis  ticklabel 19, "units"
-@    xaxis  tick major 20,               21
-@    xaxis  ticklabel 20, "viz"
-@    xaxis  tick major 21,               22
-@    xaxis  ticklabel 21, "xm"
+@    xaxis  tick spec 4
+@    xaxis  tick major 0, 1
+@    xaxis  ticklabel 0, "draco-3_0_0"
+@    xaxis  tick major 1, 2
+@    xaxis  ticklabel 1, "draco-3_2_0"
+@    xaxis  tick major 2, 3
+@    xaxis  ticklabel 2, "draco-4_0_0"
+@    xaxis  tick major 3, 4
+@    xaxis  ticklabel 3, "draco-5_0_0"
 @    yaxis  on
 @    yaxis  type zero false
 @    yaxis  offset 0.000000 , 0.000000
@@ -226,7 +190,7 @@
 @    yaxis  bar color 1
 @    yaxis  bar linestyle 1
 @    yaxis  bar linewidth 1.0
-@    yaxis  label "Lines-of-Code (LOC)"
+@    yaxis  label "LOC (Lines of Code)"
 @    yaxis  label layout para
 @    yaxis  label place auto
 @    yaxis  label char size 1.000000
@@ -234,8 +198,8 @@
 @    yaxis  label color 1
 @    yaxis  label place normal
 @    yaxis  tick on
-@    yaxis  tick major 10
-@    yaxis  tick minor ticks 9
+@    yaxis  tick major 5000
+@    yaxis  tick minor ticks 2
 @    yaxis  tick default 6
 @    yaxis  tick place rounded true
 @    yaxis  tick in
@@ -273,8 +237,8 @@
 @    altxaxis  off
 @    altyaxis  off
 @    legend on
-@    legend loctype world
-@    legend 17, 8000
+@    legend loctype view
+@    legend 0.85, 0.8
 @    legend box color 1
 @    legend box pattern 1
 @    legend box linewidth 1.0
@@ -297,12 +261,12 @@
 @    frame background pattern 0
 @    s0 hidden false
 @    s0 type xy
-@    s0 symbol 0
-@    s0 symbol size 1.000000
+@    s0 symbol 1
+@    s0 symbol size 0.400000
 @    s0 symbol color 1
 @    s0 symbol pattern 1
 @    s0 symbol fill color 1
-@    s0 symbol fill pattern 0
+@    s0 symbol fill pattern 8
 @    s0 symbol linewidth 1.0
 @    s0 symbol linestyle 1
 @    s0 symbol char 65
@@ -342,16 +306,16 @@
 @    s0 errorbar riser linestyle 1
 @    s0 errorbar riser clip off
 @    s0 errorbar riser clip length 0.100000
-@    s0 comment "/home/tme/imc/draco/doc/releases/loc.dat"
-@    s0 legend  "Component Source"
+@    s0 comment "x"
+@    s0 legend  "Executable Code"
 @    s1 hidden false
 @    s1 type xy
-@    s1 symbol 0
-@    s1 symbol size 1.000000
+@    s1 symbol 4
+@    s1 symbol size 0.400000
 @    s1 symbol color 2
 @    s1 symbol pattern 1
 @    s1 symbol fill color 2
-@    s1 symbol fill pattern 0
+@    s1 symbol fill pattern 8
 @    s1 symbol linewidth 1.0
 @    s1 symbol linestyle 1
 @    s1 symbol char 65
@@ -391,203 +355,19 @@
 @    s1 errorbar riser linestyle 1
 @    s1 errorbar riser clip off
 @    s1 errorbar riser clip length 0.100000
-@    s1 comment "/home/tme/imc/draco/doc/releases/loc.dat"
-@    s1 legend  "Unit Tests"
-@    s2 hidden false
-@    s2 type xy
-@    s2 symbol 0
-@    s2 symbol size 1.000000
-@    s2 symbol color 3
-@    s2 symbol pattern 1
-@    s2 symbol fill color 3
-@    s2 symbol fill pattern 0
-@    s2 symbol linewidth 1.0
-@    s2 symbol linestyle 1
-@    s2 symbol char 65
-@    s2 symbol char font 0
-@    s2 symbol skip 0
-@    s2 line type 1
-@    s2 line linestyle 1
-@    s2 line linewidth 1.0
-@    s2 line color 3
-@    s2 line pattern 1
-@    s2 baseline type 0
-@    s2 baseline off
-@    s2 dropline off
-@    s2 fill type 0
-@    s2 fill rule 0
-@    s2 fill color 1
-@    s2 fill pattern 1
-@    s2 avalue off
-@    s2 avalue type 2
-@    s2 avalue char size 1.000000
-@    s2 avalue font 0
-@    s2 avalue color 1
-@    s2 avalue rot 0
-@    s2 avalue format general
-@    s2 avalue prec 3
-@    s2 avalue prepend ""
-@    s2 avalue append ""
-@    s2 avalue offset 0.000000 , 0.000000
-@    s2 errorbar on
-@    s2 errorbar place both
-@    s2 errorbar color 3
-@    s2 errorbar pattern 1
-@    s2 errorbar size 1.000000
-@    s2 errorbar linewidth 1.0
-@    s2 errorbar linestyle 1
-@    s2 errorbar riser linewidth 1.0
-@    s2 errorbar riser linestyle 1
-@    s2 errorbar riser clip off
-@    s2 errorbar riser clip length 0.100000
-@    s2 comment "/home/tme/imc/draco/doc/releases/loc.dat"
-@    s2 legend  "DBC"
-@    s3 hidden false
-@    s3 type xy
-@    s3 symbol 0
-@    s3 symbol size 1.000000
-@    s3 symbol color 4
-@    s3 symbol pattern 1
-@    s3 symbol fill color 4
-@    s3 symbol fill pattern 0
-@    s3 symbol linewidth 1.0
-@    s3 symbol linestyle 1
-@    s3 symbol char 65
-@    s3 symbol char font 0
-@    s3 symbol skip 0
-@    s3 line type 1
-@    s3 line linestyle 1
-@    s3 line linewidth 1.0
-@    s3 line color 4
-@    s3 line pattern 1
-@    s3 baseline type 0
-@    s3 baseline off
-@    s3 dropline off
-@    s3 fill type 0
-@    s3 fill rule 0
-@    s3 fill color 1
-@    s3 fill pattern 1
-@    s3 avalue off
-@    s3 avalue type 2
-@    s3 avalue char size 1.000000
-@    s3 avalue font 0
-@    s3 avalue color 1
-@    s3 avalue rot 0
-@    s3 avalue format general
-@    s3 avalue prec 3
-@    s3 avalue prepend ""
-@    s3 avalue append ""
-@    s3 avalue offset 0.000000 , 0.000000
-@    s3 errorbar on
-@    s3 errorbar place both
-@    s3 errorbar color 4
-@    s3 errorbar pattern 1
-@    s3 errorbar size 1.000000
-@    s3 errorbar linewidth 1.0
-@    s3 errorbar linestyle 1
-@    s3 errorbar riser linewidth 1.0
-@    s3 errorbar riser linestyle 1
-@    s3 errorbar riser clip off
-@    s3 errorbar riser clip length 0.100000
-@    s3 comment "/home/tme/imc/draco/doc/releases/loc.dat"
-@    s3 legend  "Comments"
+@    s1 comment "/data/tme/rtt/draco/doc/code_stats/x"
+@    s1 legend  "Unit-test Code"
 @target G0.S0
 @type xy
-               1              582
-               2              372
-               3              502
-               4              424
-               5              665
-               6             1459
-               7             4588
-               8               77
-               9             4877
-              10              657
-              11              266
-              12              224
-              13              226
-              14              560
-              15              115
-              16             1265
-              17                4
-              18              334
-              19               87
-              20               90
-              21              361
-              22              157
+1 16963
+2 17534
+3 17892
+4 8363
 &
 @target G0.S1
 @type xy
-               1              407
-               2              772
-               3              488
-               4              198
-               5              713
-               6             5489
-               7             5289
-               8              116
-               9             5388
-              10              831
-              11              269
-              12               79
-              13               75
-              14               64
-              15              158
-              16             1041
-              17                0
-              18              127
-              19               49
-              20                0
-              21               74
-              22              257
-&
-@target G0.S2
-@type xy
-               1               19
-               2               60
-               3              110
-               4                5
-               5               25
-               6              161
-               7              817
-               8               37
-               9              680
-              10               33
-              11                9
-              12                9
-              13               20
-              14               48
-              15               15
-              16               38
-              17                0
-              18               16
-              19                9
-              20                3
-              21               20
-              22                4
-&
-@target G0.S3
-@type xy
-               1             1150
-               2             2748
-               3             1334
-               4             1457
-               5             2786
-               6             3150
-               7             8606
-               8              325
-               9             9121
-              10              912
-              11              455
-              12              389
-              13              595
-              14              740
-              15              550
-              16             2671
-              17               54
-              18              785
-              19              244
-              20              274
-              21              483
-              22              400
+1 20153
+2 20909
+3 21884
+4 12479
 &
