@@ -17,8 +17,6 @@
 #include "imctest/Random.hh"
 #include "imctest/Math.hh"
 #include "ds++/SP.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -36,11 +34,6 @@ using IMC::Random;
 using IMC::Particle_Stack;
 using IMC::Global::operator<<;
 using namespace std;
-using namespace C4;
-
-// declare node
-int mynode;
-int mynodes;
 
 template<class MT>
 void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
@@ -48,14 +41,7 @@ void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
 {
   // do some diagnostic checks
 
-    string title;
-
-    if (mynode == 0) 
-	title = "0.dat";
-    if (mynode == 1)
-	title = "1.dat";
-    if (mynode == 2)
-	title = "2.dat";
+    string title = "try.dat";
 
     ofstream output(title.c_str());
 
@@ -204,12 +190,6 @@ void Run_Particle(const MT &mesh, const Opacity<MT> &opacity,
 
 int main(int argc, char *argv[])
 {
-
-  // init C4 stuff
-    Init(argc, argv);
-    mynode  = C4::node();
-    mynodes = C4::nodes();
-
   // declare geometry and material stuff
     SP<OS_Mesh> mesh;
     SP< Mat_State<OS_Mesh> > mat_state;
@@ -217,15 +197,7 @@ int main(int argc, char *argv[])
 
   // scoping blocks for build-stuff
     {
-	string infile;
-
-	if (mynode == 0)
-	    for (int i = 0; i < 100000; i++);
-	
-	{
-	    HTSyncSpinLock h;
-	    cout << "Input file on " << mynode << ": " << endl;
-	}
+	string infile = argv[1];
 
       // run the interface parser
 	SP<OS_Interface> interface = new OS_Interface(infile);
@@ -264,9 +236,6 @@ int main(int argc, char *argv[])
   // }
   // cout << " Total energy deposited = " 
   //      << tally->get_energy_dep_tot() << endl;
-    
-  // c4 end
-    Finalize();
 }
 
 
