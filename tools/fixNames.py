@@ -2,7 +2,7 @@
 ## fixNames.py
 ## Thomas M. Evans
 ## Tue Feb  8 15:34:20 2000
-## Time-stamp: <00/02/08 17:18:46 tme>
+## Time-stamp: <00/02/08 18:48:18 tme>
 ###############################################################################
 ##---------------------------------------------------------------------------##
 ## fixNames
@@ -31,13 +31,14 @@ for files in dirlist:
         (match2, mc2) = re.subn(r'namespace\s+dsxx', "namespace rtt_dsxx", match)
         (match3, mc3) = re.subn("\(dsxx::", "(rtt_dsxx::", match2)
         (match4, mc4) = re.subn(",dsxx::", ",rtt_dsxx::", match3)
+        (match5, mc5) = re.subn("<dsxx::", "<rtt_dsxx::", match4)
 
         # output modified files and count
-        count = mc + mc2 + mc3 + mc4
+        count = mc + mc2 + mc3 + mc4 + mc5
     
         if count > 0:
             new_file = open(file, 'w')
-            new_file.write(match4)
+            new_file.write(match5)
             print "Replaced %d expressions in %s" % (count, file)
     
 ###############################################################################
