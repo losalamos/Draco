@@ -201,9 +201,49 @@ AC_DEFUN(AC_PCG_SETUP, [dnl
    # set up the libraries
    if test "${with_pcg}" != no ; then
        if test -z "${PCG_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_pcg, -lpcg)
+	   AC_VENDORLIB_SETUP(vendor_pcg, -l${with_pcg})
        elif test -n "${PCG_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_pcg, -L${PCG_LIB} -lpcg)
+	   AC_VENDORLIB_SETUP(vendor_pcg, -L${PCG_LIB} -l${with_pcg})
+       fi
+   fi
+
+   dnl note that we add some system-specific libraries for this
+   dnl vendor in AC_DRACO_ENV; also, the user must set up LAPACK for
+   dnl this to work
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_GANDOLF_SETUP
+dnl
+dnl GANDOLF LIBRARY SETUP (on by default)
+dnl GANDOLF is a required vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_GANDOLF_SETUP, [dnl
+
+   dnl define --with-gandolf
+   AC_ARG_WITH(gandolf,        
+      [  --with-gandolf[=lib]    determine the gandolf lib name (gandolf is default)])
+
+   dnl define --with-gandolf-lib
+   AC_WITH_DIR(gandolf-lib, GANDOLF_LIB, \${GANDOLF_LIB_DIR},
+	       [tell where GANDOLF libraries are])
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_gandolf=$1
+
+   # gandolf is set to libgandolf by default
+   if test "${with_gandolf:=gandolf}" = yes ; then
+       with_gandolf='gandolf'
+   fi
+
+   # set up the libraries
+   if test "${with_gandolf}" != no ; then
+       if test -z "${GANDOLF_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_gandolf, -l${with_gandolf})
+       elif test -n "${GANDOLF_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_gandolf, -L${GANDOLF_LIB} -l${with_gandolf})
        fi
    fi
 
@@ -249,9 +289,9 @@ AC_DEFUN(AC_LAPACK_SETUP, [dnl
        # if a library path has been defined use it otherwise assume
        # the libraries are in a default location
        if test -z "${LAPACK_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_lapack, -llapack -lf77blas -latlas)
+	   AC_VENDORLIB_SETUP(vendor_lapack, -llapack -lf77blas -lcblas -latlas)
        elif test -n "${LAPACK_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -llapack -lf77blas -latlas)
+	   AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas)
        fi
 
    fi
@@ -276,6 +316,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_SPRNG_SETUP(pkg)
    AC_PCG_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
+   AC_GANDOLF_SETUP(pkg)
 ])
 
 dnl-------------------------------------------------------------------------dnl

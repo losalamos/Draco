@@ -260,6 +260,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        LDFLAGS="${with_ldflags} ${LDFLAGS}"
    fi
 
+   # check user added libs (using --with-libs); these are appended to
+   # LIBS after the machine-specific setup
+   if test "${with_libs}" = yes ; then
+       AC_MSG_ERROR("Must define libs when using --with-libs")
+   fi
+
    dnl throw message errors for poorly defined flags
    
    if test "${with_cxxflags}" = yes || test "${with_cflags}" = yes ||\
