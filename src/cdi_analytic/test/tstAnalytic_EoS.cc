@@ -255,6 +255,50 @@ void CDI_test()
 
 //---------------------------------------------------------------------------//
 
+void packing_test()
+{
+    typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
+
+    vector<char> packed;
+
+    {
+	// make an analytic model (polynomial specific heats)
+	SP<Polynomial_Model> model(new Polynomial_Model(0.0,1.0,3.0,
+							0.2,0.0,0.0));
+	
+	// make an analtyic eos
+	SP<EoS> eos(new Analytic_EoS(model));
+
+	packed = eos->pack();
+    }
+    
+    Analytic_EoS neos(packed);
+
+    // checks
+    {
+	double T   = 5.0;
+	double rho = 3.0;
+
+	double Cve = T*T*T;
+	double Cvi = 0.2;
+
+	// specific heats
+	if (neos.getElectronHeatCapacity(T,rho) != Cve)           ITFAILS;
+	if (neos.getIonHeatCapacity(T,rho) != Cvi)                ITFAILS;
+
+	// everything else is zero
+	if (neos.getSpecificElectronInternalEnergy(T,rho) != 0.0) ITFAILS;
+	if (neos.getSpecificIonInternalEnergy(T,rho) != 0.0)      ITFAILS;
+	if (neos.getNumFreeElectronsPerIon(T,rho) != 0.0)         ITFAILS;
+	if (neos.getElectronThermalConductivity(T,rho) != 0.0)    ITFAILS;
+    }
+
+    if (rtt_cdi_analytic_test::passed)
+	PASSMSG("Analytic EoS packing/unpacking test successfull.");
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     // version tag
@@ -271,6 +315,8 @@ int main(int argc, char *argv[])
 	// >>> UNIT TESTS
 	analytic_eos_test();
 	CDI_test();
+
+	packing_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {

@@ -1,3 +1,9 @@
+2001-11-26  Thomas M. Evans  <tme@lanl.gov>
+
+	* Analytic_Multigroup_Opacity, Analytic_Gray_Opacity,
+	Analytic_EoS: added packing functionality dictated by GrayOpacity,
+	MultigroupOpacity, and EoS base classes.
+
 2001-11-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* tstAnalytic_Multigroup_Opacity: added analytic multigroup

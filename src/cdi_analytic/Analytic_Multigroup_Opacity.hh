@@ -104,7 +104,7 @@ namespace rtt_cdi_analytic
 				rtt_cdi::Reaction);
 
     // Constructor for packed Analytic_Multigroup_Opacities
-    Analytic_Multigroup_Opacity(const sf_char &);
+    explicit Analytic_Multigroup_Opacity(const sf_char &);
 
     // >>> INTERFACE SPECIFIED BY rtt_cdi::MultigroupOpacity
 

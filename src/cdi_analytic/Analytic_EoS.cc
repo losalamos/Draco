@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Analytic_EoS.hh"
+#include "ds++/Packing_Utils.hh"
 
 namespace rtt_cdi_analytic
 {
@@ -30,6 +31,60 @@ namespace rtt_cdi_analytic
 Analytic_EoS::Analytic_EoS(SP_Analytic_Model model_in)
     : analytic_model(model_in)
 {
+    Ensure (analytic_model);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Unpacking constructor.
+ * 
+ * This constructor rebuilds and Analytic_EoS from a vector<char> that was
+ * created by a call to pack().  It can only rebuild Analytic_Model types
+ * that have been registered in the rtt_cdi_analytic::EoS_Models enumeration.
+ */
+Analytic_EoS::Analytic_EoS(const sf_char &packed)
+{
+    // the packed size must be at least 2 integers (size,
+    // analytic model indicator)
+    Require (packed.size() >= 2 * sizeof(int));
+
+    // make an unpacker
+    rtt_dsxx::Unpacker unpacker;
+
+    // set the buffer
+    unpacker.set_buffer(packed.size(), &packed[0]);
+
+    // unpack the size of the analytic model
+    int size_analytic;
+    unpacker >> size_analytic;
+    Check (size_analytic >= sizeof(int));
+
+    // unpack the packed analytic model
+    std::vector<char> packed_analytic(size_analytic);
+    for (int i = 0; i < size_analytic; i++)
+	unpacker >> packed_analytic[i];
+
+    Check (unpacker.get_ptr() == &packed[0] + packed.size());
+
+    // now reset the buffer so that we can determine the analytic model
+    // indicator
+    unpacker.set_buffer(size_analytic, &packed_analytic[0]);
+    
+    // unpack the indicator
+    int indicator;
+    unpacker >> indicator;
+
+    // now determine which analytic model we need to build
+    if (indicator == POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL)
+    {
+	analytic_model = new Polynomial_Specific_Heat_Analytic_EoS_Model(
+	    packed_analytic);
+    }
+    else
+    {
+	Insist (0, "Unregistered analytic EoS model!");
+    }
+    
     Ensure (analytic_model);
 }
 
@@ -441,8 +496,35 @@ Analytic_EoS::getElectronThermalConductivity(const sf_double &T,
  */
 Analytic_EoS::sf_char Analytic_EoS::pack() const
 {
-    return sf_char();
+    Require (analytic_model);
+
+    // make a packer
+    rtt_dsxx::Packer packer;
+
+    // first pack up the analytic model
+    sf_char anal_model = analytic_model->pack();
+
+    // now add up the total size (in bytes): size of analytic model + 1
+    // int for size of analytic model
+    int size = anal_model.size() + 1 * sizeof(int);
+
+    // make a char array
+    sf_char packed(size);
+
+    // set the buffer
+    packer.set_buffer(size, &packed[0]);
+
+    // pack the anal_model size
+    packer << anal_model.size();
+
+    // now pack the anal model
+    for (int i = 0; i < anal_model.size(); i++)
+	packer << anal_model[i];
+
+    Ensure (packer.get_ptr() == &packed[0] + size);
+    return packed;
 }
+
 } // end namespace rtt_cdi_analytic
 
 //---------------------------------------------------------------------------//

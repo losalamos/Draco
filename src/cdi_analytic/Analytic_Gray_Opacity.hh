@@ -86,7 +86,7 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
     Analytic_Gray_Opacity(SP_Analytic_Model, rtt_cdi::Reaction);
 
     // Constructor for packed Analytic_Gray_Opacities.
-    Analytic_Gray_Opacity(const sf_char &);
+    explicit Analytic_Gray_Opacity(const sf_char &);
 
     // >>> INTERFACE SPECIFIED BY rtt_cdi::GrayOpacity
 

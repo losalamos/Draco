@@ -65,7 +65,10 @@ class Analytic_EoS : public rtt_cdi::EoS
     
   public:
     // Constructor.
-    Analytic_EoS(SP_Analytic_Model);
+    explicit Analytic_EoS(SP_Analytic_Model);
+
+    // Unpacking constructor.
+    explicit Analytic_EoS(const sf_char &);
 
     // >>> INTERFACE SPECIFIED BY rtt_cdi::EoS
 

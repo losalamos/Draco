@@ -242,7 +242,7 @@ Analytic_Gray_Opacity::sf_char Analytic_Gray_Opacity::pack() const
     // make a packer
     rtt_dsxx::Packer packer;
 
-    // first get pack up the analytic model
+    // first pack up the analytic model
     sf_char anal_model = analytic_model->pack();
 
     // now add up the total size (in bytes): size of analytic model + 2
