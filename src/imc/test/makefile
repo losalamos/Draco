@@ -15,24 +15,29 @@ need_c4         := yes
 
 include ../../config/makefile
 
-srcs = 
+srcs =
+
+# async communication test
+ifeq ($(tst),async)
+srcs += testasync.cc
+endif
 
 # parallel test driver
 ifeq ($(tst),p)
 srcs += testp.cc
 endif
 
-# build test driver
+# async parallel test
 ifeq ($(tst),ap)
 srcs += testap.cc
 endif
 
-# more parallelism
+# AMR interface test
 ifeq ($(tst),a)
 srcs += testa.cc
 endif
 
-# source
+# source init test
 ifeq ($(tst),s)
 srcs += tests.cc
 endif
