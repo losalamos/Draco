@@ -22,6 +22,8 @@
 
 #include "timestep/ts_advisor.hh"
 
+namespace rtt_timestep {
+
 class target_ts_advisor : public ts_advisor {
 
 // DATA
@@ -73,6 +75,8 @@ class target_ts_advisor : public ts_advisor {
     bool invariant_satisfied() const;
 
 };
+
+} // end of rtt_timestep namespace
 
 #endif                          // __target_timestep_ts_advisor_hh__
 

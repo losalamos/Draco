@@ -21,6 +21,8 @@
 using std::cout;
 using std::endl;
 
+using namespace rtt_timestep;
+
 test_timestep::test_timestep()
 {
 //empty

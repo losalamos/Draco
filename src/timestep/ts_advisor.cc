@@ -14,6 +14,8 @@ using std::string;
 using std::cout;
 using std::endl;
 
+using namespace rtt_timestep;
+
 ts_advisor::ts_advisor(const string &name_,
 		       const usage_flag usage_,
 		       const bool active_)

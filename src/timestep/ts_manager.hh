@@ -54,6 +54,8 @@
 
 #include <string>
 
+namespace rtt_timestep {
+
 class ts_manager {
 
 // NESTED CLASSES AND TYPEDEFS
@@ -108,6 +110,8 @@ class ts_manager {
     bool invariant_satisfied() const;
 
 };
+
+} // end of rtt_timestep namespace
 
 #endif                          // __timestep_ts_manager_hh__
 

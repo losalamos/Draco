@@ -14,6 +14,8 @@
 
 #include <string>
 
+namespace rtt_timestep {
+
 // FORWARD REFERENCES
 
 class ts_manager; 
@@ -156,6 +158,8 @@ class ts_advisor {
 		       const bool controlling = false) const;
 
 };
+
+} // end of rtt_timestep namespace
 
 #endif                          // __timestep_ts_advisor_hh__
 

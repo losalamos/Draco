@@ -17,15 +17,15 @@
 #include <iostream>
 
 using std::list;
-
-typedef ts_advisor TSA;
-
 using std::endl;
 using std::cerr;
 using std::cout;
 using std::ios;
-
 using dsxx::SP;
+
+using namespace rtt_timestep;
+
+typedef ts_advisor TSA;
 
 ts_manager::ts_manager()
     :time(0.), dt_new(TSA::small()), dt(TSA::small()), cycle(9999),  

@@ -18,6 +18,7 @@
 
 using std::vector;
 
+using namespace rtt_timestep;
 
 vector<double> operator*(double lhs, const vector<double> &rhs)
 {

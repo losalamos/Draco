@@ -17,6 +17,8 @@
 using std::cout;
 using std::endl;
 
+using namespace rtt_timestep;
+
 target_ts_advisor::target_ts_advisor(
     const std::string   &name_,
     const usage_flag usage_,

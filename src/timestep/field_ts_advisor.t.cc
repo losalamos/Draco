@@ -18,6 +18,7 @@
 
 #include <cmath>
 
+using namespace rtt_timestep;
 
 template <class FT>
 void field_ts_advisor::set_floor(const FT &y1, double frac)

@@ -13,8 +13,12 @@
 
 // FORWARD REFERENCES
 
+namespace rtt_timestep {
+
 class ts_manager;
 class field_ts_advisor;
+
+}
 
 //===========================================================================//
 // class dummy_package - Exercizes the field time-step advisors.
@@ -31,16 +35,16 @@ class dummy_package {
 // DATA
   private:
 
-    ts_manager &tsm;
-    dsxx::SP<field_ts_advisor> sp_te;
-    dsxx::SP<field_ts_advisor> sp_ti;
-    dsxx::SP<field_ts_advisor> sp_ri; 
+    rtt_timestep::ts_manager &tsm;
+    dsxx::SP<rtt_timestep::field_ts_advisor> sp_te;
+    dsxx::SP<rtt_timestep::field_ts_advisor> sp_ti;
+    dsxx::SP<rtt_timestep::field_ts_advisor> sp_ri; 
 
 
 // CREATORS
 
   public:
-    dummy_package(ts_manager &tsm_);
+    dummy_package(rtt_timestep::ts_manager &tsm_);
     ~dummy_package();
 
 // MANIPULATORS

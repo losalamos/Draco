@@ -15,6 +15,8 @@
 using std::cout;
 using std::endl;
 
+using namespace rtt_timestep;
+
 fixed_ts_advisor::fixed_ts_advisor(const std::string &name_,
 				   const usage_flag usage_,
 				   const double fixed_value_,

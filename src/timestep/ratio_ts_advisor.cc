@@ -17,6 +17,8 @@
 using std::cout;
 using std::endl;
 
+using namespace rtt_timestep;
+
 ratio_ts_advisor::ratio_ts_advisor(const std::string &name_,
 				   const usage_flag usage_,
 				   const double ratio_value_,

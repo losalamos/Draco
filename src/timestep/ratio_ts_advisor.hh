@@ -22,6 +22,8 @@
 
 #include "timestep/ts_advisor.hh"
 
+namespace rtt_timestep {
+
 class ratio_ts_advisor : public ts_advisor {
 
 
@@ -73,6 +75,8 @@ class ratio_ts_advisor : public ts_advisor {
     bool invariant_satisfied() const;
 
 };
+
+} // end of rtt_timestep namespace
 
 #endif                          // __timestep_ratio_ts_advisor_hh__
 

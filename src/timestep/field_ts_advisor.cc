@@ -17,6 +17,8 @@
 using std::cout;
 using std::endl;
 
+using namespace rtt_timestep;
+
 field_ts_advisor::field_ts_advisor(const std::string &name_,
 				   const usage_flag usage_,
 				   const update_method_flag update_method_,

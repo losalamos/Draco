@@ -24,6 +24,8 @@
 
 using std::cerr;
 
+namespace rtt_timestep {
+
 class field_ts_advisor : public ts_advisor {
 
 // NESTED CLASSES AND TYPEDEFS
@@ -144,6 +146,8 @@ class field_ts_advisor : public ts_advisor {
     bool invariant_satisfied() const;
 
 };
+
+} //end namespace rtt_timestep
 
 #endif                          // __timestep_field_ts_advisor_hh__
 

@@ -9,6 +9,8 @@
 #include "timestep/field_ts_advisor.t.cc"
 #include <vector>
 
+using namespace rtt_timestep;
+
 typedef std::vector<double> FTVD;
 
 template void field_ts_advisor::set_floor(const FTVD &y1, double frac); 
