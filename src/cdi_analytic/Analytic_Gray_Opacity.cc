@@ -59,9 +59,9 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(SP_Analytic_Model model_in,
  */
 Analytic_Gray_Opacity::Analytic_Gray_Opacity(const sf_char &packed)
 {
-    // the packed size must be at least 3 integers (size, reaction type,
-    // analytic model indicator)
-    Require (packed.size() >= 3 * sizeof(int));
+    // the packed size must be at least 4 integers (size, reaction type,
+    // model type, analytic model indicator)
+    Require (packed.size() >= 4 * sizeof(int));
 
     // make an unpacker
     rtt_dsxx::Unpacker unpacker;
@@ -79,13 +79,17 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(const sf_char &packed)
     for (int i = 0; i < size_analytic; i++)
 	unpacker >> packed_analytic[i];
 
-    // unpack the reaction type
-    int react_int;
-    unpacker >> react_int;
+    // unpack the reaction and model type
+    int react_int, model_int;
+    unpacker >> react_int >> model_int;
     Check (unpacker.get_ptr() == &packed[0] + packed.size());
 
-    // assign the reaction type
+    // assign the reaction and type
     reaction = static_cast<rtt_cdi::Reaction>(react_int);
+    model    = static_cast<rtt_cdi::Model>(model_int);
+    Check (reaction == rtt_cdi::ABSORPTION ||
+	   reaction == rtt_cdi::SCATTERING ||
+	   reaction == rtt_cdi::TOTAL);
 
     // now reset the buffer so that we can determine the analytic model
     // indicator
@@ -247,9 +251,10 @@ Analytic_Gray_Opacity::sf_char Analytic_Gray_Opacity::pack() const
     // first pack up the analytic model
     sf_char anal_model = analytic_model->pack();
 
-    // now add up the total size (in bytes): size of analytic model + 2
-    // int--one for reaction type and one for size of analytic model
-    int size = anal_model.size() + 2 * sizeof(int);
+    // now add up the total size (in bytes): size of analytic model + 3
+    // int--one for reaction type, one for model type, and one for size of
+    // analytic model
+    int size = anal_model.size() + 3 * sizeof(int);
 
     // make a char array
     sf_char packed(size);
@@ -264,9 +269,8 @@ Analytic_Gray_Opacity::sf_char Analytic_Gray_Opacity::pack() const
     for (int i = 0; i < anal_model.size(); i++)
 	packer << anal_model[i];
 
-    // pack the reaction type
-    int react_int = reaction;
-    packer << react_int;
+    // pack the reaction and model type
+    packer << static_cast<int>(reaction) << static_cast<int>(model);
 
     Ensure (packer.get_ptr() == &packed[0] + size);
     return packed;

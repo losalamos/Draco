@@ -65,6 +65,7 @@ namespace rtt_cdi_analytic
 // revision history:
 // -----------------
 // 0) original
+// 1) 06-MAR-03 : added model specification; default is still ANALYTIC
 // 
 //===========================================================================//
 

@@ -68,9 +68,9 @@ Analytic_Multigroup_Opacity::Analytic_Multigroup_Opacity(
 Analytic_Multigroup_Opacity::Analytic_Multigroup_Opacity(
     const sf_char &packed)
 {
-    // the packed size must be at least 3 integers (number of groups,
-    // reaction type, analytic model indicator)
-    Require (packed.size() >= 3 * sizeof(int));
+    // the packed size must be at least 4 integers (number of groups,
+    // reaction type, model type, analytic model indicator)
+    Require (packed.size() >= 4 * sizeof(int));
 
     // make an unpacker
     rtt_dsxx::Unpacker unpacker;
@@ -107,13 +107,17 @@ Analytic_Multigroup_Opacity::Analytic_Multigroup_Opacity(
 	    unpacker >> models[i][j];
     }
 
-    // unpack the reaction type
-    int reaction_int;
-    unpacker >> reaction_int;
+    // unpack the reaction and model type
+    int reaction_int, model_int;
+    unpacker >> reaction_int >> model_int;
     Check (unpacker.get_ptr() == &packed[0] + packed.size());
 
-    // assign the reaction type
+    // assign the reaction and model type
     reaction = static_cast<rtt_cdi::Reaction>(reaction_int);
+    model    = static_cast<rtt_cdi::Model>(model_int);
+    Check (reaction == rtt_cdi::ABSORPTION ||
+	   reaction == rtt_cdi::SCATTERING ||
+	   reaction == rtt_cdi::TOTAL);
 
     // now rebuild the analytic models
     int indicator = 0;
@@ -325,8 +329,8 @@ Analytic_Multigroup_Opacity::sf_char Analytic_Multigroup_Opacity::pack() const
 
     // now add up the total size; number of groups + 1 int for number of
     // groups, number of models + size in each model + models, 1 int for
-    // reaction type
-    int size =  (2 + models.size()) * sizeof(int) + 
+    // reaction type, 1 int for model type
+    int size = (3 + models.size()) * sizeof(int) + 
 	group_boundaries.size() * sizeof(double) + num_bytes_models;
 
     // make a char array
@@ -351,8 +355,8 @@ Analytic_Multigroup_Opacity::sf_char Analytic_Multigroup_Opacity::pack() const
 	    packer << models[i][j];
     }
 
-    // now pack the reaction type
-    packer << static_cast<int>(reaction);
+    // now pack the reaction and model type
+    packer << static_cast<int>(reaction) << static_cast<int>(model);
 
     Ensure (packer.get_ptr() == &packed[0] + size);
     return packed;
