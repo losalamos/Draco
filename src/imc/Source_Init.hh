@@ -27,6 +27,9 @@
 //                particle.  Thus, these SP's were pointing to the same 
 //                particle; the correct code is:
 //                     SP<PT> another = new PT(*particle)
+//  4) 6-18-99 : Removed the post-comb census adjustment.  Verified on 
+//               five test problems.  Discussed in memo "Eliminating the 
+//               Post-Comb Census Adjustment," XTM:99-49(U), July 13, 1999.
 // 
 //===========================================================================//
 
