@@ -1,3 +1,20 @@
+2002-01-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* Particle_Buffer, Communicator, Comm_Builder: moved these classes
+	to mc.  Also, updated Particle to work with the new versions of
+	these classes.  The Particle_Buffer, etc classes are now totally
+	distinct from Particle.  All a PT must have to use these classes
+	are the following functions:
+		
+		PT(const vector<char> &);
+		vector<char> pack();
+		int get_cell();
+		void set_cell();
+
+	Additionally, the Particle must indicate that it is in a boundary
+	cell by returning a negative index with get_cell() (to use the
+	Communicator class, this is the same condition as before).
+
 2001-12-18  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: Released imc version 2_3_0.  This version includes the
