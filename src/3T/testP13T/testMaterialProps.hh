@@ -139,6 +139,16 @@ namespace rtt_3T_testP13T
 	 matstateFC.getSigmaAbsorption(groupNo, results);
      }
      
+     void getSigmaScattering(int groupNo, ccsf &results) const
+     {
+	 matstateCC.getSigmaScattering(groupNo, results);
+     }
+
+     void getSigmaScattering(int groupNo, fcdsf &results) const
+     {
+	 matstateFC.getSigmaScattering(groupNo, results);
+     }
+     
      void getSigmaEmission(int groupNo, ccsf &results) const
      {
 	 matstateCC.getSigmaEmission(groupNo, results);
