@@ -60,6 +60,9 @@ void Connect::organizeData(rtt_dsxx::SP<Mesh_Reader> mesh_reader)
 	    {
 	        std::map<std::string, std::set<int> >::iterator esiter = 
 		    elem_sets.find(bndry_flags[f]);
+		Insist(esiter != elem_sets.end(), 
+		       ("side flag " + bndry_flags[f] +
+			" does not exist").c_str());
 		if (esiter->second.count(e) != 0)
 		    sides_bndry.push_back(flag_numbs[f]);
 	    }	        
