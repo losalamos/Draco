@@ -149,7 +149,7 @@ namespace rtt_gandolf_with_cdi_test
 	    // Create CDI object //
 	    // ----------------- //
 	    
-	    rtt_dsxx::SP< const rtt_cdi::CDI > spCDI_Analytic;
+	    rtt_dsxx::SP< rtt_cdi::CDI > spCDI_Analytic;
 	    if ( spCDI_Analytic = new rtt_cdi::CDI( spOp_Analytic_ragray ) )
 		pass() << "SP to CDI object created successfully (GrayOpacity).";
 	    else
@@ -207,7 +207,7 @@ namespace rtt_gandolf_with_cdi_test
 	    // ----------------------------------------- //
 	    
 	    // Create a smart pointer to an opacity object.
-	    rtt_dsxx::SP< rtt_cdi::MultigroupOpacity > spOp_Analytic_ramg;
+	    rtt_dsxx::SP< const rtt_cdi::MultigroupOpacity > spOp_Analytic_ramg;
 	    
 	    // Try to instantiate the opacity object.
 	    try
@@ -241,11 +241,14 @@ namespace rtt_gandolf_with_cdi_test
 	    // Create a new CDI that has both Gray and MG data //
 	    // ----------------------------------------------- //
 	    
-	    if ( spCDI_Analytic = new rtt_cdi::CDI( spOp_Analytic_ragray, 
-						    spOp_Analytic_ramg ) )
-		pass() << "SP to CDI object created successfully (GrayOpacity + Multigroup).";
-	    else
-		fail() << "Failed to create SP to CDI object (GrayOpacity + Multigroup).";
+// 	    if ( spCDI_Analytic = new rtt_cdi::CDI( spOp_Analytic_ragray ) ) 
+// 		pass() << "SP to CDI object created successfully (GrayOpacity + Multigroup).";
+// 	    else
+// 		fail() << "Failed to create SP to CDI object (GrayOpacity + Multigroup).";
+
+	    // Add a multigroup opacity object to this CDI object.
+
+	    spCDI_Analytic->setMultigroupOpacity( spOp_Analytic_ramg );
 	    
 	    // --------------- //
 	    // MG Opacity test //

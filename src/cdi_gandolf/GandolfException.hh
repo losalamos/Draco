@@ -64,7 +64,7 @@ namespace rtt_cdi_gandolf
 
 	/*!
 	 * \brief A summary message that describes the error that was
-	 *	 caught.
+	 *        caught.
 	 */
 	mutable char* message;
 	
@@ -72,7 +72,7 @@ namespace rtt_cdi_gandolf
 	
 	/*!
 	 * \brief The Gandolf error code that was returned from the
-	 *	 FORTRAN library.
+	 *        FORTRAN library.
 	 */
  	const int errorCode;
 	
@@ -81,7 +81,7 @@ namespace rtt_cdi_gandolf
 	// CREATORS
 
 	/*!
-	 * \brief The standard GandolfExceptoin constuctor.
+	 * \brief The standard GandolfException constuctor.
 	 *
 	 * When a specific error is thrown (i.e.: gmatidException),
 	 * the base class is also instantiated through this 

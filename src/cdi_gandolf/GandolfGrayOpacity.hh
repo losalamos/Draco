@@ -12,11 +12,15 @@
 #ifndef __cdi_gandolf_GandolfGrayOpacity_hh__
 #define __cdi_gandolf_GandolfGrayOpacity_hh__
 
+// cdi_gandolf dependencies
+#include "cdi/GrayOpacity.hh"
+
+// Draco dependencies
+#include "ds++/SP.hh"
+
+// C++ standard library dependencies
 #include <vector>
 #include <string>
-
-#include "ds++/SP.hh"
-#include "cdi/GrayOpacity.hh"
 
 namespace rtt_cdi_gandolf
 {
@@ -77,8 +81,6 @@ namespace rtt_cdi_gandolf
  *      (via Gandolf) you must add the following option on the
  *      configure line:<br><br>
  *      <tt>    --with-gandolf-lib=${VENDORS}/gandolf/IRIX64/lib64</tt><br><br>
- *      Currently, the Gandolf library is only available on 64 bit
- *      IRIX architectures.
  * <p>
  * Things to do:
  * <ul>
