@@ -12,6 +12,8 @@ for env in $*; do
 
     # clean up the main executables
 
+    rm draco/draco_${env}
+
     # Clean up test executables from various directories.
 
     rm ds++/tst*_${env}
