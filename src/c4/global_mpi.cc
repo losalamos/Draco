@@ -68,7 +68,7 @@ void gsync()
 //---------------------------------------------------------------------------//
 // Perform a normal (blocking) send.
 //---------------------------------------------------------------------------//
-
+/*
 int Send( void *buf, int size, int dest, int tag, int group )
 {
     MPI_Send( buf, size, MPI_BYTE, dest, tag, MPI_COMM_WORLD );
@@ -87,7 +87,7 @@ int Recv( void *buf, int size, int source, int tag, int group )
     MPI_Get_count( &status, MPI_BYTE, &cnt );
     return cnt;
 }
-
+*/
 //---------------------------------------------------------------------------//
 // Perform a non blocking send.
 //---------------------------------------------------------------------------//
@@ -211,7 +211,6 @@ int Recv( double *buf, int nels, int source, int group /*=0*/ )
     return cnt;
 }
 #endif
-
 //---------------------------------------------------------------------------//
 // Global reduction operations.
 //
