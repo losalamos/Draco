@@ -1,0 +1,49 @@
+###############################################################################
+## set_env
+## Kelly Thompson
+## $Id$
+###############################################################################
+
+##---------------------------------------------------------------------------##
+## DRACO VENDORS
+
+# MPI
+export MPI_DIR=/codes/mpi/bin
+
+# Aztec
+export AZTEC_INC_DIR=/codes/radtran/vendors/aztec/include
+export AZTEC_LIB_DIR=/codes/radtran/vendors/aztec/`uname`/lib/mpi
+
+# LA-Pack
+export LAPACK_LIB_DIR=/codes/radtran/vendors/atlas/`uname`/lib
+
+# Spring
+export SPRNG_INC_DIR=/codes/radtran/vendors/sprng/include
+export SPRNG_LIB_DIR=/codes/radtran/vendors/sprng/`uname`/lib
+
+# Trilinos
+#export TRILINOS_INC_DIR=/codes/radtran/vendors/trilinos-3.1/`uname`/mpich/include
+#export TRILINOS_LIB_DIR=/codes/radtran/vendors/trilinos-3.1/`uname`/mpich/lib
+
+# Metis
+export METIS_INC_DIR=/codes/radtran/vendors/metis/include
+export METIS_LIB_DIR=/codes/radtran/vendors/metis/lib
+
+# PCGLIB
+export PCG_LIB_DIR=/codes/radtran/vendors/pcg/`uname`/lib
+
+# Gandolf
+export GANDOLF_LIB_DIR=/codes/radtran/vendors/gandolf/`uname`/lib
+
+# EOSPAC5
+export EOSPAC5_LIB_DIR="/codes/radtran/vendors/eospac/`uname`/lib"
+export SESPATHU=/codes/radtran/physical_data/eos
+export SESPATHC=/codes/radtran/physical_data/eos
+
+# XMGRACE
+export GRACE_INC_DIR=/usr/local/grace/include
+export GRACE_LIB_DIR=/usr/local/grace/lib
+
+# GNU Scientific Library
+export GSL_INC_DIR=/codes/radtran/vendors/gsl/Linux/include
+export GSL_LIB_DIR=/codes/radtran/vendors/gsl/Linux/lib

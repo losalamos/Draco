@@ -1,0 +1,142 @@
+## -*- Mode: sh -*-
+#!/bin/bash2
+##---------------------------------------------------------------------------##
+## Parse Options
+## 
+## Ref: Bruce Blinn, "Portable Shell Programming," Prentice Hall, NJ
+## 07458.
+##---------------------------------------------------------------------------##
+
+##---------------------------------------------------------------------------##
+## Default values
+##---------------------------------------------------------------------------##
+function set_default_values()
+{
+
+# determine hostname and system
+hostname=`hostname`
+uname=`uname -a`
+username=`/usr/bin/whoami`
+regress_home=/home/regress
+code=`echo $0 | sed -e 's/_.*//' | sed -e 's/.*[/]//'`
+REGDIR="${regress_home}/${code}"
+origdir=`pwd`
+draco_regress=/home/regress/draco
+
+# check the regression directory
+if [ ! -d ${REGDIR} ] ; then
+    echo ">>> Regression directory does not exist! EXITING"
+    echo ">>> Found REGDIR = $REGDIR"
+    exit 1 
+fi
+
+}
+
+##---------------------------------------------------------------------------##
+## Parse Command Line Options
+##---------------------------------------------------------------------------##
+function parse_options()
+{
+
+## Default values
+echoonly=
+withcoverage=
+withapptest=
+withstplort=
+option=
+
+while [ $# -gt 0 ]; do
+    case $1 in 
+        -s) 
+           echo ">>> Option Selected: (s) Using STLPort"
+           withstlport=yes
+           shift
+           ;;
+        -n)
+           echo ">>> Option Selected: (n) Dry Run"
+           echoonly='echo '
+	   shift
+           ;;
+        -a) 
+           echo ">>> Option Selected: (a) Apptest Mode"
+           withapptest=yes
+	   shift
+           ;;
+        -c) 
+           echo ">>> Option Selected: (c) Coverage Analysis"
+           withcoverage=yes
+	   shift
+           ;;
+         --) shift
+	     break
+	     ;;
+        -*) 
+           echo "Usage: draco_regresion [options]"
+           echo "Options:"
+           echo "    -s Use STLPort"
+           echo "    -n Print the commands that would be executed, but do not"
+           echo "       execute them."
+           echo "    -a Run application tests in addition to unit tests."
+           echo "    -c Do Coverage Analsysis."
+           echo " "
+	   shift
+           ;;
+	 *) break
+           ;;
+    esac
+done
+
+}
+
+
+function parse_options_broken()
+{
+## K. Thompson - This script doesn't work inside of a function.  The
+## body of this script may be placed into a file and run as a shell
+## script. 
+
+## Default values
+echoonly=
+withcoverage=
+withapptest=
+withstplort=
+option=
+
+while getopts snac: option; do
+    case $option in 
+        s) 
+           echo ">>> Option Selected: (s) Using STLPort"
+           withstlport=yes
+           ;;
+        n)
+           echo ">>> Option Selected: (n) Dry Run"
+           echoonly='echo '
+           ;;
+        a) 
+           echo ">>> Option Selected: (a) Apptest Mode"
+           withapptest=yes
+           ;;
+        c) 
+           echo ">>> Option Selected: (c) Coverage Analysis"
+           withcoverage=yes
+           ;;
+        \?) 
+           echo "Usage: draco_regresion [options]"
+           echo "Options:"
+           echo "    -s Use STLPort"
+           echo "    -n Print the commands that would be executed, but do not"
+           echo "       execute them."
+           echo "    -a Run application tests in addition to unit tests."
+           echo "    -c Do Coverage Analsysis."
+           echo " "
+           ;;
+    esac
+done
+shift `expr $OPTIND - 1`
+
+if test ${withstlport:-no} = yes; then
+   echo ">>> Option Selected: (s) Using STLPort"
+fi
+
+}
+

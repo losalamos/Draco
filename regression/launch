@@ -1,0 +1,137 @@
+## -*- Mode: sh -*-
+#!/bin/bash2 
+##---------------------------------------------------------------------------##
+## Script to run regression tests for rtt
+##
+## Usage:
+##    launch <regression test> <options for regression test>
+## examples:
+##    Run the Draco regression tests:
+##    % launch draco
+##
+##    Run the Capsaicin regression tests.  Compile with STLPort.
+##    % /home/regression/bin/launch capsaicin -s
+##---------------------------------------------------------------------------##
+## Time-stamp: <01/08/31 15:18:07 tme>
+##---------------------------------------------------------------------------##
+
+##---------------------------------------------------------------------------##
+## Check regression directories and make log files
+
+# determine hostname and system
+hostname=`hostname`
+uname=`uname -a`
+ 
+# obtain name of package
+PACKAGE=$1
+shift
+
+# check the regression directory
+if [ $(hostname) = "ios.lanl.gov" ]; then
+    REGHOME="/home/regress"
+elif [ $(uname) = "OSF/1" ]; then
+    REGHOME="/usr/projects/draco/regress"
+fi
+REGDIR="${REGHOME}/${PACKAGE}"
+
+# check the regression directory
+
+if [ ! -d ${REGDIR} ]; then
+    echo ">>> Regression directory ${REGDIR} does not exist! EXITING"
+    exit 1 
+fi
+
+# check for the regression script
+
+regression_script="/home/regress/bin/${PACKAGE}_regression"
+if [ ! -f $regression_script ]; then
+    echo ">>> Regression script ${PACKAGE}_regression aka $regression_script does not exist! EXITING"
+    exit 1
+fi
+
+# make log file
+
+# get date
+date=`date +%m%d%y`
+
+# check log directory
+if [ ! -d ${REGDIR}/logs ]; then
+    echo ">>> Logs directory ${REGDIR}/logs does not exist! EXITING"
+    exit 1
+fi
+
+# make draco log file
+LOG="${REGDIR}/logs/${PACKAGE}_${date}"
+
+# test log file for write access.  Default to $cwd for log file if
+# specified location cannot be written to.
+if [ ! -w $REGDIR/logs ]; then
+   echo " "
+   echo ">>> Cannot create the logfile $LOG."
+   LOG="`pwd`/${PACKAGE}_${date}"
+   if [ ! -w `pwd` ]; then
+      echo ">>> Cannot write to alternate logfile $LOG."
+      echo ">>> Aborting script"
+      exit 1
+   fi
+   echo ">>> Output will be written to $LOG"
+fi
+
+# if file LOG exists, add a suffix to the logfile name
+suffixvals='a b c d e f g h i j k l m n o p q r s t u v w x y z'
+if test -f $LOG; then
+    echo ">>> The logfile $LOG already exists.  "
+    for suffix in ${suffixvals}; do
+       if ! test -f ${LOG}-${suffix}; then
+ 	  LOG=${LOG}-${suffix}
+          break
+       fi
+    done
+    echo ">>> Added suffix ${suffix} to filename."
+    echo ">>> Output will be written to $LOG"
+fi
+
+# direct output to log file
+exec 1>$LOG
+exec 2>&1
+
+##---------------------------------------------------------------------------##
+## launch regression script
+
+echo ">>>" 
+echo ">>> Running $regression_script script"
+echo ">>>"
+echo ">>> PACKAGE           : ${PACKAGE}"
+echo ">>> HOSTNAME          : $hostname"
+echo ">>> REGRESSION SCRIPT : $regression_script"
+echo ">>> OPTIONAL ARGS     : $*"
+echo ">>> REGRESSION LOG    : $LOG"
+echo ">>> DATE              : $date"
+echo ">>>"
+echo ""
+$regression_script $*
+echo ""
+echo ">>>"
+echo ">>> Done running $regression_script script"
+echo ">>>"
+
+if [ ${PACKAGE} = "draco" ]; then
+    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date draco-regression@sourceforge-web.lanl.gov 
+elif [ ${PACKAGE} = "clubimc" ]; then
+    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date jayenne-regression@sourceforge-web.lanl.gov
+elif [ ${PACKAGE} = "wedgehog" ]; then
+    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date jayenne-regression@sourceforge-web.lanl.gov
+elif [ ${PACKAGE} = "milagro" ]; then
+    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date jayenne-regression@sourceforge-web.lanl.gov
+elif [ ${PACKAGE} = "unclemcflux" ]; then
+    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date jayenne-regression@sourceforge-web.lanl.gov
+elif [ ${PACKAGE} = "capsaicin" ]; then
+    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date capsaicin-unit-tests@sourceforge-web.lanl.gov
+elif [ ${PACKAGE} = "pika" ]; then
+    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date marmot-regression@sourceforge-web.lanl.gov
+fi
+
+##---------------------------------------------------------------------------##
+## end launch
+##---------------------------------------------------------------------------##
+
