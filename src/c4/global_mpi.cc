@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "c4/global.hh"
+#include "c4/mpi_traits.hh"
 
 #include "ds++/DynArray.hh"
 #include "ds++/Assert.hh"
@@ -97,7 +98,7 @@ void gsum( T *px, int n )
 	mpi_ar_traits<T>::ar_buf[i] = px[i];
 
     MPI_Allreduce( &mpi_ar_traits<T>::ar_buf[0], px, n,
-		   mpi_traits<T>::element_type, MPI_SUM, MPI_COMM_WORLD );
+		   mpi_traits<T>::element_type(), MPI_SUM, MPI_COMM_WORLD );
 }
 
 template<class T>
@@ -111,7 +112,7 @@ void gmin( T *px, int n )
 	mpi_ar_traits<T>::ar_buf[i] = px[i];
 
     MPI_Allreduce( &mpi_ar_traits<T>::ar_buf[0], px, n,
-		   mpi_traits<T>::element_type, MPI_MIN, MPI_COMM_WORLD );
+		   mpi_traits<T>::element_type(), MPI_MIN, MPI_COMM_WORLD );
 }
 
 template<class T>
@@ -125,7 +126,7 @@ void gmax( T *px, int n )
 	mpi_ar_traits<T>::ar_buf[i] = px[i];
 
     MPI_Allreduce( &mpi_ar_traits<T>::ar_buf[0], px, n,
-		   mpi_traits<T>::element_type, MPI_MAX, MPI_COMM_WORLD );
+		   mpi_traits<T>::element_type(), MPI_MAX, MPI_COMM_WORLD );
 }
 
 template<class T>
