@@ -14,11 +14,18 @@ testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 
 ${test_alltarget}: ${testdeps}
 
-%: %.o 
-	${LD} ${LDFLAGS} -o $@ $< ${testlibs}
+tstOpacity_dep = tstOpacity.o tstOpacity_pt.o
+tstTally_dep = tstTally.o tstTally_pt.o
+tstParticle_dep = tstParticle.o tstParticle_pt.o tstTally_pt.o
 
-tstOpacity: tstOpacity.o tstOpacity_pt.o
-	${LD} ${LDFLAGS} -o tstOpacity tstOpacity.o tstOpacity_pt.o ${testlibs}
+tstOpacity: ${tstOpacity_dep}
+	${LD} ${LDFLAGS} -o $@ ${tstOpacity_dep} ${testlibs}
+
+tstTally: ${tstTally_dep}
+	${LD} ${LDFLAGS} -o $@ ${tstTally_dep} ${testlibs}
+
+tstParticle: ${tstParticle_dep}
+	${LD} ${LDFLAGS} -o $@ ${tstParticle_dep} ${testlibs}
 
 ###############################################################################
 #			 end of draco/src/imc/test Makefile.target

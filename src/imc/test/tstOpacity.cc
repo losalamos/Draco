@@ -14,6 +14,7 @@
 #include "../Release.hh"
 #include "../Global.hh"
 #include "mc/OS_Mesh.hh"
+#include "mc/OS_Builder.hh"
 #include "c4/global.hh"
 
 #include <iostream>
@@ -23,6 +24,7 @@
 using namespace std;
 
 using rtt_mc::OS_Mesh;
+using rtt_mc::OS_Builder;
 using rtt_imc::Opacity;
 using rtt_imc::Opacity_Builder;
 using rtt_imc::Mat_State;
@@ -44,7 +46,8 @@ void Mat_Test()
     SP<IMC_Interface> interface(new IMC_Interface());
 
     // build a mesh
-    SP<OS_Mesh> mesh = rtt_imc_test::build_2DMesh();
+    OS_Builder mb(interface);
+    SP<OS_Mesh> mesh = mb.build_Mesh();
 
     // build the Mat_State
     Opacity_Builder<OS_Mesh> ob(interface);
@@ -82,7 +85,8 @@ void Opacity_Test()
     SP<IMC_Interface> interface(new IMC_Interface());
 
     // build a mesh
-    SP<OS_Mesh> mesh = rtt_imc_test::build_2DMesh();
+    OS_Builder mb(interface);
+    SP<OS_Mesh> mesh = mb.build_Mesh();
 
     // build the Mat_State and Opacity
     Opacity_Builder<OS_Mesh> ob(interface);
