@@ -57,12 +57,26 @@ class Pyramid_Mesh
     vf_double cell_x_extents;
 
     // Pyramid angle data; precalculated
-    double alpha_degrees;
     double beta_degrees;
+    double beta_radians;
+    double tan_beta;
+    double sin_beta;
+    double cos_beta;
+
+    // Total, processor-local volume
+    double total_volume;
+
+    // Private implementations
+    
+    // Function to calculate frequently used wedge data
+    void calc_angle_data(const double);
+
+    // Function to calculate and set the total, on-processor voluem
+    void calc_total_volume();
   
   public:
     // Constructor
-    Pyramid_Mesh(SP_Coord, AMR_Layout &, vf_double &, double, double);
+    Pyramid_Mesh(SP_Coord, AMR_Layout &, vf_double &, double);
 
 
   
