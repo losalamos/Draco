@@ -51,7 +51,7 @@ using rtt_format::RTT_Format;
 
 /*!
  * \brief  The continuous adaptive refinement (CAR) Cartesion unstructured 
- *         (CU) Builder Class provides member functions that can be used to
+ *         (CU) Builder class provides member functions that can be used to
  *         construct a CAR_CU_Mesh class object. The build_Mesh public member
  *         function takes a smart pointer to an rtt_format::RTT_Format class 
  *         object as its single input and returns a smart pointer to the new 
@@ -86,7 +86,7 @@ private:
     string coord_system;
   // vertex (node) coordinate array
 /*!
- * \brief The node coordinates.
+ * \brief The node coordinate values.
  */
     CAR_CU_Mesh::NCVF_d vertex;
   // cell vertexes
@@ -150,9 +150,9 @@ private:
   // parents, depending upon whether the parents multimap is null or assigned,
   // respectively).
 /*!
- * \brief Assigns either child or child and parent cells to a 
- *        generation-specific meshes (depending upon whether or not the 
- *        seek_Adoption private member function is called prior).
+ * \brief Assigns either child or child and parent cells to 
+ *        generation-specific meshes depending upon whether or not the 
+ *        seek_Adoption private member function is called prior.
  * \param gen_cells Generation-specific cell sets (returned by private member
  *                   function assign_Generations and possibly modified by 
  *                   seek_Adoption).

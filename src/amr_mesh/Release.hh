@@ -91,7 +91,7 @@ namespace rtt_amr
  *    interface of the CAR_CU_Interface class constructor when it is called 
  *    from a Fortran 90 code. The CAR_CU_Interface data accessor functions are
  *    also shadowed so that the remainder of the input data is available to 
- *    the calling program.
+ *    the calling program. A \ref rtt_amr_input is also provided.
  *
  * 2) An rtt_amr::CAR_CU_Builder class object is instantiated by the main
  *    program. The mesh builder contains the build_Mesh public member function
@@ -141,8 +141,9 @@ namespace rtt_amr
  *    are also shadowed. 
  *
  * <h3> Other Draco Packages </h3>
- * The AMR mesh package uses the Draco ds++ services library and the C4 
- * communication library.
+ * The AMR mesh package uses the Draco ds++ services library, the C4 
+ * communication library, the implicit monte carlo (imc) library, and the
+ * mesh class (mc) library.
  */
 
 //---------------------------------------------------------------------------//

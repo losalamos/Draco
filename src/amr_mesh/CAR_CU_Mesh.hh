@@ -92,7 +92,7 @@ class CAR_CU_Mesh
 /*!
  * \brief Constructs an uninitialized CAR_CU_Mesh cell-centered scalar field 
  *        (CCSF) class object sized to the number of cells in the mesh.
- * \param mesh Smart pointer to the current CAR_CU_Mesh class object
+ * \param mesh Smart pointer to the current CAR_CU_Mesh class object.
  */
 	inline explicit CCSF(SP<CAR_CU_Mesh> mesh);
 
@@ -100,7 +100,7 @@ class CAR_CU_Mesh
 /*!
  * \brief Constructs an initialized CAR_CU_Mesh cell-centered scalar field 
  *        (CCSF) class object sized to the number of cells in the mesh.
- * \param mesh Smart pointer to the current CAR_CU_Mesh class object
+ * \param mesh Smart pointer to the current CAR_CU_Mesh class object.
  * \param array CCSF initialization data of type T (must be sized to the 
  *              number of cells in the mesh).
  */

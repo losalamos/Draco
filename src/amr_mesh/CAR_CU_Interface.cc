@@ -5,6 +5,12 @@
 //---------------------------------------------------------------------------//
 // @> CAR_CU_Interface class implementation file (developed from 
 // OS_Interface.hh)
+/*! 
+ * \file   amr_mesh/CAR_CU_Interface.cc
+ * \author B.T. Adams
+ * \date   Tue May 18 10:33:26 1999
+ * \brief  Implementation file for CAR_CU_Interface class library.
+ */
 //---------------------------------------------------------------------------//
 
 #include "CAR_CU_Interface.hh"
