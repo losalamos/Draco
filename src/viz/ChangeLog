@@ -1,3 +1,8 @@
+2001-07-30  Thomas M. Evans  <tme@lanl.gov>
+
+	* viz: released version 1_1_0.  Added std:: namespace to
+	(Ensight_Translator) that allows compiling by g++.
+
 2000-04-18  Thomas M. Evans  <tme@lanl.gov>
 
 	* viz: released version 1_0_0 of viz.
