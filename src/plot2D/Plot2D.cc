@@ -79,7 +79,7 @@ graceVersion()
 {
     // Grab the version string from a pipe.
     
-    std::FILE *pipe = popen("xmgrace -version", "r");
+    std::FILE *pipe = popen("gracebat -version", "r");
 
     Insist(pipe,
 	   "plot2D::graceVersion: Unable to get grace version!");
