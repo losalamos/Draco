@@ -18,64 +18,68 @@
 
 #include <string>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
+// FORWARD REFERENCES
 
-BEGIN_NS_XTM
+namespace rtt_timestep {
+ class ts_manager;
+}
 
-//===========================================================================//
-// class testFullP13T - 
-//
-// Date created :
-// Purpose      :
-//
-// revision history:
-// -----------------
-// 0) original
-// 
-//===========================================================================//
+namespace XTM {
+ 
+ //===========================================================================//
+ // class testFullP13T - 
+ //
+ // Date created :
+ // Purpose      :
+ //
+ // revision history:
+ // -----------------
+ // 0) original
+ // 
+ //===========================================================================//
 
-class testFullP13T
-{
+ class testFullP13T
+ {
 
-    // NESTED CLASSES AND TYPEDEFS
+     // NESTED CLASSES AND TYPEDEFS
 
-  public:
+   public:
     
-    typedef Mesh_XYZ MT;
-    typedef InterpedMaterialProps MP;
-    typedef Diffusion_P1<MT> DS;
+     typedef Mesh_XYZ MT;
+     typedef InterpedMaterialProps MP;
+     typedef Diffusion_P1<MT> DS;
 
-    // DATA
+     // DATA
 
-  private:
+   private:
     
-    SP< P13T<MT,MP,DS> > spP13T;
+     SP< P13T<MT,MP,DS> > spP13T;
 
-    testFullP13T_DB pdb;
-    Diffusion_DB diffdb;
-    pcg_DB pcg_db;
+     SP<rtt_timestep::ts_manager> spTsManager;
+
+     testFullP13T_DB pdb;
+     Diffusion_DB diffdb;
+     pcg_DB pcg_db;
     
-  public:
+   public:
 
-    // CREATORS
+     // CREATORS
     
-    testFullP13T(const std::string &infile);
+     testFullP13T(const std::string &infile);
+     ~testFullP13T();
 
-    // MANIPULATORS
+     // MANIPULATORS
     
-    // ACCESSORS
+     // ACCESSORS
 
-    void run() const;
+     void run() const;
 
-  private:
+   private:
     
-    // IMPLEMENTATION
-};
+     // IMPLEMENTATION
+ };
 
-END_NS_XTM  // namespace XTM
+}  // namespace XTM
 
 #endif                          // __3T_testP13T_testFullP13T_hh__
 

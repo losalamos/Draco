@@ -18,6 +18,7 @@ need_3T		:= yes
 need_units	:= yes
 need_radphys	:= yes
 need_matprops	:= yes
+need_timestep	:= yes
 
 # Go get the standard includeable makefile for Draco components.
 
@@ -26,7 +27,10 @@ include ../../config/makefile
 srcs	= \
 	main.cc \
 	testFullP13T.cc \
-	testFullP13T_pt.cc \
+	testFullP13T_MP_pt.cc \
+	testFullP13T_P13T_pt.cc \
+	testFullP13T_RadPhys_pt.cc \
+	testFullP13T_ts_pt.cc \
 	testFullP13T_DB.cc
 
 ifdef preinstantiate
@@ -43,7 +47,8 @@ objs	= $(srcs:%.cc=$(env)/%.o) \
 default: main_$(env)
 
 main_$(env) : deps $(objs) \
-	$(dep_lib3T) $(dep_libmatprops) $(dep_libradphys) $(dep_libunits) \
+	$(dep_lib3T) $(dep_libtimestep) \
+	$(dep_libmatprops) $(dep_libradphys) $(dep_libunits) \
 	$(dep_libutil) $(dep_libspdf) \
 	$(dep_libnml) $(dep_libc4) $(dep_libds++)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
@@ -54,8 +59,10 @@ ifneq ($(dodeps),no)
 	(cd ../../units;      $(MAKE) $(subnj) dodeps=no)
 	(cd ../../radphys;    $(MAKE) $(subnj) dodeps=no)
 	(cd ../../matprops;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../../timestep;   $(MAKE) $(subnj) dodeps=no)
 endif
 
+$(dep_libtimestep):
 $(dep_libmatprops):
 $(dep_libunits):
 $(dep_lib3T):

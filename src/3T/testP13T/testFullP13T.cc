@@ -13,6 +13,7 @@
 #include "units/Units.hh"
 #include "radphys/RadiationPhysics.hh"
 #include "nml/Group.hh"
+#include "timestep/ts_manager.hh"
 
 #include <new>
 #include <fstream>
@@ -115,7 +116,14 @@ testFullP13T::testFullP13T(const string &infile)
     
     P13TOptions options(pdb.P1TauMultiplier, pdb.IsCoupledMaterial);
 
-    spP13T = new P13T<MT,MP,DS>(options, spmesh);
+    spTsManager = new rtt_timestep::ts_manager();
+	
+    spP13T = new P13T<MT,MP,DS>(options, spmesh, spTsManager);
+}
+
+testFullP13T::~testFullP13T()
+{
+    // empty
 }
 
 void testFullP13T::run() const
@@ -128,7 +136,6 @@ void testFullP13T::run() const
 
     SP<MT> spmesh = spP13T->getMesh();
 
-    
     Units units;
 
     switch (pdb.units)
@@ -258,6 +265,11 @@ void testFullP13T::run() const
     DS diffSolver(diffdb, spmesh, pcg_db);
     
     cerr << "Made it after diffSolver ctor" << endl;
+
+    int cycle = 1;
+    double time = 0.0;
+    
+    spTsManager->set_cycle_data(dt, cycle, time);
     
     cerr << "Made it before solve3T" << endl;
     
@@ -266,6 +278,9 @@ void testFullP13T::run() const
 		    electEnergyDep, ionEnergyDep, TElec, TIon);
 
     cerr << "Made it after solve3T" << endl;
+
+    dt = spTsManager->compute_new_timestep();
+    spTsManager->print_summary();
     
     cout << "newRadState.phi: " << newRadState.phi << endl;
     cout << "newRadState.F: " << newRadState.F << endl;

@@ -2,16 +2,12 @@
 
 #include "traits/ContainerTraits.hh"
 
-#include "3T/Diffusion_P1.cc"
-#include "3T/P13T.cc"
 #include "radphys/RadiationPhysics.t.cc"
-#include "matprops/InterpedMaterialProps.t.cc"
 
-using namespace XTM;
+using XTM::ContainerTraits;
+using XTM::RadiationPhysics;
 
 typedef Mesh_XYZ MT;
-typedef InterpedMaterialProps MP;
-typedef Diffusion_P1<MT> DS;
 
 template<>
 class ContainerTraits<MT::ccsf >
@@ -71,31 +67,9 @@ class ContainerTraits<MT::fcdsf >
     }
 };
 
-// template class MT;
-// template class DS;
-template class P13T<MT,MP,DS>;
 template void RadiationPhysics::getPlanck(const MT::ccsf &TElectron,
 					  MT::ccsf &planckian) const;
 template void RadiationPhysics::
     getPlanckTemperatureDerivative(const MT::ccsf &TElectron,
 				   MT::ccsf &dplanckdT) const;
 
-typedef MT::ccsf ccsf;
-typedef MT::fcdsf fcdsf;
-typedef MT::ccif ccif;
-typedef MT::fcdif fcdif;
-
-typedef ccsf T1;
-typedef ccif T2;
-
-template
-MP::MaterialStateField<T1>
-MP::getMaterialState<T1, T2>(const T1 &, const T1 &, const T1 &,
-			     const T2 &) const;
-typedef fcdsf TT1;
-typedef fcdif TT2;
-
-template
-MP::MaterialStateField<TT1>
-MP::getMaterialState<TT1, TT2>(const TT1 &, const TT1 &, const TT1 &,
-			       const TT2 &) const;
