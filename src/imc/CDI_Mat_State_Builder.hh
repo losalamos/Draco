@@ -54,6 +54,7 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) original
+// 1) 20-FEB-2003 : updated to match new Mat_State_Builder interface
 // 
 //===========================================================================//
 
@@ -85,31 +86,35 @@ class CDI_Mat_State_Builder<MT,Gray_Frequency>
     typedef rtt_dsxx::SP<Diffusion_Opacity<MT> >      SP_Diff_Opacity;
     typedef rtt_dsxx::SP<rtt_cdi::CDI>                SP_CDI;
     typedef std::vector<SP_CDI>                       sf_CDI;
+    typedef std::pair<int, int>                       model_pair;
+    typedef std::vector<model_pair>                   sf_model_pair;
     typedef std::vector<double>                       sf_double;
     typedef std::vector<sf_double>                    vf_double;
     typedef std::vector<int>                          sf_int;
-    typedef std::vector<rtt_cdi::Model>               sf_Opacity_Model;
 
   private:
     // >>> DATA
 
     // Material CDI objects.
-    sf_CDI    material_cdi;
+    sf_CDI        material_cdi;
     
     // Map of material_cdi to cells.
-    sf_int    cdi_cell_map;
+    sf_int        cdi_cell_map;
+
+    // List of (absorption,scattering) models for each CDI.
+    sf_model_pair cdi_models;
 
     // Cell-centered densities in g/cc.
-    sf_double density;
+    sf_double     density;
     
     // Cell-centered temperatures in keV.
-    sf_double temperature;
+    sf_double     temperature;
     
     // Fleck and Cummings implicitness factor.
-    double    implicitness;
+    double        implicitness;
 
     // Timestep in shakes.
-    double    delta_t;
+    double        delta_t;
 
   private:
     // >>> BUILT OBJECTS
@@ -131,9 +136,6 @@ class CDI_Mat_State_Builder<MT,Gray_Frequency>
 
     // Build the Opacity.
     void build_Opacity(SP_Mesh);
-
-    // Determine the models and reactions for gray data.
-    void determine_gray_models(sf_Opacity_Model &, sf_Opacity_Model &);
 
   public:
     // Constructor.
@@ -187,6 +189,7 @@ CDI_Mat_State_Builder<MT,Gray_Frequency>::CDI_Mat_State_Builder(
     // assign data members from the interface parser
     material_cdi = interface->get_CDIs();
     cdi_cell_map = interface->get_CDI_map();
+    cdi_models   = interface->get_CDI_models();
     density      = interface->get_density();
     temperature  = interface->get_temperature();
     implicitness = interface->get_implicitness_factor();
@@ -197,6 +200,7 @@ CDI_Mat_State_Builder<MT,Gray_Frequency>::CDI_Mat_State_Builder(
     Ensure (density.size() == temperature.size());
     Ensure (density.size() == cdi_cell_map.size());
     Ensure (material_cdi.size() > 0);
+    Ensure (cdi_models.size() == material_cdi.size());
 }
 
 //===========================================================================//
@@ -220,29 +224,33 @@ class CDI_Mat_State_Builder<MT, Multigroup_Frequency>
     typedef rtt_dsxx::SP<Diffusion_Opacity<MT> >            SP_Diff_Opacity;
     typedef rtt_dsxx::SP<rtt_cdi::CDI>                      SP_CDI;
     typedef std::vector<SP_CDI>                             sf_CDI;
+    typedef std::pair<int, int>                             model_pair;
+    typedef std::vector<model_pair>                         sf_model_pair;
     typedef std::vector<double>                             sf_double;
     typedef std::vector<sf_double>                          vf_double;
     typedef std::vector<int>                                sf_int;
-    typedef std::vector<rtt_cdi::Model>                     sf_Opacity_Model;
 
   private:
     // Material CDI objects.
-    sf_CDI    material_cdi;
+    sf_CDI        material_cdi;
     
     // Map of material_cdi to cells
-    sf_int    cdi_cell_map;
+    sf_int        cdi_cell_map;
+
+    // List of (absorption,scattering) models for each CDI.
+    sf_model_pair cdi_models;
 
     // Cell-centered densities in g/cc.
-    sf_double density;
+    sf_double     density;
     
     // Cell-centered temperatures in keV.
-    sf_double temperature;
+    sf_double     temperature;
     
     // Fleck and Cummings implicitness factor.
-    double    implicitness;
+    double        implicitness;
 
     // Timestep in shakes.
-    double    delta_t;
+    double        delta_t;
 
   private:
     // >>> BUILT OBJECTS
@@ -264,9 +272,6 @@ class CDI_Mat_State_Builder<MT, Multigroup_Frequency>
 
     // Build the Opacity.
     void build_Opacity(SP_Mesh);
-
-    // Determine the models and reactions for multigroup data.
-    void determine_mg_models(sf_Opacity_Model &, sf_Opacity_Model &);
 
     // Build the opacities.
     void build_opacities(typename MT::template CCSF<sf_double> &,
@@ -324,6 +329,7 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::CDI_Mat_State_Builder(
     // assign data members from the interface parser
     material_cdi = interface->get_CDIs();
     cdi_cell_map = interface->get_CDI_map();
+    cdi_models   = interface->get_CDI_models();
     density      = interface->get_density();
     temperature  = interface->get_temperature();
     implicitness = interface->get_implicitness_factor();
@@ -333,7 +339,8 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::CDI_Mat_State_Builder(
     Ensure (implicitness >= 0.0 && implicitness <= 1.0);
     Ensure (density.size() == temperature.size());
     Ensure (density.size() == cdi_cell_map.size());
-    Require (material_cdi.size() > 0);
+    Ensure (material_cdi.size() > 0);
+    Ensure (cdi_models.size() == material_cdi.size());
 }
 
 } // end namespace rtt_imc

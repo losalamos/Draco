@@ -28,6 +28,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <utility>
 
 namespace rtt_mc
 {
@@ -94,13 +95,16 @@ class IMC_Flat_Interface :
   public:
     // constructor
     IMC_Flat_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder>, bool = false);
+
+    // general interface
+    double get_delta_t() const { return delta_t; }
+    int    get_hybrid_diffusion_method() const { return 0; }
     
     // public interface for Opacity_Builder
     SP_Data   get_flat_data_container() const { return mat_data; }
     sf_double get_density() const {return density;}
     sf_double get_temperature() const {return temperature;}
     double    get_implicitness_factor() const { return implicitness; }
-    double    get_delta_t() const { return delta_t; }
 
     // public interface for Source_Builder
     double get_elapsed_t() const { return elapsed_t; }
@@ -256,6 +260,8 @@ class IMC_CDI_Interface :
     typedef rtt_dsxx::SP<rtt_cdi::CDI>                       SP_CDI;
     typedef std::vector<int>                                 sf_int;
     typedef std::vector<SP_CDI>                              sf_CDI;
+    typedef std::pair<int, int>                              model_pair;
+    typedef std::vector<model_pair>                          sf_model_pair;
     typedef std::vector<double>                              sf_double;
     typedef std::string                                      std_string;
     typedef std::vector<std_string>                          sf_string;
@@ -271,22 +277,27 @@ class IMC_CDI_Interface :
     double     implicitness;
     double     delta_t;
 
-    sf_int     cdi_map;
-    sf_CDI     cdi_list;
+    sf_int        cdi_map;
+    sf_CDI        cdi_list;
+    sf_model_pair cdi_models;
 
   public:
     // constructor -> the default processor capacity is 6 cells
     IMC_CDI_Interface();
+
+    // general interface
+    double get_delta_t() const { return delta_t; }
+    int    get_hybrid_diffusion_method() const { return 0; }
     
     // public interface for Opacity_Builder
     sf_double get_density() const {return density;}
     sf_double get_temperature() const {return temperature;}
     double    get_implicitness_factor() const { return implicitness; }
-    double    get_delta_t() const { return delta_t; }
 
     // CDI specific parts of interface
     sf_CDI get_CDIs() const { return cdi_list; }
     sf_int get_CDI_map() const { return cdi_map; }
+    sf_model_pair get_CDI_models() const { return cdi_models; }
 
     // public interface for Source_Builder
     double get_elapsed_t() const { return double(); }
@@ -321,7 +332,8 @@ IMC_CDI_Interface<PT>::IMC_CDI_Interface()
       implicitness(1.0), 
       delta_t(.001),
       cdi_map(6),
-      cdi_list(3)
+      cdi_list(3),
+      cdi_models(3)
 {  
     using rtt_cdi_analytic::Analytic_Gray_Opacity;
     using rtt_cdi_analytic::Analytic_Multigroup_Opacity;
@@ -463,6 +475,34 @@ IMC_CDI_Interface<PT>::IMC_CDI_Interface()
     cdi_list[2]->setMultigroupOpacity(mgop_3);
     cdi_list[2]->setMultigroupOpacity(mgop_s);
     cdi_list[2]->setEoS(eos_3);
+
+    // make model list; NOTE: here we are cheating a little because we are
+    // dumping both gray and multigroup data into the same CDI's; we aren't
+    // in trouble because the multigroup and gray opacities are the same
+    // model; in real calculations we don't use the same CDI for both gray
+    // and multigroup data; even if we do, we only check one or the other in
+    // a given problem; IN SUMMARY: we only need models for either gray OR
+    // multigroup; for this test we get away with both!
+
+    // check that gray and multigroup have the same models
+    if (gop_1->getModelType() != mgop_1->getModelType()) 
+	throw(rtt_dsxx::assertion("Death to this test, incompatible models!"));
+    else if (gop_2->getModelType() != mgop_2->getModelType()) 
+	throw(rtt_dsxx::assertion("Death to this test, incompatible models!"));
+    else if (gop_3->getModelType() != mgop_3->getModelType()) 
+	throw(rtt_dsxx::assertion("Death to this test, incompatible models!"));
+    else if (gop_s->getModelType() != mgop_s->getModelType()) 
+	throw(rtt_dsxx::assertion("Death to this test, incompatible models!"));
+	      
+    // now make models
+    cdi_models[0].first  = gop_1->getModelType();
+    cdi_models[0].second = gop_s->getModelType();
+
+    cdi_models[1].first  = gop_2->getModelType();
+    cdi_models[1].second = gop_s->getModelType();
+
+    cdi_models[2].first  = gop_3->getModelType();
+    cdi_models[2].second = gop_s->getModelType();
 }
 
 //===========================================================================//

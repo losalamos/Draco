@@ -62,6 +62,7 @@ namespace rtt_imc
 // 1) 31 Jul 2001 : Added kappa_offset (tju)
 // 2) 13 Nov 2001 : modified interface class to conform to new
 //                  Mat_State_Builder constructions.
+// 3) 21-FEB 2003 : added Random_Walk flag
 // 
 //===========================================================================//
 
@@ -85,8 +86,16 @@ class Interface
 
     // Virtual constructor to make life happy down the inhertiance chain.
     virtual ~Interface() { /* need a destructor for inheritance chain */ }
+
+    // >>> FUNCTIONS REQUIRED BY MULTIPLE IMC BUILDERS
+
+    //! Get the timestep in shakes.
+    virtual double get_delta_t()                 const = 0;
+    
+    //! Hybrid IMC switch.
+    virtual int    get_hybrid_diffusion_method() const = 0;
    
-    // >>> FUNCTIONS REQUIRED BY MULTIPLE BUILDER CLASSES
+    // >>> FUNCTIONS REQUIRED BY MULTIPLE MAT_STATE_BUILDER CLASSES
     
     //! Get cell-centered densities in g/cc.
     virtual sf_double get_density() const = 0;
@@ -96,9 +105,6 @@ class Interface
 
     //! Get Fleck and Cummings implicitness factor.
     virtual double    get_implicitness_factor() const = 0;
-
-    //! Get the timestep in shakes.
-    virtual double    get_delta_t() const = 0;
     
     // >>> FUNCTIONS REQUIRED BY SOURCE_BUILDERs
 

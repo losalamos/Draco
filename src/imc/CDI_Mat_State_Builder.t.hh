@@ -203,11 +203,6 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
     SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
     Check (fleck->fleck.size() == num_cells);
 
-    // determine the model types for gray opacity
-    sf_Opacity_Model model_abs(material_cdi.size());
-    sf_Opacity_Model model_sct(material_cdi.size());
-    determine_gray_models(model_abs, model_sct);
-
     // constants needed for calculation of opacities in /cm
     double T      = 0.0; // temp in keV
     double rho    = 0.0; // density in g/cc
@@ -222,6 +217,10 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
     // reaction types
     rtt_cdi::Reaction abs = rtt_cdi::ABSORPTION;
     rtt_cdi::Reaction sct = rtt_cdi::SCATTERING;
+
+    // models
+    rtt_cdi::Model model_abs;
+    rtt_cdi::Model model_sct;
 
     // loop through the cells and assign the opacities and fleck factor
     for (int cell = 1; cell <= num_cells; cell++)
@@ -247,13 +246,23 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
 	// calculate beta (4acT^3/Cv)
 	beta   = 4.0 * a * T*T*T * volume / dedT;
 
+	// get the models (the standard allows explicit casts from int to a
+	// valid enumeration)
+	model_abs = static_cast<rtt_cdi::Model>(cdi_models[icdi].first);
+	model_sct = static_cast<rtt_cdi::Model>(cdi_models[icdi].second);
+
+	Check(model_abs == rtt_cdi::ROSSELAND ||
+	      model_abs == rtt_cdi::PLANCK    ||
+	      model_abs == rtt_cdi::ANALYTIC);
+	Check(model_sct == rtt_cdi::ROSSELAND ||
+	      model_sct == rtt_cdi::PLANCK    ||
+	      model_sct == rtt_cdi::ANALYTIC);
+
 	// get the absorption opacity (multiply by density to convert to /cm)
-	absorption(cell) = cdi->gray(model_abs[icdi], abs)->
-	    getOpacity(T, rho) * rho;
+	absorption(cell) = cdi->gray(model_abs, abs)->getOpacity(T, rho) * rho;
 
 	// get the scattering opacity (multiply by density to convert to /cm)
-	scattering(cell) = cdi->gray(model_sct[icdi], sct)->
-	    getOpacity(T, rho) * rho;
+	scattering(cell) = cdi->gray(model_sct, sct)->getOpacity(T, rho) * rho;
 
 	// calculate Fleck Factor
 	fleck->fleck(cell) = 1.0 / 
@@ -270,97 +279,6 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
 
     Ensure (opacity);
     Ensure (opacity->num_cells() == mesh->num_cells());
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Detemine the models used for gray opacities.
- */
-template<class MT>
-void CDI_Mat_State_Builder<MT, Gray_Frequency>::determine_gray_models(
-    sf_Opacity_Model &model_abs, 
-    sf_Opacity_Model &model_sct)
-{
-    Require (model_abs.size() == material_cdi.size());
-    Require (model_sct.size() == material_cdi.size());
-    Require (material_cdi.size() > 0);
-
-    // placeholder for CDI objects
-    SP_CDI cdi;
-
-    // Reaction types
-    rtt_cdi::Reaction abs = rtt_cdi::ABSORPTION;
-    rtt_cdi::Reaction sct = rtt_cdi::SCATTERING;
-
-    // loop over each material and determine the (model, reaction) combos for
-    // each 
-    for (int i = 0; i < material_cdi.size(); i++)
-    {
-	// get a SP to the cdi for this material
-	cdi = material_cdi[i];
-	Check (cdi);
-
-	// absorption opacities, we check to make sure only ONE of the
-	// following (model, ABSORPTION) combinations is defined
-
-	if (cdi->isGrayOpacitySet(rtt_cdi::ANALYTIC, abs))
-	{
-	    // use Analytic values for the absorption and Planck opacities
-	    model_abs[i] = rtt_cdi::ANALYTIC;
-
-	    // make sure the other absorption models are not set
-	    Insist (!cdi->isGrayOpacitySet(rtt_cdi::ROSSELAND, abs) &&
-		    !cdi->isGrayOpacitySet(rtt_cdi::PLANCK, abs),
-		    "Tried to define multiple opacity models for absorption.");
-	}
-	else if (cdi->isGrayOpacitySet(rtt_cdi::ROSSELAND, abs))
-	{
-	    // the absorption opacity is Rosseland
-	    model_abs[i] = rtt_cdi::ROSSELAND;
-
-	    // make sure the other absorption models are not set
-	    Insist (!cdi->isGrayOpacitySet(rtt_cdi::PLANCK, abs),
-		    "Tried to define multiple opacity models for absorption.");
-	}
-	else if (cdi->isGrayOpacitySet(rtt_cdi::PLANCK, abs))
-	{
-	    // the absorption opacity is Planck;
-	    model_abs[i] = rtt_cdi::PLANCK;
-	}
-	else
-	{
-	    Insist (0, "No absorption opacity available!");
-	}
-
-	// scattering opacities, we check to make sure only ONE of the
-	// following (model, SCATTERING) combinations is defined
-
-	if (cdi->isGrayOpacitySet(rtt_cdi::ANALYTIC, sct))
-	{
-	    model_sct[i] = rtt_cdi::ANALYTIC;
-
-	    // make sure the other scattering models are not set
-	    Insist (!cdi->isGrayOpacitySet(rtt_cdi::ROSSELAND, sct) &&
-		    !cdi->isGrayOpacitySet(rtt_cdi::PLANCK, sct),
-		    "Tried to define multiple opacity models for scattering.");
-	}
-	else if (cdi->isGrayOpacitySet(rtt_cdi::ROSSELAND, sct))
-	{
-	    model_sct[i] = rtt_cdi::ROSSELAND;
-
-	    // make sure the other absorption models are not set
-	    Insist (!cdi->isGrayOpacitySet(rtt_cdi::PLANCK, abs),
-		    "Tried to define multiple opacity models for scattering.");
-	}
-	else if (cdi->isGrayOpacitySet(rtt_cdi::PLANCK, sct))
-	{
-	    model_sct[i] = rtt_cdi::PLANCK;
-	}
-	else
-	{
-	    Insist (0, "No scattering opacity available.");
-	}
-    }
 }
 
 //===========================================================================//
@@ -565,97 +483,6 @@ void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Determine the models used for multigroup opacities.
- */
-template<class MT>
-void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::determine_mg_models(
-    sf_Opacity_Model &model_abs, 
-    sf_Opacity_Model &model_sct)
-{
-    Require (model_abs.size() == material_cdi.size());
-    Require (model_sct.size() == material_cdi.size());
-    Require (material_cdi.size() > 0);
-
-    // placeholder for CDI objects
-    SP_CDI cdi;
-
-    // Reaction types
-    rtt_cdi::Reaction abs = rtt_cdi::ABSORPTION;
-    rtt_cdi::Reaction sct = rtt_cdi::SCATTERING;
-
-    // loop over each material and determine the (model, reaction) combos for
-    // each 
-    for (int i = 0; i < material_cdi.size(); i++)
-    {
-	// get a SP to the cdi for this material
-	cdi = material_cdi[i];
-	Check (cdi);
-
-	// absorption opacities, we check to make sure only ONE of the
-	// following (model, ABSORPTION) combinations is defined
-
-	if (cdi->isMultigroupOpacitySet(rtt_cdi::ANALYTIC, abs))
-	{
-	    // use Analytic values for the absorption and Planck opacities
-	    model_abs[i]    = rtt_cdi::ANALYTIC;
-
-	    // make sure the other absorption models are not set
-	    Insist (!cdi->isMultigroupOpacitySet(rtt_cdi::ROSSELAND, abs) &&
-		    !cdi->isMultigroupOpacitySet(rtt_cdi::PLANCK, abs),
-		    "Tried to define multiple opacity models for absorption.");
-	}
-	else if (cdi->isMultigroupOpacitySet(rtt_cdi::ROSSELAND, abs))
-	{
-	    // the absorption opacity is Rosseland
-	    model_abs[i]    = rtt_cdi::ROSSELAND;
-
-	    // make sure the other absorption models are not set
-	    Insist (!cdi->isMultigroupOpacitySet(rtt_cdi::PLANCK, abs),
-		    "Tried to define multiple opacity models for absorption.");
-	}
-	else if (cdi->isMultigroupOpacitySet(rtt_cdi::PLANCK, abs))
-	{
-	    // the absorption opacity is Planck;
-	    model_abs[i]    = rtt_cdi::PLANCK;
-	}
-	else
-	{
-	    Insist (0, "No absorption opacity available!");
-	}
-
-	// scattering opacities, we check to make sure only ONE of the
-	// following (model, SCATTERING) combinations is defined
-
-	if (cdi->isMultigroupOpacitySet(rtt_cdi::ANALYTIC, sct))
-	{
-	    model_sct[i] = rtt_cdi::ANALYTIC;
-
-	    // make sure the other scattering models are not set
-	    Insist (!cdi->isMultigroupOpacitySet(rtt_cdi::ROSSELAND, sct) &&
-		    !cdi->isMultigroupOpacitySet(rtt_cdi::PLANCK, sct),
-		    "Tried to define multiple opacity models for scattering.");
-	}
-	else if (cdi->isMultigroupOpacitySet(rtt_cdi::ROSSELAND, sct))
-	{
-	    model_sct[i] = rtt_cdi::ROSSELAND;
-
-	    // make sure the other absorption models are not set
-	    Insist (!cdi->isMultigroupOpacitySet(rtt_cdi::PLANCK, abs),
-		    "Tried to define multiple opacity models for scattering.");
-	}
-	else if (cdi->isMultigroupOpacitySet(rtt_cdi::PLANCK, sct))
-	{
-	    model_sct[i] = rtt_cdi::PLANCK;
-	}
-	else
-	{
-	    Insist (0, "No scattering opacity available.");
-	}
-    }
-}
-
-//---------------------------------------------------------------------------//
-/*!
  * \brief Get multigroup absorption and scattering opacities.
  */
 template<class MT>
@@ -671,11 +498,6 @@ void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_opacities(
 
     Check (mat_state->num_cells() == num_cells);
 
-    // determine the model types for multigroup opacity
-    sf_Opacity_Model model_abs(material_cdi.size());
-    sf_Opacity_Model model_sct(material_cdi.size());
-    determine_mg_models(model_abs, model_sct);
-
     // constants needed for calculation of opacities in /cm
     double T   = 0.0; // temp in keV
     double rho = 0.0; // density in g/cc
@@ -687,6 +509,10 @@ void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_opacities(
     // reaction types
     rtt_cdi::Reaction abs = rtt_cdi::ABSORPTION;
     rtt_cdi::Reaction sct = rtt_cdi::SCATTERING;
+
+    // models
+    rtt_cdi::Model model_abs;
+    rtt_cdi::Model model_sct;
 
     // loop through the cells and assign the opacities 
     for (int cell = 1; cell <= num_cells; cell++)
@@ -704,12 +530,24 @@ void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_opacities(
 
 	Check (T   >= 0.0);
 	Check (rho >  0.0);
+
+	// get the models (the standard allows explicit casts from int to a
+	// valid enumeration)
+	model_abs = static_cast<rtt_cdi::Model>(cdi_models[icdi].first);
+	model_sct = static_cast<rtt_cdi::Model>(cdi_models[icdi].second);
+
+	Check(model_abs == rtt_cdi::ROSSELAND ||
+	      model_abs == rtt_cdi::PLANCK    ||
+	      model_abs == rtt_cdi::ANALYTIC);
+	Check(model_sct == rtt_cdi::ROSSELAND ||
+	      model_sct == rtt_cdi::PLANCK    ||
+	      model_sct == rtt_cdi::ANALYTIC);
 	
 	// get the absorption coefficients in cm^2/g 
-	absorption(cell) = cdi->mg(model_abs[icdi], abs)->getOpacity(T, rho);
+	absorption(cell) = cdi->mg(model_abs, abs)->getOpacity(T, rho);
 
 	// get the scattering coefficients in cm^2/g 
-	scattering(cell) = cdi->mg(model_sct[icdi], sct)->getOpacity(T, rho);
+	scattering(cell) = cdi->mg(model_sct, sct)->getOpacity(T, rho);
 
 	Check (absorption(cell).size() == num_groups);
 	Check (scattering(cell).size() == num_groups);

@@ -91,12 +91,15 @@ class IMC_DD_Interface :
     // constructor -> the default processor capacity is 2 cells
     IMC_DD_Interface(int = 2);
     
+    // general interface
+    double get_delta_t() const { return delta_t; }
+    int    get_hybrid_diffusion_method() const { return 0; }
+    
     // public interface for Opacity_Builder
     SP_Data   get_flat_data_container() const {return mat_data;}
     sf_double get_density() const {return density;}
     sf_double get_temperature() const {return temperature;}
     double    get_implicitness_factor() const { return implicitness; }
-    double    get_delta_t() const { return delta_t; }
 
     // processor capacity
     int get_capacity() const { return capacity; }

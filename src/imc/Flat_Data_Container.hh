@@ -55,6 +55,9 @@ struct Flat_Data_Container
     //! Cell-centered field of gray scattering opacities in /cm.
     sf_double gray_scattering_opacity;
 
+    //! Cell-centered field of Rosseland opacities in /cm.
+    sf_double rosseland_opacity;
+
     //! Specific heats in Jerks/gm/keV.
     sf_double specific_heat;
 };

@@ -46,6 +46,7 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) original
+// 1) 20-FEB-2003 : updated to use new Mat_State_Builder interface
 // 
 //===========================================================================//
 
