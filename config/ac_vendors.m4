@@ -249,9 +249,9 @@ AC_DEFUN(AC_LAPACK_SETUP, [dnl
        # if a library path has been defined use it otherwise assume
        # the libraries are in a default location
        if test -z "${LAPACK_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_lapack, -llapack -lf77blas -lcblas -latlas)
+	   AC_VENDORLIB_SETUP(vendor_lapack, -llapack -lf77blas -latlas)
        elif test -n "${LAPACK_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas)
+	   AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -llapack -lf77blas -latlas)
        fi
 
    fi

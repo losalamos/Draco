@@ -362,7 +362,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	  test -n "${with_gandolf}"; then
 	   LIBS="${LIBS} -lg2c"
 	   AC_MSG_RESULT("-lg2c added to LIBS")
-       elif
+       else
 	   AC_MSG_RESULT("not needed")
        fi
 
@@ -540,12 +540,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        #
        # end of communication package setup
        #
-
-       # PCGLIB EXTRAS
-       if test "${with_pcg}" = yes ; then
-	   pcg_sun_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
-	   AC_VENDORLIB_SETUP(vendor_pcglib, ${pcg_sun_libs})
-       fi
 
        #
        # setup lapack
