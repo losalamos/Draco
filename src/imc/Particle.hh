@@ -150,9 +150,6 @@ class Particle
     // DDMC transport step
     void trans_DDMC(const MT &, const Opacity<MT> &);
 
-    // Begin_Doc particle-int.tex
-    // Begin_Verbatim 
-
   public:
     // Particle constructor
     inline Particle(std::vector<double>, std::vector<double>, double, int,
@@ -199,9 +196,6 @@ class Particle
     // overloaded operators
     bool operator==(const Particle<MT> &) const;
     bool operator!=(const Particle<MT> &p) const { return !(*this == p); } 
-
-    // End_Verbatim 
-    // End_Doc 
 };
 
 //---------------------------------------------------------------------------//
