@@ -56,7 +56,7 @@ void runTest()
 	    // mesh file (enum DEFINED).
 	case (0):
 	    mesh_type = rtt_RTT_Mesh_Reader_test::DEFINED;
-	    all_passed = all_passed && check_virtual(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Mesh_Reader_test::check_virtual(mesh, mesh_type);
 	    break;
 
 	default:

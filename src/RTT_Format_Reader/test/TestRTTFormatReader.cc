@@ -9,15 +9,16 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "RTT_Format_Reader_test.hh"
-#include "TestRTTFormatReader.hh"
-#include "../Release.hh"
-#include "ds++/Assert.hh"
-
 #include <iostream>
 #include <vector>
 #include <sstream>
 #include <cmath>
+
+#include "../Release.hh"
+#include "ds++/Assert.hh"
+
+#include "RTT_Format_Reader_test.hh"
+#include "TestRTTFormatReader.hh"
 
 using namespace std;
 
@@ -60,21 +61,21 @@ void runTest()
 	    // mesh file (enum DEFINED).
 	case (0):
 	    mesh_type  = rtt_RTT_Format_Reader_test::DEFINED;
-	    all_passed = all_passed && check_header(mesh, mesh_type);
-	    all_passed = all_passed && check_dims(mesh, mesh_type);
-	    all_passed = all_passed && check_node_flags(mesh, mesh_type);
-	    all_passed = all_passed && check_side_flags(mesh, mesh_type);
-	    all_passed = all_passed && check_cell_flags(mesh, mesh_type);
-	    all_passed = all_passed && check_node_data_ids(mesh, mesh_type);
-	    all_passed = all_passed && check_side_data_ids(mesh, mesh_type);
-	    all_passed = all_passed && check_cell_data_ids(mesh, mesh_type);
-	    all_passed = all_passed && check_cell_defs(mesh, mesh_type);
-	    all_passed = all_passed && check_nodes(mesh, mesh_type);
-	    all_passed = all_passed && check_sides(mesh, mesh_type);
-	    all_passed = all_passed && check_cells(mesh, mesh_type);
-	    all_passed = all_passed && check_node_data(mesh, mesh_type);
-	    all_passed = all_passed && check_side_data(mesh, mesh_type);
-	    all_passed = all_passed && check_cell_data(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_header(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_dims(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_node_flags(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_side_flags(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_cell_flags(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_node_data_ids(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_side_data_ids(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_cell_data_ids(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_cell_defs(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_nodes(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_sides(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_cells(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_node_data(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_side_data(mesh, mesh_type);
+	    all_passed = all_passed && rtt_RTT_Format_Reader_test::check_cell_data(mesh, mesh_type);
 	    break;
 
 	default:
