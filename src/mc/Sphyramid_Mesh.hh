@@ -2,7 +2,7 @@
 /*!
  * \file   mc/Sphyramid_Mesh.hh
  * \author Jeffery Densmore (Stolen from RZWedge_Mesh.hh)
- * \date   Mon Oct  6 09:15:12 2003
+ * \date   Mon Nov 10 12:53 2003
  * \brief  Sphyramid_Mesh header file.
  * \note   Copyright © 2003 The Regents of the University of California.
  *
@@ -35,9 +35,20 @@ namespace rtt_mc
 /*!
  * \class Sphyramid_Mesh
 
- * \brief An XYZ Sphyramid mesh constructed from an R mesh.
+ * \brief An XYZ Pyramid mesh constructed from an R Mesh
  *
- * I'll put a description in later
+ * We model an R mesh with an XYZ "Sphyramid Mesh".  On this mesh, all
+ * cells are hexes, except at r=0, where the inner degenerate face is a
+ * point.  In the construction of this mesh, a spherical cone (the original
+ * mesh) is modeled with a pyramid, and the x-direction is aligned with the 
+ * r-direction.  
+ * The construction of this mesh requires a R mesh and an unfolding angle
+ * alpha.  The conversion from the R mesh to the Sphyramid mesh conserves 
+ * volume and differential volume (as x increases) for each cell in the
+ * mesh.  The mesh is one cell thick in the y and z directions, and the high
+ * and low y and z faces are reflective.
+ *
+ * 
 
  */
 
@@ -62,14 +73,14 @@ class Sphyramid_Mesh
     // Typedefs used throughout Sphyramid_Mesh class.
     // typedef rtt_dsxx::SP<Sphyramid_Mesh> SP_Mesh;
     typedef rtt_dsxx::SP<Coord_sys>            SP_Coord;
-    //    typedef rtt_dsxx::SP<Sphyramid_Mesh::Pack>  SP_Pack;
+    // typedef rtt_dsxx::SP<Sphyramid_Mesh::Pack>  SP_Pack;
     // typedef rtt_rng::Sprng rng_Sprng;
     typedef std::vector<int>                   sf_int;
-    //    typedef std::vector<std::vector<int>>     vf_int;
+    // typedef std::vector<std::vector<int>>     vf_int;
     typedef std::vector<double>                sf_double;
     typedef std::vector<std::vector<double> >  vf_double;
     typedef std::string                        std_string;
-    //    typedef std::pair<sf_double, sf_double>   pair_sf_double;
+    // typedef std::pair<sf_double, sf_double>   pair_sf_double;
 
     // Handy typedefs to CC fields (not formally needed in KCC3.3+).
     // typedef CCSF<double> CCSF_double;
@@ -83,7 +94,7 @@ class Sphyramid_Mesh
     // (the Sphyramid_Mesh is always three-dimensional, Cartesian)
     SP_Coord coord;
 
-    // Layout (cell connectivity of mesh
+    // Layout (cell connectivity) of mesh
     AMR_Layout layout;
     
     // vector<vector> of x-extents of each cell
@@ -98,10 +109,10 @@ class Sphyramid_Mesh
     // Total, processor-local volume
     double total_volume;
 
-    // >>> Private implementations
+    // >>>> Private implementations <<<<
 
     // Pack up the cell extents
-    //    void pack_extents(const sf_int &, char *, int, int) const;
+    // void pack_extents(const sf_int &, char *, int, int) const;
     
     // Function to calculate frequently used wedge data
     void calc_angle_data(const double beta_radians);
@@ -118,8 +129,6 @@ class Sphyramid_Mesh
     Sphyramid_Mesh(SP_Coord coord_, AMR_Layout &layout_, 
 		 vf_double &cell_x_extents_, double beta_radians_);
 
-    // >>> Member functions used by Sphyramid_Mesh dependent classes
-    
     // Return the number of cells.
     int num_cells() const { return layout.num_cells(); }
 
@@ -140,14 +149,14 @@ class Sphyramid_Mesh
     // Determine if a position is in a cell
     bool in_cell(int cell, const sf_double & r) const;
 
-    // Diagnostic functions.
-    //    void print(std::ostream &) const;
-    //    void print(std::ostream &, int) const;
+    // Diagnostic functions
+    // void print(std::ostream &) const;
+    // void print(std::ostream &, int) const;
 
-    // References to embedded objects.
+    // References to embedded objects
     // const AMR_Layout& get_Layout() const {return layout; }
     const Coord_sys & get_Coord() const {return *coord;}
-    SP_Coord get_SPCoord() const { return coord;}
+    SP_Coord get_SPCoord() const {return coord;}
 
     // Access total, on-procceser Sphyramid volume
     inline double get_total_volume() const;
@@ -155,14 +164,13 @@ class Sphyramid_Mesh
     // Services required for graphics dumps.
     sf_int get_cell_types() const;
     vf_double get_point_coord() const;
-    //    vf_int get_cell_pair() const;
+    // vf_int get_cell_pair() const;
 
-    // Required services for transport and source
+    // Services for transport and source
     // get_spatial_dimension() const {return 3;}
     inline int next_cell(int cell, int face) const;
     int get_cell(const sf_double &) const;
-    //    double get_db(const sf_double &, const sf_double &, int, int &)
-    //    const;
+    // double get_db(const sf_double &, const sf_double &, int, int &) const;
     // inline double get_random_walk_sphere_radius(const sf_double &,int) const;
     inline sf_double get_normal(int cell, int face) const;
     inline sf_double get_normal_in(int cell, int face) const;
@@ -186,10 +194,10 @@ class Sphyramid_Mesh
     bool full_Mesh() const { return 1;}
 
     // Pack function.
-//    SP_Pack pack(const sf_int & = sf_int()) const;
+    // SP_Pack pack(const sf_int & = sf_int()) const;
 
     // Overloaded Operators.
-//  bool operator==(const Sphyramid_Mesh &) const;
+    // bool operator==(const Sphyramid_Mesh &) const;
     // bool operator!=(const Sphyramid_Mes &rhs) const {return !(*this == rhs);
     // }
 
@@ -197,42 +205,33 @@ class Sphyramid_Mesh
 
 };
 //---------------------------------------------------------------------------//
-// Sphyramid_MESH INLINE FUNCTIONS
-//---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-// OVERLOADED OPERATORS
-//---------------------------------------------------------------------------//
-
-//std::ostream & operator<<(std:ostream &output, const Sphyramid_Mesh &object);
-
-//---------------------------------------------------------------------------//
-// Sphyramid_MESH SERVICES FOR Sphyramid_MESH-DEPENDENT CLASSES
+// SPHYRAMID_MESH INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Calculate the midpoint of a cell for the x-dimension.
  * 
- * \param cell Sphyramid_Mesh cell.
+ * \param cell cell number.
  * \return midpoint of x-dimension
  */
 double Sphyramid_Mesh::get_x_midpoint(int cell) const
 {
-    Check ( ( cell >0) && (cell <=num_cells() ));
+    Require ( ( cell >0) && (cell <=num_cells() ));
     return 0.5*(get_low_x(cell)+get_high_x(cell));
 }
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Calculate the midpoint of a cell for the y-dimension
  * 
- * \param cell Sphyramid_Mesh cell
+ * \param cell cell number
  *
  * \return midpoint of y-dimension
  */
 double Sphyramid_Mesh::get_y_midpoint(int cell) const
 {
-    Check ((cell>0) && (cell <= num_cells()));
+    Require ((cell>0) && (cell <= num_cells()));
 
     return 0.0;
 }
@@ -240,13 +239,13 @@ double Sphyramid_Mesh::get_y_midpoint(int cell) const
 /*! 
  * \brief Calculate the midpoint of a cell for the z-dimension
  * 
- * \param cell Sphyramid_Mesh cell
+ * \param cell cell number
  *
  * \return midpoint of z-dimension
  */
 double Sphyramid_Mesh::get_z_midpoint(int cell) const
 {
-    Check ((cell>0) && (cell <= num_cells()));
+    Require ((cell>0) && (cell <= num_cells()));
 
     return 0.0;
 }
@@ -254,15 +253,15 @@ double Sphyramid_Mesh::get_z_midpoint(int cell) const
 /*! 
  * \brief Get the dimension of the cell in the requested coordinate
  * 
- * \param cell Pryamid_Mesh cell.
+ * \param cell cell number.
  * \param coordinate coordinate
  *
- * \return dim the dimension (length) of the cell in the requested coordinate
+ * \return the dimension (length) of the cell in the requested coordinate
  */
 double Sphyramid_Mesh::dim(const int coordinate, const int cell) const
 {
-    Check ( (cell>0) && (cell<= num_cells()) );
-    Check ( (coordinate>0) && (coordinate <=3) );
+    Require ( (cell>0) && (cell<= num_cells()) );
+    Require ( (coordinate>0) && (coordinate <=3) );
 
     // return value
     double dimension = 0.0;
@@ -283,19 +282,26 @@ double Sphyramid_Mesh::dim(const int coordinate, const int cell) const
 
     return dimension;
 }
-
-
 //---------------------------------------------------------------------------//
-// RZWEDGE_MESH GENERALIZED MT SERVICES REQUIRED BY IMC
-//---------------------------------------------------------------------------//
+/*! 
+ * \brief Access the total (on-processor) volume of a Sphyramid_Mesh
+ * 
+ * \return total volume of on-processor Sphyramid cells
+ */
+double Sphyramid_Mesh::get_total_volume() const
+{
+    Ensure (total_volume>0.0);
 
+    return total_volume;
+}
+//---------------------------------------------------------------------------//
 /*! 
  * \brief Calculate the cell across a face.
  * 
  *
  * \param cell current cell index
  * \param face face index
- * \return cell_across the cell across the face
+ * \return the cell across the face
  */
 int Sphyramid_Mesh::next_cell(int cell, int face) const
 {
@@ -317,8 +323,6 @@ int Sphyramid_Mesh::next_cell(int cell, int face) const
 
     return cell_across;
 }
-
-
 //---------------------------------------------------------------------------//
 /*!
  * \brief Calculate the outward normal for the particular face of a cell.
@@ -332,7 +336,7 @@ int Sphyramid_Mesh::next_cell(int cell, int face) const
 Sphyramid_Mesh::sf_double Sphyramid_Mesh::get_normal(int cell, int face) const
 {
     Check (coord->get_dim() == 3);
-    Check ((face >=1) && (face<=6));
+    Require ((face >=1) && (face<=6));
 
     sf_double normal(coord->get_dim(),0.0);
 
@@ -357,7 +361,6 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::get_normal(int cell, int face) const
 	normal[0]=-sin_beta;
 	normal[1]=cos_beta;
     }
- 
 
     // low z face
     else if (face==5)
@@ -388,7 +391,7 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::get_normal(int cell, int face) const
 Sphyramid_Mesh::sf_double Sphyramid_Mesh::get_normal_in(int cell, int face) const
 {
     Check (coord->get_dim() == 3);
-    Check ((face>=1) && (face <= 6));
+    Require ((face>=1) && (face <= 6));
 
     // initialize inward normal
     sf_double normal_in(coord->get_dim(), 0.0);
@@ -406,9 +409,9 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::get_normal_in(int cell, int face) cons
 }
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return the volume of a Sphyramid_Mesh cell.
+ * \brief Return the volume of a Sphyramid mesh cell.
  *
- * \param cell Sphyramid_Mesh cell
+ * \param cell cell number
  */
 double Sphyramid_Mesh::volume(int cell) const
 {
@@ -422,25 +425,12 @@ double Sphyramid_Mesh::volume(int cell) const
     Ensure (vol>0.0);
 
     return vol;
-
-}
-//---------------------------------------------------------------------------//
-/*! 
- * \brief Access the total (on-processor) volume of a Sphyramid_Mesh
- * 
- * \return total volume of on-processor Sphyramid cells
- */
-double Sphyramid_Mesh::get_total_volume() const
-{
-    Ensure (total_volume>0.0);
-
-    return total_volume;
 }
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Return the area of a face in a Sphyramid_Mesh cell.
  * 
- * \param cell Sphyramid_Mesh cell
+ * \param cell cell number
  * \param face face of cell.
  *
  * \return face area
@@ -481,7 +471,7 @@ double Sphyramid_Mesh::face_area(int cell, int face) const
  */
 Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_neighbors(int cell) const
 {
-    Require (layout.num_faces(cell) == 6);
+    Check (layout.num_faces(cell) == 6);
 
     sf_int neighbors;
 
@@ -498,52 +488,6 @@ Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_neighbors(int cell) const
 
     return neighbors;
 }
-
-//===========================================================================//
-/*!
- * \struct  Sphyramid_Mesh::Pack
- * \brief  Pack and unpack a Sphyramid_Mesh instance into raw c-style data
- * arrays.
- */
-//===========================================================================//
-//struct Sphyramid_Mesh::Pack
-//{
-//  private:
-    // Data contained in the mesh.
-//    char *data;
-//    int size;
-
-    //disallow assignment.
-//    const Pack& operator=(const Pack &);
-
-//  public:
-    // constructor
-//    Pack(int, char *);
-
-    // copy constructor.
-//    Pack(const Pack &);
-
-    // Destructor
-//    ~Pack();
-
-    // >>> Accessors
-
-    //! Get pointer to beginning of char data stream.
-//    const char* begin() const {return & data[0];}
-
-    //! Get pointer to end of char data stream.
-//    const char* end() const { return &data[size];}
-
-    //! Return the number of cells in the packed mesh.
-//    int get_num_packed_cells() const;
-
-    //! Get size of data stream.
-//    int get_size() const {return size; }
-
-    // Unpack function.
-//    SP_Mesh unpack() const;
-//}
-
 
 } // end namespace rtt_mc
 

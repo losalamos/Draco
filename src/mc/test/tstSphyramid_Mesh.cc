@@ -89,7 +89,7 @@ void simple_one_cell_Sphyramid()
 	cell_x_extents[cell-1][1]=1.0; //high x
     }
 
-    // set Sphyramid_angle
+    // set Sphyramid angle
     double beta_radians=0.725153345774; // alpha_degrees=45
     
     // calculate tan(beta), you'll need it
@@ -432,7 +432,7 @@ void build_a_Sphyramid()
 	if(builder.get_cells_in_zone(2) !=zone[1]) ITFAILS;
 
     }
-    //build a Sphyramid mesh
+    //build a Sphyramid_mesh object
     SP<Sphyramid_Mesh> mesh= builder.build_Mesh();
 
     //check defined surface source cells
