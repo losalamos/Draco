@@ -93,7 +93,7 @@ void C4_Req::wait()
 	PGN( msgwait( mid ) );
 	MPI( MPI_Wait( &r, &s ) );
 #ifdef C4_SHMEM
-	C4_Wait( mid, type );
+    //	C4_Wait( mid, type );
 #endif
     }
     clear();
