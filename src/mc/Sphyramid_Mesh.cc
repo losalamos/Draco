@@ -40,7 +40,7 @@ namespace rtt_mc
 
  * \param coord_ coordinate system smart pointer
 
- * \param layout_ AMR_layout giving cell connectivity information
+ * \param layout_ Layout giving cell connectivity information
 
  * \param cell_x_extents_ the x coordinates of each cell in the following
  * form: [cell][low x]; [cell][hi x];
@@ -50,7 +50,7 @@ namespace rtt_mc
 
 */
 
-Sphyramid_Mesh::Sphyramid_Mesh(SP_Coord coord_, AMR_Layout &layout_, 
+Sphyramid_Mesh::Sphyramid_Mesh(SP_Coord coord_, Layout &layout_, 
 			       vf_double & cell_x_extents_, double beta_radians_)
     :coord(coord_),
      layout(layout_),
@@ -60,27 +60,27 @@ Sphyramid_Mesh::Sphyramid_Mesh(SP_Coord coord_, AMR_Layout &layout_,
     using global::pi;
 
     // Check coordinate system class
-    Require (coord);
-    Require (coord->get_dim() == 3);
-    Require (coord->get_Coord() == std_string("xyz"));
+    Require (this->coord);
+    Require (this->coord->get_dim() == 3);
+    Require (this->coord->get_Coord() == std_string("xyz"));
     
-    // Make sure that the Sphyramid angle is postive and not too big
-    Require ((beta_radians>0.0) && (beta_radians <= pi/4.));
+    // Make sure that the Sphyramid angle is positive and not too big
+    Require (this->beta_radians > 0.0);
+    Require (this->beta_radians <= pi/4.);
 
     // check that the cell-extents vector has num_cells elements
     // and weakly check that each cell-element has 2 extent-elements
-    Check (cell_x_extents.size() == layout.num_cells());
-    Check (cell_x_extents[0].size() == 2);
-    Check (cell_x_extents[layout.num_cells()-1].size() ==2);
+    Check (this->cell_x_extents.size()    == this->layout.num_cells());
+    Check (this->cell_x_extents[0].size() == 2);
+    Check (this->cell_x_extents[this->layout.num_cells()-1].size() == 2);
 
     // precalculate heavily used angle quatities
-    calc_angle_data(beta_radians);
+    calc_angle_data();
 
     // calculate and assign the on-processor total volume
     calc_total_volume();
 }
 
- 
 //---------------------------------------------------------------------------//
 // PRIVATE IMPLEMENTATIONS
 //---------------------------------------------------------------------------//
@@ -90,19 +90,24 @@ Sphyramid_Mesh::Sphyramid_Mesh(SP_Coord coord_, AMR_Layout &layout_,
  * \param beta_radians "angle" of Sphyramid in degrees (not angle of spherical
  * cone)
  */
-void Sphyramid_Mesh::calc_angle_data(const double beta_radians)
+void Sphyramid_Mesh::calc_angle_data()
 {
     using global::pi;
     using std::tan;
     using std::sin;
     using std::cos;
 
-    Require ((beta_radians >0.0) && (beta_radians <= pi/4.));
+    Require (this->beta_radians > 0.0);
+    Require (this->beta_radians <= pi/4.);
    
     // precalculate heavily used trig functions
-    tan_beta=std::tan(beta_radians);
-    sin_beta=std::sin(beta_radians);
-    cos_beta=std::cos(beta_radians);
+    this->tan_beta = std::tan(this->beta_radians);
+    this->sin_beta = std::sin(this->beta_radians);
+    this->cos_beta = std::cos(this->beta_radians);
+
+    Ensure (this->tan_beta > 0.0);
+    Ensure (this->sin_beta > 0.0);
+    Ensure (this->cos_beta > 0.0);
 }
 
 //---------------------------------------------------------------------------//
@@ -116,13 +121,13 @@ void Sphyramid_Mesh::calc_total_volume()
     Require (num_cells()>0);
 
     // initialize private data member
-    total_volume=0.0;
+    this->total_volume = 0.0;
     
     // sum local cell volumes
-    for(int cell=1; cell<=num_cells(); cell++)
-	total_volume+=volume(cell);
+    for(int cell = 1; cell <= num_cells(); cell++)
+	this->total_volume += volume(cell);
 
-    Ensure (total_volume >0.0);
+    Ensure (this->total_volume > 0.0);
 }
 //---------------------------------------------------------------------------//
 // PUBLIC MEMBER FUNCTIONS
@@ -143,30 +148,31 @@ bool Sphyramid_Mesh::in_cell(int cell, const sf_double &r) const
     using rtt_mc::global::soft_equiv;
 
     Require (r.size() == 3);
-    Require (cell >0 && cell <= layout.num_cells());
+    Require (cell > 0);
+    Require (cell <= this->layout.num_cells());
     
     // first check x dimension
-    if ((r[0]<cell_x_extents[cell-1][0] &&
-	 !soft_equiv(r[0],cell_x_extents[cell-1][0]))
+    if ((r[0] < this->cell_x_extents[cell-1][0] &&
+	 !soft_equiv(r[0], this->cell_x_extents[cell-1][0]))
 	||
-	(r[0]> cell_x_extents[cell-1][1] &&
-	 !soft_equiv(r[0],cell_x_extents[cell-1][1])))
+	(r[0] > this->cell_x_extents[cell-1][1] &&
+	 !soft_equiv(r[0], this->cell_x_extents[cell-1][1])))
 	return false;
 
     // check y dimension
-    if ((r[1] < -(r[0]*tan_beta) &&
-	 !soft_equiv(r[1], -(r[0]*tan_beta)))
+    if ((r[1] < -(r[0]*this->tan_beta) &&
+	 !soft_equiv(r[1], -(r[0]*this->tan_beta)))
 	||
-	(r[1] > (r[0]*tan_beta) &&
-	 !soft_equiv(r[1], -(r[0]*tan_beta))))
+	(r[1] > (r[0]*this->tan_beta) &&
+	 !soft_equiv(r[1], -(r[0]*this->tan_beta))))
 	return false;
 
     // check z dimension (cell is symmetric)
-    if ((r[2] < -(r[0]*tan_beta) &&
-	 !soft_equiv(r[2], -(r[0]*tan_beta)))
+    if ((r[2] < -(r[0]*this->tan_beta) &&
+	 !soft_equiv(r[2], -(r[0]*this->tan_beta)))
 	||
-	(r[2] > (r[0]*tan_beta) &&
-	 !soft_equiv(r[2], -(r[0]*tan_beta))))
+	(r[2] > (r[0]*this->tan_beta) &&
+	 !soft_equiv(r[2], -(r[0]*this->tan_beta))))
 	return false;
 
     return true;
@@ -181,7 +187,7 @@ Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_cell_types() const
 {
     using std::fill;
 
-    sf_int cell_type(layout.num_cells());
+    sf_int cell_type(this->layout.num_cells());
 
     // all cells in a Sphyramid_Mesh are general, 8-node hexahedrons
     fill(cell_type.begin(),cell_type.end(),rtt_viz::eight_node_hexahedron);
@@ -206,7 +212,7 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_point_coord() const
     // number of vertices is always 8; always 3D
    const int num_verts_cell = 8;
    int vert_index;
-   Check (coord->get_dim() == 3);
+   Check (this->coord->get_dim() == 3);
 
     // weakly check the validity of num_cells()
    Check(num_cells() >0 );
@@ -215,16 +221,16 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_point_coord() const
    vf_double return_coord(num_cells()*num_verts_cell);
 
     // for each cell, get vertices and reverse the columns and rows
-   for (int cell=1; cell<=num_cells(); cell++)
+   for (int cell = 1; cell <= num_cells(); cell++)
    {
 	// get the cell's verices[dim][8]
         vf_double cell_verts = get_vertices(cell);
 
 	// check validity of cell vertices vector
-       Check (cell_verts.size() == coord->get_dim());
+       Check (cell_verts.size() == this->coord->get_dim());
 
 	// loop over all 8 nodes for this cell
-       for (int node = 0; node <num_verts_cell; node++)
+       for (int node = 0; node < num_verts_cell; node++)
        {
 	   //calculate running vertex index
 	   vert_index = (cell-1)*num_verts_cell+node;
@@ -233,10 +239,10 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_point_coord() const
 	   return_coord[vert_index].resize(coord->get_dim());
 
 	   // re-assign point coordinates to return vector
-	   for (int dim=0; dim<coord->get_dim(); dim++)
+	   for (int dim = 0; dim < this->coord->get_dim(); dim++)
 	   {
 	       Check (cell_verts[dim].size() == num_verts_cell);
-	       return_coord[vert_index][dim]=cell_verts[dim][node];
+	       return_coord[vert_index][dim] = cell_verts[dim][node];
 	    }
 	}
     }
@@ -260,31 +266,31 @@ int Sphyramid_Mesh::get_cell(const sf_double &r) const
     using std::fabs;
 
     // initialize cell, flag indicating that cell was located
-    int located_cell =0;
-    bool found =false;
+    int located_cell = 0;
+    bool found       = false;
 
     // find cell that contains the x position
-    while(!found)
+    while (!found)
     {
-	located_cell+=1;
+	located_cell += 1;
 	double lox = get_low_x(located_cell);
 	double hix = get_high_x(located_cell);
 	
-	if (r[0]>= lox && r[0] <=hix)
+	if (r[0] >= lox && r[0] <= hix)
 	    found=true;
 
 	if (located_cell == num_cells() && !found)
 	{
-	    located_cell= -1;
-	    found=true;
+	    located_cell = -1;
+	    found        = true;
 	}
     }
 
     // check that the y- and z-position is with the cell
-    if(located_cell>0)
+    if(located_cell > 0)
     {
-        Check(fabs(r[1])<=r[0]*tan_beta);
-	Check(fabs(r[2])<=r[0]*tan_beta);
+        Check (fabs(r[1]) <= r[0]*this->tan_beta);
+	Check (fabs(r[2]) <= r[0]*this->tan_beta);
     }
 
     return located_cell;
@@ -304,13 +310,14 @@ int Sphyramid_Mesh::get_cell(const sf_double &r) const
  */
 Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell) const
 {
-    Require (cell>0 && cell <= num_cells());
-    Check (coord->get_dim() == 3);
+    Require (cell > 0);
+    Require (cell <= num_cells());
+    Check   (this->coord->get_dim() == 3);
 
     const int num_verts_face = 4;
     const int num_verts_cell = 8;
-    const int loz_face = 5;
-    const int hiz_face = 6;
+    const int loz_face       = 5;
+    const int hiz_face       = 6;
 
     // get the vertices for the low z face of the cell
     vf_double cell_vertices = get_vertices(cell, loz_face);
@@ -318,21 +325,23 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell) const
     // get the vertices for the high z face of the cell
     vf_double hiz_face_vertices = get_vertices(cell,hiz_face);
 
-    Check (cell_vertices.size() == coord->get_dim());
+    Check (cell_vertices.size()    == this->coord->get_dim());
     Check (cell_vertices[0].size() == num_verts_face);
     Check (cell_vertices[1].size() == num_verts_face);
     Check (cell_vertices[2].size() == num_verts_face);
 
-    Check (hiz_face_vertices.size() == coord->get_dim());
+    Check (hiz_face_vertices.size()    == this->coord->get_dim());
     Check (hiz_face_vertices[0].size() == num_verts_face);
     Check (hiz_face_vertices[1].size() == num_verts_face);
     Check (hiz_face_vertices[2].size() == num_verts_face);
 
     // add the hiz face vertices to the loz face vertices
-    for (int v=0; v<coord->get_dim();v++)
+    for (int v = 0; v < this->coord->get_dim(); v++)
+    {
 	cell_vertices[v].insert(cell_vertices[v].end(),
 			hiz_face_vertices[v].begin(),
 			hiz_face_vertices[v].end());
+    }
 
     // make sure each dimension has 8 entries -- one per vertex
     Ensure (cell_vertices[0].size() == num_verts_cell);
@@ -359,22 +368,24 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell) const
  */
 Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell, int face) const
 {
-    Require (face> 0 && face <= 6);
-    Require (cell>0 && cell<= layout.num_cells());
-    Check (coord->get_dim() == 3);
+    Require (face > 0);
+    Require (face <= 6);
+    Require (cell > 0);
+    Require (cell <= this->layout.num_cells());
+    Check (this->coord->get_dim() == 3);
 
-    vf_double face_vertices(coord->get_dim());
-    sf_double single_vert(coord->get_dim(),0.0);
+    vf_double face_vertices(this->coord->get_dim());
+    sf_double single_vert(this->coord->get_dim(),0.0);
 
-    double lox = get_low_x(cell);
-    double hix = get_high_x(cell);
-    double small_y = lox*tan_beta;
-    double large_y = hix*tan_beta;
-    double small_z = lox*tan_beta;
-    double large_z = hix*tan_beta;
+    double lox     = get_low_x(cell);
+    double hix     = get_high_x(cell);
+    double small_y = lox*this->tan_beta;
+    double large_y = hix*this->tan_beta;
+    double small_z = lox*this->tan_beta;
+    double large_z = hix*this->tan_beta;
 
     // low x face or high x face
-    if (face == 1 || face ==2)
+    if (face == 1 || face == 2)
     {
 	double y_variable;
 	double z_variable;
@@ -385,7 +396,7 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell, int face) const
 	    y_variable=small_y;
 	    z_variable=small_z;
 	}
-	else if(face ==2)
+	else if (face == 2)
 	{
 	    single_vert[0] = hix;
 	    y_variable = large_y;
@@ -394,54 +405,67 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell, int face) const
 	
 	single_vert[1] = -y_variable;
 	single_vert[2] = -z_variable;
-	for(int i = 0; i <coord->get_dim(); i++)
+	for (int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);
-
+	}
 	single_vert[1] = y_variable;
-	for(int i = 0; i<coord->get_dim(); i++)
+	for(int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);
-
+	}
 	single_vert[2]= z_variable;
-	for(int i = 0; i<coord->get_dim(); i++)
+	for(int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);
-
+	}
 	single_vert[1]=-y_variable;
-	for(int i = 0; i<coord->get_dim(); i++)
+	for(int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);
+	}
     }
 
     // low y face or high y face
     else if (face == 3 || face == 4)
     {
 	double y_plusminus;
-	if(face == 3)
+	if (face == 3)
+	{
 	    y_plusminus = -1.0;
-	else if(face == 4)
+	}
+	else if (face == 4)
+	{
 	    y_plusminus = 1.0;
-
-	single_vert[0] =lox;
-	single_vert[1]=y_plusminus*small_y;
-	single_vert[2]=-small_z;
-	for(int i = 0; i<coord->get_dim(); i++)
+	}
+	single_vert[0] = lox;
+	single_vert[1] = y_plusminus*small_y;
+	single_vert[2] = -small_z;
+	for (int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);
-
-	single_vert[0] =hix;
-	single_vert[1]=y_plusminus*large_y;
-	single_vert[2]=-large_z;
-	for(int i = 0; i<coord->get_dim(); i++)
+	}
+	single_vert[0] = hix;
+	single_vert[1] = y_plusminus*large_y;
+	single_vert[2] = -large_z;
+	for (int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);
-
-	single_vert[0] =hix;
-	single_vert[1]=y_plusminus*large_y;
-	single_vert[2]=+large_z;
-	for(int i = 0; i<coord->get_dim(); i++)
+	}
+	single_vert[0] = hix;
+	single_vert[1] = y_plusminus*large_y;
+	single_vert[2] = large_z;
+	for (int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);	
-
-	single_vert[0] =lox;
-	single_vert[1]=y_plusminus*small_y;
-	single_vert[2]=+small_z;
-	for(int i = 0; i<coord->get_dim(); i++)
+	}
+	single_vert[0] = lox;
+	single_vert[1] = y_plusminus*small_y;
+	single_vert[2] = small_z;
+	for (int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);	
+	}
     }
 
     // low z face or high z face
@@ -449,38 +473,46 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell, int face) const
     else if (face == 5 || face == 6)
     {
 	double z_plusminus;
-	if(face == 5)
+	if (face == 5)
+	{
 	    z_plusminus = -1.0;
-	else if(face == 6)
+	}
+	else if (face == 6)
+	{
 	    z_plusminus = 1.0;
-
-	single_vert[0] =lox;
-	single_vert[1]=-small_y;
-	single_vert[2]=z_plusminus*small_z;
-	for(int i = 0; i<coord->get_dim(); i++)
+	}
+	single_vert[0] = lox;
+	single_vert[1] = -small_y;
+	single_vert[2] = z_plusminus*small_z;
+	for (int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);
-
-	single_vert[0] =hix;
-	single_vert[1]=-large_y;
-	single_vert[2]=z_plusminus*large_z;
-	for(int i = 0; i<coord->get_dim(); i++)
+	}
+	single_vert[0] = hix;
+	single_vert[1] = -large_y;
+	single_vert[2] = z_plusminus*large_z;
+	for (int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);
-
-	single_vert[0] =hix;
-	single_vert[1]= large_y;
-	single_vert[2]=z_plusminus*large_z;
-	for(int i = 0; i<coord->get_dim(); i++)
+	}
+	single_vert[0] = hix;
+	single_vert[1] = large_y;
+	single_vert[2] =z_plusminus*large_z;
+	for(int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);	
-
-	single_vert[0] =lox;
-	single_vert[1]=small_y;
-	single_vert[2]=z_plusminus*small_z;
-	for(int i = 0; i<coord->get_dim(); i++)
+	}
+	single_vert[0] = lox;
+	single_vert[1] = small_y;
+	single_vert[2] = z_plusminus*small_z;
+	for(int i = 0; i < this->coord->get_dim(); i++)
+	{
 	    face_vertices[i].push_back(single_vert[i]);	
+	}
     }
 
     // check that there are 3 dimensions a 4 vertices
-    Ensure (face_vertices.size() == coord->get_dim());
+    Ensure (face_vertices.size()    == this->coord->get_dim());
     Ensure (face_vertices[0].size() == 4);
     Ensure (face_vertices[1].size() == 4);
     Ensure (face_vertices[2].size() == 4);
@@ -504,7 +536,7 @@ int Sphyramid_Mesh::get_bndface(std_string boundary, int cell) const
     //return value
     int face;
     
-    if (boundary =="lox" || boundary == "lor")
+    if (boundary == "lox" || boundary == "lor")
 	face = 1;
     else if (boundary == "hix" || boundary == "hir")
 	face = 2;
@@ -533,15 +565,17 @@ int Sphyramid_Mesh::get_bndface(std_string boundary, int cell) const
 Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_surcells(std::string boundary) const
 {
 
-    Check(coord->get_dim() == 3);
+    Check (this->coord->get_dim() == 3);
 
     // make return vector containing a list of cells along specified boundary
     sf_int return_list;
 
     // verify assumption that cell 1 is the low x cell
-    Insist ((layout(1,1,1)==1) && (layout(1,3,1)==1) && (layout(1,4,1)==1)
-	    && (layout(1,5,1)==1) && (layout(1,6,1)==1),
-	    "Cell 1 is not reflective on inside and sides!");
+    Insist (layout(1,1) == 1, "Cell 1 is not reflective on low x face!");
+    Insist (layout(1,3) == 1, "Cell 1 is not reflective on low y face!");
+    Insist (layout(1,4) == 1, "Cell 1 is not reflective on high y face!");
+    Insist (layout(1,5) == 1, "Cell 1 is not reflective on low z face!");
+    Insist (layout(1,6) == 1, "Cell 1 is not reflective on high z face!");
     
     // calculate the cells along the...
     // ... the high r boundary
@@ -549,21 +583,22 @@ Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_surcells(std::string boundary) const
     {
 	// first, work our way along mesh to the high x cell
 	int start_cell = 1;
-	while(layout(start_cell,2,1) != start_cell &&
-	      layout(start_cell,2,1) !=0)
+	while (layout(start_cell,2) != start_cell && layout(start_cell,2) !=0)
 	{
 	    //get the next cell
-	    int next_cell=layout(start_cell,2,1);
+	    int next_cell=layout(start_cell,2);
 
 	    // ridiculous, unnecessary checks on the next cell
-	    Check (next_cell !=0 && next_cell != start_cell);
-	    Check (next_cell >0 && next_cell <= layout.num_cells());
+	    Check (next_cell != 0);
+	    Check (next_cell != start_cell);
+	    Check (next_cell  > 0);
+	    Check (next_cell <= this->layout.num_cells());
 
 	    //check that the cell has reflecting sides
-	    Check ((layout(next_cell,3,1) == next_cell) &&
-	   (layout(next_cell,4,1) == next_cell) &&
-	   (layout(next_cell,5,1) == next_cell) &&
-	   (layout(next_cell,6,1) == next_cell));
+	    Check (this->layout(next_cell,3) == next_cell);
+	    Check (this->layout(next_cell,4) == next_cell);
+	    Check (this->layout(next_cell,5) == next_cell);
+	    Check (this->layout(next_cell,6) == next_cell);
 
 	    // the next cell is okay
 	    start_cell = next_cell;
@@ -576,9 +611,10 @@ Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_surcells(std::string boundary) const
 	// check the size of the surface cell list
 	Ensure (return_list.size() == 1);
     }
-    else
+    else{
 	Insist(0,
 	       "Unkown or invalid (lor/lox,loy/hiy,loz/hiz) surf in get_surcells!");
+    }
 
     // return vector
     return return_list;
@@ -600,15 +636,15 @@ bool Sphyramid_Mesh::check_defined_surcells(const std_string ss_face,
     // a weak check on the number of surface cells
     Check (ss_list.size() <= num_cells());
 
-    for (int ss_indx = 0; ss_indx<ss_list.size(); ss_indx++)
+    for (int ss_indx = 0; ss_indx < ss_list.size(); ss_indx++)
     {
 	// convert face on which ss resides from string to int.
 	// despite its args, get_bndface actually has no cell dependence
-	int ss_face_num = get_bndface(ss_face,ss_list[ss_indx]);
+	int ss_face_num = get_bndface(ss_face, ss_list[ss_indx]);
 
 	// get_bnd condition on ss face; had better be vacuum (0)
-	int bc = layout(ss_list[ss_indx],ss_face_num,1);
-	if (bc!=0)
+	int bc = this->layout(ss_list[ss_indx], ss_face_num);
+	if (bc != 0)
 	    return false;
     }
 

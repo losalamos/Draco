@@ -14,7 +14,7 @@
 #define __mc_Sphyramid_Builder_hh__
 
 #include "Coord_sys.hh"
-#include "AMR_Layout.hh"
+#include "Layout.hh"
 #include "Sphyramid_Mesh.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
@@ -46,9 +46,9 @@ class Sphyramid_Builder
 {
   public:
     // Useful typedefs.
-    typedef rtt_dsxx::SP<Sphyramid_Mesh>          SP_Mesh;
+    typedef rtt_dsxx::SP<Sphyramid_Mesh>        SP_Mesh;
     typedef rtt_dsxx::SP<Coord_sys>             SP_Coord_sys;
-    typedef rtt_dsxx::SP<AMR_Layout>            SP_Layout;
+    typedef rtt_dsxx::SP<Layout>                SP_Layout;
     typedef std::vector<int>                    sf_int;
     typedef std::vector<std::vector<int> >      vf_int;
     typedef std::vector<double>                 sf_double;
@@ -66,7 +66,7 @@ class Sphyramid_Builder
     // Coordinate system string.
     std_string coord_system;
 
-    // Angle of spherical cone in degrees
+    // Angle of spherical cone in degrees (i.e. maximum polar angle)
     double alpha_degrees;
     
     // Number of fine cells per coarse cell.
@@ -113,13 +113,13 @@ class Sphyramid_Builder
 
     // Build Layout helper functions.
     SP_Layout build_Sphyramid_Layout(const Coord_sys &coord) const;
-    void assign_Sphyramid_Layout(AMR_Layout &layout) const;
+    void assign_Sphyramid_Layout(Layout &layout) const;
 
     // Build Coord_sys helper functions.
     SP_Coord_sys build_Coord() const;
 
     // Build Mesh helper functions
-    SP_Mesh build_Sphyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout);
+    SP_Mesh build_Sphyramid_Mesh(SP_Coord_sys coord, Layout &layout);
 
     // Member functions for cell-zone mapping
     void zone_mapper();
@@ -146,7 +146,7 @@ class Sphyramid_Builder
     // ACCESSORS
 
     // Get a copy of the built mesh.
-    SP_Mesh get_Mesh() const { Require(mesh); return mesh; }
+    SP_Mesh get_Mesh() const { Require (mesh); return mesh; }
 
     // Get cell regions for graphics dumping.
     sf_int get_regions() const;
@@ -191,7 +191,7 @@ Sphyramid_Builder::Sphyramid_Builder(rtt_dsxx::SP<IT> interface)
     Require (interface);
 
     // get mesh_input file name from interface
-    mesh_file=interface->get_mesh_file();
+    this->mesh_file = interface->get_mesh_file();
 
     // parse the mesh input file
     parser();
@@ -199,7 +199,7 @@ Sphyramid_Builder::Sphyramid_Builder(rtt_dsxx::SP<IT> interface)
     // do zone mapping
     zone_mapper();
 
-    Ensure (!mesh);
+    Ensure (!this->mesh);
 }
 //---------------------------------------------------------------------------//
 /*! 
@@ -230,8 +230,8 @@ std::vector<T> Sphyramid_Builder::zone_cell_mapper(const std::vector<T>
     vector<T> cell_field(zone.size());
 
     // assign cell values to cell_field based on zonal values
-    for (int cell=0; cell<cell_field.size(); cell++)
-	cell_field[cell]=zone_field[zone[cell]-1];
+    for (int cell=0; cell < cell_field.size(); cell++)
+	cell_field[cell] = zone_field[zone[cell]-1];
 
     // return the mapped field
     return cell_field;

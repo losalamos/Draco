@@ -16,7 +16,7 @@
 #define rtt_mc_Sphyramid_Mesh_hh
 
 #include "Coord_sys.hh"
-#include "AMR_Layout.hh"
+#include "Layout.hh"
 //#include "rng/Sprng.hh"
 #include "ds++/SP.hh"
 //#include "ds++/Assert.hh"
@@ -42,11 +42,11 @@ namespace rtt_mc
  * point.  In the construction of this mesh, a spherical cone (the original
  * mesh) is modeled with a pyramid, and the x-direction is aligned with the 
  * r-direction.  
- * The construction of this mesh requires a R mesh and an unfolding angle
- * alpha.  The conversion from the R mesh to the Sphyramid mesh conserves 
- * volume and differential volume (as x increases) for each cell in the
- * mesh.  The mesh is one cell thick in the y and z directions, and the high
- * and low y and z faces are reflective.
+ * The construction of this mesh requires an R mesh and an unfolding angle
+ * alpha (the maximum polar angle of the spherical cone.  The Sphyramid mesh
+ * then generates an x mesh and an unfolding angle beta (the angle between
+ * the x-axis and sides of the mesh).  Please see memos CCS-4:03-56(U) and 
+ * CCS-4:03-??(U)
  *
  * 
 
@@ -95,7 +95,7 @@ class Sphyramid_Mesh
     SP_Coord coord;
 
     // Layout (cell connectivity) of mesh
-    AMR_Layout layout;
+    Layout layout;
     
     // vector<vector> of x-extents of each cell
     vf_double cell_x_extents;
@@ -115,7 +115,7 @@ class Sphyramid_Mesh
     // void pack_extents(const sf_int &, char *, int, int) const;
     
     // Function to calculate frequently used wedge data
-    void calc_angle_data(const double beta_radians);
+    void calc_angle_data();
 
     // Function to calculate and set the total, on-processor volume
     void calc_total_volume();
@@ -126,17 +126,17 @@ class Sphyramid_Mesh
   
   public:
     // Constructor
-    Sphyramid_Mesh(SP_Coord coord_, AMR_Layout &layout_, 
-		 vf_double &cell_x_extents_, double beta_radians_);
+    Sphyramid_Mesh(SP_Coord coord_, Layout &layout_, 
+		   vf_double &cell_x_extents_, double beta_radians_);
 
     // Return the number of cells.
     int num_cells() const { return layout.num_cells(); }
 
     // Return the x-dimension cell extents
-    double get_low_x(int cell) const {return cell_x_extents[cell-1][0]; }
-    double get_high_x(int cell) const {return cell_x_extents[cell-1][1]; }
+    double get_low_x(int cell) const { return cell_x_extents[cell-1][0]; }
+    double get_high_x(int cell) const { return cell_x_extents[cell-1][1]; }
 
-    // Get the midpoint of a cell for a give dimension
+    // Get the midpoint of a cell for a given dimension
     inline double get_x_midpoint(int cell) const;
     inline double get_y_midpoint(int cell) const;
     inline double get_z_midpoint(int cell) const;
@@ -155,8 +155,8 @@ class Sphyramid_Mesh
 
     // References to embedded objects
     // const AMR_Layout& get_Layout() const {return layout; }
-    const Coord_sys & get_Coord() const {return *coord;}
-    SP_Coord get_SPCoord() const {return coord;}
+    const Coord_sys & get_Coord() const { return *coord; }
+    SP_Coord get_SPCoord() const { return coord; }
 
     // Access total, on-procceser Sphyramid volume
     inline double get_total_volume() const;
@@ -217,7 +217,8 @@ class Sphyramid_Mesh
  */
 double Sphyramid_Mesh::get_x_midpoint(int cell) const
 {
-    Require ( ( cell >0) && (cell <=num_cells() ));
+    Require (cell > 0);
+    Require (cell <= num_cells());
     return 0.5*(get_low_x(cell)+get_high_x(cell));
 }
 
@@ -231,7 +232,8 @@ double Sphyramid_Mesh::get_x_midpoint(int cell) const
  */
 double Sphyramid_Mesh::get_y_midpoint(int cell) const
 {
-    Require ((cell>0) && (cell <= num_cells()));
+    Require (cell > 0); 
+    Require (cell <= num_cells());
 
     return 0.0;
 }
@@ -245,7 +247,8 @@ double Sphyramid_Mesh::get_y_midpoint(int cell) const
  */
 double Sphyramid_Mesh::get_z_midpoint(int cell) const
 {
-    Require ((cell>0) && (cell <= num_cells()));
+    Require (cell > 0);
+    Require (cell <= num_cells());
 
     return 0.0;
 }
@@ -260,25 +263,33 @@ double Sphyramid_Mesh::get_z_midpoint(int cell) const
  */
 double Sphyramid_Mesh::dim(const int coordinate, const int cell) const
 {
-    Require ( (cell>0) && (cell<= num_cells()) );
-    Require ( (coordinate>0) && (coordinate <=3) );
+    Require (cell > 0); 
+    Require (cell <= num_cells() );
+    Require (coordinate > 0);
+    Require (coordinate <= 3);
 
     // return value
     double dimension = 0.0;
 
     // x-coordinate
-    if (coordinate==1)
+    if (coordinate == 1)
+    {
 	dimension = get_high_x(cell)-get_low_x(cell);
+    }
 
     // y-coordinate
     else if (coordinate==2)
+    {
 	dimension = 2.0 *get_x_midpoint(cell)*tan_beta;
+    }
 
     // z-coordinate
     else if (coordinate==3)
-	dimension=2.0*get_x_midpoint(cell)*tan_beta;
+    {
+	dimension = 2.0*get_x_midpoint(cell)*tan_beta;
+    }
     else
-	Insist (0,"Requested coordinate in Sphyramid_Mesh's dim no valid!");
+	Insist (0,"Requested coordinate in Sphyramid_Mesh's dim not valid!");
 
     return dimension;
 }
@@ -290,7 +301,7 @@ double Sphyramid_Mesh::dim(const int coordinate, const int cell) const
  */
 double Sphyramid_Mesh::get_total_volume() const
 {
-    Ensure (total_volume>0.0);
+    Ensure (total_volume > 0.0);
 
     return total_volume;
 }
@@ -305,21 +316,18 @@ double Sphyramid_Mesh::get_total_volume() const
  */
 int Sphyramid_Mesh::next_cell(int cell, int face) const
 {
-    Require (cell>0 && cell <= layout.num_cells());
-    Require (face>0 && face<=6);
+    Require (cell > 0); 
+    Require (cell <= this->layout.num_cells());
+    Require (face > 0);
+    Require (face <= 6);
 
     // declare return cell
     int cell_across;
 
-    if (layout.num_cells_across(cell,face) ==1)
-    {
-	cell_across = layout(cell,face,1);
-
-	Check(face ==3 || face == 4 || face == 5 || face == 6 
-	      ? cell_across == cell:cell_across==layout(cell,face,1));
-    }
-    else 
-	Insist(0,"Must have exactly one cell across face in Sphyramid Mesh!");
+    cell_across = this->layout(cell,face);
+    
+    Check (face == 3 || face == 4 || face == 5 || face == 6 
+	      ? cell_across == cell : cell_across == layout(cell,face));
 
     return cell_across;
 }
@@ -335,45 +343,50 @@ int Sphyramid_Mesh::next_cell(int cell, int face) const
  */
 Sphyramid_Mesh::sf_double Sphyramid_Mesh::get_normal(int cell, int face) const
 {
-    Check (coord->get_dim() == 3);
-    Require ((face >=1) && (face<=6));
+    Check (this->coord->get_dim() == 3);
+    Require (face >= 1);
+    Require (face <= 6);
 
-    sf_double normal(coord->get_dim(),0.0);
+    sf_double normal(this->coord->get_dim(),0.0);
 
     // low x face
-    if (face==1)
-	normal[0]=-1.0;
-
+    if (face == 1)
+    {
+	normal[0] = -1.0;
+    }
+    
     // high x face
-    else if (face==2)
-	normal[0]=1.0;
+    else if (face == 2)
+    {
+	normal[0] = 1.0;
+    }
 
     // low y face
-    else if (face==3)
+    else if (face == 3)
     {
-	normal[0]= -sin_beta;
-	normal[1]= -cos_beta;
+	normal[0] = -this->sin_beta;
+	normal[1] = -this->cos_beta;
     }
 
     // high y face
-    else if (face ==4)
+    else if (face == 4)
     {
-	normal[0]=-sin_beta;
-	normal[1]=cos_beta;
+	normal[0] = -this->sin_beta;
+	normal[1] =  this->cos_beta;
     }
 
     // low z face
-    else if (face==5)
+    else if (face == 5)
     {
-	normal[0]= -sin_beta;
-	normal[2]= -cos_beta;
+	normal[0] = -this->sin_beta;
+	normal[2] = -this->cos_beta;
     }
 
     // high z face
-    else if (face ==6)
+    else if (face == 6)
     {
-	normal[0]=-sin_beta;
-	normal[2]=cos_beta;
+	normal[0] = -this->sin_beta;
+	normal[2] =  this->cos_beta;
     }
     
     // return outward normal
@@ -388,21 +401,25 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::get_normal(int cell, int face) const
  *
  * \return inward normal
  */
-Sphyramid_Mesh::sf_double Sphyramid_Mesh::get_normal_in(int cell, int face) const
+Sphyramid_Mesh::sf_double Sphyramid_Mesh::get_normal_in(int cell, int face) 
+    const
 {
-    Check (coord->get_dim() == 3);
-    Require ((face>=1) && (face <= 6));
+    Check (this->coord->get_dim() == 3);
+    Require (face >= 1);
+    Require (face <= 6);
 
     // initialize inward normal
-    sf_double normal_in(coord->get_dim(), 0.0);
+    sf_double normal_in(this->coord->get_dim(), 0.0);
 
     // get outward normal first
     sf_double normal = get_normal(cell, face);
-    Check (normal.size() == coord->get_dim());
+    Check (normal.size() == this->coord->get_dim());
     
     // reverse direction
-    for (int dir = 0; dir <coord->get_dim(); dir++)
-	normal_in[dir]=-normal[dir];
+    for (int dir = 0; dir < this->coord->get_dim(); dir++)
+    {
+	normal_in[dir] = -normal[dir];
+    }
 
     // return inward normal
     return normal_in;
@@ -415,14 +432,19 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::get_normal_in(int cell, int face) cons
  */
 double Sphyramid_Mesh::volume(int cell) const
 {
-    Require (cell>0 && cell <=num_cells());
+    Require (cell > 0);
+    Require (cell <= num_cells());
     
     double lox = get_low_x(cell);
     double hix = get_high_x(cell);
 
-    double vol = (4./3.)*tan_beta*tan_beta*(hix*hix*hix-lox*lox*lox);
+    Check (hix >= 0.);
+    Check (lox >= 0.);
 
-    Ensure (vol>0.0);
+    double vol = (4./3.)*this->tan_beta*this->tan_beta*
+	(hix*hix*hix-lox*lox*lox);
+
+    Ensure (vol > 0.0);
 
     return vol;
 }
@@ -437,29 +459,39 @@ double Sphyramid_Mesh::volume(int cell) const
  */
 double Sphyramid_Mesh::face_area(int cell, int face) const
 {
-    Require (face>0 && face <=6);
-    Require (cell>0 && cell<=num_cells());
+    Require (face > 0);
+    Require (face <= 6);
+    Require (cell > 0);
+    Require (cell <= num_cells());
 
-    // initialize face area
-    double face_area =0.0;
+    // initialize face_area and side
+    double face_area;
+    double side;
 
     // low x face
-    if(face ==1)
-	face_area=4.0*get_low_x(cell)*get_low_x(cell)*tan_beta*tan_beta;
+    if (face == 1)
+    {
+	side      = 2.0*get_low_x(cell)*this->tan_beta;
+	face_area = side*side;
+    }
 
     // high x face
-    if(face ==2)
-	face_area=4.0*get_high_x(cell)*get_high_x(cell)*tan_beta*tan_beta;
+    if (face == 2)
+    {
+	side      = 2.0*get_high_x(cell)*this->tan_beta;
+	face_area = side*side;
+    }
 
     // all other faces
-    else if (face ==3 || face ==4 || face == 5 || face ==6)
+    else if (face == 3 || face == 4 || face == 5 || face == 6)
     {
-	face_area=get_high_x(cell)*get_high_x(cell);
-	face_area-=get_low_x(cell)*get_low_x(cell);
-	face_area/=cos_beta;
+	face_area  = get_high_x(cell)*get_high_x(cell);
+	face_area -= get_low_x(cell)*get_low_x(cell);
+	face_area /= this->cos_beta;
     }
 
     // return face_area;
+    Ensure (face_area >= 0.);
     return face_area;
 }
 //---------------------------------------------------------------------------//
@@ -471,20 +503,15 @@ double Sphyramid_Mesh::face_area(int cell, int face) const
  */
 Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_neighbors(int cell) const
 {
-    Check (layout.num_faces(cell) == 6);
+    Check (this->layout.num_faces(cell) == 6);
 
     sf_int neighbors;
 
-    for( int face =1; face<= layout.num_faces(cell); face++)
+    for (int face = 1; face <= this->layout.num_faces(cell); face++)
     {
-
-	// loop over number of cells across the face and add the cells
-	// across to the neighbor list
-	Check(layout.num_cells_across(cell,face)==1);
-	for (int i =1; i<= layout.num_cells_across(cell,face); i++)
-	    neighbors.push_back(layout(cell,face,i));
+	neighbors.push_back(this->layout(cell,face));
     }
-    Check(neighbors.size()==layout.num_faces(cell));
+    Check (neighbors.size() == this->layout.num_faces(cell));
 
     return neighbors;
 }

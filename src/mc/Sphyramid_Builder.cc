@@ -37,8 +37,8 @@ namespace rtt_mc
  */
 Sphyramid_Builder::SP_Mesh Sphyramid_Builder::build_Mesh()
 {
-    Require(!mesh);
-    Insist(((coord_system =="r") || (coord_system=="R")),
+    Require (!this->mesh);
+    Insist (((this->coord_system == "r") || (this->coord_system== "R")),
 	   "You are using Sphyramid_Builder, but coord_system is not R!");
 
     // declare smart pointers
@@ -50,15 +50,15 @@ Sphyramid_Builder::SP_Mesh Sphyramid_Builder::build_Mesh()
     layout = build_Sphyramid_Layout(*coord);
 
     // build the Sphyramid_Mesh
-    mesh = build_Sphyramid_Mesh(coord, *layout);
+    this->mesh = build_Sphyramid_Mesh(coord, *layout);
 
     // calculate defined surface cells;
     calc_defined_surcells();
 
     // do some check and return completed mesh
-    Ensure (mesh->full_Mesh());
-    Ensure (mesh->get_Coord().get_dim() ==3);
-    Ensure (mesh->num_cells() == zone.size());
+    Ensure (this->mesh->full_Mesh());
+    Ensure (this->mesh->get_Coord().get_dim() == 3);
+    Ensure (this->mesh->num_cells() == zone.size());
 
     return mesh;
 }
@@ -75,33 +75,39 @@ Sphyramid_Builder::sf_int Sphyramid_Builder::get_regions() const
 {
     using std::fill;
 
-    sf_int return_regions(zone.size());
+    sf_int return_regions(this->zone.size());
     sf_int::const_iterator cell_itr;
 
     // if no user defined regions given, simply return region 1 in each cell
-    if (regions.size() ==1)
+    if (this->regions.size() == 1)
     {
 	// make all regions 1
 	fill(return_regions.begin(), return_regions.end(), 1);
     }
-    else if(regions.size()>1)
+    else if (this->regions.size() > 1)
     {
 
 	// preliminary declarations
 	int zone;
-	for(int i=0; i<regions.size();i++)
-	    for(int j=0;j<regions[i].size(); j++)
+	for (int i = 0; i < this->regions.size(); i++)
+	{
+	    for (int j = 0; j < this->regions[i].size(); j++)
 	    {
 		// get a zone in this region
-		zone=regions[i][j];
+		zone=this->regions[i][j];
 
 		// find the cells in this zone and add them to the region
-		for (int k=0; k < cell_zone[zone-1].size();k++)
-		    return_regions[cell_zone[zone-1][k]-1]=i+1;
+		for (int k = 0; k < this->cell_zone[zone-1].size(); k++)
+		{
+		    return_regions[this->cell_zone[zone-1][k]-1] = i+1;
+		}
 	    }
+	}
     }
-    else 
+    else
+    {
 	Insist (0, "something wrong with the regions setting!");
+    }
 
     // make sure there are no undefined regions
     cell_itr=std::find(return_regions.begin(),return_regions.end(), 0);
@@ -116,8 +122,8 @@ Sphyramid_Builder::sf_int Sphyramid_Builder::get_regions() const
  */
 Sphyramid_Builder::vf_int Sphyramid_Builder::get_defined_surcells() const
 {
-    Require (mesh);
-    return defined_surcells;
+    Require (this->mesh);
+    return this->defined_surcells;
 }
 
 //---------------------------------------------------------------------------//
@@ -138,7 +144,7 @@ void Sphyramid_Builder::parser()
     using std::fabs;
 
     // first open the input file
-    const char *file=mesh_file.c_str();
+    const char *file = this->mesh_file.c_str();
     std_ifstream input(file);
 
     // make sure the file exists
@@ -152,46 +158,53 @@ void Sphyramid_Builder::parser()
 	Insist (!input.eof(), "You did not supply an end-title!");
 
 	//do title block input
-	input>>keyword;
-	if(keyword == "coord:")
-	    input >> coord_system;
+	input >> keyword;
+	if (keyword == "coord:")
+	{
+	    input >> this->coord_system;
+	}
     }
 
     // check to make sure an appropriate coord_sys is called
-    Insist (coord_system == "xy"  || coord_system == "XY"  || 
-	    coord_system == "rz"  || coord_system == "RZ"  ||
-	    coord_system == "XYZ" || coord_system == "xyz" ||
-	    coord_system == "R"   || coord_system == "r"   ,
+    Insist (this->coord_system == "xy"  || this->coord_system == "XY"  || 
+	    this->coord_system == "rz"  || this->coord_system == "RZ"  ||
+	    this->coord_system == "XYZ" || this->coord_system == "xyz" ||
+	    this->coord_system == "R"   || this->coord_system == "r"   ,
 	    "Invalid coordinate system choosen!");
 
     // call sub-parser
-   if (coord_system == "r" || coord_system == "R")
+   if (this->coord_system == "r" || this->coord_system == "R")
    {
        // the boundary cond is always reflecting at r=0 for a Sphyramid mesh
-       bnd_cond[0] = "reflect";
+       this->bnd_cond[0] = "reflect";
 
        //parse mesh particulars
        parser1D(input);
    }
-   else if (coord_system == "xyz" || coord_system == "XYZ" ||
-	    coord_system == "xy" || coord_system == "XY" ||
-	    coord_system == "RZ" || coord_system == "rz")
+   else if (this->coord_system == "xyz" || this->coord_system == "XYZ" ||
+	    this->coord_system == "xy"  || this->coord_system == "XY"  ||
+	    this->coord_system == "RZ"  || this->coord_system == "rz")
+   {
        Insist(0,"On input, Sphyramid needs r or R coord_system!");
+   }
 
    //parse the source block that contains surface source information
    source_parser(input);
 
    // size regions data if not already sized
-   if (regions.empty())
-       regions.resize(1);
-
+   if (this->regions.empty())
+   {
+       this->regions.resize(1);
+   }
    // >>> calculate fine_edge array <<<
 
    // determine size of fine_edge array
    int nfine = 0;
-   for (int n = 0; n<fine_cells.size(); n++)
-       nfine+=fine_cells[n];
-   fine_edge.resize(nfine+1);
+   for (int n = 0; n < this->fine_cells.size(); n++)
+   {
+       nfine += this->fine_cells[n];
+   }
+   this->fine_edge.resize(nfine+1);
 
    // assign edge data to array
 
@@ -199,59 +212,72 @@ void Sphyramid_Builder::parser()
    int ifine=0;
 
    // initalize local-use widths
-   double coarse_cell_width  =0.0;
-   double first_fine_cell_width =0.0;
+   double coarse_cell_width;
+   double first_fine_cell_width;
 
    // loop over coarse cells -- i-th coarse cell bracketed by the i-th and
    // i+1st coarse cell edges
-   for (int i =0; i < coarse_edge.size() - 1; i++)
+   for (int i = 0; i < this->coarse_edge.size()-1; i++)
    {
        // set the first fine edge -- equivalent to first coarse edge
-       fine_edge[ifine] =coarse_edge[i];
+       this->fine_edge[ifine] = this->coarse_edge[i];
 
        // calculate the width of this coarse cell
-       coarse_cell_width=coarse_edge[i+1]-coarse_edge[i];
+       coarse_cell_width = this->coarse_edge[i+1]-this->coarse_edge[i];
 
        // set the width of the first fine cell in this coarse cell
-       if (fine_ratio[i] ==1.0)
-	   first_fine_cell_width=coarse_cell_width/fine_cells[i];
+       if (fine_ratio[i] == 1.0)
+       {
+	   first_fine_cell_width = coarse_cell_width/this->fine_cells[i];
+       }
        else
-	   first_fine_cell_width=(1.0-fine_ratio[i]) * coarse_cell_width / 
-	       (1.0-pow(fine_ratio[i],fine_cells[i]));
+       {
+	   first_fine_cell_width = (1.0-this->fine_ratio[i])*coarse_cell_width / 
+	       (1.0-pow(this->fine_ratio[i],this->fine_cells[i]));
+       }
 
        // initialize the offset from the low edge of the coarse cell
        double coarse_offset=0.0;
 
        // set each fine edge in this coarse cell
-       for(int j=1; j<=fine_cells[i];j++)
+       for (int j = 1; j <= this->fine_cells[i]; j++)
        {
 	   // increment fine edge counter (for entire direction d)
 	   ifine++;
 
 	   // set offset from low edge of this coarse cell; set fine edge
-	   if (fine_ratio[i] == 1.0)
-	       coarse_offset=j* first_fine_cell_width;
+	   if (this->fine_ratio[i] == 1.0)
+	   {
+	       coarse_offset = j* first_fine_cell_width;
+	   }
 	   else
-	       coarse_offset += pow(fine_ratio[i],j-1)*first_fine_cell_width;
-	   fine_edge[ifine] = coarse_edge[i]+coarse_offset;
+	   {
+	       coarse_offset += 
+		   pow(this->fine_ratio[i],j-1)*first_fine_cell_width;
+	   }
+	   this->fine_edge[ifine] = this->coarse_edge[i]+coarse_offset;
        }
 
        
        // check last fine cell in this coarse cell; it should be equal to the
        // "first fine cell width" if we use the inverse of the ratio.
-       double last_width=fine_edge[ifine]-fine_edge[ifine-1];
-       double inv_ratio=1.0 / fine_ratio[i];
+       double last_width = this->fine_edge[ifine]-this->fine_edge[ifine-1];
+       double inv_ratio  = 1.0/this->fine_ratio[i];
        double check_last_w;
        if (inv_ratio == 1.0)
-	   check_last_w= coarse_cell_width/ fine_cells[i];
+       {
+	   check_last_w = coarse_cell_width/this->fine_cells[i];
+       }
        else
-	   check_last_w= (1.-inv_ratio) * coarse_cell_width / 
-	       (1.0-pow(inv_ratio,fine_cells[i]));
-       Check (fabs(last_width -check_last_w) <1.0e-5 *last_width);
+       {
+	   check_last_w = (1.-inv_ratio)*coarse_cell_width/ 
+	       (1.0-pow(inv_ratio,this->fine_cells[i]));
+       }
+       Check (fabs(last_width-check_last_w) < 1.0e-5*last_width);
    }
 
    //reset the last fine edge -- equiv to the last coarse edge.
-   fine_edge[ifine] = coarse_edge.back();
+   this->fine_edge[ifine] = this->coarse_edge.back();
 }
 
 //---------------------------------------------------------------------------//
@@ -280,49 +306,53 @@ void Sphyramid_Builder::parser1D(std_ifstream &in)
 	in >> keyword;
 	if (keyword == "num_xcoarse:" || keyword == "num_rcoarse:")
 	{
-	    in>> data;
-	    Require(data>0);
-	    fine_cells.resize(data);
-	    fine_ratio.resize(data);
-	    fill(fine_ratio.begin(), fine_ratio.end(), 1.0);
-	    coarse_edge.resize(data+1);
+	    in >> data;
+	    Require (data > 0);
+	    this->fine_cells.resize(data);
+	    this->fine_ratio.resize(data);
+	    fill(this->fine_ratio.begin(), this->fine_ratio.end(), 1.0);
+	    this->coarse_edge.resize(data+1);
 	}
 	if (keyword == "lox_bnd:" || keyword == "lor_bnd:")
 	{
-	    in >> bnd_cond[0];
-	    Insist(((coord_system == "r") || (coord_system=="R")) ?
-		   bnd_cond[0] == "reflect" : true, "Invalid B.C. for R!");
+	    in >> this->bnd_cond[0];
+	    Insist(
+		((this->coord_system == "r") || (this->coord_system== "R")) ?
+		this->bnd_cond[0] == "reflect" : true, "Invalid B.C. for R!");
 	}
 	if (keyword == "hix_bnd:" || keyword== "hir_bnd:")
 	{
-	    in>>bnd_cond[1];
-	    Require(bnd_cond[1]=="reflect"||bnd_cond[1]=="vacuum");
+	    in>>this->bnd_cond[1];
+	    Require (this->bnd_cond[1] == "reflect" || 
+		    this->bnd_cond[1] == "vacuum");
 	}
 	if (keyword == "num_regions:")
 	{
 	    in >> data;
-	    Require(data>0);
-	    regions.resize(data);
+	    Require (data > 0);
+	    this->regions.resize(data);
 	}
 	if (keyword == "num_zones_per_region:")
 	{
-	    Insist (regions.size()>0, "region size not set!");
-	    for (int i = 0; i<regions.size(); i++)
+	    Insist (this->regions.size() > 0, "region size not set!");
+	    for (int i = 0; i < this->regions.size(); i++)
 	    {
-		in >>data;
-		Require(data>0);
-		regions[i].resize(data);
+		in >> data;
+		Require (data > 0);
+		this->regions[i].resize(data);
 	    }
 	}
 	if (keyword == "regions:")
 	{
-	    Insist (regions.size()>0, "Region size not set!");
+	    Insist (this->regions.size() > 0, "Region size not set!");
 	    in >> data;
-	    Require(data>0);
-	    Insist (regions[data-1].size()>0, "Zones per region not set!");
-	    for (int i=0; i< regions[data-1].size(); i ++){
-		in >> regions[data-1][i];
-		Require(regions[data-1][i]>0);
+	    Require (data > 0);
+	    Insist (this->regions[data-1].size() > 0,
+		    "Zones per region not set!");
+	    for (int i = 0; i < this->regions[data-1].size(); i++)
+	    {
+		in >> this->regions[data-1][i];
+		Require (this->regions[data-1][i] > 0);
 	    }
 	}
     }
@@ -332,38 +362,44 @@ void Sphyramid_Builder::parser1D(std_ifstream &in)
     {
 
 	// test that we have not reached end-of-file
-	Insist(!in.eof(), "You did not specify a proper end-mesh!");
+	Insist (!in.eof(), "You did not specify a proper end-mesh!");
 
 	// do input
 	in >> keyword;
 	if (keyword == "xcoarse:" || keyword == "rcoarse:")
 	{
-	    for (int i=0; i<coarse_edge.size(); i++)
-		in >> coarse_edge[i];
-	    Insist(soft_equiv(coarse_edge[0],0.0),
+	    for (int i = 0; i < this->coarse_edge.size(); i++)
+	    {
+		in >> this->coarse_edge[i];
+	    }
+	    Insist (soft_equiv(this->coarse_edge[0],0.0),
 		   "The first radial value must be zero!");
 	}
-	if (keyword == "num_xfine:" || keyword == "num_rfine:"){
-	    for(int i = 0; i<fine_cells.size(); i++){
-		in >> fine_cells[i];
-		Require(fine_cells[i]>0);
+	if (keyword == "num_xfine:" || keyword == "num_rfine:")
+	{
+	    for (int i = 0; i < this->fine_cells.size(); i++){
+		in >> this->fine_cells[i];
+		Require (this->fine_cells[i] > 0);
 	    }
 	}
 	if (keyword == "xfine_ratio:" || keyword == "rfine_ratio:")
-	    for(int i=0;i<fine_cells.size(); i++)
+	{
+	    for (int i = 0; i < this->fine_cells.size(); i++)
 	    {
-		in >> fine_ratio[i];
-		Require(fine_ratio[i] > 0.0);
+		in >> this->fine_ratio[i];
+		Require (this->fine_ratio[i] > 0.0);
 	    }
+	}
+
 	// unfolding angle for Sphyramid_Mesh
 	if (keyword == "cone_angle_degrees:")
 	{
 	    Insist ((coord_system == "r") || (coord_system =="R"),
 		    "Cone angle specified, but coord_sys not equal to R!");
 
-	    in >> alpha_degrees;
-	    Insist (alpha_degrees >0.0, "Cone Angle <= 0!");
-	    Insist (alpha_degrees <=45.0, "Cone Angle > 45!");
+	    in >> this->alpha_degrees;
+	    Insist (this->alpha_degrees >  0.0,  "Cone Angle <= 0!");
+	    Insist (this->alpha_degrees <= 45.0, "Cone Angle > 45!");
 	}
     }
 }
@@ -396,28 +432,28 @@ void Sphyramid_Builder::source_parser(std_ifstream &in)
 	if (keyword == "num_ss:")
 	{
 	    in >> data;
-	    Insist(data==1,"Can only have one surface source in R geometry!");
+	    Insist (data==1,"Can only have one surface source in R geometry!");
 
 	    // size surface source data
-	    ss_pos.resize(data);
-	    num_defined_surcells.resize(data);
-	    defined_surcells.resize(data);
+	    this->ss_pos.resize(data);
+	    this->num_defined_surcells.resize(data);
+	    this->defined_surcells.resize(data);
 
 	    // initalize to zero
-	    fill(num_defined_surcells.begin(),
-		 num_defined_surcells.end(), 0);
+	    fill(this->num_defined_surcells.begin(),
+		 this->num_defined_surcells.end(), 0);
 	}
 	// read in the surface source positions
 	if (keyword == "sur_source:")
 	{
 
 	    // make sure that surface source has been sized
-	    Insist (ss_pos.size() !=0, "Number of surface sources =0!");
+	    Insist (ss_pos.size() != 0, "Number of surface sources = 0!");
 
 	    // input the surface source position
-	    for (int i=0; i< ss_pos.size(); i++){
-		in >> ss_pos[i];
-		Insist(ss_pos[i]=="hir",
+	    for (int i = 0; i < this->ss_pos.size(); i++){
+		in >> this->ss_pos[i];
+		Insist (this->ss_pos[i] == "hir",
 		       "Surface source can only be on exterior!");
 	    }
 	}
@@ -426,20 +462,22 @@ void Sphyramid_Builder::source_parser(std_ifstream &in)
 	if (keyword == "num_defined_surcells:")
 	{
 	    // make sure number of user/host-defined surcells has been sized
-	    Insist (num_defined_surcells.size() !=0,
+	    Insist (this->num_defined_surcells.size() !=0,
 		    "Number of surface sources = 0!");
 
 	    // input the number of user/host defined surcells.
 	    // input file requires any preceding zeros
-	    for (int i=0; i < num_defined_surcells.size(); i++){
-		in >> num_defined_surcells[i];
-		Require(num_defined_surcells[i]==0
-			||num_defined_surcells[i]==1);
+	    for (int i = 0; i < this->num_defined_surcells.size(); i++){
+		in >> this->num_defined_surcells[i];
+		Require (this->num_defined_surcells[i]   == 0
+			||this->num_defined_surcells[i] == 1);
 	    }
 
 	    // resize defined_surcells
-	    for (int i=0; i< num_defined_surcells.size(); i++)
-		defined_surcells[i].resize(num_defined_surcells[i]);
+	    for (int i = 0; i < this->num_defined_surcells.size(); i++)
+	    {
+		this->defined_surcells[i].resize(this->num_defined_surcells[i]);
+	    }
 	}
    
 	// read in the defined surface cells list; keyword repeated for each
@@ -449,21 +487,21 @@ void Sphyramid_Builder::source_parser(std_ifstream &in)
        
 	    	
 	    // make sure user/host-defined surcells has been sized
-	    Insist (defined_surcells.size()!=0,
+	    Insist (this->defined_surcells.size() != 0,
 		"Number of surface sources = 0!");
 
 	    // surface source index (first entry after keyword)
 	    in >> data;
-	    Insist (data <= defined_surcells.size(),
+	    Insist (data <= this->defined_surcells.size(),
 		    "Defined surface source out of range!");
 
-	    Insist (defined_surcells[data-1].size() == 
-		    num_defined_surcells[data-1],
+	    Insist (this->defined_surcells[data-1].size() == 
+		    this->num_defined_surcells[data-1],
 		    "Range error in defined surface source cells!");
 
 	    // input user/host-defined surcells
-	    for (int i = 0; i< num_defined_surcells[data-1]; i++)
-		in >> defined_surcells[data-1][i];
+	    for (int i = 0; i < this->num_defined_surcells[data-1]; i++)
+		in >> this->defined_surcells[data-1][i];
 	}
     }
 }
@@ -477,12 +515,12 @@ void Sphyramid_Builder::source_parser(std_ifstream &in)
  * \brief build mesh specifically for Sphyramid_Mesh 
  * 
  * \param coord smart pointer to Coord_sys object
- * \param layout reference to AMR_layout object
+ * \param layout reference to Layout object
  * \return smart pointer to built mesh
  */
 
 Sphyramid_Builder::SP_Mesh
-Sphyramid_Builder::build_Sphyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout)
+Sphyramid_Builder::build_Sphyramid_Mesh(SP_Coord_sys coord, Layout &layout)
 {
     using global::pi;
     using std::pow;
@@ -492,32 +530,32 @@ Sphyramid_Builder::build_Sphyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout)
     using std::atan;
 
     //consistency checks
-    Require(alpha_degrees>0.0);
-    Require(alpha_degrees<=45.0);
+    Require (this->alpha_degrees >  0.0);
+    Require (this->alpha_degrees <= 45.0);
 
     // variable declarations
-    int num_xsur = fine_edge.size();
-    int num_xcells=num_xsur-1;
-    int num_cells=num_xcells;
-    int dimension = coord->get_dim();
+    int num_xsur   = this->fine_edge.size();
+    int num_xcells = num_xsur-1;
+    int num_cells  = num_xcells;
+    int dimension  = coord->get_dim();
 
     // check some assertions
-    Check(layout.num_cells() == num_cells);
-    Check(dimension == 3);
+    Check (layout.num_cells() == num_cells);
+    Check (dimension          == 3);
 
     // radius to x-value conversion
-    double alpha_radians =pi/180.0*alpha_degrees;
-    double r_to_x=pow((2.*(1.-cos(alpha_radians))
-		       /(tan(alpha_radians)*tan(alpha_radians))),1./3.);
+    double alpha_radians = pi/180.0*this->alpha_degrees;
+    double r_to_x        = pow((2.*(1.-cos(alpha_radians))
+			   /(tan(alpha_radians)*tan(alpha_radians))),1./3.);
 
     // create the x cell extents vector
     vf_double cell_x_extents(num_cells);
-    for (int xsur = 0; xsur<num_xcells;xsur++)
+    for (int xsur = 0; xsur < num_xcells; xsur++)
     {
-	int cell=xsur;
+	int cell = xsur;
 	cell_x_extents[cell].resize(2);
-	cell_x_extents[cell][0] = fine_edge[xsur]*r_to_x;
-	cell_x_extents[cell][1]=fine_edge[xsur+1]*r_to_x;
+	cell_x_extents[cell][0] = this->fine_edge[xsur]*r_to_x;
+	cell_x_extents[cell][1] = this->fine_edge[xsur+1]*r_to_x;
     }
 
     // calculate beta angle of Sphyramid
@@ -548,14 +586,15 @@ Sphyramid_Builder::SP_Coord_sys Sphyramid_Builder::build_Coord() const
 
     //build coordinate system
     SP_Coord_sys coord;
-    Check (coord_system !="xy"  || coord_system !="XY"  ||
-	   coord_system !="xyz" || coord_system !="XYZ" ||
-	   coord_system !="rz"  || coord_system !="RZ");
-    Check (coord_system == "r"  || coord_system =="R");
+
+    Check (this->coord_system != "xy"  || this->coord_system != "XY"  ||
+	   this->coord_system != "xyz" || this->coord_system != "XYZ" ||
+	   this->coord_system != "rz"  || this->coord_system != "RZ");
+    Check (this->coord_system == "r"   || this->coord_system =="R");
 
     // the Sphyramid mesh uses a 3D XYZ coordinate system
     SP<XYZCoord_sys> xyzcoord(new XYZCoord_sys);
-    coord=xyzcoord;
+    coord = xyzcoord;
     
     // return base class SP to a derived Coord_sys
     return coord;
@@ -566,7 +605,7 @@ Sphyramid_Builder::SP_Coord_sys Sphyramid_Builder::build_Coord() const
 //---------------------------------------------------------------------------//
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Construct AMR Layout
+ * \brief Construct Layout
  * 
  * \param coord  Coord_sys object
  * \return smart pointer to new layout object
@@ -576,16 +615,17 @@ Sphyramid_Builder::SP_Layout
 Sphyramid_Builder::build_Sphyramid_Layout(const Coord_sys &coord) const
 {
     // set size of new Layout
-    int size = fine_edge.size()-1;
+    int size = this->fine_edge.size()-1;
 
     //build layout object
-    SP_Layout layout(new AMR_Layout(size));
+    SP_Layout layout(new Layout(size));
 
     // set number of faces for each cell in layout.  For the (OS)
     // Sphyramid mesh, the layout must be 3D XYZ, so there are 6 faces/cell.
-    for(int i=1;i<=size;i++)
+    for (int i = 1; i <= size; i++)
+    {
 	layout->set_size(i,6);
-
+    }
     // assign cells and faces to Layout;
     assign_Sphyramid_Layout(*layout);
 
@@ -596,43 +636,47 @@ Sphyramid_Builder::build_Sphyramid_Layout(const Coord_sys &coord) const
 /*! 
  * \brief Construct layout specifically
  * 
- * \param layout reference to AMR_layout object
+ * \param layout reference to Layout object
  */
 
-void Sphyramid_Builder::assign_Sphyramid_Layout(AMR_Layout &layout) const
+void Sphyramid_Builder::assign_Sphyramid_Layout(Layout &layout) const
 {
 
     // 3D map of Mesh
-    int num_xcells = fine_edge.size()-1;
+    int num_xcells = this->fine_edge.size()-1;
 
-    // loop over num_cells and assign cell acros faces
+    // loop over num_cells and assign cell across faces
     // 1:x(-), 2:x(+), 3:y(-), 4:y(+), 5:z(-), 6:z(+)
     // the high and low y and z faces are always reflecting.
     // the x bc's will be taken care of later
-    for(int cell=1;cell<=layout.num_cells(); cell++)
+    for (int cell = 1 ;cell <= layout.num_cells(); cell++)
     {
-	layout(cell,1,1)=cell-1;
-	layout(cell,2,1)=cell+1;
-	layout(cell,3,1)=cell;
-	layout(cell,4,1)=cell;
-	layout(cell,5,1)=cell;
-	layout(cell,6,1)=cell;
+	layout(cell,1) = cell-1;
+	layout(cell,2) = cell+1;
+	layout(cell,3) = cell;
+	layout(cell,4) = cell;
+	layout(cell,5) = cell;
+	layout(cell,6) = cell;
     }
 
     // take care of boundary conditions
 
     // low x boundary (always reflecting)
-    Insist(bnd_cond[0] =="reflect",
+    Insist (this->bnd_cond[0] =="reflect",
 	   "Sphyramid Mesh must be reflecting at the center!");
-    layout(1,1,1)=1;
+    layout(1,1) = 1;
 
     // high x boundary
-    Insist(bnd_cond[1]=="vacuum" || bnd_cond[1]=="reflect",
+    Insist (this->bnd_cond[1] == "vacuum" || this->bnd_cond[1]=="reflect",
 	   "Invalid boundary condition!");
-    if(bnd_cond[1] == "vacuum")
-	layout(num_xcells,2,1) = 0;
-    else if(bnd_cond[1] == "reflect")
-	layout(num_xcells,2,1)= num_xcells;
+    if (this->bnd_cond[1] == "vacuum")
+    {
+	layout(num_xcells,2) = 0;
+    }
+    else if (this->bnd_cond[1] == "reflect")
+    {
+	layout(num_xcells,2) = num_xcells;
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -652,22 +696,26 @@ void Sphyramid_Builder::zone_mapper()
     int num_zones =1;
 
     // calculate number of zones
-    num_cells *= fine_edge.size() -1 ;
-    num_zones *= coarse_edge.size()-1;
+    num_cells *= this->fine_edge.size() -1 ;
+    num_zones *= this->coarse_edge.size()-1;
 
     // calculate accumulated fine_cell data
-    accum_cells.resize(fine_cells.size()+1);
-    accum_cells[0] = 0;
-    for(int i = 0 ; i < fine_cells.size(); i++)
-	accum_cells[i+1] = accum_cells[i]+fine_cells[i];
+    this->accum_cells.resize(this->fine_cells.size()+1);
+    this->accum_cells[0] = 0;
+    for (int i = 0 ; i < this->fine_cells.size(); i++)
+    {
+	this->accum_cells[i+1] = this->accum_cells[i]+this->fine_cells[i];
+    }
 
     // size zone arrays
-    zone.resize(num_cells);
-    cell_zone.resize(num_zones);
+    this->zone.resize(num_cells);
+    this->cell_zone.resize(num_zones);
 
     // determine cell-zone map, i.e. map a fine-cell to a zone
-    for (int i=1; i<=fine_cells.size(); i++)
+    for (int i = 1; i <= this->fine_cells.size(); i++)
+    {
 	cell_zoner(i);
+    }
 }
 //---------------------------------------------------------------------------//
 /*! 
@@ -682,21 +730,21 @@ void Sphyramid_Builder::cell_zoner(int iz)
     // match a fine-cell to a zone for 1D meshes
 
     // descriptive variables
-    int num_xzones = coarse_edge.size() -1 ;
+    int num_xzones = this->coarse_edge.size()-1 ;
     int zone_index = iz;
-    int num_xcells = fine_edge.size() - 1;
+    int num_xcells = this->fine_edge.size()-1;
 
     // loop boundaries
-    int starti = 1+accum_cells[iz-1];
-    int endi = accum_cells[iz-1]+fine_cells[iz-1];
+    int starti = 1+this->accum_cells[iz-1];
+    int endi   = this->accum_cells[iz-1]+this->fine_cells[iz-1];
 
     // loop over zone and assign zone_index to those fine-cells residing in
     // the zone
     for (int i = starti; i<=endi; i++)
     {
-	int cell =i;
-	zone[cell-1]=zone_index;
-	cell_zone[zone_index-1].push_back(cell);
+	int cell = i;
+	this->zone[cell-1] = zone_index;
+	this->cell_zone[zone_index-1].push_back(cell);
     }
 }
 //---------------------------------------------------------------------------//
@@ -718,36 +766,39 @@ void Sphyramid_Builder::cell_zoner(int iz)
  */
 void Sphyramid_Builder::calc_defined_surcells()
 {
-    Require (mesh);
-    Require (mesh->full_Mesh());
+    Require (this->mesh);
+    Require (this->mesh->full_Mesh());
 
     // define number of surface sources
-    int num_ss= ss_pos.size();
+    int num_ss= this->ss_pos.size();
 
     //exit if no surface sources
     if (num_ss == 0)
+    {
 	return ;
+    }
 
     // check the defined surface source list
-    Check(defined_surcells.size() == num_ss);
+    Check (this->defined_surcells.size() == num_ss);
 
     // check to see if we need to do any work
-    for(int i=0;i<num_ss;i++)
+    for(int i = 0; i < num_ss; i++)
     {
-	if(defined_surcells[i].size() == 0)
+	if (this->defined_surcells[i].size() == 0)
 	{
 	    //get a vector of surface cells along the boundary
-	    defined_surcells[i] = mesh->get_surcells(ss_pos[i]);
-	    Check (defined_surcells[i].size() >0 );
+	    this->defined_surcells[i] = mesh->get_surcells(this->ss_pos[i]);
+	    Check (this->defined_surcells[i].size() >0 );
 	}
-	else if (defined_surcells[i].size() >0)
+	else if (this->defined_surcells[i].size() >0)
 	{
-	    Check(mesh->check_defined_surcells(ss_pos[i],defined_surcells[i]));
+	    Check (mesh->check_defined_surcells
+		  (this->ss_pos[i], this->defined_surcells[i]));
 	    continue;
 	}
 	else
 	{
-	    Insist(0,"Number of defined surface source cells < 0!");
+	    Insist (0,"Number of defined surface source cells < 0!");
 	}
     }
 }
