@@ -13,6 +13,7 @@
 #include <map>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 #ifndef BEGIN_NS_XTM
 #define BEGIN_NS_XTM namespace XTM  {
@@ -125,6 +126,7 @@ class FifiParser
     // ACCESSORS
 
     bool hasKeyword(MaterialId materialId, const std::string &keyword) const;
+    bool hasMaterial(MaterialId materialId) const;
     
   private:
     

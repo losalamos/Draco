@@ -558,6 +558,11 @@ bool FifiParser::hasKeyword(MaterialId materialId, const string &keyword) const
     return getMaterialInfo(materialId).hasKeyword(keyword);
 }
 
+bool FifiParser::hasMaterial(MaterialId materialId) const
+{
+    return materialInfoMap.find(materialId) != materialInfoMap.end();
+}
+
 bool FifiParser::MaterialInfo::hasKeyword(const string &keyword) const
 {
     return keywordPosMap.find(keyword) != keywordPosMap.end();

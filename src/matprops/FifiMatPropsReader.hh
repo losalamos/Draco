@@ -44,6 +44,20 @@ class FifiMatPropsReader : public MaterialPropsReader
     // NESTED CLASSES AND TYPEDEFS
 
   public:
+
+    struct MaterialDefinition
+    {
+	std::string         name;
+	MaterialId          matid;
+	double              abar;
+	MaterialDefinition() { }
+	MaterialDefinition(const std::string &name_, MaterialId matid_,
+			   double abar_)
+	    : name(name_), matid(matid_), abar(abar_)
+	{
+	    // empty
+	}
+    };
     
     struct MaterialInfo
     {
@@ -115,7 +129,8 @@ class FifiMatPropsReader : public MaterialPropsReader
 
     // CREATORS
     
-    FifiMatPropsReader(const Units &outputUnits_, std::istream &is_);
+    FifiMatPropsReader(const std::vector<MaterialDefinition> &matdefs,
+		       const Units &outputUnits_, std::istream &is_);
 
     // MANIPULATORS
     
@@ -176,7 +191,11 @@ class FifiMatPropsReader : public MaterialPropsReader
     const MaterialInfo &getMaterialInfo(MaterialId materialId) const;
 
     void getSigma(const MaterialInfo &matInfo, int group,
-		  const std::string &keyword, dsxx::Mat2<double> &dataMat);    
+		  const std::string &keyword, dsxx::Mat2<double> &dataMat);
+
+    void calcTemperatureDerivative(MaterialId materialId,
+				   const dsxx::Mat2<double> &data,
+				   dsxx::Mat2<double> &derivative) const;
 };
 
 END_NS_XTM  // namespace XTM

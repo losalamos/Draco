@@ -50,7 +50,8 @@ using namespace XTM;
 
 typedef FifiMatPropsReader FMPR;
 
-FMPR::FifiMatPropsReader(const Units &outputUnits_, std::istream &is_)
+FMPR::FifiMatPropsReader(const vector<MaterialDefinition> &matdefs,
+			 const Units &outputUnits_, std::istream &is_)
     : MaterialPropsReader(outputUnits_), fifiParser(is_),
       fileUnits(Units::getAstroPhysUnits())
 {
@@ -63,7 +64,37 @@ FMPR::FifiMatPropsReader(const Units &outputUnits_, std::istream &is_)
     // file, i.e. Astronomical, units to the user's output units.
 	
     file2OutputUnits = fileUnits / getOutputUnits();
-	    
+
+    for (vector<MaterialDefinition>::const_iterator mit = matdefs.begin();
+	 mit != matdefs.end(); mit++)
+    {
+	const MaterialDefinition &mat = (*mit);
+	int matid = mat.matid;
+	
+	if (hasMaterial(matid))
+	{
+	    ostrstream os;
+	    os << "FifiMatPropsReader ctor: "
+	       << "material: " << matid << " "
+	       << " already processed." << ends;
+	
+	    throw std::runtime_error(os.str());
+	}
+	
+	if (!fifiParser.hasMaterial(matid))
+	{
+	    ostrstream os;
+	    os << "FifiMatPropsReader ctor: "
+	       << "material: " << matid << " "
+	       << mat.name << " not found." << ends;
+	
+	    throw std::runtime_error(os.str());
+	}
+
+	MaterialInfo matinfo(matid, mat.abar);
+	materialInfoMap.insert(std::make_pair(matid, matinfo));
+    }
+    
     calcGridInfo();
 }
 
@@ -93,6 +124,7 @@ void FMPR::calcGridInfo()
 
 	fifiParser.getData(matid, "tgrid", matInfo.temperatureGrid);
 
+	cerr << "matInfo: " << matid << " tgrid: " << endl;
 	for (int i=0; i<matInfo.temperatureGrid.size(); i++)
 	{
 	    const Units &f2O = file2OutputUnits;
@@ -102,12 +134,15 @@ void FMPR::calcGridInfo()
 	    
 	    matInfo.temperatureGrid[i] = f2O.ConvertTemperature(
 		matInfo.temperatureGrid[i]);
+	    cerr << matInfo.temperatureGrid[i] << " ";
 	}
+	cerr << endl;
 	
 	// Get the density grid for this material
 	
 	fifiParser.getData(matid, "rgrid", matInfo.densityGrid);
 
+	cerr << "matInfo: " << matid << " rgrid: " << endl;
 	for (int i=0; i<matInfo.densityGrid.size(); i++)
 	{
 	    const Units &f2O = file2OutputUnits;
@@ -116,7 +151,9 @@ void FMPR::calcGridInfo()
 	    // Convert these to user density units.
 	    
 	    matInfo.densityGrid[i] = f2O.ConvertDensity(matInfo.densityGrid[i]);
+	    cerr << matInfo.densityGrid[i] << " ";
 	}
+	cerr << endl;
 	
 	// Get the energy grid for this material
 	
@@ -215,6 +252,9 @@ bool FMPR::getSigmaAbsorption(MaterialId materialId, int group,
 {
     const MaterialInfo &matInfo = getMaterialInfo(materialId);
 
+    Require(dataMat.nx() == matInfo.getNumTemperatures());
+    Require(dataMat.ny() == matInfo.getNumDensities());
+    
     if (fifiParser.hasKeyword(matInfo.matid, "ramg"))
     {
 	getSigma(matInfo, group, "ramg", dataMat);
@@ -229,6 +269,12 @@ bool FMPR::getSigmaTotal(MaterialId materialId, int group,
 {
     const MaterialInfo &matInfo = getMaterialInfo(materialId);
 
+    int numTemps = matInfo.getNumTemperatures();
+    int numDensities = matInfo.getNumDensities();
+
+    Require(dataMat.nx() == matInfo.getNumTemperatures());
+    Require(dataMat.ny() == matInfo.getNumDensities());
+    
     if (!fifiParser.hasKeyword(materialId, "ramg") &&	
 	!(fifiParser.hasKeyword(materialId, "rams")  ||
 	  fifiParser.hasKeyword(materialId, "rams0")))
@@ -236,21 +282,12 @@ bool FMPR::getSigmaTotal(MaterialId materialId, int group,
 	return false;
     }
 	  
-    Mat2<double> sigmaAbs;
+    Mat2<double> sigmaAbs(numTemps, numDensities, 0.0);
 
     if (fifiParser.hasKeyword(materialId, "ramg"))
 	getSigma(matInfo, group, "ramg", sigmaAbs);
-    else
-	sigmaAbs = Mat2<double>(matInfo.getNumTemperatures(),
-				matInfo.getNumDensities(), 0.0);
  
-    Insist(sigmaAbs.get_xlen() == matInfo.getNumTemperatures() &&
-	   sigmaAbs.get_ylen() == matInfo.getNumDensities(),
-	   (string("FifiMatPropsReader::getSigmaTotal: \n") +
-	    "\t\"ramg\" field of Fifi file is not number" +
-	    " of Temperatures by number of densities long.").c_str());
-    
-    Mat2<double> sigmaSct;
+    Mat2<double> sigmaSct(numTemps, numDensities, 0.0);
 
     if (fifiParser.hasKeyword(materialId, "rsmg0"))
     {
@@ -260,20 +297,10 @@ bool FMPR::getSigmaTotal(MaterialId materialId, int group,
     {
 	getSigma(matInfo, group, "rsmg", sigmaSct);
     }
-    else
-    {
-	sigmaSct = Mat2<double>(matInfo.getNumTemperatures(),
-				matInfo.getNumDensities(), 0.0);
-    }
-    
-    Insist(sigmaSct.get_xlen() == matInfo.getNumTemperatures() &&
-	   sigmaSct.get_ylen() == matInfo.getNumDensities(),
-	   (string("FifiMatPropsReader::getSigmaTotal: \n") +
-	    "\t\"rsmg\" or \"rsmg0\" field of file is not number" +
-	    " of Temperatures by number of densities long.").c_str());
-    
-    dataMat = sigmaAbs;
-    dataMat += sigmaSct;
+
+    for (int i=0; i<numTemps; i++)
+	for (int j=0; j<numDensities; j++)
+	    dataMat(i,j) = sigmaAbs(i,j) + sigmaSct(i,j);
 
     return true;
 }
@@ -281,6 +308,9 @@ bool FMPR::getSigmaTotal(MaterialId materialId, int group,
 void FMPR::getSigma(const MaterialInfo &matInfo, int group,
 		    const string &keyword, Mat2<double> &dataMat)
 {
+    Require(dataMat.nx() == matInfo.getNumTemperatures());
+    Require(dataMat.ny() == matInfo.getNumDensities());
+    
     int numTemps = matInfo.getNumTemperatures();
     int numDensities = matInfo.getNumDensities();
     int numGroups = matInfo.getNumGroups();
@@ -294,8 +324,6 @@ void FMPR::getSigma(const MaterialInfo &matInfo, int group,
 	    "\" is not number of groups by number of temperatures" +
 	    " by number of densities.").c_str());
     
-    dataMat.redim(numTemps, numDensities);
-
     vector<double>::const_iterator dataiter = dataVec.begin();
     
     for (int i=0; i<numTemps; i++)
@@ -333,6 +361,9 @@ bool FMPR::getElectronIonCoupling(MaterialId materialId, Mat2<double> &data)
 {
     const MaterialInfo &matInfo = getMaterialInfo(materialId);
 
+    Require(data.nx() == matInfo.getNumTemperatures());
+    Require(data.ny() == matInfo.getNumDensities());
+    
     const double abar = matInfo.abar;
     
     vector<double> z;
@@ -351,6 +382,167 @@ bool FMPR::getElectronIonCoupling(MaterialId materialId, Mat2<double> &data)
 					matInfo.getTemperatureGrid()[i],
 					z[iz++], abar, data(i,j));
     return true;
+}
+
+bool FMPR::getElectronConductionCoeff(MaterialId materialId, Mat2<double> &data)
+{
+    const MaterialInfo &matInfo = getMaterialInfo(materialId);
+
+    Require(data.nx() == matInfo.getNumTemperatures());
+    Require(data.ny() == matInfo.getNumDensities());
+    
+    const double abar = matInfo.abar;
+    
+    vector<double> z;
+    if (!fifiParser.getData(matInfo.matid, "tfree", z))
+	return false;
+
+    // No units converselectron necessary for "tfree".
+
+    // Create RadiationPhysics for the output units.
+
+    RadiationPhysics radPhys(getOutputUnits());
+    
+    for (int iz=0, i=0; i<matInfo.getNumTemperatures(); i++)
+	for (int j=0; j<matInfo.getNumDensities(); j++)
+	    radPhys.getElectronConductionCoeff(matInfo.getDensityGrid()[j],
+					       matInfo.getTemperatureGrid()[i],
+					       z[iz++], abar, data(i,j));
+    return true;
+}
+
+bool FMPR::getIonConductionCoeff(MaterialId materialId, Mat2<double> &data)
+{
+    const MaterialInfo &matInfo = getMaterialInfo(materialId);
+
+    Require(data.nx() == matInfo.getNumTemperatures());
+    Require(data.ny() == matInfo.getNumDensities());
+    
+    const double abar = matInfo.abar;
+    
+    vector<double> z;
+    if (!fifiParser.getData(matInfo.matid, "tfree", z))
+	return false;
+
+    // No units conversion necessary for "tfree".
+
+    // Create RadiationPhysics for the output units.
+
+    RadiationPhysics radPhys(getOutputUnits());
+    
+    for (int iz=0, i=0; i<matInfo.getNumTemperatures(); i++)
+	for (int j=0; j<matInfo.getNumDensities(); j++)
+	    radPhys.getIonConductionCoeff(matInfo.getDensityGrid()[j],
+					  matInfo.getTemperatureGrid()[i],
+					  z[iz++], abar, data(i,j));
+    return true;
+}
+
+bool FMPR::getElectronSpecificHeat(MaterialId materialId, Mat2<double> &data)
+{
+    const MaterialInfo &matInfo = getMaterialInfo(materialId);
+
+    Require(data.nx() == matInfo.getNumTemperatures());
+    Require(data.ny() == matInfo.getNumDensities());
+    
+    Mat2<double> eelect(matInfo.getNumTemperatures(),
+			matInfo.getNumDensities());
+
+    // Begin a scoping block.
+    {
+	vector<double> eelect_v;
+	if (!fifiParser.getData(matInfo.matid, "eelect", eelect_v))
+	    return false;
+
+	// File units for internal energy are: MJ/kg (MegaJoules / KiloGram)
+	const Units &OU = getOutputUnits();
+
+	for (int iz=0, i=0; i<matInfo.getNumTemperatures(); i++)
+	    for (int j=0; j<matInfo.getNumDensities(); j++)
+		eelect(i, j) = 1.0e6 *
+		    OU.ConvertEnergy(OU.InvertMass(eelect_v[iz++]));
+    }
+
+    calcTemperatureDerivative(materialId, eelect, data);
+
+    return true;
+}
+
+bool FMPR::getIonSpecificHeat(MaterialId materialId, Mat2<double> &data)
+{
+    const MaterialInfo &matInfo = getMaterialInfo(materialId);
+
+    Require(data.nx() == matInfo.getNumTemperatures());
+    Require(data.ny() == matInfo.getNumDensities());
+    
+    Mat2<double> enuc(matInfo.getNumTemperatures(),
+		      matInfo.getNumDensities());
+
+    // Begin a scoping block.
+    {
+	vector<double> enuc_v;
+	if (!fifiParser.getData(matInfo.matid, "enuc", enuc_v))
+	    return false;
+
+	// File units for internal energy are: MJ/kg (MegaJoules / KiloGram)
+	
+	const Units &OU = getOutputUnits();
+
+	for (int iz=0, i=0; i<matInfo.getNumTemperatures(); i++)
+	    for (int j=0; j<matInfo.getNumDensities(); j++)
+		enuc(i, j) = 1.0e6 *
+		    OU.ConvertEnergy(OU.InvertMass(enuc_v[iz++]));
+    }
+    
+    calcTemperatureDerivative(materialId, enuc, data);
+
+    return true;
+}
+
+void FMPR::calcTemperatureDerivative(MaterialId materialId,
+				     const Mat2<double> &data,
+				     Mat2<double> &derivative) const
+{
+    const MaterialInfo &matInfo = getMaterialInfo(materialId);
+
+    Require(data.nx() == matInfo.getNumTemperatures());
+    Require(data.ny() == matInfo.getNumDensities());
+    Require(derivative.nx() == matInfo.getNumTemperatures());
+    Require(derivative.ny() == matInfo.getNumDensities());
+
+    const vector<double> &tgrid = matInfo.temperatureGrid;
+
+    int numT = matInfo.getNumTemperatures();
+    
+    for (int j=0; j<matInfo.getNumDensities(); j++)
+    {
+	// The first two points are used for the derivative's first point.
+	
+	derivative(0, j) = (data(1, j) - data(0,j)) /
+	    (tgrid[1] - tgrid[0]);
+
+	// We will approximate the function with a quadratic interpolation,
+	// and take the first deriviative of the quadratic
+	// as the derivative.
+	
+	for (int i=1; i<numT-1; i++)
+	{
+	    const double dy21 = data(i, j)  - data(i-1, j);
+	    const double dy32 = data(i+1, j)- data(i, j);
+	    const double dt32 = tgrid[i+1]-tgrid[i];
+	    const double dt21 = tgrid[i]-tgrid[i-1];
+	    const double dt31 = tgrid[i+1]-tgrid[i-1];
+
+	    const double dydt = (dt32*dy21/dt21 + dt21*dy32/dt32) / dt31;
+	    
+	    derivative(i, j) = dydt;
+	}
+
+	// The last two points are used for the derivative's last point.
+	
+	derivative(numT-1, j) = (data(numT-1, j) - data(numT-2, j)) /
+	    (tgrid[numT-1] - tgrid[numT-2]);
+    }
 }
 
 //---------------------------------------------------------------------------//
