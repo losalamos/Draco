@@ -19,30 +19,50 @@
 namespace rtt_imc 
 {
 
-// Draco functions
-using rtt_rng::Sprng;
-using rtt_rng::Rnd_Control;
-using rtt_mc::global::pi;
-using rtt_dsxx::SP;
-
-// STL functions
-using std::ios;
-using std::cos;
-using std::sin;
-using std::sqrt;
-using std::pow;
-using std::endl;
-using std::setiosflags;
-using std::setw;
-using std::string;
-using std::ostream;
-using std::vector;
-
 //---------------------------------------------------------------------------//
-// constructor
+// Constructor
 //---------------------------------------------------------------------------//
-// standard constructor for the Source class
+/*!
+ * \brief Constructor for source class.
 
+ * \param vol_rnnum_ cell-centered, scalar field of beginning random number
+ * id for volume emission source per cell
+
+ * \param nvol_ cell-centered, scalar field of number of volume emission
+ * sources per cell
+
+ * \param ew_vol_ cell-centered, scalar field of energy weights of volume
+ * emission sources per cell
+
+ * \param ss_rnnum_ cell-centered, scalar field of beginning random number id
+ * for surface source per cell
+
+ * \param nss_ cell-centered, scalar field of number of surface sources per
+ * cell
+
+ * \param fss_ cell-centered, scalar field of surface source face position
+ * per cell
+
+ * \param ew_ss_ cell-centered, scalar field of energy weights of surface
+ * sources per cell
+
+ * \param census_ census bank for this source
+
+ * \param ssd surface source distribution string
+
+ * \param nvoltot_ number of volume emission sources in this source
+
+ * \param nsstot_ number of surface sources in this source
+
+ * \param rcon_ rtt_rng::Rnd_Control object
+
+ * \param mat_state material state object
+
+ * \param operations mesh operations object (controls T^4 slope sampling)
+
+ * \param top topology
+
+ */
 template<class MT, class PT>
 Source<MT, PT>::Source(ccsf_int &vol_rnnum_, 
 		       ccsf_int &nvol_,
@@ -52,7 +72,7 @@ Source<MT, PT>::Source(ccsf_int &vol_rnnum_,
 		       ccsf_int &fss_,
 		       ccsf_double &ew_ss_,
 		       SP_Census census_,
-		       string ssd, 
+		       std::string ssd, 
 		       int nvoltot_, 
 		       int nsstot_,
 		       SP_Rnd_Control rcon_, 
@@ -93,6 +113,8 @@ Source<MT, PT>::Source(ccsf_int &vol_rnnum_,
     // Begin with first cell
     current_cell = 1;
 
+    ncentot = 0;
+
     // running totals of completed source particles, by type
     nssdone  = 0;
     nvoldone = 0;
@@ -100,13 +122,29 @@ Source<MT, PT>::Source(ccsf_int &vol_rnnum_,
 }
 
 //---------------------------------------------------------------------------//
-// Source interface functions
+// MAIN INTERFACE
 //---------------------------------------------------------------------------//
-// get a source particle
+/*!
 
+ * \brief Return a rtt_dsxx::SP to the next emitted source particle (PT)
+
+ * This member creates a particle and returns it to the client.  It keeps
+ * track of the number of particles of each type created.  It throws a DBC
+ * exception if a particle is asked for after all particles have been
+ * created.
+
+ * The particles are created with "active" status.
+
+ * \param delta_t problem timestep
+
+ * \return source particle
+
+ */
 template<class MT, class PT>
-SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
+rtt_dsxx::SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 {
+    using rtt_dsxx::SP;
+
     bool sampled = false;
 
     // instantiate particle to return
@@ -182,7 +220,8 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 	ncendone++;
     }
 
-    Ensure (sampled);
+    Insist (sampled, 
+	    "Tried to create a source particle after source is empty!");
     Ensure (source_particle->status());
     
     // return the particle
@@ -190,13 +229,18 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 }
 
 //---------------------------------------------------------------------------//
-// sample surface source particle
-
+// PRIVATE MEMBERS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Create a surface source particle.
+ */
 template<class MT, class PT>
-SP<PT> Source<MT, PT>::get_ss(double delta_t)
+rtt_dsxx::SP<PT> Source<MT, PT>::get_ss(double delta_t)
 {
-    // draco directives
     using rtt_mc::global::pi;
+    using rtt_rng::Sprng;
+    using rtt_dsxx::SP;
+    using std::vector;
 
     // face on which surface source resides
     int face = fss(current_cell);
@@ -218,7 +262,7 @@ SP<PT> Source<MT, PT>::get_ss(double delta_t)
     if (ss_dist == "cosine")
     {
 	double costheta = sqrt(rand.ran());
-	double phi = 2.0 * pi * rand.ran();
+	double phi      = 2.0 * pi * rand.ran();
 	nss.get_Mesh().get_Coord().calc_omega(costheta, phi, omega);
     }
     else 
@@ -226,9 +270,9 @@ SP<PT> Source<MT, PT>::get_ss(double delta_t)
 	       "Surface source angle distrib is neither cosine nor normal!"); 
 
     // complete description of surface source particle    
-    double ew = ew_ss(current_cell);
-    int cell = current_cell;
-    double fraction = 1.0;
+    double ew        = ew_ss(current_cell);
+    int cell         = current_cell;
+    double fraction  = 1.0;
     double time_left = rand.ran() * delta_t;
 
     // instantiate particle to return
@@ -240,16 +284,21 @@ SP<PT> Source<MT, PT>::get_ss(double delta_t)
 }
 
 //---------------------------------------------------------------------------//
-// sample volume emission particle
-
+/*!
+ * \brief Create a volume source particle.
+ */
 template<class MT, class PT>
-SP<PT> Source<MT, PT>::get_evol(double delta_t)
+rtt_dsxx::SP<PT> Source<MT, PT>::get_evol(double delta_t)
 {
+    using rtt_rng::Sprng;
+    using rtt_dsxx::SP;
+    using std::vector;
+
     // get the random number object
     Sprng rand = rcon->get_rn();
 
     // sample location using tilt
-    double T = material->get_T(current_cell);
+    double T         = material->get_T(current_cell);
     vector<double> r = mesh_op->sample_pos_tilt(current_cell, T, rand);
 
     // sample particle direction
@@ -269,11 +318,14 @@ SP<PT> Source<MT, PT>::get_evol(double delta_t)
 }
 
 //---------------------------------------------------------------------------//
-// read census particle
-
+/*!
+ * \brief Create a census particle.
+ */
 template<class MT, class PT>
-SP<PT> Source<MT, PT>::get_census(double delta_t)
+rtt_dsxx::SP<PT> Source<MT, PT>::get_census(double delta_t)
 {
+    using rtt_dsxx::SP;
+
     Require (census->size() > 0);
 
     // get the census particle from the Census buffer
@@ -299,13 +351,22 @@ SP<PT> Source<MT, PT>::get_census(double delta_t)
 }
 
 //---------------------------------------------------------------------------//
-// source diagnostic functions
+// DIAGNOSTICS
 //---------------------------------------------------------------------------//
-// print out an ascii description of the source
+/*!
+ * \brief Print out the source to an output.
 
+ * \param out ostream output
+
+ */
 template<class MT, class PT>
-void Source<MT, PT>::print(ostream &out) const
+void Source<MT, PT>::print(std::ostream &out) const
 {
+    using std::ios;
+    using std::setiosflags;
+    using std::setw;
+    using std::endl;
+
     out << endl;
     out << ">>> SOURCE DATA <<<" << endl;
     out << "===================" << endl;

@@ -31,9 +31,10 @@ namespace rtt_imc
  
  * \brief Get source particles for IMC transport.
 
- * The Source class generates rtt_imc::Particle objects when queried with the
- * get_Source_Particle() function.  The Source has an overloaded bool()
- * operator that allows the user to query when the source is active or empty.
+ * The Source class generates the next rtt_imc::Particle object when queried
+ * with the get_Source_Particle() function.  The Source has an overloaded
+ * bool() operator that allows the user to query when the source is active or
+ * empty.
 
  */
 // revision history:
@@ -45,6 +46,8 @@ namespace rtt_imc
 //               global cells to local cells
 // 3) 24-AUG-00: added work-around capability for random number streams to
 //               wrap around 2e9 seamlessly.
+// 4) 14-DEC-00: added accessor to get the total number of source particles 
+//               contained in this source
 // 
 //===========================================================================//
 
@@ -63,52 +66,62 @@ class Source
     typedef rtt_dsxx::SP<Mesh_Operations<MT> >   SP_Mesh_Op; 
 
   private:
+    // >>> DATA
+
     // Problem topology.
     SP_Topology topology;
 
-    // volume source particles: number and first random number stream per
-    // cell
+    // Volume source particles: number and first random number stream per
+    // cell.
     ccsf_int vol_rnnum;
     ccsf_int nvol;
     ccsf_double ew_vol;
 
-    // surface source particles: number and first random number stream per
-    // cell
+    // Surface source particles: number and first random number stream per
+    // cell.
     ccsf_int ss_rnnum;
     ccsf_int nss;
     ccsf_int fss;
     ccsf_double ew_ss;
     std::string ss_dist;
 
-    // census bank
+    // Census bank.
     SP_Census census;
 
-    // total number of sources
+    // Total number of sources.
     int nvoltot;
     int nsstot;
     int ncentot;
 
-    // nsrcdone_cell is the running number of source particles completed for
-    // a particular source type in a particular cell.
+    // The running number of source particles completed for a particular
+    // source type in a particular cell.
     int nsrcdone_cell;
 
-    // cell currently under consideration
+    // Cell currently under consideration.
     int current_cell;
 
-    // running totals of completed source particles, by type
+    // Running totals of completed source particles, by type.
     int nssdone;
     int nvoldone;
     int ncendone;
 
-    // random number controller
+    // Random number controller.
     SP_Rnd_Control rcon;
 
-    // Material State
+    // Material State.
     SP_Mat_State material;
 
     // Mesh_Operations class for performing volume emission sampling with T^4
-    // tilts
+    // tilts.
     SP_Mesh_Op mesh_op;
+
+  private:
+    // >>> PRIVATE IMPLEMENTATION
+
+    // Particle sources accessors.
+    rtt_dsxx::SP<PT> get_census(double);
+    rtt_dsxx::SP<PT> get_evol(double);
+    rtt_dsxx::SP<PT> get_ss(double);
 
   public:
     // Constructor.
@@ -116,18 +129,20 @@ class Source
 	   ccsf_int &, ccsf_double &, SP_Census, std::string, int, int, 
 	   SP_Rnd_Control, SP_Mat_State, SP_Mesh_Op, SP_Topology);
 
-    // Required services for Source.
+    // Primary source service, get a source particle.
     rtt_dsxx::SP<PT> get_Source_Particle(double); 
 
-    // Particle sources.
-    rtt_dsxx::SP<PT> get_census(double);
-    rtt_dsxx::SP<PT> get_evol(double);
-    rtt_dsxx::SP<PT> get_ss(double);
-
-    // Accessors.
+    //! Get the number of volume emission sources contained in this source. 
     int get_nvoltot() const { return nvoltot; }
+
+    //! Get the number of surface sources contained in this source object.
     int get_nsstot() const { return nsstot; }
+
+    //! Get the number of census particles contained in this source object.
     int get_ncentot() const { return ncentot; }
+
+    // Get the total number of source particles contained in this object.
+    inline int get_num_source_particles() const;
 
     // Source diagnostic.
     void print(std::ostream &) const;
@@ -142,12 +157,36 @@ class Source
 //---------------------------------------------------------------------------//
 // inline functions for Source
 //---------------------------------------------------------------------------//
-// bool conversion operator
+/*!
 
+ * \brief Boolean conversion operator for source object.
+
+ * \return true if source particles exist; false if the source is empty
+
+ */
 template<class MT, class PT>
-inline Source<MT, PT>::operator bool() const
+Source<MT, PT>::operator bool() const
 {
     return (ncentot != ncendone || nsstot != nssdone || nvoltot != nvoldone);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ 
+ * \brief Get the total number of source particles in this source object.
+
+ * This function returns the total number of source particles initially
+ * contained in this source object. It is the sum of all three source
+ * species: volume, surface source, and census.
+
+ * \return the sum of the volume, surface source, and census particles
+ * contained in this source object.
+ 
+ */
+template<class MT, class PT>
+int Source<MT,PT>::get_num_source_particles() const
+{
+    return nvoltot + nsstot + ncentot;
 }
 
 //---------------------------------------------------------------------------//
