@@ -2,7 +2,7 @@
 # draco/config Makefile.test.in
 # Thomas M. Evans
 # Wed Feb  3 16:42:49 1999
-# Time-stamp: <99/02/11 09:01:38 mcghee>
+# Time-stamp: <99/02/19 10:35:06 rsqrd>
 ###############################################################################
 # @> General Makefile.in for draco package test directories
 ###############################################################################
@@ -231,15 +231,27 @@ ${dependfiles}: ${nml_hh} ${nml_cc}
 
 %.cc.d: %.cc
 	@echo making dependency $@
-	@${SHELL} -ec '${CXX} -M ${CPPFLAGS} $< \
-		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@; \
-		[ -s $@ ] || rm -f $@'
+	@if ${CXX} -M ${CPPFLAGS} $< >.tmp0 ; then \
+	   cat .tmp0 | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+		[ -s $@ ] || rm -f $@ ; \
+	else \
+	   echo failed making dependency $@ ; \
+	   rm -f $@ ; \
+	   exit 1; \
+	fi
+	@-rm .tmp0
 
 %.c.d: %.c
 	@echo making dependency $@
-	@${SHELL} -ec '${CC} -M ${CPPFLAGS} $< \
-		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@; \
-		[ -s $@ ] || rm -f $@'
+	@if ${CC} -M ${CPPFLAGS} $< >.tmp0 ; then \
+	   cat .tmp0 | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+		[ -s $@ ] || rm -f $@ ; \
+	else \
+	   echo failed making dependency $@ ; \
+	   rm -f $@ ; \
+	   exit 1; \
+	fi
+	@-rm .tmp0
 
 %.nml.d: .nml_%.hh .nml_%.cc
 
