@@ -35,6 +35,8 @@ main()
     ran1.print();
     ran2.print();
 
+	cout << ran1.get_id() << endl;
+
     cout << "**SPAWNING**" << endl;
 
     spawn = spawn_sprng(ran1.get_id(), 1, &news);

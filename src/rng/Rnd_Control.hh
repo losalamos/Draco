@@ -46,7 +46,7 @@ private:
 
 public:
   // constructor
-    Rnd_Control(int, int = 1000000, int = 0, int = 1);
+    Rnd_Control(int, int = 100000000, int = 0, int = 1);
 
   // start a new random number stream
     Sprng get_rn();

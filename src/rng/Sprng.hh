@@ -16,9 +16,10 @@
 //
 // revision history:
 // -----------------
-//  0)  original
-//  1)  4-30-98: added reference counting to take care of memory in case the 
-//               object is copied and deleted
+//  0) original
+//  1)  4-30-98 : added reference counting to take care of memory in case the 
+//                object is copied and deleted
+//  2)  6-26-98 : added average tester 
 // 
 //===========================================================================//
 
@@ -75,6 +76,9 @@ public:
     int* get_id() const { return streamid->id; }
     int get_num() const { return streamnum; }
 
+  // test diagnostics
+    bool avg_test(int, double = .001);
+
   // do a diagnostic
     void print() const { print_sprng(streamid->id); }
 };
@@ -120,7 +124,8 @@ inline Sprng& Sprng::operator=(const Sprng &rhs)
 	delete streamid;
 
   // do assignment
-    streamid = rhs.streamid;
+    streamid  = rhs.streamid;
+    streamnum = rhs.streamnum; 
     ++streamid->refcount;
     return *this;
 }
