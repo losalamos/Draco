@@ -12,29 +12,17 @@
 #ifndef __imc_Source_hh__
 #define __imc_Source_hh__
 
+#include "Mesh_Operations.hh"
 #include "Global.hh"
+#include "Opacity.hh"
+#include "Mat_State.hh"
+#include "mc/Particle_Stack.hh"
+#include "mc/Topology.hh"
+#include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <string>
 #include <vector>
-
-namespace rtt_rng
-{
-
-// Forward declarations.
-class Sprng;
-class Rnd_Control;
-
-}
-
-namespace rtt_mc
-{
-
-// Forward declarations.
-class Topology;
-template<class PT> class Particle_Containers;
-
-}
 
 namespace rtt_imc 
 {
@@ -44,9 +32,6 @@ class Gray_Frequency;
 class Multigroup_Frequency;
 template<class MT> class Gray_Particle;
 template<class MT> class Multigroup_Particle;
-template<class MT> class Mat_State;
-template<class MT> class Mesh_Operations;
-template<class MT, class FT> class Opacity;
 
 //===========================================================================//
 /*!

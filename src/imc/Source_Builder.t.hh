@@ -13,7 +13,6 @@
 #include "Gray_Particle.hh"
 #include "Multigroup_Particle.hh"
 #include "Frequency.hh"
-#include "mc/Particle_Stack.hh"
 #include "rng/Random.hh"
 #include "mc/Sampler.hh"
 

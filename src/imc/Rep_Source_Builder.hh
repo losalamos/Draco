@@ -183,7 +183,7 @@ Rep_Source_Builder<MT,FT,PT>::Rep_Source_Builder(rtt_dsxx::SP<IT> interface,
       global_eloss_vol(0),
       global_eloss_ss(0)
 { 
-    using rtt_dsxx::soft_equiv);
+    using rtt_dsxx::soft_equiv;
 
     Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
 

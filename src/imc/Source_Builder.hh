@@ -18,6 +18,7 @@
 #include "Mat_State.hh"
 #include "Opacity.hh"
 #include "mc/Topology.hh"
+#include "mc/Particle_Stack.hh"
 #include "mc/Parallel_Data_Operator.hh"
 #include "c4/global.hh"
 #include "ds++/SP.hh"
@@ -41,7 +42,6 @@ namespace rtt_mc
 
 // Forward declarations.
 class Comm_Patterns;
-template<class PT> class Particle_Containers;
 
 }
 

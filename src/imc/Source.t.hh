@@ -10,15 +10,9 @@
 //---------------------------------------------------------------------------//
 
 #include "Source.hh"
-#include "Mat_State.hh"
-#include "Mesh_Operations.hh"
 #include "Gray_Particle.hh"
 #include "Multigroup_Particle.hh"
-#include "Opacity.hh"
-#include "mc/Particle_Stack.hh"
-#include "mc/Topology.hh"
 #include "mc/Sampler.hh"
-#include "rng/Random.hh"
 #include "ds++/Assert.hh"
 #include <iomanip>
 #include <cmath>
