@@ -44,7 +44,7 @@ using std::set;
 using std::multimap;
 
 // draco components
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 // RTT_Format input file class
 using rtt_format::RTT_Format;

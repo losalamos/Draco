@@ -106,7 +106,6 @@ SP<RTT_Format> CAR_CU_Interface::parser_Mesh(ifstream &in)
     // Set up some useful RTT Format variables
     // total number of nodes.
     int ncells = rttMesh->get_dims_ncells();
-    // problem dimension (2D or 3D).
 
     // Assign a material zone to each cell.
     zone.resize(ncells);

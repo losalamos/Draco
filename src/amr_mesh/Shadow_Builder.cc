@@ -10,7 +10,7 @@
  *         the Continuous Adaptive Refinement Cartesion Unstructured Mesh 
  *         Builder class for use with Fortran 90 codes. The complimentary 
  *         Fortran 90 shadow object interface functions that reference the 
- *         functions herein are provided in Shadow_Builder.f90.
+ *         functions herein are provided in amr_mesh_fort/Shadow_Builder.f90.
  *         Only the class constructor and destructor are shadowed, as all 
  *         other class functions are invoked automatically by the shadow 
  *         object interface of the CAR_CU_Builder class constructor. An 
@@ -52,9 +52,9 @@ namespace rtt_amr
 using std::cout;
 
 // draco components
-using dsxx::SP;
+using rtt_dsxx::SP;
+using rtt_dsxx::opaque_pointers;
 using rtt_format::RTT_Format;
-using dsxx::opaque_pointers;
 
 extern "C" 
 {

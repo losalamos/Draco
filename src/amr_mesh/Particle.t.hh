@@ -22,7 +22,7 @@ using std::ostream;
 using std::vector;
 
 // draco stuff
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 // services from IMC::Global namespace
 using rtt_mc::global::pi;

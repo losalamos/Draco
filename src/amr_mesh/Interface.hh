@@ -45,7 +45,7 @@ using std::vector;
 using std::ifstream;
 
 // draco components
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 using rtt_format::RTT_Format;
 

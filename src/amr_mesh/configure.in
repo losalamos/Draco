@@ -7,7 +7,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for amr_mesh
 dnl-------------------------------------------------------------------------dnl
 
-AC_INIT(CAR_CU_Mesh.hh)
+AC_INIT(Mesh.hh)
 AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(amr_mesh/config.h:config.h.in)
 package="amr_mesh"

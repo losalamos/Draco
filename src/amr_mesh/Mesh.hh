@@ -53,7 +53,7 @@ using rtt_mc::Coord_sys;
 
 // draco namespaces
 using rtt_rng::Sprng;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 /*!
  * \brief  The continuous adaptive refinement (CAR) Cartesion unstructured 

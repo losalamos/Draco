@@ -10,7 +10,7 @@
  *         the Continuous Adaptive Refinement Cartesion Unstructured Mesh 
  *         Interface class for use with Fortran 90 codes. The complimentary 
  *         Fortran 90 shadow object interface functions that reference the 
- *         functions herein are provided in Shadow_Interface.f90.
+ *         functions herein are provided in amr_mesh_fort/Shadow_Interface.f90.
  *         An example code is also provide to illustrate the usage of all of
  *         the shadow object interface functions to the amr_mesh package from
  *         a Fortran 90 code.
@@ -49,9 +49,9 @@ using std::cout;
 using std::endl;
 
 // draco components
-using dsxx::SP;
+using rtt_dsxx::SP;
+using rtt_dsxx::opaque_pointers;
 using rtt_format::RTT_Format;
-using dsxx::opaque_pointers;
 
 extern "C" 
 {
