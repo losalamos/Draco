@@ -9,6 +9,7 @@
 SRC_TOP = ../..
 
 need_linalg     := yes
+need_diffusion  := yes
 need_c4		:= yes
 need_namelist	:= yes
 need_spdf	:= yes
@@ -45,7 +46,7 @@ main: deps main_$(env)
 	@echo 
 
 main_$(env) : $(objs) \
-	$(dep_lib3T) $(dep_libmesh) $(dep_libgeom) $(dep_liblinalg) \
+	$(dep_lib3T) $(dep_libdiffusion) $(dep_libmesh) $(dep_libgeom) $(dep_liblinalg) \
 	$(dep_libutil) $(dep_libspdf) $(dep_libnml) $(dep_libc4) $(dep_libds++)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
 
@@ -57,6 +58,7 @@ ifneq ($(dodeps),no)
 endif
 
 $(dep_lib3T):
+$(dep_libdiffusion):
 $(dep_libmesh):
 $(dep_libgeom):
 $(dep_liblinalg):
