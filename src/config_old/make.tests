@@ -21,7 +21,11 @@ else
 tstprogs	= $(tstsrcs:%.cc=%_$(env))
 endif
 
+puretstprogs	= $(tstprogs:%=%.pure)
+
 tests: $(tstpretarg) $(tstprogs)
+
+puretests: $(tstpretarg) $(puretstprogs)
 
 # Set the library to link the tests against.  Normally we have to add
 # the default library for the current directory, since it won't be in
@@ -35,6 +39,9 @@ endif
 
 $(tstprogs) : %_$(env) : $(default_lib) $(env)/%.o
 	$(CXX) $(CXXFLAGS) -o $@ $(env)/$*.o $(tstlib) $(LINK_LIBS)
+
+$(puretstprogs) : %_$(env).pure : %_$(env)
+	purify $*_$(env)
 
 ###############################################################################
 #                           End of config/make.tests
