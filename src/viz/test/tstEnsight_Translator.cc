@@ -119,10 +119,20 @@ void ensight_dump_test()
     // thus we will not overwrite the existing directories
 
     Ensight_Translator translator3(prefix, gd_wpath, ens_vdata_names,
-				   ens_cdata_names, dump_times); 
+ 				   ens_cdata_names, dump_times); 
     
     // now add another dump to the existing data
     translator3.ensight_dump(2, .05, dt,
+			     ipar, iel_type, rgn_index, pt_coor,
+			     ens_vrtx_data, ens_cell_data,
+			     rgn_data, rgn_name);    
+
+    // test of alternative constructor that parses dump_times
+    Ensight_Translator translator4(prefix, gd_wpath, ens_vdata_names,
+				   ens_cdata_names, false); 
+    
+    // add yet another dump to the existing data
+    translator4.ensight_dump(3, .10, dt,
 			     ipar, iel_type, rgn_index, pt_coor,
 			     ens_vrtx_data, ens_cell_data,
 			     rgn_data, rgn_name);    
