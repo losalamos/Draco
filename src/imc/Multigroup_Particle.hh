@@ -30,6 +30,7 @@ class Multigroup_Frequency;
 /*!
  * \class Multigroup_Particle
  *
+ * \brief Particle for doing multigroup IMC transport.
  */
 // revision history:
 // -----------------

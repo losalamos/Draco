@@ -29,6 +29,7 @@ class Gray_Frequency;
 /*!
  * \class Gray_Particle
  *
+ * \brief Particle for doing gray IMC transport.
  */
 // revision history:
 // -----------------
