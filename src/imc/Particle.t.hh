@@ -167,6 +167,32 @@ std::string Particle<MT>::convert_descriptor_to_string(int index)
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Calculate and return the size of the packed particle.
+ * 
+ * \param dimension spatial dimension of the problem
+ * \param control rtt_rng::Rnd_Control object
+ */
+template<class MT>
+int Particle<MT>::get_packed_particle_size(int dimension,
+					   const rtt_rng::Rnd_Control &control)
+{
+    Require (dimension > 0 && dimension <= 3);
+
+    // determine the size of the packed random number
+    int size_rn   = control.get_size();
+    Check (size_rn > 0);
+    
+    // calculate size: int for dimension, int for cell, int for size_rn;
+    // dimension doubles for position, 3 doubles for omega, 1 double for ew,
+    // 1 double for time_left, 1 double for fraction; size_rn characters for
+    // random number state
+    int size = 3 * sizeof(int) + (dimension + 6) * sizeof(double) + size_rn;
+    
+    return size;
+}
+
+//---------------------------------------------------------------------------//
 // PUBLIC FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!

@@ -121,7 +121,8 @@ namespace rtt_imc
 // 17) 24-SEP-01: switched to hybrid aborption behavior and added streaming
 //                to cutoff. See memo CCS-4:01-33(U)
 // 18) 20-DEC-01: redesigned the pack infrastructure
-// 
+// 19) 09-JAN-02: updated particle to work with new Particle_Buffer; added
+//                packed size calculation static function
 //===========================================================================//
 
 template<class MT>
@@ -304,6 +305,9 @@ class Particle
     
     //! Convert a string descriptor into an integer.
     static int convert_string_to_descriptor(std_string);
+
+    // Get the size of the packed particle.
+    static int get_packed_particle_size(int, const rtt_rng::Rnd_Control &);
 
     // >>> SET FUNCTIONS
     

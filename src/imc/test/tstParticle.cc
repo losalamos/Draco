@@ -219,6 +219,13 @@ void pack_test()
 
 	// throw more random numbers
 	rnd.ran();
+
+	// check the size packed state function
+	if (PT::get_packed_particle_size(2, control) == packed.size()) ITFAILS;
+	if (PT::get_packed_particle_size(3, control) != packed.size()) ITFAILS;
+
+	int twodsize = packed.size() - sizeof(double);
+	if (PT::get_packed_particle_size(2, control) != twodsize)      ITFAILS;
     }
 
     // unpack it and test
