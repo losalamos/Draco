@@ -81,13 +81,18 @@ class Mesh_XYZ : private XYZ_Mapper
     template<class T> class gfcdtf;
     template<class T> class cctf;
     template<class T> class gcctf;
+    template<class T> class nctf;
     template<class T> class vctf;
+    template<class T> class gvctf;
     template<class T, int N> class tiny_vec;
 
     typedef cctf<double> ccsf;
     typedef cctf<int> ccif;
     typedef gcctf<double> gccsf;
+    typedef nctf<double> ncsf;
+    typedef nctf<tiny_vec<double, 3> > ncvf;
     typedef vctf<double> vcsf;
+    typedef gvctf<double> gvcsf;
     typedef vctf<tiny_vec<double, 3> > vcvf;
     typedef tiny_vec<double, 3> vec3;
 
@@ -340,6 +345,72 @@ class Mesh_XYZ : private XYZ_Mapper
         int size() const { return data.size(); }
     };
 
+// Node centered field
+// Has a value at each node.
+
+    template<class T>
+    class nctf : private XYZ_Mapper,
+                       public xm::Indexable< T, nctf<T> >
+    {
+        dsxx::Mat1<T> data;
+        const Mesh_XYZ* mesh;
+
+	nctf( const Mesh_XYZ *m ) 
+          : XYZ_Mapper( m->get_Mesh_DB() ),
+            data( (m->get_ncx()+1)*(m->get_ncy()+1)*(m->get_nczp()+1) ),
+            mesh( m )
+        {}
+
+      public:
+	typedef T value_type;
+        typedef typename dsxx::Mat1<T>::iterator iterator;
+        typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
+
+	nctf( const dsxx::SP<Mesh_XYZ>& m ) 
+          : XYZ_Mapper( m->get_Mesh_DB() ),
+            data( (m->get_ncx()+1)*(m->get_ncy()+1)*(m->get_nczp()+1) ),
+            mesh( m.bp() ) {}
+
+        const Mesh_XYZ& get_Mesh() const { return *mesh; }
+
+        nctf& operator=( T x )
+        {
+            data = x;
+            return *this;
+        }
+
+        template<class X>
+        nctf& operator=( const xm::Xpr< T, X, nctf >& x )
+        {
+            return assign_from( x );
+        }
+
+        const T& operator()( int i ) const { return data(i); }
+        T& operator()( int i ) { return data(i); }
+
+	T& operator()( int i, int j, int k )
+	{
+	    return data( i+(ncx+1)*(j+(ncy+1)*(k-zoff)) );
+	}
+	const T& operator()( int i, int j, int k ) const 
+	{
+	    return data( i+(ncx+1)*(j+(ncy+1)*(k-zoff)) );
+	}
+
+        const T& operator[]( int i ) const { return data(i); }
+        T& operator[]( int i ) { return data(i); }
+
+        iterator begin() { return data.begin(); }
+        iterator end() { return data.end(); }
+
+        const_iterator begin() const { return data.begin(); }
+        const_iterator end() const { return data.end(); }
+
+        int size() const { return data.size(); }
+
+	friend class Mesh_XYZ;
+    };
+
 // Vertex centered field
 // Has a value at each vertex in each cell.
 
@@ -347,6 +418,7 @@ class Mesh_XYZ : private XYZ_Mapper
     class vctf : private XYZ_Mapper,
                  public xm::Indexable< T, vctf<T> > {
 	friend class Mesh_XYZ;
+	friend class gvctf<T>;
 
 	dsxx::Mat2<T> data;
         const Mesh_XYZ* mesh;
@@ -391,6 +463,65 @@ class Mesh_XYZ : private XYZ_Mapper
 	{
 	    return data( local_cell_index(i,j,k), v );
 	}
+
+        const T& operator[]( int i ) const { return data[i]; }
+        T& operator[]( int i ) { return data[i]; }
+
+        iterator begin() { return data.begin(); }
+        iterator end() { return data.end(); }
+
+        const_iterator begin() const { return data.begin(); }
+        const_iterator end() const { return data.end(); }
+
+        int size() const { return data.size(); }
+    };
+
+// Guarded vertex centered field
+// Has a value at each vertex in each cell.
+
+    template<class T>
+    class gvctf : private XYZ_Mapper,
+                  public xm::Indexable< T, gvctf<T> > {
+	dsxx::Mat4<T> data;
+        const Mesh_XYZ* mesh;
+
+      public:
+        typedef typename dsxx::Mat4<T>::iterator iterator;
+        typedef typename dsxx::Mat4<T>::const_iterator const_iterator;
+
+	gvctf( const dsxx::SP<Mesh_XYZ>& m )
+	    : XYZ_Mapper( m->get_Mesh_DB() ),
+	      data( dsxx::Bounds( 0, 7 ),
+                    dsxx::Bounds( 0, ncx - 1 ),
+                    dsxx::Bounds( 0, ncy - 1 ),
+                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+              mesh( m.bp() )
+	{}
+
+        const Mesh_XYZ& get_Mesh() const { return *mesh; }
+
+        gvctf<T>& operator=( const vctf<T>& c );
+        void update_gvctf();
+
+        gvctf<T>( const vctf<T>& c )
+            : XYZ_Mapper( c.get_Mesh_DB() ),
+              data( dsxx::Bounds( 0, 7 ),
+                    dsxx::Bounds( 0, ncx - 1 ),
+                    dsxx::Bounds( 0, ncy - 1 ),
+                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+              mesh( c.mesh )
+        { *this = c; }
+
+    // i, j, k == global xyz cell indicies
+    // v == vertex index
+
+    // Note that the order of the indexing is different than the
+    // order of the data layout.
+
+        const T& operator()( int i, int j, int k, int v ) const
+        { return data(v,i,j,k); }
+        T& operator()( int i, int j, int k, int v )
+        { return data(v,i,j,k); }
 
         const T& operator[]( int i ) const { return data[i]; }
         T& operator[]( int i ) { return data[i]; }
@@ -646,6 +777,9 @@ class Mesh_XYZ : private XYZ_Mapper
     static void scatter( fcdtf<T1>& to, const vctf<T2>& from, const Op& op );
 
     template <class T1, class T2, class Op>
+    static void scatter( nctf<T1>& to, const vctf<T2>& from, const Op& op );
+
+    template <class T1, class T2, class Op>
     static void gather( fcdtf<T1>& to, const cctf<T2>& from, const Op& op );
 
     template <class T1, class T2, class Op>
@@ -653,6 +787,9 @@ class Mesh_XYZ : private XYZ_Mapper
 
     template <class T1, class T2, class Op>
     static void gather( fcdtf<T1>& to, const bstf<T2>& from, const Op& op );
+
+    template <class T1, class T2, class Op>
+    static void gather( vctf<T1>& to, const nctf<T2>& from, const Op& op );
 
     template <class T>
     static void swap( fcdtf<T>& to, const fcdtf<T>& from );
@@ -693,6 +830,12 @@ void dump( const Mesh_XYZ::cctf<T>& data, char *name );
 
 template<class T>
 void dump( const Mesh_XYZ::fcdtf<T>& data, char *name );
+
+template<class T>
+void dump( const Mesh_XYZ::nctf<T>& data, char *name );
+
+template<class T>
+void dump( const Mesh_XYZ::vctf<T>& data, char *name );
 
 #include "Mesh_XYZ.t.cc"
 

@@ -44,6 +44,38 @@ void dump( const Mesh_XYZ::fcdtf<T>& data, char *name )
 }
 
 template<class T>
+void dump( const Mesh_XYZ::nctf<T>& data, char *name )
+{
+    cout << "dumping a Mesh_XYZ::nctf: " << name << endl;
+    {
+        C4::HTSyncSpinLock h;
+        char buf[80];
+        for( int i=0; i < data.size(); i++ ) {
+            sprintf( buf, "processor %d, node %d, value=%lf \n",
+                     C4::node(), i, data(i) );
+            cout << buf;
+	}
+    }
+}
+
+template<class T>
+void dump( const Mesh_XYZ::vctf<T>& data, char *name )
+{
+    cout << "dumping a Mesh_XYZ::vctf: " << name << endl;
+    {
+        C4::HTSyncSpinLock h;
+        char buf[80];
+        for( int i=0; i < data.size()/8; i++ ) {
+            for( int j=0; j < 8; j++ ) {
+                sprintf( buf, "node %d, cell %d, vertex %d, value=%lf \n",
+                         C4::node(), i, j, data(i,j) );
+                cout << buf;
+            }
+        }
+    }
+}
+
+template<class T>
 Mesh_XYZ::gcctf<T>& 
 Mesh_XYZ::gcctf<T>::operator=( const Mesh_XYZ::cctf<T>& c )
 {
@@ -114,6 +146,43 @@ void Mesh_XYZ::gfcdtf<T>::update_gfcdtf()
 
     if (node < lastnode)
         Send( &data(0,0,0,zoff+nczp-1), 6*ncx*ncy, node+1 );
+}
+
+template<class T>
+Mesh_XYZ::gvctf<T>& 
+Mesh_XYZ::gvctf<T>::operator=( const Mesh_XYZ::vctf<T>& c )
+{
+    for( int k=zoff; k < zoff + nczp; k++ )
+        for( int j=0; j < ncy; j++ )
+            for( int i=0; i < ncx; i++ )
+                for ( int v=0; v < 8; v++ )
+                    data(v,i,j,k) = c(i,j,k,v);
+
+    update_gvctf();
+    
+    return *this;
+}
+
+template<class T>
+void Mesh_XYZ::gvctf<T>::update_gvctf()
+{
+    using namespace C4;
+    C4_Req lrcv, rrcv;
+
+    dsxx::Mat3<T> lrbuf( &data(0,0,0,zoff-1), 8, ncx, ncy );
+    dsxx::Mat3<T> rrbuf( &data(0,0,0,zoff+nczp), 8, ncx, ncy );
+
+    if (node > 0)
+        RecvAsync( lrcv, &lrbuf(0,0,0), 8*ncx*ncy, node-1 );
+
+    if (node < lastnode)
+        RecvAsync( rrcv, &rrbuf(0,0,0), 8*ncx*ncy, node+1 );
+
+    if (node > 0)
+        Send( &data(0,0,0,zoff), 8*ncx*ncy, node-1 );
+
+    if (node < lastnode)
+        Send( &data(0,0,0,zoff+nczp-1), 8*ncx*ncy, node+1 );
 }
 
 template<class T>
@@ -627,6 +696,46 @@ void Mesh_XYZ::scatter
 }
 
 template <class T1, class T2, class Op>
+void Mesh_XYZ::scatter
+( Mesh_XYZ::nctf<T1>& to, const Mesh_XYZ::vctf<T2>& from, const Op& op )
+{
+    Mesh_XYZ::gvctf<T2> gfrom(from);
+    for ( int i = 0; i < from.ncx; ++i )
+      for ( int j = 0; j < from.ncy; ++j )
+      {
+          if (from.zoff != 0)
+          {
+              op(to(i,j,from.zoff), gfrom(i,j,from.zoff-1,4));
+              op(to(i+1,j,from.zoff), gfrom(i,j,from.zoff-1,5));
+              op(to(i,j+1,from.zoff), gfrom(i,j,from.zoff-1,6));
+              op(to(i+1,j+1,from.zoff), gfrom(i,j,from.zoff-1,7));
+          }
+          for ( int k = from.zoff; k < from.zoff + from.nczp; ++k )
+          {
+              op(to(i,j,k), gfrom(i,j,k,0));
+              op(to(i+1,j,k), gfrom(i,j,k,1));
+              op(to(i,j+1,k), gfrom(i,j,k,2));
+              op(to(i+1,j+1,k), gfrom(i,j,k,3));
+              op(to(i,j,k+1), gfrom(i,j,k,4));
+              op(to(i+1,j,k+1), gfrom(i,j,k,5));
+              op(to(i,j+1,k+1), gfrom(i,j,k,6));
+              op(to(i+1,j+1,k+1), gfrom(i,j,k,7));
+          }
+          if (from.zoff + from.nczp - 1 != from.ncz)
+          {
+              op(to(i,j,from.zoff + from.nczp),
+                 gfrom(i,j,from.zoff + from.nczp,0));
+              op(to(i+1,j,from.zoff + from.nczp),
+                 gfrom(i,j,from.zoff + from.nczp,1));
+              op(to(i,j+1,from.zoff + from.nczp),
+                 gfrom(i,j,from.zoff + from.nczp,2));
+              op(to(i+1,j+1,from.zoff + from.nczp),
+                 gfrom(i,j,from.zoff + from.nczp,3));
+          }
+      }
+}
+
+template <class T1, class T2, class Op>
 void Mesh_XYZ::gather
 ( Mesh_XYZ::fcdtf<T1>& to, const Mesh_XYZ::cctf<T2>& from, const Op& op )
 {
@@ -711,6 +820,25 @@ void Mesh_XYZ::gather
                 op(to(i,j,to.ncz-1,5), from(i,j,to.ncz-1,5));
 }
 
+template <class T1, class T2, class Op>
+void Mesh_XYZ::gather
+( Mesh_XYZ::vctf<T1>& to, const Mesh_XYZ::nctf<T2>& from, const Op& op )
+{
+    for ( int i = 0; i < to.ncx; ++i )
+      for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+        {
+            op(to(i,j,k,0), from(i,j,k));
+            op(to(i,j,k,1), from(i+1,j,k));
+            op(to(i,j,k,2), from(i,j+1,k));
+            op(to(i,j,k,3), from(i+1,j+1,k));
+            op(to(i,j,k,4), from(i,j,k+1));
+            op(to(i,j,k,5), from(i+1,j,k+1));
+            op(to(i,j,k,6), from(i,j+1,k+1));
+            op(to(i,j,k,7), from(i+1,j+1,k+1));
+        }
+}
+
 template <class T>
 void Mesh_XYZ::swap
 ( Mesh_XYZ::fcdtf<T>& to, const Mesh_XYZ::fcdtf<T>& from )
@@ -719,7 +847,7 @@ void Mesh_XYZ::swap
     for ( int i = 0; i < to.ncx; ++i )
       for ( int j = 0; j < to.ncy; ++j )
         for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
-	{
+        {
           if (i != 0)
               to(i,j,k,0) = gfrom(i-1,j,k,1);
           else

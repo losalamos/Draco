@@ -68,6 +68,14 @@ int main( int argc, char *argv[] )
     }
 
     {
+        Mesh_XYZ::ncsf xn( spm ), yn( spm ), zn( spm );
+        xn = 1.;
+        yn = 2.;
+        zn = xn + yn;
+        Mesh_XYZ m = xn.get_Mesh();
+    }
+
+    {
         Mesh_XYZ::vcsf xv( spm ), yv( spm ), zv( spm );
         xv = 1.;
         yv = 2.;
@@ -100,6 +108,14 @@ int main( int argc, char *argv[] )
         xf = 1.;
         xgf = xf;
         Mesh_XYZ m = xgf.get_Mesh();
+    }
+
+    {
+        Mesh_XYZ::gvcsf xgv( spm );
+        Mesh_XYZ::vcsf xv( spm );
+        xv = 1.;
+        xgv = xv;
+        Mesh_XYZ m = xgv.get_Mesh();
     }
 
     {
@@ -180,6 +196,25 @@ int main( int argc, char *argv[] )
         oneCC = 1.0;
         Mesh_XYZ::gather ( oneFC, oneCC, Mesh_XYZ::OpAddAssign() );
         //dump( oneFC, "oneFC, after" );
+    }
+
+    {
+        Mesh_XYZ::vcsf oneVC( spm );
+        oneVC = 0.0;
+        Mesh_XYZ::ncsf oneNC( spm );
+        oneNC = 1.0;
+        Mesh_XYZ::gather ( oneVC, oneNC, Mesh_XYZ::OpAddAssign() );
+        //dump( oneNC, "oneNC, after" );
+        //dump( oneVC, "oneVC, after" );
+    }
+
+    {
+        Mesh_XYZ::ncsf eightNC( spm );
+        eightNC = 0.0;
+        Mesh_XYZ::vcsf oneVC( spm );
+        oneVC = 1.0;
+        Mesh_XYZ::scatter ( eightNC, oneVC, Mesh_XYZ::OpAddAssign() );
+        //dump( eightNC, "eightNC, after" );
     }
 
     {
