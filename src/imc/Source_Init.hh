@@ -24,12 +24,14 @@
 #include "imctest/Names.hh"
 #include "imctest/Opacity.hh"
 #include "imctest/Mat_State.hh"
+#include "rng/Rnd_Control.hh"
 #include "ds++/SP.hh"
 #include <string>
 
 IMCSPACE
 
 using std::string;
+using RNG::Rnd_Control;
 
 template<class MT>
 class Source_Init
@@ -72,7 +74,7 @@ private:
   // and surface sources
     void calc_num_part();
     void calc_initial_census(const MT &,const Opacity<MT> &, 
-			     const Mat_State<MT> &);
+			     const Mat_State<MT> &, const Rnd_Control &);
     void calc_source_energies();
     void calc_source_numbers();
 
@@ -81,14 +83,15 @@ private:
     void calc_ess();
     void calc_erad();
     void calc_ncen_init();
-    void write_initial_census(const MT &);
+    void write_initial_census(const MT &, const Rnd_Control &);
 
 public:
     template<class IT>
     explicit Source_Init(SP<IT>, SP<MT>);
 
   // source initialyzer function
-    void initialize(const MT &, const Opacity<MT> &, const Mat_State<MT> &);
+    void initialize(const MT &, const Opacity<MT> &, const Mat_State<MT> &,
+		    const Rnd_Control &);
 
 CSPACE
 

@@ -9,12 +9,14 @@
 #include "imctest/Source_Init.hh"
 #include "imctest/Constants.hh"
 #include "imctest/Math.hh"
+#include "rng/Sprng.hh"
 #include <cmath>
 #include <iostream>
 #include <fstream>
 
 IMCSPACE
 
+using RNG::Sprng;
 using Global::min;
 using std::pow;
 using std::ofstream;
@@ -25,14 +27,15 @@ using std::ofstream;
 // source initialyzer -- this is the main guy
 template<class MT>
 void Source_Init<MT>::initialize(const MT &mesh, const Opacity<MT> &opacity,
-				 const Mat_State<MT> &state)
+				 const Mat_State<MT> &state, 
+				 const Rnd_Control &rcontrol)
 {
   // calculate number of particles
     calc_num_part();
 
   // on first pass do initial source census
     if (cycle == 1)
-	calc_initial_census(mesh, opacity, state);
+	calc_initial_census(mesh, opacity, state, rcontrol);
 
   // calculate source energies
     calc_source_energies();
@@ -57,7 +60,8 @@ void Source_Init<MT>::calc_num_part()
 template<class MT>
 void Source_Init<MT>::calc_initial_census(const MT &mesh,
 					  const Opacity<MT> &opacity,
-					  const Mat_State<MT> &state)
+					  const Mat_State<MT> &state,
+					  const Rnd_Control &rcontrol)
 {
   // calculate and write the initial census source
 
@@ -74,7 +78,7 @@ void Source_Init<MT>::calc_initial_census(const MT &mesh,
     calc_ncen_init();
 
   // write out the initial census
-    write_initial_census(mesh);
+    write_initial_census(mesh, rcontrol);
 }
 
 //---------------------------------------------------------------------------//
@@ -222,13 +226,37 @@ void Source_Init<MT>::calc_ncen_init()
 // write the initial census
 	
 template<class MT>
-void Source_Init<MT>::write_initial_census(const MT &mesh)
+void Source_Init<MT>::write_initial_census(const MT &mesh, 
+					   const Rnd_Control &rcon)
 {
   // open census file
     ofstream cen_file("census");
 
-  // 
+  // loop over cells
+    for (int cell = 1; cell <= mesh.num_cells(); cell++)
+	for (int i = 1; i <= ncen(cell); i++)
+	{
+	  // make a new random number for delivery to Particle
+	    Sprng random = rcon.get_rn();
+	    
+	  // sample particle location
+	    vector<double> r = sample_pos("uniform", cell, random);
 
+	  // sample particle direction
+	    vector<double> omega = sample_dir("isotropic", random);
+	    
+	  // sample frequency (not now, 1 group)
+
+	  // calculate energy weight
+	    double ew = erad(cell)/ncen(cell);
+
+	  // create Particle
+	    Particle<MT> particle(r, omega, ew, cell, random);
+	    
+	  // write particle
+	    cen_file << particle;
+	}
+}
 
 CSPACE
 

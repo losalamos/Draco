@@ -9,7 +9,6 @@
 #include "imctest/Particle.hh"
 #include "imctest/Constants.hh"
 #include "imctest/Math.hh"
-#include <iostream>
 #include <iomanip>
 
 IMCSPACE
@@ -27,7 +26,7 @@ using Global::c;
 using Global::dot;
 
 //===========================================================================//
-// class Particle<MT, RN>
+// class Particle<MT>
 //===========================================================================//
 
 //---------------------------------------------------------------------------//
@@ -40,29 +39,10 @@ using Global::dot;
 //---------------------------------------------------------------------------//
 // public transport member functions
 //---------------------------------------------------------------------------//
-// calculate source from a given point (temporary)
-template<class MT, class RN>
-void Particle<MT, RN>::source(vector<double> &r_, vector<double> &omega_,
-			  const MT &mesh)
-{
-  // initial location
-    r = r_;
-    omega = omega_;
+// transport a particle
 
-  // sample initial direction (isotropic)
-  // mesh.Coord().Set_omega(omega, random);
-
-    fraction = 1.0;
-    time_left = 1.0;
-
-  // find particle cell
-    cell = mesh.get_cell(r);
-}
-
-//---------------------------------------------------------------------------//
-
-template<class MT, class RN>
-void Particle<MT, RN>::transport(const MT &mesh, const Opacity<MT> &xs, 
+template<class MT>
+void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs, 
 				 Tally<MT> &tally, SP<Diagnostic> diagnostic)
 {
   // transport particle through mesh using regular IMC transport
@@ -157,8 +137,9 @@ void Particle<MT, RN>::transport(const MT &mesh, const Opacity<MT> &xs,
 // private transport member functions
 //---------------------------------------------------------------------------//
 // calculate everything about a collision
-template<class MT, class RN>
-bool Particle<MT, RN>::collide(const MT &mesh, const Opacity<MT> &xs)
+
+template<class MT>
+bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
 {   
   // status from collision
     bool status;
@@ -189,8 +170,8 @@ bool Particle<MT, RN>::collide(const MT &mesh, const Opacity<MT> &xs)
 //---------------------------------------------------------------------------//
 // perform an isotropic effective scatter 
 
-template<class MT, class RN>
-void Particle<MT, RN>::scatter(const MT &mesh)
+template<class MT>
+void Particle<MT>::scatter(const MT &mesh)
 {   
       // calculate theta and phi (isotropic)
     double costheta, phi;
@@ -204,8 +185,9 @@ void Particle<MT, RN>::scatter(const MT &mesh)
 
 //---------------------------------------------------------------------------//
 // do surface crossings
-template<class MT, class RN>
-bool Particle<MT, RN>::surface(const MT &mesh, int face)
+
+template<class MT>
+bool Particle<MT>::surface(const MT &mesh, int face)
 {
   // handle particles at a surface
 
@@ -247,8 +229,8 @@ bool Particle<MT, RN>::surface(const MT &mesh, int face)
 
 //---------------------------------------------------------------------------//
 
-template<class MT, class RN>
-void Particle<MT, RN>::print(ostream &output) const
+template<class MT>
+void Particle<MT>::print(ostream &output) const
 {
   // set precisions
     output.precision(3);
@@ -284,15 +266,15 @@ void Particle<MT, RN>::print(ostream &output) const
 
     
 //===========================================================================//
-// class Particle<MT, RN>::Diagnostic
+// class Particle<MT>::Diagnostic
 //===========================================================================//
 
 //---------------------------------------------------------------------------//
 // public diagnostic member functions
 //---------------------------------------------------------------------------//
 
-template<class MT, class RN>
-void Particle<MT, RN>::Diagnostic::print(const Particle<MT, RN> &particle) 
+template<class MT>
+void Particle<MT>::Diagnostic::print(const Particle<MT> &particle) 
     const
 {
   // set output precision
@@ -308,8 +290,8 @@ void Particle<MT, RN>::Diagnostic::print(const Particle<MT, RN> &particle)
 
 //---------------------------------------------------------------------------//
 
-template<class MT, class RN>
-void Particle<MT, RN>::Diagnostic::print_alive(const Particle<MT, RN> 
+template<class MT>
+void Particle<MT>::Diagnostic::print_alive(const Particle<MT> 
 					       &particle) const 
 {
   // print active particle (alive = true)
@@ -352,8 +334,9 @@ void Particle<MT, RN>::Diagnostic::print_alive(const Particle<MT, RN>
 
 //---------------------------------------------------------------------------//
 
-template<class MT, class RN>
-void Particle<MT, RN>::Diagnostic::print_dead(const Particle<MT, RN> &particle) const
+template<class MT>
+void Particle<MT>::Diagnostic::print_dead(const Particle<MT> 
+					      &particle) const
 {
   // print dead particle (alive = false)
     output << " -- Particle is dead -- " << endl;
@@ -395,8 +378,8 @@ void Particle<MT, RN>::Diagnostic::print_dead(const Particle<MT, RN> &particle) 
 
 //---------------------------------------------------------------------------//
 
-template<class MT, class RN>
-void Particle<MT, RN>::Diagnostic::print_dist(double d_scat, double d_bnd, 
+template<class MT>
+void Particle<MT>::Diagnostic::print_dist(double d_scat, double d_bnd, 
 					      double d_cen, int cell) const
 {
   // do detailed diagnostic print of particle event distances
@@ -408,13 +391,12 @@ void Particle<MT, RN>::Diagnostic::print_dist(double d_scat, double d_bnd,
 	   << setw(12) << d_bnd << endl;   
     output << setw(20) << setiosflags(ios::right) << "Dist-census: "
 	   << setw(12) << d_cen << endl;
-
 }
 
 //---------------------------------------------------------------------------//
 
-template<class MT, class RN>
-void Particle<MT, RN>::Diagnostic::print_xs(const Opacity<MT> &xs,
+template<class MT>
+void Particle<MT>::Diagnostic::print_xs(const Opacity<MT> &xs,
 					    int cell) const
 {
   // do detailed diagnostic print of particle event cross sections

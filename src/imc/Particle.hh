@@ -29,6 +29,10 @@
 //                initialize the containers because there are no conversion 
 //                constructors in Particle; made Particle_Stack parameterized 
 //                on PT (Particle-type)
+//  4)   5-5-98 : removed source() function and parameterization on random
+//                number type, updated contructor to work with new source
+//                classes, added dump and changed random number to Sprng 
+//                types.
 // 
 //===========================================================================//
 
@@ -42,6 +46,7 @@
 #include "imctest/Names.hh"
 #include "imctest/Opacity.hh"
 #include "imctest/Tally.hh"
+#include "rng/Sprng.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <string>
@@ -62,13 +67,16 @@ using std::exp;
 using std::stack;
 using std::list;
 
+// DRACO classes used in Particle
+using RNG::Sprng;
+
 template<class PT>
 struct Particle_Stack
 {
     typedef stack<PT, list<PT> > Bank;
 };
 
-template<class MT, class RN>
+template<class MT>
 class Particle
 {
 public: 
@@ -90,9 +98,9 @@ public:
 	bool detail_status() const { return detail; }
 
       // diagnostic print functions
-	void print(const Particle<MT, RN> &) const;
-	void print_alive(const Particle<MT, RN> &) const;
-	void print_dead(const Particle<MT, RN> &) const;
+	void print(const Particle<MT> &) const;
+	void print_alive(const Particle<MT> &) const;
+	void print_dead(const Particle<MT> &) const;
 	void print_dist(double, double, double, int) const;
 	void print_xs(const Opacity<MT> &, int) const;
 
@@ -122,7 +130,7 @@ private:
     string descriptor;
 
   // random number object
-    RN random;
+    Sprng random;
 
   // private particle service functions
 
@@ -160,9 +168,6 @@ public:
 
   // transport solvers
 
-  // source is temporary until the real source object arrives 
-    void source(vector<double> &, vector<double> &, const MT &);
-
   // IMC transport step
     void transport(const MT &, const Opacity<MT> &, Tally<MT> &,
 		   SP<Diagnostic> = SP<Diagnostic>());
@@ -181,8 +186,8 @@ public:
 // overloaded operators
 //---------------------------------------------------------------------------//
 
-template<class MT, class RN>
-inline ostream& operator<<(ostream &output, Particle<MT, RN> &object)
+template<class MT>
+inline ostream& operator<<(ostream &output, Particle<MT> &object)
 {
     object.print(output);
     return output;
@@ -194,8 +199,8 @@ inline ostream& operator<<(ostream &output, Particle<MT, RN> &object)
 
 // Particle<MT>::Diagnostic inline functions
 
-template<class MT, class RN>
-inline void Particle<MT, RN>::Diagnostic::header() const 
+template<class MT>
+inline void Particle<MT>::Diagnostic::header() const 
 { 
     output << "*** PARTICLE HISTORY ***" << endl; 
     output << "------------------------" << endl;
@@ -203,8 +208,8 @@ inline void Particle<MT, RN>::Diagnostic::header() const
 
 // Particle<MT> inline functions
 
-template<class MT, class RN>
-inline Particle<MT, RN>::Particle(const MT &mesh, long seed, double ew_)
+template<class MT>
+inline Particle<MT>::Particle(const MT &mesh, long seed, double ew_)
     : ew(ew_), r(mesh.get_Coord().get_dim(), 0.0), 
       omega(mesh.get_Coord().get_sdim(), 0.0), cell(0), alive(true), 
       descriptor("born"), random(seed), time_left(0), fraction(1)
@@ -212,8 +217,8 @@ inline Particle<MT, RN>::Particle(const MT &mesh, long seed, double ew_)
   // non-default constructor, Particle must be defined with a Mesh
 }
 
-template<class MT, class RN>
-inline Particle<MT, RN>::Particle()
+template<class MT>
+inline Particle<MT>::Particle()
     : random(-1)
 {
   // default constructor for use with stl containers; must provide an
@@ -223,17 +228,17 @@ inline Particle<MT, RN>::Particle()
     assert (0);
 }
 
-template<class MT, class RN>
-inline void Particle<MT, RN>::stream(double distance)
+template<class MT>
+inline void Particle<MT>::stream(double distance)
 {
   // calculate new location when Particle streams
     for (int i = 0; i <= r.size()-1; i++)
 	r[i] = r[i] + distance * omega[i];
 }
 
-template<class MT, class RN>
-inline void Particle<MT, RN>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
-					 double distance)
+template<class MT>
+inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
+				     double distance)
 {
   // hardwire minimum energy weight fraction
     double minwt_frac = 0.01;

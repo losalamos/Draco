@@ -25,20 +25,23 @@
 //  3)  3-16-98 : reserve calc_normal function for later if need be
 //  4)  3-17-98 : because of a dumb-ass oversight on my part, we don't need
 //                a transform for 2D XY, it has been removed
+//  5)   5-5-98 : added sample_pos virtual function
 // 
 //===========================================================================//
 
 #include "imctest/Names.hh"
 #include "imctest/Coord_sys.hh"
+#include "rng/Sprng.hh"
+#include "ds++/Assert.hh"
 #include <vector>
-#include <cmath>
 #include <string>
 
 IMCSPACE
 
 using std::vector;
-using std::sqrt;
 using std::string;
+
+using RNG::Sprng;
     
 class XYCoord_sys : public Coord_sys
 {
@@ -52,10 +55,40 @@ public:
 
   // virtual functions
     virtual string get_Coord() const { string c = "xy"; return c; }
-
+    inline virtual vector<double> sample_pos(string, vector<double>,
+					     vector<double>, Sprng &);
+	     
   // End_Verbatim 
   // End_Doc 
 };
+
+//---------------------------------------------------------------------------//
+// INLINE Functions
+//---------------------------------------------------------------------------//
+// sample the position in an XY cell
+
+inline vector<double> 
+XYCoord_sys::sample_pos(string dist, vector<double> min, vector<double> max,
+			Sprng &random)
+{
+  // make return vector
+    vector<double> r(2);
+
+  // some assertions
+    Check (min.size() == 2);
+    Check (max.size() == 2);
+
+    for (int d = 0; d < 2; d++)
+    {
+      // do uniform sampling
+	if (dist == "uniform")
+	    r[d] = (max[d] - min[d]) * random.ran() + min[d];
+      // add others as needed
+    }
+
+  // return assigned array
+    return r;
+}
 
 CSPACE
 

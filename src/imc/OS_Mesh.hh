@@ -37,6 +37,7 @@
 #include "imctest/Names.hh"
 #include "imctest/Coord_sys.hh"
 #include "imctest/Layout.hh"
+#include "rng/Sprng.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <algorithm>
@@ -58,6 +59,8 @@ using std::pow;
 using std::cout;
 using std::endl;
 using std::string;
+
+using RNG::Sprng;
     
 class OS_Mesh
 {
@@ -165,7 +168,7 @@ public:
     inline double min(int, int) const;
     inline double max(int, int) const;
 
-  // find centerpoint of cell, width of cell, and volume of cell
+  // find centerpoint of cell and width of cell
     inline double pos(int, int) const;
     double dim(int d, int cell) const { return max(d, cell) - min(d, cell); }
 
@@ -197,6 +200,7 @@ public:
     vector<int> get_surcells(string) const;
     int get_bndface(string, int) const;
     inline CCVF_a get_vertices(int, int) const;
+    inline vector<double> sample_pos(string, int, Sprng &);
 
   // End_Verbatim 
   // End_Doc 
@@ -217,7 +221,9 @@ inline ostream& operator<<(ostream &output, const OS_Mesh &object)
 // inline functions
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
 // OS_Mesh::CCVF functions
+//---------------------------------------------------------------------------//
 
 // CCVF constructor
 template<class T>
@@ -229,11 +235,15 @@ inline OS_Mesh::CCVF<T>::CCVF(SP<OS_Mesh> mesh_)
 	data[i].resize(mesh->num_cells());
 }
 
+//---------------------------------------------------------------------------//
+
 template<class T>
 inline T OS_Mesh::CCVF<T>::operator()(int dim, int cell) const 
 {
     return data[dim-1][cell-1]; 
 }
+
+//---------------------------------------------------------------------------//
 
 template<class T>
 inline T& OS_Mesh::CCVF<T>::operator()(int dim, int cell)
@@ -241,7 +251,9 @@ inline T& OS_Mesh::CCVF<T>::operator()(int dim, int cell)
     return data[dim-1][cell-1];
 }
 
+//---------------------------------------------------------------------------//
 // OS_Mesh inline functions
+//---------------------------------------------------------------------------//
 
 inline double OS_Mesh::begin(int d) const 
 {
@@ -249,11 +261,15 @@ inline double OS_Mesh::begin(int d) const
     return *min_element(vertex[d-1].begin(), vertex[d-1].end()); 
 }
 
+//---------------------------------------------------------------------------//
+
 inline double OS_Mesh::end(int d) const 
 {
   // find the maximum surface for d over the whole mesh
     return *max_element(vertex[d-1].begin(), vertex[d-1].end()); 
 }
+
+//---------------------------------------------------------------------------//
 
 inline double OS_Mesh::pos(int d, int cell) const
 {
@@ -270,6 +286,8 @@ inline double OS_Mesh::pos(int d, int cell) const
   // return value
     return return_pos / static_cast<double>(cell_pair[cell-1].size());     
 }
+
+//---------------------------------------------------------------------------//
 
 inline double OS_Mesh::min(int d, int cell) const 
 {	
@@ -290,6 +308,8 @@ inline double OS_Mesh::min(int d, int cell) const
     return minimum;
 }
 
+//---------------------------------------------------------------------------//
+
 inline double OS_Mesh::max(int d, int cell) const
 {
   // find maximum dimension of cell
@@ -309,6 +329,8 @@ inline double OS_Mesh::max(int d, int cell) const
     return maximum;
 }
 
+//---------------------------------------------------------------------------//
+
 inline double OS_Mesh::volume(int cell) const 
 {
   // calculate volume of cell
@@ -321,6 +343,8 @@ inline double OS_Mesh::volume(int cell) const
   // return volume
     return volume;
 }
+
+//---------------------------------------------------------------------------//
 
 inline vector<double> OS_Mesh::get_normal(int cell, int face) const
 {
@@ -337,6 +361,8 @@ inline vector<double> OS_Mesh::get_normal(int cell, int face) const
   // return the normal
     return normal;
 }
+
+//---------------------------------------------------------------------------//
 
 inline OS_Mesh::CCVF_a OS_Mesh::get_vertices(int cell, int face) const
 {
@@ -365,6 +391,28 @@ inline OS_Mesh::CCVF_a OS_Mesh::get_vertices(int cell, int face) const
 
   // return vector of vertices
     return ret_vert;
+}
+
+//---------------------------------------------------------------------------//
+// sample the position in a cell
+
+inline vector<double> OS_Mesh::sample_pos(string dist, int cell, Sprng &random)
+{
+  // assign minimums and maximums for cell dimensions
+    vector<double> vmin(coord->get_dim());
+    vector<double> vmax(coord->get_dim());
+
+    for (int d = 1; d <= coord->get_dim(); d++)
+    {
+	vmin[d-1] = min(d, cell);
+	vmax[d-1] = max(d, cell);
+    }
+
+  // use coord_sys to sample the location
+    vector<double> r = coord->sample_pos(dist, vmin, vmax, random);
+
+  // return position vector
+    return r;
 }
 
 CSPACE

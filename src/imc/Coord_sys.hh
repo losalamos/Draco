@@ -28,7 +28,7 @@
 //===========================================================================//
 
 #include "imctest/Names.hh"
-#include "rng/SMrng.hh"
+#include "rng/Sprng.hh"
 #include <vector>
 #include <string>
 
@@ -36,7 +36,7 @@ IMCSPACE
 
 using std::vector;
 using std::string;
-using RNG::SMrng;
+using RNG::Sprng;
 
 class Coord_sys
 {
@@ -65,8 +65,10 @@ public:
 
   // pure virtual functions
     virtual string get_Coord() const = 0;
+    virtual vector<double> sample_pos(string, vector<double>, vector<double>, 
+				      Sprng &) = 0;
 
-    virtual void set_omega(vector<double> &, SMrng &) const;
+    virtual void set_omega(vector<double> &, Sprng &) const;
     virtual void calc_omega(double, double, vector<double> &) const;
 
   // End_Verbatim 

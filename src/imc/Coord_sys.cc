@@ -18,7 +18,7 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // set Omega directions for 3D transport
 
-void Coord_sys::set_omega(vector<double> &omega_, SMrng &random) const
+void Coord_sys::set_omega(vector<double> &omega_, Sprng &random) const
 {
     using Global::pi;
     using std::cos;
@@ -38,8 +38,8 @@ void Coord_sys::set_omega(vector<double> &omega_, SMrng &random) const
 }
 
 //---------------------------------------------------------------------------//
-
 // calculate Omega directions for 3D transport
+
 void Coord_sys::calc_omega(double costheta, double phi, vector<double> 
 			   &omega_) const
 {

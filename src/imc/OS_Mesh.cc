@@ -78,6 +78,8 @@ void OS_Mesh::calc_surface()
 //---------------------------------------------------------------------------//
 // member functions
 //---------------------------------------------------------------------------//
+// do binary search on a cell
+
 int OS_Mesh::get_cell(const vector<double> &r) const
 {
   // used variables
@@ -111,6 +113,8 @@ int OS_Mesh::get_cell(const vector<double> &r) const
 }
 
 //---------------------------------------------------------------------------//
+// calculate the distance to boundary
+
 double OS_Mesh::get_db(const vector<double> &r, const vector<double> &omega,
 		       int cell, int &face) const
 {
@@ -155,6 +159,8 @@ double OS_Mesh::get_db(const vector<double> &r, const vector<double> &omega,
 }
 
 //---------------------------------------------------------------------------//
+// return the face number for a given cell boundary
+
 int OS_Mesh::get_bndface(string boundary, int cell) const
 {
   // return the face number for boundary on cell
@@ -180,6 +186,8 @@ int OS_Mesh::get_bndface(string boundary, int cell) const
 }
 
 //---------------------------------------------------------------------------//
+// return a list of cells along a specified boundary
+
 vector<int> OS_Mesh::get_surcells(string boundary) const
 {
   // return a list of cells along the specified boundary
@@ -278,6 +286,7 @@ vector<int> OS_Mesh::get_surcells(string boundary) const
 //---------------------------------------------------------------------------//
 // public diagnostic member functions
 //---------------------------------------------------------------------------//
+
 void OS_Mesh::print(ostream &output, int cell) const
 {
     using std::cout;

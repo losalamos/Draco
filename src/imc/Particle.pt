@@ -7,16 +7,13 @@
 //---------------------------------------------------------------------------//
 
 #include "imctest/OS_Mesh.hh"
-#include "rng/SMrng.hh"
 #include "Particle.cc"
 
 IMCSPACE
 
-using RNG::SMrng;
+instantiate class Particle<OS_Mesh>
 
-instantiate class Particle<OS_Mesh, SMrng>
-
-instantiate class Particle_Stack<Particle<OS_Mesh, SMrng> >
+instantiate class Particle_Stack<Particle<OS_Mesh> >
 
 CSPACE
 
