@@ -326,11 +326,13 @@ Particle_Buffer<PT>::read_census(istream &cenfile) const
 template<class PT>
 void Particle_Buffer<PT>::send_buffer(Comm_Buffer &buffer, int proc) const
 {
-    // send out a Comm_Buffer
-    Send (buffer.n_part, proc, 200);
-    Send (&buffer.array_d[0], buffer_d, proc, 201);
-    Send (&buffer.array_i[0], buffer_i, proc, 202);
-    Send (&buffer.array_c[0], buffer_c, proc, 203);
+    // send out a Comm_Buffer, add explicit template parameter so that highly 
+    // standard compliant compilers will not face ambiguity in determining
+    // which Send to use
+    Send <int>(buffer.n_part, proc, 200);
+    Send <double>(&buffer.array_d[0], buffer_d, proc, 201);
+    Send <int>(&buffer.array_i[0], buffer_i, proc, 202);
+    Send <char>(&buffer.array_c[0], buffer_c, proc, 203);
 
     // empty the buffer
     buffer.n_part = 0;
@@ -346,7 +348,8 @@ Particle_Buffer<PT>::recv_buffer(int proc) const
     // return Comm_Buffer declaration
     SP<Comm_Buffer> buffer(new Comm_Buffer());
 
-    // receive the n_part
+    // receive the n_part, as above, explicitly give the template function
+    // arguments 
     Recv (buffer->n_part, proc, 200);
     Recv (&buffer->array_d[0], buffer_d, proc, 201);
     Recv (&buffer->array_i[0], buffer_i, proc, 202);

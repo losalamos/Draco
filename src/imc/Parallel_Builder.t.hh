@@ -65,7 +65,7 @@ Parallel_Builder<MT>::Parallel_Builder(const MT &mesh,
 
       // send out the global cell lists
 	Send (num_cells, np, 48);
-	Send (send_global, num_cells, np, 49);
+	Send <int>(send_global, num_cells, np, 49);
 
       // reclaim storage
 	delete [] send_global;
@@ -682,10 +682,10 @@ void Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit,
 	{
 	  // send to proc i if we are not on the host
 	    Send (num_cells, i, 24);
-	    Send (nvol_send, num_cells, i, 25);
-	    Send (stream_send, num_cells, i, 26);
-	    Send (ew_send, num_cells, i, 27);
-	    Send (t4_send, num_cells * dimension, i, 28);
+	    Send <int>(nvol_send, num_cells, i, 25);
+	    Send <int>(stream_send, num_cells, i, 26);
+	    Send <double>(ew_send, num_cells, i, 27);
+	    Send <double>(t4_send, num_cells * dimension, i, 28);
 	}
 	else
 	{
@@ -843,10 +843,10 @@ void Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit,
 	{
 	  // send to proc i if we are not on the host
 	    Send (num_cells, i, 29);
-	    Send (nss_send, num_cells, i, 30);
-	    Send (stream_send, num_cells, i, 31);
-	    Send (fss_send, num_cells, i, 32);
-	    Send (ew_send, num_cells, i, 33);
+	    Send <int>(nss_send, num_cells, i, 30);
+	    Send <int>(stream_send, num_cells, i, 31);
+	    Send <int>(fss_send, num_cells, i, 32);
+	    Send <double>(ew_send, num_cells, i, 33);
 	}
 	else
 	{
@@ -1097,10 +1097,10 @@ void Parallel_Builder<MT>::send_Layout(Layout &host_layout)
 	Send (layout_size, np, 4);
 
       // pass the num_faces array
-	Send (&num_faces[0], num_cells, np, 5);
+	Send <int>(&num_faces[0], num_cells, np, 5);
 
       // pass the face-values array
-	Send (faces, layout_size, np, 6);
+	Send <int>(faces, layout_size, np, 6);
 
       // delete dynamically allocated faces array
 	delete [] faces;
@@ -1305,7 +1305,7 @@ void Parallel_Builder<MT>::send_vertex(const typename MT::CCVF_d &vertex,
 	Send (total_size, proc, 8);
 
       // send the vertex array
-	Send (vert, total_size, proc, 9);
+	Send <double>(vert, total_size, proc, 9);
 
       // delete dynamically allocated arrays
 	delete [] vert;
@@ -1398,10 +1398,10 @@ void Parallel_Builder<MT>::send_cellpair(const typename MT::CCVF_i &cellpair,
     Send (size, proc, 11);
 
   // pass the num_vert array
-    Send (num_vert, num_cells, proc, 12);
+    Send <int>(num_vert, num_cells, proc, 12);
 	
   // pass the vertices-values array
-    Send (vertices, size, proc, 13);
+    Send <int>(vertices, size, proc, 13);
 
   // delete the dynamically allocated arrays
     delete [] num_vert;
@@ -1505,10 +1505,10 @@ Parallel_Builder<MT>::send_Opacity(SP<MT> mesh, const Opacity<MT> &opacity)
 	if (np)
 	{
 	    Send (num_cells, np, 20);
-	    Send (sigma_send, num_cells, np, 21);
-	    Send (sigma_thom_send, num_cells, np, 47);
-	    Send (planck_send, num_cells, np, 22);
-	    Send (fleck_send, num_cells, np, 23);
+	    Send <double>(sigma_send, num_cells, np, 21);
+	    Send <double>(sigma_thom_send, num_cells, np, 47);
+	    Send <double>(planck_send, num_cells, np, 22);
+	    Send <double>(fleck_send, num_cells, np, 23);
 	}
 	else
 	{
@@ -1647,9 +1647,9 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
 	if (np)
 	{
 	    Send (num_cells, np, 37);
-	    Send (density_send, num_cells, np, 38);
-	    Send (T_send, num_cells, np, 39);
-	    Send (dedt_send, num_cells, np, 40);
+	    Send <double>(density_send, num_cells, np, 38);
+	    Send <double>(T_send, num_cells, np, 39);
+	    Send <double>(dedt_send, num_cells, np, 40);
 	}
 	else
 	{
@@ -1797,11 +1797,11 @@ SP<Communicator<PT> > Parallel_Builder<MT>::send_Communicator()
 	sizes[3] = b_node.size();
 
       // send the data out to the IMC processors
-	Send (sizes, 4, np, 42);
-	Send (b_node_send, bound_size, np, 43);
-	Send (b_cell_send, bound_size, np, 44);
-	Send (b_num, b_node.size(), np, 45);
-	Send (nodes_send, recv_nodes.size()+send_nodes.size(), np, 46);
+	Send <int>(sizes, 4, np, 42);
+	Send <int>(b_node_send, bound_size, np, 43);
+	Send <int>(b_cell_send, bound_size, np, 44);
+	Send <int>(b_num, b_node.size(), np, 45);
+	Send <int>(nodes_send, recv_nodes.size()+send_nodes.size(), np, 46);
 
       // reclaim storage
 	delete [] b_node_send;
