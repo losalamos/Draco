@@ -11,7 +11,9 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
+#include <cmath>
 
 #include "../Plot2D.hh"
 #include "../Release.hh"
@@ -40,36 +42,57 @@ void pause()
 void
 tstPlot2D()
 {
-    string blockName("tmp.block");
+    string paramFile("tstPlot2D.par");
 
     // Set batch to false if you want to call up the GUI
-    bool batch = true;
+    const bool batch = true;
+    //const bool batch = false;
 
-    // do first plot
-    
+    const int numGraphs = 3; // number of graphs in plot
+    const int n = 10; // number of points in each set
+
+    //////////////////////////////////////////////////////////////////////
+    // Plot 1.
+    //////////////////////////////////////////////////////////////////////
+
+    // Output the block data file that Grace will read
+
+    string blockName("tmp.block");
     ofstream block(blockName.c_str());
-
-    const int n = 10;
+    
     for ( int i = 0; i < n; i++ ) {
-	block << i
-	      << " " << i
-	      << " " << i * i
-	      << endl;
+	block << i;
+	for ( int j = 0; j < numGraphs; j++ ) {
+	    block << " " << std::pow(double(i), j + 1);
+	}
+	block << endl;
     }
 
     block.close();
 
-    Plot2D p(2, "tstPlot2D.par", batch);
+    // Generate the plot
+
+    Plot2D p(numGraphs, paramFile, batch);
 
     p.readBlock(blockName);
-    p.setTitles("plot0", "subtitle0", 0);
-    p.setTitles("plot1", "subtitle1", 1);
-    p.setAxesLabels("x", "y0", 0);
-    p.setAxesLabels("x", "y1", 1);
+
+    // Set titles and axis labels
+
+    for ( int j = 0; j < numGraphs; j++ ) {
+	std::ostringstream title, subtitle, ylabel;
+	title << "title " << j;
+	subtitle << "subtitle " << j;
+	ylabel << "y" << j;
+	p.setTitles(title.str(), subtitle.str(), j);
+	p.setAxesLabels("x", ylabel.str(), j);
+    }
+
+    // Changes some set properties; most were set in the param
+    // file.
 
     SetProps prop;
-    prop.line.color = 2;
-    p.setProps(0, 0, prop);
+    prop.line.color = 2; // red
+    p.setProps(0, 0, prop); // of graph 0, set 0
 
     if ( ! batch ) {
 	pause();
@@ -77,18 +100,27 @@ tstPlot2D()
 
     p.save("plot1.agr");
 
-    // second plot
+    //////////////////////////////////////////////////////////////////////
+    // Plot 2.  Add a set to each graph of the previous plot.
+    //////////////////////////////////////////////////////////////////////
 
+    // Generate new data.  Use a different temporary filename,
+    // because Grace may not have read the data from plot 1 yet.
+
+    blockName = "tmp2.block";
     block.open(blockName.c_str());
 
     for ( int i = 0; i < n; i++ ) {
-	block << i
-	      << " " << i * i
-	      << " " << i * i * i
-	      << endl;
+	block << i;
+	for ( int j = 0; j < numGraphs; j++ ) {
+	    block << " " << i + std::pow(double(i), j + 2);
+	}
+	block << endl;
     }
 
     block.close();
+
+    // Add the data to the graphs
 
     p.killAllSets();
     p.readBlock(blockName);
@@ -99,9 +131,11 @@ tstPlot2D()
 
     p.save("plot2.agr");
 
-    // third plot
+    //////////////////////////////////////////////////////////////////////
+    // Plot 3.  Rearrange graph matrix.
+    //////////////////////////////////////////////////////////////////////
 
-    p.arrange(0, 1);
+    p.arrange(2, 2);
 
     if ( ! batch ) {
 	pause();
@@ -109,11 +143,18 @@ tstPlot2D()
 
     p.save("plot3.agr");
 
-    // fourth plot
+    //////////////////////////////////////////////////////////////////////
+    // Plot 4.  Put all of the data of the previous plot
+    // into one graph.
+    //////////////////////////////////////////////////////////////////////
 
     p.close();
-    p.open(1, "tstPlot2D.par", batch);
+    p.open(1, "", batch); // 1 graph, no param file specified
+
+    // Must specify the graph number (0) to put all sets into one
+    // graph.
     p.readBlock(blockName, 0);
+    
     p.setTitles("Same Data, One Graph", "subtitle");
 
     if ( ! batch ) {

@@ -54,7 +54,7 @@
 @timestamp rot 0
 @timestamp font 0
 @timestamp char size 1.000000
-@timestamp def "Mon Apr 15 12:14:54 2002"
+@timestamp def "Thu Apr 25 17:22:04 2002"
 @r0 off
 @link r0 to g0
 @r0 type above
@@ -104,7 +104,7 @@
 @    world xmin 0
 @    world xmax 9
 @    world ymin 0
-@    world ymax 800
+@    world ymax 7000
 @    stack world 0, 0, 0, 0
 @    znorm 1
 @    view xmin 0.100000
@@ -189,7 +189,7 @@
 @    yaxis  label color 1
 @    yaxis  label place normal
 @    yaxis  tick on
-@    yaxis  tick major 200
+@    yaxis  tick major 1000
 @    yaxis  tick minor ticks 1
 @    yaxis  tick default 6
 @    yaxis  tick place rounded true
@@ -348,29 +348,91 @@
 @    s1 errorbar riser clip length 0.100000
 @    s1 comment "Cols 1:3"
 @    s1 legend  ""
+@    s2 hidden false
+@    s2 type xy
+@    s2 symbol 0
+@    s2 symbol size 1.000000
+@    s2 symbol color 3
+@    s2 symbol pattern 1
+@    s2 symbol fill color 3
+@    s2 symbol fill pattern 0
+@    s2 symbol linewidth 1.0
+@    s2 symbol linestyle 1
+@    s2 symbol char 65
+@    s2 symbol char font 0
+@    s2 symbol skip 0
+@    s2 line type 1
+@    s2 line linestyle 1
+@    s2 line linewidth 1.0
+@    s2 line color 3
+@    s2 line pattern 1
+@    s2 baseline type 0
+@    s2 baseline off
+@    s2 dropline off
+@    s2 fill type 0
+@    s2 fill rule 0
+@    s2 fill color 1
+@    s2 fill pattern 1
+@    s2 avalue off
+@    s2 avalue type 2
+@    s2 avalue char size 1.000000
+@    s2 avalue font 0
+@    s2 avalue color 1
+@    s2 avalue rot 0
+@    s2 avalue format general
+@    s2 avalue prec 3
+@    s2 avalue prepend ""
+@    s2 avalue append ""
+@    s2 avalue offset 0.000000 , 0.000000
+@    s2 errorbar on
+@    s2 errorbar place both
+@    s2 errorbar color 3
+@    s2 errorbar pattern 1
+@    s2 errorbar size 1.000000
+@    s2 errorbar linewidth 1.0
+@    s2 errorbar linestyle 1
+@    s2 errorbar riser linewidth 1.0
+@    s2 errorbar riser linestyle 1
+@    s2 errorbar riser clip off
+@    s2 errorbar riser clip length 0.100000
+@    s2 comment "Cols 1:4"
+@    s2 legend  ""
 @target G0.S0
 @type xy
                0                0
-               1                1
-               2                4
-               3                9
-               4               16
-               5               25
-               6               36
-               7               49
-               8               64
-               9               81
+               1                2
+               2                6
+               3               12
+               4               20
+               5               30
+               6               42
+               7               56
+               8               72
+               9               90
 &
 @target G0.S1
 @type xy
                0                0
-               1                1
-               2                8
-               3               27
-               4               64
-               5              125
-               6              216
-               7              343
-               8              512
-               9              729
+               1                2
+               2               10
+               3               30
+               4               68
+               5              130
+               6              222
+               7              350
+               8              520
+               9              738
+&
+@target G0.S2
+@type xy
+               0                0
+               1                2
+               2               18
+               3               84
+               4              260
+               5              630
+               6             1302
+               7             2408
+               8             4104
+               9             6570
 &
