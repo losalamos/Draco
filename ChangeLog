@@ -1,3 +1,23 @@
+2001-10-17  Thomas M. Evans  <tme@lanl.gov>
+
+	* doc/design: added draco levelization diagrams reflecting current
+	version of draco.
+
+	* src/configure.in: updated this configure.in to reflect the
+	current state of draco.
+
+	* draco: on this date--between release 1_0_0 and 2_0_0--draco has
+	the following packages:
+
+		level 1: ds++ stdheaders
+		level 2: xm rng c4 units traits UnitTestFrame cdi
+		level 3: timestep pcgWrap stopwatch quadrature radphys
+			 ConjGrad meshReaders viz cdi_eospac 
+			 cdi_gandolf cdi_analytic
+		level 4: RTT_Format_Reader amr_mesh
+		level 5: mc meshReader_Services
+		level 6: imc
+
 2000-05-03  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco/: Released draco version draco-1_0_0.  This version
