@@ -245,7 +245,11 @@ Particle_Buffer<PT>::read_census(istream &cenfile) const
 template<class PT>
 void Particle_Buffer<PT>::send_buffer(Comm_Buffer &buffer, int proc) const
 {
-  // <<CONTINUE HERE>>
+  // send out a Comm_Buffer
+    Send (buffer.n_part, proc, 200);
+    Send (&buffer.array_d[0], Global::buffer_d, proc, 201);
+    Send (&buffer.array_i[0], Global::buffer_i, proc, 202);
+    Send (&buffer.array_c[0], Global::buffer_c, proc, 203);
 }
 
 //---------------------------------------------------------------------------//
@@ -256,12 +260,16 @@ SP<typename Particle_Buffer<PT>::Comm_Buffer>
 Particle_Buffer<PT>::recv_buffer(int proc) const
 {
   // return Comm_Buffer declaration
-    SP<Comm_Buffer> return_buffer;
+    SP<Comm_Buffer> buffer = new Comm_Buffer();
 
-  // <<CONTINUE HERE>>
+  // receive the n_part
+    Recv (buffer->n_part, proc, 200);
+    Recv (&buffer->array_d[0], Global::buffer_d, proc, 201);
+    Recv (&buffer->array_i[0], Global::buffer_i, proc, 202);
+    Recv (&buffer->array_c[0], Global::buffer_c, proc, 203);
 
   // return SP
-    return return_buffer;
+    return buffer;
 }
 
 //---------------------------------------------------------------------------//
@@ -330,10 +338,10 @@ template<class PT>
 void Particle_Buffer<PT>::arecv_bank(Comm_Buffer &buf, int proc) const
 {
   // post c4 async receives
-    RecvAsync(buf.comm_n, &(buf.n_part), 1, proc, 100);
-    RecvAsync(buf.comm_d, &(buf.array_d[0]), Global::buffer_d, proc, 101);
-    RecvAsync(buf.comm_i, &(buf.array_i[0]), Global::buffer_i, proc, 102);
-    RecvAsync(buf.comm_c, &(buf.array_c[0]), Global::buffer_c, proc, 103);
+    RecvAsync(buf.comm_n, &buf.n_part, 1, proc, 100);
+    RecvAsync(buf.comm_d, &buf.array_d[0], Global::buffer_d, proc, 101);
+    RecvAsync(buf.comm_i, &buf.array_i[0], Global::buffer_i, proc, 102);
+    RecvAsync(buf.comm_c, &buf.array_c[0], Global::buffer_c, proc, 103);
 }
 
 //---------------------------------------------------------------------------//
@@ -368,10 +376,51 @@ void Particle_Buffer<PT>::buffer_census(Comm_Buffer &comm,
 // add a Particle to a Comm_Buffer
 
 template<class PT>
-void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &comm,
+void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
 					  const PT &particle) const
 {
-  // <<CONTINUE HERE>>
+  // check to make sure this Comm_Buffer isn't full
+    Require (buffer.n_part < Global::buffer_s);
+
+  // calculate indices for the buffer, remember the particle info required
+  // during a timestep must also include the time left
+    int id = buffer.n_part * (dsize+1);
+    int ii = buffer.n_part * isize;
+    int ic = buffer.n_part * csize;
+    
+  // add one particle to the buffer
+
+  // start with the double data
+    buffer.array_d[id++] = particle.ew;
+    buffer.array_d[id++] = particle.fraction;
+    buffer.array_d[id++] = particle.time_left;
+    for (int i = 0; i < particle.omega.size(); i++)
+	buffer.array_d[id++] = particle.omega[i];
+    for (int i = 0; i < particle.r.size(); i++)
+	buffer.array_d[id++] = particle.r[i];
+    Check (id - buffer.n_part * (dsize+1) == (dsize+1));
+
+  // do the int data
+    buffer.array_i[ii++] = particle.cell;
+    buffer.array_i[ii++] = particle.random.get_num();
+    Check (ii - buffer.n_part * isize == isize);
+
+  // do the char data
+    char *bytes;
+    int size = pack_sprng(particle.random.get_id(), &bytes);
+    Check (size == csize);
+    for (int i = 0; i < csize; i++)
+	buffer.array_c[ic++] = bytes[i];
+    std::free(bytes);
+    Check (ic - buffer.n_part * csize == csize);
+  
+  // update the n_particles
+    buffer.n_part++;
+
+  // do some assertions
+    Ensure (id <= Global::buffer_d);
+    Ensure (ii <= Global::buffer_i);
+    Ensure (ic <= Global::buffer_c);
 }
 
 CSPACE

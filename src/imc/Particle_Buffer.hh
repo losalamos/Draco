@@ -44,6 +44,8 @@ using C4::nodes;
 using C4::C4_Req;
 using C4::SendAsync;
 using C4::RecvAsync;
+using C4::Send;
+using C4::Recv;
 
 // STL components
 using std::vector;
@@ -126,6 +128,9 @@ public:
 
       // number of particles in the buffer
 	int n_part;
+
+      // inline default constructor
+	inline Comm_Buffer() : n_part(0) {}
     };
 
   // standard buffers for particles
@@ -134,7 +139,7 @@ public:
     typedef Particle_Stack<PT> Comm_Bank;
 
 private:
-  // data of type double size (number of elements)
+  // data of type double size (number of elements) saved to census
     int dsize;
   // data of type int size (number of elements)
     int isize;
