@@ -1,3 +1,8 @@
+2002-11-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* ds++: Updated to 1_7_0.  Small std compliant changes to
+	SortPermutation. 
+
 2002-05-08  Thomas M. Evans  <tme@lanl.gov>
 
 	* ds++: updated to release ds++-1_6_0.  This release primarily
