@@ -1,4 +1,4 @@
-# generated automatically by aclocal 1.7.6 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
@@ -1462,7 +1462,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_HDF5_SETUP
 dnl
 dnl HDF5 SETUP (on by default; 'mpi' if mpi in use, else 'serial')
-dnl HDF5 is a required vendor
+dnl HDF5 is an optional vendor
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_HDF5_SETUP], [dnl
@@ -1491,6 +1491,11 @@ AC_DEFUN([AC_HDF5_SETUP], [dnl
    # determine if this package is needed for testing or for the 
    # package
    vendor_hdf5=$1
+
+   # define variable if hdf5 is on
+   if test "${with_hdf5:=yes}" != no; then
+       AC_DEFINE([USE_HDF5])
+   fi
 
 ])
 
@@ -1525,7 +1530,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_UDM_SETUP
 dnl
 dnl UDM SETUP (on by default; 'mpi' if mpi in use, else 'serial')
-dnl UDM is a required vendor
+dnl UDM is an optional vendor
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_UDM_SETUP], [dnl
@@ -1554,6 +1559,11 @@ AC_DEFUN([AC_UDM_SETUP], [dnl
    # determine if this package is needed for testing or for the 
    # package
    vendor_udm=$1
+
+   # define variable if udm is on
+   if test "${with_udm:=no}" != no; then
+       AC_DEFINE([USE_UDM])
+   fi
 
 ])
 

@@ -4828,14 +4828,8 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
 
    # if shared then ar is cxx
    if test "${enable_shared}" = yes ; then
-       AR="${CXX}"
-       ARFLAGS="-shared -nocxxstd -expect_unresolved '*3td*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*ios_base*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_ostream*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_string*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*cout*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*cerr*' "
+       AR='${CXX}'
+       ARFLAGS="-shared -nocxxstd"
        ARFLAGS="${ARFLAGS} -o"
    else
        AR='ar'
@@ -11576,6 +11570,9 @@ _ACEOF
                { echo "$as_me:$LINENO: g++ -ansi option set to allow long long type!" >&5
 echo "$as_me: g++ -ansi option set to allow long long type!" >&6;}
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
+               { echo "$as_me:$LINENO: g++ -ansi option set to allow long double type" >&5
+echo "$as_me: g++ -ansi option set to allow long double type" >&6;}
+               STRICTFLAG="$STRICTFLAG -Wno-long-double"
            ;;
   	   ibm)
 	       { echo "$as_me:$LINENO: WARNING: \"xlC set to allow long long\"" >&5
@@ -11634,7 +11631,7 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
            ;;
        esac
 
-	mpi_libs="-lpmpich $mpi_libs -lz"
+	mpi_libs="-lmpich -lpmpich -lz"
 
        #
        # setup lapack

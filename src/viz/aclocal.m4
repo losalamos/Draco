@@ -1,4 +1,4 @@
-# generated automatically by aclocal 1.7.6 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
@@ -2170,14 +2170,8 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
 
    # if shared then ar is cxx
    if test "${enable_shared}" = yes ; then
-       AR="${CXX}"
-       ARFLAGS="-shared -nocxxstd -expect_unresolved '*3td*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*ios_base*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_ostream*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_string*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*cout*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*cerr*' "
+       AR='${CXX}'
+       ARFLAGS="-shared -nocxxstd"
        ARFLAGS="${ARFLAGS} -o"
    else
        AR='ar'
@@ -3370,6 +3364,8 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
            g++) 
                AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
+               AC_MSG_NOTICE([g++ -ansi option set to allow long double type])
+               STRICTFLAG="$STRICTFLAG -Wno-long-double"
            ;;
   	   ibm)	
 	       AC_MSG_WARN("xlC set to allow long long")
@@ -3394,7 +3390,7 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        # Setup communications packages
        #
        AC_DBS_SETUP_COMM(mpich)
-	mpi_libs="-lpmpich++ -lpmpich -lmpich -lpmpich -lmpich -lz"
+	mpi_libs="-lmpich -lpmpich -lz"
 
        # 
        # setup lapack 
@@ -4575,7 +4571,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_HDF5_SETUP
 dnl
 dnl HDF5 SETUP (on by default; 'mpi' if mpi in use, else 'serial')
-dnl HDF5 is a required vendor
+dnl HDF5 is an optional vendor
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_HDF5_SETUP], [dnl
@@ -4604,6 +4600,11 @@ AC_DEFUN([AC_HDF5_SETUP], [dnl
    # determine if this package is needed for testing or for the 
    # package
    vendor_hdf5=$1
+
+   # define variable if hdf5 is on
+   if test "${with_hdf5:=yes}" != no; then
+       AC_DEFINE([USE_HDF5])
+   fi
 
 ])
 
@@ -4638,7 +4639,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_UDM_SETUP
 dnl
 dnl UDM SETUP (on by default; 'mpi' if mpi in use, else 'serial')
-dnl UDM is a required vendor
+dnl UDM is an optional vendor
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_UDM_SETUP], [dnl
@@ -4667,6 +4668,11 @@ AC_DEFUN([AC_UDM_SETUP], [dnl
    # determine if this package is needed for testing or for the 
    # package
    vendor_udm=$1
+
+   # define variable if udm is on
+   if test "${with_udm:=no}" != no; then
+       AC_DEFINE([USE_UDM])
+   fi
 
 ])
 
