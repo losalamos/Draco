@@ -442,12 +442,16 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
 
        #
-       # gandolf, eospac, pcg, udm require -lfor on the link line.
+       # libfor.a requirements:
+       # GANDOLF, EOSPAC, PCG, BLACS, udm require -lfor on the link line.
        #
 
-       AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}" || test -n "${vendor_udm}"; then
+       AC_MSG_CHECKING("libfor.a requirements")
+       if test -n "${vendor_gandolf}" || 
+          test -n "${vendor_eospac}"  ||
+          test -n "${vendor_pcg}"     || 
+          test -n "${vendor_udm}"     ||
+          test -n "${vendor_blacs}"; then
            LIBS="${LIBS} -lfor"
            AC_MSG_RESULT("-lfor added to LIBS")
        else
@@ -455,15 +459,17 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        fi
 
        #
-       # end of gandolf/libfortran setup
+       # end of libfor.a requirements
        #
 
        #
-       # libpcg/libudm/libfmpi setup
+       # libpcg/libudm/libfmpi setup (libfmpi.a requirements)
        #
 
        AC_MSG_CHECKING("libfmpi requirements")
-       if test -n "${vendor_pcg}" || test "${with_udm}" = mpi; then
+       if test -n "${vendor_pcg}"  || 
+          test "${with_udm}" = mpi || 
+          test -n "${vendor_blacs}" ; then
            LIBS="${LIBS} -lfmpi"
            AC_MSG_RESULT("-lfmpi added to LIBS")
        else
