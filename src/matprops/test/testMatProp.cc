@@ -17,6 +17,9 @@ using std::vector;
 using std::cout;
 using std::cerr;
 using std::endl;
+#include <iomanip>
+using std::scientific;
+using std::setprecision;
 
 using namespace XTM;
 
@@ -38,12 +41,17 @@ typedef InterpedMaterialProps IMP;
 
 void testMatProp()
 {
+    typedef vector<double> ccsf;
+    typedef vector<int> ccif;
+
     Units units = Units::getAstroPhysUnits();
+    // Units units;
 
     std::ifstream ifs("testMatProp.inp");
 
     typedef FifiMatPropsReader::MaterialDefinition MatDef;
     vector<MatDef> matdefs;
+    matdefs.push_back(MatDef("BeO, 3 Group", 1, 25.0));
     matdefs.push_back(MatDef("BeO, 13 Group", 2, 25.0));
     matdefs.push_back(MatDef("BeO, 3 Group", 3, 25.0));
     
@@ -55,76 +63,142 @@ void testMatProp()
     
     IMP matProp(matIds, reader);
 
-    cerr << "Made it past the matProp constructor" << endl;
-    
-    typedef vector<double> ccsf;
+    //.... DUMP SOME RESULTS TO SCREEN
 
-    const int ncells = 1;
+    for (int i=0; i<matdefs.size(); i++)
+    {
+	int matid = matdefs[i].matid;
+	cout << " mat#   = " << matid << endl;
+	cout << " name   = " << matProp.getMaterialName(matid) << endl;
+	cout << " info   = " << endl;
+	cout << " ngroups= " << matProp.getNumGroups(matid) << endl;
+	cout << " ndens  = " << matProp.getNumDensities(matid) << endl;
+	cout << " ntemps = " << matProp.getNumTemperatures(matid) << endl;
+	cout << " nscxs  = " << matProp.getMaxScatteringPnOrder(matid) << endl;
+
+	vector<double> grid;
+
+	grid = matProp.getTemperatureGrid(matid);
+	ccsf lastTemp(1, grid[grid.size()-1]);
+	
+	cout << " Temperature Grid:" << endl;
+
+	for (int j = 0; j < grid.size(); )
+	{
+	    cout << " ";
+	    for (int jj=0; jj < 6 && j < grid.size() ; jj++, j++)
+		cout << " " << scientific << setprecision(4) << grid[j];
+	    cout << endl;
+	}
+
+	grid = matProp.getDensityGrid(matid);
+	ccsf lastDens(1,grid[grid.size()-1]);
+
+	cout << " Density Grid:" << endl;
+	
+	for (int j = 0; j < grid.size(); )
+	{
+	    cout << " ";
+	    for (int jj=0; jj < 6 && j < grid.size() ; jj++, j++)
+		cout << " " << scientific << setprecision(4) << grid[j];
+	    cout << endl;
+	}
+
+	ccif matids(1);
+	matids[0] = matid;
+	
+	IMP::MaterialStateField<ccsf> matstate =
+	    matProp.getMaterialState(lastDens, lastTemp, lastTemp, matids);
+	
+	cout << " ABS(ndens,ntemps,1:ngroups):" << endl;
+	for (int j = 1; j <= matProp.getNumGroups(matid); )
+	{
+	    cout << " ";
+	    for (int jj=0; jj < 6 && j <= matProp.getNumGroups(matid);
+		 jj++, j++)
+	    {
+		ccsf abs(1);
+		matstate.getSigmaAbsorption(j, abs);
+		cout << " " << scientific << setprecision(4)
+		     << abs[0] / lastDens[0];
+	    }
+	    cout << endl;
+	}
+
+	cout << endl;
+    }
+    
+    const int ncells = 200;
+    int matnum = 0;
+    int ngroups = matProp.getNumGroups(matdefs[matnum].matid);
     
     ccsf density(ncells);
     ccsf temp(ncells);
     vector<int> matid(ncells);
+    vector<ccsf> abs(ngroups, ccsf(ncells));
+    vector<ccsf> sigt(ngroups, ccsf(ncells));
+    vector<ccsf> emission(ngroups, ccsf(ncells));
+    ccsf cve(ncells);
+    ccsf cvi(ncells);
+    ccsf eic(ncells);
+    ccsf tce(ncells);
+    ccsf tci(ncells);
 
 #if 0
-    for (int i=0; i<ncells; i++)
+    for (int i=0; i<ngroups; i++)
     {
-	density[i] = 0.2*i;
-	temp[i] = 1.e-3*i;
-	matid[i] = (i<5 ? matIds[0] : matIds[1]);
+	abs[i] = ccsf(ncells);
+	sigt[i] = ccsf(ncells);
+	emission[i] = ccsf(ncells);
     }
 #endif
 
-    density[0] = 0.565;
-    temp[0] = 1.0e+33;
-    matid[0] = 3;
-    
-    cerr << "before getMaterialState" << endl;
+    for (int i=0; i<ncells; i++)
+    {
+	density[i] = units.InvertDensity((i+1)*1.5);
+	matid[i] = matdefs[matnum].matid;
+    }
+
+    temp[0] = units.InvertTemperature(1.e4);
+    for (int i=1; i<ncells; i++)
+	temp[i] = 1.055*temp[i-1];
     
     IMP::MaterialStateField<ccsf> matstate =
 	matProp.getMaterialState(density, temp, temp, matid);
 
-    cerr << "after getMaterialState" << endl;
+    for (int ig = 1; ig <= ngroups; ig++)
+    {
+	matstate.getSigmaAbsorption(ig, abs[ig-1]);
+	matstate.getSigmaTotal(ig, sigt[ig-1]);
+	matstate.getSigmaEmission(ig, emission[ig-1]);
+    }
+    matstate.getElectronSpecificHeat(cve);
+    matstate.getIonSpecificHeat(cvi);
+    matstate.getElectronIonCoupling(eic);
+    matstate.getElectronConductionCoeff(tce);
+    matstate.getIonConductionCoeff(tci);
 
-    cout << std::scientific;
+    int ig = ngroups;
+    int m = 19;
 
-    cout << "Material State: " << endl;
-    matstate.print(cout) << endl;
+    cout << scientific << setprecision(12);
     
-    ccsf results(ncells);
-    
-    matstate.getDensity(results);
-
-    cout << "Density: " << endl;
-    print(cout, results, 10);
-    
-    matstate.getElectronTemperature(results);
-
-    cout << "Electron Temperature: " << endl;
-    print(cout, results, 10);
-    
-    matstate.getElectronSpecificHeat(results);
-
-    cout << "Cv Elect: " << endl;
-    print(cout, results, 10);
-    
-    matstate.getIonSpecificHeat(results);
-
-    cout << "Cv Ion: " << endl;
-    print(cout, results, 10);
-    
-    matstate.getSigmaTotal(1, results);
-
-    cout << "SigmaTotal: " << endl;
-    print(cout, results, 10);
-    
-    matstate.getSigmaAbsorption(1, results);
-
-    cout << "SigmaAbsorption: " << endl;
-    print(cout, results, 10);
-    
-    matstate.getElectronIonCoupling(results);
-
-    cout << "ElectronIonCoupling: " << endl;
-    print(cout, results, 10);
-    
+    cout << " Material Properties Summary" << endl;
+    cout << " cell# (m)==>" << m <<  "   group# (ig)==>" << ig << endl;
+    cout << " Material Table# ==>" <<  matid[m-1] << endl;
+    cout << endl;
+    cout << " temp(m)     = " <<  temp[m-1] << endl;
+    cout << " dens(m)     = " <<  density[m-1] << endl;
+    cout << " abs(m,ig)   = " <<  abs[ig-1][m-1] << endl;
+    cout << " sct(m,0,ig) = " <<  "no-op" << endl;
+    cout << " sct(m,1,ig) = " <<  "no-op" << endl;
+    cout << " sigt(m,ig)  = " <<  sigt[ig-1][m-1] << endl;
+    cout << " rmv(m,ig)   = " <<  "no-op" << endl;
+    cout << " emis(m,ig)  = " <<  emission[ig-1][m-1] << endl;
+    cout << " cve(m)      = " <<  cve[m-1] << endl;
+    cout << " cvi(m)      = " <<  cvi[m-1] << endl;
+    cout << " eic(m)      = " <<  eic[m-1] << endl;
+    cout << " tce(m)      = " <<  tce[m-1] << endl;
+    cout << " tci(m)      = " <<  tci[m-1] << endl;
+    cout << endl;
 }
