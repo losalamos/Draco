@@ -407,10 +407,20 @@ testFullP13T::~testFullP13T()
 
 void testFullP13T::getMatProp()
 {
-#ifdef MARSHAK_MATPROPS
-    spMatProp = new MP(units, pdb.kappa0, pdb.abar, pdb.kappaPower);
-#else
+    getMatProp(spMatProp);
+}
+
+void testFullP13T::getMatProp(SP<MarshakMaterialProps> &spMatProp_) const
+{
+    spMatProp_ = new MarshakMaterialProps(units, pdb.kappa0, pdb.abar,
+					  pdb.kappaPower);
+}
+
+void testFullP13T::getMatProp(SP<InterpedMaterialProps> &spMatProp_) const
+{
     std::ifstream ifs(pdb.opacityFile);
+
+    using rtt_matprops::FifiMatPropsReader;
 
     typedef FifiMatPropsReader::MaterialDefinition MatDef;
     vector<MatDef> matdefs;
@@ -423,8 +433,7 @@ void testFullP13T::getMatProp()
     for (int i=0; i<matdefs.size(); i++)
 	matIds[i] = matdefs[i].matid;
     
-    spMatProp = new MP(matIds, reader);
-#endif
+    spMatProp_ = new InterpedMaterialProps(matIds, reader);
 }
 
 testFullP13T::MatStateCC testFullP13T::getMatStateCC(const ccsf &TElect,
@@ -457,8 +466,8 @@ testFullP13T::MatStateFC testFullP13T::getMatStateFC(const ccsf &TElect,
     MT::scatter(TIonFC, TIon, MT::OpAddAssign());
     TIonFC /= twoFC;
 
-    densityFC = density;
-    matidFC = matid;
+    MT::gather(densityFC, density, MT::OpAssign());
+    MT::gather(matidFC, matid, MT::OpAssign());
     
     if (pdb.verbose)
     {
@@ -545,16 +554,11 @@ void testFullP13T::run() const
 	QIon(pdb.Qloc) = pdb.Qi;
     }
 
-    boundary.face(0) = pdb.src_left;
-    boundary.face(1) = pdb.src_right;
-    boundary.face(2) = pdb.src_front;
-    boundary.face(3) = pdb.src_back;
-    boundary.face(4) = pdb.src_bottom;
-    boundary.face(5) = pdb.src_top;
-
+    setBoundary(boundary);
+    
     cerr << "Made it before diffSolver ctor" << endl;
     
-    DS diffSolver(diffdb, spMesh, pcg_db);
+    spDiffSolver = new DS(diffdb, spMesh, pcg_db);
     
     cerr << "Made it after diffSolver ctor" << endl;
 
@@ -600,103 +604,153 @@ void testFullP13T::run() const
     
     for (int cycle = 1; cycle <= ncycles; cycle++)
     {
-	// end of cycle time
-	time += dt;
-
-	// advance the timestep manager
-	
-	spTsManager->set_cycle_data(dt, cycle, time);
-    
-	ccsf TElec(spMesh);
-	ccsf TIon(spMesh);
-	ccsf CvElec(spMesh);
-	ccsf CvIon(spMesh);
-	ccsf sigAbs(spMesh);
-	ccsf alpha(spMesh);
-	ccsf kappaElec(spMesh);
-	ccsf kappaIon(spMesh);
-    
-	matStateCC.getElectronTemperature(TElec);
-	matStateCC.getIonTemperature(TIon);
-	matStateCC.getElectronSpecificHeat(CvElec);
-	matStateCC.getIonSpecificHeat(CvIon);
-	matStateCC.getSigmaAbsorption(1,sigAbs);
-	matStateCC.getElectronIonCoupling(alpha);
-	matStateCC.getElectronConductionCoeff(kappaElec);
-	matStateCC.getIonConductionCoeff(kappaIon);
-
-	if (pdb.verbose)
-	{
-	    cout << "TElectron: " << TElec << endl;
-	    cout << "TIon: " << TIon << endl;
-	    cout << "Cv Electron: " << CvElec << endl;
-	    cout << "Cv Ion: " << CvIon << endl;
-	    cout << "Absorption: " << sigAbs << endl;
-	    cout << "alpha: " << alpha << endl;
-	    cout << "kappa Electron: " << kappaElec << endl;
-	    cout << "kappa Ion: " << kappaIon << endl;
-	    cout << "radState.phi: " << radState.phi
-		 << " radState.F: " << radState.F << endl;
-	}
-	else
-	{
-	    double (*pabs)(double) = std::abs;
-	    std::pointer_to_unary_function<double,double> opAbs =
-		std::ptr_fun(pabs);
-	    
-	    cout << "TElec (min), (max): " << min(TElec, opAbs) << " " <<
-		max(TElec, opAbs) << endl;
-	    cout << "TIon (min), (max): " << min(TIon, opAbs) << " " <<
-		max(TIon, opAbs) << endl;
-	    cout << "CvElec (min), (max): " << min(CvElec, opAbs) << " " <<
-		max(CvElec, opAbs) << endl;
-	    cout << "CvIon (min), (max): " << min(CvIon, opAbs) << " " <<
-		max(CvIon, opAbs) << endl;
-	    cout << "sigAbs (min), (max): " << min(sigAbs, opAbs) << " " <<
-		max(sigAbs, opAbs) << endl;
-	    cout << "alpha (min), (max): " << min(alpha, opAbs) << " " <<
-		max(alpha, opAbs) << endl;
-	    cout << "kappaElec (min), (max): "
-		 << min(kappaElec, opAbs) << " "
-		 << max(kappaElec, opAbs) << endl;
-	    cout << "kappaIon (min), (max): " << min(kappaIon, opAbs)
-		 << " " << max(kappaIon, opAbs) << endl;
-	    cout << "radState.phi (min), (max): " << min(radState.phi, opAbs)
-		 << " " << max(radState.phi, opAbs) << endl;
-	    cout << "radState.F (min), (max): " << min(radState.F, opAbs)
-		 << " " << max(radState.F, opAbs) << endl;
-	}
-    
-	cerr << "Made it before solve3T" << endl;
-    
-	RadiationStateField newRadState(spMesh);
-	ccsf QEEM(spMesh);
-	ccsf REEM(spMesh);
-	
-	spP13T->solve3T(dt, matStateCC, matStateFC, radState, QRad,
-			QElectron, QIon,
-			boundary, diffSolver, newRadState, QEEM, REEM,
-			electEnergyDep, ionEnergyDep, TElec, TIon);
-
-	cerr << "Made it after solve3T" << endl;
-
-	gmvDump(newRadState, TElec, TIon, cycle, time);
-	
-	MatStateCC newMatStateCC = getMatStateCC(TElec, TIon, density, matid);
-	MatStateFC newMatStateFC = getMatStateFC(TElec, TIon, density, matid);
-	
-	postProcess(radState, newRadState, matStateCC, newMatStateCC,
-		    electEnergyDep, ionEnergyDep, QRad, QElectron, QIon,
-		    QEEM, REEM, dt);
-
-	dt = spTsManager->compute_new_timestep();
-	spTsManager->print_summary();
-
-	matStateCC = newMatStateCC;
-	matStateFC = newMatStateFC;
-	radState = newRadState;
+	timestep(time, dt, cycle, matStateCC, matStateFC, radState,
+		 electEnergyDep, ionEnergyDep,
+		 QRad, QElectron, QIon, boundary);
     }
 }
+
+void testFullP13T::timestep(double &time, double &dt, int &cycle,
+			    MatStateCC &matStateCC,
+			    MatStateFC &matStateFC,
+			    RadiationStateField &radState,
+			    ccsf &electEnergyDep, ccsf &ionEnergyDep,
+			    const ccsf &QRad, const ccsf &QElectron,
+			    const ccsf &QIon, const bssf &boundary) const
+{
+    // end of cycle time
+    
+    time += dt;
+
+    // advance the timestep manager
+	
+    spTsManager->set_cycle_data(dt, cycle, time);
+    
+    ccsf TElec(spMesh);
+    ccsf TIon(spMesh);
+    ccsf CvElec(spMesh);
+    ccsf CvIon(spMesh);
+    ccsf sigAbs(spMesh);
+    ccsf alpha(spMesh);
+    ccsf kappaElec(spMesh);
+    ccsf kappaIon(spMesh);
+    
+    matStateCC.getElectronTemperature(TElec);
+    matStateCC.getIonTemperature(TIon);
+    matStateCC.getElectronSpecificHeat(CvElec);
+    matStateCC.getIonSpecificHeat(CvIon);
+    matStateCC.getSigmaAbsorption(1,sigAbs);
+    matStateCC.getElectronIonCoupling(alpha);
+    matStateCC.getElectronConductionCoeff(kappaElec);
+    matStateCC.getIonConductionCoeff(kappaIon);
+
+    if (pdb.verbose)
+    {
+	cout << "TElectron: " << TElec << endl;
+	cout << "TIon: " << TIon << endl;
+	cout << "Cv Electron: " << CvElec << endl;
+	cout << "Cv Ion: " << CvIon << endl;
+	cout << "Absorption: " << sigAbs << endl;
+	cout << "alpha: " << alpha << endl;
+	cout << "kappa Electron: " << kappaElec << endl;
+	cout << "kappa Ion: " << kappaIon << endl;
+	cout << "radState.phi: " << radState.phi
+	     << " radState.F: " << radState.F << endl;
+    }
+    else
+    {
+	double (*pabs)(double) = std::abs;
+	std::pointer_to_unary_function<double,double> opAbs =
+	    std::ptr_fun(pabs);
+	    
+	cout << "TElec (min), (max): " << min(TElec, opAbs) << " " <<
+	    max(TElec, opAbs) << endl;
+	cout << "TIon (min), (max): " << min(TIon, opAbs) << " " <<
+	    max(TIon, opAbs) << endl;
+	cout << "CvElec (min), (max): " << min(CvElec, opAbs) << " " <<
+	    max(CvElec, opAbs) << endl;
+	cout << "CvIon (min), (max): " << min(CvIon, opAbs) << " " <<
+	    max(CvIon, opAbs) << endl;
+	cout << "sigAbs (min), (max): " << min(sigAbs, opAbs) << " " <<
+	    max(sigAbs, opAbs) << endl;
+	cout << "alpha (min), (max): " << min(alpha, opAbs) << " " <<
+	    max(alpha, opAbs) << endl;
+	cout << "kappaElec (min), (max): "
+	     << min(kappaElec, opAbs) << " "
+	     << max(kappaElec, opAbs) << endl;
+	cout << "kappaIon (min), (max): " << min(kappaIon, opAbs)
+	     << " " << max(kappaIon, opAbs) << endl;
+	cout << "radState.phi (min), (max): " << min(radState.phi, opAbs)
+	     << " " << max(radState.phi, opAbs) << endl;
+	cout << "radState.F (min), (max): " << min(radState.F, opAbs)
+	     << " " << max(radState.F, opAbs) << endl;
+    }
+    
+    cerr << "Made it before solve3T" << endl;
+    
+    RadiationStateField newRadState(spMesh);
+    ccsf QEEM(spMesh);
+    ccsf REEM(spMesh);
+	
+    spP13T->solve3T(dt, matStateCC, matStateFC, radState, QRad,
+		    QElectron, QIon,
+		    boundary, *spDiffSolver, newRadState, QEEM, REEM,
+		    electEnergyDep, ionEnergyDep, TElec, TIon);
+
+    cerr << "Made it after solve3T" << endl;
+
+    gmvDump(newRadState, TElec, TIon, cycle, time);
+
+    ccsf density(spMesh);
+    matStateCC.getDensity(density);
+
+    ccif matid(spMesh);
+    matStateCC.getMatId(matid);
+    
+    MatStateCC newMatStateCC = getMatStateCC(TElec, TIon, density, matid);
+    MatStateFC newMatStateFC = getMatStateFC(TElec, TIon, density, matid);
+	
+    postProcess(radState, newRadState, matStateCC, newMatStateCC,
+		electEnergyDep, ionEnergyDep, QRad, QElectron, QIon,
+		QEEM, REEM, dt);
+
+    dt = spTsManager->compute_new_timestep();
+    spTsManager->print_summary();
+
+    matStateCC = newMatStateCC;
+    matStateFC = newMatStateFC;
+    radState = newRadState;
+}
+
+void testFullP13T::setBoundary(bssf &boundary) const
+{
+    for (int j=0; j<ny; j++)
+    {
+	for (int k=0; k<nz; k++)
+	{
+	    boundary(0   , j, k, 0) = pdb.src_left;
+	    boundary(nx-1, j, k, 1) = pdb.src_right;
+	}
+    }
+
+    for (int i=0; i<nx; i++)
+    {
+	for (int k=0; k<nz; k++)
+	{
+	    boundary(i, 0   , k, 2) = pdb.src_front;
+	    boundary(i, ny-1, k, 3) = pdb.src_back;
+	}
+    }
+    
+    for (int i=0; i<nx; i++)
+    {
+	for (int j=0; j<ny; j++)
+	{
+	    boundary(i, j, 0   , 4) = pdb.src_bottom;
+	    boundary(i, j, nz-1, 5) = pdb.src_top;
+	}
+    }
+}    
 
 void testFullP13T::postProcess(const RadiationStateField &radState,
 			       const RadiationStateField &newRadState,

@@ -34,7 +34,10 @@ class ContainerTraits<MT::ccsf >
     static inline bool conformal(const MT::ccsf &a,
 				 const MT::ccsf &b)
     {
-	return a.size() == b.size();
+	const MT &msha = a.get_Mesh();
+	const MT &mshb = b.get_Mesh();
+
+	return msha == mshb;
     }
 };
 
@@ -63,7 +66,10 @@ class ContainerTraits<MT::fcdsf >
     static inline bool conformal(const MT::fcdsf &a,
 				 const MT::fcdsf &b)
     {
-	return a.size() == b.size();
+	const MT &msha = a.get_Mesh();
+	const MT &mshb = b.get_Mesh();
+
+	return msha == mshb;
     }
 };
 

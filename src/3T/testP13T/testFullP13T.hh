@@ -15,13 +15,10 @@
 #include "3T/Diffusion_P1.hh"
 #include "mesh/Mesh_XYZ.hh"
 
-#define MARSHAK_MATPROPS
+// #define MARSHAK_MATPROPS
 
-#ifdef MARSHAK_MATPROPS
 #include "matprops/MarshakMaterialProps.hh"
-#else
 #include "matprops/InterpedMaterialProps.hh"
-#endif
 
 #include <string>
 
@@ -53,11 +50,16 @@ namespace XTM {
    public:
     
      typedef Mesh_XYZ MT;
+
+     typedef rtt_matprops::MarshakMaterialProps MarshakMaterialProps;
+     typedef rtt_matprops::InterpedMaterialProps InterpedMaterialProps;
+
 #ifdef MARSHAK_MATPROPS
      typedef MarshakMaterialProps MP;
 #else
      typedef InterpedMaterialProps MP;
 #endif
+     
      typedef Diffusion_P1<MT> DS;
 
      typedef MT::ccsf ccsf;
@@ -85,6 +87,8 @@ namespace XTM {
 
      dsxx::SP<rtt_timestep::ts_manager> spTsManager;
 
+     mutable dsxx::SP<DS> spDiffSolver;
+     
      testFullP13T_DB pdb;
      Diffusion_DB diffdb;
      pcg_DB pcg_db;
@@ -106,8 +110,17 @@ namespace XTM {
     
      // IMPLEMENTATION
 
+     void timestep(double &time, double &dt, int &cycle,
+		   MatStateCC &matStateCC, MatStateFC &matStateFC,
+		   RadiationStateField &radState,
+		   ccsf &electEnergyDep, ccsf &ionEnergyDep,
+		   const ccsf &QRad, const ccsf &QElectron, const ccsf &QIon,
+		   const bssf &boundary) const;
+
      void getMatProp();
-     
+     void getMatProp(dsxx::SP<MarshakMaterialProps> &spMatProp_) const;
+     void getMatProp(dsxx::SP<InterpedMaterialProps> &spMatProp_) const;
+    
      MatStateCC getMatStateCC(const ccsf &TElec, const ccsf &TIon,
 			      const ccsf &density, const ccif &matid) const;
 
@@ -117,6 +130,8 @@ namespace XTM {
      void gmvDump(const RadiationStateField &radState, const ccsf &TElec,
 		  const ccsf &TIon, int cycle, double time) const;
 
+     void setBoundary(bssf &boundary) const;
+     
      void postProcess(const RadiationStateField &radState,
 		      const RadiationStateField &newRadState,
 		      const MatStateCC &matStateCC,

@@ -5,7 +5,7 @@
 #include "matprops/InterpedMaterialProps.t.cc"
 
 typedef Mesh_XYZ MT;
-typedef XTM::InterpedMaterialProps MP;
+typedef rtt_matprops::InterpedMaterialProps MP;
 
 typedef MT::ccsf ccsf;
 typedef MT::fcdsf fcdsf;
@@ -20,6 +20,10 @@ MP::MaterialStateField<T1>
 MP::getMaterialState<T1, T2>(const T1 &, const T1 &, const T1 &,
 			     const T2 &) const;
 
+template
+void
+MP::MaterialStateField<T1>::getMatId(T2 &) const;
+
 #undef T1
 #undef T2
 #define T1 fcdsf
@@ -30,7 +34,7 @@ MP::MaterialStateField<T1>
 MP::getMaterialState<T1, T2>(const T1 &, const T1 &, const T1 &,
 			     const T2 &) const;
 
-typedef XTM::BilinearInterpTable BIT;
+typedef rtt_matprops::BilinearInterpTable BIT;
 
 #undef T1
 #undef T2
