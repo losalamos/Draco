@@ -172,6 +172,14 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        AC_MSG_ERROR("No valid C++ Compiler Found!")
    fi
 
+   AC_MSG_CHECKING("for draco standard headers")
+   if test "${enable_draco_stdhdrs:=no}" != no ; then
+      CPPFLAGS="${CPPFLAGS} "'-I${includedir}/stdheaders'
+      AC_MSG_RESULT("CPPFLAGS modified")
+   else
+     AC_MSG_RESULT("no") 
+   fi
+
    # if with_f90 defined test with_f90 for compiler, and call setup
    # if with_f90 set to yes or not set 
    # attempt to guess compiler based on target

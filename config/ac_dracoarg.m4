@@ -123,6 +123,10 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
        with_mips='4'
    fi
 
+   dnl defines --enable-draco-stdhdrs
+   AC_ARG_ENABLE(draco-stdhdrs,
+      [  --enable-draco-stdhdrs  use draco standard headers (off by default)])
+
    dnl end of AC_DRACO_ARGS
 ])
 
