@@ -83,7 +83,7 @@ runregression ()
 
    # remove directories that depend on gandolf if they can't be found.
 
-   if [ "$HAS_GANDOLFLIB" != "true" ] ; then
+   if [ "$HAS_GANDOLF" != "true" ] ; then
       echo removing Gandolf dependent directories: $GANDOLF_DEPEND_DIRS
       echo rm -rf $GANDOLF_DEPEND_DIRS
       rm -rf $GANDOLF_DEPEND_DIRS
