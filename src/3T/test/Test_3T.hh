@@ -33,6 +33,7 @@ class Test_3T : public Test_Prob,
 		private MT::Coord_Mapper
 {
     SP<MT> spm;
+    MT::fcdsf Df;
 
     SP< Diffusion_XYZ<MT> > spd;
 

@@ -38,7 +38,9 @@ Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_,
 			       const pcg_DB& pcg_db_ )
     : Run_DB( rdb ), Problem(p),
       MT::Coord_Mapper( spm_->get_Mesh_DB() ),
-      spm(spm_), pcg_db(pcg_db_)
+      spm(spm_),
+      Df( spm ),
+      pcg_db(pcg_db_)
 {
     spd = new Diffusion_XYZ<MT>( spm );
 
@@ -46,6 +48,14 @@ Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_,
 	adf = new ADFile( "test.dat", IDX::WRITE, 500 );
     else
 	adf = (ADFile *) 1;	// Don't /eeeeven/ ask.
+
+// Now build up D.  D does not depend on time, so we can do this here.
+
+    for( int f=0; f < 6; f++ )
+	for( int c=0; c < ncp; c++ )
+	{
+	    Df(c,f) = D( xf(c,f), yf(c,f), zf(c,f) );
+	}
 }
 
 
@@ -219,12 +229,7 @@ void Test_3T<MT, Problem>::run()
 	print2_Mat( A, "A" );
 
     // Solve Ax = b
-// 	En = 0;
 
-    // The best way to solve Ax = b.
-// 	En = E_analytic;
-
-    // A somewhat better approach for solving Ax = b.
 	SP< PCG_MatVec<double> >  matvec  =
 	    new MatVec_3T< Test_3T<MT,Problem> >( this );
 	SP< MatVec_3T< Test_3T<MT,Problem> > >  t3matvec  = matvec;
