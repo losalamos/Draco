@@ -10,7 +10,8 @@
 #ifndef __stopwatch_Timer_hh__
 #define __stopwatch_Timer_hh__
 
-#include <ctime>
+#include <unistd.h>
+#include <sys/times.h>
 
 namespace rtt_stopwatch
 {
@@ -26,22 +27,7 @@ namespace rtt_stopwatch
 // 
 //===========================================================================//
 
-#ifndef CLOCKS_PER_SEC
-#ifdef CLK_TCK
-#define CLOCKS_PER_SEC CLK_TCK  // Some systems still use this older form
-#endif // CLK_TCK
-#endif // CLOCKS_PER_SEC
-
-#ifndef CLOCKS_PER_SEC
-#define CLOCKS_PER_SEC 1000000  // For non-ANSI systems, like SunOS
-#endif // CLOCKS_PER_SEC
-
 enum state {OFF, ON};
-
-inline double mysec()
-{
-    return (double)clock()/CLOCKS_PER_SEC;
-}
 
 class Timer 
 {
@@ -50,16 +36,24 @@ class Timer
 
     // DATA
 
-    double time;
+    const long clockTick;
+
+    clock_t begin;
+    clock_t end;
+    clock_t elapsed;
+
+    tms tmsBegin;
+    tms tmsEnd;
+    tms tmsElapsed;
+
     state timerState;
     int count;
-    
+
   public:
 
     // CREATORS
-    
-    Timer() : time(0.), timerState(OFF), count(0) {}
-    ~Timer() {}
+
+    Timer();
 
     // MANIPULATORS
 
@@ -67,16 +61,16 @@ class Timer
     void stop();
     void reset();
 
-    Timer &operator+=(const Timer &rhs);
-    
-    // ACCESSORS
-
-    double getTime() const { return time; }
+    double wallClock() const { return seconds(elapsed); }
+    double systemCPU() const { return seconds(tmsElapsed.tms_stime); }
+    double userCPU() const { return seconds(tmsElapsed.tms_utime); }
     state getState() const { return timerState; }
     int getCount() const { return count; }
-    static inline double resolution() { return 10.0/CLOCKS_PER_SEC; }
 
   private:
+
+    double seconds(const clock_t &time) const
+    { return time/static_cast<double>(clockTick); }
     
     // IMPLEMENTATION
 };

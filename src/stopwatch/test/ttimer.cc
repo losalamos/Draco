@@ -12,6 +12,8 @@
 #include <cmath>
 
 using rtt_stopwatch::Timer;
+using rtt_stopwatch::OFF;
+using rtt_stopwatch::ON;
 using std::cout;
 using std::endl;
 using std::fabs;
@@ -20,8 +22,12 @@ bool passed = true;
 
 void pause( int seconds )
 {
-    double time = clock()/CLOCKS_PER_SEC;
-    while (clock()/CLOCKS_PER_SEC - time < seconds) {}
+    const long clock_tick(sysconf(_SC_CLK_TCK));
+    clock_t begin;
+    tms tmsNow;
+
+    begin = times(&tmsNow);
+    while ((times(&tmsNow)-begin)/static_cast<double>(clock_tick) < seconds) {}
 }
 
 void version(const std::string &progname)
@@ -43,32 +49,58 @@ int main( int argc, char *argv[] )
     
     cout << "Initiating test of the Timer class.\n";
 
-    Timer testTimer1;
-    Timer testTimer2;
     int pauseLength = 5;
 
-    testTimer1.start();
+    Timer timer;
+    cout << "Pausing for " << pauseLength << " seconds" << endl;
+    timer.start();
     pause(pauseLength);
-    testTimer1.stop();
-    if (fabs(testTimer1.getTime() - pauseLength) > 0.1)
+    timer.stop();
+    cout << "wallClock, systemCPU, userCPU: " << timer.wallClock()
+	 << "  " << timer.systemCPU() << "  " << timer.userCPU() << endl;
+    if (fabs(timer.wallClock() - pauseLength) > 0.1)
         passed = false;
-    if (testTimer1.getCount() != 1)
+    if (fabs((timer.systemCPU() + timer.userCPU())/timer.wallClock() - 1.)
+	> 0.1)
+        passed = false;
+    if (timer.getCount() != 1)
         passed = false;
 
-    testTimer1.start();
-    pause(pauseLength);
-    testTimer2.start();
-    pause(pauseLength);
-    testTimer2.stop();
-    pause(pauseLength);
-    testTimer1.stop();
-    if (fabs(testTimer1.getTime() - 4*pauseLength) > 0.1)
+    timer.reset();
+    if (timer.wallClock() != 0.)
         passed = false;
-    if (fabs(testTimer2.getTime() - pauseLength) > 0.1)
+    if (timer.systemCPU() != 0.)
         passed = false;
-    if (testTimer1.getCount() != 2)
+    if (timer.userCPU() != 0.)
         passed = false;
-    if (testTimer2.getCount() != 1)
+    if (timer.getCount() != 0)
+        passed = false;
+
+    if (timer.getState() != OFF)
+        passed = false;
+    timer.start();
+    if (timer.getState() != ON)
+        passed = false;
+    timer.stop();
+    if (timer.getState() != OFF)
+        passed = false;
+
+    timer.reset();
+    cout << "Pausing for " << 2*pauseLength << " seconds" << endl;
+    timer.start();
+    pause(pauseLength);
+    timer.stop();
+    timer.start();
+    pause(pauseLength);
+    timer.stop();
+    cout << "wallClock, systemCPU, userCPU: " << timer.wallClock()
+	 << "  " << timer.systemCPU() << "  " << timer.userCPU() << endl;
+    if (fabs(timer.wallClock() - 2*pauseLength) > 0.1)
+        passed = false;
+    if (fabs((timer.systemCPU() + timer.userCPU())/timer.wallClock() - 1.)
+	> 0.1)
+        passed = false;
+    if (timer.getCount() != 2)
         passed = false;
 
 // Print the status of the test.
