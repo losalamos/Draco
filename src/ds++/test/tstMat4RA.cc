@@ -14,7 +14,7 @@
 
 using namespace std;
 
-#include "Mat.hh"
+#include "../Mat.hh"
 
 bool passed = true;
 double value = 4.23;
@@ -2072,8 +2072,23 @@ void t6()
 }
 
 
-int main()
+void version(const std::string &progname)
 {
+    std::string version = "1.0.0";
+    cout << progname << ": version " << version << endl;
+}
+
+int main( int argc, char *argv[] )
+{
+    for (int arg=1; arg < argc; arg++)
+    {
+	if (std::string(argv[arg]) == "--version")
+	{
+	    version(argv[0]);
+	    return 0;
+	}
+    }
+
     cout << "Initiating test of the Mat4 container.\n";
 
     try {
