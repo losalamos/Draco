@@ -6,13 +6,24 @@
 /* $Id$ */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __mc_config_h__
-#define __mc_config_h__
+#ifndef rtt_mc_config_h
+#define rtt_mc_config_h
 
-/* 8 byte integer type */
-#undef EIGHT_BYTE_INT_TYPE
+/* integer types */
+#undef SIZEOF_INT
+#undef SIZEOF_LONG
+#undef SIZEOF_LONG_LONG
 
-#endif                          /* __mc_config_h__ */
+/* set the eight byte int type */
+#if SIZEOF_INT == 8
+#define EIGHT_BYTE_INT_TYPE int
+#elif SIZEOF_LONG == 8
+#define EIGHT_BYTE_INT_TYPE long
+#elif SIZEOF_LONG_LONG == 8
+#define EIGHT_BYTE_INT_TYPE long long
+#endif
+
+#endif                          /* rtt_mc_config_h */
 
 /*---------------------------------------------------------------------------*/
 /*                              end of mc/config.h */

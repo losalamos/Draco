@@ -11,9 +11,14 @@
 
 /* VENDOR TYPES */
 
-#undef V_INT     /* int, long, long long (strict ansi off) */
-#undef V_FLOAT   /* float, double, long double */
-#undef V_BOOL    /* int */
+/* int, long, long long (strict ansi off) */
+#undef V_INT
+
+/* float, double, long double */
+#undef V_FLOAT
+
+/* int */
+#undef V_BOOL
 
 #endif   /* __cdi_eospac_config_h__ */
 
