@@ -136,7 +136,7 @@ class RZWedge_Mesh
 
     // get the dimension of a cell for a given coordinate 
     // (y-coord => dim at midpoint)  
-    inline double dim(const int cell, const int coordinate) const;
+    inline double dim(const int coordinate, const int cell) const;
 
     // Diagnostic functions.
     void print(std::ostream &) const;
@@ -244,7 +244,7 @@ double RZWedge_Mesh::get_z_midpoint(int cell) const
  *
  * \return dim the dimension (length) of the cell in the requested coordinate
  */
-double RZWedge_Mesh::dim(const int cell, const int coordinate) const
+double RZWedge_Mesh::dim(const int coordinate, const int cell) const
 {
     Check ( (cell > 0) && (cell <= num_cells()) );
     Check ( (coordinate > 0) && (coordinate <= 3) );
