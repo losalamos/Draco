@@ -351,7 +351,8 @@ class Element_Definition
 
     /*!
      * \brief Performs some simple sanity checks on the private data
-     *        of the Element_Description class.
+     *        of the Element_Description class. Note that this
+     *        only works with DBC turned on.
      */
     bool invariant_satisfied() const;
 
