@@ -1,3 +1,9 @@
+2004-04-07  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: Moved to SourceForge CVS control.  Formal time of move:
+
+		2004-04-06: 12:00 p.m.
+
 2004-03-11  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: release draco-4_3_0.  This is a minor release, as such it
