@@ -144,16 +144,12 @@ will be overridden for some modes\n
 (defvar ccs4-templates-dir (concat ccs4-env-dir "templates/")
 "\nDirectory containing source code templates that are to be
 used with the Draco elisp code (RTT Menu).")
-(defvar ccs4-info-dir (concat ccs4-elisp-dir "info/")
-"\nDirectory containing extra Info files.  These files are common
-to the Draco development environment.")
 
 ;; Add CCS-4 xemacs directories to load path
 ;; Assumes that ccs4-elisp-dir is valid
 
 (setq load-path (cons ccs4-elisp-dir load-path))
 (defvar Info-directory-list my-info-dir)
-(setq Info-directory-list (cons ccs4-info-dir Info-directory-list))
 
 (if (not (file-accessible-directory-p my-templates-dir))
     (if (file-accessible-directory-p ccs4-templates-dir)
