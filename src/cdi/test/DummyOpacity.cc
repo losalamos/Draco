@@ -43,10 +43,49 @@ namespace rtt_dummy_opacity
      */
     double DummyOpacity::getGrayRosseland(
 	const double targetTemperature, 
-	const double targetDensity ) 
+	const double targetDensity,
+	const std::string skey ) 
 	{
 	    return targetTemperature + targetDensity/10000;
 	}
+
+    std::vector<double> DummyOpacity::getGrayRosseland(
+	const std::vector<double> targetTemperature,
+	const double targetDensity,
+	const std::string skey)
+	{
+	    std::vector<double> grayOpacities( targetTemperature.size() );
+	    for ( int i=0; i<targetTemperature.size(); ++i )
+		grayOpacities[i] = targetTemperature[i] + targetDensity/10000;
+	    return grayOpacities;
+	}
+    
+    std::vector<double> DummyOpacity::getGrayRosseland(
+	const double targetTemperature,
+	const std::vector<double> targetDensity,
+	const std::string skey)
+	{
+	    std::vector<double> grayOpacities( targetDensity.size() );
+	    for ( int i=0; i<targetDensity.size(); ++i )
+		grayOpacities[i] = targetTemperature + targetDensity[i]/10000;
+	    return grayOpacities;
+	}
+
+    std::vector<double> DummyOpacity::getGrayRosseland(
+	const std::vector<double> targetTemperature,
+	const std::vector<double> targetDensity,
+	const std::string skey)
+	{
+	    const int nt = targetTemperature.size();
+	    const int nd = targetDensity.size();
+
+	    std::vector<double> grayOpacities( nt*nd );
+	    for ( int i=0; i<nt; ++i )
+		for ( int j=0; j<nd; ++j )
+		    grayOpacities[i*nt+j] = 
+			targetTemperature[i] + targetDensity[j]/10000;
+	    return grayOpacities;
+     }
 
     /*!
      * \breif Returns a vector of the opacity values for each energy
@@ -70,10 +109,61 @@ namespace rtt_dummy_opacity
 	const double targetDensity,
 	const std::string skey ) 
 	{
-	    vector<double> dummyMGOpacity(3);
-	    for (int i=0; i<3; ++i)
-		dummyMGOpacity[i] = (i+1)*1000.0 + targetTemperature + 
+	    const int ng = 3;
+	    vector<double> dummyMGOpacity( ng );
+	    for (int ig=0; ig<ng; ++ig)
+		dummyMGOpacity[ig] = (ig+1)*1000.0 + targetTemperature + 
 		    targetDensity/10000;
+	    return dummyMGOpacity;
+	}
+    vector<double> DummyOpacity::getMGRosseland( 
+	const std::vector<double> targetTemperature, 
+	const double targetDensity,
+	const std::string skey ) 
+	{
+	    const int ng = 3;
+	    const int nt = targetTemperature.size();
+	    vector<double> dummyMGOpacity( nt*ng );
+	    for ( int it=0; it<nt; ++it )
+		for ( int ig=0; ig<ng; ++ig)
+		    dummyMGOpacity[ it*ng + ig ] = 
+			(ig+1)*1000.0 
+			+ targetTemperature[it]
+			+ targetDensity/10000;
+	    return dummyMGOpacity;
+	}
+    vector<double> DummyOpacity::getMGRosseland( 
+	const double targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey ) 
+	{
+	    const int ng = 3;
+	    const int nd = targetDensity.size();
+	    vector<double> dummyMGOpacity( nd*ng );
+	    for ( int id=0; id<nd; ++id )
+		for ( int ig=0; ig<ng; ++ig)
+		    dummyMGOpacity[ id*ng + ig ] = 
+			(ig+1)*1000.0 
+			+ targetTemperature
+			+ targetDensity[id]/10000;
+	    return dummyMGOpacity;
+	}
+    vector<double> DummyOpacity::getMGRosseland( 
+	const std::vector<double> targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey ) 
+	{
+	    const int ng = 3;
+	    const int nt = targetTemperature.size();
+	    const int nd = targetDensity.size();
+	    vector<double> dummyMGOpacity( nt*nd*ng );
+	    for ( int it=0; it<nt; ++it )
+		for ( int id=0; id<nd; ++id )
+		    for ( int ig=0; ig<ng; ++ig)
+			dummyMGOpacity[ it*nd*ng + id*ng + ig ] = 
+			    (ig+1)*1000.0 
+			    + targetTemperature[it]
+			    + targetDensity[id]/10000;
 	    return dummyMGOpacity;
 	}
 
@@ -94,11 +184,45 @@ namespace rtt_dummy_opacity
      */
     double DummyOpacity::getGrayPlank(
 	const double targetTemperature, 
-	const double targetDensity ) 
+	const double targetDensity,
+	const std::string skey ) 
 	{
 	    return targetTemperature + targetDensity/10000;
 	}
-
+    std::vector<double> DummyOpacity::getGrayPlank(
+	const std::vector<double> targetTemperature, 
+	const double targetDensity,
+	const std::string skey ) 
+	{
+	    std::vector<double> grayOpacity( targetTemperature.size() );
+	    for ( int i=0; i<targetTemperature.size(); ++i )
+		grayOpacity[i] = targetTemperature[i] + targetDensity/10000;
+	    return grayOpacity;
+	}
+    std::vector<double> DummyOpacity::getGrayPlank(
+	const double targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey ) 
+	{
+	    std::vector<double> grayOpacity( targetDensity.size() );
+	    for ( int i=0; i<targetDensity.size(); ++i )
+		grayOpacity[i] = targetTemperature + targetDensity[i]/10000;
+	    return grayOpacity;
+	}
+    std::vector<double> DummyOpacity::getGrayPlank(
+	const std::vector<double> targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey ) 
+	{
+	    const int nt = targetTemperature.size();
+	    const int nd = targetDensity.size();
+	    std::vector<double> grayOpacity( nt*nd );
+	    for ( int it=0; it<nt; ++it )
+		for ( int id=0; id<nd; ++id )
+		    grayOpacity[ it*nd + id ] = 
+			targetTemperature[it] + targetDensity[id]/10000;
+	    return grayOpacity;
+	}
     /*!
      * \breif Returns a vector of the opacity values for each energy
      *        group for the prescribed temperature and density.
@@ -118,7 +242,8 @@ namespace rtt_dummy_opacity
      */    
     vector<double> DummyOpacity::getMGPlank( 
 	const double targetTemperature, 
-	const double targetDensity ) 
+	const double targetDensity,
+	const std::string skey ) 
 	{
 	    vector<double> dummyMGOpacity(3);
 	    for (int i=0; i<3; ++i)
@@ -126,7 +251,61 @@ namespace rtt_dummy_opacity
 		    targetDensity/10000;
 	    return dummyMGOpacity;
 	}
+    vector<double> DummyOpacity::getMGPlank( 
+	const std::vector<double> targetTemperature, 
+	const double targetDensity,
+	const std::string skey ) 
+	{
+	    const int ng = 3; // number of groups
+	    const int nt = targetTemperature.size();
+	    vector<double> dummyMGOpacity( nt*ng );
+	    for ( int it=0; it<nt; ++it )
+		for ( int ig=0; ig<ng; ++ig )
+		    dummyMGOpacity[ it*ng + ig] = 
+			(ig+1)*1000.0 
+			+ targetTemperature[it]
+			+ targetDensity/10000;
+	    return dummyMGOpacity;
+	}
+    vector<double> DummyOpacity::getMGPlank( 
+	const double targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey ) 
+	{
+	    const int ng = 3; // number of groups
+	    const int nd = targetDensity.size();
+	    vector<double> dummyMGOpacity( nd*ng );
+	    for ( int id=0; id<nd; ++id )
+		for ( int ig=0; ig<ng; ++ig )
+		    dummyMGOpacity[ id*ng + ig] = 
+			(ig+1)*1000.0 
+			+ targetTemperature
+			+ targetDensity[id]/10000;
+	    return dummyMGOpacity;
+	}
+    vector<double> DummyOpacity::getMGPlank( 
+	const std::vector<double> targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey ) 
+	{
+	    const int ng = 3; // number of groups
+	    const int nt = targetTemperature.size();
+	    const int nd = targetDensity.size();
+	    vector<double> dummyMGOpacity( nt*nd*ng );
+	    for ( int it=0; it<nt; ++it )
+		for ( int id=0; id<nd; ++id )
+		    for ( int ig=0; ig<ng; ++ig )
+			dummyMGOpacity[ it*nd*ng + id*ng + ig] = 
+			    (ig+1)*1000.0 
+			    + targetTemperature[it]
+			    + targetDensity[id]/10000;
+	    return dummyMGOpacity;
+	}
 
+    /*!
+     * \brief Returns a vector of temperatures (keV) found in the data 
+     *        file.
+     */
     vector<double> DummyOpacity::getTemperatureGrid() const
 	{
 	    const int numTemps = 3;

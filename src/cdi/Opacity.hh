@@ -81,13 +81,28 @@ class Opacity
      * \param targetTemperature The temperature (in keV) of the
      *                          material. 
      * \param targetDensity The density (in g/cm^3) of the material.
-     *
+     * \param skey Optional parameter used to specify if the returned
+     *        value is scattering ("rsmg"), absorption ("ramg") or
+     *        total ("rtmg") opacity.  The default is total.
      * \return Gray opacity value for the current material at
      *         targetTemperature keV and targetDensity g/cm^3.
      */
     virtual double getGrayRosseland( 
 	const double targetTemperature, 
-	const double targetDensity ) = 0;
+	const double targetDensity,
+	const std::string skey = "rgray" ) = 0;
+    virtual std::vector<double> getGrayRosseland(
+	const std::vector<double> targetTemperatures,
+	const double targetDensity,
+	const std::string skey = "rgray" ) = 0;
+    virtual std::vector<double> getGrayRosseland(
+	const double targetTemperature,
+	const std::vector<double> targetDensities,
+	const std::string skey = "rgray" ) = 0;
+    virtual std::vector<double> getGrayRosseland(
+	const std::vector<double> targetTemperatures,
+	const std::vector<double> targetDensities,
+	const std::string skey = "rgray" ) = 0;
 
     /*!
      * \brief Returns a vector of the opacity values for each energy
@@ -117,6 +132,18 @@ class Opacity
 	const double targetTemperature, 
 	const double targetDensity,
 	const std::string skey = "rtmg" ) = 0;
+    virtual std::vector<double> getMGRosseland( 
+	const std::vector<double> targetTemperature, 
+	const double targetDensity,
+	const std::string skey = "rtmg" ) = 0;
+    virtual std::vector<double> getMGRosseland( 
+	const double targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey = "rtmg" ) = 0;
+    virtual std::vector<double> getMGRosseland( 
+	const std::vector<double> targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey = "rtmg" ) = 0;
 
     /*!
      * \brief Returns a single gray Plank opacity value for the
@@ -140,7 +167,20 @@ class Opacity
      */
     virtual double getGrayPlank( 
 	const double targetTemperature, 
-	const double targetDensity ) = 0;
+	const double targetDensity,
+	const std::string skey = "pgray" ) = 0;
+    virtual std::vector<double> getGrayPlank( 
+	const std::vector<double> targetTemperature, 
+	const double targetDensity,
+	const std::string skey = "pgray" ) = 0;
+    virtual std::vector<double> getGrayPlank( 
+	const double targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey = "pgray" ) = 0;
+    virtual std::vector<double> getGrayPlank( 
+	const std::vector<double> targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey = "pgray" ) = 0;
 
     /*!
      * \brief Returns a vector of the opacity values for each energy
@@ -166,13 +206,55 @@ class Opacity
      */
     virtual std::vector<double> getMGPlank( 
 	const double targetTemperature, 
-	const double targetDensity ) = 0;
+	const double targetDensity,
+	const std::string skey = "pmg" ) = 0;
+    virtual std::vector<double> getMGPlank( 
+	const std::vector<double> targetTemperature, 
+	const double targetDensity,
+	const std::string skey = "pmg" ) = 0;
+    virtual std::vector<double> getMGPlank( 
+	const double targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey = "pmg" ) = 0;
+    virtual std::vector<double> getMGPlank( 
+	const std::vector<double> targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey = "pmg" ) = 0;
 
+    /*!
+     * \brief Return the number of temperature points in the data
+     *        grid.
+     */
     virtual int getNumTemperatures() const = 0;
+
+    /*!
+     * \brief Return a vector that contains all of the temperature
+     *        grid points.
+     */
     virtual std::vector<double> getTemperatureGrid() const = 0;
+
+    /*!
+     * \brief Return the number of density points in the data
+     *        grid.
+     */
     virtual int getNumDensities() const = 0;
+
+    /*!
+     * \brief Return a vector that contains all of the density
+     *        grid points.
+     */
     virtual std::vector<double> getDensityGrid() const = 0;
+
+    /*!
+     * \brief Return the number of energy group boundaries in the data 
+     *        grid.
+     */
     virtual int getNumGroupBoundaries() const = 0;
+
+    /*!
+     * \brief Return a vector that contains all of the energy group
+     *        boundaries.
+     */
     virtual std::vector<double> getGroupBoundaries() const = 0;
 
     //  protected:     

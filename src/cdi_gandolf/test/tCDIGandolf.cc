@@ -78,7 +78,7 @@ string tCDIGandolf::runTest()
     catch ( rtt_cdi_gandolf::GandolfException gerr )
 	{
 	    fail() << std::endl << "\t" << gerr.errorSummary();
-	    return "Some tests failed.";
+	    return "Unable to create GanolfFile object. Test sequence aborted.";
 	}
 
     // If we make it here then spGFABC was successfully instantiated.
@@ -88,12 +88,15 @@ string tCDIGandolf::runTest()
     if ( spGFABC->getDataFilename() == op_data_file )
 	pass() << "GandolfFile object is now linked to the Al_BeCu.ipcress data file.";
     else
-	fail() << "GandolfFile object failed to link itself to theAl_BeCu.ipcress  data file.";
+	fail() << "GandolfFile object failed to link itself to the "
+	       << "Al_BeCu.ipcress  data file.";
 
     if ( spGFABC->getNumMaterials() == 2 )
-	pass() << "The correct number of materials was found in the Al_BeCu.ipcress data file.";
+	pass() << "The correct number of materials was found in the "
+	       << "Al_BeCu.ipcress data file.";
     else
-	fail() << "spGFABC did not find the correct number of materials in the Al_BeCu.ipcress data file.";
+	fail() << "spGFABC did not find the correct number of materials "
+	       << "in the Al_BeCu.ipcress data file.";
 
     // ---------------------- //
     // Create Opacity object. //
@@ -112,9 +115,10 @@ string tCDIGandolf::runTest()
 	// Alternatively, we could use:
 	// catch ( rtt_cdi_gandolf::gkeysException gerr )
 	{
-	    fail() << "Failed to create SP to new Opacity object for Al_BeCu.ipcress data."
+	    fail() << "Failed to create SP to new Opacity object for "
+		   << "Al_BeCu.ipcress data."
 		   << std::endl << "\t" << gerr.errorSummary();
-	    return "Some tests failed.";
+	    return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
 	}
 
     // If we get here then the object was successfully instantiated.
@@ -123,98 +127,88 @@ string tCDIGandolf::runTest()
     // ----------------- //
     // Gray Opacity Test //
     // ----------------- //
-
+    
     double temperature = 0.1; // keV
     double density = 27.0; // g/cm^3
     double tabulatedGrayOpacity = 4271.7041147070677; // cm^2/g
-
+    
     if ( ! testGrayRosselandOpacityAccessorPassed( 
 	spOpacityABC, temperature, density, tabulatedGrayOpacity ) )
 	return "testGrayRosselandOpacityAccessorPassed() failed.";
     
-  // --------------- //
-  // MG Opacity test //
-  // --------------- //
-  
+    // --------------- //
+    // MG Opacity test //
+    // --------------- //
+    
     temperature = 0.01; // keV
     density = 2.0; // g/cm^3
-
+    
     // The solution to compare against:
     int numGroups = 33;
     double tabulatedMGOpacityArray[] =
-    {   2.4935160506e+08, 
-	2.6666668566e+04, 
-	1.6270311515e+04, 
-	1.7634614752e+04, 
-	4.4986543915e+04, 
-	9.9917288352e+04, 
-	8.3261040205e+04, 
-	5.9742699269e+04, 
-	4.0372986257e+04, 
-	2.6156310247e+04, 
-	1.6356517677e+04, 
-	1.0006990734e+04, 
-	5.9761421730e+03, 
-	3.5201139934e+03, 
-	2.0761987266e+03, 
-	6.8547729207e+03, 
-	4.1253621873e+03, 
-	2.4194579352e+03, 
-	1.3888963339e+03, 
-	7.8973170438e+02, 
-	4.3992670770e+02, 
-	2.4390304515e+02, 
-	1.3380845641e+02, 
-	6.9706128602e+01,
-	3.7034400058e+01, 
-	1.9776964848e+01, 
-	1.0437495354e+01, 
-	5.4952246461e+00, 
-	2.8823716869e+00, 
-	1.4965372557e+00, 
-	7.8893806873e-01, 
-	4.1875736190e-01, 
-	2.1668498635e-01 }; // KeV, numGroups entries.
+    {
+	2.4935245299837247e+08,
+	2.6666789027326573e+04,
+	1.6270621515227660e+04,
+	1.7634711671468522e+04,
+	4.4999455359684442e+04,
+	9.9917674335613032e+04,
+	8.3261383385464113e+04,
+	5.9742975304886764e+04,
+	4.0373209722602740e+04,
+	2.6156503146710609e+04,
+	1.6356701105166874e+04,
+	1.0007184686170869e+04,
+	5.9763667878215247e+03,
+	3.5203912630050986e+03,
+	2.0765528559140448e+03,
+	6.8550529299142445e+03,
+	4.1257095227186965e+03,
+	2.4199006949490426e+03,
+	1.3894677080938793e+03,
+	7.9046985091966621e+02,
+	4.4088463936537232e+02,
+	2.4514360684176387e+02,
+	1.3541656611912146e+02,
+	7.1828886317050177e+01,
+	3.9793827527329107e+01,
+	2.3312673181867030e+01,
+	1.4879458895157605e+01,
+	1.0862672679200283e+01,
+	9.0590676798691288e+00,
+	8.2841367649864175e+00,
+	7.3809286930540363e+00,
+	7.1057875403123791e+00,
+	6.8907716134926735e+00
+    }; // KeV, numGroups entries.
+
      vector<double> tabulatedMGOpacity(numGroups);
      std::copy( tabulatedMGOpacityArray, 
 		tabulatedMGOpacityArray+numGroups,
 		tabulatedMGOpacity.begin() );    
 
+     // use default value for skey = "rtmg".
+
      if ( ! testMGRosselandOpacityAccessorPassed( 
 	 spOpacityABC, temperature, density, tabulatedMGOpacity ) )
 	 return "testGrayRosselandOpacityAccessorPassed() failed.";
-     
-     // Interpolate the multigroup opacities for T = 0.01 keV and
-     // density = 2.0 g/cm^3. 
-     vector<double> mgRosselandOpacity;
-     try
-	 {
-	     // The tabulated data is for absoption only so we over
-	     // ride the default total opacity with rosseland
-	     // absorption opacities
-	     mgRosselandOpacity	
-		 = spOpacityABC->getMGRosseland( 0.01, 2.0, "ramg" );
-	 }
-     catch ( rtt_cdi_gandolf::ggetmgException gerr )
-	 {
-	    fail() << std::endl << "\t" << gerr.errorSummary();
-	    return "Some tests failed.";
-	 }
-
-     // Compare the interpolated value with previous interpolations:
-     if ( match( mgRosselandOpacity, tabulatedMGOpacity ) )
- 	pass() << "Multigroup Opacity computation was good for Al_BeCu.ipcress data.";
-     else
- 	fail() << "Multigroup Opacity computation failed for Al_BeCu.ipcress data.";
 
 // ----------------------------------------------- //
 // Test the data file "analyticOpacities.ipcress"  //
 // ----------------------------------------------- //
 
+     // -----------------------------------------------------------------
      // The Opacities in this file are computed from the following
      // analytic formula:
      //     opacity = rho * T^4,
      // rho is the density and T is the temperature.
+     //
+     // The grid in this data file has the following structure:
+     //    T   = { 0.1, 1.0, 10.0 } keV.
+     //    rho = { 0.1, 0.5, 1.0 } g/cm^3
+     //    E_bounds = { 0.01, 0.03, 0.07, 0.1, 0.3, 0.7, 1.0, 3.0, 7.0 
+     //                 10.0, 30.0, 70.0 100.0 } keV.
+     //-----------------------------------------------------------------
 
      // Gandolf data filename (IPCRESS format required)
      op_data_file = "analyticOpacities.ipcress";
@@ -234,7 +228,7 @@ string tCDIGandolf::runTest()
      catch ( rtt_cdi_gandolf::gmatidsException gerr)
 	 {
 	     fail() << std::endl << "\t" << gerr.errorSummary();
-	     return "Some tests failed.";
+	     return "Unable to instantiate GandolfFile object spGFAnalytic.  Test sequence aborted.";
 	 }
      
      // If we make it here then spGFAnalytic was successfully instantiated.
@@ -267,12 +261,12 @@ string tCDIGandolf::runTest()
      catch ( rtt_cdi_gandolf::gkeysException gerr )
 	 {
 	    fail() << std::endl << "\t" << gerr.errorSummary();
-	    return "Some tests failed.";
+	    return "Unable to instantiate spOpacityAnalytic object.  Test sequence aborted.";
 	 }
      catch ( rtt_cdi_gandolf::gchgridsException gerr )
 	 {
 	    fail() << std::endl << "\t" << gerr.errorSummary();
-	    return "Some tests failed.";
+	    return "Unable to instantiate spOpacityAnalytic. Test sequence aborted.";
 	 }
 
      // If we get here then the object was successfully instantiated.
@@ -282,16 +276,14 @@ string tCDIGandolf::runTest()
      // Gray Opacity Test //
      // ----------------- //
 
-     temperature = 1.0; // keV
+     temperature = 10.0; // keV
      density = 1.0; // g/cm^3
-     
-     // The analytic formula shown above does not include the
-     // addition of scattering. 
-     double scatter = 0.4; // cm^2/g
-     tabulatedGrayOpacity = density * pow( temperature, 4 ) + scatter;
+     tabulatedGrayOpacity = density * pow( temperature, 4 );
+     std::string skey = "ragray"; // Do not include the scattering cross section.
 
      if ( ! testGrayRosselandOpacityAccessorPassed( 
-	 spOpacityAnalytic, temperature, density, tabulatedGrayOpacity ) )
+	 spOpacityAnalytic, temperature, density,
+	 tabulatedGrayOpacity, skey ) )
 	 return "testGrayRosselandOpacityAccessorPassed() failed.";
      
      //---------------- //
@@ -307,10 +299,13 @@ string tCDIGandolf::runTest()
      for ( int i=0; i<numGroups; ++i )
 	 tabulatedMGOpacity[i] = density * pow( temperature, 4 ); // cm^2/gm
 
+     // use "ramg" optional arguament to specify that the scattering
+     // cross section not be added to the returned opacity value.
+
      if ( ! testMGRosselandOpacityAccessorPassed( 
-	 spOpacityAnalytic, temperature, density, tabulatedMGOpacity ) )
+	 spOpacityAnalytic, temperature, density, tabulatedMGOpacity, "ramg" ) )
 	 return "testMGRosselandOpacityAccessorPassed() failed.";
-     
+
     // ------------------------------------------------------------ //
     // Test the Plank routines using analyticOpacities.ipcress data //
     // ------------------------------------------------------------ //
@@ -329,15 +324,29 @@ string tCDIGandolf::runTest()
     // Gray Opacity Test //
     // ----------------- //
     
-    if ( ! testGrayPlankOpacityAccessorPassed( spOpacityAnalytic ) )
+     temperature = 3.0; // keV
+     density = 0.7; // g/cm^3
+     double tabulatedValue = density * pow( temperature, 4 ); // cm^2/g
+
+    if ( ! testGrayPlankOpacityAccessorPassed( spOpacityAnalytic,
+					       temperature, density,
+					       tabulatedValue ) )
 	return "testGrayPlankOpacityAccessor() failed.";
     
     // --------------- //
     // MG Opacity test //
     // --------------- //
+
+    int ng=12;
+    tabulatedMGOpacity.resize( ng );
+    temperature = 0.4; // keV
+    density = 0.22; // g/cm^3
+    for ( int ig=0; ig<ng; ++ig )
+	tabulatedMGOpacity[ig] = density * pow( temperature, 4 ); // cm^2/g
     
     // If this test fails then stop testing.
-    if ( ! testMGPlankOpacityAccessorPassed( spOpacityAnalytic ) )
+    if ( ! testMGPlankOpacityAccessorPassed( spOpacityAnalytic,
+					     temperature, density, tabulatedMGOpacity ) )
 	return "testMGPlankOpacityAccessor() failed.";
     
     // ------------------------ //
@@ -358,15 +367,286 @@ string tCDIGandolf::runTest()
     
     testEnergyBoundaryAccessor( spOpacityAnalytic );
     
-    // ----------------------
-    // Print the test result.
-    // ----------------------
-    if (passed()) {
+    // ------------------------------------------------------------ //
+    // Test alternate (vector-based) accessors for getGrayRosseland //
+    // ------------------------------------------------------------ //
+
+    // ---------------------- //
+    // Vector of temperatures //
+    // ---------------------- //
+
+    vector<double> vtemperature(2);
+    vtemperature[0] = 0.5; // keV
+    vtemperature[1] = 0.7; // keV
+    density = 0.35; // g/cm^3
+
+    vector<double> vtabulatedGrayOpacity( vtemperature.size() );
+    for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
+	vtabulatedGrayOpacity[i] = density * pow ( vtemperature[i], 4 );
+
+    skey = "ragray"; // Do not include the scattering cross section in 
+                     // the reported values.
+
+    if ( ! testGrayRosselandOpacityAccessorPassed( 
+	spOpacityAnalytic, vtemperature, density,
+	vtabulatedGrayOpacity, skey ) )
+	return "testGrayRosselandOpacityAccessorPassed() failed for a vector of temps.";
+
+    // ---------------------- //
+    // Vector of densities    //
+    // ---------------------- //
+
+    temperature = 0.3; //keV
+    vector<double> vdensity(3);
+    vdensity[0] = 0.2; // g/cm^3
+    vdensity[1] = 0.4; // g/cm^3
+    vdensity[2] = 0.6; // g/cm^3
+
+    vtabulatedGrayOpacity.resize( vdensity.size() );
+    for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
+	vtabulatedGrayOpacity[i] = vdensity[i] * pow ( temperature, 4 );
+
+    skey = "ragray"; // Do not include the scattering cross section in 
+                     // the reported values.
+
+    if ( ! testGrayRosselandOpacityAccessorPassed( 
+	spOpacityAnalytic, temperature, vdensity,
+	vtabulatedGrayOpacity, skey ) )
+	return "testGrayRosselandOpacityAccessorPassed() failed for a vector of densities.";
+ 
+    // ------------------------------------------------ //
+    // Vector of temperatures and a vector of densities //
+    // ------------------------------------------------ //
+
+    int nt = vtemperature.size();
+    int nd = vdensity.size();
+    vtabulatedGrayOpacity.resize( nt*nd ); 
+    for ( int i=0; i< nt; ++i )
+	for ( int j=0; j< nd; ++j )
+	    vtabulatedGrayOpacity[i*nt+j] = 
+		vdensity[j] * pow ( vtemperature[i], 4 );
+    
+    skey = "ragray"; // Do not include the scattering cross section in 
+                     // the reported values.
+
+    if ( ! testGrayRosselandOpacityAccessorPassed( 
+	spOpacityAnalytic, vtemperature, vdensity,
+	vtabulatedGrayOpacity, skey ) )
+	return "testGrayRosselandOpacityAccessorPassed() failed for a vector of temperatures x densities.";
+
+    // -------------------------------------------------------- //
+    // Test alternate (vector-based) accessors for getGrayPlank //
+    // -------------------------------------------------------- //
+
+    // ---------------------- //
+    // Vector of temperatures //
+    // ---------------------- //
+
+    vtemperature.resize(2);
+    vtemperature[0] = 0.5; // keV
+    vtemperature[1] = 0.7; // keV
+    density = 0.35; // g/cm^3q
+
+    vtabulatedGrayOpacity.resize( vtemperature.size() );
+    for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
+	vtabulatedGrayOpacity[i] = density * pow ( vtemperature[i], 4 );
+
+    if ( ! testGrayPlankOpacityAccessorPassed( 
+	spOpacityAnalytic, vtemperature, density,
+	vtabulatedGrayOpacity ) )
+	return "testGrayPlankOpacityAccessorPassed() failed for a vector of temps.";
+   
+    // ------------------- //
+    // Vector of densities //
+    // ------------------- //
+
+    temperature = 0.3; //keV
+    vdensity.resize(3);
+    vdensity[0] = 0.2; // g/cm^3
+    vdensity[1] = 0.4; // g/cm^3
+    vdensity[2] = 0.6; // g/cm^3
+
+    vtabulatedGrayOpacity.resize( vdensity.size() );
+    for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
+	vtabulatedGrayOpacity[i] = vdensity[i] * pow ( temperature, 4 );
+
+    if ( ! testGrayPlankOpacityAccessorPassed( spOpacityAnalytic, 
+					       temperature, vdensity,
+					       vtabulatedGrayOpacity  ) )
+	return "testGrayPlankOpacityAccessorPassed() failed for a vector of densities.";
+
+    // ------------------------------------------------ //
+    // Vector of temperatures and a vector of densities //
+    // ------------------------------------------------ //
+
+    nt = vtemperature.size();
+    nd = vdensity.size();
+    vtabulatedGrayOpacity.resize( nt*nd ); 
+    for ( int i=0; i< nt; ++i )
+	for ( int j=0; j< nd; ++j )
+	    vtabulatedGrayOpacity[i*nt+j] = 
+		vdensity[j] * pow ( vtemperature[i], 4 );
+    
+    if ( ! testGrayPlankOpacityAccessorPassed( spOpacityAnalytic, 
+					       vtemperature, vdensity,
+					       vtabulatedGrayOpacity ) )
+	return "testGrayPlankOpacityAccessorPassed() failed for a vector of temperatures x densities.";
+
+    // ---------------------------------------------------------- //
+    // Test alternate (vector-based) accessors for getMGRosseland //
+    // ---------------------------------------------------------- //
+
+    // ---------------------- //
+    // Vector of temperatures //
+    // ---------------------- //
+
+     vtemperature.resize(2);
+     vtemperature[0] = 0.5; // keV
+     vtemperature[1] = 0.7; // keV
+     density = 0.35; // g/cm^3
+     ng = spOpacityAnalytic->getNumGroupBoundaries() - 1;
+
+     vector<double> vtabulatedMGOpacity( vtemperature.size() * ng );
+     for ( int i=0; i< vtemperature.size(); ++i )
+ 	for ( int ig=0; ig<ng; ++ig )
+ 	    vtabulatedMGOpacity[ i*ng + ig ] = 
+ 		density * pow ( vtemperature[i], 4 );
+     
+     skey = "ramg"; // Do not include the scattering cross section in 
+                    // the reported values.
+     
+     if ( ! testMGRosselandOpacityAccessorPassed( 
+ 	spOpacityAnalytic, vtemperature, density,
+ 	vtabulatedMGOpacity, skey ) )
+ 	return "testMGRosselandOpacityAccessorPassed() failed for a vector of temps.";
+
+     // ------------------- //
+     // Vector of densities //
+     // ------------------- //
+
+     vdensity.resize(2);
+     vdensity[0] = 0.3; // g/cm^3
+     vdensity[1] = 0.7; // g/cm^3
+     temperature = 7.0; // keV
+     ng = spOpacityAnalytic->getNumGroupBoundaries() - 1;
+
+     vtabulatedMGOpacity.resize( vdensity.size() * ng );
+     for ( int i=0; i<vdensity.size(); ++i )
+	 for ( int ig=0; ig<ng; ++ig )
+	     vtabulatedMGOpacity[ i*ng + ig ] = 
+		 vdensity[i] * pow ( temperature, 4 );
+
+     skey = "ramg"; // Do not include the scattering cross section in 
+                    // the reported values.
+     
+     if ( ! testMGRosselandOpacityAccessorPassed( 
+	 spOpacityAnalytic, temperature, vdensity,
+	 vtabulatedMGOpacity, skey ) )
+	 return "testMGRosselandOpacityAccessorPassed() failed for a vector of densities.";
+
+
+     // ------------------------------------------------ //
+     // Vector of temperatures and a vector of densities //
+     // ------------------------------------------------ //
+
+     vtabulatedMGOpacity.resize( vtemperature.size() 
+				 * vdensity.size() 
+				 * ng );
+     nd = vdensity.size();
+     for ( int it=0; it<vtemperature.size(); ++it )
+	 for ( int id=0; id<nd; ++id )
+	     for ( int ig=0; ig<ng; ++ig )
+		 vtabulatedMGOpacity[ it*nd*ng + id*ng + ig ] = 
+		     vdensity[id] * pow ( vtemperature[it], 4 );
+
+     skey = "ramg"; // Do not include the scattering cross section in 
+                    // the reported values.
+     
+     if ( ! testMGRosselandOpacityAccessorPassed( 
+	 spOpacityAnalytic, vtemperature, vdensity,
+	 vtabulatedMGOpacity, skey ) )
+	 return "testMGRosselandOpacityAccessorPassed() failed for a vector of temps and a vector of densities.";
+
+    // ------------------------------------------------------ //
+    // Test alternate (vector-based) accessors for getMGPlank //
+    // ------------------------------------------------------ //
+
+    // ---------------------- //
+    // Vector of temperatures //
+    // ---------------------- //
+
+     vtemperature.resize(2);
+     vtemperature[0] = 0.5; // keV
+     vtemperature[1] = 0.7; // keV
+     density = 0.35; // g/cm^3
+     ng = spOpacityAnalytic->getNumGroupBoundaries() - 1;
+
+     vtabulatedMGOpacity.resize( vtemperature.size() * ng );
+     for ( int i=0; i< vtemperature.size(); ++i )
+ 	for ( int ig=0; ig<ng; ++ig )
+ 	    vtabulatedMGOpacity[ i*ng + ig ] = 
+ 		density * pow ( vtemperature[i], 4 );
+     
+     if ( ! testMGPlankOpacityAccessorPassed( 
+ 	spOpacityAnalytic, vtemperature, density,
+ 	vtabulatedMGOpacity ) )
+ 	return "testMGPlankOpacityAccessorPassed() failed for a vector of temps.";
+
+     // ------------------- //
+     // Vector of densities //
+     // ------------------- //
+
+     vdensity.resize(2);
+     vdensity[0] = 0.3; // g/cm^3
+     vdensity[1] = 0.7; // g/cm^3
+     temperature = 7.0; // keV
+     ng = spOpacityAnalytic->getNumGroupBoundaries() - 1;
+
+     vtabulatedMGOpacity.resize( vdensity.size() * ng );
+     for ( int i=0; i<vdensity.size(); ++i )
+	 for ( int ig=0; ig<ng; ++ig )
+	     vtabulatedMGOpacity[ i*ng + ig ] = 
+		 vdensity[i] * pow ( temperature, 4 );
+
+     if ( ! testMGPlankOpacityAccessorPassed( 
+	 spOpacityAnalytic, temperature, vdensity,
+	 vtabulatedMGOpacity ) )
+	 return "testMGPlankOpacityAccessorPassed() failed for a vector of densities.";
+
+
+     // ------------------------------------------------ //
+     // Vector of temperatures and a vector of densities //
+     // ------------------------------------------------ //
+
+     vtabulatedMGOpacity.resize( vtemperature.size() 
+				 * vdensity.size() 
+				 * ng );
+     nd = vdensity.size();
+     for ( int it=0; it<vtemperature.size(); ++it )
+	 for ( int id=0; id<nd; ++id )
+	     for ( int ig=0; ig<ng; ++ig )
+		 vtabulatedMGOpacity[ it*nd*ng + id*ng + ig ] = 
+		     vdensity[id] * pow ( vtemperature[it], 4 );
+
+     if ( ! testMGPlankOpacityAccessorPassed( 
+	 spOpacityAnalytic, vtemperature, vdensity,
+	 vtabulatedMGOpacity ) )
+	 return "testMGPlankOpacityAccessorPassed() failed for a vector of temps and a vector of densities.";
+
+
+
+    // ---------------------- //
+    // Print the test result. //
+    // ---------------------- //
+
+    if ( passed() ) {
 	pass() << "All tests passed.";
 	return "All tests passed.";
     }
+
     return "Some tests failed.";
-}
+
+} // end of runTest()
 
 //---------------------------------------------
 // Compare Reference value to computed values
@@ -425,22 +705,27 @@ bool tCDIGandolf::match( const double computedValue,
 // Test the gray Rosseland opacity accessor // 
 // ---------------------------------------- //
 
+template < class T1, class T2, class T3 >
 bool tCDIGandolf::testGrayRosselandOpacityAccessorPassed(
     const SP<rtt_cdi::Opacity> spOpacity, 
-    const double temperature, const double density, 
-    const double tabulatedValue )
+    const T1 temperature, const T2 density, 
+    const T3 tabulatedValue, const std::string skey )
 {
-    double grayRosselandOpacity;
+    T3 grayRosselandOpacity;
     try 
 	{
 	    grayRosselandOpacity 
-		= spOpacity->getGrayRosseland( temperature, density );
+		= spOpacity->getGrayRosseland( temperature, density, skey );
 	}
     catch ( rtt_cdi_gandolf::ggetgrayException gerr )
 	{
 	    fail() << std::endl << "\t" << gerr.errorSummary();
 	    return false;
-	    //return "Some tests failed.";
+	}
+    catch ( rtt_cdi_gandolf::gkeysException gerr )
+	{
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return false;
 	}
 
     // Make sure that the interpolated value matches previous
@@ -460,47 +745,45 @@ bool tCDIGandolf::testGrayRosselandOpacityAccessorPassed(
 // Test the multigroup Rosseland opacity accessor //
 // ---------------------------------------------- //
 
+template < class temperatureType, class densityType >
 bool tCDIGandolf::testMGRosselandOpacityAccessorPassed(
     const SP<rtt_cdi::Opacity> spOpacity,
-    const double temperature, const double density,
-    const vector<double> tabulatedValues )
+    const temperatureType temperature, const densityType density,
+    const vector<double> tabulatedValues,
+    const std::string skey )
 {
-    // Interpolate the multigroup opacities for T = 0.3 keV and
-    // density = 0.7 g/cm^3. 
+    // Interpolate the multigroup opacities.
     vector<double> mgRosselandOpacity( tabulatedValues.size() );
     try
 	{
-	    // override default "rtmg" mode for analytic values.
+	    // override default skey = "rtmg" mode for analytic values?
 	    mgRosselandOpacity
-		= spOpacity->getMGRosseland( temperature, density, "ramg" );
+		= spOpacity->getMGRosseland( temperature, density, skey );
 	}
     catch ( rtt_cdi_gandolf::ggetmgException gerr )
 	{
 	    fail() << std::endl << "\t" << gerr.errorSummary();
 	    return false;
-	    //return "Some tests failed.";
+	}
+    catch ( rtt_cdi_gandolf::gkeysException gerr )
+	{
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return false;
+	}
+    catch ( rtt_cdi_gandolf::GandolfException gerr )
+	{
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return false;
 	}
 
-     // print the results
-//      cout << endl << "Multigroup Rosseland Opacities for Aluminum (matID=" 
-// 	  << matid << ") test:" << endl
-// 	  << "   MGOpacities at T=0.3 keV and rho=0.7 g/cm^3 ( in cm^2/gm. )."
-// 	  << endl << endl;
-//      for ( int i=0; i<mgRosselandOpacity.size(); ++i )
-// 	 cout << "   Opacity(group=" << std::setw(2) << i << ") = " 
-// 	      << std::scientific << std::setprecision(5) 
-// 	      << mgRosselandOpacity[i] << endl;
-//      cout << endl;
-    
-
-//     // Compare the interpolated value with previous interpolations:
+     // Compare the interpolated value with previous interpolations:
      if ( match( mgRosselandOpacity, tabulatedValues ) )
  	pass() << "Multigroup Rosseland Opacity computation was\n\t"
 	       << "good for the data obtained from the file " 
 	       << "\"" << spOpacity->getDataFilename() << "\".";
      else
  	fail() << "Multigroup Rosseland Opacity computation failed for \n\t"
-	       << "the data obtained from the file" 
+	       << "the data obtained from the file " 
 	       << "\"" << spOpacity->getDataFilename() << "\".";
 
      return true;
@@ -510,35 +793,44 @@ bool tCDIGandolf::testMGRosselandOpacityAccessorPassed(
 // ------------------------------------ //
 // Test the gray Plank opacity accessor //
 // ------------------------------------ //
-
+template < class T1, class T2, class T3 >
 bool tCDIGandolf::testGrayPlankOpacityAccessorPassed(
-    SP<rtt_cdi::Opacity> spOpacity )
+    const SP<rtt_cdi::Opacity> spOpacity,
+    const T1 temperature, const T2 density, const T3 tabulatedValue,
+    const std::string skey )
 {
-    // Obtain a Plank Gray Opacity value for T=3.0 keV and density 
-    // = 0.7 g/cm^3.
-    double T = 3.0;   // keV
-    double rho = 0.7; // g/cm^3
-    double grayPlankOpacity = 0.0;
+    T3 grayPlankOpacity;
     try 
 	{
 	    grayPlankOpacity 
-		= spOpacity->getGrayPlank( T, rho );
+		= spOpacity->getGrayPlank( temperature, density, skey );
 	}
     catch ( rtt_cdi_gandolf::ggetgrayException gerr )
 	{
 	    fail() << std::endl << "\t" << gerr.errorSummary();
 	    return false;
-	    // return "Some tests failed.";
 	}
-     
+    catch ( rtt_cdi_gandolf::gkeysException gerr )
+	{
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return false;
+	}
+// Optionally...
+//    catch ( rtt_cdi_gandolf::GandolfException gerr )
+// 	{
+// 	    fail() << std::endl << "\t" << gerr.errorSummary();
+// 	    return false;
+// 	}
+
     // Make sure that the interpolated value matches previous
     // interpolations. 
-    double tabulatedGrayOpacity = rho*pow(T,4); // cm^2/g
     
-    if ( match( grayPlankOpacity, tabulatedGrayOpacity ) )
-	pass() << "grayPlankOpacity computation was good for analyticOpacity data.";
+    if ( match( grayPlankOpacity, tabulatedValue ) )
+	pass() << "grayPlankOpacity computation was good for "
+	       << spOpacity->getDataFilename();
     else
-	fail() << "grayPlankOpacity value is out of spec for analyticOpacity data.";
+	fail() << "grayPlankOpacity value is out of spec. for "
+	       << spOpacity->getDataFilename();
     
     return true;
 
@@ -548,52 +840,47 @@ bool tCDIGandolf::testGrayPlankOpacityAccessorPassed(
 // Test the multigroup Plank Opacity accessor //
 // ------------------------------------------ //
 
+template < class temperatureType, class densityType >
 bool tCDIGandolf::testMGPlankOpacityAccessorPassed( 
-    SP<rtt_cdi::Opacity> spOpacity )
+    const SP<rtt_cdi::Opacity> spOpacity,
+    const temperatureType temperature,
+    const densityType density,
+    const vector<double> tabulatedValues,
+    const std::string skey )
 {
-    // The solution to compare against:
-    int numGroups = 12;
-    vector<double> tabulatedMGOpacity(numGroups);
+    vector<double> mgPlankOpacity( tabulatedValues.size() );
     
-    double T   = 0.4; // keV
-    double rho = 0.22; // g/cm^3
-    for ( int i=0; i<numGroups; ++i )
-	tabulatedMGOpacity[i] = rho*pow(T,4); // cm^2/gm
-    
-    vector<double> mgPlankOpacity;
-    
-    // Interpolate the multigroup opacities for T = 0.4 keV and
-    // density = 2.2 g/cm^3. 
+    // Interpolate the multigroup opacities.
     try
 	{
 	    mgPlankOpacity
-		= spOpacity->getMGPlank( T, rho );
+		= spOpacity->getMGPlank( temperature, density, skey );
 	}
     catch ( rtt_cdi_gandolf::ggetmgException gerr )
 	{
 	    fail() << std::endl << "\t" << gerr.errorSummary();
-	    // return "Some tests failed.";
 	    return false;
 	}
-    
-     // print the results
-//      cout << endl << "Multigroup Plank Opacities for Aluminum (matID=" 
-// 	  << matid << ") test:" << endl
-// 	  << "   MGOpacities at T=0.4 keV and rho=0.22 g/cm^3 ( in cm^2/gm. )."
-// 	  << endl << endl;
-//      for ( int i=0; i<mgPlankOpacity.size(); ++i )
-// 	 cout << "   Opacity(group=" << std::setw(2) << i << ") = " 
-// 	      << std::scientific << std::setprecision(5) 
-// 	      << mgPlankOpacity[i] << endl;
-//      cout << endl;
+    catch ( rtt_cdi_gandolf::gkeysException gerr )
+    	{
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return false;
+	}
+    catch ( rtt_cdi_gandolf::GandolfException gerr )
+	{
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return false;
+	}
 
     // Compare the interpolated value with previous interpolations:
-    if ( match( mgPlankOpacity, tabulatedMGOpacity ) )
-	pass() << "Multigroup Plank Opacity computation was good "
-	       << "for analyticOpacity data.";
+    if ( match( mgPlankOpacity, tabulatedValues ) )
+	pass() << "Multigroup Plank Opacity computation was good\n\t"
+	       << "for the data obtained from the file "
+	       << "\"" << spOpacity->getDataFilename() << "\"";
     else
-	fail() << "Multigroup Plank Opacity computation failed "
-	       << "for analyticOpacity data.";
+	fail() << "Multigroup Plank Opacity computation failed for\n\t"
+	       << "the data obtained from the file " 
+	       << "\"" << spOpacity->getDataFilename() << "\".";
 
     return true;
 
@@ -729,16 +1016,12 @@ void tCDIGandolf::testEnergyBoundaryAccessor( SP<rtt_cdi::Opacity> spOpacity )
 	     ebounds_ref[11] = 70.0;
 	     ebounds_ref[12] = 100.0;
 
-
 	     // Compare the grids.
 	     if ( match( ebounds, ebounds_ref ) )
 		 pass() << "Energy group boundary grid matches.";
 	     else
 		 fail() << "Energy group boundary grid did not match.";
 	     
-// 	     cout << "Energy Boundary Grid (keV):" << endl << endl;
-// 	     for ( int i=0; i<ebounds.size(); ++i )
-// 		 cout << "   ebounds[" << i << "] = " << ebounds[i] << endl;
 	 }
      else
 	 {

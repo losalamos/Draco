@@ -90,18 +90,29 @@ class tCDIGandolf : public rtt_UnitTestFrame::TestApp
 	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity ); 
     void testTemperatureGridAccessor( 
 	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity ); 
+    template < class temperatureType, class densityType >
     bool testMGPlankOpacityAccessorPassed(
-	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity ); 
+	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity,
+	const temperatureType temperature,
+	const densityType density,
+	const vector<double> tabulatedValues,
+	const std::string skey = "pmg" );
+    template < class T1, class T2, class T3 >
     bool testGrayPlankOpacityAccessorPassed(
-	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity ); 
+	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity,
+	const T1 temperature, const T2 density,
+	const T3 tabulatedValue, const std::string skey = "pgray" ); 
+    template < class temperatureType, class densityType >
     bool testMGRosselandOpacityAccessorPassed(
 	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity,
-	const double temperature, const double density, 
-	const vector<double> tabulatedValues ); 
+	const temperatureType temperature, const densityType density, 
+	const vector<double> tabulatedValues,
+	const std::string skey = "rtmg" ); 
+    template < class T1, class T2, class T3 >
     bool testGrayRosselandOpacityAccessorPassed(
 	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity,
-	const double temperature, const double density, 
-	const double tabulatedValue ); 
+	const T1 temperature, const T2 density, 
+	const T3 tabulatedValue, const std::string skey = "rgray" ); 
 };
 
 } // end namespace rtt_cdi_gandolf_test

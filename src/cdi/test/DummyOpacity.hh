@@ -127,7 +127,21 @@ class DummyOpacity : public rtt_cdi::Opacity
      *         targetTemperature keV and targetDensity g/cm^3.
      */
     double getGrayRosseland( const double targetTemperature, 
-			     const double targetDensity);
+			     const double targetDensity,
+			     const std::string skey );
+    std::vector<double> getGrayRosseland(
+	const std::vector<double> targetTemperatures,
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getGrayRosseland(
+	const double targetTemperatures,
+	const std::vector<double> targetDensity,
+	const std::string skey );
+    std::vector<double> getGrayRosseland(
+	const std::vector<double> targetTemperatures,
+	const std::vector<double> targetDensity,
+ 	const std::string skey );
+
     /*!
      * \breif Returns a vector of the opacity values for each energy
      *        group for the prescribed temperature and density.
@@ -149,9 +163,21 @@ class DummyOpacity : public rtt_cdi::Opacity
 
     // The default value for "skey" is set in cdi/Opacity.hh.
 
-    vector<double> getMGRosseland( 
+    std::vector<double> getMGRosseland( 
 	const double targetTemperature, 
 	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getMGRosseland( 
+	const std::vector<double> targetTemperature, 
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getMGRosseland( 
+	const double targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey );
+    std::vector<double> getMGRosseland( 
+	const std::vector<double> targetTemperature, 
+	const std::vector<double> targetDensity,
 	const std::string skey );
 
     /*!
@@ -168,8 +194,24 @@ class DummyOpacity : public rtt_cdi::Opacity
      * \return Gray opacity value for the current material at
      *         targetTemperature keV and targetDensity g/cm^3.
      */
-    double getGrayPlank( const double targetTemperature, 
-			 const double targetDensity );
+
+    double getGrayPlank( 
+	const double targetTemperature, 
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getGrayPlank( 
+	const std::vector<double> targetTemperature,
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getGrayPlank( 
+	const double targetTemperature,
+	const std::vector<double> targetDensity,
+	const std::string skey );
+    std::vector<double> getGrayPlank( 
+	const std::vector<double> targetTemperature,
+	const std::vector<double> targetDensity,
+	const std::string skey );
+
     /*!
      * \breif Returns a vector of the opacity values for each energy
      *        group for the prescribed temperature and density.
@@ -186,9 +228,23 @@ class DummyOpacity : public rtt_cdi::Opacity
      *         vector for this class has length 3 and all entries are
      *         set equal to zero.
      */
-    vector<double> getMGPlank( 
+
+    std::vector<double> getMGPlank( 
 	const double targetTemperature, 
-	const double targetDensity );
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getMGPlank( 
+	const std::vector<double> targetTemperature, 
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getMGPlank( 
+	const double targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey );
+    std::vector<double> getMGPlank( 
+	const std::vector<double> targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey );
 
     /*!
      * \brief Return the number of temperatures in the temperature

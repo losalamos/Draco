@@ -85,7 +85,7 @@ std::string gkeysException::errorMessage()
 	case -1:
 	    return "The requested material ID was not found in the list of material IDs associated with the data file.";
 	case -2:
-	    return "The requested data key was not found if the list of available keys for this material.";
+	    return "The requested data key was not found in the list of available keys for this material.";
  	case 1: // IPCRESS file not found.
  	    return "The IPCRESS file was not found.";
 	case 2: // File is not IPCRESS.

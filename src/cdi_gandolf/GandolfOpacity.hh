@@ -157,11 +157,6 @@ class GandolfOpacity : public rtt_cdi::Opacity
     std::vector<double> logMGOpacities;
 
     /*!
-     * \brief Have we loaded any opacity table yet?
-     */
-    bool anyTableLoaded;
-
-    /*!
      * \brief Have we loaded the gray Rosseland opacity table yet?
      */
     bool grayRosselandTableLoaded;
@@ -227,22 +222,34 @@ class GandolfOpacity : public rtt_cdi::Opacity
     const std::string& getDataFilename() const;
 
     /*!
-     * \brief Returns a single opacity value for the prescribed
-     *        temperature and density.
+     * \brief Returns opacity value(s) for the prescribed
+     *        temperature(s) and density(ies).
      *
      * This opacity object only knows how to access the data for one 
      * material.  The material identification is specified in the
      * construction of the derived concrete opacity object. 
      *
      * Additionally, the default behavior of this function is to
-     * return a Rosseland opacity value.  
+     * return a Rosseland total (scatter plus absorption) opacity
+     * value.   
      *
-     * \param targetTemperature The temperature (in keV) of the
-     *                          material. 
-     * \param targetDensity The density (in g/cm^3) of the material.
-     *
-     * \return Gray opacity value for the current material at
-     *         targetTemperature keV and targetDensity g/cm^3.
+     * \param targetTemperature The temperature(s) (in keV) of the 
+     *        material. Expecting a double or a vector<double>.
+     * \param targetDensity The density(ies) (in g/cm^3) of the
+     *        material.  Expecting a double or a vector<double>.
+     * \param skey Optional parameter used to specify if the returned
+     *        value is scattering ("rsgray"), absorption ("ragray") or
+     *        total ("rgray") opacity.  The the accessor returns the
+     *        total opacity ("rgray") by default.
+     * \return Gray opacity value(s) for the current material at
+     *         targetTemperature(s) keV and targetDensity(ies)
+     *         g/cm^3.  If a vector was used for targetTemperature or
+     *         targetDensity then a vector of opacities will be
+     *         returned.  If both targetTemperature and targetDensity
+     *         are vectors then the resulting opacity vector has index 
+     *         ordering (it*nt+id) where nt is
+     *         targetTemperature.size(), it is the temperature index
+     *         and id is the density index.
      */
     // Currenlty this accessor modifies the GandolfOpacity object so
     // it is not declared as const.  The opacity accessors load the
@@ -250,7 +257,21 @@ class GandolfOpacity : public rtt_cdi::Opacity
     // accessor the tabulated data is retrieved from the
     // GandolfOpacity object and not the data file.
     double getGrayRosseland( 
-	const double targetTemperature, const double targetDensity );
+	const double targetTemperature, 
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getGrayRosseland(
+	const std::vector<double> targetTemperatures,
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getGrayRosseland(
+	const double targetTemperatures,
+	const std::vector<double> targetDensity,
+	const std::string skey );
+    std::vector<double> getGrayRosseland(
+	const std::vector<double> targetTemperatures,
+	const std::vector<double> targetDensity,
+ 	const std::string skey );
 
     /*!
      * \brief Returns a vector of the opacity values for each energy
@@ -288,24 +309,48 @@ class GandolfOpacity : public rtt_cdi::Opacity
 	const double targetTemperature, 
 	const double targetDensity,
 	const std::string skey );
+    std::vector<double> getMGRosseland( 
+	const std::vector<double> targetTemperature, 
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getMGRosseland( 
+	const double targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey );
+    std::vector<double> getMGRosseland( 
+	const std::vector<double> targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey );
  
     /*!
-     * \brief Returns a single opacity value for the prescribed
-     *        temperature and density.
+     * \brief Returns opacity value(s) for the prescribed
+     *        temperature(s) and density(ies).
      *
      * This opacity object only knows how to access the data for one 
      * material.  The material identification is specified in the
      * construction of the derived concrete opacity object. 
      *
      * Additionally, the default behavior of this function is to
-     * return a Plank opacity value.  
+     * return a Plank total opacity value (scatter plus absorption)
+     * opacity value.
      *
-     * \param targetTemperature The temperature (in keV) of the
-     *                          material. 
-     * \param targetDensity The density (in g/cm^3) of the material.
-     *
-     * \return Gray opacity value for the current material at
-     *         targetTemperature keV and targetDensity g/cm^3.
+     * \param targetTemperature The temperature(s) (in keV) of the 
+     *        material. Expecting a double or a vector<double>.
+     * \param targetDensity The density(ies) (in g/cm^3) of the
+     *        material.  Expecting a double or a vector<double>.
+     * \param skey Optional parameter used to specify if the returned
+     *        value is scattering ("psgray"), absorption ("pagray") or
+     *        total ("pgray") opacity.  The the accessor returns the
+     *        total opacity ("pgray") by default.
+     * \return Gray opacity value(s) for the current material at
+     *         targetTemperature(s) keV and targetDensity(ies)
+     *         g/cm^3.  If a vector was used for targetTemperature or
+     *         targetDensity then a vector of opacities will be
+     *         returned.  If both targetTemperature and targetDensity
+     *         are vectors then the resulting opacity vector has index 
+     *         ordering (it*nt+id) where nt is
+     *         targetTemperature.size(), it is the temperature index
+     *         and id is the density index.
      */
     // Currenlty this accessor modifies the GandolfOpacity object so
     // it is not declared as const.  The opacity accessors load the
@@ -313,7 +358,21 @@ class GandolfOpacity : public rtt_cdi::Opacity
     // accessor the tabulated data is retrieved from the
     // GandolfOpacity object and not the data file.
     double getGrayPlank( 
-	const double targetTemperature, const double targetDensity );
+	const double targetTemperature, 
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getGrayPlank( 
+	const std::vector<double> targetTemperature,
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getGrayPlank( 
+	const double targetTemperature,
+	const std::vector<double> targetDensity,
+	const std::string skey );
+    std::vector<double> getGrayPlank( 
+	const std::vector<double> targetTemperature,
+	const std::vector<double> targetDensity,
+	const std::string skey );
 
     /*!
      * \brief Returns a vector of the opacity values for each energy
@@ -341,7 +400,21 @@ class GandolfOpacity : public rtt_cdi::Opacity
     // accessor the tabulated data is retrieved from the
     // GandolfOpacity object and not the data file.
     std::vector<double> getMGPlank( 
-	const double targetTemperature, const double targetDensity );
+	const double targetTemperature, 
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getMGPlank( 
+	const std::vector<double> targetTemperature, 
+	const double targetDensity,
+	const std::string skey );
+    std::vector<double> getMGPlank( 
+	const double targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey );
+    std::vector<double> getMGPlank( 
+	const std::vector<double> targetTemperature, 
+	const std::vector<double> targetDensity,
+	const std::string skey );
 
     /*!
      * \breif Returns the number of temperature points in the data
@@ -406,8 +479,7 @@ class GandolfOpacity : public rtt_cdi::Opacity
      *        and targetDensity using model skey.
      */
     double getGray( const std::string &skey,
-		    bool grayTableLoaded,
-		    const bool otherTableLoaded,
+		    bool &grayTableLoaded,
 		    const double targetTemperature,
 		    const double targetDensity );
 
@@ -432,8 +504,7 @@ class GandolfOpacity : public rtt_cdi::Opacity
      *         This vector will be numGroups long.
      */
     std::vector<double> getMG( const std::string &skey,
-			       bool mgTableLoaded,
-			       const bool otherTableLoaded,
+			       bool &mgTableLoaded,
 			       const double targetTemperature,
 			       const double targetDensity );
     
@@ -455,6 +526,14 @@ class GandolfOpacity : public rtt_cdi::Opacity
      */
     static bool isSame( const std::vector<double> &v1, 
 			const std::vector<double> &v2 );
+
+    /*!
+     * \brief Has any table been loaded?
+     */
+    bool anyTableLoaded() const { return grayRosselandTableLoaded &&
+				      mgRosselandTableLoaded &&
+				      grayPlankTableLoaded &&
+				      mgPlankTableLoaded; };
 
 }; // end of class GandolfOpacity
 
