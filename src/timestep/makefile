@@ -21,6 +21,7 @@ libsrcs = ts_manager.cc \
 	  fixed_ts_advisor.cc \
 	  ratio_ts_advisor.cc \
 	  target_ts_advisor.cc \
+	  field_ts_advisor.cc \
           ts_advisor.cc
 
 # Get the library built, minding our various other targets too.

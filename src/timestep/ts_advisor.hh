@@ -32,7 +32,8 @@ class ts_advisor {
         inf , // informational only, not to be used for control
 	min , // a lower limit
 	max , // a upper limit
-	req   // a required value
+	req , // a required value
+        last_usage  // dummy to mark end of list
     };
 
 // DATA
@@ -67,7 +68,7 @@ class ts_advisor {
 
     static std::string usage_flag_name(const int i) 
     {
-	static const std::string usage_flag_names [4] =
+	static const std::string usage_flag_names [last_usage] =
 	{	"informational",
 		"minimum",
 		"maximum",

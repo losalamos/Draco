@@ -67,8 +67,8 @@ bool target_ts_advisor::invariant_satisfied() const
 {
     bool ldum =
 	name.length() != 0 &&
-	inf    <= usage &&
-	usage  <= req &&
+	0      <= usage &&
+	usage  <  last_usage &&
 	0. < dt_rec;
 
     return ldum;

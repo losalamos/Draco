@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "timestep/field_ts_advisor.cc"
+#include "timestep/field_ts_advisor.t.cc"
 #include <vector>
 
 typedef std::vector<double> FTVD;

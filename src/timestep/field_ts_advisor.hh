@@ -42,7 +42,8 @@ class field_ts_advisor : public ts_advisor {
 	a_mean,     // arithmetic mean
 	q_mean,     // Q weighted mean
 	rc_mean,    // relative change (alpha) weighted mean
-	rcq_mean    // product of Q and alpha weighted mean
+	rcq_mean,   // product of Q and alpha weighted mean
+        last_umf    // dummy to mark end of list
     };    
 
 // DATA
@@ -61,7 +62,7 @@ class field_ts_advisor : public ts_advisor {
 
     static std::string update_method_flag_name(const int i)
     {
-	static const std::string update_method_flag_names [5] =
+	static const std::string update_method_flag_names [last_umf] =
 	{ "infinity norm",
 	  "arithmetic mean",
 	  "weighted by field value",
