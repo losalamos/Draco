@@ -78,10 +78,10 @@ int Multigroup_Particle<MT>::get_packed_particle_size(
  * current cell.
  */
 template<class MT>
-void Multigroup_Particle<MT>::transport(const MT   &mesh, 
-				  const MG_Opacity &xs, 
-				  Tally<MT>        &tally, 
-				  SP_Diagnostic     diagnostic)
+void Multigroup_Particle<MT>::transport(const MT         &mesh, 
+					const MG_Opacity &xs, 
+					Tally<MT>        &tally, 
+					SP_Diagnostic     diagnostic)
 {
     Require (alive);
 
