@@ -7,11 +7,12 @@
  */
 //---------------------------------------------------------------------------//
 
-#include "MC_Test.hh"
 #include "../TET_Mesh.hh"
+#include "../TET_Builder.hh"
 #include "../Layout.hh"
 #include "../XYZCoord_sys.hh"
 #include "../Release.hh"
+#include "TET_test_1.hh"
 #include "c4/global.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
@@ -27,10 +28,12 @@ using rtt_mc::Coord_sys;
 using rtt_mc::XYZCoord_sys;
 using rtt_mc::Layout;
 using rtt_mc::TET_Mesh;
+using rtt_mc::TET_Builder;
 using rtt_mc::ThreeVector;
 using rtt_mc::sample_in_triangle;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
+using rtt_mc_test::TET_test_1;
 
 //! Typedef for scalar field of ThreeVectors.
 typedef std::vector<ThreeVector> SF_THREEVECTOR;
@@ -250,6 +253,24 @@ void Test_TET()
     if (fabs(0.559016994375-mesh_ptr_1->face_area(1,2)) > TET_epsilon) ITFAILS;
     if (fabs(0.707106781187-mesh_ptr_1->face_area(2,3)) > TET_epsilon) ITFAILS;
     if (fabs(0.5 - mesh_ptr_1->face_area(1,4)) > TET_epsilon)          ITFAILS;
+
+    // Later, add some vector position and direction tests here.
+
+    // Test interface ===> TET_Builder instantiation.
+
+    SP<TET_test_1> interface(new TET_test_1());
+    if (!interface)                                   ITFAILS;
+
+    TET_Builder builder(interface);
+
+    SP<TET_Mesh> mesh_ptr_2 = builder.build_Mesh();
+    if (!mesh_ptr_2)                                  ITFAILS;
+
+    // The pointers themselves should not be equal...
+    if (mesh_ptr_1 == mesh_ptr_2)                     ITFAILS;
+
+    // ... but, with luck, the meshes will be equal.
+    if (*mesh_ptr_1 != *mesh_ptr_2)                   ITFAILS;
 
 
 }   // end Test_TET()
