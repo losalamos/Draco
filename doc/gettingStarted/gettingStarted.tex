@@ -1,3 +1,4 @@
+
 %%---------------------------------------------------------------------------%%
 %% 
 %% \file    draco/doc/gettingStarted/gettingStarted.tex
@@ -134,7 +135,7 @@ The purpose of this document is to present a detailed explanation
 of \draco's clients including \milagro, \tycho\ and \solon.  In
 addition to building these libraries and clients, we will also cover
 setting up the shell environment, accessing recommended scripts and
-tools, and using 3rd party vendors (e.g. \metis\ and \pcg).  We will
+tools, and using third party vendors (e.g. \metis\ and \pcg).  We will
 also point the reader to other \draco\ realted documents where more
 detailed information can be located.
 
@@ -157,13 +158,14 @@ build system~\cite{draco-build}.
 %%----------------------------------------
 \subsection{Bash}
 
-Additionally, the recommended shell is for \draco\ development is
-\bash.  All of the following examples assume that use user is running
-\bash\ as his or her primary shell.  If you are not using \bash\ the
-syntax shown in all of this documents examples may be slightly
-different.  If you would like to make \bash\ your primary shell you
-can add the following code to the end of your \comp{.login.local}
-startup script.
+The recommended shell is for \draco\ development is \bash.  All of the
+following examples assume that use user is running \bash\ as his or
+her primary shell.  If you are not using \bash\ the syntax shown in
+all of this documents examples may be slightly different.  If you
+would like to make \bash\ your primary shell you can add the following
+code to the end of your \comp{.login.local} startup script.  The
+default shell for the CCS-4 Linux machines is \bash\ so this script is 
+not needed on our Linux boxes.
 
 \footnotesize
 
@@ -264,8 +266,8 @@ compilers on Twix (SGI), Crisps (SGI) and Bonjovi (Sun).
 \hspace*{0.25in}         export KAI\_SERIAL=1081\\
 \hspace*{0.25in}         export KAI\_CODEKEY=kkkllklkkklnchllenllnebb\\
 \hspace*{0.25in}         export KAI\_PATH=/usr/local/bin\\
-    elif [ \$target = ios ]; then\\
-\hspace*{0.25in}         export KCC\_LICENSE=CXP-1084-NLK-897168-66195\\
+%    elif [ \$target = ios ]; then\\
+%\hspace*{0.25in}         export KCC\_LICENSE=CXP-1084-NLK-897168-66195\\
     fi
 }
 \end{verse}
@@ -274,44 +276,46 @@ compilers on Twix (SGI), Crisps (SGI) and Bonjovi (Sun).
 
 If you are compiling on a machine other than one of those listed above
 you will need to assign different values for \comp{KAI\_SERIAL} and
-\comp{KAI\_CODEKEY}.  When using a CCS-4 Linux machine you only need
-to assign a value for \comp{KCC\_LICENSE}.  The licenses that I now of 
-are listed below in Table~\ref{tab:KCClicense}.
+\comp{KAI\_CODEKEY}.  
 
-\begin{table}[!ht]
-  \setcaptionwidth{0.9\textwidth}
-  \caption{KCC license numbers for CCS-4 Linux machines}
-  \label{tab:KCClicense}
-  \footnotesize
+%When using a CCS-4 Linux machine you only need
+%to assign a value for \comp{KCC\_LICENSE}.  The licenses that I now of 
+%are listed below in Table~\ref{tab:KCClicense}.
 
-  \begin{center}
-    \newcolumntype{W}{>{\raggedright\setlength{\hsize}{0.1\linewidth}\arraybackslash}X}
-    \newcolumntype{Y}{>{\raggedright\setlength{\hsize}{0.4\linewidth}\arraybackslash}X}
-    \newcolumntype{Z}{>{\centering\setlength{\hsize}{0.5\linewidth}\arraybackslash}X}
+%\begin{table}[!ht]
+%  \setcaptionwidth{0.9\textwidth}
+%  \caption{KCC license numbers for CCS-4 Linux machines}
+%  \label{tab:KCClicense}
+%  \footnotesize
+
+%  \begin{center}
+%    \newcolumntype{W}{>{\raggedright\setlength{\hsize}{0.1\linewidth}\arraybackslash}X}
+%    \newcolumntype{Y}{>{\raggedright\setlength{\hsize}{0.4\linewidth}\arraybackslash}X}
+%    \newcolumntype{Z}{>{\centering\setlength{\hsize}{0.5\linewidth}\arraybackslash}X}
     
-    \begin{tabularx}{0.9\linewidth}{WYZ}  
-      \multicolumn{2}{c}{\textbf{Machine Name (Primary User)}} &
-      \multicolumn{1}{c}{\textbf{License}} \\ 
-        \hline
-        \\
-        & \textbf{}(Todd Adams)         & CXP-1304-NLK-791441-15344 \\ 
-        & \textbf{}(Marv Alme)          & CXP-1931-NLK-512733-44017 \\
-        & \textbf{Mordor} (Tom Evans)   & CXP-0392-NLK-196119-01072 \\
-        & \textbf{Paxi} (Jim Warsa)     & CXP-2756-NLK-145783-18353 \\
-        & \textbf{}(Mark Gray)          & CXP-2294-NLK-350563-97457 \\
-        & \textbf{Thasos} (John McGhee) & CXP-0106-NLK-322089-15472 \\
-        & \textbf{Patmos} (Shawn Pautz) & CXP-1601-NLK-668304-80530 \\
-        & \textbf{}(Randy Roberts)      & CXP-0799-NLK-024480-98323 \\
-        & \textbf{Ios} (Kelly Thompson) & CXP-1084-NLK-897168-66195 \\
-        & \textbf{Vikings} (Todd Urbatsch) & CXP-2063-NLK-462181-83698 \\
-        & \textbf{}(Todd Wareing)       & CXP-0612-NLK-106497-62963 \\
-        & \textbf{}(Jim Morel)          & CXP-2624-NLK-212440-91410 \\
-        & \textbf{Mikonos} (Server)     & ? \\
-        & \textbf{Naxos} (File Server)  & ? \\
-      \end{tabularx}
-    \end{center}
-    \normalsize
-  \end{table}
+%    \begin{tabularx}{0.9\linewidth}{WYZ}  
+%      \multicolumn{2}{c}{\textbf{Machine Name (Primary User)}} &
+%      \multicolumn{1}{c}{\textbf{License}} \\ 
+%        \hline
+%        \\
+%        & \textbf{}(Todd Adams)         & CXP-1304-NLK-791441-15344 \\ 
+%        & \textbf{}(Marv Alme)          & CXP-1931-NLK-512733-44017 \\
+%        & \textbf{Mordor} (Tom Evans)   & CXP-0392-NLK-196119-01072 \\
+%        & \textbf{Paxi} (Jim Warsa)     & CXP-2756-NLK-145783-18353 \\
+%        & \textbf{}(Mark Gray)          & CXP-2294-NLK-350563-97457 \\
+%        & \textbf{Thasos} (John McGhee) & CXP-0106-NLK-322089-15472 \\
+%        & \textbf{Patmos} (Shawn Pautz) & CXP-1601-NLK-668304-80530 \\
+%        & \textbf{}(Randy Roberts)      & CXP-0799-NLK-024480-98323 \\
+%        & \textbf{Ios} (Kelly Thompson) & CXP-1084-NLK-897168-66195 \\
+%        & \textbf{Vikings} (Todd Urbatsch) & CXP-2063-NLK-462181-83698 \\
+%        & \textbf{}(Todd Wareing)       & CXP-0612-NLK-106497-62963 \\
+%        & \textbf{}(Jim Morel)          & CXP-2624-NLK-212440-91410 \\
+%        & \textbf{Mikonos} (Server)     & ? \\
+%        & \textbf{Naxos} (File Server)  & ? \\
+%      \end{tabularx}
+%    \end{center}
+%    \normalsize
+%  \end{table}
 
 To ensure that you are actually using the version of \kcc\ specified by
 \comp{KAI\_PATH} you should prepend your \comp{PATH} with this
@@ -403,9 +407,11 @@ so that no modifications are required to use \textbf{autoconf},
 If you want to use the automatic documentation features of
 \draco~\cite{doxygen} then you will need to have both \doxygen\ and
 \LaTeX\ configured for your system.  The \doxygen\ code requires
-access to the \textbf{QT} libraries.  Additionally you will need to
-add the \textbf{QT} libraries location to the SGI \emph{library load
-  path}. (Note: \doxygen\ is only available on the SGI.)
+access to the \textbf{QT} libraries.  Additionally the \textbf{QT}
+libraries location must be included in the \emph{library load path}.
+For the CCS-4 Linux systems this is configured automatically for you.
+On the X-Division LAN \doxygen\ is only available on the SGI and the
+following two environment variables will need to be set:
 
 \footnotesize
 \begin{verbatim}
@@ -531,18 +537,26 @@ command.
 
 \footnotesize
 \begin{verse}
-\texttt{[$\sim$/work] \% cvs co -P draco \\
-\emph{cvs checkout: Updating draco \\
-U draco/.cvsignore \\
-      ... \\
-U draco/tools/test\_filter.py}}
+\texttt{[$\sim$/work] \% cvs co -P draco} \\
+%\emph{cvs checkout: Updating draco \\
+%U draco/.cvsignore \\
+%      ... \\
+%U draco/tools/test\_filter.py}}
 \end{verse}
 \normalsize
 
 This will create the directory \comp{draco} under \comp{$\sim$/work}.  All
 of the \draco\ source files will be placed in this directory.  The
 \comp{-P} tag instructs \cvs\ to prune empty directories in the
-checked out version.  
+checked out version.  You should also \emph{check out} the \cvs\ files 
+required to build the \draco\ documentation.  This can be done by
+executing a similar \cvs\ command.
+
+\footnotesize
+\begin{verse}
+\texttt{[$\sim$/work] \% cvs co -P draco\_doc} \\
+\end{verse}
+\normalsize
 
 %%----------------------------------------
 \subsection{\tycho, \metis\ and other \draco\ clients}
@@ -636,11 +650,11 @@ an SGI machine:
 \footnotesize
 \begin{verse}
 \texttt{[$\sim$/work/sgi\_mpi0/draco] \% ../../draco/draco\_config .. --with-c4=mpi $\backslash$\\
-\hspace{0.5in}--with-pcglib-lib=\$\{VENDORS\}/pcglib/\$(uname) \\
-\emph{../../draco/configure --prefix=/home/kellyt/work/sgi\_mpi0 --with-c4=mpi $\backslash$\\
-\hspace{0.5in}--with-pcglib-lib=/n/skiathos/radtran/vendors/pcglib/IRIX64\\
-creating cache ./config.cache\\
-\hspace{1.0in} \ldots }}
+\hspace{0.5in}--with-pcglib-lib=\$\{VENDORS\}/pcglib/\$(uname)} \\
+%\emph{../../draco/configure --prefix=/home/kellyt/work/sgi\_mpi0 --with-c4=mpi $\backslash$\\
+%\hspace{0.5in}--with-pcglib-lib=/n/skiathos/radtran/vendors/pcglib/IRIX64\\
+%creating cache ./config.cache\\
+%\hspace{1.0in} \ldots }}
 \end{verse}
 \normalsize
 
@@ -649,9 +663,11 @@ In this example, we have assumed that the environment variable
 current machine. This configure command also links to the \pcg\ 
 libraries.  Different builds will need to include different vendor
 libraries.  See Ref.~\cite{draco-build} for details about what
-libraries may need to be included.  For example, to use the
-\url{cdi_gandolf} package you will need to link with the Gandolf
-libraries by using the following configure option:
+libraries may need to be included.  Additionally, some packages may
+have their own documentation concerning required configure options.
+For example, to use the \url{cdi_gandolf} package you will need to
+link with the Gandolf libraries by using the following configure
+option:
 
 \footnotesize
 \begin{verse}
@@ -664,10 +680,10 @@ libraries we would execute a similar command.
 
 \footnotesize
 \begin{verse}
-\texttt{[$\sim$/work/sun0/draco] \% ../../draco/draco\_config .. \\
-\emph{../../draco/configure --prefix=/home/kellyt/work/sun0 $\backslash$\\
-\hspace{0.5in}creating cache ./config.cache\\
-\hspace{1.0in} \ldots }}
+\texttt{[$\sim$/work/sun0/draco] \% ../../draco/draco\_config .. }\\
+%\emph{../../draco/configure --prefix=/home/kellyt/work/sun0 $\backslash$\\
+%\hspace{0.5in}creating cache ./config.cache\\
+%\hspace{1.0in} \ldots }}
 \end{verse}
 \normalsize
 
@@ -675,7 +691,7 @@ Once the configuration is complete the files required for building the
 \draco\ libraries will exist in the target directory.  The Makefiles
 will know where the required system tools live, where the vendor
 libraries are installed and where the final \draco\ library files
-should be installed (\comp{$\sim$/work/\emph{target}/lib}).
+should be installed (\comp{$\sim$/work/<\emph{target}>/lib}).
 
 %%----------------------------------------
 \subsection{\tycho\ and \metis}
@@ -1013,7 +1029,7 @@ added then you may need to reconfigure as well.)
 \end{verse}
 
 \begin{verse}
-\texttt{[$\sim$/work/draco] \% autoreconf --localdir=config }
+\texttt{[$\sim$/work/draco] \% autoreconf --localdir=config --force}
 \end{verse}
 
 \begin{verse}

@@ -29,23 +29,6 @@ if [ -z $BASHRCDONE ]; then
     fi
 
     #----------------------------------------#
-    #               LaTeX                    #
-    #----------------------------------------#
-
-    # Updated styles for LaTeX (from Tom Evans)
-    export TEXINPUTS=/home/tme/lib/tex/styles//:
-    export BSTINPUTS=/home/tme/lib/tex/bib//:
-
-    #----------------------------------------#
-    #              XMGR                      #
-    #----------------------------------------#
-
-    if [ "`uname`" = IRIX64 ] ; then
-        # XMGR HELP
-        export GR_HOME=/scratch/tme/xmgr
-    fi
-
-    #----------------------------------------#
     #                  KCC                   #
     #----------------------------------------#
 
@@ -62,8 +45,6 @@ if [ -z $BASHRCDONE ]; then
         export KAI_SERIAL=1081
         export KAI_CODEKEY=kkkllklkkklnchllenllnebb
         export KAI_PATH=/usr/local/bin
-    elif [ $target = ios ]; then
-        export KCC_LICENSE=CXP-1084-NLK-897168-66195
     fi
     
     #----------------------------------------#
@@ -74,7 +55,7 @@ if [ -z $BASHRCDONE ]; then
     if [ "`uname`" = IRIX64 ] ; then
         # Force CVS to use SSH authentication from IRIX machines
         export CVS_RSH=ssh
-        export CVSROOT=kellyt@ios:/radtran/cvsroot
+        export CVSROOT=mikonos:/radtran/cvsroot
     elif [ "`uname`" = Linux ] ; then
         export CVSROOT=/radtran/cvsroot    
     fi
@@ -83,8 +64,6 @@ if [ -z $BASHRCDONE ]; then
     #              Python 1.5                #
     #----------------------------------------#
 
-    # On IRIX use python from /scratch/tme/bin which is already part
-    # of the path.
     if [ "`uname`" = SunOS ] ; then
         PYTHON_PATH=/usr/local/src/Python-1.5.2:
     fi
@@ -94,17 +73,14 @@ if [ -z $BASHRCDONE ]; then
     #----------------------------------------#
 
     # SEARCH PATH
-    MYPATH=.:~/bin:~/bin/$(uname)
-    PATH=${PYTHON_PATH}${KAI_PATH}:$GNATS_PATH:$MYPATH:$PATH
+    MYPATH=~/bin:
+    PATH=${PYTHON_PATH}${KAI_PATH}${MYPATH}${PATH}
 
     # MAN PATH
     if [ "`uname`" = IRIX64 ] ; then
        MYMANPATH=/scratch/tme/man:
     fi
     MANPATH=$MYMANPATH:$GNATS_MANPATH:$MANPATH
-
-    # INFO PATH
-    INFOPATH=$GNATS_INFOPATH:$INFOPATH
 
     # LOAD PATH
     if [ "`uname`" = IRIX64 ] ; then
@@ -131,8 +107,8 @@ amr_mesh_fort diffusion linalg matprops mesh meshReaders \
 meshReaders_fort meshReaders_Services meshTest nml quadrature \
 radphys sn stdheaders stopwatch timestep traits units viz xm"
 alias killextras='cd src; rm -rf $extradirs; cd ..' 
+export VENDORS='/radtran/vendors'
 if [ "`uname`" = IRIX64 ] ; then
-    export VENDORS='/n/skiathos/radtran/vendors'
     # Gandolf only
     vlibs0="--with-gandolf-lib=${VENDORS}/gandolf/IRIX64/lib64"
     alias dracoconfig='../../draco/draco_config .. $vlibs0; killextras'
@@ -143,13 +119,9 @@ if [ "`uname`" = IRIX64 ] ; then
     vlibs2="--with-c4=mpi $vlibs"
     alias mpipcgdracoconfig='../../draco/draco_config .. $vlibs2; killextras'
 elif [ "`uname`" = Linux ] ; then
-    export VENDORS='/radtran/vendors'
     # Gandolf only
     vlibs0="--with-gandolf-lib=${VENDORS}/gandolf/$(uname)"
     alias dracoconfig='../../draco/draco_config .. $vlibs0; killextras'
-    # No PCG for Linux
-    # vlibs1="--with-pcglib-lib=${VENDORS}/pcglib/$(uname) $vlibs0"
-    # alias pcgdracoconfig='../../draco/draco_config .. $vlibs1; killextras'
     # Gandolf + MPI
     vlibs2="--with-c4=mpi $vlibs0"
     alias mpipcgdracoconfig='../../draco/draco_config .. $vlibs2; killextras'
