@@ -50,14 +50,14 @@
 
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
-\refno{X-6-RN(U)-00-???}
+\refno{CCS-4:01-??(U)}
 \subject{Getting Started with Draco -- Help for new users and developers}
 % ?? The Draco Primer ??
 
 %-------NO CHANGES
-\divisionname{Applied Physics Division}
-\groupname{X-6:Transport Methods Group}
-\fromms{Kelly Thompson X-6 D409}
+\divisionname{Computer and Computational Sciences Division}
+\groupname{CCS-4: Transport Methods Group}
+\fromms{Kelly Thompson CCS-4 D409}
 \phone{(505) 665--3929}
 \originator{kt}
 \typist{kt}
@@ -80,13 +80,12 @@
 %%---------------------------------------------------------------------------%%
 
 \distribution {
-  X-6 MS D409:\\
-% Group Leader:  J.E. Morel, X-6 MS D409\\ 
+  CCS-4 MS D409:\\
+  Group Leader:  J.E. Morel, X-6 MS D409\\ 
   B.T. Adams, X-6 MS D409\\
 %  R.E. Alcouffe, X-6 MS D409\\ 
-  M.L. Alme, X-6 MS D409\\
-%  D.G. Archuleta, X-6 MS D409\\ 
-%  L.H. Auer, X-6 MS D409\\ 
+%  M.L. Alme, X-6 MS D409\\
+  D.G. Archuleta, X-6 MS D409\\ 
 %  R.S. Baker, X-6 MS D409\\ 
 %  F.W. Brinkley, Jr., X-6 MS D409\\ 
 %  J.A. Dahl, X-6 MS D409\\ 
@@ -94,20 +93,18 @@
   T.M. Evans, X-6 MS D409\\ 
 %  S.A. Gallegos, X-6 MS D409\\ 
 %  B.D. Ganapol, X-6 MS D409\\ 
-  C.J. Gesh, X-6 MS D409\\
   M.G. Gray, X-6 MS D409\\ 
 %  J.C. Gulick, X-6 MS D409\\ 
 %  M.L. Hall, X-6 MS D409\\ 
-  W.D. Hawkins, X-6 MS D409\\
+%  W.D. Hawkins, X-6 MS D409\\
   H.G. Hughes, X-6 MS D409\\ 
 % M.A. Hunter, X-6 \\
-% H. Lichtenstein, X-6 MS D409\\ 
+ H. Lichtenstein, X-6 MS D409\\ 
 % D.R. Marr, X-6 MS D409\\ 
   J.M. McGhee, X-6 MS D409\\ 
 %  D. Mihalas, X-6 MS D409\\ 
-  J.E. Morel, X-6 MS D409\\ 
   M.L. Murillo, X-6 MS D409\\ 
-%  G.L. Olson, X-6 MS D409\\ 
+  G.L. Olson, X-6 MS D409\\ 
   S. Pautz, X-6 MS D409\\ 
 %  A.K. Prinja, X-6\\ 
 %  E.W. Qarsen, X-6 MS D409\\ 
@@ -212,7 +209,10 @@ you should have the equivalent coding using csh syntax in your
      # Setup CVS (.bashrc)
      #
 
-     export CVSROOT=/n/skiathos/radtran/cvsroot
+     # From Linux we don't need to specify the machine name.
+     # A moniker might be needed on some systems
+     # e.g.: export CVSROOT=kellyt@mikonos:/radtran/cvsroot
+     export CVSROOT=mikonos:/radtran/cvsroot
      export CVSEDITOR=xemacs
 \end{verbatim}
 
@@ -357,11 +357,11 @@ John McGhee has written a technical memo on getting started with
 \textbf{GNATS} in the \draco\ environment~\cite{draco-gnats}.  This
 memo is aimed at new users and its contents are not replicated here.
 
-\subsection{Purify and Ensure}
+\subsection{Purify and Assure}
 
 See Ref.~\cite{draco-purify} for details on using \textbf{Purify} with 
 \draco.  No \draco\ specific documents currently exist for using
-\textbf{Ensure} with \draco.
+\textbf{Assure} with \draco.
 
 \subsection{\comp{.bashrc}}
 
@@ -726,6 +726,32 @@ postscript versions of the documentation.
 \end{verse}
 
 %%----------------------------------------
+\subsection{Package Documentation}
+
+Some \draco\ packages have \LaTeX\ documentation in the source tree.
+When you configure these packages a \comp{doc} subdirectory will be
+created in your build tree under the package directory (e.g.:
+\comp{target/draco/src/$\langle$\emph{package}$\rangle$/doc}).  This directory will
+contain a Makefile for building the package documentation.  The
+following targets are available:
+
+\begin{quote}
+\begin{tabular}{rl}
+all:    &  builds the $\langle$\emph{package}$\rangle$.ps file \\
+doc:    &  same as all \\
+xdvi:   &  builds $\langle$\emph{package}$\rangle$.dvi and then runs \comp{xdvi} \\
+view:   &  builds $\langle$\emph{package}$\rangle$.ps and then runs \comp{ghostview} \\
+print:  &  builds $\langle$\emph{package}$\rangle$.ps and then runs \comp{lp} or \comp{lpr}
+\end{tabular}
+\end{quote}
+
+In addition to building these \LaTeX\ files you should examine the
+\comp{doc} subdirectory in the source tree.  Some packages have PDF
+formatted documentation (or other types of documentation) in this
+subdirectory. 
+
+
+%%----------------------------------------
 \subsection{General \draco\ Related Documentation}
 
 Additional documentation (other than the \emph{automatic code
@@ -734,8 +760,10 @@ research notes, technical memorandum and other potentially useful
 documentation.  An abreviated list of these documents in shown in
 Table \ref{tab:draco_docs}.  In addition to this list of references
 you may want to peruse the \draco\ web site located at
-\emph{http://www-xdiv.lanl.gov/XTM/radtran/draco\_www/draco}.
 
+\begin{quote}
+\emph{http://www.ccs.lanl.gov/rad/htdocs/XTM/radtran/draco\_www/draco}.
+\end{quote}
 % this web address gets split at the dash.  Using \mbox{} makes things 
 % worse because the text runs off the end of the page.
 
@@ -755,10 +783,10 @@ you may want to peruse the \draco\ web site located at
       Using Purify in \draco\ with MPI       & ~\cite{draco-purify} \\
       \draco\ Release Policy and Procedures  & ~\cite{xtm:9936}    \\
       Generic Programming in the \solon\ Interface & ~\cite{ro98} \\
-      \draco\ CVS Repository                 & [not yet available?] \\
-%      Using Ensure in \draco                 & [not yet available?] \\
-%      \draco\ email list                     & [not yet available?] \\
-%      The \draco\ web site                   & http://www-xdiv.lanl.gov/XTM/radtran/draco\_www/draco\\
+      \draco\ CVS Repository                 & [ref?] \\
+      Using Assure in \draco                 & [ref?] \\
+      \draco\ email list                     & [ref?] \\
+      The \draco\ web site                   &  ~\cite{draco-web-site} \\
       \hline\hline
     \end{tabular}
   \end{center}
@@ -887,6 +915,21 @@ and execute the command ``\comp{cvs add $<$\emph{file}$>$}'' for each
 should execute the ``\comp{cvs add}'' command for it and all of the
 associated test files.  To finalize your chages, navigate back to the
 \draco\ source directory and execute a ``\comp{cvs commit}'' command.
+
+%%----------------------------------------
+\subsection{Package Documentation}
+
+If you want to include \LaTeX\ documentation for your new package
+create a new subdirectory called \comp{doc} in the source tree under
+your package subdirectory.  Your \LaTeX\ document should be named
+$\langle$\emph{package}$\rangle$.\comp{tex}.  You will also need to
+modify your package's \comp{configure.in} to include the following:
+
+\begin{tabbing}
+\hspace{0.5in}\=\comp{AC\_OUTPUT(Makefile:../../config/Makefile.package.in $\backslash$} \\*
+\>\hspace{0.5in}\=\comp{test/Makefile:../../config/Makefile.test.in $\backslash$} \\*
+\>\>\comp{doc/Makefile:../../config/Makefile.doc.in)}
+\end{tabbing}
 
 %%---------------------------------------------------------------------------%%
 
