@@ -29,7 +29,7 @@ namespace rtt_timestep
 {
 /*!
  * \brief  Gets the release number for the timestep package. 
- * \return release number as a string in the form "timestep-x_x_x"
+ * \return release number as a string in the form "timestep-\#_\#_\#"
  */
     const std::string release();
 }
