@@ -194,7 +194,7 @@ namespace rtt_cdi
 	 * \param temperature Temperature of the material in keV.
 	 * \return The electron based thermal conductivity in 1/s/cm.
 	 */
-	virtual double getElectronBasedThermalConductivity(
+	virtual double getElectronThermalConductivity(
 	    double temperature, double density ) const = 0; 
 
 	/*!
@@ -207,7 +207,7 @@ namespace rtt_cdi
 	 * \return A vector of electron based thermal conductivities
 	 * in 1/s/cm.
 	 */
-	virtual std::vector< double > getElectronBasedThermalConductivity(
+	virtual std::vector< double > getElectronThermalConductivity(
 	    const std::vector< double >& vtemperature,
 	    const std::vector< double >& vdensity ) const = 0;
 	
