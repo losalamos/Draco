@@ -13,6 +13,8 @@
 #ifndef __units_UnitSystemEnums_hh__
 #define __units_UnitSystemEnums_hh__
 
+#include <string>
+
 namespace rtt_units
 {
 
