@@ -3,7 +3,7 @@ dnl ac_dracoenv.m4
 dnl puts together the DRACO environments given the arguments from 
 dnl vendors (ac_vendors.m4) and DRACO (ac_dracoarg.m4)
 dnl
-dnl Time-stamp: <99/02/24 10:34:01 rsqrd>
+dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
@@ -176,14 +176,23 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl DEJAGNU TEST SYSTEM
    dnl
 
+   # If we ran AC_RUNTESTS with "serial" then mark it so here.
+
+   for np in $test_nprocs; do
+       if test $np = serial || test $np = scalar ; then
+          test_scalar="scalar"
+       fi
+   done
+
    # Double dollar signs in MAKE commands will become single dollar signs.
    # Backslashes are needed to ensure that objdir is not
    # evaluated until unix.exp
-
+   
    for tool in $test_alltarget; do
        if test "${with_c4:=scalar}" = scalar || \
-	   test "$with_c4" = yes ; then
-	   test_launch='\$$objdir/'"${tool}"
+	 test "$with_c4" = yes || \
+         test "$test_scalar" = scalar ; then
+           test_launch='\$$objdir/'"${tool}"
 	   test_nprocs="1"
        elif test "$with_c4" = mpi ; then
 	   test_launch='mpirun -np \$$NPROCS \$$objdir/'"${tool}"

@@ -2,7 +2,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl ac_conf.m4
 dnl service macros used in configure.in's throughout DRACO
 dnl
-dnl Time-stamp: <99/02/05 13:13:42 rsqrd>
+dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
@@ -50,11 +50,14 @@ dnl AC_RUNTESTS
 dnl
 dnl add DRACO-package tests (default to use DejaGnu)
 dnl usage: in configure.in:
-dnl AC_RUNTESTS(testexec1 testexec2 ... , nprocs1 nprocs2 ...)
+dnl AC_RUNTESTS(testexec1 testexec2 ... , {nprocs1 nprocs2 ... | scalar})
+dnl where serial means run as serial test only.
+dnl If compiling with scalar c4 then nprocs are ignored.
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_RUNTESTS, [dnl
 	test_alltarget="$test_alltarget $1"
+        
 	test_nprocs="$2"
 ])
 
