@@ -1,5 +1,6 @@
 #!/bin/sh
 # usage: draco_conf prefix [stuff]
+# $Id$
 
 case $1 in
     --*)

@@ -1,3 +1,10 @@
+dnl-------------------------------------------------------------------------dnl
+dnl draco/ configure.in
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for draco/
+dnl-------------------------------------------------------------------------dnl
+
 AC_INIT(README.draco)
 AC_CONFIG_AUX_DIR(config)
 
@@ -10,3 +17,7 @@ AC_DRACO_ARGS
 
 AC_CONFIG_SUBDIRS(tools src doc)
 AC_OUTPUT(Makefile)
+
+dnl-------------------------------------------------------------------------dnl
+dnl			 end of draco/ configure.in
+dnl-------------------------------------------------------------------------dnl
