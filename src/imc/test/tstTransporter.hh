@@ -156,12 +156,12 @@ RW_Interface<PT>::RW_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder> osb)
 	mat_data->gray_absorption_opacity[i]     = 100.0  * density[i];
 	mat_data->gray_absorption_opacity[i+mod] = 50.0 * density[i+mod];
 
-	mat_data->mg_absorption_opacity[i][0]     = 0.1 * density[i];
-	mat_data->mg_absorption_opacity[i][1]     = 0.1 * density[i];
-	mat_data->mg_absorption_opacity[i][2]     = 0.1 * density[i];
-	mat_data->mg_absorption_opacity[i+mod][0] = 0.01 * density[i+mod];
-	mat_data->mg_absorption_opacity[i+mod][1] = 0.01 * density[i+mod];
-	mat_data->mg_absorption_opacity[i+mod][2] = 0.01 * density[i+mod];
+	mat_data->mg_absorption_opacity[i][0]     = 100.0 * density[i];
+	mat_data->mg_absorption_opacity[i][1]     = 10.0  * density[i];
+	mat_data->mg_absorption_opacity[i][2]     = 1.0   * density[i];
+	mat_data->mg_absorption_opacity[i+mod][0] = 1.0   * density[i+mod];
+	mat_data->mg_absorption_opacity[i+mod][1] = 0.1   * density[i+mod];
+	mat_data->mg_absorption_opacity[i+mod][2] = 0.01  * density[i+mod];
 
 	mat_data->mg_scattering_opacity[i][0]     = 0.5 * density[i];
 	mat_data->mg_scattering_opacity[i][1]     = 0.5 * density[i];

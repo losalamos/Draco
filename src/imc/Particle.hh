@@ -28,6 +28,7 @@
 #include <cmath>
 #include <iomanip>
 #include <algorithm>
+#include <limits>
 
 namespace rtt_imc 
 {
@@ -252,7 +253,7 @@ class Particle
     inline void stream_analog_capture  (Tally<MT> &, double);
 
     // Perform streaming operations specific to implicit absorption
-    inline void stream_implicit_capture(double sig_eff_abs, Tally<MT>&, double);
+    inline void stream_implicit_capture(double, Tally<MT> &, double);
 
     // Surface crossings, return a false if particle escapes.
     inline bool surface(const MT &, int);
@@ -264,15 +265,18 @@ class Particle
     inline void census_event(Tally<MT> &);
 
     // Process a particle crossing a boundary
-    inline void boundary_event(const MT&, Tally<MT>&, int);
+    inline void boundary_event(const MT &, Tally<MT> &, int);
+
+    // Process a particle that has undergone random walk.
+    inline void random_walk_event(const double, const double, Tally<MT> &, 
+				  const double, const double);
 
     // Perform an isotropic scatter.
     inline void scatter(const MT &);
 
-    // Dispatch to correct streaming method
-    inline void stream_and_capture(Tally<MT>& tally, 
-				   SP_Surface_tracker surface_tracker,
-				   double sigma_eff_abs, double dstream);
+    // Dispatch to correct streaming method.
+    inline void stream_and_capture(Tally<MT> &, SP_Surface_tracker, double, 
+				   double);
 
   public:
     // Particle constructor.
@@ -282,7 +286,7 @@ class Particle
     //! Default constructor.
     Particle() {/*...*/}
 
-    //! Virtual destructor.
+    // Virtual destructor.
     virtual inline ~Particle() = 0;
 		      
     // >>> ACCESSORS
@@ -389,7 +393,9 @@ Particle<MT>::Particle(const sf_double &r_,
 }
 
 //---------------------------------------------------------------------------//
-
+/*!
+ * \brief Default destructor.
+ */
 template<class MT>
 Particle<MT>::~Particle()
 {
@@ -524,9 +530,6 @@ void Particle<MT>::stream_and_capture(Tally<MT>         &tally,
 
 }
 
-
-
-
 //---------------------------------------------------------------------------//
 /*!
  * \brief Process a particle going into census.
@@ -571,6 +574,71 @@ void Particle<MT>::boundary_event(const MT  &mesh,
 	tally.accum_n_escaped();
 	tally.accum_ew_escaped(ew);
     }
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Process a particle that has undergone random walk.
+ */
+template<class MT>
+void Particle<MT>::random_walk_event(const double  rw_time,
+				     const double  rw_distance,
+				     Tally<MT>    &tally,
+				     const double  gray_abs_opacity,
+				     const double  fleck_factor)
+{
+    Require (rw_time >= 0.0);
+    Require (rw_distance >= 0.0);
+    Require (gray_abs_opacity >= 0.0);
+    Require (fleck_factor >= 0.0);
+    Require (fleck_factor <= 1.0);
+
+    // adjust weight of random walk particle
+    double sigeff   = -gray_abs_opacity * (1.0 - fleck_factor) * 
+	std::log(1.0 - fleck_factor);
+    double exponent = -rtt_mc::global::c * sigeff * rw_time;
+
+    // calculate weight factor
+    double weight_factor = 0.0;
+
+    // check the exponent against the minimum allowed
+    if (exponent > std::numeric_limits<double>::min_exponent)
+	weight_factor = std::exp(exponent);
+
+    // adjust weight
+    double new_ew   = weight_factor * ew;
+    double delta_ew = ew - new_ew;
+    Check (delta_ew >= 0.0);
+
+    // do momentum deposition
+    tally.accumulate_momentum(cell, delta_ew, omega);
+	    
+    // do energy deposition
+    tally.deposit_energy(cell, delta_ew);
+
+    // tally random walk event
+    tally.get_RW_Sub_Tally()->accum_n_random_walks();
+
+    // tally energy-weighted path-length
+    if (gray_abs_opacity > 0.0)
+    {
+	tally.accumulate_ewpl(cell, delta_ew /
+			      (fleck_factor * gray_abs_opacity));
+    }
+    else if(gray_abs_opacity == 0.0)
+    {
+	tally.accumulate_ewpl(cell, ew * rw_distance);
+    }
+    else
+    {
+	throw rtt_dsxx::assertion("Gray absorption opacity is zero.");
+    }
+    
+    // update the particle weight fraction
+    fraction *= weight_factor;
+   
+    // update particle energy weight
+    ew = new_ew;
 }
 
 //---------------------------------------------------------------------------//

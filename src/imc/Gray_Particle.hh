@@ -64,12 +64,12 @@ class Gray_Particle : public Particle<MT>
     friend class Diagnostic;
 
     // Useful typedefs.
-    typedef std::vector<double>            sf_double;
-    typedef rtt_rng::Sprng                 Rnd_Type;
-    typedef rtt_dsxx::SP<Rnd_Type>         SP_Rnd_Type;
-    typedef std::string                    std_string;
-    typedef rtt_dsxx::SP<Diagnostic>       SP_Diagnostic;
-    typedef rtt_dsxx::SP<Random_Walk<MT> > SP_Random_Walk;
+    typedef std::vector<double>                      sf_double;
+    typedef rtt_rng::Sprng                           Rnd_Type;
+    typedef rtt_dsxx::SP<Rnd_Type>                   SP_Rnd_Type;
+    typedef std::string                              std_string;
+    typedef rtt_dsxx::SP<Diagnostic>                 SP_Diagnostic;
+    typedef rtt_dsxx::SP<Random_Walk<MT> >           SP_Random_Walk;
     typedef rtt_dsxx::SP<Extrinsic_Surface_Tracker>  SP_Surface_tracker;
 
   private:
@@ -90,10 +90,6 @@ class Gray_Particle : public Particle<MT>
 
     // Process a collision event.
     void collision_event(const MT &, Tally<MT> &, double, double, double);
-
-    // Process a random walk particle.
-    void random_walk_event(double, Tally<MT> &,
-			   const Opacity<MT,Gray_Frequency> &);
 
   public:
     // Particle constructor.

@@ -1,3 +1,10 @@
+2003-07-30  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: released imc-3_4_0.  This is a sub-release tag that
+	represents the full inclusion of random walk for gray and
+	multigroup transport.  However, the CDI_Mat_State_Builder cannot
+	build diffusion opacities in multigroup problems.
+
 2003-07-25  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: tagged as part of draco-3_2_0.  This version of imc has

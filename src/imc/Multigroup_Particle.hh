@@ -17,8 +17,6 @@
 #include "Random_Walk.hh"
 #include "Extrinsic_Surface_Tracker.hh"
 #include "mc/Sampler.hh"
-#include "ds++/Soft_Equivalence.hh"
-#include <cmath>
 
 namespace rtt_imc
 {
@@ -38,6 +36,7 @@ class Multigroup_Frequency;
 // 1) 10-FEB-03 : removed #define's for Base class scoping; added real
 //                scoping
 // 2) 19-MAY-03 : added Random_Walk to transport
+// 3) 29-JUL-03 : implemented Random_Walk in transport
 // 
 //===========================================================================//
 
@@ -45,14 +44,6 @@ template<class MT>
 class Multigroup_Particle : public Particle<MT>
 {
   public:
-    // Useful typedefs.
-    typedef std::vector<double>              sf_double;
-    typedef rtt_rng::Sprng                   Rnd_Type;
-    typedef rtt_dsxx::SP<Rnd_Type>           SP_Rnd_Type;
-    typedef std::string                      std_string;
-    typedef Opacity<MT,Multigroup_Frequency> MG_Opacity;
-    typedef rtt_dsxx::SP<Random_Walk<MT> >   SP_Random_Walk;
-    typedef rtt_dsxx::SP<Extrinsic_Surface_Tracker> SP_Surface_tracker;
 
     // >>> NESTED TYPES
 
@@ -67,14 +58,21 @@ class Multigroup_Particle : public Particle<MT>
 	    : Particle<MT>::Diagnostic(output_, detail_) {}
 	
 	// Diagnostic print functions.
-	void print_xs(const MG_Opacity &, int, int) const;
+	void print_xs(const Opacity<MT,Multigroup_Frequency> &, int, int) const;
     };
-
-    // Diagnostic typedef.
-    typedef rtt_dsxx::SP<Diagnostic> SP_Diagnostic;
     
     // Friend declarations.
     friend class Diagnostic;
+
+    // Useful typedefs.
+    typedef std::vector<double>                     sf_double;
+    typedef rtt_rng::Sprng                          Rnd_Type;
+    typedef rtt_dsxx::SP<Rnd_Type>                  SP_Rnd_Type;
+    typedef std::string                             std_string;
+    typedef rtt_dsxx::SP<Diagnostic>                SP_Diagnostic;
+    typedef Opacity<MT,Multigroup_Frequency>        MG_Opacity;
+    typedef rtt_dsxx::SP<Random_Walk<MT> >          SP_Random_Walk;
+    typedef rtt_dsxx::SP<Extrinsic_Surface_Tracker> SP_Surface_tracker;
 
   private:
     // Typedef for base class scoping.
@@ -89,9 +87,17 @@ class Multigroup_Particle : public Particle<MT>
   private:
     // >>> IMPLEMENTATION
 
+    // Transport a particle without hybrid methods.
+    void straight_transport(const MT &, const MG_Opacity &, Tally<MT> &, 
+			    SP_Surface_tracker, SP_Diagnostic);
+
+    // Transport a particle with random walk.
+    void rw_transport(const MT &, const MG_Opacity &, Tally<MT> &, 
+		      SP_Random_Walk, SP_Surface_tracker, SP_Diagnostic);
+
     // Process a collision event.
-    inline void collision_event(const MT &, Tally<MT> &, const MG_Opacity &,
-				double, double, double);
+    void collision_event(const MT &, Tally<MT> &, const MG_Opacity &,
+			 double, double, double);
 
     // Do an effective scatter
     inline void effective_scatter(const MT &, const MG_Opacity &);
@@ -103,7 +109,7 @@ class Multigroup_Particle : public Particle<MT>
 			       int = Base::BORN);
 
     // Unpacking constructor.
-    inline Multigroup_Particle(const std::vector<char> &);
+    Multigroup_Particle(const std::vector<char> &);
 
     // >>> TRANSPORT INTERFACE
 
@@ -132,7 +138,7 @@ class Multigroup_Particle : public Particle<MT>
     // >>> PACKING FUNCTIONALITY
     
     // Pack function
-    inline std::vector<char> pack() const;
+    std::vector<char> pack() const;
 
     // Get the size of the packed particle.
     static int get_packed_particle_size(int, const rtt_rng::Rnd_Control &);
@@ -168,184 +174,6 @@ Multigroup_Particle<MT>::Multigroup_Particle(const sf_double& r_,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Unpacking constructor.
- *
- * This constructor is used to unpack a particle that has been packed with
- * the Particle::pack() function.
- *
- * It is declared inline for optimization.
- */
-template<class MT>
-Multigroup_Particle<MT>::Multigroup_Particle(const std::vector<char> &packed)
-{
-    Require (packed.size() >= 4 * sizeof(int) + 6 * sizeof(double));
-
-    // make an unpacker
-    rtt_dsxx::Unpacker u;
-    
-    // set it
-    u.set_buffer(packed.size(), &packed[0]);
-
-    // unpack the spatial dimension of the particle
-    int dimension = 0;
-    u >> dimension;
-    Check (dimension > 0 && dimension <= 3);
-
-    // size the dimension and direction 
-    Base::r.resize(dimension);
-    Base::omega.resize(3);
-
-    // unpack the position
-    for (int i = 0; i < dimension; i++)
-	u >> Base::r[i];
-
-    // unpack the rest of the data
-    u >> Base::omega[0] >> Base::omega[1] >> Base::omega[2] >> Base::cell 
-      >> Base::ew >> Base::time_left >> Base::fraction >> group_index;
-    Check (Base::time_left   >= 0.0);
-    Check (Base::fraction    >= 0.0);
-    Check (Base::cell        >  0);
-    Check (Base::ew          >= 0.0);
-    Check (group_index >  0)
-
-    // get the size of the RN state
-    int size_rn = 0;
-    u >> size_rn;
-    Check (size_rn > 0);
-
-    // make a packed rn vector
-    std::vector<char> prn(size_rn);
-
-    // unpack the rn state
-    for (int i = 0; i < size_rn; i++)
-	u >> prn[i];
-
-    // rebuild the rn state
-    Base::random = new Rnd_Type(prn);
-    Check (Base::random->get_num() >= 0);
-    Check (Base::random->get_id());
-
-    // assign the descriptor and status
-    Base::descriptor = Base::UNPACKED;
-    Base::alive      = true;
-    
-    Ensure (Base::status());
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Pack a particle into a char stream for communication and
- * persistence. 
- */
-template<class MT>
-std::vector<char> Multigroup_Particle<MT>::pack() const
-{
-    Require (Base::omega.size() == 3);
-
-    // make a packer
-    rtt_dsxx::Packer p;
-
-    // first pack the random number state
-    std::vector<char> prn = Base::random->pack();
-
-    // determine the size of the packed particle: 1 int for cell, + 1 int for
-    // size of packed RN state + 1 int for dimension of space + 1 int for
-    // group index; dimension + 6 doubles; + size of RN state chars
-    int size = 4 * sizeof(int) + (Base::r.size() + 6) * sizeof(double) +
-	prn.size();
-
-    // set the packed buffer
-    std::vector<char> packed(size);
-    p.set_buffer(size, &packed[0]);
-
-    // pack the spatial dimension
-    p << static_cast<int>(Base::r.size());
-    
-    // pack the dimension
-    for (int i = 0; i < Base::r.size(); i++)
-	p << Base::r[i];
-    
-    // pack the rest of the data
-    p << Base::omega[0] << Base::omega[1] << Base::omega[2] << Base::cell 
-      << Base::ew << Base::time_left << Base::fraction << group_index;
-
-    // pack the RN state
-    p << static_cast<int>(prn.size());
-    for (int i = 0; i < prn.size(); i++)
-	p << prn[i];
-
-    Ensure (p.get_ptr() == &packed[0] + size);
-    return packed;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Process a collision.
- */
-template<class MT> 
-void Multigroup_Particle<MT>::collision_event(
-    const MT         &mesh, 
-    Tally<MT>        &tally, 
-    const MG_Opacity &opacity,
-    double            prob_scatter, 
-    double            prob_thomson_scatter, 
-    double            prob_abs)
-{
-    Check (mesh.num_cells() == tally.num_cells());
-
-    // get a random number
-    double rand_selector = Base::random->ran();
-    
-    if (rand_selector < prob_scatter) 
-    { 
-	// accumulate momentum from before the scatter
-	tally.accumulate_momentum(Base::cell, Base::ew, Base::omega);
-	
-	// Scatter
-	if (rand_selector < prob_thomson_scatter)
-	{ 
-	    // Thomson scatter
-	    Base::descriptor = Base::THOM_SCATTER;
-	    tally.accum_n_thomscat();
-	
-	    // scatter the particle -- update direction cosines
-	    Base::scatter(mesh);
-	}
-	else
-	{ 
-	    // Effective scatter
-	    Base::descriptor = Base::EFF_SCATTER;
-	    tally.accum_n_effscat();
-
-	    // scatter the particle -- update direction cosines
-	    effective_scatter(mesh, opacity);
-	}
-	
-	// accumulate momentum from after the scatter
-	tally.accumulate_momentum(Base::cell, -Base::ew, Base::omega);
-    }
-    else if (rand_selector < prob_scatter + prob_abs)
-    { 
-	// Absorption
-	
-	// tally absorption data
-	tally.deposit_energy(Base::cell, Base::ew);
-	tally.accum_n_killed();
-	tally.accum_ew_killed(Base::ew);
-	tally.accumulate_momentum(Base::cell, Base::ew, Base::omega);
-
-	// set the descriptor and particle status
-	Base::descriptor = Base::KILLED; 
-	Base::alive      = false;
-    }
-    else
-    {
-	Insist(0,"D'oh! Transport could not pick a random event!");
-    }   
-}
-
-//---------------------------------------------------------------------------//
-/*!
  * \brief Do an effective scatter.
  *
  * Sample a new frequency, for mulitgroup particles in the Fleck and
@@ -368,7 +196,6 @@ void Multigroup_Particle<MT>::effective_scatter(const MT         &mesh,
     // sample particle direction for re-emitted particle
     Base::omega = mesh.get_Coord().sample_dir("isotropic", *Base::random);
 }
-
 
 } // end namespace rtt_imc
 

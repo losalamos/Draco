@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Interface_hh__
-#define __imc_Interface_hh__
+#ifndef rtt_imc_Interface_hh
+#define rtt_imc_Interface_hh
 
 #include "mc/Particle_Stack.hh"
 #include "ds++/SP.hh"
@@ -98,10 +98,10 @@ class Interface
     // >>> FUNCTIONS REQUIRED BY MULTIPLE MAT_STATE_BUILDER CLASSES
     
     //! Get cell-centered densities in g/cc.
-    virtual sf_double get_density() const = 0;
+    virtual sf_double get_density()             const = 0;
 
     //! Get cell-centered temperatures in keV.
-    virtual sf_double get_temperature() const = 0;
+    virtual sf_double get_temperature()         const = 0;
 
     //! Get Fleck and Cummings implicitness factor.
     virtual double    get_implicitness_factor() const = 0;
@@ -168,7 +168,7 @@ class Interface
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Interface_hh__
+#endif                          // rtt_imc_Interface_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Interface.hh

@@ -10,13 +10,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#ifndef rtt_imc_Gray_Particle_t_hh
+#define rtt_imc_Gray_Particle_t_hh
+
 #include "Gray_Particle.hh"
 #include "Random_Walk_Sub_Tally.hh"
-#include "Surface_Sub_Tally.hh"
-#include "Surface_tracker.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <cmath>
-#include <limits>
 #include <utility>
 
 namespace rtt_imc
@@ -130,10 +129,10 @@ Gray_Particle<MT>::Gray_Particle(const std::vector<char> &packed)
  * .
  * The optional arguments specify transport options.  If no optional
  * arguments are given then simple transport is performed as described in
- * \ref trans_method.  If random_walk is active then Random Walk is turned on
- * in thick cells as described in \ref trans_method_walk.
+ * \ref gray_trans_method.  If random_walk is active then Random Walk is
+ * turned on in thick cells as described in \ref gray_trans_method_walk.
  *
- * \subsection trans_method Straight Transport Method
+ * \subsection gray_trans_method Straight Gray Transport Method
  *
  * Particles undergo implicit absorption until their energy weight drops
  * below 0.01 of their original value. During this time their energy weight
@@ -152,7 +151,7 @@ Gray_Particle<MT>::Gray_Particle(const std::vector<char> &packed)
  * the current fractional energy weight and the effective absorption in the
  * current cell.
  *
- * \subsection trans_method_walk Transport Method with Random Walk
+ * \subsection gray_trans_method_walk Gray Transport Method with Random Walk
  *
  * Particles undergo implicit absorption until their energy weight drops
  * below 0.01 of their original value. During this time their energy weight
@@ -294,6 +293,7 @@ void Gray_Particle<MT>::straight_transport(
 	diagnostic->print(*this);
     }
 
+    // initialize the surface tracker if this feature is requested
     if (surface_tracker) 
 	surface_tracker->initialize_status(Base::r, Base::omega);
 
@@ -337,7 +337,7 @@ void Gray_Particle<MT>::straight_transport(
 
 	// determine total collision cross section
 	sigma_collide = sigma_scatter + sigma_analog_abs;
-	Check(sigma_collide>=0);
+	Check(sigma_collide >= 0);
 
 	// accumulate momentum deposition from volume emission particles
 	if (Base::descriptor == Base::VOL_EMISSION)
@@ -361,15 +361,15 @@ void Gray_Particle<MT>::straight_transport(
 	    prob_abs             = sigma_analog_abs      / sigma_collide;
 	}
 
-	Check(d_collide > 0);
+	Check (d_collide > 0);
 
 	// get distance-to-boundary and cell face
-	d_boundary = mesh.get_db(Base::r, Base::omega, Base::cell, face);  
-	Check(d_boundary>=0);
+	d_boundary = mesh.get_db(Base::r, Base::omega, Base::cell, face); 
+	Check (d_boundary >= 0);
 
 	// distance to census (end of time step)
-	d_census = rtt_mc::global::c * Base::time_left;   
-	Check(d_census);
+	d_census = rtt_mc::global::c * Base::time_left;  
+	Check (d_census);
 
 	// distance until cutoff weight is reached:
 	if (sigma_eff_abs == 0 || Base::use_analog_absorption() )
@@ -388,7 +388,7 @@ void Gray_Particle<MT>::straight_transport(
 	if (diagnostic)
 	    if (diagnostic->detail_status())
 	    {
-		diagnostic->print_dist(d_collide, d_boundary, d_census, 
+		diagnostic->print_dist(d_collide, d_boundary, d_census,
 				       Base::cell); 
 		diagnostic->print_xs(xs, Base:: cell);
 	    }
@@ -424,11 +424,9 @@ void Gray_Particle<MT>::straight_transport(
 		"Transport could not decide limiting event!");
 	}
 
-
 	// Stream the particle, according to its status:
-
-	Base::stream_and_capture(tally, surface_tracker, 
-				 sigma_eff_abs, d_stream);
+	Base::stream_and_capture(tally, surface_tracker, sigma_eff_abs,
+				 d_stream);
 
 	// Process collisions, boundary crossings, going to census or
 	// reaching cutoff events.
@@ -503,6 +501,7 @@ void Gray_Particle<MT>::rw_transport(
 	diagnostic->print(*this);
     }
 
+    // initialize the surface tracker if this feature is requested
     if (surface_tracker) 
 	surface_tracker->initialize_status(Base::r, Base::omega);
 
@@ -523,7 +522,7 @@ void Gray_Particle<MT>::rw_transport(
 
     // intermediate cross section definitions:
     double sigma_thomson_scatter, sigma_eff_scatter, sigma_eff_abs, 
-	sigma_scatter, sigma_rosseland, sigma_analog_abs, sigma_collide;
+	sigma_scatter, sigma_analog_abs, sigma_collide;
 
     // are we doing random walk on this step
     bool do_a_random_walk;
@@ -552,7 +551,7 @@ void Gray_Particle<MT>::rw_transport(
 
 	// determine total collision cross section
 	sigma_collide = sigma_scatter + sigma_analog_abs;
-	Check(sigma_collide>=0);
+	Check (sigma_collide >= 0);
 
 	// accumulate momentum deposition from volume emission particles
 	if (Base::descriptor == Base::VOL_EMISSION)
@@ -575,11 +574,11 @@ void Gray_Particle<MT>::rw_transport(
 	    prob_scatter         = sigma_scatter         / sigma_collide;
 	    prob_abs             = sigma_analog_abs      / sigma_collide;
 	}
-	Check(d_collide > 0);
+	Check (d_collide > 0);
 
 	// distance to census (end of time step)
-	d_census = rtt_mc::global::c * Base::time_left;   
-	Check(d_census);
+	d_census = rtt_mc::global::c * Base::time_left;  
+	Check (d_census);
 
 	// distance until cutoff weight is reached:
 	if (sigma_eff_abs == 0 || Base::use_analog_absorption() )
@@ -591,7 +590,7 @@ void Gray_Particle<MT>::rw_transport(
 	    d_cutoff = std::log(Base::fraction / Base::minwt_frac) / 
 		sigma_eff_abs;
 	}
-	Check(d_cutoff > 0);
+	Check (d_cutoff > 0);
 
 	// check to see if we should do a random walk; check on initial
 	// conditions first
@@ -635,7 +634,7 @@ void Gray_Particle<MT>::rw_transport(
 	if (diagnostic)
 	    if (diagnostic->detail_status())
 	    {
-		diagnostic->print_dist(d_collide, d_boundary, d_census, 
+		diagnostic->print_dist(d_collide, d_boundary, d_census,
 				       Base::cell); 
 		diagnostic->print_xs(xs, Base:: cell);
 	    }
@@ -676,7 +675,6 @@ void Gray_Particle<MT>::rw_transport(
 		"Transport could not decide limiting event!");
 	}
 
-
 	// stream the particle: transport or random walk
 	if (do_a_random_walk)
 	{
@@ -697,14 +695,15 @@ void Gray_Particle<MT>::rw_transport(
 		Base::descriptor = Base::CENSUS;
 
 	    // process the random walk absorption
-	    random_walk_event(time_radius.first, tally, xs);
+	    Base::random_walk_event(time_radius.first, time_radius.second,
+				    tally, xs.get_sigma_abs(Base::cell),
+				    xs.get_fleck(Base::cell));
 	}
 	else
 	{
 	    // Stream the particle, according to its status:
-	    Base::stream_and_capture(tally, surface_tracker,
-				     sigma_eff_abs, d_stream);
-
+	    Base::stream_and_capture(tally, surface_tracker, sigma_eff_abs,
+				     d_stream);
 	}
 
 	// Process collisions, boundary crossings, going to census or
@@ -757,54 +756,6 @@ void Gray_Particle<MT>::rw_transport(
     } 
 
     // !!! END OF TRANSPORT LOOP !!!
-}
-
-//---------------------------------------------------------------------------//
-/*! 
- * \brief Process a particle that has undergone random walk.
- */
-template<class MT>
-void Gray_Particle<MT>::random_walk_event(
-    double                            rw_time,
-    Tally<MT>                        &tally,
-    const Opacity<MT,Gray_Frequency> &opacity)
-{
-    // adjust weight of random walk particle
-    double sigeff   = -opacity.get_sigma_abs(Base::cell) *
-	(1.0 - opacity.get_fleck(Base::cell)) * 
-	std::log(1.0 - opacity.get_fleck(Base::cell));
-    double exponent = -rtt_mc::global::c * sigeff * rw_time;
-
-    // calculate weight factor
-    double weight_factor = 0.0;
-
-    // check the exponent against the minimum allowed
-    if (exponent > std::numeric_limits<double>::min_exponent)
-	weight_factor = std::exp(exponent);
-
-    // adjust weight
-    double new_ew   = weight_factor * Base::ew;
-    double delta_ew = Base::ew - new_ew;
-    Check (delta_ew >= 0.0);
-
-    // do momentum deposition
-    tally.accumulate_momentum(Base::cell, delta_ew, Base::omega);
-	    
-    // do energy deposition
-    tally.deposit_energy(Base::cell, delta_ew);
-
-    // tally random walk event
-    tally.get_RW_Sub_Tally()->accum_n_random_walks();
-
-    // tally energy-weighted path-length
-    tally.accumulate_ewpl(Base::cell, delta_ew /
-			  opacity.get_sigeffabs(Base::cell));
-
-    // update the particle weight fraction
-    Base::fraction *= weight_factor;
-   
-    // update particle energy weight
-    Base::ew = new_ew;
 }
 
 //---------------------------------------------------------------------------//
@@ -953,6 +904,8 @@ void Gray_Particle<MT>::Diagnostic::print_xs(
 }
 
 } // end namespace rtt_imc
+
+#endif // rtt_imc_Gray_Particle_t_hh
 
 //---------------------------------------------------------------------------//
 //                        end of imc/Gray_Particle.t.hh

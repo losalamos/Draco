@@ -227,6 +227,50 @@ void check_rw_tallies<Gray,GPT>(SP<Tally<MT> > tally, int num_run)
 }
 
 //---------------------------------------------------------------------------//
+
+template<>
+void check_rw_tallies<MG,MGPT>(SP<Tally<MT> > tally, int num_run)
+{
+    rtt_c4::global_barrier();
+
+    // do some integral checks on tally output
+    double ew_escaped  = tally->get_ew_escaped();
+    double erg_dep_tot = tally->get_energy_dep_tot();
+    double ecen_tot    = tally->get_new_ecen_tot();
+    int    ncen_tot    = tally->get_new_ncen_tot();
+    int    neff_scat   = tally->get_accum_n_effscat();
+    int    nbnd_cross  = tally->get_accum_n_bndcross();
+    int    nescaped    = tally->get_accum_n_escaped();
+    int    nrws        = tally->get_RW_Sub_Tally()->get_accum_n_random_walks();
+
+    // do sums
+    rtt_c4::global_sum(ew_escaped);
+    rtt_c4::global_sum(erg_dep_tot);
+    rtt_c4::global_sum(ecen_tot);
+    rtt_c4::global_sum(ncen_tot);
+    rtt_c4::global_sum(neff_scat);
+    rtt_c4::global_sum(nbnd_cross);
+    rtt_c4::global_sum(nescaped);
+    rtt_c4::global_sum(nrws);
+
+    // check sums
+    if (!soft_equiv(erg_dep_tot, 0.081277207, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ew_escaped, 0.0080160309, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ecen_tot, 0.279052307092, 1.e-6)) ITFAILS;
+    if (ncen_tot != 970)                              ITFAILS;
+    if (neff_scat != 252)                             ITFAILS;
+    if (nbnd_cross != 193)                            ITFAILS;
+    if (nescaped != 26)                               ITFAILS;
+    if (nrws   != 201)                                ITFAILS;
+
+    // check num_run
+    if (num_run != 996) ITFAILS;
+    
+    if (rtt_imc_test::passed)
+	PASSMSG("Integral transport checks ok for mg random walk problem.")
+}
+
+//---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
@@ -541,6 +585,7 @@ int main(int argc, char *argv[])
 
 	// run some particles with random walk
 	rep_transporter_random_walk_run_test<MT,Gray,GPT>();
+	rep_transporter_random_walk_run_test<MT,MG,MGPT>();
     }
     catch (rtt_dsxx::assertion &ass)
     {

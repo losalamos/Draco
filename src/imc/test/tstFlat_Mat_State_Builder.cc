@@ -422,6 +422,9 @@ void mg_flat_diffusion_mat_state_test()
     SP<Parser>                  parser(new Parser("OS_Input"));
     SP<OS_Builder>              mb(new OS_Builder(parser));
     SP<OS_Mesh>                 mesh = mb->build_Mesh();
+
+    // build dummy interface with hybrid diffusion on and common mg opacities
+    // off
     SP<IMC_Flat_Interface<PT> > interface(new IMC_Flat_Interface<PT>(mb, 0, 1));
     
     // pointer to a mat state builder
