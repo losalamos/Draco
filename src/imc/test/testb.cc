@@ -45,7 +45,7 @@ main()
 	mesh->Print(cell);
     cout << endl;
 
-    for (int z = 1; z <= 4; z++)
+    for (int z = 1; z <= 8; z++)
     {
 	cout << "Zone : " << z << endl;
 	for (int i = 1; i <= mesh->Num_cells(); i++)
