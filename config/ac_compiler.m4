@@ -121,6 +121,173 @@ AC_DEFUN(AC_DRACO_EGCS, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl end of ac_compiler.m4
+dnl IBM XLF90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
+AC_DEFUN(AC_DRACO_XLF90, [dnl
+
+   # FREE, FIXED AND MODULE FLAGS
+
+   F90FREE='-qfree=f90'
+   F90FIXED='-qfixed'
+   MODFLAG='-I'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='${F90}'
+   ARFLAGS=
+   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+
+   # COMPILATION FLAGS
+
+   F90FLAGS="-qextchk -qhalt=s -qarch=pwr2 -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp"
+
+   if test "${enable_debug:=no}" = yes && test "${with_opt:=0}" != 0
+   then
+        trapflags="-qinitauto=FF"
+        trapflags="${trapflags} -qflttrap=overflow:underflow:zerodivide:invalid:enable"
+        trapflags="${trapflags} -qsigtrap"
+        F90FLAGS="-g -d -C ${trapflags} -bloadmap:loadmap.dat ${F90FLAGS}"
+   else
+        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+   fi
+
+   dnl end of AC_DRACO_XLF90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl FUJITSU F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DRACO_FUJITSU_F90, [dnl
+
+   # FREE, FIXED AND MODULE FLAGS
+
+   F90FREE='-Free'
+   F90FIXED='-Fixed'
+   MODFLAG='-I'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='${F90}'
+   ARFLAGS=
+   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+
+   # COMPILATION FLAGS
+
+   F90FLAGS="-X9 -Am"
+
+   if test "${enable_debug:=no}" = yes && test "${with_opt:=0}" != 0
+   then
+        F90FLAGS="-g ${F90FLAGS}"
+   else
+        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+   fi
+
+   dnl end of AC_DRACO_FUJITSU_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl SUN F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DRACO_SUN_F90, [dnl
+
+   # FREE, FIXED AND MODULE FLAGS
+
+   F90FREE='-free'
+   F90FIXED='-fixed'
+   MODFLAG='-M'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='${F90}'
+   ARFLAGS=
+   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+
+   # COMPILATION FLAGS
+
+   F90FLAGS=
+
+   if test "${enable_debug:=no}" = yes && test "${with_opt:=0}" != 0
+   then
+        F90FLAGS="-g"
+   else
+        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+   fi
+
+   dnl end of AC_DRACO_SUN_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl CRAY_F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DRACO_CRAY_F90, [dnl
+
+   # FREE, FIXED AND MODULE FLAGS
+
+   F90FREE='-f free'
+   F90FIXED='-f fixed'
+   MODFLAG='-p'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='${F90}'
+   ARFLAGS=
+   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+
+   # COMPILATION FLAGS
+
+   F90FLAGS=
+
+   if test "${enable_debug:=no}" = yes && test "${with_opt:=0}" != 0
+   then
+        F90FLAGS="-g ${F90FLAGS}"
+   else
+        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+   fi
+
+   dnl end of AC_DRACO_CRAY_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl IRIX F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DRACO_IRIX_F90, [dnl
+
+   # FREE, FIXED AND MODULE FLAGS
+
+   F90FREE='-freeform'
+   F90FIXED='-col72'
+   MODFLAG='-I'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='${F90}'
+   ARFLAGS=
+   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+
+   # COMPILATION FLAGS
+
+   F90FLAGS=
+
+   if test "${enable_debug:=no}" = yes && test "${with_opt:=0}" != 0
+   then
+        F90FLAGS="-g ${F90FLAGS}"
+   else
+        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+   fi
+
+   dnl end of AC_DRACO_IRIX_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_compiler.m4
+dnl-------------------------------------------------------------------------dnl
