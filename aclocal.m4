@@ -1163,6 +1163,34 @@ AC_DEFUN(AC_VENDORLIB_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_FIND_TOP_SRC(1,2)
+dnl 
+dnl Find the top source directory of the package by searching upward
+dnl from the argument directory. The top source directory is defined
+dnl as the one with a 'config' sub-directory.
+dnl
+dnl Note: This function will run forever if the pacakge top source
+dnl directory is not somewhere above the argument directory.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_FIND_TOP_SRC, [dnl
+   
+   # $1 is the component's source directory
+   # $2 is the variable to store the package's main source directory in.
+
+   temp_dir=$1
+   echo $temp_dir
+   while test ! -d $temp_dir/config ; do   
+       temp_dir="${temp_dir}/.."
+       echo "RUNNING: $temp_dir"
+   done
+   $2=`cd $temp_dir; pwd;`
+   AC_MSG_RESULT([Package top source directory: $$2])
+])
+
+
+
+dnl-------------------------------------------------------------------------dnl
 dnl DO VARIABLE SUBSTITUTIONS ON AC_OUTPUT
 dnl
 dnl These are all the variable substitutions used within the draco
@@ -1240,6 +1268,10 @@ AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
 
    # configure options
    AC_SUBST(configure_command)dnl
+
+   # directories in source tree
+   AC_SUBST(package_top_srcdir)
+   
 ])
 
 dnl-------------------------------------------------------------------------dnl
