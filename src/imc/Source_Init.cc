@@ -21,21 +21,21 @@ using std::pow;
 //---------------------------------------------------------------------------//
 // source initialyzer -- this is the main guy
 template<class MT>
-void Source_Init<MT>::Initialize(const Opacity<MT> &opacity,
+void Source_Init<MT>::initialize(const Opacity<MT> &opacity,
 				 const Mat_State<MT> &state)
 {
   // calculate number of particles
-    Calc_num_part();
+    calc_num_part();
 
   // on first pass do initial source census
     if (cycle == 1)
-	Calc_initial_census(opacity, state);
+	calc_initial_census(opacity, state);
 
   // calculate source energies
-    Calc_source_energies();
+    calc_source_energies();
 
   // calculate source numbers
-    Calc_source_numbers();
+    calc_source_numbers();
 }
 
 //---------------------------------------------------------------------------//
@@ -43,52 +43,52 @@ void Source_Init<MT>::Initialize(const Opacity<MT> &opacity,
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Source_Init<MT>::Calc_num_part()
+void Source_Init<MT>::calc_num_part()
 {
   // calculate the number of particles used in the timestep
-    npwant = Min(npmax, npwant + dupdt * delta_t);
+    npwant = min(npmax, npwant + dupdt * delta_t);
 }
 
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Source_Init<MT>::Calc_initial_census(const Opacity<MT> &opacity,
+void Source_Init<MT>::calc_initial_census(const Opacity<MT> &opacity,
 					  const Mat_State<MT> &state)
 {
   // calculate and write the initial census source
 
   // calc volume emission
-    Calc_evol(opacity, state);
+    calc_evol(opacity, state);
 
   // calc surface source emission
-    Calc_ess();
+    calc_ess();
     
   // calc radiation energy
-    Calc_erad();
+    calc_erad();
 
   // calc initial number of census particles
-    Calc_ncen_init();
+    calc_ncen_init();
 
   // write out the initial census
-    Write_initial_census();
+    write_initial_census();
 }
 
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Source_Init<MT>::Calc_source_energies()
+void Source_Init<MT>::calc_source_energies()
 {
   // calc vol emission
-    Calc_evol();
+    calc_evol();
 
   // calc surface source
-    Calc_ess();
+    calc_ess();
 }
 
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Calc_source_numbers()
+void calc_source_numbers()
 {
   // calculate numbers of different quantities necessary for the source
 
@@ -97,10 +97,10 @@ void Calc_source_numbers()
     part_per_e = nsource / esource;
 
   // calculate volume source number
-    Calc_nvol();
+    calc_nvol();
     
   // calculate surface source number
-    Calc_nss();
+    calc_nss();
 }
 
 //---------------------------------------------------------------------------//
@@ -108,20 +108,21 @@ void Calc_source_numbers()
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Source_Init<MT>::Calc_evol(const Opacity<MT> &opacity,
+void Source_Init<MT>::calc_evol(const Opacity<MT> &opacity,
 				const Mat_State<MT> &state)
 {
   // reset evoltot
     evoltot = 0.0;
 
   // calc volume source and tot volume source
-    for (int cell = 1; cell <= evol.Mesh().Num_cells(); cell++)
+    for (int cell = 1; cell <= evol.get_Mesh().num_cells(); cell++)
     {
       // calc cell centered volume source
-	evol(cell) = opacity.FPlanck(cell) * Global::a * Global::c *
-	    pow(state.Temperature(cell), 4) * evol.Mesh().Volume(cell) *
-	    delta_t + (1.0 - opacity.Fleck(cell)) * evol_ext[cell-1] *
-	    evol.Mesh().Volume(cell) * delta_t;
+	evol(cell) = opacity.fplanck(cell) * Global::a * Global::c *
+	    pow(state.get_temperature(cell), 4) *
+	    evol.get_Mesh().volume(cell) * delta_t + 
+	    (1.0 - opacity.get_fleck(cell)) * evol_ext[cell-1] *
+	    evol.get_Mesh().volume(cell) * delta_t;
 
       // accumulate evoltot
 	evoltot += evol(cell);
@@ -131,7 +132,7 @@ void Source_Init<MT>::Calc_evol(const Opacity<MT> &opacity,
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Source_Init<MT>::Calc_ess()
+void Source_Init<MT>::calc_ess()
 {
   // variables
     int dimension = ess.Mesh().Coord().Get_dim();

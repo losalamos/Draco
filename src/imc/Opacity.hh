@@ -49,8 +49,9 @@ public:
 
   // member set and accessor functions
 
-    double& get_sigma(int cell) { return sigma(cell); }
     double get_sigma(int cell) const { return sigma(cell); }
+    double get_planck(int cell) { return planck(cell); }
+    double get_fleck(int cell) { return fleck(cell); }
     int num_cells() const { return sigma.get_Mesh().num_cells(); }
 
   // operations

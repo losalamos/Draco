@@ -41,6 +41,7 @@
 #include <cmath>
 #include <cassert>
 #include <iostream>
+#include <string>
 
 IMCSPACE
 
@@ -53,6 +54,7 @@ using std::ostream;
 using std::pow;
 using std::cout;
 using std::endl;
+using std::string;
     
 class OS_Mesh
 {
@@ -157,20 +159,29 @@ public:
   // find centerpoint of cell, width of cell, and volume of cell
     inline double pos(int, int) const;
     double dim(int d, int cell) const { return max(d, cell) - min(d, cell); }
-    inline double volume(int) const;
 
   // diagnostic functions
 
     void print(ostream &, int) const;
 
-  // required services: find cell across face, find a cell, get
-  // dist-boundary, and get the normal for a cell-face
+  // required services: 
+
+  // 1) get the cell across a face;
+  // 2) find a cell
+  // 3) get dist-boundary and face that the particle crosses
+  // 4) get the normal on a face
+  // 5) calc the volume
+  // 6) find the cells along a surface
+  // 7) find cell's face along a given surface
 
     int next_cell(int cell, int face) const { return layout(cell, face); }
     int get_cell(const vector<double> &) const;
     double get_db(const vector<double> &, const vector<double> &, int, 
 		  int &) const;
     inline vector<double> get_normal(int, int) const;
+    inline double volume(int) const;
+    vector<int> get_surcells(string) const;
+    int get_bndface(string, int) const;
 };
 
 //---------------------------------------------------------------------------//

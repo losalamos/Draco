@@ -56,24 +56,24 @@ private:
 
   // number of source particles, census, source energies, number of volume
   // and surface sources
-    void Calc_num_part();
-    void Calc_initial_census(const Opacity<MT> &, const Mat_State<MT> &);
-    void Calc_source_energies();
-    void Calc_source_numbers();
+    void calc_num_part();
+    void calc_initial_census(const Opacity<MT> &, const Mat_State<MT> &);
+    void calc_source_energies();
+    void calc_source_numbers();
 
   // initial census service functions
-    void Calc_evol(const Opacity<MT> &, const Mat_State<MT> &);
-    void Calc_ess();
-    void Calc_erad();
-    void Calc_ncen_init();
-    void Write_initial_census();
+    void calc_evol(const Opacity<MT> &, const Mat_State<MT> &);
+    void calc_ess();
+    void calc_erad();
+    void calc_ncen_init();
+    void write_initial_census();
 
 public:
     template<class IT>
     explicit Source_Init(SP<IT>, SP<MT>);
 
   // source initialyzer function
-    void Initialize(const Opacity<MT> &, const Mat_State<MT> &);
+    void initialize(const Opacity<MT> &, const Mat_State<MT> &);
 
 CSPACE
 

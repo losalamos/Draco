@@ -65,6 +65,7 @@ double Random::ran()
     mj = ma[inext] - ma[inextp];
     if (mj < mz) mj += mbig;
     ma[inext] = mj;
+    std::cout << static_cast<double>(mj) * fac << std::endl;
     return static_cast<double>(mj) * fac;
 }
 

@@ -155,6 +155,127 @@ double OS_Mesh::get_db(const vector<double> &r, const vector<double> &omega,
 }
 
 //---------------------------------------------------------------------------//
+int OS_Mesh::get_bndface(string boundary, int cell) const
+{
+  // return the face number for boundary on cell
+
+  // return value
+    int face;
+
+    if (boundary == "lox")
+	face = 1;
+    if (boundary == "hix")
+	face = 2;
+    if (boundary == "loy")
+	face = 3;
+    if (boundary == "hiy")
+	face = 4;
+    if (boundary == "loz")
+	face = 5;
+    if (boundary == "hiz")
+	face = 6;
+
+  // return the face
+    return face;
+}
+
+//---------------------------------------------------------------------------//
+vector<int> OS_Mesh::get_surcells(string boundary) const
+{
+  // return a list of cells along the specified boundary
+
+  // make return vector containing a list of cells along specified boundary
+    vector<int> return_list;
+
+    int num_xcells = 1;
+    int num_ycells = 1;
+    int num_zcells = 1;
+
+  // set dimensionality variables
+    if (coord->get_dim() == 1)
+    {
+	num_xcells = sur[0].size() - 1;
+	num_ycells = 1;
+	num_zcells = 1;
+    }
+    else if (coord->get_dim() == 2)
+    {
+	num_xcells = sur[0].size() - 1;
+	num_ycells = sur[1].size() - 1;
+	num_zcells = 1;
+    }
+    else if (coord->get_dim() == 3)
+    {
+	num_xcells = sur[0].size() - 1;
+	num_ycells = sur[1].size() - 1;
+	num_zcells = sur[2].size() - 1;
+    }
+
+  // calculate the cells along the boundary
+    if (boundary == "lox")
+    {
+	for (int k = 1; k <= num_zcells; k++)
+	    for (int j = 1; j <= num_ycells; j++)
+	    {
+		int bcell = 1 + num_xcells * (j - 1) + 
+		    num_xcells * num_ycells * (k - 1);
+		return_list.push_back(bcell);
+	    }
+    }
+    if (boundary == "hix")
+    {
+        for (int k = 1; k <= num_zcells; k++)
+	    for (int j = 1; j <= num_ycells; j++)
+	    {
+		int bcell = 1 + (num_xcells - 1) + num_xcells * (j - 1) +
+		    num_xcells * num_ycells * (k - 1);
+		return_list.push_back(bcell);
+	    }
+    }
+    if (boundary == "loy")
+    {
+	for (int k = 1; k <= num_zcells; k++)
+	    for (int i = 1; i <= num_xcells; i++)
+	    {
+		int bcell = 1 + (i - 1) + num_xcells * num_ycells * (k - 1);
+		return_list.push_back(bcell);
+	    }	
+    }
+    if (boundary == "hiy")
+    {
+       	for (int k = 1; k <= num_zcells; k++)
+	    for (int i = 1; i <= num_xcells; i++)
+	    {
+		int bcell = 1 + (i - 1) + num_xcells * (num_ycells - 1) +
+		    num_xcells * num_ycells * (k - 1);
+		return_list.push_back(bcell);
+	    }
+    }
+    if (boundary == "loz")
+    {
+	for (int j = 1; j <= num_ycells; j++)
+	    for (int i = 1; i <= num_xcells; i++)
+	    {
+		int bcell = 1 + (i - 1) + num_xcells * (j - 1);
+		return_list.push_back(bcell);
+	    }
+    }
+    if (boundary == "hiz")
+    {
+	for (int j = 1; j <= num_ycells; j++)
+	    for (int i = 1; i <= num_xcells; i++)
+	    {
+		int bcell = 1 + (i - 1) + num_xcells * (j - 1) + 
+		    num_xcells * num_ycells * (num_zcells - 1);
+		return_list.push_back(bcell);
+	    }
+    }
+
+  // return vector
+    return return_list;
+}
+
+//---------------------------------------------------------------------------//
 // public diagnostic member functions
 //---------------------------------------------------------------------------//
 void OS_Mesh::print(ostream &output, int cell) const
