@@ -196,9 +196,14 @@ AC_DEFUN(AC_COMPILER_FUJITSU_F90, [dnl
    # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
-        F90FLAGS="-g -Haesu ${F90FLAGS}"
-   else
-        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       F90FLAGS="-X9 -Am ${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g -Haesu ${F90FLAGS}"
+       else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
    fi
 
    dnl end of AC_COMPILER_FUJITSU_F90
@@ -210,7 +215,7 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
 
-   # Check for working Fujitsu F90 compiler
+   # Check for working Absoft F90 compiler
 
    AC_CHECK_PROG(F90, f90, f90, none)
 
