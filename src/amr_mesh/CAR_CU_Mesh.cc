@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "CAR_CU_Mesh.hh"
-#include "Constants.hh"
+#include "mc/Constants.hh"
 #include <iomanip>
 
 namespace rtt_mc 

@@ -6,8 +6,8 @@
 // @> Source_Init class implementation file
 //---------------------------------------------------------------------------//
 
-#include "Source_Init.hh"
-#include "Global.hh"
+#include "imc/Source_Init.hh"
+#include "imc/Global.hh"
 #include "rng/Sprng.hh"
 #include "ds++/Assert.hh"
 #include <cmath>

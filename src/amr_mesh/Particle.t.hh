@@ -6,7 +6,7 @@
 // @> Particle class implementation file
 //---------------------------------------------------------------------------//
 
-#include "Particle.hh"
+#include "imc/Particle.hh"
 #include "Global.hh"
 #include <iomanip>
 

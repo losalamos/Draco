@@ -32,7 +32,7 @@
 // 
 //===========================================================================//
 
-#include "Coord_sys.hh"
+#include "mc/Coord_sys.hh"
 #include "rng/Sprng.hh"
 #include "ds++/Assert.hh"
 #include <vector>

@@ -6,8 +6,8 @@
 // @> Parallel_Source_Init implementation file
 //---------------------------------------------------------------------------//
 
-#include "Parallel_Source_Init.hh"
-#include "Global.hh"
+#include "imc/Parallel_Source_Init.hh"
+#include "imc/Global.hh"
 #include "c4/global.hh"
 #include <algorithm>
 #include <iomanip>

@@ -19,7 +19,7 @@
 //  0) original (developed from OS_Builder.hh)
 //===========================================================================//
 
-#include "Coord_sys.hh"
+#include "mc/Coord_sys.hh"
 #include "Layout.hh"
 #include "CAR_CU_Mesh.hh"
 #include "ds++/SP.hh"

@@ -9,7 +9,7 @@
 #include "Parallel_Builder.hh"
 #include "XYCoord_sys.hh"
 #include "XYZCoord_sys.hh"
-#include "Global.hh"
+#include "imc/Global.hh"
 #include <string>
 #include <iomanip>
 #include <cstdio>

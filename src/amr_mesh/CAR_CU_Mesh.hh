@@ -20,7 +20,7 @@
 // 
 //===========================================================================//
 
-#include "Coord_sys.hh"
+#include "mc/Coord_sys.hh"
 #include "Layout.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
