@@ -38,7 +38,7 @@ passes   = re.compile(r'Pass.*:\s*([0-9]+)', re.IGNORECASE)
 failures = re.compile(r'Fail.*:\s*([0-9]+)', re.IGNORECASE)
 errors   = re.compile(r'error', re.IGNORECASE)
 warnings = re.compile(r'warn[a-z:]*\s+(?!AC\_TRY\_RUN).*', re.IGNORECASE)
-package  = re.compile(r'Entering.*src/([A-Za-z+_]+)/test', re.IGNORECASE)
+package  = re.compile(r'Entering.*src/([A-Za-z+_0-9]+)/test', re.IGNORECASE)
 
 reg_host   = re.compile(r'.*>>>\s*HOSTNAME\s*:\s*(.+)', re.IGNORECASE)
 pkg_tag    = re.compile(r'.*>>>\s*PACKAGE\s*:\s*(.+)', re.IGNORECASE)
