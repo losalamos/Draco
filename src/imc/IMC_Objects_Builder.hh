@@ -184,7 +184,7 @@ class IMC_Objects_Builder
     void build_mat_state_objects(SP_Mesh);
 
     // Build the source objects.
-    void build_source_builder_object(SP_Mesh, SP_Topology, SP_Rnd_Control);
+    void build_source_builder_object(SP_Mesh, SP_Topology);
     void build_source_object(SP_Mesh, SP_Rnd_Control, SP_Comm_Patterns);
 
     // Build the tally object.

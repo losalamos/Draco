@@ -134,7 +134,7 @@ class DBuilder : public IMC_Objects_Builder<IT, M, MG, P>
 	Check (Base::opacity);
 
 	// build the source
-	Base::build_source_builder_object(mesh, topology, rnd_control);
+	Base::build_source_builder_object(mesh, topology);
 	Base::build_source_object(mesh, rnd_control, comm_patterns);
 	Check (Base::source);
 	Check (Base::source_builder);

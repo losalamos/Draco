@@ -152,13 +152,11 @@ IMC_Objects_Builder<IT,MT,FT,PT>::get_mat_builder(
 template<class IT, class MT, class FT, class PT>
 void IMC_Objects_Builder<IT,MT,FT,PT>::build_source_builder_object(
     SP_Mesh          mesh,
-    SP_Topology      topology,
-    SP_Rnd_Control   rnd_control)
+    SP_Topology      topology)
 {
     Require (interface);
     Require (mesh);
     Require (topology);
-    Require (rnd_control);
 
     Require (frequency);
     Require (mat_state);
