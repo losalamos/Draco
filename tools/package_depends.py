@@ -144,6 +144,7 @@ print
 
 # make a dictionary of includes
 draco_includes = {}
+draco_test_includes = {}
     
 # first get a list of the filenames associated with this class
 files = get_files()
@@ -163,10 +164,9 @@ for file in files:
 # >>> do test directory
 
 if os.path.exists(pkg_test_dir):
+
+    # change to test directory
     os.chdir(pkg_test_dir)
-    
-    # make a dictionary of includes
-    draco_test_includes = {}
     
     # first get a list of the filenames associated with this class
     files = get_files()
@@ -183,11 +183,8 @@ if os.path.exists(pkg_test_dir):
         # add to the dictionaries
         draco_test_includes[file] = draco_depends
     
-    # write out data
-    output_total(draco_includes, draco_test_includes)
-else:
-    # no test directory
-    print ">>> No test directory"
+# write out data
+output_total(draco_includes, draco_test_includes)
 
 ###############################################################################
 ##                            end of package_depends.py
