@@ -3202,11 +3202,20 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    # RPATH FLAGS
 
    # add -rpath for the compiler library (G++ as LD does not do this
-   # automatically); this, unfortunately, may become host dependent
-   # in the future
-   if test -n "${GCC_LIB_DIR}"; then
-       RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
-   fi
+   # automatically) if required.
+   case $host in
+
+   # Darwin doesn't need any special flags
+   powerpc-apple-darwin*)
+   ;;
+
+   # EVERYTHING ELSE -> linux?
+   *)
+      if test -n "${GCC_LIB_DIR}"; then
+           RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
+      fi
+   ;;
+   esac
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
@@ -3567,6 +3576,13 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        AC_DBS_SUN_ENVIRONMENT
    ;;
 
+   # *********************
+   # MAC OS X/DARWIN SETUP
+   # *********************
+   powerpc-apple-darwin*)
+       AC_DBS_DARWIN_ENVIRONMENT
+   ;;      
+
    # *******
    # NOTHING
    # *******
@@ -3700,6 +3716,8 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
                GCC_LIB_DIR="${GCC_HOME}/lib"
 	       LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
 	       AC_MSG_RESULT("-lg2c added to LIBS")
+           else
+               AC_MSG_RESULT("not needed")
 	   fi
 
        else
@@ -3711,15 +3729,17 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #
        AC_MSG_CHECKING("librt requirements")
        if test -n "${vendor_udm}"; then
-	   
+
 	   # Add rt for g++
 	   if test "${CXX}" = g++ ; then
 	       LIBS="${LIBS} -lrt"
 	       AC_MSG_RESULT("-lrt added to LIBS")
+           else
+               AC_MSG_RESULT("not needed")
 	   fi
 
        else
-	   AC_MSG_RESULT("not needed")
+           AC_MSG_RESULT("not needed")
        fi
 
        #
@@ -3728,14 +3748,24 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #
        AC_MSG_CHECKING("libdl requirements")
        if test -n "${vendor_dlopen}" ; then
-          if test "${enable_dlopen}" = yes ; then
-	      LIBS="${LIBS} -ldl"
-	      CFLAGS="${CFLAGS} -fPIC"
-	      CXXFLAGS="${CXXFLAGS} -fPIC"
-	      AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
-	  fi
+           if test "${enable_dlopen}" = yes ; then
+               LIBS="${LIBS} -ldl"
+
+               # if we are using g++ add fPIC
+               if test "${CXX}" = g++ ; then
+                   CFLAGS="${CFLAGS} -fPIC"
+                   CXXFLAGS="${CXXFLAGS} -fPIC"
+                   AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
+               else
+                   AC_MSG_RESULT("-ldl added to LIBS")
+               fi
+
+           else  
+               AC_MSG_RESULT("not needed")
+           fi
+
        else
-	   AC_MSG_RESULT("not needed")
+           AC_MSG_RESULT("not needed")
        fi
 
        #
@@ -4348,6 +4378,170 @@ AC_DEFUN([AC_DBS_IRIX_ENVIRONMENT], [dnl
        AC_DBS_SETUP_RPATH(rpath)
 
 ]) dnl irix
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_DARWIN_ENVIRONMENT
+dnl
+dnl Configure draco build system Darwin-specific variables
+dnl This function is called within AC_DBS_PLATFORM_ENVIRONMENT
+dnl ***** NOT FULLY IMPLEMENTED *****
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
+
+       # print out cpu message
+       AC_MSG_CHECKING("host platform cpu")
+       AC_MSG_RESULT("${host_cpu}")
+
+       AC_DBS_SETUP_POSIX
+
+       #   
+       # LONG LONG on Linux
+       #
+       
+       # always allow long long in strict ansi mode (if possible)
+       
+       if test -n "${STRICTFLAG}"; then
+
+           case $CXX in
+
+           # GNU g++
+           g++) 
+               AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
+               STRICTFLAG="$STRICTFLAG -Wno-long-long"
+           ;;
+
+           # catchall
+           *) 
+               # do nothing
+           ;;
+
+           esac
+
+       fi
+
+       # 
+       # end of LONG LONG setup
+       #
+
+       #
+       # Setup communications packages
+       #
+       AC_DBS_SETUP_COMM(mpich)
+
+       # 
+       # setup lapack 
+       #
+       
+       # we assume that the vendor option on linux is the install of
+       # redhat rpms in /usr/lib; we don't worry about atlas because
+       # that has already been defined
+
+       if test "${with_lapack}" = vendor ; then
+	   lapack_libs='-llapack -lblas'
+       fi 
+
+       # 
+       # end of lapack setup
+       # 
+
+       #
+       # setup eospac
+       #
+       
+       AC_MSG_CHECKING("for extra eospac library requirements.")
+       if test -n "${vendor_eospac}"; then
+           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           LIBS="${LIBS} ${extra_eospac_libs}"
+           AC_MSG_RESULT("${extra_eospac_libs}")
+       else
+           AC_MSG_RESULT("none.")
+       fi
+
+       #
+       # end of eospac
+       #
+
+       #
+       # add libg2c to LIBS if lapack, gandolf, or pcg is used
+       #
+       AC_MSG_CHECKING("libg2c requirements")
+       if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||
+	  test -n "${vendor_gandolf}"; then
+	   
+	   # Add g2c for various compilers
+	   if test "${CXX}" = KCC ; then
+	       LIBS="${LIBS} --backend -lg2c"
+	       AC_MSG_RESULT("--backend -lg2c added to LIBS")
+	   elif test "${CXX}" = g++ ; then
+	       LIBS="${LIBS} -lg2c"
+	       AC_MSG_RESULT("-lg2c added to LIBS")
+	   elif test "${CXX}" = icc ; then
+               AC_PATH_PROG(GCC_BIN, g++, null)
+               GCC_BIN=`dirname ${GCC_BIN}`
+               GCC_HOME=`dirname ${GCC_BIN}`
+               GCC_LIB_DIR="${GCC_HOME}/lib"
+	       LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
+	       AC_MSG_RESULT("-lg2c added to LIBS")
+           else
+               AC_MSG_RESULT("not needed")
+	   fi
+
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # add librt to LIBS if udm is used
+       #
+       AC_MSG_CHECKING("librt requirements")
+       if test -n "${vendor_udm}"; then
+
+	   # Add rt for g++
+	   if test "${CXX}" = g++ ; then
+	       LIBS="${LIBS} -lrt"
+	       AC_MSG_RESULT("-lrt added to LIBS")
+           else
+               AC_MSG_RESULT("not needed")
+	   fi
+
+       else
+           AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # If dlopen is specified, 1) add libdl to LIBS; 
+       # 2) add -fPIC to compile flags.
+       #
+       AC_MSG_CHECKING("libdl requirements")
+       if test -n "${vendor_dlopen}" ; then
+           if test "${enable_dlopen}" = yes ; then
+               LIBS="${LIBS} -ldl"
+
+               # if we are using g++ add fPIC
+               if test "${CXX}" = g++ ; then
+                   CFLAGS="${CFLAGS} -fPIC"
+                   CXXFLAGS="${CXXFLAGS} -fPIC"
+                   AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
+               else
+                   AC_MSG_RESULT("-ldl added to LIBS")
+               fi
+
+           else  
+               AC_MSG_RESULT("not needed")
+           fi
+
+       else
+           AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
+
+])
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DBS_SETUP_POSIX
