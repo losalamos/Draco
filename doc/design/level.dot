@@ -20,14 +20,15 @@ digraph draco_level {
     stdheaders [shape=box, label="stdheaders"];
     
     /* level 2 */
-    traits [shape=box, label="traits" width=2];
+    traits [shape=box, label="traits"];
     xm [shape=box, label="xm"];
-    c4 [shape=box, label="c4", width=2];
+    c4 [shape=box, label="c4"];
     rng [shape=box, label="rng"];
     units [shape=box, label="units"];
     cdi [shape=box, label="cdi"];
     quad [shape=box, label="quadrature"];
     meshread [shape=box, label="meshReaders"];
+    stop [shape=box, label="stopwatch"];
     
     /* level 3 */
     viz [shape=box, label="viz"];
@@ -37,7 +38,6 @@ digraph draco_level {
     cdieos [shape=box, label="cdi_eospac"];
     cdigan [shape=box, label="cdi_gandolf"];
     pcg [shape=box, label="pcgWrap"];
-    stop [shape=box, label="stopwatch"];
     rttread [shape=box, label="RTT_Format_Reader"];
     
     /* level 4 */
@@ -65,13 +65,14 @@ digraph draco_level {
     cdi         -> {dsxx};
     meshread    -> {dsxx};
     quad        -> {dsxx};
+    stop        -> {dsxx};
     
     /* level 3 */
     viz         -> {traits dsxx};
     timestep    -> {c4 dsxx};
-    stop        -> {c4 dsxx};
     radphys     -> {units dsxx};
-    pcg         -> {c4 dsxx};
+    pcg         -> {dsxx};
+    pcg         -> {c4} [style=dotted];
     cdianal     -> {cdi dsxx};
     cdieos      -> {cdi dsxx};
     cdigan      -> {cdi dsxx};
@@ -80,7 +81,8 @@ digraph draco_level {
     /* level 4 */
     mc          -> {viz meshread rng c4 dsxx};
     mc          -> {rttread} [style=dotted];
-    meshservice -> {rttread meshread c4 dsxx};
+    meshservice -> {meshread dsxx};
+    meshservice -> {rttread} [style=dotted];
 
     /* level 5 */
     imc         -> {mc cdi rng c4 dsxx};
