@@ -87,6 +87,8 @@ void OS_Mesh::calc_surface()
 
 int OS_Mesh::get_cell(const vector<double> &r) const
 {
+    Require (!submesh);
+
   // used variables
     int dim         = coord->get_dim();
     int return_cell = 1;
@@ -196,6 +198,8 @@ int OS_Mesh::get_bndface(string boundary, int cell) const
 
 vector<int> OS_Mesh::get_surcells(string boundary) const
 {
+    Require (!submesh);
+
   // return a list of cells along the specified boundary
 
   // make return vector containing a list of cells along specified boundary
