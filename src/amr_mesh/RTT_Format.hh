@@ -449,7 +449,7 @@ class RTT_Format
 	    for (int f = 0; f < dims.get_ncell_flag_types(); f++)
 	    {
 	        string flag = flagTypes(f)->getFlagType();
-	        if ((flag[0] == 'r' || flag[0] == 'r') &&
+	        if ((flag[0] == 'r' || flag[0] == 'R') &&
 		    flag.find_first_not_of(source) == string::npos &&  
 		    flag.find_first_not_of(source) >= length)
 		{
