@@ -74,26 +74,18 @@ inline int Recv( T& data, int dest,
 }
 
 // Global reductions
-// Sum, scalar
 
-void gsum( int& x );
-void gsum( long& x );
-void gsum( float& x );
-void gsum( double& x );
+template<class T> void gsum( T& x );
+template<class T> void gmin( T& x );
+template<class T> void gmax( T& x );
 
+#if 0
 // Sum, array
 
 void gsum( int *px, int n );
 void gsum( long *px, int n );
 void gsum( float *px, int n );
 void gsum( double *px, int n );
-
-// Min, scalar
-
-void gmin( int& x );
-void gmin( long& x );
-void gmin( float& x );
-void gmin( double& x );
 
 // Min, array
 
@@ -102,19 +94,13 @@ void gmin( long *px, int n );
 void gmin( float *px, int n );
 void gmin( double *px, int n );
 
-// Max, scalar
-
-void gmax( int& x );
-void gmax( long& x );
-void gmax( float& x );
-void gmax( double& x );
-
 // Max, array
 
 void gmax( int *px, int n );
 void gmax( long *px, int n );
 void gmax( float *px, int n );
 void gmax( double *px, int n );
+#endif
 
 C4_NAMESPACE_END
 
