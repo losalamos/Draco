@@ -12,6 +12,8 @@
 
 #include <iostream>
 #include <iomanip>
+
+#include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
 #include "Q3DLevelSym.hh"
 
@@ -31,6 +33,8 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
       numAngles ( sn_order_ * (sn_order_+2) )
 
 { 
+    using rtt_dsxx::soft_equiv;
+
     Require ( snOrder > 0 );
     Require ( norm > 0.0 );
     // Insist ( snOrder%2 == 0, "LS Quad must have an even SN order." );
@@ -400,25 +404,25 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
     wtt.clear();
 
     // Verify that the quadrature meets our integration requirements.
-    Ensure( fabs(iDomega()-norm) <= TOL );
+    Ensure( soft_equiv(iDomega(),norm) );
 
     // check each component of the vector result
     vector<double> iod = iOmegaDomega();
-    Ensure( fabs(iod[0]) <= TOL );
-    Ensure( fabs(iod[1]) <= TOL );
-    Ensure( fabs(iod[2]) <= TOL );
+    Ensure( soft_equiv(iod[0],0.0) );
+    Ensure( soft_equiv(iod[1],0.0) );
+    Ensure( soft_equiv(iod[2],0.0) );
 
     // check each component of the tensor result
     vector<double> iood = iOmegaOmegaDomega();
-    Ensure( fabs(iood[0]-norm/3.0 ) <= TOL );  // mu*mu
-    Ensure( fabs(iood[1]) <= TOL ); // mu*eta
-    Ensure( fabs(iood[2]) <= TOL ); // mu*xi
-    Ensure( fabs(iood[3]) <= TOL ); // eta*mu
-    Ensure( fabs(iood[4]-norm/3.0) <= TOL ); // eta*eta
-    Ensure( fabs(iood[5]) <= TOL ); // eta*xi
-    Ensure( fabs(iood[6]) <= TOL ); // xi*mu
-    Ensure( fabs(iood[7]) <= TOL ); // xi*eta
-    Ensure( fabs(iood[8]-norm/3.0) <= TOL ); // xi*xi
+    Ensure( soft_equiv(iood[0],norm/3.0) );  // mu*mu
+    Ensure( soft_equiv(iood[1],0.0) ); // mu*eta
+    Ensure( soft_equiv(iood[2],0.0) ); // mu*xi
+    Ensure( soft_equiv(iood[3],0.0) ); // eta*mu
+    Ensure( soft_equiv(iood[4],norm/3.0) ); // eta*eta
+    Ensure( soft_equiv(iood[5],0.0) ); // eta*xi
+    Ensure( soft_equiv(iood[6],0.0) ); // xi*mu
+    Ensure( soft_equiv(iood[7],0.0) ); // xi*eta
+    Ensure( soft_equiv(iood[8],norm/3.0) ); // xi*xi
 
     // Copy quadrature data { mu, eta, xi } into the vector omega.
     omega.resize( numAngles );

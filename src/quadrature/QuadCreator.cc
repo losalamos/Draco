@@ -23,6 +23,7 @@
 #include <iostream>
 #include <cmath>
 
+#include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
 
 #include "Q1DGaussLeg.hh"
@@ -51,6 +52,8 @@ rtt_dsxx::SP<Quadrature>
 QuadCreator::quadCreate( QuadCreator::Qid quad_type, 
 			 size_t sn_order, double norm ) 
 {
+    using rtt_dsxx::soft_equiv;
+
     rtt_dsxx::SP<Quadrature> spQuad;
 
     switch( quad_type ) 
@@ -58,22 +61,22 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 	case GaussLeg:
 	    // if the client did not specify a value for norm then it will be
 	    // zero here.  We must set it to a default value of 2.0.
-	    if ( fabs(norm) <= TOL ) norm = 2.0;
+	    if ( soft_equiv(norm,0.0) ) norm = 2.0;
 	    spQuad = new Q1DGaussLeg( sn_order, norm );
 	    break;
 	    
 	case Axial1D:
-	    if ( fabs(norm) <= TOL ) norm = 2.0;
+	    if ( soft_equiv(norm,0.0) ) norm = 2.0;
 	    spQuad = new Q1Axial( sn_order, norm );
 	    break;
 	    
 	case LevelSym2D:
-	    if ( fabs(norm) <= TOL ) norm = 2.0*rtt_units::PI;
+	    if ( soft_equiv(norm,0.0) ) norm = 2.0*rtt_units::PI;
 	    spQuad = new Q2DLevelSym( sn_order, norm );
 	    break;
 	    
 	case LevelSym:
-	    if ( fabs(norm) <= TOL ) norm = 4.0*rtt_units::PI;
+	    if ( soft_equiv(norm,0.0) ) norm = 4.0*rtt_units::PI;
 	    spQuad = new Q3DLevelSym( sn_order, norm );
 	    break;
 	    

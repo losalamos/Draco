@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <cmath>
 
+#include "ds++/Soft_Equivalence.hh"
 #include "Q3DLevelSym.hh"
 #include "Q2DLevelSym.hh"
 
@@ -34,6 +35,7 @@ Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_ )
     : Quadrature( sn_order_, norm_ ), numAngles (sn_order_ * (sn_order_+2)/2)
 {
     using std::fabs;
+    using rtt_dsxx::soft_equiv;
 
     Require ( snOrder > 0 );
     Require ( norm > 0.0 );
@@ -68,19 +70,19 @@ Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_ )
 	wt[angle] = wt[angle]*(norm/wsum);
 
     // Verify that the quadrature meets our integration requirements.
-    Ensure( fabs(iDomega()-norm) <= TOL );
+    Ensure( soft_equiv(iDomega(),norm) );
 
     // check each component of the vector result
     vector<double> iod = iOmegaDomega();
-    Ensure( fabs(iod[0]) <= TOL );
-    Ensure( fabs(iod[1]) <= TOL );
-
+    Ensure( soft_equiv(iod[0],0.0) );
+    Ensure( soft_equiv(iod[1],0.0) );
+		    
     // check each component of the tensor result
     vector<double> iood = iOmegaOmegaDomega();
-    Ensure( fabs(iood[0]-norm/3.0 ) <= TOL );  // mu*mu
-    Ensure( fabs(iood[1]) <= TOL ); // mu*eta
-    Ensure( fabs(iood[2]) <= TOL ); // eta*mu
-    Ensure( fabs(iood[3]-norm/3.0) <= TOL ); // eta*eta
+    Ensure( soft_equiv(iood[0],norm/3.0) );  // mu*mu
+    Ensure( soft_equiv(iood[1],0.0) ); // mu*eta
+    Ensure( soft_equiv(iood[2],0.0) ); // eta*mu
+    Ensure( soft_equiv(iood[3],norm/3.0) ); // eta*eta
 
     // Copy quadrature data { mu, eta } into the vector omega.
     omega.resize( numAngles );

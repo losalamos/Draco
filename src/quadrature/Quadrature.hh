@@ -21,9 +21,6 @@ namespace rtt_quadrature
 using std::vector;
 using std::string;
 
-//! Tol specifies how accurately we compare two double values.
-const double TOL = 1.0e-13;
-
 //===========================================================================//
 /*!
  * \class Quadrature
