@@ -38,26 +38,37 @@ class P1Matrix
 
     // DATA
     
-    const dsxx::SP<const ccsf> spADiagonal_m;
-    const dsxx::SP<const fcdsf> spAOffDiagonal_m;
+    ccsf ADiagonal_m;
+    fcdsf AOffDiagonal_m;
     const FieldConstructor &fCtor_m;
     
   public:
 
     // CREATORS
     
-    P1Matrix(const FieldConstructor &fCtor_,
-	     const dsxx::SP<const ccsf> &spADiag_,
-	     const dsxx::SP<const fcdsf> &spAOffDiag_)
-	: fCtor_m(fCtor_), spADiagonal_m(spADiag_),
-	  spAOffDiagonal_m(spAOffDiag_)
+    P1Matrix(const FieldConstructor &fCtor_, const ccsf &ADiag_,
+	     const fcdsf &AOffDiag_)
+	: fCtor_m(fCtor_), ADiagonal_m(ADiag_),
+	  AOffDiagonal_m(AOffDiag_)
     {
-	// empty
+	// Empty
     }
     
     // MANIPULATORS
 
-    // ** none **
+    void jacobiScale()
+    {
+	fcdsf DiagOnFaces(fCtor());
+	MT::gather(DiagOnFaces, ADiagonal_m, MT::OpAssign());
+
+	fcdsf DiagAcrossFaces(fCtor());
+	MT::swap_faces(DiagAcrossFaces, DiagOnFaces, 1.0);
+
+	AOffDiagonal_m = AOffDiagonal_m / sqrt(fabs(DiagAcrossFaces
+						    * DiagOnFaces));
+	ADiagonal_m = ADiagonal_m/ fabs(ADiagonal_m);
+    }
+ 
     
     // ACCESSORS
 
@@ -65,13 +76,13 @@ class P1Matrix
     {
 	return fCtor_m;
     }
-    const dsxx::SP<const ccsf> spADiagonal() const
+    const ccsf &diagonal() const
     {
-	return spADiagonal_m;
+	return ADiagonal_m;
     }
-    const dsxx::SP<const fcdsf> spAOffDiagonal() const
+    const fcdsf &offDiagonal() const
     {
-	return spAOffDiagonal_m;
+	return AOffDiagonal_m;
     }
     
   private:
