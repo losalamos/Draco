@@ -22,6 +22,7 @@ using std::endl;
 using std::string;
 using std::ofstream;
 using rtt_plot2D::Plot2D;
+using rtt_plot2D::SetProps;
 
 void pause();
 void tstPlot2D();
@@ -66,7 +67,7 @@ tstPlot2D()
     p.setAxesLabels("x", "y0", 0);
     p.setAxesLabels("x", "y1", 1);
 
-    Plot2D::SetProps prop;
+    SetProps prop;
     prop.line.color = 2;
     p.setProps(0, 0, prop);
 
