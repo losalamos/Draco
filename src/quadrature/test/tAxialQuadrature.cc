@@ -1,0 +1,159 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   quadrature/test/tAxialQuadrature.cc
+ * \author Jae Chang
+ * \date   Fri Oct 08 10:26:41 2004
+ * \brief  quadrature package test.
+ */
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+#include "quadrature_test.hh"
+#include "../Quadrature.hh"
+#include "../QuadCreator.hh"
+#include "../Release.hh"
+#include "ds++/Assert.hh"
+#include "ds++/SP.hh"
+
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <sstream>
+
+using namespace std;
+
+using rtt_quadrature::QuadCreator;
+using rtt_quadrature::Quadrature;
+using rtt_dsxx::SP;
+
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Tests the Quadcrator and Quadtrature constructors and access
+ * routines. 
+ *
+ * To add a quadrature to this test the following items must be changed: add
+ * new enumeration to Qid[] array.  add new mu[0] value to mu0[] array.
+ * verify nquads is set to the correct number of quadrature sets being
+ * tested.
+ */
+void quadrature_test()
+{
+    // double precesion values will be tested for correctness against this
+    // tolerance. 
+    const double TOL = 1.0e-10; 
+
+    // create an object that is responsible for creating quadrature objects.
+    QuadCreator QuadratureCreator;
+    
+    // we will only look at S2 in this test.
+    const int sn_order = 2;
+    
+
+    // total number of quadrature sets to be tested.
+    const int nquads = 1;
+
+    // Declare an enumeration object that specifies the Quadrature set to be
+    // tested.
+
+    // Quadrature sets to be tested:
+    //
+    // #   Qid        Description
+    // -   --------   ------------
+    // 0   Axial1D    1D Axial
+ 
+
+    QuadCreator::Qid qid[nquads] = { QuadCreator::Axial1D };
+
+    // mu0 holds mu for the first direction for each quadrature set tested.
+    double mu0[nquads] = { 2.0 };
+    
+    SP< const Quadrature > spQuad;
+
+    // loop over quadrature types to be tested.
+
+    for ( int ix = 0; ix < nquads; ++ix ) {
+	
+	// Verify that the enumeration value matches its int value.
+	if ( qid[ix] != QuadCreator::Axial1D ) {
+	    FAILMSG("Setting QuadCreator::Qid enumeration failed.");
+	    break;
+	} else {
+	    // Instantiate the quadrature object.
+	    spQuad = QuadratureCreator.quadCreate( qid[ix], sn_order ); 
+
+	    // print the name of the quadrature set that we are testing.
+	    string qname = spQuad->name();
+	    cout << "\nTesting the "  << qname
+		 << "Quadrature set." << endl;
+	    cout << "   Sn Order         = " << spQuad->getSnOrder() << endl;
+	    cout << "   Number of Angles = " << spQuad->getNumAngles() << endl;
+
+	    // If the object was constructed sucessfully then we continue
+	    // with the tests.
+	    if ( ! spQuad )
+		FAILMSG("QuadCreator failed to create a new quadrature set.")
+	    else {
+		// get the mu vector
+		vector<double> mu = spQuad->getMu();
+		if ( mu.size() != spQuad->getNumAngles() )
+		    FAILMSG("The direction vector has the wrong length.")
+		else 
+		{
+		    spQuad->display();
+		    cout << endl << endl; // end of this quadrature type
+		}
+	    }
+	    std::ostringstream msg;
+	    msg << "Passed all tests for the " << qname 
+		<< " quadrature set.";
+	    PASSMSG( msg.str() );
+	}
+    }
+    return;
+} // end of quadrature_test
+
+//---------------------------------------------------------------------------//
+
+int main(int argc, char *argv[])
+{
+    // version tag
+    for (int arg = 1; arg < argc; arg++)
+	if (string(argv[arg]) == "--version")
+	{
+	    cout << argv[0] << ": version " << rtt_quadrature::release() 
+		 << endl;
+	    return 0;
+	}
+
+    try
+    {
+	// >>> UNIT TESTS
+	quadrature_test();
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing tAxialQuadrature, " << ass.what()
+	     << endl;
+	return 1;
+    }
+
+    // status of test
+    cout << endl;
+    cout <<     "*********************************************" << endl;
+    if (rtt_quadrature_test::passed) 
+    {
+        cout << "**** tAxialQuadrature Test: PASSED" 
+	     << endl;
+    }
+    cout <<     "*********************************************" << endl;
+    cout << endl;
+
+    cout << "Done testing tAxialQuadrature." << endl;
+}   
+
+//---------------------------------------------------------------------------//
+//                        end of tQuadrature.cc
+//---------------------------------------------------------------------------//

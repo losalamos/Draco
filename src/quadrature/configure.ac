@@ -46,7 +46,7 @@ dnl A space delimited list of packages that this package depends on.
 AC_NEEDS_LIBS(ds++)
 
 dnl tests
-AC_RUNTESTS(tQuadrature, scalar)
+AC_RUNTESTS(tQuadrature tAxialQuadrature, scalar)
 
 dnl Evaluate requested build environment and create values to be
 dnl substituted into the build system files listed in AC_OUTPUT

@@ -26,6 +26,7 @@
 #include "units/PhysicalConstants.hh"
 
 #include "Q1DGaussLeg.hh"
+#include "Q1Axial.hh"
 #include "Q2DLevelSym.hh"
 #include "Q3DLevelSym.hh"
 #include "QuadCreator.hh"
@@ -59,6 +60,11 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 	    // zero here.  We must set it to a default value of 2.0.
 	    if ( fabs(norm) <= TOL ) norm = 2.0;
 	    spQuad = new Q1DGaussLeg( sn_order, norm );
+	    break;
+	    
+	case Axial1D:
+	    if ( fabs(norm) <= TOL ) norm = 2.0;
+	    spQuad = new Q1Axial( sn_order, norm );
 	    break;
 	    
 	case LevelSym2D:
