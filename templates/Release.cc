@@ -18,7 +18,7 @@ using std::string;
 // this library in the form <spkg>_#.#.# in pkg_version variable
 const string release()
 {
-    string pkg_release = "<spkg>_<start>#.#.#";
+    string pkg_release = "@(#)<spkg>_<start>#.#.#";
     return pkg_release;
 }
 
