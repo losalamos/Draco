@@ -165,7 +165,8 @@
 under the current framework (draco, solon, dante, etc).  If no
 templates directory is found then try (my-templates-directory)."
   
-  ;; find the draco/templates directory go a maximum of twenty levels
+  ;; find the draco/environment/templates directory go a maximum of
+  ;; twenty levels
 
   ;; definitions of variables
   (setq ldir ".")
@@ -175,9 +176,9 @@ templates directory is found then try (my-templates-directory)."
   (while (not found)
     ;; get this level and the parent level
     (setq level (expand-file-name ldir))
-    (setq target (concat level "/templates"))
+    (setq target (concat level "/environment/templates"))
 
-    ;; see if the templates/ directory exists
+    ;; see if the environment/templates/ directory exists
     (if (file-exists-p target)
 	(setq found t))
 
@@ -193,7 +194,7 @@ templates directory is found then try (my-templates-directory)."
     ;; directory then return its value otherwise return an error.
     (if (= nlevel 20)
 	(progn ; directory not found
-	  (message "Can't find draco/templates. Looking for alt. template directory.\n")
+	  (message "Can't find draco/environment/templates. Looking for alt. template directory.\n")
 	  (if my-templates-dir ; has this var been set?
 	      (if (file-accessible-directory-p my-templates-dir)
 		  (progn
