@@ -71,7 +71,7 @@ class Banded_Matrix
 
   public:
     template<class Decomposition_DB>
-    Banded_Matrix( const Decomposition_DB& ddb, int *doff )
+    Banded_Matrix( const Decomposition_DB& ddb, const int *doff )
 	: nro( ddb.row_offset() ),
 	  nrp( ddb.nrows_this_processor() ),
 	  nrt( ddb.nrows_total() ),
