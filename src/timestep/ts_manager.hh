@@ -56,7 +56,7 @@ class ts_manager {
     //! name of the advisor in control
     std::string controlling_advisor; 
     //! a list of Smart Pointers to time step advisors
-    std::list < dsxx::SP<ts_advisor> > advisors; 
+    std::list < rtt_dsxx::SP<ts_advisor> > advisors; 
 
 // CREATORS
 
@@ -72,12 +72,12 @@ class ts_manager {
     //! Adds a timestep advisor to a RTT timestep manager
     /*! \param new_advisor the new advisor to be added
      */
-    void add_advisor(const dsxx::SP<ts_advisor> &new_advisor);
+    void add_advisor(const rtt_dsxx::SP<ts_advisor> &new_advisor);
 
     //! Removes a timestep advisor from a RTT timestep manager
     /*! \param advisor_to_remove the advisor to be removed 
      */
-    void remove_advisor(const dsxx::SP<ts_advisor> &advisor_to_remove);
+    void remove_advisor(const rtt_dsxx::SP<ts_advisor> &advisor_to_remove);
 
     //! Sets timestep, cycle number, and problem time
     /*! \param dt_ the timestep (time)

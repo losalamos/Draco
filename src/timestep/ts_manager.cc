@@ -25,7 +25,7 @@ using std::endl;
 using std::cerr;
 using std::cout;
 using std::ios;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 namespace rtt_timestep
 {
