@@ -32,6 +32,9 @@ instantiate funcproto T=double
 void print_Mat( const Mat2<T>& m, String name )
 
 instantiate funcproto T=double
+void print2_Mat( const Mat2<T>& m, String name )
+
+instantiate funcproto T=double
 void ADdump_Mat( ADFile *f, Mat3<T>& m, String id )
 
 instantiate funcproto T=double
