@@ -430,7 +430,7 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell, Sprng &random) const
     ThreeVector B = lin_comb(vertex_vector[v3],vertex_vector[v1],fraction);
     ThreeVector C = lin_comb(vertex_vector[v3],vertex_vector[v2],fraction);
 
-    return sample_in_triangle(A, B, C, random).convert();
+    return rtt_mc::sample_in_triangle(A, B, C, random).convert();
 
 }   // end TET_Mesh::sample_pos(int,Sprng &)
 
@@ -489,7 +489,7 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos_on_face(int cell, int face,
             va = 0; vb = 2; vc = 1;
         }
 
-    return sample_in_triangle(vertex_vector[cells_vertices[cell_][va]],
+    return rtt_mc::sample_in_triangle(vertex_vector[cells_vertices[cell_][va]],
                               vertex_vector[cells_vertices[cell_][vb]],
                               vertex_vector[cells_vertices[cell_][vc]],
                               random).convert();

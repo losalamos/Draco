@@ -210,7 +210,25 @@ void Test_TET()
     if (cells_ver[0].size() != 4)   ITFAILS;
     if (cells_ver[1].size() != 4)   ITFAILS;
 
-    
+    // BEFORE constructing layout, reconcile vertex order.
+    // We will do this later.
+
+    Layout layo;
+    layo.set_size(2);
+    layo.set_size(1,4);
+    layo.set_size(2,4);
+
+    for (int c = 1 ; c <=2 ; c++)
+        for (int f = 1 ; f <= 4 ; f++)
+            layo(c,f) = 0;
+
+    layo(1,1) = 2;
+    layo(2,3) = 1;
+
+//  SP<TET_Mesh> mesh_ptr(new TET_Mesh(coor, layo, vertex_vec, cells_ver));
+//  if ( !mesh_ptr )                  ITFAILS;
+//  if ( !mesh_ptr->full_Mesh() )     ITFAILS;
+
 
 }
 
