@@ -8,24 +8,20 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "field_ts_advisor.hh"
-
-#include "ts_manager.hh"
+#include <algorithm>
+#include <stdexcept>
+#include <cmath>
 
 #include "ds++/Assert.hh"
-
 #include "c4/global.hh"
 
-#include <algorithm>
-
-#include <stdexcept>
-
-#include <cmath>
+#include "field_ts_advisor.hh"
+#include "ts_manager.hh"
 
 namespace rtt_timestep
 {
 
-template <class FT>
+template< class FT >
 void field_ts_advisor::set_floor(const FT &y1, double frac)
 {
     Require(invariant_satisfied());
@@ -156,7 +152,7 @@ void field_ts_advisor::update_tstep(const ts_manager &tsm,
 
 
 //---------------------------------------------------------------------------//
-//                              end of field_ts_advisor.t.hh
+//                        end of field_ts_advisor.t.hh
 //---------------------------------------------------------------------------//
 
 
