@@ -11,6 +11,7 @@
 
 #include "3T/testP13T/faces.hh"
 #include "ds++/SP.hh"
+#include <string>
 
 namespace rtt_3T_testP13T
 {
@@ -34,6 +35,10 @@ namespace rtt_3T_testP13T
 
  template<class FT, class OP>
  typename FT::value_type max(const FT &rhs, OP &op);
+
+ std::string getFileName(const std::string &prefix,
+			 const std::string &suffix, int number,
+			 int fieldwidth=5);
 
 } // end namespace rtt_3T_testP13T
 

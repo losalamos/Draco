@@ -25,7 +25,6 @@
 
 #include <functional>
 #include <new>
-#include <strstream>
 #include <fstream>
 #include <iostream>
 using std::cout;
@@ -286,11 +285,8 @@ void testFullP13T<UMCMP>::gmvDump(const RadiationStateField &radState,
 				  const ccsf &TElec, const ccsf &TIon,
 				  int dumpno, int cycle, double time) const
 {
-    std::ostrstream oss;
-    oss << "testFullP13T.gmvout."
-	<< std::setw(5) << std::setfill('0') << dumpno
-	<< std::ends;
-
+    std::string fname = rtt_3T_testP13T::getFileName("testFullP13T.gmvout.",
+						     "", dumpno);
     using PhysicalConstants::pi;
     
     const RadiationPhysics radphys(units);
@@ -306,7 +302,7 @@ void testFullP13T<UMCMP>::gmvDump(const RadiationStateField &radState,
 	*trit++ = std::pow((*pit) / (a*c), 0.25);
     }
 
-    rtt_3T_testP13T::GmvDump<MT> gmv(oss.str(), spMesh, cycle, time);
+    rtt_3T_testP13T::GmvDump<MT> gmv(fname, spMesh, cycle, time);
     gmv.dump(radState.phi, "phi");
     gmv.dump(TRad, "TRad");
     gmv.dump(TElec, "TElec");
@@ -580,8 +576,10 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
 
     if (cycle % tdb.dumpcycles == 0)
     {
-	static int dumpno = 0;
+	static int dumpno = 1;
+	std::cerr << "before gmvDump()" << std::endl;
 	gmvDump(newRadState, TElec, TIon, dumpno++, cycle, time);
+	std::cerr << "after gmvDump()" << std::endl;
     }
 
     ccvsf density(spMesh);
@@ -605,23 +603,24 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
 					     density, volfrac, matid);
     MatStateFC newMatStateFC = getMatStateFC(newMatStateCC);
 	
-#if 1
     if (cycle % tdb.dumpcycles == 0)
     {
-	static int dumpno = 1;
+	int dumpno = cycle / tdb.dumpcycles;
     
-	std::ostrstream oss;
-	oss << "testFullP13T."
-	    << std::setw(5) << std::setfill('0') << dumpno++
-	    << ".dat"
-	    << std::ends;
+	std::cerr << "before creating dump file name" << std::endl;
+
+	std::string fname = rtt_3T_testP13T::getFileName("testFullP13T.",
+						  ".dat", dumpno);
+	
+	std::cerr << "after creating dump file name" << std::endl;
 
 	ccsf TElect(spMesh);
 	newMatStateCC.getElectronTemperature(TElect);
-	
-	rtt_3T_testP13T::dumpInZ(oss.str(), cycle, time, TElect);
+
+	std::cerr << "before dumpInZ()" << std::endl;
+	rtt_3T_testP13T::dumpInZ(fname, cycle, time, TElect);
+	std::cerr << "after dumpInZ()" << std::endl;
     }
-#endif
 
     postProcess(radState, newRadState, matStateCC, newMatStateCC,
 		electEnergyDep, ionEnergyDep, QRad, QElectron, QIon,

@@ -26,6 +26,7 @@ need_P1Diffusion := yes
 include ../../config/makefile
 
 srcs	= \
+	utils.cc \
 	main.cc \
 	Mesh_XYZ_IO.cc \
 	testFullP13T_MS_pt.cc \
