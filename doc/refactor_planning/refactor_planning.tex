@@ -71,19 +71,20 @@
 
 \opening
 
-\section{Background on the Particle-transport refactor}
+\section{Introduction}
+\subsection{Background on the Particle-transport refactor}
 
-Particles are currently represented in a heirachy of classes. {\tt
+Particles are currently represented in a heirachy of classes: {\tt
   Particle}, the abstract base class, and two derived classes {\tt
   Gray\_particle} and {\tt Multigroup\_particle}. The interface of the
-derived classes is a mixture of virtual and non-virtual functions.
-Most classes which use particles are templated on the particle type
-and do {\em not} refer to the particle via its base class. The purpose
-of the base class is to provide a common set of inherited data and
-methods (via protected code blocks) to the derived classes. The
-principal difference between the two derived classes is the different
-type of the {\tt Opacity} class used and the different interface used
-to access the object.
+derived classes contains both virtual and non-virtual functions.  Most
+classes which use particles are templated on the particle type and do
+{\em not} refer to the particle via its base class. The purpose of the
+base class is to provide a common set of inherited data and methods
+(via protected code blocks) to the derived classes. The principal
+difference between the two derived classes is the different type of
+the {\tt Opacity} class used and the different interface used to
+access the object.
 
 Currently, the particle classes implement the main particle-transport
 algorithm.  The addition of multigroup versus gray transport
@@ -99,34 +100,47 @@ transport with random walk enabled, or not. These functions are also
 nearly identical, differing only in the conditional logic for random
 walk.
 
-This refactoring is being undertaken under the auspices of the {\em
-  Camel Norton} project described in~\cite{ccs-4:04-13}
+The goal of this refactoring is to reduce the amount of duplicated
+code and better encapsulate different parts of the particle transport
+algorithm. It is being undertaken under the auspices of the {\em Camel
+  Norton} refactoring project described in~\cite{ccs-4:04-13}
 
-\section{The contractor metaphor for particle transport}
+\subsection{Particle transport and the contractor metaphor}
 
-The transport algorithm for a particle consists of repeated short
-streaming steps which are limited by various events. These events then
-cause a change in the state of the particle. The streaming steps are
+The transport process for a particle consists of repeated short
+streaming steps which are limited by various events which then cause a
+change in the state of the particle. The state of the particle
+includes it's position in space, it's direction of motion, it's energy
+weight and optionally, it's energy group. The streaming steps are
 repeated until the particle enters a state for which the streaming
 stops. The particle can be dead, go to census, or need to be
-communicated to another domain.
+communicated to another processor. Optionally, a particle can undergo
+random walk in which a (short) streaming step is replaced with a
+diffusion process. Here, the particle accquires a new position
+randomly sampled within a sphere and a new random direction.
 
-The contractor methaphor for particle transport differs from the
-current approach in two main ways: First, it seperates the different
-events which effect the transport process. Second, the contractor
-metaphor changes the particle transport algorithm from something
-implemented {\em by} the particle to somthing applied {\em to} the
-particle. This change will enable different generic programming
-techniques to unify the code.
+Currently, the events which limit streaming in the particle transport
+algorithm are: collisions (which consists of absorption, and effective
+and Thompson scattering), mesh boundary crossings, attaining weight
+cutoff, and going into census.
 
-Currently, the limiting events in the particle transport algorithm
-are: collisions (which consists of absorption, effective scattering
-and Thompson scattering), mesh boundary corssings, attaining weight
-cutoff, and going into census. Optionally, particles can also undergo
-random walk. Random walk is different in that it is not a
-streaming-limiter but rather circumvents the streaming step.
+Idea behind the contractor metaphor is to replace the monolithing
+transport algorithm in it's multiply-repeated glory with a
+collaboration between objects, each of which represent an event, or
+group of events, which can befall a particle and affect it in various
+ways. Coordinating the interactions of these various contractors is
+the sole remaining job of the particle transport method.
 
-Each of these events (or group of related sub-events e.g. collisions)
+The contractor methaphor for particle transport thus differs from the
+current approach in two main ways: First, it changes the particle
+transport algorithm from something implemented {\em by} the particle
+to somthing applied {\em to} the particle. This enables various
+generic programming techniques to unify the code.  Second, it
+encapsulates the different events which effect the transport process
+into separate classes. These clases will operate on the particle being
+transported.
+
+Each limiting event (or group of related sub-events, e.g. collisions)
 has two aspects to it: It generates a distance at which the event
 occurs, and, if the event comes to pass, changes the state of the
 particle to reflect the event. This change in state can include
@@ -135,79 +149,119 @@ resampling its direction (e.g. scattering), resampling its position
 Both of these steps generally require the collaboration of other
 objects which hold needed data. For example, the mesh to determine the
 distance to boundary crossings, or the opacity to determine the
-distance to cutoff.
+distance to scattering events.
 
-In the contractor model, limiting events are implemented via separate
-classes. This class provides two public member functions which compute
-the event distance and modify the particle state. These methods take
-the particle in question as arguments.
+In the contractor model, the event limiters are implemented as
+separate classes. Each class is responsible for the {\em determination
+  step}, finding the distance to the event, and the {\em implmentation
+  step}, applying the event to the particle. To do this, the class
+provides two public member functions which take the particle in
+question as arguments.
 
 With the limiting event compuations and implementations moved into
 seperate classes, the main loop of the particle transport algorithm
-contains less data and is less complicated. It is primairly
-responsible for soliciting distance information from its various
+contains less data and is less complicated. It's primary
+responsibilities are to solicit distance information from the
 contractors, (e.g. ``bids''), determining which event occurs (the
 ``winner'') and handing the particle to that contractor for
 implementation. It then decides if transport should continue or if
 other actions are required (e.g. communication).
 
-\section{Example contractor implemetation}
+\section{Contractors}
 
-\subsection{Collision contractor}
+\subsection{The contractor interface}
 
-A good candidate for stand-alone contractor status is the collision
-event handler. This event depends on additional data extracted from
-the opacity class and computes probabilities from this data. Also,
-its effect of the particle involves conditionals on the particle's
-state (analog versus implicit absorption). This is a fair amount of
-complexity which should be encapsulated. This will also isolate the
-main particle-transport algorithm from the details in the event that
-they should change. We take a closer look at this contractor as an
-example here. An example implementation is illustrated in
+The common interface required of contractors is simple, and consists
+of two functions:
+\begin{verbatim}
+  double compute_distance(const PT& particle)
+  bool apply_event(PT& particle)
+\end{verbatim}
+
+The formal type {\tt PT} denotes the type of the particle and is
+assumed to be a template parameter of the contractor class.
+Alternatively, we can implement the functions above as template member
+functions if there is no need to access the particle type elsewhere in
+the class.
+
+Note that a reference to the particle is used in both cases, to
+prevent copying of the object.  The {\tt compute\_distance} member
+takes a constant reference, since it will not modify the particle, and
+{\tt apply\_event} takes a regular reference since it will.
+
+The boolean return argument of {\tt apply\_event} can be used to
+provide context-specific information about the result of the event, in
+addition to information carried by the particle itself. This can be
+used in coordinating interactions with other contractors. Again, the
+{\tt Particle\_Transporter} is responsible for interpreting this
+information. 
+
+\subsection{The Collision contractor}
+
+Our first example of a contractor is the collision event handler.
+Collision events depend on additional data extracted from the opacity
+class and computes probabilities from this data. Also, its effect of
+the particle involves conditionals on the particle's state (analog
+versus implicit absorption). This is a fair amount of complexity which
+should be encapsulated. This will also isolate the main
+particle-transport algorithm from the details in the event that they
+should change. We take a closer look at this contractor as an example
+here. An example implementation is illustrated in
 Figure~\ref{fig:collision_contractor}
 
 \begin{center}
   \begin{figure}
-    \includegraphics[width=6.5in]{figures/collision_contractor.eps}
-    \caption{Example contractor implementation. Not all members shown} 
+    \includegraphics[width=6.5in]{figures/collision_contractor}
+    \caption{Collision contractor implementation. Not all members shown} 
     \label{fig:collision_contractor}
   \end{figure}
 \end{center}
 
-Publicly, the  {\tt  Collision\_Contractor}  class will implement  {\tt
-  compute\_distance} and  {\tt apply\_event} members.  The function {\tt
-  compute\_distance} can take    a constant reference to  the  particle
-while {\tt apply\_event} will need an ordinary  reference to modify the
-particle.  Internally,  it will use  the opacity object to compute the
-distance and the  relative probabilities for  its various sub-events. 
-If it wins, the {\tt apply\_event} member function will dispatch to
-vartious private members depending on the sub-event.
+Publicly, the {\tt Collision\_Contractor} class will implement {\tt
+  compute\_distance} and {\tt apply\_event} members.  The function
+{\tt compute\_distance} can take a constant reference to the particle
+while {\tt apply\_event} will need an ordinary reference in order to
+modify the particle.  Internally, it will use the opacity object to
+compute the distance and the relative probabilities for its various
+sub-events.  If it wins, the {\tt apply\_event} member function will
+dispatch to vartious private members depending on the sub-event.
 
 The contractor class can also aggregate the appropaite tally object
 for the kinds of events that it handles as shown in the figure. This
 removes more code from the transport algorithm itself.
 
-\subsection{Opacity interface}
+The changes in particle state which occur with the collision events
+depend on the state of the particle: Implicit versus Explicit
+absorption. This is another source of complexity which can be moved
+out of the transport algorithm. It is also another source of coupling
+between the particle class and the contractor. If the model of
+particle bahavior changes, then both the particle and the contractors
+which depend on this model mush change. This problem also affects the
+surface-tracking operations which need two methods for tallying
+surface crossings depending on the absorption state of the particle. 
 
-One of the problems to be address when unifying the particle transport
-functions is the differing interface between the {\tt Opacity} class
-for gray and multigroup frequency.  The multigroup version contains an
-extra argument for the energy group of the particle. We propose to
-wrap the opacity class with another class which takes the particle as
-an argument and returns the correct opacity information.
+\subsection{Opacity Adapter}
 
-This wrapper class will be specialized on the frequency type (which is
-part of the type of the particle class). The specialized versions will
-differ in the following ways: They will contain the correct type of
-opacity object, extract different data from the particle object (cell
-and group versus just cell) and fetch the opacity information from the
-opacity object via the correct interface).
+One of the problems to address is the differing interface between the
+{\tt Opacity} class for gray and multigroup frequency.  The multigroup
+version contains an extra argument for the energy group of the
+particle. We propose to wrap the opacity class with an adapter which
+takes the particle as an argument and returns the correct opacity
+information. This is also depicted in
+Figure~\ref{fig:collision_contractor}. 
 
-This wrapper class will then in turn be used by the collision event
-contractor in the particle transport algorithm. This class will also
-need to be templated on the frequency type of the particle. This, in
-turn, implys that the particle transporter class itself needs to be
-templated on this parameter.
+The {\tt Opacity\_Adapter} class will be specialized on the frequency
+type (which is part of the type of the particle class). The
+specialized versions will differ by containing the correct type of
+opacity object, and extracting different data from the particle object
+(cell and group versus just cell). They will fetch information from
+the opacity object via the appropiate interface for the frequency
+type.
+
+The adapter class is used in by the collision event contractor, which
+will also need to be templated on the frequency type of the particle.
+This, in turn, implys that the particle transporter class itself needs
+to be templated on this parameter.
 
 In various classes we can choose between templating on the particle
 type itself or just the frequency type. In making the transition
@@ -216,57 +270,268 @@ the particle type, or build the particle type from the frequecny type
 (by combining it with other type information, e.g. mesh type). We give
 one likely assignment of template parameters in
 Figure~\ref{fig:collision_contractor}. In this implementation, class
-{\tt Opacity\_Interface} extracts the frequency type partameter {\tt
+{\tt Opacity\_Adapter} extracts the frequency type partameter {\tt
   FT} from the particle type {\tt PT} to determine the correct
 parameter for the {\tt Opacity} class. This can be facilitated by a
 {\tt typedef} in the derived particle classes.
 
-\section{Implementation of random walk and particle transport}
+\subsection{A good design spoiled: The trouble with random walk}
 
-With contractor classes (or functions) in place for the limiting
-events, we reduce the main particle transport algorithm to the
-following:
+The implementation of random walk introduces considerable complexity
+into the particle transport algorithm. For example, random walk:
 
 \begin{itemize}
-  \item Accept a new particle for transporting
-  \item Do new-particle initializations (e.g. initialize surface
-    particle tracking)
-  \item While the particle is ``alive'':
-    \begin{enumerate}
-    \item Obtain limiting distances from contractors
-    \item Choose limiting event
-    \item Pass particle to winning contractor.
-    \item Post-process the streaming step (e.g. surface tracking)
-    \end{enumerate}
-  \item Post-process transport step. E.g. tally fate of particle.
+\item Requires more data: 
+  \begin{itemize}
+  \item Depends on both the {\em distance} to census and the {\em
+      time} to census.
+  \item Uses more opacity information.
+  \end{itemize}
+  
+\item Has more conditions on its execution:
+  \begin{itemize}
+  \item May be disabled
+  \item Cell must be diffusive, e.g. the random walk radius dictated
+    by the size of the cell must be greater than the number of mean
+    free paths. 
+  \item Random walk radius must lie between the computed distance to
+    collision and the distance to census: $d_{\mbox{collision}} <
+    r_{\mbox{\tiny RW}} < d_{\mbox{census}}$. 
+  \item There must be no tally surfaces in the cell.
+  \item Particle must have come from volume source or have just
+    undergone effective scattering.
+  \end{itemize}
+
+\item  Does more to the particle:
+  \begin{itemize}
+  \item Kills particles that reach weight cutoff, 
+  \item Sends particles still in radius straight to census.
+  \item Changes position and direction of particle in a different
+    manner than streaming.
+  \end{itemize}
+  
+\item Interacts with frequency type: Change in particle weight is
+  different.
+  
 \end{itemize}
 
-Most of the complication lies in step 2. Most of this is the result of
-random walk. Among the streaming-distance limiters, the winner is
-always the one with the shortest distance. Random walk is preferred
-over collisions if its distance is greater, but its distance must be
-less than the distance to census. 
+The current implementation of random walk functionality,
+e.g. determination of the random walk radius and application of the
+random walk step is currently split between the {\tt Random\_Walk}
+class, the {\tt Particle} base class and the two derived particle
+classes. Our objective is to re-package the random walk functionality
+in contractor form and take the responsibilities away from the
+particle classes.
 
-Other complications involving random walk is that it may not always
-be enabled and must be disabled in cells in which a tally surface is
-present. Random walk is also only possible if the particle is in
-certain states. The effect of random walk on a particle also differ
-with the frequency type. Finally, random walk can send a particle
-straight to census. 
+To do this, we propose a contractor-style facade to the {\tt
+  Random\_Walk} class. This class will implement the {\tt
+  compute\_distance} and {\tt apply\_event} methods taking a particle as
+an argument. We divide up the responsibilities for random walk as
+follows:
 
-Some of these complications can be moved into the random walk
-implementation either by adding to the existing class or wrapping it
-in a contractor-style interface class. Wrapping the random walk in
-another class would provide a better location for the
-frequency-specific specializations, instead of specializing {\tt
-  Random\_Walk} itself . The interactions between random walk and other
-limiting events should be handled in the particle transport algorithm.
+\begin{itemize}
+\item The {\tt Particle\_Transporter} class will manage the
+  interaction between random walk radius and other contractors. 
+  This consists of the comparison of the random walk radius to the
+  collision and census distances and disabling random walk in
+  cells with tally surfaces. 
+\item The {\tt Random\_Walk\_Contractor} class will implement members
+  required in the contractor interface and all operations which apply
+  directly to a particle . Frequency dependent parts of the
+  implementation will be moved from the particle classes to the
+  contractor.
+\item Otherwise, functionality will remain in the existing {\tt
+    Random\_Walk} class as much as possible, being modified to work
+  with {\tt Random\_Walk\_Contractor} as necessary.
+\end{itemize}
 
-Currently, the random walk option is checked for only once before
-dispatching to the different transport functions in the particle.
-Unifying these functions will require a conditional check on random
-walk with each streaming step. This carries a mild performance penalty
-that we will address later.
+In the current implementation, the particle transport method
+dispatches to two different implementations based on the existence of
+a random walk object. This means that the check is performed only once
+per particle to be transported. To unify these two different transport
+implemetations, we must move this check to inside the main transport
+loop, which means that it will be performed once per streaming step.
+This is a small, but perhaps not unimportant performance penalty.
+
+One way around this will be to statically bind the activation of
+random walk using a template parameter. The feasiability of this will
+be examinded further once the performance penalty is assesed.
+
+\subsubsection{``Random-Walkability''}
+
+Note that Random walk can only be executed if the particle is volume
+source or has just undergone effective scattering. These states are
+part of the enumeration of states in the original particle class.
+Effective scattering is a subset of the collision event. Rather than
+frame the conditional on random walk in terms of all possible states
+which make random walk permissible, we seek to create a single
+particle state which is identical to ``random-walkability''. Then,
+additional contractors will have the responsibility to set or not set
+this state of the particle as appropriate.
+
+This means that part of the interaction between contractors is being
+handled outside of the main particle transport loop. The alternative
+is to make ``random-walkability'' a property tracked in the main
+loop. This adds to to communication required with contractors, e.g. (to
+determine if the collision event satisifies
+``random-walkability'').
+
+``Random-walkability'' appears to be equivalent to the particle's
+current direction being sampled from an isotropic distribution. In the
+current multigroup particle implementation effective scattering events
+result in sampling an isotropic distrubution for the direction. The
+Grey particle implemetation seems to be fudging on this a bit. It does
+not have an effective scatter method and uses the base particle
+scatter method instead. This also appears to be an isotropic scatter,
+but is implemented differently.
+
+If indeed ``Random-walkability'' == ``current direction was sampled
+isotropically'' then we can use the code which samples the new
+direction for the particle to set the particle state as well.
+
+\subsubsection{Executing Random Walk}
+
+Random walk sends particles directly to census if they remain within
+the radius. If a particle exits the random walk sphere, but it's new
+weight is below cutoff, it is killed instead of switching to analog
+absorption mode. 
+
+There are two ways of implementing the effects of random walk:
+\begin{enumerate}
+\item Dispatch to these actions in the particle transport function.
+  The random walk contractor would set a flag (possibly inside the
+  particle) indicating it's post-random walk fate.
+  
+\item Have the random walk implementation perform the actions on the
+  particle itself. The means that the random walk contractor needs to
+  know how to send a particle to census or to kill it. If there are
+  free functions or contractors which perform these actions, then the
+  random walk contractor can invoke them directly.
+\end{enumerate}
+
+Method 1 requires fewer interactions between contractors, but results
+in a more complicated particle-transport function. Method 2 is
+considered to be more in the spirit of the contractor model. In this
+implemetation, the main particle transport responsibilities are
+limited to contractor solicitation and interaction. 
+
+\subsection{Extrinsic Surface Tracking} \label{sec:surface_tracking}
+
+The process of tracking particles which cross extrinsic surfaces
+(e.g. surfaces overlaid onto the mesh) is another source of
+complication in the particle transport algoirhtm. The implementation
+of crossing detection is a post-processing step after a particle
+streams. Thus, it disables random walk in cells where a tally surface
+is present. Moreover, after a random walk, there is no need to check
+for surface crossings.
+
+Surface tracking also introduces more instances of code duplication.
+The exponential decay of the weight of a particle undergoing implicit
+absorption is implemented in both the particles streaming operation,
+and in the surface tracking classes to determine the weight at the
+crossing point. Also, the surface tracking class must behave
+differently depending on the streaming mode of the
+particle. Furthermore, the final position of the particle is computed
+both in the stream operation and in the surface tracking.
+
+To eliminate this duplication, we need to pull the weight and final
+position computations out of the particle class and put it in a place
+available to both update the weight and final position of the particle
+and for use in the surface tracking. 
+
+\subsection{Whither Particle?}
+
+The particle classes have been stripped of much of their functionality
+at this point, since they no longer perform the transport
+operations. Their remaining responsibilities are limited to the
+following:
+\begin{itemize}
+  \item Have a position and direction of travel. 
+  \item Know which cell of the mesh the position is in.
+  \item Know the energy weight and absorption mode.
+  \item Know the remaining travel distance to the end of the
+    time-step.
+  \item (Optional for MG) know which energy group the particle is in.
+  \item Have a random number state and provide random numbers to
+    contractors.
+  \item Be able to pack all of the information in the particle state
+    into a {\tt vector<char>} for communication.
+  \item Know how to stream a given distance by modifying the position
+    and adjusting the energy weight according to the absorption state.
+\end{itemize}
+
+The particle is beginning to look more like a plain data-holder. In
+light of the code duplication discussed in
+Section~\ref{sec:surface_tracking}, we may want to remove the
+streaming functionality from particle and bestow it upon a streaming
+operator. This streaming operator would modify the state of the
+particle according to the abosprtion state and provide the necessary
+information to the extrinsic surface tracker.
+
+The ever-expanding enum in the particle class should also be either
+eliminated entirely or stripped down to contain just a few essential
+states that need to be communicated between contractors.
+
+
+\section{Doing particle transport with contractors}
+\label{sec:particle_transport}
+
+\subsection{The particle transport algorithm}
+
+\begin{figure}[htb]
+  \fbox{
+    \parbox[b]{6.4in}{
+      \begin{itemize}
+      \item Accept a new particle for transporting
+      \item Initialize the extrinsic surface tracker
+      \item While the particle is active:
+        \begin{itemize}
+        \item Get distance to collision $d_{\mbox{collide}}$.
+        \item Get distance to census $d_{\mbox{census}}$.
+        \item If Random walk is feasible, i.e:
+          \begin{itemize}
+          \item Random walk is enabled,
+          \item No tally surface in cell,
+          \item Particle is ``random-walkable'', 
+          \end{itemize}
+          Then...
+          \begin{itemize}
+          \item Get random walk distance $r_{\mbox{\tiny RW}}$ from
+            the mesh.
+          \item Compute the mean free paths (mfp) from the opacity.
+          \item If $d_{\mbox{collide}} < r_{\mbox{\tiny RW}} <
+            d_{\mbox{census}}$, and $r_{\mbox{\tiny RW}} >
+            \mbox{mfp}$, call the random walk implementor.
+          \end{itemize}
+        \item If we {\bf did not} do random walk, we must be streaming, so:
+          \begin{itemize}
+          \item Get distance to mesh crossing $d_{\mbox{mesh}}$.
+          \item Get distance to weight transition $d_{\mbox{weight}}$.
+          \item Determine the smallest element of $d_{\mbox{collide}},
+            d_{\mbox{census}}, d_{\mbox{mesh}}, d_{\mbox{weight}}$.
+          \item Dispatch the particle to the owner of the winning
+            distance.
+          \item Do surface tracking check.
+          \end{itemize}
+        \end{itemize}
+      \item Return the particle and it's status to the caller
+      \end{itemize}
+    }
+  }
+  \caption{The particle transport algorithm}
+  \label{fig:particle_transport}
+\end{figure}
+
+Figure~\ref{fig:particle_transport} contains the main-loop of the
+particle transport algorithm using contractors. The various
+implementation actions are not shown, since these are handeled by the
+contractors. One difference between the top level organization in this
+version and the existing transport algorithm is that we have moved the
+execution of random walk up into the same conditional as the selection
+of random walk. This reduces the number of conditionals on random
+walk. We exit the conditional with a break and return to the top of
+the while loop. This is done in order to avoid putting the rest of the
+streaming steps inside of a conditional.
 
 The {\tt transport\_particle} member of the particle transporter class
 returns an object of class {\tt Status}. The purpose of this object is
@@ -275,14 +540,35 @@ next with the particle. In applications, the caller will be the
 asynchronous transport implementation which currently calls the
 particle transport function. Once the particle-transport stage is
 completed, a particle might need to be added to the census,
-communicated to another processor, or just be dead. We need to return
+communicated to another processor, or be dead. We need to return
 enough information from the particle-transport algortihm to determine
-what to do next. 
+what to do next. It is possible that a simple boolean will suffice.
+
+\subsection{Persistence and aggregation of objects}
+
+There are more objects involved when using the contractor metaphor for
+particle transport, which introduces some new issues. The lifetime of
+the contractors must be managed, as well as the other objects they
+collaborate with. Also, the means by which objects are aggregated must
+be determined.
+
+As a first solution to the problem, we propose building all of these
+objects at a level above particle transport, e.g. at the asynchrous
+transport algorithm level. Smart pointers can be used to manage the
+lifetime of these objects. Since the relationship between the {\tt
+  Particle\_Transporter} and it's contractors will not change during
+the lifetime of these objects, they can be connected by holding
+references to the contractors established at construction. Likewise
+the contractors can be constructed with references to the objects that
+they need to collaborate with. Consequently, most of the aggregation
+relationips in the between objects will be implemented through
+references instead of pointers. This will keep down the pointer
+de-referenceing overhead.
 
 \section{Proposed sequence for refactoring}
 
 Our first objective for this sub-project is to unify the four
-implementations of the particle transport alforithm. On outline of our
+implementations of the particle transport algorithm. On outline of our
 proposed approach to do so are as follows.
 
 \begin{enumerate}
@@ -336,9 +622,31 @@ proposed approach to do so are as follows.
       eliminate the specializations.
     \end{itemize}
     
-  \item Evaluate the use of contractors to handle remaining events:
-    Mesh crossing, Census, Termination, Random Walk. The process would
-    be similar to that for the Collision Constractor.
+  \item Create a contractor for Random Walk. 
+
+    \begin{itemize}
+    \item Wrap the current {\tt random\_walk} class in a
+      contractor-style adapter which specilizes on frequency
+      type. This contractor will also implement a method to determine
+      if random walk is possible.
+    \item Move the distance computation and implemetation methods up
+      from the random walk object or down from the particle class into
+      this contractor.
+    \item Move the interaction logic between random walk and other
+      limiting events into the particle transport loop or the
+      contractor's ``is random walk possible'' method, as appropiate.
+    \end{itemize}
+
+    Modify {\tt Particle\_Transporter} to use this contractor.
+    
+  \item Create a contractor for mesh crossing events.
+    
+    This should be easy after the last two. Modify {\tt
+      Particle\_Transporter}.
+
+  \item Evaluate the use of a contractor to handle going to census and
+    weight cutoff. These may be simple enough to implement as free
+    functions or as part of {\tt Particle\_Transporter}.
     
   \item Remove the old transport methods in particle classes. Remove
     unnecessary data types and data objects.
@@ -351,15 +659,123 @@ proposed approach to do so are as follows.
 
 \section{Next Steps}
 
+\subsection{Anticipating new features}
+
+One of the motivations of this refactoring project is the anticipation
+of several new features, which would be impossible to implement with
+the particle transport algorithm in it's current state. We would like
+to reassure ourselves that the new design is more amenable to the
+addition of these features. 
+
+\subsubsection{DDIMC}
+
+DDIMC, another diffusion-based method, is likely to be added to the
+particle transport algorithm soon. Like random walk, DDIMC replaces
+the streaming steps of particle transport with a diffusion process in
+suitable cells. Unlike random walk, it begins a soon as a particle
+enters a sufficiently diffusive cell and propagates the particle until
+it exits the cell.
+
+We should allow for the possibility that DDIMC and random walk will be
+active at the same time, so they will compete with each other for
+control of the particle. Since DDIMC will propagate a particle all the
+way through a cell, it should be attempted first. The physical
+conditions on which it can be used are also like to be more stringent
+than random walk, e.g. requiring the entire cell to be optically
+thick.
+
+The DDIMC operation transportes the particle to a boundary of the mesh
+cell or sends it directly to census if it fails to escape in time.
+Like random walk, which can shuffle particles directly to census or
+premature death, DDIMC can directly pass particles to the mesh
+crossing of census contractors after it is finished with them.
+
+With the DDIMC option in place, the particle transport algorithm is
+modified with another conditional layer. The result is presented in
+Figure~\ref{fig:modified_particle_transport}. In this algorithm,
+``DDIMC-able'' is the analog of ``Random-walkable'' and is probably
+equivalent to having just performed a cell crossing. This is a
+particle state variable which can be set by the mesh crossing
+contractor. We also note that the net effect of adding DDIMC is to
+push random walk and streaming down another level in the conditional
+hierarchy.
+
+\begin{figure}[htb]
+  \fbox{
+    \parbox[b]{6.4in}{
+      \begin{itemize}
+      \item Accept a new particle for transporting
+      \item Initialize the extrinsic surface tracker
+      \item While the particle is active:
+        \begin{itemize}
+        \item If DDIMC is feasible, i.e.:
+          \begin{itemize}
+          \item DDIMC is enabled.
+          \item No tally surface in cell.
+          \item Particle is ``DDIMC-able'',
+          \item Cell is sufficiently opaque.
+          \end{itemize}
+          Then, call the DDIMC contractor implementation.
+        \item If we {\bf did not} do DDIMC, we must be moving within the
+          cell, so:
+          \begin{itemize}
+          \item Get distance to collision $d_{\mbox{collide}}$.
+          \item Get distance to census $d_{\mbox{census}}$.
+          \item If Random walk is feasible, i.e:
+            \begin{itemize}
+            \item As before...
+            \end{itemize}
+            Then...
+            \begin{itemize}
+            \item As before...
+            \end{itemize}
+          \item If we {\bf did not} do random walk, we must be streaming, so:
+            \begin{itemize}
+            \item Get distance to mesh crossing $d_{\mbox{mesh}}$.
+            \item Get distance to weight transition $d_{\mbox{weight}}$.
+            \item Determine the smallest element of $d_{\mbox{collide}},
+              d_{\mbox{census}}, d_{\mbox{mesh}}, d_{\mbox{weight}}$.
+            \item Dispatch the particle to the owner of the winning
+              distance.
+            \item Do surface tracking check.
+            \end{itemize}
+          \end{itemize}
+        \end{itemize}
+      \item Return the particle and it's status to the caller
+      \end{itemize}
+    }
+  }
+  \caption{The particle transport algorithm with DDIMC}
+  \label{fig:modified_particle_transport}
+\end{figure}
+
+\subsubsection{Compton Scattering}
+
+With the contractor framework in place, the addition of Compton
+Scatting should be encapsulated with the collision contractor class
+and transparent to the rest of the particle transport algorithm. One
+way that this might fail is through additional interactions between
+Compton Scattering and other contractors (a la, effective scattering
+and random walk). This will have to be handeled through the addition
+of appropiate state variables. 
+
+\subsubsection{Material Motion}
+
+No friggin' idea.
+
+\subsection{More refactorings}
+
 Some other changes to the code may follow logically after the
-refactoring above. We list some of those here.
+refactoring above is completed, or may be inserted as part of the
+process. We list some of those here.
 
 \begin{itemize}
 \item Eliminate mesh dependency from Particle.
 
   Since the particle will no longer logically depend on the mesh, the
   mesh type template parameter can probably be removed from the
-  particle type. 
+  particle type. Eliminating this dependency may make it possible to
+  remove mesh depenence from other classes as well.
       
 \item Collapse particle hierarchy. 
   
@@ -368,15 +784,6 @@ refactoring above. We list some of those here.
   The new particle class would be templated on the frequency type and
   use a ``mixin'' style component to add the extra members needed by
   the multigroup type.
-
-\item Eliminate cutoff as a limiting event.
-
-  Weight-based cutoff can be changed from a limiting event to a stream
-  post-processing event. This will speed up transport, since the
-  distance to cutoff computation is logarithmic. It will also simplify
-  the particle-transport loop somewhat.
-
-  It will, however, change the regression test results.
 
 \item Statically bind random-walk
   
@@ -394,6 +801,46 @@ refactoring above. We list some of those here.
   two versions of the particle transport algorithm with and without
   surface tracking. Since surface tracking interacts with random walk,
   statically binding both may be impractically complicated. 
+
+\item Clean up the random sampling methods.
+
+  There appear to be different means of performing isotropic random
+  samplings. These should be combined.
+
+\end{itemize}
+
+\subsection{Modifications inspired by the refactoring}
+
+Some other, possibly beneficial, changes have come to light during the
+analysis of this refactoring. Since they will change the bahavior of
+the code, they must not be implemented concurrently with the refactoring.
+
+\begin{itemize}
+
+\item Eliminate cutoff as a limiting event.
+
+  Weight-based cutoff can be changed from a limiting event to a stream
+  post-processing event. This will speed up transport, since the
+  distance to cutoff computation is logarithmic. It will also simplify
+  the particle-transport loop somewhat.
+
+\item Modify random walk. 
+  
+  More random walk steps can be taken if the radius is limited by the
+  distance to census, instead of skipping it when the radius exceedes
+  the census distance. 
+
+  Also, the random walk raidus could be limited to the distance to a
+  tally surface, instead of completely disabling random walk in cells
+  which contain a tally surface. 
+
+  The cell size, distance to census and distance to tracking surface
+  could all be combined into geometric limiters on the random walk
+  radius (indeed, the distance to cell boundary and distance to
+  tracking surface are conceptually very similar). The random walk
+  radius would be chosen as the minimum of these geometric
+  contstraints and random walk would be implemented if this radius is
+  larger than the distance to collision and mean free paths.
 
 \end{itemize}
   
