@@ -136,11 +136,11 @@ PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77_sgi_64
 endif
 
 ifeq ($(need_sprng), yes)
-SYS_FLAGS += -I/home/tme/lib/sprng/SRC
+SYS_FLAGS += -I/scratch/tme/sprng/SRC
 ifeq ($(bits),32)
-SYS_LIBS += -L/home/tme/lib/sprng/sgi32 -l$(sprng)
+SYS_LIBS += -L/scratch/tme/sprng/sgi32 -l$(sprng)
 else
-SYS_LIBS += -L/home/tme/lib/sprng/sgi64 -l$(sprng)
+SYS_LIBS += -L/scratch/tme/sprng/sgi64 -l$(sprng)
 endif
 endif
 
