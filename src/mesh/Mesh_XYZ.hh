@@ -101,8 +101,8 @@ class Mesh_XYZ : private XYZ_Mapper
 
       public:
 	typedef T value_type;
-        typedef dsxx::Mat2<T>::iterator iterator;
-        typedef dsxx::Mat2<T>::const_iterator const_iterator;
+        typedef typename dsxx::Mat2<T>::iterator iterator;
+        typedef typename dsxx::Mat2<T>::const_iterator const_iterator;
 
 	fcdtf( const dsxx::SP<Mesh_XYZ>& m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
