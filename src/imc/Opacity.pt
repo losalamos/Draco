@@ -8,10 +8,15 @@
 
 #include "imctest/OS_Mesh.hh"
 #include "Opacity.cc"
+#include <iostream>
 
 IMCSPACE
 
+using std::ostream;
+
 instantiate class Opacity<OS_Mesh>
+instantiate funcproto MT=OS_Mesh
+ostream& operator<<(ostream&, const Opacity<MT> &)
 
 CSPACE
 

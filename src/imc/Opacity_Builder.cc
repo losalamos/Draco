@@ -29,6 +29,7 @@ Opacity_Builder<MT>::Opacity_Builder(SP<PT> parser, SP<MT> mesh)
   // check some asserts verifying size of mesh
     assert (mesh->Num_cells() == rho.Mesh().Num_cells());
     assert (mesh->Num_cells() == temp.Mesh().Num_cells());
+    assert (mesh->Num_cells() == opacity.Mesh().Num_cells());
     assert (zone.size() == mesh->Num_cells());
 }
 
@@ -47,8 +48,8 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::Build_Mat()
   // assign density and temperature to each cell
     for (int cell = 1; cell <= num_cells; cell++)
     {
-	int den = density[mat_zone[zone[cell-1]-1]-1];
-	int T   = temperature[mat_zone[zone[cell-1]-1]-1];
+	double den = density[mat_zone[zone[cell-1]-1]-1];
+	double T   = temperature[mat_zone[zone[cell-1]-1]-1];
 	rho(cell)  = den;
 	temp(cell) = T;
     }
@@ -58,6 +59,32 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::Build_Mat()
 
   // return Mat_State SP
     return return_state;
+}
+
+//---------------------------------------------------------------------------//
+// build Opacity object
+//---------------------------------------------------------------------------//
+template<class MT>
+SP< Opacity<MT> > Opacity_Builder<MT>::Build_Opacity()
+{
+  // return Opacity object
+    SP< Opacity<MT> > return_opacity;
+
+  // number of cells
+    int num_cells = opacity.Mesh().Num_cells();
+
+  // calculate and assign opacities to each cell
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	double k      = kappa[mat_zone[zone[cell-1]-1]-1];
+	opacity(cell) = rho(cell) * k;
+    }
+
+  // create Opacity object
+    return_opacity = new Opacity<MT>(opacity);
+
+  // return Opacity SP
+    return return_opacity;
 }
 
 CSPACE

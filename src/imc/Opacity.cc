@@ -40,7 +40,7 @@ ostream& operator<<(ostream &output, const Opacity<MT> &object)
     cout << "  Cell  " << " Opacity  " << endl;
     cout << "------------------------" << endl;
 
-    for (int i = 1; i <= Num_cells(); i++)
+    for (int i = 1; i <= object.Num_cells(); i++)
         object.Print(i);
     return output;
 }
