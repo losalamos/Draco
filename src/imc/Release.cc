@@ -18,7 +18,7 @@ using std::string;
 // this library in the form imc_#.#.# in pkg_version variable
 const string release()
 {
-    string pkg_release = "@(#)imc-1_2_0x";
+    string pkg_release = "@(#)imc-1_2_0y";
     return pkg_release;
 }
 
