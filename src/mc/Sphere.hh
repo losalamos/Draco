@@ -74,16 +74,18 @@ class Sphere : public Surface
     // ACCESSORS
 
     double distance_to(std::vector<double> position,
-		       const std::vector<double>& direction);
+		       const std::vector<double>& direction) const;
 
     double distance_to(std::vector<double> position,
 		       const std::vector<double>& direction,
-		       bool is_inside);
+		       bool is_inside) const;
 
-    bool is_inside(std::vector<double> position);
+    bool is_inside(std::vector<double> position) const;
+    bool is_inside(std::vector<double> position,
+		   const std::vector<double> direction) const;
 
-    double surface_area();
-    double volume();
+    double surface_area() const;
+    double volume() const;
 
   private:
 
@@ -92,7 +94,7 @@ class Sphere : public Surface
     // DATA
 
     double center;
-    double radius;
+    double radius, radius_2;
 
 
 };

@@ -73,16 +73,18 @@ class Surface
     // ACCESSORS
 
     virtual double distance_to(std::vector<double> position,
-			       const std::vector<double>& direction) = 0;
+			       const std::vector<double>& direction) const = 0;
 
     virtual double distance_to(std::vector<double> position,
 			       const std::vector<double>& direction,
-			       bool is_inside) = 0;
+			       bool is_inside) const = 0;
 
-    virtual bool is_inside(std::vector<double> position) = 0;
+    virtual bool is_inside(std::vector<double> position) const = 0;
+    virtual bool is_inside(std::vector<double> position,
+			   const std::vector<double> direction) const = 0;
 
-    virtual double surface_area() = 0;
-    virtual double volume() = 0;
+    virtual double surface_area() const = 0;
+    virtual double volume() const = 0;
     
 		
 

@@ -155,9 +155,9 @@ void test_is_inside()
 {
 
     const double center = 0.0;
-    const double raidus = 2.0;
+    const double radius = 2.0;
 
-    SP<Sphere> sphere( make_sphere(center, raidus) );
+    SP<Sphere> sphere( make_sphere(center, radius) );
 
     vector<double> position (3);
 
@@ -170,6 +170,27 @@ void test_is_inside()
     position[1] = 3.0;
 
     if (sphere->is_inside(position) != false) ITFAILS;
+
+    position[1] = 2.0;
+
+    if (sphere->is_inside(position) != false) ITFAILS;
+
+    position[0] = 0.0;
+    position[1] = 0.0;
+    position[2] = center + radius;
+
+    if (sphere->is_inside(position) != false) ITFAILS;
+
+    vector<double> direction(3);
+    direction[0] = 0.0;
+    direction[1] = 0.0;
+    direction[2] = 1.0;
+
+    if (sphere->is_inside(position, direction) != false) ITFAILS;
+
+    direction[2] = -1.0;
+
+    if (sphere->is_inside(position, direction) != true) ITFAILS;
     
 
 }
