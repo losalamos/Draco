@@ -260,12 +260,12 @@ void Parallel_Data_Operator::local_to_global(FT &local_field,
 	Check(global_field.size() == topology->num_cells());
 
 	// iterators for local field
-	typename FT::iterator begin  = local_field.begin();
-	typename FT::iterator end    = local_field.end();
+	const typename FT::iterator begin  = local_field.begin();
+	const typename FT::iterator end    = local_field.end();
 	
 	// iterators for global field
-	typename GT::iterator global_begin = global_field.begin();
-	typename GT::iterator global_end   = global_field.end();
+	const typename GT::iterator global_begin = global_field.begin();
+	const typename GT::iterator global_end   = global_field.end();
 	
 	// iterators for reading/writing
 	typename FT::iterator itr;
@@ -280,16 +280,17 @@ void Parallel_Data_Operator::local_to_global(FT &local_field,
 	for (itr = begin; itr != end; itr++)
 	{
 	    // calculate the local cell index
-	    local_cell = (itr - begin) + 1;
+	    local_cell = std::distance(begin, itr) + 1;
 	    Check(local_cell > 0 && local_cell <= local_field.size());
 
 	    // calculate the global cell index
 	    global_cell = topology->global_cell(local_cell);
 	    
 	    // calculate the global cell iterator position corresponding to
-	    // the global_cell -> we require a random access iterator type in 
-	    // order to perform iterator::difference_type + iterator addition
-	    global = (global_cell - 1) + global_begin;
+	    // the global_cell index -> the advance function is much faster
+	    // when global is a random access iterator
+	    global = global_begin;
+	    std::advance(global, (global_cell-1));
 	    Check(global >= global_begin && global < global_end);
 
 	    // assign the local cell value to the global cell value
