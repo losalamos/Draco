@@ -257,10 +257,10 @@ void Global_Tally<MT,PT>::print(ostream &out) const
 	<< endl;
     out << setw(30) << "Cycle energy loss:" << setw(15) 
 	<< eloss_vol + eloss_ss + eloss_cen << " (frac:" << setw(15) 
-	<< (eloss_vol +	eloss_ss + eloss_cen) / eint_begin << ")" << endl;
+	<< (eloss_vol +	eloss_ss + eloss_cen) / eint_end << ")" << endl;
     out << setw(30) << "Accumulated energy loss:" << setw(15) 
 	<< e_loss_probtot << " (frac:" << setw(15) 
- 	<< e_loss_probtot / eint_initial << ")" << endl;
+ 	<< e_loss_probtot / eint_end << ")" << endl;
     out << setw(30) << "Escaping energy this cycle:" << setw(15) << e_escape 
 	<< endl;
     out << setw(30) << "Energy to census :" << setw(15) << eradtot_e << endl;

@@ -351,9 +351,14 @@ void Source_Init<MT,PT>::calc_evol(const Opacity<MT> &opacity,
 	    for (int cell = 1; cell <= evol.get_Mesh().num_cells(); cell++)
 		rad_volume += rad_source[cell-1] * evol.get_Mesh().volume(cell);
 	    Ensure (rad_volume > 0.0);
+	    double evol_add;
 	    for (int cell = 1; cell <= evol.get_Mesh().num_cells(); cell++)
-		evol(cell) += rad_source[cell-1] / rad_volume * 
+	    {
+		evol_add = rad_source[cell-1] / rad_volume * 
 		    evol.get_Mesh().volume(cell) * duration; 
+		evol(cell) += evol_add;
+		evoltot    += evol_add;
+	    }
 	}
     }
 }
