@@ -67,10 +67,10 @@ inline int Send( const T& data, int dest,
 }
 
 template<class T>
-inline int Recv( T& data, int dest,
+inline int Recv( T& data, int source,
 		 int tag =c4_traits<T>::Tag, int group =0 )
 {
-    return Recv( &data, 1, dest, tag, group );
+    return Recv( &data, 1, source, tag, group );
 }
 
 // Global reductions.
