@@ -648,6 +648,25 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const
     Ensure (buffer.n_part == 0);
 }
 
+//===========================================================================//
+// CENSUS BUFFER FUNCTIONS
+//===========================================================================//
+/*!
+ * \brief Make a particle out of a Census_Buffer.
+ */
+template<class PT>
+SP<PT> Particle_Buffer<PT>::Census_Buffer::make_Particle() const
+{
+    // make a particle
+    SP<PT> particle;
+
+    // load particle data, set time_left to 1.0-->this will be adjusted in
+    // the source
+    particle = new PT(r, omega, ew, cell, random, fraction, 1.0, "census");
+
+    return particle;
+}
+
 } // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//

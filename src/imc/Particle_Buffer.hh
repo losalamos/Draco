@@ -27,6 +27,8 @@
 //                waiting on an async receive
 //  4)  4-30-99 : fixed set_buffer_size() function, it had an integer
 //                division error that hit us when we reduced the buffer size 
+//  5) 7-MAR-00 : added Census_Buffer::make_Particle() function that converts 
+//                a Census_Buffer object into a particle.
 //
 //===========================================================================//
 
@@ -102,6 +104,9 @@ class Particle_Buffer
 		      double, int, rtt_rng::Sprng);
 	// faux default constructor for STL
 	Census_Buffer();
+
+	// make into a Particle
+	rtt_dsxx::SP<PT> make_Particle() const;
     };
 
     // particle buffer for async receives of particles
