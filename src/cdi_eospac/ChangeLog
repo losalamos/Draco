@@ -1,3 +1,8 @@
+2002-05-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* cdi_eospac: released version 1_1_0.  Updated to work with
+	cdi-1_1_0 and greater.
+
 2002-04-10  Kelly Thompson  <kgt@lanl.gov>
 
 	* physical_data: Eos data files (sesameu, sescu, sescu1, sescu9,
