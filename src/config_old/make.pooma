@@ -1,5 +1,7 @@
 $(SRC_TOP)/config/.pooma.$(env): $(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.def
 	$(RM) $@
+	echo INCLUDES  = $(shell grep ^INCLUDES \
+	$(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.def | cut -c23- ) >> $@
 	echo POOMA_INCLUDES  = $(shell grep ^CXXINCLUDES \
 	$(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.def | cut -c23- ) >> $@
 	echo POOMA_DEFINES  = $(shell grep ^CXXDEFINES \
