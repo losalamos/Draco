@@ -13,6 +13,8 @@
 
 #include "config.hh"
 
+#include <vector>
+
 C4_NAMESPACE_BEG
 
 //===========================================================================//
@@ -38,6 +40,8 @@ class ThreadControl {
     int cnt;
 
     void *scratch;
+
+    std::vector<void *> v;
 
   public:
     ThreadControl( int nthreads_ );

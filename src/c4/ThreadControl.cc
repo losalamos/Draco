@@ -15,7 +15,8 @@ C4_NAMESPACE_BEG
 ThreadControl::ThreadControl( int nthreads_ )
     : nthreads( nthreads_ ),
       cycle( 0 ),
-      cnt( nthreads )
+      cnt( nthreads ),
+      v( nthreads )
 {
     if (pthread_mutex_init( &mutex, NULL ))
         throw "Can't initialize mutex.";
