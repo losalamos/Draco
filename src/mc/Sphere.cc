@@ -142,7 +142,7 @@ double Sphere::distance_to(std::vector<double> position,
  * As an added feature, this function can be used to get both of the positive
  * crossing distances for a particle outside of the surface. Passing false as
  * the final argument gives the closer outside to inside crossing, while
- * passing true gives the more distance inside to outside crossing. This is
+ * passing true gives the more distant inside to outside crossing. This is
  * useful when detecting multiple crossings.
  *
  */
