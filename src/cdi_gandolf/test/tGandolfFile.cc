@@ -72,6 +72,7 @@ std::string tGandolfFile::runTest()
 	}
     catch ( const rtt_cdi_gandolf::gmatidsException& GandError )
 	{
+	    fail() << std::endl << "\t" << GandError.what();
 	    fail() << std::endl << "\t" << GandError.errorSummary();
 	    return "Some tests failed.";
 	}

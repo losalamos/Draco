@@ -87,7 +87,7 @@ std::string tGandolfOpacity::runTest()
 	}
     catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 	{
-	    fail() << std::endl << "\t" << GandError.errorSummary();
+	    fail() << std::endl << "\t" << GandError.what();
 	    return "Unable to create GanolfFile object. Test sequence aborted.";
 	}
 
@@ -134,7 +134,7 @@ std::string tGandolfOpacity::runTest()
 	{
 	    fail() << "Failed to create SP to new GandolfOpacity object for "
 		   << "Al_BeCu.ipcress data."
-		   << std::endl << "\t" << GandError.errorSummary();
+		   << std::endl << "\t" << GandError.what();
 	    return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
 	}
 
@@ -174,7 +174,7 @@ std::string tGandolfOpacity::runTest()
 	{
 	    fail() << "Failed to create SP to new GandolfOpacity object for "
 		   << "Al_BeCu.ipcress data."
-		   << std::endl << "\t" << GandError.errorSummary();
+		   << std::endl << "\t" << GandError.what();
 	    return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
 	}
 
@@ -264,7 +264,7 @@ std::string tGandolfOpacity::runTest()
 	 }
      catch ( const rtt_cdi_gandolf::gmatidsException& GandError)
 	 {
-	     fail() << std::endl << "\t" << GandError.errorSummary();
+	     fail() << std::endl << "\t" << GandError.what();
 	     return "Unable to instantiate GandolfFile object spGFAnalytic.  Test sequence aborted.";
 	 }
      
@@ -308,7 +308,7 @@ std::string tGandolfOpacity::runTest()
 	  {
 	      fail() << "Failed to create SP to new GandolfOpacity object for "
 		     << "Al_BeCu.ipcress data."
-		     << std::endl << "\t" << GandError.errorSummary();
+		     << std::endl << "\t" << GandError.what();
 	      return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
 	  }
       
@@ -344,7 +344,7 @@ std::string tGandolfOpacity::runTest()
 		    rtt_cdi::Absorption );
       } catch ( const rtt_cdi_gandolf::GandolfException& GandError ) {
 	  fail() << "Failed to create SP to new GandolfOpacity object for "
-		 << "Al_BeCu.ipcress data." << std::endl << "\t" << GandError.errorSummary();
+		 << "Al_BeCu.ipcress data." << std::endl << "\t" << GandError.what();
 	  return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
       }
       
@@ -396,7 +396,7 @@ std::string tGandolfOpacity::runTest()
 		    rtt_cdi::Total );
       } catch ( const rtt_cdi_gandolf::GandolfException& GandError ) {
 	  fail() << "Failed to create SP to new GandolfOpacity object for "
-		 << "Al_BeCu.ipcress data." << std::endl << "\t" << GandError.errorSummary();
+		 << "Al_BeCu.ipcress data." << std::endl << "\t" << GandError.what();
 	  return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
       }
       
@@ -431,7 +431,7 @@ std::string tGandolfOpacity::runTest()
       } catch ( const rtt_cdi_gandolf::GandolfException& GandError ) {
 	  fail() << "Failed to create SP to new GandolfOpacity object for "
 		 << "Al_BeCu.ipcress data." << std::endl << "\t" 
-		 << GandError.errorSummary();
+		 << GandError.what();
 	  return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
       }
 
@@ -685,7 +685,7 @@ std::string tGandolfOpacity::runTest()
 	 {
 	     fail() << "Failed to create SP to new GandolfGrayOpacity object for "
 		    << "\n\tAl_BeCu.ipcress data (SP not templated on cdi/GrayOpacity)."
-		    << std::endl << "\t" << GandError.errorSummary();
+		    << std::endl << "\t" << GandError.what();
 	     return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
 	 }
      
@@ -859,7 +859,7 @@ std::string tGandolfOpacity::runTest()
 	 {
 	     fail() << "Failed to create SP to new GandolfGrayOpacity object for \n\t"
 		    << "Al_BeCu.ipcress data (SP not templated on cdi/GrayOpacity)."
-		    << std::endl << "\t" << GandError.errorSummary();
+		    << std::endl << "\t" << GandError.what();
 	     return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
 	 }
 

@@ -99,7 +99,7 @@ namespace rtt_gandolf_with_cdi_test
 		}
 	    catch ( const rtt_cdi_gandolf::gmatidsException& GandError)
 		{
-		    fail() << std::endl << "\t" << GandError.errorSummary();
+		    fail() << std::endl << "\t" << GandError.what();
 		    return "Unable to instantiate GandolfFile object spGFAnalytic.  Test sequence aborted.";
 		}
 	    
@@ -138,7 +138,7 @@ namespace rtt_gandolf_with_cdi_test
 		{
 		    fail() << "Failed to create SP to new GandolfGrayOpacity object for "
 			   << "Al_BeCu.ipcress data."
-			   << std::endl << "\t" << GandError.errorSummary();
+			   << std::endl << "\t" << GandError.what();
 		    return "Unable to instantiate GandolfGrayOpacity object.  Test sequence aborted.";
 		}
 	    
@@ -231,7 +231,7 @@ namespace rtt_gandolf_with_cdi_test
 		{
 		    fail() << "Failed to create SP to new GandolfMultigroupOpacity "
 			   << "object for Al_BeCu.ipcress data."
-			   << std::endl << "\t" << GandError.errorSummary();
+			   << std::endl << "\t" << GandError.what();
 		    return "Unable to instantiate GandolfMultigroupOpacity object.  Test sequence aborted.";
 		}
 	    
