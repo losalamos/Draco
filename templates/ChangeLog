@@ -1,3 +1,8 @@
+1999-10-26  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco-note.tex, draco-memo.tex: updated templates to reflect new 
+	group and division names.  Updated tag to templates-1_2_0.
+
 1999-09-08  Thomas M. Evans  <tme@lanl.gov>
 
 	* *.cc, *.hh, *.t.hh: added new comment characters for doxygen, I
