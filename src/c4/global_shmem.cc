@@ -1212,57 +1212,39 @@ static void C4_shm_init_scalar_work_arrays()
     gsync();
 }
 
+const int ar_data_size = 256;
+#if ar_data_suze/2 + 1 > _SHMEM_REDUCE_MIN_WRKDATA_SIZE
+const int ar_pWrk_size = ar_data_size/2 +1
+#else
+const int ar_pWrk_size = _SHMEM_REDUCE_MIN_WRKDATA_SIZE;
+#endif
+
 template<class T> class shm_ar_helper
 {
   protected:
-    static int ar_size;
-    static T *ar_data;
-    static int ar_Wsz;
-    static T *ar_pWrk;
+    static T ar_data[ ar_data_size ];
+    static T ar_pWrk[ ar_pWrk_size ];
+
   public:
-    static void enlarge_work_arrays( int n )
-    {
-	if (ar_size < n) {
-	// Data arrays too small, enlarge.
-	    if (ar_data)
-		shfree(ar_data);
-	    ar_data = (T *) shmalloc( n * sizeof(T) );
-	    ar_size = n;
-
-	// See if we have to lengthen pWrk.
-	    int nWsz = std::max( n/2 + 1, _SHMEM_REDUCE_MIN_WRKDATA_SIZE );
-
-	    if (nWsz > ar_Wsz) {
-		if (ar_pWrk)
-		    shfree( ar_pWrk );
-
-		ar_pWrk = (T *) shmalloc( nWsz * sizeof(T) );
-		ar_Wsz = nWsz;
-	    }
-	}
-    }
-
     static void copy_data_to_symmetric_work_arrays( T *px, int n )
     {
+	Assert( n <= ar_data_size );
 	for( int i=0; i < n; i++ )
 	    ar_data[i] = px[i];
     }
 
     static void get_data_from_symmetric_work_arrays( T *px, int n )
     {
+	Assert( n <= ar_data_size );
 	for( int i=0; i < n; i++ )
 	    px[i] = ar_data[i];
     }
 };
 
 template<class T>
-int shm_ar_helper<T>::ar_size = 0;
+T shm_ar_helper<T>::ar_data[ar_data_size];
 template<class T>
-T *shm_ar_helper<T>::ar_data = 0;
-template<class T>
-int shm_ar_helper<T>::ar_Wsz = 0;
-template<class T>
-T *shm_ar_helper<T>::ar_pWrk = 0;
+T shm_ar_helper<T>::ar_pWrk[ar_pWrk_size];
 
 template<class T> class shm_traits {};
 
@@ -1305,27 +1287,6 @@ template<> class shm_traits<int> : public shm_ar_helper<int>
 			      ar_pWrk, sr_pSync );
 	gsync();
     }
-    static void array_sum_to_all( int *px, int n )
-    {
-	enlarge_work_arrays( n );
-	copy_data_to_symmetric_work_arrays( px, n );
-	ar_sum_to_all( n );
-	get_data_from_symmetric_work_arrays( px, n );
-    }
-    static void array_min_to_all( int *px, int n )
-    {
-	enlarge_work_arrays( n );
-	copy_data_to_symmetric_work_arrays( px, n );
-	ar_min_to_all( n );
-	get_data_from_symmetric_work_arrays( px, n );
-    }
-    static void array_max_to_all( int *px, int n )
-    {
-	enlarge_work_arrays( n );
-	copy_data_to_symmetric_work_arrays( px, n );
-	ar_max_to_all( n );
-	get_data_from_symmetric_work_arrays( px, n );
-    }
 };
 
 template<> class shm_traits<float> : public shm_ar_helper<float>
@@ -1367,27 +1328,6 @@ template<> class shm_traits<float> : public shm_ar_helper<float>
 				ar_pWrk, sr_pSync );
 	gsync();
     }
-    static void array_sum_to_all( float *px, int n )
-    {
-	enlarge_work_arrays( n );
-	copy_data_to_symmetric_work_arrays( px, n );
-	ar_sum_to_all( n );
-	get_data_from_symmetric_work_arrays( px, n );
-    }
-    static void array_min_to_all( float *px, int n )
-    {
-	enlarge_work_arrays( n );
-	copy_data_to_symmetric_work_arrays( px, n );
-	ar_min_to_all( n );
-	get_data_from_symmetric_work_arrays( px, n );
-    }
-    static void array_max_to_all( float *px, int n )
-    {
-	enlarge_work_arrays( n );
-	copy_data_to_symmetric_work_arrays( px, n );
-	ar_max_to_all( n );
-	get_data_from_symmetric_work_arrays( px, n );
-    }
 };
 
 template<> class shm_traits<double> : public shm_ar_helper<double>
@@ -1428,27 +1368,6 @@ template<> class shm_traits<double> : public shm_ar_helper<double>
 	shmem_double_max_to_all( ar_data, ar_data, n, 0, 0, C4_shm_nodes,
 				 ar_pWrk, sr_pSync );
 	gsync();
-    }
-    static void array_sum_to_all( double *px, int n )
-    {
-	enlarge_work_arrays( n );
-	copy_data_to_symmetric_work_arrays( px, n );
-	ar_sum_to_all( n );
-	get_data_from_symmetric_work_arrays( px, n );
-    }
-    static void array_min_to_all( double *px, int n )
-    {
-	enlarge_work_arrays( n );
-	copy_data_to_symmetric_work_arrays( px, n );
-	ar_min_to_all( n );
-	get_data_from_symmetric_work_arrays( px, n );
-    }
-    static void array_max_to_all( double *px, int n )
-    {
-	enlarge_work_arrays( n );
-	copy_data_to_symmetric_work_arrays( px, n );
-	ar_max_to_all( n );
-	get_data_from_symmetric_work_arrays( px, n );
     }
 };
 
@@ -1496,80 +1415,58 @@ template void gmax( double& x );
 
 //---------------------------------------------------------------------------//
 // Array reduction API.
+//
+// Because the sucky SGI SHMEM implementation doesn't have shmalloc, we have
+// to "packetize" these reduction ops.  Grrrr.
+//---------------------------------------------------------------------------//
 
 template<class T> 
-void gsum( T *px, int n, T dummy /*=T()*/ )
+void gsum( T *px, int n )
 {
-    shm_traits<T>::array_sum_to_all( px, n );
-}
-
-template<class T> 
-void gmin( T *px, int n, T dummy /*=T()*/ )
-{
-    shm_traits<T>::array_min_to_all( px, n );
-}
-
-template<class T> 
-void gmax( T *px, int n, T dummy /*=T()*/ )
-{
-    shm_traits<T>::array_max_to_all( px, n );
-}
-
-template void gsum( int *, int, int );
-template void gsum( float *, int, float );
-template void gsum( double *, int, double );
-
-template void gmin( int *, int, int );
-template void gmin( float *, int, float );
-template void gmin( double *, int, double );
-
-template void gmax( int *, int, int );
-template void gmax( float *, int, float );
-template void gmax( double *, int, double );
-
-#if 0
-// Leave this one around till we can get the template versions debugged. 
-
-void gsum( int *px, int n )
-{
-    int i;
-    if (n < 1) return;
-
-// Make sure all the work arrays are big enough.
-    if (ari_sz < n) {
-    // Make the source/target array larger.
-	if (ar_i)
-	    shfree( ar_i );
-	ar_i = (int *) shmalloc( n * sizeof(int) );
-	ari_sz = n;
-
-    // See if we have to lengthen pWrk.
-	int nWsz = max( n/2 + 1, _SHMEM_REDUCE_MIN_WRKDATA_SIZE );
-
-	if (nWsz > ari_Wsz) {
-	    if (ari_pWrk)
-		shfree( ari_pWrk );
-
-	    ari_pWrk = (int *) shmalloc( nWsz * sizeof(int) );
-	    ari_Wsz = nWsz;
-	}
+    for( int i=0; i < n; i += ar_data_size )
+    {
+	int ilim = std::min( ar_data_size, n - i );
+	shm_traits<T>::copy_data_to_symmetric_work_arrays( px+i, ilim );
+	shm_traits<T>::ar_sum_to_all( ilim );
+	shm_traits<T>::get_data_from_symmetric_work_arrays( px+i, ilim );
     }
-
-// Copy data to symmetric work array.
-    for( i=0; i < n; i++ )
-	ar_i[i] = px[i];
-
-// Perform reduction.
-    shmem_int_sum_to_all( ar_i, ar_i, n, 0, 0, C4_shm_nodes,
-			  ari_pWrk, sr_pSync );
-
-// Copy data back to user buffer.
-    for( i=0; i < n; i++ )
-	px[i] = ar_i[i];
-
-    gsync();
 }
-#endif
+
+template<class T> 
+void gmin( T *px, int n )
+{
+    for( int i=0; i < n; i += ar_data_size )
+    {
+	int ilim = std::min( ar_data_size, n - i );
+	shm_traits<T>::copy_data_to_symmetric_work_arrays( px+i, ilim );
+	shm_traits<T>::ar_min_to_all( ilim );
+	shm_traits<T>::get_data_from_symmetric_work_arrays( px+i, ilim );
+    }
+}
+
+template<class T> 
+void gmax( T *px, int n )
+{
+    for( int i=0; i < n; i += ar_data_size )
+    {
+	int ilim = std::min( ar_data_size, n - i );
+	shm_traits<T>::copy_data_to_symmetric_work_arrays( px+i, ilim );
+	shm_traits<T>::ar_max_to_all( ilim );
+	shm_traits<T>::get_data_from_symmetric_work_arrays( px+i, ilim );
+    }
+}
+
+template void gsum( int *, int );
+template void gsum( float *, int );
+template void gsum( double *, int );
+
+template void gmin( int *, int );
+template void gmin( float *, int );
+template void gmin( double *, int );
+
+template void gmax( int *, int );
+template void gmax( float *, int );
+template void gmax( double *, int );
 
 //---------------------------------------------------------------------------//
 // Now some debugging functions, just in case we ever have any bugs :-).
