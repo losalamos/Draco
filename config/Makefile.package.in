@@ -231,7 +231,7 @@ ARFLAGS := ${PARALLEL_FLAG} ${ARFLAGS}
 
 .PHONY : all install installdirs clean distclean forced-distclean \
 	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
-	forced-clean dvi dependencies configure reconfigure
+	forced-clean dvi dependencies configure reconfigure autodoc
 
 all: ${alltarget}
 
@@ -265,6 +265,13 @@ lib${LIB_PREFIX}${package}${libsuffix}: ${objs} ${DRACO_DEPENDS} ${VENDOR_DEPEND
 check: ${alltarget}
 	@if test -d "${srcdir}/test" && test -d "test" ; then \
 		(cd test && ${MAKE} $@) || exit; \
+	fi
+
+##---------------------------------------------------------------------------##
+## Build and install autodoc documentation
+autodoc:
+	@if test -d "autodoc"; then \
+	   (cd autodoc && ${MAKE} $@) || exit; \
 	fi
 
 ##---------------------------------------------------------------------------##
@@ -325,7 +332,7 @@ include ${config_dir}/@DEPENDENCY_RULES@
 ## Do not include the dependfiles when doing clean-like stuff.
 
 ifneq (,$(filter uninstall dvi distclean mostlyclean clean \
-	configure reconfigure maintainer-clean, \
+	configure reconfigure maintainer-clean autodoc, \
 	${MAKECMDGOALS}))
 #empty
 else

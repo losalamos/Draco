@@ -35,7 +35,7 @@ subnj	:= -j $(nj)
 
 .PHONY : all install installdirs clean distclean mostlyclean maintainer-clean \
 	check uninstall forced-distclean forced-maintainer-clean \
-	dvi configure reconfigure
+	dvi configure reconfigure autodoc
 
 all: install
 
@@ -56,6 +56,13 @@ check:
 			(cd $${dir} && ${MAKE} $(subnj)) || ${EXIT}; \
 			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
 			(cd $${dir} && ${MAKE} install) || ${EXIT}; \
+		fi; \
+	done
+
+autodoc:
+	@for dir in ${subdirs} ; do \
+		if test -d "$${dir}" ; then \
+			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
 		fi; \
 	done
 

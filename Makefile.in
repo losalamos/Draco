@@ -51,10 +51,11 @@ check:
 # autodoc target 
 
 autodoc:
+	@if test -d src ; then \
+		(cd src && ${MAKE} $@) || ${EXIT}; \
+	fi; 
 	@if test -d autodoc; then \
 		(cd autodoc && ${MAKE} $@) || ${EXIT}; \
-	else \
-		echo "No autodoc directory found!"; \
 	fi
 
 ##---------------------------------------------------------------------------##
