@@ -1,0 +1,21 @@
+%%---------------------------------------------------------------------------%%
+%% Solver::Transport module for imc-dev manual
+%%---------------------------------------------------------------------------%%
+
+\section{Transport Model in \mle{Solver::Transport}}
+
+The \mle{Solver::Transport} module in \imctest\ performs the fundamental IMC 
+calculation using MT objects from \mle{Solver::Mesh} and material
+objects from \mle{Solver::Material}.  
+
+\subsection{Transport Model Design}
+
+The transport classes are shown in Table~\ref{tab:classes}.  The
+structure of the \mle{Transport} sub-module is shown in
+Fig.~\ref{fig:trans}.
+\begin{figure}
+  \centerline{
+    \includegraphics[width=6in]{trans.eps}}
+  \caption{Structure of the \mle{Solver::Transport} module.}
+  \label{fig:trans}
+\end{figure}
