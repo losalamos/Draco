@@ -23,6 +23,8 @@
 #include "mc/General_Topology.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
+#include "mc/Sphyramid_Builder.hh"
+#include "mc/Sphyramid_Mesh.hh"
 #include "mc/Comm_Patterns.hh"
 #include "mc/RZWedge_Mesh.hh"
 #include "mc/Sampler.hh"
@@ -51,6 +53,8 @@ using rtt_mc::Rep_Topology;
 using rtt_mc::General_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
+using rtt_mc::Sphyramid_Builder;
+using rtt_mc::Sphyramid_Mesh;
 using rtt_mc::RZWedge_Mesh;
 using rtt_mc::Comm_Patterns;
 using rtt_rng::Rnd_Control;
@@ -359,6 +363,25 @@ void T4_slope_test_AMR()
 	PASSMSG("T4 slopes ok for RZWedge_Mesh replication.");
 }
 
+//===========================================================================//
+// SPHYRAMID_MESH SPECIALIZATION
+//===========================================================================//
+void Sphyramid_replicate()
+{
+    // build a FULL mesh --> this mesh will be fully replicated on all
+    // processors in the test
+    SP<Parser> parser(new Parser("Sphyramid_Input"));
+    SP<Sphyramid_Builder> builder(new Sphyramid_Builder(parser));
+    SP<Sphyramid_Mesh> mesh = builder->build_Mesh();
+
+
+
+
+
+if (rtt_imc_test::passed)
+	PASSMSG("T4 slopes ok for Sphyramid replication.");
+}
+
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -385,6 +408,9 @@ int main(int argc, char *argv[])
 
 	// run test on each processor for RZWedge_Mesh
 	T4_slope_test_AMR();
+
+	// run Sphyramid tests
+	Sphyramid_replicate();
     }
     catch (rtt_dsxx::assertion &ass)
     {

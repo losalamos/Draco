@@ -64,6 +64,8 @@ echo copying ${srcdir}/test/OS_Input_B.in to test/OS_Input_B
 cp ${srcdir}/test/OS_Input_B.in test/OS_Input_B
 echo copying ${srcdir}/test/RZWedge_Input.in to test/RZWedge_Input
 cp ${srcdir}/test/RZWedge_Input.in test/RZWedge_Input
+echo copying ${srcdir}/test/Sphyramid_Input.in to test/Sphyramid_Input
+cp ${srcdir}/test/Sphyramid_Input.in test/Sphyramid_Input
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/imc configure.in

@@ -835,6 +835,179 @@ void Mesh_Operations<RZWedge_Mesh>::build_DD_T4_slope(SP_Mat_State mat_state,
     }
 }
 
+//===========================================================================//
+// SPHYRAMID_MESH SPECIALIZATIONS
+//===========================================================================//
+
+using rtt_mc::Sphyramid_Mesh;
+using rtt_mc::Layout;
+
+//---------------------------------------------------------------------------//
+// CONSTRUCTOR
+//---------------------------------------------------------------------------//
+
+Mesh_Operations<Sphyramid_Mesh>::Mesh_Operations(SP_Mesh mesh,
+						 SP_Mat_State state,
+						 SP_Topology topology,
+						 SP_Comm_Patterns patterns)
+    :t4_slope(mesh)
+{
+    Require (mesh);
+    Require (state);
+    Require (topology);
+    Require (patterns);
+    Require (mesh->num_cells() == topology->num_cells(C4::node()));
+
+    // Sphyramid_Mesh always has 3 dimensions
+    Check(this->t4_slope.size() == 3);
+
+    // build the T^4 data based upon the topology
+    if (topology->get_parallel_scheme() == "replication")
+    {
+	Check (!(*patterns));
+	build_replication_T4_slope(state);
+    }
+    else if (topology->get_parallel_scheme() == "DD")
+    {
+
+	Check (*patterns);
+	//build_DD_T4_slope(state, topology, patterns);
+    }
+    else
+    {
+	Insist(0, "We don't have general support yet!");
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------//
+// BUILD T4 SLOPES
+//---------------------------------------------------------------------------//
+// Build the T4 slopes in a full replication topology
+
+void Mesh_Operations<Sphyramid_Mesh>::build_replication_T4_slope(SP_Mat_State 
+								 mat_state)
+{	    
+    using std::pow;
+
+    Require(mat_state->num_cells() == this->t4_slope.get_Mesh().num_cells());
+
+    // set number of cells
+    int num_cells = mat_state->num_cells();
+
+    // get a reference to the mesh and layout
+    const Sphyramid_Mesh &mesh = this->t4_slope.get_Mesh();
+    const Layout &layout       = mesh.get_Layout();
+
+    // sweep through cells and build T4 slopes
+    for (int cell = 1; cell <= mesh.num_cells(); cell++)
+    {
+	// calculate this cell's value of t4
+	double t4 = pow(mat_state->get_T(cell), 4);
+
+	// >>>calculate x direction slopes<<<
+	
+	// check size of vector
+	Check (this->t4_slope.size(1) == num_cells);
+
+	// get face indices
+	int face_low  = 1;
+	int face_high = 2;
+
+	// get neighboring cell indices
+	int cell_low  = layout(cell, face_low);
+	int cell_high = layout(cell, face_high);
+
+	// get neighboring cell temperatures
+	double t4_low  = pow(mat_state->get_T(cell_low), 4);
+	double t4_high = pow(mat_state->get_T(cell_high), 4);
+
+	// explicity set slope to zero if either face is reflective
+	if (cell_low == cell || cell_high == cell)
+	{
+	    this->t4_slope(1,cell) = 0.0;
+	}
+	// set slope to zero if both sides are radiatively vacuum
+	else if (cell_low == 0 && cell_high == 0)
+	{
+	    this->t4_slope(1,cell) = 0.0;
+	}
+	// if low side is vacuum, use only two T^4's
+	else if (cell_low == 0)
+	{
+	    double delta = mesh.high_half_width(cell)
+		+mesh.low_half_width(cell_high);
+	    
+	    this->t4_slope(1,cell) = (t4_high-t4)/delta;
+
+	    // make sure slope isn't too large so as to give a negative
+	    // t4_low.  If so, limit slope so t4_low is zero
+	    t4_low = t4-this->t4_slope(1,cell)*mesh.low_half_width(cell);
+	    if (t4_low < 0.0)
+	    {
+		this->t4_slope(1,cell) = t4/mesh.low_half_width(cell);
+	    }
+	}
+	// if high side is vacuum, use only two T^4's
+	else if (cell_high == 0)
+	{
+	    double delta = mesh.low_half_width(cell)
+		+mesh.high_half_width(cell_low);
+	    
+	    this->t4_slope(1,cell) = (t4-t4_low)/delta;
+
+	    // make sure slope isn't too large so as to give a negative
+	    // t4_high.  If so, limit slope so t4_high is zero
+	    t4_high = t4+this->t4_slope(1,cell)*mesh.high_half_width(cell);
+	    if (t4_high < 0.0)
+	    {
+		this->t4_slope(1,cell) = -t4/mesh.high_half_width(cell);
+	    }
+	}    
+	// no conditions on calculating slope; just do it
+	else
+	{
+	    double low_slope = (t4-t4_low)/
+		(mesh.low_half_width(cell)+mesh.high_half_width(cell_low));
+
+	    double high_slope = (t4_high-t4)/
+		(mesh.high_half_width(cell)+mesh.low_half_width(cell_low));
+
+	    double t4_lo_edge = t4-low_slope*mesh.low_half_width(cell);
+	    double t4_hi_edge = t4+high_slope*mesh.high_half_width(cell);
+
+	    this->t4_slope(1,cell) = (t4_hi_edge-t4_lo_edge)/
+		(mesh.low_half_width(cell)+mesh.high_half_width(cell));
+
+	    // put checks to make sure that slope is not too large
+	    t4_high = t4+this->t4_slope(1,cell)*mesh.high_half_width(cell);
+	    t4_low  = t4-this->t4_slope(1,cell)*mesh.low_half_width(cell);
+
+	    // at most one edge can be negative
+	    Check (t4_high >= 0.0 || t4_low >= 0.0);
+
+	    // if high edge is negative
+	    if (t4_high < 0.0)
+	    {
+		this->t4_slope(1,cell) = -t4/mesh.high_half_width(cell);
+	    }
+	    else if (t4_low < 0.0);
+	    {
+		this->t4_slope(1,cell) = t4/mesh.low_half_width(cell);
+	    }
+	}
+
+	// explicity set y and z slopes to zero
+	Check (this->t4_slope.size(2) == num_cells);
+	Check (this->t4_slope.size(3) == num_cells);
+	this->t4_slope(2, cell) = 0.0;
+	this->t4_slope(3, cell) = 0.0;
+    }
+
+    return;
+}
+	
 } // end of rtt_imc
 
 //---------------------------------------------------------------------------//
