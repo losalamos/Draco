@@ -4,7 +4,9 @@ dnl <user>
 dnl <date>
 dnl $Id$
 dnl-------------------------------------------------------------------------dnl
-dnl @> configure.in for <pkg>
+dnl Copyright © 2003 The Regents of the University of California.
+dnl-------------------------------------------------------------------------dnl
+dnl configure.in for <pkg>
 dnl-------------------------------------------------------------------------dnl
 
 AC_INIT

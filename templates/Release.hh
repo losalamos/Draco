@@ -4,6 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  Release function for the <pkg> library
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

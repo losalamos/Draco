@@ -4,7 +4,9 @@
 # <date>
 # $Id$
 ###############################################################################
-# @> General Makefile.target for <pkg>
+# Copyright © 2003 The Regents of the University of California.
+###############################################################################
+# General Makefile.target for <pkg>
 ###############################################################################
 
 testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
