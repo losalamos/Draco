@@ -1,0 +1,22 @@
+###############################################################################
+# draco/src/rng/test Makefile.target
+# Thomas M. Evans
+# Wed Jan 31 16:08:21 2001
+# $Id$
+###############################################################################
+# @> General Makefile.target for draco/src/rng/test
+###############################################################################
+
+testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
+		${VENDOR_TEST_DEPENDS} ${VENDOR_DEPENDS}
+testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
+		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
+
+${test_alltarget}: ${testdeps}
+
+%: %.o
+	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
+
+###############################################################################
+#			 end of draco/src/rng/test Makefile.target
+###############################################################################
