@@ -32,6 +32,7 @@
 #include "mtl/matrix.h"
 #include "gauss.hh"
 #include "matrix.t.hh"
+#include "LSquad.hh"
 
 using namespace std;
 using namespace mtl;
