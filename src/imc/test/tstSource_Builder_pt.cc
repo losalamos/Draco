@@ -11,6 +11,7 @@
 
 #include "mc/OS_Mesh.hh"
 #include "../Source_Builder.t.hh"
+#include "../Rep_Source_Builder.t.hh"
 
 namespace rtt_imc
 {
@@ -18,6 +19,8 @@ namespace rtt_imc
 using rtt_mc::OS_Mesh;
 
 template class Source_Builder<OS_Mesh>;
+
+template class Rep_Source_Builder<OS_Mesh>;
 
 } // end of namespace rtt_imc
 

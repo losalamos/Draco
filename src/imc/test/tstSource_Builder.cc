@@ -11,6 +11,7 @@
 
 #include "IMC_Test.hh"
 #include "../Source_Builder.hh"
+#include "../Rep_Source_Builder.hh"
 #include "../Release.hh"
 #include "mc/OS_Mesh.hh"
 #include "c4/global.hh"
@@ -23,6 +24,7 @@ using namespace std;
 
 using rtt_imc_test::IMC_Interface;
 using rtt_imc::Source_Builder;
+using rtt_imc::Rep_Source_Builder;
 using rtt_mc::OS_Mesh;
 
 // passing condition
@@ -39,7 +41,8 @@ void test_equivalence(const T value, const T mod_value)
     T local_value = value;
 
     // make a source builder
-    Source_Builder<OS_Mesh> sb;
+    Rep_Source_Builder<OS_Mesh> rsb;
+    Source_Builder<OS_Mesh> &sb = rsb;
 
     // check if more than 1 node
     if (C4::nodes() > 1)
@@ -118,6 +121,7 @@ void test_equivalence(const T value, const T mod_value)
     }
 }
 
+// simple timing test
 void timing()
 {
     // set a value
@@ -127,7 +131,8 @@ void timing()
     double end;
 	
     // make a source builder
-    Source_Builder<OS_Mesh> sb;
+    Rep_Source_Builder<OS_Mesh> rsb;
+    Source_Builder<OS_Mesh> &sb = rsb;
 
     if (C4::node() == 0)
 	begin = C4::Wtime();

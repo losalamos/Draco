@@ -22,6 +22,8 @@ using C4::node;
 using C4::Send;
 using C4::Recv;
 using C4::gsync;
+using C4::C4_Req;
+using C4::SendAsync;
 
 using std::fabs;
 
