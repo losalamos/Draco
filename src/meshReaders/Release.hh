@@ -23,14 +23,19 @@
 
 #include <string>
 
-namespace rtt_format 
+/*!
+ * \brief Namespace to contain the RTT mesh Reader utilities.
+ *
+ */
+namespace rtt_meshReaders 
 {
 /*!
  * \brief  Gets the release number for the meshReaders package. 
  * \return release number as a string in the form "meshReaders-\#_\#_\#"
  */
-    const std::string release();
-}
+const std::string release();
+
+}  // end of rtt_meshReaders namespace
 
 #endif                          // __meshReaders_Release_hh__
 

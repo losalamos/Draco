@@ -15,7 +15,7 @@
 
 #include "Release.hh"
 
-namespace rtt_format
+namespace rtt_meshReaders
 {
 
 using std::string;
@@ -28,7 +28,7 @@ const string release()
     return pkg_release;
 }
 
-}  // end of rtt_format namespace
+}  // end of rtt_meshReaders namespace
 
 //---------------------------------------------------------------------------//
 //                              end of Release.cc
