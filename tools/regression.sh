@@ -43,7 +43,7 @@ runregression ()
 
    # remove directories that depend on sprnglib if it can't be found.
 
-   if [ ! -f ${SPRNGLIB:-"No File Exists"} ] ; then
+   if [ "$HAS_SPRNGLIB" != "true" ] ; then
       echo removing SPRNG dependent directories: $SPRNG_DEPEND_DIRS
       echo rm -rf $SPRNG_DEPEND_DIRS
       rm -rf $SPRNG_DEPEND_DIRS
@@ -51,7 +51,7 @@ runregression ()
 
    # remove directories that depend on pcglib if it can't be found.
 
-   if [ ! -f ${PCGLIB:-"No File Exists"} ] ; then
+   if [ "$HAS_PCGLIB" != "true" ] ; then
       echo removing PCG dependent directories: $PCG_DEPEND_DIRS
       echo rm -rf $PCG_DEPEND_DIRS
       rm -rf $PCG_DEPEND_DIRS
@@ -134,6 +134,9 @@ do
    for b in $BITS
    do
 
+      HAS_PCGLIB="false"
+      HAS_SPRNGLIB="false"
+
       CONFIGUREFLAGS="--with-c4=$c4"
 
       if [ "X$b" = "X0" ] ; then
@@ -146,8 +149,9 @@ do
 
       # Check if pcglib is available
 
-      if [ -d $PCG_LIBPATH -a -f $PCG_LIBPATH/libpcg_f77.a ] ; then
-         PCGLIB=$PCG_LIBPATH/libpcg_f77.a
+      if [    -d $PCG_LIBPATH \
+           -a -f $PCG_LIBPATH/libpcg_f77.a ] ; then
+         HAS_PCGLIB="true"
          CONFIGUREFLAGS="--enable-pcglib --with-pcglib-lib=$PCG_LIBPATH $CONFIGUREFLAGS" 
       fi
 
@@ -159,7 +163,7 @@ do
            -a -f $SPRNG_LIBPATH/liblcg.a   \
            -a -f $SPRNG_LIBPATH/liblcg64.a \
            -a -f $SPRNG_LIBPATH/liblfg.a   ] ; then
-         SPRNGLIB=$SPRNG_LIBPATH/libcmrg.a
+         HAS_SPRNGLIB="true"
          CONFIGUREFLAGS="--with-sprng-lib=$SPRNG_LIBPATH --with-sprng-inc=$SPRNG_INCPATH $CONFIGUREFLAGS" 
       fi
 
