@@ -62,7 +62,7 @@ include ../config/make.doc
 
 # Go pick up the standard signature for makefiles.
 
-cc_files := $(libsrcs)
+cc_files := $(libsrcs) $(tstsrcs)
 
 include ../config/make.end
 
