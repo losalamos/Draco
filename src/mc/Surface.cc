@@ -3,7 +3,8 @@
  * \file   mc/Surface.cc
  * \author Mike Buksas
  * \date   Mon Jun 16 16:07:44 2003
- * \brief  Abstract base class for surfaces.
+ * \brief  Implementation file for abstract class Surface
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

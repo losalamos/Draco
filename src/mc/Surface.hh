@@ -3,9 +3,8 @@
  * \file   mc/Surface.hh
  * \author Mike Buksas
  * \date   Mon Jun 16 16:07:44 2003
- * \brief  Abstract base class for surfaces.
- *
- * Long description.
+ * \brief  Header file for abstract surface class.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -27,8 +26,8 @@ namespace rtt_mc
  * Class Surface is an abstract base class which provides virtual functions
  * required for surface tracking.
  *
- * The constructor, copy operators and destructor are all protected to
- * provect unintended object slicing.
+ * The constructor, and copy operators are all protected to provect
+ * unintended object slicing.
  *
  */
 /*! 

@@ -3,7 +3,8 @@
  * \file   mc/Sphere.cc
  * \author Mike Buksas
  * \date   Mon Jun 16 16:14:46 2003
- * \brief  Implements a spherical surface for surface tallies
+ * \brief  Sphere implementation file
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
