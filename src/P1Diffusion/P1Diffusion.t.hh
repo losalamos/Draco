@@ -11,6 +11,7 @@
 #include "diffusion/P1Matrix.hh"
 #include "traits/MatrixFactoryTraits.hh"
 #include <limits>
+#include <cmath>
 
 // Note:
 // Inside class scope MT has been typedef'ed to MeshType,
