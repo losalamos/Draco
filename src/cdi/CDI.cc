@@ -181,7 +181,7 @@ inline double polylog_series_minus_one_planck(double x)
     double eix = std::exp(-x);
     double eixp = 1;
 
-    for (int i = 1; i <= 10; i++)
+    for (int i = 1; i < 11; i+=2)
     {
 
     // kgbudge (030827):  The original loop code, which was slower but more
@@ -192,12 +192,26 @@ inline double polylog_series_minus_one_planck(double x)
     // li3 += std::exp(-i * x) / (i*i*i);
     // li4 += std::exp(-i * x) / (i*i*i*i);
 
+	const double i_inv   = 1.0 / i;
+	const double ip1_inv = 1.0 / (i+1);
+	
 	eixp *= eix;
 	double eixr = eixp;
-	li1 += (eixr /= i);
-	li2 += (eixr /= i);
-	li3 += (eixr /= i);
-	li4 += (eixr /= i);
+
+	eixp *= eix;
+	double eixrp1 = eixp;
+
+
+	li1 += (eixr *= i_inv);
+	li2 += (eixr *= i_inv);
+	li3 += (eixr *= i_inv);
+	li4 += (eixr *= i_inv);
+
+	li1 += (eixrp1 *= ip1_inv);
+	li2 += (eixrp1 *= ip1_inv);
+	li3 += (eixrp1 *= ip1_inv);
+	li4 += (eixrp1 *= ip1_inv);
+
     }
 
     // calculate the lower polylogarithmic integral
