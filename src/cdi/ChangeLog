@@ -3,7 +3,8 @@
 	* cdi: release version 1_1_0. Lots of updates since original
 	release.  Several functions have been added to the GrayOpacity,
 	MultigroupOpacity, and EoS base classes.  Planck integration
-	routines have been added.  Packing functions have been added.
+	routines have been added.  Packing functions have been added.  It
+	no longer uses UnitTestFrame.
 
 2001-11-26  Thomas M. Evans  <tme@lanl.gov>
 
