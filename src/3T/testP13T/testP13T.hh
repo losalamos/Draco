@@ -13,7 +13,9 @@
 #include "3T/P13T.hh"
 #include "3T/testP13T/DiffusionSolverStub.hh"
 #include "3T/testP13T/MeshTypeStub.hh"
-#include "3T/testP13T/MaterialPropertiesStub.hh"
+
+// #include "3T/testP13T/MaterialPropertiesStub.hh"
+#include "matprops/InterpedMaterialProps.hh"
 
 #ifndef BEGIN_NS_XTM
 #define BEGIN_NS_XTM namespace XTM  {
@@ -40,7 +42,8 @@ class testP13T
     // NESTED CLASSES AND TYPEDEFS
 
     typedef MeshTypeStub MT;
-    typedef MaterialPropertiesStub<MT> MP;
+    // typedef MaterialPropertiesStub<MT> MP;
+    typedef InterpedMaterialProps MP;
     typedef DiffusionSolverStub<MT> DS;
     
     typedef P13T<MT,MP,DS> P13TStub;

@@ -33,47 +33,48 @@ template void RadiationPhysics::
     getPlanckTemperatureDerivative(const MT::ccsf &TElectron,
 				   MT::ccsf &dplanckdT) const;
 
-typedef MeshTypeStub::ccsf FT;
+typedef MeshTypeStub::ccsf ccsf;
+typedef MeshTypeStub::fcdsf fcdsf;
 typedef int GT;
 
 template void MaterialPropertiesStub<MT>::
-getSigmaTotal(const MaterialStateField &matState,
-	      GT group, FT &sigmaTotal) const;
+getSigmaTotal(const MaterialStateField<fcdsf> &matState,
+	      GT group, fcdsf &sigmaTotal) const;
 
 template void MaterialPropertiesStub<MT>::
-getSigmaAbsorption(const MaterialStateField &matState,
-		   GT group, FT &sigmaAbsorption) const;
+getSigmaAbsorption(const MaterialStateField<ccsf> &matState,
+		   GT group, ccsf &sigmaAbsorption) const;
 
 template void MaterialPropertiesStub<MT>::
-getSigmaEmission(const MaterialStateField &matState,
-		 GT group, FT &sigmaEmission) const;
+getSigmaEmission(const MaterialStateField<ccsf> &matState,
+		 GT group, ccsf &sigmaEmission) const;
 
 template void MaterialPropertiesStub<MT>::
-getElectronIonCoupling(const MaterialStateField &matState,
-		       FT &gamma) const;
+getElectronIonCoupling(const MaterialStateField<ccsf> &matState,
+		       ccsf &gamma) const;
 
 template void MaterialPropertiesStub<MT>::
-getElectronTemperature(const MaterialStateField &matState,
-		       FT &TElectron) const;
+getElectronTemperature(const MaterialStateField<ccsf> &matState,
+		       ccsf &TElectron) const;
 
 template void MaterialPropertiesStub<MT>::
-getIonTemperature(const MaterialStateField &matState,
-		  FT &TIon) const;
+getIonTemperature(const MaterialStateField<ccsf> &matState,
+		  ccsf &TIon) const;
 
 template void MaterialPropertiesStub<MT>::
-getElectronConductionCoeff(const MaterialStateField &matState,
-			   FT &kappaElectron) const;
+getElectronConductionCoeff(const MaterialStateField<fcdsf> &matState,
+			   fcdsf &kappaElectron) const;
 
 template void MaterialPropertiesStub<MT>::
-getIonConductionCoeff(const MaterialStateField &matState,
-		      FT &kappaIon) const;
+getIonConductionCoeff(const MaterialStateField<fcdsf> &matState,
+		      fcdsf &kappaIon) const;
 
 template void MaterialPropertiesStub<MT>::
-getElectronSpecificHeat(const MaterialStateField &matState,
-			FT &CvElectron) const;
+getElectronSpecificHeat(const MaterialStateField<ccsf> &matState,
+			ccsf &CvElectron) const;
 
 template void MaterialPropertiesStub<MT>::
-getIonSpecificHeat(const MaterialStateField &matState,
-		   FT &CvIon) const;
+getIonSpecificHeat(const MaterialStateField<ccsf> &matState,
+		   ccsf &CvIon) const;
 
 END_NS_XTM  // namespace XTM

@@ -46,7 +46,7 @@ main_$(env) : deps $(objs) \
 
 deps:
 ifneq ($(dodeps),no)
-#	(cd ../../3T;   $(MAKE) $(subnj))
+	(cd ../../3T;   $(MAKE) $(subnj))
 endif
 
 $(dep_lib3T):

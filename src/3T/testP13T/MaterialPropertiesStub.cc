@@ -33,43 +33,43 @@ MaterialPropertiesStub(const Units &units_,
 template<class MT>
 template<class FT, class GT>
 void MaterialPropertiesStub<MT>::
-getSigmaTotal(const MaterialStateField &matState,
+getSigmaTotal(const MaterialStateField<FT> &matState,
 	      GT group, FT &sigmaTotal) const
 {
-    sigmaTotal = matVals[matState].sigmaTotal;
+    sigmaTotal = matVals[matState.val].sigmaTotal;
 }
 
 template<class MT>
 template<class FT, class GT>
 void MaterialPropertiesStub<MT>::
-getSigmaAbsorption(const MaterialStateField &matState,
+getSigmaAbsorption(const MaterialStateField<FT> &matState,
 		   GT group, FT &sigmaAbsorption) const
 {
-    sigmaAbsorption = matVals[matState].sigmaAbsorption;
+    sigmaAbsorption = matVals[matState.val].sigmaAbsorption;
 }
 
 template<class MT>
 template<class FT, class GT>
 void MaterialPropertiesStub<MT>::
-getSigmaEmission(const MaterialStateField &matState,
+getSigmaEmission(const MaterialStateField<FT> &matState,
 		 GT group, FT &sigmaEmission) const
 {
-    sigmaEmission = matVals[matState].sigmaEmission;
+    sigmaEmission = matVals[matState.val].sigmaEmission;
 }
 
 template<class MT>
 template<class FT>
 void MaterialPropertiesStub<MT>::
-getElectronIonCoupling(const MaterialStateField &matState,
+getElectronIonCoupling(const MaterialStateField<FT> &matState,
 		       FT &gamma) const
 {
-    gamma = matVals[matState].electronIonCoupling;
+    gamma = matVals[matState.val].electronIonCoupling;
 }
 
 template<class MT>
 template<class FT>
 void MaterialPropertiesStub<MT>::
-getElectronTemperature(const MaterialStateField &matState,
+getElectronTemperature(const MaterialStateField<FT> &matState,
 		       FT &TElectron_) const
 {
     TElectron_ = TElectron;
@@ -78,7 +78,7 @@ getElectronTemperature(const MaterialStateField &matState,
 template<class MT>
 template<class FT>
 void MaterialPropertiesStub<MT>::
-getIonTemperature(const MaterialStateField &matState,
+getIonTemperature(const MaterialStateField<FT> &matState,
 		  FT &TIon_) const
 {
     TIon_ = TIon;
@@ -87,37 +87,37 @@ getIonTemperature(const MaterialStateField &matState,
 template<class MT>
 template<class FT>
 void MaterialPropertiesStub<MT>::
-getElectronConductionCoeff(const MaterialStateField &matState,
+getElectronConductionCoeff(const MaterialStateField<FT> &matState,
 			   FT &kappaElectron) const
 {
-    kappaElectron = matVals[matState].electronConductionCoeff;
+    kappaElectron = matVals[matState.val].electronConductionCoeff;
 }
 
 template<class MT>
 template<class FT>
 void MaterialPropertiesStub<MT>::
-getIonConductionCoeff(const MaterialStateField &matState,
+getIonConductionCoeff(const MaterialStateField<FT> &matState,
 		      FT &kappaIon) const
 {
-    kappaIon = matVals[matState].ionConductionCoeff;
+    kappaIon = matVals[matState.val].ionConductionCoeff;
 }
 
 template<class MT>
 template<class FT>
 void MaterialPropertiesStub<MT>::
-getElectronSpecificHeat(const MaterialStateField &matState,
+getElectronSpecificHeat(const MaterialStateField<FT> &matState,
 			FT &CvElectron) const
 {
-    CvElectron = matVals[matState].electronSpecificHeat;
+    CvElectron = matVals[matState.val].electronSpecificHeat;
 }
 
 template<class MT>
 template<class FT>
 void MaterialPropertiesStub<MT>::
-getIonSpecificHeat(const MaterialStateField &matState,
+getIonSpecificHeat(const MaterialStateField<FT> &matState,
 		   FT &CvIon) const
 {
-    CvIon = matVals[matState].ionSpecificHeat;
+    CvIon = matVals[matState.val].ionSpecificHeat;
 }
 
 END_NS_XTM  // namespace XTM

@@ -65,7 +65,14 @@ class MaterialPropertiesStub
 	      
     };
 
-    typedef int MaterialStateField;
+    template<class FT>
+    struct MaterialStateField
+    {
+	int val;
+	operator int() { return val; }
+	MaterialStateField(SP<MT> &) {}
+	MaterialStateField(int val_) : val(val_) {}
+    };
 
     // DATA
 
@@ -110,43 +117,43 @@ class MaterialPropertiesStub
     //------------------------------------------------------------------------//
 
     template<class FT, class GT>
-    void getSigmaTotal(const MaterialStateField &matState,
+    void getSigmaTotal(const MaterialStateField<FT> &matState,
 		       GT group, FT &sigmaTotal) const;
 
     template<class FT, class GT>
-    void getSigmaAbsorption(const MaterialStateField &matState,
+    void getSigmaAbsorption(const MaterialStateField<FT> &matState,
 			    GT group, FT &sigmaAbsorption) const;
 
     template<class FT, class GT>
-    void getSigmaEmission(const MaterialStateField &matState,
+    void getSigmaEmission(const MaterialStateField<FT> &matState,
 			  GT group, FT &sigmaEmission) const;
 
     template<class FT>
-    void getElectronIonCoupling(const MaterialStateField &matState,
+    void getElectronIonCoupling(const MaterialStateField<FT> &matState,
 				FT &gamma) const;
 
     template<class FT>
-    void getElectronTemperature(const MaterialStateField &matState,
+    void getElectronTemperature(const MaterialStateField<FT> &matState,
 				FT &TElectron) const;
 
     template<class FT>
-    void getIonTemperature(const MaterialStateField &matState,
+    void getIonTemperature(const MaterialStateField<FT> &matState,
 			   FT &TIon) const;
 
     template<class FT>
-    void getElectronConductionCoeff(const MaterialStateField &matState,
+    void getElectronConductionCoeff(const MaterialStateField<FT> &matState,
 				    FT &kappaElectron) const;
 
     template<class FT>
-    void getIonConductionCoeff(const MaterialStateField &matState,
+    void getIonConductionCoeff(const MaterialStateField<FT> &matState,
 			       FT &kappaIon) const;
 
     template<class FT>
-    void getElectronSpecificHeat(const MaterialStateField &matState,
+    void getElectronSpecificHeat(const MaterialStateField<FT> &matState,
 				 FT &CvElectron) const;
 
     template<class FT>
-    void getIonSpecificHeat(const MaterialStateField &matState,
+    void getIonSpecificHeat(const MaterialStateField<FT> &matState,
 			    FT &CvIon) const;
 
   private:

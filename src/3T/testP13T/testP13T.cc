@@ -39,6 +39,7 @@ testP13T::testP13T()
     double TElectron = 2.0;
     double TIon = 4.0;
 
+#if 0
     std::vector<MP::MatVals> matVals(3);
     matVals[0] = MP::MatVals(/*sigmaTotal*/ 2.0,
 			     /* sigmaAbsorption */ 1.0,
@@ -66,34 +67,41 @@ testP13T::testP13T()
 			     /* ionSpecificHeat */ 2.0);
     
     SP<MP> spmatprop = new MP(units, spmesh, TElectron, TIon, matVals);
-
+#endif
+    
     P13TOptions options(true, true);
 
-    spP13T = new P13TStub(options, spmatprop, spdiffSolver);
+    spP13T = new P13TStub(options, spdiffSolver);
 }
 
 void testP13T::solve() const
 {
     typedef MT::ccsf ccsf;
+    typedef MT::fcdsf fcdsf;
     typedef MT::bsbf bsbf;
     typedef MT::ncvf ncvf;
 
     SP<MT> spmesh = spP13T->getMesh();
     SP<MP> spProp = spP13T->getMaterialProperties();
 
-    MP::MaterialStateField matState(spmesh);
+    MP::MaterialStateField<ccsf> matStateCC(spmesh);
 
-    matState = 0;
+    matStateCC = 0;
+
+    // Here is where you would do anything fancy to the cell-temperatures,
+    // like averaging, etc., in order to obtain the face-temperatures.
+    
+    MP::MaterialStateField<fcdsf> matStateFC = matStateCC;
     
     P13T<MT,MP,DS>::RadiationStateField radState(spmesh);
 
-    spP13T->initializeRadiationState(matState, radState);
+    spP13T->initializeRadiationState(matStateCC, radState);
 
     ccsf TElec(spmesh);
     ccsf TIon(spmesh);
 
-    spProp->getElectronTemperature(matState, TElec);
-    spProp->getIonTemperature(matState, TIon);
+    spProp->getElectronTemperature(matStateCC, TElec);
+    spProp->getIonTemperature(matStateCC, TIon);
 
     cerr << "TElectron: " << TElec << endl;
     cerr << "TIon: " << TIon << endl;
@@ -116,7 +124,7 @@ void testP13T::solve() const
     QIon = 4.25;
     boundary = 0.0;
 
-    spP13T->solve(dt, matState, radState, QRad, QElectron, QIon,
+    spP13T->solve(dt, matStateCC, matStateFC, radState, QRad, QElectron, QIon,
 		  boundary, newRadState, electEnergyDep, ionEnergyDep,
 		  momDep, TElec, TIon);
 
