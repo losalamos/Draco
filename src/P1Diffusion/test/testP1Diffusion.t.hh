@@ -70,9 +70,9 @@ namespace rtt_P1Diffusion_test
  template<class MT>
  void testP1Diffusion<MT>::run()
  {
-     SP<MatrixSolver> spMatrixSolver = new MatrixSolver(spMesh, pcg_db);
-     SP<DiffSolver> spDiffSolver = new DiffSolver(diffdb, spMesh,
-						  spMatrixSolver);
+     SP<MatrixSolver> spMatrixSolver(new MatrixSolver(spMesh, pcg_db));
+     SP<DiffSolver> spDiffSolver(new DiffSolver(diffdb, spMesh,
+						spMatrixSolver));
 
      fcdsf DFC(spMesh);
      DFC = D;

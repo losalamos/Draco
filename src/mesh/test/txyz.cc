@@ -111,16 +111,16 @@ void t2()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<const MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm(new MT( mdb ));
     FieldConstructor FC = spm;
 
     {
     // The following constructor is not required by the MT
     // concept, but we need to get an object somehow.
 
-        dsxx::SP<const MT> spm1 = new MT( mdb );
-        dsxx::SP<const MT> spm2 = new MT( mdb );
-        dsxx::SP<const MT> spm3 = new MT( mdb );
+        dsxx::SP<const MT> spm1(new MT( mdb ));
+        dsxx::SP<const MT> spm2(new MT( mdb ));
+        dsxx::SP<const MT> spm3(new MT( mdb ));
 
     // Test equivalence relations.
 
@@ -211,7 +211,7 @@ void t3()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<const MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm(new MT( mdb ));
     FieldConstructor FC = spm;
 
     ccsf c(FC);
@@ -473,7 +473,7 @@ void t4()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<const MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm(new MT( mdb ));
     FieldConstructor FC = spm;
 
     ccif c(FC);

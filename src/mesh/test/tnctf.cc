@@ -98,7 +98,7 @@ void t1()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<const MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm(new MT( mdb ));
 
     {
     // Test for required typedefs
@@ -309,7 +309,7 @@ void t2()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<const MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm(new MT( mdb ));
 
     {
         typedef iterator_traits<X::iterator>::value_type value_type;
@@ -519,7 +519,7 @@ void t3()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<const MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm(new MT( mdb ));
 
     {
         typedef iterator_traits<X::const_iterator>::value_type value_type;
@@ -733,7 +733,7 @@ void t4()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<const MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm(new MT( mdb ));
 
     {
     // The following constructor is not required by the Forward
@@ -768,7 +768,7 @@ void t5()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<const MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm(new MT( mdb ));
 
     {
     // The following constructor is not required by the MTField
@@ -808,7 +808,7 @@ void t6()
     Mesh_DB mdb;
     mdb.setup_namelist( g );
     g.readgroup( "test.in" );
-    dsxx::SP<const MT> spm = new MT( mdb );
+    dsxx::SP<const MT> spm(new MT( mdb ));
 
     // Check the simple binary operations with assignments.
 

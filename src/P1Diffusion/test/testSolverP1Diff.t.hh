@@ -69,16 +69,16 @@ namespace rtt_P1Diffusion_test
  template<class MT>
  void testSolverP1Diff<MT>::run()
  {
-     SP<MT> spMesh = new MT(mdb);
+     SP<MT> spMesh(new MT(mdb));
      Solver solver(spMesh, pcg_db);
 
-     SP<ccsf> spDiag = new ccsf(spMesh);
+     SP<ccsf> spDiag(new ccsf(spMesh));
      *spDiag = -6.0;
     
-     SP<fcdsf> spOffDiag = new fcdsf(spMesh);
+     SP<fcdsf> spOffDiag(new fcdsf(spMesh));
      *spOffDiag = 1.0;
 
-     SP<Matrix> spMatrix = new Matrix(spMesh, spDiag, spOffDiag);
+     SP<Matrix> spMatrix(new Matrix(spMesh, spDiag, spOffDiag));
     
      ccsf phi(spMesh);
      ccsf brhs(spMesh);

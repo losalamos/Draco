@@ -84,8 +84,8 @@ int main( int argc, char *argv[] )
 
     using dsxx::SP;
     
-    SP< PCG_MatVec<double> >  pcg_matvec  = new TstPCG_MatVec<double>(nxs,nys);
-    SP< PCG_PreCond<double> > pcg_precond = new TstPCG_PreCond<double>();
+    SP< PCG_MatVec<double> >  pcg_matvec(new TstPCG_MatVec<double>(nxs,nys));
+    SP< PCG_PreCond<double> > pcg_precond(new TstPCG_PreCond<double>());
 
     PCG_Ctrl<double> pcg_ctrl( pcg_db, nru );
 
