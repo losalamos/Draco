@@ -210,7 +210,7 @@ inline double polylog_series_minus_one_planck(double x)
     return poly;
 }
 
-}
+} // end of unnamed namespace
 
 //---------------------------------------------------------------------------//
 /*!

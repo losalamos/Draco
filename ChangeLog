@@ -1,3 +1,42 @@
+2004-06-22  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: Released draco-5_1_0.  This is a minor draco release. A
+	summary of changes are:
+
+	- build system changes: support for darwin [MacOS], dlopen
+	  support,  changed Q template option to -pt, improved autodoc
+	  support over last release
+	- meshReaders has been redesigned with its base functionality
+	  moved to the mesh_element component
+
+	This draco release includes the following packages:
+
+		rng
+		ds++
+		shared_lib
+		RTT_Format_Reader
+		lapack_wrap
+		stdheaders
+		meshReaders
+		timestep
+		c4
+		meshReaders_Services
+		traits
+		cdi
+		mesh_element
+		units
+		cdi_analytic
+		pcgWrap
+		viz
+		cdi_gandolf
+		plot2D
+		xm
+		quadrature
+
+	We are not releasing cdi_eospac in draco until the compiler issues
+	have been resolved [hopefully with the release of a C version of
+	EOSPAC].
+
 2004-04-30  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: Released draco-5_0_0.  See CCS-4:04-36 for details about
@@ -68,7 +107,7 @@
 
 	* draco: release draco-4_3_0.  This is a minor release, as such it
 	does not have a release memo associated with it.  In summary, the
-	chages are:
+	changes are:
 
 		- added RCF and Vector_Lite to ds++
 		- added MG surface tallies to imc particles tracking
