@@ -3,14 +3,17 @@
 // John McGhee
 // Thu Apr  2 14:06:18 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Defines the fixed time-step advisor.
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_fixed_ts_advisor_hh__
 #define __timestep_fixed_ts_advisor_hh__
 
 //===========================================================================//
-// class fixed_ts_advisor - This class provides a means to introduce
+// class fixed_ts_advisor -  Introduces a user defined fixed value into the 
+//                           time-step calculation.
+//
+// This class provides a means to introduce
 // a user defined fixed value into the time-step calculation.
 // This is useful to set min and max timesteps, or to force a
 // timestep, etc.
@@ -21,6 +24,16 @@
 
 class fixed_ts_advisor : public ts_advisor {
 
+  // DATA
+
+  // Value used to oompute fixed advisor 
+
+  private:
+    double fixed_value; 
+
+   
+// CREATORS
+
   public:
 
     fixed_ts_advisor( 
@@ -30,6 +43,10 @@ class fixed_ts_advisor : public ts_advisor {
 	const bool active_ = true);
     
     ~fixed_ts_advisor();
+
+
+
+// MANIPULATORS
 
 // Update the recommended time-step
     
@@ -42,15 +59,18 @@ class fixed_ts_advisor : public ts_advisor {
 	fixed_value = value_;
     }
 
+
+// ACCESSORS
+
 // Print state
 
-    void print_state();
+    void print_state() const;
 
   private:
 
-    bool invariant_satisfied();
+    bool invariant_satisfied() const;
 
-    double fixed_value;     //value used to oompute fixed advisor 
+
 
 };
 

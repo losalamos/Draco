@@ -3,14 +3,17 @@
 // John McGhee
 // Thu Apr  2 14:06:18 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Defines the target time-step advisor.
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_target_ts_advisor_hh__
 #define __timestep_target_ts_advisor_hh__
 
 //===========================================================================//
-// class target_ts_advisor - This class provides a means to calculate 
+// class target_ts_advisor - Calculates a new time-step required to hit
+//                           some "target" problem time.
+//
+// This class provides a means to calculate 
 // a new time-step required to hit some "target" problem time. This
 // is useful to assure that graphics dumps/IO/etc. occur precisely at
 // a predetermined problem time.
@@ -21,6 +24,15 @@
 
 class target_ts_advisor : public ts_advisor {
 
+// DATA
+
+// Target time (time)
+
+  private:
+    double target_value; 
+
+
+// CREATORS
 
   public:
     
@@ -31,6 +43,10 @@ class target_ts_advisor : public ts_advisor {
 	const bool active_ = true );
     
     ~target_ts_advisor();
+
+
+
+// MANIPULATORS
 
 // Update the recommended time-step 
     
@@ -44,14 +60,18 @@ class target_ts_advisor : public ts_advisor {
 	target_value = value_;
     }
 
+
+
+// ACCESSORS
+
 // Print state
 
-    void print_state();
+    void print_state() const;
 
   private:
 
-    bool invariant_satisfied();
-    double target_value;              //target time (time)
+    bool invariant_satisfied() const;
+
 
 };
 

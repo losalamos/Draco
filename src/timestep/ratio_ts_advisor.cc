@@ -3,7 +3,7 @@
 // John McGhee
 // Thu Apr  2 14:06:18 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Defines the ratio time-step advisor.
 //---------------------------------------------------------------------------//
 
 #include "timestep/ratio_ts_advisor.hh"
@@ -43,19 +43,7 @@ void ratio_ts_advisor::update_tstep(const double current_dt,
     Ensure(invariant_satisfied());
 }
 
-bool ratio_ts_advisor::invariant_satisfied()
-{
-    bool ldum =
-	name.length() != 0 &&
-	inf    <= usage &&
-	usage  <= req &&
-	0. < dt_rec &&
-        0. < ratio_value;
-
-    return ldum;
-}
-
-void ratio_ts_advisor::print_state()
+void ratio_ts_advisor::print_state() const
 {
     std::string status = active ? "true " : "false";
     cout << endl;
@@ -69,6 +57,19 @@ void ratio_ts_advisor::print_state()
     cout << "  dt_rec         : " << dt_rec << endl;
     cout << endl;
 }
+
+bool ratio_ts_advisor::invariant_satisfied() const
+{
+    bool ldum =
+	name.length() != 0 &&
+	inf    <= usage &&
+	usage  <= req &&
+	0. < dt_rec &&
+        0. < ratio_value;
+
+    return ldum;
+}
+
 //---------------------------------------------------------------------------//
 //                              end of ratio_ts_advisor.cc
 //---------------------------------------------------------------------------//

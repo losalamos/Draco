@@ -3,16 +3,19 @@
 // John McGhee
 // Thu Apr  2 14:06:18 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Defines the ratio time-step advisor.
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_ratio_ts_advisor_hh__
 #define __timestep_ratio_ts_advisor_hh__
 
 //===========================================================================//
-// class ratio_ts_advisor - This class provides a means to calculate a
+// class ratio_ts_advisor - Calculates a new timestep as a ratio of 
+//                          the current time-step
+//
+// This class provides a means to calculate a
 // new timestep as a ratio of the current time-step. This is useful to
-// limit the rate of change in the time-step form one time cycle to the 
+// limit the rate of change in the time-step from one time cycle to the 
 // next.
 // 
 //===========================================================================//
@@ -21,6 +24,17 @@
 
 class ratio_ts_advisor : public ts_advisor {
 
+
+// DATA
+
+ // Value used to compute ratio advisor
+
+  private:
+    double ratio_value; 
+
+
+
+// CREATORS
   public:
 
     ratio_ts_advisor(const std::string &name_  = std::string("Unlabeled"),
@@ -29,6 +43,10 @@ class ratio_ts_advisor : public ts_advisor {
 		     const bool active_ = true);
     
     ~ratio_ts_advisor();
+
+
+
+// MANIPULATORS
 
 // Update the recommended time-step 
     
@@ -42,14 +60,18 @@ class ratio_ts_advisor : public ts_advisor {
 	ratio_value = value_;
     }
 
+
+
+// ACCESSORS
+
 // Print state
 
-    void print_state();
+    void print_state() const;
 
   private:
 
-    bool invariant_satisfied();
-    double ratio_value;  //value used to compute ratio advisor
+    bool invariant_satisfied() const;
+
 
 };
 

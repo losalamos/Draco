@@ -3,7 +3,7 @@
 // John McGhee
 // Thu Apr  2 14:06:18 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Defines the target time-step advisor.
 //---------------------------------------------------------------------------//
 
 #include "timestep/target_ts_advisor.hh"
@@ -48,19 +48,7 @@ void target_ts_advisor::update_tstep( const double end_of_cycle_time,
     Ensure(invariant_satisfied());
 }
 
-
-bool target_ts_advisor::invariant_satisfied()
-{
-    bool ldum =
-	name.length() != 0 &&
-	inf    <= usage &&
-	usage  <= req &&
-	0. < dt_rec;
-
-    return ldum;
-}
-
-void target_ts_advisor::print_state()
+void target_ts_advisor::print_state() const
 {
     std::string status = active ? "true " : "false";
     cout << endl;
@@ -74,6 +62,18 @@ void target_ts_advisor::print_state()
     cout << "  dt_rec         : " << dt_rec << endl;
     cout << endl;
 }
+
+bool target_ts_advisor::invariant_satisfied() const
+{
+    bool ldum =
+	name.length() != 0 &&
+	inf    <= usage &&
+	usage  <= req &&
+	0. < dt_rec;
+
+    return ldum;
+}
+
 //---------------------------------------------------------------------------//
 //                              end of target_ts_advisor.cc
 //---------------------------------------------------------------------------//

@@ -3,7 +3,7 @@
 // John McGhee
 // Thu Apr  2 14:06:18 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Defines the fixed time-step advisor. 
 //---------------------------------------------------------------------------//
 
 #include "timestep/fixed_ts_advisor.hh"
@@ -40,18 +40,7 @@ void fixed_ts_advisor::update_tstep(const int cycle_)
     Ensure(invariant_satisfied());
 }
 
-bool fixed_ts_advisor::invariant_satisfied()
-{
-    bool ldum =
-	name.length() != 0 &&
-	inf    <= usage &&
-	usage  <= req &&
-	0. < dt_rec &&
-        0. < fixed_value;
-
-    return ldum;
-}
-void fixed_ts_advisor::print_state()
+void fixed_ts_advisor::print_state() const
 {
     std::string status = active ? "true " : "false";
     cout << endl;
@@ -64,6 +53,18 @@ void fixed_ts_advisor::print_state()
     cout << "  Fixed Value    : " << fixed_value << endl;
     cout << "  dt_rec         : " << dt_rec << endl;
     cout << endl;
+}
+
+bool fixed_ts_advisor::invariant_satisfied() const
+{
+    bool ldum =
+	name.length() != 0 &&
+	inf    <= usage &&
+	usage  <= req &&
+	0. < dt_rec &&
+        0. < fixed_value;
+
+    return ldum;
 }
 
 //---------------------------------------------------------------------------//

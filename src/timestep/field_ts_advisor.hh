@@ -3,14 +3,16 @@
 // John McGhee
 // Thu Apr  2 14:06:18 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Defines the field time-step advisor.
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_field_ts_advisor_hh__
 #define __timestep_field_ts_advisor_hh__
 
 //===========================================================================//
-// class field_ts_advisor - This class provides a means to estimate a
+// class field_ts_advisor - Estimates a new timestep based on current fields.
+//
+// This class provides a means to estimate a
 // new timestep based on the current dQ/dt where Q is some field quantity
 // to be controlled (i.e. temperature, energy, particle number density,
 // etc....), and dt is the current timestep.  
@@ -20,7 +22,9 @@
 #include "timestep/ts_advisor.hh"
 
 class field_ts_advisor : public ts_advisor {
-    
+
+// NESTED CLASSES AND TYPEDEFS
+
   public:
 
 // Flag to determine the method used to produce the recommended 
@@ -39,7 +43,21 @@ class field_ts_advisor : public ts_advisor {
 	q_mean,     // Q weighted mean
 	rc_mean,    // relative change (alpha) weighted mean
 	rcq_mean    // product of Q and alpha weighted mean
-    };
+    };    
+
+// DATA
+
+  private:
+
+
+    update_method_flag update_method; //update method for dt_rec
+    double fc_value;                  //frac change  value for field advisor
+    double floor_value;               //floor value for field advisor
+
+
+// STATIC CLASS METHODS
+
+  public:
 
     static std::string update_method_flag_name(const int i)
     {
@@ -53,6 +71,10 @@ class field_ts_advisor : public ts_advisor {
 	return update_method_flag_names[i];
     };
 
+
+
+// CREATORS
+
     field_ts_advisor(const std::string &name_ = std::string("Unlabeled"),
 		     const usage_flag usage_ = max,
 		     const update_method_flag update_method_ = inf_norm,
@@ -62,6 +84,16 @@ class field_ts_advisor : public ts_advisor {
     
     ~field_ts_advisor();
 
+
+
+// MANIPULATORS
+
+// A utility function to calculate a floor as a
+// fraction of the max value in a field
+
+    template < class FT >
+    void set_floor(const FT &y1, double frac=0.001);
+
 // Update the recommended time-step for advisors based on fields.
 // q_old is the field value at the beginning of the current time-step,
 // q_new is the field value at the end of the current time-step.
@@ -70,12 +102,6 @@ class field_ts_advisor : public ts_advisor {
     void update_tstep(const FT &q_old, const FT &q_new, 
 		      double current_dt, 
 		      int cycle_);
-
-// A utility function to calculate a floor as a
-// fraction of the max value in a field
-
-    template < class FT >
-    void set_floor(const FT &y1, double frac=0.001);
 
 // Set the fractional change value
 
@@ -98,16 +124,19 @@ class field_ts_advisor : public ts_advisor {
 	update_method = flag;
     }
 
+
+
+// ACCESSORS
+
 // Print state
 
-    void print_state();
+    void print_state() const;
+
+// Invariant function
 
   private:
 
-    bool invariant_satisfied();       //invariant function
-    update_method_flag update_method; //update method for dt_rec
-    double fc_value;                  //frac change  value for field advisor
-    double floor_value;               //floor value for field advisor
+    bool invariant_satisfied() const;
 
 };
 

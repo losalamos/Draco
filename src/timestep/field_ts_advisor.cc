@@ -3,7 +3,7 @@
 // John McGhee
 // Thu Apr  2 14:06:18 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Defines the field time-step advisor.
 //---------------------------------------------------------------------------//
 
 #include "timestep/field_ts_advisor.hh"
@@ -151,22 +151,7 @@ void field_ts_advisor::update_tstep(const FT &q_old,
 
 }
 
-bool field_ts_advisor::invariant_satisfied()
-{
-    bool ldum =
-	name.length() != 0 &&
-	inf    <= usage &&
-	usage  <= req &&
-	0. < dt_rec &&
-	0. < floor_value  &&
-	0. < fc_value  &&
-	inf_norm <= update_method && 
-	update_method <= rcq_mean;
-
-    return ldum;
-}
-
-void field_ts_advisor::print_state()
+void field_ts_advisor::print_state() const
 {
     std::string status = active ? "true " : "false";
     cout << endl;
@@ -184,7 +169,20 @@ void field_ts_advisor::print_state()
     cout << endl;
 }
 
+bool field_ts_advisor::invariant_satisfied() const
+{
+    bool ldum =
+	name.length() != 0 &&
+	inf    <= usage &&
+	usage  <= req &&
+	0. < dt_rec &&
+	0. < floor_value  &&
+	0. < fc_value  &&
+	inf_norm <= update_method && 
+	update_method <= rcq_mean;
 
+    return ldum;
+}
 
 //---------------------------------------------------------------------------//
 //                              end of field_ts_advisor.cc

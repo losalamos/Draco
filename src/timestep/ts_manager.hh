@@ -3,7 +3,7 @@
 // John McGhee
 // Mon Apr  6 17:22:53 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Defines a manager utility for time-step advisors.
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_ts_manager_hh__
@@ -11,6 +11,8 @@
 
 //===========================================================================//
 // class ts_manager - Manages a list of time-step advisors.
+//
+//
 // Calculates a new timestep based on the 
 // recommended timesteps of its component adsisors (i.e. electron energy,
 // radiation energy, ion energy, max allowed change, etc...). 
@@ -47,15 +49,36 @@
 
 class ts_manager {
 
+// NESTED CLASSES AND TYPEDEFS
+
+// DATA
+
+  private:
+
+    double dt_new; // the recommendation for the next time-step (time)
+    double time;   // problem time at the end of current cycle  (time)
+    double dt;     // the current time-step (time)
+    int    cycle;  // current cycle number
+    std::string controlling_advisor; // name of the advisor in control
+    std::list < dsxx::SP<ts_advisor> > advisors; // a list of Smart Pointers to
+// time step advisors
+
+// CREATORS
+
   public:
 
     ts_manager();
     ~ts_manager();
+
+// MANIPULATORS
+
     void add_advisor(const dsxx::SP<ts_advisor> &new_advisor);
     void remove_advisor(const dsxx::SP<ts_advisor> &advisor_to_remove);
-    
     double compute_new_timestep(double dt_, int cycle_,
 				double time_);
+
+// ACCESSORS
+
     void print_advisors() const;
     void print_summary() const;
 
@@ -76,15 +99,9 @@ class ts_manager {
 
   private:
 
-    bool invariant_satisfied();
+    bool invariant_satisfied() const;
 
-    double dt_new; // the recommendation for the next time-step (time)
-    double time;   // problem time at the end of current cycle  (time)
-    double dt;     // the current time-step (time)
-    int    cycle;  // current cycle number
-    std::string controlling_advisor; // name of the advisor in control
-    std::list < dsxx::SP<ts_advisor> > advisors; // a list of Smart Pointers to
-// time step advisors
+
 };
 
 #endif                          // __timestep_ts_manager_hh__

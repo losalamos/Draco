@@ -25,10 +25,12 @@ using std::vector;
 
 test_timestep::test_timestep()
 {
+//empty
 }
 
 test_timestep::~test_timestep()
 {
+//empty
 }
 
 bool compare_reals(const double x1, const double x2, const int ndigits)

@@ -3,7 +3,7 @@
 // John McGhee
 // Mon Apr  6 17:22:53 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Defines a manager utility for time-step advisors.
 //---------------------------------------------------------------------------//
 
 #include "timestep/ts_manager.hh"
@@ -39,13 +39,40 @@ ts_manager::~ts_manager()
 // empty
 }
 
-bool ts_manager::invariant_satisfied()
+void ts_manager::add_advisor(const SP<ts_advisor> &new_advisor)
 {
-    bool ldum =
-	0.0 < dt_new &&
-	0.0 < dt &&
-	controlling_advisor.length() != 0;
-    return ldum;
+    bool not_in_use = true;
+    for (list< SP <ts_advisor> >::iterator py = advisors.begin(); 
+	 py != advisors.end(); py++) 
+    {
+	if ((**py).get_name() == (*new_advisor).get_name())
+	{
+	    not_in_use = false;
+	    break;
+	}
+    }
+    if (not_in_use)
+    {
+	advisors.push_front(new_advisor);
+    }
+    else
+    {
+	throw std::runtime_error("Name for requested advisor already in use");
+    }
+}
+
+void ts_manager::remove_advisor( const SP<ts_advisor> &advisor_to_remove)
+{
+    for (list< SP<ts_advisor> >::iterator py = advisors.begin(); 
+	 py != advisors.end(); py++) 
+    {
+	if ((**py).get_name() == (*advisor_to_remove).get_name())
+	{
+	    advisors.erase(py);
+	    return;
+	}
+    }
+    throw std::runtime_error("Unable to find requested advisor");
 }
 
 double ts_manager::compute_new_timestep(double dt_, int cycle_,
@@ -175,43 +202,6 @@ double ts_manager::compute_new_timestep(double dt_, int cycle_,
     return dt_new;
 }
 
-void ts_manager::add_advisor(const SP<ts_advisor> &new_advisor)
-{
-    bool not_in_use = true;
-    for (list< SP <ts_advisor> >::iterator py = advisors.begin(); 
-	 py != advisors.end(); py++) 
-    {
-	if ((**py).get_name() == (*new_advisor).get_name())
-	{
-	    not_in_use = false;
-	    break;
-	}
-    }
-    if (not_in_use)
-    {
-	advisors.push_front(new_advisor);
-    }
-    else
-    {
-	throw std::runtime_error("Name for requested advisor already in use");
-    }
-}
-
-void ts_manager::remove_advisor( const SP<ts_advisor> &advisor_to_remove)
-{
-    for (list< SP<ts_advisor> >::iterator py = advisors.begin(); 
-	 py != advisors.end(); py++) 
-    {
-	if ((**py).get_name() == (*advisor_to_remove).get_name())
-	{
-	    advisors.erase(py);
-	    return;
-	}
-    }
-    throw std::runtime_error("Unable to find requested advisor");
-}
-
-
 struct sptsa_less_than : public std::binary_function< SP<ts_advisor>,
 			 SP<ts_advisor>, bool > 
 {
@@ -221,6 +211,18 @@ struct sptsa_less_than : public std::binary_function< SP<ts_advisor>,
 	return (*sp_lhs < *sp_rhs);
     }
 };
+
+void ts_manager::print_advisors() const
+{
+    cout << endl;
+    cout << "*** Time-Step Manager: Advisor Listing ***" << endl;
+    for (list< SP<ts_advisor> >::const_iterator 
+	     py = advisors.begin(); py != advisors.end(); py++)
+    {
+	cout << (**py).get_name() << endl;
+    }
+    cout << endl; 
+}
 
 void ts_manager::print_summary() const
 {
@@ -247,18 +249,14 @@ void ts_manager::print_summary() const
     cout.setf(0,ios::floatfield);
 }
 
-void ts_manager::print_advisors() const
+bool ts_manager::invariant_satisfied() const
 {
-    cout << endl;
-    cout << "*** Time-Step Manager: Advisor Listing ***" << endl;
-    for (list< SP<ts_advisor> >::const_iterator 
-	     py = advisors.begin(); py != advisors.end(); py++)
-    {
-	cout << (**py).get_name() << endl;
-    }
-    cout << endl; 
+    bool ldum =
+	0.0 < dt_new &&
+	0.0 < dt &&
+	controlling_advisor.length() != 0;
+    return ldum;
 }
-
 
 //---------------------------------------------------------------------------//
 //                              end of ts_manager.cc

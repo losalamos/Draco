@@ -3,7 +3,7 @@
 // John McGhee
 // Thu Apr  2 14:06:18 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Defines the base class time-step advisor.
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_ts_advisor_hh__
@@ -19,6 +19,34 @@
 #include <string>
 
 class ts_advisor {
+
+// NESTED CLASSES AND TYPEDEFS
+
+  public:
+
+// Flag to determine how the recommended timestep is to be
+// used. The recommended value "dt_rec" is to be considered:
+
+    enum usage_flag {
+
+        inf , // informational only, not to be used for control
+	min , // a lower limit
+	max , // a upper limit
+	req   // a required value
+    };
+
+// DATA
+
+  protected:
+
+    std::string name;                 //ID string
+    usage_flag usage;                 //how to use dt_rec 
+    bool   active;                    //on-off switch
+    int    cycle_at_last_update;      //problem time-cycle index at last update
+    double dt_rec;                    //the recommended time-step
+
+
+// STATIC CLASS METHODS
 
   public:
 
@@ -37,17 +65,6 @@ class ts_advisor {
 	return 0.01*std::numeric_limits<double>::max(); 
     }
 
-// Flag to determine how the recommended timestep is to be
-// used. The recommended value "dt_rec" is to be considered:
-
-    enum usage_flag {
-
-        inf , // informational only, not to be used for control
-	min , // a lower limit
-	max , // a upper limit
-	req   // a required value
-    };
-
     static std::string usage_flag_name(const int i) 
     {
 	static const std::string usage_flag_names [4] =
@@ -58,11 +75,19 @@ class ts_advisor {
 	return usage_flag_names[i];
     };
 
+
+// CREATORS
+
     ts_advisor(const std::string &name_  = std::string("Unlabeled"),
 	       const usage_flag usage_ = max,
 	       const bool active_ = true);
     
     virtual ~ts_advisor();
+
+
+
+//MANIPULATORS
+
 
 // Turn the advisor on and off
 
@@ -74,6 +99,18 @@ class ts_advisor {
     void deactivate()
     {
 	active = false;
+    }
+
+
+// ACCESSORS
+
+// Define the "less than" operator (<) so that the
+// advisors can be sorted based on their recommended 
+// time-steps
+
+    bool operator<(const ts_advisor &rhs) const
+    {
+	return dt_rec < rhs.dt_rec;
     }
 
 // Determine if the advisor is fit to use in
@@ -100,33 +137,16 @@ class ts_advisor {
 	return name;
     }
     
-// Print out advisor data
-
-    void print(const int cycle_, const bool controlling = false) const;
-
-// Define the "less than" operator (<) so that the
-// advisors can be sorted based on their recommended 
-// time-steps
-
-    bool operator<(const ts_advisor &rhs) const
-    {
-	return dt_rec < rhs.dt_rec;
-    }
-
 // Produce the recommended time-step
 
-    double get_dt_rec()
+    double get_dt_rec() const
     {
 	return dt_rec;
     }
 
-  protected:
+// Print out advisor data
 
-    std::string name;                 //ID string
-    usage_flag usage;                 //how to use dt_rec 
-    bool   active;                    //on-off switch
-    int    cycle_at_last_update;      //problem time-cycle index at last update
-    double dt_rec;                    //the recommended time-step
+    void print(const int cycle_, const bool controlling = false) const;
 
 };
 
