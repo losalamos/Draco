@@ -581,6 +581,9 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC_async()
 	else
 	    update();
     }
+
+  // synchronize before wrapping this cycle up
+    gsync();
     
   // complete the asynchronous recvs (last comm w/out posting new recvs)
     complete_step_arecvs();
