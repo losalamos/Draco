@@ -107,29 +107,39 @@ algorithm. It is being undertaken under the auspices of the {\em Camel
 
 \subsection{Particle transport and the contractor metaphor}
 
-The transport process for a particle consists of repeated short
-streaming steps which are limited by various events which then cause a
-change in the state of the particle. The state of the particle
-includes it's position in space, it's direction of motion, it's energy
-weight and optionally, it's energy group. The streaming steps are
-repeated until the particle enters a state for which the streaming
-stops. The particle can be dead, go to census, or need to be
-communicated to another processor. Optionally, a particle can undergo
+The transport process for a particle consists of repeated short steps
+limited by various events which change the state of the particle. The
+state of the particle includes it's position in space, it's direction
+of motion, it's energy weight and optionally, it's energy group. The
+steps are repeated until the particle enters a state for which
+transport stops. The particle can be dead, go to census, or need to be
+communicated to another processor.  Optionally, a particle can undergo
 random walk in which a (short) streaming step is replaced with a
-diffusion process. Here, the particle accquires a new position
+diffusion process.  Here, the particle accquires a new position
 randomly sampled within a sphere and a new random direction.
 
-Currently, the events which limit streaming in the particle transport
-algorithm are: collisions (which consists of absorption, and effective
-and Thompson scattering), mesh boundary crossings, attaining weight
-cutoff, and going into census.
+The currently implemented events which limit particle motion fall into
+two categories: streaming and non-streaming. The streaming events
+consist of collisions, mesh boundary crossings, attaining weight
+cutoff and going into census (end of timestep). The collision event
+can be sub-divided in to absorption, effective scattering and Thomspon
+scattering. The non-streaming events currently only consist of random
+walk. (DDIMC is coming down the pipe and will also be in this
+category.)
 
-Idea behind the contractor metaphor is to replace the monolithing
-transport algorithm in it's multiply-repeated glory with a
-collaboration between objects, each of which represent an event, or
-group of events, which can befall a particle and affect it in various
-ways. Coordinating the interactions of these various contractors is
-the sole remaining job of the particle transport method.
+The principal idea behind the contractor metaphor is to replace the
+monolithic transport algorithm with a collaboration between objects,
+each of which represent an event, or group of events, which limit the
+motion of a transporting particle. The main responsibility of the
+particle transport method, henceforth the ``coordinator'', is to
+coordinate the interactions of these various contractors. To perform
+this task, it solicits information from the various contractors ``e.g.
+bids'' and selects a ``winner''. The winning contractor is then
+awarded the particle and implements changes in the particle state. The
+particle then returns to the control of the coordinator. The
+coordinator determines if transport needs to continue, or if other
+actions are required, (e.g. commuinication) based on the state of the
+particle and other information returned by the contractors.
 
 The contractor methaphor for particle transport thus differs from the
 current approach in two main ways: First, it changes the particle
@@ -151,23 +161,14 @@ objects which hold needed data. For example, the mesh to determine the
 distance to boundary crossings, or the opacity to determine the
 distance to scattering events.
 
-In the contractor model, the event limiters are implemented as
-separate classes. Each class is responsible for the {\em determination
+In the contractor model, the events are implemented as separate
+classes. Each class is responsible for the {\em distance computation
   step}, finding the distance to the event, and the {\em implmentation
   step}, applying the event to the particle. To do this, the class
 provides two public member functions which take the particle in
 question as arguments.
 
-With the limiting event compuations and implementations moved into
-seperate classes, the main loop of the particle transport algorithm
-contains less data and is less complicated. It's primary
-responsibilities are to solicit distance information from the
-contractors, (e.g. ``bids''), determining which event occurs (the
-``winner'') and handing the particle to that contractor for
-implementation. It then decides if transport should continue or if
-other actions are required (e.g. communication).
-
-\section{Contractors}
+\section{The Contractors}
 
 \subsection{The contractor interface}
 
@@ -359,22 +360,24 @@ be examinded further once the performance penalty is assesed.
 
 \subsubsection{``Random-Walkability''}
 
-Note that Random walk can only be executed if the particle is volume
-source or has just undergone effective scattering. These states are
-part of the enumeration of states in the original particle class.
-Effective scattering is a subset of the collision event. Rather than
-frame the conditional on random walk in terms of all possible states
-which make random walk permissible, we seek to create a single
-particle state which is identical to ``random-walkability''. Then,
-additional contractors will have the responsibility to set or not set
-this state of the particle as appropriate.
+Random walk can only be executed if the particle is volume source or
+has just undergone effective scattering. These states are part of the
+enumeration of states in the current particle class.  Effective
+scattering is a subset of the collision event. Rather than frame the
+conditional on random walk in terms of all possible states which make
+random walk permissible, we seek to create a single particle state
+which is synonymous with ``random-walkability''. Additional
+contractors will have the responsibility to set or not set this state
+of the particle as appropriate.
 
 This means that part of the interaction between contractors is being
 handled outside of the main particle transport loop. The alternative
 is to make ``random-walkability'' a property tracked in the main
 loop. This adds to to communication required with contractors, e.g. (to
 determine if the collision event satisifies
-``random-walkability'').
+``random-walkability''). At the risk of obscuring the interaction
+between contractors, we prefer an implemention using particle state
+modified by contractors in a first pass to this problem. 
 
 ``Random-walkability'' appears to be equivalent to the particle's
 current direction being sampled from an isotropic distribution. In the
@@ -387,7 +390,11 @@ but is implemented differently.
 
 If indeed ``Random-walkability'' == ``current direction was sampled
 isotropically'' then we can use the code which samples the new
-direction for the particle to set the particle state as well.
+direction for the particle to set the particle state as well. It will
+also be necessary for all other contractors which cause the direction
+to be sampled in a non-isotropic fasion to set the state variable to
+false. We revisit the implementation of state variables in
+Section~\ref{sec:State}. 
 
 \subsubsection{Executing Random Walk}
 
@@ -451,7 +458,7 @@ following:
   \item Know the energy weight and absorption mode.
   \item Know the remaining travel distance to the end of the
     time-step.
-  \item (Optional for MG) know which energy group the particle is in.
+  \item (MG only) know which energy group the particle is in.
   \item Have a random number state and provide random numbers to
     contractors.
   \item Be able to pack all of the information in the particle state
@@ -472,6 +479,93 @@ The ever-expanding enum in the particle class should also be either
 eliminated entirely or stripped down to contain just a few essential
 states that need to be communicated between contractors.
 
+\subsection{Matters of particle state} \label{sec:State}
+
+\subsubsection{Creeping state scope}
+
+One problem with using particle state to handle interaction between
+contractors is that the manipulation of a given state tends to spread
+from the contractors directly involved to all of the others.  Our
+working example for this problem is random walk. We expect the same
+kind of issues with DDIMC.
+
+The central problem is that we cannot constrain {\em a priori} the
+number of contractors which may effect or be affected by a given
+detail of the particle state. For random walk, this means that all
+contractors which re-sample the direction of the particle must know
+about the ``random-walkability'' particle state variable and modify it
+appropiately.
+
+The solution to this problem, as with all others in computer science,
+is to add another layer of indirection. The contractors themselves can
+dispatch to a layer which performs the actual implementations, e.g. of
+direction sampling. By encapsulating the actions which affect the
+particle, we can guarantee that the other particle state variables are
+kept in sync.
+
+For DDIMC, (discussed further in Section~\ref{sec:DDIMC}), the
+particle state which is likely to matter is whether the particle has
+just crossed a mesh boundary. This is a state that will automatically
+expire (``become false'') if any {\em other} kind of action is
+performed on the particle. This suggests that some aspects of the
+particle state should automatically expire and only explicitly be set
+to ``true''.  The expiration of state would need to occur after it has
+had a chance to be useful, i.e. after the bid solicitation stage in
+the coordinator. This means that the right point to clear the state of
+the particle is between the bid solicitation and implementation
+stages.
+
+\subsubsection{Mutually exclusive or orthogonal?}
+
+The current and anticiapted future implementation requires two
+additional pieces of state information which correspond to
+``random-walkability'' and ``DDIMC-ability''. Physcially, these appear
+to correspsond to ``direction sampled isotropically'' and ``just
+entered a new cell''. These physical states appear to be mutually
+exclusive, since the operation of moving a particle across a mesh
+boundary will not cause it's direction to be resampled, and vice
+versa. Does this mean that we should make the particle states mutally
+exclusive as well?
+
+In the design, this would suggest an enumeration of the possible
+states of the particle, restricting the particle only one at a time.
+This enumeration would also contain a ``none'' state, which would be
+attained after a state reset. The orthogonal decomposition of states
+would use independent boolean variables to indicate the truth of each
+one.
+
+We prefer the orthogonal decomposition of states with boolean
+variables for one primary reason: Additional states added for other,
+currently unforseen, events may break the independence the exclusive
+model relies on.
+
+\subsubsection{Inside or outside the particle?}
+
+We also consider moving these supplemental state variables for
+contractor interactions outside the particle and into a seperate
+class. This class would be passed along with the particle to the
+distance calculation and a new state object could be returned by the
+contractors.
+
+This gives the particle one less reason to change and isolates it from
+knowing about the contractors that are working on it. It even makes it
+easier to use the particle class with a wholly different set of
+contractors, or with none, in other applications. Only the
+state-holding class would need to be modified.  The particle would
+also contain exactly the information that it needs to carry with it
+between problem domains, bringing it more in line with it's new life
+as a data container. For example, the ``Analog versis Implicit''
+absorption state belongs firly within the particle class since it
+needs to be communicated along with it, and while it affects the
+behavior of some contractors, it isn't really about interaction
+between contractors.
+
+We can also eliminate the awkward ``forget old state'' operation in
+the coordinator by replacing the old state with a fresh one generated
+by the contractor.
+
+These are all nice and compelling reasons for a separate state object,
+but another class may be overkill here.
 
 \section{Doing particle transport with contractors}
 \label{sec:particle_transport}
@@ -667,7 +761,7 @@ the particle transport algorithm in it's current state. We would like
 to reassure ourselves that the new design is more amenable to the
 addition of these features. 
 
-\subsubsection{DDIMC}
+\subsubsection{DDIMC} \label{sec:DDIMC}
 
 DDIMC, another diffusion-based method, is likely to be added to the
 particle transport algorithm soon. Like random walk, DDIMC replaces
@@ -840,7 +934,7 @@ the code, they must not be implemented concurrently with the refactoring.
   tracking surface are conceptually very similar). The random walk
   radius would be chosen as the minimum of these geometric
   contstraints and random walk would be implemented if this radius is
-  larger than the distance to collision and mean free paths.
+  larger than the distance to collision and mean free path quantity.
 
 \end{itemize}
   
