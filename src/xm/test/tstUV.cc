@@ -206,11 +206,23 @@ void t5()
     c = pow(a,b);
     passed &= (c[0] == 64.);
 
+    a = 0.;
+    b = 1.;
+    c = atan2(a,b);
+    passed &= (c[0] == 0.);
+    a = 4.;
+    b = 3.;
+
     c = min(a,b);
     passed &= (c[0] == 3.);
 
     c = max(a,b);
     passed &= (c[0] == 4.);
+
+    b = 7.;
+    c = fmod(b,a);
+    passed &= (c[0] == 3.);
+    b = 3.;
 
     d = pow(a,min(a,b));
     passed &= (d[0] == 64.);
@@ -236,6 +248,29 @@ void t6()
     b = cos(a);
     passed &= (b[0] == 1.);
 
+    b = tan(a);
+    passed &= (b[0] == 0.);
+
+    b = asin(a);
+    passed &= (b[0] == 0.);
+
+    a = 1.;
+    b = acos(a);
+    passed &= (b[0] == 0.);
+    a = 0.;
+
+    b = atan(a);
+    passed &= (b[0] == 0.);
+
+    b = sinh(a);
+    passed &= (b[0] == 0.);
+
+    b = cosh(a);
+    passed &= (b[0] == 1.);
+
+    b = tanh(a);
+    passed &= (b[0] == 0.);
+
     b = exp(a);
     passed &= (b[0] == 1.);
 
@@ -249,6 +284,18 @@ void t6()
 
     a = 9.;
     b = sqrt(a);
+    passed &= (b[0] == 3.);
+
+    a = 3.4;
+    b = ceil(a);
+    passed &= (b[0] == 4.);
+
+    a = -3.4;
+    b = fabs(a);
+    passed &= (fabs(b[0] - 3.4) < 0.00001);
+
+    a = 3.4;
+    b = floor(a);
     passed &= (b[0] == 3.);
 
     cout << "t6: end\n";
