@@ -49,6 +49,8 @@ NAMESPACE_DS_BEG
 // and Mat3.
 //===========================================================================//
 
+using std::lexicographical_compare;
+
 template< class T,
     class Allocator = typename alloc_traits<T>::Default_Allocator >
 class Mat1 {
@@ -260,7 +262,7 @@ class Mat1 {
     bool operator<( const Mat1& m ) const
     {
         return lexicographical_compare(this->begin(), this->end(), m.begin(), 
-				       m.end());
+                                            m.end());
     }
 
     bool operator>( const Mat1& m ) const
