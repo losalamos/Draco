@@ -1,5 +1,0 @@
-block: test
-	int    itsmax     1000
-	double tol        1.e-4
-	int    levout     2
-	double tolerance  1.e-4
