@@ -1,0 +1,6 @@
+2002-05-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* quadrature: released version 1_1_0.  This is the second
+	"official" release of this package.  From the first release it
+	includes the new draco testing framework.
+
