@@ -114,6 +114,7 @@ namespace rtt_imc
 //                string descriptor. See memo CCS-4:01-19(U)
 // 16) 26-JUL-01: cleaned up file format; made get_descriptor return the
 //                enumeration value (integer)
+// 17) 17-SEP-01: added check on zero scattering cross section in transport()
 // 
 //===========================================================================//
 
