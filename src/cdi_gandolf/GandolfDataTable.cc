@@ -125,18 +125,18 @@ namespace rtt_cdi_gandolf
 	    if ( opacityEnergyDescriptor == "gray" )
 		{
 		    switch ( opacityModel ) {
-		    case ( rtt_cdi::Rosseland ) :
+		    case ( rtt_cdi::ROSSELAND ) :
 
 			switch ( opacityReaction ) {
-			case ( rtt_cdi::Total ) :
+			case ( rtt_cdi::TOTAL ) :
 			    gandolfDataTypeKey = "rgray";
 			    dataDescriptor = "Gray Rosseland Total";
 			    break;
-			case ( rtt_cdi::Absorption ) :
+			case ( rtt_cdi::ABSORPTION ) :
 			    gandolfDataTypeKey = "ragray";
 			    dataDescriptor = "Gray Rosseland Absorption";
 			    break;
-			case ( rtt_cdi::Scattering ) :
+			case ( rtt_cdi::SCATTERING ) :
 			    gandolfDataTypeKey = "rsgray";
 			    dataDescriptor = "Gray Rosseland Scattering";
 			    break;
@@ -146,18 +146,18 @@ namespace rtt_cdi_gandolf
 			}
 			break;
 
-		    case ( rtt_cdi::Plank ) :
+		    case ( rtt_cdi::PLANCK ) :
 			
 			switch ( opacityReaction ) {
-			case ( rtt_cdi::Total ) :
+			case ( rtt_cdi::TOTAL ) :
 			    gandolfDataTypeKey = "pgray";
 			    dataDescriptor = "Gray Plank Total";
 			    break;
-			case ( rtt_cdi::Absorption ) :
+			case ( rtt_cdi::ABSORPTION ) :
 			    gandolfDataTypeKey = "pagray";
 			    dataDescriptor = "Gray Plank Absorption";
 			    break;
-			case ( rtt_cdi::Scattering ) :
+			case ( rtt_cdi::SCATTERING ) :
 			    gandolfDataTypeKey = "psgray";
 			    dataDescriptor = "Gray Plank Scattering";
 			    break;
@@ -175,18 +175,18 @@ namespace rtt_cdi_gandolf
 	    else // "mg"
 		{
 		    switch ( opacityModel ) {
-		    case ( rtt_cdi::Rosseland ) :
+		    case ( rtt_cdi::ROSSELAND ) :
 
 			switch ( opacityReaction ) {
-			case ( rtt_cdi::Total ) :
+			case ( rtt_cdi::TOTAL ) :
 			    gandolfDataTypeKey = "rtmg";
 			    dataDescriptor = "Multigroup Rosseland Total";
 			    break;
-			case ( rtt_cdi::Absorption ) :
+			case ( rtt_cdi::ABSORPTION ) :
 			    gandolfDataTypeKey = "ramg";
 			    dataDescriptor = "Multigroup Rosseland Absorption";
 			    break;
-			case ( rtt_cdi::Scattering ) :
+			case ( rtt_cdi::SCATTERING ) :
 			    gandolfDataTypeKey = "rsmg";
 			    dataDescriptor = "Multigroup Rosseland Scattering";
 			    break;
@@ -196,18 +196,18 @@ namespace rtt_cdi_gandolf
 			}
 			break;
 			
-		    case ( rtt_cdi::Plank ) :
+		    case ( rtt_cdi::PLANCK ) :
 			
 			switch ( opacityReaction ) {
-			case ( rtt_cdi::Total ) :
+			case ( rtt_cdi::TOTAL ) :
 			    gandolfDataTypeKey = "pmg";
 			    dataDescriptor = "Multigroup Plank Total";
 			    break;
-			case ( rtt_cdi::Absorption ) :
+			case ( rtt_cdi::ABSORPTION ) :
 			    gandolfDataTypeKey = "pamg";
 			    dataDescriptor = "Multigroup Plank Absorption";
 			    break;
-			case ( rtt_cdi::Scattering ) :
+			case ( rtt_cdi::SCATTERING ) :
 			    gandolfDataTypeKey = "psmg";
 			    dataDescriptor = "Multigroup Plank Scattering";
 			    break;

@@ -14,6 +14,7 @@
 
 // cdi_gandolf dependencies
 #include "cdi/GrayOpacity.hh"
+#include "cdi/OpacityCommon.hh"
 
 // Draco dependencies
 #include "ds++/SP.hh"
@@ -24,12 +25,12 @@
 
 namespace rtt_cdi_gandolf
 {
-    // -------------------- //
-    // Forward declarations //
-    // -------------------- //
+// -------------------- //
+// Forward declarations //
+// -------------------- //
 
-    class GandolfFile;
-    class GandolfDataTable;
+class GandolfFile;
+class GandolfDataTable;
 
 //===========================================================================//
 /*!
@@ -356,13 +357,29 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
 	double targetTemperature,
 	const std::vector<double>& targetDensity ) const; 
 
+    /*!
+     * \brief Query whether the data is in tables or functional form.
+     */
+    bool data_in_tabular_form() const { return true; } 
+
+    /*!
+     * \brief Query to determine the reaction model.
+     */
+    rtt_cdi::Reaction getReactionType() const { return opacityReaction; }
+
+    /*!
+     * \brief Query to determine the physics model.
+     */
+    rtt_cdi::Model getModelType() const { return opacityModel; }
+	
+
     // It is not clear how to assume order of opacity(temp,dens) when
     // accessed in this manner --> for now use the STL-style accessor
     // or a loop over one of the other vector-accessors.
 
-//     std::vector< double > getOpacity( 
-// 	const std::vector<double>& targetTemperature,
-// 	const std::vector<double>& targetDensity ) const;
+    //     std::vector< double > getOpacity( 
+    // 	const std::vector<double>& targetTemperature,
+    // 	const std::vector<double>& targetDensity ) const;
 
     /*!
      * \brief Returns a string that describes the templated

@@ -134,7 +134,7 @@ namespace rtt_cdi_gandolf_test
 	    try
 		{
 		    spOp_Al_rgt = new rtt_cdi_gandolf::GandolfGrayOpacity( 
-			spGFABC, matid,	rtt_cdi::Rosseland, rtt_cdi::Total );
+			spGFABC, matid,	rtt_cdi::ROSSELAND, rtt_cdi::TOTAL );
 		}
 	    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 		// Alternatively, we could use:
@@ -178,8 +178,8 @@ namespace rtt_cdi_gandolf_test
 		    spOp_Al_rtmg = new rtt_cdi_gandolf::GandolfMultigroupOpacity( 
 			spGFABC, 
 			matid,
-			rtt_cdi::Rosseland, 
-			rtt_cdi::Total );
+			rtt_cdi::ROSSELAND, 
+			rtt_cdi::TOTAL );
 		}
 	    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 		{
@@ -307,8 +307,8 @@ namespace rtt_cdi_gandolf_test
 			= new rtt_cdi_gandolf::GandolfGrayOpacity( 
 			    spGFAnalytic, 
 			    matid,
-			    rtt_cdi::Rosseland,
-			    rtt_cdi::Absorption );
+			    rtt_cdi::ROSSELAND,
+			    rtt_cdi::ABSORPTION );
 		}
 	    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 		// Alternatively, we could use:
@@ -351,8 +351,8 @@ namespace rtt_cdi_gandolf_test
 		      = new rtt_cdi_gandolf::GandolfMultigroupOpacity( 
 			  spGFAnalytic, 
 			  matid, 
-			  rtt_cdi::Rosseland,
-			  rtt_cdi::Absorption );
+			  rtt_cdi::ROSSELAND,
+			  rtt_cdi::ABSORPTION );
 	    } catch ( const rtt_cdi_gandolf::GandolfException& GandError ) {
 		fail() << "Failed to create SP to new GandolfOpacity object for "
 		       << "Al_BeCu.ipcress data." << std::endl << "\t" << GandError.what();
@@ -403,8 +403,8 @@ namespace rtt_cdi_gandolf_test
 		      = new rtt_cdi_gandolf::GandolfGrayOpacity( 
 			  spGFAnalytic, 
 			  matid, 
-			  rtt_cdi::Plank,
-			  rtt_cdi::Total );
+			  rtt_cdi::PLANCK,
+			  rtt_cdi::TOTAL );
 	    } catch ( const rtt_cdi_gandolf::GandolfException& GandError ) {
 		fail() << "Failed to create SP to new GandolfOpacity object for "
 		       << "Al_BeCu.ipcress data." << std::endl << "\t" << GandError.what();
@@ -437,8 +437,8 @@ namespace rtt_cdi_gandolf_test
 		      = new rtt_cdi_gandolf::GandolfMultigroupOpacity( 
 			  spGFAnalytic, 
 			  matid,
-			  rtt_cdi::Plank,
-			  rtt_cdi::Total ); 
+			  rtt_cdi::PLANCK,
+			  rtt_cdi::TOTAL ); 
 	    } catch ( const rtt_cdi_gandolf::GandolfException& GandError ) {
 		fail() << "Failed to create SP to new GandolfOpacity object for "
 		       << "Al_BeCu.ipcress data." << std::endl << "\t" 
@@ -689,8 +689,8 @@ namespace rtt_cdi_gandolf_test
 			rtt_cdi_gandolf::GandolfGrayOpacity(
 			    spGFAnalytic,
 			    matid,
-			    rtt_cdi::Rosseland,
-			    rtt_cdi::Absorption );
+			    rtt_cdi::ROSSELAND,
+			    rtt_cdi::ABSORPTION );
 		}
 	    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 		{
@@ -863,8 +863,8 @@ namespace rtt_cdi_gandolf_test
 			rtt_cdi_gandolf::GandolfMultigroupOpacity(
 			    spGFAnalytic,
 			    matid,
-			    rtt_cdi::Rosseland,
-			    rtt_cdi::Absorption );
+			    rtt_cdi::ROSSELAND,
+			    rtt_cdi::ABSORPTION );
 		}
 	    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 		{

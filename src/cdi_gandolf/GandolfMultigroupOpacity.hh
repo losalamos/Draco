@@ -18,6 +18,7 @@
 
 #include "ds++/SP.hh"
 #include "cdi/MultigroupOpacity.hh"
+#include "cdi/OpacityCommon.hh"
 
 namespace rtt_cdi_gandolf
 {
@@ -355,13 +356,20 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
 	double targetTemperature,
 	const std::vector<double>& targetDensity ) const; 
 
-    // It is not clear how to assume order of opacity(temp,dens) when
-    // accessed in this manner --> for now use the STL-style accessor
-    // or a loop over one of the other vector-accessors.
+    /*!
+     * \brief Query whether the data is in tables or functional form.
+     */
+    bool data_in_tabular_form() const { return true; } 
 
-//     std::vector< std::vector< double > > getOpacity( 
-// 	const std::vector<double>& targetTemperature,
-// 	const std::vector<double>& targetDensity ) const;
+    /*!
+     * \brief Query to determine the reaction model.
+     */
+    rtt_cdi::Reaction getReactionType() const { return opacityReaction; }
+
+    /*!
+     * \brief Query to determine the physics model.
+     */
+    rtt_cdi::Model getModelType() const { return opacityModel; }
 
     /*!
      * \brief Returns a string that describes the templated

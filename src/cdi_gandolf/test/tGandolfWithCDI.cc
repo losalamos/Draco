@@ -26,6 +26,9 @@
 #include "UnitTestFrame/PassFailStream.hh"
 #include "ds++/SP.hh"
 
+using rtt_cdi::ROSSELAND;
+using rtt_cdi::ABSORPTION;
+
 // --------------------- //
 // Unit Test Frame Stuff //
 // --------------------- //
@@ -126,8 +129,8 @@ namespace rtt_gandolf_with_cdi_test
 			= new rtt_cdi_gandolf::GandolfGrayOpacity(
 			    spGFAnalytic,
 			    matid,
-			    rtt_cdi::Rosseland,         // enumeration
-			    rtt_cdi::Absorption );      // enumeration
+			    rtt_cdi::ROSSELAND,         // enumeration
+			    rtt_cdi::ABSORPTION );      // enumeration
 		}
 	    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 		// Alternatively, we could use:
@@ -150,7 +153,7 @@ namespace rtt_gandolf_with_cdi_test
 	    // ----------------- //
 	    
 	    rtt_dsxx::SP< rtt_cdi::CDI > spCDI_Analytic;
-	    if ( spCDI_Analytic = new rtt_cdi::CDI( spOp_Analytic_ragray ) )
+	    if ( spCDI_Analytic = new rtt_cdi::CDI() )
 		pass() << "SP to CDI object created successfully (GrayOpacity).";
 	    else
 		fail() << "Failed to create SP to CDI object (GrayOpacity).";
@@ -159,18 +162,21 @@ namespace rtt_gandolf_with_cdi_test
 	    // ------------------ //
 	    // Gray Opacity Tests //
 	    // ------------------ //
+
+	    // set the gray opacity
+	    spCDI_Analytic->setGrayOpacity(spOp_Analytic_ragray);
 	    
 	    double temperature = 10.0; // keV
 	    double density = 1.0; // g/cm^3
 	    double tabulatedGrayOpacity = density * pow( temperature, 4 ); // cm^2/g
 	    
-	    double opacity = spCDI_Analytic->gray()->getOpacity( temperature, density );
+	    double opacity = spCDI_Analytic->gray(ROSSELAND,ABSORPTION)->getOpacity( temperature, density );
 	    
 	    if ( match ( opacity, tabulatedGrayOpacity ) ) 
-		pass() << spCDI_Analytic->gray()->getDataDescriptor()
+		pass() << spCDI_Analytic->gray(ROSSELAND,ABSORPTION)->getDataDescriptor()
 		       << " getOpacity computation was good.";
 	    else
-		fail() << spCDI_Analytic->gray()->getDataDescriptor()
+		fail() << spCDI_Analytic->gray(ROSSELAND,ABSORPTION)->getDataDescriptor()
 		       << " getOpacity value is out of spec.";
 	    
 	    // try using a vector of temps.
@@ -183,14 +189,14 @@ namespace rtt_gandolf_with_cdi_test
 	    for ( int i=0; i<vtemperature.size(); ++i )
 		vRefOpacity[i] = density * pow ( vtemperature[i], 4 );
 	    
-	    std::vector< double > vOpacity = spCDI_Analytic->gray()->
+	    std::vector< double > vOpacity = spCDI_Analytic->gray(ROSSELAND,ABSORPTION)->
 		getOpacity( vtemperature, density );
 	    
 	    if ( match ( vOpacity, vRefOpacity ) ) 
-		pass() << spCDI_Analytic->gray()->getDataDescriptor()
+		pass() << spCDI_Analytic->gray(ROSSELAND,ABSORPTION)->getDataDescriptor()
 		       << " getOpacity computation was good for a vector of temps.";
 	    else
-		fail() << spCDI_Analytic->gray()->getDataDescriptor()
+		fail() << spCDI_Analytic->gray(ROSSELAND,ABSORPTION)->getDataDescriptor()
 		       << " getOpacity value is out of spec. for a vector of temps.";
 	    
 	    
@@ -216,8 +222,8 @@ namespace rtt_gandolf_with_cdi_test
 			= new rtt_cdi_gandolf::GandolfMultigroupOpacity(
 			    spGFAnalytic,
 			    matid,
-			    rtt_cdi::Rosseland,         // enumeration
-			    rtt_cdi::Absorption );      // enumeration
+			    rtt_cdi::ROSSELAND,         // enumeration
+			    rtt_cdi::ABSORPTION );      // enumeration
 		}
 	    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 		// Alternatively, we could use:
@@ -267,13 +273,13 @@ namespace rtt_gandolf_with_cdi_test
 	    
 	    // Request the multigroup opacity vector.
 	    std::vector< double > mgOpacity =
-		spCDI_Analytic->mg()->getOpacity ( temperature, density );
+		spCDI_Analytic->mg(ROSSELAND,ABSORPTION)->getOpacity ( temperature, density );
 	    
 	    if ( match ( mgOpacity, tabulatedMGOpacity ) )
-		pass() << spCDI_Analytic->mg()->getDataDescriptor()
+		pass() << spCDI_Analytic->mg(ROSSELAND,ABSORPTION)->getDataDescriptor()
 		       << " getOpacity computation was good.";
 	    else
-		fail() << spCDI_Analytic->mg()->getDataDescriptor()
+		fail() << spCDI_Analytic->mg(ROSSELAND,ABSORPTION)->getDataDescriptor()
 		       << " getOpacity value is out of spec.";
 	    
 	    
