@@ -135,17 +135,32 @@ dvi:
 
 packagelibs := ${DRACO_LIBS} ${VENDOR_LIBS} ${LIBS}
 
+##---------------------------------------------------------------------------##
+## build any executables in this package
+
 ${package}: ${objs} ${DRACO_DEPENDS} ${VENDOR_DEPENDS}
-	${LD} ${LDFLAGS} -o ${package} ${objs} ${packagelibs}
+	@if test ! -d "bin" ; then \
+		mkdir bin; \
+	fi
+	${LD} ${LDFLAGS} -o bin/${package} ${objs} ${packagelibs}
+
+##---------------------------------------------------------------------------##
+## build any libraries in this package
 
 lib${package}${libsuffix}: ${objs} ${DRACO_DEPENDS} ${VENDOR_DEPENDS}
 	${AR} ${ARFLAGS} $@ ${objs} ${ARLIBS}
 	${RANLIB} $@
 
+##---------------------------------------------------------------------------##
+## run the test/ directory tests
+
 check: ${alltarget}
 	@if test -d "${srcdir}/test" && test -d "test" ; then \
 		(cd test && ${MAKE} $@) || exit; \
 	fi
+
+##---------------------------------------------------------------------------##
+## do requested installations
 
 installdirs: ${installdirs}
 
@@ -161,7 +176,7 @@ ${libdir}/%: %
 	${INSTALL_DATA} $< $@
 
 ${bindir}/%: %
-	${INSTALL} $< $@
+	${INSTALL} bin/$< $@
 
 ${libexecdir}/%: %
 	${INSTALL} $< $@
@@ -172,7 +187,9 @@ ${includedir}/${package}/%: %
 ${includedir}/${package}/%: ${package}/%
 	${INSTALL_DATA} $< $@
 
-# Makefile depends on all of the M4 files in the config directory
+##---------------------------------------------------------------------------##
+## dependencies in the build system
+## Makefile depends on all of the M4 files in the config directory
 
 configfiles := aclocal.m4 ac_local.m4 ac_conf.m4 ac_vendors.m4 ac_dracoarg.m4 \
  ac_dracoenv.m4 ac_compiler.m4
@@ -201,7 +218,9 @@ Makefile: ../../config/Makefile.package.in config.status
 config.status: configure
 	./config.status --recheck
 
-# Locate the namelist input files automatically.
+##---------------------------------------------------------------------------##
+## rules for building source code
+## Locate the namelist input files automatically.
 
 nml_files := $(notdir $(wildcard ${srcdir}/*.nml))
 nml_hh := $(nml_files:%.nml=.nml_%.hh)
@@ -247,7 +266,9 @@ ${dependfiles}: ${nml_hh} ${nml_cc}
 .nml_%.hh .nml_%.cc: ${srcdir}/%.nml
 	-$(NMLGEN) ${srcdir}/$*.nml
 
-# Do not include the dependfiles when doing clean-like stuff.
+##---------------------------------------------------------------------------##
+## clean rules
+## Do not include the dependfiles when doing clean-like stuff.
 
 ifneq (,$(filter uninstall dvi distclean mostlyclean clean maintainer-clean, \
 	${MAKECMDGOALS}))
@@ -263,7 +284,7 @@ maintainer-clean distclean mostlyclean clean:
 
 clean: forced-clean
 forced-clean:
-	-rm ${package} ${objs} lib${package}${libsuffix} ${dependfiles}
+	-rm bin/${package} ${objs} lib${package}${libsuffix} ${dependfiles}
 	-rm -f ${nml_hh} ${nml_cc} .tmp?
 	-rm -r ${dirstoclean}
 
@@ -275,6 +296,7 @@ distclean: mostlyclean forced-distclean
 forced-distclean:
 	-rm config.status config.cache config.log
 	-rm ${package}/*.h ${package}/*.hh ${package}/stamp-h Makefile
+	-rm -rf bin
 
 # maintainer-clean does not delete "configure"
 
@@ -282,6 +304,10 @@ maintainer-clean: forced-maintainer-clean distclean
 forced-maintainer-clean:
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
+
+##---------------------------------------------------------------------------##
+## ADDITIONAL RULES AND TARGETS
+##---------------------------------------------------------------------------##
 
 # any other hand-coded dependencies or any thing **additional** can
 # be put into Makefile.misc in the source directory
