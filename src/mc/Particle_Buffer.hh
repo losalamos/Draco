@@ -161,7 +161,7 @@ class Particle_Buffer
     void buffer_particle(const PT &);
 
     //! Add a Particle_Buffer of particles to a particle bank.
-    void add_to_bank(typename Particle_Stack<PT>::Bank &);
+    void add_to_bank(typename Particle_Containers<PT>::Bank &);
 
     // >>> COMMON PARTICLE COMMUNICATION FUNCTIONS
 

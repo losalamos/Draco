@@ -38,9 +38,9 @@ class Particle_IO
 {
   public:
     // Useful typedefs.
-    typedef std::ostream                      std_ostream;
-    typedef std::istream                      std_istream;
-    typedef typename Particle_Stack<PT>::Bank Bank;
+    typedef std::ostream                           std_ostream;
+    typedef std::istream                           std_istream;
+    typedef typename Particle_Containers<PT>::Bank Bank;
 
   public:
 

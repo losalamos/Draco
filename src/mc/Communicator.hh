@@ -72,7 +72,7 @@ class Communicator
 {
   public:
     // Useful typdefs.
-    typedef typename Particle_Stack<PT>::Bank      Bank;
+    typedef typename Particle_Containers<PT>::Bank Bank;
     typedef rtt_dsxx::SP<PT>                       SP_PT;
     typedef std::vector<Recv_Particle_Buffer<PT> > sf_Recv_Buffer;
     typedef std::vector<Send_Particle_Buffer<PT> > sf_Send_Buffer;

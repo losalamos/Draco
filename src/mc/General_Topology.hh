@@ -136,13 +136,6 @@ class General_Topology : public Topology
 };
 
 //---------------------------------------------------------------------------//
-// overloaded operators
-//---------------------------------------------------------------------------//
-
-//! Overloaded stream output operator.
-std::ostream& operator<<(std::ostream &out, const Topology &object);
-
-//---------------------------------------------------------------------------//
 // INLINE FUNCTIONS FOR GENERAL_TOPOLOGY
 //---------------------------------------------------------------------------//
 /*!

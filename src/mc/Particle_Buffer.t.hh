@@ -198,7 +198,8 @@ void Particle_Buffer<PT>::buffer_particle(const PT &particle)
  * Particle_Stack<SP<PT>> 
  */
 template<class PT>
-void Particle_Buffer<PT>::add_to_bank(typename Particle_Stack<PT>::Bank &bank)
+void Particle_Buffer<PT>::add_to_bank(
+    typename Particle_Containers<PT>::Bank &bank)
 {
     using rtt_dsxx::SP;
     using std::vector;

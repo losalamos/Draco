@@ -502,7 +502,7 @@ Parallel_Data_Operator::gather_bnd_cell_data(SP_Comm_Patterns pattern,
 	    local_cell = topology->local_cell(itor->second[i]);
 	    Check (local_cell);
 	    
-	    // write the dataerature data into the dataorary sending field
+	    // write the data into the temporary sending field
 	    send_data[i] = local_data[local_cell-1];
 	}
 
@@ -519,7 +519,7 @@ Parallel_Data_Operator::gather_bnd_cell_data(SP_Comm_Patterns pattern,
     bc_data.resize(num_bcells);
 
     // receive data from the processors we communicate with and write their
-    // dataerature data into the bc_data field
+    // data into the bc_data field
     int global_cell;
     int bound_cell;
     int finished = 0;
@@ -544,7 +544,7 @@ Parallel_Data_Operator::gather_bnd_cell_data(SP_Comm_Patterns pattern,
 		finished++;
 		Check (!data_requests[req].inuse());
 
-		// write the dataeratures to the bc_data field
+		// write the data to the bc_data field
 		for (int c = 0; c < size; c++)
 		{
 		    // determine the global_cell
@@ -555,7 +555,7 @@ Parallel_Data_Operator::gather_bnd_cell_data(SP_Comm_Patterns pattern,
 							      C4::node());
 		    Check (bound_cell);
 
-		    // add the dataerature to the boundary data field
+		    // add the data to the boundary data field
 		    bc_data[bound_cell-1] = recv_data[req][c];
 		}
 		

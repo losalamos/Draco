@@ -44,11 +44,8 @@ class Particle_Stack
     typedef typename std::vector<PT>::value_type value_type;
     typedef typename std::vector<PT>::size_type  size_type;
 
-    // Particle banks and containers.
-    typedef Particle_Stack<rtt_dsxx::SP<PT> > Census;
-    typedef Particle_Stack<rtt_dsxx::SP<PT> > Bank;
-
   private:
+
     // Container holding data in the stack.
     std::vector<PT> c;
 
@@ -77,6 +74,21 @@ class Particle_Stack
 
     //! Overloaded operator [] for viewing elements sequentially.
     const value_type& operator[](int i) const { return c[i]; }
+};
+
+//===========================================================================//
+/*!
+ * \class Particle_Containers
+ */
+//===========================================================================//
+
+template<class PT>
+class Particle_Containers
+{
+  public: 
+    // Particle banks and containers.
+    typedef Particle_Stack<rtt_dsxx::SP<PT> > Census;
+    typedef Particle_Stack<rtt_dsxx::SP<PT> > Bank;
 };
 
 } // end namespace rtt_mc

@@ -25,12 +25,12 @@ AC_NEEDS_LIBS(viz meshReaders rng c4 traits ds++)
 AC_NEEDS_LIBS_TEST(RTT_Format_Reader)
 
 dnl runtesting
-AC_RUNTESTS(tstMath tstCoord tstLayout tstOSMesh tstFields \
-            tstTopology tstParallel_Data_Op tstTET_Mesh    \
-            tstSampler tstRZWedge_Mesh tstComm_Patterns    \
-            tstOSMesh_Pack tstRZWedge_Mesh_Pack            \
-            tstParticle_Buffer tstCommunicator             \
-            tstParticle_IO, 1 2 4)
+AC_RUNTESTS(tstConfig tstMath tstCoord tstLayout tstOSMesh \
+            tstFields tstTopology tstParallel_Data_Op \
+	    tstTET_Mesh tstSampler tstRZWedge_Mesh \
+            tstComm_Patterns tstOSMesh_Pack \
+            tstRZWedge_Mesh_Pack tstParticle_Buffer \
+            tstCommunicator tstParticle_IO, 1 2 4)
 
 dnl 8-BYTE INT TYPE
 AC_DETERMINE_INT(8)
