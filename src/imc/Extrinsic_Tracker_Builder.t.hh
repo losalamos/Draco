@@ -71,18 +71,30 @@ Extrinsic_Tracker_Builder<MT>::Extrinsic_Tracker_Builder(
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Builds and returns the surface tracker. Stops accumulation of
- * surfaces.
+ * \brief Builds and returns the surface tracker. 
+ *
+ * \return an instantiated tracker if there are local tally surfaces defined
+ * on the mesh; a non-assigned tracker if there are no local tally surfaces
+ * defined (even if there are global tally surfaces).
  */
 template<class MT>
 typename Extrinsic_Tracker_Builder<MT>::SP_Tracker
 Extrinsic_Tracker_Builder<MT>::build_tracker()
 {
     // make a tracker
-    SP_Tracker tracker(new Extrinsic_Surface_Tracker(
-			   surfaces, surface_indices, surface_in_cell));
-    
-    Ensure (tracker);
+    SP_Tracker tracker;
+
+    // only return if there are surfaces; there may be surfaces on other
+    // processors, however, we return an empty tracker if there are no
+    // surfaces on this mesh
+    if (!surfaces.empty()) 
+    {
+	tracker = new Extrinsic_Surface_Tracker(surfaces, 
+						surface_indices, 
+						surface_in_cell);
+	Ensure (tracker);
+    }
+
     return tracker;
 }
 

@@ -14,6 +14,7 @@
 
 #include "../Interface.hh"
 #include "../Flat_Data_Interface.hh"
+#include "../Surface_Tracking_Interface.hh"
 #include "../Flat_Data_Container.hh"
 #include "../Hybrid_Diffusion.hh"
 #include "mc/Particle_Stack.hh"
@@ -32,7 +33,8 @@ namespace rtt_imc_test
 template<class PT>
 class RW_Interface :
 	public rtt_imc::Interface<PT>,
-	public rtt_imc::Flat_Data_Interface
+	public rtt_imc::Flat_Data_Interface,
+	public rtt_imc::Surface_Tracking_Interface
 {
   public:
     // Useful typedefs
@@ -44,6 +46,8 @@ class RW_Interface :
     typedef rtt_dsxx::SP<rtt_imc::Flat_Data_Container>       SP_Data;
     typedef typename rtt_mc::Particle_Containers<PT>::Census Census;
     typedef rtt_dsxx::SP<Census>                             SP_Census;
+    typedef rtt_mc::Surface_Descriptor                       Surface;
+    typedef std::vector<Surface>                             sf_Surface;
 
   private:
     // sp to OS_Builder
@@ -66,6 +70,10 @@ class RW_Interface :
 
     // hybrid diffusion scheme
     int hmodel;
+
+    // surface tracking data
+    sf_Surface surfaces;
+    sf_double  cosines;
 
   public:
     // constructor
@@ -99,6 +107,11 @@ class RW_Interface :
     SP_Census get_census() const { return SP_Census(); }
     double get_ecen(int cell) const { return double(0); }
     double get_ecentot() const { return double(0); }
+
+    // interface for surface tracker
+    int number_of_surfaces() const { return 0; }
+    const sf_Surface& get_surface_data() const { return surfaces; }
+    const sf_double& get_bin_cosines() const { return cosines; }
 };
 
 //---------------------------------------------------------------------------//

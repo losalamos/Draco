@@ -148,8 +148,8 @@ class Tally
 
     // >>> SUB TALLY CREATORS
 
-    //! Create a Random_Walk_Sub_Tally.
-    void create_RW_Sub_Tally() { rw_sub_tally = new Random_Walk_Sub_Tally(); }
+    //! Assign a Random_Walk_Sub_Tally.
+    void assign_RW_Sub_Tally(SP_RW_ST tally) { rw_sub_tally = tally; }
 
     //! Assign a Surface_Sub_Tally
     void assign_Surface_Sub_Tally(SP_S_ST tally) { surface_sub_tally = tally; }

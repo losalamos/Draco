@@ -14,6 +14,7 @@
 #include "../Release.hh"
 #include "../Tally.hh"
 #include "../Random_Walk_Sub_Tally.hh"
+#include "../Tally_Builder.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "c4/global.hh"
@@ -30,6 +31,7 @@ using rtt_imc_test::Parser;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_imc::Tally;
+using rtt_imc::Tally_Builder;
 using rtt_imc::Random_Walk_Sub_Tally;
 using rtt_dsxx::SP;
 using std::pow;
@@ -51,7 +53,8 @@ void Tally_Test()
     if (t.get_RW_Sub_Tally()) ITFAILS;
 
     // now create a random walk sub_tally
-    t.create_RW_Sub_Tally();
+    SP<Random_Walk_Sub_Tally> rwsub(new Random_Walk_Sub_Tally);
+    t.assign_RW_Sub_Tally(rwsub);
     if (!t.get_RW_Sub_Tally()) ITFAILS;
     
     if (t.num_cells() != 6) ITFAILS;
@@ -179,6 +182,16 @@ void Tally_Test()
     if (t.get_ew_escaped() != sum_i*ppcell)                  ITFAILS;
     if (t.num_cells() != 6)                                  ITFAILS;
 
+    if (rtt_imc_test::passed)
+	PASSMSG("Tally tests ok.")
+}
+
+//---------------------------------------------------------------------------//
+
+void Tally_Builder_Test()
+{
+    if (rtt_imc_test::passed)
+	PASSMSG("Tally_Builder tests ok.")
 }
 
 //---------------------------------------------------------------------------//
@@ -210,6 +223,7 @@ int main(int argc, char *argv[])
 
 	// Tally tests
 	Tally_Test();
+	Tally_Builder_Test();
     }
     catch (rtt_dsxx::assertion &ass)
     {

@@ -36,6 +36,11 @@ namespace rtt_imc
  * \arg differential internal energy--heat capacity--(dE/dT) in Jerks/keV
  * \arg specific heat capacity in Jerks/g/keV
  */
+/*!
+ * \example imc/test/tstMat_State.cc
+ *
+ * Mat_State unit test.
+ */
 // revision history:
 // -----------------
 // original

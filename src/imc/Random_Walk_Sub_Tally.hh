@@ -28,6 +28,11 @@ namespace rtt_imc
  * accumulators and accessors for edit quantities specific to random walk
  * phenomenon. 
  */
+/*!
+ * \example imc/test/tstRW_Sub_Tally.cc
+ *
+ * Test the Random_Walk_Sub_Tally.
+ */
 // revision history:
 // -----------------
 // 0) original

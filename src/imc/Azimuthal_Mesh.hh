@@ -36,9 +36,9 @@ class Surface_Tracking_Interface;
  *
  */
 /*! 
- * \example imc/test/imc_test.cc 
+ * \example imc/test/tstAzimuthal_Mesh.cc
  * 
- * description of example
+ * Azimuthal_Mesh unit test.
  */
 // revision history:
 // -----------------

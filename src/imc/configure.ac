@@ -34,6 +34,7 @@ AC_RUNTESTS(tstFrequency \
             tstMesh_Operations \
             tstSource_Builder \
             tstTally \
+            tstRW_Sub_Tally \
             tstRandom_Walk \
             tstAzimuthal_Mesh \
             tstExtrinsic_Tracker \

@@ -377,9 +377,11 @@ void test_gray_particle_rw()
     SP<Tally<RZWedge_Mesh> > tally ( new Tally<RZWedge_Mesh>(mesh) );
 
     // Make a surface tracking sub-tally
-    SP<Surface_Sub_Tally> surface_tally ( new Surface_Sub_Tally(az_mesh, tester));
+    SP<Surface_Sub_Tally> surface_tally ( new Surface_Sub_Tally(az_mesh, 
+								tester));
+    SP<Random_Walk_Sub_Tally> rw_tally(new Random_Walk_Sub_Tally);
     tally->assign_Surface_Sub_Tally(surface_tally);
-    tally->create_RW_Sub_Tally();
+    tally->assign_RW_Sub_Tally(rw_tally);
 
     // Make a gray opacity
     SP<Opacity<RZWedge_Mesh, Gray_Frequency> > opacity = build_a_gray_opacity(mesh);

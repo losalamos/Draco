@@ -29,6 +29,7 @@
 #include "../Diffusion_Opacity.hh"
 #include "../Random_Walk.hh"
 #include "../Extrinsic_Surface_Tracker.hh"
+#include "../Tally_Builder.hh"
 #include "mc/Communicator.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/General_Topology.hh"
@@ -63,6 +64,7 @@ using rtt_imc::Opacity;
 using rtt_imc::Mat_State;
 using rtt_imc::Rep_Source_Builder;
 using rtt_imc::Tally;
+using rtt_imc::Tally_Builder;
 using rtt_imc::Random_Walk;
 using rtt_imc::Diffusion_Opacity;
 using rtt_imc::Extrinsic_Surface_Tracker;
@@ -434,10 +436,8 @@ void rep_transporter_random_walk_run_test()
     transporter = new Rep_Transporter<MT,FT,PT>(topology);
 
     // build a tally
-    SP<Tally<MT> > tally(new Tally<MT>(mesh));
-
-    // create a random walk
-    tally->create_RW_Sub_Tally();
+    Tally_Builder<MT> tally_builder(interface);
+    SP<Tally<MT> > tally = tally_builder.build_Tally(mesh);
 
     // build a "NULL" communicator
     SP<Communicator<PT> > comm;

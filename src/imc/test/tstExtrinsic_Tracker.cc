@@ -94,6 +94,21 @@ Surface_Tracking_Tester::Surface_Tracking_Tester(double small, double large)
     bin_cosines.assign(bin_data, bin_data+3);
 }
 
+struct Surface_Tracking_Tester_Zero : public Surface_Tracking_Interface
+{
+    vector<double> bin_cosines;
+    vector<Surface_Descriptor> descriptor;
+
+    int number_of_surfaces() const { return 0; }
+
+    const vector<Surface_Descriptor>& get_surface_data() const 
+    { 
+	return descriptor;
+    }
+
+    const vector<double>& get_bin_cosines() const { return bin_cosines; }
+};
+
 //---------------------------------------------------------------------------//
 // BUILDERS
 //---------------------------------------------------------------------------//
@@ -246,6 +261,23 @@ void test_OS_Mesh_tracker()
 
 //---------------------------------------------------------------------------//
 
+void test_null_tracker()
+{
+    SP<RZWedge_Mesh> mesh = build_mesh();
+
+    Surface_Tracking_Tester_Zero tester;
+    
+    SP<Extrinsic_Tracker_Builder<RZ> > builder = 
+	build_tracker_builder(*mesh, tester);
+
+    SP<Extrinsic_Surface_Tracker> tracker = builder->build_tracker();
+
+    // we shouldn't have a tracker because there are no global surfaces
+    if (tracker) ITFAILS;
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     // version tag
@@ -263,6 +295,7 @@ int main(int argc, char *argv[])
 	// >>> UNIT TESTS
 	test_RZWedge_Mesh_tracker();
 	test_OS_Mesh_tracker();
+	test_null_tracker();
     }
     catch (rtt_dsxx::assertion &ass)
     {

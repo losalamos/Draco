@@ -27,6 +27,11 @@ namespace rtt_imc
  * \brief The Multigroup_Frequency class type.
  *
  */
+/*!
+ * \example imc/test/tstFrequency.cc
+ *
+ * Frequency.hh unit tests.
+ */
 // revision history:
 // -----------------
 // 0) 10 Jan 2002 : original

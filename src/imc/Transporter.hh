@@ -47,7 +47,7 @@ template<class MT, class FT, class PT> class Source;
  * all IMC particles from a source in one timestep.
  */
 /*!
- * \example imc/test/tstTransporter.hh
+ * \example imc/test/tstTransporter.cc
  *
  * Transporter unit test.
  */

@@ -13,6 +13,7 @@
 #include "mc/OS_Mesh.hh"
 #include "mc/RZWedge_Mesh.hh"
 #include "../Tally.t.hh"
+#include "../Tally_Builder.t.hh"
 
 namespace rtt_imc
 {
@@ -22,6 +23,9 @@ using rtt_mc::RZWedge_Mesh;
 
 template class Tally<OS_Mesh>;
 template class Tally<RZWedge_Mesh>;
+
+template class Tally_Builder<OS_Mesh>;
+template class Tally_Builder<RZWedge_Mesh>;
 
 } // end namespace rtt_imc
 
