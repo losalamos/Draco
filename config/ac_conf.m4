@@ -43,6 +43,10 @@ AC_DEFUN(AC_NEEDS_LIBS, [dnl
        DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
        DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
    done
+
+   # Keep a list of component dependencies free of other tags or paths.
+   DRACO_COMPONENTS="$1"
+
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -208,6 +212,13 @@ AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
        AC_MSG_WARN("No valid lp or lpr found!")
    fi
    AC_SUBST(LPFLAGS)
+
+   dnl check for and assign the path for doxygen
+   AC_PATH_PROG(DOXYGEN_PATH, doxygen, null)
+   if test "${DOXYGEN_PATH}" = null ; then
+       AC_MSG_WARN("No valid Doxygen found!")
+   fi
+   AC_SUBST(DOXYGEN_PATH)
 
 ])
 
