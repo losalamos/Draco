@@ -65,10 +65,12 @@ endif
 INSTANTIALYZER	+= -m ansi
 
 ifeq ($(c4),no)
-SYS_FLAGS = -DNOMPI
+SYS_FLAGS =
 comm	:=
-else
-comm	:= c4
+endif
+
+ifeq ($(c4),mpi)
+comm	:= mpi
 SYS_FLAGS = -I/home/tme/lib/mpi/include -DC4_MPI
 SYS_LIBS = -L/home/tme/lib/mpi/lib/solaris/ch_p4 -lpmpi -lmpi -lsocket -lnsl
 endif
