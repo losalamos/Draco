@@ -122,10 +122,10 @@ void test_streaming()
     tracker->tally_crossings_implicit_abs(
 	position, direction, distance, ew, sigma, tally);
 
-    if (!soft_equiv(tally.get_outward_tally(1)[3], exp(-2.0) ) ) ITFAILS;
-    if (!soft_equiv(tally.get_inward_tally (2)[3], exp(-1.0) ) ) ITFAILS;
-    if (!soft_equiv(tally.get_outward_tally(2)[3], exp(-3.0) ) ) ITFAILS;
-    if (!soft_equiv(tally.get_outward_tally(3)[3], exp(-3.0) ) ) ITFAILS;
+    if (!soft_equiv(tally.get_outward_weight_tally(1)[3], exp(-2.0) ) ) ITFAILS;
+    if (!soft_equiv(tally.get_inward_weight_tally (2)[3], exp(-1.0) ) ) ITFAILS;
+    if (!soft_equiv(tally.get_outward_weight_tally(2)[3], exp(-3.0) ) ) ITFAILS;
+    if (!soft_equiv(tally.get_outward_weight_tally(3)[3], exp(-3.0) ) ) ITFAILS;
 
     position[0] = -1.0;
     position[1] =  0.0;
@@ -153,9 +153,12 @@ void test_streaming()
     tracker->tally_crossings_implicit_abs(
 	position, direction, distance, ew, sigma, tally);
 
-    if (!soft_equiv(tally.get_outward_tally(2)[1], exp(-2.0) ) ) ITFAILS;
-    if (!soft_equiv(tally.get_outward_tally(3)[1], exp(-1.0-sqrt(5.0)))) ITFAILS;
-    if (!soft_equiv(tally.get_inward_tally(3) [1], exp(3.0-2*sqrt(5.0)))) ITFAILS;
+    if (!soft_equiv(tally.get_outward_weight_tally(2)[1], 
+		    exp(-2.0) ) ) ITFAILS;
+    if (!soft_equiv(tally.get_outward_weight_tally(3)[1], 
+		    exp(-1.0-sqrt(5.0)))) ITFAILS;
+    if (!soft_equiv(tally.get_inward_weight_tally(3) [1], 
+		    exp(3.0-2*sqrt(5.0)))) ITFAILS;
     
 }
 
