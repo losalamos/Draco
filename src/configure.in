@@ -28,29 +28,7 @@ AC_CONFIG_SUBDIRS(imc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver meshReaders_Services)
 AC_CONFIG_SUBDIRS(P1Diffusion)
 
-# check for configure
-AC_CHECK_PROG(AUTOCONF, autoconf, autoconf, null)
-if test "${AUTOCONF}" = null ; then
-   AC_MSG_ERROR("Cannot find autoconf; cannot build configure scripts!")
-fi
-
-CURRENT_DIR=`pwd`
-
-# build configure scripts in subdirs
-for dir in $subdirs
-   do
-       if test -d ${srcdir}/${dir} ; then
-	   AC_MSG_CHECKING("configure in ${srcdir}/${dir}")
-	   cd $srcdir/$dir
-	   if test -f configure ; then 
-	       AC_MSG_RESULT("exists")
-	   else
-	       ${AUTOCONF} --localdir=../../config
-	       AC_MSG_RESULT("built")
-	   fi
-	   cd $CURRENT_DIR
-       fi
-   done 
+AC_BUILD_CONFIGURES(..)
 
 AC_OUTPUT(Makefile)
 

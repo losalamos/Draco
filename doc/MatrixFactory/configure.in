@@ -12,20 +12,12 @@ AC_CONFIG_AUX_DIR(../../config)
 dnl AC_CONFIG_HEADER(MatrixFactory/config.h:config.h.in)
 package="MatrixFactory"
 
-dnl VENDOR SETUPS
-dnl AC_MPI_SETUP(pkg)
-dnl AC_SHMEM_SETUP(pkg)
-dnl AC_SPRNG_SETUP(pkg)
-dnl AC_PCGLIB_SETUP(pkg)
-
-dnl AC_INSTALL_HEADERS
-dnl AC_INSTALL_LIB
-dnl AC_NEEDS_LIBS(ds++)
-
 dnl DRACO SETUP
 AC_DRACO_ENV
 
 AC_CONFIG_SUBDIRS(code)
+
+AC_BUILD_CONFIGURES(../..)
 
 AC_OUTPUT(Makefile:Makefile.in)
 
