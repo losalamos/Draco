@@ -39,7 +39,8 @@ AC_RUNTESTS(tstFrequency \
             tstAzimuthal_Mesh \
             tstSurface_Sub_Tally \
             tstSurface_tracker \
-            tstRZ_Surface_tracking, 1 2 4)
+            tstRZ_Surface_tracking \
+            tstExtrinsic_Tracker, 1 2 4)
 
 # DRACO SETUP
 AC_DRACO_ENV

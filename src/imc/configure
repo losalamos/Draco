@@ -1634,7 +1634,8 @@ fi;
             tstAzimuthal_Mesh \
             tstSurface_Sub_Tally \
             tstSurface_tracker \
-            tstRZ_Surface_tracking"
+            tstRZ_Surface_tracking \
+            tstExtrinsic_Tracker"
 
 	test_nprocs="1 2 4"
 

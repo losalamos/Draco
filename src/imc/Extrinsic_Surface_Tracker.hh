@@ -26,7 +26,7 @@ namespace rtt_imc
 /*!
  * \class Extrinsic_Surface_Tracker
  * \brief Implements surface traking vis-a-vis \c Surface_tracker in the
- * presence of a mesh.
+ * presence of an RZ wedge mesh.
  *
  * The surfaces referred to here are extrinsic in the sense of being overlaid
  * onto a mesh. This class keeps (and requires at construction) a boolean
@@ -60,11 +60,12 @@ class Extrinsic_Surface_Tracker : public Surface_tracker
     typedef std::vector<SP_Surface>::const_iterator surface_iterator;
     typedef std::vector<bool>::iterator bool_iterator;
 
-    //! Constructor
+    //! Full constructor
     Extrinsic_Surface_Tracker(const std::vector<SP_Surface> &surfaces,
 			      const std::vector<int>        &tally_indices,
 			      const std::vector<bool>       &surface_in_cell_data);
 
+    //! Construct with default indices
     Extrinsic_Surface_Tracker(const std::vector<SP_Surface> &surfaces,
 			      const std::vector<bool>       &surface_in_cell_data);
 
@@ -81,7 +82,7 @@ class Extrinsic_Surface_Tracker : public Surface_tracker
 
     // ACCESSORS
 
-    bool surface_in_cell(int cell);
+    inline bool surface_in_cell(int cell);
 
     //! Process implicit streamings across surfaces in a particlar cell.
     void tally_crossings_implicit_abs(const std::vector<double> &position,
@@ -107,6 +108,16 @@ class Extrinsic_Surface_Tracker : public Surface_tracker
     int number_cells;
 
 };
+
+//---------------------------------------------------------------------------//
+// Inline functions
+
+//! Return true if there is a surface in the given cell on the local mesh.
+bool Extrinsic_Surface_Tracker::surface_in_cell(int cell)
+{
+    Check (cell >0 );  Check (cell <= number_cells);
+    return surface_in_cell_data[cell-1];
+}
 
 } // end namespace rtt_imc
 

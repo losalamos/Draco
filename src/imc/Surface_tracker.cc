@@ -32,13 +32,13 @@ Surface_tracker::Surface_tracker(
       tally_indices(surfaces_.size())
 { 
 
-    Require(is_inside.size() > 0);
-    
     int index = 1;
     for (vector<int>::iterator tally_index = tally_indices.begin();
 	 tally_index != tally_indices.end(); 
 	 ++tally_index)
+    {
 	*tally_index = index++;
+    }
 	
 
 }

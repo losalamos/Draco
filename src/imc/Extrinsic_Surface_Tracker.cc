@@ -23,7 +23,7 @@ Extrinsic_Surface_Tracker::Extrinsic_Surface_Tracker(
       number_cells(surface_in_cell_data_.size())
 {
     
-    Check( number_cells > 0);
+    Check( number_cells > 0 );
     
 } 
 
@@ -36,7 +36,7 @@ Extrinsic_Surface_Tracker::Extrinsic_Surface_Tracker(
       number_cells(surface_in_cell_data_.size())
 {
 
-    Check ( number_cells > 0);
+    Check ( number_cells > 0 );
 
 }
 
