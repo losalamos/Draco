@@ -80,7 +80,7 @@ string tQuadrature::runTest()
     QuadCreator QuadratureCreator;
     
     // we will only look at S4 Sets in this test.
-    int sn_order = 4;
+    const int sn_order = 4;
 
     // total number of quadrature sets to be tested.
     const int nquads = 2;
@@ -132,12 +132,17 @@ string tQuadrature::runTest()
 		vector<double> mu = spQuad->getMu();
 		// get the omega vector for direction m=1.
 		vector<double> omega_1 = spQuad->getOmega(1);
+		// get the total omega object.
+		vector< vector<double> > omega = spQuad->getOmega();
+		// compare values.
 		if ( mu.size() != spQuad->getNumAngles() )
 		    fail() << "The direction vector has the wrong length.";
 		else if ( fabs( mu[0] + mu0[ix] ) >= TOL ) 
 		    fail() << "mu[0] has the wrong value."; 
 		else if ( fabs( mu[1] - omega_1[0] ) >= TOL )
 		    fail() << "mu[1] != omega_1[0].";
+		else if ( fabs( omega[1][0] - omega_1[0] ) >= TOL )
+		    fail() << "omega[1][0] != omega_1[0].";
 		else {
 		    spQuad->display();
 		    cout << endl << endl; // end of this quadrature type
