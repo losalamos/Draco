@@ -317,9 +317,9 @@ void Sweep3d::balance_eqn_no_fixup( Input_edit &data, Sn_constants &sn,
         for ( j=jlow ; j != (jhigh+jshift) ; j += jshift )
         {
             ql = phi(j,k,iz) +
-                 sn.mu (mz) * phii(j,k) * data.hi(isw) +
-                 sn.eta(mz) * phij[k]   * data.hj(j) +
-                 sn.tsi(mz) * phik[j]   * data.hk(k);
+                 phii(j,k) * pre.muh(isw,mz) +
+                 phij[k]   * pre.etah(j,mz) +
+                 phik[j]   * pre.tsih(k,mz);
 
             phi(j,k,iz) = ql * pre.dlinv(j,k,isw,mz);
 
@@ -339,23 +339,21 @@ void Sweep3d::balance_eqn_with_fixup( Input_edit &data, Sn_constants &sn,
     int j;     // loop variable for cells in the y-direction
     int k;     // loop variable for cells in the z-direction
 
-    REAL ql;   // a temp variable to hold calculated results
-    REAL dl;   // a temp variable to hold calculated results
-    REAL sih;  // temp holder for phii during set-to-zero fixup
-    REAL siv;  // temp holder for phij during set-to-zero fixup
-    REAL sif;  // temp holder for phik during set-to-zero fixup
+    REAL ql;      // a temp variable to hold calculated results
+    REAL dl_loc;  // a temp variable to hold calculated results
+    REAL sih;     // temp holder for phii during set-to-zero fixup
+    REAL siv;     // temp holder for phij during set-to-zero fixup
+    REAL sif;     // temp holder for phik during set-to-zero fixup
 
     for ( k=klow ; k != (khigh+kshift) ; k += kshift )
         for ( j=jlow ; j != (jhigh+jshift) ; j += jshift )
         {
             ql = phi(j,k,iz) +
-                 sn.mu (mz) * phii(j,k) * data.hi(isw) +
-                 sn.eta(mz) * phij[k]   * data.hj(j) +
-                 sn.tsi(mz) * phik[j]   * data.hk(k);
-            dl = xsec.ct(j,k,isw) + 
-                 sn.mu (mz) * data.hi(isw) +
-                 sn.eta(mz) * data.hj(j) +
-                 sn.tsi(mz) * data.hk(k);
+                 phii(j,k) * pre.muh(isw,mz) +
+                 phij[k]   * pre.etah(j,mz) +
+                 phik[j]   * pre.tsih(k,mz);
+
+            dl_loc = pre.dl(j,k,isw,mz);
 
             phi(j,k,iz) = ql * pre.dlinv(j,k,isw,mz);
 
@@ -373,10 +371,10 @@ void Sweep3d::balance_eqn_with_fixup( Input_edit &data, Sn_constants &sn,
 
             if ( sih < 0.0 )
             {
-                ql -= 0.5 * sn.mu(mz) * phii(j,k) * data.hi(isw);
-                dl -= sn.mu(mz) * data.hi(isw);
+                ql -= 0.5 * phii(j,k) * pre.muh(isw,mz);
+                dl_loc -= pre.muh(isw,mz);
 
-                phi(j,k,iz) = ql / dl;
+                phi(j,k,iz) = ql / dl_loc;
 
                 sih = 0.0;
                 if ( siv != 0.0 ) siv = 2.0 * phi(j,k,iz) - phij[k];
@@ -385,10 +383,10 @@ void Sweep3d::balance_eqn_with_fixup( Input_edit &data, Sn_constants &sn,
 
             if ( siv < 0.0 )
             {
-                ql -= 0.5 * sn.eta(mz) * phij[k] * data.hj(j);
-                dl -= sn.eta(mz) * data.hj(j);
+                ql -= 0.5 * phij[k] * pre.etah(j,mz);
+                dl_loc -= pre.etah(j,mz);
 
-                phi(j,k,iz) = ql / dl;
+                phi(j,k,iz) = ql / dl_loc;
 
                 siv = 0.0;
                 if ( sif != 0.0 ) sif = 2.0 * phi(j,k,iz) - phik[j];
@@ -399,10 +397,10 @@ void Sweep3d::balance_eqn_with_fixup( Input_edit &data, Sn_constants &sn,
 
             if ( sif < 0.0 )
             {
-                ql -= 0.5 * sn.tsi(mz) * phik[j] * data.hk(k);
-                dl -= sn.tsi(mz) * data.hk(k);
+                ql -= 0.5 * phik[j] * pre.tsih(k,mz);
+                dl_loc -= pre.tsih(k,mz);
 
-                phi(j,k,iz) = ql / dl;
+                phi(j,k,iz) = ql / dl_loc;
 
                 sif = 0.0;
                 if ( sih != 0.0 ) sih = 2.0 * phi(j,k,iz) - phii(j,k);

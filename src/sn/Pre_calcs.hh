@@ -27,14 +27,19 @@ class Pre_calcs
         // use the default destructor
         // ~Pre_calcs();
 
-        REAL dlinv( int j, int k, int i, int m ) const
-        {
-            return dlinv_p(j,k,i,m);
-        }
+        REAL muh( int i, int m )  const { return muh_p(i,m);  }
+        REAL etah( int j, int m ) const { return etah_p(j,m); }
+        REAL tsih( int k, int m ) const { return tsih_p(k,m); }
+        REAL dlinv(int j, int k, int i, int m) const {return dlinv_p(j,k,i,m);}
+        REAL dl( int j, int k, int i, int m ) const { return dl_p(j,k,i,m); }
 
     private:
 
         Array4D dlinv_p;  // a factor in the balance equation
+        Array4D dl_p;     // a factor in the balance equation with fixup
+        Array2D muh_p;    // a factor in the balance equation
+        Array2D etah_p;   // a factor in the balance equation
+        Array2D tsih_p;   // a factor in the balance equation
 
 };
 
