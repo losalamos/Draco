@@ -119,16 +119,16 @@ void t4()
     a = 4.;
     b = 2.;
 
-    c = pow( a, 2.f );
+    //c = pow( a, 2.f );
 
     dump(c);
 
     c = 2.;
-    d = pow( c, 2 );
+    //d = pow( c, 2 );
 
     dump(d);
 
-    d = 1.f + pow( c, 2 );
+    //d = 1.f + pow( c, 2 );
 
     dump(d);
 

@@ -32,7 +32,7 @@
 //===========================================================================//
 
 template<class T>
-class UserVec : public Indexable<T,UserVec<T> > {
+class UserVec : public xm::Indexable<T,UserVec<T> > {
 
     T *v;
     int sz;
@@ -42,7 +42,7 @@ class UserVec : public Indexable<T,UserVec<T> > {
 
   public:
     UserVec( int n )
-	: Indexable<T,UserVec<T> >(),
+	: xm::Indexable<T,UserVec<T> >(),
 	  sz(n) 
     {
 	v = new T[sz];
@@ -69,7 +69,7 @@ class UserVec : public Indexable<T,UserVec<T> > {
 
 // This is the routine which evaluates the expression.
     template<class X>
-    UserVec<T>& operator=( const Xpr< T, X, UserVec<T> >& x )
+    UserVec<T>& operator=( const xm::Xpr< T, X, UserVec<T> >& x )
     {
  	return assign_from( x );
     }
@@ -82,7 +82,7 @@ class UserVec : public Indexable<T,UserVec<T> > {
 //===========================================================================//
 
 template<class T>
-class FooBar : public Indexable<T,FooBar<T> > {
+class FooBar : public xm::Indexable<T,FooBar<T> > {
 
     T *v;
     int sz;
@@ -92,7 +92,7 @@ class FooBar : public Indexable<T,FooBar<T> > {
 
   public:
     FooBar( int n )
-	: Indexable<T,FooBar<T> >(),
+	: xm::Indexable<T,FooBar<T> >(),
 	  sz(n) 
     {
 	v = new T[sz];
@@ -120,7 +120,7 @@ class FooBar : public Indexable<T,FooBar<T> > {
 // This is the routine which evaluates the expression.
 
     template<class X>
-    FooBar<T>& operator=( const Xpr< T, X, FooBar<T> >& x )
+    FooBar<T>& operator=( const xm::Xpr< T, X, FooBar<T> >& x )
     {
  	return assign_from( x );
     }
