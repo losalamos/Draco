@@ -19,7 +19,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <math.h>
+#include <cmath>
 
 #include "ds++/Assert.hh"
 
