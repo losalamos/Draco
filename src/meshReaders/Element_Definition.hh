@@ -29,36 +29,40 @@ namespace rtt_meshReaders
  *        elements used in the RTT meshReader class.
  *
  * A few high points, trying not to wax eloquent. It was originally desired
- * to create a simple class the would concisely, unambiguously, and 
+ * to create a simple class that would concisely, unambiguously, and 
  * completely describe any mesh element that could be conceived. While
  * this may be a laudable goal, it appears to be harder than it appears. Perhaps
  * we could get some help on this from some computational geometry experts
  * at some time. In the mean time here is my 80% solution.
  *
  *  First, we will
- * reduce the scope from any element to just the ones currently described
- * in the CGNS standard. Remember that it is only necessary to describe
+ * reduce the scope from any element to just the elements currently supported
+ * by the <a href="http://www.cgns.org/"> CGNS </a> data storage system. 
+ * CGNS is an emerging industry standard for the storage and retrival of
+ * computational physics data. Remember that it is only necessary to describe
  * the problem "geometry" with these elements, not the solution, or any
  * other field on the mesh, so this may not be as much of a restriction
- * as it first appears. This set consists of  18 elements including most of the
- * commonly used ones. Moreover, remember we currently have no means of
+ * as it first appears. The CGNS set consists of 18 elements including most
+ * of the commonly used ones. Moreover, remember we currently have no means of
  * generating a mesh with weird custom elements. Any mesh anyone in the
- * group has ever run on can be expressed with just six of these elements.
+ * group has ever run on can be expressed with just six of the 18
+ * CGNS elements.
  *
  * Second, we will not try to design a completely general element
  * description, but will settle for providing a limited set of services that can
  * be used to discover a lot of things about the elements in the CGNS sub-set,
  * but may not necessarily be a universal, complete, and unambiguous 
  * description. 
- * The ultimate authority on the element descriptions are the figures and
+ * The ultimate authority on the element descriptions are the 
+ * <a href="http://www.CGNS.org/documents/Elements.pdf"> figures </a> and
  * text found in the CGNS SIDS-Additions manual.
  *
  * The description implemented herein utilizes a hierarchical approach. 3D 
  * elements
  * are described as assemblies of 2D elements, which are composed of 1D
- * elements, which are themselves composed of nodes. For examples a hexahedra
- * is described in terms of its quadrilateral faces, which are described in 
- * terms of line edge elements, which are then described in terms of their
+ * elements, which are themselves composed of nodes. For example, a 3D hexahedra
+ * is described in terms of its 2D quadrilateral faces, which are described in 
+ * terms of 1D line edge elements, which are then described in terms of their
  * constituent nodes.  This approach appears to be adequate for
  * the subset of elements under consideration herein, but it is not clear
  * that this will suffice in the general case.
@@ -67,7 +71,7 @@ namespace rtt_meshReaders
  * triangle, etc....) as well as the nodes that compose the face.
  *
  * In addition to face types, there is a concept of "node-location" within
- * the element. Thus all nodes are given a location (i.e. "CORNER", "EDGE",
+ * the element. All nodes are given a location (i.e. "CORNER", "EDGE",
  * etc....) to aide in the description of the element. Again this appears 
  * to be adequate for the sub-set of elements under consideration herein
  * but may not be adequate in a more general case.
@@ -76,6 +80,9 @@ namespace rtt_meshReaders
  * through recursively descending through element faces, edges, and nodes 
  * provides an adequate amount of information for our present needs. However,
  * it is difficult to show that this description is complete and unambiguous.
+ *
+ * \sa The \ref meshReadersOverview page provides an overview of
+ * the other utilities in the rtt_meshReaders namespace.
  *
  */
 // revision history:
@@ -126,6 +133,9 @@ class Element_Definition
      * These names and the elements that they
      * represent are the same as those defined in the 
      *  <a href="http://www.cgns.org/"> CGNS </a> SIDS Manual.
+     * <a href="http://www.CGNS.org/documents/Elements.pdf"> 
+     * Element-Descriptions </a>  (Adobe PDF format) are
+     * are available  at the CGNS www site.
      */
     enum Element_Type {
 	NODE,       /*!< A dimensionless point in space. */
