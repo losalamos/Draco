@@ -53,7 +53,22 @@ Coord_sys::sf_double Coord_sys::sample_dir(std_string dist,
 	omega_[2] = costheta;
     }
 
-    Check (soft_equiv(dot(omega_, omega_), 1.0, 1.e-6));
+    // calculate the magnitude of the unit direction vector
+    double magnitude = std::pow(dot(omega_, omega_), 0.5);
+
+    // weak check on the magnitude
+    Check (soft_equiv(magnitude, 1.0, 1.0e-3));
+
+    // renormalize if magnitude fails stronger check
+    if (!soft_equiv(magnitude, 1.0, 1.0e-5))
+    {
+	omega_[0] /= magnitude;
+	omega_[1] /= magnitude;
+	omega_[2] /= magnitude;
+	
+	double new_magnitude = std::pow(dot(omega_, omega_), 0.5);
+	Check (soft_equiv(new_magnitude, 1.0, 1.0e-5));
+    }
 
     // return vector
     return omega_;
@@ -65,6 +80,9 @@ Coord_sys::sf_double Coord_sys::sample_dir(std_string dist,
 void Coord_sys::calc_omega(double costheta, double phi, 
 			   sf_double &omega_) const
 {
+    // check that the old, incoming direction is reasonably normalized
+    Check (soft_equiv(dot(omega_, omega_), 1.0, 1.e-8));
+
     // calculate new direction cosines
     double sintheta = sqrt(1 - costheta * costheta);
     vector<double> old_dir;
@@ -87,7 +105,23 @@ void Coord_sys::calc_omega(double costheta, double phi,
         omega_[2] = old_dir[2] * costheta - factor * sintheta * cos(phi);
     }
 
-    Check (soft_equiv(dot(omega_, omega_), 1.0, 1.e-6));
+    // calculate the magnitude of the new unit direction vector
+    double magnitude = std::pow(dot(omega_, omega_), 0.5);
+
+    // weak check on the magnitude
+    Check (soft_equiv(magnitude, 1.0, 1.0e-3));
+
+    // renormalize if magnitude fails stronger check
+    if (!soft_equiv(magnitude, 1.0, 1.0e-5))
+    {
+	omega_[0] /= magnitude;
+	omega_[1] /= magnitude;
+	omega_[2] /= magnitude;
+	
+	double new_magnitude = std::pow(dot(omega_, omega_), 0.5);
+	Check (soft_equiv(new_magnitude, 1.0, 1.0e-5));
+    }
+
 }
 
 } // end namespace rtt_mc
