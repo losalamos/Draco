@@ -1,0 +1,27 @@
+//----------------------------------*-C++-*----------------------------------//
+// Parallel_Source_Init.pt
+// Thomas M. Evans
+// Fri Aug 21 17:22:58 1998
+//---------------------------------------------------------------------------//
+// @> Instantialyzer for template class Parallel_Source_Init
+//---------------------------------------------------------------------------//
+
+#include "imc/OS_Mesh.hh"
+#include "imc/AMR_Interface.hh"
+#include "ds++/SP.hh"
+#include "Parallel_Source_Init.cc"
+
+IMCSPACE
+
+using dsxx::SP;
+
+instantiate class Parallel_Source_Init<OS_Mesh>
+
+instantiate funcproto MT=OS_Mesh, IT=AMR_Interface, PT=Particle<OS_Mesh>
+Parallel_Source_Init<MT,PT>::Parallel_Source_Init(SP<IT>, SP<MT>)
+
+CSPACE
+
+//---------------------------------------------------------------------------//
+//                              end of Parallel_Source_Init.pt
+//---------------------------------------------------------------------------//
