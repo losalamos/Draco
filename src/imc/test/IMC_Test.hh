@@ -276,6 +276,7 @@ class IMC_CDI_Interface :
     sf_double  temperature;
     double     implicitness;
     double     delta_t;
+    int        hybrid_model;
 
     sf_int        cdi_map;
     sf_CDI        cdi_list;
@@ -283,11 +284,11 @@ class IMC_CDI_Interface :
 
   public:
     // constructor -> the default processor capacity is 6 cells
-    IMC_CDI_Interface();
+    IMC_CDI_Interface(int = 0);
 
     // general interface
     double get_delta_t() const { return delta_t; }
-    int    get_hybrid_diffusion_method() const { return 0; }
+    int    get_hybrid_diffusion_method() const { return hybrid_model; }
     
     // public interface for Opacity_Builder
     sf_double get_density() const {return density;}
@@ -325,7 +326,7 @@ class IMC_CDI_Interface :
 
 // constructor
 template<class PT>
-IMC_CDI_Interface<PT>::IMC_CDI_Interface() 
+IMC_CDI_Interface<PT>::IMC_CDI_Interface(int hybrid) 
     : 
       density(6),   
       temperature(6, 3.0), 
@@ -333,7 +334,8 @@ IMC_CDI_Interface<PT>::IMC_CDI_Interface()
       delta_t(.001),
       cdi_map(6),
       cdi_list(3),
-      cdi_models(3)
+      cdi_models(3),
+      hybrid_model(hybrid)
 {  
     using rtt_cdi_analytic::Analytic_Gray_Opacity;
     using rtt_cdi_analytic::Analytic_Multigroup_Opacity;
@@ -384,9 +386,12 @@ IMC_CDI_Interface<PT>::IMC_CDI_Interface()
 				       (1.5));
     SP<Analytic_Opacity_Model> model_3(new Polynomial_Analytic_Opacity_Model
 				       (1.0, 0.1, 1.0, 0.0));
+    SP<Analytic_Opacity_Model> model_s;
 
-    SP<Analytic_Opacity_Model> model_s(new Constant_Analytic_Opacity_Model
-				       (0.0));
+    if (hybrid_model)
+	model_s = new Constant_Analytic_Opacity_Model(1.01);
+    else
+	model_s = new Constant_Analytic_Opacity_Model(0.0);
 
     // multigroup analytic opacity models
     std::vector<SP<Analytic_Opacity_Model> > mg_1(3);
@@ -503,6 +508,221 @@ IMC_CDI_Interface<PT>::IMC_CDI_Interface()
 
     cdi_models[2].first  = gop_3->getModelType();
     cdi_models[2].second = gop_s->getModelType();
+}
+
+//---------------------------------------------------------------------------//
+//make a CDI diffusion interface for a 6 cell mesh; this interface is used to
+//test CDI_Mat_State_Builder only.  It contains both multigroup and gray data
+//in the CDIs. This interface has diffusion data. The source parts of the
+//interface have no meaning
+//---------------------------------------------------------------------------//
+
+template<class PT>
+class IMC_CDI_Diffusion_Interface :
+	public rtt_imc::Interface<PT>,
+	public rtt_imc::CDI_Data_Interface
+{
+  public:
+    typedef rtt_dsxx::SP<rtt_cdi::CDI>                       SP_CDI;
+    typedef std::vector<int>                                 sf_int;
+    typedef std::vector<SP_CDI>                              sf_CDI;
+    typedef std::pair<int, int>                              model_pair;
+    typedef std::vector<model_pair>                          sf_model_pair;
+    typedef std::vector<double>                              sf_double;
+    typedef std::string                                      std_string;
+    typedef std::vector<std_string>                          sf_string;
+    typedef std::vector<sf_int>                              vf_int;
+    typedef typename rtt_mc::Particle_Containers<PT>::Census Census;
+    typedef rtt_dsxx::SP<Census>                             SP_Census;
+
+
+  private:
+    // data for the Opacity and Mat_State
+    sf_double  density;
+    sf_double  temperature;
+    double     implicitness;
+    double     delta_t;
+
+    sf_int        cdi_map;
+    sf_CDI        cdi_list;
+    sf_model_pair cdi_models;
+
+  public:
+    // constructor -> the default processor capacity is 6 cells
+    IMC_CDI_Diffusion_Interface(const std::string &, bool = false);
+
+    // general interface
+    double get_delta_t() const { return delta_t; }
+    int    get_hybrid_diffusion_method() const { return 1; }
+    
+    // public interface for Opacity_Builder
+    sf_double get_density() const {return density;}
+    sf_double get_temperature() const {return temperature;}
+    double    get_implicitness_factor() const { return implicitness; }
+
+    // CDI specific parts of interface
+    sf_CDI get_CDIs() const { return cdi_list; }
+    sf_int get_CDI_map() const { return cdi_map; }
+    sf_model_pair get_CDI_models() const { return cdi_models; }
+
+    // public interface for Source_Builder
+    double get_elapsed_t() const { return double(); }
+    sf_double get_evol_ext() const { return sf_double(); }
+    double get_rad_s_tend() const { return double(); }
+    sf_double get_rad_source() const { return sf_double(); }
+    sf_double get_rad_temp() const { return sf_double(); }
+    sf_string get_ss_pos() const { return sf_string(); }
+    sf_double get_ss_temp() const { return sf_double(); }
+    vf_int get_defined_surcells() const { return vf_int(); }
+    int get_npnom() const { return int(); }
+    int get_npmax() const { return int(); }
+    double get_dnpdt() const { return double(0); }
+    int get_cycle() const { return int(); }
+    std_string get_ss_dist() const { return std_string(); }
+    sf_string get_ss_desc() const { return sf_string(); }
+    SP_Census get_census() const { return SP_Census(); }
+    double get_ecen(int cell) const { return double(); }
+    double get_ecentot() const { return double(); }
+};
+
+//---------------------------------------------------------------------------//
+// IMC_CDI_Diffusion_INTERFACE DEFINITIONS
+//---------------------------------------------------------------------------//
+
+// constructor
+template<class PT>
+IMC_CDI_Diffusion_Interface<PT>::IMC_CDI_Diffusion_Interface(
+    const std::string &freq,
+    bool               bad) 
+    : density(6),   
+      temperature(6, 3.0), 
+      implicitness(1.0), 
+      delta_t(.001),
+      cdi_map(6),
+      cdi_list(1),
+      cdi_models(1)
+{  
+    using rtt_cdi_analytic::Analytic_Gray_Opacity;
+    using rtt_cdi_analytic::Analytic_Multigroup_Opacity;
+    using rtt_cdi_analytic::Analytic_EoS;
+    using rtt_cdi_analytic::Analytic_Opacity_Model;
+    using rtt_cdi_analytic::Analytic_EoS_Model;
+    using rtt_cdi_analytic::Polynomial_Specific_Heat_Analytic_EoS_Model;
+    using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
+    using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
+    using rtt_cdi::CDI;
+    using rtt_cdi::GrayOpacity;
+    using rtt_cdi::EoS;
+    using rtt_cdi::MultigroupOpacity;
+    using rtt_dsxx::SP;
+
+    // make material data
+    density[0] = 1.0;
+    density[1] = 2.0;
+    density[2] = 1.0;
+    density[3] = 3.0;
+    density[4] = 1.0;
+    density[5] = 2.0;
+
+    // make cdi map
+    cdi_map[0] = 1;
+    cdi_map[1] = 1;
+    cdi_map[2] = 1;
+    cdi_map[3] = 1;
+    cdi_map[4] = 1;
+    cdi_map[5] = 1;
+
+    // make 1 cdi materials
+    //  GRAY SPECIFICATION: 
+    //      MAT 1: planck = 100/T^3       cm^2/g,
+    //             scat   = 0.1           cm^2/g,
+    //             ross   = 1.1 + 1.0/T^3 cm^2/g
+    //                 Cv = .1e6    kJ/g/keV
+    //  MULTIGROUP SPECIFICATION:
+    //      Groups: = .01 .1 1 10 keV (3 groups)
+    //      MAT 1: sigma = 5.0/1.5/0.5 cm^2/g
+    // Note: 1kJ = 1e-6 Jerks
+
+    // gray analytic opacity models
+    SP<Analytic_Opacity_Model> planck(new Polynomial_Analytic_Opacity_Model
+				      (0.0, 100.0, -3.0, 0.0));
+    
+    SP<Analytic_Opacity_Model> scat(new Constant_Analytic_Opacity_Model
+				       (0.1));
+    
+    SP<Analytic_Opacity_Model> ross(new Polynomial_Analytic_Opacity_Model
+				    (1.1, 1.0, -3.0, 0.0));
+
+    // multigroup analytic opacity models
+    std::vector<SP<Analytic_Opacity_Model> > mg_1(3);
+    std::vector<SP<Analytic_Opacity_Model> > mg_s(3);
+
+    mg_1[0] = new Constant_Analytic_Opacity_Model(5.0);
+    mg_1[1] = new Constant_Analytic_Opacity_Model(1.5);
+    mg_1[2] = new Constant_Analytic_Opacity_Model(0.5);
+
+    mg_s[0] = scat;
+    mg_s[1] = scat;
+    mg_s[2] = scat;
+
+    std::vector<double> groups(4);
+    groups[0] = 0.01;
+    groups[1] = 0.1;
+    groups[2] = 1.0;
+    groups[3] = 10.0;
+
+    // analytic eos models
+    SP<Analytic_EoS_Model> aeos_1(
+	new Polynomial_Specific_Heat_Analytic_EoS_Model(0.1e6, 0.0, 0.0, 
+							0.0, 0.0, 0.0));
+
+    // make gray opacities
+    SP<const GrayOpacity> gop_1(new Analytic_Gray_Opacity(
+				    planck, rtt_cdi::ABSORPTION,
+				    rtt_cdi::PLANCK));
+    SP<const GrayOpacity> gop_r(new Analytic_Gray_Opacity(
+				    ross, rtt_cdi::TOTAL,
+				    rtt_cdi::ROSSELAND)); 
+    SP<const GrayOpacity> gop_s(new Analytic_Gray_Opacity(
+				    scat, rtt_cdi::SCATTERING));
+
+    // make multigroup opacities
+    SP<const MultigroupOpacity> mgop_1(new Analytic_Multigroup_Opacity(
+					   groups, mg_1, rtt_cdi::ABSORPTION));
+    SP<const MultigroupOpacity> mgop_s(new Analytic_Multigroup_Opacity(
+					   groups, mg_s, rtt_cdi::SCATTERING));
+
+    // make EoS
+    SP<const EoS> eos_1(new Analytic_EoS(aeos_1));
+
+    // Make CDIs
+    cdi_list[0] = new CDI;
+
+    cdi_list[0]->setGrayOpacity(gop_1);
+    cdi_list[0]->setGrayOpacity(gop_s);
+    cdi_list[0]->setMultigroupOpacity(mgop_1);
+    cdi_list[0]->setMultigroupOpacity(mgop_s);
+    cdi_list[0]->setEoS(eos_1);
+
+    // do not set to test assertion throwing if bad
+    if (!bad)
+	cdi_list[0]->setGrayOpacity(gop_r);
+	      
+    // now make models; depends if we are being used for gray or multigroup
+    if (freq == "gray")
+    {
+	cdi_models[0].first  = gop_1->getModelType();
+	cdi_models[0].second = gop_s->getModelType();
+    }
+    else if (freq == "mg")
+    {
+	cdi_models[0].first  = mgop_1->getModelType();
+	cdi_models[0].second = mgop_s->getModelType();
+    }
+    else
+    {
+	throw rtt_dsxx::assertion("Invalid test frequency specifier.");
+    }
 }
 
 //===========================================================================//

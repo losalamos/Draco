@@ -12,6 +12,8 @@
 #ifndef __imc_Random_Walk_hh__
 #define __imc_Random_Walk_hh__
 
+#include "Hybrid_Diffusion.hh"
+
 namespace rtt_imc
 {
     
@@ -100,20 +102,22 @@ class Random_Walk_Sampling_Tables
 //===========================================================================//
 
 template<class MT>
-class Random_Walk 
+class Random_Walk : public Hybrid_Diffusion
 {
   public:
-    // >>> NESTED CLASSES
+    // Useful typedefs.
 
   private:
     // >>> DATA
 
     // Data for sampling Random Walk.
     const Random_Walk_Sampling_Tables table;
-
+    
   public:
     // Constructor.
     Random_Walk();
+
+    // >>> QUERY FUNCTIONS
 };
 
 } // end namespace rtt_imc

@@ -148,12 +148,13 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_mat_classes(SP_Mesh mesh)
     Ensure (mat_state);
     Ensure (mat_state->num_cells() == mesh->num_cells());
 
-    // build the opacity
+    // build the opacity and diffusion opacity
     {
 	build_Opacity(mesh);
     }
     Ensure (opacity);
     Ensure (opacity->num_cells() == mesh->num_cells());
+    Ensure (build_diffusion_opacity ? diff_opacity : true);
 }
 
 //---------------------------------------------------------------------------//
@@ -166,18 +167,10 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_mat_classes(SP_Mesh mesh)
  * is input to the function.
  *
  * Each CDI opacity contains a rtt_cdi::Model and rtt_cdi::Reaction
- * descriptor i.e., a (rtt_cdi::Model, rtt_cdi::Reaction) pair.  The CDI
- * objects are queried to determine the model type for the absorption and
- * scattering opacities.  Even though CDI allows multiple models for each
- * reaction type, the CDI_Mat_State_Builder expects CDI to use only one model
- * for each reaction type.  For example, CDI_Mat_State_Builder will throw an
- * exception if it encounters opacities defined by (rtt_cdi::PLANCK,
- * rtt_cdi::ABSORPTION) and (rtt_cdi::ANALYTIC, rtt_cdi::ABSORPTION) in the
- * same CDI object.
+ * descriptor i.e., a (rtt_cdi::Model, rtt_cdi::Reaction) pair that is
+ * provided by the CDI_Data_Interface.
  *
  * \param  mesh rtt_dsxx::SP to a mesh
- * \param  mat_state SP to a Mat_State
- * \return SP to an Opacity object
  */
 template<class MT>
 void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
@@ -244,7 +237,7 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
 	Check (volume >   0.0);
 
 	// calculate beta (4acT^3/Cv)
-	beta   = 4.0 * a * T*T*T * volume / dedT;
+	beta = 4.0 * a * T*T*T * volume / dedT;
 
 	// get the models (the standard allows explicit casts from int to a
 	// valid enumeration)
@@ -257,6 +250,9 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
 	Check(model_sct == rtt_cdi::ROSSELAND ||
 	      model_sct == rtt_cdi::PLANCK    ||
 	      model_sct == rtt_cdi::ANALYTIC);
+
+	Check (cdi->isGrayOpacitySet(model_abs, abs));
+	Check (cdi->isGrayOpacitySet(model_sct, sct));
 
 	// get the absorption opacity (multiply by density to convert to /cm)
 	absorption(cell) = cdi->gray(model_abs, abs)->getOpacity(T, rho) * rho;
@@ -277,8 +273,114 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
     opacity = new Opacity<MT, Gray_Frequency>(gray, absorption, scattering, 
 					      fleck);
 
+    // build the diffusion opacity if required
+    if (build_diffusion_opacity)
+    {
+	// build the Rosseland opacities
+	build_Diffusion_Opacity(mesh, fleck);
+	Ensure (diff_opacity);
+	Ensure (diff_opacity->num_cells() == mesh->num_cells());
+    }
+
     Ensure (opacity);
     Ensure (opacity->num_cells() == mesh->num_cells());
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Build a Diffusion_opacity object.
+ *
+ * \param  mesh rtt_dsxx::SP to a mesh
+ */
+template<class MT>
+void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Diffusion_Opacity(
+    SP_Mesh                          mesh,
+    rtt_dsxx::SP<Fleck_Factors<MT> > fleck)
+{
+    using rtt_mc::global::a;
+    using rtt_mc::global::c;
+    using rtt_dsxx::SP;
+
+    Require (mesh);
+    Require (mat_state);
+    Require (fleck);
+    Require (mesh->num_cells() == mat_state->num_cells());
+    Require (mesh->num_cells() == density.size());
+    
+    // number of cells
+    int num_cells = mesh->num_cells();
+
+    // make cell-centered, scalar fields for Rosseland opacity
+    typename MT::template CCSF<double> rosseland(mesh);
+
+    // constants needed for calculation of opacities in /cm
+    double T      = 0.0; // temp in keV
+    double rho    = 0.0; // density in g/cc
+
+    // cdi index
+    int    icdi   = 0;
+    SP_CDI cdi;
+
+    // reaction and model types
+    rtt_cdi::Reaction tot = rtt_cdi::TOTAL;
+    rtt_cdi::Reaction sct = rtt_cdi::SCATTERING;
+    rtt_cdi::Reaction abs = rtt_cdi::ABSORPTION;
+    rtt_cdi::Model    ros = rtt_cdi::ROSSELAND;
+    rtt_cdi::Model    mabs;
+    rtt_cdi::Model    msct;
+
+    // loop through the cells and assign the opacities and fleck factor
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	// cdi index
+	icdi = cdi_cell_map[cell-1]-1;
+
+	// set SP to cdi
+	cdi = material_cdi[icdi];
+	Check (cdi);
+
+	// get material data
+	T      = mat_state->get_T(cell);
+	rho    = mat_state->get_rho(cell);
+
+	Check (T      >=  0.0);
+	Check (rho    >   0.0);
+
+	// determine how to calculate the Rosseland opacity:
+	// (multiply by density to convert to /cm)
+	
+	// if the Rosseland total opacity is given then use it
+	if (cdi->isGrayOpacitySet(ros, tot))
+	{
+	    rosseland(cell) = cdi->gray(ros, tot)->getOpacity(T, rho) * rho;
+	}
+
+	// otherwise add the absorption and scattering together to estimate
+	// the Rosseland opacity (assuming that the absorption is not Planck)
+	else if (cdi_models[icdi].first != rtt_cdi::PLANCK)
+	{
+	    // get the models for the absorption and scattering
+	    mabs = static_cast<rtt_cdi::Model>(cdi_models[icdi].first);
+	    msct = static_cast<rtt_cdi::Model>(cdi_models[icdi].second);
+	    
+	    // now add scattering to absorption to get the Rosseland total
+	    rosseland(cell) = (cdi->gray(mabs, abs)->getOpacity(T, rho)  +
+			       cdi->gray(msct, sct)->getOpacity(T, rho)) * rho;
+	}
+
+	// if the only thing we are given is the Planck opacity for
+	// absorption then we fail
+	else
+	{
+	    throw rtt_dsxx::assertion(
+		"Cannot build Rosseland opacity from Planck absorption.");
+	}
+
+	Check (rosseland(cell) >= 0.0);
+    }
+
+    // build the diffusion opacity
+    diff_opacity = new Diffusion_Opacity<MT>(fleck, rosseland);
 }
 
 //===========================================================================//

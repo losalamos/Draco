@@ -17,6 +17,7 @@
 #include "Opacity.hh"
 #include "Mat_State.hh"
 #include "Diffusion_Opacity.hh"
+#include "Hybrid_Diffusion.hh"
 #include "cdi/CDI.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -42,6 +43,23 @@ namespace rtt_imc
  * the like to build the necessary rtt_cdi::CDI objects.  The member
  * functions that provide data to this builder are defined in the
  * rtt_imc::CDI_Data_Interface class.
+ *
+ * The CDIs \b must contain data for absorption and scattering. The
+ * rtt_cdi::Model types for each are specified by the interface. If
+ * Diffusion_Opacity objects are required the data required depends upon the
+ * frequency treatment.  For gray, if the CDIs have the Rosseland total
+ * opacity set (rtt_cdi::Model == rtt_cdi::ROSSELAND and rtt_cdi::Reaction ==
+ * rtt_cdi::TOTAL) then that is used.  Otherwise, the absorption and
+ * scattering opacities are added together to estimate the Rosseland total
+ * opacity.  However, if the absorption opacity model is rtt_cdi::PLANCK then
+ * an assertion is thrown.
+ *
+ * For multigroup, the Rosseland opacities are calculated by integrating over
+ * each group as follows:
+ * \f[
+ * \frac{1}{\sigma_{R}} = \frac{\int(\sigma_{a}+\sigma_{s})
+ * \frac{\partial B}{\partial T}}{\int\frac{\partial B}{\partial T}}
+ * \f]
  *
  * This class, along with rtt_imc::Flat_Mat_State_Builder, is a derived class
  * of Mat_State_Builder.  It should be used when a client is using CDI
@@ -116,6 +134,9 @@ class CDI_Mat_State_Builder<MT,Gray_Frequency>
     // Timestep in shakes.
     double        delta_t;
 
+    // Switch for building diffusion opacities.
+    bool          build_diffusion_opacity;
+
   private:
     // >>> BUILT OBJECTS
     
@@ -136,6 +157,9 @@ class CDI_Mat_State_Builder<MT,Gray_Frequency>
 
     // Build the Opacity.
     void build_Opacity(SP_Mesh);
+
+    // build the Diffusion_Opacity.
+    void build_Diffusion_Opacity(SP_Mesh, rtt_dsxx::SP<Fleck_Factors<MT> >);
 
   public:
     // Constructor.
@@ -182,18 +206,35 @@ template<class MT>
 template<class IT>
 CDI_Mat_State_Builder<MT,Gray_Frequency>::CDI_Mat_State_Builder(
     rtt_dsxx::SP<IT> interface)
-    : Mat_State_Builder<MT,Gray_Frequency>()
+    : Mat_State_Builder<MT,Gray_Frequency>(),
+      material_cdi(interface->get_CDIs()),
+      cdi_cell_map(interface->get_CDI_map()),
+      cdi_models(interface->get_CDI_models()),
+      density(interface->get_density()),
+      temperature(interface->get_temperature()),
+      implicitness(interface->get_implicitness_factor()),
+      delta_t(interface->get_delta_t()),
+      build_diffusion_opacity(false)
 {
     Require (interface);
+    
+    // set switch
+    int hybrid = interface->get_hybrid_diffusion_method();
+    switch (hybrid)
+    {
+    case Hybrid_Diffusion::TRANSPORT:
+	build_diffusion_opacity = false;
+	break;
 
-    // assign data members from the interface parser
-    material_cdi = interface->get_CDIs();
-    cdi_cell_map = interface->get_CDI_map();
-    cdi_models   = interface->get_CDI_models();
-    density      = interface->get_density();
-    temperature  = interface->get_temperature();
-    implicitness = interface->get_implicitness_factor();
-    delta_t      = interface->get_delta_t();
+    case Hybrid_Diffusion::RANDOM_WALK:
+    case Hybrid_Diffusion::DDIMC:
+	build_diffusion_opacity = true;
+	break;
+
+    default:
+	throw rtt_dsxx::assertion("Invalid hybrid diffusion scheme.");
+	break;
+    }
 
     Ensure (delta_t > 0.0);
     Ensure (implicitness >= 0.0 && implicitness <= 1.0);

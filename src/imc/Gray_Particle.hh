@@ -13,6 +13,7 @@
 #define RTT_imc_Gray_Particle_HH
 
 #include "Particle.hh"
+#include "Random_Walk.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cmath>
 
@@ -33,6 +34,7 @@ class Gray_Frequency;
 // 0) original
 // 1) 10-FEB-03 : removed #define's for Base class scoping; added real
 //                scoping
+// 2) 18-FEB-03 : added random walk version of transport function
 // 
 //===========================================================================//
 
@@ -44,8 +46,7 @@ class Gray_Particle : public Particle<MT>
     // >>> NESTED TYPES
 
     /*!
-     * \class Gray_Particle::Diagnostic
-     * \brief Diagnostic class for tracking particle histories.
+     * \brief Diagnostic class for tracking gray particle histories.
      */
     class Diagnostic : public Particle<MT>::Diagnostic
     {
@@ -62,11 +63,12 @@ class Gray_Particle : public Particle<MT>
     friend class Diagnostic;
 
     // Useful typedefs.
-    typedef std::vector<double>       sf_double;
-    typedef rtt_rng::Sprng            Rnd_Type;
-    typedef rtt_dsxx::SP<Rnd_Type>    SP_Rnd_Type;
-    typedef std::string               std_string;
-    typedef rtt_dsxx::SP<Diagnostic>  SP_Diagnostic;
+    typedef std::vector<double>            sf_double;
+    typedef rtt_rng::Sprng                 Rnd_Type;
+    typedef rtt_dsxx::SP<Rnd_Type>         SP_Rnd_Type;
+    typedef std::string                    std_string;
+    typedef rtt_dsxx::SP<Diagnostic>       SP_Diagnostic;
+    typedef rtt_dsxx::SP<Random_Walk<MT> > SP_Random_Walk;
 
   private:
     // Typedef for base class scoping.
@@ -96,6 +98,11 @@ class Gray_Particle : public Particle<MT>
     // IMC transport step.
     void transport(const MT &, const Opacity<MT,Gray_Frequency> &, 
 		   Tally<MT> &, SP_Diagnostic = SP_Diagnostic()); 
+
+    // IMC transport step with Random Walk
+    void transport(const MT &, const Opacity<MT,Gray_Frequency> &, 
+		   Tally<MT> &, SP_Random_Walk,
+		   SP_Diagnostic = SP_Diagnostic()); 
 
     // >>> DIAGNOSTIC FUNCTIONS
 
