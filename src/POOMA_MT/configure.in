@@ -51,7 +51,7 @@ AC_WITH_DIR(pooma-root, POOMA_ROOT, \${POOMA_ROOT},
             [tell where POOMA is])
 
 if test "${with_pooma_root:=no}" = no ; then
-   AC_MSG_ERROR([Must set --with-pooma and --with-pooma-root])
+   AC_MSG_WARN([Must set --with-pooma and --with-pooma-root])
 fi
 
 AC_MSG_CHECKING(for pooma root directory)

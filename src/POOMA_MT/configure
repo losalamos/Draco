@@ -2716,7 +2716,7 @@ fi
 
 
 if test "${with_pooma_root:=no}" = no ; then
-   { echo "configure: error: Must set --with-pooma and --with-pooma-root" 1>&2; exit 1; }
+   echo "configure: warning: Must set --with-pooma and --with-pooma-root" 1>&2
 fi
 
 echo $ac_n "checking for pooma root directory""... $ac_c" 1>&6
