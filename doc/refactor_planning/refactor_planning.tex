@@ -29,8 +29,8 @@
 
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
-\refno{CCS-4-}
-\subject{Template}
+\refno{CCS-4:04-14(U)}
+\subject{Particle-transport refactoring plan}
 
 %-------NO CHANGES
 \divisionname{Computer and Computational Sciences Division}
@@ -57,7 +57,13 @@
 %% DISTRIBUTION LIST
 %%---------------------------------------------------------------------------%%
 
-\distribution {}
+\distribution {
+  M.W. Buksas, CCS-4, D-409 \\
+  J.D. Densmore, CCS-4, D-409 \\
+  T.M. Evans, CCS-4, D-409 \\
+  T.J. Urbatsch, CCS-4, D-409 \\
+  CCS-4 Files.
+}
 
 %%---------------------------------------------------------------------------%%
 %% BEGIN NOTE
@@ -69,39 +75,31 @@
 
 Particles are currently represented in a heirachy of classes. {\tt
   Particle}, the abstract base class, and two derived classes {\tt
-  Grey\_particle} and {\tt Multigroup\_particle}. The interface of the
+  Gray\_particle} and {\tt Multigroup\_particle}. The interface of the
 derived classes is a mixture of virtual and non-virtual functions.
 Most classes which use particles are templated on the particle type
 and do {\em not} refer to the particle via its base class. The purpose
 of the base class is to provide a common set of inherited data and
 methods (via protected code blocks) to the derived classes. The
 principal difference between the two derived classes is the different
-object used to contain opacity data and the different interface used
-to access opacity data from the object.
+type of the {\tt Opacity} class used and the different interface used
+to access the object.
 
-The particle classes currently implement the main particle-transport
-algorithm.  This algorithm is characterized by repeatedly computing
-distances to various events which limit the streaming of particles.
-Determining the shortest of these distances. Streaming the particle
-that distance and tallying the results. Depending on the nature of the
-event the particle can either live to be streamed again, perhaps
-after accquiring a new direction (after scattering), or die and be
-eliminated from the computation (e.g. absorption)
-
-The addition of multigroup versus grey bifurcated this function into
-versions for the grey and multigroup. These functions are {\em nearly
-  identical}. They differ only in the handful of lines which are
-concerned with the interface to the opacity object and processing
-random walk events.
+Currently, the particle classes implement the main particle-transport
+algorithm.  The addition of multigroup versus gray transport
+bifurcated this function (and the particle class) into two versions
+which contain extensive duplicated code. They differ only in the
+handful of lines which are concerned with the interface to the opacity
+object and processing random walk events.
 
 The addition of random walk to the transport process caused another
 bifurcation in the transport functions, resulting in four functions
 total. Each particle's transport split into versions suitable for
 transport with random walk enabled, or not. These functions are also
 nearly identical, differing only in the conditional logic for random
-walks.
+walk.
 
-\section{The contractor model for particle transport}
+\section{The contractor metaphor for particle transport}
 
 The transport algorithm for a particle consists of repeated short
 streaming steps which are limited by various events. These events then
@@ -129,29 +127,30 @@ Each of these events (or group of related sub-events e.g. collisions)
 has two aspects to it: It generates a distance at which the event
 occurs, and, if the event comes to pass, changes the state of the
 particle to reflect the event. This change in state can include
-resampling its direction (for collisions) resampling its position
-(for random walk), killing the particle, moving it to census,
-etc. Both of these steps generally require the collaboration of other
+resampling its direction (e.g. scattering), resampling its position
+(e.g. random walk), killing the particle, moving it to census, etc.
+Both of these steps generally require the collaboration of other
 objects which hold needed data. For example, the mesh to determine the
 distance to boundary crossings, or the opacity to determine the
 distance to cutoff.
 
-In the contractor model, the more complicated limiting events would be
-implemented as seperate classes. This class computes the event
-distance and modifies the particle state as seperate methods. These
-methods take the particle in question as arguments. Less complicated
-limiting events may not require offloading into seperate classes, but
-should still be expresses as pairs of functions in the same pattern.
+In the contractor model, limiting events are implemented via separate
+classes. This class provides two public member functions which compute
+the event distance and modify the particle state. These methods take
+the particle in question as arguments.
 
 With the limiting event compuations and implementations moved into
-seperate classes or functions, the main loop of the particle transport
-algorithm contains less data and is less complicated. It is primairly
+seperate classes, the main loop of the particle transport algorithm
+contains less data and is less complicated. It is primairly
 responsible for soliciting distance information from its various
 contractors, (e.g. ``bids''), determining which event occurs (the
 ``winner'') and handing the particle to that contractor for
-implementation.
+implementation. It then decides if transport should continue or if
+other actions are required (e.g. communication).
 
-\section{Contractor implemetation details by example}
+\section{Example contractor implemetation}
+
+\subsection{Collision contractor}
 
 A good candidate for stand-alone contractor status is the collision
 event handler. This event depends on additional data extracted from
@@ -167,7 +166,7 @@ Figure~\ref{fig:collision_contractor}
 \begin{center}
   \begin{figure}
     \includegraphics[width=6.5in]{figures/collision_contractor.eps}
-    \caption{Example contractor implementation (not all members shown)} 
+    \caption{Example contractor implementation. Not all members shown} 
     \label{fig:collision_contractor}
   \end{figure}
 \end{center}
@@ -181,14 +180,18 @@ distance and the  relative probabilities for  its various sub-events.
 If it wins, the {\tt apply\_event} member function will dispatch to
 vartious private members depending on the sub-event.
 
-One of the problems that needs to be addressed when unifying the
-manifold particle transport implementations is the differing interface
-between the {\tt Opacity} class for grey frequency and multigroup
-transport. The multigroup version contains an extra argument for the
-energy group of the particle. We propose to wrap the opacity class
-with another class which takes the particle as an argument and returns
-the correct opacity information for its cell and group (if
-applicable)
+The contractor class can also aggregate the appropaite tally object
+for the kinds of events that it handles as shown in the figure. This
+removes more code from the transport algorithm itself.
+
+\subsection{Opacity interface}
+
+One of the problems to be address when unifying the particle transport
+functions is the differing interface between the {\tt Opacity} class
+for gray and multigroup frequency.  The multigroup version contains an
+extra argument for the energy group of the particle. We propose to
+wrap the opacity class with another class which takes the particle as
+an argument and returns the correct opacity information.
 
 This wrapper class will be specialized on the frequency type (which is
 part of the type of the particle class). The specialized versions will
@@ -212,9 +215,10 @@ one likely assignment of template parameters in
 Figure~\ref{fig:collision_contractor}. In this implementation, class
 {\tt Opacity\_Interface} extracts the frequency type partameter {\tt
   FT} from the particle type {\tt PT} to determine the correct
-parameter for the {\tt Opacity} class. 
+parameter for the {\tt Opacity} class. This can be facilitated by a
+{\tt typedef} in the derived particle classes.
 
-\section{Implementation of random-walk and particle-transport algorithm}
+\section{Implementation of random walk and particle transport}
 
 With contractor classes (or functions) in place for the limiting
 events, we reduce the main particle transport algorithm to the
@@ -251,23 +255,34 @@ Some of these complications can be moved into the random walk
 implementation either by adding to the existing class or wrapping it
 in a contractor-style interface class. Wrapping the random walk in
 another class would provide a better location for the
-frequency-specific specializations. The interactions between random
-walk and other limiting events should be handled in the particle
-transport algorithm.
+frequency-specific specializations, instead of specializing {\tt
+  Random\_Walk} itself . The interactions between random walk and other
+limiting events should be handled in the particle transport algorithm.
 
 Currently, the random walk option is checked for only once before
 dispatching to the different transport functions in the particle.
 Unifying these functions will require a conditional check on random
-walk with each streaming step. This carries a performance penalty that
-we will address later.
+walk with each streaming step. This carries a mild performance penalty
+that we will address later.
+
+The {\tt transport\_particle} member of the particle transporter class
+returns an object of class {\tt Status}. The purpose of this object is
+to convey enough inforation so that the caller can decide what to do
+next with the particle. In applications, the caller will be the
+asynchronous transport implementation which currently calls the
+particle transport function. Once the particle-transport stage is
+completed, a particle might need to be added to the census,
+communicated to another processor, or just be dead. We need to return
+enough information from the particle-transport algortihm to determine
+what to do next. 
 
 \section{Proposed sequence for refactoring}
 
 Our first objective for this sub-project is to unify the four
 implementations of the particle transport alforithm. On outline of our
-proposed approach to do so are as follows:
+proposed approach to do so are as follows.
 
-\begin{itemize}
+\begin{enumerate}
 \item Unify the logic between the random-walk and non-random walk
   transport versions. 
 
@@ -280,44 +295,42 @@ proposed approach to do so are as follows:
   \item At this point, it should be possible to combine the two
     functions.
   \end{itemize}
-
-\item Create Particle-transporter class. This class will take over the
-  transport operation.
+  
+\item Create {\tt Particle\_Transporter} class. This class will take
+  over the particle transport operation.
 
   \begin{itemize}
-  \item Template the class on the Particle type: Grey (G) or
-    Multigroup (MG). This can be done with a flag class or the full
-    type of the particle.
-  \item Create specialized versions of the transport algorithm in the
-    particle-transporter.
-  \item Expand the public interface of the Particle classes, if
+  \item Template the class on the frequency type (FT) or the full type
+    of the particle (PT).
+  \item Copy over specialized versions of the transport algorithm in
+    the particle-transporter for the different frequency types from
+    the particle classes.
+  \item Expand the public interface of the Particle classes as
     necessary, to enable the transport methods in the
     particle-transporter to function. Various other methods of the
     Particle class can also be moved over to the transporter as
     needed.
   \item Construct the particle-transporter with references or pointers
-    to classes which provide information for doing the transport:
-    e.g. opacity, mesh.
+    to classes which provide needed information, e.g. opacity, mesh.
   \end{itemize}
 
-\item Unify the Grey and Multigroup specializations in the particle
-  transporter by creating a collision event contractor class. 
-
-  The collison handler will compute distance to collisions and
-  implement the streaming operation when a stream-to collision
-  takes place. 
+  Once {\tt Particle\_Transporter} is in place, modify the Particle
+  unit tests to use it instead of the particle's transport method.
+  
+\item Unify the Gray and Multigroup specializations in the particle
+  transporter by creating a collision event contractor class: {\tt
+    Collision\_Contractor}
 
   \begin{itemize}
-    \item Create class and template on particle type.
-    \item Implement distance computation (``bidding'') and streaming
-      operator (``winning''). These functions take a particle
-      argument.
-    \item Construct with needed assistant classes. e.g. opacity.
-    \item Modify the particle transporter to use the collision event
-      contractor.
-    \item The Grey and Multigroup specializations of the transport
-      function should now differ only in types, so we can eliminate
-      the specializations.
+    \item Create class and template on particle type
+    \item Implement {\tt compute\_distance} and {\tt apply\_event}
+    \item Construct with and aggregate required assistant classes.
+      e.g.  {\tt Opacity\_Interface}.
+    \item Modify {\tt Particle\_Transporter} to use {\tt
+        Collision\_Contractor}.
+    \item The Gray and Multigroup specializations of the transport
+      function should now differ only in symbolic types, so we can
+      eliminate the specializations.
     \end{itemize}
     
   \item Evaluate the use of contractors to handle remaining events:
@@ -327,10 +340,11 @@ proposed approach to do so are as follows:
   \item Remove the old transport methods in particle classes. Remove
     unnecessary data types and data objects.
     
-  \item Modify client codes to create and use a particle-transporter
-    class instead of calling the particle-transport method.
+  \item Modify clients of particle transport to create and use a {\tt
+      Particle\_Transporter} instead of calling the particle's
+    transport method.
 
-\end{itemize}
+\end{enumerate}
 
 \section{Next Steps}
 
