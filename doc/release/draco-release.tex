@@ -588,13 +588,10 @@ perform the following tasks
 \item Update the {\bf cvs} revision numbers in \texttt{draco/src/ds++} 
   to 3.0:
 \begin{verbatim}
-     cd draco
+     cd draco/src/ds++
      cvs commit -r 3.0
 \end{verbatim}
-\item Update the \stable\ tag.  For a minor revision change this step
-  would not be necessary; however, since we committed the \dsxx\
-  component files by updating the {\bf cvs} revision numbers to 3.0,
-  this step is required.
+\item Update the \stable\ tag.
 \begin{verbatim}
      cvs tag -F last_stable
 \end{verbatim}
@@ -604,10 +601,10 @@ perform the following tasks
 \end{verbatim}
 \end{enumerate}
 Note that this example is an extraordinary case where the major
-release of \dsxx\ is updated.  Normally, we would not have to re-tag
-the \texttt{draco/src/ds++} components as \stable.  Remember, whenever
-the major release number is advanced the \stable\ tag must be
-reapplied to the component.
+release of \dsxx\ is updated.  Normally, we would not have to
+re-commit the \texttt{draco/src/ds++} components.  Remember, whenever
+the major release number is advanced an additional commit is required
+to advance the {\bf cvs} revision numbers in the package.
 
 On a final note, \draco-client systems such as \solon\ and \milagro\ 
 should be tagged in a similar manner.  However, the decision on
