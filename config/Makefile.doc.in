@@ -1,0 +1,244 @@
+###############################################################################
+# draco/config Makefile.doc.in
+# Randy M. Roberts
+# Wed Nov  1 09:31:34 MST 2000
+# $Id$
+###############################################################################
+# @> General Makefile.in for draco package documents.
+###############################################################################
+
+top_srcdir = @top_srcdir@
+srcdir = @srcdir@
+
+# get the relative directory between the top_srcdir and the srcdir
+
+reldir := $(shell echo "${srcdir}" | sed s%${top_srcdir}%% | sed 's%/[^/]*%../%g')
+ifeq (,${reldir})
+  reldir := "."
+endif
+# get the relative directory to the config files (relative to ${top_srcdir}).
+
+rel_config_dir := $(shell ( cd ${top_srcdir} ; \
+	tmp="" ; \
+	while test ! -d config ; \
+	do \
+	   cd .. ; \
+	   tmp=$$tmp../ ; \
+	done ; \
+	echo $$tmp ) )config
+
+
+##---------------------------------------------------------------------------##
+## VARIABLES THAT ARE ASSIGNED BY AUTOCONF
+## These are assigned using "="
+##---------------------------------------------------------------------------##
+
+package = @package@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+includedir = @includedir@
+libdir = @libdir@
+libexecdir = @libexecdir@
+bindir = @bindir@
+
+dirstoclean = @dirstoclean@
+
+NMLGEN = @NMLGEN@
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+UNINSTALL = rm -f
+
+CC = @CC@
+CFLAGS = @CFLAGS@
+CPPFLAGS = @CPPFLAGS@
+CPPFLAGS += -I. -I.. @testcppflags@ -I${includedir}
+
+CXX = @CXX@
+STRICTFLAG = @STRICTFLAG@
+CXXFLAGS = @CXXFLAGS@
+
+LEX = @LEX@
+LEXLIB = @LEXLIB@
+YACC = @YACC@
+YACCLIB = @YACCLIB@
+
+GM4 = @GM4@
+
+PYTHON = @PYTHON_PATH@
+
+LD = @LD@
+LDFLAGS = @LDFLAGS@
+PKG_LIBS = @PKG_LIBS@
+DRACO_LIBS = @DRACO_LIBS@
+VENDOR_LIBS = @VENDOR_LIBS@
+DRACO_TEST_LIBS = @DRACO_TEST_LIBS@
+VENDOR_TEST_LIBS = @VENDOR_TEST_LIBS@
+PKG_DEPENDS = @PKG_DEPENDS@
+DRACO_DEPENDS = @DRACO_DEPENDS@
+VENDOR_DEPENDS = @VENDOR_DEPENDS@
+DRACO_TEST_DEPENDS = @DRACO_TEST_DEPENDS@
+VENDOR_TEST_DEPENDS = @VENDOR_TEST_DEPENDS@
+LIBS = @LIBS@
+
+AR = @AR@
+ARFLAGS = @ARFLAGS@
+ARLIBS = @ARLIBS@
+RANLIB = @RANLIB@
+
+GHOSTVIEW = @GHOSTVIEW@
+LATEX = @LATEX@
+LATEXFLAGS = @LATEXFLAGS@
+BIBTEX = @BIBTEX@
+BIBTEXFLAGS = @BIBTEXFLAGS@
+DVIPS = @DVIPS@
+DVIPSFLAGS = @DVIPSFLAGS@
+XDVI = @XDVI@
+XDVIFLAGS = @XDVIFLAGS@
+LP = @LP@
+LPFLAGS = @LPFLAGS@
+
+libsuffix = @libsuffix@
+installdirs = 
+installfiles = 
+
+configure_command = @configure_command@
+
+##---------------------------------------------------------------------------##
+## EXPLICIT VARIABLES
+## these are assigned using ":="
+##---------------------------------------------------------------------------##
+
+# Add the src directory and the DRACO/doc/tex directory to the TEXINPUTS
+# environment variable for every invocation of a LaTeX-like command.
+
+DRACOTEXINPUTS := ${top_srcdir}/../doc/tex
+TEXINPUTSENV := TEXINPUTS="${TEXINPUTS}:${srcdir}:${DRACOTEXINPUTS}"
+LATEXCMD  := ${TEXINPUTSENV} ${LATEX}
+BIBTEXCMD := ${TEXINPUTSENV} ${BIBTEX}
+DVIPSCMD  := ${TEXINPUTSENV} ${DVIPS}
+XDVICMD  := ${TEXINPUTSENV} ${XDVI}
+
+# if the source developer wants to over override what sources and objects
+# are to be made then create a Makefile.srcs file that lives in the source
+# directory that defines the variables:
+# "texsrc" "texdvi" "texps" "texlog"
+
+ifeq (,$(wildcard ${srcdir}/Makefile.srcs))
+
+  texsrc  := ${srcdir}/${package}.tex
+  texdvi  := $(notdir $(patsubst %.tex,%.dvi,${texsrc}))
+  texps   := $(notdir $(patsubst %.tex,%.ps,${texsrc}))
+  texlog  := $(notdir $(patsubst %.tex,%.log,${texsrc}))
+
+else
+
+  include ${srcdir}/Makefile.srcs
+
+endif
+
+##---------------------------------------------------------------------------##
+## TARGETS
+##---------------------------------------------------------------------------##
+
+.PHONY : all install installdirs clean distclean forced-distclean \
+	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
+	forced-clean reconfigure view doc xdvi print
+
+all: ${texps}
+
+doc: ${texps}
+
+xdvi: ${texdvi}
+	${XDVICMD} ${XDVIFLAGS} $^
+
+view: ${texps}
+	${GHOSTVIEW} $^
+
+print: ${texps}
+	${LP} ${LPFLAGS} $^
+
+${texps}: ${texdvi}
+
+%.ps: %.dvi
+	${DVIPSCMD} ${DVIPSFLAGS} -o $@ $<
+
+${texdvi}: ${texsrc}
+
+%.dvi: ${srcdir}/%.tex
+	${LATEXCMD} ${LATEXFLAGS} $<
+	-${BIBTEXCMD} ${BIBTEXFLAGS} $(basename $@)
+	${LATEXCMD} ${LATEXFLAGS} $<
+	${LATEXCMD} ${LATEXFLAGS} $<
+
+installdirs: ${installdirs}
+
+${installdirs}:
+	mkdir $@
+
+# nothing to install in doc
+
+install:
+
+uninstall:
+
+##---------------------------------------------------------------------------##
+## dependencies in the build system
+# Makefile depends on all of the M4 files in the config directory
+## and the pkg_config directory
+
+configfiles := $(wildcard ${top_srcdir}/${rel_config_dir}/*.m4) \
+	$(wildcard ${top_srcdir}/${rel_config_dir}/../pkg_config/*.m4)
+
+${top_srcdir}/configure: ${top_srcdir}/configure.in ${configfiles}
+	@echo 1>&2 "****************************************************"
+	@echo 1>&2 "***      WARNING: configure is out of date       ***"
+	@echo 1>&2 "***      You may need to rerun autoconf          ***"
+	@echo 1>&2 "***      in the source directory by running      ***"
+	@echo 1>&2 "***      ${MAKE} reconfigure                     ***"
+	@echo 1>&2 "****************************************************"
+
+reconfigure:
+	@echo 1>&2 "Running ${MAKE} reconfigure..."
+	cd ${top_srcdir} && autoconf --localdir=${rel_config_dir}
+
+Makefile: ${top_srcdir}/${rel_config_dir}/Makefile.doc.in ${reldir}/config.status
+	(cd ${reldir} && if test -x ./config.status ; then ./config.status ; fi)
+
+${reldir}/config.status: ${top_srcdir}/configure
+	(cd ${reldir} && if test -x ./config.status ; then \
+		./config.status --recheck ; fi)
+
+%: ${srcdir}/%.in
+	(cd ${reldir} && if test -x ./config.status ; then \
+	  CONFIG_FILES=doc/$@:doc/$(notdir $<) \
+	      CONFIG_HEADERS= ./config.status; fi)
+
+clean:
+	-rm -f .tmp?
+	-rm -f *.aux ${texlog} ${texdvi} ${texps} *.bbl *.blg
+	-rm -r ${dirstoclean}
+
+distclean: mostlyclean
+	-rm config.status config.cache config.log config.h stamp-h Makefile
+	-rm -f site.exp
+
+mostlyclean: clean
+	-rm *.o *.d
+
+# maintainer-clean does not delete "configure"
+
+maintainer-clean: forced-maintainer-clean distclean
+forced-maintainer-clean:
+	@echo 'This command is intended for maintainers to use; it'
+	@echo 'deletes files that may need special tools to rebuild.'
+
+# any other hand-coded dependencies or any thing **additional** can
+# be put into Makefile.misc in the source directory
+
+-include ${srcdir}/Makefile.misc
+
+
+###############################################################################
+#			 end of draco/config Makefile.doc.in
+###############################################################################
