@@ -169,7 +169,7 @@ arrange(const int numRows,
     // turn off unused graphs
     
     for ( int i = d_numGraphs; i < d_numCols * d_numRows; i++ ) {
-	GracePrintf("focus g%d", graphNum(i));
+	GracePrintf("focus g%d", graphNum(i, true));
 	GracePrintf("frame off");
 	GracePrintf("xaxis off");
 	GracePrintf("yaxis off");
@@ -480,6 +480,8 @@ setProps(const int iSet,
   \brief Determines the Grace graph number for the given graph number.
   
   \param iG The graph number used by Plot2D.
+
+  \param allowVacant Allow access to vacant graph locations.
   
   \returns The graph number used by Grace.
 
@@ -497,9 +499,12 @@ setProps(const int iSet,
 //---------------------------------------------------------------------------//
 int
 Plot2D::
-graphNum(const int iG) const
+graphNum(const int iG,
+	 const bool allowVacant) const
 {
-    Require(iG >= 0 && iG < d_numGraphs);
+    Require(iG >= 0);
+    Require((allowVacant && iG < d_numRows * d_numCols)
+	    || iG < d_numGraphs);
     
     int iRow = iG / d_numCols;
     int iCol = iG - d_numCols * iRow;

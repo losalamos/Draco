@@ -182,8 +182,9 @@ class Plot2D
 
     // IMPLEMENTATION
 
-    // Returns the xmgr graph number for the given equation number
-    int graphNum(const int iEqn) const;
+    // Returns the Grace graph number for the given graph number.
+    int graphNum(const int iEqn,
+		 const bool allowVacant = false) const;
 
     // Returns the number of columns of data in file
     int numColumnsInFile(const std::string filename) const;
