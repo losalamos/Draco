@@ -6,6 +6,8 @@
 
 #include "PreCond.cc"
 #include "Diffusion_XYZ.hh"
+#include "Diffusion_P1.hh"
 #include "mesh/Mesh_XYZ.hh"
 
 instantiate class PreCond< Diffusion_XYZ<Mesh_XYZ> >
+instantiate class PreCond< Diffusion_P1<Mesh_XYZ> >
