@@ -13,7 +13,7 @@ if {$Serial} { set maxprocs 1 } else { set maxprocs 8 }
 
 proc runit {np args} {
     set output [c4run $np $args]
-    puts "output is :$output:"
+    # puts "output is :$output:"
 
     set lines [split $output \n]
 
@@ -37,18 +37,19 @@ for {set np 1} {$np <= $maxprocs} {incr np} {
 
     set x "tgsync_$ENV -np $np"
 
-    set err [catch {set rc [runit $np tgsync_$ENV]} result]
+    set err [catch {runit $np tgsync_$ENV} rc]
 
     if {$err} {
 
-       fail "$x : result=\"$result\""
+       fail "$x : rc=\"$rc\""
 
     } else {
 
        puts "err=$err rc=$rc"
 
        if { !$rc } {
-	   xfail $x
+	   # xfail $x
+	   fail $x
        } else {
 	   pass $x
        }

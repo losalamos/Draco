@@ -17,12 +17,12 @@ for {set np 1} {$np <= $maxprocs} {incr np} {
 
     set x "tReduce_$ENV -np $np"
 
-    set err [catch {set output [c4run $np tReduce_$ENV]} result]
-#    puts "err=$err output=$output"
+    set err [catch {c4run $np tReduce_$ENV} output]
+    # puts "err=$err output=$output"
 
     if {$err != 0} {
 
-	fail "$x : result=\"$result\""
+	fail "$x : output=\"$output\""
 
     } else {
 

@@ -38,17 +38,36 @@ proc c4run {np args} {
 
     if {$Serial} {
 	puts "Running serial code."
-	return [exec $args]
+#	return [exec $args]
+        if [catch {exec $args} output] {
+	   error "serial code faild: $output"
+        } else {
+           return "$output"
+        }
     }
 
     if {$C4 == "mpi"} {
 	puts "Running MPI code on $np nodes."
-	return [exec mpirun -np $np $args]
+#	return [exec mpirun -np $np $args]
+	if [catch {exec mpirun -np $np $args} output] {
+	   error "mpirun failed: $output"
+        } else {
+           return "$output"
+        }
     }
 
     if {$C4 == "s2"} {
 	puts "Running an SGI SHMEM program."
-	return [exec $args -npes $np]
+#	return [exec $args -npes $np]
+	if [catch {exec $args -npes $np} output] {
+	   if [regexp "child killed: kill signal" $output] {
+	      return "SHMEM program may have failed: $output"
+           } else {
+	      error "SHMEM program failed: $output"
+           }
+        } else {
+           return "$output"
+        }
     }
 
     puts "Unrecognized C4 option."
