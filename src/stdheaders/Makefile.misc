@@ -4,3 +4,10 @@ extraInstallHeaders := $(addprefix ${includedir}/${package}/, ${extraheaders})
 
 install: ${extraInstallHeaders}
 
+uninstall: extraUninstall
+
+.PHONY: extraUninstall
+
+extraUninstall:
+	-${UNINSTALL} ${extraInstallHeaders}
+
