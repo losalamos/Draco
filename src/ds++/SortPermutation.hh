@@ -178,7 +178,7 @@ class SortPermutation
     /*!
      * \brief Returns the i'th entry into the index table.
      * \param i The i'th entry into the sorted order.
-     * The condition, *(first + sortPerm(i+1)) < *(first + sortPerm(i)),
+     * The condition, *(first + sortPerm[i+1]) < *(first + sortPerm[i]),
      * is guaranteed to be false.
      *
      * eg.
@@ -186,7 +186,7 @@ class SortPermutation
      *     last = unsorted.end()
      *     SortPermutation sortPerm(first, last);
      *     for (int i=0; i<unsorted.size(); i++)
-     *        sorted[i] = unsorted[sortPerm(i)];
+     *        sorted[i] = unsorted[sortPerm[i]];
      *
      * results in sorted containing the sorted elements of [first, last).
      */
