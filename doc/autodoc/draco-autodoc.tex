@@ -83,8 +83,8 @@
   T.A. Wareing, XTM MS D409\\
   J.S. Warsa, XTM MS D409\\
   C.J. Gesh, XTM MS D409\\
-  R.B. Lowrie, XHM MS D413\\
-  W.D. Hawkins, XTM MS D409
+  W.D. Hawkins, XTM MS D409\\
+  R.B. Lowrie, XHM MS D413
   }
 
 %%---------------------------------------------------------------------------%%
@@ -180,6 +180,7 @@ Additionally, the configuration options available to users are well
 documented in the \doxy\ manual.
 
 \subsection{Special Comment Blocks}
+\label{sec:spcom}
 
 As previously mentioned, \doxy\ can be used on any C++ source file
 without any modifications to the source at all.  \doxy\ will extract a
@@ -217,7 +218,7 @@ keywords that we have found to be most useful.
 \item \verb+\file+ The file name.
 \item \verb+\author+ The author.
 \item \verb+\date+ The date.
-\item \verb+\brief+ A one line description.
+\item \verb+\brief+ A pithy ``one line'' description.
 \item \verb+\param+ An input parameter.
 \item \verb+\return+ The return value.
 \item \verb+\sa+ ``See Also'' a list of related items.
@@ -230,6 +231,31 @@ keywords that we have found to be most useful.
     title}. You can refer to and create a link to the page using {\em
     reference} as an argument to the \doxy\ ``\verb+\ref+'' keyword.
 \end{itemize}
+
+\subsection{Other Fancy Stuff}
+
+If found within a special comment block 
+as defined in section \S~\ref{sec:spcom} above, \doxy\ 
+recoginizes a multitude of html commands. These
+commands are used directly in the html document, and are converted appropriately for
+the \LaTeX\ output. 
+For example, if the phrase: 
+\begin{verbatim}
+<H1> My Header <\H1>
+\end{verbatim} appears in the special comment
+block \doxy\ will format the phrase ``My Header'' as the start of an
+unumberded section in the documentation. 
+Also, \LaTeX\ fomulas can be used inside a special
+comment block if they are delimited using the syntax ``\verb+\f$ ... \f$+''.
+For example, the phrase 
+\begin{verbatim}
+\f$ \sqrt{x_2-x_1)^2+(y_2-y_1)^2} \f$ 
+\end{verbatim}  will appear in the
+documentation as $\sqrt{x_2-x_1)^2+(y_2-y_1)^2}$.
+These two
+features make it possible to create a fairly sophisticated document, if desired.
+See the manual for more details.
+
 
 %%---------------------------------------------------------------------------%%
 
@@ -358,27 +384,32 @@ that point to the \dsxx\ documentation:
      cd draco/src/c4/html
      cp ../../ds++/html/ds++.tag .
      ./installdox -l ds++.tag@../../ds++/html
-     rm ds++.tag
 \end{verbatim}
  The \texttt{installdox} script should be run in the above manner for each
 of the tagfiles named in the configure script.
 The \texttt{installdox} script will modify all of the \texttt{.html}
-files so that the links point to the correct locations.  Remember to
-use relative paths so that the documentation is independent of the
-absolute location of the \texttt{draco} directory.  In addition, do
-{\bf not} commit the copied tag files into the \texttt{html}
-directory.  Only make temporary copies to generate the link
-information.  Unfortunately, remote paths to do not seem to work in
+files so that the links point to the correct locations.  Be sure to 
+use relative paths in the above procedure to insure that the 
+documentation is independent of the
+absolute location of the \texttt{draco} directory.  The dates of
+copied tag files
+can be used to determine the currency of the references to other packages.
+Unfortunately, remote paths to do not seem to work in
 \texttt{installdox} at this time; thus, copying is required.
 
 \subsection{Storage of \doxy\ Output}
 
 Each package developer will run \doxy\ in their respective
 directories.  \doxy\ will create html and \LaTeX\ sub-directories to
-contain the html and \LaTeX\ documentation output. \doxy\ will need to
+contain the html and \LaTeX\ documentation output. \doxy\ and
+\texttt{installdox} will need to
 be run periodically to bring the documentation into sync with with the
 source code. The resulting output should be tagged and committed to
-CVS using the same procedures as for the source code.
+CVS using the same procedures as for the source code. Also note the
+dependencies introduced by the tag files.
+When the documentation for package ``A'' changes, all the packages
+that use ``A.tag'' will have to be redocumented in insure compatibility
+with the potentially new references in tag.A.
 
 \subsection{\draco\ WWW Site}
 
@@ -396,7 +427,7 @@ following standards for consideration:
 
 \begin{itemize}
 \item Each file, namespace, class, and associated public members
-  should have a least a brief description.
+  should have at least a brief description.
 \item Each public member should have descriptions of its input
   parameters and return values.
 \end{itemize}
