@@ -214,7 +214,7 @@ AC_DEFUN(AC_EOSPAC5_SETUP, [dnl
 
    dnl define --with-eospac
    AC_ARG_WITH(eospac,        
-      [  --with-eospac[=lib]    determine the eospac lib name (eospac is default)])
+      [  --with-eospac[=lib]     determine the eospac lib name (eospac is default)])
 
    dnl define --with-eospac-lib
    AC_WITH_DIR(eospac-lib, EOSPAC5_LIB, \${EOSPAC5_LIB_DIR},
@@ -292,6 +292,59 @@ AC_DEFUN(AC_LAPACK_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_GRACE_SETUP
+dnl
+dnl GRACE SETUP (on by default)
+dnl GRACE is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_GRACE_SETUP, [dnl
+
+   dnl define --with-grace
+   AC_ARG_WITH(grace,
+      [  --with-grace=[lib]      determine the grace lib (grace_np is the default])
+ 
+   dnl define --with-grace-inc
+   AC_WITH_DIR(grace-inc, GRACE_INC, \${GRACE_INC_DIR},
+	       [tell where GRACE includes are])
+
+   dnl define --with-grace-lib
+   AC_WITH_DIR(grace-lib, GRACE_LIB, \${GRACE_LIB_DIR},
+	       [tell where GRACE libraries are])
+
+   # set default value of grace includes and libs
+   if test "${with_grace:=grace_np}" = yes ; then
+       with_grace='grace_np'
+   fi
+
+   # define GRACE include path
+   if test -n "${GRACE_INC}" ; then
+       # remember that GRACE_INC has the final slash
+       GRACE_H="\"${GRACE_INC}${with_grace}.h\""
+   elif test -z "${GRACE_INC}" ; then
+       GRACE_H="<${with_grace}.h>"
+   fi
+   
+   # we define GRACE_H regardless of whether a PATH is set
+   AC_DEFINE_UNQUOTED(GRACE_H, ${GRACE_H})dnl
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_grace=$1
+
+   # set up the libraries
+   if test "${with_grace}" != no ; then
+       if test -n "${GRACE_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_grace, -L${GRACE_LIB} -l${with_grace})
+       elif test -z "${GRACE_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_grace, -l${with_grace})
+       fi
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_ALL_VENDORS_SETUP
 dnl
 dnl DRACO INCLUSIVE VENDOR MACRO
@@ -308,6 +361,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_LAPACK_SETUP(pkg)
    AC_GANDOLF_SETUP(pkg)
    AC_EOSPAC5_SETUP(pkg)
+   AC_GRACE_SETUP(pkg)
 ])
 
 dnl-------------------------------------------------------------------------dnl
