@@ -20,7 +20,7 @@ CXXFLAGS += -DDBC=7
 
 # Put non template code here
 
-libsrcs = BilinearInterpTable.cc
+libsrcs = BilinearInterpTable.cc BilinearInterpGrid.cc
 
 # Get the library built, minding our various other targets too.
 

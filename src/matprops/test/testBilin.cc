@@ -59,6 +59,8 @@ BilinearInterpTable getTable()
     vector<double> vx1(x1, x1+sz1);
     vector<double> vx2(x2, x2+sz2);
 
+    BilinearInterpGrid grid(vx1, vx2);
+
 #if 0
     
     Mat2<double> mat(sz1, sz2);
@@ -71,11 +73,11 @@ BilinearInterpTable getTable()
 	}
     }
 
-    return BilinearInterpTable(vx1, vx2, mat);
+    return BilinearInterpTable(grid, mat);
 
 #else
     
-    return BilinearInterpTable(vx1, vx2, func);
+    return BilinearInterpTable(grid, func);
     
 #endif
 }
@@ -93,9 +95,11 @@ void doit()
     vector<BilinearInterpTable::Memento> mementos;
 
     // Load up the mementos
-    
+
+    const BilinearInterpGrid &grid = biLinTable.getGrid();
+
     for (int i=0; i<sztest; i++)
-	mementos.push_back(biLinTable.getMemento(testvals1[i], testvals2[i]));
+	mementos.push_back(grid.getMemento(testvals1[i], testvals2[i]));
     
     vector<double> results;
     

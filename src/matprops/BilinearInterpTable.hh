@@ -9,9 +9,9 @@
 #ifndef __matprops_BilinearInterpTable_hh__
 #define __matprops_BilinearInterpTable_hh__
 
+#include "matprops/BilinearInterpGrid.hh"
 #include "ds++/Mat.hh"
 #include "ds++/Assert.hh"
-#include <vector>
 #include <algorithm>
 #include <functional>
 
@@ -43,20 +43,7 @@ class BilinearInterpTable
 
   public:
     
-    // This class is part of the Memento pattern
-    // from p. 283, "Design Patterns", E. Gamma, et. al., 1995
-    //
-    // This class is meant to be "the internal state" of the
-    // BilinearInterpTable (to be held externally),
-    // and therefore, must be seen only by that class.
-    // I am using it to contain the internal state for a given
-    // (x1, x2) pair's interpolation.
-    //
-    // For faster access to the interpolation table, a user can create
-    // a field of Memento to store the intermediate interpolation table
-    // calculations.
-
-    class Memento;
+    typedef BilinearInterpGrid::Memento Memento;
 
   private:
 
@@ -75,14 +62,13 @@ class BilinearInterpTable
     //=======================================================================//
 
   private:
+
+    // The grid axis values on which to do the interpolation.
     
-    // x1vals is the x1 axis of the 2-dimensional grid of tabulated y values.
-    std::vector<double> x1vals;
-
-    // x2vals is the x2 axis of the 2-dimensional grid of tabulated y values.
-    std::vector<double> x2vals;
-
+    BilinearInterpGrid grid;
+    
     // yvals is the 2-dimensional grid of tabulated y values.
+
     dsxx::Mat2<double> yvals;
     
     //=======================================================================//
@@ -99,14 +85,7 @@ class BilinearInterpTable
 
     BilinearInterpTable(const std::vector<double> &x1vals_,
 			const std::vector<double> &x2vals_,
-			const dsxx::Mat2<double> &yvals_)
-	: x1vals(x1vals_), x2vals(x2vals_), yvals(yvals_)
-    {
-	Require(x1vals.size() >= 2);
-	Require(x2vals.size() >= 2);
-	Require(yvals.size() == x1vals.size()*x2vals.size());
-	Require(axesAreOrdered());
-    }
+			const dsxx::Mat2<double> &yvals_);
     
     //------------------------------------------------------------------------//
     // BilinearInterpTable:
@@ -115,20 +94,28 @@ class BilinearInterpTable
     //------------------------------------------------------------------------//
 
     template<class BinaryOperation>
-    BilinearInterpTable(const std::vector<double> &x1vals_,
-			const std::vector<double> &x2vals_,
-			BinaryOperation binary_op)
-	: x1vals(x1vals_), x2vals(x2vals_), yvals(x1vals.size(),x2vals.size())
-    {
-	Require(x1vals.size() >= 2);
-	Require(x2vals.size() >= 2);
-	Require(yvals.size() == x1vals.size()*x2vals.size());
-	Require(axesAreOrdered());
+    inline BilinearInterpTable(const std::vector<double> &x1vals_,
+			       const std::vector<double> &x2vals_,
+			       BinaryOperation binary_op);
+    
+    //------------------------------------------------------------------------//
+    // BilinearInterpTable:
+    //    Constructor supplying the grid and the two-dimensional
+    //    table of evaluations.
+    //------------------------------------------------------------------------//
 
-	for (int i=0; i<x1vals.size(); i++)
-	    for (int j=0; j<x2vals.size(); j++)
-		yvals(i,j) = binary_op(x1vals[i], x2vals[j]);
-    }
+    BilinearInterpTable(const BilinearInterpGrid &grid_,
+			const dsxx::Mat2<double> &yvals_);
+    
+    //------------------------------------------------------------------------//
+    // BilinearInterpTable:
+    //    Constructor supplying the grid and a binary functional
+    //    to perform the calculation.
+    //------------------------------------------------------------------------//
+
+    template<class BinaryOperation>
+    inline BilinearInterpTable(const BilinearInterpGrid &grid_,
+			       BinaryOperation binary_op);
     
     //=======================================================================//
     // MANIPULATORS
@@ -143,14 +130,11 @@ class BilinearInterpTable
     template<class BinaryOperation>
     void setTable(BinaryOperation binary_op)
     {
-	Require(x1vals.size() >= 2);
-	Require(x2vals.size() >= 2);
-	Require(yvals.size() == x1vals.size()*x2vals.size());
-	Require(axesAreOrdered());
+	Require(yvals.size() == grid.size());
 
-	for (int i=0; i<x1vals.size(); i++)
-	    for (int j=0; j<x2vals.size(); j++)
-		yvals(i,j) = binary_op(x1vals[i], x2vals[j]);
+	for (int i=0; i<grid.dimension(1); i++)
+	    for (int j=0; j<grid.dimension(2); j++)
+		yvals(i,j) = binary_op(grid.x1(i), grid.x2(j));
     }
     
     //=======================================================================//
@@ -158,27 +142,61 @@ class BilinearInterpTable
     //=======================================================================//
 
     //------------------------------------------------------------------------//
-    // getMemento:
-    //    Accessor to obtain the Memento from an x1, x2 interpolation.
-    //    This allows the user to avoid the repeated calculation of
-    //    interpolation quantities.
+    // getGrid:
+    //    Return a const reference to the grid.
     //------------------------------------------------------------------------//
 
-    Memento getMemento(double x1, double x2) const;
+    const BilinearInterpGrid &getGrid() const { return grid; }
     
+    //------------------------------------------------------------------------//
+    // interpolate:
+    //    Given a Memento, return an interpolated value.
+    //------------------------------------------------------------------------//
+
     inline double interpolate(const Memento &memento) const;
+
+    //------------------------------------------------------------------------//
+    // interpolate:
+    //    Given a pair of doubles, return an interpolated value.
+    //------------------------------------------------------------------------//
 
     inline double interpolate(std::pair<double,double> p) const;
 
+    //------------------------------------------------------------------------//
+    // interpolate:
+    //    Given a pair of doubles, return an interpolated value.
+    //------------------------------------------------------------------------//
+
     inline double interpolate(double x1, double x2) const;
+
+    //------------------------------------------------------------------------//
+    // interpolate:
+    //    Given begin and end iterators of "things" (probably Memento's
+    //    or std::pair<double,double>'s), return interpolations to the
+    //    result iterator.
+    //------------------------------------------------------------------------//
 
     template<class InputIterator, class OutputIterator>
     inline void interpolate(InputIterator first,
 			    InputIterator last,
 			    OutputIterator result) const;
     
+    //------------------------------------------------------------------------//
+    // interpolate:
+    //    Given a field of "things" (probably Memento's
+    //    or std::pair<double,double>'s), return interpolations to the
+    //    ret_vals field.
+    //------------------------------------------------------------------------//
+
     template<class FTIN, class FTOUT>
     inline void interpolate(const FTIN &args, FTOUT &ret_vals) const;
+
+    //------------------------------------------------------------------------//
+    // interpolate:
+    //    Given begin and end iterators of something (probably double's)
+    //    and a begin iterator of something else (also probably double;s),
+    //    return interpolations to the result iterator.
+    //------------------------------------------------------------------------//
 
     template<class InputIterator1, class InputIterator2, class OutputIterator>
     inline void interpolate(InputIterator1 first1,
@@ -186,6 +204,13 @@ class BilinearInterpTable
 			    InputIterator2 first2,
 			    OutputIterator result) const;
     
+    //------------------------------------------------------------------------//
+    // interpolate:
+    //    Given a field of something (probably double's)
+    //    and another field of something else (also probably double;s),
+    //    return interpolations to the ret_vals field.
+    //------------------------------------------------------------------------//
+
     template<class FTIN1, class FTIN2, class FTOUT>
     inline void interpolate(const FTIN1 &arg1s,
 			    const FTIN2 &arg2s,
@@ -197,124 +222,91 @@ class BilinearInterpTable
     // IMPLEMENTATION
     //=======================================================================//
 
-    bool axesAreOrdered() const;
-
-};
-
-//===========================================================================//
-// class BilinearInterpTable::Memento
-//     This class is part of the Memento pattern
-//     from "Design Patterns", E. Gamma, et. al., 1995
-//
-//     This class is meant to be "the internal state" of the
-//     BilinearInterpTable (to be held externally),
-//     and therefore, must be seen only by that class.
-//     I am using it to contain the internal state for a given
-//     (x1, x2) pair's interpolation.
-//
-//     For faster access to the interpolation table, a user can create
-//     a field of Memento to store the intermediate interpolation table
-//     calculations.
-//===========================================================================//
-
-class BilinearInterpTable::Memento
-{
-    friend class BilinearInterpTable;
-
-    //=======================================================================//
-    // DATA
-    //=======================================================================//
-    
-  private:
-
-    // The j index into the x1 axis that is just less than the x1 value.
-    int j;
-
-    // The k index into the x2 axis that is just less than the x2 value.
-    int k;
-
-    // t and u are defined so that the interpolation to a given (x1,x2)
-    // is given by:
-    //    y = (1-t)*(1-u)*y1 + t*(1-u)*y2 + t*u*y3 + (1-t)*u*y4
-    // where y1 ... y4 are numbered counterclockwise, with y1 in the
-    // lower left corner.
-    
-    double t;
-    double u;
-
-    
-    //=======================================================================//
-    // CREATORS
-    //=======================================================================//
-
-    // all Creators are private, so only usable by BilinearInterpTable
-
-    Memento(int j_, int k_, double t_, double u_)
-	: j(j_), k(k_), t(t_), u(u_)
-    {
-	// empty
-    }
-
-  public:
-    Memento()
-    {
-	Assert(0);
-    }
-    
-  private:
-
-    //=======================================================================//
-    // MANIPULATORS
-    //=======================================================================//
-    
-    // *** none ***
-    
-    //=======================================================================//
-    // ACCESSORS
-    //=======================================================================//
-
-    // *** none ***
-    
-  private:
-    
-    //=======================================================================//
-    // IMPLEMENTATION
-    //=======================================================================//
-
-    // *** none ***
 };
 
 //=======================================================================//
 // INLINE METHODS
 //=======================================================================//
 
-inline double BilinearInterpTable::interpolate(std::pair<double,double> p) const
+//------------------------------------------------------------------------//
+// BilinearInterpTable:
+//    Constructor supplying the two axes grids and a binary functional
+//    to perform the calculation.
+//------------------------------------------------------------------------//
+
+template<class BinaryOperation>
+inline
+BilinearInterpTable::BilinearInterpTable(const std::vector<double> &x1vals_,
+					 const std::vector<double> &x2vals_,
+					 BinaryOperation binary_op)
+    : grid(x1vals_, x2vals_), yvals(x1vals_.size(),x2vals_.size())
 {
-    return interpolate(getMemento(p.first, p.second));
+    Require(yvals.size() == grid.size());
+
+    setTable(binary_op);
 }
     
+//------------------------------------------------------------------------//
+// BilinearInterpTable:
+//    Constructor supplying the grid and a binary functional
+//    to perform the calculation.
+//------------------------------------------------------------------------//
+
+template<class BinaryOperation>
+inline BilinearInterpTable::BilinearInterpTable(const BilinearInterpGrid &grid_,
+						BinaryOperation binary_op)
+    : grid(grid_), yvals(grid_.dimension(1),grid_.dimension(2))
+{
+    Require(yvals.size() == grid.size());
+
+    setTable(binary_op);
+}
+    
+//------------------------------------------------------------------------//
+// interpolate:
+//    Given a pair of doubles, return an interpolated value.
+//------------------------------------------------------------------------//
+
+inline double BilinearInterpTable::interpolate(std::pair<double,double> p) const
+{
+    return interpolate(grid.getMemento(p.first, p.second));
+}
+    
+//------------------------------------------------------------------------//
+// interpolate:
+//    Given a pair of doubles, return an interpolated value.
+//------------------------------------------------------------------------//
+
 inline double BilinearInterpTable::interpolate(double x1, double x2) const
 {
-    return interpolate(getMemento(x1, x2));
+    return interpolate(grid.getMemento(x1, x2));
 }
+
+//------------------------------------------------------------------------//
+// interpolate:
+//    Given a Memento, return an interpolated value.
+//------------------------------------------------------------------------//
 
 inline double BilinearInterpTable::interpolate(const Memento &memento) const
 {
-    const double t = memento.t;
-    const double u = memento.u;
-    const int j = memento.j;
-    const int k = memento.k;
+    int j, k;
+    grid.getIndices(memento, j, k);
 
-    Require(j >= 0 && j < x1vals.size());
-    Require(k >= 0 && k < x2vals.size());
-    Require(t >= 0.0 && t <= 1.0);
-    Require(u >= 0.0 && u <= 1.0);
+    double t, u;
+    grid.getCoefficients(memento, t, u);
     
     return (1-t)*(1-u) * yvals(j  ,k)
 	+  t*(1-u)     * yvals(j+1,k)
 	+  t*u         * yvals(j+1,k+1)
 	+  (1-t)*u     * yvals(j  ,k+1);
 }
+
+//===========================================================================//
+// class BilinearInterpTable::UnaryInterpolator
+//     A nested class used with the std::transform to repeatedly call
+//     the interpolation over a container of "things" (probably Memento's
+//     or std::pair<double,double>'s).
+//===========================================================================//
 
 template<class T>
 class BilinearInterpTable::UnaryInterpolator
@@ -334,6 +326,13 @@ class BilinearInterpTable::UnaryInterpolator
     }
 };
 	
+//------------------------------------------------------------------------//
+// interpolate:
+//    Given begin and end iterators of "things" (probably Memento's
+//    or std::pair<double,double>'s, return interpolations to the
+//    result iterator.
+//------------------------------------------------------------------------//
+
 template<class InputIterator, class OutputIterator>
 inline void BilinearInterpTable::interpolate(InputIterator first,
 					     InputIterator last,
@@ -346,6 +345,13 @@ inline void BilinearInterpTable::interpolate(InputIterator first,
     std::transform(first, last, result, UnaryInterpolator<value_type>(*this));
 }
 
+//------------------------------------------------------------------------//
+// interpolate:
+//    Given a field of "things" (probably Memento's
+//    or std::pair<double,double>'s), return interpolations to the
+//    ret_vals field.
+//------------------------------------------------------------------------//
+
 template<class FTIN, class FTOUT>
 inline void BilinearInterpTable::interpolate(const FTIN &args,
 					     FTOUT &ret_vals) const
@@ -354,7 +360,11 @@ inline void BilinearInterpTable::interpolate(const FTIN &args,
     interpolate(args.begin(), args.end(), ret_vals.begin());
 }
 
-// This class turns the interploation table in to a binary functor.
+//===========================================================================//
+// class BilinearInterpTable::BinaryInterpolator
+//     A nested class used with the std::transform to repeatedly call
+//     the interpolation over two containers (probably both of double's).
+//===========================================================================//
 
 template<class T1, class T2>
 class BilinearInterpTable::BinaryInterpolator
@@ -375,6 +385,13 @@ class BilinearInterpTable::BinaryInterpolator
     }
 };
 	
+//------------------------------------------------------------------------//
+// interpolate:
+//    Given begin and end iterators of something (probably double's)
+//    and a begin iterator of something else (also probably double;s),
+//    return interpolations to the result iterator.
+//------------------------------------------------------------------------//
+
 template<class InputIterator1, class InputIterator2, class OutputIterator>
 inline void BilinearInterpTable::interpolate(InputIterator1 first1,
 					     InputIterator1 last1,
@@ -389,6 +406,13 @@ inline void BilinearInterpTable::interpolate(InputIterator1 first1,
     std::transform(first1, last1, first2, result,
 		   BinaryInterpolator<value_type1, value_type2>(*this));
 }
+
+//------------------------------------------------------------------------//
+// interpolate:
+//    Given a field of something (probably double's)
+//    and another field of something else (also probably double;s),
+//    return interpolations to the ret_vals field.
+//------------------------------------------------------------------------//
 
 template<class FTIN1, class FTIN2, class FTOUT>
 inline void BilinearInterpTable::interpolate(const FTIN1 &arg1s,
