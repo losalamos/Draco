@@ -3,7 +3,7 @@
  * \file   mc/Surface_Descriptor.hh
  * \author Mike Buksas
  * \date   Mon Aug 11 13:17:49 2003
- * \brief  
+ * \brief  Header file for Surface_Descriptor
  * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
@@ -21,8 +21,10 @@ namespace rtt_mc
 //===========================================================================//
 /*!
  * \class Surface_Descriptor
- * \brief A Struct which enumerates the surface types and provides a uniform
- * method for storing a surface description.
+ * \brief A Struct for storing a surface description.
+ *
+ * This class enumerates the available surface types (exactly one, so far)
+ * and their data storage requirements.
  *
  */
 /*! 
@@ -40,6 +42,9 @@ struct Surface_Descriptor
 {
 
     enum Surface_Type { SPHERE = 0 };
+
+    static const int kinds = 1;
+    static const int sizes[1];
 
     Surface_Type type;
 
