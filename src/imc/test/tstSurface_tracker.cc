@@ -49,11 +49,21 @@ SP<Surface_tracker> build_surface_tracker()
     vector<int> tally_indices(3);
     tally_indices[0] = 1; tally_indices[1] = 2; tally_indices[2] = 4;
 
-    SP<Surface_tracker> tracker(new Surface_tracker(surfaces, tally_indices));
+    // make surface areas of 1.0, 2.0, and 4.0 because this if just for
+    // access testing
+    vector<double> sa(3);
+    sa[0] = static_cast<double>(tally_indices[0]);
+    sa[1] = static_cast<double>(tally_indices[1]);
+    sa[2] = static_cast<double>(tally_indices[2]);
+
+    SP<Surface_tracker> tracker(new Surface_tracker(surfaces, tally_indices,
+						    sa));
 
     return tracker;
 
 }
+
+//---------------------------------------------------------------------------//
 
 SP<Extrinsic_Surface_Tracker> build_extrinsic_surface_tracker()
 {
@@ -68,19 +78,29 @@ SP<Extrinsic_Surface_Tracker> build_extrinsic_surface_tracker()
     vector<int> tally_indices(3);
     tally_indices[0] = 1; tally_indices[1] = 2; tally_indices[2] = 4;
 
+    // make surface areas of 1.0, 2.0, and 4.0 because this if just for
+    // access testing
+    vector<double> sa(3);
+    sa[0] = static_cast<double>(tally_indices[0]);
+    sa[1] = static_cast<double>(tally_indices[1]);
+    sa[2] = static_cast<double>(tally_indices[2]);
+
     // Postulate a phony mesh with two cells. All of the surfaces are
     // supposed to be in cell 1, cell 2 has none.
     vector<bool> cell_data(2);
     cell_data[0] = true; cell_data[1] = false;
 
     SP<Extrinsic_Surface_Tracker> tracker( 
-	new Extrinsic_Surface_Tracker (surfaces, tally_indices, cell_data) );
+	new Extrinsic_Surface_Tracker (surfaces, tally_indices, sa, 
+				       cell_data) ); 
 
     Ensure(tracker);
 
     return tracker;
 
 }
+
+//---------------------------------------------------------------------------//
 
 Surface_Sub_Tally make_surface_tally()
 {
@@ -95,7 +115,7 @@ Surface_Sub_Tally make_surface_tally()
 
 }
 
-
+//---------------------------------------------------------------------------//
 
 void test_initial_status()
 {
@@ -124,9 +144,13 @@ void test_initial_status()
     if ( tracker->get_inside(1) != true)  ITFAILS;
     if ( tracker->get_inside(2) != false) ITFAILS;
     if ( tracker->get_inside(4) != true)  ITFAILS;
-    
 
+    if (tracker->get_surface_area(1) != 1.0) ITFAILS;
+    if (tracker->get_surface_area(2) != 2.0) ITFAILS;
+    if (tracker->get_surface_area(4) != 4.0) ITFAILS;
 }
+
+//---------------------------------------------------------------------------//
 
 void test_tracker()
 {
@@ -192,10 +216,16 @@ void test_tracker()
     
 }
 
+//---------------------------------------------------------------------------//
+
 void test_extrinsic_tracker()
 {
 
     SP<Extrinsic_Surface_Tracker> tracker ( build_extrinsic_surface_tracker() );
+
+    if (tracker->get_surface_area(1) != 1.0) ITFAILS;
+    if (tracker->get_surface_area(2) != 2.0) ITFAILS;
+    if (tracker->get_surface_area(4) != 4.0) ITFAILS;
 
     vector<double> position(3);
     vector<double> direction(3);
@@ -296,13 +326,15 @@ int main(int argc, char *argv[])
 
     // status of test
     std::cout << std::endl;
-    std::cout <<     "*********************************************" << std::endl;
+    std::cout <<     "*********************************************" 
+	      << std::endl;
     if (rtt_imc_test::passed) 
     {
         std::cout << "**** tstSurface_tracker Test: PASSED" 
 		  << std::endl;
     }
-    std::cout <<     "*********************************************" << std::endl;
+    std::cout <<     "*********************************************" 
+	      << std::endl;
     std::cout << std::endl;
     
     std::cout << "Done testing tstSurface_tracker." << std::endl;

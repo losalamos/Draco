@@ -41,7 +41,8 @@ class Surface_Sub_Tally;
  * functions:
  * \code   
  *    Surface::is_inside(vector position, const vector& direction)
- *    Surface::distance_to(vector position, const vector& direction, bool is_inside)
+ *    Surface::distance_to(vector position, const vector& direction, 
+ *                         bool is_inside)
  * \endcode
  *
  * The inside/outside status for a new particle is initialized via a call to
@@ -50,9 +51,9 @@ class Surface_Sub_Tally;
  * particle that surface crossing tallies are desired for.
  *
  * The surface tracker also maintains a list of global surface indices for
- * it's surfaces. It will generally hold fewer than the total number of
+ * its surfaces. It will generally hold fewer than the total number of
  * surfaces on domain-decomosed meshes. We also allow the surface tracker to
- * hold no surfaces. 
+ * hold no surfaces.
  *
  * \sa Surface_tracker.cc for detailed descriptions.
  */
@@ -63,7 +64,8 @@ class Surface_Sub_Tally;
  */
 // revision history:
 // -----------------
-// 0) 25 June 1993  First complete version.
+// 0) 25 June 2003  First complete version.
+// 1) 05 Jan  2004  added surface areas
 // 
 //===========================================================================//
 
@@ -79,12 +81,14 @@ class Surface_tracker
 
     // CREATORS
     
-    //! Construct with a list of surfaces
-    Surface_tracker(const std::vector<SP_Surface>& surfaces);
-
-    //! Construct with a list of surfaces and tally indices
+    // Construct with a list of surfaces.
     Surface_tracker(const std::vector<SP_Surface>& surfaces,
-		    const std::vector<int>& tally_indices);
+		    const std::vector<double>& surface_areas);
+
+    // Construct with a list of surfaces and tally indices.
+    Surface_tracker(const std::vector<SP_Surface>& surfaces,
+		    const std::vector<int>& tally_indices,
+		    const std::vector<double>& surface_areas);
 
     //! copy constructor
     Surface_tracker(const Surface_tracker &rhs);
@@ -94,7 +98,7 @@ class Surface_tracker
 
     // MANIPULATORS
     
-    //! Assignment operator for Surface_tracker
+    //! Assignment operator for Surface_tracker.
     Surface_tracker& operator=(const Surface_tracker &rhs);
 
     void initialize_status(const std::vector<double> &position,
@@ -117,7 +121,7 @@ class Surface_tracker
 
     inline bool get_inside(int surface) const;
 
-    bool get_surface_in_cell(int cell) const;
+    inline double get_surface_area(int surface) const;
 
     int surfaces() const { return surface_list.size(); }
 
@@ -126,19 +130,29 @@ class Surface_tracker
     // DATA
 
     std::vector<SP_Surface> surface_list;
-    std::vector<int> tally_indices;
-    std::vector<bool> is_inside;
+    std::vector<int>        tally_indices;
+    std::vector<bool>       is_inside;
+    std::vector<double>     surface_areas;
 
     // IMPLEMENTATION
 
     inline int get_data_index(int surface) const;
-
 };
 
 //---------------------------------------------------------------------------//
 // Inline functions
 //---------------------------------------------------------------------------//
-
+/*!
+ * \brief Determine if a particle is inside or outside the surface.
+ *
+ * At initialization the inside/outside status of the particle is set.  As
+ * the surface tracker follows the path of the particle this data is updated.
+ * This function can be used to access the particle sense vis-a-vis a
+ * surface.
+ * 
+ * \param surface global surface index
+ * \return true if particle is inside the surface; false otherwise
+ */
 bool Surface_tracker::get_inside(int surface) const
 {
     int index = get_data_index(surface);
@@ -147,10 +161,27 @@ bool Surface_tracker::get_inside(int surface) const
     Require ( index < is_inside.size() );
 
     return is_inside[index];
-
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Get the surface area subtended by the mesh for a given surface.
+ * 
+ * \param surface global surface index
+ */
+double Surface_tracker::get_surface_area(int surface) const
+{
+    int index = get_data_index(surface);
+    
+    Require ( index >= 0 );
+    Require ( index < surface_areas.size() );
+    
+    Ensure (surface_areas[index]);
+    return surface_areas[index];
+}
+
+//---------------------------------------------------------------------------//
+
 int Surface_tracker::get_data_index(int surface) const
 {
     Check(surface > 0);
@@ -162,11 +193,8 @@ int Surface_tracker::get_data_index(int surface) const
     Require ( surface_iterator != tally_indices.end());
 
     return static_cast<int>(surface_iterator - tally_indices.begin());
-
 }
     
-
-
 } // end namespace rtt_imc
 
 #endif // rtt_imc_Surface_tracker_hh

@@ -108,6 +108,8 @@ bool Extrinsic_Tracker_Builder<rtt_mc::RZWedge_Mesh>::sphere_intersects_cell(
 /*! 
  * \brief Determines the surface areas of the spheres that are subtended
  *  by the mesh; specialized for RZWedge_Mesh.
+ *
+ * Surface areas are calculated in cm^2.
  * 
  * \param sphere The sphere object
  */

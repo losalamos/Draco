@@ -41,6 +41,7 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) (Mon Jul 14 16:19:43 2003) Mike Buksas: original
+// 1) 05-JAN-2004: added surface areas
 // 
 //===========================================================================//
 
@@ -54,24 +55,26 @@ class Extrinsic_Surface_Tracker : public Surface_tracker
     typedef std::vector<SP_Surface>::const_iterator surface_iterator;
     typedef std::vector<bool>::iterator bool_iterator;
 
-    //! Full constructor
+    // Full constructor.
     Extrinsic_Surface_Tracker(const std::vector<SP_Surface> &surfaces,
-			      const std::vector<int>        &tally_indices,
-			      const std::vector<bool>       &surface_in_cell_data);
+			      const std::vector<int> &tally_indices,
+			      const std::vector<double> &surface_areas,
+			      const std::vector<bool> &surface_in_cell_data);
 
-    //! Construct with default indices
+    // Construct with default indices.
     Extrinsic_Surface_Tracker(const std::vector<SP_Surface> &surfaces,
-			      const std::vector<bool>       &surface_in_cell_data);
+			      const std::vector<double> &surface_areas,
+			      const std::vector<bool> &surface_in_cell_data);
 
-    //! copy constructor (the long doxygen description is in the .cc file)
+    //! Copy constructor (the long doxygen description is in the .cc file).
     Extrinsic_Surface_Tracker(const Extrinsic_Surface_Tracker &rhs);
 
-    //! destructor
+    //! Destructor.
     ~Extrinsic_Surface_Tracker() { /* ... */ }
 
     // MANIPULATORS
     
-    //! Assignment operator for Extrinsic_Surface_Tracker
+    //! Assignment operator for Extrinsic_Surface_Tracker.
     Extrinsic_Surface_Tracker& operator=(const Extrinsic_Surface_Tracker& rhs);
 
     // ACCESSORS

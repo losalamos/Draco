@@ -96,7 +96,8 @@ Extrinsic_Tracker_Builder<MT>::build_tracker()
     if (!surfaces.empty()) 
     {
 	tracker = new Extrinsic_Surface_Tracker(surfaces, 
-						surface_indices, 
+						surface_indices,
+						surface_areas,
 						surface_in_cell);
 	Ensure (tracker);
     }

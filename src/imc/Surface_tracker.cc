@@ -24,12 +24,29 @@ using rtt_mc::Surface;
 namespace rtt_imc
 {
 
+//---------------------------------------------------------------------------//
+// CONSTRUCTORS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Construct with a list of surfaces.
+ *
+ * This constructor assumes a one-to-one correspondence between local and
+ * global surface indices.  In other words, this constructor requires a list
+ * of \b all global surfaces in the problem
+ * 
+ * \param surfaces_ list of all surfaces in the problem
+ * \param surface_areas_ list of surface areas for each surface
+ */
 Surface_tracker::Surface_tracker(
-    const vector<Surface_tracker::SP_Surface>& surfaces_)
+    const vector<Surface_tracker::SP_Surface>& surfaces_,
+    const vector<double>&                      surface_areas_)
     : surface_list(surfaces_),
       is_inside(surfaces_.size()),
-      tally_indices(surfaces_.size())
+      tally_indices(surfaces_.size()),
+      surface_areas(surface_areas_)
 { 
+    
+    Require (surface_areas.size() == surface_list.size());
 
     int index = 1;
     for (vector<int>::iterator tally_index = tally_indices.begin();
@@ -38,17 +55,32 @@ Surface_tracker::Surface_tracker(
     {
 	*tally_index = index++;
     }
-	
 
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Construct with a list of surfaces and tally indices.
+ *
+ * The surface list includes only those surfaces that intersect at least one
+ * cell on the local mesh.  Thus, we require a map of global surface index
+ * (range [0,N_surface)) to local surface index.
+ * 
+ * \param surfaces_ list of surfaces that are \b local to the mesh
+ * \param tally_indices_ map of local surface index to global surface index
+ * \param surface_areas_ list of surface areas for each surface
+ */
 Surface_tracker::Surface_tracker(
     const vector<Surface_tracker::SP_Surface>& surfaces_,
-    const vector<int>& tally_indices_)
+    const vector<int>&                         tally_indices_,
+    const vector<double>&                      surface_areas_)
     : surface_list(surfaces_),
       is_inside(surfaces_.size()),
-      tally_indices(tally_indices_)
+      tally_indices(tally_indices_),
+      surface_areas(surface_areas_)
 {
+    
+    Require (surface_areas.size() == surface_list.size());
 
     // Make sure index list is the same size:
     Require( tally_indices.size() == surface_list.size() );
@@ -65,10 +97,9 @@ Surface_tracker::Surface_tracker(
 	adjacent_find( tally_indices.begin(), tally_indices.end(),
 		       greater_equal<int>()) == 
 	tally_indices.end() 
-	);
-    
-}
+	);    
 
+}
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -97,7 +128,6 @@ void Surface_tracker::initialize_status(const std::vector<double>& position,
     }
 
 } 
-
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -230,10 +260,6 @@ void Surface_tracker::tally_crossings_analog_abs(
     }
     
 }
-
-	     
-
-
 
 } // end namespace rtt_imc
 
