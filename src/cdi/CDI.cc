@@ -28,7 +28,6 @@ CDI::CDI( const rtt_dsxx::SP<Opacity> _spOpacity ) :
 CDI::~CDI()
     {
 	// empty.
-	// Does this need to do anything right now?
     }
  
 // Return the name of the Opacity data file.
@@ -43,20 +42,41 @@ std::string CDI::getOpacityDataFilename() const
     const double targetTemperature, 
     const double targetDensity ) const
     {
-	return spOpacity->getGrayRosseland( targetTemperature, 
-					    targetDensity );
+ 	return spOpacity->getGrayRosseland( targetTemperature, 
+ 					    targetDensity );
     }
  
 // Return the interpolated Rosseland Gray Opacity for the specified 
 // temperature and density.
 std::vector<double> CDI::getMGRosselandOpacity( 
     const double targetTemperature, 
-    const double targetDensity ) const
+    const double targetDensity,
+    const std::string skey ) const
     {
 	return spOpacity->getMGRosseland( targetTemperature, 
-					  targetDensity );
+					  targetDensity, skey );
+    }
+  
+// Return the interpolated Plank Gray Opacity for the specified 
+// temperature and density.
+ double CDI::getGrayPlankOpacity( 
+    const double targetTemperature, 
+    const double targetDensity ) const
+    {
+	return spOpacity->getGrayPlank( targetTemperature, 
+					targetDensity );
     }
  
+// Return the interpolated Plank Gray Opacity for the specified 
+// temperature and density.
+std::vector<double> CDI::getMGPlankOpacity( 
+    const double targetTemperature, 
+    const double targetDensity ) const
+    {
+	return spOpacity->getMGPlank( targetTemperature, 
+				      targetDensity );
+    }
+
 } // end namespace rtt_cdi
 
 

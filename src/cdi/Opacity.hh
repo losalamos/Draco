@@ -63,23 +63,22 @@ class Opacity
     // ACCESSORS
     
     /*!
-     * \breif Returns the opacity data filename.
+     * \brief Returns the opacity data filename.
      */
     virtual const std::string& getDataFilename() const = 0;
 
     /*!
-     * \breif Return a vector material ID's found in the opacity data
-     *        file.
-     */
-//     virtual std::vector<int> getMatIDs() const = 0;
-
-    /*!
-     * \breif Returns a single gray Rosseland opacity value for the
+     * \brief Returns a single gray Rosseland opacity value for the
      *        prescribed temperature and density.
      *
      * \sa This opacity object only knows how to access the data for one 
      * material.  The material identification is specified in the
      * construction of the derived concrete opacity object. 
+     *
+     * We do not mark this access const because currently the accessor 
+     * getGrayRosseland() in the GandolfOpacity class does modify
+     * itself.  It loads the data table from file the first time it is 
+     * called.
      *
      * \param targetTemperature The temperature (in keV) of the
      *                          material. 
@@ -93,12 +92,70 @@ class Opacity
 	const double targetDensity ) = 0;
 
     /*!
-     * \breif Returns a vector of the opacity values for each energy
+     * \brief Returns a vector of the opacity values for each energy
      *        group for the prescribed temperature and density.
      *
      * The opacity object only knows how to access the data for one
      * material.  The material identification is specified in the
      * construction of the derived concrete opacity object. 
+     *
+     * We do not mark this access const because currently the accessor 
+     * getGrayRosseland() in the GandolfOpacity class does modify
+     * itself.  It loads the data table from file the first time it is 
+     * called.
+     *
+     * \param targetTemperature The temperature (in keV) of the
+     *        material.
+     * \param targetDensity The density (in g/cm^3) of the material.
+     * \param skey Optional parameter used to specify if the returned
+     *        value is scattering ("rsmg"), absorption ("ramg") or
+     *        total ("rtmg") opacity.  The default is total.
+     * \return A vector of opacity values for the current material at 
+     *         targetTemperature keV and targetDensity g/cm^3.  The
+     *         vector has ngroups entries.  The number of groups is
+     *         specified by the data file. 
+     */
+    virtual std::vector<double> getMGRosseland( 
+	const double targetTemperature, 
+	const double targetDensity,
+	const std::string skey = "rtmg" ) = 0;
+
+    /*!
+     * \brief Returns a single gray Plank opacity value for the
+     *        prescribed temperature and density.
+     *
+     * \sa This opacity object only knows how to access the data for one 
+     * material.  The material identification is specified in the
+     * construction of the derived concrete opacity object. 
+     *
+     * We do not mark this access const because currently the accessor 
+     * getGrayRosseland() in the GandolfOpacity class does modify
+     * itself.  It loads the data table from file the first time it is 
+     * called.
+     *
+     * \param targetTemperature The temperature (in keV) of the
+     *                          material. 
+     * \param targetDensity The density (in g/cm^3) of the material.
+     *
+     * \return Gray opacity value for the current material at
+     *         targetTemperature keV and targetDensity g/cm^3.
+     */
+    virtual double getGrayPlank( 
+	const double targetTemperature, 
+	const double targetDensity ) = 0;
+
+    /*!
+     * \brief Returns a vector of the opacity values for each energy
+     *        group for the prescribed temperature and density.
+     *
+     * The opacity object only knows how to access the data for one
+     * material.  The material identification is specified in the
+     * construction of the derived concrete opacity object. 
+     *
+     * We do not mark this access const because currently the accessor 
+     * getGrayPlank() in the GandolfOpacity class does modify
+     * itself.  It loads the data table from file the first time it is 
+     * called.
      *
      * \param targetTemperature The temperature (in keV) of the
      *                          material.
@@ -109,7 +166,7 @@ class Opacity
      *         vector has ngroups entries.  The number of groups is
      *         specified by the data file. 
      */
-    virtual std::vector<double> getMGRosseland( 
+    virtual std::vector<double> getMGPlank( 
 	const double targetTemperature, 
 	const double targetDensity ) = 0;
 
