@@ -83,11 +83,8 @@ using std::sqrt;
  */
 RTT_Format::RTT_Format(const string & RTT_File, const bool & renumber)
 {
-    if (C4::node() == 0)
-    {
-	readMesh(RTT_File,renumber);
-	calculateConnectivity();
-    }
+    readMesh(RTT_File,renumber);
+    calculateConnectivity();
 }
 
 /*!
@@ -114,48 +111,45 @@ void RTT_Format::calculateConnectivity()
  */
 void RTT_Format::readMesh(const string & RTT_File, const bool & renumber)
 {
-    if (C4::node() == 0)
+    const char * file = RTT_File.c_str();
+    ifstream meshfile(file, ios::in);
+    if (!meshfile)
     {
-        const char * file = RTT_File.c_str();
-	ifstream meshfile(file, ios::in);
-	if (!meshfile)
-	{
-	    cout << "File could not be opened\n";
-	}
+        cout << "File could not be opened\n";
+    }
 
-	try
-	{
-	    readKeyword(meshfile);
-	    header.readHeader(meshfile);
-	    dims.readDims(meshfile,renumber);
-	    createMembers();
-	    readFlagBlocks(meshfile);
-	    readDataIDs(meshfile);
-	    spCellDefs->readCellDefs(meshfile);
-	    spNodes->readNodes(meshfile);
-	    spSides->readSides(meshfile);
-	    spCells->readCells(meshfile);
-	    spNodeData->readNodeData(meshfile);
-	    spSideData->readSideData(meshfile);
-	    spCellData->readCellData(meshfile);
-	    readEndKeyword(meshfile);
-	}
-	catch (rtt_dsxx::assertion as)
-	{
-	    cout << "Assertion thrown: " << as.what() << endl;
-	    Insist(false, as.what());
-	}
+    try
+    {
+        readKeyword(meshfile);
+        header.readHeader(meshfile);
+        dims.readDims(meshfile,renumber);
+        createMembers();
+        readFlagBlocks(meshfile);
+        readDataIDs(meshfile);
+        spCellDefs->readCellDefs(meshfile);
+        spNodes->readNodes(meshfile);
+        spSides->readSides(meshfile);
+        spCells->readCells(meshfile);
+        spNodeData->readNodeData(meshfile);
+        spSideData->readSideData(meshfile);
+        spCellData->readCellData(meshfile);
+        readEndKeyword(meshfile);
+    }
+    catch (rtt_dsxx::assertion as)
+    {
+        cout << "Assertion thrown: " << as.what() << endl;
+        Insist(false, as.what());
+    }
 
-	if (renumber)
-	{
-	    spCellDefs-> sortData();
-	    spNodes-> sortData();
-	    spSides-> sortData();
-	    spCells-> sortData();
-	    spNodeData-> sortData();
-	    spSideData-> sortData();
-	    spCellData-> sortData();
-	}
+    if (renumber)
+    {
+        spCellDefs-> sortData();
+        spNodes-> sortData();
+        spSides-> sortData();
+        spCells-> sortData();
+        spNodeData-> sortData();
+        spSideData-> sortData();
+        spCellData-> sortData();
     }
 }
 
