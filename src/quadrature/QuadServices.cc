@@ -262,7 +262,7 @@ double QuadServices::spherical_harmonic( unsigned const m,
     unsigned const dim( spQuad->dimensionality() );
     double   const mu ( spQuad->getMu(m) );
     double   const eta( dim>1 ? spQuad->getEta(m) : 0.0 );
-    double   const xi ( dim>2 ? spQuad->getXi( m) : 0.0 );
+    double   const xi ( dim>2 ? spQuad->getXi( m) : std::sqrt(1.0-mu*mu-eta*eta) );
 
     // Compute the azimuthal angle.
     double const azimuthalAngle( compute_azimuthalAngle( mu, eta, xi ) );
@@ -273,7 +273,7 @@ double QuadServices::spherical_harmonic( unsigned const m,
 	    * sin( std::abs(k) * azimuthalAngle );
     else
 	sphHarm = gsl_sf_legendre_Plm( ell, k, mu ) 
-	    * cos( ell * azimuthalAngle );
+	    * cos( k * azimuthalAngle );
     
     return sphHarm;
 }
