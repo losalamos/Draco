@@ -11,10 +11,21 @@ AC_PROG_INSTALL
 
 installdirs='${libexecdir} ${bindir}'
 
-libexec_files1='${libexecdir}/launchtest'
-libexec_files2='${libexecdir}/test_filter.py'
+# required tools for draco build system testing framework
+libexec_files="\${libexecdir}/launchtest"
+libexec_files="\${libexecdir}/test_filter.py ${libexec_files}"
+
+# draco information script
 bin_files='${bindir}/draco'
-installfiles="$libexec_files1 $libexec_files2 $bin_files"
+
+# useful utilities that we install
+bin_files="\${bindir}/count_loc.sh ${bin_files}"
+bin_files="\${bindir}/find_tags.py ${bin_files}"
+bin_files="\${bindir}/include_tree.py ${bin_files}"
+bin_files="\${bindir}/package_depends.py ${bin_files}"
+bin_files="\${bindir}/regression_filter.py ${bin_files}"
+
+installfiles="$libexec_files $bin_files"
 
 AC_SUBST(installdirs)
 AC_SUBST(installfiles)
