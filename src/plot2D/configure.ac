@@ -26,6 +26,12 @@ AC_RUNTESTS(tstPlot2D, scalar)
 dnl DRACO SETUP
 AC_DRACO_ENV
 
+dnl Grace must be in the path!
+AC_PATH_PROG(XMGRACE_PATH, xmgrace, null)
+if test "${XMGRACE_PATH}" = null; then
+   AC_MSG_ERROR("No valid xmgrace found!")
+fi
+
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in])
 AC_OUTPUT
