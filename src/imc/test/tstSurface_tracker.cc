@@ -113,17 +113,17 @@ void test_initial_status()
 
     tracker->initialize_status(position, direction);
 
-    if ( tracker->get_inside(0) != true) ITFAILS;
     if ( tracker->get_inside(1) != true) ITFAILS;
     if ( tracker->get_inside(2) != true) ITFAILS;
+    if ( tracker->get_inside(4) != true) ITFAILS;
 
     direction[2] = -1.0;
 
     tracker->initialize_status(position, direction);
 
-    if ( tracker->get_inside(0) != true)  ITFAILS;
-    if ( tracker->get_inside(1) != false) ITFAILS;
-    if ( tracker->get_inside(2) != true)  ITFAILS;
+    if ( tracker->get_inside(1) != true)  ITFAILS;
+    if ( tracker->get_inside(2) != false) ITFAILS;
+    if ( tracker->get_inside(4) != true)  ITFAILS;
     
 
 }

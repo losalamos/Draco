@@ -101,11 +101,8 @@ class Extrinsic_Tracker_Builder
     // IMPLEMENTATION
 
     bool sphere_intersects_cell(const rtt_mc::Sphere& sphere, int cell);
-
     bool check_point(const rtt_mc::Sphere& sphere, double x, double z);
-
     bool check_intersections(const rtt_mc::Sphere& sphere);
-
     void add_sphere_to_list(rtt_dsxx::SP<rtt_mc::Sphere> sphere);
 
 };

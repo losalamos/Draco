@@ -109,7 +109,7 @@ class Surface_tracker
 
     // ACCESSORS:
 
-    bool get_inside(int i) const { return is_inside[i]; }
+    inline bool get_inside(int surface) const;
 
     bool get_surface_in_cell(int cell) const;
 
@@ -123,7 +123,43 @@ class Surface_tracker
     std::vector<int> tally_indices;
     std::vector<bool> is_inside;
 
+    // IMPLEMENTATION
+
+    inline int get_data_index(int surface) const;
+
 };
+
+//---------------------------------------------------------------------------//
+// Inline functions
+//---------------------------------------------------------------------------//
+
+bool Surface_tracker::get_inside(int surface) const
+{
+    int index = get_data_index(surface);
+    
+    Require ( index >= 0 );
+    Require ( index < is_inside.size() );
+
+    return is_inside[index];
+
+}
+
+//---------------------------------------------------------------------------//
+int Surface_tracker::get_data_index(int surface) const
+{
+    Check(surface > 0);
+
+    // Find the surface index in the vector of indices:
+    std::vector<int>::const_iterator surface_iterator = 
+	std::find(tally_indices.begin(), tally_indices.end(), surface);
+
+    Require ( surface_iterator != tally_indices.end());
+
+    return static_cast<int>(surface_iterator - tally_indices.begin());
+
+}
+    
+
 
 } // end namespace rtt_imc
 

@@ -20,6 +20,7 @@
 #include "mc/RZWedge_Mesh.hh"
 #include "mc/RZWedge_Builder.hh"
 #include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "IMC_Test.hh"
 #include "../Extrinsic_Surface_Tracker.hh"
 #include "../Extrinsic_Tracker_Builder.hh"
@@ -32,10 +33,25 @@ using namespace rtt_imc;
 using namespace rtt_imc_test;
 
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // BUILDERS
 //---------------------------------------------------------------------------//
+
+Surface_Sub_Tally make_surface_tally()
+{
+
+    double c[3] = {-0.5, 0.0, 0.5};
+    vector<double> cosines(c, c+3);
+
+    SP<Azimuthal_Mesh> mesh ( new Azimuthal_Mesh( cosines ) );
+
+    // The highest surface index number is 4:
+    return Surface_Sub_Tally(mesh, 4);
+
+}
+
 
 SP<RZWedge_Mesh> build_mesh()
 {
@@ -53,42 +69,25 @@ SP<RZWedge_Mesh> build_mesh()
 }
 
 
-Surface_Sub_Tally make_surface_tally()
+SP<Extrinsic_Tracker_Builder> build_tracker_builder(const RZWedge_Mesh& mesh)
 {
 
-    double c[3] = {-0.5, 0.0, 0.5};
-    vector<double> cosines(c, c+3);
-
-    SP<Azimuthal_Mesh> mesh ( new Azimuthal_Mesh( cosines ) );
-
-    // The highest surface index number is 4:
-    return Surface_Sub_Tally(mesh, 4);
-
-}
-
-
-SP<Extrinsic_Tracker_Builder> build_tracker_builder()
-{
-
-    SP<RZWedge_Mesh> mesh = build_mesh();
-
-    double x1 = mesh->get_high_x(1);
-    double x3 = mesh->get_high_x(3);
+    double x1 = mesh.get_high_x(1);
+    double x3 = mesh.get_high_x(3);
 
     SP<Extrinsic_Tracker_Builder> builder (
-	new Extrinsic_Tracker_Builder(*mesh) );
+	new Extrinsic_Tracker_Builder(mesh) );
 
-    builder->add_sphere(0.0, x1);
-    builder->add_sphere(1.0, x1);
-    builder->add_sphere(0.0, 50.0);  // Off the mesh
-    builder->add_sphere(2.0, x3);
+    builder->add_sphere(0.0, x1);    // Surface 1
+    builder->add_sphere(1.0, x1);    // Surface 2
+    builder->add_sphere(0.0, 50.0);  // Surface 3: Off the mesh
+    builder->add_sphere(2.0, x3);    // Surface 4
 
     Ensure (builder);
 
     return builder;
 
 }
-
 
 SP<Extrinsic_Surface_Tracker> build_tracker(Extrinsic_Tracker_Builder& builder)
 {
@@ -102,6 +101,9 @@ SP<Extrinsic_Surface_Tracker> build_tracker(Extrinsic_Tracker_Builder& builder)
 }
 
 
+
+
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -109,7 +111,9 @@ SP<Extrinsic_Surface_Tracker> build_tracker(Extrinsic_Tracker_Builder& builder)
 void test_tracker_builder()
 {
 
-    SP<Extrinsic_Tracker_Builder> builder = build_tracker_builder();
+    SP<RZWedge_Mesh> mesh = build_mesh();
+
+    SP<Extrinsic_Tracker_Builder> builder = build_tracker_builder(*mesh);
 
     if (builder->get_global_surfaces() != 4) ITFAILS;
 
@@ -128,7 +132,9 @@ void test_tracker_builder()
 void test_tracker()
 {
 
-    SP<Extrinsic_Tracker_Builder> builder = build_tracker_builder();
+    SP<RZWedge_Mesh> mesh = build_mesh();
+
+    SP<Extrinsic_Tracker_Builder> builder = build_tracker_builder(*mesh);
 
     SP<Extrinsic_Surface_Tracker> tracker = builder->build_tracker();
 
@@ -139,7 +145,42 @@ void test_tracker()
     if (tracker->surface_in_cell(5) != false) ITFAILS;
     if (tracker->surface_in_cell(6) != true)  ITFAILS;
 
+    double x1 = mesh->get_high_x(1);
 
+    vector<double> position(3);
+    position[0]  = x1*0.5; position[1]  = 0.0; position[2]  = 0.0;
+
+    vector<double> direction(3);
+    direction[0] = 0.0;    direction[1] = 0.0; direction[2] = 1.0;
+
+    double distance = 3.0;
+    double sigma = 1.0;
+    double ew = 1.0;
+
+    int cell = mesh->get_cell(position);  
+    if (cell != 1) ITFAILS;
+
+    Surface_Sub_Tally tally (make_surface_tally() );
+
+    tracker->initialize_status(position, direction);
+
+    if (tracker->get_inside(1) != true)  ITFAILS;
+    if (tracker->get_inside(2) != false) ITFAILS;
+    if (tracker->get_inside(4) != true)  ITFAILS;
+
+    tracker->tally_crossings_implicit_abs(
+	position, direction, cell, distance, ew, sigma, tally);
+
+    if (!soft_equiv(tally.weight(1,true,4) , 
+		    ew * exp(-sigma*x1*sqrt(3.0)/2.0) ) ) ITFAILS;
+
+    if (!soft_equiv(tally.weight(2,false,4) ,
+		    ew * exp(-sigma*(1.0-x1*sqrt(3.0)/2.0) ) ) ) ITFAILS;
+
+    if (!soft_equiv(tally.weight(2,true,4) ,
+		    ew * exp(-sigma*(1.0+x1*sqrt(3.0)/2.0) ) ) ) ITFAILS;
+
+    
 
 }
 
