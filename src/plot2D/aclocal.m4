@@ -632,6 +632,9 @@ AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
 
    AC_ARG_VAR(CPPFLAGS)dnl
 
+   # dependency rules
+   AC_SUBST(DEPENDENCY_RULES)
+
    # other compiler substitutions
    AC_SUBST(STRICTFLAG)dnl
    AC_SUBST(PARALLEL_FLAG)dnl
@@ -2633,14 +2636,18 @@ AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+
+       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
-   fi
 
-   ARLIBS=''
-   ARTESTLIBS=''
+       ARLIBS=''
+       ARTESTLIBS=''
+   fi
 
    # COMPILATION FLAGS
 
@@ -2695,7 +2702,7 @@ AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
    CFLAGS="${CFLAGS} ${xlC_opt_flags}"
 
    # set template stuff
-   CXXFLAGS="${CXXFLAGS} -qnotempinc"
+   CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
    
    # allow long long types
    CXXFLAGS="${CXXFLAGS} -qlonglong"
@@ -2742,6 +2749,9 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 
    # we must know the host
    AC_REQUIRE([AC_CANONICAL_HOST])
+
+   # dependency rules
+   DEPENDENCY_RULES='Makefile.dep.general'
 
    # systems setup
    case $host in
@@ -3107,8 +3117,10 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ; then
           LIBS="${LIBS} -lfortran"
           AC_MSG_RESULT("-lfortran added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
        fi
-
+       
        #
        # end of gandolf/libfortran setup
        #
@@ -3225,6 +3237,8 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
           test -n "${vendor_pcg}"; then
           LIBS="${LIBS} -lfor"
           AC_MSG_RESULT("-lfor added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
        fi
 
        #
@@ -3267,6 +3281,11 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
    # IBM AIX SETUP
    # *************
    *ibm-aix*)
+
+       # dependency rules for IBM visual age compiler are complex
+       if test "${with_cxx}" = asciwhite || test "${with_cxx}" = ibm; then
+	   DEPENDENCY_RULES='Makefile.dependencies.xlC'
+       fi
    
        # print out cpu message
        AC_MSG_CHECKING("host platform cpu")
@@ -3307,6 +3326,20 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	   elif test -z "${MPI_LIB}" ; then
 	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
 	   fi
+
+	   # now turn on long long support if we are using the 
+	   # visual age compiler
+	   if test "${with_cxx}" = ibm || 
+	      test "${with_cxx}" = asciwhite ; then
+
+	       if test "${enable_strict_ansi}"; then
+		   AC_MSG_WARN("xlC set to allow long long")
+		   STRICTFLAG="-qlanglvl=extended"
+		   CFLAGS="${CFLAGS} -qlonglong"
+		   CXXFLAGS="${CXXFLAGS} -qlonglong"
+	       fi
+
+	   fi   
        
        # setup mpich
        elif test "${with_mpi}" = mpich ; then
@@ -3351,7 +3384,9 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
           test -n "${vendor_pcg}"; then
           LIBS="${LIBS} -lfor"
-          AC_MSG_RESULT("-lfor added to LIBS")
+          AC_MSG_RESULT("-lfor added to LIBS") 
+       else
+	   AC_MSG_RESULT("not needed")
        fi
 
        #

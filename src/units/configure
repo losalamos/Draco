@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="Units.hh"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -4797,14 +4797,18 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+
+       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
-   fi
 
-   ARLIBS=''
-   ARTESTLIBS=''
+       ARLIBS=''
+       ARTESTLIBS=''
+   fi
 
    # COMPILATION FLAGS
 
@@ -4859,7 +4863,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    CFLAGS="${CFLAGS} ${xlC_opt_flags}"
 
    # set template stuff
-   CXXFLAGS="${CXXFLAGS} -qnotempinc"
+   CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
 
    # allow long long types
    CXXFLAGS="${CXXFLAGS} -qlonglong"
@@ -4975,14 +4979,18 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+
+       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
-   fi
 
-   ARLIBS=''
-   ARTESTLIBS=''
+       ARLIBS=''
+       ARTESTLIBS=''
+   fi
 
    # COMPILATION FLAGS
 
@@ -5037,7 +5045,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    CFLAGS="${CFLAGS} ${xlC_opt_flags}"
 
    # set template stuff
-   CXXFLAGS="${CXXFLAGS} -qnotempinc"
+   CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
 
    # allow long long types
    CXXFLAGS="${CXXFLAGS} -qlonglong"
@@ -5151,14 +5159,18 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+
+       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
-   fi
 
-   ARLIBS=''
-   ARTESTLIBS=''
+       ARLIBS=''
+       ARTESTLIBS=''
+   fi
 
    # COMPILATION FLAGS
 
@@ -5213,7 +5225,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    CFLAGS="${CFLAGS} ${xlC_opt_flags}"
 
    # set template stuff
-   CXXFLAGS="${CXXFLAGS} -qnotempinc"
+   CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
 
    # allow long long types
    CXXFLAGS="${CXXFLAGS} -qlonglong"
@@ -5422,6 +5434,9 @@ fi
 
    # we must know the host
 
+
+   # dependency rules
+   DEPENDENCY_RULES='Makefile.dep.general'
 
    # systems setup
    case $host in
@@ -5939,6 +5954,9 @@ echo $ECHO_N "checking \"libfortran requirements\"... $ECHO_C" >&6
           LIBS="${LIBS} -lfortran"
           echo "$as_me:$LINENO: result: \"-lfortran added to LIBS\"" >&5
 echo "${ECHO_T}\"-lfortran added to LIBS\"" >&6
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        #
@@ -6124,6 +6142,9 @@ echo $ECHO_N "checking \"libfortran requirements\"... $ECHO_C" >&6
           LIBS="${LIBS} -lfor"
           echo "$as_me:$LINENO: result: \"-lfor added to LIBS\"" >&5
 echo "${ECHO_T}\"-lfor added to LIBS\"" >&6
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        #
@@ -6166,6 +6187,11 @@ echo "${ECHO_T}\"-lfor added to LIBS\"" >&6
    # IBM AIX SETUP
    # *************
    *ibm-aix*)
+
+       # dependency rules for IBM visual age compiler are complex
+       if test "${with_cxx}" = asciwhite || test "${with_cxx}" = ibm; then
+	   DEPENDENCY_RULES='Makefile.dependencies.xlC'
+       fi
 
        # print out cpu message
        echo "$as_me:$LINENO: checking \"host platform cpu\"" >&5
@@ -6230,6 +6256,21 @@ _ACEOF
    elif test "${vendor_mpi}" = test ; then
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpi"
    fi
+
+	   fi
+
+	   # now turn on long long support if we are using the
+	   # visual age compiler
+	   if test "${with_cxx}" = ibm ||
+	      test "${with_cxx}" = asciwhite ; then
+
+	       if test "${enable_strict_ansi}"; then
+		   { echo "$as_me:$LINENO: WARNING: \"xlC set to allow long long\"" >&5
+echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
+		   STRICTFLAG="-qlanglvl=extended"
+		   CFLAGS="${CFLAGS} -qlonglong"
+		   CXXFLAGS="${CXXFLAGS} -qlonglong"
+	       fi
 
 	   fi
 
@@ -6315,6 +6356,9 @@ echo $ECHO_N "checking \"libfortran requirements\"... $ECHO_C" >&6
           LIBS="${LIBS} -lfor"
           echo "$as_me:$LINENO: result: \"-lfor added to LIBS\"" >&5
 echo "${ECHO_T}\"-lfor added to LIBS\"" >&6
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        #
@@ -6600,6 +6644,9 @@ echo "${ECHO_T}\"no vendors definitions required\"" >&6
 
 
 
+
+
+   # dependency rules
 
 
    # other compiler substitutions
@@ -7270,6 +7317,7 @@ s,@LDFLAGS@,$LDFLAGS,;t t
 s,@AR@,$AR,;t t
 s,@ARFLAGS@,$ARFLAGS,;t t
 s,@CPPFLAGS@,$CPPFLAGS,;t t
+s,@DEPENDENCY_RULES@,$DEPENDENCY_RULES,;t t
 s,@STRICTFLAG@,$STRICTFLAG,;t t
 s,@PARALLEL_FLAG@,$PARALLEL_FLAG,;t t
 s,@RPATH@,$RPATH,;t t
