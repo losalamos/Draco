@@ -12,19 +12,9 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(cdi_eospac/config.h:config.h.in)
 package="cdi_eospac"
 
-dnl EOSPACKAGE VENDOR SETUP
-AC_WITH_DIR(eospac-lib, EOSPACK_LIB, \${EOSPACK_LIB_DIR},
-            [tell where EOSPACK libraries are])
-
-if test -z "${EOSPACK_LIB}" ; then
-   AC_VENDORLIB_SETUP(pkg, -leospac )
-elif test -n "${EOSPACK_LIB}" ; then
-   pkg='pkg'
-   AC_VENDORLIB_SETUP(pkg, -L${EOSPACK_LIB} -leospac)
-fi
-
 dnl VENDOR SETUPS
-dnl AC_MPI_SETUP(test)
+dnl Setup up Eospac.  The package needs the libs.
+AC_EOSPAC5_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
@@ -35,34 +25,22 @@ AC_RUNTESTS(tEospac tEospacWithCDI, scalar)
 dnl DRACO SETUP
 AC_DRACO_ENV
 
-dnl Setup up RPATH for shared libraries.
+dnl Setup config.h for EOSPAC type defines.
 case $host in
 mips-sgi-irix6.*)
-   if test -n "${EOSPACK_LIB}" ; then
-     VENDOR_LIBS="-rpath ${EOSPACK_LIB} ${VENDOR_LIBS}"
-   fi
+dnl [Setup up RPATH for shared libraries.] - Do I need RPATH?
+dnl    if test -n "${EOSPACK_LIB}" ; then
+dnl      VENDOR_LIBS="-rpath ${EOSPACK_LIB} ${VENDOR_LIBS}"
+dnl    fi
    AC_DEFINE(V_INT, int)
    AC_DEFINE(V_FLOAT, double)
    AC_DEFINE(V_BOOL, int)
    ;;
 *-pc-linux-gnu)
-   if test -n "${EOSPACK_LIB}" ; then
-      VENDOR_LIBS="-rpath ${EOSPACK_LIB} ${VENDOR_LIBS}"
-   fi
-   dnl Add the required F90 libs
-   VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L/usr/local/lf9560/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86"
-   echo "VTL=${VENDOR_TEST_LIBS}"
    AC_DEFINE(V_INT, long)
    AC_DEFINE(V_FLOAT, double)
    AC_DEFINE(V_BOOL, long)
    ;;
-sparc-sun-solaris2.*)
-   if test -n "${EOSPACK_LIB}" ; then
-     VENDOR_LIBS="-rpath ${EOSPACK_LIB} ${VENDOR_LIBS}"
-   fi
-   AC_DEFINE(V_INT, long)
-   AC_DEFINE(V_FLOAT, double)
-   AC_DEFINE(V_BOOL, long);;
 esac
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
@@ -70,5 +48,5 @@ AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           doc/Makefile:../../config/Makefile.doc.in)
 
 dnl-------------------------------------------------------------------------dnl
-dnl			 end of draco/src/cdi_eospac configure.in
+dnl end of draco/src/cdi_eospac configure.in
 dnl-------------------------------------------------------------------------dnl

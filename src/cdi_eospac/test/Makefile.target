@@ -21,7 +21,6 @@ thistestlib_dep := cdi_eospac_test.o
 ${test_alltarget}: ${thistestdep} ${testdeps}
 
 %: %.o
-	@echo "Testlibs=${testlibs}"
 	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
 
 ${thistestdep}: ${thistestlib_dep} ${testdeps}

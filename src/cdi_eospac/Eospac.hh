@@ -60,7 +60,8 @@ namespace rtt_cdi_eospac
      * When compiling DRACO with support for this package you must add 
      * the following option on the configure line:<br><br>
      * <tt>   --with-eospac-lib=${VENDORS}/eospac/IRIX64/lib64</tt><br><br>
-     * Currently, libeospac.a is not available on Linux machines.
+     * - or -
+     * <tt>   --with-eospac-lib=${VENDORS}/eospac/Linux/lib</tt><br><br>
      */
 
     /*!
