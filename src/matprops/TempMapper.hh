@@ -42,13 +42,13 @@ namespace rtt_matprops
 
      double gamma;
      const SP<MT> &spMesh;
-     const FieldConstructor &FC;
+     const FieldConstructor &fCtor;
     
    public:
 
      // CREATORS
     
-     TempMapper(const SP<MT> &spMesh_, double gamma_, const FieldConstructor &FC_);
+     TempMapper(const SP<MT> &spMesh_, double gamma_, const FieldConstructor &fCtor_);
 
      // MANIPULATORS
     
