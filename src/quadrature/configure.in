@@ -1,0 +1,34 @@
+dnl-------------------------------------------------------------------------dnl
+dnl draco/src/quadrature configure.in
+dnl Kelly Thompson
+dnl Tue Feb 22 09:48:39 2000
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for quadrature
+dnl-------------------------------------------------------------------------dnl
+
+AC_INIT(Quadrature.hh)
+AC_CONFIG_AUX_DIR(../../config)
+AC_CONFIG_HEADER(quadrature/config.h:config.h.in)
+package="quadrature"
+
+AC_MPI_SETUP(pkg)
+dnl AC_POOMA_SETUP(pkg)
+
+AC_INSTALL_HEADERS
+AC_INSTALL_LIB
+AC_NEEDS_LIBS(ds++)
+AC_NEEDS_LIBS_TEST(UnitTestFrame c4)
+
+dnl must run as "1" instead of scalar because UnitTestFrame assumes
+dnl that the job is parallel.
+AC_RUNTESTS(tQuadrature, 1)
+
+AC_DRACO_ENV
+
+AC_OUTPUT(Makefile:../../config/Makefile.package.in \
+          test/Makefile:../../config/Makefile.test.in)
+
+dnl-------------------------------------------------------------------------dnl
+dnl			 end of draco/src/quadrature configure.in
+dnl-------------------------------------------------------------------------dnl
