@@ -1,0 +1,10 @@
+//----------------------------------*-C++-*----------------------------------//
+// PCG_PreCond.pt
+// Dave Nystrom
+// Fri May  9 12:30:55 1997
+//---------------------------------------------------------------------------//
+
+#include "linalg/PCG_PreCond.cc"
+
+//instantiate class PCG_PreCond<float>
+instantiate class PCG_PreCond<double>
