@@ -37,20 +37,16 @@ using std::vector;
 class Layout
 {
 private:
-  // cell-face-cell array for transport between cells,
-  // this array is a vector of vectors such that the
-  // dimensioning will be face_cell[i-1][j-1] where i is the cell,
-  // j is the face being crossed and the value is the cell
-  // being entered; clients give the Layout the cell number, 1-N,
-  // and the face number, 1-Nf, Layout adjusts the index to
-  // 0-(N-1) and 0-(Nf-1)
+  // cell-face-cell array for transport between cells, Layout adjusts the
+  // cell and face indices to (cell-1) and (face-1)
     vector< vector<int> > face_cell;
 public:
   // inline default constructor, can give the total number of
   // cells as an argument; no copy constructor or assignment
   // operator needed because we are using vectors
     Layout(int num_cells = 0)
-	: face_cell(num_cells) {}
+	: face_cell(num_cells) 
+    {}
 
   // inline function which sets the size of the face_cell
   // array to the number of cells in the problem 

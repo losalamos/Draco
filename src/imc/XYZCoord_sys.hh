@@ -18,7 +18,7 @@
 // revision history:
 // -----------------
 // 0) original
-// 2-18-98) added getCoord() function for debugging
+// 1) 2-18-98: added getCoord() function for debugging
 // 
 //===========================================================================//
 
