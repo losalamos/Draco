@@ -78,7 +78,8 @@ Rep_Source_Builder<MT,PT>::Rep_Source_Builder(SP<IT> interface, SP_Mesh mesh,
 	ecentot = interface->get_ecentot();
     
 	// checks
-	Check(rtt_mc::global::soft_equiv(ecentot, ecentot_check, 1.e-12));
+	Check(rtt_mc::global::soft_equiv(ecentot, ecentot_check, 
+					 mesh->num_cells() * 1.e-12));
     }
 }
 

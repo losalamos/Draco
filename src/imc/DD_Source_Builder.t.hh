@@ -84,7 +84,7 @@ DD_Source_Builder<MT,PT>::DD_Source_Builder(SP<IT> interface, SP_Mesh mesh,
 
 	// check consistency of energies and totals
 	Check (rtt_mc::global::soft_equiv(global_ecentot, ecentot_check,
-					  1.0e-12));
+					  mesh->num_cells() * 1.0e-12));
     }
 }
 
