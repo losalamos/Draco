@@ -1,0 +1,27 @@
+#!/bin/sh
+#  ========================================================================  #
+# 
+#  NAME
+#	Python_loc
+#
+#  SYNOPSIS
+#       Python_loc [file...]
+#
+#  DESCRIPTION
+#       This command counts the number of Python executable statements
+#       in a file.  It ignores blank lines and  # comments.
+#
+#  PROVENANCE
+#       Author: Mark G. Gray
+#               Los Alamos National Laboratory
+#       Date:   Mon Jan 25 13:22:22 MST 1999
+# 
+#       Copyright (c) 1999 U. S. Department of Energy. All rights reserved.
+# 
+#       $Id$
+# 
+#  ========================================================================  #
+
+awk '/^[ \t]*$/ || $1 ~ /#/ {next} {print}' $* | wc -l 
+
+#  ========================================================================  #

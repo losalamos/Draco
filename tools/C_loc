@@ -1,0 +1,28 @@
+#!/bin/sh
+#  ========================================================================  #
+# 
+#  NAME
+#	C_loc
+#
+#  SYNOPSIS
+#       C_loc [file...]
+#
+#  DESCRIPTION
+#       This command counts the number of semi-colons in a file.  This is 
+#       the lines of code (LOC) metric used by Microsoft for its C and C++
+#       Codes.
+#
+#  PROVENANCE
+# 	Author:	Mark G. Gray
+# 		Los Alamos National Laboratory
+# 	Date:	Mon Aug  8 10:51:19 MDT 1994
+# 
+# 	Copyright 1994 by U. S. Department of Energy
+# 
+#  	$Id$
+# 
+#  ========================================================================  #
+
+grep ";" $* | wc -l
+
+#  ========================================================================  #
