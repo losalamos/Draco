@@ -68,8 +68,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        fi
    fi
 
-   # now set up the platform-independent comm directories
-   AC_COMM_SET
+   dnl set up platform-dependent stuff in the 
+   dnl SYSTEM-SPECIFIC SETUP SECTION
    
    dnl
    dnl DBC SETUP
@@ -182,6 +182,40 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_DEFINE(_POSIX_SOURCE)
 	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
        fi
+
+       #
+       # setup communication packages
+       #
+   
+       # setup for mpi support, on linux vendor and mich are one
+       # and the same because there is no vendor for mpi on linux
+        
+       if test "${with_mpi}" = vendor ; then
+	   with_mpi='mpich'
+       fi
+
+       if test "${with_mpi}" = mpich ; then
+	   
+	   # define mpich libraries for v1.2 of mpich
+	   if test -n "${MPI_LIB}" ; then
+	       linux_mpi_libs="-L${MPI_LIB} -lmpich"
+	   elif test -z "${MPI_LIB}" ; then
+	       linux_mpi_libs="-lmpich"
+	   fi
+
+	   # define the linux mpi libs
+	   AC_VENDORLIB_SETUP(vendor_mpi, ${linux_mpi_libs})
+
+       fi
+
+       # shmem (not available on suns)
+       if test "${enable_shmem}" = yes ; then
+	   AC_MSG_ERROR("We don't support shmem on linux!")
+       fi
+
+       #
+       # end of communication package setup
+       #
    ;;
    mips-sgi-irix6.*)
        # posix source defines, by default we set poaix on 
@@ -220,21 +254,48 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   LDFLAGS="-mips${with_mips:=4} ${LDFLAGS}"
        fi
 
+       #
+       # setup communication packages
+       #
+   
+       # setup for mpi support
+       # we only support vendor mpi on sgis       
+       if test "${with_mpi}" = vendor ; then
+	   if test -n "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
+	   elif test -z "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
+	   fi
+       elif test "${with_mpi}" = mpich ; then
+	   AC_MSG_ERROR("We don't support mpich on the SGI yet!")
+       fi
+
+       # setup for shmem support
+       if test "${enable_shmem}" = yes ; then
+	   if test -n "${SHMEM_LIB}" ; then
+	       VENDOR_LIBS="${VENDOR_LIBS} -L${SHMEM_LIB} -lsma -lpthread"
+	   elif test -z "${SHMEM_LIB}" ; then
+	       VENDOR_LIBS="${VENDOR_LIBS} -lsma -lpthread"
+	   fi
+       fi
+
        # MPT (Message Passing Toolkit) for SGI vendor
        # implementation of MPI and SHMEM
        if test -z "${MPI_INC}" &&  test "${with_mpi}" = vendor ; then
-	   MPI_INC="${MPT_SGI}/usr/include/"
-	   AC_DEFINE_UNQUOTED(MPI_INC, ${MPI_INC})	   
+	   MPI_INC="${MPT_SGI}/usr/include/"	   
 	   MPI_H="\"${MPI_INC}mpi.h\""
 	   AC_DEFINE_UNQUOTED(MPI_H, ${MPI_H})
        fi
 
        if test -z "${SHMEM_INC}" && test "${enable_shmem}" = yes ; then
 	   SHMEM_INC="${MPT_SGI}/usr/include/mpp/"
-	   AC_DEFINE_UNQUOTED(SHMEM_INC, ${SHMEM_INC})
 	   SHMEM_H="\"${SHMEM_INC}shmem.h\""
 	   AC_DEFINE_UNQUOTED(SHMEM_H, ${SHMEM_H})
        fi
+
+       #
+       # end of communication package setup
+       #
 
        #PCGLIB EXTRAS
        if test "${enable_pcglib}" = yes ; then
@@ -258,10 +319,36 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_DEFINE(_POSIX_SOURCE)
        fi
 
-       # MPICH LIBRARY EXTRAS
-       if test "${with_mpi}" = mpich ; then
-	   AC_VENDORLIB_SETUP(vendor_mpi, -lsocket -lnsl)
+       #
+       # setup communication packages
+       #
+   
+       # setup for mpi support
+       # we only support mpich on sgis       
+       if test "${with_mpi}" = vendor ; then
+	   AC_MSG_ERROR("We don't support vendor mpi on the SUN yet!")
+       elif test "${with_mpi}" = mpich ; then
+	   
+	   # define sun-required libraries for mpich, v 1.0 (this
+	   # needs to be updated for version 1.2)
+	   sun_mpi_libs='-lpmpi -lmpi -lsocket -lnsl'
+   
+	   if test -n "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} ${sun_mpi_libs})
+	   elif test -z "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, ${sun_mpi_libs})
+	   fi
+
        fi
+
+       # shmem (not available on suns)
+       if test "${enable_shmem}" = yes ; then
+	   AC_MSG_ERROR("We don't support shmem on suns!")
+       fi
+
+       #
+       # end of communication package setup
+       #
 
        # PCGLIB EXTRAS
        if test "${enable_pcglib}" = yes ; then
@@ -277,6 +364,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        fi
    ;;
    *)
+       # catchall for nothing
+   ;;
    esac
 
    # add system specific libraries

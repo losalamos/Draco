@@ -23,7 +23,7 @@ AC_DEFUN(AC_MPI_SETUP, [dnl
    dnl define --with-mpi
    AC_ARG_WITH(mpi,
       [  --with-mpi=[vendor,mpich] 
-	                  determine MPI implementation (vendor by default)])
+	                  determine MPI implementation (vendor on SGI,SUN; mpich on LINUX)])
 
    dnl define --with-mpi-inc and --with-mpi-lib
    AC_WITH_DIR(mpi-inc, MPI_INC, \${MPI_INC_DIR},
@@ -62,9 +62,15 @@ AC_DEFUN(AC_MPI_SETUP, [dnl
    fi
 
    dnl we wait to set the basic MPI libraries (if it is on) until
-   dnl after checking the C4 status, we use the funcion AC_COMM_SET
-   dnl for this purpose; note that we add some system-specific
-   dnl libraries later on in AC_DRACO_ENV
+   dnl after checking the C4 status; these functions are performed
+   dnl in ac_dracoenv.m4, section SYSTEM-SPECIFIC SETUP; we do this
+   dnl here because each platform has different mpi options for
+   dnl vendors and mpich
+
+   dnl note that we used to do this in a function called AC_COMM_SET;
+   dnl however, there are too many platform-dependent variables 
+   dnl to continue doing this; so we do all these operations in the
+   dnl platform specific section of ac_dracoenv.m4
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -111,10 +117,8 @@ AC_DEFUN(AC_SHMEM_SETUP, [dnl
        fi
    fi
 
-   dnl we wait to set the basic SHMEM libraries (if it is on) until
-   dnl after checking the C4 status, we use the funcion AC_COMM_SET
-   dnl for this purpose; note that we add some system-specific
-   dnl libraries later on in AC_DRACO_ENV
+   dnl shmem is only available on sgis in this build system (and in
+   dnl general I think)
 ])
 
 dnl-------------------------------------------------------------------------dnl

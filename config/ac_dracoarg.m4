@@ -101,7 +101,7 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl defines --with-posix
    AC_ARG_WITH(posix,
-      [  --with-posix[=num]      give posix source (199309L default)])
+      [  --with-posix[=num]      give posix source (system-dependent defaults)])
 
    dnl
    dnl CHOSE BIT COMPILATION ON SGI'S

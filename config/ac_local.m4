@@ -88,54 +88,5 @@ AC_DEFUN(AC_VENDORLIB_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_COMM_SET
-dnl
-dnl determine machine-independent part of the communication libraries
-dnl usage: in aclocal.m4
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_COMM_SET, [ dnl 
-
-   #
-   # if mpi is on then set it up
-   #
-
-   # vendor mpi
-   if test "${with_mpi}" = vendor ; then
-
-       if test -n "${MPI_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
-       elif test -z "${MPI_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
-       fi
-
-   # mpich mpi
-   elif test "${with_mpi}" = mpich ; then
-
-       if test -n "${MPI_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lpmpi -lmpi)
-       elif test -z "${MPI_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_mpi, -lpmpi -lmpi)
-       fi
-
-   fi
-
-   #
-   # if shmem is on then set it up
-   #
-
-   if test "${enable_shmem}" = yes ; then
-       if test -n "${SHMEM_LIB}" ; then
-	   VENDOR_LIBS="${VENDOR_LIBS} -L${SHMEM_LIB} -lsma -lpthread"
-       elif test -z "${SHMEM_LIB}" ; then
-	   VENDOR_LIBS="${VENDOR_LIBS} -lsma -lpthread"
-       fi
-   fi
-
-   dnl note that we may add some more target specific libraries
-   dnl in AC_DRACO_ENV
-])
-
-dnl-------------------------------------------------------------------------dnl
 dnl end of ac_local.m4
 dnl-------------------------------------------------------------------------dnl
