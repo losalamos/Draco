@@ -1,0 +1,30 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   stdheaders/cstdio
+ * \author Kelly Thompson
+ * \date   Fri Dec 19 14:30:22 2003
+ * \brief  Encapsulate cstdio namespace for system/compilers that do no
+ * provide it.
+ * \note  Copyright © 2003 The Regents of the University of California.
+ */
+//---------------------------------------------------------------------------//
+// $Id$ //
+//---------------------------------------------------------------------------//
+
+#ifndef __stdheaders_cstdio__
+#define __stdheaders_cstdio__
+
+#include <stdio.h>
+
+namespace std {
+
+using ::FILE;
+using ::fgets;
+
+} // end namespace std 
+
+#endif    // end __stdheaders_cstdio__
+
+//---------------------------------------------------------------------------//
+//                                end of cstdio                              //
+//---------------------------------------------------------------------------//

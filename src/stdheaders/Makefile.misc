@@ -8,7 +8,7 @@
 ## Headers (add as needed)
 ##---------------------------------------------------------------------------##
 
-extraheaders := cmath ctime cctype cstdlib cstring cassert cfloat
+extraheaders := cmath ctime cctype cstdlib cstring cassert cfloat cstdio 
 
 extraInstallHeaders := $(addprefix ${includedir}/${package}/, ${extraheaders})
 
