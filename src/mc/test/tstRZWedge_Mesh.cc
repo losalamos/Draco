@@ -445,8 +445,8 @@ void simple_one_cell_RZWedge()
     {
 	position_sampled = mesh->sample_pos(1, ran_object, slope, 0.5);
 	
-	xbin = position_sampled[0]*num_bins;
-	zbin = position_sampled[2]*num_bins;
+	xbin = static_cast<int>(position_sampled[0]*num_bins);
+	zbin = static_cast<int>(position_sampled[2]*num_bins);
 
 	xdist[xbin]++;
 	zdist[zbin]++;
