@@ -32,6 +32,7 @@ AC_RUNTESTS(tstCheck_Strings \
             tstMat3RA \ 
             tstMat4RA \
             tstMat5RA \
+            tstFile_Streams \
             , scalar)
 
 AC_DRACO_ENV

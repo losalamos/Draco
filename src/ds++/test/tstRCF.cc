@@ -46,6 +46,7 @@ class Field
 
   public:
     Field() : d(5, 1.0) { nfields++; }
+    Field(int n, value_type v = value_type()) : d(n,v) { nfields++; }
     ~Field() { nfields--; }
 
     value_type& operator[](int i) { return d[i]; }
@@ -171,8 +172,8 @@ void test_simple_construction_copy()
         sf.get_field().resize(0);
         if (!sf.empty()) ITFAILS;
 
-        // make a field
-        RCF<dbl_field> x(new dbl_field(10, 12.46));
+        // make a field, using alternative ctor.
+        RCF<dbl_field> x(10, 12.46);
         if (!x.assigned()) ITFAILS;
         if (!soft_equiv(x.begin(), x.end(), ref.begin(), ref.end())) ITFAILS;
 

@@ -39,6 +39,7 @@ namespace rtt_dsxx
  *
  * The RCF is templated on Field_t (Field Type).  The field must
  * provide the following functions
+ * - Field_t::Field_t(int n, value_type v);
  * - const T& Field_t::operator[] const
  * - T& Field_t::operator[]
  * - size_type size() const
@@ -68,7 +69,7 @@ namespace rtt_dsxx
  * or
  *
  * \code
- *     RCF<vector<double> > x(new vector<double>(10, 0.0));
+ *     RCF<vector<double> > x(10, 0.0); // shorthand
  *     for (vector<double>::iterator i = x.begin(); 
  *          i != x.end(); i++)
  *     {
@@ -117,8 +118,13 @@ class RCF
     template<class X> friend class RCF;
 
   public:
+
     //! Default constructor.
-    RCF() {/*...*/}
+    RCF() { /* */ }
+
+    //! Constructor.
+    inline explicit RCF(const int n,
+			const value_type v = value_type());
 
     // Explicit constructor for type Field_t *.
     inline explicit RCF(Field_t *p_in);
@@ -162,6 +168,24 @@ class RCF
 
 //---------------------------------------------------------------------------//
 // INLINE FUNCTIONS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Construct an RCF from its size and initial value.
+ *
+ * This constructor has the following usage:
+ * \code
+ *     // make an RCF field from a vector<double>(10, 0.0)
+ *     RCF<vector<double> > x(10, 0.0);
+ * \endcode
+ */
+template<class Field_t>
+RCF<Field_t>::RCF(const int        n,
+		  const value_type v)
+{
+    Require(n > 0);
+    sp_field = new Field_t(n, v);
+}
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Construct a RCF from a pointer to the field.
@@ -308,7 +332,11 @@ class RCF<const Field_t>
 
   public:
     //! Default constructor.
-    RCF() {/*...*/}
+    RCF() { /* */ }
+    
+    //! Constructor.
+    inline explicit RCF(const int n,
+			const value_type v = value_type());
 
     //! Constructor from non-const Field_t.
     RCF(const RCF<Field_t> &x) : sp_field(x.sp_field) {/*...*/}
@@ -343,6 +371,24 @@ class RCF<const Field_t>
 
 //---------------------------------------------------------------------------//
 // INLINE FUNCTIONS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Construct an RCF from its size and initial value.
+ *
+ * This constructor has the following usage:
+ * \code
+ *     // make an RCF field from a vector<double>(10, 0.0)
+ *     RCF<const vector<double> > x(10, 0.0);
+ * \endcode
+ */
+template<class Field_t>
+RCF<const Field_t>::RCF(const int        n,
+			const value_type v)
+{
+    Require(n > 0);
+    sp_field = new Field_t(n, v);
+}
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Construct a RCF to a const Field_t from a pointer to the field.

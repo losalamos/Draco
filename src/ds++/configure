@@ -1334,6 +1334,7 @@ package="ds++"
             tstMat3RA \
             tstMat4RA \
             tstMat5RA \
+            tstFile_Streams \
             "
 
 	test_nprocs="scalar"
