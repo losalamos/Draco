@@ -1,0 +1,6 @@
+2002-05-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* stopwatch: Released 1_1_0 of stopwatch.  The contents within
+	should probably be merged in some way with the timers available in
+	c4. However, we are not worried about that for this release.
+
