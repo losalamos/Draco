@@ -522,7 +522,7 @@ void Source_Init<MT,PT>::write_initial_census(const MT &mesh,
 	    double ew = ecen(cell) / ncen(cell);
 
 	  // create Particle
-	    SP<PT> particle = new PT(r, omega, ew, cell, random);
+	    SP<PT> particle(new PT(r, omega, ew, cell, random));
 
 	  // write particle to census
 	    census->push(particle);
@@ -574,8 +574,8 @@ void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon)
     double cenew;
 
   // make new census bank to hold combed census particles
-    SP<Particle_Buffer<PT>::Census> comb_census = new
-	Particle_Buffer<PT>::Census();
+    SP<Particle_Buffer<PT>::Census> 
+	comb_census(new	Particle_Buffer<PT>::Census());
 
     while (census->size())
     {
@@ -604,7 +604,7 @@ void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon)
 		    for (int nc = 1; nc <= numcomb-1; nc++)
 		    {
 		      // COPY a new particle and spawn a new RN state
-			SP<PT> another = new PT(*particle);
+			SP<PT> another(new PT(*particle));
 			Sprng nran = rcon.spawn(particle->get_random());
 			another->set_random(nran);
 			comb_census->push(another);
@@ -652,8 +652,8 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
     eloss_cen += (ecentot - eloss_cen);
 
   // make new census bank to hold combed census particles
-    SP<Particle_Buffer<PT>::Census> comb_census = new
-	Particle_Buffer<PT>::Census();
+    SP<Particle_Buffer<PT>::Census> 
+	comb_census(new Particle_Buffer<PT>::Census());
 
     while (census->size())
     {
@@ -679,7 +679,7 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
 		    for (int nc = 1; nc <= numcomb-1; nc++)
 		    {
 		      // COPY a new particle and spawn a new RN state
-			SP<PT> another = new PT(*particle);
+			SP<PT> another(new PT(*particle));
 			Sprng nran = rcon.spawn(particle->get_random());
 			another->set_random(nran);
 			comb_census->push(another);

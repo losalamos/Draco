@@ -330,7 +330,7 @@ SP<typename Particle_Buffer<PT>::Comm_Buffer>
 Particle_Buffer<PT>::recv_buffer(int proc) const
 {
   // return Comm_Buffer declaration
-    SP<Comm_Buffer> buffer = new Comm_Buffer();
+    SP<Comm_Buffer> buffer(new Comm_Buffer());
 
   // receive the n_part
     Recv (buffer->n_part, proc, 200);
@@ -621,7 +621,7 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const
 	Check (ic <= buffer_c);
 
       // make the Particle
-	SP<PT> particle = new PT(r, omega, ew, cell, random, frac, t_left); 
+	SP<PT> particle(new PT(r, omega, ew, cell, random, frac, t_left)); 
 
       // add the Particle to the Bank and update the num_part counter
 	bank.push(particle);

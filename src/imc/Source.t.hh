@@ -199,8 +199,8 @@ SP<PT> Source<MT, PT>::get_ss(double delta_t)
     double time_left = rand.ran() * delta_t;
 
     // instantiate particle to return
-    SP<PT> ss_particle = new PT(r, omega, ew, cell, rand, fraction, 
-				time_left);
+    SP<PT> ss_particle(new PT(r, omega, ew, cell, rand, fraction, 
+			      time_left));
 
     // return the ss particle;
     return ss_particle;
@@ -230,8 +230,8 @@ SP<PT> Source<MT, PT>::get_evol(double delta_t)
     double time_left = rand.ran() * delta_t;
 
   // instantiate particle to return
-    SP<PT> vol_particle = new PT(r, omega, ew, cell, rand, fraction, 
-				 time_left); 
+    SP<PT> vol_particle(new PT(r, omega, ew, cell, rand, fraction, 
+			       time_left)); 
 
     return vol_particle;
 }

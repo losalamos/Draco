@@ -1033,12 +1033,12 @@ SP<Coord_sys> Parallel_Builder<MT>::recv_Coord()
   // build the coordinate system
     if (cs == "xy")
     {
-	SP<XYCoord_sys> xycoord = new XYCoord_sys;
+	SP<XYCoord_sys> xycoord(new XYCoord_sys);
 	coord = xycoord;
     }
     else if (cs == "xyz")
     {
-	SP<XYZCoord_sys> xyzcoord = new XYZCoord_sys;
+	SP<XYZCoord_sys> xyzcoord(new XYZCoord_sys);
 	coord = xyzcoord;
     }
     
@@ -1878,8 +1878,8 @@ SP<Communicator<PT> > Parallel_Builder<MT>::recv_Communicator()
     delete [] nodes_recv;
 
   // make new communicator
-    SP<Communicator<PT> > comm = new Communicator<PT>(recv_nodes, send_nodes, 
-						      b_node, b_cell);
+    SP<Communicator<PT> > comm(new Communicator<PT>(recv_nodes, send_nodes, 
+						    b_node, b_cell));
   // comm->print(std::cout);
     return comm;
 }
