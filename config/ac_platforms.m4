@@ -87,6 +87,32 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
    esac
 ])
 
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_LAHEY_ENVIRONMENT
+dnl
+dnl Some vendor setups require that the Lahey lib dir and compiler
+dnl libraries be provided on the link line.  This m4 function adds the
+dnl necessary libraries to LIBS.
+dnl-------------------------------------------------------------------------dnl
+AC_DEFUN([AC_DBS_LAHEY_ENVIRONMENT], [dnl
+#
+# setup lf95 libs:
+# add lf95 libs to LIBS if eospac or scalapack is used.
+#
+   AC_MSG_CHECKING("for extra lf95 library requirements.")
+   if test -n "${vendor_eospac}"    ||
+      test -n "${vendor_scalapack}" ||
+      test -n "${vendor_trilinos}"; then
+         lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	 extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+         LIBS="${LIBS} ${extra_lf95_libs}"
+         extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
+         RPATH="${RPATH} ${extra_lf95_rpaths}"
+         AC_MSG_RESULT("${extra_lf95_libs}")
+   else
+         AC_MSG_RESULT("none.")
+   fi
+])
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DBS_LINUX_ENVIRONMENT
@@ -172,47 +198,15 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # end of lapack setup
        # 
 
-       #
-       # setup eospac
-       #
-       
-       AC_MSG_CHECKING("for extra eospac library requirements.")
-       if test -n "${vendor_eospac}"; then
-           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_eospac_libs}"
-           AC_MSG_RESULT("${extra_eospac_libs}")
-       else
-           AC_MSG_RESULT("none.")
-       fi
-
-       #
-       # end of eospac
-       #
-
-       #
-       # setup scalapack
-       #
-       
-       AC_MSG_CHECKING("for extra scalapack library requirements.")
-       if test -n "${vendor_scalapack}"; then
-           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_scalapack_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_scalapack_libs}"
-           AC_MSG_RESULT("${extra_scalapack_libs}")
-       else
-           AC_MSG_RESULT("none.")
-       fi
-
-       #
-       # end of eospac
-       #
+       # setup lf95 libs
+       AC_DBS_LAHEY_ENVIRONMENT
 
        #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
        #
        AC_MSG_CHECKING("libg2c requirements")
-       if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||
+       if test -n "${vendor_lapack}" || 
+          test -n "${vendor_pcg}"    ||
 	  test -n "${vendor_gandolf}"; then
 	   
 	   # Add g2c for various compilers
@@ -329,22 +323,8 @@ AC_DEFUN([AC_DBS_CYGWIN_ENVIRONMENT], [dnl
        dnl end of lapack setup
        dnl 
 
-       dnl
-       dnl setup eospac
-       dnl
-       
-       AC_MSG_CHECKING("for extra eospac library requirements.")
-       if test -n "${vendor_eospac}"; then
-	   extra_eospac_libs="-L/usr/local/lf9562/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_eospac_libs}"
-           AC_MSG_RESULT("${extra_eospac_libs}")
-       else
-           AC_MSG_RESULT("none.")
-       fi
-
-       dnl
-       dnl end of eospac
-       dnl
+       # setup lf95 libs
+       AC_DBS_LAHEY_ENVIRONMENT
 
        dnl
        dnl add libg2c to LIBS if lapack, gandolf, or pcg is used
@@ -977,23 +957,8 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        # end of lapack setup
        # 
 
-       #
-       # setup eospac
-       #
-       
-       AC_MSG_CHECKING("for extra eospac library requirements.")
-       if test -n "${vendor_eospac}"; then
-           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_eospac_libs}"
-           AC_MSG_RESULT("${extra_eospac_libs}")
-       else
-           AC_MSG_RESULT("none.")
-       fi
-
-       #
-       # end of eospac
-       #
+       # setup lf95 libs
+       AC_DBS_LAHEY_ENVIRONMENT
 
        #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
