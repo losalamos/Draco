@@ -1,0 +1,30 @@
+#!/usr/local/bin/perl
+# fixdeps
+# Geoffrey Furnish
+#
+# Dumb tool to fix output of KCC --output_dependencies.
+
+require "getopts.pl";
+
+&Getopts('e:o:i:v');
+
+$env = $opt_e;
+$infile = $opt_i;
+$outfile = $opt_o;
+$verbose = $opt_v;
+
+print "Making $outfile from $infile, environment $env\n" if $verbose;
+
+open( INFILE, "< $infile" ) || die "Can't open $infile for input.";
+open( OUTFILE, "> $outfile" ) || die "Can't open $outfile for output.";
+
+while( <INFILE> ) {
+    if (/^\.pt_(\w+)_$env.o:(.*)/) {
+	print OUTFILE "$env/pt_$1.o:$2\n";
+    }
+    else {
+	print OUTFILE "$env/$_";
+    }
+}
+
+close INFILE, OUTFILE;
