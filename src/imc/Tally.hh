@@ -73,7 +73,7 @@ template<class MT>
 class Tally 
 {
   public:
-    // Usefull typedefs
+    // Useful typedefs
     typedef rtt_dsxx::SP<MT>       SP_MT;
     typedef std::vector<double>    sf_double;
     typedef std::vector<sf_double> vf_double;

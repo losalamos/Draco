@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   imc/Particle.t.hh"
- * \author Thomas M. Evans, Todd J. Urbatsch and Mike Buksas
+ * \author Thomas M. Evans, Todd J. Urbatsch, Mike Buksas
  * \date   Fri Jan 30 17:04:24 1998
  * \brief  Particle class implementation file.
  */
