@@ -14,13 +14,9 @@
 #include <cmath>
 #include <limits>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
+namespace rtt_radphys
+{
 
-BEGIN_NS_XTM
-    
 //------------------------------------------------------------------------//
 // getPlank:
 //   Calculate the planck function from the electron temperature.
@@ -35,7 +31,7 @@ void RadiationPhysics::getPlanck(const Field &TElectron,
     using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(TElectron, planckian));
 
-    using PhysicalConstants::pi;
+    using rtt_units::PhysicalConstants::pi;
     const double sigmaR = getStefanBoltzmann();
     
     planckian = sigmaR / pi * TElectron*TElectron*TElectron*TElectron;
@@ -56,7 +52,7 @@ void RadiationPhysics::getPlanckTemperatureDerivative(const Field &TElectron,
     using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(TElectron, dplanckdT));
 
-    using PhysicalConstants::pi;
+    using rtt_units::PhysicalConstants::pi;
     const double sigmaR = getStefanBoltzmann();
 
     dplanckdT = 4.0 * sigmaR / pi * TElectron*TElectron*TElectron;
@@ -150,6 +146,8 @@ void RadiationPhysics::getElectIonCoulombLog(const Field &density,
     Require(ContainerTraits<Field>::conformal(TElectron, lambda_ei));
     Require(ContainerTraits<Field>::conformal(z, lambda_ei));
     Require(abar > 0.0);
+
+    using namespace rtt_units;
     
     const double Na = PhysicalConstants::avogadro;
     const double eV2K = PhysicalConstants::eV2K;
@@ -292,6 +290,8 @@ void RadiationPhysics::getElectElectCoulombLog(const Field &density,
     Require(ContainerTraits<Field>::conformal(z, lambda_ee));
     Require(abar > 0.0);
 
+    using namespace rtt_units;
+    
     const double Na = PhysicalConstants::avogadro;
     const double eV2K = PhysicalConstants::eV2K;
     
@@ -480,6 +480,8 @@ void RadiationPhysics::getIonIonCoulombLog(const Field &density,
     Require(ContainerTraits<Field>::conformal(z, lambda_ii));
     Require(abar > 0.0);
 
+    using namespace rtt_units;
+    
     const double Na = PhysicalConstants::avogadro;
     const double eV2K = PhysicalConstants::eV2K;
     
@@ -573,7 +575,7 @@ void RadiationPhysics::getIonGamma0(const Field &z, const Field &TElect,
     }
 }
 
-END_NS_XTM  // namespace XTM
+} // end namespace rtt_radphys
 
 //---------------------------------------------------------------------------//
 //                              end of RadiationPhysics.t.hh

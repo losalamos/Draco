@@ -12,13 +12,9 @@
 #include "units/Units.hh"
 #include "units/PhysicalConstants.hh"
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
+namespace rtt_radphys
+{
 
-BEGIN_NS_XTM
-    
 //===========================================================================//
 // class RadiationPhysics - 
 //
@@ -36,7 +32,7 @@ class RadiationPhysics
 {
 
     // NESTED CLASSES AND TYPEDEFS
-    // none
+    typedef rtt_units::Units Units;
 
     // DATA
 
@@ -241,7 +237,7 @@ class RadiationPhysics
 
 inline double RadiationPhysics::getLightSpeed() const
 {
-    using XTM::PhysicalConstants::cLightSI;
+    using rtt_units::PhysicalConstants::cLightSI;
 
     // Convert from SI to user's units with the InvertXXX method.
     
@@ -260,7 +256,7 @@ inline double RadiationPhysics::getRadConstant() const
     return 4.0 / getLightSpeed() * getStefanBoltzmann();
 }
 
-END_NS_XTM  // namespace XTM
+} // end namespace rtt_radphys
 
 #endif                          // __radphys_RadiationPhysics_hh__
 

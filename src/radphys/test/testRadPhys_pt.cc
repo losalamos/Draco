@@ -12,7 +12,7 @@
 typedef std::vector<double> VD;
 
 #include "../RadiationPhysics.t.hh"
-using namespace XTM;
+using rtt_radphys::RadiationPhysics;
 
 template 
 void RadiationPhysics::getPlanck(const VD &TElectron, VD &planckian) const;
@@ -31,7 +31,7 @@ VD func()
     VD a(3, 42.);
     const VD b(3, 23.);
 
-    Units units(Units::getAstroPhysUnits());	       
+    rtt_units::Units units(rtt_units::Units::getAstroPhysUnits());	       
 
     VD c = units.ConvertDensity(a) / b;
 

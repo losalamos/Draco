@@ -14,13 +14,9 @@
 #include <cmath>
 #include <limits>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
+namespace rtt_radphys
+{
 
-BEGIN_NS_XTM
-    
 //------------------------------------------------------------------------//
 // RadiationPhysics:
 //     Constructor based on Units.
@@ -39,7 +35,7 @@ RadiationPhysics::RadiationPhysics(const Units &units_)
 
 double RadiationPhysics::getStefanBoltzmann() const
 {
-    using XTM::PhysicalConstants::stefanBoltzmannSI;
+    using rtt_units::PhysicalConstants::stefanBoltzmannSI;
     using std::pow;
 
     // The Stefan-Boltzmann constant has the following SI units:
@@ -55,7 +51,7 @@ double RadiationPhysics::getStefanBoltzmann() const
     return stefanBoltzmann;
 }
 
-END_NS_XTM  // namespace XTM
+} // end namespace rtt_radphys
 
 //---------------------------------------------------------------------------//
 //                              end of RadiationPhysics.cc

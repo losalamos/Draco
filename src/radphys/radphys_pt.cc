@@ -10,7 +10,7 @@
 
 #include "RadiationPhysics.t.hh"
 
-namespace XTM
+namespace rtt_radphys
 {
 
  typedef double T1;
@@ -36,7 +36,7 @@ namespace XTM
  template void RadiationPhysics::getPlanck(const double &TElectron,
 					   double &planckian) const;
 
-} // end namespace XTM
+} // end namespace rtt_radphys
 
 //---------------------------------------------------------------------------//
 //                              end of radphys_pt.cc

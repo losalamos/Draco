@@ -19,7 +19,7 @@ using std::vector;
 namespace rtt_radphys
 {
 
- using namespace XTM;
+ using rtt_units::Units;
 
  void testRadPhys(int testnum)
  {
