@@ -269,6 +269,9 @@ void IMC_Manager<MT,BT,IT,PT>::IMC_init()
       // processor if we are on the first cycle
 	if (!parallel_builder)
 	{
+	  // make a new parallel builder on the IMC nodes
+	    parallel_builder = new Parallel_Builder<MT>();
+
 	  // receive the data from the host proc the first cycle
 	    int seed;
 	    int s, d, i, c;
@@ -286,7 +289,6 @@ void IMC_Manager<MT,BT,IT,PT>::IMC_init()
 	  // now make the objects
 	    rnd_con = new Rnd_Control(seed);
 	    Particle_Buffer<PT>::set_buffer_size(s);
-	    parallel_builder = new Parallel_Builder<MT>();
 	    buffer           = new Particle_Buffer<PT>(d, i, c);
 	    parallel_scheme  = get_scheme(ps);
 	}
@@ -463,7 +465,15 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC_dd()
 	
 	  // if census write to file
 	    if (particle->desc() == "census")
+	    {
+	      // convert the particle cell index back to a global cell index
+		int local_cell  = particle->get_cell();
+		int global_cell = parallel_builder->master_cell(local_cell);
+		particle->set_cell(global_cell);
+
+	      // push particle to census
 		new_census_bank->push(particle);
+	    }
 
 	  // if boundary cross communicate the particle
 	    if (particle->desc() == "cross_boundary")
@@ -505,15 +515,25 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC_dd()
 	    particle->reset_status();
 	    
 	  // transport the particle
-	    particle->transport(*mesh, *opacity, *tally);
+	    particle->transport(*mesh, *opacity, *tally, check);
 	    counter++;
 
 	  // do ending particle stuff
 	    Check (!particle->status());
 	    if (particle->desc() == "census")
+	    {
+	      // convert the particle cell index back to a global cell index
+		int local_cell  = particle->get_cell();
+		int global_cell = parallel_builder->master_cell(local_cell);
+		particle->set_cell(global_cell);
+
+	      // push particle to census
 		new_census_bank->push(particle);
+	    }
+
 	    if (particle->desc() == "cross_boundary")
 		communicator->communicate(*buffer, particle);
+
 	    if (!(counter % Particle_Buffer<PT>::get_buffer_s()))
 		communicator->arecv_post(*buffer, bank);
 

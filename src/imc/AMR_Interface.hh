@@ -36,7 +36,7 @@
 
 extern "C"
 {
-    extern void rage_imc_(int *, int *, int *, double *, int *, int *, int *, 
+    extern void milstone_(int *, int *, int *, double *, int *, int *, int *, 
 			  int *, double *, double *, double *, double *, 
 			  double *, double *, double *, double *, double *, 
 			  int *, int *, double *, int *, int *, int *, 

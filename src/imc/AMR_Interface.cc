@@ -24,7 +24,7 @@
 //---------------------------------------------------------------------------//
 // IMC launcher in Rage
 
-void rage_imc_(int *imc_ncycle, int *local_numtop, int *global_numtop,
+void milstone_(int *imc_ncycle, int *local_numtop, int *global_numtop,
 	       double *imc_node_coord, int *imc_layout, int *num_b_cells,
 	       int *b_proc, int *b_cell, double *imc_cv, double *imc_tev, 
 	       double *imc_rev, double *imc_rho, double *imc_mua_n,
@@ -58,9 +58,12 @@ void rage_imc_(int *imc_ncycle, int *local_numtop, int *global_numtop,
     {
       // welcome to IMC
 	cout << "*********************************" << endl;
-	cout << ">>> MILAGRO, 'a true miracle' <<<" << endl;
-	cout << ">>> version 1.0               <<<" << endl;
-	cout << ">>> Evans and Urbatsch        <<<" << endl;
+	cout << ">>>        MILSTONE           <<<" << endl;
+	cout << ">>> 'An exclusive catalog for <<<" << endl;
+	cout << ">>>  discrimenating shoppers' <<<" << endl;
+	cout << ">>>                           <<<" << endl;
+	cout << ">>>       version 1.0         <<<" << endl;
+	cout << ">>>    Evans and Urbatsch     <<<" << endl;
 	cout << "*********************************" << endl;
 
       // begining time

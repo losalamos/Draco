@@ -21,6 +21,12 @@
 //  1)  7-28-98 : fixed calculation of cell_pair data in build_cells() member 
 //                function; this error did not cause any transport errors 
 //                luckily
+//  2)  9-16-98 : added global_cells vector which maps the local cells to
+//                global cells, this data is sent to IMC processors in the 
+//                constructors for Parallel_Builder; added some DBC Requires
+//                to mesh topology query functions
+//  3)  9-16-98 : in dist_census, added global_cell -> local_cell update for
+//                particles that are sent out
 // 
 //===========================================================================//
 
@@ -63,6 +69,7 @@ private:
     vector<vector<int> > cells_per_proc;
     vector<vector<int> > procs_per_cell;
     vector<vector<int> > bound_cells;
+    vector<int> global_cells;
 
   // decomposition mode
     string parallel_scheme;
@@ -149,7 +156,7 @@ public:
     template<class PT>
     SP<Communicator<PT> > recv_Communicator();
 
-  // Mesh mapping functionality
+  // Mesh mapping functionality functions available on the host node
     inline int master_cell(int icell, int proc) const;
     inline int imc_cell(int mcell, int proc) const;
     inline vector<int> get_cells(int proc) const;
@@ -158,6 +165,9 @@ public:
     int num_cells(int proc) const { return cells_per_proc[proc].size(); }
     int num_procs(int mcell) const { return procs_per_cell[mcell-1].size(); } 
     
+  // Mesh mapping functionality available on all nodes
+    int master_cell(int icell) const { return global_cells[icell-1]; }
+
   // parallel scheme
     string get_parallel_scheme() const { return parallel_scheme; }
 
@@ -184,6 +194,7 @@ ostream& operator<<(ostream &out, const Parallel_Builder<MT> &object)
 template<class MT>
 inline int Parallel_Builder<MT>::master_cell(int icell, int proc) const
 {
+    Require (!node());
     Require (proc < nodes());
     Require (icell <= cells_per_proc[proc].size());
     return cells_per_proc[proc][icell-1];
@@ -196,6 +207,7 @@ inline int Parallel_Builder<MT>::master_cell(int icell, int proc) const
 template<class MT>
 inline int Parallel_Builder<MT>::imc_cell(int mcell, int proc) const
 {
+    Require (!node());
     Require (proc < nodes());
 
   // get the iterator location, for const_iterator explanation see KAI
@@ -216,6 +228,7 @@ inline int Parallel_Builder<MT>::imc_cell(int mcell, int proc) const
 template<class MT>
 inline vector<int> Parallel_Builder<MT>::get_cells(int proc) const
 {
+    Require (!node());
     Require (proc < nodes());
     return cells_per_proc[proc];
 }
@@ -226,6 +239,7 @@ inline vector<int> Parallel_Builder<MT>::get_cells(int proc) const
 template<class MT>
 inline vector<int> Parallel_Builder<MT>::get_procs(int mcell) const
 {
+    Require (!node());
     return procs_per_cell[mcell-1];
 }
 

@@ -17,6 +17,8 @@
 // revision history:
 // -----------------
 // 0) original
+// 1)  9-16-98 : added local cell -> global cell update for census particles
+//               in step_IMC_dd
 // 
 //===========================================================================//
 

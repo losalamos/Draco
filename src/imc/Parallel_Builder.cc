@@ -39,9 +39,33 @@ template<class MT>
 Parallel_Builder<MT>::Parallel_Builder(const MT &mesh, 
 				       const Source_Init<MT> &sinit)
 {
+    Require (!node());
+
   // calculate the parameters for splitting the problem amongst many
   // processors 
     parallel_topology(mesh, sinit);
+    Check (cells_per_proc.size() != 0);
+    Check (procs_per_cell.size() != 0);
+
+  // if we have more than 1 processor, send out the global_cells index
+    for (int np = 1; np < nodes(); np++)
+    {
+      // assign global cell lists for each processor
+	int num_cells = cells_per_proc[np].size();
+	int *send_global = new int[num_cells];
+	for (int lcell = 0; lcell < num_cells; lcell++)
+	    send_global[lcell] = cells_per_proc[np][lcell];
+
+      // send out the global cell lists
+	Send (num_cells, np, 48);
+	Send (send_global, num_cells, np, 49);
+
+      // reclaim storage
+	delete [] send_global;
+    }
+
+  // assign the global cell list on the host processor
+    global_cells = cells_per_proc[0];
 }
 
 //---------------------------------------------------------------------------//
@@ -50,7 +74,21 @@ Parallel_Builder<MT>::Parallel_Builder(const MT &mesh,
 template<class MT>
 Parallel_Builder<MT>::Parallel_Builder()
 {
-  // the IMC-nodes don't use this data
+    Require (node());
+
+  // receive the global_cell lists from the host node
+    int num_cells;
+    Recv (num_cells, 0, 48);
+    int *recv_global = new int[num_cells];
+    Recv (recv_global, num_cells, 0, 49);
+
+  // assign the global cell list to global_cells
+    global_cells.resize(num_cells);
+    for (int i = 0; i < num_cells; i++)
+	global_cells[i] = recv_global[i];
+
+  // reclaim storage
+    delete [] recv_global;
 }
 
 //---------------------------------------------------------------------------//
@@ -448,6 +486,7 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
       // in a cell, total number of census particles after which the
       // leftover particles are placed
 	offset = (ncen2proc[cell-1] + 1) * ncenleft[cell-1];
+
       // determine the processor to go to
 	if (num_placed_per_cell[cell-1] < offset)
 	    proc_index = num_placed_per_cell[cell-1] / 
@@ -456,6 +495,10 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
 	    proc_index = (num_placed_per_cell[cell-1] - offset) / 
 		ncen2proc[cell-1] + ncenleft[cell-1];
 	proc_goto = procs_per_cell[cell-1][proc_index];
+
+      // update the particle cell with the local index of the cell on the
+      // IMC_processor
+	particle->set_cell(imc_cell(cell, proc_goto));
 	buffer.buffer_particle(cen_buffer[proc_goto], *particle);
 
       // increment some counters
@@ -1174,7 +1217,7 @@ void Parallel_Builder<MT>::send_cells(const MT &host_mesh,
 }
 
 //---------------------------------------------------------------------------//
-// build a new vertex and cell_pair on each processor
+// build a new vertex and cell_pair for each processor
 
 template<class MT>
 void Parallel_Builder<MT>::build_cells(const MT &mesh,
