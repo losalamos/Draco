@@ -24,7 +24,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "@(#)<spkg>-<start>#_#_#";
+    string pkg_release = "<spkg>(draco-<start>#_#_#)";
     return pkg_release;
 }
 
