@@ -71,52 +71,51 @@ Element_Definition::Element_Definition(const Element_Type &type_)
 	
     }
     
-    Ensure( invariant_satisfied() );
+    invariant_satisfied();
 }
 
 bool Element_Definition::invariant_satisfied() const
 {
     
-    bool ldum = name.empty() == false;
-
-    if (type == NODE)
+    Ensure(name.empty() == false);
+    
+    if (type == NODE) 
     {
-	ldum = ldum && 
-	    dimension         == 0 && number_of_nodes  == 1 &&
-	    elem_defs.size()  == 0 && side_type.size() == 0 &&
-	    side_nodes.size() == 0 && number_of_sides  == 0 ;
+	Ensure(dimension         == 0);
+	Ensure(number_of_nodes   == 1);
+	Ensure(number_of_sides   == 0);	
+	Ensure(elem_defs.size()  == 0);
     }
     else
     {
-	ldum = ldum &&
-	    dimension > 0 && 
-	    number_of_nodes > dimension &&
-	    elem_defs.size() > 0 &&
-	    node_loc.size() == number_of_nodes;
-	for (int i=0; i < elem_defs.size(); i++)
+	Ensure(dimension > 0); 
+	Ensure(number_of_nodes > dimension);
+	Ensure(number_of_sides <= number_of_nodes);
+	Ensure(number_of_sides > dimension); 
+	Ensure(elem_defs.size() > 0);
+    }
+    
+    Ensure(side_type.size() == number_of_sides);
+    Ensure(side_nodes.size() == number_of_sides);
+    Ensure(node_loc.size() == number_of_nodes);
+    
+    for (int i=0; i < elem_defs.size(); i++)
+	Ensure(elem_defs[i].dimension == dimension-1);
+    
+    for (int i=0; i < side_nodes.size(); i++)
+    {
+	Ensure(side_nodes[i].size() > 0);
+	Ensure(side_nodes[i].size() == 
+	       elem_defs[ side_type[i] ].number_of_nodes);
+	for (int j=0; j < side_nodes[i].size(); j++)
 	{
-	    ldum = ldum && elem_defs[i].dimension == dimension-1;
-	}
-	ldum = ldum && 
-	    number_of_sides <= number_of_nodes &&
-	    number_of_sides > dimension; 
-	ldum == ldum && side_type.size() == number_of_sides;
-	ldum == ldum && side_nodes.size() == number_of_sides;
-        for (int i=0; i < side_nodes.size(); i++)
-	{
-	    ldum = ldum && side_nodes[i].size() > 0;
-	    ldum = ldum && side_nodes[i].size() == 
-		elem_defs[ side_type[i] ].number_of_nodes;
-	    for (int j=0; j < side_nodes[i].size(); j++)
-	    {
-		ldum = ldum && side_nodes[i][j] >= 0 &&
-		    side_nodes[i][j] < number_of_nodes;
-		ldum = ldum && node_loc[ side_nodes[i][j] ] ==
-		    elem_defs[ side_type[i] ].node_loc[j];
-	    }
+	    Ensure(side_nodes[i][j] >= 0);
+	    Ensure(side_nodes[i][j] < number_of_nodes);
+	    Ensure(node_loc[ side_nodes[i][j] ] ==
+		   elem_defs[ side_type[i] ].node_loc[j]);
 	}
     }
-    return ldum;
+    return true;
 }
 
 void Element_Definition::construct_node()
@@ -600,6 +599,40 @@ void Element_Definition::construct_hexa()
     }
     for (int i = 0; i < number_of_sides; i++)
 	side_type.push_back(0);	
+}
+
+std::ostream& Element_Definition::print(std::ostream &os_out) const
+{
+    std::vector<int> tmp;
+    os_out << "Element Type   : " << get_type() << std::endl;
+    os_out << "Element Name   : " << get_name() << std::endl;
+    os_out << "Number of Nodes: " << get_number_of_nodes() <<
+	std::endl;
+    os_out << "Dimension      : " << get_dimension() << std::endl;
+    os_out << "Number of Sides: " << get_number_of_sides() << std::endl;
+    os_out << "Node Locations : ";
+    for (int j=0; j<get_number_of_nodes(); j++)
+	os_out << get_node_location(j) << " ";
+    os_out << std::endl;
+    if (get_number_of_sides() != 0) 
+    {
+	os_out << "Side Types     : ";
+	for (int j=0; j<get_number_of_sides(); j++)
+	    os_out << get_side_type(j).get_name() << " ";
+	os_out << std::endl;
+	
+	os_out << "Side Nodes     : " << std::endl;
+	for (int j=0; j<get_number_of_sides(); j++)
+	{
+	    tmp = get_side_nodes(j);
+	    os_out << "  " << "side# " << j << " -    ";
+	    for (int k=0; k<tmp.size(); k++)
+		os_out << tmp[k] << " ";
+	    os_out << std::endl;
+	}
+    }
+    os_out << std::endl;
+    return os_out;
 }
 
 } // end namespace rtt_meshReaders

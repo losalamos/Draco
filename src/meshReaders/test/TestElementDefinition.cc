@@ -89,51 +89,20 @@ string TestElementDefinition::runTest()
     type_list.push_back(Element_Definition::HEXA_27);
 
     std::vector<Element_Definition> elem_defs;
-    std::vector<int> tmp;
-    cout << endl << "Building Elements for Test ---" << endl << endl;
+    os() << endl << "Building Elements for Test ---" << endl << endl;
     for (int i=0; i< type_list.size(); i++)
     {
 	elem_defs.push_back( Element_Definition(type_list[i]) );
-	cout << "Element Type   : " << elem_defs[i].get_type() << endl;
-	cout << "Element Name   : " << elem_defs[i].get_name() << endl;
-	cout << "Number of Nodes: " << elem_defs[i].get_number_of_nodes() <<
-	    endl;
-	cout << "Dimension      : " << elem_defs[i].get_dimension() << endl;
-	cout << "Number of Sides: " << elem_defs[i].get_number_of_sides() << endl;
-	cout << "Node Locations : ";
-	for (int j=0; j<elem_defs[i].get_number_of_nodes(); j++)
-	    cout << elem_defs[i].get_node_location(j) << " ";
-	cout << endl;
-
-	cout << "Side Types     : ";
-	for (int j=0; j<elem_defs[i].get_number_of_sides(); j++)
-	    cout << elem_defs[i].get_side_type(j).get_name() << " ";
-	cout << endl;
-
-	cout << "Side Nodes     : " << endl;
-	for (int j=0; j<elem_defs[i].get_number_of_sides(); j++)
-	{
-	    tmp = elem_defs[i].get_side_nodes(j);
-	    cout << "  " << "side# " << j << " -    ";
-	    for (int k=0; k<tmp.size(); k++)
-		cout << tmp[k] << " ";
-	    cout << endl;
-	}
-	cout << endl;
+	os() << elem_defs[i];
     }
-    cout << endl;
-	
-    pass() << "All tests passed.";
-    return "All tests passed.";
+    os() << endl;
 
-//     fail() << "This test sucks!";
-
-//     if (passed())
-//     {
-// 	pass() << "All tests passed.";
-// 	return "All tests passed.";
-//     }
-//     return "Some tests failed.";
+    if (passed())
+    {
+	pass() << "All tests passed.";
+	return "All tests passed.";
+    }
+    return "Some tests failed.";
 }
 
 } // end namespace rtt_meshReaders_test
