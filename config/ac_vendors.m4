@@ -190,6 +190,74 @@ AC_DEFUN(AC_AZTEC_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_TRILINOS_SETUP
+dnl
+dnl TRILINOS SETUP (on by default)
+dnl TRILINOS is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_TRILINOS_SETUP, [dnl
+
+   dnl define --with-trilinos
+   AC_ARG_WITH(trilinos,
+      [  --with-trilinos=[lib]    determine the trilinos implementation (aztecoo is default])
+ 
+   dnl define --with-trilinos-inc
+   AC_WITH_DIR(trilinos-inc, TRILINOS_INC, \${TRILINOS_INC_DIR},
+	       [tell where TRILINOS includes are])
+
+   dnl define --with-trilinos-lib
+   AC_WITH_DIR(trilinos-lib, TRILINOS_LIB, \${TRILINOS_LIB_DIR},
+	       [tell where TRILINOS libraries are])
+
+   # set default value of trilinos includes and libs
+   if test "${with_trilinos:=aztecoo}" = yes ; then
+       with_trilinos='aztecoo'
+   fi
+
+   # define TRILINOS include path
+   if test -n "${TRILINOS_INC}" ; then
+       # remember that TRILINOS_INC has the final slash
+       Trilinos_Util_H="\"${TRILINOS_INC}Trilinos_Util.h\""
+       AztecOO_H="\"${TRILINOS_INC}AztecOO.h\""
+       Epetra_MpiComm_H="\"${TRILINOS_INC}Epetra_MpiComm.h\"" 
+       Epetra_Map_H="\"${TRILINOS_INC}Epetra_Map.h\""
+       Epetra_Vector_H="\"${TRILINOS_INC}Epetra_Vector.h\""
+       Epetra_CrsMatrix_H="\"${TRILINOS_INC}Epetra_CrsMatrix.h\""
+       Epetra_LinearProblem_H="\"${TRILINOS_INC}Epetra_LinearProblem.h\""
+       Epetra_IntVector_H="\"${TRILINOS_INC}Epetra_IntVector.h\""
+       Epetra_Import_H="\"${TRILINOS_INC}Epetra_Import.h\""
+       Epetra_Export_H="\"${TRILINOS_INC}Epetra_Export.h\""
+       Epetra_CompObject_H="\"${TRILINOS_INC}Epetra_CompObject.h\""
+       Epetra_Distributor_H="\"${TRILINOS_INC}Epetra_Distributor.h\""
+       Epetra_DistObject_H="\"${TRILINOS_INC}Epetra_DistObject.h\""
+       Epetra_MpiDistributor_H="\"${TRILINOS_INC}Epetra_MpiDistributor.h\""
+       Epetra_BasicDirectory_H="\"${TRILINOS_INC}Epetra_BasicDirectory.h\""
+       Epetra_Util_H="\"${TRILINOS_INC}Epetra_Util.h\""
+       Epetra_Time_H="\"${TRILINOS_INC}Epetra_Time.h\""
+dnl   elif test -z "${TRILINOS_INC}" ; then
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_trilinos=$1
+
+   # set up the libraries
+   if test "${with_trilinos}" != no ; then
+       if test -n "${TRILINOS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m)
+       elif test -z "${TRILINOS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -ltriutils -ly12m)
+       fi
+   fi
+
+   # add TRILINOS directory to VENDOR_DIRS
+   VENDOR_DIRS="${TRILINOS_LIB} ${VENDOR_DIRS}"
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_PCG_SETUP
 dnl
 dnl PCG LIBRARY SETUP (on by default)
@@ -470,6 +538,38 @@ AC_DEFUN([AC_VENDOR_DEFINES], [dnl
    fi
 
    # *****
+   # TRILINOS
+   # *****
+   if test -n "${vendor_trilinos}"; then 
+       # define trilinos include paths
+       AC_DEFINE_UNQUOTED(Trilinos_Util_H, ${Trilinos_Util_H})dnl
+       AC_DEFINE_UNQUOTED(AztecOO_H, ${AztecOO_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_MpiComm_H, ${Epetra_MpiComm_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Map_H, ${Epetra_Map_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Vector_H, ${Epetra_Vector_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_CrsMatrix_H, ${Epetra_CrsMatrix_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_LinearProblem_H, ${Epetra_LinearProblem_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_IntVector_H, ${Epetra_IntVector_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Import_H, ${Epetra_Import_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Export_H, ${Epetra_Export_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_CompObject_H, ${Epetra_CompObject_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Distributor_H, ${Epetra_Distributor_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_DistObject_H, ${Epetra_DistObject_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_MpiDistributor_H, ${Epetra_MpiDistributor_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_BasicDirectory_H, ${Epetra_BasicDirectory_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Util_H, ${Epetra_Util_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Time_H, ${Epetra_Time_H})dnl
+
+       # add to defines
+       defines="${defines} ${Trilinos_Util_H} ${AztecOO_H} ${Epetra_MpiComm_H} ${Epetra_Map_H}"
+       defines="${defines} ${Epetra_Vector_H} ${Epetra_CrsMatrix_H} ${Epetra_LinearProblem_H}"
+       defines="${defines} ${Epetra_IntVector_H} ${Epetra_Import_H} ${Epetra_Export_H}"
+       defines="${defines} ${Epetra_CompObject_H} ${Epetra_Distributor_H} ${Epetra_DistObject_H}"
+       defines="${defines} ${Epetra_MpiDistributor_H} ${Epetra_BasicDirectory_H}"
+       defines="${defines} ${Epetra_Util_H} ${Epetra_Time_H}"
+   fi
+
+   # *****
    # GRACE
    # *****
    if test -n "${vendor_grace}"; then
@@ -503,6 +603,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_SPRNG_SETUP(pkg)
    AC_PCG_SETUP(pkg)
    AC_AZTEC_SETUP(pkg)
+   AC_TRILINOS_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
    AC_GANDOLF_SETUP(pkg)
    AC_EOSPAC5_SETUP(pkg)
