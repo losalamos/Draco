@@ -12,7 +12,8 @@
   (interactive)
   (setq font-lock-keywords
 	(append
-	 '(("\\<\\(Check\\|Ensure\\|Insist\\|Require\\)\\>"
+	 '((
+            "\\<\\(Check\\|Ensure\\|Insist\\|Assert\\|Remember\\|Require\\)\\>\\([ ]*\\s(\\)"
 	    1 font-lock-kull-macros-face t))
 	 c++-font-lock-keywords-3)))
 
