@@ -9,6 +9,7 @@
 #include "3T/testP13T/testFullP13T.hh"
 
 #include "matprops/FifiMatPropsReader.hh"
+#include "matprops/TempMapper.hh"
 #include "3T/P13TOptions.hh"
 #include "units/Units.hh"
 #include "radphys/RadiationPhysics.hh"
@@ -414,6 +415,12 @@ testFullP13T::testFullP13T(const string &infile)
     nx = spMesh->get_ncx();
     ny = spMesh->get_ncy();
     nz = spMesh->get_ncz();
+
+    // gamma is the high weight when computing the weighted mean of
+    // cc temperatures to construct fc temperatures.
+    
+    double gamma = 0.5;
+    spTempMapper = new rtt_matprops::TempMapper<MT>(spMesh, gamma);
 }
 
 testFullP13T::~testFullP13T()
@@ -470,17 +477,8 @@ testFullP13T::MatStateFC testFullP13T::getMatStateFC(const ccsf &TElect,
     fcdsf densityFC(spMesh);
     fcdif matidFC(spMesh);
 
-    ccsf  oneCC(spMesh);
-    oneCC = 1.0;
-    
-    fcdsf twoFC(spMesh);
-    MT::scatter(twoFC, oneCC, MT::OpAddAssign());
-
-    MT::scatter(TElectFC, TElect, MT::OpAddAssign());
-    TElectFC /= twoFC;
-
-    MT::scatter(TIonFC, TIon, MT::OpAddAssign());
-    TIonFC /= twoFC;
+    spTempMapper->tempCC2FC(TElectFC, TElect, TElect, MT::OpAssign());
+    spTempMapper->tempCC2FC(TIonFC, TIon, TIon, MT::OpAssign());
 
     MT::gather(densityFC, density, MT::OpAssign());
     MT::gather(matidFC, matid, MT::OpAssign());
@@ -489,7 +487,6 @@ testFullP13T::MatStateFC testFullP13T::getMatStateFC(const ccsf &TElect,
     {
 	cout << "In testFullP13T::getMatStateFC" << endl;
 	cout << endl;
-	cout << "twoFC: " << twoFC << endl;
 	cout << "TElectFC: " << TElectFC << endl;
 	cout << "TElect: " << TElect << endl;
 	cout << endl;

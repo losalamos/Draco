@@ -9,13 +9,13 @@
 #ifndef __3T_testP13T_testFullP13T_hh__
 #define __3T_testP13T_testFullP13T_hh__
 
+#include "mesh/Mesh_XYZ.hh"
 #include "testFullP13T_DB.hh"
 #include "ds++/SP.hh"
 #include "3T/P13T.hh"
 // #include "3T/Diffusion_P1.hh"
 #include "P1Diffusion/P1Diffusion.hh"
 #include "P1Diffusion/SolverP1Diff.hh"
-#include "mesh/Mesh_XYZ.hh"
 
 #define MARSHAK_MATPROPS
 
@@ -28,6 +28,10 @@
 
 namespace rtt_timestep {
  class ts_manager;
+}
+
+namespace rtt_matprops {
+ template<class MT> class TempMapper;
 }
 
 namespace XTM {
@@ -87,6 +91,7 @@ namespace XTM {
     
      Units units;
      dsxx::SP<MP> spMatProp;
+     dsxx::SP<rtt_matprops::TempMapper<MT> > spTempMapper;
 
      dsxx::SP<MT> spMesh;
      dsxx::SP<P13T> spP13T;

@@ -19,6 +19,7 @@ need_units	:= yes
 need_radphys	:= yes
 need_matprops	:= yes
 need_timestep	:= yes
+need_P1Diffusion := yes
 
 # Go get the standard includeable makefile for Draco components.
 
@@ -48,7 +49,7 @@ objs	= $(srcs:%.cc=$(env)/%.o) \
 default: main_$(env)
 
 main_$(env) : deps $(objs) \
-	$(dep_lib3T) $(dep_libtimestep) \
+	$(dep_lib3T) $(dep_libP1Diffusion) $(dep_libtimestep) \
 	$(dep_libmatprops) $(dep_libradphys) $(dep_libunits) \
 	$(dep_libutil) $(dep_libspdf) \
 	$(dep_libnml) $(dep_libc4) $(dep_libds++)
@@ -57,14 +58,16 @@ main_$(env) : deps $(objs) \
 deps:
 ifneq ($(dodeps),no)
 	(cd ../../3T;         $(MAKE) $(subnj))
-	(cd ../../units;      $(MAKE) $(subnj) dodeps=no)
-	(cd ../../radphys;    $(MAKE) $(subnj) dodeps=no)
-	(cd ../../matprops;   $(MAKE) $(subnj) dodeps=no)
-	(cd ../../timestep;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../../units;      $(MAKE) $(subnj))
+	(cd ../../radphys;    $(MAKE) $(subnj))
+	(cd ../../matprops;   $(MAKE) $(subnj))
+	(cd ../../timestep;   $(MAKE) $(subnj))
+	(cd ../../P1Diffusion;   $(MAKE) $(subnj))
 endif
 
 $(dep_libtimestep):
 $(dep_libmatprops):
+$(dep_libP1Diffusion):
 $(dep_libunits):
 $(dep_lib3T):
 $(dep_libds++):
