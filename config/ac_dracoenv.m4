@@ -50,12 +50,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_PROG_INSTALL
 
    dnl
-   dnl NMLGEN PATH
-   dnl
-
-   NMLGEN=${libexecdir}/nmlgen
-
-   dnl
    dnl C4 OPERATIONS
    dnl
 
@@ -344,7 +338,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        AC_DETERMINE_FLOAT(4)
        AC_DEFINE_UNQUOTED(FOUR_BYTE_FLOAT_TYPE, ${FLOAT_SIZE_TYPE})
    fi
-
 
    dnl
    dnl SYSTEM-SPECIFIC SETUP
