@@ -37,19 +37,8 @@ Hex_Format::Hex_Format(std::string filename)
     meshfile >> npoints >> ncells >> nvrtx >> nvrpf >> ndim >> nvb_faces
 	     >> nrb_faces >> nmat;
 
-    std::cout << "npoints= " << npoints << std::endl;
-    std::cout << "ncells= " << ncells << std::endl;
-    std::cout << "nvrtx= " << nvrtx << std::endl;
-    std::cout << "nvrpf= " << nvrpf << std::endl;
-    std::cout << "ndim= " << ndim  << std::endl;
-    std::cout << "nvb_faces= " << nvb_faces << std::endl;
-    std::cout << "nrb_faces= " <<  nrb_faces << std::endl;
-    std::cout << "nmat= " <<  nmat << std::endl;
-
     // Read the point coordinates data.
     point_coords.resize(npoints);
-    std::cout << "Capacity of Point Coords: " << point_coords.capacity() << std::endl;
-    std::cout << "Size of Point Coords: " << point_coords.size() << std::endl;
     for (int i=0; i<npoints; i++)
     {
 	point_coords[i].resize(ndim);
@@ -63,8 +52,6 @@ Hex_Format::Hex_Format(std::string filename)
 	else
 	    Insist(false,"Dimension index out of range!");  
     }
-
-    std::cout << "Read coordinates." << std::endl;
 
     // Read in the mesh connectivity.
     ipar.resize(ncells);
@@ -83,13 +70,11 @@ Hex_Format::Hex_Format(std::string filename)
 	for (int j=0; j<nvrtx; j++)
 	    ipar[i][j] = ipar[i][j]-1;
     }
-    std::cout << "Read elements." << std::endl;
 
     // Read in the mesh interior-region data.
     imat_index.resize(ncells);
     for (int i=0; i<ncells; i++)
 	meshfile >> imat_index[i];
-    std::cout << "Read material flag." << std::endl;
 
     // Read in the mesh vacuum boundary data.
     ipar_vb.resize(nvb_faces);
@@ -102,14 +87,13 @@ Hex_Format::Hex_Format(std::string filename)
 	else if (ndim ==2)
 	    meshfile >> ipar_vb[i][0] >> ipar_vb[i][1] >> irgn_vb_index[i];
 	else if (ndim ==3)
-	    meshfile >> ipar_vb[i][0] >> ipar_vb[i][1] >>ipar_vb[i][2] >>
+	    meshfile >> ipar_vb[i][0] >> ipar_vb[i][1] >> ipar_vb[i][2] >>
 		ipar_vb[i][3] >> irgn_vb_index[i];
 	else
 	    Insist(false,"Dimension index out of range!");
 	for (int j=0; j<nvrpf; j++) 
 	    ipar_vb[i][j] = ipar_vb[i][j]-1;
     }
-    std::cout << "Read vacuum boundary data." << std::endl;
 
     // Read in the mesh reflective boundary data.
     ipar_rb.resize(nrb_faces);
@@ -122,13 +106,12 @@ Hex_Format::Hex_Format(std::string filename)
 	    meshfile >> ipar_rb[i][0] >> ipar_rb[i][1];
 	else if (ndim == 3)
 	    meshfile >> ipar_rb[i][0] >> ipar_rb[i][1] >>ipar_rb[i][2] >>
-		ipar_vb[i][3];
+		ipar_rb[i][3];
 	else
 	    Insist(false,"Dimension index out of range!");
 	for (int j=0; j<nvrpf; j++) 
 	    ipar_rb[i][j] = ipar_rb[i][j]-1;
     }
-    std::cout << "Read reflective boundary data." << std::endl;
 
     Ensure (invariant());
 }
@@ -144,7 +127,6 @@ std::vector<std::vector<int> > Hex_Format::get_element_nodes() const
     // This would be more efficient if this is going to be
     // used repetively.
     std::vector<std::vector<int> > result;
-    result.resize(ncells+nvb_faces+nrb_faces);
     for (int i=0; i<ncells; i++)
 	result.push_back(ipar[i]);
     for (int i=0; i<nvb_faces; i++)
@@ -192,22 +174,8 @@ std::map<std::string, std::set<int> > Hex_Format::get_element_sets() const
     resultT result;
     std::vector<int> tmp;
     std::set<int> rgn_index;
-    std::ostringstream os_chdum;
     std::set<int> stmp;
-
-    // Create a vacuum boundary set. Note that this depends on
-    // the elements being stored in a specific order.
-    for (int i=ncells; i<ncells+nvb_faces; i++)
-	stmp.insert(i);
-    result.insert(resultT::value_type("Vacuum_Boundary", stmp));
     
-    // Create a reflective boundary set. Note that this depends on
-    // the elements being stored in a specific order.
-    stmp.clear();
-    for (int i=ncells+nvb_faces; i<ncells+nvb_faces+nrb_faces; i++)
-	stmp.insert(i);
-    result.insert(resultT::value_type("Reflective_Boundary", stmp));
-
     // Create sets for all the interior mesh regions.
     // This loops over the whole mesh number_of_mesh_regions times. Could
     // be made to do it more efficiently in one loop? Note that this 
@@ -215,28 +183,54 @@ std::map<std::string, std::set<int> > Hex_Format::get_element_sets() const
     rgn_index = std::set<int>(imat_index.begin(), imat_index.end());
     for (std::set<int>::iterator i=rgn_index.begin(); i != rgn_index.end(); i++)
     {
-	os_chdum.clear();
+	std::ostringstream os_chdum("");
 	os_chdum << "Interior_Region_" << *i;
 	stmp.clear();
 	for (int j=0; j<ncells; j++)
 	    if (imat_index[j] == *i) stmp.insert(j);
 	result.insert(resultT::value_type(os_chdum.str(), stmp));
+    }
+
+    if (nvb_faces > 0) 
+    {
+	// Create a vacuum boundary set. Note that this depends on
+	// the elements being stored in a specific order.
+	stmp.clear();
+	for (int i=ncells; i<ncells+nvb_faces; i++)
+	    stmp.insert(i);
+	result.insert(resultT::value_type("Vacuum_Boundary", stmp));
+	
+	// Create sets for all the vacuum boundary regions.
+	// This loops over the whole mesh number_of_vb_regions times. Could
+	// be made to do it more efficiently in one loop? Note that 
+	// this depends on the elements being stored in a specific order.
+	rgn_index = std::set<int>(irgn_vb_index.begin(), irgn_vb_index.end());
+	for (std::set<int>::iterator i=rgn_index.begin(); 
+	     i != rgn_index.end(); i++)
+	{
+
+	    std::ostringstream os_chdum("");
+	    os_chdum << "Vacuum_Boundary_Region_" << *i;
+	    stmp.clear();
+	    for (int j=0; j<nvb_faces; j++)
+	    {
+		if (irgn_vb_index[j] == *i) stmp.insert(j+ncells);
+	    }
+	    if (stmp.size() != 0) 
+		result.insert(resultT::value_type( os_chdum.str(), stmp));
+	}	
+    }
+
+    // Create a reflective boundary set. Note that this depends on
+    // the elements being stored in a specific order.
+    if (nrb_faces > 0)
+    {
+	stmp.clear();
+	for (int i=ncells+nvb_faces; i<ncells+nvb_faces+nrb_faces; i++)
+	    stmp.insert(i);
+	result.insert(resultT::value_type("Reflective_Boundary", stmp));
     }	
 
-    // Create sets for all the vacuum boundary regions.
-    // This loops over the whole mesh number_of_vb_regions times. Could
-    // be made to do it more efficiently in one loop? Note that 
-    // this depends on the elements being stored in a specific order.
-    rgn_index = std::set<int>(irgn_vb_index.begin(), irgn_vb_index.end());
-    for (std::set<int>::iterator i=rgn_index.begin(); i != rgn_index.end(); i++)
-    {
-	os_chdum.clear();	
-	os_chdum << "Vacuum_Boundary_Region_" << *i;
-	stmp.clear();
-	for (int j=0; j<ncells; j++)
-	    if (irgn_vb_index[j] == *i) stmp.insert(j);
-	result.insert(resultT::value_type( os_chdum.str(), stmp));
-    }	
     return result;
 }
 
