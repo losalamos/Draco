@@ -31,8 +31,8 @@ endif
 #PCG_LIB		= -L$(HOME)/lib -lpcg
 LAPACK_LIB	= -lcomplib.sgimath
 
-# Currently KCC is hosed, so CC is the only workable choice.
-cxx	:= CC
+# Choose the default compiler.
+cxx	:= KCC
 
 # Currently avoid the gui support, until we can get all the tools built.
 spartan	:= yes
@@ -48,7 +48,7 @@ ranlib	= /bin/true
 ifeq ($(cxx),KCC)
 
 CC	= cc
-CXX	= KCC -x -64 -mips4 --restrict #--no_implicit_include
+CXX	= KCC -x -64 -mips4 --no_implicit_include --strict -D_POSIX_SOURCE
 cmplr	= kai
 
 ifeq ($(kcc),old)
