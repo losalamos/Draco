@@ -15,6 +15,10 @@
 
 #include <vector>
 
+// #define ARRAY_REDUCE_1
+#define ARRAY_REDUCE_2
+// #define ARRAY_REDUCE_3
+
 C4_NAMESPACE_BEG
 
 //===========================================================================//
@@ -42,6 +46,26 @@ class ThreadControl {
     void *scratch;
 
     std::vector<void *> v;
+
+#ifdef ARRAY_REDUCE_2
+    int arrival_predicate;
+    pthread_cond_t arrival_cv;
+    int exit_predicate;
+    pthread_cond_t exit_cv;
+#endif
+
+#ifdef ARRAY_REDUCE_3
+    int arrival_predicate;
+    pthread_cond_t arrival_cv;
+
+    int middle_predicate;
+    pthread_cond_t middle_cv;
+
+    int exit_predicate;
+    pthread_cond_t exit_cv;
+
+    std::vector<int> min, max;
+#endif
 
   public:
     ThreadControl( int nthreads_ );
