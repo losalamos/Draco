@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="Analytic_Gray_Opacity.hh"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command doxygen_output doxygen_examples doxygen_input rel_doxygen_output rel_doxygen_examples rel_doxygen_input latex_yes_no dotpath number TAGFILES DOXYGEN_TAGFILES LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir doxygen_output doxygen_examples doxygen_input rel_doxygen_output rel_doxygen_examples rel_doxygen_input latex_yes_no dotpath number TAGFILES DOXYGEN_TAGFILES LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -4398,7 +4398,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
 
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-ansi -Wnon-virtual-dtor -Wreturn-type"
+       STRICTFLAG="-ansi -Wnon-virtual-dtor -Wreturn-type -pedantic"
    fi
 
    # optimization level
@@ -5464,14 +5464,44 @@ _ACEOF
        fi
 
        #
-       # setup linux strict if the compiler is KCC (also turn off the
-       # warnings about long long being non-standard)
+       # LONG LONG on Linux
        #
-       if test "${CXX}" = KCC && test -n "${STRICTFLAG}" ; then
-	   { echo "$as_me:$LINENO: WARNING: \"Linux KCC strict option set to allow long long type!\"" >&5
-echo "$as_me: WARNING: \"Linux KCC strict option set to allow long long type!\"" >&2;}
-	   STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
+
+       # always allow long long in strict ansi mode (if possible)
+
+       if test -n "${STRICTFLAG}"; then
+
+           case $CXX in
+
+           # GNU g++
+           g++)
+               { echo "$as_me:$LINENO: g++ -ansi option set to allow long long type!" >&5
+echo "$as_me: g++ -ansi option set to allow long long type!" >&6;}
+               STRICTFLAG="$STRICTFLAG -Wno-long-long"
+           ;;
+
+           # KCC
+           KCC)
+
+               # setup linux strict if the compiler is KCC (also turn
+               # off the warnings about long long being non-standard)
+               { echo "$as_me:$LINENO: Linux KCC strict option set to allow long long type!" >&5
+echo "$as_me: Linux KCC strict option set to allow long long type!" >&6;}
+               STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
+           ;;
+
+           # catchall
+           *)
+               # do nothing
+           ;;
+
+           esac
+
        fi
+
+       #
+       # end of LONG LONG setup
+       #
 
        #
        # add thread safety if we are using KCC on linux
@@ -9562,6 +9592,22 @@ echo "$as_me: error: \"Cannot figure out the platform or host!\"" >&2;}
        fi
    done
 
+   # Define the package-level source directory (e.g. draco)
+
+   # $srcdir is the component's source directory
+   # package_top_srcdir is the variable to store the package's main source directory in.
+
+   temp_dir=$srcdir
+   echo $temp_dir
+   while test ! -d $temp_dir/config ; do
+       temp_dir="${temp_dir}/.."
+       echo "RUNNING: $temp_dir"
+   done
+   package_top_srcdir=`cd $temp_dir; pwd;`
+   echo "$as_me:$LINENO: result: Package top source directory: $package_top_srcdir" >&5
+echo "${ECHO_T}Package top source directory: $package_top_srcdir" >&6
+
+
 
 
    # these variables are declared "precious", meaning that they are
@@ -9590,6 +9636,10 @@ echo "$as_me: error: \"Cannot figure out the platform or host!\"" >&2;}
 
    # configure options
 
+   # directories in source tree
+
+
+
 
 
 
@@ -9609,11 +9659,66 @@ echo "$as_me: error: \"Cannot figure out the platform or host!\"" >&2;}
    # compute relative paths from localdir
    #
 
-   _lcl_common_prefix=''
+   for _lcl_i in \
+      localdir:doxygen_output:rel_doxygen_output \
+      localdir:doxygen_examples:rel_doxygen_examples \
+      localdir:doxygen_input:rel_doxygen_input\
+   ; do
+  _lcl_from=\$`echo "$_lcl_i" | sed 's,:.*$,,'`
+  _lcl_to=\$`echo "$_lcl_i" | sed 's,^[^:]*:,,' | sed 's,:[^:]*$,,'`
+  _lcl_result_var=`echo "$_lcl_i" | sed 's,^.*:,,'`
+  _lcl_receval="$_lcl_from"
+_lcl_from=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
+     _lcl_receval_old=''
+     while test "$_lcl_receval_old" != "$_lcl_receval"; do
+       _lcl_receval_old="$_lcl_receval"
+       eval _lcl_receval="\"$_lcl_receval\""
+     done
+     echo "$_lcl_receval")`
+  _lcl_receval="$_lcl_to"
+_lcl_to=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
+     _lcl_receval_old=''
+     while test "$_lcl_receval_old" != "$_lcl_receval"; do
+       _lcl_receval_old="$_lcl_receval"
+       eval _lcl_receval="\"$_lcl_receval\""
+     done
+     echo "$_lcl_receval")`
+  _lcl_notation="$_lcl_from$_lcl_to"
+  case ":$_lcl_from:" in
+# change empty paths to '.'
+  ::) _lcl_from='.' ;;
+# strip trailing slashes
+  :*[\\/]:) _lcl_from=`echo "$_lcl_from" | sed 's,[\\/]*$,,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case '/' in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) _lcl_from=`echo "$_lcl_from" | sed 's,\(.\)[\\/][\\/]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) _lcl_from=`echo "$_lcl_from" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+esac
+  case ":$_lcl_to:" in
+# change empty paths to '.'
+  ::) _lcl_to='.' ;;
+# strip trailing slashes
+  :*[\\/]:) _lcl_to=`echo "$_lcl_to" | sed 's,[\\/]*$,,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case '/' in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) _lcl_to=`echo "$_lcl_to" | sed 's,\(.\)[\\/][\\/]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) _lcl_to=`echo "$_lcl_to" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+esac
+  _lcl_common_prefix=''
 _lcl_second_prefix_match=''
 while test "$_lcl_second_prefix_match" != 0; do
-  _lcl_first_prefix=`expr "x$localdir" : "x\($_lcl_common_prefix/*[^/]*\)"`
-  _lcl_second_prefix_match=`expr "x$doxygen_output" : "x$_lcl_first_prefix"`
+  _lcl_first_prefix=`expr "x$_lcl_from" : "x\($_lcl_common_prefix/*[^/]*\)"`
+  _lcl_second_prefix_match=`expr "x$_lcl_to" : "x$_lcl_first_prefix"`
   if test "$_lcl_second_prefix_match" != 0; then
     if test "$_lcl_first_prefix" != "$_lcl_common_prefix"; then
       _lcl_common_prefix="$_lcl_first_prefix"
@@ -9622,7 +9727,7 @@ while test "$_lcl_second_prefix_match" != 0; do
     fi
   fi
 done
-_lcl_first_suffix=`expr "x$localdir" : "x$_lcl_common_prefix/*\(.*\)"`
+_lcl_first_suffix=`expr "x$_lcl_from" : "x$_lcl_common_prefix/*\(.*\)"`
 _lcl_first_rel=''
 _lcl_tmp='xxx'
 while test "$_lcl_tmp" != ''; do
@@ -9632,58 +9737,24 @@ while test "$_lcl_tmp" != ''; do
      _lcl_first_rel="../$_lcl_first_rel"
   fi
 done
-_lcl_second_suffix=`expr "x$doxygen_output" : "x$_lcl_common_prefix/*\(.*\)"`
-rel_doxygen_output="$_lcl_first_rel$_lcl_second_suffix"
-   _lcl_common_prefix=''
-_lcl_second_prefix_match=''
-while test "$_lcl_second_prefix_match" != 0; do
-  _lcl_first_prefix=`expr "x$localdir" : "x\($_lcl_common_prefix/*[^/]*\)"`
-  _lcl_second_prefix_match=`expr "x$doxygen_examples" : "x$_lcl_first_prefix"`
-  if test "$_lcl_second_prefix_match" != 0; then
-    if test "$_lcl_first_prefix" != "$_lcl_common_prefix"; then
-      _lcl_common_prefix="$_lcl_first_prefix"
-    else
-      _lcl_second_prefix_match=0
-    fi
-  fi
+_lcl_second_suffix=`expr "x$_lcl_to" : "x$_lcl_common_prefix/*\(.*\)"`
+_lcl_result_tmp="$_lcl_first_rel$_lcl_second_suffix"
+  case ":$_lcl_result_tmp:" in
+# change empty paths to '.'
+  ::) _lcl_result_tmp='.' ;;
+# strip trailing slashes
+  :*[\\/]:) _lcl_result_tmp=`echo "$_lcl_result_tmp" | sed 's,[\\/]*$,,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case "$_lcl_notation" in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) _lcl_result_tmp=`echo "$_lcl_result_tmp" | sed 's,\(.\)[\\/][\\/]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) _lcl_result_tmp=`echo "$_lcl_result_tmp" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+esac
+  eval $_lcl_result_var='$_lcl_result_tmp'
 done
-_lcl_first_suffix=`expr "x$localdir" : "x$_lcl_common_prefix/*\(.*\)"`
-_lcl_first_rel=''
-_lcl_tmp='xxx'
-while test "$_lcl_tmp" != ''; do
-  _lcl_tmp=`expr "x$_lcl_first_suffix" : "x[^/]*/*\(.*\)"`
-  if test "$_lcl_first_suffix" != ''; then
-     _lcl_first_suffix="$_lcl_tmp"
-     _lcl_first_rel="../$_lcl_first_rel"
-  fi
-done
-_lcl_second_suffix=`expr "x$doxygen_examples" : "x$_lcl_common_prefix/*\(.*\)"`
-rel_doxygen_examples="$_lcl_first_rel$_lcl_second_suffix"
-   _lcl_common_prefix=''
-_lcl_second_prefix_match=''
-while test "$_lcl_second_prefix_match" != 0; do
-  _lcl_first_prefix=`expr "x$localdir" : "x\($_lcl_common_prefix/*[^/]*\)"`
-  _lcl_second_prefix_match=`expr "x$doxygen_input" : "x$_lcl_first_prefix"`
-  if test "$_lcl_second_prefix_match" != 0; then
-    if test "$_lcl_first_prefix" != "$_lcl_common_prefix"; then
-      _lcl_common_prefix="$_lcl_first_prefix"
-    else
-      _lcl_second_prefix_match=0
-    fi
-  fi
-done
-_lcl_first_suffix=`expr "x$localdir" : "x$_lcl_common_prefix/*\(.*\)"`
-_lcl_first_rel=''
-_lcl_tmp='xxx'
-while test "$_lcl_tmp" != ''; do
-  _lcl_tmp=`expr "x$_lcl_first_suffix" : "x[^/]*/*\(.*\)"`
-  if test "$_lcl_first_suffix" != ''; then
-     _lcl_first_suffix="$_lcl_tmp"
-     _lcl_first_rel="../$_lcl_first_rel"
-  fi
-done
-_lcl_second_suffix=`expr "x$doxygen_input" : "x$_lcl_common_prefix/*\(.*\)"`
-rel_doxygen_input="$_lcl_first_rel$_lcl_second_suffix"
 
    #
    # use relative paths for tag files also
@@ -10420,6 +10491,7 @@ s,@test_scalar@,$test_scalar,;t t
 s,@test_nprocs@,$test_nprocs,;t t
 s,@test_output_files@,$test_output_files,;t t
 s,@configure_command@,$configure_command,;t t
+s,@package_top_srcdir@,$package_top_srcdir,;t t
 s,@doxygen_output@,$doxygen_output,;t t
 s,@doxygen_examples@,$doxygen_examples,;t t
 s,@doxygen_input@,$doxygen_input,;t t

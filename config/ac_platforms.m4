@@ -49,14 +49,43 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
        fi
 
+       #   
+       # LONG LONG on Linux
        #
-       # setup linux strict if the compiler is KCC (also turn off the
-       # warnings about long long being non-standard)
-       #
-       if test "${CXX}" = KCC && test -n "${STRICTFLAG}" ; then
-	   AC_MSG_WARN("Linux KCC strict option set to allow long long type!")
-	   STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
+       
+       # always allow long long in strict ansi mode (if possible)
+       
+       if test -n "${STRICTFLAG}"; then
+
+           case $CXX in
+
+           # GNU g++
+           g++) 
+               AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
+               STRICTFLAG="$STRICTFLAG -Wno-long-long"
+           ;;
+
+           # KCC
+           KCC)
+
+               # setup linux strict if the compiler is KCC (also turn
+               # off the warnings about long long being non-standard)
+               AC_MSG_NOTICE([Linux KCC strict option set to allow long long type!])
+               STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
+           ;;
+
+           # catchall
+           *) 
+               # do nothing
+           ;;
+
+           esac
+
        fi
+
+       # 
+       # end of LONG LONG setup
+       #
 
        #
        # add thread safety if we are using KCC on linux
