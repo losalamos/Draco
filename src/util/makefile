@@ -25,8 +25,9 @@ libsrcs = \
 
 pretarg = deps
 resolve_libs = \
-	../spdf/libspdf_$(env).$(lib_suffix) \
-	../ds++/libds++_$(env).$(lib_suffix)
+	-L../spdf -lspdf_$(env) \
+	-L../c4 -lc4_$(env) \
+	-L../ds++ -lds++_$(env)
 
 include ../config/make.lib
 

@@ -20,6 +20,7 @@ libsrcs =
 
 pretarg = deps
 auxtarg = $(TEST_PROGS)
+resolve_libs = -L../ds++ -lds++_$(env)
 
 include ../config/make.lib
 
