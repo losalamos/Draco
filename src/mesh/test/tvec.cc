@@ -18,7 +18,9 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
+using std::cout;
+using std::endl;
+using std::iterator_traits;
 
 bool passed = true;
 double value = 4.23;
@@ -174,8 +176,8 @@ void t1()
         y = x;
         if (x < y)
             passed = false;
-        if (x < y != lexicographical_compare(x.begin(),x.end(),
-                                             y.begin(),y.end()))
+        if (x < y != std::lexicographical_compare(x.begin(),x.end(),
+                                                  y.begin(),y.end()))
             passed = false;
         if (x > y != y < x)
             passed = false;
@@ -265,7 +267,7 @@ void t1()
         for (X::iterator iter = x.begin(); iter != x.end(); iter++) {}
         for (X::const_iterator iter = cx.begin(); iter != cx.end(); iter++) {}
 
-        if (!(x.size() == distance(x.begin(),x.end())))
+        if (!(x.size() == std::distance(x.begin(),x.end())))
             passed = false;
     }
 
@@ -273,8 +275,9 @@ void t1()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        X x, y;
-        const X cx;
+        X x;
+
+        const X cx = x;
 
     // Test for required container member functions.
 
@@ -307,7 +310,8 @@ void t1()
     // Container concept, but we need to get an object somehow.
 
         X x, y;
-        const X cx;
+
+        const X cx = x;
 
         x[1] = y[2];
         x[0] = cx[1];
@@ -548,8 +552,6 @@ void t2()
     }
 
     {
-        typedef iterator_traits<X::iterator>::value_type value_type;
-
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
@@ -599,7 +601,6 @@ void t2()
     }
 
     {
-        typedef iterator_traits<X::iterator>::value_type value_type;
         typedef iterator_traits<X::iterator>::difference_type difference_type;
 
     // The following constructor is not required by the Random Access
@@ -751,7 +752,9 @@ void t3()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
+
+        const X cx = x;
 
     // Test the default constructor.
 
@@ -760,7 +763,7 @@ void t3()
 
     // Test the copy constructor.
 
-        iter1 = x.begin();
+        iter1 = cx.begin();
         f5(iter1, X::const_iterator(iter1));
         X::const_iterator iter2(iter1);
         if (iter2 != iter1)
@@ -781,10 +784,12 @@ void t3()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
+
+        const X cx = x;
 
         X::const_iterator iter1, iter2, iter3;
-        iter1 = x.begin();
+        iter1 = cx.begin();
 
     // Test equivalence relations.
 
@@ -813,10 +818,12 @@ void t3()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
+
+        const X cx = x;
 
         X::const_iterator iter1, iter2, iter3;
-        iter1 = x.begin();
+        iter1 = cx.begin();
 
     // Test ordering relations.
 
@@ -859,10 +866,12 @@ void t3()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
+
+        const X cx = x;
 
         X::const_iterator iter1, iter2, iter3;
-        iter1 = x.begin();
+        iter1 = cx.begin();
         iter2 = iter1;
         iter3 = iter2;
 
@@ -878,13 +887,15 @@ void t3()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
 
-        X::const_iterator iter = x.begin();
+        const X cx = x;
+
+        X::const_iterator iter = cx.begin();
 
     // Test dereferenceability.
 
-        if (*iter != *(x.begin()))
+        if (*iter != *(cx.begin()))
             passed = false;
     }
 
@@ -892,10 +903,12 @@ void t3()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
 
-        X::const_iterator iter1 = x.begin();
-        X::const_iterator iter2 = x.begin();
+        const X cx = x;
+
+        X::const_iterator iter1 = cx.begin();
+        X::const_iterator iter2 = cx.begin();
 
     // Invariant
 
@@ -912,15 +925,15 @@ void t3()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        X w;
+        X x;
 
         for (int i = 0; i < 3; i++)
-            w[i] = i;
+            x[i] = i;
 
-        const X x(w);
+        const X cx(x);
 
-        X::const_iterator iter1 = x.begin();
-        X::const_iterator iter2 = x.begin();
+        X::const_iterator iter1 = cx.begin();
+        X::const_iterator iter2 = cx.begin();
 
     // Test increments
 
@@ -932,7 +945,7 @@ void t3()
         if (iter1 != iter2)
             passed = false;
 
-        iter2 = x.begin();
+        iter2 = cx.begin();
         iter1 = iter2;
         value_type t = *iter2;
         ++iter2;
@@ -946,10 +959,12 @@ void t3()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
 
-        X::const_iterator iter1 = x.begin();
-        X::const_iterator iter2 = x.begin();
+        const X cx = x;
+
+        X::const_iterator iter1 = cx.begin();
+        X::const_iterator iter2 = cx.begin();
 
         if (!(&iter1 == &++iter1))
             passed = false;
@@ -959,15 +974,15 @@ void t3()
     }
 
     {
-        typedef iterator_traits<X::const_iterator>::value_type value_type;
-
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
 
-        X::const_iterator iter1 = x.end();
-        X::const_iterator iter2 = x.end();
+        const X cx = x;
+
+        X::const_iterator iter1 = cx.end();
+        X::const_iterator iter2 = cx.end();
 
     // Test decrements
 
@@ -982,7 +997,7 @@ void t3()
         if (!(--iter1 == iter2))
             passed = false;
 
-        iter1 = x.end();
+        iter1 = cx.end();
         iter2 = iter1;
         X::const_iterator iter3 = iter2;
         --iter2;
@@ -993,16 +1008,16 @@ void t3()
 
     // Invariants
 
-        iter1 = x.begin();
+        iter1 = cx.begin();
         ++iter1;
         --iter1;
-        if (iter1 != x.begin())
+        if (iter1 != cx.begin())
             passed = false;
 
-        iter1 = x.end();
+        iter1 = cx.end();
         --iter1;
         ++iter1;
-        if (iter1 != x.end())
+        if (iter1 != cx.end())
             passed = false;
     }
 
@@ -1014,16 +1029,16 @@ void t3()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        X w;
+        X x;
 
         for (int i = 0; i < 3; i++)
-            w[i] = i;
+            x[i] = i;
 
-        const X x(w);
+        const X cx(x);
 
-        X::const_iterator iter1 = x.begin();
-        X::const_iterator iter2 = x.begin();
-        X::const_iterator iter3 = x.begin();
+        X::const_iterator iter1 = cx.begin();
+        X::const_iterator iter2 = cx.begin();
+        X::const_iterator iter3 = cx.begin();
 
     // Iterator addition
 
@@ -1045,28 +1060,28 @@ void t3()
         if (iter1 != iter2)
             passed = false;
 
-        iter1 = x.begin();
-        iter2 = x.begin();
+        iter1 = cx.begin();
+        iter2 = cx.begin();
         iter3 = iter1 + 3;
         iter2 += 3;
         if (iter3 != iter2)
             passed = false;
-        if (iter1 != x.begin())
+        if (iter1 != cx.begin())
             passed = false;
 
-        iter1 = x.begin();
-        iter2 = x.begin();
+        iter1 = cx.begin();
+        iter2 = cx.begin();
         iter3 = 3 + iter1;
         iter2 += 3;
         if (iter3 != iter2)
             passed = false;
-        if (iter1 != x.begin())
+        if (iter1 != cx.begin())
             passed = false;
 
     // Iterator subtraction
 
-        iter1 = x.end();
-        iter2 = x.end();
+        iter1 = cx.end();
+        iter2 = cx.end();
         iter1 -= 0;
         if (iter1 != iter2)
             passed = false;
@@ -1081,51 +1096,51 @@ void t3()
         if (iter1 != iter2)
             passed = false;
 
-        iter1 = x.end();
-        iter2 = x.end();
+        iter1 = cx.end();
+        iter2 = cx.end();
         iter3 = iter1 - 3;
         iter2 -= 3;
         if (iter3 != iter2)
             passed = false;
-        if (iter1 != x.end())
+        if (iter1 != cx.end())
             passed = false;
 
     // Iterator difference.
 
-        iter1 = x.begin();
-        iter2 = x.end();
+        iter1 = cx.begin();
+        iter2 = cx.end();
         difference_type d = iter2 - iter1;
         if (!(iter2 == iter1 + d))
             passed = false;
 
     // Element access
 
-        iter1 = x.begin();
+        iter1 = cx.begin();
         if (iter1[2] != *(iter1 + 2))
             passed = false;
 
     // Invariants
 
-        iter1 = x.begin();
+        iter1 = cx.begin();
         iter1 += 3;
         iter1 -= 3;
-        if (iter1 != x.begin())
+        if (iter1 != cx.begin())
             passed = false;
         iter2 = (iter1 + 3) - 3;
-        if (iter2 != x.begin())
+        if (iter2 != cx.begin())
             passed = false;
 
-        iter1 = x.end();
+        iter1 = cx.end();
         iter1 -= 3;
         iter1 += 3;
-        if (iter1 != x.end())
+        if (iter1 != cx.end())
             passed = false;
         iter2 = (iter1 - 3) + 3;
-        if (iter2 != x.end())
+        if (iter2 != cx.end())
             passed = false;
 
-        iter1 = x.begin();
-        iter2 = x.end();
+        iter1 = cx.begin();
+        iter2 = cx.end();
         if (!(iter2 == iter1 + (iter2 - iter1)))
             passed = false;
         if (!(iter2 - iter1 >= 0))
@@ -1369,8 +1384,6 @@ void t4()
     }
 
     {
-        typedef iterator_traits<X::reverse_iterator>::value_type value_type;
-
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
@@ -1417,7 +1430,6 @@ void t4()
     }
 
     {
-        typedef iterator_traits<X::reverse_iterator>::value_type value_type;
         typedef iterator_traits<X::reverse_iterator>::difference_type
                                                       difference_type;
 
@@ -1572,7 +1584,9 @@ void t5()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
+
+        const X cx = x;
 
     // Test the default constructor.
 
@@ -1581,7 +1595,7 @@ void t5()
 
     // Test the copy constructor.
 
-        iter1 = x.rbegin();
+        iter1 = cx.rbegin();
         f9(iter1, X::const_reverse_iterator(iter1));
         X::const_reverse_iterator iter2(iter1);
         if (iter2 != iter1)
@@ -1602,10 +1616,12 @@ void t5()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
+
+        const X cx = x;
 
         X::const_reverse_iterator iter1, iter2, iter3;
-        iter1 = x.rbegin();
+        iter1 = cx.rbegin();
 
     // Test equivalence relations.
 
@@ -1634,10 +1650,12 @@ void t5()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
+
+        const X cx = x;
 
         X::const_reverse_iterator iter1, iter2, iter3;
-        iter1 = x.rbegin();
+        iter1 = cx.rbegin();
 
     // Test ordering relations.
 
@@ -1680,10 +1698,12 @@ void t5()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
+
+        const X cx = x;
 
         X::const_reverse_iterator iter1, iter2, iter3;
-        iter1 = x.rbegin();
+        iter1 = cx.rbegin();
         iter2 = iter1;
         iter3 = iter2;
 
@@ -1699,17 +1719,17 @@ void t5()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        X w;
+        X x;
 
-        w = value;
+        x = value;
 
-        const X x(w);
+        const X cx(x);
 
-        X::const_reverse_iterator iter = x.rbegin();
+        X::const_reverse_iterator iter = cx.rbegin();
 
     // Test dereferenceability.
 
-        if (*iter != *(x.begin()))
+        if (*iter != *(cx.begin()))
             passed = false;
     }
 
@@ -1717,10 +1737,12 @@ void t5()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
 
-        X::const_reverse_iterator iter1 = x.rbegin();
-        X::const_reverse_iterator iter2 = x.rbegin();
+        const X cx = x;
+
+        X::const_reverse_iterator iter1 = cx.rbegin();
+        X::const_reverse_iterator iter2 = cx.rbegin();
 
     // Invariant
 
@@ -1738,15 +1760,15 @@ void t5()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        X w;
+        X x;
 
         for (int i = 0; i < 3; i++)
-            w[i] = i;
+            x[i] = i;
 
-        const X x(w);
+        const X cx(x);
 
-        X::const_reverse_iterator iter1 = x.rbegin();
-        X::const_reverse_iterator iter2 = x.rbegin();
+        X::const_reverse_iterator iter1 = cx.rbegin();
+        X::const_reverse_iterator iter2 = cx.rbegin();
 
     // Test increments
 
@@ -1758,7 +1780,7 @@ void t5()
         if (iter1 != iter2)
             passed = false;
 
-        iter2 = x.rbegin();
+        iter2 = cx.rbegin();
         iter1 = iter2;
         value_type t = *iter2;
         ++iter2;
@@ -1772,10 +1794,12 @@ void t5()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
 
-        X::const_reverse_iterator iter1 = x.rbegin();
-        X::const_reverse_iterator iter2 = x.rbegin();
+        const X cx = x;
+
+        X::const_reverse_iterator iter1 = cx.rbegin();
+        X::const_reverse_iterator iter2 = cx.rbegin();
 
         if (!(&iter1 == &++iter1))
             passed = false;
@@ -1785,16 +1809,15 @@ void t5()
     }
 
     {
-        typedef iterator_traits<X::const_reverse_iterator>::value_type
-                                                            value_type;
-
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        const X x;
+        X x;
 
-        X::const_reverse_iterator iter1 = x.rend();
-        X::const_reverse_iterator iter2 = x.rend();
+        const X cx = x;
+
+        X::const_reverse_iterator iter1 = cx.rend();
+        X::const_reverse_iterator iter2 = cx.rend();
 
     // Test decrements
 
@@ -1809,7 +1832,7 @@ void t5()
         if (!(--iter1 == iter2))
             passed = false;
 
-        iter1 = x.rend();
+        iter1 = cx.rend();
         iter2 = iter1;
         X::const_reverse_iterator iter3 = iter2;
         --iter2;
@@ -1820,16 +1843,16 @@ void t5()
 
     // Invariants
 
-        iter1 = x.rbegin();
+        iter1 = cx.rbegin();
         ++iter1;
         --iter1;
-        if (iter1 != x.rbegin())
+        if (iter1 != cx.rbegin())
             passed = false;
 
-        iter1 = x.rend();
+        iter1 = cx.rend();
         --iter1;
         ++iter1;
-        if (iter1 != x.rend())
+        if (iter1 != cx.rend())
             passed = false;
     }
 
@@ -1842,16 +1865,16 @@ void t5()
     // The following constructor is not required by the Random Access
     // Container concept, but we need to get an object somehow.
 
-        X w;
+        X x;
 
         for (int i = 0; i < 3; i++)
-            w[i] = i;
+            x[i] = i;
 
-        const X x(w);
+        const X cx(x);
 
-        X::const_reverse_iterator iter1 = x.rbegin();
-        X::const_reverse_iterator iter2 = x.rbegin();
-        X::const_reverse_iterator iter3 = x.rbegin();
+        X::const_reverse_iterator iter1 = cx.rbegin();
+        X::const_reverse_iterator iter2 = cx.rbegin();
+        X::const_reverse_iterator iter3 = cx.rbegin();
 
     // Iterator addition
 
@@ -1873,28 +1896,28 @@ void t5()
         if (iter1 != iter2)
             passed = false;
 
-        iter1 = x.rbegin();
-        iter2 = x.rbegin();
+        iter1 = cx.rbegin();
+        iter2 = cx.rbegin();
         iter3 = iter1 + 3;
         iter2 += 3;
         if (iter3 != iter2)
             passed = false;
-        if (iter1 != x.rbegin())
+        if (iter1 != cx.rbegin())
             passed = false;
 
-        iter1 = x.rbegin();
-        iter2 = x.rbegin();
+        iter1 = cx.rbegin();
+        iter2 = cx.rbegin();
         iter3 = 3 + iter1;
         iter2 += 3;
         if (iter3 != iter2)
             passed = false;
-        if (iter1 != x.rbegin())
+        if (iter1 != cx.rbegin())
             passed = false;
 
     // Iterator subtraction
 
-        iter1 = x.rend();
-        iter2 = x.rend();
+        iter1 = cx.rend();
+        iter2 = cx.rend();
         iter1 -= 0;
         if (iter1 != iter2)
             passed = false;
@@ -1909,51 +1932,51 @@ void t5()
         if (iter1 != iter2)
             passed = false;
 
-        iter1 = x.rend();
-        iter2 = x.rend();
+        iter1 = cx.rend();
+        iter2 = cx.rend();
         iter3 = iter1 - 3;
         iter2 -= 3;
         if (iter3 != iter2)
             passed = false;
-        if (iter1 != x.rend())
+        if (iter1 != cx.rend())
             passed = false;
 
     // Iterator difference.
 
-        iter1 = x.rbegin();
-        iter2 = x.rend();
+        iter1 = cx.rbegin();
+        iter2 = cx.rend();
         difference_type d = iter2 - iter1;
         if (!(iter2 == iter1 + d))
             passed = false;
 
     // Element access
 
-        iter1 = x.rbegin();
+        iter1 = cx.rbegin();
         if (iter1[2] != *(iter1 + 2))
             passed = false;
 
     // Invariants
 
-        iter1 = x.rbegin();
+        iter1 = cx.rbegin();
         iter1 += 3;
         iter1 -= 3;
-        if (iter1 != x.rbegin())
+        if (iter1 != cx.rbegin())
             passed = false;
         iter2 = (iter1 + 3) - 3;
-        if (iter2 != x.rbegin())
+        if (iter2 != cx.rbegin())
             passed = false;
 
-        iter1 = x.rend();
+        iter1 = cx.rend();
         iter1 -= 3;
         iter1 += 3;
-        if (iter1 != x.rend())
+        if (iter1 != cx.rend())
             passed = false;
         iter2 = (iter1 - 3) + 3;
-        if (iter2 != x.rend())
+        if (iter2 != cx.rend())
             passed = false;
 
-        iter1 = x.rbegin();
-        iter2 = x.rend();
+        iter1 = cx.rbegin();
+        iter2 = cx.rend();
         if (!(iter2 == iter1 + (iter2 - iter1)))
             passed = false;
         if (!(iter2 - iter1 >= 0))
@@ -2376,6 +2399,8 @@ int main( int argc, char *argv[] )
     cout << endl;
 
     cout << "Done testing MT::ccvsf::value_type container.\n";
+
+    C4::Finalize();
 
     return 0;
 }

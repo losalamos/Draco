@@ -18,7 +18,9 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
+using std::cout;
+using std::endl;
+using std::iterator_traits;
 
 bool passed = true;
 double value = 4.23;
@@ -190,8 +192,8 @@ void t1()
         y = x;
         if (x < y)
             passed = false;
-        if (x < y != lexicographical_compare(x.begin(), x.end(),
-                                             y.begin(), y.end()))
+        if (x < y != std::lexicographical_compare(x.begin(), x.end(),
+                                                  y.begin(), y.end()))
             passed = false;
         if (x > y != y < x)
             passed = false;
@@ -285,7 +287,7 @@ void t1()
         for (X::iterator iter = x.begin(); iter != x.end(); iter++) {}
         for (X::const_iterator iter = cx.begin(); iter != cx.end(); iter++) {}
 
-        if (!(x.size() == distance(x.begin(),x.end())))
+        if (!(x.size() == std::distance(x.begin(),x.end())))
             passed = false;
     }
 
