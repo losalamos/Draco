@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Apr 13 11:41:37 2000
  * \brief  Rep_Transporter template definitions.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -46,6 +47,7 @@ Rep_Transporter<MT,FT,PT>::Rep_Transporter(SP_Topology top)
     Require (!tally);
     Require (!random_walk);
     Require (!communicator);
+    Require (!surface_tracker);
     Require (topology);
 
     // check the topology
@@ -104,10 +106,6 @@ Rep_Transporter<MT,FT,PT>::transport(double dt,
     // begin timing the transport on this processor
     double trans_begin = C4::Wtime();
 
-    // add null pointer for extrinsic surface tracker; this feature will be
-    // fully added at a later date (it is fully functional in particle)
-    rtt_dsxx::SP<Extrinsic_Surface_Tracker> tracker;
-
     // get source particles and run them to completion
     while (*source)
     {
@@ -116,8 +114,8 @@ Rep_Transporter<MT,FT,PT>::transport(double dt,
 	Check (particle->status());
 
 	// transport the particle
-	particle->transport(*mesh, *opacity, *tally, random_walk, tracker, 
-			    check);
+	particle->transport(*mesh, *opacity, *tally, random_walk, 
+			    surface_tracker, check);
 	num_done++;
 
 	// after the particle is no longer active take appropriate action
@@ -172,6 +170,8 @@ Rep_Transporter<MT,FT,PT>::transport(double dt,
  * \param source_in rtt_dsxx::SP to a valid Source object
  * \param tally_in rtt_dsxx::SP to a valid Tally object
  * \param random_walk_in rtt_dsxx::SP to a random walk object (can be null)
+ * \param surface_tracker_in rtt_dsxx::SP to an extrinsic surface tracker
+ * (can be null)
  * \param communicator_in null rtt_dsxx::SP to a Communicator (must be null)
 
  */
@@ -182,6 +182,7 @@ void Rep_Transporter<MT,FT,PT>::set(SP_Mesh         mesh_in,
 				    SP_Source       source_in,
 				    SP_Tally        tally_in,
 				    SP_Random_Walk  random_walk_in,
+				    SP_Tracker      surface_tracker_in,
 				    SP_Communicator communicator_in)
 {
     Require (mesh_in);
@@ -192,12 +193,13 @@ void Rep_Transporter<MT,FT,PT>::set(SP_Mesh         mesh_in,
     Require (!communicator_in);
 
     // assign objects (no need to assign communicator as it should be null)
-    mesh        = mesh_in;
-    opacity     = opacity_in;
-    source      = source_in;
-    mat_state   = mat_state_in;
-    tally       = tally_in;
-    random_walk = random_walk_in;
+    mesh            = mesh_in;
+    opacity         = opacity_in;
+    source          = source_in;
+    mat_state       = mat_state_in;
+    tally           = tally_in;
+    surface_tracker = surface_tracker_in;
+    random_walk     = random_walk_in;
     
     // number of global cells is the same number of cells on processor
     int num_cells = topology->num_cells();
@@ -231,13 +233,14 @@ void Rep_Transporter<MT,FT,PT>::unset()
     Require (topology);
 
     // assign the fundamental objects to null pointers
-    mesh         = SP_Mesh();
-    opacity      = SP_Opacity();
-    mat_state    = SP_Mat_State();
-    tally        = SP_Tally();
-    source       = SP_Source();
-    communicator = SP_Communicator();
-    random_walk  = SP_Random_Walk();
+    mesh            = SP_Mesh();
+    opacity         = SP_Opacity();
+    mat_state       = SP_Mat_State();
+    tally           = SP_Tally();
+    source          = SP_Source();
+    communicator    = SP_Communicator();
+    random_walk     = SP_Random_Walk();
+    surface_tracker = SP_Tracker();
 
     Ensure (!mesh);
     Ensure (!opacity);
@@ -245,6 +248,7 @@ void Rep_Transporter<MT,FT,PT>::unset()
     Ensure (!tally);
     Ensure (!source);
     Ensure (!random_walk);
+    Ensure (!surface_tracker);
     Ensure (!communicator);
 }
 
@@ -255,6 +259,9 @@ void Rep_Transporter<MT,FT,PT>::unset()
  * This function checks to make sure that all fundamental IMC transport
  * objects are set in the transporter.  If everything is ready a value of
  * true is returned; otherwise, ready returns false.
+
+ * Because random walk and surface tracking are options these objects are not
+ * set.  This function only checks the \e minimum set of required objects.
  
  */
 template<class MT, class FT, class PT>

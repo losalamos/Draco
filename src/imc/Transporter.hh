@@ -28,6 +28,7 @@ namespace rtt_imc
 {
 
 // Forward declarations.
+class Extrinsic_Surface_Tracker;
 template<class MT> class Mat_State;
 template<class MT> class Tally;
 template<class MT> class Random_Walk;
@@ -45,10 +46,16 @@ template<class MT, class FT, class PT> class Source;
  * transport.  The fundamental operation of the transporter is to transport
  * all IMC particles from a source in one timestep.
  */
+/*!
+ * \example imc/test/tstTransporter.hh
+ *
+ * Transporter unit test.
+ */
 // revision history:
 // -----------------
 // 0) original
 // 1) 19-MAY-03 : added Random_Walk class to Transporter
+// 2) 19-AUG-03 : added surface tracking to Transporter
 // 
 //===========================================================================//
 
@@ -63,6 +70,7 @@ class Transporter
     typedef rtt_dsxx::SP<Source<MT,FT,PT> >                  SP_Source;
     typedef rtt_dsxx::SP<Tally<MT> >                         SP_Tally;
     typedef rtt_dsxx::SP<Random_Walk<MT> >                   SP_Random_Walk;
+    typedef rtt_dsxx::SP<Extrinsic_Surface_Tracker>          SP_Tracker;
     typedef rtt_dsxx::SP<rtt_mc::Communicator<PT> >          SP_Communicator;
     typedef typename rtt_mc::Particle_Containers<PT>::Census Census;
     typedef rtt_dsxx::SP<Census>                             SP_Census;
@@ -79,7 +87,7 @@ class Transporter
 
     //! Set objects.
     virtual void set(SP_Mesh, SP_Mat_State, SP_Opacity, SP_Source, SP_Tally,
-		     SP_Random_Walk, SP_Communicator) = 0;
+		     SP_Random_Walk, SP_Tracker, SP_Communicator) = 0;
 
     //! Unset objects.
     virtual void unset() = 0;

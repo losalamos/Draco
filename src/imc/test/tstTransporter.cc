@@ -28,6 +28,7 @@
 #include "../Tally.hh"
 #include "../Diffusion_Opacity.hh"
 #include "../Random_Walk.hh"
+#include "../Extrinsic_Surface_Tracker.hh"
 #include "mc/Communicator.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/General_Topology.hh"
@@ -64,6 +65,7 @@ using rtt_imc::Rep_Source_Builder;
 using rtt_imc::Tally;
 using rtt_imc::Random_Walk;
 using rtt_imc::Diffusion_Opacity;
+using rtt_imc::Extrinsic_Surface_Tracker;
 using rtt_mc::Communicator;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
@@ -351,9 +353,12 @@ void rep_transporter_run_test()
 
     // build a random walk object
     SP<Random_Walk<MT> > rwalk;
+
+    // build an extrinsic surface tracker
+    SP<Extrinsic_Surface_Tracker> tracker;
     
     // set the transporter
-    transporter->set(mesh, mat, opacity, source, tally, rwalk, comm);
+    transporter->set(mesh, mat, opacity, source, tally, rwalk, tracker, comm);
 
     // transport
     double dt = interface->get_delta_t();
@@ -440,9 +445,12 @@ void rep_transporter_random_walk_run_test()
     // build a random walk object
     SP<Random_Walk<MT> > rwalk(new Random_Walk<MT>(mesh, diff_opacity));
     if (!rwalk) ITFAILS;
+
+    // build an extrinsic surface tracker
+    SP<Extrinsic_Surface_Tracker> tracker;
     
     // set the transporter
-    transporter->set(mesh, mat, opacity, source, tally, rwalk, comm);
+    transporter->set(mesh, mat, opacity, source, tally, rwalk, tracker, comm);
 
     // transport
     double dt = interface->get_delta_t();

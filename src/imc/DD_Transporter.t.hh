@@ -4,6 +4,7 @@
  * \author Todd J. Urbatsch and Thomas M. Evans
  * \date   Wed Apr 19 15:37:14 2000
  * \brief  DD_Transporter template definitions.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -50,6 +51,8 @@ DD_Transporter<MT,FT,PT>::DD_Transporter(SP_Topology top)
     Require (!source);
     Require (!tally);
     Require (!communicator);
+    Require (!surface_tracker);
+    Require (!random_walk);
     Require (topology);
 
     // check the topology
@@ -211,16 +214,13 @@ void DD_Transporter<MT,FT,PT>::trans_src_async(
     using std::endl;
     using std::setw;
 
-    // add null pointer for extrinsic surface tracker; this feature will be
-    // fully added at a later date (it is fully functional in particle)
-    rtt_dsxx::SP<Extrinsic_Surface_Tracker> tracker;
-
     // get a source particle
     SP<PT> particle = source->get_Source_Particle(delta_t); 
     Check (particle->status());
 
     // transport the particle; update counters
-    particle->transport(*mesh, *opacity, *tally, random_walk, tracker, check);
+    particle->transport(*mesh, *opacity, *tally, random_walk, surface_tracker, 
+			check);
     num_run++;
     nsrc_run++;
     
@@ -292,17 +292,14 @@ void DD_Transporter<MT,FT,PT>::trans_domain_async(
     using std::endl;
     using std::setw;
 
-    // add null pointer for extrinsic surface tracker; this feature will be
-    // fully added at a later date (it is fully functional in particle)
-    rtt_dsxx::SP<Extrinsic_Surface_Tracker> tracker;
-
     // get a particle from the bank and activate it
     SP<PT> particle = bank.top();
     bank.pop();
     particle->reset_status();
     
     // transport the particle
-    particle->transport(*mesh, *opacity, *tally, random_walk, tracker, check);
+    particle->transport(*mesh, *opacity, *tally, random_walk, surface_tracker,
+			check);
     num_run++;
     
     // particle is no longer active; take further action accordingly
@@ -493,6 +490,8 @@ void DD_Transporter<MT,FT,PT>::complete_step_arecvs()
  * \param source_in rtt_dsxx::SP to a valid Source object
  * \param tally_in rtt_dsxx::SP to a valid Tally object
  * \param random_walk_in rtt_dsxx::SP to a random walk object (can be null)
+ * \param surface_tracker_in rtt_dsxx::SP to an extrinsic surface tracker
+ * (can be null)
  * \param communicator_in rtt_dsxx::SP to a valid Communicator object
 
  */
@@ -503,6 +502,7 @@ void DD_Transporter<MT,FT,PT>::set(SP_Mesh         mesh_in,
 				   SP_Source       source_in,
 				   SP_Tally        tally_in,
 				   SP_Random_Walk  random_walk_in,
+				   SP_Tracker      surface_tracker_in,
 				   SP_Communicator communicator_in)
 {
     Require (mesh_in);
@@ -513,13 +513,14 @@ void DD_Transporter<MT,FT,PT>::set(SP_Mesh         mesh_in,
     Require (communicator_in);
 
     // assign objects
-    mesh         = mesh_in;
-    opacity      = opacity_in;
-    source       = source_in;
-    mat_state    = mat_state_in;
-    tally        = tally_in;
-    random_walk  = random_walk_in;
-    communicator = communicator_in;
+    mesh            = mesh_in;
+    opacity         = opacity_in;
+    source          = source_in;
+    mat_state       = mat_state_in;
+    tally           = tally_in;
+    random_walk     = random_walk_in;
+    surface_tracker = surface_tracker_in;
+    communicator    = communicator_in;
     
     // number of global cells is the same number of cells on processor
     int num_cells = topology->num_cells(C4::node());
@@ -553,13 +554,14 @@ void DD_Transporter<MT,FT,PT>::unset()
     Require (topology);
 
     // assign the fundamental objects to null pointers
-    mesh         = SP_Mesh();
-    opacity      = SP_Opacity();
-    mat_state    = SP_Mat_State();
-    tally        = SP_Tally();
-    source       = SP_Source();
-    communicator = SP_Communicator();
-    random_walk  = SP_Random_Walk();
+    mesh            = SP_Mesh();
+    opacity         = SP_Opacity();
+    mat_state       = SP_Mat_State();
+    tally           = SP_Tally();
+    source          = SP_Source();
+    communicator    = SP_Communicator();
+    random_walk     = SP_Random_Walk();
+    surface_tracker = SP_Tracker();
 
     Ensure (!mesh);
     Ensure (!opacity);
@@ -567,6 +569,7 @@ void DD_Transporter<MT,FT,PT>::unset()
     Ensure (!tally);
     Ensure (!source);
     Ensure (!random_walk);
+    Ensure (!surface_tracker);
     Ensure (!communicator);
 }
 
@@ -577,6 +580,9 @@ void DD_Transporter<MT,FT,PT>::unset()
  * This function checks to make sure that all fundamental IMC transport
  * objects are set in the transporter.  If everything is ready a value of
  * true is returned; otherwise, ready returns false.
+
+ * Because random walk and surface tracking are options these objects are not
+ * set.  This function only checks the \e minimum set of required objects.
  
  */
 template<class MT, class FT, class PT>
@@ -620,7 +626,8 @@ int DD_Transporter<MT,FT,PT>::get_num_run() const
     if (rtt_c4::node() == 0)
 	num_particles_run = num_done;
 	
-    // sum up and return
+    // sum up and return; this an effective broadcast of the total number of
+    // particles run to each processor
     rtt_c4::global_sum(num_particles_run);
 
     // the num_particles_run should be the number asked for or zero if they

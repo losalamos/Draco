@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Apr 13 11:41:37 2000
  * \brief  Rep_Transporter header file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,6 +19,7 @@
 #include "Source.hh"
 #include "Tally.hh"
 #include "Random_Walk.hh"
+#include "Extrinsic_Surface_Tracker.hh"
 #include "mc/Communicator.hh"
 #include "mc/Topology.hh"
 
@@ -38,7 +40,8 @@ namespace rtt_imc
 // -----------------
 // 0) original
 // 1) 08-FEB-02 : updated for multigroup
-// 1) 19-MAY-03 : added Random_Walk class to Transporter
+// 2) 19-MAY-03 : added Random_Walk class to Transporter
+// 3) 19-AUG-03 : added surface tracking to Transporter
 // 
 //===========================================================================//
 
@@ -53,6 +56,7 @@ class Rep_Transporter : public Transporter<MT,FT,PT>
     typedef rtt_dsxx::SP<Source<MT,FT,PT> >                  SP_Source;
     typedef rtt_dsxx::SP<Tally<MT> >                         SP_Tally;
     typedef rtt_dsxx::SP<Random_Walk<MT> >                   SP_Random_Walk;
+    typedef rtt_dsxx::SP<Extrinsic_Surface_Tracker>          SP_Tracker;
     typedef rtt_dsxx::SP<rtt_mc::Communicator<PT> >          SP_Communicator;
     typedef typename rtt_mc::Particle_Containers<PT>::Census Census;
     typedef rtt_dsxx::SP<Census>                             SP_Census;
@@ -78,6 +82,9 @@ class Rep_Transporter : public Transporter<MT,FT,PT>
     // Random Walk object.
     SP_Random_Walk random_walk;
 
+    // Extrinsic_Surface_Tracker object.
+    SP_Tracker surface_tracker;
+
     // Communicator (not used in full replication topology).
     SP_Communicator communicator;
 
@@ -95,7 +102,7 @@ class Rep_Transporter : public Transporter<MT,FT,PT>
     
     // Set up objects for this transport step.
     void set(SP_Mesh, SP_Mat_State, SP_Opacity, SP_Source, SP_Tally,
-	     SP_Random_Walk, SP_Communicator);
+	     SP_Random_Walk, SP_Tracker, SP_Communicator);
 
     // Unset objects (assign back to null pointers).
     void unset();
