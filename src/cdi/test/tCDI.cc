@@ -469,28 +469,40 @@ void test_planck_integration()
     }
 
     // catch overflow exception.
-    caught = false;
-    try
+
+    // Only report this as a failure if 1) the error was not caught AND 2)
+    // the Require macro is available.
+    bool dbc_require( DBC && 1 );
+    if( dbc_require )
     {
-	// The frequency is large so that x^22 > max_double and the
-	// integration routine will fail.
-	CDI::integratePlanckSpectrum( 1.1e14, 1.0 );
+
+	caught = false;
+	try
+	{
+	    // The frequency is large so that x^22 > max_double and the
+	    // integration routine will fail.
+	    CDI::integratePlanckSpectrum( 1.1e14, 1.0 );
+	}
+	catch( rtt_dsxx::assertion const & ass )
+	{
+	    ostringstream message;
+	    message << "Caught illegal Planck calculation exception: \n";
+	    //      << "\t" << ass.what();
+	    // ass.what should be "Assertion: 22.0*log(x) < log(maxDouble),
+	    // failed in ../../../src/cdi/CDI.cc".  The word "failed" in the
+	    // message confuses the python reporting script so we don't print
+	    // it. 
+	    PASSMSG(message.str());
+	    caught = true;
+	}
+	if ( ! caught )
+	{
+	    FAILMSG("Did not catch an exception for calculating Planck integral (overflow).");
+	}
     }
-    catch( rtt_dsxx::assertion const & ass )
+    else // no error to catch
     {
-	ostringstream message;
-	message << "Caught illegal Planck calculation exception: \n";
-	//      << "\t" << ass.what();
-	// ass.what should be "Assertion: 22.0*log(x) < log(maxDouble),
-	// failed in ../../../src/cdi/CDI.cc".  The word "failed" in the
-	// message confuses the python reporting script so we don't print
-	// it. 
-	PASSMSG(message.str());
-	caught = true;
-    }
-    if ( !caught )
-    {
-	FAILMSG("Did not catch an exception for calculating Planck integral (overflow).");
+	PASSMSG("No error to catch if Require() is not available.");
     }
 
     // check some planck integrals
