@@ -4,13 +4,14 @@
  * \author Thomas M. Evans
  * \date   Wed Nov 14 15:59:23 2001
  * \brief  Mat_State_Builder class definition.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Mat_State_Builder_hh__
-#define __imc_Mat_State_Builder_hh__
+#ifndef rtt_imc_Mat_State_Builder_hh
+#define rtt_imc_Mat_State_Builder_hh
 
 #include "ds++/SP.hh"
 
@@ -111,7 +112,7 @@ class Mat_State_Builder
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Mat_State_Builder_hh__
+#endif                          // rtt_imc_Mat_State_Builder_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Mat_State_Builder.hh

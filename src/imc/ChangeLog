@@ -1,3 +1,13 @@
+2003-08-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* Mat_State_Builder, Flat_Mat_State_Builder,
+	CDI_Mat_State_Builder, Opacity_Builder_Helper: Made the
+	Flat_Mat_State_Builder and CDI_Mat_State_Builder have the same
+	general structure.  This will help with maintanence.  Also, added
+	Opacity_Builder_Helper class to implement common functionality for
+	both classes.  We use this class so we don't have to specialize on
+	the base class.
+
 2003-07-30  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: released imc-3_4_0.  This is a sub-release tag that

@@ -145,18 +145,18 @@ class Flat_Mat_State_Builder : public Mat_State_Builder<MT,FT>
     // >>> IMPLEMENTATION
 
     // Build the Mat_State.
-    void build_Mat_State(SP_Mesh);
+    void build_mat_state(SP_Mesh);
 
   private:
     // >>> PARTIAL SPECIALIZATIONS ON FREQUENCY TYPE
 
     // Build a Gray_Frequency.
     template<class Stop_Explicit_Instantiation>
-    rtt_dsxx::SP<Gray_Frequency> build_frequency(Switch_Gray);
+    void build_frequency(Switch_Gray);
 
     // Build a Multigroup_Frequency
     template<class Stop_Explicit_Instantiation>
-    rtt_dsxx::SP<Multigroup_Frequency> build_frequency(Switch_MG);
+    void build_frequency(Switch_MG);
 
     // Build an Opacity<MT,Gray_Frequency>
     template<class Stop_Explicit_Instantiation>

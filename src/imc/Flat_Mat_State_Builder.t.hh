@@ -53,13 +53,13 @@ void Flat_Mat_State_Builder<MT,FT>::build_mat_classes(SP_Mesh mesh)
 
     // build the frequency, specialize on the frequency type
     {
-	frequency = build_frequency<Dummy_Type>(Type_Switch<FT>());
+	build_frequency<Dummy_Type>(Type_Switch<FT>());
     }
     Ensure (frequency);
 
     // build the mat_state
     {
-	build_Mat_State(mesh);
+	build_mat_state(mesh);
     }
     Ensure (mat_state);
     Ensure (mat_state->num_cells() == mesh->num_cells());
@@ -70,6 +70,7 @@ void Flat_Mat_State_Builder<MT,FT>::build_mat_classes(SP_Mesh mesh)
     }
     Ensure (opacity);
     Ensure (opacity->num_cells() == mesh->num_cells());
+    Ensure (build_diffusion_opacity ? diff_opacity : true);
 }
 
 //---------------------------------------------------------------------------//
@@ -78,14 +79,13 @@ void Flat_Mat_State_Builder<MT,FT>::build_mat_classes(SP_Mesh mesh)
 /*!
  * \brief Build a rtt_imc::Mat_State object.
  *
- * The Mat_State that is returned by this function is defined on the mesh
+ * The Mat_State that is built by this function is defined on the mesh
  * that is input to the function.
  *
  * \param  mesh rtt_dsxx::SP to a mesh
- * \return SP to a Mat_State object
  */
 template<class MT, class FT>
-void Flat_Mat_State_Builder<MT,FT>::build_Mat_State(SP_Mesh mesh)
+void Flat_Mat_State_Builder<MT,FT>::build_mat_state(SP_Mesh mesh)
 {
     Require (mesh);
     Require (mesh->num_cells() == density.size());
@@ -111,18 +111,15 @@ void Flat_Mat_State_Builder<MT,FT>::build_Mat_State(SP_Mesh mesh)
  */
 template<class MT, class FT>
 template<class Stop_Explicit_Instantiation>
-rtt_dsxx::SP<Gray_Frequency> 
-Flat_Mat_State_Builder<MT,FT>::build_frequency(Switch_Gray)
+void Flat_Mat_State_Builder<MT,FT>::build_frequency(Switch_Gray)
 {
-    // return frequency
-    rtt_dsxx::SP<Gray_Frequency> gray_frequency;
-
-    gray_frequency = new Gray_Frequency;
+    // build the gray frequency
+    frequency = new Gray_Frequency;
 
     Ensure (!flat_data->gray_absorption_opacity.empty());
     Ensure (!flat_data->gray_scattering_opacity.empty());
-    Ensure (gray_frequency);
-    return gray_frequency;
+    Ensure (frequency);
+    Ensure (frequency->is_gray());
 }
 
 //---------------------------------------------------------------------------//
@@ -131,20 +128,17 @@ Flat_Mat_State_Builder<MT,FT>::build_frequency(Switch_Gray)
  */
 template<class MT, class FT>
 template<class Stop_Explicit_Instantiation>
-rtt_dsxx::SP<Multigroup_Frequency> 
-Flat_Mat_State_Builder<MT,FT>::build_frequency(Switch_MG)
+void Flat_Mat_State_Builder<MT,FT>::build_frequency(Switch_MG)
 {
     Require (!flat_data->group_boundaries.empty());
 
-    // return frequency
-    rtt_dsxx::SP<Multigroup_Frequency> mg_frequency;
-
-    mg_frequency = new Multigroup_Frequency(flat_data->group_boundaries);
+    // build the multigroup frequency
+    frequency = new Multigroup_Frequency(flat_data->group_boundaries);
 
     Ensure (!flat_data->mg_absorption_opacity.empty());
     Ensure (!flat_data->mg_scattering_opacity.empty());
-    Ensure (mg_frequency);
-    return mg_frequency;
+    Ensure (frequency);
+    Ensure (frequency->is_multigroup());
 }
 
 //---------------------------------------------------------------------------//
