@@ -24,7 +24,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "@(#)mc-3_1_0";
+    string pkg_release = "@(#)mc-3_2_0";
     return pkg_release;
 }
 
