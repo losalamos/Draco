@@ -1,3 +1,8 @@
+2001-12-17  Thomas M. Evans  <tme@lanl.gov>
+
+	* meshReaders: released version 1_3_0.  This release no longer
+	includes the configure script within the package.
+
 2001-07-30  Thomas M. Evans  <tme@lanl.gov>
 
 	* meshReaders: released version 1_2_0.  New accessors added to
