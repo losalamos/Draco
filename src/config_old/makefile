@@ -80,6 +80,7 @@ UTIL_LIB	= -L$(SRC_TOP)/util   -lutil_$(env)
 LINALG_LIB	= -L$(SRC_TOP)/linalg -llinalg_$(env)
 GEOM_LIB	= -L$(SRC_TOP)/geom   -lgeom_$(env)
 MESH_LIB	= -L$(SRC_TOP)/mesh   -lmesh_$(env)
+3T_LIB		= -L$(SRC_TOP)/3T     -l3T_$(env)
 
 ifeq ($(need_util),yes)
 need_spdf	:= yes
@@ -262,6 +263,8 @@ dep_libspdf	= $(SRC_TOP)/spdf/libspdf_$(env).$(lib_suffix)
 dep_libutil	= $(SRC_TOP)/util/libutil_$(env).$(lib_suffix)
 dep_libgeom	= $(SRC_TOP)/geom/libgeom_$(env).$(lib_suffix)
 dep_libmesh	= $(SRC_TOP)/mesh/libmesh_$(env).$(lib_suffix)
+dep_liblinalg	= $(SRC_TOP)/linalg/liblinalg_$(env).$(lib_suffix)
+dep_lib3T	= $(SRC_TOP)/3T/lib3T_$(env).$(lib_suffix)
 
 #dep_libpooma	= $(POOMA_LIB_DIR)/libpooma.a
 dep_libpooma	= $(POOMA_ROOT)/lib/$(POOMA_ARCH)/libpooma.a
