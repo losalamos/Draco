@@ -39,7 +39,7 @@ namespace rtt_3T
        TElectron(TElectron_), TIon(TIon_)
  {
      spQEEM = new ccsf(spMesh);
-     spQEEM = new ccsf(spMesh);
+     spREEM = new ccsf(spMesh);
      spQRadBar = new ccsf(spMesh);
      spQElecStar = new ccsf(spMesh);
      spCvStar = new ccsf(spMesh);
