@@ -34,7 +34,8 @@ namespace rtt_P1Diffusion
 
      // NESTED CLASSES AND TYPEDEFS
 
-     typedef MT Mesh;
+   private:
+     
      typedef MS MatrixSolver;
      typedef typename MS::Matrix Matrix;
      typedef typename MT::fcdsf fcdsf;
@@ -43,12 +44,13 @@ namespace rtt_P1Diffusion
 
    public:
 
+     typedef MT MeshType;
      typedef fcdsf FluxField;
      typedef fcdsf DiscFluxField;
      
      // DATA
     
-     dsxx::SP<Mesh> spm;
+     dsxx::SP<MeshType> spm;
      dsxx::SP<MatrixSolver> spsolver;
 
      // Cache the swapped values to avoid too much communication.
@@ -61,7 +63,7 @@ namespace rtt_P1Diffusion
 
      // CREATORS
     
-     P1Diffusion(const Diffusion_DB &diffdb, const dsxx::SP<Mesh>& spm_,
+     P1Diffusion(const Diffusion_DB &diffdb, const dsxx::SP<MeshType>& spm_,
 		 const dsxx::SP<MatrixSolver> &spsolver_);
 
      // MANIPULATORS

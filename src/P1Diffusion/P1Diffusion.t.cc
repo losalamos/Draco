@@ -10,7 +10,7 @@
 #include "ds++/SP.hh"
 
 // Note:
-// Inside class scope MT has been typedef'ed to Mesh,
+// Inside class scope MT has been typedef'ed to MeshType,
 // and MS has been typedef'ed to MatrixSolver.
 
 namespace rtt_P1Diffusion
