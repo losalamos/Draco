@@ -1,16 +1,16 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   cdi_eospac/test/tEospac.cc
+ * \file   cdi_eospac/test/tEospacWithCDI.cc
  * \author Kelly Thompson
- * \date   Mon Apr 2 14:20:14 2001
- * \brief  Implementation file for tEospac
+ * \date   Thu Apr 19 11:00:24 2001
+ * \brief  Implementation file for tEospacWithCDI
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 // cdi_gandolf dependencies
-#include "tEospac.hh"
+#include "tEospacWithCDI.hh"
 #include "../Eospac.hh"
 #include "../SesameTables.hh"
 #include "../Release.hh"
@@ -18,6 +18,7 @@
 // Draco dependencies
 #include "UnitTestFrame/PassFailStream.hh"
 #include "ds++/SP.hh"
+#include "cdi/CDI.hh"
 
 // STL dependencies
 #include <iostream>
@@ -44,7 +45,7 @@ namespace rtt_cdi_eospac_test
     tEospac::tEospac( int argc, char *argv[], std::ostream& os_in )
 	: rtt_UnitTestFrame::TestApp( argc, argv, os_in )
 	{
-	    os() << "Created tEospac" << std::endl;
+	    os() << "Created tEospacWithCDI" << std::endl;
 	}
     
     std::string tEospac::version() const
@@ -52,9 +53,9 @@ namespace rtt_cdi_eospac_test
 	    return rtt_cdi_eospac::release();
 	}
     
-    //===========================================================================
+    //=========================================================================
     /*!
-     * \brief Tests the Eospac constructor and access routines.
+     * \brief Tests the Eospac access routines via the CDI interface.
      *
      * On the XDIV LAN the EOSPAC library is located at:
      *
@@ -69,12 +70,12 @@ namespace rtt_cdi_eospac_test
      * --with-eospac-lib=/radtran/vendors/eospac/IRIX64/lib64 tag.
      *
      */
-    //===========================================================================
+    //========================================================================
     std::string tEospac::runTest()
 	{
 	    
 	    std::cout << std::endl
-		 << "Test of C++ code calling EOSPAC routines" 
+		 << "Test of C++ code calling EOSPAC routines via the CDI interface." 
 		 << std::endl << std::endl;
 
 
@@ -148,7 +149,7 @@ namespace rtt_cdi_eospac_test
 	    // in a SesameTable object.  The constructor for Eospac
 	    // takes one argument: a SesameTables object.
 	    
-	    rtt_dsxx::SP< rtt_cdi_eospac::Eospac > spEospac;
+	    rtt_dsxx::SP< const rtt_cdi::EoS > spEospac;
 
 	    // Try to instantiate the new Eospac object.
 	    // Simultaneously, we are assigned material IDs to more
@@ -163,6 +164,16 @@ namespace rtt_cdi_eospac_test
 		    return "Unable to create SP to new Eospac object.";
 		}
 	    
+	    // ------------------- //
+	    // Create a CDI object //
+	    // ------------------- //
+
+	    rtt_dsxx::SP< const rtt_cdi::CDI > spCdiEos;
+	    if ( spCdiEos = new rtt_cdi::CDI( spEospac ) )
+		pass() << "SP to CDI object created successfully (EoS).";
+	    else
+		fail() << "Failed to create SP to CDI object (EoS).";
+
 	    // --------------------------- //
 	    // Test scalar access routines //
 	    // --------------------------- //
@@ -175,23 +186,24 @@ namespace rtt_cdi_eospac_test
 	    double density     = 1.0;  // g/cm^3
 	    double temperature = 5800; // K
 
-	    double refValue = 1.052552479800656;  // kJ/g
+ 	    double refValue = 1.052552479800656;  // kJ/g
 
-	    double specificElectronInternalEnergy =
-		spEospac->getSpecificElectronInternalEnergy(
-		    density, temperature );
+ 	    double specificElectronInternalEnergy =
+ 		spCdiEos->eos()->getSpecificElectronInternalEnergy(
+ 		    density, temperature );
 
 	    if ( match( specificElectronInternalEnergy, refValue ) )
 		pass() << "getSpecificElectronInternalEnergy() test passed.";
 	    else
 		fail() << "getSpecificElectronInternalEnergy() test failed.";
 
-	    // Retrieve an electron heat capacity (= dE/dT)	    
+ 	    // Retrieve an electron heat capacity (= dE/dT)	    
 
 	    refValue = 0.0002711658224638093; // kJ/g/K
 	    
 	    double heatCapacity =
-		spEospac->getElectronHeatCapacity( density, temperature );
+		spCdiEos->eos()->getElectronHeatCapacity( 
+		    density, temperature );
 
 	    if ( match(  heatCapacity, refValue ) )
 		pass() << "getElectronHeatCapacity() test passed.";
@@ -203,8 +215,8 @@ namespace rtt_cdi_eospac_test
 	    refValue = 5.238217222081386; // kJ/g
 
 	    double specificIonInternalEnergy = 
-		spEospac->getSpecificIonInternalEnergy( density,
-							 temperature );
+		spCdiEos->eos()->getSpecificIonInternalEnergy( 
+		    density, temperature );
 
 	    if ( match( specificIonInternalEnergy, refValue ) )
 		pass() << "getSpecificIonInternalEnergy() test passed.";
@@ -216,7 +228,7 @@ namespace rtt_cdi_eospac_test
 	    refValue = 0.000581583274263501; // kJ/g/K
 
 	    heatCapacity =
-		spEospac->getIonHeatCapacity( density, temperature );
+		spCdiEos->eos()->getIonHeatCapacity( density, temperature );
 	    
 	    if ( match( heatCapacity, refValue ) )
 		pass() << "getIonHeatCapacity() test passed.";
@@ -228,7 +240,7 @@ namespace rtt_cdi_eospac_test
 	    refValue = 12.89854626207534; // electrons per ion
 
 	    double nfree =
-		spEospac->getNumFreeElectronsPerIon( 
+		spCdiEos->eos()->getNumFreeElectronsPerIon( 
 		    density, temperature );
 	    
 	    if ( match( nfree, refValue ) )
@@ -241,14 +253,14 @@ namespace rtt_cdi_eospac_test
 	    refValue = 1.389598060091371e+29; // 1/s/cm
 
 	    double chie = 
-		spEospac->getElectronBasedThermalConductivity(
+		spCdiEos->eos()->getElectronBasedThermalConductivity(
 		    density, temperature );
 
 	    if ( match( chie, refValue ) )
 		pass() << "getElectronBasedThermalConductivity() test passed.";
 	    else
 		fail() << "getElectronBasedThermalConductivity() test failed.";
-
+	    
 	    // --------------------------- //
 	    // Test vector access routines //
 	    // --------------------------- //
@@ -270,8 +282,8 @@ namespace rtt_cdi_eospac_test
 	    // (density, temperature) values.
 
 	    std::vector< double > vcve(2);
-	    vcve = spEospac->getElectronHeatCapacity( vdensities,
-						      vtemps );
+	    vcve = spCdiEos->eos()->getElectronHeatCapacity( 
+		vdensities, vtemps );
 
 	    // Since the i=0 and i=1 tuples of density and temperature 
 	    // are identical the two returned heat capacities should
@@ -288,8 +300,8 @@ namespace rtt_cdi_eospac_test
 	    // calculated above.
 
 	    heatCapacity =
-		spEospac->getElectronHeatCapacity( density,
-						   temperature );
+		spCdiEos->eos()->getElectronHeatCapacity( 
+		    density, temperature );
 
 	    if ( match( vcve[0], heatCapacity ) )
 		pass() << "getElectronHeatCapacity() test passed for "
@@ -348,5 +360,5 @@ namespace rtt_cdi_eospac_test
 } // end namespace rtt_cdi_eospac_test
 
 //---------------------------------------------------------------------------//
-// end of tEospac.cc
+// end of tEospacwithCDI.cc
 //---------------------------------------------------------------------------//

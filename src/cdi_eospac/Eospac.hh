@@ -15,6 +15,9 @@
 // cdi_eospac dependencies
 #include "SesameTables.hh"
 
+// Draco dependencies
+#include "cdi/EoS.hh"
+
 // C++ standard library dependencies
 #include <vector>
 
@@ -76,7 +79,7 @@ namespace rtt_cdi_eospac
 
     //===========================================================================//
     
-    class Eospac // : public rtt_cdi::EoS
+    class Eospac : public rtt_cdi::EoS
     {
 	
 	// NESTED CLASSES AND TYPEDEFS

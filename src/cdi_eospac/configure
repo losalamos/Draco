@@ -891,7 +891,7 @@ EOF
    done
 
 
-	test_alltarget="$test_alltarget tEospac"
+	test_alltarget="$test_alltarget tEospac tEospacWithCDI"
         
 	test_nprocs="1"
 

@@ -1,0 +1,28 @@
+###############################################################################
+# draco/src/cdi_eospac/test Makefile.target
+# Kelly Thompson
+# $Id$
+###############################################################################
+# @> Target makefile for MESHREADERS component tests
+###############################################################################
+
+testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
+                ${VENDOR_TEST_DEPENDS} ${VENDOR_DEPENDS}
+testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
+                ${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
+
+#ptCCsrc := $(wildcard ${srcdir}/*_pt.cc)
+#ptObjs := $(notdir $(patsubst %.cc,%.o,${ptCCsrc}))
+
+#utilObjs := ${ptObjs}
+
+extraObjs := 
+
+${test_alltarget}: ${testdeps}
+
+%: %.o ${extraObjs}
+	${LD} ${LDFLAGS} -o $@ $< ${extraObjs} ${testlibs}
+
+###############################################################################
+# end of draco/src/cdi_eospac/test Makefile.target
+###############################################################################

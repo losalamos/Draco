@@ -31,7 +31,7 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++ cdi)
 AC_NEEDS_LIBS_TEST(UnitTestFrame)
 
-AC_RUNTESTS(tEospac, 1)
+AC_RUNTESTS(tEospac tEospacWithCDI, 1)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
