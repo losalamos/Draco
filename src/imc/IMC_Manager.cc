@@ -414,7 +414,7 @@ void IMC_Manager<MT,BT,IT,PT>::regroup()
 	}
 	Check (ncentot == tally->get_new_ncen_tot());
 	Check (fabs(ecentot - tally->get_new_ecen_tot()) 
-	       < 1.0e-6 * tally->get_new_ecen_tot());
+	       <= 1.0e-6 * tally->get_new_ecen_tot());
 
       // send tally to master
 	Send (num_cells, 0, 300);
@@ -520,9 +520,9 @@ void IMC_Manager<MT,BT,IT,PT>::regroup()
 	ecentot      += tally->get_new_ecen_tot();
       // check total census energy on master node
 	Check (fabs(ecenmaster - tally->get_new_ecen_tot()) 
-	       < 1.0e-6 * tally->get_new_ecen_tot());
+	       <= 1.0e-6 * tally->get_new_ecen_tot());
       // Check problem total census energy
-	Check (fabs(ecencheck - ecentot) < 1.0e-6 * ecentot);
+	Check (fabs(ecencheck - ecentot) <= 1.0e-6 * ecentot);
 
 	e_escape_tot += tally->get_ew_escaped();
 
