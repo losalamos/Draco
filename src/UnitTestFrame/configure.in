@@ -1,0 +1,33 @@
+dnl-------------------------------------------------------------------------dnl
+dnl draco/src/UnitTestFrame configure.in
+dnl Randy M. Roberts
+dnl Fri Feb 25 10:10:22 2000
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for UnitTestFrame
+dnl-------------------------------------------------------------------------dnl
+
+AC_INIT(TestApp.hh)
+AC_CONFIG_AUX_DIR(../../config)
+AC_CONFIG_HEADER(UnitTestFrame/config.h:config.h.in)
+package="UnitTestFrame"
+
+dnl VENDOR SETUPS
+AC_MPI_SETUP(pkg)
+AC_SHMEM_SETUP(pkg)
+dnl AC_SPRNG_SETUP(pkg)
+dnl AC_PCGLIB_SETUP(pkg)
+
+AC_INSTALL_HEADERS
+AC_INSTALL_LIB
+AC_NEEDS_LIBS(ds++ c4)
+
+dnl DRACO SETUP
+AC_DRACO_ENV
+
+AC_OUTPUT(Makefile:../../config/Makefile.package.in \
+          test/Makefile:../../config/Makefile.test.in)
+
+dnl-------------------------------------------------------------------------dnl
+dnl			 end of draco/src/UnitTestFrame configure.in
+dnl-------------------------------------------------------------------------dnl
