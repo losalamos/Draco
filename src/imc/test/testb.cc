@@ -9,6 +9,8 @@
 #include "../OS_Parser.hh"
 #include "../OS_Builder.hh"
 #include "../OS_Mesh.hh"
+#include "../Opacity_Builder.hh"
+#include "../Mat_State.hh"
 #include "SP.hh"
 #include <iostream>
 #include <string>
@@ -18,12 +20,12 @@ main()
     using IMC::OS_Parser;
     using IMC::OS_Builder;
     using IMC::OS_Mesh;
+    using IMC::Mat_State;
+    using IMC::Opacity_Builder;
     using namespace std;
 
     SP<OS_Mesh> mesh;
-    vector<int> zones;
-    vector<double> temp;
-    vector<int> matzone;
+    SP< Mat_State<OS_Mesh> > mat_state;
 
   // scoping blocks
     {
@@ -34,13 +36,14 @@ main()
       // run the Parser
 	SP<OS_Parser> parser = new OS_Parser(infile);
 	parser->Parser();
-	zones   = parser->Zone();
-	temp    = parser->Temperature();
-	matzone = parser->Mat_zone();
 
-      // initialize the builder
+      // initialize the mesh builder and build mesh
 	OS_Builder build(parser);
 	mesh = build.Build_Mesh();
+
+      // initialize the Opacity builder and build state 
+	Opacity_Builder<OS_Mesh> opacity_build(parser, mesh);
+	mat_state = opacity_build.Build_Mat();
     }
 
     cout << "Coordinate System: " << mesh->Coord().Get_coord() << endl;
@@ -49,23 +52,8 @@ main()
 	mesh->Print(cell);
     cout << endl;
 
-    for (int z = 1; z <= 4; z++)
-    {
-	cout << "Zone : " << z << endl;
-	cout << "Mat  : " << matzone[z-1] << endl;
-	cout << "Temp : " << temp[matzone[z-1]-1] << endl;
-	for (int i = 1; i <= mesh->Num_cells(); i++)
-	    if (zones[i-1] == z)
-		cout << " " << i;
-	cout << endl;
-    }
+    mat_state->Print(3);
 
-    int cell;
-    cout << "Pick a cell" << endl;
-    cin >> cell;
-    cout << "Cell is in zone " << zones[cell-1] << endl;
-    cout << "Cell has temp   " << temp[matzone[zones[cell-1]-1]-1] << endl;
-    cout << "Cell has material " << matzone[zones[cell-1]-1] << endl;
 }
 
 //---------------------------------------------------------------------------//
