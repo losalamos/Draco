@@ -14,6 +14,11 @@
 #include "ds++/Assert.hh"
 #include "diffusion/Diffusion_DB.hh"
 #include "traits/MatrixFactoryTraits.hh"
+#include "stopwatch/Timer.hh"
+
+#include <string>
+#include <list>
+#include <utility>
 
 // Forward reference
 namespace rtt_diffusion
@@ -79,6 +84,11 @@ namespace rtt_P1Diffusion
      FieldConstructor fCtor;
      typename MatFacTraits::PreComputedState preComputedMatrixState;
      bool jacobiScale;
+
+     rtt_stopwatch::Timer assembleTimer_m;
+     rtt_stopwatch::Timer rhsTimer_m;
+     rtt_stopwatch::Timer matSolverTimer_m;
+     rtt_stopwatch::Timer newFluxTimer_m;
      
      // Cache the swapped values to avoid too much communication.
      
@@ -97,36 +107,42 @@ namespace rtt_P1Diffusion
 
      // MANIPULATORS
     
-     // ACCESSORS
-
      void solve(ccsf &phi, fcdsf &F, const fcdsf &D, const ccsf &sigma,
 		const ccsf &Q, const fcdsf &Fprime, const bssf &alpha,
-		const bssf &beta, const bssf &fb) const;
+		const bssf &beta, const bssf &fb);
+
+     const std::list<std::pair<std::string,rtt_stopwatch::Timer *> > timers();
+
+     // ACCESSORS
 
      typename ccsf::value_type integrateOverVolume(const ccsf &field) const;
 
      typename fcdsf::value_type integrateOverBoundary(const fcdsf &field) const;
 
-    void discFluxToDiscMomentum(DiscMomentumField &result,
-				const DiscFluxField &flux) const
-    {
-	spmomentum->discFluxToDiscMomentum(result, flux);
-    }
+     void discFluxToDiscMomentum(DiscMomentumField &result,
+                                 const DiscFluxField &flux) const
+     {
+         spmomentum->discFluxToDiscMomentum(result, flux);
+     }
 
-    void dotProduct(DiscKineticEnergyField &result,
-		    const DiscMomentumField &vec1,
-		    const DiscMomentumField &vec2) const
-    {
-	spmomentum->dotProduct(result, vec1, vec2);
-    }
+     void dotProduct(DiscKineticEnergyField &result,
+                     const DiscMomentumField &vec1,
+                     const DiscMomentumField &vec2) const
+     {
+         spmomentum->dotProduct(result, vec1, vec2);
+     }
      
-    void dotProduct(DiscKineticEnergyField &KEnergy,
-		    const DiscFluxField &sigmaF,
-		    const DiscMomentumField &velocity) const
-    {
-	spmomentum->dotProduct(KEnergy, sigmaF, velocity);
-    }
+     void dotProduct(DiscKineticEnergyField &KEnergy,
+                     const DiscFluxField &sigmaF,
+                     const DiscMomentumField &velocity) const
+     {
+         spmomentum->dotProduct(KEnergy, sigmaF, velocity);
+     }
 
+     const
+     std::list<std::pair<std::string,const rtt_stopwatch::Timer *> >
+     timers() const;
+     
    private:
     
      // IMPLEMENTATION
@@ -173,7 +189,7 @@ namespace rtt_P1Diffusion
 			    const bssf &fb) const;
 
      void solveMatrixEquation(ccsf &phi, P1Matrix &p1Mat,
-			      const ccsf &brhs) const;
+			      const ccsf &brhs);
      
      void getNewFlux(fcdsf &F, const fcdsf &DEffOverDeltaL,
 		     const fcdsf &FprimeEff,

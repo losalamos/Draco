@@ -41,8 +41,10 @@ void P1Diffusion<MT,MS,HV>::solve(ccsf &phi, fcdsf &F,
 				  const fcdsf &D, const ccsf &sigma,
 				  const ccsf &Q, const fcdsf &Fprime,
 				  const bssf &alpha, const bssf &beta,
-				  const bssf &fb) const
+				  const bssf &fb)
 {
+    assembleTimer_m.start();
+    
     // Get the cell lengths perpendicular to the face.
 
     fcdsf deltaL(fCtor);
@@ -70,6 +72,10 @@ void P1Diffusion<MT,MS,HV>::solve(ccsf &phi, fcdsf &F,
     
     fcdsf FprimeEff(fCtor);
     getFprimeEff(FprimeEff, Fprime, D, alpha, beta, fb);
+
+    assembleTimer_m.stop();
+
+    rhsTimer_m.start();
     
     // The right hand side of the matrix equation is a cell-centered
     // scalar field.
@@ -103,6 +109,8 @@ void P1Diffusion<MT,MS,HV>::solve(ccsf &phi, fcdsf &F,
 	MT::scatter(brhs, bf, MT::OpSubAssign());
     }
 
+    rhsTimer_m.stop();
+    
     // We no longer need the cached values.
     
     decacheSwappedValues();
@@ -111,11 +119,15 @@ void P1Diffusion<MT,MS,HV>::solve(ccsf &phi, fcdsf &F,
     // where the matrix is comprised of the diagonal and off-diagonal
     // parts.
 
+    matSolverTimer_m.start();
     solveMatrixEquation(phi, p1Mat, brhs);
+    matSolverTimer_m.stop();
 
     // Calculate the new flux using the new values of phi.
-    
+
+    newFluxTimer_m.start();
     getNewFlux(F, DEffOverDeltaL, FprimeEff, phi);
+    newFluxTimer_m.stop();
 }
 
 template<class MT, class MS, bool HV>
@@ -296,7 +308,7 @@ void P1Diffusion<MT,MS,HV>::getFprimeEffBndry(bssf &FprimeEffBndry,
 
 template<class MT, class MS, bool HV>
 void P1Diffusion<MT,MS,HV>::solveMatrixEquation(ccsf &phi, P1Matrix &p1Mat,
-						const ccsf &brhs) const
+						const ccsf &brhs)
 {
     ccsf D1_2(fCtor);
     if (jacobiScale)
@@ -317,7 +329,7 @@ void P1Diffusion<MT,MS,HV>::solveMatrixEquation(ccsf &phi, P1Matrix &p1Mat,
     {
 	ccsf brhsTilde(fCtor);
 	brhsTilde = brhs / D1_2;
-	
+
 	spsolver->solve(phi, spMatrix, brhsTilde);
 	
 	phi = phi / D1_2;
@@ -425,6 +437,32 @@ P1Diffusion<MT,MS,HV>::getP1Matrix(const fcdsf &D, const fcdsf &DEffOverDeltaL,
     // off-diagonal elements.
 
     return P1Matrix(fCtor, ADiagonal, AOffDiagonal);
+}
+
+template<class MT, class MS, bool HV>
+const std::list<std::pair<std::string,rtt_stopwatch::Timer *> >
+P1Diffusion<MT,MS,HV>::timers()
+{
+    typedef std::pair<std::string,rtt_stopwatch::Timer *> pair;
+    std::list<pair> list;
+    list.push_back(pair("assemble", &assembleTimer_m));
+    list.push_back(pair("rhs", &rhsTimer_m));
+    list.push_back(pair("mat solver", &matSolverTimer_m));
+    list.push_back(pair("new flux", &newFluxTimer_m));
+    return list;
+}
+
+template<class MT, class MS, bool HV>
+const std::list<std::pair<std::string, const rtt_stopwatch::Timer *> >
+P1Diffusion<MT,MS,HV>::timers() const
+{
+    typedef std::pair<std::string,const rtt_stopwatch::Timer *> pair;
+    std::list<pair> list;
+    list.push_back(pair("assemble", &assembleTimer_m));
+    list.push_back(pair("rhs", &rhsTimer_m));
+    list.push_back(pair("mat solver", &matSolverTimer_m));
+    list.push_back(pair("new flux", &newFluxTimer_m));
+    return list;
 }
 
 } // end namespace rtt_diffusion

@@ -19,7 +19,7 @@ AC_INSTALL_LIB
 dnl No longer any libs to install
 dnl AC_INSTALL_LIB
 
-dnl AC_NEEDS_LIBS(xxx)
+AC_NEEDS_LIBS(stopwatch)
 AC_NEEDS_LIBS_TEST(mesh diffusion nml c4 ds++)
 
 AC_MSG_CHECKING([for diffusion solver package])
