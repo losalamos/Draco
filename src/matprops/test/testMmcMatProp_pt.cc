@@ -7,12 +7,12 @@
 //---------------------------------------------------------------------------//
 
 #include "matprops/MultiMatCellMatProps.t.cc"
-#include <vector>
+#include <list>
 #include "matprops/InterpedMaterialProps.hh"
 
-typedef std::vector<double> FTVD;
-typedef std::vector<std::vector< double > > FTVVD;
-typedef std::vector<std::vector< int > >    FTVVI;
+typedef std::list<double> FTVD;
+typedef std::list<std::list< double > > FTVVD;
+typedef std::list<std::list< int > >    FTVVI;
 typedef XTM::InterpedMaterialProps IMP;
 
 template class MultiMatCellMatProps<IMP>;

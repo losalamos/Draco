@@ -3,7 +3,7 @@
 // Randy M. Roberts
 // Mon May  4 13:32:55 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Driver for the matprops test routines.
 //---------------------------------------------------------------------------//
 
 #include "ds++/Assert.hh"
@@ -16,12 +16,12 @@ int main()
 {
     try
     {
-	void testBilinDoit();
+    	void testBilinDoit();
 	testBilinDoit();
-
+	
 	void testMatProp();
 	testMatProp();
-
+	
 	testMmcMatProp xxx;
 	xxx.execute_test();
 

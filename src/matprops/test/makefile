@@ -3,8 +3,10 @@
 # Geoffrey Furnish
 # 29 September 1997
 ###############################################################################
-# @> Rules for building the baby solver test executable.
+# @> Rules for building the matprops test executable.
 ###############################################################################
+
+pkg	:= matprops
 
 SRC_TOP = ../..
 

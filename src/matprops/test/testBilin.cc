@@ -108,7 +108,7 @@ void testBilinDoit()
     biLinTable.interpolate(testvals1, testvals1+sztest, testvals2,
 			   back_inserter(results));
 
-    showSequence(" results: ", results, cerr);
+    showSequence(" results: ", results);
 
     // Uncomment the next line if you want to trigger an assertion failure.
     // results.push_back(999.9);
@@ -118,7 +118,7 @@ void testBilinDoit()
 
     biLinTable.interpolate(mementos, results);
 
-    showSequence(" results: ", results, cerr);
+    showSequence(" results: ", results);
 
     list<pair<double,double> > testlist;
     for (int i=0; i<sztest; i++)
@@ -129,11 +129,11 @@ void testBilinDoit()
 
     biLinTable.interpolate(testlist, results);
 
-    showSequence(" results: ", results, cerr);
+    showSequence(" results: ", results);
 
     vector<double> expected;
     for (int i=0; i<sztest; i++)
 	expected.push_back(func(testvals1[i], testvals2[i]));
 
-    showSequence("expected: ", expected, cerr);
+    showSequence("expected: ", expected);
 }
