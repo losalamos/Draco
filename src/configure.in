@@ -11,22 +11,54 @@ AC_CONFIG_AUX_DIR(../config)
 AC_ALL_VENDORS_SETUP
 AC_DRACO_ARGS
 
-# The order of packages in AC_CONFIG_SUBDIRS **is** important.
-# Each AC_CONFIG_SUBDIRS corresponds to a level, level 1 at the
-# top -> level 5 at the bottom.  On each level the ordering is
-# NOT important with the exception of mesh (mesh is need for the
-# radphys test suite)
+# The order of packages in AC_CONFIG_SUBDIRS **is** important.  Each
+# AC_CONFIG_SUBDIRS corresponds to a level, level 1 at the top ->
+# level 6 at the bottom.  On each level the ordering is NOT
+# important. See draco/doc/design/level.ps for a visualization of the
+# levelization diagram
 
-AC_CONFIG_SUBDIRS(ds++ xm stdheaders)
-AC_CONFIG_SUBDIRS(UnitTestFrame)
-AC_CONFIG_SUBDIRS(traits units c4 rng meshReaders)
-AC_CONFIG_SUBDIRS(stopwatch meshTest viz RTT_Format_Reader \
-                  quadrature cdi linalg)
-AC_CONFIG_SUBDIRS(mesh radphys LAMG ConjGrad diffusion \
-                  timestep cdi_gandolf cdi_eospac cdi_analytic mc)
-AC_CONFIG_SUBDIRS(imc matprops PCGDiffusionSolver LAMGDiffusionSolver \
-                  ConjGradDiffusionSolver meshReaders_Services)
-AC_CONFIG_SUBDIRS(P1Diffusion)
+##---------------------------------------------------------------------------##
+## LEVEL 1
+##---------------------------------------------------------------------------##
+
+AC_CONFIG_SUBDIRS(ds++ stdheaders)
+
+##---------------------------------------------------------------------------##
+## LEVEL 2
+##---------------------------------------------------------------------------##
+
+AC_CONFIG_SUBDIRS(xm rng c4 units traits UnitTestFrame cdi)
+
+##---------------------------------------------------------------------------##
+## LEVEL 3
+##---------------------------------------------------------------------------##
+
+AC_CONFIG_SUBDIRS(timestep pcgWrap stopwatch quadrature radphys \
+		  ConjGrad meshReaders viz cdi_eospac cdi_gandolf \
+	          cdi_analytic)
+
+##---------------------------------------------------------------------------##
+## LEVEL 4
+##---------------------------------------------------------------------------##
+
+AC_CONFIG_SUBDIRS(RTT_Format_Reader amr_mesh)
+
+##---------------------------------------------------------------------------##
+## LEVEL 5
+##---------------------------------------------------------------------------##
+
+AC_CONFIG_SUBDIRS(mc meshReaders_Services)
+
+##---------------------------------------------------------------------------##
+## LEVEL 6
+##---------------------------------------------------------------------------##
+
+AC_CONFIG_SUBDIRS(imc)
+
+##---------------------------------------------------------------------------##
+## build the src/pkg configure scripts
+## (this must be done after the AC_CONFIG_SUBDIRS calls)
+##---------------------------------------------------------------------------##
 
 AC_BUILD_CONFIGURES(..)
 

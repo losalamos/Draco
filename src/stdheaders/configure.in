@@ -12,21 +12,13 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(stdheaders/config.h:config.h.in)
 package="stdheaders"
 
-dnl VENDOR SETUPS
-dnl AC_MPI_SETUP(pkg)
-dnl AC_SHMEM_SETUP(pkg)
-dnl AC_SPRNG_SETUP(pkg)
-dnl AC_PCGLIB_SETUP(pkg)
-
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-dnl AC_NEEDS_LIBS(ds++)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in)
-          
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/stdheaders configure.in

@@ -20,7 +20,7 @@ dnl AC_PCGLIB_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(c4 ds++ RTT_Format_Reader meshReaders)
+AC_NEEDS_LIBS(RTT_Format_Reader meshReaders c4 ds++)
 AC_NEEDS_LIBS_TEST(UnitTestFrame)
 
 AC_RUNTESTS(TestmeshReadersServices, scalar)
