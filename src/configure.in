@@ -1,3 +1,10 @@
+dnl-------------------------------------------------------------------------dnl
+dnl draco/src configure.in
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for draco/src/
+dnl-------------------------------------------------------------------------dnl
+
 AC_INIT(Makefile.in)
 AC_CONFIG_AUX_DIR(../config)
 
@@ -16,3 +23,7 @@ AC_CONFIG_SUBDIRS(mesh radphys linalg diffusion imc timestep)
 AC_CONFIG_SUBDIRS(matprops P1Diffusion)
 
 AC_OUTPUT(Makefile)
+
+dnl-------------------------------------------------------------------------dnl
+dnl			 end of draco/src/ configure.in
+dnl-------------------------------------------------------------------------dnl
