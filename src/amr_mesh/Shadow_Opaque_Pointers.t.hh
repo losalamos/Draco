@@ -6,7 +6,7 @@
  * \file   amr_mesh/Shadow_Opaque_Pointers.t.hh
  * \author Mark Gray/B.T. Adams
  * \date   Wed 1 Sep 10:33:26 1999
- * \brief  Header file for Shadow_Opaque_Pointers library.
+ * \brief  Implementation file for Shadow_Opaque_Pointers library.
  */
 //---------------------------------------------------------------------------//
 // @> 
@@ -23,10 +23,10 @@ opaque_pointers<T>::rep & opaque_pointers<T>::get_rep()
     return r;
 }
 
+    // add t to list, return opaque pointer to it
 template <class T>
 opaque_pointer_type opaque_pointers<T>::insert(SP<T> t)
 {
-    // add t to list, return opaque pointer to it
 
     assert(!opaque_pointers<T>::is_full()); // REQUIRE
 
@@ -44,37 +44,35 @@ opaque_pointer_type opaque_pointers<T>::insert(SP<T> t)
     return i;
 }
 
+    // is there no more room?
 template <class T>
 bool opaque_pointers<T>::is_full()
 {
-    // is there no more room?
     return get_next_avail() >= std::numeric_limits<opaque_pointer_type>::max()
 	|| get_object_pointers().size() >= get_object_pointers().max_size();
 }
 
+    // convert opaque pointer to real pointer
 template <class T>
 SP<T> opaque_pointers<T>::item(opaque_pointer_type i)
 {
-    // convert opaque pointer to real pointer
     assert(opaque_pointers<T>::has(i)); // ENSURE
 
     return get_object_pointers().find(i)->second;
 }
 
+    // is i associated?
 template <class T> 
 bool opaque_pointers<T>::has(opaque_pointer_type i)
 {
-    // is i associated?
-
     ptr_map::size_type nfound = get_object_pointers().count(i);
     return nfound != 0;
 }
 
+    // remove pointer referenced by opaque pointer
 template <class T>
 void opaque_pointers<T>::erase(opaque_pointer_type i)
-{
-    // remove pointer referenced by opaque pointer
-    
+{    
     assert(opaque_pointers<T>::has(i)); // REQUIRE
 
     get_object_pointers().erase(i);
