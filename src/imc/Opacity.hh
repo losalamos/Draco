@@ -15,7 +15,6 @@
 #include "Frequency.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
-#include <iomanip>
 #include <iostream>
 
 namespace rtt_imc 
@@ -268,8 +267,11 @@ class Opacity<MT, Multigroup_Frequency>
     // Get integrated normalized Planck function in a cell (unitless).
     inline double get_integrated_norm_Planck(int cell) const;
 
-    // Get emission group Cumulative Distribution Function.
-    inline sf_double get_emission_group_cdf(int c) const;
+    // Get emission group Cumulative Distribution Function in a cell.
+    inline sf_double get_emission_group_cdf(int) const;
+
+    // Get the total integrated emission in a cell (int sigma * b_g).
+    inline double get_integrated_sigma_times_Planck(int) const;
 
     // >>> FLECK AND CUMMINGS OPACITY OPERATIONS
 
@@ -389,6 +391,20 @@ Opacity<MT,Multigroup_Frequency>::get_emission_group_cdf(int cell) const
     Require (cell > 0 && cell <= num_cells());
 
     return emission_group_cdf(cell);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Get the total integrated sigma * normalized Planck in a cell (int
+ * sigma * b_g).
+ */
+template<class MT>
+double Opacity<MT,Multigroup_Frequency>::get_integrated_sigma_times_Planck(
+    int cell) const
+{
+    Require (cell > 0 && cell <= num_cells());
+
+    return emission_group_cdf(cell).back();
 }
 
 } // end namespace rtt_imc

@@ -10,7 +10,10 @@
 //---------------------------------------------------------------------------//
 
 #include "Source_Builder.hh"
-#include <cmath>
+#include "Gray_Particle.hh"
+#include "Multigroup_Particle.hh"
+#include "rng/Random.hh"
+#include "mc/Sampler.hh"
 
 namespace rtt_imc
 {
@@ -44,9 +47,10 @@ namespace rtt_imc
  *
  * \param state local (on-processor) Mat_State object
  * \param opacity local (on-processor) Opacity object */
-template<class MT, class PT>
-void Source_Builder<MT,PT>::calc_source_energies(const Mat_State<MT> &state,
-						 const Opacity<MT> &opacity)
+template<class MT, class FT, class PT>
+void Source_Builder<MT,FT,PT>::calc_source_energies(
+    const Mat_State<MT>  &state,
+    const Opacity<MT,FT> &opacity)
 {
     // make sure that the number of cells on this mesh is consistent (it
     // should be a submesh)
@@ -57,7 +61,7 @@ void Source_Builder<MT,PT>::calc_source_energies(const Mat_State<MT> &state,
     calc_evol(state, opacity);
 
     // calc surface source energy per cell, total
-    calc_ess();
+    calc_ess(opacity);
 }
 
 //---------------------------------------------------------------------------//
@@ -74,26 +78,27 @@ void Source_Builder<MT,PT>::calc_source_energies(const Mat_State<MT> &state,
  * \param state local (on-processor) Mat_State object
  * \param opacity local (on-processor) Opacity object
  */
-template<class MT, class PT>
-void Source_Builder<MT,PT>::calc_evol(const Mat_State<MT> &state, 
-				      const Opacity<MT> &opacity)
+template<class MT, class FT, class PT>
+void Source_Builder<MT,FT,PT>::calc_evol(const Mat_State<MT>  &state, 
+					 const Opacity<MT,FT> &opacity)
 {
     // draco necessities
-    using rtt_mc::global::a;
-    using rtt_mc::global::c;
+    using rtt_imc::global::Type_Switch;
 
     // reset evoltot
     evoltot        = 0.0;
     mat_vol_srctot = 0.0;
 
+    // calc evol net depending on frequency type
+    calc_evol_net(Type_Switch<FT>(), state, opacity);
+    
     // calc volume source and tot volume source
     // evol_net and mat_vol_src needed for temperature update
     for (int cell = 1; cell <= evol.size(); cell++)
     {
 	// calc cell centered radiation volume source
-	evol_net(cell) = opacity.get_fleck(cell) *
-	    opacity.get_sigma_abs(cell) * a * c * pow(state.get_T(cell), 4) *
-	    evol.get_Mesh().volume(cell) * delta_t;
+
+	// add time-implicit portion of material energy source
 	evol(cell) = evol_net(cell) + 
 	    evol_ext[cell-1] * (1.0 - opacity.get_fleck(cell)) *  
 	    evol.get_Mesh().volume(cell) * delta_t;
@@ -126,10 +131,17 @@ void Source_Builder<MT,PT>::calc_evol(const Mat_State<MT> &state,
 	    double evol_add;
 	    for (int cell = 1; cell <= evol.size(); cell++)
 	    {
+		// calculate radiation source
 		evol_add = rad_source[cell-1] * evol.get_Mesh().volume(cell)
 		    * duration; 
+
+		// add the radiation source to evol
 		evol(cell) += evol_add;
 		evoltot    += evol_add;
+
+		// calculate fraction of evol_net to evol
+		calc_prob_Planck_emission<Type_Switch<FT>::Type>(
+		    Type_Switch<FT>(), evol_add, cell);
 	    }
 	}
     }
@@ -145,8 +157,8 @@ void Source_Builder<MT,PT>::calc_evol(const Mat_State<MT> &state,
  * surface source.  Thus, this function is domain independent because the
  * surface source cells are listed individually.  
  */
-template<class MT, class PT>
-void Source_Builder<MT,PT>::calc_ess()
+template<class MT, class FT, class PT>
+void Source_Builder<MT,FT,PT>::calc_ess(const Opacity<MT,FT> &opacity)
 {
     // draco niceties
     using rtt_mc::global::a;
@@ -189,7 +201,8 @@ void Source_Builder<MT,PT>::calc_ess()
 		ess(local_cell) = a * c * 0.25 *
 		    ess.get_Mesh().face_area
 		    (local_cell, ss_face_in_cell(local_cell)) * 
-		    pow(ss_temp[ss],4) * delta_t;
+		    pow(ss_temp[ss],4) * 
+		    opacity.get_integrated_norm_Planck(local_cell) * delta_t;
 		
 		// accumulate esstot
 		esstot += ess(local_cell);
@@ -206,8 +219,9 @@ void Source_Builder<MT,PT>::calc_ess()
  * This function is used to calculate the \b initial census energies on the
  * local processor.  
  */
-template<class MT, class PT>
-void Source_Builder<MT,PT>::calc_initial_ecen()
+template<class MT, class FT, class PT>
+void Source_Builder<MT,FT,PT>::calc_initial_ecen(
+    const Opacity<MT,FT> &opacity)
 {
     // draco stuff
     using rtt_mc::global::a;
@@ -220,7 +234,8 @@ void Source_Builder<MT,PT>::calc_initial_ecen()
     {
 	// calc cell centered census radiation energy
 	ecen(cell) = a * ecen.get_Mesh().volume(cell) *
-	    pow(rad_temp[cell-1], 4);
+	    pow(rad_temp[cell-1], 4) * 
+	    opacity.get_integrated_norm_Planck(cell);
 
 	// accumulate ecentot on-processor
 	ecentot += ecen(cell);
@@ -246,11 +261,12 @@ void Source_Builder<MT,PT>::calc_initial_ecen()
  * \param n_field mutable ccsf_int field of number of particles
  * \param ntot mutable total number of particles for this species 
  */
-template<class MT, class PT> void
-Source_Builder<MT,PT>::calc_num_src_particles(const double part_per_e,
-					      const ccsf_double &e_field, 
-					      ccsf_int &n_field,
-					      int &ntot)
+template<class MT, class FT, class PT> 
+void Source_Builder<MT,FT,PT>::calc_num_src_particles(
+    const double       part_per_e,
+    const ccsf_double &e_field, 
+    ccsf_int          &n_field,
+    int               &ntot)
 {
     Require(e_field.size() == n_field.size());
     Require(part_per_e >= 0);
@@ -308,22 +324,27 @@ Source_Builder<MT,PT>::calc_num_src_particles(const double part_per_e,
  * \param ncentot total number of local census particles
  * \param cenrn local field of census random number IDs
  */
-template<class MT, class PT>
-void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh, 
-						 SP_Rnd_Control rcon,
-						 const ccsf_int &ncen,
-						 const int &ncentot,
-						 const ccsf_int &cenrn)
+template<class MT, class FT, class PT>
+void Source_Builder<MT,FT,PT>::write_initial_census(
+    SP_Mesh              mesh, 
+    SP_Rnd_Control       rcon,
+    const FT            &frequency,
+    const Mat_State<MT> &mat_state,
+    const ccsf_int      &ncen,
+    const int           &ncentot,
+    const ccsf_int      &cenrn)
 {
+    using rtt_imc::global::Type_Switch;
     using rtt_rng::Sprng;
     using rtt_dsxx::SP;
     using std::vector;
 
     Require(mesh);
     Require(census);
-    Require(mesh->num_cells() == ncen.size());
-    Require(mesh->num_cells() == cenrn.size());
-    Require(mesh->num_cells() == ew_cen.size());
+
+    Check(mesh->num_cells() == ncen.size());
+    Check(mesh->num_cells() == cenrn.size());
+    Check(mesh->num_cells() == ew_cen.size());
 
     // loop over all cells
     for (int cell = 1; cell <= mesh->num_cells(); cell++)
@@ -344,12 +365,12 @@ void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh,
 	    // sample particle direction
 	    vector<double> omega = mesh->get_Coord().
 		sample_dir("isotropic", random);
-	    
-	    // sample frequency (not now; 1 group)
 
 	    // create Particle
-	    SP<PT> particle(new PT(r, omega, ew_cen(cell), global_cell, 
-				   random));
+	    SP<PT> particle = make_particle<Type_Switch<FT>::Type>(
+		Type_Switch<FT>(), Type_Switch<PT>(), frequency,
+		mat_state.get_T(cell), r, omega, ew_cen(cell),
+		global_cell, random);
 
 	    // write particle to census
 	    census->push(particle);
@@ -358,6 +379,75 @@ void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh,
 
     // a final assertion
     Ensure (census->size() == ncentot);
+}
+
+//---------------------------------------------------------------------------//
+// Specialization of write census for Gray_Particle type.
+
+template<class MT, class FT, class PT>
+template<class Stop_Explicit_Instantiation>
+rtt_dsxx::SP<Gray_Particle<MT> >
+Source_Builder<MT,FT,PT>::make_particle(
+    rtt_imc::global::Type_Switch<Gray_Frequency>,
+    rtt_imc::global::Type_Switch<Gray_Particle<MT> >,
+    Gray_Frequency        frequency,
+    const double          T,
+    const sf_double      &r,
+    const sf_double      &omega,
+    const double          ew,
+    int                   global_cell,
+    const rtt_rng::Sprng &random)
+{
+    using rtt_dsxx::SP;
+
+    SP<Gray_Particle<MT> > particle(
+	new Gray_Particle<MT>(r, omega, ew, global_cell, random));
+
+    Check (particle);
+    return particle;
+}
+
+//---------------------------------------------------------------------------//
+// Specialization of write census for Multigroup_Particle type.
+
+template<class MT, class FT, class PT>
+template<class Stop_Explicit_Instantiation>
+rtt_dsxx::SP<Multigroup_Particle<MT> > 
+Source_Builder<MT,FT,PT>::make_particle(
+    rtt_imc::global::Type_Switch<Multigroup_Frequency>,
+    rtt_imc::global::Type_Switch<Multigroup_Particle<MT> >,
+    Multigroup_Frequency  frequency,
+    const double          T,
+    const sf_double      &r,
+    const sf_double      &omega,
+    const double          ew,
+    int                   global_cell,
+    const rtt_rng::Sprng &random)
+{
+    using rtt_mc::sampler::sample_planckian_frequency;
+    using rtt_dsxx::SP;
+
+    // sample group from Planckian
+    int group   = 0;
+    int counter = 0;
+    double freq = 0.0;
+
+    while (group == 0)
+    {
+	freq   = sample_planckian_frequency(random, T);
+	group  = frequency.find_group_given_a_freq(freq);
+
+	// advance counter
+	counter++;
+
+	Insist (counter < 100, "Unable to sample group.");
+    }
+
+    SP<Multigroup_Particle<MT> > particle(
+	new Gray_Particle<MT>(r, omega, ew, global_cell, random, group));
+
+    Check (particle);
+    return particle;
 }
 
 //---------------------------------------------------------------------------//
@@ -382,13 +472,13 @@ void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh,
  * \param eloss_comb mutable value of the energy loss incurred through
  *                   combing
  */
-template<class MT, class PT>
-void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
-					ccsf_int &local_ncen,
-					int &local_ncentot,
-					double &eloss_comb,
-					SP_Census dead_census,
-					ccsf_int &max_dead_rand_id)
+template<class MT, class FT, class PT>
+void Source_Builder<MT,FT,PT>::comb_census(SP_Rnd_Control  rcon,
+					   ccsf_int       &local_ncen,
+					   int            &local_ncentot,
+					   double         &eloss_comb,
+					   SP_Census       dead_census,
+					   ccsf_int       &max_dead_rand_id)
 {
     using rtt_rng::Sprng;
     using rtt_dsxx::SP;
@@ -543,11 +633,11 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
  *                              pre-combed census energy, used as a check
  *
  */
-template<class MT, class PT>
-void Source_Builder<MT,PT>::reset_ew_in_census(const int &local_ncentot,
-					       double &global_eloss_comb,
-					       const double
-					       &global_ecentot_actual) 
+template<class MT, class FT, class PT>
+void Source_Builder<MT,FT,PT>::reset_ew_in_census(
+    const int    &local_ncentot,
+    double       &global_eloss_comb,
+    const double &global_ecentot_actual) 
 {
     using rtt_mc::global::soft_equiv;
 

@@ -33,6 +33,31 @@ namespace global
 // PROBLEM VARIABLES
 //---------------------------------------------------------------------------//
 
+//===========================================================================//
+/*!
+ * \class Type_Switch
+ * 
+ * \brief Class used to call functions based on template type arguments.
+ *
+ * This class can be used to simulate partial template specialization for
+ * member functions in a class template.  See Alexandrescu, 2001, "Modern C++
+ * Design", chapter 2.
+ *
+ * Note, the Alexandrescu trick works under automatic instantiation rules
+ * because functions that are not needed are not instantiated.  However,
+ * because we use explicit instantiation, an additional trick is required.
+ * The additional trick is to add a "faux" template argument to the function
+ * to prevent it from being instantiated as part of the explicit class
+ * instantiation.  We will write this up in detail at a later time.
+ */
+//===========================================================================//
+
+template<class T>
+struct Type_Switch
+{
+    typedef T Type;
+};
+
 } // end namespace global
 } // end namespace rtt_imc
 

@@ -110,14 +110,14 @@ class Multigroup_Frequency
 
 	// Return error if hnu is outside group boundaries.
 	if (hnu < group_boundaries[0] || hnu > group_boundaries[num_grps])
-	    return -1;
+	    return 0;
 
 	// Binary search on groups. The search is successful when either 
 	// 1) the frequency is within the group bounds or 
 	// 2) the low and high search bounds are the same.
 	int grp_lo  = 1;
 	int grp_hi  = num_grps;
-	int grp_try = 0.5 * (grp_lo + grp_hi);
+	int grp_try = static_cast<int>(0.5 * (grp_lo + grp_hi));
 
 	while (grp_lo != grp_hi)
 	{
@@ -129,7 +129,7 @@ class Multigroup_Frequency
 	    if (hnu > group_boundaries[grp_try])
 	    {
 		grp_lo  = grp_try + 1;
-		grp_try = 0.5 * (grp_lo + grp_hi);
+		grp_try = static_cast<int>(0.5 * (grp_lo + grp_hi));
 	    }
 
 	    // move down high search bound if frequency is below this group
@@ -137,7 +137,7 @@ class Multigroup_Frequency
 	    else if (hnu < group_boundaries[grp_try-1])
 	    {
 		grp_hi  = grp_try - 1;
-		grp_try = 0.5 * (grp_lo + grp_hi);
+		grp_try = static_cast<int>(0.5 * (grp_lo + grp_hi));
 	    }
 
 	    // otherwise, we have the correct group; return

@@ -13,24 +13,44 @@
 #define __imc_Source_Builder_hh__
 
 #include "Particle.hh"
-#include "Source.hh"
-#include "Opacity.hh"
-#include "Mat_State.hh"
 #include "Global.hh"
+#include "Source.hh"
+#include "Mat_State.hh"
+#include "Opacity.hh"
+#include "Frequency.hh"
 #include "mc/Particle_Stack.hh"
 #include "mc/Topology.hh"
 #include "mc/Parallel_Data_Operator.hh"
-#include "mc/Comm_Patterns.hh"
-#include "rng/Random.hh"
 #include "c4/global.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>
 #include <string>
-#include <iostream>
+#include <cmath>
+#include <typeinfo>
+
+namespace rtt_rng
+{
+
+// Forward declarations.
+class Rnd_Control;
+class Sprng;
+
+} // end of namespace rtt_rng
+
+namespace rtt_mc
+{
+
+// Forward declarations.
+class Comm_Patterns;
+
+}
 
 namespace rtt_imc
 {
+
+template<class MT> class Gray_Particle;
+template<class MT> class Multigroup_Particle;
  
 //===========================================================================//
 /*!
@@ -126,31 +146,32 @@ namespace rtt_imc
 //                  Particle_Stack 
 //===========================================================================//
 
-template<class MT, class PT = Particle<MT> >
+template<class MT, class FT, class PT>
 class Source_Builder 
 {
   public:
     // typedefs used in the inheritance chain
-    typedef rtt_dsxx::SP<Source<MT,PT> >                SP_Source;
-    typedef typename rtt_mc::Particle_Stack<PT>::Census Census;
-    typedef rtt_dsxx::SP<Census>                        SP_Census;
-    typedef rtt_dsxx::SP<Opacity<MT> >                  SP_Opacity;
-    typedef rtt_dsxx::SP<Mat_State<MT> >                SP_Mat_State;
-    typedef rtt_dsxx::SP<MT>                            SP_Mesh;
-    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>          SP_Rnd_Control;
-    typedef rtt_dsxx::SP<rtt_mc::Topology>              SP_Topology;
-    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>         SP_Comm_Patterns;
-    typedef std::vector<int>                            sf_int;
-    typedef std::vector<std::vector<int> >              vf_int;
-    typedef std::vector<double>                         sf_double;
-    typedef std::vector<std::string>                    sf_string;
-    typedef std::string                                 std_string;
-    typedef typename MT::CCSF_double                    ccsf_double;
-    typedef typename MT::CCSF_int                       ccsf_int;
-    typedef typename MT::CCVF_double                    ccvf_double;
+    typedef rtt_dsxx::SP<Source<MT,PT> >          SP_Source;
+    typedef rtt_mc::Particle_Containers<PT>       Containers;
+    typedef typename Containers::Census           Census;
+    typedef rtt_dsxx::SP<Census>                  SP_Census;
+    typedef rtt_dsxx::SP<Opacity<MT,FT> >         SP_Opacity;
+    typedef rtt_dsxx::SP<Mat_State<MT> >          SP_Mat_State;
+    typedef rtt_dsxx::SP<MT>                      SP_Mesh;
+    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>    SP_Rnd_Control;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>        SP_Topology;
+    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>   SP_Comm_Patterns;
+    typedef std::vector<int>                      sf_int;
+    typedef std::vector<std::vector<int> >        vf_int;
+    typedef std::vector<double>                   sf_double;
+    typedef std::vector<std::string>              sf_string;
+    typedef std::string                           std_string;
+    typedef typename MT::template CCSF<double>    ccsf_double;
+    typedef typename MT::template CCSF<int>       ccsf_int;
+    typedef typename MT::template CCVF<double>    ccvf_double;
 
   private:
-    // BASE CLASS DATA
+    // >>> BASE CLASS DATA
 
     // Interface data.
 
@@ -181,16 +202,61 @@ class Source_Builder
     //! Descriptor for each surface source.
     sf_string ss_desc;
 
-    // BASE CLASS IMPLEMENTATION MEMBER FUNCTIONS
+    // >>> BASE CLASS IMPLEMENTATION MEMBER FUNCTIONS
 
     // Calculate volume emission source energies.
-    void calc_evol(const Mat_State<MT> &, const Opacity<MT> &);
+    void calc_evol(const Mat_State<MT> &, const Opacity<MT,FT> &);
 
     // Calculate surface source energies.
-    void calc_ess();
+    void calc_ess(const Opacity<MT,FT> &);
+
+  private:
+    // >>> SPECIALIZATIONS ON FREQUENCY
+    
+    // Gray_Frequency partial specialization of calc_evol_net.
+    inline void calc_evol_net(
+	rtt_imc::global::Type_Switch<Gray_Frequency>,
+	const Mat_State<MT> &,
+	const Opacity<MT,Gray_Frequency> &);
+    
+    // Multigroup_Frequency partial specialization of calc_evol_net.
+    inline void calc_evol_net(
+	rtt_imc::global::Type_Switch<Multigroup_Frequency>,
+	const Mat_State<MT> &, 
+	const Opacity<MT,Multigroup_Frequency> &);
+    
+    // Calculate probability of straight Planckian emission for
+    // Gray_Frequency.
+    template<class Stop_Explicit_Instantiation>
+    inline void calc_prob_Planck_emission(
+	rtt_imc::global::Type_Switch<Gray_Frequency>, double, int);
+
+    // Calculate probability of straight Planckian emission for
+    // Multigroup_Frequency.
+    template<class Stop_Explicit_Instantiation>
+    inline void calc_prob_Planck_emission(
+	rtt_imc::global::Type_Switch<Multigroup_Frequency>, double, int);
+
+    // Calculate particle for Gray_Particle type.
+    template<class Stop_Explicit_Instantiation>
+    rtt_dsxx::SP<Gray_Particle<MT> > make_particle(
+	rtt_imc::global::Type_Switch<Gray_Frequency>,
+	rtt_imc::global::Type_Switch<Gray_Particle<MT> >,
+	Gray_Frequency, const double, const sf_double &,
+	const sf_double &, const double, int, 
+	const rtt_rng::Sprng &);
+
+    // Calculate particle for Multigroup_Particle type.
+    template<class Stop_Explicit_Instantiation>
+    rtt_dsxx::SP<Multigroup_Particle<MT> > make_particle(
+	rtt_imc::global::Type_Switch<Multigroup_Frequency>,
+	rtt_imc::global::Type_Switch<Multigroup_Particle<MT> >,
+	Multigroup_Frequency, const double, const sf_double &,
+	const sf_double &, const double, int, 
+	const rtt_rng::Sprng &);
 
   protected:
-    // DATA USED BY ALL SOURCE BUILDERS
+    // >>> DATA USED BY ALL SOURCE BUILDERS
 
     // Interface data.
 
@@ -273,20 +339,24 @@ class Source_Builder
     //! Local starting random number stream ID field for surface source.
     ccsf_int ssrn;
 
-    // IMPLEMENTATION INHERITANCE
+    //! Frequency-dependent sampling of evol_net.
+    Frequency_Sampling_Data<MT,FT> freq_samp_data;
+
+    // >>> IMPLEMENTATION INHERITANCE
 
     // Calculate source energies for volume emission and surface source.
-    void calc_source_energies(const Mat_State<MT> &, const Opacity<MT> &);
+    void calc_source_energies(const Mat_State<MT> &, const Opacity<MT,FT> &);
 
     // Calculate the initial census energy.
-    void calc_initial_ecen();
+    void calc_initial_ecen(const Opacity<MT,FT> &);
 
     // Calculate the number of source particles.
     void calc_num_src_particles(const double, const ccsf_double &, 
 				ccsf_int &, int &); 
 
     // Write the local census on each processor.
-    void write_initial_census(SP_Mesh, SP_Rnd_Control, const ccsf_int &,
+    void write_initial_census(SP_Mesh, SP_Rnd_Control, const FT &,
+			      const Mat_State<MT> &, const ccsf_int &, 
 			      const int &, const ccsf_int &);
 
     // Comb local census.
@@ -315,12 +385,12 @@ class Source_Builder
     //! Get the number of cells accessed by the Source_Builder on processor.
     int num_cells() const { return topology->num_cells(C4::node()); }
 
-    // ACCESSOR FOR CENSUS
+    // >>> ACCESSOR FOR CENSUS
 
     //! Get a rtt_dsxx::SP to the census.
     SP_Census get_census() const { return census; }
 
-    // ACCESSOR SERVICES TO GET SOURCE INITIALIZATION DATA
+    // >>> ACCESSOR SERVICES TO GET SOURCE INITIALIZATION DATA
 
     // These functions are primarily for edits and the problem variables on
     // processor.  The client will be required to use the data in an
@@ -394,11 +464,11 @@ class Source_Builder
  * \param mesh rtt_dsxx::SP to a local mesh object
  * \param top rtt_dsxx::SP to a topology object 
  */
-template<class MT, class PT>
+template<class MT, class FT, class PT>
 template<class IT>
-Source_Builder<MT,PT>::Source_Builder(rtt_dsxx::SP<IT> interface,
-				      SP_Mesh mesh, 
-				      SP_Topology top)
+Source_Builder<MT,FT,PT>::Source_Builder(rtt_dsxx::SP<IT> interface,
+					 SP_Mesh          mesh, 
+					 SP_Topology      top)
     : elapsed_t(interface->get_elapsed_t()), 
       evol_ext(interface->get_evol_ext()),
       rad_s_tend(interface->get_rad_s_tend()),
@@ -432,7 +502,8 @@ Source_Builder<MT,PT>::Source_Builder(rtt_dsxx::SP<IT> interface,
       ss_face_in_cell(mesh),
       esstot(0),
       volrn(mesh),
-      ssrn(mesh)
+      ssrn(mesh),
+      freq_samp_data(mesh)
 {
     using rtt_mc::global::min;
 
@@ -458,6 +529,86 @@ Source_Builder<MT,PT>::Source_Builder(rtt_dsxx::SP<IT> interface,
     Ensure(ss_pos.size() == ss_temp.size());
     Ensure(ss_pos.size() == defined_surcells.size());
     Ensure(npwant > 0);
+}
+
+//---------------------------------------------------------------------------//
+// PARTIAL SPECIALIZATIONS BASED ON FREQUENCY (PRIVATE)
+//---------------------------------------------------------------------------//
+// Gray_Frequency partial specialization of calc_evol_net.
+
+template<class MT, class FT, class PT>
+void Source_Builder<MT,FT,PT>::calc_evol_net(
+    rtt_imc::global::Type_Switch<Gray_Frequency>,
+    const Mat_State<MT>              &state,
+    const Opacity<MT,Gray_Frequency> &opacity)
+{
+    using rtt_imc::global::Type_Switch;
+    using rtt_mc::global::a;
+    using rtt_mc::global::c;
+    using std::pow;
+
+    Check (typeid(FT) == typeid(Gray_Frequency));
+
+    for (int cell = 1; cell <= evol.size(); cell++)
+	evol_net(cell) = opacity.get_fleck(cell) *
+	    opacity.get_sigma_abs(cell) * a * c * pow(state.get_T(cell), 4) *
+	    evol.get_Mesh().volume(cell) * delta_t;
+}
+
+//---------------------------------------------------------------------------//
+// Multigroup_Frequency partial specialization of calc_evol_net.
+
+template<class MT, class FT, class PT>
+void Source_Builder<MT,FT,PT>::calc_evol_net(
+    rtt_imc::global::Type_Switch<Multigroup_Frequency>,
+    const Mat_State<MT>                    &state,
+    const Opacity<MT,Multigroup_Frequency> &opacity)
+{
+    using rtt_imc::global::Type_Switch;
+    using rtt_mc::global::a;
+    using rtt_mc::global::c;
+    using std::pow;
+
+    Check (typeid(FT) == typeid(Multigroup_Frequency));
+
+    for (int cell = 1; cell <= evol.size(); cell++)
+	evol_net(cell) = opacity.get_fleck(cell) *
+	    opacity.get_integrated_sigma_times_Planck(cell) * a * c *
+	    pow(state.get_T(cell), 4) * evol.get_Mesh().volume(cell) *
+	    delta_t;
+}
+
+//---------------------------------------------------------------------------//
+// Calculate probability of straight Planckian emission for Gray_Frequency
+
+template<class MT, class FT, class PT>
+template<class Stop_Explicit_Instantiation>
+void Source_Builder<MT,FT,PT>::calc_prob_Planck_emission(
+    rtt_imc::global::Type_Switch<Gray_Frequency>,
+    double evol_add,
+    int    cell)
+{
+    // NULL OP FOR GRAY
+}
+
+//---------------------------------------------------------------------------//
+// Calculate probability of straight Planckian emission for
+// Multigroup_Frequency.
+
+template<class MT, class FT, class PT>
+template<class Stop_Explicit_Instantiation>
+void Source_Builder<MT,FT,PT>::calc_prob_Planck_emission(
+    rtt_imc::global::Type_Switch<Multigroup_Frequency>,
+    double evol_add,
+    int    cell)
+{
+    using rtt_imc::global::Type_Switch;
+
+    Check (typeid(FT) == typeid(Multigroup_Frequency));
+
+    // calculate the probability of straight Planckian emission in a cell
+    freq_samp_data.prob_of_straight_Planck_emission(cell) = evol_add / 
+	evol(cell);
 }
 
 } // end namespace rtt_imc
