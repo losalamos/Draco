@@ -13,7 +13,7 @@ using std::vector;
 typedef vector<double> VD;
 typedef vector<int> VI;
 
-using namespace XTM;
+using rtt_matprops::InterpedMaterialProps;
 
 template class InterpedMaterialProps::MaterialStateField<VD>;
 

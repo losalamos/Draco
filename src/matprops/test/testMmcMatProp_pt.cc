@@ -13,11 +13,11 @@
 typedef std::list<double> FTVD;
 typedef std::list<std::list< double > > FTVVD;
 typedef std::list<std::list< int > >    FTVVI;
-typedef XTM::InterpedMaterialProps IMP;
+typedef rtt_matprops::InterpedMaterialProps IMP;
 
-template class MultiMatCellMatProps<IMP>;
+template class rtt_matprops::MultiMatCellMatProps<IMP>;
 
-typedef MultiMatCellMatProps<IMP> MMCP;
+typedef rtt_matprops::MultiMatCellMatProps<IMP> MMCP;
 
 template class MMCP::MaterialStateField< FTVD, FTVVD >;
 

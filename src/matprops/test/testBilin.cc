@@ -6,12 +6,7 @@
 #include <vector>
 #include <list>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
-using namespace XTM;
+using namespace rtt_matprops;
 
 using dsxx::Mat2;
 using std::cout;

@@ -17,8 +17,9 @@
 #include "matprops/MultiMatCellMatProps.hh"
 #include <limits>
 
-using XTM::InterpedMaterialProps;
-using XTM::FifiMatPropsReader;
+using rtt_matprops::MultiMatCellMatProps;
+using rtt_matprops::InterpedMaterialProps;
+using rtt_matprops::FifiMatPropsReader;
 using dsxx::SP;
 
 testMmcMatProp::testMmcMatProp()
@@ -222,6 +223,34 @@ void testMmcMatProp::execute_test()
 	std::cout << std::endl;
 	passed = passed && relErrMax <= eps;
     }
+
+// Check ion temperature results.
+
+    {
+	std::cout << " ** Ion Temperature **" << std::endl;
+	std::cout << " Cell  Temperature (K)    Relative Error" 
+		  << std::endl;
+	std::list<double> results(ncell);
+	std::vector<double> answer(ncell);
+	std::vector<double> relErr(ncell);
+	double relErrMax = 0.;
+	answer[0]=   5.925879248264e+00;
+	answer[1]=   2.171458879996e+01;
+	answer[2]=   1.777763774479e+01;
+	answer[3]=   4.342917759992e+01;
+
+	msf.getIonTemperature(results);
+	FTVD::iterator resit = results.begin();
+	for( int icell = 0; icell<ncell; icell++)
+	{
+	    relErr[icell] = std::abs(*resit-answer[icell])/answer[icell];
+	    if (relErr[icell] > relErrMax) relErrMax = relErr[icell];
+	    std::cout << " [" << icell << "]   " << 
+		*resit++ << " " << relErr[icell] << std::endl;
+	}
+	std::cout << std::endl;
+        passed = passed && relErrMax <= eps;
+    }
     
 // Check electron specific heat results
 
@@ -275,6 +304,61 @@ void testMmcMatProp::execute_test()
 	}
 	std::cout << std::endl;
 	passed = passed && relErrMax <= eps;
+    }
+
+
+// Check ion specific heat results
+
+    {
+	std::cout << " ** Ion Specific Heat By Material**" << std::endl;
+	std::cout << " Cell Mat   Cvi (J/m**3-K)     Relative Error" 
+		  << std::endl;
+        std::list<std::list<double> > results(ncell);
+        std::vector<std::vector<double> > answer(ncell);
+	std::vector<std::vector<double> > relErr(ncell);
+	double relErrMax = 0.; 
+	FTVVD::iterator resit=results.begin();
+	FTVVI::iterator mit= mat_id.begin();
+	for (int icell = 0; icell<ncell; icell++)
+	{
+	    int nmat = (*mit++).size();
+	    (*resit++).resize(nmat);
+	    answer[icell].resize(nmat);
+	    relErr[icell].resize(nmat);
+	}
+	answer[0]  [0]=   7.650146580363e+00;
+	answer[0]  [1]=   5.100219799322e+00;
+	answer[1]  [0]=   1.530029316073e+01;
+	answer[1]  [1]=   1.020043959864e+01;
+	answer[1]  [2]=   1.287800005770e+02;
+	answer[2]  [0]=   2.295043974109e+01;
+	answer[2]  [1]=   1.530065939797e+01;
+	answer[3]  [0]=   3.060058632145e+01;
+	answer[3]  [1]=   2.040087919729e+01;
+	answer[3]  [2]=   2.575600011540e+02;
+
+	msf.getIonSpecificHeatByMat(results);
+	resit = results.begin();
+	mit   = mat_id.begin();
+	for( int icell = 0; icell<ncell; icell++)
+	{
+	    int nmat = (*mit++).size();
+	    FTVD::iterator resitit= (*resit++).begin();
+	    for (int imat = 0; imat<nmat; imat++)
+	    {
+		relErr[icell][imat] = 
+		    std::abs(*resitit-answer[icell][imat])/
+		    answer[icell][imat];
+		if (relErr[icell][imat] > relErrMax)
+		    relErrMax = relErr[icell][imat];
+		std::cout << " [" << icell << 
+		    "]  [" << imat << "]   " << 
+		    *resitit++ << " " << relErr[icell][imat] << std::endl;
+	    }
+	    std::cout << std::endl;
+	}
+	std::cout << std::endl;
+     	passed = passed && relErrMax <= eps;
     }
 
 // Print the status of the test.

@@ -23,9 +23,9 @@ using std::string;
 #include <vector>
 using std::vector;
 
-using namespace XTM;
+using namespace rtt_matprops;
 
-TestMatPropReader::TestMatPropReader(const Units &units,
+TestMatPropReader::TestMatPropReader(const XTM::Units &units,
 				     const string &filename,
 				     const vector<int> &materialIds)
 {

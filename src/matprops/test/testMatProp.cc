@@ -21,7 +21,7 @@ using std::endl;
 using std::scientific;
 using std::setprecision;
 
-using namespace XTM;
+using namespace rtt_matprops;
 
 template<class T>
 inline void print(std::ostream &os, T &v, int npline)
@@ -44,7 +44,7 @@ void testMatProp()
     typedef vector<double> ccsf;
     typedef vector<int> ccif;
 
-    Units units = Units::getAstroPhysUnits();
+    XTM::Units units = XTM::Units::getAstroPhysUnits();
     // Units units;
 
     std::ifstream ifs("testMatProp.inp");

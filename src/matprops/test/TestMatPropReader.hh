@@ -12,13 +12,6 @@
 #include <string>
 #include <vector>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
-BEGIN_NS_XTM
-    
 // Forward Declaration
 
 class Units;
@@ -63,9 +56,6 @@ class TestMatPropReader
     
     // IMPLEMENTATION
 };
-
-
-END_NS_XTM  // namespace XTM
 
 #endif                          // __matprops_test_TestMatPropReader_hh__
 
