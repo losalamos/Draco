@@ -17,9 +17,9 @@
 \newcommand{\Bnphlf}{\ensuremath{\hat{B}^{n+\frac{1}{2}}}}
 \newcommand{\pBnphlfdT}{\ensuremath{\frac{\partial\hat{B}}{\partial T}^{n+\frac{1}{2}}}}
 \newcommand{\Bgnphlf}{\ensuremath{\hat{B}_{g}^{n+\frac{1}{2}}}}
-\newcommand{\pBgnphlfdT}{\ensuremath{\frac{\partial\hat{B}}{\partial T}^{n+\frac{1}{2}}}}
+\newcommand{\pBgnphlfdT}{\ensuremath{\frac{\partial\hat{B}_{g}}{\partial T}^{n+\frac{1}{2}}}}
 \newcommand{\Bknphlf}{\ensuremath{\hat{B}_{k}^{n+\frac{1}{2}}}}
-\newcommand{\pBknphlfdT}{\ensuremath{\frac{\partial\hat{B}}{\partial T}^{n+\frac{1}{2}}}}
+\newcommand{\pBknphlfdT}{\ensuremath{\frac{\partial\hat{B}_{k}}{\partial T}^{n+\frac{1}{2}}}}
 \newcommand{\units}[1]{\ensuremath{[\mbox{#1}]}}
 \newcommand{\bfunc}{\ensuremath{f_{b}}}
 \newcommand{\tensor}[1]{\ensuremath{\stackrel{\leftrightarrow}{#1}}}
@@ -480,9 +480,7 @@ where
         \vec{F}' = \frac{\tau \vec{F}^{n}
                         + \langle \hat{\Omega} \xi^{n} \rangle}
                {(\sigma^{t} + \tau)}
-%\end{gather}
-%and
-%\begin{gather}
+  \\
         \tau = \frac{1}{c\dt}
   \\
         \hat{B}(T_{e}) = 4\pi B(T_{e})
@@ -495,7 +493,10 @@ where
                                 Q_{i} \right\}
                 \left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right) -
                 \tilde{\xi}^{n}
-  \\
+%  \\
+\end{gather}
+and
+\begin{gather}
         \langle \xi^{n} \rangle =
                         (\sigma^{a} - \sigma^{s}) \vec{F}^{(0)}
                         \cdot \frac{\vec{v}^{n}}{c}
