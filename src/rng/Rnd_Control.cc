@@ -16,13 +16,13 @@ RNGSPACE
 //---------------------------------------------------------------------------//
 // get a new Random number object with its own stream
 
-SP<Sprng> Rnd_Control::get_rn()
+Sprng Rnd_Control::get_rn()
 {
   // declare a stream
     int *id = init_sprng(streamnum, number, seed, parameter);
 
   // create a new Rnd object
-    SP<Sprng> random = new Sprng(id, number);
+    Sprng random(id, streamnum);
 
   // advance the counter
     streamnum++;
@@ -34,7 +34,7 @@ SP<Sprng> Rnd_Control::get_rn()
 //---------------------------------------------------------------------------//
 // spawn a new random number stream
 
-SP<Sprng> Rnd_Control::spawn(Sprng &random)
+Sprng Rnd_Control::spawn(Sprng &random)
 {
   // declare variables necessary to spawn a stream
     int **newstream;
@@ -45,7 +45,7 @@ SP<Sprng> Rnd_Control::spawn(Sprng &random)
     Check (numspawn == 1);
 
   // create a new SPRNG random number object with new stream
-    SP<Sprng> ran = new Sprng(newstream[0], random.get_num());
+    Sprng ran(newstream[0], random.get_num());
 
   // retrun the new random object
     return ran;

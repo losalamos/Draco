@@ -42,18 +42,17 @@ private:
 
 public:
   // constructor
-    Rnd_Control(int s, int n = 1000000, int sn = 0, int p = 1) 
+    Rnd_Control(int s, int n = 500000, int sn = 0, int p = 1) 
 	: seed(s), number(n), streamnum(sn), parameter(p) {}
 
   // start a new random number stream
-    SP<Sprng> get_rn();
+    Sprng get_rn();
 
   // spawn a new random number stream
-    SP<Sprng> spawn(Sprng &);
+    Sprng spawn(Sprng &);
 
   // query for the number of random streams
     int get_num() const { return streamnum; }
-    int total() const { return streamnum + 1; }
 };
 
 CSPACE
