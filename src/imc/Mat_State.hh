@@ -88,7 +88,11 @@ inline Mat_State<MT>::Mat_State(const typename MT::CCSF_double &density_,
 				const string analytic_sp_heat_)
     : density(density_), temperature(temp_), dedt(dedt_), 
       spec_heat(spec_heat_), analytic_sp_heat(analytic_sp_heat_)
-{}
+{
+    Ensure (density.get_Mesh() == temperature.get_Mesh());
+    Ensure (density.get_Mesh() == dedt.get_Mesh());
+    Ensure (density.get_Mesh() == spec_heat.get_Mesh());
+}
 
 //---------------------------------------------------------------------------//
 // return the num_cells

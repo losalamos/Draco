@@ -21,33 +21,15 @@ AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(mc rng c4 ds++)
 
-dnl-------------------------------------------------------------------------dnl
-dnl TEST DIRECTORY
-
-dnl if test "${with_c4}" = scalar ; then
-dnl 	test_alltarget='testasync testp testtop'
-dnl	RUNTEST='./testasync ; ./testp testinp ; ./testtop testinp'
-dnl elif test "${with_c4}" = mpi ; then
-dnl   	test_alltarget='testasync testap testp'
-dnl	RUNTEST='mpirun -np 2 ./testasync ;'
-dnl	RUNTEST="${RUNTEST} mpirun -np 2 ./testap ;"
-dnl	RUNTEST="${RUNTEST} mpirun -np 2 ./testp testinp"
-dnl fi
-
-if test "${with_c4}" = scalar ; then
-   AC_RUNTESTS(testasync, 1)
-elif test "${with_c4}" = mpi ; then
-   AC_RUNTESTS(testasync testap, 2)
-fi
+# testing setup
+AC_RUNTESTS(tstOpacity, 1 2 4)
 
 # DRACO SETUP
 AC_DRACO_ENV
 
-dnl-------------------------------------------------------------------------dnl
-dnl OUTPUTS
-
-AC_OUTPUT(Makefile:../../config/Makefile.package.in 
-test/Makefile:../../config/Makefile.test.in test/testinp:test/testinp.in)
+# OUTPUTS
+AC_OUTPUT(Makefile:../../config/Makefile.package.in \
+          test/Makefile:../../config/Makefile.test.in) 
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/imc configure.in
