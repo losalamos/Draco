@@ -77,9 +77,9 @@ void P1Momentum<MT,HV>::discFluxToDiscMomentum(DiscMomentumField &result,
 	    const NormVector &norm = *itNormFace;
 	    const FluxType &flux = *itFluxFace;
 
-	    res[0] = norm[0]*flux;
-	    res[1] = norm[1]*flux;
-	    res[2] = norm[2]*flux;
+	    res[0] += norm[0]*flux;
+	    res[1] += norm[1]*flux;
+	    res[2] += norm[2]*flux;
 	     
 	    itNormFace++;
 	    itFluxFace++;
