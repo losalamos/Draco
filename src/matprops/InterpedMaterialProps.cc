@@ -19,6 +19,9 @@
 #include <vector>
 using std::vector;
 
+#include <stdexcept>
+#include <strstream>
+
 #ifndef BEGIN_NS_XTM
 #define BEGIN_NS_XTM namespace XTM  {
 #define END_NS_XTM }
@@ -38,14 +41,26 @@ typedef InterpedMaterialProps IMP;
 //    object derived from MaterialPropsReader.
 //---------------------------------------------------------------------------//
 
-IMP::InterpedMaterialProps(Units units_, const MaterialPropsReader &reader)
-    : units(units_)
+IMP::InterpedMaterialProps(vector<int> materialIds,
+			   MaterialPropsReader &reader)
+    : units(reader.getUnits())
 {
-    int materialId;
-    std::string materialName;
     
-    while (reader.getNextMaterial(materialId, materialName))
+    for (int i=0; i<materialIds.size(); i++)
     {
+	std::string materialName;
+	int materialId = materialIds[i];
+
+	int bool found = reader.getNextMaterial(materialId, materialName);
+
+	if (!found)
+	{
+	    std::ostrstream os;
+	    os << "InterpedMaterialProps ctor: Unable to find material "
+	       << materialId << " in reader." << std::ends;
+	    throw std::runtime_error(os.str());
+	}
+	
 	// Make sure that this materialId
 	// has not been used before.
 
@@ -70,7 +85,7 @@ IMP::InterpedMaterialProps(Units units_, const MaterialPropsReader &reader)
 	    reader.getEnergyLowerbounds(materialId, i, energyLowerbounds[i]);
 	}
 
-	dsxx::Mat2<double> data(tempGrid.size(), densityGrid.size(), 0.0);
+	dsxx::Mat2<double> data(densityGrid.size(), tempGrid.size(), 0.0);
 	vector<BilinearInterpTable> tables(numGroups);
 
 	for (int i=0; i<numGroups; i++)
@@ -173,16 +188,18 @@ IMP::MaterialTables &IMP::getMaterialTables(int matId)
     return (*matit).second;
 }
 
-//---------------------------------------------------------------------------//
+//------------------------------------------------------------------------//
 // interpolate:
 //   Given a material state, a group number, and a pointer to a method
-//   that returns a GroupedTable, return the interpolated results from
-//   the table indicated by the method pointer and group.
-//---------------------------------------------------------------------------//
+//   that returns a GroupedTable, return a unary operation on the
+//   interpolated results from the table indicated by the method pointer
+//   and group.
+//------------------------------------------------------------------------//
 
-template<class FT>
+template<class FT, class UnaryOperation>
 void IMP::interpolate(const MaterialStateField<FT> &matState, int group,
-		      PGroupedTable pTable, FT &results) const
+		      PGroupedTable pTable, UnaryOperation op,
+		      FT &results) const
 {
     Require(&matState.matprops == this);
     Require(matState.size() == results.size());
@@ -210,21 +227,27 @@ void IMP::interpolate(const MaterialStateField<FT> &matState, int group,
 	const BilinearInterpTable &table = groupedTable.getTable(group);
 
 	// Do the interpolation.
-	
-	table.interpolate(matState.getMemento(i), *resit++);
+
+	typename FT::value_type intVal;
+	table.interpolate(matState.getMemento(i), intVal);
+
+	// Perform a function on the interpolated value.
+
+	*resit++ = op(intVal);
     }
 }
 
 //---------------------------------------------------------------------------//
 // interpolate:
 //   Given a material state, and a pointer to a method
-//   that returns a BilinearInterpTable, return the interpolated results
-//   from the table indicated by the method pointer.
+//   that returns a BilinearInterpTable, return a unary operation on the
+//   interpolated results from the table indicated by the method pointer.
 //---------------------------------------------------------------------------//
 
-template<class FT>
+template<class FT, class UnaryOperation>
 void IMP::interpolate(const MaterialStateField<FT> &matState,
-		      PBilinearInterpTable pTable, FT &results) const
+		      PBilinearInterpTable pTable, UnaryOperation op,
+		      FT &results) const
 {
     Require(&matState.matprops == this);
     Require(matState.size() == results.size());
@@ -242,7 +265,14 @@ void IMP::interpolate(const MaterialStateField<FT> &matState,
 	
 	const BilinearInterpTable &table = (mattabs.*pTable)();
 	
-	table.interpolate(matState.getMemento(i), *resit++);
+	// Do the interpolation.
+
+	typename FT::value_type intVal;
+	table.interpolate(matState.getMemento(i), intVal);
+
+	// Perform a function on the interpolated value.
+
+	*resit++ = op(intVal);
     }
 }
 

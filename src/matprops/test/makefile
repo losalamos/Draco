@@ -25,7 +25,9 @@ include ../../config/makefile
 CXXFLAGS += -DDBC=7
 
 srcs	= \
-	testBilin.cc
+	main.cc \
+	testBilin.cc \
+	testMatProp.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.

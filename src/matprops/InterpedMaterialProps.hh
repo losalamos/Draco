@@ -85,7 +85,8 @@ class InterpedMaterialProps
     
   public:
 
-    InterpedMaterialProps(Units units_, const MaterialPropsReader &reader);
+    InterpedMaterialProps(std::vector<int> materialIds,
+			  MaterialPropsReader &reader);
 
 
     // MANIPULATORS
@@ -132,28 +133,32 @@ class InterpedMaterialProps
     //------------------------------------------------------------------------//
     // interpolate:
     //   Given a material state, a group number, and a pointer to a method
-    //   that returns a GroupedTable, return the interpolated results from
-    //   the table indicated by the method pointer and group.
+    //   that returns a GroupedTable, return a unary operation on the
+    //   interpolated results from the table indicated by the method pointer
+    //   and group.
     //------------------------------------------------------------------------//
 
-    typedef GroupedTable (MaterialTables::*PGroupedTable)();
+    typedef const GroupedTable &(MaterialTables::*PGroupedTable)() const;
     
-    template<class FT>
+    template<class FT, class UnaryOperation>
     void interpolate(const MaterialStateField<FT> &matState, int group,
-		     PGroupedTable pTable, FT &results) const;
+		     PGroupedTable pTable, UnaryOperation op,
+		     FT &results) const;
 
     //------------------------------------------------------------------------//
     // interpolate:
     //   Given a material state, and a pointer to a method
-    //   that returns a BilinearInterpTable, return the interpolated results
-    //   from the table indicated by the method pointer.
+    //   that returns a BilinearInterpTable, return a unary operation on the
+    //   interpolated results from the table indicated by the method pointer.
     //------------------------------------------------------------------------//
 
-    typedef BilinearInterpTable (MaterialTables::*PBilinearInterpTable)();
+    typedef const BilinearInterpTable
+                      &(MaterialTables::*PBilinearInterpTable)() const;
     
-    template<class FT>
+    template<class FT, class UnaryOperation>
     void interpolate(const MaterialStateField<FT> &matState,
-		     PBilinearInterpTable pTable, FT &results) const;
+		     PBilinearInterpTable pTable, UnaryOperation op,
+		     FT &results) const;
 };
 
 //========================================================================//
@@ -314,7 +319,30 @@ class InterpedMaterialProps::MaterialStateField
 
     // Nested Classes and Typedefs
     
+  private:
+
     typedef BilinearInterpTable::Memento Memento;
+
+    typedef typename FT::value_type value_type;
+
+    // A small unary operation class
+    
+    class MultByDensity
+    {
+	const MaterialStateField &field;
+	int index;
+
+      public:
+
+	MultByDensity(const MaterialStateField &field_)
+	    : field(field_), index(0)
+	{ /* empty */ }
+	
+	value_type operator()(const value_type &rhs)
+	{
+	    return field.getDensity(index++) * rhs;
+	}
+    };
     
     // DATA
 
@@ -326,9 +354,9 @@ class InterpedMaterialProps::MaterialStateField
 
     std::vector<Memento>         memento;
     
-    std::vector<double>          density;
-    std::vector<double>          electronTemp;
-    std::vector<double>          ionTemp;
+    std::vector<value_type>      density;
+    std::vector<value_type>      electronTemp;
+    std::vector<value_type>      ionTemp;
     std::vector<int>             matId;
 	
 
@@ -359,8 +387,8 @@ class InterpedMaterialProps::MaterialStateField
 
     void getSigmaTotal(int group, FT &results) const
     {
-	getProps().interpolate(*this, group, &MaterialTables::sigmaTotal,
-			       results);
+	getProps().interpolate(*this, group, &MaterialTables::getSigmaTotal,
+			       MultByDensity(*this), results);
     }
 
     void getSigmaTotal(double group, FT &results) const
@@ -372,7 +400,8 @@ class InterpedMaterialProps::MaterialStateField
     void getSigmaAbsorption(int group, FT &results) const
     {
 	getProps().interpolate(*this, group,
-			       &MaterialTables::getSigmaAbsorption, results);
+			       &MaterialTables::getSigmaAbsorption,
+			       MultByDensity(*this), results);
     }
 
     void getSigmaAbsorption(double group, FT &results) const
@@ -384,7 +413,7 @@ class InterpedMaterialProps::MaterialStateField
     void getSigmaEmission(int group, FT &results) const
     {
 	getProps().interpolate(*this, group, &MaterialTables::getSigmaEmission,
-			       results);
+			       MultByDensity(*this), results);
     }
 
     void getSigmaEmission(double group, FT &results) const
@@ -396,32 +425,32 @@ class InterpedMaterialProps::MaterialStateField
     void getElectronIonCoupling(FT &results) const
     {
 	getProps().interpolate(*this, &MaterialTables::getElectronIonCoupling,
-			       results);
+			       MultByDensity(*this), results);
     }
 
     void getElectronConductionCoeff(FT &results) const
     {
 	getProps().interpolate(*this,
 			       &MaterialTables::getElectronConductionCoeff,
-			       results);
+			       MultByDensity(*this), results);
     }
 
     void getIonConductionCoeff(FT &results) const
     {
 	getProps().interpolate(*this, &MaterialTables::getIonConductionCoeff,
-			       results);
+			       MultByDensity(*this), results);
     }
 
     void getElectronSpecificHeat(FT &results) const
     {
 	getProps().interpolate(*this, &MaterialTables::getElectronSpecificHeat,
-			       results);
+			       MultByDensity(*this), results);
     }
 
     void getIonSpecificHeat(FT &results) const
     {
 	getProps().interpolate(*this, &MaterialTables::getIonSpecificHeat,
-			       results);
+			       MultByDensity(*this), results);
     }
     
     // IMPLEMENTATION
@@ -430,10 +459,10 @@ class InterpedMaterialProps::MaterialStateField
     
     const Memento &getMemento(int i) const { return memento[i]; }
     
-    const double &getDensity(int i) const { return density[i]; }
-    const double &getElectronTemp(int i) const { return electronTemp[i]; }
-    const double &getIonTemp(int i) const { return ionTemp[i]; }
-    const double &getMatId(int i) const { return matId[i]; }
+    const value_type &getDensity(int i) const { return density[i]; }
+    const value_type &getElectronTemp(int i) const { return electronTemp[i]; }
+    const value_type &getIonTemp(int i) const { return ionTemp[i]; }
+    const int &getMatId(int i) const { return matId[i]; }
 
 };
 
