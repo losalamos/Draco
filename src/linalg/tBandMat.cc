@@ -35,7 +35,8 @@ struct layout
     int row_offset() const { return nro; }
     int nrows_this_processor() const { return nrp; }
     int nrows_total() const { return nrt; }
-    bool verbose() const { return true; }
+//     bool verbose() const { return true; }
+    bool verbose() const { return false; }
 };
 
 //---------------------------------------------------------------------------//
