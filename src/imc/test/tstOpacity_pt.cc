@@ -19,7 +19,7 @@ namespace rtt_imc
 {
 
 using rtt_mc::OS_Mesh;
-using dsxx::SP;
+using rtt_dsxx::SP;
 using rtt_imc_test::IMC_Interface;
 using std::ostream;
 

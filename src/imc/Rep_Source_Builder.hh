@@ -52,21 +52,22 @@ class Rep_Source_Builder : public Source_Builder<MT,PT>
 {
   public:
     // typedefs used in the inheritance chain
-    typedef dsxx::SP<Source<MT,PT> >                       SP_Source;
-    typedef dsxx::SP<typename Particle_Buffer<PT>::Census> SP_Census;
-    typedef dsxx::SP<Opacity<MT> >                         SP_Opacity;
-    typedef dsxx::SP<Mat_State<MT> >                       SP_Mat_State;
-    typedef dsxx::SP<MT>                                   SP_Mesh;
-    typedef dsxx::SP<rtt_rng::Rnd_Control>                 SP_Rnd_Control;
-    typedef dsxx::SP<rtt_mc::Topology>                     SP_Topology;
-    typedef std::vector<int>                               sf_int;
-    typedef std::vector<double>                            sf_double;
-    typedef std::vector<std::string>                       sf_string;
-    typedef std::vector<std::vector<double> >              vf_double;
-    typedef std::string                                    std_string;
-    typedef typename MT::CCSF_double                       ccsf_double;
-    typedef typename MT::CCSF_int                          ccsf_int;
-    typedef typename MT::CCVF_double                       ccvf_double;             
+    typedef rtt_dsxx::SP<Source<MT,PT> >         SP_Source;
+    typedef typename Particle_Buffer<PT>::Census PB_Census;
+    typedef rtt_dsxx::SP<PB_Census>              SP_Census;
+    typedef rtt_dsxx::SP<Opacity<MT> >           SP_Opacity;
+    typedef rtt_dsxx::SP<Mat_State<MT> >         SP_Mat_State;
+    typedef rtt_dsxx::SP<MT>                     SP_Mesh;
+    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>   SP_Rnd_Control; 
+    typedef rtt_dsxx::SP<rtt_mc::Topology>       SP_Topology;
+    typedef std::vector<int>                     sf_int;
+    typedef std::vector<double>                  sf_double;
+    typedef std::vector<std::string>             sf_string;
+    typedef std::vector<std::vector<double> >    vf_double;
+    typedef std::string                          std_string;
+    typedef typename MT::CCSF_double             ccsf_double;
+    typedef typename MT::CCSF_int                ccsf_int;
+    typedef typename MT::CCVF_double             ccvf_double;             
 
   private:
     // Data fields unique or more properly defined for full Replication
@@ -114,7 +115,7 @@ class Rep_Source_Builder : public Source_Builder<MT,PT>
   public:
     // Constructor.
     template<class IT>
-    Rep_Source_Builder(dsxx::SP<IT>, SP_Mesh, SP_Topology);
+    Rep_Source_Builder(rtt_dsxx::SP<IT>, SP_Mesh, SP_Topology);
 
     // Build source.
     SP_Source build_Source(SP_Mesh, SP_Mat_State, SP_Opacity,

@@ -29,7 +29,7 @@ using rtt_imc::Opacity;
 using rtt_imc::Opacity_Builder;
 using rtt_imc::Mat_State;
 using rtt_imc_test::IMC_Interface;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 // some typedefs
 typedef Mat_State<OS_Mesh> MSOS;

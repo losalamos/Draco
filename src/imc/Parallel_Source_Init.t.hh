@@ -21,7 +21,7 @@ using C4::node;
 using C4::nodes;
 using C4::Send;
 using C4::Recv;
-using dsxx::SP;
+using rtt_dsxx::SP;
 using rtt_mc::global::min;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;

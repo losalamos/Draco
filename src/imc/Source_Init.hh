@@ -46,8 +46,8 @@ template<class IT, class MT>
 class Source_Init 
 {
   public:
-    typedef dsxx::SP<IT>                      SP_Interface;
-    typedef dsxx::SP<MT>                      SP_Mesh;
+    typedef rtt_dsxx::SP<IT>                  SP_Interface;
+    typedef rtt_dsxx::SP<MT>                  SP_Mesh;
     typedef std::vector<int>                  sf_int;
     typedef std::vector<std::vector<int> >    vf_int;
     typedef std::vector<std::string>          sf_string;

@@ -20,7 +20,7 @@ namespace rtt_imc
 /*!
  * \brief Source_Init constructor.
  *
- * \param intrface dsxx::SP to a realization of an interface defined by
+ * \param intrface rtt_dsxx::SP to a realization of an interface defined by
  * Interface.hh 
  */
 template<class IT, class MT>
@@ -52,7 +52,7 @@ Source_Init<IT,MT>::Source_Init(SP_Interface intrface)
  * node.  We only require that the mesh be global, ie. MT::full_Mesh() ==
  * true.
  *
- * \param mesh dsxx::SP to a global mesh
+ * \param mesh rtt_dsxx::SP to a global mesh
  */
 template<class IT, class MT>
 void Source_Init<IT,MT>::calc_defined_surcells(SP_Mesh mesh)

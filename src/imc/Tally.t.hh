@@ -19,7 +19,7 @@ using std::setiosflags;
 using std::endl;
 using std::ostream;
 
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 //---------------------------------------------------------------------------//
 // constructors

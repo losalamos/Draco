@@ -32,7 +32,7 @@ using rtt_imc::Particle_Buffer;
 using rtt_imc_test::IMC_Interface;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 // some typedefs
 typedef Particle<OS_Mesh> POS;
@@ -392,7 +392,7 @@ int main(int argc, char *argv[])
 	Particle_Comm_Async();
 	C4::gsync();
     }
-    catch (const dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &ass)
     {
 	cout << "Test: assertion failure at line " 
 	     << ass.what() << endl;

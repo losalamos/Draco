@@ -20,7 +20,7 @@ namespace rtt_imc
 using rtt_mc::OS_Mesh;
 using rtt_mc::Coord_sys;
 using rtt_rng::Sprng;
-using dsxx::SP;
+using rtt_dsxx::SP;
 using std::vector;
 
 //===========================================================================//

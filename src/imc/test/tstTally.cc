@@ -23,7 +23,7 @@ using namespace std;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_imc::Tally;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 // passing condition
 bool passed = true;

@@ -167,7 +167,7 @@ class Particle
 
     // IMC transport step
     void transport(const MT &, const Opacity<MT> &, Tally<MT> &,
-		   dsxx::SP<Diagnostic> = dsxx::SP<Diagnostic>());
+		   rtt_dsxx::SP<Diagnostic> = rtt_dsxx::SP<Diagnostic>()); 
 
     // other services
 

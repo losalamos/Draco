@@ -35,7 +35,7 @@ using rtt_mc::Rep_Topology;
 using rtt_mc::General_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 // passing condition
 bool passed = true;

@@ -118,21 +118,22 @@ class Source_Builder
 {
   public:
     // typedefs used in the inheritance chain
-    typedef dsxx::SP<Source<MT,PT> >                       SP_Source;
-    typedef dsxx::SP<typename Particle_Buffer<PT>::Census> SP_Census;
-    typedef dsxx::SP<Opacity<MT> >                         SP_Opacity;
-    typedef dsxx::SP<Mat_State<MT> >                       SP_Mat_State;
-    typedef dsxx::SP<MT>                                   SP_Mesh;
-    typedef dsxx::SP<rtt_rng::Rnd_Control>                 SP_Rnd_Control;
-    typedef dsxx::SP<rtt_mc::Topology>                     SP_Topology;
-    typedef std::vector<int>                               sf_int;
-    typedef std::vector<std::vector<int> >                 vf_int;
-    typedef std::vector<double>                            sf_double;
-    typedef std::vector<std::string>                       sf_string;
-    typedef std::string                                    std_string;
-    typedef typename MT::CCSF_double                       ccsf_double;
-    typedef typename MT::CCSF_int                          ccsf_int;
-    typedef typename MT::CCVF_double                       ccvf_double;
+    typedef rtt_dsxx::SP<Source<MT,PT> >         SP_Source;
+    typedef typename Particle_Buffer<PT>::Census PB_Census
+    typedef rtt_dsxx::SP<PB_Census>              SP_Census;
+    typedef rtt_dsxx::SP<Opacity<MT> >           SP_Opacity;
+    typedef rtt_dsxx::SP<Mat_State<MT> >         SP_Mat_State;
+    typedef rtt_dsxx::SP<MT>                     SP_Mesh;
+    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>   SP_Rnd_Control;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>       SP_Topology;
+    typedef std::vector<int>                     sf_int;
+    typedef std::vector<std::vector<int> >       vf_int;
+    typedef std::vector<double>                  sf_double;
+    typedef std::vector<std::string>             sf_string;
+    typedef std::string                          std_string;
+    typedef typename MT::CCSF_double             ccsf_double;
+    typedef typename MT::CCSF_int                ccsf_int;
+    typedef typename MT::CCVF_double             ccvf_double;
 
   private:
     // BASE CLASS DATA
@@ -268,7 +269,7 @@ class Source_Builder
 
     // Calculate the number of source particles.
     void calc_num_src_particles(const double, const ccsf_double &, 
-			       ccsf_int &, int &); 
+				ccsf_int &, int &); 
 
     // Write the local census on each processor.
     void write_initial_census(SP_Mesh, SP_Rnd_Control, const ccsf_int &,
@@ -280,12 +281,12 @@ class Source_Builder
   public:
     // Constructor.
     template<class IT>
-    Source_Builder(dsxx::SP<IT>, SP_Mesh, SP_Topology);
+    Source_Builder(rtt_dsxx::SP<IT>, SP_Mesh, SP_Topology);
 
     // virtual destructor for correct behavior in inheritance chain
     virtual ~Source_Builder() {/*...*/}
 
-    //! Build dsxx::SP to source.
+    //! Build rtt_dsxx::SP to source.
     virtual SP_Source build_Source(SP_Mesh, SP_Mat_State, SP_Opacity,
 				   SP_Rnd_Control) = 0;
 
@@ -298,7 +299,7 @@ class Source_Builder
 
     // ACCESSOR FOR CENSUS
 
-    //! Get a dsxx::SP to the census.
+    //! Get a rtt_dsxx::SP to the census.
     SP_Census get_census() const { return census; }
 
     // ACCESSOR SERVICES TO GET SOURCE INITIALIZATION DATA

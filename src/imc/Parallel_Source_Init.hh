@@ -106,7 +106,7 @@ class Parallel_Source_Init
     // number of census particles per cell
     typename MT::CCSF_int ncen;
     int ncentot;
-    dsxx::SP<typename Particle_Buffer<PT>::Census> census;
+    rtt_dsxx::SP<typename Particle_Buffer<PT>::Census> census;
 
     // number of surface source and volume source particles
     typename MT::CCSF_int nvol;
@@ -192,21 +192,21 @@ class Parallel_Source_Init
     void recv_census_numbers(const MT &);
 
     // typedefs
-    typedef dsxx::SP<typename Particle_Buffer<PT>::Census> Census_SP;
+    typedef rtt_dsxx::SP<typename Particle_Buffer<PT>::Census> Census_SP;
 
   public:
     // constructor for master node
-    template<class IT> Parallel_Source_Init(dsxx::SP<IT>, dsxx::SP<MT>);
+    template<class IT> Parallel_Source_Init(rtt_dsxx::SP<IT>, rtt_dsxx::SP<MT>);
 
     // initial census function
-    Census_SP calc_initial_census(dsxx::SP<MT>, dsxx::SP<Opacity<MT> >,
-				  dsxx::SP<Mat_State<MT> >, 
-				  dsxx::SP<rtt_rng::Rnd_Control>);
+    Census_SP calc_initial_census(rtt_dsxx::SP<MT>, rtt_dsxx::SP<Opacity<MT> >,
+				  rtt_dsxx::SP<Mat_State<MT> >, 
+				  rtt_dsxx::SP<rtt_rng::Rnd_Control>);
 
     // source initialyzer function
-    dsxx::SP<Source<MT> > initialize(dsxx::SP<MT>, dsxx::SP<Opacity<MT> >,  
-				     dsxx::SP<Mat_State<MT> >, 
-				     dsxx::SP<rtt_rng::Rnd_Control>, 
+    rtt_dsxx::SP<Source<MT> > initialize(rtt_dsxx::SP<MT>, rtt_dsxx::SP<Opacity<MT> >,  
+				     rtt_dsxx::SP<Mat_State<MT> >, 
+				     rtt_dsxx::SP<rtt_rng::Rnd_Control>, 
 				     const Particle_Buffer<PT> &); 
 
     // accessor functions

@@ -44,7 +44,7 @@ using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 // passing condition
 bool passed = true;

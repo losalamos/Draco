@@ -33,7 +33,7 @@ namespace rtt_imc
 {
 
 // DRACO components
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 // std components
 using std::vector;
@@ -43,35 +43,35 @@ using std::ostream;
 template<class PT>
 class Communicator
 {
-public:
-  // usefull typedefs
+  public:
+    // usefull typedefs
     typedef typename Particle_Buffer<PT>::Bank Bank;
 
-private:
-  // Comm_Buffers for particle tranport
+  private:
+    // Comm_Buffers for particle tranport
     typename Particle_Buffer<PT>::Comm_Vector recv_buffer;
     typename Particle_Buffer<PT>::Comm_Vector send_buffer;
 
-  // data with boundary cell->across processor info 
+    // data with boundary cell->across processor info 
     vector<int> recv_nodes;
     vector<int> send_nodes;
     vector<int> last_node;
     vector<vector<int> > boundary_node;
     vector<vector<int> > boundary_cell;
 
-  // convert global->local nodes
+    // convert global->local nodes
     inline int global_to_local(int) const;
 
-public:
-  // constructors
+  public:
+    // constructors
     explicit Communicator(const vector<int> &, const vector<int> &,
 			  const vector<vector<int> > &,
 			  const vector<vector<int> > &);
 
-  // buffer a particle destined for a new processor
+    // buffer a particle destined for a new processor
     int communicate(const Particle_Buffer<PT> &, SP<PT>);
 
-  // message passing (async and sync) operations
+    // message passing (async and sync) operations
     void post(const Particle_Buffer<PT> &);
     vector<int> flush(const Particle_Buffer<PT> &);
     void flush_all(const Particle_Buffer<PT> &);
@@ -83,7 +83,7 @@ public:
     void asend_end(const Particle_Buffer<PT> &);
     void arecv_end(const Particle_Buffer<PT> &);
 
-  // accessor functions
+    // accessor functions
     int num_send_nodes() const { return send_nodes.size(); }
     int num_recv_nodes() const { return recv_nodes.size(); }
     int num_bound_cells() const { return boundary_node.size(); }
@@ -92,11 +92,11 @@ public:
     const vector<int>& get_recv_nodes() const { return recv_nodes; }
     const vector<int>& get_send_nodes() const { return send_nodes; }
 
-  // checks on state of buffers
+    // checks on state of buffers
     int get_send_size() const;
     int get_recv_size() const;
 
-  // diagnostic 
+    // diagnostic 
     void print(ostream &) const;
     void arecv_print_status(const Particle_Buffer<PT> &);
 };

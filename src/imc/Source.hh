@@ -39,12 +39,13 @@ class Source
 {
   public:
     // usefull typedefs
-    typedef typename MT::template CCSF<int>                ccsf_int;
-    typedef typename MT::template CCSF<double>             ccsf_double;
-    typedef dsxx::SP<typename Particle_Buffer<PT>::Census> SP_Census;
-    typedef dsxx::SP<rtt_rng::Rnd_Control>                 SP_Rnd_Control;
-    typedef dsxx::SP<Mat_State<MT> >                       SP_Mat_State;
-    typedef dsxx::SP<Mesh_Operations<MT> >                 SP_Mesh_Op; 
+    typedef typename MT::template CCSF<int>      ccsf_int;
+    typedef typename MT::template CCSF<double>   ccsf_double;
+    typedef typename Particle_Buffer<PT>::Census PB_Census
+    typedef rtt_dsxx::SP<PB_Census>              SP_Census;
+    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>   SP_Rnd_Control; 
+    typedef rtt_dsxx::SP<Mat_State<MT> >         SP_Mat_State;
+    typedef rtt_dsxx::SP<Mesh_Operations<MT> >   SP_Mesh_Op; 
 
   public:
     // volume source particles: number and first random number stream per
@@ -98,12 +99,12 @@ class Source
 	   SP_Rnd_Control, SP_Mat_State, SP_Mesh_Op);
 
     // required services for Source
-    dsxx::SP<PT> get_Source_Particle(double); 
+    rtt_dsxx::SP<PT> get_Source_Particle(double); 
 
     // Particle sources
-    dsxx::SP<PT> get_census(double);
-    dsxx::SP<PT> get_evol(double);
-    dsxx::SP<PT> get_ss(double);
+    rtt_dsxx::SP<PT> get_census(double);
+    rtt_dsxx::SP<PT> get_evol(double);
+    rtt_dsxx::SP<PT> get_ss(double);
 
     // accessors
     int get_nvoltot() const { return nvoltot; }

@@ -71,11 +71,11 @@ class Mesh_Operations
 
   private:
     // typedefs
-    typedef std::vector<double>                   sf_double;
-    typedef rtt_mc::OS_Mesh::CCVF<double>         ccvf_double;
-    typedef dsxx::SP<rtt_mc::OS_Mesh>             SP_Mesh;
-    typedef dsxx::SP<rtt_mc::Topology>            SP_Topology;
-    typedef dsxx::SP<Mat_State<rtt_mc::OS_Mesh> > SP_Mat_State;
+    typedef std::vector<double>                       sf_double;
+    typedef rtt_mc::OS_Mesh::CCVF<double>             ccvf_double;
+    typedef rtt_dsxx::SP<rtt_mc::OS_Mesh>             SP_Mesh;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>            SP_Topology;
+    typedef rtt_dsxx::SP<Mat_State<rtt_mc::OS_Mesh> > SP_Mat_State;
     
   public:
     /*! 
@@ -84,9 +84,9 @@ class Mesh_Operations
      * The constructor builds complete state information necessary to perform
      * required operations.  This include T4 slope data and the like.
      *
-     * \param mesh dsxx::SP to a mesh
-     * \param state dsxx::SP to a Mat_State
-     * \param topology dsxx::SP to a Topology
+     * \param mesh rtt_dsxx::SP to a mesh
+     * \param state rtt_dsxx::SP to a Mat_State
+     * \param topology rtt_dsxx::SP to a Topology
      */
     Mesh_Operations(SP_Mesh mesh, SP_Mat_State state, SP_Topology topology)
     {/*...*/}
@@ -116,11 +116,11 @@ class Mesh_Operations<rtt_mc::OS_Mesh>
 
   private:
     // typedefs
-    typedef std::vector<double>                   sf_double;
-    typedef rtt_mc::OS_Mesh::CCVF<double>         ccvf_double;
-    typedef dsxx::SP<rtt_mc::OS_Mesh>             SP_Mesh;
-    typedef dsxx::SP<rtt_mc::Topology>            SP_Topology;
-    typedef dsxx::SP<Mat_State<rtt_mc::OS_Mesh> > SP_Mat_State;
+    typedef std::vector<double>                       sf_double;
+    typedef rtt_mc::OS_Mesh::CCVF<double>             ccvf_double;
+    typedef rtt_dsxx::SP<rtt_mc::OS_Mesh>             SP_Mesh;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>            SP_Topology;
+    typedef rtt_dsxx::SP<Mat_State<rtt_mc::OS_Mesh> > SP_Mat_State;
 
   private:
     // T^4 slope data

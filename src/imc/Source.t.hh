@@ -20,7 +20,7 @@ namespace rtt_imc
 using rtt_rng::Sprng;
 using rtt_rng::Rnd_Control;
 using rtt_mc::global::pi;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 // STL functions
 using std::ios;

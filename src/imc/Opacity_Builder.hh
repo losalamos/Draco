@@ -36,9 +36,9 @@ template<class MT>
 class Opacity_Builder
 {
     // typedefs
-    typedef dsxx::SP<MT> SP_MT;
-    typedef dsxx::SP<Mat_State<MT> > SP_Mat;
-    typedef dsxx::SP<Opacity<MT> > SP_Opacity; 
+    typedef rtt_dsxx::SP<MT>             SP_MT;
+    typedef rtt_dsxx::SP<Mat_State<MT> > SP_Mat;
+    typedef rtt_dsxx::SP<Opacity<MT> >   SP_Opacity; 
 
   private:
     // data received from XX_Interface
@@ -56,7 +56,7 @@ class Opacity_Builder
   public:
     // templated explicit constructor depends on interface type (IT)
     template<class IT>
-    explicit Opacity_Builder(dsxx::SP<IT>);
+    explicit Opacity_Builder(rtt_dsxx::SP<IT>);
 
     // build state member functions
 

@@ -22,7 +22,7 @@ using std::istream;
 using std::ostream;
 
 // draco namespace objects
-using dsxx::SP;
+using rtt_dsxx::SP;
 using C4::C4_Req;
 using C4::Send;
 using C4::Recv;

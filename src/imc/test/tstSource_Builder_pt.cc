@@ -24,7 +24,7 @@ namespace rtt_imc
 using rtt_imc_test::IMC_Interface;
 using rtt_mc::OS_Mesh;
 using rtt_mc::Topology;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 template class Source_Builder<OS_Mesh>;
 template Source_Builder<OS_Mesh>::Source_Builder(SP<IMC_Interface>, 

@@ -24,7 +24,7 @@ namespace rtt_imc
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::General_Topology;
-using dsxx::SP;
+using rtt_dsxx::SP;
 using std::vector;
 using std::string;
 using std::find;
@@ -48,7 +48,7 @@ using std::find;
  * This function must be explicitly instantiated with the appropriate
  * interfaces that are to be used in a given problem.
  *
- * \param interface Smart Pointer (dsxx::SP) to an appropriate interface
+ * \param interface Smart Pointer (rtt_dsxx::SP) to an appropriate interface
  * class.  
  */
 template<class MT>
@@ -87,8 +87,8 @@ Topology_Builder<MT>::Topology_Builder(SP<IT> interface)
  * situation indicates a DD/replication problem that will be dealt with at a
  * later date.
  *
- * \param mesh smart pointer (dsxx::SP) to a \b global mesh
- * \return smart pointer (dsxx::SP) to a rtt_mc::Topology 
+ * \param mesh smart pointer (rtt_dsxx::SP) to a \b global mesh
+ * \return smart pointer (rtt_dsxx::SP) to a rtt_mc::Topology 
  */
 template<class MT>
 Topology_Builder<MT>::SP_Topology 
@@ -150,7 +150,7 @@ Topology_Builder<MT>::build_Topology(SP_MT mesh)
 /*!
  * \brief Build full DD topology data.
  *
- * \param mesh dsxx::SP to a mesh, this must be a global mesh.
+ * \param mesh rtt_dsxx::SP to a mesh, this must be a global mesh.
  */
 template<class MT>
 void Topology_Builder<MT>::build_DD(vf_int &cells_per_proc, 

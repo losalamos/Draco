@@ -20,7 +20,7 @@ namespace rtt_imc
 
 using C4::nodes;
 using C4::node;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 using std::cout;
 using std::endl;
@@ -157,7 +157,7 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
  * class through the run-time interface.
  *
  * This function builds a local initial census on each processor.  The
- * dsxx::SP to the completed census may be accessed through the
+ * rtt_dsxx::SP to the completed census may be accessed through the
  * Source_Builder::get_census() function. 
  */
 template<class MT, class PT>

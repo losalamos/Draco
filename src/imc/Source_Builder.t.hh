@@ -21,7 +21,7 @@ namespace rtt_imc
 using rtt_rng::Sprng;
 using C4::nodes;
 using C4::node;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 using std::pow;
 using std::fabs;
@@ -49,9 +49,9 @@ using std::endl;
  * \arg a mesh must exist and be properly sized, \arg the rtt_rng::rn_stream
  * must be the same on all processors.
  *
- * \param interface dsxx::SP to a valid run-time interface
- * \param mesh dsxx::SP to a local mesh object
- * \param top dsxx::SP to a topology object 
+ * \param interface rtt_dsxx::SP to a valid run-time interface
+ * \param mesh rtt_dsxx::SP to a local mesh object
+ * \param top rtt_dsxx::SP to a topology object 
  */
 template<class MT, class PT>
 template<class IT>
@@ -391,7 +391,7 @@ Source_Builder<MT,PT>::calc_num_src_particles(const double part_per_e,
  * builder derived classes utilize this function; however, each derived class
  * must provide the correct local census fields.
  *
- * \param mesh dsxx::SP to the local mesh
+ * \param mesh rtt_dsxx::SP to the local mesh
  * \param rcon random number controller
  * \param ncen local field of census particles on processor
  * \param ncentot total number of local census particles
@@ -449,7 +449,7 @@ void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh,
  * calculated.  The function returns the on-processor, local energy loss
  * resulting from the comb.
  *
- * \param rcon dsxx::SP to a Rnd_Control object
+ * \param rcon rtt_dsxx::SP to a Rnd_Control object
  * \param local_ncentot mutable value of post-comb total number of census
  * particles on this processor
  * \param eloss_comb mutable value of the energy loss incurred through

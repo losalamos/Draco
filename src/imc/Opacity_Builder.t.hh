@@ -18,7 +18,7 @@ namespace rtt_imc
 using std::pow;
 
 // draco components
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 //---------------------------------------------------------------------------//
 // constructors

@@ -72,10 +72,10 @@ class Topology_Builder
 {
   public:
     // Usefull typedefs in this class.
-    typedef dsxx::SP<rtt_mc::Topology> SP_Topology;
-    typedef dsxx::SP<MT> SP_MT;
+    typedef rtt_dsxx::SP<rtt_mc::Topology> SP_Topology;
+    typedef rtt_dsxx::SP<MT>               SP_MT;
     typedef std::vector<std::vector<int> > vf_int;
-    typedef std::string std_string;
+    typedef std::string                    std_string;
 
   private:
     // The cells/processor capacity.
@@ -86,7 +86,7 @@ class Topology_Builder
 
   public:
     // Constructor, templated on the Interface Type.
-    template<class IT> Topology_Builder(dsxx::SP<IT>);
+    template<class IT> Topology_Builder(rtt_dsxx::SP<IT>);
 
     // Builder functions.
     SP_Topology build_Topology(SP_MT);

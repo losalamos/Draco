@@ -50,13 +50,13 @@ class Interface
 {
   public:
     // useful typedefs
-    typedef std::string                                    std_string;
-    typedef std::vector<double>                            sf_double;
-    typedef std::vector<std::vector<double> >              vf_double;
-    typedef std::vector<int>                               sf_int;
-    typedef std::vector<std::vector<int> >                 vf_int;
-    typedef std::vector<std::string>                       sf_string;
-    typedef dsxx::SP<typename Particle_Buffer<PT>::Census> SP_Census;
+    typedef std::string                                        std_string;
+    typedef std::vector<double>                                sf_double;
+    typedef std::vector<std::vector<double> >                  vf_double;
+    typedef std::vector<int>                                   sf_int;
+    typedef std::vector<std::vector<int> >                     vf_int;
+    typedef std::vector<std::string>                           sf_string;
+    typedef rtt_dsxx::SP<typename Particle_Buffer<PT>::Census> SP_Census; 
     
   public:
     // constructor

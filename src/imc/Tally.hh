@@ -59,10 +59,10 @@ class Tally
 
   public:
     // Tally constructor.
-    explicit Tally(dsxx::SP<MT>);
+    explicit Tally(rtt_dsxx::SP<MT>);
 
     // Tally constructor that gets evol_net.
-    Tally(dsxx::SP<MT>, typename MT::CCSF_double);
+    Tally(rtt_dsxx::SP<MT>, typename MT::CCSF_double);
 
     // accumulate energy deposited
     void deposit_energy(const int cell, const double energy);

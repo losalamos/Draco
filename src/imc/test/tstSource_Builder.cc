@@ -52,7 +52,7 @@ using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_mc::Parallel_Data_Operator;
 using rtt_rng::Rnd_Control;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 typedef SP<Particle<OS_Mesh> > SP_Particle;
 

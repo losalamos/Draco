@@ -131,8 +131,8 @@ class Particle_Buffer
     };
 
     // standard buffers for particles
-    typedef Particle_Stack<dsxx::SP<PT> > Census;
-    typedef Particle_Stack<dsxx::SP<PT> > Bank;
+    typedef Particle_Stack<rtt_dsxx::SP<PT> > Census;
+    typedef Particle_Stack<rtt_dsxx::SP<PT> > Bank;
 
     // standard buffers for Comm_Buffers
     typedef std::vector<Comm_Buffer> Comm_Vector;
@@ -170,7 +170,7 @@ class Particle_Buffer
     // io functions
     void write_census(std::ostream &, const PT &) const;
     void write_census(std::ostream &, Comm_Buffer &) const;
-    dsxx::SP<Census_Buffer> read_census(std::istream &) const;
+    rtt_dsxx::SP<Census_Buffer> read_census(std::istream &) const;
 
     // fill and get buffer functions
     void buffer_census(Comm_Buffer &, const Census_Buffer &) const;
@@ -181,7 +181,7 @@ class Particle_Buffer
 
     // blocking
     void send_buffer(Comm_Buffer &, int) const;
-    dsxx::SP<Comm_Buffer> recv_buffer(int) const;
+    rtt_dsxx::SP<Comm_Buffer> recv_buffer(int) const;
 
     // async
     void asend_buffer(Comm_Buffer &, int) const;

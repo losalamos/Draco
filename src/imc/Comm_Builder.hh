@@ -35,7 +35,7 @@ class Comm_Builder
 {
   private:
     // usefull typedefs in Comm_Builder
-    typedef dsxx::SP<Communicator<PT> > SP_Comm;
+    typedef rtt_dsxx::SP<Communicator<PT> > SP_Comm;
     typedef std::vector<int> intvec;
     typedef std::vector<vector<int> > dintvec;
 
