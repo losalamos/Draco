@@ -210,7 +210,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # shmem (not available on suns)
        if test "${enable_shmem}" = yes ; then
-	   AC_MSG_ERROR("We don't support shmem on linux!")
+	   AC_MSG_ERROR("We do not support shmem on linux!")
        fi
 
        #
@@ -267,7 +267,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
 	   fi
        elif test "${with_mpi}" = mpich ; then
-	   AC_MSG_ERROR("We don't support mpich on the SGI yet!")
+	   AC_MSG_ERROR("We do not support mpich on the SGI yet!")
        fi
 
        # setup for shmem support
@@ -326,7 +326,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # setup for mpi support
        # we only support mpich on sgis       
        if test "${with_mpi}" = vendor ; then
-	   AC_MSG_ERROR("We don't support vendor mpi on the SUN yet!")
+	   AC_MSG_ERROR("We do not support vendor mpi on the SUN yet!")
        elif test "${with_mpi}" = mpich ; then
 	   
 	   # define sun-required libraries for mpich, v 1.0 (this
@@ -343,7 +343,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # shmem (not available on suns)
        if test "${enable_shmem}" = yes ; then
-	   AC_MSG_ERROR("We don't support shmem on suns!")
+	   AC_MSG_ERROR("We do not support shmem on suns!")
        fi
 
        #
