@@ -173,10 +173,10 @@ endif
 
 # This used to be in CXX_INC_FLAGS: -I$(GTS_SRC_TOP)/ds++ 
 
-CXX_INC_FLAGS = -I$(SRC_TOP) $(POOMA_FLAGS)
+CXX_INC_FLAGS = -I$(SRC_TOP) $(POOMA_FLAGS) $(PY_INC_FLAG)
 
 CXXFLAGS = $(SYS_FLAGS) $(CXX_INC_FLAGS) $(DEBUG_FLAG) $(XCPT_FLAG) \
-	 $(ASSERT_FLAG)
+	 $(ASSERT_FLAG) $(PYTHON_FLAG)
 
 # Need these because I have some cases of explicit rules in my various
 # makefiles, written back when I was using gmake before the
@@ -223,6 +223,9 @@ endif
 ifeq ($(need_pooma),yes)
 #LINK_LIBS	+= $(POOMA_LIB)
 LINK_LIBS	+= $(POOMA_LFLAGS) $(POOMA_LIBS)
+endif
+ifeq ($(need_python),yes)
+LINK_LIBS	+= $(PYLIBS)
 endif
 ifdef MPI_LIB
 LINK_LIBS	+= $(MPI_LIB)
