@@ -5,92 +5,58 @@
 ##
 ## Usage:
 ##    draco_regression <opts>
-##---------------------------------------------------------------------------##
-## Time-stamp: <02/03/28 14:08:54 tme>
+##
+## Options:
+##
+##     -n   Print the commands that would be executed, but do not
+##          execute them.
+##
 ##---------------------------------------------------------------------------##
 
 ##---------------------------------------------------------------------------##
-## Check regression directories and make log files
-
-# determine hostname and system
-hostname=`hostname`
-uname=`uname -a`
-username=`/usr/bin/whoami`
-regress_home=/home/regress
+## Setup environment
 
 # get environment
-. /home/regress/.bash_profile
+source /home/regress/.bash_profile
+source /home/regress/draco/regression/parse_options 
+source /home/regress/draco/regression/set_env
 
-# Echo environment
-echo ">>>"
-echo ">>>Environment (printenv)"
-echo ">>>"
-printenv
+# Replace default FORTRAN environment as a hack around EOSPAC5 bug
+# (see SF bug report)
+source /usr/local/lf9562/bash_setup
 
-echo ">>> whoami"
-/usr/bin/whoami
+# set defaults
+set_default_values $*
 
-echo ">>> groups"
-groups
+# parse options
+parse_options $*
 
-echo ">>> id"
-id
+##---------------------------------------------------------------------------##
+## Echo environment
 
-# get gcc version
-echo " "
-echo ">>>"
-echo ">>>Software versions"
-echo ">>>"
-echo " "
-echo "% gcc --version"
-gcc --version
-
-# get ld version
-echo "% ld --version"
-ld --version
-echo " "
-
-# set up fortran 90 LAHEY 60 for now
-. /usr/local/lf9560/bash_setup
-echo "\$PATH = $PATH"
-echo "\$LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
-echo "which lf95 ... "
-which lf95
-lf95 --version
-
-# check the regression directory
-
-if test ${username} = "kellyt" ; then
-    REGDIR=`pwd`
-else
-    REGDIR="${regress_home}/draco"
-fi
-
-# Change to the regression directory
-
-if [ ! -d ${REGDIR} ] ; then
-    echo ">>> Regression directory does not exist! EXITING"
-    exit 1 
-fi
+${REGDIR}/regression/echo_env
 
 ##---------------------------------------------------------------------------##
 ## make regression directories
 
-# home         : the regression top-level directory
-# draco_src    : location of draco source directory
-# draco_mpi    : location of parallel build target directory
-# draco_scalar : location of scalar build target directory
-# draco_opt    : location of parallel, optimized build target directory
-# target_list  : list of build target directories
+# REGDIR      : the regression top-level directory
+# code_src    : location of draco source directory
+# code_mpi    : location of parallel build target directory
+# code_scalar : location of scalar build target directory
+# code_opt    : location of parallel, optimized build target directory
+# target_list : list of build target directories
 
-home=${REGDIR}
-draco_src="${home}/draco"
-draco_mpi="${home}/mpi"
-draco_scalar="${home}/scalar"
-draco_opt="${home}/opt"
-draco_lampi_dbg="${home}/lampi_dbg"
+code_src="${REGDIR}/${code}"
 
-target_list="${draco_mpi} ${draco_scalar} ${draco_opt} ${draco_lampi_dbg}"
+code_mpi="${REGDIR}/mpi"
+code_mpi_dbg="${REGDIR}/mpi_dbg"
+code_scalar="${REGDIR}/scalar"
+code_opt="${REGDIR}/opt"
+code_cov="${REGDIR}/cov"
+code_apptest="${REGDIR}/apptest"
+code_lampi_dbg="${REGDIR}/lampi_dbg"
+
+target_list="${code_mpi} ${code_scalar} ${code_opt}"
 
 ##---------------------------------------------------------------------------##
 ## set up SourceForge cvs
@@ -100,81 +66,53 @@ target_list="${draco_mpi} ${draco_scalar} ${draco_opt} ${draco_lampi_dbg}"
 cvs=`which cvs`
 
 # set cvs environment
-if test ${username} = "kellyt"; then
-   export CVS_RSH=ssh
-else
-   export CVS_RSH=/home/regress/draco/regression/draco_ssh
-fi
+export CVS_RSH="${REGDIR}/regression/draco_ssh"
 
-cvsroot='-z9 -d:ext:sf.lanl.gov:/cvsroot/draco'
+cvsroot="-z9 -d sf.lanl.gov:/cvsroot/${code}"
 
 ##---------------------------------------------------------------------------##
 ## Checkout draco
 
 # goto regression directory and do a draco checkout
 
-cd $home
+cd ${REGDIR}
 
 # remove the source directory
 
-if [ -d $draco_src ]; then
-    echo ">>> Removing ${draco_src}, draco source code"
-    rm -rf $draco_src
+if [ -d $code_src ]; then
+    echo ">>> Removing ${code_src}, ${code} source code"
+    ${echoonly} rm -rf $code_src
 fi
 
 # checkout draco
 
-echo ">>> Checking out draco in $home"
-echo "${cvs} -q $cvsroot checkout -P draco"
-${cvs} -q $cvsroot checkout -P draco
+echo ">>> Checking out ${code} in ${REGDIR}"
+echo "${cvs} -q $cvsroot checkout -P ${code}"
+${echoonly} ${cvs} -q $cvsroot checkout -P ${code}
 
 ##---------------------------------------------------------------------------##
 ## Set up vendors
+## VENDOR_LIB_DIR and VENDOR_INC_DIR are set in .bashrc.
 
-SPRNG_LIB='/codes/radtran/vendors/sprng/Linux/lib'
-SPRNG_INC='/codes/radtran/vendors/sprng/include'
-SPRNG_SETUP="--with-sprng-inc=${SPRNG_INC} --with-sprng-lib=${SPRNG_LIB}"
-
-GRACE_LIB='/usr/local/grace/lib'
-GRACE_INC='/usr/local/grace/include'
-GRACE_SETUP="--with-grace-inc=${GRACE_INC} --with-grace-lib=${GRACE_LIB}"
-
-GANDOLF_LIB='/codes/radtran/vendors/gandolf/Linux'
-GANDOLF_SETUP="--with-gandolf-lib=${GANDOLF_LIB}"
-
-EOSPAC_LIB='/codes/radtran/vendors/eospac/Linux/lib'
-EOSPAC_SETUP="--with-eospac-lib=${EOSPAC_LIB}"
-
-export SESPATHU=/codes/radtran/physical_data/eos
-export SESPATHC=/codes/radtran/physical_data/eos
-
-MPI_DIR='/codes/mpi/bin'
-MPI_SETUP="--with-mpi-inc --with-mpi-lib"
-
-PCG_LIB='/codes/radtran/vendors/pcg/Linux/lib'
-PCG_SETUP="--with-pcg-lib=${PCG_LIB}"
-
-LAPACK_LIB='/codes/radtran/vendors/atlas/Linux/lib'
-LAPACK_SETUP="--with-lapack=atlas --with-lapack-lib=${LAPACK_LIB}"
-
-VENDOR_SETUP="${GANDOLF_SETUP} ${PCG_SETUP} ${LAPACK_SETUP}"
-VENDOR_SETUP="${VENDOR_SETUP} ${SPRNG_SETUP} ${EOSPAC_SETUP}"
-VENDOR_SETUP="${VENDOR_SETUP} ${GRACE_SETUP}"
+VENDOR_SETUP="--with-sprng-inc --with-sprng-lib --with-grace-inc \
+--with-grace-lib --with-gandolf-lib --with-eospac-lib \
+--with-mpi-inc --with-mpi-lib --with-pcg-lib --with-lapack=atlas \
+--with-lapack-lib --with-gsl-inc --with-gsl-lib"
 
 ##---------------------------------------------------------------------------##
 ## LOOP THROUGH AND DO BUILD AND CHECKS
 
 for target in ${target_list}; do
 
-    cd $home
+    cd ${REGDIR}
 
     case $target in
 	
 	# setup parallel build options
-	${draco_mpi})
+	${code_mpi})
 
             # Source mpich
-            . $MPI_DIR/mpich.sh shmem-lahey
+            . $MPI_DIR/mpich.sh p4-lahey
             echo $MPI_TAG
 
 	    OPTIONS='--with-c4=mpi'
@@ -182,16 +120,16 @@ for target in ${target_list}; do
 	;;
 
 	# setup serial build options
-	${draco_scalar})
+	${code_scalar})
 	    OPTIONS=''
 	    VENDOR_OPTIONS="${VENDOR_SETUP}"
 	;;
 
 	# setup of parallel optimized options
-	${draco_opt})
+	${code_opt})
 
             # Source mpich
-            . $MPI_DIR/mpich.sh shmem-lahey
+            . $MPI_DIR/mpich.sh p4-lahey
             echo $MPI_TAG
 
 	    OPTIONS='--with-c4=mpi --with-opt=2 --with-dbc=0'
@@ -199,15 +137,17 @@ for target in ${target_list}; do
 	;;
 
         # LAMPI version
-        ${draco_lampi_dbg})
+        ${code_lampi_dbg})
 
             # Source lampi
+            echo "source $MPI_DIR/lampi.sh shmem-lahey"
             . $MPI_DIR/lampi.sh shmem-lahey
-            echo $MPI_TAG
+            echo "MPI_TAG = $MPI_TAG"
 
             MPI_SETUP="--with-mpi=lampi $MPI_SETUP"
-            OPTIONS='--with-c4=mpi --with-dbc=7 --enable-debug'
-            VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+            OPTIONS='--enable-shared --with-c4=mpi --with-dbc=7 --enable-debug'
+            STLPORT_SETUP="--with-stlport=/codes/radtran/vendors/stlport/Linux"
+            VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP} ${STLPORT_SETUP}"
         ;;
 
 	# catchall
@@ -223,7 +163,7 @@ for target in ${target_list}; do
     # remove the old target directory if it exists
     if [ -d $target ]; then
 	echo ">>> Removing old $target target directory"
-	rm -rf $target
+	${echoonly} rm -rf $target
     fi
 
     # build the target directory
@@ -235,13 +175,13 @@ for target in ${target_list}; do
     echo ">>> Running configure in $target/draco"
     cd $target/draco
 
-    echo "$draco_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS"
-    $draco_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS
+    echo "$code_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS"
+    ${echoonly} $code_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS
 
     # do gmake check
     echo ">>> Doing gmake check in $target/draco"
     
-    echo "gmake -k check nj=8"
-    gmake -k check nj=8
+    echo "gmake -k check nj=2"
+    ${echoonly} gmake -k check nj=2
     
 done
