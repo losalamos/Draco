@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "tCDIGandolf.hh"
+#include "../GandolfFile.hh"
 #include "../GandolfOpacity.hh"
 #include "../Release.hh"
 
@@ -26,9 +27,8 @@
 namespace rtt_UnitTestFrame {
     rtt_dsxx::SP<TestApp> TestApp::create( int &argc, char *argv[],
 					   std::ostream& os_in ) {
-	using rtt_cdi_gandolf_test::tCDIGandolf;
 	return rtt_dsxx::SP<TestApp> ( 
-	    new tCDIGandolf( argc, argv, os_in ));
+	    new rtt_cdi_gandolf_test::tCDIGandolf( argc, argv, os_in ));
     }
 } // end namespace rtt_UnitTestFrame
 
@@ -60,28 +60,45 @@ string tCDIGandolf::runTest()
     
     // Material identifier.  This data file has two materials: Al and
     // BeCu.  Al has the id tag "10001".
-    int matid=10001;
+    const int matid=10001;
     
     // Start the test.
-    cout << endl << "Testing the cdi_gandolf package." << endl;
-    cout << endl << "Create SP to a cdi_gandolf object." << endl << endl;
 
-    // Create a GandolfOpacity object for Aluminum using the data from
-    // the IPCRESS file Al_BeCu.ipcress.
+//     cout << endl << "Testing the cdi_gandolf package." << endl;
+//     cout << endl << "Create SP to a cdi_gandolf object." << endl << endl;
+
+    SP<rtt_cdi_gandolf::GandolfFile> spGF;
+    spGF = new rtt_cdi_gandolf::GandolfFile( op_data_file );
+
+    if ( spGF )
+	pass() << "SP to new GandolfFile object created for Al_BeCu.ipcress data.";
+    else 
+	{
+	    fail() << "Failed to create SP to new GandolfFile object for Al_BeCu.ipcress data.";
+	    return "Failed to finish testing cdi_gandolf.";
+	}
+
+    if ( spGF->getDataFilename() == op_data_file )
+	pass() << "GandolfFile object is now linked to the Al_BeCu.ipcress data file.";
+    else
+	fail() << "GandolfFile object failed to link itself to theAl_BeCu.ipcress  data file.";
+
+    if ( spGF->getNumMaterials() == 2 )
+	pass() << "The correct number of materials was found in the Al_BeCu.ipcress data file.";
+    else
+	fail() << "spGF did not find the correct number of materials in the Al_BeCu.ipcress data file.";
+
     SP<rtt_cdi::Opacity> spOpacityABC;
-    spOpacityABC = new 
-	rtt_cdi_gandolf::GandolfOpacity( op_data_file, matid );
-    
-    cout << endl << "The Gandalf input file is named: \"" 
-	 << spOpacityABC->getDataFilename() << "\"" << endl;
-    
-    cout << "Material " << matid << " was found in the data file."
-	 << endl << endl;
+    spOpacityABC = new rtt_cdi_gandolf::GandolfOpacity( spGF, matid );
 
+    if ( spOpacityABC )
+	pass() << "SP to new Opacity object created for Al_BeCu.ipcress data.";
+    else
+	fail() << "Failed to create SP to new Opacity object for Al_BeCu.ipcress data.";
 
-    //===================//
-    // Gray Opacity Test //
-    //===================//
+    //------------------
+    // Gray Opacity Test
+    //------------------
 
     // Currently only Rossland opacities are available.  I need to
     // implement a mechanism so that the user can choose between
@@ -91,27 +108,29 @@ string tCDIGandolf::runTest()
     // = 27.0 g/cm^3.
     double grayRosselandOpacity = spOpacityABC->getGrayRosseland( 0.1, 27.0 );
 
-    cout << endl << "grayRosselandOpacity for material Aluminum (matID=" 
-	 << matid << ") is:" << endl
-	 << "   opacity ( T=0.1 keV, rho=27.0 g/cm^3 ) = " <<
-	grayRosselandOpacity << " cm^2/gm." << endl << endl;
+    // Print some info to standard out.
+    // cout << endl << "grayRosselandOpacity for material Aluminum (matID=" 
+    // << matid << ") is:" << endl
+    // << "   opacity ( T=0.1 keV, rho=27.0 g/cm^3 ) = " <<
+    // grayRosselandOpacity << " cm^2/gm." << endl << endl;
+
 
     // Make sure that the interpolated value matches previous
     // interpolations. 
     double tabulatedGrayOpacity = 4271.7041147070677; // cm^2/g
 
     if ( match( grayRosselandOpacity, tabulatedGrayOpacity ) )
-	pass() << "grayRosselandOpacity computation was good.";
+	pass() << "grayRosselandOpacity computation was good for Al_BeCu.ipcress data.";
     else
-	fail() << "grayRosselandOpacity value is out of spec.";
-	
-    //=================//
-    // MG Opacity test //
-    //=================//
-
+	fail() << "grayRosselandOpacity value is out of spec for Al_BeCu.ipcress data.";
+    
+  //----------------
+  // MG Opacity test
+  //----------------
+  
     // The solution to compare against:
-    const int numGroups = 33;
-    const double tabulatedMGOpacityArray[] =
+    int numGroups = 33;
+    double tabulatedMGOpacityArray[] =
     {   2.4935160506e+08, 
 	2.6666668566e+04, 
 	1.6270311515e+04, 
@@ -145,40 +164,150 @@ string tCDIGandolf::runTest()
 	7.8893806873e-01, 
 	4.1875736190e-01, 
 	2.1668498635e-01 }; // KeV, numGroups entries.
-    vector<double> tabulatedMGOpacity(numGroups);
-    std::copy( tabulatedMGOpacityArray, 
-	       tabulatedMGOpacityArray+numGroups,
-	       tabulatedMGOpacity.begin() );    
-    
-    // Interpolate the multigroup opacities for T = 0.01 keV and
-    // density = 2.0 g/cm^3. 
-    vector<double> mgRosselandOpacity
-	= spOpacityABC->getMGRosseland( 0.01, 2.0 );
+     vector<double> tabulatedMGOpacity(numGroups);
+     std::copy( tabulatedMGOpacityArray, 
+		tabulatedMGOpacityArray+numGroups,
+		tabulatedMGOpacity.begin() );    
+     
+     // Interpolate the multigroup opacities for T = 0.01 keV and
+     // density = 2.0 g/cm^3. 
+     vector<double> mgRosselandOpacity
+ 	= spOpacityABC->getMGRosseland( 0.01, 2.0 );
 
-    // print the results
-    cout << endl << "Multigroup Rosseland Opacities for Aluminum (matID=" 
-	 << matid << ") test:" << endl
-	 << "   MGOpacities at T=0.01 keV and rho=2.0 g/cm^3 ( in cm^2/gm. )."
-	 << endl << endl;
-    for ( int i=0; i<mgRosselandOpacity.size(); ++i )
-	cout << "   Opacity(group=" << std::setw(2) << i << ") = " 
-	     << std::scientific << std::setprecision(5) 
-	     << mgRosselandOpacity[i] << endl;
-    cout << endl;
+//     // print the results
+//     cout << endl << "Multigroup Rosseland Opacities for Aluminum (matID=" 
+// 	 << matid << ") test:" << endl
+// 	 << "   MGOpacities at T=0.01 keV and rho=2.0 g/cm^3 ( in cm^2/gm. )."
+// 	 << endl << endl;
+//     for ( int i=0; i<mgRosselandOpacity.size(); ++i )
+//     cout << "   Opacity(group=" << std::setw(2) << i << ") = " 
+// 	    << std::scientific << std::setprecision(5) 
+// 	    << mgRosselandOpacity[i] << endl;
+//     cout << endl;
     
 
-    // Compare the interpolated value with previous interpolations:
-    if ( match( mgRosselandOpacity, tabulatedMGOpacity ) )
-	pass() << "Multigroup Opacity computation was good.";
+//     // Compare the interpolated value with previous interpolations:
+     if ( match( mgRosselandOpacity, tabulatedMGOpacity ) )
+ 	pass() << "Multigroup Opacity computation was good for Al_BeCu.ipcress data.";
+     else
+ 	fail() << "Multigroup Opacity ocmputation failed for Al_BeCu.ipcress data.";
+
+// -----------------------------------------------
+// Test the data file "analyticOpacities.ipcress"
+// -----------------------------------------------
+
+     // The Opacities in this file are computed from the following
+     // analytic formula:
+     //     opacity = rho * T^4,
+     // rho is the density and T is the temperature.
+
+     // Gandolf data filename (IPCRESS format required)
+     op_data_file = "analyticOpacities.ipcress";
+     
+     // Start the test.
+
+     // SP<rtt_cdi_gandolf::GandolfFile> spGF;
+     spGF = new rtt_cdi_gandolf::GandolfFile( op_data_file );
+     
+     if ( spGF )
+	 pass() << "SP to new GandolfFile object created.";
+     else
+	 fail() << "Failed to create SP to new GandolfFile object.";
+     
+     if ( spGF->getDataFilename() == op_data_file )
+	 pass() << "GandolfFile object is now linked to the data file.";
+     else
+	 fail() << "GandolfFile object failed to link itself to the data file.";
+
+     if ( spGF->getNumMaterials() == 1 )
+	 pass() << "The correct number of materials was found in the data file.";
+     else
+	 fail() << "spGF did not find the correct number of materials in the data file.";
+
+     // SP<rtt_cdi::Opacity> spOpacityABC;
+     spOpacityABC = new rtt_cdi_gandolf::GandolfOpacity( spGF, matid );
+     
+     if ( spOpacityABC )
+	 pass() << "SP to new Opacity object created.";
+     else
+	 fail() << "Failed to create SP to new Opacity object.";
+
+     //------------------
+     // Gray Opacity Test
+     //------------------
+     
+     // Currently only Rossland total opacities are available.  The
+     // analytic formulat shown above does not include the addition of 
+     // scattering.  I need to implement a mechanism so that the user
+     // can choose absoptive-only Rosseland or Plank opacities.
+     
+     // Obtain a Rosseland Gray Opacity value for T=0.2 keV and density 
+     // = 0.3 g/cm^3.
+     double T = 1.0;   // keV
+     double rho = 1.0; // g/cm^3
+     grayRosselandOpacity = spOpacityABC->getGrayRosseland( T, rho );
+
+    // Print some info to standard out.
+//      cout << endl << "grayRosselandOpacity for material 1 (matID=" 
+// 	  << matid << ") is:" << endl
+// 	  << "   opacity ( T=" << T << " keV, rho=" << rho << " g/cm^3 ) = " <<
+// 	 grayRosselandOpacity << " cm^2/gm." << endl << endl;
+
+    // Make sure that the interpolated value matches previous
+    // interpolations. 
+     double scatter = 0.4;
+     tabulatedGrayOpacity = rho*pow(T,4) + scatter; // cm^2/g
+
+    if ( match( grayRosselandOpacity, tabulatedGrayOpacity ) )
+	pass() << "grayRosselandOpacity computation was good for analyticOpacity data.";
     else
-	fail() << "Multigroup Opacity ocmputation failed.";
+	fail() << "grayRosselandOpacity value is out of spec for analyticOpacity data.";
     
-    // Print the test result.
-    if (passed()) {
-	pass() << "All tests passed.";
-	return "All tests passed.";
-    }
-    return "Some tests failed.";
+  //----------------
+  // MG Opacity test
+  //----------------
+  
+    // The solution to compare against:
+    numGroups = 12;
+    tabulatedMGOpacity.resize(numGroups);
+
+    T   = 0.3; // keV
+    rho = 0.7; // g/cm^3
+    for ( int i=0; i<numGroups; ++i )
+	tabulatedMGOpacity[i] = rho*pow(T,4); // cm^2/gm
+    
+    // Interpolate the multigroup opacities for T = 0.3 keV and
+    // density = 0.7 g/cm^3. 
+    mgRosselandOpacity
+ 	= spOpacityABC->getMGRosseland( T, rho );
+
+//     // print the results
+//     cout << endl << "Multigroup Rosseland Opacities for Aluminum (matID=" 
+// 	 << matid << ") test:" << endl
+// 	 << "   MGOpacities at T=0.01 keV and rho=2.0 g/cm^3 ( in cm^2/gm. )."
+// 	 << endl << endl;
+//     for ( int i=0; i<mgRosselandOpacity.size(); ++i )
+//     cout << "   Opacity(group=" << std::setw(2) << i << ") = " 
+// 	    << std::scientific << std::setprecision(5) 
+// 	    << mgRosselandOpacity[i] << endl;
+//     cout << endl;
+    
+
+//     // Compare the interpolated value with previous interpolations:
+     if ( match( mgRosselandOpacity, tabulatedMGOpacity ) )
+ 	pass() << "Multigroup Opacity computation was good for analyticOpacity data.";
+     else
+ 	fail() << "Multigroup Opacity ocmputation failed for analyticOpacity data.";
+
+
+     // ----------------------
+     // Print the test result.
+     // ----------------------
+     if (passed()) {
+	 pass() << "All tests passed.";
+	 return "All tests passed.";
+     }
+     return "Some tests failed.";
 }
 
 //---------------------------------------------
