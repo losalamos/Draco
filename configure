@@ -48,6 +48,9 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-grace-lib[=DIR]    tell where GRACE libraries are (\${GRACE_LIB_DIR} by default)"
 ac_help="$ac_help
+  --with-lib-prefix[=library prefix]
+                          give prefix to libraries (default rtt_)"
+ac_help="$ac_help
   --with-c4[=scalar,mpi,shmem]   
 		          turn on c4 (default scalar) "
 ac_help="$ac_help
@@ -1431,6 +1434,20 @@ EOF
 
 
 
+              
+   # Check whether --with-lib-prefix or --without-lib-prefix was given.
+if test "${with_lib_prefix+set}" = set; then
+  withval="$with_lib_prefix"
+  :
+fi
+
+
+   # default for lib_prefix is rtt_
+   LIB_PREFIX="${with_lib_prefix:=rtt_}"
+   if test "${LIB_PREFIX}" = no ; then
+       LIB_PREFIX=''
+   fi
+
          
       # Check whether --with-c4 or --without-c4 was given.
 if test "${with_c4+set}" = set; then
@@ -1629,7 +1646,7 @@ fi
       # Extract the first word of "python", so it can be a program name with args.
 set dummy python; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1633: checking for $ac_word" >&5
+echo "configure:1650: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_PYTHON_PATH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1669,7 +1686,7 @@ fi
       # Extract the first word of "perl", so it can be a program name with args.
 set dummy perl; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1673: checking for $ac_word" >&5
+echo "configure:1690: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_PERL_PATH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1709,7 +1726,7 @@ fi
       # Extract the first word of "cvs", so it can be a program name with args.
 set dummy cvs; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1713: checking for $ac_word" >&5
+echo "configure:1730: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_CVS_PATH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1751,7 +1768,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1755: checking for $ac_word" >&5
+echo "configure:1772: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_GHOSTVIEW'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1790,7 +1807,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1794: checking for $ac_word" >&5
+echo "configure:1811: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_LATEX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1830,7 +1847,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1834: checking for $ac_word" >&5
+echo "configure:1851: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_BIBTEX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1870,7 +1887,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1874: checking for $ac_word" >&5
+echo "configure:1891: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_XDVI'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1910,7 +1927,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1914: checking for $ac_word" >&5
+echo "configure:1931: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_DVIPS'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1950,7 +1967,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1954: checking for $ac_word" >&5
+echo "configure:1971: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_LP'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2012,7 +2029,7 @@ subdirs="tools src autodoc"
 # Extract the first word of "autoconf", so it can be a program name with args.
 set dummy autoconf; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2016: checking for $ac_word" >&5
+echo "configure:2033: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_AUTOCONF'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2050,7 +2067,7 @@ for dir in $subdirs
    do
        if test -d ${srcdir}/${dir} ; then
 	   echo $ac_n "checking "configure in ${srcdir}/${dir}"""... $ac_c" 1>&6
-echo "configure:2054: checking "configure in ${srcdir}/${dir}"" >&5
+echo "configure:2071: checking "configure in ${srcdir}/${dir}"" >&5
 	   cd $srcdir/$dir
 	   if test -f configure ; then 
 	       echo "$ac_t"""exists"" 1>&6

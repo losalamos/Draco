@@ -21,9 +21,9 @@ AC_DEFUN(AC_NEEDS_LIBS, [dnl
    for lib in $1
    do
        # temporary string to keep line from getting too long
-       draco_depends="\${libdir}/lib${lib}\${libsuffix}"
+       draco_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
        DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
-       DRACO_LIBS="${DRACO_LIBS} -l${lib}"
+       DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
    done
 ])
 
@@ -39,9 +39,9 @@ AC_DEFUN(AC_NEEDS_LIBS_TEST, [dnl
    for lib in $1
    do
        # temporary string to keep line from getting too long
-       draco_test_depends="\${libdir}/lib${lib}\${libsuffix}"
+       draco_test_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
        DRACO_TEST_DEPENDS="${DRACO_TEST_DEPENDS} ${draco_test_depends}"
-       DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -l${lib}"
+       DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -l\${LIB_PREFIX}${lib}"
    done
 ])
 
@@ -99,13 +99,13 @@ dnl usage: configure.in
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_INSTALL_LIB, [ dnl
-   install_lib="\${libdir}/lib\${package}\${libsuffix}"
+   install_lib='${libdir}/lib${LIB_PREFIX}${package}${libsuffix}'
    installdirs="${installdirs} \${libdir}"
-   alltarget="${alltarget} lib\${package}\${libsuffix}"
+   alltarget="${alltarget} lib\${LIB_PREFIX}\${package}\${libsuffix}"
 
    # test will need to link this library
-   PKG_DEPENDS='../lib${package}${libsuffix}'
-   PKG_LIBS='-L.. -l${package}'
+   PKG_DEPENDS='../lib${LIB_PREFIX}${package}${libsuffix}'
+   PKG_LIBS='-L.. -l${LIB_PREFIX}${package}'
 ])
 
 dnl-------------------------------------------------------------------------dnl

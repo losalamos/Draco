@@ -117,6 +117,8 @@ PYTHON = @PYTHON_PATH@
 ##---------------------------------------------------------------------------##
 ## linker and libraries
 
+LIB_PREFIX     = @LIB_PREFIX@
+
 RPATH          = @RPATH@
 
 LD             = @LD@
@@ -246,7 +248,7 @@ bin:
 ##---------------------------------------------------------------------------##
 ## build any libraries in this package
 
-lib${package}${libsuffix}: ${objs} ${DRACO_DEPENDS} ${VENDOR_DEPENDS}
+lib${LIB_PREFIX}${package}${libsuffix}: ${objs} ${DRACO_DEPENDS} ${VENDOR_DEPENDS}
 	${AR} ${ARFLAGS} $@ ${objs} ${ARLIBS}
 	${RANLIB} $@
 

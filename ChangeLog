@@ -1,3 +1,63 @@
+2003-03-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: released draco-2_4_0.  This release contains the
+	following packages:
+
+		c4-2_3_0
+		cdi-1_3_0
+		cdi_analytic-1_1_0
+		cdi_eospac-1_2_0
+		cdi_gandolf-1_3_0
+		ds++-1_9_0
+		imc-3_3_0
+		lapack_wrap-1_0_0
+		mc-3_3_0
+		meshReaders-1_4_0
+		meshReaders_Services-1_0_0
+		pcgWrap-1_2_0
+		plot2D-1_1_0
+		quadrature-1_2_0
+		rng-1_6_0
+		RTT_Format_Reader-1_3_0
+		stdheaders-1_3_0
+		timestep-1_3_0
+		traits-1_5_0
+		units-1_3_0
+		viz-1_3_0
+		xm-1_5_0
+
+	See package ChangeLogs for package details.  On the draco front we
+	changed:
+		
+		1) better doxygen front page
+		2) build-system documentation
+		3) new improved templates
+		4) small build system fixes [Compaq link options]
+		5) moved draco/Merge and draco/assesment to 
+		   draco/doc/merge and draco/doc/assessment
+
+	Made significant update to build system.  The libraries are now
+	built prefixed by a rtt_ by default.  For example, the ds++
+	package library will be:
+
+		librtt_ds++.a(so)
+
+	Everything else is the same.  The prefix is added to the Makefiles
+	at configure time.  Packages are still referenced by their package
+	name, not library name.  The prefix can be changed by the
+	--with-lib-prefix configure option.
+
+	This change will help avoid library name collisions.  The
+	following files were changed to accomodate the update:
+
+		config/Makefile.package.in
+		config/Makefile.test.in
+		config/ac_conf.m4
+		config/ac_draco_vendor.m4
+		config/ac_dracoarg.m4
+		config/ac_dracoenv.m4
+		config/doc/build_system.dcc
+
 2003-02-05  Thomas M. Evans  <tme@lanl.gov>
 
 	* html: removed old John McGhee html info directory.

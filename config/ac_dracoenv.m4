@@ -830,10 +830,11 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_SUBST(STRICTFLAG)dnl
    AC_SUBST(PARALLEL_FLAG)dnl
    AC_SUBST(RPATH)dnl
+   AC_SUBST(LIB_PREFIX)dnl
 
    # install program
-   AC_SUBST(INSTALL)
-   AC_SUBST(INSTALL_DATA)
+   AC_SUBST(INSTALL)dnl
+   AC_SUBST(INSTALL_DATA)dnl
 
    # files to install
    : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}

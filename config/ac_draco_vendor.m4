@@ -158,9 +158,9 @@ AC_DEFUN(AC_NEEDS_LIBS_DRACO, [dnl
    for lib in $1
    do
        # temporary string to keep line from getting too long
-       draco_depends="${DRACO_LIB}/lib${lib}\${libsuffix}"
+       draco_depends="${DRACO_LIB}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
        DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
-       DRACO_LIBS="${DRACO_LIBS} -l${lib}"
+       DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
    done
 ])
 
@@ -178,9 +178,9 @@ AC_DEFUN(AC_NEEDS_LIBS_TEST_DRACO, [dnl
    for lib in $1
    do
        # temporary string to keep line from getting too long
-       draco_test_depends="${DRACO_LIB}/lib${lib}\${libsuffix}"
+       draco_test_depends="${DRACO_LIB}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
        DRACO_TEST_DEPENDS="${DRACO_TEST_DEPENDS} ${draco_test_depends}"
-       DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -l${lib}"
+       DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -l\${LIB_PREFIX}${lib}"
    done
 ])
 

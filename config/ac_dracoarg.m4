@@ -15,6 +15,20 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl
+   dnl Library prefix
+   dnl
+     
+   AC_ARG_WITH(lib-prefix,
+      [  --with-lib-prefix[=library prefix]
+                          give prefix to libraries (default rtt_)])
+
+   # default for lib_prefix is rtt_
+   LIB_PREFIX="${with_lib_prefix:=rtt_}"
+   if test "${LIB_PREFIX}" = no ; then
+       LIB_PREFIX=''
+   fi
+
+   dnl
    dnl c4 toggle (scalar by default)
    dnl
 

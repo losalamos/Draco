@@ -118,6 +118,8 @@ PYTHON = @PYTHON_PATH@
 ##---------------------------------------------------------------------------##
 ## linker and libraries
 
+LIB_PREFIX          = @LIB_PREFIX@
+
 RPATH               = @RPATH@
 
 LD                  = @LD@

@@ -214,17 +214,18 @@ else:
         # get revision number of tagged release
         (check_tag, tag_revision) = get_current_tag_revision(f)
 
-        if check_tag != current_tag:
-            print "Error in tags, exiting!"
-            sys.exit(1)
-        
-        print "*** %s: Current revision: %s, Tag revision: %s" % \
-        (f, revision_num, tag_revision)
+        if check_tag != current_tag and check_tag != 'none':
+            print check_tag, current_tag, f, tag_revision
+            print "Error in tags, skipping!"
 
-        # do diff
-        if tag_revision != 'none':
-            diff = commands.getoutput('cvs diff -r %s %s' % (tag_revision, f))
-            print diff
+        else: 
+            print "*** %s: Current revision: %s, Tag revision: %s" % \
+                  (f, revision_num, tag_revision)
+
+            # do diff
+            if tag_revision != 'none':
+                diff = commands.getoutput('cvs diff -r %s %s' % (tag_revision, f))
+                print diff
                                  
 
 ###############################################################################

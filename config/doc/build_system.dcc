@@ -232,20 +232,21 @@ Thus, running MAKE in $BUILD or $BUILD/src actually does a \c make \c install
 in each subdirectory.  Running MAKE in the subdirectories does a build
 (compile) of the package directory's principle targets.
 
-The targets for each package directory in Draco are
-- an executable
-- a library
-- headers
-- a custom target
-- one or more of the above
+The targets for each package directory in Draco are 
+- an executable 
+- a library 
+- headers 
+- a custom target 
+- one or more of the above 
 . 
-The targets are determined by the package \c configure.in file.
-Generating this file is the subject of \ref pkg.  By default the
-executable and/or library name will be the package name.  For example,
-the \c ds++ package will produce a library called 
-\c libds++.a(so).  As described above, libraries are installed in
-$INSTALL/lib, headers in $INSTALL/include/pkg, and executables in
-$INSTALL/bin. 
+The targets are determined by the package \c configure.in file.  Generating
+this file is the subject of \ref pkg.  By default the executable will be the
+package name.  The library will have the name \c lib${LIB_PREFIX}package.
+The \c LIB_PREFIX variable can be set at configure time, see \ref
+config_options.  By default \c LIB_PREFIX is set to \c rtt_. For example, the
+\c ds++ package will produce a library called \c librtt_ds++.a(so).  As
+described above, libraries are installed in $INSTALL/lib, headers in
+$INSTALL/include/pkg, and executables in $INSTALL/bin.
 
 The DBS allows the definition of custom targets through inclusion of a
 \c Makefile.target file.  Sources for the build can also be customized
@@ -326,7 +327,7 @@ its dependencies in the proper order.  For example, a client wishing
 to utilize services in the \c mc package must include the following
 libraries (packages) at link time:
 \verbatim
-  -lmc -lviz -lmeshReaders -ltraits -lrng -lc4 -lds++
+  -lrtt_mc -lrtt_viz -lrtt_meshReaders -lrtt_traits -lrtt_rng -lrtt_c4 -lrtt_ds++
 \endverbatim
 Notice that \c mc depends on \c traits through its association with
 the \c viz package.  Likewise, a Draco package utilizing \c mc will
@@ -400,7 +401,7 @@ loading Draco libraries.  Returning to the \c mc package example, the
 \c rng package uses SPRNG and the \c c4 package may use MPI; thus, the
 total link line should be:
 \verbatim
-  -lmc -lviz -lmeshReaders -ltraits -lrng -lc4 -lds++ -llfg -lmpi
+  -lrtt_mc -lrtt_viz -lrtt_meshReaders -lrtt_traits -lrtt_rng -lrtt_c4 -lrtt_ds++ -llfg -lmpi
 \endverbatim
 where \c liblfg.a(so) is the SPRNG random number library.  The DBS
 automatically includes these vendor libraries; thus, if the Draco DBS
@@ -453,6 +454,14 @@ following table summarizes the \c --with DBS build options:
 <th> Default Argument </th>
 <th> Valid arguments </th>
 <th> Notes </th>
+</tr>
+<!-- lib-prefix -->
+<tr>
+<td> \c --with-lib-prefix </td>
+<td> \c rtt_ </td>
+<td> \c rtt_ </td>
+<td> any string </td>
+<td> sets the library name prefix </td>
 </tr>
 <!-- c4 -->
 <tr>
