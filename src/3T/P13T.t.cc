@@ -597,12 +597,9 @@ void P13T<DS>::calcMomentumDeposition
     solver.dotProduct(sigmaFe3, sigmaF, e3Field);
     // add in the other flux term here
 
-    sigmaFe1 *= vc_volume_ratios;
-    sigmaFe2 *= vc_volume_ratios;
-    sigmaFe3 *= vc_volume_ratios;
-    sigmaFe1 /= c;
-    sigmaFe2 /= c;
-    sigmaFe3 /= c;
+    sigmaFe1 *= vc_volume_ratios/c;
+    sigmaFe2 *= vc_volume_ratios/c;
+    sigmaFe3 *= vc_volume_ratios/c;
 
     ncsf momentum1(spMesh), momentum2(spMesh), momentum3(spMesh);
     MT::scatter ( momentum1, sigmaFe1, MT::OpAddAssign() );
