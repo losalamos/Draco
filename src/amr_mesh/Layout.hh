@@ -69,15 +69,25 @@ public:
     inline int num_adj(int cell, int face) const;
 
   // diagnostic functions
-    void print(ostream &, int) const;
+    void print(ostream & output, int) const;
 
   // overloaded subscripting operators for assignment and retrieval
     inline int operator()(int cell, int face, int adjcell = 1) const;
     inline int& operator()(int cell, int face, int adjcell = 1);
 
   // overloaded operators for equality
-    inline bool operator==(const Layout &) const;
-    bool operator!=(const Layout &rhs) const { return !(*this == rhs); }
+/*!
+ * \brief Compares a layout for equivalence relative to the current layout.
+ * \param rhs Second layout
+ * \return Status of second layout = current layout. 
+ */
+    inline bool operator==(const Layout & rhs) const;
+/*!
+ * \brief Compares a layout for non-equivalence relative to the current layout.
+ * \param rhs Second layout
+ * \return Status of second layout != current layout. 
+ */
+    bool operator!=(const Layout & rhs) const { return !(*this == rhs); }
 
   // End_Verbatim 
   // End_Doc 
@@ -88,12 +98,12 @@ public:
 //---------------------------------------------------------------------------//
 // overload operator for stream output
 
-ostream& operator<<(ostream &, const Layout &);
+ostream & operator<<(ostream & output, const Layout & object);
 
 //---------------------------------------------------------------------------//
 // overload equality(==) operator for design-by-contract
 
-inline bool Layout::operator==(const Layout &rhs) const
+inline bool Layout::operator==(const Layout & rhs) const
 {
   // if the data is equal, the Layouts are equal
     if (face_cell == rhs.face_cell)

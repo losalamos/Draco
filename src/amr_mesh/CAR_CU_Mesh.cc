@@ -24,6 +24,21 @@ using std::ios;
 // constructors
 //---------------------------------------------------------------------------//
 // default constructor
+/*!
+ * \brief Constructs a CAR_CU_Mesh class object (typically using objects that
+ *        were created by a CAR_CU_Builder class object).
+ * \param coord_ Smart pointer to an existing, initialized Coord_sys class 
+ *               object.
+ * \param layout_ An existing, initialized Layout class object.
+ * \param vertex_ An existing, initialized NCVF_d type object containing the 
+ *                mesh node vertex data.
+ * \param cell_pair_ An existing, initialized CCVF_i type object containing 
+ *                   the mesh cell-pair data.
+ * \param generation_ An existing, initialized CCSF_i type object containing 
+ *                   the mesh generation data.
+ * \param submesh_ Status flag indicating that this is a submesh for parallel
+ *                 execution (defaults to false). 
+ */
 CAR_CU_Mesh::CAR_CU_Mesh(SP<Coord_sys> coord_, Layout & layout_, 
    NCVF_d & vertex_, CCVF_i & cell_pair_,  CCSF_i & generation_,
    bool submesh_) : coord(coord_), layout(layout_), vertex(vertex_), 
@@ -91,6 +106,11 @@ void CAR_CU_Mesh::calc_surface()
 //---------------------------------------------------------------------------//
 // do binary search on a cell
 
+/*!
+ * \brief Returns the cell number that contains the specified point in space.
+ * \param r Coordinate values of point in space.
+ * \return Cell number. 
+ */
 int CAR_CU_Mesh::get_cell(const vector<double> &r) const
 {
     Require (!submesh);
@@ -137,8 +157,17 @@ int CAR_CU_Mesh::get_cell(const vector<double> &r) const
 //---------------------------------------------------------------------------//
 // calculate the distance to boundary
 
-double CAR_CU_Mesh::get_db(const vector<double> &r, 
-   const vector<double> &omega, int cell, int &face) const
+/*!
+ * \brief Returns the distance to nearest boundary for the specified point in 
+ *        space in the specified cell and direction.
+ * \param r Coordinate values of point in space.
+ * \param omega Direction.
+ * \param cell Cell. 
+ * \param face Cell face number at the nearest boundary (calculated). 
+ * \return Distance to nearest boundary. 
+ */
+double CAR_CU_Mesh::get_db(const vector<double> & r, 
+   const vector<double> & omega, int cell, int & face) const
 {
     using std::vector;
     using std::min_element;
@@ -183,6 +212,12 @@ double CAR_CU_Mesh::get_db(const vector<double> &r,
 //---------------------------------------------------------------------------//
 // return the face number for a given cell boundary
 
+/*!
+ * \brief Returns the face number that corresponds to the specified side.
+ * \param boundary Side (lox, loy, loz, hix, hiy, hiz).
+ * \param cell Cell (not used).
+ * \return Face number. 
+ */
 int CAR_CU_Mesh::get_bndface(string boundary, int cell) const
 {
   // return the face number for boundary on cell
@@ -212,6 +247,11 @@ int CAR_CU_Mesh::get_bndface(string boundary, int cell) const
 //---------------------------------------------------------------------------//
 // return a list of cells along a specified boundary
 
+/*!
+ * \brief Returns a list of cells along a specified boundary.
+ * \param boundary Boundary (lox, loy, loz, hix, hiy, hiz).
+ * \return Surface cell numbers. 
+ */
 vector<int> CAR_CU_Mesh::get_surcells(string boundary) const
 {
     Require (!submesh);
@@ -299,8 +339,16 @@ vector<int> CAR_CU_Mesh::get_surcells(string boundary) const
 
 //---------------------------------------------------------------------------//
 // check that a user-/host-defined set of surface source cells actually
-// resides on the surface of the system (requires a vacuum bnd).
+// resides on the surface of the system (requires eitehr a vacuum or 
+// reflection bnd).
 
+/*!
+ * \brief Checks to insure that user-defined surface source cells actually
+ *        reside on the specified face and are on the outer boundary of the 
+ *        problem.
+ * \param ss_face Boundary side (lox, loy, loz, hix, hiy, hiz).
+ * \param ss_list Surface source cells.
+ */
 void CAR_CU_Mesh::check_defined_surcells(const string ss_face, 
 					 const vector<int> &ss_list) const
 {
@@ -350,7 +398,12 @@ bool CAR_CU_Mesh::operator==(const CAR_CU_Mesh &rhs) const
 //---------------------------------------------------------------------------//
 // print out the whole mesh
 
-void CAR_CU_Mesh::print(ostream &out) const
+/*!
+ * \brief Diagnostic member function used to print out the cell center-point 
+ *        coordinate values and widths for the entire mesh.
+ * \param out Stream-output class object.
+ */
+void CAR_CU_Mesh::print(ostream & out) const
 {
     out << endl;
     out << ">>> MESH <<<" << endl;
@@ -363,7 +416,13 @@ void CAR_CU_Mesh::print(ostream &out) const
 //---------------------------------------------------------------------------//
 // print individual cells
 
-void CAR_CU_Mesh::print(ostream &output, int cell) const
+/*!
+ * \brief Diagnostic member function used to print out the center-point 
+ *        coordinate values and width for the specified cell.
+ * \param out Stream-output class object.
+ * \param cell Cell.
+ */
+void CAR_CU_Mesh::print(ostream & output, int cell) const
 {
   // print out content info for 1 cell
     output << "+++++++++++++++" << endl;

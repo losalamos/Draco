@@ -27,7 +27,7 @@ namespace rtt_amr
 //---------------------------------------------------------------------------//
 // print member function used for printing the cell-face-cell info.
 // for one particular cell
-void Layout::print(ostream &output, int cell_index) const
+void Layout::print(ostream & output, int cell_index) const
 {
     using std::endl;
     using std::setw;
@@ -56,7 +56,13 @@ void Layout::print(ostream &output, int cell_index) const
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
-ostream& operator<<(ostream &output, const Layout &object)
+/*!
+ * \brief Overloaded stream-extraction operator for layout output.
+ * \param output Stream-output class object.
+ * \param object Layout class object.
+ * \return Reference to output.
+ */
+ostream & operator<<(ostream & output, const Layout & object)
 {
     int num_cells = object.num_cells();
     for (int cell_index = 1; cell_index <= num_cells; cell_index++)

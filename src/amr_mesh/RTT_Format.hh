@@ -1795,11 +1795,11 @@ class RTT_Format
  */
 
 /*!
- * \page rtt_stdcell RTT Standard Cell Definitions
- * The standard (i.e., default) RTT side set numbering is depicted on this 
- * page. Note that the "right hand rule" is used to return the direction of 
- * the outward-directed normal when the nodes are traversed in the order that
- * is specified in the side set node ordering. The RTT standard cell 
+ * \page rtt_stdcell RTT Format Standard Cell Definitions
+ * The standard (i.e., default) RTT_Format side set numbering is depicted on 
+ * this page. Note that the "right hand rule" is used to return the direction
+ * of the outward-directed normal when the nodes are traversed in the order
+ * that is specified in the side set node ordering. The RTT standard cell 
  * definitions do not assume any particular orientation relative to the system
  * coordinate system.
  *
@@ -1816,8 +1816,8 @@ class RTT_Format
  */
 
 /*!
- * \page rtt_sortcell RTT AMR Renumbered Cell Definitions
- * The RTT AMR renumbered side set numbering is depicted on this page. Note 
+ * \page rtt_sortcell RTT Format Renumbered Cell Definitions for AMR
+ * The RTT_Format side set renumbered for AMR is depicted on this page. Note 
  * that the "right hand rule" is used to return the direction of the 
  * outward-directed normal when the nodes are traversed in the order that
  * is specified in the side set node ordering. The cell definitions assume 
