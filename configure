@@ -1346,6 +1346,66 @@ fi
 
 subdirs="autodoc tools src doc"
 
+
+ 
+# check for configure
+# Extract the first word of "autoconf", so it can be a program name with args.
+set dummy autoconf; ac_word=$2
+echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+echo "configure:1356: checking for $ac_word" >&5
+if eval "test \"`echo '$''{'ac_cv_prog_AUTOCONF'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test -n "$AUTOCONF"; then
+  ac_cv_prog_AUTOCONF="$AUTOCONF" # Let the user override the test.
+else
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+  ac_dummy="$PATH"
+  for ac_dir in $ac_dummy; do
+    test -z "$ac_dir" && ac_dir=.
+    if test -f $ac_dir/$ac_word; then
+      ac_cv_prog_AUTOCONF="autoconf"
+      break
+    fi
+  done
+  IFS="$ac_save_ifs"
+  test -z "$ac_cv_prog_AUTOCONF" && ac_cv_prog_AUTOCONF="null"
+fi
+fi
+AUTOCONF="$ac_cv_prog_AUTOCONF"
+if test -n "$AUTOCONF"; then
+  echo "$ac_t""$AUTOCONF" 1>&6
+else
+  echo "$ac_t""no" 1>&6
+fi
+
+if test "${AUTOCONF}" = null ; then
+   { echo "configure: error: "Cannot find autoconf; cannot build configure scripts!"" 1>&2; exit 1; }
+fi
+
+CURRENT_DIR=`pwd`
+
+# build configure scripts in subdirs
+for dir in $subdirs
+   do
+       if test -d ${srcdir}/${dir} ; then
+	   echo $ac_n "checking "configure in ${srcdir}/${dir}"""... $ac_c" 1>&6
+echo "configure:1394: checking "configure in ${srcdir}/${dir}"" >&5
+	   cd $srcdir/$dir
+	   if test -f configure ; then 
+	       echo "$ac_t"""exists"" 1>&6
+	   elif test -f configure.in ; then
+	       ${AUTOCONF} --localdir=./../config
+	       echo "$ac_t"""built"" 1>&6
+	   else
+	       echo "$ac_t"""no configure.in - skipped"" 1>&6
+	   fi
+	   cd $CURRENT_DIR
+       fi
+   done
+
+
+
 trap '' 1 2 15
 cat > confcache <<\EOF
 # This file is a shell script that caches the results of configure
@@ -1498,6 +1558,7 @@ s%@SPRNG_INC@%$SPRNG_INC%g
 s%@SPRNG_LIB@%$SPRNG_LIB%g
 s%@PCGLIB_LIB@%$PCGLIB_LIB%g
 s%@subdirs@%$subdirs%g
+s%@AUTOCONF@%$AUTOCONF%g
 
 CEOF
 EOF
