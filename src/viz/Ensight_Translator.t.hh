@@ -121,8 +121,8 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
     system(rm_ensight.str().c_str());
 
     // build the ensight directory
-    mkdir(ens_prefix.c_str(), ENSIGHT_DIR_MODE);
-    if (errno != 0)
+    int err = mkdir(ens_prefix.c_str(), ENSIGHT_DIR_MODE);
+    if (err == -1)
     {
 	std::ostringstream dir_error;
 	dir_error << "Error opening ensight directory: " << strerror(errno);
