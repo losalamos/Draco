@@ -360,8 +360,16 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        AC_MSG_CHECKING("libg2c requirements")
        if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||
 	  test -n "${vendor_gandolf}"; then
-	   LIBS="${LIBS} -lg2c"
-	   AC_MSG_RESULT("-lg2c added to LIBS")
+	   
+	   # if KCC compiler than add backend
+	   if test "${CXX}" = KCC ; then
+	       LIBS="${LIBS} --backend -lg2c"
+	       AC_MSG_RESULT("--backend -lg2c added to LIBS")
+	   elif test "${CXX}" = g++ ; then
+	       LIBS="${LIBS} -lg2c"
+	       AC_MSG_RESULT("-lg2c added to LIBS")
+	   fi
+
        else
 	   AC_MSG_RESULT("not needed")
        fi
