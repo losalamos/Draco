@@ -92,6 +92,10 @@ need_c4 := yes
 need_namelist := yes
 endif
 
+ifeq ($(need_pcg),yes)
+need_lapack	:= yes
+endif
+
 #-----------------------------------------------------------------------------#
 # Set up some tools.
 
