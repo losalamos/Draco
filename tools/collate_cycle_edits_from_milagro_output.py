@@ -65,10 +65,11 @@ cycle_found = [(0)] * len(edit_cycles)
 # read command line arguments
 ###############################################################################
 
-fname = " "
+fname     = " "
 print_mat = 0
 print_rad = 0
-dx = 0.0
+dx        = 0.0
+num_cells = 0
 
 for arg in range(1,len(argv)):
     if (argv[arg] == '-i'):
@@ -87,6 +88,10 @@ for arg in range(1,len(argv)):
 
 if (dx <= 0.0):
     print "Error: dx (cell width) not entered correctly!"
+    sys.exit()
+
+if (num_cells <= 0.0):
+    print "Error: num_cells not entered correctly!"
     sys.exit()
 
 if (print_mat):
@@ -181,9 +186,17 @@ while (line):
                 #
                 # read in energies
                 #
+                # milagro line output for each cell is as follows:
+                #
+                # Cell  T-mat  E-mat  T-rad(path)  E-rad(path)  E-rad(cen)  
+                #       Evol-net  dE/dT  Mom-dep(1)  Mom-dep(2)  Mom-dep(3)
+                # 
+                # E-rad(path) is the timestep-averaged radiation energy.
+                # E-rad(cen) is the end-of-timestep radiation energy.
+                #
                 words = string.split(line)
                 mat_energy_edits[cycle_index][cell] = string.atof(words[2])
-                rad_energy_edits[cycle_index][cell] = string.atof(words[4])
+                rad_energy_edits[cycle_index][cell] = string.atof(words[5])
 
                 #
                 # increment cell counter
