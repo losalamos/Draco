@@ -6,67 +6,73 @@ digraph imc_package_level {
 
     /* nodes */
     node0 [shape=box, label="Rep_Source_Builder"];
-    node1 [shape=box, label="Communicator"];
-    node2 [shape=box, label="Interface"];
-    node3 [shape=box, label="Mat_State"];
-    node4 [shape=box, label="Tally"];
+    node1 [shape=box, label="Flat_Mat_State_Builder"];
+    node2 [shape=box, label="Transporter"];
+    node3 [shape=box, label="Interface"];
+    node4 [shape=box, label="Frequency"];
     node5 [shape=box, label="Mat_State_Builder"];
-    node6 [shape=box, label="DD_Transporter"];
-    node7 [shape=box, label="Flat_Mat_State_Builder"];
-    node8 [shape=box, label="Comm_Builder"];
-    node9 [shape=box, label="Particle_Buffer"];
-    node10 [shape=box, label="Opacity"];
-    node11 [shape=box, label="Mesh_Operations"];
-    node12 [shape=box, label="Transporter"];
+    node6 [shape=box, label="Global"];
+    node7 [shape=box, label="DD_Transporter"];
+    node8 [shape=box, label="Gray_Particle"];
+    node9 [shape=box, label="Opacity"];
+    node10 [shape=box, label="Mesh_Operations"];
+    node11 [shape=box, label="Flat_Data_Container"];
+    node12 [shape=box, label="Multigroup_Particle"];
     node13 [shape=box, label="Release"];
     node14 [shape=box, label="Source_Builder"];
     node15 [shape=box, label="Flat_Data_Interface"];
     node16 [shape=box, label="DD_Source_Builder"];
     node17 [shape=box, label="Source"];
-    node18 [shape=box, label="CDI_Data_Interface"];
-    node19 [shape=box, label="CDI_Mat_State_Builder"];
-    node20 [shape=box, label="Rep_Transporter"];
-    node21 [shape=box, label="Particle"];
-    node22 [shape=box, label="Global"];
+    node18 [shape=box, label="Tally"];
+    node19 [shape=box, label="CDI_Data_Interface"];
+    node20 [shape=box, label="CDI_Mat_State_Builder"];
+    node21 [shape=box, label="Rep_Transporter"];
+    node22 [shape=box, label="Particle"];
+    node23 [shape=box, label="Mat_State"];
 
     /* level dependencies */
-    node0 -> { node14  node17  node9  node10  node3  node11  node22 };
-    node1 -> { node9 };
-    node2 -> { node9 };
+    node0 -> { node14  node10 };
+    node1 -> { node5  node11  node6  node11  node23  node9  node4 };
+    node2 -> {};
     node3 -> {};
     node4 -> {};
-    node5 -> { node3  node10 };
-    node6 -> { node12 };
-    node7 -> { node5  node22 };
-    node8 -> { node1 };
-    node9 -> {};
-    node10 -> {};
-    node11 -> { node3 };
-    node12 -> { node3  node10  node17  node4  node9  node1 };
+    node5 -> {};
+    node6 -> {};
+    node7 -> { node2  node9  node23  node17  node18 };
+    node8 -> { node22 };
+    node9 -> { node4 };
+    node10 -> { node23 };
+    node11 -> {};
+    node12 -> { node22 };
     node13 -> {};
-    node14 -> { node21  node17  node9  node10  node3  node21  node22 };
-    node15 -> {};
-    node16 -> { node14  node17  node9  node10  node3  node11  node22 };
-    node17 -> { node21  node9  node3  node11  node22 };
+    node14 -> { node22  node6  node17  node23  node9  node8  node12  node4 };
+    node15 -> { node11 };
+    node16 -> { node14  node10 };
+    node17 -> { node10  node6  node9  node23  node8  node12 };
     node18 -> {};
-    node19 -> { node5  node22 };
-    node20 -> { node12 };
-    node21 -> { node10  node4  node22  node22 };
-    node22 -> {};
+    node19 -> {};
+    node20 -> { node5  node4  node9  node23  node6 };
+    node21 -> { node2  node9  node23  node17  node18 };
+    node22 -> { node9  node18  node6  node6 };
+    node23 -> {};
 
     /* Levels */
+    l7 [shape=plaintext, label="Level 7", fontsize=18];
+    l6 [shape=plaintext, label="Level 6", fontsize=18];
     l5 [shape=plaintext, label="Level 5", fontsize=18];
     l4 [shape=plaintext, label="Level 4", fontsize=18];
     l3 [shape=plaintext, label="Level 3", fontsize=18];
     l2 [shape=plaintext, label="Level 2", fontsize=18];
     l1 [shape=plaintext, label="Level 1", fontsize=18];
 
-    l5 -> l4 -> l3 -> l2 -> l1
+    l7 -> l6 -> l5 -> l4 -> l3 -> l2 -> l1
 
-    {rank=same; l1 node3 node4 node9 node10 node13 node15 node18 node22};
-    {rank=same; l2 node1 node2 node5 node11 node21};
-    {rank=same; l3 node7 node8 node17 node19};
-    {rank=same; l4 node12 node14};
-    {rank=same; l5 node0 node6 node16 node20};
+    {rank=same; l1 node2 node3 node4 node5 node6 node11 node13 node18 node19 node23};
+    {rank=same; l2 node9 node10 node15};
+    {rank=same; l3 node1 node20 node22};
+    {rank=same; l4 node8 node12};
+    {rank=same; l5 node17};
+    {rank=same; l6 node7 node14 node21};
+    {rank=same; l7 node0 node16};
 
 }
