@@ -17,6 +17,7 @@
 #include <cmath>
 #include <cctype>
 #include <cstdio>
+#include <stdio.h>
 
 #include "plot2D_grace.h"
 
@@ -78,7 +79,6 @@ Plot2D::
 graceVersion()
 {
     // Grab the version string from a pipe.
-    
     std::FILE *pipe = popen("gracebat -version", "r");
 
     Insist(pipe,
@@ -662,7 +662,7 @@ int
 Plot2D::
 numColumnsInFile(const std::string filename) const
 {
-    using ::isspace;
+    using std::isspace;
 
     std::ifstream f(filename.c_str());
 

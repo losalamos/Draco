@@ -27,6 +27,14 @@ dnl DRACO SETUP
 AC_DRACO_ENV
 AC_DRACO_AUTODOC(draco-4_3_0)
 
+dnl We need to add -nopure_cname to CXXFLAGS on the compaq because 
+dnl popen is defined in stdio.h but the strict ansi option will
+dnl automatically convert to std:: namespace (which doesn't include
+dnl popen and pclose)
+if test ${CXX} = 'cxx'; then
+   CXXFLAGS="$CXXFLAGS -nopure_cname"
+fi
+
 dnl Grace must be in the path!
 AC_PATH_PROG(XMGRACE_PATH, xmgrace, null)
 if test "${XMGRACE_PATH}" = null; then
