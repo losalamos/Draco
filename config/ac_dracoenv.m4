@@ -126,10 +126,23 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    AC_MSG_CHECKING("for draco standard headers")
    if test "${enable_draco_stdhdrs:=no}" != no ; then
-      CPPFLAGS="${CPPFLAGS} "'-I${includedir}/stdheaders'
-      AC_MSG_RESULT("CPPFLAGS modified")
+
+       # if draco vendor is defined then use that include path
+       if test -n "${DRACO_INC}" ; then
+	   CPPFLAGS="${CPPFLAGS} -I${DRACO_INC}/stdheaders"
+
+       # otherwise use the standard install location (includedir)
+       else
+	   CPPFLAGS="${CPPFLAGS} "'-I${includedir}/stdheaders'
+
+       fi
+       AC_MSG_RESULT("CPPFLAGS modified")
+
    else
-      AC_MSG_RESULT("no") 
+
+       # we don't need draco stdheaders
+       AC_MSG_RESULT("no") 
+
    fi
 
    dnl add any additional flags
