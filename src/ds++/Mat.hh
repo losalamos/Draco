@@ -32,6 +32,7 @@
 
 #include <algorithm>
 
+#include "config.hh"
 #include "Assert.hh"
 #include "Allocators.hh"
 #include "Bounds.hh"
