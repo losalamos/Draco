@@ -298,9 +298,7 @@ void T4_slope_test_AMR()
     vector<double> ref(3);
     {    
 	// get x-dimension cell extents
-	double lox       = 1.0;
-	double hix       = 1.5;
-	double half_delx = 0.5 * (hix - lox);
+	double half_delx = 0.5 * (1.5 - 1.0);
 
 	// calculate weighting function values at x-dimension cell extents
 	double half_delw = 64 * half_delx;
@@ -309,8 +307,8 @@ void T4_slope_test_AMR()
 
 	// calculate posititve y-values corresponding to x-dimension cell
 	// extents
-	double loy = lox * .267949;
-	double hiy = hix * .267949;
+	double loy = 1.0 * .267949;
+	double hiy = 1.5 * .267949;
 
 	// calc extents of function (wt-fn * half_y_value) from which to
 	// sample
@@ -318,7 +316,7 @@ void T4_slope_test_AMR()
 	double hif = hiy * high_w;
 	
 	// sample x
-	ref[0] = sample_general_linear(ran1, lox, hix, lof, hif);
+	ref[0] = sample_general_linear(ran1, 1.0, 1.5, lof, hif);
 
 	// calculate y-values corresponding to sampled x-value
 	double pos_y = ref[0] * .267949;
@@ -328,21 +326,15 @@ void T4_slope_test_AMR()
 	ref[1] = neg_y + ran1.ran() * (pos_y - neg_y);
 
 	// get z-dimension cell extents
-	double loz       = 2.0;
-	double hiz       = 2.5;
-	double half_delz = 0.5 * (hiz - loz);
+	double half_delz = 0.5 * (2.5 - 2.0);
 	
 	// calculate weighting function at z-dimension cell extents
 	half_delw = 64 * half_delz;
 	low_w     = 16 - half_delw;
 	high_w    = 16 + half_delw;
 
-	// calculate extents of function from which to sample
-	lof = loz * low_w;
-	hif = hiz * high_w;
-
 	// sample z
-	ref[2] = sample_general_linear(ran1, loz, hiz, lof, hif);
+	ref[2] = sample_general_linear(ran1, 2.0, 2.5, low_w, high_w);
     }
     
     // sample position using mesh_op

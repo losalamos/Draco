@@ -13,6 +13,7 @@
 #include "../Global.hh"
 #include "mc/AMR_Layout.hh"
 #include "mc/XYZCoord_sys.hh"
+#include <cmath>
 
 namespace rtt_imc_test
 {
@@ -23,6 +24,10 @@ using rtt_mc::AMR_Layout;
 using rtt_mc::Coord_sys;
 using rtt_mc::XYZCoord_sys;
 using rtt_dsxx::SP;
+
+using std::sqrt;
+using std::cos;
+using std::sin;
 
 typedef std::vector<double>    sf_double;
 typedef std::vector<sf_double> vf_double;
