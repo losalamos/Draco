@@ -84,7 +84,7 @@
 
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
-\refno{CCS-4:04-????(U)}
+\refno{CCS-4:04-13(U)}
 \subject{Vision and Scope Statements for Project Camel Norton}
 
 %-------NO CHANGES
@@ -113,10 +113,7 @@
 %%---------------------------------------------------------------------------%%
 
 \distribution {
-  G.L. Olson, CCS-4, D-409 \\
-  R.S. Baker, CCS-4, D-409 \\
   M.W. Buksas, CCS-4, D-409 \\
-  J.A. Dahl, CCS-4, D-409 \\
   J.D. Densmore, CCS-4, D-409 \\
   T.M. Evans, CCS-4, D-409 \\
   T.J. Urbatsch, CCS-4, D-409 \\
@@ -131,15 +128,16 @@
 
 \section*{Vision Statement}
 
-Project Camel Norton\footnote{The name is an anagram of Monte Carlo,
-  if you must know.} will produce improved code in the Draco MC and
-IMC packages. Time permitting, it will also extend to the interaface
-components within Milagro. Within IMC, we seek to reduce the amount of
-duplicated code in the Particle class heirachy and simplify the
-execution of the transport algorithm. This is the highest priority of
-this project. In the MC component the goal is to improve the topology
-class to reduce the amount of inforation it requires.  This is the
-second priority of this project. Within Milagro, we seek to eliminate
+Project Camel Norton\footnote{The name is an anagram of {\em Monte
+    Carlo}, if you must know.} will produce improved code in the Draco
+{\tt mc} and {\tt imc} components. Time permitting, it will also
+extend to the interaface components within Milagro. Within {\tt imc},
+we seek to reduce the amount of duplicated code in the Particle class
+heirachy and simplify the execution of the transport algorithm. This
+is the highest priority of this project. In the {\tt mc} component the
+goal is to improve the topology class to reduce the amount of data it
+contains and make the extent of it's data more clear.  This is the
+second priority of this project.  Within Milagro, we seek to eliminate
 the redundancies in the interface code and the global tally. This is
 the third priority of this project.
 
@@ -148,12 +146,15 @@ particle-transport subproject, the topology subproject and the milagro
 interface subproject.
 
 This project is being undertaken to simplify the addition of new
-features and improve maintenance. The next area to be affect by the
-addition of new features in the transport algorithm. The ease by which
-specific features can be added after the refactoring is comlete will
-be our criteria for success. This will be done in comparison to the
-difficulties encountered in the addition of the surface tracking
-capability.
+features and ease maintenance of the code. The next area to be
+affected by new features is the particle transport algorithm.  This
+code is already in a difficult to maintain state because of the recent
+addition of new features. The ease by which specific features can be
+added after the refactoring is comlete will be our criteria for the
+success of this stage of the project. 
+
+Detailed plans for the particle transport phase have been documented
+in~\cite{ccs-4:04-14}.
 
 \newpage
 \section*{Scope Statement}
@@ -168,24 +169,46 @@ The product of Project Camel Norton will be the replacement of
 existing code while preserving functionality. {\em No new capabilities
   will be added as part of this project.}
 
-For the transport algorithm in {\tt draco/imc} the modifications to
-the code will likely result in the creation of new classes and the
-removal of functionality from the Particle heriachy of classes. We
-will use the design in Uncle McFlux as a model, where the Particle
-class and the Particle transport algorithm are seperated.
+In this document, we need to make a distinction between the {\em
+  particle transport algorithm} and the {\em transport algorithm}.
+Particle transport refers to the sequence of actions taken on a single
+particle from the point at which it is created until it is
+communicated, killed or goes into census at the end of the time step.
+This is currently implemented in {\tt draco/imc} by the various
+particle classes transport member functions.  
 
-The design for the refactored code will be based on the anticipation
-of several new features: DDIMC, Three dimensional support, Material
+The {\em transport algorithm} (without particle) refers to the
+asynchrous parallel implementation of multiple particle transport
+processes and their coordination through parallel communication and
+the global particle count. This this implemented in {\tt draco/imc} by
+the {\tt DD\_Transporter} and {\tt Rep\_Transporter} classes.
+
+For the particle transport algorithm in {\tt draco/imc} the
+modifications to the code will likely result in the creation of new
+classes and the removal of functionality from the Particle heriachy of
+classes. We will use the design in Uncle McFlux as a model, where the
+Particle class and the Particle transport algorithm are seperated.
+
+The need for refactored code is be based on the anticipation of
+several new features: DDIMC, Three dimensional computations, Material
 Motion and Compton Scattering. Our goal is code which will support the
 addition of these features with minimum of effort.
 
 The {\tt General\_Topology} class in {\tt draco/mc} supportes a very
 general range of cell to domain mappings, including full replication
-and fully decomposed meshes. The class, however, does not enforce a
+and fully decomposed meshes. The class, however, does not make a
 distinction between topologies which contain information about the
-global mesh or which only contain the necessary local information
-about the neighbors of a given mesh. We seek to improve the topology
-class to make this distinction more explicit.
+global mesh or which only contain information about cells which are
+neighbors of the local mesh. We seek to improve the topology class to
+make this distinction more explicit.
+
+While working in the {\tt imc} component, it may also prove benifical
+to import classes from Uncle McFlux which provide useful services. For
+example the {\tt DD\_Transporter} and {\tt Rep\_Transporter} classes
+which implement the asynchrous transport algorithm are also
+responsible for the global count of completed particles. In Uncle
+McFlux this responsibility is given to a seperate class {\tt
+  Asynchrous\_Counter}. 
 
 The Milagro interface has accquired some unusual features which make
 it ripe for refactoring. Principal among these are:
@@ -203,18 +226,23 @@ the very purpose of using abstract interfaces.
 more than tallies.
 
 \item The {\tt Interface} and {\tt Global\_Tally} both have large
-  interfaces which are the union of interfaces required by other
-  objects. This strongly suggests that the data they contain cound be
-  better encapsulated.
+  interfaces to implement which are the union of interfaces required
+  by other objects. This strongly suggests that the data they contain
+  cound be better encapsulated. To do this, the interface class could
+  inherit from implementations of it's component interfaces, reducing
+  the amount of implementation which must be one in one large class.
 
 \end{itemize}
 
 \subsection*{Graphical Representation}
 
+See Figure~\ref{fig:norton}.
+
 \begin{figure}[h]
   \begin{center}
     \includegraphics[width=1in]{figures/camel.eps}
     \caption{Norton}
+    \label{fig:norton}
   \end{center}
 \end{figure}
 
@@ -247,29 +275,15 @@ similarly cross-cutting features.
 For the particle-transport subproject to be considered a success, we
 must be able to recuperate some of the time spent refactoring in time
 spent adding new features. Refactoring is strictly a software
-development issue, and hence is an ordinary problem. The problem
-acquires a dilemma-like character becasue it's goal is diffucilt to
-quantify and can only be attempted after the project is complete.
+development issue but acquires a dilemma-like character becasue it's
+goal is diffucilt to quantify and can only be attempted after the
+project is complete.
 
 To deal with this dilemma, we can consider incorporating the addition
 of a selected feature into a broader project, thereby expanding the
 scope to include one cycle of ``refactor, then implement''. The
 relative ease of the implementation phase can be used to judge the
 success of the project.
-
-Another risk involves keeping the scope of the refactor limited to
-areas where the payoff in terms of maintenance is the greatest. The
-author of this document has been known to succumb to refactor-mania on
-occasion. 
-
-The topology subproject must be evaluated in a similar fashion. It may
-be undertaken as the same time as the particle-transport refactor if
-it is deemed useful in implementing new features. If it appears to
-remain independent, it will be postponed and evaluated seperately.
-
-The Milagro-interface subproject can also be evaluated by its
-facilitation of new features. We can also examine it for code smells,
-especially code duplication.
 
 \begin{table}[ht]
   \caption{Critical Success Factor Actions.}
@@ -304,6 +318,20 @@ especially code duplication.
 \newpage
 \section*{Risk Assessment}
 
+One risk of refactoring involves keeping the scope of the refactor
+limited to areas where the payoff in terms of maintenance is the
+greatest. (The author of this document has been known to succumb to
+refactor-mania on occasion.)
+
+The topology subproject must be evaluated in a similar fashion. It may
+be undertaken as the same time as the particle-transport refactor if
+it is deemed useful in implementing new features. If it appears to
+remain independent, it will be postponed and evaluated seperately.
+
+The Milagro-interface subproject can also be evaluated by its
+facilitation of new features. We can also examine it for code smells,
+especially code duplication.
+
 \begin{table}[ht]
   \begin{center}
     \caption{Risk Assessment for Project Camel Norton.}
@@ -312,15 +340,28 @@ especially code duplication.
     \hline
     Risk & Likelihood & Impact & Importance & Contingency \\ 
     \hline\hline
-    Too difficult to tell if refactoring is useful & 6 & 3 & 18 &
-    Add an implementation step. \\
-    \hline
-    Refactor spreads to rest of package & 4 & 8 & 32 &
-    Evaluate additional refactoring targets on merits \\
-    \hline
-    Refactored code is significantly slower & 2 & 9 & 18 &
+    Refactored code is significantly slower & 4 & 9 & 36 &
     Add an optimization refactor step when new features are
-    implemented. \\ \hline
+    implemented. \\ 
+    \hline
+    Refactored code is too fragmented or ``clever'' to be understood
+    easily. 
+    & 5 & 4 & 20 &
+    Consider re-consolidation for clairty. Make sure design choices are
+    well documented. \\
+    \hline
+    Too difficult to tell if refactoring is useful & 6 & 3 & 18 &
+    Add an implementation step. Refactor on aesthetic merits alone. \\
+    \hline
+    Refactor planning leads to ``paralysis by analysis'' 
+    & 3 & 5 & 15 &
+    Enforce a strict deadline for stopping planning phase and
+    beginning deployment. \\
+    \hline
+    Refactor scope spreads too far & 4 & 3 & 12 &
+    Evaluate additional refactoring targets on merits. Adjust or
+    enforce scope as needed. \\
+    \hline
     \end{tabular}
   \end{center}
 \end{table}
@@ -349,7 +390,7 @@ Track actual results and performance with plans.
    projects?
 
 \newpage
-\bibliography{cs}
+\bibliography{cs,jayenne_ref}
 \bibliographystyle{plain}
 
 \closing
