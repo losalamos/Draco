@@ -12,12 +12,14 @@
 #ifndef __imc_Mat_State_Builder_hh__
 #define __imc_Mat_State_Builder_hh__
 
-#include "Mat_State.hh"
-#include "Opacity.hh"
 #include "ds++/SP.hh"
 
 namespace rtt_imc
 {
+
+// Forward declarations
+template<class MT> class Mat_State;
+template<class MT, class FT> class Opacity;
 
 //===========================================================================//
 /*!
@@ -41,7 +43,9 @@ namespace rtt_imc
  * The Mat_State_Builder provides a simple interface to build two objects:
  *
  * \arg \b build_Mat_State() builds a Mat_State object
+ * \arg \b build_Frequency() builds a Frequency object
  * \arg \b build_Opacity() builds an Opacity object
+ * \arg \b build_Frequency_Operations() builds a Frequency_Operations object
  *
  * The Mat_State must be built first because the Mat_State object is an
  * argument to build_Opacity().  The argument is required for efficiency's
@@ -62,14 +66,15 @@ namespace rtt_imc
 // 
 //===========================================================================//
 
-template<class MT>
+template<class MT, class FT>
 class Mat_State_Builder 
 {
   public:
     // Useful typedefs.
-    typedef rtt_dsxx::SP<MT>             SP_Mesh;
-    typedef rtt_dsxx::SP<Mat_State<MT> > SP_Mat_State;
-    typedef rtt_dsxx::SP<Opacity<MT> >   SP_Opacity;
+    typedef rtt_dsxx::SP<MT>                        SP_Mesh;
+    typedef rtt_dsxx::SP<Mat_State<MT> >            SP_Mat_State;
+    typedef rtt_dsxx::SP<Opacity<MT,FT> >           SP_Opacity;
+    typedef rtt_dsxx::SP<FT>                        SP_Frequency;
     
   public:
     //! Constructor.
@@ -80,11 +85,14 @@ class Mat_State_Builder
 
     // >>> PUBLIC INTERFACE
 
+    //! Build a frequency definition.
+    virtual SP_Frequency build_Frequency() = 0;
+
     //! Build a material state.
-    virtual SP_Mat_State build_Mat_State(SP_Mesh) const = 0;
+    virtual SP_Mat_State build_Mat_State(SP_Mesh) = 0;
 
     //! Build an opacity.
-    virtual SP_Opacity build_Opacity(SP_Mesh, SP_Mat_State) const = 0;
+    virtual SP_Opacity build_Opacity(SP_Mesh, SP_Frequency, SP_Mat_State) = 0;
 };
 
 } // end namespace rtt_imc

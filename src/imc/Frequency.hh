@@ -51,7 +51,7 @@ class Multigroup_Frequency
   public:
 
     // Constructor.
-    explicit Multigroup_Frequency(const sf_double & grp_bnds = sf_double())
+    explicit Multigroup_Frequency(const sf_double &grp_bnds)
 	: group_boundaries(grp_bnds)
     {
 	// Require at least one group
@@ -175,28 +175,16 @@ class Multigroup_Frequency
 
 class Gray_Frequency 
 {
-
   public:
 
     // Useful typedefs.
     typedef std::vector<double>        sf_double;
     typedef std::pair<double,double>   pair_doubles;
 
-  private:
-
-    // Frequency group boundaries.
-    sf_double group_boundaries;
-
   public:
 
     // Constructor.
-    explicit Gray_Frequency(const sf_double & grp_bnds = sf_double())
-	: group_boundaries(grp_bnds)
-    {
-	// Check that there are no group bounds.
-	Insist (group_boundaries.size() == 0, 
-		"Non-null group bnds given to Gray_Frequency!");
-    }
+    explicit Gray_Frequency() {/*...*/}
 
     // >>> Accessors.
     
@@ -213,7 +201,7 @@ class Gray_Frequency
     int get_num_group_boundaries() const { return 0; }
 
     //! Get all group boundaries.
-    sf_double get_group_boundaries() const { return group_boundaries; }
+    sf_double get_group_boundaries() const { return sf_double(); }
 
     //! Find a frequency group, in [1,G], given a frequency [keV]. 
     int find_group_given_a_freq(const double hnu) const { return 0; }
