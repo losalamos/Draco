@@ -176,49 +176,58 @@ inline double polylog_series_minus_one_planck(double x)
  *
  * This function integrates the normalized Plankian that is defined:
  *
- * b(x) = 15/pi^4 * x^3 / (e^x - 1)
+ * \f[
+ *    b(x) = \frac{15}{\pi^4} \frac{x^3}{e^x - 1}
+ * \f]
  *
  * where 
- *
- * x = (h nu) / (kT)
  * 
+ * \f[
+ *    x = \frac{h\nu}{kT}
+ * \f]
+ *
  * and 
- * 
- * B(nu, T)dnu = acT^4/4pi * b(x)dx
- * 
- * where B(nu, T) is the Plankian and is defined
  *
- * B(nu, T) = 2hnu^3/c^2 (e^hnu/kt - 1)^-1
+ * \f[ 
+ *    B(\nu,T)d\nu = \frac{acT^4}{4\pi} b(x)dx
+ * \f]
+ * 
+ * where \f$B(\nu,T)\f$ is the Plankian and is defined
  *
- * The normalized Plankian, integrated from 0 to infinity, equals
+ * \f[
+ *    B(\nu,T) = \frac{2h\nu^3}{c^2} \frac{1}{e^{h\nu/kt} - 1}
+ * \f]
+ *
+ * The normalized Plankian, integrated from 0 to \f$\infty\f$, equals
  * one. However, depending upon the maximum and minimum group boundaries, the
  * normalized Planck function may integrate to something less than one.
  *
  * This function performs the following integration:
- *
- *      Int_(x_low)^(x_high) b(x) dx
- *
- * where x_low is calculated from the input low frequency bound and x_high is
- * calculated from the input high frequency bound.  This integration uses the
- * method of B. Clark (JCP (70)/2, 1987).  We use a 10-term Polylogarithmic
- * expansion for the normalized Planckian, except in the low-x limit, where
- * we use a 21-term Taylor series expansion.
+ *\f[
+ *      \int_{x_low}^{x_high} b(x) dx
+ *\f]
+ * where \f$x_low\f$ is calculated from the input low frequency bound and
+ * \f$x_high\f$ is calculated from the input high frequency bound.  This
+ * integration uses the method of B. Clark (JCP (70)/2, 1987).  We use a
+ * 10-term Polylogarithmic expansion for the normalized Planckian, except in
+ * the low-x limit, where we use a 21-term Taylor series expansion.
  *
  * The user is responsible for applying the appropriate constants to the
  * result of this integration.  For example, to make the result of this
  * integration equivalent to
+ * \f[
+ *      \int_{\nu_low}^{\nu_high} B(\nu,T) d\nu 
+ * \f]
+ * then you must multiply by a factor of \f$\frac{acT^4}{4\pi}\f$ where a is
+ * the radiation constant.  If you want to evaluate expressions like the
+ * following:
+ *\f[
+ *      \int_{4\pi} \int_{\nu_low}^{\nu_high} B(\nu,T) d\nu d\Omega
+ *\f]
+ * then you must multiply by \f$acT^4\f$.
  *
- *      Int_(nu_low)^{nu_high) B(nu,T) dnu
- * 
- * then you must multiply by a factor of acT^4/4pi where a is the radiation
- * constant.  If you want to evaluate expressions like the following:
- *
- *      Int_(4pi)Int_(nu_low)^{nu_high) B(nu,T) dnu domega
- *
- * then you must multiply by acT^4.
- *
- * In the limit of T -> zero, b(T) -> zero, therefore we return a hard zero
- * for a temperature equal to a hard zero.
+ * In the limit of \f$T \rightarrow 0, b(T) \rightarrow 0, therefore we
+ * return a hard zero for a temperature equal to a hard zero.
  *
  * \param lowFreq lower frequency bound in keV
  *
@@ -270,28 +279,29 @@ double CDI::integratePlanckSpectrum(double lowFreq, double highFreq, double T)
 //---------------------------------------------------------------------------//
 /*!
  *
- * \brief Integrate the normalized Planckian spectrum from 0 to x (hnu/kT).
+ * \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
+ * (\frac{h\nu}{kT}) \f$.
  *
  * This function integrates the normalized Plankian that is defined:
- *
- * b(x) = 15/pi^4 * x^3 / (e^x - 1)
- *
+ *\f[
+ *    b(x) = \frac{15}{\pi^4} \frac{x^3}{e^x - 1}
+ *\f]
  * where 
- *
- * x = (h nu) / (kT)
- * 
+ *\f[
+ * x = \frac{h\nu}{kT}
+ * \f]
  * and 
- * 
- * B(nu, T)dnu = acT^4/4pi * b(x)dx
- * 
- * where B(nu, T) is the Plankian and is defined
- *
- * B(nu, T) = 2hnu^3/c^2 (e^hnu/kt - 1)^-1
- *
+ * \f[
+ *    B(\nu,T)d\nu = \frac{acT^4}{4\pi} b(x)dx
+ * \f]
+ * where \f$B(\nu,T)\f$ is the Plankian and is defined
+ *\f[
+ *    B(\nu,T) = \frac{2hnu^3}{c^2} \frac{1}{e^{\frac{h\nu}{kT}} - 1}
+ *\f]
  * This function performs the following integration:
- *
- *      Int_(0)^(x) b(x) dx
- *
+ *\f[
+ *      \int_{0}^{x} b(x) dx
+ *\f]
  * using the method of B. Clark (JCP (70)/2, 1987).  We use a 10-term
  * Polylogarithmic expansion for the normalized Planckian, except in the
  * low-x limit, where we use a 21-term Taylor series expansion.
@@ -299,24 +309,25 @@ double CDI::integratePlanckSpectrum(double lowFreq, double highFreq, double T)
  * The user is responsible for applying the appropriate constants to the
  * result of this integration.  For example, to make the result of this
  * integration equivalent to
+ *\f[
+ *     \int_{0}^{\nu} B(\nu,T) d\nu
+ * \f]
+ * then you must multiply by a factor of \f$\frac{acT^4}{4\pi}\f$ where a is
+ * the radiation constant.  If you want to evaluate expressions like the
+ * following: 
+ *\f[
+ *     \int_{4\pi} \int_{0}^{\nu} B(\nu,T) d\nu d\Omega
+ *\f]
+ * then you must multiply by \f$acT^4\f$.
  *
- *      Int_(0)^{nu) B(nu,T) dnu
- * 
- * then you must multiply by a factor of acT^4/4pi where a is the radiation
- * constant.  If you want to evaluate expressions like the following:
- *
- *      Int_(4pi)Int_(0)^{nu) B(nu,T) dnu domega
- *
- * then you must multiply by acT^4.
- *
- * In the limit of T -> zero, b(T) -> zero, therefore we return a hard zero
- * for a temperature equal to a hard zero.
+ * In the limit of \f$T \rightarrow 0, b(T) \rightarrow 0 \f$, therefore we
+ * return a hard zero for a temperature equal to a hard zero.
  *
  * \param frequency frequency upper integration limit in keV
  *
  * \param T the temperature in keV (must be greater than 0.0)
  * 
- * \return integrated normalized Plankian from 0 to x (hnu/kT)
+ * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
  *
  */
 double CDI::integratePlanckSpectrum(double frequency, double T)
@@ -338,29 +349,29 @@ double CDI::integratePlanckSpectrum(double frequency, double T)
  * \brief Integrate the Planckian spectrum over a frequency group.
  *
  * This function integrates the normalized Plankian that is defined:
- *
- * b(x) = 15/pi^4 * x^3 / (e^x - 1)
- *
+ * \f[
+ *    b(x) = \frac{15}{\pi^4} \frac{x^3}{e^x - 1}
+ * \f]
  * where 
- *
- * x = (h nu) / (kT)
- * 
+ * \f[
+ *    x = \frac{h\nu}{kT}
+ * \f]
  * and 
- * 
- * B(nu, T)dnu = acT^4/4pi * b(x)dx
- * 
- * where B(nu, T) is the Plankian and is defined
- *
- * B(nu, T) = 2hnu^3/c^2 (e^hnu/kt - 1)^-1
- *
- * The normalized Plankian, integrated from 0 to infinity, equals
+ * \f[
+ *    B(\nu, T)d\nu = \frac{acT^4}{4\pi}b(x)dx
+ * \f]
+ * where \f$B(\nu, T)\f$ is the Plankian and is defined
+ * \f[
+ *    B(\nu, T) = \frac{2h\nu^3}{c^2} \frac{1}{e^{\frac{h\nu}{kT}} - 1}
+ * \f]
+ * The normalized Plankian, integrated from 0 to \f$\infty\f$, equals
  * one. However, depending upon the maximum and minimum group boundaries, the
  * normalized Planck function may integrate to something less than one.
  *
  * This function performs the following integration:
- *
- *      Int_(x_g-1)^(x_g) b(x) dx
- *
+ * \f[
+ *      \int_{x_{g-1}}^{x_g} b(x) dx
+ * \f]
  * using the method of B. Clark (JCP (70)/2, 1987).  We use a 10-term
  * Polylogarithmic expansion for the normalized Planckian, except in the
  * low-x limit, where we use a 21-term Taylor series expansion.
@@ -368,27 +379,26 @@ double CDI::integratePlanckSpectrum(double frequency, double T)
  * The user is responsible for applying the appropriate constants to the
  * result of this integration.  For example, to make the result of this
  * integration equivalent to
+ * \f[
+ *      \int_{\nu_{g-1}}^{\nu_g} B(\nu,T) d\nu
+ * \f]
+ * then you must multiply by a factor of \f$\frac{acT^4}{4\pi}\f$ where a is
+ * the radiation constant.  If you want to evaluate expressions like the
+ * following:
+ *\f[
+ *     \int_{4\pi} \int_{\nu_{g-1}}^{\nu_g} B(\nu,T) d\nu d\Omega
+ *\f]
+ * then you must multiply by \f$acT^4\f$.
  *
- *      Int_(nu_g-1)^{nu_g) B(nu,T) dnu
- * 
- * then you must multiply by a factor of acT^4/4pi where a is the radiation
- * constant.  If you want to evaluate expressions like the following:
- *
- *      Int_(4pi)Int_(nu_g-1)^{nu_g) B(nu,T) dnu domega
- *
- * then you must multiply by acT^4.
- *
- * In the limit of T -> zero, b(T) -> zero, therefore we return a hard zero
- * for a temperature equal to a hard zero.
+ * In the limit of \f$T \rightarrow 0, b(T) \rightarrow 0\f$, therefore we
+ * return a hard zero for a temperature equal to a hard zero.
  *
  * If no groups are defined then an exception is thrown.
  *
  * \param groupIndex index of the frequency group to integrate [1,num_groups]
- *
- * \param T the temperature in keV (must be greater than 0.0)
- * 
- * \return integrated normalized Plankian over the group specified by
- * groupIndex
+ * \param T          the temperature in keV (must be greater than 0.0)
+ * \return           integrated normalized Plankian over the group specified
+ *                   by groupIndex.
  *
  */
 double CDI::integratePlanckSpectrum(int groupIndex, double T)
@@ -417,50 +427,51 @@ double CDI::integratePlanckSpectrum(int groupIndex, double T)
  * \brief Integrate the Planckian spectrum over all frequency groups.
  *
  * This function integrates the normalized Plankian that is defined:
- *
- * b(x) = 15/pi^4 * x^3 / (e^x - 1)
- *
+ * \f[
+ *    b(x) = \frac{15}{\pi^4} \frac{x^3}{e^x - 1}
+ * \f]
  * where 
- *
- * x = (h nu) / (kT)
- * 
+ * \f[
+ *    x = \frac{h\nu}{kT}
+ * \f]
  * and 
- * 
- * B(nu, T)dnu = acT^4/4pi * b(x)dx
- * 
- * where B(nu, T) is the Plankian and is defined
- *
- * B(nu, T) = 2hnu^3/c^2 (e^hnu/kt - 1)^-1
- *
- * The normalized Plankian, integrated from 0 to infinity, equals
+ * \f[
+ *    B(\nu, T)d\nu = \frac{acT^4}{4\pi}b(x)dx
+ * \f]
+ * where \f$B(\nu, T)\f$ is the Plankian and is defined
+ * \f[
+ *    B(\nu, T) = \frac{2h\nu^3}{c^2} \frac{1}{e^{\frac{h\nu}{kT}} - 1}
+ * \f]
+ * The normalized Plankian, integrated from 0 to \f$\infty\f$, equals
  * one. However, depending upon the maximum and minimum group boundaries, the
  * normalized Planck function may integrate to something less than one.
  *
  * This function performs the following integration:
- *
- *      Int_(x_1)^(x_N) b(x) dx
- *
- * where x_1 is the low frequency bound and x_N is the high frequency bound
- * of the multigroup data set.  This integration uses the method of B. Clark
- * (JCP (70)/2, 1987).  We use a 10-term Polylogarithmic expansion for the
- * normalized Planckian, except in the low-x limit, where we use a 21-term
- * Taylor series expansion.
+ * \f[
+ *      \int_{x_1}^{x_N} b(x) dx
+ * \f]
+ * where \f$x_1\f$ is the low frequency bound and \f$x_N\f$ is the high
+ * frequency bound of the multigroup data set.  This integration uses the
+ * method of B. Clark (JCP (70)/2, 1987).  We use a 10-term Polylogarithmic
+ * expansion for the normalized Planckian, except in the low-x limit, where
+ * we use a 21-term Taylor series expansion.
  *
  * The user is responsible for applying the appropriate constants to the
  * result of this integration.  For example, to make the result of this
  * integration equivalent to
+ * \f[
+ *      \int_{\nu_1}^{\nu_N} B(\nu,T) d\nu
+ * \f]
+ * then you must multiply by a factor of \f$\frac{acT^4}{4\pi}\f$ where a is
+ * the radiation constant.  If you want to evaluate expressions like the
+ * following:
+ *\f[
+ *      \int_{4\pi} \int_{\nu_1}^{\nu_N} B(\nu,T) d\nu d\Omega
+ *\f]
+ * then you must multiply by \f$ acT^4 \f$.
  *
- *      Int_(nu_1)^{nu_N) B(nu,T) dnu
- * 
- * then you must multiply by a factor of acT^4/4pi where a is the radiation
- * constant.  If you want to evaluate expressions like the following:
- *
- *      Int_(4pi)Int_(nu_1)^{nu_N) B(nu,T) dnu domega
- *
- * then you must multiply by acT^4.
- *
- * In the limit of T -> zero, b(T) -> zero, therefore we return a hard zero
- * for a temperature equal to a hard zero.
+ * In the limit of \f$ T \rightarrow 0, b(T) \rightarrow 0\f$, therefore we
+ * return a hard zero for a temperature equal to a hard zero.
  *
  * If no groups are defined then an exception is thrown.
  *
