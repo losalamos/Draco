@@ -15,6 +15,12 @@
 
 #include "C4_MPI.t.hh"
 
+#else
+
+#include "C4_Serial.hh"
+
+#endif // C4_MPI
+
 namespace rtt_c4
 {
 
@@ -103,8 +109,6 @@ template void global_min(double *, int);
 template void global_min(long double *, int);
 
 } // end namespace rtt_c4
-
-#endif // C4_MPI
 
 //---------------------------------------------------------------------------//
 //                              end of C4_MPI_reductions_pt.cc
