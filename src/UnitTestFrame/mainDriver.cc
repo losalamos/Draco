@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
     try
     {
-	TestApp &theTestApp = TestApp::theTestApp(argc, argv);
+	TestApp &theTestApp = TestApp::theTestApp(argc, argv, std::cout);
     }
     catch(rtt_dsxx::assertion& a)
     {

@@ -95,6 +95,8 @@ class TestApp
 
     const std::list<std::string> &messageList() const { return messageList_m; }
 
+    std::string getNextArg(const std::string &arg) const;
+
     virtual std::string name() const = 0;
 
     virtual std::string version() const = 0;
@@ -103,10 +105,11 @@ class TestApp
     
     // STATIC CREATOR
 
-    static TestApp &theTestApp(int &argc, char *argv[])
+    static TestApp &theTestApp(int &argc, char *argv[],
+			       std::ostream &os_in = std::cerr)
     {
 	if (!theSPTestApp)
-	    theSPTestApp = create(argc, argv);
+	    theSPTestApp = create(argc, argv, os_in);
 	return *theSPTestApp;
     }
 
@@ -115,7 +118,7 @@ class TestApp
 	int argc = 0;
 	char **argv = 0;
 	if (!theSPTestApp)
-	    theSPTestApp = create(argc, argv);
+	    theSPTestApp = create(argc, argv, std::cerr);
 	return *theSPTestApp;
     }
 
@@ -123,7 +126,8 @@ class TestApp
 
     // STATIC IMPLEMENTATION
     
-    static rtt_dsxx::SP<TestApp> create(int &argc, char *argv[]);
+    static rtt_dsxx::SP<TestApp> create(int &argc, char *argv[],
+					std::ostream &os_in);
 
   private:
 

@@ -13,6 +13,8 @@
 #include "PassFailStream.hh"
 #include <algorithm>
 
+using std::string;
+
 namespace rtt_UnitTestFrame
 {
 
@@ -25,7 +27,7 @@ TestApp::TestApp(int &argc,  char *argv[], std::ostream &os_in)
 	argList_m.push_back(argv[i]);
 }
 
-std::string TestApp::run()
+string TestApp::run()
 {
     if (std::find(argList_m.begin(), argList_m.end(), "--version")
 	!= argList_m.end())
@@ -45,17 +47,28 @@ std::string TestApp::run()
     {
 	fail() <<"std::exception: " << a.what();
     }
-    return std::string("Test ") + name() + " incomplete.";
+    return string("Test ") + name() + " incomplete.";
 }
 
-PassFailStream TestApp::pass(const std::string &str)
+PassFailStream TestApp::pass(const string &str)
 {
     return PassFailStream(*this, str, true);			
 }
 
-PassFailStream TestApp::fail(const std::string &str)
+PassFailStream TestApp::fail(const string &str)
 {
     return PassFailStream(*this, str, false);			
+}
+
+string TestApp::getNextArg(const string &arg) const
+{
+    std::list<string>::const_iterator argit;
+    argit = std::find(argList_m.begin(), argList_m.end(), arg);
+
+    if (argit != argList_m.end() && ++argit != argList_m.end())
+	return *argit;
+
+    return "";
 }
 
 } // end namespace rtt_UnitTestFrame
