@@ -1,4 +1,10 @@
-$Id$
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> DRACO RELEASE draco-2_0_0       
+>>> CCS-4 Transport Methods Group      
+>>> Copyright University of California 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> $Id$
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 Draco is an object-oriented component library geared towards
 numerically intensive, radiation (particle) transport applications.
@@ -11,6 +17,31 @@ Draco contains two sets of components.  Active components are
 currently used and maintained.  Retired packages are no longer in use
 by any clients.  Retired packages can be recovered from cvs by using
 the tag <package>-retired.
+
+Draco development is performed by project teams within CCS-4 and
+CCS-2.  The following code projects use/supply code to draco:
+
+	1) JAYENNE/CCS-4/Tom Evans <tme@lanl.gov>
+		         Todd Urbatsch <tmonster@lanl.gov>
+			 Mike Buksas <mwbuksas@lanl.gov>
+			 Grady Hughes <hgh@lanl.gov>
+
+	2) THALES/CCS-4/Kelly Thompson <kgt@lanl.gov>
+		        Shaun Pautz <pautz@lanl.gov>
+			Brad Clark <bac@lanl.gov>
+
+	3) MACH/CCS-2/Rob Lowrie <lowrie@lanl.gov>
+
+	4) ZATHRAS/CCS-4/Scott Turner <turners@lanl.gov>
+			 Dave Carrington <dcarring@lanl.gov>
+
+Draco is governed by a board consisting of:
+
+      Tom Evans/CCS-4/<tme@lanl.gov> (Chair)
+      Kelly Thompson/CCS-4/<kgt@lanl.gov>
+      Jim Warsa/CCS-4/<warsa@lanl.gov>
+      Jon Dahl/CCS-4/<dahl@lanl.gov>
+      Rob Lowrie/CCS-2/<lowrie@lanl.gov>
 
 A brief description of the packages in draco follows.
 
