@@ -9,7 +9,8 @@
 #include "Units.hh"
 #include <limits>
 
-using namespace XTM;
+namespace XTM
+{
 
 //------------------------------------------------------------------------//
 // minConversion:
@@ -22,7 +23,7 @@ double Units::minConversion()
     return minConv;
 }
 
-Units XTM::operator/(const Units &op1, const Units &op2)
+Units operator/(const Units &op1, const Units &op2)
 {
     return Units(op1.lengthConversion      / op2.lengthConversion,
 		 op1.massConversion        / op2.massConversion,
@@ -30,13 +31,15 @@ Units XTM::operator/(const Units &op1, const Units &op2)
 		 op1.temperatureConversion / op2.temperatureConversion);
 }
 
-bool XTM::operator==(const Units &op1, const Units &op2)
+bool operator==(const Units &op1, const Units &op2)
 {
     return op1.lengthConversion == op2.lengthConversion &&
 		 op1.massConversion == op2.massConversion &&
 		 op1.timeConversion == op2.timeConversion &&
 		 op1.temperatureConversion == op2.temperatureConversion;
 }
+
+} // end namespace XTM
 
 //---------------------------------------------------------------------------//
 //                              end of Units.cc
