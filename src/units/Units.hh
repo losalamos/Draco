@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __3T_Units_hh__
-#define __3T_Units_hh__
+#ifndef __units_Units_hh__
+#define __units_Units_hh__
 
 #ifndef BEGIN_NS_XTM
 #define BEGIN_NS_XTM namespace XTM  {
@@ -15,7 +15,7 @@
 #endif
 
 #include "ds++/Assert.hh"
-#include "3T/PhysicalConstants.hh"
+#include "units/PhysicalConstants.hh"
 
 #include <cmath>
 
@@ -25,7 +25,7 @@ BEGIN_NS_XTM
 // class Units - 
 //
 // Date created : Tue Mar 17 14:52:37 1998
-// Purpose      : Provide units standardization for the 3T package.
+// Purpose      : Provide units standardization for Draco.
 //                Unit conversion factors defined so that
 //                (value in user units) * xxxConversion = (value in SI units)
 //
@@ -450,8 +450,8 @@ inline double Units::InvertEnergy(double energy) const
 
 END_NS_XTM  // namespace XTM
 
-#endif                          // __3T_Units_hh__
+#endif                          // __units_Units_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of 3T/Units.hh
+//                              end of units/Units.hh
 //---------------------------------------------------------------------------//

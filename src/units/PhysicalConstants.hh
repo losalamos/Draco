@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __3T_PhysicalConstants_hh__
-#define __3T_PhysicalConstants_hh__
+#ifndef __units_PhysicalConstants_hh__
+#define __units_PhysicalConstants_hh__
 
 //===========================================================================//
 // namespace PhysicalConstants - 
@@ -70,8 +70,8 @@ namespace PhysicalConstants
 
 END_NS_XTM  // namespace XTM
 
-#endif                          // __3T_PhysicalConstants_hh__
+#endif                          // __units_PhysicalConstants_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of 3T/PhysicalConstants.hh
+//                              end of units/PhysicalConstants.hh
 //---------------------------------------------------------------------------//
