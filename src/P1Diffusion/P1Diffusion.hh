@@ -9,10 +9,6 @@
 #ifndef __P1Diffusion_P1Diffusion_hh__
 #define __P1Diffusion_P1Diffusion_hh__
 
-#ifndef P13T_MOMENTUM_DEPOSITION
-#define P13T_MOMENTUM_DEPOSITION
-#endif
-
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include "3T/Diffusion_DB.hh"
