@@ -25,6 +25,7 @@ using std::endl;
 //---------------------------------------------------------------------------//
 // public Mesh build member functions
 //---------------------------------------------------------------------------//
+
 SP<OS_Mesh> OS_Builder::build_Mesh()
 {
   // declare smart pointers
@@ -48,6 +49,7 @@ SP<OS_Mesh> OS_Builder::build_Mesh()
 //---------------------------------------------------------------------------//
 // private Mesh build member functions
 //---------------------------------------------------------------------------//
+
 SP<OS_Mesh> OS_Builder::build_2DMesh(SP<Coord_sys> coord, Layout &layout)
 {
   // variable declarations
@@ -107,6 +109,7 @@ SP<OS_Mesh> OS_Builder::build_2DMesh(SP<Coord_sys> coord, Layout &layout)
 }
 
 //---------------------------------------------------------------------------//
+
 SP<OS_Mesh> OS_Builder::build_3DMesh(SP<Coord_sys> coord, Layout &layout)
 {
   // variable declarations
@@ -184,6 +187,7 @@ SP<OS_Mesh> OS_Builder::build_3DMesh(SP<Coord_sys> coord, Layout &layout)
 //---------------------------------------------------------------------------//
 // Coord_sys build member functions
 //---------------------------------------------------------------------------//
+
 SP<Coord_sys> OS_Builder::build_Coord()
 {
   // build coordinate system
@@ -206,6 +210,7 @@ SP<Coord_sys> OS_Builder::build_Coord()
 //---------------------------------------------------------------------------//
 // Layout build member functions
 //---------------------------------------------------------------------------//
+
 SP<Layout> OS_Builder::build_Layout(const Coord_sys &coord)
 {
   // set size of new Layout
@@ -230,6 +235,7 @@ SP<Layout> OS_Builder::build_Layout(const Coord_sys &coord)
 }
 
 //---------------------------------------------------------------------------//
+
 void OS_Builder::assign2D(Layout &layout)
 {
   // 2D map of Mesh
@@ -291,6 +297,7 @@ void OS_Builder::assign2D(Layout &layout)
 }
 
 //---------------------------------------------------------------------------//
+
 void OS_Builder::assign3D(Layout &layout)
 {
   // 3D map of Mesh

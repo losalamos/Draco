@@ -145,16 +145,10 @@ private:
   // Begin_Verbatim 
 
 public:
-  // default constructor
+  // generalized constructor for all mesh types
     OS_Mesh(SP<Coord_sys>, Layout &, CCVF_a &, CCVF_i &); 
 
-  // member functions
-
-  // references to imbedded objects
-
-  // return references to the Coord_sys and Layout
-    const Layout& get_Layout() const { return layout; }
-    const Coord_sys& get_Coord() const { return *coord; }
+  // member functions used by the OS_Mesh-dependent classes
 
   // mesh dimensionality functions
 
@@ -182,22 +176,19 @@ public:
   // Begin_Doc os_mesh-rint.tex
   // Begin_Verbatim 
 
-  // required services: 
+  // services required by ALL mesh types used in JAYENNE
 
-  // 1) get the cell across a face;
-  // 2) find a cell
-  // 3) get dist-boundary and face that the particle crosses
-  // 4) get the normal on a face
-  // 5) calc the volume
-  // 6) find the cells along a surface
-  // 7) find cell's face along a given surface
-  // 8) find the vertices for a given cell-face
+  // references to imbedded objects and data required for Parallel_Building
+    const Layout& get_Layout() const { return layout; }
+    const Coord_sys& get_Coord() const { return *coord; }
+    const CCVF_a& get_vertex() const { return vertex; }
+    const CCVF_i& get_cell_pair() const { return cell_pair; }
 
+  // required services for transport; 
     int next_cell(int cell, int face) const { return layout(cell, face); }
     int get_cell(const vector<double> &) const;
     double get_db(const vector<double> &, const vector<double> &, int, 
 		  int &) const;
-
     inline vector<double> get_normal(int, int) const;
     inline double volume(int) const;
     vector<int> get_surcells(string) const;
@@ -207,6 +198,17 @@ public:
   // End_Verbatim 
   // End_Doc 
 };
+
+//---------------------------------------------------------------------------//
+// overloaded operators
+//---------------------------------------------------------------------------//
+
+inline ostream& operator<<(ostream &output, const OS_Mesh &object)
+{
+    for (int cell = 1; cell <= object.num_cells(); cell++)
+	object.print(output, cell);
+    return output;
+}
 
 //---------------------------------------------------------------------------//
 // inline functions
