@@ -370,6 +370,10 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    powerpc-apple-darwin*)
    ;;
 
+   # COMPAQ -> CXX
+   alpha*-dec-osf*)
+   ;;
+
    # EVERYTHING ELSE -> linux?
    *)
       if test -n "${GCC_LIB_DIR}"; then
@@ -408,7 +412,13 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
        ARFLAGS="-shared -nocxxstd -expect_unresolved '*3td*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' -o"
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*ios_base*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_ostream*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_string*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*cout*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*cerr*' "
+       ARFLAGS="${ARFLAGS} -o"
    else
        AR='ar'
        ARFLAGS='cr'
