@@ -1,0 +1,155 @@
+#!/usr/bin/env python
+
+"""
+checkout.py
+
+Checks out a variety of CCS-4 packages from the sourceforge server.
+
+Usage:
+
+   checkout [options] [package] [version]
+
+The package argument may be omitted only if the -r <tagname> option is
+used and the name of the package is the first word in the tag name,
+e.g. -r wedgehog-4_3_0 implies a package name of 'wedgehog'
+
+The package argument can refer to an entire package, e.g. 'draco' or a
+component within the package, e.g. 'draco/tools'. In the latter case,
+it may be desirable to use the -d option to specify a more compact
+directory name.
+
+Options:
+-r <tagname>   Check out a particular tagged version. If [package] is
+               not given, extract it from the tagname as package-###.
+-d <dir>       Create <dir> to hold the checked out sources, instead
+               of a directory based on the pacakge name,
+-n  --dry-run  Causes the cvs command to be printed but not executed.
+-h  --help     Prints this message and exits.
+-l  --list     Lists the available packages for checkout and exits.
+
+Examples:
+
+  > checkout draco           # Checks out the head version of draco
+  > checkout draco 4_1_0     # Checks out release 4_1_0 of draco
+  > checkout -r draco-4_1_0  # Ditto
+
+  # Checks out the Camel_Norton branch of Uncle Mcflux. Note that the
+  # package name is not optional:
+  > checkout -r Camel_Norton uncleMcFlux
+
+  # Checks out the tools component of draco into directory draco/tools:
+  > checkout draco/tools
+
+  # Ditto, but into directory tools:
+  checkout draco/tools -d tools
+"""
+
+from Utils import disambiguate, AmbiguousKeyError, padlist
+import sys, os, getopt
+
+package_archive = {'draco'      :'draco',
+                   'tools'      :'jayenne',
+                   'clubimc'    :'jayenne',
+                   'milagro'    :'jayenne',
+                   'wedgehog'   :'jayenne',
+                   'uncleMcFlux':'jayenne'}
+
+package_list = ', '.join(package_archive.keys())
+
+def list_packages(): print "Available Packages:", package_list
+
+username =  os.environ['LOGNAME']
+
+try:
+    options, words = getopt.getopt(sys.argv[1:], 'r:d:hnl', \
+                                   ['help','dry-run', 'list'])
+except getopt.GetoptError:
+    sys.exit('ERROR: bad option or missing argument')
+
+# Convert options into a dictionary for easier key lookup.
+options = dict(options)
+
+tag = ''
+package_component = ''
+package = ''
+archive = ''
+directory = ''
+dry_run = False;
+
+if '-h' in options or '--help' in options:
+    print __doc__
+    list_packages()
+    sys.exit()
+
+if '-r' in options:
+    tag = options['-r']
+
+    # Attempt to find package name
+    package = tag.split('-')[0];
+    if package not in package_archive.keys():
+        print "Could not determine package name from tag: %s. " \
+        "Looking elsewhere." % (tag,)
+        package = ''
+
+if '-n' in options or '--dry-run' in options:
+    dry_run = True;
+
+if '-l' in options or '--list' in options:
+    list_packages()
+    sys.exit()
+
+if '-d' in options:
+    directory = options['-d']
+
+# If we don't have a package, try and get it from the remaining
+# arguments:
+
+if not package:
+    try:
+        package_name = words[0]
+        package_parts = package_name.split('/',1)
+        package_parts[0] = disambiguate(package_parts[0], package_archive.keys())
+        package_name = '/'.join(package_parts)
+
+        package = package_parts[0]
+        archive = package_archive[package]
+    except IndexError:
+        sys.exit("ERROR: No package name given.")
+    except AmbiguousKeyError:
+        sys.exit("ERROR: Ambiguous package name.")
+
+    # Disambuguation should prevent this:
+    if not package in package_archive.keys():
+        sys.exit("ERROR: Unrecognized package name: %s" % package)
+    
+
+# If we don't have a tag yet, look for a version number in the
+# arguments. If we find one, make a tag from it. Otherwize, leave the
+# tag field empty to denote the head version.
+
+if not tag:
+    try:
+        version = words[1]
+    except IndexError:
+        print "Using head version"
+    else:
+        tag = "%s-%s" % (package, version)
+
+
+# Build the cvs command:
+if tag: tag = "-r %s" % tag
+
+if directory: directory = "-d %s" % directory;
+
+command = "cvs -z9 -d:ext:%s@sf.lanl.gov:/cvsroot/%s co %s %s %s" % \
+          (username, archive, directory, tag, package_name)
+
+print "Executing: %s" % command
+
+if not dry_run:
+    command_out = os.popen(command)
+    output = command_out.read()
+    print output
+
+
+
