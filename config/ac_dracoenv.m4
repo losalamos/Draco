@@ -173,7 +173,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    case $host in
    mips-sgi-irix6.*)   
        if test -z "${with_cxx}" ; then
-	   with_cxx='cc'
+	   with_cxx='sgi'
        fi
    ;;
    alpha-dec-osf*)
@@ -540,7 +540,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   CFLAGS="-mips${with_mips:=4} -r10000 ${CFLAGS}"
 	   ARFLAGS="-mips${with_mips:=4} ${ARFLAGS}"
 	   LDFLAGS="-mips${with_mips:=4} ${LDFLAGS}"
-       elif test "${with_cxx}" = cc ; then
+       elif test "${with_cxx}" = sgi ; then
 	   CXXFLAGS="-mips${with_mips:=4} -r10000 ${CXXFLAGS}"
 	   CFLAGS="-mips${with_mips:=4} -r10000 ${CFLAGS}"
 	   ARFLAGS="-mips${with_mips:=4} ${ARFLAGS}"
