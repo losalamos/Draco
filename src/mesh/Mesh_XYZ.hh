@@ -124,10 +124,22 @@ class Mesh_XYZ : private XYZ_Mapper
             for ( int j = 0; j < ncy; ++j )
               for ( int k = zoff; k < zoff + nczp; ++k )
 	      {
-                data( local_cell_index(i,j,k), 0) += x(i,j,k) + x(i-1,j,k);
-                data( local_cell_index(i,j,k), 1) += x(i,j,k) + x(i+1,j,k);
-                data( local_cell_index(i,j,k), 2) += x(i,j,k) + x(i,j-1,k);
-                data( local_cell_index(i,j,k), 3) += x(i,j,k) + x(i,j+1,k);
+                if ( i == 0 )
+                  data( local_cell_index(i,j,k), 0) += x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 0) += x(i,j,k) + x(i-1,j,k);
+                if ( i == ncx - 1 )
+                  data( local_cell_index(i,j,k), 1) += x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 1) += x(i,j,k) + x(i+1,j,k);
+                if ( j == 0 )
+                  data( local_cell_index(i,j,k), 2) += x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 2) += x(i,j,k) + x(i,j-1,k);
+                if ( j == ncy - 1 )
+                  data( local_cell_index(i,j,k), 3) += x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 3) += x(i,j,k) + x(i,j+1,k);
                 data( local_cell_index(i,j,k), 4) += x(i,j,k) + x(i,j,k-1);
                 data( local_cell_index(i,j,k), 5) += x(i,j,k) + x(i,j,k+1);
               }
@@ -140,10 +152,22 @@ class Mesh_XYZ : private XYZ_Mapper
             for ( int j = 0; j < ncy; ++j )
               for ( int k = zoff; k < zoff + nczp; ++k )
 	      {
-                data( local_cell_index(i,j,k), 0) *= x(i,j,k) * x(i-1,j,k);
-                data( local_cell_index(i,j,k), 1) *= x(i,j,k) * x(i+1,j,k);
-                data( local_cell_index(i,j,k), 2) *= x(i,j,k) * x(i,j-1,k);
-                data( local_cell_index(i,j,k), 3) *= x(i,j,k) * x(i,j+1,k);
+                if ( i == 0 )
+                  data( local_cell_index(i,j,k), 0) *= x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 0) *= x(i,j,k) * x(i-1,j,k);
+                if ( i == ncx - 1 )
+                  data( local_cell_index(i,j,k), 1) *= x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 1) *= x(i,j,k) * x(i+1,j,k);
+                if ( j == 0 )
+                  data( local_cell_index(i,j,k), 2) *= x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 2) *= x(i,j,k) * x(i,j-1,k);
+                if ( j == ncy - 1 )
+                  data( local_cell_index(i,j,k), 3) *= x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 3) *= x(i,j,k) * x(i,j+1,k);
                 data( local_cell_index(i,j,k), 4) *= x(i,j,k) * x(i,j,k-1);
                 data( local_cell_index(i,j,k), 5) *= x(i,j,k) * x(i,j,k+1);
               }
