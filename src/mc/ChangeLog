@@ -1,29 +1,36 @@
 2000-02-12  H. Grady Hughes  <hgh@lanl.gov>
 
-	* TET_Mesh.hh, TET_Mesh.cc, TET_Builder.hh, TET_Builder.cc:
-	Added TET_Mesh member functions get_cell_types() and get_point_coord()
-	for Ensight support.  Also eliminated all using declarations from
-	TET_Mesh and TET_Builder.
+	* TET_Mesh.hh, TET_Mesh.cc, TET_Builder.hh, TET_Builder.cc: Added
+ 	TET_Mesh member functions get_cell_types() and get_point_coord()
+ 	for Ensight support.  Also eliminated all using declarations from
+ 	TET_Mesh and TET_Builder.
 
+2000-02-10  Thomas M. Evans  <tme@lanl.gov>
+
+	* OS_Builder.hh, OS_Builder.cc: the builder now reads its own
+ 	simple OS_Mesh format file.  This format file can be in a separate
+ 	file or in the traditional input file.  This move precedes the
+ 	general move to have mesh builders read their own mesh format
+ 	files.
+	
 2000-02-09  H. Grady Hughes  <hgh@lanl.gov>
 
-	* TET_Builder.hh, TET_Builder.cc, test/TET_test_1.hh, and
-	test/tstTET_Mesh.cc:
-	Initial commit of TET_test_1.hh, an example of a TET_Mesh
-	Interface Type class, and extension of tstTET_Mesh.cc to
-	include instantiation from that <IT> class.  Also corrected
-	some out-of-range index errors in TET_Builder.
+	* TET_Builder.hh, TET_Builder.cc, test/TET_test_1.hh,
+ 	test/tstTET_Mesh.cc: Initial commit of TET_test_1.hh, an example
+ 	of a TET_Mesh Interface Type class, and extension of
+ 	tstTET_Mesh.cc to include instantiation from that <IT> class.
+  	Also corrected some out-of-range index errors in TET_Builder.
 
 2000-02-08  H. Grady Hughes  <hgh@lanl.gov>
 
-	* TET_Builder.hh, TET_Builder.cc:
-	Initial commit of components for the TET_Mesh builder class.
+	* TET_Builder.hh, TET_Builder.cc: Initial commit of components for
+ 	the TET_Mesh builder class.
 
 2000-02-07  H. Grady Hughes  <hgh@lanl.gov>
 
-	* test/tstTET_Mesh.cc:
-	Added many tests of TET_Mesh functions, for a "hand-coded" test mesh.
-
+	* test/tstTET_Mesh.cc: Added many tests of TET_Mesh functions, for
+ 	a "hand-coded" test mesh.
+	
 2000-02-02  Thomas M. Evans  <tme@lanl.gov>
 
 	* Layout*, *Coord_sys*, OS_Mesh*, OS_Builder*: removed using
@@ -33,9 +40,8 @@
 
 2000-01-30  H. Grady Hughes <hgh@lanl.gov>
 
-	* TET_Mesh.hh:
-	Added subscripting, iterators, size, and empty functions to
-	class TET_Mesh::CCVF.
+	* TET_Mesh.hh: Added subscripting, iterators, size, and empty
+ 	functions to class TET_Mesh::CCVF.
 
 2000-01-28  H. Grady Hughes <hgh@lanl.gov>
 
@@ -45,9 +51,9 @@
 
 2000-01-27  H. Grady Hughes <hgh@lanl.gov>
 
-	* TET_Mesh.hh, TET_Mesh.cc, ThreeVector.hh:
-	Initial commit of components for the TET_Mesh.
-
+	* TET_Mesh.hh, TET_Mesh.cc, ThreeVector.hh: Initial commit of
+ 	components for the TET_Mesh.
+	
 1999-12-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* Parallel_Data_Operator.*, /test/tstParallel_Data_Operator.*:
