@@ -834,34 +834,76 @@ class CAR_CU_Mesh
 
   private:
     // base class reference to a derived coord class
+/*!
+ * \brief Smart pointer to the mesh Coord_sys class object.
+ */
     SP<Coord_sys> coord;
     // layout of mesh
+/*!
+ * \brief The mesh Layout class object.
+ */
     Layout layout;
     // vertices in mesh
+/*!
+ * \brief The node coordinate values.
+ */
     NCVF_d vertex;
     // cell-pairings of cell to its vertices
+/*!
+ * \brief The connections between cell faces.
+ */
     CCVF_i cell_pair;
     // area of surfaces on each dimension
+/*!
+ * \brief The area of surfaces on each spatial dimension.
+ */
     CCVF_d sur;
     // indicator whether this is a submesh
+/*!
+ * \brief An indicator that this is a submesh for parallel processing.
+ */
     bool submesh;
     // indicator that the cell has been refined
+/*!
+ * \brief An indicator that the cells have been refined (not used).
+ */
     CCSF_b has_kids;
     // indicator for the level of cell refinement, with the original coarse
     // mesh input by the user assigned as zero. 
+/*!
+ * \brief The cell generation (i.e., refinement) levels.
+ */
     CCSF_i generation;
 
     // private functions
 
     // compare real values for equality
+/*!
+ * \brief Compares real values for equality considering machine precision.
+ * \param low_val Values that are assumed to be at the lower value.
+ * \param high_val Values that are assumed to be at the higher value.
+ * \return high_val > low_val && 
+ *         abs(low_val- high_val) > epsilon (desired precision).
+ */
     bool compReal(const double & low_val, const double & high_val) const;
 
     // calculate a surface array from the vertices of the mesh
+/*!
+ * \brief Calculates a surface array from the vertices of the mesh.
+ */
     void calc_surface();
 
     // private copy and assignment operators; can't copy or assign a mesh
-    CAR_CU_Mesh(const CAR_CU_Mesh &);
-    CAR_CU_Mesh & operator=(const CAR_CU_Mesh &);
+/*!
+ * \brief Private copy operator; can't copy a mesh.
+ * \param mesh CAR_CU_Mesh class object.
+ */
+    CAR_CU_Mesh(const CAR_CU_Mesh & mesh);
+/*!
+ * \brief Private assignment operator; can't assign a mesh.
+ * \param mesh CAR_CU_Mesh class object.
+ */
+    CAR_CU_Mesh & operator=(const CAR_CU_Mesh & mesh);
 
     // Begin_Doc os_mesh-int.tex
     // Begin_Verbatim 

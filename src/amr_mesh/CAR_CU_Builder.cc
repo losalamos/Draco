@@ -38,6 +38,12 @@
 //                      ----                     ----
 //---------------------------------------------------------------------------//
 // @> CAR_CU_Builder class implementation file (developed from OS_Builder.cc)
+/*! 
+ * \file   amr_mesh/CAR_CU_Builder.cc
+ * \author B.T. Adams
+ * \date   Tue May 18 10:33:26 1999
+ * \brief  Implementation file for CAR_CU_Builder class library.
+ */
 //---------------------------------------------------------------------------//
 
 #include "CAR_CU_Builder.hh"
@@ -152,7 +158,7 @@ SP<CAR_CU_Mesh> CAR_CU_Builder::build_Mesh(const SP<RTT_Format> & rttMesh)
     // multimap proud_parents. Note that none of the pre-existing cells in the
     // RTT Format file can have children because a hiearchy does not exist in
     // the data. A "gap" will always exist between subsequent cell numbers at
-    // a  given generation level where refined cells are connected, so the new 
+    // a given generation level where refined cells are connected, so the new 
     // cell numbers can be taken to be the same as that of the first refined 
     // cell that is being "grouped" to create the parent cell. Add these new 
     // cell numbers to the respective sets in gen_cells.
@@ -846,6 +852,16 @@ vector<int> CAR_CU_Builder::map_Nodes(const SP<RTT_Format> & rttMesh)
 // vertex vector.
 //---------------------------------------------------------------------------//
 
+/*!
+ * \brief Generate nodes that are centered on the cell faces, adds them to the
+ *        cell_pairs vector, calculates their coordinates, and adds the 
+ *        coordinates to the vertex vector. Numbering of the face-centererd
+ *        nodes begins after all of the cell corner nodes.
+ * \param nnodes Total number of nodes (corner nodes only on input and both
+ *               corner and face-centered nodes on output).
+ * \param rttMesh Smart pointer to an existing, initialized RTT_Format
+ *                class object.
+ */
 void CAR_CU_Builder::FC_Nodes(int nnodes, const SP<RTT_Format> & rttMesh)
 {
     // Set up some useful RTT Format variables
