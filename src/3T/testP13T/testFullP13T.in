@@ -1,6 +1,6 @@
 $P13T
 	verbose=false
-	verbose=true
+	# verbose=true
 	units=astro
 	nsteps=1
 	dumpcycles=1

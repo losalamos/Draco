@@ -11,6 +11,7 @@
 #include "matprops/FifiMatPropsReader.hh"
 #include "matprops/TempMapper.hh"
 #include "3T/P13TOptions.hh"
+#include "3T/OpCrossSectionMapper.hh"
 #include "units/Units.hh"
 #include "radphys/RadiationPhysics.hh"
 #include "nml/Group.hh"
@@ -182,8 +183,17 @@ testFullP13T<UMCMP>::testFullP13T(const testFullP13T_DB &tdb_,
 					   tdb.dt, false);
     spTsManager->add_advisor(spTsCurrent);
 
-	
-    spP13T = new P13T(options, spMesh, spTsManager);
+
+    // Create an object that will map cross sections from faces
+    // to vertices.
+    // You can create your mapper class own as long as it inherits
+    // from rtt_3T::CrossSectionMapper<DS>.
+    
+    SP<const rtt_3T::OpCrossSectionMapper<DS,MT::OpMinAssign> >
+	spOpCrossSectionMapper
+	= new rtt_3T::OpCrossSectionMapper<DS,MT::OpMinAssign>;
+    
+    spP13T = new P13T(options, spMesh, spOpCrossSectionMapper, spTsManager);
 
     nx = spMesh->get_ncx();
     ny = spMesh->get_ncy();
