@@ -19,12 +19,12 @@ using std::string;
 /*!  
  * \return string of the release number
  *
- * Function definition for Release, define the local version number for
- * this library in the form cdi-\#_\#_\# in pkg_release variable 
+ * Function definition for Release, define the local version number for this
+ * library in the form cdi_gandolf-\#_\#_\# in pkg_release variable
  */
 const string release()
 {
-    string pkg_release = "@(#)cdi-1_0_0a";
+    string pkg_release = "@(#)cdi_gandolf-1_0_0a";
     return pkg_release;
 }
 
