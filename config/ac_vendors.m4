@@ -2,7 +2,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl ac_vendors.m4
 dnl macros for each vendor that is used in DRACO
 dnl
-dnl Time-stamp: <99/02/09 10:06:58 tme>
+dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
 ##---------------------------------------------------------------------------##
@@ -118,6 +118,48 @@ AC_DEFUN(AC_SHMEM_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_POOMA_SETUP
+dnl
+dnl POOMA implementation (off by default)
+dnl POOMA is an optional vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_POOMA_SETUP, [dnl
+	
+   dnl define --enable-pooma
+   AC_ARG_ENABLE(pooma,
+      [  --enable-pooma          turn on pooma (off by default)])
+
+   dnl define --with-pooma-root
+   AC_WITH_DIR(pooma-root, POOMA_ROOT, \${POOMA_ROOT_DIR},
+	       [tell where root to the POOMA src and libraries are])
+
+   dnl define --with-pooma-arch
+   AC_ARG_WITH(pooma-arch,
+      [  --with-pooma-arch=[POOMA_ARCH]  set pooma architecture])
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_pooma=$1
+	
+
+   if test "${enable_pooma:=no}" != no ; then
+      POOMA_ROOT="${with_pooma_root}"
+      AC_MSG_CHECKING(for pooma root directory)
+      AC_MSG_RESULT(${with_pooma_root})	
+
+      POOMA_ARCH="${with_pooma_arch}"
+      AC_MSG_CHECKING(for POOMA_ARCH)
+      AC_MSG_RESULT(${POOMA_ARCH})	
+      AC_VENDORLIB_SETUP(vendor_pooma, -L${with_pooma_root}/lib/${POOMA_ARCH} -lpooma)
+
+      CXXFLAGS="${CXXFLAGS} --restrict"
+      CPPFLAGS="${CPPFLAGS} -I${POOMA_ROOT}/src"
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_SPRNG_SETUP
 dnl
 dnl SPRNG LIBRARY SETUP (on by default -lfg)
@@ -217,6 +259,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_SHMEM_SETUP(pkg)
    AC_SPRNG_SETUP(pkg)
    AC_PCGLIB_SETUP(pkg)
+   dnl AC_POOMA_SETUP(pkg)
 ])
 
 dnl-------------------------------------------------------------------------dnl
