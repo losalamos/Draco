@@ -92,6 +92,9 @@ tstpretarg := $(pretarg)
 
 include ../config/make.tests
 
+# Testing out some dejagnu support
+
+include ../config/make.deja
 
 # Go pick up the standard signature for makefiles.
 
