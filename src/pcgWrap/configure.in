@@ -1,19 +1,19 @@
 dnl-------------------------------------------------------------------------dnl
-dnl draco/src/linalg configure.in
+dnl draco/src/pcgWrap configure.in
 dnl Randy M. Roberts
 dnl 
 dnl-------------------------------------------------------------------------dnl
-dnl @> configure.in for linalg
+dnl @> configure.in for pcgWrap
 dnl-------------------------------------------------------------------------dnl
 dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
 AC_INIT(PCG_Ctrl.hh)
 AC_CONFIG_AUX_DIR(../../config)
-AC_CONFIG_HEADER(linalg/config.h:config.h.in)
-package="linalg"
+AC_CONFIG_HEADER(pcgWrap/config.h:config.h.in)
+package="pcgWrap"
 
-AC_PCG_SETUP(pkg) dnl through linalg
+AC_PCG_SETUP(pkg) dnl through pcgWrap
 AC_MPI_SETUP(pkg)    dnl through c4
 AC_SHMEM_SETUP(pkg)  dnl through c4
 AC_LAPACK_SETUP(pkg) 
@@ -30,5 +30,5 @@ AC_OUTPUT(Makefile:../../config/Makefile.package.in \
 test/Makefile:../../config/Makefile.test.in)
 
 dnl-------------------------------------------------------------------------dnl
-dnl			 end of draco/src/linalg configure.in
+dnl			 end of draco/src/pcgWrap configure.in
 dnl-------------------------------------------------------------------------dnl

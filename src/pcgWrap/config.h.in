@@ -3,14 +3,14 @@
 /* Randy M. Roberts */
 /* Wed Jan 13 17:15:27 1999 */
 /*---------------------------------------------------------------------------*/
-/* @> config.h.in for linalg package */
+/* @> config.h.in for pcgWrap package */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __linalg_config_h__
-#define __linalg_config_h__
+#ifndef __pcgWrap_config_h__
+#define __pcgWrap_config_h__
 
 
-#endif    /* __linalg_config_h__ */
+#endif    /* __pcgWrap_config_h__ */
 
 /*---------------------------------------------------------------------------*/
 /*    end of config.h */
