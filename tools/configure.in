@@ -39,7 +39,7 @@ AC_SUBST(installfiles)
 AC_SUBST(INSTALL)
 AC_SUBST(INSTALL_DATA)
 
-AC_OUTPUT(Makefile draco)
+AC_OUTPUT(Makefile draco check_coverage)
 
 ##---------------------------------------------------------------------------##
 ## end of configure.in
