@@ -582,6 +582,62 @@ void test_planck_integration()
     {
 	FAILMSG("Total integral over groups fails tolerance.");
     }
+
+    // test that a zero temperature returns a zero
+    if (soft_equiv(CDI::integratePlanckSpectrum(0.0, 100.0, 0.0), 0.0))
+    {
+	PASSMSG("Planck integral from hnu=0 to 100 at T=0 is zero: good!");
+    }
+    else
+    {
+	FAILMSG("Planck integral from hnu=0 to 100 at T=0 is not zero: BAD!");
+    }
+
+    if (soft_equiv(CDI::integratePlanckSpectrum(100.0, 0.0), 0.0))
+    {
+	PASSMSG("Planck integral to hnu=100 at T=0 is zero: good!");
+    }
+    else
+    {
+	FAILMSG("Planck integral to hnu=100 at T=0 is not zero: BAD!");
+    }
+
+    if (soft_equiv(CDI::integratePlanckSpectrum(1, 0.0), 0.0))
+    {
+	PASSMSG("Planck integral of group 1 at T=0 is zero: good!");
+    }
+    else
+    {
+	FAILMSG("Planck integral of group 1 at T=0 is not zero: BAD!");
+    }
+
+    if (soft_equiv(CDI::integratePlanckSpectrum(2, 0.0), 0.0))
+    {
+	PASSMSG("Planck integral of group 2 at T=0 is zero: good!");
+    }
+    else
+    {
+	FAILMSG("Planck integral of group 2 at T=0 is not zero: BAD!");
+    }
+
+    if (soft_equiv(CDI::integratePlanckSpectrum(3, 0.0), 0.0))
+    {
+	PASSMSG("Planck integral of group 3 at T=0 is zero: good!");
+    }
+    else
+    {
+	FAILMSG("Planck integral of group 3 at T=0 is not zero: BAD!");
+    }
+
+    if (soft_equiv(CDI::integratePlanckSpectrum(0.0), 0.0))
+    {
+	PASSMSG("Planck integral over all groups at T=0 is zero: good!");
+    }
+    else
+    {
+	FAILMSG("Planck integral over all groups at T=0 is not zero: BAD!");
+    }
+
 }
  
 //---------------------------------------------------------------------------//
