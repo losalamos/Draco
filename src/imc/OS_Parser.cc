@@ -25,6 +25,9 @@ void OS_Parser::Parser()
     const char *file = input_file.c_str();
     ifstream input(file);
 
+  // make sure file exists
+    assert (input);
+
   // call OS_Mesh Parser
     Parser_mesh(input);
 
@@ -288,16 +291,16 @@ void OS_Parser::Zone_mapper()
     if (dim == 2)
         for (int j = 1; j <= fine_cells[1].size(); j++)
             for (int i = 1; i <= fine_cells[0].size(); i++)
-                Calc_zone(i,j);
+                Cell_zone(i, j);
     else if (dim == 3)
         for (int k = 1; k <= fine_cells[2].size(); k++)
             for (int j = 1; j <= fine_cells[1].size(); j++)
                 for (int i = 1; i <= fine_cells[0].size(); i++)
-                    Calc_zone(i,j);
+                    Cell_zone(i, j, k);
 }
   
 //---------------------------------------------------------------------------//
-void OS_Parser::Calc_zone(int iz, int jz)
+void OS_Parser::Cell_zone(int iz, int jz)
 {
   // match a fine-cell to a zone for 2D meshes
 
@@ -320,6 +323,39 @@ void OS_Parser::Calc_zone(int iz, int jz)
             int cell     = 1 + (i-1) + num_xcells * (j-1);
             zone[cell-1] = zone_index;
         }
+}
+
+//---------------------------------------------------------------------------//
+void OS_Parser::Cell_zone(int iz, int jz, int kz)
+{
+  // match a fine-cell to a zone for 3D meshes
+
+  // descriptive variables
+    int num_xzones = coarse_edge[0].size() - 1;
+    int num_yzones = coarse_edge[1].size() - 1;
+    int zone_index = 1 + (iz-1) + num_xzones * (jz-1) + num_xzones *
+	num_yzones * (kz-1);
+    int num_xcells = fine_edge[0].size() - 1;
+    int num_ycells = fine_edge[1].size() - 1;
+
+  // loop boundaries
+    int starti = 1 + accum_cells[0][iz-1];
+    int endi   = accum_cells[0][iz-1] + fine_cells[0][iz-1];
+    int startj = 1 + accum_cells[1][jz-1];
+    int endj   = accum_cells[1][jz-1] + fine_cells[1][jz-1];
+    int startk = 1 + accum_cells[2][kz-1];
+    int endk   = accum_cells[2][kz-1] + fine_cells[2][kz-1];
+
+  // loop over zone and assign zone_index to those fine-cells residing in
+  // the zone
+    for (int k = startk; k <= endk; k++)
+	for (int j = startj; j <= endj; j++)
+	    for (int i = starti; i <= endi; i++)
+	    {
+		int cell = 1 + (i-1) + num_xcells * (j-1) + num_xcells *
+		    num_ycells * (k-1);
+		zone[cell-1] = zone_index;
+	    }
 }
 
 CSPACE

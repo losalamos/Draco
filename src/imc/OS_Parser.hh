@@ -77,8 +77,8 @@ private:
   // Opacity parser functions
     void Parser_opacity(ifstream &);
     void Zone_mapper();
-    void Calc_zone(int, int);
-    void Calc_zone(int, int, int);
+    void Cell_zone(int, int);
+    void Cell_zone(int, int, int);
 public:
   // constructor
     explicit OS_Parser(const string &infile)

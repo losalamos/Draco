@@ -86,6 +86,7 @@ SP<OS_Mesh> OS_Builder::Build_2DMesh(SP<Coord_sys> coord, Layout &layout)
     return mesh_return;
 }
 
+//---------------------------------------------------------------------------//
 SP<OS_Mesh> OS_Builder::Build_3DMesh(SP<Coord_sys> coord, Layout &layout)
 {
   // variable declarations
@@ -181,6 +182,7 @@ SP<Layout> OS_Builder::Build_Layout(const Coord_sys &coord)
     return layout;
 }
 
+//---------------------------------------------------------------------------//
 void OS_Builder::Assign2D(Layout &layout)
 {
   // 2D map of Mesh
@@ -241,6 +243,7 @@ void OS_Builder::Assign2D(Layout &layout)
     }
 }
 
+//---------------------------------------------------------------------------//
 void OS_Builder::Assign3D(Layout &layout)
 {
   // 3D map of Mesh

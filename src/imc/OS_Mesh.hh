@@ -148,7 +148,10 @@ public:
 	    CCVF_a &dim_, CCVF_a &sur_)
 	: coord(coord_), layout(layout_), pos(pos_), dim(dim_), sur(sur_)
     {
-      // assertions to verify size of mesh
+      // assertions to verify size of mesh and existence of a Layout and
+      // Coord_sys
+
+	assert (coord);
     
       // variable initialization
 	int num_cells = Num_cells();

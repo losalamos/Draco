@@ -46,9 +46,37 @@ OS_Builder.o: OS_Builder.cc OS_Builder.hh OS_Mesh.hh Layout.hh \
 OS_Parser.o: OS_Parser.cc OS_Parser.hh OS_Mesh.hh Names.hh
 	${CC} -c OS_Parser.cc ${INCLUDE} ${OPTIONS}
 
-OS_Parser.o:
-
 # UTILITIES
+
+depends: OS_Builder.cc OS_Builder.hh \
+         OS_Parser.cc  OS_Parser.hh \
+         OS_Mesh.cc OS_Mesh.hh \
+         XYCoord_sys.hh XYCoord_sys.cc \
+         XYZCoord_sys.hh XYZCoord_sys.cc \
+         Layout.hh Layout.cc \
+         Opacity.hh Opacity.cc 
+	touch depends
+	${CC} OS_Builder.cc ${INCLUDE} -M > temp
+	nawk '/.hh/ {print $2}' temp >> depends
+	${RM} temp
+	${CC} OS_Parser.cc ${INCLUDE} -M > temp
+	nawk '/.hh/ {print $2}' temp >> depends
+	${RM} temp
+	${CC} OS_Mesh.cc ${INCLUDE} -M > temp
+	nawk '/.hh/ {print $2}' temp >> depends
+	${RM} temp
+	${CC} XYCoord_sys.cc ${INCLUDE} -M > temp
+	nawk '/.hh/ {print $2}' temp >> depends
+	${RM} temp
+	${CC} XYZCoord_sys.cc ${INCLUDE} -M > temp
+	nawk '/.hh/ {print $2}' temp >> depends
+	${RM} temp
+	${CC} Layout.cc ${INCLUDE} -M > temp
+	nawk '/.hh/ {print $2}' temp >> depends
+	${RM} temp
+	${CC} Opacity.cc ${INCLUDE} -M > temp
+	nawk '/.hh/ {print $2}' temp >> depends
+	${RM} temp
 
 cleanall:
 	${RM} *.o
