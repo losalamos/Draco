@@ -17,18 +17,6 @@ GLOBALSPACE
 
 int rn_stream = 0;
 
-//---------------------------------------------------------------------------//
-// MAXIMUM BUFFER SIZE DEFINITIONS
-//---------------------------------------------------------------------------//
-
-int buffer_s = default_s;
-
-int buffer_d = buffer_s * data_d;
-
-int buffer_i = buffer_s * data_i;
-
-int buffer_c = buffer_s * (500);
-
 CSPACE
 CSPACE
 

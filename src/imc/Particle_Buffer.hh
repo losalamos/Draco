@@ -20,11 +20,13 @@
 //  0) original
 //  1)  5-26-98 : added temporary Particle_Stack class to account for the
 //                deficiency of the KCC 3.3 stack
-// 
+//  2)  6-11-98 : moved the buffer sizes into Particle_Buffer as private:
+//                static variables, they can only be accessed by accessor
+//                functions from the outside
+//
 //===========================================================================//
 
 #include "imc/Names.hh"
-#include "imc/Global.hh"
 #include "c4/global.hh"
 #include "rng/Random.hh"
 #include "ds++/Assert.hh"
@@ -151,9 +153,25 @@ private:
   // data of type char size (number of bytes of random number state)
     int csize;
 
+  // static buffer sizes
+    static int buffer_s;
+    static int buffer_d;
+    static int buffer_i;
+    static int buffer_c;
+
 public:
   // constructor
     template<class MT> Particle_Buffer(const MT &, const Rnd_Control &);
+    Particle_Buffer(int, int, int);
+
+  // buffer sizing and accessor functions
+    static void set_buffer(int, int, int);
+    static void set_buffer(int, int, int, int);
+    static void set_buffer_size(int);
+    static int get_buffer_d() { return buffer_d; }
+    static int get_buffer_i() { return buffer_i; }
+    static int get_buffer_c() { return buffer_c; }
+    static int get_buffer_s() { return buffer_s; }
 
   // io functions
     void write_census(ostream &, const PT &) const;
@@ -185,9 +203,9 @@ public:
 
 template<class PT>
 inline Particle_Buffer<PT>::Comm_Buffer::Comm_Buffer()
-    : array_d(new double[Global::buffer_d]), 
-      array_i(new int[Global::buffer_i]),
-      array_c(new char[Global::buffer_c]),
+    : array_d(new double[get_buffer_d()]), 
+      array_i(new int[get_buffer_i()]),
+      array_c(new char[get_buffer_c()]),
       n_part(0)
 {
   // dynamically sized values to the Globally determined buffer sizes
@@ -210,21 +228,21 @@ inline Particle_Buffer<PT>::Comm_Buffer::~Comm_Buffer()
 
 template<class PT>
 inline Particle_Buffer<PT>::Comm_Buffer::Comm_Buffer(const Comm_Buffer &rhs)
-    : array_d(new double[Global::buffer_d]), 
-      array_i(new int[Global::buffer_i]),
-      array_c(new char[Global::buffer_c]),
+    : array_d(new double[get_buffer_d()]), 
+      array_i(new int[get_buffer_i()]),
+      array_c(new char[get_buffer_c()]),
       n_part(rhs.n_part)
 {
   // copy double data
-    for (int i = 0; i < Global::buffer_d; i++)
+    for (int i = 0; i < get_buffer_d(); i++)
 	array_d[i] = rhs.array_d[i];
 
   // copy int data
-    for (int i = 0; i < Global::buffer_i; i++)
+    for (int i = 0; i < get_buffer_i(); i++)
 	array_i[i] = rhs.array_i[i];
 
   // copy char data
-    for (int i = 0; i < Global::buffer_c; i++)
+    for (int i = 0; i < get_buffer_c(); i++)
 	array_c[i] = rhs.array_c[i];
 }
 
@@ -243,15 +261,15 @@ Particle_Buffer<PT>::Comm_Buffer::operator=(const Comm_Buffer &rhs)
     n_part = rhs.n_part;
 
   // copy double data
-    for (int i = 0; i < Global::buffer_d; i++)
+    for (int i = 0; i < get_buffer_d(); i++)
 	array_d[i] = rhs.array_d[i];
 
   // copy int data
-    for (int i = 0; i < Global::buffer_i; i++)
+    for (int i = 0; i < get_buffer_i(); i++)
 	array_i[i] = rhs.array_i[i];
 
   // copy char data
-    for (int i = 0; i < Global::buffer_c; i++)
+    for (int i = 0; i < get_buffer_c(); i++)
 	array_c[i] = rhs.array_c[i];
 
   // return for concatenated calls

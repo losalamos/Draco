@@ -11,6 +11,7 @@
 #include "imc/XYZCoord_sys.hh"
 #include "imc/Global.hh"
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <fstream>
 #include <cstdio>
@@ -29,6 +30,7 @@ using std::fill;
 using std::ofstream;
 using std::ifstream;
 using std::remove;
+using std::ostringstream;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -230,8 +232,20 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, const Source_Init<MT> &sinit,
 
   // data necessary to build Source on host
     SP<Source<MT> > host_source;
-    vector<vector<int> > vol(mesh->num_cells());
-    vector<vector<int> > ss(mesh->num_cells());
+    vector<vector<int> > vol(2), ss(2);
+    for (int i = 0; i < 2; i++)
+    {
+	vol[i].resize(mesh->num_cells());
+	ss[i].resize(mesh->num_cells());
+    }
+
+  // send the numbers of each type of source to the other processors
+    for (int i = 1; i < nodes(); i++)
+    {
+	Send (sinit.get_ncentot(), i, 30);
+	Send (sinit.get_nvoltot(), i, 31);
+	Send (sinit.get_nsstot(), i, 32);
+    }
 
   // first distribute the census
     if (sinit.get_ncentot() > 0) 
@@ -267,6 +281,69 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, const Source_Init<MT> &sinit,
 
   // return source
     return host_source;
+}
+
+//---------------------------------------------------------------------------//
+// receive the source from the host processor
+
+template<class MT>
+template<class PT> SP<Source<MT> > 
+Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Rnd_Control> rcon,
+				  const Particle_Buffer<PT> &buffer)
+{
+  // require that we are on an IMC node only
+    Require (node());
+    Require (mesh);
+
+  // declare the source
+    SP<Source<MT> > imc_source;
+
+  // receive the total numbers of particles for each type of source
+    int global_ncentot;
+    int global_nvoltot;
+    int global_nsstot;
+    Recv (global_ncentot, 0, 30);
+    Recv (global_nvoltot, 0, 31);
+    Recv (global_nsstot, 0, 32);
+
+  // define the variables for Source construction
+    typename MT::CCSF_int volrn(mesh);
+    typename MT::CCSF_int nvol(mesh);
+    typename MT::CCSF_int ssrn(mesh);
+    typename MT::CCSF_int nss(mesh);
+
+  // receive the census
+    if (global_ncentot)
+	recv_census(buffer);
+
+  // receive the volume source
+    if (global_nvoltot)
+	recv_vol(volrn, nvol);
+
+  // receive the surface source
+    if (global_nsstot)
+	recv_ss(ssrn, nss);
+
+  // get the number of volume, census, and surface sources for this processor
+    int ncentot = 0;
+    int nvoltot = 0;
+    int nsstot = 0;
+    for (int i = 1; i <= mesh->num_cells(); i++)
+    {
+	nvoltot += nvol(i);
+	nsstot  += nss(i);
+    }
+
+  // get the census name
+    ostringstream cenfile;
+    cenfile << "census." << node();
+
+  // make the source
+    imc_source = new Source<MT>(volrn, nvol, ssrn, nss, cenfile.str(), 
+				nvoltot, nsstot, ncentot, rcon, buffer);
+
+  // return source
+    return imc_source;
 }
 
 //---------------------------------------------------------------------------//
@@ -351,7 +428,8 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
 	    num_to_send[proc_goto]++;
 
 	  // send these guys out
-	    if (num_to_send[proc_goto] == Global::buffer_s)
+	    if (num_to_send[proc_goto] ==
+		Particle_Buffer<PT>::get_buffer_s())
 	    {
 		buffer.send_buffer(cen_buffer[proc_goto], proc_goto);
 		cen_buffer[proc_goto].n_part = 0;
@@ -374,6 +452,16 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
 	    num_to_send[proc] = 0;  
 	}
     }
+}
+
+//---------------------------------------------------------------------------//
+// receive the census buffers and write out the census files
+
+template<class MT>
+template<class PT>
+void Parallel_Builder<MT>::recv_census(const Particle_Buffer<PT> &buffer)
+{
+  // do something here
 }
 
 //---------------------------------------------------------------------------//
@@ -425,13 +513,15 @@ Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
 	  // determine the global cell index
 	    int global_cell = cells_per_proc[i][cell-1];
 
+	  // calculate the nvol source
+	    nvol_send[cell-1] = nvol[global_cell-1];
+
 	  // check to see if we need to add extra sources to this cell on
 	  // this processor
 	    if (nvol_xtra[global_cell-1] >= i+1)
-		nvol[global_cell-1]++;
-	    
-	  // calculate the nvol source and stream number for proc i
-	    nvol_send[cell-1]   = nvol[global_cell-1];
+		nvol_send[cell-1]++;
+
+	  // calculate the stream number for proc i
 	    stream_send[cell-1] = streamnum[global_cell-1];
 	    streamnum[global_cell-1] += nvol_send[cell-1];
 
@@ -469,11 +559,42 @@ Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
     }
 
   // final assertion
-    std::cout << voltot << " " << sinit.get_nvoltot() << std::endl;
     Ensure (voltot == sinit.get_nvoltot());
 
   // return the host volume source to the host processor
     return host_vol;
+}
+
+//---------------------------------------------------------------------------//
+// receive the volume source stuff
+
+template<class MT>
+void Parallel_Builder<MT>::recv_vol(typename MT::CCSF_int &volrn,
+				    typename MT::CCSF_int &nvol)
+{
+    Require (volrn.get_Mesh() == nvol.get_Mesh());
+
+  // lets get the size of the thing from the host processor
+    int num_cells;
+    Recv (num_cells, 0, 24);
+    Check (num_cells == volrn.get_Mesh().num_cells());
+
+  // receive the volume source data from the host processor
+    int *nvol_recv   = new int[num_cells];
+    int *stream_recv = new int[num_cells];
+    Recv (nvol_recv, num_cells, 0, 25);
+    Recv (stream_recv, num_cells, 0, 26);
+
+  // assign data to the CCSFs
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	nvol(cell)  = nvol_recv[cell-1];
+	volrn(cell) = stream_recv[cell-1];
+    }
+
+  // release the dynamic storage
+    delete [] nvol_recv;
+    delete [] stream_recv;
 }
 
 //---------------------------------------------------------------------------//
@@ -525,13 +646,15 @@ Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit)
 	  // determine the global cell index
 	    int global_cell = cells_per_proc[i][cell-1];
 
+	  // calculate the nss source
+	    nss_send[cell-1] = nss[global_cell-1];
+
 	  // check to see if we need to add extra sources to this cell on
 	  // this processor
-	    if (nss_xtra[global_cell-1] <= i)
-		nss[global_cell-1]++;
+	    if (nss_xtra[global_cell-1] >= i+1)
+		nss_send[cell-1]++;
 	    
-	  // calculate the nss source and stream number for proc i
-	    nss_send[cell-1]    = nss[global_cell-1];
+	  // calculate the stream number for proc i
 	    stream_send[cell-1] = streamnum[global_cell-1];
 	    streamnum[global_cell-1] += nss_send[cell-1];
 
@@ -540,7 +663,7 @@ Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit)
 	}
 
       // send out the data 
-	if (node())
+	if (i)
 	{
 	  // send to proc i if we are not on the host
 	    Send (num_cells, i, 27);
@@ -573,6 +696,38 @@ Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit)
 
   // return the host surface source to the host processor
     return host_ss;
+}
+
+//---------------------------------------------------------------------------//
+// receive the surface source stuff
+
+template<class MT>
+void Parallel_Builder<MT>::recv_ss(typename MT::CCSF_int &ssrn,
+				   typename MT::CCSF_int &nss)
+{
+    Require (ssrn.get_Mesh() == nss.get_Mesh());
+
+  // lets get the size of the thing from the host processor
+    int num_cells;
+    Recv (num_cells, 0, 27);
+    Check (num_cells == ssrn.get_Mesh().num_cells());
+
+  // receive the surface source data from the host processor
+    int *nss_recv    = new int[num_cells];
+    int *stream_recv = new int[num_cells];
+    Recv (nss_recv, num_cells, 0, 28);
+    Recv (stream_recv, num_cells, 0, 29);
+
+  // assign data to the CCSFs
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	nss(cell)  = nss_recv[cell-1];
+	ssrn(cell) = stream_recv[cell-1];
+    }
+
+  // release the dynamic storage
+    delete [] nss_recv;
+    delete [] stream_recv;
 }
 
 //---------------------------------------------------------------------------//

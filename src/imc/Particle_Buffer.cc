@@ -33,6 +33,21 @@ Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon)
   // in bytes
     csize = rcon.get_size();
     Check (csize <= RNG::max_buffer);
+
+  // set the static buffer variables
+    set_buffer(dsize+1, isize, csize);
+}
+
+//---------------------------------------------------------------------------//
+// constructor for Particle_Buffer which allows the user to enter the 
+// Particle sizes
+
+template<class MT>
+Particle_Buffer<MT>::Particle_Buffer(int d, int i, int c)
+    : dsize(d), isize(i), csize(c) 
+{
+  // set the static buffer variables
+    set_buffer(dsize+1, isize, csize);
 }
 
 //---------------------------------------------------------------------------//
@@ -58,6 +73,50 @@ Particle_Buffer<PT>::Census_Buffer::Census_Buffer()
 {
   // constructor for use with STL, this cannot be used
     Insist (0, "You tried to default construct a Census_Buffer!");
+}
+
+//---------------------------------------------------------------------------//
+// static buffer size members
+//---------------------------------------------------------------------------//
+
+// buffer size
+template<class PT> int Particle_Buffer<PT>::buffer_s = 1000;
+
+// size of doubles, ints, and chars in buffer
+template<class PT> int Particle_Buffer<PT>::buffer_d = buffer_s * 9;
+template<class PT> int Particle_Buffer<PT>::buffer_i = buffer_s * 2;
+template<class PT> int Particle_Buffer<PT>::buffer_c = buffer_s * 500;
+
+//---------------------------------------------------------------------------//
+// set the buffers
+
+template<class PT>
+void Particle_Buffer<PT>::set_buffer(int d, int i, int c)
+{
+  // reset the double, int, and char buffer sizes
+    buffer_d = buffer_s * d;
+    buffer_i = buffer_s * i;
+    buffer_c = buffer_s * c;
+}
+
+template<class PT>
+void Particle_Buffer<PT>::set_buffer(int d, int i, int c, int s)
+{
+  // reset the buffer size, double, int, and char buffer sizes
+    buffer_s = s;
+    buffer_d = buffer_s * d;
+    buffer_i = buffer_s * i;
+    buffer_c = buffer_s * c;
+}
+
+template<class PT>
+void Particle_Buffer<PT>::set_buffer_size(int s)
+{
+  // reset the buffer sizes
+    buffer_d *= s / buffer_s; 
+    buffer_i *= s / buffer_s; 
+    buffer_c *= s / buffer_s; 
+    buffer_s = s;
 }
 
 //---------------------------------------------------------------------------//
@@ -166,9 +225,9 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
 	buffer.n_part--;
 
       // asserts to make sure we haven't gone over
-	Check (id <= Global::buffer_d);
-	Check (ii <= Global::buffer_i);
-	Check (ic <= Global::buffer_c);
+	Check (id <= buffer_d);
+	Check (ii <= buffer_i);
+	Check (ic <= buffer_c);
     }
 
   // recover storage
@@ -248,9 +307,9 @@ void Particle_Buffer<PT>::send_buffer(Comm_Buffer &buffer, int proc) const
 {
   // send out a Comm_Buffer
     Send (buffer.n_part, proc, 200);
-    Send (&buffer.array_d[0], Global::buffer_d, proc, 201);
-    Send (&buffer.array_i[0], Global::buffer_i, proc, 202);
-    Send (&buffer.array_c[0], Global::buffer_c, proc, 203);
+    Send (&buffer.array_d[0], buffer_d, proc, 201);
+    Send (&buffer.array_i[0], buffer_i, proc, 202);
+    Send (&buffer.array_c[0], buffer_c, proc, 203);
 }
 
 //---------------------------------------------------------------------------//
@@ -265,9 +324,9 @@ Particle_Buffer<PT>::recv_buffer(int proc) const
 
   // receive the n_part
     Recv (buffer->n_part, proc, 200);
-    Recv (&buffer->array_d[0], Global::buffer_d, proc, 201);
-    Recv (&buffer->array_i[0], Global::buffer_i, proc, 202);
-    Recv (&buffer->array_c[0], Global::buffer_c, proc, 203);
+    Recv (&buffer->array_d[0], buffer_d, proc, 201);
+    Recv (&buffer->array_i[0], buffer_i, proc, 202);
+    Recv (&buffer->array_c[0], buffer_c, proc, 203);
 
   // return SP
     return buffer;
@@ -282,7 +341,7 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc,
 {
   // find out the number of Particles
     int num_part = bank.size();
-    Check (num_part > 0 && num_part <= Global::buffer_s);
+    Check (num_part > 0 && num_part <= buffer_s);
     
   // define indices for data
     int id = 0;
@@ -290,9 +349,9 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc,
     int ic = 0;
 
   // define arrays for buffering
-    double *array_d = new double[Global::buffer_d];
-    int    *array_i = new int[Global::buffer_i];
-    char   *array_c = new char[Global::buffer_c];
+    double *array_d = new double[buffer_d];
+    int    *array_i = new int[buffer_i];
+    char   *array_c = new char[buffer_c];
 
   // loop through particles and get the goods
     while (bank.size())
@@ -305,12 +364,12 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc,
 	    array_d[id++] = bank.top().omega[j];
 	for (int j = 0; j < bank.top().r.size(); j++)
 	    array_d[id++] = bank.top().r[j];
-	Check (id <= Global::buffer_d);
+	Check (id <= buffer_d);
 
       // get the int info from the particle
 	array_i[ii++] = bank.top().cell;
 	array_i[ii++] = bank.top().random.get_num();
-	Check (ii <= Global::buffer_i);
+	Check (ii <= buffer_i);
 
       // get the char info from the particle
 	char *bytes;
@@ -319,7 +378,7 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc,
 	for (int j = 0; j < csize; j++)
 	    array_c[ic++] = bytes[j];
 	std::free(bytes);
-	Check (ic <= Global::buffer_c);
+	Check (ic <= buffer_c);
 
       // pop the highest level particle
 	bank.pop();
@@ -327,9 +386,9 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc,
 
   // send the particle buffers
     SendAsync(buffer.comm_n, &num_part, 1, proc, 100);
-    SendAsync(buffer.comm_d, &array_d[0], Global::buffer_d, proc, 101);
-    SendAsync(buffer.comm_i, &array_i[0], Global::buffer_i, proc, 102);
-    SendAsync(buffer.comm_c, &array_c[0], Global::buffer_c, proc, 103);
+    SendAsync(buffer.comm_d, &array_d[0], buffer_d, proc, 101);
+    SendAsync(buffer.comm_i, &array_i[0], buffer_i, proc, 102);
+    SendAsync(buffer.comm_c, &array_c[0], buffer_c, proc, 103);
 
   // reclaim our memory
     delete [] array_d;
@@ -345,9 +404,9 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc) const
 {
   // async send this Comm_Buffer
     SendAsync(buffer.comm_n, &buffer.n_part, 1, proc, 100);
-    SendAsync(buffer.comm_d, &buffer.array_d[0], Global::buffer_d, proc, 101);
-    SendAsync(buffer.comm_i, &buffer.array_i[0], Global::buffer_i, proc, 102);
-    SendAsync(buffer.comm_c, &buffer.array_c[0], Global::buffer_c, proc, 103);
+    SendAsync(buffer.comm_d, &buffer.array_d[0], buffer_d, proc, 101);
+    SendAsync(buffer.comm_i, &buffer.array_i[0], buffer_i, proc, 102);
+    SendAsync(buffer.comm_c, &buffer.array_c[0], buffer_c, proc, 103);
 }
 
 //---------------------------------------------------------------------------//
@@ -358,9 +417,9 @@ void Particle_Buffer<PT>::post_arecv(Comm_Buffer &buf, int proc) const
 {
   // post c4 async receives
     RecvAsync(buf.comm_n, &buf.n_part, 1, proc, 100);
-    RecvAsync(buf.comm_d, &buf.array_d[0], Global::buffer_d, proc, 101);
-    RecvAsync(buf.comm_i, &buf.array_i[0], Global::buffer_i, proc, 102);
-    RecvAsync(buf.comm_c, &buf.array_c[0], Global::buffer_c, proc, 103);
+    RecvAsync(buf.comm_d, &buf.array_d[0], buffer_d, proc, 101);
+    RecvAsync(buf.comm_i, &buf.array_i[0], buffer_i, proc, 102);
+    RecvAsync(buf.comm_c, &buf.array_c[0], buffer_c, proc, 103);
 }
 
 //---------------------------------------------------------------------------//
@@ -386,7 +445,7 @@ void Particle_Buffer<PT>::buffer_census(Comm_Buffer &comm,
 					const Census_Buffer &census) const
 {
   // check to make sure this Comm_Buffer isn't full
-    Require (comm.n_part < Global::buffer_s);
+    Require (comm.n_part < buffer_s);
 
   // calculate indices for the buffer
     int id = comm.n_part * (dsize + 1);
@@ -424,9 +483,9 @@ void Particle_Buffer<PT>::buffer_census(Comm_Buffer &comm,
     comm.n_part++;
 
   // do some assertions
-    Ensure (id <= Global::buffer_d);
-    Ensure (ii <= Global::buffer_i);
-    Ensure (ic <= Global::buffer_c);
+    Ensure (id <= buffer_d);
+    Ensure (ii <= buffer_i);
+    Ensure (ic <= buffer_c);
 }
 
 //---------------------------------------------------------------------------//
@@ -437,7 +496,7 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
 					  const PT &particle) const
 {
   // check to make sure this Comm_Buffer isn't full
-    Require (buffer.n_part < Global::buffer_s);
+    Require (buffer.n_part < buffer_s);
 
   // calculate indices for the buffer, remember the particle info required
   // during a timestep must also include the time left
@@ -475,9 +534,9 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
     buffer.n_part++;
 
   // do some assertions
-    Ensure (id <= Global::buffer_d);
-    Ensure (ii <= Global::buffer_i);
-    Ensure (ic <= Global::buffer_c);
+    Ensure (id <= buffer_d);
+    Ensure (ii <= buffer_i);
+    Ensure (ic <= buffer_c);
 }
 
 //---------------------------------------------------------------------------//
@@ -488,7 +547,7 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Comm_Bank &bank) const
 {
   // get the number of Particles in the Comm_Buffer
     int num_part = buffer.n_part;
-    Require (num_part <= Global::buffer_s);
+    Require (num_part <= buffer_s);
 
   // set buffer counters
     int id = 0;
@@ -526,9 +585,9 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Comm_Bank &bank) const
 	delete [] bytes;
 
       // check to make sure we haven't gone over
-	Check (id <= Global::buffer_d);
-	Check (ii <= Global::buffer_i);
-	Check (ic <= Global::buffer_c);
+	Check (id <= buffer_d);
+	Check (ii <= buffer_i);
+	Check (ic <= buffer_c);
 
       // make the Particle
 	PT particle(r, omega, ew, cell, random, frac, t_left);

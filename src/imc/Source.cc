@@ -8,10 +8,15 @@
 
 #include "imc/Source.hh"
 #include "ds++/Assert.hh"
+#include <iomanip>
 
 IMCSPACE
 
+// STL functions
 using std::ios;
+using std::endl;
+using std::setiosflags;
+using std::setw;
 
 //---------------------------------------------------------------------------//
 // constructor
@@ -35,7 +40,41 @@ Source<MT, PT>::Source(typename MT::CCSF_int &vol_rnnum_,
     Check (vol_rnnum.get_Mesh() == nvol.get_Mesh());
     Check (nvol.get_Mesh()      == ss_rnnum.get_Mesh());
     Check (nvol.get_Mesh()      == nss.get_Mesh());
-    Check (census);
+}
+
+//---------------------------------------------------------------------------//
+// source diagnostic functions
+//---------------------------------------------------------------------------//
+// print out an ascii description of the source
+
+template<class MT, class PT>
+void Source<MT, PT>::print(ostream &out) const
+{
+    out << "*** SOURCE DATA ***" << endl;
+    out << "-------------------" << endl;
+
+  // numbers of each type of particle
+    out << setw(25) << setiosflags(ios::right) << "Census Particles: "
+	<< setw(10) << ncentot << endl;
+    out << setw(25) << setiosflags(ios::right) << "Volume Particles: "
+	<< setw(10) << nvoltot << endl;
+    out << setw(25) << setiosflags(ios::right) << "Surface Particles: "
+	<< setw(10) << nsstot << endl;
+
+  // lets look at the number of particles in each cell
+    out << endl << " ** Sources **" << endl;
+    out << setw(10) << " " << setw(13) << setiosflags(ios::right)
+	<< "Volume" << setw(7) << " " << setw(12) << setiosflags(ios::right)
+	<< "Surface" << endl;
+    out << setw(10) << setiosflags(ios::right) << "Cell"
+	<< setw(10) << setiosflags(ios::right) << "Number"
+	<< setw(10) << setiosflags(ios::right) << "Stream ID"
+	<< setw(10) << setiosflags(ios::right) << "Number"
+	<< setw(10) << setiosflags(ios::right) << "Stream ID" << endl;
+    for (int i = 1; i <= nvol.get_Mesh().num_cells(); i++)
+	out << setw(10) << i << setw(10) << nvol(i) 
+	    << setw(10) << vol_rnnum(i)  << setw(10) << nss(i)
+	    << setw(10) << ss_rnnum(i)   << endl;
 }
 	
 CSPACE

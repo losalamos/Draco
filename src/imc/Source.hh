@@ -36,6 +36,7 @@ using RNG::Rnd_Control;
 
 // STL components
 using std::ifstream;
+using std::ostream;
 using std::string;
 
 template<class MT, class PT=Particle<MT> >
@@ -77,7 +78,22 @@ public:
     SP<PT> get_census();
     SP<PT> get_evol();
     SP<PT> get_ss();
+
+  // source diagnostic
+    void print(ostream &) const;
 };
+
+//---------------------------------------------------------------------------//
+// overloaded operators
+//---------------------------------------------------------------------------//
+// output ascii version of the source
+
+template<class MT, class PT>
+inline ostream& operator<<(ostream &output, const Source<MT,PT> &object)
+{
+    object.print(output);
+    return output;
+}
 
 CSPACE
 

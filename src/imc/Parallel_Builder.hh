@@ -13,7 +13,7 @@
 // class Parallel_Builder - 
 //
 // Purpose : pass the mesh, opacity, and source info to IMC_topology
-//           processors 
+//           processors
 //
 // revision history:
 // -----------------
@@ -63,6 +63,11 @@ private:
     vector<vector<int> > dist_vol(const Source_Init<MT> &);
     vector<vector<int> > dist_ss(const Source_Init<MT> &);
 
+  // receive the census, volume, and surface sources
+    template<class PT> void recv_census(const Particle_Buffer<PT> &);
+    void recv_vol(typename MT::CCSF_int &, typename MT::CCSF_int &);
+    void recv_ss(typename MT::CCSF_int &, typename MT::CCSF_int &);
+
   // functionality for Mesh passing
 
   // pass the Layout
@@ -91,7 +96,7 @@ public:
     send_Source(SP<MT>, const Source_Init<MT> &, const Particle_Buffer<PT> &,
 		SP<Rnd_Control>); 
     template<class PT> SP<Source<MT> > 
-    recv_Source(SP<MT>, SP<Rnd_Control>, Particle_Buffer<PT>); 
+    recv_Source(SP<MT>, SP<Rnd_Control>, const Particle_Buffer<PT> &); 
 
   // Mesh passing functionality
     void send_Mesh(const MT &);
