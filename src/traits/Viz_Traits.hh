@@ -20,7 +20,7 @@ namespace rtt_traits
  
 //===========================================================================//
 /*!
- * \class Viz_Trait
+ * \class Viz_Traits
  *
  * \brief Traits that are used by the rtt_viz package.
  *
@@ -41,6 +41,8 @@ namespace rtt_traits
 // revision history:
 // -----------------
 // 0) original
+// 1) 28-JAN-00 : added explicit specializations for vector<vector<int>> and
+//                vector<vector<double>> because of totalview goofiness
 // 
 //===========================================================================//
 
@@ -85,6 +87,80 @@ class Viz_Traits< std::vector<std::vector<T> > >
 
     // Overloaded operator().
     T operator()(int i, int j) const
+    {
+	Require(i >= 0 && i < field.size());
+	Require(j >= 0 && j < field[i].size());
+	return field[i][j];
+    }
+
+    // Row size accessor.
+    int nrows() const { return field.size(); }
+
+    // Column size accessor.
+    int ncols(int row) const
+    {
+	Require (row >= 0 && row < field.size());
+	return field[row].size();
+    }
+};
+
+//---------------------------------------------------------------------------//
+// explicit specialization for vector<vector<int>> --> Need this because of
+// totalviews inability to handle templated specializations
+
+template<>
+class Viz_Traits< std::vector<std::vector<int> > >
+{
+  private:
+    // Reference to vector<vector> field.
+    const std::vector<std::vector<int> > &field;
+    
+  public:
+    // Constructor.
+    Viz_Traits(const std::vector<std::vector<int> > &fin) : field(fin)
+    {
+	// Nothing to do here
+    } 
+
+    // Overloaded operator().
+    int operator()(int i, int j) const
+    {
+	Require(i >= 0 && i < field.size());
+	Require(j >= 0 && j < field[i].size());
+	return field[i][j];
+    }
+
+    // Row size accessor.
+    int nrows() const { return field.size(); }
+
+    // Column size accessor.
+    int ncols(int row) const
+    {
+	Require (row >= 0 && row < field.size());
+	return field[row].size();
+    }
+};
+
+//---------------------------------------------------------------------------//
+// explicit specialization for vector<vector<double>> --> Need this because of
+// totalviews inability to handle templated specializations
+
+template<>
+class Viz_Traits< std::vector<std::vector<double> > >
+{
+  private:
+    // Reference to vector<vector> field.
+    const std::vector<std::vector<double> > &field;
+    
+  public:
+    // Constructor.
+    Viz_Traits(const std::vector<std::vector<double> > &fin) : field(fin)
+    {
+	// Nothing to do here
+    } 
+
+    // Overloaded operator().
+    double operator()(int i, int j) const
     {
 	Require(i >= 0 && i < field.size());
 	Require(j >= 0 && j < field[i].size());
