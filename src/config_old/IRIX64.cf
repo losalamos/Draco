@@ -199,6 +199,14 @@ DBC		= 0
 cxx_opt		= +K3 -O3
 endif
 
+ifeq ($(opt),3at)
+optns		= o3at
+#ASSERT_FLAG	= -DNOASSERT
+#ASSERT_FLAG	= -DDBC=0
+DBC		= 0
+cxx_opt		= +K3 -O3 -OPT:alias=typed
+endif
+
 CXX	+= $(cxx_opt)
 
 endif				# Photon C++
@@ -292,6 +300,12 @@ ifeq ($(opt),3)
 optns		= o3
 ASSERT_FLAG	= -DNOASSERT
 cxx_opt		= -O3
+endif
+
+ifeq ($(opt),3at)
+optns		= o3at
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt		= -O3 -OPT:alias=typed
 endif
 
 CXX	+= $(cxx_opt)
