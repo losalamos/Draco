@@ -58,7 +58,7 @@
               subroutine RTT_Format_destruct(self)
                   type(RTT_Format), intent(inout) :: self
 
-                  call destruct_rtt_format(self%this)
+                  call destruct_c_rtt_format(self%this)
 
               end subroutine RTT_Format_destruct
 

@@ -34,7 +34,7 @@
           integer narg, iargc, fnlgth
 
           type(CAR_CU_Interface)           :: interface_class
-          type(RTT_Format)          :: rtt_format_class
+          type(RTT_Format)                 :: rtt_class
           type(CAR_CU_Mesh_Builder)        :: mesh_builder_class
           type(CAR_CU_Mesh)                :: mesh_class
           type(CAR_CU_Opacity_Builder)     :: opacity_builder_class
@@ -146,7 +146,7 @@
 !===========================================================================
 
           call construct_Interface(interface_class)
-          rtt_format_class%this = interface_class%rtt_format
+          rtt_class%this = interface_class%rtt_format
 
 !===========================================================================
 ! Create a C++ CAR_CU_Mesh_Builder class object. This also constructs the 
@@ -254,7 +254,7 @@
 
           call destruct_Opacity_Builder(opacity_builder_class)
           call destruct_Mesh_Builder(mesh_builder_class)
-          call destruct_RTT_Format(rtt_format_class)
+          call destruct_RTT_Format(rtt_class)
           call destruct_Interface(interface_class)
 
 !===========================================================================
