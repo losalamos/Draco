@@ -161,6 +161,15 @@ class Mesh_XYZ : private XYZ_Mapper
         T operator()( int i ) const { return data(i); }
         T& operator()( int i ) { return data(i); }
 
+	T& operator()( int i, int j, int k )
+	{
+	    return data( local_cell_index(i,j,k) );
+	}
+	T  operator()( int i, int j, int k ) const 
+	{
+	    return data( local_cell_index(i,j,k) );
+	}
+
         T operator[]( int i ) const { return data(i); }
         T& operator[]( int i ) { return data(i); }
 
