@@ -35,6 +35,7 @@ AC_RUNTESTS(tstConfig \
             tstSphere \
             tstCoord \
             tstComm_Patterns \
+            tstParticle_Stack \
             tstParticle_Buffer \
             tstCommunicator \
             tstParticle_IO \

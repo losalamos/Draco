@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Particle_Buffer_hh__
-#define __mc_Particle_Buffer_hh__
+#ifndef rtt_mc_Particle_Buffer_hh
+#define rtt_mc_Particle_Buffer_hh
 
 #include "Particle_Stack.hh"
 #include "c4/global.hh"
@@ -146,6 +146,9 @@ class Particle_Buffer
     // Copy Constructor and assignment operators.
     Particle_Buffer(const Particle_Buffer &);
     const Particle_Buffer& operator=(const Particle_Buffer &);
+
+    // Virtual destructor.
+    virtual ~Particle_Buffer() { /*...*/ }
 
     // >>> SET FUNCTIONS
 
@@ -343,7 +346,7 @@ class Send_Particle_Buffer : public Particle_Buffer<PT>
 
 } // end namespace rtt_mc
 
-#endif                          // __mc_Particle_Buffer_hh__
+#endif                          // rtt_mc_Particle_Buffer_hh
 
 //---------------------------------------------------------------------------//
 //                              end of mc/Particle_Buffer.hh

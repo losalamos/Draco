@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Communicator_hh__
-#define __mc_Communicator_hh__
+#ifndef rtt_mc_Communicator_hh
+#define rtt_mc_Communicator_hh
 
 #include "Particle_Buffer.hh"
 #include "Particle_Stack.hh"
@@ -193,7 +193,7 @@ int Communicator<PT>::global_to_local(int global_index) const
 
 } // end namespace rtt_mc
 
-#endif                          // __mc_Communicator_hh__
+#endif                          // rtt_mc_Communicator_hh
 
 //---------------------------------------------------------------------------//
 //                              end of mc/Communicator.hh
