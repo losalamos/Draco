@@ -1013,6 +1013,42 @@ class Mesh_XYZ : private XYZ_Mapper
             return sum;
         }
 
+        friend tiny_vec<T,N> operator+( const tiny_vec<T,N>& x,
+                                        const tiny_vec<T,N>& y)
+        {
+            tiny_vec<T,N> results;
+            for (int i = 0; i<N; ++i)
+                results[i] = x[i] + y[i];
+            return results;
+        }
+
+        friend tiny_vec<T,N> operator*( const tiny_vec<T,N>& x,
+                                        const tiny_vec<T,N>& y)
+        {
+            tiny_vec<T,N> results;
+            for (int i = 0; i<N; ++i)
+                results[i] = x[i] * y[i];
+            return results;
+        }
+
+        friend tiny_vec<T,N> operator-( const tiny_vec<T,N>& x,
+                                        const tiny_vec<T,N>& y)
+        {
+            tiny_vec<T,N> results;
+            for (int i = 0; i<N; ++i)
+                results[i] = x[i] - y[i];
+            return results;
+        }
+
+         friend tiny_vec<T,N> operator/( const tiny_vec<T,N>& x,
+                                        const tiny_vec<T,N>& y)
+        {
+            tiny_vec<T,N> results;
+            for (int i = 0; i<N; ++i)
+                results[i] = x[i] / y[i];
+            return results;
+        }
+
         template<class X>
         tiny_vec& operator=( const xm::Xpr< T, X, tiny_vec >& x )
         {
