@@ -6,7 +6,7 @@
 // @> A basic String class.
 //---------------------------------------------------------------------------//
 
-#include <iostream.h>
+#include <iostream>
 
 #include "String.hh"
 #include <string.h>
@@ -206,7 +206,7 @@ char String::operator[]( int i ) const
 // Output to i/o streams.
 //---------------------------------------------------------------------------//
 
-ostream& operator<<( ostream& s, const String& x )
+std::ostream& operator<<( std::ostream& s, const String& x )
 {
     return s << x.p->s;
 }
@@ -216,7 +216,7 @@ ostream& operator<<( ostream& s, const String& x )
 // overflow. 
 //---------------------------------------------------------------------------//
 
-istream& operator>>( istream& s, String& x )
+std::istream& operator>>( std::istream& s, String& x )
 {
     char buf[256];
 
