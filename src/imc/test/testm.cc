@@ -202,12 +202,25 @@ void f(Random &random, const OS_Mesh &mesh)
     r[0] = mesh.begin(1) + random.ran() * mesh.end(1);
     r[1] = mesh.begin(2) + random.ran() * mesh.end(2);
 
+    vector<double> omega(2);
+
     int cell = mesh.getCell(r);
+    mesh.Coord().setOmega(omega, random);
+
+    int face = 0;
+    double bnd = mesh.getDb(r, omega, cell, face);
+
+    int ecell = mesh.Layout()(cell, face);
 
     cout << endl;
     cout << "Starting Cell : " << cell << endl;
     cout << "X             : " << r[0] << endl;
     cout << "Y             : " << r[1] << endl;
+    cout << "u             : " << omega[0] << endl;
+    cout << "v             : " << omega[1] << endl;
+    cout << "Dist-bnd      : " << bnd << endl;
+    cout << "Face          : " << face << endl;
+    cout << "Entering cell : " << ecell << endl;
 }
 
 CSPACE
@@ -264,7 +277,7 @@ main()
     
     Random random(-142573);
 
-    for (int i = 1; i <= 10; i++)
+    for (int i = 1; i <= 2; i++)
 	f(random, *mesh);
 
 }
