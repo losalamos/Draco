@@ -114,6 +114,12 @@ class RCF
 
     //! Smart pointer to field.
     SP<Field_t> sp_field;
+    
+    //! Dumb pointer to the field
+    /*! This member is used to implement all of the member functions.  There
+      tends to be overhead associated with accessing data through an SP: this
+      approach avoids that overhead */
+    Field_t* ptr_field;
 
     // Friendship for const specialization.
     template<class X> friend class RCF;
@@ -137,10 +143,18 @@ class RCF
     inline RCF<Field_t>& operator=(Field_t *p_in);
 
     //! Get the field (const).
-    const Field_t& get_field() const { Require(assigned()); return *sp_field; }
+    const Field_t& get_field() const 
+    { 
+	Require(assigned()); 
+	return *ptr_field; 
+    }
 
     //! Get the field (l-value).
-    Field_t& get_field() { Require(assigned()); return *sp_field; }
+    Field_t& get_field() 
+    { 
+	Require(assigned()); 
+	return *ptr_field; 
+    }
 
     //! Determine if field is assigned.
     bool assigned() const { return bool(sp_field); }
@@ -164,10 +178,10 @@ class RCF
     inline iterator end();
 
     // Expose size().
-    size_type size() const { Require(assigned()); return sp_field->size(); }
+    size_type size() const { Require(assigned()); return ptr_field->size(); }
 
     // Expose empty().
-    bool empty() const { Require(assigned()); return sp_field->empty(); }
+    bool empty() const { Require(assigned()); return ptr_field->empty(); }
 };
 
 //---------------------------------------------------------------------------//
@@ -188,6 +202,7 @@ RCF<Field_t>::RCF(const int        n,
 {
     Require(n > 0);
     sp_field = new Field_t(n, v);
+    ptr_field = sp_field.bp();
 }
 
 //---------------------------------------------------------------------------//
@@ -207,6 +222,7 @@ RCF<Field_t>::RCF(const int        n,
 template<class Field_t>
 RCF<Field_t>::RCF(Field_t *p_in)
     : sp_field(p_in)
+    , ptr_field(sp_field.bp())
 {
     // nothing to check because this could be a NULL field pointer
 }
@@ -226,6 +242,7 @@ RCF<Field_t>::RCF(const_iterator b,
 		  const_iterator e)
 {
     sp_field = new Field_t(b, e);
+    ptr_field = sp_field.bp();
 }
 
 //---------------------------------------------------------------------------//
@@ -252,6 +269,7 @@ RCF<Field_t>& RCF<Field_t>::operator=(Field_t *p_in)
 
     // reassign the existing smart pointer
     sp_field = p_in;
+    ptr_field = sp_field.bp();
     return *this;
 }
 
@@ -264,7 +282,7 @@ const typename RCF<Field_t>::value_type&
 RCF<Field_t>::operator[](const size_type i) const
 {
     Require (assigned());
-    return sp_field->operator[](i);
+    return ptr_field->operator[](i);
 }
 
 //---------------------------------------------------------------------------//
@@ -275,7 +293,7 @@ template<class Field_t>
 typename RCF<Field_t>::value_type& RCF<Field_t>::operator[](const size_type i)
 {
     Require (assigned());
-    return sp_field->operator[](i);
+    return ptr_field->operator[](i);
 }
 
 //---------------------------------------------------------------------------//
@@ -286,7 +304,7 @@ template<class Field_t>
 typename RCF<Field_t>::const_iterator RCF<Field_t>::begin() const
 {
     Require (assigned());
-    return sp_field->begin();
+    return ptr_field->begin();
 }
 
 //---------------------------------------------------------------------------//
@@ -297,7 +315,7 @@ template<class Field_t>
 typename RCF<Field_t>::iterator RCF<Field_t>::begin()
 {
     Require (assigned());
-    return sp_field->begin();
+    return ptr_field->begin();
 }
 
 //---------------------------------------------------------------------------//
@@ -308,7 +326,7 @@ template<class Field_t>
 typename RCF<Field_t>::const_iterator RCF<Field_t>::end() const
 {
     Require (assigned());
-    return sp_field->end();
+    return ptr_field->end();
 }
 
 //---------------------------------------------------------------------------//
@@ -319,7 +337,7 @@ template<class Field_t>
 typename RCF<Field_t>::iterator RCF<Field_t>::end()
 {
     Require (assigned());
-    return sp_field->end();
+    return ptr_field->end();
 }
 
 //===========================================================================//
@@ -351,6 +369,12 @@ class RCF<const Field_t>
     //! Smart pointer to field.
     SP<const Field_t> sp_field;
 
+    //! Dumb pointer to the field
+    /*! This member is used to implement all of the member functions.  There
+      tends to be overhead associated with accessing data through an SP: this
+      approach avoids that overhead */
+    Field_t const * ptr_field;
+
   public:
     //! Default constructor.
     RCF() { /* */ }
@@ -360,7 +384,10 @@ class RCF<const Field_t>
 			const value_type v = value_type());
 
     //! Constructor from non-const Field_t.
-    RCF(const RCF<Field_t> &x) : sp_field(x.sp_field) {/*...*/}
+    RCF(const RCF<Field_t> &x) 
+	: sp_field(x.sp_field) 
+	, ptr_field(sp_field.bp())
+    {/*...*/}
 
     // Explicit constructor for type Field_t *.
     inline explicit RCF(Field_t *p_in);
@@ -372,7 +399,8 @@ class RCF<const Field_t>
     inline RCF<const Field_t>& operator=(Field_t *p_in);
 
     //! Get the field (const).
-    const Field_t& get_field() const { Require(assigned()); return *sp_field; }
+    const Field_t& get_field() const { Require(assigned()); 
+	return *ptr_field; }
 
     //! Determine if field is assigned.
     bool assigned() const { return bool(sp_field); }
@@ -387,10 +415,10 @@ class RCF<const Field_t>
     inline const_iterator end() const;
 
     // Expose size().
-    size_type size() const { Require(assigned()); return sp_field->size(); }
+    size_type size() const { Require(assigned()); return ptr_field->size(); }
 
     // Expose empty().
-    bool empty() const { Require(assigned()); return sp_field->empty(); }
+    bool empty() const { Require(assigned()); return ptr_field->empty(); }
 };
 
 //---------------------------------------------------------------------------//
@@ -411,6 +439,7 @@ RCF<const Field_t>::RCF(const int        n,
 {
     Require(n > 0);
     sp_field = new Field_t(n, v);
+    ptr_field = sp_field.bp();
 }
 
 //---------------------------------------------------------------------------//
@@ -430,6 +459,7 @@ RCF<const Field_t>::RCF(const int        n,
 template<class Field_t>
 RCF<const Field_t>::RCF(Field_t *p_in)
     : sp_field(p_in)
+    , ptr_field(sp_field.bp())
 {
     // nothing to check because this could be a NULL field pointer
 }
@@ -449,6 +479,7 @@ RCF<const Field_t>::RCF(const_iterator b,
 			const_iterator e)
 {
     sp_field = new Field_t(b, e);
+    ptr_field = sp_field.bp();
 }
 
 //---------------------------------------------------------------------------//
@@ -475,6 +506,7 @@ RCF<const Field_t>& RCF<const Field_t>::operator=(Field_t *p_in)
 
     // reassign the existing smart pointer
     sp_field = p_in;
+    ptr_field = sp_field.bp();
     return *this;
 }
 
@@ -487,7 +519,7 @@ const typename RCF<const Field_t>::value_type&
 RCF<const Field_t>::operator[](const size_type i) const
 {
     Require (assigned());
-    return sp_field->operator[](i);
+    return ptr_field->operator[](i);
 }
 
 //---------------------------------------------------------------------------//
@@ -498,7 +530,7 @@ template<class Field_t>
 typename RCF<const Field_t>::const_iterator RCF<const Field_t>::begin() const
 {
     Require (assigned());
-    return sp_field->begin();
+    return ptr_field->begin();
 }
 
 //---------------------------------------------------------------------------//
@@ -509,7 +541,7 @@ template<class Field_t>
 typename RCF<const Field_t>::const_iterator RCF<const Field_t>::end() const
 {
     Require (assigned());
-    return sp_field->end();
+    return ptr_field->end();
 }
 
 } // end namespace rtt_dsxx
