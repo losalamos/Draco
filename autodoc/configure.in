@@ -21,18 +21,22 @@ AC_PATH_PROG(DOXYGEN_PATH, doxygen, null)
 doxygen_src=${srcdir}/../src
 
 # find sources
+AC_MSG_CHECKING("directories to doxygenize")
 dirs=`ls ../src`
 
 doxygen_input=''
 doxygen_examples=''
+doxygen_dirs=''
 
 for dir in $dirs;
 do
    if test -d ../src/$dir ; then
+       doxygen_dirs="${dir} ${doxygen_dirs}"
        doxygen_input="${doxygen_src}/${dir} ${doxygen_input}"
        doxygen_examples="${doxygen_src}/${dir}/test ${doxygen_examples}"
    fi
 done
+AC_MSG_RESULT($doxygen_dirs)
 
 # check if we should build latex sources
 latex_yes_no='NO'
@@ -41,7 +45,10 @@ if test "${enable_latex_doc:=no}" = yes ; then
 fi
 
 # find the release number
-number=`${prefix}/bin/draco --version`
+number='null'
+AC_MSG_CHECKING("draco release number")
+number=`/bin/sh ../tools/draco --version`
+AC_MSG_RESULT($number)
 
 AC_SUBST(doxygen_input)
 AC_SUBST(doxygen_examples)
