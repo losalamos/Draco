@@ -455,7 +455,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
 	   # add suppression of long long errors if the compiler is
 	   # KCC 
-	   if test "${CXX}" = KCC && test "${enable_strict}" = yes ; then
+	   if test "${CXX}" = KCC && test "${enable_strict_ansi}" = yes ; then
 	       STRICTFLAG='--strict --diag_suppress 450'
 	   fi
        fi
