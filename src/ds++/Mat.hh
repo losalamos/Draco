@@ -1682,6 +1682,511 @@ class Mat4 {
     }
 };
 
+//===========================================================================//
+// class Mat5 - A 5-d container.
+
+// Mat5 is a container which supports four indices.  It is otherwise similar 
+// to Mat1, Mat2, Mat3 and Mat4.
+//===========================================================================//
+
+template< class T, class Allocator = Simple_Allocator<T> >
+class Mat5 {
+  private:
+    int xmin, xlen, ymin, ylen, zmin, zlen, wmin, wlen, umin, ulen;
+    bool may_free_space;
+
+    int xmax() const { return xmin + xlen - 1; }
+    int ymax() const { return ymin + ylen - 1; }
+    int zmax() const { return zmin + zlen - 1; }
+    int wmax() const { return wmin + wlen - 1; }
+    int umax() const { return umin + ulen - 1; }
+
+// index() is used for indexing, so is checked.  offset() is used for
+// adjusting the memory pointer, which is logically distinct from indexing,
+// so is not checked.  Note in particular, that a zero size matrix will have
+// no valid index, but we still need to be able to compute the offsets.
+
+// Compute the offset into the data array, of the i,j,k,l,m th element.
+    int index( int i, int j, int k, int l, int m ) const
+    {
+	Assert( i >= xmin );
+	Assert( i <  xmin + xlen );
+	Assert( j >= ymin );
+	Assert( j <  ymin + ylen );
+	Assert( k >= zmin );
+	Assert( k <  zmin + zlen );
+	Assert( l >= wmin );
+	Assert( l <  wmin + wlen );
+	Assert( m >= umin );
+	Assert( m <  umin + ulen );
+
+	return offset(i,j,k,l,m);
+    }
+    int offset( int i, int j, int k, int l, int m ) const
+    {
+	return xlen*(ylen*(zlen*(wlen*m+l)+k)+j)+i;
+    }
+
+// Make sure a bare integer index is within the appropriate range.
+    void check( int i ) const
+    {
+	Assert( i >= offset( xmin,   ymin,   zmin,   wmin,   umin   ) );
+	Assert( i <= offset( xmax(), ymax(), zmax(), wmax(), umax() ) );
+    }
+
+    void detach()
+    {
+	if (may_free_space) {
+	    dsxx::Destroy( begin(), end() );
+	    alloc.release( v + offset(xmin,ymin,zmin,wmin,umin), size() );
+	}
+    }
+
+  protected:
+    Allocator alloc;
+    T *v;
+
+  public:
+    typedef T value_type;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef T* pointer;
+    typedef const T* const_pointer;
+    typedef typename Allocator::difference_type difference_type;
+    typedef typename Allocator::size_type size_type;
+    typedef typename Allocator::iterator iterator;
+    typedef typename Allocator::const_iterator const_iterator;
+    typedef typename Allocator::reverse_iterator reverse_iterator;
+    typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
+
+// Accessors
+
+    T& operator()( int i, int j, int k, int l, int m )
+    {
+	return v[ index(i,j,k,l,m) ];
+    }
+    const T& operator()( int i, int j, int k, int l, int m ) const
+    {
+	return v[ index(i,j,k,l,m) ];
+    }
+
+    T& operator[]( int i ) { check(i); return v[i]; }
+    const T& operator[]( int i ) const { check(i); return v[i]; }
+
+    iterator       begin()       { return v + offset(xmin,ymin,zmin,wmin,umin); }
+    const_iterator begin() const { return v + offset(xmin,ymin,zmin,wmin,umin); }
+
+    iterator end()
+    {
+	return v + offset(xmax(),ymax(),zmax(),wmax(),umax()) + 1;
+    }
+    const_iterator end() const
+    {
+	return v + offset(xmax(),ymax(),zmax(),wmax(),umax()) + 1;
+    }
+
+    reverse_iterator       rbegin()       { return reverse_iterator(end()); }
+    const_reverse_iterator rbegin() const
+    { return const_reverse_iterator(end()); }
+
+    reverse_iterator       rend()         { return reverse_iterator(begin()); }
+    const_reverse_iterator rend() const
+    { return const_reverse_iterator(begin()); }
+
+    int get_xmin() const { return xmin; }
+    int get_xlen() const { return xlen; }
+    int get_ymin() const { return ymin; }
+    int get_ylen() const { return ylen; }
+    int get_zmin() const { return zmin; }
+    int get_zlen() const { return zlen; }
+    int get_wmin() const { return wmin; }
+    int get_wlen() const { return wlen; }
+    int get_umin() const { return umin; }
+    int get_ulen() const { return ulen; }
+
+    size_type size() const { return nx() * ny() * nz() * nw() * nu(); }
+    size_type max_size () const { return alloc.max_size(); }
+    bool empty() const { return (this->size() == 0); }
+
+// For backward compatibility.
+    int nx() const { return xlen; }
+    int ny() const { return ylen; }
+    int nz() const { return zlen; }
+    int nw() const { return wlen; }
+    int nu() const { return ulen; }
+
+// Constructors
+
+    Mat5()
+	: xmin(0), xlen(0), ymin(0), ylen(0),
+	  zmin(0), zlen(0), wmin(0), wlen(0), umin(0), ulen(0),
+	  may_free_space(false), v(0)
+    {}
+
+    Mat5( int xmax_, int ymax_, int zmax_, int wmax_, int umax_,
+	  const T& t = T() )
+	: xmin(0), xlen(xmax_),
+	  ymin(0), ylen(ymax_),
+	  zmin(0), zlen(zmax_),
+	  wmin(0), wlen(wmax_),
+	  umin(0), ulen(wmax_),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
+    {
+	std::uninitialized_fill( begin(), end(), t );
+    }
+
+    Mat5( T *vv, int xmax_, int ymax_, int zmax_, int wmax_, int umax_ )
+	: xmin(0), xlen(xmax_),
+	  ymin(0), ylen(ymax_),
+	  zmin(0), zlen(zmax_),
+	  wmin(0), wlen(wmax_),
+	  umin(0), ulen(wmax_),
+	  may_free_space(false), v(vv)
+    {}
+
+    Mat5( const Bounds& bx, const Bounds& by,
+	  const Bounds& bz, const Bounds& bw,
+	  const Bounds& bu, const T& t = T() )
+	: xmin( bx.min() ), xlen( bx.len() ),
+	  ymin( by.min() ), ylen( by.len() ),
+	  zmin( bz.min() ), zlen( bz.len() ),
+	  wmin( bw.min() ), wlen( bw.len() ),
+	  umin( bu.min() ), ulen( bu.len() ),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
+    {
+	std::uninitialized_fill( begin(), end(), t );
+    }
+
+    Mat5( T *vv,
+	  const Bounds& bx, const Bounds& by,
+	  const Bounds& bz, const Bounds& bw, const Bounds& bu )
+	: xmin( bx.min() ), xlen( bx.len() ),
+	  ymin( by.min() ), ylen( by.len() ),
+	  zmin( bz.min() ), zlen( bz.len() ),
+	  wmin( bw.min() ), wlen( bw.len() ),
+	  umin( bu.min() ), ulen( bu.len() ),
+	  may_free_space(false),
+	  v( vv - offset(xmin,ymin,zmin,wmin,umin) )
+    {}
+
+    Mat5( const Mat5<T>& m )
+	: xmin(m.xmin), xlen(m.xlen),
+	  ymin(m.ymin), ylen(m.ylen),
+	  zmin(m.zmin), zlen(m.zlen),
+	  wmin(m.wmin), wlen(m.wlen),
+	  umin(m.umin), ulen(m.ulen),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
+    {
+	std::uninitialized_copy( m.begin(), m.end(), begin() );
+    }
+
+// Destructor
+
+    ~Mat5()
+    {
+	detach();
+    }
+
+    void swap ( Mat5& m )
+    {
+        int itemp;
+        bool btemp;
+        Allocator atemp;
+        T* ptemp;
+
+        itemp = xmin;
+        xmin = m.xmin;
+        m.xmin = itemp;
+
+        itemp = xlen;
+        xlen = m.xlen;
+        m.xlen = itemp;
+
+        itemp = ymin;
+        ymin = m.ymin;
+        m.ymin = itemp;
+
+        itemp = ylen;
+        ylen = m.ylen;
+        m.ylen = itemp;
+
+        itemp = zmin;
+        zmin = m.zmin;
+        m.zmin = itemp;
+
+        itemp = zlen;
+        zlen = m.zlen;
+        m.zlen = itemp;
+
+        itemp = wmin;
+        wmin = m.wmin;
+        m.wmin = itemp;
+
+        itemp = wlen;
+        wlen = m.wlen;
+        m.wlen = itemp;
+
+        itemp = umin;
+        umin = m.umin;
+        m.umin = itemp;
+
+        itemp = ulen;
+        ulen = m.ulen;
+        m.ulen = itemp;
+
+        btemp = may_free_space;
+        may_free_space = m.may_free_space;
+        m.may_free_space = btemp;
+
+        atemp = alloc;
+        alloc = m.alloc;
+        m.alloc = atemp;
+
+        ptemp = v;
+        v = m.v;
+        m.v = ptemp;
+    }
+
+// Boolean operators
+
+    bool operator==( const Mat5& m ) const
+    {
+        if (this == &m)
+            return true;
+
+        if ( m.size() != this->size() )
+            return false;
+
+        const_iterator miter = m.begin();
+        for (const_iterator iter = this->begin(); iter != this->end(); ++iter)
+        {
+            if (*iter != *miter) return false;
+            ++miter;
+        }
+
+        return true;
+    }
+
+    bool operator!=( const Mat5& m ) const
+    {
+        return !(*this == m);
+    }
+
+    bool operator<( const Mat5& m ) const
+    {
+        return lexicographical_compare(this->begin(), this->end(), m.begin(), 
+				       m.end());
+    }
+
+    bool operator>( const Mat5& m ) const
+    {
+        return (m < *this);
+    }
+
+    bool operator<=( const Mat5& m ) const
+    {
+        return !(m < *this);
+    }
+
+    bool operator>=( const Mat5& m ) const
+    {
+        return !(*this < m);
+    }
+
+// Assignment operators
+
+    Mat5& operator=( const T& t )
+    {
+	std::fill( begin(), end(), t );
+	return *this;
+    }
+
+    Mat5& operator=( const Mat5& m )
+    {
+	if (this == &m) return *this;
+
+	if ( m.xmin != xmin || m.xlen != xlen ||
+	     m.ymin != ymin || m.ylen != ylen ||
+	     m.zmin != zmin || m.zlen != zlen ||
+	     m.wmin != wmin || m.wlen != wlen ||
+	     m.umin != umin || m.ulen != ulen ) {
+	    detach();
+	    xmin = m.xmin;
+	    xlen = m.xlen;
+	    ymin = m.ymin;
+	    ylen = m.ylen;
+	    zmin = m.zmin;
+	    zlen = m.zlen;
+	    wmin = m.wmin;
+	    wlen = m.wlen;
+	    umin = m.umin;
+	    ulen = m.ulen;
+	    v = alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin);
+	    std::uninitialized_copy( m.begin(), m.end(), begin() );
+	    may_free_space = true;
+	}
+	else {
+	    if (v)
+		std::copy( m.begin(), m.end(), begin() );
+	}
+
+	return *this;
+    }
+
+// Mathematical support
+
+    template<class X> Mat5& operator+=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ += x;
+	return *this;
+    }
+    Mat5& operator+=( const Mat5<T>& m )
+    {
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ += *j++;
+	return *this;
+    }
+
+    template<class X> Mat5& operator-=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ -= x;
+	return *this;
+    }
+    Mat5& operator-=( const Mat5<T>& m )
+    {
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ -= *j++;
+	return *this;
+    }
+
+    template<class X> Mat5& operator*=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ *= x;
+	return *this;
+    }
+    Mat5& operator*=( const Mat5<T>& m )
+    {
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ *= *j++;
+	return *this;
+    }
+
+    template<class X> Mat5& operator/=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ /= x;
+	return *this;
+    }
+    Mat5& operator/=( const Mat5<T>& m )
+    {
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ /= *j++;
+	return *this;
+    }
+
+// Utility support
+
+    void assert_conformality( const Mat5<T>& m ) const
+    {
+	Assert( xmin == m.xmin );
+	Assert( xlen == m.xlen );
+	Assert( ymin == m.ymin );
+	Assert( ylen == m.ylen );
+	Assert( zmin == m.zmin );
+	Assert( zlen == m.zlen );
+	Assert( wmin == m.wmin );
+	Assert( wlen == m.wlen );
+	Assert( umin == m.umin );
+	Assert( ulen == m.ulen );
+    }
+
+    void redim( int nxmax, int nymax, int nzmax,
+		int nwmax, int numax, const T& t = T() )
+    {
+    // This one only works right if xmin == 0 and ymin == 0 and zmin == 0 and
+    // wmin == 0 and umin == 0.
+	Assert( xmin == 0 );
+	Assert( ymin == 0 );
+	Assert( zmin == 0 );
+	Assert( wmin == 0 );
+	Assert( umin == 0 );
+	if (v && !may_free_space) {
+	// User thinks he wants to expand the aliased region.
+	    xlen = nxmax;
+	    ylen = nymax;
+	    zlen = nzmax;
+	    wlen = nwmax;
+	    ulen = numax;
+	    return;
+	}
+	detach();
+	xlen = nxmax;
+	ylen = nymax;
+	zlen = nzmax;
+	wlen = nwmax;
+	ulen = numax;
+	v = alloc.fetch( size() ) - offset(0,0,0,0,0);
+	std::uninitialized_fill( begin(), end(), t );
+	may_free_space = true;
+    }
+
+    void redim( const Bounds& bx, const Bounds& by, const Bounds& bz, 
+		const Bounds& bw, const Bounds& bu, const T& t = T() )
+    {
+	if (v && !may_free_space) {
+	// Respecify the aliased region.
+	    v += offset(xmin,ymin,zmin,wmin,umin);
+	    xmin = bx.min(); xlen = bx.len();
+	    ymin = by.min(); ylen = by.len();
+	    zmin = bz.min(); zlen = bz.len();
+	    wmin = bw.min(); wlen = bw.len();
+	    umin = bu.min(); ulen = bu.len();
+	    v -= offset(xmin,ymin,zmin,wmin,umin);
+	    return;
+	}
+	detach();
+	xmin = bx.min(); xlen = bx.len();
+	ymin = by.min(); ylen = by.len();
+	zmin = bz.min(); zlen = bz.len();
+	wmin = bw.min(); wlen = bw.len();
+	umin = bu.min(); ulen = bu.len();
+	v = alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin);
+	std::uninitialized_fill( begin(), end(), t );
+	may_free_space = true;
+    }
+
+// WARNING: This doesn't make a lot of sense anymore.
+
+// Check to see if this Mat5<T> is of size x by y by z by w by u.
+
+    bool conformal( int x, int y, int z, int w, int u ) const
+    {
+	return x == xlen && y == ylen && z == zlen
+	    && w == wlen && u == ulen;
+    }
+
+// Obtain dimensions of this Mat5<T>.
+
+    void elements( int& nx, int& ny, int& nz, int& nw, int& nu ) const
+    {
+	nx = xlen; ny = ylen; nz = zlen; nw = wlen; nu = ulen;
+    }
+};
+
 NAMESPACE_DS_END
 
 #endif                          // __ds_Mat_hh__

@@ -576,7 +576,7 @@ package="ds++"
 
 
 	test_alltarget="$test_alltarget tstAllocators tstMat tstSP tstAssert tstNestMap \
-            tstMat1RA tstMat2RA tstMat3RA tstMat4RA"
+            tstMat1RA tstMat2RA tstMat3RA tstMat4RA tstMat5RA"
         
 	test_nprocs="scalar"
 
