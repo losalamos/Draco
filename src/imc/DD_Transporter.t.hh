@@ -594,6 +594,32 @@ bool DD_Transporter<MT,FT,PT>::ready() const
     return indicator;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Query to see number of particles run to completion by the
+ * transporter. 
+ *
+ * \return the total, global number of particles run in the transporter
+ */
+template<class MT, class FT, class PT>
+int DD_Transporter<MT,FT,PT>::get_num_run() const
+{
+    // local number of particles finished
+    int num_particles_run = 0;
+
+    // on the host node this number will be the total number run
+    if (rtt_c4::node() == 0)
+	num_particles_run = num_done;
+	
+    // sum up and return
+    rtt_c4::global_sum(num_particles_run);
+
+    // the num_particles_run should be the number asked for or zero if they
+    // haven't been run yet
+    Ensure (num_particles_run == num_to_run || num_particles_run == 0);
+    return num_particles_run;
+}
+
 } // end namespace rtt_imc
 
 #endif                          // rtt_imc_DD_Transporter_t_hh

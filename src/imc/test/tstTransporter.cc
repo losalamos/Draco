@@ -11,6 +11,7 @@
 
 #include "imc_test.hh"
 #include "IMC_Test.hh"
+#include "tstTransporter.hh"
 #include "../Transporter.hh"
 #include "../Rep_Transporter.hh"
 #include "../DD_Transporter.hh"
@@ -24,6 +25,7 @@
 #include "../Rep_Source_Builder.hh"
 #include "../Source.hh"
 #include "../Tally.hh"
+#include "../Diffusion_Opacity.hh"
 #include "../Random_Walk.hh"
 #include "mc/Communicator.hh"
 #include "mc/Rep_Topology.hh"
@@ -36,6 +38,7 @@
 #include "c4/SpinLock.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 #include <vector>
 #include <string>
@@ -46,6 +49,7 @@
 
 using namespace std;
 
+using rtt_imc_test::RW_Interface;
 using rtt_imc_test::IMC_Flat_Interface;
 using rtt_imc_test::Parser;
 using rtt_imc::Transporter;
@@ -58,6 +62,7 @@ using rtt_imc::Mat_State;
 using rtt_imc::Rep_Source_Builder;
 using rtt_imc::Tally;
 using rtt_imc::Random_Walk;
+using rtt_imc::Diffusion_Opacity;
 using rtt_mc::Communicator;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
@@ -67,6 +72,7 @@ using rtt_mc::OS_Builder;
 using rtt_mc::Comm_Patterns;
 using rtt_rng::Rnd_Control;
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
 
 // typedefs
 typedef rtt_mc::OS_Mesh                       MT;
@@ -74,6 +80,150 @@ typedef rtt_imc::Gray_Frequency               Gray;
 typedef rtt_imc::Multigroup_Frequency         MG;
 typedef rtt_imc::Gray_Particle<OS_Mesh>       GPT;
 typedef rtt_imc::Multigroup_Particle<OS_Mesh> MGPT; 
+
+//---------------------------------------------------------------------------//
+// SERVICES
+//---------------------------------------------------------------------------//
+
+template<class FT, class PT>
+void check_tallies(SP<Tally<MT> > tally, int num_run)
+{
+    FAILMSG("We should not get this check.");
+}
+
+//---------------------------------------------------------------------------//
+
+template<>
+void check_tallies<Gray,GPT>(SP<Tally<MT> > tally, int num_run)
+{
+    rtt_c4::global_barrier();
+
+    // do some integral checks on tally output
+    double ew_escaped  = tally->get_ew_escaped();
+    double erg_dep_tot = tally->get_energy_dep_tot();
+    double ecen_tot    = tally->get_new_ecen_tot();
+    int    ncen_tot    = tally->get_new_ncen_tot();
+    int    neff_scat   = tally->get_accum_n_effscat();
+    int    nbnd_cross  = tally->get_accum_n_bndcross();
+    int    nescaped    = tally->get_accum_n_escaped();
+
+    // do sums
+    rtt_c4::global_sum(ew_escaped);
+    rtt_c4::global_sum(erg_dep_tot);
+    rtt_c4::global_sum(ecen_tot);
+    rtt_c4::global_sum(ncen_tot);
+    rtt_c4::global_sum(neff_scat);
+    rtt_c4::global_sum(nbnd_cross);
+    rtt_c4::global_sum(nescaped);
+
+    // check sums
+    if (!soft_equiv(erg_dep_tot, 2.293336, 1.e-6))  ITFAILS;
+    if (!soft_equiv(ew_escaped, 107.165317, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ecen_tot, 1881.311183, 1.e-6))  ITFAILS;
+    if (ncen_tot != 941)                            ITFAILS;
+    if (neff_scat != 12)                            ITFAILS;
+    if (nbnd_cross != 185)                          ITFAILS;
+    if (nescaped != 54)                             ITFAILS;
+
+    // check num_run
+    if (num_run != 995) ITFAILS;
+    
+    if (rtt_imc_test::passed)
+	PASSMSG("Integral transport checks ok for gray problem.")
+}
+
+//---------------------------------------------------------------------------//
+
+template<>
+void check_tallies<MG,MGPT>(SP<Tally<MT> > tally, int num_run)
+{
+    rtt_c4::global_barrier();
+
+    // do some integral checks on tally output
+    double ew_escaped  = tally->get_ew_escaped();
+    double erg_dep_tot = tally->get_energy_dep_tot();
+    double ecen_tot    = tally->get_new_ecen_tot();
+    int    ncen_tot    = tally->get_new_ncen_tot();
+    int    neff_scat   = tally->get_accum_n_effscat();
+    int    nbnd_cross  = tally->get_accum_n_bndcross();
+    int    nescaped    = tally->get_accum_n_escaped();
+
+    // do sums
+    rtt_c4::global_sum(ew_escaped);
+    rtt_c4::global_sum(erg_dep_tot);
+    rtt_c4::global_sum(ecen_tot);
+    rtt_c4::global_sum(ncen_tot);
+    rtt_c4::global_sum(neff_scat);
+    rtt_c4::global_sum(nbnd_cross);
+    rtt_c4::global_sum(nescaped);
+
+    // check sums
+    if (!soft_equiv(erg_dep_tot, 2.159577, 1.e-6))  ITFAILS;
+    if (!soft_equiv(ew_escaped, 93.0673595, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ecen_tot, 1797.756481, 1.e-6))  ITFAILS;
+    if (ncen_tot != 948)                            ITFAILS;
+    if (neff_scat != 153)                           ITFAILS;
+    if (nbnd_cross != 190)                          ITFAILS;
+    if (nescaped != 49)                             ITFAILS;
+
+    // check num_run
+    if (num_run != 997) ITFAILS;
+    
+    if (rtt_imc_test::passed)
+	PASSMSG("Integral transport checks ok for multigroup problem.")
+}
+
+//---------------------------------------------------------------------------//
+
+template<class FT, class PT>
+void check_rw_tallies(SP<Tally<MT> > tally, int num_run)
+{
+    FAILMSG("We should not get this check.");
+}
+
+//---------------------------------------------------------------------------//
+
+template<>
+void check_rw_tallies<Gray,GPT>(SP<Tally<MT> > tally, int num_run)
+{
+    rtt_c4::global_barrier();
+
+    // do some integral checks on tally output
+    double ew_escaped  = tally->get_ew_escaped();
+    double erg_dep_tot = tally->get_energy_dep_tot();
+    double ecen_tot    = tally->get_new_ecen_tot();
+    int    ncen_tot    = tally->get_new_ncen_tot();
+    int    neff_scat   = tally->get_accum_n_effscat();
+    int    nbnd_cross  = tally->get_accum_n_bndcross();
+    int    nescaped    = tally->get_accum_n_escaped();
+    int    nrws        = tally->get_accum_n_random_walks();
+
+    // do sums
+    rtt_c4::global_sum(ew_escaped);
+    rtt_c4::global_sum(erg_dep_tot);
+    rtt_c4::global_sum(ecen_tot);
+    rtt_c4::global_sum(ncen_tot);
+    rtt_c4::global_sum(neff_scat);
+    rtt_c4::global_sum(nbnd_cross);
+    rtt_c4::global_sum(nescaped);
+    rtt_c4::global_sum(nrws);
+
+    // check sums
+    if (!soft_equiv(erg_dep_tot, 0.904415, 1.e-6))  ITFAILS;
+    if (!soft_equiv(ew_escaped, 0.02564707, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ecen_tot, 1.737147594, 1.e-6))  ITFAILS;
+    if (ncen_tot != 980)                            ITFAILS;
+    if (neff_scat != 5925)                          ITFAILS;
+    if (nbnd_cross != 177)                          ITFAILS;
+    if (nescaped != 20)                             ITFAILS;
+    if (nrws   != 453)                              ITFAILS;
+
+    // check num_run
+    if (num_run != 1000) ITFAILS;
+    
+    if (rtt_imc_test::passed)
+	PASSMSG("Integral transport checks ok for gray random walk problem.")
+}
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -144,8 +294,6 @@ void rep_transporter_run_test()
     SP<Source<MT,FT,PT> > source = 
 	source_builder.build_Source(mesh, mat, opacity, rcon, patterns);
 
-    cout << source->get_num_source_particles() << endl;
-
     // build a replication transporter
     SP<Transporter<MT,FT,PT> > transporter;
     transporter = new Rep_Transporter<MT,FT,PT>(topology);
@@ -167,12 +315,102 @@ void rep_transporter_run_test()
     int cycle = interface->get_cycle();
     transporter->transport(dt, cycle, 100000, 0, 0);
 
+    // check tallies
+    check_tallies<FT,PT>(tally, transporter->get_num_run());
+
     if (rtt_imc_test::passed)
     {
 	ostringstream message;
 	message << "Finished a replication transport cycle for " 
 		<< typeid(FT).name() << " and " << typeid(PT).name()
 		<< endl;
+	PASSMSG(message.str().c_str());
+    }
+    else
+    {
+	ostringstream message;
+	message << "Unable to complete a replication transport cycle for " 
+		<< typeid(FT).name() << " and " << typeid(PT).name()
+		<< endl;
+	FAILMSG(message.str().c_str());
+    }
+}
+
+//---------------------------------------------------------------------------//
+
+template<class MT, class FT, class PT>
+void rep_transporter_random_walk_run_test()
+{
+    // set the rn_stream to 0
+    rtt_rng::rn_stream = 0;
+
+    // build a FULL mesh --> this mesh will be fully replicated on all
+    // processors in the test
+    SP<Parser> parser(new Parser("OS_Input_3D"));
+    SP<OS_Builder> mb(new OS_Builder(parser));
+    SP<MT> mesh = mb->build_Mesh();
+
+    // build a random number controller
+    SP<Rnd_Control> rcon(new Rnd_Control(347223));
+
+    // build a topology
+    SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
+
+    // build a comm_patterns
+    SP<Comm_Patterns> patterns(new Comm_Patterns());
+    patterns->calc_patterns(topology);
+
+    // get an interface (dummy)
+    SP<RW_Interface<PT> > interface(new RW_Interface<PT>(mb));
+
+    // build the Mat_State
+    Flat_Mat_State_Builder<MT,FT> ob(interface);
+    ob.build_mat_classes(mesh);
+
+    SP<FT>              frequency           = ob.get_Frequency();
+    SP<Mat_State<MT> >  mat                 = ob.get_Mat_State();
+    SP<Opacity<MT,FT> > opacity             = ob.get_Opacity();
+    SP<Diffusion_Opacity<MT> > diff_opacity = ob.get_Diffusion_Opacity();
+
+    // build a Rep_Source Builder
+    Rep_Source_Builder<MT,FT,PT> source_builder(interface, mesh, topology);
+
+    // build the source
+    SP<Source<MT,FT,PT> > source = 
+	source_builder.build_Source(mesh, mat, opacity, rcon, patterns);
+
+    // build a replication transporter
+    SP<Transporter<MT,FT,PT> > transporter;
+    transporter = new Rep_Transporter<MT,FT,PT>(topology);
+
+    // build a tally
+    SP<Tally<MT> > tally(new Tally<MT>(mesh));
+
+    // build a "NULL" communicator
+    SP<Communicator<PT> > comm;
+
+    // build a random walk object
+    SP<Random_Walk<MT> > rwalk(new Random_Walk<MT>(mesh, diff_opacity));
+    if (!rwalk) ITFAILS;
+    
+    // set the transporter
+    transporter->set(mesh, mat, opacity, source, tally, rwalk, comm);
+
+    // transport
+    double dt = interface->get_delta_t();
+    int cycle = interface->get_cycle();
+    transporter->transport(dt, cycle, 100000, 0, 0);
+
+    // check tallies
+    check_rw_tallies<FT,PT>(tally, transporter->get_num_run());
+
+    if (rtt_imc_test::passed)
+    {
+	ostringstream message;
+	message << "Finished replication transport cycle for " 
+		<< typeid(FT).name() << " and " << typeid(PT).name()
+		<< " that did " << tally->get_accum_n_random_walks()
+		<< " random walks" << endl;
 	PASSMSG(message.str().c_str());
     }
     else
@@ -199,9 +437,6 @@ void DD_transporter_test()
     SP<Parser> parser(new Parser("OS_Input"));
     SP<OS_Builder> mb(new OS_Builder(parser));
     SP<MT> mesh = mb->build_Mesh();
-
-    // get the dummy interface with a capacity of 3 cells (2 processor)
-    SP<IMC_Flat_Interface<PT> > interface(new IMC_Flat_Interface<PT>(mb, 3));
 
     // build a DD topology
     SP<Topology> topology;
@@ -298,6 +533,9 @@ int main(int argc, char *argv[])
 	// run some particles
 	rep_transporter_run_test<MT,Gray,GPT>();
 	rep_transporter_run_test<MT,MG,MGPT>();
+
+	// run some particles with random walk
+	rep_transporter_random_walk_run_test<MT,Gray,GPT>();
     }
     catch (rtt_dsxx::assertion &ass)
     {

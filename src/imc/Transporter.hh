@@ -92,6 +92,9 @@ class Transporter
 
     //! Query to see if Transporter has all objects assigned.
     virtual bool ready() const = 0;
+
+    //! Get the global, total, number of particles run in the transporter.
+    virtual int get_num_run() const = 0;
 };
 
 } // end namespace rtt_imc

@@ -7,7 +7,7 @@ num_xcoarse: 1
 num_ycoarse: 2
 num_zcoarse: 2
 lox_bnd: vacuum
-hix_bnd: reflect
+hix_bnd: vacuum
 loy_bnd: reflect
 hiy_bnd: reflect
 loz_bnd: reflect
@@ -22,6 +22,6 @@ zcoarse: 0 1 2
 num_zfine: 1 1
 end-mesh
 
-num_ss: 2
-sur_source: lox hiz
+num_ss: 1
+sur_source: lox
 end-source

@@ -35,7 +35,8 @@ namespace rtt_imc
 template<class MT, class FT, class PT>
 Rep_Transporter<MT,FT,PT>::Rep_Transporter(SP_Topology top)
     : Transporter<MT,FT,PT>(),
-      topology(top)
+      topology(top),
+      num_done(0)
 {
     Require (!mesh);
     Require (!opacity);
@@ -96,11 +97,13 @@ Rep_Transporter<MT,FT,PT>::transport(double dt,
     if (verbose)
 	check = new typename PT::Diagnostic(cout, true); 
 
+    // initialize num_done counter
+    num_done = 0;
+
     // begin timing the transport on this processor
     double trans_begin = C4::Wtime();
 
     // get source particles and run them to completion
-    int counter = 0;
     while (*source)
     {
 	// get a particle from the source
@@ -109,7 +112,7 @@ Rep_Transporter<MT,FT,PT>::transport(double dt,
 
 	// transport the particle
 	particle->transport(*mesh, *opacity, *tally, random_walk, check);
-	counter++;
+	num_done++;
 
 	// after the particle is no longer active take appropriate action
 	Check (!particle->status());
@@ -119,8 +122,8 @@ Rep_Transporter<MT,FT,PT>::transport(double dt,
 	    new_census_bank->push(particle);
 
 	// message particle counter
-	if (!(counter % print_f)) 
-	    cerr << setw(10) << counter << " particles run on proc " 
+	if (!(num_done % print_f)) 
+	    cerr << setw(10) << num_done << " particles run on proc " 
 		 << C4::node() << endl;
     }
 
@@ -128,7 +131,7 @@ Rep_Transporter<MT,FT,PT>::transport(double dt,
     double trans_end = C4::Wtime();
 
     // finished with this timestep
-    cerr << ">> Finished transporting " << counter 
+    cerr << ">> Finished transporting " << num_done
          << " particles for cycle "
 	 << cycle << " on proc " << C4::node() 
 	 << " in " << trans_end - trans_begin << " seconds." << endl;
@@ -269,6 +272,26 @@ bool Rep_Transporter<MT,FT,PT>::ready() const
 	indicator = false;
 
     return indicator;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Query to see number of particles run to completion by the
+ * transporter. 
+ *
+ * \return the total, global number of particles run in the transporter
+ */
+template<class MT, class FT, class PT>
+int Rep_Transporter<MT,FT,PT>::get_num_run() const
+{
+    // sum up the total done
+    int num_particles_run = num_done;
+    rtt_c4::global_sum(num_particles_run);
+
+    Ensure (num_particles_run >= 0);
+    Ensure (num_done <= num_particles_run);
+
+    return num_particles_run;
 }
 
 } // end namespace rtt_imc

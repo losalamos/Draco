@@ -150,6 +150,9 @@ class DD_Transporter : public Transporter<MT,FT,PT>
 
     // Determine if we are ready for transport.
     bool ready() const;
+
+    // Return the number of particles run.
+    int get_num_run() const;
 };
 
 } // end namespace rtt_imc
