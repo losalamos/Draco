@@ -41,7 +41,7 @@ namespace global
 //---------------------------------------------------------------------------//
 
 const double pi       = 2.0 * std::asin(1.0);
-const double huge     = DBL_MAX;
+const double huge     = 1.0e22;
 const int    huge_int = 2000000000;
 const double epsilon  = DBL_EPSILON;
 
