@@ -17,6 +17,7 @@
 #include "Opacity.hh"
 #include "Mat_State.hh"
 #include "Global.hh"
+#include "Fleck_Factors.hh"
 
 namespace rtt_imc
 {
@@ -197,6 +198,7 @@ CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(
 {
     using rtt_mc::global::a;
     using rtt_mc::global::c;
+    using rtt_dsxx::SP;
 
     Require (mesh);
     Require (mat_state);
@@ -213,7 +215,10 @@ CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(
     // make cell-centered, scalar fields for Opacity
     typename MT::template CCSF<double> absorption(mesh);
     typename MT::template CCSF<double> scattering(mesh);
-    typename MT::template CCSF<double> fleck(mesh);
+
+    // make a fleck factors object
+    SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
+    Check (fleck->fleck.size() == num_cells);
 
     // determine the model types for gray opacity
     sf_Opacity_Model model_abs(material_cdi.size());
@@ -268,12 +273,12 @@ CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(
 	    getOpacity(T, rho) * rho;
 
 	// calculate Fleck Factor
-	fleck(cell) = 1.0 / 
+	fleck->fleck(cell) = 1.0 / 
 	    (1.0 + implicitness * beta * c * delta_t * absorption(cell)); 
 	
-	Check (absorption(cell) >= 0.0);
-	Check (scattering(cell) >= 0.0);
-	Check (fleck(cell)      >= 0.0 && fleck(cell) <= 1.0);
+	Check (absorption(cell)   >= 0.0);
+	Check (scattering(cell)   >= 0.0);
+	Check (fleck->fleck(cell) >= 0.0 && fleck->fleck(cell) <= 1.0);
     }
 
     // build the return opacity
@@ -474,6 +479,7 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
     using rtt_mc::global::c;
     using rtt_cdi::CDI;
     using rtt_dsxx::soft_equiv;
+    using rtt_dsxx::SP;
 
     Require (mesh);
     Require (mat_state);
@@ -492,9 +498,12 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
     // make cell-centered, scalar fields for opacities
     typename MT::template CCSF<sf_double> absorption(mesh);
     typename MT::template CCSF<sf_double> scattering(mesh);
-    typename MT::template CCSF<double>    fleck(mesh);
     typename MT::template CCSF<double>    integrated_norm_planck(mesh);
     typename MT::template CCSF<sf_double> emission_group_cdf(mesh);
+
+    // make a Fleck Factors object
+    SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
+    Check (fleck->fleck.size() == num_cells);
 
     // get the multigroup absorption and scattering opacities in /cm,
     // integrate the Planckian
@@ -567,8 +576,9 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
 	beta = 4.0 * a * T*T*T * volume / dedT;
 	
 	// calculate Fleck Factor
-	fleck(cell) = 1.0/(1.0 + implicitness * beta * c * delta_t * planck); 
-	Check (fleck(cell) >= 0.0 && fleck(cell) <= 1.0);
+	fleck->fleck(cell) = 1.0 / 
+	    (1.0 + implicitness * beta * c * delta_t * planck); 
+	Check (fleck->fleck(cell) >= 0.0 && fleck->fleck(cell) <= 1.0);
     }
 
     // build the return opacity
