@@ -25,8 +25,10 @@ libsrcs = \
 
 pretarg = deps
 
-resolve_libs = $(dep_libc4) $(dep_libnml) $(dep_libds++) #$(dep_libpooma)
-
+resolve_libs = \
+	-L../c4 -lc4_$(env) \
+	-L../nml -lnml_$(env) \
+	-L../ds++ -lds++_$(env)
 
 include ../config/make.lib
 
@@ -48,10 +50,10 @@ deja:
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../ds++;   $(MAKE))
-	(cd ../nml;    $(MAKE) dodeps=no)
-	(cd ../c4;     $(MAKE) dodeps=no)
-	(cd ../geom;   $(MAKE) dodeps=no)
+	(cd ../ds++;   $(MAKE) $(subnj))
+	(cd ../nml;    $(MAKE) $(subnj) dodeps=no)
+	(cd ../c4;     $(MAKE) $(subnj) dodeps=no)
+	(cd ../geom;   $(MAKE) $(subnj) dodeps=no)
 endif
 
 # Rules for building docs
