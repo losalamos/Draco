@@ -170,10 +170,11 @@ FIXDEPS	+= -p
 ifeq ($(c4),no)
 #SYS_FLAGS = -DNOMPI
 comm	:=
+SYS_LIBS = -lpthread
 else
 comm	:= c4
 SYS_FLAGS = 
-SYS_LIBS = -lmpi
+SYS_LIBS = -lmpi -lpthread
 endif
 
 lib_cmd	:= $(CXX) -o
