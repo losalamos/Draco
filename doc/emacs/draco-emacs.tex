@@ -180,23 +180,26 @@ locations are used:
      $HOME/lib/elisp
 \end{verbatim}
 Note that if the general templates (non-\draco) from \comp{tme-hacks}
-are desired then the elisp directory should be placed in
+are desired then the \comp{elisp/} directory should be placed in
 \comp{\$HOME/lib/elisp}.  However, the placement of the elisp
 directory will not affect the \draco\ development environment
-functionality.  
+functionality.
 
 \subsection{\comp{.emacs} File}
+\label{sec:.emacs}
 
 The \draco\ environment is loaded from the \comp{.emacs} file.
 Appendix~\ref{.emacs} lists a model \comp{.emacs} file that loads the
 complete \draco\ development environment.  This file also loads
 additional packages such as \comp{xemacs-setup} and \comp{tme-keys}
 that are primarily key-bindings.  Each user should add an Elisp file
-in \comp{elisp/} that describes the key bindings he/she wants.  An
-example of such a file is \comp{tme-keys} that may be viewed in
+in \comp{elisp/} that describes the key bindings and Elisp
+\comp{mode-hooks} that he/she wants.  An example of such a file is
+\comp{tme-keys} that may be viewed in
 \begin{verbatim}
      /home/tme/lib/elisp/tme-keys.el
 \end{verbatim}
+For convenience, this file is reproduced in \S~\ref{tme-keys}.
 Additional functionality can be added by users to suit additional
 needs outside of \draco\ by simply making their own Elisp files in
 this manner.
@@ -275,21 +278,99 @@ all functions.
 
 The following is a list of functions used exclusively in \draco:
 \begin{description}
-\item[\comp{draco-package}:] sets up the required files for a \draco\
+\item[\comp{draco-package}:] Sets up the required files for a \draco\ 
   package including \comp{configure.in}, \comp{config.h.in},
   \comp{Version.hh}, and \comp{Version.cc}.
+\item[\comp{draco-class}:] Sets up a \C++ class in \draco; makes a
+  \textsl{class}\comp{.hh}, \textsl{class}\comp{.cc}, and a
+  \textsl{class}\comp{.t.hh} file.
+\item[\comp{draco-cc-head}:] Sets up a \C++ header file in \draco;
+  makes a \textsl{header}\comp{.hh} file.
+\item[\comp{draco-cc-headin}:] Sets up a \C++ header file in \draco\ 
+  that is modified during configuration (see Ref.~\cite{draco-build});
+  makes a \textsl{header}\comp{.hh.in} file.
+\item[\comp{draco-c-headin}:] Sets up a C header file in \draco\ that
+  is modified during configuration (see Ref.~\cite{draco-build});
+  makes a \textsl{header}\comp{.h.in} file.
+\item[\comp{draco-cc-imp}:] Sets up a \C++ implementation file unit;
+  makes a \textsl{base}\comp{.cc} and \textsl{base}\comp{.t.hh} file.
+\item[\comp{draco-python}:] Sets up a Python file; makes a
+  \textsl{base}\comp{.py} file.
+\item[\comp{draco-memo}:] Sets up a LANL-style memo using \LaTeX;
+  makes a \textsl{name}\comp{.tex} file.
+\item[\comp{draco-note}:] Sets up a LANL-style research note using
+  \LaTeX; makes a \textsl{name}\comp{.tex} file.
+\item[\comp{draco-article}:] Sets up a RTT-style article using \LaTeX;
+  makes a \textsl{name}\comp{.tex} file.
+\item[\comp{draco-report}:] Sets up a RTT-style report using \LaTeX;
+  makes a \textsl{name}\comp{.tex} file.
+\item[\comp{draco-bib}:] Sets up a \LaTeX\ BiB-\TeX\ file in RTT
+  format; makes a \textsl{name}\comp{.bib} file.
 \end{description}
+
+Remember, these functions must be launched in a directory that is
+located under \comp{draco/} or a \draco-like directory.  Also, the
+user always has the option of making key-bindings for these functions.
+Key-bindings should be placed in the user's \comp{.emacs} file or in a
+file in the \comp{elisp/} directory that is loaded from \comp{.emacs}.
+See \S~\ref{sec:.emacs} for examples.
 
 \subsection{General Functions}
 \label{sec:gfunc}
 
 The following is a list of Elisp functions that are useful in
-environments teh supercede \draco.  Many of these use the
-\comp{\$HOME/lib/elisp/templates} directory.
+environments that supercede \draco.  This is a highlighted list of
+functions that exist in the Elisp distribution described in
+Table~\ref{tab:elisp}.  The easiest way to see the functions is to use
+the \xemacs\ \comp{help-for-help A} function.  Query the strings
+\comp{gmf}, \comp{rtt}, and \comp{tme} to see an almost complete list
+of the functions defined in the \comp{elisp/} directory\footnote{Many
+  of the interactive \comp{rtt-} prefixed functions are deprecated in
+  the new build system.  These have been kept in the Elisp directory
+  for reference and for working on previously tagged version of
+  \draco.}.  Many of the functions that are prefixed by \comp{tme-}
+use the \comp{\$HOME/lib/elisp/templates} directory as the default
+location for templates.
 \begin{description}
-\item[\comp{tme-latex-comment-divider}:] Inserts a \LaTeX\ style comment
+\item[\comp{rtt-find-companion-file}:] Finds the companion to a
+  \comp{.hh} or \comp{.cc} file.
+\item[\comp{rtt-insert-class-doc}:] Inserts a \C++-style class comment 
+  block.
+\item[\comp{rtt-insert-comment-divider}:] Inserts a \C++-style comment 
   divider.
-\end{description}
+\item[\comp{rtt-insert-function-doc}:] Inserts a \C++-style comment
+  block divider.
+\item[\comp{tme-latex-comment-divider}:] Inserts a \LaTeX-style comment
+  divider.
+\item[\comp{tme-latex-divider}:] Inserts a \LaTeX-style comment block 
+  divider.
+\item[\comp{tme-latex-radtran-dist}:] Inserts the distribution list of 
+  the RTT (\draco) team for LANL memos and research notes.
+\item[\comp{tme-latex-xtm-dist}:] Inserts the distribution list of XTM 
+  for LANL memos and research notes.
+\item[\comp{tme-c-comment-divider}:] Inserts a C-style comment
+  divider.
+\item[\comp{tme-c-divider}:] Inserts a C-style comment block divider.
+\item[\comp{tme-m4-comment-divider}:] Inserts a M4-style comment
+  divider.
+\item[\comp{tme-m4-divider}:] Inserts a M4-style comment block
+  divider.
+\item[\comp{tme-makefile-comment-divider}:] Inserts a makefile-style
+  (\comp{\#}) comment divider.  This is also useful in \comp{sh-mode},
+  \comp{autoconf-mode}, and \comp{python-mode}.
+\item[\comp{tme-makefile-divider}:] Inserts a makefile-style
+  (\comp{\#}) comment block divider. This is also useful in
+  \comp{sh-mode}, \comp{autoconf-mode}, and \comp{python-mode}.
+\item[\comp{tme-\textsl{type}-file}:] Makes a template for the
+  language \textsl{type}.  These are very similar to the \draco\ 
+  functions described in \S~\ref{sec:dfunc}; however, these functions
+  can be used anywhere, not just under \comp{draco/}.  Additionally,
+  the template default location is \comp{\$HOME/lib/elisp/templates}.
+\item[\comp{gmf-save-and-kill}:]  Saves a buffer and then kills it.
+\end{description}  
+A good example of how to incorporate these functions into Elisp
+\comp{mode-hooks} is given in the file \comp{tme-keys}; see
+\S~\ref{tme-keys}.
 
 %%---------------------------------------------------------------------------%%
 
@@ -299,6 +380,11 @@ environments teh supercede \draco.  Many of these use the
 \label{.emacs}
 
 \input{emacs}
+
+\section{Sample User Key-Bindings and Mode-Hooks}
+\label{tme-keys}
+
+\input{tme-keys}
 
 \bibliographystyle{rnote}
 \bibliography{../bib/draco}
