@@ -33,14 +33,10 @@ IMCSPACE
 template<class MT>
 class Parallel_Builder
 {
-    friend int main(int, char**);
 private:
   // topology data
     vector<vector<int> > cells_per_proc;
     vector<vector<int> > procs_per_cell;
-
-  // calculate topology map
-    void parallel_params(const Source_Init<MT> &);
 
   // functionality for Mesh passing
 
@@ -64,6 +60,9 @@ public:
     
   // constructor for host-node
     Parallel_Builder(const MT &, const Source_Init<MT> &);
+
+  // calculate topology map
+    void parallel_params(const MT &, const Source_Init<MT> &);
 
   // Mesh passing functionality
     void send_Mesh(const MT &);

@@ -38,22 +38,21 @@ using std::fill;
 //---------------------------------------------------------------------------//
 // host node constructor that determines the toplogy on the IMC-nodes
 
-template<class MT>
-Parallel_Builder<MT>::Parallel_Builder(const MT &mesh, 
-				       const Source_Init<MT> &sinit)
-    : cells_per_proc(nodes()), procs_per_cell(mesh.num_cells())
-{
-  // calculate the parameters for splitting the problem amongst many
-  // processors 
-    parallel_params(sinit);
-}
+// template<class MT>
+// Parallel_Builder<MT>::Parallel_Builder(const MT &mesh, 
+// 				       const Source_Init<MT> &sinit)
+//     : cells_per_proc(nodes()), procs_per_cell(mesh.num_cells())
+// {
+//   // calculate the parameters for splitting the problem amongst many
+//   // processors 
+//   //  parallel_params(sinit);
+// }
 
 //---------------------------------------------------------------------------//
 // default constructor for IMC-nodes
 
 template<class MT>
 Parallel_Builder<MT>::Parallel_Builder()
-    : cells_per_proc(0), procs_per_cell(0) 
 {
   // the IMC-nodes don't use this data
 }
@@ -64,13 +63,19 @@ Parallel_Builder<MT>::Parallel_Builder()
 // calculate topology parameters to determine what cells go where
 
 template<class MT>
-void Parallel_Builder<MT>::parallel_params(const Source_Init<MT> &sinit)
+void Parallel_Builder<MT>::parallel_params(const MT &mesh,
+					   const Source_Init<MT> &sinit)
 {
-  // make sure we have a Source_Init
+  // make sure we have a Source_Init and Mesh
     assert (&sinit);
+    assert (&mesh);
 
   // number of cells in the mesh
-    int num_cells = procs_per_cell.size();
+    int num_cells = mesh.num_cells();
+
+  // size the partitioning vectors
+    cells_per_proc.resize(nodes());
+    procs_per_cell.resize(num_cells);
 
   // calculate the total capacity of all processors
     int total_capacity = sinit.get_capacity() * nodes();
@@ -114,8 +119,6 @@ void Parallel_Builder<MT>::parallel_params(const Source_Init<MT> &sinit)
 	int *cellrep = new int(num_cells);
 	double sfrac = 0;
 	int total_rep = 0;
-	int below_limit = 0;
-	int avg_add = 0;
 
       // loop for first estimate of cell replication
 	for (int cell = 1; cell <= num_cells; cell++)
@@ -132,82 +135,65 @@ void Parallel_Builder<MT>::parallel_params(const Source_Init<MT> &sinit)
 	    cellrep[cell-1] = min(nodes(), max(1, static_cast<int>
 					       (sfrac * total_capacity)));
 	    total_rep += cellrep[cell-1];
-
-	  // tally the number of cells which are replicated below the
-	  // max. limit (number of processors)
-	    if (cellrep[cell-1] < nodes())
-		below_limit++;
 	}
 
       // calculate amount of extra capacity still available
 	int xtra_reps = total_capacity - total_rep;
-	assert (xtra_reps >= 0);
 
       // loop until xtra_capacity is gone
-	while (xtra_reps)
+	while (xtra_reps != 0)
 	{
-	  // determine the average number of additional replicates for each
-	  // cell
-	    avg_add = xtra_reps / below_limit;
-	    avg_add = avg_add < 1 ? 1 : avg_add;
-	  
-	  // reset our counters
+	  // reset counters
 	    total_rep = 0;
-	    below_limit = 0;
 
-	  // loop through cells and add additional replicates
-	    int cell = 1;
-	    double add;
-	    while (total_rep < total_capacity && cell <= num_cells)
+	    if (xtra_reps > 0)
 	    {
-	      // determine the ammount we will add
-		add = min(nodes() - cellrep[cell-1], avg_add);
-
-	      // update counters and cell replicates
-		cellrep[cell-1] += add;
-		total_rep += cellrep[cell-1];
-		if (cellrep[cell-1] < nodes())
-		    below_limit++;
-		
-	      // make sure we haven't gone over
-		if (total_rep > total_capacity)
+	      // loop over cells and add one replicate at a time
+		int cell = 1;
+		while (cell <= num_cells && total_rep < xtra_reps)
 		{
-		    while (total_rep > total_capacity)
-		    {
-			cellrep[cell-1]--;
-			total_rep--;
-		    }
+		    if (cellrep[cell-1] < nodes())
+			cellrep[cell-1]++;
+		    total_rep++;
+		    cell++;
 		}
-
-	      // update cell counter
-		cell++;
 	    }
-
-	  // calculate amoutn of extra capacity still available
-	    xtra_reps = total_capacity - total_rep;
-	    assert (xtra_reps >= 0);
+	    else if (xtra_reps < 0)
+	    {
+	      // loop over cells and subtract one replicate at a time
+		int cell = 1;
+		while (cell <= num_cells && total_rep > xtra_reps)
+		{
+		    if (cellrep[cell-1] > 1)
+			cellrep[cell-1]--;
+		    total_rep--;
+		    cell++;
+		}
+	    }
+	    xtra_reps -= total_rep;
 	}
-      
-	std::cout << "I GOT THIS FAR" << std::endl;
-      // <<CONTINUE HERE>>
-      // I THINK OUR ERROR IS SOMEWHERE DOWN HERE!!!
+
       // now we can do our DD/replication partitioning
 	for (int cell = 1; cell <= num_cells; cell++)
 	{
+	    std::cout << cell << std::endl;
 	    int max_rep = 0;
 	    for (int proc = 0; proc < nodes(); proc++)
 	    {
+		std::cout << cell << std::endl;
 		if (++max_rep <= cellrep[cell-1] && 
 		    cells_per_proc[proc].size() < sinit.get_capacity())
 		{
-		    std::cout << proc << " " << cell << std::endl;
-		    cells_per_proc[proc].push_back(cell);
+		    std::cout << cell << std::endl;
 		    procs_per_cell[cell-1].push_back(proc);
+		    std::cout << cell << std::endl;
+   		    cells_per_proc[proc].push_back(cell);
+		    std::cout << cell << std::endl << std::endl;
 		}
-		assert (cells_per_proc[proc].size() <= sinit.get_capacity());
+ 		assert (cells_per_proc[proc].size() <= sinit.get_capacity());
 	    }
-	    assert (procs_per_cell[cell-1].size() > 0);
-	    assert (procs_per_cell[cell-1].size() <= nodes());
+ 	    assert (procs_per_cell[cell-1].size() > 0);
+ 	    assert (procs_per_cell[cell-1].size() <= nodes());
 	}
 
       // reclaim storage
@@ -253,6 +239,9 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
   // assure that we are not on the host node
     Check (node());
 
+  // rebuilt Mesh SP
+    SP<MT> return_mesh;
+
   // get coordinate system
     SP<Coord_sys> coord = recv_Coord();
 
@@ -264,10 +253,11 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
     typename MT::CCVF_i cell_pair = recv_cellpair();
 
   // build mesh
-    SP<OS_Mesh> mesh = new OS_Mesh(coord, layout, vertex, cell_pair);
+    return_mesh = new MT(coord, layout, vertex, cell_pair);
+    std::cout << "Built MESH" << std::endl;
 
   // return mesh
-    return mesh;
+    return return_mesh;
 }
 
 //---------------------------------------------------------------------------//
