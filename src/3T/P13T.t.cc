@@ -651,9 +651,9 @@ void P13T<DS>::calcMomentumDeposition(
         for (DiscMomentumField::const_iterator iter = vvelocity.begin();
              iter != vvelocity.end(); iter++)
         {
-            *iter1++ = vec::dot(*iter, e1);
-            *iter2++ = vec::dot(*iter, e2);
-            *iter3++ = vec::dot(*iter, e3);
+            *iter1++ = rtt_traits::vector_traits<vec>::dot(*iter, e1);
+            *iter2++ = rtt_traits::vector_traits<vec>::dot(*iter, e2);
+            *iter3++ = rtt_traits::vector_traits<vec>::dot(*iter, e3);
         }
     }
 
