@@ -520,8 +520,33 @@ RZWedge_Mesh::vf_double RZWedge_Mesh::get_point_coord() const
 
     // return the coordinates for all nodes of all cells
     return return_coord;
-
 }
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Get cell-pairing data that matches the coordinate data returned by
+ * point coord.
+ */
+RZWedge_Mesh::vf_int RZWedge_Mesh::get_cell_pair() const
+{
+    // each cell points to eight vertices, this is ALWAYS a 3D mesh
+    vf_int cp(layout.num_cells(), sf_int(8));
+
+    // the coordinates are cyclic starting from the low z to the high z face
+    // going clockwise in the xy plane
+    int counter = 0;
+    for (int cell = 0; cell < cp.size(); cell++)
+    {
+	for (int node = 0; node < cp[cell].size(); node++)
+	    cp[cell][node] = ++counter;
+
+	Check (((cell+1) * counter) % 8 == 0);
+    }
+
+    Ensure (counter == cp.size() * 8);
+    return cp;
+}
+
 //---------------------------------------------------------------------------//
 // public diagnostic member functions
 //---------------------------------------------------------------------------//

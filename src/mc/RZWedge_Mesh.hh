@@ -48,6 +48,7 @@ namespace rtt_mc
 // -----------------
 // 13 Apr 2000 : committed on Thursday, April 13, 2000.
 //  5 Jul 2000 : added dependence on Coord_sys (needed in transport...)
+// 17-JUL-2000 : added get_cell_pair function for graphics dumping.
 // 
 //===========================================================================//
 
@@ -137,6 +138,7 @@ class RZWedge_Mesh
     // Services required for graphics dumps.
     sf_int get_cell_types() const;
     vf_double get_point_coord() const;
+    vf_int get_cell_pair() const;
 
     // Required services for transport and source.
     int next_cell(int cell, int face) const { return layout(cell, face); } 
