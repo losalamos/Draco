@@ -26,8 +26,6 @@
 
 #include "QuadServices.hh"
 
-#include <iostream>
-
 namespace rtt_quadrature
 {
 
@@ -68,7 +66,6 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_ )
     double const mu1( std::sqrt(2.0)/2.0 );
     double const mu2( std::sqrt(3.0)/3.0 );
     Ensure( soft_equiv( compute_azimuthalAngle( 1.0, 0.0, 0.0 ), 0.0 ) );
-    // Ensure( compute_azimuthalAngle( mu1, mu1, 0.0 ) == 0.0 );
     Ensure( soft_equiv( compute_azimuthalAngle( mu2, mu2, mu2 ), PI/4.0 )  );
     Ensure( soft_equiv( compute_azimuthalAngle( mu2, -1.0*mu2, mu2 ), 3.0*PI/4.0 )  );
     Ensure( soft_equiv( compute_azimuthalAngle( mu2, -1.0*mu2, -1.0*mu2 ), 5.0*PI/4.0 )  );
@@ -78,31 +75,6 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_ )
     Check( soft_equiv(gsl_sf_legendre_Plm( 1, 0, 0.5 ), 0.5 ));
     Check( soft_equiv(gsl_sf_legendre_Plm( 1, 1, mu2 ), -1.0*std::sqrt(1.0-mu2*mu2) ));
     Check( soft_equiv(gsl_sf_legendre_Plm( 2, 2, mu2 ), 3.0*(1.0-mu2*mu2) ));
-
-    Check( n2lk[0].first == 0 );
-    Check( n2lk[1].first == 1 );
-    Check( n2lk[2].first == 1 );
-    Check( n2lk[3].first == 1 );
-    Check( n2lk[4].first == 2 );
-    Check( n2lk[5].first == 2 );
-    Check( n2lk[6].first == 2 );
-    Check( n2lk[7].first == 3 );
-
-    Check( n2lk[0].second == 0 );
-    Check( n2lk[1].second == -1 );
-    Check( n2lk[2].second == 0 );
-    Check( n2lk[3].second == 1 );
-    Check( n2lk[4].second == -2 );
-    Check( n2lk[5].second == -1 );
-    Check( n2lk[6].second == 1 );
-    Check( n2lk[7].second == -2 );
-
-//---------------------------------------------------------------------------//
-
-    std::vector< unsigned > dims;
-    dims.push_back( spQuad->getNumAngles() );
-    dims.push_back( numMoments );
-    print_matrix( "Mmatrix", Mmatrix, dims );
 
     Ensure( D_equals_M_inverse() );
 }
@@ -375,8 +347,6 @@ double QuadServices::compute_clk( unsigned const ell, int const k ) const
 bool QuadServices::D_equals_M_inverse() const
 {
     using rtt_dsxx::soft_equiv;
-    using std::cout;
-    using std::endl;
 
     int n( numMoments );
     int m( spQuad->getNumAngles() );
@@ -405,7 +375,6 @@ bool QuadServices::D_equals_M_inverse() const
     gsl_blas_dgemm( op, op, alpha, &M.matrix, &D.matrix, beta, &I.matrix );
 
     for( unsigned i=0; i<nm; ++i )
-	// cout << Iarray[ i ] << endl;
 	if( ! soft_equiv( Iarray[ i + i*nm ], 1.0 ) ) return false;
 
     return true;
