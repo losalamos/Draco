@@ -127,7 +127,49 @@ class DummyOpacity : public rtt_cdi::Opacity
      *         targetTemperature keV and targetDensity g/cm^3.
      */
     double getGrayRosseland( const double targetTemperature, 
-			     const double targetDensity );
+			     const double targetDensity);
+    /*!
+     * \breif Returns a vector of the opacity values for each energy
+     *        group for the prescribed temperature and density.
+     *
+     * The opacity object doesn not do any type of look up or
+     * interpolation.  It simply returns a vector of dummy values.
+     *
+     * \param targetTemperature The temperature (in keV) of the
+     *                          material.
+     * \param targetDensity The density (in g/cm^3) of the material.
+     * \param skey Optional parameter used to specify if the returned
+     *        value is scattering ("rsmg"), absorption ("ramg") or
+     *        total ("rtmg") opacity.  The default is total.
+     * \return A vector of opacity values for the current material at 
+     *         targetTemperature keV and targetDensity g/cm^3.  The
+     *         vector for this class has length 3 and all entries are
+     *         set equal to zero.
+     */
+
+    // The default value for "skey" is set in cdi/Opacity.hh.
+
+    vector<double> getMGRosseland( 
+	const double targetTemperature, 
+	const double targetDensity,
+	const std::string skey );
+
+    /*!
+     * \breif Returns a single opacity value for the prescribed
+     *        temperature and density.
+     *
+     * This opacity object does not do any type of look up or
+     * interpolation.  It simply returns a dummy value.
+     *
+     * \param targetTemperature The temperature (in keV) of the
+     *                          material. 
+     * \param targetDensity The density (in g/cm^3) of the material.
+     *
+     * \return Gray opacity value for the current material at
+     *         targetTemperature keV and targetDensity g/cm^3.
+     */
+    double getGrayPlank( const double targetTemperature, 
+			 const double targetDensity );
     /*!
      * \breif Returns a vector of the opacity values for each energy
      *        group for the prescribed temperature and density.
@@ -144,10 +186,9 @@ class DummyOpacity : public rtt_cdi::Opacity
      *         vector for this class has length 3 and all entries are
      *         set equal to zero.
      */
-    vector<double> getMGRosseland( 
+    vector<double> getMGPlank( 
 	const double targetTemperature, 
 	const double targetDensity );
-
   private:
     
     // IMPLEMENTATION

@@ -101,12 +101,21 @@ string tCDI::runTest()
 
     double grayOpacityReference = temp + density/10000;  // cm^2/g
     double grayOpacity 
-        = spCDI_mat1->getGrayRosselandOpacity( temp, density);
+        = spCDI_mat1->getGrayRosselandOpacity( temp, density );
 
     if ( match( grayOpacity, grayOpacityReference ) )
-	pass() << "Access to gray opacity data succeeded.";
+	pass() << "Access to gray Rosseland opacity data succeeded.";
     else
-	fail() << "Access to gray opacity data failed.";
+	fail() << "Access to gray Rosseland opacity data failed.";
+
+    // Plank opacities.
+
+    grayOpacity = spCDI_mat1->getGrayPlankOpacity( temp, density );
+
+    if ( match( grayOpacity, grayOpacityReference ) )
+	pass() << "Access to gray Plank opacity data succeeded.";
+    else
+	fail() << "Access to gray Plank opacity data failed.";
 
     // --> Try to collect multigroup opacity data.
 
@@ -116,12 +125,20 @@ string tCDI::runTest()
 	MGOpacitiesReference[i] = (i+1)*1000.0 + temp + density/10000;
 
     vector<double> MGOpacities 
-	= spCDI_mat1->getMGRosselandOpacity( temp, density);
+	= spCDI_mat1->getMGRosselandOpacity( temp, density );
 
     if ( match( MGOpacities, MGOpacitiesReference ) )
-	pass() << "Access to multigroup opacity data succeeded.";
+	pass() << "Access to multigroup Rosseland opacity data succeeded.";
     else
-	fail() << "Access to multigroup data failed.";
+	fail() << "Access to multigroup Rosseland data failed.";
+
+    // Plank Opacities
+    MGOpacities = spCDI_mat1->getMGPlankOpacity( temp, density );
+
+    if ( match( MGOpacities, MGOpacitiesReference ) )
+	pass() << "Access to multigroup Plank opacity data succeeded.";
+    else
+	fail() << "Access to multigroup Plank osseland data failed.";
 
     //----------------------------------------
     // End of tests
