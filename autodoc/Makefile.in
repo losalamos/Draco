@@ -49,7 +49,7 @@ html latex: install_graphics install_support reconfigure
 	   ${DOXYGEN} doxygen_config; \
 	fi
 
-install: html
+install: # do nothing on install
 
 check:
 
