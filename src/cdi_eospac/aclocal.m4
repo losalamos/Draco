@@ -3288,6 +3288,187 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
    ;;
 
+   # ***********
+   # CYGWIN SETUP
+   # ***********
+   i686-pc-cygwin)
+
+       # print out cpu message
+       AC_MSG_CHECKING("host platform cpu")
+       AC_MSG_RESULT("${host_cpu}")
+
+       # we do not do any posix source defines unless the user
+       # specifically requests them
+       if test "${with_posix:=no}" = yes ; then
+	   with_posix='199309L'
+       fi
+
+       if test "${with_posix}" != no ; then
+	   AC_DEFINE(_POSIX_SOURCE)
+	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
+       fi
+
+       #
+       # setup linux strict if the compiler is KCC (also turn off the
+       # warnings about long long being non-standard)
+       #
+       if test "${CXX}" = KCC && test -n "${STRICTFLAG}" ; then
+	   AC_MSG_WARN("Linux KCC strict option set to allow long long type!")
+	   STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
+       fi
+
+       #
+       # add thread safety if we are using KCC on linux
+       #
+       if test "${CXX}" = KCC ; then
+	   CFLAGS="--thread_safe ${CFLAGS}"
+	   CXXFLAGS="--thread_safe ${CXXFLAGS}"
+	   ARFLAGS="--thread_safe ${ARFLAGS}"
+	   LDFLAGS="--thread_safe ${LDFLAGS}"
+       fi
+
+       #
+       # setup communication packages
+       #
+       
+       # the default locations for mpi include/lib are:
+       #   /usr/local/mpich/include
+       #   /us	   # define mpi libs for mpich on linux
+	   mpi_libs='-lmpich'
+
+	   dnl ifr/local/mpich/lib
+       dnl to make life easy for CCS-2/4 users; needless to say,
+       dnl these can be overridden by --with-mpi-lib and --with-mpi-inc
+
+       dnl setup for mpi support, on linux vendor and mich are one
+       dnl and the same because there is no vendor for mpi on linux
+        
+       if test "${with_mpi}" = vendor ; then
+	   with_mpi='mpich'
+       fi
+
+       if test "${with_mpi}" = mpich ; then
+
+	   dnl define mpi libs for mpich on linux
+	   mpi_libs='-lmpich'
+
+	   dnl if /usr/local/mpich/lib exists use it by default;
+	   dnl this is set as the default for the CCS-2/4 network;
+	   dnl it may not be appropriate on other LINUX networks;
+	   dnl in those cases, override with --with-mpi-lib
+	   if test -z "${MPI_LIB}" && test -d "/usr/local/mpich/lib"; then
+	       MPI_LIB='/usr/local/mpich/lib'
+	   fi
+
+	   dnl set the default include location on LINUX to
+	   dnl /usr/local/mpich/include; this is specific to the CCS-2/4
+	   dnl LINUX network; to override on other systems use
+	   dnl --with-mpi-inc on the configure line
+
+	   dnl if MPI_INC is undefined then define it
+	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include"; then
+	       MPI_INC='/usr/local/mpich/include'
+	   fi
+
+       fi
+
+       dnl
+       dnl end of communication package setup
+       dnl  
+
+       dnl 
+       dnl setup lapack 
+       dnl
+       
+       dnl we assume that the vendor option on linux is the install of
+       dnl redhat rpms in /usr/lib; we don't worry about atlas because
+       dnl that has already been defined
+
+       if test "${with_lapack}" = vendor ; then
+	   lapack_libs='-llapack -lblas'
+       fi 
+
+       dnl 
+       dnl end of lapack setup
+       dnl 
+
+       dnl
+       dnl setup eospac
+       dnl
+       
+       AC_MSG_CHECKING("for extra eospac library requirements.")
+       if test -n "${vendor_eospac}"; then
+	   extra_eospac_libs="-L/usr/local/lf9562/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           LIBS="${LIBS} ${extra_eospac_libs}"
+           AC_MSG_RESULT("${extra_eospac_libs}")
+       else
+           AC_MSG_RESULT("none.")
+       fi
+
+       dnl
+       dnl end of eospac
+       dnl
+
+       dnl
+       dnl add libg2c to LIBS if lapack, gandolf, or pcg is used
+       dnl
+       AC_MSG_CHECKING("libg2c requirements")
+       if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||
+	  test -n "${vendor_gandolf}"; then
+	   
+	   dnl Add g2c for various compilers
+	   if test "${CXX}" = g++ ; then
+	       LIBS="${LIBS} -lg2c"
+	       AC_MSG_RESULT("-lg2c added to LIBS")
+	   fi
+
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       dnl
+       dnl finalize vendors
+       dnl
+       AC_VENDOR_FINALIZE
+
+       # set rpath when building shared library executables
+       if test "${enable_shared}" = yes ; then
+
+	   # turn off ranlib
+	   RANLIB=':'
+
+	   # the g++/icc rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	       RPATHA="-Xlinker -rpath \${curdir}"
+	       RPATHB="-Xlinker -rpath \${curdir}/.."
+	       RPATHC="-Xlinker -rpath \${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+	   else
+	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	   fi
+
+       fi
+
+       # add vendors to rpath
+       for vendor_dir in ${VENDOR_LIB_DIRS}; 
+       do
+	   # if we are using gcc/icc then add xlinker
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
+
+	   # else we just add the rpath
+	   else
+	       RPATH="-rpath ${vendor_dir} ${RPATH}"
+	   fi
+       done
+
+       # add the intel math library for better performance when
+       # compiling with intel
+       if test "${CXX}" = icc; then
+	   LIBS="$LIBS -limf"
+       fi
+   ;;
+
    # *********
    # SGI SETUP
    # *********

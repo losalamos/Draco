@@ -1,3 +1,44 @@
+2003-09-22  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: release draco-4_1_0.  This is a minor release, as such it
+	does not have a release memo associated with it.  In summary the
+	changes are:
+
+		- updated compaq LAPACK/BLAS numerics library in DBS
+		- added cygwin to supported platforms in DBS
+		- updated random walk in imc
+		- updated libraries in build system for EOSPAC on LINUX
+		- updated the regression and test filters
+
+	See the individual package changelogs for more details.
+
+	This draco release includes the following packages:
+	
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_eospac
+		cdi_gandolf
+		ds++
+		imc
+		lapack_wrap
+		mc
+		meshReaders
+		meshReaders_Services
+		pcgWrap
+		plot2D
+		quadrature
+		rng
+		stdheaders
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	We still have not put in default build parameters.
+
 2003-09-05  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: release draco-4_0_0. This is a major release with
@@ -13,7 +54,6 @@
 
 	This draco release includes the following packages:
 
-		RTT_Format_Reader
 		c4
 		cdi
 		cdi_analytic
