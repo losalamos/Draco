@@ -9,17 +9,19 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "quadrature_test.hh"
-#include "../Quadrature.hh"
-#include "../QuadCreator.hh"
-#include "../Release.hh"
-#include "ds++/Assert.hh"
-#include "ds++/SP.hh"
-
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <sstream>
+
+#include "ds++/Assert.hh"
+#include "ds++/SP.hh"
+
+#include "../Quadrature.hh"
+#include "../QuadCreator.hh"
+#include "../Release.hh"
+
+#include "quadrature_test.hh"
 
 using namespace std;
 
@@ -41,6 +43,10 @@ using rtt_dsxx::SP;
  */
 void quadrature_test()
 {
+    using std::ostringstream;
+    using std::endl;
+    using std::cout;
+
     // double precesion values will be tested for correctness against this
     // tolerance. 
     const double TOL = 1.0e-10; 
@@ -112,6 +118,23 @@ void quadrature_test()
 	    PASSMSG( msg.str() );
 	}
     }
+    
+    // Test dimensionality accessor.
+    size_t const expected_dim( 1 );
+    if( spQuad->dimensionality() == expected_dim )
+    {
+	PASSMSG("Found expected dimensionality value.");
+    }
+    else
+    {
+	ostringstream msg;
+	msg << "Did not find expected dimensionality == " << expected_dim << "."
+	    << endl
+	    << "spQuad returned dim=" << spQuad->dimensionality() << " instead."
+	    << endl;	
+	FAILMSG(msg.str()); 
+    }
+
     return;
 } // end of quadrature_test
 

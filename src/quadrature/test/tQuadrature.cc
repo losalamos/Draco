@@ -9,17 +9,23 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "quadrature_test.hh"
-#include "../Quadrature.hh"
-#include "../QuadCreator.hh"
-#include "../Release.hh"
-#include "ds++/Assert.hh"
-#include "ds++/SP.hh"
 
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <sstream>
+
+#include "ds++/Assert.hh"
+#include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
+
+#include "../Quadrature.hh"
+#include "../QuadCreator.hh"
+#include "../Q2DLevelSym.hh"
+#include "../Q3DLevelSym.hh"
+#include "../Release.hh"
+
+#include "quadrature_test.hh"
 
 using namespace std;
 
@@ -41,6 +47,8 @@ using rtt_dsxx::SP;
  */
 void quadrature_test()
 {
+    using rtt_dsxx::soft_equiv;
+
     // double precesion values will be tested for correctness against this
     // tolerance. 
     const double TOL = 1.0e-10; 
@@ -80,10 +88,13 @@ void quadrature_test()
     for ( int ix = 0; ix < nquads; ++ix ) {
 	
 	// Verify that the enumeration value matches its int value.
-	if ( qid[ix] != ix ) {
+	if ( qid[ix] != ix ) 
+	{
 	    FAILMSG("Setting QuadCreator::Qid enumeration failed.");
 	    break;
-	} else {
+	}
+	else 
+	{
 	    // Instantiate the quadrature object.
 	    spQuad = QuadratureCreator.quadCreate( qid[ix], sn_order ); 
 
@@ -94,11 +105,72 @@ void quadrature_test()
 	    cout << "   Sn Order         = " << spQuad->getSnOrder() << endl;
 	    cout << "   Number of Angles = " << spQuad->getNumAngles() << endl;
 
+	    // Extra tests for improving coverage analysis
+	    if( qid[ix] == QuadCreator::GaussLeg)
+	    {
+		double const expected_sumwt( 2.0 );
+		if( soft_equiv( spQuad->iDomega(), expected_sumwt ) )
+		{
+		    PASSMSG("Sumwt for GaussLeg quad is 2.0, as expected.");
+		}
+		else
+		{
+		    ostringstream msg;
+		    msg << "Unexpected value returned from spQuad->iDomega()."
+			<< endl
+			<< "Expected iDomega() to return " << expected_sumwt
+			<< ", but instead it returned" << spQuad->iDomega()
+			<< "." << endl;
+		    FAILMSG( msg.str() );
+		}
+	    }
+	    else if( qid[ix] == QuadCreator::LevelSym )
+	    {
+		vector<double> const veta( spQuad->getEta() );
+		vector<double> const vxi( spQuad->getXi() );
+
+		// ensure that the length of the discrete ordinate vector is 1.
+		for( size_t m=0; m<spQuad->getNumAngles(); ++m )
+		{
+		    double const mu( spQuad->getMu(m) );
+		    double const eta( spQuad->getEta(m) );
+		    double const xi( spQuad->getXi(m) );
+		    double const len( mu*mu + eta*eta + xi*xi );
+		    if( soft_equiv( veta[m], eta ) )
+			PASSMSG( "vector and single eta accessor agree." )
+		    else
+			FAILMSG( "vector and single eta accessor disagree." )
+		    if( soft_equiv( vxi[m], xi ) )
+			PASSMSG( "vector and single xi accessor agree." )
+		    else
+			FAILMSG( "vector and single xi accessor disagree." )
+		    if( soft_equiv( len, 1.0 ) )
+		    {
+			ostringstream msg;
+			msg << "Length of direction ordinate " << m
+			    << " has correct value of 1.0" << endl;
+			PASSMSG(msg.str());		       
+		    }
+		    else
+		    {
+			ostringstream msg;
+			msg << "Length of direction ordinate " << m
+			    << " does not have the correct value of 1.0" 
+			    << endl
+			    << "It was found to have length " << len
+			    << ", which is incorrect." << endl;
+			FAILMSG(msg.str());
+		    }
+		}
+		
+	    }
+
 	    // If the object was constructed sucessfully then we continue
 	    // with the tests.
 	    if ( ! spQuad )
 		FAILMSG("QuadCreator failed to create a new quadrature set.")
-	    else {
+	    else 
+	    {
 		// get the mu vector
 		vector<double> mu = spQuad->getMu();
 		// get the omega vector for direction m=1.
@@ -120,14 +192,85 @@ void quadrature_test()
 		    cout << endl << endl; // end of this quadrature type
 		}
 	    }
-	    std::ostringstream msg;
-	    msg << "Passed all tests for the " << qname 
-		<< " quadrature set.";
-	    PASSMSG( msg.str() );
 	}
     }
     return;
 } // end of quadrature_test
+
+//---------------------------------------------------------------------------//
+
+void Q2DLevelSym_tests()
+{
+    using rtt_quadrature::Q2DLevelSym;
+    using std::ostringstream;
+    using std::endl;
+
+    int    const sn_order( 4 );
+    double const sumwt( 1.0 );
+    Q2DLevelSym const quad( sn_order, sumwt );
+
+    size_t const expected_nlevels((sn_order+2)*sn_order/8);
+    if( quad.getLevels() == expected_nlevels)
+    {
+	PASSMSG("Found expected number of levels in quadrature set.");
+    }
+    else
+    {
+	ostringstream msg;
+	msg << "Found the wrong number of quadrature levels." << endl
+	    << "quad.getLevels() returned " << quad.getLevels()
+	    << ", but we expected to find " << expected_nlevels << "."
+	    << endl;
+	FAILMSG( msg.str() );
+    }
+    return;
+} // end of Q2DLevelSym_tests()
+//---------------------------------------------------------------------------//
+
+void Q3DLevelSym_tests()
+{
+    using rtt_dsxx::soft_equiv;
+    using rtt_quadrature::Q3DLevelSym;
+    using std::ostringstream;
+    using std::endl;
+
+    int    const sn_order( 4 );
+    double const assigned_sumwt( 1.0 );
+    Q3DLevelSym const quad( sn_order, assigned_sumwt );
+
+    size_t const expected_nlevels((sn_order+2)*sn_order/8);
+    if( quad.getLevels() == expected_nlevels)
+    {
+	PASSMSG("Found expected number of levels in quadrature set.");
+    }
+    else
+    {
+	ostringstream msg;
+	msg << "Found the wrong number of quadrature levels." << endl
+	    << "quad.getLevels() returned " << quad.getLevels()
+	    << ", but we expected to find " << expected_nlevels << "."
+	    << endl;
+	FAILMSG( msg.str() );
+    }
+    
+    double const sumwt( 1.0 );
+    if( soft_equiv( sumwt, assigned_sumwt ) )
+    {
+	PASSMSG("Stored sumwt matches assigned value.");
+    }
+    else
+    {
+	ostringstream msg;
+	msg << "Stored sumwt does not match assigned value as retrieved by iDomega()."
+	    << endl
+	    << "quad.iDomega() returned " << quad.iDomega()
+	    << ", but we expected to find " << assigned_sumwt << "."
+	    << endl;
+	FAILMSG( msg.str() );
+    }
+
+    return;
+} // end of Q3DLevelSym_tests()
 
 //---------------------------------------------------------------------------//
 
@@ -142,10 +285,15 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
+    cout << "This is the quadrature package." << endl
+	 << "Version " << rtt_quadrature::release() << endl;
+
     try
     {
 	// >>> UNIT TESTS
 	quadrature_test();
+	Q2DLevelSym_tests();
+	Q3DLevelSym_tests();
     }
     catch (rtt_dsxx::assertion &ass)
     {

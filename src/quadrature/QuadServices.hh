@@ -83,6 +83,9 @@ class QuadServices
     //! \brief Return the (l,k) index pair associated with moment index n.
     lk_index lkPair( unsigned n ) const { Require( n<numMoments ); return n2lk[n]; }
 
+    //! Checks
+    bool D_equals_M_inverse() const;
+
   private:
 
     // NESTED CLASSES AND TYPEDEFS
@@ -110,9 +113,6 @@ class QuadServices
     double compute_azimuthalAngle( double const mu,
 				   double const eta,
 				   double const xi ) const;
-
-    //! Checks
-    bool D_equals_M_inverse() const;
 
     // DATA
     rtt_dsxx::SP< const Quadrature > const spQuad;

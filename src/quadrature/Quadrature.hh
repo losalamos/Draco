@@ -253,7 +253,7 @@ class Quadrature
      */
     const vector<double> &getOmega( const size_t m ) const
     {
-	Require ( m < getNumAngles() );
+	Require( m < getNumAngles() );
 	return omega[m];
     }
 

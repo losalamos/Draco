@@ -320,6 +320,63 @@ void test_quad_services_with_1D_S2_quad()
 	}
     }
 
+    // Ensure D = M^{-1}
+    // ------------------------------------------------------------
+    {
+	if( qs.D_equals_M_inverse() )
+	{
+	    PASSMSG("Found D = inverse(M).");
+	}
+	else
+	{
+	    FAILMSG("Oh no! D != inverse(M).");
+	}
+    }
+    
+    // Test applyD function
+    // ------------------------------------------------------------
+    {
+	vector<double> const angularFlux( numAngles, 7.0 );
+	vector<double> const fluxMoments( qs.applyD( angularFlux ) );
+
+	if( soft_equiv( fluxMoments[0], 14.0 ) &&
+	    soft_equiv( fluxMoments[1], 0.0 ) )
+	{
+	    PASSMSG("applyD() appears to work.");
+	}
+	else
+	{
+	    ostringstream msg;
+	    msg << "applyD() failed to work as expected." << endl
+		<< "Expected phi = { 14.0, 0.0} but found phi = { "
+		<< fluxMoments[0] << ", " << fluxMoments[1] << " }." << endl;
+	    FAILMSG(msg.str());
+	}
+    }
+
+    // Test applyM function
+    // ------------------------------------------------------------
+    {
+	double fm[2] = { 7.0, 0.0 };
+	vector<double> const fluxMoments( fm, fm+2 );
+	vector<double> const angularFlux( qs.applyM( fluxMoments ) );
+	
+	if( soft_equiv( angularFlux[0], 3.5 ) &&
+	    soft_equiv( angularFlux[1], 3.5 ) )
+	{
+	    PASSMSG("applyM() appears to work.");
+	}
+	else
+	{
+	    ostringstream msg;
+	    msg << "applyM() failed to work as expected." << endl
+		<< "Expected psi = { 3.5, 3.5 } but found psi = { "
+		<< angularFlux[0] << ", " << angularFlux[1] << " }." << endl;
+	    FAILMSG(msg.str());
+	}
+    }	    
+
+
     return;
 }
 
@@ -352,7 +409,7 @@ void test_quad_services_with_1D_S8_quad()
     
     // Banner
     cout << "\nTesting the "  << qname_ref << " S"
-	 << sn_ord_ref << "8 quadrature set." << endl << endl;
+	 << sn_ord_ref << " quadrature set." << endl << endl;
     
     // Create a quadrature set from a temporary instance of a
     // QuadratureCreator factory object.
@@ -822,6 +879,99 @@ void test_quad_services_with_2D_S2_quad()
 
 //---------------------------------------------------------------------------//
 
+void test_quad_services_alt_constructor()
+{
+    using rtt_quadrature::QuadCreator;
+    using rtt_quadrature::Quadrature;
+    using rtt_quadrature::QuadServices;
+    using rtt_dsxx::SP;
+    using rtt_dsxx::soft_equiv;
+
+    using std::endl;
+    using std::vector;
+    using std::ostringstream;
+
+    typedef std::pair< unsigned, int > lk_index;
+
+    //----------------------------------------
+    // Setup Quadrature set
+    
+    // we will only look at S2 Sets in this test.
+    size_t const snOrder( 2 );
+
+    // Create a quadrature set from a temporary instance of a
+    // QuadratureCreator factory object.
+    SP< const Quadrature > spQuad;
+    spQuad = QuadCreator().quadCreate( QuadCreator::LevelSym, snOrder ); 
+    
+    // Create a vector that designates the (l,k) moments that will be used
+    unsigned const numMoments( spQuad->getNumAngles() );
+    unsigned n(0);
+    vector< lk_index > lkMoments;
+    
+    // Copy algorithm from compute_n2lk_3D()
+    // -------------------------------------
+    // Choose: l= 0, ..., N-1, k = -l, ..., l
+    for( unsigned ell=0; ell< snOrder; ++ell )
+	for( int k(-1*static_cast<int>(ell)); std::abs(k) <= ell; ++k, ++n )
+	    lkMoments.push_back( lk_index(ell,k) );
+
+    // Add ell=N and k<0
+    {
+	unsigned ell( snOrder );
+	for( int k(-1*static_cast<int>(ell)); k<0; ++k, ++n )
+	    lkMoments.push_back( lk_index(ell,k) );
+    }
+
+    // Add ell=N, k>0, k odd
+    {
+	unsigned ell( snOrder );
+	for( int k=1; k<=ell; k+=2, ++n )
+	    lkMoments.push_back( lk_index(ell,k) );
+    }
+
+    // Add ell=N+1 and k<0, k even
+    {
+	unsigned ell( snOrder+1 );
+	for( int k(-1*static_cast<int>(ell)+1); k<0; k+=2, ++n )
+	    lkMoments.push_back( lk_index(ell,k) );
+    }
+
+    //----------------------------------------
+    // Setup QuadServices object using alternate constructor.
+    
+    QuadServices qsStd( spQuad );
+    QuadServices qsAlt( spQuad, lkMoments );
+
+    for( unsigned n=0; n<numMoments; ++n )
+    {
+	lk_index stdIndexValues( qsStd.lkPair(n) );
+	lk_index altIndexValues( qsAlt.lkPair(n) );
+	if( stdIndexValues.first == altIndexValues.first &&
+	    stdIndexValues.second == altIndexValues.second )
+	{
+	    ostringstream msg;
+	    msg << "Alternate Constructor -- lk_index has expected value for moment "
+		<< n << "." << endl;
+	    PASSMSG(msg.str());
+	}
+	else
+	{
+	    ostringstream msg;
+	    msg << "Alternate Constructor -- "
+		<< "lk_index does not have the expected value for moment "
+		<< n << "." << endl
+		<< "Found lk_index = (" << altIndexValues.first << ", "
+		<< altIndexValues.second << ") but expected (" << stdIndexValues.first
+		<< ", " << stdIndexValues.second << ")." << endl;
+	    PASSMSG(msg.str());
+	}
+    }
+    return;
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     using std::string;
@@ -846,6 +996,7 @@ int main(int argc, char *argv[])
 	test_quad_services_with_1D_S8_quad();
 	test_quad_services_with_3D_S2_quad();
 	test_quad_services_with_2D_S2_quad();
+	test_quad_services_alt_constructor();
     }
     catch (rtt_dsxx::assertion &ass)
     {
