@@ -572,7 +572,7 @@ package="ds++"
 
    # test will need to link this library
    PKG_DEPENDS='../lib${package}${libsuffix}'
-   PKG_LIBS='-L .. -l${package}'
+   PKG_LIBS='-L.. -l${package}'
 
 
 	test_alltarget="$test_alltarget tstAllocators tstMat tstSP tstAssert \

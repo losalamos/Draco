@@ -567,7 +567,7 @@ package="xm"
    installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
 
    if test ${has_libdir:=no} != "yes" ; then
-       DRACO_LIBS="${DRACO_LIBS} -L \${libdir}"
+       DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
        has_libdir="yes"
    fi
 

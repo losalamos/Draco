@@ -586,7 +586,7 @@ package="P1Diffusion"
 
 
    if test ${has_libdir:=no} != "yes" ; then
-       DRACO_LIBS="${DRACO_LIBS} -L \${libdir}"
+       DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
        has_libdir="yes"
    fi
 
@@ -598,7 +598,7 @@ package="P1Diffusion"
        DRACO_LIBS="${DRACO_LIBS} -l${lib}"
    done
 
-   DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L \${libdir}"
+   DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
    for lib in mesh diffusion nml
    do
        # temporary string to keep line from getting too long

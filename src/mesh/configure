@@ -585,7 +585,7 @@ package="mesh"
 
    # test will need to link this library
    PKG_DEPENDS='../lib${package}${libsuffix}'
-   PKG_LIBS='-L .. -l${package}'
+   PKG_LIBS='-L.. -l${package}'
 
 
 
@@ -841,7 +841,7 @@ EOF
             
 
    if test ${has_libdir:=no} != "yes" ; then
-       DRACO_LIBS="${DRACO_LIBS} -L \${libdir}"
+       DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
        has_libdir="yes"
    fi
 
