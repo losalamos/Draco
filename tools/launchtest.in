@@ -127,7 +127,7 @@ case $exe in
 		    # Linux, lambda and non-lambda
 		    Linux)
 			mpich_path=`which mpirun | sed -e "/mpich/!d"`
-			if test $LSB_SUB_HOST = "lambda" && test $mpich_path; then
+			if test "$LSB_SUB_HOST" = "lambda" && test $mpich_path; then
 			    test_exec="$libexecdir/mpijob -v mpirun -np $procs $executable $exe_options"
 			else
 			    test_exec="mpirun -np $procs $executable $exe_options"
