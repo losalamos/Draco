@@ -108,8 +108,39 @@ SP<RTT_Format> CAR_CU_Interface::parser_Mesh(ifstream &in)
     for (int cell_number = 0; cell_number < ncells; cell_number++)
         zone[cell_number] = rttMesh->get_cells_flags(cell_number,matl_flag);
 
-    // resize the material zone vector according to the number of materials
+    // resize the material zone and radiation temperature vectors according 
+    // to the number of materials.
     mat_zone.resize(rttMesh->get_dims_ncell_flags(matl_flag));
+    rad_temp.resize(rttMesh->get_dims_ncell_flags(matl_flag));
+
+    // Assign a volume source to each cell, if present.
+    cell_evol.resize(ncells);
+    int vol_src_flag = rttMesh->get_cell_flags_volume_src_flag_number();
+    if (vol_src_flag >= 0)
+    {
+        // resize the volumetric source vector according to the number of
+        // sources specified in the RTT Format file
+        evol_ext.resize(rttMesh->get_dims_ncell_flags(vol_src_flag));
+
+        for (int cell = 0; cell < ncells; cell++)
+	    cell_evol[cell] = rttMesh->get_cells_flags(cell,vol_src_flag);
+    }
+    else
+        fill(cell_evol.begin(), cell_evol.end(), 0.0);
+
+    // Assign a radiation source to each cell, if present.
+    cell_rsrc.resize(ncells);
+    int rad_src_flag = rttMesh->get_cell_flags_radiation_src_flag_number();
+    if (rad_src_flag >= 0)
+    {
+        // resize the radiation source vector according to the number of
+        // sources specified in the RTT Format file
+        rad_source.resize(rttMesh->get_dims_ncell_flags(rad_src_flag));
+        for (int cell = 0; cell < ncells; cell++)
+	    cell_rsrc[cell] = rttMesh->get_cells_flags(cell,rad_src_flag);
+    }
+    else
+        fill(cell_rsrc.begin(), cell_rsrc.end(), 0.0);
 
     return rttMesh;
 }
@@ -191,11 +222,6 @@ void CAR_CU_Interface::parser_Opacity(ifstream &in)
 
 void CAR_CU_Interface::parser_Source(ifstream &in)
 {
-  // define number of zones and resize Source data arrays
-    int num_zones = mat_zone.size();
-    evol_ext.resize(num_zones);
-    rad_temp.resize(num_zones);
-    rad_source.resize(num_zones);
     fill(evol_ext.begin(), evol_ext.end(), 0.0);
     fill(rad_temp.begin(), rad_temp.end(), 0.0);
     fill(rad_source.begin(), rad_source.end(), 0.0);
@@ -225,8 +251,12 @@ void CAR_CU_Interface::zone_source_parser(ifstream &in)
       // do input
 	in >> keyword;
 	if (keyword == "vol_source:")
+	{
 	    for (int i = 0; i < evol_ext.size(); i++)
 		in >> evol_ext[i];
+	    for (int cell = 0; cell < cell_evol.size(); cell++)
+		cell_evol[cell] = evol_ext[cell_evol[cell] - 1];
+	}
 	if (keyword == "rad_source:")
 	{
 	    for (int i = 0; i < rad_source.size(); i++)
@@ -234,6 +264,8 @@ void CAR_CU_Interface::zone_source_parser(ifstream &in)
 		in >> rad_source[i];
 		if (rad_source[i] > 0.0)
 		    have_rad_source = true;
+		for (int cell = 0; cell < cell_rsrc.size(); cell++)
+		    cell_rsrc[cell] = rad_source[cell_rsrc[cell] - 1];
 	    }
 	}
 	if (keyword == "rad_s_tend:")
@@ -302,6 +334,7 @@ void CAR_CU_Interface::zone_source_parser(ifstream &in)
     Insist (buffer > 0, "The buffer must be > 0!");
     if (have_rad_source)
 	Insist (rad_s_tend > 0, "You have a radiation source of zero time!");
+
     if (rad_s_tend > 0)
 	Insist (have_rad_source, 
 		"Duration defined for zero radiation source!");
@@ -387,37 +420,6 @@ vector<double> CAR_CU_Interface::get_specific_heat() const
 
   // return cell_cv
     return cell_cv;
-}
-
-//---------------------------------------------------------------------------//
-// map volume source to cell based arrays
-
-vector<double> CAR_CU_Interface::get_evol_ext() const
-{
-  // make a return vector of the proper size
-    vector<double> cell_evol(zone.size());
-
-  // assign the values to cell_evol based on the zone
-    for (int cell = 1; cell <= cell_evol.size(); cell++)
-	cell_evol[cell-1] = evol_ext[zone[cell-1]-1];
-
-  // return cell_evol
-    return cell_evol;
-}
-//---------------------------------------------------------------------------//
-// map radiation source to cell based arrays
-
-vector<double> CAR_CU_Interface::get_rad_source() const
-{
-  // make a return vector of the proper size
-    vector<double> cell_rsrc(zone.size());
-
-  // assign cell values of rad source based on zonal values
-    for (int cell = 1; cell <= cell_rsrc.size(); cell++)
-	cell_rsrc[cell-1] = rad_source[zone[cell-1]-1];
-
-  // return cell_evol
-    return cell_rsrc;
 }
 
 //---------------------------------------------------------------------------//

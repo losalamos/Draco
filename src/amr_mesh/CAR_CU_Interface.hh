@@ -79,7 +79,9 @@ class CAR_CU_Interface
 
     // data required for Source_Init
     vector<double> evol_ext;
+    vector<double> cell_evol;
     vector<double> rad_source;
+    vector<double> cell_rsrc;
     double rad_s_tend;
     vector<string> ss_pos;
     vector<double> ss_temp;
@@ -135,10 +137,10 @@ class CAR_CU_Interface
 
     // public copy functions for Source_Init<MT>
     int get_zone_size()  { return zone.size();}
-    vector<double> get_evol_ext() const;
-    double get_evol_ext(int cell) const { return evol_ext[cell -1]; }
-    vector<double> get_rad_source() const;
-    double get_rad_source(int cell) const { return rad_source[cell -1]; }
+    vector<double> get_evol_ext() const { return cell_evol; }
+    double get_evol_ext(int cell) const { return cell_evol[cell -1]; }
+    vector<double> get_rad_source() const { return cell_rsrc; }
+    double get_rad_source(int cell) const { return cell_rsrc[cell -1]; }
     double get_rad_s_tend() const { return rad_s_tend; }
     // return the number of grouped surface source cell sets
     int get_ss_pos_size() { return ss_pos.size(); }

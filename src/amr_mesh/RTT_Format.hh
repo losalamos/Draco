@@ -309,7 +309,7 @@ class RTT_Format
 	}
         int get_boundary_flag_number() const 
 	{
-	    string bc("boundarycditBOUNDARYCDIT");
+	    string bc("boundarycditBOUNDARYCDIT_");
 	    int boundary = -1;
 	    int length = 0;
 	    for (int f = 0; f < dims.get_nside_flag_types(); f++)
@@ -325,7 +325,25 @@ class RTT_Format
 	    }
 	    Insist(boundary >= 0, "Boundary conditions not found!");
 	    return boundary;
-	}    
+	}
+        int get_surface_src_flag_number() const 
+	{
+	    string surface("surfaceoSURFACEO_");
+	    int source = -1;
+	    int length = 0;
+	    for (int f = 0; f < dims.get_nside_flag_types(); f++)
+	    {
+	        string flag = flagTypes(f)->getFlagType();
+	        if ((flag[0] == 's' || flag[0] == 's') &&
+		    flag.find_first_not_of(surface) == string::npos &&  
+		    flag.find_first_not_of(surface) >= length)
+		{
+		    length = flag.size();
+		    source = f;
+		}
+	    }
+	    return source;
+	}
     };
 
     class CellFlags
@@ -399,6 +417,42 @@ class RTT_Format
 	    }
 	    Insist(material >= 0, "Material conditions not found!");
 	    return material;
+	}    
+        int get_volume_src_flag_number() const 
+	{
+	    string source("volumesrcVOLUMESRC_");
+	    int vol_src = -1;
+	    int length = 0;
+	    for (int f = 0; f < dims.get_ncell_flag_types(); f++)
+	    {
+	        string flag = flagTypes(f)->getFlagType();
+	        if ((flag[0] == 'v' || flag[0] == 'V') &&
+		    flag.find_first_not_of(source) == string::npos &&  
+		    flag.find_first_not_of(source) >= length)
+		{
+		    length = flag.size();
+		    vol_src = f;
+		}
+	    }
+	    return vol_src;
+	}    
+        int get_radiation_src_flag_number() const 
+	{
+	    string source("raditonsuceRADITONSUCE_");
+	    int rad_src = -1;
+	    int length = 0;
+	    for (int f = 0; f < dims.get_ncell_flag_types(); f++)
+	    {
+	        string flag = flagTypes(f)->getFlagType();
+	        if ((flag[0] == 'r' || flag[0] == 'r') &&
+		    flag.find_first_not_of(source) == string::npos &&  
+		    flag.find_first_not_of(source) >= length)
+		{
+		    length = flag.size();
+		    rad_src = f;
+		}
+	    }
+	    return rad_src;
 	}    
     };
 
@@ -939,6 +993,8 @@ class RTT_Format
 	{ return spSideFlags->get_flag_name(flagtype, flag_index); }
     int get_side_flags_boundary_flag_number() const 
 	{ return spSideFlags->get_boundary_flag_number(); }
+    int get_side_flags_surface_src_flag_number() const 
+	{ return spSideFlags->get_surface_src_flag_number(); }
 
     // cell flags access
     string get_cell_flags_flag_type(int flagtype) const 
@@ -951,6 +1007,10 @@ class RTT_Format
 	{ return spCellFlags->get_flag_name( flagtype, flag_index); }
     int get_cell_flags_material_flag_number() const 
 	{ return spCellFlags->get_material_flag_number(); }
+    int get_cell_flags_volume_src_flag_number() const 
+	{ return spCellFlags->get_volume_src_flag_number(); }
+    int get_cell_flags_radiation_src_flag_number() const 
+	{ return spCellFlags->get_radiation_src_flag_number(); }
 
     // node data ids access
     string get_node_data_id_name(int id_numb) const 
