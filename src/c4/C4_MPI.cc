@@ -94,7 +94,10 @@ double wall_clock_time()
 {
     return MPI_Wtime();
 }
-
+double wall_clock_time( tms & now )
+{
+    return MPI_Wtime();
+}
 //---------------------------------------------------------------------------//
 
 double wall_clock_resolution()

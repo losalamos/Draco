@@ -1,3 +1,23 @@
+2005-01-25  Kelly Thompson  <kgt@lanl.gov>
+
+	* Timer.hh (class Timer): Significant modification to Timer
+	class.  The Timer class will use MPI_Wtime when it is available.
+	Otherwise, it will use posix timers.  
+	 - clock_t data members are now	doubles.
+	 - new data member "bool system_time_available" is set to true if
+	   we are using posix timers.
+	 - Added virtual destructor to allow users to inherit from this
+	   class. 
+	 - Disallow copy construction.
+	 - Utilize rtt_c4::wall_clock_time and rtt_c4:: when possible.
+	 - More thorogh initializer in the default constructor.
+	 - Only print User and System times when using posix timers.
+
+	* C4_Functions.hh, C4_MPI.cc, C4_Serial.cc: added overloaded
+	version of wall_clock_time.  This new function takes a reference
+	to a tms struct so that additional information can be provided to
+	the calling routine.
+
 2004-11-17  Rob Lowrie  <lowrie@lanl.gov>
 
 	* c4: Added broadcast().

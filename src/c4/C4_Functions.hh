@@ -15,6 +15,8 @@
 #ifndef __c4_C4_Functions_hh__
 #define __c4_C4_Functions_hh__
 
+#include <unistd.h>
+#include <sys/times.h>  // defines the struct tms.
 #include "C4_Traits.hh"
 
 namespace rtt_c4
@@ -203,6 +205,7 @@ void global_max(T *x, int n);
  * \brief Return the wall-clock time in seconds.
  */
 double wall_clock_time();
+double wall_clock_time( tms & now );
 
 //---------------------------------------------------------------------------//
 /*!

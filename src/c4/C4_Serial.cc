@@ -70,8 +70,12 @@ void global_barrier()
 
 double wall_clock_time()
 {
-    tms temp;
-    return times(&temp) / static_cast<double>(sysconf(_SC_CLK_TCK));
+    tms now;
+    return times( &now ) / wall_clock_resolution();
+}
+double wall_clock_time( tms & now )
+{
+    return times( &now ) / wall_clock_resolution();
 }
 
 //---------------------------------------------------------------------------//
