@@ -95,11 +95,13 @@ public:
     class CCVF
     {
     private:
+
       // SP back to OS_Mesh
 	SP<OS_Mesh> mesh;
       // the data array is data(dimension,num_cells) where
       // dimension is 1 (1-D), 2 (2-D), or 3 (3-D)
 	vector< vector<T> > data;
+
     public:
       // inline explicit constructor
 	inline explicit CCVF(SP<OS_Mesh>);
@@ -132,6 +134,10 @@ private:
   // private copy and assignment operators; can't copy or assign a mesh
     OS_Mesh(const OS_Mesh &);
     OS_Mesh& operator=(const OS_Mesh &);
+
+  // Begin_Doc os_mesh-int.tex
+  // Begin_Verbatim 
+
 public:
   // default constructor
     OS_Mesh(SP<Coord_sys>, Layout &, CCVF_a &, CCVF_i &); 
@@ -173,15 +179,21 @@ public:
   // 5) calc the volume
   // 6) find the cells along a surface
   // 7) find cell's face along a given surface
+  // 8) find the vertices for a given cell-face
 
     int next_cell(int cell, int face) const { return layout(cell, face); }
     int get_cell(const vector<double> &) const;
     double get_db(const vector<double> &, const vector<double> &, int, 
 		  int &) const;
+
     inline vector<double> get_normal(int, int) const;
     inline double volume(int) const;
     vector<int> get_surcells(string) const;
     int get_bndface(string, int) const;
+    inline vector<double> get_vertices(int, int) const;
+
+  // End_Verbatim 
+  // End_Doc 
 };
 
 //---------------------------------------------------------------------------//
