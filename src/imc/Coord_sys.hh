@@ -21,6 +21,7 @@
 //  1)  3-12-98 : moved Calc and Set_omega functions into Coord_sys as
 //                non-pure virtual functions because they are the same in
 //                both XY and XYZ transport, added a transform for 2D meshes
+//  2)  3-16-98 : added normal calculation as pure virtual function
 // 
 //===========================================================================//
 
@@ -46,6 +47,9 @@ public:
     Coord_sys(int dimension_) 
 	:dimension(dimension_), set_dimension(3) {}
 
+  // virtual destructor to insure correct behavior down inheritance chain
+    virtual ~Coord_sys() {}
+
   // base class member functions
 
   // we have two dimensionalities, a "real" dimension for the geometry and a
@@ -56,6 +60,8 @@ public:
 
   // pure virtual functions
     virtual string Get_coord() const = 0;
+    virtual vector<double> Calc_normal(vector<double> &, vector<double> &, 
+				       int) = 0;
 
   // virtual functions, these are only needed in some coordinate systems
     virtual double Transform(double dist_bnd, const vector<double> &omega) 

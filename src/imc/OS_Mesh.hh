@@ -21,6 +21,7 @@
 //                smart pointer
 //  2)  2-20-98 : added assertion to constructor to make sure that the number
 //                of cells defined in the mesh is consistent with the Layout
+//  3)  3-16-98 : added Get_normal public member function
 // 
 //===========================================================================//
 
@@ -185,6 +186,18 @@ public:
     int Get_cell(const vector<double> &) const;
     double Get_db(const vector<double> &, const vector<double> &, int, 
 		  int &) const;
+    vector<double> Get_normal(int cell, int face)
+    {
+      // send necessary dimensions to Coordinate system to calculate the normal
+	vector<double> center(coord->Get_dim());
+	vector<double> extent(coord->Get_dim());
+	for (int i = 0; i < coord->Get_dim(); i++)
+	{
+	    center[i] = pos[i][cell-1];
+	    extent[i] = dim[i][cell-1];
+	}
+	vector<double> normal = coord->Calc_normal(center, extent, face);
+    }
 };
 
 CSPACE

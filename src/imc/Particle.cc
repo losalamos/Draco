@@ -20,6 +20,10 @@ using std::setw;
 using std::ios;
 using std::setiosflags;
 
+//===========================================================================//
+// class Particle<MT>
+//===========================================================================//
+
 //---------------------------------------------------------------------------//
 // constructors
 //---------------------------------------------------------------------------//
@@ -30,7 +34,8 @@ template<class MT>
 Particle<MT>::Particle(const MT &mesh, int seed, double weight_, 
 		       double energy_)
     :weight(weight_), energy(energy_), r(mesh.Coord().Get_dim(), 0.0), 
-     omega(mesh.Coord().Get_sdim(), 0.0), cell(0), alive(true), random(seed)
+     omega(mesh.Coord().Get_sdim(), 0.0), cell(0), alive(true), 
+     descriptor("born"), random(seed)
 {
   // the syntax for initialization of the vector is equivalent to:
   // vector<double> r(dimension, 0.0),
@@ -64,14 +69,21 @@ void Particle<MT>::Source(vector<double> &r_, vector<double> &omega_,
 
 // transport particle through mesh
 template<class MT>
-void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs)
+void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs, 
+			     SP<Diagnostic> diagnostic)
 {
   // explicit calls from standard library namespace
     using std::log;
   // explicit calls from Global namespace
     using Global::pi;
 
-  // transport loop, ended when transport = false
+  // initialize diagnostics
+    if (diagnostic)
+	diagnostic->Print(*this);
+  
+  // !!! BEGIN TRANSPORT LOOP !!!
+
+  // transport loop, ended when alive = false
     while (alive)
     {
       // dist-to-collision and dist-to-boundary definitions
@@ -84,16 +96,10 @@ void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs)
 
       // get distance-to-boundary and cell face
         d_boundary  = mesh.Get_db(r, omega, cell, face);
-
+	
       // for 3D transport in 2D meshes, do a transform, for 3D transform
       // simply returns value
 	double d_travel = mesh.Coord().Transform(d_boundary, omega);
-
-      // do diagnostic print
-	Print();
-	cout << "Boundary:  " << d_boundary << endl;
-	cout << "Collision: " << d_collision << endl;
-	cout << "Travel:    " << d_travel << endl;
 
       // streaming
         if (d_collision <= d_boundary)
@@ -101,39 +107,37 @@ void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs)
             Stream(d_collision);
             alive = Collide(mesh, xs);
         }
-        else
+	else
         {
+	  // stream to cell boundary and find next cell
             Stream(d_travel);
-            cell  = mesh.Next_cell(cell, face);
-	    alive = cell;
-        }
-    }
-  
-  // end-particle diagnostic print
-    Print();
+	    alive = Surface(mesh, face);
+	}
+	
+      // do diagnostic print
+	if (diagnostic)
+	    diagnostic->Print(*this);
+    } 
+
+  // !!! END OF TRANSPORT LOOP !!!
 }
 
 //---------------------------------------------------------------------------//
 // private transport member functions
 //---------------------------------------------------------------------------//
-// stream particle a distance d
-template<class MT>
-void Particle<MT>::Stream(double distance)
-{
-  // calculate new location
-    for (int i = 0; i <= r.size()-1; i++)
-        r[i] = r[i] + distance * omega[i];
-}
-
 // calculate everything about a collision
 template<class MT>
 bool Particle<MT>::Collide(const MT &mesh, const Opacity<MT> &xs)
 {   
+  // status from collision
     bool status;
 
   // determine absorption or collision
     if (random.ran() <= xs.Sigma(cell) / xs.Sigma(cell))
+    {
+	descriptor = "absorption";
         status = false;
+    }
     else
     {
         status = true;
@@ -147,77 +151,151 @@ bool Particle<MT>::Collide(const MT &mesh, const Opacity<MT> &xs)
         mesh.Coord().Calc_omega(costheta, phi, omega);
     }
 
+  // return outcome of the event
     return status;
 }
 
 //---------------------------------------------------------------------------//
-// public diagnostic member functions
-//---------------------------------------------------------------------------//
+// do surface crossings
 template<class MT>
-void Particle<MT>::Print()
+bool Particle<MT>::Surface(const MT &mesh, int face)
 {
-  // print particulars of the particle based on its status
-    if (alive == true)
-	Print_alive();
-    else
-	Print_dead();
-}
+    using Global::Dot;
 
-template<class MT>
-void Particle<MT>::Print_alive()
-{
-  // print active particle (alive = true)
-    cout << "Particle is alive." << endl;
+  // status from surface crossing
+    bool status;
 
-  // coordinates
-    cout << setw(15) << setiosflags(ios::right) << "Coordinates: ";
-    for (int i = 0; i < r.size(); i++)
-	cout << setw(8) << r[i] << " ";
-    cout << endl;
-    
-  // direction
-    cout << setw(15) << setiosflags(ios::right) << "Direction: ";
-    for (int i = 0; i < omega.size(); i++)
-	cout << setw(8) << omega[i] << " ";
-    cout << endl;
+  // determine the next cell
+    int next_cell = mesh.Next_cell(cell, face);
 
-  // cell
-    cout << setw(15) << setiosflags(ios::right) << "Cell: " << setw(8) 
-	 << cell << endl;
+  // determine descriptor and outcome of this event
 
-  // energy
-    cout << setw(15) << setiosflags(ios::right) << "Energy: " << setw(8) 
-	 << energy << endl;
-	
-  // weight
-    cout << setw(15) << setiosflags(ios::right) << "Energy: " << setw(8) 
-	 << weight << endl;
+    if (next_cell == cell)
+    {
+      // reflection
+	descriptor = "reflection";
+	vector<double> normal = mesh.Get_normal(cell, face);
+	double factor = Dot(omega, normal);
+	for (int i = 0; i < mesh.Coord().Get_dim(); i++
+		 omega[i] -= 2 * factor * normal[i];
+	cell = next_cell;
+    }
+    else if (next_cell == 0)
+    {
+      // escape
+	descriptor = "escape";
+	cell = next_cell;
+    }
+    else 
+    {
+      // continue streaming
+	descriptor = "stream";
+	cell = next_cell;
+    }
 
-    cout << endl;
-}
-
-template<class MT>
-void Particle<MT>::Print_dead()
-{
-  // print dead particle (alive = false)
-    cout << "Particle is dead." << endl;
-
-  // coordinates
-    cout << setw(20) << setiosflags(ios::right) << " Last Coordinates: ";
-    for (int i = 0; i < r.size(); i++)
-	cout << setw(8) << r[i] << " ";
-    cout << endl;
-    
-  // direction
-    cout << setw(20) << setiosflags(ios::right) << " Last Direction: ";
-    for (int i = 0; i < omega.size(); i++)
-	cout << setw(8) << omega[i] << " ";
-    cout << endl;
+  // return outcome of the event
+    status = cell;
+    return status;
 }
 
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
+
+//===========================================================================//
+// class Particle<MT>::Diagnostic
+//===========================================================================//
+
+//---------------------------------------------------------------------------//
+// public diagnostic member functions
+//---------------------------------------------------------------------------//
+template<class MT>
+void Particle<MT>::Diagnostic::Print(const Particle<MT> &particle) const
+{
+  // set output precision
+    output.precision(3);
+    output << setiosflags(ios::fixed);
+
+  // print particulars of the particle based on its status
+    if (particle.alive == true)
+	Print_alive(particle);
+    else
+	Print_dead(particle);
+}
+
+template<class MT>
+void Particle<MT>::Diagnostic::Print_alive(const Particle<MT> &particle) const 
+{
+  // print active particle (alive = true)
+    output << "Particle is alive." << endl;
+
+  // event
+    output << setw(20) << setiosflags(ios::right) << "Event: " 
+	   << setw(12) << particle.descriptor.c_str() << endl;
+    
+  // coordinates
+    output << setw(20) << setiosflags(ios::right) << "Coordinates: ";
+    for (int i = 0; i < particle.r.size(); i++)
+	output << setw(12) << particle.r[i] << " ";
+    output << endl;
+    
+  // direction
+    output << setw(20) << setiosflags(ios::right) << "Direction: ";
+    for (int i = 0; i < particle.omega.size(); i++)
+	output << setw(12) << particle.omega[i] << " ";
+    output << endl;
+    
+  // cell
+    output << setw(20) << setiosflags(ios::right) << "Cell: " << setw(12) 
+	   << particle.cell << endl;
+    
+  // energy
+    output << setw(20) << setiosflags(ios::right) << "Energy: " << setw(12) 
+	   << particle.energy << endl;
+    
+  // weight
+    output << setw(20) << setiosflags(ios::right) << "Weight: " << setw(12) 
+	   << particle.weight << endl;
+    
+    output << endl;
+}
+
+template<class MT>
+void Particle<MT>::Diagnostic::Print_dead(const Particle<MT> &particle) const
+{
+  // print dead particle (alive = false)
+    output << "Particle is dead." << endl;
+
+  // event
+    output << setw(20) << setiosflags(ios::right) << "Event: " 
+	   << setw(12) << particle.descriptor.c_str() << endl;
+    
+  // coordinates
+    output << setw(20) << setiosflags(ios::right) << " Last Coordinates: ";
+    for (int i = 0; i < particle.r.size(); i++)
+	output << setw(12) << particle.r[i] << " ";
+    output << endl;
+    
+  // direction
+    output << setw(20) << setiosflags(ios::right) << " Last Direction: ";
+    for (int i = 0; i < particle.omega.size(); i++)
+	output << setw(12) << particle.omega[i] << " ";
+    output << endl;
+
+  // cell
+    output << setw(20) << setiosflags(ios::right) << "Last Cell: " 
+	   << setw(12) << particle.cell << endl;
+    
+  // energy
+    output << setw(20) << setiosflags(ios::right) << "Last Energy: "
+	   << setw(12) << particle.energy << endl;
+    
+  // weight
+    output << setw(20) << setiosflags(ios::right) << "Last Weight: " 
+	   << setw(12) << particle.weight << endl;
+
+    output << endl;
+}
 
 CSPACE
 

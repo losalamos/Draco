@@ -26,16 +26,41 @@
 #include "imctest/Names.hh"
 #include "imctest/Random.hh"
 #include "imctest/Opacity.hh"
+#include "ds++/SP.hh"
 #include <vector>
+#include <string>
+#include <iostream>
 
 IMCSPACE
 
 // STL classes used in Particle
 using std::vector;
+using std::string;
+using std::ostream;
 
 template<class MT>
 class Particle
 {
+  // friends and such
+    friend class Diagnostic;
+
+public:
+  // nested diagnostic class
+    class Diagnostic
+    {
+    private:
+      // stream output is sent to
+	ostream &output;
+    public:
+      // constructor
+	Diagnostic(ostream &output_) : output(output_) {}
+
+      // diagnostic print functions
+	void Print(const Particle<MT> &) const;
+	void Print_alive(const Particle<MT> &) const;
+	void Print_dead(const Particle<MT> &) const;
+    };
+	
 private:
   // particle weight
     double weight;
@@ -49,20 +74,26 @@ private:
     int cell;
   // status of particle
     bool alive;
+  // event type descriptor
+    string descriptor;
+
   // random number object
     Random random;
 
   // private particle service functions
 
   // stream a distance d
-    void Stream(double);
+    void Stream(double distance)
+    {
+      // calculate new location
+	for (int i = 0; i <= r.size()-1; i++)
+	    r[i] = r[i] + distance * omega[i];
+    }
+
   // collision, return a false if particle is absorbed
     bool Collide(const MT &, const Opacity<MT> &);
-
-  // private diagnostic functions
-    void Print();
-    void Print_alive();
-    void Print_dead();
+  // surface crossings, return a false if particle escapes
+    bool Surface(const MT &, int);
 
 public:
   // default constructor, explicit to guarantee definition
@@ -70,12 +101,20 @@ public:
     explicit Particle(const MT &, int, double = 0, double = 0);
 
   // transport member functions
-    void Source(vector<double> &,vector<double> &, const MT &);
-    void Transport(const MT &, const Opacity<MT> &);
+    void Source(vector<double> &, vector<double> &, const MT &);
+    void Transport(const MT &, const Opacity<MT> &, 
+		   SP<Diagnostic> = SP<Diagnostic>());
 
   // other services
-    bool Status() { return alive; }
+    bool Status() const { return alive; }
+
+  // public diagnostic services
+    void Print(ostream &) const;
 };
+
+// overloaded functions
+template<class MT>
+ostream& operator<<(ostream &, const Particle<MT> &);
 
 CSPACE
 

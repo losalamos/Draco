@@ -29,18 +29,23 @@
 #include <cstdlib>
 #include <cfloat>
 #include <iomanip>
+#include <cassert>
 
 GLOBALSPACE
 
 using std::ostream;
 using std::vector;
 
+//---------------------------------------------------------------------------//
 // CONSTANTS
+//---------------------------------------------------------------------------//
 const double pi = 2.0 * std::asin(1.0);
 const double huge = DBL_MAX;
 const double epsilon = DBL_EPSILON;
 
+//---------------------------------------------------------------------------//
 // OVERLOADED OPERATORS
+//---------------------------------------------------------------------------//
 // overloaded operator for printing a vector templated on vector type (VT)
 template<class VT>
 inline ostream& operator<<(ostream &output, const vector<VT> &object)
@@ -52,6 +57,19 @@ inline ostream& operator<<(ostream &output, const vector<VT> &object)
     for (int i = 0; i < size; i++)
 	output << setw(5) << i << setw(10) << object[i] << endl;
     return output;
+}
+
+//---------------------------------------------------------------------------//
+// VECTOR FUNCTIONS
+//---------------------------------------------------------------------------//
+// do the DOT product between two vectors
+template<class VT>
+inline VT Dot(vector<VT> A, vector<VT> B)
+{
+    assert (A.size() == B.size());
+    VT value = 0.0;
+    for (int i = 0; i < A.size(); i++)
+	value += A[i] * B[i];
 }
 
 CSPACE

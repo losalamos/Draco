@@ -53,6 +53,7 @@ int OS_Mesh::Get_cell(const vector<double> &r) const
     return return_cell;
 }
 
+//---------------------------------------------------------------------------//
 double OS_Mesh::Get_db(const vector<double> &r, const vector<double> &omega,
 		       int cell, int &face) const
 {
@@ -94,6 +95,9 @@ double OS_Mesh::Get_db(const vector<double> &r, const vector<double> &omega,
     return dist_boundary;
 }
 
+//---------------------------------------------------------------------------//
+// public diagnostic member functions
+//---------------------------------------------------------------------------//
 void OS_Mesh::Print(ostream &output, int cell) const
 {
     using std::cout;
