@@ -324,7 +324,7 @@ void simple_one_cell_RZWedge()
     if (vertices[1].size() != 8) ITFAILS;  // 8 nodes per cell
     if (vertices[2].size() != 8) ITFAILS;  // 8 nodes per cell
 
-    for (int cell_node = 0; cell_node < 4; cell_node++)
+    for (int cell_node = 0; cell_node < 8; cell_node++)
 	for (int dim = 0; dim < 3; dim++)
 	    if (!soft_equiv(vertices[dim][cell_node],
 				ref_vert[dim][cell_node])) ITFAILS; 
