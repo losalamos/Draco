@@ -38,6 +38,12 @@ rel_config_dir := $(shell ( cd ${top_srcdir} ; \
 # get the config directory
 config_dir = $(shell cd ${top_srcdir}/${rel_config_dir}; pwd)
 
+# pkg_config directory
+home_src_dir    = $(shell cd ${config_dir}/..; pwd)
+pkg_config_dir  = ${home_src_dir}/pkg_config
+pkg_config_inc := $(shell if test -d ${pkg_config_dir}; then \
+                    echo "-I ${pkg_config_dir}"; fi)
+
 ##---------------------------------------------------------------------------##
 ## VARIABLES THAT ARE ASSIGNED BY AUTOCONF
 ## These are assigned using "="
@@ -277,7 +283,7 @@ configfiles := $(wildcard ${top_srcdir}/${rel_config_dir}/*.m4) \
 
 configure: 
 	@echo "Rebuilding ${top_srcdir}/aclocal.m4"
-	@cd ${top_srcdir} && aclocal -I ${rel_config_dir}
+	@cd ${top_srcdir} && aclocal -I ${rel_config_dir} ${pkg_config_inc}
 	@echo "Rebuilding ${top_srcdir}/configure"
 	@cd ${top_srcdir} && autoconf
 	@cd ${reldir} && ./config.status --recheck
