@@ -1660,7 +1660,7 @@ fi;
 
    # we use the install script provided with autoconf on all machines
    INSTALL='${config_dir}/install-sh -c'
-   INSTALL_DATA='${INSTALL} -m 444'
+   INSTALL_DATA='${INSTALL} -m 644'
 
 
    # do the correct #defines
@@ -5622,6 +5622,27 @@ echo "${ECHO_T}\"none.\"" >&6
        #
 
        #
+       # setup scalapack
+       #
+
+       echo "$as_me:$LINENO: checking \"for extra scalapack library requirements.\"" >&5
+echo $ECHO_N "checking \"for extra scalapack library requirements.\"... $ECHO_C" >&6
+       if test -n "${vendor_scalapack}"; then
+           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	   extra_scalapack_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           LIBS="${LIBS} ${extra_scalapack_libs}"
+           echo "$as_me:$LINENO: result: \"${extra_scalapack_libs}\"" >&5
+echo "${ECHO_T}\"${extra_scalapack_libs}\"" >&6
+       else
+           echo "$as_me:$LINENO: result: \"none.\"" >&5
+echo "${ECHO_T}\"none.\"" >&6
+       fi
+
+       #
+       # end of eospac
+       #
+
+       #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
        #
        echo "$as_me:$LINENO: checking \"libg2c requirements\"" >&5
@@ -5874,6 +5895,125 @@ echo "${ECHO_T}\"not needed\"" >&6
 
    fi
 
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_hypre}" ; then
+
+       # include path
+       if test -n "${HYPRE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HYPRE_INC}"
+       fi
+
+       # library path
+       if test -n "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       elif test -z "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       fi
+
+       # add HYPRE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HYPRE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HYPRE_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_scalapack}" ; then
+
+       # no includes for scalapack
+
+       # library path
+       if test -n "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -L${SCALAPACK_LIB} -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   fi
+
+       elif test -z "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lscalapack"
+   fi
+
+       fi
+
+       # add SCALAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SCALAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_blacs}" ; then
+
+       # no includes for blacs
+
+       # library path
+       if test -n "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       elif test -z "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       fi
+
+       # add BLACS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
+
+   fi
 
 
 
@@ -6702,6 +6842,125 @@ echo "${ECHO_T}\"not needed\"" >&6
 
    fi
 
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_hypre}" ; then
+
+       # include path
+       if test -n "${HYPRE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HYPRE_INC}"
+       fi
+
+       # library path
+       if test -n "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       elif test -z "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       fi
+
+       # add HYPRE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HYPRE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HYPRE_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_scalapack}" ; then
+
+       # no includes for scalapack
+
+       # library path
+       if test -n "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -L${SCALAPACK_LIB} -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   fi
+
+       elif test -z "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lscalapack"
+   fi
+
+       fi
+
+       # add SCALAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SCALAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_blacs}" ; then
+
+       # no includes for blacs
+
+       # library path
+       if test -n "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       elif test -z "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       fi
+
+       # add BLACS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
+
+   fi
 
 
 
@@ -7629,6 +7888,125 @@ echo "${ECHO_T}\"not needed\"" >&6
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_hypre}" ; then
+
+       # include path
+       if test -n "${HYPRE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HYPRE_INC}"
+       fi
+
+       # library path
+       if test -n "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       elif test -z "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       fi
+
+       # add HYPRE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HYPRE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HYPRE_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_scalapack}" ; then
+
+       # no includes for scalapack
+
+       # library path
+       if test -n "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -L${SCALAPACK_LIB} -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   fi
+
+       elif test -z "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lscalapack"
+   fi
+
+       fi
+
+       # add SCALAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SCALAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_blacs}" ; then
+
+       # no includes for blacs
+
+       # library path
+       if test -n "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       elif test -z "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       fi
+
+       # add BLACS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
+
+   fi
+
+
 
    # set up lapack libraries
    if test -n "${vendor_lapack}"; then
@@ -8496,6 +8874,125 @@ echo "${ECHO_T}\"not needed\"" >&6
 
    fi
 
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_hypre}" ; then
+
+       # include path
+       if test -n "${HYPRE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HYPRE_INC}"
+       fi
+
+       # library path
+       if test -n "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       elif test -z "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       fi
+
+       # add HYPRE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HYPRE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HYPRE_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_scalapack}" ; then
+
+       # no includes for scalapack
+
+       # library path
+       if test -n "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -L${SCALAPACK_LIB} -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   fi
+
+       elif test -z "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lscalapack"
+   fi
+
+       fi
+
+       # add SCALAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SCALAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_blacs}" ; then
+
+       # no includes for blacs
+
+       # library path
+       if test -n "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       elif test -z "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       fi
+
+       # add BLACS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
+
+   fi
 
 
 
@@ -9377,6 +9874,125 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_hypre}" ; then
+
+       # include path
+       if test -n "${HYPRE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HYPRE_INC}"
+       fi
+
+       # library path
+       if test -n "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       elif test -z "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       fi
+
+       # add HYPRE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HYPRE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HYPRE_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_scalapack}" ; then
+
+       # no includes for scalapack
+
+       # library path
+       if test -n "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -L${SCALAPACK_LIB} -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   fi
+
+       elif test -z "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lscalapack"
+   fi
+
+       fi
+
+       # add SCALAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SCALAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_blacs}" ; then
+
+       # no includes for blacs
+
+       # library path
+       if test -n "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       elif test -z "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       fi
+
+       # add BLACS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
+
+   fi
+
+
 
    # set up lapack libraries
    if test -n "${vendor_lapack}"; then
@@ -10142,6 +10758,125 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_hypre}" ; then
+
+       # include path
+       if test -n "${HYPRE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HYPRE_INC}"
+       fi
+
+       # library path
+       if test -n "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       elif test -z "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       fi
+
+       # add HYPRE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HYPRE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HYPRE_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_scalapack}" ; then
+
+       # no includes for scalapack
+
+       # library path
+       if test -n "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -L${SCALAPACK_LIB} -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   fi
+
+       elif test -z "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lscalapack"
+   fi
+
+       fi
+
+       # add SCALAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SCALAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_blacs}" ; then
+
+       # no includes for blacs
+
+       # library path
+       if test -n "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       elif test -z "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       fi
+
+       # add BLACS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
+
+   fi
+
+
 
    # set up lapack libraries
    if test -n "${vendor_lapack}"; then
@@ -10834,6 +11569,7 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
            ;;
        esac
 
+	mpi_libs="-lpmpich $mpi_libs -lz"
 
        #
        # setup lapack
@@ -10946,27 +11682,6 @@ echo "${ECHO_T}\"not needed\"" >&6
 echo "${ECHO_T}\"not needed\"" >&6
        fi
 
-       #
-       # add librt to LIBS if udm is used
-       #
-       echo "$as_me:$LINENO: checking \"librt requirements\"" >&5
-echo $ECHO_N "checking \"librt requirements\"... $ECHO_C" >&6
-       if test -n "${vendor_udm}"; then
-
-	   # Add rt for g++
-	   if test "${CXX}" = g++ ; then
-	       LIBS="${LIBS} -lrt"
-	       echo "$as_me:$LINENO: result: \"-lrt added to LIBS\"" >&5
-echo "${ECHO_T}\"-lrt added to LIBS\"" >&6
-           else
-               echo "$as_me:$LINENO: result: \"not needed\"" >&5
-echo "${ECHO_T}\"not needed\"" >&6
-	   fi
-
-       else
-           echo "$as_me:$LINENO: result: \"not needed\"" >&5
-echo "${ECHO_T}\"not needed\"" >&6
-       fi
 
        #
        # If dlopen is specified, 1) add libdl to LIBS;
@@ -11125,6 +11840,125 @@ echo "${ECHO_T}\"not needed\"" >&6
 
    fi
 
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_hypre}" ; then
+
+       # include path
+       if test -n "${HYPRE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HYPRE_INC}"
+       fi
+
+       # library path
+       if test -n "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       elif test -z "${HYPRE_LIB}" ; then
+
+
+   # vendor_hypre is the vendor_<> tag (equals pkg or test)
+   # -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities are the directories added
+
+   if test "${vendor_hypre}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   elif test "${vendor_hypre}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities"
+   fi
+
+
+       fi
+
+       # add HYPRE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HYPRE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HYPRE_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_scalapack}" ; then
+
+       # no includes for scalapack
+
+       # library path
+       if test -n "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -L${SCALAPACK_LIB} -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SCALAPACK_LIB} -lscalapack"
+   fi
+
+       elif test -z "${SCALAPACK_LIB}" ; then
+
+   # vendor_scalapack is the vendor_<> tag (equals pkg or test)
+   # -lscalapack are the directories added
+
+   if test "${vendor_scalapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lscalapack"
+   elif test "${vendor_scalapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lscalapack"
+   fi
+
+       fi
+
+       # add SCALAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SCALAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_blacs}" ; then
+
+       # no includes for blacs
+
+       # library path
+       if test -n "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       elif test -z "${BLACS_LIB}" ; then
+
+   # vendor_blacs is the vendor_<> tag (equals pkg or test)
+   # -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs are the directories added
+
+   if test "${vendor_blacs}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   elif test "${vendor_blacs}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs"
+   fi
+
+       fi
+
+       # add BLACS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
+
+   fi
 
 
 
