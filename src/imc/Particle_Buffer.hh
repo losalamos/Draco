@@ -155,7 +155,7 @@ class Particle_Buffer
   public:
     // constructor
     template<class MT>
-    Particle_Buffer(const MT &, const rtt_rng::Rnd_Control &); 
+    Particle_Buffer(const MT &, const rtt_rng::Rnd_Control &);  
     Particle_Buffer(int, int, int);
 
     // buffer sizing and accessor functions

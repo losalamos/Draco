@@ -997,7 +997,7 @@ EOF
        has_libdir="yes"
    fi
 
-   for lib in mc rng c4 ds++
+   for lib in matprops mc radphys rng c4 units ds++
    do
        # temporary string to keep line from getting too long
        draco_depends="\${libdir}/lib${lib}\${libsuffix}"

@@ -10,9 +10,11 @@
 #ifndef __imc_test_IMC_Test_hh__
 #define __imc_test_IMC_Test_hh__
 
+#include "../Interface.hh"
 #include "mc/Layout.hh"
 #include "mc/XYCoord_sys.hh"
 #include "mc/OS_Mesh.hh"
+#include "matprops/InterpedMaterialProps.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <vector>
@@ -36,27 +38,30 @@ inline bool fail(int line)
 //===========================================================================//
 // make an interface for a 6 cell mesh
 
-class IMC_Interface
+class IMC_Interface : public rtt_imc::Interface
 {
-    typedef std::vector<std::vector<double> > vec_double;
-    typedef std::vector<std::string> vec_string;
+    typedef std::vector<int> vi;
+    typedef std::vector<double> vd;
+    typedef std::vector<std::string> vs;
+    typedef std::vector<std::vector<double> > vvd;
+    typedef dsxx::SP<rtt_matprops::InterpedMaterialProps> SP_Matprop;
    
   private:
     // Mesh data
     std::string coord;
-    vec_double fine_edge;
-    vec_string bnd;
+    vvd         fine_edge;
+    vs          bnd;
     
     // data for the Opacity and Mat_State
-    std::vector<double> density;
-    std::vector<double> kappa;
-    std::vector<double> kappa_thomson;
-    std::vector<double> temperature;
-    std::vector<double> specific_heat;
-    double              implicitness;
-    double              delta_t;
-    std::string         analytic_opacity;
-    std::string         analytic_sp_heat;
+    vd          density;
+    vd          kappa;
+    vd          kappa_thomson;
+    vd          temperature;
+    vd          specific_heat;
+    double      implicitness;
+    double      delta_t;
+    std::string analytic_opacity;
+    std::string analytic_sp_heat;
 
   public:
     // constructor
@@ -64,28 +69,39 @@ class IMC_Interface
 
     // public copy functions for Mesh
     std::string get_coordinates() const {return coord;}
-    vec_double get_fine_edge() const {return fine_edge;} 
-    vec_string get_boundaries() const {return bnd;}
+    vvd get_fine_edge() const {return fine_edge;} 
+    vs get_boundaries() const {return bnd;}
     
     // public copy functions for Opacity<MT>
-    std::vector<double> get_density() const {return density;}
-    std::vector<double> get_kappa() const {return kappa;}
-    std::vector<double> get_kappa_thomson() const {return kappa_thomson;}
-    std::vector<double> get_specific_heat() const {return specific_heat;}
-    std::vector<double> get_temperature() const {return temperature;}
-    std::string get_analytic_opacity() const { return analytic_opacity; }
-    std::string get_analytic_sp_heat() const { return analytic_sp_heat; }
+    vd get_density() const {return density;}
+    vd get_kappa() const {return kappa;}
+    vd get_kappa_thomson() const {return kappa_thomson;}
+    vd get_specific_heat() const {return specific_heat;}
+    vd get_temperature() const {return temperature;}
+    inline std::string get_analytic_opacity() const;
+    inline std::string get_analytic_sp_heat() const;
 
     // accessor function to get implicitness factor (Fleck's alpha)
     double get_implicit() const { return implicitness; }
 
     // public copy functions for Source_Init<MT>
     double get_delta_t() const { return delta_t; }
+
+    // material data for file access
+    vi get_material_id() const { return vi(); }
+    SP_Matprop get_matprops() const { return SP_Matprop(); }
+
+    // source interfaces
+    double get_rad_s_tend() const { return double(); }
+    vd get_rad_temp() const { return vd(); }
+    int get_npmax() const { return int(); }
+    int get_npnom() const { return int(); }
+    double get_dnpdt() const { return double(); }
 };
 
 // constructor
 IMC_Interface::IMC_Interface()
-    :  coord("xy"), fine_edge(2), bnd(4),
+    :  rtt_imc::Interface(), coord("xy"), fine_edge(2), bnd(4),
        density(6), kappa(6), kappa_thomson(6), temperature(6),
        specific_heat(6), implicitness(1.0), delta_t(.001),
        analytic_opacity("straight"), analytic_sp_heat("straight")
@@ -133,6 +149,17 @@ IMC_Interface::IMC_Interface()
 	temperature[i]   = 10;
 	temperature[i+3] = 20;
     }
+}
+
+
+std::string IMC_Interface::get_analytic_opacity() const 
+{ 
+    return analytic_opacity;
+}
+
+std::string IMC_Interface::get_analytic_sp_heat() const 
+{ 
+    return analytic_sp_heat; 
 }
 
 } // end namespace rtt_imc_test

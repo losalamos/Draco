@@ -725,7 +725,6 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
     Check (census->size() == ncentot);
 
     Ensure (fabs(ecencheck + eloss_cen - ecentot) <= 1.0e-6 * ecentot);
-
 }
 
 //---------------------------------------------------------------------------//
