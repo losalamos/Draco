@@ -70,7 +70,7 @@ std::string tGandolfFile::runTest()
 	{
 	    spGF = new rtt_cdi_gandolf::GandolfFile( op_data_file );
 	}
-    catch ( rtt_cdi_gandolf::gmatidsException GandError )
+    catch ( const rtt_cdi_gandolf::gmatidsException& GandError )
 	{
 	    fail() << std::endl << "\t" << GandError.errorSummary();
 	    return "Some tests failed.";

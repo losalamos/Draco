@@ -97,7 +97,7 @@ namespace rtt_gandolf_with_cdi_test
 		{
 		    spGFAnalytic = new rtt_cdi_gandolf::GandolfFile( op_data_file ); 
 		}
-	    catch ( rtt_cdi_gandolf::gmatidsException GandError)
+	    catch ( const rtt_cdi_gandolf::gmatidsException& GandError)
 		{
 		    fail() << std::endl << "\t" << GandError.errorSummary();
 		    return "Unable to instantiate GandolfFile object spGFAnalytic.  Test sequence aborted.";
@@ -129,7 +129,7 @@ namespace rtt_gandolf_with_cdi_test
 			    rtt_cdi::Rosseland,         // enumeration
 			    rtt_cdi::Absorption );      // enumeration
 		}
-	    catch ( rtt_cdi_gandolf::GandolfException GandError )
+	    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 		// Alternatively, we could use:
 		// catch ( rtt_cdi_gandolf::gkeysException GandError )
 		// catch ( rtt_cdi_gandolf::gchgridsException GandError )
@@ -222,7 +222,7 @@ namespace rtt_gandolf_with_cdi_test
 			    rtt_cdi::Rosseland,         // enumeration
 			    rtt_cdi::Absorption );      // enumeration
 		}
-	    catch ( rtt_cdi_gandolf::GandolfException GandError )
+	    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 		// Alternatively, we could use:
 		// catch ( rtt_cdi_gandolf::gkeysException GandError )
 		// catch ( rtt_cdi_gandolf::gchgridsException GandError )

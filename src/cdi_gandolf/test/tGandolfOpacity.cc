@@ -85,7 +85,7 @@ std::string tGandolfOpacity::runTest()
 	{
 	    spGFABC = new rtt_cdi_gandolf::GandolfFile( op_data_file ); 
 	}
-    catch ( rtt_cdi_gandolf::GandolfException GandError )
+    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 	{
 	    fail() << std::endl << "\t" << GandError.errorSummary();
 	    return "Unable to create GanolfFile object. Test sequence aborted.";
@@ -125,7 +125,7 @@ std::string tGandolfOpacity::runTest()
 	    spOp_Al_rgt = new rtt_cdi_gandolf::GandolfGrayOpacity( 
 		spGFABC, matid,	rtt_cdi::Rosseland, rtt_cdi::Total );
 	}
-    catch ( rtt_cdi_gandolf::GandolfException GandError )
+    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 	// Alternatively, we could use:
 	// catch ( rtt_cdi_gandolf::gkeysException GandError )
 	// catch ( rtt_cdi_gandolf::gchgridsException GandError )
@@ -170,7 +170,7 @@ std::string tGandolfOpacity::runTest()
 		rtt_cdi::Rosseland, 
 		rtt_cdi::Total );
 	}
-    catch ( rtt_cdi_gandolf::GandolfException GandError )
+    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 	{
 	    fail() << "Failed to create SP to new GandolfOpacity object for "
 		   << "Al_BeCu.ipcress data."
@@ -262,7 +262,7 @@ std::string tGandolfOpacity::runTest()
 	 {
 	     spGFAnalytic = new rtt_cdi_gandolf::GandolfFile( op_data_file ); 
 	 }
-     catch ( rtt_cdi_gandolf::gmatidsException GandError)
+     catch ( const rtt_cdi_gandolf::gmatidsException& GandError)
 	 {
 	     fail() << std::endl << "\t" << GandError.errorSummary();
 	     return "Unable to instantiate GandolfFile object spGFAnalytic.  Test sequence aborted.";
@@ -299,7 +299,7 @@ std::string tGandolfOpacity::runTest()
 		     rtt_cdi::Rosseland,
 		     rtt_cdi::Absorption );
 	 }
-      catch ( rtt_cdi_gandolf::GandolfException GandError )
+      catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 	  // Alternatively, we could use:
 	  // catch ( rtt_cdi_gandolf::gkeysException GandError )
 	  // catch ( rtt_cdi_gandolf::gchgridsException GandError )
@@ -342,7 +342,7 @@ std::string tGandolfOpacity::runTest()
 		    matid, 
 		    rtt_cdi::Rosseland,
 		    rtt_cdi::Absorption );
-      } catch ( rtt_cdi_gandolf::GandolfException GandError ) {
+      } catch ( const rtt_cdi_gandolf::GandolfException& GandError ) {
 	  fail() << "Failed to create SP to new GandolfOpacity object for "
 		 << "Al_BeCu.ipcress data." << std::endl << "\t" << GandError.errorSummary();
 	  return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
@@ -394,7 +394,7 @@ std::string tGandolfOpacity::runTest()
 		    matid, 
 		    rtt_cdi::Plank,
 		    rtt_cdi::Total );
-      } catch ( rtt_cdi_gandolf::GandolfException GandError ) {
+      } catch ( const rtt_cdi_gandolf::GandolfException& GandError ) {
 	  fail() << "Failed to create SP to new GandolfOpacity object for "
 		 << "Al_BeCu.ipcress data." << std::endl << "\t" << GandError.errorSummary();
 	  return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
@@ -428,7 +428,7 @@ std::string tGandolfOpacity::runTest()
 		    matid,
 		    rtt_cdi::Plank,
 		    rtt_cdi::Total ); 
-      } catch ( rtt_cdi_gandolf::GandolfException GandError ) {
+      } catch ( const rtt_cdi_gandolf::GandolfException& GandError ) {
 	  fail() << "Failed to create SP to new GandolfOpacity object for "
 		 << "Al_BeCu.ipcress data." << std::endl << "\t" 
 		 << GandError.errorSummary();
@@ -681,7 +681,7 @@ std::string tGandolfOpacity::runTest()
 		     rtt_cdi::Rosseland,
 		     rtt_cdi::Absorption );
 	 }
-     catch ( rtt_cdi_gandolf::GandolfException GandError )
+     catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 	 {
 	     fail() << "Failed to create SP to new GandolfGrayOpacity object for "
 		    << "\n\tAl_BeCu.ipcress data (SP not templated on cdi/GrayOpacity)."
@@ -855,7 +855,7 @@ std::string tGandolfOpacity::runTest()
 		     rtt_cdi::Rosseland,
 		     rtt_cdi::Absorption );
 	 }
-     catch ( rtt_cdi_gandolf::GandolfException GandError )
+     catch ( const rtt_cdi_gandolf::GandolfException& GandError )
 	 {
 	     fail() << "Failed to create SP to new GandolfGrayOpacity object for \n\t"
 		    << "Al_BeCu.ipcress data (SP not templated on cdi/GrayOpacity)."

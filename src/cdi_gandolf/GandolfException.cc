@@ -20,33 +20,33 @@ namespace rtt_cdi_gandolf
 // GandolfException exception instead of an exception for a specific
 // Gandolf function.  
 
-std::string GandolfException::errorMessage()
+std::string GandolfException::errorMessage() const
     {
 	std::string s1;
 	if ( gandolfFunctionName == "gkeys" )
 	    {
-		gkeysException gerr( errorCode );
-		return gerr.errorMessage();
+		gkeysException GandError( errorCode );
+		return GandError.errorMessage();
 	    }
 	else if ( gandolfFunctionName == "gchgrids" )
 	    {
-		gchgridsException gerr ( errorCode );
-		return gerr.errorMessage();
+		gchgridsException GandError ( errorCode );
+		return GandError.errorMessage();
 	    }
 	else if ( gandolfFunctionName == "ggetgray" )
 	    {
-		ggetgrayException gerr ( errorCode );
-		return gerr.errorMessage();
+		ggetgrayException GandError ( errorCode );
+		return GandError.errorMessage();
 	    }
 	else if ( gandolfFunctionName == "ggetmg" )
 	    {
-		ggetmgException gerr ( errorCode );
-		return gerr.errorMessage();
+		ggetmgException GandError ( errorCode );
+		return GandError.errorMessage();
 	    }
 	else if ( gandolfFunctionName == "gmatids" )
 	    {
-		gmatidsException gerr ( errorCode );
-		return gerr.errorMessage();
+		gmatidsException GandError ( errorCode );
+		return GandError.errorMessage();
 	    }
 	else
 	    {	
@@ -55,7 +55,7 @@ std::string GandolfException::errorMessage()
 	    }
     } // end of GandolfException::errorMessage();
 
-std::string GandolfException::errorSummary()
+std::string GandolfException::errorSummary() const
     {
 	std::ostringstream outputString;
 	outputString << "The Gandolf function named \""
@@ -73,13 +73,13 @@ std::string GandolfException::errorSummary()
 // gkeys Exception Class //
 // --------------------- //
 
-gkeysException::gkeysException( int in_errorCode )
-    : GandolfException( "gkeys", in_errorCode)
+gkeysException::gkeysException( int errorCode )
+    : GandolfException( "gkeys", errorCode)
     {
 	// empty
     }
 
-std::string gkeysException::errorMessage()
+std::string gkeysException::errorMessage() const
     {
 	switch ( errorCode ) {
  	case 0: // no errors
@@ -107,13 +107,13 @@ std::string gkeysException::errorMessage()
 // gchgrids Exception Class //
 // ------------------------ //
 
-gchgridsException::gchgridsException( int in_errorCode )
-    : GandolfException( "gchgrids", in_errorCode)
+gchgridsException::gchgridsException( int errorCode )
+    : GandolfException( "gchgrids", errorCode)
     {
 	// empty
     }
 
-std::string gchgridsException::errorMessage()
+std::string gchgridsException::errorMessage() const
     {
 	switch ( errorCode ) {
  	case 0: // no errors
@@ -144,13 +144,13 @@ std::string gchgridsException::errorMessage()
 // ggetgray Exception Class //
 // ------------------------ //
 
-ggetgrayException::ggetgrayException( int in_errorCode )
-    : GandolfException( "ggetgray", in_errorCode)
+ggetgrayException::ggetgrayException( int errorCode )
+    : GandolfException( "ggetgray", errorCode)
     {
 	// empty
     }
 
-std::string ggetgrayException::errorMessage()
+std::string ggetgrayException::errorMessage() const
     {
 	switch ( errorCode ) {
  	case 0: // no errors
@@ -180,13 +180,13 @@ std::string ggetgrayException::errorMessage()
 // ggetmg Exception Class //
 // ---------------------- //
 
-ggetmgException::ggetmgException( int in_errorCode )
-    : GandolfException( "ggetmg", in_errorCode)
+ggetmgException::ggetmgException( int errorCode )
+    : GandolfException( "ggetmg", errorCode)
     {
 	// empty
     }
 
-std::string ggetmgException::errorMessage()
+std::string ggetmgException::errorMessage() const
     {
 	switch ( errorCode ) {
  	case 0: // no errors
@@ -210,17 +210,17 @@ std::string ggetmgException::errorMessage()
 	}
     }
 
-// ---------------------- //
+// ----------------------- //
 // gmatids Exception Class //
-// ---------------------- //
+// ----------------------- //
 
-gmatidsException::gmatidsException( int in_errorCode )
-    : GandolfException( "gmatids", in_errorCode)
+gmatidsException::gmatidsException( int errorCode )
+    : GandolfException( "gmatids", errorCode)
     {
 	// empty
     }
 
-std::string gmatidsException::errorMessage()
+std::string gmatidsException::errorMessage() const
     {
 	switch ( errorCode ) {
  	case 0: // no errors
