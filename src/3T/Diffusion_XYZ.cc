@@ -131,7 +131,7 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
     // Here comes a pig face.    (With appologies to Dr. Seus :-).
     }
 
-    print2_Mat( A, "A" );
+//     print2_Mat( A, "A" );
 
 // Now solve the matrix equation A.x = rhs.
 
