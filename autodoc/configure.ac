@@ -1,5 +1,5 @@
 dnl-------------------------------------------------------------------------dnl
-dnl draco/src/autodoc configure.in
+dnl draco/autodoc configure.in
 dnl Thomas M. Evans
 dnl Fri Sep  3 13:04:05 1999
 dnl $Id$
@@ -65,5 +65,5 @@ AC_CONFIG_FILES([Makefile doxygen_config header.html footer.html mainpage.dcc])
 AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl
-dnl			 end of draco/src/autodoc configure.in
+dnl			 end of draco/autodoc configure.in
 dnl-------------------------------------------------------------------------dnl
