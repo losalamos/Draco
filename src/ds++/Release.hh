@@ -16,7 +16,7 @@
 
 //===========================================================================//
 /*!
- * \page ds++-overview Overview of the Data Structures in C++ (DS++) Package
+ * \mainpage Overview of the Data Structures in C++ (DS++) Package
  * \author Tom Evans, Kelly Thompson, Todd Urbatsch
  * \version 1_9_0
  *

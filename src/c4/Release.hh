@@ -15,7 +15,7 @@
 //===========================================================================//
 /*!
  *
- * \page c4_overview Overview of the C4 package
+ * \mainpage Overview of the C4 package
  * \version 2_3_0
  * \author Tom Evans, Todd Urbatsch, Geoff Furnish
 

@@ -14,7 +14,7 @@
 
 //===========================================================================//
 /*!
- * \page cdi_overview Overview of the cdi package
+ * \mainpage Overview of the cdi package
  * \version 1_1_0
  * \author Kelly Thompson and Tom Evans
  * 
