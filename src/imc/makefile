@@ -22,8 +22,8 @@ include ../config/makefile
 nonsrc  = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Interface.cc Random.cc \
           Coord_sys.cc
 
-tempsrc = Mat_State.pt.cc Opacity_Builder.pt.cc Opacity.pt.cc \
-          Particle.pt.cc
+tempsrc = 
+          
 
 libsrcs = $(nonsrc) $(tempsrc)
 

@@ -37,6 +37,16 @@ const double pi = 2.0 * std::asin(1.0);
 const double huge = DBL_MAX;
 const double epsilon = DBL_EPSILON;
 
+//---------------------------------------------------------------------------//
+// Physical constants
+//---------------------------------------------------------------------------//
+// radiation constant
+const double a = 0.01372
+
+// speed of light (m/s)
+const double c = 2.99792458e8;
+
+
 CSPACE
 CSPACE
 

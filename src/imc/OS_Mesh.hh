@@ -163,10 +163,12 @@ public:
     { 
 	return *min_element(vertex[d-1].begin(), vertex[d-1].end()); 
     }
+
     double End(int d) const 
     {
 	return *max_element(vertex[d-1].begin(), vertex[d-1].end()); 
     }
+
     int Num_cells() const { return layout.Num_cells(); }
 
   // cell dimensionality functions
@@ -224,6 +226,18 @@ public:
 
   // find the width along dimension of cell
     double Dim(int d, int cell) const { return Max(d, cell) - Min(d, cell); }
+
+  // calculate volume of cell
+    double Volume(int cell) const 
+    {
+      // loop through dimensions and get volume
+	double volume = 1.0;
+	for (int d = 1; d <= coord.Get_dim(); d++)
+	    volume *= Dim(d, cell);
+
+      // return volume
+	return volume;
+    }
 
   // diagnostic functions
     void Print(ostream &, int) const;
