@@ -26,13 +26,13 @@ void stall_node()
 void t1()
 {
     gsync();
-#if 0
+
     if (mynode == 0) {
 	int x[4];
 	for( int i=0; i < 4; i++ )
 	    x[i] = i;
 
-	Send( &x, 4*sizeof(int), 1, 1 );
+	Send( &x[0], 4, 1 );
     }		
 
     gsync();
@@ -46,7 +46,7 @@ void t1()
 
     if (mynode == 1) {
 	int x[4];
-	Recv( &x, 4*sizeof(int), 0, 1 );
+	Recv( &x[0], 4, 0 );
 
 	cout << "1 got the message.\n" << flush;
 
@@ -59,7 +59,7 @@ void t1()
 	else
 	    cout << "\t\t >> t1 succeeded <<\n" << flush;
     }
-#endif
+
 // By this point the inbox should be empty, and the msg_queues empty.
 
     gsync();
@@ -72,7 +72,7 @@ void t1()
 void t2()
 {
     gsync();
-#if 0
+
 // At this point, pe_ready[1] on node 0 should be 1.
 
     if (mynode == 0) {
@@ -81,10 +81,10 @@ void t2()
 	int x1[4] = {0,1,2,3};
 	int x2[4] = {4,5,6,7};
 
-	Send( &x1, sizeof(x1), 1, 1 );
+	Send( &x1[0], 4, 1, 1 );
 	cout << "msg1 sent.\n" << flush;
 
-	Send( &x2, sizeof(x2), 1, 2 );
+	Send( &x2[0], 4, 1, 2 );
 	cout << "msg2 sent.\n" << flush;
     }
     if (mynode == 1) {
@@ -92,10 +92,10 @@ void t2()
 
 	int x1[4], x2[4];
 
-	Recv( &x2, sizeof(x2), 0, 2 );
+	Recv( &x2[0], 4, 0, 2 );
 	cout << "msg2 recv'd.\n" << flush;
 
-	Recv( &x1, sizeof(x1), 0, 1 );
+	Recv( &x1[0], 4, 0, 1 );
 	cout << "msg1 recv'd.\n" << flush;
 
     // Now validate data.
@@ -117,7 +117,7 @@ void t2()
 	} else
 	    cout << "\t\t >> t2 succeeded <<\n" << flush;
     }
-#endif
+
     gsync();
 }
 
@@ -128,7 +128,7 @@ void t2()
 void t3()
 {
     gsync();
-#if 0
+
     int x[4];
     {
 	C4_Req r;
@@ -137,7 +137,8 @@ void t3()
 	    for( int i=0; i < 4; i++ )
 		x[i] = i;
 
-	    r = SendAsync( (void *) &x[0], 4*sizeof(int), 1, 47 );
+// 	    r = SendAsync( (void *) &x[0], 4*sizeof(int), 1, 47 );
+	    r = SendAsync( &x[0], 4, 1 );
 
 	    cout << "0: msg sent to node 1.\n" << flush;
 	}
@@ -145,7 +146,8 @@ void t3()
 	gsync();
 
 	if (mynode == 1) {
-	    Recv( (void *) x, 4*sizeof(int), 0, 47 );
+// 	    Recv( (void *) x, 4*sizeof(int), 0, 47 );
+	    Recv( &x[0], 4, 0 );
 
 	    cout << "1: msg recv'd.\n" << flush;
 	}
@@ -167,7 +169,6 @@ void t3()
 	else
 	    cout << "\t\t >> t3 succeeded <<\n" << flush;
     }
-#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -177,7 +178,7 @@ void t3()
 void t4()
 {
     gsync();
-#if 0
+
     int x[4];
     {
 	C4_Req r;
@@ -186,7 +187,7 @@ void t4()
 	    for( int i=0; i < 4; i++ )
 		x[i] = i;
 
-	    Send( (void *) &x[0], 4*sizeof(int), 1, 47 );
+	    Send( &x[0], 4, 1, 47 );
 
 	    cout << "0: msg sent to node 1.\n" << flush;
 	}
@@ -197,7 +198,7 @@ void t4()
 	// In this case, the send will have gone straight to the inbox, so
 	// this should complete immediately.
 
-	    r = RecvAsync( (void *) x, 4*sizeof(int), 0, 47 );
+	    r = RecvAsync( x, 4, 0, 47 );
 
 	    cout << "1: msg recv posted.\n" << flush;
 	}
@@ -219,7 +220,6 @@ void t4()
 	else
 	    cout << "\t\t >> t4 succeeded <<\n" << flush;
     }
-#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -229,7 +229,7 @@ void t4()
 void t5()
 {
     gsync();
-#if 0
+
     int x[4];
     {
 	C4_Req r;
@@ -238,7 +238,7 @@ void t5()
 	    for( int i=0; i < 4; i++ )
 		x[i] = i;
 
-	    Send( (void *) &x[0], 4*sizeof(int), 1, 47 );
+	    Send( x, 4, 1, 47 );
 	    Send( x[0], 1 );
 
 	    cout << "0: msg sent to node 1.\n" << flush;
@@ -247,7 +247,7 @@ void t5()
 	if (mynode == 1) {
 	    Recv( x[0], 0 );
 	// This should've forced the desired message onto the msg_queue.
-	    r = RecvAsync( (void *) x, 4*sizeof(int), 0, 47 );
+	    r = RecvAsync( x, 4, 0, 47 );
 
 	    cout << "1: msg recv posted.\n" << flush;
 	}
@@ -270,7 +270,6 @@ void t5()
 	else
 	    cout << "\t\t >> t5 succeeded <<\n" << flush;
     }
-#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -281,13 +280,13 @@ void t5()
 void t6()
 {
     gsync();
-#if 0
+
     int x[4];
     {
 	C4_Req r;
 
 	if (mynode == 1) {
-	    r = RecvAsync( (void *) x, 4*sizeof(int), 0, 47 );
+	    r = RecvAsync( x, 4, 0, 47 );
 	    cout << "1: posted async recv\n";
 	}
 
@@ -299,7 +298,7 @@ void t6()
 	    for( int i=0; i < 4; i++ )
 		x[i] = i;
 
-	    Send( (void *) &x[0], 4*sizeof(int), 1, 47 );
+	    Send( &x[0], 4, 1, 47 );
 
 	    cout << "0: msg sent to node 1.\n" << flush;
 	}
@@ -329,7 +328,6 @@ void t6()
 	else
 	    cout << "\t\t >> t6 succeeded <<\n" << flush;
     }
-#endif
 }
 
 //---------------------------------------------------------------------------//
