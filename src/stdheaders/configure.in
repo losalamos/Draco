@@ -20,13 +20,13 @@ dnl AC_PCGLIB_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(ds++)
+dnl AC_NEEDS_LIBS(ds++)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
 
-AC_OUTPUT(Makefile:../../config/Makefile.package.in \
-          test/Makefile:../../config/Makefile.test.in)
+AC_OUTPUT(Makefile:../../config/Makefile.package.in)
+          
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/stdheaders configure.in

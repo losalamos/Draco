@@ -1,0 +1,158 @@
+/** -*- C++ -*-
+ **
+ **  KAI C++ Compiler
+ **
+ **  Copyright (C) 1996-1997, Kuck & Associates, Inc. All rights reserved.
+ **/
+#ifndef __KAI_CMATH
+#define __KAI_CMATH
+
+#include <mcompile.h>
+#include <math.h>
+
+// It is a bit inconsistent to have abs properly defined in std, 
+// and the other functions imported from the global namespace.
+// But abs for floating types is not at all part of ANSI C, 
+// and defining it for floating types could conceivably lead to trouble.
+// There are still issues to resolve with putting the math functions
+// truly in namespace std and still allowing existing codes to compile.
+namespace std {
+#if defined(__hpux) && !defined(__hpux_11) && !defined(_HITACHI_SR2201) /* HP defines ::abs in their <math.h> */
+using ::abs;
+#else 
+inline double abs( double x ) {return ::fabs(x);}
+#endif /*__hpux*/
+}
+
+#if defined(_AIX)||defined(__sparc)||(defined(cray) && !defined(_CRAYMPP))||defined(__linux)||defined(__sun)||defined(_HITACHI_SR2201)||defined(__SR8000)
+namespace std {
+inline float abs  (float x) {return fabs((double)x);}
+}
+inline float fabs (float x) {return fabs((double)x);}
+inline float sin  (float x) {return sin((double)x);}
+inline float cos  (float x) {return cos((double)x);}
+inline float tan  (float x) {return tan((double)x);}
+inline float exp  (float x) {return exp((double)x);}
+inline float log  (float x) {return log((double)x);}
+inline float sqrt (const float x) {return sqrt((double)x);}
+inline float asin (float x) {return asin((double)x);}
+inline float acos (float x) {return acos((double)x);}
+inline float sinh (float x) {return sinh((double)x);}
+inline float cosh (float x) {return cosh((double)x);}
+inline float tanh (float x) {return tanh((double)x);}
+inline float atan (float x) {return atan((double)x);}
+inline float log10 (float x) {return log10((double)x);}
+inline float pow  (float x, float y) {return pow((double)x,(double)y);}
+inline float atan2 (float x, float y) {return atan2((double)x,(double)y);}
+#else
+namespace std {
+inline float abs  (float x) {return fabsf(x);}
+}
+inline float fabs (float x) {return fabsf(x);}
+inline float sin  (float x) {return sinf(x);}
+inline float cos  (float x) {return cosf(x);}
+inline float tan  (float x) {return tanf(x);}
+inline float exp  (float x) {return expf(x);}
+inline float log  (float x) {return logf(x);}
+inline float sqrt (const float x) {return sqrtf(x);}
+inline float asin (float x) {return asinf(x);}
+inline float acos (float x) {return acosf(x);}
+inline float sinh (float x) {return sinhf(x);}
+inline float cosh (float x) {return coshf(x);}
+inline float tanh (float x) {return tanhf(x);}
+inline float atan (float x) {return atanf(x);}
+inline float log10 (float x) {return log10f(x);}
+inline float pow  (float x, float y) {return powf(x,y);}
+inline float atan2 (float x, float y) {return atan2f(x,y);}
+#endif
+
+#if defined(cray) || (defined(__sgi) && !defined(_CFE)) || defined(__sparc) || defined(__i386)
+#ifdef __sgi
+// SGI headers lie - their library calls it fabsl, not absl. 
+extern "C" {
+    long double fabsl(long double);
+    long double sinl(long double);
+    long double cosl(long double);
+    long double tanl(long double);
+    long double expl(long double);
+    long double logl(long double);
+    long double sqrtl(long double);
+    long double asinl(long double);
+    long double acosl(long double);
+    long double sinhl(long double);
+    long double coshl(long double);
+    long double tanhl(long double);
+    long double atanl(long double);
+    long double log10l(long double);
+    long double powl(long double, long double);
+    long double atan2l(long double, long double);
+}
+#endif /* __sgi */
+namespace std {
+inline long double abs (long double x) {return fabsl(x);}
+}
+inline long double fabs (long double x) {return fabsl(x);}
+inline long double sin  (long double x) {return sinl(x);}
+inline long double cos  (long double x) {return cosl(x);}
+inline long double tan  (long double x) {return tanl(x);}
+inline long double exp  (long double x) {return expl(x);}
+inline long double log  (long double x) {return logl(x);}
+inline long double sqrt (long double x) {return sqrtl(x);}
+inline long double asin (long double x) {return asinl(x);}
+inline long double acos (long double x) {return acosl(x);}
+inline long double sinh (long double x) {return sinhl(x);}
+inline long double cosh (long double x) {return coshl(x);}
+inline long double tanh (long double x) {return tanhl(x);}
+inline long double atan (long double x) {return atanl(x);}
+inline long double log10(long double x) {return log10l(x);}
+inline long double pow  (long double x, long double y) {return powl(x,y);}
+inline long double atan2(long double x, long double y) {return atan2l(x,y);}
+#else 
+/* Platforms without true long double */
+namespace std {
+inline long double abs  (long double x) {return x>=0 ? x : -x;}
+}
+inline long double fabs (long double x) {return x>=0 ? x : -x;}
+inline long double sin  (long double x) {return sin((double)x);}
+inline long double cos  (long double x) {return cos((double)x);}
+inline long double tan  (long double x) {return tan((double)x);}
+inline long double exp  (long double x) {return exp((double)x);}
+inline long double log  (long double x) {return log((double)x);}
+inline long double sqrt (long double x) {return sqrt((double)x);}
+inline long double asin (long double x) {return asin((double)x);}
+inline long double acos (long double x) {return acos((double)x);}
+inline long double sinh (long double x) {return sinh((double)x);}
+inline long double cosh (long double x) {return cosh((double)x);}
+inline long double tanh (long double x) {return tanh((double)x);}
+inline long double atan (long double x) {return atan((double)x);}
+inline long double log10 (long double x) {return log10((double)x);}
+inline long double pow   (long double x, long double y) {return pow((double)x,(double)y);}
+inline long double atan2 (long double x, long double y) {return atan2((double)x,(double)y);}
+#endif /* Whether platform has true long double or not */
+
+namespace std {
+using ::acos;
+using ::asin;
+using ::atan;
+using ::atan2;
+using ::cos;
+using ::sin;
+using ::tan;
+using ::cosh;
+using ::sinh;
+using ::tanh;
+using ::exp;
+using ::frexp;
+using ::ldexp;
+using ::log;
+using ::log10;
+using ::modf;
+using ::pow;
+using ::sqrt;
+using ::ceil;
+using ::fabs;
+using ::floor;
+using ::fmod;
+}  /* namespace std */
+
+#endif /* __KAI_CMATH */
