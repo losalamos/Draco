@@ -12,6 +12,8 @@
 #ifndef __<spkg>_<class>_t_hh__
 #define __<spkg>_<class>_t_hh__
 
+#include "<basename>.hh"
+
 namespace rtt_<spkg>
 {
 
