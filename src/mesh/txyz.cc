@@ -231,6 +231,15 @@ int main( int argc, char *argv[] )
     }
 
     {
+        Mesh_XYZ::fcdsf oneFC( spm );
+        oneFC = 1.0;
+        Mesh_XYZ::vcsf threeVC( spm );
+        threeVC = 0.0;
+        Mesh_XYZ::scatter ( threeVC, oneFC, Mesh_XYZ::OpAddAssign() );
+        //dump( threeVC, "threeVC, after" );
+    }
+
+    {
         Mesh_XYZ::ncsf eightNC( spm );
         eightNC = 0.0;
         Mesh_XYZ::vcsf oneVC( spm );

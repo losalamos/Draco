@@ -779,6 +779,9 @@ class Mesh_XYZ : private XYZ_Mapper
     static void scatter( fcdtf<T1>& to, const vctf<T2>& from, const Op& op );
 
     template <class T1, class T2, class Op>
+    static void scatter( vctf<T1>& to, const fcdtf<T2>& from, const Op& op );
+
+    template <class T1, class T2, class Op>
     static void scatter( nctf<T1>& to, const vctf<T2>& from, const Op& op );
 
     template <class T1, class T2, class Op>

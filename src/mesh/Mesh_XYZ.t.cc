@@ -672,26 +672,74 @@ void Mesh_XYZ::scatter
           op(to(i,j,k,0), from(i,j,k,2));
           op(to(i,j,k,0), from(i,j,k,4));
           op(to(i,j,k,0), from(i,j,k,6));
+
           op(to(i,j,k,1), from(i,j,k,1));
           op(to(i,j,k,1), from(i,j,k,3));
           op(to(i,j,k,1), from(i,j,k,5));
           op(to(i,j,k,1), from(i,j,k,7));
+
           op(to(i,j,k,2), from(i,j,k,0));
           op(to(i,j,k,2), from(i,j,k,1));
           op(to(i,j,k,2), from(i,j,k,4));
           op(to(i,j,k,2), from(i,j,k,5));
+
           op(to(i,j,k,3), from(i,j,k,2));
           op(to(i,j,k,3), from(i,j,k,3));
           op(to(i,j,k,3), from(i,j,k,6));
           op(to(i,j,k,3), from(i,j,k,7));
+
           op(to(i,j,k,4), from(i,j,k,0));
           op(to(i,j,k,4), from(i,j,k,1));
           op(to(i,j,k,4), from(i,j,k,2));
           op(to(i,j,k,4), from(i,j,k,3));
+
           op(to(i,j,k,5), from(i,j,k,4));
           op(to(i,j,k,5), from(i,j,k,5));
           op(to(i,j,k,5), from(i,j,k,6));
           op(to(i,j,k,5), from(i,j,k,7));
+        }  
+}
+
+template <class T1, class T2, class Op> 
+void Mesh_XYZ::scatter
+( Mesh_XYZ::vctf<T1>& to, const Mesh_XYZ::fcdtf<T2>& from, const Op& op )
+{
+    for ( int i = 0; i < to.ncx; ++i )
+      for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+        {
+          op(to(i,j,k,0), from(i,j,k,0));
+          op(to(i,j,k,0), from(i,j,k,2));
+          op(to(i,j,k,0), from(i,j,k,4));
+
+          op(to(i,j,k,1), from(i,j,k,1));
+          op(to(i,j,k,1), from(i,j,k,2));
+          op(to(i,j,k,1), from(i,j,k,4));
+
+          op(to(i,j,k,2), from(i,j,k,0));
+          op(to(i,j,k,2), from(i,j,k,3));
+          op(to(i,j,k,2), from(i,j,k,4));
+
+          op(to(i,j,k,3), from(i,j,k,1));
+          op(to(i,j,k,3), from(i,j,k,3));
+          op(to(i,j,k,3), from(i,j,k,4));
+
+          op(to(i,j,k,4), from(i,j,k,0));
+          op(to(i,j,k,4), from(i,j,k,2));
+          op(to(i,j,k,4), from(i,j,k,5));
+
+          op(to(i,j,k,5), from(i,j,k,1));
+          op(to(i,j,k,5), from(i,j,k,2));
+          op(to(i,j,k,5), from(i,j,k,5));
+
+          op(to(i,j,k,6), from(i,j,k,0));
+          op(to(i,j,k,6), from(i,j,k,3));
+          op(to(i,j,k,6), from(i,j,k,5));
+
+          op(to(i,j,k,7), from(i,j,k,1));
+          op(to(i,j,k,7), from(i,j,k,3));
+          op(to(i,j,k,7), from(i,j,k,5));
+
         }  
 }
 
