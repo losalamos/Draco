@@ -91,10 +91,10 @@ void Global_Tally<MT,PT>::set_energy_begin(const Source_Init<MT> &source)
   // get new values of evol_net
     double sum = 0.0;
     eint_begin = 0.0;
-    for(int i = 1; i <= num_cells(); i++)
+    for(int i = 0; i < num_cells(); i++)
     {
-	evol_net[i-1] = source.get_evol_net(i);
-	sum += evol_net[i-1];
+	evol_net[i] = source.get_evol_net(i+1);
+	sum += evol_net[i];
 	eint_begin += temperature[i] * dedt[i];
     }
     evolext = evoltot - sum;
