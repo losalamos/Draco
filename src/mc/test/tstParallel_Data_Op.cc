@@ -155,6 +155,8 @@ void test_STL_Fields()
     // check
     for (int i = 0; i < mesh->num_cells(); i++)
 	if (c_data[i] != C4::nodes()) ITFAILS;
+
+    delete [] c_data;
 }
 
 //---------------------------------------------------------------------------//
