@@ -90,7 +90,7 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
     {
 	delta_t = interface->get_delta_t();
 	rnd_con = new Rnd_Control(9836592);
-	Particle_Buffer<PT>::set_buffer_size(100);
+	Particle_Buffer<PT>::set_buffer_size(100000);
     }
 
   // initialize the mesh builder and build mesh
@@ -254,11 +254,8 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
 	cout << ">> Doing particle transport for cycle " << cycle
 	     << " on proc " << node() << endl;
 
-  // make a new census file on this node
-    ostringstream cen_title;
-    cen_title << "new_census." << node();
-    string cen_file = cen_title.str();
-    ofstream census(cen_file.c_str());
+  // make a new census Comm_Buffer on this node
+    new_census = new Particle_Buffer<PT>::Comm_Buffer();
 
   // diagnostic
     SP<typename PT::Diagnostic> check;
@@ -278,7 +275,7 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
 	
       // if census write to file
 	if (particle->desc() == "census")
-	    buffer->write_census(census, *particle);
+	    buffer->buffer_particle(*new_census, *particle);
       // no other choices right now
     }
 
@@ -292,7 +289,8 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
     Ensure (rnd_con);
     Ensure (buffer);
     Ensure (parallel_builder);
-    Ensure (tally);
+    Ensure (tally);	
+    Ensure (new_census);
     Ensure (!source);
     Ensure (!mat_state);
     Ensure (!opacity);
@@ -323,9 +321,13 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	Send (num_cells, 0, 300);
 	Send (tally_send, num_cells, 0, 301);
 
+      // send back the Census buffers created on the processor
+	buffer->send_buffer(*new_census, 0);
+
       // release memory
 	delete [] tally_send;
 	kill (tally);
+	kill (new_census);
     }
 
   // receive the tallies on the master and update the global buffer
@@ -333,6 +335,7 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
     {
       // accumulated tally data from all processors
 	vector<double> accumulate_tally(global_state->num_cells(), 0.0);
+	ofstream cenfile("census");
 
       // loop through processors and get stuff
 	for (int i = 1; i < nodes(); i++)
@@ -352,6 +355,13 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 
 	  // reclaim storage
 	    delete [] tally_recv;
+	    
+	  // receive the census particles from the remote processors
+	    SP<Particle_Buffer<PT>::Comm_Buffer> temp_buffer = 
+		buffer->recv_buffer(i);
+
+	  // write the buffers to an output file
+	    buffer->write_census(cenfile, *temp_buffer);
 	}
      
       // add the results from the master processor
@@ -360,16 +370,23 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	    int global_cell = parallel_builder->master_cell(cell, 0);
 	    accumulate_tally[global_cell-1] += tally->get_energy_dep(cell);
 	}
-	kill (tally);
+
+      // write the master processor census buffer to the census file
+	buffer->write_census(cenfile, *new_census);
 
       // update the global state
 	global_state->update_T(accumulate_tally);
 
       // print out the timestep results
+	cout << endl;
 	cout << ">> Results for cycle " << cycle << endl;
 	cout << "=====================================" << endl;
 	cout << "Total time : " << delta_t * cycle << endl;
 	cout << *global_state << endl;
+
+      // reclaim objects on the master processor
+	kill (tally);
+	kill (new_census);
     }
 
   // do our inventory
@@ -378,6 +395,7 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
     Ensure (!mat_state);
     Ensure (!source);
     Ensure (!tally);
+    Ensure (!new_census);
     Ensure (!source_init);
     Ensure (parallel_builder);
     Ensure (buffer);

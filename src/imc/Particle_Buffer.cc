@@ -183,7 +183,8 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
 
   // determine number of particles in the buffer
     int num_particles = buffer.n_part;
-    Check (num_particles > 0);
+    if (num_particles == 0)
+	return;
 
   // make dynamically allocatable arrays
     double *ddata = new double[dsize];

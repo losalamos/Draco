@@ -59,6 +59,9 @@ private:
     SP<Source_Init<MT> > source_init;
     SP<Global_Buffer<MT> > global_state;
 
+  // census objects
+    SP<typename Particle_Buffer<PT>::Comm_Buffer> new_census;
+
   // problem variables
     double delta_t;
     int cycle;
