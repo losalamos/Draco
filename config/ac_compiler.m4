@@ -437,6 +437,7 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
        STRICTFLAG="-std strict_ansi"
+       CXX="${CXX} -model ansi"
    fi
 
    # make sure we always use the standard IO stream
