@@ -241,7 +241,7 @@ AC_DEFUN(AC_GSL_SETUP, [dnl
 
    dnl define --with-gsl
    AC_ARG_WITH(gsl,
-      [  --with-gsl=[lib]      determine the gsl lib (gsl is the default])
+      [  --with-gsl=[lib]      determine the gsl lib (gsl and gslcbkas are the defaults])
  
    dnl define --with-gsl-inc
    AC_WITH_DIR(gsl-inc, GSL_INC, \${GSL_INC_DIR},
@@ -277,9 +277,9 @@ AC_DEFUN([AC_GSL_FINALIZE], [dnl
 
        # library path
        if test -n "${GSL_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} -l${with_gsl})
+	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} -l${with_gsl} -lgslcblas)
        elif test -z "${GSL_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gsl, -l${with_gsl})
+	   AC_VENDORLIB_SETUP(vendor_gsl, -l${with_gsl} -lgslcblas)
        fi
 
        # add GSL directory to VENDOR_LIB_DIRS
