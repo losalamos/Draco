@@ -241,7 +241,7 @@ AC_DEFUN(AC_GSL_SETUP, [dnl
 
    dnl define --with-gsl
    AC_ARG_WITH(gsl,
-      [  --with-gsl=[lib]      determine the gsl lib (gsl and gslcbkas are the defaults])
+      [  --with-gsl=[lib]      determine the gsl lib (gsl is the default])
  
    dnl define --with-gsl-inc
    AC_WITH_DIR(gsl-inc, GSL_INC, \${GSL_INC_DIR},
@@ -277,75 +277,14 @@ AC_DEFUN([AC_GSL_FINALIZE], [dnl
 
        # library path
        if test -n "${GSL_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} -l${with_gsl} -lgslcblas)
+	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} -l${with_gsl})
        elif test -z "${GSL_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gsl, -l${with_gsl} -lgslcblas)
+	   AC_VENDORLIB_SETUP(vendor_gsl, -l${with_gsl})
        fi
 
        # add GSL directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
-
-   fi
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_GSLCBLAS_SETUP
-dnl
-dnl GSLCBLAS SETUP (on by default)
-dnl GSLCBLAS is a required vendor
-dnl
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_GSLCBLAS_SETUP], [dnl
-
-   dnl define --with-gslcblas
-   AC_ARG_WITH(gslcblas,
-      [  --with-gslcblas=[lib]      determine the gslcblas lib (gslcblas is the default])
- 
-   dnl define --with-gslcblas-inc
-   AC_WITH_DIR(gslcblas-inc, GSLCBLAS_INC, \${GSLCBLAS_INC_DIR},
-	       [tell where GSLCBLAS includes are])
-
-   dnl define --with-gslcblas-lib
-   AC_WITH_DIR(gslcblas-lib, GSLCBLAS_LIB, \${GSLCBLAS_LIB_DIR},
-	       [tell where GSLCBLAS libraries are])
-
-   # set default value of gslcblas includes and libs
-   if test "${with_gslcblas:=gslcblas}" = yes ; then
-       with_gslcblas='gslcblas'
-   fi
-
-   # determine if this package is needed for testing or for the 
-   # package
-   vendor_gslcblas=$1
-
-])
-
-##---------------------------------------------------------------------------##
-
-AC_DEFUN([AC_GSLCBLAS_FINALIZE], [dnl
-
-   # set up the libraries and include path
-   if test "${vendor_gslcblas}"; then
-
-       # include path
-       if test -n "${GSLCBLAS_INC}"; then 
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
-       fi
-
-       # library path
-       if test -n "${GSLCBLAS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gslcblas, -L${GSLCBLAS_LIB} -l${with_gslcblas})
-       elif test -z "${GSLCBLAS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gslcblas, -l${with_gslcblas})
-       fi
-
-       # add GSLCBLAS directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
 
    fi
 
@@ -1223,6 +1162,7 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
    AC_TRILINOS_FINALIZE
+   AC_GSL_FINALIZE
 
    AC_AZTEC_FINALIZE
    AC_PCG_FINALIZE
@@ -1240,9 +1180,6 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
 
    AC_UDM_FINALIZE
    AC_HDF5_FINALIZE
-
-   AC_GSL_FINALIZE
-   AC_GSLCBLAS_FINALIZE
 
    AC_MPI_FINALIZE
    AC_DLOPEN_FINALIZE
@@ -1281,7 +1218,6 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_PCG_SETUP(pkg)
    AC_AZTEC_SETUP(pkg)
    AC_GSL_SETUP(pkg)
-   AC_GSLCBLAS_SETUP(pkg)
    AC_TRILINOS_SETUP(pkg)
    AC_METIS_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
