@@ -10,6 +10,7 @@
 #define __3T_Diffusion_XYZ_hh__
 
 #include "ds++/SP.hh"
+#include "ds++/Mat.hh"
 
 //===========================================================================//
 // class Diffusion_XYZ - 
@@ -18,12 +19,16 @@
 //===========================================================================//
 
 template<class MT>
-class Diffusion_XYZ {
+class Diffusion_XYZ : private MT::Coord_Mapper {
 
     SP<MT> spm;
 
+    Mat2<double> A;
+
   public:
     Diffusion_XYZ( const SP<MT>& spm_ );
+    void solve( const MT::fcdsf& D, const MT::cell_array& rhs,
+		double dt, MT::cell_array& x );
 };
 
 #endif                          // __3T_Diffusion_XYZ_hh__
