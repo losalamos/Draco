@@ -22,9 +22,20 @@ XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb )
     Insist( ncz > nodes, "Current decomposition requires ncz > nodes." );
 
 // Calculate # of cells in z on this processor.
-    int nczp = ncz / nodes + ( (ncz % nodes) > node );
+    nczp = ncz / nodes + ( (ncz % nodes) > node );
 
     ncp = nxy * nczp;
+
+// Calculate the starting z index for this processor's data.
+
+    zoff = 0;
+    {
+        Baton<int> s(zoff);
+        zoff = s;
+        s += ncz;
+    }
+
+// Calculate the starting global cell index for this processor's data.
 
     goff = 0;
     {
@@ -151,23 +162,6 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     diags[2] = -diags[4];
     diags[1] = -diags[5];
     diags[0] = -diags[6];
-}
-
-#include "c4/global.hh"
-
-template<class T>
-void dump( const Mesh_XYZ::cell_array<T>& data, char *name )
-{
-    cout << "dumping a Mesh_XYZ::cell_array: " << name << endl;
-    {
-	HTSyncSpinLock h;
-	char buf[80];
-	for( int i=0; i < data.size(); i++ ) {
-	    sprintf( buf, "node %d, cell %d, value=%lf \n",
-		     C4::node(), i, data(i) );
-	    cout << buf;
-	}
-    }
 }
 
 //---------------------------------------------------------------------------//

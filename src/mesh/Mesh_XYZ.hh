@@ -16,6 +16,7 @@
 
 using dsxx::Mat1;
 using dsxx::Mat2;
+using dsxx::Mat3;
 
 #include "c4/NodeInfo.hh"
 
@@ -24,10 +25,12 @@ using dsxx::Mat2;
 struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo
 {
     int nct;			// # of total cells in problem.
+    int nxy;                    // # of cells in an x-y plane.
+    int nczp;                   // # of cells in z this processor.
     int ncp;			// # of cells on this processor.
 
+    int zoff;                   // z index offset of this processor's cells.
     int goff;			// global offset of this processor's cells.
-    int nxy;
 
 // Methods
 
@@ -184,6 +187,43 @@ class Mesh_XYZ : private XYZ_Mapper
 	friend class Mesh_XYZ;
     };
 
+    template<class T>
+    class guarded_cell_array
+        : private XYZ_Mapper,
+          public xm::Indexable< T, guarded_cell_array<T> >
+    {
+        dsxx::Mat3<T> data;
+
+      public:
+        typedef typename dsxx::Mat3<T>::iterator iterator;
+        typedef typename dsxx::Mat3<T>::const_iterator const_iterator;
+
+        guarded_cell_array( const SP<Mesh_XYZ>& m )
+            : XYZ_Mapper( m->get_Mesh_DB() ),
+              data( dsxx::Bounds( 0, ncx - 1 ),
+                    dsxx::Bounds( 0, ncy - 1 ),
+                    dsxx::Bounds( zoff - 1, zoff + nczp ) )
+        {}
+
+        guarded_cell_array<T>& operator=( const cell_array<T>& c );
+        void update_guard_cells();
+
+        T  operator()( int i, int j, int k ) const { return data(i,j,k); }
+        T& operator()( int i, int j, int k )       { return data(i,j,k); }
+
+    // Operators needed for glommable expression templates.
+        T  operator[]( int i ) const { return data[i]; }
+        T& operator[]( int i )       { return data[i]; }
+
+        iterator begin() { return data.begin(); }
+        iterator end()   { return data.end(); }
+
+        const_iterator begin() const { return data.begin(); }
+        const_iterator end()   const { return data.end(); }
+
+        int size() const { return data.size(); }
+    };
+
   private:
     Mat1<double> xc, yc, zc;
     Mat1<double> xf, yf, zf;
@@ -205,8 +245,13 @@ class Mesh_XYZ : private XYZ_Mapper
     const Mat1<double>& get_yc() const { return yc; }
     const Mat1<double>& get_zc() const { return zc; }
 
+    int get_ncx() const { return ncx; }
+    int get_ncy() const { return ncy; }
+    int get_ncz() const { return ncz; }
     int get_ncp() const { return ncp; }
     int get_nct() const { return nct; }
+    int get_nczp() const { return nczp; }
+    int get_zoff() const { return zoff; }
     int get_goff() const { return goff; }
 
     double get_dx() const { return dx; }
@@ -232,6 +277,8 @@ class Mesh_XYZ : private XYZ_Mapper
 
 template<class T>
 void dump( const Mesh_XYZ::cell_array<T>& data, char *name );
+
+#include "Mesh_XYZ_t.cc"
 
 #endif                          // __mesh_Mesh_XYZ_hh__
 
