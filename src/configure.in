@@ -19,7 +19,8 @@ AC_DRACO_ARGS
 
 AC_CONFIG_SUBDIRS(ds++ xm fourier)
 AC_CONFIG_SUBDIRS(traits units nml c4 UnitTestFrame rng)
-AC_CONFIG_SUBDIRS(stopwatch meshTest viz meshReaders quadrature)
+AC_CONFIG_SUBDIRS(stopwatch meshTest viz RTT_Format_Reader meshReaders \
+                  quadrature)
 AC_CONFIG_SUBDIRS(mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   mc timestep)
 AC_CONFIG_SUBDIRS(matprops PCGDiffusionSolver LAMGDiffusionSolver \
