@@ -156,11 +156,11 @@ IMC_CDI_Interface::IMC_CDI_Interface()
 
     // analytic opacity models
     SP<Analytic_Opacity_Model> model_1(new Polynomial_Analytic_Opacity_Model
-				       (0.0, 100.0, -3.0, 1.0, 0.0));
+				       (0.0, 100.0, -3.0, 0.0));
     SP<Analytic_Opacity_Model> model_2(new Constant_Analytic_Opacity_Model
 				       (1.5));
     SP<Analytic_Opacity_Model> model_3(new Polynomial_Analytic_Opacity_Model
-				       (1.0, 0.1, 1.0, 1.0, 0.0));
+				       (1.0, 0.1, 1.0, 0.0));
 
     SP<Analytic_Opacity_Model> model_s(new Constant_Analytic_Opacity_Model
 				       (0.0));
