@@ -73,7 +73,7 @@ void MatVec_3T<MT, Solver>::MatVec( Mat1<T>& b, Mat1<T>&x )
 
 	for( int m=0, n=0; n < nodes; n++ ) {
 	    if (n == node) continue;
-	    RecvAsync( rreq[m++], &xx( goffs[n] ), ncps[n]*sizeof(double),
+	    RecvAsync( rreq[m++], &xx( goffs[n] ), ncps[n],
 		       n, C4_double_ptr_Tag );
 	}
 
