@@ -53,6 +53,11 @@ class InterpedMaterialProps
     
     template<class FT> class MaterialStateField;
 
+    // FRIENDS
+
+    template<class FT>
+    friend class MaterialStateField;
+
   private:
 
     // Forward declaration
@@ -85,7 +90,7 @@ class InterpedMaterialProps
     
   public:
 
-    InterpedMaterialProps(std::vector<int> materialIds,
+    InterpedMaterialProps(const std::vector<int> &materialIds,
 			  MaterialPropsReader &reader);
 
 
@@ -98,7 +103,7 @@ class InterpedMaterialProps
 
   public:
 
-    Units getUnits() const { return units; }
+    const Units &getUnits() const { return units; }
 
     //------------------------------------------------------------------------//
     // getMaterialState:
@@ -343,6 +348,8 @@ class InterpedMaterialProps::MaterialStateField
 	    return field.getDensity(index++) * rhs;
 	}
     };
+
+    friend class MultByDensity;
     
     // DATA
 

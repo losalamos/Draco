@@ -21,7 +21,11 @@
 #define END_NS_XTM }
 #endif
 
+void funcYYY(dsxx::Mat2<double> &data);
+
 BEGIN_NS_XTM
+
+void funcXXX(dsxx::Mat2<double> &data);
 
 //===========================================================================//
 // class MaterialPropsReader - 
@@ -31,64 +35,80 @@ BEGIN_NS_XTM
 
 class MaterialPropsReader
 {
-    Units units;
+    // NESTED CLASSES AND TYPEDEFS
+
+  public:
+
+    typedef int MaterialId;
+
+    // DATA
+
+  private:
+    
+    Units outputUnits;
+    
+    // CREATORS
     
   public:
 
-    MaterialPropsReader(const Units &units_)
-	: units(units_)
+    MaterialPropsReader(const Units &outputUnits_)
+	: outputUnits(outputUnits_)
     {
 	// ** empty **
     }
 
-    const Units &getUnits() const { return units; }
+    // MANIPULATORS
+    
+    virtual bool getNextMaterial(MaterialId materialId_, std::string &name) = 0;
 
-    virtual bool getNextMaterial(int materialId_, std::string &name) = 0;
-
-    virtual void getTemperatureGrid(int materialId,
+    virtual bool getTemperatureGrid(MaterialId materialId,
 				    std::vector<double> &tempGrid_) = 0;
     
-    virtual void getDensityGrid(int materialId,
+    virtual bool getDensityGrid(MaterialId materialId,
 				std::vector<double> &densityGrid_) = 0;
 
-    virtual void getNumGroups(int materialId, int &numGroups) = 0;
+    virtual bool getNumGroups(MaterialId materialId, int &numGroups) = 0;
 
 
-    virtual void getEnergyUpperbounds(int materialId, int group,
+    virtual bool getEnergyUpperbounds(MaterialId materialId, int group,
 				      double &energyUpperbounds_) = 0;
 
-    virtual void getEnergyLowerbounds(int materialId, int group,
+    virtual bool getEnergyLowerbounds(MaterialId materialId, int group,
 				      double &energyLowerbounds_) = 0;
 
-    virtual void getSigmaTotal(int materialId, int group,
+    virtual bool getSigmaTotal(MaterialId materialId, int group,
 			       dsxx::Mat2<double> &data) = 0;
 
-    virtual void getSigmaAbsorption(int materialId, int group,
+    virtual bool getSigmaAbsorption(MaterialId materialId, int group,
 				    dsxx::Mat2<double> &data) = 0;
 
-    virtual void getSigmaEmission(int materialId, int group,
+    virtual bool getSigmaEmission(MaterialId materialId, int group,
 				  dsxx::Mat2<double> &data) = 0;
 
-    virtual void getElectronIonCoupling(int materialId,
+    virtual bool getElectronIonCoupling(MaterialId materialId,
 					dsxx::Mat2<double> &data) = 0;
 	
-    virtual void getElectronConductionCoeff(int materialId,
+    virtual bool getElectronConductionCoeff(MaterialId materialId,
 					    dsxx::Mat2<double> &data) = 0;
 	
-    virtual void getIonConductionCoeff(int materialId,
+    virtual bool getIonConductionCoeff(MaterialId materialId,
 				       dsxx::Mat2<double> &data) = 0;
 	
-    virtual void getElectronSpecificHeat(int materialId,
+    virtual bool getElectronSpecificHeat(MaterialId materialId,
 					 dsxx::Mat2<double> &data) = 0;
 	
-    virtual void getIonSpecificHeat(int materialId,
+    virtual bool getIonSpecificHeat(MaterialId materialId,
 				    dsxx::Mat2<double> &data) = 0;
+
+    // ACCESSORS
+
+    const Units &getOutputUnits() const { return outputUnits; }
 
 };
 
-#endif                          // __matprops_MaterialPropsReader_hh__
-
 END_NS_XTM  // namespace XTM
+
+#endif                          // __matprops_MaterialPropsReader_hh__
 
 //---------------------------------------------------------------------------//
 //                              end of matprops/MaterialPropsReader.hh

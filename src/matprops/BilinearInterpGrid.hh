@@ -121,22 +121,22 @@ class BilinearInterpGrid
     Memento getMemento(double x1, double x2) const;
     
 
-    int dimension(int dim) const
+    int size(int dim) const
     {
 	return ( dim == 1 ? x1vals.size() : ( dim == 2 ? x2vals.size() : 0 ) );
     }
     
-    int size() const { return dimension(1)*dimension(2); }
+    int size() const { return size(1)*size(2); }
 
     double x1(int j) const
     {
-	Require(j >= 0 && j < dimension(1));
+	Require(j >= 0 && j < size(1));
 	return x1vals[j];
     }
     
     double x2(int k) const
     {
-	Require(k >= 0 && k < dimension(2));
+	Require(k >= 0 && k < size(2));
 	return x2vals[k];
     }
     
@@ -252,8 +252,8 @@ inline void BilinearInterpGrid::getIndices(const Memento &memento,
     j = memento.j;
     k = memento.k;
 
-    Assert(j >= 0 && j < dimension(1));
-    Assert(k >= 0 && k < dimension(2));
+    Assert(j >= 0 && j < size(1));
+    Assert(k >= 0 && k < size(2));
 }
 
 //------------------------------------------------------------------------//

@@ -71,6 +71,10 @@ class BilinearInterpTable
     // yvals is the 2-dimensional grid of tabulated y values.
 
     dsxx::Mat2<double> yvals;
+
+    // Is this an empty table?
+
+    bool isEmpty;
     
     //=======================================================================//
     // CREATORS
@@ -84,6 +88,7 @@ class BilinearInterpTable
     //------------------------------------------------------------------------//
 
     BilinearInterpTable()
+	: isEmpty(true)
     {
 	// *** empty ***
     }
@@ -143,8 +148,8 @@ class BilinearInterpTable
     {
 	Require(yvals.size() == grid->size());
 
-	for (int i=0; i<grid->dimension(1); i++)
-	    for (int j=0; j<grid->dimension(2); j++)
+	for (int i=0; i<grid->size(1); i++)
+	    for (int j=0; j<grid->size(2); j++)
 		yvals(i,j) = binary_op(grid->x1(i), grid->x2(j));
     }
     
@@ -152,6 +157,13 @@ class BilinearInterpTable
     // ACCESSORS
     //=======================================================================//
 
+    //------------------------------------------------------------------------//
+    // hasData:
+    //    Return true if this table has data.
+    //------------------------------------------------------------------------//
+
+    bool hasData() const { return !isEmpty; }
+    
     //------------------------------------------------------------------------//
     // getGrid:
     //    Return a const reference to the grid.
@@ -251,7 +263,7 @@ BilinearInterpTable::BilinearInterpTable(const std::vector<double> &x1vals_,
 					 const std::vector<double> &x2vals_,
 					 BinaryOperation binary_op)
     : grid(new BilinearInterpGrid(x1vals_, x2vals_)),
-      yvals(x1vals_.size(),x2vals_.size())
+      yvals(x1vals_.size(),x2vals_.size()), isEmpty(false)
 {
     Require(yvals.size() == grid->size());
 
@@ -268,7 +280,8 @@ template<class BinaryOperation>
 inline
 BilinearInterpTable::BilinearInterpTable(const SP<BilinearInterpGrid> &grid_,
 					 BinaryOperation binary_op)
-    : grid(grid_), yvals(grid_->dimension(1),grid_->dimension(2))
+    : grid(grid_), yvals(grid_->size(1),grid_->size(2)),
+      isEmpty(false)
 {
     Require(yvals.size() == grid->size());
 

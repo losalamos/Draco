@@ -10,11 +10,13 @@
 #define __matprops_FifiMatPropsReader_hh__
 
 #include "matprops/MaterialPropsReader.hh"
+#include "matprops/FifiParser.hh"
 
 #include "ds++/Mat.hh"
 
 #include <string>
 #include <vector>
+#include <map>
 #include <iosfwd>
 
 #ifndef BEGIN_NS_XTM
@@ -24,6 +26,7 @@
 
 BEGIN_NS_XTM
     
+
 //===========================================================================//
 // class FifiMatPropsReader - 
 //
@@ -40,7 +43,66 @@ class FifiMatPropsReader : public MaterialPropsReader
 {
     // NESTED CLASSES AND TYPEDEFS
 
+  public:
+    
+    struct MaterialInfo
+    {
+	MaterialId          matid;
+
+	// Mean Atomic Weight (amu)
+	double              abar; 
+
+	std::vector<double> temperatureGrid;
+	std::vector<double> densityGrid;
+	std::vector<double> energyGrid;
+	
+	MaterialInfo()
+	{
+	    //*empty*
+	}
+	MaterialInfo(MaterialId matid_, double abar_)
+	    : matid(matid_), abar(abar_)
+	{
+	    //*empty*
+	}
+	const std::vector<double> &getTemperatureGrid() const
+	{
+	    return temperatureGrid;
+	}
+	const std::vector<double> &getDensityGrid() const
+	{
+	    return densityGrid;
+	}
+	const std::vector<double> &getEnergyGrid() const
+	{
+	    return energyGrid;
+	}
+	int getNumTemperatures() const { return temperatureGrid.size(); }
+	int getNumDensities() const { return densityGrid.size(); }
+	int getNumGroups() const { return energyGrid.size() - 1; }
+    };
+    
+    typedef std::map<MaterialId, MaterialInfo> MatInfoMap;
+
     // DATA
+
+  private:
+
+    // The FifiParser
+
+    FifiParser fifiParser;
+    
+    // This is the units converter from **most** of the units
+    // used in the Fifi file to SI units.
+    
+    Units fileUnits;
+
+    // This is the units converter from "file" units to
+    // the user's output units.
+    
+    Units file2OutputUnits;
+
+    MatInfoMap materialInfoMap;
 
     // DISALLOWED DEFAULT METHODS
     
@@ -53,65 +115,69 @@ class FifiMatPropsReader : public MaterialPropsReader
 
     // CREATORS
     
-    FifiMatPropsReader(const Units &units_)
-	: MaterialPropsReader(units_)
-    {
-	// ** empty **
-    }
-	
-    
+    FifiMatPropsReader(const Units &outputUnits_, std::istream &is_);
+
     // MANIPULATORS
     
-    // ** none **
-    
-    // ACCESSORS
+    virtual bool getNextMaterial(MaterialId materialId_, std::string &name);
 
-    virtual bool getNextMaterial(int materialId_, std::string &name);
-
-    virtual void getTemperatureGrid(int materialId,
+    virtual bool getTemperatureGrid(MaterialId materialId,
 				    std::vector<double> &tempGrid_);
     
-    virtual void getDensityGrid(int materialId,
+    virtual bool getDensityGrid(MaterialId materialId,
 				std::vector<double> &densityGrid_);
 
-    virtual void getNumGroups(int materialId, int &numGroups);
+    virtual bool getNumGroups(MaterialId materialId, int &numGroups);
 
 
-    virtual void getEnergyUpperbounds(int materialId, int group,
+    virtual bool getEnergyUpperbounds(MaterialId materialId, int group,
 				      double &energyUpperbounds_);
 
-    virtual void getEnergyLowerbounds(int materialId, int group,
+    virtual bool getEnergyLowerbounds(MaterialId materialId, int group,
 				      double &energyLowerbounds_);
 
-    virtual void getSigmaTotal(int materialId, int group,
+    virtual bool getSigmaTotal(MaterialId materialId, int group,
 			       dsxx::Mat2<double> &data);
 
-    virtual void getSigmaAbsorption(int materialId, int group,
+    virtual bool getSigmaAbsorption(MaterialId materialId, int group,
 				    dsxx::Mat2<double> &data);
 
-    virtual void getSigmaEmission(int materialId, int group,
+    virtual bool getSigmaEmission(MaterialId materialId, int group,
 				  dsxx::Mat2<double> &data);
 
-    virtual void getElectronIonCoupling(int materialId,
+    virtual bool getElectronIonCoupling(MaterialId materialId,
 					dsxx::Mat2<double> &data);
 	
-    virtual void getElectronConductionCoeff(int materialId,
+    virtual bool getElectronConductionCoeff(MaterialId materialId,
 					    dsxx::Mat2<double> &data);
 	
-    virtual void getIonConductionCoeff(int materialId,
+    virtual bool getIonConductionCoeff(MaterialId materialId,
 				       dsxx::Mat2<double> &data);
 	
-    virtual void getElectronSpecificHeat(int materialId,
+    virtual bool getElectronSpecificHeat(MaterialId materialId,
 					 dsxx::Mat2<double> &data);
 	
-    virtual void getIonSpecificHeat(int materialId,
+    virtual bool getIonSpecificHeat(MaterialId materialId,
 				    dsxx::Mat2<double> &data);
 
-  private:
-    
-    // IMPLEMENTATION
-};
+    // ACCESSORS
 
+    // *** none **
+    
+
+    // IMPLEMENTATION
+
+  private:
+
+    void calcGridInfo();
+
+    bool hasMaterial(MaterialId materialId) const;
+    
+    const MaterialInfo &getMaterialInfo(MaterialId materialId) const;
+
+    void getSigma(const MaterialInfo &matInfo, int group,
+		  const std::string &keyword, dsxx::Mat2<double> &dataMat);    
+};
 
 END_NS_XTM  // namespace XTM
 

@@ -16,6 +16,7 @@
 #include "ds++/Assert.hh"
 
 #include <string>
+using std::string;
 #include <vector>
 using std::vector;
 
@@ -41,9 +42,9 @@ typedef InterpedMaterialProps IMP;
 //    object derived from MaterialPropsReader.
 //---------------------------------------------------------------------------//
 
-IMP::InterpedMaterialProps(vector<int> materialIds,
+IMP::InterpedMaterialProps(const vector<int> &materialIds,
 			   MaterialPropsReader &reader)
-    : units(reader.getUnits())
+    : units(reader.getOutputUnits())
 {
     
     for (int i=0; i<materialIds.size(); i++)
@@ -51,7 +52,7 @@ IMP::InterpedMaterialProps(vector<int> materialIds,
 	std::string materialName;
 	int materialId = materialIds[i];
 
-	int bool found = reader.getNextMaterial(materialId, materialName);
+	bool found = reader.getNextMaterial(materialId, materialName);
 
 	if (!found)
 	{
@@ -64,7 +65,11 @@ IMP::InterpedMaterialProps(vector<int> materialIds,
 	// Make sure that this materialId
 	// has not been used before.
 
-	Assert(materials.find(materialId) == materials.end());
+	if (materials.find(materialId) == materials.end())
+	{
+	    throw std::runtime_error(string("InterpedMaterialProps ctor: ")
+				     + string("Duplicate material ids."));
+	}
 
 	vector<double> tempGrid;
 	vector<double> densityGrid;
@@ -90,9 +95,8 @@ IMP::InterpedMaterialProps(vector<int> materialIds,
 
 	for (int i=0; i<numGroups; i++)
 	{
-	    reader.getSigmaTotal(materialId, i, data);
-
-	    tables[i] = BilinearInterpTable(spGrid, data);
+	    if (reader.getSigmaTotal(materialId, i, data))
+		tables[i] = BilinearInterpTable(spGrid, data);
 	}
 
 	GroupedTable sigmaTotal(energyUpperbounds, energyLowerbounds,
@@ -100,9 +104,8 @@ IMP::InterpedMaterialProps(vector<int> materialIds,
 	
 	for (int i=0; i<numGroups; i++)
 	{
-	    reader.getSigmaAbsorption(materialId, i, data);
-
-	    tables[i] = BilinearInterpTable(spGrid, data);
+	    if (reader.getSigmaAbsorption(materialId, i, data))
+		tables[i] = BilinearInterpTable(spGrid, data);
 	}
 
 	GroupedTable sigmaAbsorption(energyUpperbounds, energyLowerbounds,
@@ -110,28 +113,32 @@ IMP::InterpedMaterialProps(vector<int> materialIds,
 	
 	for (int i=0; i<numGroups; i++)
 	{
-	    reader.getSigmaEmission(materialId, i, data);
-
-	    tables[i] = BilinearInterpTable(spGrid, data);
+	    if (reader.getSigmaEmission(materialId, i, data))
+		tables[i] = BilinearInterpTable(spGrid, data);
 	}
 
 	GroupedTable sigmaEmission(energyUpperbounds, energyLowerbounds,
-				tables);
+				   tables);
 
-	reader.getElectronIonCoupling(materialId, data);
-	BilinearInterpTable electronIonCoupling(spGrid, data);
+	BilinearInterpTable electronIonCoupling;
+	if (reader.getElectronIonCoupling(materialId, data))
+	    electronIonCoupling = BilinearInterpTable(spGrid, data);
 	
-	reader.getElectronConductionCoeff(materialId, data);
-	BilinearInterpTable electronConductionCoeff(spGrid, data);
+	BilinearInterpTable electronConductionCoeff;
+	if (reader.getElectronConductionCoeff(materialId, data))
+	    electronConductionCoeff = BilinearInterpTable (spGrid, data);
 	
-	reader.getIonConductionCoeff(materialId, data);
-	BilinearInterpTable ionConductionCoeff(spGrid, data);
+	BilinearInterpTable ionConductionCoeff;
+	if (reader.getIonConductionCoeff(materialId, data))
+	    ionConductionCoeff = BilinearInterpTable (spGrid, data);
 	
-	reader.getElectronSpecificHeat(materialId, data);
-	BilinearInterpTable electronSpecificHeat(spGrid, data);
+	BilinearInterpTable electronSpecificHeat;
+	if (reader.getElectronSpecificHeat(materialId, data))
+	    electronSpecificHeat = BilinearInterpTable(spGrid, data);
 	
-	reader.getIonSpecificHeat(materialId, data);
-	BilinearInterpTable ionSpecificHeat(spGrid, data);
+	BilinearInterpTable ionSpecificHeat;
+	if (reader.getIonSpecificHeat(materialId, data))
+	    ionSpecificHeat = BilinearInterpTable(spGrid, data);
 
 	typedef MatTabMap::value_type MapPair;
 
@@ -229,7 +236,11 @@ void IMP::interpolate(const MaterialStateField<FT> &matState, int group,
 	// Do the interpolation.
 
 	typename FT::value_type intVal;
-	table.interpolate(matState.getMemento(i), intVal);
+
+	if (table.hasData())
+	    intVal = table.interpolate(matState.getMemento(i));
+	else
+	    intVal = 0.0;
 
 	// Perform a function on the interpolated value.
 
@@ -268,7 +279,11 @@ void IMP::interpolate(const MaterialStateField<FT> &matState,
 	// Do the interpolation.
 
 	typename FT::value_type intVal;
-	table.interpolate(matState.getMemento(i), intVal);
+
+	if (table.hasData())
+	    intVal = table.interpolate(matState.getMemento(i));
+	else
+	    intVal = 0.0;
 
 	// Perform a function on the interpolated value.
 
