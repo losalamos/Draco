@@ -16,27 +16,27 @@ ${dependfiles}:
 
 %.cc.d: %.cc
 	@echo making dependency $@
-	@if ${CXX} -M ${CPPFLAGS} $< >.tmp0 ; then \
-	   cat .tmp0 | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+	@if ${CXX} -M ${CPPFLAGS} ${CXXFLAGS} $< > $@.tmp0 ; then \
+	   cat $@.tmp0 | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
 		[ -s $@ ] || rm -f $@ ; \
 	else \
 	   echo failed making dependency $@ ; \
-	   rm -f $@ .tmp0 ; \
+	   rm -f $@ $@.tmp0 ; \
 	   exit 1; \
 	fi
-	@-rm -f .tmp0
+	@-rm -f $@.tmp0
 
 %.c.d: %.c
 	@echo making dependency $@
-	@if ${CC} -M ${CPPFLAGS} $< >.tmp0 ; then \
-	   cat .tmp0 | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+	@if ${CC} -M ${CPPFLAGS} ${CFLAGS} $< > $@.tmp0 ; then \
+	   cat $@.tmp0 | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
 		[ -s $@ ] || rm -f $@ ; \
 	else \
 	   echo failed making dependency $@ ; \
-	   rm -f $@ .tmp0 ; \
+	   rm -f $@ $@.tmp0 ; \
 	   exit 1; \
 	fi
-	@-rm -f .tmp0
+	@-rm -f $@.tmp0
 
 ###############################################################################
 #		end of dependency rules Makefile.dep.general
