@@ -109,6 +109,42 @@ void RZWedge_Mesh::calc_wedge_angle_data(const double theta_degrees)
 }
 
 //---------------------------------------------------------------------------//
+// INTERFACE NOT SPECIFIC FOR IMC
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Determine if a position vector is within a cell.
+
+ * \param cell cell index
+
+ * \param r sf_double of position (3 dim vector)
+
+ * \return true if r is in cell; false otherwise
+
+ */
+bool RZWedge_Mesh::in_cell(int cell, const sf_double &r) const
+{
+    Require (r.size() == 3);
+    Require (cell > 0 && cell <= layout.num_cells());
+
+    // first check x dimension
+    if (r[0] < cell_xz_extents[cell-1][0] || 
+	r[0] > cell_xz_extents[cell-1][1])
+	return false;
+
+    // check z dimension
+    if (r[2] < cell_xz_extents[cell-1][2] ||
+	r[2] > cell_xz_extents[cell-1][3])
+	return false;
+
+    // check y dimension (x cannot be negative)
+    if (r[1] < -(r[0] * tan_half_theta) ||
+	r[1] > (r[0] * tan_half_theta))
+	return false;
+
+    return true;
+}
+
+//---------------------------------------------------------------------------//
 // PUBLIC INTERFACE FOR IMC
 //---------------------------------------------------------------------------//
 /*!

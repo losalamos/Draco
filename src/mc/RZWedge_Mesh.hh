@@ -57,6 +57,10 @@ namespace rtt_mc
 //  5 Jul 2000 : added dependence on Coord_sys (needed in transport...)
 // 17-JUL-2000 : added get_cell_pair function for graphics dumping.
 // 24-JUL-2000 : replaced Layout with AMR_Layout
+// 11-AUG-2000 : fixed error in sample_pos() (tilt), the z position was
+//               incorrectly being waited by the z dimension; also added
+//               in_cell() test function to determine if a set of coordinates 
+//               are in a cell
 // 
 //===========================================================================//
 
@@ -137,6 +141,9 @@ class RZWedge_Mesh
     // get the dimension of a cell for a given coordinate 
     // (y-coord => dim at midpoint)  
     inline double dim(const int coordinate, const int cell) const;
+
+    // Determine if a position is in a cell.
+    bool in_cell(int, const sf_double &) const;
 
     // Diagnostic functions.
     void print(std::ostream &) const;
@@ -567,8 +574,8 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
     }
 
     // calculate extents of function from which to sample
-    lof = loz * low_w;
-    hif = hiz * high_w;
+    lof = low_w;
+    hif = high_w;
 
     // sample z 
     position[2] = rtt_mc::sampler::sample_general_linear(random, loz, hiz,
