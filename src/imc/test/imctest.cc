@@ -13,7 +13,7 @@
 #include "imc/IMC_Man.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
-#include <ctime>
+#include <time.h>
 #include <iostream>
 #include <iomanip>
 
@@ -28,12 +28,12 @@ int main(int argc, char *argv[])
     C4::Init(argc, argv);
 
   // time indicators
-    std::time_t begin;
-    std::time_t end;
+    double begin;
+    double end;
 
   // starting time
     if (C4::node() == 0)
-	begin = std::time(NULL);
+	begin = C4::Wtime();
 
   // make a manager
     IMC_Man<OS_Mesh, OS_Builder, OS_Interface> manager(true);
@@ -54,17 +54,12 @@ int main(int argc, char *argv[])
     C4::gsync();
     if (C4::node() == 0)
     {
-	end = std::time(NULL);
+	end = C4::Wtime();
 	std::cout << std::endl << ">> Problem Timing" << std::endl;
-	std::cout << std::endl << " ** The problem started at "
-		  << ctime(&begin) << std::endl;
-	std::cout << " ** The problem ended at " << ctime(&end) 
-		  << std::endl;
 	std::cout.precision(4);
 	std::cout << " ** We ran for " << std::setw(15) 
 		  << std::setiosflags(std::ios::scientific)
-		  << std::difftime(end, begin) 
-		  << " seconds" << std::endl; 
+		  << end-begin << " seconds" << std::endl; 
     }
 
   // c4 end

@@ -48,7 +48,7 @@ Source<MT, PT>::Source(typename MT::CCSF_int &vol_rnnum_,
 		       SP<Mat_State<MT> > mat_state) 
     : vol_rnnum(vol_rnnum_), nvol(nvol_), ew_vol(ew_vol_), t4_slope(t4_),
       ss_rnnum(ss_rnnum_), nss(nss_), fss(fss_), ew_ss(ew_ss_),
-      census(census_), ss_dist(ssd),, nvoltot(nvoltot_), nsstot(nsstot_),
+      census(census_), ss_dist(ssd), nvoltot(nvoltot_), nsstot(nsstot_),
       ncentot(census.size()), rcon(rcon_), buffer(buffer_),
       material(mat_state) 
 {
@@ -97,6 +97,11 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 	    sampled = true;
 	    nsrcdone_cell++;
 	    nssdone++;
+	    if (nssdone == nsstot)
+	    {
+		current_cell  = 1;
+		nsrcdone_cell = 0;
+	    }
 	}
 	else
 	{
@@ -120,6 +125,11 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
 	    sampled = true;
 	    nsrcdone_cell++;
 	    nvoldone++;
+	    if (nvoldone == nvoltot)
+	    {
+		current_cell  = 1;
+		nsrcdone_cell = 0;
+	    }
 	}
 	else
 	{
@@ -226,17 +236,13 @@ SP<PT> IMC::Source<MT, PT>::get_evol(double delta_t)
 template<class MT, class PT>
 SP<PT> Source<MT, PT>::get_census(double delta_t)
 {
-    SP<PT> census_particle;
+    Require (census.size() > 0);
 
-  // read a Census_Buffer from the census file
-    SP<Particle_Buffer<PT>::Census_Buffer> cenpart;
-    cenpart = buffer.read_census(census);
-    Check (cenpart);
+  // get the census particle from the Census buffer
+    SP<PT> census_particle = census.top();
 
-  // make a Particle from the Census buffer
-    census_particle = new PT(cenpart->r, cenpart->omega, cenpart->ew,
-			     cenpart->cell, cenpart->random,
-			     cenpart->fraction, delta_t);
+  // remove the census particle from the bank
+    census.pop();
 
   // return the particle
     return census_particle;
@@ -282,9 +288,9 @@ void Source<MT, PT>::print(ostream &out) const
 	<< setw(15) << setiosflags(ios::right) << "Volume ew" 
 	<< setw(15) << setiosflags(ios::right) << "Surface ew" << endl;
     out.precision(3);
-    out << setiosflags(ios::fixed);
     for (int i = 1; i <= nvol.get_Mesh().num_cells(); i++)
-	out << setw(10) << i << setw(15) << ew_vol(i) << setw(15)
+	out << setw(10) << i << setw(15) << setiosflags(ios::scientific)
+	    << ew_vol(i) << setw(15) << setiosflags(ios::scientific)
 	    << ew_ss(i) << endl;
 }
 	

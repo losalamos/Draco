@@ -54,7 +54,7 @@ void Global_Buffer<MT>::update_T(const vector<double> &tally)
 	double delta_E = tally[i] - evol_net[i];
 
       // calculate new electron temperature in cell
-	temperature[i] = delta_E / Cv[i];
+	temperature[i] += delta_E / Cv[i];
     }
 }
 

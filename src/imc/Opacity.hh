@@ -89,7 +89,7 @@ inline Opacity<MT>::Opacity(const typename MT::CCSF_double &sigma_abs_,
 template<class MT>
 inline double Opacity<MT>::get_sigeffscat(int cell) const 
 {
-    return fleck(cell) * sigma_abs(cell);
+    return (1.0 -fleck(cell)) * sigma_abs(cell);
 }
 
 //---------------------------------------------------------------------------//
@@ -98,7 +98,7 @@ inline double Opacity<MT>::get_sigeffscat(int cell) const
 template<class MT>
 inline double Opacity<MT>::get_sigeffabs(int cell) const 
 { 
-    return (1.0 - fleck(cell)) * sigma_abs(cell);
+    return fleck(cell) * sigma_abs(cell);
 }
 
 CSPACE

@@ -72,7 +72,9 @@ private:
 		 typename MT::CCSF_double &);
 
   // receive the census, volume, and surface sources
-    template<class PT> void recv_census(const Particle_Buffer<PT> &);
+    template<class PT>
+    void recv_census(const Particle_Buffer<PT> &,
+		     typename Particle_Buffer<PT>::Census &);
     void recv_vol(typename MT::CCSF_int &, typename MT::CCSF_int &,
 		  typename MT::CCSF_double &, typename MT::CCVF_double &);
     void recv_ss(typename MT::CCSF_int &, typename MT::CCSF_int &,

@@ -298,7 +298,7 @@ void comm_particle2(const MT &mesh,
 	     << rbuf->n_part << " particles from node " << 0 << endl;
 
       // let's put them into a bank
-	Particle_Buffer<PT>::Comm_Bank bank;
+	Particle_Buffer<PT>::Bank bank;
 	buffer.add_to_bank(*rbuf, bank);
 	cout << "** We made a Particle Bank on node " << mynode << endl;
 

@@ -8,8 +8,11 @@
 
 #include "imc/OS_Interface.hh"
 #include "ds++/Assert.hh"
+#include <algorithm>
 
 IMCSPACE
+
+using std::fill;
 
 //---------------------------------------------------------------------------//
 // constructor
@@ -449,6 +452,8 @@ void OS_Interface::parser_Source(ifstream &in)
     int num_zones = mat_zone.size();
     evol_ext.resize(num_zones);
     rad_temp.resize(num_zones);
+    fill(evol_ext.begin(), evol_ext.end(), 0.0);
+    fill(rad_temp.begin(), rad_temp.end(), 0.0);
 
   // parse the source
     zone_source_parser(in);
@@ -481,6 +486,7 @@ void OS_Interface::zone_source_parser(ifstream &in)
 	    in >> data;
 	    ss_pos.resize(data);
 	    ss_temp.resize(data);
+	    fill(ss_temp.begin(), ss_temp.end(), 0.0);
 	}
 	if (keyword == "sur_source:")
 	{
@@ -517,7 +523,7 @@ void OS_Interface::zone_source_parser(ifstream &in)
 	    in >> dnpdt;
 	if (keyword == "capacity:")
 	    in >> capacity;
-	if (keyword == " max_cycle:")
+	if (keyword == "max_cycle:")
 	    in >> max_cycle;
     }   
   

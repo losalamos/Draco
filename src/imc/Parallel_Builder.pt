@@ -16,10 +16,12 @@ instantiate class Parallel_Builder<OS_Mesh>
 
 instantiate funcproto PT=Particle<OS_Mesh>, MT=OS_Mesh
 void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &, 
-				       const Particle_Buffer<PT> &)
+				       const Particle_Buffer<PT> &,
+				       Particle_Buffer<PT>::Census &) 
 
 instantiate funcproto PT=Particle<OS_Mesh>, MT=OS_Mesh
-void Parallel_Builder<MT>::recv_census(const Particle_Buffer<PT> &)
+void Parallel_Builder<MT>::recv_census(const Particle_Buffer<PT> &,
+				       Particle_Buffer<PT>::Census &)
 
 instantiate funcproto PT=Particle<OS_Mesh>, MT=OS_Mesh
 SP<Source<MT> > Parallel_Builder<MT>::send_Source

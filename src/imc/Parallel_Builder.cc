@@ -243,7 +243,7 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
     typename MT::CCSF_int nss(mesh);
     typename MT::CCSF_int fss(mesh);
     typename MT::CCSF_double ew_ss(mesh);
-    typename Particle_Buffer<PT>::Census census;
+    Particle_Buffer<PT>::Census census;
 
   // send the numbers of each type of source to the other processors
     for (int i = 1; i < nodes(); i++)
@@ -266,7 +266,6 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
 	dist_ss(sinit, ssrn, nss, fss, ew_ss);
 
   // get the number of volume, census, and surface sources for this processor
-    int ncentot = 0;
     int nvoltot = 0;
     int nsstot = 0;
     for (int i = 1; i <= mesh->num_cells(); i++)
@@ -293,8 +292,8 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
 
   // make the source
     host_source = new Source<MT>(volrn, nvol, ew_vol, t4_slope, ssrn, nss, 
-				 fss, ew_ss, ss_dist, "census.0", nvoltot, 
-				 nsstot, ncentot, rcon, buffer, mat); 
+				 fss, ew_ss, census, ss_dist, nvoltot,
+				 nsstot, rcon, buffer, mat); 
 
   // return source
     return host_source;
@@ -334,10 +333,11 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
     typename MT::CCSF_int nss(mesh);
     typename MT::CCSF_int fss(mesh);
     typename MT::CCSF_double ew_ss(mesh);
+    Particle_Buffer<PT>::Census census;
 
   // receive the census
     if (global_ncentot)
-	recv_census(buffer);
+	recv_census(buffer, census);
 
   // receive the volume source
     if (global_nvoltot)
@@ -348,7 +348,6 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
 	recv_ss(ssrn, nss, fss, ew_ss);
 
   // get the number of volume, census, and surface sources for this processor
-    int ncentot = 0;
     int nvoltot = 0;
     int nsstot = 0;
     for (int i = 1; i <= mesh->num_cells(); i++)
@@ -356,10 +355,6 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
 	nvoltot += nvol(i);
 	nsstot  += nss(i);
     }
-
-  // get the census name
-    ostringstream cenfile;
-    cenfile << "census." << node();
 
   // get and calculate source distributions
     
@@ -378,8 +373,8 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
 
   // make the source
     imc_source = new Source<MT>(volrn, nvol, ew_vol, t4_slope, ssrn, nss, 
-				fss, ew_ss, ss_dist, cenfile.str(), nvoltot, 
-				nsstot, ncentot, rcon, buffer, mat);
+				fss, ew_ss, census, ss_dist, nvoltot, nsstot, 
+				rcon, buffer, mat);
 
   // return source
     return imc_source;
@@ -395,7 +390,7 @@ template<class PT>
 void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit, 
 				       const Particle_Buffer<PT> &buffer,
 				       typename Particle_Buffer<PT>::Census
-				       &census_bank)
+				       &census_bank) 
 {
   // get number of cells on the global mesh
     int num_cells = procs_per_cell.size();
@@ -496,6 +491,15 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
     Check (total_read == sinit.get_ncentot());
 
   // send the guys off that haven't been sent yet
+
+  // on the host
+    if (num_to_send[0] > 0)
+    {
+	buffer.add_to_bank(cen_buffer[0], census_bank);
+	Check (cen_buffer[0].n_part == 0);
+    }
+
+  // on the IMC processors
     for (int proc = 1; proc < nodes(); proc++)
     {
 	if (num_to_send[proc] > 0)
@@ -509,7 +513,7 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
   // send a final message to indicate completion
     for (int proc = 1; proc < nodes(); proc++)
     {
-	Check (cen_buffer[proc].m_part == 0);
+	Check (cen_buffer[proc].n_part == 0);
 	buffer.send_buffer(cen_buffer[proc], proc);
     }
 }
@@ -519,9 +523,30 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
 
 template<class MT>
 template<class PT>
-void Parallel_Builder<MT>::recv_census(const Particle_Buffer<PT> &buffer)
+void Parallel_Builder<MT>::recv_census(const Particle_Buffer<PT> &buffer,
+				       typename Particle_Buffer<PT>::Census
+				       &census_bank) 
 {
-  // do something here
+    Require (census_bank.size() == 0);
+
+  // condition to keep receiving
+    bool receive = true;
+    
+  // receive the Comm_Buffers from the host
+    while (receive)
+    {
+      // receive the buffer
+	SP<Particle_Buffer<PT>::Comm_Buffer> cen_buffer =
+	    buffer.recv_buffer(0); 
+
+      // if the buffer has particles bankit, else stop this nonsense
+	if (cen_buffer->n_part > 0)
+	    buffer.add_to_bank(*cen_buffer, census_bank);
+	else if (cen_buffer->n_part == 0)
+	    receive = false;
+	else
+	    Insist(0, "Buffers are < 0 during census remap!");
+    }	
 }
 
 //---------------------------------------------------------------------------//
