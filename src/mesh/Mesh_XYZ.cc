@@ -33,6 +33,9 @@ XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb )
 
 Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     : XYZ_Mapper( mdb ),
+
+      vc( this ),
+
       xF( this ), yF( this ), zF( this )
 {
     char buf[80];
@@ -83,7 +86,6 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 
 // Initialize the cell volumes we will be concerned with.
 
-    vc = Mat1<double>( ncp );
     for( int i=0; i < ncp; i++ )
 	vc(i) = dx * dy * dz;
 
@@ -130,6 +132,22 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 	zF(c,0) = z; zF(c,1) = z;
 	zF(c,2) = z; zF(c,3) = z;
 	zF(c,4) = z - dz2; zF(c,5) = z + dz2;
+    }
+}
+
+#include "c4/global.hh"
+
+void dump( const Mesh_XYZ::cell_array& data, char *name )
+{
+    cout << "dumping a Mesh_XYZ::cell_array: " << name << endl;
+    {
+	HTSyncSpinLock h;
+	char buf[80];
+	for( int i=0; i < data.size(); i++ ) {
+	    sprintf( buf, "node %d, cell %d, value=%lf \n",
+		     C4::node(), i, data(i) );
+	    cout << buf;
+	}
     }
 }
 
