@@ -9,8 +9,8 @@ digraph draco_level {
     level2 [shape=plaintext, label="Level 2:", fontsize=18];
     level3 [shape=plaintext, label="Level 3:", fontsize=18];
     level4 [shape=plaintext, label="Level 4:", fontsize=18];
-    level5 [shape=plaintext, label="Level 4:", fontsize=18];
-    level6 [shape=plaintext, label="Level 4:", fontsize=18];
+    level5 [shape=plaintext, label="Level 5:", fontsize=18];
+    level6 [shape=plaintext, label="Level 6:", fontsize=18];
     
     level6 -> level5 -> level4 -> level3 -> level2 -> level1 [style=invis];
     
@@ -28,8 +28,6 @@ digraph draco_level {
     units [shape=box, label="units"];
     frame [shape=box, label="UnitTestFrame"];
     cdi [shape=box, label="cdi"];
-    
-    meshtest [shape=box, label="meshTest", style=dashed];
     
     /* level 3 */
     viz [shape=box, label="viz"];
@@ -73,7 +71,6 @@ digraph draco_level {
     rng         -> {dsxx};
     cdi         -> {dsxx};
     
-    
     /* level 3 */
     viz         -> {traits dsxx};
     timestep    -> {c4 dsxx};
@@ -84,10 +81,9 @@ digraph draco_level {
     meshread    -> {dsxx};
     meshread    -> {frame} [style=dotted];
     cdieos      -> {cdi dsxx};
-    cdieos      -> {frame} [style=dotted];
     cdigan      -> {cdi dsxx};
     conjgrad    -> {traits c4 dsxx};
-    conjgrad    -> {frame meshtest} [style=dotted];
+    conjgrad    -> {frame} [style=dotted];
     quad        -> {dsxx};
     quad        -> {c4 frame} [style=dotted];
 
@@ -102,6 +98,6 @@ digraph draco_level {
     meshservice -> {frame} [style=dotted];
 
     /* level 6 */
-    imc         -> {mc viz meshread cdi rng c4 dsxx};
+    imc         -> {mc cdi rng c4 dsxx};
     imc         -> {cdianal} [style=dotted];
 }
