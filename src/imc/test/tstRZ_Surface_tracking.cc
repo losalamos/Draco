@@ -53,7 +53,7 @@ int seed = 395731;
 SP<RZWedge_Mesh> build_an_RZWedge()
 {
 
-    // make a builder from the RZWedge input
+    // Make a builder from the RZWedge input
     SP<Parser> parser(new Parser("RZWedge_Input"));
     RZWedge_Builder builder(parser);
 

@@ -40,38 +40,6 @@ void test()
 
     if (az_mesh.size() != 5) ITFAILS;
 
-    try {
-	cosines[0] = -1.0;
-	Azimuthal_Mesh az_mesh(cosines);
-	ITFAILS;
-    }
-    catch (rtt_dsxx::assertion &ass) 
-    {
-	std::cerr << "Caught: " << ass.what() << std::endl;
-    }
-
-    try {
-	cosines[2] = 0.0;
-	Azimuthal_Mesh az_mesh(cosines);
-	ITFAILS;
-    }
-    catch (rtt_dsxx::assertion &ass) 
-    {
-	std::cerr << "Caught: " << ass.what() << std::endl;
-    }
-
-    
-    try {
-	cosines[3] = 1.0;
-	Azimuthal_Mesh az_mesh(cosines);
-	ITFAILS;
-    }
-    catch (rtt_dsxx::assertion &ass) 
-    {
-	std::cerr << "Caught: " << ass.what() << std::endl;
-    }
-
-
     if (!soft_equiv(az_mesh.get_lower_cosine(1), -1.0) ) ITFAILS;
     if (!soft_equiv(az_mesh.get_upper_cosine(5),  1.0) ) ITFAILS;
 
@@ -93,6 +61,44 @@ void test()
     direction[2] = 0.1;
     if (!az_mesh.is_in_bin(direction, 3) ) ITFAILS;
     if (az_mesh.find_bin(direction) != 3 ) ITFAILS;
+
+
+#if DBC & 2
+    try {
+	cosines[0] = -1.0;
+	Azimuthal_Mesh az_mesh(cosines);
+	ITFAILS;
+    }
+    catch (rtt_dsxx::assertion &ass) 
+    {
+	std::cerr << "Caught a deliberate assertion." << std::endl;
+    }
+#endif
+
+#if DBC & 2
+    try {
+	cosines[2] = 0.0;
+	Azimuthal_Mesh az_mesh(cosines);
+	ITFAILS;
+    }
+    catch (rtt_dsxx::assertion &ass) 
+    {
+	std::cerr << "Caught a deliberate assertion." << std::endl;
+    }
+#endif
+
+    
+#if DBC & 2
+    try {
+	cosines[3] = 1.0;
+	Azimuthal_Mesh az_mesh(cosines);
+	ITFAILS;
+    }
+    catch (rtt_dsxx::assertion &ass) 
+    {
+	std::cerr << "Caught a deliberate assertion." << std::endl;
+    }
+#endif
 
 
 

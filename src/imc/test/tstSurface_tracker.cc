@@ -186,8 +186,8 @@ void test_tracker()
     tracker->tally_crossings_implicit_abs(
 	position, direction, distance, ew, sigma, tally);
 
-    if (!soft_equiv(tally.weight(2, true,  2), exp(-2.0) ) ) ITFAILS;
-    if (!soft_equiv(tally.weight(4, true,  2), exp(-1.0-sqrt(5.0)))) ITFAILS;
+    if (!soft_equiv(tally.weight(2, true,  2), exp(-2.0) ) )          ITFAILS;
+    if (!soft_equiv(tally.weight(4, true,  2), exp(-1.0-sqrt(5.0))))  ITFAILS;
     if (!soft_equiv(tally.weight(4, false, 2), exp(3.0-2*sqrt(5.0)))) ITFAILS;
     
 }
