@@ -1,0 +1,83 @@
+digraph RTT_Format_Reader_package_level {
+
+    /* graph attributes */
+    center=1;
+    size="8,14";
+    ranksep=1.25;
+
+    /* package nodes */
+    CellData [shape=box, color=black, label="CellData"];
+    CellDataIDs [shape=box, color=black, label="CellDataIDs"];
+    CellDefs [shape=box, color=black, label="CellDefs"];
+    CellFlags [shape=box, color=black, label="CellFlags"];
+    Cells [shape=box, color=black, label="Cells"];
+    Dims [shape=box, color=black, label="Dims"];
+    Flags [shape=box, color=black, label="Flags"];
+    Header [shape=box, color=black, label="Header"];
+    NodeData [shape=box, color=black, label="NodeData"];
+    NodeDataIDs [shape=box, color=black, label="NodeDataIDs"];
+    NodeFlags [shape=box, color=black, label="NodeFlags"];
+    Nodes [shape=box, color=black, label="Nodes"];
+    RTT_Format_Reader [shape=box, color=black, label="RTT_Format_Reader"];
+    RTT_Mesh_Reader [shape=box, color=black, label="RTT_Mesh_Reader"];
+    Release [shape=box, color=black, label="Release"];
+    SideData [shape=box, color=black, label="SideData"];
+    SideDataIDs [shape=box, color=black, label="SideDataIDs"];
+    SideFlags [shape=box, color=black, label="SideFlags"];
+    Sides [shape=box, color=black, label="Sides"];
+
+    /* draco nodes */
+    rtt_dsxx [shape=house, color=blue, label="rtt_ds++"];
+    rtt_meshReaders [shape=house, color=blue, label="rtt_meshReaders"];
+
+    /* vendor nodes */
+
+    /* Package Dependencies */
+    rtt_RTT_Format_Reader [shape=house,color=blue,label="rtt_RTT_Format_Reader"];
+
+    /* level dependencies */
+    CellData -> { Dims Cells };
+    CellDataIDs -> { Dims };
+    CellDefs -> { Dims };
+    CellFlags -> { Dims Flags };
+    Cells -> { Dims CellFlags CellDefs Nodes };
+    Dims -> { };
+    Flags -> { };
+    Header -> { };
+    NodeData -> { Dims Nodes };
+    NodeDataIDs -> { Dims };
+    NodeFlags -> { Dims Flags };
+    Nodes -> { Dims NodeFlags };
+    RTT_Format_Reader -> { Header Dims Flags NodeFlags SideFlags CellFlags NodeDataIDs SideDataIDs CellDataIDs CellDefs Nodes Sides Cells NodeData SideData CellData };
+    RTT_Mesh_Reader -> { RTT_Format_Reader };
+    Release -> { };
+    SideData -> { Dims Sides };
+    SideDataIDs -> { Dims };
+    SideFlags -> { Dims Flags };
+    Sides -> { Dims SideFlags CellDefs Nodes };
+
+    /* level dependencies for packages */
+    rtt_dsxx -> { };
+    rtt_meshReaders -> { };
+    rtt_RTT_Format_Reader -> { rtt_dsxx rtt_meshReaders } [color=blue];
+
+    /* Levels */
+    l1 [shape=plaintext, label="Level 1", fontsize=18];
+    l2 [shape=plaintext, label="Level 2", fontsize=18];
+    l3 [shape=plaintext, label="Level 3", fontsize=18];
+    l4 [shape=plaintext, label="Level 4", fontsize=18];
+    l5 [shape=plaintext, label="Level 5", fontsize=18];
+    l6 [shape=plaintext, label="Level 6", fontsize=18];
+    l7 [shape=plaintext, label="Level 7", fontsize=18];
+
+    l7 -> l6 -> l5 -> l4 -> l3 -> l2 -> l1;
+
+    {rank=same; l1 Flags Dims Header Release rtt_dsxx rtt_meshReaders };
+    {rank=same; l2 NodeDataIDs SideDataIDs CellDataIDs CellFlags SideFlags CellDefs NodeFlags rtt_RTT_Format_Reader };
+    {rank=same; l3 Nodes};
+    {rank=same; l4 Cells NodeData Sides};
+    {rank=same; l5 CellData SideData};
+    {rank=same; l6 RTT_Format_Reader};
+    {rank=same; l7 RTT_Mesh_Reader};
+
+}
