@@ -21,6 +21,11 @@ template<class T>
 class c4_traits {
 };
 
+template<> class c4_traits<char *> {
+  public:
+    static const int Tag = C4_char_ptr_Tag;
+};
+
 template<> class c4_traits<int *> {
   public:
     static const int Tag = C4_int_ptr_Tag;
