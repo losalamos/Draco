@@ -1,101 +1,95 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   RTT_Format_Reader/test/TestRTTMeshReader.cc
- * \author B.T. Adams
- * \date   Tue Mar 14 09:48:00 2000
- * \brief  Header file for the RTT_Mesh_Reader class unit test.
+ * \author Thomas M. Evans
+ * \date   Wed Mar 27 10:41:12 2002
+ * \brief  RTT_Mesh_Reader test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "RTT_Format_Reader_test.hh"
 #include "TestRTTMeshReader.hh"
-#include "meshReaders/Release.hh"
+#include "../Release.hh"
+#include "ds++/Assert.hh"
 
-#include "UnitTestFrame/PassFailStream.hh"
-#include <sstream>
 #include <iostream>
+#include <vector>
+#include <cmath>
+#include <sstream>
 
-namespace rtt_UnitTestFrame
-{
+using namespace std;
 
-rtt_dsxx::SP<TestApp> TestApp::create(int &argc, char *argv[],
-				      std::ostream& os_in)
-{
-    using rtt_dsxx::SP;
-    using rtt_RTT_Mesh_Reader_test::TestRTT_Mesh_Reader;
-    
-    return SP<TestApp>(new TestRTT_Mesh_Reader(argc, argv, os_in));
-}
+using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
 
-} // end namespace rtt_UnitTestFrame
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
 
-namespace rtt_RTT_Mesh_Reader_test
-{
-
-TestRTT_Mesh_Reader::TestRTT_Mesh_Reader(int argc, char * argv[], 
-					     std::ostream & os_in)
-    : rtt_UnitTestFrame::TestApp(argc, argv, os_in)
-{
-    os() << "Created TestRTT_Mesh_Reader" << std::endl;
-}
-
-std::string TestRTT_Mesh_Reader::version() const
-{
-    return rtt_meshReaders::release();
-}
-
-/*!
- * \brief Tests the RTT_Mesh_Reader mesh reader.
- *
- */
-std::string TestRTT_Mesh_Reader::runTest()
+void runTest()
 {
     // New meshes added to this test will have to be added to the enumeration
     // Meshes in the header file.
     const int MAX_MESHES = 1;
     std::string filename[MAX_MESHES] = {"rttdef.mesh"};
-    Meshes mesh_type;
+    rtt_RTT_Mesh_Reader_test::Meshes mesh_type;
 
     for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++)
     {
         // Construct an RTT_Mesh_Reader class object from the data in the 
 	// specified mesh file. 
         RTT_Mesh_Reader mesh(filename[mesh_number]);
-	pass(" Construct ") << "Read " << filename[mesh_number] 
-			    << " without coreing in or firing an assertion." 
-			    << std::endl;
+	{
+	    ostringstream m;
+	    m << "Read " << filename[mesh_number] 
+	      << " without coreing in or firing an assertion." 
+	      << std::endl;
+	    PASSMSG(m.str());
+	}
 	bool all_passed = true;
 	// The following switch allows addition of other meshes for testing,
 	// with the "DEFINED" mesh providing an example.
         switch (mesh_number)
 	{
-	// Test all nested class accessor functions for a very simplistic 
-	// mesh file (enum DEFINED).
+	    // Test all nested class accessor functions for a very simplistic 
+	    // mesh file (enum DEFINED).
 	case (0):
-	    mesh_type = DEFINED;
+	    mesh_type = rtt_RTT_Mesh_Reader_test::DEFINED;
 	    all_passed = all_passed && check_virtual(mesh, mesh_type);
 	    break;
 
 	default:
-	    fail("runTest") << "Invalid mesh type encountered." << std::endl;
+	    FAILMSG("Invalid mesh type encountered.");
 	    all_passed = false;
 	    break;
 	}
 	if (!all_passed)
-	    fail(filename[mesh_number]) << "Errors occured testing mesh " 
-					<< "number " << mesh_type << std::endl;
+	{
+	    ostringstream m;
+	    m << "Errors occured testing mesh " 
+	      << "number " << mesh_type << std::endl;
+	    FAILMSG(m.str());
+	}
     }
 
     // Report results of test.
-    if (passed())
+    if (rtt_RTT_Format_Reader_test::passed)
     {
-	return "All tests passed.";
+	PASSMSG("All tests passed.");
     }
-    return "Some tests failed.";
+    else
+    {
+	FAILMSG("Some tests failed.");
+    }
 }
-bool TestRTT_Mesh_Reader::check_virtual(const RTT_Mesh_Reader & mesh, 
-					const Meshes & meshtype)
+
+//---------------------------------------------------------------------------//
+
+namespace rtt_RTT_Mesh_Reader_test
+{
+
+bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
 {
     // Exercise the virtual accessor functions for this mesh.
     bool all_passed = true;
@@ -130,23 +124,23 @@ bool TestRTT_Mesh_Reader::check_virtual(const RTT_Mesh_Reader & mesh,
 	// load the node numbers for the single tet cell defined in the input
 	// file (note that the node numbers are zero indexed).
 	side_nodes.push_back(1); side_nodes.push_back(2);
-	    side_nodes.push_back(3);
+	side_nodes.push_back(3);
 	element_nodes.push_back(side_nodes);
 	side_nodes.resize(0);
 	side_nodes.push_back(0); side_nodes.push_back(3);
-	    side_nodes.push_back(2);
+	side_nodes.push_back(2);
 	element_nodes.push_back(side_nodes);
 	side_nodes.resize(0);
 	side_nodes.push_back(0); side_nodes.push_back(1);
-	    side_nodes.push_back(3);
+	side_nodes.push_back(3);
 	element_nodes.push_back(side_nodes);
 	side_nodes.resize(0);
 	side_nodes.push_back(0); side_nodes.push_back(2);
-	    side_nodes.push_back(1);
+	side_nodes.push_back(1);
 	element_nodes.push_back(side_nodes);
 	side_nodes.resize(0);
 	side_nodes.push_back(0); side_nodes.push_back(1); 
-	    side_nodes.push_back(2); side_nodes.push_back(3);
+	side_nodes.push_back(2); side_nodes.push_back(3);
 	element_nodes.push_back(side_nodes);
 	side_nodes.resize(0);
 	// load the element types defined for RTT_Format according to the
@@ -205,7 +199,7 @@ bool TestRTT_Mesh_Reader::check_virtual(const RTT_Mesh_Reader & mesh,
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	// load the element (i.e., sides + cell) sets
 	flag_elements.insert(1); flag_elements.insert(2); 
-	    flag_elements.insert(3);
+	flag_elements.insert(3);
 	element_sets.insert(std::make_pair(std::string("boundary/reflective"),
 					   flag_elements));
 	flag_elements.erase(flag_elements.begin(),flag_elements.end());
@@ -231,79 +225,116 @@ bool TestRTT_Mesh_Reader::check_virtual(const RTT_Mesh_Reader & mesh,
 	break;
 
     default:
-        fail("check_virtual") << "Invalid mesh type encountered." << std::endl;
+	FAILMSG("Invalid mesh type encountered.");
 	all_passed = false;
 	return all_passed;
     }
     // Check node coords
     if (node_coords != mesh.get_node_coords())
     {
-        fail(" Node Coordinates ") << "Node coordinates not obtained." 
-				   << std::endl;
+	FAILMSG("Node coordinates not obtained.");
 	all_passed = false;
     }
     // Check coordinate units.
     if (node_coord_units != mesh.get_node_coord_units())
     {
-        fail(" Coordinates Units ") << "Coordinate units not obtained." 
-				    << std::endl;
+	FAILMSG("Coordinate units not obtained.");
  	all_passed = false;
     }
     if (element_nodes != mesh.get_element_nodes())
     {
-        fail(" Element Nodes ") << "Element nodes not obtained." << std::endl;
+	FAILMSG("Element nodes not obtained.");
  	all_passed = false;
     }
     // Check Element Types.
     if (element_types != mesh.get_element_types())
     {
-	fail(" Element Types ") << "Element Types not obtained." << std::endl;
+	FAILMSG("Element Types not obtained.");
  	all_passed = false;
     }
-     // Check Unique Element Types.
+    // Check Unique Element Types.
     if (unique_element_types != mesh.get_unique_element_types())
     {
-	fail(" Unique Element Types ") << "Unique Element Types not obtained."
-				       << std::endl;
+	FAILMSG("Unique Element Types not obtained.");
  	all_passed = false;
     }
-   // Check node sets.
+    // Check node sets.
     if (node_sets != mesh.get_node_sets())
     {
-        fail(" Node Sets ") << "Node sets not obtained." << std::endl;
+	FAILMSG("Node sets not obtained.");
  	all_passed = false;
     }
     // Check Element sets.
     if (element_sets != mesh.get_element_sets())
     {
-        fail(" Element Sets ") << "Element sets not obtained." << std::endl;
+	FAILMSG("Element sets not obtained.");
  	all_passed = false;
     }
     // Check title.
     if (title != mesh.get_title())
     {
-        fail(" Title ") << "Title not obtained." << std::endl;
+	FAILMSG("Title not obtained.");
  	all_passed = false;
     }
     // Check invariant.
     if (!mesh.invariant())
     {
-	fail(" Invariant ") << "Invariant not satisfied." << std::endl;
+	FAILMSG("Invariant not satisfied.");
  	all_passed = false;
     }
     if (all_passed)
-        pass(" Virtual Accessors " ) << "Got all virtual accessors." 
-				     << std::endl;
+    {
+        PASSMSG("Got all virtual accessors.");
+    }
     else
-	fail(" Virtual Accessors ") << "Errors in some virtual accessors." 
-				    << std::endl;
+    {
+	FAILMSG("Errors in some virtual accessors.");
+    }
 
     return all_passed;
 }
 
-} // end namespace rtt_RTT_Mesh_Reader_test
-
+} // end of rtt_RTT_Format_Reader_test
 
 //---------------------------------------------------------------------------//
-//                end of RTT_Format_Reader/test/TestRTTMeshReader.cc
+
+int main(int argc, char *argv[])
+{
+    // version tag
+    for (int arg = 1; arg < argc; arg++)
+	if (string(argv[arg]) == "--version")
+	{
+	    cout << argv[0] << ": version " << rtt_RTT_Format_Reader::release() 
+		 << endl;
+	    return 0;
+	}
+
+    try
+    {
+	// >>> UNIT TESTS
+	runTest();
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing TestRTTMeshReader, " << ass.what()
+	     << endl;
+	return 1;
+    }
+
+    // status of test
+    cout << endl;
+    cout <<     "*********************************************" << endl;
+    if (rtt_RTT_Format_Reader_test::passed) 
+    {
+        cout << "**** TestRTTMeshReader Test: PASSED" 
+	     << endl;
+    }
+    cout <<     "*********************************************" << endl;
+    cout << endl;
+
+    cout << "Done testing TestRTTMeshReader." << endl;
+}   
+
+//---------------------------------------------------------------------------//
+//                        end of TestRTTMeshReader.cc
 //---------------------------------------------------------------------------//
