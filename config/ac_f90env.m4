@@ -41,7 +41,7 @@ dnl
 
 dnl defines --with-f90
 AC_ARG_WITH(f90,[dnl
-  --with-f90[=XL,Fujitsu,Lahey,Portland,Absoft,WorkShop,Cray,MIPS,Compaq]     choose an F90 compiler
+  --with-f90[=XL,Fujitsu,Lahey,Portland,Absoft,WorkShop,Cray,MIPS,Compaq,HP]     choose an F90 compiler
 ])
 
 AC_DEFUN(AC_F90_ENV, [dnl
@@ -75,6 +75,9 @@ AC_DEFUN(AC_F90_ENV, [dnl
    Compaq)
        AC_COMPILER_COMPAQ_F90
    ;;
+   HP)
+       AC_COMPILER_HP_F90
+   ;;
    yes)				# guess compiler from target platform
        case "${target}" in   
        rs6000-ibm-aix*)
@@ -97,6 +100,9 @@ AC_DEFUN(AC_F90_ENV, [dnl
        ;;
        alphaev67-dec*)
           AC_COMPILER_COMPAQ_F90
+       ;;
+       *hp*)
+          AC_COMPILER_HP_F90
        ;;
        *)
           AC_MSG_ERROR([Cannot guess F90 compiler, set --with-f90])
@@ -521,6 +527,49 @@ AC_DEFUN(AC_COMPILER_MIPS_F90, [dnl
    fi
 
    dnl end of AC_COMPILER_MIPS_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl HP F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_COMPILER_HP_F90, [dnl
+
+   # CHECK FOR WORKING HP F90 COMPILER
+   AC_CHECK_PROG(F90, f90, f90, none)
+   if test "${F90}" = f90 && ${F90} +version 2>&1 | grep "HP"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
+   F90FREE='+source=free'
+   F90FIXED='+source=fixed'
+   MODFLAG='-I'
+
+   # LINKER AND LIBRARY (AR)
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='+noshared'
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g -C ${F90FLAGS}"
+       else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_HP_F90
 ])
 
 dnl ========================================================================
