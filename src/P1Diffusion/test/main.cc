@@ -11,9 +11,11 @@
 
 #include "nml/Group.hh"
 #include "ds++/SP.hh"
+#include "c4/global.hh"
 #include "mesh/Mesh_XYZ.hh"
 #include <iostream>
 #include <iomanip>
+#include <string>
 
 class Test_DB {
   public:
@@ -32,8 +34,26 @@ typedef MT::ccsf ccsf;
 
 using dsxx::SP;
 
-int main()
+void version(const std::string &progname)
+{
+    std::string version = "1.0.0";
+    std::cout << progname << ": version " << version << std::endl;
+}
+
+int main(int argc, char *argv[])
 {    
+    C4::Init( argc, argv );
+
+    for (int arg=1; arg < argc; arg++)
+    {
+	if (std::string(argv[arg]) == "--version")
+	{
+	    version(argv[0]);
+	    C4::Finalize();
+	    return 0;
+	}
+    }
+
     NML_Group g("testP1Diffusion");
 
     Diffusion_DB diffdb;
@@ -61,6 +81,8 @@ int main()
 						     diffdb, pcg_db);
     testP1.run();
     
+    C4::Finalize();
+
     return 0;
 }
 

@@ -938,7 +938,7 @@ EOF
 
 	test_alltarget="$test_alltarget TstPCG"
         
-	test_nprocs="1 2 4 8"
+	test_nprocs="1 2 5"
 
 
 

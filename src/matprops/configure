@@ -577,7 +577,7 @@ package="matprops"
        has_libdir="yes"
    fi
 
-   for lib in mesh radphys units ds++
+   for lib in radphys units ds++
    do
        # temporary string to keep line from getting too long
        draco_depends="\${libdir}/lib${lib}\${libsuffix}"

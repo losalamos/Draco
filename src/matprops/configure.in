@@ -15,7 +15,7 @@ package="matprops"
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(mesh radphys units ds++)
+AC_NEEDS_LIBS(radphys units ds++)
 
 AC_RUNTESTS(matprops, 1 2)
 AC_DRACO_ENV
