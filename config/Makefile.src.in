@@ -130,6 +130,15 @@ forced-maintainer-clean:
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
 
+##---------------------------------------------------------------------------##
+## ADDITIONAL RULES AND TARGETS
+##---------------------------------------------------------------------------##
+
+# any other hand-coded dependencies or any thing **additional** can
+# be put into Makefile.misc in the source directory
+
+-include ${srcdir}/Makefile.misc
+
 ###############################################################################
 #                       end of draco/src/ Makefile.in
 ###############################################################################
