@@ -358,7 +358,15 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        #
        # end of communication package setup
-       #
+       #       
+
+       # set rpath when building shared library executables
+       if test "${enable_shared}" = yes; then
+	   DRACO_LIBS="-rpath \${libdir} ${DRACO_LIBS}"
+	   PKG_LIBS="-rpath \${CURDIR}/.. ${PKG_LIBS}"
+	   LDFLAGS="-rpath \${CURDIR} ${LDFLAGS}"
+	   RANLIB=':'
+       fi
    ;;
    mips-sgi-irix6.*)
        # posix source defines, by default we set posix on 
@@ -508,6 +516,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        if test "${enable_shared}" = yes; then
 	   DRACO_LIBS="-R \${libdir} ${DRACO_LIBS}"
 	   PKG_LIBS="-R .. ${PKG_LIBS}"
+	   LDFLAGS="-R . ${LDFLAGS}"
 	   RANLIB=':'
        fi
    ;;
