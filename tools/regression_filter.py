@@ -34,13 +34,11 @@ hostname = socket.gethostname()
 # test_filter.py)
 
 banner   = re.compile(r'=+\s*(.*)\s+Output Summary\s*=+', re.IGNORECASE)
-
 passes   = re.compile(r'Pass.*:\s*([0-9]+)', re.IGNORECASE)
 failures = re.compile(r'Fail.*:\s*([0-9]+)', re.IGNORECASE)
-
 errors   = re.compile(r'error', re.IGNORECASE)
-
-warnings = re.compile(r'warn', re.IGNORECASE)
+warnings = re.compile(r'warn[a-z:]*\s+(?!AC\_TRY\_RUN).*', re.IGNORECASE)
+package  = re.compile(r'Entering.*src/([A-Za-z+_]+)/test', re.IGNORECASE)
 
 reg_host   = re.compile(r'.*>>>\s*HOSTNAME\s*:\s*(.+)', re.IGNORECASE)
 pkg_tag    = re.compile(r'.*>>>\s*PACKAGE\s*:\s*(.+)', re.IGNORECASE)
@@ -53,7 +51,11 @@ date_tag   = re.compile(r'.*>>>\s*DATE\s*:\s*(.+)', re.IGNORECASE)
 ##---------------------------------------------------------------------------##
 
 # dictionary of tests
-tests   = {}
+tests = {}
+
+# make a dictionary of package-tests
+pkg_tests = {}
+test_list = []
 
 # list of results: first entry is number of times run, second entry is 
 # total number of passes, third entry is total number of failures
@@ -78,8 +80,9 @@ script_tag_str = ''
 log_tag_str    = ''
 date_tag_str   = ''
 
-# initialize search key
-key = ''
+# initialize search keys
+key     = ''
+pkg_key = ''
 
 # initialize temp pass and fails
 np  = 0
@@ -119,7 +122,22 @@ for line in lines:
     match = date_tag.search(line)
     if match:
         date_tag_str = match.group(1)
-    
+
+    # search on package
+    match = package.search(line)
+
+    if match:
+
+        # make key
+        pkg_key = match.group(1)
+
+        # add to dictionary
+        if not pkg_tests.has_key(pkg_key):
+            test_list          = []
+            pkg_tests[pkg_key] = test_list
+        else:
+            test_list = pkg_tests[pkg_key]
+            
     # search on banners
     match = banner.search(line)
     
@@ -127,6 +145,11 @@ for line in lines:
 
         # test key
         key = match.group(1)
+
+        # add to list
+        if test_list.count(key) == 0:
+            test_list.append(key)
+            pkg_tests[pkg_key] = test_list
         
         # add to dictionary if not already there
         if not tests.has_key(key):
@@ -179,8 +202,6 @@ for line in lines:
         # add warning line number to list
         warn_line.append(ln)
 
-# Output from 
-
 # print out test results
 
 print "Regression output from %s package."   % (pkg_tag_str)
@@ -192,14 +213,26 @@ print
 
 print "%41s" % ("Test Results")
 print "======================================================================="
-print "%23s %15s %15s %15s" % ("Test","Num Run", "Num Passed", "Num Fail")
+print "%30s %10s %15s %13s" % ("Package | Test","Num Run", "Num Passed", "Num Fail")
 print "======================================================================="
-        
-for key in tests.keys():
-    results = tests[key]
-    print "%23s %15i %15i %15i" % (key, results[0], results[1],
-                                   results[2])
+
+for pkg in pkg_tests.keys():
+
+    print ">>>> " + pkg + " package <<<<"
     print "-----------------------------------------------------------------------"
+
+    nc = 0
+    nr = len(pkg_tests[pkg])
+    for key in pkg_tests[pkg]:
+        nc      = nc + 1
+        results = tests[key]
+        print "%30s %10i %15i %13i" % (key, results[0], results[1],
+                                       results[2])
+
+        if nc < nr:
+            print "-----------------------------------------------------------------------"
+        
+    print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 print
 
 print "Lines in logfile %s with errors and warning mesages appear below." % (log_tag_str)
