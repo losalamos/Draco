@@ -359,7 +359,7 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
    AR='ar'
    ARFLAGS=
    ARLIBS=
-   F90STATIC= -non-shared
+   F90STATIC='-non_shared'
 
    # COMPILATION FLAGS
 
