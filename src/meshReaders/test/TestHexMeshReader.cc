@@ -113,9 +113,10 @@ bool TestHexMeshReader::check_mesh(
     bool pass_in = check_invariant(mesh);
     bool pass_es = check_element_sets(mesh, testid);
     bool pass_et = check_element_types(mesh, testid);
+    bool pass_ut = check_unique_element_types(mesh, testid);
 
     return pass_nc && pass_cu && pass_ns && pass_ti && pass_en
-	&& pass_in && pass_es && pass_et;
+	&& pass_in && pass_es && pass_et && pass_ut;
 }
 
 bool TestHexMeshReader::check_nodes(
@@ -383,6 +384,39 @@ bool TestHexMeshReader::check_element_types(
 	pass(" Element Types ") << "Read Element Types." << std::endl;
     else
 	fail(" Element Types ") << "Error in Element Types." << std::endl;
+    return pass_et;
+}
+bool TestHexMeshReader::check_unique_element_types(
+    const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
+{
+    // Check Unique Element Types.
+    typedef rtt_meshReaders::Element_Definition et;
+    bool pass_et = true;
+    std::vector<rtt_meshReaders::Element_Definition::Element_Type>
+	etypes = mesh.get_unique_element_types();
+    if (testid == "slab")
+    { 
+	pass_et = pass_et && (etypes[0] == et::NODE && etypes[1] == et::BAR_2);
+    }
+    else if (testid == "quad")
+    {
+	pass_et = pass_et && (etypes[0] == et::NODE && etypes[1] == et::BAR_2
+	                  &&  etypes[2] == et::QUAD_4);
+    }
+    else if (testid == "cube") 
+    {
+	pass_et = pass_et && (etypes[0] == et::NODE && etypes[1] == et::BAR_2
+	                  &&  etypes[2] == et::QUAD_4 
+			  &&  etypes[3] == et::HEXA_8);
+    }
+    else
+	Insist(false,"Unrecognized test id string!");
+    if (pass_et) 
+	pass(" Unique Element Types ") << "Read Unique Element Types." 
+				       << std::endl;
+    else
+	fail(" Unique Element Types ") << "Error in Unique Element Types." 
+				       << std::endl;
     return pass_et;
 }
 

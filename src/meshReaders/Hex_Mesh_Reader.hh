@@ -129,6 +129,8 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     bool invariant() const;
     std::map<std::string, std::set<int> > get_element_sets() const;
     std::vector<Element_Definition::Element_Type> get_element_types() const;
+    std::vector<Element_Definition::Element_Type> get_unique_element_types() 
+        const;
 
   private:
     

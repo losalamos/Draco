@@ -86,6 +86,8 @@ class TestHexMeshReader : public rtt_UnitTestFrame::TestApp
 			    const std::string &testid);
     bool check_element_types(const rtt_meshReaders::Hex_Mesh_Reader &mesh, 
 			     const std::string &testid);
+    bool check_unique_element_types(const rtt_meshReaders::Hex_Mesh_Reader 
+				    &mesh, const std::string &testid);
     bool compare_double(const double &lhs, const double &rhs);
     bool check_map(const std::map<std::string, std::set<int> >
 		   &elmsets, const std::string &name, const int &begin, 

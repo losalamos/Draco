@@ -17,12 +17,11 @@
 namespace rtt_RTT_Format_Reader
 {
 /*!
- * \brief Transforms the RTT_Format data to the CYGNUS format.
+ * \brief Transforms the RTT_Format data to the CGNS format.
  */
-void RTT_Mesh_Reader::transform2CYGNUS()
+void RTT_Mesh_Reader::transform2CGNS()
 {
     rtt_meshReaders::Element_Definition::Element_Type cell_defs;
-    std::vector<rtt_meshReaders::Element_Definition::Element_Type> cell_types;
     rtt_dsxx::SP<rtt_meshReaders::Element_Definition> cell;
     vector_int new_side_types;
     vector_vector_int new_ordered_sides;
@@ -53,16 +52,16 @@ void RTT_Mesh_Reader::transform2CYGNUS()
 	else
 	    throw std::runtime_error("Unrecognized cell definition");
 
-	cell_types.push_back(cell_defs);
+	unique_element_types.push_back(cell_defs);
 	cell = new rtt_meshReaders::Element_Definition(cell_defs);
 	new_side_types.resize(cell->get_number_of_sides());
 	new_ordered_sides.resize(cell->get_number_of_sides());
 	for (int s = 0; s < cell->get_number_of_sides(); s++)
 	{
-	    new_side_types[s] = (std::find(cell_types.begin(), 
-					   cell_types.end(),
+	    new_side_types[s] = (std::find(unique_element_types.begin(), 
+					   unique_element_types.end(),
 					   cell->get_side_type(s).get_type())
-				 - cell_types.begin());
+				 - unique_element_types.begin());
 	    new_ordered_sides[s] = cell->get_side_nodes(s);
 	}
 	cell_side_types[cd] = new_side_types;
@@ -72,9 +71,11 @@ void RTT_Mesh_Reader::transform2CYGNUS()
 
     // Load the element types vector.
     for (int s = 0; s < rttMesh->get_dims_nsides(); s++)
-        element_types.push_back(cell_types[rttMesh->get_sides_type(s)]);
+        element_types.push_back(
+	    unique_element_types[rttMesh->get_sides_type(s)]);
     for (int c = 0; c < rttMesh->get_dims_ncells(); c++)
-        element_types.push_back(cell_types[rttMesh->get_cells_type(c)]);
+        element_types.push_back(
+	    unique_element_types[rttMesh->get_cells_type(c)]);
 }
 /*!
  * \brief Returns the node numbers associated with each element (i.e., sides

@@ -104,6 +104,8 @@ bool TestRTT_Mesh_Reader::check_virtual(const RTT_Mesh_Reader & mesh,
     std::vector<std::vector<int> > element_nodes;
     std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
         element_types;
+    std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
+        unique_element_types;
     std::map<std::string, std::set<int> > node_sets;
     std::map<std::string, std::set<int> > element_sets;
     std::string title;
@@ -154,6 +156,24 @@ bool TestRTT_Mesh_Reader::check_virtual(const RTT_Mesh_Reader & mesh,
 	element_types.push_back(rtt_meshReaders::Element_Definition::TRI_3); 
 	element_types.push_back(rtt_meshReaders::Element_Definition::TRI_3); 
 	element_types.push_back(rtt_meshReaders::Element_Definition::TETRA_4);
+	// load the unique element types defined for RTT_Format according to 
+	// the corresponding Element_Definition::Element_Type.
+	unique_element_types.push_back(
+	    rtt_meshReaders::Element_Definition::NODE); 
+	unique_element_types.push_back(
+	    rtt_meshReaders::Element_Definition::BAR_2); 
+	unique_element_types.push_back(
+	    rtt_meshReaders::Element_Definition::TRI_3); 
+	unique_element_types.push_back(
+	    rtt_meshReaders::Element_Definition::QUAD_4); 
+	unique_element_types.push_back(
+	    rtt_meshReaders::Element_Definition::PYRA_5); 
+	unique_element_types.push_back(
+	    rtt_meshReaders::Element_Definition::TETRA_4); 
+	unique_element_types.push_back(
+	    rtt_meshReaders::Element_Definition::PENTA_6); 
+	unique_element_types.push_back(
+	    rtt_meshReaders::Element_Definition::HEXA_8); 
 	// load the node sets
 	flag_nodes.insert(0);
 	node_sets.insert(std::make_pair(std::string("node_type/interior"), 
@@ -240,7 +260,14 @@ bool TestRTT_Mesh_Reader::check_virtual(const RTT_Mesh_Reader & mesh,
 	fail(" Element Types ") << "Element Types not obtained." << std::endl;
  	all_passed = false;
     }
-    // Check node sets.
+     // Check Unique Element Types.
+    if (unique_element_types != mesh.get_unique_element_types())
+    {
+	fail(" Unique Element Types ") << "Unique Element Types not obtained."
+				       << std::endl;
+ 	all_passed = false;
+    }
+   // Check node sets.
     if (node_sets != mesh.get_node_sets())
     {
         fail(" Node Sets ") << "Node sets not obtained." << std::endl;

@@ -29,9 +29,6 @@ RTT_Format_Reader::RTT_Format_Reader(const string & RTT_File)
  * \brief Parses the mesh file data via calls to the member data class objects
  *        public "read" member functions.
  * \param RTT_File Mesh file name.
- * \param renumber Turns the option to reassign the node, side, and cell 
- *        numbers based upon coordinates in ascending order (x, y, and then z)
- *        on and off (defaults to no renumbering).
  */
 void RTT_Format_Reader::readMesh(const string & RTT_File)
 {

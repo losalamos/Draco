@@ -59,6 +59,8 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
      rtt_dsxx::SP<RTT_Format_Reader> rttMesh;
      std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
          element_types;
+     std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
+         unique_element_types;
 
   public:
 
@@ -70,7 +72,7 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     RTT_Mesh_Reader(const string & RTT_File)
         : rttMesh(new RTT_Format_Reader(RTT_File))
     {
-        transform2CYGNUS();
+        transform2CGNS();
     }
 /*!
  * \brief Destroys an RTT_Mesh_Reader class object
@@ -104,6 +106,15 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
         get_element_types() const
     { return element_types; }
 
+/*!
+ * \brief Returns the unique element types (e.g., TRI_3 and TETRA_4) that 
+ *        are defined in the mesh file.
+ * \return Element definitions.
+ */
+    virtual std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
+        get_unique_element_types() const
+    { return unique_element_types; }
+
 
     virtual std::map<string, set_int > get_node_sets() const;
 
@@ -119,7 +130,7 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     // IMPLEMENTATION
   private:
     
-    void transform2CYGNUS();
+    void transform2CGNS();
 };
 
 } // end namespace rtt_RTT_Format_Reader

@@ -187,6 +187,35 @@ Hex_Mesh_Reader::get_element_types() const
     return tmp;
 }
 /*!
+ * Returns the unique element types defined in the mesh. Will
+ * always be one of rtt_meshReaders::Element_Definition::NODE,
+ * rtt_meshReaders::Element_Definition::BAR_2,
+ * rtt_meshReaders::Element_Definition::QUAD_4,
+ * or rtt_meshReaders::Element_Definition::HEXA_8.
+ */
+std::vector<Element_Definition::Element_Type> 
+Hex_Mesh_Reader::get_unique_element_types() const
+{
+    std::vector<Element_Definition::Element_Type> tmp;
+    tmp.push_back(Element_Definition::NODE);
+    tmp.push_back(Element_Definition::BAR_2);
+    switch ( ndim )
+    { 
+    case (1) :
+	break;
+    case (2) :
+	tmp.push_back(Element_Definition::QUAD_4);
+	break;
+    case (3) :
+	tmp.push_back(Element_Definition::QUAD_4);
+	tmp.push_back(Element_Definition::HEXA_8);
+	break;
+    default :
+	Insist(false,"Dimension index out of range!");
+    }
+    return tmp;
+}
+/*!
  * There is no provision for naming element sets in the Hex 
  * format. The following default names are provided for the sets
  * found on the mesh file: 

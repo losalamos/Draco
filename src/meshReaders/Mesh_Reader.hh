@@ -110,6 +110,14 @@ class Mesh_Reader
         const = 0;
 
     /*!
+     * \brief Returns the unique element types that are defined in the mesh.
+     *
+     */
+    virtual std::vector<Element_Definition::Element_Type> 
+        get_unique_element_types() 
+        const = 0;
+
+    /*!
      * \brief Returns node sub-sets.
      *
      * Returned node numbers are 0 based and refer to the nodes 
