@@ -30,8 +30,10 @@ namespace rtt_3T {
    private:
 
      typedef typename DS::MeshType MT;
+#ifdef P13T_MOMENTUM_DEPOSITION
      typedef typename
      CrossSectionMapper<DS>::DiscKineticEnergyField DiscKineticEnergyField;
+#endif
      typedef typename CrossSectionMapper<DS>::fcdsf fcdsf;
 
      // CREATORS
@@ -42,11 +44,13 @@ namespace rtt_3T {
 
      // ACCESSORS
 
+#ifdef P13T_MOMENTUM_DEPOSITION
      virtual void mapCrossSections(DiscKineticEnergyField &vcSigma,
 				   const fcdsf &fcSigma) const
      {
 	 MT::scatter(vcSigma, fcSigma, Op());
      }
+#endif
  };
 
 } // end namespace rtt_3T

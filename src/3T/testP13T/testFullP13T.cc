@@ -575,9 +575,15 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
     ccsf REEM(spMesh);
 	
     spP13T->solve3T(newRadState, QEEM, REEM,
-		    electEnergyDep, ionEnergyDep, momentumDeposition,
+		    electEnergyDep, ionEnergyDep,
+#ifdef P13T_MOMENTUM_DEPOSITION
+                    momentumDeposition,
+#endif
 		    TElec, TIon, *spDiffSolver, dt,
-		    testMaterialProps(matStateCC, matStateFC), velocity,
+		    testMaterialProps(matStateCC, matStateFC),
+#ifdef P13T_MOMENTUM_DEPOSITION
+                    velocity,
+#endif
 		    radState, QRad, QElectron, QIon, alpha, beta, bSrc);
 
     std::cerr << C4::node() << " Made it after solve3T" << endl;
