@@ -25,13 +25,13 @@ Hex_Format::Hex_Format(std::string filename)
     // Open the mesh file for read.
     std::ifstream meshfile(filename.c_str(), std::ios::in);
     if (!meshfile)
-	throw std::runtime_error("Could not open mesh-file!");
+	Insist(false,"Could not open mesh-file!");
 
     // Check to make sure this is a CIC-19 Hex format file.
     std::string chdum;
     meshfile >> chdum;
     if ( chdum != keyword() )
-	throw std::runtime_error("Not a CIC-19 Hex Mesh File!");
+	Insist(false,"Not a CIC-19 Hex Mesh File!");
 
     // Read in the dimensions of the problem.
     meshfile >> npoints >> ncells >> nvrtx >> nvrpf >> ndim >> nvb_faces
@@ -50,7 +50,7 @@ Hex_Format::Hex_Format(std::string filename)
 	    meshfile >> point_coords[i][0] >> point_coords[i][1]
 		     >> point_coords[i][2];
 	else
-	    throw std::runtime_error("Dimension index out of range!");  
+	    Insist(false,"Dimension index out of range!");  
     }
 
     // Read in the mesh connectivity.
@@ -132,7 +132,7 @@ std::vector<Element_Definition::Element_Type> Hex_Format::get_element_types() co
 	d2 = Element_Definition::QUAD_4;
 	break;
     default :
-	throw std::runtime_error("Dimension index out of range!");
+	Insist(false,"Dimension index out of range!");
     }
     std::vector<Element_Definition::Element_Type> tmp;
     for(int i=0; i<ncells; i++)

@@ -12,6 +12,7 @@
 #ifndef __meshReaders_Element_Definition_hh__
 #define __meshReaders_Element_Definition_hh__
 
+#include "ds++/Assert.hh"
 #include <vector>
 #include <string>
 #include <stdexcept>
@@ -263,10 +264,9 @@ class Element_Definition
      */
     Node_Location get_node_location(const int node_number) const
     {
-       if (node_number >= 0 && node_number < number_of_nodes) 
-	   return node_loc[node_number];
-       else
-	   throw std::runtime_error("Node index out of range!");
+       if (node_number < 0 || node_number >= number_of_nodes) 
+	   Insist(false,"Node index out of range!");
+       return node_loc[node_number]; 
     }
 
     /*!
@@ -287,14 +287,9 @@ class Element_Definition
      */
     Element_Definition get_side_type(const int side_number) const
     {
-	if ( side_number >= 0 && side_number < side_type.size() )
-	{
-	    return elem_defs[side_type[side_number] ];
-	}
-	else 
-	{
-	    throw std::runtime_error("Side index out of range!");
-	}
+	if ( side_number < 0 || side_number >= side_type.size() )
+	    Insist(false,"Side index out of range!");
+	return elem_defs[side_type[side_number] ];
     }
 
 
@@ -339,14 +334,9 @@ class Element_Definition
      */
     std::vector<int> get_side_nodes(const int side_number) const
     {
-	if (side_number >= 0 && side_number < side_nodes.size() )
-	{
-	    return side_nodes[side_number];
-	}
-	else
-	{
-	    throw std::runtime_error("Side index out of range!");
-	}
+	if (side_number < 0 || side_number >= side_nodes.size() )
+	    Insist(false,"Side index out of range!");
+	return side_nodes[side_number];
     }
 
     /*!
