@@ -37,11 +37,6 @@ ifeq ($(tst),s)
 srcs += tests.cc
 endif
 
-# the imc executable IMCTEST
-ifeq ($(tst),imc)
-srcs += imctest.cc
-endif
-
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.
 
