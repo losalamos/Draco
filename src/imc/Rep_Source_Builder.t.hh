@@ -130,15 +130,10 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     global_ncentot = local_ncentot;
     C4::gsum(global_ncentot);
 
-//***********************************************************************
-// ******* THE POST COMB CENSUS RESURRECTION/EW-ADJUSTMENT IS 
-// COMMENTED OUT UNTIL FULL DOMAIN DECOMPOSITION IS WORKING AND
-// PASSES ALL THE OLD REGRESSION TESTS.  TJU 28JUN00 
-//    // recalculate and reset the census particles' energy-weights
-//     recalc_census_ew_after_comb(mesh, max_dead_rand_id, dead_census,
-// 				global_eloss_comb); 
-//     reset_ew_in_census(local_ncentot, global_eloss_comb, ecentot); 
-//***********************************************************************
+   // recalculate and reset the census particles' energy-weights
+    recalc_census_ew_after_comb(mesh, max_dead_rand_id, dead_census,
+				global_eloss_comb); 
+    reset_ew_in_census(local_ncentot, global_eloss_comb, ecentot); 
 
     // add energy loss from the comb to the global census energy loss
     global_eloss_cen += global_eloss_comb;

@@ -143,21 +143,16 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     global_ncentot = local_ncentot;
     C4::gsum(global_ncentot);
 
-//***********************************************************************
-// ******* THE POST COMB CENSUS RESURRECTION/EW-ADJUSTMENT IS 
-// COMMENTED OUT UNTIL FULL DOMAIN DECOMPOSITION IS WORKING AND
-// PASSES ALL THE OLD REGRESSION TESTS.  TJU 28JUN00 
-//     // recalculate the census particles' energy-weights
-//     recalc_census_ew_after_comb(mesh, max_dead_rand_id, dead_census,
-// 				global_eloss_comb);
-//
-//     // update total numbers of census particles
-//     global_ncentot = local_ncentot;
-//     C4::gsum(global_ncentot);
-// 
-//     // reset the census particles' energy-weights
-//     reset_ew_in_census(local_ncentot, global_eloss_comb, global_ecentot);
-//***********************************************************************
+    // recalculate the census particles' energy-weights
+    recalc_census_ew_after_comb(mesh, max_dead_rand_id, dead_census,
+				global_eloss_comb);
+
+    // update total numbers of census particles
+    global_ncentot = local_ncentot;
+    C4::gsum(global_ncentot);
+
+    // reset the census particles' energy-weights
+    reset_ew_in_census(local_ncentot, global_eloss_comb, global_ecentot);
 
     // add energy loss from the comb to the global census energy loss
     global_eloss_cen += global_eloss_comb;
@@ -415,6 +410,12 @@ void DD_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh,
     int num_resurrected  = 0;
     double e_resurrected = 0.0;
 
+    // make a temporary cell-centered scalar field to hold the post-comb, 
+    // pre-resurrected values of local_ncen
+    ccsf_int old_local_ncen(mesh);
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	old_local_ncen(cell) = local_ncen(cell);
+
     // loop through dead census particles and resurrect if there exists
     // globally unsampled energy and if the particle has the maximum random
     // number stream id in its cell
@@ -429,7 +430,7 @@ void DD_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh,
 	Sprng dead_random = dead_particle->get_random();
 
 	// resurrect the particle if needed
-        if (local_ncen(loc_dead_cell) == 0)
+        if (old_local_ncen(loc_dead_cell) == 0)
 	    if (ecen(loc_dead_cell) > 0.0)
 		if (dead_random.get_num() == max_dead_rand_id(loc_dead_cell))
 		{
