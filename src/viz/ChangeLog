@@ -1,3 +1,20 @@
+2004-11-29  Rob Lowrie  <lowrie@lanl.gov>
+
+	* Added write_part() function, which allows writing on a per-part
+	basis.  This way, parallel dumps may be done on a per-processor
+	basis, as opposed to collecting all data on a single processor
+	before dumping.  A "part" is what ensight_dump() refers to as a 
+	"region."  The part nomenclature follows the ensight
+	documentation.
+
+	* Lots of internal code rearrangement.
+
+2004-11-15  Rob Lowrie  <lowrie@lanl.gov>
+
+	* Switched to Enight Gold format.  Added option to dump binary
+	ensight files.  Note that the tests for binary format need more
+	work (see tstEnsight_Translator.cc).
+
 2003-05-06  Thomas M. Evans  <tme@lanl.gov>
 
 	* Ensight_Translator: got rid of constructors where the dump_times
@@ -5,7 +22,7 @@
 	on the IBM platforms because of a bug in xlC.  Now there is one
 	simple constructor available that allows you to overwrite the
 	existing ensight directory.  The default is to append, not
-	overwrite. 
+	overwrite.
 
 2002-05-09  Thomas M. Evans  <tme@lanl.gov>
 

@@ -27,8 +27,12 @@ namespace rtt_viz
  */
 Ensight_Stream& endl(Ensight_Stream &s)
 {
+    Require(s.d_stream.is_open());
+    
     if ( ! s.d_binary )
 	s.d_stream << std::endl;
+
+    Require(s.d_stream.good());
     
     return s;
 }
@@ -36,6 +40,38 @@ Ensight_Stream& endl(Ensight_Stream &s)
 //---------------------------------------------------------------------------//
 /*!
  * \brief Constructor
+ *
+ * This constructor opens the stream, if \a file_name is non-empty.
+ * See open() for more information.
+ *
+ * \param file_name  Name of output file.
+ * \param binary     If true, output binary.  Otherwise, output ascii.
+ * \param geom_file  If true, then a geometry file will be dumped.
+ */
+Ensight_Stream::Ensight_Stream(const std::string &file_name,
+			       const bool binary,
+			       const bool geom_file)
+{
+    if (! file_name.empty())
+    {
+	open(file_name, binary, geom_file);
+    }
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Destructor
+ *
+ * Automatically closes stream, if open.
+ */
+Ensight_Stream::~Ensight_Stream()
+{
+    close();
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Opens the stream.
  *
  * \a geom_file is used only so that the "C Binary" header may be dumped when
  * \a binary is true.  If the geometry file is binary, Ensight assumes that
@@ -46,12 +82,13 @@ Ensight_Stream& endl(Ensight_Stream &s)
  * \param binary     If true, output binary.  Otherwise, output ascii.
  * \param geom_file  If true, then a geometry file will be dumped.
  */
-Ensight_Stream::Ensight_Stream(const std::string &file_name,
-			       const bool binary,
-			       const bool geom_file)
-    : d_binary(binary)
+void Ensight_Stream::open(const std::string &file_name,
+			  const bool binary,
+			  const bool geom_file)
 {
     Require(! file_name.empty());
+
+    d_binary = binary;
     
     // Open the stream.
     
@@ -81,14 +118,30 @@ Ensight_Stream::Ensight_Stream(const std::string &file_name,
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Closes the stream.
+ */
+void Ensight_Stream::close()
+{
+    if ( d_stream.is_open() )
+    {
+	d_stream.close();
+    }
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Output for ints.
  */
 Ensight_Stream& Ensight_Stream::operator<<(const int i)
 {
+    Require(d_stream.is_open());
+    
     if ( d_binary )
 	binary_write(i);
     else
 	d_stream << std::setw(10) << i;
+
+    Ensure(d_stream.good());
     
     return *this;
 }
@@ -102,9 +155,14 @@ Ensight_Stream& Ensight_Stream::operator<<(const int i)
  */
 Ensight_Stream& Ensight_Stream::operator<<(const std::size_t i)
 {
+    Require(d_stream.is_open());
+
     int j(i);
     Check(j >= 0);
     *this << j;
+
+    Ensure(d_stream.good());
+
     return *this;
 }
 
@@ -116,10 +174,14 @@ Ensight_Stream& Ensight_Stream::operator<<(const std::size_t i)
  */
 Ensight_Stream& Ensight_Stream::operator<<(const double d)
 {
+    Require(d_stream.is_open());
+
     if ( d_binary )
 	binary_write(float(d));
     else
 	d_stream << std::setw(12) << d;
+
+    Ensure(d_stream.good());
     
     return *this;
 }
@@ -130,6 +192,8 @@ Ensight_Stream& Ensight_Stream::operator<<(const double d)
  */
 Ensight_Stream& Ensight_Stream::operator<<(const std::string &s)
 {
+    Require(d_stream.is_open());
+
     if ( d_binary )
     {
 	// Ensight demands all character strings be 80 chars.  Make it so.
@@ -140,6 +204,8 @@ Ensight_Stream& Ensight_Stream::operator<<(const std::string &s)
     else
 	d_stream << s;
     
+    Ensure(d_stream.good());
+
     return *this;
 }
 
@@ -149,9 +215,14 @@ Ensight_Stream& Ensight_Stream::operator<<(const std::string &s)
  */
 Ensight_Stream& Ensight_Stream::operator<<(FP f)
 {
+    Require(d_stream.is_open());
+
     Require(f);
     
     f(*this);
+
+    Ensure(d_stream.good());
+
     return *this;
 }
 
@@ -170,6 +241,8 @@ Ensight_Stream& Ensight_Stream::operator<<(FP f)
 template <class T>
 void Ensight_Stream::binary_write(const T v)
 {
+    Require(d_stream.is_open());
+
     char *vc = new char[sizeof(T)];
 
     rtt_dsxx::Packer p;
@@ -178,6 +251,8 @@ void Ensight_Stream::binary_write(const T v)
 
     d_stream.write(vc, sizeof(T));
     delete[] vc;
+
+    Ensure(d_stream.good());
 }
 
 } // end of rtt_viz

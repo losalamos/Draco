@@ -22,7 +22,141 @@ using std::string;
 using std::setiosflags;
 
 //---------------------------------------------------------------------------//
-// CREATEFILENAMES PRIVATE
+// PUBLIC FUNCTIONS
+//---------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Opens the geometry and variable files.
+ *
+ * \param icycle Cycle number for this dump.
+ * \param time   Time value for this dump.
+ * \param dt     Timestep at this dump.  This parameter is only used for
+ *               diagnotics and is not placed in the Ensight dump.
+ */
+void Ensight_Translator::
+open(const int        icycle,
+     const double     time,
+     const double     dt)
+{
+    Insist(! d_geom_out.is_open(),
+	   "Attempted to open an already open geometry file!");
+
+    using std::string;
+    using std::ostringstream;
+
+    // Increment local dump counter and add dump time
+    d_dump_times.push_back(time);
+    int igrdump_num = d_dump_times.size();
+    Check (igrdump_num < 10000);
+
+    // create ensight postfix indicators
+    ostringstream postfix_build;
+    ostringstream post_number;
+
+    if (igrdump_num < 10)
+	post_number << "000" << igrdump_num;
+    else if (igrdump_num < 100) 
+	post_number << "00" << igrdump_num;
+    else if (igrdump_num < 1000) 
+	post_number << "0" << igrdump_num;
+    else 
+	post_number << igrdump_num;
+
+    postfix_build << "data." << post_number.str();
+    string postfix = postfix_build.str();
+
+    // announce the graphics dump
+    std::cout << ">>> ENSIGHT GRAPHICS DUMP: icycle= " << icycle 
+	      << " time= " << time << " dt= " << dt << std::endl
+	      << "dir= " << d_prefix << ", dump_number= " 
+	      << igrdump_num << std::endl;
+    
+    // write case file
+    write_case();
+
+    // >>> Open the geometry file.
+
+    if ( (! d_static_geom ) ||
+	 (d_dump_times.size() == 1) )
+    {
+
+	// make output file for this timestep
+	string filename  = d_geo_dir + "/";
+	if ( d_static_geom ) {
+	    filename += "data";
+	}
+	else {
+	    filename += postfix;
+	}
+
+	d_geom_out.open(filename, d_binary, true);
+	
+	// write the header
+	d_geom_out << "Description line 1" << endl;
+	
+	ostringstream s;
+	s << "probtime " << time << " cycleno " << icycle;
+	d_geom_out << s.str() << endl;
+    
+	d_geom_out << "node id given" << endl;
+	d_geom_out << "element id given" << endl;
+    }
+
+    // >>> Open the vertex data files.
+
+    d_vertex_out.resize(d_cdata_names.size());
+    
+    // loop over all vertex data fields and write out data for each field
+    for (int nvd = 0; nvd < d_vdata_names.size(); nvd++)
+    {
+	// open file for this data
+	std::string filename  = d_vdata_dirs[nvd] + "/" + postfix;
+	d_vertex_out[nvd] = new Ensight_Stream(filename, d_binary);
+
+	*d_vertex_out[nvd] << d_vdata_names[nvd] << endl;
+    }
+
+    // >>> Open the cell data files.
+
+    d_cell_out.resize(d_cdata_names.size());
+    
+    // loop over all cell data fields
+    for (int ncd = 0; ncd < d_cdata_names.size(); ncd++)
+    {
+	// open file for this data
+	std::string filename  = d_cdata_dirs[ncd] + "/" + postfix;
+	d_cell_out[ncd] = new Ensight_Stream(filename, d_binary);
+
+	*d_cell_out[ncd] << d_cdata_names[ncd] << endl;
+    }
+}
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Closes any open file streams.
+ *
+ * Calling this function is unnecessary if this object is destroyed.
+ */
+void Ensight_Translator::
+close()
+{
+    if ( d_geom_out.is_open() ) d_geom_out.close();
+
+    for ( int i = 0; i < d_vertex_out.size(); i++ )
+    {
+	if ( d_vertex_out[i]->is_open() ) d_vertex_out[i]->close();
+    }
+
+    for ( int i = 0; i < d_cell_out.size(); i++ )
+    {
+	if ( d_cell_out[i]->is_open() ) d_cell_out[i]->close();
+    }
+}
+
+//---------------------------------------------------------------------------//
+// PRIVATE FUNCTIONS
+//---------------------------------------------------------------------------//
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Creates some of the file prefixes and filenames for ensight dump.
@@ -30,18 +164,16 @@ using std::setiosflags;
  * \param prefix std_string giving the name of the problem
  * \param gd_wpath directory where dumps are stored
  */
-void Ensight_Translator::createFilenames(const std_string &prefix,
-					 const std_string &gd_wpath)
+void Ensight_Translator::create_filenames(const std_string &prefix,
+					  const std_string &gd_wpath)
 {
     // ensight directory name
-    d_ens_prefix = gd_wpath + "/" + prefix + "_ensight";
+    d_prefix = gd_wpath + "/" + prefix + "_ensight";
 
     // case file name
-    d_case_filename = d_ens_prefix + "/" + prefix + ".case";
+    d_case_filename = d_prefix + "/" + prefix + ".case";
 }
 
-//---------------------------------------------------------------------------//
-// INITIALIZE PRIVATE
 //---------------------------------------------------------------------------//
 /*!
  * \brief Common initializer for constructors.
@@ -53,31 +185,31 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 {
     using std::strerror;
 
-    d_num_ensight_cell_types = 15;
+    d_num_cell_types = 15;
 
-    // Assign values to d_ensight_cell_names. These are
+    // Assign values to d_cell_names. These are
     // the official "Ensight" names that must be used in 
     // the Ensight file.
-    d_ensight_cell_names.resize(d_num_ensight_cell_types);
-    d_ensight_cell_names[0]  = "point";
-    d_ensight_cell_names[1]  = "bar2";
-    d_ensight_cell_names[2]  = "bar3";
-    d_ensight_cell_names[3]  = "tria3";
-    d_ensight_cell_names[4]  = "tria6";
-    d_ensight_cell_names[5]  = "quad4";
-    d_ensight_cell_names[6]  = "quad8";
-    d_ensight_cell_names[7]  = "tetra4";
-    d_ensight_cell_names[8]  = "tetra10";
-    d_ensight_cell_names[9]  = "pyramid5";
-    d_ensight_cell_names[10] = "pyramid13";
-    d_ensight_cell_names[11] = "hexa8";
-    d_ensight_cell_names[12] = "hexa20";
-    d_ensight_cell_names[13] = "penta6";
-    d_ensight_cell_names[14] = "penta15";
+    d_cell_names.resize(d_num_cell_types);
+    d_cell_names[0]  = "point";
+    d_cell_names[1]  = "bar2";
+    d_cell_names[2]  = "bar3";
+    d_cell_names[3]  = "tria3";
+    d_cell_names[4]  = "tria6";
+    d_cell_names[5]  = "quad4";
+    d_cell_names[6]  = "quad8";
+    d_cell_names[7]  = "tetra4";
+    d_cell_names[8]  = "tetra10";
+    d_cell_names[9]  = "pyramid5";
+    d_cell_names[10] = "pyramid13";
+    d_cell_names[11] = "hexa8";
+    d_cell_names[12] = "hexa20";
+    d_cell_names[13] = "penta6";
+    d_cell_names[14] = "penta15";
 
     // Assign values to vrtx_count, the number of vertices 
     // in a cell.
-    d_vrtx_cnt.resize(d_num_ensight_cell_types);
+    d_vrtx_cnt.resize(d_num_cell_types);
     d_vrtx_cnt[0]  = 1;
     d_vrtx_cnt[1]  = 2;
     d_vrtx_cnt[2]  = 3;
@@ -96,7 +228,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 
     // Assign values to d_cell_type_index. The user will
     // use these to identify cell types.
-    d_cell_type_index.resize(d_num_ensight_cell_types);
+    d_cell_type_index.resize(d_num_cell_types);
     d_cell_type_index[0]  = point;
     d_cell_type_index[1]  = two_node_bar;
     d_cell_type_index[2]  = three_node_bar;
@@ -118,10 +250,10 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     { 
 	// remove old ensight directory
 	std::ostringstream rm_ensight;
-	rm_ensight << "rm -rf " << d_ens_prefix;
+	rm_ensight << "rm -rf " << d_prefix;
 	system(rm_ensight.str().c_str());
 
-	int err = mkdir(d_ens_prefix.c_str(), ENSIGHT_DIR_MODE);
+	int err = mkdir(d_prefix.c_str(), ENSIGHT_DIR_MODE);
 	if (err == -1)
 	{
 	    std::ostringstream dir_error;
@@ -138,16 +270,16 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     // names will be used to label output and to create directories,
     // the names should also be unique.
 
-    int nens_vdata = d_ens_vdata_names.size();
-    int nens_cdata = d_ens_cdata_names.size();
+    int nvdata = d_vdata_names.size();
+    int ncdata = d_cdata_names.size();
 
     typedef std::vector<sf_string::iterator> SFS_iter_vec;
     // Create a name list for testing.
-    sf_string name_tmp(nens_vdata+nens_cdata);
-    for (int i=0; i < nens_vdata; i++ )
-	name_tmp[i] = d_ens_vdata_names[i];
-    for (int i=0; i < nens_cdata; i++ )
-	name_tmp[i+nens_vdata] = d_ens_cdata_names[i];
+    sf_string name_tmp(nvdata+ncdata);
+    for (int i=0; i < nvdata; i++ )
+	name_tmp[i] = d_vdata_names[i];
+    for (int i=0; i < ncdata; i++ )
+	name_tmp[i+nvdata] = d_cdata_names[i];
     // Check for name lengths out of limits
     {
 	int low = 1;
@@ -201,24 +333,24 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 
     // calculate and make the geometry directory if this is not a
     // continuation
-    d_geo_dir = d_ens_prefix + "/geo";
+    d_geo_dir = d_prefix + "/geo";
     if (!graphics_continue)
 	mkdir(d_geo_dir.c_str(), ENSIGHT_DIR_MODE);
 
     // make data directory names and directories
-    d_vdata_dirs.resize(d_ens_vdata_names.size());
-    d_cdata_dirs.resize(d_ens_cdata_names.size());
-    for (int i = 0; i < d_ens_vdata_names.size(); i++)
+    d_vdata_dirs.resize(d_vdata_names.size());
+    d_cdata_dirs.resize(d_cdata_names.size());
+    for (int i = 0; i < d_vdata_names.size(); i++)
     {
-	d_vdata_dirs[i] = d_ens_prefix + "/" + d_ens_vdata_names[i];
+	d_vdata_dirs[i] = d_prefix + "/" + d_vdata_names[i];
 	
 	// if this is not a continuation make the directory
 	if (!graphics_continue)
 	    mkdir(d_vdata_dirs[i].c_str(), ENSIGHT_DIR_MODE);
     }
-    for (int i = 0; i < d_ens_cdata_names.size(); i++)
+    for (int i = 0; i < d_cdata_names.size(); i++)
     {
-	d_cdata_dirs[i] = d_ens_prefix + "/" + d_ens_cdata_names[i];
+	d_cdata_dirs[i] = d_prefix + "/" + d_cdata_names[i];
 
 	// if this is not a continuation make the directory
 	if (!graphics_continue)
@@ -227,12 +359,10 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 }
 
 //---------------------------------------------------------------------------//
-// WRITE ENSIGHT CASE FILE
-//---------------------------------------------------------------------------//
 /*!
  * \brief Write out case file.
  */
-void Ensight_Translator::ensight_case()
+void Ensight_Translator::write_case()
 {
     // create the case file name (directory already created)
     const char *filename = d_case_filename.c_str();
@@ -256,18 +386,18 @@ void Ensight_Translator::ensight_case()
     caseout << "VARIABLE" << endl;
 
     // write the pointer to the node variables
-    for (int i = 0; i < d_ens_vdata_names.size(); i++)
+    for (int i = 0; i < d_vdata_names.size(); i++)
 	caseout << "scalar per node:    1  " << setw(19)
 		<< setiosflags(ios::left)
-		<< d_ens_vdata_names[i] << setw(4) << " "
-		<< "./" << d_ens_vdata_names[i] << "/data.****" << endl;
+		<< d_vdata_names[i] << setw(4) << " "
+		<< "./" << d_vdata_names[i] << "/data.****" << endl;
 
     // write the pointer to the cell variables
-    for (int i = 0; i < d_ens_cdata_names.size(); i++)
+    for (int i = 0; i < d_cdata_names.size(); i++)
 	caseout << "scalar per element: 1  " << setw(19)
 		<< setiosflags(ios::left)
-		<< d_ens_cdata_names[i] << setw(4) << " "
-		<< "./" << d_ens_cdata_names[i] << "/data.****" << endl;
+		<< d_cdata_names[i] << setw(4) << " "
+		<< "./" << d_cdata_names[i] << "/data.****" << endl;
 
     caseout << endl;
     // write out the time block

@@ -18,6 +18,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <set>
+#include <algorithm>
 #include <cmath>
 #include <stdlib.h> 
 
@@ -35,20 +37,27 @@ void ensight_dump_test(const bool binary)
     int ndata    = 2;
     int nhexvert = 8;
     int nrgn     = 2;
+
+    typedef vector<string> vec_s;
+    typedef vector<int>    vec_i;
+    typedef vector<vec_i>  vec2_i;
+    typedef vector<vec2_i> vec3_i;
+    typedef vector<double> vec_d;
+    typedef vector<vec_d>  vec2_d;
+    typedef vector<vec2_d> vec3_d;
     
     // do an Ensight Dump
-    vector<vector<int> >    ipar(ncells, vector<int>(nhexvert));
-    vector<vector<double> > ens_vrtx_data(nvert, vector<double>(ndata, 5.0)); 
-    vector<vector<double> > ens_cell_data(ncells, vector<double>(ndata, 10.));   
-    vector<vector<double> > pt_coor(nvert, vector<double>(ndim));
+    vec2_i ipar(ncells, vec_i(nhexvert));
+    vec2_d vrtx_data(nvert, vec_d(ndata, 5.0)); 
+    vec2_d cell_data(ncells, vec_d(ndata, 10.));   
+    vec2_d pt_coor(nvert, vec_d(ndim));
   
-    vector<int>    iel_type(ncells, 
-    			    rtt_viz::eight_node_hexahedron);
-    vector<int>    rgn_index(ncells, 1);
-    vector<string> ens_vdata_names(ndata, "Temperatures");
-    vector<string> ens_cdata_names(ndata, "Velocity");
-    vector<string> rgn_name(nrgn, "RGN_A");
-    vector<int>    rgn_data(nrgn, 1);
+    vec_i iel_type(ncells, rtt_viz::eight_node_hexahedron);
+    vec_i rgn_index(ncells, 1);
+    vec_s vdata_names(ndata, "Temperatures");
+    vec_s cdata_names(ndata, "Velocity");
+    vec_s rgn_name(nrgn, "RGN_A");
+    vec_i rgn_data(nrgn, 1);
 
     // set region stuff
     rgn_name[1] = "RGN_B";
@@ -58,8 +67,8 @@ void ensight_dump_test(const bool binary)
     rgn_index[14] = 2;
     rgn_index[15] = 2;
     rgn_index[21] = 2;
-    ens_vdata_names[1] = "Densities";
-    ens_cdata_names[1] = "Pressure";
+    vdata_names[1] = "Densities";
+    cdata_names[1] = "Pressure";
 
     string prefix   = "testproblem";
     if ( binary )
@@ -75,11 +84,11 @@ void ensight_dump_test(const bool binary)
     {
 	// cell data
 	for (int cell = 0; cell < ncells; cell++)
-	    ens_cell_data[cell][i] = 1 + cell;
+	    cell_data[cell][i] = 1 + cell;
 
 	// vrtx data
 	for (int v = 0; v < nvert; v++)
-	    ens_vrtx_data[v][i] = 1 + v;
+	    vrtx_data[v][i] = 1 + v;
     }
 
     // read cell data
@@ -93,55 +102,135 @@ void ensight_dump_test(const bool binary)
 
     const bool static_geom = false;
 
+    // Find global indices for write_part() version.
+
+    vec2_i g_cell_indices(nrgn);
+    vector<set<int> > tmp_vrtx(nrgn);
+    for ( int i = 0; i < ncells; i++ )
+    {
+	int ipart = rgn_index[i] - 1;
+	g_cell_indices[ipart].push_back(i);
+	for ( int j = 0; j < ipar[i].size(); j++ )
+	    tmp_vrtx[ipart].insert(ipar[i][j] - 1);
+    }
+
+    typedef set<int>::const_iterator set_iter;
+    vec2_i g_vrtx_indices(nrgn);
+    for ( int i = 0; i < nrgn; i++ )
+    {
+	for ( set_iter s = tmp_vrtx[i].begin(); s != tmp_vrtx[i].end(); ++s )
+	    g_vrtx_indices[i].push_back(*s);
+    }
+
+    // Create the equivalent data arrays for the write_part() versions.
+
+    vec3_i p_ipar(nrgn);
+    vec3_d p_vrtx_data(nrgn);
+    vec3_d p_cell_data(nrgn);
+    vec3_d p_pt_coor(nrgn);
+    vec2_i p_iel_type(nrgn);
+
+    for ( int i = 0; i < nrgn; i++ )
+    {
+	int p_ncells = g_cell_indices[i].size();
+	int p_nvert  = g_vrtx_indices[i].size();
+	p_ipar[i].resize(p_ncells, vec_i(nhexvert));
+	p_vrtx_data[i].resize(p_nvert, vec_d(ndata, 5.0)); 
+	p_cell_data[i].resize(p_ncells, vec_d(ndata, 10.));   
+	p_pt_coor[i].resize(p_nvert, vec_d(ndim));
+  	p_iel_type[i].resize(p_ncells, rtt_viz::eight_node_hexahedron);
+
+	for ( int j = 0; j < p_nvert; j++ )
+	{
+	    int g = g_vrtx_indices[i][j];
+	    cout << g << endl;
+	    p_vrtx_data[i][j] = vrtx_data[g];
+	    p_pt_coor[i][j] = pt_coor[g];
+	}
+	
+	for ( int j = 0; j < p_ncells; j++ )
+	{
+	    int g = g_cell_indices[i][j];
+	    p_cell_data[i][j] = cell_data[g];
+	    p_iel_type[i][j]  = iel_type[g];
+
+	    for ( int k = 0; k < ipar[g].size(); k++ )
+	    {
+		int tmp =  ipar[g][k] - 1;
+
+		vector<int>::iterator f = find(g_vrtx_indices[i].begin(),
+					       g_vrtx_indices[i].end(), tmp);
+
+		Require(f !=  g_vrtx_indices[i].end());
+		p_ipar[i][j][k] = f - g_vrtx_indices[i].begin() + 1;
+	    }
+	}
+    }
+
     // build an Ensight_Translator (make sure it overwrites any existing
     // stuff) 
-    Ensight_Translator translator(prefix, gd_wpath, ens_vdata_names,
-				  ens_cdata_names, true, static_geom,
+    Ensight_Translator translator(prefix, gd_wpath, vdata_names,
+				  cdata_names, true, static_geom,
 				  binary); 
 
     translator.ensight_dump(icycle, time, dt,
 			    ipar, iel_type, rgn_index, pt_coor,
-			    ens_vrtx_data, ens_cell_data,
+			    vrtx_data, cell_data,
 			    rgn_data, rgn_name);
 
-    vector<double> dump_times = translator.get_dump_times();
+    vec_d dump_times = translator.get_dump_times();
     if (dump_times.size() != 1) ITFAILS;
     if (dump_times[0] != .01)   ITFAILS;
 
     // build another ensight translator; this should overwrite the existing
     // directories
-    Ensight_Translator translator2(prefix, gd_wpath, ens_vdata_names,
-				   ens_cdata_names, true, static_geom,
+    Ensight_Translator translator2(prefix, gd_wpath, vdata_names,
+				   cdata_names, true, static_geom,
 				   binary); 
     
     translator2.ensight_dump(icycle, time, dt,
 			     ipar, iel_type, rgn_index, pt_coor,
-			     ens_vrtx_data, ens_cell_data,
+			     vrtx_data, cell_data,
 			     rgn_data, rgn_name);
 
     // build another ensight translator from the existing dump times list;
     // thus we will not overwrite the existing directories
 
-    Ensight_Translator translator3(prefix, gd_wpath, ens_vdata_names,
- 				   ens_cdata_names, false, static_geom,
+    Ensight_Translator translator3(prefix, gd_wpath, vdata_names,
+ 				   cdata_names, false, static_geom,
 				   binary); 
     
     // now add another dump to the existing data
     translator3.ensight_dump(2, .05, dt,
 			     ipar, iel_type, rgn_index, pt_coor,
-			     ens_vrtx_data, ens_cell_data,
+			     vrtx_data, cell_data,
 			     rgn_data, rgn_name);    
 
     // make yet a fourth translator that will append
-    Ensight_Translator translator4(prefix, gd_wpath, ens_vdata_names,
-				   ens_cdata_names, false, static_geom,
+    Ensight_Translator translator4(prefix, gd_wpath, vdata_names,
+				   cdata_names, false, static_geom,
 				   binary); 
     
     // add yet another dump to the existing data
     translator4.ensight_dump(3, .10, dt,
 			     ipar, iel_type, rgn_index, pt_coor,
-			     ens_vrtx_data, ens_cell_data,
+			     vrtx_data, cell_data,
 			     rgn_data, rgn_name);    
+
+    // build an Ensight_Translator and do the per-part dump.
+    string p_prefix = "part_" + prefix;
+    Ensight_Translator translator5(p_prefix, gd_wpath, vdata_names,
+				   cdata_names, true, static_geom,
+				   binary); 
+
+    translator5.open(icycle, time, dt);
+
+    for ( int i = 0; i < nrgn; i++ )
+	translator5.write_part(i+1, rgn_name[i], p_ipar[i], p_iel_type[i],
+			       p_pt_coor[i], p_vrtx_data[i], p_cell_data[i],
+			       g_vrtx_indices[i], g_cell_indices[i]);
+
+    translator5.close();
 }
 
 //---------------------------------------------------------------------------//

@@ -61,13 +61,27 @@ class Ensight_Stream
     // CREATORS
     
     //! Constructor.
-    explicit Ensight_Stream(const std::string &file_name,
+    explicit Ensight_Stream(const std::string &file_name = "",
 			    const bool binary = false,
 			    const bool geom_file = false);
 
-    // Use compiler-generated copy ctor, dtor, and assignment operators.
-    // The dtor will destroy d_stream, which takes care of closing the
-    // stream.
+    //! Destructor.
+    ~Ensight_Stream();
+
+    // Use compiler-generated copy ctor and assignment operators.
+
+    // MANIPULATORS
+
+    //! Opens the stream.
+    void open(const std::string &file_name,
+	      const bool binary = false,
+	      const bool geom_file = false);
+
+    //! Closes the stream.
+    void close();
+
+    //! Expose is_open().
+    bool is_open() { return d_stream.is_open(); }
 
     // The supported output stream functions.
     
