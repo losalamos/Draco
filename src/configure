@@ -1189,17 +1189,17 @@ fi
 # NOT important with the exception of mesh (mesh is need for the
 # radphys test suite)
 
-subdirs="ds++ xm fourier"
+subdirs="ds++ UnitTestFrame xm fourier"
 
-subdirs="ds++ xm fourier traits units nml c4 rng"
+subdirs="ds++ UnitTestFrame xm fourier traits units nml c4 rng"
 
-subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest viz"
+subdirs="ds++ UnitTestFrame xm fourier traits units nml c4 rng stopwatch meshTest viz"
 
-subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg LAMG diffusion mc timestep"
+subdirs="ds++ UnitTestFrame xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg LAMG diffusion mc timestep"
 
-subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion"
+subdirs="ds++ UnitTestFrame xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion"
 
-subdirs="ds++ xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion imc"
+subdirs="ds++ UnitTestFrame xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion imc"
 
 
 trap '' 1 2 15
@@ -1486,7 +1486,7 @@ if test "$no_recursion" != yes; then
     esac
   done
 
-  for ac_config_dir in ds++ xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion imc; do
+  for ac_config_dir in ds++ UnitTestFrame xm fourier traits units nml c4 rng stopwatch meshTest viz mesh POOMA_MT radphys linalg LAMG diffusion mc timestep matprops PCGDiffusionSolver LAMGDiffusionSolver P1Diffusion imc; do
 
     # Do not complain, so a configure script can configure whichever
     # parts of a large source tree are present.
