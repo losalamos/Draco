@@ -14,10 +14,10 @@
 #include "DD_Mesh.hh"
 #include "../Mesh_Operations.hh"
 #include "../Flat_Mat_State_Builder.hh"
-#include "../Opacity.hh"
 #include "../Mat_State.hh"
 #include "../Release.hh"
 #include "../Global.hh"
+#include "../Gray_Particle.hh"
 #include "mc/Topology.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/General_Topology.hh"
@@ -44,7 +44,6 @@ using rtt_imc_test::Parser;
 using rtt_imc::Mesh_Operations;
 using rtt_imc::Flat_Mat_State_Builder;
 using rtt_imc::Mat_State;
-using rtt_imc::Opacity;
 using rtt_mc::global::soft_equiv;
 using rtt_mc::sampler::sample_general_linear;
 using rtt_mc::Topology;
@@ -57,6 +56,14 @@ using rtt_mc::Comm_Patterns;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
+
+namespace rtt_imc
+{
+class Gray_Frequency;
+}
+
+typedef rtt_imc::Gray_Particle<OS_Mesh> PT;
+typedef rtt_imc::Gray_Frequency         Gray;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -73,7 +80,7 @@ void T4_slope_test()
     SP<OS_Mesh> mesh = mb->build_Mesh();
 
     // build an interface to a six cell fully replicated mesh
-    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb));
+    SP<IMC_Flat_Interface<PT> > interface(new IMC_Flat_Interface<PT>(mb));
 
     // build a Topology: we do not use the Topology builder here because the
     // topology builder is designed to work on the host processor only -->
@@ -81,9 +88,8 @@ void T4_slope_test()
     SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
 
     // build a Mat_State and Opacity
-    Flat_Mat_State_Builder<OS_Mesh> ob(interface);
-    SP<Mat_State<OS_Mesh> > mat    = ob.build_Mat_State(mesh);
-    SP<Opacity<OS_Mesh> > opacity  = ob.build_Opacity(mesh, mat);
+    Flat_Mat_State_Builder<OS_Mesh,Gray> ob(interface);
+    SP<Mat_State<OS_Mesh> > mat = ob.build_Mat_State(mesh);
 
     // Build a Comm_Patterns
     SP<Comm_Patterns> comm_patterns(new Comm_Patterns());
@@ -149,6 +155,9 @@ void T4_slope_test()
 
     // check for equivalence
     if (reference_r != r) ITFAILS;
+
+    if (rtt_imc_test::passed)
+	PASSMSG("T4 slopes ok for OS_Mesh replication.");
 }
 
 //---------------------------------------------------------------------------//
@@ -220,6 +229,9 @@ void T4_slope_test_DD()
 
     // we already checked sample_pos_tilt above, since the slopes are correct 
     // we can assume that sample_pos_tilt is also correct
+
+    if (rtt_imc_test::passed)
+	PASSMSG("T4 slopes ok for OS_Mesh DD.");
 }
 
 //===========================================================================//
@@ -340,6 +352,9 @@ void T4_slope_test_AMR()
     
     for (int i = 0; i < 2; i++)
 	if (!soft_equiv(r[i], ref[i], 1e-6)) ITFAILS;
+
+    if (rtt_imc_test::passed)
+	PASSMSG("T4 slopes ok for RZWedge_Mesh replication.");
 }
 
 //---------------------------------------------------------------------------//
