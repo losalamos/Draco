@@ -24,10 +24,7 @@ namespace rtt_<spkg>
  * \brief
  *
  * Long description or discussion goes here.  Information about Doxygen
- * commands can be found at:
- *
- * Doxygen tutorial: http://www.stack.nl/~dimitri/doxygen/docblocks.html
- * Doxygen keywords: http://www.stack.nl/~dimitri/doxygen/commands.html
+ * commands can be found at http://www.doxygen.org.
  *
  * \sa <class>.cc for detailed descriptions.
  *
@@ -43,7 +40,7 @@ namespace rtt_<spkg>
  */
 // revision history:
 // -----------------
-// 0) original
+// 0) (<date>) <user>: original
 // 
 //===========================================================================//
 
@@ -58,7 +55,7 @@ class <class>
     //! default constructors
     <class>();
 
-    //! copy constructor
+    //! copy constructor (the long doxygen description is in the .cc file)
     <class>(const <class> &rhs);
 
     //! destructor

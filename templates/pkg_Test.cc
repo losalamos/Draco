@@ -10,8 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "<spkg>.hh"
 #include <iostream>
+#include "<spkg>.hh"
 
 namespace rtt_<spkg>
 {
