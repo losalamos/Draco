@@ -23,15 +23,21 @@
 
           USE CAR_CU_Interface_Class
           USE CAR_CU_RTT_Format_Class
-          USE CAR_CU_Builder_Class
+          USE CAR_CU_Mesh_Builder_Class
           USE CAR_CU_Mesh_Class
+          USE CAR_CU_Opacity_Builder_Class
+          USE CAR_CU_Opacity_Class
+          USE CAR_CU_Mat_State_Class
 
           implicit none
           integer narg, iargc, fnlgth
-          type(CAR_CU_Interface)  :: interface_class
-          type(CAR_CU_RTT_Format) :: rtt_format_class
-          type(CAR_CU_Builder)    :: builder_class
-          type(CAR_CU_Mesh)       :: mesh_class
+          type(CAR_CU_Interface)       :: interface_class
+          type(CAR_CU_RTT_Format)      :: rtt_format_class
+          type(CAR_CU_Mesh_Builder)    :: mesh_builder_class
+          type(CAR_CU_Mesh)            :: mesh_class
+          type(CAR_CU_Opacity_Builder) :: opacity_builder_class
+          type(CAR_CU_Opacity)         :: opacity_class
+          type(CAR_CU_Mat_State)       :: mat_state_class
 
 !===========================================================================
 ! Define variables needed just for testing the shadow interface functions
@@ -91,7 +97,9 @@
           real*8, dimension (:), allocatable    :: volume,              &
               cell_faces_area, mesh_min_coords, mesh_max_coords,        &
               cell_nodes_vertices, face_nodes_area, nodes_area,         &
-              corner_nodes_area
+              corner_nodes_area, sig_abs, sig_thom, planck, fleck,      &
+              fleck_planck, sigeffscat, sigeffabs, density, temperature,&
+              dedt, specific_heat
 
 !===========================================================================
 ! Input the command line arguments - input file name followed by anything to
@@ -117,33 +125,55 @@
 !===========================================================================
 ! Create a C++ CAR_CU_Interface class object. This also constructs a C++ 
 ! RTT_Format class object and parses both the input deck and the RTT Format 
-! mesh file specified therein. The addresses of both the new CAR_CU_Interace 
-! and RTT_Format class objects are set.
+! mesh file specified therein. The address of the new CAR_CU_Interace class
+! object is set automatically while the address of the new RTT_Format class 
+! objects must be assigned with a seperate statement.
 !===========================================================================
 
           call construct_Interface(interface_class)
           rtt_format_class%this = interface_class%rtt_format
 
 !===========================================================================
-! Create a C++ CAR_CU_Builder class object. This also constructs the C++ 
-! Coord_sys, Layout, and CAR_CU_Mesh class objects. The addresses of both 
-! the new CAR_CU_Builder and CAR_CU_Mesh class objects are set.
+! Create a C++ CAR_CU_Mesh_Builder class object. This also constructs the 
+! C++ Coord_sys, Layout, and CAR_CU_Mesh class objects. The address of the
+! new CAR_CU_Mesh_Builder class object is set automatically while the address
+! of the new CAR_CU_Mesh class object must be assigned with a seperate 
+! statement.
 !===========================================================================
 
-          call construct_Builder(builder_class, interface_class)
-          mesh_class%this = builder_class%mesh
+          call construct_Mesh_Builder(mesh_builder_class, interface_class)
+          mesh_class%this = mesh_builder_class%mesh
 
 !===========================================================================
-! Get rid of RTT_Format, CAR_CU_Interface, and CAR_CU_Builder class objects 
-! since they are no longer needed. 
+! Create a C++ Opacity_Builder class object. This also constructs the 
+! C++ Mat_State and Opacity class objects. The address of the new 
+! Opacity_Builder class object is set automatically while the addresses of
+! the new Mat_State and Opacity class objects must be assigned with a 
+! seperate statement. The mesh that these objects are associated with must
+! also be specified.
 !===========================================================================
 
+          call construct_Opacity_Builder(opacity_builder_class,         &
+                                         interface_class, mesh_class)
+          opacity_class%this = opacity_builder_class%opacity
+          opacity_class%mesh = mesh_class%this
+          mat_state_class%this = opacity_builder_class%matl_state
+          mat_state_class%mesh = mesh_class%this
+
+!===========================================================================
+! Get rid of the CAR_CU_Opacity_Builder, CAR_CU_Mesh_Builder, 
+! CAR_CU_RTT_Format, and CAR_CU_Interface class objects since they are no 
+! longer needed. 
+!===========================================================================
+
+          call destruct_Opacity_Builder(opacity_builder_class)
+          call destruct_Mesh_Builder(mesh_builder_class)
           call destruct_RTT_Format(rtt_format_class)
           call destruct_Interface(interface_class)
-          call destruct_Builder(builder_class)
 
 !===========================================================================
-! Test shadowed mesh accessor functions
+! Test shadowed mesh accessor functions - the transport calculations would
+! start here in a real problem. 
 !===========================================================================
 
           ! Test scalar values
@@ -157,6 +187,17 @@
           ! Cell-centered values
           allocate(volume(ncells))
           allocate(generation(ncells))
+          allocate(sig_abs(ncells))
+          allocate(sig_thom(ncells))
+          allocate(planck(ncells))
+          allocate(fleck(ncells))
+          allocate(fleck_planck(ncells))
+          allocate(sigeffscat(ncells))
+          allocate(sigeffabs(ncells))
+          allocate(density(ncells))
+          allocate(temperature(ncells))
+          allocate(dedt(ncells))
+          allocate(specific_heat(ncells))
           ! Face-dependent cell values
           allocate(num_adj_cell_faces(ncells, 2 * ndims))
           allocate(adj_cells_faces(ncells, 2 * ndims))
@@ -246,6 +287,24 @@
               volume(cell) = get_cell_volume(mesh_class, cell)
               generation(cell) = get_cell_generation(mesh_class, cell)
               cell_nodes_coords = get_cell_vertices(mesh_class, cell)
+
+              ! Test Opacity accessor functions
+              sig_abs(cell) = get_sigma_abs(opacity_class, cell)
+              sig_thom(cell) = get_sigma_thomson(opacity_class, cell)
+              planck(cell) = get_planck(opacity_class, cell)
+              fleck(cell) = get_fleck(opacity_class, cell)
+              fleck_planck(cell) = get_fleck_planck(opacity_class, cell)
+              sigeffscat(cell) = get_sigeffscat(opacity_class, cell)
+              sigeffabs(cell) = get_sigeffabs(opacity_class, cell)
+
+              ! Test Mat_State accessor functions
+              density(cell) = get_density(mat_state_class, cell)
+              call set_density(mat_state_class, cell, density(cell))
+              temperature(cell) = get_temperature(mat_state_class, cell)
+              call set_temperature(mat_state_class, cell, temperature(cell))
+              dedt(cell) = get_dedt(mat_state_class, cell)
+              call set_dedt(mat_state_class, cell, dedt(cell))
+              specific_heat(cell) = get_specific_heat(mat_state_class, cell)
 
               ! Test face-dependent cell values
               face = 1
@@ -593,6 +652,17 @@
           ! Cell-centered values
           deallocate(volume)
           deallocate(generation)
+          deallocate(sig_abs)
+          deallocate(sig_thom)
+          deallocate(planck)
+          deallocate(fleck)
+          deallocate(fleck_planck)
+          deallocate(sigeffscat)
+          deallocate(sigeffabs)
+          deallocate(density)
+          deallocate(temperature)
+          deallocate(dedt)
+          deallocate(specific_heat)
           ! Face-dependent cell values
           deallocate(num_adj_cell_faces)
           deallocate(adj_cells_faces)
@@ -641,8 +711,9 @@
           deallocate(face_nodes_faces_area)
 
 !===========================================================================
-! Get rid of the CAR_CU_Mesh class object and the associated test fields. 
-! We are done.
+! Get rid of the mesh fields that were defined for testing and the 
+! CAR_CU_Mat_State, CAR_CU_Opacity, and CAR_CU_Mesh class objects 
+! we are done.
 !===========================================================================
 
           call destruct_CCSF(int_CCSF_1)
@@ -699,6 +770,9 @@
           call destruct_NCVF(real_NCVF_4)
           call destruct_NCVF(real_NCVF_5)
           call destruct_NCVF(real_NCVF_6)
+
+          call destruct_Mat_State(mat_state_class)
+          call destruct_Opacity(opacity_class)
 
           call destruct_Mesh(mesh_class)
 

@@ -66,5 +66,5 @@
        end module CAR_CU_RTT_Format_Class
 
 !---------------------------------------------------------------------------
-!                              end of amr_mesh/Shadow_CAR_CU_RTT_Format.f90
+!                              end of amr_mesh/Shadow_RTT_Format.f90
 !---------------------------------------------------------------------------

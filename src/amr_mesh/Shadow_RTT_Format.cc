@@ -6,8 +6,8 @@
 // @> Shadow_RTT_Format interface file
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Shadow_RTT_Format_cc__
-#define __mc_Shadow_RTT_Format_cc__
+#ifndef __rtt_format_Shadow_RTT_Format_cc__
+#define __rtt_format_Shadow_RTT_Format_cc__
 
 #include "RTT_Format.hh"
 #include "Shadow_Opaque_Pointers.hh"
@@ -62,7 +62,7 @@ extern "C"
 
 } // end namespace rtt_format
 
-#endif                          // __mc_Shadow_RTT_Format_cc__
+#endif                          // __rtt_format_Shadow_RTT_Format_cc__
 
 //---------------------------------------------------------------------------//
 //                              end of amr_mesh/Shadow_RTT_Format.cc

@@ -1,13 +1,13 @@
 //----------------------------------*-C++-*----------------------------------//
-// Shadow_CAR_CU_Builder.cc
+// Shadow_CAR_CU_Mesh_Builder.cc
 // B.T. Adams (bta@lanl.gov)
 // 27 Sept 99
 //---------------------------------------------------------------------------//
-// @> Shadow_CAR_CU_Builder interface file
+// @> Shadow_CAR_CU_Mesh_Builder interface file
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Shadow_CAR_CU_Builder_cc__
-#define __mc_Shadow_CAR_CU_Builder_cc__
+#ifndef __mc_Shadow_CAR_CU_Mesh_Builder_cc__
+#define __mc_Shadow_CAR_CU_Mesh_Builder_cc__
 
 #include "CAR_CU_Builder.hh"
 #include "CAR_CU_Interface.hh"
@@ -17,7 +17,7 @@
 #include <iostream>
 
 //===========================================================================//
-// Shadow_CAR_CU_Builder - 
+// Shadow_CAR_CU_Mesh_Builder - 
 //
 // Purpose : Provides flat interface functions to the Continuous Adaptive 
 // Refinement Cartesion Unstructured Mesh Builder Class for use with Fortran.
@@ -49,9 +49,9 @@ extern "C"
     // The addresses of both the new CAR_CU_Builder and CAR_CU_Mesh class 
     // objects are set. The CAR_CU_Mesh class contains member functions to 
     // return the addresses of the Coord and Layout class objects, if needed.
-    void construct_car_cu_builder_(long & self, long & itf_ptr, 
-				   long & rttf_ptr, long & verbosity, 
-				   long & mesh_ptr)
+    void construct_car_cu_mesh_builder_(long & self, long & itf_ptr, 
+					long & rttf_ptr, long & verbosity, 
+					long & mesh_ptr)
     {
 	bool verbose = verbosity;
 	SP<CAR_CU_Interface> interface;
@@ -79,7 +79,7 @@ extern "C"
     }
 
     // Destroy a CAR_CU_Builder class object from a Fortran 90 program call.
-    void destruct_car_cu_builder_(long & self)
+    void destruct_car_cu_mesh_builder_(long & self)
     {
 	// Get the address of the CAR_CU_Builder class object (self).
 	SP<CAR_CU_Builder> builder = 
@@ -100,8 +100,8 @@ extern "C"
 
 }  // end namespace rtt_mc
 
-#endif                          // __mc_Shadow_CAR_CU_Builder_cc__
+#endif                          // __mc_Shadow_CAR_CU_Mesh_Builder_cc__
 
 //---------------------------------------------------------------------------//
-//                              end of amr_mesh/Shadow_CAR_CU_Builder.cc
+//                        end of amr_mesh/Shadow_CAR_CU_Mesh_Builder.cc
 //---------------------------------------------------------------------------//
