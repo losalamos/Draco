@@ -76,11 +76,6 @@ void gsync()
 // B:	MPI_BYTE
 //---------------------------------------------------------------------------//
 
-static DynArray<int>    ibuf(10);
-static DynArray<long>   lbuf(10);
-static DynArray<float>  fbuf(10);
-static DynArray<double> dbuf(10);
-
 // MPI array reductions traits class.
 
 template<class T> class mpi_ar_traits
@@ -128,9 +123,8 @@ void gmax( T *px, int n, T dummy /*=T()*/ )
 		   mpi_traits<T>::element_type, MPI_MAX, MPI_COMM_WORLD );
 }
 
-template<> DynArray<int> mpi_ar_traits<int>::ar_buf(10);
-template<> DynArray<float> mpi_ar_traits<float>::ar_buf(10);
-template<> DynArray<double> mpi_ar_traits<double>::ar_buf(10);
+template<class T>
+DynArray<T> mpi_ar_traits<T>::ar_buf(10);
 
 template void gsum( int *px, int n, int dummy );
 template void gsum( float *px, int n, float dummy );
