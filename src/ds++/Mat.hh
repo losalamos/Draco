@@ -335,7 +335,7 @@ class Mat2 {
     int offset( int i, int j ) const { return xlen * j + i; }
 
 // Make sure a bare integer index is within the appropriate range.
-    void check( int i )
+    void check( int i ) const
     {
 	Assert( i >= offset( xmin, ymin ) );
 	Assert( i <= offset( xmax(), ymax() ) );
@@ -353,9 +353,6 @@ class Mat2 {
     Allocator alloc;
     T *v;
 
-    T& operator[]( int i ) { check(i); return v[i]; }
-    const T& operator[]( int i ) const { check(i); return v[i]; }
-
   public:
     typedef typename Allocator::iterator iterator;
     typedef typename Allocator::const_iterator const_iterator;
@@ -364,6 +361,9 @@ class Mat2 {
 
     T&       operator()( int i, int j )       { return v[ index(i,j) ]; }
     const T& operator()( int i, int j ) const { return v[ index(i,j) ]; }
+
+    T& operator[]( int i ) { check(i); return v[i]; }
+    const T& operator[]( int i ) const { check(i); return v[i]; }
 
     iterator       begin()       { return v + offset(xmin,ymin); }
     const_iterator begin() const { return v + offset(xmin,ymin); }
