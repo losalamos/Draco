@@ -899,9 +899,9 @@ EOF
    done
 
 
-	test_alltarget="$test_alltarget tCDIGandolf"
+	test_alltarget="$test_alltarget tGandolfFile tCDIGandolf"
         
-	test_nprocs="serial"
+	test_nprocs="scalar"
 
 	if test -z "${test_nprocs}" ; then
 	    { echo "configure: error: "No procs choosen for the tests!"" 1>&2; exit 1; }
@@ -4157,7 +4157,9 @@ rm -fr confdefs* $ac_clean_files
 test "$no_create" = yes || ${CONFIG_SHELL-/bin/sh} $CONFIG_STATUS || exit 1
 
 
-# The IPCRESS file is binary so we copy it to the target directory manually.
+# The IPCRESS files are binary so we copy them to the target directory manually.
 echo copying ${srcdir}/test/Al_BeCu.ipcress to test/Al_BeCu.ipcress
 cp ${srcdir}/test/Al_BeCu.ipcress test/Al_BeCu.ipcress
+echo copying ${srcdir}/test/analyticOpacities.ipcress to test/analyticOpacities.ipcress
+cp ${srcdir}/test/analyticOpacities.ipcress test/analyticOpacities.ipcress
 

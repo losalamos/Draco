@@ -11,6 +11,7 @@
 
 #include "GandolfOpacity.hh"
 #include "GandolfWrapper.hh"
+#include "GandolfFile.hh"
 
 #include "ds++/Assert.hh"
 
@@ -20,59 +21,151 @@ namespace rtt_cdi_gandolf
 /*!
  * \brief Constructor for Gandolf Opacity reader (as a part of CDI).
  */
-GandolfOpacity::GandolfOpacity( const string& _data_filename, 
-				const int _matid )
-    : dataFilename ( _data_filename ), matID( _matid ),
-    numMaterials( 0 ), numKeys( 0 ), numTemps( 0 ), numDensities( 0 ), 
-    numGroupBoundaries( 0 ), numGrayOpacities( 0 ), numMGOpacities( 0 ),
-    grayRosselandTableLoaded( false ), mgRosselandTableLoaded( false )
+// GandolfOpacity::GandolfOpacity( const std::string& _data_filename, 
+// 				const int _matid )
+//     : dataFilename ( _data_filename ), matID( _matid ),
+//     numMaterials( 0 ), numKeys( 0 ), numTemps( 0 ), numDensities( 0 ), 
+//     numGroupBoundaries( 0 ), numGrayOpacities( 0 ), numMGOpacities( 0 ),
+//     grayRosselandTableLoaded( false ), mgRosselandTableLoaded( false )
 	  
+//     {
+// 	// Gandolf will only look at the first "maxDataFilenameLength"
+// 	// characters of the data filename.  We must require that the
+// 	// given name is less than "maxDataFilenameLength" characters.
+// 	Require( dataFilename.length() < wrapper::maxDataFilenameLength );
+
+// 	// local variables
+// 	std::vector<int> matIDs;
+// 	int errorCode = 0;
+
+// 	// This call to Gandolf validates the datafile and if
+// 	// successful returns a list of material identifiers for which 
+// 	// the materials that exist in the data file.
+// 	wrapper::gmatids( dataFilename, matIDs, wrapper::maxMaterials,
+// 			  numMaterials, errorCode ); 
+
+// 	// Abort if Gandolf returned an error.
+// 	switch ( errorCode ) {
+// 	case 0: // no errors
+// 	    break;
+// 	case 1: // IPCRESS file not found.
+// 	    Insist( false, "The IPCRESS file was not found.");
+// 	    break;
+// 	case 2: // File is not IPCRESS.
+// 	    Insist( false, "The file does not appear to be in IPCRESS format");
+// 	    break;
+// 	case 3: // Problem reading file
+// 	    Insist( false, "Having trouble reading the IPCRESS file.");
+// 	    break;
+// 	case 4: // No material ID's found in file.
+// 	    Insist( false, "No material ID's were found in the IPCRESS data file.");
+// 	    break;
+// 	case 5: // too many matids found ( nmat > kmat )
+// 	    Insist( false, "Too many materials were found in the data file ( nmat > kmat ).");
+// 	    break;
+// 	default: // unknown error.
+// 	    Insist( false, "Unknown error returned from Gandolf::gmatids().");
+// 	    break;
+// 	}
+
+// 	// search for the requested matID in the vector of available matIDs.
+// 	Require( key_available( matID, matIDs ) );
+
+// 	// Retrieve keys available for this material from data file.
+// 	wrapper::gkeys( dataFilename, matID, vkeys, wrapper::maxKeys,
+// 			numKeys, errorCode );
+
+// 	// Abort if Gandolf returns an error.
+// 	switch ( errorCode ) {
+// 	case 0: // no errors
+// 	    break;
+// 	case 1: // IPCRESS file not found.
+// 	    Insist( false, "The IPCRESS file was not found.");
+// 	    break;
+// 	case 2: // File is not IPCRESS.
+// 	    Insist( false, "The file does not appear to be in IPCRESS format");
+// 	    break;
+// 	case 3: // Problem reading file
+// 	    Insist( false, "Having trouble reading the IPCRESS file.");
+// 	    break;
+// 	case 4: // No keys found for this material.
+// 	    Insist( false, "No keys were found for this material");
+// 	    break;
+// 	case 5: // Too many keys found.
+// 	    Insist( false, "Too many keys for array ( nkeys > kkeys )." );
+// 	    break;
+// 	default: // unknown error.
+// 	    Insist( false, "Unknown error returned from Gandolf::gkeys().");
+// 	    break;
+// 	}
+
+// 	// Retrieve size of the data set.
+// 	wrapper::gchgrids( dataFilename, matID, numTemps, numDensities,
+// 			   numGroupBoundaries, numGrayOpacities,
+// 			   numMGOpacities, errorCode );
+
+// 	// Abort if Gandolf returns an error.
+// 	switch ( errorCode ) {
+// 	case 0: // no errors
+// 	    break;
+// 	case -1: // return with etas, not densities
+// 	    Insist( false, "IPCRESS file returned ETAs not Densities.");
+// 	    break;		
+// 	case 1: // IPCRESS file not found.
+// 	    Insist( false, "The IPCRESS file was not found.");
+// 	    break;
+// 	case 2: // File is not IPCRESS.
+// 	    Insist( false, "The file does not appear to be in IPCRESS format");
+// 	    break;
+// 	case 3: // Problem reading file
+// 	    Insist( false, "Having trouble reading the IPCRESS file.");
+// 	    break;
+// 	case 4: // Inconsistent gray grids, mg not checked
+// 	    Insist( false, "Gray grid inconsistent with the temp/density grid.");
+// 	    break;
+// 	case 5: // ngray != nt*nrho, mg not checked
+// 	    Insist( false, "Wrong number of gray opacities found (ngray != nt*nrho)." );
+// 	    break;
+// 	case 6: // inconsistent mg grid.
+// 	    Insist( false, "MG grid inconsistent with the temp/density/hnu grid.");
+// 	    break;
+// 	case 7: //  nmg != nt*nrho*(nhnu-1).
+// 	    Insist( false, "Wrong number of MG opacities found (nmg != nt*nrho*(nhnu-1)).");
+// 	    break;
+// 	default: // unknown error.
+// 	    Insist( false, "Unknown error returned from Gandolf::gchgrids().");
+// 	    break;
+// 	}
+	
+// 	// Resize the temperature and density member data.  We only
+// 	// resize the opacity grid when it is first requested.
+// 	logTemperatures.resize(numTemps);
+// 	logDensities.resize(numDensities);
+
+//     } // end GandolfOpacity::GandolfOpacity(string,int)
+
+GandolfOpacity::GandolfOpacity( 
+    const rtt_dsxx::SP<GandolfFile> _spGandolfFile, 
+    const int _matid )
+    : spGandolfFile( _spGandolfFile ), matID( _matid ), 
+      numMaterials( 0 ), numKeys( 0 ), numTemps( 0 ), 
+      numDensities( 0 ), numGroupBoundaries( 0 ), 
+      numGrayOpacities( 0 ), numMGOpacities( 0 ),
+      grayRosselandTableLoaded( false ), 
+      mgRosselandTableLoaded( false )
     {
-	// Gandolf will only look at the first "maxDataFilenameLength"
-	// characters of the data filename.  We must require that the
-	// given name is less than "maxDataFilenameLength" characters.
-	Require( dataFilename.length() < wrapper::maxDataFilenameLength );
+	// search for the requested matID in the vector of available matIDs.
+// 	Require( key_available( matID, spGF->getMatIDs() ) );
+
+	const std::vector<int> matids = spGandolfFile->getMatIDs();
+	Require( key_available( matID, matids ) );
 
 	// local variables
-	vector<int> matIDs;
-	int errorCode = 0;
-
-	// This call to Gandolf validates the datafile and if
-	// successful returns a list of material identifiers for which 
-	// the materials that exist in the data file.
-	wrapper::gmatids( dataFilename, matIDs, wrapper::maxMaterials,
-			  numMaterials, errorCode ); 
-
-	// Abort if Gandolf returned an error.
-	switch ( errorCode ) {
-	case 0: // no errors
-	    break;
-	case 1: // IPCRESS file not found.
-	    Insist( false, "The IPCRESS file was not found.");
-	    break;
-	case 2: // File is not IPCRESS.
-	    Insist( false, "The file does not appear to be in IPCRESS format");
-	    break;
-	case 3: // Problem reading file
-	    Insist( false, "Having trouble reading the IPCRESS file.");
-	    break;
-	case 4: // No material ID's found in file.
-	    Insist( false, "No material ID's were found in the IPCRESS data file.");
-	    break;
-	case 5: // too many matids found ( nmat > kmat )
-	    Insist( false, "Too many materials were found in the data file ( nmat > kmat ).");
-	    break;
-	default: // unknown error.
-	    Insist( false, "Unknown error returned from Gandolf::gmatids().");
-	    break;
-	}
-
-	// search for the requested matID in the vector of available matIDs.
-	Require( key_available( matID, matIDs ) );
+	int errorCode;
 
 	// Retrieve keys available for this material from data file.
-	wrapper::gkeys( dataFilename, matID, vkeys, wrapper::maxKeys,
-			numKeys, errorCode );
+	wrapper::gkeys( spGandolfFile->getDataFilename(), matID, vkeys, 
+			wrapper::maxKeys, numKeys, errorCode );
 
 	// Abort if Gandolf returns an error.
 	switch ( errorCode ) {
@@ -99,7 +192,7 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 	}
 
 	// Retrieve size of the data set.
-	wrapper::gchgrids( dataFilename, matID, numTemps, numDensities,
+	wrapper::gchgrids( spGandolfFile->getDataFilename(), matID, numTemps, numDensities,
 			   numGroupBoundaries, numGrayOpacities,
 			   numMGOpacities, errorCode );
 
@@ -140,8 +233,9 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 	// resize the opacity grid when it is first requested.
 	logTemperatures.resize(numTemps);
 	logDensities.resize(numDensities);
+	
+    } // end of GandolfOpacity::GandolfOpacity(SP<GandolfFile>,int)
 
-    } // end GandolfOpacity::GandolfOpacity(string,int)
 
 /*!
  * \brief Return a Rosseland Mean Gray Opacity value for the user
@@ -151,7 +245,7 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
      const double targetTemp, const double targetDensity )
      {
 	 // request rosseland gray opacity information.
-	 string skey = "rgray";
+	 std::string skey = "rgray";
 
 	 // Require that key is available in keys[].
 	 Require( key_available( skey, vkeys ) );
@@ -167,22 +261,16 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 		 // I'm not sure if the temperature/density grid is identical
 		 // for the MG and the Gray set.  To be safe I will load the
 		 // Gray temp/density grid into different arrays and compare.
-		 vector<double> logGrayTemperatures(numTemps);
-		 vector<double> logGrayDensities(numDensities);
+		 std::vector<double> logGrayTemperatures(numTemps);
+		 std::vector<double> logGrayDensities(numDensities);
 		 
 		 // Retrieve the gray data 
 		 int errorCode;
-		 wrapper::ggetgray( dataFilename, matID, skey, 
+		 wrapper::ggetgray( spGandolfFile->getDataFilename(), matID, skey, 
 				    logGrayTemperatures, numTemps, numTemps,
 				    logGrayDensities, numDensities, numDensities,
 				    logGrayOpacities, numGrayOpacities, numGrayOpacities,
 				    errorCode );
-// 		 wrapper::ggetgray( dataFilename, matID, skey, 
-// 				    logGrayTemperatures, wrapper::maxTemps, numTemps,
-// 				    logGrayTemperatures, wrapper::maxTemps, numTemps,
-// 				    logGrayDensities, wrapper::maxDensities, numDensities,
-// 				    logGrayOpacities, wrapper::maxGrayOpacities, numGrayOpacities,
-// 				    errorCode );
 
 		 // abort if Gandolf returned an error.
 		 switch ( errorCode ) {
@@ -257,14 +345,22 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 
 
 /*!
+ * \brief Returns the IPCRESS data filename.
+ */
+ const std::string& GandolfOpacity::getDataFilename() const 
+     {
+	 return spGandolfFile->getDataFilename();
+     }
+
+/*!
  * \brief Return Rosseland Multi-group Opacity values for the user
  *        specified temperature and density.
  */
- vector<double> GandolfOpacity::getMGRosseland( 
+ std::vector<double> GandolfOpacity::getMGRosseland( 
      const double targetTemp, const double targetDensity )
      {
 	 // request rosseland multigroup opacity information.
-	 string skey = "ramg";
+	 std::string skey = "ramg";
 
 	 // Require that key is available in key.
 	 Require( key_available( skey, vkeys ) );
@@ -281,18 +377,12 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 		 // I'm not sure if the temperature/density grid is identical
 		 // for the MG and the Gray set.  To be safe I will load the
 		 // MG temp/density grid into different arrays and compare.
-		 vector<double> logMGtemperatures(numTemps);
-		 vector<double> logMGdensities(numDensities);
+		 std::vector<double> logMGtemperatures(numTemps);
+		 std::vector<double> logMGdensities(numDensities);
 		 
 		 // Retrieve the multi-group data
 		 int errorCode;
-// 		 wrapper::ggetmg( dataFilename, matID, skey, 
-// 			 logMGtemperatures, wrapper::maxTemps, numTemps,
-// 			 logMGdensities, wrapper::maxDensities, numDensities,
-// 			 groupBoundaries, wrapper::maxGroupBoundaries, numGroupBoundaries,
-// 			 logMGOpacities, wrapper::maxMGOpacities, numMGOpacities,
-// 			 errorCode );
-		 wrapper::ggetmg( dataFilename, matID, skey, 
+		 wrapper::ggetmg( spGandolfFile->getDataFilename(), matID, skey, 
 			 logMGtemperatures, numTemps, numTemps,
 			 logMGdensities, numDensities, numDensities,
 			 groupBoundaries, numGroupBoundaries, numGroupBoundaries,
@@ -362,7 +452,7 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
 	     }
 
 	 // This is the vector we are looking for:
-	 vector<double> MGOpacity( numGroupBoundaries-1 );
+	 std::vector<double> MGOpacity( numGroupBoundaries-1 );
 
 	 // Send the opacity grid information to the interpolation routine.
 	 wrapper::gintmglog( logTemperatures, numTemps, logDensities,
@@ -379,7 +469,7 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
   *        of "keys".  This is a static member function.
   */
  template < typename T >
- bool GandolfOpacity::key_available( T key, vector<T> keys )
+ bool GandolfOpacity::key_available( T key, std::vector<T> keys )
      {
 	 // Loop over all available keys.  If the requested key
 	 // matches one in the list return true.  If we reach the end
@@ -394,8 +484,8 @@ GandolfOpacity::GandolfOpacity( const string& _data_filename,
   * \brief This function returns "true" if the two vectors are the
   *        same.
   */
- bool GandolfOpacity::isSame( const vector<double> &v1, 
-			      const vector<double> &v2 )
+ bool GandolfOpacity::isSame( const std::vector<double> &v1, 
+			      const std::vector<double> &v2 )
      {
 	 const double TOL = 1.0e-10;
 

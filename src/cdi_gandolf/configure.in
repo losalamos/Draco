@@ -31,7 +31,7 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)
 AC_NEEDS_LIBS_TEST(UnitTestFrame c4)
 
-AC_RUNTESTS(tCDIGandolf, serial)
+AC_RUNTESTS(tGandolfFile tCDIGandolf, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
@@ -47,9 +47,11 @@ esac
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in)
 
-# The IPCRESS file is binary so we copy it to the target directory manually.
+# The IPCRESS files are binary so we copy them to the target directory manually.
 echo copying ${srcdir}/test/Al_BeCu.ipcress to test/Al_BeCu.ipcress
 cp ${srcdir}/test/Al_BeCu.ipcress test/Al_BeCu.ipcress
+echo copying ${srcdir}/test/analyticOpacities.ipcress to test/analyticOpacities.ipcress
+cp ${srcdir}/test/analyticOpacities.ipcress test/analyticOpacities.ipcress
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/cdi_gandolf configure.in

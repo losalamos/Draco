@@ -16,13 +16,15 @@
 #include <string>
 #include <cmath>
 
+#include "ds++/SP.hh"
 #include "cdi/Opacity.hh"
 
 namespace rtt_cdi_gandolf
 {
 
-using std::string;
-using std::vector;
+    // forward declaration (we don't include GandolfFile.hh in this
+    // header -- but we do in GandolfFile.cc.
+    class GandolfFile;
 
 //===========================================================================//
 /*!
@@ -74,9 +76,9 @@ class GandolfOpacity : public rtt_cdi::Opacity
     // DATA
 
     /*!
-     * \brief IPCRESS data filename
+     * \brief GandolfFile object identifies the physical data file.
      */
-    const string dataFilename;
+    const rtt_dsxx::SP<GandolfFile> spGandolfFile;
 
     /*!
      * \brief Number of materials found in the data file.
@@ -93,7 +95,7 @@ class GandolfOpacity : public rtt_cdi::Opacity
      * \brief List of keywords for current material found in the data
      *        file. 
      */
-    vector<string> vkeys;
+    std::vector<std::string> vkeys;
     /*!
      * \brief Number of keys available for the current material found
      *        in the data file.
@@ -132,27 +134,27 @@ class GandolfOpacity : public rtt_cdi::Opacity
     /*!
      * \brief The log(temperature) grid found in the data file.  
      */
-    vector<double> logTemperatures;
+    std::vector<double> logTemperatures;
 
     /*!
      * \brief The log(density) grid found in the data file.
      */
-    vector<double> logDensities;
+    std::vector<double> logDensities;
 
     /*!
      * \brief The energy group boundaries found in the data file.
      */
-    vector<double> groupBoundaries;
+    std::vector<double> groupBoundaries;
 
     /*!
      * \brief The log(gray opacity) table found in the data file.
      */
-    vector<double> logGrayOpacities;
+    std::vector<double> logGrayOpacities;
 
     /*!
      * \brief The log(multigroup opacity) table found in the data file.
      */
-    vector<double> logMGOpacities;
+    std::vector<double> logMGOpacities;
 
     /*!
      * \brief Have we loaded the gray Rosseland opacity table yet?
@@ -190,7 +192,10 @@ class GandolfOpacity : public rtt_cdi::Opacity
      *               the client must specify.  This material
      *               identifier must exist in the IPCRESS file.
      */
-    GandolfOpacity( const string& _data_filename, 
+//     GandolfOpacity( const std::string& _data_filename, 
+// 		    const int _matid );
+
+    GandolfOpacity( const rtt_dsxx::SP<GandolfFile> _spGandolfFile, 
 		    const int _matid );
 
     // (defaulted) GandolfOpacity(const GandolfOpacity &rhs);
@@ -205,8 +210,7 @@ class GandolfOpacity : public rtt_cdi::Opacity
     /*!
      * \brief Returns the IPCRESS data filename.
      */
-    const string& getDataFilename() const { return dataFilename; }
-
+    const std::string& getDataFilename() const;
 
     /*!
      * \breif Returns a single opacity value for the prescribed
@@ -249,7 +253,7 @@ class GandolfOpacity : public rtt_cdi::Opacity
      *         vector has ngroups entries.  The number of groups is
      *         specified by the data file. 
      */
-    vector<double> getMGRosseland( 
+    std::vector<double> getMGRosseland( 
 	const double targetTemperature, const double targetDensity );
  
   private:
@@ -261,15 +265,15 @@ class GandolfOpacity : public rtt_cdi::Opacity
      *        of "keys".
      */
     template < typename T >
-    static bool key_available( T key, vector<T> keys ); 
+    static bool key_available( T key, std::vector<T> keys ); 
     
     /*!
      * \brief This function compares two double precision vectors.  If 
      *        the vectors are equal within some tolerance then the
      *        function returns "true".
      */
-    static bool isSame( const vector<double> &v1, 
-			const vector<double> &v2 );
+    static bool isSame( const std::vector<double> &v1, 
+			const std::vector<double> &v2 );
 
 };
 
