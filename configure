@@ -1,5 +1,71 @@
 #! /bin/sh
 
+ac_help="$ac_help
+dnl
+  --with-f90[=XL,WorkShop,Fujitsu,Cray,MIPS,Compaq]     choose an F90 compiler
+"
+# Check whether --with-f90 or --without-f90 was given.
+if test "${with_f90+set}" = set; then
+  withval="$with_f90"
+  :
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+###-------------------------------------------------------------------------###
+### include any package-dependent macro definitions that are used 
+### outside of draco, by default these must be located in the
+### directory/file:
+###	       <pkg>/pkg_config/ac_pkg.m4
+### where <pkg> is the name of the package (solon, milagro, etc.),
+### we use sinclude so that the file does not have to exist
+###-------------------------------------------------------------------------###
+
+
+###-------------------------------------------------------------------------###
+### end of aclocal.m4
+###-------------------------------------------------------------------------###
 # Guess values for system-dependent variables and create Makefiles.
 # Generated automatically using autoconf version 2.13 
 # Copyright (C) 1992, 93, 94, 95, 96 Free Software Foundation, Inc.
@@ -42,14 +108,14 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-shared         turn on shared libraries (.a default)"
 ac_help="$ac_help
-  --with-cxx[=kcc,cc]     choose a c++ compiler (KCC is default)"
-ac_help="$ac_help
-  --with-f90[=XL,WorkShop,Fujitsu,Cray,MIPS]
-                                 choose an F90 compiler"
+  --with-cxx[=kcc,cc,guide]                                    
+                          choose a c++ compiler (KCC is default)"
 ac_help="$ac_help
   --enable-static-ld      use (.a) libraries if possible"
 ac_help="$ac_help
   --disable-strict-ansi   turn off strict ansi compliance"
+ac_help="$ac_help
+  --disable-one-per       turn off --one_per flag"
 ac_help="$ac_help
   --with-opt[=0,1,2,3]    set optimization level (0 by default)"
 ac_help="$ac_help
@@ -57,9 +123,23 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-posix[=num]      give posix source (system-dependent defaults)"
 ac_help="$ac_help
+  --with-cppflags[=flags] add flags to \$CPPFLAGS"
+ac_help="$ac_help
+  --with-cxxflags[=flags] add flags to \$CXXFLAGS"
+ac_help="$ac_help
+  --with-cflags[=flags]   add flags to \$CFLAGS"
+ac_help="$ac_help
+  --with-f90flags[=flags] add flags to \$F90FLAGS"
+ac_help="$ac_help
+  --with-arflags[=flags]  add flags to \$ARFLAGS"
+ac_help="$ac_help
+  --with-ldflags[=flags]  add flags to \$LDFLAGS"
+ac_help="$ac_help
   --enable-32-bit         do 32-bit compilation (SGI ONLY)"
 ac_help="$ac_help
   --with-mips[=1,2,3,4]   set mips, mips4 by default (SGI ONLY)"
+ac_help="$ac_help
+  --enable-draco-stdhdrs  use draco standard headers (off by default)"
 
 # Initialize some variables set by options.
 # The variables have the same names as the options, with
@@ -1123,14 +1203,6 @@ fi
    fi
 
          
-      # Check whether --with-f90 or --without-f90 was given.
-if test "${with_f90+set}" = set; then
-  withval="$with_f90"
-  :
-fi
-
-
-         
       # Check whether --enable-static-ld or --disable-static-ld was given.
 if test "${enable_static_ld+set}" = set; then
   enableval="$enable_static_ld"
@@ -1142,6 +1214,14 @@ fi
       # Check whether --enable-strict-ansi or --disable-strict-ansi was given.
 if test "${enable_strict_ansi+set}" = set; then
   enableval="$enable_strict_ansi"
+  :
+fi
+
+
+         
+      # Check whether --enable-one-per or --disable-one-per was given.
+if test "${enable_one_per+set}" = set; then
+  enableval="$enable_one_per"
   :
 fi
 
@@ -1173,6 +1253,54 @@ if test "${with_posix+set}" = set; then
 fi
 
 
+            
+      # Check whether --with-cppflags or --without-cppflags was given.
+if test "${with_cppflags+set}" = set; then
+  withval="$with_cppflags"
+  :
+fi
+
+
+            
+      # Check whether --with-cxxflags or --without-cxxflags was given.
+if test "${with_cxxflags+set}" = set; then
+  withval="$with_cxxflags"
+  :
+fi
+
+
+            
+      # Check whether --with-cflags or --without-cflags was given.
+if test "${with_cflags+set}" = set; then
+  withval="$with_cflags"
+  :
+fi
+
+
+            
+      # Check whether --with-f90flags or --without-f90flags was given.
+if test "${with_f90flags+set}" = set; then
+  withval="$with_f90flags"
+  :
+fi
+
+
+            
+      # Check whether --with-arflags or --without-arflags was given.
+if test "${with_arflags+set}" = set; then
+  withval="$with_arflags"
+  :
+fi
+
+
+            
+      # Check whether --with-ldflags or --without-ldflags was given.
+if test "${with_ldflags+set}" = set; then
+  withval="$with_ldflags"
+  :
+fi
+
+
          
       # Check whether --enable-32-bit or --disable-32-bit was given.
 if test "${enable_32_bit+set}" = set; then
@@ -1192,6 +1320,14 @@ fi
    if test "${with_mips}" = yes ; then
        with_mips='4'
    fi
+
+         
+      # Check whether --enable-draco-stdhdrs or --disable-draco-stdhdrs was given.
+if test "${enable_draco_stdhdrs+set}" = set; then
+  enableval="$enable_draco_stdhdrs"
+  :
+fi
+
 
    
 
