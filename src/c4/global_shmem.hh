@@ -11,8 +11,10 @@
 
 #include "c4/global.hh"
 
-#include "Assert.hh"
-#include "DynArray.hh"
+#include "ds++/Assert.hh"
+#include "ds++/DynArray.hh"
+
+C4_NAMESPACE_BEG
 
 //---------------------------------------------------------------------------//
 // Debugging stuff.
@@ -168,6 +170,8 @@ struct Async_DB {
     int tag;
     int size;
 };
+
+C4_NAMESPACE_END
 
 #endif                          // __c4_global_shmem_hh__
 
