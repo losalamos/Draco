@@ -15,12 +15,13 @@ typedef vector<int> VI;
 
 using namespace XTM;
 
-template class IMP::MaterialStateField<VD>;
+template class InterpedMaterialProps::MaterialStateField<VD>;
 
-typedef IMP::MaterialStateField<VD> MSF;
+typedef InterpedMaterialProps::MaterialStateField<VD> MSF;
 
-template MSF IMP::getMaterialState(const VD &, const VD &, const VD &,
-				   const VI &) const;
+template MSF InterpedMaterialProps::getMaterialState(const VD &, 
+						     const VD &, const VD &,
+						     const VI &) const;
 
 //---------------------------------------------------------------------------//
 //                              end of testMatProp_pt.cc

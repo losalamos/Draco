@@ -32,7 +32,8 @@ srcs	= \
 	testBilin.cc \
 	testMatProp.cc \
 	testMatProp_pt.cc \
-	testMmcMatProp.cc
+	testMmcMatProp.cc \
+	testMmcMatProp_pt.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.
@@ -59,6 +60,10 @@ endif
 $(dep_libmatprops):
 $(dep_libradphys):
 $(dep_libds++):
+
+# Get DejaGnu support
+
+include ../../config/make.deja
 
 # Go pick up the standard signature for makefiles.
 

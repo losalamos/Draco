@@ -1,0 +1,21 @@
+puts "Running test of matprops component."
+
+load_lib draco.exp
+
+global ENV
+
+puts "value of ENV is $ENV"
+
+puts "Running main_$ENV"
+
+set output [exec ./main_$ENV]
+
+# Check the output of t1
+
+if {[regexp "PASSED" $output]} {
+    pass matprops
+} else {
+    fail matprops
+}
+
+# All done with tests of matprops package.

@@ -93,22 +93,74 @@ void testMmcMatProp::execute_test()
 	mmcmp.getMaterialState<FT,FT1,FT2>(density, electron_temp,
 			       ion_temp, volume_fraction, 
 			       mat_id);
-    
-    
-// Get some properties for examination
+
+// Print header.
+
+    std::cout << "--- Begin Multi-Material Cell Tests ---" << std::endl;    
+    std::cout << std::endl;
+
+// Check absorption opacity results.
 
     {
+	std::cout << " ** Absorption Opacity **" << std::endl;
 	std::vector<double> results(ncell);
 	std::vector<double> answer(ncell);
 	int group = 1;
 	msf.getSigmaAbsorption(group, results);
 	for( int icell = 0; icell<ncell; icell++)
 	{
-	    std::cout << "results[" << icell << "] = " << results[icell] << std::endl;
+	    std::cout << "results[" << icell << "] = " << 
+		results[icell] << std::endl;
 	}
+	std::cout << std::endl;
     }
-	
 
+// Check electron temperature results.
+
+    {
+	std::cout << " ** Electron Temperature **" << std::endl;
+	std::vector<double> results(ncell);
+	std::vector<double> answer(ncell);
+	msf.getElectronTemperature(results);
+	for( int icell = 0; icell<ncell; icell++)
+	{
+	    std::cout << "results[" << icell << "] = " << 
+		results[icell] << std::endl;
+	}
+	std::cout << std::endl;
+    }
+    
+// Check electron specific heat results
+
+    {
+	std::cout << " ** Electron Specific Heat **" << std::endl;
+        std::vector<std::vector<double> > results(ncell);
+        std::vector<std::vector<double> > answer(ncell);
+
+	for (int icell = 0; icell<ncell; icell++)
+	{
+	    int nmat = mat_id[icell].size();
+	    results[icell].resize(nmat);
+	    answer[icell].resize(nmat);
+	}
+	msf.getElectronSpecificHeatByMat(results);
+	for( int icell = 0; icell<ncell; icell++)
+	{
+	    int nmat = mat_id[icell].size();
+	    for (int imat = 0; imat<nmat; imat++)
+		{
+		    std::cout << "results[" << icell << 
+			"] [" << imat << "]= " << 
+			results[icell][imat] << std::endl;
+		}
+	}
+	std::cout << std::endl;
+     }
+
+// Print footer.
+
+    std::cout << "--- End Multi-Material Cell Tests ---" << std::endl;    
+    std::cout << std::endl;
 }   
 
 //
