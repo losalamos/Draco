@@ -43,10 +43,16 @@ dnl Append this directory to a list of library install locations.
 AC_INSTALL_LIB
 
 dnl A space delimited list of packages that this package depends on.
-AC_NEEDS_LIBS(ds++)
+AC_NEEDS_LIBS(\
+   ds++ \
+   units )
 
 dnl tests
-AC_RUNTESTS(tQuadrature tAxialQuadrature, scalar)
+AC_RUNTESTS(\
+   tQuadrature \
+   tAxialQuadrature \
+   tQuadServices\
+   , scalar)
 
 dnl Evaluate requested build environment and create values to be
 dnl substituted into the build system files listed in AC_OUTPUT

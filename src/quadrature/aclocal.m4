@@ -3344,6 +3344,11 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
 
+       # dependency rules for IBM visual age compiler are complex
+       if test "${with_cxx}" = ibm; then
+	   DEPENDENCY_RULES='Makefile.dep.xlC.darwin'
+       fi
+
        # print out cpu message
        AC_MSG_CHECKING("host platform cpu")
        AC_MSG_RESULT("${host_cpu}")
@@ -3365,7 +3370,12 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
                AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
            ;;
-
+  	   ibm)	
+	       AC_MSG_WARN("xlC set to allow long long")
+	       STRICTFLAG="-qlanglvl=extended"
+	       CFLAGS="${CFLAGS} -qlonglong"
+	       CXXFLAGS="${CXXFLAGS} -qlonglong"
+	   ;;
            # catchall
            *) 
                # do nothing
