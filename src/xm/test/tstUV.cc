@@ -278,7 +278,7 @@ void t6()
 
     a = exp(1.);
     b = log(a);
-    passed &= (fabs(b[0] - 1.) < 0.00001);
+    passed &= (std::fabs(b[0] - 1.) < 0.00001);
 
     a = 10.;
     b = log10(a);
@@ -302,7 +302,7 @@ void t6()
 
     a = -3.4;
     b = fabs(a);
-    passed &= (fabs(b[0] - 3.4) < 0.00001);
+    passed &= (std::fabs(b[0] - 3.4) < 0.00001);
 
     a = 3.4;
     b = floor(a);

@@ -134,7 +134,7 @@ class OpSin {
   public:
     static inline P apply( const P& x )
     {
-	return ::sin(x);
+	return std::sin(x);
     }
 };
 
@@ -149,7 +149,7 @@ class OpCos {
   public:
     static inline P apply( const P& x )
     {
-	return ::cos(x);
+	return std::cos(x);
     }
 };
 
@@ -164,7 +164,7 @@ class OpTan {
   public:
     static inline P apply( const P& x )
     {
-	return ::tan(x);
+	return std::tan(x);
     }
 };
 
@@ -179,7 +179,7 @@ class OpACos {
   public:
     static inline P apply( const P& x )
     {
-	return ::acos(x);
+	return std::acos(x);
     }
 };
 
@@ -194,7 +194,7 @@ class OpASin {
   public:
     static inline P apply( const P& x )
     {
-	return ::asin(x);
+	return std::asin(x);
     }
 };
 
@@ -209,7 +209,7 @@ class OpATan {
   public:
     static inline P apply( const P& x )
     {
-	return ::atan(x);
+	return std::atan(x);
     }
 };
 
@@ -224,7 +224,7 @@ class OpCosh {
   public:
     static inline P apply( const P& x )
     {
-	return ::cosh(x);
+	return std::cosh(x);
     }
 };
 
@@ -239,7 +239,7 @@ class OpSinh {
   public:
     static inline P apply( const P& x )
     {
-	return ::sinh(x);
+	return std::sinh(x);
     }
 };
 
@@ -254,7 +254,7 @@ class OpTanh {
   public:
     static inline P apply( const P& x )
     {
-	return ::tanh(x);
+	return std::tanh(x);
     }
 };
 
@@ -269,7 +269,7 @@ class OpExp {
   public:
     static inline P apply( const P& x )
     {
-	return ::exp(x);
+	return std::exp(x);
     }
 };
 
@@ -284,7 +284,7 @@ class OpLog {
   public:
     static inline P apply( const P& x )
     {
-	return ::log(x);
+	return std::log(x);
     }
 };
 
@@ -299,7 +299,7 @@ class OpLog10 {
   public:
     static inline P apply( const P& x )
     {
-	return ::log10(x);
+	return std::log10(x);
     }
 };
 
@@ -314,7 +314,7 @@ class OpSqrt {
   public:
     static inline P apply( const P& x )
     {
-	return ::sqrt(x);
+	return std::sqrt(x);
     }
 };
 
@@ -329,7 +329,7 @@ class OpCeil {
   public:
     static inline P apply( const P& x )
     {
-	return ::ceil(x);
+	return std::ceil(x);
     }
 };
 
@@ -344,7 +344,7 @@ class OpAbs {
   public:
     static inline P apply( const P& x )
     {
-	return ::abs(x);
+	return std::abs(x);
     }
 };
 
@@ -359,7 +359,7 @@ class OpLabs {
   public:
     static inline P apply( const P& x )
     {
-	return ::labs(x);
+	return std::labs(x);
     }
 };
 
@@ -374,7 +374,7 @@ class OpFabs {
   public:
     static inline P apply( const P& x )
     {
-	return ::fabs(x);
+	return std::fabs(x);
     }
 };
 
@@ -389,7 +389,7 @@ class OpFloor {
   public:
     static inline P apply( const P& x )
     {
-	return ::floor(x);
+	return std::floor(x);
     }
 };
 
@@ -408,7 +408,7 @@ class OpPow {
   public:
     static inline P apply( const P& x, const P& y )
     {
-      return ::pow(x,y);
+      return std::pow(x,y);
     }
 };
 
@@ -423,7 +423,7 @@ class OpATan2 {
   public:
     static inline P apply( const P& x, const P& y )
     {
-      return ::atan2(x,y);
+      return std::atan2(x,y);
     }
 };
 
@@ -438,7 +438,7 @@ class OpFmod {
   public:
     static inline P apply( const P& x, const P& y )
     {
-      return ::fmod(x,y);
+      return std::fmod(x,y);
     }
 };
 
