@@ -17,8 +17,16 @@ function set_default_values()
 hostname=`hostname`
 uname=`uname -a`
 username=`/usr/bin/whoami`
-regress_home=/home/regress
 code=`echo $0 | sed -e 's/_.*//' | sed -e 's/.*[/]//'`
+if test ${username} = regress; then
+   if test -d /codes/radtran; then
+      regress_home=/home/regress
+   elif test -d /usr/projects/${code}; then
+      regress_home=/usr/projects/${code}/regress
+   fi
+else
+  regress_home=`pwd`
+fi
 REGDIR="${regress_home}/${code}"
 origdir=`pwd`
 draco_regress=/home/regress/draco
@@ -29,6 +37,11 @@ if [ ! -d ${REGDIR} ] ; then
     echo ">>> Found REGDIR = $REGDIR"
     exit 1 
 fi
+
+# add to the PATH so that the script can find: gcc-3.4.2, xmgrace, ghostview.
+export PATH=/usr/local/gcc/bin:/codes/mpi/bin:/usr/local/grace/bin:/usr/local/bin:${PATH}
+# add to LD_LIBRARY_PATH so that the script can find the g++ libraries.
+export LD_LIBRARY_PATH=/usr/local/gcc/lib:${LD_LIBRARY_PATH}
 
 }
 
@@ -43,6 +56,7 @@ echoonly=
 withcoverage=
 withapptest=
 withstplort=
+with_source=
 option=
 
 while [ $# -gt 0 ]; do
@@ -67,6 +81,11 @@ while [ $# -gt 0 ]; do
            withcoverage=yes
 	   shift
            ;;
+	 --with-source=*)
+           echo ">> Option Selected: $1"
+	   with_source=`echo "$1" | sed -e 's/.*=//'`
+           shift
+           ;;
          --) shift
 	     break
 	     ;;
@@ -78,8 +97,10 @@ while [ $# -gt 0 ]; do
            echo "       execute them."
            echo "    -a Run application tests in addition to unit tests."
            echo "    -c Do Coverage Analsysis."
+           echo "    --with-source=<dir> Specify a source directory"
+           echo "       (do not check out from CVS repository)."
            echo " "
-	   shift
+	   exit
            ;;
 	 *) break
            ;;

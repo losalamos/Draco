@@ -44,6 +44,8 @@ echo ">>>"
 echo " "
 echo "% gcc --version"
 gcc --version
+echo "% which gcc"
+which gcc
 
 # get ld version
 echo "% ld --version"

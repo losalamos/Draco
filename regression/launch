@@ -15,23 +15,53 @@
 ## Time-stamp: <01/08/31 15:18:07 tme>
 ##---------------------------------------------------------------------------##
 
+# Make the functions s_time() and s_interval() available to this script.
+source /home/regress/draco/regression/timer_functions
+
 ##---------------------------------------------------------------------------##
 ## Check regression directories and make log files
+
+# determine if this script is being run interactively or not.
+interactive_job='no'
+case ${-} in
+*i*) interactive_job=yes ;;
+esac
+
+# One more chance
+if test ${interactive_job} = 'no' && test -t 0; then
+   interactive_job=yes
+fi
+
+# provide a start time for the script:
+start_time=`s_time`
 
 # determine hostname and system
 hostname=`hostname`
 uname=`uname -a`
+user=`whoami`
  
 # obtain name of package
 PACKAGE=$1
 shift
 
-# check the regression directory
-if [ $(hostname) = "ios.lanl.gov" ]; then
-    REGHOME="/home/regress"
-elif [ $(uname) = "OSF/1" ]; then
-    REGHOME="/usr/projects/draco/regress"
+# Setup of the REGHOME variable
+if test ${user} = regress; then
+   # Are we on CCS-2/4 Linux or the ICN?
+   if test -d /codes/radtran; then
+      REGHOME="/home/regress"
+   elif test -d /usr/projects/draco; then
+      REGHOME="/usr/projects/draco/regress"
+   else
+      echo ">>> I don't know what system we are on.  I can't find /codes/radtran"
+      echo ">>> or /usr/projects/draco.  This is a fatal error."
+      exit 1
+   fi
+else
+   # A user is running the script, not the regress account.
+    REGHOME=`pwd`
+    non_regress_run='yes'
 fi
+
 REGDIR="${REGHOME}/${PACKAGE}"
 
 # check the regression directory
@@ -43,9 +73,10 @@ fi
 
 # check for the regression script
 
-regression_script="/home/regress/bin/${PACKAGE}_regression"
+regression_script="${REGHOME}/bin/${PACKAGE}_regression"
 if [ ! -f $regression_script ]; then
-    echo ">>> Regression script ${PACKAGE}_regression aka $regression_script does not exist! EXITING"
+    echo ">>> Regression script ${PACKAGE}_regression does not exist at ${REGHOME}/bin/."
+    echo ">>> EXITING"
     exit 1
 fi
 
@@ -80,15 +111,19 @@ fi
 # if file LOG exists, add a suffix to the logfile name
 suffixvals='a b c d e f g h i j k l m n o p q r s t u v w x y z'
 if test -f $LOG; then
-    echo ">>> The logfile $LOG already exists.  "
+    if test ${interactive_job} = yes; then
+       echo ">>> The logfile $LOG already exists.  "
+    fi
     for suffix in ${suffixvals}; do
        if ! test -f ${LOG}-${suffix}; then
  	  LOG=${LOG}-${suffix}
           break
        fi
     done
-    echo ">>> Added suffix ${suffix} to filename."
-    echo ">>> Output will be written to $LOG"
+    if test ${interactive_job} = yes; then
+       echo ">>> Added suffix ${suffix} to filename."
+       echo ">>> Output will be written to $LOG"
+    fi
 fi
 
 # direct output to log file
@@ -108,28 +143,55 @@ echo ">>> OPTIONAL ARGS     : $*"
 echo ">>> REGRESSION LOG    : $LOG"
 echo ">>> DATE              : $date"
 echo ">>>"
+echo ">>> Start Time        : ${start_time}"
 echo ""
 $regression_script $*
+stop_time=`s_time`
+elapsed_time=`s_interval ${start_time} ${stop_time}`
+echo ">>> Stop Time         : ${stop_time}"
+echo ">>> Elapsed Time      : ${elapsed_time}"
+echo ">>>"
 echo ""
 echo ">>>"
 echo ">>> Done running $regression_script script"
 echo ">>>"
 
-if [ ${PACKAGE} = "draco" ]; then
-    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date draco-regression@sourceforge-web.lanl.gov 
-elif [ ${PACKAGE} = "clubimc" ]; then
-    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date jayenne-regression@sourceforge-web.lanl.gov
-elif [ ${PACKAGE} = "wedgehog" ]; then
-    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date jayenne-regression@sourceforge-web.lanl.gov
-elif [ ${PACKAGE} = "milagro" ]; then
-    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date jayenne-regression@sourceforge-web.lanl.gov
-elif [ ${PACKAGE} = "unclemcflux" ]; then
-    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date jayenne-regression@sourceforge-web.lanl.gov
-elif [ ${PACKAGE} = "capsaicin" ]; then
-    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date capsaicin-unit-tests@sourceforge-web.lanl.gov
-elif [ ${PACKAGE} = "pika" ]; then
-    python /home/regress/tools/regression_filter.py<$LOG | mailx -s ${PACKAGE}_$date marmot-regression@sourceforge-web.lanl.gov
+##---------------------------------------------------------------------------##
+## Who do we send the report to?
+
+mailto="mailx -s ${LOG} "
+case ${PACKAGE} in
+draco) 
+   mailto="${mailto} draco-regression@sf.lanl.gov" ;;
+clubimc | wedgehog | milagro | unclemcflux)
+   mailto="${mailto} jayenne-regression@sf.lanl.gov" ;;
+capsaicin)
+   mailto="${mailto} capsaicin-unit-tests@sf.lanl.gov" ;;
+pika)
+   mailto="${mailto} marmot-regression@sf.lanl.gov" ;;
+*)
+   mailto="${mailto} kgt@lanl.gov" ;;
+esac
+
+echo " "
+echo ">>>"
+echo ">>> Preparing/Emailing final report"
+echo ">>>"
+echo " "
+
+regression_cmd="python /home/regress/draco/draco/tools/regression_filter.py"
+if test ${interactive_job} = yes; then
+   echo ">>> Running the command: ${regression_cmd}<${LOG}"
+   ${regression_cmd}<${LOG}
+else
+   echo ">>> Running the command: ${regression_cmd}<${LOG} | ${mailto}"
+   ${regression_cmd}<${LOG} | ${mailto}
 fi
+
+echo " "
+echo ">>>"
+echo ">>> End of launch script."
+echo ">>>"
 
 ##---------------------------------------------------------------------------##
 ## end launch

@@ -1,3 +1,29 @@
+2005-02-11  Kelly Thompson  <kgt@lanl.gov>
+
+	* launch: Add a capability to time regression run times.
+
+	* launch: Add checks for interactive or cron job.  If this is an
+	  interactive job, send extra info to tty and do not send final
+	  email report.
+
+	* launch: Add logic to determine the value of $REGHOME
+	  (/home/regress or /usr/projects/draco/regress).
+
+	* launch: Simplify the script used to compile and email the final
+	  report. 
+
+	* parse_options (set_default_values): Replace hard coded value for
+	  ${regress_home} with logic to determine what value it should
+	  have.  If username == regress, set it to /home/regress.
+
+	* parse_options (set_default_values): Add commands to augment
+	  $PATH and $LD_LIBRARY_PATH so that the regression scripts can
+	  find gcc-3.4.2, xmgrace and ghostview.
+
+	* parse_options (parse_options): Add new option --with-source that
+	  tells the regression script where the source code is.  This
+	  option disables automatic cvs checkout of source code.
+	
 2005-01-19  Kelly Thompson  <kgt@lanl.gov>
 
 	* draco_regression: Replace environment setup with a calls to
