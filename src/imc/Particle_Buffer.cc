@@ -357,23 +357,23 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc,
     while (bank.size())
     {
       // get the double info from the particle
-	array_d[id++] = bank.top().time_left;
-	array_d[id++] = bank.top().ew;
-	array_d[id++] = bank.top().fraction;
-	for (int j = 0; j < bank.top().omega.size(); j++)
-	    array_d[id++] = bank.top().omega[j];
-	for (int j = 0; j < bank.top().r.size(); j++)
-	    array_d[id++] = bank.top().r[j];
+	array_d[id++] = bank.top()->time_left;
+	array_d[id++] = bank.top()->ew;
+	array_d[id++] = bank.top()->fraction;
+	for (int j = 0; j < bank.top()->omega.size(); j++)
+	    array_d[id++] = bank.top()->omega[j];
+	for (int j = 0; j < bank.top()->r.size(); j++)
+	    array_d[id++] = bank.top()->r[j];
 	Check (id <= buffer_d);
 
       // get the int info from the particle
-	array_i[ii++] = bank.top().cell;
-	array_i[ii++] = bank.top().random.get_num();
+	array_i[ii++] = bank.top()->cell;
+	array_i[ii++] = bank.top()->random.get_num();
 	Check (ii <= buffer_i);
 
       // get the char info from the particle
 	char *bytes;
-	int size = pack_sprng(bank.top().random.get_id(), &bytes);
+	int size = pack_sprng(bank.top()->random.get_id(), &bytes);
 	Check (size == csize);
 	for (int j = 0; j < csize; j++)
 	    array_c[ic++] = bytes[j];
@@ -590,7 +590,7 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Comm_Bank &bank) const
 	Check (ic <= buffer_c);
 
       // make the Particle
-	PT particle(r, omega, ew, cell, random, frac, t_left);
+	SP<PT> particle = new PT(r, omega, ew, cell, random, frac, t_left); 
 
       // add the Particle to the Comm_Bank and update the num_part counter
 	bank.push(particle);

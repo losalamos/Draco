@@ -141,9 +141,9 @@ public:
     };
 
   // standard buffers for particles
-    typedef Particle_Stack<PT> Census;
-    typedef Particle_Stack<PT> Bank;
-    typedef Particle_Stack<PT> Comm_Bank;
+    typedef Particle_Stack<SP<PT> > Census;
+    typedef Particle_Stack<SP<PT> > Bank;
+    typedef Particle_Stack<SP<PT> > Comm_Bank;
 
 private:
   // data of type double size (number of elements) saved to census
