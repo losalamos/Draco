@@ -42,9 +42,13 @@ rmdep:
 	$(RM) .d.*_$(env)
 
 clean: $(aux_clean)
-	$(RM) .d.*_$(env) .pt*_$(env)* .env_$(env) .x.*
-	$(RM) .dkcc.*
+	$(RM) .pt*_$(env)* .env_$(env) .x.*
+ifeq ($(wipestate),no)
+	$(RM) -f $(env)/*.o
+else
+	$(RM) .d.*_$(env)  .dkcc.*
 	$(RM) -rf $(env) 
+endif
 	$(RM) lib*_$(env).* x*_$(env)
 	$(RM) $(tstprogs)
 
@@ -60,8 +64,6 @@ clean: $(aux_clean)
 
 .nmlgen: $(nml_hh) $(nml_cc)
 	@echo "# stupid" > $@
-
-deps: $(cc_files:%.cc=.d.%_$(env)) $(ptcc_files:.%.cc=.d.%)
 
 ###############################################################################
 # Make certain that the .env tag directory is built, that the template
