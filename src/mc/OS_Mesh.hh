@@ -214,11 +214,7 @@ class OS_Mesh
 // OVERLOADED OPERATORS
 //---------------------------------------------------------------------------//
 
-std::ostream& operator<<(std::ostream &output, const OS_Mesh &object)
-{
-    object.print(output);
-    return output;
-}
+std::ostream& operator<<(std::ostream &output, const OS_Mesh &object);
 
 //---------------------------------------------------------------------------//
 // OS_MESH SERVICES FOR OS_MESH DEPENDENT CLASSES

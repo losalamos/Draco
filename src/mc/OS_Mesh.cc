@@ -449,6 +449,16 @@ void OS_Mesh::print(ostream &output, int cell) const
     output << "+++++++++++++++" << endl;
 }
 
+//---------------------------------------------------------------------------//
+// overloaded operators
+//---------------------------------------------------------------------------//
+
+std::ostream& operator<<(std::ostream &output, const OS_Mesh &object)
+{
+    object.print(output);
+    return output;
+}
+
 } // end namespace rtt_mc
 
 //---------------------------------------------------------------------------//
