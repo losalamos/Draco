@@ -59,6 +59,8 @@ struct Frequency_Sampling_Data
  * This class holds data needed by multigroup specializations of the
  * rtt_imc::Source and rtt_imc::Source_Builder classes.
  */
+//---------------------------------------------------------------------------//
+
 template<class MT>
 struct Frequency_Sampling_Data<MT, Multigroup_Frequency>
 {

@@ -107,7 +107,7 @@ void Opacity<MT,Gray_Frequency>::print(std::ostream &output) const
  *
  */
 template<class MT>
-Opacity<MT,Multigroup_Frequency>::Opacity(SP_Frequency freq,
+Opacity<MT,Multigroup_Frequency>::Opacity(SP_Frequency       freq,
 					  const ccsf_vector &sigma_abs_,
 					  const ccsf_vector &sigma_thomson_,
 					  SP_Fleck_Factors   fleck_,

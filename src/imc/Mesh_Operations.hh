@@ -112,7 +112,9 @@ class Mesh_Operations
 };
 
 //---------------------------------------------------------------------------//
-// OS_MESH SPECIALIZATION OF MESH_OPERATIONS CLASS
+/*!
+ * \brief Specialization of Mesh_Operations for rtt_mc::OS_Mesh.
+ */
 //---------------------------------------------------------------------------//
 
 template<>
@@ -157,7 +159,9 @@ class Mesh_Operations<rtt_mc::OS_Mesh>
 };
 
 //---------------------------------------------------------------------------//
-// RZWEDGE_MESH SPECIALIZATION OF MESH_OPERATIONS CLASS
+/*!
+ * \brief Specialization of Mesh_Operations for rtt_mc::RZWedge_Mesh.
+ */
 //---------------------------------------------------------------------------//
 
 template<>
