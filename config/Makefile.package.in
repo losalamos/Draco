@@ -17,6 +17,17 @@ ifeq (,${reldir})
   reldir := "."
 endif
 
+# get the relative directory to the config files (relative to ${top_srcdir}).
+
+rel_config_dir := $(shell ( cd ${top_srcdir} ; \
+	tmp="" ; \
+	while test ! -d config ; \
+	do \
+	   cd .. ; \
+	   tmp=$$tmp../ ; \
+	done ; \
+	echo $$tmp ) )config
+
 ##---------------------------------------------------------------------------##
 ## VARIABLES THAT ARE ASSIGNED BY AUTOCONF
 ## These are assigned using "="
@@ -197,10 +208,10 @@ ${includedir}/${package}/%: ${package}/%
 
 configfiles := aclocal.m4 ac_local.m4 ac_conf.m4 ac_vendors.m4 ac_dracoarg.m4 \
  ac_dracoenv.m4 ac_compiler.m4
-configfiles := $(addprefix ${top_srcdir}/../../config/, ${configfiles})
+configfiles := $(addprefix ${top_srcdir}/${rel_config_dir}/, ${configfiles})
 
 ${top_srcdir}/configure: configure.in ${configfiles}
-	cd ${top_srcdir} && autoconf --localdir=../../config
+	cd ${top_srcdir} && autoconf --localdir=${rel_config_dir}
 
 ${package}/config.h: ${package}/stamp-h
 	@: echo "config.h newer than stamp-h" # need any no-op command here!
@@ -215,8 +226,8 @@ ${package}/%.hh: %.hh.in
 ${package}/%.h: %.h.in
 	CONFIG_FILES=$@:$(notdir $<) CONFIG_HEADERS= ./config.status
 
-Makefile: ../../config/Makefile.package.in config.status
-	CONFIG_FILES=Makefile:../../config/Makefile.package.in \
+Makefile: ${rel_config_dir}/Makefile.package.in config.status
+	CONFIG_FILES=Makefile:${rel_config_dir}/Makefile.package.in \
 		CONFIG_HEADERS= ./config.status
 
 config.status: configure
