@@ -427,7 +427,7 @@ Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
 
 	  // check to see if we need to add extra sources to this cell on
 	  // this processor
-	    if (nvol_xtra[global_cell-1] <= i+1)
+	    if (nvol_xtra[global_cell-1] >= i+1)
 		nvol[global_cell-1]++;
 	    
 	  // calculate the nvol source and stream number for proc i
