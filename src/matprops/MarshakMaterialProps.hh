@@ -51,7 +51,7 @@ namespace rtt_matprops {
 
    private:
     
-     XTM::Units units;
+     rtt_units::Units units;
 
      double kappa0;
      double abar;
@@ -62,7 +62,7 @@ namespace rtt_matprops {
 
      // CREATORS
     
-     MarshakMaterialProps(const XTM::Units &units_,
+     MarshakMaterialProps(const rtt_units::Units &units_,
 			  double kappa0_=10.0, double abar_=1.0,
 			  int kappaPower_=3, double gamma_ = 5.0/3.0)
 	 : units(units_), kappa0(kappa0_), abar(abar_),
@@ -82,7 +82,7 @@ namespace rtt_matprops {
 
   public:
 
-    const XTM::Units &getUnits() const { return units; }
+    const rtt_units::Units &getUnits() const { return units; }
 
     //------------------------------------------------------------------------//
     // getMaterialState:
@@ -162,7 +162,7 @@ class MarshakMaterialProps::MaterialStateField
 
     const MarshakMaterialProps &getProps() const { return *pMatprops; }
     
-    const XTM::Units &getUnits() const { return getProps().getUnits(); }
+    const rtt_units::Units &getUnits() const { return getProps().getUnits(); }
 
     inline void getElectronTemperature(FT &results) const;
     inline void getIonTemperature(FT &results) const;
@@ -324,8 +324,8 @@ void MPMSF<FT,FT2>::getElectronSpecificHeat(FT &results) const
 {
     Require(size() == results.size());
 
-    using XTM::PhysicalConstants::protonMassSI;
-    using XTM::PhysicalConstants::boltzmannSI;
+    using rtt_units::PhysicalConstants::protonMassSI;
+    using rtt_units::PhysicalConstants::boltzmannSI;
     
     const double abar = pMatprops->abar;
     const double protonMass =

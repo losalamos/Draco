@@ -37,13 +37,13 @@ namespace rtt_matprops
 
      // DATA
     
-     XTM::Units units;
+     rtt_units::Units units;
 
    public:
 
      // CREATORS
     
-     MaterialProperties(const XTM::Units &units_)
+     MaterialProperties(const rtt_units::Units &units_)
 	 : units(units_)
      {
 	 // empty
@@ -53,7 +53,7 @@ namespace rtt_matprops
     
      // ACCESSORS
 
-     const XTM::Units &getUnits() const { return units; }
+     const rtt_units::Units &getUnits() const { return units; }
 
      virtual void getElectronTemperature(ccsf &results) const = 0;
      virtual void getElectronTemperature(fcdsf &results) const = 0;

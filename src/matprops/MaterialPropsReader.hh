@@ -44,13 +44,13 @@ class MaterialPropsReader
 
     // The desired units to convert all of the data.
     
-    XTM::Units outputUnits;
+    rtt_units::Units outputUnits;
     
     // CREATORS
     
   public:
 
-    MaterialPropsReader(const XTM::Units &outputUnits_)
+    MaterialPropsReader(const rtt_units::Units &outputUnits_)
 	: outputUnits(outputUnits_)
     {
 	// ** empty **
@@ -236,7 +236,7 @@ class MaterialPropsReader
     //   Return the desired units for output.
     //------------------------------------------------------------------------//
 
-    const XTM::Units &getOutputUnits() const { return outputUnits; }
+    const rtt_units::Units &getOutputUnits() const { return outputUnits; }
 
 };
 

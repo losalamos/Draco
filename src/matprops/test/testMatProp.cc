@@ -44,7 +44,7 @@ void testMatProp()
     typedef vector<double> ccsf;
     typedef vector<int> ccif;
 
-    XTM::Units units = XTM::Units::getAstroPhysUnits();
+    rtt_units::Units units = rtt_units::Units::getAstroPhysUnits();
     // Units units;
 
     std::ifstream ifs("testMatProp.inp");

@@ -81,7 +81,7 @@ namespace rtt_matprops {
 
      // returns the units to be used for mass, length, time, 
      // and temperature
-     const XTM::Units &getUnits() const
+     const rtt_units::Units &getUnits() const
      {
 	 return spumcmp->getUnits();
      }
@@ -202,7 +202,7 @@ namespace rtt_matprops {
 
      // returns the units to be used for mass, length, time, 
      // and temperature
-     const XTM::Units &getUnits() const { return pMatProps->getUnits(); }
+     const rtt_units::Units &getUnits() const { return pMatProps->getUnits(); }
 
      // For all the methods found below, the size of
      // arguments of type FT1 and FT (i.e. ncell) is  expected to be the

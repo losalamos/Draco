@@ -133,12 +133,12 @@ class FifiMatPropsReader : public MaterialPropsReader
     // This is the units converter from **most** of the units
     // used in the Fifi file to SI units.
     
-    XTM::Units fileUnits;
+    rtt_units::Units fileUnits;
 
     // This is the units converter from "file" units to
     // the user's output units.
     
-    XTM::Units file2OutputUnits;
+    rtt_units::Units file2OutputUnits;
 
     // This is the actual mapping from material ids to the MaterialInfo spec.
     
@@ -169,7 +169,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     FifiMatPropsReader(const std::vector<MaterialDefinition> &matdefs,
-		       const XTM::Units &outputUnits_, std::istream &is_);
+		       const rtt_units::Units &outputUnits_, std::istream &is_);
 
     // MANIPULATORS
     

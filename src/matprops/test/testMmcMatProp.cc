@@ -96,7 +96,7 @@ void testMmcMatProp::execute_test()
 	matId[imat] = imat+1;
     }
     std::ifstream fifis("testMmcMatProp.opac.inp");
-    FifiMatPropsReader reader(mats, XTM::Units(), fifis);
+    FifiMatPropsReader reader(mats, rtt_units::Units(), fifis);
     SP<InterpedMaterialProps> spumcmp(new InterpedMaterialProps(matId,reader));
 
     typedef MultiMatCellMatProps<InterpedMaterialProps> MMCMP;

@@ -74,7 +74,7 @@ class InterpedMaterialProps
 
   private:
     
-    XTM::Units units;
+    rtt_units::Units units;
 
     // This is the dictionary of material tables
     // keyed via the integer material id number.
@@ -99,7 +99,7 @@ class InterpedMaterialProps
 
   public:
 
-    const XTM::Units &getUnits() const { return units; }
+    const rtt_units::Units &getUnits() const { return units; }
 
     //------------------------------------------------------------------------//
     // getMaterialState:
@@ -376,7 +376,7 @@ class InterpedMaterialProps::MaterialStateField
 
     const InterpedMaterialProps &getProps() const { return *pMatprops; }
     
-    const XTM::Units &getUnits() const { return getProps().getUnits(); }
+    const rtt_units::Units &getUnits() const { return getProps().getUnits(); }
 
     void getElectronTemperature(FT &results) const;
 
