@@ -96,7 +96,7 @@ Source_Builder<MT,PT>::Source_Builder(SP<IT> interface, SP_Mesh mesh,
 
     Require(mesh);
     Require(mesh->num_cells() == topology->num_cells(node()));
-    Require(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
     
     int num_cells = mesh->num_cells();
 

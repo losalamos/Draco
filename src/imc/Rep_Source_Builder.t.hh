@@ -51,7 +51,7 @@ Rep_Source_Builder<MT,PT>::Rep_Source_Builder(SP<IT> interface, SP_Mesh mesh,
       global_eloss_vol(0),
       global_eloss_ss(0)
 { 
-    Require(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
 
     // if the census does not exist yet then we build it --> if the census
     // does not exist it means that this is the initial IMC cycle
@@ -102,9 +102,9 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
 	calc_source_energies(*state, *opacity);
 
 	// make sure global energies are the same on each processor
-	parallel_data_op.check_global_equiv(evoltot);
-	parallel_data_op.check_global_equiv(esstot);
-	parallel_data_op.check_global_equiv(ecentot);
+	Check(parallel_data_op.check_global_equiv(evoltot));
+	Check(parallel_data_op.check_global_equiv(esstot));
+	Check(parallel_data_op.check_global_equiv(ecentot));
     }
 
     // calculate the number of source particles for all source particles
@@ -286,8 +286,8 @@ void Rep_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 				rtt_rng::rn_stream, local_ncen,
 				local_ncentot, cenrn);
 
+    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
     Ensure(rtt_rng::rn_stream == global_ncentot);
-    Ensure(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
 }
 
 //---------------------------------------------------------------------------//
@@ -308,7 +308,7 @@ void Rep_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 template<class MT, class PT>
 void Rep_Source_Builder<MT,PT>::calc_source_numbers()
 {
-    Require(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
 
     // calculate total, global source energy 
     double total_energy = evoltot + ecentot + esstot;
@@ -365,9 +365,9 @@ void Rep_Source_Builder<MT,PT>::calc_source_numbers()
     }
     
     // check global equivalence of source numbers
-    parallel_data_op.check_global_equiv(global_nvoltot);
-    parallel_data_op.check_global_equiv(global_nsstot);
-    parallel_data_op.check_global_equiv(global_ncentot);
+    Check(parallel_data_op.check_global_equiv(global_nvoltot));
+    Check(parallel_data_op.check_global_equiv(global_nsstot));
+    Check(parallel_data_op.check_global_equiv(global_ncentot));
     
     // calculate energy weights sampling loss constribution to energy loss
     // based on global source numbers and energies
@@ -411,7 +411,7 @@ void Rep_Source_Builder<MT,PT>::calc_source_numbers()
 				rtt_rng::rn_stream, local_nss,
 				local_nsstot, ssrn);
 
-    Ensure(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
 }
 
 //---------------------------------------------------------------------------//
