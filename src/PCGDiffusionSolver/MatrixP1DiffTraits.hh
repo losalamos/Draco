@@ -11,7 +11,7 @@
 #define __PCGDiffusionSolver_MatrixP1DiffTraits_hh__
 
 #include "traits/MatrixFactoryTraits.hh"
-#include "PCGDiffusionSolver/MatrixP1Diff.hh"
+#include "MatrixP1Diff.hh"
 #include "diffusion/P1Matrix.hh"
 
 namespace rtt_traits
