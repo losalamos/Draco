@@ -16,9 +16,10 @@ namespace rtt_matprops
 {
 
  template<class MT>
- TempMapper<MT>::TempMapper(const SP<MT> &spMesh_, double gamma_,
-                            double power_, const FieldConstructor &fCtor_)
-    : spMesh(spMesh_), gamma(gamma_), power(power_), fCtor(fCtor_)
+ TempMapper<MT>::TempMapper(double power_, double gamma_,
+                            const SP<MT> &spMesh_,
+			    const FieldConstructor &fCtor_)
+    : power(power_), gamma(gamma_), spMesh(spMesh_), fCtor(fCtor_)
  {
      Require(gamma >= 0.0 && gamma <= 1.0);
      Require(power != 0.0);
