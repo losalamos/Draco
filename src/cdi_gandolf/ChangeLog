@@ -1,3 +1,8 @@
+2001-11-26  Thomas M. Evans  <tme@lanl.gov>
+
+	* GandolfGrayOpacity, GandolfMultigroupOpacity: adding
+	packing/unpacking functionality for persistence.
+
 2001-10-30  Thomas M. Evans  <tme@lanl.gov>
 
 	* cdi_gandolf: removed dependency to UnitTestFrame from

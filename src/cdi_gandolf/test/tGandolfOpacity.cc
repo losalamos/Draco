@@ -322,7 +322,7 @@ void file_check_analytic()
     {
 	ostringstream message;
 	message << "Failed to create SP to new GandolfOpacity object for "
-		<< "Al_BeCu.ipcress data."
+		<< "analyticOpacities.ipcress data."
 		<< std::endl << "\t" << GandError.what();
 	FAILMSG(message.str());
 	FAILMSG("Aborting tests.");
@@ -364,7 +364,7 @@ void file_check_analytic()
     {
 	ostringstream message;
 	message << "Failed to create SP to new GandolfOpacity object for "
-		<< "Al_BeCu.ipcress data." << std::endl << "\t" 
+		<< "analyticOpacities.ipcress data." << std::endl << "\t" 
 		<< GandError.what();
 	FAILMSG(message.str());
 	FAILMSG("Aborting tests.");
@@ -423,7 +423,7 @@ void file_check_analytic()
     {
 	ostringstream message;
 	message << "Failed to create SP to new GandolfOpacity object for "
-		<< "Al_BeCu.ipcress data." << std::endl << "\t"
+		<< "analyticOpacities.ipcress data." << std::endl << "\t"
 		<< GandError.what();
 	FAILMSG(message.str());
 	FAILMSG("Aborting tests.");
@@ -468,7 +468,7 @@ void file_check_analytic()
     {
 	ostringstream message;
 	message << "Failed to create SP to new GandolfOpacity object for "
-		<< "Al_BeCu.ipcress data." << std::endl << "\t" 
+		<< "analyticOpacities.ipcress data." << std::endl << "\t" 
 		<< GandError.what();
 	FAILMSG(message.str());
 	FAILMSG("Aborting tests.");
@@ -778,7 +778,7 @@ void check_gandolf_stl_accessors()
     {
 	ostringstream message;
 	message << "Failed to create SP to new GandolfGrayOpacity object for "
-		<< "\n\tAl_BeCu.ipcress data (SP not templated on "
+		<< "\n\t analyticOpacityies.ipcress data (SP not templated on "
 		<< "cdi/GrayOpacity)." << std::endl << "\t" 
 		<< GandError.what();
 	FAILMSG(message.str());
@@ -974,7 +974,7 @@ void check_gandolf_stl_accessors()
     {
 	ostringstream message;
 	message << "Failed to create SP to new GandolfGrayOpacity "
-		<< "object for \n\t Al_BeCu.ipcress data "
+		<< "object for \n\t analyticOpacities.ipcress data "
 		<< "(SP not templated on cdi/GrayOpacity)."
 		<< std::endl << "\t" << GandError.what();
 	FAILMSG(message.str()); 
@@ -1141,6 +1141,257 @@ void check_gandolf_stl_accessors()
 
 //---------------------------------------------------------------------------//
 
+void gray_opacity_packing_test()
+{   
+    vector<char> packed;
+
+    {
+	// Gandolf data filename (IPCRESS format required)
+	string op_data_file = "analyticOpacities.ipcress";
+
+	// ------------------------- //
+	// Create GandolfFile object //
+	// ------------------------- //
+	    
+	// Create a smart pointer to a GandolfFile object
+	SP<GandolfFile> spGFAnalytic;
+	    
+	// Try to instantiate the object.
+	try 
+	{
+	    spGFAnalytic = new rtt_cdi_gandolf::GandolfFile( op_data_file ); 
+	}
+	catch (const rtt_cdi_gandolf::gmatidsException& GandError)
+	{
+	    ostringstream message;
+	    FAILMSG(GandError.what());
+	    FAILMSG("Aborting tests.");
+	    return;
+	}
+
+	// Create a smart pointer to an Opacity object.
+	SP<GrayOpacity> spOp_Analytic_ragray;
+
+	// material ID
+	const int matid=10001;
+    
+	spOp_Analytic_ragray = new GandolfGrayOpacity( 
+	    spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION );
+
+	// pack up the opacity
+	packed = spOp_Analytic_ragray->pack();
+    }
+
+    // make a new GandolfGrayOpacity from packed data
+    SP<GrayOpacity> unpacked_opacity;  
+
+    // Try to instantiate the Opacity object.
+    try 
+    {
+	unpacked_opacity = new GandolfGrayOpacity(packed); 
+    }
+    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
+	// Alternatively, we could use:
+	// catch ( rtt_cdi_gandolf::gkeysException GandError )
+	// catch ( rtt_cdi_gandolf::gchgridsException GandError )
+	// catch ( rtt_cdi_gandolf::ggetmgException GandError )
+	// catch ( rtt_cdi_gandolf::ggetgrayException GandError )
+    {
+	ostringstream message;
+	message << "Failed to create SP to unpacked GandolfOpacity object for "
+		<< "analyticOpacities.ipcress data."
+		<< std::endl << "\t" << GandError.what();
+	FAILMSG(message.str());
+	FAILMSG("Aborting tests.");
+	return;
+    }
+
+    // some simple tests
+    if (unpacked_opacity->getDataFilename() != "analyticOpacities.ipcress")
+	ITFAILS;
+
+    if (unpacked_opacity->getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
+    if (unpacked_opacity->getModelType() != rtt_cdi::ROSSELAND)     ITFAILS;
+	    
+    // ----------------- //
+    // Gray Opacity Test //
+    // ----------------- //
+	    
+    double temperature          = 10.0; // keV
+    double density              = 1.0; // g/cm^3
+    double tabulatedGrayOpacity = density * pow( temperature, 4 );
+	    
+    if (!rtt_cdi_gandolf_test::opacityAccessorPassed( 
+	    unpacked_opacity, temperature, density, tabulatedGrayOpacity))
+    {
+	FAILMSG("Aborting tests.");
+	return;
+    }	
+
+    // try to unpack gray opacity as multigroup opacity
+    bool caught = false;
+    try
+    {
+	SP<MultigroupOpacity> opacity(new GandolfMultigroupOpacity(packed));
+    }
+    catch (const rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+	ostringstream message;
+	message << "Good, we caught the following assertion, \n"
+		<< ass.what();
+	PASSMSG(message.str());
+    }
+    if (!caught)
+    {
+	FAILMSG("Failed to catch an illegal packing asserion.");
+    }
+
+    if (rtt_cdi_gandolf_test::passed)
+    {
+	PASSMSG("GandolfGrayOpacity packing test successfull.");
+    }
+}
+
+//---------------------------------------------------------------------------//
+
+void mg_opacity_packing_test()
+{
+    vector<char> packed;
+
+    {
+	// Gandolf data filename (IPCRESS format required)
+	string op_data_file = "analyticOpacities.ipcress";
+	
+	// ------------------------- //
+	// Create GandolfFile object //
+	// ------------------------- //
+	    
+	// Create a smart pointer to a GandolfFile object
+	SP<GandolfFile> spGFAnalytic;
+	    
+	// Try to instantiate the object.
+	try 
+	{
+	    spGFAnalytic = new rtt_cdi_gandolf::GandolfFile( op_data_file ); 
+	}
+	catch (const rtt_cdi_gandolf::gmatidsException& GandError)
+	{
+	    ostringstream message;
+	    FAILMSG(GandError.what());
+	    FAILMSG("Aborting tests.");
+	    return;
+	}
+
+	// material ID
+	const int matid=10001;
+
+	//---------------- //
+	// MG Opacity test //
+	//---------------- //
+	    
+	// Create a smart pointer to an Opacity object.
+	SP<MultigroupOpacity> spOp_Analytic_pmg;
+	
+	spOp_Analytic_pmg = new GandolfMultigroupOpacity( 
+	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::TOTAL );
+
+	packed = spOp_Analytic_pmg->pack();
+    }
+
+    // make a new GandolfGrayOpacity from packed data
+    SP<MultigroupOpacity> unpacked_opacity;  
+
+    // Try to instantiate the Opacity object.
+    try 
+    {
+	unpacked_opacity = new GandolfMultigroupOpacity(packed); 
+    }
+    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
+	// Alternatively, we could use:
+	// catch ( rtt_cdi_gandolf::gkeysException GandError )
+	// catch ( rtt_cdi_gandolf::gchgridsException GandError )
+	// catch ( rtt_cdi_gandolf::ggetmgException GandError )
+	// catch ( rtt_cdi_gandolf::ggetgrayException GandError )
+    {
+	ostringstream message;
+	message << "Failed to create SP to unpacked GandolfOpacity object for "
+		<< "analyticOpacities.ipcress data."
+		<< std::endl << "\t" << GandError.what();
+	FAILMSG(message.str());
+	FAILMSG("Aborting tests.");
+	return;
+    }
+
+    // some simple tests
+    if (unpacked_opacity->getDataFilename() != "analyticOpacities.ipcress")
+	ITFAILS;
+
+    if (unpacked_opacity->getReactionType() != rtt_cdi::TOTAL) ITFAILS;
+    if (unpacked_opacity->getModelType() != rtt_cdi::PLANCK)   ITFAILS;
+
+    // Setup the test problem.
+	    
+    int ng             = 12;
+    vector<double> tabulatedMGOpacity( ng );
+    double temperature = 0.4;  // keV
+    double density     = 0.22; // g/cm^3
+    for ( int ig=0; ig<ng; ++ig )
+	tabulatedMGOpacity[ig] = density * pow( temperature, 4 ); // cm^2/g
+	    
+    // If this test fails then stop testing.
+    if (!rtt_cdi_gandolf_test::opacityAccessorPassed( 
+	    unpacked_opacity, temperature, density, tabulatedMGOpacity)) 
+    {
+	FAILMSG("Aborting tests.");
+	return;
+    }
+	    
+    // ------------------------ //
+    // Access temperature grid. //
+    // ------------------------ //
+	    
+    rtt_cdi_gandolf_test::testTemperatureGridAccessor(unpacked_opacity);
+	    
+    // ------------------------ //
+    // Access the density grid. //
+    // ------------------------ //
+	    
+    rtt_cdi_gandolf_test::testDensityGridAccessor(unpacked_opacity);
+	    
+    // ----------------------------- //
+    // Access the energy boundaries. //
+    // ----------------------------- //
+	    
+    rtt_cdi_gandolf_test::testEnergyBoundaryAccessor(unpacked_opacity);
+
+    // try to unpack multigroup as gray opacity
+    bool caught = false;
+    try
+    {
+	SP<GrayOpacity> opacity(new GandolfGrayOpacity(packed));
+    }
+    catch (const rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+	ostringstream message;
+	message << "Good, we caught the following assertion, \n"
+		<< ass.what();
+	PASSMSG(message.str());
+    }
+    if (!caught)
+    {
+	FAILMSG("Failed to catch an illegal packing asserion.");
+    }
+
+    if (rtt_cdi_gandolf_test::passed)
+    {
+	PASSMSG("GandolfMultigroupOpacity packing test successfull.");
+    }
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     // version tag
@@ -1158,6 +1409,9 @@ int main(int argc, char *argv[])
 	file_check_Al_BeCu();
 	file_check_analytic();
 	check_gandolf_stl_accessors();
+
+	gray_opacity_packing_test();
+	mg_opacity_packing_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {

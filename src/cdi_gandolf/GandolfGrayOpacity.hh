@@ -128,13 +128,13 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     spGandolfFile acts as a hook to link this object to an
      *     IPCRESS file.
      */
-    const rtt_dsxx::SP< const GandolfFile > spGandolfFile;
+    rtt_dsxx::SP< const GandolfFile > spGandolfFile;
 
     /*!
      * \brief Identification number for one of the materials found in
      *     the IPCRESS file pointed to by spGandolfFile.
      */
-    const int materialID;
+    int materialID;
 
     // -------------------- //
     // Available data types //
@@ -161,14 +161,14 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *        { Rosseland, Plank }.  This enumeration is defined
      *        in cdi/OpacityCommon.hh.
      */
-    const rtt_cdi::Model opacityModel;
+    rtt_cdi::Model opacityModel;
 
     /*!
      * \brief The type of reaction rates that the current data set
      *        represents { Total, Scattering, Absorption }. This
      *        enumeration is defined in cdi/OpacityCommon.hh.
      */
-    const rtt_cdi::Reaction opacityReaction;
+    rtt_cdi::Reaction opacityReaction;
 
     /*!
      * \brief A string that identifies the energy model for this
@@ -221,6 +221,17 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
 			int materialID, 
 			rtt_cdi::Model opacityModel,
 			rtt_cdi::Reaction opacityReaction );
+
+    /*!
+     * \brief Unpacking constructor.
+     *
+     * This constructor unpacks a GandolfGrayOpacity object from a state
+     * attained through the pack function.
+     *
+     * \param packed vector<char> of packed GandolfGrayOpacity state; the
+     * packed state is attained by calling pack()
+     */
+    explicit GandolfGrayOpacity(const std::vector<char> &packed);
 
     /*!
      * \brief Default GandolfOpacity() destructor.
@@ -440,6 +451,13 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      * \brief Returns the size of the density grid.
      */
     int getNumDensities() const;
+
+    /*!
+     * \brief Pack a GandolfGrayOpacity object.
+     *
+     * \return packed state in a vector<char>
+     */ 
+    std::vector<char> pack() const;
 
 }; // end of class GandolfGrayOpacity
 
