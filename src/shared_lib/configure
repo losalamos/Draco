@@ -6439,23 +6439,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -7386,23 +7386,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -8430,23 +8430,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -9418,23 +9418,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -10416,23 +10416,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -11300,23 +11300,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -12384,23 +12384,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi

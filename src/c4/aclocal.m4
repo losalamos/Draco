@@ -1063,9 +1063,9 @@ AC_DEFUN([AC_HDF5_FINALIZE], [dnl
 
        # library path
        if test -n "${HDF5_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_hdf5, -L${HDF5_LIB} -lhdf5)
+	   AC_VENDORLIB_SETUP(vendor_hdf5, -L${HDF5_LIB} -lhdf5 -lz)
        elif test -z "${HDF5_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_hdf5, -lhdf5)
+	   AC_VENDORLIB_SETUP(vendor_hdf5, -lhdf5 -lz)
        fi
 
        # add HDF5 directory to VENDOR_LIB_DIRS
