@@ -1,5 +1,5 @@
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> DRACO RELEASE draco-4_1_0    
+>>> DRACO RELEASE draco-4_2_0    
 >>> CCS-4 Transport Methods Group      
 >>> Copyright University of California 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -32,6 +32,9 @@ CCS-2.  The following code projects use/supply code to draco:
 
 	4) ZATHRAS/CCS-4/Scott Turner <turners@lanl.gov>
 			 Dave Carrington <dcarring@lanl.gov>
+
+        5) MARMOT/CompSci/Tom Evans <tme@lanl.gov>
+                          Rob Lowrie <lowrie@lanl.gov>
 
 Draco is governed by a board consisting of:
 
