@@ -15,6 +15,7 @@
 //  2) 2000-02-09 : Extension to include instantiation from a generic interface
 //                  class, and tests based on a particular example of such an
 //                  interface class, contained in TET_test_1.hh.
+//  3) 2000-04-03 : Rewrite to be consistent with meshReader classes.
 
 #include "../TET_Mesh.hh"
 #include "../TET_Builder.hh"

@@ -40,6 +40,7 @@ bool fail(int line, char *file)
 // revision history:
 // -----------------
 //  0) original : Committed 2000-02-09
+//  1) 2000-04-03 : Rewrite to be consistent with meshReader classes.
 //___________________________________________________________________________//
 
 class TET_test_1
@@ -50,66 +51,61 @@ class TET_test_1
     // Default constructor.  No need to initialize anything.
     TET_test_1() { }
 
-    std::string get_coord_system() { return std::string("XYZ"); }
+    // TET_Builder no longer requires this function.
+    // std::string get_coord_system();
 
-    std::vector< std::vector<double> > get_nodes()
+    std::vector< std::vector<double> > get_node_coords()
     {
-        std::vector< std::vector<double> > nodes;
-        nodes.resize(3);
+        std::vector< std::vector<double> > nodes_coor;
+        nodes_coor.resize(5);
 
-        nodes[0].push_back(0.0);
-        nodes[0].push_back(1.0);
-        nodes[0].push_back(0.0);
-        nodes[0].push_back(1.0);
-        nodes[0].push_back(0.5);
+        nodes_coor[0].push_back(0.0);
+        nodes_coor[0].push_back(0.0);
+        nodes_coor[0].push_back(0.0);
 
-        nodes[1].push_back(0.0);
-        nodes[1].push_back(0.0);
-        nodes[1].push_back(1.0);
-        nodes[1].push_back(1.0);
-        nodes[1].push_back(0.5);
+        nodes_coor[1].push_back(1.0);
+        nodes_coor[1].push_back(0.0);
+        nodes_coor[1].push_back(0.0);
 
-        nodes[2].push_back(0.0);
-        nodes[2].push_back(0.0);
-        nodes[2].push_back(0.0);
-        nodes[2].push_back(0.0);
-        nodes[2].push_back(1.0);
+        nodes_coor[2].push_back(0.0);
+        nodes_coor[2].push_back(1.0);
+        nodes_coor[2].push_back(0.0);
 
-        return nodes;
+        nodes_coor[3].push_back(1.0);
+        nodes_coor[3].push_back(1.0);
+        nodes_coor[3].push_back(0.0);
+
+        nodes_coor[4].push_back(0.5);
+        nodes_coor[4].push_back(0.5);
+        nodes_coor[4].push_back(1.0);
+
+
+        return nodes_coor;
     }
 
-    std::vector<int> get_parent()
-    {
-        std::vector<int> parent;
+    // TET_Builder no longer requires this function.
+    // std::vector<int> get_parent();
 
-        parent.push_back(1);
-        parent.push_back(2);
-        parent.push_back(3);
-        parent.push_back(4);
-        parent.push_back(5);
-
-        return parent;
-    }
-
-    std::vector< std::vector<int> > get_cells_nodes()
+    std::vector< std::vector<int> > get_element_nodes()
     {
         std::vector< std::vector<int> > cells_nodes;
         cells_nodes.resize(2);
 
+        cells_nodes[0].push_back(0);
         cells_nodes[0].push_back(1);
         cells_nodes[0].push_back(2);
-        cells_nodes[0].push_back(3);
-        cells_nodes[0].push_back(5);
+        cells_nodes[0].push_back(4);
 
-        cells_nodes[1].push_back(3);
         cells_nodes[1].push_back(2);
-        cells_nodes[1].push_back(5);
+        cells_nodes[1].push_back(1);
         cells_nodes[1].push_back(4);
+        cells_nodes[1].push_back(3);
 
         return cells_nodes;
     }
 
-    bool get_submesh() { return false; }
+    // TET_Builder no longer requires this function.
+    // bool get_submesh();
 
 };  // end class TET_test_1
 

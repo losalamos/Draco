@@ -30,6 +30,7 @@ namespace rtt_mc
 //  0)   Original : Committed 2000-02-08
 //  1) 2000-02-12 : Completed namespace issues, bug fixes, and elimination
 //                  of using declarations.
+//  2) 2000-04-04 : Rewritten to be consistent with new meshReader classes.
 //
 //___________________________________________________________________________//
 
@@ -62,8 +63,8 @@ class TET_Builder
     //! Coordinate system identifying string.
     std::string coord_system;
 
-    //! Collection of vertices: nodes[dim][v] == dim-coordinate of node v.
-    VF_DOUBLE nodes;
+    //! Collection of vertices: nodes_coords[v][dim]==dim-coordinate of node v.
+    VF_DOUBLE nodes_coords;
 
     /*!
      * Parent nodes for each vertex: parent[v] == external number of parent
@@ -78,8 +79,8 @@ class TET_Builder
      * Nodes bounding each cell: cells_vertices[c][0..3] == internal # of node.
      * These can be provided in any order.  The TET_Builder constructor will
      * adjust them to provide the right-handed sense needed by TET_Mesh.  Also
-     * the interface (e.g. file reader) will provide external numbers of the
-     * bounding nodes, so the constructor will adjust them to internal numbers.
+     * the interface (e.g. file reader) is expected to provide internal numbers
+     * of the bounding nodes, so no adjustment is needed on construction.
      */
     VF_INT cells_vertices;
 
@@ -104,20 +105,34 @@ class TET_Builder
 /*!
  * \brief           Non-inline, templated TET_Builder constructor.
  * \param interface Smart pointer to an instance of an Interface Type.
+ *
+ * This version does not require that the interface class return information
+ * on parent nodes, the designator of the coordinate system, or the submesh
+ * flag.  The first two of these items probably should use services of the
+ * interface class.  However, for the time being, coord_system and submesh
+ * are initialized, and parent is set to the obvious default.
  */
 template<class IT>
 TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
+    : coord_system("xyz"), submesh(false)
 {
     Require (interface);
 
     // Get data arrays from the interface for TET_Mesh objects.
-    coord_system   = interface->get_coord_system();
-    nodes          = interface->get_nodes();
-    parent         = interface->get_parent();
-    cells_vertices = interface->get_cells_nodes();
-    submesh        = interface->get_submesh();
+    nodes_coords   = interface->get_node_coords();
+    cells_vertices = interface->get_element_nodes();
 
-    Ensure (coord_system == "xyz" || coord_system == "XYZ");
+    // TET_Mesh objects are 3-D.
+    for (int node_ = 0 ; node_ < nodes_coords.size() ; node_++)
+        Check (nodes_coords[node_].size() == THREE);
+
+    // TET_Mesh objects have four vertices.
+    for (int cell_ = 0 ; cell_ < cells_vertices.size() ; cell_++)
+        Check (cells_vertices[cell_].size() == FOUR);
+
+    parent.resize(nodes_coords.size());
+    for (int node_ = 0 ; node_ < nodes_coords.size() ; node_++)
+        parent[node_] = node_ + 1;
 
     // To be properly constructed, cells_vertices[][] must contain the
     // internal numbers of the four bounding vertices of the cells.
@@ -125,9 +140,8 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
     for (int cell_ = 0 ; cell_ < cells_vertices.size() ; cell_++)
         for (int ver_ = 0 ; ver_ < FOUR ; ver_++)
         {
-            cells_vertices[cell_][ver_] -= 1;
             Ensure ( cells_vertices[cell_][ver_] >= 0 );
-            Ensure ( cells_vertices[cell_][ver_] < nodes[0].size() );
+            Ensure ( cells_vertices[cell_][ver_] < nodes_coords.size() );
         }
 
     // To be properly constructed, cells_vertices[][] must be in a predefined
@@ -140,14 +154,18 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
         int v2 = cells_vertices[cell_][2];
         int v3 = cells_vertices[cell_][3];
 
-        ThreeVector R0(nodes[0][v0],nodes[1][v0],nodes[2][v0]);
-        ThreeVector R1(nodes[0][v1],nodes[1][v1],nodes[2][v1]);
-        ThreeVector R2(nodes[0][v2],nodes[1][v2],nodes[2][v2]);
-        ThreeVector R3(nodes[0][v3],nodes[1][v3],nodes[2][v3]);
+        ThreeVector R0(nodes_coords[v0][0],nodes_coords[v0][1],
+                       nodes_coords[v0][2]);
+        ThreeVector R1(nodes_coords[v1][0],nodes_coords[v1][1],
+                       nodes_coords[v1][2]);
+        ThreeVector R2(nodes_coords[v2][0],nodes_coords[v2][1],
+                       nodes_coords[v2][2]);
+        ThreeVector R3(nodes_coords[v3][0],nodes_coords[v3][1],
+                       nodes_coords[v3][2]);
 
         double disc = (R1 - R0).dot((R2 - R1).cross(R3 - R2));
 
-        Check (disc != 0.0);
+        Ensure (disc != 0.0);
 
         if (disc < 0.0)
         {

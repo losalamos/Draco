@@ -1,3 +1,8 @@
+2000-04-04  H. Grady Hughes  <hgh@lanl.gov>
+    * TET_Builder.hh, TET_Builder.cc, test/TET_test_1.hh,
+    test/tstTET_Mesh.cc: Rewrote the builder class and the tests to
+    be consistent with the new meshReader classes.
+
 2000-02-12  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Mesh.hh, TET_Mesh.cc, TET_Builder.hh, TET_Builder.cc: Added
