@@ -340,6 +340,9 @@ void Gray_Particle<MT>::transport(
     // streaming distance definition
     double d_stream;
 
+    // random walk sphere radius
+    double rw_radius;
+
     // cell face definition
     int face = 0;
 
@@ -349,6 +352,12 @@ void Gray_Particle<MT>::transport(
     // intermediate cross section definitions:
     double sigma_thomson_scatter, sigma_eff_scatter, sigma_eff_abs, 
 	sigma_scatter, sigma_rosseland, sigma_analog_abs, sigma_collide;
+
+    // are we doing random walk on this step
+    bool do_a_random_walk;
+
+    // time taken during a random walk
+    double rw_time;
   
     // !!! BEGIN TRANSPORT LOOP !!!
 
@@ -397,12 +406,7 @@ void Gray_Particle<MT>::transport(
 	    prob_scatter         = sigma_scatter         / sigma_collide;
 	    prob_abs             = sigma_analog_abs      / sigma_collide;
 	}
-
 	Check(d_collide > 0);
-
-	// get distance-to-boundary and cell face
-	d_boundary = mesh.get_db(Base::r, Base::omega, Base::cell, face);  
-	Check(d_boundary>=0);
 
 	// distance to census (end of time step)
 	d_census = rtt_mc::global::c * Base::time_left;   
@@ -418,8 +422,39 @@ void Gray_Particle<MT>::transport(
 	    d_cutoff = std::log(Base::fraction / Base::minwt_frac) / 
 		sigma_eff_abs;
 	}
-
 	Check(d_cutoff > 0);
+
+	// check to see if we should do a random walk; check on initial
+	// conditions first
+	if (Base::descriptor == Base::VOL_EMISSION || 
+	    Base::descriptor == Base::EFF_SCATTER)
+	{
+	    // get the size of the random walk sphere
+	    rw_radius = mesh.get_orthogonal_dist_to_bnd(r, cell);
+	    Check (rw_radius >= 0.0);
+
+	    // check to see if the random walk conditions are valid
+	    do_a_random_walk = random_walk->do_a_random_walk(
+		Base::cell, rw_radius, d_collide, d_census);
+	}
+	else
+	{
+	    // initial conditions not met, don't do a random walk
+	    do_a_random_walk = false;
+	}
+	 
+	// calculate distance to boundary if we are not doing random walk
+	if (!do_a_random_walk)
+	{
+	    // get distance-to-boundary and cell face
+	    d_boundary = mesh.get_db(Base::r, Base::omega, Base::cell, face);  
+	    Check (d_boundary >= 0);
+	}
+	else   
+	{
+	    // we don't need distance to boundary so set it to zero
+	    d_boundary = 0.0;
+	}
 
 	// detailed diagnostics
 	if (diagnostic)
@@ -431,7 +466,12 @@ void Gray_Particle<MT>::transport(
 	    }
 
 	// determine limiting event
-	if      (d_collide < d_boundary  &&  d_collide < d_census   &&
+	if      (do_a_random_walk)
+	{
+	    Base::descriptor = Base::RANDOM_WALK;
+	    d_stream         = 0.0;
+	}
+	else if (d_collide < d_boundary  &&  d_collide < d_census   &&
 		 d_collide < d_cutoff  )
 	{
 	    Base::descriptor = Base::COLLISION;
@@ -462,26 +502,50 @@ void Gray_Particle<MT>::transport(
 	}
 
 
-	// Stream the particle, according to its status:
-	if (Base::use_analog_absorption())
+	// stream the particle: transport or random walk
+	if (do_a_random_walk)
 	{
-	    // Light particle (analog) streaming.
-	    Base::stream_analog_capture(tally, d_stream);          
+	    // boolean to see if particle goes to census
+	    bool to_census;
+
+	    // do a random walk
+	    rw_time = random_walk->random_walk(Base::r, Base::omega, 
+					       Base::time_left, Base::cell, 
+					       Base::random, to_census);
+
+	    // set descriptor if particle goes to census
+	    if (to_census)
+		Base::descriptor = Base::CENSUS;
 	}
 	else
 	{
-	    // Heavy particle (implicit) streaming
-	    stream_implicit_capture(xs, tally, d_stream);    
-	}
+	    // Stream the particle, according to its status:
+	    if (Base::use_analog_absorption())
+	    {
+		// Light particle (analog) streaming.
+		Base::stream_analog_capture(tally, d_stream);          
+	    }
+	    else
+	    {
+		// Heavy particle (implicit) streaming
+		stream_implicit_capture(xs, tally, d_stream);    
+	    }
 
-	// Adjust the time remaining till the end of the time step
-	Base::time_left -= d_stream / rtt_mc::global::c;
+	    // Adjust the time remaining till the end of the time step
+	    Base::time_left -= d_stream / rtt_mc::global::c;
+	}
 
 	// Process collisions, boundary crossings, going to census or
 	// reaching cutoff events.
 	switch (Base::descriptor) 
 	{
 
+	case Base::RANDOM_WALK:
+
+	    // process the random walk absorption
+	    random_walk_event(rw_time, tally, xs);
+	    break;
+	
 	case Base::COLLISION:
 
 	    // process the collision
@@ -491,7 +555,7 @@ void Gray_Particle<MT>::transport(
 
 	case Base::CUTOFF:
 
-	    Check(rtt_mc::global::soft_equiv(Base::fraction, 
+	    Check(rtt_mc::global::soft_equiv(Base::fraction,
 					     Base::minwt_frac));
 
 	    // Ensure light weight from now on:

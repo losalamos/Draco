@@ -16,6 +16,7 @@
 #include "Random_Walk.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cmath>
+#include <limits>
 
 namespace rtt_imc
 {
@@ -84,6 +85,10 @@ class Gray_Particle : public Particle<MT>
     // Process a collision event.
     inline void collision_event(const MT &, Tally<MT> &, double, double, 
 				double);
+
+    // Process a random walk particle.
+    inline void random_walk_event(double, Tally<MT> &,
+				  const Opacity<MT,Gray_Frequency> &);
 
   public:
     // Particle constructor.
@@ -319,6 +324,42 @@ void Gray_Particle<MT>::stream_implicit_capture(
 
     // Physically transport the particle
     Base::stream(distance); 
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Process a particle that has undergone random walk.
+ */
+template<class MT>
+void Gray_Particle<MT>::random_walk_event(
+    double                            rw_time,
+    Tally<MT>                        &tally,
+    const Opacity<MT,Gray_Frequency> &opacity)
+{
+    // adjust weight of random walk particle
+    double exponent = -rtt_mc::global::c * 
+	opacity.get_sigeffscat(Base::cell) * rw_time;
+
+    // calculate weight factor
+    double weight_factor = 0.0;
+
+    // check the exponent against the minimum allowed
+    if (exponent > std::numeric_limits<double>::min_exponent)
+	weight_factor = std::exp(exponent);
+
+    // adjust weight
+    double new_ew   = weight_factor * Base::ew;
+    double delta_ew = Base::ew - new_ew;
+    Check (delta_ew >= 0.0);
+
+    // do momentum deposition
+    tally.accumulate_momentum(Base::cell, delta_ew, Base::omega);
+	    
+    // do energy deposition
+    tally.deposit_energy(Base::cell, delta_ew);
+
+    // update particle energy weight
+    Base::ew = new_ew;
 }
 
 //---------------------------------------------------------------------------//

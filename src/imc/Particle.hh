@@ -9,12 +9,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Particle_hh__
-#define __imc_Particle_hh__
+#ifndef rtt_imc_Particle_hh
+#define rtt_imc_Particle_hh
 
 #include "Opacity.hh"
 #include "Tally.hh"
-#include "Global.hh"
 #include "Global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
@@ -155,6 +154,8 @@ class Particle
 		     ABSORPTION=204,
 		     BOUNDARY=205, 
 		     CENSUS=300, 
+		     RANDOM_WALK=400,
+		     DDIMC=401,
 		     KILLED=1000};
 
     /*!
@@ -540,7 +541,7 @@ void Particle<MT>::scatter(const MT &mesh)
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Particle_hh__
+#endif                          // rtt_imc_Particle_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Particle.hh

@@ -9,10 +9,19 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Random_Walk_hh__
-#define __imc_Random_Walk_hh__
+#ifndef rtt_imc_Random_Walk_hh
+#define rtt_imc_Random_Walk_hh
 
 #include "Hybrid_Diffusion.hh"
+#include "Diffusion_Opacity.hh"
+#include "ds++/SP.hh"
+#include <vector>
+
+// Forward declarations.
+namespace rtt_rng
+{
+class Sprng;
+}
 
 namespace rtt_imc
 {
@@ -106,23 +115,48 @@ class Random_Walk : public Hybrid_Diffusion
 {
   public:
     // Useful typedefs.
+    typedef rtt_dsxx::SP<Diffusion_Opacity<MT> > SP_Diffusion_Opacity;
+    typedef std::vector<double>                  sf_double;
+    typedef rtt_rng::Sprng                       Rnd_Type;
+    typedef rtt_dsxx::SP<Rnd_Type>               SP_Rnd_Type;
+    typedef rtt_dsxx::SP<MT>                     SP_Mesh;
 
   private:
     // >>> DATA
 
     // Data for sampling Random Walk.
     const Random_Walk_Sampling_Tables table;
+
+    // Smart pointer to the mesh.
+    SP_Mesh mesh;
+
+    // Diffusion Opacity object.
+    SP_Diffusion_Opacity diff_opacity;
+
+    // Radius of random walk sphere.
+    double rw_radius;
+    bool   rw_set;
+
+    // Minimum optical radius for doing a random walk step.
+    double min_optical_radius;
     
   public:
     // Constructor.
-    Random_Walk();
+    Random_Walk(SP_Mesh, SP_Diffusion_Opacity, double = 1.0);
+
+    // See if we should do Random Walk on this step.
+    bool do_a_random_walk(int, double, double, double);
+
+    // Do a random walk.
+    double random_walk(sf_double &, sf_double &, double &, int, 
+		       SP_Rnd_Type, bool &);
 
     // >>> QUERY FUNCTIONS
 };
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Random_Walk_hh__
+#endif                          // rtt_imc_Random_Walk_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Random_Walk.hh
