@@ -1,3 +1,8 @@
+2001-07-30  Thomas M. Evans  <tme@lanl.gov>
+
+	* meshReaders: released version 1_2_0.  New accessors added to
+	interface. 
+	
 2000-12-11  Thomas M. Evans  <tme@lanl.gov>
 
 	* meshReaders: released version meshReaders-1_1_0. Using

@@ -1,8 +1,4 @@
 //----------------------------------*-C++-*----------------------------------//
-// Release.cc
-// B.T. Adams
-// Wed Apr 14 15:36:52 1999
-// $Id$
 /*! 
  * \file   meshReaders/Release.cc
  * \author B.T. Adams
@@ -24,7 +20,7 @@ using std::string;
 // this library in the form meshReader-#.#.# in pkg_version variable
 const string release()
 {
-    string pkg_release = "@(#)meshReaders-1_1_0";
+    string pkg_release = "@(#)meshReaders-1_2_0";
     return pkg_release;
 }
 
