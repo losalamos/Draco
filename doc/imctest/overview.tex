@@ -38,36 +38,48 @@ namespace, \comp{IMC::Global}, that holds inline, non-member,
 templated, service functions.  It also contains fundamental and
 physical constants.  Within each module there are sub-modules which
 organize the classes into logical structures. The classes contained in
-each module and sub-module are displayed in Table~\ref{tab:classes}.
-\begin{table}
+each module and sub-module are displayed in Fig.~\ref{fig:classes}.
+\begin{figure}
   \begin{center}
-    \caption{Module composition in \imctest.}
-    \label{tab:classes}
-    \begin{footnotesize}
-      \begin{tabular}{|ll|lll|l|} \hline
-          \multicolumn{2}{|c|}{\mle{Pre-Process}} & 
-          \multicolumn{3}{|c|}{\mle{Solver}} &
-          \multicolumn{1}{|c|}{\mle{Post-Process}} \\ \hline
-          \multicolumn{1}{|c}{\mle{Interface}} & 
-          \multicolumn{1}{c|}{\mle{Builder}} &
-          \multicolumn{1}{c}{\mle{Mesh}} &
-          \multicolumn{1}{c}{\mle{Material}} &
-          \multicolumn{1}{c|}{\mle{Transport}} &
-          \multicolumn{1}{c|}{\mle{Output}} \\ \hline
-          \comp{OS\_Interface} & \comp{OS\_Builder} & \comp{OS\_Mesh} 
-          & \comp{Mat\_State\tlate{MT}} & \comp{Source\tlate{MT}} & 
-          \comp{Assemble\tlate{MT}} \\
-          & \comp{Opacity\_Builder\tlate{MT}} & \comp{Coord\_sys} &
-          \comp{Opacity\tlate{MT}} & \comp{Particle\tlate{MT}} & 
-          \comp{Output\tlate{MT}} \\
-          & \comp{Source\_Builder\tlate{MT}} & \comp{Layout} & 
-          & \comp{Random} & \\
-          & \comp{Parallel\_Builder\tlate{MT}} & & &
-          \comp{Tally\tlate{MT}} & \\ \hline
-      \end{tabular}
-    \end{footnotesize}
+    \begin{tabular}{c}
+      \vspace{1\baselineskip} \\
+      \begin{tabular}{|l|l|} \hline
+        \multicolumn{1}{|c|}{\mle{Interface}} & 
+        \multicolumn{1}{c|}{\mle{Builder}} \\\hline
+        \comp{OS\_Interface} & \comp{OS\_Builder} \\
+        & \comp{Opacity\_Builder\tlate{MT}} \\
+        & \comp{Source\_Builder\tlate{MT}} \\
+        & \comp{Parallel\_Builder\tlate{MT}} \\\hline
+      \end{tabular} \\
+      (a) \\
+      \vspace{1\baselineskip} \\
+      \begin{tabular}{|l|l|l|}\hline
+        \multicolumn{1}{|c|}{\mle{Mesh}} &
+        \multicolumn{1}{c}{\mle{Material}} &
+        \multicolumn{1}{|c|}{\mle{Transport}} \\\hline
+        \comp{OS\_Mesh} &  \comp{Mat\_State\tlate{MT}} &
+        \comp{Source\tlate{MT, RN}} \\
+        \comp{Coord\_sys} & \comp{Opacity\tlate{MT}} &
+        \comp{Particle\tlate{MT, RN}} \\
+        \comp{Layout} & & \comp{Random} \\
+        & & \comp{Particle\_Stack\tlate{PT}} \\
+        & & \comp{Tally\tlate{MT}} \\\hline
+      \end{tabular} \\
+      (b) \\
+      \vspace{1\baselineskip} \\
+      \begin{tabular}{|l|} \hline
+        \multicolumn{1}{|c|}{\mle{Output}} \\ \hline
+        \comp{Assemble\tlate{MT}} \\
+        \comp{Output\tlate{MT}} \\\hline
+      \end{tabular} \\
+      (c) \\
+    \end{tabular}
   \end{center}
-\end{table}
+  \caption{Module composition in \imctest, (a) the \mle{Pre-Process} 
+    module, (b) the \mle{Solver} module, and (c) the
+    \mle{Post-Process} module.}
+  \label{fig:classes}
+\end{figure}
 
 The \mle{Pre-Process} module controls the operations that are required 
 at the beginning of each calculational cycle.  The \mle{Interface}
@@ -90,7 +102,7 @@ transport output from each processor and assembles the data for
 output.  It also prepares the problem for the next cycle by storing
 the census particles.
 
-The files listed in Table~\ref{tab:classes} compose the \imctest\ 
+The files listed in Fig.~\ref{fig:classes} compose the \imctest\ 
 library.  The \imctest\ library is built under \draco.  \imctest\ 
 also provides an execution class, \comp{IMC\_run}, that utilizes the
 modules in the \imctest\ library and creates an \imctest\ stand-alone
