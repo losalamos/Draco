@@ -3,12 +3,23 @@
 for env in $*; do
     echo "wiping environment $env"
 
-    rm */.d.*_$env
-    rm */.dkcc.*_$env
-    rm -f */.pt*_${env}*
+    # clean up the first tier of subdirectories
+ 
+    rm     */.d.*_$env
+    rm     */.dkcc.*_$env
+    rm -f  */.pt*_${env}*
     rm -rf */$env
-    rm */.env_$env
-    rm */lib*_${env}.*
+    rm     */.env_$env
+    rm     */lib*_${env}.*
+
+    # clean up the second tier of subdirectories
+ 
+    rm     */*/.d.*_$env
+    rm     */*/.dkcc.*_$env
+    rm -f  */*/.pt*_${env}*
+    rm -rf */*/$env
+    rm     */*/.env_$env
+    rm     */*/lib*_${env}.*
 
     # clean up the main executables
 
