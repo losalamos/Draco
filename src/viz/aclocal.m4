@@ -840,10 +840,7 @@ AC_DEFUN(AC_F90_ENV, [dnl
        i??86-pc-cygwin*)
           AC_COMPILER_COMPAQ_F90
        ;;
-       alphaev67-dec*)
-          AC_COMPILER_COMPAQ_F90
-       ;;
-       alpha-dec*)
+       alpha*)
           AC_COMPILER_COMPAQ_F90
        ;;
        *hp-hpux*)
@@ -2606,7 +2603,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 
        # dependency rules for IBM visual age compiler are complex
        if test "${with_cxx}" = asciwhite || test "${with_cxx}" = ibm; then
-	   DEPENDENCY_RULES='Makefile.dependencies.xlC'
+	   DEPENDENCY_RULES='Makefile.dep.xlC'
        fi
    
        # print out cpu message
@@ -2625,14 +2622,56 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 
        # set up 32 or 64 bit compiling on IBM
        if test "${enable_32_bit:=no}" = yes ; then
-	   CXXFLAGS="${CXXFLAGS} -q32"
+	   
+	   # switch on gcc or xlC compiler
+	   if test "${with_cxx}" = gcc; then
+	       CXXFLAGS="${CXXFLAGS} -maix32"
+	       CFLAGS="${CFLAGS} -maix32"
+	   elif test "${with_cxx}" = asciwhite || 
+                test "${with_cxx}" = ibm; then
+	       CXXFLAGS="${CXXFLAGS} -q32"
+	       CFLAGS="${CFLAGS} -q32"
+	   fi
+
        elif test "${enable_64_bit:=no}" = yes ; then
-	   CXXFLAGS="${CXXFLAGS} -q64"
+	   
+	   # switch on gcc or xlC compiler
+	   if test "${with_cxx}" = gcc; then
+	       CXXFLAGS="${CXXFLAGS} -maix64"
+	       CFLAGS="${CFLAGS} -maix64"
+	   elif test "${with_cxx}" = asciwhite || 
+                test "${with_cxx}" = ibm; then
+	       CXXFLAGS="${CXXFLAGS} -q64"
+	       CFLAGS="${CFLAGS} -q64"
+	   fi
+
        fi
 
        # set up the heap size
        if test "${with_cxx}" = asciwhite ; then
 	   LDFLAGS="${LDFLAGS} -bmaxdata=0x80000000"
+       fi
+
+       # 
+       # GCC on AIX FLAGS
+       #
+       if test "${with_cxx}" = gcc; then
+
+	   # add the appropriate runtime linking for shared compiling
+	   if test "${enable_shared}" = yes; then
+	       ARFLAGS="-Xlinker -brtl -Xlinker -bh:5 ${ARFLAGS}"
+	       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+	       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+	       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}" 
+	   fi
+
+	   # we always allow shared object linking
+	   if test "${enable_static_ld}" != yes; then
+	       LDFLAGS="${LDFLAGS} -Xlinker -brtl -Xlinker -bh:5"
+	   fi
+
+	   # turn of the rpath
+	   RPATH=''
        fi
 
        #

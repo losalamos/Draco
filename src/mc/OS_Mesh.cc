@@ -191,6 +191,7 @@ OS_Mesh::sf_double OS_Mesh::sample_pos_on_sphere(int              cell,
     Require (origin.size() == coord->get_dim());
     Require (in_cell(cell, origin));
 
+    // checks to make sure sphere is in cell (we check 3D stuff later)
     Require (origin[0] - radius >= min(1, cell));
     Require (origin[0] + radius <= max(1, cell));
     Require (origin[1] - radius >= min(2, cell));
@@ -223,16 +224,16 @@ OS_Mesh::sf_double OS_Mesh::sample_pos_on_sphere(int              cell,
 	Check (r_final[2] <= max(3, cell));
     }
     
+    else
+    {
+	throw rtt_dsxx::assertion("Don't do 1-D in OS_Mesh.");
+    }
+    
     // check to make sure final location is inside cell
     Check (r_final[0] >= min(1, cell));
     Check (r_final[0] <= max(1, cell));
     Check (r_final[1] >= min(2, cell));
     Check (r_final[1] <= max(2, cell));
-    
-    else
-    {
-	throw rtt_dsxx::assertion("Don't do 1-D in OS_Mesh.");
-    }
 
     // return
     return r_final;
