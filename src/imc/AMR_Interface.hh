@@ -24,7 +24,10 @@
 #include "imc/OS_Mesh.hh"
 #include "imc/Particle.hh"
 #include "imc/Particle_Buffer.hh"
+#include "c4/global.hh"
 #include "ds++/SP.hh"
+#include <vector>
+#include <string>
 
 //===========================================================================//
 // F90 Functional Interface to Rage 
@@ -33,20 +36,23 @@
 
 extern "C"
 {
-    extern void rage_imc_(int *, double *, int *, int *, int *, int *);
+    extern void rage_imc_(int *, int *, int *, double *, int *, int *, int *, 
+			  int *, double *, double *, double *, double *, 
+			  double *, double *, double *, double *, double *, 
+			  int *, int *, double *, int *, int *);
 }
 
 //---------------------------------------------------------------------------//
 // census object declarations
 
 IMCSPACE
-GLOBALSPACE
 
-extern 
-dsxx::SP<IMC::Particle_Buffer<IMC::Particle<IMC::OS_Mesh> >::Census>
-host_census; 
+// stl components
+using std::vector;
+using std::string;
 
-CSPACE
+// draco components
+using dsxx::SP;
 
 //===========================================================================//
 // class AMR_Interface
@@ -80,12 +86,13 @@ public:
 	const int seed;
 	const int buffer;
 	const int print_f;
+	const int cycle;
 
       // constructor
 	Arguments(const double *, const int *, const int *, const int *,
 		  const double *, const double *, const double *, const
 		  double *, const double *, int, int, double, double, double, 
-		  int, int, double, int, int, int); 
+		  int, int, double, int, int, int, int); 
     };
 
 private:
@@ -97,6 +104,10 @@ private:
     vector<double> evol_ext;
     vector<string> ss_pos;
     vector<double> ss_temp;
+
+  // static census SP that needs to be preserved between timesteps
+    typedef SP<Particle_Buffer<Particle<OS_Mesh> >::Census> SP_Census;
+    static SP_Census host_census;
 
 public:
   // constructor
@@ -134,7 +145,11 @@ public:
     int get_printf() const { return arguments.print_f; }
     int get_buffer() const { return arguments.buffer; }
     int get_seed() const { return arguments.seed; }
-    int get_capacity() const { return 0; }
+    int get_capacity() const { return 100000; }
+
+  // static functions to access in-between timestep variables
+    static SP_Census get_census() { return host_census; }
+    static void set_census(SP_Census cen) { host_census = cen; }
 };
 
 CSPACE

@@ -13,7 +13,6 @@
 IMCSPACE
 
 // STL functions used
-using std::cout;
 using std::endl;
 using std::setw;
 using std::ios;

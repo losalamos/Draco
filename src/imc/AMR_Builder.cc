@@ -169,8 +169,8 @@ SP<OS_Mesh> AMR_Builder::build_Mesh(SP<Coord_sys> coord, SP<Layout> layout)
     }
     Check (index == vertices.size());
 
-  // build new Mesh
-    SP<OS_Mesh> mesh = new OS_Mesh(coord, *layout, vertex, cell_pair);
+  // build new Mesh, we assume that this will always be a sub_mesh
+    SP<OS_Mesh> mesh = new OS_Mesh(coord, *layout, vertex, cell_pair, true);
     return mesh;
 }
 

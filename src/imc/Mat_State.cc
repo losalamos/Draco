@@ -20,7 +20,6 @@ template<class MT>
 void Mat_State<MT>::print(ostream &output, int cell) const
 {
   // print out material state of cell
-    using std::cout;
     using std::endl;
     using std::setw;
     using std::ios;

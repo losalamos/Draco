@@ -64,16 +64,18 @@ void OS_Mesh::calc_surface()
 	vector<double> sorted = vertex[d];
 	sort(sorted.begin(), sorted.end());
 
-      // loop over sorted array, appending new surfaces onto sur array
+      // loop over sorted array, appending new surfaces onto sur array, watch 
+      // out for possible machine error (especially when merging host codes)
+      // in the sorted[i] > sorted[i-1] comparison!!!
 	sur[d].push_back(sorted[0]);
 	for (int i = 1; i < sorted.size(); i++)
 	    if (sorted[i] > sorted[i-1])
 		sur[d].push_back(sorted[i]);
 
       // calculate mesh_size by dimension
-	mesh_size *= sur[d].size() - 1;
+	mesh_size *= (sur[d].size() - 1);
     }
-
+    
   // assert mesh size
     Check (num_cells() == mesh_size);
 }
@@ -106,6 +108,7 @@ int OS_Mesh::get_cell(const vector<double> &r) const
 		low_index  = index;
 	}
 	return_cell += subcells * (high_index - 1);
+
       // number of cells per dimension equals the number of surfaces along
       // that dimension minus one
 	subcells    *= sur[i].size() - 1;

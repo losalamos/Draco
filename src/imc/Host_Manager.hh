@@ -70,7 +70,7 @@ private:
 
 public:
   // default constructor
-    Host_Manager();
+    Host_Manager(int);
 
   // run one cycle
     void execute_IMC(const typename IT::Arguments &);
@@ -105,7 +105,6 @@ inline void Host_Manager<MT,BT,IT,PT>::kill(SP<T> &spref)
     spref = SP<T>();
     Ensure (!spref);
 }
-
 
 CSPACE
 

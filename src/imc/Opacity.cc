@@ -20,7 +20,6 @@ template<class MT>
 void Opacity<MT>::print(ostream &output, int cell) const
 {
   // print out opacities in cell
-    using std::cout;
     using std::endl;
     using std::setw;
     using std::ios;
@@ -40,7 +39,6 @@ template<class MT>
 ostream& operator<<(ostream &output, const Opacity<MT> &object)
 {
   // print out opacities for all cells
-    using std::cout;
     using std::endl;
     using std::setw;
     using std::ios;

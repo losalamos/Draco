@@ -67,7 +67,6 @@ using std::min_element;
 using std::max_element;
 using std::ostream;
 using std::pow;
-using std::cout;
 using std::endl;
 using std::string;
 
