@@ -47,5 +47,5 @@ AC_SUBST(number)
 AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl
-dnl			 end of draco/autodoc configure.in
+dnl			 end of draco/autodoc configure.ac
 dnl-------------------------------------------------------------------------dnl
