@@ -19,6 +19,9 @@ endif
 ifeq ($(host),sugarloaf)
 mach	= o2k
 endif
+ifeq ($(host),ironside)
+mach	= o2k
+endif
 
 ifeq ($(mach),o2k)
 PCG_LIB		= -L$(HOME)/lib -lpcg
