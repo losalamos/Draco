@@ -18,7 +18,7 @@ AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 
 AC_MPI_SETUP(pkg)
-AC_SHMEM_SETUP(pkg)
+AC_POOMA_SETUP(pkg)
 
 AC_NEEDS_LIBS(c4 ds++)
 AC_NEEDS_LIBS_TEST(meshTest)
@@ -29,39 +29,10 @@ enable_strict_ansi=no
 
 AC_DRACO_ENV
 
-AC_ARG_WITH(pooma,
-      [  --with-pooma=[POOMA_ARCH] \${POOMA_ARCH} by default])
-
-if test "${with_pooma:=no}" = yes ; then
-   if test -z "${POOMA_ARCH}" ; then
-      AC_MSG_WARN([Environment variable POOMA_ARCH must be set if]
-		 [ --with-pooma does not specifiy architecture.])
-   fi
-   with_pooma="$POOMA_ARCH"
-elif test "${with_pooma}" = no ; then
-   AC_MSG_WARN([Must set --with-pooma and --with-pooma-root])
-fi
-
-AC_MSG_CHECKING(for pooma)
-AC_MSG_RESULT(architecture: ${with_pooma})
-
-POOMA_ARCH="${with_pooma}"
-
-AC_WITH_DIR(pooma-root, POOMA_ROOT, \${POOMA_ROOT},
-            [tell where POOMA is])
-
-if test "${with_pooma_root:=no}" = no ; then
-   AC_MSG_WARN([Must set --with-pooma and --with-pooma-root])
-fi
-
-AC_MSG_CHECKING(for pooma root directory)
-AC_MSG_RESULT(${with_pooma_root})
-
-vendor_pooma="pkg"
-AC_VENDORLIB_SETUP(vendor_pooma, -L${with_pooma_root}/lib/${with_pooma} -lpooma)
-
 AC_SUBST(POOMA_ROOT)dnl
 AC_SUBST(POOMA_ARCH)dnl
+
+AC_DEFINE_UNQUOTED(POOMA_MT_POOMA_INCLUDE, ${POOMA_ROOT}/src/)
 
 AC_OUTPUT(Makefile.POOMA \
           Makefile:../../config/Makefile.package.in \
