@@ -31,14 +31,24 @@ class Test_Prob : private Run_DB, private C4::NodeInfo {
     int goff;			// global offset of this processor's cells.
     int nxy;
 
-    int I(int x) const { return (x % nxy) % ncx; }
-    int J(int x) const { return (x % nxy) / ncx; }
-    int K(int x) const { return  x / nxy; }
+// Convert a local cell index to its (i,j,k) indexes in whole domain.
+
+    int I(int x) const { x += goff; return (x % nxy) % ncx; }
+    int J(int x) const { x += goff; return (x % nxy) / ncx; }
+    int K(int x) const { x += goff; return  x / nxy; }
+
+    int goffset( int i, int j, int k ) const { return ncx*(k*ncy + j) +i; }
+    int goffset( int nc ) const
+    {
+	nc += goff;
+	return goffset( I(nc), J(nc), K(nc) );
+    }
 
     Mat1<double> xc, yc, zc;
     Mat1<double> xf, yf, zf;
     double       dx, dy, dz;
     Mat1<double> vc;
+    Mat1<double> xA, yA, zA;
 
     pcg_DB       pcg_db;
 
