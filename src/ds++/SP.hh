@@ -177,6 +177,7 @@ class SP
     //! Inequality operator for SP<T>.
     bool operator!=(const SP<T> &sp_in) const { return p != sp_in.p; }
 };
+
 //---------------------------------------------------------------------------//
 // OVERLOADED OPERATORS
 //---------------------------------------------------------------------------//
