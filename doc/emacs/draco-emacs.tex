@@ -1,0 +1,311 @@
+%%---------------------------------------------------------------------------%%
+%% draco-emacs.tex
+%% Thomas M. Evans
+%% $Id$
+%%---------------------------------------------------------------------------%%
+\documentclass[11pt]{nmemo}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{tabularx}
+\usepackage{tmadd,tmath}
+\usepackage{cite}
+\usepackage{c++}
+
+%%---------------------------------------------------------------------------%%
+%% DEFINE SPECIFIC ENVIRONMENTS HERE
+%%---------------------------------------------------------------------------%%
+%\newcommand{\elfit}{\ensuremath{\operatorname{Im}(-1/\epsilon(\vq,\omega)}}
+%\msection{}-->section commands
+%\tradem{}  -->add TM subscript to entry
+%\ucatm{}   -->add trademark footnote about entry
+
+\newcommand{\comp}[1]{{\normalfont\texttt#1}}
+\newcommand{\draco}{{\normalfont\sffamily Draco}}
+\newcommand{\xemacs}{{\normalfont\bfseries XEmacs}}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\newcolumntype{L}{>{\ttfamily}X}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\toms{Distribution}
+%\toms{Joe Sixpak/XTM, MS B226}
+\refno{XTM:TME-97--09 (U)}
+\subject{XEmacs Development Environment for Draco}
+
+%-------NO CHANGES
+\divisionname{Applied Theoretical \& Computational Physics Div.}
+\groupname{X-TM:Transport Methods Group}
+\fromms{Thomas M. Evans/XTM D409}
+\phone{(505)665--3677}
+\originator{tme}
+\typist{tme}
+\date{\today}
+%-------NO CHANGES
+
+%-------OPTIONS
+%\reference{NPB Star Reimbursable Project}
+%\thru{P. D. Soran, XTM, MS B226}
+%\enc{list}      
+%\attachments{list}
+%\cy{list}
+%\encas
+%\attachmentas
+%\attachmentsas 
+%-------OPTIONS
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+\distribution {
+  XTM MS D409:\\ 
+  J.E. Morel, XTM MS D409\\ 
+  G.L. Olson, XTM MS D409\\ 
+  J.M. McGhee, XTM MS D409\\ 
+  H.G. Hughes, XTM MS D409\\ 
+  T.M. Evans, XTM MS D409\\ 
+  M.G. Gray, XTM MS D409\\ 
+  M.L. Hall, XTM MS D409\\ 
+  S. Pautz, XTM MS D409\\ 
+  R.M. Roberts, XTM MS D409\\ 
+  S.A. Turner, XTM MS D409\\ 
+  T.J. Urbatsch, XTM MS D409\\ 
+  }
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN NOTE
+%%---------------------------------------------------------------------------%%
+
+\opening
+
+\section{Introduction}
+
+\draco~\cite{rn98046} has been built using an informal \xemacs-based
+design environment since its conception.  As part of the \draco\ 
+reorganization project~\cite{draco-build} we have sorted through the
+existing Elisp functions and macros that have defined the \draco\ 
+environment.  These files have been cleaned up and organized.  As
+such, we know have the beginnings of a formal development environment
+for \draco.
+
+Our goal is for all files in \draco\ to have the same ``look and
+feel.''  To accomplish this we employ the \xemacs\ editor with a
+defined set of modes and functions to both expedite and homogenize
+code and document development in \draco.  Additionally, templates are
+provided in \draco\ that contain the same header information and
+format.  Thus, all source code files in \draco\ will obtain the same
+``look'' simply by using this environment.
+
+The \draco\ development environment consists of a series of Elisp
+(\comp{.el}) files that need to be loaded from the user's
+\comp{.emacs} file.  The \xemacs\ \draco\ development environment
+provides the following features:
+\begin{itemize}
+\item A set of templates providing standard headers and footers for
+  \draco\ source code.
+\item A \C++ indentation style for \xemacs.
+\item Functions to expedite editing of source code (including \LaTeX)
+   and package creation in \draco.
+\end{itemize}
+We will show how to load the \draco\ development environment and
+analyze these features in the following sections
+
+%%---------------------------------------------------------------------------%%
+
+\section{Draco Elisp Files}
+
+The files that constitute the \xemacs\ \draco\ development environment
+are listed in Table~\ref{tab:elisp}.  These files can be obtained
+\begin{table}
+  \caption{Files that are part of the \draco\ development environment
+    distribution.}
+  \label{tab:elisp}
+  \begin{center}
+    \begin{tabularx}{\linewidth}{
+        >{\setlength{\hsize}{.8\hsize}}L %
+        >{\setlength{\hsize}{.4\hsize}}Y %
+        >{\setlength{\hsize}{1.8\hsize}}X}
+      \hline\hline
+      \multicolumn{1}{Y}{File} & Required &
+      \multicolumn{1}{Y}{Description} \\ \hline
+      Config-key.el & no & describes some key-bindings \\
+      Config-pkg.el & yes & does package configurations for
+      environments used in (and outside) of \draco \\
+      draco-hacks.el & yes & \draco-specific function definitions \\
+      fl-keywords.el & yes & font-lock keywords used throughout the
+      \draco\ package \\
+      infer-cc-style.el & yes & functionality for inferring
+      \comp{c\--indentation\--styles} \\
+      infer-mode.el & yes & functionality for inferring the \xemacs\
+      mode from strings in file headers \\
+      nml-mode.el & yes & \comp{nml} mode definition \\
+      pooma-hacks.el & yes & c-style used by the POOMA team \\
+      pooma.el & yes & loads the \draco\ environment and other
+      packages \\
+      rtt-hacks.el & yes & defines the \comp{rtt-c-style} \\
+      tme-hacks.el & yes & contains functions used by the \draco\
+      environment \\
+      xemacs-setup.el & no & keybindings that may be useful to \draco\ 
+      developers \\ 
+      \hline\hline
+    \end{tabularx}
+  \end{center}
+\end{table}
+through CVS export:
+\begin{verbatim}
+     $ cvs export elisp
+\end{verbatim} % $
+Note that not all files are required by the \draco\ development
+environment.  They are included because they may be useful for general
+work in XTM.  In addition to the \comp{elisp/} directory, a
+\comp{elisp/templates} directory is generated from the CVS export.
+These templates are used by functions in \comp{tme-hacks} that are not
+part of the official \draco\ development environment.  However, these
+functions are useful when writing code and documents outside of
+\draco.
+
+The \comp{elisp/} directory that results from CVS export should be
+placed in a suitable location.  In general, the following two
+locations are used:
+\begin{verbatim}
+     $HOME/elisp
+     $HOME/lib/elisp
+\end{verbatim}
+Note that if the general templates (non-\draco) from \comp{tme-hacks}
+are desired then the elisp directory should be placed in
+\comp{\$HOME/lib/elisp}.  However, the placement of the elisp
+directory will not affect the \draco\ development environment
+functionality.  
+
+\subsection{\comp{.emacs} File}
+
+The \draco\ environment is loaded from the \comp{.emacs} file.
+Appendix~\ref{.emacs} lists a model \comp{.emacs} file that loads the
+complete \draco\ development environment.  This file also loads
+additional packages such as \comp{xemacs-setup} and \comp{tme-keys}
+that are primarily key-bindings.  Each user should add an Elisp file
+in \comp{elisp/} that describes the key bindings he/she wants.  An
+example of such a file is \comp{tme-keys} that may be viewed in
+\begin{verbatim}
+     /home/tme/lib/elisp/tme-keys.el
+\end{verbatim}
+Additional functionality can be added by users to suit additional
+needs outside of \draco\ by simply making their own Elisp files in
+this manner.
+
+We will use The \comp{.emacs} file in \S~\ref{.emacs} as a template
+for what follows.  The following code determines where the
+user-installed \comp{elisp/} directory is located:
+\begin{verbatim}
+     (setq my-home-dir (getenv "HOME"))
+     (setq my-elisp-dir (concat my-home-dir "/lib/elisp"))
+     (setq load-path (cons my-elisp-dir load-path))
+\end{verbatim}
+To load the packages in the \draco\ environment include the following:
+\begin{verbatim}
+     (load "pooma")
+\end{verbatim}
+To enable language support for the following modes, we use the
+following code:
+\begin{verbatim}
+     (setq config-pkg-verbose t)
+
+     (setq want-mppl-mode t)
+     (setq want-tcl-mode t)
+     (setq want-python-mode t)
+     (setq want-nml-mode t)
+     (setq want-makefile-mode t)
+     (setq want-cc-mode t)
+     (setq want-auctex-pkg t)
+     (setq want-f90-mode t)
+     (setq want-fortran-mode t)
+
+     (load "Config-pkg")
+\end{verbatim}
+\comp{Auctex} is a useful mode for editing \TeX\ and \LaTeX\ source
+files.  See \comp{Config-pkg.el} for descriptions of the rest of
+language modes.  Additional packages can be loaded using the Elisp
+function \comp{load}, ie. 
+\begin{verbatim}
+     (load "Config-key")
+\end{verbatim}
+loads the \comp{Config-key.el} file.  For additional descriptions of
+commands in the sample \comp{.emacs} file see the \xemacs\ help menu.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Draco Templates}
+
+A set of templates used by \draco\ sits under the
+\comp{draco/templates/} directory.  These templates are used by the
+functions described in \S~\ref{sec:func} to make \comp{.cc},
+\comp{.tex}, and a host of other files.  Additional templates are
+provided to help setup \draco\ packages quickly and easily.  \draco\
+functions must called under the \comp{draco/} (or \draco-like,
+ie. \comp{solon/}) directory in order to use the \draco\ templates.
+The template functions in \comp{tme-hacks} can be used for work
+outside of \draco.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Draco Functions}
+\label{sec:func}
+
+This section describes to families of functions.  The first set,
+\S~\ref{sec:dfunc}, is provided for use when developing in \draco\ 
+only.  These functions must be used under a viable \draco-like system
+directory such as \comp{draco/}, \comp{solon/}, or \comp{milagro/}.
+The second set, \S~\ref{sec:gfunc} are general functions that may be
+useful to \draco\ developers on projects outside of \draco.  These
+function lists are highlights.  There exists additional functions that 
+have limited, but useful, utility to various users.  See the packages
+listed in Table~\ref{tab:elisp} for complete lists and descriptions of 
+all functions.  
+
+\subsection{Draco Functions}
+\label{sec:dfunc}
+
+The following is a list of functions used exclusively in \draco:
+\begin{description}
+\item[\comp{draco-package}:] sets up the required files for a \draco\
+  package including \comp{configure.in}, \comp{config.h.in},
+  \comp{Version.hh}, and \comp{Version.cc}.
+\end{description}
+
+\subsection{General Functions}
+\label{sec:gfunc}
+
+The following is a list of Elisp functions that are useful in
+environments teh supercede \draco.  Many of these use the
+\comp{\$HOME/lib/elisp/templates} directory.
+\begin{description}
+\item[\comp{tme-latex-comment-divider}:] Inserts a \LaTeX\ style comment
+  divider.
+\end{description}
+
+%%---------------------------------------------------------------------------%%
+
+\appendix
+
+\section{Sample \comp{.emacs} File}
+\label{.emacs}
+
+\input{emacs}
+
+\bibliographystyle{rnote}
+\bibliography{../bib/draco}
+
+\closing
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of draco-emacs.tex
+%%---------------------------------------------------------------------------%%

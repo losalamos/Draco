@@ -1,0 +1,160 @@
+\begin{verbatim}
+;;---------------------------------------------------------------------------;;
+;; .emacs
+;; Thomas Evans
+;; Feb. 1999
+;;---------------------------------------------------------------------------;;
+;; Options file for XEMACS
+;;---------------------------------------------------------------------------;;
+;; Time-stamp: <99/02/22 10:02:36 tme>
+;;---------------------------------------------------------------------------;;
+
+;;---------------------------------------------------------------------------;;
+;; on message
+
+(message "reading .emacs")
+
+;;---------------------------------------------------------------------------;;
+;; set home directory and my elisp path
+
+(setq my-home-dir (getenv "HOME"))
+(setq my-elisp-dir (concat my-home-dir "/lib/elisp"))
+(setq load-path (cons my-elisp-dir load-path))
+
+(setq my-info-dir (concat my-home-dir "/info"))
+
+;;---------------------------------------------------------------------------;;
+;; time stamp added to write file hook
+
+(add-hook 'write-file-hooks 'time-stamp t)
+
+;;---------------------------------------------------------------------------;;
+;; load the RTT and TME stuff for XTM development
+;;---------------------------------------------------------------------------;;
+
+;;
+;; load pooma, this contains most of the emacs function defs that we
+;; use
+;;
+
+;(setq want-pooma-style-by-default t)
+(load "pooma")
+
+;;
+;; Turn on the language modes that are defined in Config-pkg.el
+;;
+
+(setq config-pkg-verbose t)
+
+(setq want-mppl-mode t)
+(setq want-tcl-mode t)
+(setq want-python-mode t)
+(setq want-nml-mode t)
+(setq want-makefile-mode t)
+(setq want-cc-mode t)
+(setq want-auctex-pkg t)
+(setq want-f90-mode t)
+(setq want-fortran-mode t)
+
+(load "Config-pkg")
+
+;;
+;; Compiling using M-x compile, set gmake as the default make
+;; 
+
+(setq compile-command "gmake")
+
+;;
+;; Now configure various keybindings.
+;;
+
+;; load config-key.el
+(load "Config-key")
+
+;; not sure what all this does; however, it does load the key-settings 
+;; in xemacs-setup
+(defvar is-xemacs (string-match "XEmacs" emacs-version)
+  "*Set to t if using XEmacs")
+
+(if is-xemacs
+    (load "xemacs-setup")
+  (load "fsf-setup"))
+
+;; load tme's keys
+(load "tme-keys")
+
+;;---------------------------------------------------------------------------;;
+;; SOME ADDITIONAL CUSTOMIZATIONS
+;;---------------------------------------------------------------------------;;
+
+;;
+;; set default mode
+;; 
+
+(setq default-major-mode 'text-mode)
+(setq make-backup-files t)
+
+;;
+;; Some stuff for using GNUS, a fantastic newsreader.
+;;
+
+(autoload 'gnus "gnus" "Read network news." t)
+(autoload 'gnus-post-news "gnuspost" "Post a new news." t)
+(setq gnus-select-method '(nntp "newshost.lanl.gov"))
+
+(defvar mail-yank-prefix "> "
+  "*Prefix insert on lines of yanked message being replied to.
+nil means use indentation.")
+
+;;
+;; CVS stuff
+;;
+
+(setq cvs-program "/usr/local/gnu/bin/cvs")
+(global-set-key "\M-c" 'cvs-update)   ; run the CVS update facility.
+
+;;
+;; Minibuffer
+;;
+
+(setq minibuffer-max-depth nil)
+
+;;---------------------------------------------------------------------------;;
+;; OPTIONS MENU STUFF
+;;---------------------------------------------------------------------------;;
+
+;; Options Menu Settings
+;; =====================
+(cond
+ ((and (string-match "XEmacs" emacs-version)
+       (boundp 'emacs-major-version)
+       (or (and
+            (= emacs-major-version 19)
+            (>= emacs-minor-version 14))
+           (= emacs-major-version 20))
+       (fboundp 'load-options-file))
+  (load-options-file "/home/tme/.xemacs-options")))
+;; ============================
+;; End of Options Menu Settings
+
+;;---------------------------------------------------------------------------;;
+;; final settings, email etc
+;;---------------------------------------------------------------------------;;
+
+;;
+;; load my "permanent" options
+;; 
+
+(load "/home/tme/.xemacs-std")
+
+;;
+;; Final stuff
+;;
+
+(custom-set-variables
+ '(toolbar-news-reader (quote gnus))
+ '(toolbar-mail-reader (quote vm))
+ '(user-mail-address "tme@lanl.gov" t)
+ '(query-user-mail-address nil))
+(custom-set-faces)
+\end{verbatim}
