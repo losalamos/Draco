@@ -15,7 +15,7 @@
 
 #include "Particle.hh"
 #include "Random_Walk.hh"
-#include "Surface_tracker.hh"
+#include "Extrinsic_Surface_Tracker.hh"
 
 namespace rtt_imc
 {
@@ -70,7 +70,7 @@ class Gray_Particle : public Particle<MT>
     typedef std::string                    std_string;
     typedef rtt_dsxx::SP<Diagnostic>       SP_Diagnostic;
     typedef rtt_dsxx::SP<Random_Walk<MT> > SP_Random_Walk;
-    typedef rtt_dsxx::SP<Surface_tracker>  SP_Surface_tracker;
+    typedef rtt_dsxx::SP<Extrinsic_Surface_Tracker>  SP_Surface_tracker;
 
   private:
     // Typedef for base class scoping.
@@ -85,7 +85,8 @@ class Gray_Particle : public Particle<MT>
 
     // Transport a particle with random walk.
     void rw_transport(const MT &, const Opacity<MT,Gray_Frequency> &,
-		      Tally<MT> &, SP_Random_Walk, SP_Diagnostic);
+		      Tally<MT> &, SP_Random_Walk, SP_Surface_tracker,
+		      SP_Diagnostic);
 
     // Process a collision event.
     void collision_event(const MT &, Tally<MT> &, double, double, double);

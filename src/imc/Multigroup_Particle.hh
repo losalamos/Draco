@@ -15,7 +15,7 @@
 
 #include "Particle.hh"
 #include "Random_Walk.hh"
-#include "Surface_tracker.hh"
+#include "Extrinsic_Surface_Tracker.hh"
 #include "mc/Sampler.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cmath>
@@ -52,7 +52,7 @@ class Multigroup_Particle : public Particle<MT>
     typedef std::string                      std_string;
     typedef Opacity<MT,Multigroup_Frequency> MG_Opacity;
     typedef rtt_dsxx::SP<Random_Walk<MT> >   SP_Random_Walk;
-    typedef rtt_dsxx::SP<Surface_tracker>    SP_Surface_tracker;
+    typedef rtt_dsxx::SP<Extrinsic_Surface_Tracker> SP_Surface_tracker;
 
     // >>> NESTED TYPES
 

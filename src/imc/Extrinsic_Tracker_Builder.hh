@@ -32,6 +32,25 @@ namespace rtt_imc
  * \class Extrinsic_Tracker_Builder
  * \brief This class constructs an Extrinsic_Surface_Tracker
  *
+ * This class is responsible for making sure that the geometry of the tally
+ * surfaces and the information about mesh cells intersected by these
+ * surfaces are consistent.
+ *
+ * The interface of this class only supports adding spheres to the list of
+ * tally surfaces. Cylinders (if implemented) will require a new public
+ * interface member and support for the detection of intersections with cells
+ * in the mesh.
+ *
+ * Once the Extrinsic_Surface_Tracker is created, this class stores a smart
+ * pointer to it and avoids creating it again. Adding additional surfaces is
+ * not allowed after creating the surface tracker. Thus this class has two
+ * states:
+ *   - a) "accumulating surfaces" 
+ *   - b) "provide surface tracker". 
+ *
+ * The class is in state a when constructed. Calling the build_tracker()
+ * method moves it to state b. It is not possible to switch back to state a.
+ *
  */
 /*! 
  * \example imc/test/imc_test.cc 

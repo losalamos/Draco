@@ -212,7 +212,7 @@ void Gray_Particle<MT>::transport(
 
     // run transport with random walk
     if (random_walk)
-	rw_transport(mesh, xs, tally, random_walk, diagnostic);
+	rw_transport(mesh, xs, tally, random_walk, surface_tracker, diagnostic);
 
     // otherwise run simple transport
     else
@@ -490,13 +490,11 @@ void Gray_Particle<MT>::rw_transport(
     const Opacity<MT,Gray_Frequency> &xs, 
     Tally<MT>                        &tally, 
     SP_Random_Walk                    random_walk,
+    SP_Surface_tracker                surface_tracker,
     SP_Diagnostic                     diagnostic)
 {
     Require (Base::alive);
     Require (tally.get_RW_Sub_Tally());
-
-    // Empty surface-tracker pointer. Initialize only once
-    static SP_Surface_tracker surface_tracker = SP_Surface_tracker();
 
     // initialize diagnostics
     if (diagnostic)
@@ -504,6 +502,9 @@ void Gray_Particle<MT>::rw_transport(
 	diagnostic->header();
 	diagnostic->print(*this);
     }
+
+    if (surface_tracker) 
+	surface_tracker->initialize_status(Base::r, Base::omega);
 
     // distance to collision, boundary, census and cutoff definitions
     double d_collide, d_boundary, d_census, d_cutoff;
@@ -607,6 +608,9 @@ void Gray_Particle<MT>::rw_transport(
 	    // check to see if the random walk conditions are valid
 	    do_a_random_walk = random_walk->do_a_random_walk(
 		Base::cell, rw_radius, d_collide, d_census);
+
+	    if (surface_tracker && surface_tracker->surface_in_cell(Base::cell))
+		do_a_random_walk = false;
 	}
 	else
 	{

@@ -17,7 +17,7 @@
 #include "../Multigroup_Particle.hh"
 #include "../Opacity.hh"
 #include "../Tally.hh"
-#include "../Surface_tracker.hh"
+#include "../Extrinsic_Surface_Tracker.hh"
 #include "../Global.hh"
 #include "../Frequency.hh"
 #include "../Fleck_Factors.hh"
@@ -40,7 +40,7 @@ using rtt_imc::Gray_Particle;
 using rtt_imc::Multigroup_Particle;
 using rtt_imc::Opacity;
 using rtt_imc::Tally;
-using rtt_imc::Surface_tracker;
+using rtt_imc::Extrinsic_Surface_Tracker;
 using rtt_imc::Fleck_Factors;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;

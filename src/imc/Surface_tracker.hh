@@ -39,7 +39,7 @@ class Surface_Sub_Tally;
  * class Surface, which are provided in the constructor. This class uses the
  * functions:
  * \code   
- *    Surface::is_inside(vector position , const vector& direction)
+ *    Surface::is_inside(vector position, const vector& direction)
  *    Surface::distance_to(vector position, const vector& direction, bool is_inside)
  * \endcode
  *
@@ -47,6 +47,11 @@ class Surface_Sub_Tally;
  * Surface_tracker::initialize_status(const vector&, const vector&). This
  * call should be performed with the intial position and direction of each
  * particle that surface crossing tallies are desired for.
+ *
+ * The surface tracker also maintains a list of global surface indices for
+ * it's surfaces. It will generally hold fewer than the total number of
+ * surfaces on domain-decomosed meshes. We also allow the surface tracker to
+ * hold no surfaces. 
  *
  * \sa Surface_tracker.cc for detailed descriptions.
  */

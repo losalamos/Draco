@@ -124,8 +124,16 @@ bool Extrinsic_Tracker_Builder::check_intersections(const Sphere& sphere)
 }
 
 //---------------------------------------------------------------------------//
+/*! 
+ * \brief Detects intersections of a given sphere and the indicated cell of
+ * the mesh.
+ * 
+ * \param sphere The sphere object
+ * \param cell The cell of the RZWedge_Mesh
+ * \return true if the cell is intersected by the sphere
+ */
 bool Extrinsic_Tracker_Builder::sphere_intersects_cell(
-    const Sphere& sphere, int cell)
+    const rtt_mc::Sphere& sphere, int cell)
 {
 
     double r_s = sphere.get_radius();

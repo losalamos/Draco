@@ -15,7 +15,7 @@
 
 #include "Opacity.hh"
 #include "Tally.hh"
-#include "Surface_tracker.hh"
+#include "Extrinsic_Surface_Tracker.hh"
 #include "Global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
@@ -198,7 +198,7 @@ class Particle
     typedef rtt_rng::Sprng               Rnd_Type;
     typedef rtt_dsxx::SP<Rnd_Type>       SP_Rnd_Type;
     typedef std::string                  std_string;
-    typedef rtt_dsxx::SP<Surface_tracker>SP_Surface_tracker;
+    typedef rtt_dsxx::SP<Extrinsic_Surface_Tracker> SP_Surface_tracker;
     
     // friend declarations
     friend class Diagnostic;
@@ -499,7 +499,7 @@ void Particle<MT>::stream_and_capture(Tally<MT>         &tally,
 	// Light particle (analog) streaming.
 	if (surface_tracker) 
 	    surface_tracker->tally_crossings_analog_abs(
-		r, omega, d_stream, ew, 
+		r, omega, cell, d_stream, ew, 
 		*(tally.get_Surface_Sub_Tally()) 
 		);
           
@@ -511,7 +511,7 @@ void Particle<MT>::stream_and_capture(Tally<MT>         &tally,
 	// Heavy particle (implicit) streaming
 	if (surface_tracker) 
 	    surface_tracker->tally_crossings_implicit_abs(
-		r, omega, d_stream, ew, sigma_eff_abs,
+		r, omega, cell, d_stream, ew, sigma_eff_abs,
 		*(tally.get_Surface_Sub_Tally()) 
 		);
           

@@ -29,7 +29,8 @@
 #include "../Random_Walk.hh"
 #include "../Gray_Particle.hh"
 #include "../Multigroup_Particle.hh"
-#include "../Surface_tracker.hh"
+#include "../Extrinsic_Surface_Tracker.hh"
+#include "../Extrinsic_Tracker_Builder.hh"
 #include "../Azimuthal_Mesh.hh"
 #include "rng/Random.hh"
 #include "mc/Sphere.hh"
@@ -96,6 +97,22 @@ SP<Surface_tracker> build_a_surface_tracker()
 
 }
 
+SP<Extrinsic_Surface_Tracker> build_extrinsic_tracker(const RZWedge_Mesh& mesh)
+{
+
+    Extrinsic_Tracker_Builder builder(mesh);
+
+    builder.add_sphere(0.0, 2.0);    // Surface 1
+    builder.add_sphere(1.0, 2.0);    // Surface 2
+    builder.add_sphere(-1.0, 3.0);    // Surface 3
+
+    SP<Extrinsic_Surface_Tracker> tracker = builder.build_tracker();
+
+    Ensure(tracker);
+
+    return tracker;
+
+}
 
 
 //---------------------------------------------------------------------------//
@@ -181,6 +198,35 @@ SP<Opacity<RZWedge_Mesh, Multigroup_Frequency> > build_a_mg_opacity(
 
 }
 
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Make a diffusion opacity
+ * 
+ * \param mesh the mesh
+ * \return the diffusion opacity object via smart pointer
+ */
+
+
+SP<Diffusion_Opacity<RZWedge_Mesh> > get_diff_opacity(SP<RZWedge_Mesh> mesh)
+{
+    // make data
+    SP<Fleck_Factors<RZWedge_Mesh> > fleck(new Fleck_Factors<RZWedge_Mesh>(mesh));
+    RZWedge_Mesh::CCSF<double> ross(mesh);
+
+    for (int i = 1; i <= mesh->num_cells(); i++)
+    {
+	fleck->fleck(i) = 1.0 / 2.5;
+	ross(i)         = 100.0 + static_cast<double>(i);
+    }
+
+    // make the diffusion opacity
+    SP<Diffusion_Opacity<RZWedge_Mesh> > diff(
+	new Diffusion_Opacity<RZWedge_Mesh>(fleck, ross));
+
+    Ensure(diff);
+					
+    return diff;
+}
 
 
 
@@ -188,7 +234,7 @@ SP<Opacity<RZWedge_Mesh, Multigroup_Frequency> > build_a_mg_opacity(
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
-void test_gray_particle()
+void test_gray_particle_straight()
 {
 
     // Make a mesh
@@ -209,7 +255,7 @@ void test_gray_particle()
     SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh();
 
     // Make a surface-tracker
-    SP<Surface_tracker> tracker = build_a_surface_tracker();
+    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh);
 
     // Make a tally
     SP<Tally<RZWedge_Mesh> > tally ( new Tally<RZWedge_Mesh>(mesh) );
@@ -284,6 +330,99 @@ void test_gray_particle()
 
 }
 
+
+void test_gray_particle_rw()
+{
+
+    // Make a mesh
+    SP<RZWedge_Mesh> mesh = build_an_RZWedge();
+
+    // Make an azimuthal mesh
+    SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh();
+
+    // Make a surface-tracker
+    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh);
+
+    // Make a tally
+    SP<Tally<RZWedge_Mesh> > tally ( new Tally<RZWedge_Mesh>(mesh) );
+
+    // Make a surface tracking sub-tally
+    int surfaces = tracker->surfaces();
+    SP<Surface_Sub_Tally> surface_tally ( new Surface_Sub_Tally(az_mesh, surfaces));
+    tally->assign_Surface_Sub_Tally(surface_tally);
+    tally->create_RW_Sub_Tally();
+
+    // Make a gray opacity
+    SP<Opacity<RZWedge_Mesh, Gray_Frequency> > opacity = build_a_gray_opacity(mesh);
+
+    // Make a diffusion opacity
+    SP<Diffusion_Opacity<RZWedge_Mesh> > diff = get_diff_opacity(mesh);
+
+    // make random walk
+    SP<Random_Walk<RZWedge_Mesh> > rw( new Random_Walk<RZWedge_Mesh>(mesh, diff) );
+
+    // Make a particle
+    vector<double> r(3), o(3);
+    Rnd_Control control(seed);
+    Sprng rnd = control.get_rn(1);
+
+    r[0] = 1.0;
+    r[1] = 0.0;
+    r[2] =-1.0;
+
+    o[0] = 0.0;
+    o[1] = 0.0;
+    o[2] = 1.0;
+
+    double ew = 1.0;
+    int cell = mesh->get_cell(r);
+    Gray_Particle<RZWedge_Mesh> particle(r, o, ew, cell, rnd, 1.0, 1.0);
+
+    // Do the transport
+    particle.transport(*mesh, *opacity, *tally, rw, tracker);
+
+    // Check the results
+    if (particle.status() != false ) ITFAILS;
+
+    vector<double> final_r ( particle.get_r() );
+    const double correct_final_r[3] = {1.0, 0.0, 3.0};
+    if (!soft_equiv(final_r.begin(), final_r.end(), 
+		    correct_final_r, correct_final_r+3) ) ITFAILS;
+
+    if (particle.get_descriptor() != 
+	Gray_Particle<RZWedge_Mesh>::ESCAPE) ITFAILS;
+
+    if (!soft_equiv(particle.get_ew(), std::exp(-4.0) ) ) ITFAILS;
+
+    // Check the tallies:
+
+    // 1st: inward across surface 2
+    if (!soft_equiv(surface_tally->weight(2, false, 4) , exp(-2.0+sqrt(3.0))))
+	ITFAILS;
+
+    // 2nd: outward across surface 1
+    if (!soft_equiv(surface_tally->weight(1, true,  4) , exp(-1.0-sqrt(3.0))))
+	ITFAILS;
+
+    // 3rd: outward across surface 3
+    if (!soft_equiv(surface_tally->weight(3, true,  4) , exp(-2.0*sqrt(2.0))))
+	ITFAILS;
+
+    // 4th: outrward across surface 2
+    if (!soft_equiv(surface_tally->weight(2, true,  4) , exp(-2.0-sqrt(3.0))))
+	ITFAILS;
+
+    if (surface_tally->crossings(2, false, 4) != 1 ) ITFAILS;
+    if (surface_tally->crossings(1, true , 4) != 1 ) ITFAILS;
+    if (surface_tally->crossings(3, true , 4) != 1 ) ITFAILS;
+    if (surface_tally->crossings(2, true , 4) != 1 ) ITFAILS;
+
+    SP<Random_Walk_Sub_Tally> rwsb = tally->get_RW_Sub_Tally();
+
+    if (rwsb->get_accum_n_random_walks() != 0) ITFAILS;
+
+}
+
 void test_mg_particle()
 {
 
@@ -294,7 +433,7 @@ void test_mg_particle()
     SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh();
 
     // Make a surface-tracker
-    SP<Surface_tracker> tracker = build_a_surface_tracker();
+    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh);
 
     // Make a tally
     SP<Tally<RZWedge_Mesh> > tally ( new Tally<RZWedge_Mesh>(mesh) );
@@ -382,7 +521,9 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
-	test_gray_particle();
+	test_gray_particle_straight();
+
+	test_gray_particle_rw();
 
 	test_mg_particle();
     }
