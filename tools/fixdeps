@@ -13,7 +13,10 @@ $infile = $opt_i;
 $outfile = $opt_o;
 $verbose = $opt_v;
 
-print "Making $outfile from $infile, environment $env\n" if $verbose;
+$infile =~ /\.dkcc\.(.*)_$env/;
+$component = $1;
+
+print "Fixing dependencies: $env $component\n" if $verbose;
 
 open( INFILE, "< $infile" ) || die "Can't open $infile for input.";
 open( OUTFILE, "> $outfile" ) || die "Can't open $outfile for output.";
