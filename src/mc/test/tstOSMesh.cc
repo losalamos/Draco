@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstOSMesh.cc
-// Thomas M. Evans
-// Wed Apr 21 18:50:01 1999
-// $Id$
+/*!
+ * \file   mc/test/tstOSMesh.cc
+ * \author Thomas M. Evans
+ * \date   Wed Apr 21 18:50:01 1999
+ * \brief  Test file for rtt_mc::OS_Mesh class
+ */
 //---------------------------------------------------------------------------//
-// @> Test of OS_Mesh and OS_Builder
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "MC_Test.hh"
