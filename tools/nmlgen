@@ -1,0 +1,259 @@
+#!/usr/local/bin/perl
+# nmlgen                                  -*-perl-*-
+# Geoffrey Furnish
+# 26 April 1994
+#
+# @> A quick perl hack to make specification of namelist data easier.
+###############################################################################
+
+if ( $#ARGV != 0 ) {		# really means one arg.
+
+    print "Usage: nmlgen file\n";
+    print "       Where file is a file containing namelist specifications.\n";
+    print "       in the format understood by this program :-).\n";
+    die;
+}
+
+$inblock = 0;
+$fail = 0;
+$fail_this_block = 0;
+$nitems = 0;
+
+while( <> ) {
+    chop;			# Drop the \n.
+    if (/([^\#]*)\#.*/) {		# Discard # to end of line.
+	$_ = $1;
+    }
+    next if /^\s*$/;		# Discard empty lines.
+#    print $_,"\n" if $_ ne "";
+
+    if ( /\s*block:\s+(\w+)\@(\w+)/ ) {	# Check for special block introducer.
+
+	if ( $inblock ) {
+	    close H_FILE;
+	    print CC_FILE "    NMI_END );\n";
+	    close CC_FILE;
+	    if ( $fail_this_block ) { # trash files so make will trigger on 
+				      # the next invocation.
+		rename( ".nml_$fstub.hh", ".nml_$fstub.hh.fail" );
+		rename( ".nml_$fstub.cc", ".nml_$fstub.cc.fail" );
+	    }
+	}
+
+	$fstub = $1;
+	$block = $2;
+
+#	print "Processing $block.\n";
+
+	$hhfile = ".nml_$fstub.hh";
+	$ccfile = ".nml_$fstub.cc";
+
+	unlink $hhfile, $ccfile;
+	open( H_FILE, "> $hhfile" ) || die "Can't open $hhfile";
+	print H_FILE "// block $block\n";
+
+	open( CC_FILE, "> $ccfile" ) || die "Can't open $ccfile";
+	print CC_FILE "// block $block\n";
+	print CC_FILE "g.addblock( $block,\n";
+
+	$inblock = 1;
+	$fail_this_block = 0;	# reset flag on new block.
+	next;
+    }
+
+    if ( /\s*block:\s+(\w+)/ ) {	# Check for normal block introducer.
+
+	if ( $inblock ) {
+	    close H_FILE;
+	    print CC_FILE "    NMI_END );\n";
+	    close CC_FILE;
+	    if ( $fail_this_block ) { # trash files so make will trigger on 
+				      # the next invocation.
+		rename( ".nml_$fstub.hh", ".nml_$fstub.hh.fail" );
+		rename( ".nml_$fstub.cc", ".nml_$fstub.cc.fail" );
+	    }
+	}
+
+	$block = $1;
+	$fstub = $1;
+
+#	print "Processing $block.\n";
+
+	$hhfile = ".nml_$fstub.hh";
+	$ccfile = ".nml_$fstub.cc";
+
+	unlink $hhfile, $ccfile;
+	open( H_FILE, "> $hhfile" ) || die "Can't open $hhfile";
+	print H_FILE "// block $block\n";
+
+	open( CC_FILE, "> $ccfile" ) || die "Can't open $ccfile";
+	print CC_FILE "// block $block\n";
+	print CC_FILE "g.addblock( \"$block\",\n";
+
+	$inblock = 1;
+	$fail_this_block = 0;	# reset flag on new block.
+	next;
+    }
+
+# Need to be able to close off and start up again, due to argument
+# list length limitations on some computers (Cray T3D).  Grrrr.
+
+    if ( /\s*break/ ) {
+	print CC_FILE "    NMI_END );\n";
+	print CC_FILE "// block $block\n";
+	print CC_FILE "g.addblock( $block,\n";
+	next;
+    }
+
+    # Okay, now this should be a variable specification line.
+
+#    print ":$_:\n";
+    split;
+
+#    print "\$_[0] == :$_[0]:\n";
+
+    if ( $_[0] =~ /^$/ ) {
+#	print "shifting\n";
+	shift @_;
+    }
+
+#    print "\$_[0] == :$_[0]:\n";
+
+    if ( $_[0] eq "int" ) {
+	print  H_FILE "    int $_[1];\n";
+	print CC_FILE "    N_int( $_[1], $_[2] ),\n";
+	next;
+    }
+
+    if ( $_[0] eq "DynArray<int>" ) {
+	print  H_FILE "    DynArray<int> $_[1];\n";
+	print CC_FILE "    N_DynArray_int( $_[1], \"$_[2]\" ),\n";
+	next;
+    }
+
+    if ( $_[0] eq "float" ) {
+	print  H_FILE "    float $_[1];\n";
+	print CC_FILE "    N_float( $_[1], $_[2] ),\n";
+	next;
+    }
+
+    if ( $_[0] eq "double" ) {
+	print  H_FILE "    double $_[1];\n";
+	print CC_FILE "    N_double( $_[1], $_[2] ),\n";
+	next;
+    }
+
+    if ( $_[0] eq "String" ) {
+	print  H_FILE "    String $_[1];\n";
+	if ( $_[2] ne "\"\"" ) {
+	    print CC_FILE "    N_String( $_[1], \"$_[2]\" ),\n";
+	} else {
+	    print CC_FILE "    N_String( $_[1], \"\" ),\n";
+	}
+	next;
+    }
+
+    if ( $_[0] eq "bool" ) {
+	print  H_FILE "    int $_[1];\n";
+	print CC_FILE "    N_bool( $_[1], $_[2] ),\n";
+	next;
+    }
+
+    if ( $_[0] eq "int_set" ) {
+	# The syntax for an int_set is:
+	# int_set   name   default   [unknown  [var]]
+	# where unknown defaults to 0, and is the value to assign to
+ 	# the integer variable if an unrecognizeable input token is
+ 	# seen.  var will default to name, but can be specified to
+ 	# choose a different program variable.
+	# NOTE:  The number of pairs is inferred.  An int_set must be
+ 	# terminated with a blank line!
+
+	$name = $_[1];
+	$defval = $_[2];
+	if ($_[3] ne "") {
+	    $unknown = $_[3];
+	} else {
+	    $unknown = 0;
+	}
+	if ($_[4] ne "") {
+	    $var = $_[4];
+	} else {
+	    $var = $name;
+	}
+
+	# Now read in the name/value pairs.
+
+	$nitems = 0;
+	while(1) {
+	    $_ = <>;
+	    chop;
+	    last if /^$/;
+	    split;
+	    $pname[$nitems] = $_[0];
+	    $pval[$nitems] = $_[1];
+	    $nitems++;
+	}
+
+	# Now write the output.
+
+	print H_FILE  "    int $var;\n";
+	print CC_FILE "    NMI_INT_SET, \"$name\", \"$defval\", ";
+	print CC_FILE "$unknown, $nitems, &$var,\n";
+	for( $i=0; $i < $nitems; $i++ ) {
+	    print CC_FILE "    \"$pname[$i]\", $pval[$i],\n";
+	}
+	next;
+    }
+
+    if ( $_[0] eq "page" ) {
+	# I really need to parse this better so the user can specify
+	# an arbitrary string.  But this will have to do for now.
+
+	print H_FILE "// page break\n";
+	print CC_FILE "    NMI_PAGE_BREAK,$_[1],\n";
+	next;
+    }
+
+    if ( $_[0] eq "boxstart" ) {
+	print H_FILE "// box start\n";
+	print CC_FILE "    NMI_BOX_START,\n";
+	next;
+    }
+
+    if ( $_[0] eq "boxend" ) {
+	print H_FILE "// box end\n";
+	print CC_FILE "    NMI_BOX_END,\n";
+	next;
+    }
+
+    print "No handler for type :$_[0]:\n";
+    ++$fail;
+    ++$fail_this_block;
+}
+
+# Now handle the closing of any open files.
+
+if ( $inblock ) {
+    close H_FILE;
+    print CC_FILE "    NMI_END );\n";
+    close CC_FILE;
+
+# Since the output files are generated, we do not want people editing them
+# by accident, thinking they are fixing a bug.  Instead, we mark them
+# unwritable, which will force them to edit the .nml files which are the
+# actual "source".
+
+    chmod 0444, $hhfile;
+    chmod 0444, $ccfile;
+
+    if ( $fail_this_block ) { # trash files so make will trigger on 
+	                      # the next invocation.
+	rename( ".nml_$block.hh", ".nml_$block.hh.fail" );
+	rename( ".nml_$block.cc", ".nml_$block.cc.fail" );
+    }
+}
+
+exit $fail;
+
+# end of nmlgen
