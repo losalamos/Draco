@@ -19,10 +19,15 @@ else
 default_lib	:= lib$(pkg)_$(env).a
 endif
 
+ifneq ($(pretarg),)
+build_lib_$(pkg): $(pretarg)
+	@($(MAKE) $(subnj) pretarg= build_lib_$(pkg))
+else
 build_lib_$(pkg): $(default_lib) $(auxtarg)
 	@echo " "
 	@echo "Library for package $(pkg) has been built."
 	@echo " "
+endif
 
 # Build up the list of files to go into the library.
 
@@ -39,11 +44,11 @@ libobjs	:= $(libsrcs:%.cc=$(env)/%.o) \
 # Rule to build an archive library.
 
 ifdef lib_cmd
-lib$(pkg)_$(env).a : $(pretarg) $(libobjs)
+lib$(pkg)_$(env).a : $(libobjs)
 	$(RM) $@
 	$(lib_cmd) $@ $(libobjs) $(resolve_libs)
 else
-lib$(pkg)_$(env).a : $(pretarg) $(libobjs)
+lib$(pkg)_$(env).a : $(libobjs)
 	-rm -f $@
 	$(ar) qc $@ $(libobjs)
 	$(ranlib) $@
