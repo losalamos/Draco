@@ -15,17 +15,15 @@ include ../config/makefile
 # Put non template code here
 
 libsrcs = \
-	K_Mesh_DB.cc
+	Mesh_DB.cc Mesh_XYZ.cc
+
+#	K_Mesh_DB.cc Mesh_DB.cc
 
 # Get the library built, minding our various other targets too.
 
 pretarg = deps
-#resolve_libs = \
-#	../c4/libc4_$(env).$(lib_suffix) \
-#	../nml/libnml_$(env).$(lib_suffix) \
-#	../ds++/libds++_$(env).$(lib_suffix)
 
-resolve_libs = $(dep_libc4) $(dep_libnml) $(dep_libds++) $(dep_libpooma)
+resolve_libs = $(dep_libc4) $(dep_libnml) $(dep_libds++) #$(dep_libpooma)
 
 
 include ../config/make.lib
