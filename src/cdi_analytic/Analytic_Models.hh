@@ -186,10 +186,10 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
     //! Constructor for packed state.
     explicit Polynomial_Analytic_Opacity_Model(const sf_char &packed);
 
-    //! Calculate the opacity in units of c^2/g
+    //! Calculate the opacity in units of cm^2/g
     double calculate_opacity(double T, double rho) const
     {
-	Require (T >= 0.0);
+	Require (c < 0.0 ? T > 0.0 : T >= 0.0);
 	Require (rho >= 0.0);
 
 	double T_power   = std::pow(T, c);
@@ -347,7 +347,7 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     //! Calculate the electron heat capacity in kJ/g/keV.
     double calculate_electron_heat_capacity(double T, double rho) const
     {
-	Require (T >= 0.0);
+	Require (c < 0.0 ? T > 0.0 : T >= 0.0);
 	Require (rho >= 0.0);
 
 	double T_power = std::pow(T, c);
@@ -360,7 +360,7 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     //! Calculate the ion heat capacity in kJ/g/keV.
     double calculate_ion_heat_capacity(double T, double rho) const
     {
-	Require (T >= 0.0);
+	Require (f < 0.0 ? T > 0.0 : T >= 0.0);
 	Require (rho >= 0.0);
 
 	double T_power = std::pow(T, f);
