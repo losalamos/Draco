@@ -3,14 +3,15 @@
  * \file   imc/Flat_Data_Container.hh
  * \author Thomas M. Evans
  * \date   Wed Feb  6 10:55:32 2002
- * \brief  
+ * \brief  Flat_Data_Container struct definition.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Flat_Data_Container_hh__
-#define __imc_Flat_Data_Container_hh__
+#ifndef rtt_imc_Flat_Data_Container_hh
+#define rtt_imc_Flat_Data_Container_hh
 
 #include <vector>
 
@@ -59,13 +60,16 @@ struct Flat_Data_Container
     //! Cell-centered field of Rosseland opacities in /cm.
     sf_double rosseland_opacity;
 
+    //! Boolean that is true if the gray_absorption_opacity is Rosseland.
+    bool gray_absorption_is_Rosseland;
+
     //! Specific heats in Jerks/gm/keV.
     sf_double specific_heat;
 };
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Flat_Data_Container_hh__
+#endif // rtt_imc_Flat_Data_Container_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Flat_Data_Container.hh
