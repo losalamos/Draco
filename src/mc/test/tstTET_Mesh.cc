@@ -440,8 +440,6 @@ void Test_TET()
     SP<TET_test_1> interface(new TET_test_1());
     if (!interface)                                   ITFAILS;
 
-    // TEMPORARY:
-    cerr << "TET_Builder constructor invoked.\n";
     TET_Builder* ptr_builder = new TET_Builder(interface);
 
     SP<TET_Mesh> mesh_ptr_0 = ptr_builder->build_Mesh();
@@ -491,8 +489,6 @@ void Test_TET()
     SP<RTT_Mesh_Reader> reader_1(new RTT_Mesh_Reader("TET_RTT_1"));
     if (!reader_1)                                       ITFAILS;
 
-    // TEMPORARY:
-    cerr << "TET_Builder constructor invoked.\n";
     TET_Builder* ptr_read_build_1 = new TET_Builder(reader_1);
 
     SP<TET_Mesh> mesh_ptr_1 = ptr_read_build_1->build_Mesh();
@@ -784,8 +780,6 @@ void Test_TET()
     SP<RTT_Mesh_Reader> reader_2(new RTT_Mesh_Reader("TET_RTT_2"));
     if (!reader_2)                                       ITFAILS;
 
-    // TEMPORARY:
-    cerr << "TET_Builder constructor invoked.\n";
     TET_Builder* ptr_read_build_2 = new TET_Builder(reader_2);
 
     SP<TET_Mesh> mesh_ptr_2 = ptr_read_build_2->build_Mesh();
@@ -842,8 +836,6 @@ void Test_TET()
     SP<RTT_Mesh_Reader> reader_3(new RTT_Mesh_Reader("TET_RTT_3"));
     if (!reader_3)                                       ITFAILS;
 
-    // TEMPORARY:
-    cerr << "TET_Builder constructor invoked.\n";
     TET_Builder* ptr_read_build_3 = new TET_Builder(reader_3);
 
     SP<TET_Mesh> mesh_ptr_3 = ptr_read_build_3->build_Mesh();
@@ -877,8 +869,6 @@ void Test_TET()
     SP<RTT_Mesh_Reader> reader_4(new RTT_Mesh_Reader("TET_RTT_4"));
     if (!reader_4)                                       ITFAILS;
 
-    // TEMPORARY:
-    cerr << "TET_Builder constructor invoked.\n";
     TET_Builder* ptr_read_build_4 = new TET_Builder(reader_4);
 
     SP<TET_Mesh> mesh_ptr_4 = ptr_read_build_4->build_Mesh();
@@ -907,26 +897,24 @@ void Test_TET()
     if (*mesh_ptr_1 == *mesh_ptr_4)                      ITFAILS;
     if (*mesh_ptr_2 == *mesh_ptr_4)                      ITFAILS;
 
-//    theOutput << "Ready for mesh_ptr_5." << endl;
-//
-//    SP<RTT_Mesh_Reader> reader_5(new RTT_Mesh_Reader("TET_RTT_5"));
-//    if (!reader_5)                                       ITFAILS;
-//
-//    // TEMPORARY:
-//    cerr << "TET_Builder constructor invoked.\n";
-//    TET_Builder* ptr_read_build_5 = new TET_Builder(reader_5);
-//
-//    SP<TET_Mesh> mesh_ptr_5 = ptr_read_build_5->build_Mesh();
-//    delete ptr_read_build_5;
-//
-//    theOutput << "BEGIN get_cell_pair\n";
-//
-//    VF_INT cell_pair_5 = mesh_ptr_5->get_cell_pair();
-//
-//    for (int i = 0; i < cell_pair_5.size() ; ++i)
-//        for (int j = 0 ; j < cell_pair_5[i].size() ; ++j)
-//            theOutput << cell_pair_5[i][j] << "\n";
-//    theOutput << "END get_cell_pair\n";
+    theOutput << "Ready for mesh_ptr_5." << endl;
+
+    SP<RTT_Mesh_Reader> reader_5(new RTT_Mesh_Reader("TET_RTT_5"));
+    if (!reader_5)                                       ITFAILS;
+
+    TET_Builder* ptr_read_build_5 = new TET_Builder(reader_5);
+
+    SP<TET_Mesh> mesh_ptr_5 = ptr_read_build_5->build_Mesh();
+    delete ptr_read_build_5;
+
+    theOutput << "BEGIN get_cell_pair\n";
+
+    VF_INT cell_pair_5 = mesh_ptr_5->get_cell_pair();
+
+    for (int i = 0; i < cell_pair_5.size() ; ++i)
+        for (int j = 0 ; j < cell_pair_5[i].size() ; ++j)
+            theOutput << cell_pair_5[i][j] << "\n";
+    theOutput << "END get_cell_pair\n";
 
 }   // end Test_TET()
 
