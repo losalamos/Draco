@@ -54,10 +54,10 @@ class Surface
     //! copy constructor
     Surface(const Surface &rhs);
 
+  public:
+
     //! destructor
     virtual ~Surface() { /* ... */ }
-
-  public:
 
     // MANIPULATORS
     
