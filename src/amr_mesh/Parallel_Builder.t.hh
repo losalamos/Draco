@@ -19,10 +19,10 @@ namespace rtt_imc
 {
 
 // draco necessities
-using rtt_C4::Send;
-using rtt_C4::Recv;
-using rtt_C4::node;
-using rtt_C4::nodes;
+using C4::Send;
+using C4::Recv;
+using C4::node;
+using C4::nodes;
 using rtt_mc::global::max;
 using rtt_mc::global::min;
 using rtt_mc::Coord_sys;

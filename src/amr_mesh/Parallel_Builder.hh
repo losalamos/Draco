@@ -56,8 +56,8 @@ namespace rtt_imc
 {
 
 // draco stuff
-using rtt_C4::node;
-using rtt_C4::nodes;
+using C4::node;
+using C4::nodes;
 using rtt_rng::Rnd_Control;
 using rtt_dsxx::SP;
 
