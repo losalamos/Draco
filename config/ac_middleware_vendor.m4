@@ -57,6 +57,11 @@ dnl specify where the vendor_name source directory vendor_name/ is
 dnl located.  It is NOT used in this function in any way.  It is only
 dnl provided so that clients can use it to determine the location of the
 dnl vendor_name source directory in their own configure/build systems.
+dnl
+dnl The AC_MIDDLEWARE_VENDOR_SETUP does not set the libexecdir
+dnl variable.  This variable is reserved for tools installed by 
+dnl draco.  Middleware vendors should not have their own libexecdir,
+dnl but instead, they should only add includes and libraries.
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_MIDDLEWARE_VENDOR_SETUP, [dnl
@@ -93,21 +98,19 @@ AC_DEFUN(AC_MIDDLEWARE_VENDOR_SETUP, [dnl
        # by --with-vendor without argument)
        if test "${with_$1}" = yes ; then
       
-      # set MIDDLEWARE_INC_$1 and MIDDLEWARE_LIB_$1
-      MIDDLEWARE_INC_$1="${prefix}/include"
-      MIDDLEWARE_LIB_$1="${prefix}/lib"
-      libexecdir="${prefix}/libexec"
+           # set MIDDLEWARE_INC_$1 and MIDDLEWARE_LIB_$1
+           MIDDLEWARE_INC_$1="${prefix}/include"
+           MIDDLEWARE_LIB_$1="${prefix}/lib"
 
-      middleware_in_prefix_$1='true'
+           middleware_in_prefix_$1='true'
 
        # otherwise it is the directory where the installed lib and 
        # include are; check them
        else
       
-      # set MIDDLEWARE_INC_$1 and MIDDLEWARE_LIB_$1
-      MIDDLEWARE_LIB_$1="${with_$1}/lib"   
-      MIDDLEWARE_INC_$1="${with_$1}/include"
-      libexecdir="${with_$1}/libexec"
+           # set MIDDLEWARE_INC_$1 and MIDDLEWARE_LIB_$1
+           MIDDLEWARE_LIB_$1="${with_$1}/lib"   
+           MIDDLEWARE_INC_$1="${with_$1}/include"
 
        fi
 
@@ -116,7 +119,6 @@ AC_DEFUN(AC_MIDDLEWARE_VENDOR_SETUP, [dnl
 
        MIDDLEWARE_INC_$1="/usr/local/include"
        MIDDLEWARE_LIB_$1="/usr/local/lib"
-       libexecdir="/usr/local/libexec"
 
    fi
      
@@ -128,7 +130,6 @@ AC_DEFUN(AC_MIDDLEWARE_VENDOR_SETUP, [dnl
    # if --with_vendor_lib is defined then set and check MIDDLEWARE_LIB_$1
    if test -n "${with_$1_lib}" ; then
        MIDDLEWARE_LIB_$1="${with_$1_lib}"
-       libexecdir="${with_$1_lib}/../libexec"
    fi
 
    # make sure they exist   
@@ -141,7 +142,7 @@ AC_DEFUN(AC_MIDDLEWARE_VENDOR_SETUP, [dnl
    fi
 
 
-   AC_MSG_RESULT("${MIDDLEWARE_INC_$1} and ${MIDDLEWARE_LIB_$1} and ${libexecdir} set")
+   AC_MSG_RESULT("${MIDDLEWARE_INC_$1} and ${MIDDLEWARE_LIB_$1} set")
 
    # add vendor include directory to VENDOR_INC
    if test -z "${middlware_in_prefix_$1}" ; then
