@@ -138,7 +138,12 @@
      -------------------------------  ---------------------  ---------------------
      Total                              1569 /  2031 =  77%    4371 /  7834 =  55%
 
+	Code Releae:
 
+	     Code installed on CCS-4/2 LAN at
+	     /codes/radtran/vendors/draco-5_5_0. Code installed on LANL
+	     ICN machines at /usr/projects/draco/draco-5_5_0. 
+	
 2005-01-12  Kelly Thompson  <kgt@lanl.gov>
 
 	* config/ac_platforms.m4 (AC_DBS_LAHEY_ENVIRONMENT): Created a new
