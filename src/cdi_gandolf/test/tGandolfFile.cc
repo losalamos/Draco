@@ -182,6 +182,8 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing tGandolfFile." << endl;
+
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

@@ -39,6 +39,8 @@ namespace rtt_cdi_eospac
      *     Material Identifiers</a>.  This web site also does dynamic
      *     plotting of EoS values.
      *
+     * \sa The web page for <a href="http://laurel.lanl.gov/PROJECTS/DATA/eos/sesameLocations.html">data table locations</a>. 
+     *
      * Eospac allows the client code to retrive equation of state (EoS)
      * data for a specified material.  The material is specified by
      * the SesameTables object which links a lookup table to each type 

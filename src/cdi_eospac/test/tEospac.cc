@@ -362,7 +362,7 @@ int main(int argc, char *argv[])
     cout <<     "*********************************************" << endl;
     cout << endl;
 
-    cout << "Done testing tEospacFile." << endl;
+    cout << "Done testing tEospac." << endl;
 
     return 0;
 }   

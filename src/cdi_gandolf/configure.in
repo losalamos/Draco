@@ -13,6 +13,7 @@ AC_CONFIG_HEADER(cdi_gandolf/config.h:config.h.in)
 package="cdi_gandolf"
 
 dnl VENDOR SETUPS
+dnl why again - already done via draco/configure.in AC_ALL_VENDORS_SETUP
 AC_GANDOLF_SETUP(pkg)
 
 AC_INSTALL_HEADERS
