@@ -12,6 +12,7 @@
 #include "c4/config.hh"
 #include "c4/C4_Req.hh"
 #include "c4/tags.hh"
+#include "c4/c4_traits.hh"
 
 C4_NAMESPACE_BEG
 
@@ -29,46 +30,59 @@ int group();
 void gsync();
 
 // Send/receive
-
+/*
 int Send( void *buf, int size, int dest,   int tag, int group =0 );
 int Recv( void *buf, int size, int source, int tag, int group =0 );
-
+*/
 C4_Req SendAsync( void *buf, int size, int dest,   int tag, int group =0 );
 C4_Req RecvAsync( void *buf, int size, int source, int tag, int group =0 );
 
 void SendAsync( C4_Req& r, void *buf, int size, int dest,   int tag, int group =0 );
 void RecvAsync( C4_Req& r, void *buf, int size, int source, int tag, int group =0 );
 
+template<class T>
+int Send( const T *buf, int nels, int dest,
+	  int tag =c4_traits<T*>::Tag, int group =0 );
+template<class T>
+int Recv( T *buf, int nels, int source,
+	  int tag =c4_traits<T*>::Tag, int group =0 );
+
 // Super convenient special forms.
 
 inline int Send( int data, int dest, int group =0 )
 {
-    return Send( &data, sizeof(int), dest, C4_int_Tag, group );
+//    return Send( &data, sizeof(int), dest, C4_int_Tag, group );
+    return Send( &data, 1, dest, C4_int_Tag, group );
 }
 
 inline int Recv( int& data, int source, int group =0 )
 {
-    return Recv( &data, sizeof(int), source, C4_int_Tag, group );
+//    return Recv( &data, sizeof(int), source, C4_int_Tag, group );
+    return Recv( &data, 1, source, C4_int_Tag, group );
 }
 
 inline int Send( float data, int dest, int group =0 )
 {
-    return Send( &data, sizeof(float), dest, C4_float_Tag, group );
+//    return Send( &data, sizeof(float), dest, C4_float_Tag, group );
+    return Send( &data, 1, dest, C4_float_Tag, group );
 }
 
 inline int Recv( float& data, int source, int group =0 )
 {
-    return Recv( &data, sizeof(float), source, C4_float_Tag, group );
+//    return Recv( &data, sizeof(float), source, C4_float_Tag, group );
+    return Recv( &data, 1, source, C4_float_Tag, group );
 }
 
 inline int Send( double data, int dest, int group =0 )
 {
-    return Send( &data, sizeof(double), dest, C4_double_Tag, group );
+//    return Send( &data, sizeof(double), dest, C4_double_Tag, group );
+    return Send( &data, 1, dest, C4_double_Tag, group );
 }
 
 inline int Recv( double& data, int source, int group =0 )
 {
-    return Recv( &data, sizeof(double), source, C4_double_Tag, group );
+//    return Recv( &data, sizeof(double), source, C4_double_Tag, group );
+    return Recv( &data, 1, source, C4_double_Tag, group );
 }
 /*
 int Send( int *buf, int nels, int dest, int group =0 );
@@ -78,11 +92,6 @@ int Recv( float *buf, int nels, int source, int group =0 );
 int Send( double *buf, int nels, int dest, int group =0 );
 int Recv( double *buf, int nels, int source, int group =0 );
 */
-
-template<class T>
-int Send( const T *buf, int nels, int dest, int group =0 );
-template<class T>
-int Recv( T *buf, int nels, int source, int group =0 );
 
 // Global reductions
 // Sum, scalar
@@ -128,7 +137,7 @@ void gmax( float *px, int n );
 void gmax( double *px, int n );
 
 C4_NAMESPACE_END
-
+/*
 //---------------------------------------------------------------------------//
 // Prototypes
 // Cruft
@@ -145,14 +154,17 @@ inline int C4_group() { return C4::group(); }
 // Global sync
 
 inline void C4_gsync() { C4::gsync(); }
-
+*/
 // Send/receive
 
+/*
 inline int C4_Send( void *buf, int size, int dest,   int tag, int group =0 )
 { return C4::Send( buf, size, dest, tag, group ); }
 inline int C4_Recv( void *buf, int size, int source, int tag, int group =0 )
 { return C4::Recv( buf, size, source, tag, group ); }
+*/
 
+/*
 inline C4::C4_Req C4_SendAsync( void *buf, int size, int dest,
 				int tag, int group =0 )
 { return C4::SendAsync( buf, size, dest, tag, group ); }
@@ -254,13 +266,19 @@ inline void C4_gmax( int *px, int n ) { C4::gmax( px, n ); }
 inline void C4_gmax( long *px, int n ) { C4::gmax( px, n ); }
 inline void C4_gmax( float *px, int n ) { C4::gmax( px, n ); }
 inline void C4_gmax( double *px, int n ) { C4::gmax( px, n ); }
-
+*/
 //---------------------------------------------------------------------------//
 // Now include anything which might help a particular hardware abstraction
 // layer.  For example, C4_gsync might be inlined...
 
 #ifdef C4_SHMEM
 #include "c4/global_shmem.hh"
+#endif
+#ifdef __MPI__
+#include "global_mpi.hh"
+#endif
+#ifdef __C4_SCALAR__
+#include "global_scalar.hh"
 #endif
 
 #endif                          // __c4_global_hh__
