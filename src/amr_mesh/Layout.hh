@@ -181,13 +181,7 @@ public:
  * \param object Layout class object.
  * \return Reference to output.
  */
-ostream & operator<<(ostream & output, const Layout & object)
-{
-    int num_cells = object.num_cells();
-    for (int cell_index = 1; cell_index <= num_cells; cell_index++)
-        object.print(output, cell_index);
-    return output;
-}
+ostream & operator<<(ostream & output, const Layout & object);
 
 //---------------------------------------------------------------------------//
 // overload equality(==) operator for design-by-contract

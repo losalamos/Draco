@@ -59,6 +59,17 @@ void Layout::print(ostream & output, int cell_index) const
     output << "=============" << endl;
 }
 
+//---------------------------------------------------------------------------//
+// overloaded operators
+//---------------------------------------------------------------------------//
+ostream & operator<<(ostream & output, const Layout & object)
+{
+    int num_cells = object.num_cells();
+    for (int cell_index = 1; cell_index <= num_cells; cell_index++)
+        object.print(output, cell_index);
+    return output;
+}
+
 } // end namespace rtt_amr
 
 //---------------------------------------------------------------------------//
