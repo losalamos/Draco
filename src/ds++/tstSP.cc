@@ -9,8 +9,6 @@
 #include <iostream.h>
 
 #include "SP.hh"
-// #include "List.cc"
-// #include "Map.cc"
 
 // autodoc: noprint foo
 
@@ -39,23 +37,6 @@ class baz : public bar
 };
 
 class wombat {};
-
-#ifdef __GNUC__
-INSTANTIATE_SP(foo);
-INSTANTIATE_SPList(foo);
-INSTANTIATE_Map(int,SP<foo>);
-#endif
-
-#ifdef __DECCXX
-#pragma define_template SP<foo>
-#pragma define_template SPrep<foo>
-#pragma define_template SPList<foo>
-#pragma define_template SPList_iter<foo>
-#pragma define_template SPLink<foo>
-#pragma define_template Map<int, SP<foo> >
-#pragma define_template Link<int, SP<foo> >
-#pragma define_template Map_iter<int, SP<foo> >
-#endif
 
 //---------------------------------------------------------------------------//
 // Function to help us keep track of the foo pool.
@@ -90,12 +71,6 @@ SP<foo> useafoo( SP<foo> s )
 
     return p;
 }
-
-#ifdef __GNUC__
-INSTANTIATE_Slist(SP<foo>);
-#endif
-
-void tst_map();
 
 void x1()
 {
@@ -432,91 +407,12 @@ void x4()
 
 main()
 {
-#ifndef __KCC
-    ios::sync_with_stdio();
-#endif
-
     cout << "\n\n\n    tstSP starting.\n";
 
     x1();
     x2();
     x3();
     x4();
-    
-    tst_map();
-}
-
-//---------------------------------------------------------------------------//
-// Test interaction of smart pointers with Maps.
-//---------------------------------------------------------------------------//
-
-void u1()
-{
-#if 0
-    int i;
-    expect(0);
-    {
-	Map< int, SP<foo> > mif;
-
-	cout << "Putting some foo's in a Map.\n";
-
-	for( i=0; i < 5; i++ ) {
-	    SP<foo> spf = new foo(i);
-	    mif[i] = spf;
-	}
-
-	expect(5);
-
-	cout << "Now the Map will go out of scope.\n";
-    }
-    expect(0);
-    {
-	Map< int, SP<foo> > mif;
-
-	cout << "Putting some foo's in a new Map.\n";
-
-	for( i=0; i < 5; i++ ) {
-	    SP<foo> spf = new foo(i);
-	    mif[i] = spf;
-	}
-
-	expect(5);
-
-	cout << "Walking a Map.\n";
-	Map_iter<int,SP<foo> > mi( mif );
-	for( ; mi; mi++ ) {
-	    SP<foo> spf = mi.value();
-	    cout << spf->val() << ' ';
-	}
-	cout << endl;
-
-	{
-	    cout << "Using copy ctor to make a new Map.\n";
-	    Map<int,SP<foo> > mif2( mif );
-	    expect(5);
-	    cout << "Ready to let aliasing Map go out of scope.\n";
-	}
-	expect(5);
-
-	SPList<foo> s;
-	for( mi.reset(); mi; mi++ ) {
-	    SP<foo> spf = mi.value();
-	    s.insert( spf );
-	}
-	expect(5);
-
-	cout << "Now the Map and the SPList will go out of scope.\n";
-    }
-
-    expect(0);
-#endif
-}
-
-void tst_map()
-{
-    cout << "\n\n Testing SP<T> with Map<K,V>.\n\n";
-
-    u1();
 }
 
 //---------------------------------------------------------------------------//
