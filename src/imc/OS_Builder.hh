@@ -20,6 +20,7 @@
 //  1)  3-18-98 : added generalized mesh constructor which consists of 
 //                calculating vertex-based arrays and sending them to the 
 //                OS_Mesh constructor
+//  2)   4-6-99 : made OS_Builder class templated on an interface type
 // 
 //===========================================================================//
 
@@ -27,7 +28,6 @@
 #include "Coord_sys.hh"
 #include "Layout.hh"
 #include "OS_Mesh.hh"
-#include "OS_Interface.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>
@@ -73,7 +73,8 @@ private:
 
 public:
   // constructor
-    inline explicit OS_Builder(SP<OS_Interface>);
+    template<class IT>
+    inline explicit OS_Builder(SP<IT>);
 
   // build Mesh member functions
     SP<OS_Mesh> build_Mesh();
@@ -86,7 +87,8 @@ public:
 // inline functions for OS_Builder
 //---------------------------------------------------------------------------//
 
-inline OS_Builder::OS_Builder(SP<OS_Interface> interface)
+template<class IT>
+inline OS_Builder::OS_Builder(SP<IT> interface)
 {
     Require (interface);
 
