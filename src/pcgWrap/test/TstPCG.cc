@@ -53,7 +53,6 @@ int main( int argc, char *argv[] )
 // Initialize some local variables
     int node  = C4::node();
     int nodes = C4::nodes();
-    int ptype = C4::group();
 
 // Now do the testing.
     int nxs = 12;

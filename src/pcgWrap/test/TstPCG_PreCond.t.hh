@@ -25,7 +25,6 @@ TstPCG_PreCond<T>::
 template<class T>
 TstPCG_PreCond<T>::
 TstPCG_PreCond()
-    : PCG_PreCond<T>()
 {
 }
 
