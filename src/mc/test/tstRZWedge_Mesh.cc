@@ -370,14 +370,16 @@ void simple_one_cell_RZWedge()
     // make sure the mesh thinks it's not submesh
     if (!mesh->full_Mesh()) ITFAILS;
 
-    // test the mesh's ability to sample positions.  This test has been hand
-    // checked in a weak sense and, therefore, is more of a regression test.
+    // >>>> test the mesh's ability to sample positions. <<<<
+
     int seed = 1234567;
     Rnd_Control rand_control(seed);
     Sprng ran_object = rand_control.get_rn(10);
 
     if (seed != 1234567) ITFAILS;
 
+    // The explicit-value tests has been hand-checked in a weak sense and,
+    // therefore, are more of a regression test.
     vector<double> position_sampled;
     position_sampled = mesh->sample_pos(1,ran_object);
     if (position_sampled.size() != 3)                  ITFAILS;
@@ -391,17 +393,18 @@ void simple_one_cell_RZWedge()
     if (!soft_equiv(position_sampled[1],-.02354,0.001)) ITFAILS;
     if (!soft_equiv(position_sampled[2], 0.4629,0.001)) ITFAILS;
 
+    // sample with slope -- explicit-value test: 
     vector<double> slope(3);
     slope[0] = -1.0;
     slope[1] =  0.0;
     slope[2] =  0.0;
+
     position_sampled = mesh->sample_pos(1, ran_object, slope, 1.0);
     if (position_sampled.size() != 3)                    ITFAILS;
     if (!soft_equiv(position_sampled[0],  0.2633,0.001)) ITFAILS;
     if (!soft_equiv(position_sampled[1],-.002651,0.001)) ITFAILS;
-    if (!soft_equiv(position_sampled[2],  0.9373,0.001)) ITFAILS;
+    if (!soft_equiv(position_sampled[2],  0.0627,0.001)) ITFAILS;
 
-    
     position_sampled = mesh->sample_pos_on_face(1,2,ran_object);
     if (position_sampled.size() != 3)                   ITFAILS;
     if (!soft_equiv(position_sampled[0],   1.0,0.001)) ITFAILS;
@@ -419,6 +422,106 @@ void simple_one_cell_RZWedge()
     if (!soft_equiv(position_sampled[0], 0.2198,0.001)) ITFAILS;
     if (!soft_equiv(position_sampled[1], 0.1769,0.001)) ITFAILS;
     if (!soft_equiv(position_sampled[2],    1.0,0.001)) ITFAILS;
+
+    // with slope=(-1,0,0) and a cell value T^4 of 0.5, x- and z-dimensions
+    // should be sampled uniformly
+    int num_bins = 100;
+    vector<double> xdist(num_bins, 0.0);
+    vector<double> zdist(num_bins, 0.0);
+    double xavg = 0.0;
+    double yavg = 0.0;
+    double zavg = 0.0;
+    int xbin, zbin;
+    int num_particles = 100000;
+
+    slope[0] = -1.0;
+    slope[1] =  0.0;
+    slope[2] =  0.0;
+    
+    for (int num_p = 0; num_p < num_particles; num_p++)
+    {
+	position_sampled = mesh->sample_pos(1, ran_object, slope, 0.5);
+	
+	xbin = position_sampled[0]*num_bins;
+	zbin = position_sampled[2]*num_bins;
+
+	xdist[xbin]++;
+	zdist[zbin]++;
+
+	xavg += position_sampled[0];
+	yavg += position_sampled[1];
+	zavg += position_sampled[2];
+    }
+
+    xavg = xavg/num_particles;
+    yavg = yavg/num_particles;
+    zavg = zavg/num_particles;
+
+    double est_std_of_mean = 1.0/std::pow(num_particles, 0.5);
+
+    if (!soft_equiv(xavg, 0.5, 4.0*est_std_of_mean))  ITFAILS;
+    if (!soft_equiv(yavg, 0.0, 4.0*est_std_of_mean))  ITFAILS;
+    if (!soft_equiv(zavg, 0.5, 4.0*est_std_of_mean))  ITFAILS;
+    
+    for (int bin = 0; bin < num_bins; bin++)
+    {
+	xdist[bin] = xdist[bin] / num_particles * num_bins;
+	zdist[bin] = zdist[bin] / num_particles * num_bins;
+    }
+
+    int num_xbin_within_1std = 0;
+    int num_zbin_within_1std = 0;
+    int num_xbin_within_2std = 0;
+    int num_zbin_within_2std = 0;
+    int num_xbin_within_3std = 0;
+    int num_zbin_within_3std = 0;
+
+    double estimated_std = 
+	std::pow(static_cast<double>(num_bins)/num_particles,0.5);
+
+    for (int bin = 0; bin < num_bins; bin++)
+    {
+	if (std::fabs(xdist[bin]-1.0) < estimated_std)
+	    num_xbin_within_1std++;
+	if (std::fabs(zdist[bin]-1.0) < estimated_std)
+	    num_zbin_within_1std++;
+
+	if (std::fabs(xdist[bin]-1.0) < 2.0*estimated_std)
+	    num_xbin_within_2std++;
+	if (std::fabs(zdist[bin]-1.0) < 2.0*estimated_std)
+	    num_zbin_within_2std++;
+
+	if (std::fabs(xdist[bin]-1.0) < 3.0*estimated_std)
+	    num_xbin_within_3std++;
+	if (std::fabs(zdist[bin]-1.0) < 3.0*estimated_std)
+	    num_zbin_within_3std++;
+    }
+    double coverage_x_1std =
+	static_cast<double>(num_xbin_within_1std)/num_bins; 
+    double coverage_z_1std =
+	static_cast<double>(num_zbin_within_1std)/num_bins; 
+    double coverage_x_2std =
+	static_cast<double>(num_xbin_within_2std)/num_bins; 
+    double coverage_z_2std =
+	static_cast<double>(num_zbin_within_2std)/num_bins; 
+    double coverage_x_3std =
+	static_cast<double>(num_xbin_within_3std)/num_bins; 
+    double coverage_z_3std =
+	static_cast<double>(num_zbin_within_3std)/num_bins; 
+
+    if ((coverage_x_1std < 0.67) && 
+	!soft_equiv(coverage_x_1std, 0.67, 0.1))	ITFAILS; 
+    if ((coverage_z_1std < 0.67) && 
+	!soft_equiv(coverage_z_1std, 0.67, 0.1))	ITFAILS; 
+    if ((coverage_x_2std < 0.95) && 
+	!soft_equiv(coverage_x_2std, 0.95, 0.1))	ITFAILS;  
+    if ((coverage_z_2std < 0.95) && 
+	!soft_equiv(coverage_z_2std, 0.95, 0.1))	ITFAILS;  
+    if ((coverage_x_3std < 0.99) && 
+	!soft_equiv(coverage_x_3std, 0.99, 0.1))	ITFAILS;  
+    if ((coverage_z_3std < 0.99) && 
+	!soft_equiv(coverage_z_3std, 0.99, 0.1))	ITFAILS;  
+
 
     // check the == and != operations.
     // first, build another mesh object equivalent to old mesh object.
