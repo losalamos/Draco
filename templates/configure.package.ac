@@ -73,8 +73,8 @@ dnl different than package dependencies.  If this is a Draco client,
 dnl the unit test dependencies on Draco libraries should be listed as
 dnl arguments to AC_NEEDS_LIBS_TEST_DRACO.
 
-AC_NEEDS_LIBS_TEST(ds++ c4)
-dnl AC_NEEDS_LIBS_TEST_DRACO(ds++ c4)
+dnl AC_NEEDS_LIBS_TEST(c4 ds++)
+dnl AC_NEEDS_LIBS_TEST_DRACO(c4 ds++)
 
 dnl List the unit tests that should be run and the number of
 dnl processors that should be used when running the test. If this is a
