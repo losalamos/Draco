@@ -18,9 +18,8 @@ AC_GANDOLF_SETUP(pkg)
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(cdi ds++)
-AC_NEEDS_LIBS_TEST(UnitTestFrame)
 
-AC_RUNTESTS(tGandolfFile tGandolfOpacity tGandolfWithCDI, 1)
+AC_RUNTESTS(tGandolfFile tGandolfOpacity tGandolfWithCDI, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV

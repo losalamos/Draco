@@ -12,16 +12,21 @@
 #ifndef __cdi_gandolf_GandolfGrayOpacity_hh__
 #define __cdi_gandolf_GandolfGrayOpacity_hh__
 
+#include "GandolfWrapper.hh"    // we make calls to the wrapper routines.
+#include "GandolfDataTable.hh"  // we have a smart pointer to a
+                                // GandolfDataTable object.
 // cdi_gandolf dependencies
 #include "cdi/GrayOpacity.hh"
 #include "cdi/OpacityCommon.hh"
 
 // Draco dependencies
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 
 // C++ standard library dependencies
 #include <vector>
 #include <string>
+#include <cmath> // we need to define log(double) and exp(double)
 
 namespace rtt_cdi_gandolf
 {
@@ -30,7 +35,6 @@ namespace rtt_cdi_gandolf
 // -------------------- //
 
 class GandolfFile;
-class GandolfDataTable;
 
 //===========================================================================//
 /*!
@@ -438,6 +442,103 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
     int getNumDensities() const;
 
 }; // end of class GandolfGrayOpacity
+
+//---------------------------------------------------------------------------//
+// INCLUDE TEMPLATE MEMBER DEFINITIONS FOR AUTOMATIC TEMPLATE INSTANTIATION
+//---------------------------------------------------------------------------//
+
+// --------------------------------- //
+// STL-like accessors for getOpacity //
+// --------------------------------- //
+
+// ------------------------------------------ //
+// getOpacity with Tuple of (T,rho) arguments //
+// ------------------------------------------ //
+
+template < class TemperatureIterator, class DensityIterator,
+           class OpacityIterator >
+OpacityIterator GandolfGrayOpacity::getOpacity(
+    TemperatureIterator tempIter, 
+    TemperatureIterator tempLast,
+    DensityIterator densIter, 
+    DensityIterator densLast,
+    OpacityIterator opIter ) const
+{ 
+    // from twix:/scratch/tme/kai/KCC_BASE/include/algorithm
+    
+    // assert that the two input iterators have compatible sizes.
+    Require( std::distance( tempIter, tempLast )
+	     == std::distance( densIter, densLast ) );
+
+    // Loop over all (temperature,density) tuple values.
+    for ( ; tempIter != tempLast;
+	  ++tempIter, ++densIter, ++opIter )
+	// Call the Gandolf Logorithmic Interpolator for Gray data.
+	*opIter = 
+	    wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
+				 spGandolfDataTable->getNumTemperatures(), 
+				 spGandolfDataTable->getLogDensities(), 
+				 spGandolfDataTable->getNumDensities(),
+				 spGandolfDataTable->getLogOpacities(), 
+				 spGandolfDataTable->getNumOpacities(),
+				 log( *tempIter ),
+				 log( *densIter ) );
+    return opIter;
+}
+
+// ------------------------------------ // 
+// getOpacity() with container of temps //
+// ------------------------------------ // 
+
+template < class TemperatureIterator, class OpacityIterator >
+OpacityIterator GandolfGrayOpacity::getOpacity(
+    TemperatureIterator tempIter,
+    TemperatureIterator tempLast,
+    double targetDensity,
+    OpacityIterator opIter ) const
+{ 
+    // loop over all the entries the temperature container and
+    // calculate an opacity value for each.
+    for ( ; tempIter != tempLast; ++tempIter, ++opIter )
+	// Call the Gandolf Logorithmic Interpolator for Gray data.
+	*opIter = 
+	    wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
+				 spGandolfDataTable->getNumTemperatures(), 
+				 spGandolfDataTable->getLogDensities(), 
+				 spGandolfDataTable->getNumDensities(),
+				 spGandolfDataTable->getLogOpacities(), 
+				 spGandolfDataTable->getNumOpacities(),
+				 log( *tempIter ),
+				 log( targetDensity ) );
+    return opIter;
+}
+
+// ---------------------------------------- // 
+// getOpacity() with container of densities //
+// ---------------------------------------- //
+
+template < class DensityIterator, class OpacityIterator >
+OpacityIterator GandolfGrayOpacity::getOpacity(
+    double targetTemperature,
+    DensityIterator densIter, 
+    DensityIterator densLast,
+    OpacityIterator opIter ) const
+{ 
+    // loop over all the entries the density container and
+    // calculate an opacity value for each.
+    for ( ; densIter != densLast; ++densIter, ++opIter )
+	// Call the Gandolf Logorithmic Interpolator for Gray data.
+	*opIter = 
+	    wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
+				 spGandolfDataTable->getNumTemperatures(), 
+				 spGandolfDataTable->getLogDensities(), 
+				 spGandolfDataTable->getNumDensities(),
+				 spGandolfDataTable->getLogOpacities(), 
+				 spGandolfDataTable->getNumOpacities(),
+				 log( targetTemperature ),
+				 log( *densIter ) );
+    return opIter;
+}
 
 } // end namespace rtt_cdi_gandolf
 
