@@ -119,8 +119,8 @@ void simple_one_cell_RZWedge()
 
     // check that the cell dimensions are correct
     if (!soft_equiv(mesh->dim(1, 1), 1.0)) ITFAILS;
-    if (!soft_equiv(mesh->dim(1, 2), 1.0)) ITFAILS;
-    if (!soft_equiv(mesh->dim(1, 3), 1.0)) ITFAILS;
+    if (!soft_equiv(mesh->dim(2, 1), 1.0)) ITFAILS;
+    if (!soft_equiv(mesh->dim(3, 1), 1.0)) ITFAILS;
 
     // check that graphics cell type is correct
     vector<int> cell_type = mesh->get_cell_types();
@@ -661,12 +661,12 @@ void build_an_RZWedge()
 
     // check that the cell dimensions are correct for 1st and last cells
     if (!soft_equiv(mesh->dim(1,1), sqrtpi_2)) ITFAILS;
-    if (!soft_equiv(mesh->dim(1,2), sqrtpi_2)) ITFAILS;
-    if (!soft_equiv(mesh->dim(1,3), 2.0))      ITFAILS;
+    if (!soft_equiv(mesh->dim(2,1), sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(mesh->dim(3,1), 2.0))      ITFAILS;
 
-    if (!soft_equiv(mesh->dim(6,1), sqrtpi_2))     ITFAILS;
-    if (!soft_equiv(mesh->dim(6,2), 5.0*sqrtpi_2)) ITFAILS;
-    if (!soft_equiv(mesh->dim(6,3), 2.0))          ITFAILS;
+    if (!soft_equiv(mesh->dim(1,6), sqrtpi_2))     ITFAILS;
+    if (!soft_equiv(mesh->dim(2,6), 5.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(mesh->dim(3,6), 2.0))          ITFAILS;
 
     // check that graphics cell type is correct
     vector<int> cell_type = mesh->get_cell_types();
