@@ -20,6 +20,9 @@
 // revision history:
 // -----------------
 // 0) 04-04-00 : original
+// 1) 08-11-00 : modified sample_general_linear fn to allow for, in addition
+//               to a totally positive function, a totally negative or a
+//               zero-valued function.
 //
 //===========================================================================//
 
@@ -57,15 +60,19 @@ inline double sample_general_linear(Ran ran, const double a, const double b,
     // require that a<b and the function is nonnegative (could require that
     // it is either nonnegative OR nonpositive, but we will stick with >=0).
     Require (a < b);
-    Require (f_of_a >= 0.0 && f_of_b >= 0.0);
-    Require (f_of_a + f_of_b > 0.0);
+    Require ((f_of_a >= 0.0 && f_of_b >= 0.0) || 
+	     (f_of_a <= 0.0 && f_of_b <= 0.0));
 
     // return value of x in [a,b], sampled from f(x).
     double x;
 
     // calculate the probability of selecting the function with negative
     // slope.
-    double prob_neg = f_of_a / (f_of_a + f_of_b);
+    double prob_neg;
+    if (std::fabs(f_of_a + f_of_b) > 0)
+	prob_neg = f_of_a / (f_of_a + f_of_b);
+    else 
+	prob_neg = 0.5;
 
     // calculate length of independent extent.
     double delta_x = b - a;
