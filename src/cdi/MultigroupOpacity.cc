@@ -11,11 +11,11 @@
 
 #include "MultigroupOpacity.hh"
 
-namespace rtt_cdi_multigroup_opacity
+namespace rtt_cdi
 {
     // empty
 
-} // end namespace rtt_cdi_multigroup_opacity
+} // end namespace rtt_cdi
 
 
 //---------------------------------------------------------------------------//

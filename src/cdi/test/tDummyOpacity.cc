@@ -9,9 +9,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <string>
-#include <vector>
-// #include <ostream>
+#include <vector>  // required by match()
 
 #include "tDummyOpacity.hh"
 #include "../Release.hh"
@@ -24,8 +22,10 @@
 #include "UnitTestFrame/PassFailStream.hh"
 #include "ds++/SP.hh"
 
-// Unit Test Frame Stuff
-//----------------------------------------
+// --------------------- //
+// Unit Test Frame Stuff //
+// --------------------- //
+
 namespace rtt_UnitTestFrame {
     rtt_dsxx::SP<TestApp> TestApp::create( int &argc, char *argv[],
 					   std::ostream& os_in ) {
@@ -34,24 +34,29 @@ namespace rtt_UnitTestFrame {
     }
 } // end namespace rtt_UnitTestFrame
 
-// tDummyOpacity Stuff
-//--------------------------------------------------
-namespace rtt_dummy_opacity_test {
+// ------------------- //
+// tDummyOpacity Stuff //
+// ------------------- //
+
+namespace rtt_dummy_opacity_test 
+{
 
 tDummyOpacity::tDummyOpacity( int argc, char *argv[], std::ostream& os_in )
     : rtt_UnitTestFrame::TestApp( argc, argv, os_in )
-{
-    os() << "Created tDummyOpacity" << std::endl;
-}
-
+    {
+	os() << "Created tDummyOpacity" << std::endl;
+    }
+ 
 std::string tDummyOpacity::version() const
 {
     return rtt_cdi::release();
 }
 
-//==============================================================================
-// The tests start here.
-//==============================================================================
+
+          //====================================//
+          // The DummyOpacity tests start here. //
+          //====================================//
+
 
 std::string tDummyOpacity::runTest()
 {
@@ -60,7 +65,7 @@ std::string tDummyOpacity::runTest()
     // Create a GrayOpacity object. //
     // ---------------------------- //
 
-    rtt_dsxx::SP< rtt_cdiGrayOpacity::GrayOpacity > spDGO;
+    rtt_dsxx::SP< rtt_cdi::GrayOpacity > spDGO;
     
     if ( spDGO = new rtt_dummyGrayOpacity::DummyGrayOpacity() )
 	// If we get here then the object was successfully instantiated.
@@ -156,7 +161,7 @@ std::string tDummyOpacity::runTest()
     // Create a Dummy Multigroup Opacity object. //
     // ----------------------------------------- //
 
-    rtt_dsxx::SP< rtt_cdiMultigroupOpacity::MultigroupOpacity > spDmgO;
+    rtt_dsxx::SP< rtt_cdi::MultigroupOpacity > spDmgO;
     
     if ( spDmgO = new rtt_dummyMultigroupOpacity::DummyMultigroupOpacity() )
 	// If we get here then the object was successfully instantiated.
@@ -312,6 +317,8 @@ std::string tDummyOpacity::runTest()
 
 } // end of runTest()
 
+
+
 //---------------------------------------------
 // Compare Reference value to computed values
 //---------------------------------------------
@@ -381,7 +388,6 @@ bool tDummyOpacity::match(
 	}
     return true;
 } // end of tDummyOpacity::match( vector<double>, vector<double> )
-
 
 } // end namespace rtt_dummy_opacity_test
 

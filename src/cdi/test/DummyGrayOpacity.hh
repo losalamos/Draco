@@ -12,162 +12,283 @@
 #ifndef __cdi_DummyGrayOpacity_hh__
 #define __cdi_DummyGrayOpacity_hh__
 
-#include <vector>
-#include <string>
-
 #include "../GrayOpacity.hh"
 
 namespace rtt_dummyGrayOpacity
 {
 
+//===========================================================================//
+/*!
+ * \class DummyGrayOpacity
+ *
+ * \breif This is an opacity class that derives its interface from
+ * cdi/GrayOpacity and is used for testing purposes only.
+ *
+ * \sa This opacity class always contains the same data (set by the
+ * default constructor).  The data table has the following properties:
+ *
+ *     Temperatures = { 1.0, 2.0, 3.0 }
+ *     Densities    = { 0.1, 0.2 }
+ *
+ *     Opacity = temperature + density/1000
+ *
+ * In addition to providing definitions for the member functions
+ * outlined in GrayOpacity this class provides three additional 1-D
+ * STL-like accessors for opacity data.
+ */
+
+/*!
+ * \example cdi/test/tDummyOpacity.cc
+ * \example cdi/test/tCDI.cc
+ */
+//===========================================================================//
+
+class DummyGrayOpacity : public rtt_cdi::GrayOpacity
+{
+    // DATA - all of these values are set in the constructor.
+    
+    // string descriptors
+    const std::string dataFilename;            // "none"
+    const std::string dataDescriptor;          // "DummyGrayOpacity"
+    const std::string energyPolicyDescriptor;  // "Gray"
+    
+    // data grid size
+    const int numTemperatures;  // = 3
+    const int numDensities;     // = 2
+    
+    // the data grid
+    std::vector< double > temperatureGrid;  // = { 1.0, 2.0, 3.0 }
+    std::vector< double > densityGrid;      // = { 0.1, 0.2 }
+    
+  public:
+    
+    // -------------------------- //
+    // Constructors & Destructors //
+    // -------------------------- //
+    
     /*!
-     * \class DummyGrayOpacity
-     *
-     * \brief
-     *
-     * \sa This is a dummy opacity class that has the following
-     *     properties: 
-     *
-     *     Temperatures = { 1.0, 2.0, 3.0 }
-     *     Densities    = { 0.1, 0.2 }
-     *     Opacity = temp + density/1000
-     *
-     * \example tDummyOpacity.cc
-     * \example tCDI.cc
+     * \brief Constructor for DummyGrayOpacity object.
+     * 
+     * \sa The constructor assigns fixed values for all of the member
+     *     data.  Every instance of this object has the same member
+     *     data. 
      */
-
-    class DummyGrayOpacity : public rtt_cdiGrayOpacity::GrayOpacity
-    {
-	// DATA
+    DummyGrayOpacity();
+    
+    /*!
+     * \brief Default DummyGrayOpacity() destructor.
+     *
+     * This is required to correctly release memory when a
+     * DummyGrayOpacity object is destroyed.
+     */
+    ~DummyGrayOpacity() {};
+    
+    // --------- //
+    // Accessors //
+    // --------- //
+    
+    /*!
+     * \brief Opacity accessor that returns a single opacity that 
+     *     corresponds to the provided temperature and density.  
+     *
+     *     Opacity = temperature + density/1000
+     *
+     * \parameter targetTemperature The temperature value for which an
+     *     opacity value is being requested (keV).
+     *
+     * \parameter targetDensity The density value for which an opacity 
+     *     value is being requested (g/cm^3).
+     *
+     * \return A single interpolated opacity (cm^2/g).
+     */
+    double getOpacity( const double targetTemperature,
+		       const double targetDensity ) const; 
 	
- 	const std::string dataFilename;
-	const std::string dataDescriptor;
-	const std::string energyPolicyDescriptor;
-	
-	const int numTemperatures;
-	const int numDensities;
-	
-	std::vector< double > temperatureGrid;
-	std::vector< double > densityGrid;
+    /*!
+     * \brief Opacity accessor that returns a vector of opacities that
+     *     correspond to the provided vector of temperatures and a
+     *     single density value. 
+     *
+     *     Opacity[i] = temperature[i] + density/1000
+     *
+     * \parameter targetTemperature A vector of temperature values for
+     *     which opacity values are being requested (keV).
+     *
+     * \parameter targetDensity The density value for which an opacity 
+     *     value is being requested (g/cm^3).
+     *
+     * \return A vector of opacities (cm^2/g).
+     */
+    std::vector< double > getOpacity(
+	const std::vector< double >& targetTemperature,
+	const double targetDensity ) const;
 
-      public:
+    /*!
+     * \brief Opacity accessor that returns a vector of opacities
+     *     that correspond to the provided vector of densities and a
+     *     single temperature value. 
+     *
+     *     Opacity[i] = temperature[i] + density/1000
+     *
+     * \parameter targetTemperature The temperature value for which an 
+     *     opacity value is being requested (keV).
+     *
+     * \parameter targetDensity A vector of density values for which
+     *     opacity values are being requested (g/cm^3).
+     *
+     * \return A vector of opacities (cm^2/g).
+     */
+    std::vector< double > getOpacity( 
+	const double targetTemperature,
+	const std::vector< double >& targetDensity ) const; 
 
-	// ------------ //
-	// Constructors //
-	// ------------ //
-	
-	/*!
-	 * \brief Constructor for DummyOpacity object.
-	 * 
-	 * See DummyOpacity.hh for details.
-	 *
-	 * Note that everything in this file must be templated by the
-	 * EnergyPolicy.  All Templated forms of DummyOpacity<EnergyPolicy>
-	 * must be instantiated in DummyOpacity_pt.cc
-	 */
-	DummyGrayOpacity();
-	 
-	/*!
-	 * \brief Default DummyOpacity() destructor.
-	 *
-	 * This is required to correctly release memory when a
-	 * DummyOpacity<EnergyPolicy> is destroyed.
-	 */
-	~DummyGrayOpacity() {};
+    /*! 
+     * \brief Opacity accessor that returns an STL container of
+     *     opacities that correspond to the provided STL container of
+     *     temperatures and a single density.  The length of the
+     *     opacity container and the temperature container should be
+     *     equal. 
+     *
+     *     This function is not required by GrayOpacity.
+     *
+     * \parameter tempFirst The beginning position of a STL container
+     *     that holds a list of temperatures (keV).
+     *
+     * \parameter tempLast The end position of a STL container that
+     *     holds a list of temperatures (keV).
+     *
+     * \parameter targetDensity The density value for which an opacity 
+     *     value is being requested (g/cm^3).
+     *
+     * \parameter opacityFirst The beginning position of a STL
+     *     container into which opacity values corresponding to the
+     *     given temperature values will be stored (cm^2/g).
+     * 
+     * \return A list (of type OpacityIterator) of opacities are
+     *     returned (cm^2/g).  These opacities correspond to the
+     *     provided list of temperatures and the fixed density.
+     */
+    template< class OpacityIterator, class TemperatureIterator >
+    OpacityIterator getOpacity( TemperatureIterator tempFirst,
+				TemperatureIterator tempLast,
+				const double targetDensity,
+				OpacityIterator opacityFirst ) const;
+    
+    /*! 
+     * \brief Opacity accessor that returns an STL container of
+     *     opacities that correspond to the provided STL container of
+     *     densities and a single temperature.  The length of the
+     *     opacity container and the density container should be
+     *     equal. 
+     *
+     *     This function is not required by GrayOpacity.
+     *
+     * \parameter targetTemperature The temperature value for which an
+     *     opacity value is being requested (keV).
+     *
+     * \parameter densFirst The beginning position of a STL container
+     *     that holds a list of densities (g/cm^3).
+     *
+     * \parameter densLast The end position of a STL container that
+     *     holds a list of densities (g/cm^3).
+     *
+     * \parameter opacityFirst The beginning position of a STL
+     *     container into which opacity values corresponding to the
+     *     given density values will be stored (cm^2/g).
+     * 
+     * \return A list (of type OpacityIterator) of opacities are
+     *     returned (cm^2/g).  These opacities correspond to the
+     *     provided list of densities and the fixed temperature.
+     */
+    template< class OpacityIterator, class DensityIterator >
+    OpacityIterator getOpacity( const double targetTemperature,
+				DensityIterator densFirst,
+				DensityIterator densLast,
+				OpacityIterator opacityFirst ) const;
+    
+    /*! 
+     * \brief Opacity accessor that returns an STL container of
+     *     opacities that correspond to a tuple of provided STL
+     *     containers (temperatures and densities).  The length of the
+     *     opacity container, the temperature and the the density
+     *     container should be equal. 
+     *
+     *     This function is not required by GrayOpacity.
+     *
+     * \parameter tempFirst The beginning position of a STL container
+     *     that holds a list of temperatures (keV).
+     *
+     * \parameter tempLast The end position of a STL container that
+     *     holds a list of temperatures (keV).
+     *
+     * \parameter densFirst The beginning position of a STL container
+     *     that holds a list of densities (g/cm^3).
+     *
+     * \parameter densLast The end position of a STL container that
+     *     holds a list of densities (g/cm^3).
+     *
+     * \parameter opacityFirst The beginning position of a STL
+     *     container into which opacity values corresponding to the
+     *     given tuple of (temperature, density) values will be stored
+     *     (cm^2/g). 
+     * 
+     * \return A list (of type OpacityIterator) of opacities are
+     *     returned (cm^2/g).  These opacities correspond to the
+     *     provided tuple of (temperature, density) values.
+     */
+    template< class OpacityIterator, class TemperatureIterator,
+	class DensityIterator >
+    OpacityIterator getOpacity( TemperatureIterator tempFirst,
+				TemperatureIterator tempLast,
+				DensityIterator densFirst,
+				DensityIterator densLast,
+				OpacityIterator opacityFirst ) const;
 
-	// --------- //
-	// Accessors //
-	// --------- //
-	
-	/*!
-	 * \brief Opacity accessor that returns a single opacity that 
-	 *     corresponds to the provided temperature and density.
-	 */
-	double getOpacity( const double targetTemperature,
-			   const double targetDensity ) const; 
-	
-	std::vector< double > getOpacity(
-	    const std::vector< double >& targetTemperature,
-	    const double targetDensity ) const;
-	
-	std::vector< double > getOpacity( 
-	    const double targetTemperature,
-	    const std::vector< double >& targetDensity ) const; 
+    /*!
+     * \brief Returns a "plain English" description of the data.
+     */
+    const std::string& getDataDescriptor() const { 
+	return dataDescriptor; };
 
-	template< class OpacityIterator, class TemperatureIterator >
-	OpacityIterator getOpacity( TemperatureIterator tempFirst,
-				    TemperatureIterator tempLast,
-				    const double targetDensity,
-				    OpacityIterator opacityFirst ) const;
+    /*!
+     * \brief Returns a "plain English" description of the energy
+     *	  group structure (gray vs. multigroup).
+     */	
+    const std::string& getEnergyPolicyDescriptor() const {
+	return energyPolicyDescriptor; };
 
-	template< class OpacityIterator, class DensityIterator >
-	OpacityIterator getOpacity( const double targetTemperature,
-				    DensityIterator densFirst,
-				    DensityIterator densLast,
-				    OpacityIterator opacityFirst ) const;
-
-	// Given a (temperature,density) tuple return an opacity.
-	template< class OpacityIterator, class TemperatureIterator,
-  	          class DensityIterator >
-	OpacityIterator getOpacity( TemperatureIterator tempFirst,
-				    TemperatureIterator tempLast,
-				    DensityIterator densFirst,
-				    DensityIterator densLast,
-				    OpacityIterator opacityFirst ) const;
-
-	/*!
-	 * \brief Returns a "plain English" description of the data.
-	 */
-	const std::string& getDataDescriptor() const { 
-	    return dataDescriptor; };
-
-	/*!
-	 * \brief Returns a "plain English" description of the energy
-	 *	  group structure (gray vs. multigroup).
-	 */	
-	const std::string& getEnergyPolicyDescriptor() const {
-	    return energyPolicyDescriptor; };
-
-	/*!
-	 * \brief Returns the name of the associated IPCRESS file.
-	 *
-	 * The definition of this function is not included here to prevent 
-	 *     the inclusion of the GandolfFile.hh definitions within this 
-	 *     header file.
-	 */
-	const std::string& getDataFilename() const {
+    /*!
+     * \brief Returns the name of the associated data file.  Since
+     *     there is no data file associated with this opacity class
+     *     the string "none" is returned.
+     */
+    const std::string& getDataFilename() const {
 	    return dataFilename; };
-
-	/*!
-	 * \brief Returns a vector of temperatures that define the cached
-	 *     opacity data table.
-	 * 
-	 * We do not return a const reference because this function
-	 * must construct this information from more fundamental tables.
-	 */
-	std::vector<double> getTemperatureGrid() const {
-	    return temperatureGrid; };
-	
-	/*!
-	 * \brief Returns a vector of densities that define the cached
-	 *     opacity data table.
-	 * 
-	 * We do not return a const reference because this function
-	 * must construct this information from more fundamental tables.
-	 */
-	std::vector<double> getDensityGrid() const {
-	    return densityGrid; };
-	
-	/*!
-	 * \brief Returns the size of the temperature grid.
-	 */
-	int getNumTemperatures() const { return numTemperatures; };
-	
-	/*! 
-	 * \brief Returns the size of the density grid.
-	 */
-	int getNumDensities() const { return numDensities; };
-	
+    
+    /*!
+     * \brief Returns a vector of temperatures that define the cached
+     *     opacity data table.
+     */
+    const std::vector<double>& getTemperatureGrid() const {
+	return temperatureGrid; };
+    
+    /*!
+     * \brief Returns a vector of densities that define the cached
+     *     opacity data table.
+     */
+    const std::vector<double>& getDensityGrid() const {
+	return densityGrid; };
+    
+    /*!
+     * \brief Returns the size of the temperature grid.
+     */
+    int getNumTemperatures() const { return numTemperatures; };
+    
+    /*! 
+     * \brief Returns the size of the density grid.
+     */
+    int getNumDensities() const { return numDensities; };
+    
     };
 
 } // end namespace rtt_dummyGrayOpacity

@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   cdi/test/GandolfDummyOpacity.cc
+ * \file   cdi/test/DummyMultigroupOpacity.cc
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:17:16 2001
  * \brief  DummyMultigroupOpacity templated class implementation file.
@@ -12,7 +12,6 @@
 #include "DummyMultigroupOpacity.hh"
 
 #include <cmath> // pow(x,n)
-#include <vector>
 
 namespace rtt_dummyMultigroupOpacity
 {
@@ -22,13 +21,15 @@ namespace rtt_dummyMultigroupOpacity
     // ------------ //
 
     /*!
-     * \brief Constructor for DummyOpacity object.
+     * \brief Constructor for DummyMultigroupOpacity object.
      * 
-     * See DummyOpacity.hh for details.
+     * \sa The constructor assigns fixed values for all of the member
+     *     data.  Every instance of this object has the same member
+     *     data. 
      *
-     * Note that everything in this file must be templated by the
-     * EnergyPolicy.  All Templated forms of DummyOpacity<EnergyPolicy>
-     * must be instantiated in DummyOpacity_pt.cc
+     *     Temperatures     = { 1.0, 2.0, 3.0 }
+     *     Densities        = { 0.1, 0.2 }
+     *     EnergyBoundaries = { 0.05, 0.5, 5.0, 50.0 }
      */
     DummyMultigroupOpacity::DummyMultigroupOpacity( )
 	: dataFilename( "none" ),
@@ -56,9 +57,13 @@ namespace rtt_dummyMultigroupOpacity
     // --------- //
 
     /*!
-     * \brief Opacity accessor that returns a single opacity (or a
-     *     vector of opacities for the multigroup EnergyPolicy) that 
-     *     corresponds to the provided temperature and density.
+     * \brief Opacity accessor that returns a vector of opacities (one 
+     *     for each group) that corresponds to the provided
+     *     temperature and density.   
+     *
+     *     Opacity = 2 * ( temperature + density/1000 ) 
+     *                 / ( E_high + E_low )
+     *
      */
 std::vector<double> DummyMultigroupOpacity::getOpacity(
     const double targetTemperature,
@@ -73,10 +78,13 @@ std::vector<double> DummyMultigroupOpacity::getOpacity(
     }
 
     /*!
-     * \brief Opacity accessor that returns a vector of opacities (or a
-     *     vector of vectors of opacities for the multigroup
-     *     EnergyPolicy) that correspond to the provided vector of
-     *     temperatures and a single density value.
+     * \brief Opacity accessor that returns a vector of multigroup
+     *     opacities corresponding to the provided vector of
+     *     temperatures and a single density.  Each multigroup opacity 
+     *     is in itself a vector of numGroups opacities.
+     *
+     *     Opacity = 2 * ( temperature + density/1000 ) 
+     *                 / ( E_high + E_low )
      */
 std::vector< std::vector<double> > 
 DummyMultigroupOpacity::getOpacity(
@@ -99,10 +107,13 @@ DummyMultigroupOpacity::getOpacity(
     }
 
     /*!
-     * \brief Opacity accessor that returns a vector of opacities (or a
-     *     vector of vectors of opacities for the multigroup
-     *     EnergyPolicy) that correspond to the provided vector of
-     *     densities and a single temperature value.
+     * \brief Opacity accessor that returns a vector of multigroup
+     *     opacities corresponding to the provided vector of
+     *     densities and a single temperature.  Each multigroup opacity 
+     *     is in itself a vector of numGroups opacities.
+     *
+     *     Opacity = 2 * ( temperature + density/1000 ) 
+     *                 / ( E_high + E_low )
      */
 std::vector< std::vector<double> > 
 DummyMultigroupOpacity::getOpacity(

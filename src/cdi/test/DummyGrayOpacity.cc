@@ -10,7 +10,6 @@
 //---------------------------------------------------------------------------//
 
 #include "DummyGrayOpacity.hh"
-#include <vector>
 
 namespace rtt_dummyGrayOpacity
 {
@@ -19,15 +18,16 @@ namespace rtt_dummyGrayOpacity
     // Constructors //
     // ------------ //
 
-/*!
- * \brief Constructor for DummyOpacity object.
- * 
- * See DummyOpacity.hh for details.
- *
- * Note that everything in this file must be templated by the
- * EnergyPolicy.  All Templated forms of DummyOpacity<EnergyPolicy>
- * must be instantiated in DummyOpacity_pt.cc
- */
+    /*!
+     * \brief Constructor for DummyGrayOpacity object.
+     * 
+     * \sa The constructor assigns fixed values for all of the member
+     *     data.  Every instance of this object has the same member
+     *     data. 
+     *
+     *     Temperatures = { 1.0, 2.0, 3.0 }
+     *     Densities    = { 0.1, 0.2 }
+     */
     DummyGrayOpacity::DummyGrayOpacity()
 	    : dataFilename( "none"), 
 	      dataDescriptor( "DummyGrayOpacity" ), 
@@ -52,6 +52,8 @@ namespace rtt_dummyGrayOpacity
      * \brief Opacity accessor that returns a single opacity (or a
      *     vector of opacities for the multigroup EnergyPolicy) that 
      *     corresponds to the provided temperature and density.
+     *
+     *     Opacity = temperature + density/1000
      */
 double DummyGrayOpacity::getOpacity(
     const double targetTemperature,
@@ -59,7 +61,14 @@ double DummyGrayOpacity::getOpacity(
     { 
 	return targetTemperature + targetDensity/1000.0;
     }
- 
+
+    /*!
+     * \brief Opacity accessor that returns a vector of opacities that
+     *     correspond to the provided vector of temperatures and a
+     *     single density value. 
+     *
+     *     Opacity[i] = temperature[i] + density/1000
+     */
 std::vector< double > DummyGrayOpacity::getOpacity(
     const std::vector< double >& targetTemperature,
     const double targetDensity ) const
@@ -71,7 +80,14 @@ std::vector< double > DummyGrayOpacity::getOpacity(
 		    targetDensity/1000.0;
 	return grayOpacity;
     }
- 
+
+    /*!
+     * \brief Opacity accessor that returns a vector of opacities
+     *     that correspond to the provided vector of densities and a
+     *     single temperature value. 
+     *
+     *     Opacity[i] = temperature[i] + density/1000
+     */
 std::vector< double > DummyGrayOpacity::getOpacity( 
     const double targetTemperature,
     const std::vector< double >& targetDensity ) const

@@ -11,13 +11,13 @@
 
 #include "GrayOpacity.hh"
 
-namespace rtt_cdi_gray_opacity
+namespace rtt_cdi
 {
     // empty
 
-} // end namespace rtt_cdi_gray_opacity
+} // end namespace rtt_cdi
 
 
 //---------------------------------------------------------------------------//
-//                              end of GrayOpacity.cc
+// end of GrayOpacity.cc
 //---------------------------------------------------------------------------//

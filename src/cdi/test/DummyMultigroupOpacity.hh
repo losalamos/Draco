@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 17:12:51 2001
  * \brief  DummyMultigroupOpacity class header file (derived from 
- *         cdi/MultigroupOpacity)
+ *         ../MultigroupOpacity)
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,122 +13,331 @@
 #ifndef __cdi_DummyMultigroupOpacity_hh__
 #define __cdi_DummyMultigroupOpacity_hh__
 
-#include <vector>
-#include <string>
-
 #include "../MultigroupOpacity.hh"
 
 namespace rtt_dummyMultigroupOpacity
 {
 
-    /*!
-     * \class DummyMultigroupOpacity
-     *
-     * \brief
-     *
-     * \sa This is a dummy opacity class that has the following
-     *     properties: 
-     *
-     *     Temperatures = { 1.0, 2.0, 3.0 }
-     *     Densities    = { 0.1, 0.2 }
-     *     GroupBoundaries = { 0.05, 0.5, 5.0, 50.0 }
-     *
-     *     Opacity = 2.0 * ( Temperature + Density/1000.0 ) 
-     *                   / ( E_high + E_low )
-     *
-     * \example tDummyOpacity.cc
-     * \example tCDI.cc
-     */
+//===========================================================================//
+/*!
+ * \class DummyMultigroupOpacity
+ *
+ * \breif This is an opacity class that derives its interface from
+ * cdi/MultigroupOpacity and is used for testing purposes only.
+ *
+ * \sa This opacity class always contains the same data (set by the
+ * default constructor).  The data table has the following properties:
+ *
+ *     Temperatures     = { 1.0, 2.0, 3.0 }
+ *     Densities        = { 0.1, 0.2 }
+ *     EnergyBoundaries = { 0.05, 0.5, 5.0, 50.0 }
+ *
+ *     Opacity = 2 * ( temperature + density/1000 ) 
+ *                 / ( E_high + E_low )
+ *
+ * In addition to providing definitions for the member functions
+ * outlined in MultigroupOpacity this class provides three additional
+ * 1-D STL-like accessors for opacity data.
+ */
 
-class DummyMultigroupOpacity : public rtt_cdiMultigroupOpacity::MultigroupOpacity
+/*!
+ * \example cdi/test/tDummyOpacity.cc
+ * \example cdi/test/tCDI.cc
+ */
+//===========================================================================//
+
+class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
 {
 
-    // DATA
+    // DATA - all of these values are set in the constructor.
     
-    const std::string dataFilename;
-    const std::string dataDescriptor;
-    const std::string energyPolicyDescriptor;
+    // string descriptors
+    const std::string dataFilename;            // "none"
+    const std::string dataDescriptor;          // "DummyMultigroupOpacity"
+    const std::string energyPolicyDescriptor;  // "Multigroup"
 
-    const int numTemperatures;
-    const int numDensities;
-    const int numGroupBoundaries;
+    const int numTemperatures;     // = 3
+    const int numDensities;        // = 2
+    const int numGroupBoundaries;  // = 4
 
-    std::vector< double> groupBoundaries;
-    std::vector< double > temperatureGrid;
-    std::vector< double > densityGrid;
+    std::vector< double> groupBoundaries;   // = { 0.05, 0.5, 5.0, 50.0 }
+    std::vector< double > temperatureGrid;  // = { 1.0, 2.0, 3.0 }
+    std::vector< double > densityGrid;      // = { 0.1, 0.2 }
 
   public:
 
-    // ------------ //
-    // Constructors //
-    // ------------ //
+    // -------------------------- //
+    // Constructors & Destrcutors //
+    // -------------------------- //
 
+    /*!
+     * \brief Constructor for DummyMultigroupOpacity object.
+     * 
+     * \sa The constructor assigns fixed values for all of the member
+     *     data.  Every instance of this object has the same member
+     *     data. 
+     */
     DummyMultigroupOpacity( );
+
+    /*!
+     * \brief Default DummyMultigroupOpacity destructor.
+     *
+     * This is required to correctly release memory when a
+     * DummyMultigroupOpacity object is destroyed.
+     */
     ~DummyMultigroupOpacity( ) { };
 
     // --------- //
     // Accessors //
     // --------- //
 
-    const std::string& getDataDescriptor() const {
-	return dataDescriptor; };
+    /*!
+     * \brief Opacity accessor that returns a vector of opacities (one 
+     *     for each group) that corresponds to the provided
+     *     temperature and density.   
+     *
+     *     Opacity = 2 * ( temperature + density/1000 ) 
+     *                 / ( E_high + E_low )
+     *
+     * \parameter targetTemperature The temperature value for which an
+     *     opacity value is being requested (keV).
+     *
+     * \parameter targetDensity The density value for which an opacity 
+     *     value is being requested (g/cm^3).
+     *
+     * \return A vector of interpolated opacities (cm^2/g).  Each
+     *     entry of this vector corresponds to one energy group.
+     */
+    std::vector< double > getOpacity( const double targetTemperature,
+				      const double targetDensity ) const; 
 
+    /*!
+     * \brief Opacity accessor that returns a vector of multigroup
+     *     opacities corresponding to the provided vector of
+     *     temperatures and a single density.  Each multigroup opacity 
+     *     is in itself a vector of numGroups opacities.
+     *
+     *     Opacity = 2 * ( temperature + density/1000 ) 
+     *                 / ( E_high + E_low )
+     *
+     * \parameter targetTemperature A vector of temperature values for
+     *     which corresponding opacity values are being requested (keV).
+     *
+     * \parameter targetDensity The density value for which opacity 
+     *     values are being requested (g/cm^3).
+     *
+     * \return A vector of interpolated multigroup opacities (cm^2/g).
+     *     Each entry of this vector corresponds to one of the
+     *     provided temperatures and is itself a vector of numGroups
+     *     opacities. 
+     */
+    std::vector< std::vector <double > > getOpacity( 
+	const std::vector< double >& targetTemperature,
+	const double targetDensity ) const; 
+
+    /*!
+     * \brief Opacity accessor that returns a vector of multigroup
+     *     opacities corresponding to the provided vector of
+     *     densities and a single temperature.  Each multigroup opacity 
+     *     is in itself a vector of numGroups opacities.
+     *
+     *     Opacity = 2 * ( temperature + density/1000 ) 
+     *                 / ( E_high + E_low )
+     *
+     * \parameter targetTemperature The temperature value for
+     *     which corresponding opacity values are being requested
+     *     (keV). 
+     *
+     * \parameter targetDensity A vector of density values for which
+     *     corresponding opacity values are being requested (g/cm^3).
+     *
+     * \return A vector of interpolated multigroup opacities (cm^2/g).
+     *     Each entry of this vector corresponds to one of the
+     *     provided densities and is itself a vector of numGroups
+     *     opacities. 
+     */
+    std::vector< std::vector< double > > getOpacity( 
+	const double targetTemperature,
+	const std::vector< double >& targetDensity ) const; 
+
+    /*! 
+     * \brief Opacity accessor that returns an STL container of
+     *     opacities that correspond to a tuple of provided STL
+     *     containers (temperatures and densities).  The length of the 
+     *     temperature and the the density container should be equal
+     *     and the length of the opacity container should be
+     *     numGroups x temperature.size().
+     *
+     *     This function is not required by MultigroupOpacity.
+     *
+     * \parameter tempFirst The beginning position of a STL container
+     *     that holds a list of temperatures (keV).
+     *
+     * \parameter tempLast The end position of a STL container that
+     *     holds a list of temperatures (keV).
+     *
+     * \parameter densFirst The beginning position of a STL container
+     *     that holds a list of densities (g/cm^3).
+     *
+     * \parameter densLast The end position of a STL container that
+     *     holds a list of densities (g/cm^3).
+     *
+     * \parameter opacityFirst The beginning position of a STL
+     *     container into which multigroup opacity values
+     *     corresponding to the given tuple of (temperature, density) 
+     *     values and the number of energy groups will be stored
+     *     (cm^2/g).  
+     * 
+     * \return A list (of type OpacityIterator) of multigroup
+     *     opacities are returned (cm^2/g).  These multigroup
+     *     opacities correspond to the provided tuple of (temperature,
+     *     density) values and the total number of energy groups.
+     */
     template < class TemperatureIterator, class DensityIterator, 
-	       class OpacityIterator >
+	class OpacityIterator >
     OpacityIterator getOpacity( TemperatureIterator tempIter,
 				TemperatureIterator templast,
 				DensityIterator densIter,
 				DensityIterator densLast,
 				OpacityIterator opacityIter ) const;
-    
+
+    /*! 
+     * \brief Opacity accessor that returns an STL container of
+     *     opacities that correspond to a list of provided STL
+     *     temperature values.  The length of the opacity container
+     *     should be numGroups x temperature.size().
+     *
+     *     This function is not required by MultigroupOpacity.
+     *
+     * \parameter tempFirst The beginning position of a STL container
+     *     that holds a list of temperatures (keV).
+     *
+     * \parameter tempLast The end position of a STL container that
+     *     holds a list of temperatures (keV).
+     *
+     * \parameter targetDensity A single density value for which
+     *     opacity values are being requested (g/cm^3).
+     *
+     * \parameter opacityFirst The beginning position of a STL
+     *     container into which multigroup opacity values
+     *     corresponding to the given list of temperature
+     *     values and the number of energy groups will be stored
+     *     (cm^2/g).  
+     * 
+     * \return A list (of type OpacityIterator) of multigroup
+     *     opacities are returned (cm^2/g).  These multigroup
+     *     opacities correspond to the provided list of temperature
+     *     values, the fixed density and the total number of energy
+     *     groups. 
+     */
     template < class TemperatureIterator, class OpacityIterator >
     OpacityIterator getOpacity( TemperatureIterator tempIter,
 				TemperatureIterator templast,
 				const double targetDensity,
 				OpacityIterator opacityIter ) const;
 
+    /*! 
+     * \brief Opacity accessor that returns an STL container of
+     *     opacities that correspond to a list of provided STL
+     *     density values and a fixed temperature.  The length of the
+     *     opacity container should be numGroups x density.size().
+     *
+     *     This function is not required by MultigroupOpacity.
+     *
+     * \parameter targetTemperature A single temperature value for which
+     *     opacity values are being requested (keV).
+     *     
+     * \parameter densFirst The beginning position of a STL container
+     *     that holds a list of densities (g/cm^3).
+     *
+     * \parameter densLast The end position of a STL container that
+     *     holds a list of densities (g/cm^3).
+     *
+     * \parameter opacityFirst The beginning position of a STL
+     *     container into which multigroup opacity values
+     *     corresponding to the given list of density
+     *     values and the number of energy groups will be stored
+     *     (cm^2/g).  
+     * 
+     * \return A list (of type OpacityIterator) of multigroup
+     *     opacities are returned (cm^2/g).  These multigroup
+     *     opacities correspond to the provided list of density
+     *     values, the fixed temperature and the total number of
+     *     energy groups. 
+     */
     template < class DensityIterator, class OpacityIterator >
     OpacityIterator getOpacity( const double targetTemperature,
 				DensityIterator densIter,
 				DensityIterator densLast,
 				OpacityIterator opacityIter ) const;
 
-    std::vector< double > getOpacity( const double targetTemperature,
-				      const double targetDensity ) const; 
+    /*!
+     * \brief Returns a "plain English" description of the data.
+     */
+    const std::string& getDataDescriptor() const {
+	return dataDescriptor; };
 
-    std::vector< std::vector <double > > getOpacity( 
-	const std::vector< double >& targetTemperature,
-	const double targetDensity ) const; 
-
-    std::vector< std::vector< double > > getOpacity( 
-	const double targetTemperature,
-	const std::vector< double >& targetDensity ) const; 
-
+    /*!
+     * \brief Returns a "plain English" description of the energy
+     *	  group structure (gray vs. multigroup).
+     */	
     const std::string& getEnergyPolicyDescriptor() const { 
 	return energyPolicyDescriptor; };
 
+   /*!
+     * \brief Returns the name of the associated data file.  Since
+     *     there is no data file associated with this opacity class
+     *     the string "none" is returned.
+     */
     const std::string& getDataFilename() const {
 	return dataFilename; };
 
-    std::vector<double> getTemperatureGrid() const {
+    /*!
+     * \brief Returns a vector of temperatures that define the cached
+     *     opacity data table.
+     */
+    const std::vector<double>& getTemperatureGrid() const {
 	return temperatureGrid; };
 
-    std::vector<double> getDensityGrid() const {
+    /*!
+     * \brief Returns a vector of densities that define the cached
+     *     opacity data table.
+     */
+    const std::vector<double>& getDensityGrid() const {
 	return densityGrid; };
 
+    /*!
+     * \brief Returns a vector of energy group boundaries that define
+     *     the cached multigroup opacity data table.
+     */
     const std::vector<double>& getGroupBoundaries() const {
 	return groupBoundaries; };
     
+    /*!
+     * \brief Returns the size of the temperature grid.
+     */
     int getNumTemperatures() const {
 	return numTemperatures; };
 
+    /*! 
+     * \brief Returns the size of the density grid.
+     */
     int getNumDensities() const {
 	return numDensities; };
 
+    /*! 
+     * \brief Returns the number of energy group boundaries.
+     */
     int getNumGroupBoundaries() const {
 	return numGroupBoundaries; };
 
-}; // end of class GandolfOpacity
+    /*!
+     * \brief Returns the number of energy groups.
+     */
+    int getNumGroups() const {
+	return numGroupBoundaries - 1; };
+
+}; // end of class DummyMultigroupOpacity
 
 } // end namespace rtt_dummyMultigroupOpacity
 

@@ -20,9 +20,6 @@
 namespace rtt_CDI_test
 {
 
-using std::vector;
-using std::string;
- 
 //===========================================================================//
 /*!
  * \class tCDI
@@ -48,14 +45,7 @@ class tCDI : public rtt_UnitTestFrame::TestApp
   public:
 
     // CREATORS
-    
     tCDI( int argc, char *argv[], std::ostream &os_in );
-    //Defaulted: tCDI(const tCDI &rhs);
-    //Defaulted: ~tCDI();
-
-    // MANIPULATORS
-    
-    //Defaulted: tCDI& operator=(const tCDI &rhs);
 
     // ACCESSORS
     std::string name() const { return "tCDI"; }
@@ -69,29 +59,19 @@ class tCDI : public rtt_UnitTestFrame::TestApp
     
     // IMPLEMENTATION
 
-    // The match function is declared static because only one copy of
-    // this function needs to exist (shared by all objects of this
-    // class). 
-
-    /*!
-     * \brief Returns true if the elements of the two vectors are
-     *        identical to 10 decimal places.
-     */
-    static bool match( const vector<double> computedValue, 
-		       const vector<double> refereneceValue );
-    
-    /*!
-     * \brief Returns true if the two values are identical to 10
-     *        decimal places. 
-     */
-    static bool match( const double computedValue,
-		       const double referenceValue );
-
+    // These routines are used by the test routine to compare computed 
+    // results to tabulated values.  
+    bool match( 
+	const double computedValue,
+	const double referenceValue ) const;
+    bool match( 
+	const std::vector< double >& computedValue, 
+	const std::vector< double >& referenceValue ) const;
 };
 
 } // end namespace rtt_cdi_test
 
-#endif                          // __cdi_tCDI_hh__
+#endif // __cdi_tCDI_hh__
 
 //---------------------------------------------------------------------------//
 //                              end of cdi/tCDI.hh

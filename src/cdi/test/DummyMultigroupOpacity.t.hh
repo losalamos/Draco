@@ -22,18 +22,13 @@ namespace rtt_dummyMultigroupOpacity
     // Accessors //
     // --------- //
 
-    /*!
-     * \brief Opacity accessor that utilizes STL-like iterators.  This 
-     *     accessor expects a list of (temperature,density) tuples.
-     *     An opacity value will be returned for each tuple.  The
-     *     temperatureIterator and density iterators are required to
-     *     be the same length.  The opacity iterator should also have
-     *     this same length for gray data or this length times the
-     *     number of energy groups for multigroup data.
-     *
-     * The InputIterator and OutputIterator classes must be
-     *     instantiated for each STL container used.  This has already
-     *     been done for a few STL containers in DummyMultigroupOpacity_pt.cc.
+    /*! 
+     * \brief Opacity accessor that returns an STL container of
+     *     opacities that correspond to a tuple of provided STL
+     *     containers (temperatures and densities).  The length of the 
+     *     temperature and the the density container should be equal
+     *     and the length of the opacity container should be
+     *     numGroups x temperature.size().
      */
 template < class TemperatureIterator, class DensityIterator, 
            class OpacityIterator >
@@ -54,18 +49,11 @@ OpacityIterator DummyMultigroupOpacity::getOpacity(
 	return opacityIter;
     }
 
-    /*!
-     * \brief Opacity accessor that utilizes STL-like iterators.  This 
-     *     accessor expects a list of temperatures in an STL container.
-     *     An opacity value will be returned for each temperature
-     *     provided.  The opacity iterator should be the same length
-     *     as the temperatureIterator for gray data or the length of
-     *     the temperatureIterator times the number of energy groups
-     *     for multigroup data.
-     *
-     * The InputIterator and OpacityIterator classes must be
-     *     instantiated for each STL container used.  This has already
-     *     been done for a few STL containers in DummyMultigroupOpacity_pt.cc.
+    /*! 
+     * \brief Opacity accessor that returns an STL container of
+     *     opacities that correspond to a list of provided STL
+     *     temperature values.  The length of the opacity container
+     *     should be numGroups x temperature.size().
      */
 template < class TemperatureIterator, class OpacityIterator >
 OpacityIterator DummyMultigroupOpacity::getOpacity(
@@ -84,18 +72,11 @@ OpacityIterator DummyMultigroupOpacity::getOpacity(
 	return opacityIter;
     }
 
-    /*!
-     * \brief Opacity accessor that utilizes STL-like iterators.  This 
-     *     accessor expects a list of densities in an STL container.
-     *     An opacity value will be returned for each density
-     *     provided.  The opacity iterator should be the same length
-     *     as the densityIterator for gray data or the length of the
-     *     densityIterator times the number of energy groups for
-     *     multigroup data.
-     *
-     * The InputIterator and OpacityIterator classes must be
-     *     instantiated for each STL container used.  This has already
-     *     been done for a few STL containers in DummyMultigroupOpacity_pt.cc.
+    /*! 
+     * \brief Opacity accessor that returns an STL container of
+     *     opacities that correspond to a list of provided STL
+     *     density values and a fixed temperature.  The length of the
+     *     opacity container should be numGroups x density.size().
      */
 template < class DensityIterator, class OpacityIterator >
 OpacityIterator DummyMultigroupOpacity::getOpacity(

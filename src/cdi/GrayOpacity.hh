@@ -15,38 +15,22 @@
 #include <vector>
 #include <string>
 
-namespace rtt_cdiGrayOpacity
+#include "OpacityEnums.hh"
+
+namespace rtt_cdi
 {
-    // --------------------- //
-    // Enumerated data types //
-    // --------------------- //
-
-    /*!
-     * \brief Physics model used to compute the opacity values.
-     */
-    enum Model
-    {
-	Rosseland,
-	Plank
-    };
-
-    /*!
-     * \brief Opacity reaction type stored in this opacity object.
-     */
-    enum Reaction
-    {
-	Total,      /*!< Total opacity value (scattering plus absorption). */
-	Absorption, /*!< Absorption cross sections only. */
-	Scattering  /*!< Scattering cross sections only. */
-    };
 
 //===========================================================================//
 /*!
  * \class GrayOpacity
  *
- * \brief
+ * \brief This is a pure virtual class that defines a standard
+ *  interface for all derived GrayOpacity objects. 
  *
- * \sa 
+ * \sa Any derived GrayOpacity object must provide as a minumum the
+ * functionality outlined in this routine.  This functionality
+ * includes access to the data grid and the ability to return
+ * interpolated opacity values.
  */
 
 /*!
@@ -60,11 +44,14 @@ class GrayOpacity
 {
     // DATA
 
+    // There is no data for a pure virtual object.  This class
+    // provides an interface and does not preserve state.
+
   public:
 
-    // ----------- //
-    // Destructors //
-    // ----------- //
+    // ---------- //
+    // Destructor //
+    // ---------- //
 
     /*!
      * \brief Default GrayOpacity() destructor.
@@ -78,188 +65,59 @@ class GrayOpacity
     // Accessors //
     // --------- //
 
-
-    // THE C++ STANDARD DOES NOT ALLOW TEMPLATED VIRTUAL MEMBER
-    // FUNCTIONS.  WE DO NOT DEFINE THESE STL-LIKE ACCESSORS IN THIS
-    // VIRTUAL BASE CLASS.  HOWEVER, THESE TYPES OF ACCESSORS MAY BE
-    // DEFINED IN THE DERIVED OPACITY CLASSES.
-
     /*!
-     * \brief Opacity accessor that utilizes STL-like iterators.  This 
-     *     accessor expects a list of (temperature,density) tuples.
-     *     An opacity value will be returned for each tuple.  The
-     *     temperatureIterator and density iterators are required to
-     *     be the same length.  The opacity iterator should also have
-     *     this same length for gray data or this length times the
-     *     number of energy groups for multigroup data.
-     *
-     * The InputIterator and OutputIterator classes must be
-     *     instantiated for each STL container used.  This has already
-     *     been done for a few STL containers in GandolfOpacity_pt.cc.
-     * 
-     * \parameter temperatureIterator The beginning position of a STL
-     *     container that holds a list of temperatures.
-     *
-     * \parameter temperatureIteratorEnd The end position of a STL
-     *     container that holds a list of temperatures.
-     *
-     * \parameter densityIterator The beginning position of a STL
-     *     container that holds a list of densities.
-     *
-     * \parameter densityIteratorEnd The end position of a STL
-     *     container that holds a list of temperatures.
-     * 
-     * \parameter opacityIterator The beginning position of a STL
-     *     container into which opacity values corresponding to the
-     *     given (temperature,density) tuple will be stored.
-     *
-     * \return A list (of type OutputIterator) of opacities are
-     *     returned.  These opacities correspond to the temperature
-     *     and density values provied in the two InputIterators.
-     */
-//     template < class OpacityIterator, class TemperatureIterator,
-//                class DensityIterator >
-//     virtual OpacityIterator getOpacity( 
-// 	TemperatureIterator temperatureIteratorFirst, 
-// 	TemperatureIterator temperatureIteratorLast,
-// 	DensityIterator densityIteratorFirst, 
-// 	DensityIterator densityIteratorLast,
-// 	OpacityIterator opacityIteratorFirst ) const = 0;
-
-    /*!
-     * \brief Opacity accessor that utilizes STL-like iterators.  This 
-     *     accessor expects a list of temperatures in an STL container.
-     *     An opacity value will be returned for each temperature
-     *     provided.  The opacity iterator should be the same length
-     *     as the temperatureIterator for gray data or the length of
-     *     the temperatureIterator times the number of energy groups
-     *     for multigroup data.
-     *
-     * The InputIterator and OutputIterator classes must be
-     *     instantiated for each STL container used.  This has already
-     *     been done for a few STL containers in GandolfOpacity_pt.cc.
-     *
-     * \parameter temperatureIterator The beginning position of a STL
-     *     container that holds a list of temperatures.
-     *
-     * \parameter temperatureIteratorEnd The end position of a STL
-     *     container that holds a list of temperatures.
-     *
-     * \parameter targetDensity The single density value used when
-     *     computing opacities for each given temperature.
-     * 
-     * \parameter opacityIterator The beginning position of a STL
-     *     container into which opacity values (corresponding to the
-     *     provided temperature and density values) will be stored.
-     *
-     * \return A list (of type OutputIterator) of opacities are
-     *     returned.  These opacities correspond to the temperature
-     *     and density values provied.
-     */
-//     template < class OpacityIterator, class TemperatureIterator >
-//     virtual OpacityIterator getOpacity( 
-// 	TemperatureIterator temperatureIteratorFirst,
-// 	TemperatureIterator temperatureIteratorLast,
-// 	const double targetDensity,
-// 	OpacityIterator opacityIteratorFirst ) const = 0;
-
-    /*!
-     * \brief Opacity accessor that utilizes STL-like iterators.  This 
-     *     accessor expects a list of densities in an STL container.
-     *     An opacity value will be returned for each density
-     *     provided.  The opacity iterator should be the same length
-     *     as the densityIterator for gray data or the length of the
-     *     densityIterator times the number of energy groups for
-     *     multigroup data.
-     *
-     * The InputIterator and OutputIterator classes must be
-     *     instantiated for each STL container used.  This has already
-     *     been done for a few STL containers in GandolfOpacity_pt.cc.
-     *
-     * \parameter targetTemperature The single temperature value used when
-     *     computing opacities for each given density.
-     * 
-     * \parameter densityIterator The beginning position of a STL
-     *     container that holds a list of densities.
-     *
-     * \parameter densityIteratorEnd The end position of a STL
-     *     container that holds a list of densities.
-     *
-     * \parameter opacityIterator The beginning position of a STL
-     *     container into which opacity values (corresponding to the
-     *     provided temperature and density values) will be stored.
-     *
-     * \return A list (of type OutputIterator) of opacities are
-     *     returned.  These opacities correspond to the temperature
-     *     and density values provied.
-     */
-//     template < class OpacityIterator, class DensityIterator
-//     virtual OutputIterator getOpacity( 
-// 	const double targetTemperature,
-// 	DensityIterator densityIteratorFirst, 
-// 	DensityIterator densityIteratorLast,
-// 	OpacityIterator opacityIteratorFirst ) const = 0;
-
-    /*!
-     * \brief Opacity accessor that returns a single opacity (or a
-     *     vector of opacities for the multigroup EnergyPolicy) that 
+     * \brief Opacity accessor that returns a single opacity that 
      *     corresponds to the provided temperature and density.
      *
      * \parameter targetTemperature The temperature value for which an
-     *     opacity value is being requested.
+     *     opacity value is being requested (keV).
      *
      * \parameter targetDensity The density value for which an opacity 
-     *     value is being requested.
+     *     value is being requested (g/cm^3).
      *
-     * \return A single opacity (or a vector of opacities for the
-     *     multigroup EnergyPolicy).
+     * \return A single interpolated opacity (cm^2/g).
      */
     virtual double getOpacity( 
 	const double targetTemperature,
 	const double targetDensity ) const = 0; 
 
     /*!
-     * \brief Opacity accessor that returns a vector of opacities (or a
-     *     vector of vectors of opacities for the multigroup
-     *     EnergyPolicy) that correspond to the provided vector of
-     *     temperatures and a single density value.
+     * \brief Opacity accessor that returns a vector of opacities that
+     *     correspond to the provided vector of temperatures and a
+     *     single density value. 
      *
      * \parameter targetTemperature A vector of temperature values for
-     *     which opacity values are being requested.
+     *     which opacity values are being requested (keV).
      *
      * \parameter targetDensity The density value for which an opacity 
-     *     value is being requested.
+     *     value is being requested (g/cm^3).
      *
-     * \return A vector of opacities (or a vector of vectors of
-     *     opacities for the multigroup EnergyPolicy).
+     * \return A vector of opacities (cm^2/g).
      */
     virtual std::vector< double > getOpacity( 
 	const std::vector<double>& targetTemperature,
 	const double targetDensity ) const = 0; 
     
     /*!
-     * \brief Opacity accessor that returns a vector of opacities (or a
-     *     vector of vectors of opacities for the multigroup
-     *     EnergyPolicy) that correspond to the provided vector of
-     *     densities and a single temperature value.
+     * \brief Opacity accessor that returns a vector of opacities
+     *     that correspond to the provided vector of densities and a
+     *     single temperature value. 
      *
      * \parameter targetTemperature The temperature value for which an 
-     *     opacity value is being requested.
+     *     opacity value is being requested (keV).
      *
      * \parameter targetDensity A vector of density values for which
-     *     opacity values are being requested.
+     *     opacity values are being requested (g/cm^3).
      *
-     * \return A vector of opacities (or a vector of vectors of
-     *     opacities for the multigroup EnergyPolicy).
+     * \return A vector of opacities (cm^2/g).
      */
     virtual std::vector< double > getOpacity( 
 	const double targetTemperature,
 	const std::vector<double>& targetDensity ) const = 0; 
 
     /*!
-     * \brief Returns a string that describes the templated
-     *     EnergyPolicy.  Currently this will return either "mg" or
-     *     "gray."
+     * \brief Returns a string that describes the EnergyPolicy.
+     *     Currently this will return either "mg" or "gray."
      */ 
      virtual const std::string& getEnergyPolicyDescriptor() const = 0;
 
@@ -267,39 +125,25 @@ class GrayOpacity
      * \brief Returns a "plain English" description of the opacity
      *     data that this class references. (e.g. "Gray Rosseland
      *     Scattering".) 
-     *
-     * The definition of this function is not included here to prevent 
-     *     the inclusion of the GandolfFile.hh definitions within this 
-     *     header file.
      */
     virtual const std::string& getDataDescriptor() const = 0;
 
     /*!
-     * \brief Returns the name of the associated IPCRESS file.
-     *
-     * The definition of this function is not included here to prevent 
-     *     the inclusion of the GandolfFile.hh definitions within this 
-     *     header file.
+     * \brief Returns the name of the associated data file (if any).
      */
     virtual const std::string& getDataFilename() const = 0;
 
     /*!
      * \brief Returns a vector of temperatures that define the cached
-     *     opacity data table.
-     * 
-     * We do not return a const reference because this function
-     * must construct this information from more fundamental tables.
+     *     opacity data table (keV).
      */
-    virtual std::vector<double> getTemperatureGrid() const = 0;
+    virtual const std::vector<double>& getTemperatureGrid() const = 0;
 
     /*!
      * \brief Returns a vector of densities that define the cached
-     *     opacity data table.
-     * 
-     * We do not return a const reference because this function
-     * must construct this information from more fundamental tables.
+     *     opacity data table (g/cm^3).
      */
-    virtual std::vector<double> getDensityGrid() const = 0;
+    virtual const std::vector<double>& getDensityGrid() const = 0;
 
     /*!
      * \brief Returns the size of the temperature grid.
@@ -314,7 +158,7 @@ class GrayOpacity
 }; // end of class GrayOpacity
 
 
-} // end namespace rtt_cdiGrayOpacity
+} // end namespace rtt_cdi
 
 #endif // __cdi_GrayOpacity_hh__
 

@@ -12,17 +12,13 @@
 #ifndef __cdi_CDI_hh__
 #define __cdi_CDI_hh__
 
-#include <vector>
-#include <string>
-
 #include "ds++/SP.hh"
 
 namespace rtt_cdi
 {
 
-    // forward declaration (we don't include Opacity.hh in CDI.hh -- but
-    // we do in CDI.cc).
-    //    class Opacity;
+    class GrayOpacity;
+    class MultigroupOpacity;
 
 //===========================================================================//
 /*!
@@ -37,6 +33,17 @@ namespace rtt_cdi
  * as constructor parameters.  Each CDI object will provide access to
  * data for one material.
  *
+ * Since this header file does not include the definitions for
+ * GrayOpacity or MultigroupOpacity, the calling routine must include
+ * these header files.  If the calling routine does not make use of
+ * one of these classes then it's definition file does not need to be
+ * included, however this will result in the compile-time warning:
+ *
+ *       line 69: warning: delete of pointer to incomplete class
+ *  	    delete p;
+ *
+ * The user should not worry about this warning as long he/she is not
+ * trying to instantiate the class specified by the error message.
  */
 
 /*!
@@ -75,7 +82,8 @@ class CDI
      * constructor. 
      *
      */
-    //    const rtt_dsxx::SP<Opacity> spOpacity;
+    const rtt_dsxx::SP< GrayOpacity > spGrayOpacity;
+    const rtt_dsxx::SP< MultigroupOpacity > spMultigroupOpacity;
     
     // future expansion
     // const rtt_dsxx::SP<EOS> spEOS;
@@ -88,11 +96,10 @@ class CDI
      * \brief The CDI object instantiates a CDI object by hooking
      *        itself to Opacity, Nuclear, and EOS Data objects.
      *
-     * \sa Currently, CDI only interfaces with IPCRESS opacity data
-     * (accessed through the GandolfOpacity class).  Because of this
-     * only one constructor is currently available.
+     * \sa Currently, CDI only interfaces opacity data (either gray or 
+     *     multigroup).
      *
-     * \param _spOpaicty A smart pointer object to an opacity class.
+     * \param _spOpacity A smart pointer object to an opacity class.
      *                   The opacity class must be derived from the
      *                   abstract class found in the CDI package.
      * \return A CDI object.  A CDI object will be able to access the 
@@ -102,11 +109,11 @@ class CDI
      * avoid requiring a large number of constructors.  See
      * B. Stroustrup, "The Design and Evolution of C++," Section 6.5.1.
      */
-    CDI() {};
-    //    CDI( const rtt_dsxx::SP<Opacity> _spOpacity );
+     CDI( const rtt_dsxx::SP< GrayOpacity > _spGrayOpacity );
+     CDI( const rtt_dsxx::SP< MultigroupOpacity > _spMultigroupOpacity );
+     CDI( const rtt_dsxx::SP< GrayOpacity > _spGrayOpacity, 
+	  const rtt_dsxx::SP< MultigroupOpacity > _spMultigroupOpacity );
     
-    // defaulted CDI(const CDI &rhs);
-
     /*!
      * \brief Destructor for CDI objects.
      *
@@ -114,108 +121,12 @@ class CDI
      *     another object inherits from CDI, the derived object
      *     correctly destroys the CDI base class.
      */
-    virtual ~CDI();
-
-
-    // MANIPULATORS
-    
-    // defaulted CDI& operator=(const CDI &rhs);
+    virtual ~CDI() {};
 
     // ACCESSORS
 
-    /*!
-     * \breif Returns the opacity data filename.
-     */
-//     virtual std::string getOpacityDataFilename() const;
-
-    /*!
-     * \breif Returns a single gray Rosseland opacity value for the
-     *        prescribed temperature and density.
-     *
-     * \sa The opacity object that this CDI object links to only knows how 
-     * to access the data for one material.  The material
-     * identification is specified in the construction of the opacity
-     * object. 
-     *
-     * \param targetTemperature The temperature (in keV) of the
-     *                          material. 
-     * \param targetDensity The density (in g/cm^3) of the material. 
-     *
-     * \return Gray opacity value for the current material at
-     *         targetTemperature keV and targetDensity g/cm^3.
-     */
-//     virtual double getGrayRosselandOpacity( 
-// 	const double targetTemperature, 
-// 	const double targetDensity ) const;
-
-    /*!
-     * \breif Returns a vector of Rosseland opacity values
-     *        for each energy group for the prescribed temperature and
-     *        density. 
-     *
-     * \sa The opacity object that this CDI object links to only knows how 
-     * to access the data for one material.  The material
-     * identification is specified in the construction of the opacity
-     * object. 
-     *
-     * \param targetTemperature The temperature (in keV) of the
-     *                          material. 
-     * \param targetDensity The density (in g/cm^3) of the material.
-     * \param skey Optional parameter used to specify if the returned
-     *        value is scattering ("rsmg"), absorption ("ramg") or
-     *        total ("rtmg") opacity.  The default is total.
-     * \return A vector of opacity values for the current material at 
-     *         targetTemperature keV and targetDensity g/cm^3.  The
-     *         vector has ngroups entries.  The number of groups is
-     *         specified by the data file. 
-     */
-//     virtual std::vector<double> getMGRosselandOpacity( 
-// 	const double targetTemperature,
-// 	const double targetDensity,
-//  	const std::string skey = "rtmg" ) const ;
-
-    /*!
-     * \breif Returns a single gray Plank opacity value for the
-     *        prescribed temperature and density.
-     *
-     * \sa The opacity object that this CDI object links to only knows how 
-     * to access the data for one material.  The material
-     * identification is specified in the construction of the opacity
-     * object. 
-     *
-     * \param targetTemperature The temperature (in keV) of the
-     *                          material. 
-     * \param targetDensity The density (in g/cm^3) of the material. 
-     *
-     * \return Gray opacity value for the current material at
-     *         targetTemperature keV and targetDensity g/cm^3.
-     */
-//     virtual double getGrayPlankOpacity( 
-// 	const double targetTemperature, 
-// 	const double targetDensity ) const;
-
-    /*!
-     * \breif Returns a vector of Plank opacity values
-     *        for each energy group for the prescribed temperature and
-     *        density. 
-     *
-     * \sa The opacity object that this CDI object links to only knows how 
-     * to access the data for one material.  The material
-     * identification is specified in the construction of the opacity
-     * object. 
-     *
-     * \param targetTemperature The temperature (in keV) of the
-     *                          material. 
-     * \param targetDensity The density (in g/cm^3) of the material.
-     *
-     * \return A vector of opacity values for the current material at 
-     *         targetTemperature keV and targetDensity g/cm^3.  The
-     *         vector has ngroups entries.  The number of groups is
-     *         specified by the data file. 
-     */
-//     virtual std::vector<double> getMGPlankOpacity( 
-// 	const double targetTemperature,
-// 	const double targetDensity ) const ;
+    rtt_dsxx::SP< GrayOpacity > gray();
+    rtt_dsxx::SP< MultigroupOpacity > mg();
 
   private:
     
@@ -224,8 +135,8 @@ class CDI
 
 } // end namespace rtt_cdi
 
-#endif                          // __cdi_CDI_hh__
+#endif // __cdi_CDI_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of cdi/CDI.hh
+// end of cdi/CDI.hh
 //---------------------------------------------------------------------------//

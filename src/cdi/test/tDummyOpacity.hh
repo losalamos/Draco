@@ -14,27 +14,17 @@
 
 #include "UnitTestFrame/TestApp.hh"
 
-//#include <vector>
-
 namespace rtt_dummy_opacity_test
 {
 
 class tDummyOpacity : public rtt_UnitTestFrame::TestApp
 {
 
-    // NESTED CLASSES AND TYPEDEFS
-
-    // DATA
-    
   public:
 
     // CREATORS
     
     tDummyOpacity( int argc, char *argv[], std::ostream &os_in );
-
-    // MANIPULATORS
-    
-    //Defaulted: tCDI& operator=(const tCDI &rhs);
 
     // ACCESSORS
     std::string name() const { return "tDummyOpacity"; }
@@ -47,7 +37,7 @@ class tDummyOpacity : public rtt_UnitTestFrame::TestApp
   private:
 
     // These routines are used by the test routine to compare computed 
-    // results to tabulated values.
+    // results to tabulated values.  
     bool match( 
 	const double computedValue,
 	const double referenceValue ) const;

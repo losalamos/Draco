@@ -14,201 +14,235 @@
 // 1.1) Original
 
 #include "tCDI.hh"
-// #include "DummyOpacity.hh"
-//#include "../CDI.hh"
 #include "../Release.hh"
 
 #include "UnitTestFrame/PassFailStream.hh"
 #include "ds++/SP.hh"
 
-#include <iostream>
-#include <vector>
+#include "DummyGrayOpacity.hh"
+#include "DummyMultigroupOpacity.hh"
+#include "../CDI.hh"
 
-// Unit Test Frame Stuff
-//----------------------------------------
+
+// --------------------- //
+// Unit Test Frame Stuff //
+// --------------------- //
+
 namespace rtt_UnitTestFrame {
-    rtt_dsxx::SP<TestApp> TestApp::create( int &argc, char *argv[],
-					   std::ostream& os_in ) {
-	using rtt_CDI_test::tCDI;
-	return rtt_dsxx::SP<TestApp> ( new tCDI( argc, argv, os_in ));
-    }
+    rtt_dsxx::SP< TestApp > 
+	TestApp::create( int &argc, char *argv[],
+			 std::ostream& os_in ) 
+	{
+	    return rtt_dsxx::SP< TestApp > 
+		( new rtt_CDI_test::tCDI( argc, argv, os_in ) );
+	}
 } // end namespace rtt_UnitTestFrame
 
+// ---------- //
+// tCDI Stuff //
+// ---------- //
 
-// tCDI Stuff
-//--------------------------------------------------
 namespace rtt_CDI_test {
-
-using std::string;
-using std::cout;
-using std::endl;
-using std::vector;
-using rtt_dsxx::SP;
-//using rtt_cdi::CDI;
 
 tCDI::tCDI( int argc, char *argv[], std::ostream& os_in )
     : rtt_UnitTestFrame::TestApp( argc, argv, os_in )
 {
-    os() << "Created tCDI" << endl;
+    os() << "Created tCDI" << std::endl;
 }
 
-string tCDI::version() const
+std::string tCDI::version() const
 {
     return rtt_cdi::release();
 }
 
-string tCDI::runTest()
+
+
+		 // ============================== //
+		 // The CDI unit tests start here. //
+		 // ============================== //
+
+
+std::string tCDI::runTest()
 {
     // Start the test.
-    cout << endl
-	 << "Testing the CDI package."
-	 << endl;
-	
-//     // Create an opacity object
-//     SP<rtt_cdi::Opacity> spOpacity;
-//     if ( spOpacity = new rtt_dummy_opacity::DummyOpacity() )
-// 	pass() << "SP to opacity object created successfully.";
-//     else
-// 	fail() << "Failed to create SP to opacity object.";
 
-//     // Create a CDI object linked to the opacity object    
-//     SP<CDI> spCDI_mat1;
-//     if ( spCDI_mat1 = new CDI( spOpacity ) )
-// 	pass() << "SP to CDI object created successfully.";
-//     else
-// 	fail() << "Failed to create SP to CDI object.";
+    std::cout << std::endl
+	      << "Testing the CDI package."
+	      << std::endl;
 	
 
-//     // test the getDataFilename() function.
-//     string fname = spOpacity->getDataFilename();
-//     cout << "The data file is named: " << fname << endl;
-//     fname.append("blah");
-//     cout << "The data file is named: " << fname << endl;
+    // ----------------------------------- //
+    // Create some Opacity and CDI objects //
+    // ----------------------------------- //
+
+    // Create a GrayOpacity object
+
+    rtt_dsxx::SP< rtt_cdi::GrayOpacity > spDGrO;
+    
+    if ( spDGrO = new rtt_dummyGrayOpacity::DummyGrayOpacity() )
+	pass() << "SP to new GrayOpacity object created.";
+    else
+	{
+	    fail() << "Unable to create a SP to new GrayOpacity object.";
+	    return "Unable to create a SP to new GrayOpacity object.";
+	}
 
 
+    // Create a MultigroupOpacity object
 
-    //----------------------------------------
-    // Start the tests
-    //----------------------------------------
+    rtt_dsxx::SP< rtt_cdi::MultigroupOpacity > spDMgO;
+    
+    if ( spDMgO = new rtt_dummyMultigroupOpacity::DummyMultigroupOpacity() )
+	pass() << "SP to new MultigroupOpacity object created.";
+    else
+	{
+	    fail() << "Unable to create a SP to new MultigroupOpacity object.";
+	    return "Unable to create a SP to new MultigroupOpacity object.";
+	}
 
-//     // do some dummy calls here to make sure things are working
-//     // These values are actually ignored by DummyOpacity.
+    // Create a CDI object linked to a DummyGrayOpacity object.
 
-//     double temp = 1.0;        // keV
-//     double density = 27.0;    // g/cm^3
+     rtt_dsxx::SP< rtt_cdi::CDI > spCdiDumGr;
+     if ( spCdiDumGr = new rtt_cdi::CDI( spDGrO ) )
+ 	pass() << "SP to CDI object created successfully (GrayOpacity).";
+     else
+	 fail() << "Failed to create SP to CDI object (GrayOpacity).";
+     
+     // Create a CDI object linked to a DummyMultigroupOpacity object.
 
-//     // --> Try to collect gray opacity data.
+     rtt_dsxx::SP< rtt_cdi::CDI > spCdiDumMg;
+     if ( spCdiDumMg = new rtt_cdi::CDI( spDMgO ) )
+ 	pass() << "SP to CDI object created successfully (MultigroupOpacity).";
+     else
+	 fail() << "Failed to create SP to CDI object (MultigroupOpacity).";
 
-//     double grayOpacityReference = temp + density/10000;  // cm^2/g
-//     double grayOpacity 
-//         = spCDI_mat1->getGrayRosselandOpacity( temp, density );
 
-//     if ( match( grayOpacity, grayOpacityReference ) )
-// 	pass() << "Access to gray Rosseland opacity data succeeded.";
-//     else
-// 	fail() << "Access to gray Rosseland opacity data failed.";
+     // --------------- //
+     // Start the tests // 
+     // --------------- //
 
-//     // Plank opacities.
+     // gray test case:  Find the value of opacity at T=0.35 keV and
+     //      rho = 27.2 g/cm^3.  For DummyGrayOpacity the value
+     //      should be .35272 cm^2/g.
+     
+     double temp = 0.35; // keV
+     double dens = 27.2; // g/cm^3
+     double refOpacity = temp + dens/1000.0; // cm^2/g
 
-//     grayOpacity = spCDI_mat1->getGrayPlankOpacity( temp, density );
+     double opacity = spCdiDumGr->gray()->getOpacity( temp, dens );
 
-//     if ( match( grayOpacity, grayOpacityReference ) )
-// 	pass() << "Access to gray Plank opacity data succeeded.";
-//     else
-// 	fail() << "Access to gray Plank opacity data failed.";
+     if ( match( opacity, refOpacity ) )
+	 pass() << "CDI->gray()->getOpacity(T,rho) computation was good.";
+     else
+	 fail() << "CDI->gray()->getOpacity(T,rho) value is out of spec.";
 
-//     // --> Try to collect multigroup opacity data.
 
-//     // In DummyOpacity ngroups is hard coded to 3.
-//     vector<double> MGOpacitiesReference(3); 
-//     for ( int i=0; i<3; ++i )
-// 	MGOpacitiesReference[i] = (i+1)*1000.0 + temp + density/10000;
+     // mg test case:  Find the mg opacities at T=0.35 keV and 
+     //     rho = 27.2 g/cm^3.  For DummyMultigroupOpacity the values
+     //     should be { }
+     
+     int ng = spCdiDumMg->mg()->getNumGroups();
 
-//     vector<double> MGOpacities 
-// 	= spCDI_mat1->getMGRosselandOpacity( temp, density );
+     if ( ng == 3 ) // DummyMultigroupOpacity is hardwired to 3 groups.
+	 pass() << "CDI->mg()->getNumGroups() access was good.";
+     else
+	 fail() << "CDI->mg()->getNumGroups() access failed.";
 
-//     if ( match( MGOpacities, MGOpacitiesReference ) )
-// 	pass() << "Access to multigroup Rosseland opacity data succeeded.";
-//     else
-// 	fail() << "Access to multigroup Rosseland data failed.";
+     // The energy groups in DummyMultigroupOpacity are hardwired to
+     // be { 0.05, 0.5, 5.0, 50.0 } keV.
+     std::vector< double > refEnergyBoundary(ng+1);
+     refEnergyBoundary[0] = 0.05;
+     refEnergyBoundary[1] = 0.5;
+     refEnergyBoundary[2] = 5.0;
+     refEnergyBoundary[3] = 50.0;
 
-//     // Plank Opacities
-//     MGOpacities = spCDI_mat1->getMGPlankOpacity( temp, density );
+     std::vector< double > energyBoundary(ng+1);
+     energyBoundary = spCdiDumMg->mg()->getGroupBoundaries();
 
-//     if ( match( MGOpacities, MGOpacitiesReference ) )
-// 	pass() << "Access to multigroup Plank opacity data succeeded.";
-//     else
-// 	fail() << "Access to multigroup Plank osseland data failed.";
+     if ( match( energyBoundary, refEnergyBoundary ) )
+	 pass() << "Accessed energy group boundaries for\n"
+		<< "\tCDI->mg()->getGroupBoundaries() match expected values.";
+     else
+	 fail() << "Accessed energy group boundaries for\n"
+		<< "\tCDI->mg()->getGroupBoundaries() do not match expected values.";
+
+     std::vector< double > vRefOpacity( ng );
+     for ( int ig=0; ig<ng; ++ig )
+	 {
+	     vRefOpacity[ig] = 2.0*(temp+dens/1000.0)
+		 /(energyBoundary[ig]+energyBoundary[ig+1]);
+	     std::cout << "vRefOpacity[" << ig << "] = "
+		       << vRefOpacity[ig] << " cm^2/g." << std::endl;
+	 }
+
+     std::vector< double > vOpacity( ng );
+     vOpacity = spCdiDumMg->mg()->getOpacity( temp, dens );
+
+     if ( match( vOpacity, vRefOpacity ) )
+	 pass() << "CDI->mg()->getOpacity(T,rho) computation was good.";
+     else
+	 fail() << "CDI->mg()->getOpacity(T,rho) computation is out of spec.";
+
 
     //----------------------------------------
     // End of tests
     //----------------------------------------
     
     pass() << "Done testing CDI.";
-    cout << endl << endl;
+    std::cout << std::endl << std::endl;
 
     //----------------------------------------
     // Print the test result.
     //----------------------------------------
 
-    if (passed()) {
+    if ( passed() ) {
 	pass() << "All tests passed.";
 	return "All tests passed.";
     }
     return "Some tests failed.";
 }
 
-//---------------------------------------------
-// Compare Reference value to computed values
-//---------------------------------------------
-bool tCDI::match( const vector<double> computedValue, 
-			 const vector<double> referenceValue )
-{
-    // Start by assuming that the two quantities match exactly.
-    bool em = true;
-
-    // Compare items up to 10 digits of accuracy.
-    const double TOL = 1.0e-10;
-
-    // Test each item in the list
-    double absdiff = 0.0;
-    for ( int i=0; i<computedValue.size(); ++i )
-	{
-	    absdiff = fabs( ( computedValue[i] - referenceValue[i] )
-			    / referenceValue[i] );
-	    // If the comparison fails then change the value of "em"
-	    // and exit the loop.
-	    if ( absdiff > TOL )
-		{
-		    em = false;
-		    break;
-		}
-	}
-    return em;
-} // end of tCDI::match( vector<double>, vector<double> )
-
 bool tCDI::match( const double computedValue,
-		  const double referenceValue )
+		  const double referenceValue ) const
 {
-    // Start by assuming that the two quantities match exactly.
-    bool em = true;
-
     // Compare items up to 10 digits of accuracy.
     const double TOL = 1.0e-10;
 
     // Calculate the absolute value of the relative difference between 
     // the computed and reference values.
-    double absdiff = fabs( ( computedValue - referenceValue )
+    double reldiff = fabs( ( computedValue - referenceValue )
 			   / referenceValue );
     
-    // If the comparison fails then change the value of "em" return
-    // the result;
-    if ( absdiff > TOL )
-	em = false;
+    // If the comparison fails then return "false" to indicate that
+    // the test failed.
+    if ( reldiff > TOL ) return false;
 
-    return em;    
+    return true;    
 
 } // end of tCDI::match( double, double )
+
+bool tCDI::match( const std::vector< double >& computedValue, 
+		  const std::vector< double >& referenceValue ) const
+{
+    // If the vector sizes don't match then die
+    if ( computedValue.size() != referenceValue.size() )
+	return false;
+
+    // Compare items up to 10 digits of accuracy.
+    const double TOL = 1.0e-10;
+
+    // Test each item in the list
+    double reldiff = 0.0;
+    for ( int i=0; i<computedValue.size(); ++i )
+	{
+	    reldiff = fabs( ( computedValue[i] - referenceValue[i] )
+			    / referenceValue[i] );
+	    // If the comparison fails then return "false" to indicate 
+	    // that the test failed.
+	    if ( reldiff > TOL ) return false;
+	}
+    return true;
+} // end of tCDI::match( vector<double>, vector<double> )
 
 } // end namespace rtt_CDI_test
 
