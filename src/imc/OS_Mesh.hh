@@ -33,6 +33,8 @@
 //                Parallel_Builder 
 //  6)  5-14-98 : added overloaded operator== for Checks and design by
 //                contract purposes
+//  7)  6-10-98 : added constructors to CCSF and CCVF for taking a vector to
+//                initialize the field
 // 
 //===========================================================================//
 
@@ -61,6 +63,7 @@ using std::cout;
 using std::endl;
 using std::string;
 
+// draco namespaces
 using RNG::Sprng;
     
 class OS_Mesh
@@ -77,13 +80,15 @@ public:
     private:
       // SP back to OS_Mesh 
 	SP<OS_Mesh> mesh;
-      // data in field
+      // data in field, (num_cells)
 	vector<T> data;
 
     public:
       // inline explicit constructor
-	explicit CCSF(SP<OS_Mesh> mesh_) : mesh(mesh_),
-	    data(mesh->num_cells()) { }
+	inline explicit CCSF(SP<OS_Mesh>);
+
+      // additional constructors
+	inline CCSF(SP<OS_Mesh>, const vector<T> &);
 
       // return reference to mesh
 	const OS_Mesh& get_Mesh() const { return *mesh; }
@@ -100,13 +105,15 @@ public:
 
       // SP back to OS_Mesh
 	SP<OS_Mesh> mesh;
-      // the data array is data(dimension,num_cells) where
-      // dimension is 1 (1-D), 2 (2-D), or 3 (3-D)
+      // 2-D field vector, (dimension, num_cells)
 	vector< vector<T> > data;
 
     public:
       // inline explicit constructor
 	inline explicit CCVF(SP<OS_Mesh>);
+
+      // additional constructors
+	inline CCVF(SP<OS_Mesh>, const vector<vector<T> > &);
 
       // return reference to mesh
 	const OS_Mesh& get_Mesh() const { return *mesh; }
@@ -122,11 +129,12 @@ public:
     typedef vector<int> CCSF_i;
     typedef vector< vector<int> > CCVF_i;
    
-  // temporary typedefs for compiling code until KCC 3.3 is released
+  // temporary typedefs for compiling code until KCC 3.3+ is released
     typedef CCSF<double> CCSF_double;
     typedef CCSF<int> CCSF_int;
     typedef CCVF<double> CCVF_double;
     typedef CCVF<int> CCVF_int;
+    typedef CCSF<string> CCSF_string;
 
 private:
   // base class reference to a derived coord class
@@ -225,24 +233,60 @@ inline ostream& operator<<(ostream &output, const OS_Mesh &object)
 }
 
 //---------------------------------------------------------------------------//
-// inline functions
+// OS_Mesh::CCSF inline functions
 //---------------------------------------------------------------------------//
+// CCSF explicit constructor
+
+template<class T>
+inline OS_Mesh::CCSF<T>::CCSF(SP<OS_Mesh> mesh_) 
+    : mesh(mesh_), data(mesh->num_cells()) 
+{
+    Require (mesh);
+}
 
 //---------------------------------------------------------------------------//
-// OS_Mesh::CCVF functions
-//---------------------------------------------------------------------------//
+// constructor for automatic initialization
 
-// CCVF constructor
+template<class T>
+inline OS_Mesh::CCSF<T>::CCSF(SP<OS_Mesh> mesh_, const vector<T> &array)
+    : mesh(mesh_), data(array)
+{
+  // make sure things are kosher
+    Ensure (data.size() == mesh->num_cells());
+}
+
+//---------------------------------------------------------------------------//
+// OS_Mesh::CCVF inline functions
+//---------------------------------------------------------------------------//
+// CCVF explicit constructor
+
 template<class T>
 inline OS_Mesh::CCVF<T>::CCVF(SP<OS_Mesh> mesh_)
     : mesh(mesh_), data(mesh->get_Coord().get_dim())
 {
+    Require (mesh);
+
   // initialize data array
     for (int i = 0; i < mesh->get_Coord().get_dim(); i++)
 	data[i].resize(mesh->num_cells());
 }
 
 //---------------------------------------------------------------------------//
+// constructor for automatic initialization
+
+template<class T>
+inline OS_Mesh::CCVF<T>::CCVF(SP<OS_Mesh> mesh_, 
+			      const vector<vector<T> > &array)
+    : mesh(mesh_), data(array)
+{
+  // check things out
+    Ensure (data.size() == mesh->get_Coord().get_dim());
+    for (int dim = 0; dim < mesh->get_Coord().get_dim(); dim++)
+	Ensure (data[dim].size() == mesh->num_cells());
+}
+
+//---------------------------------------------------------------------------//
+// constant overloaded ()
 
 template<class T>
 inline const T& OS_Mesh::CCVF<T>::operator()(int dim, int cell) const 
@@ -251,6 +295,7 @@ inline const T& OS_Mesh::CCVF<T>::operator()(int dim, int cell) const
 }
 
 //---------------------------------------------------------------------------//
+// assignment overloaded ()
 
 template<class T>
 inline T& OS_Mesh::CCVF<T>::operator()(int dim, int cell)

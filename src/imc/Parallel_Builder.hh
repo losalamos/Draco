@@ -88,8 +88,10 @@ public:
 
   // source functions
     template<class PT> SP<Source<MT> > 
-    send_Source(const Source_Init<MT> &, const Particle_Buffer<PT> &);
-    SP<Source<MT> > recv_Source();
+    send_Source(SP<MT>, const Source_Init<MT> &, const Particle_Buffer<PT> &,
+		SP<Rnd_Control>); 
+    template<class PT> SP<Source<MT> > 
+    recv_Source(SP<MT>, SP<Rnd_Control>, Particle_Buffer<PT>); 
 
   // Mesh passing functionality
     void send_Mesh(const MT &);

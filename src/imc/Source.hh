@@ -41,7 +41,7 @@ using std::string;
 template<class MT, class PT=Particle<MT> >
 class Source
 {
-private:
+public:
   // volume source particle counters
     typename MT::CCSF_int vol_rnnum;
     typename MT::CCSF_int nvol;
@@ -67,8 +67,8 @@ private:
 public:
   // constructor
     Source(typename MT::CCSF_int &, typename MT::CCSF_int &,
-	   typename MT::CCSF_int &, typename MT::CCSF_int &, string, int, 
-	   int, int, SP<Rnd_Control>);
+	   typename MT::CCSF_int &, typename MT::CCSF_int &, string, 
+	   int, int, int, SP<Rnd_Control>, const Particle_Buffer<PT> &);
 
   // required services for Source
     inline SP<PT> get_Particle(); 

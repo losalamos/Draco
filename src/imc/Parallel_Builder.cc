@@ -220,16 +220,18 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
 
 template<class MT>
 template<class PT> SP<Source<MT> >
-Parallel_Builder<MT>::send_Source(const Source_Init<MT> &sinit, 
-				  const Particle_Buffer<PT> &buffer)
+Parallel_Builder<MT>::send_Source(SP<MT> mesh, const Source_Init<MT> &sinit, 
+				  const Particle_Buffer<PT> &buffer,
+				  SP<Rnd_Control> rcon)
 {
   // check that we are on the host node only
-    Check (!node());
+    Require (!node());
+    Require (mesh);
 
   // data necessary to build Source on host
     SP<Source<MT> > host_source;
-    vector<vector<int> > vol;
-    vector<vector<int> > ss;
+    vector<vector<int> > vol(mesh->num_cells());
+    vector<vector<int> > ss(mesh->num_cells());
 
   // first distribute the census
     if (sinit.get_ncentot() > 0) 
@@ -242,6 +244,26 @@ Parallel_Builder<MT>::send_Source(const Source_Init<MT> &sinit,
   // finally do the surface source
     if (sinit.get_nsstot() > 0)
 	ss = dist_ss(sinit);
+
+  // now let's build the source on the host
+    typename MT::CCSF_int volrn(mesh, vol[1]);
+    typename MT::CCSF_int nvol(mesh, vol[0]);
+    typename MT::CCSF_int ssrn(mesh, ss[1]);
+    typename MT::CCSF_int nss(mesh, ss[0]);
+
+  // get the number of volume, census, and surface sources for this processor
+    int ncentot = 0;
+    int nvoltot = 0;
+    int nsstot = 0;
+    for (int i = 1; i <= mesh->num_cells(); i++)
+    {
+	nvoltot += nvol(i);
+	nsstot  += nss(i);
+    }
+
+  // make the source
+    host_source = new Source<MT>(volrn, nvol, ssrn, nss, "census.0", 
+				 nvoltot, nsstot, ncentot, rcon, buffer);
 
   // return source
     return host_source;
@@ -374,7 +396,7 @@ Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
     int counter = Global::rn_stream;
     for (int cell = 1; cell <= num_cells; cell++)
     {
-	nvol[cell-1] = sinit.get_nvol(cell) / procs_per_cell[cell-1].size();
+	nvol[cell-1] = sinit.get_nvol(cell) / procs_per_cell[cell-1].size(); 
 	nvol_xtra[cell-1] = sinit.get_nvol(cell) % 
 	    procs_per_cell[cell-1].size();
 	streamnum[cell-1] = counter;
@@ -405,7 +427,7 @@ Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
 
 	  // check to see if we need to add extra sources to this cell on
 	  // this processor
-	    if (nvol_xtra[global_cell-1] <= i)
+	    if (nvol_xtra[global_cell-1] <= i+1)
 		nvol[global_cell-1]++;
 	    
 	  // calculate the nvol source and stream number for proc i
@@ -418,7 +440,7 @@ Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
 	}
 
       // send out the data 
-	if (node())
+	if (i)
 	{
 	  // send to proc i if we are not on the host
 	    Send (num_cells, i, 24);
@@ -447,6 +469,7 @@ Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
     }
 
   // final assertion
+    std::cout << voltot << " " << sinit.get_nvoltot() << std::endl;
     Ensure (voltot == sinit.get_nvoltot());
 
   // return the host volume source to the host processor
