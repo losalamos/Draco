@@ -9,6 +9,7 @@
 #ifndef __stdheaders_cctype__
 #define __stdheaders_cctype__
 
+#include <ctype.h>
 
 #endif    /* __stdheaders_cctype__ */
 

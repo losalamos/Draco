@@ -1,4 +1,4 @@
-extraheaders := cmath ctime cctype
+extraheaders := cmath ctime cctype cstdlib
 
 extraInstallHeaders := $(addprefix ${includedir}/${package}/, ${extraheaders})
 

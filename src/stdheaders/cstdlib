@@ -1,27 +1,24 @@
 /*----------------------------------*-C++-*----------------------------------*/
-/* cmath */
+/* cstdlib */
 /* Murillo Michelle L. */
-/* Mon Jul 17 11:29:26 2000 */
+/* Tue Jul 18 17:11:03 2000 */
 /*---------------------------------------------------------------------------*/
-/* @> cmath for stdheaders package */
+/* @> cstdlib for stdheaders package */
 /*---------------------------------------------------------------------------*/
 
+#ifndef __stdheaders_cstdlib__
+#define __stdheaders_cstdlib__
 
-#ifndef __stdheaders_cmath__
-#define __stdheaders_cmath__
-
-#include <math.h>
+#include <stdlib.h>
 
 namespace std {
-using ::fabs;
-using ::abs;
-using ::pow;
-using ::sqrt;
-using ::log10;
+using ::rand;
+
 } /*namespace std*/
 
-#endif    /* __stdheaders_cmath__ */
+
+#endif    /* __stdheaders_cstdlib__ */
 
 /*---------------------------------------------------------------------------*/
-/*    end of cmath */
+/*    end of cstdlib */
 /*---------------------------------------------------------------------------*/
