@@ -141,6 +141,7 @@ void RTT_Format::readMesh(const string & RTT_File, const bool & renumber)
 	    cout << "Assertion thrown: " << as.what() << endl;
 	    Insist(false, as.what());
 	}
+
 	if (renumber)
 	{
 	    spCellDefs-> sortData();
@@ -1654,6 +1655,7 @@ void RTT_Format::Sides::readData(ifstream & meshfile)
 	--sideType[i];
 	Insist(dims.allowed_side_type(sideType[i]),
 	       "Invalid mesh file: illegal side type");
+	nodes[i].resize(cellDefs.get_nnodes(sideType[i]));
 	for (int j = 0; j < cellDefs.get_nnodes(sideType[i]); ++j)
 	{
 	    meshfile >> nodes[i][j];
@@ -1838,6 +1840,7 @@ void RTT_Format::Cells::readData(ifstream & meshfile)
 	--cellType[i];
 	Insist(dims.allowed_cell_type(cellType[i]),
 	       "Invalid mesh file: illegal cell type");
+	nodes[i].resize(cellDefs.get_nnodes(cellType[i]));
 	for (int j = 0; j < cellDefs.get_nnodes(cellType[i]); ++j)
 	{
 	    meshfile >> nodes[i][j];
@@ -2546,6 +2549,167 @@ void RTT_Format::Connectivity::calcAdjacentCells()
 	    }
 	}
     }
+}
+
+/*!
+ * \brief Returns the node numbers associated with each element (i.e., sides
+ *        and cells) read from the mesh file data.
+ * \return The node number.
+ */
+vector<vector<int> > RTT_Format::get_element_nodes() const
+{
+    vector<vector<int> > element_nodes(get_dims_nsides() + get_dims_ncells());
+
+    for (int i = 0; i < get_dims_nsides(); i++)
+	element_nodes[i] = get_sides_nodes(i);
+
+    int nsides = get_dims_nsides();
+    for (int i = 0; i < get_dims_ncells(); i++)
+	element_nodes[i + nsides] = get_cells_nodes(i);
+
+    return element_nodes;
+}
+
+/*!
+ * \brief Returns the element (i.e., sides and cells) read from the mesh 
+ *        file data.
+ * \return Element definitions.
+ */
+vector<Element_Definition::Element_Type> RTT_Format::get_element_types() const
+{
+    vector<Element_Definition::Element_Type> types(get_dims_ncell_defs());
+    Element_Definition::Element_Type element_type;
+
+    for (int d = 0; d < get_dims_ncell_defs(); d++)
+    {
+	string cell_name = get_cell_defs_name(d);
+	
+	if (cell_name == "point")
+	    element_type = Element_Definition::NODE;
+	else if (cell_name == "line")
+	    element_type = Element_Definition::BAR_2;
+	else if (cell_name == "triangle")
+	    element_type = Element_Definition::TRI_3;
+	else if (cell_name == "quad")
+	    element_type = Element_Definition::QUAD_4;
+	else if (cell_name == "tetrahedron")
+	    element_type = Element_Definition::TETRA_4;
+	else if (cell_name == "quad_pyr")
+	    element_type = Element_Definition::PYRA_5;
+	else if (cell_name == "tri_prism")
+	    element_type = Element_Definition::PENTA_6;
+	else if (cell_name == "hexahedron")
+	    element_type = Element_Definition::HEXA_8;
+	else
+	    throw std::runtime_error("Unrecognized cell definition");
+
+	types[d] = element_type;
+    }
+    return types;
+}
+
+/*!
+ * \brief Returns the nodes associated with each node_flag_type_name and
+ *        node_flag_name combination read from the mesh file data.
+ * \return The nodes associated with each node_flag_type_name/node_flag_name 
+ *         combination.
+ */
+map<string, set<int> > RTT_Format::get_node_sets() const
+{
+    map<string, set<int> > node_sets;
+    string flag_types_and_names;
+
+    // loop over the number of node flag types.
+    for (int type = 0; type < get_dims_nnode_flag_types(); type++)
+    {
+        // loop over the number of node flags for this type.
+        for (int flag = 0; flag < get_dims_nnode_flags(type); flag++)
+	{
+            set<int> node_flags;
+            flag_types_and_names =  get_node_flags_flag_type(type);
+	    flag_types_and_names.append("/");
+	    flag_types_and_names += get_node_flags_flag_name(type, flag);
+	    int flag_number = get_node_flags_flag_number(type,flag);
+            // loop over the nodes.
+	    for (int node = 0; node < get_dims_nnodes(); node++)
+	    {
+	        if (flag_number == get_nodes_flags(node,type))
+		   node_flags.insert(node);
+	    }
+	    node_sets.insert(make_pair(flag_types_and_names,node_flags));
+	}
+    }
+    return node_sets;
+}
+
+/*!
+ * \brief Returns the elements (i.e., sides and cells) associated with each 
+ *        flag_type_name and flag_name combination for the sides and cells
+ *        read from the mesh file data.
+ * \return The elements associated with each flag_type_name/flag_name 
+ *         combination for the sides and cells
+ */
+map<string, set<int> > RTT_Format::get_element_sets() const
+{
+    map<string, set<int> > element_sets;
+    string flag_types_and_names;
+
+    // loop over the number of side flag types.
+    for (int type = 0; type < get_dims_nside_flag_types(); type++)
+    {
+        // loop over the number of side flags for this type.
+        for (int flag = 0; flag < get_dims_nside_flags(type); flag++)
+	{
+            set<int> side_flags;
+            flag_types_and_names =  get_side_flags_flag_type(type);
+	    flag_types_and_names.append("/");
+	    flag_types_and_names += get_side_flags_flag_name(type, flag);
+	    int flag_number = get_side_flags_flag_number(type,flag);
+            // loop over the sides.
+	    for (int side = 0; side < get_dims_nsides(); side++)
+	    {
+	        if (flag_number == get_sides_flags(side,type))
+		   side_flags.insert(side);
+	    }
+	    element_sets.insert(make_pair(flag_types_and_names,side_flags));
+	}
+        
+    }
+
+    int nsides = dims.get_nsides();
+    // loop over the number of cell flag types.
+    for (int type = 0; type < get_dims_ncell_flag_types(); type++)
+    {
+        // loop over the number of cell flags for this type.
+        for (int flag = 0; flag < get_dims_ncell_flags(type); flag++)
+	{
+            set<int> cell_flags;
+            flag_types_and_names =  get_cell_flags_flag_type(type);
+	    flag_types_and_names.append("/");
+	    flag_types_and_names += get_cell_flags_flag_name(type, flag);
+	    int flag_number = get_cell_flags_flag_number(type,flag);
+            // loop over the cells.
+	    for (int cell = 0; cell < get_dims_ncells(); cell++)
+	    {
+	        if (flag_number == get_cells_flags(cell,type))
+		   cell_flags.insert(cell + nsides);
+	    }
+	    // Allow the possibility that the cells could haved identical 
+	    // flags as the sides.
+	    if (element_sets.count(flag_types_and_names) != 0)
+	    {
+	        set<int> side_set =
+		    element_sets.find(flag_types_and_names)->second;
+		for (set<int>::const_iterator side_set_itr = side_set.begin();
+		     side_set_itr != side_set.end(); side_set_itr++)
+		    cell_flags.insert(* side_set_itr);
+		element_sets.erase(flag_types_and_names);
+	    }
+	    element_sets.insert(make_pair(flag_types_and_names,cell_flags));
+	}
+    }
+
+    return element_sets;
 }
 
 } // end namespace rtt_format

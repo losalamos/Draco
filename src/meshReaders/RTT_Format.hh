@@ -15,6 +15,7 @@
 #ifndef __RTT_Format_hh__
 #define __RTT_Format_hh__
 
+#include "Mesh_Reader.hh"
 #include "ds++/SP.hh"
 #include <string>
 #include <algorithm>
@@ -24,11 +25,14 @@
 #include <vector>
 #include <map>
 
+using rtt_meshReaders::Mesh_Reader;
+using rtt_meshReaders::Element_Definition;
 using std::string;
 using std::set;
 using std::ifstream;
 using std::vector;
 using std::multimap;
+using std::map;
 using rtt_dsxx::SP;
 
 /*!
@@ -64,7 +68,7 @@ namespace rtt_format
 // 
 //===========================================================================//
 
-class RTT_Format 
+class RTT_Format : public Mesh_Reader
 {
 /*!
  * \brief RTT_Format nested class member that controls parsing, storing, and 
@@ -738,11 +742,14 @@ class RTT_Format
 
 
       public:
-	double get_coords(int node_numb, int coord_index) const
-	{ return coords[node_numb][coord_index]; }
+	vector<vector<double> > get_coords() const
+	{ return coords; }
 
 	vector<double> get_coords(int node_numb) const
 	{ return coords[node_numb]; }
+
+	double get_coords(int node_numb, int coord_index) const
+	{ return coords[node_numb][coord_index]; }
 
         int get_node(vector<double> node_coords) const;
 
@@ -778,8 +785,7 @@ class RTT_Format
 	      const CellDefs & cellDefs_, const Nodes & nodesClass_)
 	    : sideFlags(sideFlags_), dims(dims_), cellDefs(cellDefs_),
 	      nodesClass(nodesClass_), sideType(dims.get_nsides()),
-	      nodes(dims.get_nsides(), 
-		    vector<int>(dims.get_nnodes_side_max())),sort_map(0),
+	      nodes(dims.get_nsides()),sort_map(0),
 	      flags(dims.get_nsides(), 
 		    vector<int>(dims.get_nside_flag_types())) {}
 	~Sides() {}
@@ -798,6 +804,12 @@ class RTT_Format
       public:
 	int get_type(int side_numb) const
 	{ return sideType[side_numb]; }
+
+	vector<vector<int> > get_nodes() const
+	{ return nodes; }
+
+	vector<int> get_nodes(int side_numb) const
+	{ return nodes[side_numb]; }
 
 	int get_nodes(int side_numb,int node_numb) const
 	{ return nodes[side_numb][node_numb]; }
@@ -837,9 +849,9 @@ class RTT_Format
 	      const CellDefs & cellDefs_, const Nodes & nodesClass_) 
 	    : cellFlags(cellFlags_), dims(dims_), cellDefs(cellDefs_),
 	      nodesClass(nodesClass_), cellType(dims.get_ncells()),
-	      nodes(dims.get_ncells(), vector<int>(dims.get_nnodes_max())), 
-	      sort_map(0), flags(dims.get_ncells(), 
-				 vector<int>(dims.get_ncell_flag_types())) {}
+	      nodes(dims.get_ncells()), sort_map(0), 
+	      flags(dims.get_ncells(), 
+		    vector<int>(dims.get_ncell_flag_types())) {}
 	~Cells() {}
 
 	void readCells(ifstream & meshfile);
@@ -853,6 +865,12 @@ class RTT_Format
       public:
 	int get_type(int cell_numb) const
 	{ return cellType[cell_numb]; }
+
+	vector<vector<int> > get_nodes() const
+	{ return nodes; }
+
+	vector<int> get_nodes(int cell_numb) const
+	{ return nodes[cell_numb]; }
 
 	int get_nodes(int cell_numb,int node_numb) const
 	{ return nodes[cell_numb][node_numb]; }
@@ -1075,6 +1093,41 @@ class RTT_Format
     ~RTT_Format() {}
 
     // ACCESSORS
+    // Virutal accessor function definitions based on the Mesh_Readers
+    // abstract base class.
+/*!
+ * \brief Returns the coordinate values for each of the nodes read from the 
+ *        mesh file node data.
+ * \return The coordinate values for the nodes.
+ */
+    virtual vector<vector<double> > get_node_coords() const
+	{ return spNodes->get_coords(); }
+/*!
+ * \brief Returns the problem coordinate units (e.g, cm) read from the mesh 
+ *        file dimension data.
+ * \return Mesh file coordinate units.
+ */
+    virtual string get_node_coord_units() const 
+        { return dims.get_coor_units(); }
+
+    virtual vector<vector<int> > get_element_nodes() const;
+
+    virtual vector<Element_Definition::Element_Type> get_element_types() const;
+
+    virtual map<string, set<int> > get_node_sets() const;
+
+    virtual map<string, set<int> > get_element_sets() const;
+/*!
+ * \brief Returns the title read from the mesh file header.
+ * \return Mesh file title.
+ */
+    virtual string get_title() const
+        { return header.get_title(); }
+
+    virtual bool invariant() const
+        { bool test = true;
+	  return test; }
+
     // header data access
 /*!
  * \brief Returns the version number read from the mesh file header.
@@ -1535,14 +1588,12 @@ class RTT_Format
 
     // nodes access
 /*!
- * \brief Returns the coordinate value for the specified node and direction 
- *        (i.e., x, y, and z) read from the mesh file node data.
- * \param node_numb Node number.
- * \param coord_index Coordinate index number (x = 0, y = 1, etc.).
- * \return The node coordinate value.
+ * \brief Returns the coordinate values for each of the nodes read from the 
+ *        mesh file node data.
+ * \return The coordinate values for the nodes.
  */
-    double get_nodes_coords(int node_numb, int coord_index) const
-	{ return spNodes->get_coords(node_numb, coord_index); }
+    vector<vector<double> > get_nodes_coords() const
+	{ return spNodes->get_coords(); }
 /*!
  * \brief Returns all of the coordinate values for the specified node read 
  *        from the mesh file node data.
@@ -1551,7 +1602,15 @@ class RTT_Format
  */
     vector<double> get_nodes_coords(int node_numb) const
 	{ return spNodes->get_coords(node_numb); }
-
+/*!
+ * \brief Returns the coordinate value for the specified node and direction 
+ *        (i.e., x, y, and z) read from the mesh file node data.
+ * \param node_numb Node number.
+ * \param coord_index Coordinate index number (x = 0, y = 1, etc.).
+ * \return The node coordinate value.
+ */
+    double get_nodes_coords(int node_numb, int coord_index) const
+	{ return spNodes->get_coords(node_numb, coord_index); }
 /*!
  * \brief Returns the node number that has the specified coordinate values.
  * \param node_coords Coordinate values.
@@ -1596,6 +1655,21 @@ class RTT_Format
     int get_sides_type(int side_numb) const
 	{ return spSides->get_type(side_numb); }
 /*!
+ * \brief Returns the node numbers associated with each side read from the 
+ *        mesh file side data.
+ * \return The node number.
+ */
+    vector<vector<int> > get_sides_nodes() const
+	{ return spSides->get_nodes(); }
+/*!
+ * \brief Returns the node numbers associated with the specified side read 
+ *        from the mesh file side data.
+ * \param side_numb Side number.
+ * \return The node number.
+ */
+    vector<int> get_sides_nodes(int side_numb) const
+	{ return spSides->get_nodes(side_numb); }
+/*!
  * \brief Returns the node number associated with the specified side and 
  *        side-node index read from the mesh file side data.
  * \param side_numb Side number.
@@ -1632,6 +1706,21 @@ class RTT_Format
     int get_cells_type(int cell_numb) const
 	{ return spCells->get_type(cell_numb); }
 
+/*!
+ * \brief Returns all of the node numbers for each of the cells read from the 
+ *        mesh file cell data.
+ * \return The node number.
+ */
+    vector<vector<int> > get_cells_nodes() const
+	{ return spCells->get_nodes(); }
+/*!
+ * \brief Returns all of the node numbers associated with the specified cell
+ *        read from the mesh file cell data.
+ * \param cell_numb Cell number.
+ * \return The node number.
+ */
+    vector<int> get_cells_nodes(int cell_numb) const
+	{ return spCells->get_nodes(cell_numb); }
 /*!
  * \brief Returns the node number associated with the specified cell and 
  *        cell-node index read from the mesh file cell data.
