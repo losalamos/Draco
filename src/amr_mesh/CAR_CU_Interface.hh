@@ -111,6 +111,8 @@ class CAR_CU_Interface
     explicit inline CAR_CU_Interface(const string & infile, 
 				     const bool & verbose_);
 
+    ~CAR_CU_Interface() {}
+
     // public Parser member functions
     SP<RTT_Format> parser();
     

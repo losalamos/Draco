@@ -29,12 +29,11 @@
 // 
 //===========================================================================//
 
-namespace rtt_mc 
+namespace rtt_format
 {
 
 // draco components
 using dsxx::SP;
-using rtt_format::RTT_Format;
 
 extern "C" 
 {
@@ -61,7 +60,7 @@ extern "C"
 } // end extern "C"
 
 
-}
+} // end namespace rtt_format
 
 #endif                          // __mc_Shadow_RTT_Format_cc__
 

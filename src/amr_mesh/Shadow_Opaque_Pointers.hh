@@ -3,6 +3,8 @@
 
 #include <map>
 
+using dsxx::SP;
+
 typedef long opaque_pointer_type;
 
 template <class T>

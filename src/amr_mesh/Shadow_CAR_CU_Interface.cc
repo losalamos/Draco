@@ -27,13 +27,13 @@
 // 
 //===========================================================================//
 
-namespace rtt_mc 
+namespace rtt_imc 
 {
 using std::cout;
+using std::endl;
 
 // draco components
 using dsxx::SP;
-using rtt_imc::CAR_CU_Interface;
 using rtt_format::RTT_Format;
 
 extern "C" 
@@ -85,10 +85,10 @@ extern "C"
     }
 
 
-}
-
-
 } // end extern "C"
+
+
+} // end namespace rtt_imc
 
 #endif                          // __mc_Shadow_CAR_CU_Interface_cc__
 

@@ -50,7 +50,7 @@ extern "C"
     // objects are set. The CAR_CU_Mesh class contains member functions to 
     // return the addresses of the Coord and Layout class objects, if needed.
     void construct_car_cu_builder_(long & self, long & itf_ptr, 
-				   long & rttf_ptr, int & verbosity, 
+				   long & rttf_ptr, long & verbosity, 
 				   long & mesh_ptr)
     {
 	bool verbose = verbosity;
@@ -95,10 +95,10 @@ extern "C"
     }
 
 
-}
-
-
 }  // end extern "C"
+
+
+}  // end namespace rtt_mc
 
 #endif                          // __mc_Shadow_CAR_CU_Builder_cc__
 

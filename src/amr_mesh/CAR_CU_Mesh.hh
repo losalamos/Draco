@@ -336,10 +336,13 @@ class CAR_CU_Mesh
     inline double begin(int) const;
     inline double end(int) const;
 
+    // Problem geometry dimension
+    int get_ndim() const { return coord->get_dim(); }
+
     // return number of cells
     int num_cells() const { return layout.num_cells(); }
 
-    // return number of nodes
+    // return total number of nodes
     int num_nodes() const { return vertex[0].size(); }
 
     // return number of cell-corner nodes

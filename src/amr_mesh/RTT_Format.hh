@@ -24,7 +24,6 @@ using std::set;
 using std::ifstream;
 using std::vector;
 using std::multimap;
-
 using dsxx::SP;
 
 namespace rtt_format
@@ -864,10 +863,10 @@ class RTT_Format
 
   public:
 
-    // CREATORS
+    // Constructors
     RTT_Format(const string & RTT_File, const bool & renumber);
 
-//     RTT_Format(const RTT_Format & rhs);
+    // Destructors
     ~RTT_Format() {}
 
     // ACCESSORS
