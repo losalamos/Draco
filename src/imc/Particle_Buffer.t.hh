@@ -41,21 +41,26 @@ template<class MT>
 Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon) 
 {
     
-    // determine size of double info from Particles;
-    // 5 = omega(3) + ew + fraction
-    dsize = mesh.get_Coord().get_dim() + 5;
+    /* Note: dsize is the size of the double data for the census. This
+       differs from the complete set of particle data by one double value
+       (time_left). Hence, we set dsize to _one_less_than_ the value returned
+       by Particle::Pack. Since, the communication buffers include all of the
+       double data in the particle, dsize+1 is passed to set_buffer
+    */
 
-    // determine size of integer info from Particles;
-    // 2 = cell + streamnum
-    isize = 2;
+    // Call setup for Particle::Pack
+    PT::Pack::setup_buffer_sizes(mesh, rcon);
 
-    // determine size of character (RN state) from Particles;
-    // in bytes
-    csize = rcon.get_size();
-    Check (csize <= rtt_rng::max_buffer);
+    // Get sizes from Particle::Pack
+    dsize = PT::Pack::get_double_size()-1;  // -1 : See note above
+    isize = PT::Pack::get_int_size();
+    csize = PT::Pack::get_char_size();
 
-    // set the static buffer variables
-    set_buffer(dsize+1, isize, csize);
+    Check(dsize); Check(isize); Check(csize);
+
+    // set the static buffer variables 
+    set_buffer(dsize+1, isize, csize);      // +1 : See note above
+
 }
 
 //---------------------------------------------------------------------------//
@@ -66,18 +71,17 @@ Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon)
 template<class PT>
 Particle_Buffer<PT>::Particle_Buffer(int dimension, const Rnd_Control &rcon)
 {
-    // determine size of double info from Particles;
-    // 5 = omega(3) + ew + fraction
-    dsize = dimension + 5;
 
-    // determine size of integer info from Particles;
-    // 2 = cell + streamnum
-    isize = 2;
+    /* Note: See comments for Particle_Buffer(const MT&, const Rnd_Control&)
+       above */
 
-    // determine size of character (RN state) from Particles;
-    // in bytes
-    csize = rcon.get_size();
-    Check (csize <= rtt_rng::max_buffer);
+    // Call setup for Particle::Pack
+    PT::Pack::setup_buffer_sizes(dimension, rcon);
+
+    // Get sizes from Particle::Pack
+    dsize = PT::Pack::get_double_size()-1;
+    isize = PT::Pack::get_int_size();
+    csize = PT::Pack::get_char_size();
 
     // set the static buffer variables
     set_buffer(dsize+1, isize, csize);  
@@ -86,6 +90,10 @@ Particle_Buffer<PT>::Particle_Buffer(int dimension, const Rnd_Control &rcon)
 //---------------------------------------------------------------------------//
 // constructor for Particle_Buffer which allows the user to enter the 
 // Particle sizes
+
+/* This constructor is dangerous because it does not sync Particle::Pack
+   buffer sizes 
+*/
 
 template<class MT>
 Particle_Buffer<MT>::Particle_Buffer(int d, int i, int c)
@@ -128,9 +136,9 @@ Particle_Buffer<PT>::Census_Buffer::Census_Buffer()
 template<class PT> int Particle_Buffer<PT>::buffer_s = 1000;
 
 // size of doubles, ints, and chars in buffer
-template<class PT> int Particle_Buffer<PT>::buffer_d = buffer_s * 9;
-template<class PT> int Particle_Buffer<PT>::buffer_i = buffer_s * 2;
-template<class PT> int Particle_Buffer<PT>::buffer_c = buffer_s * 500;
+template<class PT> int Particle_Buffer<PT>::buffer_d = buffer_s * PT::Pack::get_double_size();
+template<class PT> int Particle_Buffer<PT>::buffer_i = buffer_s * PT::Pack::get_int_size();
+template<class PT> int Particle_Buffer<PT>::buffer_c = buffer_s * PT::Pack::get_char_size();
 
 //---------------------------------------------------------------------------//
 // set the buffers
@@ -138,6 +146,10 @@ template<class PT> int Particle_Buffer<PT>::buffer_c = buffer_s * 500;
 template<class PT>
 void Particle_Buffer<PT>::set_buffer(int d, int i, int c)
 {
+
+    /* This function is dangerous because it resets buffer sizes without
+        consulting Particle::Pack */
+
     // reset the double, int, and char buffer sizes
     buffer_d = buffer_s * d;
     buffer_i = buffer_s * i;
@@ -147,6 +159,10 @@ void Particle_Buffer<PT>::set_buffer(int d, int i, int c)
 template<class PT>
 void Particle_Buffer<PT>::set_buffer(int d, int i, int c, int s)
 {
+
+    /* This function is dangerous because it resets buffer sizes without
+       consulting Particle::Pack */
+
     // reset the buffer size, double, int, and char buffer sizes
     buffer_s = s;
     buffer_d = buffer_s * d;
@@ -157,10 +173,12 @@ void Particle_Buffer<PT>::set_buffer(int d, int i, int c, int s)
 template<class PT>
 void Particle_Buffer<PT>::set_buffer_size(int s)
 {
+    Require(s);
+
     // reset the buffer sizes
-    buffer_d = s * (buffer_d / buffer_s); 
-    buffer_i = s * (buffer_i / buffer_s); 
-    buffer_c = s * (buffer_c / buffer_s); 
+    buffer_d = s*PT::Pack::get_double_size();
+    buffer_i = s*PT::Pack::get_int_size();
+    buffer_c = s*PT::Pack::get_char_size();
     buffer_s = s;
 }
 
@@ -173,45 +191,28 @@ template<class PT>
 void Particle_Buffer<PT>::write_census(ostream &cenfile,
 				       const PT &particle) const
 {
-    // dynamicaly assign arrays for output, types double, int
-    double *ddata = new double[dsize];
-    int *idata = new int[isize];
-
-    // assign all data of type double about the particle
-    int index = 0;
-    ddata[index++] = particle.ew;
-    ddata[index++] = particle.fraction;
-    for (int i = 0; i < particle.omega.size(); i++)
-	ddata[index++] = particle.omega[i];
-    for (int i = 0; i < particle.r.size(); i++)
-	ddata[index++] = particle.r[i];
-    Check (index == dsize);
-
-    // assign integer data
-    idata[0] = particle.cell;
-    idata[1] = particle.random.get_num();
-
-    // set the size of dynamic storage for the Random number state and pack it
-    char *rdata;
-    int size = pack_sprng(particle.random.get_id(), &rdata);
-    Check (size == csize);
-
+    // create a packed version of the particle
+    PT::Pack packed(particle);
+    
     // now dump particle data to the census file
 
     // make sure census file exists
     Check (cenfile);
 
-    // write the output
-    cenfile.write(reinterpret_cast<const char *>(ddata), dsize *
-		  sizeof(double));
-    cenfile.write(reinterpret_cast<const char *>(idata), isize *
-		  sizeof(int)); 
-    cenfile.write(reinterpret_cast<const char *>(rdata), csize);
+    // Require that buffer sizes are set correctly
+    Check (packed.get_double_size() == dsize+1);
+    Check (packed.get_int_size()    == isize  );
+    Check (packed.get_char_size()   == csize  );
 
-    // reclaim dynamic memory
-    delete [] ddata;
-    delete [] idata;
-    std::free(rdata);
+    // write the output
+    /* Note that we skip the first element of the double data. This is
+       time_left, which is not included in the census */
+    cenfile.write(reinterpret_cast<const char *>(packed.double_begin()+1), dsize *
+		  sizeof(double));
+    cenfile.write(reinterpret_cast<const char *>(packed.int_begin()), isize *
+		  sizeof(int)); 
+    cenfile.write(reinterpret_cast<const char *>(packed.char_begin()), csize);
+
 }
 
 //---------------------------------------------------------------------------//
@@ -570,44 +571,31 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
     Require (buffer.n_part >= 0);
 
     // calculate indices for the buffer, remember the particle info required
-    // during a timestep must also include the time left
+    // during a timestep must also include the time left, hence dsize+1.
     int id = buffer.n_part * (dsize+1);
     int ii = buffer.n_part * isize;
     int ic = buffer.n_part * csize;
     
-    // add one particle to the buffer
+    // create a packed version of the particle;
+    PT::Pack packed(particle);
 
-    // start with the double data
-    buffer.array_d[id++] = particle.time_left;
-    buffer.array_d[id++] = particle.ew;
-    buffer.array_d[id++] = particle.fraction;
-    for (int i = 0; i < particle.omega.size(); i++)
-	buffer.array_d[id++] = particle.omega[i];
-    for (int i = 0; i < particle.r.size(); i++)
-	buffer.array_d[id++] = particle.r[i];
-    Check (id - buffer.n_part * (dsize+1) == (dsize+1));
+    // Check that the data sizes are consistent
+    Check (packed.get_double_size() == dsize+1);
+    Check (packed.get_int_size()    == isize  );
+    Check (packed.get_char_size()   == csize  );
 
-    // do the int data
-    buffer.array_i[ii++] = particle.cell;
-    buffer.array_i[ii++] = particle.random.get_num();
-    Check (ii - buffer.n_part * isize == isize);
+    // add the double data
+    std::copy(packed.double_begin(), packed.double_end(), buffer.array_d+id);
+    std::copy(packed.int_begin(),    packed.int_end(),    buffer.array_i+ii);
+    std::copy(packed.char_begin(),   packed.char_end(),   buffer.array_c+ic);
 
-    // do the char data
-    char *bytes;
-    int size = pack_sprng(particle.random.get_id(), &bytes);
-    Check (size == csize);
-    for (int i = 0; i < csize; i++)
-	buffer.array_c[ic++] = bytes[i];
-    std::free(bytes);
-    Check (ic - buffer.n_part * csize == csize);
-  
     // update the n_particles
     buffer.n_part++;
 
     // do some assertions
-    Ensure (id <= buffer_d);
-    Ensure (ii <= buffer_i);
-    Ensure (ic <= buffer_c);
+    Ensure (id+dsize+1 <= buffer_d);
+    Ensure (ii+isize   <= buffer_i);
+    Ensure (ic+csize   <= buffer_c);
 }
 
 //---------------------------------------------------------------------------//
@@ -621,48 +609,24 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const
     Require (num_part <= buffer_s);
     Require (num_part >= 0);
 
-    // set buffer counters
-    int id = 0;
-    int ii = 0;
-    int ic = 0;
-
-    // loop through Comm_Buffer and add the Particles to the Bank
-    for (int n = 1; n <= num_part; n++)
+    // loop through Comm_Buffer and add the Particles to the Bank.
+    // Particles are numbered 0 through num_part-1
+    for (int n = 0; n < num_part; n++)
     {
-	// make the Particle data
 
-	// double data
-	double t_left = buffer.array_d[id++];
-	double ew     = buffer.array_d[id++];
-	double frac   = buffer.array_d[id++];
-	vector<double> r;
-	vector<double> omega;
-	for (int i = 0; i < 3; i++)
-	    omega.push_back(buffer.array_d[id++]);
-	for (int i = 0; i < (dsize-5); i++)
-	    r.push_back(buffer.array_d[id++]);
-	Check (omega.size() == 3);
-	Check (r.size() == (dsize-5));
+	// find data locations
+	double* d_data = buffer.array_d + (dsize+1)*n;
+	int*    i_data = buffer.array_i +  isize   *n;
+	char*   c_data = buffer.array_c +  csize   *n;
 
-	// int data
-	int cell = buffer.array_i[ii++];
-	int rnum = buffer.array_i[ii++];
+	// Check that enough data remains to be read
+	Check(d_data + dsize+1 <= buffer.array_d + buffer_d);
+	Check(i_data + isize   <= buffer.array_i + buffer_i);
+	Check(c_data + csize   <= buffer.array_c + buffer_c);
 
-	// char data
-	char *bytes = new char[csize];
-	for (int i = 0; i < csize; i++)
-	    bytes[i] = buffer.array_c[ic++];
-	int *rnid = unpack_sprng(bytes);
-	Sprng random(rnid, rnum);
-	delete [] bytes;
-
-	// check to make sure we haven't gone over
-	Check (id <= buffer_d);
-	Check (ii <= buffer_i);
-	Check (ic <= buffer_c);
-
-	// make the Particle
-	SP<PT> particle(new PT(r, omega, ew, cell, random, frac, t_left)); 
+	// unpack the particle, make a pointer to it
+	SP<PT> particle(PT::Pack::unpack(dsize+1, d_data, isize, i_data, 
+					 csize, c_data)) ;
 
 	// add the Particle to the Bank and update the num_part counter
 	bank.push(particle);

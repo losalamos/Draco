@@ -109,13 +109,32 @@ namespace rtt_imc
 //                vector for AMR support.
 // 13) 28-AUG-00: modified the energy-weighted path length to account for a
 //                zero opacity. 
+// 14) 27-APR-01: added pack struct and member function
+// 15) 30-MAY-01: added Descriptor enum to represent particle state, removed string 
+//                descriptor. See memo CCS-4:01-19(U)
 // 
 //===========================================================================//
 
 template<class MT>
 class Particle
 {
+    
+    enum Descriptor {BORN=1, CENSUS_BORN=2, BOUNDARY_BORN=3, VOL_EMISSION=4,
+		     SURFACE_SOURCE=5, 
+		     SCATTER=100, LOW_WEIGHT=101, EFF_SCATTER=102, THOM_SCATTER=103,
+		     REFLECTION=200, STREAM=201, ESCAPE=202, CROSS_BOUNDARY=203,
+		     ABSORPTION=204, BOUNDARY=205,		 
+		     CENSUS=300, KILLED=1000};
+    
   public: 
+
+
+    // Forward decleration of Pack class
+    struct Pack;
+
+    // Public typedefs:
+    typedef rtt_dsxx::SP<Particle::Pack>     SP_Pack;
+    typedef rtt_dsxx::SP<Particle>           SP_Particle;
 
     /*!
      * \class Particle::Diagnostic
@@ -151,7 +170,7 @@ class Particle
 
     // Friend declarations.
     friend class Diagnostic;
-    template<class PT> friend class Particle_Buffer;
+    template<class PT> friend class Particle<PT>::Pack;
 
   private:
     //>>> DATA
@@ -177,7 +196,8 @@ class Particle
     bool alive;
     
     // Event type descriptor.
-    std::string descriptor;
+    //    std::string descriptor;
+    int descriptor;
 
     // Random number object.
     rtt_rng::Sprng random;
@@ -243,14 +263,16 @@ class Particle
     // Set functions for sourcing particles.
     void set_random(rtt_rng::Sprng &ran) { random = ran; }
     void set_time_left(double t) { time_left = t; }
-    void set_descriptor(std::string s) { descriptor = s; }
+    //    void set_descriptor(std::string s) { descriptor = s; }
+    void set_descriptor(std::string s) { descriptor = get_index(s); }  /* Changed */
     void set_ew(double new_ew) { ew = new_ew; }
     void set_cell(int new_cell) { cell = new_cell; }
 
     // Transport descriptors.
-    std::string desc() const { return descriptor; }
     inline static int get_index(std::string);
     inline static std::string get_descriptor(int);
+    //    std::string desc() const { return descriptor; } 
+    std::string desc() const { return get_descriptor(descriptor); } /* Changed */
 
     // Public diagnostic services.
     void print(std::ostream &) const;
@@ -258,7 +280,11 @@ class Particle
     // Overloaded operators.
     bool operator==(const Particle<MT> &) const;
     bool operator!=(const Particle<MT> &p) const { return !(*this == p); } 
-};
+
+    // Pack function
+    SP_Pack pack() const;
+
+};  // End of class Particle
 
 //---------------------------------------------------------------------------//
 // overloaded operators
@@ -297,7 +323,7 @@ inline Particle<MT>::Particle(std::vector<double> r_,
 			      rtt_rng::Sprng random_, 
 			      double frac, double tleft, std::string desc)
     : ew(ew_), r(r_), omega(omega_), cell(cell_), time_left(tleft), 
-      fraction(frac), alive(true), descriptor(desc), random(random_)
+      fraction(frac), alive(true), descriptor(get_index(desc)), random(random_)
 {
     // non-default particle constructor
     Ensure (r.size() < 4);
@@ -356,7 +382,7 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
 	tally.accum_n_killed();
 	tally.accum_ew_killed( new_ew );
 	tally.accumulate_momentum(cell, new_ew, omega);
-	descriptor = "killed";
+	descriptor = KILLED;
 	alive = false;
     }
     else
@@ -379,102 +405,196 @@ inline int Particle<MT>::get_index(std::string desc)
 
     // born descriptors
     if (desc == "born")
-	return_value = 1;
-    if (desc == "census_born")
-	return_value = 2;
-    if (desc == "boundary_born")
-	return_value = 3;
-    if (desc == "vol_emission")
-	return_value = 4;
-    if (desc == "surface_source")
-	return_value = 5;
+	return_value = BORN;
+    else if (desc == "census_born")
+	return_value = CENSUS_BORN;
+    else if (desc == "boundary_born")
+	return_value = BOUNDARY_BORN;
+    else if (desc == "vol_emission")
+	return_value = VOL_EMISSION;
+    else if (desc == "surface_source")
+	return_value = SURFACE_SOURCE;
 
     // collision event descriptors
-    if (desc == "scatter")
-	return_value = 100;
-    if (desc == "low_weight")
-	return_value = 101;
-    if (desc == "eff_scatter")
-	return_value = 102;
-    if (desc == "thom_scatter")
-	return_value = 103;
+    else if (desc == "scatter")
+	return_value = SCATTER;
+    else if (desc == "low_weight")
+	return_value = LOW_WEIGHT;
+    else if (desc == "eff_scatter")
+	return_value = EFF_SCATTER;
+    else if (desc == "thom_scatter")
+	return_value = THOM_SCATTER;
  
     // streaming descriptors
-    if (desc == "reflection")
-	return_value = 200;
-    if (desc == "stream")
-	return_value = 201;
-    if (desc == "escape")
-	return_value = 202;
-    if (desc == "cross_boundary")
-	return_value = 203;
+    else if (desc == "reflection")
+	return_value = REFLECTION;
+    else if (desc == "stream")
+	return_value = STREAM;
+    else if (desc == "escape")
+	return_value = ESCAPE;
+    else if (desc == "cross_boundary")
+	return_value = CROSS_BOUNDARY;
 
     // time and census descriptors
-    if (desc == "census")
-	return_value = 300;
+    else if (desc == "census")
+	return_value = CENSUS;
 
     // death
-    if (desc == "killed")
-	return_value = 1000;
+    else if (desc == "killed")
+	return_value = KILLED;
+
+    // last else
+    else 
+	Insist(0,"Invalid string descriptor");
 
     // return
     return return_value;
+
 }
 
 //---------------------------------------------------------------------------//
 // convert an int into a particle event descriptor
 
+/* Changed */
+
 template<class MT>
 inline std::string Particle<MT>::get_descriptor(int index)
 {
-    using std::string;
 
-    // declare return type
-    string return_value;
+    switch (index) {
 
     // born descriptors
-    if (index == 1)
-	return_value = "born";
-    if (index == 2)
-	return_value = "census_born";
-    if (index == 3)
-	return_value = "boundary_born";
-    if (index == 4)
-	return_value = "vol_emission";
-    if (index == 5)
-	return_value = "surface_source";
+    case BORN: 	         return "born";
+    case CENSUS_BORN:	 return "census_born";
+    case BOUNDARY_BORN:	 return "boundary_born";
+    case VOL_EMISSION:	 return "vol_emission";
+    case SURFACE_SOURCE: return "surface_source";
 
     // collision event descriptors
-    if (index == 100)
-	return_value = "scatter";
-    if (index == 101)
-	return_value = "low_weight";
-    if (index == 102)
-	return_value = "eff_scatter";
-    if (index == 103)
-	return_value = "thom_scatter";
- 
+    case SCATTER:        return "scatter";
+    case LOW_WEIGHT: 	 return "low_weight";
+    case EFF_SCATTER:	 return "eff_scatter";
+    case THOM_SCATTER:	 return "thom_scatter";
+
     // streaming descriptors
-    if (index == 200)
-	return_value = "reflection";
-    if (index == 201)
-	return_value = "stream";
-    if (index == 202)
-	return_value = "escape";
-    if (index == 203)
-	return_value = "cross_boundary";
+    case REFLECTION:	 return "reflection";
+    case STREAM:	 return "stream";
+    case ESCAPE:	 return "escape";
+    case CROSS_BOUNDARY: return "cross_boundary";
 
     // time and census descriptors
-    if (index == 300)
-	return_value = "census";
+    case CENSUS:	 return "census";
 
     // death
-    if (index == 1000)
-	return_value = "killed";
+    case KILLED:	 return "killed";
 
-    // return
-    return return_value;
+    default:
+	Insist(0,"Unrecognized descriptor number");
+	return "";
+	    
+    }    
+
 }
+
+
+//===========================================================================//
+/*!  
+ * \struct Particle::Pack 
+ 
+ * \brief Nested class for packing particles into raw data for writing
+ * or communication.
+ 
+ */
+//===========================================================================//
+
+template <typename MT>
+struct Particle<MT>::Pack { 
+    
+  private:
+    
+    // Size info is static for class wide consistency and access
+    static int double_data_size;
+    static int int_data_size;
+    static int char_data_size;
+    static bool setup_done;
+
+    double *double_data; 
+    int *int_data;       
+    char*char_data;      
+
+    // Disallow assignment
+    const Pack& operator=(const Pack &);
+
+    // Internal size set routine
+    static void set_sizes(int, int);
+
+  public:
+    
+    /* Setup */
+
+    static void setup_buffer_sizes(const MT& mesh, 
+				   const rtt_rng::Rnd_Control &rcon);
+
+    static void setup_buffer_sizes(const int dim,
+				   const rtt_rng::Rnd_Control &rcon);
+
+    /* Structors */
+    
+    // Construct from three pointers
+    Pack(double*, int*, char*); 
+
+    // Construct from Particle
+    Pack(const Particle&);
+    
+    // Copy
+    Pack(const Pack&);
+    
+    // Destroy
+    ~Pack();
+    
+    /* Accessors */
+    
+    //! Get const pointer to beginning of integer data stream
+    const int* int_begin() const {return int_data; }
+    
+    //! Get const pointer to begining of char data stream
+    const char* char_begin() const {return char_data; }
+    
+    //! Get const pointer to begining of double double stream
+    const double* double_begin() const {return double_data; }
+    
+    //! Get const pointer to one past end of integer data stream
+    const int* int_end() const {return int_data+int_data_size; }
+    
+    //! Get const pointer to one past end of char data stream
+    const char* char_end() const {return char_data+char_data_size; }
+    
+    //! Get const pointer to one past end of double data stream
+    const double* double_end() const {return double_data+double_data_size; }
+    
+    //! Unpack function
+    SP_Particle unpack() const;
+
+    /* Functions for size information is static to assist in constructing
+       Particle_Buffer objects */
+
+    //! Get size of integer data stream
+    static int get_int_size() { return int_data_size; }
+    
+    //! Get size of char data stream
+    static int get_char_size() { return char_data_size; }
+    
+    //! Get size of double data stream
+    static int get_double_size() { return double_data_size; }
+
+    //! Get setup status of class
+    static bool get_setup() { return setup_done; }
+    
+    //! Unpack from provided data
+    static SP_Particle unpack(int, double*, int, int*, int, char*);
+    
+}; // End of class Particle::Pack
+
 
 } // end namespace rtt_imc
 

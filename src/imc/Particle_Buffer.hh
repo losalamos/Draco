@@ -157,16 +157,28 @@ class Particle_Buffer
     static int buffer_i;
     static int buffer_c;
 
+    /* Invariants of the various buffer dimensions:
+
+       buffer_d = buffer_s * (dsize+1)
+       buffer_i = buffer_s *  isize
+       buffer_c = buffer_s *  csize 
+
+    */
+
+    static void set_buffer(int, int, int);       /* Move to private? */
+    static void set_buffer(int, int, int, int);  /* Move to private? */
+
+
   public:
     // Constructors
     template<class MT>
     Particle_Buffer(const MT &, const rtt_rng::Rnd_Control &); 
     Particle_Buffer(int, const rtt_rng::Rnd_Control &);
-    Particle_Buffer(int, int, int);
+    Particle_Buffer(int, int, int);  /* Used in Milagro Parallel_Builder */
 
     // buffer sizing and accessor functions
-    static void set_buffer(int, int, int);
-    static void set_buffer(int, int, int, int);
+    //    static void set_buffer(int, int, int);       /* Move to private? */
+    //    static void set_buffer(int, int, int, int);  /* Move to private? */
     static void set_buffer_size(int);
     static int get_buffer_d() { return buffer_d; }
     static int get_buffer_i() { return buffer_i; }

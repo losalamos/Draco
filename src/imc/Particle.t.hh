@@ -12,6 +12,7 @@
 #include "Particle.hh"
 #include "Global.hh"
 #include <iomanip>
+#include <algorithm>
 
 namespace rtt_imc 
 {
@@ -74,7 +75,7 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
         int face = 0;
 
 	// accumulate momentum deposition from volume emission particles
-	if (descriptor == "vol_emission")
+	if (descriptor == VOL_EMISSION)
 	    tally.accumulate_momentum(cell, -ew, omega);
         
 	// sample distance-to-scatter (effective scatter or hardball)
@@ -99,17 +100,17 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	// determine limiting event
 	if (d_scatter < d_boundary && d_scatter < d_census)
 	{
-	    descriptor = "scatter";
+	    descriptor = SCATTER;
 	    dist_stream = d_scatter;
 	}	
 	else if (d_boundary < d_scatter && d_boundary < d_census)
 	{
-	    descriptor = "boundary";
+	    descriptor = BOUNDARY;
 	    dist_stream = d_boundary;
 	}
 	else 
 	{
-	    descriptor = "census";
+	    descriptor = CENSUS;
 	    dist_stream = d_census;
 	}
 
@@ -117,22 +118,22 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	stream_IMC(xs, tally, dist_stream);
 
 	// scatter, effective or Thomson
-	if (descriptor == "scatter")
+	if (descriptor == SCATTER)
 	{
 	    if (xs.get_sigma_thomson(cell) > 0.0)
 	    {
 		if (random.ran() < xs.get_sigeffscat(cell) /
 		    (xs.get_sigeffscat(cell) + xs.get_sigma_thomson(cell)))
-		    descriptor = "eff_scatter";
+		    descriptor = EFF_SCATTER;
 		else
-		    descriptor = "thom_scatter";
+		    descriptor = THOM_SCATTER;
 	    }
 	    else
-		descriptor = "eff_scatter";
+		descriptor = EFF_SCATTER;
 
-	    if (descriptor == "eff_scatter")
+	    if (descriptor == EFF_SCATTER)
 		tally.accum_n_effscat();
-	    else if (descriptor == "thom_scatter")
+	    else if (descriptor == THOM_SCATTER)
 		tally.accum_n_thomscat();
 
 	    // accumulate momentum from before the scatter
@@ -145,15 +146,15 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	    tally.accumulate_momentum(cell, -ew, omega);
 	}
 
-	if (descriptor == "boundary")
+	if (descriptor == BOUNDARY)
         {
 	    tally.accum_n_bndcross();
 	    alive = surface(mesh, face);
 
-	    if (descriptor == "reflection")
+	    if (descriptor == REFLECTION)
 		tally.accum_n_reflections();
 
-	    if (descriptor == "escape")
+	    if (descriptor == ESCAPE)
 	    {
 		tally.accum_n_escaped();
 		tally.accum_ew_escaped(ew);
@@ -161,10 +162,12 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 
 	}
 
-	if (descriptor == "census")
+	if (descriptor == CENSUS)
 	{
 	    tally.accumulate_cen_info( cell, ew );
 	    alive = false;
+	    Check(rtt_mc::global::soft_equiv(time_left, 0.0));
+	    time_left = 0.0;
 	}
 
 	// do diagnostic print
@@ -189,7 +192,7 @@ bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
     // determine absorption or collision
     if (random.ran() <= xs.get_sigma_abs(cell) / xs.get_sigma_abs(cell))
     {
-	descriptor = "absorption";
+	descriptor = ABSORPTION;
         status = false;
     }
     else
@@ -244,7 +247,7 @@ bool Particle<MT>::surface(const MT &mesh, int face)
     if (next_cell == cell)
     {
 	// reflection
-	descriptor            = "reflection";
+	descriptor            = REFLECTION;
 	vector<double> normal = mesh.get_normal(cell, face);
 	double factor         = rtt_mc::global::dot(omega, normal);
 	for (int i = 0; i < mesh.get_Coord().get_sdim(); i++)
@@ -254,19 +257,19 @@ bool Particle<MT>::surface(const MT &mesh, int face)
     else if (next_cell == 0)
     {
 	// escape
-	descriptor = "escape";
+	descriptor = ESCAPE;
 	cell       = next_cell;
     }
     else if (next_cell < 0)
     {
 	// domain boundary crossing
-	descriptor = "cross_boundary";
+	descriptor = CROSS_BOUNDARY;
 	cell       = next_cell;
     }
     else 
     {
 	// continue streaming
-	descriptor = "stream";
+	descriptor = STREAM;
 	cell       = next_cell;
     }
 
@@ -381,7 +384,7 @@ void Particle<MT>::Diagnostic::print_alive(const Particle<MT>
 
     // event
     output << setw(20) << setiosflags(ios::right) << "Event: " 
-	   << setw(12) << particle.descriptor.c_str() << endl;
+	   << setw(12) << get_descriptor(particle.descriptor) << endl;
     
     // coordinates
     output << setw(20) << setiosflags(ios::right) << "Coordinates: ";
@@ -425,7 +428,7 @@ void Particle<MT>::Diagnostic::print_dead(const Particle<MT>
 
     // event
     output << setw(20) << setiosflags(ios::right) << "Event: " 
-	   << setw(12) << particle.descriptor.c_str() << endl;
+	   << setw(12) << get_descriptor(particle.descriptor) << endl;
     
     // coordinates
     output << setw(20) << setiosflags(ios::right) << " Last Coordinates: ";
@@ -490,6 +493,253 @@ void Particle<MT>::Diagnostic::print_xs(const Opacity<MT> &xs,
 	   << setw(12) << xs.get_sigeffabs(cell)  << endl; 
     output << setw(20) << setiosflags(ios::right) << "Thomson scatter: " 
 	   << setw(12) << xs.get_sigma_thomson(cell)  << endl; 
+}
+
+template<typename MT>
+Particle<MT>::SP_Pack Particle<MT>::pack() const {
+
+    // Require conditions
+
+    // Create a smart pointer to a new Particle::Pack 
+    return Particle<MT>::SP_Pack(new Particle::Pack(*this));
+
+}
+
+//===========================================================================//
+// PARTICLE::PACK CLASS DEFINITIONS
+//===========================================================================//
+
+template <typename MT> int Particle<MT>::Pack::double_data_size = 0;
+template <typename MT> int Particle<MT>::Pack::int_data_size    = 0;
+template <typename MT> int Particle<MT>::Pack::char_data_size   = 0;
+template <typename MT> bool Particle<MT>::Pack::setup_done      = false;
+
+template <typename MT>
+void Particle<MT>::Pack::set_sizes(int dim, int rnd_size)
+{
+    Require(dim>0 && dim<4); 
+    Require(rnd_size);
+
+    double_data_size = dim+6;  // This is all of the data, incl time_left
+    int_data_size    = 2;
+    char_data_size   = rnd_size;
+    setup_done       = true;
+}
+    
+
+/*!
+ * \brief Setup function
+
+ * Setup the sizes of the double, int and char data based on information from
+ * the mesh and Random_Control objects. Should be called before constructing
+ * Particle::Pack objects.  These methods are called by the Particle_Buffer
+ * constructors
+
+ */
+
+template <typename MT> 
+void Particle<MT>::Pack::setup_buffer_sizes(const MT &mesh, 
+					    const rtt_rng::Rnd_Control &rcon)
+{
+    int dim = mesh.get_Coord().get_dim();  
+    Check(dim>0 && dim<4);
+
+    int rnd = rcon.get_size();
+    Check(char_data_size <= rtt_rng::max_buffer);
+
+    set_sizes(dim,rnd);
+}
+
+
+template <typename MT> 
+void Particle<MT>::Pack::setup_buffer_sizes(const int dim,
+					    const rtt_rng::Rnd_Control &rcon)
+{
+    Require(dim>0 && dim<4);
+
+    int rnd = rcon.get_size();
+    Check(char_data_size <= rtt_rng::max_buffer);
+
+    set_sizes(dim,rnd);
+}
+
+
+/*!
+ * \brief Constructor.
+
+ * Construct a Particle::Pack instance. Once allocated char, double and int
+ * data is given to the constructor via pointers, the Pack object owns it and 
+ * is resonsible for deallocation. Normally, Pack objects are created via
+ * Particle::pack() which returns a smart pointer to the Pack object.
+
+ */
+
+template <typename MT>
+Particle<MT>::Pack::Pack(double* d, int* i, char* c) :
+    double_data(d), int_data(i), char_data(c) 
+{ /* Assume control of the given pointers */ }
+
+
+/*!
+ * \brief Constructor.
+ * Construct a Particle::Pack instance from a particle.
+ */
+template <typename MT>
+Particle<MT>::Pack::Pack(const Particle<MT>& particle)
+{
+    Require(particle.cell);
+
+    // Temp storage
+    char* bytes;
+    
+    // Set data sizes
+    int dim = particle.r.size();    Check (dim>0 && dim<4);
+
+    // Compute sizes locally and compare. Note that this duplicates the size info
+    int d_size = dim + 6; 
+    int i_size = 2;
+    int c_size = pack_sprng(particle.random.get_id(), &bytes); Check(bytes);
+
+    // if this is the first construction, use these values to set up the
+    // static data, else, check for consistency
+    if (!setup_done) set_sizes(dim, c_size);
+    else {
+	Check(d_size == double_data_size);
+	Check(i_size == int_data_size);
+	Check(c_size == char_data_size);
+    }
+
+    // Allocate the storage
+    double_data = new double[double_data_size];
+    int_data    = new int   [int_data_size];
+    char_data   = new char  [char_data_size]; 
+
+    // Insert the values
+    // double data
+    double_data[0] = particle.time_left;
+    double_data[1] = particle.ew;
+    double_data[2] = particle.fraction;
+    std::copy(particle.omega.begin(), particle.omega.end(), double_data+3);
+    std::copy(particle.r.begin(),     particle.r.end(),     double_data+6);
+
+    // int data
+    int_data[0] = particle.cell;
+    int_data[1] = particle.random.get_num();
+
+    // char data
+    std::copy(bytes, bytes+char_data_size, char_data);
+    std::free(bytes);
+
+}
+
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Copy constructor.
+
+ * Do copy construction while preserving memory.  This is not a reference 
+ * counted class so data is copied from one class to the other during
+ * function calls and the like (wherever a copy constructor is called).
+
+ */
+
+template <typename MT>
+Particle<MT>::Pack::Pack(const Pack &rhs) : 
+    double_data(new double[rhs.double_data_size]), 
+    int_data(new int[rhs.int_data_size]),
+    char_data(new char[rhs.char_data_size])
+{
+    // copy all three data arrays
+    std::copy(rhs.double_data, rhs.double_data+double_data_size,   double_data);
+    std::copy(rhs.int_data,    rhs.int_data   +int_data_size,      int_data);
+    std::copy(rhs.char_data,   rhs.char_data  +rhs.char_data_size, char_data);
+}
+
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Destructor.
+
+ * Cleans up memory when the Pack object goes out of scope.  Once allocated
+ * pointers are given to the Pack object the Pack object takes control of
+ * them.
+
+ */
+
+template <typename MT>
+Particle<MT>::Pack::~Pack()
+{
+    delete [] double_data;
+    delete [] int_data;
+    delete [] char_data;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Unpack the Particle
+
+ * Unpacks and returns a smart pointer to a new Particle.
+
+ * \return smart pointer to the unpacked particle
+
+ */
+
+template <typename MT>
+Particle<MT>::SP_Particle Particle<MT>::Pack::unpack() const
+{
+    // calls the static version of unpack with it's own data
+    return unpack(double_data_size, double_data,
+		  int_data_size,    int_data,
+		  char_data_size,   char_data);
+}
+
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Unpack the Particle represented as raw data
+
+ * Unpacks and returns a smart pointer to a new Particle.
+
+ * \return smart pointer to the unpacked particle
+
+ */
+
+template <typename MT>
+Particle<MT>::SP_Particle Particle<MT>::Pack::unpack(
+    int double_size, double* double_data, 
+    int int_size,    int*    int_data,
+    int char_size,   char*   char_data)
+{
+    Require(double_size>6);  Require(double_data);
+    Require(int_size==2);    Require(int_data);
+    Require(char_size>0);    Require(char_data);
+
+    // compute the dimension of the space based on the size of the data:
+    int dim = double_size - 6;
+    Check(dim>0 && dim<4);
+
+    // double data
+    double t_left = double_data[0];  Check(t_left>=0.0);
+    double ew     = double_data[1];  Check(ew>0.0);
+    double frac   = double_data[2];  Check(frac>0.0);
+    vector<double> omega(double_data+3, double_data+6);
+    vector<double> r    (double_data+6, double_data+6+dim);
+
+    // int data
+    int cell = int_data[0];  Check(cell);
+    int rnum = int_data[1];  Check(rnum>=0);
+
+    // char data
+    char *bytes = new char[char_size];
+    std::copy(char_data, char_data+char_size, bytes);
+
+    // random object, from int and char data
+    int *rnid = unpack_sprng(bytes);
+    rtt_rng::Sprng random(rnid, rnum);
+    delete [] bytes;
+    
+    return SP_Particle (new Particle(r, omega, ew, cell, random, frac, t_left));
+
 }
 
 } // end namespace rtt_imc
