@@ -13,9 +13,10 @@
 #define __cdi_gandolf_GandolfOpacity_hh__
 
 #include <vector>
+#include <string>
+#include <cmath>
 
 #include "cdi/Opacity.hh"
-#include "GandolfWrapper.hh"
 
 namespace rtt_cdi_gandolf
 {
@@ -78,22 +79,21 @@ class GandolfOpacity : public rtt_cdi::Opacity
     const string dataFilename;
 
     /*!
-     * \brief List of material identifiers found in the data file.
+     * \brief Number of materials found in the data file.
      */
-    vector<int> matIDs;
+    int numMaterials;
 
     /*!
      * \brief The material ID that this instance of GandolfOpacity 
      *        represents.
      */
-    int matID;
+    const int matID;
 
     /*!
      * \brief List of keywords for current material found in the data
      *        file. 
      */
-    char keys[maxKeys][key_length];
-
+    vector<string> vkeys;
     /*!
      * \brief Number of keys available for the current material found
      *        in the data file.
@@ -130,14 +130,14 @@ class GandolfOpacity : public rtt_cdi::Opacity
     int numMGOpacities;
     
     /*!
-     * \brief The temperature grid found in the data file.
+     * \brief The log(temperature) grid found in the data file.  
      */
-    vector<double> temperatures;
+    vector<double> logTemperatures;
 
     /*!
-     * \brief The density grid found in the data file.
+     * \brief The log(density) grid found in the data file.
      */
-    vector<double> densities;
+    vector<double> logDensities;
 
     /*!
      * \brief The energy group boundaries found in the data file.
@@ -145,36 +145,29 @@ class GandolfOpacity : public rtt_cdi::Opacity
     vector<double> groupBoundaries;
 
     /*!
-     * \brief The gray opacity table found in the data file.
+     * \brief The log(gray opacity) table found in the data file.
      */
-    vector<double> grayOpacities;
+    vector<double> logGrayOpacities;
 
     /*!
-     * \brief The multigroup opacity table found in the data file.
+     * \brief The log(multigroup opacity) table found in the data file.
      */
-    vector<double> MGOpacities;
+    vector<double> logMGOpacities;
+
+    /*!
+     * \brief Have we loaded the gray Rosseland opacity table yet?
+     */
+    bool grayRosselandTableLoaded;
+
+    /*!
+     * \brief Have we loaded the multigroup Rosseland opacity table yet?
+     */
+    bool mgRosselandTableLoaded;
 
   public:
 
     // CREATORS
     
-    /*!
-     * \brief GandolfOpacity constructor only requiring data filename.
-     *
-     * \sa This GandolfOpacity constructor only requires the data
-     *     filename.   This constructor will provide the client
-     *     with an object that allows them to see a list of
-     *     available material ID tags.  This constructor should be
-     *     used very rarely.  The primary constructor for this
-     *     class is GandolfOpacity( string, int );
-     *
-     * \param _data_filename The name of the IPCRESS data file.  While 
-     *                       this class can use any filename the F77
-     *                       Gandolf library requires the name to have
-     *                       80 characters or less. 
-     */
-    GandolfOpacity( string _data_filename );
-
     /*!
      * \brief Standard GandolfOpacity constructor.
      * 
@@ -197,7 +190,8 @@ class GandolfOpacity : public rtt_cdi::Opacity
      *               the client must specify.  This material
      *               identifier must exist in the IPCRESS file.
      */
-    GandolfOpacity( string _data_filename, int _matid );
+    GandolfOpacity( const string& _data_filename, 
+		    const int _matid );
 
     // (defaulted) GandolfOpacity(const GandolfOpacity &rhs);
     // (defaulte) ~GandolfOpacity()
@@ -211,16 +205,8 @@ class GandolfOpacity : public rtt_cdi::Opacity
     /*!
      * \brief Returns the IPCRESS data filename.
      */
-    string getDataFilename() { return dataFilename; }
+    const string& getDataFilename() const { return dataFilename; }
 
-    /*!
-     * \brief Returns a list of material identifiers available in the
-     *        IPCRESS file.
-     */
-    vector<int> getMatIDs() 
-    { 
-	return matIDs; 
-    }
 
     /*!
      * \breif Returns a single opacity value for the prescribed
@@ -240,8 +226,8 @@ class GandolfOpacity : public rtt_cdi::Opacity
      * \return Gray opacity value for the current material at
      *         targetTemperature keV and targetDensity g/cm^3.
      */
-    double getGray( const double targetTemperature,
-		    const double targetDensity );
+    double getGrayRosseland( 
+	const double targetTemperature, const double targetDensity );
 
     /*!
      * \breif Returns a vector of the opacity values for each energy
@@ -263,19 +249,31 @@ class GandolfOpacity : public rtt_cdi::Opacity
      *         vector has ngroups entries.  The number of groups is
      *         specified by the data file. 
      */
-    vector<double> getMG( const double targetTemperature, 
-	 		  const double targetDensity );
+    vector<double> getMGRosseland( 
+	const double targetTemperature, const double targetDensity );
  
   private:
     
     // IMPLEMENTATION
+
+    /*! 
+     * \brief This function returns "true" if "key" is found in the list
+     *        of "keys".
+     */
+    template < typename T >
+    static bool key_available( T key, vector<T> keys ); 
+    
+    /*!
+     * \brief This function compares two double precision vectors.  If 
+     *        the vectors are equal within some tolerance then the
+     *        function returns "true".
+     */
+    static bool isSame( const vector<double> &v1, 
+			const vector<double> &v2 );
+
 };
 
-/*! 
- * \brief This function returns "true" if "key" is found in the list
- *        of "keys".
- */
- bool key_available( char key[], char keys[][key_length], int numKeys ); 
+
 
 } // end namespace rtt_cdi_gandolf
 

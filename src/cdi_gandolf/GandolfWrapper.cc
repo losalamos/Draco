@@ -13,82 +13,77 @@
 
 #include "ds++/Assert.hh"
 
-#include <string>
-
 namespace rtt_cdi_gandolf {
 
 using std::string;
+
+void string2char( const string &source, char target[], 
+		  int targetLength )
+    {
+	// If the target c-string is longer than the source string then 
+	// copy the string into the c-string and pad the extra cells
+	// with blanks.	
+	
+	// If the target c-string is shorter than the source string
+	// then copy targetLength characters from the source string
+	// into the target string.
+
+	if ( targetLength >= source.length() ) {
+	    for ( int i=0; i < source.length(); ++i )
+		target[i] = source[i];
+	    for ( int i=source.length(); i < targetLength; ++i )
+		target[i] = ' ';
+	} else {
+	    for ( int i=0; i < targetLength; ++i )
+		target[i] = source[i];
+	}
+    }
+
 
     //----------------------------------------//
     //                gmatids                 //
     //----------------------------------------//
     
-    void gmatids( const std::string &fname , int matids[], 
+    void gmatids( const std::string &fname , vector<int> &matids, 
 		  const int kmat, int &nmat, int &ier ) 
 	{
-	    // Gandolf will not accept a filename that is longer that
-	    // 80 chars in length.	  
-	    int len = fname.length();
-	    Require( len<80 ); 
-
+	    // ----------------------------------------
+	    // Create simple flat data types
+	    // ----------------------------------------
+	    
 	    // copy filename into a char array;
 	    // also remove constness.
-	    char cfname[80];
-	    int i = 0;
-	    for ( ; i < len; ++i )
-		cfname[i] =fname[i];
-	    for ( ; i < 80; ++i )
-		cfname[i] = ' ';
-
+ 	    char cfname[maxDataFilenameLength];
+	    string2char( fname, cfname, maxDataFilenameLength );
+	    
 	    // create "long int" versions of variables.
 	    long int li_nmat = static_cast<long int>(nmat);
 	    long int li_ier  = static_cast<long int>(ier);
 	    // also remove constness from kmat.
 	    long int li_kmat = static_cast<long int>(kmat); 
 
-	    // we don't know the value of kmat until runtime so we
+	    // we don't know the value of nmat until runtime so we
 	    // must dynamically allocate li_matids.
 	    long int *li_matids = new long int [ kmat ];
-	    for ( int i=0; i<kmat; ++i )
-		li_matids[i] = static_cast<long int>(matids[i]);
 
+	    // --------------------------------------------------
 	    // call the Gandolf library function
+	    // --------------------------------------------------
+
 	    extc_gmatids( cfname, li_matids, li_kmat, li_nmat, li_ier );
 
-	    // Abort if Gandolf returns an error.
-
-	    switch ( li_ier ) {
-	    case 0: // no errors
-		break;
-	    case 1: // IPCRESS file not found.
-		Insist( false, "The IPCRESS file was not found.");
-		break;
-	    case 2: // File is not IPCRESS.
-		Insist( false, "The file does not appear to be in IPCRESS format");
-		break;
-	    case 3: // Problem reading file
-		Insist( false, "Having trouble reading the IPCRESS file.");
-		break;
-	    case 4: // No material ID's found in file.
-		Insist( false, "No material ID's were found in the IPCRESS data file.");
-		break;
-	    case 5: // too many matids found ( nmat > kmat )
-		Insist( false, "Too many materials were found in the data file ( nmat > kmat ).");
-		break;
-	    default: // unknown error.
-		Insist( false, "Unknown error returned from Gandolf::gmatids().");
-		break;
-	    }
-
+	    // ----------------------------------------
+	    // Copy the data back into C++ data types
+	    // ----------------------------------------
 
 	    // update the function arguments from their "long int"
-	    // counterparts.
-	    for ( int i=0; i<kmat; ++i )
-		matids[i] = static_cast<int>(li_matids[i]);
+	    // counterparts.  We don't update kmat since it is const. 
 	    ier  = static_cast<int>(li_ier);
 	    nmat = static_cast<int>(li_nmat);
-	    // we don't update kmat since it is const.
+	    matids.resize( nmat );
+	    std::copy( li_matids, li_matids+nmat, matids.begin() );
 	    
+	    // Free up dynamic memory and return.
 	    delete [] li_matids;
 
 	    return;
@@ -97,66 +92,61 @@ using std::string;
 
 
     //----------------------------------------//
-    //                gmatids                 //
+    //                gkeys                   //
     //----------------------------------------//
     
     void gkeys( const std::string &fname, const int &matid, 
-		char keys[][key_length],
+		vector<string> &vkeys,
 		const int kkeys, int &nkeys, int &ier)
 	{
-	    // Gandolf will not accept a filename that is longer that
-	    // 80 chars in length.	  
-	    int len = fname.length();
-	    Require( len<80 ); 
-
+	    // ----------------------------------------
+	    // Create simple flat data types
+	    // ----------------------------------------
+	    
 	    // copy filename into a char array;
 	    // also remove constness.
-	    char cfname[80];
-	    int i = 0;
-	    for ( ; i < len; ++i )
-		cfname[i] =fname[i];
-	    for ( ; i < 80; ++i )
-		cfname[i] = ' ';
-	    
+	    char cfname[maxDataFilenameLength];
+	    string2char( fname, cfname, maxDataFilenameLength );
+
 	    long int li_matid = static_cast<long int>(matid); // const
 	    long int li_kkeys = static_cast<long int>(kkeys); // const
 	    long int li_nkeys = static_cast<long int>(nkeys);
 	    long int li_ier   = static_cast<long int>(ier);
 
+	    // we do not know the value of numKeys until after we call 
+	    // gkeys() so we create the character array keys[][] to be 
+	    // maxKeys long.  This array will later be copied into the
+	    // vector vkeys that is returned to the calling program.
+	    char keys[maxKeys][key_length];
+
+	    // --------------------------------------------------
 	    // call the Gandolf library function
+	    // --------------------------------------------------
+
 	    extc_gkeys( cfname, li_matid, keys, li_kkeys, li_nkeys,
 			li_ier );
 
-	    // Abort if Gandolf returns an error.
-	    switch ( li_ier ) {
-	    case 0: // no errors
-		break;
-	    case 1: // IPCRESS file not found.
-		Insist( false, "The IPCRESS file was not found.");
-		break;
-	    case 2: // File is not IPCRESS.
-		Insist( false, "The file does not appear to be in IPCRESS format");
-		break;
-	    case 3: // Problem reading file
-		Insist( false, "Having trouble reading the IPCRESS file.");
-		break;
-	    case 4: // No keys found for this material.
- 		Insist( false, "No keys were found for this material");
-		break;
-	    case 5: // Too many keys found.
-		Insist( false, "Too many keys for array ( nkeys > kkeys )." );
-		break;
-	    default: // unknown error.
-		Insist( false, "Unknown error returned from Gandolf::gmatids().");
-		break;
-	    }
+	    // ----------------------------------------
+	    // Copy the data back into C++ data types
+	    // ----------------------------------------
 
-	    // copy data back into standard ojects.
 	    // we don't modify matID or kkeys because these are const
 	    // values.
 	    nkeys = static_cast<int>(li_nkeys);	    
 	    ier   = static_cast<int>(li_ier);
 
+	    vkeys.resize( nkeys );
+	    char key[key_length];
+	    for ( int i=0; i<nkeys; ++i )
+		{
+		    // copy all 24 characters of keys[i] into key.
+		    strncpy( key, keys[i], key_length );
+		    // kill trailing whitespace.
+		    strtok( key, " " );
+		    // store the keyword in a vector.
+		    vkeys[i].assign( key, 0, strlen(key) );
+		}
+	    
 	} // end of gkeys
 
 
@@ -168,19 +158,14 @@ using std::string;
 		   int &nt, int &nrho, int &nhnu, int &ngray, int &nmg,
 		   int &ier )
 	{
-	    // Gandolf will not accept a filename that is longer that
-	    // 80 chars in length.	  
-	    int len = fname.length();
-	    Require( len<80 ); 
-
+	    // ----------------------------------------
+	    // Create simple flat data types
+	    // ----------------------------------------
+	    
 	    // copy filename into a char array;
 	    // also remove constness.
-	    char cfname[80];
-	    int i = 0;
-	    for ( ; i < len; ++i )
-		cfname[i] =fname[i];
-	    for ( ; i < 80; ++i )
-		cfname[i] = ' ';
+	    char cfname[maxDataFilenameLength];
+	    string2char( fname, cfname, maxDataFilenameLength );
 	    
 	    long int li_matid = static_cast<long int>(matid); // const
 	    long int li_nt    = static_cast<long int>(nt); 
@@ -190,45 +175,19 @@ using std::string;
 	    long int li_nmg   = static_cast<long int>(nmg);
 	    long int li_ier   = static_cast<long int>(ier);
 
+	    // --------------------------------------------------
 	    // call the Gandolf library function
+	    // --------------------------------------------------
+
 	    extc_gchgrids( cfname, li_matid, li_nt, li_nrho, li_nhnu,
 			   li_ngray, li_nmg, li_ier );
 
-	    // Abort if Gandolf returns an error.
-	    switch ( li_ier ) {
-	    case 0: // no errors
-		break;
-	    case -1: // return with etas, not densities
-		Insist( false, "IPCRESS file returned ETAs not Densities.");
-		break;		
-	    case 1: // IPCRESS file not found.
-		Insist( false, "The IPCRESS file was not found.");
-		break;
-	    case 2: // File is not IPCRESS.
-		Insist( false, "The file does not appear to be in IPCRESS format");
-		break;
-	    case 3: // Problem reading file
-		Insist( false, "Having trouble reading the IPCRESS file.");
-		break;
-	    case 4: // Inconsistent gray grids, mg not checked
- 		Insist( false, "Gray grid inconsistent with the temp/density grid.");
-		break;
-	    case 5: // ngray != nt*nrho, mg not checked
-		Insist( false, "Wrong number of gray opacities found (ngray != nt*nrho)." );
-		break;
-	    case 6: // inconsistent mg grid.
-		Insist( false, "MG grid inconsistent with the temp/density/hnu grid.");
-		break;
-	    case 7: //  nmg != nt*nrho*(nhnu-1).
-		Insist( false, "Wrong number of MG opacities found (nmg != nt*nrho*(nhnu-1)).");
-		break;
-	    default: // unknown error.
-		Insist( false, "Unknown error returned from Gandolf::gmatids().");
-		break;
-	    }
+	    // ----------------------------------------
+	    // Copy the data back into C++ data types
+	    // ----------------------------------------
 
 	    // copy data back into standard ojects.
-	    // we don't modify matID it is a const value.
+	    // we don't modify matID because it is a const value.
 	    nt    = static_cast<int>(li_nt);
 	    nrho  = static_cast<int>(li_nrho);
 	    nhnu  = static_cast<int>(li_nhnu);
@@ -242,26 +201,24 @@ using std::string;
     //                ggetgray                //
     //----------------------------------------//
     
-    void ggetgray( const string &fname,   const int &matid, char *key, 
+    void ggetgray( const string &fname,   const int &matid, const string skey,
 		   vector<double> &temps, const int &kt,    int &nt, 
 		   vector<double> &rhos,  const int &krho,  int &nrho,
 		   vector<double> &data,  const int &kgray, int &ngray,
 		   int &ier )
 	{
-	    // Gandolf will not accept a filename that is longer that
-	    // 80 chars in length.	  
-	    int len = fname.length();
-	    Require( len<80 ); 
+	    // ----------------------------------------
+	    // Create simple flat data types
+	    // ----------------------------------------
 
 	    // copy filename into a char array;
 	    // also remove constness.
-	    char cfname[80];
-	    int i = 0;
-	    for ( ; i < len; ++i )
-		cfname[i] =fname[i];
-	    for ( ; i < 80; ++i )
-		cfname[i] = ' ';
+	    char cfname[maxDataFilenameLength];
+	    string2char( fname, cfname, maxDataFilenameLength );
 
+	    char key[ key_length ];                           
+	    string2char( skey, key, key_length );
+	    
 	    // cast all integers as long integers before calling ggetgray.
 	    long int li_matid = static_cast<long int>(matid); // const
 	    long int li_kt    = static_cast<long int>(kt);    // const
@@ -278,44 +235,20 @@ using std::string;
 	    double *array_rhos  = new double [krho];
 	    double *array_data  = new double [kgray];
 	    
-	    // Call the routine from the Gandolf library.
+	    // --------------------------------------------------
+	    // call the Gandolf library function
+	    // --------------------------------------------------
+
 	    extc_ggetgray( cfname,      li_matid, key, 
 			   array_temps, li_kt,    li_nt, 
 			   array_rhos,  li_krho,  li_nrho,
 			   array_data,  li_kgray, li_ngray,
 			   li_ier );
-	    
-	    // abort if Gandolf returned an error.
-	    switch ( li_ier ) {
-	    case 0: // no errors
-		break;
-	    case -1: // return with etas, not densities
-		Insist( false, "IPCRESS file returned ETAs not Densities.");
-		break;		
-	    case 1: // IPCRESS file not found.
-		Insist( false, "The IPCRESS file was not found.");
-		break;
-	    case 2: // File is not IPCRESS.
-		Insist( false, "The file does not appear to be in IPCRESS format");
-		break;
-	    case 3: // Problem reading file
-		Insist( false, "Having trouble reading the IPCRESS file.");
-		break;
-	    case 4: // Data not found
- 		Insist( false, "Requested data not found.  Check nt, nrho, ngray.");
-		break;
-	    case 5: // Data larger than allocated arrays.
-		Insist( false, "Data found is larger than allocated array size." );
-		break;
-	    case 6: // Data size not equal to nt*nrho
-		Insist( false, "Data size not equal to expected size (ndata != nt*nrho)");
-		break;
-	    default: // unknown error.
-		Insist( false, "Unknown error returned from Gandolf::gmatids().");
-		break;
-	    }
 
-	    // copy flat data structures back into 
+	    // ----------------------------------------
+	    // Copy the data back into C++ data types
+	    // ----------------------------------------
+
 	    nt    = static_cast<int>(li_nt);
 	    nrho  = static_cast<int>(li_nrho);
 	    ngray = static_cast<int>(li_ngray);
@@ -345,6 +278,10 @@ using std::string;
 		    const double &const_tlog, const double &const_rlog, 
 		    double &ans )
  	{
+	    // ----------------------------------------
+	    // Create simple flat data types
+	    // ----------------------------------------
+
 	    // cast all integers as long integers before calling ggetgray.
 	    long int li_nt    = static_cast<long int>(nt);    // const
 	    long int li_nrho  = static_cast<long int>(nrho);  // const
@@ -363,14 +300,17 @@ using std::string;
 	    std::copy( rhos.begin(),  rhos.end(),  array_rhos );
 	    std::copy( data.begin(),  data.end(),  array_data );
 	    
-	    // Call the routine from the Gandolf library.
+	    // --------------------------------------------------
+	    // call the Gandolf library function
+	    // --------------------------------------------------
+
 	    extc_gintgrlog( array_temps, li_nt, array_rhos, li_nrho,
 			    array_data, li_ngray, tlog, rlog, ans );
 	    
-	    // Gandolf does not return an error code for this function.
-
-	    // copy flat data structures back into 
-	    // (none??? -- maybe ans???)
+	    // no error code is returned from this function.
+	    // we don't need to copy any data back into C++ data
+	    // types.  The only return value is "ans" and it is
+	    // already in the correct format.
 
 	    delete [] array_temps;
 	    delete [] array_rhos;
@@ -385,26 +325,24 @@ using std::string;
     // Read data grid (temp,density,energy_bounds) and mg opacity
     // data.  Retrieve both the size of the data and the actual data.
 
-    void ggetmg( const string &fname,   const int &matid, char *key, 
+    void ggetmg( const string &fname,   const int &matid, const string skey,
 		 vector<double> &temps, const int &kt,    int &nt, 
 		 vector<double> &rhos,  const int &krho,  int &nrho,
 		 vector<double> &hnus,  const int &khnu,  int &nhnu,
 		 vector<double> &data,  const int &kdata, int &ndata,
 		 int &ier )
 	{
-	    // Gandolf will not accept a filename that is longer that
-	    // 80 chars in length.	  
-	    int len = fname.length();
-	    Require( len<80 ); 
+	    // ----------------------------------------
+	    // Create simple flat data types
+	    // ----------------------------------------
 
 	    // copy filename into a char array;
 	    // also remove constness.
-	    char cfname[80];
-	    int i = 0;
-	    for ( ; i < len; ++i )
-		cfname[i] =fname[i];
-	    for ( ; i < 80; ++i )
-		cfname[i] = ' ';
+	    char cfname[maxDataFilenameLength];
+	    string2char( fname, cfname, maxDataFilenameLength );
+
+	    char key[ key_length ];                           
+	    string2char( skey, key, key_length);
 
 	    // cast all integers as long integers before calling ggetgray.
 	    long int li_matid = static_cast<long int>(matid); // const
@@ -425,45 +363,21 @@ using std::string;
 	    double *array_hnus  = new double [khnu];
 	    double *array_data  = new double [kdata];
 	    
-	    // Call the routine from the Gandolf library.
+	    // --------------------------------------------------
+	    // call the Gandolf library function
+	    // --------------------------------------------------
+
 	    extc_ggetmg( cfname,      li_matid, key, 
 			 array_temps, li_kt,    li_nt, 
 			 array_rhos,  li_krho,  li_nrho,
 			 array_hnus,  li_khnu,  li_nhnu,
 			 array_data,  li_kdata, li_ndata,
 			 li_ier );
-	    
-	    // abort if Gandolf returned an error.
-	    switch ( li_ier ) {
-	    case 0: // no errors
-		break;
-	    case -1: // return with etas, not densities
-		Insist( false, "IPCRESS file returned ETAs not Densities.");
-		break;		
-	    case 1: // IPCRESS file not found.
-		Insist( false, "The IPCRESS file was not found.");
-		break;
-	    case 2: // File is not IPCRESS.
-		Insist( false, "The file does not appear to be in IPCRESS format");
-		break;
-	    case 3: // Problem reading file
-		Insist( false, "Having trouble reading the IPCRESS file.");
-		break;
-	    case 4: // Data not found
- 		Insist( false, "Requested data not found.  Check nt, nrho, nhnu and ndata.");
-		break;
-	    case 5: // Data larger than allocated arrays.
-		Insist( false, "Data found is larger than allocated array size." );
-		break;
-	    case 6: // Data size not equal to nt*nrho
-		Insist( false, "Data size not equal to expected size (ndata != nt*nrho*(nhnu-1))");
-		break;
-	    default: // unknown error.
-		Insist( false, "Unknown error returned from Gandolf::gmatids().");
-		break;
-	    }
 
-	    // copy flat data structures back into 
+	    // ----------------------------------------
+	    // Copy the data back into C++ data types
+	    // ----------------------------------------
+
 	    nt    = static_cast<int>(li_nt);
 	    nrho  = static_cast<int>(li_nrho);
 	    nhnu  = static_cast<int>(li_nhnu);
@@ -480,7 +394,9 @@ using std::string;
 	    std::copy( array_rhos,  array_rhos+nrho,  rhos.begin()  );
 	    std::copy( array_hnus,  array_hnus+nhnu,  hnus.begin()  );
 	    std::copy( array_data,  array_data+ndata, data.begin()  );
-
+	    
+	    // free up dynamically allocated memory
+	    
 	    delete [] array_temps;
 	    delete [] array_rhos;
 	    delete [] array_hnus;
@@ -499,6 +415,10 @@ using std::string;
 		    const double &const_tlog, const double &const_rlog, 
 		    vector<double> &ansmg )
  	{
+	    // ----------------------------------------
+	    // Create simple flat data types
+	    // ----------------------------------------
+
 	    int ngroups = nhnu-1;
 
 	    // cast all integers as long integers before calling
@@ -524,15 +444,18 @@ using std::string;
 	    // Allocate apace for the solution.
 	    double *array_ansmg = new double [ngroups];
 	    
-	    // Call the routine from the Gandolf library.
+	    // --------------------------------------------------
+	    // call the Gandolf library function
+	    // --------------------------------------------------
+
 	    extc_gintmglog( array_temps, li_nt, array_rhos, li_nrho,
 			    li_nhnu, array_data, li_ndata, tlog, rlog,
 			    array_ansmg ); 
 	    
-	    // Gandolf does not return an error code for this function.
+	    // ----------------------------------------
+	    // Copy the data back into C++ data types
+	    // ----------------------------------------
 
-	    // copy flat data structures back into standard data
-	    // types.
 	    std::copy( array_ansmg, array_ansmg+ngroups, 
 		       ansmg.begin() );
 

@@ -13,6 +13,7 @@
 #define __cdi_gandolf_GandolfWrapper_hh__
 
 #include <string>
+#include <cstring>
 #include <vector>
 
 namespace rtt_cdi_gandolf {
@@ -31,6 +32,12 @@ using std::vector;
  * available any where in the rtt_cdi_gandolf namespace.
  */
 //===========================================================================//
+
+/*!
+ * \brief The maximum length of the data filename.  This length is set 
+ *        by the Gandolf libraries.
+ */
+ const int maxDataFilenameLength = 80;
 
  /*!
   * \brief The length of each descriptor key (set by Gandolf).
@@ -102,8 +109,8 @@ using std::vector;
  * \return       matids, nmat and ier.
  *
  */
-    void gmatids( const string &fname , int matids[], 
-		  const int kmat,int &nmat, int &ier );
+    void gmatids( const string &fname , vector<int> &matids, 
+		  const int kmat, int &nmat, int &ier );
 /*!
  * \brief Retrieve a list of keys that specify the types of
  *        information available for the spacified material in the
@@ -124,7 +131,7 @@ using std::vector;
  *
  */
     void gkeys( const string &fname, const int &matid, 
-		char keys[][key_length],
+		vector<string> &vkeys,
 		const int kkeys, int &nkeys, int &ier );
 
 /*!
@@ -176,7 +183,7 @@ using std::vector;
  * \return       temps, nt, rhos, nrho, gray, ngray.
  *
  */
-    void ggetgray( const string &fname,   const int &matid, char *key, 
+    void ggetgray( const string &fname,   const int &matid, const string key, 
 		   vector<double> &temps, const int &kt,    int &nt, 
 		   vector<double> &rhos,  const int &krho,  int &nrho,
 		   vector<double> &gray,  const int &kgray, int &ngray,
@@ -237,7 +244,7 @@ using std::vector;
  * \return       temps, nt, rhos, nrho, hnus, nhnu, data, ndata, ier.
  *
  */
-    void ggetmg( const string &fname,   const int &matid, char *key, 
+    void ggetmg( const string &fname,   const int &matid, const string key, 
 		 vector<double> &temps, const int &kt,    int &nt,
 		 vector<double> &rhos,  const int &krho,  int &nrho,
 		 vector<double> &hnus,  const int &khnu,  int &nhnu,
@@ -270,6 +277,18 @@ using std::vector;
 		    const double &tlog, const double &rlog, 
 		    vector<double> &ansmg );
 
+/*!
+ * \brief copies the source string into the target c-string.
+ *
+ * \param source       The string that needs to be copied into a c-string.
+ * \param target       The c-string that is being filled.
+ * \param targetLength The length of of the c-string "target[]".
+ * \return             target[]
+ *
+ */
+    void string2char( const string &source, char target[], 
+		      int targetLength );	
+
 } // end namespace rtt_cdi_gandolf
 
 
@@ -286,6 +305,8 @@ using std::vector;
 #define extc_gintgrlog gintgrlog_
 #define extc_ggetmg ggetmg_
 #define extc_gintmglog gintmglog_
+
+// Add defines for gandolf_integer and gandolf_double?
 
 #endif
     
@@ -306,7 +327,8 @@ extern "C" {
     // variable is set in the rtt_cdi_gandolf namespace but since this 
     // "extern C" block is outside of that namespace we must specify
     // this length manually.
-    void extc_gkeys( char *cfname, long int &matid, char keys[][24],
+    void extc_gkeys( char *cfname, long int &matid, 
+		     char keys[][rtt_cdi_gandolf::key_length],
 		     long int &kkeys, long int &nkeys, long int &ier );
 
     void extc_gchgrids( char *cfname, long int &matid, long int &nt,
