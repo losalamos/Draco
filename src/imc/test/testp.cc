@@ -42,10 +42,7 @@ void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
 {
   // do some diagnostic checks
 
-    ostringstream stitle;
-    stitle << mynode << ".dat";
-    string title = stitle.str();
-
+    string title = "full.dat";
     ofstream output(title.c_str());
 
   // title header
@@ -69,6 +66,39 @@ void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
     output << "Mesh:      " << mesh.num_cells() << endl;
     output << "Opacity:   " << opacity.num_cells() << endl;
     output << "Mat_State: " << mat.num_cells() << endl;
+
+  // message
+    cout << "Wrote Full Mesh diagnostic file " << title << " from proc. " 
+	 << mynode << endl;
+}
+
+template<class MT>
+void Builder_diagnostic(const MT &mesh,	const Opacity<MT> &opacity)
+{
+  // do some diagnostic checks
+
+    ostringstream stitle;
+    stitle << mynode << ".dat";
+    string title = stitle.str();
+
+    ofstream output(title.c_str());
+
+  // title header
+    output << "Coordinate System: " << mesh.get_Coord().get_Coord() << endl;
+    output << "Mesh Size: " << mesh.num_cells() << endl;
+    output << endl;
+
+  // print mesh
+    output << mesh;
+    output << endl;
+
+  // print opacity
+    output << opacity;
+    output << endl;
+
+  // final diagnostics
+    output << "Mesh:      " << mesh.num_cells() << endl;
+    output << "Opacity:   " << opacity.num_cells() << endl;
 
   // message
     cout << "Wrote Mesh diagnostic file " << title << " from proc. " 
@@ -111,16 +141,20 @@ int main(int argc, char *argv[])
     Parallel_Builder<OS_Mesh> pcomm;
     
     if (!mynode)
+    {
 	pcomm.send_Mesh(*mesh);
+	pcomm.send_Opacity(*opacity);
+	Builder_diagnostic(*mesh, *mat_state, *opacity);
+    }
 
     if (mynode)
-    {
-        mesh = pcomm.recv_Mesh();
-	std::cout << mesh->num_cells() << std::endl;
-    } 
+    {	
+        mesh    = pcomm.recv_Mesh();
+	opacity = pcomm.recv_Opacity(mesh);
+    }
     
     if (mesh) 
-	Builder_diagnostic(*mesh, *mat_state, *opacity);
+	Builder_diagnostic(*mesh, *opacity);
 
   // c4 end
     Finalize();
