@@ -34,12 +34,12 @@ AC_ARG_WITH(pooma,
 
 if test "${with_pooma:=no}" = yes ; then
    if test -z "${POOMA_ARCH}" ; then
-      AC_MSG_ERROR([Environment variable POOMA_ARCH must be set if]
+      AC_MSG_WARN([Environment variable POOMA_ARCH must be set if]
 		 [ --with-pooma does not specifiy architecture.])
    fi
    with_pooma="$POOMA_ARCH"
 elif test "${with_pooma}" = no ; then
-   AC_MSG_ERROR([Must set --with-pooma and --with-pooma-root])
+   AC_MSG_WARN([Must set --with-pooma and --with-pooma-root])
 fi
 
 AC_MSG_CHECKING(for pooma)

@@ -2657,12 +2657,12 @@ fi
 
 if test "${with_pooma:=no}" = yes ; then
    if test -z "${POOMA_ARCH}" ; then
-      { echo "configure: error: Environment variable POOMA_ARCH must be set if
-		  --with-pooma does not specifiy architecture." 1>&2; exit 1; }
+      echo "configure: warning: Environment variable POOMA_ARCH must be set if
+		  --with-pooma does not specifiy architecture." 1>&2
    fi
    with_pooma="$POOMA_ARCH"
 elif test "${with_pooma}" = no ; then
-   { echo "configure: error: Must set --with-pooma and --with-pooma-root" 1>&2; exit 1; }
+   echo "configure: warning: Must set --with-pooma and --with-pooma-root" 1>&2
 fi
 
 echo $ac_n "checking for pooma""... $ac_c" 1>&6
