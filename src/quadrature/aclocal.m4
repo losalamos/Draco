@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.2 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -180,7 +180,7 @@ AC_DEFUN([AC_AZTEC_SETUP], [dnl
 
    dnl define --with-aztec
    AC_ARG_WITH(aztec,
-      [  --with-aztec=[lib]      determine the aztec lib (aztec is the default])
+      [  --with-aztec=[lib]      determine the aztec lib (aztec is the default)])
  
    dnl define --with-aztec-inc
    AC_WITH_DIR(aztec-inc, AZTEC_INC, \${AZTEC_INC_DIR},
@@ -240,7 +240,8 @@ AC_DEFUN(AC_GSL_SETUP, [dnl
 
    dnl define --with-gsl
    AC_ARG_WITH(gsl,
-      [  --with-gsl=[lib]      determine the gsl lib (gsl is the default])
+      [  --with-gsl=[gsl] 
+                       determine GSL lib (gsl is default)])
  
    dnl define --with-gsl-inc
    AC_WITH_DIR(gsl-inc, GSL_INC, \${GSL_INC_DIR},
@@ -255,10 +256,17 @@ AC_DEFUN(AC_GSL_SETUP, [dnl
        with_gsl='gsl'
    fi
 
+   # if atlas is available use it's version of cblas, 
+   # otherwise use the version provided by GSL
+   if test "${with_lapack}" = atlas; then
+       gsl_libs='-lgsl'
+   else
+       gsl_libs='-lgsl -lgslcblas'
+   fi
+
    # determine if this package is needed for testing or for the 
    # package
    vendor_gsl=$1
-
 ])
 
 
@@ -275,9 +283,9 @@ AC_DEFUN([AC_GSL_FINALIZE], [dnl
 
        # library path
        if test -n "${GSL_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} -l${with_gsl})
+	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} ${gsl_libs})
        elif test -z "${GSL_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gsl, -l${with_gsl})
+	   AC_VENDORLIB_SETUP(vendor_gsl, ${gsl_libs})
        fi
 
        # add GSL directory to VENDOR_LIB_DIRS
@@ -4966,14 +4974,23 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
 
    # For a component, the doxygen input is the srcdir and the examples
    # are in the tests
-   doxygen_input="${abs_srcdir} ${abs_srcdir}/autodoc"
-   doxygen_examples=${abs_srcdir}/test
+   AC_MSG_CHECKING([doxygen input directories])
+   if test -d ${abs_srcdir}; then
+      doxygen_input="${doxygen_input} ${abs_srcdir}"
+   fi
+   if test -d ${autodoc_dir}; then
+      doxygen_input="${doxygen_input} ${autodoc_dir}"
+   fi
+   AC_MSG_RESULT(${doxygen_input})
+   if test -d ${abs_srcdir}/test; then
+      doxygen_examples=${abs_srcdir}/test
+   fi
 
    # Set the package-level html output location
    package_html=${doxygen_output_top}/html
 
    # The local dir is different from the current dir.
-   localdir=`pwd`/autodoc
+   # localdir=`pwd`/autodoc
 
    # Set the component output locations.
    doxygen_html_output="${doxygen_output_top}/html/${package}"
@@ -5021,7 +5038,15 @@ AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
 
    # For the package, the input is the current directory, plus
    # configure/doc. There are no examples
-   doxygen_input="`pwd` ${config_dir}/doc"
+   AC_MSG_CHECKING([for Doxygen input directories])
+   doxygen_input="`pwd`"
+   if test -d ${config_dir}/doc; then
+      doxygen_input="${doxygen_input} ${config_dir}/doc"
+   fi
+   if test -d ${autodoc_dir}; then
+      doxygen_input="${doxygen_input} ${autodoc_dir}"
+   fi
+   AC_MSG_RESULT(${doxygen_input})
    doxygen_examples=''
 
    # Component output locations

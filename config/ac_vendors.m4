@@ -180,7 +180,7 @@ AC_DEFUN([AC_AZTEC_SETUP], [dnl
 
    dnl define --with-aztec
    AC_ARG_WITH(aztec,
-      [  --with-aztec=[lib]      determine the aztec lib (aztec is the default])
+      [  --with-aztec=[lib]      determine the aztec lib (aztec is the default)])
  
    dnl define --with-aztec-inc
    AC_WITH_DIR(aztec-inc, AZTEC_INC, \${AZTEC_INC_DIR},
@@ -241,7 +241,8 @@ AC_DEFUN(AC_GSL_SETUP, [dnl
 
    dnl define --with-gsl
    AC_ARG_WITH(gsl,
-      [  --with-gsl=[lib]      determine the gsl lib (gsl is the default])
+      [  --with-gsl=[gsl] 
+                       determine GSL lib (gsl is default)])
  
    dnl define --with-gsl-inc
    AC_WITH_DIR(gsl-inc, GSL_INC, \${GSL_INC_DIR},
@@ -256,10 +257,17 @@ AC_DEFUN(AC_GSL_SETUP, [dnl
        with_gsl='gsl'
    fi
 
+   # if atlas is available use it's version of cblas, 
+   # otherwise use the version provided by GSL
+   if test "${with_lapack}" = atlas; then
+       gsl_libs='-lgsl'
+   else
+       gsl_libs='-lgsl -lgslcblas'
+   fi
+
    # determine if this package is needed for testing or for the 
    # package
    vendor_gsl=$1
-
 ])
 
 ##---------------------------------------------------------------------------##
@@ -277,9 +285,9 @@ AC_DEFUN([AC_GSL_FINALIZE], [dnl
 
        # library path
        if test -n "${GSL_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} -l${with_gsl})
+	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} ${gsl_libs})
        elif test -z "${GSL_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gsl, -l${with_gsl})
+	   AC_VENDORLIB_SETUP(vendor_gsl, ${gsl_libs})
        fi
 
        # add GSL directory to VENDOR_LIB_DIRS
