@@ -929,7 +929,7 @@ EOF
        has_libdir="yes"
    fi
 
-   for lib in nml c4 ds++
+   for lib in c4 ds++
    do
        # temporary string to keep line from getting too long
        draco_depends="\${libdir}/lib${lib}\${libsuffix}"
@@ -2616,12 +2616,6 @@ EOF
    fi
 
        fi
-
-       # set rpath when building shared library executables
-       if test "${enable_shared}" = yes; then
-	   DRACO_LIBS="-rpath \${libdir} ${DRACO_LIBS}"
-	   PKG_LIBS="-rpath .. ${PKG_LIBS}"
-       fi
    ;;
    sparc-sun-solaris2.*)
        # MPICH LIBRARY EXTRAS
@@ -2651,13 +2645,6 @@ EOF
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${pcg_sun_libs}"
    fi
 
-       fi
-
-       # set -R when building shared library executables
-       if test "${enable_shared}" = yes; then
-	   DRACO_LIBS="-R \${libdir} ${DRACO_LIBS}"
-	   PKG_LIBS="-R .. ${PKG_LIBS}"
-	   RANLIB=':'
        fi
    ;;
    *)
@@ -2820,7 +2807,7 @@ ac_given_srcdir=$srcdir
 ac_given_INSTALL="$INSTALL"
 
 trap 'rm -fr `echo "Makefile:../../config/Makefile.package.in \
-test/Makefile:../../config/Makefile.test.in test/TstPCG.in:test/TstPCG.in.in linalg/config.h:config.h.in" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+test/Makefile:../../config/Makefile.test.in linalg/config.h:config.h.in" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -2945,7 +2932,7 @@ EOF
 cat >> $CONFIG_STATUS <<EOF
 
 CONFIG_FILES=\${CONFIG_FILES-"Makefile:../../config/Makefile.package.in \
-test/Makefile:../../config/Makefile.test.in test/TstPCG.in:test/TstPCG.in.in"}
+test/Makefile:../../config/Makefile.test.in"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then

@@ -9,18 +9,11 @@
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 
-#include "nml/Group.hh"
-#include "nml/Items.hh"
-
-//#include "base/Log.hh"
-
-#include "../pcg_DB.hh"
 #include "../PCG_Ctrl.hh"
 #include "../PCG_MatVec.hh"
 #include "../PCG_PreCond.hh"
 
 #include "test_utils.hh"
-#include "tstpcg_DB.hh"
 #include "TstPCG_MatVec.hh"
 #include "TstPCG_PreCond.hh"
 
@@ -58,28 +51,9 @@ int main( int argc, char *argv[] )
     int nodes = C4::nodes();
     int ptype = C4::group();
 
-// Now, try to read in some namelist input.
-    NML_Group *g;
-
-    tstpcg_DB tstpcg_db;
-    pcg_DB    pcg_db( "pcg" );
-
-    g = new NML_Group( "TstPCG.in" );
-
-    tstpcg_db.setup_namelist( *g );
-    pcg_db   .setup_namelist( *g );
-
-    g->readgroup ( "TstPCG.in"  );
-    g->writegroup( "TstPCG.out" );
-
-// Now, try writing to a log file.
-//     Log tstlog;
-//     tstlog.init( "TstPCG.log" );
-//     tstlog << "*** Log File for TstPCG ***\n";
-
 // Now do the testing.
-    int nxs = tstpcg_db.nxs;
-    int nys = tstpcg_db.nys;
+    int nxs = 12;
+    int nys = 12;
     int nru = nxs * nys;
 
     using dsxx::SP;
@@ -87,7 +61,12 @@ int main( int argc, char *argv[] )
     SP< PCG_MatVec<double> >  pcg_matvec(new TstPCG_MatVec<double>(nxs,nys));
     SP< PCG_PreCond<double> > pcg_precond(new TstPCG_PreCond<double>());
 
-    PCG_Ctrl<double> pcg_ctrl( pcg_db, nru );
+    PCG_Ctrl<double> pcg_ctrl(PCG_Ctrl<double>::GMRS);
+    pcg_ctrl.setIparm(PCG_Ctrl<double>::ITSMAX, 1000);
+    pcg_ctrl.setIparm(PCG_Ctrl<double>::NS2, 10);
+    pcg_ctrl.setFparm(PCG_Ctrl<double>::ZETA, 0.001);
+    pcg_ctrl.setFparm(PCG_Ctrl<double>::ALPHA, 0.1);
+    pcg_ctrl.setOutputLevel(PCG_Ctrl<double>::LEVPRM);
 
     using dsxx::Mat1;
     
@@ -97,7 +76,7 @@ int main( int argc, char *argv[] )
     double h = 1.0/(nxs+1);
     b = h*h;
 
-    pcg_ctrl.pcg_fe( x, b, pcg_matvec, pcg_precond );
+    pcg_ctrl.solve( x, b, pcg_matvec, pcg_precond );
 
     // evaluate the results to see if it converged.
     

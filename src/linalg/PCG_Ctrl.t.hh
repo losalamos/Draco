@@ -17,219 +17,408 @@ using namespace dsxx;
 //---------------------------------------------------------------------------//
 
 template<class T>
-PCG_Ctrl<T>::PCG_Ctrl( const pcg_DB& pcg_db, int _nru )
-    : pcg_DB(pcg_db),
-      iparm(Bounds(1,50)), fparm(Bounds(1,30)),
-      iwk(pcg_db.nwi), fwk(pcg_db.nwf),
-      xex(1), nru(_nru)
+PCG_Ctrl<T>::PCG_Ctrl(const Method method)
+    : d_iparm(Bounds(1,50)),
+      d_fparm(Bounds(1,30)),
+      d_uExact(1),
+      d_method(method)
 {
-// Initialize some stuff from pcg_DB.
-    itmeth = pcg_db.itmeth;
+    // Initialize iparm and fparm arrays via PCG defaults
+    pcg::xdfalt(&d_iparm(1), &d_fparm(1));
+    
+    d_iparm(MALLOC) = NO;  // Don't allow this for now; see allocateWorkArrays
+}
 
-// Compute required size of iwk and fwk and resize them.
-    set_nwi();
-    set_nwf();
+//---------------------------------------------------------------------------//
+// Copy constructor.
+//---------------------------------------------------------------------------//
 
-    iwk.redim( nwi );
-    fwk.redim( nwf );
+template<class T>
+PCG_Ctrl<T>::PCG_Ctrl(const PCG_Ctrl<T> &rhs)
+    : d_iparm(rhs.d_iparm),
+      d_fparm(rhs.d_fparm),
+      d_uExact(rhs.d_uExact),
+      d_method(rhs.d_method)
+{
+}
 
-// Initialize iparm and fparm arrays.
-    set_default();
+//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
-    iparm(pcg::NOUT)   = nout;
-    iparm(pcg::LEVOUT) = levout;
-    iparm(pcg::NRU)    = nru;
-    iparm(pcg::ITSMAX) = itsmax;
-    iparm(pcg::MALLOC) = malloc;
-    iparm(pcg::NWI)    = nwi;
-    iparm(pcg::NWF)    = nwf;
-    iparm(pcg::NTEST)  = ntest;
-    iparm(pcg::IQSIDE) = iqside;
-    iparm(pcg::IUINIT) = iuinit;
-    iparm(pcg::NEEDRC) = needrc;
-    iparm(pcg::NS1)    = ns1;
-    iparm(pcg::NS2)    = ns2;
-    iparm(pcg::ICKSTG) = ickstg;
-    iparm(pcg::IUEXAC) = iuexac;
-    iparm(pcg::IDOT)   = idot;
-    iparm(pcg::ISTATS) = istats;
+template<class T>
+PCG_Ctrl<T> &
+PCG_Ctrl<T>::operator=(const PCG_Ctrl<T> &rhs)
+{
+    if ( this == &rhs ) {
+	return *this;
+    }
 
-    fparm(pcg::CTIMER) = ctimer;
-    fparm(pcg::RTIMER) = rtimer;
-    fparm(pcg::FLOPSR) = flopsr;
-    fparm(pcg::ZETA)   = zeta;
-    fparm(pcg::ALPHA)  = alpha;
+    d_iparm = rhs.d_iparm;
+    d_fparm = rhs.d_fparm;
+    d_uExact = rhs.d_uExact;
+    d_method = rhs.d_method;
 
-// Print control parameters.
-//    print_params();
+    return *this;
 }
 
 //---------------------------------------------------------------------------//
 // Main controller method.
+//
+// x: Output solution and possibly input initial guess
+// b: right-hand size vector
+// pcg_matvec: matvec routine
+// pcg_precond: preconditioner routine
+// nru: Length of solution vector, which may be smaller than x.size().
+//      If nru < 0, then set to x.size().  Default value is -1.
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::pcg_fe( dsxx::Mat1<T>& x, const dsxx::Mat1<T>& b,
-			  dsxx::SP< PCG_MatVec<T> > pcg_matvec,
-			  dsxx::SP< PCG_PreCond<T> > pcg_precond )
+void PCG_Ctrl<T>::solve(dsxx::Mat1<T>& x,
+			const dsxx::Mat1<T>& b,
+			dsxx::SP< PCG_MatVec<T> > pcg_matvec,
+			dsxx::SP< PCG_PreCond<T> > pcg_precond,
+			const int nru)
 {
-// Initialize ijob.
-    ijob = pcg::JINIT;
-
-// Call an iterative method.
-    int done=0;
-    while (!done) {
-	it_method( x, b, xex );
-
-	ijob = pcg::JRUN;
-
-	if( ireq == pcg::JTERM ) {
-	    done = 1;
-	}
-	else if( ireq == pcg::JAV ) {
-	//	    cout << "Preparing for MatVec." << endl << flush;
-	    Mat1<T> xmatvec(&fwk(ivqr-1),nru);
-	    Mat1<T> bmatvec(&fwk(iva-1), nru);
-	    pcg_matvec->MatVec(bmatvec,xmatvec);
-	//	    cout << "Done with     MatVec." << endl << flush;
-	}
-	else if( ireq == pcg::JQLV ) {
-	//	    cout << "Preparing for Left_PreCond." << endl << flush;
-	    Mat1<T> xprecond(&fwk(ivql-1),nru);
-	    Mat1<T> bprecond(&fwk(iva-1), nru);
-	    pcg_precond->Left_PreCond(xprecond,bprecond);
-	//	    cout << "Done with     Left_PreCond." << endl << flush;
-	}
-	else if( ireq == pcg::JQRV ) {
-	    Mat1<T> xprecond(&fwk(ivqr-1),nru);
-	    Mat1<T> bprecond(&fwk(ivql-1),nru);
-	    pcg_precond->Right_PreCond(xprecond,bprecond);
-	}
-	else if( ireq == pcg::JTEST ) {
-	}
-	else if( ireq == pcg::JATV ) {
-	}
-	else if( ireq == pcg::JQLTV ) {
-	}
-	else if( ireq == pcg::JQRTV ) {
-	}
-    }
-}
-
-//---------------------------------------------------------------------------//
-// Set default values for PCG iparm and fparm arrays.
-//---------------------------------------------------------------------------//
-
-template<class T>
-void PCG_Ctrl<T>::set_default()
-{
-    pcg::xdfalt( &iparm(1), &fparm(1) );
-}
-
-//---------------------------------------------------------------------------//
-// Call a pcg iterative method.
-//---------------------------------------------------------------------------//
-
-template<class T>
-void PCG_Ctrl<T>::it_method( dsxx::Mat1<T>& x, const dsxx::Mat1<T>& b, dsxx::Mat1<T>& xex )
-{
-    if( itmeth == pcg::BASIC ) {
-	pcg::xbasr( ijob, ireq, &x(0), &xex(0), &b(0), iva, ivql, ivqr,
-		    &iwk(0), &fwk(0), &iparm(1), &fparm(1), ier );
-	imatvec = pcg::TRUE;
-    }
-    else if( itmeth == pcg::GMRES ) {
-	pcg::xgmrsr( ijob, ireq, &x(0), &xex(0), &b(0), iva, ivql, ivqr,
-		     &iwk(0), &fwk(0), &iparm(1), &fparm(1), ier );
-	imatvec = pcg::TRUE;
-    }
-    else if( itmeth == pcg::CG ) {
-	pcg::xcgr( ijob, ireq, &x(0), &xex(0), &b(0), iva, ivql, ivqr,
-		   &iwk(0), &fwk(0), &iparm(1), &fparm(1), ier );
-	imatvec = pcg::TRUE;
+    // Allocate the work arrays
+    
+    if ( nru > 0 ) {
+	Require(nru <= x.size() && nru <= b.size());
+	d_iparm(NRU) = nru;
     }
     else {
-	throw("Need to choose a valid pcg iterative method.");
+	Require(x.size() == b.size());  // should specify nru if not!
+	d_iparm(NRU) = x.size();
     }
+    
+    computeWorkSpace();
+
+    dsxx::Mat1<int> iwork(d_iparm(NWI)); // PCG IWK array
+    dsxx::Mat1<T> fwork(d_iparm(NWF)); // PCG FWK array
+
+    // These variables are used to communicate with the PCG package.
+    // See the "call _methR" PCG documentation.
+    
+    int ijob;
+    int ireq;
+    int iva;
+    int ivql;
+    int ivqr;
+    
+    // Initialize ijob so that initialization is done on the first
+    // callPCG call.
+    
+    ijob = JINIT;
+
+    // Loop on PCG calls in the reverse communication mode.
+    
+    bool done = false;
+
+    while ( ! done ) {
+
+	callPCG(x, b, ijob, ireq, iva, ivql, ivqr, iwork, fwork);
+
+	ijob = JRUN;  // from now on, RUN!
+
+	// Handle the request from callPCG
+
+	switch ( ireq ) {
+
+	case JTERM: {
+	    done = true;
+	    break;
+	}
+
+	case JAV: {
+	    //	    cout << "Preparing for MatVec." << endl << flush;
+	    Mat1<T> xmatvec(&fwork(ivqr-1), getSize());
+	    Mat1<T> bmatvec(&fwork(iva-1), getSize());
+	    pcg_matvec->MatVec(bmatvec, xmatvec);
+	    //	    cout << "Done with     MatVec." << endl << flush;
+	    break;
+	}
+	
+	case JQLV: {
+	    //	    cout << "Preparing for Left_PreCond." << endl << flush;
+	    Mat1<T> xprecond(&fwork(ivql-1), getSize());
+	    Mat1<T> bprecond(&fwork(iva-1), getSize());
+	    pcg_precond->Left_PreCond(xprecond, bprecond);
+	    //	    cout << "Done with     Left_PreCond." << endl << flush;
+	    break;
+	}
+	
+	case JQRV: {
+	    Mat1<T> xprecond(&fwork(ivqr-1), getSize());
+	    Mat1<T> bprecond(&fwork(ivql-1), getSize());
+	    pcg_precond->Right_PreCond(xprecond, bprecond);
+	    break;
+	}
+
+	default: {
+	    std::ostringstream mesg;
+	    mesg << "PCG returned IREQ = " << ireq
+		 << " which PCG_Ctrl::solve cannot handle.";
+	    Insist(0, mesg.str().c_str());
+	}
+	}
+    } // end of while ( ! done )
 }
 
 //---------------------------------------------------------------------------//
-// Set nwi.
+// Call a pcg iterative method in reverse communication mode.
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::set_nwi()
+void PCG_Ctrl<T>::callPCG(dsxx::Mat1<T> &x,
+			  const dsxx::Mat1<T> &b,
+			  int &ijob,
+			  int &ireq,
+			  int &iva,
+			  int &ivql,
+			  int &ivqr,
+			  dsxx::Mat1<int> &iwork,
+			  dsxx::Mat1<T> &fwork)
 {
-    if( itmeth == pcg::BASIC    ) nwi = 100;
-    if( itmeth == pcg::BCGSTAB  ) nwi = 100;
-    if( itmeth == pcg::BCGSTAB2 ) nwi = 100;
-    if( itmeth == pcg::BCGSTABL ) nwi = 100;
-    if( itmeth == pcg::CGS      ) nwi = 100;
-    if( itmeth == pcg::TFQMR    ) nwi = 100;
-    if( itmeth == pcg::GMRES    ) nwi = 100;
-    if( itmeth == pcg::GMRES_H  ) nwi = 100;
-    if( itmeth == pcg::OMIN     ) nwi = 100;
-    if( itmeth == pcg::ORES     ) nwi = 100;
-    if( itmeth == pcg::IOM      ) nwi = 100;
-    if( itmeth == pcg::CG       ) nwi = 100;
-    if( itmeth == pcg::BCG      ) nwi = 100;
+    int iError = 0;
+    
+    switch ( d_method ) {
+    case BAS: {
+	pcg::xbasr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
+		   ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
+		   iError);
+	break;
+    }
+    
+    case CG: {
+	pcg::xcgr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
+		  ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
+		  iError);
+	break;
+    }
+    
+    case GMRS: {
+	pcg::xgmrsr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
+		    ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
+		    iError);
+	break;
+    }
+    }
 
-    if( malloc == pcg::TRUE     ) nwi = 1;
+    Ensure(iError == 0);
 }
 
 //---------------------------------------------------------------------------//
-// Set nwf.
+// This routine sets the memory parameters NWI and NWF in the IPARM array,
+// depending on the various methods.  This is a translation of the PCG
+// Reference Manual, Chapter 9.
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::set_nwf()
+void PCG_Ctrl<T>::computeWorkSpace()
 {
-    int nrup2   = nru + 2;
-    int nwfgenl = 31 + nrup2*2;
-    int nwfit   = 0;
-    int nwfstat = 0;
-    int nwftst  = 0;
-
-    if( itmeth == pcg::BASIC    ) nwfit =  7 + nrup2*5;
-    if( itmeth == pcg::BCGSTAB  ) nwfit = 15 + nrup2*13;
-    if( itmeth == pcg::BCGSTAB2 ) nwfit = 15 + nrup2*25;
-    if( itmeth == pcg::BCGSTABL ) nwfit = 31 + nrup2*(2*ns2+8) + ns2*9
-				        + ns2*ns2;
-    if( itmeth == pcg::CGS      ) nwfit = 12 + nrup2*11;
-    if( itmeth == pcg::TFQMR    ) nwfit = 16 + nrup2*18;
-    if( itmeth == pcg::CG       ) nwfit = 12 + nrup2*5;
-    if( itmeth == pcg::BCG      ) nwfit = 12 + nrup2*9;
-    if( iqside >= pcg::QRIGHT ) {
-	if( itmeth == pcg::GMRES   ) nwfit = 31 + nrup2*(2*ns2+8) + ns2*9
-					   + ns2*ns2;
-	if( itmeth == pcg::GMRES_H ) nwfit = 26 + nrup2*(2*ns2+7) + ns2*7
-					   + ns2*ns2;
-	if( itmeth == pcg::OMIN    ) nwfit = 13 + nrup2*(3*ns1+5) + ns1;
-	if( itmeth == pcg::ORES    ) nwfit = 12 + nrup2*(4*ns1+6) + ns1;
-	if( itmeth == pcg::IOM     ) nwfit = 31 + nrup2*(3*ns1+9) + ns1*5;
-    }        
-    else {
-	if( itmeth == pcg::GMRES   ) nwfit = 31 + nrup2*(1*ns2+4) + ns2*9
-					   + ns2*ns2;
-	if( itmeth == pcg::GMRES_H ) nwfit = 26 + nrup2*(2*ns2+7) + ns2*7
-					   + ns2*ns2;
-	if( itmeth == pcg::OMIN    ) nwfit = 13 + nrup2*(2*ns1+3) + ns1;
-	if( itmeth == pcg::ORES    ) nwfit = 12 + nrup2*(2*ns1+4) + ns1;
-	if( itmeth == pcg::IOM     ) nwfit = 31 + nrup2*(2*ns1+7) + ns1*5;
-    }
-
-    if( istats == 1 ) nwfstat = 20 + nrup2*4;
-
-    if( ntest != pcg::TST0 && ntest != pcg::TSTDFA ) {
-	nwftst = nrup2*2;
-    }
-
-    if( malloc == pcg::TRUE ) {
+    int nwi;
+    int nwf;
+    
+    if( d_iparm(MALLOC) == YES ) {
+	// PCG mallocs its own memory
+	// For the present constructor, we don't allow this, but leave
+	// this logic here for now.
+	nwi = 1;
 	nwf = 1;
     }
     else {
-	nwf = nwfgenl + nwfstat + nwftst + nwfit;
+	// PCG actually uses the work arrays
+
+	// First translate Table 9.1 of the PCG RM.  Ignore CMF case.
+	// Since we're never actually passing PCG a matrix, we can
+	// also ignore the GR format stuff.  Therefore, SPMD and Uniprocessor
+	// are the same (phew!)
+	const int nwiv = 0;
+	const int nwfv = d_iparm(NRU) + 2;
+	const int nwigenl = 32 + 2 * nwiv;
+	const int nwfgenl = 32 + 2 * nwfv;
+	
+	int nwistat;
+	if ( d_iparm(ISTATS) == NO ) {
+	    nwistat = 0;
+	}
+	else if ( d_iparm(ISTATS) == YES ) {
+	    nwistat = 20 + 4 * nwfv;
+	}
+	else {
+	    Insist(0, "ISTATS has illegal value.");
+	}
+
+	int nwitst;
+	if ( d_iparm(NTEST) == TST0 ||
+	     d_iparm(NTEST) == TSTDFA ) {
+	    nwitst = 0;
+	}
+	else {
+	    nwitst = 2 * nwfv;
+	}
+
+	// Translate Table 9.2
+
+	int nwiit;
+	int nwfit;
+	const int ns1 = d_iparm(NS1);
+	const int ns2 = d_iparm(NS2);
+
+	switch ( d_method ) {
+	case BAS:
+	    nwiit = 26 + 5 * nwiv;
+	    nwfit = 7  + 5 * nwfv;
+	    break;
+
+	case CG:
+	    nwiit = 25 + 5 * nwiv;
+	    nwfit = 12 + 5 * nwfv;
+	    break;
+
+	case GMRS: {
+	    // Assume that NR = 0 for now
+	    if ( d_iparm(IQSIDE) == QNONE ||
+		 d_iparm(IQSIDE) == QLEFT ) {
+		nwiit = 39 + (ns2 + 4) * nwiv;
+		nwfit = ns2 * (ns2 + 9) + 31 + (ns2 + 4) * nwfv;
+	    }
+	    else {
+		nwiit = 39 + (3 * ns2 + 8) * nwiv;
+		nwfit = ns2 * (ns2 + 9) + 31 + (3 * ns2 + 8) * nwfv;
+	    }
+
+	    break;
+	}
+	}
+
+	// Sum up the requirements.  Again, nwiscl = nwfscl = 0 since we
+	// don't use GR format.  nwiprec = nwfprec = nwfstat = nwftst = 0,
+	// since we have no idea what these are.
+
+	nwi = nwigenl + nwiv + nwiit + nwistat + nwitst;
+	nwf = nwfgenl + nwfv + nwfit;
     }
+
+    d_iparm(NWI) = nwi;
+    d_iparm(NWF) = nwf;
+}
+
+//---------------------------------------------------------------------------//
+// Set a value for IPARM array.  Only certain values are permitted to be
+// changed.
+//---------------------------------------------------------------------------//
+
+template<class T>
+void PCG_Ctrl<T>::setIparm(const Iparms parm,
+			   const int value)
+{
+    switch ( parm ) {
+    case ITSMAX:
+    case NS1:
+    case NS2:
+    case ITIMER: // Do we really need Connection Machine stuff???
+    case ICOMM:
+    case MSGMIN:
+    case MSGMAX:
+    case MSGTYP: {
+	d_iparm(parm) = value;
+	break;
+    }
+    default: {
+	std::ostringstream mesg;
+	mesg << "Cannot use PCG_Ctrl::setIparm to set IPARM index = "
+	     << parm;
+	Insist(0, mesg.str().c_str());
+	break;
+    }
+    }
+}
+
+//---------------------------------------------------------------------------//
+// Set a value for FPARM array.
+//---------------------------------------------------------------------------//
+
+template<class T>
+void PCG_Ctrl<T>::setFparm(const Fparms parm,
+			   const T value)
+{
+    d_fparm(parm) = value;
+}
+
+//---------------------------------------------------------------------------//
+// Set the exact solution.
+//---------------------------------------------------------------------------//
+
+template<class T>
+void PCG_Ctrl<T>::setUexact(const dsxx::Mat1<T>& uExact)
+{
+    d_uExact = uExact;
+    d_iparm(IUEXAC) = YES;
+}
+
+//---------------------------------------------------------------------------//
+// Set a logical value in IPARM array.
+//---------------------------------------------------------------------------//
+
+template<class T>
+void PCG_Ctrl<T>::setLogical(const Iparms parm,
+			     const Logical value)
+{
+    switch ( parm ) {
+    case ICKSTG:
+    case IDOT:
+    case ISTATS: {
+	d_iparm(parm) = value;
+	break;
+    }
+    default: {
+	std::ostringstream mesg;
+	mesg << "Cannot use PCG_Ctrl::setLogical to set IPARM index = "
+	     << parm;
+	Insist(0, mesg.str().c_str());
+	break;
+    }
+    }
+}
+
+//---------------------------------------------------------------------------//
+// Set the output level in the IPARM array
+//---------------------------------------------------------------------------//
+
+template<class T>
+void PCG_Ctrl<T>::setOutputLevel(const OutputLevel value)
+{
+    d_iparm(LEVOUT) = value;
+}
+
+//---------------------------------------------------------------------------//
+// Set the stopping test in the IPARM array
+//---------------------------------------------------------------------------//
+
+template<class T>
+void PCG_Ctrl<T>::setStopTest(const StopTest value)
+{
+    d_iparm(NTEST) = value;
+}
+
+//---------------------------------------------------------------------------//
+// Set the preconditioner in the IPARM array
+//---------------------------------------------------------------------------//
+
+template<class T>
+void PCG_Ctrl<T>::setPrecon(const Precon value)
+{
+    d_iparm(IQSIDE) = value;
+}
+
+//---------------------------------------------------------------------------//
+// Set how initial condition is set in the IPARM array
+//---------------------------------------------------------------------------//
+
+template<class T>
+void PCG_Ctrl<T>::setUinit(const Uinit value)
+{
+    d_iparm(IUINIT) = value;
 }
 
 //---------------------------------------------------------------------------//
@@ -237,7 +426,7 @@ void PCG_Ctrl<T>::set_nwf()
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::print_params()
+void PCG_Ctrl<T>::printParams() const
 {
     using std::cout;
     using std::endl;
@@ -246,42 +435,41 @@ void PCG_Ctrl<T>::print_params()
     cout << "----------------------------------------------" << endl;
     cout << "Revcom level parameters."                       << endl;
     cout << "----------------------------------------------" << endl;
-    cout << "     nout   = " << iparm(pcg::NOUT)   << endl;
-    cout << "     levout = " << iparm(pcg::LEVOUT) << endl;
-    cout << "     nru    = " << iparm(pcg::NRU)    << endl;
-    cout << "     itsmax = " << iparm(pcg::ITSMAX) << endl;
-    cout << "     its    = " << iparm(pcg::ITS)    << endl;
-    cout << "     malloc = " << iparm(pcg::MALLOC) << endl;
-    cout << "     nwi    = " << iparm(pcg::NWI)    << endl;
-    cout << "     nwf    = " << iparm(pcg::NWF)    << endl;
-    cout << "     nwiusd = " << iparm(pcg::NWIUSD) << endl;
-    cout << "     nwfusd = " << iparm(pcg::NWFUSD) << endl;
-    cout << "     iptr   = " << iparm(pcg::IPTR)   << endl;
-    cout << "     ntest  = " << iparm(pcg::NTEST)  << endl;
-    cout << "     iqside = " << iparm(pcg::IQSIDE) << endl;
-    cout << "     iuinit = " << iparm(pcg::IUINIT) << endl;
-    cout << "     needrc = " << iparm(pcg::NEEDRC) << endl;
-    cout << "     ns1    = " << iparm(pcg::NS1)    << endl;
-    cout << "     ns2    = " << iparm(pcg::NS2)    << endl;
-    cout << "     ickstg = " << iparm(pcg::ICKSTG) << endl;
-    cout << "     iuexac = " << iparm(pcg::IUEXAC) << endl;
-    cout << "     idot   = " << iparm(pcg::IDOT)   << endl;
-    cout << "     istats = " << iparm(pcg::ISTATS) << endl;
-    cout << "     itimer = " << iparm(pcg::ITIMER) << endl;
-    cout << "     icomm  = " << iparm(pcg::ICOMM)  << endl;
-    cout << "     msgmin = " << iparm(pcg::MSGMIN) << endl;
-    cout << "     msgmax = " << iparm(pcg::MSGMAX) << endl;
-    cout << "     msgtyp = " << iparm(pcg::MSGTYP) << endl;
-    cout << "     iclev  = " << iparm(pcg::ICLEV)  << endl;
-    cout << " "                                    << endl;
-    cout << "     ctimer = " << fparm(pcg::CTIMER) << endl;
-    cout << "     rtimer = " << fparm(pcg::RTIMER) << endl;
-    cout << "     flopsr = " << fparm(pcg::FLOPSR) << endl;
-    cout << "     zeta   = " << fparm(pcg::ZETA)   << endl;
-    cout << "     stptst = " << fparm(pcg::STPTST) << endl;
-    cout << "     alpha  = " << fparm(pcg::ALPHA)  << endl;
-    cout << "     relrsd = " << fparm(pcg::RELRSD) << endl;
-    cout << "     relerr = " << fparm(pcg::RELERR) << endl;
+    cout << "     nout   = " << d_iparm(NOUT)   << endl;
+    cout << "     levout = " << d_iparm(LEVOUT) << endl;
+    cout << "     nru    = " << d_iparm(NRU)    << endl;
+    cout << "     itsmax = " << d_iparm(ITSMAX) << endl;
+    cout << "     its    = " << d_iparm(ITS)    << endl;
+    cout << "     malloc = " << d_iparm(MALLOC) << endl;
+    cout << "     nwi    = " << d_iparm(NWI)    << endl;
+    cout << "     nwf    = " << d_iparm(NWF)    << endl;
+    cout << "     nwiusd = " << d_iparm(NWIUSD) << endl;
+    cout << "     nwfusd = " << d_iparm(NWFUSD) << endl;
+    cout << "     iptr   = " << d_iparm(IPTR)   << endl;
+    cout << "     ntest  = " << d_iparm(NTEST)  << endl;
+    cout << "     iqside = " << d_iparm(IQSIDE) << endl;
+    cout << "     iuinit = " << d_iparm(IUINIT) << endl;
+    cout << "     needrc = " << d_iparm(NEEDRC) << endl;
+    cout << "     ns1    = " << d_iparm(NS1)    << endl;
+    cout << "     ns2    = " << d_iparm(NS2)    << endl;
+    cout << "     ickstg = " << d_iparm(ICKSTG) << endl;
+    cout << "     iuexac = " << d_iparm(IUEXAC) << endl;
+    cout << "     idot   = " << d_iparm(IDOT)   << endl;
+    cout << "     istats = " << d_iparm(ISTATS) << endl;
+    cout << "     itimer = " << d_iparm(ITIMER) << endl;
+    cout << "     icomm  = " << d_iparm(ICOMM)  << endl;
+    cout << "     msgmin = " << d_iparm(MSGMIN) << endl;
+    cout << "     msgmax = " << d_iparm(MSGMAX) << endl;
+    cout << "     msgtyp = " << d_iparm(MSGTYP) << endl;
+    cout << " "                                 << endl;
+    cout << "     ctimer = " << d_fparm(CTIMER) << endl;
+    cout << "     rtimer = " << d_fparm(RTIMER) << endl;
+    cout << "     flopsr = " << d_fparm(FLOPSR) << endl;
+    cout << "     zeta   = " << d_fparm(ZETA)   << endl;
+    cout << "     stptst = " << d_fparm(STPTST) << endl;
+    cout << "     alpha  = " << d_fparm(ALPHA)  << endl;
+    cout << "     relrsd = " << d_fparm(RELRSD) << endl;
+    cout << "     relerr = " << d_fparm(RELERR) << endl;
 }
 
 //---------------------------------------------------------------------------//
