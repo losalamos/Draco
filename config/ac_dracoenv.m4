@@ -38,10 +38,10 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_DRACO_ARGS
 
    dnl
-   dnl first find the system
+   dnl first find the host
    dnl
-
-   AC_CANONICAL_SYSTEM
+   
+   AC_CANONICAL_HOST
 
    dnl
    dnl RUN AC_PROG_INSTALL
@@ -110,9 +110,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl COMPILER SETUPS
    dnl
 
-   dnl first find the system
-   AC_CANONICAL_SYSTEM
-
    # the default compiler is C++; we do not turn on F90 unless
    # AC_WITH_F90 is called in configure.in (which sets with_cxx='no')
    if test "${with_cxx}" = no ; then
@@ -178,7 +175,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        AC_MSG_ERROR("Must define libs when using --with-libs")
    fi
 
-   dnl throw message errors for poorly defined flags
+      dnl throw message errors for poorly defined flags
    
    if test "${with_cxxflags}" = yes || test "${with_cflags}" = yes ||\
       test "${with_f90flags}" = yes || test "${with_arflags}" = yes \
@@ -334,6 +331,19 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   fi
 
        fi
+
+       # add vendors to rpath
+       for vendor_dir in ${VENDOR_DIRS}; 
+       do
+	   # if we are using gcc then add xlinker
+	   if test "${CXX}" = g++; then
+	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
+
+	   # else we just add the rpath
+	   else
+	       RPATH="-rpath ${vendor_dir} ${RPATH}"
+	   fi
+       done
    ;;
    mips-sgi-irix6.*)
        # posix source defines, by default we set posix on 
@@ -504,6 +514,19 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   fi
 
        fi
+
+       # add vendors to rpath
+       for vendor_dir in ${VENDOR_DIRS}; 
+       do
+	   # if we are using gcc then add xlinker
+	   if test "${CXX}" = g++; then
+	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
+
+	   # else we just add the rpath
+	   else
+	       RPATH="-rpath ${vendor_dir} ${RPATH}"
+	   fi
+       done
    ;;
    alpha-dec-osf*)
        # posix source defines, by default we set posix off
@@ -548,6 +571,37 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        #
        # end of communication packages
        #
+
+       # set rpath when building shared library executables
+       if test "${enable_shared}" = yes; then
+
+	   # turn off ranlib
+	   RANLIB=':'
+
+	   # the g++ rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++; then
+	       RPATHA="-Xlinker -rpath \${curdir}"
+	       RPATHB="-Xlinker -rpath \${curdir}/.."
+	       RPATHC="-Xlinker -rpath \${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+	   else
+	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	   fi
+
+       fi
+
+       # add vendors to rpath
+       for vendor_dir in ${VENDOR_DIRS}; 
+       do
+	   # if we are using gcc then add xlinker
+	   if test "${CXX}" = g++; then
+	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
+
+	   # else we just add the rpath
+	   else
+	       RPATH="-rpath ${vendor_dir} ${RPATH}"
+	   fi
+       done
    ;;
    sparc-sun-solaris2.*)
        # posix source defines, by default we set poaix on 
@@ -620,6 +674,19 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   RPATH="-R \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
 	   RANLIB=':'
        fi
+
+       # add vendors to rpath
+       for vendor_dir in ${VENDOR_DIRS}; 
+       do
+	   # if we are using gcc then add xlinker
+	   if test "${CXX}" = g++; then
+	       RPATH="-Xlinker -R ${vendor_dir} ${RPATH}"
+
+	   # else we just add the rpath
+	   else
+	       RPATH="-R ${vendor_dir} ${RPATH}"
+	   fi
+       done
    ;;
    *)
        # catchall for nothing

@@ -117,6 +117,9 @@ AC_DEFUN(AC_DRACO_VENDOR_SETUP, [dnl
    if test -z "${draco_in_prefix}" ; then
        CPPFLAGS="${CPPFLAGS} -I ${DRACO_INC}"
    fi
+
+   # add draco to VENDIR_DIRS
+   VENDOR_DIRS="${DRACO_LIB} ${VENDOR_DIRS}"
 ])
 
 dnl-------------------------------------------------------------------------dnl

@@ -61,6 +61,9 @@ AC_DEFUN(AC_MPI_SETUP, [dnl
        fi
    fi
 
+   # add MPI directory to VENDOR_DIRS
+   VENDOR_DIRS="${MPI_LIB} ${VENDOR_DIRS}"
+
    dnl we wait to set the basic MPI libraries (if it is on) until
    dnl after checking the C4 status; these functions are performed
    dnl in ac_dracoenv.m4, section SYSTEM-SPECIFIC SETUP; we do this
@@ -122,6 +125,9 @@ AC_DEFUN(AC_SPRNG_SETUP, [dnl
 	   AC_VENDORLIB_SETUP(vendor_sprng, -l${with_sprng})
        fi
    fi
+
+   # add sprng directory to VENDOR_DIRS
+   VENDOR_DIRS="${SPRNG_LIB} ${VENDOR_DIRS}"
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -158,6 +164,9 @@ AC_DEFUN(AC_PCG_SETUP, [dnl
 	   AC_VENDORLIB_SETUP(vendor_pcg, -L${PCG_LIB} -l${with_pcg})
        fi
    fi
+
+   # add PCG directory to VENDOR_DIRS
+   VENDOR_DIRS="${PCG_LIB} ${VENDOR_DIRS}"
 
    dnl note that we add some system-specific libraries for this
    dnl vendor in AC_DRACO_ENV; also, the user must set up LAPACK for
@@ -199,6 +208,9 @@ AC_DEFUN(AC_GANDOLF_SETUP, [dnl
        fi
    fi
 
+   # add GANDOLF directory to VENDOR_DIRS
+   VENDOR_DIRS="${GANDOLF_LIB} ${VENDOR_DIRS}"
+
    dnl SGI needs "-lfortran" on the load line when including libgandolf.a.
    dnl This library is added to ${LIBS} in AC_DRACO_ENV.
 ])
@@ -237,6 +249,9 @@ AC_DEFUN(AC_EOSPAC5_SETUP, [dnl
 	   AC_VENDORLIB_SETUP(vendor_eospac, -L${EOSPAC5_LIB} -l${with_eospac})
        fi
    fi
+
+   # add EOSPAC5 directory to VENDOR_DIRS
+   VENDOR_DIRS="${EOSPAC5_LIB} ${VENDOR_DIRS}"
 
    dnl note that we add some system-specific libraries for this
    dnl vendor in AC_DRACO_ENV; also, the user must set up LAPACK for
@@ -286,6 +301,9 @@ AC_DEFUN(AC_LAPACK_SETUP, [dnl
        fi
 
    fi
+
+   # add LAPACK directory to VENDOR_DIRS
+   VENDOR_DIRS="${LAPACK_LIB} ${VENDOR_DIRS}"
 
    dnl note that we add system specific libraries to this list in
    dnl dracoenv
@@ -341,6 +359,9 @@ AC_DEFUN(AC_GRACE_SETUP, [dnl
 	   AC_VENDORLIB_SETUP(vendor_grace, -l${with_grace})
        fi
    fi
+
+   # add GRACE directory to VENDOR_DIRS
+   VENDOR_DIRS="${GRACE_LIB} ${VENDOR_DIRS}"
 
 ])
 

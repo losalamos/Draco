@@ -48,7 +48,7 @@ dnl CHOOSE A F90 COMPILER
 dnl
 
 AC_DEFUN(AC_F90_ENV, [dnl
-   AC_REQUIRE([AC_CANONICAL_SYSTEM])
+   AC_REQUIRE([AC_CANONICAL_HOST])
 
    case "${with_f90:=yes}" in
    XL)
@@ -82,7 +82,7 @@ AC_DEFUN(AC_F90_ENV, [dnl
        AC_COMPILER_HP_F90
    ;;
    yes)				# guess compiler from target platform
-       case "${target}" in   
+       case "${host}" in   
        rs6000-ibm-aix*)
            AC_COMPILER_XL_F90
        ;;

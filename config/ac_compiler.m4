@@ -15,7 +15,7 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN(AC_CPP_ENV, [dnl
 
    # make sure that the host is defined
-   AC_REQUIRE([AC_CANONICAL_SYSTEM])
+   AC_REQUIRE([AC_CANONICAL_HOST])
 
    dnl set up a default compiler
    case $host in
