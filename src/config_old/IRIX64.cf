@@ -264,7 +264,7 @@ endif				# SGI C++
 
 env	:= $(mach)$(cmplr)$(optns)$(comm)
 
-include $(SRC_TOP)/config/.$(env).pooma
+include $(SRC_TOP)/config/.pooma.$(env)
 
 POOMA_INC_FLAG	= $(POOMA_INCLUDES)
 POOMA_FLAGS	= $(POOMA_INCLUDES) $(POOMA_DEFINES)
