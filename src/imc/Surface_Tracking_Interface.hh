@@ -5,8 +5,6 @@
  * \date   Wed Jul 30 12:26:37 2003
  * \brief  Header file for Surface_Tracking_Interface
  * \note   Copyright © 2003 The Regents of the University of California.
- *
- * Long description.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -23,7 +21,8 @@ namespace rtt_imc
 //===========================================================================//
 /*!
  * \class Surface_Tracking_Interface
- * \brief
+ * \brief An abstract interface representing the operations necessary to
+ * build surface tracking applications.
  *
  *
  */
@@ -51,7 +50,7 @@ class Surface_Tracking_Interface
     virtual int number_of_surfaces() const = 0;
     
     //! Get the surface descriptor for the given surface
-    virtual const rtt_mc::Surface_Descriptor& get_descriptor(int surface) const = 0;
+    virtual const rtt_mc::Surface_Descriptor& get_surface(int surface) const = 0;
     
 };
 

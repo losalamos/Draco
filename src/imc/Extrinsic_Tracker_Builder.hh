@@ -3,10 +3,8 @@
  * \file   imc/Extrinsic_Tracker_Builder.hh
  * \author Mike Buksas
  * \date   Thu Jul 17 13:16:13 2003
- * \brief  
+ * \brief  Header file for Extrinsic_Tracker_Builder
  * \note   Copyright © 2003 The Regents of the University of California.
- *
- * Long description.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -25,9 +23,6 @@ namespace rtt_mc { class Sphere; class RZWedge_Mesh;}
 namespace rtt_imc
 {
 
-// Forward declerations:
-
-
 //===========================================================================//
 /*!
  * \class Extrinsic_Tracker_Builder
@@ -42,7 +37,7 @@ namespace rtt_imc
  *
  */
 /*! 
- * \example imc/test/imc_test.cc 
+ * \example imc/test/tstExtrinsic_Tracker
  * 
  * description of example
  */

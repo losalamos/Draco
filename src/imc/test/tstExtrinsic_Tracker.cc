@@ -46,17 +46,20 @@ struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 
     Surface_Descriptor descriptor[4];
 
-    Surface_Tracking_Tester(double x1, double x3);
+    Surface_Tracking_Tester(double small, double large);
 
     int number_of_surfaces() const { return 4; }
-    const Surface_Descriptor& get_descriptor(int surface) const;
+    const Surface_Descriptor& get_surface(int surface) const
+    { 
+	Check(surface > 0); Check(surface <= 4); return descriptor[surface-1]; 
+    }
 
     ~Surface_Tracking_Tester() { /* ... */ }
 
 };
 
-Surface_Tracking_Tester::Surface_Tracking_Tester(double x1, double x3)
-    : small_radius(x1), large_radius(x3)
+Surface_Tracking_Tester::Surface_Tracking_Tester(double small, double large)
+    : small_radius(small), large_radius(large)
 {
 
     descriptor[0].type = Surface_Descriptor::SPHERE;
@@ -81,13 +84,6 @@ Surface_Tracking_Tester::Surface_Tracking_Tester(double x1, double x3)
 
 }
 
-const Surface_Descriptor& Surface_Tracking_Tester::get_descriptor(int surface) const
-{
-    Check(surface > 0); Check(surface <= 4);
-
-    return descriptor[surface-1];
-
-}
 //---------------------------------------------------------------------------//
 // BUILDERS
 //---------------------------------------------------------------------------//

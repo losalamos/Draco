@@ -44,7 +44,7 @@ Extrinsic_Tracker_Builder::Extrinsic_Tracker_Builder(
 	global_surface_number++;
 
 	const Surface_Descriptor& descriptor = 
-	    interface->get_descriptor(surface);
+	    interface->get_surface(surface);
 	
 	process_surface( descriptor );
 	
