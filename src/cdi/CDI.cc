@@ -646,6 +646,9 @@ double CDI::integrateRosselandSpectrum(const double lowFreq,
 				       const double highFreq, 
 				       const double T)
 {
+    using std::exp;
+    using std::pow;
+
     Require (lowFreq >= 0.0);
     Require (highFreq >= lowFreq);
     Require (T >= 0.0);
@@ -768,6 +771,9 @@ double CDI::integrateRosselandSpectrum(const double lowFreq,
  */
 double CDI::integrateRosselandSpectrum(const int groupIndex, const double T)
 {
+    using std::exp;
+    using std::pow;
+
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
     Require (T >= 0.0);
     Require (groupIndex > 0 && 
@@ -895,6 +901,9 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const int     groupIndex,
 						 double       &PL, 
 						 double       &ROSL)
 {
+    using std::exp;
+    using std::pow;
+
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
     Require (T >= 0.0);
     Require (groupIndex > 0 && 
@@ -1020,6 +1029,9 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const double  lowFreq,
 						 double       &PL, 
 						 double       &ROSL)
 {
+    using std::exp;
+    using std::pow;
+
     Require (lowFreq >= 0.0);
     Require (highFreq >= lowFreq);
     Require (T >= 0.0);
