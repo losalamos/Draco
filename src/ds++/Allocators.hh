@@ -9,6 +9,7 @@
 #ifndef __ds_Allocators_hh__
 #define __ds_Allocators_hh__
 
+#include "config.hh"
 #include "Assert.hh"
 
 //---------------------------------------------------------------------------//
@@ -24,6 +25,8 @@
 //---------------------------------------------------------------------------//
 
 #include <memory>
+
+NAMESPACE_DS_BEG
 
 // These functions were in the April '96 draft, but disappeared by December
 // '96.  Too bad, b/c they are extremely helpful for building allocators.
@@ -49,14 +52,14 @@ inline void ds_deallocate( T *buf ) { ::operator delete( buf ); }
 template<class T>
 class Simple_Allocator {
   public:
-    T *fetch( int n, const T *hint = 0 ) const
+    static T *fetch( int n, const T *hint = 0 )
     {
 	return ds_allocate( n, hint );
     }
 
-    T *validate( T *v, int n ) const { return v; }
+    static T *validate( T *v, int n ) { return v; }
 
-    void release( T *v, int n =0 ) const
+    static void release( T *v, int n =0 )
     {
 	ds_deallocate( validate( v, n ) );
     }
@@ -80,7 +83,7 @@ class Simple_Allocator {
 template<class T>
 class Guarded_Allocator {
   public:
-    T *fetch( int n, const T* hint = 0 ) const
+    static T *fetch( int n, const T* hint = 0 )
     {
 	Assert( n >= 0 );
 	T *v = ds_allocate( n+2, hint );
@@ -96,7 +99,7 @@ class Guarded_Allocator {
 	return v+1;
     }
 
-    T *validate( T *v, int n ) const
+    static T *validate( T *v, int n )
     {
 	v--;
 
@@ -107,20 +110,20 @@ class Guarded_Allocator {
 
 // Check magic data in T[0] and T[n+1]
 
-    bool guard_elements_ok( T *v, int n ) const
+    static bool guard_elements_ok( T *v, int n )
     {
 	char *pb = reinterpret_cast<char *>(v);
 	char *pe = reinterpret_cast<char *>( v+n+1 );
 
 	for( int i=0; i < sizeof(T); i++ ) {
 	    if (pb[i] != static_cast<char>( 0xE8 )) return false;
-	    if (pe[i] == static_cast<char>( 0xE9 )) return false;
+	    if (pe[i] != static_cast<char>( 0xE9 )) return false;
 	}
 
 	return true;
     }
 
-    void release( T *v, int n ) const
+    static void release( T *v, int n )
     {
 	if (!v) return;
 
@@ -169,6 +172,8 @@ template<> class alloc_traits<int> {
   public:
     typedef Guarded_Allocator<int> Default_Allocator;
 };
+
+NAMESPACE_DS_END
 
 #endif                          // __ds_Allocators_hh__
 
