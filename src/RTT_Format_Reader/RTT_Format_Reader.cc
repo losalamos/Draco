@@ -28,15 +28,6 @@ RTT_Format_Reader::RTT_Format_Reader(const string & RTT_File,
 				     const bool & renumber)
 {
     readMesh(RTT_File,renumber);
-    calculateConnectivity();
-}
-/*!
- * \brief Instantiates a Connectivity and determines the mesh connectivity.
- */
-void RTT_Format_Reader::calculateConnectivity()
-{
-    spConnectivity = new Connectivity(dims, * spCellDefs, * spCells, 
-				      * spSides, * spNodes);
 }
 /*!
  * \brief Parses the mesh file data via calls to the member data class objects

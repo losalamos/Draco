@@ -14,6 +14,7 @@
 
 #include "UnitTestFrame/TestApp.hh"
 #include "../RTT_Format_Reader.hh"
+#include <map>
 
 namespace rtt_RTT_Format_Reader_test
 {

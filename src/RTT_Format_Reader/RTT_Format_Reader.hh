@@ -31,7 +31,6 @@
 #include "NodeData.hh"
 #include "SideData.hh"
 #include "CellData.hh"
-#include "RTT_Format_Connect.hh"
 
 namespace rtt_RTT_Format_Reader
 {
@@ -83,7 +82,6 @@ class RTT_Format_Reader
     rtt_dsxx::SP<NodeData> spNodeData;
     rtt_dsxx::SP<SideData> spSideData;
     rtt_dsxx::SP<CellData> spCellData;
-    rtt_dsxx::SP<Connectivity> spConnectivity;
 
   public:
 
@@ -733,73 +731,8 @@ class RTT_Format_Reader
  * \param data_index Data field.
  * \return The cell data field value.
  */
-    double get_cell_data(int cell_numb, int data_index) const
-    { return spCellData->get_data(cell_numb, data_index); }
-    // connectivity access
-/*!
- * \brief Returns the number of cells adjacent to the specified cell face.
- * \param cell Cell number.
- * \param face Face number.
- * \return The number of adjacent cells.
- */
-    int get_adjCell_size(int cell, int face) const
-    { return spConnectivity->get_adjCell_size(cell,face); }
-/*!
- * \brief Returns the number of the cell adjacent to the specified cell, face,
- *        and optional adjacent cell index.
- * \param cell Cell number.
- * \param face Face number.
- * \param adjcell Adjacent cell number (defaults to 0).
- * \return The adjacent cell number.
- */
-    int get_adjCell(int cell, int face, int adjcell = 0) const
-    { return spConnectivity->get_adjCell(cell, face, adjcell); }
-/*!
- * \brief Returns the number of boundary faces (i.e., faces that are either
- *        on the outer boundary of the problem geometry or a connection between
- *        cells with different refinement levels in an AMR mesh) with the 
- *        specified face number
- * \param face Face number.
- * \return The number of boundary faces.
- */
-    int get_bndryFaces_count(int face) const
-    { return spConnectivity->get_bndryFaces_count(face); }
-/*!
- * \brief Returns the cells that have boundary faces (i.e., faces that are 
- *        either on the outer boundary of the problem geometry or a connection
- *        between cells with different refinement levels in an AMR mesh) with 
- *        the specified face number
- * \param face Face number.
- * \return The cells with these boundary faces.
- */
-    set_int get_bndryCells(int face) const
-    { return spConnectivity->get_bndryCells(face); }
-/*!
- * \brief Returns true if the specified cell face is a boundary face (i.e., 
- *        a faces that is either on the outer boundary of the problem geometry
- *        or a connection between cells with different refinement levels in an
- *        AMR mesh).
- * \param cell Cell number.
- * \param face Face number.
- * \return Boundary face status.
- */
-    bool check_bndryFace(int cell, int face) const
-        { return spConnectivity->check_bndryFace(cell,face); }
-/*!
- * \brief Returns the cell number associated with the specified side number.
- * \param side Side number.
- * \return The cell number.
- */
-    int get_Cell_from_Side(int side) const
-        { return spConnectivity->get_Cell_from_Side(side); }
-/*!
- * \brief Returns the cell face number associated with the specified side 
- *        number.
- * \param side Side number.
- * \return The face number.
- */
-    int get_Cell_Face_from_Side(int side) const
-        { return spConnectivity->get_Cell_Face_from_Side(side); }
+     double get_cell_data(int cell_numb, int data_index) const
+     { return spCellData->get_data(cell_numb, data_index); }
 
     // IMPLEMENTATION
 
@@ -811,7 +744,6 @@ class RTT_Format_Reader
     void readFlagBlocks(ifstream & meshfile);
     void readDataIDs(ifstream & meshfile);
     void readEndKeyword(ifstream & meshfile);
-    void calculateConnectivity();
 };
 
 } // end namespace rtt_RTT_Format_Reader
