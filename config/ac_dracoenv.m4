@@ -15,13 +15,6 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_ENV, [dnl
 
-   dnl 
-   dnl MAKE INSTALLS READ-ONLY
-   dnl
-       
-   # no need to run AC_SUBST because it is done automagically by autoconf
-   INSTALL_DATA="\${INSTALL} -m 444"
-
    dnl
    dnl CONFIGURE ARGUMENTS
    dnl
@@ -44,10 +37,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_CANONICAL_HOST
 
    dnl
-   dnl RUN AC_PROG_INSTALL
+   dnl INSTALL
    dnl
 
-   AC_PROG_INSTALL
+   # we use the install script provided with autoconf on all machines
+   INSTALL='${config_dir}/install-sh -c'
+   INSTALL_DATA='${INSTALL} -m 444'
 
    dnl
    dnl C4 OPERATIONS
@@ -768,6 +763,10 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_SUBST(STRICTFLAG)dnl
    AC_SUBST(PARALLEL_FLAG)dnl
    AC_SUBST(RPATH)dnl
+
+   # install program
+   AC_SUBST(INSTALL)
+   AC_SUBST(INSTALL_DATA)
 
    # files to install
    : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}

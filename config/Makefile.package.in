@@ -7,6 +7,8 @@
 # @> General Makefile.in for draco packages
 ###############################################################################
 
+# @configure_input@
+
 # source directories: top_srcdir is the toplevel and srcdir is the
 # package
 
@@ -33,6 +35,9 @@ rel_config_dir := $(shell ( cd ${top_srcdir} ; \
 	   tmp=$$tmp../ ; \
 	done ; \
 	echo $$tmp ) )config
+
+# get the config directory
+config_dir = $(shell cd ${top_srcdir}/${rel_config_dir}; pwd)
 
 ##---------------------------------------------------------------------------##
 ## VARIABLES THAT ARE ASSIGNED BY AUTOCONF
