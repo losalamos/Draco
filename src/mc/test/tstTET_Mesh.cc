@@ -56,13 +56,13 @@ using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
 //---------------------------------------------------------------------------//
 
 //! Typedef for scalar field of ThreeVectors.
-typedef std::vector<ThreeVector> SF_THREEVECTOR;
+typedef std::vector<ThreeVector> sf_ThreeVector;
 
 //! Typedef for scalar field of doubles.
-typedef std::vector<double> SF_DOUBLE;
+typedef std::vector<double> sf_double;
 
 //! Typedef for vector field of integers.
-typedef std::vector< std::vector<int> > VF_INT;
+typedef std::vector< std::vector<int> > vf_int;
 
 //! Typedef for a standard set of integers.
 typedef std::set<int> SetInt;
@@ -249,7 +249,7 @@ void Test_TET()
     layo(1,1) = 2;
     layo(2,3) = 1;
 
-    SF_THREEVECTOR vertex_vec;
+    sf_ThreeVector vertex_vec;
     vertex_vec.push_back(ThreeVector(0.0,0.0,0.0));
     vertex_vec.push_back(ThreeVector(1.0,0.0,0.0));
     vertex_vec.push_back(ThreeVector(0.0,1.0,0.0));
@@ -320,7 +320,7 @@ void Test_TET()
     s12.insert(1);
     cell_set[std::string("material_region/control_rod")] = s12;
 
-    VF_INT sides_ver(6);
+    vf_int sides_ver(6);
 
     sides_ver[0].push_back(0);
     sides_ver[0].push_back(4);
@@ -346,7 +346,7 @@ void Test_TET()
     sides_ver[5].push_back(4);
     sides_ver[5].push_back(3);
 
-    VF_INT cells_ver(2);
+    vf_int cells_ver(2);
 
     cells_ver[0].push_back(0);
     cells_ver[0].push_back(1);
@@ -376,7 +376,7 @@ void Test_TET()
     mesh_ptr_H->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
 
-    VF_INT cell_pair_H = mesh_ptr_H->get_cell_pair();
+    vf_int cell_pair_H = mesh_ptr_H->get_cell_pair();
 
     for (int i = 0; i < cell_pair_H.size() ; ++i)
         for (int j = 0 ; j < cell_pair_H[i].size() ; ++j)
@@ -433,7 +433,7 @@ void Test_TET()
     mesh_ptr_0->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
 
-    VF_INT cell_pair_0 = mesh_ptr_0->get_cell_pair();
+    vf_int cell_pair_0 = mesh_ptr_0->get_cell_pair();
 
     for (int i = 0; i < cell_pair_0.size() ; ++i)
         for (int j = 0 ; j < cell_pair_0[i].size() ; ++j)
@@ -488,7 +488,7 @@ void Test_TET()
     mesh_ptr_1->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
 
-    VF_INT cell_pair_1 = mesh_ptr_1->get_cell_pair();
+    vf_int cell_pair_1 = mesh_ptr_1->get_cell_pair();
 
     for (int i = 0; i < cell_pair_1.size() ; ++i)
         for (int j = 0 ; j < cell_pair_1[i].size() ; ++j)
@@ -504,8 +504,8 @@ void Test_TET()
     if (*mesh_ptr_H != *mesh_ptr_1)                      ITFAILS;
 
     // Test get_db() and get_min_db().
-    SF_DOUBLE R_dist(3);
-    SF_DOUBLE V_dist(3);
+    sf_double R_dist(3);
+    sf_double V_dist(3);
     int I_dist;
 
     // Example 1:
@@ -564,7 +564,7 @@ void Test_TET()
 
     for (int i = 0 ; i < numm ; i++)
     {
-        SF_DOUBLE R = mesh_ptr_1->sample_pos(1,random);
+        sf_double R = mesh_ptr_1->sample_pos(1,random);
 
         x_cent += R[0];
         y_cent += R[1];
@@ -641,7 +641,7 @@ void Test_TET()
     //  cout << "-----------------------------------------------\n";
     //  End:  a way to see these results ordered on the page.
 
-    SF_DOUBLE T4(4);
+    sf_double T4(4);
 
     // First test for T**4 interpolated sampling.
     T4[0] = T4[1] = T4[2] = 0.928571428571;
@@ -654,7 +654,7 @@ void Test_TET()
 
     for (int i = 0 ; i < numm ; i++)
     {
-        SF_DOUBLE R = mesh_ptr_1->sample_pos(1,random,T4);
+        sf_double R = mesh_ptr_1->sample_pos(1,random,T4);
 
         int xx = static_cast<int>(10.0*R[0]);
         int yy = static_cast<int>(10.0*R[1]);
@@ -713,7 +713,7 @@ void Test_TET()
 
     for (int i = 0 ; i < numm ; i++)
     {
-        SF_DOUBLE R = mesh_ptr_1->sample_pos(1,random,T4);
+        sf_double R = mesh_ptr_1->sample_pos(1,random,T4);
 
         int xx = static_cast<int>(10.0*R[0]);
         int yy = static_cast<int>(10.0*R[1]);
@@ -785,7 +785,7 @@ void Test_TET()
     mesh_ptr_2->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
 
-    VF_INT cell_pair_2 = mesh_ptr_2->get_cell_pair();
+    vf_int cell_pair_2 = mesh_ptr_2->get_cell_pair();
 
     for (int i = 0; i < cell_pair_2.size() ; ++i)
         for (int j = 0 ; j < cell_pair_2[i].size() ; ++j)
@@ -847,7 +847,7 @@ void Test_TET()
     mesh_ptr_3->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
 
-    VF_INT cell_pair_3 = mesh_ptr_3->get_cell_pair();
+    vf_int cell_pair_3 = mesh_ptr_3->get_cell_pair();
 
     for (int i = 0; i < cell_pair_3.size() ; ++i)
         for (int j = 0 ; j < cell_pair_3[i].size() ; ++j)
@@ -886,7 +886,7 @@ void Test_TET()
     mesh_ptr_4->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
 
-    VF_INT cell_pair_4 = mesh_ptr_4->get_cell_pair();
+    vf_int cell_pair_4 = mesh_ptr_4->get_cell_pair();
 
     for (int i = 0; i < cell_pair_4.size() ; ++i)
         for (int j = 0 ; j < cell_pair_4[i].size() ; ++j)
@@ -924,7 +924,7 @@ void Test_TET()
 
     theOutput << "BEGIN get_cell_pair\n";
 
-    VF_INT cell_pair_5 = mesh_ptr_5->get_cell_pair();
+    vf_int cell_pair_5 = mesh_ptr_5->get_cell_pair();
 
     for (int i = 0; i < cell_pair_5.size() ; ++i)
         for (int j = 0 ; j < cell_pair_5[i].size() ; ++j)
@@ -949,7 +949,7 @@ void Test_TET()
 //
 //    theOutput << "BEGIN get_cell_pair\n";
 //
-//    VF_INT cell_pair_6 = mesh_ptr_6->get_cell_pair();
+//    vf_int cell_pair_6 = mesh_ptr_6->get_cell_pair();
 //
 //    for (int i = 0; i < cell_pair_6.size() ; ++i)
 //        for (int j = 0 ; j < cell_pair_6[i].size() ; ++j)

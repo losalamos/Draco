@@ -26,11 +26,11 @@ namespace rtt_mc
  * \param sides_vertices_ Internal identifiers of the three vertices of sides.
  * \param submesh_        Submesh indicator flag.
  */
-TET_Mesh::TET_Mesh(std::string & title_, rtt_dsxx::SP<Coord_sys> coord_,
-    Layout & layout_, SF_THREEVECTOR & vertex_vector_,
+TET_Mesh::TET_Mesh(std::string & title_, SP_Coord_sys coord_,
+    Layout & layout_, sf_ThreeVector & vertex_vector_,
     std::string & node_coord_units_, MAP_String_SetInt & node_sets_,
     MAP_String_SetInt & side_sets_, MAP_String_SetInt & cell_sets_,
-    VF_INT & sides_vertices_, VF_INT & cells_vertices_, bool submesh_)
+    vf_int & sides_vertices_, vf_int & cells_vertices_, bool submesh_)
     : title(title_), coord(coord_), layout(layout_),
       vertex_vector(vertex_vector_), node_coord_units(node_coord_units_),
       node_sets(node_sets_), side_sets(side_sets_), cell_sets(cell_sets_),
@@ -166,10 +166,10 @@ const ThreeVector TET_Mesh::get_inward_cross(int cell_, int face_) const
  * The barycentric coordinates will be normalized and ordered as the vertices
  * (and corresponding faces) are ordered - 0, 1, 2, 3.
  */
-const TET_Mesh::SF_DOUBLE TET_Mesh::get_barycentric_coords(
-        const SF_DOUBLE &position, int cell_) const
+const TET_Mesh::sf_double TET_Mesh::get_barycentric_coords(
+        const sf_double &position, int cell_) const
 {
-    SF_DOUBLE b_coords(FOUR);
+    sf_double b_coords(FOUR);
     ThreeVector R(position);
     double summ = 0.;
 
@@ -189,7 +189,7 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::get_barycentric_coords(
 
     return b_coords;
 
-}   // end TET_Mesh::get_barycentric_coords(const SF_DOUBLE &,int)
+}   // end TET_Mesh::get_barycentric_coords(const sf_double &,int)
 
 //___________________________________________________________________________//
 /*!
@@ -201,7 +201,7 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::get_barycentric_coords(
  * The external number "cell" is checked for validity, then converted to
  * cell_ = cell - 1 for internal use.
  */
-bool TET_Mesh::in_open_cell(const SF_DOUBLE &position, int cell) const
+bool TET_Mesh::in_open_cell(const sf_double &position, int cell) const
 {
     Valid(cell);
     int cell_ = cell - 1;
@@ -220,7 +220,7 @@ bool TET_Mesh::in_open_cell(const SF_DOUBLE &position, int cell) const
     // If position is "inside" every face, it is inside the cell.
     return true;
 
-}   // end TET_Mesh::in_open_cell(const SF_DOUBLE &, int)
+}   // end TET_Mesh::in_open_cell(const sf_double &, int)
 
 //___________________________________________________________________________//
 /*!
@@ -232,7 +232,7 @@ bool TET_Mesh::in_open_cell(const SF_DOUBLE &position, int cell) const
  * The external number "cell" is checked for validity, then converted to
  * cell_ = cell - 1 for internal use.
  */
-bool TET_Mesh::in_closed_cell(const SF_DOUBLE &position, int cell) const
+bool TET_Mesh::in_closed_cell(const sf_double &position, int cell) const
 {
     Valid(cell);
     int cell_ = cell - 1;
@@ -250,7 +250,7 @@ bool TET_Mesh::in_closed_cell(const SF_DOUBLE &position, int cell) const
     // If position is "inside-or-on" every face, it is in the closed cell.
     return true;
 
-}   // end TET_Mesh::in_closed_cell(const SF_DOUBLE &, int)
+}   // end TET_Mesh::in_closed_cell(const sf_double &, int)
 
 //___________________________________________________________________________//
 /*!
@@ -280,7 +280,7 @@ bool TET_Mesh::in_closed_cell(const SF_DOUBLE &position, int cell) const
  * 5. For notation, both position and omega are converted to ThreeVectors.
  * This could be hand-coded for efficiency if necessary.
  */
-double TET_Mesh::get_db(const SF_DOUBLE &position, const SF_DOUBLE &omega,
+double TET_Mesh::get_db(const sf_double &position, const sf_double &omega,
                         int cell, int &face) const
 {
     Valid(cell);
@@ -288,7 +288,7 @@ double TET_Mesh::get_db(const SF_DOUBLE &position, const SF_DOUBLE &omega,
 
     ThreeVector XYZ(position);
     ThreeVector UVW(omega);
-    SF_DOUBLE dist(FOUR);
+    sf_double dist(FOUR);
 
     for (int f_ = 0 ; f_ < FOUR ; f_++)
     {
@@ -303,7 +303,7 @@ double TET_Mesh::get_db(const SF_DOUBLE &position, const SF_DOUBLE &omega,
             dist[f_] = global::huge;
     }
 
-    SF_DOUBLE::iterator itor = std::min_element(dist.begin(),dist.end());
+    sf_double::iterator itor = std::min_element(dist.begin(),dist.end());
 
     double dist_min = *itor;
     Ensure ( dist_min > 0.0 && dist_min < global::huge );
@@ -314,7 +314,7 @@ double TET_Mesh::get_db(const SF_DOUBLE &position, const SF_DOUBLE &omega,
 
     return *itor;
 
-}   // end TET_Mesh::get_db(const SF_DOUBLE&,const SF_DOUBLE&,int,int&)
+}   // end TET_Mesh::get_db(const sf_double&,const sf_double&,int,int&)
 
 //___________________________________________________________________________//
 /*!
@@ -326,7 +326,7 @@ double TET_Mesh::get_db(const SF_DOUBLE &position, const SF_DOUBLE &omega,
  * The external numbers "cell" and "face" are checked for validity, and the
  * internal numbers "cell-1" and "face-1" are passed to get_outward_cross().
  */
-const TET_Mesh::SF_DOUBLE TET_Mesh::get_normal(int cell, int face) const
+const TET_Mesh::sf_double TET_Mesh::get_normal(int cell, int face) const
 {
     Valid(cell, face);
     ThreeVector N = get_outward_cross(cell-1, face-1);
@@ -347,7 +347,7 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::get_normal(int cell, int face) const
  * The external numbers "cell" and "face" are checked for validity, and the
  * internal numbers "cell-1" and "face-1" are passed to get_outward_cross().
  */
-const TET_Mesh::SF_DOUBLE TET_Mesh::get_normal_in(int cell, int face) const
+const TET_Mesh::sf_double TET_Mesh::get_normal_in(int cell, int face) const
 {
     Valid(cell, face);
     ThreeVector N = get_inward_cross(cell-1, face-1);
@@ -415,13 +415,13 @@ double TET_Mesh::face_area(int cell, int face) const
  *
  * vertex# = 0, 1, 2, 3.
  */
-const TET_Mesh::VF_DOUBLE TET_Mesh::get_vertices(int cell) const
+const TET_Mesh::vf_double TET_Mesh::get_vertices(int cell) const
 {
     Valid(cell);
     int cell_ = cell - 1;
     // Could check that (cells_vertices[cell_].size() == FOUR);
 
-    TET_Mesh::VF_DOUBLE ret_vert(THREE);
+    TET_Mesh::vf_double ret_vert(THREE);
 
     for (int cv = 0 ; cv < FOUR ; cv++)
     {
@@ -449,13 +449,13 @@ const TET_Mesh::VF_DOUBLE TET_Mesh::get_vertices(int cell) const
  * chosen so that right-handed circulation in the order specified would
  * result in an outward direction.
  */
-const TET_Mesh::VF_DOUBLE TET_Mesh::get_vertices(int cell, int face) const
+const TET_Mesh::vf_double TET_Mesh::get_vertices(int cell, int face) const
 {
     Valid(cell, face);
     int cell_ = cell - 1;
     int face_ = face - 1;
 
-    VF_DOUBLE ret_vert(THREE);
+    vf_double ret_vert(THREE);
 
     int fv[THREE];
 
@@ -499,7 +499,7 @@ const TET_Mesh::VF_DOUBLE TET_Mesh::get_vertices(int cell, int face) const
  * then samples along the altitude, with the appropriate geometric PDF, for the
  * position in the cell.
  */
-const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
+const TET_Mesh::sf_double TET_Mesh::sample_pos(int cell,
     rtt_rng::Sprng &random) const
 {
     Valid(cell);
@@ -532,8 +532,8 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
  * This function assumes that the temperatures are known on the four vertices
  * of the cell, and are adequately represented by linear interpolation in T**4.
  */
-const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
-    rtt_rng::Sprng &random, const SF_DOUBLE &T4) const
+const TET_Mesh::sf_double TET_Mesh::sample_pos(int cell,
+    rtt_rng::Sprng &random, const sf_double &T4) const
 {
     Require (T4.size() == FOUR);
     Valid(cell);
@@ -541,22 +541,22 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
     for (int i = 0 ; i < FOUR ; i++)
         Check (T4[i] >= 0.);
 
-    SF_DOUBLE::const_iterator im = std::max_element(T4.begin(),T4.end());
+    sf_double::const_iterator im = std::max_element(T4.begin(),T4.end());
     double Tmax = *im;
     Check (Tmax >= 0.);
     double Tr;
 
-    SF_DOUBLE R(THREE);
+    sf_double R(THREE);
     do
     {
         R = sample_pos(cell, random);  // Trial uniform sampling.
-        SF_DOUBLE B = get_barycentric_coords(R, cell_);
+        sf_double B = get_barycentric_coords(R, cell_);
         Tr = B[0]*T4[0] + B[1]*T4[1] + B[2]*T4[2] + B[3]*T4[3];
     } while (Tr <= Tmax*random.ran());
 
     return R;
 
-}   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &,const SF_DOUBLE &)
+}   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &,const sf_double &)
 
 //___________________________________________________________________________//
 /*!
@@ -566,7 +566,7 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
  * \param random The random-number generator, used as random.ran()
  * \return       Scalar_field[dim#] == sampled coordinate along dim#-axis.
  */
-const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos_on_face(int cell, int face,
+const TET_Mesh::sf_double TET_Mesh::sample_pos_on_face(int cell, int face,
     rtt_rng::Sprng &random) const
 {
     Valid(cell, face);
@@ -871,7 +871,7 @@ void TET_Mesh::print_mesh(std::ostream &output) const
  *
  * For TET_Meshes, no binary search is available, so get_cell() will be slow.
  */
-int TET_Mesh::get_cell(const SF_DOUBLE &position) const
+int TET_Mesh::get_cell(const sf_double &position) const
 {
     Require (!submesh);
 
@@ -884,7 +884,7 @@ int TET_Mesh::get_cell(const SF_DOUBLE &position) const
     Ensure (ret_cell > 0);
     return ret_cell;
 
-}   // end TET_Mesh::get_cell(const SF_DOUBLE &)
+}   // end TET_Mesh::get_cell(const sf_double &)
 
 //___________________________________________________________________________//
 /*!
@@ -900,13 +900,13 @@ int TET_Mesh::get_cell(const SF_DOUBLE &position) const
  * It is not checked that "position" is actually in "cell".
  *
  */
-double TET_Mesh::get_min_db(const SF_DOUBLE &position, int cell) const
+double TET_Mesh::get_min_db(const sf_double &position, int cell) const
 {
     Valid(cell);
     int cell_ = cell - 1;
 
     ThreeVector XYZ(position);
-    SF_DOUBLE dist(FOUR);
+    sf_double dist(FOUR);
 
     for (int face = 1 ; face <= FOUR ; face++)
     {
@@ -917,13 +917,13 @@ double TET_Mesh::get_min_db(const SF_DOUBLE &position, int cell) const
             N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ);
     }
 
-    SF_DOUBLE::iterator itor = std::min_element(dist.begin(),dist.end());
+    sf_double::iterator itor = std::min_element(dist.begin(),dist.end());
 
     double dist_min = *itor;
     Ensure ( dist_min > 0.0 && dist_min < global::huge );
     return dist_min;
 
-}   // end TET_Mesh::get_min_db(const SF_DOUBLE &, int)
+}   // end TET_Mesh::get_min_db(const sf_double &, int)
 
 //===========================================================================//
 // Beginning of TET_Mesh::Pack member functions
@@ -979,7 +979,7 @@ TET_Mesh::Pack::Pack(const Pack &rhs)
 
 //---------------------------------------------------------------------------//
 //! Unpacking routine: member function of struct Pack.
-rtt_dsxx::SP<TET_Mesh> TET_Mesh::Pack::unpack() const
+TET_Mesh::SP_Mesh TET_Mesh::Pack::unpack() const
 {
     int LenTitle = idata[0];          // length of title string
     int LenUnits = idata[1];          // length of coord_units string
@@ -997,7 +997,7 @@ rtt_dsxx::SP<TET_Mesh> TET_Mesh::Pack::unpack() const
     int c_ctr  = 0;           // for characters.
 
    // TET meshes are always XYZ.
-    rtt_dsxx::SP<Coord_sys> coord_(new XYZCoord_sys());
+    TET_Mesh::SP_Coord_sys coord_(new XYZCoord_sys());
 
     bool submesh_ = (SubmeshFlag == 1);
 
@@ -1027,12 +1027,12 @@ rtt_dsxx::SP<TET_Mesh> TET_Mesh::Pack::unpack() const
         for (int f = 0 ; f < FOUR ; ++f)
             layout_(c+1,f+1) = idata[i_ctr++];
 
-    VF_INT cells_vertices_(NumCells);
+    vf_int cells_vertices_(NumCells);
     for (int c = 0 ; c < NumCells ; ++c)
         for (int v = 0 ; v < FOUR ; ++v)
             cells_vertices_[c].push_back(idata[i_ctr++]);
 
-    VF_INT sides_vertices_(NumSides);
+    vf_int sides_vertices_(NumSides);
     for (int s = 0 ; s < NumSides ; ++s)
         for (int v = 0 ; v < THREE ; ++v)
             sides_vertices_[s].push_back(idata[i_ctr++]);
@@ -1100,7 +1100,7 @@ rtt_dsxx::SP<TET_Mesh> TET_Mesh::Pack::unpack() const
         }
     } // End if (NumCellSets > 0)
 
-    rtt_dsxx::SP<TET_Mesh> mesh_ptr(new TET_Mesh(title_, coord_, layout_,
+    SP_Mesh mesh_ptr(new TET_Mesh(title_, coord_, layout_,
         vertex_vector_, node_coord_units_, node_sets_, side_sets_, cell_sets_,
         sides_vertices_, cells_vertices_, submesh_));
 

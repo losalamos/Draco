@@ -39,7 +39,7 @@ class ThreeVector
  private:
 
     //! Scalar field of doubles, used for returning an ordinary vector.
-    typedef std::vector<double> SF_DOUBLE;
+    typedef std::vector<double> sf_double;
 
     //! Cartesian coordinates of the vector.
     double x, y, z;
@@ -61,13 +61,13 @@ class ThreeVector
      *
      * Again, no invisible type conversion is allowed.
      */
-    explicit ThreeVector(const SF_DOUBLE &v)
+    explicit ThreeVector(const sf_double &v)
     { Require ( v.size() == 3 ); x = v[0]; y = v[1]; z = v[2]; }
 
     //! \brief Conversion function for returning an ordinary vector.
-    SF_DOUBLE convert() const
+    sf_double convert() const
     {
-        SF_DOUBLE v;
+        sf_double v;
         v.push_back(x); v.push_back(y); v.push_back(z);
         return v;
     }

@@ -13,8 +13,8 @@
 #define __mc_TET_Builder_hh__
 
 #include <ostream>
-#include "TET_Mesh.hh"
 #include "XYZCoord_sys.hh"
+#include "TET_Mesh.hh"
 #include "meshReaders/Element_Definition.hh"
 
 namespace rtt_mc
@@ -34,7 +34,7 @@ using rtt_meshReaders::Element_Definition;
 //  1) 2000-02-12: Completed namespace issues, bug fixes, and elimination
 //                 of using declarations.
 //  2) 2000-04-10: Rewritten to be consistent with new meshReader classes.
-//  3) 2000-04-26: Modified to construct VF_INT sides_vertices, new private
+//  3) 2000-04-26: Modified to construct vf_int sides_vertices, new private
 //                 TET_Mesh data, and to make use of get_element_nodes() and
 //                 get_element_types() from the Mesh_Reader base class.
 //  4) 2000-05-03: TET_Builder, TET_Mesh, and their test files now use the
@@ -56,22 +56,27 @@ using rtt_meshReaders::Element_Definition;
 
 class TET_Builder
 {
+ public:
+
+    // Public-interface typedefs.
+    typedef rtt_dsxx::SP<TET_Mesh>               SP_Mesh;
+    typedef rtt_dsxx::SP<Coord_sys>              SP_Coord_sys;
+    typedef std::string                          std_string;
+
+    // Public-interface typedefs for fields of standard types.
+    typedef std::vector<int>                     sf_int;
+    typedef std::vector< std::vector<int> >      vf_int;
+    typedef std::vector<double>                  sf_double;
+    typedef std::vector< std::vector<double> >   vf_double;
+    typedef std::vector<std_string>              sf_string;
+
  private:
 
-    //! Typedef for scalar field of integers.
-    typedef std::vector<int> SF_INT;
-
     //! Typedef for scalar field of ThreeVectors.
-    typedef std::vector<ThreeVector> SF_THREEVECTOR;
+    typedef std::vector<ThreeVector> sf_ThreeVector;
 
     //! Typedef for scalar field of Element_Types.
-    typedef std::vector<Element_Definition::Element_Type> SF_TYPE;
-
-    //! Typedef for vector field of integers.
-    typedef std::vector< std::vector<int> > VF_INT;
-
-    //! Typedef for vector field of doubles.
-    typedef std::vector< std::vector<double> > VF_DOUBLE;
+    typedef std::vector<Element_Definition::Element_Type> sf_Element_Type;
 
     //! Typedef for a standard set of integers.
     typedef std::set<int> SetInt;
@@ -99,7 +104,7 @@ class TET_Builder
     bool submesh;
 
     //! Collection of vertices: node_coords[v][dim]==dim-coordinate of node v.
-    VF_DOUBLE node_coords;
+    vf_double node_coords;
 
     //! Coordinate system units (e.g. "cm").
     std::string node_coord_units;
@@ -134,7 +139,7 @@ class TET_Builder
      * not be converted to internal numbers, as long as care is taken with
      * their consistent use.
      */
-    SF_INT parent;
+    sf_int parent;
 
     /*!
      * Nodes bounding each side: sides_vertices[s][0..2] == internal # of node.
@@ -144,7 +149,7 @@ class TET_Builder
      * The interface (e.g. file reader) is expected to provide internal numbers
      * of the bounding nodes, so no adjustment is needed on construction.
      */
-    VF_INT sides_vertices;
+    vf_int sides_vertices;
 
     /*!
      * Nodes bounding each cell: cells_vertices[c][0..3] == internal # of node.
@@ -153,7 +158,7 @@ class TET_Builder
      * the interface (e.g. file reader) is expected to provide internal numbers
      * of the bounding nodes, so no adjustment is needed on construction.
      */
-    VF_INT cells_vertices;
+    vf_int cells_vertices;
 
     /*!
      * The zero-based numbers of sides, cells, edges, and points (the latter
@@ -161,7 +166,7 @@ class TET_Builder
      * by the interface.  These "true names" will be provided to the TET_Mesh
      * class.
      */
-    SF_INT true_name;
+    sf_int true_name;
 
     //________________________________________//
     // End of private data of class TET_Builder.
@@ -173,7 +178,7 @@ class TET_Builder
     explicit TET_Builder(rtt_dsxx::SP<IT>);
 
     //! Build a TET_Mesh, using TET_Builder's private data.
-    rtt_dsxx::SP<TET_Mesh> build_Mesh();
+    SP_Mesh build_Mesh();
 
     //! Print the node_sets.
     void print_node_sets(std::ostream &) const;
@@ -214,9 +219,9 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
 
     node_coord_units = interface->get_node_coord_units();
 
-    VF_INT element_nodes = interface->get_element_nodes();
+    vf_int element_nodes = interface->get_element_nodes();
 
-    SF_TYPE element_types = interface->get_element_types();
+    sf_Element_Type element_types = interface->get_element_types();
 
     node_sets = interface->get_node_sets();
 

@@ -50,9 +50,9 @@ namespace rtt_mc
 // -----------------
 //  0)   Original: Committed 2000-01-27.
 //  1) 2000-01-28: Added public functions to TET_Mesh:
-//                         bool   in_cell(const SF_DOUBLE &, int);
-//                         int    get_cell(const SF_DOUBLE &);
-//                         double get_min_db(const SF_DOUBLE &, int);
+//                         bool   in_cell(const sf_double &, int);
+//                         int    get_cell(const sf_double &);
+//                         double get_min_db(const sf_double &, int);
 //  2) 2000-01-30: Added subscripting, iterators, size, and empty functions
 //                 to class TET_Mesh::CCVF.
 //  3) 2000-02-12: Added TET_Mesh member functions get_cell_types() and
@@ -60,7 +60,7 @@ namespace rtt_mc
 //                 namespace issues and elimination of using declarations.
 //  4) 2000-04-25: Renamed in_cell() to in_open_cell() and added the related
 //                 function in_closed_cell().
-//  5) 2000-04-26: Added private data VF_INT sides_vertices, and dealt with
+//  5) 2000-04-26: Added private data vf_int sides_vertices, and dealt with
 //                 sides_vertices in the public constructor.
 //  6) 2000-05-03: TET_Builder, TET_Mesh, and their test files now use the
 //                 get_node_coord_units(), get_node_sets(), get_element_sets(),
@@ -90,6 +90,36 @@ namespace rtt_mc
 
 class TET_Mesh
 {
+ public:
+
+    //! Forward declaration of pack class.
+    struct Pack;
+
+    //! Forward declaration of cell-centered scalar fields.
+    template<class T> class CCSF;
+
+    //! Forward declaration of cell-centered vector fields.
+    template<class T> class CCVF;
+
+    // Public-interface typedefs.
+    typedef rtt_dsxx::SP<TET_Mesh>               SP_Mesh;
+    typedef rtt_dsxx::SP<Coord_sys>              SP_Coord_sys;
+    typedef std::string                          std_string;
+
+    // Public-interface typedefs for fields of standard types.
+    typedef std::vector<int>                     sf_int;
+    typedef std::vector< std::vector<int> >      vf_int;
+    typedef std::vector<double>                  sf_double;
+    typedef std::vector< std::vector<double> >   vf_double;
+    typedef std::vector<std_string>              sf_string;
+
+    // Typedefs to cell-centered fields.
+    typedef CCSF<double>                         CCSF_double;
+    typedef CCSF<int>                            CCSF_int;
+    typedef CCVF<double>                         CCVF_double;
+    typedef CCVF<int>                            CCVF_int;
+    typedef CCSF<std_string>                     CCSF_string;
+
  private:
 
     //! Private copy constructor: can't copy or assign a mesh.
@@ -98,20 +128,8 @@ class TET_Mesh
     //! Private assignment operator: can't copy or assign a mesh.
     TET_Mesh& operator=(const TET_Mesh &);
 
-    //! Typedef for scalar field of integers.
-    typedef std::vector<int> SF_INT;
-
-    //! Typedef for scalar field of doubles.
-    typedef std::vector<double> SF_DOUBLE;
-
     //! Typedef for scalar field of ThreeVectors.
-    typedef std::vector<ThreeVector> SF_THREEVECTOR;
-
-    //! Typedef for vector field of integers.
-    typedef std::vector< std::vector<int> > VF_INT;
-
-    //! Typedef for vector field of doubles.
-    typedef std::vector< std::vector<double> > VF_DOUBLE;
+    typedef std::vector<ThreeVector> sf_ThreeVector;
 
     //! Typedef for a standard set of integers.
     typedef std::set<int> SetInt;
@@ -132,7 +150,7 @@ class TET_Mesh
     std::string title;
 
     //! Base class reference to a derived coordinate system class.
-    rtt_dsxx::SP<Coord_sys> coord;
+    SP_Coord_sys coord;
 
     // Layout of mesh.
     Layout layout;
@@ -142,7 +160,7 @@ class TET_Mesh
      *
      * vertex# == (0, 1, 2, 3, 4, ...) for an internal list of all vertices.
      */
-    SF_THREEVECTOR vertex_vector;
+    sf_ThreeVector vertex_vector;
 
     //! Coordinate system units (e.g. "cm").
     std::string node_coord_units;
@@ -168,7 +186,7 @@ class TET_Mesh
      * to any particular cell face, nor about the ordering of the vertices of
      * a side.
      */
-    VF_INT sides_vertices;
+    vf_int sides_vertices;
 
     /*!
      * cells_vertices[cell#][cell_vertex#] == internal numbers of the four
@@ -186,7 +204,7 @@ class TET_Mesh
      * that the vertices labeled (0, 1, 2, 3) are in the proper order for
      * predictable inward- and outward-normal directions.
      */
-    VF_INT cells_vertices;
+    vf_int cells_vertices;
 
     //! Flag to indicate whether this is a submesh.
     bool submesh;
@@ -209,30 +227,24 @@ class TET_Mesh
 
     const ThreeVector get_inward_cross(int, int) const;
 
-    const SF_DOUBLE get_barycentric_coords(const SF_DOUBLE &, int) const;
+    const sf_double get_barycentric_coords(const sf_double &, int) const;
 
  public:
 
     //! TET_Mesh constructor.
-    TET_Mesh(std::string &, rtt_dsxx::SP<Coord_sys>, Layout &,
-        SF_THREEVECTOR &, std::string &, MAP_String_SetInt &,
-        MAP_String_SetInt &, MAP_String_SetInt &, VF_INT &, VF_INT &,
+    TET_Mesh(std::string &, SP_Coord_sys, Layout &,
+        sf_ThreeVector &, std::string &, MAP_String_SetInt &,
+        MAP_String_SetInt &, MAP_String_SetInt &, vf_int &, vf_int &,
         bool = false);
-
-    //! Forward declaration of cell-centered scalar fields.
-    template<class T> class CCSF;
-
-    //! Forward declaration of cell-centered vector fields.
-    template<class T> class CCVF;
 
     //! \brief Return the number of cells in the mesh.
     int num_cells() const { return layout.num_cells(); }
 
     // Determine whether a given position is inside a given cell.
-    bool in_open_cell(const SF_DOUBLE &, int) const;
+    bool in_open_cell(const sf_double &, int) const;
 
     // Similarly, inside a cell or on its boundary.
-    bool in_closed_cell(const SF_DOUBLE &, int) const;
+    bool in_closed_cell(const sf_double &, int) const;
 
     //____________________________________________________//
     // Services required by all mesh types used in JAYENNE.
@@ -241,35 +253,35 @@ class TET_Mesh
     int next_cell(int cell, int face) const
     { Valid(cell, face); return layout(cell, face); }
 
-    double get_db(const SF_DOUBLE &, const SF_DOUBLE &, int, int &) const;
+    double get_db(const sf_double &, const sf_double &, int, int &) const;
 
-    const SF_DOUBLE get_normal(int, int) const;
+    const sf_double get_normal(int, int) const;
 
-    const SF_DOUBLE get_normal_in(int, int) const;
+    const sf_double get_normal_in(int, int) const;
 
     double volume(int) const;
 
     double face_area(int, int) const;
 
-    const SF_INT get_surcells(std::string) const;
+    const sf_int get_surcells(std::string) const;
 
     int get_bndface(std::string, int) const;
 
-    const VF_DOUBLE get_vertices(int) const;
+    const vf_double get_vertices(int) const;
 
-    const VF_DOUBLE get_vertices(int, int) const;
+    const vf_double get_vertices(int, int) const;
 
-    const SF_DOUBLE sample_pos(int, rtt_rng::Sprng &) const;
+    const sf_double sample_pos(int, rtt_rng::Sprng &) const;
 
-    const SF_DOUBLE sample_pos(int, rtt_rng::Sprng &, const SF_DOUBLE &) const;
+    const sf_double sample_pos(int, rtt_rng::Sprng &, const sf_double &) const;
 
-    const SF_DOUBLE sample_pos_on_face(int, int, rtt_rng::Sprng &) const;
+    const sf_double sample_pos_on_face(int, int, rtt_rng::Sprng &) const;
 
     //! \brief Return a vector<int> list of a cell's neighbors.
-    const SF_INT get_neighbors(int cell) const
+    const sf_int get_neighbors(int cell) const
     {
         Valid(cell);
-        SF_INT neighbors(layout.num_faces(cell));
+        sf_int neighbors(layout.num_faces(cell));
         for (int face = 1; face <= neighbors.size(); face++)
         neighbors[face-1] = layout(cell, face);
         return neighbors;
@@ -288,9 +300,9 @@ class TET_Mesh
     // Services required for graphics dumps.
 
     //! \brief Return the cell type for each cell in the mesh.
-    SF_INT get_cell_types() const
+    sf_int get_cell_types() const
     {
-        SF_INT cell_type(layout.num_cells());
+        sf_int cell_type(layout.num_cells());
         std::fill(cell_type.begin(), cell_type.end(),
             rtt_viz::four_node_tetrahedron);
 
@@ -303,9 +315,9 @@ class TET_Mesh
      * return_coords[vertex#][0,1,2] == (X,Y,Z) coordinate of vertex#.
      * vertex# == (0, 1, 2, 3, 4, ...) for an internal list of all vertices.
      */
-    VF_DOUBLE get_point_coord() const
+    vf_double get_point_coord() const
     {
-        VF_DOUBLE return_coords(vertex_vector.size());
+        vf_double return_coords(vertex_vector.size());
         for (int v_ = 0 ; v_ < vertex_vector.size() ; v_++)
         {
             return_coords[v_].push_back(vertex_vector[v_].get_x());
@@ -324,9 +336,9 @@ class TET_Mesh
      * cell# == (0, 1, 2, 3, 4, ...) for an internal list of all cells.
      * cell_vertex# == (0, 1, 2, 3) for each tetrahedral cell.
      */
-    VF_INT get_cell_pair() const
+    vf_int get_cell_pair() const
     {
-        VF_INT cell_pair(cells_vertices);
+        vf_int cell_pair(cells_vertices);
         for (int i = 0; i < cell_pair.size(); ++i)
             for (int j = 0; j < cell_pair[i].size(); ++j)
                 ++cell_pair[i][j];
@@ -376,16 +388,16 @@ class TET_Mesh
     // End of diagnostic services.
 
     // Find the cell comtaining a given position.
-    int get_cell(const SF_DOUBLE &) const;
+    int get_cell(const sf_double &) const;
 
     // Get minimum distance to cell boundary, regardless of direction.
-    double get_min_db(const SF_DOUBLE &, int) const;
+    double get_min_db(const sf_double &, int) const;
 
     // References to imbedded objects and data required for Parallel_Building.
     // More may be added later.
     const Layout&           get_Layout() const  { return layout; }
     const Coord_sys&        get_Coord() const   { return *coord; }
-    rtt_dsxx::SP<Coord_sys> get_SPCoord() const { return coord; }
+    SP_Coord_sys      get_SPCoord() const { return coord; }
 
     //__________________________________________//
     // Beginning of packing/unpacking facilities.
@@ -408,7 +420,7 @@ class TET_Mesh
         static const int FOUR = 4;
 
         //! Typedef for vector field of integers.
-        typedef std::vector< std::vector<int> > VF_INT;
+        typedef std::vector< std::vector<int> > vf_int;
 
         //! Typedef for a standard set of integers.
         typedef std::set<int> SetInt;
@@ -441,7 +453,7 @@ class TET_Mesh
         ~Pack();
 
         // Unpacker.  Recovers a TET_Mesh from the Pack object.
-        rtt_dsxx::SP<TET_Mesh> unpack() const;
+        SP_Mesh unpack() const;
 
         // Printer for diagnostics.
         void print_pack(std::ostream &) const;
@@ -485,7 +497,7 @@ class TET_Mesh::CCSF
     typedef typename std::vector<T>::size_type size_type;
 
     //! Smart pointer back to underlying TET_Mesh.
-    rtt_dsxx::SP<TET_Mesh> mesh;
+    SP_Mesh mesh;
 
     //! Data in scalar field  --  one object per cell.
     std::vector<T> data;
@@ -493,10 +505,10 @@ class TET_Mesh::CCSF
  public:
 
     // Inline explicit constructor.
-    inline explicit CCSF(rtt_dsxx::SP<TET_Mesh>);
+    inline explicit CCSF(SP_Mesh);
 
     // Constructor for automatic initialization.
-    inline CCSF(rtt_dsxx::SP<TET_Mesh>, const std::vector<T> &);
+    inline CCSF(SP_Mesh, const std::vector<T> &);
 
     //! Return reference to mesh.
     const TET_Mesh& get_Mesh() const { return *mesh; }
@@ -548,7 +560,7 @@ class TET_Mesh::CCSF
  * \param mesh_ Smart pointer to the underlying mesh for this scalar field.
  */
 template<class T>
-inline TET_Mesh::CCSF<T>::CCSF(rtt_dsxx::SP<TET_Mesh> mesh_)
+inline TET_Mesh::CCSF<T>::CCSF(SP_Mesh mesh_)
     : mesh(mesh_), data(mesh->num_cells())
 {
     Require (mesh);
@@ -564,7 +576,7 @@ inline TET_Mesh::CCSF<T>::CCSF(rtt_dsxx::SP<TET_Mesh> mesh_)
  * Constructor for automatic initialization.
  */
 template<class T>
-inline TET_Mesh::CCSF<T>::CCSF(rtt_dsxx::SP<TET_Mesh> mesh_,
+inline TET_Mesh::CCSF<T>::CCSF(SP_Mesh mesh_,
     const std::vector<T> &array) : mesh(mesh_), data(array)
 {
     Require (mesh);
@@ -602,7 +614,7 @@ class TET_Mesh::CCVF
     typedef typename std::vector<T>::size_type size_type;
 
     //! Smart pointer back to underlying TET_Mesh.
-    rtt_dsxx::SP<TET_Mesh> mesh;
+    SP_Mesh mesh;
 
     //! Data in vector field  --  one object per (dimension, cell) pairing.
     std::vector< std::vector<T> > data;
@@ -610,10 +622,10 @@ class TET_Mesh::CCVF
  public:
 
     // Inline explicit constructor.
-    inline explicit CCVF(rtt_dsxx::SP<TET_Mesh>);
+    inline explicit CCVF(SP_Mesh);
 
     // Constructor for automatic initialization.
-    inline CCVF(rtt_dsxx::SP<TET_Mesh>, const std::vector< std::vector<T> > &);
+    inline CCVF(SP_Mesh, const std::vector< std::vector<T> > &);
 
     //! Return reference to mesh.
     const TET_Mesh& get_Mesh() const { return *mesh; }
@@ -686,7 +698,7 @@ class TET_Mesh::CCVF
  * \param mesh_ Smart pointer to the underlying mesh for this vector field.
  */
 template<class T>
-inline TET_Mesh::CCVF<T>::CCVF(rtt_dsxx::SP<TET_Mesh> mesh_)
+inline TET_Mesh::CCVF<T>::CCVF(SP_Mesh mesh_)
     : mesh(mesh_), data(mesh->get_Coord().get_dim())
 {
     Require (mesh);
@@ -705,7 +717,7 @@ inline TET_Mesh::CCVF<T>::CCVF(rtt_dsxx::SP<TET_Mesh> mesh_)
  * Constructor for automatic initialization.
  */
 template<class T>
-inline TET_Mesh::CCVF<T>::CCVF(rtt_dsxx::SP<TET_Mesh> mesh_,
+inline TET_Mesh::CCVF<T>::CCVF(SP_Mesh mesh_,
                   const std::vector< std::vector<T> > &array)
     : mesh(mesh_), data(array)
 {

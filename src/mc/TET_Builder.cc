@@ -28,10 +28,10 @@ using std::set;
 using std::make_pair;
 
 //! Build a TET_Mesh, using TET_Builder's private data.
-rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
+TET_Builder::SP_Mesh TET_Builder::build_Mesh()
 {
     // Create first constructor argument: coord.
-    rtt_dsxx::SP<Coord_sys> coord(new XYZCoord_sys);
+    TET_Builder::SP_Coord_sys coord(new XYZCoord_sys);
 
     // Create second constructor argument: layout.
     Layout layout(cells_vertices.size());
@@ -115,7 +115,7 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
 #endif
 
     // Create third constructor argument: vertex_vector.
-    SF_THREEVECTOR vertex_vector;
+    sf_ThreeVector vertex_vector;
     for (int v_ = 0 ; v_ < node_coords.size() ; v_++)
         vertex_vector.push_back(ThreeVector(node_coords[v_][0],
                                 node_coords[v_][1],node_coords[v_][2]));
@@ -123,7 +123,7 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
     // Remaining constructor arguments (cells_vertices, submesh) already made.
 
     // Instantiate and return Smart Pointer to the new TET_Mesh.
-    rtt_dsxx::SP<TET_Mesh> mesh_ptr(new TET_Mesh(title, coord, layout,
+    SP_Mesh mesh_ptr(new TET_Mesh(title, coord, layout,
         vertex_vector, node_coord_units, node_sets, side_sets, cell_sets,
         sides_vertices, cells_vertices, submesh));
 
