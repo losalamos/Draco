@@ -10,15 +10,16 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Opacity_hh__
-#define __imc_Opacity_hh__
+#ifndef rtt_imc_Opacity_hh
+#define rtt_imc_Opacity_hh
 
-#include "Frequency.hh"
-#include "Fleck_Factors.hh"
+#include <iostream>
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "cdi/CDI.hh"
-#include <iostream>
+#include "mc/Constants.hh"
+#include "Frequency.hh"
+#include "Fleck_Factors.hh"
 
 namespace rtt_imc 
 {
@@ -140,6 +141,9 @@ class Opacity<MT, Gray_Frequency>
     // Get integrated normalized Planck function at temperature T.
     double get_integrated_norm_Planck(double T) const { return 1.0; }
 
+    // Get integrated Planck opacity in a cell (/cm).
+    inline double get_Planck(int c) const;
+
     // >>> FLECK AND CUMMINGS OPACITY OPERATIONS
 
     // Get the effective scattering cross section.
@@ -213,6 +217,22 @@ double Opacity<MT,Gray_Frequency>::get_sigeffabs(int cell) const
 { 
     Require (cell > 0 && cell <= num_cells());
     return fleck->fleck(cell) * sigma_abs(cell);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Get integrated Planck opacity in a cell (/cm).
+ *
+ * This function returns the absorption opacity.  If a client uses Rosseland
+ * for the absorption opacity then there is nothing we can do about it here.
+ *
+ * \param cell cell index [1,N_cells]
+ */
+template<class MT>
+double Opacity<MT,Gray_Frequency>::get_Planck(int cell) const
+{
+    Require (cell > 0 && cell <= num_cells());
+    return sigma_abs(cell);
 }
 
 //===========================================================================//
@@ -291,6 +311,9 @@ class Opacity<MT, Multigroup_Frequency>
 
     // Get the total integrated emission in a cell (int sigma * b_g).
     inline double get_integrated_sigma_times_Planck(int) const;
+
+    // Get integrated Planck opacity in a cell (/cm).
+    inline double get_Planck(int c) const;
 
     // >>> FLECK AND CUMMINGS OPACITY OPERATIONS
 
@@ -457,9 +480,25 @@ double Opacity<MT,Multigroup_Frequency>::get_integrated_sigma_times_Planck(
     return emission_group_cdf(cell).back();
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Get integrated Planck opacity in a cell (/cm).
+ */
+template<class MT>
+double Opacity<MT,Multigroup_Frequency>::get_Planck(int cell) const
+{
+    Require (cell > 0 && cell <= num_cells());
+
+    // check on zero
+    if (integrated_norm_planck(cell) == 0.0)
+	return rtt_mc::global::huge;
+    
+    return emission_group_cdf(cell).back() / integrated_norm_planck(cell);
+}
+
 } // end namespace rtt_imc
 
-#endif                          // __imc_Opacity_hh__
+#endif                          // rtt_imc_Opacity_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Opacity.hh

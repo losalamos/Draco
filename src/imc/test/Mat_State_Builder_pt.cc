@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "mc/OS_Mesh.hh"
+#include "mc/RZWedge_Mesh.hh"
 #include "../Frequency.hh"
 #include "../CDI_Mat_State_Builder.t.hh"
 #include "../Flat_Mat_State_Builder.t.hh"
@@ -18,10 +19,13 @@ namespace rtt_imc
 {
 
 typedef rtt_mc::OS_Mesh MT;
+typedef rtt_mc::RZWedge_Mesh RZ;
 
 template class CDI_Mat_State_Builder<MT, Gray_Frequency>;
 
 template class CDI_Mat_State_Builder<MT, Multigroup_Frequency>;
+
+template class CDI_Mat_State_Builder<RZ, Multigroup_Frequency>;
 
 template class Flat_Mat_State_Builder<MT, Gray_Frequency>;
 

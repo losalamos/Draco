@@ -178,8 +178,6 @@ int main(int argc, char *argv[])
     }
 
     {
-	rtt_c4::HTSyncSpinLock slock;
-
 	// status of test
 	cout << endl;
 	cout <<     "*********************************************" << endl;
@@ -191,8 +189,6 @@ int main(int argc, char *argv[])
 	cout <<     "*********************************************" << endl;
 	cout << endl;
     }
-    
-    rtt_c4::global_barrier();
 
     cout << "Done testing tstMat_State on " << rtt_c4::node() << endl;
     

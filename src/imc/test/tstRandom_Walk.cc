@@ -9,27 +9,29 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "imc_test.hh"
-#include "IMC_Test.hh"
-#include "../Random_Walk.hh"
-#include "../Diffusion_Opacity.hh"
-#include "../Fleck_Factors.hh"
-#include "../Release.hh"
-#include "mc/OS_Mesh.hh"
-#include "mc/OS_Builder.hh"
-#include "mc/Constants.hh"
-#include "rng/Random.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
-#include "ds++/Assert.hh"
-#include "ds++/SP.hh"
-#include "ds++/Soft_Equivalence.hh"
-
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <algorithm>
 #include <utility>
+
+#include "ds++/Assert.hh"
+#include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "c4/global.hh"
+#include "c4/SpinLock.hh"
+#include "rng/Random.hh"
+#include "mc/OS_Mesh.hh"
+#include "mc/OS_Builder.hh"
+#include "mc/Constants.hh"
+#include "../Random_Walk.hh"
+#include "../Diffusion_Opacity.hh"
+#include "../Opacity.hh"
+#include "../Fleck_Factors.hh"
+#include "../Frequency.hh"
+#include "../Release.hh"
+#include "imc_test.hh"
+#include "IMC_Test.hh"
 
 using namespace std;
 
@@ -38,6 +40,7 @@ using rtt_imc::Random_Walk;
 using rtt_imc::Random_Walk_Sampling_Tables;
 using rtt_imc::Fleck_Factors;
 using rtt_imc::Diffusion_Opacity;
+using rtt_imc::Opacity;
 using rtt_mc::OS_Builder;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
@@ -45,7 +48,9 @@ using rtt_dsxx::soft_equiv;
 using rtt_dsxx::SP;
 using rtt_mc::global::pi;
 
-typedef rtt_mc::OS_Mesh MT;
+typedef rtt_imc::Gray_Frequency FT;
+typedef rtt_mc::OS_Mesh         MT;
+
 typedef pair<vector<double>, vector<double> > pair_dbl;
 
 int seed = 234224;
@@ -139,6 +144,52 @@ SP<Diffusion_Opacity<MT> > get_diff_opacity(SP<MT> mesh)
 	new Diffusion_Opacity<MT>(fleck, ross, scat));
 					
     return diff;
+}
+
+//---------------------------------------------------------------------------//
+
+SP<Opacity<MT,FT> > get_opacity(SP<MT> mesh)
+{
+    // make data
+    SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
+    MT::CCSF<double> planck(mesh);
+    MT::CCSF<double> scat(mesh);
+
+    for (int i = 1; i <= mesh->num_cells(); i++)
+    {
+	fleck->fleck(i) = 1.0 / 2.5;
+	planck(i)       = 200.0 + static_cast<double>(i);
+	scat(i)         = 0.0;
+    }
+    
+    SP<FT> frequency(new FT);
+    SP<Opacity<MT,FT> > opacity(new Opacity<MT,FT>(frequency, planck, scat,
+						   fleck));
+
+    return opacity;
+}
+
+//---------------------------------------------------------------------------//
+
+SP<Opacity<MT,FT> > get_big_opacity(SP<MT> mesh)
+{
+    // make data
+    SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
+    MT::CCSF<double> planck(mesh);
+    MT::CCSF<double> scat(mesh);
+
+    for (int i = 1; i <= mesh->num_cells(); i++)
+    {
+	fleck->fleck(i) = 1.0 / 2.5;
+	planck(i)       = 1.0 + static_cast<double>(i);
+	scat(i)         = 0.0;
+    }
+    
+    SP<FT> frequency(new FT);
+    SP<Opacity<MT,FT> > opacity(new Opacity<MT,FT>(frequency, planck, scat,
+						   fleck));
+
+    return opacity;
 }
 
 //===========================================================================//
@@ -629,6 +680,66 @@ void interpolation_error_test()
 // RANDOM WALK TESTS
 //===========================================================================//
 
+void random_walk_query_mfp_test()
+{
+    // build a 3D mesh
+    SP<MT> mesh;
+    {
+	SP<Parser> p(new Parser("OS_Input_3D"));
+	OS_Builder b(p);
+	mesh = b.build_Mesh();
+
+	if (mesh->num_cells() != 12) ITFAILS;
+    }
+    
+    // get the diffusion opacity
+    SP<Opacity<MT,FT> >        opac = get_opacity(mesh);
+    SP<Diffusion_Opacity<MT> > diff = get_diff_opacity(mesh);
+
+    // make random walk
+    Random_Walk<MT> rw(mesh, diff);
+
+    // cases where radius v mfp decides it (mfp ~ 0.0817 -> from 5 *
+    // lambda_R) 
+    double radius = 0.0818;
+    double d_col  = 0.01;
+    double d_cen  = 0.02;
+    
+    if (!rw.do_a_random_walk(2, radius, d_col, d_cen, *opac)) ITFAILS;
+    rw.reset();
+    
+    radius = 0.0816;
+    d_col  = 0.01;
+    d_cen  = 0.02;
+    
+    if (rw.do_a_random_walk(2, radius, d_col, d_cen, *opac)) ITFAILS;
+    rw.reset();
+
+    // now make a "smaller" opacity and check; here the rosseland opacity
+    // will determine the radius limit
+    opac = get_big_opacity(mesh);
+
+    // cases where radius v mfp decides it (mfp ~ 2.77778 -> from 5 * sigma_P)
+    radius = 2.7778;
+    d_col  = 0.01;
+    d_cen  = 0.02;
+    
+    if (!rw.do_a_random_walk(2, radius, d_col, d_cen, *opac)) ITFAILS;
+    rw.reset();
+    
+    radius = 2.7777;
+    d_col  = 0.01;
+    d_cen  = 0.02;
+    
+    if (rw.do_a_random_walk(2, radius, d_col, d_cen, *opac)) ITFAILS;
+    rw.reset();
+
+    if (rtt_imc_test::passed)
+	PASSMSG("Random Walk mean free path queries on OS_Mesh ok.");    
+}
+
+//---------------------------------------------------------------------------//
+
 void random_walk_test()
 {
     // build a 3D mesh
@@ -642,6 +753,7 @@ void random_walk_test()
     }
     
     // get the diffusion opacity
+    SP<Opacity<MT,FT> >        opac = get_opacity(mesh);
     SP<Diffusion_Opacity<MT> > diff = get_diff_opacity(mesh);
 
     // make random walk
@@ -662,7 +774,8 @@ void random_walk_test()
     pair<double, double> time_left;
 
     // check do_a_random_walk function
-    // Ross = 100 + cell_index
+    // Ross   = 100 + cell_index
+    // Planck = 200 + cell_index
     {
 	cout << "Random Walk example in cell 1" << endl;
 	cout << "=============================" << endl;
@@ -689,7 +802,7 @@ void random_walk_test()
 	d_col  = 1.0 / 102.0;
 	d_cen  = 1.0 / 5.0;
 
-	if (!rw.do_a_random_walk(1, radius, d_col, d_cen)) ITFAILS;
+	if (!rw.do_a_random_walk(1, radius, d_col, d_cen, *opac)) ITFAILS;
 	
 	// now do the random walk
 	r[0]  = -0.5;
@@ -746,19 +859,19 @@ void random_walk_test()
 	d_col  = 1.0 / 9.9;
 	d_cen  = 1.0 / 5.0;
 
-	if (rw.do_a_random_walk(1, radius, d_col, d_cen)) ITFAILS;
+	if (rw.do_a_random_walk(1, radius, d_col, d_cen, *opac)) ITFAILS;
 
 	radius = 1.0 / 10.0;
 	d_col  = 1.0 / 102.0;
 	d_cen  = 1.0 / 103.0;
 
-	if (rw.do_a_random_walk(1, radius, d_col, d_cen)) ITFAILS;
+	if (rw.do_a_random_walk(1, radius, d_col, d_cen, *opac)) ITFAILS;
 
-	radius = 1.0 / 101.5;
+	radius = 0.016501;
 	d_col  = 1.0 / 102.0;
 	d_cen  = 1.0 / 10.0;
 
-	if (rw.do_a_random_walk(1, radius, d_col, d_cen)) ITFAILS;
+	if (rw.do_a_random_walk(1, radius, d_col, d_cen, *opac)) ITFAILS;
 
 	// >>> cell 11
 	cout << "Random Walk example in cell 11" << endl;
@@ -768,7 +881,7 @@ void random_walk_test()
 	d_col  = 1.0 / 20.0;
 	d_cen  = 1.0 / 5.0;
 
-	if (!rw.do_a_random_walk(11, radius, d_col, d_cen)) ITFAILS;
+	if (!rw.do_a_random_walk(11, radius, d_col, d_cen, *opac)) ITFAILS;
 	
 	// now do the random walk
 	r[0]  = 0.5;
@@ -822,24 +935,37 @@ void random_walk_test()
 
 	cout << "==============================" << endl << endl;
 
-	// try some where it is off
-	radius = 1.0 / 10.0;
-	d_col  = 1.0 / 9.9;
-	d_cen  = 1.0 / 5.0;
+	// try some where it is off : 
+	// in cell 11 the mean free path is 0.075075
 
-	if (rw.do_a_random_walk(11, radius, d_col, d_cen)) ITFAILS;
+	// fails radius vs mfp test
+	radius = 0.075074;
+	d_col  = 0.001;
+	d_cen  = 0.01;
 
-	radius = 1.0 / 10.0;
-	d_col  = 1.0 / 102.0;
-	d_cen  = 1.0 / 104.0;
+	if (rw.do_a_random_walk(11, radius, d_col, d_cen, *opac)) ITFAILS;
 
-	if (rw.do_a_random_walk(11, radius, d_col, d_cen)) ITFAILS;
+	// passes radius vs mfp test
+	radius = 0.075076;
+	d_col  = 0.001;
+	d_cen  = 0.01;
 
-	radius = 1.0 / 111.5;
-	d_col  = 1.0 / 112.0;
-	d_cen  = 1.0 / 10.0;
+	if (!rw.do_a_random_walk(11, radius, d_col, d_cen, *opac)) ITFAILS;
+	rw.reset();
 
-	if (rw.do_a_random_walk(11, radius, d_col, d_cen)) ITFAILS;
+	// fails radius vs d_col test
+	radius = 0.05;
+	d_col  = 0.06;
+	d_cen  = 0.10;
+
+	if (rw.do_a_random_walk(11, radius, d_col, d_cen, *opac)) ITFAILS;
+
+	// fails d_census v d_col test
+	radius = 0.03;
+	d_col  = 0.05;
+	d_cen  = 0.04;
+
+	if (rw.do_a_random_walk(11, radius, d_col, d_cen, *opac)) ITFAILS;
     }
    
     if (rtt_imc_test::passed)
@@ -879,6 +1005,8 @@ int main(int argc, char *argv[])
 	    interpolation_error_test();
 
 	    // random walk tests
+	    random_walk_query_mfp_test();
+	    cout << endl;
 	    random_walk_test();
 	}
     }

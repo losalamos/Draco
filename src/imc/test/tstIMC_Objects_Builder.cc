@@ -22,6 +22,8 @@
 #include "rng/Random.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
+#include "mc/RZWedge_Mesh.hh"
+#include "mc/RZWedge_Builder.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/Comm_Patterns.hh"
 #include "../Release.hh"
@@ -38,7 +40,9 @@ using rtt_imc_test::Parser;
 using rtt_imc::IMC_Objects_Builder;
 
 using rtt_mc::OS_Mesh;
+using rtt_mc::RZWedge_Mesh;
 using rtt_mc::OS_Builder;
+using rtt_mc::RZWedge_Builder;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::Comm_Patterns;
@@ -48,11 +52,13 @@ using rtt_rng::Rnd_Control;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
-typedef rtt_mc::OS_Mesh                        MT;
-typedef rtt_imc::Multigroup_Frequency          MG;
-typedef rtt_imc::Multigroup_Particle<OS_Mesh>  MGP;
-typedef rtt_imc_test::IMC_CDI_Interface<MGP>   CDI_Interface;
-typedef rtt_imc_test::IMC_Flat_Interface<MGP>  Flat_Interface;
+typedef rtt_mc::OS_Mesh                            MT;
+typedef rtt_mc::RZWedge_Mesh                       RZ;
+typedef rtt_imc::Multigroup_Frequency              MG;
+typedef rtt_imc::Multigroup_Particle<OS_Mesh>      MGP;
+typedef rtt_imc::Multigroup_Particle<RZWedge_Mesh> MGPRZ;
+typedef rtt_imc_test::IMC_CDI_Interface<MGPRZ>     CDI_Interface;
+typedef rtt_imc_test::IMC_Flat_Interface<MGP>      Flat_Interface;
 
 typedef rtt_dsxx::SP<MG>                                 SP_Frequency;
 typedef rtt_dsxx::SP<rtt_imc::Mat_State<MT> >            SP_Mat_State;
@@ -63,10 +69,99 @@ typedef rtt_dsxx::SP<rtt_imc::Source<MT,MG,MGP> >         SP_Source;
 typedef rtt_dsxx::SP<rtt_imc::Tally<MT> >                 SP_Tally;
 typedef rtt_dsxx::SP<rtt_imc::Random_Walk<MT> >           SP_Random_Walk;
 typedef rtt_dsxx::SP<rtt_imc::Extrinsic_Surface_Tracker>  SP_Tracker;
-typedef rtt_dsxx::SP<rtt_imc::Source_Builder<MT,MG,MGP> > SP_Source_Builder; 
+typedef rtt_dsxx::SP<rtt_imc::Source_Builder<MT,MG,MGP> > SP_Source_Builder;
+
+typedef rtt_dsxx::SP<MG>                                 RZ_Frequency;
+typedef rtt_dsxx::SP<rtt_imc::Mat_State<RZ> >            RZ_Mat_State;
+typedef rtt_dsxx::SP<rtt_imc::Opacity<RZ,MG> >           RZ_Opacity;
+typedef rtt_dsxx::SP<rtt_imc::Diffusion_Opacity<RZ> >    RZ_Diff_Opacity;
+
+typedef rtt_dsxx::SP<rtt_imc::Source<RZ,MG,MGPRZ> >         RZ_Source;
+typedef rtt_dsxx::SP<rtt_imc::Tally<RZ> >                   RZ_Tally;
+typedef rtt_dsxx::SP<rtt_imc::Random_Walk<RZ> >             RZ_Random_Walk;
+typedef rtt_dsxx::SP<rtt_imc::Extrinsic_Surface_Tracker>    RZ_Tracker;
+typedef rtt_dsxx::SP<rtt_imc::Source_Builder<RZ,MG,MGPRZ> > RZ_Source_Builder; 
+ 
 
 //---------------------------------------------------------------------------//
 // TESTS
+//---------------------------------------------------------------------------//
+
+// derived IMC_Objects_Builder class
+
+template<class IT, class M, class P>
+class DBuilder : public IMC_Objects_Builder<IT, M, MG, P>
+{
+  private:
+    typedef IMC_Objects_Builder<IT,M,MG,P> Base;
+
+  public:
+    // Constructor.
+    DBuilder(SP<IT> intface) : IMC_Objects_Builder<IT,M,MG,P>(intface)
+    {
+	Ensure (Base::interface);
+    }
+
+    // Builder.
+    void build_IMC_objects(SP<M> mesh,
+			   SP<Topology> topology,
+			   SP<Comm_Patterns> comm_patterns,
+			   SP<Rnd_Control> rnd_control)
+    {
+	Require (mesh);
+	Require (topology);
+	Require (comm_patterns);
+	Require (rnd_control);
+
+	Require (!Base::frequency);
+	Require (!Base::mat_state);
+	Require (!Base::opacity);
+	Require (!Base::diff_opacity);
+	Require (!Base::source);
+	Require (!Base::tally);
+	Require (!Base::random_walk);
+	Require (!Base::tracker);
+	Require (!Base::source_builder);
+
+	Require (mesh->num_cells() == topology->num_cells(rtt_c4::node()));
+
+	// first build the material state objects, the appropriate internal
+	// function will be called depending upon the base class of the
+	// interface (CDI_Data_interface or Flat_Data_Interface)
+	Base::build_mat_state_objects(mesh);
+	Check (Base::frequency);
+	Check (Base::mat_state);
+	Check (Base::opacity);
+
+	// build the source
+	Base::build_source_builder_object(mesh, topology, rnd_control);
+	Base::build_source_object(mesh, rnd_control, comm_patterns);
+	Check (Base::source);
+	Check (Base::source_builder);
+
+	// build the tally
+	Base::build_tally_object(mesh);
+	Check (Base::tally);
+
+	// build the particle transport objects
+	Base::build_time_dependent_particle_objects(mesh);
+	Base::build_time_independent_particle_objects(mesh);
+    }
+
+    void reset()
+    {
+	Base::reset(Base::frequency);
+	Base::reset(Base::mat_state);
+	Base::reset(Base::opacity);
+	Base::reset(Base::diff_opacity);
+	Base::reset(Base::source);
+	Base::reset(Base::tally);
+	Base::reset(Base::random_walk);
+	Base::reset(Base::tracker);
+	Base::reset(Base::source_builder);
+    }
+};
+
 //---------------------------------------------------------------------------//
 
 void cdi_objects_test()
@@ -76,9 +171,11 @@ void cdi_objects_test()
 
     // build a FULL mesh --> this mesh will be fully replicated on all
     // processors in the test
-    SP<Parser> parser(new Parser("OS_Input"));
-    SP<OS_Builder> mb(new OS_Builder(parser));
-    SP<OS_Mesh> mesh = mb->build_Mesh();
+    SP<Parser> parser(new Parser("RZWedge_Input"));
+    SP<RZWedge_Builder> mb(new RZWedge_Builder(parser));
+    SP<RZ> mesh = mb->build_Mesh();
+
+    if (mesh->num_cells() != 6) ITFAILS;
 
     // build a Topology:  a Replication topology on each mesh
     SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
@@ -91,16 +188,16 @@ void cdi_objects_test()
     SP<CDI_Interface> interface(new CDI_Interface(1));
 
     // make the objects builder
-    IMC_Objects_Builder<CDI_Interface, OS_Mesh, MG, MGP> builder(interface);
+    DBuilder<CDI_Interface, RZ, MGPRZ> builder(interface);
 
     builder.build_IMC_objects(mesh, topology, patterns, rcon); 
 
     // get objects
 
-    SP_Frequency    frequency = builder.get_Frequency();
-    SP_Mat_State    mat       = builder.get_Mat_State();
-    SP_Opacity      opacity   = builder.get_Opacity();
-    SP_Diff_Opacity diff      = builder.get_Diffusion_Opacity();
+    RZ_Frequency    frequency = builder.get_Frequency();
+    RZ_Mat_State    mat       = builder.get_Mat_State();
+    RZ_Opacity      opacity   = builder.get_Opacity();
+    RZ_Diff_Opacity diff      = builder.get_Diffusion_Opacity();
 
     // some simple mat objects tests (these are tested thoroughly---with the
     // same interface---in tstCDI_Mat_State_Builder)
@@ -127,8 +224,8 @@ void cdi_objects_test()
 	if (!soft_equiv(diff->get_Rosseland_opacity(4), ros4)) ITFAILS;
     }
 
-    SP_Source source                 = builder.get_Source();
-    SP_Source_Builder source_builder = builder.get_Source_Builder(); 
+    RZ_Source source                 = builder.get_Source();
+    RZ_Source_Builder source_builder = builder.get_Source_Builder(); 
 
     // some simple source tests (more extensive in the flat case)
     {
@@ -136,16 +233,22 @@ void cdi_objects_test()
 	if (!source_builder) ITFAILS;
     }
 
-    SP_Tally tally = builder.get_Tally();
+    RZ_Tally tally = builder.get_Tally();
 
     // some simple tests on tally
     {
 	if (!tally) ITFAILS;
 
-	// we won't have surface sub tallies but we will have random walk sub
-	// tallies
-	if (!tally->get_RW_Sub_Tally())     ITFAILS;
-	if (tally->get_Surface_Sub_Tally()) ITFAILS;
+	if (!tally->get_RW_Sub_Tally())      ITFAILS;
+	if (!tally->get_Surface_Sub_Tally()) ITFAILS;
+    }
+
+    // get particle objects
+    RZ_Random_Walk rwalk   = builder.get_Random_Walk();
+    RZ_Tracker     tracker = builder.get_Surface_Tracker();
+    {
+	if (!rwalk)  ITFAILS;
+	if (!tracker) ITFAILS;
     }
 
     if (rtt_imc_test::passed)
@@ -177,7 +280,7 @@ void flat_objects_test()
     SP<Flat_Interface> interface(new Flat_Interface(mb, true));
 
     // make the objects builder
-    IMC_Objects_Builder<Flat_Interface, OS_Mesh, MG, MGP> builder(interface);
+    DBuilder<Flat_Interface, MT, MGP> builder(interface);
 
     builder.build_IMC_objects(mesh, topology, patterns, rcon);  
 
@@ -262,12 +365,41 @@ void flat_objects_test()
     {
 	if (!tally) ITFAILS;
 
-	// we will have surface sub tallies but we won't have random walk sub
-	// tallies
-	if (tally->get_RW_Sub_Tally())       ITFAILS;
-	if (!tally->get_Surface_Sub_Tally()) ITFAILS;
+	if (tally->get_RW_Sub_Tally())      ITFAILS;
+	if (tally->get_Surface_Sub_Tally()) ITFAILS;
     }
 
+    // get particle objects
+    SP_Random_Walk rwalk   = builder.get_Random_Walk();
+    SP_Tracker     tracker = builder.get_Surface_Tracker();
+    {
+	if (rwalk)   ITFAILS;
+	if (tracker) ITFAILS;
+    }
+
+    // make sure it resets
+    builder.reset();
+    if (builder.get_Random_Walk())       ITFAILS;
+    if (builder.get_Surface_Tracker())   ITFAILS;
+    if (builder.get_Tally())             ITFAILS;
+    if (builder.get_Source_Builder())    ITFAILS;
+    if (builder.get_Source())            ITFAILS;
+    if (builder.get_Frequency())         ITFAILS;
+    if (builder.get_Mat_State())         ITFAILS;
+    if (builder.get_Opacity())           ITFAILS;         
+    if (builder.get_Diffusion_Opacity()) ITFAILS;
+
+    // the objects should still be here though
+    if (!tally)          ITFAILS;
+    if (rwalk)           ITFAILS;
+    if (tracker)         ITFAILS;
+    if (!source)         ITFAILS;
+    if (!source_builder) ITFAILS;
+    if (!frequency)      ITFAILS;
+    if (!mat)            ITFAILS;
+    if (!opacity)        ITFAILS;
+    if (diff)            ITFAILS;
+	
     if (rtt_imc_test::passed)
 	PASSMSG("Object builder ok for Flat_Data_Interface.");
 }

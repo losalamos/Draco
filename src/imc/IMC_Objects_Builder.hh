@@ -50,15 +50,17 @@ template<class MT, class FT> class Mat_State_Builder;
 //===========================================================================//
 /*!
  * \class IMC_Objects_Builder
- * \brief Builds a set of on-processor IMC objects that are needed to do IMC
- * transport. 
+ * \brief Provides protected functions that build IMC objects during in-cycle
+ * initialization.
  *
- * This class builds the following on-processor IMC objects:
+ * This class provides functionality to build the following, on-processor,
+ * IMC objects that are needed to do a cycle of IMC transport:
  * - rtt_imc::Gray_Frequency or rtt_imc::Multigroup_Frequency (FT)
  * - rtt_imc::Mat_State
  * - rtt_imc::Opacity
  * - rtt_imc::Diffusion_Opacity (if needed)
  * - rtt_imc::Source
+ * - rtt_imc::Source_Builder (for initialization and edit steps)
  * - rtt_imc::Tally (with appropriate sub tallies)
  * - rtt_imc::Extrinsic_Surface_Tracker (if needed)
  * - rtt_imc::Random_Walk (if needed)
@@ -79,12 +81,16 @@ template<class MT, class FT> class Mat_State_Builder;
  * interfaces.  It parses on the appropriate data builder based on the
  * interface.
  *
+ * The services in this class are provided as protected members that can be
+ * used by a client to build the appropriate series of IMC objects in a
+ * consistent manner.
+ *
  * \sa IMC_Objects_Builder.t.hh for detailed descriptions.
  *
  * Code Sample:
  * \code
  *     IMC_Objects_Builder<MT,FT,PT> builder(interface);
- *     builder.build_IMC_objects(mesh, comm_patterns, rnd_control);
+ *     builder.build_IMC_objects(mesh, topology, comm_patterns, rnd_control);
  *     frequency = builder.get_Frequency();
  *     mat_state = builder.get_Mat_State();
  *     // ....
@@ -122,7 +128,18 @@ class IMC_Objects_Builder
     typedef rtt_dsxx::SP<Source_Builder<MT,FT,PT> > SP_Source_Builder; 
     typedef rtt_dsxx::SP<Mat_State_Builder<MT,FT> > SP_Mat_State_Builder;
 
-  private:
+  private: 
+    // >>> IMPLEMENTATION
+
+    // Build a CDI_Mat_State_Builder from a CDI_Data_Interface.
+    template<class Stop_Explicit_Instantiation>
+    SP_Mat_State_Builder get_mat_builder(const CDI_Data_Interface &);
+
+    // Build a Flat_Mat_State_Builder from a Flat_Data_Interface.
+    template<class Stop_Explicit_Instantiation>
+    SP_Mat_State_Builder get_mat_builder(const Flat_Data_Interface &);
+
+  protected:
     // >>> DATA
 
     // Interface.
@@ -160,36 +177,35 @@ class IMC_Objects_Builder
     // timesteps). 
     SP_Source_Builder source_builder;
 
-  private:
-    // >>> IMPLEMENTATION
+  protected:
+    // >>> DERIVED IMPLEMENTATION
 
     // Build the material state objects.
     void build_mat_state_objects(SP_Mesh);
 
-    // Build a CDI_Mat_State_Builder from a CDI_Data_Interface.
-    template<class Stop_Explicit_Instantiation>
-    SP_Mat_State_Builder get_mat_builder(const CDI_Data_Interface &);
-
-    // Build a Flat_Mat_State_Builder from a Flat_Data_Interface.
-    template<class Stop_Explicit_Instantiation>
-    SP_Mat_State_Builder get_mat_builder(const Flat_Data_Interface &);
-
-    // Build the source object.
-    void build_source_object(SP_Mesh, SP_Topology, SP_Rnd_Control, 
-			     SP_Comm_Patterns);
+    // Build the source objects.
+    void build_source_builder_object(SP_Mesh, SP_Topology, SP_Rnd_Control);
+    void build_source_object(SP_Mesh, SP_Rnd_Control, SP_Comm_Patterns);
 
     // Build the tally object.
     void build_tally_object(SP_Mesh);
+
+    // Build particle transport objects.
+    void build_time_dependent_particle_objects(SP_Mesh);
+    void build_time_independent_particle_objects(SP_Mesh);
+
+    // Reset a member object.
+    template<class T>
+    void reset(rtt_dsxx::SP<T> &object) { object = rtt_dsxx::SP<T>(); }
 
   public:
     // Constructor.
     explicit IMC_Objects_Builder(SP_Interface);
 
-    // >>> MEMBER FUNCTIONS
+    // Destructor.
+    virtual ~IMC_Objects_Builder() = 0;
 
-    // Build the IMC transport objects.
-    void build_IMC_objects(SP_Mesh, SP_Topology, SP_Comm_Patterns, 
-			   SP_Rnd_Control);
+    // >>> PUBLIC INTERFACE
 
     // >>> ACCESSORS
 

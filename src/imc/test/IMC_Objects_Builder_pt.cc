@@ -11,6 +11,7 @@
 //---------------------------------------------------------------------------//
 
 #include "mc/OS_Mesh.hh"
+#include "mc/RZWedge_Mesh.hh"
 #include "../Frequency.hh"
 #include "../Multigroup_Particle.hh"
 #include "../IMC_Objects_Builder.t.hh"
@@ -19,13 +20,15 @@
 namespace rtt_imc 
 {
 
-typedef rtt_mc::OS_Mesh                        MT;
-typedef rtt_imc::Multigroup_Frequency          MG;
-typedef rtt_imc::Multigroup_Particle<MT>       MGPT;
-typedef rtt_imc_test::IMC_CDI_Interface<MGPT>  CIT;
-typedef rtt_imc_test::IMC_Flat_Interface<MGPT> FIT;
+typedef rtt_mc::OS_Mesh                         MT;
+typedef rtt_mc::RZWedge_Mesh                    RZ;
+typedef rtt_imc::Multigroup_Frequency           MG;
+typedef rtt_imc::Multigroup_Particle<MT>        MGPT;
+typedef rtt_imc::Multigroup_Particle<RZ>        MGPTRZ;
+typedef rtt_imc_test::IMC_CDI_Interface<MGPTRZ> CIT;
+typedef rtt_imc_test::IMC_Flat_Interface<MGPT>  FIT;
 
-template class IMC_Objects_Builder<CIT, MT, MG, MGPT>;
+template class IMC_Objects_Builder<CIT, RZ, MG, MGPTRZ>;
 template class IMC_Objects_Builder<FIT, MT, MG, MGPT>;
 
 } // end namespace rtt_imc

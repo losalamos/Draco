@@ -606,7 +606,7 @@ void Multigroup_Particle<MT>::rw_transport(
 
 	    // check to see if the random walk conditions are valid
 	    do_a_random_walk = random_walk->do_a_random_walk(
-		Base::cell, rw_radius, d_collide, d_census);
+		Base::cell, rw_radius, d_collide, d_census, xs);
 
 	    if (surface_tracker && surface_tracker->surface_in_cell(Base::cell))
 		do_a_random_walk = false;

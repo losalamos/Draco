@@ -164,8 +164,8 @@ IMC_Flat_Interface<PT>::IMC_Flat_Interface(
       ss_temp(2),
       ss_desc(2, "standard"),
       hybrid_model(hmodel),
-      surfaces(1),
-      cosines(3)
+      surfaces(),
+      cosines()
 {   
     if (osb->num_cells() % 2 != 0)
 	throw rtt_dsxx::assertion("Non-even celled test mesh.");
@@ -271,16 +271,6 @@ IMC_Flat_Interface<PT>::IMC_Flat_Interface(
 
     ss_temp[0] = 20.0;
     ss_temp[1] = 0.0;
-
-    // surfaces
-    surfaces[0].type = rtt_mc::Surface_Descriptor::SPHERE;
-    surfaces[0].data.resize(2);
-    surfaces[0].data[0] = 1.0;
-    surfaces[0].data[1] = 2.0;
-
-    cosines[0] = -0.5;
-    cosines[1] = 0.0;
-    cosines[2] = 0.5;
 }
 
 //---------------------------------------------------------------------------//
@@ -408,8 +398,8 @@ IMC_CDI_Interface<PT>::IMC_CDI_Interface(int hybrid)
       rad_temp(6),
       ss_temp(),
       ss_desc(),
-      surfaces(),
-      cosines()
+      surfaces(1),
+      cosines(3)
 {  
     using rtt_cdi_analytic::Analytic_Gray_Opacity;
     using rtt_cdi_analytic::Analytic_Multigroup_Opacity;
@@ -590,6 +580,14 @@ IMC_CDI_Interface<PT>::IMC_CDI_Interface(int hybrid)
 	rad_source[i] = 200;
 	rad_temp[i]   = 10.0;
     }
+
+    surfaces[0].type = rtt_mc::Surface_Descriptor::SPHERE;
+    surfaces[0].data.resize(2);
+    surfaces[0].data[0] = 1.0;
+    surfaces[0].data[1] = 2.0;
+
+    double bin_data[3] = {-0.5, 0.0, 0.5};
+    cosines.assign(bin_data, bin_data+3);
 }
 
 //---------------------------------------------------------------------------//

@@ -148,8 +148,14 @@ double Diffusion_Opacity<MT>::get_Rosseland_effmfp(int cell) const
     Check (fleck->fleck(cell) >= 0.0);
     Check (fleck->fleck(cell) <= 1.0);
 
-    Check ((1-fleck->fleck(cell)) * rosseland(cell) + scattering(cell) > 0.0);
-    return 1.0 / ((1.0-fleck->fleck(cell)) * rosseland(cell) + scattering(cell));
+    double denominator = (1.0-fleck->fleck(cell)) * rosseland(cell) +
+	scattering(cell);
+
+    // make sure that we don't divide by zero
+    if (denominator == 0.0)
+	return rtt_mc::global::huge;
+
+    return 1.0 / denominator;
 }
 
 //---------------------------------------------------------------------------//

@@ -99,7 +99,7 @@ class Multigroup_Particle : public Particle<MT>
     void collision_event(const MT &, Tally<MT> &, const MG_Opacity &,
 			 double, double, double);
 
-    // Do an effective scatter
+    // Do an effective scatter.
     inline void effective_scatter(const MT &, const MG_Opacity &);
 
   public:

@@ -214,14 +214,14 @@ void check_rw_tallies<Gray,GPT>(SP<Tally<MT> > tally, int num_run)
     rtt_c4::global_sum(nrws);
 
     // check sums
-    if (!soft_equiv(erg_dep_tot, 0.91662919, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ew_escaped, 0.04447913, 1.e-6))  ITFAILS;
-    if (!soft_equiv(ecen_tot, 1.7061015068, 1.e-6))  ITFAILS;
-    if (ncen_tot != 980)                             ITFAILS;
-    if (neff_scat != 1012)                           ITFAILS;
-    if (nbnd_cross != 179)                           ITFAILS;
-    if (nescaped != 20)                              ITFAILS;
-    if (nrws   != 1301)                              ITFAILS;
+    if (!soft_equiv(erg_dep_tot, 0.91770659, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ew_escaped, 0.04157554, 1.e-6))  ITFAILS;
+    if (!soft_equiv(ecen_tot, 1.7079277061, 1.e-6))  ITFAILS;
+    if (ncen_tot != 981)                             ITFAILS;
+    if (neff_scat != 2421)                           ITFAILS;
+    if (nbnd_cross != 154)                           ITFAILS;
+    if (nescaped != 19)                              ITFAILS;
+    if (nrws   != 846)                               ITFAILS;
 
     // check num_run
     if (num_run != 1000) ITFAILS;
@@ -258,17 +258,17 @@ void check_rw_tallies<MG,MGPT>(SP<Tally<MT> > tally, int num_run)
     rtt_c4::global_sum(nrws);
 
     // check sums
-    if (!soft_equiv(erg_dep_tot, 0.081283934, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ew_escaped, 0.0080145985, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ecen_tot, 0.279047012801, 1.e-6)) ITFAILS;
-    if (ncen_tot != 970)                              ITFAILS;
-    if (neff_scat != 258)                             ITFAILS;
-    if (nbnd_cross != 193)                            ITFAILS;
-    if (nescaped != 26)                               ITFAILS;
-    if (nrws   != 195)                                ITFAILS;
+    if (!soft_equiv(erg_dep_tot, 0.659338308, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ew_escaped, 0.0476896883, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ecen_tot, 1.42913968172, 1.e-6))  ITFAILS;
+    if (ncen_tot != 971)                              ITFAILS;
+    if (neff_scat != 1479)                            ITFAILS;
+    if (nbnd_cross != 191)                            ITFAILS;
+    if (nescaped != 29)                               ITFAILS;
+    if (nrws   != 65)                                 ITFAILS;
 
     // check num_run
-    if (num_run != 996) ITFAILS;
+    if (num_run != 1000) ITFAILS;
     
     if (rtt_imc_test::passed)
 	PASSMSG("Integral transport checks ok for mg random walk problem.")

@@ -13,11 +13,9 @@
 #ifndef rtt_imc_Random_Walk_t_hh
 #define rtt_imc_Random_Walk_t_hh
 
-#include "Random_Walk.hh"
-#include "mc/Constants.hh"
-#include "rng/Random.hh"
-#include <utility>
 #include <cmath>
+#include "rng/Random.hh"
+#include "Random_Walk.hh"
 
 namespace rtt_imc
 {
@@ -53,68 +51,6 @@ Random_Walk<MT>::Random_Walk(SP_Mesh              mesh_in,
 
 //---------------------------------------------------------------------------//
 // PUBLIC INTERFACE
-//---------------------------------------------------------------------------//
-/*!
- * \brief See if we should do Random Walk on this step.
- *
- * Random Walk is valid during a step if:
- * - Ro > min_optical_radius * mean-free-path AND
- * - Ro > distance-to-collision AND
- * - distance-to-census > distance-to-collision
- * .
- *
- * \param cell current cell index
- * \param rw_radius Random Walk sphere radius
- * \param d_collision distance to collision (cm)
- * \param d_census distance to census (shakes)
- */
-template<class MT>
-bool Random_Walk<MT>::do_a_random_walk(int    cell,
-				       double rw_radius_in,
-				       double d_collision,
-				       double d_census)
-{
-    Require (cell > 0);
-    Require (cell <= diff_opacity->num_cells());
-    Require (rw_radius_in >= 0.0);
-    Require (rw_set == false);
-
-    // get the rosseland opacity in this cell
-    double rosseland = diff_opacity->get_Rosseland_opacity(cell);
-    Check (rosseland >= 0.0);
-
-    // calculate the mean free path
-    double mfp = 0.0;
-    if (rosseland == 0.0)
-	mfp = rtt_mc::global::huge;
-    else
-	mfp = 1.0 / rosseland;
-
-    // set the random walk radius for this step
-    rw_radius = rw_radius_in;
-
-    // check to see if random walk is valid
-
-    // rw_radius must be greater than the minimum number of mfps
-    if (rw_radius <= min_optical_radius * mfp)
-	return false;
-
-    // rw_radius must be greater than the distance to collision
-    else if (rw_radius <= d_collision)
-	return false;
-
-    // rw_radius is greater than dist-to-collision so rw is possible;
-    // however, if d_census is the limiting event then don't do random walk 
-    else if (d_census <= d_collision)
-	return false;
-
-    // set the rw_set flag to true (random walk is on)
-    rw_set = true;
-
-    // return random walk boolean flag
-    return true;
-}
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Do a random walk.
@@ -224,6 +160,27 @@ std::pair<double,double> Random_Walk<MT>::random_walk(sf_double   &r,
 
     // return elapsed time
     return time_radius;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Reset the random walk.
+ *
+ * This function clears the random walk status that is set by
+ * do_a_random_walk().  It does not reset parameters given at construction
+ * time.
+ */
+template<class MT>
+void Random_Walk<MT>::reset()
+{
+    Require (mesh);
+    Require (diff_opacity);
+
+    rw_radius = 0.0;
+    rw_set    = false;
+
+    Ensure (mesh);
+    Ensure (diff_opacity);
 }
 
 } // end namespace rtt_imc

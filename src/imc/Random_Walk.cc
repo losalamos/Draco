@@ -10,9 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Random_Walk.hh"
 #include "mc/Math.hh"
-#include <algorithm>
+#include "Random_Walk.hh"
 
 namespace rtt_imc
 {
