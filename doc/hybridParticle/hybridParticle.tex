@@ -28,7 +28,6 @@
 %%---------------------------------------------------------------------------%%
 
 \toms{Distribution}
-%\toms{Joe Sixpak/XTM, MS B226}
 \refno{CCS-4:01-33(U)}
 \subject{Low-Weight IMC Particle Termination in Draco}
 
@@ -61,15 +60,21 @@
   T.E. Booth, X-5 MS F663 \\
   B.A. Clark, CCS-4 MS D409 \\
   T.M. Evans, CCS-4 MS D409 \\ 
+  R.A. Forster, X-5 MS F663 \\
+  M.G. Gray, CCS-4 MS D409 \\
+  A.R. Heath, X-5 MS F663 \\
+  H.G. Hughes, CCS-4 MS D409 \\
+  H. Lichtenstein, CCS-4 MS D409 \\
   J.M. McGhee, CCS-4 MS D409 \\ 
   J.E. Morel, CCS-4 MS D409 \\ 
   M. Murillo, CCS-4 MS D409 \\
   G.L. Olson, CCS-4 MS D409 \\ 
-  S. Pautz, CCS-4 MS D409 \\ 
+  S.D. Pautz, CCS-4 MS D409 \\ 
   K.G. Thomson, CCS-4 MS D409 \\
   S.A. Turner, CCS-4 MS D409 \\ 
   T.J. Urbatsch, CCS-4 MS D409 \\ 
   J.S. Warsa, CCS-4 MS D409 \\
+  CCS-4 Files.
 }
 
 %%---------------------------------------------------------------------------%%
@@ -80,29 +85,29 @@
 
 \section{Introduction}
 
-In memo CCS-4:01-15(U), the authors propose the construction of a new
-Particle type that would switch between implicit and analog absorption
-behavior below an energy-weight threshold (an idea originally proposed
-by Tom Booth, X-5). It was suggested that this hybrid particle would
-eliminate a persistent difference between the computed material and
-radiation energies apparent in thermal equilibrium problems. This
-discrepancy was known to be caused by the ``full-clip Russian
-roulette'' approach to terminating low weight particles, wherein all
-particles below a fractional energy-weight threshold (1\% of their
-original energy weight, typically) are harvested and their energy
-deposited into the material.  Eliminating full-clip Russian roulette
-will necessarily increase computational effort, because some particles
-will survive longer, and increase variance since these particles will
-be subject to further random events.  Nevertheless, full-clip Russian
-roulette is biased because it delivers all of the particle energy to
-the material, so replacing it with another particle termination method
-is desirable, even at the expense of increased variance and
-computation time. In this memo we describe the implementation of a
-modified particle type with the hybrid absorption behavior and
-demonstrate its effectiveness at closing the material/radiation
-temperature gap at moderate cost.
+In memo CCS-4:01-15(U) \cite{ccs4:01-15}, the authors propose the
+construction of a new Particle type in the IMC module of Draco that
+would switch from implicit to analog absorption behavior below an
+energy-weight threshold (an idea originally proposed by Tom Booth,
+X-5). It was suggested that this hybrid particle would eliminate a
+persistent difference between the computed material and radiation
+energies apparent in thermal equilibrium problems. This discrepancy
+was known to be caused by the ``full-clip Russian roulette'' approach
+to terminating low weight particles, wherein all particles below a
+fractional energy-weight threshold (1\% of their original energy
+weight, typically) are harvested and their energy deposited into the
+material.  Eliminating full-clip Russian roulette will necessarily
+increase computational effort, because some particles will survive
+longer, and increase variance since these particles will be subject to
+further random events.  Nevertheless, full-clip Russian roulette is
+biased because it delivers all of the particle energy to the material,
+so replacing it with another particle termination method is desirable,
+even at the expense of increased variance and computation time. In
+this memo we describe the implementation of a modified particle type
+with the hybrid absorption behavior and demonstrate its effectiveness
+at closing the material/radiation temperature gap at moderate cost.
 
-\section{Implementation}
+\section{Implementation and Testing}
 
 The hybrid Particle type was created by modifying the original
 \texttt{Particle} type present in the IMC component directory of
@@ -112,9 +117,15 @@ modified to implement the new absorption behavior. The modified
 the fractional energy weight of the particle is above 0.01 (i.e. the
 energy weight is greater than 1\% of its initial value). In this case,
 the energy weight is decreased along the path of the particle to
-represent implicit absorption. For particles that are below 0.01 of
-their original energy weight, a cross section is computed for
-absorption and the energy weight of the particle remains constant.
+represent implicit absorption. Particles which reach a fractional
+energy weight of 0.01 are stopped and immediately switched to analog
+absorption behavior. This prevents the appearence of particles with
+very low fractional energy weights. If large numbers of these
+particles go into the census the combing process can fail to produce a
+reasonable selection of particles, resulting in considerable energy
+loss. When particles are at 1\% of their original energy weight, a
+cross section is computed for absorption and the energy weight of the
+particle remains constant.
 
 The new class was then added to the Draco/IMC library. A version of
 \texttt{milagro\_xyz} was written that allowed the type of particle to
@@ -122,69 +133,86 @@ be specified when the code is run. (Both of these steps were greatly
 facilitated by the use of a templated parameter throughout Draco and
 Milagro to specify the particle type.) We tested the new particle type
 by using it to compile and run \texttt{tstParticle} in the Draco
-regression test suite. Furthermore, it produced results identical to
+regression test suite. As expected, it produced results identical to
 the original particle type on the pure streaming and pure scattering
-problems in the test suite for \texttt{milagro\_xyz}.
+problems in the test suite for \texttt{milagro\_xyz}. These tests
+verified that the new particle type was interacting correctly with
+other Draco components (e.g. components for buffering and parallel
+communication) and that the modified transport method was giving the
+correct behavior in degenerate problems without absorption. These
+tests also brought to our attention the problem arising from too many
+low energy weight particles entering the census.
 
 \section{Results}
 
 \subsection{Steady State Problem}
 
-We test the efficacy of the hybrid particle on a steady-state problem
-in which the material and radiation are in thermal equilibrium at a
-common initial temperature of 0.89994 keV. We compute the average and
-standard deviation of the material and radiation temperatures in a
-single cell over ten different runs with different random seeds. The
-data is collected at 0.1 shakes (100 steps at 0.001 shakes per step)
-and the runs are performed with 1,000 particles.
+We demonstrated the efficacy of the hybrid particle on a steady-state
+problem in which the material and radiation are in thermal equilibrium
+at a common initial temperature of 0.89994 keV (See \cite{x-6:rn99037}
+for a full problem description). We compute the average and standard
+deviation of the material and radiation temperatures in a single cell
+over ten different runs with different random seeds. The data is
+collected at 0.1 shakes (100 steps at 0.001 shakes per step) and the
+runs are performed with 1,000 particles.
 
 \begin{center}
   \begin{tabular}{r|cc}
     ``Full-Clip'' Particle  &  Average   & STD \\ \hline
      Material Temperature:  &  0.902114  & $4.08194\times 10^{-4}$ \\
      Radiation Temperature: &  0.899231  & $8.83107\times 10^{-5}$ \\
-     Difference:            &  0.002883  & \\
+     Difference:            &  0.002883  & $\approx 4.176\times 10^{-4}$\\
      \multicolumn{3}{c}{} \\
      Hybrid Particle        &  Average   & STD \\ \hline
-     Material Temperature:  &  0.899494  & $4.78574\times 10^{-4}$ \\
-     Radiation Temperature: &  0.899961  & $1.81940\times 10^{-4}$ \\
-     Difference:            & -0.000467  & \\
+     Material Temperature:  &  0.899856  & $5.24318\times 10^{-4}$ \\
+     Radiation Temperature: &  0.899964  & $1.29539\times 10^{-4}$ \\
+     Difference:            & -0.000108  & $\approx 5.401\times 10^{-4}$\\
   \end{tabular}
 \end{center}
 
 We notice that the discrepancy in the material and radiation
-temperatures is smaller by a factor of six and is no longer in the
+temperatures is smaller by a factor of 26 and is no longer in the
 characteristic direction of greater material temperature. As expected,
-an increase in the variance is also observed. The increase in variance
-is sufficiently small that the merit of the new absorption behavior is
-not substantially reduced.  
+an increase in the variance is also observed. (We compute the
+approximate variance of the difference based on the assumption that
+the two quantities are independent.) The increase in variance is
+sufficiently small that the merit of the new absorption behavior is
+not substantially reduced. Where the difference between material and
+radiation temperature is seven times the approximate standard
+deviation for the original particle, it is reduced to less than one
+standard deviation for the new particle.
 
-Because of optimizations made in the transport and other methods of
-the new particle class, the execution was faster for the hybrid
-particle than the original version (92.11 versus 100.93 seconds, on
-average) despite requiring more computation.
+The execution was faster for the hybrid particle than the original
+version (92.11 versus 100.93 seconds, on average) despite requiring
+more computation. This speed-up was obtained by improving the
+performance of other parts of the code particle class. Specifically,
+the data members of the class related to the fractional energy weight
+cutoff were made constant static members and multiple redundant
+initializations of these variables we're eliminated. Also, we reduced
+the number of \texttt{if} statements, which are known to be
+computationally slow, executed in the body of the transport method.
 
 \subsection{Marshak wave problem}
 
 The Marshak wave problem is a diffusive radiative transfer problem in
-which the material and radiation are in thermal equilibrium.  We use
-it here to demonstrate that the original and hybrid particle types
-give qualitatively similar results. The particular problem is
-marshak2b as implemented in problem \texttt{fulltp01} in the Milagro
-regression test suite. After 10 shakes (10,000 time-steps with 10,000
-particles) the analytic solution and the solutions generated using
-each particle type and the same initial random seed are as pictured in
-Figure~\ref{fig:marshak2b}.
+which the material and radiation are in thermal equilibrium
+\cite{lams:2421}. We use it here to demonstrate that the original and
+hybrid particle types give qualitatively similar results. The
+particular problem is marshak2b as implemented in problem
+\texttt{fulltp01} in the Milagro regression test suite. After 10
+shakes (10,000 time-steps with 10,000 particles) the analytic solution
+and the solutions generated using each particle type and the same
+initial random seed are as pictured in Figure~\ref{fig:marshak2b}.
 
 \vspace{1em}
 \begin{figure}[h]
-  \centerline{\includegraphics[height=3.0in]{plot.eps}}
-  \caption{Analytic solution, and Monte Carlo solutions using Analog
+  \centerline{\includegraphics[height=3.0in]{plot}}
+  \caption{Analytic solution, and Monte Carlo solutions using ``Full-Clip''
     and Hybrid Particles to the Marshak2b problem}
   \label{fig:marshak2b}
 \end{figure}
 
-\section{Conclusions}
+\section{Conclusions and Future Work}
 
 We have demonstrated that replacing the full-clip Russian roulette
 termination of low weight particles with analog absorption effectively
@@ -194,11 +222,21 @@ slight increase in the variance and amount of computation.  The time
 required for the additional computation was more than made up for by
 other improvements in the efficiency of the execution.  Furthermore,
 we expect that this method of particle termination will reduce the
-sensitivity of the computation to the low-weight cut off value since
+sensitivity of the computation to the low-weight cutoff value since
 the absorption of the particle is unbiased both above and below of the
 cutoff.
 
-\newpage
+The new particle class defined to implement the hybrid particle
+behavior will become the default particle type in Draco/IMC. Since the
+increased variance of this method may be a greater issue in other
+applications (e.g. hydrodynamics computations) we will further modify
+this class to make the fractional energy-weight cutoff value an
+adjustable parameter.  This will allow for lower cutoff values to be
+used when it is desirable to trade a lower variance for the increased
+computational cost of tracking low-weight particles.
+
+\bibliographystyle{plain}
+\bibliography{draco,IMC}
 
 \closing
 \end{document}
