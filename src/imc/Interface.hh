@@ -3,7 +3,7 @@
  * \file   imc/Interface.hh
  * \author Thomas M. Evans
  * \date   Wed Jul  7 15:42:05 1999 
- * \brief  Interface abstract base class definition
+ * \brief  Interface abstract base class definition for the imc package.
  */
 //---------------------------------------------------------------------------//
 // $Id$
