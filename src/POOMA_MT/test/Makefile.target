@@ -14,7 +14,7 @@ testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 ptCCsrc := $(wildcard ${srcdir}/*_pt.cc)
 ptObjs := $(notdir $(patsubst %.cc,%.o,${ptCCsrc}))
 
-utilObjs := ${ptObjs} TestRelease.o utils.o
+utilObjs := ${ptObjs} utils.o
 
 ${test_alltarget}: ${testdeps}
 
