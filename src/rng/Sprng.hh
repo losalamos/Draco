@@ -13,10 +13,14 @@
 #define __rng_Sprng_hh__
 
 #include "ds++/Assert.hh"
+#include "ds++/Packing_Utils.hh"
 
 // Header file that includes the SPRNG library
 #include <rng/config.h>
 #include "rng_sprng.h"
+
+#include <vector>
+#include <cstdlib>
 
 namespace rtt_rng 
 {
@@ -63,13 +67,14 @@ namespace rtt_rng
 //                object is copied and deleted
 //  2)  6-26-98 : added average tester 
 //  3)  1-SEP-99: added doxygen comments
+//  4) 20-DEC-01: added packing functions
 // 
 //===========================================================================//
 
 class Sprng 
 {
   private:
-    // reference counting class for SPRNG random numbers
+    // Reference Counting Class For Sprng Random Numbers.
     struct SprngValue
     {
 	// counter and id to Sprng library
@@ -83,73 +88,151 @@ class Sprng
 	~SprngValue() { free_sprng(id); }
     };	
 
-    // pointer to memory in Sprng library
+    // Pointer to memory in Sprng library.
     SprngValue *streamid;
-    // number of this particular stream
+
+    // Number of this particular stream.
     int streamnum;
 
   public:
-    // creation, copy, and assignment
-
-    // constructors
+    // Constructors
     inline Sprng(int *, int);
     inline Sprng(const Sprng &);
+    inline Sprng(const std::vector<char> &);
 
-    // fake constructor for STL containers
-    inline Sprng();
-
-    // destructor, reclaim memory from SPRNG library
+    // Destructor, reclaim memory from SPRNG library.
     inline ~Sprng();
 
-    // assignment operator
+    // Assignment operator.
     inline Sprng& operator=(const Sprng &);
-   
-    // services provided by Sprng class
 
-    // get Random number
+    // Pack Sprng state.
+    inline std::vector<char> pack() const;
+   
+    // >>> Services provided by Sprng class.
+
+    // Get Random number.
     double ran() const { return sprng(streamid->id); }
 
-    // return the ID and number
+    // Return the ID and number.
     int* get_id() const { return streamid->id; }
     int get_num() const { return streamnum; }
 
-    // test diagnostics
+    // Test diagnostics.
     bool avg_test(int, double = .001) const;
 
-    // do a diagnostic
+    // Do a diagnostic.
     void print() const { print_sprng(streamid->id); }
 };
 
 //---------------------------------------------------------------------------//
-// inline members for Sprng
+// INLINE SPRNG MEMBERS
 //---------------------------------------------------------------------------//
-// constructor
-
-inline Sprng::Sprng(int *idval, int number)
+/*!
+ * \brief Constructor.
+ */
+Sprng::Sprng(int *idval, int number)
     : streamid(new SprngValue(idval)), streamnum(number) {}
 
 //---------------------------------------------------------------------------//
-// copy constructor
-
-inline Sprng::Sprng(const Sprng &rhs)
+/*!
+ * \brief Copy constructor.
+ */
+Sprng::Sprng(const Sprng &rhs)
     : streamid(rhs.streamid), streamnum(rhs.streamnum)
 {
     ++streamid->refcount;
 }
 
 //---------------------------------------------------------------------------//
-// destructor
+/*!
+ * \brief Unpacking constructor.
+ */
+Sprng::Sprng(const std::vector<char> &packed)
+    : streamid(0), streamnum(0)
+{
+    Require (packed.size() >= 2 * sizeof(int));
 
-inline Sprng::~Sprng()
+    // make an unpacker
+    rtt_dsxx::Unpacker u;
+    
+    // set the buffer
+    u.set_buffer(packed.size(), &packed[0]);
+
+    // unpack the stream num and size of state
+    int rng_size = 0;
+    u >> streamnum >> rng_size;
+    Check (streamnum >= 0);
+    Check (rng_size >= 0);
+
+    // unpack the random stream state
+    char *prng = new char[rng_size];
+    for (int i = 0; i < rng_size; i++)
+	u >> prng[i];
+
+    // now rebuild the sprng object
+    int *rnid = unpack_sprng(prng);
+
+    // now make a new streamid
+    streamid = new SprngValue(rnid);
+
+    // reclaim memory
+    delete [] prng;
+
+    Ensure (u.get_ptr() == &packed[0] + packed.size());
+    Ensure (streamid);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Destructor
+ */
+Sprng::~Sprng()
 {
     if (--streamid->refcount == 0)
 	delete streamid;
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Pack a Sprng object into a vector<char>.
+ */
+std::vector<char> Sprng::pack() const
+{
+    Require (streamid);
+    
+    // make a packer
+    rtt_dsxx::Packer p;
+
+    // first pack the random number object and determine the size
+    char *prng   = 0;
+    int rng_size = pack_sprng(streamid->id, &prng);
+    int size     = rng_size + 2 * sizeof(int);
+    Check (prng);
+
+    // now set the buffer
+    std::vector<char> packed(size);
+    p.set_buffer(size, &packed[0]);
+
+    // pack the stream number and rng size
+    p << streamnum << rng_size;
+
+    // pack the stream state
+    for (int i = 0; i < rng_size; i++)
+	p << prng[i];
+
+    // free the prng buffer
+    std::free(prng);
+
+    Ensure (p.get_ptr() == &packed[0] + size);
+
+    return packed;
+}
+
+//---------------------------------------------------------------------------//
 // assignment operator
 
-inline Sprng& Sprng::operator=(const Sprng &rhs)
+Sprng& Sprng::operator=(const Sprng &rhs)
 {
     // check to see if the values are the same
     if (streamid == rhs.streamid && streamnum == rhs.streamnum)
@@ -166,16 +249,6 @@ inline Sprng& Sprng::operator=(const Sprng &rhs)
     ++streamid->refcount;
     return *this;
 }
-
-//---------------------------------------------------------------------------//
-// default constructor for STL classes
-
-inline Sprng::Sprng() 
-    : streamid(0) 
-{ 
-    // constructor for use with STL containers, this cannot be used
-    Insist (0, "You tried to default construct a Sprng!"); 
-} 
 
 } // end namespace rtt_rng
 

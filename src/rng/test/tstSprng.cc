@@ -13,6 +13,7 @@
 #include "../Release.hh"
 #include "../Random.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 #include <iostream>
 #include <vector>
@@ -107,6 +108,56 @@ void sprng_test()
 
 //---------------------------------------------------------------------------//
 
+void pack_test()
+{
+    int num = 5;
+
+    vector<double> ref(80);
+    vector<char>   packed;
+
+    {
+	// make a sprng state
+	int *id1 = init_sprng(0, num, seed, 1);
+	int *idr = init_sprng(0, num, seed, 1);
+	
+	// now make some sprngs
+	Sprng ran1(id1, 0);
+	Sprng ranr(idr, 0);
+
+	// get some reference numbers
+	for (int i = 0; i < 80; i++)
+	    ref[i] = ranr.ran();
+
+	// get 40 numbers from the non-ref
+	for (int i = 0; i < 40; i++)
+	    ran1.ran();
+
+	// pack up the sprng
+	packed = ran1.pack();
+    }
+
+    // now check it
+    {
+	Sprng uran(packed);
+
+	// now check the first 40 Unpacked ran numbers
+	double r   = 0;
+	double rf  = 0;
+	for (int i = 0; i < 40; i++)
+	{
+	    r  = uran.ran();
+	    rf = ref[i+40];
+ 
+	    if (!rtt_dsxx::soft_equiv(r,rf)) ITFAILS;
+	}
+    }
+
+    if (rtt_rng_test::passed)
+	PASSMSG("Packing/Unpacking ok.");
+}
+
+//---------------------------------------------------------------------------//
+
 void spawn_test()
 {
 //     int **news;
@@ -138,6 +189,7 @@ int main(int argc, char *argv[])
 	// >>> UNIT TESTS
 	ran_test();
 	sprng_test();
+	pack_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {
