@@ -1015,7 +1015,7 @@ EOF
 
 # testing setup
 	test_alltarget="$test_alltarget tstOpacity tstTally tstParticle tstTopology_Builder \
-            tstSource_Builder tstMesh_Operations"
+            tstSource_Builder tstMesh_Operations tstTransporter"
         
 	test_nprocs="1 2 4"
 
