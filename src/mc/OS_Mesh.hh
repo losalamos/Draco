@@ -52,6 +52,9 @@
 //                this move presupposes the use of Randy's matprops class
 // 15) 18-NOV-99: added get_neighbors member function that returns a
 //                vector<int> that contains the neighbors of a cell.
+// 16) 29-NOV-99: added full_Mesh() function that returns the value of
+//                submesh, used for determining whether a mesh is a master
+//                (global) mesh or some sort of decomposed mesh
 // 
 //===========================================================================//
 
@@ -198,6 +201,7 @@ class OS_Mesh
 				     double) const; 
     inline vector<double> sample_pos_on_face(int, int, Sprng &)	const;
     inline vector<int> get_neighbors(int) const;
+    bool full_Mesh() const { return !submesh; }
 
     // overloaded operators
     bool operator==(const OS_Mesh &) const;

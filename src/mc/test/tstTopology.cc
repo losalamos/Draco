@@ -10,7 +10,8 @@
 //---------------------------------------------------------------------------//
 
 #include "MC_Test.hh"
-#include "../Topology.hh"
+#include "../General_Topology.hh"
+#include "../Rep_Topology.hh"
 #include "../OS_Mesh.hh"
 #include "../OS_Builder.hh"
 #include "../Release.hh"
@@ -24,16 +25,22 @@
 using namespace std;
 
 using rtt_mc::Topology;
+using rtt_mc::General_Topology;
+using rtt_mc::Rep_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_mc_test::MC_Interface;
 using dsxx::SP;
 
 bool passed = true;
-#define ITFAILS passed = rtt_mc_test::fail(__LINE__);
+#define ITFAILS passed = rtt_mc_test::fail(__LINE__, __FILE__);
 
-// Full replication topology
-void replication_test()
+//---------------------------------------------------------------------------//
+// REPLICATION TOPOLOGY TESTS
+//---------------------------------------------------------------------------//
+// full replication/General_Topology test
+
+void test_Replication()
 {
     // get an OS_Mesh (2D 6 cells)
     SP<MC_Interface> interface(new MC_Interface());
@@ -61,69 +68,30 @@ void replication_test()
 	    ppc[cell-1][np] = np;
     }
 
-    // make topology object
-    Topology top(cpp, ppc, bc, "replication");
+    // build and test General_Topology for replication
+    General_Topology general(cpp, ppc, bc, "replication");
+    if ( !rtt_mc_test::topology_replication_test(mesh, general) ) ITFAILS;
 
-    // test num_cells
-    if (top.num_cells() != mesh->num_cells()) ITFAILS;
-    if (top.num_cells(C4::node()) != mesh->num_cells()) ITFAILS;
-    
-    // test num procs
-    for (int cell = 1; cell <= top.num_cells(); cell++)
-	if (top.num_procs(cell) != C4::nodes()) ITFAILS;
+    // build and test a SP<Topology> for replication
+    SP<Topology> spgen(new General_Topology(cpp, ppc, bc, "replication"));
+    if ( !rtt_mc_test::topology_replication_test(mesh, *spgen) ) ITFAILS;
 
-    // verify the parallel scheme
-    if (top.get_parallel_scheme() != "replication") ITFAILS;
+    // build and test Rep_Topology
+    Rep_Topology rep(mesh->num_cells());
+    if ( !rtt_mc_test::topology_replication_test(mesh, rep) ) ITFAILS;
 
-    // test global_cell functions
-    for (int lc = 1; lc <= top.num_cells(C4::node()); lc++)
-	if (top.global_cell(lc) != lc) ITFAILS;
-
-    for (int proc = 0; proc < C4::nodes(); proc++)
-	for (int lc = 1; lc <= top.num_cells(proc); lc++)
-	    if (top.global_cell(lc, proc) != lc) ITFAILS;
-
-    // test local cell functions
-    for (int gc = 1; gc <= top.num_cells(); gc++)
-	if (top.local_cell(gc) != gc) ITFAILS;
-
-    for (int proc = 0; proc < C4::nodes(); proc++)
-	for (int gc = 1; gc <= top.num_cells(); gc++)
-	    if (top.local_cell(gc, proc) != gc) ITFAILS;
-
-    // test get_cells function
-    {
-	vector<int> cell_list(mesh->num_cells());
-	for (int i = 1; i <= cell_list.size(); i++)
-	    cell_list[i-1] = i;
-
-	// compare
-	for (int np = 0; np < C4::nodes(); np++)
-	{
-	    vector<int> got_cells = top.get_cells(np);
-	    if (got_cells != cell_list) ITFAILS;
-	}
-    }
-
-    // test get_procs function
-    {
-	vector<int> proc_list(C4::nodes());
-	for (int i = 0; i < C4::nodes(); i++)
-	    proc_list[i] = i;
-
-	// compare
-	for (int cell = 1; cell <= mesh->num_cells(); cell++)
-	{
-	    vector<int> got_procs = top.get_procs(cell);
-	    if (got_procs != proc_list) ITFAILS;
-	}
-    }
+    // build and test SP<Topology> for replication
+    SP<Topology> sprep(new Rep_Topology(mesh->num_cells()));
+    if ( !rtt_mc_test::topology_replication_test(mesh, *sprep) ) ITFAILS;
 }
+
+//---------------------------------------------------------------------------//
+// MAIN
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
     C4::Init(argc, argv);
-
     
     // version tag
     for (int arg = 1; arg < argc; arg++)
@@ -136,8 +104,8 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
-    // full replication test
-    replication_test();
+    // full replication tests of General_Topology and Rep_Topology
+    test_Replication();
 
     // status of test
     cout << endl;

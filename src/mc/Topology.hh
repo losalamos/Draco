@@ -12,12 +12,9 @@
 #ifndef __mc_Topology_hh__
 #define __mc_Topology_hh__
 
-#include "ds++/Assert.hh"
-#include "c4/global.hh"
 #include <string>
 #include <vector>
 #include <iostream>
-#include <algorithm>
 
 namespace rtt_mc
 {
@@ -25,8 +22,9 @@ namespace rtt_mc
 //===========================================================================//
 /*!
  * \class Topology
- * \brief Topology is a parallel-topology class that maps cells to
- * processors.
+ *
+ * \brief Topology is a parallel-topology abstract base class that maps cells
+ * to processors.
  *
  * The Topology keeps a record of processor<-->mesh-cell relationships. Thus,
  * the Topology class can tell a client across-processor information about a
@@ -38,22 +36,20 @@ namespace rtt_mc
  * \arg \b processor: gives the processor for a global_cell index
  * \arg \b cell_list: gives the global cells on a given processor
  * \arg \b processor_list: gives the processors that a global_cell is on
- * \arg \b boundary_cells: returns boundary cell information for a processor
- * 
- * Topology needs to be built by a Topology_Builder that may vary from code
- * to code * depending upon how the topology is constructed.  The Topology
- * constructor takes complete spatial state information as arguments.  This
- * information is constructed based upon the problem setup, source, mesh,
- * etc.  The Topology class constructor requires three vector<vector<int>>
- * fields that contain the following information:
- * \arg \b cells_per_proc: global cells per processor.
- * \arg \b procs_per_cell: processors per global cell.
- * \arg \b bound_cells: list of boundary cells per processor.
- * Additionally, a string is provided that states the parallel topology
- * description that is one of the following:
- * \arg \b "replication": full replication of cells across processors
- * \arg \b "DD": full domain decomposition of cells across processors
- * \arg \b "DD/replication": hybrid scheme where some cells are replicated
+ * \arg \b boundary_cells: returns boundary cell information for a processor.
+ *
+ * Topology has two derived classes-a rtt_mc::General_Topology class that is
+ * used for DD and DD/replication topologies and a rtt_mc::Rep_Topology class
+ * that is used for full replication topologies.  The General_Topology class
+ * can also be applied to full replication problems; however, because this
+ * topology is so simple, this is a waste of memory and effort.  All
+ * functionality in the base class is available through public inheritance in
+ * the derived classes.
+ *
+ * The topology family of classes should be build by an appropriate builder
+ * class.  The constructors for the derived classes demand different
+ * information.  See rtt_mc::General_Topology and rtt_mc::Rep_Topology for
+ * the appropriate building requirements. 
  */
 /*!
  * \example mc/test/tstTopology.cc
@@ -66,6 +62,9 @@ namespace rtt_mc
 // revision history:
 // -----------------
 // 0) original
+// 1) 30-NOV-99 : made Topology an inheritance tree --> derived classes are
+//                accessed through polymorphism to describe general
+//                topologies, replication topologies, and local topologies.
 // 
 //===========================================================================//
 
@@ -78,53 +77,50 @@ class Topology
     typedef std::string                    std_string;
 
   private:
-    // local_cells per processor list
-    vf_int cells_per_proc;
-    
-    // processors per global_cell list
-    vf_int procs_per_cell;
-
-    // boundary cells on processor
-    vf_int bound_cells;
-
     // parallel scheme for this topology
     std_string parallel_scheme;
 
   public:
-    // constructor
-    Topology(const vf_int &, const vf_int &, const vf_int &, 
-	     const std_string &);  
+    // Constructor
+    Topology(const std_string &);
+
+    //! Destructor for proper performance in inheritance tree.
+    virtual ~Topology() {/*...*/}
+
+    //! Return the parallel scheme.
+    const std_string& get_parallel_scheme() const { return parallel_scheme; }
     
-    // SERVICES
+    // virtual functions shared by derived classes
 
     //! Return the number of global cells.
-    int num_cells() const { return procs_per_cell.size(); }
+    virtual int num_cells() const = 0;
 
     //! Return the number of cells on processor.
-    int num_cells(int proc) const { return cells_per_proc[proc].size(); }
+    virtual int num_cells(int) const = 0;
 
-    //! Return the number of processors storing a global_cell.
-    int num_procs(int gcell) const { return procs_per_cell[gcell-1].size(); } 
+    //! Return the number of processors storing a global cell.
+    virtual int num_procs(int) const = 0;
+
+    //! Get the global cell index on processor.
+    virtual int global_cell(int) const = 0;
+
+    //! Get the global cell index on a given processor.
+    virtual int global_cell(int, int) const = 0;
+
+    //! Get the local cell index on processor.
+    virtual int local_cell(int) const = 0;
     
-    //! Return string stating the parallel scheme
-    const std_string& get_parallel_scheme() const { return parallel_scheme; } 
+    //! Get the local cell index on a given processor.
+    virtual int local_cell(int, int) const = 0;
 
-    // Get the global cell indices.
-    inline int global_cell(int) const;
-    inline int global_cell(int, int) const;
+    //! Get a list of global cells on processor.
+    virtual sf_int get_cells(int) const = 0;
 
-    // Get the local cell index.
-    inline int local_cell(int) const;
-    inline int local_cell(int, int) const;
+    //! Get a list of processors that a global cell is on.
+    virtual sf_int get_procs(int) const = 0;
 
-    // Get a list of global cells on processor.
-    inline sf_int get_cells(int) const;
-
-    // Get a list of processors that a global cell is on.
-    inline sf_int get_procs(int) const;
-
-    // Diagnostics.
-    void print(std::ostream &) const;
+    //! Diagnostic printing.
+    virtual void print(std::ostream &) const = 0;
 };
 
 //---------------------------------------------------------------------------//
@@ -132,169 +128,7 @@ class Topology
 //---------------------------------------------------------------------------//
 
 //! Overloaded stream output operator.
-std::ostream& operator<<(std::ostream &out, const Topology &object);
-
-//---------------------------------------------------------------------------//
-// INLINE FUNCTIONS FOR TOPOLOGY
-//---------------------------------------------------------------------------//
-/*!
- * \brief Return the global cell index given a local cell index.
- *
- * This function is used on a processor to determine the global cell index
- * for a local cell index.
- *
- * The local cell index entered must be in the range of local cells that live
- * on the processor.  This range can be queried by calls to
- * Topology::num_cells with the current processor id as the argument.
- *
- * \param local_cell local cell index on a processor
- * \return global cell index
- */
-int Topology::global_cell(int local_cell) const
-{
-    Require (local_cell > 0 &&
-	     local_cell <= cells_per_proc[C4::node()].size());
-    return cells_per_proc[C4::node()][local_cell-1];
-}
-
-//---------------------------------------------------------------------------//
-/*!  
- * \brief Return the global cell index given a local cell index and
- * processor id.
- *
- * This function is used on any processor to get a global cell index given a
- * local cell index and the processor id on which that local cell resides.
- * This function is identical to Topology::global_cell with the exception
- * that any processor can be entered.
- *
- * The local cell index entered must be in the range of local cells that live
- * on the processor id.  This range can be queried by calls to
- * Topology::num_cells with the processor id as the argument.
- *
- * \param local_cell local cell index on processor proc
- * \param proc processor on which local_cell resides
- * \return global cell index
- */
-int Topology::global_cell(int local_cell, int proc) const
-{
-    Require (proc < C4::nodes());
-    Require (local_cell > 0 && local_cell <= cells_per_proc[proc].size());
-    return cells_per_proc[proc][local_cell-1];
-}
-
-//---------------------------------------------------------------------------//
-/*!  
- * \brief Return the local cell index on the current processor given a global
- * cell index.
- *
- * This function is used on a processor to get a local cell index given a
- * global cell index.  If the requested global cell does not live on the
- * current processor a value of zero is returned.  Otherwise, the local cell
- * index for the particular global cell on the current processor is returned.
- *
- * \param global_cell requested global cell index
- * \return local cell index of global cell on processor or 0 if the global
- * cell does not live on the current processor
- */
-int Topology::local_cell(int global_cell) const
-{
-    Require (global_cell > 0 && global_cell <= num_cells());
-
-    // get the iterator location of the desired cell, we need to use const
-    // iterators because that is what find returns-->see KAI reponse on
-    // 19-JUN-98 for details
-    int proc = C4::node();
-    sf_int::const_iterator itr = std::find(cells_per_proc[proc].begin(), 
-					   cells_per_proc[proc].end(), 
-					   global_cell);
-
-    // if the cell is here return it, remember the local_cell is [1,N]
-    // whereas the dimensionality is [0,N-1]; thus we need to add one to the
-    // iterator position to return the actual local_cell index
-    if (itr != cells_per_proc[proc].end())
-	return (itr - cells_per_proc[proc].begin()) + 1;
-
-    // if the global_cell does not live on this node return 0
-    return 0;
-}
-
-
-//---------------------------------------------------------------------------//
-/*!  
- * \brief Return the local cell index given a global cell index and
- * processor id.
- *
- * This function is used on any processor to get a local cell index given a
- * global cell index and a processor id.  If the requested global cell does
- * not live on proc a value of zero is returned.  Otherwise, the local cell
- * index for the particular global cell on processor proc is returned.  It is
- * identical to Topology::local_cell with the exception that any processor
- * can be entered.
- *
- * \param global_cell requested global cell index
- * \param proc processor
- * \return local cell index of global cell on proc or 0 if the global cell
- * does not live on proc
- */
-int Topology::local_cell(int global_cell, int proc) const
-{
-    Require (global_cell > 0 && global_cell <= num_cells());
-    Require (proc < C4::nodes());
-
-    // get the iterator location of the desired cell, we need to use const
-    // iterators because that is what find returns-->see KAI reponse on
-    // 19-JUN-98 for details
-    sf_int::const_iterator itr = std::find(cells_per_proc[proc].begin(),
-					   cells_per_proc[proc].end(), 
-					   global_cell);
-
-    // if the cell is here return it, remember the local_cell is [1,N]
-    // whereas the dimensionality is [0,N-1]; thus we need to add one to the
-    // iterator position to return the actual local_cell index
-    if (itr != cells_per_proc[proc].end())
-	return (itr - cells_per_proc[proc].begin()) + 1;
-
-    // if the global_cell does not live on this node return 0
-    return 0;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Get a local-global cell list on processor.
- *
- * This function returns a vector<int> of global cells on processor.  The
- * vector is dimensioned [0,N-1] where N is the number of local cells on the
- * processor.  This vector can be used to map local cells to global cells on
- * a processor.  The local cell index for each global cell is the vector
- * index + 1
- *
- * \param proc processor id
- * \return vector<int> of global cells on proc 
- */
-Topology::sf_int Topology::get_cells(int proc) const
-{
-    Require (proc < C4::nodes());
-    return cells_per_proc[proc];
-}
-
-//---------------------------------------------------------------------------//
-/*!
- *
- * \brief Get a list of processor that a global_cell lives on.
- *
- * This function returns a list of processors that have a copy of a queried
- * global cell.  It returns a vector<int> of processor ids, the vector is
- * dimensioned [0,N] where N+1 is the total number of processors that the
- * global cell lives on.
- *
- * \param global_cell queried global cell index
- * \return vector<int> of processor ids
- */
-Topology::sf_int Topology::get_procs(int global_cell) const
-{
-    Require (global_cell > 0 && global_cell <= num_cells());
-    return procs_per_cell[global_cell-1];
-}
+std::ostream& operator<<(std::ostream &, const Topology &);
 
 } // end namespace rtt_mc
 
