@@ -44,27 +44,25 @@ public:
   // inline default constructor, can give the total number of
   // cells as an argument; no copy constructor or assignment
   // operator needed because we are using vectors
-    Layout(int num_cells = 0)
-	: face_cell(num_cells) 
-    {}
+    Layout(int num_cells = 0) : face_cell(num_cells) {}
 
   // inline function which sets the size of the face_cell
   // array to the number of cells in the problem 
-    void setSize(int num_cells) { face_cell.resize(num_cells); }
+    void Set_size(int num_cells) { face_cell.resize(num_cells); }
 
   // inline function to size the face vector for cell_index
-    void setSize(int cell_index, int num_faces)
+    void Set_size(int cell_index, int num_faces)
     {
 	face_cell[cell_index-1].resize(num_faces);
     } 
 
   // inline get functions
-    int getNum_cell() const { return face_cell.size(); }
-    int getNum_face(int cell_index) const
+    int Num_cells() const { return face_cell.size(); }
+    int Num_faces(int cell_index) const
     {
 	return face_cell[cell_index-1].size();
     }
-    void print(int) const;
+    void Print(int) const;
 
   // overloaded operator for subscripting, not assignment,
   // for const objects

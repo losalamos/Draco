@@ -21,18 +21,18 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // print member function used for printing the cell-face-cell info.
 // for one particular cell
-void Layout::print(int cell_index) const
+void Layout::Print(int cell_index) const
 {
     using std::cout;
     using std::endl;
     using std::setw;
       
-    int num_faces = face_cell[cell_index-1].size();
+    int num_faces = Num_faces(cell_index);
 
   // print the face information for cell indexed by cell_index
     cout << "=============" << endl;
-    cout << "Cell   : " << cell_index << endl;
-    cout << "# faces: " << num_faces << endl;
+    cout << "Cell   :     " << cell_index << endl;
+    cout << "# faces:     " << num_faces << endl;
     cout << "-------------" << endl;
     cout << setw(4) << "Face" << setw(9) << " Neighbor" << endl;
     cout << "-------------" << endl;
@@ -47,9 +47,9 @@ void Layout::print(int cell_index) const
 //---------------------------------------------------------------------------//
 ostream & operator<<(ostream &output, const Layout &object)
 {
-    int num_cells = object.getNum_cell();
+    int num_cells = object.Num_cells();
     for (int i = 1; i <= num_cells; i++)
-        object.print(i);
+        object.Print(i);
     return output;
 }
 

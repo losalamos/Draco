@@ -21,7 +21,7 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // public Mesh build member functions
 //---------------------------------------------------------------------------//
-SP<OS_Mesh> OS_Builder::buildMesh()
+SP<OS_Mesh> OS_Builder::Build_Mesh()
 {
   // declare smart pointers
     SP<Coord_sys> coord;
@@ -48,8 +48,8 @@ SP<OS_Mesh> OS_Builder::buildMesh()
 //---------------------------------------------------------------------------//
 // private Mesh build member functions
 //---------------------------------------------------------------------------//
-SP<OS_Mesh> OS_Builder::build2DMesh(SP<Coord_sys> coord, const Layout
-				    &layout)
+SP<OS_Mesh> OS_Builder::Build_2DMesh(SP<Coord_sys> coord, 
+				     const Layout &layout)
 {
   // variable declarations
     int num_cells  = layout.getNum_cell();
@@ -93,7 +93,7 @@ SP<OS_Mesh> OS_Builder::build2DMesh(SP<Coord_sys> coord, const Layout
 //---------------------------------------------------------------------------//
 // parser member functions
 //---------------------------------------------------------------------------//
-void OS_Builder::parser()
+void OS_Builder::Parser()
 {
   // open input file, ifstream object requires C-style string
     const char *file = input_file.c_str();
@@ -166,7 +166,7 @@ void OS_Builder::parser()
     }
 }
 
-void OS_Builder::parser2D(ifstream &in)
+void OS_Builder::Parser2D(ifstream &in)
 {
   // 2D parser
 
@@ -226,7 +226,7 @@ void OS_Builder::parser2D(ifstream &in)
     }
 }    
 
-void OS_Builder::parser3D(ifstream &in)
+void OS_Builder::Parser3D(ifstream &in)
 {
   // 3D parser
 
@@ -305,7 +305,7 @@ void OS_Builder::parser3D(ifstream &in)
 //---------------------------------------------------------------------------//
 // Coord_sys build member functions
 //---------------------------------------------------------------------------//
-SP<Coord_sys> OS_Builder::buildCoord()
+SP<Coord_sys> OS_Builder::Build_Coord()
 {
     SP<Coord_sys> coord;
     if (coord_system == "xy" || coord_system == "XY")
@@ -326,7 +326,7 @@ SP<Coord_sys> OS_Builder::buildCoord()
 //---------------------------------------------------------------------------//
 // Layout build member functions
 //---------------------------------------------------------------------------//
-SP<Layout> OS_Builder::buildLayout(const Coord_sys &coord)
+SP<Layout> OS_Builder::Build_Layout(const Coord_sys &coord)
 {
   // set size of new Layout
     int size = 1;

@@ -3,7 +3,7 @@
 // Thomas M. Evans
 // Fri Jan 30 16:45:37 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> XYZCoord_sys derived class implementation file
 //---------------------------------------------------------------------------//
 
 #include "XYZCoord_sys.hh"
@@ -18,7 +18,7 @@ IMCSPACE
 // virtual member functions
 //---------------------------------------------------------------------------//
 // set Omega directions in a 2D XY geometry
-void XYZCoord_sys::setOmega(vector<double> &omega_, Random &random) const
+void XYZCoord_sys::Set_omega(vector<double> &omega_, Random &random) const
 {
     using Global::pi;
     using std::cos;
@@ -38,8 +38,8 @@ void XYZCoord_sys::setOmega(vector<double> &omega_, Random &random) const
 }
 
 // calculate Omega directions in 2D XY geometry after a scatter
-void XYZCoord_sys::calcOmega(double costheta, double phi,
-			     vector<double> &omega_) const
+void XYZCoord_sys::Calc_omega(double costheta, double phi, vector<double> 
+			      &omega_) const
 {
     using Global::pi;
     using std::cos;
@@ -49,7 +49,7 @@ void XYZCoord_sys::calcOmega(double costheta, double phi,
   // calculate new direction cosines
     double sintheta = sqrt(1 - costheta * costheta);
     double old_dir[3] = {0};
-    for (int i = 0; i <= getDim()-1; i++)
+    for (int i = 0; i <= Get_dim()-1; i++)
         old_dir[i] = omega_[i];
     double factor = sqrt(1 - old_dir[2] * old_dir[2]);
     if (factor == 0)

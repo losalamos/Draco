@@ -17,8 +17,8 @@
 //
 // revision history:
 // -----------------
-// 0) original
-// 1) 2-18-98: added getCoord() function for debugging
+//  0) original
+//  1)  2-18-98 : added getCoord() function for debugging
 // 
 //===========================================================================//
 
@@ -37,9 +37,9 @@ public:
   // system, inline
     XYZCoord_sys() : Coord_sys(3) {}
   // virtual functions
-    virtual string getCoord() const { string c = "xyz"; return c; }
-    virtual void setOmega(vector<double> &, Random &) const;
-    virtual void calcOmega(double, double, vector<double> &) const;
+    virtual string Get_coord() const { string c = "xyz"; return c; }
+    virtual void Set_omega(vector<double> &, Random &) const;
+    virtual void Calc_omega(double, double, vector<double> &) const;
 };
 
 CSPACE

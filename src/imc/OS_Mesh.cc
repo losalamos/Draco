@@ -21,12 +21,12 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // member functions
 //---------------------------------------------------------------------------//
-int OS_Mesh::getCell(vector<double> &r) const
+int OS_Mesh::Get_cell(vector<double> &r) const
 {
   // used variables
-    int dim = coord->getDim();
+    int dim         = coord->Get_dim();
     int return_cell = 1;
-    int subcells = 1;
+    int subcells    = 1;
     
   // binary search of cells
 
@@ -44,6 +44,8 @@ int OS_Mesh::getCell(vector<double> &r) const
 		low_index  = index;
 	}
 	return_cell += subcells * (high_index - 1);
+      // number of cells per dimension equals the number of surfaces along
+      // that dimension minus one
 	subcells    *= sur[i].size() - 1;
     }  
     
@@ -51,8 +53,8 @@ int OS_Mesh::getCell(vector<double> &r) const
     return return_cell;
 }
 
-double OS_Mesh::getDb(vector<double> &r, vector<double> &omega,
-		      int cell, int &face) const
+double OS_Mesh::Get_db(vector<double> &r, vector<double> &omega,
+		       int cell, int &face) const
 {
     using std::vector;
     using std::min_element;
@@ -61,10 +63,10 @@ double OS_Mesh::getDb(vector<double> &r, vector<double> &omega,
   // calculate distance to the vec(r) boundaries
 
   // boundary distances over each coordinate direction
-    vector<double> dim_dist_boundary(coord->getDim(), 0.0);
+    vector<double> dim_dist_boundary(coord->Get_dim(), 0.0);
     
   // loop to get the distances to boundary in each coordinate direction
-    for (int i = 0; i < coord->getDim(); i++)
+    for (int i = 0; i < coord->Get_dim(); i++)
     {
 	if (omega[i] == 0.0)
 	    dim_dist_boundary[i] = Global::huge;
@@ -100,10 +102,10 @@ void OS_Mesh::Print(int cell) const
 
   // print out content info for 1 cell
     cout << "+++++++++++++++" << endl;
-    cout << "Cell        : " << cell << endl;
+    cout << "Cell        :  " << cell << endl;
     cout << "---------------" << endl;
-    cout << "Dimensions  : " << endl;
-    if (coord->getDim() == 2)
+    cout << "Dimensions  :  " << endl;
+    if (coord->Get_dim() == 2)
     {
 	cout << " x  : " << pos[0][cell-1] << endl;
 	cout << " y  : " << pos[1][cell-1] << endl;
@@ -121,7 +123,7 @@ void OS_Mesh::Print(int cell) const
     }	
     cout << "---------------" << endl;
     cout << "Layout      :  " << endl;
-    layout.print(cell);
+    layout.Print(cell);
     cout << "+++++++++++++++" << endl;
 }
 

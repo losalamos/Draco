@@ -53,24 +53,24 @@ private:
     vector<string> bnd_cond;
 
   // Parser member functions
-    void parser();
-    void parser2D(ifstream &);
-    void parser3D(ifstream &);
+    void Parser();
+    void Parser2D(ifstream &);
+    void Parser3D(ifstream &);
   // build Layout helper functions
-    SP<Layout> buildLayout(const Coord_sys &);
+    SP<Layout> Build_Layout(const Coord_sys &);
     void Assign2D(Layout &);
     void Assign3D(Layout &);
   // build Coord_sys helper functions
-    SP<Coord_sys> buildCoord();
+    SP<Coord_sys> Build_Coord();
   // build Mesh helper functions
-    SP<OS_Mesh> build2DMesh(SP<Coord_sys>, const Layout &);
-    SP<OS_Mesh> build3DMesh(SP<Coord_sys>, const Layout &);
+    SP<OS_Mesh> Build_2DMesh(SP<Coord_sys>, const Layout &);
+    SP<OS_Mesh> Build_3DMesh(SP<Coord_sys>, const Layout &);
 public:
     explicit OS_Builder(const string &infile) 
 	: input_file(infile), coord_system(""), fine_cells(0), 
 	  coarse_edge(0), fine_edge(0), bnd_cond(0)
     {}
-    SP<OS_Mesh> buildMesh();
+    SP<OS_Mesh> Build_Mesh();
 };
 
 CSPACE

@@ -17,7 +17,7 @@
 //
 // revision history:
 // -----------------
-// 0) original
+//  0) original
 // 
 //===========================================================================//
 
@@ -41,11 +41,11 @@ public:
   // constructor for setting dimension of Coord_sys, inline
     Coord_sys(int dimension_) 
 	:dimension(dimension_) {}
-    int getDim() const { return dimension; } 
+    int Get_dim() const { return dimension; } 
   // virtual functions utilized by each derived class
-    virtual string getCoord() const = 0;
-    virtual void setOmega(vector<double> &, Random &) const = 0;
-    virtual void calcOmega(double, double, vector<double> &) const = 0;
+    virtual string Get_coord() const = 0;
+    virtual void Set_omega(vector<double> &, Random &) const = 0;
+    virtual void Calc_omega(double, double, vector<double> &) const = 0;
 };
 
 CSPACE
