@@ -1,3 +1,11 @@
+2002-12-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* ds++: release 1_8_0.  Fixed some problems with standard
+	conformity in tstSort.cc.  Fixed test of tstPacking_Utils.cc.
+	There was a vague implicit conversion there in which space for
+	ints was allocated, but the loaded type was not guaranteed to be
+	an int.
+
 2002-11-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* ds++: Updated to 1_7_0.  Small std compliant changes to
