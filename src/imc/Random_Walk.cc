@@ -206,10 +206,22 @@ double Random_Walk_Sampling_Tables::get_elapsed_time(double D,
  * \f]
  * To summarize, we do the following:
  * -# calculate \e a
- * -# invert the tables to get Prob(\e a, \e b )
- * -# interpolate to calculate R1
- * -# MORE DETAILS!!!!!
+ * -# set \e a to maximum when \e a > 20.0
+ * -# find the index of \e a in the abcissa table
+ * -# do a search on Prob(\e a,b ) to find the \e b index
+ * -# interpolate on \a to get a Prob(\e a,b_low) and Prob(\e a,b_high)
+ * -# check to see if Prob(\e a,b_low) < ran < Prob(\e a,b_high )
+ * -# if yes then interpolate/invert on ran to get \e b
+ * -# if no adjust the \e b index up or down
+ * -# calculate R1
  * .
+ *
+ * The tables for Prob(\e a,b ) are calculated at \e b =
+ * 0,0.05,0.1,0.15,0.2,0.3,...,1.0.  This leads to some poor interpolations
+ * when \e b < 0.1 that result in errors on the order of 70% in R1.  However,
+ * the probability for this to occur is low, ie. Prob(\e a,b ) < 0.0015.
+ * Thus, we will not worry about this now.  We may need to add more tables
+ * below \e b = 0.1 to get better interpolations in this regime.
  *
  * \param t time to census in [shakes]
  * \param D random walk diffusion coefficient [cm^2/shake]
@@ -227,7 +239,7 @@ double Random_Walk_Sampling_Tables::get_radius(double t,
     using std::lower_bound;
 
     Require (t >= 0.0);
-    Require (Ro >= 0.0);
+    Require (Ro >= 0.0); 
     Require (D >= 0.0);
 
     // calculate A

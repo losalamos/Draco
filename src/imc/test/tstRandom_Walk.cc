@@ -23,6 +23,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 using namespace std;
 
@@ -243,8 +244,12 @@ void sampling_table_prob_exit_t_test()
 
 void sampling_table_Rcen_test()
 {
+    cout << endl << "Entering R sampling test" << endl;
+
     Random_Walk_Sampling_Tables table;
     {
+	cout << endl;
+
 	double Ro  = 0;
 	double t   = 0;
 	double D   = 0;
@@ -258,10 +263,20 @@ void sampling_table_Rcen_test()
 	D  = 0.3;
 	R1 = 0.07;
 
+	cout << "Checking for a=" << D*t/(Ro*Ro) << " and b="
+	     << R1/Ro << " .... ";
+
 	ran = get_prob_radius(t,D,Ro,R1) / get_prob_radius(t,D,Ro,Ro);
 	R   = table.get_radius(t, D, Ro, ran); 
 
-	if (!soft_equiv(R, R1, 1.e-3)) ITFAILS;
+	if (!soft_equiv(R, R1, 1.e-3))
+	{
+	    ITFAILS;
+	}
+	else 
+	{
+	    cout << "ok" << endl;
+	}
 
 	// a = 0.425, b = .3
 	Ro = 0.1;
@@ -269,10 +284,20 @@ void sampling_table_Rcen_test()
 	D  = 0.425;
 	R1 = 0.03;
 
+	cout << "Checking for a=" << D*t/(Ro*Ro) << " and b="
+	     << R1/Ro << " .... ";
+
 	ran = get_prob_radius(t,D,Ro,R1) / get_prob_radius(t,D,Ro,Ro);
 	R   = table.get_radius(t, D, Ro, ran); 
 
-	if (!soft_equiv(R, R1, 1.e-3)) ITFAILS;
+	if (!soft_equiv(R, R1, 1.e-3))
+	{
+	    ITFAILS;
+	}
+	else 
+	{
+	    cout << "ok" << endl;
+	}
 
 	// a = 0.65, b= .9
 	Ro = 0.1;
@@ -280,10 +305,20 @@ void sampling_table_Rcen_test()
 	D  = 0.65;
 	R1 = 0.09;
 
-	ran = get_prob_radius(t,D,Ro,R1) / get_prob_radius(t,D,Ro,Ro);
-	R   = table.get_radius(t, D, Ro, ran); 
+	cout << "Checking for a=" << D*t/(Ro*Ro) << " and b="
+	     << R1/Ro << " .... ";
 
-	if (!soft_equiv(R, R1, 1.e-3)) ITFAILS;
+	ran = get_prob_radius(t,D,Ro,R1) / get_prob_radius(t,D,Ro,Ro);
+	R   = table.get_radius(t, D, Ro, ran);
+
+	if (!soft_equiv(R, R1, 1.e-3))
+	{
+	    ITFAILS;
+	}
+	else 
+	{
+	    cout << "ok" << endl;
+	} 
 
 	// a = 15.0, b = .1
 	Ro = 0.1;
@@ -291,10 +326,20 @@ void sampling_table_Rcen_test()
 	D  = 15.0;
 	R1 = 0.01;
 
+	cout << "Checking for a=" << D*t/(Ro*Ro) << " and b="
+	     << R1/Ro << " .... ";
+
 	ran = get_prob_radius(t,D,Ro,R1) / get_prob_radius(t,D,Ro,Ro);
 	R   = table.get_radius(t, D, Ro, ran); 
 
-	if (!soft_equiv(R, R1, 1.e-3)) ITFAILS;
+	if (!soft_equiv(R, R1, 1.e-3))
+	{
+	    ITFAILS;
+	}
+	else 
+	{
+	    cout << "ok" << endl;
+	}
 
 	// a = 25.0, b = .2
 	Ro = 0.1;
@@ -302,15 +347,243 @@ void sampling_table_Rcen_test()
 	D  = 25.0;
 	R1 = 0.02;
 
+	cout << "Checking for a=" << D*t/(Ro*Ro) << " and b="
+	     << R1/Ro << " .... ";
+	
 	ran = get_prob_radius(t,D,Ro,R1) / get_prob_radius(t,D,Ro,Ro);
 	R   = table.get_radius(t, D, Ro, ran); 
 
-	if (!soft_equiv(R, R1, 1.e-3)) ITFAILS;
+	if (!soft_equiv(R, R1, 1.e-3))
+	{
+	    ITFAILS;
+	}
+	else 
+	{
+	    cout << "ok" << endl;
+	}
+
+	// a = 15.0, b = .15
+	Ro = 0.1;
+	t  = 0.01;
+	D  = 15.0;
+	R1 = 0.015;
+
+	cout << "Checking for a=" << D*t/(Ro*Ro) << " and b="
+	     << R1/Ro << " .... ";
+
+	ran = get_prob_radius(t,D,Ro,R1) / get_prob_radius(t,D,Ro,Ro);
+	R   = table.get_radius(t, D, Ro, ran); 
+
+	if (!soft_equiv(R, R1, 1.e-3))
+	{
+	    ITFAILS;
+	}
+	else 
+	{
+	    cout << "ok" << endl;
+	}
+
+	// a = .65, b = .27
+	Ro = 0.1;
+	t  = 0.01;
+	D  = 0.65;
+	R1 = 0.027;
+
+	cout << "Checking for a=" << D*t/(Ro*Ro) << " and b="
+	     << R1/Ro << " .... ";
+
+	ran = get_prob_radius(t,D,Ro,R1) / get_prob_radius(t,D,Ro,Ro);
+	R   = table.get_radius(t, D, Ro, ran); 
+
+	if (!soft_equiv(R, R1, 5.e-2))
+	{
+	    ITFAILS;
+	}
+	else 
+	{
+	    cout << "ok" << endl;
+	}
+
+	// a = .65, b = .62
+	Ro = 0.1;
+	t  = 0.01;
+	D  = 0.65;
+	R1 = 0.062;
+
+	cout << "Checking for a=" << D*t/(Ro*Ro) << " and b="
+	     << R1/Ro << " .... ";
+
+	ran = get_prob_radius(t,D,Ro,R1) / get_prob_radius(t,D,Ro,Ro);
+	R   = table.get_radius(t, D, Ro, ran); 
+
+	if (!soft_equiv(R, R1, 1.e-3))
+	{
+	    ITFAILS;
+	}
+	else 
+	{
+	    cout << "ok" << endl;
+	}
+
+	// a = .11, b = .21
+	Ro = 0.1;
+	t  = 0.01;
+	D  = 0.11;
+	R1 = 0.021;
+
+	cout << "Checking for a=" << D*t/(Ro*Ro) << " and b="
+	     << R1/Ro << " .... ";
 	
+	ran = get_prob_radius(t,D,Ro,R1) / get_prob_radius(t,D,Ro,Ro);
+	R   = table.get_radius(t, D, Ro, ran); 
+
+	if (!soft_equiv(R, R1, 5.e-2))
+	{
+	    ITFAILS;
+	}
+	else 
+	{
+	    cout << "ok" << endl;
+	}
+
+	cout << endl;
     }
     
     if (rtt_imc_test::passed)
 	PASSMSG("Random Walk sampling tables for Rcen ok.");
+}
+
+//---------------------------------------------------------------------------//
+
+void interpolation_error_test()
+{
+    cout << endl;
+
+    Random_Walk_Sampling_Tables table; 
+
+    // test prob exit
+    {
+	double prob_exit = 0.0;
+	double ref       = 0.0;
+	double max_error = 0.0;
+	double error     = 0.0;
+	double D         = 0.1;
+	double t         = 0.001;
+	double Ro        = 0.0;
+	double ma        = 0.0;
+	
+	double a = 0.04;
+	while (a <= 20)
+	{
+	    // calc Ro
+	    Ro = sqrt(D*t/a);
+	    
+	    // calc prob_exit
+	    prob_exit = table.get_prob_exit(t, D, Ro);
+	    ref       = integrate_prob_exit(t, D, Ro);
+	    
+	    // calculate difference
+	    error     = fabs(prob_exit - ref) / ref;
+	    max_error = max(error, max_error);
+	    if (error == max_error) ma = a;
+	    
+	    // advance a
+	    a += 0.04;
+	}
+	
+	cout << "The maximum error interpolating Prob_exit is " << max_error
+	     << " at a = " << ma << endl;
+    }
+
+    // test time of exit
+    {
+	double prob_exit = 0.0;
+	double t         = 0.0;
+	double max_error = 0.0;
+	double error     = 0.0;
+	double D         = 0.1;
+	double ref       = 0.001;
+	double Ro        = 0.001;
+	double mpe       = 0.0;
+
+	prob_exit = 0.05;
+	while (prob_exit <= 1.0)
+	{
+	    // get a value for t
+	    t = table.get_elapsed_time(D, Ro, prob_exit);
+
+	    // now integrate to get prob_exit
+	    ref = integrate_prob_exit(t, D, Ro);
+
+	    // estimate an error
+	    error     = fabs(prob_exit - ref) / ref;
+	    max_error = max(error, max_error);
+	    if (error == max_error) mpe = prob_exit;
+
+	    // advance prob_exit
+	    prob_exit += 0.05;
+	}
+
+	cout << "The maximum error interpolating t exit is " << max_error
+	     << " at Prob_exit = " << mpe << endl;
+    }
+
+    // test of R1
+    {
+	double a = 0.04;
+	double b = 0.025;
+
+	double t   = 0.001;
+	double Ro  = 0.0;
+	double D   = 0.035;
+	double ran = 0.0;
+	double R1  = 0.0;
+	double ref = 0.0;
+
+	double error     = 0.0;
+	double max_error = 0.0;
+	double ma        = 0.0;
+	double mb        = 0.0;
+
+	while (a <= 20.0)
+	{
+	    b = 0.025;
+	    
+	    // calculate Ro
+	    Ro = sqrt(t*D/a);
+
+	    while (b <= 1.0)
+	    {
+		// calc R1
+		ref = b * Ro;
+
+		// calculate ran
+		ran = get_prob_radius(t,D,Ro,ref) / 
+		    get_prob_radius(t,D,Ro,Ro);
+		
+		// calculate R1
+		R1 = table.get_radius(t,D,Ro,ran);
+
+		// estimate an error
+		error     = fabs(R1 - ref) / ref;
+		max_error = max(error, max_error);
+		if (error == max_error) 
+		{
+		    ma = a;
+		    mb = b;
+		}
+
+		// advance b
+		b += 0.025;
+	    }
+
+	    // advance a 
+	    a += 0.04; 
+	}
+
+	cout << "The maximum error interpolating R1 is " << max_error
+	     << " at a = " << ma << " and b = " << mb << endl << endl;
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -347,6 +620,7 @@ int main(int argc, char *argv[])
 	// sampling tables tests
 	sampling_table_prob_exit_t_test();
 	sampling_table_Rcen_test();
+	interpolation_error_test();
 
 	// random walk tests
 	random_walk_OS_Mesh_test();
