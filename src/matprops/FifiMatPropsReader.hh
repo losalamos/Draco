@@ -171,7 +171,7 @@ class FifiMatPropsReader : public MaterialPropsReader
 
     FifiMatPropsReader(const std::vector<MaterialDefinition> &matdefs,
 		       const rtt_units::Units &outputUnits_,
-                       const rtt_dsxx::SP<std::istream> &is_);
+                       std::istream &is_);
 
     // MANIPULATORS
     

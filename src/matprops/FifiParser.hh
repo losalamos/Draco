@@ -145,7 +145,7 @@ class FifiParser
 
     // The input stream that we will parse.
     
-    rtt_dsxx::SP<std::istream> spIstream;
+    std::istream &is_m;
 
     // The mapping of a material id to a MaterialInfo object
     // used to find the file position of the keywords within the material
@@ -166,7 +166,7 @@ class FifiParser
 
     // CREATORS
     
-    FifiParser(const rtt_dsxx::SP<std::istream> &spIstream_in);
+    FifiParser(std::istream &is_in);
 
     // MANIPULATORS
     
@@ -184,7 +184,7 @@ class FifiParser
 
   private:
 
-    std::istream &is() const { return *spIstream; }
+    std::istream &is() const { return is_m; }
 
     const MaterialInfo &getMaterialInfo(MaterialId materialId) const;
 

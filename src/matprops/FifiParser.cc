@@ -68,8 +68,8 @@ namespace
 //   Create a FifiParser from an open and valid input stream.
 //---------------------------------------------------------------------------//
 
-FifiParser::FifiParser(const rtt_dsxx::SP<std::istream> &spIstream_in)
-    : spIstream(spIstream_in)
+FifiParser::FifiParser(std::istream &is_in)
+    : is_m(is_in)
 {
     // Set the current position to the beginning of the file.
     
