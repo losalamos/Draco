@@ -1,0 +1,6 @@
+2000-12-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* RTT_Format_Reader: first release of
+ 	RTT_Format_Reader-1_0_0. This is a derived package based on
+ 	meshReaders-1_1_0.
+

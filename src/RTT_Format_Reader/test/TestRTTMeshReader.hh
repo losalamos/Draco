@@ -12,7 +12,7 @@
 #ifndef __RTT_Format_Reader_test_TestRTT_Mesh_Reader_hh__
 #define __RTT_Format_Reader_test_TestRTT_Mesh_Reader_hh__
 
-#include "UnitTestFrame/TestApp.hh"
+#include "UnitTestFrame/TestAppNoC4.hh"
 #include "../RTT_Mesh_Reader.hh"
 
 namespace rtt_RTT_Mesh_Reader_test

@@ -12,7 +12,7 @@
 #ifndef __test_TestRTT_Format_Reader_hh__
 #define __test_TestRTT_Format_Reader_hh__
 
-#include "UnitTestFrame/TestApp.hh"
+#include "UnitTestFrame/TestAppNoC4.hh"
 #include "../RTT_Format_Reader.hh"
 #include <map>
 

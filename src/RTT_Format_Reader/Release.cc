@@ -1,7 +1,4 @@
 //----------------------------------*-C++-*----------------------------------//
-// Release.cc
-// B.T. Adams
-// Wed Jun 7 10:33:26 2000
 /*! 
  * \file   RTT_Format_Reader/Release.cc
  * \author B.T. Adams
@@ -9,7 +6,7 @@
  * \brief  Implementation file for RTT_Format_Reader library release function.
  */
 //---------------------------------------------------------------------------//
-// @> Release function implementation for RTT_Format_Reader library
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Release.hh"
