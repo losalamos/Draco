@@ -193,7 +193,7 @@ class OS_Mesh
     inline double volume(int) const;
     inline double face_area(int, int) const;
     vector<int> get_surcells(string) const;
-    void check_defined_surcells(const string, const vector<int> &) const;
+    bool check_defined_surcells(const string, const vector<int> &) const;
     int get_bndface(string, int) const;
     inline CCVF_d get_vertices(int, int) const;
     inline CCVF_d get_vertices(int) const;

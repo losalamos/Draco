@@ -335,8 +335,8 @@ struct Parallel_Data_Operator::Data_Replicated
  */
 struct Parallel_Data_Operator::Data_Decomposed
 {
-    // operator for performing data decomposed operations in full repliation
-    // topologies 
+    // operator for performing data decomposed operations in full replication
+    // topologies
     template<class FT>
     void operator()(FT &local_field, FT &global_field, 
 		    Parallel_Data_Operator data_op)
