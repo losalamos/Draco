@@ -214,19 +214,18 @@ below in Table~\ref{tab:components}.
   \normalsize
 \end{table}
 
-
-The \texttt{cdi\_gandolf} package can be used as a stand-alone package
-it has been designed as a plug-in component for CDI.  Because of this,
-its design follows the interface defined by the CDI package.  In
-particular, \texttt{cdi\_gandolf} offers no mechanism for mixing
-materials.  The only mixtures that it can utilize are those specified
-by TOPS and stored in the associated IPCRESS data files.
+The \texttt{cdi\_gandolf} package may be used as a stand-alone
+package, however, it has been designed as a plug-in component for CDI.
+Because of this, its design follows the interface defined by the CDI
+package.  In particular, \texttt{cdi\_gandolf} offers no mechanism for
+mixing materials.  The only mixtures that it can utilize are those
+specified by TOPS and stored in the associated IPCRESS data files.
 Additionally, this package does not access the IPCRESS data directly.
 Instead it provides a wrapper to data access libraries written,
 supported and provided by X-division's data team.  The \draco project
 keeps a copy of these libraries for revision control purposes.  The
 Gandolf libraries are located at
-\url{/n/skiathos/radtran/vendors/gandolf}.
+\url{/radtran/vendors/gandolf}.
 
 %%---------------------------------------------------------------------------%%
 %%                           GandolfFile
@@ -881,6 +880,7 @@ stem, sig0, topow, ropow, hnupow, and nbsubg.
 \pagebreak
 \bibliographystyle{rnote}
 \bibliography{../../../../../draco/doc/bib/draco}
+%\bibliography{../../../doc/bib/draco.bib}
 
 \closing
 \end{document}
