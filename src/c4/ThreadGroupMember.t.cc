@@ -1,25 +1,29 @@
 //----------------------------------*-C++-*----------------------------------//
-// ThreadGroupMember.cc
+// ThreadGroupMember.t.cc
 // Geoffrey M. Furnish
 // Tue Jul 14 11:21:46 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Implements out-of-line member templates of ThreadGroupMember.
 //---------------------------------------------------------------------------//
 
-#include "c4/ThreadGroupMember.hh"
-#include "c4/ThreadControl.hh"
-
-#include <iostream>
-using namespace std;
+// This file is included directly by ThreadGroupMember.hh, so all the
+// includes have already been performed.
 
 C4_NAMESPACE_BEG
 
-template<class T>
-void ThreadGroupMember::gsum( T& x ) const
+//---------------------------------------------------------------------------//
+// Perform a scalar reduction across a family of threads.  The precise
+// reduction operation performed is unimportant, and is provided via a
+// templating parameter.
+//---------------------------------------------------------------------------//
+
+template<class T, class ScalarOp>
+void ThreadGroupMember::scalar_reduce( T& x ) const
 {
-    T local_sum = T();          // #'s init to zero this way.
+    using namespace std;
 
 // First we need to acquire the mutex.
+
     int status = pthread_mutex_lock( &tcb->mutex );
     if (status) cerr << "Couldn't lock mutex.\n";
 
@@ -30,20 +34,29 @@ void ThreadGroupMember::gsum( T& x ) const
 
 // Now keep a local copy of the cycle index so we can recognize an authentic
 // wake-up signal.
+
     int cycle = tcb->cycle;
 
-// If we're the first thread, set the scratch pointer to point to our
-// function scope local_sum variable.  :-).
-
     if (tcb->cnt == threads)
-        tcb->scratch = &local_sum;
+    {
+    // If we're the first thread, set the global reduction scalar to be our
+    // result value.
 
-// Whichever thread we are, we can now go ahead and add our partial sum into
-// the total.
+        tcb->scratch = &x;
 
-    *static_cast<T *>(tcb->scratch) += x;
+    // Also, the first thread needs to initialize the result.
+
+        ScalarOp::init( *static_cast<T *>(tcb->scratch), x );
+    }
+    else
+    {
+    // Threads other than the first need to contribute their partial result.
+
+        ScalarOp::apply( *static_cast<T *>(tcb->scratch), x );
+    }
 
 // Decrement the counter and figure out where we are in the pecking order.
+
     if (--tcb->cnt == 0)
     {
     // We're the last one to arrive, so reset for next cycle.
@@ -59,6 +72,7 @@ void ThreadGroupMember::gsum( T& x ) const
                 *static_cast<T *>(tcb->scratch);
 
     // Now we can wake everybody up.
+
         status = pthread_cond_broadcast( &tcb->cv );
         if (status) cerr << "Couldn't broadcast cv.\n";
     }
@@ -86,6 +100,7 @@ void ThreadGroupMember::gsum( T& x ) const
     }
 
 // Everybody wakes up with the mutex locked, so unlock it now.
+
     status = pthread_mutex_unlock( &tcb->mutex );
     if (status) cerr << "error unlocking mutex.\n";
 }
@@ -93,5 +108,5 @@ void ThreadGroupMember::gsum( T& x ) const
 C4_NAMESPACE_END
 
 //---------------------------------------------------------------------------//
-//                              end of ThreadGroupMember.cc
+//                              end of ThreadGroupMember.t.cc
 //---------------------------------------------------------------------------//
