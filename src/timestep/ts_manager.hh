@@ -59,6 +59,21 @@ class ts_manager {
     void print_advisors() const;
     void print_summary() const;
 
+    double get_dt_new() const
+    {return dt_new;}
+
+    double get_time() const
+    {return time;}
+
+    double get_dt() const
+    {return dt;}
+
+    int get_cycle() const
+    {return cycle;}
+
+    std::string get_controlling_advisor() const
+    {return controlling_advisor;}
+
   private:
 
     bool invariant_satisfied();
