@@ -1319,9 +1319,19 @@ package="ds++"
 
 	test_alltarget="$test_alltarget tstCheck_Strings \
             tstAssert \
-            tstSP tstSoft_Equiv tstPacking_Utils tstAllocators \
-            tstSortPermutation tstVector_Lite \
-            tstMat tstMat1RA tstMat2RA tstMat3RA tstMat4RA tstMat5RA\
+            tstSoft_Equiv \
+            tstSP \
+            tstRCF \
+            tstPacking_Utils \
+            tstAllocators \
+            tstSortPermutation \
+            tstVector_Lite \
+            tstMat \
+            tstMat1RA \
+            tstMat2RA \
+            tstMat3RA \
+            tstMat4RA \
+            tstMat5RA \
             "
 
 	test_nprocs="scalar"
@@ -7543,6 +7553,25 @@ echo "${ECHO_T}\"not needed\"" >&6
 
        #
        # end of gandolf/libfortran setup
+       #
+
+       #
+       # libpcg/libfmpi setup
+       #
+
+       echo "$as_me:$LINENO: checking \"libfmpi requirements\"" >&5
+echo $ECHO_N "checking \"libfmpi requirements\"... $ECHO_C" >&6
+       if test -n "${vendor_pcg}"; then
+          LIBS="${LIBS} -lfmpi"
+          echo "$as_me:$LINENO: result: \"-lfmpi added to LIBS\"" >&5
+echo "${ECHO_T}\"-lfmpi added to LIBS\"" >&6
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
+       fi
+
+       #
+       # end of libpcg setup
        #
 
        #

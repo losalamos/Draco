@@ -4,6 +4,7 @@
  * \author Geoffrey Furnish, Thomas Evans
  * \date   Tue Feb  4 11:27:53 2003
  * \brief  Smart Point class file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,7 +14,6 @@
 #define RTT_ds_SP_HH
 
 #include "Assert.hh"
-#include <typeinfo>
 
 namespace rtt_dsxx
 {

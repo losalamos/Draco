@@ -2794,6 +2794,22 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        #
+       # libpcg/libfmpi setup
+       #
+
+       AC_MSG_CHECKING("libfmpi requirements")
+       if test -n "${vendor_pcg}"; then
+          LIBS="${LIBS} -lfmpi"
+          AC_MSG_RESULT("-lfmpi added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # end of libpcg setup
+       #
+
+       #
        # finalize vendors
        #
        AC_VENDOR_FINALIZE
