@@ -34,8 +34,7 @@ namespace rtt_cdi {
 // Handle machine specific FORTRAN name linkage.
 //---------------------------------------------------------------------------//
 
-//#if defined(sun) || defined(__sun) || defined(__sgi) || defined(__linux)
-#if 1
+#if defined(sun) || defined(__sun) || defined(__sgi) || defined(__linux)
     
 #define extc_gmatids gmatids_
     
@@ -52,6 +51,12 @@ namespace rtt_cdi {
 extern "C" {
     void extc_gmatids( char *cfname, long int *matids, long int &ckmat,
 		       long int &nmat, long int &ier );
+
+    // This call may be used for calling a test routine ( with normal
+    // ints instead of longs ).
+    // ----------------------------------------------------------------
+//     void extc_gmatids( char *cfname, int *matids, int &ckmat,
+// 		       int &nmat, int &ier );
 }
 
 

@@ -43,13 +43,20 @@ CDI::CDI( OpType _opacity_type, string _opacity_data_filename ) :
     }
 
 
-    // Return the inerpolated Rosseland Gray Opacity for the specified 
+// Return a list of material ids found in the current file.
+ vector<int> CDI::getMatIDs()
+     {
+	 cout << "In CDI::getMatIDs()" << endl;
+	 return spOpacity->getMatIDs();
+     }
+ 
+
+    // Return the interpolated Rosseland Gray Opacity for the specified 
     // temperature and density.
     //----------------------------------------------------------------------
     double CDI::getGrayOpacity( const double temp, const double density )
 	{
 	    double grayOpacity = spOpacity->getGray( temp, density );
-
 	    return grayOpacity;
 	}
 	

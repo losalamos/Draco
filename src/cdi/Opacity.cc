@@ -42,12 +42,34 @@ GandolfOpacity::GandolfOpacity( string _data_filename )
 	// ofstream infile( gandolfFilename );
 	// Insist(!infile,"Could not open Gandalf data file for reading.");
 	
-	cout << "  calling gmatids via tg wrapper" << endl;
-
 	const int kmat = 2;
-	int matids[kmat], nmat, ier;
+	int amatids[kmat], nmat=0, ier=0;
 
-	gmatids( dataFilename, matids, kmat, nmat, ier );
+	// initialize amatids to zero.
+	for ( int i=0; i<kmat; ++i ) {
+	    // amatids[kmat]=0;
+	    cout << "GandolfOpacity::GandolfOpacity() amatids[" 
+		 << i << "] = " << amatids[i] << endl;
+	}
+
+	gmatids( dataFilename, amatids, kmat, nmat, ier );
+
+// 	cout << "GandolfOpacity::GandolfOpacity()"
+// 	     << "  back from call to gmatids" << endl
+// 	     << "  we found ier = " << ier << endl
+// 	     << "           nmat = " << nmat << endl
+// 	     << "           amatids[0] = " << amatids[0] << endl 
+// 	     << endl;
+	
+
+	// copy amatids into the vector matIDs
+	matIDs.resize(nmat);
+	for ( int i=0; i<nmat; ++i ) {
+	    matIDs[i] = amatids[i];
+	    cout << "GandolfOpacity::GandolfOpacity() matIDs[" 
+		 << i << "] = " << matIDs[i] << endl;
+	}
+	cout << endl;
     }
  
 

@@ -13,6 +13,7 @@
 #define __cdi_Opacity_hh__
 
 #include <iostream>
+#include <vector>
 
 namespace rtt_cdi
 {
@@ -20,6 +21,7 @@ namespace rtt_cdi
 using std::string;
 using std::cout;
 using std::endl;
+using std::vector;
 
 //===========================================================================//
 /*!
@@ -50,9 +52,12 @@ class Opacity
     Opacity() 
     {
 	cout << "In Opacity::Opacity() constructor." << endl;
-    };
+    }
     //defaulted Opacity(const CDI &rhs);
-    //defaulted ~Opacity();
+    virtual ~Opacity()
+    {
+	cout << "Destroying Opacity Object." << endl << endl;
+    }
 
     // MANIPULATORS
     
@@ -60,9 +65,13 @@ class Opacity
 
     // ACCESSORS
 
-    virtual double getGray( const double temp, const double density ) = 0;       
+    virtual string getDataFilename() = 0;
 
-    string getDataFilename();
+    virtual vector<int> getMatIDs() = 0;
+
+
+
+    virtual double getGray( const double temp, const double density ) = 0;       
 
     //  protected:     // DATA
     //    string dataFilename;
@@ -83,6 +92,7 @@ class Opacity
      // DATA
 
      const string dataFilename;
+     vector<int> matIDs;
 
    public:
      
@@ -90,7 +100,10 @@ class Opacity
      
      GandolfOpacity( string _data_filename );
      //defaulted GandolfOpacity(const CDI &rhs);
-     //defaulted ~GandolfOpacity();
+     ~GandolfOpacity()
+     {
+	 cout << "Destroying GandolfOpacity Object." << endl << endl;
+     };
      
      // MANIPULATORS
      
@@ -98,8 +111,17 @@ class Opacity
      
      // ACCESSORS
      
-     double getGray( const double temp, const double density );
      string getDataFilename() { return dataFilename; };
+     vector<int> getMatIDs() 
+     { 
+	 cout << "In Opacity::getMatIDs()" << endl;
+	 return matIDs; 
+     };
+
+
+
+
+     double getGray( const double temp, const double density );
      
    private:
      

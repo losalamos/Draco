@@ -13,6 +13,7 @@
 #define __cdi_CDI_hh__
 
 #include <iostream>
+#include <vector>
 
 #include "ds++/SP.hh"
 
@@ -22,6 +23,7 @@ namespace rtt_cdi
 {
  
 using std::string;
+using std::vector;
 using rtt_dsxx::SP;
  
 // DATA
@@ -65,7 +67,11 @@ class CDI
     
     CDI( OpType _opacity_type, string _opacity_data_filename );
     //defaulted CDI(const CDI &rhs);
-    //defaulted ~CDI();
+    ~CDI()
+    {
+	//delete pOpacity;
+	cout << "Destroying CDI Object." << endl << endl;
+    };
 
     // MANIPULATORS
     
@@ -76,6 +82,8 @@ class CDI
     double getGrayOpacity( const double temp, const double density );
 
     string getOpacityDataFilename() { return opacityDataFilename; };
+
+    vector<int> getMatIDs();
 
   private:
     
