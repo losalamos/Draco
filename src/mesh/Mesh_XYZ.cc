@@ -99,8 +99,39 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 	yA(i) = dx * dz;
     for( int i=0; i < ncz+1; i++ )
 	zA(i) = dx * dy;
-}
 
+// Uhh, initialize the "new" face locations...
+
+    for( int c=0; c < ncp; c++ )
+    {
+	int i = I(c), j = J(c), k = K(c);
+
+    // Calculate cell center.
+
+	double x = dx * (i + .5), dx2 = dx / 2.;
+	double y = dy * (j + .5), dy2 = dy / 2.;
+	double z = dz * (k + .5), dz2 = dz / 2.;
+
+    // Now loop through all the faces, and initiailize face locations using
+    // deltas from cell center.
+
+    // 0 == left,  1 == right       x variation
+    // 2 == front  3 == back        y variation
+    // 4 == bottom 5 == top         z variation
+
+	xF(c,0) = x - dx2; xF(c,1) = x + dx2;
+	xF(c,2) = x; xF(c,3) = x;
+	xF(c,4) = x; xF(c,5) = x;
+
+	yF(c,0) = y; yF(c,1) = y;
+	yF(c,2) = y - dy2; yF(c,3) = y + dy2;
+	yF(c,4) = y; yF(c,5) = y;
+
+	zF(c,0) = z; zF(c,1) = z;
+	zF(c,2) = z; zF(c,3) = z;
+	zF(c,4) = z - dz2; zF(c,5) = z + dz2;
+    }
+}
 
 //---------------------------------------------------------------------------//
 //                              end of Mesh_XYZ.cc
