@@ -385,7 +385,25 @@ void test_mapping_DD()
 
     // make fields
     vector<int> local(3, C4::node() + 1);
-    vector<int> global(6);
+    vector<int> global_vect(6);
+    
+    pdop.local_to_global(local, global_vect,
+			 Parallel_Data_Operator::Data_Distributed()); 
+
+    // check value of global data
+    if (global_vect[0] != 1) ITFAILS;
+    if (global_vect[1] != 1) ITFAILS;
+    if (global_vect[2] != 1) ITFAILS;
+    if (global_vect[3] != 2) ITFAILS;
+    if (global_vect[4] != 2) ITFAILS;
+    if (global_vect[5] != 2) ITFAILS;
+
+    // make sure local data unchanged
+    for (int i = 0; i < local.size(); i++)
+	if (local[i] != C4::node() + 1) ITFAILS;
+
+    // now check mapping with different field types (vector and ccsf)
+    ccsf_int global(mesh);
     
     pdop.local_to_global(local, global,
 			 Parallel_Data_Operator::Data_Distributed()); 
@@ -401,6 +419,7 @@ void test_mapping_DD()
     // make sure local data unchanged
     for (int i = 0; i < local.size(); i++)
 	if (local[i] != C4::node() + 1) ITFAILS;
+
 }
 
 //---------------------------------------------------------------------------//
