@@ -95,6 +95,17 @@ int main( int argc, char *argv[] )
     }
 
     {
+        Mesh_XYZ::vcvsf oneVCV( spm );
+        for (Mesh_XYZ::vcvsf::iterator iter = oneVCV.begin();
+             iter != oneVCV.end(); ++iter)
+        {
+            (*iter)(0) = 1.;
+            (*iter)(1) = 0.;
+            (*iter)(2) = 0.;
+        }
+    }
+
+    {
         Mesh_XYZ::gccsf xgc( spm );
         Mesh_XYZ::ccsf x( spm );
         x = 1.;
