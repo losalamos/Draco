@@ -34,7 +34,7 @@ endif
 ifeq ($(c4),mpi)
 libsrcs	+= global_mpi.cc
 endif
-ifndef c4
+ifeq ($(c4),no)
 libsrcs	+= global_scalar.cc
 endif
 
