@@ -57,7 +57,6 @@ int main( int argc, char *argv[] )
     v.push_back( 100 );
     v.push_back( 1000 );
     v.push_back( 10000 );
-    v.push_back( 20000 );
     v.push_back( 100000 );
     v.push_back( 1000000 );
 
@@ -70,6 +69,8 @@ int main( int argc, char *argv[] )
     if (C4::node() == 0)
         printf( "Timing reductions on %d nodes.\n", nn );
 
+    double start = C4::Wtime();
+
     for( int i=0; i < v.size(); i++ )
     {
         double s = t1( v[i], niters );
@@ -80,6 +81,11 @@ int main( int argc, char *argv[] )
             printf( "Elements: %7d, microseconds/pass  node 0: %lf  avg: %lf\n",
                     v[i], s / 1.0e-6, avg / 1.0e-6 );
     }
+
+    double end = C4::Wtime();
+
+    if (C4::node() == 0)
+        printf( "Total time to run was %lf seconds.\n", end-start );
 
     C4::Finalize();
 }
