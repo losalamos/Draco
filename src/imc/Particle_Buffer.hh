@@ -55,7 +55,7 @@ class Particle_Buffer
 {
 public:
   // abbreviated Particle data from census
-    struct Census_Particle
+    struct Census_Buffer
     {
       // particle state
 	vector<double> r;
@@ -66,19 +66,24 @@ public:
 	Sprng random;
 
       // constructor
-	Census_Particle(vector<double> &, vector<double> &, double, double,
-			int, Sprng);
+	Census_Buffer(vector<double> &, vector<double> &, double, double,
+		      int, Sprng);
       // faux default constructor for STL
-	Census_Particle();
+	Census_Buffer();
     };
 
   // particle buffer for async receives of particles
     struct Comm_Buffer
     {
-      // particle state buffers
+      // particle state buffers for receiving
 	double array_d[Global::buffer_d];
 	int array_i[Global::buffer_i];
 	char array_c[Global::buffer_c];
+
+      // C4_Req communication handles
+	C4_Req comm_d;
+	C4_Req comm_i;
+	C4_Req comm_c;
 
       // number of particles in the buffer
 	int n_part;
@@ -104,11 +109,11 @@ public:
   // io functions
     void write_census(ostream &, const PT &) const;
     void write_census(const Census &) const;
-    SP<Census_Particle> read_census(istream &);
+    SP<Census_Buffer> read_census(istream &);
 
   // Particle send and receives
-    void send_bank(C4_Req &, int, Comm_bank &) const;
-    SP<Comm_Buffer> recv_bank(C4_Req &, int) const;
+    void send_bank(Comm_Buffer &, int, Comm_bank &) const;
+    SP<Comm_Buffer> recv_bank(Comm_Buffer &, int) const;
     void add_to_bank(SP<Comm_Buffer>, Comm_bank &) const;
 };
 

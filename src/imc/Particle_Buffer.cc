@@ -171,17 +171,22 @@ Particle_Buffer<PT>::read_census(istream &cenfile)
 // Do an asyncronous send using C4
 
 template<class PT>
-void Particle_Buffer<PT>::send_bank(C4_Req &send, int proc, 
+void Particle_Buffer<PT>::send_bank(Comm_Buffer &buffer, int proc, 
 				    Comm_bank &bank) const
 {
   // find out the number of Particles
     int num_part = bank.size();
-    Check (num_part > 0);
+    Check (num_part > 0 && numpart <= Global::buffer_s);
 
   // define indices for data
     int id = 0;
     int ii = 0;
     int ic = 0;
+
+  // define arrays for buffering
+    double array_d[Global::buffer_d];
+    int    array_i[Global::buffer_i];
+    char   array_c[Global::buffer_c];
 
   // loop through particles and get the goods
     for (int i = 0; i < num_part; i++)
@@ -194,9 +199,36 @@ void Particle_Buffer<PT>::send_bank(C4_Req &send, int proc,
 	    array_d[id++] = bank.top().omega[j];
 	for (int j = 0; j < bank.top().r.size(); j++)
 	    array_d[id++] = bank.top().r[i];
+	Check (id <= Global::buffer_d);
 
       // get the int info from the particle
+	array_i[ii++] = bank.top().cell;
+	array_i[ii++] = bank.top().random.get_num();
+	array_i[ii++] = PT::get_index(bank.top().descriptor);
+	Check (ii <= Global::buffer_i);
+
+      // get the char info from the particle
+	char *bytes;
+	int size = pack_sprng(bank.top().random.get_id(), &bytes);
+	Check (size == csize);
+	for (int j = 0; j < csize; j++)
+	    array_c[ic++] = bytes[j];
+	std::free(bytes);
+	Check (ic <= Global::buffer_c);
+
+      // pop the highest level particle
+	bank.pop();
     }
+
+  // send the particle buffers
+    SendAsync(buffer.comm_d, &array_d[0], Global::buffer_d, proc, 
+	      100 + node() + nodes());
+    SendAsync(buffer.comm_i, &array_i[0], Global::buffer_i, proc,
+	      101 + node() + nodes());
+    SendAsync(buffer.comm_c, &array_c[0], Global::buffer_c, proc,
+	      102 + node() + nodes());
+  // NEED TO ADD NUM_PARTICLES AND RECEIVE FUNCTIONS
+  // NEED TO FIX UP THE NODE TAG STUFF
 }
     
 CSPACE
