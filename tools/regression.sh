@@ -34,6 +34,10 @@ runregression ()
   
    FOURIER_DEPEND_DIRS="src/fourier"
 
+   # directories that depend on lamg
+  
+   LAMG_DEPEND_DIRS="src/LAMG src/LAMGDiffusionSolver"
+
    # Remove, create the target directory, and cd into it.
 
    echo rm -rf $TARGETDIR
@@ -79,6 +83,14 @@ runregression ()
       echo removing fourier dependent directories: $FOURIER_DEPEND_DIRS
       echo rm -rf $FOURIER_DEPEND_DIRS
       rm -rf $FOURIER_DEPEND_DIRS 
+   fi
+
+   # remove lamg stuff, period.
+
+   if [ "$HAS_LAMG" != "true" ] ; then
+      echo removing lamg dependent directories: $LAMG_DEPEND_DIRS
+      echo rm -rf $LAMG_DEPEND_DIRS
+      rm -rf $LAMG_DEPEND_DIRS 
    fi
 
    # Make the test runs
@@ -170,6 +182,7 @@ do
       HAS_PCGLIB="false"
       HAS_SPRNGLIB="false"
       HAS_FOURIER="false"
+      HAS_LAMG="false"
 
       CONFIGUREFLAGS="--with-c4=$c4"
 
@@ -188,6 +201,13 @@ do
       # This will be added when POOMA_MT becomes stable.
       #
       # HAS_POOMA="true"
+
+      # Check if lamg is available
+
+      # No clause exists for checking if lamg is available.
+      # This will be added when LAMG becomes stable.
+      #
+      # HAS_LAMG="true"
 
       # Check if pcglib is available
 
