@@ -66,6 +66,8 @@ class Simple_Allocator {
 
     typedef T *iterator;
     typedef const T *const_iterator;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 };
 
 //===========================================================================//
@@ -132,6 +134,8 @@ class Guarded_Allocator {
 
     typedef T *iterator;
     typedef const T *const_iterator;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 };
 
 //===========================================================================//
