@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __3T_test_MatVec_3T_hh__
-#define __3T_test_MatVec_3T_hh__
+#ifndef __3T_MatVec_3T_hh__
+#define __3T_MatVec_3T_hh__
 
 #include "ds++/Mat.hh"
 #include "ds++/SP.hh"
@@ -15,8 +15,6 @@
 #include "linalg/PCG_MatVec.hh"
 
 #include "c4/NodeInfo.hh"
-
-class Test_Prob;
 
 //===========================================================================//
 // class MatVec_3T - 
@@ -47,8 +45,8 @@ class MatVec_3T : public PCG_MatVec<typename Solver::NumT>,
     int get_iterations() const { return its; }
 };
 
-#endif                          // __3T_test_MatVec_3T_hh__
+#endif                          // __3T_MatVec_3T_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of 3T/test/MatVec_3T.hh
+//                              end of 3T/MatVec_3T.hh
 //---------------------------------------------------------------------------//
