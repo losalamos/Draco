@@ -15,7 +15,7 @@
 //===========================================================================//
 /*!
  * \page viz_overview Overview of the viz package
- * \version 0_0_0
+ * \version 1_0_0
  * \author T.M. Evans and J. McGhee
  * 
  * The viz package contains translators to visualization software.  Currently

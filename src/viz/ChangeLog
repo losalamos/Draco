@@ -1,6 +1,6 @@
-2000-02-09  Thomas M. Evans  <tme@lanl.gov>
+2000-04-18  Thomas M. Evans  <tme@lanl.gov>
 
-	* ., test: updated to release 1_0_0. First release of viz package.
+	* viz: released version 1_0_0 of viz.
 
 2000-01-26  Thomas M. Evans  <tme@lanl.gov>
 
