@@ -10,9 +10,11 @@
 //---------------------------------------------------------------------------//
 
 #include "MC_Test.hh"
+#include "DD_Mesh.hh"
 #include "../Rep_Topology.hh"
 #include "../General_Topology.hh"
 #include "../Parallel_Data_Operator.hh"
+#include "../Comm_Patterns.hh"
 #include "../OS_Builder.hh"
 #include "../OS_Mesh.hh"
 #include "../Release.hh"
@@ -33,6 +35,7 @@ using rtt_mc::General_Topology;
 using rtt_mc::Parallel_Data_Operator;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
+using rtt_mc::Comm_Patterns;
 using rtt_mc_test::Parser;
 using rtt_dsxx::SP;
 
@@ -423,6 +426,73 @@ void test_mapping_DD()
 }
 
 //---------------------------------------------------------------------------//
+// TEST GATHERS
+//---------------------------------------------------------------------------//
+
+void gather()
+{ 
+    if (C4::nodes() != 4)
+	return;
+
+    // make topology of 9 cell mesh
+    SP<Topology> topology = rtt_mc_test::build_Topology();
+
+    // make a comm patterns
+    SP<Comm_Patterns> pattern(new Comm_Patterns());
+    pattern->calc_patterns(topology);
+
+    // make the parrallel data operator class
+    Parallel_Data_Operator pdop(topology);
+
+    // make local field data on each processor
+    vector<double> local_field(topology->num_cells(C4::node()));
+    for (int i = 0; i < local_field.size(); i++)
+	local_field[i] = C4::node() + 10.5;
+
+    // make boundary cell data
+    vector<double> bc_data;
+    pdop.calc_bnd_cell_data(topology, pattern, local_field, bc_data);
+
+    // check boundary cell data
+    if (C4::node() == 0)
+    {
+	if (bc_data.size() != 3) ITFAILS;
+	if (bc_data[0] != 11.5)  ITFAILS;
+	if (bc_data[1] != 11.5)  ITFAILS;
+	if (bc_data[2] != 12.5)  ITFAILS;
+    }
+    else if (C4::node() == 1)
+    {
+	if (bc_data.size() != 5) ITFAILS;
+	if (bc_data[0] != 10.5)  ITFAILS;
+	if (bc_data[1] != 10.5)  ITFAILS;
+	if (bc_data[2] != 12.5)  ITFAILS;
+	if (bc_data[3] != 12.5)  ITFAILS;
+	if (bc_data[4] != 13.5)  ITFAILS;
+    }
+    else if (C4::node() == 2)
+    {
+	if (bc_data.size() != 5) ITFAILS;
+	if (bc_data[0] != 10.5)  ITFAILS;
+	if (bc_data[1] != 11.5)  ITFAILS;
+	if (bc_data[2] != 11.5)  ITFAILS;
+	if (bc_data[3] != 13.5)  ITFAILS;
+	if (bc_data[4] != 13.5)  ITFAILS;
+    }
+    else if (C4::node() == 3)
+    {
+	if (bc_data.size() != 3) ITFAILS;
+	if (bc_data[0] != 11.5)  ITFAILS;
+	if (bc_data[1] != 12.5)  ITFAILS;
+	if (bc_data[2] != 12.5)  ITFAILS;
+    }
+    else
+    {
+	ITFAILS;
+    }
+}
+
+//---------------------------------------------------------------------------//
 // MAIN
 //---------------------------------------------------------------------------//
 
@@ -441,22 +511,35 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
-    // Fields test
-    test_MT_Fields();
-    test_MT_Fields<OS_Builder,OS_Mesh>();
+    try
+    {
+	// Fields test
+	test_MT_Fields();
+	test_MT_Fields<OS_Builder,OS_Mesh>();
+	
+	// test with STL and c-style fields
+	test_STL_Fields<vector<int>, int>();
+	test_STL_Fields<deque<int>, int>();
+	
+	// test global equivalences
+	test_equivalence(10, 11);           // int
+	test_equivalence(10.0001, 11.0001); // double
+	test_equivalence(10.0001, 10.0002); // double
+	
+	// test local-global cell mapping
+	test_mapping_replication();
+	test_mapping_DD();
 
-    // test with STL and c-style fields
-    test_STL_Fields<vector<int>, int>();
-    test_STL_Fields<deque<int>, int>();
-
-    // test global equivalences
-    test_equivalence(10, 11);           // int
-    test_equivalence(10.0001, 11.0001); // double
-    test_equivalence(10.0001, 10.0002); // double
-
-    // test local-global cell mapping
-    test_mapping_replication();
-    test_mapping_DD();
+	// test gathers
+	gather();
+    }
+    catch (const rtt_dsxx::assertion &ass)
+    {
+	cout << "Dumbass you screwed up, assertion: " << ass.what()
+	     << endl;
+	C4::Finalize();
+	return 1;
+    }
 
     // status of test
     cout << endl;

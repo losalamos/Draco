@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "MC_Test.hh"
+#include "DD_Mesh.hh"
 #include "../Comm_Patterns.hh"
 #include "../General_Topology.hh"
 #include "../Rep_Topology.hh"
@@ -36,82 +37,6 @@ bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__, __FILE__);
 
 //---------------------------------------------------------------------------//
-// Build a nine cell full DD topology
-//---------------------------------------------------------------------------//
-// the mesh is defined as follows:
-// processor 0: 1 2   bc: 3 4 5
-// processor 1: 3 4   bc: 2 5 6 7
-// processor 2: 5 6   bc: 2 3 4 8 9
-// processor 3: 7 8 9 bc: 4 5 6
-// See notes for  P99004 25-APR-2000, pg 2 (Mesh_Operations)
-
-SP<Topology> build_Topology()
-{
-    Require (C4::nodes() == 4);
-
-    Topology::vf_int cpp(4);
-    Topology::vf_int ppc(9, vector<int>(1));
-    Topology::vf_int bc(4);
-
-    // cells-per-proc data
-    cpp[0].resize(2);
-    cpp[0][0] = 1;
-    cpp[0][1] = 2;
-
-    cpp[1].resize(2);
-    cpp[1][0] = 3;
-    cpp[1][1] = 4;
-
-    cpp[2].resize(2);
-    cpp[2][0] = 5;
-    cpp[2][1] = 6;
-
-    cpp[3].resize(3);
-    cpp[3][0] = 7;
-    cpp[3][1] = 8;
-    cpp[3][2] = 9;
-
-    // procs_per_cell data
-    ppc[0][0] = 0;
-    ppc[1][0] = 0;
-    ppc[2][0] = 1;
-    ppc[3][0] = 1;
-    ppc[4][0] = 2;
-    ppc[5][0] = 2;
-    ppc[6][0] = 3;
-    ppc[7][0] = 3;
-    ppc[8][0] = 3;
-
-    // boundary cell data
-    bc[0].resize(3);
-    bc[0][0] = 3;
-    bc[0][1] = 4;
-    bc[0][2] = 5;
-
-    bc[1].resize(5);
-    bc[1][0] = 1;
-    bc[1][1] = 2;
-    bc[1][2] = 5;
-    bc[1][3] = 6;
-    bc[1][4] = 7;
-
-    bc[2].resize(5);
-    bc[2][0] = 2;
-    bc[2][1] = 3;
-    bc[2][2] = 4;
-    bc[2][3] = 8;
-    bc[2][4] = 9;
-    
-    bc[3].resize(3);
-    bc[3][0] = 4;
-    bc[3][1] = 5;
-    bc[3][2] = 6;
-
-    SP<Topology> topology(new General_Topology(cpp, ppc, bc, "DD"));
-    return topology;
-}
-
-//---------------------------------------------------------------------------//
 // Comm_Patterns DD Test on 9 cell mesh
 //---------------------------------------------------------------------------//
 
@@ -121,7 +46,7 @@ void DD_Comm_Patterns()
 	return;
 
     // build a DD topology for a nine cell mesh
-    SP<Topology> topology = build_Topology();
+    SP<Topology> topology = rtt_mc_test::build_Topology();
     if (topology->get_parallel_scheme() != "DD") ITFAILS;
 
     // make a cp object
@@ -317,6 +242,27 @@ void DD_Comm_Patterns()
 }
 
 //---------------------------------------------------------------------------//
+// Comm_Patterns full replication test.
+//---------------------------------------------------------------------------//
+
+void rep_Comm_Patterns()
+{
+    // make a full replication topology for nine cell mesh
+    SP<Topology> topology(new Rep_Topology(9));
+
+    // make a comm_pattern object
+    Comm_Patterns cp;
+
+    if (cp) ITFAILS;
+
+    // now build comm patterns.  This should be a null operation because we
+    // are in a full replication topology
+    cp.calc_patterns(topology);
+
+    if (cp) ITFAILS;
+}
+
+//---------------------------------------------------------------------------//
 // MAIN
 //---------------------------------------------------------------------------//
 
@@ -337,6 +283,7 @@ int main(int argc, char *argv[])
 
     try
     {
+	rep_Comm_Patterns();
 	DD_Comm_Patterns();
     }
     catch (const rtt_dsxx::assertion &ass)
