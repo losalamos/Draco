@@ -1,3 +1,14 @@
+1999-09-03  Thomas M. Evans  <tme@lanl.gov>
+
+	* autodoc, Makefile.in: added autodoc directory for automatic
+	document generation.  added gmake autodoc target that runs doxygen 
+	to build the documentation in the installation directory.  The
+	documentation is built in the html and latex directories.  Running 
+	gmake autodoc automatically does an install of the documentation.
+	Running gmake clean will remove the documentation files from html
+	and latex.  Note that no dependencies have been added to this
+	target yet.
+
 $Id$	
 
 	* src (all directories): initial release.
