@@ -29,6 +29,9 @@ namespace rtt_dsxx
 template<class ForwardIterator>
 bool isSorted(ForwardIterator first, ForwardIterator last)
 {
+    if (first == last)
+	return true;
+    
     bool isSorted = true;
     ForwardIterator prev = first; ++first;
     while (isSorted && first != last)
@@ -54,6 +57,9 @@ template<class ForwardIterator, class StrictWeakOrdering>
 bool isSorted(ForwardIterator first, ForwardIterator last,
 	      StrictWeakOrdering comp)
 {
+    if (first == last)
+	return true;
+    
     bool isSorted = true;
     ForwardIterator prev = first; ++first;
     while (isSorted && first != last)

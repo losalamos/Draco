@@ -64,7 +64,7 @@ bool testit(const std::string &name, IT first, IT last)
     std::vector<value_type> vv2;
 
     for (int i=0; i < vv1.size(); i++)
-	vv2.push_back(vv1[lfsp(i)]);
+	vv2.push_back(vv1[lfsp[i]]);
 
     IT lfi = first;
     for (int i=0; lfi != last; i++, ++lfi)
@@ -99,7 +99,7 @@ bool testit(const std::string &name, IT first, IT last, const CMP &comp)
     std::vector<value_type> vv2;
 
     for (int i=0; i < vv1.size(); i++)
-	vv2.push_back(vv1[lfsp(i)]);
+	vv2.push_back(vv1[lfsp[i]]);
 
     IT lfi = first;
     for (int i=0; lfi != last; i++, ++lfi)
@@ -180,6 +180,11 @@ int main( int argc, char *argv[] )
 
     try {
 	bool passed = false;
+
+	name = "SortPermutation(empty vector<Foo>)";
+	std::vector<Foo> evf;
+	passed = testit("empty vector<Foo>", evf.begin(), evf.end());
+	printStatus(name, passed);
 
 	Foo caf[] = { 64, 89, 64, 73, 14, 90, 63, 14 };
 	const int ncaf =  sizeof(caf)/sizeof(*caf);

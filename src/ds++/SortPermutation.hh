@@ -46,7 +46,7 @@ namespace rtt_dsxx
  *  is not necessarily stable.
  *
  *  The SortPermutation object can be used to access the "index table"
- *  for the sequence via operator()(int), begin(), and end().
+ *  for the sequence via operator[](int), begin(), and end().
  *
  *  An index table is a table of integer pointers telling which number
  *  sequence element comes first in ascending order, which second,
@@ -136,6 +136,8 @@ class SortPermutation
   public:
 
     // CREATORS
+
+    SortPermutation() { /* empty */ }
     
     template<class IT, class COMP>
     SortPermutation(IT first, IT last, const COMP &comp)
@@ -179,7 +181,7 @@ class SortPermutation
      * results in sorted containing the sorted elements of [first, last).
      */
     
-    value_type operator()(int i) const { return indexTable_m[i]; }
+    value_type operator[](int i) const { return indexTable_m[i]; }
 
     /*!
      * \brief Returns the begin const_iterator into the index table.
