@@ -180,8 +180,9 @@ public:
 
   // required services
     int Next_cell(int cell, int face) const { return layout(cell, face); }
-    int Get_cell(vector<double> &) const;
-    double Get_db(vector<double> &, vector<double> &, int, int &) const;
+    int Get_cell(const vector<double> &) const;
+    double Get_db(const vector<double> &, const vector<double> &, int, 
+		  int &) const;
 };
 
 CSPACE

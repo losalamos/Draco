@@ -21,9 +21,8 @@ IMCSPACE
 // vectors handle their own dynamic memory
 template<class MT>
 Particle<MT>::Particle(const MT &mesh, int seed, double weight_, double energy_)
-    :weight(weight_), energy(energy_),
-     r(mesh.Coord().getDim(), 0.0), omega(mesh.Coord().getDim(), 0.0),
-     cell(0), random(seed)
+    :weight(weight_), energy(energy_), r(mesh.Coord().Get_sdim(), 0.0), 
+     omega(mesh.Coord().Get_sdim(), 0.0), cell(0), random(seed)
 {
   // the syntax for initialization of the vector is equivalent to:
   // vector<double> r(dimension, 0.0),
@@ -33,8 +32,8 @@ Particle<MT>::Particle(const MT &mesh, int seed, double weight_, double energy_)
   // constructor will be called instead, see Stroustrup pg. 450
 }
 
-// no copy constructor is required because vectors can do assignment
-// therefore, we use the default copy constructor (memberwise copy)
+// need to write assignment operators and copy constructors to take care of
+// the random number
 
 //---------------------------------------------------------------------------//
 // public member functions
@@ -47,10 +46,10 @@ void Particle<MT>::source(vector<double> &r_, const MT &mesh)
     r = r_;
 
   // sample initial direction (isotropic)
-    mesh.Coord().setOmega(omega, random);
+    mesh.Coord().Set_omega(omega, random);
 
   // find particle cell
-    cell = mesh.getCell(r);
+    cell = mesh.Get_cell(r);
 }
 
 // transport particle through mesh
@@ -74,10 +73,10 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs)
         int face = 0;
         
       // sample distance-to-collision
-        d_collision = -log(random.ran()) / sigma;
+        d_collision = -log(random.ran()) / xs.Sigma(cell);
 
       // get distance-to-boundary and cell face
-        d_boundary  = mesh.getDb(r, omega, cell, face);
+        d_boundary  = mesh.Get_db(r, omega, cell, face);
 
       // streaming
         if (d_collision <= d_boundary)
@@ -88,7 +87,8 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs)
         else
         {
             stream(d_boundary);
-            alive = mesh.Layout()(cell, face);
+            cell  = mesh.Next_cell(cell, face);
+	    alive = cell;
         }
     }
 }
@@ -112,7 +112,7 @@ bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
     bool status;
 
   // determine absorption or collision
-    if (random.ran() <= xs.Sigma_a(cell) / xs.Sigma(cell))
+    if (random.ran() <= 0.0 / xs.Sigma(cell))
         status = false;
     else
     {
@@ -124,7 +124,7 @@ bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
         phi      = 2 * Global::pi * random.ran();
 
       // get new direction cosines
-        mesh.Coord().calcOmega(costheta, phi, omega);
+        mesh.Coord().Calc_omega(costheta, phi, omega);
     }
 
     return status;

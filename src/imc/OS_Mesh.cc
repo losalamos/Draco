@@ -21,7 +21,7 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // member functions
 //---------------------------------------------------------------------------//
-int OS_Mesh::Get_cell(vector<double> &r) const
+int OS_Mesh::Get_cell(const vector<double> &r) const
 {
   // used variables
     int dim         = coord->Get_dim();
@@ -53,7 +53,7 @@ int OS_Mesh::Get_cell(vector<double> &r) const
     return return_cell;
 }
 
-double OS_Mesh::Get_db(vector<double> &r, vector<double> &omega,
+double OS_Mesh::Get_db(const vector<double> &r, const vector<double> &omega,
 		       int cell, int &face) const
 {
     using std::vector;
@@ -81,7 +81,11 @@ double OS_Mesh::Get_db(vector<double> &r, vector<double> &omega,
   // calculate the distance to boundary
     vector<double>::iterator itor = min_element(dim_dist_boundary.begin(),
 						dim_dist_boundary.end());
-    double dist_boundary = *itor;
+    double dist_boundary_real = *itor;
+
+  // get the transformed distance to boundary from the coordinate system for
+  // 3D transport in 2D and non-cartesian 3D meshes
+    double dist_boundary = coord->Transform(dist_boundary_real, omega);
 
   // calculate the face that the boundary is on
     int index = itor - dim_dist_boundary.begin();

@@ -49,6 +49,9 @@ private:
     int cell;
   // random number object
     Random random;
+
+  // private particle service functions
+
   // stream a distance d
     void stream(double);
   // collision, return a false if particle is absorbed
@@ -57,6 +60,7 @@ public:
   // default constructor, explicit to guarantee definition
   // of coord. sys during Particle instantiation
     explicit Particle(const MT &, int, double = 0, double = 0);
+
   // transport member functions
     void source(vector<double> &, const MT &);
     void transport(const MT &, const Opacity<MT> &);

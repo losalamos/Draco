@@ -19,27 +19,27 @@
 // -----------------
 //  0) original
 //  1)  2-18-98 : added getCoord() function for debugging
+//  2)  3-12-98 : moved Calc and Set_omega functions to Coord_sys because
+//                they are the same for XY and XYZ transport
 // 
 //===========================================================================//
 
 #include "imctest/Names.hh"
 #include "imctest/Coord_sys.hh"
-#include <vector>
+#include <string>
 
 IMCSPACE
-
-using std::vector;
     
+using std::string;
+
 class XYZCoord_sys : public Coord_sys
 {
 public:
-  // default constructor to set dimension of XY coordinate
-  // system, inline
+  // default constructor for 3D meshes
     XYZCoord_sys() : Coord_sys(3) {}
+
   // virtual functions
     virtual string Get_coord() const { string c = "xyz"; return c; }
-    virtual void Set_omega(vector<double> &, Random &) const;
-    virtual void Calc_omega(double, double, vector<double> &) const;
 };
 
 CSPACE
