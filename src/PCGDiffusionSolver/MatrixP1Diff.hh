@@ -121,6 +121,10 @@ namespace rtt_PCGDiffusionSolver
 
 } // end namespace rtt_PCGDiffusionSolver
 
+// Let's always include the traits class with us.
+
+#include "MatrixP1DiffTraits.hh"
+
 #endif                          // __PCGDiffusionSolver_MatrixP1Diff_hh__
 
 //---------------------------------------------------------------------------//
