@@ -1,44 +1,31 @@
 //----------------------------------*-C++-*----------------------------------//
-// tQuadrature.cc
-// Kelly Thompson
-// Thu Mar 2 13:07:00 2000
+/*!
+ * \file   quadrature/test/tQuadrature.cc
+ * \author Kelly Thompson
+ * \date   Tue Mar 26 12:36:41 2002
+ * \brief  quadrature package test.
+ */
+//---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-// @> 
-//---------------------------------------------------------------------------//
 
-// revision history:
-// -----------------
-// 1.1) Original
-// ...  ...
-// 1.5) Added a pass() call for each quadrature set tested.
-//      QuadCreator.quadCreate member function name changed to lower
-//         case.
-//      Moved "using" statements inside of namespace.
-//      Added "using std::fabs".
-
-#include "tQuadrature.hh"
+#include "quadrature_test.hh"
 #include "../Quadrature.hh"
 #include "../QuadCreator.hh"
 #include "../Release.hh"
-
-#include "UnitTestFrame/PassFailStream.hh"
+#include "ds++/Assert.hh"
+#include "ds++/SP.hh"
 
 #include <iostream>
 #include <vector>
-#include <sstream>
 #include <cmath>
+#include <sstream>
 
-namespace rtt_quadrature_test {
+using namespace std;
 
-using std::vector;
-using std::string;
-using std::cout;
-using std::endl;
-using std::fabs;
-using rtt_dsxx::SP;
 using rtt_quadrature::QuadCreator;
 using rtt_quadrature::Quadrature;
+using rtt_dsxx::SP;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -47,11 +34,10 @@ using rtt_quadrature::Quadrature;
  * \brief Tests the Quadcrator and Quadtrature constructors and access
  * routines. 
  *
- * To add a quadrature to this test the following items must be changed:
- *   add new enumeration to Qid[] array.
- *   add new mu[0] value to mu0[] array.
- *   verify nquads is set to the correct number of quadrature sets being
- *      tested. 
+ * To add a quadrature to this test the following items must be changed: add
+ * new enumeration to Qid[] array.  add new mu[0] value to mu0[] array.
+ * verify nquads is set to the correct number of quadrature sets being
+ * tested.
  */
 void quadrature_test()
 {
@@ -143,69 +129,15 @@ void quadrature_test()
     return;
 } // end of quadrature_test
 
-
-//===========================================================================//
-// PASS/FAILURE
-//===========================================================================//
-
-bool fail(int line)
-{
-    std::cout << "Test: failed on line " << line << std::endl;
-    passed = false;
-    return false;
-}
-
-//---------------------------------------------------------------------------//
-
-bool fail(int line, char *file)
-{
-    std::cout << "Test: failed on line " << line << " in " << file
-	      << std::endl;
-    passed = false;
-    return false;
-}
-
-//---------------------------------------------------------------------------//
-
-bool pass_msg(const std::string &passmsg)
-{
-    std::cout << "Test: passed" << std::endl;
-    std::cout << "     " << passmsg << std::endl;
-    return true;
-}
-
-//---------------------------------------------------------------------------//
-
-bool fail_msg(const std::string &failmsg)
-{
-    std::cout << "Test: failed" << std::endl;
-    std::cout << "     " << failmsg << std::endl;
-    passed = false;
-    return false;
-}
-
-//---------------------------------------------------------------------------//
-// BOOLEAN PASS FLAG
-//---------------------------------------------------------------------------//
-
-bool passed = true;
-
-} // end namespace rtt_quadrature_test
-
-
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    using std::cout;
-    using std::endl;
-    using std::string;
-
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_quadrature::release()
+	    cout << argv[0] << ": version " << rtt_quadrature::release() 
 		 << endl;
 	    return 0;
 	}
@@ -213,7 +145,7 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
-	rtt_quadrature_test::quadrature_test();
+	quadrature_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {
@@ -234,13 +166,8 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing tQuadrature." << endl;
-
-    return 0;
 }   
 
-
-
 //---------------------------------------------------------------------------//
-//                            end of tQuadrature.cc
+//                        end of tQuadrature.cc
 //---------------------------------------------------------------------------//
-

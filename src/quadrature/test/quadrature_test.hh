@@ -1,23 +1,21 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   Quadrature/tQuadrature.hh
- * \author Kelly Thompson
- * \date   Mon Mar 6 13:41:03 2000
- * \brief  
+ * \file   quadrature/test/quadrature_test.hh
+ * \author Thomas M. Evans
+ * \date   Tue Mar 26 12:34:44 2002
+ * \brief  quadrature test infrastructure.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __Quadrature_test_tQuadrature_hh__
-#define __Quadrature_test_tQuadrature_hh__
+#ifndef __quadrature_test_hh__
+#define __quadrature_test_hh__
 
-#include <string>
+#include <iostream>
 
 namespace rtt_quadrature_test
 {
- 
-using std::string;
 
 //===========================================================================//
 // PASS/FAILURE LIMIT
@@ -25,11 +23,11 @@ using std::string;
 
 // Returns true for pass
 // Returns false for fail
-// Failure functions also set rtt_cdi_eospac_test::passed to false
+// Failure functions also set rtt_quadrature_test::passed to false
 
 // These can be used in any combination in a test to print output messages  
 // if no fail functions are called then the test will pass
-// (rtt_cdi_eospac_test::passed will have its default value of true)
+// (rtt_quadrature_test::passed will have its default value of true)
 
 // Needless to say, these can be used in many different combinations or
 // ways.  We do not constrain draco tests except that the output must be of
@@ -49,7 +47,7 @@ bool fail_msg(const std::string &);
 
 extern bool passed;
 
-} // end namespace rtt_Quadrature_test
+} // end namespace rtt_quadrature_test
 
 //===========================================================================//
 // TEST MACROS
@@ -65,8 +63,8 @@ extern bool passed;
 #define PASSMSG(a) rtt_quadrature_test::pass_msg(a);
 #define FAILMSG(a) rtt_quadrature_test::fail_msg(a);
 
-#endif // __Quadrature_test_tQuadrature_hh__
+#endif                          // __quadrature_test_hh__
 
 //---------------------------------------------------------------------------//
-//		      end of Quadrature/tQuadrature.hh
+//                              end of quadrature/test/quadrature_test.hh
 //---------------------------------------------------------------------------//

@@ -35,11 +35,6 @@ dnl The text string that will identify this package to the build
 dnl system. 
 package="quadrature"
 
-dnl VENDOR SETUPS
-dnl -------------
-AC_MPI_SETUP(pkg)
-dnl AC_POOMA_SETUP(pkg)
-
 dnl Append this directory to a list of header install locations.
 AC_INSTALL_HEADERS
 
@@ -49,13 +44,8 @@ AC_INSTALL_LIB
 dnl A space delimited list of packages that this package depends on.
 AC_NEEDS_LIBS(ds++)
 
-dnl A space delimited list of packages that the unit tests for this
-dnl package depend on.
-AC_NEEDS_LIBS_TEST(UnitTestFrame c4)
-
-dnl must run as "1" instead of scalar because UnitTestFrame assumes
-dnl that the job is parallel.
-AC_RUNTESTS(tQuadrature, 1)
+dnl tests
+AC_RUNTESTS(tQuadrature, scalar)
 
 dnl Evaluate requested build environment and create values to be
 dnl substituted into the build system files listed in AC_OUTPUT

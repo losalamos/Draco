@@ -101,6 +101,9 @@ class Quadrature
     Quadrature( int snOrder_, double norm_ )
 	: snOrder( snOrder_ ), norm( norm_ ) { }
 
+    //! Virtual destructor.
+    virtual ~Quadrature() {/*...*/}
+
     // ACCESSORS
 
     /*!
