@@ -7,8 +7,8 @@
  */
 //---------------------------------------------------------------------------//
 
-#ifdef Not_Ready_for_Primetime
-
+#include <set>
+#include <algorithm>
 #include "TET_Builder.hh"
 
 namespace rtt_mc
@@ -47,7 +47,7 @@ SP<TET_Mesh> TET_Builder::build_Mesh()
             // Set L_face_found if match is found.
             int L_face_found = -1;
             for (int f = 0; f < FOUR && L_face_found < 0; f++)
-                if (includes(R_total.begin(),R_total.end(),
+                if (std::includes(R_total.begin(),R_total.end(),
                              L_face[f].begin(),L_face[f].end()))
                     L_face_found = f;
 
@@ -72,16 +72,16 @@ SP<TET_Mesh> TET_Builder::build_Mesh()
 
                 // Empty out R_face[0], R_face[1], R_face[2], and R_face[3].
                 for (int f = 0; f < FOUR; f++)
-                    erase(R_face[f].begin(),R_face[f].end());
+                    R_face[f].erase(R_face[f].begin(),R_face[f].end());
             }
 
             // Empty out R_total.
-            erase(R_total.begin(),R_total.end());
+            R_total.erase(R_total.begin(),R_total.end());
         }
 
         // Empty out L_face[0], L_face[1], L_face[2], and L_face[3].
         for (int f = 0; f < FOUR; f++)
-            erase(L_face[f].begin(),L_face[f].end());
+            L_face[f].erase(L_face[f].begin(),L_face[f].end());
     }
 
 
@@ -102,8 +102,6 @@ SP<TET_Mesh> TET_Builder::build_Mesh()
 }   // end TET_Builder::build_Mesh()
 
 }   // end namespace rtt_mc
-
-#endif // NOT READY FOR PRIMETIME
 
 //---------------------------------------------------------------------------//
 //                              end of mc/TET_Builder.cc
