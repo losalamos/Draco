@@ -12,16 +12,14 @@
 #include "timestep/fixed_ts_advisor.hh"
 #include "timestep/ratio_ts_advisor.hh"
 #include "timestep/target_ts_advisor.hh"
-#include "timestep/field_ts_advisor.hh"
+#include "timestep/test/dummy_package.hh"
+#include "timestep/test/test_utils.hh"
 
-#include <vector>
 #include <iostream>
 #include <cmath>
 
 using std::cout;
 using std::endl;
-
-using std::vector;
 
 test_timestep::test_timestep()
 {
@@ -32,66 +30,6 @@ test_timestep::~test_timestep()
 {
 //empty
 }
-
-bool compare_reals(const double x1, const double x2, const int ndigits)
-{
-// Determines if two reals are the same to the specified number of
-// significant decimal digits.
-    
-    double zz;
-    if (x2 != 0.)
-    {
-	zz = std::log10 ( std::abs( (x1 - x2)/x2 ) );
-    }
-    else
-    {
-	zz = std::log10 ( std::abs( x1 ) );
-    }
-    return zz < -float(ndigits); 
-}
-
-vector<double> operator*(double lhs, const vector<double> &rhs)
-{
-    vector<double> results(rhs.size());
-
-    for (int i=0; i<rhs.size(); i++)
-	results[i] = lhs*rhs[i];
-
-    return results;
-}
-
-void package_XXX(field_ts_advisor &telect_adv, 
-		 field_ts_advisor &tion_adv,
-		 field_ts_advisor &radi_adv, 
-		 const double dt, const int icycle)
-{
-
-// Create a set of dummy arrays to serve as control fields for
-// use in exercizing the various advisors.
-
-    const double a1[] = {1., 10., 11., 3., 2., 5., 5., 6.7};
-    int sizea = sizeof(a1)/sizeof(a1[0]);
-    vector<double> te_old(a1,a1+sizea);
-    vector<double> te_new = 1.09*te_old;
-    vector<double> ti_old=0.97*te_old;
-    vector<double> ti_new=1.05*te_old;
-    vector<double> ri_old=1.10*te_old;
-    vector<double> ri_new=1.15*te_old;
-
-// Set a floor for the electron temperature controller, to
-// execcize this method. Just accelpt the default floor on the
-// other controllers.
-
-    telect_adv.set_floor(te_new,0.001);
-
-// Get a new time-step from each of the advisors that
-// belong to this package.
-
-    telect_adv.update_tstep(te_old, te_new, dt, icycle);
-    tion_adv.update_tstep(ti_old, ti_new, dt, icycle);
-    radi_adv.update_tstep(ri_old, ri_new, dt, icycle);
-}
-
 
 void test_timestep::execute_test()
 {
@@ -108,13 +46,16 @@ void test_timestep::execute_test()
     double dt = 1.;
     double time = 0.;
     ts_manager mngr;
+    dummy_package xxx(mngr);
 
 // Set up a informational advisor to
-// contain the current time-step for reference
+// contain the current time-step for reference.
+// Activating this controller can also be used to
+// freeze the time-step at the current value.
 
     SP<fixed_ts_advisor> sp_dt 
 	(new fixed_ts_advisor("Current Time-Step",
-			      ts_advisor::max, dt, false));
+			      ts_advisor::req, dt, false));
     mngr.add_advisor(sp_dt);
 
 // Set up a required time-step to be activated
@@ -142,30 +83,6 @@ void test_timestep::execute_test()
 			       ts_advisor::min, 0.8 ) );
     mngr.add_advisor(sp_llr);
 
-// Set up a Electron Temperature advisor
-
-    SP<field_ts_advisor> sp_te 
-	(new field_ts_advisor( "Electron Temperature",
-			       ts_advisor::max,
-			       field_ts_advisor::a_mean));
-    mngr.add_advisor(sp_te);
-
-// Set up a Ion-Temperature advisor
-
-    SP<field_ts_advisor> sp_ti 
-	(new field_ts_advisor("Ion Temperature",
-			      ts_advisor::max,
-			      field_ts_advisor::rc_mean));
-    mngr.add_advisor(sp_ti);
-
-// Set up a Radiation-Intensity advisor
-
-    SP<field_ts_advisor> sp_ri 
-	(new field_ts_advisor("Radiation Intensity",
-			      ts_advisor::max,
-			      field_ts_advisor::rcq_mean));
-    mngr.add_advisor(sp_ri);
-
 // Set up an upper limit on the time-step rate of change
 
     SP<ratio_ts_advisor> sp_ulr 
@@ -185,18 +102,16 @@ void test_timestep::execute_test()
 			       ts_advisor::max, graphics_time));
     mngr.add_advisor(sp_gd);
 
-// Dump a summary to the screen
-
-    mngr.print_advisors();
-
 // Now that all the advisors have been set up, perform time cycles
 
     for (int i=icycle_first; i != icycle_last+1; i++)
     {
 
 	time = time + dt; //end of cycle time
+	mngr.set_cycle_data(dt,i,time);
 
-    // Update the advisors owned by the host
+    // Make any user directed changes to controllers
+
 	sp_dt -> set_fixed_value(dt);
 	if (override_flag)
 	{
@@ -207,54 +122,44 @@ void test_timestep::execute_test()
 	{
 	    sp_ovr -> deactivate();
 	}
-    	sp_dt  -> update_tstep(i);
-	sp_ovr -> update_tstep(i);
-	sp_min -> update_tstep(i);
-	sp_llr -> update_tstep(dt,i);
-	sp_ulr -> update_tstep(dt,i);
-	sp_max -> update_tstep(i);
-	sp_gd  -> update_tstep(time,i);
 
     // Pass in the advisors owned by package_XXX for
     // that package to update
 
-   	package_XXX(*sp_te, *sp_ti, *sp_ri, dt, i);
+   	xxx.advance_state();
 
     //Compute a new time-step and print results to screen
 
-	dt = mngr.compute_new_timestep(dt,i,time);
+	dt = mngr.compute_new_timestep();
 	mngr.print_summary();
 	    
     }
 
-// Dump some advisor states for visual examination.
+// Dump a list of the advisors to the screen
 
-    sp_te  -> print_state();
-    sp_ulr -> print_state();
-    sp_gd  -> print_state();
-    sp_max -> print_state();
-    sp_min -> print_state();
-    sp_dt  -> print_state();
+    mngr.print_advisors();
+
+// Dump the advisor states for visual examination.
+
+    mngr.print_adv_states();
 
 // Confirm that at least some of the output is correct.
 
     int nd = 5;
-    bool passed = mngr.get_cycle() == 3;
-    passed = passed && compare_reals(3.345679e+00, mngr.get_time(),nd);
-    passed = passed && compare_reals(1.234568e+00, mngr.get_dt(),nd);
-    passed = passed && compare_reals(1.371742e+00, mngr.get_dt_new(),nd);
-    passed = passed && mngr.get_controlling_advisor() == "Electron Temperature";
-    passed = passed && compare_reals(1.000000e-06,sp_min -> get_dt_rec(),nd); 
-    passed = passed && compare_reals(9.876543e-01,sp_llr -> get_dt_rec(),nd);	
-    passed = passed && compare_reals(1.000000e+00,sp_ovr -> get_dt_rec(),nd); 
-    passed = passed && compare_reals(1.234568e+00,sp_dt  -> get_dt_rec(),nd);
-    passed = passed && compare_reals(1.371742e+00,sp_te  -> get_dt_rec(),nd); 
-    passed = passed && compare_reals(1.481481e+00,sp_ulr -> get_dt_rec(),nd);
-    passed = passed && compare_reals(1.496914e+00,sp_ti  -> get_dt_rec(),nd); 
-    passed = passed && compare_reals(2.716049e+00,sp_ri  -> get_dt_rec(),nd);
-    passed = passed && compare_reals(6.654321e+00,sp_gd  -> get_dt_rec(),nd); 
-    passed = passed && compare_reals(1.000000e+05,sp_max -> get_dt_rec(),nd);
-
+    bool passed = mngr.get_cycle() == icycle_last
+	&& compare_reals(3.345679e+00, mngr.get_time(),nd)
+	&& compare_reals(1.234568e+00, mngr.get_dt(),nd)
+	&& compare_reals(1.371742e+00, mngr.get_dt_new(),nd)
+	&& mngr.get_controlling_advisor() == "Electron Temperature"
+	&& compare_reals(1.000000e-06,sp_min->get_dt_rec(mngr),nd)
+	&& compare_reals(9.876543e-01,sp_llr->get_dt_rec(mngr),nd)
+	&& compare_reals(1.000000e+00,sp_ovr->get_dt_rec(mngr),nd)
+	&& compare_reals(1.234568e+00, sp_dt->get_dt_rec(mngr),nd)
+	&& compare_reals(1.481481e+00,sp_ulr->get_dt_rec(mngr),nd)
+	&& compare_reals(6.654321e+00, sp_gd->get_dt_rec(mngr),nd)
+	&& compare_reals(1.000000e+05,sp_max->get_dt_rec(mngr),nd)
+	&& xxx.tests_passed();
+	
 // Print the status of the test.
 
     cout << endl;

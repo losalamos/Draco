@@ -44,13 +44,8 @@ class fixed_ts_advisor : public ts_advisor {
     
     ~fixed_ts_advisor();
 
-
-
 // MANIPULATORS
 
-// Update the recommended time-step
-    
-    void update_tstep(const int cycle_);
 
 // Set the fixed value
 
@@ -62,15 +57,17 @@ class fixed_ts_advisor : public ts_advisor {
 
 // ACCESSORS
 
+// Update the recommended time-step
+    
+    double get_dt_rec(const ts_manager &tsm) const;
+
 // Print state
 
     void print_state() const;
 
-  private:
+// Invariant function
 
     bool invariant_satisfied() const;
-
-
 
 };
 

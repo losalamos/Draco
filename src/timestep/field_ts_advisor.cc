@@ -8,6 +8,8 @@
 
 #include "timestep/field_ts_advisor.hh"
 
+#include "timestep/ts_manager.hh"
+
 #include "ds++/Assert.hh"
 
 #include <iostream>
@@ -24,18 +26,37 @@ field_ts_advisor::field_ts_advisor(const std::string &name_,
 
     : ts_advisor (name_, usage_, active_), 
       update_method(update_method_),
-      fc_value(fc_value_), floor_value(floor_value_)
+      fc_value(fc_value_), floor_value(floor_value_),
+      cycle_at_last_update(-989898), dt_rec(large())
 {
     Ensure(invariant_satisfied());
 }
-
 
 field_ts_advisor::~field_ts_advisor()
 {
 // empty
 }
 
+// Produce the recommended time-step
 
+double field_ts_advisor::get_dt_rec(const ts_manager &tsm) const
+{
+    if (cycle_at_last_update != tsm.get_cycle()) 
+    {
+	cerr << "Warning: ts_adivsor " << name << 
+	    " has not been updated" << endl;
+	cerr << 
+	    "         and will not be used in time-step calculations." << 
+	    endl;
+    }
+    return dt_rec;
+}
+
+bool field_ts_advisor::advisor_usable(const ts_manager &tsm) const
+{
+    return (active == true) &&
+	(cycle_at_last_update == tsm.get_cycle());
+}
 
 void field_ts_advisor::print_state() const
 {
@@ -58,7 +79,7 @@ void field_ts_advisor::print_state() const
 bool field_ts_advisor::invariant_satisfied() const
 {
     bool ldum =
-	name.length() != 0 &&
+        name.length() != 0 &&
 	0      <= usage &&
 	usage  <  last_usage  &&
 	0. < dt_rec &&

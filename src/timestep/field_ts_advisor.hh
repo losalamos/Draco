@@ -20,6 +20,9 @@
 //===========================================================================//
 
 #include "timestep/ts_advisor.hh"
+#include <iostream>
+
+using std::cerr;
 
 class field_ts_advisor : public ts_advisor {
 
@@ -50,11 +53,11 @@ class field_ts_advisor : public ts_advisor {
 
   private:
 
-
     update_method_flag update_method; //update method for dt_rec
     double fc_value;                  //frac change  value for field advisor
     double floor_value;               //floor value for field advisor
-
+    int    cycle_at_last_update;      //problem time-cycle index at last update
+    double dt_rec;                    //the recommended time-step
 
 // STATIC CLASS METHODS
 
@@ -72,8 +75,6 @@ class field_ts_advisor : public ts_advisor {
 	return update_method_flag_names[i];
     };
 
-
-
 // CREATORS
 
     field_ts_advisor(const std::string &name_ = std::string("Unlabeled"),
@@ -84,8 +85,6 @@ class field_ts_advisor : public ts_advisor {
 		     const bool active_ = true);
     
     ~field_ts_advisor();
-
-
 
 // MANIPULATORS
 
@@ -100,9 +99,9 @@ class field_ts_advisor : public ts_advisor {
 // q_new is the field value at the end of the current time-step.
 
     template < class FT >
-    void update_tstep(const FT &q_old, const FT &q_new, 
-		      double current_dt, 
-		      int cycle_);
+    void update_tstep(const ts_manager &tsm,
+		      const FT &q_old, 
+		      const FT &q_new);
 
 // Set the fractional change value
 
@@ -125,17 +124,22 @@ class field_ts_advisor : public ts_advisor {
 	update_method = flag;
     }
 
-
-
 // ACCESSORS
+
+// Produce the recommended time-step
+
+    double get_dt_rec(const ts_manager &tsm) const;
+
+// Determine if the advisor is fit to use in
+// a time-step calculation
+
+    bool advisor_usable(const ts_manager &tsm) const;
 
 // Print state
 
     void print_state() const;
 
 // Invariant function
-
-  private:
 
     bool invariant_satisfied() const;
 

@@ -32,12 +32,10 @@ fixed_ts_advisor::~fixed_ts_advisor()
 // empty
 }
 
-void fixed_ts_advisor::update_tstep(const int cycle_)
+double fixed_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 {
     Require(invariant_satisfied());
-    dt_rec = fixed_value;
-    cycle_at_last_update = cycle_;
-    Ensure(invariant_satisfied());
+    return fixed_value;
 }
 
 void fixed_ts_advisor::print_state() const
@@ -49,9 +47,7 @@ void fixed_ts_advisor::print_state() const
     cout << "  Type           : " << "Fixed Advisor" << endl;
     cout << "  Active         : " << status << endl;
     cout << "  Usage          : " << usage_flag_name(usage) << endl;
-    cout << "  Last Update    : " << "cycle " << cycle_at_last_update << endl;
     cout << "  Fixed Value    : " << fixed_value << endl;
-    cout << "  dt_rec         : " << dt_rec << endl;
     cout << endl;
 }
 
@@ -61,7 +57,6 @@ bool fixed_ts_advisor::invariant_satisfied() const
 	name.length() != 0 &&
 	0      <= usage &&
 	usage  <  last_usage  &&
-	0. < dt_rec &&
         0. < fixed_value;
 
     return ldum;

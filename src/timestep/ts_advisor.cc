@@ -18,8 +18,7 @@ ts_advisor::ts_advisor(const string &name_,
 		       const usage_flag usage_,
 		       const bool active_)
 
-    : name(name_), usage(usage_), active(active_), 
-      cycle_at_last_update(-989898), dt_rec(large())
+    : name(name_), usage(usage_), active(active_) 
 {
 // empty
 }
@@ -29,13 +28,13 @@ ts_advisor::~ts_advisor()
 // empty
 }
 
-void ts_advisor::print(const int cycle_, const bool controlling) const
+void ts_advisor::print(const ts_manager &tsm, const bool controlling) const
 {
 
-    string status = advisor_usable(cycle_) ? "true " : "false";
+    string status = advisor_usable(tsm) ? "true " : "false";
     string space  = "   ";
     string cflag = controlling ? "  ==> " : "      ";
-    cout << cflag << dt_rec << space << 
+    cout << cflag << get_dt_rec(tsm) << space << 
 	status << space << name << endl;
 }
     

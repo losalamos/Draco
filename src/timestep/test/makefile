@@ -26,7 +26,9 @@ include ../../config/makefile
 srcs	= \
 	main.cc \
 	test_timestep.cc \
-	test_timestep_pt.cc
+	test_timestep_pt.cc \
+	dummy_package.cc   \
+	test_utils.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.

@@ -8,6 +8,8 @@
 
 #include "timestep/ratio_ts_advisor.hh"
 
+#include "timestep/ts_manager.hh"
+
 #include "ds++/Assert.hh"
 
 #include <iostream>
@@ -32,15 +34,11 @@ ratio_ts_advisor::~ratio_ts_advisor()
 // empty
 }
 
-void ratio_ts_advisor::update_tstep(const double current_dt,
-				    const int cycle_)
-
+double ratio_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 {
     Require(invariant_satisfied());
-    Require(current_dt > 0.)
-	dt_rec = ratio_value*current_dt;
-    cycle_at_last_update = cycle_;
-    Ensure(invariant_satisfied());
+    Require(tsm.get_dt() > 0.);
+    return ratio_value*tsm.get_dt();
 }
 
 void ratio_ts_advisor::print_state() const
@@ -52,9 +50,7 @@ void ratio_ts_advisor::print_state() const
     cout << "  Type           : " << "Ratio Advisor" << endl;
     cout << "  Active         : " << status << endl;
     cout << "  Usage          : " << usage_flag_name(usage) << endl;
-    cout << "  Last Update    : " << "cycle " << cycle_at_last_update << endl;
     cout << "  Ratio Value    : " << ratio_value << endl;
-    cout << "  dt_rec         : " << dt_rec << endl;
     cout << endl;
 }
 
@@ -64,7 +60,6 @@ bool ratio_ts_advisor::invariant_satisfied() const
 	name.length() != 0 &&
 	0      <= usage &&
 	usage  <  last_usage  &&
-	0. < dt_rec &&
         0. < ratio_value;
 
     return ldum;

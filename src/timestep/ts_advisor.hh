@@ -9,14 +9,19 @@
 #ifndef __timestep_ts_advisor_hh__
 #define __timestep_ts_advisor_hh__
 
-//===========================================================================//
-// class ts_advisor - This is the base class time-step advisor.
-// 
-//===========================================================================//
 
 #include <limits>
 
 #include <string>
+
+// FORWARD REFERENCES
+
+class ts_manager; 
+
+//===========================================================================//
+// class ts_advisor - This is the base class time-step advisor.
+// 
+//===========================================================================//
 
 class ts_advisor {
 
@@ -29,7 +34,6 @@ class ts_advisor {
 
     enum usage_flag {
 
-        inf , // informational only, not to be used for control
 	min , // a lower limit
 	max , // a upper limit
 	req , // a required value
@@ -42,10 +46,8 @@ class ts_advisor {
 
     std::string name;                 //ID string
     usage_flag usage;                 //how to use dt_rec 
-    bool   active;                    //on-off switch
-    int    cycle_at_last_update;      //problem time-cycle index at last update
-    double dt_rec;                    //the recommended time-step
 
+    bool   active;                    //on-off switch
 
 // STATIC CLASS METHODS
 
@@ -69,8 +71,7 @@ class ts_advisor {
     static std::string usage_flag_name(const int i) 
     {
 	static const std::string usage_flag_names [last_usage] =
-	{	"informational",
-		"minimum",
+	{	"minimum",
 		"maximum",
 		"required"};
 	return usage_flag_names[i];
@@ -102,26 +103,19 @@ class ts_advisor {
 	active = false;
     }
 
-
 // ACCESSORS
 
-// Define the "less than" operator (<) so that the
-// advisors can be sorted based on their recommended 
-// time-steps
 
-    bool operator<(const ts_advisor &rhs) const
-    {
-	return dt_rec < rhs.dt_rec;
-    }
+// Update and/or produce the recommended time-step
+
+    virtual double get_dt_rec(const ts_manager &tsm) const = 0;
 
 // Determine if the advisor is fit to use in
 // a time-step calculation
 
-    bool advisor_usable(const int cycle_) const
+    virtual bool advisor_usable(const ts_manager &tsm) const
     {
-	return (active == true) &&
-	    (usage != inf) &&
-	    (cycle_at_last_update == cycle_);
+	return (active == true);
     }
 
 // Get the usage
@@ -138,16 +132,18 @@ class ts_advisor {
 	return name;
     }
     
-// Produce the recommended time-step
+// Vomit the entire state of the advisor
 
-    double get_dt_rec() const
-    {
-	return dt_rec;
-    }
+    virtual void print_state() const = 0;
+
+// Invariant function
+
+    virtual bool invariant_satisfied() const = 0;
 
 // Print out advisor data
 
-    void print(const int cycle_, const bool controlling = false) const;
+    virtual void print(const ts_manager &tsm, 
+		       const bool controlling = false) const;
 
 };
 

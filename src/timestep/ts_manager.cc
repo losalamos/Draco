@@ -75,21 +75,23 @@ void ts_manager::remove_advisor( const SP<ts_advisor> &advisor_to_remove)
     throw std::runtime_error("Unable to find requested advisor");
 }
 
-double ts_manager::compute_new_timestep(double dt_, int cycle_,
-					double time_)
+
+void ts_manager::set_cycle_data(double dt_, int cycle_, double time_)
 {
-
+    dt = dt_;
     cycle = cycle_;
-    dt    = dt_;
-    time  = time_;
+    time = time_;
+}
 
+double ts_manager::compute_new_timestep()
+{
 // Check to be sure that there is at least one usable advisor
 
     bool found = false;
     for (list< SP<ts_advisor> >::iterator py = advisors.begin(); 
 	 py != advisors.end(); py++) 
     {
-	if ((**py).advisor_usable(cycle))
+	if ((**py).advisor_usable(*this))
 	{
 	    found = true;
 	    break;
@@ -101,7 +103,7 @@ double ts_manager::compute_new_timestep(double dt_, int cycle_,
 	cerr << "  ** Time-Step Manager Warning **" << endl;
 	cerr << "  No usable time-step advisors found," << endl;
 	cerr << "  defaulting to current time-step" << endl;
-	dt_new = dt_;
+	dt_new = dt;
 	controlling_advisor = "Current Time-Step";
 	return dt_new;
     }
@@ -112,10 +114,10 @@ double ts_manager::compute_new_timestep(double dt_, int cycle_,
     for (list< SP<ts_advisor> >::iterator py = advisors.begin(); 
 	 py != advisors.end(); py++) 
     {
-	if ((**py).advisor_usable(cycle) && (**py).get_usage() == TSA::req)
+	if ((**py).advisor_usable(*this) && (**py).get_usage() == TSA::req)
 	{
 	    i++;
-	    dt_new = (**py).get_dt_rec();
+	    dt_new = (**py).get_dt_rec(*this);
 	    controlling_advisor = (**py).get_name();
 	}
     } 
@@ -140,21 +142,21 @@ double ts_manager::compute_new_timestep(double dt_, int cycle_,
     for (list< SP<ts_advisor> >::iterator py = advisors.begin(); 
 	 py != advisors.end(); py++) 
     {   
-	if ((**py).advisor_usable(cycle))
+	if ((**py).advisor_usable(*this))
 	{
             if ((**py).get_usage() == TSA::min)
 	    {
-		if ((**py).get_dt_rec() > x1)
+		if ((**py).get_dt_rec(*this) > x1)
 		{
-		    x1 = (**py).get_dt_rec();
+		    x1 = (**py).get_dt_rec(*this);
 		    py1 = py;
 		}
 	    }
 	    else if ((**py).get_usage() == TSA::max)
 	    {
-		if ((**py).get_dt_rec() <  x2)
+		if ((**py).get_dt_rec(*this) <  x2)
 		{
-		    x2 = (**py).get_dt_rec();
+		    x2 = (**py).get_dt_rec(*this);
 		    py2 = py;
 		}
 	    }
@@ -167,7 +169,7 @@ double ts_manager::compute_new_timestep(double dt_, int cycle_,
 	cerr << "  Cycle Number: " << cycle << endl;
 	cerr << "  No usable time-step advisors found," << endl;
 	cerr << "  defaulting to current time-step" << endl;
-	dt_new = dt_;
+	dt_new = dt;
 	controlling_advisor = "Current Time-Step";
 	return dt_new;
     }
@@ -205,10 +207,18 @@ double ts_manager::compute_new_timestep(double dt_, int cycle_,
 struct sptsa_less_than : public std::binary_function< SP<ts_advisor>,
 			 SP<ts_advisor>, bool > 
 {
+    const ts_manager &tsm;
+
+    sptsa_less_than(const ts_manager &tsm_)
+	: tsm(tsm_)
+    {
+    // empty
+    }
+
     bool operator () (const SP<ts_advisor> &sp_lhs, 
 		      const SP<ts_advisor> &sp_rhs) const
     {
-	return (*sp_lhs < *sp_rhs);
+	return (sp_lhs->get_dt_rec(tsm) < sp_rhs->get_dt_rec(tsm));
     }
 };
 
@@ -229,7 +239,7 @@ void ts_manager::print_summary() const
     cout.setf(ios::scientific, ios::floatfield);
     cout.precision(4);
     list < SP<ts_advisor> > temp = advisors;
-    temp.sort(sptsa_less_than());
+    temp.sort(sptsa_less_than(*this));
     cout << endl;
     cout << "  *** Time-Step Manager Summary ***" << endl;
     cout << "  Cycle Number         : " << cycle << endl;
@@ -243,10 +253,22 @@ void ts_manager::print_summary() const
     for (list< SP<ts_advisor> >::const_iterator py = temp.begin(); 
 	 py != temp.end(); py++)
     {
-	(**py).print(cycle, (**py).get_name() == controlling_advisor);
+	(**py).print(*this, (**py).get_name() == controlling_advisor);
     }
     cout << endl;
     cout.setf(0,ios::floatfield);
+}
+
+void ts_manager::print_adv_states() const
+{
+    cout << endl;
+    cout << "*** Time-Step Manager: Advisor State Listing ***" << endl;
+    for (list< SP<ts_advisor> >::const_iterator 
+	     py = advisors.begin(); py != advisors.end(); py++)
+    {
+	(**py).print_state();
+    }
+    cout << endl; 
 }
 
 bool ts_manager::invariant_satisfied() const

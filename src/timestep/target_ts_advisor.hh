@@ -48,11 +48,6 @@ class target_ts_advisor : public ts_advisor {
 
 // MANIPULATORS
 
-// Update the recommended time-step 
-    
-    void update_tstep( const double end_of_cycle_time,
-		       const int cycle_ );
-
 // Set the target value
 
     void set_target(const double value_ = -large() )
@@ -64,14 +59,18 @@ class target_ts_advisor : public ts_advisor {
 
 // ACCESSORS
 
+
+// Update the recommended time-step 
+    
+    double get_dt_rec(const ts_manager &tsm) const;
+
 // Print state
 
     void print_state() const;
 
-  private:
+// Invariant function
 
     bool invariant_satisfied() const;
-
 
 };
 

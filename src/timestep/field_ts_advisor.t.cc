@@ -8,6 +8,8 @@
 
 #include "timestep/field_ts_advisor.hh"
 
+#include "timestep/ts_manager.hh"
+
 #include "ds++/Assert.hh"
 
 #include <algorithm>
@@ -41,14 +43,12 @@ void field_ts_advisor::set_floor(const FT &y1, double frac)
 
 
 template <class FT>
-void field_ts_advisor::update_tstep(const FT &q_old, 
-				    const FT &q_new, 
-				    double current_dt,
-				    int cycle_)
+void field_ts_advisor::update_tstep(const ts_manager &tsm,
+				    const FT &q_old, 
+				    const FT &q_new) 
 {
-
     Require(invariant_satisfied());
-    Require(current_dt > 0.0);
+    Require(tsm.get_dt() > 0.0);
 //    Require(FT::conformal(q_old,q_new));
 
     double x1 = 0.;
@@ -118,11 +118,11 @@ void field_ts_advisor::update_tstep(const FT &q_old,
 	}
 	else
 	{
-	    dt_rec = std::max(small(),fact*current_dt);
+	    dt_rec = std::max(small(),fact*tsm.get_dt());
 	}
     }
 
-    cycle_at_last_update = cycle_;
+    cycle_at_last_update = tsm.get_cycle();
     Ensure(invariant_satisfied());
 
 }

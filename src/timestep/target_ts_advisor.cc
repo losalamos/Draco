@@ -8,6 +8,8 @@
 
 #include "timestep/target_ts_advisor.hh"
 
+#include "timestep/ts_manager.hh"
+
 #include "ds++/Assert.hh"
 
 #include <iostream>
@@ -33,19 +35,16 @@ target_ts_advisor::~target_ts_advisor()
 // empty
 }
 
-void target_ts_advisor::update_tstep( const double end_of_cycle_time,
-				      const int cycle_)
+double target_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 {
     Require(invariant_satisfied());
-    
-    dt_rec = target_value - end_of_cycle_time;
-    if (dt_rec <= small ())
+
+    double dt_rec = target_value - tsm.get_time();
+    if (dt_rec <= small())
     {
 	dt_rec = large();
     }
-    
-    cycle_at_last_update = cycle_;
-    Ensure(invariant_satisfied());
+    return dt_rec;
 }
 
 void target_ts_advisor::print_state() const
@@ -57,9 +56,7 @@ void target_ts_advisor::print_state() const
     cout << "  Type           : " << "Target Advisor" << endl;
     cout << "  Active         : " << status << endl;
     cout << "  Usage          : " << usage_flag_name(usage) << endl;
-    cout << "  Last Update    : " << "cycle " << cycle_at_last_update << endl;
     cout << "  Target Value   : " << target_value << endl;
-    cout << "  dt_rec         : " << dt_rec << endl;
     cout << endl;
 }
 
@@ -68,8 +65,7 @@ bool target_ts_advisor::invariant_satisfied() const
     bool ldum =
 	name.length() != 0 &&
 	0      <= usage &&
-	usage  <  last_usage &&
-	0. < dt_rec;
+	usage  <  last_usage;
 
     return ldum;
 }
