@@ -43,7 +43,7 @@ using std::ostream;
 template<class MT>
 class Source_Init
 {
-private:
+public:
   // data received from MT_Interface
     vector<double> evol_ext;
     vector<string> ss_pos;

@@ -84,10 +84,10 @@ void Global_Buffer<MT>::print(ostream &out) const
 	<< endl;
     out << "==============================" << endl;
     out.precision(4);
+    out.setf(ios::scientific, ios::floatfield);
     for (int i = 0; i < num_cells(); i++)
     {	
-	out << setw(10) << i+1 << setw(20) << setiosflags(ios::scientific)
-	    << temperature[i] << endl;
+	out << setw(10) << i+1 << setw(20) << temperature[i] << endl;
     }
 }
 

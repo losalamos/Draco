@@ -70,7 +70,7 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
 	double heat = specific_heat[mat_zone[zone[cell-1]-1]-1];
 	rho(cell)   = den;
 	temp(cell)  = T;
-	Cv(cell)    = heat;
+	Cv(cell)    = heat * mesh->volume(cell) * den;;
     }
     
   // create Mat_State object
