@@ -27,6 +27,12 @@ AC_DEFUN(AC_DRACO_KCC, [dnl
        STRICTFLAG="--strict"
    fi
 
+   # --one_per flag
+   if test "${enable_one_per:=yes}" = yes ; then
+       # yes there is an extra space before the flag
+       ONEPERFLAG=" --one_per"
+   fi
+
    # optimization level
    if test "${enable_debug:=no}" = yes && \
       test "${with_opt:=0}" != 0 ; then
@@ -42,7 +48,9 @@ AC_DEFUN(AC_DRACO_KCC, [dnl
    fi
 
    # final compiler additions
-   CXXFLAGS="${CXXFLAGS} --one_per"
+   # yes there is no space before the flag
+
+   CXXFLAGS="${CXXFLAGS}${ONEPERFLAG}"
 
    # For version 3.3 of KCC the strict and thread_safe
    # cannot be used together (in general).

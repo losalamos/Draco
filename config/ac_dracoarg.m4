@@ -80,6 +80,14 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
       [  --disable-strict-ansi   turn off strict ansi compliance])
 
    dnl
+   dnl ONE_PER INSTANTIATION FLAG
+   dnl
+
+   dnl defines --enable-one-per
+   AC_ARG_ENABLE(one-per,
+      [  --disable-one-per       turn off --one_per flag])
+
+   dnl
    dnl COMPILER OPTIMZATION LEVEL
    dnl
 
