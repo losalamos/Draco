@@ -32,6 +32,14 @@ using std::ostream;
 template<class MT>
 class Mat_State
 {
+public:
+  // structure for holding the global temperatures between cycles
+    struct Shell
+    {
+	vector<double> temperature;
+	inline Shell(const Mat_State<MT> &);
+    };
+
 private:
   // data which defines the material state
     typename MT::CCSF_double density;
@@ -64,6 +72,21 @@ public:
 
 template<class MT>
 ostream& operator<<(ostream &, const Mat_State<MT> &);
+
+//---------------------------------------------------------------------------//
+// inline functions for Mat_State<MT>::Shell
+//---------------------------------------------------------------------------//
+
+template<class MT>
+inline Mat_State<MT>::Shell::Shell(const Mat_State<MT> &material)
+    : temperature(material.num_cells())
+{
+    Require (temperature.size() == material.num_cells());
+
+  // assign the temperatures to this vector array
+    for (int cell = 1; cell <= temperature.size(); cell++)
+	temperature[cell-1] = material.get_T(cell);
+}
 
 //---------------------------------------------------------------------------//
 // inline functions for Mat_State

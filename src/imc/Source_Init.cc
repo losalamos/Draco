@@ -43,6 +43,9 @@ Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
       nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), ew_vol(mesh),
       ew_ss(mesh), t4_slope(mesh)
 {
+    Require (interface);
+    Require (mesh);
+
   // get values from interface
     evol_ext = interface->get_evol_ext();
     ss_pos   = interface->get_ss_pos();
@@ -325,7 +328,7 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
     Particle_Buffer<Particle<MT> > buffer(mesh, rcon);
 
   // we should not have made any Random numbers yet
-    Require (Global::rn_stream == 0);
+    Require (RNG::rn_stream == 0);
 
   // loop over cells
     for (int cell = 1; cell <= mesh.num_cells(); cell++)
@@ -354,10 +357,10 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 	}
 
   // update the rn_stream constant
-    Global::rn_stream = rcon.get_num();
+    RNG::rn_stream = rcon.get_num();
 
   // a final assertion
-    Ensure (Global::rn_stream == ncentot);
+    Ensure (RNG::rn_stream == ncentot);
 }
 
 //---------------------------------------------------------------------------//

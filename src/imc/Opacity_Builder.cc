@@ -20,6 +20,9 @@ template<class IT>
 Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface, SP<MT> mesh)
     : rho(mesh), temp(mesh), opacity(mesh)
 {
+    Require (mesh);
+    Require (interface);
+
   // assign data members from the interface parser
     zone        = interface->get_zone();
     mat_zone    = interface->get_mat_zone();

@@ -15,8 +15,6 @@ GLOBALSPACE
 // PROBLEM VARIABLE INITIAL DEFINITIONS
 //---------------------------------------------------------------------------//
 
-int rn_stream = 0;
-
 CSPACE
 CSPACE
 

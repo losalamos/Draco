@@ -23,13 +23,13 @@ void Parallel_Builder<MT>::recv_census(const Particle_Buffer<PT> &)
 
 instantiate funcproto PT=Particle<OS_Mesh>, MT=OS_Mesh
 SP<Source<MT> > Parallel_Builder<MT>::send_Source
-(SP<MT>, const Source_Init<MT> &,  const Particle_Buffer<PT> &, 
- SP<Rnd_Control>)
+(SP<MT>, SP<Mat_State<MT> >, SP<Rnd_Control>, const Source_Init<MT> &, 
+ const Particle_Buffer<PT> &)
 
 instantiate funcproto PT=Particle<OS_Mesh>, MT=OS_Mesh
 SP<Source<MT> > Parallel_Builder<MT>::recv_Source
-(SP<MT>, SP<Rnd_Control>, const Particle_Buffer<PT> &)
-						 
+(SP<MT>, SP<Mat_State<MT> >, SP<Rnd_Control>, const Particle_Buffer<PT> &)
+
 CSPACE
 
 //---------------------------------------------------------------------------//

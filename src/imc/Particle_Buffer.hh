@@ -194,6 +194,11 @@ public:
     void asend_buffer(Comm_Buffer &, int) const;
     void post_arecv(Comm_Buffer &, int) const;
     void arecv_buffer(Comm_Buffer &) const;
+
+  // accessor functions
+    int get_dsize() const { return dsize; } 
+    int get_isize() const { return isize; }
+    int get_csize() const { return csize; }
 };
 
 //---------------------------------------------------------------------------//

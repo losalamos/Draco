@@ -39,6 +39,8 @@
 //                modified from get_normal to give the inward normal
 //  9)  6-12-98 : added piecewise-linear sampling to sample_pos member
 //                function
+// 10)  6-15-98 : added vector return operator() to CCVF for getting a CC
+//                vector from a cell
 // 
 //===========================================================================//
 
@@ -125,6 +127,9 @@ public:
       // subscripting
 	inline const T& operator()(int, int) const;
 	inline T& operator()(int, int);
+
+      // getting a CC vector
+	inline vector<T> operator()(int) const;
     };  
 
   // useful typedefs used when working with a mesh
@@ -216,7 +221,7 @@ public:
     int get_bndface(string, int) const;
     inline CCVF_a get_vertices(int, int) const;
     inline vector<double> sample_pos(int, Sprng &) const;
-    inline vector<double> sample_pos(int, Sprng &, vector<double> &, 
+    inline vector<double> sample_pos(int, Sprng &, vector<double>, 
 				     double) const; 
     inline vector<double> sample_pos_on_face(int, int, Sprng &)	const; 
 
@@ -308,6 +313,24 @@ template<class T>
 inline T& OS_Mesh::CCVF<T>::operator()(int dim, int cell)
 {
     return data[dim-1][cell-1];
+}
+
+//---------------------------------------------------------------------------//
+// vector return overload()
+
+template<class T>
+inline vector<T> OS_Mesh::CCVF<T>::operator()(int cell) const
+{
+  // declare return vector
+    vector<T> x;
+    
+  // loop through dimensions and make return vector for this cell
+    for (int i = 0; i < data.size(); i++)
+	x.push_back(data[i][cell-1]);
+
+  // return
+    Ensure (x.size() == data.size());
+    return x;
 }
 
 //---------------------------------------------------------------------------//
@@ -496,7 +519,7 @@ inline vector<double> OS_Mesh::sample_pos(int cell, Sprng &random) const
 // sample the position in a cell given a tilt (or other slope-like function)
 
 inline vector<double> OS_Mesh::sample_pos(int cell, Sprng &random, 
-					  vector<double> &slope, 
+					  vector<double> slope, 
 					  double center_pt) const
 {
   // assign minimums and maximums for cells dimensions

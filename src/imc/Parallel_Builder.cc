@@ -68,7 +68,7 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
     Require (&sinit);
     Require (&mesh);
 
-  // number of cells in the mesh
+  // number of cells in the global (master) mesh
     int num_cells = mesh.num_cells();
 
   // size the partitioning vectors
@@ -222,13 +222,16 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
 
 template<class MT>
 template<class PT> SP<Source<MT> >
-Parallel_Builder<MT>::send_Source(SP<MT> mesh, const Source_Init<MT> &sinit, 
-				  const Particle_Buffer<PT> &buffer,
-				  SP<Rnd_Control> rcon)
+Parallel_Builder<MT>::send_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
+				  SP<Rnd_Control> rcon,
+				  const Source_Init<MT> &sinit, 
+				  const Particle_Buffer<PT> &buffer)
 {
   // check that we are on the host node only
     Require (!node());
     Require (mesh);
+    Require (mat);
+    Require (mesh->num_cells() == mat->num_cells());
 
   // data necessary to build Source on host
     SP<Source<MT> > host_source;
@@ -272,9 +275,9 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, const Source_Init<MT> &sinit,
     }
 
   // make the source
-    host_source = new Source<MT>(volrn, nvol, ew_vol, t4_slope,
-				 ssrn, nss, fss, ew_ss, "census.0", 
-				 nvoltot, nsstot, ncentot, rcon, buffer);
+    host_source = new Source<MT>(volrn, nvol, ew_vol, t4_slope, ssrn, nss, 
+				 fss, ew_ss, "census.0", nvoltot, nsstot, 
+				 ncentot, rcon, buffer, mat); 
 
   // return source
     return host_source;
@@ -285,12 +288,14 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, const Source_Init<MT> &sinit,
 
 template<class MT>
 template<class PT> SP<Source<MT> > 
-Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Rnd_Control> rcon,
+Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Mat_State<MT> > mat, 
+				  SP<Rnd_Control> rcon,
 				  const Particle_Buffer<PT> &buffer)
 {
   // require that we are on an IMC node only
     Require (node());
     Require (mesh);
+    Require (mat);
 
   // declare the source
     SP<Source<MT> > imc_source;
@@ -341,8 +346,8 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Rnd_Control> rcon,
 
   // make the source
     imc_source = new Source<MT>(volrn, nvol, ew_vol, t4_slope, ssrn, nss, 
-				fss, ew_ss, cenfile.str(), 
-				nvoltot, nsstot, ncentot, rcon, buffer);
+				fss, ew_ss, cenfile.str(), nvoltot, nsstot, 
+				ncentot, rcon, buffer, mat);
 
   // return source
     return imc_source;
@@ -485,7 +490,7 @@ void Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit,
     vector<int> nvol(num_cells);
     vector<int> nvol_xtra(num_cells);
     vector<int> streamnum(num_cells);
-    int counter = Global::rn_stream;
+    int counter = RNG::rn_stream;
     for (int cell = 1; cell <= num_cells; cell++)
     {
 	nvol[cell-1] = sinit.get_nvol(cell) / procs_per_cell[cell-1].size(); 
@@ -497,8 +502,8 @@ void Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit,
     }
 
   // update the Global rn_stream counter
-    Global::rn_stream += sinit.get_nvoltot();
-    Check (counter == Global::rn_stream);
+    RNG::rn_stream += sinit.get_nvoltot();
+    Check (counter == RNG::rn_stream);
 
   // loop over processors and make the send info
     int voltot = 0;
@@ -525,7 +530,7 @@ void Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit,
 	    for (int d = 0; d < dimension; d++)
 	    {
 		int ptr               = d * num_cells;
-		t4_send[ptr + cell-1] = sinit.get_t4_slope(d+1, global_cell);
+		t4_send[ptr + cell-1] = sinit.get_t4_slope(d+1, global_cell); 
 	    } 
 
 	  // check to see if we need to add extra sources to this cell on
@@ -650,7 +655,7 @@ void Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit,
     vector<int> nss(num_cells);
     vector<int> nss_xtra(num_cells);
     vector<int> streamnum(num_cells);
-    int counter = Global::rn_stream;
+    int counter = RNG::rn_stream;
     for (int cell = 1; cell <= num_cells; cell++)
     {
 	nss[cell-1] = sinit.get_nss(cell) / procs_per_cell[cell-1].size();
@@ -662,8 +667,8 @@ void Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit,
     }
     
   // update the Global rn_stream counter
-    Global::rn_stream += sinit.get_nsstot();
-    Check (counter == Global::rn_stream);
+    RNG::rn_stream += sinit.get_nsstot();
+    Check (counter == RNG::rn_stream);
 
   // loop over processors and make the send info
     int sstot = 0;
@@ -1279,7 +1284,124 @@ SP<Opacity<MT> > Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
     return_opacity = new Opacity<MT>(sigma);
     return return_opacity;
 }
+
+//---------------------------------------------------------------------------//
+// Mat_State passing interface
+//---------------------------------------------------------------------------//
+// send out the Mat_State and build it on this processor
+
+template<class MT> SP<Mat_State<MT> >
+Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat) 
+{
+  // assure that we are on the host node
+    Require (!node());
     
+  // we must have a local mesh and a global Mat_State
+    Require (mesh);
+    Require (mat.num_cells() == procs_per_cell.size());
+
+  // data necessary to build Mat_State on host
+    SP<Mat_State<MT> > host_mat;
+    typename MT::CCSF_double density(mesh);
+    typename MT::CCSF_double T(mesh);
+
+  // loop over procs and send out the Mat_States
+    for (int np = 0; np < nodes(); np++)
+    {
+      // determine the number of cells on this processor
+	int num_cells = cells_per_proc[np].size();
+
+      // data for sending/receiving Mat_State
+	double *density_send = new double[num_cells];
+	double *T_send       = new double[num_cells];
+
+      // loop over on-proc cells and assign the data	
+	for (int cell = 1; cell <= num_cells; cell++)
+	{
+	  // get the global cell index
+	    int global_cell = cells_per_proc[np][cell-1];
+
+	  // assign the data
+	    density_send[cell-1] = mat.get_rho(global_cell);
+	    T_send[cell-1]       = mat.get_T(global_cell);
+	}
+	
+      // send the Opacity data to the IMC nodes
+	if (np)
+	{
+	    Send (num_cells, np, 37);
+	    Send (density_send, num_cells, np, 38);
+	    Send (T_send, num_cells, np, 39);
+	}
+	else
+	{
+	  // build the host-processor CCSFs
+	 
+	  // check to make sure the local mesh is the right size
+	    Check (mesh->num_cells() == num_cells);
+
+	  // assign the data
+	    for (int cell = 1; cell <= num_cells; cell++)
+	    {
+		density(cell) = density_send[cell-1];
+		T(cell)       = T_send[cell-1];
+	    }
+	}
+
+      // delete dynamic allocation
+	delete [] density_send;
+	delete [] T_send;
+    }
+
+  // make and return the Mat_State to the host
+    host_mat = new Mat_State<MT>(density, T);
+    Ensure (host_mat->num_cells() == mesh->num_cells());
+    return host_mat;
+}
+
+//---------------------------------------------------------------------------//
+// receive the Mat_State object
+
+template<class MT> SP<Mat_State<MT> > 
+Parallel_Builder<MT>::recv_Mat(SP<MT> mesh)
+{
+  // insure that we are on an IMC-node and that we have a Mesh
+    Require (node());
+    Require (mesh);
+
+  // declare the return Mat_State
+    SP<Mat_State<MT> > imc_mat;
+    typename MT::CCSF_double density(mesh);
+    typename MT::CCSF_double T(mesh);
+
+  // get the num_cells from the host
+    int num_cells;
+    Recv (num_cells, 0, 37);
+    Check (num_cells == mesh->num_cells());
+    
+  // now receive the Mat_State data from the host
+    double *density_recv = new double[num_cells];
+    double *T_recv       = new double[num_cells];
+    Recv (density_recv, num_cells, 0, 38);
+    Recv (T_recv, num_cells, 0, 39);
+
+  // assign the CCSFs
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	density(cell) = density_recv[cell-1];
+	T(cell)       = T_recv[cell-1];
+    }
+
+  // release the dynamic storage
+    delete [] density_recv;
+    delete [] T_recv;
+
+  // build and return the Mat_state
+    imc_mat = new Mat_State<MT>(density, T);
+    Ensure (imc_mat->num_cells() == num_cells);
+    return imc_mat;
+}
+
 CSPACE
 
 //---------------------------------------------------------------------------//

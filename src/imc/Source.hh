@@ -23,6 +23,7 @@
 #include "imc/Names.hh"
 #include "imc/Particle.hh"
 #include "imc/Particle_Buffer.hh"
+#include "imc/Mat_State.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <iostream>
@@ -81,6 +82,9 @@ public:
   // Particle Buffer
     Particle_Buffer<PT> buffer;
 
+  // Material State
+    SP<Mat_State<MT> > material;
+
 public:
   // constructor
     Source(typename MT::CCSF_int &, typename MT::CCSF_int &,
@@ -88,7 +92,7 @@ public:
 	   typename MT::CCSF_int &, typename MT::CCSF_int &, 
 	   typename MT::CCSF_int &, typename MT::CCSF_double &,
 	   string, int, int, int, SP<Rnd_Control>, 
-	   const Particle_Buffer<PT> &);
+	   const Particle_Buffer<PT> &, SP<Mat_State<MT> >);
 
   // required services for Source
     SP<PT> get_Source_Particle(double); 

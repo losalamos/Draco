@@ -32,8 +32,6 @@ GLOBALSPACE
 // PROBLEM VARIABLES
 //---------------------------------------------------------------------------//
 
-extern int rn_stream;
-
 CSPACE
 CSPACE
 

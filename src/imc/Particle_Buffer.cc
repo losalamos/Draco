@@ -18,7 +18,7 @@ IMCSPACE
 
 template<class PT>
 template<class MT>
-Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon)
+Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon) 
 {
     
   // determine size of double info from Particles;

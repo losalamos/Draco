@@ -22,6 +22,7 @@ using std::ios;
 using std::cos;
 using std::sin;
 using std::sqrt;
+using std::pow;
 using std::endl;
 using std::setiosflags;
 using std::setw;
@@ -44,11 +45,12 @@ Source<MT, PT>::Source(typename MT::CCSF_int &vol_rnnum_,
 		       string title,
 		       int nvoltot_, int nsstot_, int ncentot_,
 		       SP<Rnd_Control> rcon_, 
-		       const Particle_Buffer<PT> &buffer_) 
+		       const Particle_Buffer<PT> &buffer_,
+		       SP<Mat_State<MT> > mat_state) 
     : vol_rnnum(vol_rnnum_), nvol(nvol_), ew_vol(ew_vol_), t4_slope(t4_),
       ss_rnnum(ss_rnnum_), nss(nss_), fss(fss_), ew_ss(ew_ss_),
       census(title.c_str(), ios::in), nvoltot(nvoltot_), nsstot(nsstot_),
-      ncentot(ncentot_), rcon(rcon_), buffer(buffer_)
+      ncentot(ncentot_), rcon(rcon_), buffer(buffer_), material(mat_state) 
 {
   // some assertions
     Check (vol_rnnum.get_Mesh() == nvol.get_Mesh());
@@ -189,8 +191,10 @@ SP<PT> IMC::Source<MT, PT>::get_evol(double delta_t)
   // get the random number object
     Sprng rand = rcon->get_rn();
 
-  // sample location
-    vector<double> r = nvol.get_Mesh().sample_pos(current_cell, rand);
+  // sample location using tilt
+    double t4 = pow(material->get_T(current_cell), 4);
+    vector<double> r = nvol.get_Mesh().
+	sample_pos(current_cell, rand, t4_slope(current_cell), t4);
 
   // sample particle direction
     vector<double> omega = nvol.get_Mesh().get_Coord().
@@ -211,31 +215,22 @@ SP<PT> IMC::Source<MT, PT>::get_evol(double delta_t)
 //---------------------------------------------------------------------------//
 // read census particle
 
-// template<class MT, class PT>
-// SP<PT> IMC::Source<MT, PT>::get_census()
-// {
-
-//   // read census particle
-//     vector <double> r;
-//     vector <double> omega;
-//     double ew;
-//     int cell;
-//     double fraction;
-
-//   // time remaining is the entire time step
-//     double time_left = delta_t;
-
-//   // instantiate particle to return
-//     SP<Particle<MT> > cen_particle(r, omega, ew, cell, rand, 
-// 				   fraction, time_left);
-
-//     return census_particle;
-// }
-
 template<class MT, class PT>
 SP<PT> Source<MT, PT>::get_census(double delta_t)
 {
     SP<PT> census_particle;
+
+  // read a Census_Buffer from the census file
+    SP<Particle_Buffer<PT>::Census_Buffer> cenpart;
+    cenpart = buffer.read_census(census);
+    Check (cenpart);
+
+  // make a Particle from the Census buffer
+    census_particle = new PT(cenpart->r, cenpart->omega, cenpart->ew,
+			     cenpart->cell, cenpart->random,
+			     cenpart->fraction, delta_t);
+
+  // return the particle
     return census_particle;
 }
 

@@ -28,6 +28,8 @@
 #include "imc/Source_Init.hh"
 #include "imc/Particle_Buffer.hh"
 #include "imc/Source.hh"
+#include "imc/Mat_State.hh"
+#include "rng/Random.hh"
 #include "c4/global.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
@@ -39,6 +41,7 @@ IMCSPACE
 // draco stuff
 using C4::node;
 using C4::nodes;
+using RNG::Rnd_Control;
 
 // std stuff
 using std::vector;
@@ -97,13 +100,6 @@ public:
   // constructor for host-node
     Parallel_Builder(const MT &, const Source_Init<MT> &);
 
-  // source functions
-    template<class PT> SP<Source<MT> > 
-    send_Source(SP<MT>, const Source_Init<MT> &, const Particle_Buffer<PT> &,
-		SP<Rnd_Control>); 
-    template<class PT> SP<Source<MT> > 
-    recv_Source(SP<MT>, SP<Rnd_Control>, const Particle_Buffer<PT> &); 
-
   // Mesh passing functionality
     void send_Mesh(const MT &);
     SP<MT> recv_Mesh();
@@ -112,13 +108,25 @@ public:
     void send_Opacity(const Opacity<MT> &);
     SP<Opacity<MT> > recv_Opacity(SP<MT>);
 
+  // Mat State passing functionality
+    SP<Mat_State<MT> > send_Mat(SP<MT>, const Mat_State<MT> &);
+    SP<Mat_State<MT> > recv_Mat(SP<MT>);
+
+  // source passing functionality
+    template<class PT> SP<Source<MT> > 
+    send_Source(SP<MT>, SP<Mat_State<MT> >, SP<Rnd_Control>, 
+		const Source_Init<MT> &, const Particle_Buffer<PT> &); 
+    template<class PT> SP<Source<MT> > 
+    recv_Source(SP<MT>, SP<Mat_State<MT> >, SP<Rnd_Control>,
+		const Particle_Buffer<PT> &); 
+
   // Mesh mapping functionality
     inline int master_cell(int icell, int proc) const;
     inline int imc_cell(int mcell, int proc) const;
     inline vector<int> get_cells(int proc) const;
     inline vector<int> get_procs(int mcell) const;
     int num_cells(int proc) const { return cells_per_proc[proc].size(); }
-    int num_procs(int mcell) const { return procs_per_cell[mcell-1].size(); }    
+    int num_procs(int mcell) const { return procs_per_cell[mcell-1].size(); }
 };
 
 //---------------------------------------------------------------------------//

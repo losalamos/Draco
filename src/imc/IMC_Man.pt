@@ -1,15 +1,22 @@
 //----------------------------------*-C++-*----------------------------------//
-// IMCTEST_Man.cc
+// IMC_Man.pt
 // Thomas M. Evans
-// Wed Jun  3 10:36:11 1998
+// Mon Jun 15 17:03:01 1998
 //---------------------------------------------------------------------------//
-// @> IMCTEST_Man class implementation file.
+// @> Instantialyzer for template class IMC_Man
 //---------------------------------------------------------------------------//
 
-#include "imc/IMCTEST_Man.hh"
+#include "imc/OS_Mesh.hh"
+#include "imc/OS_Builder.hh"
+#include "imc/OS_Interface.hh"
+#include "IMC_Man.cc"
 
+IMCSPACE
 
+instantiate class IMC_Man<OS_Mesh, OS_Builder, OS_Interface>
+
+CSPACE
 
 //---------------------------------------------------------------------------//
-//                              end of IMCTEST_Man.cc
+//                              end of IMCTEST_Man.pt
 //---------------------------------------------------------------------------//
