@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Mesh_Operations.hh"
+#include "mc/Parallel_Data_Operator.hh"
 #include "c4/global.hh"
 #include <cmath>
 #include <iostream>
@@ -17,31 +18,35 @@
 namespace rtt_imc
 {
 
-using rtt_mc::OS_Mesh;
-using rtt_mc::Coord_sys;
-using rtt_rng::Sprng;
-using rtt_dsxx::SP;
-using std::vector;
-
 //===========================================================================//
 // OS_MESH SPECIALIZATION IMPLEMENTATION AND INTERFACE
 //===========================================================================//
+
+using rtt_mc::OS_Mesh;
 
 //---------------------------------------------------------------------------//
 // CONSTRUCTOR
 //---------------------------------------------------------------------------//
 
-Mesh_Operations<OS_Mesh>::Mesh_Operations(SP_Mesh mesh, SP_Mat_State state,
-					  SP_Topology topology)
+Mesh_Operations<OS_Mesh>::Mesh_Operations(SP_Mesh mesh, 
+					  SP_Mat_State state,
+					  SP_Topology topology,
+					  SP_Comm_Patterns comm_patterns)
     : t4_slope(mesh)
 {
     Require(mesh->num_cells() == topology->num_cells(C4::node()));
 
     // build the T^4 data based upon the topology
     if (topology->get_parallel_scheme() == "replication")
+    {
+	Check (!(*comm_patterns));
 	build_replication_T4_slope(state);
+    }
     else if (topology->get_parallel_scheme() == "DD")
-	build_DD_T4_slope(state, topology);
+    {
+	Check (*comm_patterns);
+	build_DD_T4_slope(state, topology, comm_patterns);
+    }
     else
     {
 	Insist(0, "We don't have general support yet!");
@@ -55,8 +60,12 @@ Mesh_Operations<OS_Mesh>::Mesh_Operations(SP_Mesh mesh, SP_Mat_State state,
 Mesh_Operations<OS_Mesh>::sf_double 
 Mesh_Operations<OS_Mesh>::sample_pos_tilt(int cell, 
 					  double T, 
-					  Sprng &random) const
+					  rtt_rng::Sprng &random) const
 {    
+    using rtt_mc::Coord_sys;
+    using rtt_dsxx::SP;
+    using std::vector;
+
     // set coord system and mesh
     const OS_Mesh &mesh = t4_slope.get_Mesh();
     SP<Coord_sys> coord = t4_slope.get_Mesh().get_SPCoord();
@@ -72,10 +81,9 @@ Mesh_Operations<OS_Mesh>::sample_pos_tilt(int cell,
     }
 
     // use coord_sys to sample the location
-    double T4             = std::pow(T, 4);
-    vector<double> slopes = t4_slope(cell);
-    vector<double> r = 
-	coord->sample_pos(vmin, vmax, random, slopes, T4);
+    double T4            = std::pow(T, 4);
+    vector<double> slope = t4_slope(cell);
+    vector<double> r     = coord->sample_pos(vmin, vmax, random, slope, T4);
 
     // return position vector
     return r;
@@ -175,6 +183,173 @@ void Mesh_Operations<OS_Mesh>::build_replication_T4_slope(SP_Mat_State state)
 
 		double t4_lo_edge = t4 - low_slope  * 0.5 * 
 		    mesh.dim(coord, cell);
+		double t4_hi_edge = t4 + high_slope * 0.5 *
+		    mesh.dim(coord, cell);
+
+		t4_slope(coord, cell) = (t4_hi_edge - t4_lo_edge) / 
+		    mesh.dim(coord, cell);
+	    }
+	}
+    }
+}
+
+//---------------------------------------------------------------------------//
+// build the T4 slopes in a full DD topology
+
+void Mesh_Operations<OS_Mesh>::build_DD_T4_slope(SP_Mat_State state,
+						 SP_Topology topology,
+						 SP_Comm_Patterns com_pat)
+{
+    Require(state->num_cells() == t4_slope.get_Mesh().num_cells());
+
+    // define the boundary cell fields that we need to perform the
+    // calculation 
+    sf_double bc_temp;
+    vf_double bc_dim;;
+    
+    int num_cells = topology->num_cells(C4::node());
+    Check (num_cells == state->num_cells());
+
+    // reference to the mesh
+    const OS_Mesh &mesh = t4_slope.get_Mesh();
+
+    // make a Parallel_Data_Operator for performing gathers on boundary cells 
+    // with local data arrays
+    rtt_mc::Parallel_Data_Operator par_op(topology);
+
+    // get the temperatures on each boundary cell
+    {
+	// local temperatures
+	sf_double local_temp(num_cells);
+	for (int cell = 1; cell <= num_cells; cell++)
+	    local_temp[cell-1] = state->get_T(cell);
+
+	// fill the boundary cells with temperatures
+	par_op.gather_bnd_cell_data(com_pat, local_temp, bc_temp);
+    }
+    Check (bc_temp.size() == topology->get_boundary_cells(C4::node()));
+
+    // get the widths of each boundary cell
+    {
+	// size the bc_dim vector to the number of dimensions in this problem
+	bc_dim.resize(t4_slope.size());
+
+	// loop through coordinates and fill up width data
+	for (int coord = 1; coord <= bc_dim.size(); coord++)
+	{
+	    // local widths
+	    sf_double local_dim(num_cells);
+	    for (int cell = 1; cell <= num_cells; cell++)
+		local_dim[cell-1] = mesh.dim(coord, cell);
+
+	    // fill up the boundary cells with dimension data
+	    par_op.gather_bnd_cell_data(com_pat, local_dim, bc_dim[coord-1]);
+	    Check (bc_dim[coord-1].size() ==
+		   topology->get_boundary_cells(C4::node()));
+	}
+    }
+    Check (bc_dim.size() == mesh.get_Coord().get_dim());
+
+    // T4 values used in calculation
+    double t4_low;
+    double t4_high;
+    double dim_low;
+    double dim_high;
+    double delta_r;
+
+    // sweep through cells and build T4 slopes
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	// calculate 4th power of cell temperature
+	double t4 = std::pow(state->get_T(cell), 4);
+
+	// sweep through coordinates
+	for ( int coord = 1; coord <= t4_slope.size(); coord++)
+	{
+	    Check(t4_slope.size(coord) == num_cells);
+	    
+	    // get face indices --> these face indices are OS_Mesh dependent
+	    int face_low  = 2*coord - 1;
+	    int face_high = 2*coord;
+	    int cell_low  = mesh.next_cell(cell, face_low);
+	    int cell_high = mesh.next_cell(cell, face_high);
+
+	    // calculate "vanilla" t4 high and low side values, in
+	    // particular, if the cell has a negative number then it is a
+	    // boundary cell and we need to get its temperature value from
+	    // the boundary temperature field
+	    if (cell_low < 0)
+	    {
+		t4_low  = std::pow(bc_temp[-cell_low - 1], 4);
+		dim_low = bc_dim[coord-1][-cell_low - 1];
+	    }
+	    else if (cell_low > 0)
+	    {
+		t4_low  = std::pow(state->get_T(cell_low), 4);
+		dim_low = mesh.dim(coord, cell_low); 
+	    }
+
+	    if (cell_high < 0)
+	    {
+		t4_high  = std::pow(bc_temp[-cell_high - 1], 4);
+		dim_high = bc_dim[coord-1][-cell_high - 1];
+	    }
+	    else if (cell_high > 0)
+	    {
+		t4_high  = std::pow(state->get_T(cell_high), 4);
+		dim_high = mesh.dim(coord, cell_high);
+	    }
+
+	    // calculate the T4 slopes
+
+	    // set slope to zero if either side is radiatively reflecting
+	    if (cell_low == cell || cell_high == cell)
+		t4_slope(coord, cell) = 0.0;
+
+	    // set slope to zero if both sides are radiatively vacuum
+	    else if (cell_low == 0 && cell_high == 0)
+		t4_slope(coord, cell) = 0.0;
+
+	    // if low side is vacuum, use only two t^4's
+	    else if (cell_low == 0)
+	    {
+		delta_r = 0.5 * (mesh.dim(coord, cell) + dim_high);
+
+		t4_slope(coord, cell) = (t4_high - t4) / delta_r;
+
+		// make sure slope isn't too large so as to give a negative
+		// t4_low.  If so, limit slope so t4_low is zero.
+		t4_low = t4 - t4_slope(coord, cell) * 0.5 * 
+		    mesh.dim(coord, cell); 
+		if (t4_low < 0.0)
+		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell); 
+	    }
+
+	    // if high side is vacuum, use only two t^4's
+	    else if (cell_high == 0)
+	    {
+		delta_r = 0.5 * (mesh.dim(coord, cell) + dim_low);
+		t4_slope(coord, cell) = (t4 - t4_low) / delta_r;
+
+		// make sure slope isn't too large so as to give a negative
+		// t4_high.  If so, limit slope so t4_high is zero.
+		t4_high = t4 + t4_slope(coord,cell) * 0.5 * 
+		    mesh.dim(coord, cell); 
+		if (t4_high < 0.0)
+		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell);
+	    }
+
+	    // no conditions on calculating slope; just do it
+	    else
+	    {
+		double low_slope = (t4 - t4_low) /
+		    (0.5 * (dim_low + mesh.dim(coord, cell)) );
+
+		double high_slope = (t4_high - t4) /
+		    (0.5 * (mesh.dim(coord, cell) + dim_high) );
+
+		double t4_lo_edge = t4 - low_slope  * 0.5 * 
+		    mesh.dim(coord, cell); 
 		double t4_hi_edge = t4 + high_slope * 0.5 *
 		    mesh.dim(coord, cell);
 

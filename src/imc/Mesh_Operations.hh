@@ -15,10 +15,13 @@
 #include "Mat_State.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/Topology.hh"
+#include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>
+#include <map>
+#include <utility>
 
 namespace rtt_imc
 {
@@ -76,6 +79,7 @@ class Mesh_Operations
     typedef rtt_dsxx::SP<rtt_mc::OS_Mesh>             SP_Mesh;
     typedef rtt_dsxx::SP<rtt_mc::Topology>            SP_Topology;
     typedef rtt_dsxx::SP<Mat_State<rtt_mc::OS_Mesh> > SP_Mat_State;
+    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>       SP_Comm_Patterns;
     
   public:
     /*! 
@@ -87,8 +91,10 @@ class Mesh_Operations
      * \param mesh rtt_dsxx::SP to a mesh
      * \param state rtt_dsxx::SP to a Mat_State
      * \param topology rtt_dsxx::SP to a Topology
+     * \param comm_patterns rtt_dsxx::SP to a Comm_Patterns object
      */
-    Mesh_Operations(SP_Mesh mesh, SP_Mat_State state, SP_Topology topology)
+    Mesh_Operations(SP_Mesh mesh, SP_Mat_State state, SP_Topology topology,
+		    SP_Comm_Patterns comm_patterns)
     {/*...*/}
 
     /*!
@@ -117,22 +123,26 @@ class Mesh_Operations<rtt_mc::OS_Mesh>
   private:
     // typedefs
     typedef std::vector<double>                       sf_double;
+    typedef std::vector<std::vector<double> >         vf_double;
     typedef rtt_mc::OS_Mesh::CCVF<double>             ccvf_double;
     typedef rtt_dsxx::SP<rtt_mc::OS_Mesh>             SP_Mesh;
     typedef rtt_dsxx::SP<rtt_mc::Topology>            SP_Topology;
     typedef rtt_dsxx::SP<Mat_State<rtt_mc::OS_Mesh> > SP_Mat_State;
+    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>       SP_Comm_Patterns;
 
   private:
     // T^4 slope data
     ccvf_double t4_slope;
 
     // IMPLEMENTATION
+
+    // Calculate T^4 slope values in different topologies.
     void build_replication_T4_slope(SP_Mat_State);
-    void build_DD_T4_slope(SP_Mat_State state, SP_Topology topology) {}
+    void build_DD_T4_slope(SP_Mat_State, SP_Topology, SP_Comm_Patterns);
 
   public:
     // Constructor.
-    Mesh_Operations(SP_Mesh mesh, SP_Mat_State state, SP_Topology topology);
+    Mesh_Operations(SP_Mesh, SP_Mat_State, SP_Topology, SP_Comm_Patterns);
 
     // Sample particle position using tilt.
     sf_double sample_pos_tilt(int, double, rtt_rng::Sprng &) const; 
