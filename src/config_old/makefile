@@ -12,6 +12,16 @@
 # @> options. 
 ###############################################################################
 
+# Get support for parallel makes configured.
+
+ifndef nj
+nj	:= 1
+endif
+
+subnj	:= -j $(nj)
+
+# Now setup the suffixes we are prepared to work with.
+
 .SUFFIXES:
 .SUFFIXES: .cpp .cc .o
 
@@ -65,6 +75,7 @@ endif
 
 DS++_LIB	= -L$(SRC_TOP)/ds++ -lds++_$(env)
 
+UTIL_LIB	= -L$(SRC_TOP)/util -lutil_$(env)
 GEOM_LIB	= -L$(SRC_TOP)/geom -lgeom_$(env)
 MESH_LIB	= -L$(SRC_TOP)/mesh -lmesh_$(env)
 
@@ -179,6 +190,9 @@ LINK_LIBS	+= $(MESH_LIB)
 endif
 ifeq ($(need_geom),yes)
 LINK_LIBS	+= $(GEOM_LIB)
+endif
+ifeq ($(need_util),yes)
+LINK_LIBS	+= $(UTIL_LIB)
 endif
 ifeq ($(need_namelist),yes)
 LINK_LIBS	+= $(NML_LIBS)
