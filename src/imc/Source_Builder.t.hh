@@ -63,6 +63,11 @@ void Source_Builder<MT,FT,PT>::calc_source_energies(
 
     // calc surface source energy per cell, total
     calc_ess(opacity);
+
+    // set the surface source temperature in the Source object so, in the
+    // case of multigroup frequency treatment, the Source can sample
+    // frequency group from a Planckian.
+
 }
 
 //---------------------------------------------------------------------------//
@@ -165,6 +170,7 @@ void Source_Builder<MT,FT,PT>::calc_ess(const Opacity<MT,FT> &opacity)
     using rtt_mc::global::a;
     using rtt_mc::global::c;
     using std::vector;
+    using rtt_imc::global::Type_Switch;
 
     // reset esstot
     esstot = 0.0;
@@ -203,10 +209,15 @@ void Source_Builder<MT,FT,PT>::calc_ess(const Opacity<MT,FT> &opacity)
 		    ess.get_Mesh().face_area
 		    (local_cell, ss_face_in_cell(local_cell)) * 
 		    pow(ss_temp[ss],4) * 
-		    opacity.get_integrated_norm_Planck(local_cell) * delta_t;
-		
+		    opacity.get_integrated_norm_Planck(ss_temp[ss]) * delta_t;
+
 		// accumulate esstot
 		esstot += ess(local_cell);
+
+		// set the surface source temperature in the source object's
+		// Frequency_Sampling_Data struct
+		set_ss_temperature_in_source<Type_Switch<FT>::Type>(
+		    Type_Switch<FT>(), ss_temp[ss], local_cell);
 	    }
 	}
     }

@@ -15,6 +15,7 @@
 #include "Mat_State_Builder.hh"
 #include "cdi/CDI.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <vector>
 
 namespace rtt_imc

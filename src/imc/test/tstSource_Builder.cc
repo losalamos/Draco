@@ -422,6 +422,24 @@ void gray_source_replication_test()
 //---------------------------------------------------------------------------//
 // build source test for a full replication topology --> tests
 // Rep_Source_Builder --> Multigroup_Frequency specialization
+//
+//  y
+//
+//  ^
+//  |     
+// 3|-----|-----|-----|
+//  |4    |5    |6    | <- SS_temp = 0
+//  |T=20 |T=20 |T=20 | <-
+// 1|-----|-----|-----| <-
+//  |1    |2    |3    | <- SS_temp = 0
+//  |T=10 |T=10 |T=10 | <-
+//-1|-----|-----|-----|--> x
+// -1     0     1     2
+//   ^^^^^^^^^^^
+//   |||||||||||
+//   SS_temp = 20
+//
+
 
 void mg_source_replication_test()
 {
@@ -456,8 +474,16 @@ void mg_source_replication_test()
     SP<Mat_State<OS_Mesh> >  mat       = ob.build_Mat_State(mesh);
     SP<Opacity<OS_Mesh,MG> > opacity   = ob.build_Opacity(mesh, frequency, mat);
 
-    if (frequency->is_gray())        ITFAILS;
-    if (!frequency->is_multigroup()) ITFAILS;
+    if (frequency->is_gray())             ITFAILS;
+    if (!frequency->is_multigroup())      ITFAILS;
+    if (frequency->get_num_groups() != 3) ITFAILS;
+
+    // double check that the groups have the same opacity, if they should
+    if (constant_group_opacities && frequency->get_num_groups() > 1)
+	for (int i = 1; i <= mesh->num_cells(); i++)
+	    for (int g = 2; g <= frequency->get_num_groups(); g++)
+		if (!soft_equiv(opacity->get_sigma_abs(i,g),
+				opacity->get_sigma_abs(i,g-1)) )   ITFAILS;
 
     // calculate Planck integrals
     vector<double> sigma_Planck(6, 0.0);
@@ -476,6 +502,12 @@ void mg_source_replication_test()
 	
 	norm_Planck[i-1] = rtt_cdi::CDI::integratePlanckSpectrum(0.01, 100.0, 
 								 T);
+
+	// check that the total integral matches the sum of group integrals
+	// when all groups have the same opacity.
+	if (!(constant_group_opacities ? 
+	      soft_equiv(norm_Planck[i-1] * opacity->get_sigma_abs(i,1), 
+			 sigma_Planck[i-1]) : true))   ITFAILS;
     }
 
     // build a Rep_Source Builder
@@ -516,17 +548,17 @@ void mg_source_replication_test()
     // census numbers; however, because there is no combing, they are
     // equivalent to the final census numbers
     vector<int> global_nvol(mesh->num_cells(), 1);
-    vector<int> global_ncen(mesh->num_cells(), 153);
+    vector<int> global_ncen(mesh->num_cells(), 160);
     vector<int> global_nss(mesh->num_cells(), 0);
     {
-	global_ncen[3] = 116;
-	global_ncen[4] = 116;
-	global_ncen[5] = 116;
+	global_ncen[3] = 122;
+	global_ncen[4] = 122;
+	global_ncen[5] = 122;
 	global_nvol[3] = 2;
 	global_nvol[4] = 2;
 	global_nvol[5] = 2;
-	global_nss[0]  = 92;
-	global_nss[1]  = 92;
+	global_nss[0]  = 73;
+	global_nss[1]  = 73;
     }
 
     // local source numbers per processor per species
@@ -648,7 +680,7 @@ void mg_source_replication_test()
     // calculated sums of surface source and volume ids
     vector<int> calc_vol_rn_sum(mesh->num_cells(), 0);
     vector<int> calc_ss_rn_sum(mesh->num_cells(), 0);
-    
+
     // get surface sources
     for (int i = 0; i < source->get_nsstot(); i++)
     {
@@ -737,7 +769,7 @@ void mg_source_replication_test()
 
     // check to hand calculations of same energies
     double hand_vol = 12.747095;
-    double hand_ss  = 325.909753;
+    double hand_ss  = 248.280745;
     double hand_cen = 1436.471652;
 
     if (fabs(vol_ew - hand_vol) > 1.e-4 * hand_vol) ITFAILS;

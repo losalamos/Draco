@@ -418,10 +418,11 @@ Source<MT,FT,PT>::SP_MG_PT Source<MT,FT,PT>::make_ss_particle(
     int group   = 0;
     int counter = 0;
     double freq = 0.0;
+    double tss  = freq_samp_data.ss_temperature(cell);
 
     while (group == 0)
     {
-	freq   = sample_planckian_frequency(random, material->get_T(cell));
+	freq   = sample_planckian_frequency(random, tss);
 	group  = opacity->get_Frequency()->find_group_given_a_freq(freq);
 
 	// advance counter
@@ -429,6 +430,9 @@ Source<MT,FT,PT>::SP_MG_PT Source<MT,FT,PT>::make_ss_particle(
 
 	Insist (counter < 100, "Unable to sample group.");
     }
+
+    Check (group >  0);
+    Check (group <= opacity->get_Frequency()->get_num_groups());
 
     SP_MG_PT particle(new MG_PT(r, omega, ew, cell, random, group,
 				fraction, time_left, PT::SURFACE_SOURCE));
@@ -509,8 +513,8 @@ Source<MT,FT,PT>::SP_MG_PT Source<MT,FT,PT>::make_vol_particle(
     // sample from opacity weighted Planckian cdf
     else
     {
-	// get the group index
-	group = sample_bin_from_discrete_cdf(
+	// get the group index (add 1 since return value is in [0,G-1])
+	group = 1 + sample_bin_from_discrete_cdf(
 	    random, opacity->get_emission_group_cdf(cell));
 
 	Check (group > 0);

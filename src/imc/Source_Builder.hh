@@ -142,9 +142,12 @@ template<class MT> class Multigroup_Particle;
 // 3) 24 Aug 2000 : added capability for the random number stream ID's to
 //                  wrap around 2e9.
 // 4) 31-JUL-2001 : changed mod_with_2e9 to INTEGER_MODULO_1E9 from rtt_mc
-// 4) 07-JAN-2002 : moved constructor to header file so that automatic
+// 5) 07-JAN-2002 : moved constructor to header file so that automatic
 //                  instantiation will work; updated to work with new
 //                  Particle_Stack 
+// 6) 18-MAR-2002 : added set functions to pass ss_temperature to Source so
+//                  the frequency is properly sampled for multigroup surface
+//                  source particles.
 //===========================================================================//
 
 template<class MT, class FT, class PT>
@@ -255,6 +258,19 @@ class Source_Builder
 	Multigroup_Frequency, const double, const sf_double &,
 	const sf_double &, const double, int, 
 	const rtt_rng::Sprng &);
+    
+    // Set the surface source temperature in the Source Object's
+    // Frequency_Sampling_Data struct for Gray_Frequency (NULL OP).
+    template<class Stop_Explicit_Instantiation>
+    inline void set_ss_temperature_in_source(
+	rtt_imc::global::Type_Switch<Gray_Frequency>, double, int);
+
+    // Set the surface source temperature in the Source Object's
+    // Frequency_Sampling_Data struct for Multigroup_Frequency.
+    template<class Stop_Explicit_Instantiation>
+    inline void set_ss_temperature_in_source(
+	rtt_imc::global::Type_Switch<Multigroup_Frequency>, double, int);
+
 
   protected:
     // >>> DATA USED BY ALL SOURCE BUILDERS
@@ -610,6 +626,43 @@ void Source_Builder<MT,FT,PT>::calc_prob_Planck_emission(
     // calculate the probability of straight Planckian emission in a cell
     freq_samp_data.prob_of_straight_Planck_emission(cell) = evol_add / 
 	evol(cell);
+}
+
+//---------------------------------------------------------------------------//
+// Set the surface source temperature in the Source Object's
+// Frequency_Sampling_Data struct for Gray_Frequency
+
+template<class MT, class FT, class PT>
+template<class Stop_Explicit_Instantiation>
+void Source_Builder<MT,FT,PT>::set_ss_temperature_in_source(
+    rtt_imc::global::Type_Switch<Gray_Frequency>,
+    double tss,
+    int    cell)
+{
+    // NULL OP FOR GRAY
+}
+
+//---------------------------------------------------------------------------//
+// Set the surface source temperature in the Source Object's
+// Frequency_Sampling_Data struct for Multigroup_Frequency.
+
+template<class MT, class FT, class PT>
+template<class Stop_Explicit_Instantiation>
+void Source_Builder<MT,FT,PT>::set_ss_temperature_in_source(
+    rtt_imc::global::Type_Switch<Multigroup_Frequency>,
+    double tss,
+    int    cell)
+{
+    using rtt_imc::global::Type_Switch;
+
+    Check (typeid(FT) == typeid(Multigroup_Frequency));
+
+    Check (cell > 0);
+    Check (cell <= freq_samp_data.ss_temperature.size());
+    Check (tss >= 0.0);
+
+    // set the surface source temperature
+    freq_samp_data.ss_temperature(cell) = tss;
 }
 
 } // end namespace rtt_imc

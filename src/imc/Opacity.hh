@@ -15,6 +15,7 @@
 #include "Frequency.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "cdi/CDI.hh"
 #include <iostream>
 
 namespace rtt_imc 
@@ -58,6 +59,9 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) original
+// 1) 18 Mar 2002 : Added overloaded function to call CDI's static Planck
+//                  integrator with a temperature instead of a cell
+//                  index.
 // 
 //===========================================================================//
 
@@ -130,6 +134,9 @@ class Opacity<MT, Gray_Frequency>
 
     // Get integrated normalized Planck function in a cell (unitless).
     double get_integrated_norm_Planck(int cell) const { return 1.0; }
+
+    // Get integrated normalized Planck function at temperature T.
+    double get_integrated_norm_Planck(double T) const { return 1.0; }
 
     // >>> FLECK AND CUMMINGS OPACITY OPERATIONS
 
@@ -273,6 +280,9 @@ class Opacity<MT, Multigroup_Frequency>
     // Get integrated normalized Planck function in a cell (unitless).
     inline double get_integrated_norm_Planck(int cell) const;
 
+    // Get integrated normalized Planck function for a temperature T.
+    inline double get_integrated_norm_Planck(double T) const;
+
     // Get emission group Cumulative Distribution Function in a cell.
     inline sf_double get_emission_group_cdf(int) const;
 
@@ -384,6 +394,37 @@ double Opacity<MT,Multigroup_Frequency>::get_integrated_norm_Planck(
     Require (cell > 0 && cell <= num_cells());
 
     return integrated_norm_planck(cell);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return integrated normed Planck at temp T for the multigroup case.
+  
+ * Return the integral over frequency of the normalized Planckian at
+ * temperature T, b(T).  The integral is evaluated from the lowest frequency
+ * group boundary to the highest.  Since the integral of b(T) from 0 to
+ * infinity is 1, this multigroup integral will be <= 1.
+ *
+ * \param T temperature at which normalized Planckian is evaluated
+ *
+ */
+template<class MT>
+double Opacity<MT,Multigroup_Frequency>::get_integrated_norm_Planck(
+    double T) const
+{
+    Require (T >= 0.0);
+    Require (frequency);
+    Require (frequency->is_multigroup());
+
+    double integrated_planck = rtt_cdi::CDI::integratePlanckSpectrum(
+	frequency->get_group_boundaries().front(),
+	frequency->get_group_boundaries().back(),
+	T);
+
+    Check (integrated_planck >= 0.0);
+    Check (integrated_planck <= 1.0);
+
+    return integrated_planck;
 }
 
 //---------------------------------------------------------------------------//

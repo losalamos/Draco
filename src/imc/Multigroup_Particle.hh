@@ -347,7 +347,7 @@ void Multigroup_Particle<MT>::effective_scatter(const MT         &mesh,
 {
     using rtt_mc::sampler::sample_bin_from_discrete_cdf;
     
-    // sample new group index
+    // sample new group index (add 1 since return value is in [0,G-1])
     group_index = sample_bin_from_discrete_cdf(
 	*random, opacity.get_emission_group_cdf(cell)) + 1;
     Check (group_index > 0);

@@ -64,8 +64,14 @@ struct Frequency_Sampling_Data<MT, Multigroup_Frequency>
     // opacity weighted Planckian as opposed to a straight Planckian.
     ccsf_double prob_of_straight_Planck_emission;
 
+    // Surface source temperature, in keV, for each cell.  Needed for
+    // sampling frequency group of a surface source particle in a multigroup
+    // treatment.
+    ccsf_double ss_temperature;
+
     Frequency_Sampling_Data(SP_Mesh mesh)
-	: prob_of_straight_Planck_emission(mesh) {/*...*/}
+	: prob_of_straight_Planck_emission(mesh),
+	  ss_temperature(mesh) {/*...*/}
 };
 
 //===========================================================================//
@@ -93,6 +99,7 @@ struct Frequency_Sampling_Data<MT, Multigroup_Frequency>
 //               contained in this source
 // 5) 31-JUL-01: used INTEGER_MODULO_1E9 from rtt_mc for random num. stream
 // 6) 05-FEB-02: updated for multigroup
+// 7) 18-MAR-02: added ss_temperature to Frequency_Sampling_Data.
 // 
 //===========================================================================//
 

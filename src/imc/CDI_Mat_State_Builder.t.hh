@@ -473,6 +473,7 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
     using rtt_mc::global::a;
     using rtt_mc::global::c;
     using rtt_cdi::CDI;
+    using rtt_dsxx::soft_equiv;
 
     Require (mesh);
     Require (mat_state);
@@ -522,9 +523,9 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
 	volume = mesh->volume(cell);
 	T      = mat_state->get_T(cell);
 
-	Check (dedT   > 0.0);
-	Check (volume > 0.0);
-	Check (T      > 0.0);
+	Check (dedT   >  0.0);
+	Check (volume >  0.0);
+	Check (T      >= 0.0);
 
 	// calculate the emission group CDF (int sigma * b(x) dx)
 	for (int g = 1; g <= num_groups; g++)
@@ -542,12 +543,25 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
 	// integrate the unnormalized Planckian
 	integrated_norm_planck(cell) = 
 	    CDI::integratePlanckSpectrum(mat_state->get_T(cell));
-	Check (integrated_norm_planck(cell) > 0.0);
+	Check (integrated_norm_planck(cell) >= 0.0);
 
 	// calculate the Planckian opacity
-	planck = emission_group_cdf(cell).back() /
-	    integrated_norm_planck(cell); 
-	Check (planck > 0.0);
+	if (integrated_norm_planck(cell) > 0.0)
+	    planck = emission_group_cdf(cell).back() /
+		integrated_norm_planck(cell); 
+	else
+	{
+	    // weak check that the zero integrated Planck is due to a cold
+	    // temperature whose Planckian peak is below the lowest (first)
+	    // group boundary.
+	    Check (soft_equiv(emission_group_cdf(cell).back(), 0.0));
+	    Check (3.0 * mat_state->get_T(cell) 
+		   <= freq->get_group_boundaries(1).first); 
+
+	    // set the ill-defined integrated Planck opacity to zero
+	    planck = 0.0;
+	}	    
+	Check (planck >= 0.0);
 
 	// calculate beta (4aT^3/Cv)
 	beta = 4.0 * a * T*T*T * volume / dedT;

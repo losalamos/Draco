@@ -1,3 +1,13 @@
+2002-03-18  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* imc: surface source (ss) energy calculations now correctly
+	evaluate the Planck integral at the ss temp instead of cell's
+	material temp.  Source_Builder now passes ss_temp to Source's
+	Freq_Sampling_Data struct so an ss particle's frequency can be
+	sampled from a Planckian in Source.  We now allow zero
+	temperatures and zero Planckian integrals.  Fixed off-by-one error
+	in group index after sampling emission cdf.
+
 2002-02-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: Updated to multigroup.  Added FT (Frequency Type) as a

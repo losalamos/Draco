@@ -253,6 +253,7 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
     using rtt_mc::global::c;
     using rtt_cdi::CDI;
     using std::pair;
+    using rtt_dsxx::soft_equiv;
 
     Check (mesh);
     Check (mesh->num_cells() == flat_data->mg_absorption_opacity.size());
@@ -303,9 +304,9 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
 	volume = mesh->volume(cell);
 	T      = mat_state->get_T(cell);
 
-	Check (dedT   > 0.0);
-	Check (volume > 0.0);
-	Check (T      > 0.0);
+	Check (dedT   >  0.0);
+	Check (volume >  0.0);
+	Check (T      >= 0.0);
 
 	Check (absorption(cell).size() == num_groups);
 	Check (scattering(cell).size() == num_groups);
@@ -334,12 +335,25 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
 	integrated_norm_planck(cell) = CDI::integratePlanckSpectrum(
 	    mg->get_group_boundaries().front(),
 	    mg->get_group_boundaries().back(), mat_state->get_T(cell));
-	Check (integrated_norm_planck(cell) > 0.0);
+	Check (integrated_norm_planck(cell) >= 0.0);
 
 	// calculate the Planckian opacity
-	planck = emission_group_cdf(cell).back() /
-	    integrated_norm_planck(cell); 
-	Check (planck > 0.0);
+	if (integrated_norm_planck(cell) > 0.0)
+	    planck = emission_group_cdf(cell).back() /
+		integrated_norm_planck(cell); 
+	else
+	{
+	    // weak check that the zero integrated Planck is due to a cold
+	    // temperature whose Planckian peak is below the lowest (first)
+	    // group boundary.
+	    Check (soft_equiv(emission_group_cdf(cell).back(), 0.0));
+	    Check (3.0 * mat_state->get_T(cell) 
+		   <= mg->get_group_boundaries(1).first); 
+
+	    // set the ill-defined integrated Planck opacity to zero
+	    planck = 0.0;
+	}
+	Check (planck >= 0.0);
 
 	// calculate beta (4aT^3/Cv)
 	beta = 4.0 * a * T*T*T * volume / dedT;
