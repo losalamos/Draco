@@ -309,7 +309,7 @@ Analytic_Multigroup_Opacity::getOpacity(double temperature,
  */
 Analytic_Multigroup_Opacity::sf_char Analytic_Multigroup_Opacity::pack() const
 {
-    Require (group_boundaries.size() - 1 == group_models.size())
+    Require (group_boundaries.size() - 1 == group_models.size());
 
     // make a packer
     rtt_dsxx::Packer packer;
