@@ -912,6 +912,9 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
   // get Layout
     Layout layout = recv_Layout();
 
+  // <<CONTINUE HERE>>
+  // <<LAYOUT STUFF SHOULD WORK, MOVE ON TO VERTEX ETC.>>
+
   // get vertices and cell_pair
     typename MT::CCVF_d vertex = recv_vertex();
     typename MT::CCVF_i cell_pair = recv_cellpair();
@@ -986,34 +989,44 @@ SP<Coord_sys> Parallel_Builder<MT>::recv_Coord()
 // pass the Layout
 
 template<class MT>
-void Parallel_Builder<MT>::send_Layout(const Layout &layout)
+void Parallel_Builder<MT>::send_Layout(const Layout &global_layout)
 {
-  // set the Layout size
-    int num_cells = layout.num_cells();
+  // make sure we have the global layout
+    Require (global_layout.num_cells() == procs_per_cell.size());
 
-  // calculate the number of faces on each cell and total size of the Layout
-  // (layout_size = SUM_(i)^(num_cells) (num_faces[i]))
-    int *num_faces = new int[num_cells];
-    int layout_size = 0;
-    for (int i = 1; i <= num_cells; i++)
-    {
-	num_faces[i-1] = layout.num_faces(i);
-	layout_size += num_faces[i-1];
-    }
+  // size the boundary cells object
+    bound_cells.resize(nodes());
 
-  // write the faces array for passing
-    int *faces = new int[layout_size];
-    int index = 0;
-    for (int i = 1; i <= num_cells; i++)
-	for (int j = 1; j <= layout.num_faces(i); j++)
-	{
-	    faces[index] = layout(i,j);
-	    index++;
-	}
-    
-  // pass all this good stuff to the other processors (for now)
+  // loop through processors and send the layouts
     for (int np = 1; np < nodes(); np++)
     {
+      // get the Layout for processor np
+	Layout layout = build_Layout(global_layout, np);
+
+      // set the Layout size
+	int num_cells = layout.num_cells();
+	Check (num_cells == cells_per_proc[np].size());
+
+      // calculate the number of faces on each cell and total size of the
+      // Layout (layout_size = SUM_(i)^(num_cells) (num_faces[i]))
+	int *num_faces = new int[num_cells];
+	int layout_size = 0;
+	for (int i = 1; i <= num_cells; i++)
+	{
+	    num_faces[i-1] = layout.num_faces(i);
+	    layout_size += num_faces[i-1];
+	}
+
+      // write the faces array for passing
+	int *faces = new int[layout_size];
+	int index = 0;
+	for (int i = 1; i <= num_cells; i++)
+	    for (int j = 1; j <= layout.num_faces(i); j++)
+	    {
+		faces[index] = layout(i,j);
+		index++;
+	    }
+
       // pass the Layout cell size
 	Send (num_cells, np, 3);
 
@@ -1025,11 +1038,54 @@ void Parallel_Builder<MT>::send_Layout(const Layout &layout)
 
       // pass the face-values array
 	Send (faces, layout_size, np, 6);
-    }
 
-  // delete dynamically allocated faces array
-    delete [] faces;
-    delete [] num_faces;
+      // delete dynamically allocated faces array
+	delete [] faces;
+	delete [] num_faces;
+    }
+}
+
+//---------------------------------------------------------------------------//
+// build a new layout on each processor
+
+template<class MT>
+Layout Parallel_Builder<MT>::build_Layout(const Layout &layout, int proc)
+{
+  // assure that we have the global Layout
+    Require (layout.num_cells() == procs_per_cell.size());
+
+  // determine the number of cells on this processor
+    int num_cells = cells_per_proc[proc].size();
+    Layout imc_layout(num_cells);
+
+  // loop over cells on IMC processor and calculate new Layout
+    int global_cell;
+    int next_global_cell;
+    int next_imc_cell;
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+      // determine the global cell index
+	global_cell = cells_per_proc[proc][cell-1];
+	
+      // size the new layout to the proper number of faces
+	imc_layout.set_size(cell, layout.num_faces(global_cell));
+	
+      // loop through faces and build the Layout for this IMC cell
+	for (int face = 1; face <= imc_layout.num_faces(cell); face++)
+	{
+	    next_global_cell = layout(global_cell, face);
+	    next_imc_cell    = imc_cell(next_global_cell, proc);
+	    if (!next_imc_cell && next_global_cell)
+	    {
+		bound_cells[proc].push_back(next_global_cell);
+		next_imc_cell = -bound_cells[proc].size();
+	    }
+	    imc_layout(cell, face) = next_imc_cell;
+	}
+    }
+    
+  // return the new Layout
+    return imc_layout;
 }
 
 //---------------------------------------------------------------------------//

@@ -55,6 +55,7 @@ private:
   // topology data
     vector<vector<int> > cells_per_proc;
     vector<vector<int> > procs_per_cell;
+    vector<vector<int> > bound_cells;
 
   // calculate topology map
     void parallel_topology(const MT &, const Source_Init<MT> &);
@@ -83,7 +84,8 @@ private:
 
   // functionality for Mesh passing
 
-  // pass the Layout
+  // build and pass the Layout
+    Layout build_Layout(const Layout &, int);
     void send_Layout(const Layout &);
     Layout recv_Layout();
 
