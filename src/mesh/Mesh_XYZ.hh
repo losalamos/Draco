@@ -277,6 +277,9 @@ class Mesh_XYZ : private XYZ_Mapper
         int size() const { return data.size(); }
     };
 
+    template<class T>
+    class bssf {};
+
   private:
     Mat1<double> xc, yc, zc;
     Mat1<double> xf, yf, zf;
@@ -331,7 +334,7 @@ class Mesh_XYZ : private XYZ_Mapper
 template<class T>
 void dump( const Mesh_XYZ::cell_array<T>& data, char *name );
 
-#include "Mesh_XYZ_t.cc"
+#include "Mesh_XYZ.t.cc"
 
 #endif                          // __mesh_Mesh_XYZ_hh__
 
