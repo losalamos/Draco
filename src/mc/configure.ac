@@ -52,6 +52,8 @@ AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
 	         test/OS_Input_3D:test/OS_Input_3D.in \
                  test/RZWedge_Input:test/RZWedge_Input.in])
 
+AC_OUTPUT
+
 # copy TET meshes to test directory (because they are big)
 echo copying ${srcdir}/test/TET_MODEL_1.in to test/TET_MODEL_1
 cp ${srcdir}/test/TET_MODEL_1.in test/TET_MODEL_1
@@ -65,8 +67,6 @@ echo copying ${srcdir}/test/TET_RTT_4.in to test/TET_RTT_4
 cp ${srcdir}/test/TET_RTT_4.in test/TET_RTT_4
 echo copying ${srcdir}/test/TET_RTT_5.in to test/TET_RTT_5
 cp ${srcdir}/test/TET_RTT_5.in test/TET_RTT_5
-
-AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/mc configure.in

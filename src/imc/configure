@@ -9007,16 +9007,6 @@ echo "$as_me: error: \"Cannot figure out the platform or host!\"" >&2;}
                     ac_config_files="$ac_config_files Makefile:../../config/Makefile.package.in test/Makefile:../../config/Makefile.test.in"
 
 
-# TEST MESHES
-echo copying ${srcdir}/test/OS_Input.in to test/OS_Input
-cp ${srcdir}/test/OS_Input.in test/OS_Input
-echo copying ${srcdir}/test/OS_Input_3D.in to test/OS_Input_3D
-cp ${srcdir}/test/OS_Input_3D.in test/OS_Input_3D
-echo copying ${srcdir}/test/OS_Input_B.in to test/OS_Input_B
-cp ${srcdir}/test/OS_Input_B.in test/OS_Input_B
-echo copying ${srcdir}/test/RZWedge_Input.in to test/RZWedge_Input
-cp ${srcdir}/test/RZWedge_Input.in test/RZWedge_Input
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -10159,4 +10149,14 @@ if test "$no_create" != yes; then
   $ac_cs_success || { (exit 1); exit 1; }
 fi
 
+
+# TEST MESHES
+echo copying ${srcdir}/test/OS_Input.in to test/OS_Input
+cp ${srcdir}/test/OS_Input.in test/OS_Input
+echo copying ${srcdir}/test/OS_Input_3D.in to test/OS_Input_3D
+cp ${srcdir}/test/OS_Input_3D.in test/OS_Input_3D
+echo copying ${srcdir}/test/OS_Input_B.in to test/OS_Input_B
+cp ${srcdir}/test/OS_Input_B.in test/OS_Input_B
+echo copying ${srcdir}/test/RZWedge_Input.in to test/RZWedge_Input
+cp ${srcdir}/test/RZWedge_Input.in test/RZWedge_Input
 

@@ -52,6 +52,8 @@ AC_DRACO_ENV
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in])
 
+AC_OUTPUT 
+
 # TEST MESHES
 echo copying ${srcdir}/test/OS_Input.in to test/OS_Input
 cp ${srcdir}/test/OS_Input.in test/OS_Input
@@ -61,8 +63,6 @@ echo copying ${srcdir}/test/OS_Input_B.in to test/OS_Input_B
 cp ${srcdir}/test/OS_Input_B.in test/OS_Input_B
 echo copying ${srcdir}/test/RZWedge_Input.in to test/RZWedge_Input
 cp ${srcdir}/test/RZWedge_Input.in test/RZWedge_Input
-
-AC_OUTPUT 
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/imc configure.in
