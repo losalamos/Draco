@@ -61,12 +61,6 @@ class OS_Mesh
 public:
   // The cell centered fields are used only outside of the MESH-type class
 
-  // useful typedefs used when working with a mesh
-    typedef vector<double> CCSF_a;
-    typedef vector< vector<double> > CCVF_a;
-    typedef vector<int> CCSF_i;
-    typedef vector< vector<int> > CCVF_i;
-
   // class definitions of the cell-centered fields: neither of these classes
   // require copy constructors or assignment operators as the SP<> and 
   // vector<> classes can do assignment
@@ -113,6 +107,18 @@ public:
 	inline T operator()(int, int) const;
 	inline T& operator()(int, int);
     };  
+
+  // useful typedefs used when working with a mesh
+    typedef vector<double> CCSF_a;
+    typedef vector< vector<double> > CCVF_a;
+    typedef vector<int> CCSF_i;
+    typedef vector< vector<int> > CCVF_i;
+   
+  // temporary typedefs for compiling code until KCC 3.3 is released
+    typedef CCSF<double> CCSF_double;
+    typedef CCSF<int> CCSF_int;
+    typedef CCVF<double> CCVF_double;
+    typedef CCVF<int> CCVF_int;
 
 private:
   // base class reference to a derived coord class

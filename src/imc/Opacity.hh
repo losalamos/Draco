@@ -34,17 +34,17 @@ class Opacity
 {
 private:
   // sigma = kappa * rho
-    typename MT::CCSF<double> sigma;
+    typename MT::CCSF_double sigma;
 
   // Plankian opacity
-    typename MT::CCSF<double> planck;
+    typename MT::CCSF_double planck;
 
   // fleck factors
-    typename MT::CCSF<double> fleck;
+    typename MT::CCSF_double fleck;
     
 public:
   // opacity constructor
-    explicit Opacity(const typename MT::CCSF<double> &sigma_) 
+    explicit Opacity(const typename MT::CCSF_double &sigma_) 
 	: sigma(sigma_), planck(sigma_), fleck(sigma_) {}
 
   // member set and accessor functions

@@ -32,7 +32,7 @@ class Tally
 {
 
 private:
-    typename MT::CCSF<double> energy_dep;
+    typename MT::CCSF_double energy_dep;
     double energy_dep_tot;
 
 public:
@@ -46,14 +46,13 @@ public:
   // access energy deposited for a cell, total.
     inline double get_energy_dep(const int cell);
     inline double get_energy_dep_tot();
-
 };
 
 //---------------------------------------------------------------------------//
 // inline member functions for Tally
 //---------------------------------------------------------------------------//
 
-  
+ 
 template<class MT>
 inline double Tally<MT>::get_energy_dep(const int cell)
 {
