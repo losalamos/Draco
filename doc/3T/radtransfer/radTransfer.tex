@@ -1179,7 +1179,25 @@ an exercise left up to the reader.
 
 After this matrix equation is solved for the $\phi^{c}$ we may substitute
 back into equations~(\ref{eq:Finterior}) and~(\ref{eq:Fboundary})
-to obtain the new values for $F^{c}_{f}$.
+to obtain the new values for $F^{c}_{f}$,
+\begin{equation}
+  \boxed{
+    F^{c}_{f} = \left\{
+                    \begin{array}{ll}
+                      \hat{F}^{c}_{f} -
+                      \frac{\hat{D}^{c}_{f}}{\Delta l^{c}_{f}}
+                      \left( \phi^{c'} - \phi^{c} \right)
+                      & \text{for interior faces} \\
+                      \hat{F}^{c}_{f} + \frac{\hat{D}^{c}_{f}}{\Delta l^{c}}
+                      \phi^{c}
+                      & \text{for boundary faces}
+                    \end{array}
+                    \right.
+ }
+ \label{eq:FbackSub}  
+\end{equation}
+where the definitions of $\hat{F}^{c}_{f}$ and $\hat{D}^{c}_{f}$ have been
+substituted into equations~(\ref{eq:Finterior}) and~(\ref{eq:Fboundary}).
 
 \section{Spatial Centering of Data}
 
