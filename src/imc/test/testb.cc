@@ -120,7 +120,7 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs)
     SP<Particle<MT, Random>::Diagnostic> check = 
 	new Particle<MT, Random>::Diagnostic(cout, true);
 
-    Particle_Stack<MT, Random>::Bank sbank;
+    Particle_Stack<Particle<MT, Random> >::Bank sbank;
     sbank.push(part1);
     cout << sbank.size() << endl;
     sbank.push(part2);
@@ -215,9 +215,9 @@ main()
   // Surface_diagnostic(*mesh);
 
   // Particle diagnostics
-    long seed = -345632;
-    Run_Particle(*mesh, *opacity, seed);
-  // Bank_Particle(*mesh, *opacity);
+  // long seed = -345632;
+  // Run_Particle(*mesh, *opacity, seed);
+    Bank_Particle(*mesh, *opacity);
     
 }
 

@@ -27,7 +27,8 @@
 //                runtime, yet, the STL containers still can see the 
 //                constructor to make the containers, can't give objects to 
 //                initialize the containers because there are no conversion 
-//                constructors in Particle
+//                constructors in Particle; made Particle_Stack parameterized 
+//                on PT (Particle-type)
 // 
 //===========================================================================//
 
@@ -60,12 +61,10 @@ using std::exp;
 using std::stack;
 using std::list;
 
-template<class MT, class RN> class Particle;
-
-template<class MT, class RN>
+template<class PT>
 struct Particle_Stack
 {
-    typedef stack<Particle<MT, RN>, list<Particle<MT, RN> > > Bank;
+    typedef stack<PT, list<PT> > Bank;
 };
 
 template<class MT, class RN>
@@ -264,6 +263,7 @@ inline void Particle<MT, RN>::stream_IMC(const Opacity<MT> &xs,
 	    r[i] = r[i] + distance * omega[i];
     }
 }
+
 CSPACE
 
 #endif                          // __imctest_Particle_hh__

@@ -14,7 +14,7 @@ IMCSPACE
 
 instantiate class Particle<OS_Mesh, Random>
 
-instantiate class Particle_Stack<OS_Mesh, Random>
+instantiate class Particle_Stack<Particle<OS_Mesh, Random> >
 
 CSPACE
 
