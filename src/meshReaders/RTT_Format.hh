@@ -3,7 +3,7 @@
 // Shawn Pautz (TychoMesh.cc original) / B.T. Adams (Extended to RTT_Format.hh)
 // 7 June 99
 /*! 
- * \file   amr_mesh/RTT_Format.hh
+ * \file   meshReaders/RTT_Format.hh
  * \author Shawn Pautz/B.T. Adams
  * \date   Mon Jun 7 10:33:26 1999
  * \brief  Header file for RTT_Format library.
@@ -30,7 +30,7 @@ using std::set;
 using std::ifstream;
 using std::vector;
 using std::multimap;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 /*!
  * \brief RTT format namespace.
@@ -1670,8 +1670,7 @@ class RTT_Format
  * \brief Returns the cells that have boundary faces (i.e., faces that are 
  *        either on the outer boundary of the problem geometry or a connection
  *        between cells with different refinement levels in an AMR mesh) with 
- *        the 
- *        specified face number
+ *        the specified face number
  * \param face Face number.
  * \return The cells with these boundary faces.
  */

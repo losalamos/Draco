@@ -10,16 +10,15 @@
 #define __rtt_format_Shadow_RTT_Format_cc__
 
 #include "RTT_Format.hh"
-#include "Shadow_Opaque_Pointers.hh"
+#include "ds++/opaquePointers.hh"
 #include <iostream>
 
 //===========================================================================//
 // Shadow_RTT_Format - 
 //
-// Purpose : Provides shadow interface functions to the Continuous Adaptive 
-// Refinement Cartesion Unstructured Mesh RTT_Format class for use with 
-// Fortran 90 codes. Note that only a destructor is provided because the
-// CAR_CU_Interface and a CAR_CU_Build classes (which are shadowed) provide
+// Purpose : Provides shadow interface functions to the RTT_Format class for 
+// use with Fortran 90 codes. Note that only a destructor is provided because
+// the CAR_CU_Interface and a CAR_CU_Build classes (which are shadowed) provide
 // full functionality to build an RTT_Format class object, parse an RTT_Format
 // mesh file, and build the mesh.
 //
@@ -33,8 +32,8 @@ namespace rtt_format
 {
 
 // draco components
-using dsxx::SP;
-using rtt_shadow::opaque_pointers;
+using rtt_dsxx::SP;
+using rtt_dsxx::opaque_pointers;
 
 extern "C" 
 {
@@ -66,5 +65,5 @@ extern "C"
 #endif                          // __rtt_format_Shadow_RTT_Format_cc__
 
 //---------------------------------------------------------------------------//
-//                              end of amr_mesh/Shadow_RTT_Format.cc
+//                              end of meshReaders/Shadow_RTT_Format.cc
 //---------------------------------------------------------------------------//

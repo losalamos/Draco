@@ -7,7 +7,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for meshReaders
 dnl-------------------------------------------------------------------------dnl
 
-AC_INIT(CAR_CU_Mesh.hh)
+AC_INIT(RTT_Format.hh)
 AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(meshReaders/config.h:config.h.in)
 package="meshReaders"
@@ -29,5 +29,5 @@ AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in)
 
 dnl-------------------------------------------------------------------------dnl
-dnl			 end of draco/src/amr_mesh configure.in
+dnl			 end of draco/src/meshReaders configure.in
 dnl-------------------------------------------------------------------------dnl

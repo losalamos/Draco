@@ -1,18 +1,18 @@
 /*-----------------------------------*-C-*-----------------------------------*/
-/* rtt_format/config.h
+/* meshReaders/config.h
  * Todd Adams
  * Tue Sep 21 15:09:59 1999 */
 /*---------------------------------------------------------------------------*/
 /* $Id$ */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __rtt_format_config_h__
-#define __rtt_format_config_h__
+#ifndef __meshReaders_config_h__
+#define __meshReaders_config_h__
 
 
 
-#endif                          /* __rtt_format_config_h__ */
+#endif                          /* __meshReaders_config_h__ */
 
 /*---------------------------------------------------------------------------*/
-/*                              end of rtt_format/config.h */
+/*                              end of meshReaders/config.h */
 /*---------------------------------------------------------------------------*/

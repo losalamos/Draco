@@ -26,7 +26,7 @@
 // search of all the nodes must be performed otherwise.
 // 7 June 99
 /*! 
- * \file   amr_mesh/RTT_Format.cc
+ * \file   meshReaders/RTT_Format.cc
  * \author Shawn Pautz/B.T. Adams
  * \date   Mon Jun 7 10:33:26 1999
  * \brief  Implementation file for RTT_Format library.
