@@ -378,7 +378,7 @@ void packing_test()
     {
 	caught = true;
 	ostringstream message;
-	message << "Caught the following assertion: " << ass.what();
+	message << "Caught the following assertion, " << ass.what();
 	PASSMSG(message.str());
     }
     if (!caught)
