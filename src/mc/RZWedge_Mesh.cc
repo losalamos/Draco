@@ -533,11 +533,14 @@ RZWedge_Mesh::sf_int RZWedge_Mesh::get_surcells(std::string boundary) const
 /*! 
  * \brief Sample a position on the surface of a sphere inside a cell.
  *
- * This function is required by the IMC_MT concept.
+ * This function is required by the IMC_MT concept. This function is used
+ * exclusively by the random walk procedure, wherein the sphere should always
+ * be inside, and never on, the cell boundaries.
  *
  * As opposed to the OS_Mesh implementation of this function, this function
- * actually tracks a distance equal to radius.  The normal is the direction
- * of the ray when reaching that distance.
+ * actually tracks a distance equal to radius on the RZWedge_Mesh.  The
+ * returned normal is actually the direction of the ray when it reaches that
+ * distance.
  * 
  * \param cell cell index
  * \param origin sphere origin
@@ -547,7 +550,7 @@ RZWedge_Mesh::sf_int RZWedge_Mesh::get_surcells(std::string boundary) const
  * the position on the surface of the sphere and the second element of the
  * pair is the normal of the sphere at that position
  */
-RZWedge_Mesh::pair_sf_double RZWedge_Mesh::sample_pos_on_sphere(
+RZWedge_Mesh::pair_sf_double RZWedge_Mesh::sample_random_walk_sphere(
     int              cell, 
     const sf_double &origin,
     double           radius,
@@ -559,10 +562,10 @@ RZWedge_Mesh::pair_sf_double RZWedge_Mesh::sample_pos_on_sphere(
     Require (in_cell(cell, origin));
 
     // checks to make sure sphere is in cell in x and z dimensions
-    Require (origin[0] - radius >= get_low_x(cell));
-    Require (origin[0] + radius <= get_high_x(cell));
-    Require (origin[2] - radius >= get_low_z(cell));
-    Require (origin[2] + radius <= get_high_z(cell));
+    Require (origin[0] - radius > get_low_x(cell));
+    Require (origin[0] + radius < get_high_x(cell));
+    Require (origin[2] - radius > get_low_z(cell));
+    Require (origin[2] + radius < get_high_z(cell));
 
     // get initial position and direction to track
     sf_double r     = origin;
@@ -580,11 +583,13 @@ RZWedge_Mesh::pair_sf_double RZWedge_Mesh::sample_pos_on_sphere(
     {
 	// determine shortest distance to boundary
 	d_bnd = get_db(r, omega, cell, face);
-	Check (face == 3 || face == 4);
 
 	// process a reflection on a y face
 	if (d_bnd < track)
 	{
+	    // make sure random walk sphere is truncated only by y faces
+	    Check (face == 3 || face == 4);
+
 	    // stream to the face
 	    r[0] = r[0] + d_bnd * omega[0];
 	    r[1] = r[1] + d_bnd * omega[1];

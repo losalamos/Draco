@@ -210,7 +210,7 @@ void check_rw_tallies<Gray,GPT>(SP<Tally<MT> > tally, int num_run)
 
     // check sums
     if (!soft_equiv(erg_dep_tot, 0.91662873, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ew_escaped, 0.04447902, 1.e-6))  ITFAILS;
+    if (!soft_equiv(ew_escaped, 0.0444791, 1.e-6))  ITFAILS;
     if (!soft_equiv(ecen_tot, 1.7061020756, 1.e-6))  ITFAILS;
     if (ncen_tot != 980)                             ITFAILS;
     if (neff_scat != 1012)                           ITFAILS;

@@ -214,6 +214,7 @@ class OS_Mesh
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &, const sf_double &, int, int &) const; 
     inline double get_orthogonal_dist_to_bnd(const sf_double &, int) const;
+    inline double get_random_walk_sphere_radius(const sf_double &, int) const;
     inline sf_double get_normal(int, int) const;
     inline sf_double get_normal_in(int, int) const;
     inline double volume(int) const;
@@ -227,8 +228,8 @@ class OS_Mesh
     inline sf_double sample_pos(int, rng_Sprng &) const;
     inline sf_double sample_pos(int, rng_Sprng &, sf_double, double) const; 
     inline sf_double sample_pos_on_face(int, int, rng_Sprng &)	const;
-    pair_sf_double sample_pos_on_sphere(int, const sf_double &, double,
-					rng_Sprng &) const;
+    pair_sf_double sample_random_walk_sphere(int, const sf_double &, 
+					     double, rng_Sprng &) const;
 
     //! Determine if this is a full mesh or partitioned mesh.
     bool full_Mesh() const { return !submesh; }
@@ -607,9 +608,6 @@ OS_Mesh::sf_int OS_Mesh::get_neighbors(int cell) const
 /*!
  * \brief Return the minimum distance to a cell boundary.
  *
- * The returned distance is a distance eps less than the minimum distance to
- * boundary.  eps is defined \f$ 1.0\times 10^{-6} \cdot \Delta\f$ where
- * \f$\Delta\f$ is the minimum cell width in each dimension.
  */
 double OS_Mesh::get_orthogonal_dist_to_bnd(const sf_double &r, 
 					   int              cell) const
@@ -621,30 +619,61 @@ double OS_Mesh::get_orthogonal_dist_to_bnd(const sf_double &r,
     
     // loop over dimensions and calculate the minimum distance
     double min_distance = global::huge;
-    double high         = 0.0;
-    double low          = 0.0;
-    double min_cell_dim = global::huge;
+    double high_dist    = 0.0;
+    double low_dist     = 0.0;
+
     for (int d = 1; d <= coord->get_dim(); d++)
     {
 	// find high and low distances for this dimension
-	high = max(d, cell) - r[d-1];
-	low  = r[d-1] - min(d, cell);
-	Check (high >= 0.0 && low >= 0.0);
+	high_dist = max(d, cell) - r[d-1];
+	low_dist  = r[d-1] - min(d, cell);
+	Check (low_dist  >= 0.0);
+	Check (high_dist >= 0.0);
 
-	min_distance = std::min(min_distance, high);
-	min_distance = std::min(min_distance, low);
+	min_distance = std::min(min_distance, high_dist);
+	min_distance = std::min(min_distance, low_dist);
 
-	Check (min_distance <= dim(d, cell));
-
-	// store the minimum width of the cell's dimensions.
-	min_cell_dim = std::min(min_cell_dim, dim(d, cell));
+	Check (min_distance <= 0.5 * dim(d, cell));
     }
-
-    // reduce the distance by epsilon
-    min_distance -= 1.0e-6 * min_cell_dim;
 
     Ensure (min_distance >= 0.0);
     return min_distance;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return largest allowable radius of random walk sphere [cm] in cell.
+ *
+ * This function calls get_orthogonal_dist_to_bnd and reduces it by epsilon,
+ * where epsilon is \f$ 10^{-6} \f$ times the cell's smallest dimension.  The
+ * return value is not allowed to be negative.
+ */
+double OS_Mesh::get_random_walk_sphere_radius(const sf_double &r, 
+					    int              cell) const
+{
+    Require (cell > 0);
+    Require (cell <= layout.num_cells());
+    Require (r.size() == coord->get_dim());
+
+    // set the factor in epsilon
+    double eps = 1.0e-6;
+   
+    // get the minimum orthogonal distance to boundary
+    double min_distance = get_orthogonal_dist_to_bnd(r, cell);
+
+    // loop over dimensions and find the minimum
+    double smallest_dim = global::huge;
+
+    for (int d = 1; d <= coord->get_dim(); d++)
+    	smallest_dim = std::min(smallest_dim, dim(d, cell));
+
+    // reduce the minimum orthogonal distance to bnd by 10^-6 of the smallest
+    // cell dimension to get the random walk sphere radius.
+    double sphere_radius = std::max(0.0, 
+				    min_distance - (eps * smallest_dim)); 
+    
+    Ensure (sphere_radius >= 0.0);
+    return sphere_radius;
 }
 
 //---------------------------------------------------------------------------//

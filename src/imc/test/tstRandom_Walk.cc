@@ -723,7 +723,7 @@ void random_walk_test()
 	dref = sqrt(dref);
 	if (!soft_equiv(d, dref)) ITFAILS;
 
-	pair_dbl rn = mesh->sample_pos_on_sphere(1, oldr, d, rngr);
+	pair_dbl rn = mesh->sample_random_walk_sphere(1, oldr, d, rngr);
 	oldr = rn.first;
 	if (!soft_equiv(r.begin(), r.end(), oldr.begin(), oldr.end())) ITFAILS;
 
@@ -804,7 +804,7 @@ void random_walk_test()
 	dref = sqrt(dref);
 	if (!soft_equiv(radius, dref)) ITFAILS;
 
-	rn   = mesh->sample_pos_on_sphere(11, oldr, radius, rngr);
+	rn   = mesh->sample_random_walk_sphere(11, oldr, radius, rngr);
 	oldr = rn.first;
 	if (!soft_equiv(r.begin(), r.end(), oldr.begin(), oldr.end())) ITFAILS;
 

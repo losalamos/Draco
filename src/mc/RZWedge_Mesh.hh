@@ -67,8 +67,8 @@ namespace rtt_mc
 // 22-MAR-2001 : fixed checks for low (high) boundaries on slope for
 //               ::sample_pos; made them a little less restrictive
 // 02-MAY-2001 : added packer struct and class
-// 03-JUL-2003 : added function to calculate the minimum distance along
-//               x and z directions; added sample position on sphere function
+// 08-JUL-2003 : added function to calculate random walk sphere size; added
+//               sample position on random walk sphere function 
 // 
 //===========================================================================//
 
@@ -190,7 +190,7 @@ class RZWedge_Mesh
     inline int next_cell(int, int, const sf_double & = sf_double(3)) const;
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &, const sf_double &, int, int &) const;
-    inline double get_orthogonal_dist_to_bnd(const sf_double &, int) const;
+    inline double get_random_walk_sphere_radius(const sf_double &, int) const;
     inline sf_double get_normal(int, int) const;
     inline sf_double get_normal_in(int, int) const;
     inline double volume(int) const;
@@ -204,8 +204,8 @@ class RZWedge_Mesh
     sf_int get_surcells(std_string) const;
     bool check_defined_surcells(const std_string, const sf_int &) const;
     inline sf_int get_neighbors(int) const;
-    pair_sf_double sample_pos_on_sphere(int, const sf_double &, double,
-					rng_Sprng &) const;
+    pair_sf_double sample_random_walk_sphere(int, const sf_double &, 
+					     double, rng_Sprng &) const;
 
     //! Determine if this is a full mesh or partitioned mesh.
     bool full_Mesh() const { return !submesh; }
@@ -802,31 +802,31 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos_on_face(int cell, int face,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return the minimum distance to a cell boundary.
+ * \brief Return largest allowable random walk sphere radius [cm] in cell.
  *
- * This function is relegated to Random Walk.  Because of the way that we are
- * implementing random walk we only check the minimum distance to the \b x or
- * \b z axis.
+ * We are implementing random walk in the RZWedge Mesh by constaining the
+ * random walk sphere only by the \b x or \b z axis.
  *
- * The returned distance is a distance eps less than the minimum distance to
- * boundary.  eps is defined \f$ 0.5\times 10^{-6} \cdot \Delta\f$ where
- * \f$\Delta\f$ is the average cell width in the xz dimensions.
+ * The returned distance is scaled back by epsilon, where epsilon is \f$
+ * 10^{-6} \f$ times the smaller of the cell's \b x or \b z dimension.  This
+ * scale back is intended to reduce particle tracking issues with coincident
+ * cell boundaries and random walk spheres.
  */
-double RZWedge_Mesh::get_orthogonal_dist_to_bnd(const sf_double &r, 
-						int              cell) const
+double RZWedge_Mesh::get_random_walk_sphere_radius(const sf_double &r, 
+						   int              cell) const
 {
     Require (cell > 0 && cell <= layout.num_cells());
     Require (r.size() == 3);
     Require (in_cell(cell, r));
 
-    // fraction reduction distance to keep sphere in cell
-    double eps = 0.5e-6 * (dim(1, cell) + dim(3, cell));
+    // calculate epsilon as 10^{-6} of the smaller of the x and z dimension
+    double eps = 1.0e-6 * std::min(dim(1, cell), dim(3, cell));
 
-    // compute x_hi distance
-    double dx_hi = get_high_x(cell) - r[0] - eps;
-    double dx_lo = r[0] - get_low_x(cell) - eps;
-    double dz_hi = get_high_z(cell) - r[2] - eps;
-    double dz_lo = r[2] - get_low_z(cell) - eps;
+    // compute distance in x and z dimensions
+    double dx_hi = get_high_x(cell) - r[0];
+    double dx_lo = r[0] - get_low_x(cell);
+    double dz_hi = get_high_z(cell) - r[2];
+    double dz_lo = r[2] - get_low_z(cell);
 
     // calculate the minimum distance
     double min_distance = dx_hi;
@@ -835,6 +835,10 @@ double RZWedge_Mesh::get_orthogonal_dist_to_bnd(const sf_double &r,
     min_distance        = std::min(min_distance, dz_lo);
 
     Ensure (min_distance >= 0.0);
+
+    // reduce distance by epsilon but not to a negative value
+    min_distance = std::max(0.0, min_distance - eps);
+
     return min_distance;
 }
 
