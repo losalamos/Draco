@@ -25,7 +25,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "meshReaders_Services(draco-5_2_0)";
+    string pkg_release = "meshReaders_Services(draco-5_3_0)";
     return pkg_release;
 }
 

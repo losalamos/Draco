@@ -1,3 +1,56 @@
+2004-12-02  Kelly Thompson  <kgt@lanl.gov>
+
+	* draco: Released draco-5_3_0.  This is a minor draco release.  A
+	summary of changes are:
+
+	- autodoc: Recent mods look for dcc files in the top level autodoc
+	  direcotry.
+	- elisp: some small changes to improve font lock for DbC keywords.
+        - c4: new broadcast signatures.
+	- ds++: extensions to RCF and addition of File_Streams class.
+	- quadrature: finished addition of QuadServices class.  New
+  	  dependance on vendor GSL. Mods to build system were also made to
+	  provide GSL as a draco vendor.
+	- viz: switched to ensight gold format; added write_part() member
+	  function. 
+	- tools: added launchtest as an installed tool to improve
+	  mpirun compatibility on lambda.
+	
+	This draco release includes the following packages:
+
+		RTT_Format_Reader 
+		c4
+		cdi 
+		cdi_analytic 
+		cdi_gandolf 
+		ds++ 
+		lapack_wrap
+		meshReaders
+		meshReaders_Services
+		mesh_element
+		plot2D
+		quadrature
+		rng
+		stdheaders
+		timestep
+		traits
+		units
+		viz
+		xm
+	
+	We are not releasing cdi_eospac in draco until the compiler issues
+	have been resolved [hopefully with the release of a C version of
+	EOSPAC].
+
+	We are not releasing pcgWrap in draco until the pcgWrap component
+        in Draco is updated to only call double precision routines.  The
+        single precision routines in libpcg have been removed in recent
+        versions. 
+
+	We are not releaseing shared_lib in draco until this package
+        passes its unit tests on QSC.
+	 
+
 2004-11-10  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: Released draco-5_2_0.  This is a minor draco release.  A
