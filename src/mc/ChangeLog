@@ -1,3 +1,10 @@
+2000-12-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* mc: Release of mc-2_0_0. This update includes all of our major
+	parallel redesign modes for Monte Carlo.  It also includes all of
+	the AMR and RZ mesh enhancements.  It does not include FULL TET
+	mesh functionality.
+
 2000-12-11  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Builder.cc, TET_Builder.hh, test/tstTET_Mesh.cc:
