@@ -74,6 +74,7 @@ string TestRTT_Format::runTest()
 	"Read mesh without coreing in or firing an assertion." << endl;
     check_virtual(mesh);
     check_header(mesh);
+    check_dims(mesh);
 
     // Report results of test.
     if (passed())
@@ -86,6 +87,7 @@ string TestRTT_Format::runTest()
 bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
 {
     // Exercize the virtual accessor functions for this mesh.
+    bool all_passed = true;
 
     // Check node coords
     vector<vector<double> > coords = mesh.get_node_coords();
@@ -93,22 +95,22 @@ bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
     for (int i = 1; i < 4; i++)
         test_coords[i][i - 1] = static_cast<double>(i);
 
-    if (test_coords == coords)
-        pass(" Node Coordinates ") << "Got node coordinates." << endl;
-    else
+    if (test_coords != coords)
+    {
         fail(" Node Coordinates ") << "Node coordinates not obtained." << endl;
+	all_passed = false;
+    }
 
     // Check coordinate units.
-    string coord_units = mesh.get_node_coord_units();
-    string test_coord_units = "cm";
-    os() << "Coordinate Units= " << coord_units << endl;
+    os() << "Coordinate Units= " << mesh.get_node_coord_units() << endl;
 
-    if (test_coord_units == coord_units)
-        pass(" Coordinate Units ") << "Got coordinate units." << endl;
-    else
+    if (mesh.get_node_coord_units() != "cm")
+    {
         fail(" Coordinates Units ") << "Coordinate units not obtained." 
 				    << endl;
-      
+ 	all_passed = false;
+    }
+     
     // Check element nodes.
     vector<vector<int> > element_nodes = mesh.get_element_nodes();
 
@@ -121,14 +123,15 @@ bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
     const int cell_nodes = 4;
     int test_elem_4[cell_nodes] = {0, 1, 2, 3};
 
-    if (element_nodes[0] == vector<int>(test_elem_0,test_elem_0+side_nodes) &&
-	element_nodes[1] == vector<int>(test_elem_1,test_elem_1+side_nodes) &&
-	element_nodes[2] == vector<int>(test_elem_2,test_elem_2+side_nodes) &&
-	element_nodes[3] == vector<int>(test_elem_3,test_elem_3+side_nodes) &&
-	element_nodes[4] == vector<int>(test_elem_4,test_elem_4+cell_nodes))
-        pass(" Element Nodes ") << "Got element nodes." << endl;
-    else
+    if (element_nodes[0] != vector<int>(test_elem_0,test_elem_0+side_nodes) ||
+	element_nodes[1] != vector<int>(test_elem_1,test_elem_1+side_nodes) ||
+	element_nodes[2] != vector<int>(test_elem_2,test_elem_2+side_nodes) ||
+	element_nodes[3] != vector<int>(test_elem_3,test_elem_3+side_nodes) ||
+	element_nodes[4] != vector<int>(test_elem_4,test_elem_4+cell_nodes))
+    {
         fail(" Element Nodes ") << "Element nodes not obtained." << endl;
+ 	all_passed = false;
+    }
 
     // Check Element Types.
     vector<rtt_meshReaders::Element_Definition::Element_Type>
@@ -140,10 +143,11 @@ bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
         if (element_types[i] != test_element_types[i])
 	    got_element_types = false;
 
-    if (got_element_types)
-	pass(" Element Types ") << "Read Element Types." << endl;
-    else
-        fail(" Element Types ") << "Element Types not obtained." << endl;
+    if (!got_element_types)
+    {
+	fail(" Element Types ") << "Element Types not obtained." << endl;
+ 	all_passed = false;
+    }
 
     // Check node sets.
     map<string, set<int> > node_sets = mesh.get_node_sets();
@@ -165,10 +169,11 @@ bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
         if (node_sets.find(node_flag_name[i])->second != flag_nodes[i])
 	    got_node_sets = false;
 
-    if (got_node_sets)
-        pass(" Node Sets ") << "Got node sets." << endl;
-    else
+    if (!got_node_sets)
+    {
         fail(" Node Sets ") << "Node sets not obtained." << endl;
+ 	all_passed = false;
+    }
 
     // Check Element sets.
     map<string, set<int> > element_sets = mesh.get_element_sets();
@@ -188,69 +193,88 @@ bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
 	                                                  flag_elements[i])
 	    got_element_sets = false;
 
-    if (got_element_sets)
-        pass(" Element Sets ") << "Got element sets." << endl;
-    else
+    if (!got_element_sets)
+    {
         fail(" Element Sets ") << "Element sets not obtained." << endl;
+ 	all_passed = false;
+    }
 
     // Check title.
     string title = mesh.get_title();
     string test_title = "RTT_format mesh file definition, version 7.";
     os() << "Mesh title = " << title  << endl;
 
-    if (title == test_title)
-        pass(" Title ") << "Got title." << endl;
-    else
+    if (title != test_title)
+    {
         fail(" Title ") << "Title not obtained." << endl;
+ 	all_passed = false;
+    }
 
     // Check invariant.
     bool test_invariant = mesh.invariant();
-    if (test_invariant)
-	pass(" Invariant ") << "Invoked invariant." << endl;
-    else
-	pass(" Invariant ") << "Invariant not satisfied." << endl;
 
-     return true;
+    if (!test_invariant)
+    {
+	fail(" Invariant ") << "Invariant not satisfied." << endl;
+ 	all_passed = false;
+    }
+
+    if (all_passed)
+        pass(" Virtual Accessors " ) << "Got all virtual accessors." << endl;
+    else
+	fail(" Virtual Accessors ") << "Errors in some virtual accessors." 
+				    << endl;
+
+    return all_passed;
 }
 
 bool TestRTT_Format::check_header(const rtt_format::RTT_Format & mesh)
 {
+    // Exercize the header accessor functions for this mesh.
+    bool all_passed = true;
+
     // Check version.
-    if (mesh.get_header_version() == "v1.0.0")
-        pass(" Header Version ") << "Got header version." << endl;
-    else
+    if (mesh.get_header_version() != "v1.0.0")
+    {
         fail(" Header Version ") << "Header version not obtained." << endl;
+ 	all_passed = false;
+    }
 
     // Check title.
-    if (mesh.get_header_title() == 
+    if (mesh.get_header_title() != 
 	"RTT_format mesh file definition, version 7.")
-        pass(" Header Title ") << "Got header title." << endl;
-    else
+    {
         fail(" Header Title ") << "Header title not obtained." << endl;
+ 	all_passed = false;
+    }
 
     // Check date.
-    if (mesh.get_header_date() == "24 Jul 97")
-        pass(" Header Date ") << "Got header date." << endl;
-    else
+    if (mesh.get_header_date() != "24 Jul 97")
+    {
         fail(" Header Date ") << "Header date not obtained." << endl;
+ 	all_passed = false;
+    }
 
     // Check cycle.
-    if (mesh.get_header_cycle() == 1)
-        pass(" Header Cycle ") << "Got header cycle." << endl;
-    else
+    if (mesh.get_header_cycle() != 1)
+    {
         fail(" Header Cycle ") << "Header cycle not obtained." << endl;
+ 	all_passed = false;
+    }
 
     // Check time.
-    if (mesh.get_header_time() == 0.0)
-        pass(" Header Time ") << "Got header time." << endl;
-    else
+    if (mesh.get_header_time() != 0.0)
+    {
         fail(" Header Time ") << "Header time not obtained." << endl;
+ 	all_passed = false;
+    }
 
     // Check ncomments.
-    if (mesh.get_header_ncomments() == 3)
-        pass(" Header Ncomments ") << "Got header ncomments." << endl;
-    else
+    if (mesh.get_header_ncomments() != 3)
+    {
         fail(" Header Ncomments ") << "Header ncomments not obtained." << endl;
+ 	all_passed = false;
+    }
 
     // Check comments.
     string test_comments[3]  = {"One tet mesh in an RTT mesh file format.",
@@ -262,12 +286,217 @@ bool TestRTT_Format::check_header(const rtt_format::RTT_Format & mesh)
         if (test_comments[i] != mesh.get_header_comments(i))
 	    got_comments = false;
 
-    if (got_comments)
-        pass(" Header Comments ") << "Got header comments." << endl;
-    else
+    if (!got_comments)
+    {
         fail(" Header Comments ") << "Header comments not obtained." << endl;
+ 	all_passed = false;
+    }
 
-    return true;
+    if (all_passed)
+        pass(" Header Accessors " ) << "Got all Header accessors." << endl;
+    else
+	fail(" Header Accessors ") << "Errors in some Header accessors." 
+				   << endl;
+
+    return all_passed;
+}
+
+bool TestRTT_Format::check_dims(const rtt_format::RTT_Format & mesh)
+{
+    // Exercize the dims accessor functions for this mesh.
+    bool all_passed = true;
+
+    // Check coordinate units.
+    if (mesh.get_dims_coor_units() != "cm")
+    {
+        fail(" Dims coor_units ") << 
+	     "Dims coor_units not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    // Check problem time units.
+    if (mesh.get_dims_prob_time_units() != "s")
+    {
+        fail(" Dims prob_time_units ") << 
+	     "Dims prob_time_units not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    // Check number of cell definitions.
+    if (mesh.get_dims_ncell_defs() != 8)
+    {
+        fail(" Dims ncell_defs ") << 
+	     "Dims ncell_defs not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    // Check .
+    if (mesh.get_dims_nnodes_max() != 8)
+    {
+        fail(" Dims nnodes_max ") << 
+	     "Dims nnodes_max not obtained." << endl;
+ 	all_passed = false;
+    }
+
+     if (mesh.get_dims_nsides_max() != 6)
+    {
+        fail(" Dims nsides_max ") << 
+	     "Dims nsides_max not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_nnodes_side_max() != 4)
+    {
+        fail(" Dims nnodes_side_max ") << 
+	     "Dims nnodes_side_max not obtained." << endl;
+ 	all_passed = false;
+    }
+
+     if (mesh.get_dims_ndim() != 3)
+    {
+        fail(" Dims ndim ") << 
+	     "Dims ndim not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_ndim_topo() != 3)
+    {
+        fail(" Dims ndim_topo ") << 
+	     "Dims ndim_topo not obtained." << endl;
+ 	all_passed = false;
+    }
+
+     if (mesh.get_dims_nnodes() != 4)
+    {
+        fail(" Dims nnodes ") << 
+	     "Dims nnodes not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_nnode_flag_types() != 3)
+    {
+        fail(" Dims nnode_flag_types ") << 
+	     "Dims nnode_flag_types not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    int nnode_flags[3] = {3, 2, 2};
+    bool got_nnode_flags = true;
+    for (int f = 0; f < 3; f++)
+        if (mesh.get_dims_nnode_flags(f) != nnode_flags[f])
+	    got_nnode_flags = false;
+    if (!got_nnode_flags)
+    {
+        fail(" Dims nnode_flags ") << "Dims nnode_flags not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_nnode_data() != 3)
+    {
+        fail(" Dims nnode_data ") << 
+	     "Dims nnode_data not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_nsides() != 4)
+    {
+        fail(" Dims nsides ") << 
+	     "Dims nsides not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_nside_types() != 1)
+    {
+        fail(" Dims nside_types ") << 
+	     "Dims nside_types not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_side_types(0) != 2)
+    {
+        fail(" Dims side_types ") << 
+	     "Dims side_types not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_nside_flag_types() != 1)
+    {
+        fail(" Dims nside_flag_types ") << 
+	     "Dims nside_flag_types not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    int nside_flags[1] = {2};
+    bool got_nside_flags = true;
+    for (int f = 0; f < 1; f++)
+        if (mesh.get_dims_nside_flags(f) != nside_flags[f])
+	    got_nside_flags = false;
+    if (!got_nside_flags)
+    {
+        fail(" Dims nside_flags ") << "Dims nside_flags not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_nside_data() != 2)
+    {
+        fail(" Dims nside_data ") << 
+	     "Dims nside_data not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_ncells() != 1)
+    {
+        fail(" Dims ncells ") << 
+	     "Dims ncells not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_ncell_types() != 1)
+    {
+        fail(" Dims ncell_types ") << 
+	     "Dims ncell_types not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_cell_types(0) != 5)
+    {
+        fail(" Dims cell_types ") << 
+	     "Dims cell_types not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_ncell_flag_types() != 2)
+    {
+        fail(" Dims ncell_flag_types ") << 
+	     "Dims ncell_flag_types not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    int ncell_flags[2] = {2, 2};
+    bool got_ncell_flags = true;
+    for (int f = 0; f < 2; f++)
+        if (mesh.get_dims_ncell_flags(f) != ncell_flags[f])
+	    got_ncell_flags = false;
+    if (!got_ncell_flags)
+    {
+        fail(" Dims ncell_flags ") << "Dims ncell_flags not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (mesh.get_dims_ncell_data() != 1)
+    {
+        fail(" Dims ncell_data ") << 
+	     "Dims ncell_data not obtained." << endl;
+ 	all_passed = false;
+    }
+
+ if (all_passed)
+        pass(" Dims Accessors " ) << "Got all Dims accessors." << endl;
+    else
+	fail(" Dims Accessors ") << "Errors in some Dims accessors." 
+				 << endl;
+
+    return all_passed;
 }
 
 } // end namespace rtt_format_test
