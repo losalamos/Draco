@@ -68,25 +68,31 @@ ifeq ($(c4),s2)
 STRICT	=
 endif
 
+ifeq ($(strict),no)
+STRICT	=
+endif
+
 CC	= cc
 CXX	= KCC -x -mips4 --no_implicit_include $(STRICT) -D_POSIX_SOURCE
-cmplr	= kai
+cmplr	= k64
 
 ifeq ($(bits),32)
 CXX	= KCC -x -32 --no_implicit_include $(STRICT) -D_POSIX_SOURCE
 cmplr	= k32
 endif
 
-ifeq ($(epsilon),yes)
-CXX	= /v/furnish/kcc3.3epsilon/KCC_BASE/bin/KCC $(STRICT) -D_POSIX_SOURCE --one_instantiation_per_object -64
-#CXX	= /v/furnish/kcc3.3epsilon/KCC_BASE/bin/KCC $(STRICT) -D_POSIX_SOURCE 
-cmplr	= kcc33e
+ifeq ($(eta),yes)
+KCC	= /v/furnish/kcc3.3eta/KCC_BASE/bin/KCC -mips4 --backend -r10000 \
+$(STRICT) -D_POSIX_SOURCE --one_per --backend -Wl,-woff,84	
+
+ifeq ($(bits),32)
+CXX	=  $(KCC) -32
+cmplr	= k32e
+else
+CXX	= $(KCC)
+cmplr	= k64e
 endif
 
-ifeq ($(zeta),yes)
-CXX	= /v/furnish/kcc3.3zeta/KCC_BASE/bin/KCC -64 -mips4 $(STRICT) -D_POSIX_SOURCE --one_instantiation_per_object
-#CXX	= /v/furnish/kcc3.3zeta/KCC_BASE/bin/KCC $(STRICT) -D_POSIX_SOURCE 
-cmplr	= kcc33z
 endif
 
 LDSHARED = cc -64 -shared
@@ -131,6 +137,10 @@ comm	:= c4s
 SYS_FLAGS = -DC4_SHMEM
 SYS_LIBS = -lsma
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77_sgi_64
+endif
+
+ifeq ($(perfex),on)
+SYS_LIBS += -lperfex
 endif
 
 ifdef nj
