@@ -34,7 +34,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl first find the host
    dnl
    
-   AC_CANONICAL_HOST
+   AC_REQUIRE([AC_CANONICAL_HOST])
 
    dnl
    dnl INSTALL
