@@ -2,7 +2,7 @@
 # draco/config Makefile.package.in
 # Thomas M. Evans
 # Wed Feb  3 16:36:55 1999
-# Time-stamp: <99/02/19 10:36:10 rsqrd>
+# $Id$
 ###############################################################################
 # @> General Makefile.in for draco packages
 ###############################################################################
@@ -220,10 +220,10 @@ ${dependfiles}: ${nml_hh} ${nml_cc}
 		[ -s $@ ] || rm -f $@ ; \
 	else \
 	   echo failed making dependency $@ ; \
-	   rm -f $@ ; \
+	   rm -f $@ .tmp0 ; \
 	   exit 1; \
 	fi
-	@-rm .tmp0
+	@-rm -f .tmp0
 
 %.c.d: %.c
 	@echo making dependency $@
@@ -232,10 +232,10 @@ ${dependfiles}: ${nml_hh} ${nml_cc}
 		[ -s $@ ] || rm -f $@ ; \
 	else \
 	   echo failed making dependency $@ ; \
-	   rm -f $@ ; \
+	   rm -f $@ .tmp0 ; \
 	   exit 1; \
 	fi
-	@-rm .tmp0
+	@-rm -f .tmp0
 
 %.nml.d: .nml_%.hh .nml_%.cc
 
