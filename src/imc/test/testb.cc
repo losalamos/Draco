@@ -11,6 +11,7 @@
 #include "imctest/OS_Mesh.hh"
 #include "imctest/Mat_State.hh"
 #include "imctest/Opacity_Builder.hh"
+#include "imctest/Opacity.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <string>
@@ -22,10 +23,12 @@ main()
     using IMC::OS_Mesh;
     using IMC::Mat_State;
     using IMC::Opacity_Builder;
+    using IMC::Opacity;
     using namespace std;
 
     SP<OS_Mesh> mesh;
     SP< Mat_State<OS_Mesh> > mat_state;
+    SP< Opacity<OS_Mesh> > opacity;
 
   // scoping blocks
     {
@@ -44,6 +47,7 @@ main()
       // initialize the Opacity builder and build state 
 	Opacity_Builder<OS_Mesh> opacity_build(parser, mesh);
 	mat_state = opacity_build.Build_Mat();
+	opacity   = opacity_build.Build_Opacity();
     }
 
     cout << "Coordinate System: " << mesh->Coord().Get_coord() << endl;
@@ -53,6 +57,11 @@ main()
     cout << endl;
 
     cout << *mat_state;
+    cout << *opacity;
+
+    cout << "Mesh:      " << mesh->Num_cells() << endl;
+    cout << "Opacity:   " << opacity->Num_cells() << endl;
+    cout << "Mat_State: " << mat_state->Num_cells() << endl;
 }
 
 //---------------------------------------------------------------------------//
