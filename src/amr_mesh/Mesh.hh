@@ -924,7 +924,7 @@ class CAR_CU_Mesh
  */
     int get_num_corner_nodes() const 
     { return cell_nodes[get_num_cells() - 1][static_cast<int>(pow(2.0, 
-					         get_ndim())) - 1]; }
+					         get_ndim())) - 1] + 1; }
 
     // return number of face-centered nodes
 /*!
@@ -933,6 +933,13 @@ class CAR_CU_Mesh
  */
     int get_num_face_nodes() const 
     { return get_num_nodes() - get_num_corner_nodes(); }
+
+/*!
+ * \brief Returns the status indicator that this is a submesh for parallel 
+ *        processing.
+ * \return Submesh status. 
+ */
+  bool get_submesh() const { return submesh; }
 
     // cell dimensionality functions
     // give the dimension and begin and end return the beginning and ending

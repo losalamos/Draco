@@ -189,7 +189,7 @@ SP<CAR_CU_Mesh> CAR_CU_Builder::build_Mesh(const SP<RTT_Format> & rttMesh)
         // some programs may not need this data so we don't do it here).
         node_coords[node].resize(ndim);
         for (int d = 0 ; d < ndim; d++)
-            node_coords[node][d] = rttMesh->get_nodes_coords(d,node_map[node]);
+            node_coords[node][d] = rttMesh->get_nodes_coords(node_map[node],d);
     }
 
     // input the existing cell_nodes data (nodes that make up a cell) from the 

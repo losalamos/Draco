@@ -70,6 +70,10 @@ class TestAMRMesh : public rtt_UnitTestFrame::TestApp
     bool check_interface(const rtt_amr::CAR_CU_Interface & interface, 
 			 const rtt_meshReaders::RTT_Format & mesh, 
 			 const Meshes & meshtype);
+    bool check_mesh_dims(const rtt_amr::CAR_CU_Mesh & mesh,
+			 const Meshes & meshtype);
+    bool check_mesh(const rtt_amr::CAR_CU_Mesh & mesh,
+		    const Meshes & meshtype);
 
 
     // IMPLEMENTATION

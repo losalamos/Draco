@@ -88,6 +88,7 @@ sur_temp: 1.0
 ss_dist: normal
 rad_temp: 1.5 2.5
 rad_source: 1.0 0.0
+rad_s_tend: 5.0 
 vol_source: 1.0 0.0
 npnom:   100
 npmax:   100

@@ -109,8 +109,8 @@ string TestAMRMesh::runTest()
 
 	// Check the interface.
 	if (!check_interface(* interface, * rttMesh, mesh_type))
-	    fail("Interface ") << " Interface class testing errors occurred" 
-			       << " for mesh " << file << endl;
+	    fail(" Interface ") << " Interface class testing errors occurred" 
+			        << " for mesh " << file << endl;
 
 	// Construct a new CAR_CU_Builder class object.
 	SP<CAR_CU_Builder> builder(new CAR_CU_Builder(interface));
@@ -123,6 +123,11 @@ string TestAMRMesh::runTest()
 	pass(" Construct ") << "Created Mesh class without coreing"
 			    << " in or firing an assertion." 
 			    << endl;
+
+	// Check the mesh.
+	if (!check_mesh(* mesh, mesh_type))
+	    fail(" Mesh ") << " Mesh class testing errors occurred" 
+			   << " for mesh " << file << endl;
     }
 
     // Report results of test.
@@ -189,13 +194,13 @@ bool TestAMRMesh::check_interface(const rtt_amr::CAR_CU_Interface & interface,
 	rad_temp.resize(mesh.get_dims_ncells(), 1.5);
 	rad_temp[0]  = rad_temp[10] = rad_temp[22] = 
 	rad_temp[28] = rad_temp[30] = rad_temp[47] = 2.5;
-	evol_ext.resize(mesh.get_dims_ncells(), 0.0);
+	evol_ext.resize(mesh.get_dims_ncells(), 1.0);
 	evol_ext[4]  = evol_ext[14] = evol_ext[20] = 
-	evol_ext[37] = evol_ext[44] = evol_ext[54] = 1.0;
-	rad_source.resize(mesh.get_dims_ncells(), 0.0);
+	evol_ext[37] = evol_ext[44] = evol_ext[54] = 0.0;
+	rad_source.resize(mesh.get_dims_ncells(), 1.0);
 	rad_source[0]  = rad_source[10] = rad_source[22] = 
-	rad_source[28] = rad_source[30] = rad_source[47] = 1.0;
-	rad_s_tend = 0;
+	rad_source[28] = rad_source[30] = rad_source[47] = 0.0;
+	rad_s_tend = 5.0;
 	ss_pos.resize(1,"lox");
 	ss_temp.resize(1,1.0);
 	ss_cells.resize(1);
@@ -508,6 +513,136 @@ bool TestAMRMesh::check_interface(const rtt_amr::CAR_CU_Interface & interface,
     else
 	fail(" Interface Accessors ") << "Errors in some Interface accessors." 
 				      << endl;
+
+    return all_passed;
+}
+
+bool TestAMRMesh::check_mesh_dims(const rtt_amr::CAR_CU_Mesh & mesh,
+				  const Meshes & meshtype)
+{
+    // Exercise the mesh basic dimensions accessor functions for this mesh.
+    bool all_passed = true;
+    int ndim;
+    int num_cells;
+    int num_nodes;
+    int num_corner_nodes;
+    int num_face_nodes;
+    bool submesh;
+    switch (meshtype)
+    {
+    case STR1:
+        ndim = 3;
+	num_cells = 57;
+	num_nodes = 343;
+        num_corner_nodes = 124;
+        num_face_nodes = 219;
+	submesh = false;
+	break;
+
+   default:
+        fail("check_mesh_dims") << "Invalid mesh type encountered." << endl;
+	all_passed = false;
+	return all_passed;
+    }
+    // Check geometry dimension.
+    if (mesh.get_ndim() != ndim)
+    {
+        fail(" Mesh Dimensions ") << "Mesh ndim not obtained." << endl;
+ 	all_passed = false;
+    }
+    // Check number of cells.
+    if (mesh.get_num_cells() != num_cells)
+    {
+        fail(" Mesh Dimensions ") << "Mesh num_cells not obtained." << endl;
+ 	all_passed = false;
+    }
+    // Check number of nodes.
+    if (mesh.get_num_nodes() != num_nodes)
+    {
+        fail(" Mesh Dimensions ") << "Mesh num_nodes not obtained." << endl;
+ 	all_passed = false;
+    }
+    // Check number of corner nodes.
+    if (mesh.get_num_corner_nodes() != num_corner_nodes)
+    {
+        fail(" Mesh Dimensions ") << "Mesh num_corner_nodes not obtained." 
+				  << endl;
+ 	all_passed = false;
+    }
+    // Check number of face nodes.
+    if (mesh.get_num_face_nodes() != num_face_nodes)
+    {
+        fail(" Mesh Dimensions ") << "Mesh num_face_nodes not obtained." 
+				  << endl;
+ 	all_passed = false;
+    }
+    // Check submesh status.
+    if (mesh.get_submesh() != submesh)
+    {
+        fail(" Mesh Dimensions ") << "Mesh submesh not obtained." 
+				  << endl;
+ 	all_passed = false;
+    }
+    // Check that all Mesh class dimension accessors passed their tests.
+    if (all_passed)
+        pass(" Mesh Dimensions " ) << "Got all Mesh dimension accessors." 
+				   << endl;
+    else
+	fail(" Mesh Dimensions ") << "Errors in some Mesh dimension"
+				  << " accessors. Aborted Mesh tests." << endl;
+
+    return all_passed;
+}
+
+bool TestAMRMesh::check_mesh(const rtt_amr::CAR_CU_Mesh & mesh,
+			     const Meshes & meshtype)
+{
+    // Return if the mesh basic dimension data is corrupt.        
+    if (!check_mesh_dims(mesh, meshtype))
+        return false;
+
+    // Exercise the mesh basic dimensions accessor functions for this mesh.
+    bool all_passed = true;
+    typedef rtt_amr::CAR_CU_Mesh::ncvf_d ncvf_d;
+    typedef rtt_amr::CAR_CU_Mesh::ccvf_i ccvf_i;
+    typedef rtt_amr::CAR_CU_Mesh::ccsf_i ccsf_i;
+    ncvf_d coords(mesh.get_num_nodes(), 
+		       vector<double> (mesh.get_ndim(),0.0));
+    ccvf_i cell_nodes(mesh.get_num_cells(),
+		      vector<int> (static_cast<int>(pow(2.0,mesh.get_ndim())) +
+				   2 * mesh.get_ndim()));
+    ccsf_i generation(mesh.get_num_cells());
+
+    switch (meshtype)
+    {
+    case STR1:
+        coords = mesh.get_node_coords();
+	break;
+
+   default:
+        fail("check_mesh") << "Invalid mesh type encountered." << endl;
+	all_passed = false;
+	return all_passed;
+    }
+    //for (int n = 0; n < coords.size(); n++)
+    //{
+    //for (int d = 0; d < coords[n].size(); d++)
+    //cout << "coords[" << n << "][" << d << "] = " 
+    //<< coords[n][d] << "; ";
+    //cout << endl;
+    //}
+    // Check node coordinates.
+    if (mesh.get_node_coords() != coords)
+    {
+        fail(" Mesh ") << "Mesh node_coords not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    // Check that all Mesh class dimension accessors passed their tests.
+    if (all_passed)
+        pass(" Mesh " ) << "Got all Mesh dimension accessors." << endl;
+    else
+	fail(" Mesh ") << "Errors in some Mesh dimension accessors." << endl;
 
     return all_passed;
 }

@@ -309,9 +309,9 @@ void CAR_CU_Interface::parser_Source(ifstream &in)
 		in >> rad_source[i];
 		if (rad_source[i] > 0.0)
 		    have_rad_source = true;
+	    }
 		for (int cell = 0; cell < cell_rsrc.size(); cell++)
 		    cell_rsrc[cell] = rad_source[cell_rsrc[cell]];
-	    }
 	}
 	if (keyword == "rad_s_tend:")
 	    in >> rad_s_tend;
