@@ -21,12 +21,10 @@ using dsxx::Mat1;
 
 template<class T>
 class PCG_MatVec {
-
   public:
-    PCG_MatVec();
-    ~PCG_MatVec();
+    virtual ~PCG_MatVec() {}
 
-    virtual void MatVec( Mat1<T>& b, Mat1<T>& x );
+    virtual void MatVec( Mat1<T>& b, const Mat1<T>& x ) =0;
 };
 
 #endif                          // __linalg_PCG_MatVec_hh__

@@ -21,9 +21,7 @@ using dsxx::Mat1;
 
 template<class T>
 class PCG_PreCond {
-
   public:
-//     PCG_PreCond();
     virtual ~PCG_PreCond() {}
 
     virtual void  Left_PreCond( Mat1<T>& x, Mat1<T>& b ) =0;
