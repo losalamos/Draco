@@ -10,7 +10,6 @@
 #include "MC_Test.hh"
 #include "../TET_Mesh.hh"
 #include "../Layout.hh"
-#include "../XYCoord_sys.hh"
 #include "../XYZCoord_sys.hh"
 #include "../Release.hh"
 #include "c4/global.hh"
@@ -24,7 +23,7 @@
 
 using namespace std;
 
-using rtt_mc::XYCoord_sys;
+using rtt_mc::Coord_sys;
 using rtt_mc::XYZCoord_sys;
 using rtt_mc::Layout;
 using rtt_mc::TET_Mesh;
@@ -32,6 +31,12 @@ using rtt_mc::ThreeVector;
 using rtt_mc::sample_in_triangle;
 using rtt_rng::Sprng;
 using dsxx::SP;
+
+//! Typedef for scalar field of ThreeVectors.
+typedef std::vector<ThreeVector> SF_THREEVECTOR;
+
+//! Typedef for vector field of integers.
+typedef std::vector< std::vector<int> > VF_INT;
 
 int seed = 493875348;
 
@@ -178,6 +183,35 @@ void Test_ThreeVector()
 // TET_Mesh Tests
 void Test_TET()
 {
+    SP<Coord_sys> coor(new XYZCoord_sys());
+    if (!coor)                     ITFAILS;
+
+    SF_THREEVECTOR vertex_vec;
+    vertex_vec.push_back(ThreeVector(0.0,0.0,0.0));
+    vertex_vec.push_back(ThreeVector(1.0,0.0,0.0));
+    vertex_vec.push_back(ThreeVector(0.0,1.0,0.0));
+    vertex_vec.push_back(ThreeVector(1.0,1.0,0.0));
+    vertex_vec.push_back(ThreeVector(0.5,0.5,1.0));
+    if (vertex_vec.size() != 5)            ITFAILS;
+
+    VF_INT cells_ver(2);
+
+    cells_ver[0].push_back(1);
+    cells_ver[0].push_back(2);
+    cells_ver[0].push_back(3);
+    cells_ver[0].push_back(5);
+
+    cells_ver[1].push_back(2);
+    cells_ver[1].push_back(3);
+    cells_ver[1].push_back(4);
+    cells_ver[1].push_back(5);
+
+    if (cells_ver.size() != 2)      ITFAILS;
+    if (cells_ver[0].size() != 4)   ITFAILS;
+    if (cells_ver[1].size() != 4)   ITFAILS;
+
+    
+
 }
 
 int main(int argc, char *argv[])
@@ -209,7 +243,7 @@ int main(int argc, char *argv[])
     // status of test
     cout << endl;
     cout <<     "************************************" << endl;
-    if (passed) 
+    if (passed)
     {
         cout << "**** TET_Mesh Self Test: PASSED ****" << endl;
     }
@@ -217,9 +251,9 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing TET_Mesh." << endl;
-    
+
     C4::Finalize();
-}   
+}
 
 //---------------------------------------------------------------------------//
 //                              end of tstTET_Mesh.cc
