@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imc/Particle.hh"
-#include "Global.hh"
+#include "imc/Global.hh"
 #include <iomanip>
 
 namespace rtt_imc 

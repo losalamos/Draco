@@ -1,9 +1,14 @@
 //----------------------------------*-C++-*----------------------------------//
 // Layout.cc
-// Thomas M. Evans
-// Fri Jan 30 15:53:52 1998
+// Todd Adams
+// Thu 23 Sept 15:53:52 1998
 //---------------------------------------------------------------------------//
-// @> Layout class implementation file
+// @> Layout class implementation file - this file should really be moved 
+// back to mc. It was modified from the original for AMR meshes to allow a
+// cell to have more than one neighbor, but it defaults to a single adjacent
+// cell and thus should work just hunky dory with the OS_Mesh type too (with
+// a small change to OS_Builder.cc also included to accomodate a ragged right
+// array for the adjacent cell vector).
 //---------------------------------------------------------------------------//
 
 #include "Layout.hh"
