@@ -361,8 +361,10 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC_rep()
   // make a new census Comm_Buffer on this node
     new_census_bank = new Particle_Buffer<PT>::Census();
 
-  // diagnostic
-    SP<typename PT::Diagnostic> check = new PT::Diagnostic(cout, true);
+  // particle history diagnostic
+    SP<PT::Diagnostic> check;
+    if (verbose)
+	check = new PT::Diagnostic(cout, true); 
 
   // get source particles and run them to completion
     int counter = 0;
@@ -373,7 +375,7 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC_rep()
 	Check (particle->status());
 
       // transport the particle
-	particle->transport(*mesh, *opacity, *tally);
+	particle->transport(*mesh, *opacity, *tally, check);
 	counter++;
 
       // after the particle is no longer active take appropriate action
@@ -425,6 +427,11 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC_dd()
 	 << " on proc " << node() << " using " << parallel_scheme << "."
 	 << endl;
 
+  // particle history diagnostic
+    SP<PT::Diagnostic> check;
+    if (verbose)
+	check = new PT::Diagnostic(cout, true); 
+
   // make a census and communication bank on this node
     new_census_bank = new Particle_Buffer<PT>::Census();
     Particle_Buffer<PT>::Bank bank;
@@ -448,7 +455,7 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC_dd()
 	    Check (particle->status());
 
 	  // transport the particle
-	    particle->transport(*mesh, *opacity, *tally);
+	    particle->transport(*mesh, *opacity, *tally, check);
 	    counter++;
 
 	  // after the particle is no longer active take appropriate action
