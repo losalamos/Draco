@@ -13,6 +13,8 @@
 #include "MC_Test.hh"
 #include "../OS_Mesh.hh"
 #include "../OS_Builder.hh"
+#include "../Sphyramid_Mesh.hh"
+#include "../Sphyramid_Builder.hh"
 #include "../Release.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
@@ -23,11 +25,14 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <typeinfo>
 
 using namespace std;
 
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
+using rtt_mc::Sphyramid_Mesh;
+using rtt_mc::Sphyramid_Builder;
 using rtt_mc_test::Parser;
 using rtt_dsxx::SP;
 
@@ -91,9 +96,19 @@ void test_CCSF(SP<MT> mesh)
 template<class MT>
 void test_CCVF(SP<MT> mesh)
 {
+    
+    
     typename MT::template CCVF<double> field(mesh);
     if (field.empty())             ITFAILS;
-    if (field.size() != 2)         ITFAILS;
+    if (typeid(mesh) == typeid(SP<OS_Mesh>))
+    {
+	if (field.size() != 2)     ITFAILS;
+    }
+    else if (typeid(mesh) == typeid(SP<Sphyramid_Mesh>))
+    {
+	if (field.size() != 3)     ITFAILS;
+    }
+    else ITFAILS;
     if (field.get_Mesh() != *mesh) ITFAILS;
 
     // fill up the field
@@ -144,10 +159,18 @@ void test_CCSF_STL(SP<MT> mesh)
 
     // let's do some counting
     if (count(first, last, 5.0) != 2)  ITFAILS;
-    if (count(first, last, 10.0) != 4) ITFAILS;
+    if (typeid(mesh) == typeid(SP<OS_Mesh>))
+    {
+	if (count(first, last, 10.0) != 4) ITFAILS;
+    }
+    else if (typeid(mesh) == typeid(SP<Sphyramid_Mesh>))
+    {
+	if (count(first, last, 10.0) != 3) ITFAILS;
+    }
+    else ITFAILS;
 
     // let's do some sorting, uses a random access iterator
-    field(6) = 3.0;
+    field(5) = 3.0;
     sort(first, last);
     
     if (*(first + 0) != 3.0) ITFAILS;
@@ -156,6 +179,7 @@ void test_CCSF_STL(SP<MT> mesh)
     for (var = first + 3; var != last; var++)
 	if (*var != 10.0) ITFAILS;
 }
+
 
 //---------------------------------------------------------------------------//
 
@@ -187,15 +211,33 @@ int main(int argc, char *argv[])
 
 	// 2D Mesh tests
 
-	// build a mesh
-	SP<Parser> interface(new Parser());
-	OS_Builder builder(interface);
-	SP<OS_Mesh> mesh = builder.build_Mesh();
+	{
+	    // build a mesh
+	    SP<Parser> interface(new Parser());
+	    OS_Builder builder(interface);
+	    SP<OS_Mesh> mesh = builder.build_Mesh();
+	
+	    // run the tests
+	    test_CCSF(mesh);
+	    test_CCVF(mesh);
+	    test_CCSF_STL(mesh);
+	}
+	
+	// Sphyramid Mesh tests
+	{
+	    SP<Parser> interface(new Parser("Sphyramid_Input"));
+	    Sphyramid_Builder builder(interface);
+	    SP<Sphyramid_Mesh> mesh = builder.build_Mesh();
 
-	// run the tests
-	test_CCSF(mesh);
-	test_CCVF(mesh);
-	test_CCSF_STL(mesh);
+	    // run the tests
+	    test_CCSF(mesh);
+	    test_CCVF(mesh);
+	    test_CCSF_STL(mesh);
+	    
+	}
+
+
+	
     }
     catch (rtt_dsxx::assertion &ass)
     {
