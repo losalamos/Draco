@@ -142,14 +142,28 @@ else
 endif
 
 ##---------------------------------------------------------------------------##
+## PARALLELISM
+##---------------------------------------------------------------------------##
+
+# nj is the number of jobs make is to run on
+
+ifndef nj
+nj	:= 1
+endif
+subnj	:= -j $(nj)
+
+##---------------------------------------------------------------------------##
 ## TARGETS
 ##---------------------------------------------------------------------------##
 
 .PHONY : all install installdirs clean distclean forced-distclean \
 	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
-	forced-clean dvi
+	forced-clean dvi dependencies
 
 all: ${alltarget}
+
+dependencies: ${dependfiles}
+	@echo "Package dependencies made."
 
 dvi:
 	: # do nothing
@@ -188,7 +202,7 @@ check: ${alltarget}
 installdirs: ${installdirs}
 
 ${installdirs}:
-	mkdir $@
+	${INSTALL} -d $@
 
 install: installdirs ${installfiles}
 

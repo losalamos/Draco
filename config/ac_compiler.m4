@@ -49,6 +49,11 @@ AC_DEFUN(AC_DRACO_KCC, [dnl
        LDFLAGS="${LDFLAGS} --static_libKCC -Bstatic"
    fi
 
+   # Parallel build flag
+   
+   ARFLAGS="--parallel_build \${nj} ${ARFLAGS} "
+   LDFLAGS="--parallel_build \${nj} ${LDFLAGS} "
+
    # final compiler additions
    # yes there is no space before the flag
 

@@ -320,6 +320,13 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        fi
 
        #
+       # setup linux strict if the compiler is KCC
+       #
+       if test "${CXX}" = KCC && test -n "${STRICTFLAG}" ; then
+	   STRICTFLAG="--linux_strict"
+       fi
+
+       #
        # setup communication packages
        #
    
@@ -354,7 +361,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        #
    ;;
    mips-sgi-irix6.*)
-       # posix source defines, by default we set poaix on 
+       # posix source defines, by default we set posix on 
        if test "${with_posix:=yes}" = yes ; then
 	   with_posix='199309L'
        fi
@@ -371,10 +378,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        if test "${enable_32_bit:=no}" = yes ; then
 	   CXXFLAGS="-n32 ${CXXFLAGS}"
 	   CFLAGS="-n32 ${CFLAGS}"
+	   ARFLAGS="-n32 ${ARFLAGS}"
 	   LDFLAGS="-n32 ${LDFLAGS}"
        else 
 	   CXXFLAGS="-64 ${CXXFLAGS}"
 	   CFLAGS="-64 ${CFLAGS}"
+	   ARFLAGS="-64 ${ARFLAGS}"
 	   LDFLAGS="-64 ${LDFLAGS}"
        fi
 
@@ -383,10 +392,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        if test "${with_cxx}" = kcc ; then
 	   CXXFLAGS="-mips${with_mips:=4} --backend -r10000 ${CXXFLAGS}"
 	   CFLAGS="-mips${with_mips:=4} -r10000 ${CFLAGS}"
+	   ARFLAGS="-mips${with_mips:=4} ${ARFLAGS}"
 	   LDFLAGS="-mips${with_mips:=4} ${LDFLAGS}"
        elif test "${with_cxx}" = cc ; then
 	   CXXFLAGS="-mips${with_mips:=4} -r10000 ${CXXFLAGS}"
 	   CFLAGS="-mips${with_mips:=4} -r10000 ${CFLAGS}"
+	   ARFLAGS="-mips${with_mips:=4} ${ARFLAGS}"
 	   LDFLAGS="-mips${with_mips:=4} ${LDFLAGS}"
        fi
 
