@@ -16,14 +16,9 @@
 #include <string>
 #include <vector>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
 void funcYYY(dsxx::Mat2<double> &data);
 
-BEGIN_NS_XTM
+namespace rtt_matprops {
 
 void funcXXX(dsxx::Mat2<double> &data);
 
@@ -49,13 +44,13 @@ class MaterialPropsReader
 
     // The desired units to convert all of the data.
     
-    Units outputUnits;
+    XTM::Units outputUnits;
     
     // CREATORS
     
   public:
 
-    MaterialPropsReader(const Units &outputUnits_)
+    MaterialPropsReader(const XTM::Units &outputUnits_)
 	: outputUnits(outputUnits_)
     {
 	// ** empty **
@@ -228,11 +223,11 @@ class MaterialPropsReader
     //   Return the desired units for output.
     //------------------------------------------------------------------------//
 
-    const Units &getOutputUnits() const { return outputUnits; }
+    const XTM::Units &getOutputUnits() const { return outputUnits; }
 
 };
 
-END_NS_XTM  // namespace XTM
+} // end of rtt_matprops namespace
 
 #endif                          // __matprops_MaterialPropsReader_hh__
 

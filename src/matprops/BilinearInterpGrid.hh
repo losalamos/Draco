@@ -15,12 +15,7 @@
 #include <algorithm>
 #include <functional>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
-BEGIN_NS_XTM
+namespace rtt_matprops {
 
 // Forward Reference
 
@@ -345,7 +340,7 @@ inline void BilinearInterpGrid::getCoefficients(const Memento &memento,
     Assert(u >= 0.0 && u <= 1.0);
 }
 
-END_NS_XTM  // namespace XTM
+} // end of rtt_matprops namespace
 
 #endif                          // __matprops_BilinearInterpGrid_hh__
 

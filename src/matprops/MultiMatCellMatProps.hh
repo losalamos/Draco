@@ -13,6 +13,8 @@
 #include "ds++/SP.hh"
 #include "units/Units.hh" 
 
+namespace rtt_matprops {
+
 //===========================================================================//
 // class MultiMatCellMatProps - Material properties for multi-material cells.
 
@@ -174,6 +176,8 @@ class MultiMatCellMatProps<UMCMP>::MaterialStateField
     void getIonTempByMat(FT1 &results) const;
 
 };
+
+} // end of rtt_matprops namespace
 
 #endif                          // __matprops_MultiMatCellMatProps_hh__
 

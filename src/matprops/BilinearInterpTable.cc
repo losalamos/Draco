@@ -12,7 +12,7 @@
 // using std::cerr;
 // using std::endl;
 
-using XTM::BilinearInterpTable;
+using rtt_matprops::BilinearInterpTable;
 
 typedef BilinearInterpTable::Memento Memento;
 

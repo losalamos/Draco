@@ -48,6 +48,7 @@ using std::ends;
 #include <stdexcept>
 
 using namespace XTM;
+using namespace rtt_matprops;
 
 //------------------------------------------------------------------------//
 // FMPR:
@@ -68,9 +69,9 @@ typedef FifiMatPropsReader FMPR;
 //------------------------------------------------------------------------//
 
 FMPR::FifiMatPropsReader(const vector<MaterialDefinition> &matdefs,
-			 const Units &outputUnits_, std::istream &is_)
+			 const XTM::Units &outputUnits_, std::istream &is_)
     : MaterialPropsReader(outputUnits_), fifiParser(is_),
-      fileUnits(Units::getAstroPhysUnits())
+      fileUnits(XTM::Units::getAstroPhysUnits())
 {
     // For fifi most of the units for the data are related
     // to Atronomical Physical Units.
@@ -173,7 +174,7 @@ void FMPR::calcGridInfo()
 
 	for (int i=0; i<matInfo.temperatureGrid.size(); i++)
 	{
-	    const Units &f2O = file2OutputUnits;
+	    const XTM::Units &f2O = file2OutputUnits;
 
 	    // The file units are in keV
 	    // Convert these to user temperature units.
@@ -188,7 +189,7 @@ void FMPR::calcGridInfo()
 
 	for (int i=0; i<matInfo.densityGrid.size(); i++)
 	{
-	    const Units &f2O = file2OutputUnits;
+	    const XTM::Units &f2O = file2OutputUnits;
 
 	    // The file units are in gm/cm**3
 	    // Convert these to user density units.
@@ -202,7 +203,7 @@ void FMPR::calcGridInfo()
 
 	for (int i=0; i<matInfo.energyGrid.size(); i++)
 	{
-	    const Units &f2O = file2OutputUnits;
+	    const XTM::Units &f2O = file2OutputUnits;
 
 	    // The file units are in keV
 	    // Convert these to user ***temperature*** units.
@@ -479,7 +480,7 @@ void FMPR::getSigma(const MaterialInfo &matInfo, int group,
     {
 	for (int j=0; j<numDensities; j++)
 	{
-	    const Units &f2O = file2OutputUnits;
+	    const XTM::Units &f2O = file2OutputUnits;
 
 	    const double datum = *(dataiter + group - 1);
 

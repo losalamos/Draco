@@ -10,6 +10,8 @@
 #include "ds++/Assert.hh"
 #include <algorithm>
 
+namespace rtt_matprops {
+
 // CREATORS
 
 template <class UMCMP>
@@ -396,6 +398,7 @@ MaterialStateField<FT, FT1>::getIonTempByMat(FT1 &results) const
     }
 }
 
+}
 
 //---------------------------------------------------------------------------//
 //                              end of MultiMatCellMatProps.t.cc

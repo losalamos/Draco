@@ -16,12 +16,7 @@
 #include <algorithm>
 #include <functional>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
-BEGIN_NS_XTM
+namespace rtt_matprops {
     
 //===========================================================================//
 // class BilinearInterpTable - 
@@ -450,7 +445,7 @@ inline void BilinearInterpTable::interpolate(const FTIN1 &arg1s,
     interpolate(arg1s.begin(), arg1s.end(), arg2s.begin(), ret_vals.begin());
 }
 
-END_NS_XTM  // namespace XTM
+} // end of rtt_matprops namespace
 
 #endif                          // __matprops_BilinearInterpTable_hh__
 

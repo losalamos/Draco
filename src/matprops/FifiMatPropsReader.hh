@@ -19,13 +19,7 @@
 #include <map>
 #include <iosfwd>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
-BEGIN_NS_XTM
-    
+namespace rtt_matprops {    
 
 //===========================================================================//
 // class FifiMatPropsReader - 
@@ -139,12 +133,12 @@ class FifiMatPropsReader : public MaterialPropsReader
     // This is the units converter from **most** of the units
     // used in the Fifi file to SI units.
     
-    Units fileUnits;
+    XTM::Units fileUnits;
 
     // This is the units converter from "file" units to
     // the user's output units.
     
-    Units file2OutputUnits;
+    XTM::Units file2OutputUnits;
 
     // This is the actual mapping from material ids to the MaterialInfo spec.
     
@@ -175,7 +169,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     //------------------------------------------------------------------------//
 
     FifiMatPropsReader(const std::vector<MaterialDefinition> &matdefs,
-		       const Units &outputUnits_, std::istream &is_);
+		       const XTM::Units &outputUnits_, std::istream &is_);
 
     // MANIPULATORS
     
@@ -419,7 +413,7 @@ class FifiMatPropsReader : public MaterialPropsReader
 				   dsxx::Mat2<double> &derivative) const;
 };
 
-END_NS_XTM  // namespace XTM
+} // end of rtt_matprops namespace
 
 #endif                          // __matprops_FifiMatPropsReader_hh__
 

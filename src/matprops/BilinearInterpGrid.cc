@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <numeric>
 
-using XTM::BilinearInterpGrid;
+using rtt_matprops::BilinearInterpGrid;
 using std::lower_bound;
 
 typedef BilinearInterpGrid::Memento Memento;

@@ -34,7 +34,7 @@ using std::istrstream;
 using std::ostrstream;
 using std::ends;
 
-using namespace XTM;
+using namespace rtt_matprops;
 
 // C++ demands that we define our static members in the implementation file
 // instead of the header file.

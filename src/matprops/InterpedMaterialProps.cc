@@ -23,7 +23,7 @@ using std::vector;
 #include <stdexcept>
 #include <strstream>
 
-typedef XTM::InterpedMaterialProps IMP;
+typedef rtt_matprops::InterpedMaterialProps IMP;
 
 //===========================================================================//
 // InterpedMaterialProps Methods

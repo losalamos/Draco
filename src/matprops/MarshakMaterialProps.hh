@@ -15,8 +15,7 @@
 #include <cmath>
 #include <limits>
 
-namespace XTM
-{
+namespace rtt_matprops {
  
  //===========================================================================//
  // class MarshakMaterialProps - 
@@ -282,12 +281,10 @@ void MPMSF<FT>::getSigmaAbsorption(int group, FT &results) const
     double kappa0 = pMatprops->kappa0;
     int kappaPower = pMatprops->kappaPower;
 
-    using std::pow;
-    
     FT::iterator resit = results.begin();
 
     for (int i=0; i < size(); i++)
-	*resit++ = getDensity(i)*kappa0/pow(getElectronTemp(i), kappaPower);
+	*resit++ = getDensity(i)*kappa0/std::pow(getElectronTemp(i), kappaPower);
 }
     
 template<class FT>
@@ -322,7 +319,7 @@ void MPMSF<FT>::getElectronSpecificHeat(FT &results) const
 
 #undef MPMSF
 
-} // namespace XTM
+} // end of rtt_matprops namespace
 
 #endif                          // __matprops_MarshakMaterialProps_hh__
 

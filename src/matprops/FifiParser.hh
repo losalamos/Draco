@@ -15,12 +15,7 @@
 #include <stdexcept>
 #include <vector>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
-BEGIN_NS_XTM
+namespace rtt_matprops {
     
 //===========================================================================//
 // class FifiParser - 
@@ -210,7 +205,7 @@ class FifiParser
 
 };
 
-END_NS_XTM  // namespace XTM
+} // end of rtt_matprops namespace
 
 #endif                          // __matprops_FifiParser_hh__
 
