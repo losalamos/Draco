@@ -1,0 +1,44 @@
+#!/bin/sh
+##---------------------------------------------------------------------------##
+## get_tex
+##
+## checks out the tex components needed to build draco docs
+##---------------------------------------------------------------------------##
+
+##---------------------------------------------------------------------------##
+## find the current directory
+
+draco_home=`dirname $0 | pwd`
+home="${draco_home}/.."
+
+##---------------------------------------------------------------------------##
+## determine cvs options
+
+# determine if we need to export or checkout
+cd $draco_home
+if test -d CVS; then
+    cvs_command='checkout'
+else
+    cvs_command='export'
+fi
+
+# find cvs
+cvs=`which cvs`
+eval command=\"${cvs} -q ${cvs_command} -P \"
+
+##---------------------------------------------------------------------------##
+
+# checkout draco components needed within draco
+
+echo
+echo ">>> Checking out archive components in $draco_home/doc with
+    $command"
+cd $draco_home/doc
+echo "*** Checking out tex"
+${command} -d tex archive/tex
+
+##---------------------------------------------------------------------------##
+## FINISHED
+
+echo
+echo ">>> Finished checking out tex components for draco"

@@ -1,3 +1,48 @@
+2003-06-04  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: released draco-3_0_0.  We have adopted some new policies,
+	in particular, we now will not require package tags to be
+	synchronized with the draco tag.  The package tags should be used
+	for interim package releases [in between draco releases].  
+
+	We will now be more proactive about documenting major draco
+	releases.  As part of that spirit, see "Release of Draco-3_0_0" in
+	draco/doc/releases/draco-3_0_0.tex for details of this release.
+
+	The following packages are part of this release:
+	
+		c4 
+    		cdi
+    		cdi_analytic
+    		cdi_eospac 
+    		cdi_gandolf 
+    		ds++ 
+    		imc 
+    		lapack_wrap
+    		mc 
+   		meshReaders 
+    		meshReaders_Services
+    		pcgWrap 
+    		plot2D 
+    		quadrature 
+    		rng 
+    		RTT_Format_Reader 
+    		stdheaders
+    		timestep 
+    		traits 
+    		units 
+    		viz 
+    		xm 
+
+	They all have draco-3_0_0 tags as their latest release.
+
+	We will be releasing a new version of the "Draco Release Policy
+	and Procedures" document to cover the new release policy.
+
+	We will also be releasing a new version of the "The Draco Build
+	System".  This release contains all build system updates
+	documented in this file since draco-2_4_0.
+
 2003-05-07  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco/config: updated to [hopefully] work correctly on the IBM

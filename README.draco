@@ -1,5 +1,5 @@
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> DRACO RELEASE draco-2_0_0       
+>>> DRACO RELEASE draco-3_0_0       
 >>> CCS-4 Transport Methods Group      
 >>> Copyright University of California 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -24,11 +24,9 @@ CCS-2.  The following code projects use/supply code to draco:
 	1) JAYENNE/CCS-4/Tom Evans <tme@lanl.gov>
 		         Todd Urbatsch <tmonster@lanl.gov>
 			 Mike Buksas <mwbuksas@lanl.gov>
-			 Grady Hughes <hgh@lanl.gov>
 
-	2) THALES/CCS-4/Kelly Thompson <kgt@lanl.gov>
-		        Shaun Pautz <pautz@lanl.gov>
-			Brad Clark <bac@lanl.gov>
+	2) CAPSAICIN/CCS-4/Kelly Thompson <kgt@lanl.gov>
+			   Brad Clark <bac@lanl.gov>
 
 	3) MACH/CCS-2/Rob Lowrie <lowrie@lanl.gov>
 
