@@ -12,20 +12,22 @@
 C4_NAMESPACE_BEG
 
 template<class T>
-int Send( const T *buf, int nels, int dest, int group /*=0*/ )
+int Send( const T *buf, int nels, int dest,
+	  int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
 {
     MPI_Send( (void *) buf, nels, mpi_traits<T*>::element_type,
-	      dest, c4_traits<T*>::Tag, MPI_COMM_WORLD );
+	      dest, tag, MPI_COMM_WORLD );
     return C4_SUCCESS;
 }
 
 template<class T>
-int Recv( T *buf, int nels, int source, int group /*=0*/ )
+int Recv( T *buf, int nels, int source,
+	  int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
 {
     int cnt;
     MPI_Status status;
     MPI_Recv( buf, nels, mpi_traits<T*>::element_type,
-	      source, c4_traits<T*>::Tag, MPI_COMM_WORLD, &status );
+	      source, tag, MPI_COMM_WORLD, &status );
     MPI_Get_count( &status, mpi_traits<T*>::element_type, &cnt );
     return cnt;
 }
