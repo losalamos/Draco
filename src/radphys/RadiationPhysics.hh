@@ -247,7 +247,8 @@ inline double RadiationPhysics::getLightSpeed() const
 
 //------------------------------------------------------------------------//
 // getRadConstant:
-//     Calculate the constant, a, for Planck = aT^4, in the user's units.
+//     Calculate the constant, a, for Planck = (a c / 4pi) T^4,
+//     in the user's units.
 //------------------------------------------------------------------------//
 
 inline double RadiationPhysics::getRadConstant() const

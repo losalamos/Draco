@@ -68,9 +68,10 @@ void RadiationPhysics::getPlanck(const Field &TElectron,
 {
     Require(ContainerTraits<Field>::conformal(TElectron, planckian));
 
-    const double a = getRadConstant();
-
-    planckian = a * TElectron*TElectron*TElectron*TElectron;
+    using PhysicalConstants::pi;
+    const double sigmaR = getStefanBoltzmann();
+    
+    planckian = sigmaR / pi * TElectron*TElectron*TElectron*TElectron;
 }
 
 //------------------------------------------------------------------------//
@@ -87,9 +88,10 @@ void RadiationPhysics::getPlanckTemperatureDerivative(const Field &TElectron,
 {
     Require(ContainerTraits<Field>::conformal(TElectron, dplanckdT));
 
-    const double a = getRadConstant();
+    using PhysicalConstants::pi;
+    const double sigmaR = getStefanBoltzmann();
 
-    dplanckdT = 4.0 * a * TElectron*TElectron*TElectron;
+    dplanckdT = 4.0 * sigmaR / pi * TElectron*TElectron*TElectron;
 }
 
 //------------------------------------------------------------------------//
