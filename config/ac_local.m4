@@ -88,189 +88,79 @@ AC_DEFUN(AC_VENDORLIB_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_DETERMINE_WORD_SIZES
+dnl DO VARIABLE SUBSTITUTIONS ON AC_OUTPUT
 dnl
-dnl determine word sizes for C++ POD data types, this function checks
-dnl the type of 4/8 byte integers and 4/8 byte floats, it defines the 
-dnl cpp variables EIGHT_BYTE_INT_TYPE, FOUR_BYTE_INT_TYPE,
-dnl EIGHT_BYTE_FLOAT_TYPE, and FOUR_BYTE_FLOAT_TYPE; it only acts if
-dnl macros AC_DEFINE_EIGHT_BYTE_INT_TYPE,
-dnl        AC_DEFINE_FOUR_BYTE_INT_TYPE,
-dnl        AC_DEFINE_FOUR_BYTE_FLOAT_TYPE,
-dnl        AC_DEFINE_EIGHT_BYTE_FLOAT_TYPE
-dnl are called in configure.in.  It defines long_long_used='true' if 
-dnl the integer type long long is required for a certain size integer
-dnl usage: in aclocal.m4 (called in AC_DRACO_ENV)
+dnl These are all the variable substitutions used within the draco
+dnl build system
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DETERMINE_WORD_SIZES, [dnl
+AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
 
-   dnl determine and define data types for word sizes
+   # these variables are declared "precious", meaning that they are
+   # automatically substituted, put in the configure --help, and
+   # cached 
+   AC_ARG_VAR(CC)dnl
+   AC_ARG_VAR(CFLAGS)dnl
 
-   # eight byte integer types
-   if test -n "${def_eight_byte_int_type}" ; then
-       AC_DETERMINE_INT(8)
-       AC_DEFINE_UNQUOTED(EIGHT_BYTE_INT_TYPE, ${INTEGER_SIZE_TYPE})
-       if test "${INTEGER_SIZE_TYPE}" = 'long long' ; then
-	   long_long_used='true'
-       fi
-   fi
+   AC_ARG_VAR(CXX)dnl
+   AC_ARG_VAR(CXXFLAGS)dnl
 
-   # four byte integer types
-   if test -n "${def_four_byte_int_type}" ; then
-       AC_DETERMINE_INT(4)
-       AC_DEFINE_UNQUOTED(FOUR_BYTE_INT_TYPE, ${INTEGER_SIZE_TYPE})
-       if test "${INTEGER_SIZE_TYPE}" = 'long long' ; then
-	   long_long_used='true'
-       fi
-   fi
+   AC_ARG_VAR(LD)dnl
+   AC_ARG_VAR(LDFLAGS)dnl
 
-   # eight byte float types
-   if test -n "${def_eight_byte_float_type}" ; then
-       AC_DETERMINE_FLOAT(8)
-       AC_DEFINE_UNQUOTED(EIGHT_BYTE_FLOAT_TYPE, ${FLOAT_SIZE_TYPE})
-   fi
+   AC_ARG_VAR(AR)dnl
+   AC_ARG_VAR(ARFLAGS)dnl
 
-   # four byte float types
-   if test -n "${def_four_byte_float_type}" ; then
-       AC_DETERMINE_FLOAT(4)
-       AC_DEFINE_UNQUOTED(FOUR_BYTE_FLOAT_TYPE, ${FLOAT_SIZE_TYPE})
-   fi
+   AC_ARG_VAR(CPPFLAGS)dnl
 
-])
+   # other compiler substitutions
+   AC_SUBST(STRICTFLAG)dnl
+   AC_SUBST(PARALLEL_FLAG)dnl
+   AC_SUBST(RPATH)dnl
+   AC_SUBST(LIB_PREFIX)dnl
 
-dnl-------------------------------------------------------------------------dnl
-dnl AC_DETERMINE_INT
-dnl
-dnl DETERMINE C++ DATA TYPE FOR A GIVEN INTEGER SIZE
-dnl eg. AC_DETERMINE_INT(4) sets the variable INTEGER_SIZE_TYPE to int
-dnl used in AC_DETERMINE_WORD_SIZES
-dnl-------------------------------------------------------------------------dnl
+   # install program
+   AC_SUBST(INSTALL)dnl
+   AC_SUBST(INSTALL_DATA)dnl
 
-AC_DEFUN(AC_DETERMINE_INT, [dnl
+   # files to install
+   : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}
+   AC_SUBST(installfiles)dnl
+   AC_SUBST(install_executable)dnl
+   AC_SUBST(install_lib)dnl
+   AC_SUBST(install_headers)dnl
+   AC_SUBST(installdirs)dnl
 
-   AC_MSG_CHECKING("C++ data type of integer of size $1 bytes")
+   # package libraries
+   AC_SUBST(alltarget)dnl
+   AC_SUBST(libsuffix)dnl
+   AC_SUBST(dirstoclean)dnl
+   AC_SUBST(package)dnl
+   AC_SUBST(DRACO_DEPENDS)dnl
+   AC_SUBST(DRACO_LIBS)dnl
+   AC_SUBST(VENDOR_DEPENDS)dnl
+   AC_SUBST(VENDOR_LIBS)dnl
+   AC_SUBST(ARLIBS)dnl
 
-   # set the language to C++ (if not all ready set)
-   AC_REQUIRE([AC_LANG_CPLUSPLUS])
+   # package testing libraries
+   AC_SUBST(PKG_DEPENDS)dnl
+   AC_SUBST(PKG_LIBS)dnl
+   AC_SUBST(DRACO_TEST_DEPENDS)dnl
+   AC_SUBST(DRACO_TEST_LIBS)dnl
+   AC_SUBST(VENDOR_TEST_DEPENDS)dnl
+   AC_SUBST(VENDOR_TEST_LIBS)dnl
+   AC_SUBST(ARTESTLIBS)dnl
+   AC_SUBST(test_alltarget)dnl
+   AC_SUBST(test_flags)dnl
+   AC_SUBST(test_scalar)dnl
+   AC_SUBST(test_nprocs)dnl
+   AC_SUBST(test_output_files)dnl
 
-   check_ints='false'
-   
-   # check to see if regular int does the job
-   AC_TRY_RUN([
-       int main()
-       {
-	   int p = 1;
-	   if (sizeof(int) == $1)
-	       p = 0;
-	   return p;
-       }], [INTEGER_SIZE_TYPE='int'], 
-	   [check_ints='true'])
-      
-   # check long int type if ints did not pass
-   if test "${check_ints}" = true ; then
+   # libraries
+   AC_ARG_VAR(LIBS)dnl
 
-       AC_TRY_RUN([
-	   int main()
-	   {   
-	       int p = 1;
-	       if (sizeof(long) == $1)
-		   p = 0;
-	       return p;
-	   }], [check_ints='false';
-		INTEGER_SIZE_TYPE='long'], [])
-
-   fi  
-     
-   # check long long type if long did not pass
-   if test "${check_ints}" = true ; then
-
-       AC_TRY_RUN([
-	   int main()
-	   {   
-	       int p = 1;
-	       if (sizeof(long long) == $1)
-		   p = 0;
-	       return p;
-	   }], [check_ints='false';
-		INTEGER_SIZE_TYPE='long long'], [])
-
-   fi
-       
-   # error message because we haven't found a valid type
-   if test "${check_ints}" = true ; then
-       AC_MSG_RESULT("no match found")
-       AC_MSG_ERROR("no valid match for $2 found")
-   else
-       AC_MSG_RESULT("$INTEGER_SIZE_TYPE")
-   fi
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl DETERMINE C++ DATA TYPE FOR HOST_FLOAT
-dnl
-dnl DETERMINE C++ DATA TYPE FOR A GIVEN FLOAT SIZE
-dnl eg. AC_DETERMINE_FLOAT(8) sets the variable FLOAT_SIZE_TYPE to double
-dnl used in AC_DETERMINE_WORD_SIZES
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_DETERMINE_FLOAT, [dnl
-
-   AC_MSG_CHECKING("C++ data type of float of size $1 bytes")
-
-   # set the language to C++
-   AC_REQUIRE([AC_LANG_CPLUSPLUS])
-
-   check_floats='false'
-   
-   # check to see if regular float does the job
-   AC_TRY_RUN([
-       int main()
-       {
-	   int p = 1;
-	   if (sizeof(float) == $1)
-	       p = 0;
-	   return p;
-       }], [FLOAT_SIZE_TYPE='float'], 
-	   [check_floats='true'])
-      
-   # check double type if float did not pass
-   if test "${check_floats}" = true ; then
-
-       AC_TRY_RUN([
-	   int main()
-	   {   
-	       int p = 1;
-	       if (sizeof(double) == $1)
-		   p = 0;
-	       return p;
-	   }], [check_floats='false';
-	        FLOAT_SIZE_TYPE='double'], [])
-
-   fi  
-     
-   # check long double type if double did not pass
-   if test "${check_floats}" = true ; then
-
-       AC_TRY_RUN([
-	   int main()
-	   {   
-	       int p = 1;
-	       if (sizeof(long double) == $1})
-		   p = 0;
-	       return p;
-	   }], [check_floats='false';
-	        FLOAT_SIZE_TYPE='long double'], [])
-
-   fi
-       
-   # error message because we haven't found a valid type
-   if test "${check_floats}" = true ; then
-       AC_MSG_RESULT("no match found")
-       AC_MSG_ERROR("no valid match for HOST_FLOATS found")
-   else
-       AC_MSG_RESULT("$FLOAT_SIZE_TYPE")
-   fi
+   # configure options
+   AC_SUBST(configure_command)dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl

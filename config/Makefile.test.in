@@ -75,7 +75,7 @@ CFLAGS = @CFLAGS@
 ## cpp preprocessor flags
 
 CPPFLAGS  = @CPPFLAGS@
-CPPFLAGS += -I. -I.. @testcppflags@ -I${includedir}
+CPPFLAGS += -I. -I.. -I${includedir}
 
 ##---------------------------------------------------------------------------##
 ## C++ flags
@@ -323,7 +323,8 @@ ${dependfiles}:
 ## clean rules
 ## Do not include the dependfiles when doing clean-like stuff.
 
-ifneq (,$(filter uninstall distclean mostlyclean clean maintainer-clean, \
+ifneq (,$(filter uninstall distclean mostlyclean clean \
+	configure reconfigure maintainer-clean, \
 	${MAKECMDGOALS}))
 #empty
 else

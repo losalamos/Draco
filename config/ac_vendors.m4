@@ -9,6 +9,10 @@ dnl-------------------------------------------------------------------------dnl
 ## All vendor macros should take the following arguments:
 ##     pkg      - this vendor is used in the package (default)
 ##     test     - this vendor is used only in the package's test
+##
+## Each vendor requires an AC_<VENDOR>_SETUP function.  Additionally,
+## any AC_DEFINE or AC_DEFINE_UNQUOTED macros needed by the vendors
+## should be done inside of AC_VENDOR_DEFINES.
 ##---------------------------------------------------------------------------##
 
 dnl-------------------------------------------------------------------------dnl
@@ -38,9 +42,6 @@ AC_DEFUN(AC_MPI_SETUP, [dnl
    elif test -z "${MPI_INC}" ; then
        MPI_H="<mpi.h>"
    fi
-   
-   # we define MPI_H regardless of whether a PATH is set
-   AC_DEFINE_UNQUOTED(MPI_H, ${MPI_H})dnl
 
    # determine if this package is needed for testing or for the
    # package
@@ -102,9 +103,6 @@ AC_DEFUN(AC_SPRNG_SETUP, [dnl
    elif test -z "${SPRNG_INC}" ; then
        SPRNG_H="<sprng.h>"
    fi
-   
-   # we define SPRNG_H regardless of whether a PATH is set
-   AC_DEFINE_UNQUOTED(SPRNG_H, ${SPRNG_H})dnl
 
    # determine if this package is needed for testing or for the 
    # package
@@ -166,10 +164,6 @@ AC_DEFUN(AC_AZTEC_SETUP, [dnl
        AZTEC_H="<az_aztec.h>"
        AZTEC_DEFS_H="<az_aztec_defs.h>"
    fi
-   
-   # we define AZTEC_H regardless of whether a PATH is set
-   AC_DEFINE_UNQUOTED(AZTEC_H, ${AZTEC_H})dnl
-   AC_DEFINE_UNQUOTED(AZTEC_DEFS_H, ${AZTEC_DEFS_H})dnl
 
    # determine if this package is needed for testing or for the 
    # package
@@ -373,7 +367,6 @@ dnl AC_GRACE_SETUP
 dnl
 dnl GRACE SETUP (on by default)
 dnl GRACE is a required vendor
-dnl
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_GRACE_SETUP, [dnl
@@ -402,9 +395,6 @@ AC_DEFUN(AC_GRACE_SETUP, [dnl
    elif test -z "${GRACE_INC}" ; then
        GRACE_H="<${with_grace}.h>"
    fi
-   
-   # we define GRACE_H regardless of whether a PATH is set
-   AC_DEFINE_UNQUOTED(GRACE_H, ${GRACE_H})dnl
 
    # determine if this package is needed for testing or for the 
    # package
@@ -421,6 +411,74 @@ AC_DEFUN(AC_GRACE_SETUP, [dnl
 
    # add GRACE directory to VENDOR_DIRS
    VENDOR_DIRS="${GRACE_LIB} ${VENDOR_DIRS}"
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_VENDOR_DEFINES
+dnl
+dnl Run at the end of the environment setup to add defines required by
+dnl the vendors.  We do this to allow platform specific mods to the 
+dnl vendor defines BEFORE they are output to config.h, etc files.  
+dnl
+dnl This macro needs to be updated when new vendors are added.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_VENDOR_DEFINES], [dnl
+
+   AC_MSG_CHECKING("vendor defines")
+   defines=''
+
+   # ***
+   # MPI
+   # ***
+   if test -n "${vendor_mpi}"; then
+       # define mpi include path
+       AC_DEFINE_UNQUOTED(MPI_H, ${MPI_H})dnl
+
+       # add to defines
+       defines="${defines} ${MPI_H}"
+   fi
+
+   # *****
+   # SPRNG
+   # *****
+   if test -n "${vendor_sprng}"; then
+       # define sprng include path
+       AC_DEFINE_UNQUOTED(SPRNG_H, ${SPRNG_H})dnl 
+
+       # add to defines
+       defines="${defines} ${SPRNG_H}"
+   fi
+
+   # *****
+   # AZTEC
+   # *****
+   if test -n "${vendor_aztec}"; then 
+       # define aztec include paths
+       AC_DEFINE_UNQUOTED(AZTEC_H, ${AZTEC_H})dnl
+       AC_DEFINE_UNQUOTED(AZTEC_DEFS_H, ${AZTEC_DEFS_H})dnl
+
+       # add to defines
+       defines="${defines} ${AZTEC_H} ${AZTEC_DEFS_H}"
+   fi
+
+   # *****
+   # GRACE
+   # *****
+   if test -n "${vendor_grace}"; then
+       # define grace include path
+       AC_DEFINE_UNQUOTED(GRACE_H, ${GRACE_H})dnl
+
+       # add to defines
+       defines="${defines} ${GRACE_H}"
+   fi
+
+   if test -n "${defines}"; then
+       AC_MSG_RESULT("${defines}")
+   else
+       AC_MSG_RESULT("no vendors definitions required")
+   fi
 
 ])
 

@@ -141,6 +141,10 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 	   fi
 
        fi
+
+   else
+       AC_MSG_ERROR("invalid compiler specification ${with_cxx}")
+
    fi
 
    # set the language to CPLUSPLUS
@@ -607,12 +611,6 @@ AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
    
    dnl end of AC_DRACO_IBM_VISUAL_AGE
 ])
-
-dnl-------------------------------------------------------------------------dnl
-dnl FORTRAN COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-builtin(include, ac_f90.m4)dnl AC_LANG_FORTRAN90 and AC_PROG_F90
 
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_compiler.m4

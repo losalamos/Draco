@@ -344,7 +344,8 @@ ${dependfiles}:
 ## clean rules
 ## Do not include the dependfiles when doing clean-like stuff.
 
-ifneq (,$(filter uninstall dvi distclean mostlyclean clean maintainer-clean, \
+ifneq (,$(filter uninstall dvi distclean mostlyclean clean \
+	configure reconfigure maintainer-clean, \
 	${MAKECMDGOALS}))
 #empty
 else

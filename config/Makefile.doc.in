@@ -50,7 +50,7 @@ UNINSTALL = rm -f
 CC = @CC@
 CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
-CPPFLAGS += -I. -I.. @testcppflags@ -I${includedir}
+CPPFLAGS += -I. -I.. -I${includedir}
 
 CXX = @CXX@
 STRICTFLAG = @STRICTFLAG@
