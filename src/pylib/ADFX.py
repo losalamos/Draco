@@ -12,9 +12,7 @@ Classes:
 from Tkinter import *
 from FileDialog import *
 
-from gnl import *
-
-#from K_Mesh import *
+from adfile import *
 
 class ADFX(Frame):
 
@@ -135,12 +133,6 @@ class ADFX(Frame):
 
 	if key[:5] == "Text:":
 	    return ADF_Text_Viewer( s.adfile, key, Toplevel() )
-
-##	if key[:10] == "K_M::zcsf:":
-##	    return K_M_zcsf( s.adfile, key, Toplevel() )
-
-##	if key[:10] == "K_M::ncsf:":
-##	    return K_M_ncsf( s.adfile, key, Toplevel() )
 
 	print 'Unrecognized, trying to autofire on key "%s".' % key
 
