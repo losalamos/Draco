@@ -11,21 +11,21 @@ summary of the code manual organization.
 \subsection{The \draco\ Philosophy}
 
 As mentioned previously, \imctest\ is built under \draco.  \draco\ is a
-\cpp\ framework which provides a general structure for building
+\C++ framework which provides a general structure for building
 computational physics codes.  It's purpose is organizational as
 opposed to being a hard and fast framework.  The principle \draco\ services
 used by \imctest\ include:
 \begin{itemize}
-\item \dspp, a \cpp\ services package that includes \comp{SP} (smart
+\item \dspp, a \C++ services package that includes \comp{SP} (smart
   pointer), \comp{Mat} (matrix), and \comp{Assert} classes;
-\item \cccc, a \cpp\ communications interface package that allows
+\item \cccc, a \C++ communications interface package that allows
   concise message passing using MPI.
 \end{itemize}
 In addition, \draco\ maintains a multifunctional build model which
 performs explicit instantiation of template classes efficiently.
 
 The underlying principle of \draco\ is the development of transport
-libraries which are parameterized on mesh-types (MT).  In \cpp\ this
+libraries which are parameterized on mesh-types (MT).  In \C++ this
 means defining class templates which may be parameterized on (nearly)
 any MT.  \imctest\ follows this organizational principle. 
 
