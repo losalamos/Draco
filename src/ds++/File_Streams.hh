@@ -103,8 +103,6 @@ class File_Output
     // Destructor.
     ~File_Output();
 
-    // Use automatic copy ctor, assignment.
-
     // Opens filename.
     void open(const std::string &filename,
 	      const bool binary = false);
@@ -170,8 +168,6 @@ class File_Input
 
     // Destructor.
     ~File_Input();
-
-    // Use automatic copy ctor, assignment.
 
     // Opens filename.
     void open(const std::string &filename);
