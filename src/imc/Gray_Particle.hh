@@ -84,10 +84,6 @@ class Gray_Particle : public Particle<MT>
     void rw_transport(const MT &, const Opacity<MT,Gray_Frequency> &,
 		      Tally<MT> &, SP_Random_Walk, SP_Diagnostic);
 
-    // Stream for implicit capture.
-    void stream_implicit_capture(const Opacity<MT,Gray_Frequency> &,
-				 Tally<MT> &, double);
-
     // Process a collision event.
     void collision_event(const MT &, Tally<MT> &, double, double, double);
 

@@ -426,7 +426,7 @@ void Gray_Particle<MT>::straight_transport(
 	else
 	{
 	    // Heavy particle (implicit) streaming
-	    stream_implicit_capture(xs, tally, d_stream);    
+	    Base::stream_implicit_capture(sigma_eff_abs, tally, d_stream);    
 	}
 
 	// Adjust the time remaining till the end of the time step
@@ -701,7 +701,7 @@ void Gray_Particle<MT>::rw_transport(
 	    else
 	    {
 		// Heavy particle (implicit) streaming
-		stream_implicit_capture(xs, tally, d_stream);    
+		Base::stream_implicit_capture(sigma_eff_abs, tally, d_stream);    
 	    }
 
 	    // Adjust the time remaining till the end of the time step
@@ -754,68 +754,6 @@ void Gray_Particle<MT>::rw_transport(
     } 
 
     // !!! END OF TRANSPORT LOOP !!!
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Stream for implicit capture.
- */
-template<class MT>
-void Gray_Particle<MT>::stream_implicit_capture(
-    const Opacity<MT,Gray_Frequency> &xs, 
-    Tally<MT>                        &tally,
-    double                            distance)
-{
-    Check(distance >= 0.0);
-    
-    // exponential argument
-    double argument = -xs.get_sigeffabs(Base::cell) * distance;
-
-    // calculate multiplicative reduction in energy-weight
-    double factor = std::exp(argument);
-
-    // calculate new energy weight; change in energy-weight
-    double new_ew = Base::ew * factor;
-    double del_ew = Base::ew - new_ew;
-
-    // tally deposited energy and momentum
-    tally.deposit_energy(Base::cell, del_ew);
-    tally.accumulate_momentum(Base::cell, del_ew, Base::omega);
-
-    // accumulate tallies for energy-weighted path length 
-    //     ewpl == energy-weighted-path-length = 
-    //             int_0^d e^(-sig*x) dx =
-    //             (1/sig)ew(1-e^(-sig*x)), 
-    //             or if sig=0, 
-    //             ewpl = ew*d.
-    if (xs.get_sigeffabs(Base::cell) > 0)
-    {
-	// integrate exponential from 0 to distance
-	tally.accumulate_ewpl(Base::cell, del_ew / 
-			      xs.get_sigeffabs(Base::cell));
-    }
-    else if (xs.get_sigeffabs(Base::cell) == 0)
-    {
-	// integrate constant
-	tally.accumulate_ewpl(Base::cell, distance * Base::ew);
-    }
-    else if (xs.get_sigeffabs(Base::cell) < 0)
-    {
-	Insist (0, "Effective absorption is negative!");
-    }
-
-    // update the fraction of the particle's original weight
-    Base::fraction *= factor;
-    Check (Base::fraction > Base::minwt_frac || 
-	   rtt_dsxx::soft_equiv(Base::fraction, Base::minwt_frac));
-
-    // update particle energy-weight
-    Base::ew = new_ew;
-
-    Check(Base::ew > 0.0);
-
-    // Physically transport the particle
-    Base::stream(distance); 
 }
 
 //---------------------------------------------------------------------------//

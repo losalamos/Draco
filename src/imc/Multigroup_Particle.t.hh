@@ -222,7 +222,7 @@ void Multigroup_Particle<MT>::transport(const MT         &mesh,
 	else
 	{
 	    // Heavy particle (implicit) streaming
-	    stream_implicit_capture(xs, tally, d_stream);    
+	    Base::stream_implicit_capture(sigma_eff_abs, tally, d_stream);    
 	}
 
 

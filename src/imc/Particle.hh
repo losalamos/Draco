@@ -247,6 +247,9 @@ class Particle
     // absorption
     inline void stream_analog_capture  (Tally<MT> &, double);
 
+    // Perform streaming operations specific to implicit absorption
+    inline void stream_implicit_capture(double sig_eff_abs, Tally<MT>&, double);
+
     // Surface crossings, return a false if particle escapes.
     inline bool surface(const MT &, int);
 
@@ -410,6 +413,69 @@ void Particle<MT>::stream_analog_capture(Tally<MT> &tally, double distance)
     // Physically transport the particle
     stream(distance); 
 }
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Stream the particle during implicit transport
+ */
+template<class MT>
+void Particle<MT>::stream_implicit_capture(
+    double      sig_eff_abs,
+    Tally<MT>  &tally,
+    double      distance)
+{
+    Check(distance >= 0.0);
+    
+    // exponential argument
+    double argument = -sig_eff_abs * distance;
+
+    // calculate multiplicative reduction in energy-weight
+    double factor = std::exp(argument);
+
+    // calculate new energy weight; change in energy-weight
+    double new_ew = ew * factor;
+    double del_ew = ew - new_ew;
+
+    // tally deposited energy and momentum
+    tally.deposit_energy(cell, del_ew);
+    tally.accumulate_momentum(cell, del_ew, omega);
+
+    // accumulate tallies for energy-weighted path length 
+    //     ewpl == energy-weighted-path-length = 
+    //             int_0^d e^(-sig*x) dx =
+    //             (1/sig)ew(1-e^(-sig*x)), 
+    //             or if sig=0, 
+    //             ewpl = ew*d.
+    if (sig_eff_abs > 0)
+    {
+	// integrate exponential from 0 to distance
+	tally.accumulate_ewpl(cell, del_ew / sig_eff_abs);
+    }
+    else if (sig_eff_abs == 0)
+    {
+	// integrate constant
+	tally.accumulate_ewpl(cell, distance * ew);
+    }
+    else if (sig_eff_abs < 0)
+    {
+	Insist (0, "Effective absorption is negative!");
+    }
+
+    // update the fraction of the particle's original weight
+    fraction *= factor;
+    Check (fraction > minwt_frac || 
+	   rtt_dsxx::soft_equiv(fraction, minwt_frac));
+
+    // update particle energy-weight
+    ew = new_ew;
+
+    Check(ew > 0.0);
+
+    // Physically transport the particle
+    stream(distance); 
+}
+
+
 
 //---------------------------------------------------------------------------//
 /*!
