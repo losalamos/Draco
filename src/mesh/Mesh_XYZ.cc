@@ -17,9 +17,14 @@ XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb )
     : Mesh_DB( mdb )
 {
     nct = ncx * ncy * ncz;
-    ncp = nct / nodes + ( (nct % nodes) > node );
-
     nxy = ncx * ncy;
+
+    Insist( ncz > nodes, "Current decomposition requires ncz > nodes." );
+
+// Calculate # of cells in z on this processor.
+    int nczp = ncz / nodes + ( (ncz % nodes) > node );
+
+    ncp = nxy * nczp;
 
     goff = 0;
     {
@@ -27,7 +32,6 @@ XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb )
 	goff = s;
 	s += ncp;
     }
-
 }
 
 
