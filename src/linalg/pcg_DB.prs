@@ -19,7 +19,7 @@
 // file for permanent storage and subsequent retrieval, etc.
 //---------------------------------------------------------------------------//
 
-void pcg_DB::save( ofstream& ofs )
+void pcg_DB::save( std::ofstream& ofs )
 {
 // PRST: dumpvars
 }
@@ -31,7 +31,7 @@ void pcg_DB::save( ofstream& ofs )
 // a file, in order to reinstantiate it just as it had been before.
 //---------------------------------------------------------------------------//
 
-void pcg_DB::restore( ifstream& ifs )
+void pcg_DB::restore( std::ifstream& ifs )
 {
 // PRST: readvars
 }
