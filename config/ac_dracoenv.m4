@@ -105,6 +105,16 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    fi
    
    dnl
+   dnl TOOL CHECKS
+   dnl
+   
+   dnl check for and assign the path to python
+   AC_PATH_PROG(PYTHON_PATH, python, null)
+   if test "${PYTHON_PATH}" == null ; then
+       AC_MSG_ERROR("No valid Python found!")
+   fi
+
+   dnl
    dnl COMPILER SETUPS
    dnl
 
@@ -320,7 +330,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_SUBST(RUNTESTFLAGS)dnl
    AC_SUBST(RUNTESTTOOLFLAG)dnl
    AC_SUBST(FLAGS_TO_PASS)dnl
-   AC_SUBST(test_launch)dnl
    AC_SUBST(test_nprocs)dnl
    AC_SUBST(SITE_EXP)dnl
    AC_SUBST(site_exp)dnl
