@@ -64,6 +64,8 @@ class C4_Req {
 
     void wait();
 
+    bool complete();
+
     int inuse() const { return assigned; }
 };
 

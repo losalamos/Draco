@@ -102,6 +102,22 @@ void C4_Req::wait()
     clear();
 }
 
+//---------------------------------------------------------------------------//
+// Tests for the completeion of a non blocking operation.
+//---------------------------------------------------------------------------//
+
+bool C4_Req::complete()
+{
+#ifdef C4_SHMEM
+    throw "incomplete";
+#endif
+#ifdef C4_MPI
+    int flag;
+    MPI_Test( &r, &flag, &s );
+    return flag;
+#endif
+}
+
 C4_NAMESPACE_END
 
 //---------------------------------------------------------------------------//
