@@ -125,14 +125,16 @@ class Particle_Buffer
 
     // Typedefs (this is needed to use static functions of a nested type
     // where the primary type is a template parameter).
-    typedef typename PT::Pack   PT_Pack;
+    typedef typename PT::Pack    PT_Pack;
     
     // Other typedefs.
-    typedef std::vector<double> sf_double;
-    typedef rtt_rng::Sprng      Rnd_Type;
-    typedef rtt_dsxx::SP<PT>    SP_PT;
-    typedef std::istream        std_istream;
-    typedef std::ostream        std_ostream;
+    typedef std::vector<double>  sf_double;
+    typedef std::vector<int>     sf_int;
+    typedef rtt_rng::Sprng       Rnd_Type;
+    typedef rtt_rng::Rnd_Control Rnd_Type_Control;
+    typedef rtt_dsxx::SP<PT>     SP_PT;
+    typedef std::istream         std_istream;
+    typedef std::ostream         std_ostream;
 
     /*!
      * \class Particle_Buffer::Census_Buffer
@@ -229,8 +231,8 @@ class Particle_Buffer
   public:
     // Constructors.
     template<class MT>
-    Particle_Buffer(const MT &, const Rnd_Type &); 
-    Particle_Buffer(int, const Rnd_Type &);
+    Particle_Buffer(const MT &, const Rnd_Type_Control &); 
+    Particle_Buffer(int, const Rnd_Type_Control &);
     Particle_Buffer(int, int, int);
 
     // >>> SET FUNCTIONS

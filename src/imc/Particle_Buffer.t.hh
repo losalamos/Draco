@@ -17,31 +17,15 @@
 namespace rtt_imc 
 {
 
-// std Namespace objects
-using std::fill;
-using std::accumulate;
-using std::vector;
-using std::istream;
-using std::ostream;
-
-// draco namespace objects
-using rtt_dsxx::SP;
-using C4::C4_Req;
-using C4::Send;
-using C4::Recv;
-using C4::SendAsync;
-using C4::RecvAsync;
-using rtt_rng::Rnd_Control;
-using rtt_rng::Sprng;
-
 //---------------------------------------------------------------------------//
-// constructors
+// CONSTRUCTORS
 //---------------------------------------------------------------------------//
 // templated constructor for Particle_Buffer
 
 template<class PT>
 template<class MT>
-Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon) 
+Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, 
+				     const Rnd_Type_Control &rcon) 
 {
     // Note: dsize is the size of the double data for the census. This
     // differs from the complete set of particle data by one double value
@@ -69,7 +53,8 @@ Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon)
 // built mesh.
 
 template<class PT>
-Particle_Buffer<PT>::Particle_Buffer(int dimension, const Rnd_Control &rcon)
+Particle_Buffer<PT>::Particle_Buffer(int dimension, 
+				     const Rnd_Type_Control &rcon)
 {
     // Note: See comments for Particle_Buffer(const MT&, const Rnd_Control&)
     // above
@@ -90,9 +75,8 @@ Particle_Buffer<PT>::Particle_Buffer(int dimension, const Rnd_Control &rcon)
 // constructor for Particle_Buffer which allows the user to enter the 
 // Particle sizes
 
-/* This constructor is dangerous because it does not sync Particle::Pack
-   buffer sizes 
-*/
+// This constructor is dangerous because it does not sync Particle::Pack
+// buffer sizes
 
 template<class MT>
 Particle_Buffer<MT>::Particle_Buffer(int d, int i, int c)
@@ -106,29 +90,25 @@ Particle_Buffer<MT>::Particle_Buffer(int d, int i, int c)
 // constructors for Particle_Buffer<PT>::Census Buffer struct
 
 template<class PT>
-Particle_Buffer<PT>::Census_Buffer::Census_Buffer(vector<double> &r_,
-						  vector<double> &omega_,
+Particle_Buffer<PT>::Census_Buffer::Census_Buffer(sf_double &r_,
+						  sf_double &omega_,
 						  double ew_,
 						  double fraction_,
 						  int cell_,
-						  Sprng random_)
-    : r(r_), omega(omega_), ew(ew_), fraction(fraction_), cell(cell_),
+						  Rnd_Type random_)
+    : r(r_), 
+      omega(omega_), 
+      ew(ew_), 
+      fraction(fraction_), 
+      cell(cell_),
       random(random_)
 {
     // constructor for abbreviated particle data that comes back from census
     // files
 }
 
-template<class PT>
-Particle_Buffer<PT>::Census_Buffer::Census_Buffer()
-    : random(0, 0)
-{
-    // constructor for use with STL, this cannot be used
-    Insist (0, "You tried to default construct a Census_Buffer!");
-}
-
 //---------------------------------------------------------------------------//
-// static buffer size members
+// STATIC PRIVATE DATA MEMBERS
 //---------------------------------------------------------------------------//
 
 // buffer size
@@ -145,34 +125,9 @@ template<class PT>
 int Particle_Buffer<PT>::buffer_c = buffer_s * PT_Pack::get_char_size();
 
 //---------------------------------------------------------------------------//
-// set the buffers
-
-template<class PT>
-void Particle_Buffer<PT>::set_buffer(int d, int i, int c)
-{
-
-    /* This function is dangerous because it resets buffer sizes without
-        consulting Particle::Pack */
-
-    // reset the double, int, and char buffer sizes
-    buffer_d = buffer_s * d;
-    buffer_i = buffer_s * i;
-    buffer_c = buffer_s * c;
-}
-
-template<class PT>
-void Particle_Buffer<PT>::set_buffer(int d, int i, int c, int s)
-{
-
-    /* This function is dangerous because it resets buffer sizes without
-       consulting Particle::Pack */
-
-    // reset the buffer size, double, int, and char buffer sizes
-    buffer_s = s;
-    buffer_d = buffer_s * d;
-    buffer_i = buffer_s * i;
-    buffer_c = buffer_s * c;
-}
+// BUFFER SIZE FUNCTIONS
+//---------------------------------------------------------------------------//
+// set the buffer size (public interface)
 
 template<class PT>
 void Particle_Buffer<PT>::set_buffer_size(int s)
@@ -187,12 +142,40 @@ void Particle_Buffer<PT>::set_buffer_size(int s)
 }
 
 //---------------------------------------------------------------------------//
+// set the buffers (private implementation)
+
+template<class PT>
+void Particle_Buffer<PT>::set_buffer(int d, int i, int c)
+{
+    // This function is dangerous because it resets buffer sizes without
+    // consulting Particle::Pack
+
+    // reset the double, int, and char buffer sizes
+    buffer_d = buffer_s * d;
+    buffer_i = buffer_s * i;
+    buffer_c = buffer_s * c;
+}
+
+template<class PT>
+void Particle_Buffer<PT>::set_buffer(int d, int i, int c, int s)
+{    
+    // This function is dangerous because it resets buffer sizes without
+    // consulting Particle::Pack
+
+    // reset the buffer size, double, int, and char buffer sizes
+    buffer_s = s;
+    buffer_d = buffer_s * d;
+    buffer_i = buffer_s * i;
+    buffer_c = buffer_s * c;
+}
+
+//---------------------------------------------------------------------------//
 // IO FUNCTIONS
 //---------------------------------------------------------------------------//
 // write a single particle to an output
 
 template<class PT>
-void Particle_Buffer<PT>::write_census(ostream &cenfile,
+void Particle_Buffer<PT>::write_census(std_ostream &cenfile,
 				       const PT &particle) const
 {
     // create a packed version of the particle
@@ -209,8 +192,8 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
     Check (packed.get_char_size()   == csize  );
 
     // write the output
-    /* Note that we skip the first element of the double data. This is
-       time_left, which is not included in the census */
+    // Note that we skip the first element of the double data. This is
+    // time_left, which is not included in the census
     cenfile.write(reinterpret_cast<const char *>(packed.double_begin()+1),
 		  dsize * sizeof(double));
     cenfile.write(reinterpret_cast<const char *>(packed.int_begin()),
@@ -223,7 +206,7 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
 // write a full Comm_Buffer to an output
 
 template<class PT>
-void Particle_Buffer<PT>::write_census(ostream &cenfile,
+void Particle_Buffer<PT>::write_census(std_ostream &cenfile,
 				       Comm_Buffer &buffer) const
 {
     // check for output file
@@ -294,9 +277,11 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
 // read a single particle from an output and return a Census_Buffer
 
 template<class PT>
-SP<typename Particle_Buffer<PT>::Census_Buffer> 
-Particle_Buffer<PT>::read_census(istream &cenfile) const
+rtt_dsxx::SP<typename Particle_Buffer<PT>::Census_Buffer> 
+Particle_Buffer<PT>::read_census(std_istream &cenfile) const
 {
+    using rtt_dsxx::SP;
+
     // make sure file exists
     Check (cenfile);
 
@@ -323,8 +308,8 @@ Particle_Buffer<PT>::read_census(istream &cenfile) const
 	// assign data to proper structures for Census Particle
 	double ew   = ddata[0];
 	double frac = ddata[1];
-	vector<double> r;
-	vector<double> omega;
+	sf_double r;
+	sf_double omega;
 	for (int i = 2; i < 5; i++)
 	    omega.push_back(ddata[i]);
 	for (int i = 5; i < dsize; i++)
@@ -333,7 +318,7 @@ Particle_Buffer<PT>::read_census(istream &cenfile) const
 
 	// make new random number
 	int *id = unpack_sprng(rdata);
-	Sprng random(id, idata[1]);
+	Rnd_Type random(id, idata[1]);
 
 	// make new Census_Buffer
 	return_part = new Census_Buffer(r, omega, ew, frac, cell, random);
@@ -349,13 +334,15 @@ Particle_Buffer<PT>::read_census(istream &cenfile) const
 }
 
 //---------------------------------------------------------------------------//
-// Particle send and receives
+// PARTICLE COMMUNICATION FUNCTIONS
 //---------------------------------------------------------------------------//
 // do a block send of a Comm_Buffer
 
 template<class PT>
 void Particle_Buffer<PT>::send_buffer(Comm_Buffer &buffer, int proc) const
 {
+    using C4::Send;
+
     // send out a Comm_Buffer, add explicit template parameter so that highly 
     // standard compliant compilers will not face ambiguity in determining
     // which Send to use
@@ -372,9 +359,12 @@ void Particle_Buffer<PT>::send_buffer(Comm_Buffer &buffer, int proc) const
 // do a block recv of a Comm_Buffer
 
 template<class PT>
-SP<typename Particle_Buffer<PT>::Comm_Buffer> 
+rtt_dsxx::SP<typename Particle_Buffer<PT>::Comm_Buffer> 
 Particle_Buffer<PT>::recv_buffer(int proc) const
 {
+    using C4::Recv;
+    using rtt_dsxx::SP;
+
     // return Comm_Buffer declaration
     SP<Comm_Buffer> buffer(new Comm_Buffer());
 
@@ -395,6 +385,8 @@ Particle_Buffer<PT>::recv_buffer(int proc) const
 template<class PT>
 void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc) const
 {
+    using C4::SendAsync;
+
     // async send this Comm_Buffer
     SendAsync(buffer.comm_n, &buffer.n_part, 1, proc, 100);
     SendAsync(buffer.comm_d, &buffer.array_d[0], buffer_d, proc, 101);
@@ -411,6 +403,8 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc) const
 template<class PT>
 void Particle_Buffer<PT>::post_arecv(Comm_Buffer &buffer, int proc) const
 {
+    using C4::RecvAsync;
+
     // post c4 async receives
     RecvAsync(buffer.comm_n, &buffer.n_part, 1, proc, 100);
     RecvAsync(buffer.comm_d, &buffer.array_d[0], buffer_d, proc, 101);
@@ -421,8 +415,8 @@ void Particle_Buffer<PT>::post_arecv(Comm_Buffer &buffer, int proc) const
 //---------------------------------------------------------------------------//
 // post waits on the receives and sends to fill up a Comm_Buffer
 
-template<class PT> void 
-Particle_Buffer<PT>::async_wait(Comm_Buffer &buffer) const
+template<class PT> 
+void Particle_Buffer<PT>::async_wait(Comm_Buffer &buffer) const
 {
     // wait on recieve buffers to make sure they are full
     buffer.comm_n.wait();
@@ -437,6 +431,10 @@ Particle_Buffer<PT>::async_wait(Comm_Buffer &buffer) const
 template<class PT>
 bool Particle_Buffer<PT>::async_check(Comm_Buffer &buffer) const
 {
+    using std::vector;
+    using std::fill;
+    using std::accumulate;
+
     // tag to check what is in; we want all or nothing
     vector<int> arrived(4);
     fill(arrived.begin(), arrived.end(), 0);
@@ -510,7 +508,7 @@ bool Particle_Buffer<PT>::comm_status(Comm_Buffer &buffer) const
 }
 
 //---------------------------------------------------------------------------//
-// Buffering functions
+// BUFFERING FUNCTIONS
 //---------------------------------------------------------------------------//
 // add a Census_Buffer to a Comm_Buffer
 
@@ -605,9 +603,11 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
 //---------------------------------------------------------------------------//
 // make a Particle bank out of a Comm_Buffer
 
-template<class PT> void 
-Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const 
+template<class PT>
+void Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const 
 {
+    using rtt_dsxx::SP;
+
     // get the number of Particles in the Comm_Buffer
     int num_part = buffer.n_part;
     Require (num_part <= buffer_s);
@@ -648,10 +648,10 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const
  * \brief Make a particle out of a Census_Buffer.
  */
 template<class PT>
-SP<PT> Particle_Buffer<PT>::Census_Buffer::make_Particle() const
+rtt_dsxx::SP<PT> Particle_Buffer<PT>::Census_Buffer::make_Particle() const
 {
     // make a particle
-    SP<PT> particle;
+    rtt_dsxx::SP<PT> particle;
 
     // load particle data, set time_left to 1.0-->this will be adjusted in
     // the source
