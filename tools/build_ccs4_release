@@ -183,15 +183,18 @@ Linux)
    MPI="--with-c4=mpi"
    MPI_INC="--with-mpi-inc=/usr/local/mpich/include"
    MPI_LIB="--with-mpi-lib=/usr/local/mpich/lib"
+   MPI="${MPI} ${MPI_INC} ${MPI_LIB}"
 
    LAPACK="--with-lapack=atlas"
    LAPACK_LIB="--with-lapack-lib=/codes/radtran/vendors/atlas/$arch/lib"
+   LAPACK="${LAPACK} ${LAPACK_LIB}"
 
    # options for Draco only
 
    if test -z "$withdraco"; then
       SPRNG_INC="--with-sprng-inc=/codes/radtran/vendors/sprng/include"
       SPRNG_LIB="--with-sprng-lib=/codes/radtran/vendors/sprng/$arch/lib"
+      SRPNG="${SPRNG_INC} ${SPRNG_LIB}"
 
       PCG_LIB="--with-pcg-lib=/codes/radtran/vendors/pcg/$arch/lib"
 
@@ -201,6 +204,7 @@ Linux)
 
       GRACE_INC="--with-grace-inc=/usr/local/grace/include"
       GRACE_LIB="--with-grace-lib=/usr/local/grace/lib"
+      GRACE="${GRACE_INC} ${GRACE_LIB}"
 
    # options for clients only
 
@@ -209,14 +213,19 @@ Linux)
       TRILINOS="--with-trilinos=aztecoo"
       TRILINOS_INC="--with-trilinos-inc=/codes/radtran/vendors/trilinos/Linux/mpi/include"
       TRILINOS_LIB="--with-trilinos-lib=/codes/radtran/vendors/trilinos/Linux/mpi/lib"
+      TRILINOS="${TRILINOS} ${TRILINOS_INC} ${TRILINOS_LIB}"
+
+      METIS="--with-metis=metis"
+      METIS_INC="/codes/radtran/vendors/metis/Lib"
+      METIS_LIB="/codes/radtran/vendors/metis"
+      METIS="${METIS} ${METIS_INC} ${METIS_LIB}"
 
    fi
 
    # Put the list together
 
-   VENDORS="$MPI $MPI_INC $MPI_LIB $SPRNG_INC $SPRNG_LIB $PCG_LIB $LAPACK"
-   VENDORS="$VENDORS $LAPACK_LIB $GANDOLF_LIB $EOSPAC_LIB $GRACE_INC $GRACE_LIB"
-   VENDORS="$VENDORS $TRILINOS $TRILINOS_INC $TRILINOS_LIB"
+   VENDORS="$MPI $SPRNG $PCG_LIB $LAPACK $GANDOLF_LIB $EOSPAC_LIB"
+   VENDORS="$VENDORS $TRILINOS $METIS"
    ;;
 
 IRIX64)
