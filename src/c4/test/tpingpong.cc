@@ -15,7 +15,7 @@ using namespace std;
 
 void t1( int len, int msgs )
 {
-    using namespace dsxx;
+    using namespace rtt_dsxx;
 
     Mat1<int> buf1( len ), buf2( len );
 
