@@ -1,7 +1,7 @@
 %%---------------------------------------------------------------------------%%
 %% draco-autodoc.tex
 %% John McGhee
-%% Time-stamp: <99/08/06 08:45:09 mcghee>
+%% Time-stamp: <99/08/06 10:49:37 mcghee>
 %%---------------------------------------------------------------------------%%
 \documentclass[11pt]{nmemo}
 \usepackage[centertags]{amsmath}
@@ -86,7 +86,7 @@ W.D. Hawkins, XTM MS D409}
 The GNU Public License C++ automatic code documentation system \doxy\
 has been installed
 for use by the \draco\ team. This memo describes how to
-set up and use \doxy\ .  Also, some suggestions are made as to minimal
+set up and use \doxy .  Also, some suggestions are made as to minimal
 documentation standards.
 
 \section{Introduction}
@@ -99,7 +99,7 @@ the GNU Public License.
 Good documentation is critical to any code development effort.
 The advantages of automatic documentation systems are many. 
 For example, the documentation  and the code are much more likely to
-be conformal; the documentation is conveniently located with the code,
+be conformal, the documentation is conveniently located with the code,
 code developers are encouraged to include liberal explanations in their 
 comments, and updates and corrections are easily handled.
 \draco\ has been considering adopting such a system for some time.
@@ -107,8 +107,8 @@ comments, and updates and corrections are easily handled.
 
 Recently, Tom Evans has evaluated several automatic documentation systems
 including DOC++, PERCEPS, KDOC, and \doxy\ . 
-For \draco\ automatic documentation purposes, \doxy\ is deemed to be clearly the 
-package of choice. There are several reasons for this. Among these are
+For \draco\ automatic documentation purposes, \doxy\ is deemed to be clearly
+the package of choice. There are several reasons for this. Among these are
 ease of use and installation; a plethora of clever and useful features;
 good documentation (the package documented itself!);
 active development and support from a responsive author; and 
@@ -157,21 +157,25 @@ inside.
 
 \subsection{Special Comment Blocks}
 
+As previously mentioned, \doxy\ can be used on any
+C++ source file without any modifications to the source at all.
+\doxy\ will extract a certain minimal amount of information directly
+from the source file. In addition to this information, the developer
+can flag certain comment blocks for inclusion in the documentation,
+if desired.
 The fundamental key that \doxy\ uses to flag a block of comments for
 extraction is the C-style comment character followed by an exclamation
-point. For example:\begin{verbatim}
-
+point. For example:
+\begin{verbatim}
 /*!
  *
  * This text (without the asterisks) will appear in the documentation!
  *
  */
-
 \end{verbatim}
-
 This is all that is required from the code developer to get everything
 in the comment block into the documentation. \doxy\ automatically associates
-the comment block with the class/member that immediately follows the 
+the special comment block with the class/member that immediately follows the 
 comment block in the source. Alternatively, you can put the comment block
 anywhere in any file and mark it with a special keyword to associate it
 with the appropriate class/member. Blank lines are recognized as paragraph
@@ -182,31 +186,31 @@ breaks. Code comments in other legal C++ comment formats are ignored.
 Inside a \doxy\ comment block, there are currently approximately 60 special
 keywords that \doxy\ recognizes. If desired, these keywords can be used to 
 control and produce addtional features in the documentation. 
- The interested reader is referred to the \doxy\
+The interested reader is referred to the \doxy\
 manual for details on these keywords. 
 We will briefly describe the major keywords that we have
 found to be most useful. 
-
 \begin{description}
-\item [file] The file name
-\item [author] The author
-\item [date] The date
-\item [brief] A one line description
-\item [param] An input parameter
-\item [return] The return value
-\item [sa] ``See Also'' a list of related items
+\item [file] The file name.
+\item [author] The author.
+\item [date] The date.
+\item [brief] A one line description.
+\item [param] An input parameter.
+\item [return] The return value.
+\item [sa] ``See Also'' a list of related items.
 \item [example {\em filename}] Includes {\em filename} as a code example.
 \item [include {\em filename}] Includes {\em filename} verbatim at the point of
-  reference
-\item [page] Places the comment block in which it appears in the documentation
-as a separate page 
+  reference.
+\item [page {\em reference title}] Places the comment block in which it appears in the documentation
+as a separate page with title {\em title}. You can refer to and create a link
+to the page using {\em reference} as an argument to the \doxy\ ``ref'' keyword. 
 \end{description}
 
 
 \section{\draco\ Installation Strategy}
   \subsection{New Templates}
   Tom Evans is installing new *.cc and *.hh templates in the \draco\ elisp
-directory to support \doxy\ requirements. There will also be a
+directory to support \doxy\ conventions. There will also be a
 template for a standard \doxy\ configuration file, and standard header
 and footer files for \doxy\ html output.
   
@@ -214,7 +218,7 @@ and footer files for \doxy\ html output.
 Tag files are used to refer to other packages. Relative Paths are supported.
 
   \subsection{Storage of \doxy\ Output}
-Each package developer will run \doxy\ in it's respective directory. 
+Each package developer will run \doxy\ in their respective directories. 
 \doxy\ will create html and \LaTeX\ sub-directories to contain the
 html and \LaTeX\ documentation output. \doxy\ will need to be
 run periodically to bring the documentation into sync with with the
@@ -224,12 +228,13 @@ CVS using the same procedures as for the source code.
   \subsection{\draco\ WWW Site}
 When checking out the \draco\ web site,
 CVS magic will be used to check out the appropriate html source
-from each package directory in \draco\.
+from each package directory in \draco\. Stubs for links to on-line 
+documentation have already been installed on the web site.
 
 \section{Documentation Standards}
 
 We believe that each developer should be free to document source code
-in the style and manner most agreeable to the individual. As such,
+in the style and manner most agreeable to the individual. As a result,
 only minimal documentation standards are required.
 We propose the following standards for consideration:
 
@@ -240,10 +245,11 @@ a least a brief description.
 return values.
 \end{itemize}
 
-We feel that these guidelines, together with what \doxy\ will automatically
+We feel that these guidelines, together with the information that
+\doxy\ will automatically
 extract, will produce documentation that is adequate for our purposes. Of
 course, all developers are free and encouraged to provide more than the
-minimum.
+absolute minimum.
 
 \section{Example}
 Nothing is as instructive as a good example, so here is a copy of
