@@ -64,7 +64,7 @@ string tQuadrature::runTest()
 {
     // double precesion values will be tested for correctness against this
     // tolerance. 
-    static const double TOL = 1.0e-9;
+    static const double TOL = 1.0e-10; 
 
     // create an object that is responsible for creating quadrature objects.
     rtt_quadrature::QuadCreator QuadratureCreator;
