@@ -1,6 +1,6 @@
 <html>
 
-<!-- Time-stamp: <99/03/18 16:14:35 mcghee> -->
+<!-- Time-stamp: <99/03/19 14:45:32 mcghee> -->
 
 <header><title>
 Draco Methods Development Environment
@@ -76,14 +76,14 @@ One, two and three dimensional numerical solutions of the
 <ul>
 <li>Particles
   <ul>
-    <li> Neutrons and high energy Gamma rays
-    <li> Charged Particles - electrons, positrons, etc.
-    <li> X-Ray and infra-red photons
+    <li> Neutral Particles - Neutrons and high energy Gamma rays
+    <li> Charged Particles - electrons, positrons
+    <li> Radiative Transfer - X-Ray and infra-red photons
   </ul>
 
 <li> Deterministic Solution Techniques 
   <ul>
-   <li> First and Second order forms of the
+   <li> First and second order forms of the
         transport equation
    <li> Structured, unstructured and AMR grids
    <li> Spatial Differencing Techniques
@@ -99,23 +99,38 @@ One, two and three dimensional numerical solutions of the
          <li> Spherical Harmonics (Pn)
          <li> Discrete Ordinates (Sn)
          <li> Simplified Spherical Harmonics (SPn)
+         <li> Fokker-Planck approximations for highly forward peaked
+              scattering
         </ul>
+   <li> Energy differencing techniques
+        <ul>
+         <li> Multi-group
+         <li> Linear discontinuous for charged particle 
+              continuous-slowing-down term
+        </ul>
+   <li> Time differencing techniques
+         <ul>
+           <li> Forward Euler
+           <li> Crank-Nicholson
+           <li> Linear Discontinuous
+          </ul>
    <li> Convergence acceleration techniques
         <ul>
          <li> MFG acceleration of fission and emission sources
          <li> DSA acceleration of Sn scattering sources
          <li> Angular multi-grid acceleration of highly forward
               peaked scattering
+         <li> Discrete and continuous Fourier Analysis convergence
+              properties
         </ul>
-   <li> Multi-Group energy differencing
-   <li> Fokker-Planck approximations
-   <li> Discrete and continuous Fourier Analysis
    <li> Automatic biasing of Monte-Carlo solutions
+   <li> Asymptotic analysis of spatial and angular differencing methods
   </ul>
 <li> Stochastic Solution Techniques
   <ul>
    <li> Implicit Monte-Carlo
-  <li> Linear Monte-Carlo
+   <li> Linear Monte-Carlo
+   <li> Hybrid Deterministic-Monte-Carlo Methods
   </ul>
 </ul>
 
@@ -152,10 +167,10 @@ One, two and three dimensional numerical solutions of the
 <li> Operating Systems and Related Utilities
 <ul>
 <li> Unix, Linux - modern operating systems
-<li> bash - the Bourne Again Shell and associated shell scripts
+<li> sh, bash - the Bourne and Bourne Again shells and associated shell scripts
 <li> MPI - Message Passing Interface for parallel applications
 <li> Posix threads - light-weight processes for parallel applications
-
+<li> OpenMP - compiler directed threads implementation
 </ul>
 
 <li> Software Engineering <a href="./draco_design.html" > 
