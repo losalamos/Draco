@@ -23,14 +23,9 @@ AC_NEEDS_LIBS(mc viz meshReaders cdi rng c4 traits ds++)
 AC_NEEDS_LIBS_TEST(cdi_analytic)
 
 # testing setup
-#AC_RUNTESTS(tstFrequency tstMat_State_Builder tstTally \
-            #tstParticle tstSource_Builder \
-            #tstMesh_Operations tstTransporter, 1 2 4)
-
 AC_RUNTESTS(tstFrequency tstMat_State_Builder tstTally \
             tstParticle tstSource_Builder \
-            , 1 2 4)
-
+            tstMesh_Operations tstTransporter, 1 2 4)
 
 # DRACO SETUP
 AC_DRACO_ENV

@@ -13,6 +13,7 @@
 #define __imc_Rep_Transporter_t_hh__
 
 #include "Rep_Transporter.hh"
+#include "mc/Particle_Stack.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
@@ -31,9 +32,9 @@ namespace rtt_imc
  * constructor checks to make sure that the proper Topology exists for this
  * construction.  Additionally, the communicator must be null.
  */
-template<class MT, class PT>
-Rep_Transporter<MT,PT>::Rep_Transporter(SP_Topology top)
-    : Transporter<MT,PT>(),
+template<class MT, class FT, class PT>
+Rep_Transporter<MT,FT,PT>::Rep_Transporter(SP_Topology top)
+    : Transporter<MT,FT,PT>(),
       topology(top)
 {
     Require (!mesh);
@@ -68,10 +69,10 @@ Rep_Transporter<MT,PT>::Rep_Transporter(SP_Topology top)
  * \return census for this timestep
 
  */
-template<class MT, class PT>
-Rep_Transporter<MT,PT>::SP_Census 
-Rep_Transporter<MT,PT>::transport(double dt, int cycle, int print_f, 
-				  int num_to_run, bool verbose) 
+template<class MT, class FT, class PT>
+Rep_Transporter<MT,FT,PT>::SP_Census 
+Rep_Transporter<MT,FT,PT>::transport(double dt, int cycle, int print_f, 
+				     int num_to_run, bool verbose) 
 {
     using std::cerr;
     using std::cout;
@@ -161,13 +162,13 @@ Rep_Transporter<MT,PT>::transport(double dt, int cycle, int print_f,
  * \param communicator_in null rtt_dsxx::SP to a Communicator
 
  */
-template<class MT, class PT>
-void Rep_Transporter<MT,PT>::set(SP_Mesh mesh_in,
-				 SP_Mat_State mat_state_in,
-				 SP_Opacity opacity_in,
-				 SP_Source source_in,
-				 SP_Tally tally_in,
-				 SP_Communicator communicator_in)
+template<class MT, class FT, class PT>
+void Rep_Transporter<MT,FT,PT>::set(SP_Mesh mesh_in,
+				    SP_Mat_State mat_state_in,
+				    SP_Opacity opacity_in,
+				    SP_Source source_in,
+				    SP_Tally tally_in,
+				    SP_Communicator communicator_in)
 {
     Require (mesh_in);
     Require (opacity_in);
@@ -208,8 +209,8 @@ void Rep_Transporter<MT,PT>::set(SP_Mesh mesh_in,
  * assigned prior to unsetting them.
 
  */
-template<class MT, class PT>
-void Rep_Transporter<MT,PT>::unset()
+template<class MT, class FT, class PT>
+void Rep_Transporter<MT,FT,PT>::unset()
 {
     Require (topology);
 
@@ -238,8 +239,8 @@ void Rep_Transporter<MT,PT>::unset()
  * true is returned; otherwise, ready returns false.
  
  */
-template<class MT, class PT>
-bool Rep_Transporter<MT,PT>::ready() const
+template<class MT, class FT, class PT>
+bool Rep_Transporter<MT,FT,PT>::ready() const
 {
     Require (!communicator);
     Require (topology);

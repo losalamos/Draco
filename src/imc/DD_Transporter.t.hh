@@ -13,6 +13,7 @@
 #define __imc_DD_Transporter_t_hh__
 
 #include "DD_Transporter.hh"
+#include "mc/Particle_Stack.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 #include <iomanip>
@@ -30,9 +31,9 @@ namespace rtt_imc
  * constructor checks to make sure that the proper Topology exists for this
  * construction.  
  */
-template<class MT, class PT>
-DD_Transporter<MT,PT>::DD_Transporter(SP_Topology top)
-    : Transporter<MT,PT>(),
+template<class MT, class FT, class PT>
+DD_Transporter<MT,FT,PT>::DD_Transporter(SP_Topology top)
+    : Transporter<MT,FT,PT>(),
     topology(top),
     num_run(0),
     nsrc_run(0),
@@ -82,10 +83,10 @@ DD_Transporter<MT,PT>::DD_Transporter(SP_Topology top)
  * \return census for this timestep
 
  */
-template<class MT, class PT>
-DD_Transporter<MT,PT>::SP_Census 
-DD_Transporter<MT,PT>::transport(double dt, int cycle_in, int print_f_in, 
-				 int num_to_run_in, bool verbose)
+template<class MT, class FT, class PT>
+DD_Transporter<MT,FT,PT>::SP_Census 
+DD_Transporter<MT,FT,PT>::transport(double dt, int cycle_in, int print_f_in, 
+				    int num_to_run_in, bool verbose)
 {
     using std::cerr;
     using std::cout;
@@ -195,10 +196,10 @@ DD_Transporter<MT,PT>::transport(double dt, int cycle_in, int print_f_in,
 /*!
  * \brief Run a source particle and, possibly, incoming particles.
  */
-template<class MT, class PT>
-void DD_Transporter<MT,PT>::trans_src_async(SP_PT_Diagnostic check,
-					    Bank &bank,
-					    SP_Census new_census_bank)
+template<class MT, class FT, class PT>
+void DD_Transporter<MT,FT,PT>::trans_src_async(SP_PT_Diagnostic check,
+					       Bank &bank,
+					       SP_Census new_census_bank)
 {
     using rtt_dsxx::SP;
     using std::cerr;
@@ -272,10 +273,10 @@ void DD_Transporter<MT,PT>::trans_src_async(SP_PT_Diagnostic check,
  * \brief Run an incoming particle and, possibly, check for more incoming
  * particles. 
  */
-template<class MT, class PT>
-void DD_Transporter<MT,PT>::trans_domain_async(SP_PT_Diagnostic check, 
-					       Bank &bank,
-					       SP_Census new_census_bank)
+template<class MT, class FT, class PT>
+void DD_Transporter<MT,FT,PT>::trans_domain_async(SP_PT_Diagnostic check, 
+						  Bank &bank,
+						  SP_Census new_census_bank)
 {
     using rtt_dsxx::SP;
     using std::cerr;
@@ -339,8 +340,8 @@ void DD_Transporter<MT,PT>::trans_domain_async(SP_PT_Diagnostic check,
  * \brief Communicate number of particles transported from IMC nodes to
  * master node and check if finished.
  */
-template<class MT, class PT>
-void DD_Transporter<MT,PT>::update()
+template<class MT, class FT, class PT>
+void DD_Transporter<MT,FT,PT>::update()
 {
     using C4::C4_Req;
 
@@ -399,8 +400,8 @@ void DD_Transporter<MT,PT>::update()
 /*!
  * \brief Post asynchronous receives.
  */
-template<class MT, class PT>
-void DD_Transporter<MT,PT>::post_step_arecvs()
+template<class MT, class FT, class PT>
+void DD_Transporter<MT,FT,PT>::post_step_arecvs()
 {
     using C4::nodes;
     using C4::RecvAsync;
@@ -433,8 +434,8 @@ void DD_Transporter<MT,PT>::post_step_arecvs()
 /*!
  * \brief Complete asynchronous receives.
  */
-template<class MT, class PT>
-void DD_Transporter<MT,PT>::complete_step_arecvs()
+template<class MT, class FT, class PT>
+void DD_Transporter<MT,FT,PT>::complete_step_arecvs()
 {
     using C4::C4_Req;
 
@@ -481,13 +482,13 @@ void DD_Transporter<MT,PT>::complete_step_arecvs()
  * \param communicator_in rtt_dsxx::SP to a valid Communicator object
 
  */
-template<class MT, class PT>
-void DD_Transporter<MT,PT>::set(SP_Mesh mesh_in,
-				 SP_Mat_State mat_state_in,
-				 SP_Opacity opacity_in,
-				 SP_Source source_in,
-				 SP_Tally tally_in,
-				 SP_Communicator communicator_in)
+template<class MT, class FT, class PT>
+void DD_Transporter<MT,FT,PT>::set(SP_Mesh mesh_in,
+				   SP_Mat_State mat_state_in,
+				   SP_Opacity opacity_in,
+				   SP_Source source_in,
+				   SP_Tally tally_in,
+				   SP_Communicator communicator_in)
 {
     Require (mesh_in);
     Require (opacity_in);
@@ -529,8 +530,8 @@ void DD_Transporter<MT,PT>::set(SP_Mesh mesh_in,
  * assigned prior to unsetting them.
 
  */
-template<class MT, class PT>
-void DD_Transporter<MT,PT>::unset()
+template<class MT, class FT, class PT>
+void DD_Transporter<MT,FT,PT>::unset()
 {
     Require (topology);
 
@@ -559,8 +560,8 @@ void DD_Transporter<MT,PT>::unset()
  * true is returned; otherwise, ready returns false.
  
  */
-template<class MT, class PT>
-bool DD_Transporter<MT,PT>::ready() const
+template<class MT, class FT, class PT>
+bool DD_Transporter<MT,FT,PT>::ready() const
 {
     Require (topology);
 

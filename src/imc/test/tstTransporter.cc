@@ -14,7 +14,9 @@
 #include "../Transporter.hh"
 #include "../Rep_Transporter.hh"
 #include "../DD_Transporter.hh"
-#include "../Particle.hh"
+#include "../Gray_Particle.hh"
+#include "../Multigroup_Particle.hh"
+#include "../Frequency.hh"
 #include "../Release.hh"
 #include "../Mat_State.hh"
 #include "../Opacity.hh"
@@ -22,13 +24,11 @@
 #include "../Rep_Source_Builder.hh"
 #include "../Source.hh"
 #include "../Tally.hh"
-#include "mc/Particle_Buffer.hh"
 #include "mc/Communicator.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/General_Topology.hh"
 #include "mc/OS_Builder.hh"
 #include "mc/OS_Mesh.hh"
-#include "mc/Parallel_Data_Operator.hh"
 #include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
@@ -40,6 +40,8 @@
 #include <string>
 #include <iostream>
 #include <cmath>
+#include <sstream>
+#include <typeinfo>
 
 using namespace std;
 
@@ -48,48 +50,48 @@ using rtt_imc_test::Parser;
 using rtt_imc::Transporter;
 using rtt_imc::Rep_Transporter;
 using rtt_imc::DD_Transporter;
-using rtt_imc::Particle;
 using rtt_imc::Flat_Mat_State_Builder;
-using rtt_imc::Mat_State;
-using rtt_imc::Opacity;
 using rtt_imc::Source;
+using rtt_imc::Opacity;
+using rtt_imc::Mat_State;
 using rtt_imc::Rep_Source_Builder;
 using rtt_imc::Tally;
-using rtt_mc::Particle_Buffer;
 using rtt_mc::Communicator;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::General_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
-using rtt_mc::Parallel_Data_Operator;
 using rtt_mc::Comm_Patterns;
 using rtt_rng::Rnd_Control;
 using rtt_dsxx::SP;
 
 // typedefs
-typedef Mat_State<OS_Mesh> OS_Mat;
-typedef Opacity<OS_Mesh>   OS_Opacity;
+typedef rtt_mc::OS_Mesh                       MT;
+typedef rtt_imc::Gray_Frequency               Gray;
+typedef rtt_imc::Multigroup_Frequency         MG;
+typedef rtt_imc::Gray_Particle<OS_Mesh>       GPT;
+typedef rtt_imc::Multigroup_Particle<OS_Mesh> MGPT; 
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-template<class MT, class PT>
+template<class MT, class FT, class PT>
 void rep_transporter_test()
 {
     // build a FULL mesh --> this mesh will be fully replicated on all
     // processors in the test
     SP<Parser> parser(new Parser("OS_Input"));
     SP<OS_Builder> mb(new OS_Builder(parser));
-    SP<OS_Mesh> mesh = mb->build_Mesh();
+    SP<MT> mesh = mb->build_Mesh();
 
     // build a full replication topology
     SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
 
     // build a replication transporter
-    SP<Transporter<MT,PT> > transporter;
-    transporter = new Rep_Transporter<MT,PT>(topology);
+    SP<Transporter<MT,FT,PT> > transporter;
+    transporter = new Rep_Transporter<MT,FT,PT>(topology);
 
     // should be full rep transporter
     if (transporter->type() != "replication") ITFAILS;
@@ -100,14 +102,17 @@ void rep_transporter_test()
 
 //---------------------------------------------------------------------------//
 
-template<class MT, class PT>
+template<class MT, class FT, class PT>
 void rep_transporter_run_test()
 {
+    // set the rn_stream to 0
+    rtt_rng::rn_stream = 0;
+
     // build a FULL mesh --> this mesh will be fully replicated on all
     // processors in the test
     SP<Parser> parser(new Parser("OS_Input"));
     SP<OS_Builder> mb(new OS_Builder(parser));
-    SP<OS_Mesh> mesh = mb->build_Mesh();
+    SP<MT> mesh = mb->build_Mesh();
 
     // build a random number controller
     SP<Rnd_Control> rcon(new Rnd_Control(347223));
@@ -120,28 +125,29 @@ void rep_transporter_run_test()
     patterns->calc_patterns(topology);
 
     // get an interface (dummy)
-    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb));
+    SP<IMC_Flat_Interface<PT> > interface(new IMC_Flat_Interface<PT>(mb));
 
     // build the Mat_State
-    Flat_Mat_State_Builder<OS_Mesh> ob(interface);
-    SP<OS_Mat> mat         = ob.build_Mat_State(mesh);
-    SP<OS_Opacity> opacity = ob.build_Opacity(mesh, mat);
+    Flat_Mat_State_Builder<MT,FT> ob(interface);
+    SP<FT>              frequency = ob.build_Frequency();
+    SP<Mat_State<MT> >  mat       = ob.build_Mat_State(mesh);
+    SP<Opacity<MT,FT> > opacity   = ob.build_Opacity(mesh, frequency, mat);
 
     // build a Rep_Source Builder
-    Rep_Source_Builder<OS_Mesh> source_builder(interface, mesh, topology);
+    Rep_Source_Builder<MT,FT,PT> source_builder(interface, mesh, topology);
 
     // build the source
-    SP<Source<OS_Mesh, Particle<OS_Mesh> > > source = 
+    SP<Source<MT,FT,PT> > source = 
 	source_builder.build_Source(mesh, mat, opacity, rcon, patterns);
 
     cout << source->get_num_source_particles() << endl;
 
     // build a replication transporter
-    SP<Transporter<MT,PT> > transporter;
-    transporter = new Rep_Transporter<MT,PT>(topology);
+    SP<Transporter<MT,FT,PT> > transporter;
+    transporter = new Rep_Transporter<MT,FT,PT>(topology);
 
     // build a tally
-    SP<Tally<OS_Mesh> > tally(new Tally<OS_Mesh>(mesh));
+    SP<Tally<MT> > tally(new Tally<MT>(mesh));
 
     // build a "NULL" communicator
     SP<Communicator<PT> > comm;
@@ -153,11 +159,28 @@ void rep_transporter_run_test()
     double dt = interface->get_delta_t();
     int cycle = interface->get_cycle();
     transporter->transport(dt, cycle, 100000, 0, 0);
+
+    if (rtt_imc_test::passed)
+    {
+	ostringstream message;
+	message << "Finished a replication transport cycle for " 
+		<< typeid(FT).name() << " and " << typeid(PT).name()
+		<< endl;
+	PASSMSG(message.str().c_str());
+    }
+    else
+    {
+	ostringstream message;
+	message << "Unable to complete a replication transport cycle for " 
+		<< typeid(FT).name() << " and " << typeid(PT).name()
+		<< endl;
+	FAILMSG(message.str().c_str());
+    }
 }
 
 //---------------------------------------------------------------------------//
 
-template<class MT, class PT>
+template<class MT, class FT, class PT>
 void DD_transporter_test()
 {
     // only perform this test on two processors
@@ -168,10 +191,10 @@ void DD_transporter_test()
     // processors in the test
     SP<Parser> parser(new Parser("OS_Input"));
     SP<OS_Builder> mb(new OS_Builder(parser));
-    SP<OS_Mesh> mesh = mb->build_Mesh();
+    SP<MT> mesh = mb->build_Mesh();
 
     // get the dummy interface with a capacity of 3 cells (2 processor)
-    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb, 3));
+    SP<IMC_Flat_Interface<PT> > interface(new IMC_Flat_Interface<PT>(mb, 3));
 
     // build a DD topology
     SP<Topology> topology;
@@ -228,12 +251,12 @@ void DD_transporter_test()
     // check to make sure Topology is full DD
     if (topology->get_parallel_scheme() != "DD") ITFAILS;
 
-    // make a Particle_Buffer
+    // make a rnd control
     Rnd_Control rcon(347223);
 
     // build a DD transporter
-    SP<Transporter<MT,PT> > transporter;
-    transporter = new DD_Transporter<MT,PT>(topology);
+    SP<Transporter<MT,FT,PT> > transporter;
+    transporter = new DD_Transporter<MT,FT,PT>(topology);
 
     // should be full DD transporter
     if (transporter->type() != "DD") ITFAILS;
@@ -262,11 +285,12 @@ int main(int argc, char *argv[])
     {
 	// >>> UNIT TESTS
 
-	rep_transporter_test<OS_Mesh,Particle<OS_Mesh> >();
-	DD_transporter_test<OS_Mesh, Particle<OS_Mesh> >();
+	rep_transporter_test<MT,Gray,GPT>();
+	DD_transporter_test<MT,Gray,GPT>();
 
 	// run some particles
-	rep_transporter_run_test<OS_Mesh,Particle<OS_Mesh> >();
+	rep_transporter_run_test<MT,Gray,GPT>();
+	rep_transporter_run_test<MT,MG,MGPT>();
     }
     catch (rtt_dsxx::assertion &ass)
     {

@@ -10,19 +10,26 @@
 //---------------------------------------------------------------------------//
 
 #include "mc/OS_Mesh.hh"
-#include "../Particle.hh"
+#include "../Gray_Particle.hh"
+#include "../Multigroup_Particle.hh"
+#include "../Frequency.hh"
 #include "../Rep_Transporter.t.hh"
 #include "../DD_Transporter.t.hh"
 
 namespace rtt_imc
 {
 
-typedef rtt_mc::OS_Mesh MT;
-typedef Particle<MT>    PT;
+typedef rtt_mc::OS_Mesh         MT;
+typedef Gray_Frequency          Gray;
+typedef Multigroup_Frequency    MG;
+typedef Gray_Particle<MT>       GPT;
+typedef Multigroup_Particle<MT> MGPT;
 
-template class Rep_Transporter<MT, PT>;
+template class Rep_Transporter<MT,Gray,GPT>;
+template class DD_Transporter<MT,Gray,GPT>;
 
-template class DD_Transporter<MT, PT>;
+template class Rep_Transporter<MT,MG,MGPT>;
+template class DD_Transporter<MT,MG,MGPT>;
 
 } // end namespace rtt_imc
 
