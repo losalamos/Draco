@@ -20,7 +20,7 @@
 \newcommand{\fninety}{\texttt{Fortran~90}}
 \newcommand{\cpp}{\texttt{C++}}
 \newcommand{\withfninety}{\texttt{--with-f90}}
-\newcommand{\langfninety}{\texttt{AC\_LANG\_F90}}
+\newcommand{\langfninety}{\texttt{AC\_LANG\_FORTRAN90}}
 \newcommand{\progfninety}{\texttt{AC\_PROG\_F90}}
 \newcommand{\requiregmfour}{\texttt{AC\_REQUIRE\_GM4}}
 \newcommand{\proggmfour}{\texttt{AC\_PROG\_GM4}}
@@ -120,25 +120,43 @@ several necessary build system features for \fninety\ support.
 \section{Introduction}
 
 How should the Draco build system support \fninety?  Ideally the user
-should see a set of macros that work just like autoconf's support for
-other languages.  The solution should be backwards compatable;
-existing Draco configuration files should continue to work.  In this
-section I will examine how the Draco build system works for \cpp, the
-problems involved with applying this approach to \fninety, and the
-resolution of these problems.
+should see a set of \fninety\ specific macros that work just like
+autoconf's support for other languages.  The solution should be
+backwards compatable; existing Draco configuration files
+should continue to work.  In this section I will examine how the
+autoconf works for supported languages, how the Draco build system
+works for \cpp, the problems involved with applying this approach to
+\fninety, and the resolution of these problems.
 
-How does the Draco build system support \cpp?  Autoconf's support for
-\cpp\ works as follows:
+Autoconf (version 2.13) supports \texttt{C}, \cpp, and \texttt{Fortran
+77}.  Its native support works as follows:
 \begin{enumerate} 
-\item \cpp\ is made the default language used for testing by the macro
-\texttt{AC\_LANG\_CPLUSPLUS}
+\item The default language is chosen for testing by the macros
+\texttt{AC\_LANG\_C}, \texttt{AC\_LANG\_CPLUSPLUS}, or
+\texttt{AC\_LANG\_FORTRAN77} 
 \item The compiler availability and viability are tested by
-the macro \texttt{AC\_PROG\_CXX}
+the macros \texttt{AC\_PROG\_CC}, \texttt{AC\_PROG\_CXX}, or
+\texttt{AC\_PROG\_F77} 
 \end{enumerate}
-\cpp\ compiler tests can be made without knowledge of the specific
-vendor because \cpp\ compilers are remarkably uniform from platform to
-platform. \texttt{CC -g Conftest.cc} will produce a working \cpp\
-program on virtually every UNIX platform in existance.
+The compiler tests can be made without knowledge of the specific
+vendor because these compilers are remarkably uniform from platform to
+platform. For example, \texttt{CC -g Conftest.cc} will produce a
+working \cpp\ program on virtually every UNIX platform in existance.
+
+Autoconf automatically supports multi-language configurations.  The
+configure.in file snippet:\\
+\begin{verbatim}
+AC_LANG_C
+AC_PROG_CC
+AC_LANG_CPLUSPLUS
+AC_PROG_CXX
+AC_LANG_FORTRAN77
+AC_PROG_F77
+\end{verbatim}
+finds, sets, and tests \texttt{C}, \cpp, and \texttt{Fortran 77}
+compilers, respectively.  Additionally, the \texttt{AC\_LANG\_SAVE}
+and \texttt{AC\_LANG\_RESTORE} push and pop the current language,
+which permits some very sophisticated multi-language configurations.
 
 The Draco build system adds an additional step: A specific \cpp\
 compiler is requested by the configure argument \texttt{--with-cxx},
@@ -150,18 +168,18 @@ this specific knowledge is that it must be maintained; the advantage
 is that \texttt{AC\_PROG\_CXX} can check if the user requested flags
 work, and the build system can use simpler makefile templates.
 
-Unfortunately the basic autoconf method of supporting \cpp\ will not
-work for \fninety\ because:
+Unfortunately basic autoconf language support cannot be extended to
+\fninety\ because:
 \begin{enumerate}
 \item Autoconf is designed primarily for \texttt{C} and \cpp; it was
-not designed to supporting other languages.
+not designed to supporting other languages
 \item \fninety\ compilers show little consistency across platforms;
 the compiler name, flags, default file extensions, and method of
-handling modules varies greatly from product to product.
+handling modules varies greatly from product to product
 \item The assumptions autoconf makes because of item 1 and the
 inconsistency of \fninety\ compilers stated in item 2 makes the
 autoconf method of guessing compiler names, flags, etc. actually
-dangerous.
+dangerous
 \end{enumerate}
 
 Fortunately, the Draco additions provide a solution; in order to add
@@ -172,7 +190,7 @@ native autoconf macros must be rewritten to redress autoconf's
 \texttt{C}-centricness  
 \item \fninety\ compiler information must be available in a database
 to configure names, flags, extensions, and module information
-\item a better guessing heuristic must be devised.
+\item a better guessing heuristic must be devised
 \end{enumerate}
 
 In the spirit of the Draco build system, \fninety\ support aims at
@@ -185,8 +203,7 @@ underlying complexity.
 The \fninety\ compiler can be specified by giving the \withfninety\ 
 argument to configure.  The currently supported compilers are shown in
 Table~\ref{tbl:compilers}.
-
-\begin{table}[hb]
+\begin{table}[htb]
 \hrulefill
 \begin{center}
 \caption{Supported \fninety\ compilers}\label{tbl:compilers}
@@ -218,11 +235,11 @@ the \texttt{--with-cxx} argument in \texttt{ac\_dracoarg.m4}.
 
 Four new macros have been added for \fninety\ support:
 \begin{description}
-\item[\langfninety:] set the compile and link test invocation
-using \texttt{F90} and the extension \texttt{F90EXT}.  This macro is
+\item[\langfninety:] set the compile and link test invocation using
+\texttt{F90} and the extension \texttt{F90EXT}.  This macro is
 required in \texttt{configure.in} for \fninety\ usage.  It is based on
-the \texttt{AC\_LANG\_C} and \texttt{AC\_LANG\_CPLUSPLUS} macros in
-\texttt{acgeneral.m4}.
+the \texttt{AC\_LANG\_C}, \texttt{AC\_LANG\_CPLUSPLUS}, and
+\texttt{AC\_LANG\_FORTRAN77} macros in \texttt{acgeneral.m4}.
 
 \item[\proggmfour:] set the output variable \texttt{GM4} to a command
 that runs the GNU m4 preprocessor.  Looks for \texttt{gm4} and then
@@ -260,8 +277,8 @@ test to determine which is the case.
 \item[\texttt{MODFLAG}:] vendor specific module include directory
 flag, typically \texttt{-I} or \texttt{-M}.
 \end{description}
-It is based on the \texttt{AC\_PROG\_CC} and \texttt{AC\_PROG\_CXX}
-macros in \texttt{acspecific.m4}.
+It is based on the \texttt{AC\_PROG\_CC}, \texttt{AC\_PROG\_CXX}, and
+\texttt{AC\_PROG\_F77} macros in \texttt{acspecific.m4}.
 \end{description}
 
 These macros have only been tested on a limited number of machines.
@@ -278,7 +295,7 @@ file named [Cc]onftest* will be overwritten!
 AC_INIT(acf90)                  dnl process args; verify src dir
 AC_CONFIG_AUX_DIR(../../config) dnl config.sub, config.guess, install-sh
 
-AC_LANG_F90                     dnl set language to Fortran 90
+AC_LANG_FORTRAN90               dnl set language to Fortran 90
 AC_DRACO_ENV                    dnl configure Draco build environment
 AC_PROG_F90                     dnl test Fortran 90 compiler
 AC_PROG_GM4                     dnl Find and verify GNU m4
