@@ -165,6 +165,8 @@ int main(int argc, char *argv[])
 	    cout << *sinit << endl;
 	    cout << " ** Source on node " << mynode << endl;
 	    cout << endl << *source;
+	    cout << endl << ">> We are now at RN Stream " << RNG::rn_stream
+		 << endl;
 	}
 	
   	if (mynode)

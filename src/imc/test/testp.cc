@@ -40,7 +40,6 @@ using IMC::Parallel_Builder;
 using IMC::Source_Init;
 using IMC::Particle_Buffer;
 using IMC::Particle;
-using IMC::Global::rn_stream;
 using RNG::Rnd_Control;
 using RNG::Sprng;
 using namespace std;
