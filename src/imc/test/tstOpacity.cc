@@ -25,6 +25,7 @@ using namespace std;
 
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
+using rtt_mc::global::soft_equiv;
 using rtt_imc::Opacity;
 using rtt_imc::Opacity_Builder;
 using rtt_imc::Mat_State;
@@ -130,18 +131,20 @@ void Opacity_Test()
 	if (o.get_fleck(i+3) != flecki3) ITFAILS;
 
 	// test fleck * planck
-	if (o.fplanck(i) != flecki * o.get_planck(i))      ITFAILS;
-	if (o.fplanck(i+3) != flecki3 * o.get_planck(i+3)) ITFAILS; 
+	if (!soft_equiv(o.fplanck(i), flecki * o.get_planck(i), 1.e-16))
+	    ITFAILS;
+	if (!soft_equiv(o.fplanck(i+3), flecki3 * o.get_planck(i+3), 1.e-16)) 
+	    ITFAILS;
 
 	// test Fleck effective cross sections
 	double escati  = (1 - flecki) * .1 * m.get_rho(i);
 	double eabsi   = flecki * .1 * m.get_rho(i);
 	double escati3 = (1 - flecki3) * .01 * m.get_rho(i+3);
 	double eabsi3  = flecki3 * .01 * m.get_rho(i+3);
-	if (o.get_sigeffscat(i) != escati)    ITFAILS;
-	if (o.get_sigeffabs(i) != eabsi)      ITFAILS;
-	if (o.get_sigeffscat(i+3) != escati3) ITFAILS;
-	if (o.get_sigeffabs(i+3) != eabsi3)   ITFAILS;
+	if (!soft_equiv(o.get_sigeffscat(i), escati, 1.e-16))    ITFAILS;
+	if (!soft_equiv(o.get_sigeffabs(i), eabsi, 1.e-16))      ITFAILS;
+	if (!soft_equiv(o.get_sigeffscat(i+3), escati3, 1.e-16)) ITFAILS;
+	if (!soft_equiv(o.get_sigeffabs(i+3), eabsi3, 1.e-16))   ITFAILS; 
     }
 }
 
