@@ -106,8 +106,10 @@ string TestConjGradDiffusionSolver::runTest()
 
     const Mesh_XYZ::FieldConstructor &fCtor = spmesh;
 
+    bool usePreconditioner = true;
+    bool verbose = true;
     SolverP1Diff<Mesh_XYZ> solver(spmesh, fCtor, tdb.maxIterations,
-				  tdb.epsilon);
+				  tdb.epsilon, usePreconditioner, verbose);
 
     int argc = 0;
     char **argv = 0;

@@ -59,9 +59,12 @@ class SolverP1Diff
     {
 	int maxIters;
 	double eps;
+        bool usePreconditioner;
 	bool verbose;
-	Options(int maxIters_in, double eps_in, bool verbose_in=true)
-	    : maxIters(maxIters_in), eps(eps_in), verbose(verbose_in)
+	Options(int maxIters_in, double eps_in, bool usePreconditioner_in,
+                bool verbose_in)
+	    : maxIters(maxIters_in), eps(eps_in),
+              usePreconditioner(usePreconditioner_in), verbose(verbose_in)
 	{
 	    // empty
 	}
@@ -81,8 +84,11 @@ class SolverP1Diff
     
     SolverP1Diff(const SP<const MT>& spMesh_in,
 		 const FieldConstructor &fCtor_in,
-		 int maxIters_in, double eps_in, bool verbose_in=true)
+		 int maxIters_in, double eps_in,
+                 bool usePreconditioner_in,
+                 bool verbose_in)
 	: spMesh(spMesh_in), fCtor(fCtor_in), options(maxIters_in, eps_in,
+                                                      usePreconditioner_in,
 						      verbose_in)
     {
 	// empty
@@ -116,8 +122,14 @@ class SolverP1Diff
 	int iter;
 	ccsf r(fCtor);
 	using rtt_ConjGrad::conjGrad;
-	conjGrad(phi, iter, brhs, MatVec(spMatrix), options.maxIters,
-		 options.eps, PreCond(spMatrix), r);
+
+        if (options.usePreconditioner)
+            conjGrad(phi, iter, brhs, MatVec(spMatrix), options.maxIters,
+                     options.eps, PreCond(spMatrix), r);
+        else
+            conjGrad(phi, iter, brhs, MatVec(spMatrix), options.maxIters,
+                     options.eps, r);
+        
 	if (options.verbose)
 	    std::cout << "SolverP1Diff: " << iter << " iterations, "
 		      << "||r||: "
