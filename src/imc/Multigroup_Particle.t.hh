@@ -708,8 +708,8 @@ void Multigroup_Particle<MT>::rw_transport(
 	    Check (planck >= 0.0);
 
 	    // process the random walk absorption
-	    random_walk_event(time_radius.first, time_radius.second,
-			      tally, planck, xs.get_fleck(Base::cell));
+	    Base::random_walk_event(time_radius.first, time_radius.second,
+				    tally, planck, xs.get_fleck(Base::cell));
 	}
 	else
 	{
