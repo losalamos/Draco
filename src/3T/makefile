@@ -46,6 +46,11 @@ include ../config/make.doc
 
 # Go pick up the standard signature for makefiles.
 
+testclean:
+	(cd test; $(MAKE) clean)
+
+aux_clean := testclean
+
 cc_files := $(libsrcs)
 
 include ../config/make.end
