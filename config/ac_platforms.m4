@@ -957,7 +957,7 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        # Setup communications packages
        #
        AC_DBS_SETUP_COMM(mpich)
-	mpi_libs="-lpmpich $mpi_libs -lz"
+	mpi_libs="-lpmpich++ -lpmpich -lmpich -lpmpich -lmpich -lz"
 
        # 
        # setup lapack 

@@ -1,4 +1,4 @@
-# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.6 -*- Autoconf -*-
 
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
@@ -4610,7 +4610,7 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        # Setup communications packages
        #
        AC_DBS_SETUP_COMM(mpich)
-	mpi_libs="-lpmpich $mpi_libs -lz"
+	mpi_libs="-lpmpich++ -lpmpich -lmpich -lpmpich -lmpich -lz"
 
        # 
        # setup lapack 
