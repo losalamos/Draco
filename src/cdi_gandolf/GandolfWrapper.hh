@@ -308,43 +308,43 @@ using std::vector;
 
 extern "C" {
 
-    void extc_gmatids( const char *cfname, long int *matids, long int &ckmat,
-		       long int &nmat, long int &ier );
+    void extc_gmatids( const char *cfname, int *matids, int &ckmat,
+		       int &nmat, int &ier );
 
     // key_length is specified to be 24 by the Gandolf standard.  This 
     // variable is set in the rtt_cdi_gandolf namespace but since this 
     // "extern C" block is outside of that namespace we must specify
     // this length manually.
-    void extc_gkeys( const char *cfname, long int &matid, 
+    void extc_gkeys( const char *cfname, int &matid, 
 		     char keys[][rtt_cdi_gandolf::wrapper::key_length],
-		     long int &kkeys, long int &nkeys, long int &ier );
+		     int &kkeys, int &nkeys, int &ier );
 
-    void extc_gchgrids( const char *cfname, long int &matid, long int &nt,
-			long int &nrho, long int &nhnu, 
-			long int &ngray, long int &nmg, long int &ier );
+    void extc_gchgrids( const char *cfname, int &matid, int &nt,
+			int &nrho, int &nhnu, 
+			int &ngray, int &nmg, int &ier );
 
-    void extc_ggetgray( const char *cfname,  long int &matid, const char *key, 
-			double *temps, long int &kt,    long int &nt, 
-			double *rhos,  long int &krho,  long int &nrho,
-			double *gray,  long int &kgray, long int &ngray,
-			long int &ier );
+    void extc_ggetgray( const char *cfname,  int &matid, const char *key, 
+			double *temps, int &kt,    int &nt, 
+			double *rhos,  int &krho,  int &nrho,
+			double *gray,  int &kgray, int &ngray,
+			int &ier );
 
-    void extc_gintgrlog( double *temps, long int &nt,
-			 double *rhos,  long int &nrho,
-			 double *gray,  long int &ngray,
+    void extc_gintgrlog( double *temps, int &nt,
+			 double *rhos,  int &nrho,
+			 double *gray,  int &ngray,
 			 double &tlog, double &rlog, double &ans );
 
-    void extc_ggetmg( const char *cfname,   long int &matid, const char *key, 
-		      double *temps,  long int &kt,    long int &nt,
-		      double *rhos,   long int &krho,  long int &nrho,
-		      double *hnus,   long int &khnu,  long int &nhnu,
-		      double *data,   long int &kdata, long int &ndata,
-		      long int &ier );
+    void extc_ggetmg( const char *cfname,   int &matid, const char *key, 
+		      double *temps,  int &kt,    int &nt,
+		      double *rhos,   int &krho,  int &nrho,
+		      double *hnus,   int &khnu,  int &nhnu,
+		      double *data,   int &kdata, int &ndata,
+		      int &ier );
 
-    void extc_gintmglog( double *temps, long int &nt,
-		         double *rhos,  long int &nrho,
-			 long int &nhnu,
-			 double *data,  long int &ndata,
+    void extc_gintmglog( double *temps, int &nt,
+		         double *rhos,  int &nrho,
+			 int &nhnu,
+			 double *data,  int &ndata,
 			 double &tlog,  double &rlog, 
 			 double *ansmg );
 

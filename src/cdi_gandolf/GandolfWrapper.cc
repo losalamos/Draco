@@ -54,7 +54,7 @@ using std::string;
     //----------------------------------------//
     
     void gmatids( const std::string &fname , vector<int> &matids, 
-		  const int kmat, int &nmat, int &ier ) 
+		  const int const_kmat, int &nmat, int &ier ) 
 	{
 
 	    // I could change this subroutine so that it identifies
@@ -69,35 +69,29 @@ using std::string;
  	    const char * ccfname = s2ccwp( fname, cfname,
 					   maxDataFilenameLength );
 
-	    // create "long int" versions of variables.
-	    long int li_nmat = nmat;
-	    long int li_ier  = ier;
-	    // also remove constness from kmat.
-	    long int li_kmat = kmat; 
+	    // Remove constness from kmat.
+	    int kmat = const_kmat; 
 
 	    // we don't know the value of nmat until runtime so we
-	    // must dynamically allocate li_matids.
-	    long int *li_matids = new long int [ kmat ];
+	    // must dynamically allocate a_matids.
+	    int *a_matids = new int [ kmat ];
 
 	    // --------------------------------------------------
 	    // call the Gandolf library function
 	    // --------------------------------------------------
-	    
-	    extc_gmatids( ccfname, li_matids, li_kmat, li_nmat, li_ier );
+
+	    extc_gmatids( ccfname, a_matids, kmat, nmat, ier );
 
 	    // ----------------------------------------
 	    // Copy the data back into C++ data types
 	    // ----------------------------------------
 
-	    // update the function arguments from their "long int"
-	    // counterparts.  We don't update kmat since it is const. 
-	    ier  = li_ier;
-	    nmat = li_nmat;
+	    // resize and update the vector matids fromt he array version.
 	    matids.resize( nmat );
-	    std::copy( li_matids, li_matids+nmat, matids.begin() );
+	    std::copy( a_matids, a_matids+nmat, matids.begin() );
 	    
 	    // Free up dynamic memory and return.
-	    delete [] li_matids;
+	    delete [] a_matids;
 
 	    return;
 
@@ -108,9 +102,9 @@ using std::string;
     //                gkeys                   //
     //----------------------------------------//
     
-    void gkeys( const std::string &fname, const int &matid, 
+    void gkeys( const std::string &fname, const int &const_matid, 
 		vector<string> &vkeys,
-		const int kkeys, int &nkeys, int &ier)
+		const int const_kkeys, int &nkeys, int &ier)
 	{
 	    // ----------------------------------------
 	    // Create simple flat data types
@@ -121,33 +115,31 @@ using std::string;
  	    const char * ccfname = s2ccwp( fname, cfname,
 					   maxDataFilenameLength );
 
-	    long int li_matid = matid; // const
-	    long int li_kkeys = kkeys; // const
-	    long int li_nkeys = nkeys;
-	    long int li_ier   = ier;
+	    // remove const-ness
+	    int matid = const_matid;
+	    int kkeys = const_kkeys;
 
 	    // we do not know the value of numKeys until after we call 
 	    // gkeys() so we create the character array keys[][] to be 
 	    // maxKeys long.  This array will later be copied into the
 	    // vector vkeys that is returned to the calling program.
+
+	    std::cout << "GandolfWrapper.cc::gkeys()  --> const char * ???" << std::endl;
+	    
 	    char keys[maxKeys][key_length];
 
 	    // --------------------------------------------------
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 	    
-	    extc_gkeys( ccfname, li_matid, keys, li_kkeys, li_nkeys, 
-			li_ier );
+	    extc_gkeys( ccfname, matid, keys, kkeys, nkeys, ier );
 
 	    // ----------------------------------------
 	    // Copy the data back into C++ data types
 	    // ----------------------------------------
 
-	    // we don't modify matID or kkeys because these are const
-	    // values.
-	    nkeys = li_nkeys;	    
-	    ier   = li_ier;
-
+	    // Resize vkeys and copy the data from the char array 
+	    // into the vector of strings.
 	    vkeys.resize( nkeys );
 	    char key[key_length];
 	    for ( int i=0; i<nkeys; ++i )
@@ -179,33 +171,16 @@ using std::string;
 	    char cfname[maxDataFilenameLength];
  	    const char * ccfname = s2ccwp( fname, cfname,
 					   maxDataFilenameLength );
-	    long int li_matid = matid; // const
-	    long int li_nt    = nt; 
-	    long int li_nrho  = nrho;
-	    long int li_nhnu  = nhnu;
-	    long int li_ngray = ngray;
-	    long int li_nmg   = nmg;
-	    long int li_ier   = ier;
+	    
+	    // remove const-ness
+	    int nc_matid = matid; // const
 
 	    // --------------------------------------------------
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 	    
-	    extc_gchgrids( ccfname, li_matid, li_nt, li_nrho, li_nhnu,
-			   li_ngray, li_nmg, li_ier );
-
-	    // ----------------------------------------
-	    // Copy the data back into C++ data types
-	    // ----------------------------------------
-
-	    // copy data back into standard ojects.
-	    // we don't modify matID because it is a const value.
-	    nt    = li_nt;
-	    nrho  = li_nrho;
-	    nhnu  = li_nhnu;
-	    ngray = li_ngray;
-	    nmg   = li_nmg;
-	    ier   = li_ier;
+	    extc_gchgrids( ccfname, nc_matid, nt, nrho, nhnu,
+			   ngray, nmg, ier );
 
     } // end of gchgrids
 
@@ -213,10 +188,10 @@ using std::string;
     //                ggetgray                //
     //----------------------------------------//
     
-    void ggetgray( const string &fname,   const int &matid, const string skey,
-		   vector<double> &temps, const int &kt,    int &nt, 
-		   vector<double> &rhos,  const int &krho,  int &nrho,
-		   vector<double> &data,  const int &kgray, int &ngray,
+    void ggetgray( const string &fname,   const int &const_matid, const string skey,
+		   vector<double> &temps, const int &const_kt,    int &nt, 
+		   vector<double> &rhos,  const int &const_krho,  int &nrho,
+		   vector<double> &data,  const int &const_kgray, int &ngray,
 		   int &ier )
 	{
 	    // ----------------------------------------
@@ -232,15 +207,11 @@ using std::string;
  	    char key[ key_length ];                           
 	    const char * cckey = s2ccwp( skey, key, key_length );
 	    
-	    // cast all integers as long integers before calling ggetgray.
-	    long int li_matid = matid; // const
-	    long int li_kt    = kt;    // const
-	    long int li_nt    = nt;
-	    long int li_krho  = krho;  // const
-	    long int li_nrho  = nrho;
-	    long int li_kgray = kgray; // const
-	    long int li_ngray = ngray;
-	    long int li_ier   = ier;
+	    // remove const-ness
+	    int matid = const_matid; // const
+	    int kt    = const_kt;    // const
+	    int krho  = const_krho;  // const
+	    int kgray = const_kgray; // const
 	    
 	    // Allocate memory for double arrays (temps,rhos,data).
 	    // These will be copied into vector<double> objects later.
@@ -252,20 +223,15 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_ggetgray( ccfname, li_matid, cckey,
-			   array_temps, li_kt,    li_nt, 
-			   array_rhos,  li_krho,  li_nrho,
-			   array_data,  li_kgray, li_ngray,
-			   li_ier );
+	    extc_ggetgray( ccfname,     matid, cckey,
+			   array_temps, kt,    nt, 
+			   array_rhos,  krho,  nrho,
+			   array_data,  kgray, ngray,
+			   ier );
 
 	    // ----------------------------------------
 	    // Copy the data back into C++ data types
 	    // ----------------------------------------
-
-	    nt    = li_nt;
-	    nrho  = li_nrho;
-	    ngray = li_ngray;
-	    ier   = li_ier;
 
 	    temps.resize(nt);
 	    rhos.resize(nrho);
@@ -285,9 +251,9 @@ using std::string;
     //                gintgrlog               //
     //----------------------------------------//
     
-    void gintgrlog( const vector<double> &temps, const int &nt,
-		    const vector<double> &rhos,  const int &nrho,
-		    const vector<double> &data,  const int &ngray,
+    void gintgrlog( const vector<double> &temps, const int &const_nt,
+		    const vector<double> &rhos,  const int &const_nrho,
+		    const vector<double> &data,  const int &const_ngray,
 		    const double &const_tlog, const double &const_rlog, 
 		    double &ans )
  	{
@@ -295,11 +261,11 @@ using std::string;
 	    // Create simple flat data types
 	    // ----------------------------------------
 
-	    // cast all integers as long integers before calling ggetgray.
-	    long int li_nt    = nt;    // const
-	    long int li_nrho  = nrho;  // const
-	    long int li_ngray = ngray; // const
-	    double tlog = const_tlog;
+	    // remove const-ness;
+	    int nt    = const_nt;   
+	    int nrho  = const_nrho; 
+	    int ngray = const_ngray;
+	    double tlog = const_tlog; 
 	    double rlog = const_rlog;
 
 	    // Allocate memory for double arrays (temps,rhos,data).
@@ -317,8 +283,8 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_gintgrlog( array_temps, li_nt, array_rhos, li_nrho,
-			    array_data, li_ngray, tlog, rlog, ans );
+	    extc_gintgrlog( array_temps, nt, array_rhos, nrho,
+			    array_data, ngray, tlog, rlog, ans );
 	    
 	    // no error code is returned from this function.
 	    // we don't need to copy any data back into C++ data
@@ -338,11 +304,11 @@ using std::string;
     // Read data grid (temp,density,energy_bounds) and mg opacity
     // data.  Retrieve both the size of the data and the actual data.
 
-    void ggetmg( const string &fname,   const int &matid, const string skey,
-		 vector<double> &temps, const int &kt,    int &nt, 
-		 vector<double> &rhos,  const int &krho,  int &nrho,
-		 vector<double> &hnus,  const int &khnu,  int &nhnu,
-		 vector<double> &data,  const int &kdata, int &ndata,
+    void ggetmg( const string &fname,   const int &const_matid, const string skey,
+		 vector<double> &temps, const int &const_kt,    int &nt, 
+		 vector<double> &rhos,  const int &const_krho,  int &nrho,
+		 vector<double> &hnus,  const int &const_khnu,  int &nhnu,
+		 vector<double> &data,  const int &const_kdata, int &ndata,
 		 int &ier )
 	{
 	    // ----------------------------------------
@@ -358,17 +324,12 @@ using std::string;
  	    char key[ key_length ];                           
 	    const char * cckey = s2ccwp( skey, key, key_length );
 
-	    // cast all integers as long integers before calling ggetgray.
-	    long int li_matid = matid; // const
-	    long int li_kt    = kt;    // const
-	    long int li_nt    = nt;
-	    long int li_krho  = krho;  // const
-	    long int li_nrho  = nrho;
-	    long int li_khnu  = khnu;  // const
-	    long int li_nhnu  = nhnu;
-	    long int li_kdata = kdata; // const
-	    long int li_ndata = ndata;
-	    long int li_ier   = ier;
+	    // remove const-ness
+	    int matid = const_matid; 
+	    int kt    = const_kt;    
+	    int krho  = const_krho;  
+	    int khnu  = const_khnu;  
+	    int kdata = const_kdata; 
 	    
 	    // Allocate memory for double arrays (temps,rhos,data).
 	    // These will be copied into vector<double> objects later.
@@ -381,22 +342,16 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_ggetmg( ccfname, li_matid, cckey,
-			 array_temps, li_kt,    li_nt, 
-			 array_rhos,  li_krho,  li_nrho,
-			 array_hnus,  li_khnu,  li_nhnu,
-			 array_data,  li_kdata, li_ndata,
-			 li_ier );
+	    extc_ggetmg( ccfname, matid, cckey,
+			 array_temps, kt,    nt, 
+			 array_rhos,  krho,  nrho,
+			 array_hnus,  khnu,  nhnu,
+			 array_data,  kdata, ndata,
+			 ier );
 
 	    // ----------------------------------------
 	    // Copy the data back into C++ data types
 	    // ----------------------------------------
-
-	    nt    = li_nt;
-	    nrho  = li_nrho;
-	    nhnu  = li_nhnu;
-	    ndata = li_ndata;
-	    ier   = li_ier;
 
 	    // resize data found in the Opacity object.
 	    temps.resize(nt);
@@ -422,10 +377,10 @@ using std::string;
     //                gintmglog               //
     //----------------------------------------//
     
-    void gintmglog( const vector<double> &temps, const int &nt,
-		    const vector<double> &rhos,  const int &nrho,
-		    const int &nhnu,
-		    const vector<double> &data,  const int &ndata,
+    void gintmglog( const vector<double> &temps, const int &const_nt,
+		    const vector<double> &rhos,  const int &const_nrho,
+		    const int &const_nhnu,
+		    const vector<double> &data,  const int &const_ndata,
 		    const double &const_tlog, const double &const_rlog, 
 		    vector<double> &ansmg )
  	{
@@ -433,14 +388,13 @@ using std::string;
 	    // Create simple flat data types
 	    // ----------------------------------------
 
-	    int ngroups = nhnu-1;
+	    const int ngroups = const_nhnu-1;
 
-	    // cast all integers as long integers before calling
-	    // ggetgray.  Also remove "const-ness".	    
-	    long int li_nt    = nt;    // const
-	    long int li_nrho  = nrho;  // const
-	    long int li_nhnu  = nhnu;  // const 
-	    long int li_ndata = ndata; // const
+	    // Remove const-ness.
+	    int nt    = const_nt; 
+	    int nrho  = const_nrho;
+	    int nhnu  = const_nhnu;
+	    int ndata = const_ndata;
 	    double tlog = const_tlog;
 	    double rlog = const_rlog;
 
@@ -462,8 +416,8 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_gintmglog( array_temps, li_nt, array_rhos, li_nrho,
-			    li_nhnu, array_data, li_ndata, tlog, rlog,
+	    extc_gintmglog( array_temps, nt, array_rhos, nrho,
+			    nhnu, array_data, ndata, tlog, rlog,
 			    array_ansmg ); 
 	    
 	    // ----------------------------------------
