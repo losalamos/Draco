@@ -347,7 +347,7 @@ static void tinsist()
 	{
 	    bool passed( true );
 	    std::string msg( a.what() );
-	    std::string expected_value( "Insist: 0, failed in" );
+	    std::string expected_value( "You must be kidding!" );
 	    string::size_type idx( msg.find( expected_value ) );
 	    if( idx == string::npos ) passed=false;
 	    idx = msg.find( insist_message );
