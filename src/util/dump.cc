@@ -171,9 +171,12 @@ void ADdump_Mat( ADFile *f, Mat3<T>& m, String id )
 // 		    C4_Recv( &buf(0,0), sizeof(T)*nfu*ncv,
 // 			     n, 200, group );
 
+#if 0
+                // Somebody needs to fix this...
 		    for( j=0; j < ncv; j++ )
 			for( i=0; i < nfu; i++ )
 			    mm(nfu*n+i,j) = buf(i,j);
+#endif
 		}
 	    }
 
@@ -240,9 +243,12 @@ void ADdump_Mat( ADFile *f, Mat2<T>& m, String id )
 // 		C4_Recv( &buf(0,0), sizeof(T) * nfu * ncv,
 // 			 n, 250, group );
 
+#if 0
+            // somebody needs to fix this
 		for( j=0; j < ncv; j++ )
 		    for( i=0; i < nfu; i++ )
 			mm(nfu*n+i,j) = buf(i,j);
+#endif
 	    }
 	}
 

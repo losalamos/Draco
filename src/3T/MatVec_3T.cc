@@ -57,7 +57,7 @@ template<class MT, class Solver>
 void MatVec_3T<MT, Solver>::MatVec( Mat1<T>& b, const Mat1<T>&x )
 {
     its++;
-    char buf[80];
+//     char buf[80];
 
     int ncp = spm->get_ncp();
     int nct = spm->get_nct();
@@ -79,10 +79,9 @@ void MatVec_3T<MT, Solver>::MatVec( Mat1<T>& b, const Mat1<T>&x )
 
     // Post the async sends.
 
-	for( int m=0, n=0; n < nodes; n++ ) {
+	for( int /*m=0,*/ n=0; n < nodes; n++ ) {
 	    if (n == node) continue;
-	//	    SendAsync( sreq[m++], &x( 0 ), ncp*sizeof(double), n, 1
-	//);
+// 	    SendAsync( sreq[m++], &x( 0 ), ncp*sizeof(double), n, 1 );
 	    Send( &x(0), ncp, n );
 	}
 
