@@ -10,19 +10,15 @@ template <class Mesh>
 template <class T1, class T2, class Op>
 void
 PoomaMesh_XYZ<Mesh>::scatter(typename PoomaMesh_XYZ<Mesh>::fcdtf<T1>& to,
-			     const typename PoomaMesh_XYZ<Mesh>::cctf<T2>& from,
-			     const Op& op)
+    const typename PoomaMesh_XYZ<Mesh>::cctf<T2>& from, const Op& op)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
-    // update guard cells on "from" field
-    typename PoomaMesh_XYZ<Mesh>::cctf<T2>& ncfrom =
-	const_cast<typename PoomaMesh_XYZ<Mesh>::cctf<T2>&>(from);
-    ncfrom.fillGuardCells();
 
     // get field iterators
     typename PoomaMesh_XYZ<Mesh>::fcdtf<T1>::iterator toit = to.begin();
     typename PoomaMesh_XYZ<Mesh>::cctf<T2>::const_iterator fromit,
 	fromend = from.end();
+
     // scatter from cells to each local face
     for (fromit = from.begin(); fromit != fromend; ++fromit)
 	for (int f=0; f<6; ++f, ++toit)
@@ -68,14 +64,15 @@ template <class Mesh>
 template <class T1, class T2, class Op>
 void
 PoomaMesh_XYZ<Mesh>::scatter(typename PoomaMesh_XYZ<Mesh>::cctf<T1>& to,
-			     const typename PoomaMesh_XYZ<Mesh>::fcdtf<T2>& from,
-			     const Op& op)
+    const typename PoomaMesh_XYZ<Mesh>::fcdtf<T2>& from, const Op& op)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
+
     // get field iterators
     typename PoomaMesh_XYZ<Mesh>::cctf<T1>::iterator toit, toend = to.end();
     typename PoomaMesh_XYZ<Mesh>::fcdtf<T2>::const_iterator fromit =
 	from.begin();
+
     // scatter from each local face to cell center
     for (toit = to.begin(); toit != toend; ++toit)
 	for (int f=0; f<6; ++f, ++fromit)
@@ -86,10 +83,17 @@ template <class Mesh>
 template <class T1, class T2, class Op>
 void
 PoomaMesh_XYZ<Mesh>::scatter(typename PoomaMesh_XYZ<Mesh>::fcdtf<T1>& to,
-			     const typename PoomaMesh_XYZ<Mesh>::vctf<T2>& from,
-			     const Op& op)
+    const typename PoomaMesh_XYZ<Mesh>::vctf<T2>& from, const Op& op)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
+
+    // We are using BaseField iterators below, so we must manage 
+    // the scalar code issues explicitly here.
+    to.prepareForScalarCode(true);
+    typename PoomaMesh_XYZ<Mesh>::vctf<T2>& ncfrom =
+      const_cast<typename PoomaMesh_XYZ<Mesh>::vctf<T2>&>(from);
+    ncfrom.prepareForScalarCode(true);
+
     // get BaseField references
     typedef typename PoomaMesh_XYZ<Mesh>::fcdtf<T1>::BaseField_t BF1_t;
     typedef typename PoomaMesh_XYZ<Mesh>::vctf<T2>::BaseField_t BF2_t;
@@ -133,16 +137,27 @@ PoomaMesh_XYZ<Mesh>::scatter(typename PoomaMesh_XYZ<Mesh>::fcdtf<T1>& to,
 	PETE_apply( op, (*toit)(5), (*fromit)(6) );
 	PETE_apply( op, (*toit)(5), (*fromit)(7) );
     }
+
+    // Explicitly indicate we have finished with scalar code
+    to.finishScalarCode(true);
+    ncfrom.finishScalarCode(false);
 }
 
 template <class Mesh>
 template <class T1, class T2, class Op>
 void
 PoomaMesh_XYZ<Mesh>::scatter(typename PoomaMesh_XYZ<Mesh>::vctf<T1>& to,
-			     const typename PoomaMesh_XYZ<Mesh>::fcdtf<T2>& from,
-			     const Op& op)
+    const typename PoomaMesh_XYZ<Mesh>::fcdtf<T2>& from, const Op& op)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
+
+    // We are using BaseField iterators below, so we must manage 
+    // the scalar code issues explicitly here.
+    to.prepareForScalarCode(true);
+    typename PoomaMesh_XYZ<Mesh>::fcdtf<T2>& ncfrom =
+      const_cast<typename PoomaMesh_XYZ<Mesh>::fcdtf<T2>&>(from);
+    ncfrom.prepareForScalarCode(true);
+
     // get BaseField references
     typedef typename PoomaMesh_XYZ<Mesh>::vctf<T1>::BaseField_t BF1_t;
     typedef typename PoomaMesh_XYZ<Mesh>::fcdtf<T2>::BaseField_t BF2_t;
@@ -188,20 +203,26 @@ PoomaMesh_XYZ<Mesh>::scatter(typename PoomaMesh_XYZ<Mesh>::vctf<T1>& to,
 	PETE_apply( op, (*toit)(7), (*fromit)(3) );
 	PETE_apply( op, (*toit)(7), (*fromit)(5) );
     }
+
+    // Explicitly indicate that we have finished scalar code
+    to.finishScalarCode(true);
+    ncfrom.finishScalarCode(false);
 }
 
 template <class Mesh>
 template <class T1, class T2, class Op>
 void
 PoomaMesh_XYZ<Mesh>::scatter(typename PoomaMesh_XYZ<Mesh>::nctf<T1>& to,
-			     const typename PoomaMesh_XYZ<Mesh>::vctf<T2>& from,
-			     const Op& op)
+    const typename PoomaMesh_XYZ<Mesh>::vctf<T2>& from, const Op& op)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
-    // update guard cells on "from" field
+
+    // We are using BaseField iterators below, so we must manage 
+    // the scalar code issues explicitly here.
+    to.prepareForScalarCode(true);
     typename PoomaMesh_XYZ<Mesh>::vctf<T2>& ncfrom =
-	const_cast<typename PoomaMesh_XYZ<Mesh>::vctf<T2>&>(from);
-    ncfrom.fillGuardCells();
+      const_cast<typename PoomaMesh_XYZ<Mesh>::vctf<T2>&>(from);
+    ncfrom.prepareForScalarCode(true);
 
     // get BaseField references
     typedef typename PoomaMesh_XYZ<Mesh>::nctf<T1>::BaseField_t BF1_t;
@@ -255,19 +276,24 @@ PoomaMesh_XYZ<Mesh>::scatter(typename PoomaMesh_XYZ<Mesh>::nctf<T1>& to,
 	    }
 	}
     }
+
+    // Explicitly indicate that we have finished scalar code
+    to.finishScalarCode(true);
+    ncfrom.finishScalarCode(false);
 }
 
 template <class Mesh>
 template <class T1, class T2, class Op>
 void
 PoomaMesh_XYZ<Mesh>::scatter(typename PoomaMesh_XYZ<Mesh>::cctf<T1>& to,
-			     const typename PoomaMesh_XYZ<Mesh>::vctf<T2>& from,
-			     const Op& op)
+    const typename PoomaMesh_XYZ<Mesh>::vctf<T2>& from, const Op& op)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
+
     // get field iterators
     typename PoomaMesh_XYZ<Mesh>::cctf<T1>::iterator toit, toend = to.end();
-    typename PoomaMesh_XYZ<Mesh>::vctf<T2>::const_iterator fromit = from.begin();
+    typename PoomaMesh_XYZ<Mesh>::vctf<T2>::const_iterator
+        fromit = from.begin();
 	
     // loop over cells and scatter from each vertex to cell center
     for (toit = to.begin(); toit != toend; ++toit) {
@@ -282,14 +308,15 @@ template <class Mesh>
 template <class T1, class T2, class Op>
 void
 PoomaMesh_XYZ<Mesh>::gather(typename PoomaMesh_XYZ<Mesh>::fcdtf<T1>& to,
-			    const typename PoomaMesh_XYZ<Mesh>::cctf<T2>& from,
-			    const Op& op)
+    const typename PoomaMesh_XYZ<Mesh>::cctf<T2>& from, const Op& op)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
+
     // get field iterators
     typename PoomaMesh_XYZ<Mesh>::fcdtf<T1>::iterator toit = to.begin();
     typename PoomaMesh_XYZ<Mesh>::cctf<T2>::const_iterator fromit,
 	fromend = from.end();
+
     // gather from cell center to each local face
     for (fromit = from.begin(); fromit != fromend; ++fromit)
 	for (int f=0; f<6; ++f, ++toit)
@@ -300,14 +327,15 @@ template <class Mesh>
 template <class T1, class T2, class Op>
 void
 PoomaMesh_XYZ<Mesh>::gather(typename PoomaMesh_XYZ<Mesh>::bstf<T1>& to,
-			    const typename PoomaMesh_XYZ<Mesh>::fcdtf<T2>& from,
-			    const Op& op)
+    const typename PoomaMesh_XYZ<Mesh>::fcdtf<T2>& from, const Op& op)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
+
     // get field iterators
     typename PoomaMesh_XYZ<Mesh>::bstf<T1>::iterator toit, toend = to.end();
     typename PoomaMesh_XYZ<Mesh>::fcdtf<T2>::const_iterator fromit =
 	from.begin();
+
     // loop over boundary faces and gather from face centers to boundary faces
     for (toit = to.begin(); toit != toend; ++toit) {
 	fromit = toit; // set fcdtf iterator to same location
@@ -319,14 +347,15 @@ template <class Mesh>
 template <class T1, class T2, class Op>
 void
 PoomaMesh_XYZ<Mesh>::gather(typename PoomaMesh_XYZ<Mesh>::fcdtf<T1>& to,
-			    const typename PoomaMesh_XYZ<Mesh>::bstf<T2>& from,
-			    const Op& op)
+    const typename PoomaMesh_XYZ<Mesh>::bstf<T2>& from, const Op& op)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
+
     // get field iterators
     typename PoomaMesh_XYZ<Mesh>::fcdtf<T1>::iterator toit = to.begin();
     typename PoomaMesh_XYZ<Mesh>::bstf<T2>::const_iterator fromit,
 	fromend = from.end();
+
     // loop over boundary faces and gather from boundary faces to face centers
     for (fromit = from.begin(); fromit != fromend; ++fromit) {
 	toit = fromit; // set fcdtf iterator to same location
@@ -338,14 +367,16 @@ template <class Mesh>
 template <class T1, class T2, class Op>
 void
 PoomaMesh_XYZ<Mesh>::gather(typename PoomaMesh_XYZ<Mesh>::vctf<T1>& to,
-			    const typename PoomaMesh_XYZ<Mesh>::nctf<T2>& from,
-			    const Op& op)
+    const typename PoomaMesh_XYZ<Mesh>::nctf<T2>& from, const Op& op)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
-    // update guard cells on "from" field
+
+    // We are using BaseField iterators below, so we must manage 
+    // the scalar code issues explicitly here.
+    to.prepareForScalarCode(true);
     typename PoomaMesh_XYZ<Mesh>::nctf<T2>& ncfrom =
-	const_cast<typename PoomaMesh_XYZ<Mesh>::nctf<T2>&>(from);
-    ncfrom.fillGuardCells();
+      const_cast<typename PoomaMesh_XYZ<Mesh>::nctf<T2>&>(from);
+    ncfrom.prepareForScalarCode(true);
 
     // get BaseField references
     typedef typename PoomaMesh_XYZ<Mesh>::vctf<T1>::BaseField_t BF1_t;
@@ -373,20 +404,25 @@ PoomaMesh_XYZ<Mesh>::gather(typename PoomaMesh_XYZ<Mesh>::vctf<T1>& to,
 	PETE_apply( op, (*toit)(6), fromit.offset(0,1,1) );
 	PETE_apply( op, (*toit)(7), fromit.offset(1,1,1) );
     }
+
+    // Explicitly indicate that we have finished scalar code
+    to.finishScalarCode(true);
+    ncfrom.finishScalarCode(false);
 }
 
 template <class Mesh>
 template <class T1, class T2, class Op>
 void
 PoomaMesh_XYZ<Mesh>::gather(typename PoomaMesh_XYZ<Mesh>::vctf<T1>& to,
-			    const typename PoomaMesh_XYZ<Mesh>::cctf<T2>& from,
-			    const Op& op)
+    const typename PoomaMesh_XYZ<Mesh>::cctf<T2>& from, const Op& op)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
+
     // get field iterators
     typename PoomaMesh_XYZ<Mesh>::vctf<T1>::iterator toit = to.begin();
     typename PoomaMesh_XYZ<Mesh>::cctf<T2>::const_iterator fromit,
 	fromend = from.end();
+
     // loop over cells and gather to each vertex in cell
     for (fromit = from.begin(); fromit != fromend; ++fromit) {
 	for (int v=0; v<8; ++v) {
@@ -400,13 +436,16 @@ template <class Mesh>
 template <class T>
 void
 PoomaMesh_XYZ<Mesh>::swap_faces(typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& to,
-				const typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& from)
+    const typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& from)
 {
     PAssert( to.get_Mesh() == from.get_Mesh() );
-    // update guard cells on "from" field
+
+    // We are using BaseField iterators below, so we must manage 
+    // the scalar code issues explicitly here.
+    to.prepareForScalarCode(true);
     typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& ncfrom =
-	const_cast<typename PoomaMesh_XYZ<Mesh>::fcdtf<T>&>(from);
-    ncfrom.fillGuardCells();
+      const_cast<typename PoomaMesh_XYZ<Mesh>::fcdtf<T>&>(from);
+    ncfrom.prepareForScalarCode(true);
 
     // get BaseField references
     typedef typename PoomaMesh_XYZ<Mesh>::fcdtf<T>::BaseField_t BF_t;
@@ -416,6 +455,7 @@ PoomaMesh_XYZ<Mesh>::swap_faces(typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& to,
     // get BaseField iterators
     typename BF_t::iterator bftoit, bftoend = bfto.end(),
 	bffromit = bffrom.begin(), bffromend = bffrom.end();
+
     // swap adjacent faces from "from" into "to"
     int loc[3];
     int ncx = from.get_Mesh().get_ncx();
@@ -448,6 +488,10 @@ PoomaMesh_XYZ<Mesh>::swap_faces(typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& to,
 	else
 	    (*bftoit)(5) = 0;
     }
+
+    // Explicitly indicate that we have finished scalar code
+    to.finishScalarCode(true);
+    ncfrom.finishScalarCode(false);
 }
 
 
@@ -464,6 +508,7 @@ template <class T>
 inline T
 PoomaMesh_XYZ<Mesh>::sum(const typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& f)
 {
+    // Sum as Vektor Field, then sum Vektor components
     Vektor<T,6> vsum = ::sum(f);
     T ssum = 0;
     for (int face=0; face<6; ++face)
@@ -476,11 +521,16 @@ template <class T>
 inline T
 PoomaMesh_XYZ<Mesh>::sum(const typename PoomaMesh_XYZ<Mesh>::bstf<T>& f)
 {
-    Vektor<T,6> vsum = ::sum(f);
-    T ssum = 0;
-    for (int face=0; face<6; ++face)
-	ssum += vsum(face);
-    return ssum;
+    // compute local sum over boundary faces
+    T lsum = 0;
+    typename PoomaMesh_XYZ<Mesh>::bstf<T>::const_iterator fit, fend = f.end();
+    for (fit = f.begin(); fit != fend; ++fit)
+        lsum += *fit;
+
+    // compute global sum using message passing, if needed
+    T gsum;
+    reduce_masked(lsum, gsum, OpAddAssign(), f.begin() != fend);
+    return gsum;
 }
 
 template <class Mesh>
@@ -496,6 +546,7 @@ template <class T>
 inline T
 PoomaMesh_XYZ<Mesh>::sum(const typename PoomaMesh_XYZ<Mesh>::vctf<T>& f)
 {
+    // Sum as Vektor Field, then sum Vektor components
     Vektor<T,8> vsum = ::sum(f);
     T ssum = 0;
     for (int vert=0; vert<8; ++vert)
@@ -516,10 +567,11 @@ template <class T>
 inline T
 PoomaMesh_XYZ<Mesh>::min(const typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& f)
 {
+    // Find min as Vektor Field, then get min of Vektor components
     Vektor<T,6> vmin = ::min(f);
     T smin = vmin(0);
     for (int face=1; face<6; ++face)
-	if (vmin(face) < smin) smin = vmin(face);
+	smin = (vmin(face) < smin) ? vmin(face) : smin;
     return smin;
 }
 
@@ -528,11 +580,21 @@ template <class T>
 inline T
 PoomaMesh_XYZ<Mesh>::min(const typename PoomaMesh_XYZ<Mesh>::bstf<T>& f)
 {
-    Vektor<T,6> vmin = ::min(f);
-    T smin = vmin(0);
-    for (int face=1; face<6; ++face)
-	if (vmin(face) < smin) smin = vmin(face);
-    return smin;
+    // compute local min over boundary faces
+    T lmin;
+    typename PoomaMesh_XYZ<Mesh>::bstf<T>::const_iterator fit, fend = f.end();
+    fit = f.begin();
+    if (fit != fend)
+        lmin = *fit++;
+    while (fit != fend) {
+        lmin = (*fit < lmin) ? *fit : lmin;
+        ++fit;
+    }
+
+    // compute global min using message passing, if needed
+    T gmin;
+    reduce_masked(lmin, gmin, OpMinAssign(), f.begin() != fend);
+    return gmin;
 }
 
 template <class Mesh>
@@ -548,10 +610,11 @@ template <class T>
 inline T
 PoomaMesh_XYZ<Mesh>::min(const typename PoomaMesh_XYZ<Mesh>::vctf<T>& f)
 {
+    // Find min as Vektor Field, then get min of Vektor components
     Vektor<T,8> vmin = ::min(f);
     T smin = vmin(0);
     for (int vert=1; vert<8; ++vert)
-	if (vmin(vert) < smin) smin = vmin(vert);
+	smin = (vmin(vert) < smin) ? vmin(vert) : smin;
     return smin;
 }
 
@@ -560,7 +623,7 @@ template <class T>
 inline T
 PoomaMesh_XYZ<Mesh>::max(const typename PoomaMesh_XYZ<Mesh>::cctf<T>& f)
 {
- return ::max(f);
+    return ::max(f);
 }
 
 template <class Mesh>
@@ -568,10 +631,11 @@ template <class T>
 inline T
 PoomaMesh_XYZ<Mesh>::max(const typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& f)
 {
+    // Find max as Vektor Field, then get max of Vektor components
     Vektor<T,6> vmax = ::max(f);
     T smax = vmax(0);
     for (int face=1; face<6; ++face)
-	if (vmax(face) > smax) smax = vmax(face);
+	smax = (vmax(face) > smax) ? vmax(face) : smax;
     return smax;
 }
 
@@ -580,11 +644,21 @@ template <class T>
 inline T
 PoomaMesh_XYZ<Mesh>::max(const typename PoomaMesh_XYZ<Mesh>::bstf<T>& f)
 {
-    Vektor<T,6> vmax = ::max(f);
-    T smax = vmax(0);
-    for (int face=1; face<6; ++face)
-	if (vmax(face) > smax) smax = vmax(face);
-    return smax;
+    // compute local max over boundary faces
+    T lmax;
+    typename PoomaMesh_XYZ<Mesh>::bstf<T>::const_iterator fit, fend = f.end();
+    fit = f.begin();
+    if (fit != fend)
+        lmax = *fit++;
+    while (fit != fend) {
+        lmax = (*fit > lmax) ? *fit : lmax;
+        ++fit;
+    }
+
+    // compute global max using message passing, if needed
+    T gmax;
+    reduce_masked(lmax, gmax, OpMaxAssign(), f.begin() != fend);
+    return gmax;
 }
 
 template <class Mesh>
@@ -600,10 +674,11 @@ template <class T>
 inline T
 PoomaMesh_XYZ<Mesh>::max(const typename PoomaMesh_XYZ<Mesh>::vctf<T>& f)
 {
+    // Find max as Vektor Field, then get max of Vektor components
     Vektor<T,8> vmax = ::max(f);
     T smax = vmax(0);
     for (int vert=1; vert<8; ++vert)
-	if (vmax(vert) > smax) smax = vmax(vert);
+	smax = (vmax(vert) > smax) ? vmax(vert) : smax;
     return smax;
 }
 

@@ -229,7 +229,7 @@ class PoomaMesh_XYZ
         // LessThan Comparable
         bool operator<(const vec& rhs) const
         {
-            const_iterator i, iend = end(), rhsi = rhs.end();
+            const_iterator i, iend = end(), rhsi = rhs.begin();
             for (i = begin(); i != iend; ++i, ++rhsi) {
                 if (*i < *rhsi) return true;
                 if (*rhsi < *i) return false;
@@ -294,17 +294,20 @@ class PoomaMesh_XYZ
             : BaseField_t( const_cast<Mesh&>(spm->get_Mesh()),
                            const_cast<CLayout_t&>(spm->get_CLayout()),
                            GC_t(1) ),
-              spm_m(spm) {}
+              spm_m(spm), iterCount(0) {}
         cctf(const MT_t& m)
             : BaseField_t( const_cast<Mesh&>(m.get_Mesh()),
                            const_cast<CLayout_t&>(m.get_CLayout()),
                            GC_t(1) ),
-              spm_m(const_cast<MT_t*>(&m)) {}
+              spm_m(const_cast<MT_t*>(&m)), iterCount(0) {}
         cctf(const cctf<T>& f)
             : BaseField_t( const_cast<Mesh&>(f.get_Mesh().get_Mesh()),
                            const_cast<CLayout_t&>(f.get_Mesh().get_CLayout()),
                            GC_t(1) ),
-              spm_m( f.get_FieldConstructor() ) {}
+              spm_m( f.get_FieldConstructor() ), iterCount(0)
+        {
+	    assign(*this,f);    // copy the field element values
+	}
 
         // Assignment from scalar
         cctf<T>& operator=(T x)
@@ -363,7 +366,7 @@ class PoomaMesh_XYZ
         // iterators
         iterator begin()
         {
-            return iterator( dynamic_cast<BaseField_t&>(*this) );
+            return iterator(*this);
         }
         iterator end()
         {
@@ -371,12 +374,27 @@ class PoomaMesh_XYZ
         }
         const_iterator begin() const
         {
-            return const_iterator( dynamic_cast<const BaseField_t&>(*this) );
+            return const_iterator(*this);
         }
         const_iterator end() const
         {
             return const_iterator( BaseField_t::end() );
         }
+
+        void incIterCount(bool flag)
+        {
+	    ++iterCount;
+	    if (iterCount == 1) 
+	      prepareForScalarCode(flag);
+	    return;
+	}
+        void decIterCount(bool flag)
+        {
+	    --iterCount;
+	    if (iterCount == 0)
+	      finishScalarCode(flag);
+	    return;
+	}
 
         // accessors
         const MT_t::FieldConstructor& get_FieldConstructor(void) const
@@ -445,7 +463,7 @@ class PoomaMesh_XYZ
       private:
         // data
         MT_t::FieldConstructor spm_m;
-
+        int iterCount;
     };
         
     // Cell centered field iterators
@@ -456,23 +474,45 @@ class PoomaMesh_XYZ
         friend class cctf_const_iterator<T>;
 
         // typedefs
+        typedef cctf<T> Field_t;
         typedef typename cctf<T>::BaseField_t BaseField_t;
         typedef typename BaseField_t::iterator BaseField_iterator;
 
       public:
 
         // constructors
-        cctf_iterator() {}
-        cctf_iterator(BaseField_t& bf)
-            : bfi_m(bf.begin()) {}
+        cctf_iterator() : pfield_m(0) {}
+        cctf_iterator(Field_t& f)
+            : pfield_m(&f)
+        {
+	    pfield_m->incIterCount(true);
+	    bfi_m = dynamic_cast<BaseField_t&>(f).begin();
+	}
         cctf_iterator(const BaseField_iterator& bfiter)
-            : bfi_m(bfiter) {}
+            : bfi_m(bfiter), pfield_m(0) {}
         cctf_iterator(const cctf_iterator<T>& iter)
-            : bfi_m(iter.bfi_m) {}
+            : pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
+
+        // destructor
+        ~cctf_iterator()
+        {
+	    if (pfield_m)
+	      pfield_m->decIterCount(true);
+	}
 
         // assignment
         cctf_iterator<T>& operator=(const cctf_iterator<T>& x)
         {
+	    if (pfield_m)
+	      pfield_m->decIterCount(true);
+	    pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
             bfi_m = x.bfi_m;
             return *this;
         }
@@ -514,38 +554,71 @@ class PoomaMesh_XYZ
       private:
         // data
         BaseField_iterator bfi_m;
+        Field_t *pfield_m;
     };
     
     template <class T>
     class cctf_const_iterator : public input_iterator<T,ptrdiff_t>
     {
         // typedefs
+        typedef cctf<T> Field_t;
         typedef typename cctf<T>::BaseField_t BaseField_t;
         typedef typename BaseField_t::iterator BaseField_iterator;
 
       public:
 
         // constructors
-        cctf_const_iterator() {}
-        cctf_const_iterator(const BaseField_t& bf)
-            : bfi_m(bf.begin()) {}
+        cctf_const_iterator() : pfield_m(0) {}
+        cctf_const_iterator(const Field_t& f)
+            : pfield_m(const_cast<Field_t *>(&f))
+        {
+	    pfield_m->incIterCount(true);
+	    bfi_m = dynamic_cast<const BaseField_t&>(f).begin();
+	}
         cctf_const_iterator(const BaseField_iterator& bfiter)
-            : bfi_m(bfiter) {}
+            : bfi_m(bfiter), pfield_m(0) {}
         cctf_const_iterator(const cctf_const_iterator<T>& iter)
-            : bfi_m(iter.bfi_m) {}
+            : pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
         cctf_const_iterator(const cctf_iterator<T>& iter)
-            : bfi_m(iter.bfi_m) {}
+            : pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
+
+        // destructor
+        ~cctf_const_iterator()
+        {
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+	}
 
         // assignment
         cctf_const_iterator<T>&
         operator=(const cctf_const_iterator<T>& x)
         {
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+	    pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
             bfi_m = x.bfi_m;
             return *this;
         }
         cctf_const_iterator<T>&
         operator=(const cctf_iterator<T>& x)
         {
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+	    pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
             bfi_m = x.bfi_m;
             return *this;
         }
@@ -579,9 +652,9 @@ class PoomaMesh_XYZ
         }
 
       private:
-
         // data
         BaseField_iterator bfi_m;
+        Field_t *pfield_m;
     };
     
     // Face centered discontinuous field
@@ -623,17 +696,20 @@ class PoomaMesh_XYZ
             : BaseField_t( const_cast<Mesh&>(spm->get_Mesh()),
                            const_cast<CLayout_t&>(spm->get_CLayout()),
                            GC_t(1) ),
-              spm_m(spm) {}
+              spm_m(spm), iterCount(0) {}
         fcdtf(const MT_t& m)
             : BaseField_t( const_cast<Mesh&>(m.get_Mesh()),
                            const_cast<CLayout_t&>(m.get_CLayout()),
                            GC_t(1) ),
-              spm_m(const_cast<MT_t*>(&m)) {}
+              spm_m(const_cast<MT_t*>(&m)), iterCount(0) {}
         fcdtf(const fcdtf<T>& f)
             : BaseField_t( const_cast<Mesh&>(f.get_Mesh().get_Mesh()),
                            const_cast<CLayout_t&>(f.get_Mesh().get_CLayout()),
                            GC_t(1) ),
-              spm_m( f.get_FieldConstructor() ) {}
+              spm_m( f.get_FieldConstructor() ), iterCount(0)
+        {
+	    assign(*this,f);    // copy the field element values
+	}
 
         // Assignment from scalar
         fcdtf<T>& operator=(T x)
@@ -737,7 +813,7 @@ class PoomaMesh_XYZ
         // iterators
         iterator begin()
         {
-            return iterator( dynamic_cast<BaseField_t&>(*this) );
+            return iterator(*this);
         }
         iterator end()
         {
@@ -745,13 +821,28 @@ class PoomaMesh_XYZ
         }
         const_iterator begin() const
         {
-            return const_iterator( dynamic_cast<const BaseField_t&>(*this) );
+            return const_iterator(*this);
         }
         const_iterator end() const
         {
             return const_iterator( BaseField_t::end() );
         }
         
+        void incIterCount(bool flag)
+        {
+	    ++iterCount;
+	    if (iterCount == 1) 
+	      prepareForScalarCode(flag);
+	    return;
+	}
+        void decIterCount(bool flag)
+        {
+	    --iterCount;
+	    if (iterCount == 0)
+	      finishScalarCode(flag);
+	    return;
+	}
+
         // accessors
         const MT_t::FieldConstructor& get_FieldConstructor(void) const
         {
@@ -819,7 +910,7 @@ class PoomaMesh_XYZ
       private:
         // data
         MT_t::FieldConstructor spm_m;
-
+        int iterCount;
     };
     
     // Face centered discontinuous field iterators
@@ -830,30 +921,52 @@ class PoomaMesh_XYZ
         friend class fcdtf_const_iterator<T>;
 
         // typedefs
+        typedef fcdtf<T> Field_t;
         typedef typename fcdtf<T>::BaseField_t BaseField_t;
         typedef typename BaseField_t::iterator BaseField_iterator;
 
       public:
 
         // constructors
-        fcdtf_iterator() : face_m(0) {}
-        fcdtf_iterator(BaseField_t& bf)
-            : bfi_m(bf.begin()), face_m(0) {}
+        fcdtf_iterator() : face_m(0), pfield_m(0) {}
+        fcdtf_iterator(Field_t& f)
+            : face_m(0), pfield_m(&f)
+        {
+	    pfield_m->incIterCount(true);
+	    bfi_m = dynamic_cast<BaseField_t&>(f).begin();
+	}
         fcdtf_iterator(const BaseField_iterator& bfiter)
-            : bfi_m(bfiter), face_m(0) {}
+            : bfi_m(bfiter), face_m(0), pfield_m(0) {}
         fcdtf_iterator(const fcdtf_iterator<T>& iter)
-            : bfi_m(iter.bfi_m), face_m(iter.face_m) {}
+            : face_m(iter.face_m), pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
+
+        // destructor
+        ~fcdtf_iterator()
+        {
+	    if (pfield_m)
+	      pfield_m->decIterCount(true);
+        }
 
         // assignment
         fcdtf_iterator<T>& operator=(const fcdtf_iterator<T>& x)
         {
+	    if (pfield_m)
+	      pfield_m->decIterCount(true);
+	    pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
             bfi_m = x.bfi_m;
             face_m = x.face_m;
             return *this;
         }
         fcdtf_iterator<T>& operator=(const bstf_iterator<T>& x)
         {
-            // set BaseField iterator and face equal
+            // set BaseField iterator location and face equal
             FieldLoc<3> loc;
             x.bfi_m.GetCurrentLocation(loc);
             bfi_m.SetCurrentLocation(loc);
@@ -862,7 +975,7 @@ class PoomaMesh_XYZ
         }
         fcdtf_iterator<T>& operator=(const bstf_const_iterator<T>& x)
         {
-            // set BaseField iterator and face equal
+            // set BaseField iterator location and face equal
             FieldLoc<3> loc;
             x.bfi_m.GetCurrentLocation(loc);
             bfi_m.SetCurrentLocation(loc);
@@ -912,32 +1025,60 @@ class PoomaMesh_XYZ
         // data
         BaseField_iterator bfi_m;
         unsigned int face_m;
+        Field_t *pfield_m;
     };
     
     template <class T>
     class fcdtf_const_iterator : public input_iterator<T,ptrdiff_t>
     {
         // typedefs
+        typedef fcdtf<T> Field_t;
         typedef typename fcdtf<T>::BaseField_t BaseField_t;
         typedef typename BaseField_t::iterator BaseField_iterator;
 
       public:
 
         // constructors
-        fcdtf_const_iterator() : face_m(0) {}
-        fcdtf_const_iterator(const BaseField_t& bf)
-            : bfi_m(bf.begin()), face_m(0) {}
+        fcdtf_const_iterator() : face_m(0), pfield_m(0) {}
+        fcdtf_const_iterator(const Field_t& f)
+            : face_m(0), pfield_m(const_cast<Field_t*>(&f))
+        {
+	    pfield_m->incIterCount(true);
+	    bfi_m = dynamic_cast<const BaseField_t&>(f).begin();
+	}
         fcdtf_const_iterator(const BaseField_iterator& bfiter)
-            : bfi_m(bfiter), face_m(0) {}
+            : bfi_m(bfiter), face_m(0), pfield_m(0) {}
         fcdtf_const_iterator(const fcdtf_const_iterator<T>& iter)
-            : bfi_m(iter.bfi_m), face_m(iter.face_m) {}
+            : face_m(iter.face_m), pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
         fcdtf_const_iterator(const fcdtf_iterator<T>& iter)
-            : bfi_m(iter.bfi_m), face_m(iter.face_m) {}
+            : face_m(iter.face_m), pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
+
+        // destructor
+        ~fcdtf_const_iterator()
+        {
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+	}
 
         // assignment
         fcdtf_const_iterator<T>&
         operator=(const fcdtf_const_iterator<T>& x)
         {
+            if (pfield_m)
+	      pfield_m->decIterCount(false);
+	    pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
             bfi_m = x.bfi_m;
             face_m = x.face_m;
             return *this;
@@ -945,6 +1086,11 @@ class PoomaMesh_XYZ
         fcdtf_const_iterator<T>&
         operator=(const fcdtf_iterator<T>& x)
         {
+            if (pfield_m)
+	      pfield_m->decIterCount(false);
+	    pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
             bfi_m = x.bfi_m;
             face_m = x.face_m;
             return *this;
@@ -952,7 +1098,7 @@ class PoomaMesh_XYZ
         fcdtf_const_iterator<T>&
         operator=(const bstf_iterator<T>& x)
         {
-            // set BaseField iterator and face equal
+            // set BaseField iterator location and face equal
             FieldLoc<3> loc;
             x.bfi_m.GetCurrentLocation(loc);
             bfi_m.SetCurrentLocation(loc);
@@ -962,7 +1108,7 @@ class PoomaMesh_XYZ
         fcdtf_const_iterator<T>&
         operator=(const bstf_const_iterator<T>& x)
         {
-            // set BaseField iterator and face equal
+            // set BaseField iterator location and face equal
             FieldLoc<3> loc;
             x.bfi_m.GetCurrentLocation(loc);
             bfi_m.SetCurrentLocation(loc);
@@ -1012,6 +1158,7 @@ class PoomaMesh_XYZ
         // data
         BaseField_iterator bfi_m;
         unsigned int face_m;
+        Field_t *pfield_m;
     };
 
     // Boundary specified field
@@ -1051,7 +1198,7 @@ class PoomaMesh_XYZ
 	bstf(const MT_t::FieldConstructor& spm)
 	    : BaseField_t( const_cast<Mesh&>(spm->get_Mesh()),
 			   const_cast<CLayout_t&>(spm->get_CLayout()) ),
-	      spm_m(spm)
+	      spm_m(spm), iterCount(0)
 	{
 	    // compute local number of boundary faces
 	    computeSize();
@@ -1059,7 +1206,7 @@ class PoomaMesh_XYZ
 	bstf(const MT_t& m)
 	    : BaseField_t( const_cast<Mesh&>(m.get_Mesh()),
 			   const_cast<CLayout_t&>(m.get_CLayout()) ),
-	      spm_m(const_cast<MT_t*>(&m))
+	      spm_m(const_cast<MT_t*>(&m)), iterCount(0)
 	{
 	    // compute local number of boundary faces
 	    computeSize();
@@ -1067,9 +1214,11 @@ class PoomaMesh_XYZ
 	bstf(const bstf<T>& f)
 	    : BaseField_t( const_cast<Mesh&>(f.get_Mesh().get_Mesh()),
 			   const_cast<CLayout_t&>(f.get_Mesh().get_CLayout()) ),
-	      spm_m( f.get_FieldConstructor() ), size_m(f.size_m)
-	{
+	      spm_m( f.get_FieldConstructor() ), size_m(f.size_m), iterCount(0)
+        {
+	    assign(*this,f);    // copy the field element values
 	}
+
 
 	// Assignment from scalar
 	bstf<T>& operator=(T x) {
@@ -1164,7 +1313,7 @@ class PoomaMesh_XYZ
         // iterators
         iterator begin()
         {
-            return iterator( dynamic_cast<BaseField_t&>(*this) );
+            return iterator(*this);
         }
         iterator end()
         {
@@ -1172,12 +1321,27 @@ class PoomaMesh_XYZ
         }
         const_iterator begin() const
         {
-            return const_iterator( dynamic_cast<const BaseField_t&>(*this) );
+            return const_iterator(*this);
         }
         const_iterator end() const
         {
             return const_iterator( BaseField_t::end() );
         }
+
+        void incIterCount(bool flag)
+        {
+	    ++iterCount;
+	    if (iterCount == 1) 
+	      prepareForScalarCode(flag);
+	    return;
+	}
+        void decIterCount(bool flag)
+        {
+	    --iterCount;
+	    if (iterCount == 0)
+	      finishScalarCode(flag);
+	    return;
+	}
 
         // accessors
         const MT_t::FieldConstructor& get_FieldConstructor(void) const
@@ -1303,7 +1467,7 @@ class PoomaMesh_XYZ
         // data
         MT_t::FieldConstructor spm_m;
         size_type size_m;
-
+        int iterCount;
     };
     
     // Boundary specified field iterators
@@ -1316,33 +1480,53 @@ class PoomaMesh_XYZ
         friend class fcdtf_const_iterator<T>;
 
         // typedefs
+        typedef bstf<T> Field_t;
         typedef typename bstf<T>::BaseField_t BaseField_t;
         typedef typename BaseField_t::iterator BaseField_iterator;
 
       public:
 
         // constructors
-        bstf_iterator() {}
-        bstf_iterator(BaseField_t& bf)
-            : bfi_m(bf.begin()), bfend_m(bf.end()), face_m(0)
+        bstf_iterator() : face_m(0), pfield_m(0) {}
+        bstf_iterator(Field_t& f)
+            : bfend_m(dynamic_cast<BaseField_t&>(f).end()),
+              face_m(0), pfield_m(&f)
         {
+	    pfield_m->incIterCount(true);
+	    bfi_m = dynamic_cast<BaseField_t&>(f).begin();
             // make sure we are at the first valid boundary face
             int loc[3];
             bool OK;
             bfi_m.GetCurrentLocation(loc);
-            bstf<T>& bsf = dynamic_cast<bstf<T>&>(bf);
-            OK = bsf.checkIndices(loc[0], loc[1], loc[2], face_m);
+            OK = f.checkIndices(loc[0], loc[1], loc[2], face_m);
             if (!OK) ++(*this); // if not, advance to next valid boundary face
         }
         bstf_iterator(const BaseField_iterator& bfiter)
-            : bfi_m(bfiter), bfend_m(bfiter), face_m(0) {}
+            : bfi_m(bfiter), bfend_m(bfiter), face_m(0), pfield_m(0) {}
         bstf_iterator(const bstf_iterator<T>& iter)
-            : bfi_m(iter.bfi_m), bfend_m(iter.bfend_m),
-              face_m(iter.face_m) {}
+            : bfend_m(iter.bfend_m),
+              face_m(iter.face_m), pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
+
+        // destructor
+        ~bstf_iterator()
+        {
+	    if (pfield_m)
+	      pfield_m->decIterCount(true);
+        }
 
         // assignment
         bstf_iterator<T>& operator=(const bstf_iterator<T>& x)
         {
+	    if (pfield_m)
+	      pfield_m->decIterCount(true);
+            pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
             bfi_m = x.bfi_m;
             bfend_m = x.bfend_m;
             face_m = x.face_m;
@@ -1420,6 +1604,7 @@ class PoomaMesh_XYZ
         BaseField_iterator bfi_m;
         BaseField_iterator bfend_m;
         unsigned int face_m;
+        Field_t *pfield_m;
     };
 
     template <class T>
@@ -1429,37 +1614,62 @@ class PoomaMesh_XYZ
         friend class fcdtf_const_iterator<T>;
 
         // typedefs
+        typedef bstf<T> Field_t;
         typedef typename bstf<T>::BaseField_t BaseField_t;
         typedef typename BaseField_t::iterator BaseField_iterator;
 
       public:
 
 	// constructors
-        bstf_const_iterator() {}
-        bstf_const_iterator(const BaseField_t& bf)
-            : bfi_m(bf.begin()), bfend_m(bf.end()), face_m(0)
+        bstf_const_iterator() : face_m(0), pfield_m(0) {}
+        bstf_const_iterator(const Field_t& f)
+            : bfend_m(dynamic_cast<const BaseField_t&>(f).end()),
+              face_m(0), pfield_m(const_cast<Field_t*>(&f))
         {
+	    pfield_m->incIterCount(true);
+	    bfi_m = dynamic_cast<const BaseField_t&>(f).begin();
             // make sure we are at the first valid boundary face
             int loc[3];
             bool OK;
             bfi_m.GetCurrentLocation(loc);
-            const bstf<T>& bsf = dynamic_cast<const bstf<T>&>(bf);
-            OK = bsf.checkIndices(loc[0], loc[1], loc[2], face_m);
+            OK = f.checkIndices(loc[0], loc[1], loc[2], face_m);
             if (!OK) ++(*this); // if not, advance to next valid boundary face
         }
         bstf_const_iterator(const BaseField_iterator& bfiter)
-            : bfi_m(bfiter), bfend_m(bfiter), face_m(0) {}
+            : bfi_m(bfiter), bfend_m(bfiter), face_m(0), pfield_m(0) {}
         bstf_const_iterator(const bstf_const_iterator<T>& iter)
-            : bfi_m(iter.bfi_m), bfend_m(iter.bfend_m),
-              face_m(iter.face_m) {}
+            : bfend_m(iter.bfend_m),
+              face_m(iter.face_m), pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
         bstf_const_iterator(const bstf_iterator<T>& iter)
-            : bfi_m(iter.bfi_m), bfend_m(iter.bfend_m),
-              face_m(iter.face_m) {}
+            : bfend_m(iter.bfend_m),
+              face_m(iter.face_m), pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
+
+        // destructor
+        ~bstf_const_iterator()
+        {
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+        }
 
         // assignment
         bstf_const_iterator<T>&
         operator=(const bstf_const_iterator<T>& x)
         {
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+	    pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
             bfi_m = x.bfi_m;
             bfend_m = x.bfend_m;
             face_m = x.face_m;
@@ -1468,6 +1678,11 @@ class PoomaMesh_XYZ
         bstf_const_iterator<T>&
         operator=(const bstf_iterator<T>& x)
         {
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+	    pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
             bfi_m = x.bfi_m;
             bfend_m = x.bfend_m;
             face_m = x.face_m;
@@ -1545,6 +1760,7 @@ class PoomaMesh_XYZ
 	BaseField_iterator bfi_m;
 	BaseField_iterator bfend_m;
 	unsigned int face_m;
+        Field_t *pfield_m;
     };
 
     // Node centered field
@@ -1585,7 +1801,8 @@ class PoomaMesh_XYZ
 	nctf(const MT_t::FieldConstructor& spm)
 	    : BaseField_t( const_cast<Mesh&>(spm->get_Mesh()),
 			   const_cast<VLayout_t&>(spm->get_VLayout()),
-			   GC_t(1) ), spm_m(spm)
+			   GC_t(1) ),
+              spm_m(spm), iterCount(0)
 	{
 	    // compute number of local nodes
 	    computeSize();
@@ -1593,7 +1810,8 @@ class PoomaMesh_XYZ
 	nctf(const MT_t& m)
 	    : BaseField_t( const_cast<Mesh&>(m.get_Mesh()),
 			   const_cast<VLayout_t&>(m.get_VLayout()),
-			   GC_t(1) ), spm_m(const_cast<MT_t*>(&m))
+			   GC_t(1) ),
+              spm_m(const_cast<MT_t*>(&m)), iterCount(0)
 	{
 	    // compute number of local nodes
 	    computeSize();
@@ -1602,7 +1820,11 @@ class PoomaMesh_XYZ
 	    : BaseField_t( const_cast<Mesh&>(f.get_Mesh().get_Mesh()),
 			   const_cast<VLayout_t&>(f.get_Mesh().get_VLayout()),
 			   GC_t(1) ),
-	      spm_m( f.get_FieldConstructor() ), size_m(f.size_m) {}
+	      spm_m( f.get_FieldConstructor() ), size_m(f.size_m),
+              iterCount(0)
+        {
+	    assign(*this,f);    // copy the field element values
+	}
 
 	// Assignment from scalar
 	nctf<T>& operator=(T x)
@@ -1662,7 +1884,7 @@ class PoomaMesh_XYZ
 	// iterators
 	iterator begin()
 	{
-	    return iterator( dynamic_cast<BaseField_t&>(*this) );
+	    return iterator(*this);
 	}
 	iterator end()
 	{
@@ -1670,13 +1892,28 @@ class PoomaMesh_XYZ
 	}
 	const_iterator begin() const
 	{
-	    return const_iterator( dynamic_cast<const BaseField_t&>(*this) );
+	    return const_iterator(*this);
 	}
 	const_iterator end() const
 	{
 	    return const_iterator( BaseField_t::end() );
 	}
 	
+        void incIterCount(bool flag)
+        {
+	    ++iterCount;
+	    if (iterCount == 1) 
+	      prepareForScalarCode(flag);
+	    return;
+	}
+        void decIterCount(bool flag)
+        {
+	    --iterCount;
+	    if (iterCount == 0)
+	      finishScalarCode(flag);
+	    return;
+	}
+
 	// accessors
 	const MT_t::FieldConstructor& get_FieldConstructor(void) const
 	{
@@ -1759,7 +1996,7 @@ class PoomaMesh_XYZ
 	// data
 	MT_t::FieldConstructor spm_m;
 	size_type size_m;
-
+        int iterCount;
     };
     
     // Node centered field iterators
@@ -1770,23 +2007,45 @@ class PoomaMesh_XYZ
 	friend class nctf_const_iterator<T>;
 
 	// typedefs
+	typedef nctf<T> Field_t;
 	typedef typename nctf<T>::BaseField_t BaseField_t;
 	typedef typename BaseField_t::iterator BaseField_iterator;
 
       public:
 
 	// constructors
-	nctf_iterator() {}
-	nctf_iterator(BaseField_t& bf)
-	    : bfi_m(bf.begin()) {}
+	nctf_iterator() : pfield_m(0) {}
+	nctf_iterator(Field_t& f)
+	    : pfield_m(&f)
+        {
+	    pfield_m->incIterCount(true);
+	    bfi_m = dynamic_cast<BaseField_t&>(f).begin();
+	}
 	nctf_iterator(const BaseField_iterator& bfiter)
-	    : bfi_m(bfiter) {}
+	    : bfi_m(bfiter), pfield_m(0) {}
 	nctf_iterator(const nctf_iterator<T>& iter)
-	    : bfi_m(iter.bfi_m) {}
+	    : pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
+
+        // destructor
+        ~nctf_iterator()
+        {
+	    if (pfield_m)
+	      pfield_m->decIterCount(true);
+        }
 
 	// assignment
 	nctf_iterator<T>& operator=(const nctf_iterator<T>& x)
 	{
+	    if (pfield_m)
+	      pfield_m->decIterCount(true);
+            pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
 	    bfi_m = x.bfi_m;
 	    return *this;
 	}
@@ -1828,38 +2087,71 @@ class PoomaMesh_XYZ
       private:
 	// data
 	BaseField_iterator bfi_m;
+        Field_t *pfield_m;
     };
 
     template <class T>
     class nctf_const_iterator : public input_iterator<T,ptrdiff_t>
     {
 	// typedefs
+	typedef nctf<T> Field_t;
 	typedef typename nctf<T>::BaseField_t BaseField_t;
 	typedef typename BaseField_t::iterator BaseField_iterator;
 
       public:
 
 	// constructors
-	nctf_const_iterator() {}
-	nctf_const_iterator(const BaseField_t& bf)
-	    : bfi_m(bf.begin()) {}
+	nctf_const_iterator() : pfield_m(0) {}
+	nctf_const_iterator(const Field_t& f)
+	    : pfield_m(const_cast<Field_t*>(&f))
+        {
+	    pfield_m->incIterCount(true);
+	    bfi_m = dynamic_cast<const BaseField_t&>(f).begin();
+	}
 	nctf_const_iterator(const BaseField_iterator& bfiter)
-	    : bfi_m(bfiter) {}
+	    : bfi_m(bfiter), pfield_m(0) {}
 	nctf_const_iterator(const nctf_const_iterator<T>& iter)
-	    : bfi_m(iter.bfi_m) {}
+	    : pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
 	nctf_const_iterator(const nctf_iterator<T>& iter)
-	    : bfi_m(iter.bfi_m) {}
+	    : pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
+
+        // destructor
+        ~nctf_const_iterator()
+        {
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+        }
 
 	// assignment
 	nctf_const_iterator<T>&
 	operator=(const nctf_const_iterator<T>& x)
 	{
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+            pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
 	    bfi_m = x.bfi_m;
 	    return *this;
 	}
 	nctf_const_iterator<T>&
 	operator=(const nctf_iterator<T>& x)
 	{
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+            pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
 	    bfi_m = x.bfi_m;
 	    return *this;
 	}
@@ -1893,9 +2185,9 @@ class PoomaMesh_XYZ
 	}
 	
       private:
-
 	// data
 	BaseField_iterator bfi_m;
+        Field_t *pfield_m;
     };
     
     // Vertex centered field
@@ -1937,17 +2229,20 @@ class PoomaMesh_XYZ
 	    : BaseField_t( const_cast<Mesh&>(spm->get_Mesh()),
 			   const_cast<CLayout_t&>(spm->get_CLayout()),
 			   GC_t(1) ),
-	      spm_m(spm) {}
+	      spm_m(spm), iterCount(0) {}
 	vctf(const MT_t& m)
 	    : BaseField_t( const_cast<Mesh&>(m.get_Mesh()),
 			   const_cast<CLayout_t&>(m.get_CLayout()),
 			   GC_t(1) ),
-	      spm_m(const_cast<MT_t*>(&m)) {}
+	      spm_m(const_cast<MT_t*>(&m)), iterCount(0) {}
 	vctf(const vctf<T>& f)
 	    : BaseField_t( const_cast<Mesh&>(f.get_Mesh().get_Mesh()),
 			   const_cast<CLayout_t&>(f.get_Mesh().get_CLayout()),
 			   GC_t(1) ),
-	      spm_m( f.get_FieldConstructor() ) {}
+	      spm_m( f.get_FieldConstructor() ), iterCount(0)
+        {
+	    assign(*this,f);    // copy the field element values
+	}
 
 	// Assignment from scalar
 	vctf<T>& operator=(T x)
@@ -2051,7 +2346,7 @@ class PoomaMesh_XYZ
 	// iterators
 	iterator begin()
 	{
-	    return iterator( dynamic_cast<BaseField_t&>(*this) );
+	    return iterator(*this);
 	}
 	iterator end()
 	{
@@ -2059,11 +2354,26 @@ class PoomaMesh_XYZ
 	}
 	const_iterator begin() const
 	{
-	    return const_iterator( dynamic_cast<const BaseField_t&>(*this) );
+	    return const_iterator(*this);
 	}
 	const_iterator end() const
 	{
 	    return const_iterator( BaseField_t::end() );
+	}
+
+        void incIterCount(bool flag)
+        {
+	    ++iterCount;
+	    if (iterCount == 1) 
+	      prepareForScalarCode(flag);
+	    return;
+	}
+        void decIterCount(bool flag)
+        {
+	    --iterCount;
+	    if (iterCount == 0)
+	      finishScalarCode(flag);
+	    return;
 	}
 
 	// accessors
@@ -2133,7 +2443,7 @@ class PoomaMesh_XYZ
       private:
 	// data
 	MT_t::FieldConstructor spm_m;
-
+        int iterCount;
     };
     
     // Vertex centered field iterators
@@ -2144,23 +2454,46 @@ class PoomaMesh_XYZ
 	friend class vctf_const_iterator<T>;
 
 	// typedefs
+	typedef vctf<T> Field_t;
 	typedef typename vctf<T>::BaseField_t BaseField_t;
 	typedef typename BaseField_t::iterator BaseField_iterator;
 
       public:
 
 	// constructors
-	vctf_iterator() : vertex_m(0) {}
-	vctf_iterator(BaseField_t& bf)
-	    : bfi_m(bf.begin()), vertex_m(0) {}
+	vctf_iterator() : vertex_m(0), pfield_m(0) {}
+	vctf_iterator(Field_t& f)
+	    : vertex_m(0), pfield_m(&f)
+        {
+	    pfield_m->incIterCount(true);
+	    bfi_m = dynamic_cast<BaseField_t&>(f).begin();
+	}
 	vctf_iterator(const BaseField_iterator& bfiter)
-	    : bfi_m(bfiter), vertex_m(0) {}
+	    : bfi_m(bfiter), vertex_m(0), pfield_m(0) {}
 	vctf_iterator(const vctf_iterator<T>& iter)
-	    : bfi_m(iter.bfi_m), vertex_m(iter.vertex_m) {}
+	    : vertex_m(iter.vertex_m),
+              pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+        }
+
+        // destructor
+        ~vctf_iterator()
+        {
+	    if (pfield_m)
+	      pfield_m->decIterCount(true);
+	}
 
 	// assignment
 	vctf_iterator<T>& operator=(const vctf_iterator<T>& x)
 	{
+	    if (pfield_m)
+	      pfield_m->decIterCount(true);
+            pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
 	    bfi_m = x.bfi_m;
 	    vertex_m = x.vertex_m;
 	    return *this;
@@ -2197,7 +2530,6 @@ class PoomaMesh_XYZ
 	}
 
       private:
-
 	// methods
 	void nextCell()
 	{
@@ -2208,32 +2540,62 @@ class PoomaMesh_XYZ
 	// data
 	BaseField_iterator bfi_m;
 	unsigned int vertex_m;
+        Field_t *pfield_m;
     };
 
     template <class T>
     class vctf_const_iterator : public input_iterator<T,ptrdiff_t>
     {
 	// typedefs
+	typedef vctf<T> Field_t;
 	typedef typename vctf<T>::BaseField_t BaseField_t;
 	typedef typename BaseField_t::iterator BaseField_iterator;
 
       public:
 
 	// constructors
-	vctf_const_iterator() : vertex_m(0) {}
-	vctf_const_iterator(const BaseField_t& bf)
-	    : bfi_m(bf.begin()), vertex_m(0) {}
+	vctf_const_iterator() : vertex_m(0), pfield_m(0) {}
+	vctf_const_iterator(const Field_t& f)
+	    : vertex_m(0), pfield_m(const_cast<Field_t*>(&f))
+        {
+	    pfield_m->incIterCount(true);
+	    bfi_m = dynamic_cast<const BaseField_t&>(f).begin();
+	}
 	vctf_const_iterator(const BaseField_iterator& bfiter)
-	    : bfi_m(bfiter), vertex_m(0) {}
+	    : bfi_m(bfiter), vertex_m(0), pfield_m(0) {}
 	vctf_const_iterator(const vctf_const_iterator<T>& iter)
-	    : bfi_m(iter.bfi_m), vertex_m(iter.vertex_m) {}
+	    : vertex_m(iter.vertex_m),
+              pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
 	vctf_const_iterator(const vctf_iterator<T>& iter)
-	    : bfi_m(iter.bfi_m), vertex_m(iter.vertex_m) {}
+	    : vertex_m(iter.vertex_m),
+              pfield_m(iter.pfield_m)
+        {
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
+	    bfi_m = iter.bfi_m;
+	}
+
+        // destructor
+        ~vctf_const_iterator()
+        {
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+        }
 
 	// assignment
 	vctf_const_iterator<T>&
 	operator=(const vctf_const_iterator<T>& x)
 	{
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+	    pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
 	    bfi_m = x.bfi_m;
 	    vertex_m = x.vertex_m;
 	    return *this;
@@ -2241,6 +2603,11 @@ class PoomaMesh_XYZ
 	vctf_const_iterator<T>&
 	operator=(const vctf_iterator<T>& x)
 	{
+	    if (pfield_m)
+	      pfield_m->decIterCount(false);
+	    pfield_m = x.pfield_m;
+	    if (pfield_m)
+	      pfield_m->incIterCount(false);
 	    bfi_m = x.bfi_m;
 	    vertex_m = x.vertex_m;
 	    return *this;
@@ -2277,7 +2644,6 @@ class PoomaMesh_XYZ
 	}
 	
       private:
-
 	// methods
 	void nextCell()
 	{
@@ -2288,6 +2654,7 @@ class PoomaMesh_XYZ
 	// data
 	BaseField_iterator bfi_m;
 	unsigned int vertex_m;
+        Field_t *pfield_m;
     };
 
     // Special accessor classes for face-centered discontinuous field
@@ -2707,11 +3074,6 @@ class PoomaMesh_XYZ
 	    }
 	};
 
-	//  const int FacesAtVertex::vf = {
-	//	{0,2,4}, {1,2,4}, {0,3,4}, {1,3,4},
-	//	{0,2,5}, {1,2,5}, {0,3,5}, {1,3,5}
-	//  };
-
 	// methods
 	void assign(typename FT::size_type cell, unsigned int vertex)
 	{
@@ -2744,7 +3106,7 @@ class PoomaMesh_XYZ
     //	typename ccvsf::BaseField_t* CellSizes_m;
     //	typename ccvsf::BaseField_t* CellPositions_m;
     typename ccsf::BaseField_t* CellVolumes_m;
-    Field<Vektor<double,3>,3,Cartesian<3,double>,Cell>**	CellSurfaceNormals_m;
+    Field<Vektor<double,3>,3,Cartesian<3,double>,Cell>** CellSurfaceNormals_m;
     //	typename ccvsf::BaseField_t** CellSurfaceNormals_m;
     unsigned int ncx_m, ncy_m, ncz_m;
     size_type ncp_m;
@@ -2752,39 +3114,6 @@ class PoomaMesh_XYZ
   public:
 
     // constructors
-#if 0
-    PoomaMesh_XYZ(int* const ncells,
-		  typename Mesh::MeshValue_t* const cwidth,
-		  e_dim_tag* decomp)
-    {
-	// store global mesh sizes
-	ncx_m = ncells[0];
-	ncy_m = ncells[1];
-	ncz_m = ncells[2];
-	// create domain for mesh vertices (one larger than no. of cells)
-	NDIndex<3> meshDom;
-	for (unsigned int d=0; d<3; ++d)
-	    meshDom[d] = Index(ncells[d]+1);
-	// create the mesh
-	Mesh_m = new Mesh(meshDom,cwidth);
-	// tell mesh to store mesh spacing fields
-	Mesh_m->storeSpacingFields(decomp);
-	// create the field layouts
-	CLayout_m = new CLayout_t(*Mesh_m, decomp);
-	VLayout_m = new VLayout_t(*Mesh_m, decomp);
-	// compute number of cells on this processor
-	ncp_m = 0;
-	typename CLayout_t::iterator_iv cli, clend = CLayout_m->end_iv();
-	for (cli = CLayout_m->begin_iv(); cli != clend; ++cli)
-	    ncp_m += (*cli).second->getDomain().size();
-	// initialize internal fields
-	initializeVertSizes();
-	initializeCellSizes();
-	initializeCellPositions();
-	initializeCellVolumes();
-	initializeCellSurfaceNormals();
-    }
-#endif
     PoomaMesh_XYZ(int* const ncells,
 		  typename Mesh::MeshValue_t** const cwidth,
 		  e_dim_tag* decomp)
@@ -2854,8 +3183,8 @@ class PoomaMesh_XYZ
     void get_dx(ccsf& f) const
     {
 	PAssert(f.get_Mesh() == *this);
-	Field<Vektor<double,3>,3,Cartesian<3,double>,Cell>::iterator csi, csend =
-	    CellSizes_m->end();
+	Field<Vektor<double,3>,3,Cartesian<3,double>,Cell>::iterator csi,
+          csend = CellSizes_m->end();
 	typename ccsf::iterator fi = f.begin();
 	for (csi = CellSizes_m->begin(); csi != csend; ++csi, ++fi)
 	    *fi = (*csi)(0);
@@ -2863,8 +3192,8 @@ class PoomaMesh_XYZ
     void get_dy(ccsf& f) const
     {
 	PAssert(f.get_Mesh() == *this);
-	Field<Vektor<double,3>,3,Cartesian<3,double>,Cell>::iterator csi, csend =
-	    CellSizes_m->end();
+	Field<Vektor<double,3>,3,Cartesian<3,double>,Cell>::iterator csi,
+          csend = CellSizes_m->end();
 	typename ccsf::iterator fi = f.begin();
 	for (csi = CellSizes_m->begin(); csi != csend; ++csi, ++fi)
 	    *fi = (*csi)(1);
@@ -2872,8 +3201,8 @@ class PoomaMesh_XYZ
     void get_dz(ccsf& f) const
     {
 	PAssert(f.get_Mesh() == *this);
-	Field<Vektor<double,3>,3,Cartesian<3,double>,Cell>::iterator csi, csend =
-	    CellSizes_m->end();
+	Field<Vektor<double,3>,3,Cartesian<3,double>,Cell>::iterator csi,
+          csend = CellSizes_m->end();
 	typename ccsf::iterator fi = f.begin();
 	for (csi = CellSizes_m->begin(); csi != csend; ++csi, ++fi)
 	    *fi = (*csi)(2);
@@ -3063,9 +3392,9 @@ class PoomaMesh_XYZ
 		     unsigned int& i, unsigned int& j, unsigned int& k) const
     {
 	size_type res = ncell;
-	k = res % (ncx_m * ncy_m);
+	k = res / (ncx_m * ncy_m);
 	res -= k * (ncx_m * ncy_m);
-	j = res % ncx_m;
+	j = res / ncx_m;
 	res -= j * ncx_m;
 	i = res;
 	return;
@@ -3077,9 +3406,9 @@ class PoomaMesh_XYZ
 		     unsigned int& i, unsigned int& j, unsigned int& k) const
     {
 	size_type res = nnode;
-	k = res % ( (ncx_m+1) * (ncy_m+1) );
+	k = res / ( (ncx_m+1) * (ncy_m+1) );
 	res -= k * ( (ncx_m+1) * (ncy_m+1) );
-	j = res % (ncx_m+1);
+	j = res / (ncx_m+1);
 	res -= j * (ncx_m+1);
 	i = res;
 	return;
