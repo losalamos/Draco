@@ -293,7 +293,7 @@ SP<T>::SP(const SP<X> &spx_in)
 
     // make a pointer to T *
     T *np = dynamic_cast<T *>(spx_in.p);
-    Insist(spx_in.p ? np != NULL : true, 
+    Insist(spx_in.p ? np != 0 : true, 
 	   "Incompatible SP conversion between SP<X> and SP<T>.");
 
     // assign the pointer and reference
@@ -419,7 +419,7 @@ SP<T>& SP<T>::operator=(const SP<X> &spx_in)
 
     // make a pointer to T *
     T *np = dynamic_cast<T *>(spx_in.p);
-    Insist(spx_in.p ? np != NULL : true, 
+    Insist(spx_in.p ? np != 0 : true, 
 	   "Incompatible SP conversion between SP<X> and SP<T>.");
 
     // check to see if we are holding the same pointer (and np is not NULL);
