@@ -98,12 +98,12 @@ class MeshXYZConnFAVIterator_base
 
     void incr()
     {
-	vertexIndex++;
-	if (vertexIndex == NSVertex::NUMVERTICES_PER_CELL)
-	{
-	    cellIndex++;
-	    vertexIndex = 0;
-	}
+        cellIndex++;
+        if (cellIndex == field.size() / NSVertex::NUMFACES_PER_CELL)
+        {
+            vertexIndex++;
+            cellIndex = 0;
+        }
 	vertex.assign(cellIndex, vertexIndex);
     }
 };

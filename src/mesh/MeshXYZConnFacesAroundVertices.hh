@@ -78,7 +78,7 @@ class MeshXYZConnFacesAroundVertices
     }
     iterator end()
     {
-	return iterator(field, numCells, 0);
+	return iterator(field, 0, NSVertex::NUMVERTICES_PER_CELL);
     }
 
     const_iterator begin() const
@@ -87,7 +87,7 @@ class MeshXYZConnFacesAroundVertices
     }
     const_iterator end() const
     {
-	return iterator(field, numCells, 0);
+	return iterator(field, 0, NSVertex::NUMVERTICES_PER_CELL);
     }
 
   private:
