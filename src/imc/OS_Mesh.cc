@@ -23,9 +23,9 @@ using std::ios;
 //---------------------------------------------------------------------------//
 // default constructor
 OS_Mesh::OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_a &vertex_, 
-		 CCVF_i &cell_pair_) 
+		 CCVF_i &cell_pair_, bool submesh_) 
     : coord(coord_), layout(layout_), vertex(vertex_),
-      cell_pair(cell_pair_), sur(coord->get_dim()) 
+      cell_pair(cell_pair_), sur(coord->get_dim()), submesh(submesh_)
 {
   // assertions to verify size of mesh and existence of a Layout and
   // Coord_sys  
@@ -43,7 +43,8 @@ OS_Mesh::OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_a &vertex_,
     Check (ncells == cell_pair.size());
       
   // calculate surface array
-    calc_surface();
+    if (!submesh)
+	calc_surface();
 }
 
 //---------------------------------------------------------------------------//

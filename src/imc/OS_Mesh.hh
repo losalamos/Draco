@@ -156,6 +156,8 @@ private:
     CCVF_i cell_pair;
   // area of surfaces on each dimension
     CCVF_a sur;
+  // indicator whether this is a submesh
+    bool submesh;
 
   // private functions
 
@@ -171,7 +173,7 @@ private:
 
 public:
   // generalized constructor for all mesh types
-    OS_Mesh(SP<Coord_sys>, Layout &, CCVF_a &, CCVF_i &); 
+    OS_Mesh(SP<Coord_sys>, Layout &, CCVF_a &, CCVF_i &, bool = false); 
 
   // member functions used by the OS_Mesh-dependent classes
 
