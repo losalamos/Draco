@@ -223,10 +223,10 @@ CDI_Mat_State_Builder<MT>::build_Opacity(SP_Mesh      mesh,
 	dedT   = mat_state->get_dedt(cell);
 	volume = mesh->volume(cell);
 
-	Check (T      >  0.0);
-	Check (rho    >  0.0);
-	Check (dedT   >  0.0);
-	Check (volume >  0.0);
+	Check (T      >=  0.0);
+	Check (rho    >   0.0);
+	Check (dedT   >   0.0);
+	Check (volume >   0.0);
 
 	// calculate beta (4acT^3/Cv)
 	beta   = 4.0 * a * T*T*T * volume / dedT;
