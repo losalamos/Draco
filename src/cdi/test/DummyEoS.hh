@@ -227,7 +227,7 @@ namespace rtt_dummyEoS
 	 * \param temperature Temperature of the material in Kelvin.
 	 * \return The electron based thermal conductivity in 1/s/cm.
 	 */
-	double getElectronBasedThermalConductivity(
+	double getElectronThermalConductivity(
 	    double temperature, double density ) const;
 
 	/*!
@@ -242,7 +242,7 @@ namespace rtt_dummyEoS
 	 * \return A vector of electron based thermal conductivities
 	 * in 1/s/cm.
 	 */
-	std::vector< double > getElectronBasedThermalConductivity(
+	std::vector< double > getElectronThermalConductivity(
 	    const std::vector< double >& vtemperature,
 	    const std::vector< double >& vdensity ) const;
 
