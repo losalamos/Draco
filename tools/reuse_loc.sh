@@ -52,8 +52,10 @@ then
  exit 1
 fi
 
-#Scan the files to determine the intersection.
-join  $1 $2 | awk '{sum+=$2} END {print sum}'
-
+#Scan the files to determine the intersection, print a total, and
+#provide a breakdown by package.
+join  $1 $2 | awk '{gsub(/\/.*/,"",$1); tmp[$1]+=$2; sum+=$2} END \
+{for(i in tmp) printf("%20s\t%d\n", i, tmp[i]); \
+printf("%20s\t%d\n","Total", sum)}' | sort -n +1
 
 #  ====================== end of reuse_loc.sh =============================  #
