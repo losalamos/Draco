@@ -34,29 +34,44 @@ cpp_loc()
 #and/or comments. Comment character is "#".
 script_loc()
 {
-  awk '/^[ \t]*$/ || $1 ~ /#/ {next} {print}' $* | wc -l
+  awk '/^[ \t]*$/ || $1 ~ /^#/ {next} {print}' $* | wc -l
 }
 
 #Count lines of code in a html file, stripping any blank lines
 #and the first line of any comments. Comment character is "<!--".
 html_loc()
 {
-  awk '/^[ \t]*$/ || $1 ~ /<!--/ {next} {print}' $* | wc -l
+  awk '/^[ \t]*$/ || $1 ~ /^<!--/ {next} {print}' $* | wc -l
 }
 
 #Count lines of code in a tex file, stripping any blank lines
 #and/or comments. Comment character is "%".
 latex_loc()
 {
-  awk '/^[ \t]*$/ || $1 ~ /%/ {next} {print}' $* | wc -l
+  awk '/^[ \t]*$/ || $1 ~ /^%/ {next} {print}' $* | wc -l
 }
 
 #Count lines of code in a elisp file, stripping any blank lines
-#and/or comments. Comment character is ";;".
+#and/or comments. Comment character is ";;" or ";".
 elisp_loc()
 {
-  awk '/^[ \t]*$/ || $1 ~ /;;/ {next} {print}' $* | wc -l
+  awk '/^[ \t]*$/ || $1 ~ /^;/ {next} {print}' $* | wc -l
 }
+
+#Count lines of code in a fortran90/95 file, stripping any blank lines
+#and/or comments. Comment character is "!"
+f90_loc()
+{
+  awk '/^[ \t]*$/ || $1 ~ /^!/ {next} {print}' $* | wc -l
+}
+
+#Count lines of code in a fortran77 file, stripping any blank lines
+#and/or comments. Comment character is "C" or "c" in column 1.
+f77_loc()
+{
+  awk '/^[ \t]*$/ || /^[Cc]/ {next} {print}' $* | wc -l
+}
+
 
 #Define a fucntion which  lists the names of any 
 #shell script files
@@ -142,11 +157,11 @@ echo "C++ contract specifications:"
 for i in `find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
           -print` 
 do
-  awk '$1 ~ /Assert|Require|Ensure|Check|Insist/ {print}' ${i}
+  awk '$1 ~ /[aA]ssert|[rR]equire|[eE]nsure|[cC]heck|[iI]nsist/ {print}' ${i}
 done | cpp_loc
 echo
 
-#------------------------ Documentation ----------------------------------
+#------------------------ C++ Documentation ----------------------------
 
 #Scan for C++ comments (finds both C and C++ style comments)
 echo "C++ comments:"
@@ -156,6 +171,28 @@ do
   awk '$1~/\/\// {print} /\/\*/, /\*\// {print}' ${i}
 done | wc -l
 echo
+
+#------------------------- f90/f95 Source Code ------------------------------
+
+#Scan for f90/f95 source code
+echo "Total f90/f95 source: "
+find . -type f \( -name '*.F' -o -name '*.f90' -o -name '*.f95' \) ! -name '#*' \
+       -exec cat {} \; |  f90_loc 
+echo
+
+#------------------------ f90/f95 Documentation ----------------------------
+
+#Scan for f90/f95 comments 
+echo "f90/f95 comments:"
+for i in `find . -type f \( -name '*.F' -o -name '*.f90' -o -name '*.f95' \) \
+          ! -name '#*' -print`
+do 
+  awk '$1 ~ /!/ {print}' ${i}
+done | wc -l
+echo
+
+
+#------------------------ Other Documentation ----------------------------
 
 #Scan for LaTeX source code
 echo 'LaTeX Documentation:'
