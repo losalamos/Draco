@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imctest/OS_Interface.hh"
-#include <cassert>
+#include "ds++/Assert.hh"
 
 IMCSPACE
 
@@ -19,6 +19,7 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // public Parser member functions
 //---------------------------------------------------------------------------//
+
 void OS_Interface::parser()
 {
   // open input file, ifstream object requires C-style string
@@ -26,7 +27,7 @@ void OS_Interface::parser()
     ifstream input(file);
 
   // make sure file exists
-    assert (input);
+    Check (input);
 
   // call OS_Mesh Parser
     parser_Mesh(input);
@@ -35,11 +36,14 @@ void OS_Interface::parser()
     parser_Opacity(input);
 
   // call Source Parser
+    parser_Source(input);
 }
 
 //---------------------------------------------------------------------------//
 // private Parser member functions for OS_Mesh build
 //---------------------------------------------------------------------------//
+// parse the Mesh
+
 void OS_Interface::parser_Mesh(ifstream &in)
 {
   // OS_Mesh Parser
@@ -49,7 +53,7 @@ void OS_Interface::parser_Mesh(ifstream &in)
     while (keyword != "end-title")
     {
       // test that we have not reached end-of-file
-	assert (!in.eof());
+	Check (!in.eof());
 
       // do title block input
 	in >> keyword;
@@ -58,7 +62,7 @@ void OS_Interface::parser_Mesh(ifstream &in)
     }
 
   // check to make sure an appropriate coord_sys is called
-    assert (coord_system == "xy" || coord_system == "XY" || 
+    Check (coord_system == "xy" || coord_system == "XY" || 
 	    coord_system == "rz" || coord_system == "RZ" ||
 	    coord_system == "XYZ" || coord_system == "xyz");
 
@@ -115,6 +119,8 @@ void OS_Interface::parser_Mesh(ifstream &in)
 }
 
 //---------------------------------------------------------------------------//
+// parse a 2D mesh
+
 void OS_Interface::parser2D(ifstream &in)
 {
   // 2D parser
@@ -126,7 +132,7 @@ void OS_Interface::parser2D(ifstream &in)
     while (keyword != "end-init")
     {
       // test that we have not reached end-of-file
-	assert (!in.eof());
+	Check (!in.eof());
 
       // do input
 	in >> keyword;
@@ -156,7 +162,7 @@ void OS_Interface::parser2D(ifstream &in)
     while (keyword != "end-mesh")
     {
       // test that we have not reached end-of-file
-	assert (!in.eof());
+	Check (!in.eof());
 
       // do input
 	in >> keyword;
@@ -176,6 +182,8 @@ void OS_Interface::parser2D(ifstream &in)
 }    
 
 //---------------------------------------------------------------------------//
+// parse a 3D mesh
+
 void OS_Interface::parser3D(ifstream &in)
 {
   // 3D parser
@@ -187,7 +195,7 @@ void OS_Interface::parser3D(ifstream &in)
     while (keyword != "end-init")
     {
       // test that we have not reached end-of-file
-	assert (!in.eof());
+	Check (!in.eof());
 
       // do input
 	in >> keyword;
@@ -227,7 +235,7 @@ void OS_Interface::parser3D(ifstream &in)
     while (keyword != "end-mesh")
     {
       // test that we have not reached end-of-file
-	assert (!in.eof());
+	Check (!in.eof());
      
       // do input
 	in >> keyword;
@@ -255,6 +263,8 @@ void OS_Interface::parser3D(ifstream &in)
 //---------------------------------------------------------------------------//
 // private Parser member functions for Opacity<MT> build
 //---------------------------------------------------------------------------//
+// parse input for Opacity and Mat_State class building
+
 void OS_Interface::parser_Opacity(ifstream &in)
 { 
   // determine size of mesh and initialize zone and zone_map arrays
@@ -273,11 +283,13 @@ void OS_Interface::parser_Opacity(ifstream &in)
     zone_mapper();
 
   // read zone map
-    zone_parser(in);
+    zone_opacity_parser(in);
 }
 
 //---------------------------------------------------------------------------//
-void OS_Interface::zone_parser(ifstream &in)
+// parse and assign the opacity and mat_state variables
+
+void OS_Interface::zone_opacity_parser(ifstream &in)
 {
   // Opacity Parser
 
@@ -289,7 +301,7 @@ void OS_Interface::zone_parser(ifstream &in)
     while (keyword != "end-mat")
     {
       // test that we have not reached end-of-file
-	assert (!in.eof());
+	Check (!in.eof());
 	
       // do input
 	in >> keyword;
@@ -305,10 +317,10 @@ void OS_Interface::zone_parser(ifstream &in)
 	}
 	if (keyword == "mat:")
 	{
-	  // assert that material data arrays have been sized previously
-	    assert (density.size() != 0);
-	    assert (density.size() == kappa.size());
-	    assert (density.size() == temperature.size());
+	  // Check that material data arrays have been sized previously
+	    Check (density.size() != 0);
+	    Check (density.size() == kappa.size());
+	    Check (density.size() == temperature.size());
 	  // input the material arrays
 	    for (int i = 0; i < density.size(); i++)
 	    {
@@ -322,6 +334,8 @@ void OS_Interface::zone_parser(ifstream &in)
 }
 
 //---------------------------------------------------------------------------//
+// map fine cells to zones
+
 void OS_Interface::zone_mapper()
 {
   // dimension of mesh
@@ -349,6 +363,7 @@ void OS_Interface::zone_mapper()
 }
   
 //---------------------------------------------------------------------------//
+
 void OS_Interface::cell_zone(int iz, int jz)
 {
   // match a fine-cell to a zone for 2D meshes
@@ -375,6 +390,7 @@ void OS_Interface::cell_zone(int iz, int jz)
 }
 
 //---------------------------------------------------------------------------//
+
 void OS_Interface::cell_zone(int iz, int jz, int kz)
 {
   // match a fine-cell to a zone for 3D meshes
@@ -405,6 +421,110 @@ void OS_Interface::cell_zone(int iz, int jz, int kz)
 		    num_ycells * (k-1);
 		zone[cell-1] = zone_index;
 	    }
+}
+
+//---------------------------------------------------------------------------//
+// private Parser member functions for Source_Init<MT> build
+//---------------------------------------------------------------------------//
+// parse input for Source_Init
+
+void OS_Interface::parser_Source(ifstream &in)
+{
+  // define number of zones and resize Source data arrays
+    int num_zones = mat_zone.size();
+    evol_ext.resize(num_zones);
+    rad_temp.resize(num_zones);
+
+  // parse the source
+    zone_source_parser(in);
+}
+
+//---------------------------------------------------------------------------//
+// parse and assign the source variables
+    
+void OS_Interface::zone_source_parser(ifstream &in)
+{
+  // Source Parser
+
+  // input keywords
+    string keyword;
+    int    data;
+
+  // determine zone map
+    while (keyword != "end-source")
+    {
+      // test that we have not reached end-of-file
+	Check (!in.eof());
+	
+      // do input
+	in >> keyword;
+	if (keyword == "vol_source:")
+	    for (int i = 0; i < evol_ext.size(); i++)
+		in >> evol_ext[i];
+	if (keyword == "num_ss:")
+	{
+	    in >> data;
+	    ss_pos.resize(data);
+	    ss_temp.resize(data);
+	}
+	if (keyword == "sur_source:")
+	{
+	  // make sure that surface source has been sized
+	    Check (ss_pos.size() != 0);
+	  // input the surface source position
+	    for (int i = 0; i < ss_pos.size(); i++)
+		in >> ss_pos[i];
+	}
+	if (keyword == "sur_temp:")
+	{
+	  // make sure that surface source has been sized
+	    Check (ss_temp.size() != 0);
+	  // input the surface source temps
+	    for (int i = 0; i < ss_temp.size(); i++)
+		in >> ss_temp[i];
+	}
+	if (keyword == "rad_temp:")
+	    for (int i = 0; i < rad_temp.size(); i++)
+		in >> rad_temp[i];
+	if (keyword == "timestep:")
+	    in >> delta_t;
+	if (keyword == "nps:")
+	    in >> npmax;
+	if (keyword == "dnpdt:")
+	    in >> dnpdt;
+    }    
+}
+
+//---------------------------------------------------------------------------//
+// map volume source to cell based arrays
+
+vector<double> OS_Interface::get_evol_ext() const
+{
+  // make a return vector of the proper size
+    vector<double> cell_evol(zone.size());
+
+  // assign the values to cell_evol based on the zone
+    for (int cell = 1; cell <= cell_evol.size(); cell++)
+	cell_evol[cell-1] = evol_ext[zone[cell-1]-1];
+
+  // return cell_evol
+    return cell_evol;
+}
+
+//---------------------------------------------------------------------------//
+// map rad temp to cell based arrays
+
+vector<double> OS_Interface::get_rad_temp() const
+{
+  // make a return vector of the proper size
+    vector<double> cell_rad(zone.size());
+
+  // assign the values to cell_rad based on the zone
+    for (int cell = 1; cell <= cell_rad.size(); cell++)
+	cell_rad[cell-1] = rad_temp[zone[cell-1]-1];
+
+  // return rad_temp
+    return cell_rad;
 }
 
 CSPACE

@@ -10,6 +10,7 @@
 #include "imctest/Constants.hh"
 #include "imctest/Math.hh"
 #include "rng/Sprng.hh"
+#include "ds++/Assert.hh"
 #include <cmath>
 #include <iostream>
 #include <fstream>
@@ -17,9 +18,49 @@
 IMCSPACE
 
 using RNG::Sprng;
-using Global::min;
 using std::pow;
 using std::ofstream;
+using Global::min;
+
+//---------------------------------------------------------------------------//
+// constructor
+//---------------------------------------------------------------------------//
+// initialization of member data in general constructor
+
+template<class MT>
+template<class IT>
+Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
+    : npwant(0), evol(mesh), evoltot(0), ess(mesh), fss(mesh), esstot(0),
+      erad(mesh), eradtot(0), ncen(mesh), ncentot(0), nvol(mesh), nss(mesh),
+      nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), ew_vol(mesh),
+      ew_ss(mesh)
+{
+  // get values from interface
+    evol_ext = interface->get_evol_ext();
+    ss_pos   = interface->get_ss_pos();
+    ss_temp  = interface->get_ss_temp();
+    rad_temp = interface->get_rad_temp();
+    delta_t  = interface->get_delta_t();
+    npmax    = interface->get_npmax();
+    dnpdt    = interface->get_dnpdt();
+    
+  // do some assertions to check that all is well
+    int num_cells = mesh->num_cells();
+    Check (evol_ext.size() == num_cells);
+    Check (rad_temp.size() == num_cells);
+    Check (ss_pos.size() == ss_temp.size());
+
+  // temporary assertions
+    Check (evol.get_Mesh().num_cells() == num_cells);
+    Check (ess.get_Mesh().num_cells() == num_cells);
+    Check (fss.get_Mesh().num_cells() == num_cells);
+    Check (erad.get_Mesh().num_cells() == num_cells);
+    Check (ncen.get_Mesh().num_cells() == num_cells);
+    Check (nvol.get_Mesh().num_cells() == num_cells);
+    Check (nss.get_Mesh().num_cells() == num_cells);
+    Check (ew_vol.get_Mesh().num_cells() == num_cells);
+    Check (ew_ss.get_Mesh().num_cells() == num_cells);
+}
 
 //---------------------------------------------------------------------------//
 // public member functions
@@ -29,10 +70,10 @@ using std::ofstream;
 template<class MT>
 void Source_Init<MT>::initialize(const MT &mesh, const Opacity<MT> &opacity,
 				 const Mat_State<MT> &state, 
-				 const Rnd_Control &rcontrol, int cycle)
+				 Rnd_Control &rcontrol, int cycle)
 {
   // calculate number of particles this cycle
-    npwant = min(npmax, npwant + dnpdt * delta_t);
+    npwant = min(npmax, static_cast<int>(npwant + dnpdt * delta_t));
 
   // on first pass do initial census, on all cycles calc source energies 
     if (cycle == 1)
@@ -48,12 +89,11 @@ void Source_Init<MT>::initialize(const MT &mesh, const Opacity<MT> &opacity,
 // private member functions used in Initialize
 //---------------------------------------------------------------------------//
 
-
 template<class MT>
 void Source_Init<MT>::calc_initial_census(const MT &mesh,
 					  const Opacity<MT> &opacity,
 					  const Mat_State<MT> &state,
-					  const Rnd_Control &rcontrol)
+					  Rnd_Control &rcontrol)
 {
   // calculate and write the initial census source
 
@@ -142,9 +182,8 @@ void Source_Init<MT>::calc_evol(const Opacity<MT> &opacity,
     {
       // calc cell centered volume source
 	evol(cell) = opacity.fplanck(cell) * Global::a * Global::c *
-	    pow(state.get_temperature(cell), 4) *
-	    evol.get_Mesh().volume(cell) * delta_t + 
-	    (1.0 - opacity.get_fleck(cell)) * evol_ext[cell-1] *
+	    pow(state.get_T(cell), 4) * evol.get_Mesh().volume(cell) * 
+	    delta_t + (1.0 - opacity.get_fleck(cell)) * evol_ext[cell-1] *
 	    evol.get_Mesh().volume(cell) * delta_t;
 
       // accumulate evoltot
@@ -181,7 +220,7 @@ void Source_Init<MT>::calc_ess()
 	    esstot += ess(surcells[sc]);
 	}
     }
-}   
+}  
 
 //---------------------------------------------------------------------------//
 // calculate radiation energy in each cell and total radiation energy
@@ -248,8 +287,7 @@ void Source_Init<MT>::calc_ncen_init()
 // write the initial census
 	
 template<class MT>
-void Source_Init<MT>::write_initial_census(const MT &mesh, 
-					   const Rnd_Control &rcon)
+void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 {
   // open census file
     ofstream cen_file("census");
@@ -262,10 +300,11 @@ void Source_Init<MT>::write_initial_census(const MT &mesh,
 	    Sprng random = rcon.get_rn();
 	    
 	  // sample particle location
-	    vector<double> r = sample_pos("uniform", cell, random);
+	    vector<double> r = mesh.sample_pos("uniform", cell, random);
 
 	  // sample particle direction
-	    vector<double> omega = sample_dir("isotropic", random);
+	  //  vector<double> omega = mesh.get_Coord().
+	  //sample_dir("isotropic", random);
 	    
 	  // sample frequency (not now, 1 group)
 
@@ -273,10 +312,10 @@ void Source_Init<MT>::write_initial_census(const MT &mesh,
 	    double ew = erad(cell)/ncen(cell);
 
 	  // create Particle
-	    Particle<MT> particle(r, omega, ew, cell, random);
+	  // Particle<MT> particle(r, omega, ew, cell, random);
 	    
 	  // write particle
-	    cen_file << particle;
+	  // cen_file << particle;
 	}
 }
 

@@ -78,6 +78,7 @@ public:
 	SP<OS_Mesh> mesh;
       // data in field
 	vector<T> data;
+
     public:
       // inline explicit constructor
 	explicit CCSF(SP<OS_Mesh> mesh_) : mesh(mesh_),
@@ -200,7 +201,7 @@ public:
     vector<int> get_surcells(string) const;
     int get_bndface(string, int) const;
     inline CCVF_a get_vertices(int, int) const;
-    inline vector<double> sample_pos(string, int, Sprng &);
+    inline vector<double> sample_pos(string, int, Sprng &) const;
 
   // End_Verbatim 
   // End_Doc 
@@ -396,7 +397,8 @@ inline OS_Mesh::CCVF_a OS_Mesh::get_vertices(int cell, int face) const
 //---------------------------------------------------------------------------//
 // sample the position in a cell
 
-inline vector<double> OS_Mesh::sample_pos(string dist, int cell, Sprng &random)
+inline vector<double> OS_Mesh::sample_pos(string dist, int cell, 
+					  Sprng &random) const
 {
   // assign minimums and maximums for cell dimensions
     vector<double> vmin(coord->get_dim());

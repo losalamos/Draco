@@ -36,6 +36,7 @@ Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface, SP<MT> mesh)
 //---------------------------------------------------------------------------//
 // build Mat_State object
 //---------------------------------------------------------------------------//
+
 template<class MT>
 SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat()
 {
@@ -64,6 +65,7 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat()
 //---------------------------------------------------------------------------//
 // build Opacity object
 //---------------------------------------------------------------------------//
+
 template<class MT>
 SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity()
 {

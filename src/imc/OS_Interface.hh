@@ -20,6 +20,7 @@
 //  0) original
 //  1)  3-13-98 : changed name to OS_Interface because this class is the
 //                interface between our input and the builders.
+//  2)   5-6-98 : added parser for source
 // 
 //===========================================================================//
 
@@ -67,6 +68,15 @@ private:
     vector<double> kappa;
     vector<double> temperature;
 
+  // data required for Source_Init
+    vector<double> evol_ext;
+    vector<string> ss_pos;
+    vector<double> ss_temp;
+    vector<double> rad_temp;
+    double delta_t;
+    int npmax;
+    double dnpdt;
+
   // Parser member functions
 
   // OS_Mesh parser functions
@@ -76,13 +86,15 @@ private:
 
   // Source member functions
     void parser_Source(ifstream &);
+    void zone_source_parser(ifstream &);
 
   // Opacity parser functions
     void parser_Opacity(ifstream &);
     void zone_mapper();
     void cell_zone(int, int);
     void cell_zone(int, int, int);
-    void zone_parser(ifstream &);
+    void zone_opacity_parser(ifstream &);
+
 public:
   // constructor
     explicit inline OS_Interface(const string &infile);
@@ -101,6 +113,15 @@ public:
     const vector<double>& get_density() const { return density; }
     const vector<double>& get_kappa() const { return kappa; }
     const vector<double>& get_temperature() const { return temperature; }
+
+  // public copy functions for Source_Init<MT>
+    vector<double> get_evol_ext() const;
+    const vector<string>& get_ss_pos() const { return ss_pos; }
+    const vector<double>& get_ss_temp() const { return ss_temp; }
+    vector<double> get_rad_temp() const;
+    double get_delta_t() const { return delta_t; }
+    int get_npmax() const { return npmax; }
+    double get_dnpdt() const { return dnpdt; }
 };
 
 //---------------------------------------------------------------------------//
@@ -110,7 +131,9 @@ public:
 inline OS_Interface::OS_Interface(const string &infile)
     : input_file(infile), coord_system(""), fine_cells(0), 
       accum_cells(0), coarse_edge(0), fine_edge(0), bnd_cond(0), 
-      zone(0), mat_zone(0), density(0), kappa(0), temperature(0)
+      zone(0), mat_zone(0), density(0), kappa(0), temperature(0),
+      evol_ext(0), ss_pos(0), ss_temp(0), rad_temp(0), delta_t(0), npmax(0),
+      dnpdt(0)
 {}
 
 CSPACE

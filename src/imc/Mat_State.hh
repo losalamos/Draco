@@ -22,7 +22,7 @@
 
 #include "imctest/Names.hh"
 #include "ds++/SP.hh"
-#include <cassert>
+#include "ds++/Assert.hh"
 #include <iostream>
 
 IMCSPACE
@@ -39,8 +39,8 @@ private:
 
 public:
   // explicit constructor
-    explicit Mat_State(const typename MT::CCSF_double &density_, 
-		       const typename MT::CCSF_double &temp_)
+    Mat_State(const typename MT::CCSF_double &density_, 
+	      const typename MT::CCSF_double &temp_)
 	: density(density_), temperature(temp_) {}
 
   // public member functions
@@ -73,8 +73,8 @@ template<class MT>
 inline int Mat_State<MT>::num_cells() const
 {
   // return the number of cells
-    assert (density.get_Mesh().num_cells() ==
-	    temperature.get_Mesh().num_cells());
+    Check (density.get_Mesh().num_cells() ==
+	   temperature.get_Mesh().num_cells());
     return density.get_Mesh().num_cells();
 }
 
