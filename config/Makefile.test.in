@@ -140,7 +140,8 @@ check: ${SITE_EXP} all
 	      ${RUNTEST} ${RUNTESTFLAGS} ${FLAGS_TO_PASS} \
 		  ${RUNTESTTOOLFLAG} $$testexec NPROCS=$$np; \
 	   done; \
-	done
+	done; \
+	exit 0
 
 site.exp: Makefile ../../config/Makefile.test.in config.status
 	@echo "Making a new config file..."
@@ -278,11 +279,12 @@ clean:
 	-rm -f ${test_output_files}
 	-rm -r ${dirstoclean}
 
-distclean: clean
+distclean: mostlyclean
 	-rm config.status config.cache config.log config.h stamp-h Makefile
 	-rm -f site.exp
 
 mostlyclean: clean
+	-rm *.o *.d
 
 # maintainer-clean does not delete "configure"
 

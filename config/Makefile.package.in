@@ -267,7 +267,11 @@ forced-clean:
 	-rm -f ${nml_hh} ${nml_cc} .tmp?
 	-rm -r ${dirstoclean}
 
-distclean: clean forced-distclean
+mostlyclean: clean forced-mostlyclean
+forced-mostlyclean:
+	-rm *.o *.d
+
+distclean: mostlyclean forced-distclean
 forced-distclean:
 	-rm config.status config.cache config.log
 	-rm ${package}/*.h ${package}/*.hh ${package}/stamp-h Makefile
