@@ -60,6 +60,7 @@ class Diffusion_XYZ : private MT::Coord_Mapper {
 		const typename MT::fcdsf& Eb );
 
     Mat2<double>& get_A() { return A; }
+    Banded_Matrix<double,7>& get_AA() { return AA; }
     SP< MatVec_3T< MT, Diffusion_XYZ<MT> > > get_matvec() { return spmv; }
     SP<MT> getMesh() { return spm; }
     const SP<MT> getMesh() const { return spm; }

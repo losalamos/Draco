@@ -48,6 +48,7 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
 // Clear the matrix.
 
     A = 0.;
+    AA = 0.;
 
 // Now initialize the matrix.
 
@@ -56,6 +57,7 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
 	double d, fac;
 
 	A(n,goff+n) = 1.;
+        AA(n,3) = 1.;
 
     // left face.
 
@@ -63,9 +65,11 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
 	d = D( n, 0 );
 	fac = (d * dt) / (vc(n) * dx);
 	A(n,goff+n) += (fac * xA(i));
-	if (i > 0)
+	AA(n,3) += (fac * xA(i));
+	if (i > 0) {
 	    A(n, goffset(i-1,j,k)) -= fac * xA(i);
-	else
+	    AA(n,2) -= fac * xA(i);
+	} else
 // 	    r(n) += fac * xA(i) * E( xc(i) - dx, yc(j), zc(k), t );
 	    r(n) += fac * xA(i) * Eb( n, 0 );
 
@@ -75,9 +79,11 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
 	d = D( n, 1 );
 	fac = (d * dt) / (vc(n) * dx);
 	A(n,goff+n) += (fac * xA(i+1));
-	if (i < ncx-1)
+	AA(n,3) += (fac * xA(i+1));
+	if (i < ncx-1) {
 	    A(n, goffset(i+1,j,k)) -= fac * xA(i+1);
-	else
+	    AA(n,4) -= fac * xA(i+1);
+	} else
 // 	    r(n) += fac * xA(i+1) * E( xc(i)+dx, yc(j), zc(k), t );
 	    r(n) += fac * xA(i+1) * Eb( n, 1 );
 
@@ -87,9 +93,11 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
 	d = D( n, 2 );
 	fac = (d * dt) / (vc(n) * dy);
 	A(n,goff+n) += (fac * yA(j));
-	if (j > 0)
+	AA(n,3) += (fac * yA(j));
+	if (j > 0) {
 	    A(n, goffset(i,j-1,k)) -= fac * yA(j);
-	else
+	    AA(n,1) -= fac * yA(j);
+	} else
 // 	    r(n) += fac * yA(j) * E( xc(i), yc(j) - dy, zc(k), t );
 	    r(n) += fac * yA(j) * Eb( n, 2 );
 
@@ -99,9 +107,11 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
 	d = D( n, 3 );
 	fac = (d * dt) / (vc(n) * dy);
 	A(n,goff+n) += (fac * yA(j+1));
-	if (j < ncy-1)
+	AA(n,3) += (fac * yA(j+1));
+	if (j < ncy-1) {
 	    A(n, goffset(i,j+1,k)) -= fac * yA(j+1);
-	else
+	    AA(n,5) -= fac * yA(j+1);
+	} else
 // 	    r(n) += fac * yA(j+1) * E( xc(i), yc(j)+dy, zc(k), t );
 	    r(n) += fac * yA(j+1) * Eb( n, 3 );
 
@@ -111,9 +121,11 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
 	d = D( n, 4 );
 	fac = (d * dt) / (vc(n) * dz);
 	A(n,goff+n) += (fac * zA(k));
-	if (k > 0)
+	AA(n,3) += (fac * zA(k));
+	if (k > 0) {
 	    A(n, goffset(i,j,k-1)) -= fac * zA(k);
-	else
+	    AA(n,0) -= fac * zA(k);
+	} else
 // 	    r(n) += fac * zA(k) * E( xc(i), yc(j), zc(k) - dz, t );
 	    r(n) += fac * zA(k) * Eb( n, 4 );
 
@@ -123,9 +135,11 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
 	d = D( n, 5 );
 	fac = (d * dt) / (vc(n) * dz);
 	A(n,goff+n) += (fac * zA(k+1));
-	if (k < ncz-1)
+	AA(n,3) += (fac * zA(k+1));
+	if (k < ncz-1) {
 	    A(n, goffset(i,j,k+1)) -= fac * zA(k+1);
-	else
+	    AA(n,6) -= fac * zA(k+1);
+	} else
 // 	    r(n) += fac * zA(k+1) * E( xc(i), yc(j), zc(k)+dz, t );
 	    r(n) += fac * zA(k+1) * Eb( n, 5 );
 

@@ -62,7 +62,8 @@ void MatVec_3T<MT, Solver>::MatVec( Mat1<T>& b, const Mat1<T>&x )
     int ncp = spm->get_ncp();
     int nct = spm->get_nct();
     Mat2<double>& A = solver->get_A();
-
+    Banded_Matrix<double,7>& AA = solver->get_AA();
+#ifdef SLOW
     {
 	Mat1<double> xx( nct );
 	Mat1<C4_Req> /*sreq(nodes-1),*/ rreq(nodes-1);
@@ -111,6 +112,32 @@ void MatVec_3T<MT, Solver>::MatVec( Mat1<T>& b, const Mat1<T>&x )
 	}
 
     }
+
+    Mat1<double> b2( b.size() );
+    AA.multiply( x, b2 );
+#else
+    AA.multiply( x, b );
+#endif
+#if 0
+    double bdotb = 0.;
+    double b2dotb2 = 0.;
+
+    for( int i=0; i < b.size(); i++ ) {
+        bdotb += b(i) * b(i);
+        b2dotb2 += b2(i) * b2(i);
+    }
+    gsum( bdotb );
+    gsum( b2dotb2 );
+
+    if (node == 0) {
+        cout << "bdotb   = " << bdotb << endl;
+        cout << "b2dotb2 = " << b2dotb2 << endl;
+        cout << "Comparing b to b2." << endl;
+
+        for( int i=0; i < b.size(); i++ )
+            cout << "b[" << i << "]=" << b(i) << " b2=" << b2(i) << endl;
+    }
+#endif
 }
 
 //---------------------------------------------------------------------------//
