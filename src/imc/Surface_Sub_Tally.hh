@@ -58,9 +58,6 @@ class Surface_Sub_Tally
     //! Constructor
     Surface_Sub_Tally(rtt_dsxx::SP<Azimuthal_Mesh> az_mesh, int surfaces);
 
-    //! Copy Constructor
-    Surface_Sub_Tally(const Surface_Sub_Tally &rhs);
-
     //! Destructor
     ~Surface_Sub_Tally();
 
