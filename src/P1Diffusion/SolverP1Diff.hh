@@ -55,7 +55,7 @@ namespace rtt_P1Diffusion
    private:
      
      SP<const MT> spMesh;
-     PCG_Ctrl<ccsf::value_type> pcg_ctrl;
+     PCG_Ctrl<typename ccsf::value_type> pcg_ctrl;
     
    public:
 

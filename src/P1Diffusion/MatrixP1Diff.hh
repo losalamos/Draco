@@ -41,7 +41,7 @@ namespace rtt_P1Diffusion
 
    public:
 
-     typedef ccsf::value_type value_type;
+     typedef typename ccsf::value_type value_type;
      typedef fcdsf Vector;
      
      // DATA
