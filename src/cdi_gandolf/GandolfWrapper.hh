@@ -35,6 +35,12 @@ using std::vector;
  */
 //===========================================================================//
 
+// maxDataFilenameLength and key_length are size descriptors expected
+// by Gandolf.  There is no interactive way of asking Gandolf for
+// these values.  I have included these two variables here so that if
+// Gandolf ever changes its definitions we can accomodate those
+// changes easily.
+
 /*!
  * \brief The maximum length of the data filename.  This length is set 
  *        by the Gandolf libraries.
@@ -45,6 +51,22 @@ using std::vector;
   * \brief The length of each descriptor key (set by Gandolf).
   */
  const int key_length = 24;  
+
+ // maxMaterials and maxKeys are size descriptors that define the
+ // pre-allocated sizes of the matIDs and keys arrays.  Ideally we
+ // would set both of these variables to the actual number of
+ // materials in the data file and the actual number of keys per
+ // material in the file.  Unfortunately, Gandolf does not provide a
+ // mechanism for gaining this information interactively.  
+ //
+ // The only alternative would be to set numMaterials and numKeys to a 
+ // dummy value (e.g. 1) and then call the Gandolf function
+ // gmatids().  If the number of materials found in the IPCRESS file
+ // exceeds this size matids() will return an error code but it will
+ // not tell you how many materials were found.  We could create a
+ // loop that "seeks" the correct number of materials by repeatedly
+ // calling gmatids() until numMaterials is equal the actual number of
+ // materials in the dataFile.
 
  /*!
   * \brief Maximum number of materials allowed in the IPCRESS file.
@@ -250,17 +272,6 @@ using std::vector;
 		    const double &tlog, const double &rlog, 
 		    vector<double> &ansmg );
 
-/*!
- * \brief copies the source string into the target c-string.
- *
- * \param source       The string that needs to be copied into a c-string.
- * \param target       The c-string that is being filled.
- * \param targetLength The length of of the c-string "target[]".
- * \return             target[]
- *
- */
-//     void string2char( const string &source, char target[], 
-// 		      int targetLength );	
 } // end namepsace wrapper
 } // end namespace rtt_cdi_gandolf
 
@@ -268,6 +279,8 @@ using std::vector;
 
 // Handle machine specific FORTRAN name linkage.
 //---------------------------------------------------------------------------//
+
+// Replace these with c-wrapper written by Robert (Bob) Judd.
 
 #if defined(sun) || defined(__sun) || defined(__sgi) || defined(__linux)
     
@@ -290,6 +303,8 @@ using std::vector;
 
 // The Gandolf library was compiled with -i8 so we must use "long int" 
 // values.
+
+// Replace these with c-wrapper written by Robert (Bob) Judd.
 
 extern "C" {
 

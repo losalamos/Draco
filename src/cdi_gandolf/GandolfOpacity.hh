@@ -3,7 +3,7 @@
  * \file   cdi_gandolf/GandolfOpacity.hh
  * \author Kelly Thompson
  * \date   Wed Jul 12 16:11:55 2000
- * \brief  Gandolf opacity header file (derived from cdi/Opacity)
+ * \brief  GandolfOpacity class header file (derived from cdi/Opacity)
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -174,27 +174,26 @@ class GandolfOpacity : public rtt_cdi::Opacity
      * \brief Standard GandolfOpacity constructor.
      * 
      * \sa This is the standard GandolfOpacity constructor.  The
-     * filename must refer to an IPCRESS data file and the material
-     * identifier must exist in the data file.  This object is usually 
-     * instantiated as a smart pointer (especially if it is to be used 
-     * in conjunction with the CDI class).  
+     * GandolfFile object must refer to an existing object and the
+     * material identifier must exist in the data file.  This object
+     * is usually instantiated as a smart pointer (especially if it is
+     * to be used in conjunction with the CDI class). 
      *
-     * rtt_dsxx::SP spGanOpAl;
-     * spGanOpAl = new 
-     *     Gandolf rtt_cdi_gandolf::GandolfOpacity( data_file, matid )
+     * example constructor:
      *
-     * \param _data_filename The name of the IPCRESS data file.  While 
-     *                       this class can use any filename the F77
-     *                       Gandolf library requires the name to have
-     *                       80 characters or less. 
+     * rtt_dsxx::SP spGF 
+     *     = new rtt_cdi_gandolf::GandolfFile( filename );
+     *
+     * rtt_dsxx::SP spGanOp
+     *     = new rtt_cdi_gandolf::GandolfOpacity( spGF, matid )
+     *
+     * \param _spGandolfFile A smart pointer to a GandolfFile object.
+     *     This object links the data file to the GandolfOpacity object.
      *
      * \param _matid The material identifier is a 5 digit integer that 
-     *               the client must specify.  This material
-     *               identifier must exist in the IPCRESS file.
+     *     the client must specify.  This material identifier must
+     *     exist in the IPCRESS file. 
      */
-//     GandolfOpacity( const std::string& _data_filename, 
-// 		    const int _matid );
-
     GandolfOpacity( const rtt_dsxx::SP<GandolfFile> _spGandolfFile, 
 		    const int _matid );
 
@@ -213,7 +212,7 @@ class GandolfOpacity : public rtt_cdi::Opacity
     const std::string& getDataFilename() const;
 
     /*!
-     * \breif Returns a single opacity value for the prescribed
+     * \brief Returns a single opacity value for the prescribed
      *        temperature and density.
      *
      * This opacity object only knows how to access the data for one 
@@ -230,11 +229,16 @@ class GandolfOpacity : public rtt_cdi::Opacity
      * \return Gray opacity value for the current material at
      *         targetTemperature keV and targetDensity g/cm^3.
      */
+    // Currenlty this accessor modifies the GandolfOpacity object so
+    // it is not declared as const.  The opacity accessors load the
+    // data when they are first called.  After the first call to this
+    // accessor the tabulated data is retrieved from the
+    // GandolfOpacity object and not the data file.
     double getGrayRosseland( 
 	const double targetTemperature, const double targetDensity );
 
     /*!
-     * \breif Returns a vector of the opacity values for each energy
+     * \brief Returns a vector of the opacity values for each energy
      *        group for the prescribed temperature and density.
      *
      * The opacity object only knows how to access the data for one
@@ -253,12 +257,21 @@ class GandolfOpacity : public rtt_cdi::Opacity
      *         vector has ngroups entries.  The number of groups is
      *         specified by the data file. 
      */
+    // Currenlty this accessor modifies the GandolfOpacity object so
+    // it is not declared as const.  The opacity accessors load the
+    // data when they are first called.  After the first call to this
+    // accessor the tabulated data is retrieved from the
+    // GandolfOpacity object and not the data file.
     std::vector<double> getMGRosseland( 
 	const double targetTemperature, const double targetDensity );
  
   private:
     
     // IMPLEMENTATION
+
+    // These two functions are delcared "static" because we only need
+    // one copy of these functions -- not one copy per instance of
+    // GandolfOpacity. 
 
     /*! 
      * \brief This function returns "true" if "key" is found in the list
@@ -275,9 +288,7 @@ class GandolfOpacity : public rtt_cdi::Opacity
     static bool isSame( const std::vector<double> &v1, 
 			const std::vector<double> &v2 );
 
-};
-
-
+}; // end of class GandolfOpacity
 
 } // end namespace rtt_cdi_gandolf
 

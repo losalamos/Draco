@@ -22,47 +22,32 @@ namespace wrapper {
 
 using std::string;
 
-// void string2char( const string &source, char target[], 
-// 		  int targetLength )
-//     {
-// 	// If the target c-string is longer than the source string then 
-// 	// copy the string into the c-string and pad the extra cells
-// 	// with blanks.	
-	
-// 	// If the target c-string is shorter than the source string
-// 	// then copy targetLength characters from the source string
-// 	// into the target string.
-
-// 	if ( targetLength >= source.length() ) {
-// 	    for ( int i=0; i < source.length(); ++i )
-// 		target[i] = source[i];
-// 	    for ( int i=source.length(); i < targetLength; ++i )
-// 		target[i] = ' ';
-// 	} else {
-// 	    for ( int i=0; i < targetLength; ++i )
-// 		target[i] = source[i];
-// 	}
-//     }
-
- const char *s2ccwp( const string &source, const int n )
+ /*!
+  * \brief Converts a const sring into a const char * that is padded
+  *        with white space.
+  *
+  * \param source The data in this string will be returned as a const
+  *               char * and padded with white space up to a length 
+  *               specified by n. 
+  * \param c1     A character string that has been allocated to length 
+  *               n by the calling routine.
+  * \param n      The length of c1 and the length of the returned
+  *               const char * c-string.
+  * \return A const char * of length n is returned.  It contains a
+  *         copy of source and is padded with white space.
+  */
+ const char *s2ccwp( const string &source, char *c1, int n )
      {
-	 // remove const-ness
+	 // Create a string to hold the needed amount of padding.
+	 string padding(n-source.size(),' ');
+	 // copy the source string into a form that can modified.
 	 string s1(source);
-	 // create a string of spaces
-	 string padding(n-source.size(), ' ');
-	 // append padding to the source string
+	 // append the requested amount of white space padding.
 	 s1.append(padding);
-	 // create a c-string of the correct length;
-	 char *c1 = new char [n];  // MEMORY LEAK ????????
-	 // copy the data from s1 into c1
- 	 for ( int i=0; i<n; ++i )
- 	     c1[i] = s1[i];
-	 // append a string terminator.
-	 c1[79] = '\0';
-	 // return the new c-string
-	 return c1;	 
+	 // copy the string into the c-string.
+	 std::copy(s1.begin(),s1.end(),c1);
+	 return c1;
      }
-
 
     //----------------------------------------//
     //                gmatids                 //
@@ -71,14 +56,18 @@ using std::string;
     void gmatids( const std::string &fname , vector<int> &matids, 
 		  const int kmat, int &nmat, int &ier ) 
 	{
+
+	    // I could change this subroutine so that it identifies
+	    // nmat=kmat by repeatedly calling gmatids_().
+
 	    // ----------------------------------------
 	    // Create simple flat data types
 	    // ----------------------------------------
 
-	    // copy filename into a char array;
-	    // also remove constness.
-//   	    char cfname[maxDataFilenameLength];
-//  	    string2char( fname, cfname, maxDataFilenameLength );
+	    // copy filename into a const char * array;
+    	    char cfname[maxDataFilenameLength];
+ 	    const char * ccfname = s2ccwp( fname, cfname,
+					   maxDataFilenameLength );
 
 	    // create "long int" versions of variables.
 	    long int li_nmat = nmat;
@@ -94,8 +83,7 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 	    
-	    extc_gmatids( s2ccwp(fname,maxDataFilenameLength),
-			  li_matids, li_kmat, li_nmat, li_ier );
+	    extc_gmatids( ccfname, li_matids, li_kmat, li_nmat, li_ier );
 
 	    // ----------------------------------------
 	    // Copy the data back into C++ data types
@@ -128,10 +116,10 @@ using std::string;
 	    // Create simple flat data types
 	    // ----------------------------------------
 	    
-	    // copy filename into a char array;
-	    // also remove constness.
-// 	    char cfname[maxDataFilenameLength];
-// 	    string2char( fname, cfname, maxDataFilenameLength );
+	    // copy filename into a const char * array;
+ 	    char cfname[maxDataFilenameLength];
+ 	    const char * ccfname = s2ccwp( fname, cfname,
+					   maxDataFilenameLength );
 
 	    long int li_matid = matid; // const
 	    long int li_kkeys = kkeys; // const
@@ -148,8 +136,7 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 	    
-	    extc_gkeys( s2ccwp(fname,maxDataFilenameLength),
-			li_matid, keys, li_kkeys, li_nkeys,
+	    extc_gkeys( ccfname, li_matid, keys, li_kkeys, li_nkeys, 
 			li_ier );
 
 	    // ----------------------------------------
@@ -188,11 +175,10 @@ using std::string;
 	    // Create simple flat data types
 	    // ----------------------------------------
 	    
-// 	    // copy filename into a char array;
-// 	    // also remove constness.
-// 	    char cfname[maxDataFilenameLength];
-// 	    string2char( fname, cfname, maxDataFilenameLength );
-	    
+ 	    // copy filename into a const char * array;
+	    char cfname[maxDataFilenameLength];
+ 	    const char * ccfname = s2ccwp( fname, cfname,
+					   maxDataFilenameLength );
 	    long int li_matid = matid; // const
 	    long int li_nt    = nt; 
 	    long int li_nrho  = nrho;
@@ -205,8 +191,7 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 	    
-	    extc_gchgrids( s2ccwp(fname,maxDataFilenameLength), 
-			   li_matid, li_nt, li_nrho, li_nhnu,
+	    extc_gchgrids( ccfname, li_matid, li_nt, li_nrho, li_nhnu,
 			   li_ngray, li_nmg, li_ier );
 
 	    // ----------------------------------------
@@ -238,13 +223,14 @@ using std::string;
 	    // Create simple flat data types
 	    // ----------------------------------------
 
-	    // copy filename into a char array;
-	    // also remove constness.
-// 	    char cfname2[maxDataFilenameLength];
-// 	    string2char( fname, cfname, maxDataFilenameLength );
+	    // copy filename into a const char * array;
+    	    char cfname[maxDataFilenameLength];
+ 	    const char * ccfname = s2ccwp( fname, cfname,
+					   maxDataFilenameLength );
 
-// 	    char key[ key_length ];                           
-// 	    string2char( skey, key, key_length );
+	    // copy skey into a const char * array;
+ 	    char key[ key_length ];                           
+	    const char * cckey = s2ccwp( skey, key, key_length );
 	    
 	    // cast all integers as long integers before calling ggetgray.
 	    long int li_matid = matid; // const
@@ -266,9 +252,7 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_ggetgray( s2ccwp(fname,maxDataFilenameLength),
-			   li_matid, 
-			   s2ccwp(skey,key_length),
+	    extc_ggetgray( ccfname, li_matid, cckey,
 			   array_temps, li_kt,    li_nt, 
 			   array_rhos,  li_krho,  li_nrho,
 			   array_data,  li_kgray, li_ngray,
@@ -365,13 +349,14 @@ using std::string;
 	    // Create simple flat data types
 	    // ----------------------------------------
 
-// 	    // copy filename into a char array;
-// 	    // also remove constness.
-// 	    char cfname[maxDataFilenameLength];
-// 	    string2char( fname, cfname, maxDataFilenameLength );
+	    // copy filename into a const char * array;
+    	    char cfname[maxDataFilenameLength];
+ 	    const char * ccfname = s2ccwp( fname, cfname,
+					   maxDataFilenameLength );
 
-// 	    char key[ key_length ];                           
-// 	    string2char( skey, key, key_length);
+	    // copy skey into a const char * array;
+ 	    char key[ key_length ];                           
+	    const char * cckey = s2ccwp( skey, key, key_length );
 
 	    // cast all integers as long integers before calling ggetgray.
 	    long int li_matid = matid; // const
@@ -396,9 +381,7 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_ggetmg( s2ccwp(fname,maxDataFilenameLength),
-			 li_matid, 
-			 s2ccwp(skey,key_length),
+	    extc_ggetmg( ccfname, li_matid, cckey,
 			 array_temps, li_kt,    li_nt, 
 			 array_rhos,  li_krho,  li_nrho,
 			 array_hnus,  li_khnu,  li_nhnu,

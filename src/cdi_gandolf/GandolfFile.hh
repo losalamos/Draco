@@ -15,8 +15,6 @@
 #include <string>
 #include <vector>
 
-#include "ds++/Assert.hh"
-
 namespace rtt_cdi_gandolf
 {
  
@@ -24,7 +22,23 @@ namespace rtt_cdi_gandolf
 /*!
  * \class GandolfFile
  *
+ * \brief This class controls access the the physical IPCRESS data
+ *        file for GandolfOpacity.  Only one GandolfFile object should 
+ *        exist for each data file.  Several GandolfOpacity objects
+ *        will access the same GandolfFile object (one per material
+ *        found in the data file).
+ *
+ * \sa This class is designed to be used in conjuction with
+ * GandolfOpacity.  The client code should create a GandolfFile object 
+ * and that object is passed to the GandolfOpacity constructor to
+ * create a link between the opacity object and the IPCRESS data file.
+ *
+ * \example cdi_gandolf/test/tGandolfFile.cc
+ *
+ * Example of GandolfFile useage independent of GandolfOpacity or CDI.
+ *
  */
+
 // revision history:
 // -----------------
 // 0) original
@@ -44,7 +58,9 @@ class GandolfFile
     const std::string dataFilename;
 
     /*!
-     * \brief Number of materials found in the data file.
+     * \brief Number of materials found in the data file.  This is not 
+     *     a const value because it will be set after accessing the
+     *     the data file.
      */
     int numMaterials;
 
@@ -57,7 +73,20 @@ class GandolfFile
 
     // CREATORS
     
-    GandolfFile( const std::string& gandolfDataFilename );
+    /*!
+     * \breif Standard GandolfFile constructor.
+     *
+     * \sa This is the standard GandolfFile constructor.  This object
+     *    is typically instantiated as a smart pointer.
+     *
+     * \param _gandolfDataFilename A string that contains the name of
+     *     the Gandolf data file in IPCRESS format.  The f77 Gandolf
+     *     vendor library expects a name with 80 characters or less.
+     *     If the filename is longer than 80 characters the library
+     *     will not be able to open the file.
+     */
+    GandolfFile( const std::string& _gandolfDataFilename );
+
     // (defaulted) GandolfFile(const GandolfFile &rhs);
     // (defaulted) ~GandolfFile();
 
@@ -67,16 +96,26 @@ class GandolfFile
 
     // ACCESSORS
 
+    /*!
+     * \brief Returns the IPCRESS data filename.
+     */
     const std::string& getDataFilename() const 
     { 
 	return dataFilename;
     }
     
+    /*!
+     * \brief Returns the number of materials found in the data file.
+     */
     int getNumMaterials() const
     {
 	return numMaterials;
     }
 
+    /*!
+     * \brief Returns a list of material identifiers found in the data 
+     *     file.
+     */
     const std::vector<int>& getMatIDs() const
     {
 	return matIDs;
