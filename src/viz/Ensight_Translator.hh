@@ -156,6 +156,9 @@ class Ensight_Translator
   private:
     // >>> DATA
 
+    // if true, geometry is static
+    bool static_geom;
+
     // Number of Ensight cell types.
     int num_ensight_cell_types;
 
@@ -232,14 +235,16 @@ class Ensight_Translator
     Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
 		       const SSF &ens_vdata_names, 
 		       const SSF &ens_cdata_names, 
-		       const sf_double & = sf_double());
+		       const sf_double & = sf_double(),
+		       const bool static_geom_in = false);
     
     // Alternative constructor (parses dump_times)
     template<class SSF>
     Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
 		       const SSF &ens_vdata_names, 
 		       const SSF &ens_cdata_names, 
-		       const bool overwrite); 
+		       const bool overwrite,
+		       const bool static_geom_in = false); 
 
     // Do an Ensight_Dump.
     template<class ISF, class IVF, class SSF, class FVF>

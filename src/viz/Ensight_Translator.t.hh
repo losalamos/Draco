@@ -41,6 +41,8 @@ namespace rtt_viz
  * than ensight directories are NOT rebuilt and the case file assumes to have
  * the entries of the dump_times_in already.  The ensight_dumps will start
  * with the next additional timestep.
+ * \param static_geom_in optional input that if true, geometry is assumed
+ * the same across all calls to Ensight_Translator::ensight_dump.
  *
  * \sa \ref Ensight_Translator_description "Ensight_Translator class" 
  * for details about SSF templated field types.  
@@ -52,10 +54,12 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
 				       const std_string &gd_wpath,
 				       const SSF &ens_vdata_names_in,
 				       const SSF &ens_cdata_names_in,
-				       const sf_double &dump_times_in)
+				       const sf_double &dump_times_in,
+				       const bool static_geom_in)
     : ens_vdata_names(ens_vdata_names_in),
       ens_cdata_names(ens_cdata_names_in),
-      dump_times(dump_times_in)
+      dump_times(dump_times_in),
+      static_geom(static_geom_in)
 {
     createFilenames(prefix, gd_wpath);
 
@@ -88,6 +92,8 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
  * existing ensight directory.  If false, and the ensight directory exists,
  * the case file is appended to.  In either case, if the ensight directory
  * does not exist it is created.
+ * \param static_geom_in optional input that if true, geometry is assumed
+ * the same across all calls to Ensight_Translator::ensight_dump.
  *
  * In the future, we might also want to parse the data names.
  * Ideally \a overwrite would default to false, but
@@ -98,9 +104,11 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
 				       const std_string &gd_wpath,
 				       const SSF &ens_vdata_names_in,
 				       const SSF &ens_cdata_names_in,
-				       const bool overwrite)
+				       const bool overwrite,
+				       const bool static_geom_in)
     : ens_vdata_names(ens_vdata_names_in),
-      ens_cdata_names(ens_cdata_names_in)
+      ens_cdata_names(ens_cdata_names_in),
+      static_geom(static_geom_in)
 {
     createFilenames(prefix, gd_wpath);
     
@@ -380,8 +388,11 @@ void Ensight_Translator::ensight_dump(int icycle,
     ensight_case(time);
 
     // WRITE THE GEOMETRY FILE
-    ensight_geom(ens_postfix, icycle, time, dt, ipar, pt_coor,
-		 part_names, index_cell, ptr_index_cell);
+    if ( (! static_geom ) ||
+	 (dump_times.size() == 1) ) {
+	ensight_geom(ens_postfix, icycle, time, dt, ipar, pt_coor,
+		     part_names, index_cell, ptr_index_cell);
+    }
 
     // write the vertex data
     if (ens_vrtx_data.nrows() > 0)
@@ -419,7 +430,13 @@ Ensight_Translator::ensight_geom(const std_string &ens_postfix,
     Require (ipar.nrows() == index_cell.size());
 
     // make output file for this timestep
-    string filename  = geo_dir + "/" + ens_postfix;
+    string filename  = geo_dir + "/";
+    if ( static_geom ) {
+	filename += "data";
+    }
+    else {
+	filename += ens_postfix;
+    }
     const char *file = filename.c_str();
     ofstream geomout(file);
 
