@@ -106,7 +106,7 @@ void Source_Init<MT,PT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity,
 	calc_initial_census(*mesh, *opacity, *state, *rcontrol, cycle);
     else
 	calc_source_energies(*opacity, *state, cycle);
-	
+    
   // calculate source numbers
     calc_source_numbers(*opacity, cycle);
 
@@ -854,12 +854,14 @@ void Source_Init<MT,PT>::print(ostream &out) const
 	<< nsstot << endl;
 
     out << endl << " ** Source Energies ** " << endl;
-    out.precision(3);
+    out.precision(4);
     out.setf(ios::fixed, ios::floatfield);
-    out << setw(10) << setiosflags(ios::right) << "Cell"
-        << setw(15) << setiosflags(ios::right) << "Volume ew"
+    out << setw(10) << setiosflags(ios::fixed) 
+	<< setiosflags(ios::right) << "Cell"
+        << setw(15) << setiosflags(ios::scientific) 
+	<< setiosflags(ios::right) << "Volume ew"
         << setw(15) << setiosflags(ios::right) << "Surface ew" 
-	<< setw(15) << setiosflags(ios::right) << "Census ew (est)" << endl;
+	<< setw(15) << setiosflags(ios::right) << "Cen ew (est)" << endl;
     for (int i = 1; i <= ew_vol.get_Mesh().num_cells(); i++)
         out << setw(10) << i << setw(15) << ew_vol(i) << setw(15)
             << ew_ss(i) << setw(15) << ew_cen(i) << endl;	
