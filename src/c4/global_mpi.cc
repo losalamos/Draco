@@ -81,148 +81,68 @@ static DynArray<long>   lbuf(10);
 static DynArray<float>  fbuf(10);
 static DynArray<double> dbuf(10);
 
-#if 0
-//---------------------------------------------------------------------------//
-// Sum, array
+// MPI array reductions traits class.
 
-void gsum( int *px, int n )
+template<class T> class mpi_ar_traits
+{
+  public:
+    static DynArray<T> ar_buf;
+};
+
+template<class T>
+void gsum( T *px, int n, T dummy /*=T()*/ )
 {
     Assert( n >= 0 );
 
-    ibuf[n-1] = 0;		// auto expand the buffer.
+    mpi_ar_traits<T>::ar_buf[n-1] = dummy; // auto expand the buffer.
     for( int i=0; i < n; i++ )
-	ibuf[i] = px[i];
+	mpi_ar_traits<T>::ar_buf[i] = px[i];
 
-    MPI_Allreduce( &ibuf[0], px, n, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce( &mpi_ar_traits<T>::ar_buf[0], px, n,
+		   mpi_traits<T>::element_type, MPI_SUM, MPI_COMM_WORLD );
 }
 
-void gsum( long *px, int n )
+template<class T>
+void gmin( T *px, int n, T dummy /*=T()*/ )
 {
     Assert( n >= 0 );
 
-    lbuf[n-1] = 0;		// auto expand the buffer.
+    mpi_ar_traits<T>::ar_buf[n-1] = dummy; // auto expand the buffer.
     for( int i=0; i < n; i++ )
-	lbuf[i] = px[i];
+	mpi_ar_traits<T>::ar_buf[i] = px[i];
 
-    MPI_Allreduce( &lbuf[0], px, n, MPI_LONG, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce( &mpi_ar_traits<T>::ar_buf[0], px, n,
+		   mpi_traits<T>::element_type, MPI_MIN, MPI_COMM_WORLD );
 }
 
-void gsum( float *px, int n )
+template<class T>
+void gmax( T *px, int n, T dummy /*=T()*/ )
 {
     Assert( n >= 0 );
 
-    fbuf[n-1] = 0;		// auto expand the buffer.
+    mpi_ar_traits<T>::ar_buf[n-1] = dummy; // auto expand the buffer.
     for( int i=0; i < n; i++ )
-	fbuf[i] = px[i];
+	mpi_ar_traits<T>::ar_buf[i] = px[i];
 
-    MPI_Allreduce( &fbuf[0], px, n, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce( &mpi_ar_traits<T>::ar_buf[0], px, n,
+		   mpi_traits<T>::element_type, MPI_MAX, MPI_COMM_WORLD );
 }
 
-void gsum( double *px, int n )
-{
-    Assert( n >= 0 );
+template<> DynArray<int> mpi_ar_traits<int>::ar_buf(10);
+template<> DynArray<float> mpi_ar_traits<float>::ar_buf(10);
+template<> DynArray<double> mpi_ar_traits<double>::ar_buf(10);
 
-    dbuf[n-1] = 0;		// auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	dbuf[i] = px[i];
+template void gsum( int *px, int n, int dummy );
+template void gsum( float *px, int n, float dummy );
+template void gsum( double *px, int n, double dummy );
 
-    MPI_Allreduce( &dbuf[0], px, n, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
-}
+template void gmin( int *px, int n, int dummy );
+template void gmin( float *px, int n, float dummy );
+template void gmin( double *px, int n, double dummy );
 
-//---------------------------------------------------------------------------//
-// Min, array
-
-void gmin( int *px, int n )
-{
-    Assert( n >= 0 );
-
-    ibuf[n-1] = 0;		// auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	ibuf[i] = px[i];
-
-    MPI_Allreduce( &ibuf[0], px, n, MPI_INT, MPI_MIN, MPI_COMM_WORLD );
-}
-
-void gmin( long *px, int n )
-{
-    Assert( n >= 0 );
-
-    lbuf[n-1] = 0;		// auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	lbuf[i] = px[i];
-
-    MPI_Allreduce( &lbuf[0], px, n, MPI_LONG, MPI_MIN, MPI_COMM_WORLD );
-}
-
-void gmin( float *px, int n )
-{
-    Assert( n >= 0 );
-
-    fbuf[n-1] = 0;		// auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	fbuf[i] = px[i];
-
-    MPI_Allreduce( &fbuf[0], px, n, MPI_FLOAT, MPI_MIN, MPI_COMM_WORLD );
-}
-
-void gmin( double *px, int n )
-{
-    Assert( n >= 0 );
-
-    dbuf[n-1] = 0;		// auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	dbuf[i] = px[i];
-
-    MPI_Allreduce( &dbuf[0], px, n, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD );
-}
-
-//---------------------------------------------------------------------------//
-// Max, array
-
-void gmax( int *px, int n )
-{
-    Assert( n >= 0 );
-
-    ibuf[n-1] = 0;		// auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	ibuf[i] = px[i];
-
-    MPI_Allreduce( &ibuf[0], px, n, MPI_INT, MPI_MAX, MPI_COMM_WORLD );
-}
-
-void gmax( long *px, int n )
-{
-    Assert( n >= 0 );
-
-    lbuf[n-1] = 0;		// auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	lbuf[i] = px[i];
-
-    MPI_Allreduce( &lbuf[0], px, n, MPI_LONG, MPI_MAX, MPI_COMM_WORLD );
-}
-
-void gmax( float *px, int n )
-{
-    Assert( n >= 0 );
-
-    fbuf[n-1] = 0;		// auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	fbuf[i] = px[i];
-
-    MPI_Allreduce( &fbuf[0], px, n, MPI_FLOAT, MPI_MAX, MPI_COMM_WORLD );
-}
-
-void gmax( double *px, int n )
-{
-    Assert( n >= 0 );
-
-    dbuf[n-1] = 0;		// auto expand the buffer.
-    for( int i=0; i < n; i++ )
-	dbuf[i] = px[i];
-
-    MPI_Allreduce( &dbuf[0], px, n, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD );
-}
-#endif
+template void gmax( int *px, int n, int dummy );
+template void gmax( float *px, int n, float dummy );
+template void gmax( double *px, int n, double dummy );
 
 C4_NAMESPACE_END
 
