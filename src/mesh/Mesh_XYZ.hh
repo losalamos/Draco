@@ -14,9 +14,9 @@
 #include "ds++/Mat.hh"
 #include "ds++/SP.hh"
 
-using dsxx::Mat1;
-using dsxx::Mat2;
-using dsxx::Mat3;
+// using dsxx::Mat1;
+// using dsxx::Mat2;
+// using dsxx::Mat3;
 
 #include "c4/NodeInfo.hh"
 
@@ -75,6 +75,7 @@ struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo
 
 class Mesh_XYZ : private XYZ_Mapper
 {
+
   public:
 
     template<class T> class cctf;
@@ -97,7 +98,7 @@ class Mesh_XYZ : private XYZ_Mapper
                   public xm::Indexable< T, fcdtf<T> > {
 	friend class Mesh_XYZ;
 
-	Mat2<T> data;
+	dsxx::Mat2<T> data;
 
 	fcdtf( const Mesh_XYZ *m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
@@ -261,7 +262,7 @@ class Mesh_XYZ : private XYZ_Mapper
     class cctf : private XYZ_Mapper,
                        public xm::Indexable< T, cctf<T> >
     {
-        Mat1<T> data;
+        dsxx::Mat1<T> data;
 
 	cctf( const Mesh_XYZ *m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
@@ -370,7 +371,7 @@ class Mesh_XYZ : private XYZ_Mapper
                  public xm::Indexable< T, vctf<T> > {
 	friend class Mesh_XYZ;
 
-	Mat2<T> data;
+	dsxx::Mat2<T> data;
 
 	vctf( const Mesh_XYZ *m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
@@ -429,7 +430,7 @@ class Mesh_XYZ : private XYZ_Mapper
     template<class T>
     class bstf : private XYZ_Mapper
     {
-        Mat2<T> f0, f1, f2, f3, f4, f5;
+        dsxx::Mat2<T> f0, f1, f2, f3, f4, f5;
       public:
         bstf( const dsxx::SP<Mesh_XYZ>& spm )
             : XYZ_Mapper( spm->get_Mesh_DB() ),
@@ -438,7 +439,7 @@ class Mesh_XYZ : private XYZ_Mapper
               f4( ncx, ncy ), f5( ncx, ncy )
         {}
 
-        Mat2<T>& face( int f )
+        dsxx::Mat2<T>& face( int f )
         {
             if (f == 0) return f0;
             if (f == 1) return f1;
@@ -449,7 +450,7 @@ class Mesh_XYZ : private XYZ_Mapper
             throw "f out of range!";
         }
 
-        const Mat2<T>& face( int f ) const
+        const dsxx::Mat2<T>& face( int f ) const
         {
             if (f == 0) return f0;
             if (f == 1) return f1;
@@ -468,7 +469,7 @@ class Mesh_XYZ : private XYZ_Mapper
     template<class T, int N>
     class tiny_vec : public xm::Indexable< T, tiny_vec<T,N> > {
 
-        Mat1<T> data;
+        dsxx::Mat1<T> data;
 
       public:
         typedef T value_type;
@@ -510,11 +511,11 @@ class Mesh_XYZ : private XYZ_Mapper
     };
 
   private:
-    Mat1<double> xc, yc, zc;
-    Mat1<double> xf, yf, zf;
+    dsxx::Mat1<double> xc, yc, zc;
+    dsxx::Mat1<double> xf, yf, zf;
     double       dx, dy, dz;
     ccsf vc;
-    Mat1<double> xA, yA, zA;
+    dsxx::Mat1<double> xA, yA, zA;
 
     fcdsf xF, yF, zF;
     fcdvf face_norms;
@@ -528,9 +529,9 @@ class Mesh_XYZ : private XYZ_Mapper
     Mesh_XYZ( const Mesh_DB& mdb );
 
     const Mesh_DB& get_Mesh_DB() const { return XYZ_Mapper::get_Mesh_DB(); }
-    const Mat1<double>& get_xc() const { return xc; }
-    const Mat1<double>& get_yc() const { return yc; }
-    const Mat1<double>& get_zc() const { return zc; }
+    const dsxx::Mat1<double>& get_xc() const { return xc; }
+    const dsxx::Mat1<double>& get_yc() const { return yc; }
+    const dsxx::Mat1<double>& get_zc() const { return zc; }
 
     int get_ncx() const { return ncx; }
     int get_ncy() const { return ncy; }
@@ -545,9 +546,9 @@ class Mesh_XYZ : private XYZ_Mapper
     double get_dy() const { return dy; }
     double get_dz() const { return dz; }
 
-    const Mat1<double>& get_xf() const { return xf; }
-    const Mat1<double>& get_yf() const { return yf; }
-    const Mat1<double>& get_zf() const { return zf; }
+    const dsxx::Mat1<double>& get_xf() const { return xf; }
+    const dsxx::Mat1<double>& get_yf() const { return yf; }
+    const dsxx::Mat1<double>& get_zf() const { return zf; }
 
     const fcdsf& get_xF() const { return xF; }
     const fcdsf& get_yF() const { return yF; }
@@ -555,9 +556,9 @@ class Mesh_XYZ : private XYZ_Mapper
 
     const fcdvf& get_fn() const { return face_norms; }
 
-    const Mat1<double>& get_xA() const { return xA; }
-    const Mat1<double>& get_yA() const { return yA; }
-    const Mat1<double>& get_zA() const { return zA; }
+    const dsxx::Mat1<double>& get_xA() const { return xA; }
+    const dsxx::Mat1<double>& get_yA() const { return yA; }
+    const dsxx::Mat1<double>& get_zA() const { return zA; }
 
     const ccsf& get_vc() const { return vc; }
 

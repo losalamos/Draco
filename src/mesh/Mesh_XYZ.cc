@@ -64,13 +64,13 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 
 // Allocate the arrays.
 
-    xc = Mat1<double>( ncx );
-    yc = Mat1<double>( ncy );
-    zc = Mat1<double>( ncz );
+    xc = dsxx::Mat1<double>( ncx );
+    yc = dsxx::Mat1<double>( ncy );
+    zc = dsxx::Mat1<double>( ncz );
 
-    xf = Mat1<double>( ncx+1 );
-    yf = Mat1<double>( ncy+1 );
-    zf = Mat1<double>( ncz+1 );
+    xf = dsxx::Mat1<double>( ncx+1 );
+    yf = dsxx::Mat1<double>( ncy+1 );
+    zf = dsxx::Mat1<double>( ncz+1 );
 
 // Initialize the deltas.
 
@@ -109,9 +109,9 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 
 // Initialize the face areas.
 
-    xA = Mat1<double>( ncx+1 );
-    yA = Mat1<double>( ncy+1 );
-    zA = Mat1<double>( ncz+1 );
+    xA = dsxx::Mat1<double>( ncx+1 );
+    yA = dsxx::Mat1<double>( ncy+1 );
+    zA = dsxx::Mat1<double>( ncz+1 );
 
     for( int i=0; i < ncx+1; i++ )
 	xA(i) = dy * dz;
