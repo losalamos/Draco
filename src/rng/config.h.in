@@ -12,6 +12,9 @@
 /* SPRNG library include path */
 #undef SPRNG_H
 
+/* USE STANDARD C INTERFACE */
+#undef __STDC__
+
 #endif                          /* __rng_config_h__ */
 
 /*---------------------------------------------------------------------------*/
