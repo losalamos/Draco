@@ -149,10 +149,16 @@ JAVADOC_AUTOBRIEF    = YES
 # with spaces.
 
 #INPUT                =  \
-# ../src/P1Diffusion ../src/POOMA_MT ../src/c4 ../src/diffusion ../src/ds++ \
-# ../src/imc ../src/linalg ../src/matprops ../src/mc ../src/mesh ../src/nml  \
-# ../src/radphys ../src/rng ../src/stopwatch ../src/timestep ../src/traits  \
-# ../src/units ../src/xm ../src/fourier 
+# @doxygen_src@/P1Diffusion  @doxygen_src@/POOMA_MT  \
+# @doxygen_src@/c4           @doxygen_src@/diffusion \
+# @doxygen_src@/ds++         @doxygen_src@/imc       \
+# @doxygen_src@/linalg       @doxygen_src@/matprops  \
+# @doxygen_src@/mc           @doxygen_src@/mesh      \
+# @doxygen_src@/nml          @doxygen_src@/radphys   \
+# @doxygen_src@/rng          @doxygen_src@/stopwatch \
+# @doxygen_src@/timestep     @doxygen_src@/traits    \
+# @doxygen_src@/units        @doxygen_src@/xm        \
+# @doxygen_src@/fourier 
 
 INPUT                 = \
  @doxygen_src@/timestep @doxygen_src@/rng 
@@ -187,11 +193,14 @@ EXCLUDE_PATTERNS     =
 # the \include command).
 
 EXAMPLE_PATH         = \
- ../src/P1Diffusion/test ../src/POOMA_MT/test ../src/c4/test  \
- ../src/ds++/test ../src/imc/test ../src/linalg/test          \
- ../src/matprops/test ../src/mc/test ../src/mesh/test         \
- ../src/radphys/test ../src/rng/test ../src/stopwatch/test    \
- ../src/timestep/test ../src/xm/test ../src/fourier/test
+ @doxygen_src@/P1Diffusion/test @doxygen_src@/POOMA_MT/test  \
+ @doxygen_src@/c4/test          @doxygen_src@/ds++/test      \
+ @doxygen_src@/imc/test         @doxygen_src@/linalg/test    \
+ @doxygen_src@/matprops/test    @doxygen_src@/mc/test        \
+ @doxygen_src@/mesh/test        @doxygen_src@/radphys/test   \
+ @doxygen_src@/rng/test         @doxygen_src@/stopwatch/test \
+ @doxygen_src@/timestep/test    @doxygen_src@/xm/test        \
+ @doxygen_src@/fourier/test
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program 
