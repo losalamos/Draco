@@ -88,6 +88,8 @@ ARFLAGS = @ARFLAGS@
 ARLIBS = @ARLIBS@
 RANLIB = @RANLIB@
 
+PARALLEL_FLAG = @PARALLEL_FLAG@
+
 libsuffix = @libsuffix@
 
 configure_command = @configure_command@
@@ -151,6 +153,9 @@ ifndef nj
 nj	:= 1
 endif
 subnj	:= -j $(nj)
+
+LDFLAGS := ${PARALLEL_FLAG} ${LDFLAGS}
+ARFLAGS := ${PARALLEL_FLAG} ${ARFLAGS}
 
 ##---------------------------------------------------------------------------##
 ## TARGETS
