@@ -8,9 +8,7 @@
 
 pkg := matprops
 
-need_units	:= yes
-# need_mesh	:= yes
-# need_linalg	:= yes
+need_radphys	:= yes
 
 # Go get the standard includeable makefile for Draco components.
 
@@ -28,14 +26,18 @@ libsrcs = BilinearInterpTable.cc BilinearInterpGrid.cc \
 
 pretarg = deps
 
-resolve_libs = 
+resolve_libs = \
+	-L../radphys -lradphys_$(env) \
+	-L../units -lunits_$(env) \
+	-L../ds++ -lds++_$(env)
 
 include ../config/make.lib
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../ds++;   $(MAKE))
-	(cd ../units;   $(MAKE))
+	(cd ../ds++;    $(MAKE) $(subnj))
+	(cd ../units;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../radphys; $(MAKE) $(subnj) dodeps=no)
 endif
 
 # Rules for building docs
