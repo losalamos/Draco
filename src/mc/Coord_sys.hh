@@ -50,6 +50,7 @@ namespace rtt_mc
 //  3)  3-17-98 : because of a dumb-ass oversight on my part, we don't need
 //                a transform for 2D XY, it has been removed
 //  4)  4-13-99 : moved into mc package
+//  5) 3-AUG-00 : fixed calc_omega error! the degenerate z-case was incorrect
 // 
 //===========================================================================//
 

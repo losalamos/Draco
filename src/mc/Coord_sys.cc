@@ -11,11 +11,15 @@
 
 #include "Coord_sys.hh"
 #include "Constants.hh"
+#include "Math.hh"
+#include "ds++/Assert.hh"
 #include <cmath>
 
 namespace rtt_mc 
 {
 
+using global::soft_equiv;
+using global::dot;
 using global::pi;
 using std::cos;
 using std::sin;
@@ -49,6 +53,8 @@ Coord_sys::sf_double Coord_sys::sample_dir(std_string dist,
 	omega_[2] = costheta;
     }
 
+    Check (soft_equiv(dot(omega_, omega_), 1.0, 1.e-6));
+
     // return vector
     return omega_;
 }
@@ -64,11 +70,11 @@ void Coord_sys::calc_omega(double costheta, double phi,
     vector<double> old_dir;
     old_dir = omega_;
     double factor = sqrt(1 - old_dir[2] * old_dir[2]);
-    if (factor == 0)
+    if (factor < 1.e-6)
     {
         omega_[0] = sintheta * cos(phi);
         omega_[1] = sintheta * sin(phi);
-        omega_[2] = old_dir[2] * cos(phi);
+        omega_[2] = old_dir[2] / std::fabs(old_dir[2]) * costheta;
     }
     else
     {
@@ -80,6 +86,8 @@ void Coord_sys::calc_omega(double costheta, double phi,
             sin(phi) / factor;
         omega_[2] = old_dir[2] * costheta - factor * sintheta * cos(phi);
     }
+
+    Check (soft_equiv(dot(omega_, omega_), 1.0, 1.e-6));
 }
 
 } // end namespace rtt_mc
