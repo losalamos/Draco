@@ -844,7 +844,7 @@ Optional Packages:
   --with-mpi-lib=DIR    tell where MPI libs are (\${MPI_LIB_DIR} by default)
   --with-lib-prefix=library prefix
                           give prefix to libraries (default rtt_)
-  --with-c4=scalar,mpi,shmem
+  --with-c4=scalar,mpi|lampi|mpich,shmem
 		          turn on c4 (default scalar)
   --with-dbc=level      set Design-by-Contract
   --with-cxx=gcc,sgi,kcc,compaq,guide
@@ -1562,6 +1562,11 @@ fi;
    # give with-c4 implied argument
    if test "${with_c4:=scalar}" = yes ; then
        with_c4='scalar'
+   fi
+
+   # if specific vendor is listed (e.g.: lampi or mpich) reset to mpi
+   if test ${with_c4} = mpich || test ${with_c4} = lampi; then
+      with_c4='mpi'
    fi
 
 
@@ -5340,7 +5345,8 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
    fi
 
-   # STL port
+   # STL port checks and setup
+
 
    echo "$as_me:$LINENO: checking \"for stlport\"" >&5
 echo $ECHO_N "checking \"for stlport\"... $ECHO_C" >&6
@@ -5404,6 +5410,8 @@ echo "$as_me: error: \"Must define path to stlport when using --with-stlport=dir
       echo "$as_me:$LINENO: result: \"none\"" >&5
 echo "${ECHO_T}\"none\"" >&6
    fi
+
+
 
 
    # add user defined cppflags

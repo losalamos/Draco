@@ -12,8 +12,6 @@
 #ifndef __c4_Timer_hh__
 #define __c4_Timer_hh__
 
-#include <unistd.h>
-#include <sys/times.h>
 #include <iostream>
 #include "ds++/Assert.hh"
 #include "C4_Functions.hh"
@@ -59,39 +57,42 @@ namespace rtt_c4
 class Timer 
 {
   private:
-    // Beginning wall clock time.
+    //! Beginning wall clock time.
     double begin;
     
-    // Ending wall clock time.
+    //! Ending wall clock time.
     double end;
 
-    // POSIX tms structure for beginning time.
+    //! POSIX tms structure for beginning time.
     tms tms_begin;
 
-    // POSIX tms structure for ending time.
+    //! POSIX tms structure for ending time.
     tms tms_end;
 
-    // System clock resolution.
-    double clock_resolution;
+    //! The number of clock ticks per second.
+    //! \sa man times
+    int const posix_clock_ticks_per_second;
 
-    // Flag determining if timer is currently on.
+    //! Flag determining if timer is currently on.
     bool timer_on;
 
-    // sum of wall clock time over all intervals.
+    //! True if we can access MPI timers.
+    bool const isMPIWtimeAvailable;
+    
+    //! sum of wall clock time over all intervals.
     double sum_wall;
 
-    // sum of system clock time over all intervals.
+    //! sum of system clock time over all intervals.
     double sum_system;
 
-    // sum of system clock time over all intervals.
+    //! sum of system clock time over all intervals.
     double sum_user;
 
-    // number of time intervals.
+    //! number of time intervals.
     int num_intervals;
 
-    //! system time is not available when using MPI_Wtime().
-    bool component_times_available;
-    bool set_cta();
+    //! determine if MPI Wtime is available.
+    bool setIsMPIWtimeAvailable() const;
     
   public:
     
@@ -103,6 +104,7 @@ class Timer
     inline double wall_clock() const;
     inline double system_cpu() const;
     inline double user_cpu()   const;
+    inline double posix_err()  const;
 
     //! Return the wall clock time in seconds, summed over all intervals.
     double sum_wall_clock() const { Require(! timer_on); return sum_wall; }
@@ -117,7 +119,7 @@ class Timer
     int intervals() const { Require(! timer_on); return num_intervals; }
 
     inline void reset();
-    void print(std::ostream &, int p = 2) const;
+    void print( std::ostream &, int p = 2 ) const;
 };
 
 //---------------------------------------------------------------------------//
@@ -130,6 +132,7 @@ void Timer::start()
     Require(! timer_on);
     timer_on = true;
     ++num_intervals;
+    // set both begin and tms_begin.
     begin    = wall_clock_time( tms_begin );
 }
 
@@ -137,7 +140,8 @@ void Timer::start()
 //! Set the end of the time interval.
 void Timer::stop()
 {
-    Require(timer_on);
+    Require( timer_on );
+    // set both end and tms_end.
     end      = wall_clock_time( tms_end );
     timer_on = false; 
 
@@ -151,7 +155,7 @@ void Timer::stop()
 double Timer::wall_clock() const
 {
     Require(! timer_on);
-    return (end - begin);
+    return( end - begin );
 }
 
 //---------------------------------------------------------------------------//
@@ -159,9 +163,8 @@ double Timer::wall_clock() const
 double Timer::system_cpu() const
 {
     Require(! timer_on);
-    if(component_times_available)
-	return (tms_end.tms_stime - tms_begin.tms_stime) / clock_resolution;
-    return 0;
+    return( tms_end.tms_stime - tms_begin.tms_stime )
+	/ static_cast<double>(posix_clock_ticks_per_second);
 }
 
 //---------------------------------------------------------------------------//
@@ -169,9 +172,15 @@ double Timer::system_cpu() const
 double Timer::user_cpu() const
 {
     Require(! timer_on);
-    if(component_times_available)
-	return (tms_end.tms_utime - tms_begin.tms_utime) / clock_resolution; 
-    return 0;
+    return( tms_end.tms_utime - tms_begin.tms_utime )
+	/ static_cast<double>(posix_clock_ticks_per_second); 
+}
+
+//---------------------------------------------------------------------------//
+//! The error in the posix timings
+double Timer::posix_err() const
+{
+    return 1.0/static_cast<double>(posix_clock_ticks_per_second);
 }
 
 //---------------------------------------------------------------------------//
@@ -180,10 +189,13 @@ void Timer::reset()
 {
     Require(! timer_on);
 
-    num_intervals = 0;
+    begin         = 0.0;
+    end           = 0.0;
+    timer_on      = false;
     sum_wall      = 0.0;
     sum_system    = 0.0;
     sum_user      = 0.0;
+    num_intervals = 0;
     return;
 }
 
@@ -191,14 +203,13 @@ void Timer::reset()
 // OVERLOADED OPERATORS
 //---------------------------------------------------------------------------//
 
-inline std::ostream& operator<<(std::ostream &out, const Timer &t)
+inline std::ostream& operator<<( std::ostream &out, const Timer &t )
 {
-    t.print(out, 2);
+    t.print( out, 2 );
     return out;
 }
 
 } // end namespace rtt_c4
-
 
 
 #endif                          // __c4_Timer_hh__

@@ -1,3 +1,27 @@
+2005-01-31  Kelly Thompson  <kgt@lanl.gov>
+
+	* test/tstTime.cc: Changed order of include directives; Moved
+	using statements into function scope and away from file scope;
+	Added more tests to improve coverage percentage; Replaced old
+	style C4:: scoping with new style "rtt_c4::".
+	
+	* Timer.hh (reset): Also reset the values for begin, end, timer_on
+	and num_intervals.
+
+	* Timer.cc (Timer): Provide new data member
+	int:posix_clock_ticks_per_second; Add new data member
+	bool:isMPIWtimeAvailable; Remove data member
+	component_times_available since it is not needed under the new
+	design; Modify the print() function so that it prints units
+	(seconds) along with values; Modify the print() member function so
+	that it always prints USER and SYSTEM time (posix values); Remove
+	the member function set_cta() since it is no longer needed.
+
+	* C4_MPI.cc (wall_clock_time): Add overloaded function definition
+	that will return the MPI_Wtime() data along with posix timer data
+	via agument reference to a tms struct.  Allows MPI programs to
+	examine both MPI times and posix times.
+
 2005-01-25  Kelly Thompson  <kgt@lanl.gov>
 
 	* Timer.hh (class Timer): Significant modification to Timer
@@ -10,7 +34,7 @@
 	   class. 
 	 - Disallow copy construction.
 	 - Utilize rtt_c4::wall_clock_time and rtt_c4:: when possible.
-	 - More thorogh initializer in the default constructor.
+	 - More thorough initializer in the default constructor.
 	 - Only print User and System times when using posix timers.
 
 	* C4_Functions.hh, C4_MPI.cc, C4_Serial.cc: added overloaded

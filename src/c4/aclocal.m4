@@ -1736,13 +1736,78 @@ dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_dracoenv.m4
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:21
 dnl
 dnl Defines the Draco build system environment.  This is the main
 dnl configure function.
 dnl
-dnl Thomas M. Evans
-dnl 1999/02/04 01:56:21
+dnl $Id$
 dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_STLPORT_ENV
+dnl
+dnl Used by AC_DRACO_ENV, this macro checks the configure line for the
+dnl presence of "--with-stlport".  If this option is found, the build
+dnl system's environment is modified so that all the all C++ compiles
+dnl use the STL libraries included with STLPort instead of the
+dnl compiler's native STL defintions.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DBS_STLPORT_ENV, [dnl
+
+   AC_MSG_CHECKING("for stlport")
+   if test "${with_stlport:=no}" != no; then
+      if ! test -d "${with_stlport}/include/stlport"; then
+         AC_MSG_ERROR("Invalid directory ${with_stlport}/include/stlport")
+      fi
+      CPPFLAGS="-I${with_stlport}/include/stlport ${CPPFLAGS}"
+      CXXFLAGS="-I${with_stlport}/include/stlport ${CXXFLAGS}"
+      AC_MSG_RESULT("-I${with_stlport}/include added to CXXFLAGS.")
+      case $with_cxx in
+      sgi)
+         stlport_libname='mipspro'
+         stlport_xlinker=' '
+         ;;
+      gcc) dnl for everything else use gcc
+         stlport_libname='gcc'
+         stlport_xlinker="-Xlinker"
+         ;;
+      *) 
+         AC_MSG_ERROR("stlport not available with this compiler.")
+         ;;
+      esac
+      AC_MSG_CHECKING("for debug stlport mode")
+      if test "${enable_debug:-yes}" = yes; then
+         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a"; then
+            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a")
+         fi
+         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname}_stldebug ${LIBS}"
+         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
+         AC_MSG_RESULT("yes")
+      else
+         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}.a"; then
+            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}.a")
+         fi
+         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname} ${LIBS}"
+         AC_MSG_RESULT("no")
+      fi
+      dnl We need to add the rpath to the LDFLAGS instead of RPATH
+      dnl because configure fails AC_CHECK_SIZEOF if sltport is not
+      dnl available.
+      AC_MSG_CHECKING("for LDFLAGS mods for stlport")
+      LDFLAGS="${stlport_xlinker} -rpath ${with_stlport}/lib ${LDFLAGS}"
+      AC_MSG_RESULT("Added ${stlport_xlinker} -rpath ${with_stlport}/lib to LDFLAGS")
+
+   elif test "${with_stlport}" = yes; then
+      AC_MSG_ERROR("Must define path to stlport when using --with-stlport=[dir]")
+   else
+      AC_MSG_RESULT("none")
+   fi
+
+   dnl end of AC_DBS_STLPORT_ENV
+])
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DRACO_ENV
@@ -1851,56 +1916,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    fi
 
-   # STL port
+   # STL port checks and setup
 
-   AC_MSG_CHECKING("for stlport")
-   if test "${with_stlport:=no}" != no; then
-      if ! test -d "${with_stlport}/include/stlport"; then
-         AC_MSG_ERROR("Invalid directory ${with_stlport}/include/stlport")
-      fi
-      CPPFLAGS="-I${with_stlport}/include/stlport ${CPPFLAGS}"
-      CXXFLAGS="-I${with_stlport}/include/stlport ${CXXFLAGS}"
-      AC_MSG_RESULT("-I${with_stlport}/include added to CXXFLAGS.")
-      case $with_cxx in
-      sgi)
-         stlport_libname='mipspro'
-         stlport_xlinker=' '
-         ;;
-      gcc) dnl for everything else use gcc
-         stlport_libname='gcc'
-         stlport_xlinker="-Xlinker"
-         ;;
-      *) 
-         AC_MSG_ERROR("stlport not available with this compiler.")
-         ;;
-      esac
-      AC_MSG_CHECKING("for debug stlport mode")
-      if test "${enable_debug:-yes}" = yes; then
-         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a"; then
-            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a")
-         fi
-         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname}_stldebug ${LIBS}"
-         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
-         AC_MSG_RESULT("yes")
-      else
-         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}.a"; then
-            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}.a")
-         fi
-         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname} ${LIBS}"
-         AC_MSG_RESULT("no")
-      fi
-      dnl We need to add the rpath to the LDFLAGS instead of RPATH
-      dnl because configure fails AC_CHECK_SIZEOF if sltport is not
-      dnl available.
-      AC_MSG_CHECKING("for LDFLAGS mods for stlport")
-      LDFLAGS="${stlport_xlinker} -rpath ${with_stlport}/lib ${LDFLAGS}"
-      AC_MSG_RESULT("Added ${stlport_xlinker} -rpath ${with_stlport}/lib to LDFLAGS")
-
-   elif test "${with_stlport}" = yes; then
-      AC_MSG_ERROR("Must define path to stlport when using --with-stlport=[dir]")
-   else
-      AC_MSG_RESULT("none")
-   fi
+   AC_DBS_STLPORT_ENV
 
    dnl add any additional flags
 
@@ -2062,12 +2080,17 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl define --with-c4
    AC_ARG_WITH(c4, 
-      [  --with-c4[=scalar,mpi,shmem]   
+      [  --with-c4[=scalar,mpi|lampi|mpich,shmem]   
 		          turn on c4 (default scalar) ])
 
    # give with-c4 implied argument
    if test "${with_c4:=scalar}" = yes ; then
        with_c4='scalar'
+   fi
+
+   # if specific vendor is listed (e.g.: lampi or mpich) reset to mpi
+   if test ${with_c4} = mpich || test ${with_c4} = lampi; then
+      with_c4='mpi'
    fi
 
    dnl

@@ -9,6 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <unistd.h>
+#include <sys/times.h>
 #include <iomanip>
 #include <c4/config.h>
 #include "Timer.hh"
@@ -24,13 +26,13 @@ namespace rtt_c4
 Timer::Timer()
     : begin( 0.0 ),
       end(   0.0 ),
-      clock_resolution( wall_clock_resolution() ),
+      posix_clock_ticks_per_second( sysconf( _SC_CLK_TCK ) ),
       timer_on(          false ),
+      isMPIWtimeAvailable( setIsMPIWtimeAvailable() ),
       sum_wall( 0.0 ),
       sum_system( 0.0 ),
       sum_user( 0.0 ),
-      num_intervals( 0 ),
-      component_times_available( set_cta() )
+      num_intervals( 0 )
 {
     reset();
 }
@@ -40,7 +42,7 @@ Timer::Timer()
 //---------------------------------------------------------------------------//
 
 //! Print out a timing report.
-void Timer::print(std::ostream &out, int p) const
+void Timer::print( std::ostream &out, int p ) const
 {
     using std::setw;
     using std::endl;
@@ -53,23 +55,20 @@ void Timer::print(std::ostream &out, int p) const
     if ( num_intervals > 1 )
 	out << "LAST INTERVAL: " << '\n';
 
-    out << setw(20) << "WALL CLOCK TIME: " << wall_clock() << '\n';
-    if( component_times_available )
-    {
-	out << setw(20) << "  USER CPU TIME: " << user_cpu() << '\n';
-	out << setw(20) << "SYSTEM CPU TIME: " << system_cpu() << '\n';
-    }
+    out << setw(20) << "WALL CLOCK TIME: " << wall_clock() << " sec." << '\n';
+    out << setw(20) << "  USER CPU TIME: " << user_cpu()   << " sec." << '\n';
+    out << setw(20) << "SYSTEM CPU TIME: " << system_cpu() << " sec." << '\n';
     out << '\n';
     
     if ( num_intervals > 1 )
     {
 	out << "OVER " << num_intervals << " INTERVALS: " << '\n';
-	out << setw(20) << "WALL CLOCK TIME: " << sum_wall_clock() << '\n';
-	if( component_times_available )
-	{
-	    out << setw(20) << "  USER CPU TIME: " << sum_user_cpu() << '\n';
-	    out << setw(20) << "SYSTEM CPU TIME: " << sum_system_cpu() << '\n';
-	}
+	out << setw(20) << "WALL CLOCK TIME: " << sum_wall_clock()
+	    << " sec." << '\n';
+	out << setw(20) << "  USER CPU TIME: " << sum_user_cpu()
+	    << " sec." << '\n';
+	out << setw(20) << "SYSTEM CPU TIME: " << sum_system_cpu()
+	    << " sec." << '\n';
 	out << '\n';
     }
     out.flush();
@@ -78,12 +77,12 @@ void Timer::print(std::ostream &out, int p) const
 //---------------------------------------------------------------------------//
 // Is this an MPI or Posix timer?
 //---------------------------------------------------------------------------//
-bool Timer::set_cta()
+bool Timer::setIsMPIWtimeAvailable() const
 {
 #ifdef C4_SCALAR
-    return true;
-#else
     return false;
+#else
+    return true;
 #endif
 }
 

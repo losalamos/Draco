@@ -10,9 +10,10 @@
 //---------------------------------------------------------------------------//
 
 #include <c4/config.h>
-
 #ifdef C4_MPI
 
+#include <unistd.h>
+#include <sys/times.h>
 #include "C4_Functions.hh"
 #include "C4_Req.hh"
 
@@ -90,14 +91,21 @@ void global_barrier()
 // TIMING FUNCTIONS
 //---------------------------------------------------------------------------//
 
+// overloaded function (no args)
 double wall_clock_time()
 {
     return MPI_Wtime();
 }
+// overloaded function (provide POSIX timer information).
 double wall_clock_time( tms & now )
 {
+    // obtain posix timer information and return it to the user via the
+    // reference value argument "now".
+    times( &now );
+    // This funtion will return the MPI wall-clock time.
     return MPI_Wtime();
 }
+
 //---------------------------------------------------------------------------//
 
 double wall_clock_resolution()
