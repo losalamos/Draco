@@ -124,6 +124,9 @@ void array_sum( T dummy )
 		 << typeid(T).name()
 		 << ": bogus." << endl;
     }
+
+    delete [] global_sum;
+    delete [] local_sum;
 }
 
 //---------------------------------------------------------------------------//
@@ -151,6 +154,9 @@ void array_min( T dummy )
 		 << typeid(T).name()
 		 << ": bogus." << endl;
     }
+
+    delete [] global_min;
+    delete [] local_min;
 }
 
 //---------------------------------------------------------------------------//
@@ -178,6 +184,9 @@ void array_max( T dummy )
 		 << typeid(T).name()
 		 << ": bogus." << endl;
     }
+
+    delete [] global_max;
+    delete [] local_max;
 }
 
 //---------------------------------------------------------------------------//
