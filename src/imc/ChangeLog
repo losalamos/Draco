@@ -1,3 +1,8 @@
+2002-08-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: Updated to imc-3_1_0.  Main changes were for the
+	Compaq-6_5_0 compiler.
+
 2002-08-12  Thomas M. Evans  <tme@lanl.gov>
 
 	* Source_Builder_Defs.h, Unset_Source_Builder_Defs.h,
