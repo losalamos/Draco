@@ -105,7 +105,9 @@ namespace rtt_imc
 //                have a different pointer pointing to the state data
 // 11)  4-29-99 : removed using declarations from namespace
 // 12) 18-AUG-00: updated surface() mesh.next_cell() to include the position
-//                vector for AMR support
+//                vector for AMR support.
+// 13) 28-AUG-00: modified the energy-weighted path length to account for a
+//                zero opacity. 
 // 
 //===========================================================================//
 
@@ -329,11 +331,17 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
     double new_ew = ew * factor;
     double del_ew = ew - new_ew;
 
-    // accumulate tallies from time-rate absorption
+    // accumulate tallies from time-rate absorption.  ewpl ==
+    // energy-weighted-path-length = int_0^d e^(-sig*x) dx =
+    // (1/sig)ew(1-e^(-sig*x)), or if sig=0, ewpl = ew*d.
     tally.deposit_energy( cell, del_ew );
     tally.accumulate_momentum(cell, del_ew, omega);
-    if ( xs.get_sigeffabs(cell) != 0)
-	tally.accumulate_ewpl( cell, del_ew / xs.get_sigeffabs(cell) );
+    if (xs.get_sigeffabs(cell) > 0)
+	tally.accumulate_ewpl(cell, del_ew / xs.get_sigeffabs(cell) );
+    else if (xs.get_sigeffabs(cell) == 0)
+	tally.accumulate_ewpl(cell, distance * ew);
+    else if (xs.get_sigeffabs(cell) < 0)
+	Insist (0, "Effective absorption is negative!");
 
     // update the fraction of the particle's original weight
     fraction *= factor;
