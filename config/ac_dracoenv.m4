@@ -399,8 +399,20 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
-	   LDFLAGS="-rpath \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
+
+	   # turn off ranlib
 	   RANLIB=':'
+
+	   # the g++ rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++; then
+	       RPATHA="-Xlinker -rpath \${curdir}"
+	       RPATHB="-Xlinker -rpath \${curdir}/.."
+	       RPATHC="-Xlinker -rpath \${libdir}"
+	       LDFLAGS="${RPATHA} ${RPATHB} ${RPATHC} ${LDFLAGS}"
+	   else
+	       LDFLAGS="-rpath \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
+	   fi
+
        fi
    ;;
    mips-sgi-irix6.*)
@@ -534,7 +546,17 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
-	   LDFLAGS="-rpath \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
+
+	   # the g++ rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++; then
+	       RPATHA="-Xlinker -rpath \${curdir}"
+	       RPATHB="-Xlinker -rpath \${curdir}/.."
+	       RPATHC="-Xlinker -rpath \${libdir}"
+	       LDFLAGS="${RPATHA} ${RPATHB} ${RPATHC} ${LDFLAGS}"
+	   else
+	       LDFLAGS="-rpath \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
+	   fi
+
        fi
    ;;
    sparc-sun-solaris2.*)

@@ -225,8 +225,16 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
 
    # LINKER AND LIBRARY (AR)
    LD='${CXX}'
-   AR='ar'
-   ARFLAGS='cr'
+
+   # if shared then ar is gcc
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-shared -o'
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
    ARLIBS=''
    ARTESTLIBS=''
 
