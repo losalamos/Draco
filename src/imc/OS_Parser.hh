@@ -60,9 +60,9 @@ private:
 
   // material zones
     vector<int> mat_zone;
-    vector<double> sigma;
-    vector<double> sigma_a;
-    vector<double> sigma_s;
+    vector<double> density;
+    vector<double> kappa;
+    vector<double> temperature;
 
   // Parser member functions
 
@@ -85,7 +85,7 @@ public:
     explicit OS_Parser(const string &infile)
 	: input_file(infile), coord_system(""), fine_cells(0), 
 	  accum_cells(0), coarse_edge(0), fine_edge(0), bnd_cond(0), 
-	  zone(0), mat_zone(0), sigma(0), sigma_a(0), sigma_s(0)
+	  zone(0), mat_zone(0), density(0), kappa(0), temperature(0)
     {}
 
   // public Parser member functions
@@ -99,6 +99,9 @@ public:
   // public copy functions for Opacity<MT>
     const vector<int>& Zone() const { return zone; }
     const vector<int>& Mat_zone() const { return mat_zone; }
+    const vector<double>& Density() const { return density; }
+    const vector<double>& Kappa() const { return kappa; }
+    const vector<double>& Temperature() const { return temperature; }
 };
 
 CSPACE

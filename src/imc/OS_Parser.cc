@@ -279,7 +279,46 @@ void OS_Parser::Parser_opacity(ifstream &in)
 //---------------------------------------------------------------------------//
 void OS_Parser::Zone_parser(ifstream &in)
 {
-  // FINISH WHEN BACK FROM CO
+  // Opacity Parser
+
+  // input keywords
+    string keyword;
+    int    data;
+
+  // determine zone map
+    while (keyword != "end-mat")
+    {
+      // test that we have not reached end-of-file
+	assert (!in.eof());
+	
+      // do input
+	in >> keyword;
+	if (keyword == "zonemap:")
+	    for (int i = 0; i < mat_zone.size(); i++)
+		in >> mat_zone[i];
+	if (keyword == "num_materials:")
+	{
+	    in >> data;
+	    density.resize(data);
+	    kappa.resize(data);
+	    temperature.resize(data);
+	}
+	if (keyword == "mat:")
+	{
+	  // assert that material data arrays have been sized previously
+	    assert (density.size() != 0);
+	    assert (density.size() == kappa.size());
+	    assert (density.size() == temperature.size());
+	  // input the material arrays
+	    for (int i = 0; i < density.size(); i++)
+	    {
+		in >> data;
+		in >> density[data-1];
+		in >> kappa[data-1];
+		in >> temperature[data-1];
+	    }
+	}
+    }    
 }
 
 //---------------------------------------------------------------------------//

@@ -10,10 +10,12 @@ RM = rm -r
 # OBJECTS
 
 objects = Layout.o OS_Builder.o OS_Mesh.o OS_Parser.o Opacity.o \
-          Particle.o Random.o XYCoord_sys.o XYZCoord_sys.o
+          Particle.o Random.o XYCoord_sys.o XYZCoord_sys.o \
+          Opacity_Builder.o
 
 sources = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Parser.cc Opacity.cc \
-          Particle.cc Random.cc XYCoord_sys.cc XYZCoord_sys.cc
+          Particle.cc Random.cc XYCoord_sys.cc XYZCoord_sys.cc \
+          Opacity_Builder.cc
 
 # INCLUDE DEPENDENCIES
 
