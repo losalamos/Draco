@@ -1,3 +1,8 @@
+2002-12-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* quadrature: release 1_2_0.  Std conforming updates to
+	Quadrature.cc.
+
 2002-05-09  Thomas M. Evans  <tme@lanl.gov>
 
 	* quadrature: released version 1_1_0.  This is the second
