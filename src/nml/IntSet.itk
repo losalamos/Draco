@@ -1,0 +1,43 @@
+# IntSet.itk
+# Geoffrey Furnish
+# 3 October 1995
+#
+# @> An itcl megawidget for integer sets in the Namelist Tk interface.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  1995/10/03  19:08:20  furnish
+# New namelist item entry widgets of various forms, using the new
+# megawidget inheritance model of itcl 2.
+#
+###############################################################################
+
+class nml::IntSet {
+    inherit nml::Item
+
+    constructor {args} {
+	eval Item::constructor $args
+    } {
+	eval itk_initialize $args
+
+	label $hull.lab -text $name
+	pack $hull.lab -side left -expand 1 -fill x
+
+	global $itk_option(-textvar)
+
+	set i 0
+	foreach choice $choices {
+	    incr i
+	    radiobutton $hull.rdb$i \
+		-text $choice -value $choice \
+		-variable $itk_option(-textvar)
+	    pack $hull.rdb$i \
+		-side top -fill x
+	}
+    }
+}
+
+#-----------------------------------------------------------------------------#
+#                             end of IntSet.itk
+#-----------------------------------------------------------------------------#

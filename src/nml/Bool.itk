@@ -1,0 +1,37 @@
+# Bool.itk
+# Geoffrey Furnish
+# 3 October 1995
+#
+# @> An itcl megawidget for on/off toggles in the Namelist Tk interface.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  1995/10/03  19:08:19  furnish
+# New namelist item entry widgets of various forms, using the new
+# megawidget inheritance model of itcl 2.
+#
+###############################################################################
+
+class nml::Bool {
+    inherit nml::Item
+
+    constructor {args} {
+	eval Item::constructor $args
+    } {
+	eval itk_initialize $args
+
+	global $itk_option(-textvar)
+
+	checkbutton $hull.chk \
+	    -text $name \
+	    -variable $itk_option(-textvar) \
+	    -onvalue on -offvalue off
+
+	pack $hull.chk -side left -expand 1 -fill x
+    }
+}
+
+#-----------------------------------------------------------------------------#
+#                             end of Bool.itk
+#-----------------------------------------------------------------------------#

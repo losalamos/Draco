@@ -1,0 +1,119 @@
+#!nml_wish -f
+# Geoffrey Furnish
+# 15 April 1994
+#
+# @> A test script for developing/debugging the nml Tk interface.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.2  1995/09/18  21:03:35  furnish
+# Cleaning up, changing to the new [incr Tk] stuff.
+#
+# Revision 1.1  1994/06/23  14:12:10  furnish
+# Script for testing nml_wish.
+#
+###############################################################################
+
+wm title . "GTS Initialization Facility"
+
+# Create the main window
+# Use the default window title.
+
+#set root_width  [winfo vrootwidth .]
+#set root_height [winfo vrootheight .]
+
+#wm minsize . 300 240
+#wm maxsize . [expr "$root_width/64*63"] [expr "$root_height/64*62"]
+
+# Set window geometry if not already set.
+# Depart from square slightly to account for menu bar.
+
+#if { ! [ info exists geometry ] } {
+#    set width  [expr "$root_width / 16 * 10"]
+#    set height [expr "$root_height / 16 * 11"]
+#    set geometry ${width}x${height}
+#}
+#wm geometry . $geometry
+
+
+###############################################################################
+# Set up the menubar and message widgets.
+
+# I don't understand how to get options to work.  Just copy these from
+# pldefaults.tcl
+
+    set gen_font		-*-helvetica-medium-r-normal-*-*-180-*
+    set gen_bold_font		-*-helvetica-bold-r-normal-*-*-180-*
+    set gen_menu_font		-*-helvetica-medium-o-normal-*-*-180-*
+    set gen_italic_font		-*-helvetica-bold-o-normal-*-*-180-*
+    set gen_font_small		-*-helvetica-medium-r-normal-*-*-120-*
+    set gen_bold_font_small	-*-helvetica-bold-r-normal-*-*-120-*
+    set gen_fixed_font		-*-courier-medium-r-normal-*-*-180-*
+
+    set dialog_font		-*-times-medium-r-normal-*-*-180-*
+    set dialog_bold_font	-*-times-bold-r-normal-*-*-180-*
+
+    option add *font		$gen_font
+    option add *Entry.font	$gen_font
+    option add *Menu*font	$gen_menu_font
+    option add *Menubutton*font	$gen_menu_font
+    option add *Scale.font	$gen_bold_font_small
+    option add *color.font	$gen_fixed_font
+
+    option add *background      bisque
+    option add *foreground      black
+
+frame .menu -relief raised -borderwidth 3
+
+button .menu.one -text "Edit Namelist" -command "namelist"
+pack append .menu .menu.one {left expand fill}
+
+button .menu.two -text "GTP" -command "get_new_gtp"
+pack append .menu .menu.two {left expand fill}
+
+button .menu.three -text "Three" -command "myplot 3"
+pack append .menu .menu.three {left expand fill}
+
+button .menu.four -text "Four" -command "myplot 4"
+pack append .menu .menu.four {left expand fill}
+
+button .menu.exit -text "Exit" -command "quit 0"
+pack append .menu .menu.exit {right expand}
+
+message .msg \
+    -font -Adobe-helvetica-medium-r-normal--*-240* -aspect 200 \
+    -width 500 -borderwidth 1 \
+    -text "GTSITK: The GTS Initialization Facility"
+
+#puts "auto_path is $auto_path"
+
+pack .menu .msg -in . -side top -fill x
+
+#tk_menuBar .menu .menu.one .menu.two .menu.three .menu.four .menu.exit
+
+set ngtps 0
+
+###############################################################################
+# Definitions of procedures used in this script.
+
+# namelist
+# This should result in the PHysical Dynamics Namelist TK toplevel
+# window appearing, allowing the user to edit all the namelist input
+# for the GTS initialization program.
+
+proc namelist {} {
+#    if [info exists .nml] { return }
+
+    puts stdout "creating toplevel .nml"
+
+    nml::Group .nml  -name "test"
+}
+
+# Punch eject and hold onto your seat !!!
+
+proc quit a {
+    destroy .
+}
+
+###############################################################################

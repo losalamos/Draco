@@ -1,0 +1,36 @@
+# Entry.itk
+# Geoffrey Furnish
+# 3 October 1995
+#
+# @> An itcl megawidget for basic entry fields in the Namelist Tk interface.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  1995/10/03  19:08:19  furnish
+# New namelist item entry widgets of various forms, using the new
+# megawidget inheritance model of itcl 2.
+#
+###############################################################################
+
+class nml::Entry {
+    inherit nml::Item
+
+    constructor {args} {
+	eval Item::constructor $args
+    } {
+	eval itk_initialize $args
+
+	label $hull.lab -text $name
+
+	global $itk_option(-textvar)
+	entry $hull.ent -textvariable $itk_option(-textvar)
+
+	pack $hull.lab -side left -expand 1 -fill x
+	pack $hull.ent -side left -expand 1 -fill x
+    }
+}
+
+#-----------------------------------------------------------------------------#
+#                             end of Entry.itk
+#-----------------------------------------------------------------------------#

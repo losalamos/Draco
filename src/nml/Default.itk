@@ -1,0 +1,58 @@
+# NML_Default.tcl
+# Geoffrey Furnish
+# 3 October 1994
+#
+# @> An [incr Tcl] + Wigwam class for displaying unadorned namelist
+# @> input variables.
+#
+# $Id$
+# $Log$
+# Revision 1.1  1995/09/18  20:54:07  furnish
+# Revamped support, now works with [incr Tk].
+#
+# Revision 1.2  1994/10/21  15:15:20  furnish
+# Shrink the size of the block windows to a more reasonable size.
+#
+# Revision 1.1  1994/10/05  18:02:06  furnish
+# Display widgets for the built in types known to the namelist utility.
+# Customized user defined display widgets will be modelled on these.
+# More work to follow in this area.
+#
+###############################################################################
+
+#auto_load destroy
+
+#itcl_class NML_Default {
+
+class nml::Default {
+    inherit itk::Widget
+
+    public variable name
+    public variable var
+    public variable choices
+    public variable binding
+    public variable bindvar
+
+    constructor {args} {
+	eval itk_initialize $args
+
+	::label $this.label -text $name
+	EmacsEntry $this.entry -width 10 -relief sunken \
+	    -textvariable $variable
+	pack $this.label -side left -expand 1
+	pack $this.entry -side left
+
+	if {$binding != "none"} {
+	    bind $this.entry $binding \
+		"set $bindvar \"%K\" "
+	}
+    }
+
+    itk_option define -name name Name blah {
+	set name $itk_option(-name)
+    }
+}
+
+#-----------------------------------------------------------------------------#
+#                             end of NML_Default.tcl
+#-----------------------------------------------------------------------------#
