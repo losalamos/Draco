@@ -1169,7 +1169,7 @@ void C4_shm_dbg_1()
 
 C4_NAMESPACE_END
 
-#include "ds++/DynArray.cc"
+#include "ds++/DynArray.t.hh"
 
 template class DynArray<C4::Msg_DB *>;
 
