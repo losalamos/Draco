@@ -74,6 +74,8 @@ class NodeFlags
 	       "Invalid node flag type number!");
 	return flagTypes[flagtype]->getFlagType();
     }
+
+    int get_flag_type_index(string & desired_flag_type) const;
 /*!
  * \brief Returns the node flag number associated with the specified node flag
  *        type and node flag index.

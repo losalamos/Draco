@@ -77,52 +77,21 @@ void SideFlags::readEndKeyword(ifstream & meshfile)
     std::getline(meshfile, dummyString);       // read and discard blank line.
 }
 /*!
- * \brief Returns the index to the side flag type that contains the problem 
- *        boundary conditions.
- * \return The boundary conditions side flag type index.
+ * \brief Returns the index to the side flag type that contains the specified
+ *        string.
+ * \param desired_flag_type Flag type.
+ * \return The side flag type index.
  */
-int SideFlags::get_boundary_flag_number() const 
+int SideFlags::get_flag_type_index(string & desired_flag_type) const 
 {
-    // Allow any combination of the phrase "boundary_conditions". 
-    string bc("boundarycditBOUNDARYCDIT_");
-    int boundary = -1;
-    int length = 0;
+    int flag_type_index = -1;
     for (int f = 0; f < dims.get_nside_flag_types(); f++)
     {
-        string flag = flagTypes[f]->getFlagType();
-        if ((flag[0] == 'b' || flag[0] == 'B') &&
-       	    flag.find_first_not_of(bc) == string::npos &&  
-       	    flag.find_first_not_of(bc) >= length)
-       	{
-	  length = flag.size();
-	    boundary = f;
-	}
+        string flag_type = flagTypes[f]->getFlagType();
+        if (flag_type == desired_flag_type)
+      	    flag_type_index = f;
     }
-    return boundary;
-}
-/*!
- * \brief Returns the index to the optional side flag type that contains the 
- *        problem external sources.
- * \return The external source side flag type index.
- */
-int SideFlags::get_surface_src_flag_number() const 
-{
-    // Allow any combination of the phrase "surface_source". 
-    string surface("surfaceoSURFACEO_");
-    int source = -1;
-    int length = 0;
-    for (int f = 0; f < dims.get_nside_flag_types(); f++)
-    {
-        string flag = flagTypes[f]->getFlagType();
-	if ((flag[0] == 's' || flag[0] == 'S') &&
-	    flag.find_first_not_of(surface) == string::npos &&  
-	    flag.find_first_not_of(surface) >= length)
-	{
-	    length = flag.size();
-	    source = f;
-	}
-    }
-    return source;
+    return flag_type_index;
 }
 
 } // end namespace rtt_RTT_Format_Reader

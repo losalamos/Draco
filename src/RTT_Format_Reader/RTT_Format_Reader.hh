@@ -281,6 +281,14 @@ class RTT_Format_Reader
     string get_node_flags_flag_type(int flagtype) const 
     { return spNodeFlags->get_flag_type(flagtype); }
 /*!
+ * \brief Returns the index to the node flag type that contains the specified
+ *        string.
+ * \param desired_flag_type Flag type.
+ * \return The node flag type index.
+ */
+    int get_node_flags_flag_type_index(string & desired_flag_type) const 
+    { return spNodeFlags->get_flag_type_index(desired_flag_type); }
+/*!
  * \brief Returns the node flag number associated with the specified node flag
  *        type and node flag index.
  * \param flagtype Node flag type number.
@@ -315,6 +323,14 @@ class RTT_Format_Reader
     string get_side_flags_flag_type(int flagtype) const 
     { return spSideFlags->get_flag_type(flagtype); }
 /*!
+ * \brief Returns the index to the side flag type that contains the specified
+ *        string.
+ * \param desired_flag_type Flag type.
+ * \return The side flag type index.
+ */
+    int get_side_flags_flag_type_index(string & desired_flag_type) const 
+    { return spSideFlags->get_flag_type_index(desired_flag_type); }
+/*!
  * \brief Returns the side flag number associated with the specified side flag
  *        type and side flag index.
  * \param flag_index Side flag index.
@@ -337,20 +353,6 @@ class RTT_Format_Reader
  */
     string get_side_flags_flag_name(int flagtype, int flag_index) const 
     { return spSideFlags->get_flag_name(flagtype, flag_index); }
-/*!
- * \brief Returns the index to the side flag type that contains the problem 
- *        boundary conditions.
- * \return The boundary conditions side flag type index.
- */
-    int get_side_flags_boundary_flag_number() const 
-    { return spSideFlags->get_boundary_flag_number(); }
-/*!
- * \brief Returns the index to the optional side flag type that contains the 
- *        problem external sources.
- * \return The external source side flag type index.
- */
-    int get_side_flags_surface_src_flag_number() const 
-    { return spSideFlags->get_surface_src_flag_number(); }
 
     // cell flags access
 /*!
@@ -360,6 +362,14 @@ class RTT_Format_Reader
  */
     string get_cell_flags_flag_type(int flagtype) const 
     { return spCellFlags->get_flag_type(flagtype); }
+/*!
+ * \brief Returns the index to the cell flag type that contains the specified
+ *        string.
+ * \param desired_flag_type Flag type.
+ * \return The cell flag type index.
+ */
+    int get_cell_flags_flag_type_index(string & desired_flag_type) const 
+    { return spCellFlags->get_flag_type_index(desired_flag_type); }
 /*!
  * \brief Returns the cell flag number associated with the specified cell flag
  *        type and cell flag index.
@@ -385,27 +395,6 @@ class RTT_Format_Reader
  */
     string get_cell_flags_flag_name(int flagtype, int flag_index) const 
     { return spCellFlags->get_flag_name( flagtype, flag_index); }
-/*!
- * \brief Returns the index to the cell flag type that contains the cell 
- *        materials.
- * \return The material cell flag type index.
- */
-    int get_cell_flags_material_flag_number() const 
-    { return spCellFlags->get_material_flag_number(); }
-/*!
- * \brief Returns the index to the optional cell flag type that contains the 
- *        cell volumetric sources.
- * \return The volumetric source cell flag type index.
- */
-    int get_cell_flags_volume_src_flag_number() const 
-    { return spCellFlags->get_volume_src_flag_number(); }
-/*!
- * \brief Returns the index to the optional cell flag type that contains the 
- *        cell radiation sources.
- * \return The radiation source cell flag type index.
- */
-    int get_cell_flags_radiation_src_flag_number() const 
-    { return spCellFlags->get_radiation_src_flag_number(); }
 
     // node data ids access
 /*!

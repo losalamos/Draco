@@ -76,6 +76,23 @@ void NodeFlags::readEndKeyword(ifstream & meshfile)
 	   "Invalid mesh file: node_flags block missing end");
     std::getline(meshfile, dummyString);       // read and discard blank line.
 }
+/*!
+ * \brief Returns the index to the node flag type that contains the specified
+ *        string.
+ * \param desired_flag_type Flag type.
+ * \return The node flag type index.
+ */
+int NodeFlags::get_flag_type_index(string & desired_flag_type) const 
+{
+    int flag_type_index = -1;
+    for (int f = 0; f < dims.get_nnode_flag_types(); f++)
+    {
+        string flag_type = flagTypes[f]->getFlagType();
+        if (flag_type == desired_flag_type)
+      	    flag_type_index = f;
+    }
+    return flag_type_index;
+}
 
 } // end namespace rtt_RTT_Format_Reader
 

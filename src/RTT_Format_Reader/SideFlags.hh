@@ -74,6 +74,8 @@ class SideFlags
 	       "Invalid side flag type number!");
 	return flagTypes[flagtype]->getFlagType();
     }
+
+    int get_flag_type_index(string & desired_flag_type) const;
 /*!
  * \brief Returns the side flag number associated with the specified side flag
  *        type and side flag index.
@@ -115,8 +117,6 @@ class SideFlags
 	       "Invalid side flag name index number!");
 	return flagTypes[flagtype]->getFlagName(flag_index);
     }
-    int get_boundary_flag_number() const;
-    int get_surface_src_flag_number() const;
 };
 
 } // end namespace rtt_RTT_Format_Reader

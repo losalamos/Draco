@@ -485,6 +485,7 @@ bool TestRTT_Format_Reader::check_node_flags(const RTT_Format_Reader & mesh,
     std::vector<std::string> flagTypes;
     std::vector<std::vector<std::pair<int, std::string> > > flag_num_name;
     std::vector<std::pair<int, std::string> > num_name;
+    int ntype, bndry, src;
 
     switch (meshtype)
     {
@@ -495,16 +496,19 @@ bool TestRTT_Format_Reader::check_node_flags(const RTT_Format_Reader & mesh,
 	    num_name.push_back(std::make_pair(6,std::string("parent")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
+	    ntype = 0;
 	flagTypes.push_back("boundary");
 	    num_name.push_back(std::make_pair(1,std::string("reflective")));
 	    num_name.push_back(std::make_pair(4,std::string("vacuum")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
+	    bndry = 1;
 	flagTypes.push_back("source");
 	    num_name.push_back(std::make_pair(101,std::string("no_source")));
 	    num_name.push_back(std::make_pair(22,std::string("rad_source")));
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
+	    src = 2;
 	break;
 
     default:
@@ -523,6 +527,27 @@ bool TestRTT_Format_Reader::check_node_flags(const RTT_Format_Reader & mesh,
     {
         fail(" NodeFlags flag_type ") << "Node Flags flag_types not obtained."
 				      << std::endl;
+ 	all_passed = false;
+    }
+    // Check node flag node_type flag number.
+    if (ntype != mesh.get_node_flags_flag_type_index(flagTypes[ntype]))
+    {
+        fail(" NodeFlags ntype_flag ") << 
+	     "Node Flags node_type flag not obtained." << std::endl;
+ 	all_passed = false;
+    }
+    // Check node flag boundary flag number.
+    if (bndry != mesh.get_node_flags_flag_type_index(flagTypes[bndry]))
+    {
+        fail(" NodeFlags bndry_flag ") << 
+	     "Node Flags boundary flag not obtained." << std::endl;
+ 	all_passed = false;
+    }
+    // Check node flag source flag number.
+    if (src != mesh.get_node_flags_flag_type_index(flagTypes[src]))
+    {
+        fail(" NodeFlags bndry_flag ") << 
+	     "Node Flags source flag not obtained." << std::endl;
  	all_passed = false;
     }
     // Check node flag numbers for each of the flag types.
@@ -592,7 +617,7 @@ bool TestRTT_Format_Reader::check_side_flags(const RTT_Format_Reader & mesh,
     std::vector<std::string> flagTypes;
     std::vector<std::vector<std::pair<int, std::string> > > flag_num_name;
     std::vector<std::pair<int, std::string> > num_name;
-    int bndry, src;
+    int bndry;
 
     switch (meshtype)
     {
@@ -603,7 +628,6 @@ bool TestRTT_Format_Reader::check_side_flags(const RTT_Format_Reader & mesh,
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
 	    bndry = 0;
-	    src = -1;
 	break;
 
     default:
@@ -622,6 +646,13 @@ bool TestRTT_Format_Reader::check_side_flags(const RTT_Format_Reader & mesh,
     {
         fail(" SideFlags flag_type ") << "Side Flags flag_types not obtained."
 				      << std::endl;
+ 	all_passed = false;
+    }
+    // Check side flag boundary flag number.
+    if (bndry != mesh.get_side_flags_flag_type_index(flagTypes[bndry]))
+    {
+        fail(" SideFlags bndry_flag ") << 
+	     "Side Flags boundary flag not obtained." << std::endl;
  	all_passed = false;
     }
     // Check side flag numbers for each of the flag types.
@@ -669,20 +700,7 @@ bool TestRTT_Format_Reader::check_side_flags(const RTT_Format_Reader & mesh,
 				      << std::endl;
  	all_passed = false;
     }
-    // Check side flag required boundary flag number.
-    if (bndry != mesh.get_side_flags_boundary_flag_number())
-    {
-        fail(" SideFlags bndry_flag ") << 
-	     "Side Flags boundary flag not obtained." << std::endl;
- 	all_passed = false;
-    }
-    // Check side flag optional surface source flag number.
-    if (src != mesh.get_side_flags_surface_src_flag_number())
-    {
-        fail(" SideFlags src_flag ") << 
-	     "Side Flags surface source flag not obtained." << std::endl;
- 	all_passed = false;
-    }
+
     if (all_passed)
         pass(" SideFlags Accessors " ) << "Got all SideFlags accessors." 
 				       << std::endl;
@@ -704,7 +722,7 @@ bool TestRTT_Format_Reader::check_cell_flags(const RTT_Format_Reader & mesh,
     std::vector<std::string> flagTypes;
     std::vector<std::vector<std::pair<int, std::string> > > flag_num_name;
     std::vector<std::pair<int, std::string> > num_name;
-    int matl, vsrc, rsrc;
+    int matl, rsrc;
 
     switch (meshtype)
     {
@@ -721,7 +739,6 @@ bool TestRTT_Format_Reader::check_cell_flags(const RTT_Format_Reader & mesh,
 	    flag_num_name.push_back(num_name);
 	    num_name.resize(0);
 	    rsrc = 1;
-	vsrc = -1;
 	break;
 
     default:
@@ -740,6 +757,20 @@ bool TestRTT_Format_Reader::check_cell_flags(const RTT_Format_Reader & mesh,
     {
         fail(" CellFlags flag_type ") << "Cell Flags flag_types not obtained."
 				      << std::endl;
+ 	all_passed = false;
+    }
+    // Check cell flag material flag number.
+    if (matl != mesh.get_cell_flags_flag_type_index(flagTypes[matl]))
+    {
+        fail(" CellFlags matl_flag ") << 
+	     "Cell Flags material flag not obtained." << std::endl;
+ 	all_passed = false;
+    }
+     // Check cell flag radiation source flag number.
+    if (rsrc != mesh.get_cell_flags_flag_type_index(flagTypes[rsrc]))
+    {
+        fail(" CellFlags rsrc_flag ") << 
+	     "Cell Flags volume source flag not obtained." << std::endl;
  	all_passed = false;
     }
     // Check cell flag numbers for each of the flag types.
@@ -785,27 +816,6 @@ bool TestRTT_Format_Reader::check_cell_flags(const RTT_Format_Reader & mesh,
     {
         fail(" CellFlags flag_name ") << "Cell Flags flag_name not obtained." 
 				      << std::endl;
- 	all_passed = false;
-    }
-    // Check cell flag required material flag number.
-    if (matl != mesh.get_cell_flags_material_flag_number())
-    {
-        fail(" CellFlags matl_flag ") << 
-	     "Cell Flags material flag not obtained." << std::endl;
- 	all_passed = false;
-    }
-    // Check cell flag optional volume source flag number.
-    if (vsrc != mesh.get_cell_flags_volume_src_flag_number())
-    {
-        fail(" CellFlags vsrc_flag ") << 
-	     "Cell Flags volume source flag not obtained." << std::endl;
- 	all_passed = false;
-    }
-     // Check cell flag optional radiation source flag number.
-    if (rsrc != mesh.get_cell_flags_radiation_src_flag_number())
-    {
-        fail(" CellFlags rsrc_flag ") << 
-	     "Cell Flags volume source flag not obtained." << std::endl;
  	all_passed = false;
     }
 
@@ -1138,7 +1148,6 @@ bool TestRTT_Format_Reader::check_cell_defs(const RTT_Format_Reader & mesh,
 	    ordered_sides[5][3].push_back(2); 
 	    ordered_sides[5][3].push_back(1); 
         // tri_prism
-	// the side_types vary between the cases for this cell def. 
 	    side_types[6][0] = side_types[6][1] = 2;
 	ordered_sides[6][0].push_back(0); 
 	    ordered_sides[6][0].push_back(2); 
@@ -1344,7 +1353,7 @@ bool TestRTT_Format_Reader::check_nodes(const RTT_Format_Reader & mesh,
     if (!got_node_coords)
     {
         fail(" Nodes Coordinates ") << "Node coordinates not obtained." 
-				   << std::endl;
+				    << std::endl;
 	all_passed = false;
     }
     // Check a single coordinate direction for a single node.

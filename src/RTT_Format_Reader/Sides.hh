@@ -99,12 +99,13 @@ class Sides
     int get_flags(int side_numb, int flag_numb) const 
     { return flags[side_numb][flag_numb]; }
 /*!
- * \brief Returns the index to the side flag type that contains the problem 
- *        boundary conditions.
- * \return The boundary conditions side flag type index.
+ * \brief Returns the index to the side flag type that contains the specified
+ *        string.
+ * \param desired_flag_type Flag type.
+ * \return The side flag type index.
  */
-    int get_boundary_flag_number() const 
-    { return sideFlags.get_boundary_flag_number(); }
+    int get_flag_type_index(string & desired_flag_type) const 
+    { return sideFlags.get_flag_type_index(desired_flag_type); }
 };
 
 } // end namespace rtt_RTT_Format_Reader

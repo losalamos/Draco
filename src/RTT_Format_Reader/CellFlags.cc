@@ -77,76 +77,21 @@ void CellFlags::readEndKeyword(ifstream & meshfile)
     std::getline(meshfile, dummyString);       // read and discard blank line.
 }
 /*!
- * \brief Returns the index to the cell flag type that contains the cell 
- *        materials.
- * \return The material cell flag type index.
+ * \brief Returns the index to the cell flag type that contains the specified
+ *        string.
+ * \param desired_flag_type Flag type.
+ * \return The cell flag type index.
  */
-int CellFlags::get_material_flag_number() const 
+int CellFlags::get_flag_type_index(string & desired_flag_type) const 
 {
-    // Allow any combination of the phrase "material". 
-    string matl("materilMATERIL");
-    int material = -1;
-    int length = 0;
+    int flag_type_index = -1;
     for (int f = 0; f < dims.get_ncell_flag_types(); f++)
     {
-        string flag = flagTypes[f]->getFlagType();
-        if ((flag[0] == 'm' || flag[0] == 'M') &&
-      	    flag.find_first_not_of(matl) == string::npos &&  
-       	    flag.find_first_not_of(matl) >= length)
-       	{
-	    length = flag.size();
-      	    material = f;
-       	}
+        string flag_type = flagTypes[f]->getFlagType();
+        if (flag_type == desired_flag_type)
+      	    flag_type_index = f;
     }
-    return material;
-}
-/*!
- * \brief Returns the index to the optional cell flag type that contains the 
- *        cell volumetric sources.
- * \return The volumetric source cell flag type index.
- */
-int CellFlags::get_volume_src_flag_number() const 
-{
-    // Allow any combination of the phrase "volume_source". 
-    string source("volumesrcVOLUMESRC_");
-    int vol_src = -1;
-    int length = 0;
-    for (int f = 0; f < dims.get_ncell_flag_types(); f++)
-    {
-        string flag = flagTypes[f]->getFlagType();
-        if ((flag[0] == 'v' || flag[0] == 'V') &&
-	    flag.find_first_not_of(source) == string::npos &&  
-	    flag.find_first_not_of(source) >= length)
-	{
-	    length = flag.size();
-	    vol_src = f;
-	}
-    }
-    return vol_src;
-}    
-/*!
- * \brief Returns the index to the optional cell flag type that contains the 
- *        cell radiation sources.
- * \return The radiation source cell flag type index.
- */
-int CellFlags::get_radiation_src_flag_number() const 
-{
-    // Allow any combination of the phrase "raditiation_source". 
-    string source("raditonsuceRADITONSUCE_");
-    int rad_src = -1;
-    int length = 0;
-    for (int f = 0; f < dims.get_ncell_flag_types(); f++)
-    {
-        string flag = flagTypes[f]->getFlagType();
-        if ((flag[0] == 'r' || flag[0] == 'R') &&
-	    flag.find_first_not_of(source) == string::npos &&  
-	    flag.find_first_not_of(source) >= length)
-	{
-	    length = flag.size();
-	    rad_src = f;
-	}
-    }
-    return rad_src;
+    return flag_type_index;
 }
 
 } // end namespace rtt_RTT_Format_Reader

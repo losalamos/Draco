@@ -75,6 +75,8 @@ class CellFlags
 	       "Invalid cell flag type number!");
 	return flagTypes[flagtype]->getFlagType();
     }
+
+    int get_flag_type_index(string & desired_flag_type) const;
 /*!
  * \brief Returns the cell flag number associated with the specified cell flag
  *        type and cell flag index.
@@ -116,9 +118,6 @@ class CellFlags
 	       "Invalid cell flag name index number!");
 	return flagTypes[flagtype]->getFlagName(flag_index);
     }
-    int get_material_flag_number() const;
-    int get_volume_src_flag_number() const;
-    int get_radiation_src_flag_number() const;
 };
 
 } // end namespace rtt_RTT_Format_Reader
