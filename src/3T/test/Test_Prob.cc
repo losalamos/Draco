@@ -12,7 +12,7 @@
 #include "3T/test/XYZ_Quadratic.hh"
 #include "3T/test/XYZ_Trigonometric.hh"
 
-#include "3T/Diffusion_DB.hh"
+#include "diffusion/Diffusion_DB.hh"
 
 #include "mesh/Mesh_XYZ.hh"
 

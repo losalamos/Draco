@@ -57,9 +57,12 @@ Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_,
 
 // Now build up D.  D does not depend on time, so we can do this here.
 
-    MT::fcdsf xf = spm->get_xF();
-    MT::fcdsf yf = spm->get_yF();
-    MT::fcdsf zf = spm->get_zF();
+    MT::fcdsf xf(spm);
+    MT::fcdsf yf(spm);
+    MT::fcdsf zf(spm);
+    spm->get_xloc(xf);
+    spm->get_yloc(yf);
+    spm->get_zloc(zf);
 
     for( int f=0; f < 6; f++ )
 	for( int c=0; c < ncp; c++ )

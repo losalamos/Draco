@@ -16,6 +16,7 @@ need_util	:= yes
 #need_pooma	:= yes
 need_mesh	:= yes
 need_3T		:= yes
+need_diffusion	:= yes
 
 # Go get the standard includeable makefile for Draco components.
 
@@ -47,7 +48,7 @@ main: deps main_$(env)
 	@echo 
 
 main_$(env) : $(objs) \
-	$(dep_lib3T) $(dep_libmesh) $(dep_libgeom) $(dep_liblinalg) \
+	$(dep_lib3T) $(dep_libdiffusion) $(dep_libmesh) $(dep_libgeom) $(dep_liblinalg) \
 	$(dep_libutil) $(dep_libspdf) $(dep_libnml) $(dep_libc4) $(dep_libds++)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
 
@@ -59,6 +60,7 @@ ifneq ($(dodeps),no)
 endif
 
 $(dep_lib3T):
+$(dep_libdiffusion):
 $(dep_libmesh):
 $(dep_libgeom):
 $(dep_liblinalg):
