@@ -1,0 +1,144 @@
+%%---------------------------------------------------------------------------%%
+%% lanl82699.tex
+%% John Gulick
+%% $Id$
+%%---------------------------------------------------------------------------%%
+\documentclass[11pt]{rnote}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{tabularx}
+\usepackage{cite}
+%\usepackage{c++}
+%\usepackage{tmadd,tmath}
+%\usepackage{stl}
+
+%%---------------------------------------------------------------------------%%
+%% DEFINE SPECIFIC ENVIRONMENTS HERE
+%%---------------------------------------------------------------------------%%
+%\newcommand{\elfit}{\ensuremath{\operatorname{Im}(-1/\epsilon(\vq,\omega)}}
+%\msection{}-->section commands
+%\tradem{}  -->add TM subscript to entry
+%\ucatm{}   -->add trademark footnote about entry
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\toms{Todd Urbatsch, Tom Evans, Todd Wareing, Jim Morel, and Gordon
+  Olson, XTM, D409}
+\refno{XTM:99-60 (U)}
+\subject{Summary of Completed Work for John C. Gulick}
+
+%-------NO CHANGES
+\divisionname{Applied Theoretical \& Computational Physics Div.}
+\groupname{X-TM:Transport Methods Group}
+\fromms{John Gulick/XTM D409}
+\phone{(505)667--5790}
+\originator{gulick}
+\typist{gulick}
+\date{August 27, 1999}
+%-------NO CHANGES
+
+%-------OPTIONS
+%\reference{NPB Star Reimbursable Project}
+%\thru{P. D. Soran, XTM, MS B226}
+%\enc{list}      
+%\attachments{list}
+%\cy{list}
+%\encas
+%\attachmentas
+%\attachmentsas 
+%-------OPTIONS
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+\distribution {}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN NOTE
+%%---------------------------------------------------------------------------%%
+
+\opening
+
+\noindent
+The following is a summary of the work completed for Summer FY 99 by
+John C. Gulick, X-TM.
+\section{Introduction}
+\noindent
+During the summer of 1999 a Fourier analysis package was designed,
+implemented and tested.  The purpose of creating this package is to assist in
+the developement and analysis of new transport discretizations and
+acceleration techniques of interest to X-TM.  By providing an easily
+extensible framework to Fourier analyze new schemes the capability of
+quickly implementing new techniques becomes possible.  For the development of this
+package there were three important phases:
+\begin{enumerate}
+ \item Design
+ \item Development and Implementation
+ \item Testing
+\end{enumerate}
+\section{Design}
+\noindent
+The design of the project involved the creation of a requirements
+document which served to guide the project.  The requirements document 
+was a key piece of material as it detailed all of the following three
+requirement areas:
+\begin{description}
+ \item [Technical Requirements] Requirements having to do with the
+   Fourier analysis capability, specifications and scope of the project.
+ \item [Software Requirements] Requirements having to do with the
+   programming/coding aspects of the Fourier analysis package.
+ \item [Testing Requirements] Requirements having to do with the
+ testing and verification of the Fourier analysis package.
+\end{description}
+The creation of this document detailed the requirements of the project 
+and the exact steps that the project would go through in fulfilling
+those requirements.
+\section{Development and Implementation}
+\noindent
+For the development and implementation it was decided to try and use 
+as much ``off the shelf'' software as possible.  This idea of
+``software reuse'' allowed the actual coding of the package to be
+staight forward.  In the current form there are three main software
+components that are being reused.
+\begin{description}
+ \item [MTL] The Matrix Template Library is a set of very powerful
+   direct and iterative linear algebra operations.
+ \item [LAPACK] A library of routines that interfaces with the MTL to
+   provide some very important linear algebra functionality.
+ \item [PGPLOT] A two and three dimensional plotting library for
+   creating graphics during code execution.
+\end{description} 
+The package was written in C++ and many of the modern capabilities of the
+language were used.  Examples of these capabilities were:
+\begin{enumerate}
+ \item Object-Oriented Programming Techniques
+ \item Generic Programming (STL/MTL) Techniques
+ \item Templating Techniques
+\end{enumerate}
+\section{Testing}
+The package was tested with discretizations and acceleration
+techniques with known results.  By comparing the results of the code
+with published data the proper operation of the package could be
+verified.  Several MAPLE and FORTRAN routines were built to further
+verify the new package.
+Currently the package has been tested for Simple Corner Balance/Lumped 
+Linear Discontinuous with and without ``Modified 4-Step'' DSA,
+Upstream Corner Balance with and without ``Modified 4-Step'' DSA, and
+Linear Characteristics with no acceleration.
+\section{Future Work}
+The first version of the Fourier package
+\closing
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of lanl82699.tex
+%%---------------------------------------------------------------------------%%
