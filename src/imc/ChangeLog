@@ -1,3 +1,15 @@
+1999-12-20  Thomas M. Evans  <tme@lanl.gov>
+
+	* Mesh_Operations.*: added Mesh_Operations class.  This class is
+	template on MT and provides specializations to different MTs for
+	operations that perform highly mesh-centric operations on data.
+	For example, we use this class to perform T4 slope sampling
+	because each MT may do this sampling differently but it requires
+	communication and temperature data, which are outside the pervue
+	of the mesh, to do the sampling itself.  Essentially, this is a
+	mesh association class for IMC operations that do highly mesh-like 
+	things.
+
 1999-11-15  Thomas M. Evans  <tme@lanl.gov>
 
 	* Opacity_Builder.hh, Opacity_Builder.t.hh, Particle_Buffer.hh:

@@ -23,7 +23,7 @@ AC_NEEDS_LIBS(mc rng c4 ds++)
 
 # testing setup
 AC_RUNTESTS(tstOpacity tstTally tstParticle tstTopology_Builder \
-            tstSource_Builder, 1 2 4)
+            tstSource_Builder tstMesh_Operations, 1 2 4)
 
 # DRACO SETUP
 AC_DRACO_ENV

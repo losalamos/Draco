@@ -41,10 +41,10 @@ private:
 
 public:
   // inline constructors
-    inline Mat_State(const typename MT::CCSF_double &, const typename
-		     MT::CCSF_double &, const typename MT::CCSF_double &,
-		     const typename MT::CCSF_double &, const std::string); 
-
+    Mat_State(const typename MT::CCSF_double &, const typename
+	      MT::CCSF_double &, const typename MT::CCSF_double &,
+	      const typename MT::CCSF_double &, const std::string); 
+    
   // public member functions
 
   // return values of material state data
@@ -77,11 +77,11 @@ std::ostream& operator<<(std::ostream &, const Mat_State<MT> &);
 // constructors
 
 template<class MT>
-inline Mat_State<MT>::Mat_State(const typename MT::CCSF_double &density_, 
-				const typename MT::CCSF_double &temp_,
-				const typename MT::CCSF_double &dedt_,
-				const typename MT::CCSF_double &spec_heat_,
-				const std::string analytic_sp_heat_)
+Mat_State<MT>::Mat_State(const typename MT::CCSF_double &density_, 
+			 const typename MT::CCSF_double &temp_,
+			 const typename MT::CCSF_double &dedt_,
+			 const typename MT::CCSF_double &spec_heat_,
+			 const std::string analytic_sp_heat_)
     : density(density_), temperature(temp_), dedt(dedt_), 
       spec_heat(spec_heat_), analytic_sp_heat(analytic_sp_heat_)
 {

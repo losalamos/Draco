@@ -91,7 +91,8 @@ Topology_Builder<MT>::Topology_Builder(SP<IT> interface)
  * \return smart pointer (dsxx::SP) to a rtt_mc::Topology 
  */
 template<class MT>
-SP<Topology> Topology_Builder<MT>::build_Topology(SP<MT> mesh)
+Topology_Builder<MT>::SP_Topology 
+Topology_Builder<MT>::build_Topology(SP_MT mesh)
 {
     // this function can only be run on the host node
     Require (C4::node() == 0);

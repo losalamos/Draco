@@ -9,20 +9,10 @@
 #ifndef __imc_Source_hh__
 #define __imc_Source_hh__
 
-//===========================================================================//
-// class Source - 
-//
-// Purpose : produce a particle for IMC transport
-//
-// revision history:
-// -----------------
-// 0) original
-// 
-//===========================================================================//
-
 #include "Particle.hh"
 #include "Particle_Buffer.hh"
 #include "Mat_State.hh"
+#include "Mesh_Operations.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <iostream>
@@ -31,79 +21,99 @@
 namespace rtt_imc 
 {
 
+//===========================================================================//
+// class Source - 
+//
+// Purpose : produce a particle for IMC transport
+//
+// revision history:
+// -----------------
+// 0) original
+// 1) 21-DEC-99: removed T^4 data and replaced it with the Mesh_Operations
+//               class that does volume emission sampling using the tilt
+// 
+//===========================================================================//
+
 template<class MT, class PT = Particle<MT> >
 class Source
 {
-public:
-  // volume source particles: number and first random number stream per cell
-    typename MT::CCSF_int vol_rnnum;
-    typename MT::CCSF_int nvol;
-    typename MT::CCSF_double ew_vol;
-    typename MT::CCVF_double t4_slope;
+  public:
+    // usefull typedefs
+    typedef typename MT::template CCSF<int>                ccsf_int;
+    typedef typename MT::template CCSF<double>             ccsf_double;
+    typedef dsxx::SP<typename Particle_Buffer<PT>::Census> SP_Census;
+    typedef dsxx::SP<rtt_rng::Rnd_Control>                 SP_Rnd_Control;
+    typedef dsxx::SP<Mat_State<MT> >                       SP_Mat_State;
+    typedef dsxx::SP<Mesh_Operations<MT> >                 SP_Mesh_Op; 
 
-  // surface source particles: number and first random number stream per cell
-    typename MT::CCSF_int ss_rnnum;
-    typename MT::CCSF_int nss;
-    typename MT::CCSF_int fss;
-    typename MT::CCSF_double ew_ss;
+  public:
+    // volume source particles: number and first random number stream per
+    // cell
+    ccsf_int vol_rnnum;
+    ccsf_int nvol;
+    ccsf_double ew_vol;
+
+    // surface source particles: number and first random number stream per
+    // cell
+    ccsf_int ss_rnnum;
+    ccsf_int nss;
+    ccsf_int fss;
+    ccsf_double ew_ss;
     std::string ss_dist;
 
-  // census bank
-    typename Particle_Buffer<PT>::Census census;
+    // census bank
+    SP_Census census;
 
-  // total number of sources
+    // total number of sources
     int nvoltot;
     int nsstot;
     int ncentot;
 
-  // nsrcdone_cell is the running number of source particles completed for a
-  // particular source type in a particular cell. 
+    // nsrcdone_cell is the running number of source particles completed for
+    // a particular source type in a particular cell.
     int nsrcdone_cell;
 
-  // cell currently under consideration
+    // cell currently under consideration
     int current_cell;
 
-  // running totals of completed source particles, by type
+    // running totals of completed source particles, by type
     int nssdone;
     int nvoldone;
     int ncendone;
 
-  // random number controller
-    dsxx::SP<rtt_rng::Rnd_Control> rcon;
+    // random number controller
+    SP_Rnd_Control rcon;
 
-  // Particle Buffer
-    Particle_Buffer<PT> buffer;
+    // Material State
+    SP_Mat_State material;
 
-  // Material State
-    dsxx::SP<Mat_State<MT> > material;
+    // Mesh_Operations class for performing volume emission sampling with T^4 
+    // tilts
+    SP_Mesh_Op mesh_op;
 
-public:
-  // constructor
-    Source(typename MT::CCSF_int &, typename MT::CCSF_int &,
-	   typename MT::CCSF_double &, typename MT::CCVF_double &,
-	   typename MT::CCSF_int &, typename MT::CCSF_int &, 
-	   typename MT::CCSF_int &, typename MT::CCSF_double &,
-	   typename Particle_Buffer<PT>::Census &,
-	   std::string, int, int, dsxx::SP<rtt_rng::Rnd_Control>, 
-	   const Particle_Buffer<PT> &, dsxx::SP<Mat_State<MT> >);
+  public:
+    // constructor
+    Source(ccsf_int &, ccsf_int &, ccsf_double &, ccsf_int &, ccsf_int &, 
+	   ccsf_int &, ccsf_double &, SP_Census, std::string, int, int, 
+	   SP_Rnd_Control, SP_Mat_State, SP_Mesh_Op);
 
-  // required services for Source
+    // required services for Source
     dsxx::SP<PT> get_Source_Particle(double); 
 
-  // Particle sources
+    // Particle sources
     dsxx::SP<PT> get_census(double);
     dsxx::SP<PT> get_evol(double);
     dsxx::SP<PT> get_ss(double);
 
-  // accessors
+    // accessors
     int get_nvoltot() const { return nvoltot; }
     int get_nsstot() const { return nsstot; }
     int get_ncentot() const { return ncentot; }
 
-  // source diagnostic
+    // source diagnostic
     void print(std::ostream &) const;
 
-  // bool conversion
+    // bool conversion
     inline operator bool() const;
 };
 

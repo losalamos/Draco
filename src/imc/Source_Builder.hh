@@ -18,6 +18,7 @@
 #include "Opacity.hh"
 #include "Mat_State.hh"
 #include "mc/Topology.hh"
+#include "mc/Parallel_Data_Operator.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <vector>
@@ -55,7 +56,47 @@ namespace rtt_imc
  * Source_Builder is used to build smart pointers to rtt_imc::Source on each
  * processor.  Additionally, the Source_Builder class, in the process of
  * making sources, calculates global source information that can be used for
- * edits.  Access functions are provided for this data.  
+ * edits.  Access functions are provided for this data as regular and virtual
+ * functions that are defined in the derived classes 
+ *
+ * All protected data in the Source_Builder base class is local to a
+ * processor.  Global quantities are calculated by using the
+ * Parallel_Data_Operations::local_to_global mapper and specifying whether
+ * the data to be mapped is Data_Replicated or Data_Decomposed.
+ * Specifically, when every replicated cell has exactly the same value, the
+ * data is replicated.  When replicated cells have a portion of the global
+ * value, the data is said to be decomposed.  If no cells are replicated,
+ * i.e., the topology parallel scheme is full domain decomposition, all data
+ * is distributed (Data_Distibuted).  In the case of full replication,
+ * deterministic quantities such as volume emission energy and surface source
+ * energy are data-replicated, and stochastic quantities such as the
+ * surviving census particle energies are data-decomposed.
+ *
+ * The following relationships apply to topology and data decomposition for
+ * locally calculated data in "replication" topologies: \arg local data +
+ * Data_Replication = global data \arg local data + Data_Decomposed = local
+ * data
+ *
+ * Data_Distributed does not apply to "replication".  In full "DD" all data
+ * is Data_Distributed, thus the local data on each processor is inherently
+ * global for that cell.  A caveat is that global data fields in "DD"
+ * topologies may not contain all the global data elements on a given
+ * processor.  It may only contain the data that lives on that processor,
+ * ie. the data that is mapped to local cells.
+ *
+ * Random number stream ID fields are set using the rtt_rng::rn_stream
+ * variable.  This variable is \b defined to be global in \b all topologies.
+ * For some topologies ("DD") this requires communication after random number
+ * IDs are assigned to set and to insure that the rtt_rng::rn_stream value is
+ * the same on all processors. 
+ *
+ * Accessors to data that live in the Source_Builder base class returns the
+ * values that have been calculated on processor.  It is up to the client to
+ * do any topology-dependent mechanics required to get global (problem-wide)
+ * data.  The data could be global or local depending upon the topology.
+ * Virtual functions are used to access source data that live in derived
+ * classes.  Accordingly, this data is also global or local depending upon
+ * the topology.
  */
 /*!
  * \example imc/test/tstSource_Builder.cc
@@ -95,6 +136,9 @@ class Source_Builder
 
     // Interface data.
 
+    //! Elapsed time that problem has been run.
+    double elapsed_t;
+
     //! Vector of local external volume source energies.
     sf_double evol_ext;
 
@@ -129,19 +173,39 @@ class Source_Builder
 
     // Interface data.
 
+    //! Requested number of source particles.
+    int npnom;
+
+    //! Maximum number of source particles.
+    int npmax;
+
+    //! Rate of change of number of source particles per shake.
+    double dnpdt;
+
     //! Problem cycle.
     int cycle;
 
     //! Timestep.
     double delta_t;
 
-    //! Problem topology.
-    SP_Topology topology;
+    //! Surface source angular distribution.
+    std_string ss_dist;
     
     //! Local (on-processor) census.
     SP_Census census;
 
+    // Data through constructor arguments.
+
+    //! Problem topology.
+    SP_Topology topology;
+
+    //! Parallel_Data_Operator for parallel data operations.
+    rtt_mc::Parallel_Data_Operator parallel_data_op;
+
     // Source class data.
+
+    //! Number of particles that we want for this cycle.
+    int npwant;
 
     //! Local field of census energies.
     ccsf_double ecen;
@@ -149,8 +213,8 @@ class Source_Builder
     //! Local (initial) census total energy.
     double ecentot;
 
-    //! Local field of census numbers.
-    ccsf_int ncen;
+    //! Local field of census energy weights.
+    ccsf_double ew_cen;
 
     //! Local field of volume emission energies.
     ccsf_double evol;
@@ -164,6 +228,9 @@ class Source_Builder
     //! Local volume emission total energy.
     double evoltot;
 
+    //! Local field of volume emission energy weights.
+    ccsf_double ew_vol;
+
     //! Local external material volume source total energy.
     double mat_vol_srctot;
 
@@ -176,17 +243,14 @@ class Source_Builder
     //! Local surface source total energy.
     double esstot;
 
+    //! Local field of surface source energy weights.
+    ccsf_double ew_ss;
+
     //! Local starting random number stream ID field for volume emission.
     ccsf_int volrn;
 
     //! Local starting random number stream ID field for surface source.
     ccsf_int ssrn;
-
-    //! Local starting random number stream ID vector for initial census.
-    // We use a vector field here because the cenrn field is only required
-    // during census initialization.  Thus, after the census has been created 
-    // we save memory be setting this variable to zero.
-    sf_int cenrn;
 
     // IMPLEMENTATION INHERITANCE
 
@@ -194,11 +258,18 @@ class Source_Builder
     void calc_source_energies(const Mat_State<MT> &, const Opacity<MT> &);
 
     // Calculate the initial census energy.
-    void calc_ecen_init();
+    void calc_initial_ecen();
 
     // Calculate the number of source particles.
-    int calc_num_src_particles(const double, const ccsf_double &, 
-			       ccsf_int &); 
+    void calc_num_src_particles(const double, const ccsf_double &, 
+			       ccsf_int &, int &); 
+
+    // Write the local census on each processor.
+    void write_initial_census(SP_Mesh, SP_Rnd_Control, const ccsf_int &,
+			      const int &, const ccsf_int &);
+
+    // Comb local census.
+    void comb_census(SP_Rnd_Control, int &, double &);
 
   public:
     // Constructor.
@@ -210,12 +281,60 @@ class Source_Builder
 
     //! Build dsxx::SP to source.
     virtual SP_Source build_Source(SP_Mesh, SP_Mat_State, SP_Opacity,
-				   SP_Rnd_Control) = 0; 
+				   SP_Rnd_Control) = 0;
 
-    // ACCESSOR SERVICES TO GET SOURCE INITIALIZATION DATA
+    //! Build an initial census from initial radiation temperature.
+    virtual void calc_initial_census(SP_Mesh, SP_Mat_State, SP_Opacity,
+				     SP_Rnd_Control) = 0;
+
+    // ACCESSOR FOR CENSUS
 
     //! Get a dsxx::SP to the census.
     SP_Census get_census() const { return census; }
+
+    // ACCESSOR SERVICES TO GET SOURCE INITIALIZATION DATA
+
+    // These functions are primarily for edits and the problem variables on
+    // processor.  The client will be required to use the data in an
+    // appropriate fashion based on the problem topology, ie. data could be
+    // either global or local depending upon the topology.
+
+    //! Get total volume emission energy on processor.
+    double get_evoltot() const { return evoltot; } 
+
+    //! Get material volume emission source energy per cell on processor.
+    double get_mat_vol_src(int cell) const { return mat_vol_src(cell); } 
+
+    //! Get total material volume emission source energy on processor.
+    double get_mat_vol_srctot() const { return mat_vol_srctot; }
+
+    //! Get net volume emission energy per cell on processor.
+    double get_evol_net(int cell) const { return evol_net(cell); }
+
+    //! Get total surface source energy on processor.
+    double get_esstot() const { return esstot; }
+
+    // Topology dependent data.  This data could be either global or local
+    // depending upon the topology.  The data that is returned lives in the
+    // derived class.
+
+    //! Get energy loss in volume emission - topology dependent.
+    virtual double get_eloss_vol() const = 0;
+
+    //! Get total number of volume emission particles - toplogy dependent.
+    virtual int get_nvoltot() const = 0;
+    
+    //! Get energy loss in surface source - topology dependent.
+    virtual double get_eloss_ss() const = 0;
+
+    //! Get total number of surface source particles - topology dependent.
+    virtual int get_nsstot() const = 0;
+
+    //! Get energy loss in census - topology dependent.
+    virtual double get_eloss_cen() const = 0;
+    
+    //! Get total number of post-comb census particles - topology dependent.
+    virtual int get_ncentot() const = 0;
 };
 
 } // end namespace rtt_imc

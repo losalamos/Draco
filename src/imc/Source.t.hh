@@ -41,31 +41,41 @@ using std::vector;
 // standard constructor for the Source class
 
 template<class MT, class PT>
-Source<MT, PT>::Source(typename MT::CCSF_int &vol_rnnum_, 
-		       typename MT::CCSF_int &nvol_,
-		       typename MT::CCSF_double &ew_vol_,
-		       typename MT::CCVF_double &t4_,
-		       typename MT::CCSF_int &ss_rnnum_, 
-		       typename MT::CCSF_int &nss_, 
-		       typename MT::CCSF_int &fss_,
-		       typename MT::CCSF_double &ew_ss_,
-		       typename Particle_Buffer<PT>::Census &census_,
-		       string ssd, int nvoltot_, int nsstot_,
-		       SP<Rnd_Control> rcon_, 
-		       const Particle_Buffer<PT> &buffer_,
-		       SP<Mat_State<MT> > mat_state) 
-    : vol_rnnum(vol_rnnum_), nvol(nvol_), ew_vol(ew_vol_), t4_slope(t4_),
-      ss_rnnum(ss_rnnum_), nss(nss_), fss(fss_), ew_ss(ew_ss_),
-      census(census_), ss_dist(ssd), nvoltot(nvoltot_), nsstot(nsstot_),
-      ncentot(census.size()), rcon(rcon_), buffer(buffer_),
-      material(mat_state) 
+Source<MT, PT>::Source(ccsf_int &vol_rnnum_, 
+		       ccsf_int &nvol_,
+		       ccsf_double &ew_vol_,
+		       ccsf_int &ss_rnnum_, 
+		       ccsf_int &nss_, 
+		       ccsf_int &fss_,
+		       ccsf_double &ew_ss_,
+		       SP_Census census_,
+		       string ssd, 
+		       int nvoltot_, 
+		       int nsstot_,
+		       SP_Rnd_Control rcon_, 
+		       SP_Mat_State mat_state,
+		       SP_Mesh_Op operations) 
+    : vol_rnnum(vol_rnnum_), 
+      nvol(nvol_), 
+      ew_vol(ew_vol_), 
+      ss_rnnum(ss_rnnum_), 
+      nss(nss_), 
+      fss(fss_), 
+      ew_ss(ew_ss_),
+      ss_dist(ssd), 
+      census(census_), 
+      nvoltot(nvoltot_), 
+      nsstot(nsstot_),
+      ncentot(census->size()), 
+      rcon(rcon_),
+      material(mat_state), 
+      mesh_op(operations)
 {
   // some assertions
     Check (vol_rnnum.get_Mesh() == nvol.get_Mesh());
     Check (nvol.get_Mesh()      == ss_rnnum.get_Mesh());
     Check (nvol.get_Mesh()      == nss.get_Mesh());
     Check (nvol.get_Mesh()      == ew_vol.get_Mesh());
-    Check (nvol.get_Mesh()      == t4_slope.get_Mesh());
     Check (nvol.get_Mesh()      == fss.get_Mesh());
     Check (nvol.get_Mesh()      == ew_ss.get_Mesh());
 
@@ -223,16 +233,15 @@ SP<PT> Source<MT, PT>::get_evol(double delta_t)
 
   // sample location using tilt
     double t4 = pow(material->get_T(current_cell), 4);
-    vector<double> r = nvol.get_Mesh().
-	sample_pos(current_cell, rand, t4_slope(current_cell), t4);
+    vector<double> r = mesh_op->sample_pos_tilt(current_cell, t4, rand);
 
   // sample particle direction
     vector<double> omega = nvol.get_Mesh().get_Coord().
 	sample_dir("isotropic", rand); 
  
-    double ew = ew_vol(current_cell);
-    int cell = current_cell;
-    double fraction = 1.0;
+    double ew        = ew_vol(current_cell);
+    int cell         = current_cell;
+    double fraction  = 1.0;
     double time_left = rand.ran() * delta_t;
 
   // instantiate particle to return
@@ -248,15 +257,15 @@ SP<PT> Source<MT, PT>::get_evol(double delta_t)
 template<class MT, class PT>
 SP<PT> Source<MT, PT>::get_census(double delta_t)
 {
-    Require (census.size() > 0);
+    Require (census->size() > 0);
 
   // get the census particle from the Census buffer
-    SP<PT> census_particle = census.top();
+    SP<PT> census_particle = census->top();
     census_particle->set_time_left(delta_t);
     census_particle->set_descriptor("from_census");
 
   // remove the census particle from the bank
-    census.pop();
+    census->pop();
 
   // make sure the particle is active
     census_particle->reset_status();

@@ -28,7 +28,7 @@ namespace rtt_imc
  * \brief Interface base class for multi-cycle imc components.
  *
  * The interface base class defines the interface functionality required by
- * the Opacity_Builder and Source_Init (Parallel_Source_Init) classes.  The
+ * the Opacity_Builder, Topology_Builder, and Source_Builder classes.  The
  * primary use of this class is to build interfaces that can provide these
  * factories with the proper data to build Opacity, Mat_State, and Source.
  * These are all components in the rtt_imc package.  Additionally, these are
@@ -36,11 +36,8 @@ namespace rtt_imc
  * may or may not change between cycles.  However, the Mat_State is always
  * changed.  Thus. various classes may take on the responsibility for
  * becoming interfaces.  To accomplish this, simply inherit the Interface
- * base class and the necessary public interface for Opacity_Builder and
- * Source_Init will be provided.
- *
- * An additional note: non-pure virtual functions are not always required by
- * the factory builders whereas pure virtual functions are always required.  
+ * base class and the necessary public interface for Opacity_Builder,
+ * Topology_Builder, and Source_Builder will be enforced at compile time.
  */
 // revision history:
 // -----------------
@@ -52,12 +49,13 @@ template<class MT, class PT = Particle<MT> >
 class Interface 
 {
   public:
-    // usefull typedefs
-    typedef std::string std_string;
-    typedef std::vector<double> double_vec;
-    typedef std::vector<int>    int_vec;
-    typedef std::vector<std::string> string_vec;
-    typedef std::vector<std::vector<int> > int_dvec;
+    // useful typedefs
+    typedef std::string                                    std_string;
+    typedef std::vector<double>                            sf_double;
+    typedef std::vector<std::vector<double> >              vf_double;
+    typedef std::vector<int>                               sf_int;
+    typedef std::vector<std::vector<int> >                 vf_int;
+    typedef std::vector<std::string>                       sf_string;
     typedef dsxx::SP<typename Particle_Buffer<PT>::Census> SP_Census;
     
   public:
@@ -67,47 +65,56 @@ class Interface
     // virtual constructor to make life happy down the inhertiance chain
     virtual ~Interface() { /* need a destructor for inheritance chain */ }
 
-    // functions required by Opacity Builder
+    // >>> FUNCTIONS REQUIRED BY OPACITY_BUILDER
 
-    // material data
-    virtual double_vec get_density() const = 0;
-    virtual double_vec get_temperature() const = 0;
+    // Material data.
+    virtual sf_double get_density() const = 0;
+    virtual sf_double get_temperature() const = 0;
 
-    // strings that determine how to calculate the opacity and specific heats
+    // Strings that determine how to calculate the opacity and specific
+    // heats.
     virtual std_string get_analytic_opacity() const = 0;
     virtual std_string get_analytic_sp_heat() const = 0;
-    virtual double_vec get_kappa() const = 0;
-    virtual double_vec get_kappa_thomson() const = 0;
-    virtual double_vec get_specific_heat() const = 0;
 
-    // Fleck implicitness factor
+    // Opacity data.
+    virtual sf_double get_kappa() const = 0;
+    virtual sf_double get_kappa_thomson() const = 0;
+    virtual sf_double get_specific_heat() const = 0;
+
+    // Fleck implicitness factor.
     virtual double get_implicit() const = 0;
    
-    // timestep
+    // Timestep.
     virtual double get_delta_t() const = 0;
 
-    // functions required by Source_Init and Parallel_Source_Init
+    // >>> FUNCTIONS REQUIRED BY TOPOLOGY BUILDER
+    
+    // Get the cells per processor capacity.
+    virtual int get_capacity() const = 0;
+    
+    // >>> FUNCTIONS REQUIRED BY SOURCE_BUILDERs
 
-    // used by both parallel_source_init and source_init
+    // Interface to Source_Builder base class.
+    virtual double get_elapsed_t() const = 0;
+    virtual sf_double get_evol_ext() const = 0;
     virtual double get_rad_s_tend() const = 0;
-    virtual double_vec get_rad_temp() const = 0;
-    virtual int get_npmax() const = 0;
+    virtual sf_double get_rad_source() const = 0;
+    virtual sf_double get_rad_temp() const = 0;
+    virtual sf_string get_ss_pos() const = 0;
+    virtual sf_double get_ss_temp() const = 0;
+    virtual vf_int get_defined_surcells() const = 0;
     virtual int get_npnom() const = 0;
+    virtual int get_npmax() const = 0;
     virtual double get_dnpdt() const = 0;
+    virtual int get_cycle() const = 0;
+    virtual std_string get_ss_dist() const = 0;
 
-    // functions defining sources that do not exist in all hosts
-    virtual double_vec get_evol_ext() const { return double_vec(); }
-    virtual double_vec get_rad_source() const { return double_vec(); }
-    virtual string_vec get_ss_pos() const { return string_vec(); }
-    virtual double_vec get_ss_temp() const { return double_vec(); }
-    virtual std_string get_ss_dist() const { return std_string(); }
-    virtual int get_num_global_cells() const { return int(0); }
-    virtual int_vec get_global_cells() const { return int_vec(); }
-    virtual int get_cycle() const { return int(0); }
-    virtual double get_elapsed_t() const { return double(0); }
-    virtual int get_capacity() const { return int(0); }
-    virtual int_dvec get_defined_surcells() const { return int_dvec(0); }
-    virtual SP_Census get_census() const { return SP_Census(); }
+    // persistent source data, this data is calculated and is persistent
+    // between time steps; at the beginning of a non-initial timestep this
+    // data must be retrieved from storage
+    virtual SP_Census get_census() const = 0;
+    virtual double get_ecen(int cell) const = 0;
+    virtual double get_ecentot() const = 0;
 };
 
 } // end namespace rtt_imc

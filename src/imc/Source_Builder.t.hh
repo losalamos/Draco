@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Source_Builder.hh"
+#include "Particle.hh"
 #include "Global.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
@@ -18,11 +19,13 @@
 namespace rtt_imc
 {
 
+using rtt_rng::Sprng;
 using C4::nodes;
 using C4::node;
 using dsxx::SP;
 
 using std::pow;
+using std::fabs;
 using std::vector;
 using std::string;
 using std::cout;
@@ -43,48 +46,69 @@ using std::endl;
  * dimensioned to the local (on-processor) mesh size.  All fields in
  * Source_Builder are dimensioned to the local mesh.
  *
+ * When the constructor is called the following requirements must be met:
+ * \arg a mesh must exist and be properly sized, \arg the rtt_rng::rn_stream
+ * must be the same on all processors.
+ *
  * \param interface dsxx::SP to a valid run-time interface
  * \param mesh dsxx::SP to a local mesh object
- * \param top dsxx::SP to a topology object
+ * \param top dsxx::SP to a topology object 
  */
 template<class MT, class PT>
 template<class IT>
 Source_Builder<MT,PT>::Source_Builder(SP<IT> interface, SP_Mesh mesh, 
 				      SP_Topology top)
-    : evol_ext(interface->get_evol_ext()),
+    : elapsed_t(interface->get_elapsed_t()), 
+      evol_ext(interface->get_evol_ext()),
       rad_s_tend(interface->get_rad_s_tend()),
       rad_source(interface->get_rad_source()),
       rad_temp(interface->get_rad_temp()),
       ss_pos(interface->get_ss_pos()),
       ss_temp(interface->get_ss_temp()),
       defined_surcells(interface->get_defined_surcells()),
-      cycle(interface->get_cycle()), delta_t(interface->get_delta_t()), 
+      npnom(interface->get_npnom()),
+      npmax(interface->get_npmax()),
+      dnpdt(interface->get_dnpdt()),
+      cycle(interface->get_cycle()), 
+      delta_t(interface->get_delta_t()), 
+      ss_dist(interface->get_ss_dist()),
       topology(top), 
+      parallel_data_op(top),
       census(interface->get_census()),
+      npwant(0),
       ecen(mesh),
-      ncen(mesh),
+      ew_cen(mesh),
+      ecentot(0),
       evol(mesh),
+      ew_vol(mesh),
       evol_net(mesh),
       mat_vol_src(mesh),
       evoltot(0),
       mat_vol_srctot(0),
       ess(mesh),
+      ew_ss(mesh),
       ss_face_in_cell(mesh),
       esstot(0),
       volrn(mesh),
-      ssrn(mesh),
-      cenrn(0)
+      ssrn(mesh)
 {
+    using rtt_mc::global::min;
+
     Require(mesh);
     Require(mesh->num_cells() == topology->num_cells(node()));
+    Require(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
     
     int num_cells = mesh->num_cells();
+
+    // calculate the desired number of source particles
+    npwant = min(npmax, static_cast<int>(npnom + dnpdt * elapsed_t)); 
 
     Ensure(evol_ext.size() == num_cells);
     Ensure(rad_source.size() == num_cells);
     Ensure(rad_temp.size() == num_cells);
     Ensure(ss_pos.size() == ss_temp.size());
-    Ensure(ss_pos.size() == defined_surcells.size());   
+    Ensure(ss_pos.size() == defined_surcells.size());
+    Ensure(npwant > 0);
 }
 
 //===========================================================================//
@@ -271,7 +295,7 @@ void Source_Builder<MT,PT>::calc_ess()
  * local processor.  
  */
 template<class MT, class PT>
-void Source_Builder<MT,PT>::calc_ecen_init()
+void Source_Builder<MT,PT>::calc_initial_ecen()
 {
     // draco stuff
     using rtt_mc::global::a;
@@ -300,20 +324,21 @@ void Source_Builder<MT,PT>::calc_ecen_init()
  *
  * This functions takes a field of source energies and the desired number of
  * particles per unit energy, and it fills in the source numbers field and
- * returns the total number of source particles for the given field type.
- * These calculations are preformed on the local processor.  Typically, one
- * will iterate in a derived source class on the number of source particles
- * across processor space.
+ * returns (as a mutable argument) the total number of source particles for
+ * the given field type.  These calculations are preformed on the local
+ * processor.  Typically, one will iterate in a derived source class on the
+ * number of source particles across processor space.
  *
  * \param part_per_e desired number of particles per unit energy
  * \param e_field ccsf_double field of energies
- * \param n_field ccsf_int field of number of particles
- * \return total number of particles for this source species
+ * \param n_field mutable ccsf_int field of number of particles
+ * \param ntot mutable total number of particles for this species 
  */
-template<class MT, class PT> int
+template<class MT, class PT> void
 Source_Builder<MT,PT>::calc_num_src_particles(const double part_per_e,
 					      const ccsf_double &e_field, 
-					      ccsf_int &n_field)
+					      ccsf_int &n_field,
+					      int &ntot)
 {
     Require(e_field.size() == n_field.size());
     Require(part_per_e >= 0);
@@ -350,7 +375,171 @@ Source_Builder<MT,PT>::calc_num_src_particles(const double part_per_e,
     Ensure(num_particles >= 0);
     
     // return the total number of particles
-    return num_particles;
+    ntot = num_particles;
+}
+
+//---------------------------------------------------------------------------//
+// WRITE INITIAL CENSUS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Calculate the initial census on a local processor.
+ *
+ * This function takes local initial census data calculated in the derived
+ * source builder classes and writes an intial census.  It is used in the
+ * derived class implementations of calc_initial_census().  All source
+ * builder derived classes utilize this function; however, each derived class
+ * must provide the correct local census fields.
+ *
+ * \param mesh dsxx::SP to the local mesh
+ * \param rcon random number controller
+ * \param ncen local field of census particles on processor
+ * \param ncentot total number of local census particles
+ * \param cenrn local field of census random number IDs
+ */
+template<class MT, class PT>
+void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh, 
+						 SP_Rnd_Control rcon,
+						 const ccsf_int &ncen,
+						 const int &ncentot,
+						 const ccsf_int &cenrn)
+{
+    Require(mesh);
+    Require(census);
+    Require(mesh->num_cells() == ncen.size());
+    Require(mesh->num_cells() == cenrn.size());
+    Require(mesh->num_cells() == ew_cen.size());
+
+    // loop over all cells
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	for (int i = 1; i <= ncen(cell); i++)
+	{
+	    // make a new random number for delivery to Particle
+	    Sprng random = rcon->get_rn(cenrn(cell) + i - 1);
+	    
+	    // sample particle location
+	    vector<double> r = mesh->sample_pos(cell, random);
+
+	    // sample particle direction
+	    vector<double> omega = mesh->get_Coord().
+		sample_dir("isotropic", random);
+	    
+	    // sample frequency (not now; 1 group)
+
+	    // create Particle
+	    SP<PT> particle(new PT(r, omega, ew_cen(cell), cell, random));
+
+	    // write particle to census
+	    census->push(particle);
+	}
+
+    // a final assertion
+    Ensure (census->size() == ncentot);
+}
+
+//---------------------------------------------------------------------------//
+// COMB CENSUS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Comb a local census object on each processor.
+ *
+ * This functions performs a comb on the on-processor, local census object.
+ * No communication is done in the comb.  The client must ensure that the
+ * (global) value of the desired energy weight per cell has been previously
+ * calculated.  The function returns the on-processor, local energy loss
+ * resulting from the comb.
+ *
+ * \param rcon dsxx::SP to a Rnd_Control object
+ * \param local_ncentot mutable value of post-comb total number of census
+ * particles on this processor
+ * \param eloss_comb mutable value of the energy loss incurred through
+ * combing
+ */
+template<class MT, class PT>
+void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
+					int &local_ncentot,
+					double &eloss_comb)
+{
+    // make double sure we have census particles to comb
+    Require(census->size() > 0);
+    
+    // reset eloss_comb to zero
+    eloss_comb = 0;
+
+    // initialize number of (new, combed) census particles
+    local_ncentot = 0;
+
+    // in-function data required for combing
+    double dbl_cen_part = 0.0;
+    int    numcomb      = 0;
+    double ecencheck    = 0.0;
+    int    cencell      = 0;
+    double cenew        = 0.0;
+
+    // local accumulation of census energy from the census particles on this
+    // processor 
+    double local_ecentot = 0.0;
+
+    // make new census bank to hold combed census particles
+    SP_Census comb_census(new Particle_Buffer<PT>::Census());
+
+    // comb census
+    while (census->size())
+    {
+	// read census particle and get cencell, ew
+	SP<PT> particle = census->top();
+	census->pop();
+	cencell      = particle->get_cell();
+	cenew        = particle->get_ew();
+	Sprng random = particle->get_random();
+	Check(cencell > 0 && cencell <= ew_cen.size());
+
+	// add up census energy
+	local_ecentot += cenew;
+	
+	// comb
+	if (ew_cen(cencell) > 0)
+	{
+	    dbl_cen_part = (cenew / ew_cen(cencell)) + random.ran();
+	    numcomb = static_cast<int>(dbl_cen_part);
+
+	    // create newly combed census particles
+	    if (numcomb > 0)
+	    {
+		particle->set_ew(ew_cen(cencell));
+		comb_census->push(particle);
+
+		if (numcomb > 1)
+		    for (int nc = 1; nc <= numcomb-1; nc++)
+		    {
+			// COPY a new particle and spawn a new RN state
+		      	SP<PT> another(new PT(*particle));
+			Sprng nran     = rcon->spawn(particle->get_random());
+			another->set_random(nran);
+			comb_census->push(another);
+		    }
+		   
+		// add up newly combed census particles
+		local_ncentot += numcomb;
+
+		// subtract newly combed particles from eloss_cen
+		eloss_comb += cenew - numcomb * ew_cen(cencell);
+		ecencheck  += numcomb * ew_cen(cencell);
+	    }
+	}
+
+	// if ewcen == 0 and a census particle exists in this cell then the
+	// energy lost was already tabulated in the energy loss due to sampling
+    }
+
+    Check(census->size() == 0);
+    Check(comb_census->size() == local_ncentot);
+
+    // assign newly combed census to census
+    census = comb_census;
+
+    Ensure(census->size() == local_ncentot);
+    Ensure(fabs(ecencheck + eloss_comb - local_ecentot) <= 1.0e-6 *
+	   local_ecentot); 
 }
 
 } // end of rtt_imc
