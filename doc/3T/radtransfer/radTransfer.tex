@@ -33,7 +33,7 @@
 \begin{document}
 
 \title{3-T Diffusion with Material Motion Corrections}
-\author{J. E. Morel \and J. M. McGhee \and R. M. Roberts}
+\author{R. M. Roberts}
 \date{\today}
 
 \maketitle
@@ -480,9 +480,9 @@ where
         \vec{F}' = \frac{\tau \vec{F}^{n}
                         + \langle \hat{\Omega} \xi^{n} \rangle}
                {(\sigma^{t} + \tau)}
-\end{gather}
-and
-\begin{gather}
+%\end{gather}
+%and
+%\begin{gather}
         \tau = \frac{1}{c\dt}
   \\
         \hat{B}(T_{e}) = 4\pi B(T_{e})
@@ -883,7 +883,7 @@ we obtain,
 \end{eqnarray}
 Substituting this result into~(\ref{eq:totalenergy2}) we obtain an equation
 for the material total energy density,
-\begin{multline}
+\begin{equation}
         \partl{}{t}\left( \frac{1}{2} \rho v^2
                           + E_{m}\right)
          + \del \cdot \left[
@@ -891,10 +891,9 @@ for the material total energy density,
                       \right]
     =
          C_{ve} \partl{T_{e}}{t}
-     \\
             + \sum_{g} \sigma^{t}_{g} \vec{F}^{(0)}_{g} \cdot \frac{\vec{v}}{c} 
 \label{eq:hydrototalenergy}
-\end{multline}
+\end{equation}
 
 Subtracting equation~(\ref{eq:hydrokinetic}) from~(\ref{eq:hydrototalenergy})
 we obtain an equation for the hydrodynamic internal energy density with
@@ -1056,8 +1055,8 @@ For Dirichlet boundary conditions we set $\alpha=1$ and $\beta=0$.
 For Neumann boundary conditions we set $\alpha=0$ and $\beta=1$,
  with the special
 case of reflective boundary conditions, where we set $\bfunc = 0$.
-For Marshak boundary conditions we set $\alpha=1/4$, $\beta=1/2$, and
-$\bfunc = F^{\text{out}}$.
+For Marshak boundary conditions we set $\alpha=1/4$, $\beta=-1/2$, and
+$\bfunc = F^{\text{in}}$.
 
 By applying the same steps of substituting for $\phi^{c}_{f}$ into
 (\ref{eq:Flux3})
@@ -1178,7 +1177,7 @@ matrix is symmetric.  Showing that the matrix is positive-definite is
 an exercise left up to the reader.
 
 After this matrix equation is solved for the $\phi^{c}$ we may substitute
-back into equations~(\ref{eq:Finterior})~and~(\ref{eq:Fboundary})
+back into equations~(\ref{eq:Finterior}) and~(\ref{eq:Fboundary})
 to obtain the new values for $F^{c}_{f}$.
 
 \section{Spatial Centering of Data}
