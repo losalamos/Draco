@@ -39,8 +39,8 @@ AC_DRACO_ENV
 dnl Setup up RPATH for shared libraries.
 case $host in
 mips-sgi-irix6.*)
-   if test -n "${GANDOLF_LIB}" ; then
-       VENDOR_LIBS="-rpath ${GANDOLF_LIB} ${VENDOR_LIBS}"
+   if test -n "${EOSPAC_LIB}" ; then
+       VENDOR_LIBS="-rpath ${EOSPAC_LIB} ${VENDOR_LIBS}"
    fi
 dnl Linux uses a static library.
 ;;
