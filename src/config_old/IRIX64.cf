@@ -92,6 +92,12 @@ CXX	= /v/furnish/kcc3.3delta/KCC_BASE/bin/KCC $(STRICT) --no_implicit_include -D
 cmplr	= kcc33d
 endif
 
+ifeq ($(epsilon),yes)
+CXX	= /v/furnish/kcc3.3epsilon/KCC_BASE/bin/KCC $(STRICT) --no_implicit_include -D_POSIX_SOURCE --one_instantiation_per_object -64
+#CXX	= /v/furnish/kcc3.3epsilon/KCC_BASE/bin/KCC $(STRICT) --no_implicit_include -D_POSIX_SOURCE 
+cmplr	= kcc33e
+endif
+
 LDSHARED = cc -64 -shared
 
 #DEFINES = -DPOOMA_KAI -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_HAS_TEMPLATED_COMPLEX -DPOOMA_USE_MEMBER_TEMPLATES
