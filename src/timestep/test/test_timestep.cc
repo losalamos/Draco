@@ -16,7 +16,9 @@
 
 #include <vector>
 #include <iostream>
-using std::cerr;
+#include <cmath>
+
+using std::cout;
 using std::endl;
 
 using std::vector;
@@ -27,6 +29,23 @@ test_timestep::test_timestep()
 
 test_timestep::~test_timestep()
 {
+}
+
+bool compare_reals(const double x1, const double x2, const int ndigits)
+{
+// Determines if two reals are the same to the specified number of
+// significant decimal digits.
+    
+    double zz;
+    if (x2 != 0.)
+    {
+	zz = std::log10 ( std::abs( (x1 - x2)/x2 ) );
+    }
+    else
+    {
+	zz = std::log10 ( std::abs( x1 ) );
+    }
+    return zz < -float(ndigits); 
 }
 
 vector<double> operator*(double lhs, const vector<double> &rhs)
@@ -206,7 +225,7 @@ void test_timestep::execute_test()
 	    
     }
 
-//Dump some advisor states for examination
+// Dump some advisor states for visual examination.
 
     sp_te  -> print_state();
     sp_ulr -> print_state();
@@ -214,6 +233,40 @@ void test_timestep::execute_test()
     sp_max -> print_state();
     sp_min -> print_state();
     sp_dt  -> print_state();
+
+// Confirm that at least some of the output is correct.
+
+    int nd = 5;
+    bool passed = mngr.get_cycle() == 3;
+    passed = passed && compare_reals(3.345679e+00, mngr.get_time(),nd);
+    passed = passed && compare_reals(1.234568e+00, mngr.get_dt(),nd);
+    passed = passed && compare_reals(1.371742e+00, mngr.get_dt_new(),nd);
+    passed = passed && mngr.get_controlling_advisor() == "Electron Temperature";
+    passed = passed && compare_reals(1.000000e-06,sp_min -> get_dt_rec(),nd); 
+    passed = passed && compare_reals(9.876543e-01,sp_llr -> get_dt_rec(),nd);	
+    passed = passed && compare_reals(1.000000e+00,sp_ovr -> get_dt_rec(),nd); 
+    passed = passed && compare_reals(1.234568e+00,sp_dt  -> get_dt_rec(),nd);
+    passed = passed && compare_reals(1.371742e+00,sp_te  -> get_dt_rec(),nd); 
+    passed = passed && compare_reals(1.481481e+00,sp_ulr -> get_dt_rec(),nd);
+    passed = passed && compare_reals(1.496914e+00,sp_ti  -> get_dt_rec(),nd); 
+    passed = passed && compare_reals(2.716049e+00,sp_ri  -> get_dt_rec(),nd);
+    passed = passed && compare_reals(6.654321e+00,sp_gd  -> get_dt_rec(),nd); 
+    passed = passed && compare_reals(1.000000e+05,sp_max -> get_dt_rec(),nd);
+
+// Print the status of the test.
+
+    cout << endl;
+    cout <<     "*********************************************" << endl;
+    if (passed) 
+    {
+	cout << "**** Time-step Manager Self Test: PASSED ****" << endl;
+    }
+    else
+    {
+	cout << "**** Time-step Manager Self Test: FAILED ****" << endl;
+    }
+    cout <<     "*********************************************" << endl;
+    cout << endl;
 }
 
 
