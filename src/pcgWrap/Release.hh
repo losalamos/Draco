@@ -15,7 +15,7 @@
 //===========================================================================//
 /*!
  * \page pcgWrap_overview Overview of the pcgWrap package
- * \version 1_0_0
+ * \version 1_2_0
  * \author Rob Lowrie and Dave Nystrom
  *
  * pcgWrap is a rather messy interface to the Preconditioned Conjugate
