@@ -38,7 +38,7 @@ AC_CONFIG_SUBDIRS(xm rng c4 units traits cdi mesh_element quadrature \
 ## LEVEL 3
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(timestep pcgWrap viz \
+AC_CONFIG_SUBDIRS(norms timestep pcgWrap viz \
                   cdi_gandolf cdi_analytic meshReaders)
 dnl
 dnl Kelly Thompson 12 January 2005
