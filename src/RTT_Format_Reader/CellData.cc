@@ -1,0 +1,96 @@
+//----------------------------------*-C++-*--------------------------------//
+// CellData.cc
+// B.T. Adams
+// 7 June 00
+/*! 
+ * \file   RTT_Format_Reader/CellData.cc
+ * \author B.T. Adams
+ * \date   Wed Jun 7 10:33:26 2000
+ * \brief  Implementation file for RTT_Format_Reader/CellData class.
+ */
+//---------------------------------------------------------------------------//
+// @> 
+//---------------------------------------------------------------------------//
+
+#include "CellData.hh"
+
+namespace rtt_RTT_Format_Reader
+{
+/*!
+ * \brief Parses the cell_data block data from the mesh file via calls to 
+ *        private member functions.
+ * \param meshfile Mesh file name.
+ */
+void CellData::readCellData(ifstream & meshfile)
+{
+    readKeyword(meshfile);
+    if (dims.get_ncell_data() > 0)
+        readData(meshfile);
+    readEndKeyword(meshfile);
+}
+/*!
+ * \brief Reads and validates the cell_data block keyword.
+ * \param meshfile Mesh file name.
+ */
+void CellData::readKeyword(ifstream & meshfile)
+{
+    string dummyString;
+
+    meshfile >> dummyString;
+    Insist(dummyString == "celldat",
+	   "Invalid mesh file: celldat block missing");
+    std::getline(meshfile, dummyString);
+}
+/*!
+ * \brief Reads and validates the cell_data block data.
+ * \param meshfile Mesh file name.
+ */
+void CellData::readData(ifstream & meshfile)
+{
+    string dummyString;
+    int cellNum;
+
+    for (int i = 0; i < dims.get_ncells(); ++i)
+    {
+	meshfile >> cellNum;
+	Insist(cellNum == i+1,
+	       "Invalid mesh file: cell data index out of order");
+	for (int j = 0; j < dims.get_ncell_data(); ++j)
+	    meshfile >> data[i][j];
+	std::getline(meshfile, dummyString);
+    }
+}
+/*!
+ * \brief Reads and validate the end_celldat block keyworde.
+ * \param meshfile Mesh file name.
+ */
+void CellData::readEndKeyword(ifstream & meshfile)
+{
+    string dummyString;
+
+    meshfile >> dummyString;
+    Insist(dummyString == "end_celldat",
+	   "Invalid mesh file: celldat block missing end");
+    std::getline(meshfile, dummyString);       // read and discard blank line.
+}
+/*!
+ * \brief Maps the cell_data into the new cell numbering scheme when node, 
+ *        side, and cell renumbering has been implemented.
+ * \param meshfile Mesh file name.
+ */
+void CellData::sortData()
+{
+    vector_vector_dbl orig_data = data;
+
+    for (int i = 0; i < dims.get_ncells(); ++i)
+    {
+	for (int j = 0; j < dims.get_ncell_data(); ++j)
+	    data[cellsClass.get_map(i)][j] = orig_data[i][j];
+    }
+}
+
+} // end namespace rtt_RTT_Format_Reader
+
+//---------------------------------------------------------------------------//
+//                      end of RTT_Format_Reader/CellData.cc
+//---------------------------------------------------------------------------//

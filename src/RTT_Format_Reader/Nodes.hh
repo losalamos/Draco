@@ -1,0 +1,123 @@
+//----------------------------------*-C++-*----------------------------------//
+// Nodes.hh
+// B.T. Adams
+// 7 June 00
+/*! 
+ * \file   RTT_Format_Reader/Nodes.hh
+ * \author B.T. Adams
+ * \date   Wed Jun 7 10:33:26 2000
+ * \brief  Header file for RTT_Format_Reader/Nodes class.
+ */
+//---------------------------------------------------------------------------//
+// @> 
+//---------------------------------------------------------------------------//
+
+#ifndef __RTT_Format_Reader_Nodes_hh__
+#define __RTT_Format_Reader_Nodes_hh__
+
+#include "Dims.hh"
+#include "NodeFlags.hh"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+
+namespace rtt_RTT_Format_Reader
+{
+/*!
+ * \brief Controls parsing, storing, and accessing the data specific to the 
+ *        nodes block of the mesh file.
+ */
+class Nodes
+{
+    // typedefs
+    typedef std::ifstream ifstream;
+    typedef std::string string;
+    typedef std::vector<int> vector_int;
+    typedef std::vector<std::vector<int> > vector_vector_int;
+    typedef std::vector<double> vector_dbl;
+    typedef std::vector<std::vector<double> > vector_vector_dbl;
+
+    const NodeFlags & nodeFlags;
+    const Dims & dims;
+    vector_vector_dbl coords;
+    vector_int parents;
+    vector_vector_int flags;
+    // This vector is a map from the input node numbers (vector index) to
+    // the sorted node number (stored value)
+    vector_int sort_map;
+
+  public:
+    Nodes(const NodeFlags & nodeFlags_, const Dims & dims_) : 
+        nodeFlags(nodeFlags_), dims(dims_), coords(dims.get_nnodes(), 
+	vector_dbl(dims.get_ndim())), parents(dims.get_nnodes()), sort_map(0),
+	flags(dims.get_nnodes(), vector_int(dims.get_nnode_flag_types())) {}
+    ~Nodes() {}
+
+    void readNodes(ifstream & meshfile);
+
+  private:
+    void readKeyword(ifstream & meshfile);
+    void readData(ifstream & meshfile);
+    void readEndKeyword(ifstream & meshfile);
+    static bool compareXYZ(const vector_dbl & low_value,
+			   const vector_dbl & high_value);
+
+  public:
+    void sortData();
+/*!
+ * \brief Returns the coordinate values for each of the nodes.
+ * \return The coordinate values for the nodes.
+ */
+    vector_vector_dbl get_coords() const { return coords; }
+/*!
+ * \brief Returns all of the coordinate values for the specified node.
+ * \param node_numb Node number.
+ * \return The node coordinate values.
+ */
+    vector_dbl get_coords(int node_numb) const { return coords[node_numb]; }
+/*!
+ * \brief Returns the coordinate value for the specified node and direction 
+ *        (i.e., x, y, and z).
+ * \param node_numb Node number.
+ * \param coord_index Coordinate index number (x = 0, y = 1, z = 2).
+ * \return The node coordinate value.
+ */
+    double get_coords(int node_numb, int coord_index) const
+    { return coords[node_numb][coord_index]; }
+/*!
+ * \brief Returns the node number that has the specified coordinate values.
+ * \param node_coords Coordinate values.
+ * \return The node number.
+ */
+    int get_node(vector_dbl node_coords) const;
+/*!
+ * \brief Returns the node parent for the specified node.
+ * \param node_numb Node number.
+ * \return The node parent.
+ */
+    int get_parents(int node_numb) const { return parents[node_numb]; }
+/*!
+ * \brief Returns the node flag for the specified node and flag index.
+ * \param node_numb Node number.
+ * \param flag_numb Node flag index.
+ * \return The node flag.
+ */
+    int get_flags(int node_numb, int flag_numb) const
+    { return flags[node_numb][flag_numb]; }
+/*!
+ * \brief Returns the new node number after sorting has been performed when
+ *        the renumber flag is set true.
+ * \param node_numb Original node number.
+ * \return New node number.
+ */
+    int get_map(int node_numb) const { return sort_map[node_numb];}
+};
+
+} // end namespace rtt_RTT_Format_Reader
+
+#endif                          // __RTT_Format_Reader_Nodes_hh__
+
+//---------------------------------------------------------------------------//
+//                       end of RTT_Format_Reader/Nodes.hh
+//---------------------------------------------------------------------------//
