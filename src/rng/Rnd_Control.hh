@@ -53,7 +53,8 @@ namespace rtt_rng
 //  1)  5-21-98 : added get_size() function that determines the size of the
 //                stored random number state
 //  2)  1-SEP-99: added doxygen comments
-//
+//  3) 09-JAN-02: cleaned up size calculation in constructor to match the 
+//                Sprng object packing functionality.
 //===========================================================================//
 
 class Rnd_Control 
