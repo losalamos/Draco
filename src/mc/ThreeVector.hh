@@ -118,6 +118,7 @@ class ThreeVector
 };  // end class ThreeVector
 
 //    //_ _brief Average of two vectors.
+//    inline
 //    const ThreeVector center(const ThreeVector &A, const ThreeVector &B)
 //    {
 //        return ThreeVector(
@@ -127,6 +128,7 @@ class ThreeVector
 //    }
 //
 //    //_ _brief Average of three vectors.
+//    inline
 //    const ThreeVector center(const ThreeVector &A, const ThreeVector &B,
 //        const ThreeVector &C)
 //    {
@@ -137,6 +139,7 @@ class ThreeVector
 //    }
 //
 //    //_ _brief Average of four vectors.
+//    inline
 //    const ThreeVector center(const ThreeVector &A, const ThreeVector &B,
 //        const ThreeVector &C, const ThreeVector &D)
 //    {
@@ -155,6 +158,7 @@ class ThreeVector
      *
      * The fraction need not be bounded by (0, 1).  Extrapolation is allowed.
      */
+    inline
     const ThreeVector lin_comb(const ThreeVector &A, const ThreeVector &B,
         double fraction)
     {
@@ -165,6 +169,7 @@ class ThreeVector
     }
 
     //! \brief Sample uniformly within a triangle specified by its vertices.
+    inline
     const ThreeVector sample_in_triangle(const ThreeVector &A,
         const ThreeVector &B, const ThreeVector &C, Sprng &random)
     {
