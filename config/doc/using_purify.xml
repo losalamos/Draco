@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+  <title>Using Purify With Marmot</title>
+
+  <para><ulink
+  url="ftp://ftp.software.ibm.com/software/rational/docs/v2003/unix_solutions/html/purifyplus/purify/index.htm">Purify</ulink>
+  is a software tool used for analyzing memory leaks and detecting certain
+  run-time application errors (array out-of-bounds accesses, uninitialized
+  memory accesses, ...). Purify instruments the binaries and produces a new
+  executable. Error output can be dumped to a text file, or more conveniently,
+  Purify errors can be viewed interactively through a browser-based
+  interface.</para>
+
+  <para>To build all of Marmot so that Purify can analyze the executables, do
+  the following:</para>
+
+  <procedure>
+    <step>
+      <para>Make sure purify is in your path</para>
+
+      <caution>
+        <para>The purify executable needs to be called "purify" in order for
+        the full build process to work. <superscript><link
+        linkend="anchor_1">1</link></superscript></para>
+      </caution>
+    </step>
+
+    <step>
+      <para>Do a full build, specifying Purify as the pre-compiler</para>
+
+      <para><programlisting>make -CXX="purify g++"</programlisting></para>
+    </step>
+
+    <step>
+      <para>Now, to have Purify check each executable</para>
+
+      <para><programlisting>make -CXX="purify g++" check</programlisting></para>
+    </step>
+
+    <step>
+      <para>A Purify browser window will pop up listing any problems
+      encountered with the run</para>
+
+      <para><figure>
+          <title>Example</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata contentdepth="" fileref="using_purify_1.png" />
+            </imageobject>
+          </mediaobject>
+        </figure></para>
+    </step>
+
+    <step>
+      <para>Navigate around in the browser window to view source and locate
+      the problems.</para>
+    </step>
+
+    <step>
+      <para>The executables have now been instrumented so that running one
+      will automatically force a purify analysis</para>
+
+      <programlisting>For example, to analyze test_Graphics_Manager, all you now have to
+do is to execute it.</programlisting>
+    </step>
+  </procedure>
+
+  <para><anchor id="anchor_1" /><superscript>1</superscript> Purify has a
+  problem in that it causes dependency files to be built improperly. So, the
+  Makefile.dep.general contains a kludge to fix this by stripping the word
+  "purify" from the CXX and CC variables. Another way around this problem is
+  to get the dependencies built without specifying a CXX value, and then to
+  build with a CXX value set.</para>
+</section>
