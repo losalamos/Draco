@@ -458,7 +458,7 @@ void test_planck_integration()
     catch(const rtt_dsxx::assertion &ass)
     {
 	ostringstream message;
-	message << "Caught illegal Planck calculation assertion: \n"
+	message << "Caught illegal Planck calculation exception: \n"
 		<< "\t" << ass.what();
 	PASSMSG(message.str());
 	caught = true;
