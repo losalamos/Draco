@@ -129,27 +129,27 @@ PoomaMesh_XYZ<Mesh>::swap(typename PoomaMesh_XYZ<Mesh>::fcdtf<T>& to,
   for (bftoit = bfto.begin(); bftoit != bftoend; ++bffromit, ++bftoit) {
     bffromit.GetCurrentLocation(loc);
     if (loc[0] != 0)
-      (*bftoit)(0) = bffromit.offset(-1,0,0)(1)
+      (*bftoit)(0) = bffromit.offset(-1,0,0)(1);
     else
       (*bftoit)(0) = 0;
     if (loc[0] != ncx-1)
-      (*bftoit)(1) = bffromit.offset(+1,0,0)(0)
+      (*bftoit)(1) = bffromit.offset(+1,0,0)(0);
     else
       (*bftoit)(1) = 0;
     if (loc[1] != 0)
-      (*bftoit)(2) = bffromit.offset(0,-1,0)(3)
+      (*bftoit)(2) = bffromit.offset(0,-1,0)(3);
     else
       (*bftoit)(2) = 0;
     if (loc[1] != ncy-1)
-      (*bftoit)(3) = bffromit.offset(0,+1,0)(2)
+      (*bftoit)(3) = bffromit.offset(0,+1,0)(2);
     else
       (*bftoit)(3) = 0;
     if (loc[2] != 0)
-      (*bftoit)(4) = bffromit.offset(0,0,-1)(5)
+      (*bftoit)(4) = bffromit.offset(0,0,-1)(5);
     else
       (*bftoit)(4) = 0;
     if (loc[2] != ncz-1)
-      (*bftoit)(5) = bffromit.offset(0,0,+1)(4)
+      (*bftoit)(5) = bffromit.offset(0,0,+1)(4);
     else
       (*bftoit)(5) = 0;
   }
