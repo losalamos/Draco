@@ -85,6 +85,7 @@ matprops_LIB	= -L$(SRC_TOP)/matprops -lmatprops_$(env)
 SN_LIB		= -L$(SRC_TOP)/sn      -lsn_$(env)
 IMCTEST_LIB     = -L$(SRC_TOP)/imctest -limctest_$(env)
 PYCXX_LIB	= -L$(SRC_TOP)/pycxx   -lpycxx_$(env)
+RNG_LIB         = -L$(SRC_TOP)/rng     -lrng_$(env)
 
 ifeq ($(need_util),yes)
 need_spdf	:= yes
@@ -211,6 +212,9 @@ endif
 ifeq ($(need_imctest),yes)
 LINK_LIBS       += $(IMCTEST_LIB)
 endif
+ifeq ($(need_rng),yes)
+LINK_LIBS       += $(RNG_LIB)
+endif
 ifeq ($(need_3T),yes)
 LINK_LIBS	+= $(3T_LIB)
 endif
@@ -287,6 +291,7 @@ dep_liblinalg	= $(SRC_TOP)/linalg/liblinalg_$(env).$(lib_suffix)
 dep_lib3T	= $(SRC_TOP)/3T/lib3T_$(env).$(lib_suffix)
 dep_libmatprops	= $(SRC_TOP)/matprops/libmatprops_$(env).$(lib_suffix)
 dep_libimctest  = $(SRC_TOP)/imctest/libimctest_$(env).$(lib_suffix)
+dep_librng      = $(SRC_TOP)/rng/librng_$(env).$(lib_suffix)
 
 #dep_libpooma	= $(POOMA_LIB_DIR)/libpooma.a
 dep_libpooma	= $(POOMA_ROOT)/lib/$(POOMA_ARCH)/libpooma.a

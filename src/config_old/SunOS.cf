@@ -23,6 +23,9 @@ spartan	:= yes
 # Don't have MPI emulation environments on XTM Sparc's yet.
 c4	:= no
 
+# Default set of SPRNG library to Lagged Fibonaci Generator
+sprng      := lfg
+
 # Tools which are independent of the compiler
 
 ar	= /bin/ar
@@ -71,8 +74,15 @@ endif
 
 ifeq ($(c4),mpi)
 comm	:= mpi
-SYS_FLAGS = -I/home/tme/lib/mpi/include -DC4_MPI
-SYS_LIBS = -L/home/tme/lib/mpi/lib/solaris/ch_p4 -lpmpi -lmpi -lsocket -lnsl
+SYS_FLAGS = -I/usr/local/include -DC4_MPI
+SYS_LIBS = -L/usr/local/lib/solaris/ch_p4 -lpmpi -lmpi -lsocket -lnsl
+endif
+
+ifeq ($(need_sprng),yes)
+SYS_FLAGS += -I/home/tme/lib/sprng/SRC
+ifeq ($(sprng),lfg)
+SYS_LIBS += -L/home/tme/lib/sprng/solaris -llfg
+endif
 endif
 
 ifdef nj
