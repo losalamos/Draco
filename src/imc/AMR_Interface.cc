@@ -11,14 +11,16 @@
 #include "imc/OS_Builder.hh"
 #include "imc/OS_Interface.hh"
 #include "imc/IMC_Manager.hh"
+#include "c4/global.hh"
 #include <iostream>
+#include <iomanip>
 
 //---------------------------------------------------------------------------//
 // F90 Rage interface functions
 //---------------------------------------------------------------------------//
 // IMC launcher in Rage
 
-void rage_IMC_()
+void rage_imc_(int *i)
 {
   // stl components
     using std::cout;
@@ -29,13 +31,44 @@ void rage_IMC_()
     using IMC::OS_Builder;
     using IMC::OS_Interface;
     using IMC::IMC_Manager;
+    using C4::Wtime;
+    using C4::node;
 
-  // welcome to IMC
-    cout << "*********************************" << endl;
-    cout << ">>> MILAGRO, 'a true miracle' <<<" << endl;
-    cout << ">>> version 1.0               <<<" << endl;
-    cout << ">>> Evans and Urbatsch        <<<" << endl;
-    cout << "*********************************" << endl;
+  // timing info
+    double begin;
+    double end;
+
+    if (node() == 0)
+    {
+      // welcome to IMC
+	cout << "*********************************" << endl;
+	cout << ">>> MILAGRO, 'a true miracle' <<<" << endl;
+	cout << ">>> version 1.0               <<<" << endl;
+	cout << ">>> Evans and Urbatsch        <<<" << endl;
+	cout << "*********************************" << endl;
+
+      // begining time
+	begin = Wtime();
+    }
+
+  // make a manager
+    IMC_Manager<OS_Mesh, OS_Builder, OS_Interface> manager;
+
+  // execute IMC
+    manager.execute_IMC("marshak");
+
+  // ending time
+    C4::gsync();
+    if (node() == 0)
+    {
+        end = Wtime();
+        std::cout << std::endl << ">> Problem Timing" << std::endl;
+        std::cout.precision(4);
+        std::cout << " ** We ran for " << std::setw(15)
+                  << std::setiosflags(std::ios::scientific)
+                  << end-begin << " seconds" << std::endl;
+    }
+
 }
 
 //---------------------------------------------------------------------------//

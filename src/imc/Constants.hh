@@ -28,7 +28,6 @@
 //===========================================================================//
 
 #include "imc/Names.hh"
-#include <cmath>
 #include <cfloat>
 
 IMCSPACE
@@ -38,7 +37,7 @@ GLOBALSPACE
 // FUNDAMENTAL CONSTANTS
 //---------------------------------------------------------------------------//
 
-const double pi = 2.0 * std::asin(1.0);
+const double pi = 3.14159265359;
 const double huge = DBL_MAX;
 const double epsilon = DBL_EPSILON;
 

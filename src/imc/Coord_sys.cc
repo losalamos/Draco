@@ -36,7 +36,7 @@ vector<double> Coord_sys::sample_dir(string dist, Sprng &random) const
 	costheta = 1 - 2 * random.ran();
 	sintheta = sqrt(1 - costheta * costheta);
 	phi      = 2 * pi * random.ran();
-	
+
       // calculate 3D direction cosines
 	omega_[0] = sintheta * cos(phi);
 	omega_[1] = sintheta * sin(phi);

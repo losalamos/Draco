@@ -178,11 +178,11 @@ bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
 template<class MT>
 void Particle<MT>::scatter(const MT &mesh)
 {   
-      // calculate theta and phi (isotropic)
+  // calculate theta and phi (isotropic)
     double costheta, phi;
     costheta = 1 - 2 * random.ran();
     phi      = 2 * Global::pi * random.ran();
-
+    
   // get new direction cosines
     mesh.get_Coord().calc_omega(costheta, phi, omega);
 }
