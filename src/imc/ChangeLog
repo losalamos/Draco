@@ -1,3 +1,20 @@
+2003-03-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: Updated to imc-3_3_0.  This update changes lots of stuff
+	[although not complete until Random_Walk is finshed].  The list of
+	changes are:
+		
+		1) got rid of scoping [see below]
+		2) added Diffusion_Opacity
+		3) changed interface of Mat_State_Builder
+		4) Mat_State_Builder [Flat and CDI] can both build
+                   Diffusion_Opacity objects in gray problems
+		5) added some new tests [tstOpacity]; broke
+		   tstMat_State_Builder into tstFlat_Mat_State_Builder
+		   and tstCDI_Mat_State_Builder
+		6) added Random_Walk class that does sampling, but not
+		   much else yet
+
 2003-02-13  Thomas M. Evans  <tme@lanl.gov>
 
 	* DD_Source_Builder, Rep_Source_Builder, Gray_Particle,
