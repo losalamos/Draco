@@ -29,13 +29,6 @@ void C4_Wait( int mid, int type );
 //---------------------------------------------------------------------------//
 // Miscelaneous stuff.
 
-extern "C" void barrier();
-
-inline void C4_gsync()
-{
-    barrier();
-}
-
 //---------------------------------------------------------------------------//
 // Utility classes, needed by the shmem interface.
 
@@ -172,6 +165,8 @@ struct Async_DB {
 };
 
 C4_NAMESPACE_END
+
+#include "shmem_t.cc"
 
 #endif                          // __c4_global_shmem_hh__
 
