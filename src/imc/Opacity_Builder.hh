@@ -22,6 +22,8 @@
 
 #include "Names.hh"
 #include "OS_Parser.hh"
+#include "Opacity.hh"
+#include "Mat_State.hh"
 #include "SP.hh"
 #include <vector>
 
@@ -31,6 +33,11 @@ template<class MT>
 class Opacity_Builder
 {
 private:
+  // density, temperature, and opacity cell-centered fields
+    typename MT::CCSF rho;
+    typename MT::CCSF temp;
+    typename MT::CCSF opacity;
+
   // data received from XX_Parser
     vector<int> zone;
     vector<int> mat_zone;
@@ -41,23 +48,15 @@ private:
 public:
   // templated explicit constructor depends on parser type (PT)
     template<class PT>
-    explicit Opacity_Builder(SP<PT> parser)
-    {
-      // assign data members from the parser
-	zone        = parser->Zone();
-	mat_zone    = parser->Mat_zone();
-	density     = parser->Density();
-	kappa       = parser->Kappa();
-	temperature = parser->Temperature();
-    }
+    explicit Opacity_Builder(SP<PT>, SP<MT>);
 
   // build state member functions
 
   // build Mat_State helper functions
-    void Build_Mat(SP<MT>);
+    SP< Mat_State<MT> > Build_Mat();
     
   // build Opacity helper functions
-    void Build_Opacity(SP<MT>);	
+    SP< Opacity<MT> > Build_Opacity();	
 };
     
 CSPACE

@@ -55,7 +55,9 @@ public:
   // and assignment operators
     friend class OS_Builder;
 
-  // class definitions of the cell-centered fields
+  // class definitions of the cell-centered fields: neither of these classes
+  // require copy constructors or assignment operators as the SP<> and 
+  // vector<> classes can do assignment
     class CCSF
     {
     private:
@@ -77,18 +79,11 @@ public:
 	  // the iterator constructor is called instead
 	    fill(index.begin(), index.end(), 0);
 	}
-      // allow OS_Mesh info to be accessed from CCSF
+
+      // helper functions 
 	const OS_Mesh& Mesh() const { return *mesh; }
-      // overloaded operator for subscripting, not assignment
-	double operator()(int cell_index) const
-	{
-	    return data[cell_index-1];
-	}
-      // overloaded operator for subscripting and assignment
-	double& operator()(int cell_index)
-	{
-	    return data[cell_index-1];
-	}
+	double operator()(int cell) const { return data[cell-1]; }
+	double& operator()(int cell_index) { return data[cell_index-1]; }
     };  
 
     class CCVF
@@ -114,17 +109,13 @@ public:
 	  // initialize index array to zero
 	    fill(index.begin(), index.end(), 0);
 	}
+
+      // helper functions
 	const OS_Mesh& Mesh() const { return *mesh; }
-      // overloaded operator for subscripting, not assignment
-	double operator()(int dim, int cell_index) const
-	{
-	    return data[dim-1][cell_index-1];
-	}
-      // overloaded operator for subscripting and assignment
-	double& operator()(int dim, int cell_index)
-	{
-	    return data[dim-1][cell_index-1];
-	}
+	double operator()(int dim, int cell) const {
+	    return data[dim-1][cell-1]; }
+	double& operator()(int dim, int cell) {
+	    return data[dim-1][cell-1]; }
     };
 
 private:
@@ -191,7 +182,6 @@ public:
     int Next_cell(int cell, int face) const { return layout(cell, face); }
     int Get_cell(vector<double> &) const;
     double Get_db(vector<double> &, vector<double> &, int, int &) const;
-
 };
 
 CSPACE

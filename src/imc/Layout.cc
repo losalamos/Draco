@@ -45,7 +45,7 @@ void Layout::Print(int cell_index) const
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
-ostream & operator<<(ostream &output, const Layout &object)
+ostream& operator<<(ostream &output, const Layout &object)
 {
     int num_cells = object.Num_cells();
     for (int i = 1; i <= num_cells; i++)

@@ -22,29 +22,36 @@
 //===========================================================================//
 
 #include "Names.hh"
+#include "OS_Mesh.hh"
 #include "SP.hh"
+#include <iostream>
 
 IMCSPACE
+
+using std::ostream;
 
 template<class MT>
 class Opacity
 {
 private:
+  // cell-centered array opacities
     typename MT::CCSF sigma;
-    typename MT::CCSF sigma_a;
-    typename MT::CCSF sigma_s;
 public:
-    Opacity(SP<MT> mesh) : sigma(mesh), sigma_a(mesh), sigma_s(mesh)
-    {}
-    void Quickset(double, double, double);
+  // opacity constructor
+    explicit Opacity(const typename MT::CCSF &sigma_) : sigma(sigma_) {}
+
   // member set and accessor functions
     double& Sigma(int cell) { return sigma(cell); }
     double Sigma(int cell) const { return sigma(cell); }
-    double& Sigma_a(int cell) { return sigma_a(cell); }
-    double Sigma_a(int cell) const { return sigma_a(cell); }
-    double& Sigma_s(int cell) { return sigma_s(cell); }
-    double Sigma_s(int cell) const { return sigma_s(cell); }
+    int Num_cells() const { return sigma.Mesh().Num_cells(); }
+
+  // diagnostic member functions
+    void Print(int) const;
 };
+
+// overloaded operators
+template<class MT>
+ostream& operator<<(ostream &, const Opacity<MT> &);
 
 CSPACE
 

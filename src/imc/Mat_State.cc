@@ -1,12 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// Opacity.cc
+// Mat_State.cc
 // Thomas M. Evans
-// Fri Feb  6 13:52:29 1998
+// Mon Mar  9 16:06:28 1998
 //---------------------------------------------------------------------------//
-// @> Opacity class implementation file
+// @> Mat_State class implementation file
 //---------------------------------------------------------------------------//
 
-#include "Opacity.hh"
+#include "Mat_State.hh"
 #include <iomanip>
 
 IMCSPACE
@@ -14,31 +14,31 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // public member functions
 //---------------------------------------------------------------------------//
-// print function for diagnostics
 template<class MT>
-void Opacity<MT>::Print(int cell) const
+void Mat_State<MT>::Print(int cell) const
 {
-  // print out opacities in cell
+  // print out material state of cell
     using std::cout;
     using std::endl;
     using std::setw;
 
-    cout << setw(8) << cell << setw(10) << sigma(cell) << endl;
-}
+    cout << setw(8) << cell << setw(10) << density(cell) << setw(10) 
+	 << temperature(cell) << endl;
+} 
 
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
 template<class MT>
-ostream& operator<<(ostream &output, const Opacity<MT> &object)
+ostream& operator<<(ostream &output, const Mat_State<MT> &object)
 {
   // print out opacities for all cells
     using std::cout;
     using std::endl;
     using std::setw;
 
-    cout << "  Cell  " << " Opacity  " << endl;
-    cout << "------------------------" << endl;
+    cout << "  Cell  " << " Density  " << "   Temp   " << endl;
+    cout << "----------------------------------------" << endl;
 
     for (int i = 1; i <= Num_cells(); i++)
         object.Print(i);
@@ -48,5 +48,5 @@ ostream& operator<<(ostream &output, const Opacity<MT> &object)
 CSPACE
 
 //---------------------------------------------------------------------------//
-//                              end of Opacity.cc
+//                              end of Mat_State.cc
 //---------------------------------------------------------------------------//
