@@ -1,0 +1,10 @@
+//----------------------------------*-C++-*----------------------------------//
+// PCG_Ctrl.pt
+// Dave Nystrom
+// 14 January 1997
+//---------------------------------------------------------------------------//
+
+#include "linalg/PCG_Ctrl.cc"
+
+//instantiate class PCG_Ctrl<float>
+instantiate class PCG_Ctrl<double>
