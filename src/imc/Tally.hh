@@ -13,11 +13,11 @@
 #ifndef rtt_imc_Tally_hh
 #define rtt_imc_Tally_hh
 
-#include "Random_Walk_Sub_Tally.hh"
-#include "Surface_Sub_Tally.hh"
-#include "ds++/SP.hh"
 #include <iostream>
 #include <vector>
+#include "ds++/SP.hh"
+#include "Random_Walk_Sub_Tally.hh"
+#include "Surface_Sub_Tally.hh"
 
 namespace rtt_imc 
 {
@@ -50,9 +50,11 @@ namespace rtt_imc
  * themselves provide the appropriate interfaces for the types of data that
  * they tally.  The existing sub tally objects are:
  * - rtt_imc::Random_Walk_Sub_Tally
+ * - rtt_imc::Surface_Sub_Tally (a vector of these equal to the number of
+ * groups) 
  * .
- * Sub tally objects are created using create functions for each sub tally.
- * They are requested using get function for each sub tally.
+ * Sub tally objects are assigned to the tally class.  It is acceptable to
+ * assign null sub-tally objects.  They are accessed through get functions.
  *
  * Nothing about the Tally class is data parallel.  The Tally is designed to
  * be created on each processor that particle transport occurs.  The tallies
@@ -151,14 +153,11 @@ class Tally
     //! Assign a Random_Walk_Sub_Tally.
     void assign_RW_Sub_Tally(SP_RW_ST tally) { rw_sub_tally = tally; }
 
-    //! Assign a vector of Surface_Sub_Tally
-    void assign_Surface_Sub_Tally(const std::vector<SP_S_ST>& tallies) 
-    { 
-	surface_sub_tallies = tallies; 
-    }
+    // Assign a vector of Surface_Sub_Tally
+    inline void assign_Surface_Sub_Tally(const std::vector<SP_S_ST>& tallies);
 
-    //! Assign a Surface_Sub_Tally
-    void assign_Surface_Sub_Tally(SP_S_ST tally) { surface_sub_tallies.resize(1,tally); }
+    // Assign a Surface_Sub_Tally
+    inline void assign_Surface_Sub_Tally(SP_S_ST tally);
 
     // >>> SUB TALLY ACCESSORS
     
@@ -326,6 +325,29 @@ typename Tally<MT>::SP_S_ST Tally<MT>::get_Surface_Sub_Tally(int group) const
 
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Assign a vector of Surface_Sub_Tally's.
+ *
+ * The given tally(s) may be null.
+ */
+template<class MT>
+void Tally<MT>::assign_Surface_Sub_Tally(const std::vector<SP_S_ST>& tallies) 
+{ 
+    surface_sub_tallies = tallies; 
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Assign a Surface_Sub_Tally.
+ *
+ * The given tally may be null.
+ */
+template<class MT>
+void Tally<MT>::assign_Surface_Sub_Tally(SP_S_ST tally) 
+{
+    surface_sub_tallies.resize(1, tally); 
+} 
 
 
 } // end of rtt_imc

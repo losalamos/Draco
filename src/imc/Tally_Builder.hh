@@ -64,6 +64,7 @@ class Tally_Builder
     // Smart pointer to randomw walk sub tally.
     SP_RW_Sub_Tally rw_sub_tally;
 
+    // Number of energy groups.
     int energy_groups;
 
   public:
@@ -98,8 +99,8 @@ class Tally_Builder
  */
 template<class MT>
 template<class IT>
-Tally_Builder<MT>::Tally_Builder(rtt_dsxx::SP<IT> interface, int groups) :
-    energy_groups(groups)
+Tally_Builder<MT>::Tally_Builder(rtt_dsxx::SP<IT> interface, int groups)
+    : energy_groups(groups)
 {
     Require (interface);
     Require (energy_groups > 0);
@@ -115,7 +116,8 @@ Tally_Builder<MT>::Tally_Builder(rtt_dsxx::SP<IT> interface, int groups) :
 
 	for (int group = 0; group < groups; ++group)
 	{
-	    surface_sub_tallies[group] = new Surface_Sub_Tally(az_mesh, *interface);
+	    surface_sub_tallies[group] = new Surface_Sub_Tally(
+		az_mesh, *interface);
 	    Check (surface_sub_tallies[group]);
 	}
     }
