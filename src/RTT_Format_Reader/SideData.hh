@@ -42,9 +42,12 @@ class SideData
     const Sides & sidesClass;
 
   public:
-    SideData(const Dims & dims_, const Sides & sidesClass_) : dims(dims_),
-        sidesClass(sidesClass_), data(dims.get_nsides(), 
-				      vector_dbl(dims.get_nside_data())) {}
+    SideData(const Dims & dims_, const Sides & sidesClass_) 
+	: dims(dims_),
+	  data(dims.get_nsides(), 
+	       vector_dbl(dims.get_nside_data())),
+	  sidesClass(sidesClass_)
+    {}
     ~SideData() {}
 
     void readSideData(ifstream & meshfile);

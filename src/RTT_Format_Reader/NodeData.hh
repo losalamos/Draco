@@ -42,9 +42,12 @@ class NodeData
     const Nodes & nodesClass;
 
   public:
-    NodeData(const Dims & dims_, const Nodes & nodesClass_) : dims(dims_),
-        nodesClass(nodesClass_), data(dims.get_nnodes(), 
-				      vector_dbl(dims.get_nnode_data())) {}
+    NodeData(const Dims & dims_, const Nodes & nodesClass_) 
+	: dims(dims_), 
+	  data(dims.get_nnodes(), 
+	       vector_dbl(dims.get_nnode_data())),
+	  nodesClass(nodesClass_)
+    {}
     ~NodeData() {}
 
     void readNodeData(ifstream & meshfile);

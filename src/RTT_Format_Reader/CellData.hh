@@ -42,9 +42,12 @@ class CellData
     const Cells & cellsClass;
 
   public:
-    CellData(const Dims & dims_, const Cells & cellsClass_) : dims(dims_),
-	cellsClass(cellsClass_), data(dims.get_ncells(), 
-				      vector_dbl(dims.get_ncell_data())) {}
+    CellData(const Dims & dims_, const Cells & cellsClass_) 
+	: dims(dims_),
+	  data(dims.get_ncells(), 
+	       vector_dbl(dims.get_ncell_data())),
+	  cellsClass(cellsClass_)
+    {}
     ~CellData() {}
 
     void readCellData(ifstream & meshfile);

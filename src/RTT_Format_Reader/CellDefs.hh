@@ -51,8 +51,8 @@ class CellDef
     vector_int node_map;
 
   public:
-    CellDef(const CellDefs & cellDefs_, const string & name_) : name(name_), 
-        cellDefs(cellDefs_), ordered_sides(0) {}
+    CellDef(const CellDefs & cellDefs_, const string & name_) 
+	: cellDefs(cellDefs_), name(name_), ordered_sides(0) {}
     ~CellDef() {}
 
     void readDef(ifstream & meshfile);
