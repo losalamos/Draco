@@ -46,24 +46,6 @@
 #define  C4_MPI
 #endif
 
-#ifdef _CRAYMPP
-#ifndef C4_SHMEM
-#define C4_MPI
-#endif
-#endif
-
-#if defined(_POWER) && !defined(NOMPI)
-#define C4_MPI
-#endif
-
-// We would only be here if the user has not specified -DC4_SHMEM on the
-// command line...  So, give him MPI by default.
-
-#if defined(__sgi) && !defined(NOMPI)
-#undef C4_SCALAR
-#define C4_MPI
-#endif
-
 #endif // !defined(C4_XXX)
 
 //---------------------------------------------------------------------------//
