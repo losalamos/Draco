@@ -335,6 +335,9 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
 						double e_, double f_)
 	: a(a_), b(b_), c(c_), d(d_), e(e_), f(f_)
     {
+	Insist(c>=0.0, "The Cve temperature exponent must be nonnegative");
+	Insist(f>=0.0, "The Cvi temperature exponent must be nonnegative");
+
 	/*...*/
     }
 
@@ -344,7 +347,7 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     //! Calculate the electron heat capacity in kJ/g/keV.
     double calculate_electron_heat_capacity(double T, double rho) const
     {
-	Require (c < 0.0 ? T > 0.0 : T >= 0.0);
+	Require (T >= 0.0);
 	Require (rho >= 0.0);
 
 	double T_power = std::pow(T, c);
@@ -357,7 +360,7 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     //! Calculate the ion heat capacity in kJ/g/keV.
     double calculate_ion_heat_capacity(double T, double rho) const
     {
-	Require (f < 0.0 ? T > 0.0 : T >= 0.0);
+	Require (T >= 0.0);
 	Require (rho >= 0.0);
 
 	double T_power = std::pow(T, f);
@@ -368,13 +371,69 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     }
 
 
-    //! Return 0 for the electron internal energy.
+    /*! Calculate the electron specific internal energy.
+     *
+     * This is done by integrating the specific heat capacity at constant
+     * density from T=0 to the specified temperature.
+     *
+     * \param T 
+     * Temperature (keV) for which the specific internal energy is to be
+     * evaluated. 
+     * \param rho
+     * Density (g/cm^3) for which the specific internal energy is to be
+     * evaluated. This parameter is not actually used.
+     *
+     * \return Electron specific internal energy (kJ/g)
+     *
+     * \pre \c T>=0
+     * \pre \c rho>=0
+     *
+     * \post \c U>=0
+     */
     double calculate_electron_internal_energy(double T, double rho) const
-    { return 0.0; }
+    { 
+	Require (T >= 0.0);
+	Require (rho >= 0.0);
 
-    //! Return 0 for the ion internal energy.
+	Check(c>=0.0);
+	double T_power = std::pow(T, c+1.0);
+	double U       = a*T + b*T_power/(c+1.0);
+	
+	Ensure(U >= 0.0);
+	return U;
+    }
+
+    /*! Calculate the ion specific internal energy.
+     *
+     * This is done by integrating the specific heat capacity at constant
+     * density from T=0 to the specified temperature.
+     *
+     * \param T 
+     * Temperature (keV) for which the specific internal energy is to be
+     * evaluated. 
+     * \param rho
+     * Density (g/cm^3) for which the specific internal energy is to be
+     * evaluated. This parameter is not actually used.
+     *
+     * \return Ion specific internal energy (kJ/g)
+     *
+     * \pre \c T>=0
+     * \pre \c rho>=0
+     *
+     * \post \c U>=0
+     */
     double calculate_ion_internal_energy(double T, double rho) const
-    { return 0.0; }
+    {
+	Require (T >= 0.0);
+	Require (rho >= 0.0);
+
+	Check(f>=0.0);
+	double T_power = std::pow(T, f+1.0);
+	double U       = d*T + e*T_power/(f+1.0);
+
+	Ensure (U >= 0.0);
+	return U;
+    }
     
     //! Return 0 for the number of electrons per ion.
     double calculate_num_free_elec_per_ion(double T, double rho) const

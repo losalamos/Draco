@@ -17,6 +17,7 @@
 #include "cdi/EoS.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 #include <iostream>
 #include <vector>
@@ -31,6 +32,7 @@ using rtt_cdi_analytic::Polynomial_Specific_Heat_Analytic_EoS_Model;
 using rtt_cdi::CDI;
 using rtt_cdi::EoS;
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -57,13 +59,21 @@ void analytic_eos_test()
 	double Cve = T*T*T;
 	double Cvi = 0.2;
 
+	double Ue = T*T*T*T/4.0;
+	double Ui = 0.2*T;
+
 	// specific heats
 	if (analytic.getElectronHeatCapacity(T,rho) != Cve)           ITFAILS;
 	if (analytic.getIonHeatCapacity(T,rho) != Cvi)                ITFAILS;
 
+	// specific internal energies
+	if (!soft_equiv(analytic.getSpecificElectronInternalEnergy(T,rho), Ue))
+	    ITFAILS;
+
+	if (!soft_equiv(analytic.getSpecificIonInternalEnergy(T,rho), Ui))
+	    ITFAILS;
+
 	// everything else is zero
-	if (analytic.getSpecificElectronInternalEnergy(T,rho) != 0.0) ITFAILS;
-	if (analytic.getSpecificIonInternalEnergy(T,rho) != 0.0)      ITFAILS;
 	if (analytic.getNumFreeElectronsPerIon(T,rho) != 0.0)         ITFAILS;
 	if (analytic.getElectronThermalConductivity(T,rho) != 0.0)    ITFAILS;
     }
@@ -100,17 +110,19 @@ void analytic_eos_test()
 	for (int i = 0; i < 6; i++)
 	{
 	    double cve_ref = T[i] * T[i] * T[i];
-	    double erre    = fabs(Cve[i] - cve_ref);
 
 	    double cvi_ref = 0.2;
-	    double erri    = fabs(Cvi[i] - cvi_ref);
 
-	    if (erre > 1.0e-12 * cve_ref) ITFAILS;
-	    if (erri > 1.0e-12 * cvi_ref) ITFAILS;
+	    double Ue_ref  = T[i] * T[i] * T[i] * T[i] / 4.0;
+
+	    double Ui_ref  = 0.2 * T[i];
+
+	    if (!soft_equiv(Cve[i], cve_ref)) ITFAILS;
+	    if (!soft_equiv(Cvi[i], cvi_ref)) ITFAILS;
+	    if (!soft_equiv(eie[i], Ue_ref)) ITFAILS;
+	    if (!soft_equiv(iie[i], Ui_ref)) ITFAILS;
 	    
 	    // all else are zero
-	    if (eie[i] != 0.0) ITFAILS;
-	    if (iie[i] != 0.0) ITFAILS;
 	    if (nfe[i] != 0.0) ITFAILS;
 	    if (etc[i] != 0.0) ITFAILS;
 	}
@@ -184,13 +196,13 @@ void CDI_test()
 	for (int i = 0; i < 6; i++)
 	{
 	    double cve_ref = T[i] * T[i] * T[i];
-	    double erre    = fabs(Cve[i] - cve_ref);
+	    double ue_ref = T[i] * T[i] * T[i] * T[i] / 4.0;
 
-	    if (erre > 1.0e-12 * cve_ref) ITFAILS;
+	    if (!soft_equiv(Cve[i], cve_ref)) ITFAILS;
+	    if (!soft_equiv(eie[i], ue_ref)) ITFAILS;
 	    
 	    // all else are zero
 	    if (Cvi[i] != 0.0) ITFAILS;
-	    if (eie[i] != 0.0) ITFAILS;
 	    if (iie[i] != 0.0) ITFAILS;
 	    if (nfe[i] != 0.0) ITFAILS;
 	    if (etc[i] != 0.0) ITFAILS;
@@ -239,13 +251,13 @@ void CDI_test()
 	for (int i = 0; i < 6; i++)
 	{
 	    double cve_ref = T[i] * T[i] * T[i];
-	    double erre    = fabs(Cve[i] - cve_ref);
+	    double eie_ref = 0.25 * T[i] * T[i] * T[i] * T[i];
 
-	    if (erre > 1.0e-12 * cve_ref) ITFAILS;
+	    if (!soft_equiv(Cve[i], cve_ref)) ITFAILS;
+	    if (!soft_equiv(eie[i], eie_ref)) ITFAILS;
 	    
 	    // all else are zero
 	    if (Cvi[i] != 0.0) ITFAILS;
-	    if (eie[i] != 0.0) ITFAILS;
 	    if (iie[i] != 0.0) ITFAILS;
 	    if (nfe[i] != 0.0) ITFAILS;
 	    if (etc[i] != 0.0) ITFAILS;
@@ -282,13 +294,22 @@ void packing_test()
 	double Cve = T*T*T;
 	double Cvi = 0.2;
 
+	double Ue  = 0.25*T*T*T*T;
+	double Ui  = 0.2 * T;
+
 	// specific heats
 	if (neos.getElectronHeatCapacity(T,rho) != Cve)           ITFAILS;
 	if (neos.getIonHeatCapacity(T,rho) != Cvi)                ITFAILS;
 
+	// specific internal energies
+	if (!soft_equiv(neos.getSpecificElectronInternalEnergy(T,rho), Ue))
+	    ITFAILS;
+
+	if (!soft_equiv(neos.getSpecificIonInternalEnergy(T,rho), Ui))
+	    ITFAILS;
+
+
 	// everything else is zero
-	if (neos.getSpecificElectronInternalEnergy(T,rho) != 0.0) ITFAILS;
-	if (neos.getSpecificIonInternalEnergy(T,rho) != 0.0)      ITFAILS;
 	if (neos.getNumFreeElectronsPerIon(T,rho) != 0.0)         ITFAILS;
 	if (neos.getElectronThermalConductivity(T,rho) != 0.0)    ITFAILS;
     }
