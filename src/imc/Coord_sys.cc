@@ -8,7 +8,6 @@
 
 #include "imctest/Coord_sys.hh"
 #include "imctest/Constants.hh"
-#include "imctest/Random.hh"
 #include <iostream>
 #include <cmath>
 
@@ -18,7 +17,8 @@ IMCSPACE
 // virtual member functions
 //---------------------------------------------------------------------------//
 // set Omega directions for 3D transport
-void Coord_sys::set_omega(vector<double> &omega_, Random &random) const
+
+void Coord_sys::set_omega(vector<double> &omega_, SMrng &random) const
 {
     using Global::pi;
     using std::cos;
@@ -37,9 +37,11 @@ void Coord_sys::set_omega(vector<double> &omega_, Random &random) const
     omega_[2] = costheta;
 }
 
+//---------------------------------------------------------------------------//
+
 // calculate Omega directions for 3D transport
 void Coord_sys::calc_omega(double costheta, double phi, vector<double> 
-			      &omega_) const
+			   &omega_) const
 {
     using Global::pi;
     using std::cos;

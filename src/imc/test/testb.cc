@@ -14,8 +14,8 @@
 #include "imctest/Opacity.hh"
 #include "imctest/Particle.hh"
 #include "imctest/Tally.hh"
-#include "imctest/Random.hh"
 #include "imctest/Math.hh"
+#include "rng/SMrng.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <fstream>
@@ -30,9 +30,9 @@ using IMC::Opacity_Builder;
 using IMC::Opacity;
 using IMC::Particle;
 using IMC::Tally;
-using IMC::Random;
 using IMC::Particle_Stack;
 using IMC::Global::operator<<;
+using RNG::SMrng;
 using namespace std;
 
 template<class MT>
@@ -107,9 +107,9 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Tally<MT> &tally)
 
   // make and copy particle
 
-    Particle<MT, Random> part1(mesh, seed, 1.0);
-    Particle<MT, Random> part2(mesh, -3423, 10.0);
-    Particle<MT, Random> part3(part2);
+    Particle<MT, SMrng> part1(mesh, seed, 1.0);
+    Particle<MT, SMrng> part2(mesh, -3423, 10.0);
+    Particle<MT, SMrng> part3(part2);
 
     vector<double> r(2);
     vector<double> o(3);
@@ -119,12 +119,12 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Tally<MT> &tally)
     part1.source(r,o,mesh);
     part2.source(r,o,mesh);
     part3 = part1;
-    Particle<MT, Random> part4(part2);
+    Particle<MT, SMrng> part4(part2);
 
-    SP<Particle<MT, Random>::Diagnostic> check = 
-	new Particle<MT, Random>::Diagnostic(cout, true);
+    SP<Particle<MT, SMrng>::Diagnostic> check = 
+	new Particle<MT, SMrng>::Diagnostic(cout, true);
 
-    Particle_Stack<Particle<MT, Random> >::Bank sbank;
+    Particle_Stack<Particle<MT, SMrng> >::Bank sbank;
     sbank.push(part1);
     cout << sbank.size() << endl;
     sbank.push(part2);
@@ -138,7 +138,7 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Tally<MT> &tally)
 
     sbank.pop();
     cout << sbank.size() << endl;
-    Particle<MT, Random> part5 = sbank.top();
+    Particle<MT, SMrng> part5 = sbank.top();
     sbank.pop();
     cout << sbank.size() << endl;
     cout << part5;	
@@ -154,11 +154,11 @@ void Run_Particle(const MT &mesh, const Opacity<MT> &opacity,
 
   // set diagnostic
     ofstream output("history", ios::app);
-    SP<Particle<MT, Random>::Diagnostic> check = 
-	new Particle<MT, Random>::Diagnostic(output, true);
+    SP<Particle<MT, SMrng>::Diagnostic> check = 
+	new Particle<MT, SMrng>::Diagnostic(output, true);
 
   // initialize particle
-    Particle<MT, Random> particle(mesh, seed, 1.0);
+    Particle<MT, SMrng> particle(mesh, seed, 1.0);
     assert (particle.status());
 
   // origin and source
@@ -221,13 +221,13 @@ int main(int argc, char *argv[])
   // tally object
   //
 
-  //	SP<Tally<OS_Mesh> > tally = new Tally<OS_Mesh>(mesh);
+    SP<Tally<OS_Mesh> > tally = new Tally<OS_Mesh>(mesh);
     
     
   // Particle diagnostics
-  // long seed = -345632;
-  // Run_Particle(*mesh, *opacity, *tally, seed);
-  // Bank_Particle(*mesh, *opacity, *tally);
+    long seed = -345632;
+    Run_Particle(*mesh, *opacity, *tally, seed);
+    Bank_Particle(*mesh, *opacity, *tally);
     
   // for ( int i = 1; i <= mesh->num_cells(); i++)
   // {
