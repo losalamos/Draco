@@ -8,6 +8,8 @@
 
 pkg := imctest
 
+need_c4 := yes
+
 # Go get the standard includeable makefile for Draco components.
 
 include ../config/makefile
@@ -30,13 +32,14 @@ libsrcs = $(nonsrc) $(tempsrc)
 # Get the library built, minding our various other targets too.
 
 pretarg = deps
-resolve_libs = $(dep_libds++)
+resolve_libs = $(dep_libds++) $(dep_libc4)
 
 include ../config/make.lib
 
 deps:
 ifneq ($(dodeps),no)
 	(cd ../ds++; $(MAKE))
+	(cd ../c4;   $(MAKE) dodeps=no)
 endif
 
 # Rules for building docs

@@ -9,12 +9,13 @@
 SRC_TOP = ../..
 
 need_imctest    := yes
+need_c4         := yes
 
 # Go get the standard includeable makefile for Draco components.
 
 include ../../config/makefile
 
-srcs    = testb.cc
+srcs    = tsr.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.
@@ -30,7 +31,7 @@ objs    = $(srcs:%.cc=$(env)/%.o) \
 default: main_$(env)
 
 main_$(env) : deps $(objs) \
-	$(dep_libimctest) $(dep_libds++)
+	$(dep_libimctest) $(dep_libds++) $(dep_libc4)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
 
 deps:
@@ -40,6 +41,7 @@ endif
 
 $(dep_libimctest):
 $(dep_libds++):
+$(dep_libc4):
 
 # Go pick up the standard signature for makefiles.
 
