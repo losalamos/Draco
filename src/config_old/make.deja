@@ -13,7 +13,7 @@
 deja:
 	(cd testsuites; $(MAKE) links)
 	runtest --tool=$(pkg) --srcdir=./testsuites \
-		ENV=$(env) DBC=$(DBC) C4=$(c4)
+		ENV=$(env) DBC=$(DBC) C4=$(c4) PWD=$(PWD)
 
 ###############################################################################
 #                           End of config/make.deja
