@@ -19,22 +19,22 @@ template<class T>
 class mpi_traits {
 };
 
-template<> class mpi_traits<char *> {
+template<> class mpi_traits<char> {
   public:
     static const MPI_Datatype element_type = MPI_CHAR;
 };
 
-template<> class mpi_traits<int *> {
+template<> class mpi_traits<int> {
   public:
     static const MPI_Datatype element_type = MPI_INT;
 };
 
-template<> class mpi_traits<float *> {
+template<> class mpi_traits<float> {
   public:
     static const MPI_Datatype element_type = MPI_FLOAT;
 };
 
-template<> class mpi_traits<double *> {
+template<> class mpi_traits<double> {
   public:
     static const MPI_Datatype element_type = MPI_DOUBLE;
 };
