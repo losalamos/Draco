@@ -114,7 +114,10 @@ int main(int argc, char *argv[])
 	pcomm.send_Mesh(*mesh);
 
     if (mynode)
-	mesh = pcomm.recv_Mesh();
+    {
+        mesh = pcomm.recv_Mesh();
+	std::cout << mesh->num_cells() << std::endl;
+    } 
     
     if (mesh) 
 	Builder_diagnostic(*mesh, *mat_state, *opacity);

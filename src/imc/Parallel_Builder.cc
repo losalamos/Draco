@@ -53,6 +53,9 @@ void Parallel_Builder<MT>::send_Mesh(const MT &mesh)
 
   // let us pass the vertex
     send_vertex(mesh.get_vertex());
+
+  // let us pass the cell_pair
+    send_cellpair(mesh.get_cell_pair());
 }
 
 //---------------------------------------------------------------------------//
@@ -75,12 +78,10 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
 
   // get vertices and cell_pair
     typename MT::CCVF_a vertex = recv_vertex();
-    std::cout << node() << " " << vertex[0].size() << std::endl;
-    typename MT::CCVF_i cell_pair(0);
+    typename MT::CCVF_i cell_pair = recv_cellpair();
 
   // build mesh
-  // SP<OS_Mesh> mesh = new OS_Mesh(coord, layout, vertex, cell_pair);
-    SP<OS_Mesh> mesh;
+    SP<OS_Mesh> mesh = new OS_Mesh(coord, layout, vertex, cell_pair);
 
   // return mesh
     return mesh;
@@ -330,6 +331,100 @@ typename MT::CCVF_a Parallel_Builder<MT>::recv_vertex()
 
 //---------------------------------------------------------------------------//
 // pass the cell_pair
+
+template<class MT>
+void Parallel_Builder<MT>::send_cellpair(const typename MT::CCVF_i
+					 &cell_pair)
+{
+  // send the cell_pair array to another processor
+    
+  // set the cell_pair size
+    int num_cells = cell_pair.size();
+
+  // calculate the number of vertices per cell and the total size of the
+  // cell_pair object
+    int *num_vert = new int[num_cells];
+    int size = 0;
+    for (int i = 0; i < num_cells; i++)
+    {
+	num_vert[i] = cell_pair[i].size();
+	size += num_vert[i];
+    }
+
+  // write the cell_pair array for passing
+    int *vertices = new int[size];
+    int index = 0;
+    for (int i = 0; i < num_cells; i++)
+	for (int j = 0; j < cell_pair[i].size(); j++)
+	{
+	    vertices[index] = cell_pair[i][j];
+	    index++;
+	}
+
+  // pass the important stuff to other processors
+    for (int np = 1; np < nodes(); np++)
+    {
+      // pass the size
+	Send (num_cells, np, 10);
+
+      // pass the total size of the cell_pair object
+	Send (size, np, 11);
+
+      // pass the num_vert array
+	Send (num_vert, num_cells, np, 12);
+	
+      // pass the vertices-values array
+	Send (vertices, size, np, 13);
+    }
+
+  // delete the dynamically allocated arrays
+    delete [] num_vert;
+    delete [] vertices;
+}
+
+//---------------------------------------------------------------------------//
+// receive the cell_pair object
+
+template<class MT>
+typename MT::CCVF_i Parallel_Builder<MT>::recv_cellpair()
+{
+  // receive and rebuild the cell_pair array
+    
+  // first get the sizes 
+    int num_cells;
+    int size;
+    Recv (num_cells, 0, 10);
+    Recv (size, 0, 11);
+
+  // make a new cell_pair object
+    typename MT::CCVF_i cell_pair(num_cells);
+
+  // receive the cell_pair data
+    int *num_vert = new int[num_cells];
+    int *vertices = new int[size];
+    Recv (num_vert, num_cells, 0, 12);
+    Recv (vertices, size, 0, 13);
+
+  // rebuild the cell_pair object
+    int index = 0;
+    for (int i = 0; i < num_cells; i++)
+    {
+	cell_pair[i].resize(num_vert[i]);
+	for (int j = 0; j < num_vert[i]; j++)
+	{
+	    cell_pair[i][j] = vertices[index];
+	    index++;
+	}
+    }
+    Check (index == size);
+
+  // delete dynamic arrays
+    delete [] num_vert;
+    delete [] vertices;
+
+  // return the cell_pair object
+    return cell_pair;
+}
     
 CSPACE
 
