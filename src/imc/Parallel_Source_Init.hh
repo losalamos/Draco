@@ -45,7 +45,7 @@
 IMCSPACE
 
 // draco components
-using RNG::Rnd_Control;
+using rtt_rng::Rnd_Control;
 using dsxx::SP;
 
 // STL components

@@ -12,7 +12,7 @@
 
 IMCSPACE
 
-using RNG::Rnd_Control;
+using rtt_rng::Rnd_Control;
 
 typedef Particle_Buffer<Particle<OS_Mesh> > POS_Buffer;
 typedef Source<OS_Mesh> OS_Source;

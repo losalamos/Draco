@@ -23,10 +23,10 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "Sprng.hh"
 
-RNGSPACE
+namespace rtt_rng 
+{
 
 class Rnd_Control 
 {
@@ -65,7 +65,7 @@ public:
     int get_number() const { return number; }
 };
 
-CSPACE
+} // end namespace rtt_rng
 
 #endif                          // __rng_Rnd_Control_hh__
 

@@ -557,15 +557,15 @@ Parallel_Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity)
 
   // set random number stream numbers for vol, first, and ss, second.
   // update the global stream number.
-    int rn_count = RNG::rn_stream;
+    int rn_count = rtt_rng::rn_stream;
     for (int cell = 0; cell < num_global_cells; cell++)
     {
 	global_volrn[cell] = rn_count;
 	rn_count          += global_nvol[cell];
     }
 
-    RNG::rn_stream += global_nvoltot;
-    Check (rn_count == RNG::rn_stream);
+    rtt_rng::rn_stream += global_nvoltot;
+    Check (rn_count == rtt_rng::rn_stream);
 
     for (int cell = 0; cell < num_global_cells; cell++)
     {
@@ -573,8 +573,8 @@ Parallel_Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity)
 	rn_count          += global_nss[cell];
     }
 
-    RNG::rn_stream += global_nsstot;
-    Ensure (rn_count == RNG::rn_stream);
+    rtt_rng::rn_stream += global_nsstot;
+    Ensure (rn_count == rtt_rng::rn_stream);
 }
 
 //---------------------------------------------------------------------------//
@@ -646,8 +646,8 @@ void Parallel_Source_Init<MT,PT>::calc_ncen_init()
     }
 
   // set census ew and random number stream number per global cell
-    Require (RNG::rn_stream == 0);
-    int rn_count = RNG::rn_stream;
+    Require (rtt_rng::rn_stream == 0);
+    int rn_count = rtt_rng::rn_stream;
 
     for (int cell = 0; cell < num_global_cells; cell++)
     {
@@ -662,8 +662,8 @@ void Parallel_Source_Init<MT,PT>::calc_ncen_init()
 
   // update global random number stream number
     Ensure (rn_count == global_ncentot);
-    RNG::rn_stream += global_ncentot;
-    Ensure (RNG::rn_stream == global_ncentot);
+    rtt_rng::rn_stream += global_ncentot;
+    Ensure (rtt_rng::rn_stream == global_ncentot);
 }
 
 //---------------------------------------------------------------------------//

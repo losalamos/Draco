@@ -43,8 +43,8 @@ using IMC::Source_Init;
 using IMC::Particle_Buffer;
 using IMC::Particle;
 using IMC::Source;
-using RNG::Rnd_Control;
-using RNG::Sprng;
+using rtt_rng::Rnd_Control;
+using rtt_rng::Sprng;
 using dsxx::SP;
 using namespace std;
 using namespace C4;
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
 // 	    cout << *sinit << endl;
 // 	    cout << " ** Source on node " << mynode << endl;
 // 	    cout << endl << *source;
-// 	    cout << endl << ">> We are now at RN Stream " << RNG::rn_stream
+// 	    cout << endl << ">> We are now at RN Stream " << rtt_rng::rn_stream
 // 		 << endl;
 	}
 	

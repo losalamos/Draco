@@ -616,7 +616,7 @@ void Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit,
     vector<int> nvol(num_cells);
     vector<int> nvol_xtra(num_cells);
     vector<int> streamnum(num_cells);
-    int counter = RNG::rn_stream;
+    int counter = rtt_rng::rn_stream;
     for (int cell = 1; cell <= num_cells; cell++)
     {
 	nvol[cell-1] = sinit.get_nvol(cell) / procs_per_cell[cell-1].size(); 
@@ -628,8 +628,8 @@ void Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit,
     }
 
   // update the Global rn_stream counter
-    RNG::rn_stream += sinit.get_nvoltot();
-    Check (counter == RNG::rn_stream);
+    rtt_rng::rn_stream += sinit.get_nvoltot();
+    Check (counter == rtt_rng::rn_stream);
 
   // loop over processors and make the send info
     int voltot = 0;
@@ -781,7 +781,7 @@ void Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit,
     vector<int> nss(num_cells);
     vector<int> nss_xtra(num_cells);
     vector<int> streamnum(num_cells);
-    int counter = RNG::rn_stream;
+    int counter = rtt_rng::rn_stream;
     for (int cell = 1; cell <= num_cells; cell++)
     {
 	nss[cell-1] = sinit.get_nss(cell) / procs_per_cell[cell-1].size();
@@ -793,8 +793,8 @@ void Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit,
     }
     
   // update the Global rn_stream counter
-    RNG::rn_stream += sinit.get_nsstot();
-    Check (counter == RNG::rn_stream);
+    rtt_rng::rn_stream += sinit.get_nsstot();
+    Check (counter == rtt_rng::rn_stream);
 
   // loop over processors and make the send info
     int sstot = 0;

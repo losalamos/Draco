@@ -8,7 +8,8 @@
 
 #include "Random.hh"
 
-RNGSPACE
+namespace rtt_rng 
+{
 
 //---------------------------------------------------------------------------//
 // VARIABLE DEFINITIONS IN RNG
@@ -16,7 +17,7 @@ RNGSPACE
 
 int rn_stream = 0;
 
-CSPACE
+} // end namespace rtt_rng
 
 //---------------------------------------------------------------------------//
 //                              end of Random.cc

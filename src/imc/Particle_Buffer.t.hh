@@ -37,7 +37,7 @@ Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon)
   // determine size of character (RN state) from Particles;
   // in bytes
     csize = rcon.get_size();
-    Check (csize <= RNG::max_buffer);
+    Check (csize <= rtt_rng::max_buffer);
 
   // set the static buffer variables
     set_buffer(dsize+1, isize, csize);

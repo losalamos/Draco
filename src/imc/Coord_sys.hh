@@ -36,7 +36,7 @@ IMCSPACE
 
 using std::vector;
 using std::string;
-using RNG::Sprng;
+using rtt_rng::Sprng;
 
 class Coord_sys
 {

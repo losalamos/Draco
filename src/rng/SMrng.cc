@@ -10,7 +10,8 @@
 #include <iostream>
 #include <fstream>
 
-RNGSPACE
+namespace rtt_rng 
+{
 
 //---------------------------------------------------------------------------//
 // public member functions
@@ -99,7 +100,7 @@ double SMrng::test_avg(int num)
     return average;
 }
 
-CSPACE
+} // end namespace rtt_rng
 
 //---------------------------------------------------------------------------//
 //                              end of SMrng.cc

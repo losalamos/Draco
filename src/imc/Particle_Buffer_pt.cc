@@ -12,7 +12,7 @@
 
 IMCSPACE
 
-using RNG::Rnd_Control;
+using rtt_rng::Rnd_Control;
 
 template class Particle_Buffer<Particle<OS_Mesh> >;
 

@@ -71,7 +71,7 @@ using std::endl;
 using std::string;
 
 // draco namespaces
-using RNG::Sprng;
+using rtt_rng::Sprng;
 using dsxx::SP;
     
 class OS_Mesh

@@ -13,7 +13,7 @@
 #include <cmath>
 
 using namespace std;
-using namespace RNG;
+using namespace rtt_rng;
 
 main()
 {

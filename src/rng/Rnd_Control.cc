@@ -14,7 +14,8 @@
 #include <rng/config.h>
 #include "rng_sprng.h"
 
-RNGSPACE
+namespace rtt_rng 
+{
 
 using std::free;
 
@@ -103,7 +104,7 @@ Sprng Rnd_Control::spawn(const Sprng &random) const
     return ran;
 }
 
-CSPACE
+} // end namespace rtt_rng
 
 //---------------------------------------------------------------------------//
 //                              end of Rnd_Control.cc

@@ -58,7 +58,7 @@ IMCSPACE
 // draco stuff
 using C4::node;
 using C4::nodes;
-using RNG::Rnd_Control;
+using rtt_rng::Rnd_Control;
 using dsxx::SP;
 
 // std stuff

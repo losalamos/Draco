@@ -17,7 +17,7 @@
 IMCSPACE
 
 // draco components
-using RNG::Sprng;
+using rtt_rng::Sprng;
 using Global::min;
 using Global::max;
 
@@ -488,7 +488,7 @@ void Source_Init<MT,PT>::write_initial_census(const MT &mesh,
 					      Rnd_Control &rcon) 
 {
   // we should not have made any Random numbers yet
-    Require (RNG::rn_stream == 0);
+    Require (rtt_rng::rn_stream == 0);
 
   // loop over cells
     for (int cell = 1; cell <= mesh.num_cells(); cell++)
@@ -517,10 +517,10 @@ void Source_Init<MT,PT>::write_initial_census(const MT &mesh,
 	}
 
   // update the rn_stream constant
-    RNG::rn_stream = rcon.get_num();
+    rtt_rng::rn_stream = rcon.get_num();
 
   // a final assertion
-    Ensure (RNG::rn_stream == ncentot);
+    Ensure (rtt_rng::rn_stream == ncentot);
     Ensure (census->size() == ncentot);
 }
 
@@ -538,7 +538,7 @@ void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon)
     Sprng random = rcon.get_rn();
 
   // update the rn_stream constant
-    RNG::rn_stream = rcon.get_num();
+    rtt_rng::rn_stream = rcon.get_num();
 
   // declare and initialize the comb in each cell
     vector<double> comb(mesh.num_cells());

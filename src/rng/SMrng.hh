@@ -25,13 +25,13 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include <vector>
 #include <algorithm>
 #include <iostream>
 #include <cassert>
 
-RNGSPACE
+namespace rtt_rng 
+{
 
 using std::vector;
 using std::fill;
@@ -115,7 +115,7 @@ inline SMrng::SMrng(long idum_)
     fill(ma.begin(), ma.end(), 0); 
 }
 
-CSPACE
+} // end namespace rtt_rng
 
 #endif                          // __rng_SMrng_hh__
 

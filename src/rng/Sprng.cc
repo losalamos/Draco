@@ -10,7 +10,8 @@
 #include <cmath>
 #include <iostream>
 
-RNGSPACE
+namespace rtt_rng 
+{
 
 // stl components
 using std::fabs;
@@ -31,7 +32,7 @@ bool Sprng::avg_test(int n, double eps) const
     return true;
 }
 
-CSPACE
+} // end namespace rtt_rng
 
 //---------------------------------------------------------------------------//
 //                              end of Sprng.cc

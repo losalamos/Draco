@@ -24,14 +24,14 @@
 #include <rng/config.h>
 
 // get rng package files
-#include "Names.hh"
 #include "Rnd_Control.hh"
 #include "Sprng.hh"
 
 // Header file that includes the SPRNG library.
 #include "rng_sprng.h"
 
-RNGSPACE
+namespace rtt_rng 
+{
 
 //---------------------------------------------------------------------------//
 // CONSTANTS USED BY SPRNG RANDOM CLASS CLIENTS
@@ -45,7 +45,7 @@ const int max_buffer = MAX_PACKED_LENGTH;
 
 extern int rn_stream;
 
-CSPACE
+} // end namespace rtt_rng
 
 #endif                          // __rng_Random_hh__
 

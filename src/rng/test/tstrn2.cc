@@ -10,7 +10,7 @@
 #include <vector>
 #include <iostream>
 
-using namespace RNG;
+using namespace rtt_rng;
 using namespace std;
 
 void t1()

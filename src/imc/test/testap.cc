@@ -26,8 +26,8 @@
 using IMC::OS_Mesh;
 using IMC::Particle_Buffer;
 using IMC::Particle;
-using RNG::Rnd_Control;
-using RNG::Sprng;
+using rtt_rng::Rnd_Control;
+using rtt_rng::Sprng;
 using dsxx::SP;
 using namespace std;
 using namespace C4;

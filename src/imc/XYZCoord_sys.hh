@@ -42,7 +42,7 @@ using std::vector;
 using std::string;
 using std::sqrt;
 
-using RNG::Sprng;
+using rtt_rng::Sprng;
 
 class XYZCoord_sys : public Coord_sys
 {

@@ -23,14 +23,14 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
 #include "ds++/Assert.hh"
 
 // Header file that includes the SPRNG library
 #include <rng/config.h>
 #include "rng_sprng.h"
 
-RNGSPACE
+namespace rtt_rng 
+{
 
 class Sprng 
 {
@@ -143,7 +143,7 @@ inline Sprng::Sprng()
     Insist (0, "You tried to default construct a Sprng!"); 
 } 
 
-CSPACE
+} // end namespace rtt_rng
 
 #endif                          // __rng_Sprng_hh__
 

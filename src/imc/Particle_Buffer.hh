@@ -39,8 +39,8 @@
 IMCSPACE
 
 // draco components
-using RNG::Sprng;
-using RNG::Rnd_Control;
+using rtt_rng::Sprng;
+using rtt_rng::Rnd_Control;
 using C4::node;
 using C4::nodes;
 using C4::C4_Req;

@@ -9,7 +9,7 @@
 #include "rng/Sprng.hh"
 #include <iostream>
 
-using namespace RNG;
+using namespace rtt_rng;
 using namespace std;
 
 main()
