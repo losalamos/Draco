@@ -226,20 +226,24 @@ void Global_Tally<MT,PT>::print(ostream &out) const
     out << ">>> Material State <<<" << endl;
     out << "======================" << endl;
     out << setw(10) << setiosflags(ios::right) << "Cell"
-	<< setw(20) << setiosflags(ios::right) << "Temperature"
-	<< setw(20) << setiosflags(ios::right) << "Rad Temp (path)"
-	<< setw(20) << setiosflags(ios::right) << "Evol-net"
-	<< setw(20) << setiosflags(ios::right) << "dE/dT" << endl;
+	<< setw(15) << setiosflags(ios::right) << "T-mat"
+	<< setw(15) << setiosflags(ios::right) << "E-mat"
+	<< setw(15) << setiosflags(ios::right) << "T-rad(path)"
+	<< setw(15) << setiosflags(ios::right) << "E-rad(path)"
+	<< setw(15) << setiosflags(ios::right) << "Evol-net"
+	<< setw(15) << setiosflags(ios::right) << "dE/dT" << endl;
     out << "=================================================="
-	<< "========================================" << endl;
+	<< "==================================================" << endl;
     out.precision(6);
     out.setf(ios::scientific, ios::floatfield);
     for (int i = 0; i < num_cells(); i++)
     {	
-	out << setw(10) << i+1 << setw(20) << temperature[i] << setw(20)
+	out << setw(10) << i+1 << setw(15) << temperature[i] 
+	    << setw(15) << temperature[i] * dedt[i] << setw(15)
 	    << pow(ewpl[i] / 
 		   (Global::a * Global::c * delta_t * volume[i]), 0.25)
-	    << setw(20) << evol_net[i] << setw(20) << dedt[i] << endl;
+	    << setw(15) << ewpl[i] / Global::c / delta_t
+	    << setw(15) << evol_net[i] << setw(15) << dedt[i] << endl;
     }
 
   // do the energy conservation check
