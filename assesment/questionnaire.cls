@@ -11,7 +11,7 @@
 %  ========================================================================  %
 			  %% identification
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{questionaire}[1999/02/04 Questionaire Class]
+\ProvidesClass{questionnaire}[1999/02/04 Questionnaire Class]
 
 			      %% options
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}

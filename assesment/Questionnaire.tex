@@ -9,7 +9,7 @@
 %       $Id$
 % 
 %  ========================================================================  %
-\documentclass{questionaire}
+\documentclass{questionnaire}
 
 \title{Software Process Maturity Questionnaire} 
 \pagestyle{myheadings}
@@ -60,7 +60,7 @@ incorporated into the software project.}
               Design}, New York, NY: Dorset House Publishing, 1989;
               {\em Mastering Technical Projects}, Erika Jones \&
              Associates, Inc.;  
-             {\em Mastering Projects Workshop}, True North pgs, Inc.;
+             {\em Mastering Projects Workshop}, True North pgs, Inc.
           } 
 \Deployment{Meetings set up by team to
               establish requirements; Memos documenting requirements;
@@ -70,10 +70,10 @@ incorporated into the software project.}
 
 \begin{KPAComment}
 This is one of the most applicable KPAs that we do not do well.  We do
-make the requirements explicit through software contracts which are
-part of the specification, implementation, and testing of the code,
-but we do poorly on formally developing the requirements, reviewing
-them, and basing our plans on them.
+make some of the requirements explicit through software contracts
+which are part of the specification, implementation, and testing of
+the code, but we do poorly on formally developing the requirements,
+reviewing them, and basing our plans on them.
 \end{KPAComment}
 
 \newpage
@@ -126,7 +126,8 @@ facilities and support tools are prepared.}
              {\em Mastering Projects Workshop}, True North pgs, Inc.;
              Staff for Project Management support}
 \Deployment{Project planned as part of training course., MS-Project
-             plans (), project web site}
+             plans (gantt charts by resource and \% completion and
+             pert charts), project web site}
 \Results{}
 \end{KPARate}
 
@@ -134,7 +135,7 @@ facilities and support tools are prepared.}
 Our project team has taken the LANL traditional project management
 course (Mastering Technical Projects) and we produce the standard
 planning artifacts required by the ASCI program office.  However we
-suspect these are inappropriate for managing software research
+find these artifacts alone are inappropriate for managing software research
 projects.  These plans provide poor maps for the actual software
 project and are not useful for tracking.  We have contracted through
 CIC--12 with True North pgs., Inc. to develop a project planning
@@ -181,7 +182,8 @@ milestones according to a documented procedure.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{MS-Project plans(), project web site}
+\Approach{MS-Project plans(Gantt charts by resource and \% completion and
+             pert charts), project web site}
 \Deployment{}
 \Results{}
 \end{KPARate}
@@ -250,6 +252,10 @@ subcontractor.}
 \end{KPARate}
 
 \begin{KPAComment}
+We have established requirements in the statement of work contracts,
+we collect periodic reports, and hope to establish formal technical
+reviews as a method of managing subcontractor work.
+
 We feel it unrealistic to expect a group of our size to oversee the
 software processes of our subcontractors.  Hence questions 4, 5, 10,
 and 11 are not applicable to our team; we can envision the division SQA
@@ -285,14 +291,15 @@ and findings with the customer's SQA personnel, as appropriate.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{SQA personnel sought by Management; Nightly regression
-             tests run (dejagnu); Failure tracking software installed
-             (GNATS); Standard test cases: Analytic Test Method,
-             LA-UR-98-5735; LA-1709; LAMS-2421, LA-UR-96-1799; Levelized
-             Design and Design by Contract used}
-\Deployment{Tools consistently used: 988 contract specifications in
-             27406 lines of code, regression test logs, analytic
-             test results}
+\Approach{SQA personnel sought by Management; Nightly regression tests
+             run (dejagnu); Failure tracking software installed
+             (GNATS); Code quality tests (purify); Standard test
+             cases: Analytic Test Method, LA-UR-98-5735; LA-1709;
+             LAMS-2421, LA-UR-96-1799; Levelized Design and Design by
+             Contract used} 
+\Deployment{Tools consistently used: 988
+             contract specifications in 27406 lines of code,
+             regression test logs, analytic test results}
 \Results{Faults caught early, Few major faults in testing}
 \end{KPARate}
 
@@ -384,7 +391,7 @@ for software process development and improvement.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{}
+\Approach{Gantt charts}
 \Deployment{}
 \Results{}
 \end{KPARate}
@@ -415,7 +422,7 @@ established and maintained.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{}
+\Approach{Gantt charts}
 \Deployment{}
 \Results{}
 \end{KPARate}
@@ -628,7 +635,8 @@ products.}
 	      PTR, 1997; Analytic Test Method; LA-UR-98-5735; 
 	      LA-1709; LAMS-2421;
               LA-UR-96-1799 }
-\Deployment{988 contract specifications in 27406 lines of code, }
+\Deployment{988 contract specifications in 27406 lines of code; test
+              results of various analytic test problems.}
 \Results{}
 \end{KPARate}
 
