@@ -173,6 +173,9 @@ class TET_Builder
     template<class IT>
     explicit TET_Builder(rtt_dsxx::SP<IT>);
 
+    // Destructor, at the moment only for debugging.
+    ~TET_Builder() {cerr << "TET_Builder destructor called.\n";}
+
     //! Build a TET_Mesh, using TET_Builder's private data.
     rtt_dsxx::SP<TET_Mesh> build_Mesh();
 

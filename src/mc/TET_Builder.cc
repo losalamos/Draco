@@ -17,6 +17,7 @@ namespace rtt_mc
 {
 
 using std::endl;
+using std::set;
 
 //! Build a TET_Mesh, using TET_Builder's private data.
 rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
@@ -26,68 +27,66 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
 
     // Create second constructor argument: layout.
     Layout layout(cells_vertices.size());
-    for (int c = 1; c <= cells_vertices.size(); c++)
+    for (int c = 1; c <= cells_vertices.size(); ++c)
         layout.set_size(c,FOUR);
 
-    std::vector< std::set<int> > L_face;
-    L_face.resize(FOUR);
+    int see_intersect[FOUR];         // Could actually be THREE.
+    SetInt Face;
 
-    std::vector< std::set<int> > R_face;
-    R_face.resize(FOUR);
-
-    std::set<int> R_total;
-
-    for (int L_cell = 0; L_cell < cells_vertices.size() - 1; L_cell++)
+    for (int L_cell = 0; L_cell < cells_vertices.size() - 1; ++L_cell)
     {
-        // Load L_face[0] with vertices #1,#2,#3; L_face[1] with #2,#3,#0; etc.
-        for (int f = 0; f < FOUR; f++)
-            for (int v = 1; v <= THREE; v++)
-                L_face[f].insert(parent[cells_vertices[L_cell][(f+v) % FOUR]]);
+        // Load L_total with all four vertices of L_cell.
+        SetInt L_total;
+        for (int v = 0; v < FOUR; ++v)
+            L_total.insert(parent[cells_vertices[L_cell][v]]);
 
-        for (int R_cell = L_cell + 1; R_cell < cells_vertices.size(); R_cell++)
+        for (int R_cell = L_cell + 1; R_cell < cells_vertices.size(); ++R_cell)
         {
             // Load R_total with all four vertices of R_cell.
-            for (int v = 0; v < FOUR; v++)
+            SetInt R_total;
+            for (int v = 0; v < FOUR; ++v)
                 R_total.insert(parent[cells_vertices[R_cell][v]]);
 
-            // Set L_face_found if match is found.
-            int L_face_found = -1;
-            for (int f = 0; f < FOUR && L_face_found < 0; f++)
-                if (std::includes(R_total.begin(),R_total.end(),
-                             L_face[f].begin(),L_face[f].end()))
-                    L_face_found = f;
+            int* end_intersect = std::set_intersection(L_total.begin(),
+                    L_total.end(),R_total.begin(),R_total.end(),see_intersect);
+            int N = end_intersect - see_intersect;
+            Check (N >= 0 && N < FOUR);
 
-            if (L_face_found >=0)
+            if (N == THREE)                         // Common face detected.
             {
-                layout(L_cell + 1, L_face_found + 1) = R_cell + 1;
+                int face_found = -1;                // Work on L_cell neighbor.
+                for (int v = 0; v < FOUR && face_found < 0; ++v)
+                {
+                    for (int f = 1 ; f <= THREE ; ++f)
+                        Face.insert(parent[cells_vertices[L_cell][(f+v) % FOUR]]);
 
-                // Load R_face[0] with vertices #1,#2,#3; etc.
-                for (int f = 0; f < FOUR; f++)
-                    for (int v = 1; v <= THREE; v++)
-                        R_face[f].insert(parent[cells_vertices
-                                          [R_cell][(f+v) % FOUR]]);
+                    if (std::includes(R_total.begin(),R_total.end(),
+                                      Face.begin(),Face.end()))
+                        face_found = v;
 
-                // Set R_face_found when match is found.
-                int R_face_found = -1;
-                for (int f = 0; f < FOUR && R_face_found < 0; f++)
-                    if (R_face[f] == L_face[L_face_found])
-                        R_face_found = f;
+                    Face.erase(Face.begin(),Face.end());
+                }
+                Check (face_found >= 0 && face_found < FOUR);
 
-                Check (R_face_found >= 0);
-                layout(R_cell + 1, R_face_found + 1) = L_cell + 1;
+                layout(L_cell + 1, face_found + 1) = R_cell + 1;
 
-                // Empty out R_face[0], R_face[1], R_face[2], and R_face[3].
-                for (int f = 0; f < FOUR; f++)
-                    R_face[f].erase(R_face[f].begin(),R_face[f].end());
+                face_found = -1;                    // Work on R_cell neighbor.
+                for (int v = 0; v < FOUR && face_found < 0; ++v)
+                {
+                    for (int f = 1 ; f <= THREE ; ++f)
+                        Face.insert(parent[cells_vertices[R_cell][(f+v) % FOUR]]);
+
+                    if (std::includes(L_total.begin(),L_total.end(),
+                                      Face.begin(),Face.end()))
+                        face_found = v;
+
+                    Face.erase(Face.begin(),Face.end());
+                }
+                Check (face_found >= 0 && face_found < FOUR);
+
+                layout(R_cell + 1, face_found + 1) = L_cell + 1;
             }
-
-            // Empty out R_total.
-            R_total.erase(R_total.begin(),R_total.end());
         }
-
-        // Empty out L_face[0], L_face[1], L_face[2], and L_face[3].
-        for (int f = 0; f < FOUR; f++)
-            L_face[f].erase(L_face[f].begin(),L_face[f].end());
     }
 
     // Create third constructor argument: vertex_vector.
