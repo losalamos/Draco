@@ -24,7 +24,7 @@ AC_CONFIG_SUBDIRS(stopwatch meshTest viz meshReaders \
 AC_CONFIG_SUBDIRS(mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader cdi_gandolf)
 AC_CONFIG_SUBDIRS(mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
-                  ConjGradDiffusionSolver)
+                  ConjGradDiffusionSolver meshReaders_Services)
 AC_CONFIG_SUBDIRS(P1Diffusion imc)
 
 AC_OUTPUT(Makefile)
