@@ -362,9 +362,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
-	   DRACO_LIBS="-rpath \${libdir} ${DRACO_LIBS}"
-	   PKG_LIBS="-rpath \${CURDIR}/.. ${PKG_LIBS}"
-	   LDFLAGS="-rpath \${CURDIR} ${LDFLAGS}"
+	   LDFLAGS="-rpath \${CURDIR}:\${CURDIR}/..:\${libdir} ${LDFLAGS}"
 	   RANLIB=':'
        fi
    ;;
@@ -471,9 +469,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
-	   DRACO_LIBS="-rpath \${libdir} ${DRACO_LIBS}"
-	   PKG_LIBS="-rpath .. ${PKG_LIBS}"
-	   LDFLAGS="-rpath . ${LDFLAGS}"
+	   LDFLAGS="-rpath \${CURDIR}:\${CURDIR}/..:\${libdir} ${LDFLAGS}"
        fi
    ;;
    sparc-sun-solaris2.*)
@@ -526,9 +522,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # set -R when building shared library executables
        if test "${enable_shared}" = yes; then
-	   DRACO_LIBS="-R \${libdir} ${DRACO_LIBS}"
-	   PKG_LIBS="-R .. ${PKG_LIBS}"
-	   LDFLAGS="-R . ${LDFLAGS}"
+	   LDFLAGS="-R \${CURDIR}:\${CURDIR}/..:\${libdir} ${LDFLAGS}"
 	   RANLIB=':'
        fi
    ;;
@@ -588,16 +582,15 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl ENVIRONMENT SUBSTITUTIONS
    dnl
 
-   dnl substitutions into Makefile.in
-   AC_SUBST(NMLGEN)dnl
+   # compiler substitutions
+   # automatic substitutions: CXXFLAGS, LDFLAGS, LIBS, CLFLAGS, CPPFLAGS
    AC_SUBST(LD)dnl
    AC_SUBST(AR)dnl
    AC_SUBST(ARFLAGS)dnl
-   AC_SUBST(ARLIBS)dnl
-   AC_SUBST(LIBDEPENDS)dnl
+   AC_SUBST(STRICTFLAG)dnl
+   AC_SUBST(PARALLEL_FLAG)dnl
 
    # files to install
-
    : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}
    AC_SUBST(installfiles)dnl
    AC_SUBST(install_executable)dnl
@@ -605,6 +598,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_SUBST(install_headers)dnl
    AC_SUBST(installdirs)dnl
 
+   # package libraries
    AC_SUBST(alltarget)dnl
    AC_SUBST(libsuffix)dnl
    AC_SUBST(dirstoclean)dnl
@@ -613,7 +607,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_SUBST(DRACO_LIBS)dnl
    AC_SUBST(VENDOR_DEPENDS)dnl
    AC_SUBST(VENDOR_LIBS)dnl
+   AC_SUBST(ARLIBS)dnl
 
+   # package testing libraries
    AC_SUBST(testcppflags)dnl
    AC_SUBST(PKG_DEPENDS)dnl
    AC_SUBST(PKG_LIBS)dnl
@@ -621,17 +617,18 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_SUBST(DRACO_TEST_LIBS)dnl
    AC_SUBST(VENDOR_TEST_DEPENDS)dnl
    AC_SUBST(VENDOR_TEST_LIBS)dnl
+   AC_SUBST(ARTESTLIBS)dnl
    AC_SUBST(test_alltarget)dnl
    AC_SUBST(test_flags)dnl
    AC_SUBST(test_scalar)dnl
    AC_SUBST(test_nprocs)dnl
    AC_SUBST(test_output_files)dnl
 
+   # configure options
    AC_SUBST(configure_command)dnl
 
-   CXXFLAGS="${CXXFLAGS} \${STRICTFLAG}"
-   AC_SUBST(STRICTFLAG)
-   AC_SUBST(PARALLEL_FLAG)
+   # namelist package (nml) generation   
+   AC_SUBST(NMLGEN)dnl
 
    dnl end of AC_DRACO_ENV
 ])

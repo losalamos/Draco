@@ -197,6 +197,9 @@ AC_DEFUN(AC_SPRNG_SETUP, [dnl
    # package
    vendor_sprng=$1
 
+   # define standard c interface
+   AC_DEFINE(__STDC__)
+
    # choices are with_sprng = lfg, lcg, yes, or no
 
    # default (sprng is no and set to lfg by default)

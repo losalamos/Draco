@@ -7,8 +7,11 @@
 # @> General Makefile.in for draco packages
 ###############################################################################
 
+# source directories: top_srcdir is the toplevel and srcdir is the
+# package
+
 top_srcdir = @top_srcdir@
-srcdir = @srcdir@
+srcdir     = @srcdir@
 
 # get the relative directory between the top_srcdir and the srcdir
 
@@ -33,72 +36,118 @@ rel_config_dir := $(shell ( cd ${top_srcdir} ; \
 ## These are assigned using "="
 ##---------------------------------------------------------------------------##
 
+## directories
+
 VPATH = @srcdir@:@top_srcdir@:${reldir} # : this colon is a bug work around.
 
-package = @package@
-prefix = @prefix@
+package     = @package@
+prefix      = @prefix@
 exec_prefix = @exec_prefix@
-includedir = @includedir@
-libdir = @libdir@
-libexecdir = @libexecdir@
-bindir = @bindir@
+includedir  = @includedir@
+libdir      = @libdir@
+libexecdir  = @libexecdir@
+bindir      = @bindir@
 
 dirstoclean = @dirstoclean@
 
+##---------------------------------------------------------------------------##
+## nml package 
+
 NMLGEN = @NMLGEN@
 
-INSTALL = @INSTALL@
-INSTALL_DATA = @INSTALL_DATA@
-UNINSTALL = rm -f
+##---------------------------------------------------------------------------##
+## install locations
 
-CC = @CC@
+INSTALL      = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+UNINSTALL    = rm -f
+
+##---------------------------------------------------------------------------##
+## c compiler flags
+
+CC     = @CC@
 CFLAGS = @CFLAGS@
-CPPFLAGS = @CPPFLAGS@
+
+##---------------------------------------------------------------------------##
+## cpp preprocessor flags
+
+CPPFLAGS  = @CPPFLAGS@
 CPPFLAGS += -I. -I${includedir}
 
-CXX = @CXX@
-STRICTFLAG = @STRICTFLAG@
-CXXFLAGS = @CXXFLAGS@
+##---------------------------------------------------------------------------##
+## C++ flags
 
-LEX = @LEX@
-LEXLIB = @LEXLIB@
-YACC = @YACC@
+CXX        = @CXX@
+STRICTFLAG = @STRICTFLAG@
+CXXFLAGS   = @CXXFLAGS@
+CXXFLAGS  += ${STRICTFLAG}
+
+##---------------------------------------------------------------------------##
+## ar flags
+
+AR      = @AR@
+ARFLAGS = @ARFLAGS@
+
+ARLIBS  = @ARLIBS@
+
+RANLIB  = @RANLIB@
+
+##---------------------------------------------------------------------------##
+## lex and yacc
+
+LEX     = @LEX@
+LEXLIB  = @LEXLIB@
+
+YACC    = @YACC@
 YACCLIB = @YACCLIB@
+
+##---------------------------------------------------------------------------##
+## m4
 
 GM4 = @GM4@
 
+##---------------------------------------------------------------------------##
+## python
+
 PYTHON = @PYTHON_PATH@
 
-LD = @LD@
-LDFLAGS = @LDFLAGS@
-PKG_LIBS = @PKG_LIBS@
-DRACO_LIBS = @DRACO_LIBS@
-VENDOR_LIBS = @VENDOR_LIBS@
-DRACO_TEST_LIBS = @DRACO_TEST_LIBS@
-VENDOR_TEST_LIBS = @VENDOR_TEST_LIBS@
-PKG_DEPENDS = @PKG_DEPENDS@
-DRACO_DEPENDS = @DRACO_DEPENDS@
-VENDOR_DEPENDS = @VENDOR_DEPENDS@
-DRACO_TEST_DEPENDS = @DRACO_TEST_DEPENDS@
-VENDOR_TEST_DEPENDS = @VENDOR_TEST_DEPENDS@
-LIBS = @LIBS@
+##---------------------------------------------------------------------------##
+## linker and libraries
 
-AR = @AR@
-ARFLAGS = @ARFLAGS@
-ARLIBS = @ARLIBS@
-RANLIB = @RANLIB@
+LD             = @LD@
+LDFLAGS        = @LDFLAGS@
+
+DRACO_LIBS     = @DRACO_LIBS@
+DRACO_DEPENDS  = @DRACO_DEPENDS@
+
+VENDOR_LIBS    = @VENDOR_LIBS@
+VENDOR_DEPENDS = @VENDOR_DEPENDS@
+
+LIBS           = @LIBS@
+
+libsuffix      = @libsuffix@
+
+##---------------------------------------------------------------------------##
+## parallel prelinking flag
 
 PARALLEL_FLAG = @PARALLEL_FLAG@
 
-libsuffix = @libsuffix@
+##---------------------------------------------------------------------------##
+## configure command
 
 configure_command = @configure_command@
 
+##---------------------------------------------------------------------------##
+## files to install
+
 install_executable = @install_executable@
-install_lib = @install_lib@
-install_headers = @install_headers@
-installfiles = @installfiles@
-installdirs = @installdirs@
+install_lib        = @install_lib@
+install_headers    = @install_headers@
+installfiles       = @installfiles@
+installdirs        = @installdirs@
+
+##---------------------------------------------------------------------------##
+## package target (library, executable)
 
 alltarget = @alltarget@
 
@@ -143,6 +192,10 @@ else
 
 endif
 
+# package library dependencies
+
+packagelibs := ${DRACO_LIBS} ${VENDOR_LIBS} ${LIBS}
+
 ##---------------------------------------------------------------------------##
 ## PARALLELISM
 ##---------------------------------------------------------------------------##
@@ -172,8 +225,6 @@ dependencies: ${dependfiles}
 
 dvi:
 	: # do nothing
-
-packagelibs := ${DRACO_LIBS} ${VENDOR_LIBS} ${LIBS}
 
 ##---------------------------------------------------------------------------##
 ## build any executables in this package, the default is one
