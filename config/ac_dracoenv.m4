@@ -450,15 +450,33 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # BIT COMPILER FLAGS ON SGI
        if test "${enable_32_bit:=no}" = yes ; then
-	   CXXFLAGS="-n32 ${CXXFLAGS}"
-	   CFLAGS="-n32 ${CFLAGS}"
-	   ARFLAGS="-n32 ${ARFLAGS}"
-	   LDFLAGS="-n32 ${LDFLAGS}"
+	   if test "${with_cxx}" = gcc ; then
+	       CXXFLAGS="-mabi=n32 ${CXXFLAGS}"
+	       CFLAGS="-mabi=n32 ${CFLAGS}"
+	       if test "${enable_shared}" = yes ; then
+		   ARFLAGS="-mabi=n32 ${ARFLAGS}"
+	       fi
+	       LDFLAGS="-mabi=n32 ${LDFLAGS}"
+	   else
+	       CXXFLAGS="-n32 ${CXXFLAGS}"
+	       CFLAGS="-n32 ${CFLAGS}"
+	       ARFLAGS="-n32 ${ARFLAGS}"
+	       LDFLAGS="-n32 ${LDFLAGS}"
+	   fi
        else 
-	   CXXFLAGS="-64 ${CXXFLAGS}"
-	   CFLAGS="-64 ${CFLAGS}"
-	   ARFLAGS="-64 ${ARFLAGS}"
-	   LDFLAGS="-64 ${LDFLAGS}"
+	   if test "${with_cxx}" = gcc ; then
+	       CXXFLAGS="-mabi=64 ${CXXFLAGS}"
+	       CFLAGS="-mabi=64 ${CFLAGS}"
+	       if test "${enable_shared}" = yes ; then
+		   ARFLAGS="-mabi=64 ${ARFLAGS}"
+	       fi
+	       LDFLAGS="-mabi=64 ${LDFLAGS}"
+	   else
+	       CXXFLAGS="-64 ${CXXFLAGS}"
+	       CFLAGS="-64 ${CFLAGS}"
+	       ARFLAGS="-64 ${ARFLAGS}"
+	       LDFLAGS="-64 ${LDFLAGS}"
+	   fi
        fi
 
        # MIPS INSTRUCTIONS ON SGI
@@ -472,6 +490,13 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   CXXFLAGS="-mips${with_mips:=4} -r10000 ${CXXFLAGS}"
 	   CFLAGS="-mips${with_mips:=4} -r10000 ${CFLAGS}"
 	   ARFLAGS="-mips${with_mips:=4} ${ARFLAGS}"
+	   LDFLAGS="-mips${with_mips:=4} ${LDFLAGS}"
+       elif test "${with_cxx}" = gcc ; then
+	   CXXFLAGS="-mips${with_mips:=4} ${CXXFLAGS}"
+	   CFLAGS="-mips${with_mips:=4} ${CFLAGS}"
+	   if test "${enable_shared}" = yes ; then
+	       ARFLAGS="-mips${with_mips:=4} ${ARFLAGS}"
+	   fi
 	   LDFLAGS="-mips${with_mips:=4} ${LDFLAGS}"
        fi
 
@@ -568,7 +593,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        #
 
        AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" = vendor ; then
+       if test -n "${vendor_gandolf}" ; then
           LIBS="${LIBS} -lfortran"
           AC_MSG_RESULT("-lfortran added to LIBS")
        fi
