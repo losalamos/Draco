@@ -18,7 +18,8 @@ AC_DRACO_ARGS
 # radphys test suite)
 
 AC_CONFIG_SUBDIRS(ds++ xm fourier stdheaders)
-AC_CONFIG_SUBDIRS(traits units nml c4 UnitTestFrame rng)
+AC_CONFIG_SUBDIRS(UnitTestFrame)
+AC_CONFIG_SUBDIRS(traits units nml c4 rng)
 AC_CONFIG_SUBDIRS(stopwatch meshTest viz meshReaders \
                   quadrature cdi)
 AC_CONFIG_SUBDIRS(mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \

@@ -139,15 +139,31 @@ ac_help="$ac_help
 ac_help="$ac_help
   --disable-strict-ansi   turn off strict ansi compliance"
 ac_help="$ac_help
+  --disable-one-per       turn off --one_per flag"
+ac_help="$ac_help
   --with-opt[=0,1,2,3]    set optimization level (0 by default)"
 ac_help="$ac_help
   --enable-debug          turn on debug (-g) option"
 ac_help="$ac_help
   --with-posix[=num]      give posix source (system-dependent defaults)"
 ac_help="$ac_help
+  --with-cppflags[=flags] add flags to \$CPPFLAGS"
+ac_help="$ac_help
+  --with-cxxflags[=flags] add flags to \$CXXFLAGS"
+ac_help="$ac_help
+  --with-cflags[=flags]   add flags to \$CFLAGS"
+ac_help="$ac_help
+  --with-f90flags[=flags] add flags to \$F90FLAGS"
+ac_help="$ac_help
+  --with-arflags[=flags]  add flags to \$ARFLAGS"
+ac_help="$ac_help
+  --with-ldflags[=flags]  add flags to \$LDFLAGS"
+ac_help="$ac_help
   --enable-32-bit         do 32-bit compilation (SGI ONLY)"
 ac_help="$ac_help
   --with-mips[=1,2,3,4]   set mips, mips4 by default (SGI ONLY)"
+ac_help="$ac_help
+  --enable-draco-stdhdrs  use draco standard headers (off by default)"
 
 # Initialize some variables set by options.
 # The variables have the same names as the options, with
@@ -1227,6 +1243,14 @@ fi
 
 
          
+      # Check whether --enable-one-per or --disable-one-per was given.
+if test "${enable_one_per+set}" = set; then
+  enableval="$enable_one_per"
+  :
+fi
+
+
+         
       # Check whether --with-opt or --without-opt was given.
 if test "${with_opt+set}" = set; then
   withval="$with_opt"
@@ -1253,6 +1277,54 @@ if test "${with_posix+set}" = set; then
 fi
 
 
+            
+      # Check whether --with-cppflags or --without-cppflags was given.
+if test "${with_cppflags+set}" = set; then
+  withval="$with_cppflags"
+  :
+fi
+
+
+            
+      # Check whether --with-cxxflags or --without-cxxflags was given.
+if test "${with_cxxflags+set}" = set; then
+  withval="$with_cxxflags"
+  :
+fi
+
+
+            
+      # Check whether --with-cflags or --without-cflags was given.
+if test "${with_cflags+set}" = set; then
+  withval="$with_cflags"
+  :
+fi
+
+
+            
+      # Check whether --with-f90flags or --without-f90flags was given.
+if test "${with_f90flags+set}" = set; then
+  withval="$with_f90flags"
+  :
+fi
+
+
+            
+      # Check whether --with-arflags or --without-arflags was given.
+if test "${with_arflags+set}" = set; then
+  withval="$with_arflags"
+  :
+fi
+
+
+            
+      # Check whether --with-ldflags or --without-ldflags was given.
+if test "${with_ldflags+set}" = set; then
+  withval="$with_ldflags"
+  :
+fi
+
+
          
       # Check whether --enable-32-bit or --disable-32-bit was given.
 if test "${enable_32_bit+set}" = set; then
@@ -1273,6 +1345,14 @@ fi
        with_mips='4'
    fi
 
+         
+      # Check whether --enable-draco-stdhdrs or --disable-draco-stdhdrs was given.
+if test "${enable_draco_stdhdrs+set}" = set; then
+  enableval="$enable_draco_stdhdrs"
+  :
+fi
+
+
    
 
 # The order of packages in AC_CONFIG_SUBDIRS **is** important.
@@ -1283,24 +1363,26 @@ fi
 
 subdirs="ds++ xm fourier stdheaders"
 
-subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng"
+subdirs="ds++ xm fourier stdheaders UnitTestFrame"
 
-subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng"
+
+subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng stopwatch meshTest viz meshReaders \
                   quadrature cdi"
 
-subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng stopwatch meshTest viz meshReaders \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader cdi_gandolf"
 
-subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng stopwatch meshTest viz meshReaders \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader cdi_gandolf mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
-                  ConjGradDiffusionSolver"
+                  ConjGradDiffusionSolver meshReaders_Services"
 
-subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng stopwatch meshTest viz meshReaders \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader cdi_gandolf mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
-                  ConjGradDiffusionSolver P1Diffusion imc"
+                  ConjGradDiffusionSolver meshReaders_Services P1Diffusion imc"
 
 
 trap '' 1 2 15
@@ -1587,10 +1669,10 @@ if test "$no_recursion" != yes; then
     esac
   done
 
-  for ac_config_dir in ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
+  for ac_config_dir in ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng stopwatch meshTest viz meshReaders \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader cdi_gandolf mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
-                  ConjGradDiffusionSolver P1Diffusion imc; do
+                  ConjGradDiffusionSolver meshReaders_Services P1Diffusion imc; do
 
     # Do not complain, so a configure script can configure whichever
     # parts of a large source tree are present.
