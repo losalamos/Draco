@@ -125,7 +125,9 @@ Fp_t Shared_Lib::get_function(const std::string &name)
 {
     Require(is_open());
     
-    Fp_t f = reinterpret_cast<Fp_t>(do_dlsym(name));
+    // ISSUE: If we switch this to a reinterpret_cast, gcc complains about a
+    // cast between pointer-to-function and pointer-to-object.
+    Fp_t f = (Fp_t)(do_dlsym(name));
 
     return f;
 }
