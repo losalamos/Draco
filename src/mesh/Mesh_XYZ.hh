@@ -83,6 +83,8 @@ class Mesh_XYZ : private XYZ_Mapper
     template<class T>
     class cell_array;
 
+    typedef cell_array<double> ccsf;
+    
     template<class T>
     class guarded_cell_array;
 
@@ -98,6 +100,7 @@ class Mesh_XYZ : private XYZ_Mapper
 	{}
 
       public:
+	typedef double value_type;
         typedef dsxx::Mat2<double>::iterator iterator;
         typedef dsxx::Mat2<double>::const_iterator const_iterator;
 
@@ -195,6 +198,7 @@ class Mesh_XYZ : private XYZ_Mapper
             data( m->get_ncp() ) {}
 
       public:
+	typedef T value_type;
         typedef typename dsxx::Mat1<T>::iterator iterator;
         typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
 
@@ -279,6 +283,8 @@ class Mesh_XYZ : private XYZ_Mapper
 
     template<class T>
     class bssf {};
+
+    typedef bssf<double> bsbf;
 
   private:
     Mat1<double> xc, yc, zc;
