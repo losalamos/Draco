@@ -10,7 +10,7 @@
 #ifndef __stopwatch_Stopwatch_hh__
 #define __stopwatch_Stopwatch_hh__
 
-#include "../ds++/NestMap.t.hh"
+#include "../ds++/NestMap.hh"
 #include "Timer.hh"
 #include <string>
 
