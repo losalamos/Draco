@@ -6,7 +6,6 @@
 // @> Template functions for the C4 MPI interface.
 //---------------------------------------------------------------------------//
 
-//#include "mpi_traits.hh"
 #include "c4_traits.hh"
 
 C4_NAMESPACE_BEG
@@ -35,22 +34,15 @@ template<class T>
 int Send( const T *buf, int nels, int dest,
 	  int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
 {
-//     MPI_Send( (void *) buf, nels, mpi_traits<T>::element_type,
-// 	      dest, tag, MPI_COMM_WORLD );
-    return C4_SUCCESS;
+    return SHM_Send( (void *) buf, nels * sizeof(T), dest, tag, group );
 }
 
 template<class T>
 int Recv( T *buf, int nels, int source,
 	  int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
 {
-//     int cnt;
-//     MPI_Status status;
-//     MPI_Recv( buf, nels, mpi_traits<T>::element_type,
-// 	      source, tag, MPI_COMM_WORLD, &status );
-//     MPI_Get_count( &status, mpi_traits<T>::element_type, &cnt );
-//     return cnt;
-    return 1;
+    int bytes = SHM_Recv( (void *) buf, nels*sizeof(T), source, tag, group );
+    return bytes/sizeof(T);
 }
 
 //---------------------------------------------------------------------------//
@@ -61,22 +53,14 @@ template<class T>
 C4_Req SendAsync( const T *buf, int nels, int dest,
 		  int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
 {
-    C4_Req r;
-//     MPI_Isend( (void *) buf, nels, mpi_traits<T>::element_type,
-// 	       dest, tag, MPI_COMM_WORLD, &r.r );
-//     r.set();
-    return r;
+    return SHM_SendAsync( (void *) buf, nels*sizeof(T), dest, tag, group );
 }
 
 template<class T>
 C4_Req RecvAsync( T *buf, int nels, int source,
 		  int tag /*=c4_traits<T*>::Tag*/, int group /*=0*/ )
 {
-    C4_Req r;
-//     MPI_Irecv( (void *) buf, nels, mpi_traits<T>::element_type,
-// 	       source, tag, MPI_COMM_WORLD, &r.r );
-//     r.set();
-    return r;
+    return SHM_RecvAsync( (void *) buf, nels*sizeof(T), source, tag, group );
 }
 
 //---------------------------------------------------------------------------//
