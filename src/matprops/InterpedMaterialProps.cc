@@ -65,7 +65,7 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 	// Make sure that this materialId
 	// has not been used before.
 
-	if (materials.find(materialId) == materials.end())
+	if (materials.find(materialId) != materials.end())
 	{
 	    throw std::runtime_error(string("InterpedMaterialProps ctor: ")
 				     + string("Duplicate material ids."));
@@ -76,53 +76,61 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 	reader.getTemperatureGrid(materialId, tempGrid);
 	reader.getDensityGrid(materialId, densityGrid);
 
-	SP<BilinearInterpGrid> spGrid(new BilinearInterpGrid(tempGrid,
-							     densityGrid));
+	bool errorOnOutOfBounds = false;
+
+	SP<BilinearInterpGrid>
+	    spGrid(new BilinearInterpGrid(tempGrid, densityGrid,
+					  errorOnOutOfBounds));
+	
 	int numGroups;
 	reader.getNumGroups(materialId, numGroups);
 
 	vector<double> energyUpperbounds(numGroups);
 	vector<double> energyLowerbounds(numGroups);
 
-	for (int i=0; i<numGroups; i++)
+	for (int i=1; i<=numGroups; i++)
 	{
-	    reader.getEnergyUpperbounds(materialId, i, energyUpperbounds[i]);
-	    reader.getEnergyLowerbounds(materialId, i, energyLowerbounds[i]);
+	    reader.getEnergyUpperbounds(materialId, i, energyUpperbounds[i-1]);
+	    reader.getEnergyLowerbounds(materialId, i, energyLowerbounds[i-1]);
 	}
 
-	dsxx::Mat2<double> data(densityGrid.size(), tempGrid.size(), 0.0);
+	dsxx::Mat2<double> data(tempGrid.size(), densityGrid.size(), 0.0);
 	vector<BilinearInterpTable> tables(numGroups);
 
-	for (int i=0; i<numGroups; i++)
+	for (int i=1; i<=numGroups; i++)
 	{
 	    if (reader.getSigmaTotal(materialId, i, data))
-		tables[i] = BilinearInterpTable(spGrid, data);
+		tables[i-1] = BilinearInterpTable(spGrid, data);
 	}
 
 	GroupedTable sigmaTotal(energyUpperbounds, energyLowerbounds,
 				tables);
 	
-	for (int i=0; i<numGroups; i++)
+	for (int i=1; i<=numGroups; i++)
 	{
 	    if (reader.getSigmaAbsorption(materialId, i, data))
-		tables[i] = BilinearInterpTable(spGrid, data);
+		tables[i-1] = BilinearInterpTable(spGrid, data);
 	}
 
 	GroupedTable sigmaAbsorption(energyUpperbounds, energyLowerbounds,
 				tables);
 	
-	for (int i=0; i<numGroups; i++)
+	for (int i=1; i<=numGroups; i++)
 	{
 	    if (reader.getSigmaEmission(materialId, i, data))
-		tables[i] = BilinearInterpTable(spGrid, data);
+		tables[i-1] = BilinearInterpTable(spGrid, data);
 	}
 
 	GroupedTable sigmaEmission(energyUpperbounds, energyLowerbounds,
 				   tables);
 
+	std::cerr << "RMR: before getElectronIonCoupling." << std::endl;
+	
 	BilinearInterpTable electronIonCoupling;
 	if (reader.getElectronIonCoupling(materialId, data))
 	    electronIonCoupling = BilinearInterpTable(spGrid, data);
+	
+	std::cerr << "RMR: after getElectronIonCoupling." << std::endl;
 	
 	BilinearInterpTable electronConductionCoeff;
 	if (reader.getElectronConductionCoeff(materialId, data))
@@ -161,6 +169,19 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 	Assert(retval.second);
 	
     }  // Loop over materials
+
+}
+
+//---------------------------------------------------------------------------//
+// has MaterialTables:
+//   Return whether the material tables specified by the material id exists.
+//---------------------------------------------------------------------------//
+
+bool IMP::hasMaterialTables(int matId) const
+{
+    MatTabMap::const_iterator matit = materials.find(matId);
+
+    return matit != materials.end();
 }
 
 //---------------------------------------------------------------------------//
@@ -338,11 +359,23 @@ IMP::MaterialStateField<FT>::MaterialStateField(const IMP &matprops_,
     
     for (int i=0; i < size(); i++)
     {
+	std::cerr << "getMaterialTables(" << getMatId(i) << ")" << std::endl;
+
+	if (!matprops.hasMaterialTables(getMatId(i)))
+	{
+	    std::ostrstream os;
+	    os << "InterpedMaterialProps::getMaterialState: "
+	       << "Unable to find material "
+	       << getMatId(i) << " in material table"
+	       << " at " << i << "." << std::ends;
+	    throw std::runtime_error(os.str());
+	}
+		
 	const MaterialTables &mattabs = matprops.getMaterialTables(getMatId(i));
 	
 	const BilinearInterpGrid &grid = mattabs.getGrid();
 
-	memento.push_back(grid.getMemento(getDensity(i), getElectronTemp(i)));
+	memento.push_back(grid.getMemento(getElectronTemp(i), getDensity(i)));
     }
 }
 

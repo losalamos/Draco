@@ -14,6 +14,7 @@
 #include "ds++/SP.hh"
 #include "units/Units.hh"
 
+#include <iosfwd>
 #include <string>
 #include <vector>
 #include <map>
@@ -121,6 +122,13 @@ class InterpedMaterialProps
 
   private:
     
+    //------------------------------------------------------------------------//
+    // hasMaterialTables:
+    //   Return whether the material tables specified by the material id exists.
+    //------------------------------------------------------------------------//
+
+    bool hasMaterialTables(int matId) const;
+	
     //------------------------------------------------------------------------//
     // getMaterialTables:
     //   Return the material tables specified by the material id.
@@ -458,6 +466,13 @@ class InterpedMaterialProps::MaterialStateField
     {
 	getProps().interpolate(*this, &MaterialTables::getIonSpecificHeat,
 			       MultByDensity(*this), results);
+    }
+
+    std::ostream &print(std::ostream &os)
+    {
+	for (int i=0; i<memento.size(); i++)
+	    os << memento[i];
+	return os;
     }
     
     // IMPLEMENTATION
