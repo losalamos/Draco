@@ -714,9 +714,9 @@ bool TestElementDefinition::test_penta_18(
     ldum = ldum && elem_def.get_side_nodes(2) == 
 	std::vector<int>(s2,s2+sizeq);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s4+sizet);
+	std::vector<int>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
-	std::vector<int>(s3,s4+sizet);
+	std::vector<int>(s4,s4+sizet);
     if (ldum) 
 	pass() << ename << " Element OK." << endl;
     else
