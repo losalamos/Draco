@@ -7,6 +7,8 @@
 # @> Makefile for Draco build document
 ###############################################################################
 
+FILE := draco-emacs
+
 DRACO := ../..
 DRACOTEXINPUTS := ${DRACO}/doc/tex
 TEXINPUTSENVS := TEXINPUTS="${DRACOTEXINPUTS}:${TEXINPUTS}"
@@ -23,40 +25,50 @@ MAKEIDX := makeindex
 
 all: postscript
 
+ghostview: postscript
+	ghostview ${FILE}.ps
+
+xdvi: dvi
+	xdvi ${FILE}
+
+pdf: postscript
+	ps2pdf ${FILE}.ps
+
 install: all
 	@echo install not ready
 
-postscript: draco-emacs.ps
+postscript: ${FILE}.ps
 
-dvi: draco-emacs.dvi
+dvi: ${FILE}.dvi
 
-draco-emacs.ps: draco-emacs.dvi
-	dvips -o draco-emacs.ps draco-emacs.dvi
+${FILE}.ps: ${FILE}.dvi
+	dvips -o ${FILE}.ps ${FILE}.dvi
 
-draco-emacs.dvi: draco-emacs.tex 
-	${LATEX} draco-emacs
-	${BIBTEX} draco-emacs
-	${LATEX} draco-emacs
-	${LATEX} draco-emacs
+${FILE}.dvi: ${FILE}.tex 
+	${LATEX} ${FILE}
+	${BIBTEX} ${FILE}
+	${LATEX} ${FILE}
+	${LATEX} ${FILE}
 
 index: 
-	${MAKEIDX} draco-emacs
+	${MAKEIDX} ${FILE}
 
 bib:
-	${BIBTEX} draco-emacs
+	${BIBTEX} ${FILE}
 
 tex:
-	${LATEX} draco-emacs
+	${LATEX} ${FILE}
 
 clean:
-	rm -f draco-emacs.dvi draco-emacs.ps draco-emacs.log draco-emacs.aux
-	rm -f draco-emacs.blg draco-emacs.bbl
-	rm -f draco-emacs.idx draco-emacs.ilg draco-emacs.ind
-	rm -f draco-emacs.toc draco-emacs.lof draco-emacs.lot
+	@rm -f ${FILE}.dvi ${FILE}.ps ${FILE}.log ${FILE}.aux
+	@rm -f ${FILE}.blg ${FILE}.bbl ${FILE}.pdf
+	@rm -f ${FILE}.idx ${FILE}.ilg ${FILE}.ind
+	@rm -f ${FILE}.toc ${FILE}.lof ${FILE}.lot
+	@rm -f *~
 
 clean-tex:
-	rm -f draco-emacs.log draco-emacs.aux
-	rm -f draco-emacs.toc draco-emacs.lof draco-emacs.lot
+	rm -f ${FILE}.log ${FILE}.aux
+	rm -f ${FILE}.toc ${FILE}.lof ${FILE}.lot
 
 ###############################################################################
 #			 end of draco/doc/emacs Makefile

@@ -40,6 +40,9 @@ postscript: ${FILE}.ps
 
 dvi: ${FILE}.dvi
 
+pdf: postscript
+	ps2pdf ${FILE}.ps
+
 ${FILE}.ps: ${FILE}.dvi
 	dvips -o ${FILE}.ps ${FILE}.dvi
 
