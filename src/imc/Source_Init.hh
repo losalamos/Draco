@@ -53,6 +53,7 @@ private:
     int npmax;
     int npnom;
     double dnpdt;
+    string ss_dist;
     
   // source initialization data
 
@@ -136,6 +137,7 @@ public:
     inline double get_t4_slope(int, int) const;
     double get_ew_vol(int cell) const { return ew_vol(cell); }
     double get_ew_ss(int cell) const { return ew_ss(cell); }
+    string get_ss_dist() const { return ss_dist; }
 
   // diagnostic functions
     void print(ostream &)const;

@@ -32,10 +32,6 @@ template<class MT>
 class Opacity_Builder
 {
 private:
-  // density, temperature, and opacity cell-centered fields
-    typename MT::CCSF_double rho;
-    typename MT::CCSF_double temp;
-    typename MT::CCSF_double opacity;
 
   // data received from XX_Interface
     vector<int> zone;
@@ -43,6 +39,9 @@ private:
     vector<double> density;
     vector<double> kappa;
     vector<double> temperature;
+    vector<double> specific_heat;
+    double implicitness;
+    double delta_t;
 
   // Begin_Doc opacity_builder-int.tex
   // Begin_Verbatim 
@@ -50,15 +49,15 @@ private:
 public:
   // templated explicit constructor depends on interface type (IT)
     template<class IT>
-    explicit Opacity_Builder(SP<IT>, SP<MT>);
+    explicit Opacity_Builder(SP<IT>);
 
   // build state member functions
 
   // build Mat_State helper functions
-    SP< Mat_State<MT> > build_Mat();
+    SP< Mat_State<MT> > build_Mat(SP<MT>);
     
   // build Opacity helper functions
-    SP< Opacity<MT> > build_Opacity();	
+    SP< Opacity<MT> > build_Opacity(SP<MT>, SP<Mat_State<MT> >);	
 
   // End_Verbatim 
   // End_Doc 

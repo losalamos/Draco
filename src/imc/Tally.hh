@@ -22,8 +22,11 @@
 
 #include "imc/Names.hh"
 #include "ds++/SP.hh"
+#include <iostream>
 
 IMCSPACE
+
+using std::ostream;
 
 template<class MT>
 class Tally 
@@ -44,7 +47,21 @@ public:
   // access energy deposited for a cell, total.
     inline double get_energy_dep(const int cell);
     inline double get_energy_dep_tot();
+
+  // diagnostics for tally
+    void print(ostream &)const;
 };
+
+//---------------------------------------------------------------------------//
+// overloaded operators
+//---------------------------------------------------------------------------//
+
+template<class MT>
+ostream& operator<<(ostream &out, const Tally<MT> &object)
+{
+    object.print(out);
+    return out;
+}
 
 //---------------------------------------------------------------------------//
 // inline member functions for Tally

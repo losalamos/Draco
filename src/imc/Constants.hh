@@ -46,11 +46,17 @@ const double epsilon = DBL_EPSILON;
 // Physical constants
 //---------------------------------------------------------------------------//
 
-// radiation constant
+// radiation constant, jerks/cm^3/keV^4
 const double a = 0.01372;
 
-// speed of light (m/s)
-const double c = 2.99792458e8;
+// speed of light, cm/shake
+const double c = 2.99792458e2;
+
+// boltzman constant, keV/K
+const double k = 8.617308e-8;
+
+// Planck constant, keV-s
+const double h = 4.135706e-18;
 
 CSPACE
 CSPACE

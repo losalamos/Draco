@@ -56,6 +56,7 @@ Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     npnom    = interface->get_npnom();
     dnpdt    = interface->get_dnpdt();
     capacity = interface->get_capacity();
+    ss_dist  = interface->get_ss_dist();
     
   // do some assertions to check that all is well
     int num_cells = mesh->num_cells();

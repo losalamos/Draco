@@ -16,7 +16,7 @@ IMCSPACE
 instantiate class Opacity_Builder<OS_Mesh>
 
 instantiate funcproto MT=OS_Mesh, IT=OS_Interface
-Opacity_Builder<MT>::Opacity_Builder(SP<IT>, SP<MT>)
+Opacity_Builder<MT>::Opacity_Builder(SP<IT>)
 
 CSPACE
 

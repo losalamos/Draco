@@ -274,10 +274,26 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
 	nsstot  += nss(i);
     }
 
+  // do the source distributions
+
+  // surface source distribution
+    string ss_dist = sinit.get_ss_dist();
+    for (int i = 1; i < nodes(); i++)
+    {
+	if (ss_dist == "none")
+	    Send (0, i, 40);
+	else if (ss_dist == "normal")
+	    Send (-1, i, 40);
+	else if (ss_dist == "cosine")
+	    Send (1, i, 40);
+	else
+	    Check (0);
+    }
+
   // make the source
     host_source = new Source<MT>(volrn, nvol, ew_vol, t4_slope, ssrn, nss, 
-				 fss, ew_ss, "census.0", nvoltot, nsstot, 
-				 ncentot, rcon, buffer, mat); 
+				 fss, ew_ss, ss_dist, "census.0", nvoltot, 
+				 nsstot, ncentot, rcon, buffer, mat); 
 
   // return source
     return host_source;
@@ -344,10 +360,25 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
     ostringstream cenfile;
     cenfile << "census." << node();
 
+  // get and calculate source distributions
+    
+  // surface source distributions
+    string ss_dist;
+    int ss_int;
+    Recv (ss_int, 0, 40);
+    if (ss_int == 0)
+	ss_dist = "none";
+    else if (ss_int == -1)
+	ss_dist = "normal";
+    else if (ss_int == 1)
+	ss_dist = "cosine";
+    else
+	Check (0);
+
   // make the source
     imc_source = new Source<MT>(volrn, nvol, ew_vol, t4_slope, ssrn, nss, 
-				fss, ew_ss, cenfile.str(), nvoltot, nsstot, 
-				ncentot, rcon, buffer, mat);
+				fss, ew_ss, ss_dist, cenfile.str(), nvoltot, 
+				nsstot, ncentot, rcon, buffer, mat);
 
   // return source
     return imc_source;
@@ -1210,7 +1241,7 @@ void Parallel_Builder<MT>::send_Opacity(const Opacity<MT> &opacity)
     
     for (int cell = 1; cell <= num_cells; cell++)
     {
-	sigma[cell-1]  = opacity.get_sigma(cell);
+	sigma[cell-1]  = opacity.get_sigma_abs(cell);
 	planck[cell-1] = opacity.get_planck(cell);
 	fleck[cell-1]  = opacity.get_fleck(cell);
     }
@@ -1281,7 +1312,7 @@ SP<Opacity<MT> > Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
     delete [] rfleck;
 
   // build and return new opacity object
-    return_opacity = new Opacity<MT>(sigma);
+    return_opacity = new Opacity<MT>(sigma, planck, fleck);
     return return_opacity;
 }
 

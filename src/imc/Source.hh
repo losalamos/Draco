@@ -55,6 +55,7 @@ public:
     typename MT::CCSF_int nss;
     typename MT::CCSF_int fss;
     typename MT::CCSF_double ew_ss;
+    string ss_dist;
 
   // census file
     ifstream census;
@@ -91,7 +92,7 @@ public:
 	   typename MT::CCSF_double &, typename MT::CCVF_double &,
 	   typename MT::CCSF_int &, typename MT::CCSF_int &, 
 	   typename MT::CCSF_int &, typename MT::CCSF_double &,
-	   string, int, int, int, SP<Rnd_Control>, 
+	   string, string, int, int, int, SP<Rnd_Control>, 
 	   const Particle_Buffer<PT> &, SP<Mat_State<MT> >);
 
   // required services for Source
@@ -102,13 +103,28 @@ public:
     SP<PT> get_evol(double);
     SP<PT> get_ss(double);
 
+  // accessors
+    int get_nvoltot() const { return nvoltot; }
+    int get_nsstot() const { return nsstot; }
+    int get_ncentot() const { return ncentot; }
+
   // source diagnostic
     void print(ostream &) const;
+
+  // bool conversion
+    inline operator bool() const;
 };
 
 //---------------------------------------------------------------------------//
 // inline functions for Source
 //---------------------------------------------------------------------------//
+// bool conversion operator
+
+template<class MT, class PT>
+inline Source<MT, PT>::operator bool() const
+{
+    return (ncentot != ncendone || nsstot != nssdone || nvoltot != nvoldone);
+}
 
 //---------------------------------------------------------------------------//
 // overloaded operators

@@ -307,13 +307,17 @@ void OS_Interface::zone_opacity_parser(ifstream &in)
 	in >> keyword;
 	if (keyword == "zonemap:")
 	    for (int i = 0; i < mat_zone.size(); i++)
+	    {
 		in >> mat_zone[i];
+		Insist(mat_zone[i] >= 0, "Materials in zonemap <= 0!");
+	    }
 	if (keyword == "num_materials:")
 	{
 	    in >> data;
 	    density.resize(data);
 	    kappa.resize(data);
 	    temperature.resize(data);
+	    specific_heat.resize(data);
 	}
 	if (keyword == "mat:")
 	{
@@ -321,6 +325,7 @@ void OS_Interface::zone_opacity_parser(ifstream &in)
 	    Check (density.size() != 0);
 	    Check (density.size() == kappa.size());
 	    Check (density.size() == temperature.size());
+	    Check (density.size() == specific_heat.size());
 	  // input the material arrays
 	    for (int i = 0; i < density.size(); i++)
 	    {
@@ -328,9 +333,17 @@ void OS_Interface::zone_opacity_parser(ifstream &in)
 		in >> density[data-1];
 		in >> kappa[data-1];
 		in >> temperature[data-1];
+		in >> specific_heat[data-1];
 	    }
 	}
+	if (keyword == "implicitness:")
+	    in >> implicitness;
     }    
+
+  // make sure we have gotten a fleck factor
+    Insist(implicitness >= 0 && implicitness <= 1, 
+	   "You must specify a proper Implicitness factor!");	
+    Insist(density.size() > 0, "You must specify at least 1 Mat.!");
 }
 
 //---------------------------------------------------------------------------//
@@ -482,6 +495,12 @@ void OS_Interface::zone_source_parser(ifstream &in)
 	  // input the surface source temps
 	    for (int i = 0; i < ss_temp.size(); i++)
 		in >> ss_temp[i];
+	}
+	if (keyword == "ss_dist:")
+	{
+	  // make sure a ss has been defined
+	    Check (ss_pos.size() != 0);
+	    in >> ss_dist;
 	}
 	if (keyword == "rad_temp:")
 	    for (int i = 0; i < rad_temp.size(); i++)

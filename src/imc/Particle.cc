@@ -144,7 +144,7 @@ bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
     bool status;
 
   // determine absorption or collision
-    if (random.ran() <= xs.get_sigma(cell) / xs.get_sigma(cell))
+    if (random.ran() <= xs.get_sigma_abs(cell) / xs.get_sigma_abs(cell))
     {
 	descriptor = "absorption";
         status = false;
@@ -402,8 +402,10 @@ void Particle<MT>::Diagnostic::print_xs(const Opacity<MT> &xs,
 {
   // do detailed diagnostic print of particle event cross sections
     output << setw(20) << setiosflags(ios::right) << "Opacity: " 
-	   << setw(12) << xs.get_sigma(cell) << "    Effective scatter: "
-	   << setw(12) << xs.get_sigeffscat(cell) << "    Effective absorption: " 
+	   << setw(12) << xs.get_sigma_abs(cell) 
+	   << "    Effective scatter: "
+	   << setw(12) << xs.get_sigeffscat(cell) 
+	   << "    Effective absorption: " 
 	   << setw(12) << xs.get_sigeffabs(cell) << endl; 
 }
 

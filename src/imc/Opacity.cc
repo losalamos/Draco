@@ -15,6 +15,7 @@ IMCSPACE
 // public member functions
 //---------------------------------------------------------------------------//
 // print function for diagnostics
+
 template<class MT>
 void Opacity<MT>::print(ostream &output, int cell) const
 {
@@ -28,12 +29,13 @@ void Opacity<MT>::print(ostream &output, int cell) const
     output.precision(4);
 
     output << setw(8) << cell << setw(15) << setiosflags(ios::scientific)
-	   << sigma(cell) << endl;
+	   << sigma_abs(cell) << endl;
 }
 
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
+
 template<class MT>
 ostream& operator<<(ostream &output, const Opacity<MT> &object)
 {

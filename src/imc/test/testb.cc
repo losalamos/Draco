@@ -243,9 +243,9 @@ int main(int argc, char *argv[])
 	    mesh = os_build.build_Mesh();
 
 	  // initialize the Opacity builder and build state 
-	    Opacity_Builder<OS_Mesh> opacity_build(interface, mesh);
-	    mat_state = opacity_build.build_Mat();
-	    opacity   = opacity_build.build_Opacity();
+	    Opacity_Builder<OS_Mesh> opacity_build(interface);
+	    mat_state = opacity_build.build_Mat(mesh);
+	    opacity   = opacity_build.build_Opacity(mesh, mat_state);
 
 	  // do the source initialization
 	    sinit = new Source_Init<OS_Mesh>(interface, mesh);

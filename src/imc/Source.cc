@@ -42,13 +42,13 @@ Source<MT, PT>::Source(typename MT::CCSF_int &vol_rnnum_,
 		       typename MT::CCSF_int &nss_, 
 		       typename MT::CCSF_int &fss_,
 		       typename MT::CCSF_double &ew_ss_,
-		       string title,
+		       string ssd, string title,
 		       int nvoltot_, int nsstot_, int ncentot_,
 		       SP<Rnd_Control> rcon_, 
 		       const Particle_Buffer<PT> &buffer_,
 		       SP<Mat_State<MT> > mat_state) 
     : vol_rnnum(vol_rnnum_), nvol(nvol_), ew_vol(ew_vol_), t4_slope(t4_),
-      ss_rnnum(ss_rnnum_), nss(nss_), fss(fss_), ew_ss(ew_ss_),
+      ss_rnnum(ss_rnnum_), nss(nss_), fss(fss_), ew_ss(ew_ss_), ss_dist(ssd), 
       census(title.c_str(), ios::in), nvoltot(nvoltot_), nsstot(nsstot_),
       ncentot(ncentot_), rcon(rcon_), buffer(buffer_), material(mat_state) 
 {
@@ -164,11 +164,19 @@ SP<PT> IMC::Source<MT, PT>::get_ss(double delta_t)
 	(current_cell, face, rand);
 
   // find inward normal, sample direction, and add
-    vector<double> omega = nss.get_Mesh().get_normal_in(current_cell, face); 
-    double costheta = sqrt(rand.ran());
-    double phi = 2.0 * Global::pi * rand.ran();
-    nss.get_Mesh().get_Coord().calc_omega(costheta, phi, omega);
 
+  // normal distributed surface source
+    vector<double> omega = nss.get_Mesh().get_normal_in(current_cell, face); 
+    
+  // cosine distribution of surface source about normal
+    if (ss_dist == "cosine")
+    {
+	double costheta = sqrt(rand.ran());
+	double phi = 2.0 * Global::pi * rand.ran();
+	nss.get_Mesh().get_Coord().calc_omega(costheta, phi, omega);
+    }
+
+  // complete description of surface source particle    
     double ew = ew_ss(current_cell);
     int cell = current_cell;
     double fraction = 1.0;

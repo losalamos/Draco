@@ -34,7 +34,7 @@ class Opacity
 {
 private:
   // sigma = kappa * rho
-    typename MT::CCSF_double sigma;
+    typename MT::CCSF_double sigma_abs;
 
   // Plankian opacity
     typename MT::CCSF_double planck;
@@ -44,15 +44,16 @@ private:
     
 public:
   // opacity constructor
-    explicit Opacity(const typename MT::CCSF_double &sigma_) 
-	: sigma(sigma_), planck(sigma_), fleck(sigma_) {}
+    inline Opacity(const typename MT::CCSF_double &,
+		   const typename MT::CCSF_double &,
+		   const typename MT::CCSF_double &);
 
   // member set and accessor functions
 
-    double get_sigma(int cell) const { return sigma(cell); }
+    double get_sigma_abs(int cell) const { return sigma_abs(cell); }
     double get_planck(int cell) const { return planck(cell); }
     double get_fleck(int cell) const { return fleck(cell); }
-    int num_cells() const { return sigma.get_Mesh().num_cells(); }
+    int num_cells() const { return sigma_abs.get_Mesh().num_cells(); }
 
   // operations
     double fplanck(int cell) const { return fleck(cell) * planck(cell); }
@@ -73,19 +74,31 @@ ostream& operator<<(ostream &, const Opacity<MT> &);
 //---------------------------------------------------------------------------//
 // inline member functions for Opacity
 //---------------------------------------------------------------------------//
+// constructor
+
+template<class MT>
+inline Opacity<MT>::Opacity(const typename MT::CCSF_double &sigma_abs_,
+			    const typename MT::CCSF_double &planck_,
+			    const typename MT::CCSF_double &fleck_)
+    : sigma_abs(sigma_abs_), planck(planck_), fleck(fleck_)
+{}
+
+//---------------------------------------------------------------------------//
+// Fleck effective scatter cross section
 
 template<class MT>
 inline double Opacity<MT>::get_sigeffscat(int cell) const 
 {
-    return fleck(cell) * sigma(cell);
+    return fleck(cell) * sigma_abs(cell);
 }
 
 //---------------------------------------------------------------------------//
+// Fleck effective absorption cross section
 
 template<class MT>
 inline double Opacity<MT>::get_sigeffabs(int cell) const 
 { 
-    return (1.0 - fleck(cell)) * sigma(cell);
+    return (1.0 - fleck(cell)) * sigma_abs(cell);
 }
 
 CSPACE

@@ -156,7 +156,7 @@ private:
 public:
   // Particle constructor
     inline Particle(vector<double>, vector<double>, double, int, Sprng, 
-		    double = 1, double = 1);
+		    double = 1, double = 1, string = "born");
 
   // null constructor required as kluge for the STL containers which need a
   // default constructor, this calls an assert(0) so you can't use it
@@ -214,9 +214,9 @@ inline void Particle<MT>::Diagnostic::header() const
 template<class MT>
 inline Particle<MT>::Particle(vector<double> r_, vector<double> omega_, 
 			      double ew_, int cell_, Sprng random_, 
-			      double frac, double tleft)
+			      double frac, double tleft, string desc)
     : ew(ew_), r(r_), omega(omega_), cell(cell_), time_left(tleft), 
-      fraction(frac), alive(true), descriptor("born"), random(random_)
+      fraction(frac), alive(true), descriptor(desc), random(random_)
 {
   // non-default particle constructor
 }

@@ -51,6 +51,7 @@ private:
     SP<Rnd_Control> rnd_con;
     SP<Parallel_Builder<MT> > parallel_builder;
     SP<Particle_Buffer<PT> > buffer;
+    SP<Source<MT> > source;
 
   // objects used only by the host
     SP<Source_Init<MT> > source_init;
@@ -81,7 +82,7 @@ public:
     void IMC_init();
 
   // run the problem for one time-cycle
-    void run_IMC();
+    void step_IMC();
 
   // do collect stuff at the end of the timestep
     void regroup();
