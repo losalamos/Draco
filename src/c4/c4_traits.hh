@@ -3,7 +3,7 @@
 // Geoffrey Furnish
 // Fri Oct  3 10:01:38 1997
 //---------------------------------------------------------------------------//
-// @> 
+// @> Traits specializations for intrinsic types in C4.
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_c4_traits_hh__
@@ -12,9 +12,11 @@
 #include "tags.hh"
 
 //===========================================================================//
-// class c4_traits - 
+// class c4_traits - Define properties of types for C4
 
-// 
+// This class and its specializations are used to implement the type-safe
+// default message tags in C4.  Any other type-determined property needed in
+// C4 would also go here.
 //===========================================================================//
 
 template<class T>
