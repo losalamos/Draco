@@ -27,10 +27,14 @@
 //                particle.  Thus, these SP's were pointing to the same 
 //                particle; the correct code is:
 //                     SP<PT> another = new PT(*particle)
-//  4) 6-18-99 : Removed the post-comb census adjustment.  Verified on 
-//               five test problems.  Discussed in memo "Eliminating the 
-//               Post-Comb Census Adjustment," XTM:99-49(U), July 13, 1999.
-//  5) 10-6-99 : Added user-/host-defined surface source cells to calc_ess.
+//  4) 6-18-99  : Removed the post-comb census adjustment.  Verified on 
+//                five test problems.  Discussed in memo "Eliminating the 
+//                Post-Comb Census Adjustment," XTM:99-49(U), July 13, 1999.
+//  5) 10-6-99  : Added user-/host-defined surface source cells to calc_ess.
+//  6) 10-27-99 : Added calculation and accessor functions for the fleck and
+//                cummings time-explicit portion of the material volume
+//                source. It will be used in the mat temp update in 
+//                Global_Tally.
 // 
 //===========================================================================//
 
@@ -60,7 +64,7 @@ template<class MT, class PT = Particle<MT> >
 class Source_Init
 {
 private:
-  // data received from MT_Interface
+    // data received from MT_Interface
     vector<double> evol_ext;
     vector<double> rad_source;
     double rad_s_tend;
@@ -74,56 +78,60 @@ private:
     double dnpdt;
     string ss_dist;
     
-  // source initialization data
+    // source initialization data
 
-  // number of particles for this cycle
+    // number of particles for this cycle
     int npwant;
 
-  // volume source variables
+    // radiation volume emission source variables
     typename MT::CCSF_double evol;
     typename MT::CCSF_double evol_net;
     double evoltot;
 
-  // surface source variables
+    // external material volume source variables
+    typename MT::CCSF_double mat_vol_src;
+    double mat_vol_srctot;
+
+    // surface source variables
     typename MT::CCSF_double ess;
     typename MT::CCSF_int fss;
     double esstot;
 
-  // radiation energy per cell, total for census energy
+    // radiation energy per cell, total for census energy
     typename MT::CCSF_double ecen;
     double ecentot;
 
-  // number of census particles per cell
+    // number of census particles per cell
     typename MT::CCSF_int ncen;
     int ncentot;
     SP<typename Particle_Buffer<PT>::Census> census;
 
-  // number of surface source and volume source particles
+    // number of surface source and volume source particles
     typename MT::CCSF_int nvol;
     typename MT::CCSF_int nss;
     int nvoltot;
     int nsstot;
 
-  // energy loss due to inadequate sampling of evol, ss, and initial census
+    // energy loss due to inadequate sampling of evol, ss, and initial census
     double eloss_vol;
     double eloss_ss;
     double eloss_cen;
 
-  // energy weights for census, ss, and vol emission source particles
+    // energy weights for census, ss, and vol emission source particles
     typename MT::CCSF_double ew_vol;
     typename MT::CCSF_double ew_ss;
     typename MT::CCSF_double ew_cen;
 
-  // maximum number of cells capable of fitting on a processor
+    // maximum number of cells capable of fitting on a processor
     int capacity;
 
-  // slope of T_electron^4 in a cell -- using neighboring values
+    // slope of T_electron^4 in a cell -- using neighboring values
     typename MT::CCVF_double t4_slope;
 
-  // private member functions used to calc initial source information
+    // private member functions used to calc initial source information
 
-  // number of source particles, census, source energies, number of volume
-  // and surface sources
+    // number of source particles, census, source energies, number of volume
+    // and surface sources
     void calc_initial_census(const MT &, const Opacity<MT> &, 
 			     const Mat_State<MT> &, Rnd_Control &, 
 			     const int);
@@ -133,25 +141,25 @@ private:
     void old_comb_census(const MT &, Rnd_Control &);
     void comb_census(const MT &, Rnd_Control &);
 
-  // initial census service functions
+    // initial census service functions
     void calc_evol(const Opacity<MT> &, const Mat_State<MT> &, const int);
     void calc_ess();
     void calc_ecen();
     void calc_ncen_init();
     void write_initial_census(const MT &, Rnd_Control &);
 
-  // calculate slope of T_electron^4 for volume emission
+    // calculate slope of T_electron^4 for volume emission
     void calc_t4_slope(const MT &, const Mat_State<MT> &);
 
 public:
-  // constructor
+    // constructor
     template<class IT> Source_Init(SP<IT>, SP<MT>);
 
-  // source initialyzer function
+    // source initialyzer function
     void initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
 		    SP<Rnd_Control>, int);
 
-  // accessor functions for Parallel_Builder
+    // accessor functions for Parallel_Builder
     int get_capacity() const { return capacity; }
     int get_nsstot() const { return nsstot; }
     int get_nvoltot() const { return nvoltot; }
@@ -165,11 +173,13 @@ public:
     double get_evol_net(int cell) const { return evol_net(cell); }
     int num_cells() const { return ncen.get_Mesh().num_cells(); }
 
-  // accessor functions for Global_Tally
+    // accessor functions for Global_Tally
     double get_delta_t() const { return delta_t; }
     double get_volume(int cell) const { return ncen.get_Mesh().volume(cell); }
+    double get_mat_vol_src(int cell) const { return mat_vol_src(cell); }
+    double get_mat_vol_srctot() const { return mat_vol_srctot; }
 
-  // set and get functions for census stuff
+    // set and get functions for census stuff
     void set_ncen(int cell, int num) { ncen(cell) = num; }
     void set_ecen(int cell, double cen) { ecen(cell) = cen; }
     int get_ncen(int cell) const { return ncen(cell); }
@@ -180,7 +190,7 @@ public:
     inline void set_census(SP<typename Particle_Buffer<PT>::Census>);
     inline SP<typename Particle_Buffer<PT>::Census> get_census() const;	
 
-  // get functions for energy
+    // get functions for energy
     double get_evoltot() const { return evoltot; }
     double get_esstot() const { return esstot; } 
     double get_ecentot() const { return ecentot; }
@@ -188,7 +198,7 @@ public:
     double get_eloss_vol() const { return eloss_vol; }
     double get_eloss_cen() const { return eloss_cen; }
 
-  // diagnostic functions
+    // diagnostic functions
     void print(ostream &) const;
 };
 
@@ -213,7 +223,7 @@ template<class MT, class PT> inline
 void Source_Init<MT,PT>::set_census(SP<typename Particle_Buffer<PT>::Census> 
 				    census_)
 {
-  // we must update this with a valid census
+    // we must update this with a valid census
     Require (census_);
     census = census_;
 }

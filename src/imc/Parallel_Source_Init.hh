@@ -89,7 +89,7 @@ class Parallel_Source_Init
     // number of particles for this cycle
     int npwant;
 
-    // volume source variables
+    // volume emission variables
     typename MT::CCSF_double evol;
     typename MT::CCSF_double evol_net;
     double evoltot;

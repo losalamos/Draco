@@ -30,16 +30,20 @@ Global_Tally<MT,PT>::Global_Tally(const MT &mesh, const Mat_State<MT>
       e_elec_tot(0), delta_t(0), dedt(mesh.num_cells()), 
       spec_heat(mesh.num_cells()), analytic_sp_heat("straight"), 
       eint_initial(0), eint_begin(0), eint_end(0), e_in_probtot(0),
-      e_esc_probtot(0), e_loss_probtot(0), evol_net(mesh.num_cells()),   
-      evoltot(0), evolext(0), nvoltot(0), ncen(mesh.num_cells()), ncentot(0),  
-      ncenrun(0), eradtot_b(0), eradtot_e(0), ecen(mesh.num_cells()),
-      ecentot(0), ewpl(mesh.num_cells()), esstot(0), nsstot(0), eloss_vol(0), 
+      e_esc_probtot(0), e_loss_probtot(0), evol_net(mesh.num_cells()), 
+      mat_vol_src(mesh.num_cells()), evoltot(0), evolext(0), nvoltot(0), 
+      ncen(mesh.num_cells()), ncentot(0), ncenrun(0), eradtot_b(0), 
+      eradtot_e(0), ecen(mesh.num_cells()), ecentot(0),
+      ewpl(mesh.num_cells()), esstot(0), nsstot(0), eloss_vol(0), 
       eloss_ss(0), eloss_cen(0), e_escape(0)
 {
     Require (mesh.num_cells() == material.num_cells());
 
-  // assign the census and cell temperature data
-    int ncentot = 0;
+    // assign the census and cell temperature data.
+    // assign the fleck-cummings time-explicit portion of material vol src.
+    int ncentot      = 0;
+    double msrccheck = 0.0;
+
     for (int cell = 1; cell <= mesh.num_cells(); cell++)
     {
 	temperature[cell-1] = material.get_T(cell);
@@ -47,12 +51,18 @@ Global_Tally<MT,PT>::Global_Tally(const MT &mesh, const Mat_State<MT>
 	spec_heat[cell-1]   = material.get_spec_heat(cell);
 	ncen[cell-1]        = source.get_ncen(cell);
 	ncentot            += ncen[cell-1];
+	mat_vol_src[cell-1] = source.get_mat_vol_src(cell);
+	msrccheck          += mat_vol_src[cell-1];
     }
-    census    = source.get_census();
-    eradtot_e = source.get_ecentot();
+    census           = source.get_census();
+    eradtot_e        = source.get_ecentot();
     analytic_sp_heat = material.get_analytic_sp_heat();
+    mat_vol_srctot   = source.get_mat_vol_srctot();
 
-  // do the initial internal energy calculation
+    // self check mat_vol_src total energy
+    Check (mat_vol_srctot == msrccheck);
+
+    // do the initial internal energy calculation
     set_energy_begin(source);
     eint_initial = eint_begin;
 
@@ -72,20 +82,24 @@ void Global_Tally<MT,PT>::set_T(const vector<double> &tally)
     Require (temperature.size() == dedt.size());
     Require (dedt.size() == spec_heat.size());
     Require (spec_heat.size() == volume.size());
+    Require (volume.size() == mat_vol_src.size());
 
-  // update cell temperatures
+    // update cell temperatures
     e_elec_tot = 0.0;
     for (int i = 0; i < temperature.size(); i++)
     {
-      // calculate net energy deposition from radiation to electrons
+        // calculate net energy deposition from radiation to electrons
 	double delta_E = tally[i] - evol_net[i];
 
-      // calculate new electron temperature in cell
+        // add in the fleck/cummings time-explicit material volume source
+	delta_E += mat_vol_src[i];
+
+        // calculate new electron temperature in cell
 	temperature[i] += delta_E / dedt[i];
 	e_elec_tot     += temperature[i] * dedt[i];
     }
 
-  // update dedt, if necessary (if it is temperature-dependent)
+    // update dedt, if necessary (if it is temperature-dependent)
     if (analytic_sp_heat == "tcube")   
 	for (int i = 0; i < dedt.size(); i++)
 	    dedt[i] = spec_heat[i] * volume[i] *
@@ -109,12 +123,14 @@ void Global_Tally<MT,PT>::set_energy_begin(const Source_Init<MT> &source)
   // get new values of evol_net
     double sum = 0.0;
     eint_begin = 0.0;
+    emat_begin = 0.0;
     for(int i = 0; i < num_cells(); i++)
     {
 	evol_net[i] = source.get_evol_net(i+1);
 	sum += evol_net[i];
-	eint_begin += temperature[i] * dedt[i];
+	emat_begin += temperature[i] * dedt[i];
     }
+    eint_begin += emat_begin;
     evolext = evoltot - sum;
 
   // get total energy from surface source
@@ -183,7 +199,7 @@ void Global_Tally<MT,PT>::set_energy_end(const vector<int> &ncen_,
   // do the cycle updates
 
   // energy in
-    double e_in   = esstot + evolext;
+    double e_in   = esstot + evolext + mat_vol_srctot;
     e_in_probtot += e_in; 
 
   // energy escaped
@@ -294,7 +310,7 @@ void Global_Tally<MT,PT>::print(ostream &out) const
     out << setw(30) << "Ending Internal Energy:" << setw(15) << eint_end 
 	<< endl;
     out << setw(30) << "Initial Material Energy:" << setw(15) 
-	<< evoltot - evolext << endl;
+	<< emat_begin << endl;
     out << setw(30) << "Ending Material Energy:" << setw(15) << e_elec_tot
 	<< endl;
     

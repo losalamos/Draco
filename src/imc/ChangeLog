@@ -1,3 +1,10 @@
+1999-11-05  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* Global_Tally.t.hh, Global_Tally.hh, Source_Init.t.hh,
+	Source_Init.hh: 1) Corrected Initial Material Energy Edit 2) Added 
+	material volume source -- time-explicit portion.  Updated to
+	imc-1_2_0. 
+
 1999-10-15  Thomas M. Evans  <tme@lanl.gov>
 
 	* Parallel_Source_Init.hh, Parallel_Source_Init.t.hh,

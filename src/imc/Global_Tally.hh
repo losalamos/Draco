@@ -18,6 +18,15 @@
 // revision history:
 // -----------------
 // 0) original
+// 1) 11-08-99 : Added the fleck-and-cummings time-explicit portion of the 
+//               material volume source (it was previously missing!) to
+//               the material temperature updates.  Also added it to the
+//               energy and energy error edit calculations.
+// 2) 11-08-99 : Corrected the initial material energy edit.  Incorrectly,
+//               it was actually representing radiation emission.  Now it is 
+//               based on the current cycle's dEdT and the material 
+//               temperature.  NOTE that if dEdT changes between timesteps, 
+//               the material energy will correspondingly change.      
 // 
 //===========================================================================//
 
@@ -47,8 +56,11 @@ private:
   // tally info
     vector<double> temperature;
     vector<double> volume;
-    double e_elec_tot;
     double delta_t;
+
+  // initial and ending material energies (based on current dedt's)
+    double emat_begin;
+    double e_elec_tot;
 
   // material state quantities
     vector<double> dedt;
@@ -69,7 +81,9 @@ private:
 
   // volume energies and source
     vector<double> evol_net;
+    vector<double> mat_vol_src;
     double evoltot;
+    double mat_vol_srctot;
     double evolext;
     int nvoltot;
 
@@ -160,7 +174,8 @@ template<class MT, class PT>
 inline double Global_Tally<MT,PT>::calc_de_cyc() const
 {   
     double elosstot = eloss_vol + eloss_ss + eloss_cen;
-    return eint_end - (eint_begin + (esstot+evolext) - e_escape - elosstot);
+    return eint_end - (eint_begin + (esstot+evolext+mat_vol_srctot) 
+		       - e_escape - elosstot);
 }
 
 //---------------------------------------------------------------------------//

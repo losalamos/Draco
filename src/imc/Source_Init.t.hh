@@ -39,10 +39,11 @@ using std::fabs;
 template<class MT, class PT>
 template<class IT>
 Source_Init<MT,PT>::Source_Init(SP<IT> interface, SP<MT> mesh)
-    : evol(mesh), evol_net(mesh), evoltot(0),  ess(mesh), fss(mesh), 
-      esstot(0), ecen(mesh), ecentot(0), ncen(mesh), ncentot(0), nvol(mesh), 
-      nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), 
+    : evol(mesh), evol_net(mesh), mat_vol_src(mesh), evoltot(0),  ess(mesh), 
+      fss(mesh), esstot(0), ecen(mesh), ecentot(0), ncen(mesh), ncentot(0), 
+      nvol(mesh), nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), 
       eloss_cen(0), ew_vol(mesh), ew_ss(mesh), ew_cen(mesh), t4_slope(mesh)
+      
 {
     Require (interface);
     Require (mesh);
@@ -316,13 +317,14 @@ void Source_Init<MT,PT>::calc_evol(const Opacity<MT> &opacity,
     using rtt_mc::global::c;
 
     // reset evoltot
-    evoltot = 0.0;
+    evoltot        = 0.0;
+    mat_vol_srctot = 0.0;
 
     // calc volume source and tot volume source
-    // evol_net needed for temperature update
+    // evol_net and mat_vol_src needed for temperature update
     for (int cell = 1; cell <= evol.get_Mesh().num_cells(); cell++)
     {
-	// calc cell centered volume source
+	// calc cell centered radiation volume source
 	evol_net(cell) = opacity.fplanck(cell) * a * c *
 	    pow(state.get_T(cell), 4) * evol.get_Mesh().volume(cell) * 
 	    delta_t;
@@ -332,6 +334,13 @@ void Source_Init<MT,PT>::calc_evol(const Opacity<MT> &opacity,
 
 	// accumulate evoltot
 	evoltot += evol(cell);
+
+	// calc cell centered material volume source
+	mat_vol_src(cell) = opacity.get_fleck(cell) * evol_ext[cell-1] *
+	    evol.get_Mesh().volume(cell) * delta_t; 
+
+	// accumulate mat_vol_srctot
+	mat_vol_srctot += mat_vol_src(cell);
     }
 
     // calculate evol due to external radiation source
