@@ -66,9 +66,9 @@ PCG_Ctrl<T>::PCG_Ctrl( const pcg_DB& pcg_db, int _nru )
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::pcg_fe( Mat1<T>& x, Mat1<T>& b,
-			  SP< PCG_MatVec<T> >& pcg_matvec,
-			  SP< PCG_PreCond<T> >& pcg_precond )
+void PCG_Ctrl<T>::pcg_fe( Mat1<T>& x, const Mat1<T>& b,
+			  SP< PCG_MatVec<T> > pcg_matvec,
+			  SP< PCG_PreCond<T> > pcg_precond )
 {
 // Initialize ijob.
     ijob = pcg::JINIT;
@@ -128,7 +128,7 @@ void PCG_Ctrl<T>::set_default()
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::it_method( Mat1<T>& x, Mat1<T>& b, Mat1<T>& xex )
+void PCG_Ctrl<T>::it_method( Mat1<T>& x, const Mat1<T>& b, Mat1<T>& xex )
 {
     if( itmeth == pcg::BASIC ) {
 	pcg::xbasr( ijob, ireq, &x(0), &xex(0), &b(0), iva, ivql, ivqr,

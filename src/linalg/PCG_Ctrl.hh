@@ -40,16 +40,16 @@ class PCG_Ctrl : private pcg_DB
 
 // Public Methods
   public:
-    void pcg_fe( Mat1<T>& x, Mat1<T>& b,
-		 SP< PCG_MatVec<T> >& pcg_matvec,
-		 SP< PCG_PreCond<T> >& pcg_precond );
+    void pcg_fe( Mat1<T>& x, const Mat1<T>& b,
+		 SP< PCG_MatVec<T> > pcg_matvec,
+		 SP< PCG_PreCond<T> > pcg_precond );
 
 // Private Methods
   private:
     void set_default();
     void set_nwi();
     void set_nwf();
-    void it_method( Mat1<T>& x, Mat1<T>& b, Mat1<T>& xex );
+    void it_method( Mat1<T>& x, const Mat1<T>& b, Mat1<T>& xex );
     void print_params();
 };
 
