@@ -172,7 +172,8 @@ class Sphyramid_Mesh
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &r, const sf_double &omega, int cell, 
 		  int &face) const;
-    // inline double get_random_walk_sphere_radius(const sf_double &,int) const;
+    inline double get_random_walk_sphere_radius(const sf_double &r,
+						int cell) const;
     inline sf_double get_normal(int cell, int face) const;
     inline sf_double get_normal_in(int cell, int face) const;
     inline double volume(int cell) const;
@@ -331,6 +332,51 @@ int Sphyramid_Mesh::next_cell(int cell, int face) const
 
     return cell_across;
 }
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Return larges allowable random walk sphere radius in cell.
+ *
+ * Note that the largest sphere is constrained only by the x extents of the
+ * cell. The returned distance is scaled back by epsilon, where epsilon is
+ * 10E-6 times the cell's x dimension.  This scale back is intended to reduce
+ * particle tracking issues with coincident cell boundaries and random walk 
+ * spheres.
+ * 
+ * \param r current position
+ * \param cell cell index
+ * \return radius of RW sphere
+ */
+double Sphyramid_Mesh::get_random_walk_sphere_radius(const sf_double &r,
+						     int cell) const
+{
+    using std::min;
+    using std::max;
+
+    Require (cell >0);
+    Require (cell <= this->layout.num_cells());
+    Require (in_cell(cell, r));
+
+    // calculate epsilon = 10E-6 * x-dimension
+    double eps = 1.0E-6*dim(1, cell);
+
+    // compute distances to boundary
+    double dx_hi = get_high_x(cell)-r[0];
+    double dx_lo = r[0]-get_low_x(cell);
+
+    // determine min_distance
+    double min_distance = min(dx_lo, dx_hi);
+
+    Check (min_distance >= 0.0);
+
+    // reduce distance by eps, but don't make it negative
+
+    double radius = max(0.0, min_distance-eps);
+
+    return radius;
+}
+
+
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Calculate the outward normal for the particular face of a cell.

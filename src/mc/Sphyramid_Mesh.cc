@@ -314,6 +314,7 @@ double Sphyramid_Mesh::get_db(const sf_double &r, const sf_double &omega,
     Require (r.size()     == 3);
     Require (omega.size() == 3);
     Require (soft_equiv(dot(omega,omega), 1.0, 1.0E-4));
+    Require (in_cell(cell, r));
 
     // set up 6 dists-to-bndry, initialize to huge value
     // -- 'cause there always be six faces in dis mesh, dogg!

@@ -789,8 +789,8 @@ void simple_one_cell_Sphyramid()
 	Sphyramid_Mesh &mesh_obj       = *mesh;
 	Sphyramid_Mesh &other_mesh_obj = *other_mesh;
 
-	if(mesh_obj   != other_mesh_obj)  ITFAILS;
-	if(!(mesh_obj == other_mesh_obj)) ITFAILS;
+	if (mesh_obj   != other_mesh_obj)  ITFAILS;
+	if (!(mesh_obj == other_mesh_obj)) ITFAILS;
     }
 
     // test the mesh's distance-to-boundary function
@@ -803,8 +803,8 @@ void simple_one_cell_Sphyramid()
 
 	omega[0] = 1.0;
 	db = mesh->get_db(r, omega, 1, intersecting_face);
-	if(!soft_equiv(db, 1.0))   ITFAILS;
-	if(intersecting_face != 2) ITFAILS;
+	if (!soft_equiv(db, 1.0))   ITFAILS;
+	if (intersecting_face != 2) ITFAILS;
 
 	r[0]     =  0.5;
 	r[1]     = -0.5*tan_beta;
@@ -813,8 +813,8 @@ void simple_one_cell_Sphyramid()
 	omega[1] =  1.0;
 	omega[2] =  0.0;
 	db = mesh->get_db(r, omega, 1, intersecting_face);
-	if(!soft_equiv(db, tan_beta)) ITFAILS;
-	if(intersecting_face != 4)    ITFAILS;
+	if (!soft_equiv(db, tan_beta)) ITFAILS;
+	if (intersecting_face != 4)    ITFAILS;
 
 	r[0]     =  0.5;
 	r[1]     =  0.0;
@@ -823,8 +823,8 @@ void simple_one_cell_Sphyramid()
 	omega[1] =  0.0;
 	omega[2] =  1.0;
 	db = mesh->get_db(r, omega, 1, intersecting_face);
-	if(!soft_equiv(db, 0.5*tan_beta-0.2)) ITFAILS;
-	if(intersecting_face != 6)            ITFAILS;
+	if (!soft_equiv(db, 0.5*tan_beta-0.2)) ITFAILS;
+	if (intersecting_face != 6)            ITFAILS;
 
 	r[0]     =  0.5;
 	r[1]     =  0.0;
@@ -833,8 +833,8 @@ void simple_one_cell_Sphyramid()
 	omega[1] =  0.70710678119;
 	omega[2] =  0.0;
 	db = mesh->get_db(r, omega, 1, intersecting_face);
-	if(!soft_equiv(db, 0.332227824872, 1.E-10)) ITFAILS;
-	if(intersecting_face != 4)                  ITFAILS;
+	if (!soft_equiv(db, 0.332227824872, 1.E-10)) ITFAILS;
+	if (intersecting_face != 4)                  ITFAILS;
 
 	r[0]     =  0.5;
 	r[1]     =  0.0;
@@ -843,8 +843,8 @@ void simple_one_cell_Sphyramid()
 	omega[1] = -0.70710678119;
 	omega[2] =  0.0;
 	db = mesh->get_db(r, omega, 1, intersecting_face);
-	if(!soft_equiv(db, 0.332227824872, 1.E-10)) ITFAILS;
-	if(intersecting_face != 3)                  ITFAILS;
+	if (!soft_equiv(db, 0.332227824872, 1.E-10)) ITFAILS;
+	if (intersecting_face != 3)                  ITFAILS;
 	
 	r[0]     =  0.5678;
 	r[1]     =  0.0;
@@ -853,10 +853,10 @@ void simple_one_cell_Sphyramid()
 	omega[1] =  0.0;
 	omega[2] =  0.0;
 	db = mesh->get_db(r, omega, 1, intersecting_face);
-	if(!soft_equiv(db, 0.5678, 1.E-10)) ITFAILS;
-	if(!((intersecting_face == 1) || (intersecting_face == 3) ||
-	     (intersecting_face == 4) || (intersecting_face == 5) ||
-	     (intersecting_face == 6))) ITFAILS;
+	if (!soft_equiv(db, 0.5678, 1.E-10)) ITFAILS;
+	if (!((intersecting_face == 1) || (intersecting_face == 3) ||
+	      (intersecting_face == 4) || (intersecting_face == 5) ||
+	      (intersecting_face == 6))) ITFAILS;
 
 	r[0]     =  1.0;
 	r[1]     = -0.5;
@@ -865,8 +865,8 @@ void simple_one_cell_Sphyramid()
 	omega[1] =  0.0;
 	omega[2] =  0.0;
 	db = mesh->get_db(r, omega, 1, intersecting_face);
-	if(!soft_equiv(db, 1.0-0.5/tan_beta, 1.E-10)) ITFAILS;
-	if(intersecting_face != 3)                    ITFAILS;
+	if (!soft_equiv(db, 1.0-0.5/tan_beta, 1.E-10)) ITFAILS;
+	if (intersecting_face != 3)                    ITFAILS;
 	
 	r[0]     =  0.5;
 	r[1]     =  0.0;
@@ -875,12 +875,34 @@ void simple_one_cell_Sphyramid()
 	omega[1] =  0.0;
 	omega[2] = -1.0;
 	db = mesh->get_db(r, omega, 1, intersecting_face);
-	if(!soft_equiv(db, tan_beta, 1.E-10)) ITFAILS;
-	if(intersecting_face != 5)            ITFAILS;
+	if (!soft_equiv(db, tan_beta, 1.E-10)) ITFAILS;
+	if (intersecting_face != 5)            ITFAILS;
 
     }
 
     // test get_random_walk_sphere_radius fucntion
+    {
+	// starting point
+	vector<double> r(3);
+	r[0] = 0.5;
+	r[1] = 0.0;
+	r[2] = 0.0;
+	if (!mesh->in_cell(1, r)) ITFAILS;
+
+	// get random walk sphere radius for this position
+	double rw_radius = mesh->get_random_walk_sphere_radius(r, 1);
+
+	if (!soft_equiv(rw_radius, 0.5-1.0E-6)) ITFAILS;
+
+	// move point and try again
+	r[0] -= 0.25;
+
+	rw_radius = mesh->get_random_walk_sphere_radius(r, 1);
+
+	if (!soft_equiv(rw_radius, 0.25-1.0E-6)) ITFAILS;
+    }
+
+    // test sample position on sphere
     {
 
     }
