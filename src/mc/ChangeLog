@@ -1,3 +1,8 @@
+2000-02-08  H. Grady Hughes  <hgh@lanl.gov>
+
+    * TET_Builder.hh, TET_Builder.cc:
+    Initial commit of components for the TET_Mesh builder class.
+
 2000-02-02  Thomas M. Evans  <tme@lanl.gov>
 
 	* Layout*, *Coord_sys*, OS_Mesh*, OS_Builder*: removed using
