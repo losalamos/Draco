@@ -49,7 +49,7 @@ namespace PhysicalConstants
     const double electronChargeSI  = 1.6021892e-19;       // C
     
     // AVOGADRO'S NUMBER (1/MOLE)
-    const double avogardro         = 6.022045e23;         // mol^-1
+    const double avogadro          = 6.022045e23;         // mol^-1
     
     // ELECTRON REST MASS (KG)
     const double electronMassSI    = 9.109534e-31;        // kg

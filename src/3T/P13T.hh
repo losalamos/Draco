@@ -50,17 +50,21 @@ class P13T
     typedef typename DiffusionSolver::FluxField FluxField;
     typedef typename DiffusionSolver::DiscFluxField DiscFluxField;
 
-    // The MaterialProperties knows the correct representation for the
-    // material state field
-
-    typedef typename MaterialProperties::MaterialStateField MaterialStateField;
-
     // Miscellaneous shortcut field typedefs from the MT class
     
     typedef typename MeshType::ccsf ccsf;    // cell-centered scalar field
     typedef typename MeshType::ncvf ncvf;    // node-centered vector field
     typedef typename MeshType::fcdsf fcdsf;  // face-centered discontinuous s.f.
     typedef typename MeshType::bsbf bsbf;    // bndry-specified boundary field.
+
+    // The MaterialProperties knows the correct representation for the
+    // material state field
+
+    typedef typename MaterialProperties::MaterialStateField<ccsf>
+            CCMaterialStateField;
+
+    typedef typename MaterialProperties::MaterialStateField<fcdsf>
+            FCMaterialStateField;
 
     // The state of the radiation field is passed in and returned
     // in this structure.
@@ -82,7 +86,7 @@ class P13T
   private:
     
     P13TOptions options;               // Specify various solve flags and values
-    SP<MaterialProperties> spProp;     // Material Props
+    SP<MeshType> spMesh;               // Mesh
     SP<DiffusionSolver> spDiffSolver;  // Which diffusion solver to use
 
 
@@ -92,7 +96,6 @@ class P13T
     // CREATORS
 
     P13T(const P13TOptions &options_,
-	 const SP<MP> &spProp_,
 	 const SP<DS> &spDiffSolver_);
     P13T(const P13T<MT,MP,DS>& );
     ~P13T();
@@ -100,19 +103,13 @@ class P13T
     // MANIPULATORS
 
     P13T& operator=(const P13T& );
-    void setMaterialProperties(const SP<MaterialProperties> &spProp_);
     void setOptions(const P13TOptions options_);
     void setDiffSolver(const SP<DiffusionSolver> &spDiffSolver_);
 
     // ACCESSORS
 
-    const SP<MeshType> getMesh() const { return spProp->getMesh(); }
+    const SP<MeshType> getMesh() const { return spMesh; }
     
-    const SP<MaterialProperties> getMaterialProperties() const
-    {
-	return spProp;
-    }
-
     //------------------------------------------------------------------------//
     // print:
     //     Print itself (for debug mostly)
@@ -126,7 +123,7 @@ class P13T
     //     based on material electron temperatures.
     //------------------------------------------------------------------------//
     
-    void initializeRadiationState(const MaterialStateField &matState,
+    void initializeRadiationState(const CCMaterialStateField &matStateCC,
 				  RadiationStateField &resultsStateField) const;
 
     //------------------------------------------------------------------------//
@@ -140,7 +137,8 @@ class P13T
     //------------------------------------------------------------------------//
     
     void solve(double dt,
-	       const MaterialStateField &matState,
+	       const CCMaterialStateField &matStateCC,
+	       const FCMaterialStateField &matStateFC,
 	       const RadiationStateField &prevStateField,
 	       const ccsf QRad,
 	       const ccsf QElectron,
@@ -183,7 +181,8 @@ class P13T
     
     void calcNewRadState(double dt,
 			 int groupNo,
-			 const MaterialStateField &matState,
+			 const CCMaterialStateField &matStateCC,
+			 const FCMaterialStateField &matStateFC,
 			 const RadiationStateField &prevStateField,
 			 const ccsf QRad,
 			 const ccsf QElectron,
@@ -201,7 +200,8 @@ class P13T
 
     void calcP1Coeffs(double dt,
 		      int groupNo,
-		      const MaterialStateField &matState,
+		      const CCMaterialStateField &matStateCC,
+		      const FCMaterialStateField &matStateFC,
 		      const RadiationStateField &prevStateField,
 		      const ccsf &QRad,
 		      const ccsf &QElectron,
@@ -222,7 +222,7 @@ class P13T
 
     void calcStarredFields(double dt,
 			   int groupNo,
-			   const MaterialStateField &matState,
+			   const CCMaterialStateField &matStateCC,
 			   const RadiationPhysics &radPhys,
 			   const ccsf &QElectron,
 			   const ccsf &QIon,
@@ -242,7 +242,7 @@ class P13T
 
     void calcStarredFields(double dt,
 			   int groupNo,
-			   const MaterialStateField &matState,
+			   const CCMaterialStateField &matStateCC,
 			   const RadiationPhysics &radPhys,
 			   const ccsf &QElectron,
 			   const ccsf &QIon,
@@ -260,7 +260,7 @@ class P13T
 
     void calcDeltaTElectron(double dt,
 			    int numGroups, 
-			    const MaterialStateField &matState, 
+			    const CCMaterialStateField &matStateCC, 
 			    const RadiationStateField &prevStateField, 
 			    const ccsf &QElectron, 
 			    const ccsf &QIon,
@@ -276,7 +276,7 @@ class P13T
     //------------------------------------------------------------------------//
 
     void calcDeltaTIon(double dt,
-		       const MaterialStateField &matState, 
+		       const CCMaterialStateField &matStateCC, 
 		       const RadiationStateField &prevStateField, 
 		       const ccsf &QIon,
 		       const ccsf &TElectron,
