@@ -158,9 +158,10 @@ class Particle_Buffer
     static int buffer_c;
 
   public:
-    // constructor
+    // Constructors
     template<class MT>
-    Particle_Buffer(const MT &, const rtt_rng::Rnd_Control &);  
+    Particle_Buffer(const MT &, const rtt_rng::Rnd_Control &); 
+    Particle_Buffer(int, const rtt_rng::Rnd_Control &);
     Particle_Buffer(int, int, int);
 
     // buffer sizing and accessor functions
@@ -200,6 +201,10 @@ class Particle_Buffer
     int get_dsize() const { return dsize; } 
     int get_isize() const { return isize; }
     int get_csize() const { return csize; }
+
+    // Accessor for census doubles and in-flight doubles
+    int get_census_dsize()   const { return dsize; }
+    int get_inflight_dsize() const { return dsize + 1; } 
 };
 
 //---------------------------------------------------------------------------//

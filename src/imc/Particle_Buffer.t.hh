@@ -59,6 +59,31 @@ Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon)
 }
 
 //---------------------------------------------------------------------------//
+// Constructor that gets the random number state size from Rnd_Control; but
+// allows the user to enter the dimensionality instead of relying on a fully
+// built mesh.
+
+template<class PT>
+Particle_Buffer<PT>::Particle_Buffer(int dimension, const Rnd_Control &rcon)
+{
+    // determine size of double info from Particles;
+    // 5 = omega(3) + ew + fraction
+    dsize = dimension + 5;
+
+    // determine size of integer info from Particles;
+    // 2 = cell + streamnum
+    isize = 2;
+
+    // determine size of character (RN state) from Particles;
+    // in bytes
+    csize = rcon.get_size();
+    Check (csize <= rtt_rng::max_buffer);
+
+    // set the static buffer variables
+    set_buffer(dsize+1, isize, csize);  
+}
+
+//---------------------------------------------------------------------------//
 // constructor for Particle_Buffer which allows the user to enter the 
 // Particle sizes
 
