@@ -515,7 +515,7 @@ Analytic_EoS::sf_char Analytic_EoS::pack() const
     packer.set_buffer(size, &packed[0]);
 
     // pack the anal_model size
-    packer << anal_model.size();
+    packer << static_cast<int>(anal_model.size());
 
     // now pack the anal model
     for (int i = 0; i < anal_model.size(); i++)

@@ -334,7 +334,7 @@ Analytic_Multigroup_Opacity::sf_char Analytic_Multigroup_Opacity::pack() const
     packer.set_buffer(size, &packed[0]);
 
     // pack the number of groups and group boundaries
-    packer << group_boundaries.size();
+    packer << static_cast<int>(group_boundaries.size());
     for (int i = 0; i < group_boundaries.size(); i++)
 	packer << group_boundaries[i];
 
@@ -342,7 +342,7 @@ Analytic_Multigroup_Opacity::sf_char Analytic_Multigroup_Opacity::pack() const
     for (int i = 0; i < models.size(); i++)
     {
 	// pack the size of this model
-	packer << models[i].size();
+	packer << static_cast<int>(models[i].size());
 	
 	// now pack the model data
 	for (int j = 0; j < models[i].size(); j++)
