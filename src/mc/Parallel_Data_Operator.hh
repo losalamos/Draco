@@ -13,11 +13,13 @@
 #define __mc_Parallel_Data_Operator_hh__
 
 #include "Topology.hh"
+#include "Comm_Patterns.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
 #include <iterator>
+#include <vector>
 
 namespace rtt_mc
 {
@@ -35,7 +37,7 @@ namespace rtt_mc
  * iterators with less functionality than random access.
  *
  * The Parallel_Data_Operator uses the rtt_mc::Topology class to determine
- * mapping between processors.
+ * mapping between processors. 
  *
  * While most functions in this class are not inlined, they are contained in
  * the header file (template functions have internal linkage).  Thus,
@@ -64,7 +66,8 @@ class Parallel_Data_Operator
 {
   public:
     // some typedefs used in this class
-    typedef rtt_dsxx::SP<Topology> SP_Topology;
+    typedef rtt_dsxx::SP<Topology>      SP_Topology;
+    typedef rtt_dsxx::SP<Comm_Patterns> SP_Comm_Patterns;
 
     // nested operations classes
     struct Data_Replicated;
@@ -90,6 +93,11 @@ class Parallel_Data_Operator
     // Map local data fields to global data fields.
     template<class FT, class GT, class Op>
     void local_to_global(FT &local, GT &global, Op);
+
+    // Create boundary cell data fields in a spatially decomposed topology.
+    template<class T> 
+    void calc_bnd_cell_data(SP_Topology, SP_Comm_Patterns, 
+			    const std::vector<T> &, std::vector<T> &);
 };
 
 //---------------------------------------------------------------------------//
@@ -391,6 +399,171 @@ struct Parallel_Data_Operator::Data_Distributed
 	// Do nothing
     }
 };
+
+//---------------------------------------------------------------------------//
+// Boundary Cell Parallel Operations (gather/scatter type)
+//---------------------------------------------------------------------------//
+/*!
+
+ * \brief Fill boundary cell data fields in a spatially decomposed topology.
+
+ * This function utilizes the rtt_mc::Comm_Patterns class to "gather" data
+ * into boundary cell fields.  What this entails is the following:
+
+ * \arg using the Comm_Patterns, each processor posts requests to processors
+ * it needs data from;
+
+ * \arg using the Comm_Patterns and local data fields, each processor sends
+ * data out to processors that need data;
+
+ * \arg each processor receives the data for its boundary cells and writes it
+ * into a local boundary cell field
+
+ * \arg topology spatially decomposed topology
+
+ * \arg pattern active Comm_Patterns object, the patterns must be set
+
+ * \arg local_data vector of local data on processor that will be sent to
+ * other processors according to the Comm_Patterns
+
+ * \arg bc_data empty boundary cell field that will be filled
+
+ */
+template<class T> void
+Parallel_Data_Operator::calc_bnd_cell_data(SP_Topology topology,
+					   SP_Comm_Patterns pattern,
+					   const std::vector<T> &local_data, 
+					   std::vector<T> &bc_data)
+{
+    using C4::C4_Req;
+    using std::vector;
+
+    Require (bc_data.empty());
+    Require (local_data.size() == topology->num_cells(C4::node()));
+    Require (*pattern);
+
+    // first make a vector of data that will be received from each processor
+    vector<C4_Req>   data_requests(pattern->get_num_recv_procs());
+    vector<double *> recv_data(pattern->get_num_recv_procs());
+
+    // iterators to the recv and send data maps
+    Comm_Patterns::const_iterator itor;
+    Comm_Patterns::const_iterator send_begin = pattern->get_send_begin();
+    Comm_Patterns::const_iterator send_end   = pattern->get_send_end();
+    Comm_Patterns::const_iterator recv_begin = pattern->get_recv_begin();
+    Comm_Patterns::const_iterator recv_end   = pattern->get_recv_end();
+
+    // post the receives to the data
+    int processor;
+    int size;
+    int index = 0;
+    for (itor = recv_begin; itor != recv_end; itor++)	
+    {
+	// determine the processor and the size of the data field
+	processor = itor->first;
+	size      = itor->second.size();
+
+	// allocate the dataerature arrays
+	recv_data[index] = new double[size];
+
+	// post the receive to the data
+	C4::RecvAsync(data_requests[index], recv_data[index], size,
+		      processor, 605);
+	index++;
+    }
+    Check (itor == recv_end);
+    Check (index == pattern->get_num_recv_procs());
+
+    // send out the data
+    int local_cell;
+    for (itor = send_begin; itor != send_end; itor++)
+    {
+	// determine the processor we are sending to
+	processor = itor->first;
+	size      = itor->second.size();
+
+	// make a data field to send
+	double *send_data = new double[size];
+
+	// fill it up with dataerature data
+	for (int i = 0; i < size; i++)
+	{
+	    // get the local cell index for a global cell that is needed by
+	    // processor and lives on this processor
+	    local_cell = topology->local_cell(itor->second[i]);
+	    Check (local_cell);
+	    
+	    // write the dataerature data into the dataorary sending field
+	    send_data[i] = local_data[local_cell-1];
+	}
+
+	// send out data and reclaim memory
+	C4::Send<double>(send_data, size, processor, 605);
+	delete [] send_data;
+    }
+    Check (itor == send_end);
+
+    // receive the data and write out bc_data field
+
+    // size bc_data data
+    int num_bcells = topology->get_boundary_cells(C4::node());
+    bc_data.resize(num_bcells);
+
+    // receive data from the processors we communicate with and write their
+    // dataerature data into the bc_data field
+    int global_cell;
+    int bound_cell;
+    int finished = 0;
+    while (finished < pattern->get_num_recv_procs())
+    {
+	// define an iterator to the recv processor map
+	itor = recv_begin;
+
+	// loop through the C4 requests for each processor that we
+	// communicate with and see if the data is here
+	for (int req = 0; req < data_requests.size(); req++)
+	{
+	    // determine the processor and size of the message we expect to
+	    // receive
+	    processor = itor->first;
+	    size      = itor->second.size();
+
+	    // see if the message is compete
+	    if (data_requests[req].complete())
+	    {
+		// indicate that this data has been received
+		finished++;
+		Check (!data_requests[req].inuse());
+
+		// write the dataeratures to the bc_data field
+		for (int c = 0; c < size; c++)
+		{
+		    // determine the global_cell
+		    global_cell = itor->second[c];
+
+		    // determine the boundary cell
+		    bound_cell = topology->global_to_boundary(global_cell,
+							      C4::node());
+		    Check (bound_cell);
+
+		    // add the dataerature to the boundary data field
+		    bc_data[bound_cell-1] = recv_data[req][c];
+		}
+		
+		// reclaim memory
+		delete [] recv_data[req];
+	    }
+	
+	    // advance the iterator
+	    itor++;
+	}
+	Check (itor == recv_end);
+    }
+    Check (finished == pattern->get_num_recv_procs());
+
+    // sync everything
+    C4::gsync();
+}
 
 } // end namespace rtt_mc
 
