@@ -1112,8 +1112,8 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
-//     try
-//     {
+    try
+    {
 	// >>> UNIT TESTS
 
 	// full replication source test for gray and multigroup
@@ -1124,14 +1124,14 @@ int main(int argc, char *argv[])
 	// test gray because all of the Frequency dependencies are in the
 	// Source_Builder base class
 	gray_source_DD_test();
-//     }
-//     catch (rtt_dsxx::assertion &ass)
-//     {
-// 	cout << "While testing tstSource_Builder, " << ass.what()
-// 	     << endl;
-// 	C4::Finalize();
-// 	return 1;
-//     }
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing tstSource_Builder, " << ass.what()
+	     << endl;
+	C4::Finalize();
+	return 1;
+    }
 
     {
 	C4::HTSyncSpinLock slock;
