@@ -93,9 +93,12 @@
 
 ;; Inserting comment blocks
 
-(define-key global-map [(f5)]                'rtt-insert-function-doc)
-(define-key global-map [(meta control f5)]   'rtt-insert-class-doc)
-(define-key global-map [(f6)]                'rtt-insert-comment-divider)
+(define-key global-map [(f5)]               'rtt-insert-function-doc)
+(define-key global-map [(meta control f5)]  'rtt-insert-class-doc)
+(define-key global-map [(f6)]               'rtt-insert-comment-divider)
+
+;; Insert ChangeLog comment.
+(define-key global-map [(shift control f5)]   'add-change-log-entry)
 
 ;; Buffer management
 
