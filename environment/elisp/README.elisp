@@ -15,7 +15,8 @@ In ~/.xemacs/init.el add the following elisp.  You should replace the
 path to the elisp directory with the real path on your current
 machine.  The value shown below works on the CCS-4 Linux LAN.
 
-(setq ccs4-elisp-dir "/codes/radtran/vendors/xemacs/elisp/")
+(setq ccs4-env-dir "/codes/radtran/vendors/environmnet/")
+(setq ccs4-elisp-dir (concat ccs4-env-dir "elisp/"))
 (if (file-accessible-directory-p ccs4-elisp-dir)
     (setq load-path (cons ccs4-elisp-dir load-path)))
 (require 'ccs4defaults)

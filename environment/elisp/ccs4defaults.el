@@ -4,14 +4,26 @@
 ;; 10 June 2002
 ;; ========================================
 
+;;========================================
+;; HOW TO USE:
+;;
+;; In the file ${HOME}/.xemacs/init.el add the line:
+;;
+;; (setq ccs4-env-dir "/codes/radtran/vendors/environment/")
+;; (setq ccs4-elisp-dir (concat ccs4-env-dir "elisp/"))
+;; (if (file-accessible-directory-p ccs4-elisp-dir)
+;;     (setq load-path (cons ccs4-elisp-dir load-path)))
+;; (require 'ccs4defaults)
+;;
 ;; NOTE: ALL defvar values may be overriden in users's init.el.
+;;========================================
 
 
 ;; Defaults for personal directories
 ;; ========================================
 
 (defvar my-home-dir (concat (getenv "HOME") "/"))
-(defvar my-elisp-dir (concat my-home-dir "lib/elisp/"))
+(defvar my-elisp-dir (concat my-home-dir ".xemacs/"))
 (defvar my-templates-dir (concat my-elisp-dir "templates/"))
 (defvar my-info-dir (concat my-elisp-dir "info/"))
 
@@ -89,21 +101,51 @@ will be overridden for some modes\n
 ;; CCS-4 directories
 ;; ========================================
 
-;; The standard CCS-4 elisp files should be installed at 
-;; /codes/radtran/vendors/xemacs/elisp.
-(defvar ccs4-elisp-dir "/codes/radtran/vendors/xemacs/elisp/")
-;;(defvar ccs4-elisp-dir "/usr/projects/draco/elisp-head/")
+;; The standard Draco environment files should be installed at 
+;; /codes/radtran/vendors/environment in the directories:
+;;
+;;    elisp       XEmacs elisp scripts and settings
+;;    templates   Templates for new documents
+;;    bibfiles
+;;    bibtex
+;;    latex
+;;    tex
+;;    
+(defvar ccs4-env-dir "/codes/radtran/vendors/environment/"
+"\nDirectory that contains Draco environment files.
+   - elisp       Subdirectory that contains XEmacs elisp scripts that
+                 support the Draco development environment.
+   - bibfiles    Subdirectory that contains LaTeX bibfiles for the
+                 Draco development environment.
+   - bibtex      Subdirectory that contains LaTeX style sheets for the
+                 Draco development environment.
+   - bin
+   - doc
+   - latex       Subdirectory that contains LaTeX style sheets for the
+                 Draco development environment.
+   - share
+   - templates   Subdirectory that contains templates that support
+                 rapid development of C++ source files.  These
+                 templates are used when the user selects 
+                 \"New file ...\" from the XEmacs RTT menu.
+   - tex         currently empty.")
 
 ;; If the user specified value or the default value does not exist then
 ;; 1) look at the default location.
 ;; 2) print an error message.
-(if (not (file-accessible-directory-p ccs4-elisp-dir))
-    (if (file-accessible-directory-p "/usr/projects/draco/vendors/xemacs/elisp/")
-	(setq ccs4-elisp-dir "/usr/projects/draco/xemacs/elisp/")
-      (error (concat "Unable to find ccs4-elisp-dir = " ccs4-elisp-dir))))
+(if (not (file-accessible-directory-p ccs4-env-dir))
+    (if (file-accessible-directory-p "/usr/projects/draco/environment/")
+	(setq ccs4-env-dir "/usr/projects/draco/environment/")
+      (error (concat "Unable to find ccs4-env-dir = " ccs4-env-dir))))
 
-(setq ccs4-templates-dir (concat ccs4-elisp-dir "templates/"))
-(setq ccs4-info-dir (concat ccs4-elisp-dir "info/"))
+(defvar ccs4-elisp-dir (concat ccs4-env-dir "elisp/")
+"\nDirectory containing standard CC4 or Draco elisp code.")
+(defvar ccs4-templates-dir (concat ccs4-env-dir "templates/")
+"\nDirectory containing source code templates that are to be
+used with the Draco elisp code (RTT Menu).")
+(defvar ccs4-info-dir (concat ccs4-elisp-dir "info/")
+"\nDirectory containing extra Info files.  These files are common
+to the Draco development environment.")
 
 ;; Add CCS-4 xemacs directories to load path
 ;; Assumes that ccs4-elisp-dir is valid
