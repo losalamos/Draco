@@ -13,11 +13,17 @@
 #define __imc_Flat_Mat_State_Builder_hh__
 
 #include "Mat_State_Builder.hh"
+#include "Global.hh"
 #include "ds++/Assert.hh"
 #include <vector>
 
 namespace rtt_imc
 {
+ 
+// Forward declarations.
+class Flat_Data_Container;
+class Gray_Frequency;
+class Multigroup_Frequency;
  
 //===========================================================================//
 /*!
@@ -42,40 +48,60 @@ namespace rtt_imc
 // 
 //===========================================================================//
 
-template<class MT>
-class Flat_Mat_State_Builder : public Mat_State_Builder<MT>
+template<class MT, class FT>
+class Flat_Mat_State_Builder
+    : public Mat_State_Builder<MT,FT>
 {
   public:
     // Useful typedefs.
-    typedef rtt_dsxx::SP<MT>             SP_Mesh;
-    typedef rtt_dsxx::SP<Mat_State<MT> > SP_Mat_State;
-    typedef rtt_dsxx::SP<Opacity<MT> >   SP_Opacity;
-    typedef std::vector<double>          sf_double;
+    typedef rtt_dsxx::SP<MT>                                   SP_Mesh;
+    typedef rtt_dsxx::SP<Mat_State<MT> >                       SP_Mat_State;
+    typedef rtt_dsxx::SP<FT>                                   SP_Frequency;
+    typedef rtt_dsxx::SP<Opacity<MT,FT> >                      SP_Opacity;
+    typedef std::vector<double>                                sf_double;
+    typedef std::vector<sf_double>                             vf_double;
+    typedef rtt_imc::global::Type_Switch<Gray_Frequency>       Switch_Gray;
+    typedef rtt_imc::global::Type_Switch<Multigroup_Frequency> Switch_MG;
+    typedef rtt_dsxx::SP<Flat_Data_Container>                  SP_Flat_Data;
+    typedef rtt_dsxx::SP<Opacity<MT,Gray_Frequency> >          SP_Gray_Opacity;
+    typedef rtt_dsxx::SP<Opacity<MT,Multigroup_Frequency> >    SP_MG_Opacity;
+    typedef rtt_dsxx::SP<Gray_Frequency>                       SP_Gray;
+    typedef rtt_dsxx::SP<Multigroup_Frequency>                 SP_MG;
 
   private:
     // Flat, cell-centered data fields received from the interface.
+    SP_Flat_Data flat_data;
 
     // Densities in g/cc.
-    sf_double density;
-
-    // Absorption opacity in /cm.
-    sf_double absorption_opacity;
-
-    // Scattering opacity in /cm.
-    sf_double scattering_opacity;
+    sf_double    density;
 
     // Material temperatures in keV.
-    sf_double temperature;
-
-    // Material specific heats in Jerks/gm/keV.
-    sf_double specific_heat;
+    sf_double    temperature;
 
     // Fleck and Cummings implicitness factor.
-    double    implicitness;
+    double       implicitness;
 
     // Timestep in shakes.
-    double    delta_t;
-    
+    double       delta_t;
+
+  private:
+    // >>> PARTIAL SPECIALIZATIONS ON FREQUENCY TYPE
+
+    // Build a Gray_Frequency.
+    template<class Stop_Explicit_Instantiation>
+    rtt_dsxx::SP<Gray_Frequency> build_frequency(Switch_Gray);
+
+    // Build a Multigroup_Frequency
+    template<class Stop_Explicit_Instantiation>
+    rtt_dsxx::SP<Multigroup_Frequency> build_frequency(Switch_MG);
+
+    // Build an Opacity<MT,Gray_Frequency>
+    template<class Stop_Explicit_Instantiation>
+    SP_Gray_Opacity build_opacity(Switch_Gray, SP_Mesh, SP_Gray, SP_Mat_State);
+
+    // Build an Opacity<MT,Multigroup_Frequency>
+    template<class Stop_Explicit_Instantiation>
+    SP_MG_Opacity build_opacity(Switch_MG, SP_Mesh, SP_MG, SP_Mat_State);
 
   public:
     // Constructor.
@@ -84,11 +110,14 @@ class Flat_Mat_State_Builder : public Mat_State_Builder<MT>
 
     // >>> PUBLIC INTERFACE
 
+    // Build the frequency.
+    SP_Frequency build_Frequency();
+
     // Build the Mat_State.
-    SP_Mat_State build_Mat_State(SP_Mesh) const;
+    SP_Mat_State build_Mat_State(SP_Mesh);
 
     // Build the Opacity.
-    SP_Opacity build_Opacity(SP_Mesh m, SP_Mat_State s) const;
+    SP_Opacity build_Opacity(SP_Mesh, SP_Frequency, SP_Mat_State);
 };
 
 //---------------------------------------------------------------------------//
@@ -108,28 +137,26 @@ class Flat_Mat_State_Builder : public Mat_State_Builder<MT>
  * interface specification defined by rtt_imc::Interface and
  * rtt_imc::Flat_Data_Interface. 
  */
-template<class MT>
+template<class MT, class FT>
 template<class IT>
-Flat_Mat_State_Builder<MT>::Flat_Mat_State_Builder(rtt_dsxx::SP<IT> interface)
-    : Mat_State_Builder<MT>()
+Flat_Mat_State_Builder<MT,FT>::Flat_Mat_State_Builder(
+    rtt_dsxx::SP<IT> interface)
+    : Mat_State_Builder<MT,FT>()
 {
     Require (interface);
 
     // assign data members from the interface parser
-    density            = interface->get_density();
-    absorption_opacity = interface->get_absorption_opacity();
-    scattering_opacity = interface->get_scattering_opacity();
-    temperature        = interface->get_temperature();
-    specific_heat      = interface->get_specific_heat();
-    implicitness       = interface->get_implicitness_factor();
-    delta_t            = interface->get_delta_t();
+    density       = interface->get_density();
+    temperature   = interface->get_temperature();
+    implicitness  = interface->get_implicitness_factor();
+    delta_t       = interface->get_delta_t();
+    flat_data     = interface->get_flat_data_container();
 
     Ensure (delta_t > 0.0);
     Ensure (implicitness >= 0.0 && implicitness <= 1.0);
-    Ensure (density.size() == absorption_opacity.size());
-    Ensure (density.size() == scattering_opacity.size());
     Ensure (density.size() == temperature.size());
-    Ensure (density.size() == specific_heat.size());
+    Ensure (flat_data);
+    Ensure (flat_data->specific_heat.size() == density.size());
 }
 
 } // end namespace rtt_imc
