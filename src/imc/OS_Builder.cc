@@ -168,7 +168,7 @@ SP<Layout> OS_Builder::Build_Layout(const Coord_sys &coord)
 
   // set number of faces for each cell in Layout, for OS Meshes this is two
   // times the dimension of the Mesh, ie. a 2D mesh cell has 4 faces
-    for (int i = 1; i < size; i++)
+    for (int i = 1; i <= size; i++)
 	layout->Set_size(i, coord.Get_dim()*2);
 
   // assign cells and faces to Layout

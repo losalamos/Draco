@@ -39,7 +39,8 @@ Opacity.o: Opacity.cc Opacity.hh OS_Mesh.hh Layout.hh Names.hh
 	${CC} -c Opacity.cc ${INCLUDE} ${OPTIONS}
 
 OS_Builder.o: OS_Builder.cc OS_Builder.hh OS_Mesh.hh Layout.hh \
-              Coord_sys.hh Names.hh XYCoord_sys.hh XYZCoord_sys.hh
+              Coord_sys.hh Names.hh XYCoord_sys.hh XYZCoord_sys.hh \
+              OS_Parser.hh	
 	${CC} -c OS_Builder.cc ${INCLUDE} ${OPTIONS}
 
 OS_Parser.o: OS_Parser.cc OS_Parser.hh OS_Mesh.hh Names.hh

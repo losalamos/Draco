@@ -20,6 +20,19 @@
 // 
 //===========================================================================//
 
+#include "Names.hh"
+#include "OS_Mesh.hh"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+IMCSPACE
+
+using std::string;
+using std::vector;
+using std::ifstream;
+
 class OS_Parser 
 {
 private:
@@ -31,6 +44,8 @@ private:
 
   // number of fine cells per coarse cell
     vector< vector<int> > fine_cells;
+  // recursive total number of fine_cells per coarse cell
+    vector< vector<int> > accum_cells;
   // coarse edges
     OS_Mesh::CCVF_a coarse_edge;
   // fine cell edges
@@ -56,14 +71,20 @@ private:
     void Parser2D(ifstream &);
     void Parser3D(ifstream &);
 
-  // Source and Opacity parser functions
+  // Source member functions
     void Parser_source(ifstream &);
+
+  // Opacity parser functions
     void Parser_opacity(ifstream &);
+    void Zone_mapper();
+    void Calc_zone(int, int);
+    void Calc_zone(int, int, int);
 public:
   // constructor
     explicit OS_Parser(const string &infile)
 	: input_file(infile), coord_system(""), fine_cells(0), 
-	  coarse_edge(0), fine_edge(0), bnd_cond(0), zones(0)
+	  accum_cells(0), coarse_edge(0), fine_edge(0), bnd_cond(0), 
+	  zone(0), mat_zone(0), sigma(0), sigma_a(0), sigma_s(0)
     {}
 
   // public Parser member functions
@@ -78,6 +99,8 @@ public:
     const vector<int>& Zone() const { return zone; }
     const vector<int>& Mat_zone() const { return mat_zone; }
 };
+
+CSPACE
 
 #endif                          // __imctest_OS_Parser_hh__
 
