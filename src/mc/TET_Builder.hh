@@ -52,6 +52,7 @@ using std::endl;  // FOR DEBUGGING.
 //                 TET_Mesh class.  The TET_Mesh class no longer has knowledge
 //                 of element_sets.  New diagnostic functions print_node_sets,
 //                 print_side_sets, and print_cell_sets are added to TET_Mesh.
+//  6) 2000-12-01: New, faster connectivity builder for TET meshes.
 //
 //___________________________________________________________________________//
 
