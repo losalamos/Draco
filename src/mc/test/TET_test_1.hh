@@ -50,9 +50,16 @@ bool fail(int line, char *file)
 //  3) 2000-05-03: TET_Builder, TET_Mesh, and their test files now use the
 //                 get_node_coord_units(), get_node_sets(), get_element_sets(),
 //                 and get_title() services of the Mesh_Reader base class.
-//                 At the top level (TET_Mesh), the get_..._sets() services
+//                 At the top level (TET_Mesh), the get_element_sets() services
 //                 will later be replaced by side- and cell-specific data
 //                 structures.
+//  4) 2000-06-08: Information from the interface service get_element_sets()
+//                 is now converted to two separate maps, side_sets and
+//                 cell_sets, and used to initialize data members of the
+//                 TET_Mesh class.  The TET_Mesh class no longer has knowledge
+//                 of element_sets.  New diagnostic functions print_node_sets,
+//                 print_side_sets, and print_cell_sets are added to TET_Mesh.
+//
 //___________________________________________________________________________//
 
 class TET_test_1

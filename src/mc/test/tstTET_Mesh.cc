@@ -19,9 +19,17 @@
 //  4) 2000-05-03: TET_Builder, TET_Mesh, and their test files now use the
 //                 get_node_coord_units(), get_node_sets(), get_element_sets(),
 //                 and get_title() services of the Mesh_Reader base class.
-//                 At the top level (TET_Mesh), the get_..._sets() services
+//                 At the top level (TET_Mesh), the get_element_sets() services
 //                 will later be replaced by side- and cell-specific data
 //                 structures.
+//  5) 2000-06-08: Information from the interface service get_element_sets()
+//                 is now converted to two separate maps, side_sets and
+//                 cell_sets, and used to initialize data members of the
+//                 TET_Mesh class.  The TET_Mesh class no longer has knowledge
+//                 of element_sets.  New diagnostic functions print_node_sets,
+//                 print_side_sets, and print_cell_sets are added to TET_Mesh.
+//
+//___________________________________________________________________________//
 
 #include "../TET_Mesh.hh"
 #include "../TET_Builder.hh"
@@ -295,7 +303,7 @@ void Test_TET()
     s7.insert(4);
     node_set[std::string("radiation_source/rad_source")] = s7;
 
-    MAP_String_SetInt element_set;
+    MAP_String_SetInt side_set;
 
     SetInt s8;
     s8.insert(0);
@@ -304,26 +312,19 @@ void Test_TET()
     s8.insert(3);
     s8.insert(4);
     s8.insert(5);
-    element_set[std::string("boundary_condition/reflective")] = s8;
+    side_set[std::string("boundary_condition/reflective")] = s8;
 
-    SetInt s9;
-    element_set[std::string("boundary_condition/vacuum")] = s9;
-
-    SetInt s10;
-    element_set[std::string("ion_source/src_name1")] = s10;
+    MAP_String_SetInt cell_set;
 
     SetInt s11;
-    s11.insert(6);
-    s11.insert(7);
-    element_set[std::string("ion_source/src_name2")] = s11;
+    s11.insert(0);
+    s11.insert(1);
+    cell_set[std::string("ion_source/src_name2")] = s11;
 
     SetInt s12;
-    s12.insert(6);
-    s12.insert(7);
-    element_set[std::string("material_region/control_rod")] = s12;
-
-    SetInt s13;
-    element_set[std::string("material_region/shield")] = s13;
+    s12.insert(0);
+    s12.insert(1);
+    cell_set[std::string("material_region/control_rod")] = s12;
 
     std::string titl("Test 2-tet pyramid in RTT-format mesh.");
 
@@ -373,7 +374,11 @@ void Test_TET()
 cerr << "Ready for mesh_ptr_H." << endl;
 
     SP<TET_Mesh> mesh_ptr_H(new TET_Mesh(coor, layo, vertex_vec,
-        node_coord_unit, node_set, element_set, titl, sides_ver, cells_ver));
+    node_coord_unit, node_set, side_set, cell_set, titl,
+    sides_ver, cells_ver));
+mesh_ptr_H->print_node_sets(cerr);
+mesh_ptr_H->print_side_sets(cerr);
+mesh_ptr_H->print_cell_sets(cerr);
 
     if ( !mesh_ptr_H )                                                 ITFAILS;
     if ( !mesh_ptr_H->full_Mesh() )                                    ITFAILS;
@@ -414,6 +419,9 @@ cerr << "Ready for mesh_ptr_0." << endl;
     TET_Builder builder(interface);
 
     SP<TET_Mesh> mesh_ptr_0 = builder.build_Mesh();
+mesh_ptr_0->print_node_sets(cerr);
+mesh_ptr_0->print_side_sets(cerr);
+mesh_ptr_0->print_cell_sets(cerr);
     if (!mesh_ptr_0)                                  ITFAILS;
 
     // The pointers themselves should not be equal...
@@ -451,6 +459,9 @@ cerr << "Ready for mesh_ptr_1." << endl;
     TET_Builder read_build_1(reader_1);
 
     SP<TET_Mesh> mesh_ptr_1 = read_build_1.build_Mesh();
+mesh_ptr_1->print_node_sets(cerr);
+mesh_ptr_1->print_side_sets(cerr);
+mesh_ptr_1->print_cell_sets(cerr);
     if (!mesh_ptr_1)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...
@@ -555,6 +566,9 @@ cerr << "Ready for mesh_ptr_2." << endl;
     TET_Builder read_build_2(reader_2);
 
     SP<TET_Mesh> mesh_ptr_2 = read_build_2.build_Mesh();
+mesh_ptr_2->print_node_sets(cerr);
+mesh_ptr_2->print_side_sets(cerr);
+mesh_ptr_2->print_cell_sets(cerr);
     if (!mesh_ptr_2)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...
@@ -578,6 +592,9 @@ cerr << "Ready for mesh_ptr_3." << endl;
     TET_Builder read_build_3(reader_3);
 
     SP<TET_Mesh> mesh_ptr_3 = read_build_3.build_Mesh();
+mesh_ptr_3->print_node_sets(cerr);
+mesh_ptr_3->print_side_sets(cerr);
+mesh_ptr_3->print_cell_sets(cerr);
     if (!mesh_ptr_3)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...

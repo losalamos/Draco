@@ -26,12 +26,12 @@ namespace rtt_mc
  */
 TET_Mesh::TET_Mesh(rtt_dsxx::SP<Coord_sys> coord_, Layout & layout_,
     SF_THREEVECTOR & vertex_vector_, std::string & node_coord_units_,
-    MAP_String_SetInt & node_sets_, MAP_String_SetInt & element_sets_,
-    std::string & title_, VF_INT & sides_vertices_, VF_INT & cells_vertices_,
-    bool submesh_)
+    MAP_String_SetInt & node_sets_, MAP_String_SetInt & side_sets_,
+    MAP_String_SetInt & cell_sets_, std::string & title_,
+    VF_INT & sides_vertices_, VF_INT & cells_vertices_, bool submesh_)
     : coord(coord_), layout(layout_), vertex_vector(vertex_vector_),
       node_coord_units(node_coord_units_), node_sets(node_sets_),
-      element_sets(element_sets_), title(title_),
+      side_sets(side_sets_), cell_sets(cell_sets_), title(title_),
       sides_vertices(sides_vertices_), cells_vertices(cells_vertices_),
       submesh(submesh_)
 {
@@ -558,17 +558,17 @@ bool TET_Mesh::operator==(const TET_Mesh &rhs) const
     if (node_coord_units != rhs.node_coord_units)
         return false;
 
-// TEMPORARY: to be replaced by side- and cell-specific structures later.
-
     // Verify the node_sets.
     if (node_sets != rhs.node_sets)
         return false;
 
-    // Verify the element_sets.
-    if (element_sets != rhs.element_sets)
+    // Verify the side_sets.
+    if (side_sets != rhs.side_sets)
         return false;
 
-// End TEMPORARY.
+    // Verify the cell_sets.
+    if (cell_sets != rhs.cell_sets)
+        return false;
 
     // Verify the mesh titles.
     if (title != rhs.title)
@@ -585,6 +585,75 @@ bool TET_Mesh::operator==(const TET_Mesh &rhs) const
     // if we haven't returned, then the two meshes must be equal
     return true;
 }   // end TET_Mesh::operator==(const TET_Mesh &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief        Allow output of node_sets.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::print_node_sets(std::ostream &output) const
+{
+    output << "NODE SETS\n" << std::endl;
+    for (MAP_String_SetInt::const_iterator flag = node_sets.begin() ; 
+            flag != node_sets.end() ; flag++)
+        {
+            output << (*flag).first << "\n";
+            int nnode = (*flag).second.size();
+            output << "  " << nnode << " flagged node" <<
+                (nnode == 1 ? "." : "s.") << "\n";
+            if (nnode > 0)
+                for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                       i != (*flag).second.end(); i++)
+                    output << "    " << *i << "\n";
+            output << std::endl;
+        }
+}   // end TET_Mesh::print_node_sets(std::ostream &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief        Allow output of side_sets.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::print_side_sets(std::ostream &output) const
+{
+    output << "SIDE SETS\n" << std::endl;
+    for (MAP_String_SetInt::const_iterator flag = side_sets.begin() ; 
+            flag != side_sets.end() ; flag++)
+        {
+            output << (*flag).first << "\n";
+            int nside = (*flag).second.size();
+            output << "  " << nside << " flagged side" <<
+                (nside == 1 ? "." : "s.") << "\n";
+            if (nside > 0)
+                for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                       i != (*flag).second.end(); i++)
+                    output << "    " << *i << "\n";
+            output << std::endl;
+        }
+}   // end TET_Mesh::print_side_sets(std::ostream &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief        Allow output of cell_sets.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::print_cell_sets(std::ostream &output) const
+{
+    output << "CELL SETS\n" << std::endl;
+    for (MAP_String_SetInt::const_iterator flag = cell_sets.begin() ; 
+            flag != cell_sets.end() ; flag++)
+        {
+            output << (*flag).first << "\n";
+            int ncell = (*flag).second.size();
+            output << "  " << ncell << " flagged cell" <<
+                (ncell == 1 ? "." : "s.") << "\n";
+            if (ncell > 0)
+                for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                       i != (*flag).second.end(); i++)
+                    output << "    " << *i << "\n";
+            output << std::endl;
+        }
+}   // end TET_Mesh::print_cell_sets(std::ostream &)
 
 //___________________________________________________________________________//
 /*!

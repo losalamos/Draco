@@ -14,6 +14,8 @@
 namespace rtt_mc
 {
 
+using std::endl;
+
 //! Build a TET_Mesh, using TET_Builder's private data.
 rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
 {
@@ -97,12 +99,89 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
 
     // Instantiate and return Smart Pointer to the new TET_Mesh.
     rtt_dsxx::SP<TET_Mesh> mesh_ptr(new TET_Mesh(coord, layout, vertex_vector,
-        node_coord_units, node_sets, element_sets, title, sides_vertices,
-        cells_vertices, submesh));
+        node_coord_units, node_sets, side_sets, cell_sets, title,
+        sides_vertices, cells_vertices, submesh));
 
     return mesh_ptr;
 
 }   // end TET_Builder::build_Mesh()
+
+//! Print the node_sets.
+void TET_Builder::print_node_sets(std::ostream &output) const
+{
+    output << "NODE SETS\n" << endl;
+    for (MAP_String_SetInt::const_iterator flag = node_sets.begin() ; 
+            flag != node_sets.end() ; flag++)
+        {
+            output << (*flag).first << "\n";
+            int nnode = (*flag).second.size();
+            output << "  " << nnode << " flagged node" <<
+                (nnode == 1 ? "." : "s.") << "\n";
+            if (nnode > 0)
+                for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                       i != (*flag).second.end(); i++)
+                    output << "    " << *i << "\n";
+            output << endl;
+        }
+}   // end TET_Builder::print_node_sets(std::ostream &)
+
+//! Print the element_sets.
+void TET_Builder::print_element_sets(std::ostream &output) const
+{
+    output << "ELEMENT SETS\n" << endl;
+    for (MAP_String_SetInt::const_iterator flag = element_sets.begin() ; 
+            flag != element_sets.end() ; flag++)
+        {
+            output << (*flag).first << "\n";
+            int nelem = (*flag).second.size();
+            output << "  " << nelem << " flagged element" <<
+                (nelem == 1 ? "." : "s.") << "\n";
+            if (nelem > 0)
+                for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                       i != (*flag).second.end(); i++)
+                    output << "    " << *i << "\n";
+            output << endl;
+        }
+}   // end TET_Builder::print_element_sets(std::ostream &)
+
+//! Print the side_sets.
+void TET_Builder::print_side_sets(std::ostream &output) const
+{
+    output << "SIDE SETS\n" << endl;
+    for (MAP_String_SetInt::const_iterator flag = side_sets.begin() ; 
+            flag != side_sets.end() ; flag++)
+        {
+            output << (*flag).first << "\n";
+            int nside = (*flag).second.size();
+            output << "  " << nside << " flagged side" <<
+                (nside == 1 ? "." : "s.") << "\n";
+            if (nside > 0)
+                for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                       i != (*flag).second.end(); i++)
+                    output << "    " << *i << "\n";
+            output << endl;
+        }
+}   // end TET_Builder::print_side_sets(std::ostream &)
+
+//! Print the cell_sets.
+void TET_Builder::print_cell_sets(std::ostream &output) const
+{
+    output << "CELL SETS\n" << endl;
+    for (MAP_String_SetInt::const_iterator flag = cell_sets.begin() ; 
+            flag != cell_sets.end() ; flag++)
+        {
+            output << (*flag).first << "\n";
+            int ncell = (*flag).second.size();
+            output << "  " << ncell << " flagged cell" <<
+                (ncell == 1 ? "." : "s.") << "\n";
+            if (ncell > 0)
+                for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                       i != (*flag).second.end(); i++)
+                    output << "    " << *i << "\n";
+            output << endl;
+        }
+}   // end TET_Builder::print_cell_sets(std::ostream &)
+
 
 }   // end namespace rtt_mc
 

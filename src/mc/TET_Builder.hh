@@ -10,6 +10,7 @@
 #ifndef __mc_TET_Builder_hh__
 #define __mc_TET_Builder_hh__
 
+#include <ostream>
 #include "TET_Mesh.hh"
 #include "XYZCoord_sys.hh"
 #include "meshReaders/Element_Definition.hh"
@@ -40,9 +41,15 @@ using std::endl;  // FOR DEBUGGING.
 //  4) 2000-05-03: TET_Builder, TET_Mesh, and their test files now use the
 //                 get_node_coord_units(), get_node_sets(), get_element_sets(),
 //                 and get_title() services of the Mesh_Reader base class.
-//                 At the top level (TET_Mesh), the get_..._sets() services
+//                 At the top level (TET_Mesh), the get_element_sets() services
 //                 will later be replaced by side- and cell-specific data
 //                 structures.
+//  5) 2000-06-08: Information from the interface service get_element_sets()
+//                 is now converted to two separate maps, side_sets and
+//                 cell_sets, and used to initialize data members of the
+//                 TET_Mesh class.  The TET_Mesh class no longer has knowledge
+//                 of element_sets.  New diagnostic functions print_node_sets,
+//                 print_side_sets, and print_cell_sets are added to TET_Mesh.
 //
 //___________________________________________________________________________//
 
@@ -93,11 +100,28 @@ class TET_Builder
     //! Coordinate system units (e.g. "cm").
     std::string node_coord_units;
 
-    //! Associate sets of nodes with characteristics identified by strings.
+    /*!
+     * Associate sets of nodes with characteristics identified by strings.
+     * This data structure comes from the Mesh_Reader base class, but will
+     * be processed by the TET_Builder constructor to eliminate those keys
+     * associated with empty sets.
+     */
     MAP_String_SetInt node_sets;
 
-    //! Associate sets of elements with characteristics identified by strings.
+    /*!
+     * Associate sets of elements with characteristics identified by strings.
+     * This data structure comes from the Mesh_Reader base class, but will be
+     * split by the TET_Builder constructor into separate maps for side_sets
+     * and cell_sets.  If edge_sets or point_sets are ever relevant, the
+     * generalization will be obvious.
+     */
     MAP_String_SetInt element_sets;
+
+    //! Associate sets of sides with characteristics identified by strings.
+    MAP_String_SetInt side_sets;
+
+    //! Associate sets of cells with characteristics identified by strings.
+    MAP_String_SetInt cell_sets;
 
     //! Mesh title.
     std::string title;
@@ -130,6 +154,14 @@ class TET_Builder
      */
     VF_INT cells_vertices;
 
+    /*!
+     * The zero-based numbers of sides, cells, edges, and points (the latter
+     * two not yet used) as a function of the element numbers as delivered
+     * by the interface.  These "true names" will be provided to the TET_Mesh
+     * class.
+     */
+    SF_INT true_name;
+
     //________________________________________//
     // End of private data of class TET_Builder.
 
@@ -141,6 +173,18 @@ class TET_Builder
 
     //! Build a TET_Mesh, using TET_Builder's private data.
     rtt_dsxx::SP<TET_Mesh> build_Mesh();
+
+    //! Print the node_sets.
+    void print_node_sets(std::ostream &) const;
+
+    //! Print the element_sets.
+    void print_element_sets(std::ostream &) const;
+
+    //! Print the side_sets.
+    void print_side_sets(std::ostream &) const;
+
+    //! Print the cell_sets.
+    void print_cell_sets(std::ostream &) const;
 
 };  // end class TET_Builder
 
@@ -171,34 +215,8 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
     SF_TYPE element_types = interface->get_element_types();
 
     node_sets = interface->get_node_sets();
-// Begin: For initial debugging.
-    for (MAP_String_SetInt::iterator flag = node_sets.begin() ; 
-        flag != node_sets.end() ; flag++)
-        {
-            cerr << (*flag).first << endl;
-            int nnode = (*flag).second.size();
-            cerr << "  size = " << nnode << endl;
-            if (nnode > 0)
-                for (SetInt::iterator i = (*flag).second.begin() ;
-                                       i != (*flag).second.end(); i++)
-                    cerr << *i << endl;
-        }
-// End: For initial debugging.
 
     element_sets = interface->get_element_sets();
-// Begin: For initial debugging.
-    for (MAP_String_SetInt::iterator flag = element_sets.begin() ; 
-        flag != element_sets.end() ; flag++)
-        {
-            cerr << (*flag).first << endl;
-            int nelem = (*flag).second.size();
-            cerr << "  size = " << nelem << endl;
-            if (nelem > 0)
-                for (SetInt::iterator i = (*flag).second.begin() ;
-                                       i != (*flag).second.end(); i++)
-                    cerr << *i << endl;
-        }
-// End: For initial debugging.
 
     title = interface->get_title();
 
@@ -214,31 +232,75 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
 
     int num_sides = 0;
     int num_cells = 0;
+    int num_edges = 0;
+    int num_points = 0;
 
     for (int elem = 0 ; elem < element_types.size() ; elem++)
         if (element_types[elem] == Element_Definition::TRI_3)
             num_sides++;
         else if (element_types[elem] == Element_Definition::TETRA_4)
             num_cells++;
+        else if (element_types[elem] == Element_Definition::BAR_2)
+            num_edges++;
         else
-            Check (element_types[elem] == Element_Definition::NODE ||
-                   element_types[elem] == Element_Definition::BAR_2);
+            {
+                Check (element_types[elem] == Element_Definition::NODE);
+                num_points++;
+            }
+
+    Check (num_sides+num_cells+num_edges+num_points == element_types.size());
+
+    true_name.resize(element_types.size());
 
     sides_vertices.resize(num_sides);
     cells_vertices.resize(num_cells);
 
-    for (int elem = 0, cell_ = 0, side_ = 0 ;
+    for (int elem = 0, cell_ = 0, side_ = 0, edge_ = 0, point_ = 0 ;
              elem < element_types.size() ; elem++)
         if (element_types[elem] == Element_Definition::TRI_3)
             {
                 sides_vertices[side_] = element_nodes[elem];
-                side_++;
+                true_name[elem] = side_++;
             }
         else if (element_types[elem] == Element_Definition::TETRA_4)
             {
                 cells_vertices[cell_] = element_nodes[elem];
-                cell_++;
+                true_name[elem] = cell_++;
             }
+        else if (element_types[elem] == Element_Definition::BAR_2)
+            true_name[elem] = edge_++;
+        else
+            {
+                Check (element_types[elem] == Element_Definition::NODE);
+                true_name[elem] = point_++;
+            }
+
+    // Construct side_sets and cell_sets.
+    for (MAP_String_SetInt::iterator flag = element_sets.begin() ;
+            flag != element_sets.end() ; flag++)
+        {
+            if ((*flag).second.empty())
+                continue;
+
+            SetInt key_side_set;
+            SetInt key_cell_set;
+            for (SetInt::iterator i = (*flag).second.begin() ;
+                                  i != (*flag).second.end(); i++)
+                {
+                    if (element_types[*i] == Element_Definition::TRI_3)
+                        key_side_set.insert(true_name[*i]);
+                    else if (element_types[*i] == Element_Definition::TETRA_4)
+                        key_cell_set.insert(true_name[*i]);
+                    else
+                        Check (element_types[*i] == Element_Definition::BAR_2
+                            || element_types[*i] == Element_Definition::NODE);
+                }
+
+            if (!key_side_set.empty())
+                side_sets[(*flag).first] = key_side_set;
+            if (!key_cell_set.empty())
+                cell_sets[(*flag).first] = key_cell_set;
+        }
 
     // To be properly constructed, sides_vertices[][] must contain the
     // internal numbers of the three bounding vertices of the sides.

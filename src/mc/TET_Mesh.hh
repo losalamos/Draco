@@ -63,9 +63,15 @@ namespace rtt_mc
 //  6) 2000-05-03: TET_Builder, TET_Mesh, and their test files now use the
 //                 get_node_coord_units(), get_node_sets(), get_element_sets(),
 //                 and get_title() services of the Mesh_Reader base class.
-//                 At the top level (TET_Mesh), the get_..._sets() services
+//                 At the top level (TET_Mesh), the get_element_sets() services
 //                 will later be replaced by side- and cell-specific data
 //                 structures.
+//  7) 2000-06-08: Information from the interface service get_element_sets()
+//                 is now converted to two separate maps, side_sets and
+//                 cell_sets, and used to initialize data members of the
+//                 TET_Mesh class.  The TET_Mesh class no longer has knowledge
+//                 of element_sets.  New diagnostic functions print_node_sets,
+//                 print_side_sets, and print_cell_sets are added to TET_Mesh.
 //
 //___________________________________________________________________________//
 
@@ -128,8 +134,11 @@ class TET_Mesh
     //! Associate sets of nodes with characteristics identified by strings.
     MAP_String_SetInt node_sets;
 
-    //! Associate sets of elements with characteristics identified by strings.
-    MAP_String_SetInt element_sets;
+    //! Associate sets of sides with characteristics identified by strings.
+    MAP_String_SetInt side_sets;
+
+    //! Associate sets of cells with characteristics identified by strings.
+    MAP_String_SetInt cell_sets;
 
     //! Mesh title.
     std::string title;
@@ -192,7 +201,7 @@ class TET_Mesh
     //! TET_Mesh constructor.
     TET_Mesh(rtt_dsxx::SP<Coord_sys>, Layout &, SF_THREEVECTOR &,
         std::string &, MAP_String_SetInt &, MAP_String_SetInt &,
-        std::string &, VF_INT &, VF_INT &, bool = false);
+        MAP_String_SetInt &, std::string &, VF_INT &, VF_INT &, bool = false);
 
     //! Forward declaration of cell-centered scalar fields.
     template<class T> class CCSF;
@@ -209,7 +218,7 @@ class TET_Mesh
     // Similarly, inside a cell or on its boundary.
     bool in_closed_cell(const SF_DOUBLE &, int) const;
 
-    //___________________________________________________//
+    //____________________________________________________//
     // Services required by all mesh types used in JAYENNE.
 
     //! \brief Cell on the other side of "face" from "cell"
@@ -257,10 +266,10 @@ class TET_Mesh
     bool operator==(const TET_Mesh &) const;
     bool operator!=(const TET_Mesh &rhs) const { return !(*this == rhs); }
 
-    //_____________________________________//
+    //______________________________________//
     // End of required JAYENNE mesh services.
 
-    //____________________________________//
+    //_____________________________________//
     // Services required for graphics dumps.
 
     //! \brief Return the cell type for each cell in the mesh.
@@ -286,8 +295,23 @@ class TET_Mesh
         return return_coords;
     }
 
-    //_____________________________//
+    //______________________________//
     // End of graphics dump services.
+
+    //____________________//
+    // Diagnostic services.
+
+    //! Print the node_sets.
+    void print_node_sets(std::ostream &) const;
+
+    //! Print the side_sets.
+    void print_side_sets(std::ostream &) const;
+
+    //! Print the cell_sets.
+    void print_cell_sets(std::ostream &) const;
+
+    //___________________________//
+    // End of diagnostic services.
 
     // Find the cell comtaining a given position.
     int get_cell(const SF_DOUBLE &) const;

@@ -1,3 +1,13 @@
+2000-06-08  H. Grady Hughes  <hgh@lanl.gov>
+
+    * TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
+    test/TET_test_1.hh, test/tstTET_Mesh.cc: The information from the
+    interface service get_element_sets() is converted to two separate
+    maps, side_sets and cell_sets, and used to initialize data members
+    of the TET_Mesh class.  The TET_Mesh class no longer has knowledge
+    of element_sets.  Also, new diagnostic functions print_node_sets,
+    print_side_sets, and print_cell_sets are added to TET_Mesh.
+
 2000-05-03  H. Grady Hughes  <hgh@lanl.gov>
 
 	* Tet_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
@@ -5,7 +15,7 @@
  	and their test files now use the get_node_coord_units(),
  	get_node_sets(), get_element_sets(), and get_title() services of
  	the Mesh_Reader base class.  At the top level (TET_Mesh), the
- 	get_..._sets() services will later be replaced by side- and
+ 	get_element_sets() service will later be replaced by side- and
  	cell-specific data structures.
 	
 2000-05-02  Thomas M. Evans  <tme@lanl.gov>
