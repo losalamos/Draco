@@ -1,3 +1,9 @@
+2002-05-09  Thomas M. Evans  <tme@lanl.gov>
+	
+	* RTT_Format_Reader: release of 1_3_0.  Main changes are to
+	configure/build/testing system.  Updated to "standard" draco
+	testing framework.
+
 2002-03-27  Thomas M. Evans  <tme@lanl.gov>
 
 	* RTT_Format_Reader/test: removed dependence on UnitTestFrame.  It
