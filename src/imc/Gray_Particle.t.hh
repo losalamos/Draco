@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Jan 29 13:30:27 2002
  * \brief  Gray_Particle class implementation.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -604,12 +604,18 @@ void Gray_Particle<MT>::rw_transport(
 	    // tally rw sphere radius
 	    tally.get_RW_Sub_Tally()->accum_sphere_radii(rw_radius);
 
-	    // check to see if the random walk conditions are valid
-	    do_a_random_walk = random_walk->do_a_random_walk(
-		Base::cell, rw_radius, d_collide, d_census, xs);
-
+	    // check to see if the random walk conditions are valid.
+	    //   - turn off random walk if cell contains a tally surface
+	    //   - otherwise do the usual physical/geometrical checks
 	    if (surface_tracker && surface_tracker->surface_in_cell(Base::cell))
+	    {
 		do_a_random_walk = false;
+	    }
+	    else
+	    {
+		do_a_random_walk = random_walk->do_a_random_walk(
+		    Base::cell, rw_radius, d_collide, d_census, xs);
+	    }
 	}
 	else
 	{

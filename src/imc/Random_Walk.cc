@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 24 15:13:23 2003
  * \brief  Random_Walk_Sampling_Tables definitions.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
