@@ -88,7 +88,7 @@ void SendAsync( C4_Req& r, const T *buf, int nels, int dest,
 {
     Require( !r.inuse() );
     r.set();
-    MPI_Isend( (void *) buf, nels, mpi_traits<T>::element_type>,
+    MPI_Isend( (void *) buf, nels, mpi_traits<T>::element_type,
 	       dest, tag, MPI_COMM_WORLD, &r.r );
 }
 
@@ -98,7 +98,7 @@ void RecvAsync( C4_Req& r, T *buf, int nels, int source,
 {
     Require( !r.inuse() );
     r.set();
-    MPI_Irecv( (void *) buf, nels, mpi_traits<T>::element_type>,
+    MPI_Irecv( (void *) buf, nels, mpi_traits<T>::element_type,
 	       source, tag, MPI_COMM_WORLD, &r.r );
 }
 
