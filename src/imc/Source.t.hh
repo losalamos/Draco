@@ -117,7 +117,11 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
     {
 	if (nsrcdone_cell < nss(current_cell))
 	{
-	    rcon->set_num(ss_rnnum(current_cell) + nsrcdone_cell);
+	    int two_billion = 2e9;
+	    int rn_str_id = (ss_rnnum(current_cell) + nsrcdone_cell) %
+		two_billion; 
+	    rcon->set_num(rn_str_id);
+	    // rcon->set_num(ss_rnnum(current_cell) + nsrcdone_cell);
 	    source_particle = get_ss(delta_t);
 	    sampled = true;
 	    nsrcdone_cell++;
@@ -145,7 +149,11 @@ SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
     {
 	if (nsrcdone_cell < nvol(current_cell))
 	{
-	    rcon->set_num(vol_rnnum(current_cell) + nsrcdone_cell);
+	    int two_billion = 2e9;
+	    int rn_str_id = (vol_rnnum(current_cell) + nsrcdone_cell) %
+		two_billion; 
+	    rcon->set_num(rn_str_id);
+	    // rcon->set_num(vol_rnnum(current_cell) + nsrcdone_cell);
 	    source_particle = get_evol(delta_t);
 	    sampled = true;
 	    nsrcdone_cell++;

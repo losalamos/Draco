@@ -312,8 +312,9 @@ void Rep_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 				rtt_rng::rn_stream, local_ncen,
 				local_ncentot, cenrn);
 
-    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
-    Ensure(rtt_rng::rn_stream == global_ncentot);
+    // make checks, noting that rn_stream always starts the problem at zero
+    Check  (parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+    Ensure (rtt_rng::rn_stream == global_ncentot);
 }
 
 //---------------------------------------------------------------------------//

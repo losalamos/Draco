@@ -367,7 +367,8 @@ void DD_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
     calc_fullDD_rn_fields(topology->num_cells(), local_ncen, rtt_rng::rn_stream,
 			  cenrn, global_ncentot);
 
-    // Check global consistency of the random number stream state
+    // Check global consistency of the random number stream state, noting
+    // that rn_stream always starts the problem at zero
     Check  (parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
     Ensure (rtt_rng::rn_stream == global_ncentot);
 }
