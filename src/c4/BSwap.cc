@@ -70,8 +70,7 @@ BSwap<T>::~BSwap()
 template<class T>
 void BSwap<T>::send( const T& d )
 {
-//     C4_Send( (void *) &d, sizeof(d), other_node, BS_xmit, group );
-    Send( &d, 1, other_node, BS_xmit, group );
+    Send( d, other_node, BS_xmit );
 }
 
 //---------------------------------------------------------------------------//
@@ -81,10 +80,7 @@ void BSwap<T>::send( const T& d )
 template<class T>
 void BSwap<T>::recv( T& d )
 {
-// Needs attention.  Can we convert this to Recv( T *, ... ) ???
-    int len = Recv( (char *) &d, sizeof(d), other_node, BS_xmit, group );
-
-    Assert( len == sizeof(d) );
+    Recv( d, other_node, BS_xmit );
 }
 
 //---------------------------------------------------------------------------//
