@@ -7,7 +7,8 @@
 //---------------------------------------------------------------------------//
 
 #include "matprops/FifiMatPropsReader.hh"
-#include "3T/RadiationPhysics.hh"
+#include "radphys/RadiationPhysics.hh"
+#include "units/Units.hh"
 
 #include "ds++/Assert.hh"
 

@@ -8,6 +8,7 @@
 
 pkg := matprops
 
+need_units	:= yes
 # need_mesh	:= yes
 # need_linalg	:= yes
 
@@ -34,8 +35,7 @@ include ../config/make.lib
 deps:
 ifneq ($(dodeps),no)
 	(cd ../ds++;   $(MAKE))
-	(cd ../nml;    $(MAKE) dodeps=no)
-	(cd ../c4;     $(MAKE) dodeps=no)
+	(cd ../units;   $(MAKE))
 endif
 
 # Rules for building docs

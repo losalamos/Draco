@@ -9,7 +9,7 @@
 #ifndef __matprops_MaterialPropsReader_hh__
 #define __matprops_MaterialPropsReader_hh__
 
-#include "3T/Units.hh"
+#include "units/Units.hh"
 
 #include "ds++/Mat.hh"
 
