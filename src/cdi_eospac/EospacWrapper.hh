@@ -164,7 +164,9 @@ extern "C" {
 		   V_INT &idtab, V_INT &eosTableLength, V_FLOAT **eosTable,
 		   V_INT *errorCodes ); 
 
-    void kt1errmsg_( V_INT &errorCode, const char *errorMessage, V_INT &msgLen );
+    //void kt1errmsg_( V_INT &errorCode, const char *errorMessage, V_INT &msgLen );
+    void es1errmsg_( V_INT &errorCode, char errorMessage[] );
+
 
     void es1info_( V_INT &tableIndex, V_INT &regionIndex, 
 		   V_FLOAT **eosTable, V_INT &iname, V_BOOL &llogs, 

@@ -16,6 +16,7 @@
 
 // Other Draco dependencies
 #include "ds++/Assert.hh"
+#include "ds++/Packing_Utils.hh"
 
 // C++ standard library dependencies
 #include <sstream>
@@ -195,6 +196,53 @@ namespace rtt_cdi_eospac
 	    const ES4DataType returnType = ES4tconde; // (tconde)
 	    return getF( vtemperature, vdensity, returnType );
 	}
+
+// ------- //
+// Packing //
+// ------- //
+
+/*!
+ * Pack the Eospac state into a char string represented by a
+ * vector<char>. This can be used for persistence, communication, etc. by
+ * accessing the char * under the vector (required by implication by the
+ * standard) with the syntax &char_string[0]. Note, it is unsafe to use
+ * iterators because they are \b not required to be char *.
+ */
+std::vector<char> Eospac::pack() const
+{
+    using std::vector;
+    using std::string;
+
+    string msg = "eospac::pack not fully implemented";
+    vector<char> packed_descriptor;
+    rtt_dsxx::pack_data(msg, packed_descriptor);
+
+    // ************************************************************
+    // See GandolfGrayOpacity.cc for how to finish this function.
+    // ************************************************************
+
+    // determine the total size: 3 ints (reaction, model, material id) + 2
+    // ints for packed_filename size and packed_descriptor size + char in
+    // packed_filename and packed_descriptor
+    int size = packed_descriptor.size() + 1;
+
+    // make a container to hold packed data
+    vector<char> packed(size);
+
+    // make a packer and set it
+    rtt_dsxx::Packer packer;
+    packer.set_buffer(size, &packed[0]);
+
+    // pack the descriptor
+    packer << static_cast<int>(packed_descriptor.size());
+    for (int i = 0; i < packed_descriptor.size(); i++)
+	packer << packed_descriptor[i];
+
+    Ensure (packer.get_ptr() == &packed[0] + size);
+
+    return packed;
+}
+
 
     // -------------- //
     // Implementation //

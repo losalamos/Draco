@@ -373,6 +373,16 @@ namespace rtt_cdi_eospac
 	    const std::vector< double >& vtemperature,
 	    const std::vector< double >& vdensity ) const;
 
+	/*!
+	 * \brief Interface for packing a derived EoS object.
+	 *
+	 * Note, the user hands the return value from this function to a
+	 * derived EoS constructor.  Thus, even though one can pack a EoS
+	 * through a base class pointer, the client must know the derived
+	 * type when unpacking.
+	 */
+	std::vector<char> pack() const;
+
       private:
 	
 	// -------------- //

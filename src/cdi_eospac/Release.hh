@@ -36,7 +36,7 @@ namespace rtt_cdi_eospac
     const std::string release();
 }
 
-#endif                          // __cdi_eospac_Release_hh__
+#endif  // __cdi_eospac_Release_hh__
 
 //---------------------------------------------------------------------------//
 //                           end of cdi_eospac/Release.hh

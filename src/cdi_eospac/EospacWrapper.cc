@@ -138,7 +138,7 @@ namespace rtt_cdi_eospac
 		    
 		    char *cErrorMessage = new char [len];
 		    std::copy( errorMessage.begin(), errorMessage.end(), cErrorMessage );
- 		    const char *ccem = cErrorMessage;
+ 		    // const char *ccem = cErrorMessage;
 		 
 		    // Retrieve the text description of errorCode
 		    // I would like to call es1errmsg_() directly but
@@ -150,8 +150,9 @@ namespace rtt_cdi_eospac
 		    // argument, len, so that the fortran knows that
 		    // ccem is a character*(len) value and then calls
 		    // the EOSPAC routine es1errmsg.
-		    kt1errmsg_( vendor_errorCode, ccem, len );
-
+		    es1errmsg_( vendor_errorCode, cErrorMessage );
+		    //kt1errmsg_( vendor_errorCode, ccem, len );
+		    
 		    // Copy to a C++ string container.
 		    std::copy( cErrorMessage, cErrorMessage+len,
 			       errorMessage.begin() );
