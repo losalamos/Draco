@@ -333,15 +333,15 @@ string tCDIGandolf::runTest()
 	 }
 
      // print the results
-     cout << endl << "Multigroup Rosseland Opacities for Aluminum (matID=" 
-	  << matid << ") test:" << endl
-	  << "   MGOpacities at T=0.3 keV and rho=0.7 g/cm^3 ( in cm^2/gm. )."
-	  << endl << endl;
-     for ( int i=0; i<mgRosselandOpacity.size(); ++i )
-	 cout << "   Opacity(group=" << std::setw(2) << i << ") = " 
-	      << std::scientific << std::setprecision(5) 
-	      << mgRosselandOpacity[i] << endl;
-     cout << endl;
+//      cout << endl << "Multigroup Rosseland Opacities for Aluminum (matID=" 
+// 	  << matid << ") test:" << endl
+// 	  << "   MGOpacities at T=0.3 keV and rho=0.7 g/cm^3 ( in cm^2/gm. )."
+// 	  << endl << endl;
+//      for ( int i=0; i<mgRosselandOpacity.size(); ++i )
+// 	 cout << "   Opacity(group=" << std::setw(2) << i << ") = " 
+// 	      << std::scientific << std::setprecision(5) 
+// 	      << mgRosselandOpacity[i] << endl;
+//      cout << endl;
     
 
 //     // Compare the interpolated value with previous interpolations:
@@ -423,22 +423,161 @@ string tCDIGandolf::runTest()
 	 }
 
      // print the results
-     cout << endl << "Multigroup Plank Opacities for Aluminum (matID=" 
-	  << matid << ") test:" << endl
-	  << "   MGOpacities at T=0.4 keV and rho=0.22 g/cm^3 ( in cm^2/gm. )."
-	  << endl << endl;
-     for ( int i=0; i<mgPlankOpacity.size(); ++i )
-	 cout << "   Opacity(group=" << std::setw(2) << i << ") = " 
-	      << std::scientific << std::setprecision(5) 
-	      << mgPlankOpacity[i] << endl;
-     cout << endl;
+//      cout << endl << "Multigroup Plank Opacities for Aluminum (matID=" 
+// 	  << matid << ") test:" << endl
+// 	  << "   MGOpacities at T=0.4 keV and rho=0.22 g/cm^3 ( in cm^2/gm. )."
+// 	  << endl << endl;
+//      for ( int i=0; i<mgPlankOpacity.size(); ++i )
+// 	 cout << "   Opacity(group=" << std::setw(2) << i << ") = " 
+// 	      << std::scientific << std::setprecision(5) 
+// 	      << mgPlankOpacity[i] << endl;
+//      cout << endl;
 
      // Compare the interpolated value with previous interpolations:
      if ( match( mgPlankOpacity, tabulatedMGOpacity ) )
-	 pass() << "Multigroup Plank Opacity computation was good for analyticOpacity data.";
+	 pass() << "Multigroup Plank Opacity computation was good "
+		<< "for analyticOpacity data.";
      else
-	 fail() << "Multigroup Plank Opacity computation failed for analyticOpacity data.";
+	 fail() << "Multigroup Plank Opacity computation failed "
+		<< "for analyticOpacity data.";
      
+     // ------------------------ //
+     // Access temperature grid. //
+     // ------------------------ //
+
+     // Read the temperature grid from the IPCRESS file.     
+     vector<double> temps = spOpacityABC->getTemperatureGrid();
+
+     // Verify that the size of the temperature grid looks right.  If
+     // it is the right size then compare the temperature grid data to 
+     // the data specified when we created the IPCRESS file using TOPS.
+     if ( temps.size() == spOpacityABC->getNumTemperatures() &&
+	  temps.size() == 3 )
+	 {
+	     pass() << "The number of temperature points found in the data\n\t" 
+		    << "grid matches the number returned by the\n\t"
+		    << "getNumTemperatures() accessor.";
+
+	     // The grid specified by TOPS has 3 temperature points.
+	     vector<double> temps_ref( temps.size() );
+	     temps_ref[0] = 0.1;
+	     temps_ref[1] = 1.0;
+	     temps_ref[2] = 10.0;
+
+	     // Compare the grids.
+	     if ( match( temps, temps_ref ) )
+		 pass() << "Temperature grid matches.";
+	     else
+		 fail() << "Temperature grid did not match.";
+	     
+	     // cout << "Temperature Grid (keV):" << endl << endl;
+	     // for ( int i=0; i<temps.size(); ++i )
+	     //   cout << "   T[" << i << "] = " << temps[i] << endl;
+	     
+	 }
+     else
+	 {
+	     fail() << "The number of temperature points found in the data\n\t"
+		    << "grid does not match the number returned by the\n\t"
+		    << "getNumTemperatures() accessor.";
+	     fail() << "Did not test the results returned by\n\t"
+		    << "getTemperatureGrid().";
+	 }
+
+     // ------------------------ //
+     // Access the density grid. //
+     // ------------------------ //
+     
+     // Read the grid from the IPCRESS file.     
+     vector<double> density = spOpacityABC->getDensityGrid();
+
+     // Verify that the size of the density grid looks right.  If
+     // it is the right size then compare the density grid data to 
+     // the data specified when we created the IPCRESS file using TOPS.
+     if ( density.size() == 3 &&
+	  density.size() == spOpacityABC->getNumDensities() )
+	 {
+	     pass() << "The number of density points found in the data\n\t"
+		    << "grid matches the number returned by the\n\t"
+		    << "getNumDensities() accessor.";
+
+	     // The grid specified by TOPS has 3 density points
+	     vector<double> density_ref( density.size() );
+	     density_ref[0] = 0.1;
+	     density_ref[1] = 0.5;
+	     density_ref[2] = 1.0;
+
+	     // Compare the grids.
+	     if ( match( density, density_ref ) )
+		 pass() << "Density grid matches.";
+	     else
+		 fail() << "Density grid did not match.";
+	     
+// 	     cout << "Density Grid (g/cm^3):" << endl << endl;
+// 	     for ( int i=0; i<density.size(); ++i )
+// 		 cout << "   rho[" << i << "] = " << density[i] << endl;
+	 }
+     else
+	 {
+	     fail() << "The number of density points found in the data\n\t"
+		    << "grid does not match the number returned by the\n\t"
+		    << "getNumDensities() accessor.";
+	     fail() << "Did not test the results returned by\n\t"  
+		    << "getDensityGrid().";
+	 }
+
+     // ----------------------------- //
+     // Access the energy boundaries. //
+     // ----------------------------- //
+     
+     // Read the grid from the IPCRESS file.     
+     vector<double> ebounds = spOpacityABC->getGroupBoundaries();
+
+     // Verify that the size of the group boundary grid looks right.  If
+     // it is the right size then compare the energy groups grid data to 
+     // the data specified when we created the IPCRESS file using TOPS.
+     if ( ebounds.size() == 13 &&
+	  ebounds.size() == spOpacityABC->getNumGroupBoundaries() )
+	 {
+	     pass() << "The number of energy boundary points found in the data\n\t"
+		    << "grid matches the number returned by the\n\t"
+		    << "getNumGroupBoundaries() accessor.";
+
+	     // The grid specified by TOPS has 13 energy boundaries.
+	     vector<double> ebounds_ref(ebounds.size());
+	     ebounds_ref[0] = 0.01;
+	     ebounds_ref[1] = 0.03;
+	     ebounds_ref[2] = 0.07;
+	     ebounds_ref[3] = 0.1;
+	     ebounds_ref[4] = 0.3;
+	     ebounds_ref[5] = 0.7;
+	     ebounds_ref[6] = 1.0;
+	     ebounds_ref[7] = 3.0;
+	     ebounds_ref[8] = 7.0;
+	     ebounds_ref[9] = 10.0;
+	     ebounds_ref[10] = 30.0;
+	     ebounds_ref[11] = 70.0;
+	     ebounds_ref[12] = 100.0;
+
+	     // Compare the grids.
+	     if ( match( ebounds, ebounds_ref ) )
+		 pass() << "Energy group boundary grid matches.";
+	     else
+		 fail() << "Energy group boundary grid did not match.";
+	     
+// 	     cout << "Energy Boundary Grid (keV):" << endl << endl;
+// 	     for ( int i=0; i<ebounds.size(); ++i )
+// 		 cout << "   ebounds[" << i << "] = " << ebounds[i] << endl;
+	 }
+     else
+	 {
+	     fail() << "The number of energy boundary points found in the data\n\t"
+		    << "grid does not match the number returned by the\n\t"
+		    << "getNumGroupBoundaries() accessor.";
+	     fail() << "Did not test the results returned by\n\t"  
+		    << "getGroupBoundaries().";
+	 }
+
      // ----------------------
      // Print the test result.
      // ----------------------

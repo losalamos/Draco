@@ -197,6 +197,22 @@ std::vector<double> GandolfOpacity::getMGPlank(
 	 return MGOpacity;
     }
 
+std::vector<double> GandolfOpacity::getTemperatureGrid() const
+     {
+	 std::vector<double> temperatureGrid(numTemps);
+	 for ( int i=0; i<numTemps; ++i )
+	     temperatureGrid[i] = exp(logTemperatures[i]);
+	 return temperatureGrid;
+     } 
+
+std::vector<double> GandolfOpacity::getDensityGrid() const
+     {
+	 std::vector<double> densityGrid(numDensities);
+	 for ( int i=0; i<numDensities; ++i )
+	     densityGrid[i] = exp(logDensities[i]);
+	 return densityGrid;
+     } 
+
 /*!
  * \brief Generic routine used to retrieve gray opacity data.  
  */

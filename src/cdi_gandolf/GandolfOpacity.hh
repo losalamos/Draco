@@ -343,6 +343,45 @@ class GandolfOpacity : public rtt_cdi::Opacity
     std::vector<double> getMGPlank( 
 	const double targetTemperature, const double targetDensity );
 
+    /*!
+     * \breif Returns the number of temperature points in the data
+     *        grid.
+     */
+    int getNumTemperatures() const { return numTemps; };
+
+    /*!
+     * \brief Returns a list of temperature (keV) that make up the
+     *        temperature grid in the IPCRESS file.
+     */
+    std::vector<double> getTemperatureGrid() const;
+
+    /*!
+     * \breif Returns the number of density points in the data
+     *        grid.
+     */
+    int getNumDensities() const { return numDensities; };
+
+    /*!
+     * \brief Returns a list of densities (g/cm^3) that make up the 
+     *        density grid in the IPCRESS file.
+     */
+    std::vector<double> getDensityGrid() const;
+
+    /*!
+     * \breif Returns the number of group boundary points in the data
+     *        grid.
+     */
+    int getNumGroupBoundaries() const { return numGroupBoundaries; };
+
+    /*!
+     * \brief Returns a list of Group Boundaries (keV) that make up the 
+     *        data grid in the IPCRESS file.
+     */
+    std::vector<double> getGroupBoundaries() const 
+    { 
+	return groupBoundaries; 
+    };
+
   private:
     
     // IMPLEMENTATION

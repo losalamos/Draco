@@ -126,7 +126,34 @@ namespace rtt_dummy_opacity
 		    targetDensity/10000;
 	    return dummyMGOpacity;
 	}
-    
+
+    vector<double> DummyOpacity::getTemperatureGrid() const
+	{
+	    const int numTemps = 3;
+	    std::vector<double> temperatureGrid(numTemps);
+	    for ( int i=0; i<numTemps; ++i )
+	     temperatureGrid[i] = 1.0 * i;
+	    return temperatureGrid;
+	}
+
+    vector<double> DummyOpacity::getDensityGrid() const
+	{
+	    const int numDensities = 3;
+	    std::vector<double> densityGrid(numDensities);
+	    for ( int i=0; i<numDensities; ++i )
+	     densityGrid[i] = 1.0 * i;
+	    return densityGrid;
+	}
+
+    vector<double> DummyOpacity::getGroupBoundaries() const
+	{
+	    const int numGroupBoundaries = 3;
+	    std::vector<double> groupBoundaries(numGroupBoundaries);
+	    for ( int i=0; i<numGroupBoundaries; ++i )
+		groupBoundaries[i] = 1.0 * i;
+	    return groupBoundaries;
+	}
+
 } // end namespace rtt_dummy_opacity
 
 

@@ -189,6 +189,43 @@ class DummyOpacity : public rtt_cdi::Opacity
     vector<double> getMGPlank( 
 	const double targetTemperature, 
 	const double targetDensity );
+
+    /*!
+     * \brief Return the number of temperatures in the temperature
+     *        grid. 
+     */
+    int getNumTemperatures() const { return 3; };
+
+    /*!
+     * \brief Returns a list of temperature (keV) that make up the
+     *        temperature grid in the IPCRESS file.
+     */
+    std::vector<double> getTemperatureGrid() const;
+
+    /*!
+     * \brief Return the number of densities in the density
+     *        grid. 
+     */
+    int getNumDensities() const { return 3; };
+
+    /*!
+     * \brief Returns a list of densities (g/cm^3) that make up the
+     *        density grid in the IPCRESS file.
+     */
+    std::vector<double> getDensityGrid() const;
+
+    /*!
+     * \brief Return the number of energy boundaries in the data
+     *        grid. 
+     */
+    int getNumGroupBoundaries() const { return 3; };
+
+    /*!
+     * \brief Returns a list of energy group bondaries (keV) that make up the
+     *        energy group structure in the IPCRESS file.
+     */
+    std::vector<double> getGroupBoundaries() const;
+
   private:
     
     // IMPLEMENTATION
