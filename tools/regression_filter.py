@@ -45,6 +45,7 @@ pkg_tag    = re.compile(r'.*>>>\s*PACKAGE\s*:\s*(.+)', re.IGNORECASE)
 script_tag = re.compile(r'.*>>>\s*REGRESSION\s*SCRIPT\s*:\s*(.+)', re.IGNORECASE)
 log_tag    = re.compile(r'.*>>>\s*REGRESSION\s*LOG\s*:\s*(.+)', re.IGNORECASE)
 date_tag   = re.compile(r'.*>>>\s*DATE\s*:\s*(.+)', re.IGNORECASE)
+checkout   = re.compile(r'^U')
 
 ##---------------------------------------------------------------------------##
 ## Lists, dictionaries, etc
@@ -105,6 +106,12 @@ for line in lines:
     results = [0,0,0]
     np      = 0
     nf      = 0
+
+    # search on checkout echo line 
+    # don't want to catch checkout of files with name "error" in them.
+    match = checkout.search(line)
+    if match:
+        continue
 
     # search on tags
     match = reg_host.search(line)
