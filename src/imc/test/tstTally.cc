@@ -15,8 +15,10 @@
 #include "../Tally.hh"
 #include "../Random_Walk_Sub_Tally.hh"
 #include "../Tally_Builder.hh"
+#include "../Surface_Tracking_Interface.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
+#include "mc/Surface_Descriptor.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include "mc/Math.hh"
@@ -30,6 +32,7 @@ using namespace std;
 using rtt_imc_test::Parser;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
+using rtt_mc::Surface_Descriptor;
 using rtt_imc::Tally;
 using rtt_imc::Tally_Builder;
 using rtt_imc::Random_Walk_Sub_Tally;
@@ -39,6 +42,34 @@ using rtt_mc::global::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // TESTS
+//---------------------------------------------------------------------------//
+
+class Interface : public rtt_imc::Surface_Tracking_Interface
+{
+  private:
+    vector<Surface_Descriptor> surfaces;
+    vector<double>             cosines;
+
+    int hybrid;
+
+  public:
+   
+
+
+    int get_hybrid_diffusion_method() const { return hybrid; }
+    int number_of_surfaces() const { return surfaces.size(); }
+
+    const vector<Surface_Descriptor>& get_surface_data() const
+    {
+	return surfaces;
+    }
+
+    const vector<double>& get_bin_cosines() const
+    {
+	return cosines;
+    }  
+};
+
 //---------------------------------------------------------------------------//
 
 void Tally_Test()

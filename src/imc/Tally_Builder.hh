@@ -81,8 +81,8 @@ class Tally_Builder
 /*!
  * \brief Constructor for the Tally_Builder
  *
- * The interface must be a model (realizes) of both rtt_imc::Interface and
- * rtt_imc::Surface_Tracking_Interface. 
+ * The interface must be a model of rtt_imc::Interface and a derived class of
+ * rtt_imc::Surface_Tracking_Interface.
  *
  * We build a surface sub tally if there are global tally surfaces defined.
  * There may be no local tally surfaces; the Surface_Sub_Tally will still be
@@ -91,8 +91,8 @@ class Tally_Builder
  * We define a Random_Walk_Sub_Tally if random walk is on.
  *
  * \param interface rtt_dsxx::SP to an interface that implements (is a
- * realization) of both rtt_imc::Interface and
- * rtt_imc::Surface_Tracking_Interface. 
+ * realization) of rtt_imc::Interface and is a derived class of
+ * rtt_imc::Surface_Tracking_Interface.
  */
 template<class MT>
 template<class IT>
