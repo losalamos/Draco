@@ -37,7 +37,10 @@ namespace rtt_mc
  *
  * While most functions in this class are not inlined, they are contained in
  * the header file (template functions have internal linkage).  Thus,
- * explicit instantiations on different field types are not necessary.  
+ * explicit instantiations on different field types are not necessary.
+ *
+ * This class also contains two equivalence-type functions to check data
+ * across processor space.  These are intended to be used for DBC checking.
  */
 // revision history:
 // -----------------
@@ -59,27 +62,14 @@ class Parallel_Data_Operator
     // Constructor.
     Parallel_Data_Operator(SP_Topology);
 
+    // Communication functions for DBC checks.
+    bool check_global_equiv(int) const;
+    bool check_global_equiv(double, double = 1.0e-8) const;
+
     // Do a global sum of a global mesh-sized field.
     template<class IT> void global_sum(IT begin, IT end);
     template<class T>  void global_sum(T *, T *);
 };
-
-//---------------------------------------------------------------------------//
-// CONSTRUCTORS
-//---------------------------------------------------------------------------//
-/*!
- * \brief Constructor for Parallel_Data_Operator.
- *
- * Constructs a Parallel_Data_Operator object with an appropriate
- * rtt_mc::Topology.
- *
- * \param top a dsxx::SP to a rtt_mc::Topology object.
- */
-Parallel_Data_Operator::Parallel_Data_Operator(SP_Topology top)
-    : topology(top)
-{
-    Ensure(topology);
-}
 
 //---------------------------------------------------------------------------//
 // PARALLEL_DATA_OPERATOR GLOBAL SUMMING FUNCTIONS

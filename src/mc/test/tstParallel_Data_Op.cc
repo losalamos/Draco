@@ -153,6 +153,138 @@ void test_STL_Fields()
 }
 
 //---------------------------------------------------------------------------//
+// TESTING GLOBAL EQUIVALENCES CHECK
+//---------------------------------------------------------------------------//
+
+template<class T>
+void test_equivalence(const T value, const T mod_value)
+{
+    // set a local_value
+    T local_value = value;
+
+    // get an OS_Mesh (2D 6 cells)
+    SP<MC_Interface> interface(new MC_Interface());
+    OS_Builder builder(interface);
+    SP<OS_Mesh> mesh = builder.build_Mesh();
+    
+    // build a full replication topology
+    SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
+    
+    // build a Parallel_Data_Operator
+    Parallel_Data_Operator pdop(topology);
+
+    // check if more than 1 node
+    if (C4::nodes() > 1)
+    {
+	// at this point all processors should have the same value
+	if (!pdop.check_global_equiv(local_value)) ITFAILS;
+	
+
+	// now change the first processor's value
+	if (C4::node() == 0)
+	    local_value = mod_value;
+
+	if (C4::node() > 0)
+	{
+	    if (!pdop.check_global_equiv(local_value)) ITFAILS;
+	}
+	else
+	{
+	    if (pdop.check_global_equiv(local_value)) ITFAILS;
+	}
+
+	// reset all to the same value
+	local_value = value;
+	if (!pdop.check_global_equiv(local_value)) ITFAILS;
+	
+	// now change the last processor's value
+	if (C4::node() == C4::nodes() - 1)
+	    local_value = mod_value;
+
+	if (C4::node() == C4::nodes() - 2)
+	{
+	    if (pdop.check_global_equiv(local_value)) ITFAILS;
+	}
+	else
+	{
+	    if (!pdop.check_global_equiv(local_value)) ITFAILS;
+	}
+    }
+	 
+    // reset all to the same value
+    local_value = value;
+    if (!pdop.check_global_equiv(local_value)) ITFAILS;
+
+    // check if more than 2 nodes
+    if (C4::nodes() > 2)
+    {
+	// now change a middle value
+	if (C4::node() == C4::nodes()/2)
+	    local_value = mod_value;
+	
+	if (C4::node() == C4::nodes()/2 - 1)
+	{
+	    if (pdop.check_global_equiv(local_value)) ITFAILS;
+	}
+	else if (C4::node() == C4::nodes()/2)
+	{
+	    if (pdop.check_global_equiv(local_value)) ITFAILS; 
+	}
+	else
+	{
+	    if (!pdop.check_global_equiv(local_value)) ITFAILS;
+	}
+    }
+	 
+    // reset all to the same value
+    local_value = value;
+    if (!pdop.check_global_equiv(local_value)) ITFAILS;
+
+    // check if 1 node (serial)
+    if (C4::nodes() == 1)
+    {
+	// do a serial problem test-->this is trivial but we want to check it
+	// anyway
+	local_value = mod_value;
+	if (!pdop.check_global_equiv(local_value)) ITFAILS;
+    }
+}
+
+// simple timing test
+void timing()
+{
+    // set a value
+    int value = 10;
+
+    double begin;
+    double end;
+	
+    // get an OS_Mesh (2D 6 cells)
+    SP<MC_Interface> interface(new MC_Interface());
+    OS_Builder builder(interface);
+    SP<OS_Mesh> mesh = builder.build_Mesh();
+    
+    // build a full replication topology
+    SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
+    
+    // build a Parallel_Data_Operator
+    Parallel_Data_Operator pdop(topology);
+
+    if (C4::node() == 0)
+	begin = C4::Wtime();
+
+    for (int i = 0; i < 10; i++)
+	pdop.check_global_equiv(value);
+
+    if (C4::node() == 0)
+	end = C4::Wtime();
+
+    if (C4::node() == 0)
+	cout << "Ran for " << end-begin << " seconds on " << C4::nodes()
+	     << endl;
+}
+
+//---------------------------------------------------------------------------//
 // MAIN
 //---------------------------------------------------------------------------//
 
@@ -178,6 +310,11 @@ int main(int argc, char *argv[])
     // test with STL and c-style fields
     test_STL_Fields<vector<int>, int>();
     test_STL_Fields<deque<int>, int>();
+
+    // test global equivalences
+    test_equivalence(10, 11);           // int
+    test_equivalence(10.0001, 11.0001); // double
+    test_equivalence(10.0001, 10.0002); // double
 
     // status of test
     cout << endl;
