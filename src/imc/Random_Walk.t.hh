@@ -91,22 +91,19 @@ bool Random_Walk<MT>::do_a_random_walk(int    cell,
     // set the random walk radius for this step
     rw_radius = rw_radius_in;
 
-    // set boolean flag for random walk
-    bool doit = true;
-
     // check to see if random walk is valid
     if (rw_radius <= min_optical_radius * mfp)
-	doit = false;
+	return false;
     else if (rw_radius <= d_collision)
-	doit = false;
+	return false;
     else if (rw_radius >= d_census)
-	doit = false;
+	return false;
 
     // set the rw_set flag to true (random walk is on)
     rw_set = true;
 
     // return random walk boolean flag
-    return doit;
+    return true;
 }
 
 //---------------------------------------------------------------------------//
@@ -135,7 +132,7 @@ double Random_Walk<MT>::random_walk(sf_double   &r,
 				    sf_double   &omega,
 				    double      &time_left,
 				    int          cell,
-				    SP_Rnd_Type  random,
+				    Rnd_Type     random,
 				    bool        &to_census)
 {
     Require (rw_set);
@@ -157,7 +154,7 @@ double Random_Walk<MT>::random_walk(sf_double   &r,
     Check (P_escape <= 1.0);
 
     // sample to see if particle escapes
-    double ran = random->ran();
+    double ran = random.ran();
 
     // radius of sphere that the particle resides on
     double radius = 0.0;
@@ -185,7 +182,7 @@ double Random_Walk<MT>::random_walk(sf_double   &r,
 	// goes to census
 	
 	// first get a new random number
-	ran = random->ran();
+	ran = random.ran();
 
 	// now determine the radius of the sphere the particle lives on
 	radius = table.get_radius(time_left, D, rw_radius, ran);
@@ -202,7 +199,7 @@ double Random_Walk<MT>::random_walk(sf_double   &r,
 
     // now sample a new particle position on the sphere
     std::pair<sf_double, sf_double> r_and_normal = 
-	mesh->sample_pos_on_sphere(cell, r, radius, *random);
+	mesh->sample_pos_on_sphere(cell, r, radius, random);
 
     // assign the particle position
     r = r_and_normal.first;
@@ -212,8 +209,8 @@ double Random_Walk<MT>::random_walk(sf_double   &r,
     omega = r_and_normal.second;
     
     // sample a new direction from a cosine distribution about the normal
-    double costheta = std::sqrt(random->ran());
-    double phi      = 2.0 * rtt_mc::global::pi * random->ran();
+    double costheta = std::sqrt(random.ran());
+    double phi      = 2.0 * rtt_mc::global::pi * random.ran();
     mesh->get_Coord().calc_omega(costheta, phi, omega);
     
     // unset random walk

@@ -10,10 +10,15 @@
 //---------------------------------------------------------------------------//
 
 #include "imc_test.hh"
+#include "IMC_Test.hh"
 #include "../Random_Walk.hh"
+#include "../Diffusion_Opacity.hh"
+#include "../Fleck_Factors.hh"
 #include "../Release.hh"
 #include "mc/OS_Mesh.hh"
+#include "mc/OS_Builder.hh"
 #include "mc/Constants.hh"
+#include "rng/Random.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
@@ -24,15 +29,26 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <utility>
 
 using namespace std;
 
+using rtt_imc_test::Parser;
 using rtt_imc::Random_Walk;
 using rtt_imc::Random_Walk_Sampling_Tables;
+using rtt_imc::Fleck_Factors;
+using rtt_imc::Diffusion_Opacity;
+using rtt_mc::OS_Builder;
+using rtt_rng::Rnd_Control;
+using rtt_rng::Sprng;
 using rtt_dsxx::soft_equiv;
 using rtt_dsxx::SP;
+using rtt_mc::global::pi;
 
 typedef rtt_mc::OS_Mesh MT;
+typedef pair<vector<double>, vector<double> > pair_dbl;
+
+int seed = 234224;
 
 //---------------------------------------------------------------------------//
 // TESTING SERVICES
@@ -103,8 +119,29 @@ double get_prob_radius(double t, double D, double Ro, double R1)
 }
 
 //---------------------------------------------------------------------------//
-// TESTS
-//---------------------------------------------------------------------------//
+
+SP<Diffusion_Opacity<MT> > get_diff_opacity(SP<MT> mesh)
+{
+    // make data
+    SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
+    MT::CCSF<double> ross(mesh);
+
+    for (int i = 1; i <= mesh->num_cells(); i++)
+    {
+	fleck->fleck(i) = 1.0 / 2.5;
+	ross(i)         = 100.0 + static_cast<double>(i);
+    }
+
+    // make the diffusion opacity
+    SP<Diffusion_Opacity<MT> > diff(
+	new Diffusion_Opacity<MT>(fleck, ross));
+					
+    return diff;
+}
+
+//===========================================================================//
+// RANDOM WALK SAMPLING TABLE TESTS
+//===========================================================================//
 
 void sampling_table_prob_exit_t_test()
 {
@@ -586,17 +623,226 @@ void interpolation_error_test()
     }
 }
 
-//---------------------------------------------------------------------------//
+//===========================================================================//
+// RANDOM WALK TESTS
+//===========================================================================//
 
-void random_walk_OS_Mesh_test()
+void random_walk_test()
 {
-    // Random_Walk<MT> rw;
+    // build a 3D mesh
+    SP<MT> mesh;
+    {
+	SP<Parser> p(new Parser("OS_Input_3D"));
+	OS_Builder b(p);
+	mesh = b.build_Mesh();
 
+	if (mesh->num_cells() != 12) ITFAILS;
+    }
+    
+    // get the diffusion opacity
+    SP<Diffusion_Opacity<MT> > diff = get_diff_opacity(mesh);
+
+    // make random walk
+    Random_Walk<MT> rw(mesh, diff);
+
+    // make two random number generators
+    Rnd_Control control(seed);
+    Sprng rng  = control.get_rn(11);
+    Sprng rngr = control.get_rn(11);
+
+    // random walk table
+    Random_Walk_Sampling_Tables table;
+
+    // particle data
+    vector<double> r(3);
+    vector<double> o(3);
+
+    // check do_a_random_walk function
+    // Ross = 100 + cell_index
+    {
+	cout << "Random Walk example in cell 1" << endl;
+	cout << "=============================" << endl;
+
+	double radius = 0.0;
+	double d_col  = 0.0;
+	double d_cen  = 0.0;
+	double telap  = 0.0;
+	double tleft  = 0.0;
+	double D      = 0.0;
+	bool   toc    = false;
+       
+	double P_exit = 0.0;
+	double ran    = 0.0;
+	double d      = 0.0;
+	double dref   = 0.0;
+	double cost   = 0.0;
+	double phi    = 0.0;
+	vector<double> oldr(3);
+	vector<double> refo(3);
+	
+	// >>> cell 1
+	radius = 1.0 / 10.0;
+	d_col  = 1.0 / 102.0;
+	d_cen  = 1.0 / 5.0;
+
+	if (!rw.do_a_random_walk(1, radius, d_col, d_cen)) ITFAILS;
+	
+	// now do the random walk
+	r[0]  = -0.5;
+	r[1]  = 0.1;
+	r[2]  = 0.6;
+	tleft = 0.001;
+
+	oldr = r;
+
+	// check it
+	D      = diff->get_random_walk_D(1);
+	P_exit = table.get_prob_exit(tleft, D, radius);
+	ran    = rngr.ran();
+
+	cout << "Probability of escape is : " << P_exit << endl;
+	cout << "Random number is         : " << ran << endl;
+
+	// the particle will go to census
+	d = table.get_radius(tleft, D, radius, rngr.ran());
+	
+	// do the random walk
+	telap = rw.random_walk(r, o, tleft, 1, rng, toc);
+
+	if (!toc)                      ITFAILS;
+	if (!soft_equiv(tleft, 0.0))   ITFAILS;
+	if (!soft_equiv(telap, 0.001)) ITFAILS;
+
+	// check particle position
+	dref = 0.0;
+	for (int i = 0; i < 3; i++)
+	    dref += (r[i] - oldr[i]) * (r[i] - oldr[i]);
+	dref = sqrt(dref);
+	if (!soft_equiv(d, dref)) ITFAILS;
+
+	pair_dbl rn = mesh->sample_pos_on_sphere(1, oldr, d, rngr);
+	oldr = rn.first;
+	if (!soft_equiv(r.begin(), r.end(), oldr.begin(), oldr.end())) ITFAILS;
+
+	// check particle direction
+	refo = rn.second;
+	cost = sqrt(rngr.ran());
+	phi  = 2.0 * pi * rngr.ran();
+	mesh->get_Coord().calc_omega(cost, phi, refo);
+
+	if (!soft_equiv(o.begin(), o.end(), refo.begin(), refo.end())) ITFAILS;
+
+	if (!soft_equiv(rng.ran(), rngr.ran()))                        ITFAILS;
+
+	cout << "=============================" << endl << endl;
+
+	// cell 1 where random walk will be off
+	radius = 1.0 / 10.0;
+	d_col  = 1.0 / 9.9;
+	d_cen  = 1.0 / 5.0;
+
+	if (rw.do_a_random_walk(1, radius, d_col, d_cen)) ITFAILS;
+
+	radius = 1.0 / 10.0;
+	d_col  = 1.0 / 102.0;
+	d_cen  = 1.0 / 11.0;
+
+	if (rw.do_a_random_walk(1, radius, d_col, d_cen)) ITFAILS;
+
+	radius = 1.0 / 101.5;
+	d_col  = 1.0 / 102.0;
+	d_cen  = 1.0 / 10.0;
+
+	if (rw.do_a_random_walk(1, radius, d_col, d_cen)) ITFAILS;
+
+	// >>> cell 11
+	cout << "Random Walk example in cell 11" << endl;
+	cout << "==============================" << endl;
+
+	radius = 1.0 / 10.0;
+	d_col  = 1.0 / 20.0;
+	d_cen  = 1.0 / 5.0;
+
+	if (!rw.do_a_random_walk(11, radius, d_col, d_cen)) ITFAILS;
+	
+	// now do the random walk
+	r[0]  = 0.5;
+	r[1]  = 2.1;
+	r[2]  = 1.77;
+	tleft = 0.001;
+
+	oldr = r;
+
+	// check it
+	D      = diff->get_random_walk_D(11);
+	P_exit = table.get_prob_exit(tleft, D, radius);
+	ran    = rngr.ran();
+
+	cout << "Probability of escape is : " << P_exit << endl;
+	cout << "Random number is         : " << ran << endl;
+
+	// the particle makes it to the surface of the sphere
+	telap = rw.random_walk(r, o, tleft, 11, rng, toc);
+
+	if (toc)                               ITFAILS;
+	if (!soft_equiv(telap + tleft, 0.001)) ITFAILS;
+
+	// check time elapsed
+	double rtelap = table.get_elapsed_time(D, radius, ran);
+	if (!soft_equiv(telap, rtelap)) ITFAILS;
+	if (telap < 0.0)                ITFAILS;
+	if (tleft < 0.0)                ITFAILS;
+
+	// check particle position
+	dref = 0.0;
+	for (int i = 0; i < 3; i++)
+	    dref += (r[i] - oldr[i]) * (r[i] - oldr[i]);
+	dref = sqrt(dref);
+	if (!soft_equiv(radius, dref)) ITFAILS;
+
+	rn   = mesh->sample_pos_on_sphere(11, oldr, radius, rngr);
+	oldr = rn.first;
+	if (!soft_equiv(r.begin(), r.end(), oldr.begin(), oldr.end())) ITFAILS;
+
+	// check particle direction
+	refo = rn.second;
+	cost = sqrt(rngr.ran());
+	phi  = 2.0 * pi * rngr.ran();
+	mesh->get_Coord().calc_omega(cost, phi, refo);
+
+	if (!soft_equiv(o.begin(), o.end(), refo.begin(), refo.end())) ITFAILS;
+
+	if (!soft_equiv(rng.ran(), rngr.ran()))                        ITFAILS;
+
+	cout << "==============================" << endl << endl;
+
+	// try some where it is off
+	radius = 1.0 / 10.0;
+	d_col  = 1.0 / 9.9;
+	d_cen  = 1.0 / 5.0;
+
+	if (rw.do_a_random_walk(11, radius, d_col, d_cen)) ITFAILS;
+
+	radius = 1.0 / 10.0;
+	d_col  = 1.0 / 102.0;
+	d_cen  = 1.0 / 11.0;
+
+	if (rw.do_a_random_walk(11, radius, d_col, d_cen)) ITFAILS;
+
+	radius = 1.0 / 111.5;
+	d_col  = 1.0 / 112.0;
+	d_cen  = 1.0 / 10.0;
+
+	if (rw.do_a_random_walk(11, radius, d_col, d_cen)) ITFAILS;
+    }
+   
     if (rtt_imc_test::passed)
 	PASSMSG("Random Walk on OS_Mesh ok.");
 }
 
-//---------------------------------------------------------------------------//
+//===========================================================================//
+// MAIN
+//===========================================================================//
 
 int main(int argc, char *argv[])
 {
@@ -615,15 +861,20 @@ int main(int argc, char *argv[])
 
     try
     {
-	// >>> UNIT TESTS
-	
-	// sampling tables tests
-	sampling_table_prob_exit_t_test();
-	sampling_table_Rcen_test();
-	interpolation_error_test();
 
-	// random walk tests
-	random_walk_OS_Mesh_test();
+	// only run on 1 processor
+	if (rtt_c4::node() == 0)
+	{
+	    // >>> UNIT TESTS
+	
+	    // sampling tables tests
+	    sampling_table_prob_exit_t_test();
+	    sampling_table_Rcen_test();
+	    interpolation_error_test();
+
+	    // random walk tests
+	    random_walk_test();
+	}
     }
     catch (rtt_dsxx::assertion &ass)
     {

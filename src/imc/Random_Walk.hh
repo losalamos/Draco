@@ -149,7 +149,7 @@ class Random_Walk : public Hybrid_Diffusion
 
     // Do a random walk.
     double random_walk(sf_double &, sf_double &, double &, int, 
-		       SP_Rnd_Type, bool &);
+		       Rnd_Type, bool &);
 
     // >>> QUERY FUNCTIONS
 };

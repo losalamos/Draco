@@ -83,13 +83,13 @@ double Random_Walk_Sampling_Tables::get_prob_exit(double t,
     using rtt_mc::global::linear_interpolate;
     using std::lower_bound;
 
-    Require (t >= 0.0);
+    Require (t > 0.0);
     Require (Ro > 0.0);
     Require (D > 0.0);
 
     // calculate A
     double A = D * t / (Ro * Ro);
-    Check (A >= 0.0);
+    Check (A > 0.0);
 
     // if a > 20 then probability is  1 that the particle will exit sphere
     if (A >= 20.0)
@@ -237,13 +237,13 @@ double Random_Walk_Sampling_Tables::get_radius(double t,
     using rtt_mc::global::linear_interpolate;
     using std::lower_bound;
 
-    Require (t >= 0.0);
+    Require (t > 0.0);
     Require (Ro > 0.0); 
     Require (D > 0.0);
 
     // calculate A
     double A = D * t / (Ro * Ro);
-    Check (A >= 0.0);
+    Check (A > 0.0);
 
     // indices
     int a_index = 0;

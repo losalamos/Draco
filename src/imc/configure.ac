@@ -34,7 +34,8 @@ AC_DRACO_ENV
 # OUTPUTS
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in\
-                 test/OS_Input:test/OS_Input.in])
+                 test/OS_Input:test/OS_Input.in\
+	         test/OS_Input_3D:test/OS_Input_3D.in])
 AC_OUTPUT 
 
 dnl-------------------------------------------------------------------------dnl

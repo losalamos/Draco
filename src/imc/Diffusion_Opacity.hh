@@ -106,6 +106,8 @@ double Diffusion_Opacity<MT>::get_random_walk_D(int cell) const
     using rtt_mc::global::c;
 
     Require (cell > 0 && cell <= num_cells());
+    Check (fleck->fleck(cell) >= 0.0);
+    Check (fleck->fleck(cell) <= 1.0);
 
     return c / (3.0 * (1.0-fleck->fleck(cell)) * rosseland(cell)); 
 }
