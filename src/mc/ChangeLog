@@ -1,3 +1,9 @@
+2002-05-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* mc: released version mc-3_0_0. Lots of changes.  Upgraded to new
+	draco testing.  Moved particle communication services into mc.
+	Upgraded for new compilers.
+
 2002-01-04  Thomas M. Evans  <tme@lanl.gov>
 
 	* Comm_Builder, Communicator: moved these two classes from imc to
