@@ -155,14 +155,13 @@ namespace rtt_cdi_eospac_test
 	    // in a SesameTable object.  The constructor for Eospac
 	    // takes one argument: a SesameTables object.
 	    
-	    rtt_dsxx::SP< rtt_cdi_eospac::Eospac > spEospac;
+	    rtt_dsxx::SP< const rtt_cdi_eospac::Eospac > spEospac;
 
 	    // Try to instantiate the new Eospac object.
 	    // Simultaneously, we are assigned material IDs to more
 	    // SesameTable values.
 	    
-	    if ( 
-		spEospac = new rtt_cdi_eospac::Eospac( 
+	    if ( spEospac = new rtt_cdi_eospac::Eospac( 
 		    AlSt.enelc( Al3717 ).zfree3( Al23714 ) ) )
 
 		// Alternatively, we can avoid carrying around the
@@ -209,7 +208,7 @@ namespace rtt_cdi_eospac_test
 
 	    // Retrieve an electron heat capacity (= dE/dT)	    
 
-	    refValue = 0.0002711658224638093; // kJ/g/K
+	    refValue = 3146.719924188898; // kJ/g/keV
 	    
 	    double heatCapacity =
 		spEospac->getElectronHeatCapacity( temperature,
@@ -235,7 +234,7 @@ namespace rtt_cdi_eospac_test
 
 	    // Retrieve an ion based heat capacity
 
-	    refValue = 0.000581583274263501; // kJ/g/K
+	    refValue = 6748.931926862662; // kJ/g/keV
 
 	    heatCapacity =
 		spEospac->getIonHeatCapacity( temperature, density );
@@ -263,13 +262,13 @@ namespace rtt_cdi_eospac_test
 	    refValue = 1.389598060091371e+29; // 1/s/cm
 
 	    double chie = 
-		spEospac->getElectronBasedThermalConductivity(
+		spEospac->getElectronThermalConductivity(
 		    temperature, density );
 
 	    if ( match( chie, refValue ) )
-		pass() << "getElectronBasedThermalConductivity() test passed.";
+		pass() << "getElectronThermalConductivity() test passed.";
 	    else
-		fail() << "getElectronBasedThermalConductivity() test failed.";
+		fail() << "getElectronThermalConductivity() test failed.";
 
 	    // --------------------------- //
 	    // Test vector access routines //
@@ -410,6 +409,7 @@ namespace rtt_cdi_eospac_test
 		    
 		    reldiff = fabs( ( computedValue[i] - referenceValue[i] )
 				    / referenceValue[i] );
+
 		    // If the comparison fails then change the value of "em"
 		    // and exit the loop.
 		    

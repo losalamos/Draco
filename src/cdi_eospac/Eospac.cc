@@ -180,7 +180,7 @@ namespace rtt_cdi_eospac
 	    return getF( vtemperature, vdensity, returnType );
 	}
     
-    double Eospac::getElectronBasedThermalConductivity(
+    double Eospac::getElectronThermalConductivity(
 	double temperature, double density ) const
 	{
 	    const ES4DataType returnType = ES4tconde; // (tconde)
@@ -188,7 +188,7 @@ namespace rtt_cdi_eospac
 			 returnType )[0];
 	}
     
-    std::vector< double > Eospac::getElectronBasedThermalConductivity(
+    std::vector< double > Eospac::getElectronThermalConductivity(
 	const std::vector< double >& vtemperature, 
 	const std::vector< double >& vdensity ) const
 	{
@@ -390,7 +390,10 @@ namespace rtt_cdi_eospac
 	    // returnVal[1]/rho.  returnVal[0] is the EoS value (not a 
 	    // derivative value.
 	    for ( int i=0; i<vtemperature.size(); ++i )
-		dFdT[i] = dFdT[i]/vtempsKelvin[i];
+// Return units for temperature should be keV not Kelvin.
+// Heat Capacity will be kJ/g/keV!
+// 		dFdT[i] = dFdT[i]/vtempsKelvin[i];
+		dFdT[i] = dFdT[i]/vtemperature[i];
 
 	    return dFdT;
 	}

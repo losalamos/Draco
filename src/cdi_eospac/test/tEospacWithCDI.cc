@@ -223,7 +223,7 @@ namespace rtt_cdi_eospac_test
 
  	    // Retrieve an electron heat capacity (= dE/dT)	    
 
-	    refValue = 0.0002711658224638093; // kJ/g/K
+	    refValue = 3146.719924188898; // kJ/g/keV
 	    
 	    double heatCapacity =
 		spCdiEos->eos()->getElectronHeatCapacity( 
@@ -249,7 +249,7 @@ namespace rtt_cdi_eospac_test
 
 	    // Retrieve an ion based heat capacity
 
-	    refValue = 0.000581583274263501; // kJ/g/K
+	    refValue = 6748.931926862662; // kJ/g/keV
 
 	    heatCapacity =
 		spCdiEos->eos()->getIonHeatCapacity( temperature, density );
@@ -277,13 +277,13 @@ namespace rtt_cdi_eospac_test
 	    refValue = 1.389598060091371e+29; // 1/s/cm
 
 	    double chie = 
-		spCdiEos->eos()->getElectronBasedThermalConductivity(
+		spCdiEos->eos()->getElectronThermalConductivity(
 		    temperature, density );
 
 	    if ( match( chie, refValue ) )
-		pass() << "getElectronBasedThermalConductivity() test passed.";
+		pass() << "getElectronThermalConductivity() test passed.";
 	    else
-		fail() << "getElectronBasedThermalConductivity() test failed.";
+		fail() << "getElectronThermalConductivity() test failed.";
 	    
 	    // --------------------------- //
 	    // Test vector access routines //

@@ -258,7 +258,7 @@ namespace rtt_cdi_eospac
 	 *
 	 * \param density Density of the material in g/cm^3
 	 * \param temperature Temperature of the material in keV.
-	 * \return The electron based heat capacity in kJ/g/K.
+	 * \return The electron based heat capacity in kJ/g/keV.
 	 */
 	double getElectronHeatCapacity(
 	    double temperature, double density ) const;
@@ -270,7 +270,7 @@ namespace rtt_cdi_eospac
 	 *
 	 * \param density Density of the material in g/cm^3
 	 * \param temperature Temperature of the material in keV.
-	 * \return The electron based heat capacity in kJ/g/K.
+	 * \return The electron based heat capacity in kJ/g/keV.
 	 */
 	std::vector< double > getElectronHeatCapacity(
 	    const std::vector< double >& vtemperature, 
@@ -306,7 +306,7 @@ namespace rtt_cdi_eospac
 	 *
 	 * \param density Density of the material in g/cm^3
 	 * \param temperature Temperature of the material in keV.
-	 * \return The ion based heat capacity in kJ/g/K.
+	 * \return The ion based heat capacity in kJ/g/keV.
 	 */
 	double getIonHeatCapacity(
 	    double temperature, double density ) const;
@@ -318,7 +318,7 @@ namespace rtt_cdi_eospac
 	 *
 	 * \param density Density of the material in g/cm^3
 	 * \param temperature Temperature of the material in keV.
-	 * \return A vector of ion based heat capacities in kJ/g/K.
+	 * \return A vector of ion based heat capacities in kJ/g/keV.
 	 */
 	std::vector< double > getIonHeatCapacity(
 	    const std::vector< double >& vtemperature,
@@ -356,7 +356,7 @@ namespace rtt_cdi_eospac
 	 * \param temperature Temperature of the material in keV.
 	 * \return The electron based thermal conductivity in 1/s/cm.
 	 */
-	double getElectronBasedThermalConductivity(
+	double getElectronThermalConductivity(
 	    double temperature, double density ) const;
 
 	/*!
@@ -369,7 +369,7 @@ namespace rtt_cdi_eospac
 	 * \return A vector of electron based thermal conductivities
 	 * in 1/s/cm.
 	 */
-	std::vector< double > getElectronBasedThermalConductivity(
+	std::vector< double > getElectronThermalConductivity(
 	    const std::vector< double >& vtemperature,
 	    const std::vector< double >& vdensity ) const;
 
