@@ -6,6 +6,8 @@
 # @> Rules for building the timestep test executable.
 ###############################################################################
 
+pkg	:= timestep
+
 SRC_TOP = ../..
 
 #need_linalg    := yes
@@ -60,6 +62,10 @@ $(dep_libspdf):
 $(dep_libnml):
 $(dep_libc4):
 $(dep_libds++):
+
+# Get DejaGnu support
+
+include ../../config/make.deja
 
 # Go pick up the standard signature for makefiles.
 
