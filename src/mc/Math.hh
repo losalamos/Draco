@@ -22,6 +22,8 @@
 // 3) 08-24-00 : added mod_with_2e9 function.
 // 4) 07-31-01 : modified mod_with_2e9 function to integer_modulo with an 
 //               argument for the integer to mod against
+// 5) 01-24-02 : modified the soft_equiv function to allow using an absolute 
+//               error check if the reference value is within 1.0e-14 of zero.
 //
 //===========================================================================//
 
@@ -56,12 +58,9 @@ inline bool soft_equiv(const FPT &value, const FPT &reference,
     else
 	passed = false;
 
-    // second chance for passing if reference is identically zero
-    if (reference == 0 && !passed)
+    // second chance for passing if reference is within machine error of zero
+    if (!passed && (fabs(reference) < 1.0e-14))
 	if (fabs(value) < precision) passed = true;
-
-    // check for both zeroes
-    if (reference == 0 && value == 0 && !passed) passed = true;
 
     return passed;
 }

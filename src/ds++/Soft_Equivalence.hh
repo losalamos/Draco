@@ -12,6 +12,20 @@
 #ifndef __ds_Soft_Equivalence_hh__
 #define __ds_Soft_Equivalence_hh__
 
+//===========================================================================//
+// Soft_Equivalence
+//
+// Purpose : checks that two reals or fields of reals are within a tolerance
+// of each other.
+//
+// revision history:
+// -----------------
+// 0) original
+// 1) 01-24-02 : modified the soft_equiv function to allow using an absolute 
+//               error check if the reference value is within 1.0e-14 of zero.
+//
+//===========================================================================//
+
 #include "Assert.hh"
 #include <cmath>
 #include <iterator>
@@ -48,12 +62,9 @@ inline bool soft_equiv(const FPT &value, const FPT &reference,
     else
 	passed = false;
 
-    // second chance for passing if reference is identically zero
-    if (reference == 0 && !passed)
+    // second chance for passing if reference is within machine error of zero
+    if (!passed && (fabs(reference) < 1.0e-14))
 	if (fabs(value) < precision) passed = true;
-
-    // check for both zeroes
-    if (reference == 0 && value == 0 && !passed) passed = true;
 
     return passed;
 }
