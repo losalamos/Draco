@@ -54,7 +54,7 @@ MatVec_3T<MT, Solver>::MatVec_3T( const SP<MT>& spm_, Solver *p )
 //---------------------------------------------------------------------------//
 
 template<class MT, class Solver>
-void MatVec_3T<MT, Solver>::MatVec( Mat1<T>& b, Mat1<T>&x )
+void MatVec_3T<MT, Solver>::MatVec( Mat1<T>& b, const Mat1<T>&x )
 {
     its++;
     char buf[80];
