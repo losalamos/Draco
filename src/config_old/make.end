@@ -51,6 +51,9 @@ else
 	$(RM) .d.*_$(env)  .dkcc.*_$(env)
 	$(RM) -rf $(env) 
 endif
+ifeq ($(bits),32)
+	$(RM) *.pure
+endif
 	$(RM) lib*_$(env).* x*_$(env)
 	$(RM) $(tstprogs) $(puretstprogs)
 	$(RM) -rf ii_files
