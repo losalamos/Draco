@@ -59,7 +59,7 @@ std::vector< double > QuadServices::computeD() const
  * The M array is actually (2\ell+1)/sum_wts * cYnm(n,m).
  *
  * \f[
- * cY_{(\ell,k),m} = \left[ \frac{(\ell-\absk)!}{(\ell+\absk)!} (2 -
+ * cY_{(\ell,k),m} = \left[ \frac{(\ell - | k|)!}{(\ell+ | k |)!} (2 -
  * \delta_{k,0}) \right] Y_{\ell,k}(\Omega_m),
  * \f]
  *
@@ -278,11 +278,12 @@ double QuadServices::spherical_harmonic( unsigned const ell,
  * polynomials by:
  *
  * \f[
- * \begin{align}
- * P^k_ell(x) & = (-1)^k(1-x^2)^{k/2}\frac{d^k}{dx^k}P_ell(x) \\
- *             & = \frac{(-1)^k}{2^ellk
+ * P^k_ell(x) = (-1)^k(1-x^2)^{k/2}\frac{d^k}{dx^k}P_ell(x),
+ * \f]
+ * or equivalently, 
+ * \f[
+ * P^k_ell(x) = \frac{(-1)^k}{2^ellk
  *             !}(1-x^2)^{k/2}\frac{d^{ell+k}}{dx^{ell+k}}(x^2-1)^ell.
- * \end{align}
  * \f]
  *
  * where \f$ P_ell(x) \f$ are the unassociated Legendre polynomials.

@@ -35,13 +35,15 @@ namespace rtt_quadrature
  * pieces were derived from the Snac2 soure file "sncYnm.f90."
  *
  * Multiplying the moment representation of the solution vector by the matrix
- * M() provides a discrete (SN) representation of the solution vector.  The
- * matrix M() is the moment-to-discrete operator, c * Y_(n,m).  Where c *
- * Y_(n,m) is the nth spherical harmonic evaluated at the mth quadrature
+ * M() provides a discrete ordinates (i.e.: \f$ S_N \f$) representation of
+ * the solution vector.  The matrix \f$ \mathbf{M} \f$ is the
+ * moment-to-discrete operator, \f$ c_n Y_{n,m} \f$.  Where \f$ Y_{n,m}
+ * \f$ is the nth spherical harmonic evaluated at the mth quadrature
  * direction, multiplied by a constant.
  *
- * If L is the order of anisotropic scattering, then we need the (k,l)th
- * spherical harmonic for k=0..L and l=-k..k.
+ * If L is the order of anisotropic scattering, then we need the \f$
+ * (k,\ell)^{th} \f$ spherical harmonic for \f$ k=0 \ldots L \f$ and \f$
+ * \ell=-k \ldots k \f$.
  * 
  * \f$ \mathbf{M}_{m,(k,\ell)} 
  * = \frac{2k+1}{\sum{w_m}}
@@ -51,7 +53,7 @@ namespace rtt_quadrature
  * The constant c_{k,l} has been defined by Morel to be
  *
  * \f$ c_{k,\ell} = \sqrt{ (2-\delta_{\ell 0})
- * \frac{(k-\abs\ell)!}{(k+\abs\ell)!}} \f$
+ * \frac{(k- | \ell |)!}{(k+ | \ell |)!}} \f$
  *
  * \sa QuadServices.cc for detailed descriptions.
  *
