@@ -13,6 +13,7 @@
 #include <string>
 #include <iomanip>
 #include <cstdio>
+#include <fstream>
 
 IMCSPACE
 
@@ -1051,6 +1052,8 @@ void Parallel_Builder<MT>::send_Layout(Layout &host_layout)
 
   // size the boundary cells object
     bound_cells.resize(nodes());
+    for (int i = 0; i < bound_cells.size(); i++)
+	bound_cells[i].resize(0);
 
   // loop through processors and send the layouts
     for (int np = 1; np < nodes(); np++)
@@ -1886,7 +1889,7 @@ SP<Communicator<PT> > Parallel_Builder<MT>::recv_Communicator()
 template<class MT>
 template<class PT>
 SP<Communicator<PT> > Parallel_Builder<MT>::build_Communicator(int np)
-{
+{ 
   // return value
     SP<Communicator<PT> > return_com;
 
