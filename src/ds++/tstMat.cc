@@ -6,13 +6,16 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include <iostream.h>
+#include <iostream>
+
+using namespace std;
 
 // This is heinous beyond description, but I /really/ want to test all the
 // parts of the Matrix classes here.  Wantom abuse of CPP like that which
 // follows, is just to prove that I mean business!
 
-#define TEST_MAT
+#define private public
+#define protected public
 
 #include "Mat.hh"
 
@@ -26,6 +29,8 @@ void ikv1( Mat1<T,A>& x )
 
 void t1()
 {
+    cout << "t1: beginning.\n";
+
     {
     // Test Mat1<int>;
 
@@ -34,6 +39,8 @@ void t1()
 
 	ikv1( x );
     }
+
+    cout << "t1: passed\n";
 }
 
 //---------------------------------------------------------------------------//
@@ -42,7 +49,7 @@ void t1()
 
 void t2()
 {
-    cout << "Testing Mat2<T>." << endl;
+    cout << "t2: beginning.\n";
     
     {
 	cout << "Testing default ctor. ";
@@ -51,6 +58,7 @@ void t2()
 
 	cout  << "Done." << endl;
     }
+    cout << "t2a: passed.\n";
 
     {
 	cout << "Testing conventional ctor. " << flush;;
@@ -75,6 +83,7 @@ void t2()
 
 	cout << "Done." << endl;
     }
+    cout << "t2b: passed.\n";
 
     {
 	cout << "Testing ctor with Bounds. " << flush;;
@@ -83,7 +92,7 @@ void t2()
 
 	Assert( x.nx() == 3 );
 	Assert( x.ny() == 3 );
-	Assert( x.index(0,0) == 4 );
+        Assert( x.index(1,1) == 4 );
 	Assert( x.size() == 9 );
 
 	int k=0;
@@ -98,11 +107,12 @@ void t2()
 
 	cout << "Done." << endl;
     }
+    cout << "t2c: passed.\n";
 
     cout << "Done testing Mat2<T>." << endl;
 }
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     cout << "Initiating test of the Mat family.\n";
 
