@@ -1,3 +1,11 @@
+2001-12-17  Thomas M. Evans  <tme@lanl.gov>
+
+	* viz: release version 1_2_0.  This release no longer includes
+	configure scripts in the package.  Also, it contains R. Lowrie's
+	updates to Ensight_Translator that allows the translator to parse
+	case files on restarts instead of requiring the dump times to be
+	stored. 
+
 2001-07-30  Thomas M. Evans  <tme@lanl.gov>
 
 	* viz: released version 1_1_0.  Added std:: namespace to
