@@ -265,6 +265,10 @@ class Particle
     // Perform an isotropic scatter.
     inline void scatter(const MT &);
 
+    // Dispatch to correct streaming method
+    inline void stream_and_capture(Tally<MT>& tally, 
+				   double sigma_eff_abs, double dstream);
+
   public:
     // Particle constructor.
     inline Particle(const sf_double &, const sf_double &, double, int,
@@ -474,6 +478,33 @@ void Particle<MT>::stream_implicit_capture(
     // Physically transport the particle
     stream(distance); 
 }
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Dispatch to correct streaming operation
+ */
+template <typename MT>
+void Particle<MT>::stream_and_capture(Tally<MT> &tally, 
+				      double     sigma_eff_abs,
+				      double     d_stream)
+{
+
+    if (use_analog_absorption())
+    {
+	// Light particle (analog) streaming.
+	stream_analog_capture(tally, d_stream);          
+    }
+    else
+    {
+	// Heavy particle (implicit) streaming
+	stream_implicit_capture(sigma_eff_abs, tally, d_stream);    
+    }
+    
+    // Adjust the time remaining till the end of the time step
+    time_left -= d_stream / rtt_mc::global::c;
+
+}
+
 
 
 

@@ -214,21 +214,7 @@ void Multigroup_Particle<MT>::transport(const MT         &mesh,
 
 
 	// Stream the particle, according to its status:
-	if (Base::use_analog_absorption())
-	{
-	    // Light particle (analog) streaming.
-	    Base::stream_analog_capture(tally, d_stream);          
-	}
-	else
-	{
-	    // Heavy particle (implicit) streaming
-	    Base::stream_implicit_capture(sigma_eff_abs, tally, d_stream);    
-	}
-
-
-	// Adjust the time remaining till the end of the time step
-	Base::time_left -= d_stream / rtt_mc::global::c;
-
+	Base::stream_and_capture(tally, sigma_eff_abs, d_stream);
 
 	// Process collisions, boundary crossings, going to census or
 	// reaching cutoff events.
