@@ -1,0 +1,33 @@
+digraph meshReaders_package_level {
+
+    /* graph attributes */
+    center=1;
+    size="8,14";
+    ranksep=1.25;
+
+    /* non-package nodes */
+    node0 [shape=house, label="rtt_mesh_element" color="blue"];
+
+    /* nodes */
+    node1 [shape=box, label="Mesh_Reader"];
+    node2 [shape=box, label="Release"];
+    node3 [shape=box, label="Hex_Mesh_Reader"];
+
+    /* level dependencies */
+    node0 -> {};
+    node1 -> { node0  node0 };
+    node2 -> {};
+    node3 -> { node1  node0 };
+
+    /* Levels */
+    l3 [shape=plaintext, label="Level 3", fontsize=18];
+    l2 [shape=plaintext, label="Level 2", fontsize=18];
+    l1 [shape=plaintext, label="Level 1", fontsize=18];
+
+    l3 -> l2 -> l1
+
+    {rank=same; l1 node0};
+    {rank=same; l2 node1 node2};
+    {rank=same; l3 node3};
+
+}
