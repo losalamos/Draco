@@ -103,7 +103,7 @@ cvs=`which cvs`
 if test ${username} = "kellyt"; then
    export CVS_RSH=ssh
 else
-   export CVS_RSH=/home/regress/bin/draco_ssh
+   export CVS_RSH=/home/regress/draco/regression/draco_ssh
 fi
 
 cvsroot='-z9 -d:ext:sf.lanl.gov:/cvsroot/draco'
@@ -148,9 +148,8 @@ EOSPAC_SETUP="--with-eospac-lib=${EOSPAC_LIB}"
 export SESPATHU=/codes/radtran/physical_data/eos
 export SESPATHC=/codes/radtran/physical_data/eos
 
-MPI_INC='/usr/local/mpich/include'
-MPI_LIB='/usr/local/mpich/lib'
-MPI_SETUP="--with-mpi-inc=${MPI_INC} --with-mpi-lib=${MPI_LIB}"
+MPI_DIR='/codes/mpi/bin'
+MPI_SETUP="--with-mpi-inc --with-mpi-lib"
 
 PCG_LIB='/codes/radtran/vendors/pcg/Linux/lib'
 PCG_SETUP="--with-pcg-lib=${PCG_LIB}"
@@ -173,6 +172,11 @@ for target in ${target_list}; do
 	
 	# setup parallel build options
 	${draco_mpi})
+
+            # Source mpich
+            . $MPI_DIR/mpich.sh shmem-lahey
+            echo $MPI_TAG
+
 	    OPTIONS='--with-c4=mpi'
 	    VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
 	;;
@@ -185,16 +189,25 @@ for target in ${target_list}; do
 
 	# setup of parallel optimized options
 	${draco_opt})
+
+            # Source mpich
+            . $MPI_DIR/mpich.sh shmem-lahey
+            echo $MPI_TAG
+
 	    OPTIONS='--with-c4=mpi --with-opt=2 --with-dbc=0'
 	    VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
 	;;
 
         # LAMPI version
         ${draco_lampi_dbg})
-	   source /codes/radtran/vendors/lampi/setup_lampi
-           MPI_SETUP="--with-mpi=lampi --with-mpi-inc=${MPI_INC_DIR} --with-mpi-lib=${MPI_LIB_DIR}"
-	   OPTIONS='--with-c4=mpi --with-dbc=7 --enable-debug'
-	   VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+
+            # Source lampi
+            . $MPI_DIR/lampi.sh shmem-lahey
+            echo $MPI_TAG
+
+            MPI_SETUP="--with-mpi=lampi $MPI_SETUP"
+            OPTIONS='--with-c4=mpi --with-dbc=7 --enable-debug'
+            VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
         ;;
 
 	# catchall
