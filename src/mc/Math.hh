@@ -96,7 +96,7 @@ inline ostream& operator<<(ostream &output, const vector<VT> &object)
 // do the DOT product between two vectors
 
 template<class VT>
-inline VT dot(vector<VT> A, vector<VT> B)
+inline VT dot(const vector<VT>& A, const vector<VT>& B)
 {
     Check (A.size() == B.size());
     VT value = 0.0;
@@ -109,7 +109,7 @@ inline VT dot(vector<VT> A, vector<VT> B)
 // do the CROSS product between two vectors
 
 template<class VT>
-inline vector<VT> cross(vector<VT> A, vector<VT> B)
+inline vector<VT> cross(const vector<VT>& A, const vector<VT>& B)
 {
     Check (A.size() == B.size());
     Check (A.size() == 3);
