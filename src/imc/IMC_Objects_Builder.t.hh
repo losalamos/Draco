@@ -312,13 +312,8 @@ void IMC_Objects_Builder<IT,MT,FT,PT>::build_time_independent_particle_objects(
 	tracker = builder.build_tracker();
     }
 
-    // the extrinsic surface tracker may not exist on a decomposed part of
-    // the mesh even though surface tracking is on; thus we can't easily
-    // check this but we'll try
-    Remember (int count = 0;);
-    Remember (if (tracker) count = 1;);
-    Remember (rtt_c4::global_prod(count););
-    Ensure   (interface->number_of_surfaces() ? count : !count);
+    // the tracker is always built if there are global surfaces
+    Ensure (interface->number_of_surfaces() ? tracker : !tracker);
 }
 
 } // end namespace rtt_imc
