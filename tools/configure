@@ -797,7 +797,7 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-lib-prefix=library prefix
                           give prefix to libraries (default rtt_)
-  --with-c4=scalar,mpi,shmem
+  --with-c4=scalar,mpi|lampi|mpich,shmem
 		          turn on c4 (default scalar)
   --with-dbc=level      set Design-by-Contract
   --with-cxx=gcc,sgi,kcc,compaq,guide
@@ -1270,6 +1270,11 @@ fi;
    # give with-c4 implied argument
    if test "${with_c4:=scalar}" = yes ; then
        with_c4='scalar'
+   fi
+
+   # if specific vendor is listed (e.g.: lampi or mpich) reset to mpi
+   if test "${with_c4:=scalar}" = mpich || test "${with_c4:=scalar}" = lampi}; then
+      with_c4='mpi'
    fi
 
 

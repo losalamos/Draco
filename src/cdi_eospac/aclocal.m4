@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
+# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -2085,12 +2085,17 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl define --with-c4
    AC_ARG_WITH(c4, 
-      [  --with-c4[=scalar,mpi,shmem]   
+      [  --with-c4[=scalar,mpi|lampi|mpich,shmem]   
 		          turn on c4 (default scalar) ])
 
    # give with-c4 implied argument
    if test "${with_c4:=scalar}" = yes ; then
        with_c4='scalar'
+   fi
+
+   # if specific vendor is listed (e.g.: lampi or mpich) reset to mpi
+   if test "${with_c4:=scalar}" = mpich || test "${with_c4:=scalar}" = lampi}; then
+      with_c4='mpi'
    fi
 
    dnl
@@ -3830,46 +3835,34 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # 
 
        #
-       # setup eospac
+       # setup lf95 libs:
+       # add lf95 libs to LIBS if eospac or scalapack is used.
        #
        
-       AC_MSG_CHECKING("for extra eospac library requirements.")
-       if test -n "${vendor_eospac}"; then
+       AC_MSG_CHECKING("for extra lf95 library requirements.")
+       if test -n "${vendor_eospac}"    ||
+          test -n "${vendor_scalapack}" ||
+          test -n "${vendor_trilinos}"; then
            lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_eospac_libs}"
-           AC_MSG_RESULT("${extra_eospac_libs}")
+	   extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           LIBS="${LIBS} ${extra_lf95_libs}"
+           extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
+           RPATH="${RPATH} ${extra_lf95_rpaths}"
+           AC_MSG_RESULT("${extra_lf95_libs}")
        else
            AC_MSG_RESULT("none.")
        fi
 
        #
-       # end of eospac
-       #
-
-       #
-       # setup scalapack
-       #
-       
-       AC_MSG_CHECKING("for extra scalapack library requirements.")
-       if test -n "${vendor_scalapack}"; then
-           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_scalapack_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_scalapack_libs}"
-           AC_MSG_RESULT("${extra_scalapack_libs}")
-       else
-           AC_MSG_RESULT("none.")
-       fi
-
-       #
-       # end of eospac
+       # end of lf95 libs check
        #
 
        #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
        #
        AC_MSG_CHECKING("libg2c requirements")
-       if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||
+       if test -n "${vendor_lapack}" || 
+          test -n "${vendor_pcg}"    ||
 	  test -n "${vendor_gandolf}"; then
 	   
 	   # Add g2c for various compilers
@@ -3986,22 +3979,29 @@ AC_DEFUN([AC_DBS_CYGWIN_ENVIRONMENT], [dnl
        dnl end of lapack setup
        dnl 
 
-       dnl
-       dnl setup eospac
-       dnl
+       #
+       # setup lf95 libs:
+       # add lf95 libs to LIBS if eospac or scalapack is used.
+       #
        
-       AC_MSG_CHECKING("for extra eospac library requirements.")
-       if test -n "${vendor_eospac}"; then
-	   extra_eospac_libs="-L/usr/local/lf9562/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_eospac_libs}"
-           AC_MSG_RESULT("${extra_eospac_libs}")
+       AC_MSG_CHECKING("for extra lf95 library requirements.")
+       if test -n "${vendor_eospac}"    ||
+          test -n "${vendor_scalapack}" ||
+          test -n "${vendor_trilinos}"; then
+           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	   extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           LIBS="${LIBS} ${extra_lf95_libs}"
+           extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
+           RPATH="${RPATH} ${extra_lf95_rpaths}"
+           AC_MSG_RESULT("${extra_lf95_libs}")
        else
            AC_MSG_RESULT("none.")
        fi
 
-       dnl
-       dnl end of eospac
-       dnl
+
+       #
+       # end of lf95 libs check
+       #
 
        dnl
        dnl add libg2c to LIBS if lapack, gandolf, or pcg is used
@@ -4635,21 +4635,26 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        # 
 
        #
-       # setup eospac
+       # setup lf95 libs:
+       # add lf95 libs to LIBS if eospac or scalapack is used.
        #
        
-       AC_MSG_CHECKING("for extra eospac library requirements.")
-       if test -n "${vendor_eospac}"; then
+       AC_MSG_CHECKING("for extra lf95 library requirements.")
+       if test -n "${vendor_eospac}"    ||
+          test -n "${vendor_scalapack}" ||
+          test -n "${vendor_trilinos}"; then
            lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_eospac_libs}"
-           AC_MSG_RESULT("${extra_eospac_libs}")
+	   extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           LIBS="${LIBS} ${extra_lf95_libs}"
+           extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
+           RPATH="${RPATH} ${extra_lf95_rpaths}"
+           AC_MSG_RESULT("${extra_lf95_libs}")
        else
            AC_MSG_RESULT("none.")
        fi
 
        #
-       # end of eospac
+       # end of lf95 libs check
        #
 
        #

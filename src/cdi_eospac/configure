@@ -843,7 +843,7 @@ Optional Packages:
   --with-eospac-lib=DIR    tell where EOSPAC5 libraries are (\${EOSPAC5_LIB_DIR} by default)
   --with-lib-prefix=library prefix
                           give prefix to libraries (default rtt_)
-  --with-c4=scalar,mpi,shmem
+  --with-c4=scalar,mpi|lampi|mpich,shmem
 		          turn on c4 (default scalar)
   --with-dbc=level      set Design-by-Contract
   --with-cxx=gcc,sgi,kcc,compaq,guide
@@ -1500,6 +1500,11 @@ fi;
    # give with-c4 implied argument
    if test "${with_c4:=scalar}" = yes ; then
        with_c4='scalar'
+   fi
+
+   # if specific vendor is listed (e.g.: lampi or mpich) reset to mpi
+   if test "${with_c4:=scalar}" = mpich || test "${with_c4:=scalar}" = lampi}; then
+      with_c4='mpi'
    fi
 
 
@@ -5653,45 +5658,29 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
        #
 
        #
-       # setup eospac
+       # setup lf95 libs:
+       # add lf95 libs to LIBS if eospac or scalapack is used.
        #
 
-       echo "$as_me:$LINENO: checking \"for extra eospac library requirements.\"" >&5
-echo $ECHO_N "checking \"for extra eospac library requirements.\"... $ECHO_C" >&6
-       if test -n "${vendor_eospac}"; then
+       echo "$as_me:$LINENO: checking \"for extra lf95 library requirements.\"" >&5
+echo $ECHO_N "checking \"for extra lf95 library requirements.\"... $ECHO_C" >&6
+       if test -n "${vendor_eospac}"    ||
+          test -n "${vendor_scalapack}" ||
+          test -n "${vendor_trilinos}"; then
            lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_eospac_libs}"
-           echo "$as_me:$LINENO: result: \"${extra_eospac_libs}\"" >&5
-echo "${ECHO_T}\"${extra_eospac_libs}\"" >&6
+	   extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           LIBS="${LIBS} ${extra_lf95_libs}"
+           extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
+           RPATH="${RPATH} ${extra_lf95_rpaths}"
+           echo "$as_me:$LINENO: result: \"${extra_lf95_libs}\"" >&5
+echo "${ECHO_T}\"${extra_lf95_libs}\"" >&6
        else
            echo "$as_me:$LINENO: result: \"none.\"" >&5
 echo "${ECHO_T}\"none.\"" >&6
        fi
 
        #
-       # end of eospac
-       #
-
-       #
-       # setup scalapack
-       #
-
-       echo "$as_me:$LINENO: checking \"for extra scalapack library requirements.\"" >&5
-echo $ECHO_N "checking \"for extra scalapack library requirements.\"... $ECHO_C" >&6
-       if test -n "${vendor_scalapack}"; then
-           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_scalapack_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_scalapack_libs}"
-           echo "$as_me:$LINENO: result: \"${extra_scalapack_libs}\"" >&5
-echo "${ECHO_T}\"${extra_scalapack_libs}\"" >&6
-       else
-           echo "$as_me:$LINENO: result: \"none.\"" >&5
-echo "${ECHO_T}\"none.\"" >&6
-       fi
-
-       #
-       # end of eospac
+       # end of lf95 libs check
        #
 
        #
@@ -5699,7 +5688,8 @@ echo "${ECHO_T}\"none.\"" >&6
        #
        echo "$as_me:$LINENO: checking \"libg2c requirements\"" >&5
 echo $ECHO_N "checking \"libg2c requirements\"... $ECHO_C" >&6
-       if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||
+       if test -n "${vendor_lapack}" ||
+          test -n "${vendor_pcg}"    ||
 	  test -n "${vendor_gandolf}"; then
 
 	   # Add g2c for various compilers
@@ -6707,19 +6697,32 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
        fi
 
 
+       #
+       # setup lf95 libs:
+       # add lf95 libs to LIBS if eospac or scalapack is used.
+       #
 
-       echo "$as_me:$LINENO: checking \"for extra eospac library requirements.\"" >&5
-echo $ECHO_N "checking \"for extra eospac library requirements.\"... $ECHO_C" >&6
-       if test -n "${vendor_eospac}"; then
-	   extra_eospac_libs="-L/usr/local/lf9562/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_eospac_libs}"
-           echo "$as_me:$LINENO: result: \"${extra_eospac_libs}\"" >&5
-echo "${ECHO_T}\"${extra_eospac_libs}\"" >&6
+       echo "$as_me:$LINENO: checking \"for extra lf95 library requirements.\"" >&5
+echo $ECHO_N "checking \"for extra lf95 library requirements.\"... $ECHO_C" >&6
+       if test -n "${vendor_eospac}"    ||
+          test -n "${vendor_scalapack}" ||
+          test -n "${vendor_trilinos}"; then
+           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	   extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           LIBS="${LIBS} ${extra_lf95_libs}"
+           extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
+           RPATH="${RPATH} ${extra_lf95_rpaths}"
+           echo "$as_me:$LINENO: result: \"${extra_lf95_libs}\"" >&5
+echo "${ECHO_T}\"${extra_lf95_libs}\"" >&6
        else
            echo "$as_me:$LINENO: result: \"none.\"" >&5
 echo "${ECHO_T}\"none.\"" >&6
        fi
 
+
+       #
+       # end of lf95 libs check
+       #
 
                             echo "$as_me:$LINENO: checking \"libg2c requirements\"" >&5
 echo $ECHO_N "checking \"libg2c requirements\"... $ECHO_C" >&6
@@ -11447,24 +11450,29 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
        #
 
        #
-       # setup eospac
+       # setup lf95 libs:
+       # add lf95 libs to LIBS if eospac or scalapack is used.
        #
 
-       echo "$as_me:$LINENO: checking \"for extra eospac library requirements.\"" >&5
-echo $ECHO_N "checking \"for extra eospac library requirements.\"... $ECHO_C" >&6
-       if test -n "${vendor_eospac}"; then
+       echo "$as_me:$LINENO: checking \"for extra lf95 library requirements.\"" >&5
+echo $ECHO_N "checking \"for extra lf95 library requirements.\"... $ECHO_C" >&6
+       if test -n "${vendor_eospac}"    ||
+          test -n "${vendor_scalapack}" ||
+          test -n "${vendor_trilinos}"; then
            lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_eospac_libs}"
-           echo "$as_me:$LINENO: result: \"${extra_eospac_libs}\"" >&5
-echo "${ECHO_T}\"${extra_eospac_libs}\"" >&6
+	   extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           LIBS="${LIBS} ${extra_lf95_libs}"
+           extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
+           RPATH="${RPATH} ${extra_lf95_rpaths}"
+           echo "$as_me:$LINENO: result: \"${extra_lf95_libs}\"" >&5
+echo "${ECHO_T}\"${extra_lf95_libs}\"" >&6
        else
            echo "$as_me:$LINENO: result: \"none.\"" >&5
 echo "${ECHO_T}\"none.\"" >&6
        fi
 
        #
-       # end of eospac
+       # end of lf95 libs check
        #
 
        #

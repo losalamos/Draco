@@ -1,3 +1,17 @@
+2005-01-12  Kelly Thompson  <kgt@lanl.gov>
+
+	* config/ac_platforms.m4 (AC_DBS_LAHEY_ENVIRONMENT): Created a new
+	m4 function that will modify the RPATH and LIBS environment
+	variables by appending the Lahey lib directory.  Additionally, the
+	Lahey compiler libraries are appended to LIBS.  RPATH and LIBS are
+	only modified for components that require the Lahey libraries at
+	link time (cdi_eospac and trilinos).  
+
+	* src/configure.ac (Level 3): Removed cdi_eospac from list of
+	packages to build and test because EOSPAC-5.35 is not fully
+	compatible with Lahey 6.2.  See SF tracker at
+	https://sourceforge-web.lanl.gov/tracker/?aid=4566. 
+
 2004-12-02  Kelly Thompson  <kgt@lanl.gov>
 
 	* draco: Released draco-5_3_0.  This is a minor draco release.  A
