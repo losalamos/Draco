@@ -24,21 +24,28 @@ libsrcs = Diffusion_DB.cc
 
 pretarg = deps
 
-resolve_libs = $(dep_libmesh) $(dep_liblinalg) \
-	$(dep_libc4) $(dep_libnml) $(dep_libds++)
+resolve_libs = \
+	-L../mesh -lmesh_$(env) \
+	-L../geom -lgeom_$(env) \
+	-L../linalg -llinalg_$(env) \
+	-L../util -lutil_$(env) \
+	-L../spdf -lspdf_$(env) \
+	-L../c4 -lc4_$(env) \
+	-L../nml -lnml_$(env) \
+	-L../ds++ -lds++_$(env)
 
 include ../config/make.lib
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../ds++;   $(MAKE))
-	(cd ../nml;    $(MAKE) dodeps=no)
-	(cd ../c4;     $(MAKE) dodeps=no)
-	(cd ../spdf;   $(MAKE) dodeps=no)
-	(cd ../util;   $(MAKE) dodeps=no)
-	(cd ../linalg; $(MAKE) dodeps=no)
-	(cd ../geom;   $(MAKE) dodeps=no)
-	(cd ../mesh;   $(MAKE) dodeps=no)
+	(cd ../ds++;   $(MAKE) $(subnj))
+	(cd ../nml;    $(MAKE) $(subnj) dodeps=no)
+	(cd ../c4;     $(MAKE) $(subnj) dodeps=no)
+	(cd ../spdf;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../util;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../linalg; $(MAKE) $(subnj) dodeps=no)
+	(cd ../geom;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../mesh;   $(MAKE) $(subnj) dodeps=no)
 endif
 
 # Rules for building docs
@@ -50,7 +57,8 @@ include ../config/make.doc
 # Go pick up the standard signature for makefiles.
 
 testclean:
-	(cd test; $(MAKE) clean)
+	(cd test;     $(MAKE) clean)
+	(cd testP13T; $(MAKE) clean)
 
 aux_clean := testclean
 
