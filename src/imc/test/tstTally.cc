@@ -29,6 +29,8 @@ using dsxx::SP;
 bool passed = true;
 #define ITFAILS passed = rtt_imc_test::fail(__LINE__);
 
+//---------------------------------------------------------------------------//
+
 void Tally_Test()
 {
     // make a mesh and tally
@@ -71,6 +73,8 @@ void Tally_Test()
     if (t.num_cells() != 6)                             ITFAILS;
 }
 
+//---------------------------------------------------------------------------//
+
 void Tally_Test_Evol_Net()
 {
     // Make a mesh and field
@@ -88,6 +92,8 @@ void Tally_Test_Evol_Net()
 
     if (t.num_cells() != evol_net.get_Mesh().num_cells()) ITFAILS;
 }
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {

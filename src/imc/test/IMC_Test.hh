@@ -11,8 +11,6 @@
 #define __imc_test_IMC_Test_hh__
 
 #include "../Interface.hh"
-#include "mc/Layout.hh"
-#include "mc/XYCoord_sys.hh"
 #include "mc/OS_Mesh.hh"
 #include "ds++/SP.hh"
 #include <iostream>
