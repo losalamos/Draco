@@ -66,14 +66,32 @@ operator=(const PCG_Ctrl<T> &rhs)
 }
 
 //---------------------------------------------------------------------------//
+// Allocates the required workspace.
+//
+// nru: Length of solution vector.
+//---------------------------------------------------------------------------//
+
+template<class T>
+void PCG_Ctrl<T>::
+allocateWorkspace(const int nru)
+{
+    Require(nru > 0);
+
+    d_iparm(NRU) = nru;
+    
+    computeWorkSpace();
+
+    d_iwork.redim(d_iparm(NWI));
+    d_fwork.redim(d_iparm(NWF));
+}
+
+//---------------------------------------------------------------------------//
 // Main controller method.
 //
 // x: Output solution and possibly input initial guess
 // b: right-hand size vector
 // pcg_matvec: matvec routine
 // pcg_precond: preconditioner routine
-// nru: Length of solution vector, which may be smaller than x.size().
-//      If nru < 0, then set to x.size().  Default value is -1.
 //---------------------------------------------------------------------------//
 
 template<class T>
@@ -81,26 +99,20 @@ void PCG_Ctrl<T>::
 solve(rtt_dsxx::Mat1<T>& x,
       const rtt_dsxx::Mat1<T>& b,
       rtt_dsxx::SP< PCG_MatVec<T> > pcg_matvec,
-      rtt_dsxx::SP< PCG_PreCond<T> > pcg_precond,
-      const int nru)
+      rtt_dsxx::SP< PCG_PreCond<T> > pcg_precond)
 {
-    using rtt_dsxx::Mat1;
-    
-    // Allocate the work arrays
-    
-    if ( nru > 0 ) {
-	Require(nru <= x.size() && nru <= b.size());
-	d_iparm(NRU) = nru;
+    if ( d_iwork.size() == 0 && d_fwork.size() == 0 ) {
+	// allocateWorkspace has not been called
+
+	Ensure(x.size() == b.size()); // vague otherwise
+	allocateWorkspace(x.size());
     }
     else {
-	Require(x.size() == b.size());  // should specify nru if not!
-	d_iparm(NRU) = x.size();
+	Ensure(d_iparm(NRU) <= x.size());
+	Ensure(d_iparm(NRU) <= b.size());
     }
-    
-    computeWorkSpace();
 
-    rtt_dsxx::Mat1<int> iwork(d_iparm(NWI)); // PCG IWK array
-    rtt_dsxx::Mat1<T> fwork(d_iparm(NWF)); // PCG FWK array
+    using rtt_dsxx::Mat1;
 
     // These variables are used to communicate with the PCG package.
     // See the "call _methR" PCG documentation.
@@ -122,7 +134,7 @@ solve(rtt_dsxx::Mat1<T>& x,
 
     while ( ! done ) {
 
-	callPCG(x, b, ijob, ireq, iva, ivql, ivqr, iwork, fwork);
+	callPCG(x, b, ijob, ireq, iva, ivql, ivqr);
 
 	ijob = JRUN;  // from now on, RUN!
 
@@ -137,8 +149,8 @@ solve(rtt_dsxx::Mat1<T>& x,
 
 	case JAV: {
 	    // cout << "Preparing for MatVec." << endl << flush;
-	    const Mat1<T> xmatvec(&fwork(ivqr-1), getSize());
-	    Mat1<T> bmatvec(&fwork(iva-1), getSize());
+	    const Mat1<T> xmatvec(&d_fwork(ivqr-1), getSize());
+	    Mat1<T> bmatvec(&d_fwork(iva-1), getSize());
 	    pcg_matvec->MatVec(bmatvec, xmatvec);
 	    // cout << "Done with     MatVec." << endl << flush;
 	    break;
@@ -146,8 +158,8 @@ solve(rtt_dsxx::Mat1<T>& x,
 	
 	case JQLV: {
 	    // cout << "Preparing for Left_PreCond." << endl << flush;
-	    Mat1<T> xprecond(&fwork(ivql-1), getSize());
-	    const Mat1<T> bprecond(&fwork(iva-1), getSize());
+	    Mat1<T> xprecond(&d_fwork(ivql-1), getSize());
+	    const Mat1<T> bprecond(&d_fwork(iva-1), getSize());
 	    pcg_precond->Left_PreCond(xprecond, bprecond);
 	    // cout << "Done with     Left_PreCond." << endl << flush;
 	    break;
@@ -155,8 +167,8 @@ solve(rtt_dsxx::Mat1<T>& x,
 	
 	case JQRV: {
 	    // cout << "Preparing for Right_PreCond." << endl << flush;
-	    Mat1<T> xprecond(&fwork(ivqr-1), getSize());
-	    const Mat1<T> bprecond(&fwork(ivql-1), getSize());
+	    Mat1<T> xprecond(&d_fwork(ivqr-1), getSize());
+	    const Mat1<T> bprecond(&d_fwork(ivql-1), getSize());
 	    pcg_precond->Right_PreCond(xprecond, bprecond);
 	    // cout << "Done with     Right_PreCond." << endl << flush;
 	    break;
@@ -184,30 +196,28 @@ callPCG(rtt_dsxx::Mat1<T> &x,
 	int &ireq,
 	int &iva,
 	int &ivql,
-	int &ivqr,
-	rtt_dsxx::Mat1<int> &iwork,
-	rtt_dsxx::Mat1<T> &fwork)
+	int &ivqr)
 {
     int iError = 0;
     
     switch ( d_method ) {
     case BAS: {
 	xbasr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
-	      ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
+	      ivqr, &d_iwork(0), &d_fwork(0), &d_iparm(1), &d_fparm(1),
 	      iError);
 	break;
     }
     
     case CG: {
 	xcgr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
-	     ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
+	     ivqr, &d_iwork(0), &d_fwork(0), &d_iparm(1), &d_fparm(1),
 	     iError);
 	break;
     }
     
     case GMRS: {
 	xgmrsr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
-	       ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
+	       ivqr, &d_iwork(0), &d_fwork(0), &d_iparm(1), &d_fparm(1),
 	       iError);
 	break;
     }

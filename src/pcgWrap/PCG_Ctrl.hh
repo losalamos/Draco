@@ -82,6 +82,8 @@ class PCG_Ctrl
     // DATA
 
     rtt_dsxx::Mat1<int> d_iparm; // PCG IPARM array
+    rtt_dsxx::Mat1<int> d_iwork; // PCG IWORK array
+    rtt_dsxx::Mat1<T> d_fwork; // PCG FWORK array
     rtt_dsxx::Mat1<T> d_fparm; // PCG FPARM array
     rtt_dsxx::Mat1<T> d_uExact; // PCG UEXACT array
     Method d_method; // The PCG iterative method to be called
@@ -103,11 +105,11 @@ class PCG_Ctrl
     // MANIPULATORS
 
     PCG_Ctrl& operator=(const PCG_Ctrl &rhs);
+    void allocateWorkspace(const int nru);
     void solve(rtt_dsxx::Mat1<T>& x,
 	       const rtt_dsxx::Mat1<T>& b,
 	       rtt_dsxx::SP< PCG_MatVec<T> > pcg_matvec,
-	       rtt_dsxx::SP< PCG_PreCond<T> > pcg_precond,
-	       const int nru = -1);
+	       rtt_dsxx::SP< PCG_PreCond<T> > pcg_precond);
     void setIparm(const Iparms parm,
 		  const int value);
     void setFparm(const Fparms parm,
@@ -131,9 +133,7 @@ class PCG_Ctrl
 		 int &ireq,
 		 int &iva,
 		 int &ivql,
-		 int &ivqr,
-		 rtt_dsxx::Mat1<int> &iwork,
-		 rtt_dsxx::Mat1<T> &fwork);
+		 int &ivqr);
     int getSize() const { return d_iparm(NRU); }
 };
 

@@ -86,7 +86,7 @@ int main( int argc, char *argv[] )
 
 	double h = 1.0/(nxs+1);
 	b = h*h;
-	
+
 	pcg_ctrl.solve( x, b, pcg_matvec, pcg_precond );
 
 	// evaluate the results to see if it converged.
