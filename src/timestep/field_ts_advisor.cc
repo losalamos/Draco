@@ -135,12 +135,7 @@ void field_ts_advisor::update_tstep(const FT &q_old,
     }
     else 
     {
-
 	double fact = x2*fc_value/x1;
-
-    //jmm
-	cout << "fact, x2, fc_value, x1: " << fact << ", " << x2 << ", "
-	     << fc_value << ", " << x1 << endl;
 	if (fact < small())
 	{
 	    dt_rec = small();
