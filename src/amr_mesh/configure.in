@@ -1,0 +1,33 @@
+dnl-------------------------------------------------------------------------dnl
+dnl draco/src/amr_mesh configure.in
+dnl Todd Adams
+dnl Tue Sep 21 15:09:59 1999
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for amr_mesh
+dnl-------------------------------------------------------------------------dnl
+
+AC_INIT(CAR_CU_Mesh.hh)
+AC_CONFIG_AUX_DIR(../../config)
+AC_CONFIG_HEADER(amr_mesh/config.h:config.h.in)
+package="amr_mesh"
+
+dnl VENDOR SETUPS
+dnl AC_MPI_SETUP(pkg)
+dnl AC_SHMEM_SETUP(pkg)
+dnl AC_SPRNG_SETUP(pkg)
+dnl AC_PCGLIB_SETUP(pkg)
+
+AC_INSTALL_HEADERS
+AC_INSTALL_LIB
+AC_NEEDS_LIBS(c4 rng ds++)
+
+dnl DRACO SETUP
+AC_DRACO_ENV
+
+AC_OUTPUT(Makefile:../../config/Makefile.package.in \
+          test/Makefile:../../config/Makefile.test.in)
+
+dnl-------------------------------------------------------------------------dnl
+dnl			 end of draco/src/amr_mesh configure.in
+dnl-------------------------------------------------------------------------dnl
