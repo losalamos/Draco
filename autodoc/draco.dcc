@@ -1,0 +1,36 @@
+/*!
+
+\page dracolink The Draco Documentation System
+
+\par  Authors
+<a href="mailto:tme@lanl.gov">Tom Evans</a>,
+<a href="mailto:tmonster@lanl.gov">Todd Urbatsch</a>,
+<a href="mailto:kellyt@lanl.gov">Kelly Thompson</a>,
+<a href="mailto:mwbuksas@lanl.gov">Mike Buksas</a>
+
+\par  Executive Summary
+Draco is a C++ radiation transport component library developed by CCS-4, Los
+Alamos National Laboratory. In addition to providing infrastructure for
+radiation transport code development, Draco serves as a "model Development
+Environment (DE)" for code development activities within CCS-4.  Most CCS-4
+code projects are based on the coding standards, idioms, style, organization,
+and architecture of Draco. 
+
+\par  Getting Started
+To get started building Draco see \ref build_system.  Package
+overviews can be found in the <a href="pages.html">Related Pages</a>
+section of the documentation.
+
+\par  Code Access
+To get access to Draco source contact 
+<a href="mailto:draco@lanl.gov">CCS-4</a>.
+
+*/
+
+//---------------------------------------------------------------------------//
+// end of mainpage.dcc
+//---------------------------------------------------------------------------//
+
+
+
+*/
