@@ -195,6 +195,13 @@ scope to include one cycle of ``refactor, then implement''. The
 relative ease of the implementation phase can be used to judge the
 success of the project.
 
+Another risk involves keeping the scope of the refactor limited to
+areas where the payoff in terms of maintenance is the greatest. The
+author of this document has been known to succumb to refactor-mania on
+occasion. Also, since the imc package is fairly tightly coupled
+internally, it may be difficult to effectively refactor only part of
+the code.
+
 How will you deal with the critical success factor?
 \begin{enumerate}
   \item Resolve it now.
@@ -207,13 +214,18 @@ How will you deal with the critical success factor?
   \begin{center}
     \caption{Critical success factors for the Particle Refactor Project.}
     \label{tab:critical-success}
-    \begin{tabular}{|c|c|c|c|} 
+    \begin{tabular}{|p{4.5cm}|c|c|p{4.5cm}|} 
     \hline
                        & Problem or & Strategy  &          \\
     Factor             &  Dilemma   & (1,2,3,4) & Comments \\ 
     \hline\hline
-    New method is bad. &  Dilemma   &    2      & probably doesn't
-                                                  resolve bnd layers \\
+    Too difficult to judge success 
+    & Dilemma & 3 
+    & Must keep refactoring and implemention stages seperate. \\
+                                %
+    Refactor spreads to rest of package
+    & Problem & 2
+    & Evaluate additional refactoring targets on merits \\
     \hline
     \end{tabular}
   \end{center}
