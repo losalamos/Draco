@@ -112,7 +112,7 @@ namespace rtt_dsxx
 // part to promote "standard C++".
 //===========================================================================//
 
-class assertion : public std::runtime_error
+class assertion : public std::logic_error
 {
   public:
     /*!
@@ -127,7 +127,7 @@ class assertion : public std::runtime_error
      * \param msg The error message saved with the exception.
      */
     explicit assertion( std::string const & msg )
-	:  std::runtime_error( msg )
+	:  std::logic_error( msg )
     { /* empty */ }
 
     /*!
@@ -148,7 +148,7 @@ class assertion : public std::runtime_error
     assertion( std::string const & cond, 
 	       std::string const & file, 
 	       int const line )
-	: std::runtime_error( build_message( cond, file, line ) )
+	: std::logic_error( build_message( cond, file, line ) )
     { /* empty */ }
 
     /*!
