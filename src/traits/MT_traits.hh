@@ -9,6 +9,8 @@
 #ifndef __traits_MT_traits_hh__
 #define __traits_MT_traits_hh__
 
+#include <iosfwd>
+
 namespace rtt_traits
 {
  //===========================================================================//
@@ -55,6 +57,16 @@ namespace rtt_traits
     
      // IMPLEMENTATION
  };
+
+template <class MT>
+struct MT_Traits
+{
+    static std::ostream &print(std::ostream &os, const MT &mesh)
+    {
+        os << "No Mesh Output Defined." << std::endl;
+        return os;
+    }
+};
 
 } // end namespace rtt_traits
 
