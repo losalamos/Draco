@@ -122,7 +122,7 @@ class DD_Source_Builder : public Source_Builder<MT,PT>
     void calc_initial_ncen(ccsf_int &);
 
     // Recalculate the post-comb census energy-weights for full DD topology.
-    void recalc_census_ew_after_comb(SP_Mesh);
+    void recalc_census_ew_after_comb(SP_Mesh, ccsf_int &, SP_Census, double &);
 
     // Calculate source numbers for full DD topology.
     void calc_source_numbers();

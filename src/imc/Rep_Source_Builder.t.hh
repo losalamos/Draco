@@ -117,7 +117,10 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
 
     // comb census -- called even if census is empty; must update local_ncen
     double eloss_comb = 0;
-    comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb);
+    SP_Census dead_census(new Particle_Buffer<PT>::Census());
+    ccsf_int max_dead_rand_id(mesh);
+    comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb,
+		dead_census, max_dead_rand_id);
 
     // calculate global values of energy loss and numbers of particles due
     // to combing the census
@@ -127,9 +130,15 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     global_ncentot = local_ncentot;
     C4::gsum(global_ncentot);
 
-    // recalculate and reset the census particles' energy-weights
-    recalc_census_ew_after_comb(mesh);
-    reset_ew_in_census(local_ncentot, global_eloss_comb, ecentot);
+//***********************************************************************
+// ******* THE POST COMB CENSUS RESURRECTION/EW-ADJUSTMENT IS 
+// COMMENTED OUT UNTIL FULL DOMAIN DECOMPOSITION IS WORKING AND
+// PASSES ALL THE OLD REGRESSION TESTS.  TJU 28JUN00 
+//    // recalculate and reset the census particles' energy-weights
+//     recalc_census_ew_after_comb(mesh, max_dead_rand_id, dead_census,
+// 				global_eloss_comb); 
+//     reset_ew_in_census(local_ncentot, global_eloss_comb, ecentot); 
+//***********************************************************************
 
     // add energy loss from the comb to the global census energy loss
     global_eloss_cen += global_eloss_comb;
@@ -319,17 +328,42 @@ void Rep_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
  * \brief Recalculate the census particles' energy-weights on each
  * processor using global information.
  *
+ * First, if global census energy is unsampled because of the comb, this
+ * function resurrects one census particle and modifies the global census
+ * energy loss accordingly.  The particle to be resurrected is the one with
+ * the maximum random number stream id.  We chose this criterion because it
+ * is reproducible and because any bias would presumably be negligible.  If,
+ * due to spawning, more than one particle has the maximum stream id, all
+ * particles with the maximum stream id get resurrected.  The resurrection
+ * gives up some reduction in variance in order to conserve energy globally
+ * and, in a spatial sense, locally. 
+ *  
  * Because of its reproducible nature, the census comb does not conserve
  * energy exactly.  Therefore, we use the actual, global, pre-combed census
- * energy and the global number of post-combed census particles in each cell
- * to recalculate the energy-weight in each cell.  In a fully replicated
- * topology, the census energies and number of particles in each cell must
- * be summed over all processors.  (These two quantities are 
- * "Data_Decomposed.")
+ * energy and the global number of post-combed (and resurrected) census
+ * particles in each cell to recalculate the energy-weight in each cell.  In
+ * a fully replicated topology, the census energies and number of particles
+ * in each cell must be summed over all processors.  (These two quantities
+ * are "Data_Decomposed.")
  *
- */
+ * \param mesh smart pointer to the mesh.
+ * \param max_dead_rand_id mutable mesh-sized array containing local maximum
+ *                         values of the random number stream id's of census 
+ *                         particles that were combed out.
+ * \param dead_census smart pointer to the dead, combed out census particles.
+ * \param global_eloss_comb mutable global value of energy loss due to
+ *                          combing; this loss will be decreased by the
+ *                          energy of any resurrected census particles.
+ *  */
 template<class MT, class PT>
-void Rep_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh)
+void Rep_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh,
+							    ccsf_int
+							     &max_dead_rand_id, 
+							    SP_Census
+							     dead_census,
+							    double 
+							     &global_eloss_comb)
+
 {
     // check sizes
     Require (global_ncen.size() == mesh->num_cells());
@@ -338,13 +372,75 @@ void Rep_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh)
     // initialize checks
     int check_global_ncentot = 0;
 
-    // map local census numbers to global census numbers
+    // <<<< map local census numbers to global census numbers >>>>
     for (int cell = 1; cell <= mesh->num_cells(); cell++)
 	global_ncen(cell) = local_ncen(cell);
     parallel_data_op.local_to_global(local_ncen, global_ncen,
-				     Parallel_Data_Operator::Data_Decomposed()); 
+				     Parallel_Data_Operator::Data_Decomposed());
 
-    // set the post-comb census energy-weight in each cell
+    // <<<< resurrect dead census particles, if necessary  >>>>
+
+    // initialize number and energy of resurrected particles
+    int num_resurrected  = 0;
+    double e_resurrected = 0.0;
+
+    // map, in full replication topology, the global max random number stream 
+    // id to local array
+    int *local_max = new int[mesh->num_cells()];
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	local_max[cell-1] = max_dead_rand_id(cell);
+    C4::gmax(local_max, mesh->num_cells());
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	max_dead_rand_id(cell) = local_max[cell-1];
+    delete [] local_max;
+
+    // loop through dead census particles and resurrect if there exists
+    // globally unsampled energy and if the particle has the maximum random
+    // number stream id in its cell
+    while(dead_census->size() > 0)
+    {
+	// get the dead particle and its attributes
+	SP<PT> dead_particle = dead_census->top();
+	dead_census->pop();
+	int dead_cell        = dead_particle->get_cell();
+	Sprng dead_random    = dead_particle->get_random();
+
+	// resurrect the particle if needed
+        if (global_ncen(dead_cell) == 0)
+	    if (ecen(dead_cell) > 0.0)
+		if (dead_random.get_num() == max_dead_rand_id(dead_cell))
+		{
+		    e_resurrected += dead_particle->get_ew();
+		    census->push(dead_particle);
+		    local_ncen(dead_cell)++;
+		    local_ncentot++;
+		    num_resurrected++;
+		}
+    }
+    // obtain global number of resurrected particles
+    C4::gsum(num_resurrected);
+
+    // <<<< recalculate global census numbers if any census particle were
+    // resurrected >>>>
+    if (num_resurrected > 0)
+    {
+	// map new local census numbers to global census numbers 
+	for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	    global_ncen(cell) = local_ncen(cell);
+
+	parallel_data_op.local_to_global(local_ncen, global_ncen,
+					 Parallel_Data_Operator::Data_Decomposed());
+	// update the total
+	global_ncentot += num_resurrected;
+
+	// obtain global value of resurrected energy and update global census 
+	// energy loss due to combing
+	C4::gsum(e_resurrected);
+	global_eloss_comb -= e_resurrected;
+    }
+
+
+    // <<<< set the post-comb census energy-weight in each cell <<<<
     for (int cell = 1; cell <= mesh->num_cells(); cell++)
     {
 	if (global_ncen(cell) > 0)

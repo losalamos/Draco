@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   imc/Rep_Source_Builder.hh
- * \author Thomas M. Evans
+ * \author Thomas M. Evans and Todd J. Urbatsch
  * \date   Thu Dec  9 10:31:16 1999
  * \brief  Header file for Rep_Source_Builder.
  */
@@ -113,7 +113,7 @@ class Rep_Source_Builder : public Source_Builder<MT,PT>
     void calc_initial_ncen(ccsf_int &);
 
     // Recalculate the post-comb census energy-weights for full replication..
-    void recalc_census_ew_after_comb(SP_Mesh);
+    void recalc_census_ew_after_comb(SP_Mesh, ccsf_int &, SP_Census, double &);
 
     // Calculate source numbers.
     void calc_source_numbers();

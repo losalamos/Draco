@@ -1,3 +1,12 @@
+2000-06-28  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* Source_Builder.*, DD_Source_Builder.*, Rep_Source_Builder.*:
+	Added capability to resurrect dead census particles, so energy is
+	conserved (globally and spatially locally -- a first!) at the
+	expense of some increase in variance.  Capability (function calls
+	in build_Source) is commented out until full DD is working and
+	passes all the (old) regression tests.
+
 2000-06-19  Todd J. Urbatsch  <tmonster@lanl.gov>
 
 	* Source_Builder.*, DD_Source_Builder.*, Rep_Source_Builder.*:

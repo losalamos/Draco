@@ -470,7 +470,9 @@ template<class MT, class PT>
 void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 					ccsf_int &local_ncen,
 					int &local_ncentot,
-					double &eloss_comb)
+					double &eloss_comb,
+					SP_Census dead_census,
+					ccsf_int &max_dead_rand_id)
 {
     // silly checks
     Require(census);
@@ -548,6 +550,13 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 		    
 		    // check census energy
 		    ecencheck  += numcomb * ew_cen(local_cell);
+		}
+		// put the combed-out particle into the dead_census
+		else
+		{
+		    if (random.get_num() > max_dead_rand_id(local_cell))
+			max_dead_rand_id(local_cell) = random.get_num();
+		    dead_census->push(particle);
 		}
 	    }
 	    else

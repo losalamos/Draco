@@ -126,9 +126,14 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     // calculate the number of source particles for all source particles
     calc_source_numbers();
 
+    // initialize data for resurrecting dead, combed-out census particles
+    SP_Census dead_census(new Particle_Buffer<PT>::Census());
+    ccsf_int max_dead_rand_id(mesh);
+
     // comb census -- even if census is empty; must update local_ncen
     double eloss_comb = 0;
-    comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb);
+    comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb,
+		dead_census, max_dead_rand_id);
 
     // calculate global values of energy loss and numbers of particles due
     // to combing the census
@@ -138,9 +143,21 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     global_ncentot = local_ncentot;
     C4::gsum(global_ncentot);
 
-    // recalculate and reset the census particles' energy-weights
-    recalc_census_ew_after_comb(mesh);
-    reset_ew_in_census(local_ncentot, global_eloss_comb, global_ecentot);
+//***********************************************************************
+// ******* THE POST COMB CENSUS RESURRECTION/EW-ADJUSTMENT IS 
+// COMMENTED OUT UNTIL FULL DOMAIN DECOMPOSITION IS WORKING AND
+// PASSES ALL THE OLD REGRESSION TESTS.  TJU 28JUN00 
+//     // recalculate the census particles' energy-weights
+//     recalc_census_ew_after_comb(mesh, max_dead_rand_id, dead_census,
+// 				global_eloss_comb);
+//
+//     // update total numbers of census particles
+//     global_ncentot = local_ncentot;
+//     C4::gsum(global_ncentot);
+// 
+//     // reset the census particles' energy-weights
+//     reset_ew_in_census(local_ncentot, global_eloss_comb, global_ecentot);
+//***********************************************************************
 
     // add energy loss from the comb to the global census energy loss
     global_eloss_cen += global_eloss_comb;
@@ -378,7 +395,13 @@ void DD_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
  * 
  */
 template<class MT, class PT>
-void DD_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh)
+void DD_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh,
+							   ccsf_int
+							    &max_dead_rand_id, 
+							   SP_Census
+							    dead_census,
+							   double 
+							    &global_eloss_comb)
 {
     // check sizes
     Require (local_ncen.size() == mesh->num_cells());
@@ -386,7 +409,49 @@ void DD_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh)
     // initialize checks
     int check_local_ncentot = 0;
 
-    // set the post-comb census energy-weight in each cell
+    // <<<< resurrect dead census particles, if necessary  >>>>
+
+    // initialize number and energy of resurrected particles
+    int num_resurrected  = 0;
+    double e_resurrected = 0.0;
+
+    // loop through dead census particles and resurrect if there exists
+    // globally unsampled energy and if the particle has the maximum random
+    // number stream id in its cell
+    while(dead_census->size() > 0)
+    {
+	// get the dead particle
+	SP<PT> dead_particle = dead_census->top();
+	dead_census->pop();
+
+	// get the dead particle's attributes
+	int loc_dead_cell = topology->local_cell(dead_particle->get_cell()); 
+	Sprng dead_random = dead_particle->get_random();
+
+	// resurrect the particle if needed
+        if (local_ncen(loc_dead_cell) == 0)
+	    if (ecen(loc_dead_cell) > 0.0)
+		if (dead_random.get_num() == max_dead_rand_id(loc_dead_cell))
+		{
+		    e_resurrected += dead_particle->get_ew();
+		    census->push(dead_particle);
+		    local_ncen(loc_dead_cell)++;
+		    local_ncentot++;
+		    num_resurrected++;
+		}
+    }
+    // obtain global number of resurrected particles
+    C4::gsum(num_resurrected);
+
+    // obtain global value of resurrected energy and update global census
+    // energy loss due to combing
+    if (num_resurrected > 0)
+    {
+	C4::gsum(e_resurrected);
+	global_eloss_comb -= e_resurrected;
+    }
+
+    // <<<< set the post-comb census energy-weight in each cell >>>>
     for (int cell = 1; cell <= mesh->num_cells(); cell++)
     {
 	if (local_ncen(cell) > 0)
