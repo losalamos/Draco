@@ -1,0 +1,114 @@
+############################### -*-makefile-*- ################################
+# gts/src/config/make.end
+# Geoffrey Furnish
+# 12 August 1996
+#
+# Copyright 1996 The Regents of the University of California. 
+# All rights reserved.
+###############################################################################
+# This "makefile" should be included at the end of the makefile in
+# each component directory.  It provides standard services which
+# should be in each makdefile but which cannot be provided in
+# make.config, since they would overide the default target.
+###############################################################################
+
+###############################################################################
+# Locate the namelist input files automatically.
+
+nml_files	:= $(wildcard *.nml)
+
+ifdef nml_xcld
+nml_files	:= $(strip $(subst $(nml_xcld),,$(nml_files)) )
+endif
+
+nml_hh		:= $(nml_files:%.nml=.nml_%.hh)
+nml_cc		:= $(nml_files:%.nml=.nml_%.cc)
+
+###############################################################################
+# Locate the perstalyzer files automatically.
+
+prs_files	:= $(wildcard *.prs)
+
+ifdef prst_xcld
+prs_files	:= $(strip $(subst $(prst_xcld),,$(prs_files)) )
+endif
+
+prst_files	:= $(prs_files:%.prs=%_prs.cc)
+
+###############################################################################
+# Utility targets.
+
+rmdep:
+	$(RM) .d.*_$(env)
+
+clean: $(aux_clean)
+	$(RM) .d.*_$(env) .pt*_$(env)* .env_$(env) .x.*
+	$(RM) .dkcc.*
+	$(RM) -rf $(env) 
+	$(RM) lib*_$(env).* x*_$(env)
+	$(RM) $(tstprogs)
+
+.env_$(env):
+	@if [ ! -d $(env) ]; then mkdir $(env); fi;
+	@if [ ! -f $@ ]; then touch $@; fi;
+
+.prstgen: $(prst_files)
+	@echo "# stupid" > $@
+
+.ptgen_$(env):	$(ptcc_files)
+	@echo "# stupid" > $@
+
+.nmlgen: $(nml_hh) $(nml_cc)
+	@echo "# stupid" > $@
+
+deps: $(cc_files:%.cc=.d.%_$(env)) $(ptcc_files:.%.cc=.d.%)
+
+###############################################################################
+# Make certain that the .env tag directory is built, that the template
+# instantiation files are constructed and the .ptgen file is stamped,
+# and finally that the dependency files are snarfed.  Note the reverse
+# order, which is a result of how GNU make works.
+
+ifeq ($(cleanonly),yes)
+incldeps	:= no
+endif
+
+ifneq ($(incldeps),no)
+-include $(cc_files:%.cc=.d.%_$(env))
+ifdef preinstantiate
+ifneq ($(ptcc_files),)
+-include $(ptcc_files:.%.cc=.d.%)
+endif
+endif
+ifneq ($(prst_files),)
+-include .prstgen
+endif
+ifdef preinstantiate
+ifneq ($(ptcc_files),)
+-include .ptgen_$(env)
+endif
+endif
+ifneq ($(nml_files),)
+-include .nmlgen
+endif
+-include .env_$(env)
+endif
+
+ifdef do_genfiles
+ifneq ($(prst_files),)
+-include .prstgen
+endif
+ifdef preinstantiate
+ifneq ($(ptcc_files),)
+-include .ptgen_$(env)
+endif
+endif
+ifneq ($(nml_files),)
+-include .nmlgen
+endif
+-include .env_$(env)
+endif
+
+###############################################################################
+#                           End of config/make.end
+###############################################################################

@@ -1,0 +1,157 @@
+############################## -*- makefile -*- ###############################
+# gts/src/config/AIX.cf
+# Geoffrey Furnish
+# 18 December 1996
+###############################################################################
+# @> This file contains configuration data for compiling on ASCI
+# @> Blue Pacific, and IBM SP2.
+###############################################################################
+
+mach	= aix
+cmplr	= 
+optns	=
+commlib	=
+
+# Default to KCC
+ifndef cxx
+cxx	:= KCC
+endif
+
+ifndef c4
+c4	:= yes
+endif
+
+# Tools which are independent of the compiler
+
+ar	= ar
+ranlib	= ranlib
+
+FFT_LIB		= -L$(GTS_SRC_TOP)/fft -lfft_$(env)
+
+#-----------------------------------------------------------------------------#
+# IBM C++
+
+ifeq ($(cxx),ibm)
+
+cmplr	= ibm
+
+ifeq ($(c4),yes)
+CC	= mpcc
+CXX	= mpCC -+
+commlib = c4
+parallel	:= yes
+else
+CC	= xlc
+CXX	= xlC -+ -DNOMPI
+endif
+
+MAKEDEPEND	= gcc -MM -U__GNUC__
+CXX_DEPEND_FLAG	= $(CXX_INC_FLAGS) \
+	-I/usr/lpp/xlC/include -I/usr/lpp/ppe.poe/include
+
+preinstantiate	:= yes
+INSTANTIALYZER	+= -m ibm
+
+ifndef opt
+opt     = 0
+endif
+
+ifeq ($(opt),0)
+optns           = g
+cxx_opt         = -O0
+endif
+
+ifeq ($(opt),1)
+optns           = o1
+ASSERT_FLAG     = -DNOASSERT
+DEBUG_FLAG      =
+cxx_opt         = -O1
+endif
+
+ifeq ($(opt),2)
+optns           = o2
+ASSERT_FLAG     = -DNOASSERT
+DEBUG_FLAG      =
+cxx_opt         = -O2
+endif
+
+endif				# IBM C++
+#-----------------------------------------------------------------------------#
+
+#-----------------------------------------------------------------------------#
+# Photon C++
+
+ifeq ($(cxx),KCC)
+
+ifeq ($(c4),yes)
+CC	= mpcc
+CXX	= mpKCC -x --no_implicit_include
+commlib = c4
+parallel	:= yes
+else
+CC	= xlc
+CXX	= KCC -x --no_implicit_include -DNOMPI
+endif
+
+cmplr	= kai
+DEBUG_FLAG	=
+
+preinstantiate	:= yes
+
+ifndef kcc_deps
+kcc_deps := yes
+endif
+
+ifeq ($(kcc_deps),yes)
+CXX	+= --output_dependencies .dkcc.$(basename $(notdir $*))_$(env)
+endif
+
+INSTANTIALYZER	+= -m edg
+
+ifndef opt
+opt	= 0
+endif
+
+ifeq ($(opt),0)
+optns		= g
+cxx_opt         = +K0
+endif
+
+ifeq ($(opt),1)
+optns		= o1
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt         = +K1 -O1
+endif
+
+ifeq ($(opt),2)
+optns		= o2
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt         = +K2 -O2
+endif
+
+ifeq ($(opt),3)
+optns		= o3
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt         = +K3 -O3
+endif
+
+lib_cmd		:= $(CXX) -o
+lib_suffix	:= a
+
+CXX     += $(cxx_opt)
+
+MAKEDEPEND	:= $(CXX) -M
+CXX_DEPEND_FLAG	= $(CXX_INC_FLAGS)
+
+ifdef verb
+CXX	+= -v
+endif
+
+endif				# Photon C++
+#-----------------------------------------------------------------------------#
+
+env	:= $(mach)$(cmplr)$(optns)$(commlib)
+
+###############################################################################
+#                        End of gts/src/config/AIX.cf
+###############################################################################

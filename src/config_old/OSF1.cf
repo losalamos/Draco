@@ -1,0 +1,161 @@
+############################## -*- makefile -*- ###############################
+# gts/src/config/OSF1.cf
+# Geoffrey Furnish
+# 1 May 1996
+###############################################################################
+# @> This file contains configuration data for compiling on Dec
+# AlphaServer's (east and west).
+###############################################################################
+
+mach	= dec
+cmplr	= 
+optns	=
+commlib	=
+
+# Default to KCC
+cxx	:= KCC
+
+# Tools which are independent of the compiler
+
+ar	= ar
+ranlib	= ranlib
+
+FFT_LIB		= -L$(GTS_SRC_TOP)/fft -lfft_$(env)
+
+ifndef COMM
+COMM	:= MPI
+endif
+
+#-----------------------------------------------------------------------------#
+# DEC cxx
+
+ifeq ($(cxx),cxx)
+
+cmplr	= cxx
+
+CC	= cc
+CXX	= cxx
+
+MAKEDEPEND	= $(CXX) -M
+CXX_DEPEND_FLAG	= $(CXX_INC_FLAGS)
+
+preinstantiate	:= yes
+INSTANTIALYZER	+= -m dec
+
+ifndef opt
+opt     = 0
+endif
+
+ifeq ($(opt),0)
+optns           = g
+cxx_opt         = -O0
+endif
+
+ifeq ($(opt),1)
+optns           = o1
+ASSERT_FLAG     = -DNOASSERT
+DEBUG_FLAG      =
+cxx_opt         = -O1
+endif
+
+ifeq ($(opt),2)
+optns           = o2
+ASSERT_FLAG     = -DNOASSERT
+DEBUG_FLAG      =
+cxx_opt         = -O2
+endif
+
+endif				# DEC cxx
+#-----------------------------------------------------------------------------#
+
+#-----------------------------------------------------------------------------#
+# Photon C++
+
+ifeq ($(cxx),KCC)
+
+CC	= cc
+CXX	= KCC -x --no_implicit_include
+
+ifdef insight
+CXX	:= insight -Zvm -x --no_implicit_include
+endif
+
+cmplr	= kai
+DEBUG_FLAG	=
+
+MAKEDEPEND	= $(CXX) -M
+MAKEDEPEND	= KCC -x --no_implicit_include -M
+CXX_DEPEND_FLAG	= $(CXX_INC_FLAGS)
+
+preinstantiate	:= yes
+
+ifndef insight
+xkcc_deps := yes
+endif
+
+ifdef kcc_deps
+CXX	+= --output_dependencies .dkcc.$(basename $(notdir $*))_$(env)
+endif
+
+INSTANTIALYZER	+= -m edg
+
+ifndef opt
+opt	= 0
+endif
+
+ifeq ($(opt),0)
+optns		= g
+cxx_opt         = +K0
+endif
+
+ifeq ($(opt),1)
+optns		= o1
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt         = +K1 -O1
+endif
+
+ifeq ($(opt),2)
+optns		= o2
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt         = +K2 -O2
+endif
+
+ifeq ($(opt),3)
+optns		= o3
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt         = +K3 -O3
+endif
+
+# Don't know how to do shared lib stuff on Digital Unix yet.
+
+lib_cmd		:= $(CXX) -o
+lib_suffix	:= a
+
+CXX     += $(cxx_opt)
+
+endif				# Photon C++
+#-----------------------------------------------------------------------------#
+
+ifeq ($(COMM),MPI)
+CXX += -D__MPI__
+
+MPI_DIR         = /usr/local/apps/mpi
+
+ifeq ($(host),turbo-01.lanl.gov)
+MPI_DIR         = /usr/users/furnish/wrk/local
+endif
+
+MPI_INCDIR      = $(MPI_DIR)/include
+MPI_LIB         = -L$(MPI_DIR)/lib/alpha/ch_shmem -lmpi
+SYS_FLAGS       = -I$(MPI_INCDIR) 
+CXX_DEPEND_FLAG	+= $(SYS_FLAGS)
+commlib		= mpi
+
+parallel	:= yes
+endif
+
+env	:= $(mach)$(cmplr)$(optns)$(commlib)
+
+###############################################################################
+#                        End of gts/src/config/OSF1.cf
+###############################################################################

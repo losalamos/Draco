@@ -1,0 +1,138 @@
+############################## -*- makefile -*- ###############################
+# hed/src/config/IRIX.cf
+# Geoffrey Furnish
+# 6 August 1996
+###############################################################################
+# @> This file contains configuration data for compiling on A-div SGI hosts.
+###############################################################################
+
+mach	= sgi
+cmplr	=
+optns	=
+
+# Currently KCC is the only choice.
+cxx	:= KCC
+
+ifndef contract
+contract	= full
+endif
+
+# Currently avoid the gui support, until we can get all the tools built.
+spartan	:= yes
+
+# Probably will get an MPI emulation environment up on A-div wkstns
+# eventually, but for now, presume they are uniprocessors.
+SYS_FLAGS = -DNOMPI
+
+# Tools which are independent of the compiler
+
+ar	= /bin/ar
+ranlib	= /bin/true
+
+#-----------------------------------------------------------------------------#
+# Photon C++
+
+ifeq ($(cxx),KCC)
+
+CC	= cc
+CXX	= KCC -x --no_implicit_include
+
+cmplr	= kai
+DEBUG_FLAG	=
+
+MAKEDEPEND	= $(CXX) -M
+CXX_DEPEND_FLAG	= $(CXXFLAGS)
+
+preinstantiate	:= yes
+
+INSTANTIALYZER	+= -m edg
+
+lib_cmd	:= $(CXX) -o
+
+ifndef opt
+opt	= 0
+endif
+
+ifeq ($(opt),0)
+optns		= g
+cxx_opt		= +K0
+endif
+
+ifeq ($(opt),1)
+optns		= o1
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt		= +K1 -O1
+ifndef contract
+contract	= require
+endif
+endif
+
+ifeq ($(opt),2)
+optns		= o2
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt		= +K2 -O2
+ifndef contract
+contract	= require
+endif
+endif
+
+ifeq ($(opt),3)
+optns		= o3
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt		= +K3 -O3
+ifndef contract
+contract	= require
+endif
+endif
+
+CXX	+= $(cxx_opt)
+
+endif				# Photon C++
+#-----------------------------------------------------------------------------#
+
+ifeq ($(need_python),yes)
+
+PYTHON_BASE = /net/wotan/vobs/KULL/py
+PYTHON_INC_DIR = $(PYTHON_BASE)/include/python1.4
+PYTHON_CFG_DIR = $(PYTHON_BASE)/lib/python1.4/config
+PY_INC_FLAG = -I$(PYTHON_INC_DIR) -I$(PYTHON_CFG_DIR)
+
+PYTHON_FLAG += -DHAVE_CONFIG_H
+
+#CXX_DEPEND_FLAG = $(CXX_INC_FLAGS) $(PYTHON_FLAG)
+
+# These are the Python stock libraries.
+
+PYLIBS =	$(PYTHON_CFG_DIR)/libModules.a \
+		$(PYTHON_CFG_DIR)/libPython.a \
+		$(PYTHON_CFG_DIR)/libObjects.a \
+		$(PYTHON_CFG_DIR)/libParser.a
+
+# Now add the rest of the stuff which has to go on the end of the line
+# when linking Python shells.
+
+PYLIBS += -L$(PYTHON_BASE)/lib -ltk4.1 -ltcl7.5 -lMatrix -lBLT -lplplotdtk \
+		-lX11 -lm
+
+# Now configure the PYTHONPATH
+
+MACHDEP=
+DESTLIB=$(PYTHON_BASE)/lib/python
+DESTLIB=$(PYTHON_BASE)/lib/python1.4
+TKPATH=:$(DESTLIB)/tkinter
+PLPLOTPATH=:$(DESTLIB)/plplot
+NUMERICPATH=:$(DESTLIB)/Numeric
+MACHDEPPATH=:$(DESTLIB)/$(MACHDEP)
+TESTPATH=:$(DESTLIB)/test
+DESTPATH=:$(DESTLIB)
+SITEPATH=
+COREPYTHONPATH=.$(SITEPATH)$(DESTPATH)$(TESTPATH)$(MACHDEPPATH)$(STDWINPATH)$(TKPATH)$(NUMERICPATH)$(PLPLOTPATH)
+PYTHONPATH=$(COREPYTHONPATH)
+
+endif
+
+env	:= $(mach)$(cmplr)$(optns)
+
+###############################################################################
+#                        End of hed/src/config/IRIX.cf
+###############################################################################
