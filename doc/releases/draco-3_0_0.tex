@@ -3,7 +3,7 @@
 %% Thomas M. Evans
 %% $Id$
 %%---------------------------------------------------------------------------%%
-\documentclass[11pt]{../tex/nmemo}
+\documentclass[11pt]{nmemo}
 \usepackage[centertags]{amsmath}
 \usepackage{amssymb,amsthm,graphicx}
 \usepackage[mathcal]{euscript}
@@ -148,6 +148,8 @@ released that will explain these changes in more detail.
   \begin{tabularx}{\linewidth}{
       >{\setlength{\hsize}{.5\hsize}}L %
       >{\setlength{\hsize}{1.5\hsize}}X}    
+    \hline\hline 
+
     c4 & communication library \\
     cdi & Common Data Interface (CDI) component \\
     cdi\_analytic & CDI analytic data component \\
@@ -172,7 +174,9 @@ released that will explain these changes in more detail.
     traits & traits used by other \draco\ components \\
     units & a physics units component \\
     viz & interfaces to visualization tools (EnSight)\\
-    xm & glommable expression templates \\
+    xm & glommable expression templates \\  
+
+    \hline\hline 
   \end{tabularx}
 \end{center}
 There are no inter/intra-component cyclic dependencies in \draco.  The
@@ -278,6 +282,61 @@ including new vendors and options, the \textit{Draco Build System}
 changes to the DBS will be updated through \textsf{Doxygen}.  The
 released \textit{The Draco Build System} document will provide an
 overview.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Draco Tools}
+
+There are several tools of note in \texttt{draco/tools} that have not
+been formally documented.  A brief summary of these tools is provided
+in Table~\ref{tab:tools}.
+\begin{table}
+  \caption{Summary of \draco\ tools in \texttt{draco/tools}.}
+  \label{tab:tools}
+  \begin{center}
+    \begin{tabularx}{\linewidth}{
+        >{\setlength{\hsize}{.5\hsize}}L %
+        >{\setlength{\hsize}{1.5\hsize}}X}
+      \hline\hline
+      
+      build\_ccs4\_release & Script that builds \draco\ releases on
+      the CCS Linux LAN \\
+
+      check\_coverage & Script that runs \textsf{gcov} analysis; this
+      tool is installed in \texttt{\$prefix/bin}. \\
+
+      count\_loc.sh & Does LOC analysis in a source directory. \\
+
+      draco & Gives information about the \draco\ version and
+      configure options; this tool is installed in
+      \texttt{\$prefix/bin}. \\
+
+      find\_tags\_diff.py & \textsf{Python} tool that finds the files
+      that have been changed since the last component package tag; it
+      also prints out the differences in changed files. \\
+      
+      find\_tags.py & \textsf{Python} tool that finds the files
+      that have been changed since the last component package tag. \\
+
+      include\_tree.py & \textsf{Python} tool that builds a levelized
+      graph of the component package using \textsf{Dot}. \\
+
+      package\_depends.py & \textsf{Python} tool that shows the
+      external \draco\ dependencies for a component package. \\
+
+      regression\_filter.py & \textsf{Python} tool that can be used to
+      pipe the results of \texttt{gmake check}; it produces a succinct
+      report of the results of all tests. \\
+
+      \hline\hline
+    \end{tabularx}
+  \end{center}
+\end{table}
+
+We have provided a new script, \texttt{draco/get\_tex}.  This script
+checks out \LaTeX\ classes from the \CVS\ repository and places them
+in the directory \texttt{draco/doc/tex}.  These \LaTeX\ classes may be
+needed to build \draco\ documents on remote systems.
 
 %%---------------------------------------------------------------------------%%
 
