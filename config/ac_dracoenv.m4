@@ -362,6 +362,23 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # end of lapack setup
        # 
 
+       #
+       # setup eospac
+       #
+       
+       AC_MSG_CHECKING("for extra eospac library requirements.")
+       if test -n "${vendor_eospac}"; then
+	   extra_eospac_libs="-L/usr/local/lf9560/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86"
+           LIBS="${LIBS} ${extra_eospac_libs}"
+           AC_MSG_RESULT("${extra_eospac_libs}")
+       else
+           AC_MSG_RESULT("none.")
+       fi
+
+       #
+       # end of eospac
+       #
+
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
        AC_MSG_CHECKING("libg2c requirements")
        if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||

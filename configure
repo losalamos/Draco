@@ -125,6 +125,9 @@ fi
 
 
 
+
+
+
 ###-------------------------------------------------------------------------###
 ### include the DRACO argument macro
 ###-------------------------------------------------------------------------###
@@ -201,6 +204,10 @@ ac_help="$ac_help
   --with-gandolf[=lib]    determine the gandolf lib name (gandolf is default)"
 ac_help="$ac_help
   --with-gandolf-lib[=DIR]    tell where GANDOLF libraries are (\${GANDOLF_LIB_DIR} by default)"
+ac_help="$ac_help
+  --with-eospac[=lib]    determine the eospac lib name (eospac is default)"
+ac_help="$ac_help
+  --with-eospac-lib[=DIR]    tell where EOSPAC5 libraries are (\${EOSPAC5_LIB_DIR} by default)"
 ac_help="$ac_help
   --with-c4[=scalar,mpi,shmem]   
 		          turn on c4 (default scalar) "
@@ -1445,6 +1452,95 @@ fi
    fi
 
          
+   
+      # Check whether --with-eospac or --without-eospac was given.
+if test "${with_eospac+set}" = set; then
+  withval="$with_eospac"
+  :
+fi
+
+
+      
+        
+   
+ # Check whether --with-eospac-lib or --without-eospac-lib was given.
+if test "${with_eospac_lib+set}" = set; then
+  withval="$with_eospac_lib"
+  if test $with_eospac_lib != "no" ; then
+      if test $with_eospac_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${EOSPAC5_LIB_DIR}
+         eval with_eospac_lib=\${EOSPAC5_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_eospac_lib=`eval echo "$with_eospac_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_eospac_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-eospac-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_eospac_lib ; then
+         { echo "configure: error: $with_eospac_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      EOSPAC5_LIB="${with_eospac_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >> confdefs.h <<EOF
+#define EOSPAC5_LIB ${with_eospac_lib}/
+EOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "EOSPAC5_LIB has been set to $EOSPAC5_LIB" 1>&6
+
+   fi
+fi
+
+
+   
+
+
+   # determine if this package is needed for testing or for the 
+   # package (valid values are pkg or test)
+   vendor_eospac=pkg
+
+   # eospac is set to libeospac by default
+   if test "${with_eospac:=eospac}" = yes ; then
+       with_eospac='eospac'
+   fi
+
+   # set up the libraries
+   if test "${with_eospac}" != no ; then
+       if test -z "${EOSPAC5_LIB}" ; then
+	   
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -l${with_eospac} are the directories added 
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_eospac}"
+   fi
+
+       elif test -n "${EOSPAC5_LIB}" ; then
+	   
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -L${EOSPAC5_LIB} -l${with_eospac} are the directories added 
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   fi
+
+       fi
+   fi
+
+         
 
 
          
@@ -1643,7 +1739,7 @@ subdirs="autodoc tools src doc"
 # Extract the first word of "autoconf", so it can be a program name with args.
 set dummy autoconf; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1647: checking for $ac_word" >&5
+echo "configure:1743: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_AUTOCONF'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1681,7 +1777,7 @@ for dir in $subdirs
    do
        if test -d ${srcdir}/${dir} ; then
 	   echo $ac_n "checking "configure in ${srcdir}/${dir}"""... $ac_c" 1>&6
-echo "configure:1685: checking "configure in ${srcdir}/${dir}"" >&5
+echo "configure:1781: checking "configure in ${srcdir}/${dir}"" >&5
 	   cd $srcdir/$dir
 	   if test -f configure ; then 
 	       echo "$ac_t"""exists"" 1>&6
@@ -1850,6 +1946,7 @@ s%@SPRNG_LIB@%$SPRNG_LIB%g
 s%@PCG_LIB@%$PCG_LIB%g
 s%@LAPACK_LIB@%$LAPACK_LIB%g
 s%@GANDOLF_LIB@%$GANDOLF_LIB%g
+s%@EOSPAC5_LIB@%$EOSPAC5_LIB%g
 s%@subdirs@%$subdirs%g
 s%@AUTOCONF@%$AUTOCONF%g
 
