@@ -104,8 +104,7 @@ void Surface_diagnostic(const MT &mesh)
 }
 
 template<class MT>
-void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Tally<MT> &tally,
-		   Rnd_Control &rcon)
+void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Rnd_Control &rcon)
 {
   // test particle copying and backing
 
@@ -113,6 +112,15 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Tally<MT> &tally,
 
     SP<Particle<MT>::Diagnostic> check = 
 	new Particle<MT>::Diagnostic(cout, true);
+
+    Particle_Buffer<Particle<MT> >::Bank bank;
+
+    vector<double> r(2, 5.0), dir(3, 0.0);
+    Particle<MT> p1(r, dir, 1, 10, rcon.get_rn());
+    bank.push(p1);
+
+    cout << endl << "Bank Size should be 1: ";
+    cout << bank.size() << endl;
 }
 
 template<class MT>
@@ -160,7 +168,7 @@ void read_part(const MT &mesh, const Rnd_Control &rcon,
   // read particles
 
     Particle_Buffer<Particle<MT> > buffer(mesh, rcon);
-    SP<Particle_Buffer<Particle<MT> >::Census_Particle> cenpart;
+    SP<Particle_Buffer<Particle<MT> >::Census_Buffer> cenpart;
     int index = 0;
     do
     {
@@ -247,7 +255,7 @@ int main(int argc, char *argv[])
       // mesh diagnostics
 	Builder_diagnostic(*mesh, *mat_state, *opacity);
 	Persistence_diagnostic(*mesh, *rcon);
-
+	Bank_Particle(*mesh, *opacity, *rcon);
     }
     catch (const assertion &ass)
     {
