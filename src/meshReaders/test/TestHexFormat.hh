@@ -61,8 +61,25 @@ class TestHexFormat : public rtt_UnitTestFrame::TestApp
     
   private:
 
-    bool check_mesh(const rtt_meshReaders::Hex_Format &mesh);
-    
+    bool check_mesh(const rtt_meshReaders::Hex_Format &mesh, 
+		    const std::string &testid);
+    bool check_nodes(const rtt_meshReaders::Hex_Format &mesh, 
+		     const std::string &testid);
+    bool check_node_units(const rtt_meshReaders::Hex_Format &mesh); 
+    bool check_node_sets(const rtt_meshReaders::Hex_Format &mesh); 
+    bool check_title(const rtt_meshReaders::Hex_Format &mesh); 
+    bool check_element_nodes(const rtt_meshReaders::Hex_Format &mesh, 
+			     const std::string &testid);
+    bool check_invariant(const rtt_meshReaders::Hex_Format &mesh);
+    bool check_element_sets(const rtt_meshReaders::Hex_Format &mesh, 
+			    const std::string &testid);
+    bool check_element_types(const rtt_meshReaders::Hex_Format &mesh, 
+			     const std::string &testid);
+    bool compare_double(const double &lhs, const double &rhs);
+    bool check_map(const std::map<std::string, std::set<int> >
+		   &elmsets, const std::string &name, const int &begin, 
+		   const int &end);
+
     // IMPLEMENTATION
 };
 

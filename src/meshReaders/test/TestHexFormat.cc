@@ -11,10 +11,12 @@
 
 #include "TestHexFormat.hh"
 #include "../Release.hh"
+#include "../Element_Definition.hh"
 
 #include "UnitTestFrame/PassFailStream.hh"
 #include <sstream>
 #include <iostream>
+#include <cmath>
 
 using std::cout;
 using std::endl;
@@ -60,27 +62,33 @@ string TestHexFormat::runTest()
 {
     using rtt_meshReaders::Hex_Format;
 
+    os() << std::endl << "******* CIC-19 Hex Mesh Reader Tests *******" 
+	 << std::endl;
     // Read and test a 1D mesh.
-    std::string filename = "marshak_slab.mesh.inp";
+    std::string filename = "slab.mesh.inp";
     Hex_Format mesh_1D(filename);
-    pass(" Construct ") << 
-	"Read mesh without coreing in or firing an assertion." << std::endl;
-    check_mesh(mesh_1D);
+    pass(" Construct 1D") << 
+	"Read a 1D mesh without coreing in or firing an assertion." 
+			  << std::endl;
+    check_mesh(mesh_1D, "slab");
 
     // Read and test a 2D mesh.
     filename = "quad.mesh.inp";
     Hex_Format mesh_2D(filename);
-    pass(" Construct ") << 
-    	"Read mesh without coreing in or firing an assertion." << std::endl;
-    check_mesh(mesh_2D);
-    
-     // Read and test a 3D mesh.
-    //    filename = "marshak_slab.mesh.inp";
-    //  Hex_Format mesh_3D(filename);
-    // pass(" Construct ") << 
-    //	 "Read mesh without coreing in or firing an assertion." << std::endl;
-    // check_mesh(mesh_3D);
-    
+    pass(" Construct 2D ") << 
+    	"Read a 2D mesh without coreing in or firing an assertion." 
+			   << std::endl;
+    check_mesh(mesh_2D, "quad");
+
+    // Read and test a 3D mesh.
+    filename = "cube.mesh.inp";
+    Hex_Format mesh_3D(filename);
+    pass(" Construct 3D ") << 
+	"Read a 3D mesh without coreing in or firing an assertion." 
+			   << std::endl;
+    check_mesh(mesh_3D, "cube");
+    os() << endl;
+   
     // Report results of test.
     if (passed())
     {
@@ -89,52 +97,302 @@ string TestHexFormat::runTest()
     return "Some tests failed.";
 }
 
-bool TestHexFormat::check_mesh(const rtt_meshReaders::Hex_Format &mesh)
+bool TestHexFormat::check_mesh(const rtt_meshReaders::Hex_Format &mesh,
+			       const std::string &testid)
 {
-    // Exercize the accessor functions for this mesh.
 
-    // Check node coords
+    // Exercize the accessor functions for this mesh and spot check
+    // the results.
+
+    bool pass_nc = check_nodes(mesh, testid);
+    bool pass_cu = check_node_units(mesh);
+    bool pass_ns = check_node_sets(mesh);
+    bool pass_ti = check_title(mesh);
+    bool pass_en = check_element_nodes(mesh, testid);
+    bool pass_in = check_invariant(mesh);
+    bool pass_es = check_element_sets(mesh, testid);
+    bool pass_et = check_element_types(mesh, testid);
+
+    return pass_nc && pass_cu && pass_ns && pass_ti && pass_en
+	&& pass_in && pass_es && pass_et;
+}
+
+bool TestHexFormat::check_nodes(const rtt_meshReaders::Hex_Format &mesh,
+				const std::string &testid)
+{
+    // Check node coords -- Need to do a "fuzzy" check here, these are doubles!
+    bool pass_nc = true;
     std::vector<std::vector<double> > point_c = mesh.get_node_coords();
-    pass(" Node Coordinates ") << "Got node coordinates." << std::endl;
-    
+     if (testid == "slab") 
+ 	pass_nc = 
+ 	    compare_double(point_c[0][0]  , 0. ) && 
+	    compare_double(point_c[10][0] , 2.5) && 
+	    compare_double(point_c[100][0], 25.);
+     else if (testid == "quad")
+ 	pass_nc = 
+ 	    compare_double(point_c[0][0]  , 0.)   && 
+	    compare_double(point_c[10][0] , 12.5) && 
+	    compare_double(point_c[440][0], 25.)  &&
+ 	    compare_double(point_c[0][1]  , 0.)   && 
+	    compare_double(point_c[10][1] , 0.)   && 
+	    compare_double(point_c[440][1], 25.);
+     else if (testid == "cube") 
+     {
+	 bool pass1 =
+	     compare_double(point_c[0][0]  , 0.)  &&
+	     compare_double(point_c[0][1]  , 0.)  && 
+	     compare_double(point_c[0][2]  , 0.)  ;
+	 bool pass2=  
+	     compare_double(point_c[10][0] , 0.8) && 
+	     compare_double(point_c[10][1] , 0.2) && 
+	     compare_double(point_c[10][2] , 0.)  ; 
+	 bool pass3=
+	     compare_double(point_c[215][0], 1.) &&
+	     compare_double(point_c[215][1], 1.) &&
+	     compare_double(point_c[215][2], 1.);
+	 pass_nc = pass1 && pass2 && pass3;
+     }
+     else
+ 	Insist(false,"Unrecognized test id string!");
+     if (pass_nc) 
+ 	pass(" Node Coordinates ") << "Got node coordinates." << std::endl;
+     else
+ 	fail(" Node Coordinates ") << "Error in node coordinates." << std::endl;	    
+     return pass_nc;
+}
+
+bool TestHexFormat::check_node_units(const rtt_meshReaders::Hex_Format &mesh)
+{     
     // Check coordinate units.
     std::string punits = mesh.get_node_coord_units();
-    os() << "units= " << punits << std::endl;
-    pass(" Coordinate Units ") << "Got coordinate units." << std::endl;
+    bool pass_cu = punits == "unknown";
+    if (pass_cu)
+	pass(" Coordinate Units ") << "Got coordinate units." << std::endl;
+    else
+	fail(" Coordinate Units ") << "Error in coordinate units." <<
+	    std::endl;
+    return pass_cu;
+}
 
+bool TestHexFormat::check_node_sets(const rtt_meshReaders::Hex_Format &mesh)
+{
     // Check node sets.
     std::map<std::string, std::set<int> > ndsets = mesh.get_node_sets();
-    pass(" Node Sets ") << "Got node sets." << std::endl;
+    bool pass_ns = ndsets.size() == 0;
+    if (pass_ns)
+	pass(" Node Sets ") << "Got node sets." << std::endl;
+    else
+	fail(" Node Sets ") << "Error in node sets." << std::endl;
+    return pass_ns;
+}
 
+bool TestHexFormat::check_title(const rtt_meshReaders::Hex_Format &mesh)
+{
     // Check title.
     std::string title = mesh.get_title();
-    os() << "title= " << title  << std::endl;
-    pass(" Title ") << "Got title." << std::endl;
+    bool pass_ti = title == "Untitled -- CIC-19 Hex Mesh";
+    if (pass_ti)
+	pass(" Title ") << "Got title." << std::endl;
+    else
+	fail(" Title ") << "Error in title." << std::endl;
+    return pass_ti;
+}
 
+bool TestHexFormat::check_element_nodes(const rtt_meshReaders::Hex_Format &mesh,
+			       const std::string &testid)
+{
     // Check element nodes.
+    bool pass_en = true;
     std::vector<std::vector<int> > enodes = mesh.get_element_nodes();
-    pass(" Element Nodes ") << "Got element nodes." << std::endl;
- 
+    if (testid == "slab")
+	pass_en = 
+	    enodes[0][0]   == 0   && enodes[0][1]   == 1  &&
+	    enodes[10][0]  == 10  && enodes[10][1]  == 11 &&
+	    enodes[99][0]  == 99  && enodes[99][1]  == 100 &&
+	    enodes[100][0] == 0   && enodes[101][0] == 100 ;
+    else if (testid == "quad")
+	pass_en = 
+	    enodes[0][0]   == 0   && enodes[0][1]   == 1   &&
+	    enodes[0][2]   == 22  && enodes[0][3]   == 21  &&
+	    enodes[10][0]  == 10  && enodes[10][1]  == 11  &&
+	    enodes[10][2]  == 32  && enodes[10][3]  == 31  &&
+	    enodes[399][0] == 418 && enodes[399][1] == 419 &&
+	    enodes[399][2] == 440 && enodes[399][3] == 439 &&
+	    enodes[400][0] == 421 && enodes[400][1] == 420 &&
+	    enodes[419][0] == 440 && enodes[419][1] == 439 &&
+ 	    enodes[420][0] == 21  && enodes[420][1] == 0   && 
+ 	    enodes[479][0] == 19  && enodes[479][1] == 20; 
+    else if (testid == "cube") 
+    {
+	bool pass1 =
+	    enodes[0][0]   == 0   && enodes[0][1]   == 1   && 
+	    enodes[0][2]   == 7   && enodes[0][3]   == 6   && 
+	    enodes[0][4]   == 36  && enodes[0][5]   == 37  &&
+	    enodes[0][6]   == 43  && enodes[0][7]   == 42  ;
+	bool pass2 =
+	    enodes[10][0]  == 12  && enodes[10][1]  == 13  &&
+	    enodes[10][2]  == 19  && enodes[10][3]  == 18  &&
+	    enodes[10][4]  == 48  && enodes[10][5]  == 49  &&
+	    enodes[10][6]  == 55  && enodes[10][7]  == 54  ;
+	bool pass3 =
+	    enodes[124][0] == 172 && enodes[124][1] == 173 &&
+	    enodes[124][2] == 179 && enodes[124][3] == 178 &&
+	    enodes[124][4] == 208 && enodes[124][5] == 209 &&
+	    enodes[124][6] == 215 && enodes[124][7] == 214 ;
+	bool pass4 =
+	    enodes[125][0] == 5   && enodes[125][1] == 11  &&
+	    enodes[125][2] == 47  && enodes[125][3] == 41  ;
+	bool pass5 =
+	    enodes[249][0] == 208 && enodes[249][1] == 209 &&
+	    enodes[249][2] == 215 && enodes[249][3] == 214 ;
+	bool pass6 =
+	    enodes[250][0] == 0   && enodes[250][1] == 36  &&
+	    enodes[250][2] == 42  && enodes[250][3] == 6   ;
+	bool pass7 =
+	    enodes[274][0] == 168 && enodes[274][1] == 204 &&
+	    enodes[274][2] == 210 && enodes[274][3] == 174 ;
+	pass_en = pass1 && pass2 && pass3 && pass4 && pass5 && 
+	    pass6 && pass7; 
+    }
+    else
+	Insist(false,"Unrecognized test id string!");
+    if (pass_en) 
+	pass(" Element Nodes ") << "Got element nodes." << std::endl;
+    else
+	fail(" Element Nodes ") << "Error in element nodes." << std::endl;
+    return pass_en;
+}
+
+bool TestHexFormat::check_invariant(const rtt_meshReaders::Hex_Format &mesh)
+{ 
     // Check invariant.
     bool invr = mesh.invariant();
     if ( invr)
 	pass(" Invariant ") << "Invoked invariant." << std::endl;
     else
-	pass(" Invariant ") << "Invariant not satisfied." << std::endl;
+	fail(" Invariant ") << "Invariant not satisfied." << std::endl;
+    return invr;
+}
 
-    // Check Element sets.
-    std::map<std::string, std::set<int> > elmsets = mesh.get_element_sets();
-    pass(" Element Sets ") << "Got element sets." << std::endl;
+bool TestHexFormat::check_element_sets(const rtt_meshReaders::Hex_Format &mesh,
+			       const std::string &testid)
+{
+    typedef std::map<std::string, std::set<int> > mt;
+    bool pass_es = true;
+    const mt elmsets = mesh.get_element_sets();
+    if (testid == "slab") 
+    {
+	pass_es == pass_es && elmsets.size() == 3;
+	pass_es = pass_es && check_map(elmsets,"Interior_Region_1",0,100);
+	pass_es = pass_es && check_map(elmsets,"Vacuum_Boundary",100,102);
+	pass_es = pass_es && check_map(elmsets,"Vacuum_Boundary_Region_1",
+				       100,102);
+    }
+    else if (testid == "quad")
+    {
+	pass_es = pass_es && elmsets.size() == 5;
+	pass_es = pass_es && check_map(elmsets,"Interior_Region_1",20,400);
+	pass_es = pass_es && check_map(elmsets,"Interior_Region_2",0,20);
+	pass_es = pass_es && check_map(elmsets,"Vacuum_Boundary",400,420);
+	pass_es = pass_es && check_map(elmsets,"Vacuum_Boundary_Region_1",
+				       400,420);
+	pass_es = pass_es && check_map(elmsets,"Reflective_Boundary",
+				       420,480);
 
+    }
+    else if (testid == "cube") 
+    {
+	bool pass0 = elmsets.size() == 9;
+	bool pass1 = check_map(elmsets,"Interior_Region_10",0,2);
+	bool pass2 = check_map(elmsets,"Interior_Region_14",2,3);
+	bool pass3 = check_map(elmsets,"Interior_Region_1",3,122);
+	bool pass4 = check_map(elmsets,"Interior_Region_2",122,125);
+	bool pass5 = check_map(elmsets,"Vacuum_Boundary",125,250);
+	bool pass6 = check_map(elmsets,"Vacuum_Boundary_Region_3",125,130);
+	bool pass7 = check_map(elmsets,"Vacuum_Boundary_Region_4",130,131);
+	bool pass8 = check_map(elmsets,"Vacuum_Boundary_Region_1",131,250);
+	bool pass9 = check_map(elmsets,"Reflective_Boundary",250,275);
+	pass_es = pass0 && pass1 && pass2 && pass3 && pass4 && pass5
+	    && pass6 && pass7 && pass8 && pass9;
+    }
+    else
+	Insist(false,"Unrecognized test id string!");
+    if (pass_es)
+	pass(" Element Sets ") << "Got element sets." << std::endl;
+    else
+	fail(" Element Sets ") << "Error in element sets." << std::endl;
+
+    return pass_es;
+}
+
+bool TestHexFormat::check_element_types(
+    const rtt_meshReaders::Hex_Format &mesh, const std::string &testid)
+{
     // Check Element Types.
+    typedef rtt_meshReaders::Element_Definition et;
+    bool pass_et = true;
     std::vector<rtt_meshReaders::Element_Definition::Element_Type>
 	etypes = mesh.get_element_types();
-    // os() << "Element Types: " << endl;
-    //    for (int i=0; i<etypes.size(); ++i)
-    //	os() << i << ",  " << etypes[i] << endl;
-    pass(" Element Types ") << "Read Element Types." << std::endl;
+    if (testid == "slab")
+    { 
+	for (int i=0; i<100; ++i)
+	    pass_et = pass_et && etypes[i] == et::BAR_2;
+	for (int i=100; i<102; ++i)
+	    etypes[i] == et::NODE;
+    }
+    else if (testid == "quad")
+    {
+	for (int i=0; i<400; ++i)
+	    pass_et = pass_et && etypes[i] == et::QUAD_4;
+	for (int i=400; i<480; ++i)
+	    etypes[i] == et::BAR_2;
+    }
+    else if (testid == "cube") 
+    {
+	for (int i=0; i<125; ++i)
+	    pass_et = pass_et && etypes[i] == et::HEXA_8;
+	for (int i=125; i<275; ++i)
+	    etypes[i] == et::QUAD_4;
+    }
+    else
+	Insist(false,"Unrecognized test id string!");
+    if (pass_et) 
+	pass(" Element Types ") << "Read Element Types." << std::endl;
+    else
+	fail(" Element Types ") << "Error in Element Types." << std::endl;
+    return pass_et;
+}
 
-    return true;
+bool TestHexFormat::compare_double(const double &lhs, const double &rhs)
+{
+    // Note that this is only good for doubles close to one.
+    return std::fabs(lhs-rhs) <= 0.00001;
+}
+
+bool TestHexFormat::check_map(const std::map<std::string, std::set<int> >
+			      &elmsets, const std::string &name, 
+			      const int &begin, const int &end) 
+{
+    bool pass = true;
+    typedef std::map<std::string, std::set<int> > mt;
+    mt::const_iterator iter = elmsets.find(name);
+    if (iter != elmsets.end())
+    {
+	const std::set<int> &elem_subset = (*iter).second;
+	if (elem_subset.size() == end-begin) 
+	{
+	    for (int i=begin; i<end; ++i)
+	    {
+		std::set<int>::const_iterator siter = elem_subset.find(i);
+		pass = pass && (siter != elem_subset.end());
+	    }
+	}
+	else
+	    pass = false;
+    }
+    else
+	pass = false;
+    return pass;
 }
 
 } // end namespace rtt_meshReaders_test
