@@ -119,6 +119,7 @@ class CDI_Mat_State_Builder : public Mat_State_Builder<MT,FT>
     typedef rtt_dsxx::SP<Gray_Frequency>                       SP_Gray;
     typedef rtt_dsxx::SP<Multigroup_Frequency>                 SP_MG;
     typedef typename rtt_imc::global::Type_Switch<FT>::Type    Dummy_Type;
+    typedef typename MT::template CCSF<double>                 ccsf;
     typedef typename MT::template CCSF<sf_double>              ccvf;
 
   private:
@@ -184,7 +185,8 @@ class CDI_Mat_State_Builder : public Mat_State_Builder<MT,FT>
 
     // Build a Diffusion_Opacity when FT=Gray_Frequency.
     template<class Stop_Explicit_Instantiation>
-    void build_diff_opacity_gray(Switch_Gray, SP_Mesh, SP_Fleck_Factors);
+    void build_diff_opacity_gray(Switch_Gray, SP_Mesh, SP_Fleck_Factors,
+				 const ccsf &);
 
     // Build an Opacity<MT,Multigroup_Frequency>.
     template<class Stop_Explicit_Instantiation>

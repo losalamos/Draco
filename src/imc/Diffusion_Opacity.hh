@@ -47,7 +47,9 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) original
-// 1) 25-AUG-03 : updated to 
+// 1) 25-AUG-03 : updated to hold the Rossealand absorption opacity (instead
+//                of Rosseland total opacity) and the total gray scattering
+//                opacity
 // 
 //===========================================================================//
 
@@ -65,12 +67,16 @@ class Diffusion_Opacity
     // Fleck factors.
     SP_Fleck_Factors fleck;
 
-    // Rosseland gray opacity.
+    // Rosseland gray absorption opacity.
     ccsf_double rosseland;
+
+    // Total gray scattering opacity.
+    ccsf_double scattering;
 
   public:
     // Constructor.
-    Diffusion_Opacity(SP_Fleck_Factors, const ccsf_double &);
+    Diffusion_Opacity(SP_Fleck_Factors, const ccsf_double &, 
+		      const ccsf_double &);
 
     // >>> ACCESSORS
 
@@ -83,8 +89,11 @@ class Diffusion_Opacity
     //! Get the gray Rosseland absorption opacity in a cell (1/cm).
     double get_Rosseland_opacity(int c) const { return rosseland(c); }
 
-    //! Get the Rosseland effective scattering opacity in a cell (1/cm).
-    double get_Rosseland_effscat(int cell) const;
+    //! Get the total, gray scattering opacity in a cell (1/cm).
+    double get_gray_scattering(int c) const { return scattering(c); }
+
+    // Get the effective Rosseland mean free path (cm).
+    inline double get_Rosseland_effmfp(int cell) const;
 
     // Get diffusion coefficents for random walk per cell.
     inline double get_random_walk_D(int cell) const;
@@ -115,24 +124,32 @@ double Diffusion_Opacity<MT>::get_random_walk_D(int cell) const
     Check (fleck->fleck(cell) >= 0.0);
     Check (fleck->fleck(cell) <= 1.0);
 
-    return c / (3.0 * (1.0-fleck->fleck(cell)) * rosseland(cell)); 
+    return c / (3.0 * ((1.0-fleck->fleck(cell)) * rosseland(cell) + 
+		scattering(cell))); 
 }
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return $(1-f)\sigma_{R}$, the effective Rosseland scattering
- * opacity (cm^-1).
+ * \brief Return the effective Rosseland mean free path.
  *
+ * The effective Rosseland mean free path is:
+ * \f[
+ * \lambda_{R\mbox{eff}} = \frac{1}{(1-f)\sigma_{R\mbox{abs}} + 
+ * \sigma_{s}}
+ * \f]
+ * where the scattering cross section includes both Thomson and Compton
+ * scattering. 
  */
 template<class MT>
-double Diffusion_Opacity<MT>::get_Rosseland_effscat(int cell) const
+double Diffusion_Opacity<MT>::get_Rosseland_effmfp(int cell) const
 {
 
     Require (cell > 0 && cell <= num_cells());
     Check (fleck->fleck(cell) >= 0.0);
     Check (fleck->fleck(cell) <= 1.0);
 
-    return (1.0-fleck->fleck(cell)) * rosseland(cell); 
+    Check ((1-fleck->fleck(cell)) * rosseland(cell) + scattering(cell) > 0.0);
+    return 1.0 / ((1.0-fleck->fleck(cell)) * rosseland(cell) + scattering(cell));
 }
 
 //---------------------------------------------------------------------------//
@@ -146,12 +163,15 @@ double Diffusion_Opacity<MT>::get_Rosseland_effscat(int cell) const
  */
 template<class MT>
 Diffusion_Opacity<MT>::Diffusion_Opacity(SP_Fleck_Factors   fleck_in,
-					 const ccsf_double &rosse_in)
+					 const ccsf_double &rosse_in,
+					 const ccsf_double &scat_in)
     : fleck(fleck_in),
-      rosseland(rosse_in)
+      rosseland(rosse_in),
+      scattering(scat_in)
 {
     Require (fleck);
     Require (fleck->fleck.size() == rosseland.get_Mesh().num_cells());
+    Require (fleck->fleck.size() == scattering.get_Mesh().num_cells());
 }
 
 } // end namespace rtt_imc

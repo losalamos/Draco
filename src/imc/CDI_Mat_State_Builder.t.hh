@@ -261,7 +261,8 @@ void CDI_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray, SP_Mesh mesh)
     if (build_diffusion_opacity)
     {
 	// build the Rosseland opacities
-	build_diff_opacity_gray<Dummy_Type>(Switch_Gray(), mesh, fleck);
+	build_diff_opacity_gray<Dummy_Type>(Switch_Gray(), mesh, fleck,
+					    scattering);
 	Ensure (diff_opacity);
 	Ensure (diff_opacity->num_cells() == mesh->num_cells());
     }
@@ -280,8 +281,9 @@ template<class MT, class FT>
 template<class Stop_Explicit_Instantiation>
 void CDI_Mat_State_Builder<MT,FT>::build_diff_opacity_gray(
     Switch_Gray,
-    SP_Mesh          mesh,
-    SP_Fleck_Factors fleck)
+    SP_Mesh           mesh,
+    SP_Fleck_Factors  fleck,
+    const ccsf       &scattering)
 {
     using rtt_mc::global::a;
     using rtt_mc::global::c;
@@ -293,6 +295,7 @@ void CDI_Mat_State_Builder<MT,FT>::build_diff_opacity_gray(
     Require (fleck);
     Require (mesh->num_cells() == mat_state->num_cells());
     Require (mesh->num_cells() == density.size());
+    Require (opacity);
     
     // number of cells
     int num_cells = mesh->num_cells();
@@ -340,7 +343,7 @@ void CDI_Mat_State_Builder<MT,FT>::build_diff_opacity_gray(
     }
 
     // build the diffusion opacity
-    diff_opacity = new Diffusion_Opacity<MT>(fleck, rosseland);
+    diff_opacity = new Diffusion_Opacity<MT>(fleck, rosseland, scattering);
 }
 
 //---------------------------------------------------------------------------//

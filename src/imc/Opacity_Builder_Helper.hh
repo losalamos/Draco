@@ -215,6 +215,7 @@ Opacity_Builder_Helper<MT,Multigroup_Frequency>::build_Opacity(
 
     // opacity data
     typename MT::template CCSF<double>    rosseland(mesh);
+    typename MT::template CCSF<double>    gray_scat(mesh);
     typename MT::template CCSF<double>    integrated_norm_planck(mesh);
     typename MT::template CCSF<sf_double> emission_group_cdf(mesh);
 
@@ -235,6 +236,7 @@ Opacity_Builder_Helper<MT,Multigroup_Frequency>::build_Opacity(
     double r_sum         = 0.0;
     double sig_p_sum     = 0.0;
     double inv_sig_r_sum = 0.0;
+    double inv_sct_r_sum = 0.0;
     double tot_sig_g     = 0.0;
 
     // group boundaries
@@ -248,6 +250,7 @@ Opacity_Builder_Helper<MT,Multigroup_Frequency>::build_Opacity(
 
 	// initialize summation of 1/sigma * r_g over the cell
 	inv_sig_r_sum = 0.0;
+	inv_sct_r_sum = 0.0;
 
 	// resize to the number of groups
 	emission_group_cdf(cell).resize(num_groups);
@@ -300,6 +303,20 @@ Opacity_Builder_Helper<MT,Multigroup_Frequency>::build_Opacity(
 	    {
 		inv_sig_r_sum += r_g / tot_sig_g;
 	    }
+
+	    // calculate the gray Rosseland scattering opacity
+	    tot_sig_g = scattering(cell)[g-1];
+	    
+	    // calculate numerator of Rosseland scattering opacity
+	    if (tot_sig_g == 0.0)
+	    {
+		inv_sct_r_sum += rtt_mc::global::huge;
+	    }
+	    else
+	    {
+		inv_sct_r_sum += r_g / tot_sig_g;
+	    }
+
 	}
 
 	// integrate the unnormalized Planckian and Rosseland over the group
@@ -332,9 +349,13 @@ Opacity_Builder_Helper<MT,Multigroup_Frequency>::build_Opacity(
 	}
 	Check (planck >= 0.0);
 
-	// build the rosseland opacity
+	// build the rosseland absorption opacity
 	Check (inv_sig_r_sum > 0.0);
 	rosseland(cell) = r_sum / inv_sig_r_sum;
+
+	// build the rosseland scattering opacity
+	Check (inv_sct_r_sum > 0.0);
+	gray_scat(cell) = r_sum / inv_sct_r_sum;
 
 	// calculate beta (4aT^3/Cv)
 	beta = 4.0 * a * T*T*T * volume / dedT;
@@ -354,7 +375,7 @@ Opacity_Builder_Helper<MT,Multigroup_Frequency>::build_Opacity(
     if (build_diffusion_opacity)
     {
 	// make the diffusion opacity
-	diff_opacity = new Diffusion_Opacity<MT>(fleck, rosseland);
+	diff_opacity = new Diffusion_Opacity<MT>(fleck, rosseland, gray_scat);
 	Ensure (diff_opacity);
 	Ensure (diff_opacity->num_cells() == mesh->num_cells());
     }

@@ -76,6 +76,9 @@ void test_diffusion_opacity()
 
     // make a rosseland field
     ccsf_double r(mesh);
+
+    // make a rosseland scattering field
+    ccsf_double s(mesh);
     
     double factor = 10.5;
     for (ccsf_double::iterator itr = r.begin(); itr != r.end(); itr++)
@@ -85,13 +88,16 @@ void test_diffusion_opacity()
     }
     factor = 10.5;
 
+    for (ccsf_double::iterator itr = s.begin(); itr != s.end(); itr++)
+	*itr = 1.01;
+
     // make fleck factors
     SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
     for (int i = 1; i <= fleck->fleck.size(); i++)
 	fleck->fleck(i) = 0.023 + 0.1 * static_cast<double>(i);
 
     // make a diffusion opacity
-    Diffusion_Opacity<MT> opac(fleck, r);
+    Diffusion_Opacity<MT> opac(fleck, r, s);
 
     // now check
     if (opac.num_cells() != 6) ITFAILS;
@@ -100,13 +106,15 @@ void test_diffusion_opacity()
     {
 	double f = 0.023 + 0.1 * static_cast<double>(i);
 	double r = 1.1 * factor;
-	double D = rtt_mc::global::c / (3.0 * (1.0-f) * r);
-	double e = (1.0 - f) * r;
+	double s = 1.01;
+	double D = rtt_mc::global::c / (3.0 * ((1.0-f) * r + s));
+	double e = 1.0 / ((1.0 - f) * r + s);
 
 	if (!soft_equiv(opac.get_fleck(i), f))             ITFAILS;
 	if (!soft_equiv(opac.get_Rosseland_opacity(i), r)) ITFAILS;
+	if (!soft_equiv(opac.get_gray_scattering(i), s))   ITFAILS;
 	if (!soft_equiv(opac.get_random_walk_D(i), D))     ITFAILS;
-	if (!soft_equiv(opac.get_Rosseland_effscat(i), e)) ITFAILS;
+	if (!soft_equiv(opac.get_Rosseland_effmfp(i), e))  ITFAILS;
 
 	factor  *= 2.0;
     }

@@ -191,7 +191,7 @@ void Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray, SP_Mesh mesh)
 	    mesh, flat_data->rosseland_opacity);
 
 	// make the diffusion opacity
-	diff_opacity = new Diffusion_Opacity<MT>(fleck, rosseland);
+	diff_opacity = new Diffusion_Opacity<MT>(fleck, rosseland, scattering);
 	Ensure (diff_opacity);
 	Ensure (diff_opacity->num_cells() == mesh->num_cells());
     }
