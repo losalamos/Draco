@@ -11,6 +11,9 @@
 
 #include "ds++/Assert.hh"
 
+#include <iostream>
+using namespace std;
+
 NML_Block::~NML_Block()
 {
     for( list<NML_Item *>::iterator i = itmlist.begin();
