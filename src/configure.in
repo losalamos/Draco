@@ -17,8 +17,8 @@ AC_DRACO_ARGS
 # NOT important with the exception of mesh (mesh is need for the
 # radphys test suite)
 
-AC_CONFIG_SUBDIRS(ds++ xm traits fourier)
-AC_CONFIG_SUBDIRS(units nml c4 rng)
+AC_CONFIG_SUBDIRS(ds++ xm fourier)
+AC_CONFIG_SUBDIRS(traits units nml c4 rng)
 AC_CONFIG_SUBDIRS(stopwatch meshTest)
 AC_CONFIG_SUBDIRS(mesh POOMA_MT radphys linalg diffusion mc timestep)
 AC_CONFIG_SUBDIRS(matprops P1Diffusion)
