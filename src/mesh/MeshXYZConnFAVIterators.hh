@@ -333,7 +333,8 @@ class NSVertex::Vertex
 	    // empty
 	}
 
-	const_iterator(const iterator &it_) : iterator_base(it_) { /* empty */ }
+	const_iterator(const NSVertex::Vertex<FaceField>::iterator &it_)
+	    : iterator_base(it_) { /* empty */ }
 	
 	const_iterator &operator++()
 	{

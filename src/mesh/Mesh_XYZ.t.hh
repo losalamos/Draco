@@ -729,7 +729,7 @@ Mesh_XYZ::bstf<T>::iterator::operator=( const iterator& iter )
 }
 
 template<class T>
-Mesh_XYZ::bstf<T>::const_iterator::const_iterator( const iterator& iter )
+Mesh_XYZ::bstf<T>::const_iterator::const_iterator( const bstf<T>::iterator& iter )
 {
     p = iter.p;
     i = iter.i;

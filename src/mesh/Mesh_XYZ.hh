@@ -761,7 +761,7 @@ class Mesh_XYZ : private XYZ_Mapper
                   bfield( _bfield )
             {}
 
-            const_iterator( const iterator& iter );
+            const_iterator( const bstf<T>::iterator& iter );
 
             const_iterator() : p(0), i(0), j(0), k(0), f(0), bfield(0) {}
 
