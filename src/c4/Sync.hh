@@ -9,9 +9,8 @@
 #ifndef __c4_Sync_hh__
 #define __c4_Sync_hh__
 
-#include "global.hh"
-
-C4_NAMESPACE_BEG
+namespace rtt_c4
+{
 
 //===========================================================================//
 // class HSync - Head synchronizing
@@ -64,7 +63,7 @@ class HTSync: public HSync, public TSync {
     HTSync( int s =1 ) : HSync(s), TSync(s) {}
 };
 
-C4_NAMESPACE_END
+} // end of rtt_c4
 
 #endif                          // __c4_Sync_hh__
 

@@ -1,9 +1,10 @@
 ###############################################################################
-# draco/src/c4/test Makefile.target
-# Randy M. Roberts
-# Time-stamp: <99/02/10 18:04:38 mcghee>
+# c4/test Makefile.target
+# Thomas M. Evans
+# Mon Mar 25 15:30:56 2002
+# $Id$
 ###############################################################################
-# @> Target makefile for C4 component tests
+# @> General Makefile.target for c4/test
 ###############################################################################
 
 testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
@@ -11,11 +12,21 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-${test_alltarget}: ${testdeps}
+thistestdep := libc4_test${libsuffix}
+thistestlib := -L. -lc4_test
+thistestlib_dep := c4_test.o 
+
+${test_alltarget}: ${thistestdep} ${testdeps}
 
 %: %.o
-	${LD} ${LDFLAGS} -o $@ $< ${testlibs}
+	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
+
+${thistestdep}: ${thistestlib_dep} ${testdeps}
+	${AR} ${ARFLAGS} $@ ${thistestlib_dep} ${ARTESTLIBS}
+	${RANLIB} $@
+
+objs += ${thistestdep}
 
 ###############################################################################
-#			 end of draco/src/c4/test Makefile.target
+#			 end of c4/test Makefile.target
 ###############################################################################

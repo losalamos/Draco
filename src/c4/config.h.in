@@ -12,13 +12,10 @@
 /* C4 Environments */
 #undef C4_SCALAR   /* scalar (default) */
 #undef C4_MPI      /* mpi */
-#undef C4_SHMEM    /* shmem */
-#undef C4_NX       /* nx (paragon) */
 
 /* Communication library include paths */
 /* Defined in ac_vendors.m4 */
 #undef MPI_H
-#undef SHMEM_H
 
 /* POSIX DEFINES */
 #undef _POSIX_SOURCE

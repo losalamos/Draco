@@ -6,12 +6,11 @@
 // @> A class for managing non blocking message requests.
 //---------------------------------------------------------------------------//
 
-#include <iostream.h>
-
 #include "C4_Req.hh"
 #include "ds++/Assert.hh"
+#include <iostream>
 
-namespace C4
+namespace rtt_c4
 {
 
 //---------------------------------------------------------------------------//
@@ -96,12 +95,10 @@ C4_ReqRefRep::~C4_ReqRefRep()
 
 void C4_ReqRefRep::wait()
 {
-    if (assigned) {
-	PGN( msgwait( mid ) );
-	MPI( MPI_Wait( &r, &s ) );
-#ifdef C4_SHMEM
-// 	C4_Wait( mid, type );
-	C4_Wait( thread );
+    if (assigned) 
+    {
+#ifdef C4_MPI
+	MPI_Wait(&r, &s);
 #endif
     }
     clear();
@@ -114,9 +111,6 @@ void C4_ReqRefRep::wait()
 
 void C4_ReqRefRep::free()
 {
-#ifdef C4_SHMEM
-    throw "incomplete";
-#endif
 #ifdef C4_MPI
     if (assigned)
 	MPI_Cancel( &r );
@@ -130,9 +124,6 @@ void C4_ReqRefRep::free()
 
 bool C4_ReqRefRep::complete()
 {
-#ifdef C4_SHMEM
-    throw "incomplete";
-#endif
 #ifdef C4_MPI
     int flag       = 0;
     bool indicator = false;
@@ -151,7 +142,7 @@ bool C4_ReqRefRep::complete()
 #endif
 }
 
-} // end namespace C4
+} // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//
 //                              end of C4_Req.cc

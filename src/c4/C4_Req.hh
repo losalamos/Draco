@@ -11,12 +11,9 @@
 
 // C4 package configure
 #include <c4/config.h>
+#include "c4_mpi.h"
 
-#include "config.hh"
-
-// autodoc: noprint C4_ReqRefRep
-
-namespace C4
+namespace rtt_c4
 {
 
 //===========================================================================//
@@ -113,58 +110,31 @@ class C4_Req {
 
     // Private access to the C4_ReqRefRep internals.
 
-#ifdef C4_NX
-    long &mid() { return p->mid; }
-#endif
 #ifdef C4_MPI
     MPI_Status  &s() { return p->s; }
     MPI_Request &r() { return p->r; }
-#endif
-#ifdef C4_SHMEM
-    pthread_t &thread() { return p->thread; }
-    int &mid() { return p->mid; }
-    int &type() { return p->type; }
 #endif
 
     // FRIENDSHIP
     
     // Specific friend C4 functions that may need to manipulate the
     // C4_ReqRefRep internals.
-    
-#ifdef C4_NX
-    friend C4_Req C4_SendAsync( void *buf, int size, int dest, int tag,
-                                int group );
-    friend C4_Req C4_RecvAsync( void *buf, int size, int source, int tag,
-                                int group );
-    friend void C4_SendAsync( C4_Req& r, void *buf, int size, int dest,
-                              int tag, int group );
-    friend void C4_RecvAsync( C4_Req& r, void *buf, int size, int source,
-                              int tag, int group );
-#endif
+
 #ifdef C4_MPI
     template<class T>
-    friend C4_Req SendAsync( const T *buf, int nels, int dest, int tag,
-                             int group );
+    friend C4_Req send_async(const T *buf, int nels, int dest, int tag);
     template<class T>
-    friend C4_Req RecvAsync( T *buf, int nels, int source, int tag,
-                             int group );
+    friend C4_Req receive_async(T *buf, int nels, int source, int tag);
     template<class T>
-    friend void SendAsync( C4_Req& r, const T *buf, int nels, int dest,
-                           int tag, int group );
+    friend void send_async(C4_Req& r, const T *buf, int nels, int dest,
+			   int tag);
     template<class T>
-    friend void RecvAsync( C4_Req& r, T *buf, int nels, int source, int tag,
-                           int group );
-#endif
-#ifdef C4_SHMEM
-    friend C4_Req SHM_SendAsync( void *buf, int size, int dest, int tag,
-                                 int group );
-
-    friend C4_Req SHM_RecvAsync( void *buf, int size, int source, int tag,
-                                 int group );
+    friend void receive_async(C4_Req& r, T *buf, int nels, int source, 
+			      int tag);
 #endif
 };
 
-} // end namespace C4
+} // end namespace rtt_c4
 
 #endif                          // __c4_C4_Req_hh__
 

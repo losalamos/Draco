@@ -1,3 +1,21 @@
+2002-03-25  Thomas M. Evans  <tme@lanl.gov>
+
+	* c4: massive changes.  Removed support for nx and shmem.  Added
+	all services to the rtt_c4 namespace (C4 namespace is preserved in
+	global.hh for backwards compatibility).  This first major series
+	of changes preserves the same capabilities as before--albeit with
+	different names.  c4 can be implemented serially and on mpi.  UPS
+	should be easy to add now.  For those of you who want to work in
+	the old C4 namespace, checkout c4-1_6_0.  No new functions will be
+	added to the C4 namespace.  All new stuff is to be added to
+	rtt_c4.  For the time-being, the C4 namespace will be preserved
+	for a transition period.
+
+	To summarize, you don't have to do anything just now; however, you
+	should think about migrating to rtt_c4 namespace (the function
+	names have changed as well).  The old C4 namespace, with the old
+	function declarations, is still preserved in global.hh.
+
 2001-12-17  Thomas M. Evans  <tme@lanl.gov>
 
 	* c4: Updated to c4-1_6_0.  The only change in this release is

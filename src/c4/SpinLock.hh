@@ -11,11 +11,11 @@
 
 #include <stdio.h>
 
-#include "config.hh"
 #include "NodeInfo.hh"
 #include "Sync.hh"
 
-C4_NAMESPACE_BEG
+namespace rtt_c4
+{
 
 //===========================================================================//
 // class SpinLock - Serialize execution of a block.
@@ -94,7 +94,19 @@ class HTSyncSpinLock : public HSync, public TSync, public SpinLock {
     cout << flush; \
 }
 
-C4_NAMESPACE_END
+} // end of rtt_c4
+
+//---------------------------------------------------------------------------//
+// Backwards compatibility
+
+namespace C4
+{
+
+using rtt_c4::HSyncSpinLock;
+using rtt_c4::TSyncSpinLock;
+using rtt_c4::HTSyncSpinLock;
+
+}
 
 #endif                          // __c4_SpinLock_hh__
 

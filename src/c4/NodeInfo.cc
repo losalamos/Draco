@@ -7,9 +7,10 @@
 //---------------------------------------------------------------------------//
 
 #include "NodeInfo.hh"
-#include "global.hh"
+#include "C4_Functions.hh"
 
-C4_NAMESPACE_BEG
+namespace rtt_c4
+{
 
 //---------------------------------------------------------------------------//
 // Constructor.  Figure out how big the multicomputer is and who we are.
@@ -17,14 +18,13 @@ C4_NAMESPACE_BEG
 
 NodeInfo::NodeInfo()
 {
-    node = C4::node();
-    nodes = C4::nodes();
-    group = C4::group();
+    node  = rtt_c4::node();
+    nodes = rtt_c4::nodes();
 
     lastnode = nodes - 1;
 }
 
-C4_NAMESPACE_END
+} // end of rtt_c4
 
 //---------------------------------------------------------------------------//
 //                              end of NodeInfo.cc

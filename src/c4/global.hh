@@ -1,125 +1,201 @@
 //----------------------------------*-C++-*----------------------------------//
-// global.hh
-// Geoffrey Furnish
-// Tue Dec 20 1994
+/*!
+ * \file   c4/global.hh
+ * \author Thomas M. Evans
+ * \date   Mon Mar 25 10:56:16 2002
+ * \brief  C4 function declarations and class * definitions. 
+ *
+ * This file allows the client to include the message passing services
+ * provided by C4.  The function declarations and class definitions are
+ * contained in the rtt_c4 namespace.  For backwards compatibility, the
+ * old-style C4 functions and classes are declared in the C4 namespace. 
+ */
 //---------------------------------------------------------------------------//
-// @> Global functions provided by the C4 Messaging API.
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_global_hh__
 #define __c4_global_hh__
 
-// c4 package configure
+// C4 package configure
 #include <c4/config.h>
 
-#include "config.hh"
-#include "tags.hh"
-#include "c4_traits.hh"
+// C4 Message Passing Functions
+#include "C4_Functions.hh"
+
+// C4 Request handler
+#include "C4_Req.hh"
+
+#include "C4_Traits.hh"
+
+//---------------------------------------------------------------------------//
+// Include the appropriate header for an underlying message passing
+// implementation.  This allows the definition of inline functions declared
+// in C4_Functions.hh.
+
+#ifdef C4_SCALAR
+#include "C4_Serial.hh"
+#endif
+
+#ifdef C4_MPI
+#include "C4_MPI.hh"
+#endif
+
+//===========================================================================//
+/*!
+ * \namespace C4
+ *
+ * \brief Deprecated namespace that contains the C4 package.
+ *
+ * This namespace contains all of C4 <= 1_6_0.  c4-2_0_0 is written in the
+ * rtt_c4 namespace.  However, for porting purposes, the functionality from
+ * c4-1_6_0 and back is preserved in the C4 namespace.  This is accomplished
+ * by introducing the new c4 names into the old namespace.  Only functions
+ * and services from c4-1_6_0 and earlier are in this deprecated namespace.
+ * New services are defined only in the rtt_c4 namespace.
+ */
+//===========================================================================//
 
 namespace C4
 {
 
-// Forward Reference
-
-class C4_Req;
-
-void Init( int& argc, char **& argv );
-void Finalize();
-
-// Informational 
-
-int node();
-int nodes();
-int group();
-
-// Global sync
-
-void gsync();
-
-// Send/receive
-
-template<class T>
-int Send( const T *buf, int nels, int dest,
-	  int tag =c4_traits<T*>::Tag, int group =0 );
-template<class T>
-int Recv( T *buf, int nels, int source,
-	  int tag =c4_traits<T*>::Tag, int group =0 );
-
-// Async send/receive
-
-template<class T>
-C4_Req SendAsync( const T *buf, int nels, int dest,
-		  int tag =c4_traits<T*>::Tag, int group =0 );
-template<class T>
-C4_Req RecvAsync( T *buf, int nels, int source,
-		  int tag =c4_traits<T*>::Tag, int group =0 );
-
-// Convenience forms which avoid object creation/copy costs from handling the 
-// C4_Req's.
-
-template<class T>
-void SendAsync( C4_Req& r, const T *buf, int nels, int dest,
-		int tag =c4_traits<T*>::Tag, int group =0 );
-template<class T>
-void RecvAsync( C4_Req& r, T *buf, int nels, int source,
-		int tag =c4_traits<T*>::Tag, int group =0 );
-
-// Convenience forms for the elemental send/receive ops.
-
-template<class T>
-inline int Send( const T& data, int dest,
-		 int tag =c4_traits<T>::Tag, int group =0 )
-{
-    return Send( &data, 1, dest, tag, group );
-}
-
-template<class T>
-inline int Recv( T& data, int source,
-		 int tag =c4_traits<T>::Tag, int group =0 )
-{
-    return Recv( &data, 1, source, tag, group );
-}
-
-// Global reductions.
-
-// Scalar.
-
-template<class T> void gsum( T& x );
-template<class T> void gprod( T& x );
-template<class T> void gmin( T& x );
-template<class T> void gmax( T& x );
-
-// Array.
-
-template<class T> void gsum( T *px, int n );
-template<class T> void gprod( T *px, int n );
-template<class T> void gmin( T *px, int n );
-template<class T> void gmax( T *px, int n );
-
-// Timing
-
-double Wtime();
-double Wtick();
-
-} // end namespace C4
+using rtt_c4::node;
+using rtt_c4::nodes;
+using rtt_c4::C4_Req;
 
 //---------------------------------------------------------------------------//
-// Now include anything which might help a particular hardware abstraction
-// layer.  For example, C4_gsync might be inlined...
+// Backwards compatibility functions
 
-#ifdef C4_SHMEM
-#include "global_shmem.hh"
-#endif
-#ifdef C4_MPI
-#include "global_mpi.hh"
-#endif
-#ifdef C4_SCALAR
-#include "global_scalar.hh"
-#endif
+inline void Init(int &argc, char **&argv)
+{
+    rtt_c4::initialize(argc, argv);
+}
 
-// For convenience let's include the C4_Req header
+inline void Finalize()
+{
+    rtt_c4::finalize();
+}
 
-#include "C4_Req.hh"
+inline void gsync()
+{
+    rtt_c4::global_barrier();
+}
+
+template<class T>
+inline int Send(const T *buf, int nels, int dest,
+		int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+{
+    return rtt_c4::send(buf, nels, dest, tag);
+}
+
+template<class T>
+inline int Recv(T *buf, int nels, int source,
+		int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+{
+    return rtt_c4::receive(buf, nels, source, tag);
+}
+
+template<class T>
+inline int Send(T data, int destination,
+		int tag = rtt_c4::C4_traits<T>::tag, int group = 0)
+{
+    return rtt_c4::send(&data, 1, destination, tag);
+}
+
+template<class T>
+inline int Recv(T &data, int source,
+		int tag = rtt_c4::C4_traits<T>::tag, int group = 0)
+{
+    return rtt_c4::receive(&data, 1, source, tag);
+}
+
+template<class T>
+inline void SendAsync(C4_Req& r, const T *buf, int nels, int dest,
+		      int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+{
+    rtt_c4::send_async(r, buf, nels, dest, tag);
+}
+
+template<class T>
+inline void RecvAsync(C4_Req& r, T *buf, int nels, int source,
+		      int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+{
+    rtt_c4::receive_async(r, buf, nels, source, tag);
+}
+
+template<class T>
+inline C4_Req SendAsync(const T *buf, int nels, int dest,
+			int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+{
+    return rtt_c4::send_async(buf, nels, dest, tag); 
+}
+
+template<class T>
+inline C4_Req RecvAsync(T *buf, int nels, int source,
+			int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+{
+    return rtt_c4::receive_async(buf, nels, source, tag);
+}
+
+template<class T>
+inline void gsum(T &x)
+{
+    rtt_c4::global_sum(x);
+}
+
+template<class T>
+inline void gprod(T &x)
+{
+    rtt_c4::global_prod(x);
+}
+
+template<class T>
+inline void gmin(T &x)
+{
+    rtt_c4::global_min(x);
+}
+
+template<class T>
+inline void gmax(T &x)
+{
+    rtt_c4::global_max(x);
+}
+
+template<class T>
+inline void gsum(T *x, int n)
+{
+    rtt_c4::global_sum(x, n);
+}
+
+template<class T>
+inline void gprod(T *x, int n)
+{
+    rtt_c4::global_prod(x, n);
+}
+
+template<class T>
+inline void gmin(T *x, int n)
+{
+    rtt_c4::global_min(x, n);
+}
+
+template<class T>
+inline void gmax(T *x, int n)
+{
+    rtt_c4::global_max(x, n);
+}
+
+inline double Wtime()
+{
+    return rtt_c4::wall_clock_time();
+}
+
+inline double Wtick()
+{
+    return rtt_c4::wall_clock_resolution();
+}
+
+} // end of namespace C4
 
 #endif                          // __c4_global_hh__
 

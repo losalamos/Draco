@@ -9,9 +9,8 @@
 #ifndef __c4_NodeInfo_hh__
 #define __c4_NodeInfo_hh__
 
-#include "config.hh"
-
-C4_NAMESPACE_BEG
+namespace rtt_c4
+{
 
 //===========================================================================//
 // class NodeInfo - Parallel configuration information
@@ -26,14 +25,13 @@ class NodeInfo {
   public:
     int node;
     int nodes;
-    int group;
 
     int lastnode;
 
     NodeInfo();
 };
 
-C4_NAMESPACE_END
+} // end of rtt_c4
 
 #endif                          // __c4_NodeInfo_hh__
 

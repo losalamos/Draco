@@ -7,8 +7,10 @@
 //---------------------------------------------------------------------------//
 
 #include "SpinLock.hh"
+#include "C4_Functions.hh"
 
-C4_NAMESPACE_BEG
+namespace rtt_c4
+{
 
 //---------------------------------------------------------------------------//
 // Constructor.  Waits for the preceeding processor to finish before
@@ -19,7 +21,7 @@ SpinLock::SpinLock( int _lock /*=1*/ )
     : lock(_lock)
 {
     if (lock && node)
-	Recv( &trash, 0, node-1, SL_Next, 0 );
+	receive( &trash, 0, node-1, SL_Next );
 }
 
 //---------------------------------------------------------------------------//
@@ -30,10 +32,10 @@ SpinLock::SpinLock( int _lock /*=1*/ )
 SpinLock::~SpinLock()
 {
     if (lock && node < lastnode)
-	Send( &trash, 0, node+1, SL_Next, 0 );
+	send( &trash, 0, node+1, SL_Next );
 }
 
-C4_NAMESPACE_END
+} // end of rtt_c4
 
 //---------------------------------------------------------------------------//
 //                              end of SpinLock.cc

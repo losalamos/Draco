@@ -7,8 +7,10 @@
 //---------------------------------------------------------------------------//
 
 #include "Sync.hh"
+#include "C4_Functions.hh"  
 
-C4_NAMESPACE_BEG
+namespace rtt_c4
+{
 
 //---------------------------------------------------------------------------//
 // HSync constructor.  Forces a global sync before continuing.
@@ -17,7 +19,7 @@ C4_NAMESPACE_BEG
 HSync::HSync( int s /*=1*/ )
 {
     if (s)
-	gsync();
+	global_barrier();
 }
 
 //---------------------------------------------------------------------------//
@@ -27,10 +29,10 @@ HSync::HSync( int s /*=1*/ )
 TSync::~TSync()
 {
     if (sync)
-	gsync();
+	global_barrier();
 }
 
-C4_NAMESPACE_END
+} // end of rtt_c4
 
 //---------------------------------------------------------------------------//
 //                              end of Sync.cc

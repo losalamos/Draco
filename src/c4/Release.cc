@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   c4/Release.cc
- * \author Randy M. Roberts, Thomas M. Evans
+ * \author Thomas M. Evans
  * \date   Thu Jul 15 09:41:09 1999
  * \brief  Release function implementation for c4 library.
  */
@@ -24,7 +24,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "@(#)c4-1_6_0";
+    string pkg_release = "@(#)c4-1_6_0a";
     return pkg_release;
 }
 
