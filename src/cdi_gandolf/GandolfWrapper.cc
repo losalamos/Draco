@@ -22,7 +22,7 @@ namespace rtt_cdi_gandolf {
 	using std::string;
 	
 	/*!
-	 * \brief Converts a const sring into a const char * that is padded
+	 * \brief Converts a const string into a const char * that is padded
 	 *        with white space.
 	 *
 	 * \param source The data in this string will be returned as a const

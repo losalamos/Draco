@@ -13,6 +13,7 @@ AC_CONFIG_HEADER(cdi_gandolf/config.h:config.h.in)
 package="cdi_gandolf"
 
 dnl GANDOLF VENDOR SETUP
+dnl on the configure line use --with-gandolf-lib=${PATH2libgandolf.a}
 AC_WITH_DIR(gandolf-lib, GANDOLF_LIB, \${GANDOLF_LIB_DIR},
             [tell where GANDOLF libraries are])
 
