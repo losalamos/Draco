@@ -256,7 +256,7 @@ struct InterpedMaterialProps::MaterialTables
     int                      numTemperatures;
     int                      maxScatteringPnOrder;
     
-    SP<BilinearInterpGrid>   spGrid;
+    dsxx::SP<BilinearInterpGrid>   spGrid;
 
     GroupedTable             sigmaTotal;
     GroupedTable             sigmaAbsorption;
@@ -272,7 +272,7 @@ struct InterpedMaterialProps::MaterialTables
     MaterialTables() {};
     
     MaterialTables(const std::string &materialName_,
-		   const SP<BilinearInterpGrid> &spGrid_,
+		   const dsxx::SP<BilinearInterpGrid> &spGrid_,
 		   const GroupedTable &sigmaTotal_,
 		   const GroupedTable &sigmaAbsorption_,
 		   const GroupedTable &sigmaEmission_,
