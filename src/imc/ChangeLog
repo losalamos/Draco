@@ -1,3 +1,8 @@
+2000-06-07  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* DD_Source_Builder.*: Added derived class for building the imc
+ 	source on a full domain decomposition topology.
+
 2000-04-19  Thomas M. Evans  <tme@lanl.gov>
 
 	* DD_Transporter.*: Full and General DD class to handle a single
