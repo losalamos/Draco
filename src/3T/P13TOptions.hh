@@ -22,13 +22,17 @@ class P13TOptions {
 
   private:
 
-    int dummy;
+    double p1TauMultiplier;
+    bool   isCoupledMaterial;
     
   public:
 
     // CREATORS
 
-    P13TOptions()
+    P13TOptions(double p1TauMultiplier_ = 1.0,
+		bool isCoupledMaterial_ = true)
+	: p1TauMultiplier(p1TauMultiplier_),
+	  isCoupledMaterial(isCoupledMaterial_)
     {
 	// empty
     }
@@ -36,6 +40,10 @@ class P13TOptions {
     // MANIPULATORS
 
     // ACCESSORS
+
+    double getP1TauMultiplier() const { return p1TauMultiplier; }
+
+    bool getIsCoupledMaterial() const { return isCoupledMaterial; }
 };
 
 #endif                          // __3T_P13TOptions_hh__

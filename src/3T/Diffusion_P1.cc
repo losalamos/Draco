@@ -34,13 +34,13 @@ Diffusion_P1<MT>::Diffusion_P1( const Diffusion_DB& diffdb,
 
 // Calculate the cell widths from the locations of the faces.
 
-    for( int i=0; i < ncx+1; i++ )
+    for( int i=0; i < ncx; i++ )
         dx(i) = xf(i+1) - xf(i);
 
-    for( int j=0; j < ncy+1; j++ )
+    for( int j=0; j < ncy; j++ )
         dy(j) = yf(j+1) - yf(j);
 
-    for( int k=0; k < ncz+1; k++ )
+    for( int k=0; k < ncz; k++ )
         dz(k) = zf(k+1) - zf(k);
 
 // Calculate the delta-l that goes with each face.

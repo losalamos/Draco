@@ -369,6 +369,10 @@ calcNewRadState(double dt,
 		 QRad, QElectron, QIon,
 		 TElectron, TIon, D, Fprime, sigmaAbsBar, QRadBar);
 
+    cerr << "sigmaAbsBar: " << *sigmaAbsBar.begin() << endl;
+    cerr << "D: " << *D.begin() << endl;
+    cerr << "QRadBar: " << *QRadBar.begin() << endl;
+    
     // Set up aliases for the long names.
     
     ccsf &phi = resultsStateField.phi;
@@ -379,6 +383,11 @@ calcNewRadState(double dt,
     // this is all we have to do.
     
     solver.solve(D, sigmaAbsBar, QRadBar, Fprime, boundary, phi, F);
+
+    cerr << "QRadBar/sigmaAbsBar: " <<
+	(*QRadBar.begin())/(*sigmaAbsBar.begin()) << endl;
+    
+    cerr << "phi: " << *phi.begin() << endl;
 
     // ENSURE that F is indeed continuous, if we can!
 }
@@ -415,6 +424,11 @@ calcP1Coeffs(double dt,
     double c = radPhys.getLightSpeed();
     double tau = 1.0/(c*dt);
 
+    // If this is diffusion, then tauP1 = 0.0.
+    // If this is full P1 then tauP1 = tau.
+    
+    double tauP1 = tau * options.getP1TauMultiplier();
+
     // Ask the material properties for sigma total.
     // It is the material properties' responsibility to do
     // any averaging of temperatures, etc. to achieve the correct
@@ -431,8 +445,8 @@ calcP1Coeffs(double dt,
     matStateCC.getSigmaAbsorption(groupNo, sigmaAbs);
     
     // Calculate the diffusion constant.
-    
-    D = (1.0/3.0) / (sigmaTotal + tau);
+
+    D = (1.0/3.0) / (sigmaTotal + tauP1);
 
     // We need nu and QElecStar, we get CvStar for free.
 
@@ -443,28 +457,40 @@ calcP1Coeffs(double dt,
     ccsf QElecStar(spMesh);
     ccsf CvStar(spMesh);
     ccsf nu(spMesh);
+
+    if (options.getIsCoupledMaterial())
+    {
+	calcStarredFields(dt, groupNo, matStateCC, radPhys,
+			  QElectron, QIon, TElectron, TIon,
+			  sigmaEmission, QElecStar, CvStar, nu);
+
+	cerr << "QElecStar: " << *QElecStar.begin() << endl;
+	cerr << "CvStar: " << *CvStar.begin() << endl;
+	cerr << "nu: " << *nu.begin() << endl;
     
-    calcStarredFields(dt, groupNo, matStateCC, radPhys,
-		      QElectron, QIon, TElectron, TIon,
-		      sigmaEmission, QElecStar, CvStar, nu);
+	// Calculate modified sigma absorption
 
-    // Calculate modified sigma absorption
+	sigmaAbsBar = (1.0 - nu) * sigmaAbs + tau;
 
-    sigmaAbsBar = (1.0 - nu) * sigmaAbs + tau;
+	// Calculated modified radiation source
 
-    // Calculated modified radiation source
+	// We need the Bhat.
 
-    // We need the Bhat.
-
-    ccsf Bhat(spMesh);
-    getBhat(radPhys, TElectron, Bhat);
+	ccsf Bhat(spMesh);
+	getBhat(radPhys, TElectron, Bhat);
     
-    QRadBar = tau*prevStateField.phi + (1.0 - nu)*sigmaEmission*Bhat
-	+ nu*QElecStar + QRad;
+	QRadBar = tau*prevStateField.phi + (1.0 - nu)*sigmaEmission*Bhat
+	    + nu*QElecStar + QRad;
+    }
+    else
+    {
+	sigmaAbsBar = sigmaAbs + tau;
+	QRadBar = tau*prevStateField.phi + QRad;
+    }
 
     // Calculate the "telegraph" term to the P1 equation.
 
-    Fprime = tau*prevStateField.F / (sigmaTotal + tau);
+    Fprime = tauP1*prevStateField.F / (sigmaTotal + tauP1);
 
 }
 
@@ -494,7 +520,7 @@ void P13T<MT, MP, DS>::calcStarredFields(double dt,
     
     calcStarredFields(dt, groupNo, matStateCC, radPhys,
 		      QElectron, QIon, TElectron, TIon,
-		      sigmaEmission, QElecStar, CvStar);
+		      QElecStar, CvStar);
 
     // Calculate the 4pi*Planckian's temperature derivative.
 
@@ -503,7 +529,7 @@ void P13T<MT, MP, DS>::calcStarredFields(double dt,
     
     // Calculate the "nu" used in the 3T modification of sigmaAbs
     
-    nu = dt * sigmaEmission * dBhatdT / (CvStar + dt * dBhatdT);
+    nu = dt * sigmaEmission * dBhatdT / (CvStar + dt * sigmaEmission * dBhatdT);
 
 }
 
@@ -523,7 +549,6 @@ void P13T<MT, MP, DS>::calcStarredFields(double dt,
 					 const ccsf &QIon,
 					 const ccsf &TElectron,
 					 const ccsf &TIon,
-					 const ccsf &sigmaEmission,
 					 ccsf &QElecStar,
 					 ccsf &CvStar) const
 {
@@ -583,9 +608,6 @@ void P13T<MT, MP, DS>::calcDeltaTElectron(double dt,
     
     const RadiationPhysics radPhys(matStateCC.getUnits());
 
-    ccsf sigmaEmission(spMesh);
-    matStateCC.getSigmaEmission(groupNo, sigmaEmission);
-
     // Calculate QElecStar and CvStar.
 
     ccsf QElecStar(spMesh);
@@ -593,7 +615,15 @@ void P13T<MT, MP, DS>::calcDeltaTElectron(double dt,
     
     calcStarredFields(dt, groupNo, matStateCC, radPhys,
 		      QElectron, QIon, TElectron, TIon,
-		      sigmaEmission, QElecStar, CvStar);
+		      QElecStar, CvStar);
+
+    if (!options.getIsCoupledMaterial())
+    {
+	// calculate delta T electron
+    
+	deltaTelectron = dt * QElecStar / CvStar;
+	return;
+    }
 
     ccsf sigmaAbs(spMesh);
     matStateCC.getSigmaAbsorption(groupNo, sigmaAbs);
@@ -608,6 +638,9 @@ void P13T<MT, MP, DS>::calcDeltaTElectron(double dt,
 
     // Get shorthand for phi^n+1
     const ccsf &phi_np1 = resultsStateField.phi;
+
+    ccsf sigmaEmission(spMesh);
+    matStateCC.getSigmaEmission(groupNo, sigmaEmission);
 
     // calculate delta T electron
     

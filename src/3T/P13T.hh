@@ -272,7 +272,6 @@ class P13T
 			   const ccsf &QIon,
 			   const ccsf &TElectron,
 			   const ccsf &TIon,
-			   const ccsf &sigmaEmission,
 			   ccsf &QElecStar,
 			   ccsf &CvStar) const;
     

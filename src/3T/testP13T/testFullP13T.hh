@@ -9,11 +9,14 @@
 #ifndef __3T_testP13T_testFullP13T_hh__
 #define __3T_testP13T_testFullP13T_hh__
 
+#include "testFullP13T_DB.hh"
 #include "ds++/SP.hh"
 #include "3T/P13T.hh"
 #include "3T/Diffusion_P1.hh"
 #include "mesh/Mesh_XYZ.hh"
 #include "matprops/InterpedMaterialProps.hh"
+
+#include <string>
 
 #ifndef BEGIN_NS_XTM
 #define BEGIN_NS_XTM namespace XTM  {
@@ -21,7 +24,7 @@
 #endif
 
 BEGIN_NS_XTM
-    
+
 //===========================================================================//
 // class testFullP13T - 
 //
@@ -50,12 +53,16 @@ class testFullP13T
   private:
     
     SP< P13T<MT,MP,DS> > spP13T;
+
+    testFullP13T_DB pdb;
+    Diffusion_DB diffdb;
+    pcg_DB pcg_db;
     
   public:
 
     // CREATORS
     
-    testFullP13T();
+    testFullP13T(const std::string &infile);
 
     // MANIPULATORS
     

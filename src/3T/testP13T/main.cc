@@ -20,7 +20,7 @@ int main()
     {
 	cerr << "In main()" << endl;
 
-	XTM::testFullP13T test;
+	XTM::testFullP13T test("testFullP13T.in");
 
 	cerr << "before test.run()" << endl;
     

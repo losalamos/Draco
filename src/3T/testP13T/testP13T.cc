@@ -26,7 +26,8 @@ using std::vector;
 
 using namespace XTM;
     
-testP13T::testP13T()
+testP13T::testP13T(const testP13T_DB &db_)
+    
 {
     SP<MT> spmesh = new MT;
     

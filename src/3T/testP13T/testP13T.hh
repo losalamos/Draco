@@ -13,8 +13,6 @@
 #include "3T/P13T.hh"
 #include "3T/testP13T/DiffusionSolverStub.hh"
 #include "3T/testP13T/MeshTypeStub.hh"
-
-// #include "3T/testP13T/MaterialPropertiesStub.hh"
 #include "matprops/InterpedMaterialProps.hh"
 
 #ifndef BEGIN_NS_XTM

@@ -26,7 +26,8 @@ include ../../config/makefile
 srcs	= \
 	main.cc \
 	testFullP13T.cc \
-	testFullP13T_pt.cc
+	testFullP13T_pt.cc \
+	testFullP13T_DB.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.
