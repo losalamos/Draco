@@ -11,6 +11,10 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(timestep/config.h:config.h.in)
 package="timestep"
 
+dnl VENDOR SETUPS
+AC_MPI_SETUP(pkg)
+AC_SHMEM_SETUP(pkg)
+
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(c4 ds++)
