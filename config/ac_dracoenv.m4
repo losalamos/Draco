@@ -191,6 +191,11 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    dnl add any additional flags
 
+   # add user defined cppflags
+   if test "${with_cppflags:=no}" != no ; then
+       CPPFLAGS="${with_cppflags} ${CPPFLAGS}"
+   fi
+
    # add user defined cxxflags
    if test "${with_cxxflags:=no}" != no ; then
        CXXFLAGS="${with_cxxflags} ${CXXFLAGS}"
@@ -220,7 +225,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    
    if test "${with_cxxflags}" = yes || test "${with_cflags}" = yes ||\
       test "${with_f90flags}" = yes || test "${with_arflags}" = yes \
-      || test "${with_ldflags}" = yes ; then
+      || test "${with_ldflags}" = yes \
+      || test "${with_cppflags}" = yes ; then
        AC_MSG_ERROR("Poor definition of user defined flags!")
    fi
    

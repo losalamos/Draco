@@ -104,6 +104,14 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
       [  --with-posix[=num]      give posix source (system-dependent defaults)])
 
    dnl
+   dnl ADD TO CPPFLAGS
+   dnl
+   
+   dnl defines --with-cppflags
+   AC_ARG_ENABLE(cppflags,
+      [  --with-cppflags[=flags] add flags to \$CPPFLAGS])
+
+   dnl
    dnl ADD TO CXXFLAGS
    dnl
    
