@@ -10,7 +10,6 @@
 #error "Users should only include xm/xm.hh"
 #endif
 
-#include <cstdlib>
 #include <cmath>
 
 XM_NAMESPACE_BEG
@@ -341,7 +340,7 @@ class OpAbs {
   public:
     static inline P apply( const P& x )
     {
-	return std::abs(x);
+	return ( x > 0 ? x : -x );
     }
 };
 
