@@ -17,11 +17,17 @@ package="ds++"
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 
-AC_RUNTESTS(tstAllocators tstMat tstSP tstAssert tstSortPermutation \
-            tstMat1RA tstMat2RA tstMat3RA tstMat4RA tstMat5RA \
-	    tstCheck_Strings tstPacking_Utils tstSoft_Equiv, scalar)
+AC_RUNTESTS(tstCheck_Strings \
+            tstAssert \
+            tstSP tstSoft_Equiv tstPacking_Utils tstAllocators \
+            tstSortPermutation \
+            tstMat tstMat1RA tstMat2RA tstMat3RA tstMat4RA tstMat5RA\
+            , scalar)
 
 AC_DRACO_ENV
+
+dnl look for flexelint on Linux
+AC_PATH_PROG(FLEXELINT_PATH, lin, null, /usr/local/flexelint/bin )
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in])

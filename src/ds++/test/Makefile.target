@@ -15,6 +15,7 @@ testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 thistestdep := libds_test${libsuffix}
 thistestlib := -L. -lds_test
 thistestlib_dep := ds_test.o 
+thistest_lintmodules := $(wildcard ${srcdir}/*.lnt)
 
 ${test_alltarget}: ${thistestdep} ${testdeps}
 
@@ -26,6 +27,19 @@ ${thistestdep}: ${thistestlib_dep} ${testdeps}
 	${RANLIB} $@
 
 objs += ${thistestdep}
+
+flint:
+	@if test -n ${FLEXELINT}; then \
+	  for lintmodule in ${thistest_lintmodules}; do \
+	    pushd ${srcdir}; \
+	    ${FLEXELINT} $${lintmodule}; \
+            popd; \
+	  done; \
+	else \
+	  echo "I don't know where flexelint is located."; \
+	  exit 1; \
+	fi;\
+	exit 0;
 
 ###############################################################################
 #			 end of ds++/test Makefile.target
