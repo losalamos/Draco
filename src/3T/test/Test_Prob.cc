@@ -13,6 +13,8 @@
 
 #include "mesh/Mesh_XYZ.hh"
 
+#include "linalg/pcg_DB.hh"
+
 #include "nml/Group.hh"
 
 SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] )
@@ -30,6 +32,9 @@ SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] )
     Quad_Params qpdb;
     qpdb.setup_namelist( g );
 
+    pcg_DB pcg_db( "pcg" );
+    pcg_db.setup_namelist( g );
+
     g.readgroup( "test.in" );
     g.writegroup( "test.out" );
 
@@ -38,7 +43,7 @@ SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] )
 // Theoretically we could parse argc, argv to figure out which test problem
 // to initiate.  For now, however, we just hardwire one.
 
-    prob = new Test_3T< Mesh_XYZ, XYZ_Quadratic >( spm, qpdb );
+    prob = new Test_3T< Mesh_XYZ, XYZ_Quadratic >( spm, rdb, qpdb, pcg_db );
 
     return prob;
 }
