@@ -27,22 +27,22 @@
           USE CAR_CU_Builder_Class
 
           implicit none
-          integer narg, iargc
+          integer narg, iargc, fnlgth
           type(CAR_CU_Interface) :: interface_class
           type(CAR_CU_Builder) :: builder_class
 
 !===========================================================================
-! Create a C++ CAR_CU_Interface class object. This also constructs a C++ 
-! RTT_Format class object and parses both the input deck and the RTT Format 
-! mesh file specified therein. The addresses of both the new CAR_CU_Interace 
-! and RTT_Format class objects are set.
+! Input the command line arguments - input file name followed by anything to
+!  activate the verbose switch (typically v or the word verbose)
 !===========================================================================
 
           narg = iargc()
           if (narg .gt. 0) then
               call getarg(1,interface_class%file_name)
-              interface_class%file_name =                               &
-                  interface_class%file_name // ACHAR(0)
+              ! Have to add a terminating null character to the end of the 
+              ! file name for conversion to a C++ string object
+              fnlgth = len_trim(interface_class%file_name)
+              interface_class%file_name(fnlgth + 1:fnlgth + 1) =  ACHAR(0)
               if (narg .gt. 1) then
                   interface_class%verbose = .TRUE.
               else
@@ -52,10 +52,12 @@
               stop
           end if
 
-
-          interface_class%file_name = '/home/bta/sun_scalar/bin/top_hat'&
-              // ACHAR(0)
-          interface_class%verbose = .TRUE.
+!===========================================================================
+! Create a C++ CAR_CU_Interface class object. This also constructs a C++ 
+! RTT_Format class object and parses both the input deck and the RTT Format 
+! mesh file specified therein. The addresses of both the new CAR_CU_Interace 
+! and RTT_Format class objects are set.
+!===========================================================================
 
           call construct_Interface_Class(interface_class)
 

@@ -31,10 +31,10 @@
 !===========================================================================
 
           type, public :: CAR_CU_Interface
-              integer        :: this
-              character * 60 :: file_name
-              logical        :: verbose
-              integer        :: rtt_format
+              integer             :: this
+              character*132       :: file_name
+              logical             :: verbose
+              integer             :: rtt_format
           end type CAR_CU_Interface 
 
 !===========================================================================
