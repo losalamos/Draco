@@ -1,0 +1,23 @@
+/*-----------------------------------*-C-*-----------------------------------*/
+/*!
+ * \file   shared_lib/config.h
+ * \author Thomas M. Evans 
+ * \date   Wed Apr 21 14:16:24 2004
+ * \brief  shared_lib package config.
+ * \note   Copyright © 2004 The Regents of the University of California.
+ */
+/*---------------------------------------------------------------------------*/
+/* $Id$ */
+/*---------------------------------------------------------------------------*/
+
+#ifndef shared_lib_config_h
+#define shared_lib_config_h
+
+/* DLOPEN SUPPORT */
+#undef NO_DLOPEN
+
+#endif /* shared_lib_config_h */
+
+/*---------------------------------------------------------------------------*/
+/*           end of shared_lib/config.h */
+/*---------------------------------------------------------------------------*/
