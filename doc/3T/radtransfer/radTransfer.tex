@@ -39,17 +39,17 @@
 
 The differential equation governing the ion temperature is
 \begin{equation}
-	C_{vi} \partl{T_{i}}{t} = \del \cdot \kappa_{i} \del T_{i}
-					+ \gamma (T_{e}-T_{i}) + Q_{i}
+        C_{vi} \partl{T_{i}}{t} = \del \cdot \kappa_{i} \del T_{i}
+                                        + \gamma (T_{e}-T_{i}) + Q_{i}
 \end{equation}
 This equation will be solved using time-splitting, into two equations,
 \begin{equation}
-	C_{vi} \partl{T_{i}}{t} = \gamma (T_{e}-T_{i}) + Q_{i}
+        C_{vi} \partl{T_{i}}{t} = \gamma (T_{e}-T_{i}) + Q_{i}
 \label{eq:couple_Ti}
 \end{equation}
 and
 \begin{equation}
-	C_{vi} \partl{T_{i}}{t} = \del \cdot \kappa_{i} \del T_{i}
+        C_{vi} \partl{T_{i}}{t} = \del \cdot \kappa_{i} \del T_{i}
 \label{eq:conduction_Ti}
 \end{equation}
 that will be solved separately.
@@ -61,31 +61,31 @@ The second equation will be solved after these equations.
 
 Implicitly time-differencing equation~(\ref{eq:couple_Ti}) we obtain
 \begin{equation}
-	\cviOdt ( T_{i}^{n+1}-T_{i}^{n}) =
-		 \gamma (T_{e}^{n+1}-T_{i}^{n+1}) + Q_{i}
+        \cviOdt ( T_{i}^{n+1}-T_{i}^{n}) =
+                 \gamma (T_{e}^{n+1}-T_{i}^{n+1}) + Q_{i}
 \end{equation}
 We will be arranging this equation to obtain the time difference of
 the ion temperature, $\Delta T_{i}^{n+1}$,
 where $\Delta T^{n+1}$ is defined for both ions and electrons by:
 \begin{equation}
-	\Delta T^{n+1} \equiv T^{n+1} - T^{n}
+        \Delta T^{n+1} \equiv T^{n+1} - T^{n}
 \end{equation}
 
 \begin{equation}
-	T_{i}^{n+1}\left\{ \cviOdt + \gamma \right\} =
-		\cviOdt T_{i}^{n} + \gamma T_{e}^{n+1} + Q_{i}
+        T_{i}^{n+1}\left\{ \cviOdt + \gamma \right\} =
+                \cviOdt T_{i}^{n} + \gamma T_{e}^{n+1} + Q_{i}
 \end{equation}
 \begin{equation}
-	\Delta T_{i}^{n+1} = \frac{ \left( \cviOdt - \cviOdt - \gamma 
-					\right) T_{i}^{n}
-			 + \gamma T_{e}^{n+1} + Q_{i} }
-		{(\cviOdt + \gamma)}
+        \Delta T_{i}^{n+1} = \frac{ \left( \cviOdt - \cviOdt - \gamma 
+                                        \right) T_{i}^{n}
+                         + \gamma T_{e}^{n+1} + Q_{i} }
+                {(\cviOdt + \gamma)}
 \end{equation}
 \begin{equation}
    \boxed{
-	\Delta T_{i}^{n+1} = \frac{ \gamma ( T_{e}^{n} - T_{i}^{n} )
-				+ \gamma \Delta T_{e}^{n+1} + Q_{i} }
-		{(\cviOdt + \gamma)}
+        \Delta T_{i}^{n+1} = \frac{ \gamma ( T_{e}^{n} - T_{i}^{n} )
+                                + \gamma \Delta T_{e}^{n+1} + Q_{i} }
+                {(\cviOdt + \gamma)}
          }
 \label{eq:Tinp1}
 \end{equation}
@@ -95,29 +95,29 @@ given the change in electron temperatures, $\Delta T_{e}^{n+1}$.
 We now will rearrange the equation in order that we may substitute the
 ion temperature equation into the electron temperature equation.
 \begin{eqnarray}
-	\Delta T_{i}^{n+1} &=& \frac{ \gamma ( T_{e}^{n+1} - T_{i}^{n} )
-				+ Q_{i} }{(\cviOdt + \gamma)} 
-		\\
-			   &=& \frac{ \dt \gamma
-					 ( T_{e}^{n+1} - T_{i}^{n} )
-				+ \dt Q_{i} }{(C_{vi} + \dt \gamma)}
+        \Delta T_{i}^{n+1} &=& \frac{ \gamma ( T_{e}^{n+1} - T_{i}^{n} )
+                                + Q_{i} }{(\cviOdt + \gamma)} 
+                \\
+                           &=& \frac{ \dt \gamma
+                                         ( T_{e}^{n+1} - T_{i}^{n} )
+                                + \dt Q_{i} }{(C_{vi} + \dt \gamma)}
 \end{eqnarray}
 \begin{equation}
-	\gamma (T_{i}^{n+1}-T_{e}^{n+1}) =
-		\gamma \left\{ \frac{\cviOdt T_{i}^{n} + \gamma T_{e}^{n+1}
-				+ Q_{i} - (\cviOdt + \gamma) T_{e}^{n+1}}
-				{(\cviOdt + \gamma)} \right\}
+        \gamma (T_{i}^{n+1}-T_{e}^{n+1}) =
+                \gamma \left\{ \frac{\cviOdt T_{i}^{n} + \gamma T_{e}^{n+1}
+                                + Q_{i} - (\cviOdt + \gamma) T_{e}^{n+1}}
+                                {(\cviOdt + \gamma)} \right\}
 \end{equation}
 \begin{equation}
    \boxed{
    \begin{split}
-	\gamma (T_{i}^{n+1}-T_{e}^{n+1}) =
-		\left(\frac{\gamma\dt}{C_{vi} + \gamma \dt} \right)
-		&  \left\{\cviOdt(T_{i}^{n} - T_{e}^{n}) \right.
-	\\
-		& \left.
-			- \cviOdt \Delta T_{e}^{n+1}
-			+ Q_{i} \right\}
+        \gamma (T_{i}^{n+1}-T_{e}^{n+1}) =
+                \left(\frac{\gamma\dt}{C_{vi} + \gamma \dt} \right)
+                &  \left\{\cviOdt(T_{i}^{n} - T_{e}^{n}) \right.
+        \\
+                & \left.
+                        - \cviOdt \Delta T_{e}^{n+1}
+                        + Q_{i} \right\}
    \end{split}
    }
 \label{eq:Ti}
@@ -131,9 +131,9 @@ we obtain
   \boxed{
      - \del \cdot \kappa_{i} \del T^{n+\frac{3}{2}}_{i}
      + \frac{C_{vi}}{\Delta t} T^{n+\frac{3}{2}}_{i}
-	   = \frac{C_{vi}}{\Delta t} T^{n+1}_{i}
+           = \frac{C_{vi}}{\Delta t} T^{n+1}_{i}
   }
-\label{eq:conduction_Ti_tdiff}	
+\label{eq:conduction_Ti_tdiff}  
 \end{equation}
 In the above equation the time split is indicated by solving at the
 $n+\frac{3}{2}$ time from the intermediate $n+1$ time solution.
@@ -143,33 +143,33 @@ $n+\frac{3}{2}$ time from the intermediate $n+1$ time solution.
 The differential equation for the electron temperature is
 \begin{equation}
   \begin{split}
-	C_{ve} \partl{T_{e}}{t} = 
-		\del \cdot \kappa_{e} \del T_{e} & +
-		\sum_{g} \left(
-			\sigma_{g}^{a} \phi_{g} - \tilde{\xi}_{g}
-			- \sigma_{g}^{e} \Bg(T_{e}) \right) \\
-			& + \gamma (T_{i} - T_{e}) + Q_{e}
+        C_{ve} \partl{T_{e}}{t} = 
+                \del \cdot \kappa_{e} \del T_{e} & +
+                \sum_{g} \left(
+                        \sigma_{g}^{a} \phi_{g} - \tilde{\xi}_{g}
+                        - \sigma_{g}^{e} \Bg(T_{e}) \right) \\
+                        & + \gamma (T_{i} - T_{e}) + Q_{e}
   \end{split}
 \end{equation}
 where the Planck function $B_{g}(T)$ has been replaced by
 \begin{equation}
-	\Bg(T) \equiv 4\pi B_{g}(T)
+        \Bg(T) \equiv 4\pi B_{g}(T)
 \end{equation}
 
 As for the ion equation we split the electron temperature into two
 equations,
 \begin{equation}
-	C_{ve} \partl{T_{e}}{t} = 
-		\sum_{g} \left(
-			\sigma_{g}^{a} \phi_{g} - \tilde{\xi}_{g}
-			- \sigma_{g}^{e} \Bg(T_{e}) \right)
-			+ \gamma (T_{i} - T_{e}) + Q_{e}
+        C_{ve} \partl{T_{e}}{t} = 
+                \sum_{g} \left(
+                        \sigma_{g}^{a} \phi_{g} - \tilde{\xi}_{g}
+                        - \sigma_{g}^{e} \Bg(T_{e}) \right)
+                        + \gamma (T_{i} - T_{e}) + Q_{e}
 \label{eq:couple_Te}
 \end{equation}
 and
 \begin{equation}
-	C_{ve} \partl{T_{e}}{t} = 
-		\del \cdot \kappa_{e} \del T_{e}
+        C_{ve} \partl{T_{e}}{t} = 
+                \del \cdot \kappa_{e} \del T_{e}
 \label{eq:conduction_Te}
 \end{equation}
 that will be solved separately.
@@ -184,29 +184,29 @@ We implicitly time-difference equation~(\ref{eq:couple_Te}),
 expanding the Planck function,
 $\Bg(T_{e})$ in a Taylor expansion
 \begin{equation}
-	\Bg(T_{e}^{n+1}) \approx \Bg(T_{e}^{n})
-		 + \Delta T_{e}^{n+1} \partl{\Bg}{T}(T_{e}^{n})
+        \Bg(T_{e}^{n+1}) \approx \Bg(T_{e}^{n})
+                 + \Delta T_{e}^{n+1} \partl{\Bg}{T}(T_{e}^{n})
 \end{equation}
 \begin{eqnarray}
-	\cveOdt \Delta T_{e}^{n+1} &=&
-		\sum_{g} \left(
-			\sigma_{g}^{a} \phi_{g}^{n+1} - \tilde{\xi}_{g}^{n}
-			- \sigma_{g}^{e} \Bgn
-			- \sigma_{g}^{e} \pBgndT \Delta T_{e}^{n+1} 
-			\right) \nonumber \\
-		& & \mbox{} + \gamma (T_{i}^{n+1} - T_{e}^{n+1}) + Q_{e}
+        \cveOdt \Delta T_{e}^{n+1} &=&
+                \sum_{g} \left(
+                        \sigma_{g}^{a} \phi_{g}^{n+1} - \tilde{\xi}_{g}^{n}
+                        - \sigma_{g}^{e} \Bgn
+                        - \sigma_{g}^{e} \pBgndT \Delta T_{e}^{n+1} 
+                        \right) \nonumber \\
+                & & \mbox{} + \gamma (T_{i}^{n+1} - T_{e}^{n+1}) + Q_{e}
 \label{eq:Te}
 \end{eqnarray}
 where the material motion correction terms are
 \begin{equation}
-	\tilde{\xi}_{g}^{n} = 2 \sigma_{g}^{a} \vec{F}_{g}^{(0)} \cdot
-				\frac{\vec{v}^{n}}{c}, 
+        \tilde{\xi}_{g}^{n} = 2 \sigma_{g}^{a} \vec{F}_{g}^{(0)} \cdot
+                                \frac{\vec{v}^{n}}{c}, 
 \label{eq:tilde_xi}
 \end{equation}
 and
 \begin{equation}
-	\vec{F}_{g}^{(0)} = \vec{F}_{g}^{n} - \frac{4}{3} \phi_{g}^{n}
-						\frac{\vec{v}^{n}}{c}
+        \vec{F}_{g}^{(0)} = \vec{F}_{g}^{n} - \frac{4}{3} \phi_{g}^{n}
+                                                \frac{\vec{v}^{n}}{c}
 \end{equation}
 These have been calculated at the previous timestep.
 
@@ -214,52 +214,52 @@ We will need to find an expression for $\Delta T_{e}^{n+1}$ to be
 substituted into the radiation equation.
 By substituting from (\ref{eq:Ti}) into (\ref{eq:Te}), we get
 \begin{multline}
-	\cveOdt \Delta T_{e}^{n+1} =
-		\sum_{g} \left(
-			\sigma_{g}^{a} \phi_{g}^{n+1} - \tilde{\xi}_{g}^{n}
-			- \sigma_{g}^{e} \Bgn
-			- \sigma_{g}^{e} \pBgndT \Delta T_{e}^{n+1} 
-			\right)
-	\\
-			 + \left(\frac{\gamma\dt}{C_{vi} + 
-					\gamma \dt} \right)
-			\left\{\cviOdt(T_{i}^{n}-T_{e}^{n})
-				 - \cviOdt \Delta T_{e}^{n+1}
-			+ Q_{i} \right\}
-			+ Q_{e}
+        \cveOdt \Delta T_{e}^{n+1} =
+                \sum_{g} \left(
+                        \sigma_{g}^{a} \phi_{g}^{n+1} - \tilde{\xi}_{g}^{n}
+                        - \sigma_{g}^{e} \Bgn
+                        - \sigma_{g}^{e} \pBgndT \Delta T_{e}^{n+1} 
+                        \right)
+        \\
+                         + \left(\frac{\gamma\dt}{C_{vi} + 
+                                        \gamma \dt} \right)
+                        \left\{\cviOdt(T_{i}^{n}-T_{e}^{n})
+                                 - \cviOdt \Delta T_{e}^{n+1}
+                        + Q_{i} \right\}
+                        + Q_{e}
 \end{multline}
 \begin{multline}
-	\Delta T_{e}^{n+1} \left\{ \cveOdt +
-		\frac{\gamma C_{vi}}{C_{vi} + \gamma \dt } +
-		\sum_{g} \sigma_{g}^{e} \pBgndT \right\} =
-		   \sum_{g} \left( \sigma_{g}^{a} \phi_{g}^{n+1} - 
-			\tilde{\xi}_{g}^{n} - \sigma_{g}^{e} \Bgn \right)
-	\\
-		  +  \left(\frac{\gamma\dt}{C_{vi} + 
-					\gamma \dt} \right)
-			\left\{\cviOdt(T_{i}^{n}-T_{e}^{n}) + Q_{i} \right\}
-			 + Q_{e}
+        \Delta T_{e}^{n+1} \left\{ \cveOdt +
+                \frac{\gamma C_{vi}}{C_{vi} + \gamma \dt } +
+                \sum_{g} \sigma_{g}^{e} \pBgndT \right\} =
+                   \sum_{g} \left( \sigma_{g}^{a} \phi_{g}^{n+1} - 
+                        \tilde{\xi}_{g}^{n} - \sigma_{g}^{e} \Bgn \right)
+        \\
+                  +  \left(\frac{\gamma\dt}{C_{vi} + 
+                                        \gamma \dt} \right)
+                        \left\{\cviOdt(T_{i}^{n}-T_{e}^{n}) + Q_{i} \right\}
+                         + Q_{e}
 \end{multline}
 
 \begin{equation}
    \boxed{
-	\Delta T_{e}^{n+1} =
-		\frac{\sum_{g} \left( \sigma_{g}^{a} \phi_{g}^{n+1} 
-			 - \sigma_{g}^{e} \Bgn \right)
-			 + Q_{e}^{*}}
-		{\cvsOdt + \sum_{g} \sigma_{g}^{e} \pBgndT}
+        \Delta T_{e}^{n+1} =
+                \frac{\sum_{g} \left( \sigma_{g}^{a} \phi_{g}^{n+1} 
+                         - \sigma_{g}^{e} \Bgn \right)
+                         + Q_{e}^{*}}
+                {\cvsOdt + \sum_{g} \sigma_{g}^{e} \pBgndT}
          }
 \label{eq:Tenp1}
 \end{equation}
 where,
 \begin{equation}
-	\Cvs = C_{ve} + C_{vi} \left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right)
+        \Cvs = C_{ve} + C_{vi} \left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right)
 \end{equation}
 \begin{equation}
-	Q_{e}^{*} = Q_{e} + \left\{ \cviOdt (T_{i}^{n} - T_{e}^{n}) +
-				Q_{i} \right\}
-		\left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right) -
-		\sum_{g} \tilde{\xi}_{g}^{n}
+        Q_{e}^{*} = Q_{e} + \left\{ \cviOdt (T_{i}^{n} - T_{e}^{n}) +
+                                Q_{i} \right\}
+                \left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right) -
+                \sum_{g} \tilde{\xi}_{g}^{n}
 \end{equation}
 
 \subsection{Conduction Equation}
@@ -270,9 +270,9 @@ we obtain
   \boxed{
      - \del \cdot \kappa_{e} \del T^{n+\frac{3}{2}}_{e}
      + \frac{C_{ve}}{\Delta t} T^{n+\frac{3}{2}}_{e}
-	   = \frac{C_{ve}}{\Delta t} T^{n+1}_{e}
+           = \frac{C_{ve}}{\Delta t} T^{n+1}_{e}
    }
-\label{eq:conduction_Te_tdiff}	
+\label{eq:conduction_Te_tdiff}  
 \end{equation}
 In the above equation the time split is indicated by solving at the
 $n+\frac{3}{2}$ time from the intermediate $n+1$ time solution.
@@ -282,39 +282,39 @@ $n+\frac{3}{2}$ time from the intermediate $n+1$ time solution.
 The multi-group equation for the radiation field in a material
 with isotropic scattering is
 \begin{equation}
-	\frac{1}{c} \partl{\psi_{g}}{t}
-	+ \hat{\Omega} \cdot \del \psi_{g}
-	+ \sigma^{t}_{g} \psi_{g}
-	= \frac{1}{4 \pi}
-	 \left( \sigma^{s}_{g} \phi_{g}
-		+ \xi_{g}
-		+ \sigma^{e}_{g} \Bg(T_{e})
+        \frac{1}{c} \partl{\psi_{g}}{t}
+        + \hat{\Omega} \cdot \del \psi_{g}
+        + \sigma^{t}_{g} \psi_{g}
+        = \frac{1}{4 \pi}
+         \left( \sigma^{s}_{g} \phi_{g}
+                + \xi_{g}
+                + \sigma^{e}_{g} \Bg(T_{e})
          \right)
 \label{eq:psi}
 \end{equation}
 This equation contains the material motion correction
 \begin{equation}
-	\xi_{g} = \left[ (\sigma^{a}_{g} - \sigma^{s}_{g}) \vec{F}^{(0)}_{g}
-		+ 4 \sigma^{t}_{g} \phi_{g} \hat{\Omega} \right]
-			\cdot \frac{\vec{v}}{c}
+        \xi_{g} = \left[ (\sigma^{a}_{g} - \sigma^{s}_{g}) \vec{F}^{(0)}_{g}
+                + 4 \sigma^{t}_{g} \phi_{g} \hat{\Omega} \right]
+                        \cdot \frac{\vec{v}}{c}
 \label{eq:xi}
 \end{equation}
 
 Implicitly time-differencing this equation we obtain
 \begin{eqnarray}
 \hat{\Omega} \cdot \del \psi^{n+1}_{g} + (\sigma^{t}_{g} + \tau) \psi^{n+1}_{g}
-	&=&  \tau \psi_{g}^{n}
-	 + \frac{1}{4\pi} \left( \sigma^{s}_{g} \phi^{n+1}_{g}
-	+ \xi_{g}^{n} \right)
+        &=&  \tau \psi_{g}^{n}
+         + \frac{1}{4\pi} \left( \sigma^{s}_{g} \phi^{n+1}_{g}
+        + \xi_{g}^{n} \right)
   \nonumber \\
     & & \mbox{}
-	+ \frac{1}{4\pi} \sigma^{e}_{g} 
-		\left(\Bgn + \pBgndT \Delta T_{e}^{n+1} \right)
+        + \frac{1}{4\pi} \sigma^{e}_{g} 
+                \left(\Bgn + \pBgndT \Delta T_{e}^{n+1} \right)
 \label{eq:RadEq1}
 \end{eqnarray}
 We have introduced $\tau$,
 \begin{equation}
-	\tau = \frac{1}{c\dt}
+        \tau = \frac{1}{c\dt}
 \end{equation}
 In the above time-differencing
 we have calculated the material motion corrections at the previous timestep.
@@ -322,18 +322,18 @@ we have calculated the material motion corrections at the previous timestep.
 Substituting (\ref{eq:Tenp1}) into (\ref{eq:RadEq1}) we get,
 \begin{multline}
 \hat{\Omega} \cdot \del \psi^{n+1}_{g} + (\sigma^{t}_{g} + \tau) \psi^{n+1}_{g}
-	=
-	 \tau \psi_{g}^{n}
-	+ \frac{1}{4\pi} \left(
-	 	\sigma^{s}_{g} \phi^{n+1}_{g}
-		+ \xi_{g}^{n}
-		+ \sigma^{e}_{g} \Bgn \right)
-	\\
-	+ \frac{1}{4\pi} \sigma^{e}_{g} \pBgndT
-		\left\{ \frac{\sum_{k} (\sigma_{k}^{a}\phi_{k}^{n+1} 
-					- \sigma_{k}^{e}\Bkn) + Q_{e}^{*}}
-			     {\frac{\Cvs}{\dt} + \sum_{k} \sigma_{k}^{e}\pBkndT}
-		\right\}
+        =
+         \tau \psi_{g}^{n}
+        + \frac{1}{4\pi} \left(
+                \sigma^{s}_{g} \phi^{n+1}_{g}
+                + \xi_{g}^{n}
+                + \sigma^{e}_{g} \Bgn \right)
+        \\
+        + \frac{1}{4\pi} \sigma^{e}_{g} \pBgndT
+                \left\{ \frac{\sum_{k} (\sigma_{k}^{a}\phi_{k}^{n+1} 
+                                        - \sigma_{k}^{e}\Bkn) + Q_{e}^{*}}
+                             {\frac{\Cvs}{\dt} + \sum_{k} \sigma_{k}^{e}\pBkndT}
+                \right\}
 \label{eq:RadEqMG}
 \end{multline}
 
@@ -348,24 +348,24 @@ one-group diffusion equation.  We will derive the one-group diffusion equation.
 First we assume that the $\sigma$'s are independent of group, then
 we define non-subscripted quantities as sums over groups, e.g.
 \begin{equation}
-	\psi^{n} = \sum_{g} \psi_{g}^{n}
+        \psi^{n} = \sum_{g} \psi_{g}^{n}
 \end{equation}
 We then sum (\ref{eq:RadEqMG}) over groups to obtain:
 \begin{eqnarray}
 \hat{\Omega} \cdot \del \psi^{n+1} + (\sigma^{t} + \tau) \psi^{n+1}
-	&=& \tau \psi^{n}
-	+ \frac{1}{4\pi} \left( \sigma^{s} \phi^{n+1}
-			+ \xi^{n}
-			+ \sigma^{e} \Bn \right)
-	\nonumber \\
-	& & \mbox{}
-	+ \frac{1}{4\pi} \nu \left( \sigma^{a}\phi^{n+1}
-					- \sigma^{e}\Bn + Q_{e}^{*}\right)
+        &=& \tau \psi^{n}
+        + \frac{1}{4\pi} \left( \sigma^{s} \phi^{n+1}
+                        + \xi^{n}
+                        + \sigma^{e} \Bn \right)
+        \nonumber \\
+        & & \mbox{}
+        + \frac{1}{4\pi} \nu \left( \sigma^{a}\phi^{n+1}
+                                        - \sigma^{e}\Bn + Q_{e}^{*}\right)
 \label{eq:RadEqGrey}
 \end{eqnarray}
 where
 \begin{equation}
-	\nu = \frac{\sigma^{e} \pBndT } {\frac{\Cvs}{\dt} + \sigma^{e}\pBndT}
+        \nu = \frac{\sigma^{e} \pBndT } {\frac{\Cvs}{\dt} + \sigma^{e}\pBndT}
 \end{equation}
 
 \subsection{Grey Diffusion Equation}
@@ -373,49 +373,49 @@ where
 We will now assume that $\psi$ contains only zero and first Legendre moments,
 i.e.\ 
 \begin{equation}
-	\psi^{n} = \frac{1}{4\pi} \left(
-			\phi^{n} + 3 \vec{F}^{n} \cdot \hat{\Omega}
-		   \right)
+        \psi^{n} = \frac{1}{4\pi} \left(
+                        \phi^{n} + 3 \vec{F}^{n} \cdot \hat{\Omega}
+                   \right)
 \end{equation}
 Integrating (\ref{eq:RadEqGrey}) over all angles
 we obtain:
 \begin{eqnarray}
 \del \cdot \vec{F}^{n+1} + (\sigma^{t} + \tau) \phi^{n+1}
-	&=& \sigma^{s}\phi^{n+1} + \tau \phi^{n}
-	+ \langle \xi^{n} \rangle
-	+ \sigma^{e} \Bn 
-	\nonumber \\
-	& & \mbox{}
-	+ \nu (\sigma^{a}\phi^{n+1} - \sigma^{e}\Bn + Q_{e}^{*})
+        &=& \sigma^{s}\phi^{n+1} + \tau \phi^{n}
+        + \langle \xi^{n} \rangle
+        + \sigma^{e} \Bn 
+        \nonumber \\
+        & & \mbox{}
+        + \nu (\sigma^{a}\phi^{n+1} - \sigma^{e}\Bn + Q_{e}^{*})
 \end{eqnarray}
 From (\ref{eq:xi}) we can determine $\langle \xi^{n} \rangle$
 \begin{eqnarray}
-	\langle \xi^{n} \rangle &=&
-		\frac{1}{4\pi} \int d\Omega \; \xi^{n}
-		\\
-		&=& \frac{1}{4\pi} \int d\Omega \;
-		    \left[ (\sigma^{a} - \sigma^{s}) \vec{F}^{(0)}
-			+ 4 \sigma^{t} \phi^{n} \hat{\Omega} \right]
-				\cdot \frac{\vec{v}^{n}}{c}
-		\\
-		 &=& (\sigma^{a} - \sigma^{s}) \vec{F}^{(0)}
-			\cdot \frac{\vec{v}^{n}}{c}
+        \langle \xi^{n} \rangle &=&
+                \frac{1}{4\pi} \int d\Omega \; \xi^{n}
+                \\
+                &=& \frac{1}{4\pi} \int d\Omega \;
+                    \left[ (\sigma^{a} - \sigma^{s}) \vec{F}^{(0)}
+                        + 4 \sigma^{t} \phi^{n} \hat{\Omega} \right]
+                                \cdot \frac{\vec{v}^{n}}{c}
+                \\
+                 &=& (\sigma^{a} - \sigma^{s}) \vec{F}^{(0)}
+                        \cdot \frac{\vec{v}^{n}}{c}
 \label{eq:l_xi_r}
 \end{eqnarray}
 Rearranging terms:
 \begin{eqnarray}
 \del \cdot \vec{F}^{n+1} + [(1 - \nu) \sigma^{a} + \tau ] \phi^{n+1}
-	&=& \tau \phi^{n}
-	+ \langle \xi^{n} \rangle
-	+ (1 - \nu) \sigma^{e} \Bn  
-	\nonumber \\
-	& & \mbox{}
-	+ \nu Q_{e}^{*}
+        &=& \tau \phi^{n}
+        + \langle \xi^{n} \rangle
+        + (1 - \nu) \sigma^{e} \Bn  
+        \nonumber \\
+        & & \mbox{}
+        + \nu Q_{e}^{*}
 \label{eq:phiEq}
 \end{eqnarray}
 where we have used
 \begin{equation}
-	\sigma^{t} = \sigma^{a} + \sigma^{s}
+        \sigma^{t} = \sigma^{a} + \sigma^{s}
 \end{equation}
 
 To obtain the flux equation we
@@ -423,28 +423,28 @@ multiply (\ref{eq:RadEqGrey}) by $\hat{\Omega}$ and
 integrate over all angles:
 \begin{equation}
 \frac{1}{3} \del \phi^{n+1} + (\sigma^{t} + \tau) \vec{F}^{n+1}
-	= \tau \vec{F}^{n}
-	+ \langle \hat{\Omega} \xi^{n} \rangle
+        = \tau \vec{F}^{n}
+        + \langle \hat{\Omega} \xi^{n} \rangle
 \end{equation}
 From (\ref{eq:xi}) we can determine $\langle \hat{\Omega} \xi^{n} \rangle$
 \begin{eqnarray}
-	\langle \hat{\Omega} \xi^{n} \rangle &=&
-		    \frac{1}{4\pi} \int d\Omega \; \hat{\Omega} \; \xi^{n}
-		\\
-		&=& \frac{1}{4\pi} \int d\Omega \; \hat{\Omega}
-		    \left[ (\sigma^{a} - \sigma^{s}) \vec{F}^{(0)}
-			+ 4 \sigma^{t} \phi^{n} \hat{\Omega} \right]
-				\cdot \frac{\vec{v}^{n}}{c}
-		\\
-		&=& \frac{4}{3} \sigma^{t} \phi^{n} \frac{\vec{v}^{n}}{c}
+        \langle \hat{\Omega} \xi^{n} \rangle &=&
+                    \frac{1}{4\pi} \int d\Omega \; \hat{\Omega} \; \xi^{n}
+                \\
+                &=& \frac{1}{4\pi} \int d\Omega \; \hat{\Omega}
+                    \left[ (\sigma^{a} - \sigma^{s}) \vec{F}^{(0)}
+                        + 4 \sigma^{t} \phi^{n} \hat{\Omega} \right]
+                                \cdot \frac{\vec{v}^{n}}{c}
+                \\
+                &=& \frac{4}{3} \sigma^{t} \phi^{n} \frac{\vec{v}^{n}}{c}
 \end{eqnarray}
 Rearranging terms we obtain:
 \begin{equation}
 \vec{F}^{n+1}
-	= - \frac{1}{3(\sigma^{t} + \tau) } \del \phi^{n+1} 
-	+ \frac{\tau \vec{F}^{n}
-			+ \langle \hat{\Omega} \xi^{n} \rangle}
-	       {(\sigma^{t} + \tau)} 
+        = - \frac{1}{3(\sigma^{t} + \tau) } \del \phi^{n+1} 
+        + \frac{\tau \vec{F}^{n}
+                        + \langle \hat{\Omega} \xi^{n} \rangle}
+               {(\sigma^{t} + \tau)} 
 \label{eq:Flux}
 \end{equation}
 
@@ -452,53 +452,53 @@ Substituting (\ref{eq:Flux}) into (\ref{eq:phiEq}) we obtain
 the second order equation:
 \begin{equation}
    \boxed{
-	 - \del \cdot D \del \phi^{n+1} +  \bar{\sigma}^{a} \phi^{n+1}
-		= \bar{Q}_{r} - \del \cdot \vec{F}'
+         - \del \cdot D \del \phi^{n+1} +  \bar{\sigma}^{a} \phi^{n+1}
+                = \bar{Q}_{r} - \del \cdot \vec{F}'
          }
 \label{eq:Diffusion}
 \end{equation}
 where
 \begin{gather}
-	D = \frac{1}{3(\sigma^{t} + \tau) } 
+        D = \frac{1}{3(\sigma^{t} + \tau) } 
   \label{eq:quant_i}
   \\
-	\bar{\sigma}^{a} = (1 - \nu) \sigma^{a} + \tau 
+        \bar{\sigma}^{a} = (1 - \nu) \sigma^{a} + \tau 
   \\
-	\bar{Q}_{r} =\tau \phi^{n}
-		+ \langle \xi^{n} \rangle
-		+ (1 - \nu) \sigma^{e} \Bn  + \nu Q_{e}^{*} 
+        \bar{Q}_{r} =\tau \phi^{n}
+                + \langle \xi^{n} \rangle
+                + (1 - \nu) \sigma^{e} \Bn  + \nu Q_{e}^{*} 
   \\
-	\vec{F}' = \frac{\tau \vec{F}^{n}
-			+ \langle \hat{\Omega} \xi^{n} \rangle}
-	       {(\sigma^{t} + \tau)}
+        \vec{F}' = \frac{\tau \vec{F}^{n}
+                        + \langle \hat{\Omega} \xi^{n} \rangle}
+               {(\sigma^{t} + \tau)}
 \end{gather}
 and
 \begin{gather}
-	\tau = \frac{1}{c\dt}
+        \tau = \frac{1}{c\dt}
   \\
-	\hat{B}(T_{e}) = 4\pi B(T_{e})
+        \hat{B}(T_{e}) = 4\pi B(T_{e})
   \\
-	\nu = \frac{\sigma^{e} \pBndT } {\frac{\Cvs}{\dt} + \sigma^{e}\pBndT}
+        \nu = \frac{\sigma^{e} \pBndT } {\frac{\Cvs}{\dt} + \sigma^{e}\pBndT}
   \\
-	\Cvs = C_{ve} + C_{vi} \left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right)
+        \Cvs = C_{ve} + C_{vi} \left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right)
   \\
-	Q_{e}^{*} = Q_{e} + \left\{ \cviOdt (T_{i}^{n} - T_{e}^{n}) +
-				Q_{i} \right\}
-		\left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right) -
-		\tilde{\xi}^{n}
+        Q_{e}^{*} = Q_{e} + \left\{ \cviOdt (T_{i}^{n} - T_{e}^{n}) +
+                                Q_{i} \right\}
+                \left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right) -
+                \tilde{\xi}^{n}
   \\
-	\langle \xi^{n} \rangle =
-			(\sigma^{a} - \sigma^{s}) \vec{F}^{(0)}
-			\cdot \frac{\vec{v}^{n}}{c}
+        \langle \xi^{n} \rangle =
+                        (\sigma^{a} - \sigma^{s}) \vec{F}^{(0)}
+                        \cdot \frac{\vec{v}^{n}}{c}
   \\
-	\langle \hat{\Omega} \xi^{n} \rangle =
-		\frac{4}{3} \sigma^{t} \phi^{n} \frac{\vec{v}^{n}}{c}
+        \langle \hat{\Omega} \xi^{n} \rangle =
+                \frac{4}{3} \sigma^{t} \phi^{n} \frac{\vec{v}^{n}}{c}
   \\
-	\tilde{\xi}^{n} = 2 \sigma^{a} \vec{F}^{(0)} \cdot
-				\frac{\vec{v}^{n}}{c}
+        \tilde{\xi}^{n} = 2 \sigma^{a} \vec{F}^{(0)} \cdot
+                                \frac{\vec{v}^{n}}{c}
   \\
-	\vec{F}^{(0)} = \vec{F}^{n} - \frac{4}{3} \phi^{n}
-						\frac{\vec{v}^{n}}{c}
+        \vec{F}^{(0)} = \vec{F}^{n} - \frac{4}{3} \phi^{n}
+                                                \frac{\vec{v}^{n}}{c}
   \label{eq:quant_f}
 \end{gather}
 
@@ -508,15 +508,15 @@ by rewriting equations (\ref{eq:phiEq}) and (\ref{eq:Flux}) with the above
 definitions:
 \begin{equation}
    \boxed{
-	\del \cdot \vec{F}^{n+1} + \bar{\sigma}^{a} \phi^{n+1}
-		= \bar{Q}_{r}
+        \del \cdot \vec{F}^{n+1} + \bar{\sigma}^{a} \phi^{n+1}
+                = \bar{Q}_{r}
          }
 \label{eq:phi2}
 \end{equation}
 and
 \begin{equation}
    \boxed{
-	\vec{F}^{n+1} + D \del \phi^{n+1} =  \vec{F}'
+        \vec{F}^{n+1} + D \del \phi^{n+1} =  \vec{F}'
          }
 \label{eq:Flux2}
 \end{equation}
@@ -544,7 +544,7 @@ where the Lagrangian flux, $\vec{F}^{(0)}$, has been recalculated at the
 new time, $n+1$,
 \begin{equation}
    \vec{F}^{(0)} = \vec{F}^{n+1} - \frac{4}{3} \phi^{n+1}
-						\frac{\vec{v}^{n}}{c}
+                                                \frac{\vec{v}^{n}}{c}
 \end{equation}
 
 Having solved for $\phi^{n+1}$ we can substitute this
@@ -562,9 +562,9 @@ Crucial outputs from these new temperatures are the ion and electron
 energy density depositions,
 c.f.~(\ref{eq:hydrointernalenergy}),
 \begin{eqnarray}
-	\Delta E_{i}^{n+1} &=& C_{vi} ( T_{i}^{n+\frac{3}{2}} - T_{i}^{n})
+        \Delta E_{i}^{n+1} &=& C_{vi} ( T_{i}^{n+\frac{3}{2}} - T_{i}^{n})
   \\
-	\Delta E_{e}^{n+1} &=& C_{ve} ( T_{e}^{n+\frac{3}{2}} - T_{e}^{n})
+        \Delta E_{e}^{n+1} &=& C_{ve} ( T_{e}^{n+\frac{3}{2}} - T_{e}^{n})
 \end{eqnarray}
 
 \appendix
@@ -578,72 +578,72 @@ The radiation field, angular intensity, integrated over
 a photon energy/frequency range determined by $g$ is defined by $\psi_{g}$
 \begin{eqnarray}
      [\psi_{g}] &=& \frac{\units{energy} \units{velocity}}
-		         {\units{solid angle} \units{volume}} \\
-	        &=& \frac{\units{energy}}
-		         {\units{solid angle} \units{area} \units{time}}
+                         {\units{solid angle} \units{volume}} \\
+                &=& \frac{\units{energy}}
+                         {\units{solid angle} \units{area} \units{time}}
 \end{eqnarray}
 The scalar intensity of the radiation field integrated over 
 a photon energy/frequency range determined by $g$ is defined by
 \begin{equation}
-	\phi_{g} = \int \psi_{g} \; d\Omega
+        \phi_{g} = \int \psi_{g} \; d\Omega
 \end{equation}
 with units
 \begin{equation}
-	[\phi_{g}] = \frac{\units{energy}}
-		          {\units{area} \units{time}}
+        [\phi_{g}] = \frac{\units{energy}}
+                          {\units{area} \units{time}}
 \end{equation}
 The radiation flux is defined such that the net energy flow across
 a surface with unit normal $\hat{n}$ is $\hat{n} \cdot \vec{F}$
 where
 \begin{equation}
-	\vec{F}_{g} = \int \hat{\Omega} \psi_{g} \; d\Omega
+        \vec{F}_{g} = \int \hat{\Omega} \psi_{g} \; d\Omega
 \end{equation}
 with units
 \begin{equation}
-	[\vec{F}_{g}] = \frac{\units{energy}}
-		         {\units{area}\units{time}}
+        [\vec{F}_{g}] = \frac{\units{energy}}
+                         {\units{area}\units{time}}
 \end{equation}
 
 The timestep in the solver is $\Delta t$
 \begin{equation}
-	[\Delta t] = \units{time}
+        [\Delta t] = \units{time}
 \end{equation}
 the units of $\tau$ are
 \begin{equation}
-	[\tau] = \frac{1}{\units{length}}
+        [\tau] = \frac{1}{\units{length}}
 \end{equation}
 
 The electron and ion temperatures, $T_{e}$ and $T_{i}$, are specified
 in units of temperature
 \begin{equation}
-	[T] = \units{temperature}
+        [T] = \units{temperature}
 \end{equation}
 
 The units for the electron and ion specific heats, $C_{ve}$ and $C_{vi}$, are 
 \begin{equation}
-	[C_{v}] = \frac{\units{energy}}{\units{volume}\units{temperature}}
+        [C_{v}] = \frac{\units{energy}}{\units{volume}\units{temperature}}
 \end{equation}
 
 The external energy sources for the electrons and ions are defined by
 $Q_{e}$ and $Q_{i}$ with the following units
 \begin{equation}
-	[Q] = \frac{\units{energy}}{\units{volume}\units{time}}
+        [Q] = \frac{\units{energy}}{\units{volume}\units{time}}
 \end{equation}
 
 The electron-ion coupling constant is defined by $\gamma$, whose units are
 \begin{equation}
-	[\gamma] = \frac{\units{energy}}{\units{volume}\units{temperature}
-			                 \units{time}}
+        [\gamma] = \frac{\units{energy}}{\units{volume}\units{temperature}
+                                         \units{time}}
 \end{equation}
 
 The Planck function, $B_{g}(T)$, is the angular intensity
 of radiated energy emitted from a 
 black body into a photon energy/frequency range determined by~$g$
 \begin{eqnarray}
-	[B_{g}] &=& \frac{\units{energy} \units{velocity}}
-		         {\units{solid angle} \units{volume}} \\
-	        &=& \frac{\units{energy}}
-		         {\units{solid angle} \units{area} \units{time}}
+        [B_{g}] &=& \frac{\units{energy} \units{velocity}}
+                         {\units{solid angle} \units{volume}} \\
+                &=& \frac{\units{energy}}
+                         {\units{solid angle} \units{area} \units{time}}
 \end{eqnarray}
 We define
 \begin{equation}
@@ -651,26 +651,26 @@ We define
 \end{equation}
  as the Planck function integrated over solid angle
 \begin{equation}
-	[\Bg] = \frac{\units{energy}}
-	             {\units{area} \units{time}}
+        [\Bg] = \frac{\units{energy}}
+                     {\units{area} \units{time}}
 \end{equation}
 
 Absorption, scattering, emissive, and total cross sections, $\sigma^{a}$,
 $\sigma^{s}$, $\sigma^{e}$, and $\sigma^{t} = \sigma^{a} + \sigma^{s}$,
 are macroscopic cross sections whose units are
 \begin{equation}
-	[\sigma] = \frac{1}{\units{length}}
+        [\sigma] = \frac{1}{\units{length}}
 \end{equation}
 
 The units for the material motion correction terms are
 \begin{equation}
-	[\xi] = \frac{\units{energy}}
-		     {\units{volume} \units{time} \units{solid angle}}
+        [\xi] = \frac{\units{energy}}
+                     {\units{volume} \units{time} \units{solid angle}}
 \end{equation}
 and
 \begin{equation}
-	[\tilde{\xi}] = \frac{\units{energy}}
-		             {\units{volume} \units{time}}
+        [\tilde{\xi}] = \frac{\units{energy}}
+                             {\units{volume} \units{time}}
 \end{equation}
 
 \section{Material Motion Correction Terms}
@@ -682,17 +682,17 @@ and the radiation transport equation, respectively.
 The $\tilde{\xi}$ can be seen as by rewriting the electron equation in
 the Lagrangian frame
 \begin{equation}
-	C_{ve} \partl{T_{e}}{t} = 
-		\sum_{g} \left(
-			\sigma_{g}^{a} \phi^{(0)}_{g}
-			- \sigma_{g}^{e} \Bg(T_{e}) \right)
-			+ \gamma (T_{i} - T_{e}) + Q_{e}
+        C_{ve} \partl{T_{e}}{t} = 
+                \sum_{g} \left(
+                        \sigma_{g}^{a} \phi^{(0)}_{g}
+                        - \sigma_{g}^{e} \Bg(T_{e}) \right)
+                        + \gamma (T_{i} - T_{e}) + Q_{e}
 \end{equation}
 and applying the Lorentz transformation of $\phi$ from the Lagrangian frame
 to the laboratory frame~\cite[page 417]{MihalasMihalas}
 \begin{equation}
-	\phi^{(0)} = \phi - 2 \vec{F}^{(0)} \cdot \frac{\vec{v}}{c} 
-		 + \mathcal{O}(\frac{v^2}{c^2})
+        \phi^{(0)} = \phi - 2 \vec{F}^{(0)} \cdot \frac{\vec{v}}{c} 
+                 + \mathcal{O}(\frac{v^2}{c^2})
 \end{equation}
 This leads to the additional term, $\tilde{\xi}$,
 expressed in~(\ref{eq:tilde_xi}).
@@ -702,8 +702,8 @@ of~\cite{MihalasKlein}.
 The velocity-dependent term in equation (2.29) of~\cite{MihalasKlein}
 is equivalent to a term
 \begin{equation}
-	\langle \xi' \rangle = (\sigma^{a} - \sigma^{s}) \vec{F}
-			\cdot \frac{\vec{v}}{c}
+        \langle \xi' \rangle = (\sigma^{a} - \sigma^{s}) \vec{F}
+                        \cdot \frac{\vec{v}}{c}
 \end{equation}
 added to the Lagrangian frame equation for $\phi$,
 where the flux, $\vec{F}$, is evaluated in the laboratory frame.
@@ -718,13 +718,13 @@ The expression for $\langle \hat{\Omega} \xi \rangle$ can be discovered
 if equation (2.30) of~\cite{MihalasKlein} is evaluated in the diffusion limit
 for both $\phi$ and the radiation pressure tensor, $P_{r}^{ij}$,
 \begin{eqnarray}
-	\phi &\rightarrow& \hat{B} \\
-	P_{r}^{ij} &\rightarrow& \frac{1}{3c} \phi \; \delta_{ij} 
+        \phi &\rightarrow& \hat{B} \\
+        P_{r}^{ij} &\rightarrow& \frac{1}{3c} \phi \; \delta_{ij} 
 \end{eqnarray}
 one obtains an addition to the Lagrangian frame flux equation of
 \begin{equation}
-	\langle \hat{\Omega} \xi \rangle = 
-		\frac{4}{3} \sigma^{t} \phi \frac{\vec{v}}{c}
+        \langle \hat{\Omega} \xi \rangle = 
+                \frac{4}{3} \sigma^{t} \phi \frac{\vec{v}}{c}
 \end{equation}
 This is the same expression as is used in (\ref{eq:Flux}).
 
@@ -745,10 +745,10 @@ The fundamental equations of radiation-hydrodynamics are:
      \end{equation}
   \item The conservation of momentum equation, c.f.\ \cite[Eq.~(17)]{PomraningLAUR}
      \begin{equation}
-	\partl{}{t}\left( \rho \vec{v} + \frac{1}{c^2} \vec{F} \right)
-	 + \del \cdot \left( \rho \vec{v} \vec{v} + \tensor{P_{r}} \right)
-	 + \del P_{m}
-	 = 0
+        \partl{}{t}\left( \rho \vec{v} + \frac{1}{c^2} \vec{F} \right)
+         + \del \cdot \left( \rho \vec{v} \vec{v} + \tensor{P_{r}} \right)
+         + \del P_{m}
+         = 0
      \label{eq:momentum}
      \end{equation}
      where $\vec{F}$ is the radiation flux,
@@ -757,12 +757,12 @@ The fundamental equations of radiation-hydrodynamics are:
   \item The conservation of energy equation,
           c.f.\ \cite[Eq.~(18)]{PomraningLAUR}
      \begin{equation}
-	\partl{}{t}\left( \frac{1}{2} \rho v^2
+        \partl{}{t}\left( \frac{1}{2} \rho v^2
                           + E_{m} + E_{r} \right)
-	 + \del \cdot \left[
+         + \del \cdot \left[
               \left( \frac{1}{2} \rho v^2 + E_{m} + P_{m} \right) \vec{v}
               + \vec{F} \right]
-	 = 0
+         = 0
      \label{eq:totalenergy}
      \end{equation}
      where $E_{m}$ is the material energy density, and $E_{r} = \phi / c$
@@ -831,13 +831,13 @@ momentum equation.
 We first move the radiation dependent terms of equation~(\ref{eq:totalenergy})
 to the right hand side in order to obtain
 \begin{equation}
-	\partl{}{t}\left( \frac{1}{2} \rho v^2
+        \partl{}{t}\left( \frac{1}{2} \rho v^2
                           + E_{m}\right)
-	 + \del \cdot \left[
+         + \del \cdot \left[
               \left( \frac{1}{2} \rho v^2 + E_{m} + P_{m} \right) \vec{v}
                       \right]
     =
-	- \left[ \partl{E_{r}}{t} + \del \cdot \vec{F} \right]
+        - \left[ \partl{E_{r}}{t} + \del \cdot \vec{F} \right]
 \label{eq:totalenergy2}
 \end{equation}
 
@@ -862,15 +862,15 @@ we obtain,
 Substituting this result into~(\ref{eq:totalenergy2}) we obtain an equation
 for the material total energy density,
 \begin{multline}
-	\partl{}{t}\left( \frac{1}{2} \rho v^2
+        \partl{}{t}\left( \frac{1}{2} \rho v^2
                           + E_{m}\right)
-	 + \del \cdot \left[
+         + \del \cdot \left[
               \left( \frac{1}{2} \rho v^2 + E_{m} + P_{m} \right) \vec{v}
                       \right]
     =
          C_{ve} \partl{T_{e}}{t}
      \\
-            + \sum_{g} \sigma^{t}_{g} \vec{F}^{(0)}_{g} \cdot \frac{\vec{v}}{c}	
+            + \sum_{g} \sigma^{t}_{g} \vec{F}^{(0)}_{g} \cdot \frac{\vec{v}}{c} 
 \label{eq:hydrototalenergy}
 \end{multline}
 
@@ -879,8 +879,8 @@ we obtain an equation for the hydrodynamic internal energy density with
 a radiation energy deposition source,
 \begin{equation}
   \boxed{
-	\partl{E_{m}}{t}
-	 + \del \cdot \left( E_{m} \vec{v} \right) 
+        \partl{E_{m}}{t}
+         + \del \cdot \left( E_{m} \vec{v} \right) 
          + P_{m} \del \cdot \vec{v}
     =
          C_{ve} \partl{T_{e}}{t}
@@ -901,25 +901,25 @@ equations~(\ref{eq:conduction_Ti_tdiff})~and~(\ref{eq:conduction_Te_tdiff}).
 Consider a cell in the mesh, $c$, with sides of length, $\Delta x^{c}$,
 $\Delta y^{c}$, $\Delta z^{c}$, and face areas,
 \begin{gather}
-	A^{c}_{x} = \Delta y^{c} \Delta z^{c} \\
-	A^{c}_{y} = \Delta z^{c} \Delta x^{c} \\
-	A^{c}_{z} = \Delta x^{c} \Delta y^{c}
+        A^{c}_{x} = \Delta y^{c} \Delta z^{c} \\
+        A^{c}_{y} = \Delta z^{c} \Delta x^{c} \\
+        A^{c}_{z} = \Delta x^{c} \Delta y^{c}
 \end{gather}
 We will be using the convention that the width of cell, $c$, in the direction
 perpendicular to a particular face, $f$, and the area of that face are
 denoted
 \begin{gather}
-	\Delta l^{c}_{f} \quad \text{is one of} \quad \{ \Delta x^{c}, 
-				\Delta y^{c}, \Delta z^{c} \} \\
-	A^{c}_{f} \quad \text{is one of} \quad \{ A^{c}_{x},
-				 A^{c}_{y}, A^{c}_{z} \}
+        \Delta l^{c}_{f} \quad \text{is one of} \quad \{ \Delta x^{c}, 
+                                \Delta y^{c}, \Delta z^{c} \} \\
+        A^{c}_{f} \quad \text{is one of} \quad \{ A^{c}_{x},
+                                 A^{c}_{y}, A^{c}_{z} \}
 \end{gather}
 
 Integrating (\ref{eq:phi2}) over the volume of cell, $c$,
 and using Gauss' theorem we obtain
 \begin{equation}
-	\sum_{f} A^{c}_{f} F^{c}_{f} + V^{c} \bar{\sigma}^{a} \phi^{c}
-		= V^{c} \bar{Q}_{r}
+        \sum_{f} A^{c}_{f} F^{c}_{f} + V^{c} \bar{\sigma}^{a} \phi^{c}
+                = V^{c} \bar{Q}_{r}
 \label{eq:Balance}
 \end{equation}
 where $V^{c}$ is the volume of the cell, $F^{c}_{f}$ is the outward face normal
@@ -937,21 +937,21 @@ We label the cell neighboring, $c$, about face, $f$, as cell $c'$, and its
 adjoining face as $f'$.
 Flux continuity maintains
 \begin{equation}
-	F^{c}_{f} = - F^{c'}_{f'}
+        F^{c}_{f} = - F^{c'}_{f'}
 \end{equation}
 Using a discreet form of equation~(\ref{eq:Flux2})
 \begin{equation}
         F^{c}_{f} = 
-	{F'}^{c}_{f} - D^{c}_{f} \frac{(\phi^{c}_{f} - \phi^{c})}
-				      {\frac{1}{2}\Delta l^{c}_{f}}
+        {F'}^{c}_{f} - D^{c}_{f} \frac{(\phi^{c}_{f} - \phi^{c})}
+                                      {\frac{1}{2}\Delta l^{c}_{f}}
 \label{eq:Flux3}
 \end{equation}
 we obtain
 \begin{equation}
-	{F'}^{c}_{f} - D^{c}_{f} \frac{(\phi^{c}_{f} - \phi^{c})}
-				    {\frac{1}{2}\Delta l^{c}_{f}}
+        {F'}^{c}_{f} - D^{c}_{f} \frac{(\phi^{c}_{f} - \phi^{c})}
+                                    {\frac{1}{2}\Delta l^{c}_{f}}
     = - {F'}^{c'}_{f'} + D^{c'}_{f'} \frac{(\phi^{c'}_{f'} - \phi^{c'})}
-				        {\frac{1}{2}\Delta l^{c'}_{f'}}
+                                        {\frac{1}{2}\Delta l^{c'}_{f'}}
 \end{equation}
 In the above equations $\phi^{c}_{f}$ and $D^{c}_{f}$
 are the scalar intensity and the diffusion constant evaluated
@@ -960,43 +960,65 @@ We must eliminate $\phi^{c}_{f}$ from the equations in order to have a
 cell-centered scheme.
 We note that at the cell face
 \begin{gather}
-	{F'}^{c}_{f} = - {F'}^{c'}_{f'} \\
-	\phi^{c}_{f} = \phi^{c'}_{f'}
+        {F'}^{c}_{f} \ne - {F'}^{c'}_{f'} \\
+        \phi^{c}_{f} = \phi^{c'}_{f'}
 \end{gather}
+where the first expression denotes that $F'$ need not be continous across
+the cell face.
 We may then obtain, after some manipulation,
 an expression for $\phi^{c}_{f}$ in terms of cell-centered
 quantities
 \begin{equation}
-	\phi^{c}_{f} =  \frac
-			{ D^{c}_{f} \Delta l^{c'}_{f'} \; \phi^{c} 
-			    + D^{c'}_{f'} \Delta l^{c}_{f} \; \phi^{c'} 
-			}
-			{ D^{c}_{f} \Delta l^{c'}_{f'}
-			    + D^{c'}_{f'} \Delta l^{c}_{f}
-			}
+        \phi^{c}_{f} =  \frac{\Delta l^{c}_{f} \Delta l^{c'}_{f'}}{2}
+                        \left(
+                        \frac
+                        {  {F'}^{c}_{f} + {F'}^{c'}_{f'}
+                        }
+                        { D^{c}_{f} \Delta l^{c'}_{f'}
+                            + D^{c'}_{f'} \Delta l^{c}_{f}
+                        }
+                        \right)
+                        +
+                        \frac
+                        { D^{c}_{f} \Delta l^{c'}_{f'} \; \phi^{c} 
+                            + D^{c'}_{f'} \Delta l^{c}_{f} \; \phi^{c'} 
+                        }
+                        { D^{c}_{f} \Delta l^{c'}_{f'}
+                            + D^{c'}_{f'} \Delta l^{c}_{f}
+                        }
 \label{eq:phicf}
 \end{equation}
 
 Substituting this into (\ref{eq:Flux3}) we obtain
 \begin{equation}
+    \boxed{
         F^{c}_{f} = 
-	{F'}^{c}_{f} -  \frac{\tilde{D}^{cc'}_{f}}{\Delta l^{c}_{f}}
-			\left( \phi^{c'} - \phi^{c} \right)
+        \tilde{F}^{c}_{f} -  \frac{\tilde{D}^{cc'}_{f}}{\Delta l^{c}_{f}}
+                             \left( \phi^{c'} - \phi^{c} \right)
+    }
 \label{eq:Finterior}
 \end{equation}
 where
 \begin{equation}
-    \boxed{
-	\tilde{D}^{cc'}_{f} =
+        \tilde{D}^{cc'}_{f} =
                        D^{c}_{f}
                        \frac{
-			 2 D^{c'}_{f'} \Delta l^{c}_{f}
+                         2 D^{c'}_{f'} \Delta l^{c}_{f}
                        }
                        {
-			   D^{c}_{f}   \Delta l^{c'}_{f'}
-			+  D^{c'}_{f'} \Delta l^{c}_{f}
-		       }
-     }
+                           D^{c}_{f}   \Delta l^{c'}_{f'}
+                        +  D^{c'}_{f'} \Delta l^{c}_{f}
+                       }
+\end{equation}
+and
+\begin{equation}
+    \tilde{F}^{c}_{f} = \frac
+                        { D^{c'}_{f'} \Delta l^{c}_{f} {F'}^{c}_{f}
+                            - D^{c}_{f} \Delta l^{c'}_{f'} {F'}^{c'}_{f'}
+                        }
+                        { D^{c}_{f} \Delta l^{c'}_{f'}
+                            + D^{c'}_{f'} \Delta l^{c}_{f}
+                        }
 \end{equation}
 
 \subsection{Boundary Conditions}
@@ -1004,9 +1026,9 @@ where
 For cells with boundary faces we will assume boundary conditions of the
 form
 \begin{gather}
-	\alpha \phi^{c}_{f} + \beta F^{c}_{f} = \bfunc
+        \alpha \phi^{c}_{f} + \beta F^{c}_{f} = \bfunc
   \\
-	\phi^{c}_{f} = \frac{1}{\alpha} \left( \bfunc - \beta F^{c}_{f} \right)
+        \phi^{c}_{f} = \frac{1}{\alpha} \left( \bfunc - \beta F^{c}_{f} \right)
 \label{eq:phicf_bc}
 \end{gather}
 For Dirichlet boundary conditions we set $\alpha=1$ and $\beta=0$.
@@ -1020,11 +1042,13 @@ By applying the same steps of substituting for $\phi^{c}_{f}$ into
 (\ref{eq:Flux3})
 we arrive at an expression for the outward normal component of the flux
 \begin{equation}
-	F^{c}_{f} = \left( \alpha - \frac{2 \beta D^{c}_{f}}{\Delta l^{c}_{f}}
-		    \right)^{-1}
-		    \left[ \alpha {F'}^{c}_{f} - \frac{2 D^{c}_{f}}{\Delta l^{c}_{f}}
-						\left(\bfunc - \alpha \phi^{c}\right)
-		    \right]
+   \boxed{
+        F^{c}_{f} = \left( \alpha - \frac{2 \beta D^{c}_{f}}{\Delta l^{c}_{f}}
+                    \right)^{-1}
+                    \left[ \alpha {F'}^{c}_{f} - \frac{2 D^{c}_{f}}{\Delta l^{c}_{f}}
+                                                \left(\bfunc - \alpha \phi^{c}\right)
+                    \right]
+   }
 \label{eq:Fboundary}
 \end{equation}
 
@@ -1034,103 +1058,107 @@ We can create a linear system of equations over all of the cells, each of
 which is obtained by substituting (\ref{eq:Finterior}) and (\ref{eq:Fboundary})
 into (\ref{eq:Balance})
 \begin{multline}
-	\sum_{f \in \{\text{interior faces}\}}
-	A^{c}_{f} \left[
-		{F'}^{c}_{f} -  \frac{\tilde{D}^{cc'}_{f}}{\Delta l^{c}_{f}}
-				\left( \phi^{c'} - \phi^{c} \right)
+        \sum_{f \in \{\text{interior faces}\}}
+        A^{c}_{f} \left[
+           \tilde{F}^{c}_{f} -  \frac{\tilde{D}^{cc'}_{f}}{\Delta l^{c}_{f}}
+                                \left( \phi^{c'} - \phi^{c} \right)
         \right]
    \\
    +
-	\sum_{f \in \{\text{boundary faces}\}}
-	A^{c}_{f} \left[
-		    \left( \alpha - \frac{2 \beta D^{c}_{f}}{\Delta l^{c}_{f}}
-		    \right)^{-1}
-		    \left[ \alpha {F'}^{c}_{f} - \frac{2 D^{c}_{f}}{\Delta l^{c}_{f}}
-						\left(\bfunc - \alpha \phi^{c}\right)
-		    \right]
-	\right]
+        \sum_{f \in \{\text{boundary faces}\}}
+        A^{c}_{f} \left[
+                    \left( \alpha - \frac{2 \beta D^{c}_{f}}{\Delta l^{c}_{f}}
+                    \right)^{-1}
+                    \left[ \alpha {F'}^{c}_{f} - \frac{2 D^{c}_{f}}{\Delta l^{c}_{f}}
+                                                \left(\bfunc - \alpha \phi^{c}\right)
+                    \right]
+        \right]
    \\
    \mbox{} +
-	 V^{c} \bar{\sigma}^{a} \phi^{c}
-		= V^{c} \bar{Q}_{r}
+         V^{c} \bar{\sigma}^{a} \phi^{c}
+                = V^{c} \bar{Q}_{r}
 \end{multline}
 
 This equation may be written more succinctly by defining
 \begin{equation}
   \boxed{
-	\hat{D}^{c}_{f}
-	       = \left\{
+        \hat{D}^{c}_{f}
+               = \left\{
                      \begin{array}{ll}
-			\tilde{D}^{cc'}_{f}
-			& \text{for interior faces} \\
-			2\alpha D^{c}_{f}
-			   \left( \alpha - \frac{2 \beta D^{c}_{f}}{\Delta l^{c}_{f}}
-			   \right)^{-1}
-			& \text{for boundary faces}
-		     \end{array}
+                        \tilde{D}^{cc'}_{f}
+                        & \text{for interior faces} \\
+                        2\alpha D^{c}_{f}
+                           \left( \alpha - \frac{2 \beta D^{c}_{f}}{\Delta l^{c}_{f}}
+                           \right)^{-1}
+                        & \text{for boundary faces}
+                     \end{array}
                     \right.
    }
 \end{equation}
 \begin{equation}
    \boxed{
-	\hat{F}^{c}_{f}
-	     =  \left\{
+        \hat{F}^{c}_{f}
+             =  \left\{
                      \begin{array}{ll}
-			{F'}^{c}_{f}
-			& \text{for interior faces} \\
-			   \left( \alpha - \frac{2 \beta D^{c}_{f}}{\Delta l^{c}_{f}}
-			   \right)^{-1}
+                        \tilde{F}^{c}_{f}
+                        & \text{for interior faces} \\
+                           \left( \alpha - \frac{2 \beta D^{c}_{f}}{\Delta l^{c}_{f}}
+                           \right)^{-1}
                         \left[ \alpha {F'}^{c}_{f}
-				 - \frac{2 D^{c}_{f}}{\Delta l^{c}_{f}} \bfunc
-			\right]
-			& \text{for boundary faces}
-		     \end{array}
+                                 - \frac{2 D^{c}_{f}}{\Delta l^{c}_{f}} \bfunc
+                        \right]
+                        & \text{for boundary faces}
+                     \end{array}
                     \right.
   }
 \end{equation}
 as
 \begin{equation}
-	\sum_{f} A^{c}_{f}
+        \sum_{f} A^{c}_{f}
              \left[
-		 \hat{F}^{c}_{f}
-			 + \frac{\hat{D}^{c}_{f}}{\Delta l^{c}_{f}}  \phi^{c}
-	     \right]
-	- \sum_{f \in \{\text{i.\ f.}\}}
-		A^{c}_{f} \frac{\hat{D}^{c}_{f}}{\Delta l^{c}_{f}} \phi^{c'}
-	+ V^{c} \bar{\sigma}^{a} \phi^{c}
-		= V^{c} \bar{Q}_{r}
+                 \hat{F}^{c}_{f}
+                         + \frac{\hat{D}^{c}_{f}}{\Delta l^{c}_{f}}  \phi^{c}
+             \right]
+        - \sum_{f \in \{\text{i.\ f.}\}}
+                A^{c}_{f} \frac{\hat{D}^{c}_{f}}{\Delta l^{c}_{f}} \phi^{c'}
+        + V^{c} \bar{\sigma}^{a} \phi^{c}
+                = V^{c} \bar{Q}_{r}
 \end{equation}
 
 This may be converted into a matrix equation
 \begin{equation}
-	\mathcal{A} \boldsymbol{\phi} = \mathbf{b}
+        \mathcal{A} \boldsymbol{\phi} = \mathbf{b}
 \end{equation}
 with
 \begin{equation}
    \boxed{
-	\mathcal{A}_{cc} = V^{c} \bar{\sigma}^{a} \;
-		+ \sum_{f}
-			\frac{A^{c}_{f} \hat{D}^{c}_{f}}{\Delta l^{c}_{f}}
+        \mathcal{A}_{cc} = V^{c} \bar{\sigma}^{a} \;
+                + \sum_{f}
+                        \frac{A^{c}_{f} \hat{D}^{c}_{f}}{\Delta l^{c}_{f}}
    }
 \end{equation}
 \begin{equation}
    \boxed{
-	\mathcal{A}_{cc'} =
-		 - \frac{A^{c}_{f} \hat{D}^{c}_{f}}{\Delta l^{c}_{f}}
+        \mathcal{A}_{cc'} =
+                 - \frac{A^{c}_{f} \hat{D}^{c}_{f}}{\Delta l^{c}_{f}}
    }
 \label{eq:Accp}
 \end{equation}
 and
 \begin{equation}
    \boxed{
-	\mathbf{b}_{c} = V^{c} \bar{Q}_{r} \;
-		- \sum_{f} A^{c}_{f} \hat{F}^{c}_{f}
+        \mathbf{b}_{c} = V^{c} \bar{Q}_{r} \;
+                - \sum_{f} A^{c}_{f} \hat{F}^{c}_{f}
    }
 \end{equation}
 
 If one closely examines (\ref{eq:Accp}) one notices that the resulting
 matrix is symmetric.  Showing that the matrix is positive-definite is
 an exercise left up to the reader.
+
+After this matrix equation is solved for the $\phi^{c}$ we may substitute
+back into equations~(\ref{eq:Finterior})~and~(\ref{eq:Fboundary})
+to obtain the new values for $F^{c}_{f}$.
 
 \section{Spatial Centering of Data}
 
@@ -1190,8 +1218,8 @@ coefficient is computed using an average of the temperatures on either
 side of the face, along with the cell-centered density value.
 In other words the value of the diffusion coefficient is calculated as
 \begin{gather}
-	T_{f} = \operatorname{avg} ( T^{c}, T^{c'} ) \\
-	D^{c}_{f} = D ( T_{f}, \rho^{c} )
+        T_{f} = \operatorname{avg} ( T^{c}, T^{c'} ) \\
+        D^{c}_{f} = D ( T_{f}, \rho^{c} )
 \label{eq:faceD}
 \end{gather}
 where the $\operatorname{avg}$ operator can be as simple as the arithmetic
@@ -1218,7 +1246,7 @@ $\sigma \vec{F}^{(0)} / c$ at the mesh nodes.
 
 These terms all involve the lagrangian frame radiation flux,
 \begin{equation}
-	\vec{F}^{(0)} = \vec{F} - \frac{4}{3} \phi \frac{\vec{v}}{c}
+        \vec{F}^{(0)} = \vec{F} - \frac{4}{3} \phi \frac{\vec{v}}{c}
 \end{equation}
 We treat the centering of this variable on the cell faces, wherein the normal
 components of $\vec{F}^{(0)}$ are required.
@@ -1233,23 +1261,23 @@ This leads to the following continuous face-centered field%
 }
 \begin{equation}
   \boxed{
-	F^{c(0)}_{f} = F^{c}_{f} - \frac{4}{3} \phi^{c}_{f} \frac{v^{c}_{f}}{c}
+        F^{c(0)}_{f} = F^{c}_{f} - \frac{4}{3} \phi^{c}_{f} \frac{v^{c}_{f}}{c}
   }
 \end{equation}
 where $\phi^{c}_{f}$ must be interpolated to the cell faces
 via equations~(\ref{eq:phicf})~and~(\ref{eq:phicf_bc}),
 \begin{gather}
    \boxed{
-	\phi^{c}_{f} =  \frac
-			{ D^{c}_{f} \Delta l^{c'}_{f'} \; \phi^{c} 
-			    + D^{c'}_{f'} \Delta l^{c}_{f} \; \phi^{c'} 
-			}
-			{ D^{c}_{f} \Delta l^{c'}_{f'}
-			    + D^{c'}_{f'} \Delta l^{c}_{f}
-			}
+        \phi^{c}_{f} =  \frac
+                        { D^{c}_{f} \Delta l^{c'}_{f'} \; \phi^{c} 
+                            + D^{c'}_{f'} \Delta l^{c}_{f} \; \phi^{c'} 
+                        }
+                        { D^{c}_{f} \Delta l^{c'}_{f'}
+                            + D^{c'}_{f'} \Delta l^{c}_{f}
+                        }
    } \\
    \boxed{
-	\phi^{c}_{f} = \frac{1}{\alpha} \left( \bfunc - \beta F^{c}_{f} \right)
+        \phi^{c}_{f} = \frac{1}{\alpha} \left( \bfunc - \beta F^{c}_{f} \right)
    }
 \end{gather}
 repeated here.
@@ -1274,7 +1302,7 @@ and the sum is over all nodes contained by the face.
 From conservation of energy we require that
 \begin{equation}
   \int \! \left( \tilde{\xi} - \langle \xi \rangle \right) \; dV
-	= \int \frac{d\vec{p}}{dt} \cdot \vec{v} \; dV
+        = \int \frac{d\vec{p}}{dt} \cdot \vec{v} \; dV
 \end{equation}
 where $d\vec{p}/dt$ is the momentum deposition source of
 equation~(\ref{eq:hydromomentum}),
@@ -1311,7 +1339,7 @@ volume weighted sum of vertex-centered quantities
        \left[ \sigma^{t} \vec{F}^{(0)} \cdot \frac{\vec{v}}{c}
         \right]_{c,v} \right) V^{c} \\
   &=& \sum_{c} \left( \sum_{ v \in c} \frac{V^{c}_{v}}{V^{c}}
-	\bracket{\sigma^{t} \vec{F}^{(0)}}
+        \bracket{\sigma^{t} \vec{F}^{(0)}}
                 {\mathcal{S}^{c}_{v}}{\frac{\vec{v}}{c}} \right) V^{c}
 \end{eqnarray}
 where $V^{c}_{v}$ is the volume associated with the cell's $v$'th vertex,
@@ -1356,7 +1384,7 @@ volume weighted sum of vertex-centered quantities
        \left[ \sigma^{t} \vec{F}^{(0)} \cdot \frac{\vec{v}}{c}
         \right]_{c,v} \right) V^{n} \\
   &=& \sum_{n} \left( \sum_{ v,c \in n} \frac{V^{c}_{v}}{V^{n}}
-	\bracket{\sigma^{t} \vec{F}^{(0)}}
+        \bracket{\sigma^{t} \vec{F}^{(0)}}
                 {\mathcal{S}^{c}_{v}}{\frac{\vec{v}}{c}} \right) V^{n}
 \end{eqnarray}
 This leads to an expression for the node-centered quantity
@@ -1397,7 +1425,7 @@ is consistent with~(\ref{eq:S_n}),
   &=&  \sum_{i=1}^{d} \bracket{\sigma^{t} \frac{\vec{F}^{(0)}}{c}}
                        {\mathcal{S}_{n}}
                        {\hat{e}_{i}} \hat{e}_{i} \cdot \vec{v}_{n}
-			 \; V^{n}
+                         \; V^{n}
 \end{eqnarray}
 therefore,
 \begin{equation}
