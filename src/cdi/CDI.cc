@@ -10,9 +10,6 @@
 //---------------------------------------------------------------------------//
 
 #include "CDI.hh"
-#include "GrayOpacity.hh"
-#include "MultigroupOpacity.hh"
-#include "EoS.hh"
 #include "ds++/Assert.hh"
 
 namespace rtt_cdi
@@ -26,10 +23,11 @@ CDI::CDI(const std_string &id)
     : matID(id),
       grayOpacities(constants::num_Models, 
 		    SF_GrayOpacity(constants::num_Reactions)),
-      multigroupOpacities(constants::num_Reactions)
+      multigroupOpacities(constants::num_Models,
+			  SF_MultigroupOpacity(constants::num_Reactions))
 {
     Ensure (grayOpacities.size() == constants::num_Models);
-    Ensure (multigroupOpacities.size() == constants::num_Reactions);
+    Ensure (multigroupOpacities.size() == constants::num_Models);
 }
 
 //---------------------------------------------------------------------------//
@@ -81,10 +79,10 @@ void CDI::setGrayOpacity(const SP_GrayOpacity &spGOp)
  *
  * This function sets a multigroup opacity object of type
  * rtt_cdi::MultigroupOpacity with the CDI object.  It stores the multigroup
- * opacity object based upon its rtt_cdi::Reaction type.  If a
- * MultigroupOpacity with this type has already been registered an exception
- * is thrown.  To register a new set of MultigroupOpacity objects call
- * CDI::reset() first.  You cannot overwrite registered objects with the
+ * opacity object based upon its rtt_cdi::Model and rtt_cdi::Reaction types.
+ * If a MultigroupOpacity with these type has already been registered an
+ * exception is thrown.  To register a new set of MultigroupOpacity objects
+ * call CDI::reset() first.  You cannot overwrite registered objects with the
  * setMultigroupOpacity() function!
  *
  * \param spGOp smart pointer (rtt_dsxx::SP) to a MultigroupOpacity object
@@ -93,16 +91,17 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp)
 {
     Require (spMGOp);
 
-    // determine the reaction type
+    // determine the model and reaction types
+    int model    = spMGOp->getModelType();
     int reaction = spMGOp->getReactionType();
 
-    Insist (!multigroupOpacities[reaction],
+    Insist (!multigroupOpacities[model][reaction],
 	    "Tried to overwrite a set MultigroupOpacity object!");\
 
     // assign the smart pointer
-    multigroupOpacities[reaction] = spMGOp;
+    multigroupOpacities[model][reaction] = spMGOp;
 
-    Ensure (multigroupOpacities[reaction]);
+    Ensure (multigroupOpacities[model][reaction]);
 }
 
 //---------------------------------------------------------------------------//
@@ -133,10 +132,11 @@ CDI::SP_GrayOpacity CDI::gray(rtt_cdi::Model    m,
     return grayOpacities[m][r]; 
 }
     
-CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Reaction r) const 
+CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Model    m,
+				  rtt_cdi::Reaction r) const 
 {
-    Insist (multigroupOpacities[r], "Undefined MultigroupOpacity!");
-    return multigroupOpacities[r]; 
+    Insist (multigroupOpacities[m][r], "Undefined MultigroupOpacity!");
+    return multigroupOpacities[m][r]; 
 }
 
 //---------------------------------------------------------------------------//
@@ -157,31 +157,26 @@ CDI::SP_EoS CDI::eos() const
 void CDI::reset()
 {
     Check (grayOpacities.size() == constants::num_Models);
-    Check (multigroupOpacities.size() == constants::num_Reactions);
+    Check (multigroupOpacities.size() == constants::num_Models);
 
     // reset the gray opacities
     for (int i = 0; i < constants::num_Models; i++)
     {
-	Check (grayOpacities.size() == constants::num_Reactions);
+	Check (grayOpacities[i].size() == constants::num_Reactions);
+	Check (multigroupOpacities[i].size() == constants::num_Reactions);
 
 	for (int j = 0; j < constants::num_Reactions; j++)
 	{
 	    // reassign the GrayOpacity SP
 	    grayOpacities[i][j] = SP_GrayOpacity();
 
+	    // reassign the MultigroupOpacity SP
+	    multigroupOpacities[i][j] = SP_MultigroupOpacity();
+
 	    // check it
 	    Check (!grayOpacities[i][j]);
+	    Check (!multigroupOpacities[i][j]);
 	}
-    }
-
-    // reset the multigroup opacities
-    for (int i = 0; i < constants::num_Reactions; i++)
-    {
-	// reassign the MultigroupOpacity SP
-	multigroupOpacities[i] = SP_MultigroupOpacity();
-
-	// check it
-	Check (!multigroupOpacities[i]);
     }
 
     // reset the EoS SP
@@ -189,6 +184,25 @@ void CDI::reset()
     Check (!spEoS);
 }
 
+//---------------------------------------------------------------------------//
+// BOOLEAN QUERY FUNCTIONS
+//---------------------------------------------------------------------------//
+
+bool CDI::isGrayOpacitySet(rtt_cdi::Model m, rtt_cdi::Reaction r) const
+{
+    return static_cast<bool>(grayOpacities[m][r]);
+}
+
+
+bool CDI::isMultigroupOpacitySet(rtt_cdi::Model m, rtt_cdi::Reaction r) const
+{
+    return static_cast<bool>(multigroupOpacities[m][r]);
+}
+
+bool CDI::isEoSSet() const
+{
+    return static_cast<bool>(spEoS);
+}
 
 } // end namespace rtt_cdi
 

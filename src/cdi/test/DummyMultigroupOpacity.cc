@@ -31,14 +31,16 @@ namespace rtt_cdi_test
  *     Densities        = { 0.1, 0.2 }
  *     EnergyBoundaries = { 0.05, 0.5, 5.0, 50.0 }
  */
-DummyMultigroupOpacity::DummyMultigroupOpacity(rtt_cdi::Reaction reaction)
+DummyMultigroupOpacity::DummyMultigroupOpacity(rtt_cdi::Reaction reaction,
+					       rtt_cdi::Model    model)
     : dataFilename( "none" ),
       dataDescriptor( "DummyMultigroupOpacity" ),
       energyPolicyDescriptor( "Multigroup" ),
       numTemperatures( 3 ),
       numDensities( 2 ),
       numGroupBoundaries( 4 ),
-      reaction_type(reaction)
+      reaction_type(reaction),
+      model_type(model)
 {
     temperatureGrid.resize( numTemperatures );
     densityGrid.resize( numDensities );

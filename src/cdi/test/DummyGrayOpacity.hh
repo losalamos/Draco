@@ -62,6 +62,7 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
     std::vector< double > densityGrid;      // = { 0.1, 0.2 }
 
     rtt_cdi::Reaction reaction_type;
+    rtt_cdi::Model    model_type;
 	
   public:
 	
@@ -76,7 +77,8 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
      * data.  Every instance of this object has the same member
      * data. 
      */
-    DummyGrayOpacity(rtt_cdi::Reaction = rtt_cdi::TOTAL);
+    DummyGrayOpacity(rtt_cdi::Reaction = rtt_cdi::TOTAL,
+		     rtt_cdi::Model    = rtt_cdi::ANALYTIC);
 	
     /*!
      * \brief Default DummyGrayOpacity() destructor.
@@ -152,7 +154,7 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
     /*!
      * \brief Return the model type.
      */
-    rtt_cdi::Model getModelType() const { return rtt_cdi::ANALYTIC; }
+    rtt_cdi::Model getModelType() const { return model_type; }
 
     /*!
      * \brief Returns a "plain English" description of the data.

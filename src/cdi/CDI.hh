@@ -12,6 +12,9 @@
 #ifndef __cdi_CDI_hh__
 #define __cdi_CDI_hh__
 
+#include "GrayOpacity.hh"
+#include "MultigroupOpacity.hh"
+#include "EoS.hh"
 #include "OpacityCommon.hh"
 #include "ds++/SP.hh"
 #include <vector>
@@ -19,10 +22,6 @@
 
 namespace rtt_cdi
 {
-
-class GrayOpacity;
-class MultigroupOpacity;
-class EoS;
     
 //===========================================================================//
 /*!
@@ -57,6 +56,10 @@ class EoS;
  *
  * The user should not worry about this warning as long he/she is not trying
  * to instantiate the class specified by the error message.
+ *
+ * Including CDI.hh in the client file will automatically include all of the
+ * pertinent cdi headers and definitions (rtt_cdi::GrayOpacity,
+ * rtt_cdi::MultigroupOpacity, EoS, rtt_cdi::Model, rtt_cdi::Reaction).
  */
 /*!
  * \example cdi/test/tCDI.cc
@@ -103,10 +106,10 @@ class CDI
      *
      * multigroupOpacities contains a list of smart pointers to
      * MultigroupOpacity objects for different rtt_cdi::Reaction types.  It
-     * is indexed [0,num_Reactions-1].  It is accessed by
-     * [rtt_cdi::Reaction]. 
+     * is indexed [0,num_Models-1][0,num_Reactions-1].  It is accessed by
+     * [rtt_cdi::Model][rtt_cdi::Reaction]. 
      */
-    SF_MultigroupOpacity multigroupOpacities;
+    VF_MultigroupOpacity multigroupOpacities;
 	
     /*!
      * \brief Smart pointer to the equation of state object.
@@ -194,10 +197,11 @@ class CDI
      * The appropriate multigroup opacity is returned for the given reaction
      * type.
      *
+     * \param m rtt_cdi::Model specifying the desired physics model
      * \param r rtt_cdi::Reaction specifying the desired reaction type.
      *
      */
-    SP_MultigroupOpacity mg(rtt_cdi::Reaction r) const;
+    SP_MultigroupOpacity mg(rtt_cdi::Model m, rtt_cdi::Reaction r) const;
 	
     /*!
      * \brief This fuction returns the EoS object.
@@ -229,6 +233,21 @@ class CDI
      * stored by CDI.
      */
     void reset();
+
+    /*!
+     * \brief Query to see if a gray opacity is set.
+     */
+    bool isGrayOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
+
+    /*!
+     * \brief Query to see if a multigroup opacity is set.
+     */
+    bool isMultigroupOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
+
+    /*!
+     * \brief Query to see if an eos is set.
+     */
+    bool isEoSSet() const;
 
   private:
 	

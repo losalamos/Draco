@@ -65,6 +65,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     std::vector< double > densityGrid;      // = { 0.1, 0.2 }
 
     rtt_cdi::Reaction reaction_type;
+    rtt_cdi::Model    model_type;
 
   public:
 
@@ -79,7 +80,8 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     data.  Every instance of this object has the same member
      *     data. 
      */
-    DummyMultigroupOpacity(rtt_cdi::Reaction = rtt_cdi::TOTAL);
+    DummyMultigroupOpacity(rtt_cdi::Reaction = rtt_cdi::TOTAL,
+			   rtt_cdi::Model    = rtt_cdi::ANALYTIC);
 
     /*!
      * \brief Default DummyMultigroupOpacity destructor.
@@ -273,7 +275,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     /*!
      * \brief Return the model type.
      */
-    rtt_cdi::Model getModelType() const { return rtt_cdi::ANALYTIC; }
+    rtt_cdi::Model getModelType() const { return model_type; }
 
     /*!
      * \brief Returns a "plain English" description of the data.

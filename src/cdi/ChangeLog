@@ -1,0 +1,6 @@
+2001-10-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* cdi: updated cdi package to 1_0_0a.  We are not quite ready for
+	release (1_1_0) yet.  This includes some changes that should
+	prepare cdi for integration into a real physics package.
+
