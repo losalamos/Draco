@@ -272,7 +272,7 @@ PACKAGE_BUGREPORT=
 
 ac_unique_file="README.draco"
 ac_subdirs_all="$ac_subdirs_all tools src autodoc"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB GSLCBLAS_INC GSLCBLAS_LIB TRILINOS_INC TRILINOS_LIB METIS_INC METIS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB SPICA_INC SPICA_LIB XERCES_INC XERCES_LIB HDF5_INC HDF5_LIB UDM_INC UDM_LIB latex_yes_no doxygen_output_top PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH subdirs CC CFLAGS CXX CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB TRILINOS_INC TRILINOS_LIB METIS_INC METIS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB SPICA_INC SPICA_LIB XERCES_INC XERCES_LIB HDF5_INC HDF5_LIB UDM_INC UDM_LIB latex_yes_no doxygen_output_top PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH subdirs CC CFLAGS CXX CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -846,15 +846,13 @@ Optional Packages:
   --with-sprng-lib=DIR    tell where SPRNG libraries are (\${SPRNG_LIB_DIR} by default)
   --with-pcg=lib        determine the pcg lib name (pcg is default)
   --with-pcg-lib=DIR    tell where PCG libraries are (\${PCG_LIB_DIR} by default)
-  --with-aztec=lib      determine the aztec lib (aztec is the default
+  --with-aztec=lib      determine the aztec lib (aztec is the default)
   --with-aztec-inc=DIR    tell where AZTEC includes are (\${AZTEC_INC_DIR} by default)
   --with-aztec-lib=DIR    tell where AZTEC libraries are (\${AZTEC_LIB_DIR} by default)
-  --with-gsl=lib      determine the gsl lib (gsl is the default
+  --with-gsl=gsl
+                       determine GSL lib (gsl is default)
   --with-gsl-inc=DIR    tell where GSL includes are (\${GSL_INC_DIR} by default)
   --with-gsl-lib=DIR    tell where GSL libraries are (\${GSL_LIB_DIR} by default)
-  --with-gslcblas=lib      determine the gslcblas lib (gslcblas is the default
-  --with-gslcblas-inc=DIR    tell where GSLCBLAS includes are (\${GSLCBLAS_INC_DIR} by default)
-  --with-gslcblas-lib=DIR    tell where GSLCBLAS libraries are (\${GSLCBLAS_LIB_DIR} by default)
   --with-trilinos=lib    determine the trilinos implementation (aztecoo is default)
   --with-trilinos-inc=DIR    tell where TRILINOS includes are (\${TRILINOS_INC_DIR} by default)
   --with-trilinos-lib=DIR    tell where TRILINOS libraries are (\${TRILINOS_LIB_DIR} by default)
@@ -1857,116 +1855,17 @@ fi;
        with_gsl='gsl'
    fi
 
+   # if atlas is available use it's version of cblas,
+   # otherwise use the version provided by GSL
+   if test "${with_lapack}" = atlas; then
+       gsl_libs='-lgsl'
+   else
+       gsl_libs='-lgsl -lgslcblas'
+   fi
+
    # determine if this package is needed for testing or for the
    # package
    vendor_gsl=pkg
-
-
-
-
-# Check whether --with-gslcblas or --without-gslcblas was given.
-if test "${with_gslcblas+set}" = set; then
-  withval="$with_gslcblas"
-
-fi;
-
-
-
-
-
-# Check whether --with-gslcblas-inc or --without-gslcblas-inc was given.
-if test "${with_gslcblas_inc+set}" = set; then
-  withval="$with_gslcblas_inc"
-  if test $with_gslcblas_inc != "no" ; then
-      if test $with_gslcblas_inc = "yes" ; then
-         # following eval needed to remove possible '\' from \${GSLCBLAS_INC_DIR}
-         eval with_gslcblas_inc=\${GSLCBLAS_INC_DIR}
-      fi
-
-      # this command removes double slashes and any trailing slash
-
-      with_gslcblas_inc=`eval echo "$with_gslcblas_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
-      if test "$with_gslcblas_inc:-null}" = "null" ; then
-         { echo "configure: error: --with-gslcblas-inc directory is unset" 1>&2; \
-           exit 1; }
-      fi
-      if test ! -d $with_gslcblas_inc ; then
-         { echo "configure: error: $with_gslcblas_inc: invalid directory" 1>&2; \
-           exit 1; }
-      fi
-
-      # this sets up the shell variable, with the name of the CPPtoken,
-      # and that we later will do an AC_SUBST on.
-      GSLCBLAS_INC="${with_gslcblas_inc}/"
-
-      # this defines the CPP macro with the directory and single slash appended.
-      cat >>confdefs.h <<_ACEOF
-#define GSLCBLAS_INC ${with_gslcblas_inc}/
-_ACEOF
-
-      # print a message to the users (that can be turned off with --silent)
-
-      echo "GSLCBLAS_INC has been set to $GSLCBLAS_INC" 1>&6
-
-   fi
-fi;
-
-
-
-
-
-
-
-
-# Check whether --with-gslcblas-lib or --without-gslcblas-lib was given.
-if test "${with_gslcblas_lib+set}" = set; then
-  withval="$with_gslcblas_lib"
-  if test $with_gslcblas_lib != "no" ; then
-      if test $with_gslcblas_lib = "yes" ; then
-         # following eval needed to remove possible '\' from \${GSLCBLAS_LIB_DIR}
-         eval with_gslcblas_lib=\${GSLCBLAS_LIB_DIR}
-      fi
-
-      # this command removes double slashes and any trailing slash
-
-      with_gslcblas_lib=`eval echo "$with_gslcblas_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
-      if test "$with_gslcblas_lib:-null}" = "null" ; then
-         { echo "configure: error: --with-gslcblas-lib directory is unset" 1>&2; \
-           exit 1; }
-      fi
-      if test ! -d $with_gslcblas_lib ; then
-         { echo "configure: error: $with_gslcblas_lib: invalid directory" 1>&2; \
-           exit 1; }
-      fi
-
-      # this sets up the shell variable, with the name of the CPPtoken,
-      # and that we later will do an AC_SUBST on.
-      GSLCBLAS_LIB="${with_gslcblas_lib}/"
-
-      # this defines the CPP macro with the directory and single slash appended.
-      cat >>confdefs.h <<_ACEOF
-#define GSLCBLAS_LIB ${with_gslcblas_lib}/
-_ACEOF
-
-      # print a message to the users (that can be turned off with --silent)
-
-      echo "GSLCBLAS_LIB has been set to $GSLCBLAS_LIB" 1>&6
-
-   fi
-fi;
-
-
-
-
-   # set default value of gslcblas includes and libs
-   if test "${with_gslcblas:=gslcblas}" = yes ; then
-       with_gslcblas='gslcblas'
-   fi
-
-   # determine if this package is needed for testing or for the
-   # package
-   vendor_gslcblas=pkg
-
 
 
 
@@ -4371,8 +4270,6 @@ s,@AZTEC_INC@,$AZTEC_INC,;t t
 s,@AZTEC_LIB@,$AZTEC_LIB,;t t
 s,@GSL_INC@,$GSL_INC,;t t
 s,@GSL_LIB@,$GSL_LIB,;t t
-s,@GSLCBLAS_INC@,$GSLCBLAS_INC,;t t
-s,@GSLCBLAS_LIB@,$GSLCBLAS_LIB,;t t
 s,@TRILINOS_INC@,$TRILINOS_INC,;t t
 s,@TRILINOS_LIB@,$TRILINOS_LIB,;t t
 s,@METIS_INC@,$METIS_INC,;t t

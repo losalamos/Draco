@@ -1,4 +1,4 @@
-# generated automatically by aclocal 1.7.2 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
@@ -3413,6 +3413,7 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
        STRICTFLAG="-std strict_ansi"
+       CXX="${CXX} -model ansi"
    fi
 
    # make sure we always use the standard IO stream

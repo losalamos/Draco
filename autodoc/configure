@@ -4550,6 +4550,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
        STRICTFLAG="-std strict_ansi"
+       CXX="${CXX} -model ansi"
    fi
 
    # make sure we always use the standard IO stream
@@ -5787,23 +5788,23 @@ echo "${ECHO_T}\"not needed\"" >&6
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} ${gsl_libs}"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${gsl_libs}"
    fi
 
        fi
@@ -6700,23 +6701,23 @@ echo "${ECHO_T}\"not needed\"" >&6
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} ${gsl_libs}"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${gsl_libs}"
    fi
 
        fi
@@ -7710,23 +7711,23 @@ echo "${ECHO_T}\"not needed\"" >&6
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} ${gsl_libs}"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${gsl_libs}"
    fi
 
        fi
@@ -8670,23 +8671,23 @@ echo "${ECHO_T}\"not needed\"" >&6
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} ${gsl_libs}"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${gsl_libs}"
    fi
 
        fi
@@ -9634,23 +9635,23 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} ${gsl_libs}"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${gsl_libs}"
    fi
 
        fi
@@ -10475,23 +10476,23 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} ${gsl_libs}"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${gsl_libs}"
    fi
 
        fi
@@ -11536,23 +11537,23 @@ echo "${ECHO_T}\"not needed\"" >&6
        if test -n "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
+   # -L${GSL_LIB} ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} ${gsl_libs}"
    fi
 
        elif test -z "${GSL_LIB}" ; then
 
    # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
+   # ${gsl_libs} are the directories added
 
    if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+       VENDOR_LIBS="${VENDOR_LIBS} ${gsl_libs}"
    elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${gsl_libs}"
    fi
 
        fi
@@ -12415,7 +12416,17 @@ fi
 
    # For the package, the input is the current directory, plus
    # configure/doc. There are no examples
-   doxygen_input="`pwd` ${config_dir}/doc"
+   echo "$as_me:$LINENO: checking for Doxygen input directories" >&5
+echo $ECHO_N "checking for Doxygen input directories... $ECHO_C" >&6
+   doxygen_input="`pwd`"
+   if test -d ${config_dir}/doc; then
+      doxygen_input="${doxygen_input} ${config_dir}/doc"
+   fi
+   if test -d ${autodoc_dir}; then
+      doxygen_input="${doxygen_input} ${autodoc_dir}"
+   fi
+   echo "$as_me:$LINENO: result: ${doxygen_input}" >&5
+echo "${ECHO_T}${doxygen_input}" >&6
    doxygen_examples=''
 
    # Component output locations
