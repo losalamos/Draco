@@ -320,12 +320,18 @@ dep_libpooma	= $(POOMA_ROOT)/lib/$(POOMA_ARCH)/libpooma.a
 
 $(env)/%.o : %.cc
 	$(CXX) -c $(CXXFLAGS) $(CXX_DEPEND) $*.cc -o $@
+ifdef CXX2
+	$(CXX2)
+endif
 
 .pt_%_$(env).cc : %.pt
 	$(INSTANTIALYZER) -o $@ $*.pt
 
 $(env)/%.o : .%_$(env).cc
 	$(CXX) -c $(CXXFLAGS) $(CXX_DEPEND) .$*_$(env).cc -o $@
+ifdef CXX2
+	$(CXX2)
+endif
 
 .nml_%.hh .nml_%.cc : %.nml
 	$(NMLGEN) $*.nml
