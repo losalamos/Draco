@@ -19,7 +19,7 @@ AC_DRACO_ARGS
 
 AC_CONFIG_SUBDIRS(ds++ xm traits)
 AC_CONFIG_SUBDIRS(units nml c4 rng)
-AC_CONFIG_SUBDIRS(stopwatch)
+AC_CONFIG_SUBDIRS(stopwatch meshTest)
 AC_CONFIG_SUBDIRS(mesh radphys linalg diffusion mc timestep)
 AC_CONFIG_SUBDIRS(imc matprops P1Diffusion)
 
