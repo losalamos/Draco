@@ -14,7 +14,7 @@
 #include "Layout.hh"
 #include <iomanip>
 
-namespace rtt_mc 
+namespace rtt_amr 
 {
 
 //---------------------------------------------------------------------------//
@@ -64,7 +64,7 @@ ostream& operator<<(ostream &output, const Layout &object)
     return output;
 }
 
-} // end namespace rtt_mc
+} // end namespace rtt_amr
 
 //---------------------------------------------------------------------------//
 //                              end of Layout.cc

@@ -6,8 +6,8 @@
 // @> CAR_CU_Interface class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __milagro_CAR_CU_Interface_hh__
-#define __milagro_CAR_CU_Interface_hh__
+#ifndef __amr_CAR_CU_Interface_hh__
+#define __amr_CAR_CU_Interface_hh__
 
 //===========================================================================//
 // class CAR_CU_Interface - 
@@ -30,7 +30,7 @@
 #include <string>
 #include <vector>
 
-namespace rtt_imc 
+namespace rtt_amr 
 {
 
 // stl components
@@ -47,7 +47,7 @@ class CAR_CU_Interface
 {
   private:
     // typenames and typedefs
-    typedef rtt_mc::CAR_CU_Mesh CAR_CU_Mesh;
+    typedef rtt_amr::CAR_CU_Mesh CAR_CU_Mesh;
 
   private:
     // input file particulars
@@ -205,10 +205,10 @@ inline CAR_CU_Interface::CAR_CU_Interface(const string &infile,
         rtt_mesh_file("undefined")
 {}
 
-} // end namespace rtt_imc
+} // end namespace rtt_amr
 
-#endif                          // __milagro_CAR_CU_Interface_hh__
+#endif                          // __amr_CAR_CU_Interface_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of milagro/CAR_CU_Interface.hh
+//                              end of amr_mesh/CAR_CU_Interface.hh
 //---------------------------------------------------------------------------//

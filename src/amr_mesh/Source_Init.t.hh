@@ -14,7 +14,7 @@
 #include <iomanip>
 #include <fstream>
 
-namespace rtt_imc 
+namespace rtt_imc
 {
 
 // draco components
@@ -872,5 +872,5 @@ void Source_Init<MT,PT>::print(ostream &out) const
 } // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
-//                              end of Source_Init.t.hh
+//                              end of amr_mesh/Source_Init.t.hh
 //---------------------------------------------------------------------------//

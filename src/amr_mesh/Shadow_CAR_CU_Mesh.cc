@@ -6,8 +6,8 @@
 // @> Shadow_CAR_CU_Mesh interface file
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Shadow_CAR_CU_Mesh_cc__
-#define __mc_Shadow_CAR_CU_Mesh_cc__
+#ifndef __amr_Shadow_CAR_CU_Mesh_cc__
+#define __amr_Shadow_CAR_CU_Mesh_cc__
 
 #include "CAR_CU_Mesh.hh"
 #include "Shadow_Opaque_Pointers.hh"
@@ -28,7 +28,7 @@
 // 
 //===========================================================================//
 
-namespace rtt_mc 
+namespace rtt_amr 
 {
 // draco components
 using dsxx::SP;
@@ -3750,9 +3750,9 @@ extern "C"
 
 } // end extern "C"
 
-} // end namespace rtt_mc
+} // end namespace rtt_amr
 
-#endif                          // __mc_Shadow_CAR_CU_Mesh_cc__
+#endif                          // __amr_Shadow_CAR_CU_Mesh_cc__
 
 //---------------------------------------------------------------------------//
 //                              end of amr_mesh/Shadow_CAR_CU_Mesh.cc

@@ -6,8 +6,8 @@
 // @> XYCoord_sys derived class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_XYCoord_sys_hh__
-#define __mc_XYCoord_sys_hh__
+#ifndef __amr_XYCoord_sys_hh__
+#define __amr_XYCoord_sys_hh__
 
 //===========================================================================//
 // class XYCoord_sys - 
@@ -39,7 +39,7 @@
 #include <string>
 #include <cmath>
 
-namespace rtt_mc 
+namespace rtt_amr 
 {
 
 using std::vector;
@@ -182,10 +182,10 @@ XYCoord_sys::sample_pos_on_face(vector<double> &min, vector<double> &max,
     return r;
 }
 
-} // end namespace rtt_mc
+} // end namespace rtt_amr
 
-#endif                          // __mc_XYCoord_sys_hh__
+#endif                          // __amr_XYCoord_sys_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of mc/XYCoord_sys.hh
+//                              end of amr_mesh/XYCoord_sys.hh
 //---------------------------------------------------------------------------//

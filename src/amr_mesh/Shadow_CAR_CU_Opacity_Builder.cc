@@ -17,8 +17,8 @@
 //===========================================================================//
 // Shadow_CAR_CU_Opacity_Builder - 
 //
-// Purpose : Provides flat interface functions to the Continuous Adaptive 
-// Refinement Cartesion Unstructured Mesh Builder Class for use with Fortran.
+// Purpose : Provides flat interface functions to the Implicit Monte Carlo
+// (imc) Opacity_Builder Class for use with Fortran.
 //
 // revision history:
 // -----------------
@@ -33,7 +33,8 @@ using std::endl;
 
 // draco components
 using dsxx::SP;
-using rtt_mc::CAR_CU_Mesh;
+using rtt_amr::CAR_CU_Mesh;
+using rtt_amr::CAR_CU_Interface;
 
 extern "C" 
 {

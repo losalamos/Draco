@@ -6,8 +6,8 @@
 // @> XYZCoord_sys derived class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_XYZCoord_sys_hh__
-#define __mc_XYZCoord_sys_hh__
+#ifndef __amr_XYZCoord_sys_hh__
+#define __amr_XYZCoord_sys_hh__
 
 //===========================================================================//
 // class XYZCoord_sys - 
@@ -36,7 +36,7 @@
 #include <string>
 #include <cmath>
 
-namespace rtt_mc 
+namespace rtt_amr 
 {
     
 using std::vector;
@@ -195,10 +195,10 @@ XYZCoord_sys::sample_pos_on_face(vector<double> &min, vector<double> &max,
   // return assigned array
     return r;
 }
-} // end namespace rtt_mc
+} // end namespace rtt_amr
 
-#endif                          // __mc_XYZCoord_sys_hh__
+#endif                          // __amr_XYZCoord_sys_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of mc/XYZCoord_sys.hh
+//                              end of amr_mesh/XYZCoord_sys.hh
 //---------------------------------------------------------------------------//

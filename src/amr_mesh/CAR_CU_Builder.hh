@@ -6,8 +6,8 @@
 // @> CAR_CU_Builder class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_CAR_CU_Builder_hh__
-#define __mc_CAR_CU_Builder_hh__
+#ifndef __amr_CAR_CU_Builder_hh__
+#define __amr_CAR_CU_Builder_hh__
 
 //===========================================================================//
 // class CAR_CU_Builder - 
@@ -28,7 +28,7 @@
 #include <vector>
 #include <string>
 
-namespace rtt_mc 
+namespace rtt_amr 
 {
 
 // stl components
@@ -121,10 +121,10 @@ inline CAR_CU_Builder::CAR_CU_Builder(SP<IT> interface)
     coord_system = interface->get_coordinates();
 }
 
-} // end namespace rtt_mc
+} // end namespace rtt_amr
 
-#endif                          // __mc_CAR_CU_Builder_hh__
+#endif                          // __amr_CAR_CU_Builder_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of mc/CAR_CU_Builder.hh
+//                              end of amr_mesh/CAR_CU_Builder.hh
 //---------------------------------------------------------------------------//

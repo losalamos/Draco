@@ -19,10 +19,10 @@
 //===========================================================================//
 // Shadow_CAR_CU_Opacity - 
 //
-// Purpose : Provides shadow interface functions to the Continuous Adaptive 
-// Refinement Cartesion Unstructured Opacity Class for use with Fortran 90 
-// codes. Note that the class constructor is not shadowed because the Opacity
-// class object is constructed by the Opacity_Builder class object.
+// Purpose : Provides shadow interface functions to the Implicit Monte Carlo
+// (imc) Opacity Class for use with Fortran 90 codes. Note that the class 
+// constructor is not shadowed because the Opacity class object is constructed
+// by the Opacity_Builder class object (which is shadowed).
 //
 // revision history:
 // -----------------
@@ -34,7 +34,7 @@ namespace rtt_imc
 {
 // draco components
 using dsxx::SP;
-using rtt_mc::CAR_CU_Mesh;
+using rtt_amr::CAR_CU_Mesh;
 
 extern "C" 
 {

@@ -6,8 +6,8 @@
 // @> Shadow_CAR_CU_Interface interface file
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Shadow_CAR_CU_Interface_cc__
-#define __mc_Shadow_CAR_CU_Interface_cc__
+#ifndef __amr_Shadow_CAR_CU_Interface_cc__
+#define __amr_Shadow_CAR_CU_Interface_cc__
 
 #include "CAR_CU_Interface.hh"
 #include "RTT_Format.hh"
@@ -27,7 +27,7 @@
 // 
 //===========================================================================//
 
-namespace rtt_imc 
+namespace rtt_amr 
 {
 using std::cout;
 using std::endl;
@@ -467,9 +467,9 @@ extern "C"
 } // end extern "C"
 
 
-} // end namespace rtt_imc
+} // end namespace rtt_amr
 
-#endif                          // __mc_Shadow_CAR_CU_Interface_cc__
+#endif                          // __amr_Shadow_CAR_CU_Interface_cc__
 
 //---------------------------------------------------------------------------//
 //                              end of amr_mesh/Shadow_CAR_CU_Interface.cc

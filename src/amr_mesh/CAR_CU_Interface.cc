@@ -13,7 +13,7 @@
 #include <map>
 #include <iterator>
 
-namespace rtt_imc 
+namespace rtt_amr 
 {
 
 using std::fill;
@@ -475,7 +475,7 @@ vector<double> CAR_CU_Interface::get_rad_temp() const
     return cell_rad;
 }
 
-} // end namespace rtt_imc
+} // end namespace rtt_amr
 
 //---------------------------------------------------------------------------//
 //                              end of CAR_CU_Interface.cc

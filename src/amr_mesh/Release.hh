@@ -9,26 +9,26 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Release_hh__
-#define __imc_Release_hh__
+#ifndef __amr_Release_hh__
+#define __amr_Release_hh__
 
 //===========================================================================//
 // namespace version - 
 //
-// Purpose : Return the version of imc; 
+// Purpose : Return the version of amr; 
 // this can be used to get exact version information in codes that 
-// use imc
+// use amr
 // 
 //===========================================================================//
 
 #include <string>
 
-namespace rtt_imc 
+namespace rtt_amr 
 {
     const std::string release();
 }
 
-#endif                          // __imc_Release_hh__
+#endif                          // __amr_Release_hh__
 
 
 /*!

@@ -13,7 +13,7 @@
 #include <iomanip>
 #include <cmath>
 
-namespace rtt_imc 
+namespace rtt_amr 
 {
 
 // draco components
@@ -1367,13 +1367,13 @@ void Parallel_Source_Init<MT,PT>::print(ostream &out) const
 	<< setw(15) << setiosflags(ios::right) << "Census ew" << endl;
     for (int i = 1; i <= num_global_cells; i++)
         out << setw(10) << i << setw(15) << global_ew_vol[i-1] << setw(15)
-            << global_ew_ss[i-1] << setw(15) << global_ew_cen[i-1] << endl;	
+            << global_ew_ss[i-1] << setw(15) << global_ew_cen[i-1] << endl;
 
     out << "======================================" << endl;
 }
 
-} // end namespace rtt_imc
+} // end namespace rtt_amr
 
 //---------------------------------------------------------------------------//
-//                              end of Parallel_Source_Init.t.hh
+//                              end of amr_mesh/Parallel_Source_Init.t.hh
 //---------------------------------------------------------------------------//

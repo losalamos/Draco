@@ -10,7 +10,7 @@
 #include "imc/Global.hh"
 #include <iomanip>
 
-namespace rtt_imc 
+namespace rtt_imc
 {
 
 // STL functions used
@@ -501,5 +501,5 @@ void Particle<MT>::Diagnostic::print_xs(const Opacity<MT> &xs,
 } // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
-//                              end of Particle.t.hh
+//                              end of amr_mesh/Particle.t.hh
 //---------------------------------------------------------------------------//

@@ -6,8 +6,8 @@
 // @> Shadow_CAR_CU_Mesh_Builder interface file
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Shadow_CAR_CU_Mesh_Builder_cc__
-#define __mc_Shadow_CAR_CU_Mesh_Builder_cc__
+#ifndef __amr_Shadow_CAR_CU_Mesh_Builder_cc__
+#define __amr_Shadow_CAR_CU_Mesh_Builder_cc__
 
 #include "CAR_CU_Builder.hh"
 #include "CAR_CU_Interface.hh"
@@ -28,13 +28,12 @@
 // 
 //===========================================================================//
 
-namespace rtt_mc 
+namespace rtt_amr 
 {
 using std::cout;
 
 // draco components
 using dsxx::SP;
-using rtt_imc::CAR_CU_Interface;
 using rtt_format::RTT_Format;
 
 extern "C" 
@@ -101,9 +100,9 @@ extern "C"
 }  // end extern "C"
 
 
-}  // end namespace rtt_mc
+}  // end namespace rtt_amr
 
-#endif                          // __mc_Shadow_CAR_CU_Mesh_Builder_cc__
+#endif                          // __amr_Shadow_CAR_CU_Mesh_Builder_cc__
 
 //---------------------------------------------------------------------------//
 //                        end of amr_mesh/Shadow_CAR_CU_Mesh_Builder.cc

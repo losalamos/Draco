@@ -6,13 +6,13 @@
 // @> Parallel_Builder header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Parallel_Builder_hh__
-#define __imc_Parallel_Builder_hh__
+#ifndef __amr_Parallel_Builder_hh__
+#define __amr_Parallel_Builder_hh__
 
 //===========================================================================//
 // class Parallel_Builder - 
 //
-// Purpose : pass the mesh, opacity, and source info to IMC_topology
+// Purpose : pass the mesh, opacity, and source info to AMR_topology
 //           processors
 //
 // revision history:
@@ -52,7 +52,7 @@
 #include <iostream>
 #include <string>
 
-namespace rtt_imc 
+namespace rtt_imc
 {
 
 // draco stuff
@@ -107,9 +107,9 @@ private:
   // functionality for Mesh passing
 
   // build and pass the Layout
-    void send_Layout(rtt_mc::Layout &);
-    rtt_mc::Layout recv_Layout();
-    rtt_mc::Layout build_Layout(const rtt_mc::Layout &, int);
+    void send_Layout(rtt_amr::Layout &);
+    rtt_amr::Layout recv_Layout();
+    rtt_amr::Layout build_Layout(const rtt_amr::Layout &, int);
 
   // pass the coord_sys
     void send_Coord(SP<rtt_mc::Coord_sys>);
@@ -215,7 +215,7 @@ inline int Parallel_Builder<MT>::master_cell(int icell, int proc) const
 }
 
 //---------------------------------------------------------------------------//
-// determine a cell on the IMC mesh on processor given the master cell,
+// determine a cell on the AMR mesh on processor given the master cell,
 // returns 0 (false) if the cell isn't on this processor
 
 template<class MT>
@@ -259,8 +259,8 @@ inline vector<int> Parallel_Builder<MT>::get_procs(int mcell) const
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Parallel_Builder_hh__
+#endif                          // __amr_Parallel_Builder_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imc/Parallel_Builder.hh
+//                              end of amr_mesh/Parallel_Builder.hh
 //---------------------------------------------------------------------------//

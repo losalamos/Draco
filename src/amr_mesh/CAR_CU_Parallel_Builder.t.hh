@@ -15,7 +15,7 @@
 #include <cstdio>
 #include <fstream>
 
-namespace rtt_imc 
+namespace rtt_imc
 {
 
 // draco necessities
@@ -26,9 +26,9 @@ using C4::nodes;
 using rtt_mc::global::max;
 using rtt_mc::global::min;
 using rtt_mc::Coord_sys;
-using rtt_mc::Layout;
-using rtt_mc::XYCoord_sys;
-using rtt_mc::XYZCoord_sys;
+using rtt_amr::XYCoord_sys;
+using rtt_amr::XYZCoord_sys;
+using rtt_amr::Layout;
 
 // std necessities
 using std::string;
@@ -2064,8 +2064,8 @@ void Parallel_Builder<MT>::print(ostream &out) const
     }
 }
     
-} // end namespace rtt_imc
+} // end namespace rtt_amr
 
 //---------------------------------------------------------------------------//
-//                              end of CAR_CU_Parallel_Builder.t.hh
+//                              end of amr_mesh/CAR_CU_Parallel_Builder.t.hh
 //---------------------------------------------------------------------------//

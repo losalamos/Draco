@@ -6,8 +6,8 @@
 // @> CAR_CU_Mesh mesh class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_CAR_CU_Mesh_hh__
-#define __mc_CAR_CU_Mesh_hh__
+#ifndef __amr_CAR_CU_Mesh_hh__
+#define __amr_CAR_CU_Mesh_hh__
 
 //===========================================================================//
 // class CAR_CU_Mesh - 
@@ -32,7 +32,7 @@
 #include <string>
 #include <map>
 
-namespace rtt_mc 
+namespace rtt_amr 
 {
 // stl namespaces
 using std::vector;
@@ -43,6 +43,7 @@ using std::ostream;
 using std::endl;
 using std::string;
 using std::multimap;
+using rtt_mc::Coord_sys;
 
 // draco namespaces
 using rtt_rng::Sprng;
@@ -1452,10 +1453,10 @@ inline bool CAR_CU_Mesh::check_on_face(vector<double> & pos, int & cell,
 
 }
 
-} // end namespace rtt_mc
+} // end namespace rtt_amr
 
-#endif                          // __mc_CAR_CU_Mesh_hh__
+#endif                          // __amr_CAR_CU_Mesh_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of mc/CAR_CU_Mesh.hh
+//                              end of amr_mesh/CAR_CU_Mesh.hh
 //---------------------------------------------------------------------------//

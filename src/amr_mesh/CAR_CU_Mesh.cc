@@ -10,7 +10,7 @@
 #include "mc/Constants.hh"
 #include <iomanip>
 
-namespace rtt_mc 
+namespace rtt_amr 
 {
 
 // std components
@@ -142,7 +142,7 @@ double CAR_CU_Mesh::get_db(const vector<double> &r,
 {
     using std::vector;
     using std::min_element;
-    using global::huge;
+    using rtt_mc::global::huge;
     
   // calculate distance to the vec(r) boundaries
 
@@ -157,7 +157,7 @@ double CAR_CU_Mesh::get_db(const vector<double> &r,
 
       // find the distances to boundary along each dimension
 	if (omega[i] == 0.0)
-	    dim_dist_boundary[i] = global::huge;
+	    dim_dist_boundary[i] = huge;
 	else if (omega[i] > 0.0)
 	    dim_dist_boundary[i] = (max(d, cell) - r[i]) / omega[i];
 	else
@@ -395,7 +395,7 @@ void CAR_CU_Mesh::print(ostream &output, int cell) const
     output << "+++++++++++++++" << endl;
 }
 
-} // end namespace rtt_mc
+} // end namespace rtt_amr
 
 //---------------------------------------------------------------------------//
 //                              end of CAR_CU_Mesh.cc

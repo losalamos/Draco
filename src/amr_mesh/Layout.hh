@@ -12,8 +12,8 @@
 //---------------------------------------------------------------------------//
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Layout_hh__
-#define __mc_Layout_hh__
+#ifndef __amr_Layout_hh__
+#define __amr_Layout_hh__
 
 //===========================================================================//
 // class Layout - 
@@ -34,7 +34,7 @@
 #include <iostream>
 #include <vector>
 
-namespace rtt_mc 
+namespace rtt_amr 
 {
 
 // defined namespaces
@@ -155,10 +155,10 @@ inline int& Layout::operator()(int cell_index, int face_index,
     return face_cell[cell_index-1][face_index-1][adj_index-1];
 }
 
-} // end namespace rtt_mc
+} // end namespace rtt_amr
 
-#endif                          // __mc_Layout_hh__
+#endif                          // __amr_Layout_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of mc/Layout.hh
+//                              end of amr_mesh/Layout.hh
 //---------------------------------------------------------------------------//

@@ -49,7 +49,7 @@
 #include <iterator>
 #include <functional>
 
-namespace rtt_mc 
+namespace rtt_amr 
 {
 using std::cout;
 using std::endl;
@@ -923,7 +923,7 @@ void CAR_CU_Builder::FC_Nodes(int nnodes, const SP<RTT_Format> & rttMesh)
     return;
 }
 
-} // end namespace rtt_mc
+} // end namespace rtt_amr
 
 //---------------------------------------------------------------------------//
 //                              end of CAR_CU_Builder.cc
