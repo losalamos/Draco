@@ -108,7 +108,8 @@ IRIX64)
     SPRNG_LIBN32PATH=
 
     BITS="64 N32"
-    C4="scalar mpi shmem"
+#    C4="scalar mpi shmem"
+    C4="scalar mpi"
     ;;
 *)
     PCG_LIBPATH=
