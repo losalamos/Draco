@@ -7,10 +7,10 @@
 ##---------------------------------------------------------------------------##
 ## determine the release tag of a package by examining all files in
 ## the package directory + Release.cc and presents a report; it
-## expects to find a Release.cc and configure.in file in the directory
+## expects to find a configure.ac file in the directory
 ## Usage:
 ##       1) enter package directory
-##       2) python ../../tools/find_tags.py
+##       2) python ../../tools/find_tags_diff.py
 ## As opposed to find_tags.py; this version also prints out the
 ## differences between the affected files.
 ##---------------------------------------------------------------------------##
@@ -34,10 +34,29 @@ import sys
 # determine package directory
 pkg_dir  = os.getcwd()
 
-if len(sys.argv) > 1:
-    pkg_name = sys.argv[1]
-else:
-    pkg_name = os.path.basename(pkg_dir)
+# check arguments
+i          = 1
+tag_name   = ''
+releasedir = ''
+while i < len(sys.argv):
+    # get argument Release.cc directory
+    if sys.argv[i] == "-r":
+        i = i + 1
+        releasedir = sys.argv[i]
+    # get argument for tag name
+    elif sys.argv[i] == "-t":
+        i = i + 1
+        tag_name = sys.argv[i]
+    else:
+        print "Options are [-r path for Release.cc][-t tag name]"
+        sys.exit(1)
+    
+    # increment counter
+    i = i + 1
+
+if len(tag_name) == 0:
+    print "Tag not specified, use -t"
+    sys.exit(1)
 
 ##---------------------------------------------------------------------------##
 ## Regular expressions
@@ -46,7 +65,7 @@ else:
 re_tag      = re.compile(r'[a-zA-Z0-9].+\-[0-9]\_[0-9]\_[0-9]', re.IGNORECASE)
 re_tag_pkg  = re.compile(r'(.+)\-.+', re.IGNORECASE)
 re_files    = re.compile(r'\nT\s+(.*)', re.IGNORECASE)
-re_tag_file = re.compile(r'string\s+pkg\_release\s+\=\s*\"\@\(\#\)(.*)\"', re.IGNORECASE)
+re_tag_file = re.compile(r'string\s+pkg\_release\s+\=\s*\"(.*)\"', re.IGNORECASE)
 
 revision    = re.compile(r'Working\s+revision:\s*([0-9]+\.[0-9]+)', re.IGNORECASE)
 
@@ -59,12 +78,12 @@ rel_rev     = re.compile(r'\(revision:\s+([0-9]+\.[0-9]+)\s*\)', re.IGNORECASE)
 def get_current_tag():
 
     # check to see if Release.cc exists
-    if not os.path.isfile('configure.in'):
-        print ">>> No configure.in ................. exiting"
+    if not os.path.isfile('configure.ac'):
+        print ">>> No configure.ac ................. exiting"
         sys.exit(1)
 
     # check the configure.in files for tags
-    tags = commands.getoutput('cvs status -v configure.in')
+    tags = commands.getoutput('cvs status -v configure.ac')
 
     match = re_tag.findall(tags)
 
@@ -80,7 +99,7 @@ def get_current_tag():
         tag_prefix_match = re_tag_pkg.search(temp_tag)
         if tag_prefix_match:
             tag_prefix = tag_prefix_match.group(1)
-            if (tag_prefix == pkg_name): this_tag = temp_tag
+            if (tag_prefix == tag_name): this_tag = temp_tag
 
         # increment counter
         ctr = ctr + 1
@@ -111,7 +130,7 @@ def get_current_tag_revision(file):
         tag_prefix_match = re_tag_pkg.search(temp_tag)
         if tag_prefix_match:
             tag_prefix = tag_prefix_match.group(1)
-            if (tag_prefix == pkg_name): this_tag = temp_tag
+            if (tag_prefix == tag_name): this_tag = temp_tag
 
         # increment counter
         ctr = ctr + 1
@@ -160,12 +179,17 @@ def get_files_changed_since_tag(tag):
 def get_Releasecc_tag():
 
     # check to see if Release.cc exists
-    if not os.path.isfile('Release.cc'):
+    if len(releasedir) > 0:
+        releasepath = releasedir + "/Release.cc"
+    else:
+        releasepath = "Release.cc"
+        
+    if not os.path.isfile(releasepath):
         release_tag = 'no Release.cc'
 
     else:
         # else open the file and find the release tag
-        file  = open('Release.cc', 'r')
+        file  = open(releasepath, 'r')
         lines = file.readlines()
         
         release_tag = ''
@@ -183,7 +207,7 @@ def get_Releasecc_tag():
 
 # announcement
 print ">>> Working in package directory    : %s" % (pkg_dir)
-print ">>> Package name is                 : %s" % (pkg_name)
+print ">>> Package name is                 : %s" % (tag_name)
 
 # check Release.cc for release tag
 releasecc_tag = get_Releasecc_tag()
