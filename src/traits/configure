@@ -2731,7 +2731,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Compaq"
+   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Fortran"
    then
        :
    else
@@ -3680,7 +3680,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Compaq"
+   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Fortran"
    then
        :
    else
@@ -3761,7 +3761,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Compaq"
+   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Fortran"
    then
        :
    else

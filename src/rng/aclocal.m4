@@ -2075,7 +2075,7 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
    # Check for working compaq F90 compiler
 
    AC_CHECK_PROG(F90, f95, f95, none)
-   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Compaq"
+   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Fortran"
    then
        :
    else
