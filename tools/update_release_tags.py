@@ -33,7 +33,7 @@ def get_dirs(homedir):
     for d in dirs:
         if os.path.isdir(d):
             os.chdir(d)
-            if os.path.isdir("autodoc"):
+            if os.path.isfile("Release.cc"):
                 rdirs.append(d)
             os.chdir(homedir)
 
