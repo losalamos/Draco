@@ -24,8 +24,8 @@ using namespace C4;
 #include "linalg/PCG_PreCond.hh"
 #include "linalg/PCG_Ctrl.hh"
 
-#include "MatVec_3T.hh"
-#include "PreCond.hh"
+#include "3T/MatVec_3T.hh"
+#include "3T/PreCond.hh"
 
 //---------------------------------------------------------------------------//
 // Constructor.  Perform basic initialization of the test problem.
@@ -42,7 +42,7 @@ Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_,
       Df( spm ),
       pcg_db(pcg_db_)
 {
-    spd = new Diffusion_XYZ<MT>( spm );
+    spd = new Diffusion_XYZ<MT>( spm, pcg_db_ );
 
     if (node == 0)
 	adf = new ADFile( "test.dat", IDX::WRITE, 500 );
@@ -158,6 +158,10 @@ void Test_3T<MT, Problem>::run()
 	for( int i=0; i < ncp; i++ )
 	    r(i) = rhs(i)*dt + Eo(i);
 
+    // Ask the solver to solve the system.
+
+	spd->solve( Df, r, dt, En );
+#if 0
     // Set up coefficient matrix.
 	A = 0.;
 
@@ -255,6 +259,9 @@ void Test_3T<MT, Problem>::run()
 	    double d = b[i] - r[i];
 	    r1 += d*d;
 	}
+#endif
+	double r1 = 0.;		// Sick hack till we fix the above.
+	int pcgits = 0;		// same as above.
 
     // Compute solution quality metrics
 	double s1=0.;
