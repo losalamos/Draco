@@ -135,7 +135,7 @@ void Test_3T<MT, Problem>::run()
         }
     }
 
-    MT::cell_array E_analytic(spm), rhs(spm), r(spm);
+    MT::cell_array<double> E_analytic(spm), rhs(spm), r(spm);
     MT::fcdsf Eb(spm);
 
     bool test_passed = true;
@@ -269,7 +269,8 @@ void Test_3T<MT, Problem>::run()
 //---------------------------------------------------------------------------//
 
 template<class MT, class Problem>
-void Test_3T<MT, Problem>::diag_out( const typename MT::cell_array& data,
+void Test_3T<MT, Problem>::diag_out
+       ( const typename MT::cell_array<double>& data,
 				     const char *name ) const
 {
     char buf[80];

@@ -56,7 +56,7 @@ class Test_3T : public Test_Prob,
 
     void run();
 
-    void diag_out( const typename MT::cell_array& data,
+    void diag_out( const typename MT::cell_array<double>& data,
 		   const char *name ) const;
 
     int get_ncp() const { return ncp; }
