@@ -27,6 +27,7 @@ all:
 	(cd timestep;$(MAKE) $(subnj))
 	(cd matprops;$(MAKE) $(subnj))
 	(cd sn;      $(MAKE) $(subnj))
+	(cd rng;     $(MAKE) $(subnj))
 	(cd imctest; $(MAKE) $(subnj))
 #	(cd draco;   $(MAKE) $(subnj))
 
@@ -43,6 +44,7 @@ clean:
 	(cd timestep;$(MAKE) clean cleanonly=yes)
 	(cd matprops;$(MAKE) clean cleanonly=yes)
 	(cd sn;      $(MAKE) clean cleanonly=yes)
+	(cd rng;     $(MAKE) clean cleanonly=yes)
 	(cd imctest; $(MAKE) clean cleanonly=yes)
 	(cd pycxx;   $(MAKE) clean cleanonly=yes)
 	(cd pydraco; $(MAKE) clean cleanonly=yes)
