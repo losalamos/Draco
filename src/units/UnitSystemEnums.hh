@@ -42,7 +42,7 @@ enum Mtype
 {
     M_null = 0, //!< no mass type
     M_kg   = 1, //!< kilogram (kg)
-    M_g    = 2, //!< gram (1 g = 1e-3 kg)
+    M_g    = 2  //!< gram (1 g = 1e-3 kg)
 };
 
 int    const num_Mtype(3);
@@ -91,7 +91,7 @@ std::string const T_labels( "NA,K,keV" );
 enum Itype
 {
     I_null, //!< no current type0.001
-    I_amp,  //!< Amp (SI)
+    I_amp   //!< Amp (SI)
 };
 
 int    const num_Itype(2);
@@ -120,7 +120,7 @@ std::string const A_labels( "NA,rad,deg" );
 enum Qtype
 {
     Q_null, //!< no quantity type
-    Q_mol,  //!< mole (SI)
+    Q_mol   //!< mole (SI)
 };
 
 int    const num_Qtype(2);
