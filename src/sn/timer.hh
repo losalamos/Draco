@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
-// timer.cc
+// timer.hh
 // Scott Turner
-// 19 February 1998
+// 17 March 1998
 //---------------------------------------------------------------------------//
 // @> Simple timing routine.
 //---------------------------------------------------------------------------//
@@ -10,11 +10,10 @@
 // Routine for CPU and Wallclock timing
 //
 
+#include "sn/precision.hh"
+
 #include <sys/types.h>
 #include <time.h>
-
-#include "sn/precision.hh"
-#include "sn/protos.hh"
 
 void timer( REAL &cpu, REAL &wall )
 {
@@ -34,6 +33,6 @@ void timer( REAL &cpu, REAL &wall )
 }
 
 //---------------------------------------------------------------------------//
-//                              end of timer.cc
+//                              end of timer.hh
 //---------------------------------------------------------------------------//
 

@@ -14,7 +14,7 @@ include ../config/makefile
 
 # Put non template code here
 
-libsrcs = read_input.cc inner_iter.cc sweep3d.cc timer.cc
+libsrcs = read_input.cc inner_iter.cc sweep3d.cc
 
 # Get the library built, minding our various other targets too.
 

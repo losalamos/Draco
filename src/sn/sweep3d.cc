@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 // sweep3d.cc
 // Scott Turner
-// 19 February 1998
+// 17 March 1998
 //---------------------------------------------------------------------------//
 // @> Performs structured sweep.
 //---------------------------------------------------------------------------//
@@ -12,24 +12,23 @@
 // angle, then eta, then tsi.
 //
 
+#include "sn/sweep3d.hh"
+#include "sn/precision.hh"
+#include "sn/array.hh"
+
 #include <math.h>
 #include <iostream.h>
 #include <stdlib.h>
 
-#include "sn/precision.hh"
-#include "sn/protos.hh"
-
-void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
-                     int ibl,            int ibb,             int ibfr,
-                     int ifxg,          REAL dx,             REAL dy,
-                    REAL dz,            REAL *lkgs_l,  const REAL *w,
-              const REAL *mu,     const REAL *eta,     const REAL *tsi,
-              const REAL *wmu,    const REAL *weta,    const REAL *wtsi,
-           const Array3D &p,   const Array3D &ct,         Array4D &src,
-                 Array4D &flux                                         )
+void sweep3d::do_sweep (    int it,    int jt,  int kt,     int mm,  int nm,
+                            int ibl,            int ibb,             int ibfr,
+                            int ifxg,          REAL dx,             REAL dy,
+                           REAL dz,            REAL *lkgs_l,  const REAL *w,
+                     const REAL *mu,     const REAL *eta,     const REAL *tsi,
+                     const REAL *wmu,    const REAL *weta,    const REAL *wtsi,
+                  const Array3D &p,   const Array3D &ct,         Array4D &src,
+                        Array4D &flux                                         )
 {
-
-#include "sn/array.hh"
 
   int itmm;     // number of x-direction cells * number of angles
   int i_cm;     // used in octant sweep order setup

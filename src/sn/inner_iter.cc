@@ -13,9 +13,10 @@
 
 #include "sn/inner_iter.hh"
 #include "sn/precision.hh"
-#include "sn/protos.hh"
+#include "sn/timer.hh"
 #include "sn/array.hh"
 #include "sn/read_input.hh"
+#include "sn/sweep3d.hh"
 
 #include <math.h>
 #include <iostream.h>
@@ -215,14 +216,15 @@
 
 // perform an ordered sweep through the mesh.
 
-   sweep3d ( it, jt, kt, mm, nm,
-             ibl,   ibb,     ibfr,
-             ifxg,  dx,      dy,
-             dz,    lkgs_l, w,
-             mu,    eta,    tsi,
-             wmu,   weta,   wtsi,
-             p,     ct,     src,
-             flux                  );
+   sweep3d sweep3d_object;
+   sweep3d_object.do_sweep ( it, jt, kt, mm, nm,
+                             ibl,   ibb,     ibfr,
+                             ifxg,  dx,      dy,
+                             dz,    lkgs_l, w,
+                             mu,    eta,    tsi,
+                             wmu,   weta,   wtsi,
+                             p,     ct,     src,
+                             flux                  );
 
 // store the absolute relative difference between the current and previous
 // fluxes in pflux (in other words replace pflux values with relative error).
