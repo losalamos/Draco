@@ -1,3 +1,8 @@
+2002-05-08  Thomas M. Evans  <tme@lanl.gov>
+
+	* ds++: updated to release ds++-1_6_0.  This release primarily
+	consists of fixes for compilers.
+
 2001-12-17  Thomas M. Evans  <tme@lanl.gov>
 
 	* ds++: updated to release ds++-1_5_0.  This release contained a

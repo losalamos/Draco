@@ -18,7 +18,7 @@ namespace rtt_dsxx
 // this library in the form ds_#.#.# in pkg_version variable
 const std::string release()
 {
-    std::string pkg_release = "@(#)ds++-1_5_0";
+    std::string pkg_release = "@(#)ds++-1_6_0";
     return pkg_release;
 }
 
