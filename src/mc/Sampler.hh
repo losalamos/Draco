@@ -94,6 +94,95 @@ inline double sample_general_linear(Ran ran, const double a, const double b,
     return x;
 }
 
+//---------------------------------------------------------------------------//
+// SAMPLE_PLANCKIAN_FREQUENCY
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Sample a frequency from the continuous Planckian distribution.
+ *
+ * Given a temperature kT, a frequency in the same units as kT is sampled
+ * from a continuous Planckian distribution.  
+ *
+ * This function utilizes Barnett and Canfield's truncated infinite series
+ * technique [UCIR-473 (UCRL-125393)].  They begin by writing the normalized
+ * Planckian, b(x) = (15/pi^4) x^3/(e^x-1), as Sum_{n=1}^{\infty} p_n f_n(x),
+ * where x=hnu/kT is the reduced frequency, p_n = 90/(pi^4 n^4), f_n(x) =
+ * (n^4/6) x^3 e^{-nx} and Sum_{n=1}^infty p_n = 1.  Thus, with probability
+ * p_n we can sample f_n(x) for x.  Sampling n from p_n requires satisfying
+ * (pi^4/90)ran <= Sum_{k=1}^{n} 1/k^4.  The search usually only requires one
+ * iteration (i.e., n=1), but, without machine-error, the search can be
+ * unbounded.  The search is bounded by truncating (rounding down) the
+ * decimal representation of (pi^4/90) = 1.0823232337....  The maximum number
+ * of iterations goes as follows:
+ *
+ *     Significant Digits   Truncated $\pi^4/90$   Max iters
+ *
+ *                  6         1.08232              47   
+ *                  7         1.082323             113  
+ *                  8         1.0823232            215  
+ *                  9         1.08232323           448  
+ *                 10         1.082323233          775  
+ *                 11         1.0823232337         2744 
+ *
+ * Large n usually corresponds to a small frequency, so the concern over
+ * significant digits is largely moot.  However, given that the maximum
+ * number of iterations is rarely encountered, the computational cost is not
+ * excessive (but the expenditure of random numbers might get wasteful).  
+ *
+ * Once n is found, x is sampled from f_n(x) according to the procedure in
+ * Everett and Cashwell's "A Third Monte Carlo Sampler":
+ * 
+ * x = -1/n * ln(ran1 * ran2 * ran3 * ran4)
+ *
+ * The frequency, then, is h*nu = x*kT.
+ *
+ * The random number object must have a member function called "ran()" that
+ * returns a random number of type double between 0 and 1.
+ *
+ * \param ran random number object
+ * \param k_temperature temperature (kT)
+ * \return hnu frequency in same units as k_temperature 
+ */
+template<class Ran>
+inline double sample_planckian_frequency(Ran ran, const double k_temperature)
+{
+    using namespace std;
+    using rtt_mc::global::soft_equiv;
+
+    // check that temp is nonnegative
+    Require (k_temperature >= 0.0);
+
+    // declaration of return value of frequency
+    double hnu;
+
+    // initialize iteration, conditional probability and its sum
+    double n       = 1.0;
+    double p_n     = 1.0;
+    double sum_p_n = 1.0;
+ 
+    // 8 significant digits in the search for n
+    double sampled_cdf = 1.0823232 * ran.ran();
+    Check (sampled_cdf > 0.0);
+ 
+    // continue the truncated infinite series sum if necessary
+    while (sampled_cdf > sum_p_n)
+    {
+        n       = n + 1.0;
+        p_n     = 1/n;
+        sum_p_n = sum_p_n + p_n*p_n*p_n*p_n;
+    }
+
+    // given n, sample nu (note that these are four different random numbers)
+    hnu = -p_n * k_temperature * log(ran.ran()*ran.ran()*ran.ran()*ran.ran());  
+ 
+    // nu should only be zero if kT=0 or if all four of the random numbers
+    // above are 1.0; otherwise nu should be > 0.  nu>=0.0 is a loose check. 
+    Ensure (hnu >= 0.0);
+
+    // return the frequency in the same units as the temperature
+    return hnu;
+}
+
 } // end namespace sampler
 } // end namespace rtt_mc
 
