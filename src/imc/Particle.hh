@@ -189,6 +189,7 @@ public:
     void set_time_left(double t) { time_left = t; }
     void set_descriptor(string s) { descriptor = s; }
     void set_ew(double new_ew) { ew = new_ew; }
+    void set_cell(int new_cell) { cell = new_cell; }
 
   // transport descriptors
     string desc() const { return descriptor; }

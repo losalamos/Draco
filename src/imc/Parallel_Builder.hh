@@ -29,6 +29,7 @@
 #include "imc/Particle_Buffer.hh"
 #include "imc/Source.hh"
 #include "imc/Mat_State.hh"
+#include "imc/Communicator.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
 #include "ds++/SP.hh"
@@ -134,6 +135,12 @@ public:
     template<class PT> SP<Source<MT> > 
     recv_Source(SP<MT>, SP<Mat_State<MT> >, SP<Rnd_Control>,
 		const Particle_Buffer<PT> &); 
+
+  // communicator mapping functionality
+    template<class PT> 
+    SP<Communicator<PT> > send_Communicator();
+    template<class PT>
+    SP<Communicator<PT> > recv_Communicator();
 
   // Mesh mapping functionality
     inline int master_cell(int icell, int proc) const;

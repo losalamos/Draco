@@ -1655,6 +1655,74 @@ Parallel_Builder<MT>::recv_Mat(SP<MT> mesh)
 }
 
 //---------------------------------------------------------------------------//
+// Communicator passing interface
+//---------------------------------------------------------------------------//
+// build and send out a Communicator on each Processor
+
+template<class MT>
+template<class PT>
+SP<Communicator<PT> > Parallel_Builder<MT>::send_Communicator()
+{
+  // return communicator
+    SP<Communicator<PT> > comm;
+
+  // first let's build a Communicator on each processor
+    for (int np = 0; np < nodes(); np++)
+    {
+      // get number of boundary cells on this processor
+	int num_cells = bound_cells[np].size();
+	vector<vector<int> > b_node(num_cells);
+	vector<vector<int> > b_cell(num_cells);
+	vector<int> com_nodes;
+	vector<bool> procs(nodes(), false);
+
+      // find the nodes this processor communicates with
+	int global_cell;
+	for (int i = 0; i < num_cells; i++)
+	{
+	  // global cell index of the boundary cell
+	    global_cell = bound_cells[np][i];
+
+	  // the procs that this cell is on
+	    b_node[i] = procs_per_cell[global_cell-1];
+	    b_cell[i].resize(b_node[i].size());
+
+	  // loop over the nodes for this boundary cell and assign processors 
+	  // and local cell stuff
+	    int local_cell;
+	    int send_proc;
+	    for (int n = 0; n < b_node[i].size(); n++)
+	    {
+		send_proc        = b_node[i][n];
+		local_cell       = imc_cell(global_cell, send_proc);
+		procs[send_proc] = true;
+		b_cell[i][n]     = local_cell;
+	    }
+	}
+
+      // loop over the nodes on the problem and see if we communicate with it
+	for (int n = 0; n < nodes(); n++)
+	    if (procs[n])
+		com_nodes.push_back(n);	
+
+      // build the Communicator on the host
+	if (!np)
+	    comm = new Communiator<PT>(com_nodes, b_node, b_cell);
+	else
+	  // SEND THESE OUT::START HERE TOMORROW
+    }
+
+  // return the host communicator
+    return comm;
+}
+
+//---------------------------------------------------------------------------//
+// Communicator passing implementation
+//---------------------------------------------------------------------------//
+// build the communicator for processor n
+
+
+//---------------------------------------------------------------------------//
 // diagnostics
 //---------------------------------------------------------------------------//
 

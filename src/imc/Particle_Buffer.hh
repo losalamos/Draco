@@ -194,10 +194,10 @@ public:
     SP<Comm_Buffer> recv_buffer(int) const;
 
   // async
-    void asend_buffer(Comm_Buffer &, int, Bank &) const;
     void asend_buffer(Comm_Buffer &, int) const;
     void post_arecv(Comm_Buffer &, int) const;
     void arecv_buffer(Comm_Buffer &) const;
+    bool check_arecv(Comm_Buffer &, int) const;
 
   // accessor functions
     int get_dsize() const { return dsize; } 

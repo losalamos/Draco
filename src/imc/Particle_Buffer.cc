@@ -311,6 +311,9 @@ void Particle_Buffer<PT>::send_buffer(Comm_Buffer &buffer, int proc) const
     Send (&buffer.array_d[0], buffer_d, proc, 201);
     Send (&buffer.array_i[0], buffer_i, proc, 202);
     Send (&buffer.array_c[0], buffer_c, proc, 203);
+
+  // enpty the buffer
+    buffer.n_part = 0;
 }
 
 //---------------------------------------------------------------------------//
@@ -332,70 +335,6 @@ Particle_Buffer<PT>::recv_buffer(int proc) const
   // return SP
     return buffer;
 }
-
-//---------------------------------------------------------------------------//
-// Do an asyncronous send using C4 on a Bank of Particles
-
-template<class PT>
-void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc, 
-				       Bank &bank) const
-{
-  // find out the number of Particles
-    int num_part = bank.size();
-    Check (num_part > 0 && num_part <= buffer_s);
-    
-  // define indices for data
-    int id = 0;
-    int ii = 0;
-    int ic = 0;
-
-  // define arrays for buffering
-    double *array_d = new double[buffer_d];
-    int    *array_i = new int[buffer_i];
-    char   *array_c = new char[buffer_c];
-
-  // loop through particles and get the goods
-    while (bank.size())
-    {
-      // get the double info from the particle
-	array_d[id++] = bank.top()->time_left;
-	array_d[id++] = bank.top()->ew;
-	array_d[id++] = bank.top()->fraction;
-	for (int j = 0; j < bank.top()->omega.size(); j++)
-	    array_d[id++] = bank.top()->omega[j];
-	for (int j = 0; j < bank.top()->r.size(); j++)
-	    array_d[id++] = bank.top()->r[j];
-	Check (id <= buffer_d);
-
-      // get the int info from the particle
-	array_i[ii++] = bank.top()->cell;
-	array_i[ii++] = bank.top()->random.get_num();
-	Check (ii <= buffer_i);
-
-      // get the char info from the particle
-	char *bytes;
-	int size = pack_sprng(bank.top()->random.get_id(), &bytes);
-	Check (size == csize);
-	for (int j = 0; j < csize; j++)
-	    array_c[ic++] = bytes[j];
-	std::free(bytes);
-	Check (ic <= buffer_c);
-
-      // pop the highest level particle
-	bank.pop();
-    }
-
-  // send the particle buffers
-    SendAsync(buffer.comm_n, &num_part, 1, proc, 100);
-    SendAsync(buffer.comm_d, &array_d[0], buffer_d, proc, 101);
-    SendAsync(buffer.comm_i, &array_i[0], buffer_i, proc, 102);
-    SendAsync(buffer.comm_c, &array_c[0], buffer_c, proc, 103);
-
-  // reclaim our memory
-    delete [] array_d;
-    delete [] array_i;
-    delete [] array_c;
-}
     
 //---------------------------------------------------------------------------//
 // do an async send of a Comm_Buffer
@@ -408,19 +347,22 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc) const
     SendAsync(buffer.comm_d, &buffer.array_d[0], buffer_d, proc, 101);
     SendAsync(buffer.comm_i, &buffer.array_i[0], buffer_i, proc, 102);
     SendAsync(buffer.comm_c, &buffer.array_c[0], buffer_c, proc, 103);
+
+  // empty the buffer
+    buffer.n_part = 0;
 }
 
 //---------------------------------------------------------------------------//
 // post async receives
 
 template<class PT>
-void Particle_Buffer<PT>::post_arecv(Comm_Buffer &buf, int proc) const
+void Particle_Buffer<PT>::post_arecv(Comm_Buffer &buffer, int proc) const
 {
   // post c4 async receives
-    RecvAsync(buf.comm_n, &buf.n_part, 1, proc, 100);
-    RecvAsync(buf.comm_d, &buf.array_d[0], buffer_d, proc, 101);
-    RecvAsync(buf.comm_i, &buf.array_i[0], buffer_i, proc, 102);
-    RecvAsync(buf.comm_c, &buf.array_c[0], buffer_c, proc, 103);
+    RecvAsync(buffer.comm_n, &buffer.n_part, 1, proc, 100);
+    RecvAsync(buffer.comm_d, &buffer.array_d[0], buffer_d, proc, 101);
+    RecvAsync(buffer.comm_i, &buffer.array_i[0], buffer_i, proc, 102);
+    RecvAsync(buffer.comm_c, &buffer.array_c[0], buffer_c, proc, 103);
 }
 
 //---------------------------------------------------------------------------//
@@ -434,6 +376,26 @@ Particle_Buffer<PT>::arecv_buffer(Comm_Buffer &buffer) const
     buffer.comm_d.wait();
     buffer.comm_i.wait();
     buffer.comm_c.wait();
+}
+
+//---------------------------------------------------------------------------//
+// check to see if our ship has come in
+
+template<class PT>
+bool Particle_Buffer<PT>::check_arecv(Comm_Buffer &buffer, int proc) const
+{
+  // check to see if the buffers have been received
+    if (!buffer.comm_n.complete())
+	return false;
+    else if (!buffer.comm_d.complete())
+	return false;
+    else if (!buffer.comm_i.complete())
+	return false;
+    else if (!buffer.comm_c.complete())
+	return false;
+
+  // all the buffers have been received
+    return true;
 }
 
 //---------------------------------------------------------------------------//
