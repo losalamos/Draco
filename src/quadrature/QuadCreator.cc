@@ -41,7 +41,7 @@ using std::fabs;
 
 rtt_dsxx::SP<Quadrature> 
 QuadCreator::quadCreate( QuadCreator::Qid quad_type, 
-			 int sn_order, double norm ) 
+			 size_t sn_order, double norm ) 
 {
     rtt_dsxx::SP<Quadrature> spQuad;
 
@@ -77,5 +77,5 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 
 
 //---------------------------------------------------------------------------//
-//                              end of Quadrature.cc
+//                              end of QuadCreator.cc
 //---------------------------------------------------------------------------//

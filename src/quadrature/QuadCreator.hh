@@ -105,24 +105,14 @@ class QuadCreator
      *                  dimensionality of the quadrature set.)
      * \return Smart pointer to a quadrature object.
      */
+
     // I'm not sure if this needs to be virtual or not.
     // norm and sn_order are optional variables.  sn_order always defaults to 
     // 4 but the default value for norm is based on the dimensionality of the 
     // quadrature set and its default value is set in the member function
+
     virtual rtt_dsxx::SP<Quadrature> 
-          quadCreate( Qid quad_type, int sn_order = 4, double norm = 0.0 );
-    //    QuadCreator(const QuadCreator &rhs);
-    //   ~QuadCreator();
-
-    // MANIPULATORS
-    
-    //    QuadCreator& operator=(const QuadCreator &rhs);
-
-    // ACCESSORS
-
-  private:
-    
-    // IMPLEMENTATION
+          quadCreate( Qid quad_type, size_t sn_order = 4, double norm = 0.0 );
 };
 
 } // end namespace rtt_quadrature
