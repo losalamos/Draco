@@ -63,6 +63,26 @@ class Quadrature
 {
   public:
 
+    // CREATORS
+
+    /*!
+     * \brief The default constructor for the quadrature class.
+     *
+     * The default constructor sets the SN Order and normalization values.
+     * This constructor complements the concrecte constructor for the
+     * quadrature class being instantiated.  The concrete class will also
+     * initialize the variable numAngles to an appropriate value.
+     *
+     * \param snOrder_ Integer specifying the order of the SN set to be
+     *                 constructed.  Number of angles = (snOrder+2)*snOrder.
+     * \param norm_    A normalization constant.  The sum of the quadrature
+     *                 weights will be equal to this value.  Its default
+     *                 value is set in QuadCreator.
+     */
+
+    Quadrature( int snOrder_, double norm_ )
+	: snOrder( snOrder_ ), norm( norm_ ) { }
+
     // ACCESSORS
 
     /*!
@@ -81,7 +101,7 @@ class Quadrature
      * theta is the azimuthal angle.
      * phi is the polar angle.
      */
-    virtual const vector<double>& getMu() = 0;
+    const vector<double>& getMu() { return mu; };
 
     /*!
      * \brief Return the eta vector.
@@ -92,7 +112,7 @@ class Quadrature
      *
      * See comments for getMu().
      */
-    virtual const vector<double>& getEta() = 0;
+    const vector<double>& getEta() const;
 
     /*!
      * \brief Return the xi vector.
@@ -103,7 +123,7 @@ class Quadrature
      *
      * See comments for getMu().
      */
-    virtual const vector<double>& getXi() = 0;
+    const vector<double>& getXi() const; // { return xi; };
 
     /*!
      * \brief Return the wt vector.
@@ -113,7 +133,7 @@ class Quadrature
      *
      * See comments for getMu().
      */
-    virtual const vector<double>& getwt() = 0;
+    const vector<double>& getwt() { return wt; };
 
     /*!
      * \brief Return the mu component of the direction Omega_m.
@@ -126,7 +146,8 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    virtual double getMu( const int ) const = 0;
+    // const double getMu ????
+    double getMu( const int ) const;
 
     /*!
      * \brief Return the eta component of the direction Omega_m.
@@ -140,7 +161,7 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    virtual double getEta( const int ) const = 0;
+    double getEta( const int ) const;
 
     /*!
      * \brief Return the xi component of the direction Omega_m.
@@ -154,7 +175,7 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    virtual double getXi( const int ) const = 0;
+    double getXi( const int ) const;
 
     /*!
      * \brief Return the weight associated with the direction Omega_m.
@@ -167,7 +188,7 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    virtual double getwt( const int ) const = 0;
+    double getwt( const int ) const;
 
     /*!
      * \brief Returns the Omega vector for all directions.
@@ -187,7 +208,7 @@ class Quadrature
      * \param m The direction index must be contained in the range
      * (0,numAngles). 
      */
-    virtual vector<double> getOmega( const int ) const = 0;
+    vector<double> getOmega( const int ) const;
 
     /*!
      * \brief Returns the number of directions in the current quadrature set.
@@ -214,10 +235,70 @@ class Quadrature
      */
     virtual int getSnOrder() const = 0;
 
+    /*!
+     * \brief Integrates dOmega over the unit sphere. (The sum of quadrature weights.)
+     */
+    double iDomega() const;
+
+    /*!
+     * \brief Integrates the vector Omega over the unit sphere. 
+     *
+     * The solution to this integral is a vector with length equal to the
+     * number of dimensions of the quadrature set.  The solution should be
+     * the zero vector. 
+     *
+     * The integral is actually calculated as a quadrature sum over all
+     * directions of the quantity: 
+     *
+     *     Omega(m) * wt(m)
+     *
+     * Omega is a vector quantity.
+     */
+    vector<double> iOmegaDomega() const;
+
+    /*!
+     * \brief Integrates the tensor (Omega Omega) over the unit sphere. 
+     *
+     * The solution to this integral is a tensor vector with ndims^2 elements
+     * The off-diagonal elements should be zero.  The diagonal elements
+     * should have the value sumwt/3.  
+     *
+     * We actually return a 1D vector whose length is ndims^2.  The "diagonal"
+     * elements are 0, 4 and 8.
+     *
+     * The integral is actually calculated as a quadrature sum over all
+     * directions of the quantity:
+     *
+     *     Omega(m) Omega(m) wt(m)
+     *
+     * The quantity ( Omega Omega ) is a tensor quantity.
+     */
+    vector<double> iOmegaOmegaDomega() const;
+
+
     // Other accessors that may be needed:
     //
     // virtual int getLevels() = 0;
     // virtual int getNumAnglesPerOctant() = 0;
+
+  protected:
+
+    // DATA
+
+    int snOrder;    // defaults to 4.
+    double norm;    // 1D: defaults to 2.0.
+                    // 2D: defaults to 2*pi.
+                    // 3D: defaults to 4*pi.
+//  int numAngles;  // Varies for different quadratures.
+                    // 1D Gauss Legendre == snOrder.
+                    // 3D Level Symmetric == (snOrder+2)*snOrder.
+
+    // Quadrature directions and weights.
+    // The length of each vector will be numAngles.
+    vector<double> mu;
+    vector<double> eta; // will be an empty vector for all 1D sets.
+    vector<double> xi;  // will be an empty vector for all 1D  and 2D sets.
+    vector<double> wt;
 };
 
 //===========================================================================//
@@ -241,15 +322,7 @@ class Q1DGaussLeg : public Quadrature
 
     // DATA
 
-    int snOrder;    // defaults to 4.
     int numAngles;  // == snOrder
-    double norm;    // defaults to 2.0
-
-    // Quadrature directions and weights.
-    vector<double> mu;
-    vector<double> eta; // will be an empty vector for this 1D set.
-    vector<double> xi;  // will be an empty vector for this 1D set.
-    vector<double> wt;
 
   public:
 
@@ -277,16 +350,6 @@ class Q1DGaussLeg : public Quadrature
     // These functions override the virtual member functions specifed in the
     // parent class Quadrature.
     
-    const vector<double>& getMu()  { return mu;  };
-    const vector<double>& getEta() { return eta; }; 
-    const vector<double>& getXi()  { return xi;  }; 
-    const vector<double>& getwt()  { return wt;  };
-    //    const vector< vector<double> >& getOmega();
-    double getMu ( const int ) const;
-    double getEta( const int ) const;
-    double getXi ( const int ) const;
-    double getwt ( const int m ) const { return wt[m]; };
-    vector<double> getOmega( const int ) const;
     int getNumAngles()   const { return numAngles; };
     void display()       const;
     string name()        const { return "1D Gauss Legendre"; };
@@ -297,10 +360,6 @@ class Q1DGaussLeg : public Quadrature
     
     // IMPLEMENTATION
 
-    // These functions integrate the direction vector over the unit sphere.
-    double iDomega() const;
-    double iOmegaDomega() const;
-    double iOmegaOmegaDomega() const;
 };
 
 
@@ -325,17 +384,7 @@ class Q3DLevelSym : public Quadrature
 
     // DATA
 
-    int snOrder; // Quadrature order, numAngles = (snOrder+2)*snOrder
-                 // number of levels = snOrder.
-                 // defaults to 4.
     int numAngles; // defaults to 24.
-    double norm; // Defaults to 4*PI
-
-    // Quadrature directions and weights.
-    vector<double> mu;
-    vector<double> wt;
-    vector<double> eta;
-    vector<double> xi;
 
   public:
 
@@ -363,16 +412,6 @@ class Q3DLevelSym : public Quadrature
     // These functions override the virtual member functions specifed in the
     // parent class Quadrature.
 
-    const vector<double>& getMu()  { return mu;  };
-    const vector<double>& getEta() { return eta; };
-    const vector<double>& getXi()  { return xi;  };
-    const vector<double>& getwt()  { return wt;  };
-    //    const vector< vector<double> >& getOmega() const;
-    double getMu ( const int ) const;
-    double getEta( const int ) const;
-    double getXi ( const int ) const;
-    double getwt ( const int m ) const { return wt[m]; };
-    vector<double> getOmega( const int ) const;
     int getNumAngles()   const { return numAngles; };
     void display()       const;
     string name()        const { return "3D Level Symmetric"; };
@@ -382,11 +421,6 @@ class Q3DLevelSym : public Quadrature
   private:
     
     // IMPLEMENTATION
-
-    // These functions integrate the direction vector over the unit sphere.
-    double iDomega() const;
-    vector<double> iOmegaDomega() const;
-    vector<double> iOmegaOmegaDomega() const;
 
 };
 

@@ -35,11 +35,148 @@ static double EPS = 3.0e-14;
 static double TOL = 1.0e-12;
 
 
+// BASE CLASS QUADRATURE MEMBER FUNCTION DEFINITIONS
+
+// The member functions included in the base class can be called for all
+// quadrature sets.
+//------------------------------------------------------------------------------
+
+// Functions that return quadrature directions and weights.
+
+const vector<double>& Quadrature::getEta() const { 
+    Insist( dimensionality() >= 2,
+	    "The quadrature set must have at least 2 dimensions to return eta.");
+    return eta;
+}
+
+const vector<double>& Quadrature::getXi() const { 
+    Insist( dimensionality() >= 3,
+	    "The quadrature set must have at least 3 dimensions to return xi.");
+    return xi;
+}
+
+double Quadrature::getMu( const int m ) const {
+    // Angle index m must be greater than zero and less than numAngles.
+    Require( m >= 0 && m < getNumAngles() );             
+    // Die if the vector mu appears to be the wrong size.
+    Check( mu.size() >= m );       
+    return mu[m];
+}
+
+double Quadrature::getEta( const int m ) const {
+    Insist( dimensionality() >= 2,
+       "The quadrature set must have at least 2 dimensions to return eta.");
+    // Angle index m must be greater than zero and less than numAngles.
+    Require( m >= 0 && m < getNumAngles() ); 
+    return eta[m];
+}
+
+double Quadrature::getXi( const int m ) const {
+    Insist( dimensionality() >= 3,
+       "The quadrature set must have at least 3 dimensions to return xi.");
+    // Angle index m must be greater than zero and less than numAngles.
+    Require( m >= 0 && m < getNumAngles() ); 
+    return xi[m];
+}
+
+double Quadrature::getwt( const int m ) const {
+    // Angle index m must be greater than zero and less than numAngles.
+    Require( m >= 0 && m < getNumAngles() ); 
+    return wt[m];
+}
+
+vector<double> Quadrature::getOmega( const int m ) const {
+    vector<double> omega;
+    Require( m >= 0 && m < getNumAngles() );
+    omega.resize(3);
+    omega[0] = mu[m];
+    if ( dimensionality() >= 2 )
+	omega[1] = eta[m];
+    else
+	omega[1] = 0.0;  // no eta or xi values in 1D!
+    if ( dimensionality() >= 3 )
+	omega[2] = xi[m];
+    else
+	omega[2] = 0.0;  // no eta or xi values in 1D!
+    return omega;
+}
+
+// Functions that test the validity of the quadrature set.
+
+double Quadrature::iDomega() const {
+    double integral = 0.0;
+    for ( int i = 0; i < getNumAngles(); ++i )
+	integral += wt[i];
+    return integral;
+}
+
+vector<double> Quadrature::iOmegaDomega() const {
+    vector<double> integral;
+    int ndims = dimensionality();
+    integral.resize( ndims );
+    // initialize the sum to zero.
+    for ( int j = 0; j < ndims; ++j ) integral[j] = 0.0;
+    switch( ndims ) {
+    case( 3 ):
+	for ( int i = 0; i < getNumAngles(); ++i )
+	    integral[3] += wt[i]*xi[i];
+    case( 2 ):
+	for ( int i = 0; i < getNumAngles(); ++i )
+	    integral[2] += wt[i]*eta[i];
+    case ( 1 ):
+	for ( int i = 0; i < getNumAngles(); ++i )
+	    integral[1] += wt[i]*mu[i];
+    }
+    return integral;
+}
+
+vector<double> Quadrature::iOmegaOmegaDomega() const {
+    // The solution is returned as a vector and not a tensor.  The diagonal
+    // elements of the tensor are elements 0, 4 and 8 of the vector.
+    vector<double> integral;
+    int ndims = dimensionality();
+    //The size of the solution tensor is ndims^2.
+    integral.resize( ndims*ndims ); 
+    // initialize the solution to zero.
+    for ( int i = 0; i < ndims*ndims; ++i) integral[0] = 0.0;
+    // We are careful to only compute the terms of the tensor solution that
+    // are available for the current dimensionality of the quadrature set.
+    switch (ndims) {
+    case( 1 ):
+	for ( int i = 0; i < getNumAngles(); ++i ) {
+	    integral[0] += wt[i]*mu[i]*mu[i];
+	}
+	break;
+    case( 2 ):
+	for ( int i = 0; i < getNumAngles(); ++i ) {
+	    integral[0] += wt[i]*mu[i]*mu[i];
+	    integral[1] += wt[i]*mu[i]*eta[i];
+	    integral[2] += wt[i]*eta[i]*mu[i];
+	    integral[3] += wt[i]*eta[i]*eta[i];
+	}
+	break;
+    case( 3 ):
+	for ( int i = 0; i < getNumAngles(); ++i ) {
+	    integral[0] += wt[i]*mu[i]*mu[i];
+	    integral[1] += wt[i]*mu[i]*eta[i];
+	    integral[2] += wt[i]*mu[i]*xi[i];
+	    integral[3] += wt[i]*eta[i]*mu[i];
+	    integral[4] += wt[i]*eta[i]*eta[i];
+	    integral[5] += wt[i]*eta[i]*xi[i];
+	    integral[6] += wt[i]*xi[i]*mu[i];
+	    integral[7] += wt[i]*xi[i]*eta[i];
+	    integral[8] += wt[i]*xi[i]*xi[i];
+	}
+	break;
+    }
+    return integral;
+}
+
 // 1D Gauss Legendre Quadrature
 //--------------------------------------------------------------------------------
 
 Q1DGaussLeg::Q1DGaussLeg( int n, double norm_ ) 
-    : numAngles( n ), snOrder( n ), norm (norm_)
+    : Quadrature( n, norm_ ), numAngles( n )
 { 
     // We require the sn_order to be greater than zero.
     Require( n > 0 );
@@ -95,9 +232,9 @@ Q1DGaussLeg::Q1DGaussLeg( int n, double norm_ )
     // The quadrature weights should sum to 2.0
     Ensure( fabs(iDomega()-2.0) <= TOL );
     // The integral of mu over all angles should be zero.
-    Ensure( fabs(iOmegaDomega()) <= TOL );
+    Ensure( fabs(iOmegaDomega()[0]) <= TOL );
     // The integral of mu^2 should be 2/3.
-    Ensure( fabs(iOmegaOmegaDomega()-2.0/3.0) <= TOL );
+    Ensure( fabs(iOmegaOmegaDomega()[0]-2.0/3.0) <= TOL );
 
     // If norm != 2.0 then renormalize the weights to the required values. 
     if ( fabs(norm-2.0) >= TOL ) {
@@ -120,58 +257,8 @@ void Q1DGaussLeg::display() const {
 	     << setprecision(10) << wt[ix] << endl;
 	sum_wt += wt[ix];
     }
-    cout << "  The sum of the weights is " << sum_wt << endl;
+    cout << endl << "  The sum of the weights is " << sum_wt << endl;
     cout << endl;
-}
-
-double Q1DGaussLeg::getMu( const int m ) const {
-    Require( m >= 0 );        // Angle index m must be greater than zero.
-    Require( m < numAngles ); // Angle index m must be less than numAngles.
-    Check( mu.size() >= m );  // The vector mu appears to be the wrong size.
-    return mu[m];
-}
-
-double Q1DGaussLeg::getEta( const int m ) const {
-    Insist( dimensionality() >= 2,
-       "The quadrature set must have at least 2 dimensions to return eta.");
-    return eta[m];
-}
-
-double Q1DGaussLeg::getXi( const int m ) const {
-    Insist( dimensionality() >= 3,
-       "The quadrature set must have at least 3 dimensions to return xi.");
-    return xi[m];
-}
-
-vector<double> Q1DGaussLeg::getOmega( const int m ) const {
-    vector<double> omega;
-    Require( m >= 0 && m < numAngles );
-    omega.resize(3);
-    omega[0] = mu[m];
-    omega[1] = 0.0;  // no eta or xi values in 1D!
-    omega[2] = 0.0;  // no eta or xi values in 1D!
-    return omega;
-}
-
-double Q1DGaussLeg::iDomega() const {
-    double integral = 0.0;
-    for ( int i = 0; i < numAngles; ++i )
-	integral += wt[i];
-    return integral;
-}
-	    
-double Q1DGaussLeg::iOmegaDomega() const {
-    double integral = 0.0;
-    for ( int i = 0; i < numAngles; ++i )
-	integral += wt[i]*mu[i];
-    return integral;
-}	
-
-double Q1DGaussLeg::iOmegaOmegaDomega() const {
-    double integral = 0.0;
-    for ( int i = 0; i < numAngles; ++i )
-	integral += wt[i]*mu[i]*mu[i];
-    return integral;
 }
 
 
@@ -179,7 +266,7 @@ double Q1DGaussLeg::iOmegaOmegaDomega() const {
 //--------------------------------------------------------------------------------
 
 Q3DLevelSym::Q3DLevelSym( int sn_order_, double norm_ ) 
-    : snOrder( sn_order_ ), norm( norm_ ), numAngles (sn_order_ * (sn_order_+2))
+    : Quadrature( sn_order_, norm_ ), numAngles (sn_order_ * (sn_order_+2))
 
 { 
     Require ( snOrder > 0 );
@@ -552,35 +639,6 @@ Q3DLevelSym::Q3DLevelSym( int sn_order_, double norm_ )
     Ensure( fabs(iOmegaOmegaDomega()[8]-4.0*PI/3.0) <= TOL ); // xi*xi
 }
 
-double Q3DLevelSym::getMu( const int m ) const {
-    Require( m >= 0 );        // Angle index m must be greater than zero.
-    Require( m < numAngles ); // Angle index m must be less than numAngles.
-    Check( mu.size() >= m );  // The vector mu appears to be the wrong size.
-    return mu[m];
-}
-
-double Q3DLevelSym::getEta( const int m ) const {
-    Insist( dimensionality() >= 2,
-       "The quadrature set must have at least 2 dimensions to return eta.");
-    return eta[m];
-}
-
-double Q3DLevelSym::getXi( const int m ) const {
-    Insist( dimensionality() >= 3,
-       "The quadrature set must have at least 3 dimensions to return xi.");
-    return xi[m];
-}
-
-vector<double> Q3DLevelSym::getOmega( const int m ) const {
-    vector<double> omega;
-    Require( m >= 0 && m < numAngles );
-    omega.resize(3);
-    omega[0] = mu[m];
-    omega[1] = eta[m];
-    omega[2] = xi[m];
-    return omega;
-}
-
 void Q3DLevelSym::display() const {
     cout << endl << "The Quadrature directions and weights are:" 
 	 << endl << endl;
@@ -596,47 +654,9 @@ void Q3DLevelSym::display() const {
 	     << setprecision(10) << wt[ix]  << endl;
 	sum_wt += wt[ix];
     }
-    cout << "  The sum of the weights is " << sum_wt << endl;
+    cout << endl << "  The sum of the weights is " << sum_wt << endl;
     cout << endl;
 }
-
-double Q3DLevelSym::iDomega() const {
-    double integral = 0.0;
-    for ( int i = 0; i < numAngles; ++i )
-	integral += wt[i];
-    return integral;
-}
-	    
-vector<double> Q3DLevelSym::iOmegaDomega() const {
-    vector<double> integral;
-    integral.resize(3);
-    for ( int i = 0; i < 3; ++i ) integral[i] = 0.0;
-    for ( int i = 0; i < numAngles; ++i ) {
-	integral[0] += wt[i]*mu[i];
-	integral[1] += wt[i]*eta[i];
-	integral[2] += wt[i]*xi[i];
-    }
-    return integral;
-}	
-
-vector<double> Q3DLevelSym::iOmegaOmegaDomega() const {
-    vector<double> integral;
-    integral.resize(9); // The integral will be a tensor with 9 components.
-    for ( int i = 0; i < 9; ++i) integral[0] = 0.0;
-    for ( int i = 0; i < numAngles; ++i ) {
-	integral[0] += wt[i]*mu[i]*mu[i];
-	integral[1] += wt[i]*mu[i]*eta[i];
-	integral[2] += wt[i]*mu[i]*xi[i];
-	integral[3] += wt[i]*eta[i]*mu[i];
-	integral[4] += wt[i]*eta[i]*eta[i];
-	integral[5] += wt[i]*eta[i]*xi[i];
-	integral[6] += wt[i]*xi[i]*mu[i];
-	integral[7] += wt[i]*xi[i]*eta[i];
-	integral[8] += wt[i]*xi[i]*xi[i];
-    }
-    return integral;
-}
-
 
 
 } // end namespace rtt_quadrature
