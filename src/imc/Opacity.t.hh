@@ -29,10 +29,10 @@ namespace rtt_imc
 
  */
 template<class MT>
-inline Opacity<MT>::Opacity(const ccsf_double &sigma_abs_,
-			    const ccsf_double &sigma_thomson_,
-			    const ccsf_double &planck_,
-			    const ccsf_double &fleck_)
+Opacity<MT>::Opacity(const ccsf_double &sigma_abs_,
+		     const ccsf_double &sigma_thomson_,
+		     const ccsf_double &planck_,
+		     const ccsf_double &fleck_)
     : sigma_abs(sigma_abs_),
       sigma_thomson(sigma_thomson_),
       planck(planck_), 
