@@ -1,3 +1,8 @@
+2002-06-05  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* draco_viscope.tex: added new latex memo template for project
+	vision and scope statements.
+
 2001-09-21  Thomas M. Evans  <tme@lanl.gov>
 
 	* pkg_Test, template_c4_test, template_test, Makefile.test:
