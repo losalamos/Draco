@@ -188,7 +188,8 @@ LINK_LIBS	+= $(C4_LIB)
 endif
 LINK_LIBS	+= $(DS++_LIB)
 ifeq ($(need_pooma),yes)
-LINK_LIBS	+= $(POOMA_LIB)
+#LINK_LIBS	+= $(POOMA_LIB)
+LINK_LIBS	+= $(POOMA_LFLAGS) $(POOMA_LIBS)
 endif
 ifdef MPI_LIB
 LINK_LIBS	+= $(MPI_LIB)
@@ -216,7 +217,8 @@ dep_libc4	= $(SRC_TOP)/c4/libc4_$(env).$(lib_suffix)
 dep_libgeom	= $(SRC_TOP)/geom/libgeom_$(env).$(lib_suffix)
 dep_libmesh	= $(SRC_TOP)/mesh/libmesh_$(env).$(lib_suffix)
 
-dep_libpooma	= $(POOMA_LIB_DIR)/libpooma.a
+#dep_libpooma	= $(POOMA_LIB_DIR)/libpooma.a
+dep_libpooma	= $(POOMA_ROOT)/lib/$(POOMA_ARCH)/libpooma.a
 
 #-----------------------------------------------------------------------------#
 # Now finally, some implicit rules which we will be using constantly,

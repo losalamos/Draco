@@ -12,6 +12,8 @@
 # make.config, since they would overide the default target.
 ###############################################################################
 
+include $(SRC_TOP)/config/make.pooma
+
 ###############################################################################
 # Locate the namelist input files automatically.
 
