@@ -46,6 +46,12 @@ clean:
 	(cd sn;      $(MAKE) clean cleanonly=yes)
 #	(cd draco;   $(MAKE) clean cleanonly=yes)
 
+# The clean target has a pernicious failure mode.  If one of these
+# directories does not exist (like you haven't checked it out), then
+# the 'cd' will fail, leaving you running "make clean" in the current
+# directory, so that the process loops an infinite number of times.
+# Need to fix this!
+
 ###############################################################################
 #			   end of draco/src/makefile
 ###############################################################################
