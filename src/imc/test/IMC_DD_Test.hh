@@ -430,8 +430,9 @@ class IMC_DD_Interface :
     std_string get_ss_dist() const { return "cosine"; }
     sf_string get_ss_desc() const { return ss_desc; }
     SP_Census get_census() const { return SP_Census(); }
-    double get_ecen(int cell) const { return double(0); }
-    double get_ecentot() const { return double(0); }
+    double get_ecen(int cell) const { return double(137.2); }
+    // get_ecentot returns the global value
+    double get_ecentot() const { return double(9*137.2); }
 };
 
 // constructor
