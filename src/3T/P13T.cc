@@ -7,8 +7,8 @@
 //---------------------------------------------------------------------------//
 
 #include "3T/P13T.hh"
-#include "3T/RadiationPhysics.hh"
-#include "3T/PhysicalConstants.hh"
+#include "radphys/RadiationPhysics.hh"
+#include "units/PhysicalConstants.hh"
 #include <cmath>
 
 #include <iostream>
@@ -169,14 +169,17 @@ void P13T<MT, MP, DS>::solve(double dt,
 			     RadiationStateField &resultsStateField,
 			     ccsf &electronEnergyDeposition,
 			     ccsf &ionEnergyDeposition,
+#if 0
 			     ncvf &momentumDeposition,
+#endif
 			     ccsf &Tnp1Electron,
 			     ccsf &Tnp1Ion) const
 {
     // Require dt > 0, etc.
 
     Require(dt > 0.0);
-
+    Require(matStateCC.getUnits() == matStateFC.getUnits());
+    
     // This is a one-group problem
 
     int groupNo = 1;
@@ -313,10 +316,12 @@ void P13T<MT, MP, DS>::solve(double dt,
 
     Tnp1Ion = TnIon + deltaTIon;
     
+#if 0
     // Calculate the momentum deposition.
     // For now we just zero it out.
 
     momentumDeposition = 0.0;
+#endif
 }
 
 //---------------------------------------------------------------------------//

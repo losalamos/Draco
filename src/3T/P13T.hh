@@ -53,17 +53,19 @@ class P13T
     // Miscellaneous shortcut field typedefs from the MT class
     
     typedef typename MeshType::ccsf ccsf;    // cell-centered scalar field
+#if 0
     typedef typename MeshType::ncvf ncvf;    // node-centered vector field
+#endif
     typedef typename MeshType::fcdsf fcdsf;  // face-centered discontinuous s.f.
     typedef typename MeshType::bsbf bsbf;    // bndry-specified boundary field.
 
     // The MaterialProperties knows the correct representation for the
     // material state field
 
-    typedef typename MaterialProperties::MaterialStateField<ccsf>
+    typedef typename MaterialProperties::template MaterialStateField<ccsf>
             CCMaterialStateField;
 
-    typedef typename MaterialProperties::MaterialStateField<fcdsf>
+    typedef typename MaterialProperties::template MaterialStateField<fcdsf>
             FCMaterialStateField;
 
     // The state of the radiation field is passed in and returned
@@ -147,7 +149,9 @@ class P13T
 	       RadiationStateField &resultsStateField,
 	       ccsf &electronEnergyDeposition,
 	       ccsf &ionEnergyDeposition,
+#if 0
 	       ncvf &momentumDeposition,
+#endif
 	       ccsf &Tnp1Electron,
 	       ccsf &Tnp1Ion) const;
 
