@@ -1,0 +1,41 @@
+//----------------------------------*-C++-*----------------------------------//
+// tstpcg_DB.prs
+// Dave Nystrom
+// Mon May 12 10:52:19 1997
+//---------------------------------------------------------------------------//
+// @> tstpcg_DB template file for Perstalyzer.
+//---------------------------------------------------------------------------//
+
+#define pwrite(a) prst_write( ofs, #a, a )
+#define pread(a)  prst_read(  ifs, #a, a )
+
+// PRST: dump_command pwrite( %s );
+// PRST: read_command pread(  %s );
+
+//---------------------------------------------------------------------------//
+// save()
+
+// This method is responsible for dumping an object of class tstpcg_DB out to
+// a file for permanent storage and subsequent retrieval, etc.
+//---------------------------------------------------------------------------//
+
+void tstpcg_DB::save( ofstream& ofs )
+{
+// PRST: dumpvars
+}
+
+//---------------------------------------------------------------------------//
+// restore()
+
+// This method is responsible for reading an object of class tstpcg_DB back
+// from a file, in order to reinstantiate it just as it had been before. 
+//---------------------------------------------------------------------------//
+
+void tstpcg_DB::restore( ifstream& ifs )
+{
+// PRST: readvars
+}
+
+//---------------------------------------------------------------------------//
+//                              end of tstpcg_DB.prs
+//---------------------------------------------------------------------------//

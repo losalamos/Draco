@@ -1,0 +1,19 @@
+###############################################################################
+# tstpcg.nml
+# Dave Nystrom
+# Mon May 12 10:52:19 1997
+#
+# @> Specification of type, name, default value, and documentation for tstpcg
+# @> description parameters.
+###############################################################################
+
+block: tstpcg
+boxstart
+int	tstprec		1	#
+int	nxs		12	#
+int	nys		12	#
+boxend
+
+###############################################################################
+#				end of tstpcg.nml
+###############################################################################
