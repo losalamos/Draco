@@ -45,7 +45,14 @@ void test_math()
 
     a = 0.987654321233;
 
-    if (soft_equiv(x, a)) ITFAILS;       
+    if (soft_equiv(x, a)) ITFAILS;      
+
+    // checks for the new "reference=zero" coding 4aug00
+    double zero = 0.0;
+    if ( soft_equiv( 1.0e-10, zero)) ITFAILS;
+    if ( soft_equiv(-1.0e-10, zero)) ITFAILS;
+    if (!soft_equiv(-1.0e-35, zero)) ITFAILS;
+    if (!soft_equiv( 1.0e-35, zero)) ITFAILS;
 }
 
 //---------------------------------------------------------------------------//
