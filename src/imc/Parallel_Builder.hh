@@ -27,11 +27,22 @@
 #include "imc/Opacity.hh"
 #include "imc/Source_Init.hh"
 #include "imc/Particle_Buffer.hh"
+#include "imc/Source.hh"
+#include "c4/global.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
+#include <vector>
+#include <algorithm>
 
 IMCSPACE
 
-template<class MT> class Source;
+// draco stuff
+using C4::node;
+using C4::nodes;
+
+// std stuff
+using std::vector;
+using std::find;
 
 template<class MT>
 class Parallel_Builder
@@ -46,12 +57,11 @@ private:
 
   // calculate parallel source distributions
 
-  // distribute the census
+  // distribute the census, volume, and surface sources
     template<class PT>
     void dist_census(const Source_Init<MT> &, const Particle_Buffer<PT> &);
-
-  // distribute the volume source
-    void dist_vol(const Source_Init<MT> &);
+    vector<vector<int> > dist_vol(const Source_Init<MT> &);
+    vector<vector<int> > dist_ss(const Source_Init<MT> &);
 
   // functionality for Mesh passing
 
@@ -77,8 +87,8 @@ public:
     Parallel_Builder(const MT &, const Source_Init<MT> &);
 
   // source functions
-    template<class PT> 
-    void send_Source(const Source_Init<MT> &, const Particle_Buffer<PT> &);
+    template<class PT> SP<Source<MT> > 
+    send_Source(const Source_Init<MT> &, const Particle_Buffer<PT> &);
     SP<Source<MT> > recv_Source();
 
   // Mesh passing functionality
@@ -88,7 +98,67 @@ public:
   // Opacity passing functionality
     void send_Opacity(const Opacity<MT> &);
     SP<Opacity<MT> > recv_Opacity(SP<MT>);
+
+  // Mesh mapping functionality
+    inline int master_cell(int icell, int proc) const;
+    inline int imc_cell(int mcell, int proc) const;
+    inline vector<int> get_cells(int proc) const;
+    inline vector<int> get_procs(int mcell) const;
+    int num_cells(int proc) const { return cells_per_proc[proc].size(); }
+    int num_procs(int mcell) const { return procs_per_cell[mcell-1].size(); }    
 };
+
+//---------------------------------------------------------------------------//
+// INLINE FUNCTIONS FOR PARALLEL_BUILDER
+//---------------------------------------------------------------------------//
+// determine a cell on the master mesh given a cell on a particular processor
+
+template<class MT>
+inline int Parallel_Builder<MT>::master_cell(int icell, int proc) const
+{
+    Require (proc < nodes());
+    Require (icell <= cells_per_proc[proc].size());
+    return cells_per_proc[proc][icell-1];
+}
+
+//---------------------------------------------------------------------------//
+// determine a cell on the IMC mesh on processor given the master cell,
+// returns 0 (false) if the cell isn't on this processor
+
+template<class MT>
+inline int Parallel_Builder<MT>::imc_cell(int mcell, int proc) const
+{
+    Require (proc < nodes());
+
+  // get the iterator location
+    vector<int>::iterator itr = const_cast<vector<int>::iterator>
+	(find(cells_per_proc[proc].begin(), cells_per_proc[proc].end(),
+	      mcell));  
+
+  // if the cell is here return it
+    if (itr != cells_per_proc[proc].end())
+	return (itr - cells_per_proc[proc].begin()) + 1;
+    return 0;
+}
+
+//---------------------------------------------------------------------------//
+// return a vector<int> holding the master cells on this processor
+
+template<class MT>
+inline vector<int> Parallel_Builder<MT>::get_cells(int proc) const
+{
+    Require (proc < nodes());
+    return cells_per_proc[proc];
+}
+
+//---------------------------------------------------------------------------//
+// return a vector<int> holding the procs that contain this master cell
+
+template<class MT>
+inline vector<int> Parallel_Builder<MT>::get_procs(int mcell) const
+{
+    return procs_per_cell[mcell-1];
+}
 
 CSPACE
 

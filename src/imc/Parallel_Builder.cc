@@ -10,27 +10,20 @@
 #include "imc/XYCoord_sys.hh"
 #include "imc/XYZCoord_sys.hh"
 #include "imc/Global.hh"
-#include "c4/global.hh"
-#include "ds++/Assert.hh"
 #include <string>
-#include <vector>
 #include <iostream>
 #include <fstream>
 #include <cstdio>
-#include <algorithm>
 
 IMCSPACE
 
 // draco necessities
-using C4::node;
-using C4::nodes;
 using C4::Send;
 using C4::Recv;
 using Global::max;
 using Global::min;
 
 // std necessities
-using std::vector;
 using std::string;
 using std::fill;
 using std::ofstream;
@@ -185,19 +178,35 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
 
       // now we can do our DD/replication partitioning
 	for (int cell = 1; cell <= num_cells; cell++)
-	{
+	{	
+	  // marker to determine if we have put a cell on this node
+	    vector<bool> flag(nodes(), false);
+
+	  // fill up the modes with cell
 	    int replicates = 1;
-	    for (int proc = 0; proc < nodes(); proc++)
+	    int old_replicates = 0;
+	    do
 	    {
-		if (replicates <= cellrep[cell-1] && 
-		    cells_per_proc[proc].size() < sinit.get_capacity())
+		for (int proc = 0; proc < nodes(); proc++)
 		{
-		    procs_per_cell[cell-1].push_back(proc);
-   		    cells_per_proc[proc].push_back(cell);
-		    replicates++;
+		    if (replicates <= cellrep[cell-1] && 
+			cells_per_proc[proc].size() < sinit.get_capacity()
+			&& !flag[proc])
+		    {
+			procs_per_cell[cell-1].push_back(proc);
+			cells_per_proc[proc].push_back(cell);
+			flag[proc] = true;
+			replicates++;
+		    }
+		    Check (cells_per_proc[proc].size() <=
+			   sinit.get_capacity());
 		}
- 		Check (cells_per_proc[proc].size() <= sinit.get_capacity());
-	    }
+
+	      // test on old replicates to prevent infinite loops
+		if (old_replicates == replicates)
+		    break;
+		old_replicates = replicates;
+	    } while (replicates <= cellrep[cell-1]);
  	    Ensure (procs_per_cell[cell-1].size() > 0);
  	    Ensure (procs_per_cell[cell-1].size() <= nodes());
 	}
@@ -210,12 +219,17 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
 // send the source to the IMC-topology processors
 
 template<class MT>
-template<class PT>
-void Parallel_Builder<MT>::send_Source(const Source_Init<MT> &sinit, 
-				       const Particle_Buffer<PT> &buffer)
+template<class PT> SP<Source<MT> >
+Parallel_Builder<MT>::send_Source(const Source_Init<MT> &sinit, 
+				  const Particle_Buffer<PT> &buffer)
 {
   // check that we are on the host node only
     Check (!node());
+
+  // data necessary to build Source on host
+    SP<Source<MT> > host_source;
+    vector<vector<int> > vol;
+    vector<vector<int> > ss;
 
   // first distribute the census
     if (sinit.get_ncentot() > 0) 
@@ -223,7 +237,14 @@ void Parallel_Builder<MT>::send_Source(const Source_Init<MT> &sinit,
 
   // next do the volume source
     if (sinit.get_nvoltot() > 0)
-	dist_vol(sinit);
+	vol = dist_vol(sinit);
+
+  // finally do the surface source
+    if (sinit.get_nsstot() > 0)
+	ss = dist_ss(sinit);
+
+  // return source
+    return host_source;
 }
 
 //---------------------------------------------------------------------------//
@@ -336,10 +357,13 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
 //---------------------------------------------------------------------------//
 // distribute the volume source stuff
 	    
-template<class MT>
-void Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
+template<class MT> vector<vector<int> > 
+Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
 {
-  // find the number of cells
+  // return data for the host source
+    vector<vector<int> > host_vol(2);
+
+  // find the number of cells on the global mesh
     int num_cells = procs_per_cell.size();
     Require (num_cells > 0);
 
@@ -358,10 +382,174 @@ void Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
 	Check (nvol_xtra[cell-1] < procs_per_cell[cell-1].size());
     }
 
+  // update the Global rn_stream counter
+    Global::rn_stream += sinit.get_nvoltot();
+    Check (counter == Global::rn_stream);
+
   // loop over processors and make the send info
-  // check       v
+    int voltot = 0;
     for (int i = 0; i < nodes(); i++)
-      // << CONTINUE HERE >>
+    {
+      // calculate the number of cells on proc i mesh
+	int num_cells = cells_per_proc[i].size();
+
+      // make a c-style array for passing to other nodes
+	int *nvol_send   = new int[num_cells];
+	int *stream_send = new int[num_cells];
+	
+      // loop through cells on this processor and send stuff out
+	for (int cell = 1; cell <= num_cells; cell++)
+	{
+	  // determine the global cell index
+	    int global_cell = cells_per_proc[i][cell-1];
+
+	  // check to see if we need to add extra sources to this cell on
+	  // this processor
+	    if (nvol_xtra[global_cell-1] <= i)
+		nvol[global_cell-1]++;
+	    
+	  // calculate the nvol source and stream number for proc i
+	    nvol_send[cell-1]   = nvol[global_cell-1];
+	    stream_send[cell-1] = streamnum[global_cell-1];
+	    streamnum[global_cell-1] += nvol_send[cell-1];
+
+	  // do some check counters
+	    voltot += nvol_send[cell-1];
+	}
+
+      // send out the data 
+	if (node())
+	{
+	  // send to proc i if we are not on the host
+	    Send (num_cells, i, 24);
+	    Send (nvol_send, num_cells, i, 25);
+	    Send (stream_send, num_cells, i, 26);
+	}
+	else
+	{
+	  // return the needed source stuff for the host
+	  
+	  // nvol and stream num data
+	    host_vol[0].resize(num_cells);
+	    host_vol[1].resize(num_cells);
+
+	  // assign the vectors to our point array
+	    for (int n = 0; n < num_cells; n++)
+	    {
+		host_vol[0][n] = nvol_send[n];
+		host_vol[1][n] = stream_send[n];
+	    }
+	}
+
+      // reclaim dynamic memory
+	delete [] nvol_send;
+	delete [] stream_send;
+    }
+
+  // final assertion
+    Ensure (voltot == sinit.get_nvoltot());
+
+  // return the host volume source to the host processor
+    return host_vol;
+}
+
+//---------------------------------------------------------------------------//
+// distribute the surface source stuff
+	    
+template<class MT> vector<vector<int> > 
+Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit)
+{
+  // return data for the host source
+    vector<vector<int> > host_ss(2);
+
+  // find the number of cells on the global mesh
+    int num_cells = procs_per_cell.size();
+    Require (num_cells > 0);
+
+  // make the surface source counters
+    vector<int> nss(num_cells);
+    vector<int> nss_xtra(num_cells);
+    vector<int> streamnum(num_cells);
+    int counter = Global::rn_stream;
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	nss[cell-1] = sinit.get_nss(cell) / procs_per_cell[cell-1].size();
+	nss_xtra[cell-1] = sinit.get_nss(cell) % 
+	    procs_per_cell[cell-1].size();
+	streamnum[cell-1] = counter;
+	counter += sinit.get_nss(cell);
+	Check (nss_xtra[cell-1] < procs_per_cell[cell-1].size());
+    }
+    
+  // update the Global rn_stream counter
+    Global::rn_stream += sinit.get_nsstot();
+    Check (counter == Global::rn_stream);
+
+  // loop over processors and make the send info
+    int sstot = 0;
+    for (int i = 0; i < nodes(); i++)
+    {
+      // calculate the number of cells on proc i mesh
+	int num_cells = cells_per_proc[i].size();
+
+      // make a c-style array for passing to other nodes
+	int *nss_send   = new int[num_cells];
+	int *stream_send = new int[num_cells];
+	
+      // loop through cells on this processor and send stuff out
+	for (int cell = 1; cell <= num_cells; cell++)
+	{
+	  // determine the global cell index
+	    int global_cell = cells_per_proc[i][cell-1];
+
+	  // check to see if we need to add extra sources to this cell on
+	  // this processor
+	    if (nss_xtra[global_cell-1] <= i)
+		nss[global_cell-1]++;
+	    
+	  // calculate the nss source and stream number for proc i
+	    nss_send[cell-1]    = nss[global_cell-1];
+	    stream_send[cell-1] = streamnum[global_cell-1];
+	    streamnum[global_cell-1] += nss_send[cell-1];
+
+	  // do some check counters
+	    sstot += nss_send[cell-1];
+	}
+
+      // send out the data 
+	if (node())
+	{
+	  // send to proc i if we are not on the host
+	    Send (num_cells, i, 27);
+	    Send (nss_send, num_cells, i, 28);
+	    Send (stream_send, num_cells, i, 29);
+	}
+	else
+	{
+	  // return the needed source stuff for the host
+	  
+	  // nss and stream num data
+	    host_ss[0].resize(num_cells);
+	    host_ss[1].resize(num_cells);
+
+	  // assign the vectors to our point array
+	    for (int n = 0; n < num_cells; n++)
+	    {
+		host_ss[0][n] = nss_send[n];
+		host_ss[1][n] = stream_send[n];
+	    }
+	}
+
+      // reclaim dynamic memory
+	delete [] nss_send;
+	delete [] stream_send;
+    }
+
+  // final assertion
+    Ensure (sstot == sinit.get_nsstot());
+
+  // return the host surface source to the host processor
+    return host_ss;
 }
 
 //---------------------------------------------------------------------------//
