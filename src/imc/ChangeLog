@@ -1,3 +1,9 @@
+2003-06-04  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: tagged as part of draco-3_0_0.  This version of imc should
+	have complete, but unverified, random walk capability for gray
+	problems. 
+
 2003-03-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: Updated to imc-3_3_0.  This update changes lots of stuff

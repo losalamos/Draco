@@ -840,10 +840,7 @@ AC_DEFUN(AC_F90_ENV, [dnl
        i??86-pc-cygwin*)
           AC_COMPILER_COMPAQ_F90
        ;;
-       alphaev67-dec*)
-          AC_COMPILER_COMPAQ_F90
-       ;;
-       alpha-dec*)
+       alpha*)
           AC_COMPILER_COMPAQ_F90
        ;;
        *hp-hpux*)
@@ -1546,30 +1543,13 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 
    elif test "${with_cxx}" = asciwhite ; then 
 
-       # if we are using mpi then use newmpxlC
-       if test "${with_c4}" = mpi ; then
+       AC_CHECK_PROG(CXX, newxlC, newxlC)
+       AC_CHECK_PROG(CC, newxlc, newxlc)
 
-	   AC_CHECK_PROG(CXX, newmpxlC, newmpxlC)
-	   AC_CHECK_PROG(CC, newmpxlc, newmpxlc)
-
-	   if test "${CXX}" = newmpxlC ; then
-	       AC_DRACO_IBM_VISUAL_AGE
-	   else
-	       AC_MSG_ERROR("Did not find ASCI White newmpxlC compiler!")
-	   fi
-
-       # otherwise use newxlC
+       if test "${CXX}" = newxlC ; then
+	   AC_DRACO_IBM_VISUAL_AGE
        else
-
-	   AC_CHECK_PROG(CXX, newxlC, newxlC)
-	   AC_CHECK_PROG(CC, newxlc, newxlc)
-
-	   if test "${CXX}" = newxlC ; then
-	       AC_DRACO_IBM_VISUAL_AGE
-	   else
-	       AC_MSG_ERROR("Did not find ASCI White newxlC compiler!")
-	   fi
-
+	   AC_MSG_ERROR("Did not find ASCI White newxlC compiler!")
        fi
 
    else
@@ -2606,7 +2586,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 
        # dependency rules for IBM visual age compiler are complex
        if test "${with_cxx}" = asciwhite || test "${with_cxx}" = ibm; then
-	   DEPENDENCY_RULES='Makefile.dependencies.xlC'
+	   DEPENDENCY_RULES='Makefile.dep.xlC'
        fi
    
        # print out cpu message
@@ -2625,14 +2605,56 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 
        # set up 32 or 64 bit compiling on IBM
        if test "${enable_32_bit:=no}" = yes ; then
-	   CXXFLAGS="${CXXFLAGS} -q32"
+	   
+	   # switch on gcc or xlC compiler
+	   if test "${with_cxx}" = gcc; then
+	       CXXFLAGS="${CXXFLAGS} -maix32"
+	       CFLAGS="${CFLAGS} -maix32"
+	   elif test "${with_cxx}" = asciwhite || 
+                test "${with_cxx}" = ibm; then
+	       CXXFLAGS="${CXXFLAGS} -q32"
+	       CFLAGS="${CFLAGS} -q32"
+	   fi
+
        elif test "${enable_64_bit:=no}" = yes ; then
-	   CXXFLAGS="${CXXFLAGS} -q64"
+	   
+	   # switch on gcc or xlC compiler
+	   if test "${with_cxx}" = gcc; then
+	       CXXFLAGS="${CXXFLAGS} -maix64"
+	       CFLAGS="${CFLAGS} -maix64"
+	   elif test "${with_cxx}" = asciwhite || 
+                test "${with_cxx}" = ibm; then
+	       CXXFLAGS="${CXXFLAGS} -q64"
+	       CFLAGS="${CFLAGS} -q64"
+	   fi
+
        fi
 
        # set up the heap size
        if test "${with_cxx}" = asciwhite ; then
 	   LDFLAGS="${LDFLAGS} -bmaxdata=0x80000000"
+       fi
+
+       # 
+       # GCC on AIX FLAGS
+       #
+       if test "${with_cxx}" = gcc; then
+
+	   # add the appropriate runtime linking for shared compiling
+	   if test "${enable_shared}" = yes; then
+	       ARFLAGS="-Xlinker -brtl -Xlinker -bh:5 ${ARFLAGS}"
+	       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+	       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+	       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}" 
+	   fi
+
+	   # we always allow shared object linking
+	   if test "${enable_static_ld}" != yes; then
+	       LDFLAGS="${LDFLAGS} -Xlinker -brtl -Xlinker -bh:5"
+	   fi
+
+	   # turn of the rpath
+	   RPATH=''
        fi
 
        #
@@ -2644,9 +2666,9 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 
 	   # set up libraries (the headers are already set)
 	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
+	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi -lmpi_r)
 	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
+	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi -lmpi_r)
 	   fi
 
 	   # now turn on long long support if we are using the 
@@ -3181,6 +3203,184 @@ AC_DEFUN(AC_AZTEC_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_GSL_SETUP
+dnl
+dnl GSL SETUP (on by default)
+dnl GSL is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_GSL_SETUP, [dnl
+
+   dnl define --with-gsl
+   AC_ARG_WITH(gsl,
+      [  --with-gsl=[lib]      determine the gsl lib (gsl is the default])
+ 
+   dnl define --with-gsl-inc
+   AC_WITH_DIR(gsl-inc, GSL_INC, \${GSL_INC_DIR},
+	       [tell where GSL includes are])
+
+   dnl define --with-gsl-lib
+   AC_WITH_DIR(gsl-lib, GSL_LIB, \${GSL_LIB_DIR},
+	       [tell where GSL libraries are])
+
+   # set default value of gsl includes and libs
+   if test "${with_gsl:=gsl}" = yes ; then
+       with_gsl='gsl'
+   fi
+
+   # define GSL include path
+   if test -n "${GSL_INC}" ; then
+       # remember that GSL_INC has the final slash
+       GSL_H="\"${GSL_INC}az_gsl.h\""
+       GSL_DEFS_H="\"${GSL_INC}az_gsl_defs.h\""
+   elif test -z "${GSL_INC}" ; then
+       GSL_H="<az_gsl.h>"
+       GSL_DEFS_H="<az_gsl_defs.h>"
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_gsl=$1
+
+   # set up the libraries
+   if test "${with_gsl}" != no ; then
+       if test -n "${GSL_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} -l${with_gsl})
+       elif test -z "${GSL_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_gsl, -l${with_gsl})
+       fi
+   fi
+
+   # add GSL directory to VENDOR_DIRS
+   VENDOR_DIRS="${GSL_LIB} ${VENDOR_DIRS}"
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_GSLCBLAS_SETUP
+dnl
+dnl GSLCBLAS SETUP (on by default)
+dnl GSLCBLAS is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_GSLCBLAS_SETUP, [dnl
+
+   dnl define --with-gslcblas
+   AC_ARG_WITH(gslcblas,
+      [  --with-gslcblas=[lib]      determine the gslcblas lib (gslcblas is the default])
+ 
+   dnl define --with-gslcblas-inc
+   AC_WITH_DIR(gslcblas-inc, GSLCBLAS_INC, \${GSLCBLAS_INC_DIR},
+	       [tell where GSLCBLAS includes are])
+
+   dnl define --with-gslcblas-lib
+   AC_WITH_DIR(gslcblas-lib, GSLCBLAS_LIB, \${GSLCBLAS_LIB_DIR},
+	       [tell where GSLCBLAS libraries are])
+
+   # set default value of gslcblas includes and libs
+   if test "${with_gslcblas:=gslcblas}" = yes ; then
+       with_gslcblas='gslcblas'
+   fi
+
+   # define GSLCBLAS include path
+   if test -n "${GSLCBLAS_INC}" ; then
+       # remember that GSLCBLAS_INC has the final slash
+       GSLCBLAS_H="\"${GSLCBLAS_INC}az_gslcblas.h\""
+       GSLCBLAS_DEFS_H="\"${GSLCBLAS_INC}az_gslcblas_defs.h\""
+   elif test -z "${GSLCBLAS_INC}" ; then
+       GSLCBLAS_H="<az_gslcblas.h>"
+       GSLCBLAS_DEFS_H="<az_gslcblas_defs.h>"
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_gslcblas=$1
+
+   # set up the libraries
+   if test "${with_gslcblas}" != no ; then
+       if test -n "${GSLCBLAS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_gslcblas, -L${GSLCBLAS_LIB} -l${with_gslcblas})
+       elif test -z "${GSLCBLAS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_gslcblas, -l${with_gslcblas})
+       fi
+   fi
+
+   # add GSLCBLAS directory to VENDOR_DIRS
+   VENDOR_DIRS="${GSLCBLAS_LIB} ${VENDOR_DIRS}"
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_TRILINOS_SETUP
+dnl
+dnl TRILINOS SETUP (on by default)
+dnl TRILINOS is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_TRILINOS_SETUP, [dnl
+
+   dnl define --with-trilinos
+   AC_ARG_WITH(trilinos,
+      [  --with-trilinos=[lib]    determine the trilinos implementation (aztecoo is default])
+ 
+   dnl define --with-trilinos-inc
+   AC_WITH_DIR(trilinos-inc, TRILINOS_INC, \${TRILINOS_INC_DIR},
+	       [tell where TRILINOS includes are])
+
+   dnl define --with-trilinos-lib
+   AC_WITH_DIR(trilinos-lib, TRILINOS_LIB, \${TRILINOS_LIB_DIR},
+	       [tell where TRILINOS libraries are])
+
+   # set default value of trilinos includes and libs
+   if test "${with_trilinos:=aztecoo}" = yes ; then
+       with_trilinos='aztecoo'
+   fi
+
+   # define TRILINOS include path
+   if test -n "${TRILINOS_INC}" ; then
+       # remember that TRILINOS_INC has the final slash
+       Trilinos_Util_H="\"${TRILINOS_INC}Trilinos_Util.h\""
+       AztecOO_H="\"${TRILINOS_INC}AztecOO.h\""
+       Epetra_MpiComm_H="\"${TRILINOS_INC}Epetra_MpiComm.h\"" 
+       Epetra_Map_H="\"${TRILINOS_INC}Epetra_Map.h\""
+       Epetra_Vector_H="\"${TRILINOS_INC}Epetra_Vector.h\""
+       Epetra_CrsMatrix_H="\"${TRILINOS_INC}Epetra_CrsMatrix.h\""
+       Epetra_LinearProblem_H="\"${TRILINOS_INC}Epetra_LinearProblem.h\""
+       Epetra_IntVector_H="\"${TRILINOS_INC}Epetra_IntVector.h\""
+       Epetra_Import_H="\"${TRILINOS_INC}Epetra_Import.h\""
+       Epetra_Export_H="\"${TRILINOS_INC}Epetra_Export.h\""
+       Epetra_CompObject_H="\"${TRILINOS_INC}Epetra_CompObject.h\""
+       Epetra_Distributor_H="\"${TRILINOS_INC}Epetra_Distributor.h\""
+       Epetra_DistObject_H="\"${TRILINOS_INC}Epetra_DistObject.h\""
+       Epetra_MpiDistributor_H="\"${TRILINOS_INC}Epetra_MpiDistributor.h\""
+       Epetra_BasicDirectory_H="\"${TRILINOS_INC}Epetra_BasicDirectory.h\""
+       Epetra_Util_H="\"${TRILINOS_INC}Epetra_Util.h\""
+       Epetra_Time_H="\"${TRILINOS_INC}Epetra_Time.h\""
+dnl   elif test -z "${TRILINOS_INC}" ; then
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_trilinos=$1
+
+   # set up the libraries
+   if test "${with_trilinos}" != no ; then
+       if test -n "${TRILINOS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m)
+       elif test -z "${TRILINOS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -ltriutils -ly12m)
+       fi
+   fi
+
+   # add TRILINOS directory to VENDOR_DIRS
+   VENDOR_DIRS="${TRILINOS_LIB} ${VENDOR_DIRS}"
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_PCG_SETUP
 dnl
 dnl PCG LIBRARY SETUP (on by default)
@@ -3461,6 +3661,63 @@ AC_DEFUN([AC_VENDOR_DEFINES], [dnl
    fi
 
    # *****
+   # GSL
+   # *****
+   if test -n "${vendor_gsl}"; then 
+       # define gsl include paths
+       AC_DEFINE_UNQUOTED(GSL_H, ${GSL_H})dnl
+       AC_DEFINE_UNQUOTED(GSL_DEFS_H, ${GSL_DEFS_H})dnl
+
+       # add to defines
+       defines="${defines} ${GSL_H} ${GSL_DEFS_H}"
+   fi
+
+   # *****
+   # GSLCBLAS
+   # *****
+   if test -n "${vendor_gslcblas}"; then 
+       # define gslcblas include paths
+       AC_DEFINE_UNQUOTED(GSLCBLAS_H, ${GSLCBLAS_H})dnl
+       AC_DEFINE_UNQUOTED(GSLCBLAS_DEFS_H, ${GSLCBLAS_DEFS_H})dnl
+
+       # add to defines
+       defines="${defines} ${GSLCBLAS_H} ${GSLCBLAS_DEFS_H}"
+   fi
+
+
+   # *****
+   # TRILINOS
+   # *****
+   if test -n "${vendor_trilinos}"; then 
+       # define trilinos include paths
+       AC_DEFINE_UNQUOTED(Trilinos_Util_H, ${Trilinos_Util_H})dnl
+       AC_DEFINE_UNQUOTED(AztecOO_H, ${AztecOO_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_MpiComm_H, ${Epetra_MpiComm_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Map_H, ${Epetra_Map_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Vector_H, ${Epetra_Vector_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_CrsMatrix_H, ${Epetra_CrsMatrix_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_LinearProblem_H, ${Epetra_LinearProblem_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_IntVector_H, ${Epetra_IntVector_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Import_H, ${Epetra_Import_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Export_H, ${Epetra_Export_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_CompObject_H, ${Epetra_CompObject_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Distributor_H, ${Epetra_Distributor_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_DistObject_H, ${Epetra_DistObject_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_MpiDistributor_H, ${Epetra_MpiDistributor_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_BasicDirectory_H, ${Epetra_BasicDirectory_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Util_H, ${Epetra_Util_H})dnl
+       AC_DEFINE_UNQUOTED(Epetra_Time_H, ${Epetra_Time_H})dnl
+
+       # add to defines
+       defines="${defines} ${Trilinos_Util_H} ${AztecOO_H} ${Epetra_MpiComm_H} ${Epetra_Map_H}"
+       defines="${defines} ${Epetra_Vector_H} ${Epetra_CrsMatrix_H} ${Epetra_LinearProblem_H}"
+       defines="${defines} ${Epetra_IntVector_H} ${Epetra_Import_H} ${Epetra_Export_H}"
+       defines="${defines} ${Epetra_CompObject_H} ${Epetra_Distributor_H} ${Epetra_DistObject_H}"
+       defines="${defines} ${Epetra_MpiDistributor_H} ${Epetra_BasicDirectory_H}"
+       defines="${defines} ${Epetra_Util_H} ${Epetra_Time_H}"
+   fi
+
+   # *****
    # GRACE
    # *****
    if test -n "${vendor_grace}"; then
@@ -3494,6 +3751,9 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_SPRNG_SETUP(pkg)
    AC_PCG_SETUP(pkg)
    AC_AZTEC_SETUP(pkg)
+   AC_GSL_SETUP(pkg)
+   AC_GSLCBLAS_SETUP(pkg)
+   AC_TRILINOS_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
    AC_GANDOLF_SETUP(pkg)
    AC_EOSPAC5_SETUP(pkg)

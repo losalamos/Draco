@@ -3868,88 +3868,7 @@ echo "$as_me: error: not found" >&2;}
 
 
        ;;
-       alphaev67-dec*)
-
-   # Check for working compaq F90 compiler
-
-   # Extract the first word of "f95", so it can be a program name with args.
-set dummy f95; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_F90+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$F90"; then
-  ac_cv_prog_F90="$F90" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_F90="f95"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-  test -z "$ac_cv_prog_F90" && ac_cv_prog_F90="none"
-fi
-fi
-F90=$ac_cv_prog_F90
-if test -n "$F90"; then
-  echo "$as_me:$LINENO: result: $F90" >&5
-echo "${ECHO_T}$F90" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Compaq"
-   then
-       :
-   else
-       { { echo "$as_me:$LINENO: error: not found" >&5
-echo "$as_me: error: not found" >&2;}
-   { (exit 1); exit 1; }; }
-   fi
-
-   # F90FREE, F90FIXED AND MODFLAG
-
-   F90FREE=''
-   F90FIXED=''
-   MODFLAG='-I'
-
-   # LINKER AND LIBRARY (AR)
-
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-   F90STATIC='-non_shared'
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-     # F90FLAGS="${F90FREE} -assume byterecl"
-       F90FLAGS="${F90FREE} -assume byterecl -automatic -std -warn argument_checking"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	  # F90FLAGS="-g ${F90FLAGS}"
-	    F90FLAGS="-g -check bounds -fpe2 ${F90FLAGS}"
-       else
-	  # F90FLAGS="-O ${F90FLAGS}"
-	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library fast -tune host ${F90FLAGS}"
-       fi
-   fi
-
-
-       ;;
-       alpha-dec*)
+       alpha*)
 
    # Check for working compaq F90 compiler
 
@@ -5051,190 +4970,7 @@ echo "$as_me: error: \"Did not find IBM Visual Age xlC compiler!\"" >&2;}
 
    elif test "${with_cxx}" = asciwhite ; then
 
-       # if we are using mpi then use newmpxlC
-       if test "${with_c4}" = mpi ; then
-
-	   # Extract the first word of "newmpxlC", so it can be a program name with args.
-set dummy newmpxlC; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_CXX+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$CXX"; then
-  ac_cv_prog_CXX="$CXX" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_CXX="newmpxlC"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-fi
-fi
-CXX=$ac_cv_prog_CXX
-if test -n "$CXX"; then
-  echo "$as_me:$LINENO: result: $CXX" >&5
-echo "${ECHO_T}$CXX" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-	   # Extract the first word of "newmpxlc", so it can be a program name with args.
-set dummy newmpxlc; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_CC+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$CC"; then
-  ac_cv_prog_CC="$CC" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_CC="newmpxlc"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-fi
-fi
-CC=$ac_cv_prog_CC
-if test -n "$CC"; then
-  echo "$as_me:$LINENO: result: $CC" >&5
-echo "${ECHO_T}$CC" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-
-	   if test "${CXX}" = newmpxlC ; then
-
-   echo "$as_me:$LINENO: checking \"configuration of ${CXX}/${CC} compilers\"" >&5
-echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >&6
-
-   # xlC SPECIFIC FLAGS
-
-   # LINKER AND LIBRARY
-   LD='${CXX}'
-
-   # if shared then ar is xlC
-   if test "${enable_shared}" = yes ; then
-       AR="${CXX}"
-       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
-
-       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
-   else
-       AR='ar'
-       ARFLAGS='cr'
-
-       ARLIBS=''
-       ARTESTLIBS=''
-   fi
-
-   # COMPILATION FLAGS
-
-   # strict asci compliance
-   if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-qlanglvl=strict98"
-   fi
-
-   # the qinline option controls inlining, when -g is on no inlining
-   # is done, with -O# inlining is on by default
-
-   # set up compiler when optimized
-   if test "${with_opt:=0}" != 0; then
-
-       # optflags
-       xlC_opt_flags="-qarch=auto -qtune=auto -qcache=auto"
-
-       # optimization level
-       if test "${with_opt}" = 1; then
-	   # if asking for 1 just use opt in ibm
-	   xlC_opt_flags="${xlC_opt_flags} -qopt"
-       else
-	   # otherwise use number
-
-	   # turn of aggressive semantic optimizations on all levels
-	   # -O2 and above
-	   xlC_opt_flags="${xlC_opt_flags} -qopt=${with_opt} -qstrict"
-       fi
-
-       # turn off debug by default
-       if test "${enable_debug:=no}" = yes ; then
-	   xlC_opt_flags="-g ${xlC_opt_flags}"
-       fi
-
-   #set up compiler when not optimized
-   else
-
-       # optflags
-       xlC_opt_flags="-qnoopt"
-
-       # turn on debug by default
-       if test "${enable_debug:=yes}" = yes ; then
-	   xlC_opt_flags="-g ${xlC_opt_flags}"
-       fi
-
-   fi
-
-   # set the CXX and CC flags
-
-   # set the optimizations
-   CXXFLAGS="${CXXFLAGS} ${xlC_opt_flags}"
-   CFLAGS="${CFLAGS} ${xlC_opt_flags}"
-
-   # set template stuff
-   CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
-
-   # allow long long types
-   CXXFLAGS="${CXXFLAGS} -qlonglong"
-   CFLAGS="${CFLAGS} -qlonglong"
-
-   # static linking option
-   if test "${enable_static_ld:=no}" = yes ; then
-       LDFLAGS="${LDFLAGS} -bstatic"
-
-   # if we are building shared libraries we need to add
-   # run-time-linking
-   else
-       LDFLAGS="${LDFLAGS} -brtl -Wl,-bh:5"
-
-   fi
-
-   echo "$as_me:$LINENO: result: \"${CXX} compiler flags set\"" >&5
-echo "${ECHO_T}\"${CXX} compiler flags set\"" >&6
-
-
-	   else
-	       { { echo "$as_me:$LINENO: error: \"Did not find ASCI White newmpxlC compiler!\"" >&5
-echo "$as_me: error: \"Did not find ASCI White newmpxlC compiler!\"" >&2;}
-   { (exit 1); exit 1; }; }
-	   fi
-
-       # otherwise use newxlC
-       else
-
-	   # Extract the first word of "newxlC", so it can be a program name with args.
+       # Extract the first word of "newxlC", so it can be a program name with args.
 set dummy newxlC; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
@@ -5269,7 +5005,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-	   # Extract the first word of "newxlc", so it can be a program name with args.
+       # Extract the first word of "newxlc", so it can be a program name with args.
 set dummy newxlc; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
@@ -5305,7 +5041,7 @@ echo "${ECHO_T}no" >&6
 fi
 
 
-	   if test "${CXX}" = newxlC ; then
+       if test "${CXX}" = newxlC ; then
 
    echo "$as_me:$LINENO: checking \"configuration of ${CXX}/${CC} compilers\"" >&5
 echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >&6
@@ -5405,12 +5141,10 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
 echo "${ECHO_T}\"${CXX} compiler flags set\"" >&6
 
 
-	   else
-	       { { echo "$as_me:$LINENO: error: \"Did not find ASCI White newxlC compiler!\"" >&5
+       else
+	   { { echo "$as_me:$LINENO: error: \"Did not find ASCI White newxlC compiler!\"" >&5
 echo "$as_me: error: \"Did not find ASCI White newxlC compiler!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
-
        fi
 
    else
@@ -6349,7 +6083,7 @@ echo "${ECHO_T}\"not needed\"" >&6
 
        # dependency rules for IBM visual age compiler are complex
        if test "${with_cxx}" = asciwhite || test "${with_cxx}" = ibm; then
-	   DEPENDENCY_RULES='Makefile.dependencies.xlC'
+	   DEPENDENCY_RULES='Makefile.dep.xlC'
        fi
 
        # print out cpu message
@@ -6376,14 +6110,56 @@ _ACEOF
 
        # set up 32 or 64 bit compiling on IBM
        if test "${enable_32_bit:=no}" = yes ; then
-	   CXXFLAGS="${CXXFLAGS} -q32"
+
+	   # switch on gcc or xlC compiler
+	   if test "${with_cxx}" = gcc; then
+	       CXXFLAGS="${CXXFLAGS} -maix32"
+	       CFLAGS="${CFLAGS} -maix32"
+	   elif test "${with_cxx}" = asciwhite ||
+                test "${with_cxx}" = ibm; then
+	       CXXFLAGS="${CXXFLAGS} -q32"
+	       CFLAGS="${CFLAGS} -q32"
+	   fi
+
        elif test "${enable_64_bit:=no}" = yes ; then
-	   CXXFLAGS="${CXXFLAGS} -q64"
+
+	   # switch on gcc or xlC compiler
+	   if test "${with_cxx}" = gcc; then
+	       CXXFLAGS="${CXXFLAGS} -maix64"
+	       CFLAGS="${CFLAGS} -maix64"
+	   elif test "${with_cxx}" = asciwhite ||
+                test "${with_cxx}" = ibm; then
+	       CXXFLAGS="${CXXFLAGS} -q64"
+	       CFLAGS="${CFLAGS} -q64"
+	   fi
+
        fi
 
        # set up the heap size
        if test "${with_cxx}" = asciwhite ; then
 	   LDFLAGS="${LDFLAGS} -bmaxdata=0x80000000"
+       fi
+
+       #
+       # GCC on AIX FLAGS
+       #
+       if test "${with_cxx}" = gcc; then
+
+	   # add the appropriate runtime linking for shared compiling
+	   if test "${enable_shared}" = yes; then
+	       ARFLAGS="-Xlinker -brtl -Xlinker -bh:5 ${ARFLAGS}"
+	       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+	       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+	       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+	   fi
+
+	   # we always allow shared object linking
+	   if test "${enable_static_ld}" != yes; then
+	       LDFLAGS="${LDFLAGS} -Xlinker -brtl -Xlinker -bh:5"
+	   fi
+
+	   # turn of the rpath
+	   RPATH=''
        fi
 
        #
@@ -6397,23 +6173,23 @@ _ACEOF
 	   if test -n "${MPI_LIB}" ; then
 
    # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPI_LIB} -lmpi are the directories added
+   # -L${MPI_LIB} -lmpi -lmpi_r are the directories added
 
    if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpi"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpi -lmpi_r"
    elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpi"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpi -lmpi_r"
    fi
 
 	   elif test -z "${MPI_LIB}" ; then
 
    # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -lmpi are the directories added
+   # -lmpi -lmpi_r are the directories added
 
    if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lmpi"
+       VENDOR_LIBS="${VENDOR_LIBS} -lmpi -lmpi_r"
    elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpi"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpi -lmpi_r"
    fi
 
 	   fi
@@ -6770,6 +6546,105 @@ _ACEOF
 
        # add to defines
        defines="${defines} ${AZTEC_H} ${AZTEC_DEFS_H}"
+   fi
+
+   # *****
+   # GSL
+   # *****
+   if test -n "${vendor_gsl}"; then
+       # define gsl include paths
+       cat >>confdefs.h <<_ACEOF
+#define GSL_H ${GSL_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define GSL_DEFS_H ${GSL_DEFS_H}
+_ACEOF
+
+       # add to defines
+       defines="${defines} ${GSL_H} ${GSL_DEFS_H}"
+   fi
+
+   # *****
+   # GSLCBLAS
+   # *****
+   if test -n "${vendor_gslcblas}"; then
+       # define gslcblas include paths
+       cat >>confdefs.h <<_ACEOF
+#define GSLCBLAS_H ${GSLCBLAS_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define GSLCBLAS_DEFS_H ${GSLCBLAS_DEFS_H}
+_ACEOF
+
+       # add to defines
+       defines="${defines} ${GSLCBLAS_H} ${GSLCBLAS_DEFS_H}"
+   fi
+
+
+   # *****
+   # TRILINOS
+   # *****
+   if test -n "${vendor_trilinos}"; then
+       # define trilinos include paths
+       cat >>confdefs.h <<_ACEOF
+#define Trilinos_Util_H ${Trilinos_Util_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define AztecOO_H ${AztecOO_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_MpiComm_H ${Epetra_MpiComm_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_Map_H ${Epetra_Map_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_Vector_H ${Epetra_Vector_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_CrsMatrix_H ${Epetra_CrsMatrix_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_LinearProblem_H ${Epetra_LinearProblem_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_IntVector_H ${Epetra_IntVector_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_Import_H ${Epetra_Import_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_Export_H ${Epetra_Export_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_CompObject_H ${Epetra_CompObject_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_Distributor_H ${Epetra_Distributor_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_DistObject_H ${Epetra_DistObject_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_MpiDistributor_H ${Epetra_MpiDistributor_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_BasicDirectory_H ${Epetra_BasicDirectory_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_Util_H ${Epetra_Util_H}
+_ACEOF
+       cat >>confdefs.h <<_ACEOF
+#define Epetra_Time_H ${Epetra_Time_H}
+_ACEOF
+
+       # add to defines
+       defines="${defines} ${Trilinos_Util_H} ${AztecOO_H} ${Epetra_MpiComm_H} ${Epetra_Map_H}"
+       defines="${defines} ${Epetra_Vector_H} ${Epetra_CrsMatrix_H} ${Epetra_LinearProblem_H}"
+       defines="${defines} ${Epetra_IntVector_H} ${Epetra_Import_H} ${Epetra_Export_H}"
+       defines="${defines} ${Epetra_CompObject_H} ${Epetra_Distributor_H} ${Epetra_DistObject_H}"
+       defines="${defines} ${Epetra_MpiDistributor_H} ${Epetra_BasicDirectory_H}"
+       defines="${defines} ${Epetra_Util_H} ${Epetra_Time_H}"
    fi
 
    # *****

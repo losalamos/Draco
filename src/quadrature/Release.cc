@@ -24,7 +24,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "@(#)quadrature-1_2_0";
+    string pkg_release = "quadrature(draco-3_0_0)";
     return pkg_release;
 }
 

@@ -24,7 +24,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "@(#)plot2D-1_1_0";
+    string pkg_release = "plot2D(draco-3_0_0)";
     return pkg_release;
 }
 

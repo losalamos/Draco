@@ -1,3 +1,9 @@
+2003-06-04  Thomas M. Evans  <tme@lanl.gov>
+
+	* mc: tagged as part of draco-3_0_0.  It has support for random
+	walk, needed by imc, in OS_Mesh.  RZWedge_Mesh and TET_Mesh do not
+	have it yet.
+
 2003-03-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* mc: Updated to mc-3_3_0.  This update has lots of little stuff:

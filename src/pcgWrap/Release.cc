@@ -20,7 +20,7 @@ using std::string;
 // this library in the form pcgWrap-#_#_# in pkg_version variable
 const string release()
 {
-    string pkg_release = "@(#)pcgWrap-1_2_0";
+    string pkg_release = "pcgWrap(draco-3_0_0)";
     return pkg_release;
 }
 
