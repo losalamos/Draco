@@ -13,6 +13,7 @@
 #define rtt_imc_Rep_Transporter_t_hh
 
 #include "Rep_Transporter.hh"
+#include "Extrinsic_Surface_Tracker.hh"
 #include "mc/Particle_Stack.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
@@ -103,6 +104,10 @@ Rep_Transporter<MT,FT,PT>::transport(double dt,
     // begin timing the transport on this processor
     double trans_begin = C4::Wtime();
 
+    // add null pointer for extrinsic surface tracker; this feature will be
+    // fully added at a later date (it is fully functional in particle)
+    rtt_dsxx::SP<Extrinsic_Surface_Tracker> tracker;
+
     // get source particles and run them to completion
     while (*source)
     {
@@ -111,7 +116,8 @@ Rep_Transporter<MT,FT,PT>::transport(double dt,
 	Check (particle->status());
 
 	// transport the particle
-	particle->transport(*mesh, *opacity, *tally, random_walk, check);
+	particle->transport(*mesh, *opacity, *tally, random_walk, tracker, 
+			    check);
 	num_done++;
 
 	// after the particle is no longer active take appropriate action

@@ -13,6 +13,7 @@
 #define rtt_imc_DD_Transporter_t_hh
 
 #include "DD_Transporter.hh"
+#include "Extrinsic_Surface_Tracker.hh"
 #include "mc/Particle_Stack.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
@@ -210,12 +211,16 @@ void DD_Transporter<MT,FT,PT>::trans_src_async(
     using std::endl;
     using std::setw;
 
+    // add null pointer for extrinsic surface tracker; this feature will be
+    // fully added at a later date (it is fully functional in particle)
+    rtt_dsxx::SP<Extrinsic_Surface_Tracker> tracker;
+
     // get a source particle
     SP<PT> particle = source->get_Source_Particle(delta_t); 
     Check (particle->status());
 
     // transport the particle; update counters
-    particle->transport(*mesh, *opacity, *tally, check);
+    particle->transport(*mesh, *opacity, *tally, random_walk, tracker, check);
     num_run++;
     nsrc_run++;
     
@@ -287,13 +292,17 @@ void DD_Transporter<MT,FT,PT>::trans_domain_async(
     using std::endl;
     using std::setw;
 
+    // add null pointer for extrinsic surface tracker; this feature will be
+    // fully added at a later date (it is fully functional in particle)
+    rtt_dsxx::SP<Extrinsic_Surface_Tracker> tracker;
+
     // get a particle from the bank and activate it
     SP<PT> particle = bank.top();
     bank.pop();
     particle->reset_status();
     
     // transport the particle
-    particle->transport(*mesh, *opacity, *tally, check);
+    particle->transport(*mesh, *opacity, *tally, random_walk, tracker, check);
     num_run++;
     
     // particle is no longer active; take further action accordingly
