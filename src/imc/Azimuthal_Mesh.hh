@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   imc/Surface_tracker.hh
+ * \file   imc/Azimuthal_Mesh.hh
  * \author Mike Buksas
- * \date   Thu Jun 19 11:33:00 2003
- * \brief  Computes and tallies surface crossings for a collection of surfaces.  
+ * \date   Mon Jun 23 12:56:30 2003
+ * \brief  Class representing a mesh of aximuthal bins centered on the z axis.
  *
  * Long description.
  */
@@ -11,23 +11,17 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef rtt_imc_Surface_tracker_hh
-#define rtt_imc_Surface_tracker_hh
+#ifndef rtt_imc_Azimuthal_Mesh_hh
+#define rtt_imc_Azimuthal_Mesh_hh 
 
 #include <vector>
-
-#include "mc/Surface.hh"
-#include "ds++/SP.hh"
-
 
 namespace rtt_imc
 {
 
-class Surface_Tally;
-
 //===========================================================================//
 /*!
- * \class Surface_tracker
+ * \class Azimuthal_Mesh
  * \brief
  *
  * Long description or discussion goes here.  Information about Doxygen
@@ -36,7 +30,7 @@ class Surface_Tally;
  * Doxygen tutorial: http://www.stack.nl/~dimitri/doxygen/docblocks.html
  * Doxygen keywords: http://www.stack.nl/~dimitri/doxygen/commands.html
  *
- * \sa Surface_tracker.cc for detailed descriptions.
+ * \sa Azimuthal_Mesh.cc for detailed descriptions.
  *
  * Code Sample:
  * \code
@@ -54,58 +48,54 @@ class Surface_Tally;
 // 
 //===========================================================================//
 
-class Surface_tracker 
+class Azimuthal_Mesh 
 {
   public:
 
     // NESTED CLASSES AND TYPEDEFS
 
-    typedef rtt_dsxx::SP<rtt_mc::Surface> SP_Surface;
-    typedef std::vector<SP_Surface>::const_iterator surface_iterator;
-
     // CREATORS
     
     //! default constructors
-    Surface_tracker(const std::vector<SP_Surface>& surfaces);
+    Azimuthal_Mesh(const std::vector<double>& cosines);
 
     //! copy constructor
-    Surface_tracker(const Surface_tracker &rhs);
+    Azimuthal_Mesh(const Azimuthal_Mesh &rhs);
 
     //! destructor
-    ~Surface_tracker() { /* ... */ }
+    ~Azimuthal_Mesh() { /* ... */ }
 
     // MANIPULATORS
     
-    //! Assignment operator for Surface_tracker
-    Surface_tracker& operator=(const Surface_tracker &rhs);
+    //! Assignment operator for Azimuthal_Mesh
+    Azimuthal_Mesh& operator=(const Azimuthal_Mesh &rhs);
 
-    void initialize_status(const std::vector<double>& position,
-			   const std::vector<double>& direction);
+    // ACCESSORS
 
-    void tally_crossings(const std::vector<double>& position,
-			 const std::vector<double>& direction,
-			 double distance,
-			 double initial_ew,
-			 double sigma,
-			 Surface_Tally&);
+    double get_lower_cosine(int bin) const;
+    double get_upper_cosine(int bin) const;
 
-    // ACCESSORS:
-
-    bool get_inside(int i) const { return is_inside[i]; }
+    int size() const { return bins; }
+    bool is_in_bin(const std::vector<double>& direction, int bin) const;
+    int find_bin(const std::vector<double>& direction) const;
 
   private:
 
     // DATA
+    
+    int bins;
+    std::vector<double> bin_cosines;
 
-    std::vector<SP_Surface> surfaces;
-    std::vector<bool> is_inside;
+    // IMPLEMENTATION
+
+    bool check_cosines(const std::vector<double>& cosines) const;
 
 };
 
 } // end namespace rtt_imc
 
-#endif // rtt_imc_Surface_tracker_hh
+#endif // rtt_imc_Azimuthal_Mesh_hh
 
 //---------------------------------------------------------------------------//
-//              end of imc/Surface_tracker.hh
+//              end of imc/Azimuthal_Mesh.hh
 //---------------------------------------------------------------------------//

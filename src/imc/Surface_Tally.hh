@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   imc/Surface_tracker.hh
+ * \file   imc/Surface_Tally.hh
  * \author Mike Buksas
- * \date   Thu Jun 19 11:33:00 2003
- * \brief  Computes and tallies surface crossings for a collection of surfaces.  
+ * \date   Mon Jun 23 15:33:15 2003
+ * \brief  Contains tally information for surface crossings
  *
  * Long description.
  */
@@ -11,23 +11,20 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef rtt_imc_Surface_tracker_hh
-#define rtt_imc_Surface_tracker_hh
+#ifndef rtt_imc_Surface_Tally_hh
+#define rtt_imc_Surface_Tally_hh 
 
-#include <vector>
-
-#include "mc/Surface.hh"
 #include "ds++/SP.hh"
-
+#include <vector>
 
 namespace rtt_imc
 {
 
-class Surface_Tally;
+class Azimuthal_Mesh;
 
 //===========================================================================//
 /*!
- * \class Surface_tracker
+ * \class Surface_Tally
  * \brief
  *
  * Long description or discussion goes here.  Information about Doxygen
@@ -36,7 +33,7 @@ class Surface_Tally;
  * Doxygen tutorial: http://www.stack.nl/~dimitri/doxygen/docblocks.html
  * Doxygen keywords: http://www.stack.nl/~dimitri/doxygen/commands.html
  *
- * \sa Surface_tracker.cc for detailed descriptions.
+ * \sa Surface_Tally.cc for detailed descriptions.
  *
  * Code Sample:
  * \code
@@ -54,58 +51,57 @@ class Surface_Tally;
 // 
 //===========================================================================//
 
-class Surface_tracker 
+class Surface_Tally 
 {
   public:
 
     // NESTED CLASSES AND TYPEDEFS
 
-    typedef rtt_dsxx::SP<rtt_mc::Surface> SP_Surface;
-    typedef std::vector<SP_Surface>::const_iterator surface_iterator;
-
     // CREATORS
     
     //! default constructors
-    Surface_tracker(const std::vector<SP_Surface>& surfaces);
+    Surface_Tally(rtt_dsxx::SP<Azimuthal_Mesh> az_mesh);
 
     //! copy constructor
-    Surface_tracker(const Surface_tracker &rhs);
+    Surface_Tally(const Surface_Tally &rhs);
 
     //! destructor
-    ~Surface_tracker() { /* ... */ }
+    ~Surface_Tally();
 
     // MANIPULATORS
     
-    //! Assignment operator for Surface_tracker
-    Surface_tracker& operator=(const Surface_tracker &rhs);
+    //! Assignment operator for Surface_Tally
+    Surface_Tally& operator=(const Surface_Tally &rhs);
 
-    void initialize_status(const std::vector<double>& position,
-			   const std::vector<double>& direction);
+    void add_to_tally(const std::vector<double>& direction, 
+		      bool outward, 
+		      double ew);
 
-    void tally_crossings(const std::vector<double>& position,
-			 const std::vector<double>& direction,
-			 double distance,
-			 double initial_ew,
-			 double sigma,
-			 Surface_Tally&);
+    // ACCESSORS
 
-    // ACCESSORS:
-
-    bool get_inside(int i) const { return is_inside[i]; }
+    const std::vector<double>& get_outward_tally() { return outward; }
+    const std::vector<double>& get_inward_tally() { return inward; }
 
   private:
 
+    // NESTED CLASSES AND TYPEDEFS
+
+    // IMPLEMENTATION
+
     // DATA
 
-    std::vector<SP_Surface> surfaces;
-    std::vector<bool> is_inside;
+    rtt_dsxx::SP<Azimuthal_Mesh> the_mesh;
+    int mesh_size;
+
+    std::vector<double> inward;
+    std::vector<double> outward;
 
 };
 
 } // end namespace rtt_imc
 
-#endif // rtt_imc_Surface_tracker_hh
+#endif // rtt_imc_Surface_Tally_hh
 
 //---------------------------------------------------------------------------//
-//              end of imc/Surface_tracker.hh
+//              end of imc/Surface_Tally.hh
 //---------------------------------------------------------------------------//

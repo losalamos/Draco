@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Surface_tracker.hh"  
+#include "Surface_Tally.hh"
 
 #include <iostream>
 #include <cmath>
@@ -46,7 +47,8 @@ void Surface_tracker::initialize_status(const vector<double>& position,
 void Surface_tracker::tally_crossings(
     const vector<double>& position,
     const vector<double>& direction,
-    double distance, double initial_ew, double sigma)
+    double distance, double initial_ew, double sigma,
+    Surface_Tally& tally)
 {
 
     Check(position.size()  == 3);
@@ -81,6 +83,8 @@ void Surface_tracker::tally_crossings(
 			  << " at distance: " << crossing_distance 
 			  << " going " << (is_inside[i] ? "outward" : "inward")
 			  << "." << std::endl;
+
+		tally.add_to_tally(direction, is_inside[i], crossing_ew);
 
 		is_inside[i] = !is_inside[i];
 
