@@ -76,9 +76,9 @@ class QuadCreator
      * added to this package. 
      */
     enum Qid { 
-	GaussLeg, /*!< 1D Gauss Legendre (arbitrary order). */
+	GaussLeg,    /*!< 1D Gauss Legendre (arbitrary order). */
 	LevelSym2D,  /*!< 2D Level Symmetric (even order between 2 and 24, inclusive). */
-	LevelSym  /*!< 3D Level Symmetric (even order between 2 and 24, inclusive). */
+	LevelSym     /*!< 3D Level Symmetric (even order between 2 and 24, inclusive). */
     };
 
     // CREATORS
