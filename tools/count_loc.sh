@@ -92,8 +92,9 @@ CODE_DIR=`(cd $TMP; pwd)`
 
 # Print the header
 echo
-echo "**** Counting lines of code in directory: " 
-echo "    " $CODE_DIR 
+echo "Counting lines of code -- " 
+echo "Directory: " $CODE_DIR 
+echo "Date     : " `date`
 echo
 
 # Go to the directory to be scanned.
