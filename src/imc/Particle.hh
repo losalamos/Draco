@@ -37,6 +37,8 @@
 //                particles
 //  6)  5-26-98 : added static functions for getting the particle descriptor
 //                and converting it to an int
+//  7)   7-6-98 : added functions to return particle information to needed
+//                services 
 // 
 //===========================================================================//
 
@@ -169,17 +171,26 @@ public:
 		   SP<Diagnostic> = SP<Diagnostic>());
 
   // other services
+
+  // particle status functions
     bool status() const { return alive; }
+    void reset_status() { alive = true; }
+    void kill_particle() { alive = false; }
+
+  // accessors
+    int get_cell() const { return cell; }
+    double get_ew() const { return ew; }
+    const Sprng& get_random() const { return random; }
+
+  // set functions for sourcing particles
+    void set_random(Sprng &ran) { random = ran; }
+    void set_time_left(double t) { time_left = t; }
+    void set_descriptor(string s) { descriptor = s; }
+
+  // transport descriptors
     string desc() const { return descriptor; }
     inline static int get_index(string);
     inline static string get_descriptor(int);
-    Sprng& get_random() { return random; }
-    int get_cell() const { return cell; }
-    double get_ew() const { return ew; }
-    void set_time_left(double t) { time_left = t; }
-    void set_descriptor(string s) { descriptor = s; }
-    void reset_status() { alive = true; }
-    void kill_particle() { alive = false; }
 
   // public diagnostic services
     void print(ostream &) const;
