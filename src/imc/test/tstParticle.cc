@@ -18,6 +18,7 @@
 #include "../Tally.hh"
 #include "../Global.hh"
 #include "../Frequency.hh"
+#include "../Fleck_Factors.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "rng/Random.hh"
@@ -37,6 +38,7 @@ using rtt_imc::Gray_Particle;
 using rtt_imc::Multigroup_Particle;
 using rtt_imc::Opacity;
 using rtt_imc::Tally;
+using rtt_imc::Fleck_Factors;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_rng::Sprng;
@@ -464,11 +466,11 @@ void gray_transport_test()
     {
 	SP<G> frequency(new G);
 	OS_Mesh::CCSF<double> planck(mesh);
-	OS_Mesh::CCSF<double> fleck(mesh);
+	SP<Fleck_Factors<OS_Mesh> > fleck(new Fleck_Factors<OS_Mesh>(mesh));
 	for (int i = 1; i <= mesh->num_cells(); i++)
-	    fleck(i) = 1.0;
+	    fleck->fleck(i) = 1.0;
 
-	opacity = new Opacity<OS_Mesh, G>(frequency,planck, planck, fleck);
+	opacity = new Opacity<OS_Mesh, G>(frequency, planck, planck, fleck);
     }
 
     if (opacity->num_cells() != mesh->num_cells()) ITFAILS;
@@ -628,15 +630,17 @@ void mg_transport_test()
 	OS_Mesh::CCSF<vector<double> > planck(mesh);
 	OS_Mesh::CCSF<double>          int_planck(mesh);
 	vector<double>                 xs(2, 0.0);
+	SP<Fleck_Factors<OS_Mesh> >    fleck(new Fleck_Factors<OS_Mesh>(mesh));
 
 	for (int i = 1; i <= mesh->num_cells(); i++)
 	{
-	    int_planck(i) = 1.0;
-	    planck(i)     = xs;
+	    int_planck(i)   = 1.0;
+	    planck(i)       = xs;
+	    fleck->fleck(i) = 1.0;
 	}
 
 	opacity = new Opacity<OS_Mesh, MG>(frequency, planck, planck,
-					   int_planck, int_planck, planck);
+					   fleck, int_planck, planck);
     }
 
     if (opacity->num_cells() != mesh->num_cells()) ITFAILS;

@@ -17,6 +17,7 @@
 #include "Mat_State.hh"
 #include "Opacity.hh"
 #include "Frequency.hh"
+#include "Fleck_Factors.hh"
 #include "cdi/CDI.hh"
 #include <utility>
 
@@ -180,6 +181,7 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray,
 {
     using rtt_mc::global::c;
     using rtt_mc::global::a;
+    using rtt_dsxx::SP;
 
     Check (mesh->num_cells() == flat_data->gray_absorption_opacity.size());
     Check (mesh->num_cells() == flat_data->gray_scattering_opacity.size());
@@ -190,14 +192,16 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray,
     // number of cells
     int num_cells = mesh->num_cells();
 
-    // make cell-centered, scalar fields for Opacity and Fleck factor
+    // make cell-centered, scalar fields for Opacity
     typename MT::template CCSF<double> absorption(
 	mesh, flat_data->gray_absorption_opacity);
 
     typename MT::template CCSF<double> scattering(
 	mesh, flat_data->gray_scattering_opacity);
 
-    typename MT::template CCSF<double> fleck(mesh);
+    // make a Fleck Factors object
+    SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
+    Check (fleck->fleck.size() == num_cells);
 
     // calculate the Fleck factor in each cell
     double dedT   = 0.0; // dedT in Jerks/keV
@@ -219,12 +223,12 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray,
 	beta        = 4.0 * a * T*T*T * volume / dedT;
 	
 	// calculate Fleck factor
-	fleck(cell) = 1.0 / 
+	fleck->fleck(cell) = 1.0 / 
 	    (1.0 + implicitness * beta * c * delta_t * absorption(cell));
 	
-	Check (fleck(cell)      >= 0.0 && fleck(cell) <= 1.0);
-	Check (absorption(cell) >= 0.0);
-	Check (scattering(cell) >= 0.0);
+	Check (fleck->fleck(cell) >= 0.0 && fleck->fleck(cell) <= 1.0);
+	Check (absorption(cell)   >= 0.0);
+	Check (scattering(cell)   >= 0.0);
     }
     
     // create Opacity object
@@ -254,6 +258,7 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
     using rtt_cdi::CDI;
     using std::pair;
     using rtt_dsxx::soft_equiv;
+    using rtt_dsxx::SP;
 
     Check (mesh);
     Check (mesh->num_cells() == flat_data->mg_absorption_opacity.size());
@@ -275,11 +280,13 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
     typename MT::template CCSF<sf_double> scattering(
 	mesh, flat_data->mg_scattering_opacity);
 
-    typename MT::template CCSF<double>    fleck(mesh);
-
     typename MT::template CCSF<double>    integrated_norm_planck(mesh);
 
     typename MT::template CCSF<sf_double> emission_group_cdf(mesh);
+
+    // make a Fleck Factors object
+    SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
+    Check (fleck->fleck.size() == num_cells);
 
     // variables needed to calculate the fleck factor and integrated Planck
     // functions 
@@ -359,8 +366,9 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
 	beta = 4.0 * a * T*T*T * volume / dedT;
 	
 	// calculate Fleck Factor
-	fleck(cell) = 1.0/(1.0 + implicitness * beta * c * delta_t * planck); 
-	Check (fleck(cell) >= 0.0 && fleck(cell) <= 1.0);
+	fleck->fleck(cell) = 1.0 / 
+	    (1.0 + implicitness * beta * c * delta_t * planck); 
+	Check (fleck->fleck(cell) >= 0.0 && fleck->fleck(cell) <= 1.0);
     }
 
     // build the return opacity
