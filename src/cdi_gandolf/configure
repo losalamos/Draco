@@ -917,7 +917,7 @@ EOF
 
 	test_alltarget="$test_alltarget tGandolfFile tCDIGandolf"
         
-	test_nprocs="scalar"
+	test_nprocs="1"
 
 	if test -z "${test_nprocs}" ; then
 	    { echo "configure: error: "No procs choosen for the tests!"" 1>&2; exit 1; }

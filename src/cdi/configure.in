@@ -12,17 +12,6 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(cdi/config.h:config.h.in)
 package="cdi"
 
-dnl GANDOLF VENDOR SETUP
-dnl AC_WITH_DIR(gandolf-lib, GANDOLF_LIB, \${GANDOLF_LIB_DIR},
-dnl             [tell where GANDOLF libraries are])
-
-dnl if test -z "${GANDOLF_LIB}" ; then
-dnl    AC_VENDORLIB_SETUP(pkg, -lgandolf)
-dnl elif test -n "${GANDOLF_LIB}" ; then
-dnl    pkg='pkg'
-dnl    AC_VENDORLIB_SETUP(pkg, -L${GANDOLF_LIB} -lgandolf)
-dnl fi
-
 dnl VENDOR SETUPS
 AC_MPI_SETUP(test)
 
@@ -31,26 +20,14 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)
 AC_NEEDS_LIBS_TEST(UnitTestFrame c4)
 
-AC_RUNTESTS(tCDI, serial)
-dnl AC_RUNTESTS(tCDI, 1) 
+dnl AC_RUNTESTS(tCDI, serial)
+AC_RUNTESTS(tCDI, 1) 
 
 dnl DRACO SETUP
 AC_DRACO_ENV
 
-dnl case $host in
-dnl mips-sgi-irix6.*)
-dnl    if test -n "${GANDOLF_LIB}" ; then
-dnl        VENDOR_LIBS="-rpath ${GANDOLF_LIB} ${VENDOR_LIBS}"
-dnl    fi
-dnl ;;
-dnl esac
-
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in)
-
-dnl The IPCRESS file is binary so we copy it to the target directory manually.
-dnl echo copying ${srcdir}/test/Al_BeCu.ipcress to test/Al_BeCu.ipcress
-dnl cp ${srcdir}/test/Al_BeCu.ipcress test/Al_BeCu.ipcress
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/cdi configure.in
