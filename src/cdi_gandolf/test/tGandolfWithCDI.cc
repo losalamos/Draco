@@ -90,7 +90,7 @@ namespace rtt_gandolf_with_cdi_test
 	    // ------------------------- //
 	    
 	    // Create a smart pointer to a GandolfFile object
-	    rtt_dsxx::SP<rtt_cdi_gandolf::GandolfFile> spGFAnalytic;
+	    rtt_dsxx::SP< const rtt_cdi_gandolf::GandolfFile > spGFAnalytic;
 	    
 	    // Try to instantiate the object.
 	    try 
@@ -117,7 +117,7 @@ namespace rtt_gandolf_with_cdi_test
 	    const int matid=10001;
 	    
 	    // Create a smart pointer to an opacity object.
-	    rtt_dsxx::SP< rtt_cdi::GrayOpacity > spOp_Analytic_ragray;
+	    rtt_dsxx::SP< const rtt_cdi::GrayOpacity > spOp_Analytic_ragray;
 	    
 	    // Try to instantiate the opacity object.
 	    try
@@ -149,7 +149,7 @@ namespace rtt_gandolf_with_cdi_test
 	    // Create CDI object //
 	    // ----------------- //
 	    
-	    rtt_dsxx::SP< rtt_cdi::CDI > spCDI_Analytic;
+	    rtt_dsxx::SP< const rtt_cdi::CDI > spCDI_Analytic;
 	    if ( spCDI_Analytic = new rtt_cdi::CDI( spOp_Analytic_ragray ) )
 		pass() << "SP to CDI object created successfully (GrayOpacity).";
 	    else
