@@ -1,3 +1,9 @@
+2000-04-13  Todd J. Urbatsch <tmonster@lanl.gov>
+	* RZWedge_Mesh.hh, RZWedge_Mesh.cc, test/tstRZWedge_Mesh.cc: Added 
+	the RZWedge_Mesh class and a thorough test of a simple, one-cell
+	RZWedge_Mesh.  It has a full, structured-mesh capability.  Still
+	needs a builder, updated face references, and AMR capability.
+
 2000-04-04  H. Grady Hughes  <hgh@lanl.gov>
     * TET_Builder.hh, TET_Builder.cc, test/TET_test_1.hh,
     test/tstTET_Mesh.cc: Rewrote the builder class and the tests to
