@@ -13,6 +13,8 @@
 #define __viz_Ensight_Translator_hh__
 
 #include "traits/Viz_Traits.hh"
+#include "ds++/Assert.hh"
+#include "ds++/Check_Strings.hh"
 
 #include <sstream>
 #include <iostream>

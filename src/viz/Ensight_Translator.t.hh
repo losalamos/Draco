@@ -133,42 +133,69 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
     for (int i = 0; i < ens_cdata_names_in.size(); i++)
 	ens_cdata_names[i] = ens_cdata_names_in[i];
        
-    // CREATE THE VARIABLE NAMES, AND CHECK TO MAKE SURE THE 
-    // VARIABLE NAMES ARE UNIQUE AND OF LENGTH GREATER THAN ZERO	      
-    
-    // here we check for size and spaces in names; however the following
-    // characters are not valid for enight names and should be not be in the
-    // names even though we don't check for them (yet):
-    //    ( ) [ ] + - @ ! # * ^ $ / space
+    // Check to make sure the variable names are of acceptable length 
+    // and contain no forbidden characters. Ensight prohibits the
+    // characters "( ) [ ] + - @ ! # * ^ $ / space", and requires
+    // the names be 19 characters or less. Moreover, since these
+    // names will be used to label output and to create directories,
+    // the names should also be unique.
 
-    // check for blanks in names
-    for (int i = 0; i < nens_vdata; i++)
+    typedef std::vector<sf_string::iterator> SFS_iter_vec;
+    // Create a name list for testing.
+    sf_string name_tmp(nens_vdata+nens_cdata);
+    for (int i=0; i < nens_vdata; i++ )
+	name_tmp[i] = ens_vdata_names[i];
+    for (int i=0; i < nens_cdata; i++ )
+	name_tmp[i+nens_vdata] = ens_cdata_names[i];
+    // Check for name lengths out of limits
     {
-	std_string test = ens_vdata_names[i];
-	
-	if (test.size() == 0 || test.size() > 19)
-	    Insist (0, "Variable name inappropriately sized!");
-
-	if (test.find(' ') != std_string::npos) 
-	    Insist (0, "Spaces found in the vertex data name!");
-
-	for (int j = i+1; j < nens_vdata; j++)
-	    if (ens_vdata_names[j] == test) 
-		Insist (0, "Non-unique names found in vdata!");
+	int low = 1;
+	int high= 19;
+	SFS_iter_vec result =
+	    rtt_dsxx::check_string_lengths(name_tmp.begin(), 
+					   name_tmp.end(), low, high);
+	if (result.size() != 0) 
+	{
+	    std::cerr << "*** Error in variable name(s) -" << std::endl;
+	    for (int i=0; i<result.size(); i++)
+		std::cerr << "Size of name is not in allowable range: \"" 
+			  << *result[i] << "\"" << std::endl;
+	    std::cerr << "Name lengths must be greater than " << low 
+		      << " and less than " << high << "." << std::endl;
+	    Insist (0, "Ensight variable name length out of limits!");
+	}
     }
-    for (int i = 0; i < nens_cdata; i++)
+    // Check for bad characters.
     {
-	std_string test = ens_cdata_names[i];
-	
-	if (test.size() == 0 || test.size() > 19)
-	    Insist (0, "Variable name inappropriately sized!");
-
-	if (test.find(' ') != std_string::npos) 
-	    Insist (0, "Spaces found in the cell data name!");
-
-	for (int j = i+1; j < nens_cdata; j++)
-	    if (ens_cdata_names[j] == test) 
-		Insist (0, "Non-unique names found in cdata!");
+	std::string bad_chars = "()[]+-@!#*^$/ ";
+	SFS_iter_vec result =
+	    rtt_dsxx::check_string_chars(name_tmp.begin(), 
+					 name_tmp.end(), bad_chars);
+	if (result.size() != 0) 
+	{
+	    std::cerr << "*** Error in variable name(s) -" << std::endl;
+	    for (int i=0; i<result.size(); i++) 
+	        std::cerr << "Found disallowed character(s) in name: \"" 
+	                  << *result[i] << "\"" << std::endl;
+	    std::cerr << "The following characters are forbidden:" << 
+		std::endl << " \"" << bad_chars << "\"," << 
+		" as well as any white-space characters." << std::endl;
+	    Insist (0, "Found illegal character in ensight variable names!");
+	}
+    }
+    // Check for non-unique names
+    {
+	SFS_iter_vec result =
+	    rtt_dsxx::check_strings_unique(name_tmp.begin(), name_tmp.end());
+	if (result.size() != 0) 
+	{
+	    std::cerr << "*** Error in variable name(s) -" << std::endl;
+	    for (int i=0; i<result.size(); i++)
+		std::cerr << "Duplicate name found: \"" 
+			  << *result[i] << "\"" << std::endl;
+	    std::cerr << "All variable names must be unique!" << std::endl;
+	    Insist (0, "Duplicate ensight variable names found!");
+	}
     }
 
     // calculate case file filename
