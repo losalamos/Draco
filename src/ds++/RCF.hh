@@ -28,8 +28,9 @@ namespace rtt_dsxx
  * The RCF provides reference counting to a field type.  In a sense it is an
  * analog of rtt_dsxx::SP, except it is tailored to field types.  The field
  * types are expected to be random access containers, and functions that are
- * part of the Basic Container Concept (with the exception of swap) are also
- * included.  This means that the following operations are provided:
+ * part of the Container Concept (with the exception of swap) are also
+ * included (Austern, Sec. 9.1.1).  This means that the following operations
+ * are provided:
  * - operator[]()
  * - size()
  * - empty()
@@ -85,7 +86,8 @@ namespace rtt_dsxx
  *     delete y;                             // YIKES!!!!!!!!!
  * \endcode
  * 
- * \sa rtt_dsxx::SP for more details on reference counting.
+ * \sa rtt_dsxx::SP for more details on reference counting and Austern,
+ * "Generic Programming and the STL" Sec. 9.1.1 for container concepts.
  */
 /*!
  * \example ds++/test/tstRCF.cc
