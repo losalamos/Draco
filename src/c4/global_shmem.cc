@@ -1338,6 +1338,33 @@ static int ari_sz = 0;
 static int *ari_pWrk = NULL;
 static int ari_Wsz = 0;
 
+template<class T> 
+void gsum( T *px, int n, T dummy /*=T()*/ )
+{
+}
+
+template<class T> 
+void gmin( T *px, int n, T dummy /*=T()*/ )
+{
+}
+
+template<class T> 
+void gmax( T *px, int n, T dummy /*=T()*/ )
+{
+}
+
+template void gsum( int *, int, int );
+template void gsum( float *, int, float );
+template void gsum( double *, int, double );
+
+template void gmin( int *, int, int );
+template void gmin( float *, int, float );
+template void gmin( double *, int, double );
+
+template void gmax( int *, int, int );
+template void gmax( float *, int, float );
+template void gmax( double *, int, double );
+
 void gsum( int *px, int n )
 {
     int i;
