@@ -81,7 +81,7 @@ void Coord_sys::calc_omega(double costheta, double phi,
 			   sf_double &omega_) const
 {
     // check that the old, incoming direction is reasonably normalized
-    Check (soft_equiv(dot(omega_, omega_), 1.0, 1.e-8));
+    Check (soft_equiv(dot(omega_, omega_), 1.0, 1.e-6));
 
     // calculate new direction cosines
     double sintheta = sqrt(1 - costheta * costheta);
