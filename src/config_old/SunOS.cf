@@ -12,7 +12,7 @@ optns	=
 
 PCG_LIB_DIR	= $(HOME)/lib
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_f77_sun_sol
-LAPACK_LIB	= -llapack_sun_sol -lblas_sun_sol
+LAPACK_LIB	= -llapack_sun_sol -lblas_sun_sol -lF77 -lM77 -lsunmath
 
 # Sun CC doesn't cut it, so use KCC for now.
 cxx	:= KCC
