@@ -20,7 +20,7 @@ using std::string;
  * \return string of the release number
  *
  * Function definition for Release, define the local version number for
- * this library in the form rng-#_#_# in pkg_release variable 
+ * this library in the form rng-\#_\#_\# in pkg_release variable 
  */
 const string release()
 {
