@@ -26,6 +26,10 @@ runregression ()
 
    PCG_DEPEND_DIRS="src/linalg src/P1Diffusion"
 
+   # directories that depend on pooma
+
+   POOMA_DEPEND_DIRS="src/POOMA_MT"
+
    # Remove, create the target directory, and cd into it.
 
    echo rm -rf $TARGETDIR
@@ -55,6 +59,14 @@ runregression ()
       echo removing PCG dependent directories: $PCG_DEPEND_DIRS
       echo rm -rf $PCG_DEPEND_DIRS
       rm -rf $PCG_DEPEND_DIRS
+   fi
+
+   # remove directories that depend on pooma if it can't be found.
+
+   if [ "$HAS_POOMA" != "true" ] ; then
+      echo removing POOMA dependent directories: $POOMA_DEPEND_DIRS
+      echo rm -rf $POOMA_DEPEND_DIRS
+      rm -rf $POOMA_DEPEND_DIRS
    fi
 
    # Make the test runs
@@ -134,6 +146,7 @@ do
    for b in $BITS
    do
 
+      HAS_POOMA="false"
       HAS_PCGLIB="false"
       HAS_SPRNGLIB="false"
 
@@ -146,6 +159,13 @@ do
          eval SPRNG_LIBPATH='$SPRNG_LIB'$b'PATH'
          TARGETDIR=$TARGETROOT/${c4}_$b/draco
       fi
+
+      # Check if pooma is available
+
+      # No clause exists for checking if pooma is available.
+      # This will be added when POOMA_MT becomes stable.
+      #
+      # HAS_POOMA="true"
 
       # Check if pcglib is available
 
