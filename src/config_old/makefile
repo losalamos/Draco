@@ -81,6 +81,7 @@ LINALG_LIB	= -L$(SRC_TOP)/linalg -llinalg_$(env)
 GEOM_LIB	= -L$(SRC_TOP)/geom   -lgeom_$(env)
 MESH_LIB	= -L$(SRC_TOP)/mesh   -lmesh_$(env)
 3T_LIB		= -L$(SRC_TOP)/3T     -l3T_$(env)
+SN_LIB		= -L$(SRC_TOP)/sn     -lsn_$(env)
 
 ifeq ($(need_util),yes)
 need_spdf	:= yes
@@ -200,6 +201,9 @@ C++FLAGS = $(CXXFLAGS)
 LINK_LIBS	:=
 ifdef SYS_LINK_FLAGS
 LINK_LIBS	+= $(SYS_LINK_FLAGS)
+endif
+ifeq ($(need_sn),yes)
+LINK_LIBS	+= $(SN_LIB)
 endif
 ifeq ($(need_3T),yes)
 LINK_LIBS	+= $(3T_LIB)
