@@ -239,6 +239,7 @@ void Parallel_Data_Operator::local_to_global(FT &local_field,
     else if (topology->get_parallel_scheme() == "DD")
     {
 	Check(local_field.size() == topology->num_cells(C4::node()));
+	Check(global_field.size() == topology->num_cells());
 
 	// iterators for local field
 	typename FT::iterator begin  = local_field.begin();
