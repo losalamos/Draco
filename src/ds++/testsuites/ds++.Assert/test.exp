@@ -1,34 +1,54 @@
 puts "Running tests of DS++ Assert component."
 
-load_lib ds.exp
+load_lib draco.exp
 
 global ENV
 
 puts "value of ENV is $ENV"
 
-puts "preparing to run tstAssert_$ENV"
+puts "Running tstAssert_$ENV"
+
 set output [exec tstAssert_$ENV]
-puts "output is :$output:"
-
-puts "Now parsing the output."
-
-# Check the output of t2
-
-#if {[regexp "^t2: a.what() = You must be kidding!" $output line]} 
-if {[regexp "^t2:.*" $output line]} {
-    puts "found line for t2 :$line:"
-    pass t2
-} else {
-    fail "t2"
-}
 
 # Check the output of t1
 
-if {[regexp "^t1:.*" $output line]} {
-    puts "found line for t1 :$line:"
+if {[regexp "t1: passed" $output]} {
     pass t1
 } else {
-    fail "t1.execute"
+    fail t1
 }
+
+# Check the output of t2
+
+if {[regexp "t2: passed" $output]} {
+    pass t2
+} else {
+    fail t2
+}
+
+# Check the output of t3
+
+if {[regexp "t3: passed" $output]} {
+    pass t3
+} else {
+    fail t3
+}
+
+# Check the output of t4
+
+if {[regexp "t4: passed" $output]} {
+    pass t4
+} else {
+    fail t4
+}
+
+# Check the output of t5
+
+if {[regexp "t5: passed" $output]} {
+    pass t5
+} else {
+    fail t5
+}
+
 
 # All done with tests of tstAssert_$(env)
