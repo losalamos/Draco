@@ -77,18 +77,49 @@ void insist( const char *cond, const char *msg, const char *file, int line );
 NAMESPACE_DS_END
 
 //---------------------------------------------------------------------------//
-// The Assert macro is intended to be used for validating preconditions which
-// must be true in order for following code to be correct, etc.  For example,
-// Assert( x > 0. ); y = sqrt(x);  If the assertion fails, the code should
-// just bomb.  Philosophically, it should be used to feret out bugs in
-// preceding code, making sure that prior results are within reasonable
-// bounds before proceeding to use those results in further computation, etc.
+// The assertion macros are intended to be used for validating preconditions
+// which must be true in order for following code to be correct, etc.  For
+// example, Assert( x > 0. ); y = sqrt(x); If the assertion fails, the code
+// should just bomb.  Philosophically, it should be used to feret out bugs in
+// preceding code, making sure that prior results are within reasonable bounds
+// before proceeding to use those results in further computation, etc.
 //---------------------------------------------------------------------------//
 
-#ifdef NOASSERT
-#define Assert(c) 
+//---------------------------------------------------------------------------//
+// These macros are provided to support the Design By Contract formalism.
+// The activation of each macro is keyed off a bit in the DBC macro which can 
+// be specified on the command line.
+//    Bit     DBC macro affected
+//     0       Require
+//     1       Check
+//     2       Ensure
+// So for instance, -DDBC=7 turns them all on, -DDBC=0 turns them all
+// off, and -DDBC=1 turns on Require but turns off Check and Ensure.  The
+// default is to have them all enabled.
+//---------------------------------------------------------------------------//
+
+#if !defined(DBC)
+#define DBC 7
+#endif
+
+#if DBC & 1
+#define Require(c) if (!(c)) dsxx::toss_cookies( #c, __FILE__, __LINE__ );
 #else
+#define Require(c) 
+#endif
+
+#if DBC & 2
+#define Check(c) if (!(c)) dsxx::toss_cookies( #c, __FILE__, __LINE__ );
 #define Assert(c) if (!(c)) dsxx::toss_cookies( #c, __FILE__, __LINE__ );
+#else
+#define Check(c) 
+#define Assert(c) 
+#endif
+
+#if DBC & 4
+#define Ensure(c) if (!(c)) dsxx::toss_cookies( #c, __FILE__, __LINE__ );
+#else
+#define Ensure(c) 
 #endif
 
 //---------------------------------------------------------------------------//

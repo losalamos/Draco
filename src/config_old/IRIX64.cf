@@ -47,6 +47,10 @@ spartan	:= yes
 ar	= /bin/ar
 ranlib	= /bin/true
 
+ifndef DBC
+DBC	= 7
+endif
+
 #-----------------------------------------------------------------------------#
 # Kuck and Associates C++
 
@@ -134,19 +138,24 @@ endif
 
 ifeq ($(opt),1)
 optns		= o1
-ASSERT_FLAG	= -DNOASSERT
+#ASSERT_FLAG	= -DNOASSERT
+DBC		= 1
 cxx_opt		= +K1 -O1
 endif
 
 ifeq ($(opt),2)
 optns		= o2
-ASSERT_FLAG	= -DNOASSERT
+#ASSERT_FLAG	= -DNOASSERT
+#ASSERT_FLAG	= -DDBC=0
+DBC		= 0
 cxx_opt		= +K2 -O2
 endif
 
 ifeq ($(opt),3)
 optns		= o3
-ASSERT_FLAG	= -DNOASSERT
+#ASSERT_FLAG	= -DNOASSERT
+#ASSERT_FLAG	= -DDBC=0
+DBC		= 0
 cxx_opt		= +K3 -O3
 endif
 
@@ -249,6 +258,8 @@ CXX	+= $(cxx_opt)
 
 endif				# SGI C++
 #-----------------------------------------------------------------------------#
+
+ASSERT_FLAG = -DDBC=$(DBC)
 
 ifeq ($(need_python),yes)
 
