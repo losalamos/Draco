@@ -1,0 +1,52 @@
+//----------------------------------*-C++-*----------------------------------//
+// DoubleContainer.hh
+// Randy M. Roberts
+// Mon Aug 23 16:30:39 1999
+// $Id$
+//---------------------------------------------------------------------------//
+// @> 
+//---------------------------------------------------------------------------//
+
+#ifndef __meshTest_DoubleContainer_hh__
+#define __meshTest_DoubleContainer_hh__
+
+namespace rtt_meshTest
+{
+ 
+//===========================================================================//
+// class DoubleContainer - 
+//
+// Purpose :  The following class exists to test the MT field types with a
+//            non-trivial type.
+//
+// revision history:
+// -----------------
+// 0) original
+// 
+//===========================================================================//
+
+class DoubleContainer
+{
+  public:
+    double data;
+
+    DoubleContainer() : data(0.) {}
+
+    DoubleContainer(double _data) : data(_data) {}
+
+    DoubleContainer(const DoubleContainer& dc) : data(dc.data) {}
+
+    DoubleContainer& operator=(const DoubleContainer& dc)
+    {
+        data = dc.data;
+        return *this;
+    }
+};
+
+} // end namespace rtt_meshTest
+
+#endif                          // __meshTest_DoubleContainer_hh__
+
+//---------------------------------------------------------------------------//
+//                              end of meshTest/DoubleContainer.hh
+//---------------------------------------------------------------------------//
