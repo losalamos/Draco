@@ -49,36 +49,77 @@
 ##
 ##---------------------------------------------------------------------------##
 
-## deterimine if this is draco or a client
+## Parse command line
 
-withdraco=$1
+echo " "
+echo "Running $0 $*"
+echo " "
 
-if ! test -z "$withdraco"; then
-   argname=`echo $withdraco | sed -e 's/=.*//'`
-   dracodir=`echo $withdraco | sed -e 's/.*=//'`
-   if test "$argname" = "--with-draco"; then
-      if test -d $dracodir; then
-         mydir=`pwd`
-         cd $dracodir
-         dracodir=`pwd`
-         cd $mydir
-         withdraco="--with-draco=$dracodir"
-         echo "Will configure package using $withdraco"
-      else
-         echo "Request was made to build using --with-draco=$dracodir"
-         echo "but the directory \"$dracodir\" could not be found.  Aborting..."
-         exit 1
-      fi
-   else
-      echo "Unknown argument.  Usage..."
-      echo "   build_draco_client_release [--with-draco=PATH]"
-      echo "Aborting..."
-      exit 1
-   fi
-else
-   echo "It looks like you want to build and release Draco"
-   echo "and not a Draco client."
-fi
+cmd_args="$1 $2 $3 $4 $5 $6 $7 $8 $9"
+for arg in $cmd_args; do
+
+    case $arg in
+
+    --with-draco=*)
+	withdraco=$arg
+        echo "$arg"
+        echo "     Looks like we are building a Draco client."
+        dracodir=`echo $withdraco | sed -e 's/.*=//'`
+        if test -d $dracodir; then
+           mydir=`pwd`
+           cd $dracodir
+           dracodir=`pwd`
+           cd $mydir
+           withdraco="--with-draco=$dracodir"
+           echo "     Will configure client using $withdraco"
+       else
+           echo "     Request was made to build using --with-draco=$dracodir"
+           echo "     but the directory \"$dracodir\" could not be found.  Aborting..."
+           exit 1
+       fi
+       echo " "
+    ;;
+
+   --client=*)
+        clientname=`echo $arg | sed -e 's/.*=//'`
+        echo "$arg"
+        echo "     Looks like we are building a Draco client: $clientname"
+	echo " "
+    ;;
+
+    --keep-build-dir*)
+        keepbuilddirs="true"
+        echo "$arg"
+        echo "    The build tree will not be removed."
+	echo " "
+    ;;
+
+    --help | -h)
+        echo " "
+	echo "$0"
+        echo " "
+        echo "This script will build an optimized and a debug version of Draco or a Draco"
+        echo "client.  After building each version a set of regression tests will be run"
+	echo "and a summary of sucess will be printed to standard out.  The install"
+        echo "directories are created relative to the CWD.  The debug version will be"
+        echo "installed at $cwd/../../\$arch/debug and the optimized version will be"
+        echo "installed at $cwd/../../\$arch/opt.  \$arch will be the value of uname for"
+	echo "the current machine."
+        echo " "
+	echo "Usage: build_ccs4_release <options>"
+	echo " "
+        echo "   --help                This message."
+	echo "   --with-draco=<path>   This argument is not needed when building Draco."
+        echo "            It is required to be present when building a Draco client."
+        echo "            <path> is the fully qualified path to a Draco installation."
+        echo "            e.g. /codes/radtran/vendors/draco/Linux/opt."
+        echo "    --keep-build-dir     Do not remove the build tree after install and"
+	echo "            testing is complete.  The default behavior is to remove the "
+	echo "            build tree."
+	echo " "
+    ;;
+    esac
+done
 
 ## determine install directory names
 arch=`uname`
@@ -110,38 +151,59 @@ case "$arch" in
 
 Linux)
 
+   # options common to Draco and Clients
+
    MPI="--with-c4=mpi"
+   MPI_INC="--with-mpi-inc=/usr/local/mpich/include"
+   MPI_LIB="--with-mpi-lib=/usr/local/mpich/lib"
+
+   LAPACK="--with-lapack=atlas"
+   LAPACK_LIB="--with-lapack-lib=/codes/radtran/vendors/atlas/$arch/lib"
+
+   # options for Draco only
 
    if test -z "$withdraco"; then
-     MPI_INC="--with-mpi-inc=/usr/local/mpich/include"
-     MPI_LIB="--with-mpi-lib=/usr/local/mpich/lib"
- 
-     SPRNG_INC="--with-sprng-inc=/codes/radtran/vendors/sprng/include"
-     SPRNG_LIB="--with-sprng-lib=/codes/radtran/vendors/sprng/$arch/lib"
+      SPRNG_INC="--with-sprng-inc=/codes/radtran/vendors/sprng/include"
+      SPRNG_LIB="--with-sprng-lib=/codes/radtran/vendors/sprng/$arch/lib"
 
-     PCG_LIB="--with-pcg-lib=/codes/radtran/vendors/pcg/$arch/lib"
- 
-     LAPACK="--with-lapack=atlas"
-     LAPACK_LIB="--with-lapack-lib=/codes/radtran/vendors/atlas/$arch/lib"
+      PCG_LIB="--with-pcg-lib=/codes/radtran/vendors/pcg/$arch/lib"
 
-     GANDOLF_LIB="--with-gandolf-lib=/codes/radtran/vendors/gandolf/$arch"
+      GANDOLF_LIB="--with-gandolf-lib=/codes/radtran/vendors/gandolf/$arch"
 
-     EOSPAC_LIB="--with-eospac-lib=/codes/radtran/vendors/eospac/$arch/lib"
+      EOSPAC_LIB="--with-eospac-lib=/codes/radtran/vendors/eospac/$arch/lib"
 
-     GRACE_INC="--with-grace-inc=/usr/local/grace/include"
-     GRACE_LIB="--with-grace-lib=/usr/local/grace/lib"
+      GRACE_INC="--with-grace-inc=/usr/local/grace/include"
+      GRACE_LIB="--with-grace-lib=/usr/local/grace/lib"
 
-     VENDORS="$MPI $MPI_INC $MPI_LIB $SPRNG_INC $SPRNG_LIB $PCG_LIB $LAPACK"
-     VENDORS="$VENDORS $LAPACK_LIB $GANDOLF_LIB $EOSPAC_LIB $GRACE_INC $GRACE_LIB"
+   # options for clients only
+
    else
-     VENDORS="$MPI"
+
+      TRILINOS="--with-trilinos=aztecoo"
+      TRILINOS_INC="--with-trilinos-inc=/codes/radtran/vendors/trilinos/Linux/mpi/include"
+      TRILINOS_LIB="--with-trilinos-lib=/codes/radtran/vendors/trilinos/Linux/mpi/lib"
+
    fi
+
+   # Put the list together
+
+   VENDORS="$MPI $MPI_INC $MPI_LIB $SPRNG_INC $SPRNG_LIB $PCG_LIB $LAPACK"
+   VENDORS="$VENDORS $LAPACK_LIB $GANDOLF_LIB $EOSPAC_LIB $GRACE_INC $GRACE_LIB"
+   VENDORS="$VENDORS $TRILINOS $TRILINOS_INC $TRILINOS_LIB"
    ;;
 
 IRIX64)
+
+   echo "This script not ready for IRIX64 platforms."
+   exit 1
+
    ;;
 
 OSF1)
+
+   echo "This script not ready for OSF1 platforms."
+   exit 1
+
    ;;
 
 esac
@@ -166,7 +228,9 @@ gmake nj=2
 gmake check > $pkg_debug/log
 
 cd $pkg_debug
-rm -rf d
+if test -z "$keepbuilddirs"; then
+   rm -rf d
+fi
 
 python $pkg_src/tools/regression_filter.py < log
 
@@ -190,6 +254,8 @@ gmake nj=2
 gmake check > $pkg_opt/log
 
 cd $pkg_opt
-rm -rf d
+if test -z "$keepbuilddirs"; then
+   rm -rf d
+fi
 
 python $pkg_src/tools/regression_filter.py < log
