@@ -30,6 +30,7 @@ digraph draco_level {
     meshread [shape=box, label="meshReaders"];
     stop [shape=box, label="stopwatch"]; 
     plot [shape=box, label="plot2D"];
+    lapack [shape=box, label="lapack_wrap"];
     
     /* level 3 */
     viz [shape=box, label="viz"];
@@ -50,7 +51,7 @@ digraph draco_level {
     
     /* dependencies */
     {rank=same; level1 stdheaders dsxx};
-    {rank=same; level2 plot stop traits xm c4 rng units meshread cdi quad};
+    {rank=same; level2 plot lapack stop traits xm c4 rng units meshread cdi quad};
     {rank=same; level3 rttread viz radphys timestep cdianal cdieos cdigan pcg};
     {rank=same; level4 mc meshservice};
     {rank=same; level5 imc};
@@ -68,6 +69,7 @@ digraph draco_level {
     quad        -> {dsxx};
     stop        -> {dsxx};
     plot        -> {dsxx};
+    lapack      -> {dsxx};
     
     /* level 3 */
     viz         -> {traits dsxx};
