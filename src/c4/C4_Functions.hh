@@ -45,6 +45,12 @@ template<class Comm>
 void inherit(const Comm &);
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Free an inherited communicator from another application.
+ */
+void free_inherited_comm();
+
+//---------------------------------------------------------------------------//
 // QUERY FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
