@@ -12,7 +12,7 @@
 //===========================================================================//
 // class Sprng - 
 //
-// Purpose : A random number class based on the SPRNG series of Generators
+// Purpose : A random number class based on the SPRNG series of Generators.
 //
 // revision history:
 // -----------------
@@ -77,7 +77,7 @@ public:
     int get_num() const { return streamnum; }
 
   // test diagnostics
-    bool avg_test(int, double = .001);
+    bool avg_test(int, double = .001) const;
 
   // do a diagnostic
     void print() const { print_sprng(streamid->id); }

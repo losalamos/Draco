@@ -20,7 +20,7 @@ using std::fabs;
 //---------------------------------------------------------------------------//
 // calculate the average for n deviates, should succeed
 
-bool Sprng::avg_test(int n, double eps)
+bool Sprng::avg_test(int n, double eps) const
 {
     double avg = 0.0;
     for (int i = 1; i <= n; i++)
