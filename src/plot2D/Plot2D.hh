@@ -101,7 +101,7 @@ class Plot2D
 	static const int indices = 3;
 	int v[indices];
 
-	VersionNumber::VersionNumber() {
+	VersionNumber() {
 	    for ( int i = 0; i < indices; i++ ) {
 		v[i] = 0;
 	    }
