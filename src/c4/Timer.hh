@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <sys/times.h>
 #include <iostream>
+#include "ds++/Assert.hh"
 
 namespace rtt_c4
 {
@@ -36,6 +37,7 @@ namespace rtt_c4
 // revision history:
 // -----------------
 // 0) original
+// 1) 2003/01/21 Added sum_* member functions (Lowrie).
 // 
 //===========================================================================//
 
@@ -44,9 +46,6 @@ class Timer
   private:
     // Beginning wall clock time.
     clock_t begin;
-
-    // Flag determining if begin has been set.
-    bool begin_set;
     
     // Ending wall clock time.
     clock_t end;
@@ -60,18 +59,27 @@ class Timer
     // System clock resolution.
     const long clock_tick;
 
+    // Flag determining if timer is currently on.
+    bool timer_on;
+
+    // sum of wall clock time between starts and stops
+    double sum_wall;
+
+    // sum of system clock time between starts and stops
+    double sum_system;
+
+    // sum of system clock time between starts and stops
+    double sum_user;
+
   public:
     //! Constructor.
-    Timer() : begin_set(false), clock_tick(sysconf(_SC_CLK_TCK)) {/*...*/}
+    Timer() : timer_on(false), clock_tick(sysconf(_SC_CLK_TCK)) { reset(); }
 
     //! Set the beginning of time cycle.
     inline void start();
 
     //! Set the end of time cycle.
-    void stop() { end = times(&tms_end); }
-
-    //! Do lap times without resetting the timer.
-    void lap_start() { if (!begin_set) start(); }
+    inline void stop();
 
     //! Return the wall clock time in seconds.
     inline double wall_clock() const;
@@ -81,6 +89,18 @@ class Timer
 
     //! Return the user cpu time in seconds.
     inline double user_cpu() const;
+
+    //! Return the wall clock time in seconds, summed over starts and stops.
+    double sum_wall_clock() const { Require(! timer_on); return sum_wall; }
+
+    //! Return the system cpu time in seconds, summed over starts and stops.
+    double sum_system_cpu() const { Require(! timer_on); return sum_system; }
+
+    //! Return the user cpu time in seconds, summed over starts and stops.
+    double sum_user_cpu() const { Require(! timer_on); return sum_user; }
+
+    //! Reset the sums of times.
+    inline void reset();
 
     //! Print out a timing report.
     void print(std::ostream &, int p = 2) const;
@@ -102,14 +122,29 @@ inline std::ostream& operator<<(std::ostream &out, const Timer &t)
 
 void Timer::start()
 {
-    begin     = times(&tms_begin);
-    begin_set = true; 
+    Require(! timer_on);
+    timer_on = true; 
+    begin    = times(&tms_begin);
+}
+
+//---------------------------------------------------------------------------//
+
+void Timer::stop()
+{
+    Require(timer_on);
+    timer_on = false; 
+    end      = times(&tms_end);
+
+    sum_wall   += wall_clock();
+    sum_system += system_cpu();
+    sum_user   += user_cpu();
 }
 
 //---------------------------------------------------------------------------//
 
 double Timer::wall_clock() const
 {
+    Require(! timer_on);
     return (end - begin) / static_cast<double>(clock_tick);
 }
 
@@ -117,6 +152,7 @@ double Timer::wall_clock() const
 
 double Timer::system_cpu() const
 {
+    Require(! timer_on);
     return (tms_end.tms_stime - tms_begin.tms_stime) /
 	static_cast<double>(clock_tick);
 }
@@ -125,8 +161,20 @@ double Timer::system_cpu() const
 
 double Timer::user_cpu() const
 {
+    Require(! timer_on);
     return (tms_end.tms_utime - tms_begin.tms_utime) /
 	static_cast<double>(clock_tick); 
+}
+
+//---------------------------------------------------------------------------//
+
+void Timer::reset()
+{
+    Require(! timer_on);
+
+    sum_wall   = 0.0;
+    sum_system = 0.0;
+    sum_user   = 0.0;
 }
 
 } // end namespace rtt_c4
