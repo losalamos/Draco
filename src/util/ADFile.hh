@@ -35,11 +35,11 @@ class ADFile : public Indx_File<ADKey> {
     ADFile( const ADFile& );
     ADFile& operator=( const ADFile& );
 
-    String fname;
+    dsxx::String fname;
     int nrecs, mode;
 
   public:
-    ADFile( String _fname, int _mode, int _nrecs );
+    ADFile( dsxx::String _fname, int _mode, int _nrecs );
 
     dsxx::Mat1<ADKey> Get_keys();
 };

@@ -26,7 +26,7 @@ class Test_Prob {
     virtual void run() =0;
 };
 
-SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] );
+dsxx::SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] );
 
 #endif                          // __3T/test_Test_Prob_hh__
 

@@ -30,8 +30,8 @@ class PreCond : public PCG_PreCond<typename Solver::NumT>
 
   public:
     PreCond( int ncp_, int m, Solver *p ) : ncp(ncp_), method(m), solver(p) {}
-    void  Left_PreCond( Mat1<T>& x, Mat1<T>&b );
-    void Right_PreCond( Mat1<T>& x, Mat1<T>&b );
+    void  Left_PreCond( dsxx::Mat1<T>& x, dsxx::Mat1<T>&b );
+    void Right_PreCond( dsxx::Mat1<T>& x, dsxx::Mat1<T>&b );
 };
 
 #endif                          // __3T_test_PreCond_hh__

@@ -12,6 +12,8 @@
 #include "ds++/DynArray.hh"
 #include "ds++/Assert.hh"
 
+using dsxx::DynArray;
+
 //---------------------------------------------------------------------------//
 // Miscellaneous
 

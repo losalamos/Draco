@@ -74,7 +74,7 @@ class P13T
     struct RadiationStateField {
 	ccsf phi;
 	FluxField F;
-	RadiationStateField(const SP<MeshType> &spmesh_)
+	RadiationStateField(const dsxx::SP<MeshType> &spmesh_)
 	    : phi(spmesh_), F(spmesh_)
 	{
 	    // empty
@@ -88,14 +88,14 @@ class P13T
   private:
     
     P13TOptions options;            // Specify various solve flags and values
-    SP<MeshType> spMesh;            // Mesh
+    dsxx::SP<MeshType> spMesh;            // Mesh
 
     
   public:
 
     // CREATORS
 
-    P13T(const P13TOptions &options_, const SP<MeshType> &spMesh_);
+    P13T(const P13TOptions &options_, const dsxx::SP<MeshType> &spMesh_);
     P13T(const P13T<MT,MP,DS>& );
     ~P13T();
 
@@ -106,7 +106,7 @@ class P13T
 
     // ACCESSORS
 
-    const SP<MeshType> getMesh() const { return spMesh; }
+    const dsxx::SP<MeshType> getMesh() const { return spMesh; }
     
     //------------------------------------------------------------------------//
     // print:

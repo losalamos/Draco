@@ -51,8 +51,8 @@ class ts_manager {
 
     ts_manager();
     ~ts_manager();
-    void add_advisor(const SP<ts_advisor> &new_advisor);
-    void remove_advisor(const SP<ts_advisor> &advisor_to_remove);
+    void add_advisor(const dsxx::SP<ts_advisor> &new_advisor);
+    void remove_advisor(const dsxx::SP<ts_advisor> &advisor_to_remove);
     
     double compute_new_timestep(double dt_, int cycle_,
 				double time_);
@@ -68,7 +68,7 @@ class ts_manager {
     double dt;     // the current time-step (time)
     int    cycle;  // current cycle number
     std::string controlling_advisor; // name of the advisor in control
-    std::list < SP<ts_advisor> > advisors; // a list of Smart Pointers to
+    std::list < dsxx::SP<ts_advisor> > advisors; // a list of Smart Pointers to
 // time step advisors
 };
 

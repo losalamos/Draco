@@ -32,7 +32,7 @@ MatVec_3T<Solver>::MatVec_3T( Solver *p )
 //---------------------------------------------------------------------------//
 
 template<class Solver>
-void MatVec_3T<Solver>::MatVec( Mat1<T>& b, const Mat1<T>&x )
+void MatVec_3T<Solver>::MatVec( dsxx::Mat1<T>& b, const dsxx::Mat1<T>&x )
 {
     its++;
 

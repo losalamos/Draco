@@ -9,6 +9,7 @@
 #include "dump.hh"
 #include "c4/SpinLock.hh"
 using namespace C4;
+using namespace dsxx;
 
 template<class T>
 void print_Mat( const Mat1<T>& a, String name )

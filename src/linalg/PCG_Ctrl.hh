@@ -25,11 +25,11 @@
 template<class T>
 class PCG_Ctrl : private pcg_DB
 {
-    Mat1<int>            iparm;
-    Mat1<T>              fparm;
-    Mat1<int>            iwk;
-    Mat1<T>              fwk;
-    Mat1<T>              xex;
+    dsxx::Mat1<int>            iparm;
+    dsxx::Mat1<T>              fparm;
+    dsxx::Mat1<int>            iwk;
+    dsxx::Mat1<T>              fwk;
+    dsxx::Mat1<T>              xex;
     int                  nru;
     int                  ijob, ireq, iva, ivql, ivqr, ier;
     int                  itmeth, imatvec;
@@ -40,16 +40,16 @@ class PCG_Ctrl : private pcg_DB
 
 // Public Methods
   public:
-    void pcg_fe( Mat1<T>& x, const Mat1<T>& b,
-		 SP< PCG_MatVec<T> > pcg_matvec,
-		 SP< PCG_PreCond<T> > pcg_precond );
+    void pcg_fe( dsxx::Mat1<T>& x, const dsxx::Mat1<T>& b,
+		 dsxx::SP< PCG_MatVec<T> > pcg_matvec,
+		 dsxx::SP< PCG_PreCond<T> > pcg_precond );
 
 // Private Methods
   private:
     void set_default();
     void set_nwi();
     void set_nwf();
-    void it_method( Mat1<T>& x, const Mat1<T>& b, Mat1<T>& xex );
+    void it_method( dsxx::Mat1<T>& x, const dsxx::Mat1<T>& b, dsxx::Mat1<T>& xex );
     void print_params();
 };
 

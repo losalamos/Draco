@@ -23,6 +23,8 @@
 #include <string>
 using std::string;
 
+using dsxx::SP;
+
 char *input_file = "test.in";
 int verbose = 0;
 

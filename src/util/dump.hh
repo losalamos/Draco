@@ -17,28 +17,24 @@
 #include "ds++/String.hh"
 #include "ds++/Mat.hh"
 
-using dsxx::Mat1;
-using dsxx::Mat2;
-using dsxx::Mat3;
+template<class T>
+void print_Mat( const dsxx::Mat1<T>& a, dsxx::String name );
 
 template<class T>
-void print_Mat( const Mat1<T>& a, String name );
+void print_Mat( const dsxx::Mat2<T>& m, dsxx::String name );
 
 template<class T>
-void print_Mat( const Mat2<T>& m, String name );
-
-template<class T>
-void print2_Mat( const Mat2<T>& m, String name );
+void print2_Mat( const dsxx::Mat2<T>& m, dsxx::String name );
 
 #include "util/ADFile.hh"
 
 template<class T>
-void ADdump_Mat( ADFile *f, Mat3<T>& m, String id );
+void ADdump_Mat( ADFile *f, dsxx::Mat3<T>& m, dsxx::String id );
 
 template<class T>
-void ADdump_Mat( ADFile *f, Mat2<T>& m, String id );
+void ADdump_Mat( ADFile *f, dsxx::Mat2<T>& m, dsxx::String id );
 
-void dump( ADFile *f, char *buf, String id );
+void dump( ADFile *f, char *buf, dsxx::String id );
 
 //---------------------------------------------------------------------------//
 // Used to dump an Mat1<T> which is understood to be one field extent
@@ -46,7 +42,7 @@ void dump( ADFile *f, char *buf, String id );
 //---------------------------------------------------------------------------//
 
 template<class T, class A>
-void dump_fe( ADFile *f, Mat1<T,A>& a, String id )
+void dump_fe( ADFile *f, dsxx::Mat1<T,A>& a, dsxx::String id )
 {
     int nfu = a.nx();
 
@@ -55,7 +51,7 @@ void dump_fe( ADFile *f, Mat1<T,A>& a, String id )
     int ncu = nfu * nodes;
 
     int i;
-    Mat2<T> mm( ncu, 1 );
+    dsxx::Mat2<T> mm( ncu, 1 );
 
     if (!node) {
 	sprintf( adk.s, "Mat1f(%d) fe, %s", ncu, &id[0] );

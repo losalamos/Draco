@@ -26,7 +26,7 @@ class pcg_DB : public persist {
   public:
 // Some way to name this thing.
 
-    String name;
+    dsxx::String name;
 
 // Pick up the namelist variables.
 
@@ -37,9 +37,9 @@ class pcg_DB : public persist {
 // Methods.
 
   public:
-    pcg_DB( String _name ) : name(_name) {}
+    pcg_DB( dsxx::String _name ) : name(_name) {}
 
-    String Name() const { return name; }
+    dsxx::String Name() const { return name; }
 
     void setup_namelist( NML_Group& g );
 

@@ -19,6 +19,8 @@
 #include <iostream.h>
 #include <iomanip.h>
 
+using namespace dsxx;
+
 //===========================================================================//
 // class persist - Adjunct to the Perstalyzer
 

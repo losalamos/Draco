@@ -35,7 +35,7 @@ class MatVec_3T : public PCG_MatVec<typename Solver::NumT>
     MatVec_3T( Solver *p );
 
 // Get A somehow else.  Then compute b = A x.
-    void MatVec( Mat1<T>& b, const Mat1<T>& x );
+    void MatVec( dsxx::Mat1<T>& b, const dsxx::Mat1<T>& x );
 
     int get_iterations() const { return its; }
 };

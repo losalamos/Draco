@@ -11,8 +11,6 @@
 
 #include "ds++/Mat.hh"
 
-using dsxx::Mat1;
-
 //===========================================================================//
 // class PCG_MatVec - 
 
@@ -24,7 +22,7 @@ class PCG_MatVec {
   public:
     virtual ~PCG_MatVec() {}
 
-    virtual void MatVec( Mat1<T>& b, const Mat1<T>& x ) =0;
+    virtual void MatVec( dsxx::Mat1<T>& b, const dsxx::Mat1<T>& x ) =0;
 };
 
 #endif                          // __linalg_PCG_MatVec_hh__

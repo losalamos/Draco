@@ -39,7 +39,7 @@ class FileSet {
     std::string ext;
     int nwid;			// width of numeric field.
 
-    DynArray<std::string> names;
+    dsxx::DynArray<std::string> names;
     int nfiles;
 
     int lstseq;

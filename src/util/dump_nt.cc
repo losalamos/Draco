@@ -8,7 +8,7 @@
 
 #include "util/dump.hh"
 
-void dump( ADFile *f, char *buf, String id )
+void dump( ADFile *f, char *buf, dsxx::String id )
 {
     ADKey adk;
     sprintf( adk.s, "Text: %s", &id[0] );

@@ -20,7 +20,7 @@
 
 void pcg_DB::setup_namelist( NML_Group& g )
 {
-String fldeqn = name;
+    dsxx::String fldeqn = name;
 
 #include "linalg/.nml_pcg.cc"
 }

@@ -11,8 +11,6 @@
 
 #include "ds++/Mat.hh"
 
-using dsxx::Mat1;
-
 //===========================================================================//
 // class PCG_PreCond - 
 
@@ -24,8 +22,8 @@ class PCG_PreCond {
   public:
     virtual ~PCG_PreCond() {}
 
-    virtual void  Left_PreCond( Mat1<T>& x, Mat1<T>& b ) =0;
-    virtual void Right_PreCond( Mat1<T>& x, Mat1<T>& b ) =0;
+    virtual void  Left_PreCond( dsxx::Mat1<T>& x, dsxx::Mat1<T>& b ) =0;
+    virtual void Right_PreCond( dsxx::Mat1<T>& x, dsxx::Mat1<T>& b ) =0;
 };
 
 #endif                          // __linalg_PCG_PreCond_hh__

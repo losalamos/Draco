@@ -80,7 +80,7 @@ class Indx_File : public IDX {
     int toc_base;
     int data_base;
 
-    String fname;
+    dsxx::String fname;
     int access_mode;
     int toc_entries, max_toc_entries; // current #, max # of entries.
     int ce;			// current entry
@@ -88,7 +88,7 @@ class Indx_File : public IDX {
 
     int write_in_progress, bytes_written;
 
-    DynArray< TOC_entry<Key> > toc;
+    dsxx::DynArray< TOC_entry<Key> > toc;
 
     int fd;
     FILE *fp;
@@ -99,7 +99,7 @@ class Indx_File : public IDX {
 
   public:
     
-    Indx_File( String _fname, int _amode, int _max_toc_entries =0,
+    Indx_File( dsxx::String _fname, int _amode, int _max_toc_entries =0,
 	       int _active =1 );
     virtual ~Indx_File();
 
@@ -168,7 +168,7 @@ class Indx_File_int : public IDX
     int toc_base;
     int data_base;
 
-    String fname;
+    dsxx::String fname;
     int access_mode;
     int toc_entries, max_toc_entries; // current #, max # of entries.
     int ce;			// current entry
@@ -176,7 +176,7 @@ class Indx_File_int : public IDX
 
     int write_in_progress, bytes_written;
 
-    DynArray< TOC_entry<int> > toc;
+    dsxx::DynArray< TOC_entry<int> > toc;
 
     int fd;
     FILE *fp;
@@ -187,7 +187,7 @@ class Indx_File_int : public IDX
 
   public:
     
-    Indx_File_int( const String& _fname, int _amode, int _max_toc_entries =0,
+    Indx_File_int( const dsxx::String& _fname, int _amode, int _max_toc_entries =0,
 		   int _active =1 );
     virtual ~Indx_File_int();
 

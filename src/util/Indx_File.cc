@@ -37,6 +37,8 @@ extern "C" {
 #define SEEK_SET 0
 #endif
 
+using namespace dsxx;
+
 //---------------------------------------------------------------------------//
 // Construct a TOC_entry from its member/arguments.
 //---------------------------------------------------------------------------//

@@ -25,6 +25,8 @@ using std::cerr;
 using std::cout;
 using std::ios;
 
+using dsxx::SP;
+
 ts_manager::ts_manager()
     :time(0.), dt_new(TSA::small()), dt(TSA::small()), cycle(9999),  
      controlling_advisor("Not Set")

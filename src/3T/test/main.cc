@@ -20,7 +20,7 @@ int main( int argc, char *argv[] )
     // Introduce a new scope in case the test problem object needs to do MPI
     // work in its dtor.
 
-	SP<Test_Prob> prob = Test_Prob_allocator( argc, argv );
+	dsxx::SP<Test_Prob> prob = Test_Prob_allocator( argc, argv );
 	prob->run();
     }
 

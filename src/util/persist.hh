@@ -16,8 +16,6 @@
 #include "ds++/Mat.hh"
 #include "ds++/DynArray.hh"
 
-using dsxx::Mat1;
-
 template<class T>
 class prst_read_xcpt {
   public:
@@ -51,17 +49,17 @@ class persist {
     void prst_write( ofstream& ofs, const char *s, int  v );
     void prst_read(  ifstream& ifs, const char *s, int& v );
 
-    void prst_write( ofstream& ofs, const char *s, String  v );
-    void prst_read(  ifstream& ifs, const char *s, String& v );
+    void prst_write( ofstream& ofs, const char *s, dsxx::String  v );
+    void prst_read(  ifstream& ifs, const char *s, dsxx::String& v );
 
-    void prst_write( ofstream& ofs, const char *s, DynArray<int>& v );
-    void prst_read(  ifstream& ifs, const char *s, DynArray<int>& v );
+    void prst_write( ofstream& ofs, const char *s, dsxx::DynArray<int>& v );
+    void prst_read(  ifstream& ifs, const char *s, dsxx::DynArray<int>& v );
 
-    void prst_write( ofstream& ofs, const char *s, DynArray<float>& v );
-    void prst_read(  ifstream& ifs, const char *s, DynArray<float>& v );
+    void prst_write( ofstream& ofs, const char *s, dsxx::DynArray<float>& v );
+    void prst_read(  ifstream& ifs, const char *s, dsxx::DynArray<float>& v );
 
-    void prst_write( ofstream& ofs, const char *s, DynArray<double>& v );
-    void prst_read(  ifstream& ifs, const char *s, DynArray<double>& v );
+    void prst_write( ofstream& ofs, const char *s, dsxx::DynArray<double>& v );
+    void prst_read(  ifstream& ifs, const char *s, dsxx::DynArray<double>& v );
 
     void prst_write( ofstream& ofs, const char *s, float  v );
     void prst_read(  ifstream& ifs, const char *s, float& v );
@@ -69,14 +67,14 @@ class persist {
     void prst_write( ofstream& ofs, const char *s, double  v );
     void prst_read(  ifstream& ifs, const char *s, double& v );
 
-    void prst_write( ofstream& ofs, const char *s, Mat1<int>& v );
-    void prst_read(  ifstream& ifs, const char *s, Mat1<int>& v );
+    void prst_write( ofstream& ofs, const char *s, dsxx::Mat1<int>& v );
+    void prst_read(  ifstream& ifs, const char *s, dsxx::Mat1<int>& v );
 
-    void prst_write( ofstream& ofs, const char *s, Mat1<float>& v );
-    void prst_read(  ifstream& ifs, const char *s, Mat1<float>& v );
+    void prst_write( ofstream& ofs, const char *s, dsxx::Mat1<float>& v );
+    void prst_read(  ifstream& ifs, const char *s, dsxx::Mat1<float>& v );
 
-    void prst_write( ofstream& ofs, const char *s, Mat1<double>& v );
-    void prst_read(  ifstream& ifs, const char *s, Mat1<double>& v );
+    void prst_write( ofstream& ofs, const char *s, dsxx::Mat1<double>& v );
+    void prst_read(  ifstream& ifs, const char *s, dsxx::Mat1<double>& v );
 };
 
 #endif                          // __util_persist_hh__
