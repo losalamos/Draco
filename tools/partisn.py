@@ -1,83 +1,75 @@
-#!/usr/local/bin/python
+#!/usr/bin/python
 ##---------------------------------------------------------------------------##
 ## Script to run variations on a partisn input file
 ##---------------------------------------------------------------------------##
 import os
 import sys
 
+output_file = 'rsp.dat'
 
 ##---------------------------------------------------------------------------##
-## Create filter dictionary
-##
-## Convert a list of 'key=value' strings to into a dictionary
+## Function valid_partisn_dir
 ##---------------------------------------------------------------------------##
-def filter_dictionary(filter_list):
-    filters = {}
-    for filter in filter_list:
-        key, value = tuple(filter.split('='))
-        filters[key]=value
-                           
-    return filters
+def valid_partisn_dir(dir):
+    "Verify that dir contains an executable file called 'partisn'"
 
-##---------------------------------------------------------------------------##
-## Class Options:
-##
-## Parses the command-line arguments with the getopt module.
-## Extracts the following options and information:
-##   -u: Perform a PARTISN run with Uncle McFlux on.
-##   -s: Perform a PARTISN run with Ray-tracing off.
-##   -b: Perform both of the above (equivalent to -us)
-## None of the above is equivalent to -u (run UMCF)
-##   -c: Perform a special Census-enabled run of PARTISN
-##   -o: <name> Change the default output data file from rsp.dat to
-##       name.dat
-##   -i: <name> Change the input deck name from test.inp to name.inp 
-##
-## All other arguments are assumed to be keyword=value pairs and a
-## parsed into a dictionary.
-##---------------------------------------------------------------------------##
+    import os, os.path
+
+    name = os.path.join(dir,'partisn')
+    return os.path.isfile(name) and os.access(name, os.X_OK)
 
 
-class Options:
-    def __init__(self, arguments):
-        self.run_umcf = 0
-        self.run_sn = 0
-        self.run_census = 0
-        self.output_name = 'rsp'
-        self.input_name  = 'test.inp'
-
-        self.parse_arguments(arguments)
 
 ##---------------------------------------------------------------------------##
-## Parse_arguments: extract arguments
+## Function read_configuration
 ##---------------------------------------------------------------------------##
-    def parse_arguments(self, arguments):
+def read_configuration():
+    """Parse the configuration file ~/.partisn.rc for information on the
+    versions of partisn and command-line options
 
-        import getopt
+    Returns two dictionaries. The first maps version names to paths of
+    partisn executables. The second maps command line options to a
+    dictionary of possible values for the option. The values
+    dictionary maps values to 'key=value' strings which are passed to
+    partisn.
+    """
+    import string, os.path, sys
 
-        try:
-            options, partisn_commands = getopt.getopt(arguments, 'usbco:i:')
-        except getopt.GetoptError:
-            sys.exit('ERROR: Bad option or missing argument.')
-            
-        for option in options:
-            if option[0] == '-u': self.run_umcf = 1
-            if option[0] == '-s': self.run_sn   = 1
-            if option[0] == '-b': self.run_umcf = self.run_sn = 1
-            if option[0] == '-c': self.run_census = 1
-            if option[0] == '-o': self.output_name = option[1]
-            if option[0] == '-i': self.input_name  = option[1]
-            
-            # Run umcf by default:
-        if self.run_umcf==0 and self.run_sn==0 and self.run_census==0:
-            self.run_umcf = 1
+    config_name = os.path.expanduser("~/.partisn.rc")
 
-        # Make command dictionary
-        self.command_dict = filter_dictionary(partisn_commands)
-##---------------------------------------------------------------------------##
-## End of class Options
-##---------------------------------------------------------------------------##
-    
+    versions = {}
+    options = {}
+
+    try:
+        config_file = open(config_name,'r')
+    except:
+        sys.exit("Unable to open config file: %s." % config_name)
+
+
+    for line in config_file:
+        words = string.strip(line.split('#',1)[0]).split(None)
+
+        if len(words) == 0: continue
+
+        if words[0]=="version:":
+            print words
+            if not len(words) == 3 or not valid_partisn_dir(words[2]):
+                sys.exit("Error in reading %s: "
+                         "PARTISN directory %s not valid" %
+                         (config_name, words[2]))
+            else:
+                versions[words[1]]=words[2]
+
+        elif words[0]=="option:":
+            if len(words) < 4:
+                sys.exit("Error in reading %s: "
+                         "Not enough words in option command" %
+                         config_name)
+            else:
+                option = words[1]
+                options.setdefault(option, {})[words[2]] = words[3]
+
+    return versions, options
 
 ##---------------------------------------------------------------------------##
 ## Transform line function
@@ -107,35 +99,137 @@ def transform_line(line, dict):
     return line
 
 
-##---------------------------------------------------------------------------##
-## Execute partisn command and move output data file
-##---------------------------------------------------------------------------##
-def execute_partisn(dir, input_lines, output_name):
-
-    import popen2
-
-    executable = dir + '/partisn'
-    data_file  = dir + "rsp.dat"
-
-    # Remove old file, if present
-    if os.access(data_file, os.F_OK): os.remove(data_file)
-
-    # Open a pipe to the command
-    r, w = popen2.popen2(executable)
-
-    # Send the command lines
-    w.writelines(input_lines)
-    w.close()
-
-    output = r.readline()
-    while output:
-        output = r.readline()
-
-    if os.access(data_file, os.F_OK):
-        os.rename(data_file, result_file)
-    else:
-        sys.exit('ERROR: Partisn failed to produce output')
+def transform_input(input, dict):
     
+    input_lines = open(input,'r').readlines()
+    return [transform_line(line, dict) for line in input_lines]
+
+
+##---------------------------------------------------------------------------##
+## Function filter_dictionary
+##---------------------------------------------------------------------------##
+def filter_dictionary(filter_list):
+    "Convert a list of 'key=value' strings to into a dictionary"
+    filters = {}
+    for filter in filter_list:
+        key, value = filter.split('=')
+        filters[key]=value
+                           
+    return filters
+
+
+##---------------------------------------------------------------------------##
+## Class PartisnOptions:
+##
+## Parses the command-line arguments with the getopt module.
+## Extracts the following options and information:
+##   -v: Indicate the version of partisn to use
+##   -o <name>: Change the default output data file from rsp.dat to
+##      name.dat
+##   -O <name>: Change the default output directory from the 
+##   -i <name>: Change the input deck name from test.inp to name.inp 
+##
+## All other arguments are assumed to be keyword=value pairs and a
+## parsed into a dictionary.
+##---------------------------------------------------------------------------##
+
+
+class PartisnOptions:
+    def __init__(self, arguments, versions, options):
+        self.input_name   = 'test.inp'
+        self.output_name  = 'rsp.dat'
+        self.output_dir   = '.'
+        self.version_name = 'default'
+
+        self.versions = versions
+        self.option_dict = options
+
+        self.process_options()
+        self.parse_arguments(arguments)
+
+    def process_options(self):
+        self.long_args = [key+"=" for key in options]
+        self.long_args.append("partisn=")
+
+    def parse_arguments(self, arguments):
+
+        import getopt, os.path
+
+        try:
+            options, partisn_commands = \
+                     getopt.getopt(arguments, "i:o:O:v:", self.long_args)
+        except getopt.GetoptError:
+            sys.exit('ERROR: Bad option or missing argument.')
+            
+        for option, value in options:
+            if option == '-o': self.output_name = value
+            if option == '-O': self.output_dir  = value
+            if option == '-i': self.input_name  = value
+            if option in ['-v','--partisn']:
+                if value in self.versions:
+                    self.version_name = value
+                else:
+                    sys.exit('ERROR: unrecognized version key %s' % value)
+            if option[2:] in self.option_dict:
+                option_values = self.option_dict[option[2:]]
+                if value in option_values:
+                    partisn_commands.append(option_values[value])
+                else: sys.exit("ERROR: unrecognized value '%s' "
+                               "for option '%s'" % (value, option))
+            
+        # Make command dictionary
+        self.command_dict = filter_dictionary(partisn_commands)
+
+        # Set the version path
+        self.version_path = self.versions[self.version_name]
+
+        # Set the directory variables:
+        self.output_dir  = os.path.expanduser(self.output_dir)
+
+        self.data_output = os.path.join(self.output_dir, self.output_name)
+        self.std_output  = os.path.join(self.output_dir, "output")
+        self.std_error   = os.path.join(self.output_dir, "error")
+        self.partisn     = os.path.join(self.version_path, 'partisn')
+    
+                          
+
+
+        
+##---------------------------------------------------------------------------##
+## End of class PartisnOptions
+##---------------------------------------------------------------------------##
+    
+
+##---------------------------------------------------------------------------##
+## Execute partisn command. Return true if successful
+##---------------------------------------------------------------------------##
+def execute_partisn(options):
+
+    input_lines = transform_input(
+        options.input_name, options.command_dict) 
+
+    input = os.path.join(options.output_dir, options.input_name)
+    command_file = open(input,'w')
+    command_file.writelines(input_lines)
+    command_file.close()
+    
+    if os.access(output_file, os.F_OK): os.remove(output_file)
+
+    errorlevel = os.system("( %s ) < %s > %s 2> %s" %
+                           (options.partisn, input, options.std_output,
+                            options.std_error)) 
+    if errorlevel > 0:
+        print "PARTISN returned error signal %s" % errorlevel
+        return False
+    
+    elif not os.access(output_file, os.F_OK):
+        print "PARTISN failed to produce output."
+        return False
+
+    else:
+        os.rename(output_file, options.data_output)
+        return True
+
 
 ##---------------------------------------------------------------------------##
 ## Main Program
@@ -144,61 +238,18 @@ def execute_partisn(dir, input_lines, output_name):
 if __name__=="__main__":
     
 
-    regular_partisn_dir = "/home/mwbuksas/work/partisn/"
-    census_partisn_dir  = "/home/mwbuksas/work/partisn_census/"
-    working_directory   = "/home/mwbuksas/work/partisn_test_problem/"
+    # Parse the configuration file:
+    versions, options =  read_configuration()
 
     # Parse the command line options:
-    options = Options(sys.argv[1:])
+    options = PartisnOptions(sys.argv[1:], versions, options)
 
-    # Read the input file
-    input_lines = open(working_directory +
-                       options.input_name).readlines()
-
-    ## Do a regular umcf partisn run:
-    ## ------------------------------
-
-    if options.run_umcf:
-        print "Executing PARTISN with UMCF"
-
-        options.command_dict['fcsrc'] = 'umcflux'
-        umcf_lines = [transform_line(line, options.command_dict) \
-                      for line in input_lines]
-
-        result_file = working_directory + options.output_name + "_umcf.dat"
-        execute_partisn(regular_partisn_dir, umcf_lines, result_file)
-
-    
-    ## Turn umcf off and re-run
-    ## ------------------------
-    
-    if options.run_sn:
-        print "Executing PARTISN without UMCF"
-
-        options.command_dict['fcsrc'] = 'no'
-        sn_lines = [transform_line(line, options.command_dict) \
-                    for line in input_lines]
-        
-        result_file = working_directory + options.output_name + "_sn.dat"
-        execute_partisn(regular_partisn_dir, sn_lines, result_file)
+    print "Input:           ", options.input_name
+    print "Output:          ", options.data_output
+    print "Partisn version: ", options.version_name
+    print "           path: ", options.version_path
+    print "Partisn commands:", options.command_dict
 
 
-    ## Execute PARTISN w/ Census version of umcf
-    ## -----------------------------------------
+    worked = execute_partisn(options)
 
-    if options.run_census:
-        print "Executing PARTISN with UMCF/CENSUS"
-
-        census_file = census_partisn_dir + 'CENSUS'
-        if os.access(census_file, os.F_OK):
-            print "Removing old census file"
-            os.remove(census_file)
-            
-        options.command_dict['fcsrc'] = 'umcflux'
-        umcf_lines = [transform_line(line, options.command_dict) \
-                      for line in input_lines]
-
-        result_file = working_directory + options.output_name + "_census.dat"
-        execute_partisn(census_partisn_dir, umcf_lines, result_file)
-
-    
