@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __linalg_PCG_PreCond_hh__
-#define __linalg_PCG_PreCond_hh__
+#ifndef __pcgWrap_PCG_PreCond_hh__
+#define __pcgWrap_PCG_PreCond_hh__
 
 #include "ds++/Mat.hh"
 
@@ -17,17 +17,24 @@
 // 
 //===========================================================================//
 
+namespace rtt_pcgWrap {
+
 template<class T>
 class PCG_PreCond {
   public:
     virtual ~PCG_PreCond() {}
 
-    virtual void  Left_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>& b ) =0;
-    virtual void Right_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>& b ) =0;
+    virtual void Left_PreCond( rtt_dsxx::Mat1<T>& x,
+			       const rtt_dsxx::Mat1<T>& b ) = 0;
+    
+    virtual void Right_PreCond( rtt_dsxx::Mat1<T>& x,
+				const rtt_dsxx::Mat1<T>& b ) = 0;
 };
 
-#endif                          // __linalg_PCG_PreCond_hh__
+} // namespace rtt_pcgWrap
+
+#endif                          // __pcgWrap_PCG_PreCond_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of linalg/PCG_PreCond.hh
+//                              end of pcgWrap/PCG_PreCond.hh
 //---------------------------------------------------------------------------//

@@ -4,30 +4,30 @@
 // Thu Jul 15 09:44:12 1999
 // $Id$
 //---------------------------------------------------------------------------//
-// @> Release function for linalg library
+// @> Release function for pcgWrap library
 //---------------------------------------------------------------------------//
 
-#ifndef __linalg_Release_hh__
-#define __linalg_Release_hh__
+#ifndef __pcgWrap_Release_hh__
+#define __pcgWrap_Release_hh__
 
 //===========================================================================//
 // namespace version - 
 //
-// Purpose : Return the version of linalg; 
+// Purpose : Return the version of pcgWrap; 
 // this can be used to get exact version information in codes that 
-// use linalg
+// use pcgWrap
 // 
 //===========================================================================//
 
 #include <string>
 
-namespace rtt_linalg 
+namespace rtt_pcgWrap
 {
     const std::string release();
 }
 
-#endif                          // __linalg_Release_hh__
+#endif                          // __pcgWrap_Release_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of linalg/Release.hh
+//                              end of pcgWrap/Release.hh
 //---------------------------------------------------------------------------//

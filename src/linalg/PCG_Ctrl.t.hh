@@ -10,25 +10,23 @@
 #include "PCG_Subroutines.hh"
 #include <iostream>
 #include <sstream>
-using std::cout;
-using std::endl;
-using std::flush;
 
-using namespace rtt_dsxx;
+namespace rtt_pcgWrap {
 
 //---------------------------------------------------------------------------//
 // Constructor.
 //---------------------------------------------------------------------------//
 
 template<class T>
-PCG_Ctrl<T>::PCG_Ctrl(const Method method)
-    : d_iparm(Bounds(1,50)),
-      d_fparm(Bounds(1,30)),
+PCG_Ctrl<T>::
+PCG_Ctrl(const Method method)
+    : d_iparm(rtt_dsxx::Bounds(1,50)),
+      d_fparm(rtt_dsxx::Bounds(1,30)),
       d_uExact(1),
       d_method(method)
 {
     // Initialize iparm and fparm arrays via PCG defaults
-    pcg::xdfalt(&d_iparm(1), &d_fparm(1));
+    xdfalt(&d_iparm(1), &d_fparm(1));
     
     d_iparm(MALLOC) = NO;  // Don't allow this for now; see allocateWorkArrays
 }
@@ -38,7 +36,8 @@ PCG_Ctrl<T>::PCG_Ctrl(const Method method)
 //---------------------------------------------------------------------------//
 
 template<class T>
-PCG_Ctrl<T>::PCG_Ctrl(const PCG_Ctrl<T> &rhs)
+PCG_Ctrl<T>::
+PCG_Ctrl(const PCG_Ctrl<T> &rhs)
     : d_iparm(rhs.d_iparm),
       d_fparm(rhs.d_fparm),
       d_uExact(rhs.d_uExact),
@@ -51,7 +50,8 @@ PCG_Ctrl<T>::PCG_Ctrl(const PCG_Ctrl<T> &rhs)
 
 template<class T>
 PCG_Ctrl<T> &
-PCG_Ctrl<T>::operator=(const PCG_Ctrl<T> &rhs)
+PCG_Ctrl<T>::
+operator=(const PCG_Ctrl<T> &rhs)
 {
     if ( this == &rhs ) {
 	return *this;
@@ -77,12 +77,15 @@ PCG_Ctrl<T>::operator=(const PCG_Ctrl<T> &rhs)
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::solve(rtt_dsxx::Mat1<T>& x,
-			const rtt_dsxx::Mat1<T>& b,
-			rtt_dsxx::SP< PCG_MatVec<T> > pcg_matvec,
-			rtt_dsxx::SP< PCG_PreCond<T> > pcg_precond,
-			const int nru)
+void PCG_Ctrl<T>::
+solve(rtt_dsxx::Mat1<T>& x,
+      const rtt_dsxx::Mat1<T>& b,
+      rtt_dsxx::SP< PCG_MatVec<T> > pcg_matvec,
+      rtt_dsxx::SP< PCG_PreCond<T> > pcg_precond,
+      const int nru)
 {
+    using rtt_dsxx::Mat1;
+    
     // Allocate the work arrays
     
     if ( nru > 0 ) {
@@ -174,37 +177,38 @@ void PCG_Ctrl<T>::solve(rtt_dsxx::Mat1<T>& x,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::callPCG(rtt_dsxx::Mat1<T> &x,
-			  const rtt_dsxx::Mat1<T> &b,
-			  int &ijob,
-			  int &ireq,
-			  int &iva,
-			  int &ivql,
-			  int &ivqr,
-			  rtt_dsxx::Mat1<int> &iwork,
-			  rtt_dsxx::Mat1<T> &fwork)
+void PCG_Ctrl<T>::
+callPCG(rtt_dsxx::Mat1<T> &x,
+	const rtt_dsxx::Mat1<T> &b,
+	int &ijob,
+	int &ireq,
+	int &iva,
+	int &ivql,
+	int &ivqr,
+	rtt_dsxx::Mat1<int> &iwork,
+	rtt_dsxx::Mat1<T> &fwork)
 {
     int iError = 0;
     
     switch ( d_method ) {
     case BAS: {
-	pcg::xbasr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
-		   ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
-		   iError);
+	xbasr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
+	      ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
+	      iError);
 	break;
     }
     
     case CG: {
-	pcg::xcgr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
-		  ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
-		  iError);
+	xcgr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
+	     ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
+	     iError);
 	break;
     }
     
     case GMRS: {
-	pcg::xgmrsr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
-		    ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
-		    iError);
+	xgmrsr(ijob, ireq, &x(0), &d_uExact(0), &b(0), iva, ivql,
+	       ivqr, &iwork(0), &fwork(0), &d_iparm(1), &d_fparm(1),
+	       iError);
 	break;
     }
     }
@@ -219,7 +223,8 @@ void PCG_Ctrl<T>::callPCG(rtt_dsxx::Mat1<T> &x,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::computeWorkSpace()
+void PCG_Ctrl<T>::
+computeWorkSpace()
 {
     int nwi;
     int nwf;
@@ -315,8 +320,9 @@ void PCG_Ctrl<T>::computeWorkSpace()
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::setIparm(const Iparms parm,
-			   const int value)
+void PCG_Ctrl<T>::
+setIparm(const Iparms parm,
+	 const int value)
 {
     switch ( parm ) {
     case NOUT:
@@ -346,8 +352,9 @@ void PCG_Ctrl<T>::setIparm(const Iparms parm,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::setFparm(const Fparms parm,
-			   const T value)
+void PCG_Ctrl<T>::
+setFparm(const Fparms parm,
+	 const T value)
 {
     d_fparm(parm) = value;
 }
@@ -357,7 +364,8 @@ void PCG_Ctrl<T>::setFparm(const Fparms parm,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::setUexact(const rtt_dsxx::Mat1<T>& uExact)
+void PCG_Ctrl<T>::
+setUexact(const rtt_dsxx::Mat1<T>& uExact)
 {
     d_uExact = uExact;
     d_iparm(IUEXAC) = YES;
@@ -368,8 +376,9 @@ void PCG_Ctrl<T>::setUexact(const rtt_dsxx::Mat1<T>& uExact)
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::setLogical(const Iparms parm,
-			     const Logical value)
+void PCG_Ctrl<T>::
+setLogical(const Iparms parm,
+	   const Logical value)
 {
     switch ( parm ) {
     case ICKSTG:
@@ -393,7 +402,8 @@ void PCG_Ctrl<T>::setLogical(const Iparms parm,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::setOutputLevel(const OutputLevel value)
+void PCG_Ctrl<T>::
+setOutputLevel(const OutputLevel value)
 {
     d_iparm(LEVOUT) = value;
 }
@@ -403,7 +413,8 @@ void PCG_Ctrl<T>::setOutputLevel(const OutputLevel value)
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::setStopTest(const StopTest value)
+void PCG_Ctrl<T>::
+setStopTest(const StopTest value)
 {
     d_iparm(NTEST) = value;
 }
@@ -413,7 +424,8 @@ void PCG_Ctrl<T>::setStopTest(const StopTest value)
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::setPrecon(const Precon value)
+void PCG_Ctrl<T>::
+setPrecon(const Precon value)
 {
     d_iparm(IQSIDE) = value;
 }
@@ -423,7 +435,8 @@ void PCG_Ctrl<T>::setPrecon(const Precon value)
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::setUinit(const Uinit value)
+void PCG_Ctrl<T>::
+setUinit(const Uinit value)
 {
     d_iparm(IUINIT) = value;
 }
@@ -433,8 +446,12 @@ void PCG_Ctrl<T>::setUinit(const Uinit value)
 //---------------------------------------------------------------------------//
 
 template<class T>
-void PCG_Ctrl<T>::printParams() const
+void PCG_Ctrl<T>::
+printParams() const
 {
+    using std::cout;
+    using std::endl;
+    
 // Revcom level parameters.
     cout << "----------------------------------------------" << endl;
     cout << "Revcom level parameters."                       << endl;
@@ -475,6 +492,8 @@ void PCG_Ctrl<T>::printParams() const
     cout << "     relrsd = " << d_fparm(RELRSD) << endl;
     cout << "     relerr = " << d_fparm(RELERR) << endl;
 }
+
+} // namespace rtt_pcgWrap
 
 //---------------------------------------------------------------------------//
 //                              end of PCG_Ctrl.cc

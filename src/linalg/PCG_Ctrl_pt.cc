@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
-// PCG_Ctrl.pt
+// PCG_Ctrl_pt.cc
 // Dave Nystrom
 // 14 January 1997
 //---------------------------------------------------------------------------//
 
 #include "PCG_Ctrl.t.hh"
 
-//instantiate class PCG_Ctrl<float>
+using namespace rtt_pcgWrap;
+
 template class PCG_Ctrl<double>;

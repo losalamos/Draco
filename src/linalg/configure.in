@@ -8,7 +8,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
-AC_INIT(Banded_Matrix.hh)
+AC_INIT(PCG_Ctrl.hh)
 AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(linalg/config.h:config.h.in)
 package="linalg"

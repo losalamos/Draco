@@ -13,22 +13,32 @@
 //---------------------------------------------------------------------------//
 
 template<class T>
-TstPCG_MatVec<T>::~TstPCG_MatVec() {}
+TstPCG_MatVec<T>::~TstPCG_MatVec()
+{
+}
 
 //---------------------------------------------------------------------------//
 // Constructor.
 //---------------------------------------------------------------------------//
 
 template<class T>
-TstPCG_MatVec<T>::TstPCG_MatVec( int _nxs, int _nys )
-    : PCG_MatVec<T>(), nxs(_nxs), nys(_nys) {}
+TstPCG_MatVec<T>::
+TstPCG_MatVec( int _nxs,
+	       int _nys )
+    : rtt_pcgWrap::PCG_MatVec<T>()
+    , nxs(_nxs)
+    , nys(_nys)
+{
+}
 
 //---------------------------------------------------------------------------//
 // Evaluate matrix-vector product.
 //---------------------------------------------------------------------------//
 
 template<class T>
-void TstPCG_MatVec<T>::MatVec( rtt_dsxx::Mat1<T>& b, const rtt_dsxx::Mat1<T>&x )
+void TstPCG_MatVec<T>::
+MatVec( rtt_dsxx::Mat1<T>& b,
+	const rtt_dsxx::Mat1<T>&x )
 {
     for( int ix = 0; ix < nxs; ix++ ) {
 	for( int iy = 0; iy < nys; iy++ ) {

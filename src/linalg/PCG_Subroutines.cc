@@ -7,59 +7,70 @@
 //---------------------------------------------------------------------------//
 
 #include "PCG_Subroutines.hh"
-// using namespace pcg;
+
+using namespace rtt_pcgWrap;
 
 //---------------------------------------------------------------------------//
 // xdfalt
 //---------------------------------------------------------------------------//
 
-void pcg::xdfalt( int *iparm, float *fparm ) {
+void
+rtt_pcgWrap::
+xdfalt( int *iparm,
+	float *fparm )
+{
     sdfalt( iparm, fparm );
 }
-void pcg::xdfalt( int *iparm, double *fparm ) {
+
+void
+rtt_pcgWrap::
+xdfalt( int *iparm,
+	double *fparm )
+{
     ddfalt( iparm, fparm );
-}
-void pcg::xdfalt( int *iparm, complex<float> *fparm ) {
-    cdfalt( iparm, fparm );
-}
-void pcg::xdfalt( int *iparm, complex<double> *fparm ) {
-    zdfalt( iparm, fparm );
 }
 
 //---------------------------------------------------------------------------//
 // xbasr - basic iterative method
 //---------------------------------------------------------------------------//
 
-void pcg::xbasr ( int& ijob, int& ireq,
-		  float *x, float *xex, const float *b,
-		  int& iva, int& ivql, int& ivqr, int *iwk,
-		  float *fwk, int *iparm, float *fparm,
-		  int& ier ) {
+void
+rtt_pcgWrap::
+xbasr ( int& ijob,
+	int& ireq,
+	float *x,
+	float *xex,
+	const float *b,
+	int& iva,
+	int& ivql,
+	int& ivqr,
+	int *iwk,
+	float *fwk,
+	int *iparm,
+	float *fparm,
+	int& ier )
+{
     sbasr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
 	   ier );
 }
-void pcg::xbasr ( int& ijob, int& ireq,
-		  double *x, double *xex, const double *b,
-		  int& iva, int& ivql, int& ivqr, int *iwk,
-		  double *fwk, int *iparm, double *fparm,
-		  int& ier ) {
+
+void
+rtt_pcgWrap::
+xbasr ( int& ijob,
+	int& ireq,
+	double *x,
+	double *xex,
+	const double *b,
+	int& iva,
+	int& ivql,
+	int& ivqr,
+	int *iwk,
+	double *fwk,
+	int *iparm,
+	double *fparm,
+	int& ier )
+{
     dbasr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
-	   ier );
-}
-void pcg::xbasr ( int& ijob, int& ireq,
-		  complex<float> *x, complex<float> *xex, const complex<float> *b,
-		  int& iva, int& ivql, int& ivqr, int *iwk,
-		  complex<float> *fwk, int *iparm, complex<float> *fparm,
-		  int& ier ) {
-    cbasr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
-	   ier );
-}
-void pcg::xbasr ( int& ijob, int& ireq,
-		  complex<double> *x, complex<double> *xex, const complex<double> *b,
-		  int& iva, int& ivql, int& ivqr, int *iwk,
-		  complex<double> *fwk, int *iparm, complex<double> *fparm,
-		  int& ier ) {
-    zbasr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
 	   ier );
 }
 
@@ -67,36 +78,43 @@ void pcg::xbasr ( int& ijob, int& ireq,
 // xgmrsr - restarted gmres
 //---------------------------------------------------------------------------//
 
-void pcg::xgmrsr( int& ijob, int& ireq,
-		  float *x, float *xex, const float *b,
-		  int& iva, int& ivql, int& ivqr, int *iwk,
-		  float *fwk, int *iparm, float *fparm,
-		  int& ier ) {
+void
+rtt_pcgWrap::
+xgmrsr( int& ijob,
+	int& ireq,
+	float *x,
+	float *xex,
+	const float *b,
+	int& iva,
+	int& ivql,
+	int& ivqr,
+	int *iwk,
+	float *fwk,
+	int *iparm,
+	float *fparm,
+	int& ier )
+{
     sgmrsr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
 	    ier );
 }
-void pcg::xgmrsr( int& ijob, int& ireq,
-		  double *x, double *xex, const double *b,
-		  int& iva, int& ivql, int& ivqr, int *iwk,
-		  double *fwk, int *iparm, double *fparm,
-		  int& ier ) {
+
+void
+rtt_pcgWrap::
+xgmrsr( int& ijob,
+	int& ireq,
+	double *x,
+	double *xex,
+	const double *b,
+	int& iva,
+	int& ivql,
+	int& ivqr,
+	int *iwk,
+	double *fwk,
+	int *iparm,
+	double *fparm,
+	int& ier )
+{
     dgmrsr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
-	    ier );
-}
-void pcg::xgmrsr( int& ijob, int& ireq,
-		  complex<float> *x, complex<float> *xex, const complex<float> *b,
-		  int& iva, int& ivql, int& ivqr, int *iwk,
-		  complex<float> *fwk, int *iparm, complex<float> *fparm,
-		  int& ier ) {
-    cgmrsr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
-	    ier );
-}
-void pcg::xgmrsr( int& ijob, int& ireq,
-		  complex<double> *x, complex<double> *xex, const complex<double> *b,
-		  int& iva, int& ivql, int& ivqr, int *iwk,
-		  complex<double> *fwk, int *iparm, complex<double> *fparm,
-		  int& ier ) {
-    zgmrsr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
 	    ier );
 }
 
@@ -104,36 +122,43 @@ void pcg::xgmrsr( int& ijob, int& ireq,
 // xcgr - conjugate gradient
 //---------------------------------------------------------------------------//
 
-void pcg::xcgr( int& ijob, int& ireq,
-		float *x, float *xex, const float *b,
-		int& iva, int& ivql, int& ivqr, int *iwk,
-		float *fwk, int *iparm, float *fparm,
-		int& ier ) {
+void
+rtt_pcgWrap::
+xcgr( int& ijob,
+      int& ireq,
+      float *x,
+      float *xex,
+      const float *b,
+      int& iva,
+      int& ivql,
+      int& ivqr,
+      int *iwk,
+      float *fwk,
+      int *iparm,
+      float *fparm,
+      int& ier )
+{
     scgr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
 	  ier );
 }
-void pcg::xcgr( int& ijob, int& ireq,
-		double *x, double *xex, const double *b,
-		int& iva, int& ivql, int& ivqr, int *iwk,
-		double *fwk, int *iparm, double *fparm,
-		int& ier ) {
+
+void
+rtt_pcgWrap::
+xcgr( int& ijob,
+      int& ireq,
+      double *x,
+      double *xex,
+      const double *b,
+      int& iva,
+      int& ivql,
+      int& ivqr,
+      int *iwk,
+      double *fwk,
+      int *iparm,
+      double *fparm,
+      int& ier )
+{
     dcgr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
-	  ier );
-}
-void pcg::xcgr( int& ijob, int& ireq,
-		complex<float> *x, complex<float> *xex, const complex<float> *b,
-		int& iva, int& ivql, int& ivqr, int *iwk,
-		complex<float> *fwk, int *iparm, complex<float> *fparm,
-		int& ier ) {
-    ccgr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
-	  ier );
-}
-void pcg::xcgr( int& ijob, int& ireq,
-		complex<double> *x, complex<double> *xex, const complex<double> *b,
-		int& iva, int& ivql, int& ivqr, int *iwk,
-		complex<double> *fwk, int *iparm, complex<double> *fparm,
-		int& ier ) {
-    zcgr( ijob, ireq, x, xex, b, iva, ivql, ivqr, iwk, fwk, iparm, fparm,
 	  ier );
 }
 

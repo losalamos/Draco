@@ -6,5 +6,4 @@
 
 #include "TstPCG_MatVec.t.hh"
 
-//instantiate class TstPCG_MatVec<float>
 template class TstPCG_MatVec<double>;

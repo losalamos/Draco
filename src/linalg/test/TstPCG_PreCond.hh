@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __linalg_test_TstPCG_PreCond_hh__
-#define __linalg_test_TstPCG_PreCond_hh__
+#ifndef __pcgWrap_test_TstPCG_PreCond_hh__
+#define __pcgWrap_test_TstPCG_PreCond_hh__
 
 #include "../PCG_PreCond.hh"
 
@@ -20,18 +20,23 @@
 //===========================================================================//
 
 template<class T>
-class TstPCG_PreCond : public PCG_PreCond<T> {
+class TstPCG_PreCond
+    : public rtt_pcgWrap::PCG_PreCond<T>
+{
 
   public:
     TstPCG_PreCond();
     ~TstPCG_PreCond();
 
-    void  Left_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>&b );
-    void Right_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>&b );
+    void Left_PreCond( rtt_dsxx::Mat1<T>& x,
+		       const rtt_dsxx::Mat1<T>&b );
+    
+    void Right_PreCond( rtt_dsxx::Mat1<T>& x,
+			const rtt_dsxx::Mat1<T>&b );
 };
 
-#endif                          // __linalg_test_TstPCG_PreCond_hh__
+#endif                          // __pcgWrap_test_TstPCG_PreCond_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of linalg/test/TstPCG_PreCond.hh
+//                              end of pcgWrap/test/TstPCG_PreCond.hh
 //---------------------------------------------------------------------------//

@@ -13,22 +13,30 @@
 //---------------------------------------------------------------------------//
 
 template<class T>
-TstPCG_PreCond<T>::~TstPCG_PreCond() {}
+TstPCG_PreCond<T>::
+~TstPCG_PreCond()
+{
+}
 
 //---------------------------------------------------------------------------//
 // Constructor.
 //---------------------------------------------------------------------------//
 
 template<class T>
-TstPCG_PreCond<T>::TstPCG_PreCond()
-    : PCG_PreCond<T>() {}
+TstPCG_PreCond<T>::
+TstPCG_PreCond()
+    : PCG_PreCond<T>()
+{
+}
 
 //---------------------------------------------------------------------------//
 // Solve QL * x = b for x.
 //---------------------------------------------------------------------------//
 
 template<class T>
-void TstPCG_PreCond<T>::Left_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>&b )
+void TstPCG_PreCond<T>::
+Left_PreCond( rtt_dsxx::Mat1<T>& x,
+	      const rtt_dsxx::Mat1<T>&b )
 {
     x = b;
 }
@@ -38,7 +46,9 @@ void TstPCG_PreCond<T>::Left_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1
 //---------------------------------------------------------------------------//
 
 template<class T>
-void TstPCG_PreCond<T>::Right_PreCond( rtt_dsxx::Mat1<T>& x, const rtt_dsxx::Mat1<T>&b )
+void TstPCG_PreCond<T>::
+Right_PreCond( rtt_dsxx::Mat1<T>& x,
+	       const rtt_dsxx::Mat1<T>&b )
 {
     x = b;
 }

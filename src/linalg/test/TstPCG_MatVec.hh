@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __linalg_test_TstPCG_MatVec_hh__
-#define __linalg_test_TstPCG_MatVec_hh__
+#ifndef __pcgWrap_test_TstPCG_MatVec_hh__
+#define __pcgWrap_test_TstPCG_MatVec_hh__
 
 #include "../PCG_MatVec.hh"
 
@@ -20,18 +20,20 @@
 //===========================================================================//
 
 template<class T>
-class TstPCG_MatVec : public PCG_MatVec<T> {
+class TstPCG_MatVec : public rtt_pcgWrap::PCG_MatVec<T>
+{
     int nxs, nys;
 
   public:
     TstPCG_MatVec( int _nxs, int _nys );
     ~TstPCG_MatVec();
 
-    void MatVec( rtt_dsxx::Mat1<T>& b, const rtt_dsxx::Mat1<T>& x );
+    void MatVec( rtt_dsxx::Mat1<T>& b,
+		 const rtt_dsxx::Mat1<T>& x );
 };
 
-#endif                          // __linalg_test_TstPCG_MatVec_hh__
+#endif                          // __pcgWrap_test_TstPCG_MatVec_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of linalg/test/TstPCG_MatVec.hh
+//                              end of pcgWrap/test/TstPCG_MatVec.hh
 //---------------------------------------------------------------------------//

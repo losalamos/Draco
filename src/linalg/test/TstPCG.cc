@@ -28,6 +28,7 @@ void version(const std::string &progname)
 }
 
 using std::vector;
+using namespace rtt_pcgWrap;
 
 //---------------------------------------------------------------------------//
 // main
@@ -106,8 +107,8 @@ int main( int argc, char *argv[] )
 	
 	    for (int i = 0; i<nru; i++)
 	    {
-		using rtt_linalg::compare_reals;
-		using rtt_linalg::testMsg;
+		using rtt_pcgWrap::compare_reals;
+		using rtt_pcgWrap::testMsg;
 		std::cout << res[i] << " " << b[i]
 			  << " ---> "
 			  << testMsg(compare_reals(res[i], b[i], ndigits))

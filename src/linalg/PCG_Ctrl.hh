@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __linalg_PCG_Ctrl_hh__
-#define __linalg_PCG_Ctrl_hh__
+#ifndef __pcgWrap_PCG_Ctrl_hh__
+#define __pcgWrap_PCG_Ctrl_hh__
 
 #include "ds++/Mat.hh"
 #include "ds++/SP.hh"
@@ -26,6 +26,8 @@
 // 1) extensively re-vamped by Rob Lowrie
 // 
 //===========================================================================//
+
+namespace rtt_pcgWrap {
 
 template<class T>
 class PCG_Ctrl
@@ -135,8 +137,10 @@ class PCG_Ctrl
     int getSize() const { return d_iparm(NRU); }
 };
 
-#endif                          // __linalg_PCG_Ctrl_hh__
+} // namespace rtt_pcgWrap
+
+#endif                          // __pcgWrap_PCG_Ctrl_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of linalg/PCG_Ctrl.hh
+//                              end of pcgWrap/PCG_Ctrl.hh
 //---------------------------------------------------------------------------//

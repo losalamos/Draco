@@ -11,7 +11,7 @@
 
 #include <string>
 
-namespace rtt_linalg
+namespace rtt_pcgWrap
 {
  bool compare_reals(const double x1, const double x2, const int ndigits);
  std::string testMsg(bool testPassed);
