@@ -17,7 +17,7 @@ include ../config/makefile
 
 # Put non template code here
 
-libsrcs = 
+libsrcs = Units.cc
 
 # Get the library built, minding our various other targets too.
 

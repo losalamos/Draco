@@ -29,13 +29,14 @@ class P13TOptions {
 
     // CREATORS
 
-    P13TOptions(bool electronConduction_, bool ionConduction_);
-    P13TOptions(const P13TOptions &rhs);
-    ~P13TOptions();
+    P13TOptions(bool electronConduction_, bool ionConduction_)
+	: electronConduction(electronConduction_),
+	  ionConduction(ionConduction_)
+    {
+	// empty
+    }
 
     // MANIPULATORS
-
-    P13TOptions& operator=(const P13TOptions &rhs);
 
     // ACCESSORS
 

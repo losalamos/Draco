@@ -11,6 +11,18 @@
 
 #include "ds++/SP.hh"
 #include "3T/P13TOptions.hh"
+#include <iostream>
+
+#ifndef BEGIN_NS_XTM
+#define BEGIN_NS_XTM namespace XTM  {
+#define END_NS_XTM }
+#endif
+
+BEGIN_NS_XTM
+
+// FORWARD REFERENCES
+
+class RadiationPhysics;
 
 //===========================================================================//
 // class P13T - 
@@ -47,7 +59,7 @@ class P13T
     
     typedef typename MeshType::ccsf ccsf;    // cell-centered scalar field
     typedef typename MeshType::ncvf ncvf;    // node-centered vector field
-    typedef typename MeshType::fcdcsf fcdsf; // face-centered discontinuous s.f.
+    typedef typename MeshType::fcdsf fcdsf;  // face-centered discontinuous s.f.
     typedef typename MeshType::bsbf bsbf;    // bndry-specified boundary field.
 
     // The state of the radiation field is passed in and returned
@@ -56,6 +68,11 @@ class P13T
     struct RadiationStateField {
 	ccsf phi;
 	FluxField F;
+	RadiationStateField(const SP<MeshType> &spmesh_)
+	    : phi(spmesh_), F(spmesh_)
+	{
+	    // empty
+	}
     };
     
 
@@ -75,9 +92,9 @@ class P13T
     // CREATORS
 
     P13T(const P13TOptions &options_,
-	 const SP<MaterialProperties> &spProp_,
-	 const SP<DiffusionSolver> &spDiffSolver_);
-    P13T(const P13T& );
+	 const SP<MP> &spProp_,
+	 const SP<DS> &spDiffSolver_);
+    P13T(const P13T<MT,MP,DS>& );
     ~P13T();
 
     // MANIPULATORS
@@ -88,6 +105,22 @@ class P13T
     void setDiffSolver(const SP<DiffusionSolver> &spDiffSolver_);
 
     // ACCESSORS
+
+    const SP<MeshType> getMesh() const { return spProp->getMesh(); }
+    const SP<MaterialProperties> getMaterialProperties() const
+    {
+	return spProp;
+    }
+
+    void print(std::ostream &os) const
+    {
+	os << "in P13T::print(), "
+	   << "this: " << (void *)this
+	   << " spProp: ";
+	spProp->print(os);
+	os << " spDiffSolver: ";
+	spDiffSolver->print(os);
+    }
 
     //------------------------------------------------------------------------//
     // initializeRadiationState:
@@ -118,7 +151,9 @@ class P13T
 	       RadiationStateField &resultsStateField,
 	       ccsf &electronEnergyDeposition,
 	       ccsf &ionEnergyDeposition,
-	       ncvf &momentumDeposition) const;
+	       ncvf &momentumDeposition,
+	       ccsf &Tnp1Electron,
+	       ccsf &Tnp1Ion) const;
 
     // IMPLEMENTATION
 
@@ -154,16 +189,63 @@ class P13T
 		      int groupNo,
 		      const MaterialStateField &matState,
 		      const RadiationStateField &prevStateField,
-		      const ccsf QRad,
-		      const ccsf QElectron,
-		      const ccsf QIon,
-		      const ccsf TElectron,
-		      const ccsf TIon,
+		      const ccsf &QRad,
+		      const ccsf &QElectron,
+		      const ccsf &QIon,
+		      const ccsf &TElectron,
+		      const ccsf &TIon,
 		      fcdsf &D,
-		      FluxField &Fprime,
+		      DiscFluxField &Fprime,
 		      ccsf &sigmaAbsBar,
 		      ccsf &QRadBar) const;
+
+    void calcStarredFields(double dt,
+			   int groupNo,
+			   const MaterialStateField &matState,
+			   const RadiationPhysics &radPhys,
+			   const ccsf &QElectron,
+			   const ccsf &QIon,
+			   const ccsf &TElectron,
+			   const ccsf &TIon,
+			   const ccsf &sigmaEmission,
+			   ccsf &QElecStar,
+			   ccsf &CvStar,
+			   ccsf &nu) const;
+    
+    void calcStarredFields(double dt,
+			   int groupNo,
+			   const MaterialStateField &matState,
+			   const RadiationPhysics &radPhys,
+			   const ccsf &QElectron,
+			   const ccsf &QIon,
+			   const ccsf &TElectron,
+			   const ccsf &TIon,
+			   const ccsf &sigmaEmission,
+			   ccsf &QElecStar,
+			   ccsf &CvStar) const;
+    
+    void calcDeltaTElectron(double dt,
+			    int numGroups, 
+			    const MaterialStateField &matState, 
+			    const RadiationStateField &prevStateField, 
+			    const ccsf &QElectron, 
+			    const ccsf &QIon,
+			    const ccsf &TElectron,
+			    const ccsf &TIon,
+			    const RadiationStateField &resultsStateField, 
+			    ccsf &deltaTelectron) const;
+
+    void calcDeltaTIon(double dt,
+		       const MaterialStateField &matState, 
+		       const RadiationStateField &prevStateField, 
+		       const ccsf &QIon,
+		       const ccsf &TElectron,
+		       const ccsf &TIon,
+		       const ccsf &deltaTelectron,
+		       ccsf &deltaTIon) const;
 };
+
+END_NS_XTM  // namespace XTM
 
 #endif                          // __3T_P13T_hh__
 

@@ -11,6 +11,17 @@
 #include "3T/PhysicalConstants.hh"
 #include <cmath>
 
+#include <iostream>
+using std::cerr;
+using std::endl;
+
+#ifndef BEGIN_NS_XTM
+#define BEGIN_NS_XTM namespace XTM  {
+#define END_NS_XTM }
+#endif
+
+BEGIN_NS_XTM
+    
 // CREATORS
 
 //---------------------------------------------------------------------------//
@@ -20,9 +31,9 @@
 
 template<class MT, class MP, class DS>
 P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
-		       const SP<MaterialProperties> &spProp_,
-		       const SP<DiffusionSolver> &spDiffSolver_)
-    : options(options_), spProp(spProp_), spDiffSolver(spDiffSolver)
+		       const SP<MP> &spProp_,
+		       const SP<DS> &spDiffSolver_)
+    : options(options_), spProp(spProp_), spDiffSolver(spDiffSolver_)
 {
     // empty
 }
@@ -33,7 +44,7 @@ P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
 //---------------------------------------------------------------------------//
 
 template<class MT, class MP, class DS>
-P13T<MT, MP, DS>::P13T(const P13T &rhs)
+P13T<MT, MP, DS>::P13T(const P13T<MT, MP, DS> &rhs)
     : options(rhs.options), spProp(rhs.spProp), spDiffSolver(rhs.spDiffSolver)
 {
     // empty
@@ -60,11 +71,12 @@ P13T<MT, MP, DS>::~P13T()
 //---------------------------------------------------------------------------//
 
 template<class MT, class MP, class DS>
-P13T& P13T<MT, MP, DS>::operator=(const P13T &rhs)
+P13T<MT, MP, DS>& P13T<MT, MP, DS>::operator=(const P13T &rhs)
 {
     options = rhs.options;
     spProp = rhs.spProp;
     spDiffSolver = rhs.spDiffSolver;
+    return *this;
 }
 
 
@@ -117,6 +129,8 @@ void P13T<MT, MP, DS>::
 initializeRadiationState(const MaterialStateField &matState,
 			 RadiationStateField &resultsStateField) const
 {
+    cerr << "in P13T::initializeRadiationState()" << endl;
+    
     // We need a smart pointer to a mesh
 
     const SP<MeshType> spMesh = spDiffSolver->getMesh();
@@ -125,14 +139,14 @@ initializeRadiationState(const MaterialStateField &matState,
     spProp->getElectronTemperature(matState, TElectron);
     
     // Set the radiation physics to the given units.
-    
+
     const RadiationPhysics radPhys(spProp->getUnits());
 
     // The radiation field is set to the 4pi*planckian with no current flow.
-    
-    radPhysics.getPlanck(TElectron, resultsStateField.phi);
 
-    using PhysicalConstants::pi;
+    radPhys.getPlanck(TElectron, resultsStateField.phi);
+
+    using XTM::PhysicalConstants::pi;
     
     resultsStateField.phi *= 4.0*pi;
     resultsStateField.F = 0.0;
@@ -159,12 +173,15 @@ void P13T<MT, MP, DS>::solve(double dt,
 			     RadiationStateField &resultsStateField,
 			     ccsf &electronEnergyDeposition,
 			     ccsf &ionEnergyDeposition,
-			     ncvf &momentumDeposition) const
+			     ncvf &momentumDeposition,
+			     ccsf &Tnp1Electron,
+			     ccsf &Tnp1Ion) const
 {
     // Require dt > 0, etc.
-    //
-    // REQUIRE(dt > 0.0)
 
+    Require(dt > 0.0);
+
+    cerr << "In P13T::solve()" << endl;
    
     // This is a one-group problem
 
@@ -185,8 +202,8 @@ void P13T<MT, MP, DS>::solve(double dt,
     // If there is conduction we will need to differentiate
     // between the temperatures at time t^n and t^n+1/2.
     
-    ccsf Tnp12Electron(spMesh) = TnElectron;
-    ccsf Tnp12Ion(spMesh) = TnIon;
+    ccsf Tnp12Electron = TnElectron;
+    ccsf Tnp12Ion = TnIon;
 
     // If they want ion conduction, we do it here.
     
@@ -196,12 +213,12 @@ void P13T<MT, MP, DS>::solve(double dt,
 	
 	fcdsf kappaIon(spMesh);
 	spProp->getIonConductionCoeff(matState, kappaIon);
+	kappaIon *= dt;
 
 	// Calculate the removal coefficient.
 	
 	ccsf removalCoeff(spMesh);
 	spProp->getIonSpecificHeat(matState, removalCoeff);
-	removalCoeff /= dt;
 
 	// Calculate the source term.
 	ccsf source = removalCoeff * TnIon;
@@ -209,7 +226,7 @@ void P13T<MT, MP, DS>::solve(double dt,
 	// Do the diffusion solve for the temperature at n+1/2.
 	
 	spDiffSolver->solve(kappaIon, removalCoeff, source,
-			    Tnp12Ion);
+			    boundary, Tnp12Ion);
     }
 
     
@@ -221,12 +238,12 @@ void P13T<MT, MP, DS>::solve(double dt,
 	
 	fcdsf kappaElectron(spMesh);
 	spProp->getElectronConductionCoeff(matState, kappaElectron);
-
+	kappaElectron *= dt;
+	
 	// Calculate the removal coefficient.
 	
 	ccsf removalCoeff(spMesh);
 	spProp->getElectronSpecificHeat(matState, removalCoeff);
-	removalCoeff /= dt;
 
 	// Calculate the source term.
 	ccsf source = removalCoeff * TnElectron;
@@ -234,9 +251,13 @@ void P13T<MT, MP, DS>::solve(double dt,
 	// Do the diffusion solve for the temperature at n+1/2.
 	
 	spDiffSolver->solve(kappaElectron, removalCoeff, source,
-			    Tnp12Electron);
+			    boundary, Tnp12Electron);
     }
 
+    cerr << "After conduction: " << endl;
+    cerr << "Tnp12Electron: " << Tnp12Electron << endl;
+    cerr << "Tnp12Ion: " << Tnp12Ion << endl;
+    
     // Calculate the new radiation state due to the radiation P1,
     // electron and ion equations ***without*** the conduction equations.
     
@@ -250,15 +271,16 @@ void P13T<MT, MP, DS>::solve(double dt,
     // state, (Te^n+1 - Te^n+1/2).
     
     ccsf deltaTElectron(spMesh);
-    calcDeltaElectron(dt, numGroups, matState, prevStateField, QElectron, QIon,
-		      resultsStateField, deltaTelectron);
+    calcDeltaTElectron(dt, numGroups, matState, prevStateField, QElectron, QIon,
+		       Tnp12Electron, Tnp12Ion,
+		       resultsStateField, deltaTElectron);
     
     // Calculate the delta ion temperature from the delta electron
     // temperature, (Ti^n+1 - Ti^n+1/2).
     
     ccsf deltaTIon(spMesh);
-    calcDeltaTIon(dt, matState, prevStateField, QIon, deltaTElectron,
-		  deltaTIon);
+    calcDeltaTIon(dt, matState, prevStateField, QIon, Tnp12Electron, Tnp12Ion,
+		  deltaTElectron, deltaTIon);
 
     // Now include the contribution from conduction.
     
@@ -279,8 +301,12 @@ void P13T<MT, MP, DS>::solve(double dt,
     spProp->getElectronSpecificHeat(matState, Cv);
     electronEnergyDeposition = Cv * deltaTElectron;
 
+    Tnp1Electron = TnElectron + deltaTElectron;
+
     spProp->getIonSpecificHeat(matState, Cv);
     ionEnergyDeposition = Cv * deltaTIon;
+
+    Tnp1Ion = TnIon + deltaTIon;
     
     // Calculate the momentum deposition.
     // For now we just zero it out.
@@ -322,8 +348,8 @@ calcNewRadState(double dt,
     ccsf sigmaAbsBar(spMesh);
     ccsf QRadBar(spMesh);
     
-    calcP1Coefs(dt, groupNo, matState, prevStateField, QRad, QElec, QIon,
-		TElectron, TIon, D, Fprime, sigmaAbsBar, QRadBar);
+    calcP1Coeffs(dt, groupNo, matState, prevStateField, QRad, QElectron, QIon,
+		 TElectron, TIon, D, Fprime, sigmaAbsBar, QRadBar);
 
     // Set up aliases for the long names.
     
@@ -351,11 +377,11 @@ calcP1Coeffs(double dt,
 	     int groupNo,
 	     const MaterialStateField &matState,
 	     const RadiationStateField &prevStateField,
-	     const ccsf QRad,
-	     const ccsf QElectron,
-	     const ccsf QIon,
-	     const ccsf TElectron,
-	     const ccsf TIon,
+	     const ccsf &QRad,
+	     const ccsf &QElectron,
+	     const ccsf &QIon,
+	     const ccsf &TElectron,
+	     const ccsf &TIon,
 	     fcdsf &D,
 	     DiscFluxField &Fprime,
 	     ccsf &sigmaAbsBar,
@@ -370,6 +396,8 @@ calcP1Coeffs(double dt,
     double c = radPhys.getLightSpeed();
     double tau = 1.0/(c*dt);
 
+    cerr << "c: " << c << " tau: " << tau << endl;
+
     // We need a smart pointer to a mesh
 
     const SP<MeshType> spMesh = spDiffSolver->getMesh();
@@ -382,54 +410,6 @@ calcP1Coeffs(double dt,
     fcdsf sigmaTotal(spMesh);
     spProp->getSigmaTotal(matState, groupNo, sigmaTotal);
 
-    // Get sigma emission
-    ccsf sigmaEmission;
-    spProp->getSigmaEmission(matState, groupNo, sigmaEmission);
-
-    // Get the electron and ion heat capacities.
-    
-    ccsf CvElec(spMesh);
-    spProp->getElectronSpecificHeat(matState, CvElec);
-
-    ccsf CvIon(spMesh);
-    spProp->getIonSpecificHeat(matState, CvIon);
-
-    // Calculate Planckian and its temperature derivative
-
-    ccsf planck(spMesh);
-    ccsf dPlanckdT(spMesh);
-    radPhysics.getPlanck(TElectron, planck);
-    radPhysics.getPlanckTemperatureDerivative(TElectron, dPlanckdT);
-
-    // We need our Planckian multiplied by 4pi
-
-    using PhysicalConstants::pi;
-    
-    planck *= 4.0*pi;
-    dPlanckdT *= 4.0*pi;
-    
-    // We need gamma, the electron-ion coupling coefficient,
-    // and CvStar (Cv*) in order to calculate nu.
-
-    ccsf gamma(spMesh);
-    spProp->getElectronIonCoupling(matState, gamma);
-
-    // tmpCoeff is a common term to two calculations.
-    // Let's just do it once.
-    
-    const ccsf tmpCoeff = (gamma*dt) / (CvIon + gamma*dt);
-
-    const ccsf CvStar = CvElec + CvIon * tmpCoeff;
-    
-    // Calculate the "nu" used in the 3T modification of sigmaAbs
-    
-    const ccsf nu = dt * sigmaEmission * dPlanckdT / (CvStar + dt * dPlanckdT);
-
-    // Calculate QElecStar (Qe*)
-
-    const ccsf QElecStar = QElec +
-	(CvIon/dt * (TIon - TElectron) + QIon) * tmpCoeff;
-
     //
     // We can now calculate the results
     //
@@ -441,11 +421,40 @@ calcP1Coeffs(double dt,
     
     D = (1.0/3.0) / (sigmaTotal + tau);
 
-    // Calculate modified sigma absorption
+    // We need nu and QElecStar, we get CvStar for free.
+
+    // Get sigma emission
+    ccsf sigmaEmission(spMesh);
+    spProp->getSigmaEmission(matState, groupNo, sigmaEmission);
+
+    ccsf QElecStar(spMesh);
+    ccsf CvStar(spMesh);
+    ccsf nu(spMesh);
     
+    calcStarredFields(dt, groupNo, matState, radPhys,
+		      QElectron, QIon, TElectron, TIon,
+		      sigmaEmission, QElecStar, CvStar, nu);
+
+    cerr << "Qe*: " << QElecStar << endl;
+    cerr << "Cv*: " << CvStar << endl;
+    cerr << "nu: " << nu << endl;
+    cerr << "tau " << tau << endl;
+    
+    // Calculate modified sigma absorption
+
     sigmaAbsBar = (1.0 - nu) * sigmaAbs + tau;
 
     // Calculated modified radiation source
+
+    // We need the Planckian.
+
+    ccsf planck(spMesh);
+    radPhys.getPlanck(TElectron, planck);
+
+    // We need our Planckian multiplied by 4pi
+
+    using XTM::PhysicalConstants::pi;
+    planck *= 4.0*pi;
 
     QRadBar = tau*prevStateField.phi + (1.0 - nu)*sigmaEmission*planck
 	+ nu*QElecStar;
@@ -453,9 +462,190 @@ calcP1Coeffs(double dt,
     // Calculate the "telegraph" term to the P1 equation.
 
     Fprime = tau*prevStateField.F / (sigmaTotal + tau);
-    
+
+    cerr << "sigmaAbsBar: " << sigmaAbsBar << endl;
+    cerr << "QRadBar: " << QRadBar << endl;
 }
- 
+
+template<class MT, class MP, class DS>
+void P13T<MT, MP, DS>::calcStarredFields(double dt,
+					 int groupNo,
+					 const MaterialStateField &matState,
+					 const RadiationPhysics &radPhys,
+					 const ccsf &QElectron,
+					 const ccsf &QIon,
+					 const ccsf &TElectron,
+					 const ccsf &TIon,
+					 const ccsf &sigmaEmission,
+					 ccsf &QElecStar,
+					 ccsf &CvStar,
+					 ccsf &nu) const
+{
+    
+    calcStarredFields(dt, groupNo, matState, radPhys,
+		      QElectron, QIon, TElectron, TIon,
+		      sigmaEmission, QElecStar, CvStar);
+
+    // We need a smart pointer to a mesh
+
+    const SP<MeshType> spMesh = spDiffSolver->getMesh();
+
+    // Calculate the Planckian's temperature derivative.
+
+    ccsf dPlanckdT(spMesh);
+    radPhys.getPlanckTemperatureDerivative(TElectron, dPlanckdT);
+
+    // We need our Planckian multiplied by 4pi
+
+    using XTM::PhysicalConstants::pi;
+    dPlanckdT *= 4.0*pi;
+    
+    // Calculate the "nu" used in the 3T modification of sigmaAbs
+    
+    nu = dt * sigmaEmission * dPlanckdT / (CvStar + dt * dPlanckdT);
+
+}
+
+template<class MT, class MP, class DS>
+void P13T<MT, MP, DS>::calcStarredFields(double dt,
+					 int groupNo,
+					 const MaterialStateField &matState,
+					 const RadiationPhysics &radPhys,
+					 const ccsf &QElectron,
+					 const ccsf &QIon,
+					 const ccsf &TElectron,
+					 const ccsf &TIon,
+					 const ccsf &sigmaEmission,
+					 ccsf &QElecStar,
+					 ccsf &CvStar) const
+{
+    // We need a smart pointer to a mesh
+
+    const SP<MeshType> spMesh = spDiffSolver->getMesh();
+
+    // Get the electron and ion heat capacities.
+    
+    ccsf CvElec(spMesh);
+    spProp->getElectronSpecificHeat(matState, CvElec);
+
+    ccsf CvIon(spMesh);
+    spProp->getIonSpecificHeat(matState, CvIon);
+
+    // We need gamma, the electron-ion coupling coefficient.
+
+    ccsf gamma(spMesh);
+    spProp->getElectronIonCoupling(matState, gamma);
+
+    // tmpCoeff is a common term to two calculations.
+    // Let's just do it once.
+    
+    const ccsf tmpCoeff = (gamma*dt) / (CvIon + gamma*dt);
+
+    // CvStar is one of the results, as well as intermediate.
+    
+    CvStar = CvElec + CvIon * tmpCoeff;
+    
+    // Calculate QElecStar (Qe*).
+
+    QElecStar = QElectron + (CvIon/dt * (TIon - TElectron) + QIon) * tmpCoeff;
+
+}
+
+template<class MT, class MP, class DS>
+void P13T<MT, MP, DS>::calcDeltaTElectron(double dt,
+					  int numGroups, 
+					  const MaterialStateField &matState, 
+					  const RadiationStateField &prevStateField,
+					  const ccsf &QElectron, 
+					  const ccsf &QIon,
+					  const ccsf &TElectron,
+					  const ccsf &TIon,
+					  const RadiationStateField &resultsStateField, 
+					  ccsf &deltaTelectron) const
+{
+    // Only one group.
+
+    Require(numGroups == 1);
+    int groupNo = 1;
+    
+    // We need a smart pointer to a mesh
+
+    const SP<MeshType> spMesh = spDiffSolver->getMesh();
+
+    // Set the radiation physics to the given units.
+    
+    const RadiationPhysics radPhys(spProp->getUnits());
+
+    ccsf sigmaEmission(spMesh);
+    spProp->getSigmaEmission(matState, groupNo, sigmaEmission);
+
+    // Calculate QElecStar and CvStar.
+
+    ccsf QElecStar(spMesh);
+    ccsf CvStar(spMesh);
+    
+    calcStarredFields(dt, groupNo, matState, radPhys,
+		      QElectron, QIon, TElectron, TIon,
+		      sigmaEmission, QElecStar, CvStar);
+
+    cerr << "Qe*: " << QElecStar << endl;
+    cerr << "Cv*: " << CvStar << endl;
+
+    ccsf sigmaAbs(spMesh);
+    spProp->getSigmaAbsorption(matState, groupNo, sigmaAbs);
+
+    ccsf planck(spMesh);
+    radPhys.getPlanck(TElectron, planck);
+    
+    ccsf dPlanckdT(spMesh);
+    radPhys.getPlanckTemperatureDerivative(TElectron, dPlanckdT);
+
+    // The planckian and derivative must be multiplies by 4pi
+    
+    using XTM::PhysicalConstants::pi;
+    planck *= 4.0*pi;
+    dPlanckdT *= 4.0*pi;
+    
+    // Get shorthand for phi^n+1
+    const ccsf &phi_np1 = resultsStateField.phi;
+
+    // calculate delta T electron
+    
+    deltaTelectron = dt * (sigmaAbs*phi_np1 - sigmaEmission*planck + QElecStar)
+	/ (CvStar + dt*sigmaEmission*dPlanckdT);
+}
+
+template<class MT, class MP, class DS>
+void P13T<MT, MP, DS>::calcDeltaTIon(double dt,
+				     const MaterialStateField &matState, 
+				     const RadiationStateField &prevStateField, 
+				     const ccsf &QIon,
+				     const ccsf &TElectron,
+				     const ccsf &TIon,
+				     const ccsf &deltaTelectron,
+				     ccsf &deltaTIon) const
+{
+    // We need a smart pointer to a mesh
+
+    const SP<MeshType> spMesh = spDiffSolver->getMesh();
+
+    // Get the ion heat capacity.
+    
+    ccsf CvIon(spMesh);
+    spProp->getIonSpecificHeat(matState, CvIon);
+
+    // We need gamma, the electron-ion coupling coefficient.
+
+    ccsf gamma(spMesh);
+    spProp->getElectronIonCoupling(matState, gamma);
+
+    deltaTIon = dt * (gamma*(TElectron - TIon + deltaTelectron) + QIon)
+	/ (CvIon + dt*gamma);
+
+}
+
+END_NS_XTM  // namespace XTM
+
 //---------------------------------------------------------------------------//
 //                              end of P13T.cc
 //---------------------------------------------------------------------------//

@@ -9,6 +9,13 @@
 #ifndef __3T_Units_hh__
 #define __3T_Units_hh__
 
+#ifndef BEGIN_NS_XTM
+#define BEGIN_NS_XTM namespace XTM  {
+#define END_NS_XTM }
+#endif
+
+BEGIN_NS_XTM
+    
 //===========================================================================//
 // class Units - 
 //
@@ -95,17 +102,23 @@ class Units
     // CLASS METHODS
 
     static Units getSIUnits() { return Units(); }
+    
     static Units getAstroPhysUnits()
     {
 	// Convenience utility to return Astro-Physical units
 	// length - centimeters
 	// mass   - grams
-	// time   - 10^-8 seconds
+	// time   - 10^-8 seconds (1 shake)
 	// temp   - keV
 
-	using PhysicalConstants::eV2Kelvin;
+	using XTM::PhysicalConstants::eV2K;
+
+	const double mPcm = 1.0e-2;
+	const double kgPg = 1.0e-3;
+	const double sPsh = 1.0e-8;
+	const double KPkeV = 1.0e3*eV2K;
 	
-	return Units(1.0e-2, 1.0e-3, 1.0e-8, 1.0e3*eV2Kelvin);
+	return Units(mPcm, kgPg, sPsh, KPkeV);
     }
     
   protected:
@@ -123,10 +136,10 @@ class Units
 
 inline bool Units::validUnits() const
 {
-    return lenghtConversion .ge. minConversion()
-	&& massConversion .ge. minConversion()
-	&& timeConversion .ge. minConversion()
-	&& temperatureConversion .ge. minConversion();
+    return lengthConversion >= minConversion()
+	&& massConversion >= minConversion()
+	&& timeConversion >= minConversion()
+	&& temperatureConversion >= minConversion();
 }
 
 inline double Units::User2SILength(double length) const
@@ -169,7 +182,7 @@ inline double Units::SI2UserTemperature(double temperature) const
     return temperature / temperatureConversion;
 }
 
-inline double Units::User2SIVelocity(double velocity) const;
+inline double Units::User2SIVelocity(double velocity) const
 {
     return velocity * lengthConversion / timeConversion;
 }
@@ -178,6 +191,8 @@ inline double Units::SI2UserVelocity(double velocity) const
 {
     return velocity * timeConversion / lengthConversion;
 }
+
+END_NS_XTM  // namespace XTM
 
 #endif                          // __3T_Units_hh__
 

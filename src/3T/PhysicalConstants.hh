@@ -21,6 +21,13 @@
 // 
 //===========================================================================//
 
+#ifndef BEGIN_NS_XTM
+#define BEGIN_NS_XTM namespace XTM  {
+#define END_NS_XTM }
+#endif
+
+BEGIN_NS_XTM
+    
 namespace PhysicalConstants
 {
     // Mathematical constants
@@ -45,7 +52,7 @@ namespace PhysicalConstants
     const double avogardro         = 6.022045e23;         // mol^-1
     
     // ELECTRON REST MASS (KG)
-    const double electronMass      = 9.109534e-31;        // kg
+    const double electronMassSI    = 9.109534e-31;        // kg
     
     // SPEED OF LIGHT (M/S)
     const double cLightSI          = 2.99792458e8;        // m s^-1
@@ -60,6 +67,8 @@ namespace PhysicalConstants
     const double eV2K              = electronChargeSI / boltzmannSI;
 
 }
+
+END_NS_XTM  // namespace XTM
 
 #endif                          // __3T_PhysicalConstants_hh__
 
