@@ -62,6 +62,8 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
       vdata_dirs(ens_vdata_names.size()),
       cdata_dirs(ens_cdata_names.size())
 {
+    using std::strerror;
+
     // Determine whether this is an original graphics startup or a
     // continuation; if this is a continuation we will not rebuild the
     // directories and we assume that previous data is in place.
