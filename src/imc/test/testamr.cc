@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     {
       // material temp
 	double tev[6] = {1,1,1,1,1,1};
-	for (int cycle = 0; cycle < 6; cycle++)
+	for (int cycle = 0; cycle < 10; cycle++)
 	{
 	    
 	  // let's give a mesh definition, RAGE style
