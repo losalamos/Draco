@@ -66,8 +66,8 @@ namespace rtt_imc
 class Gray_Frequency;
 }
 
-typedef rtt_imc::Gray_Particle<OS_Mesh> PT;
-typedef rtt_imc::Gray_Frequency         Gray;
+typedef rtt_imc::Gray_Particle<OS_Mesh>        PT;
+typedef rtt_imc::Gray_Frequency                Gray;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -368,17 +368,106 @@ void T4_slope_test_AMR()
 //===========================================================================//
 void Sphyramid_replicate()
 {
-    // build a FULL mesh --> this mesh will be fully replicated on all
-    // processors in the test
+    // make a mesh
     SP<Parser> parser(new Parser("Sphyramid_Input"));
     SP<Sphyramid_Builder> builder(new Sphyramid_Builder(parser));
     SP<Sphyramid_Mesh> mesh = builder->build_Mesh();
 
+    // make a full replication topology
+    SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
 
+    // make a Mat_State
+    Sphyramid_Mesh::CCSF<double> temps(mesh);
+    if(temps.size() != 5) ITFAILS;
+    temps(1) = 1.0;
+    temps(2) = 1.0;
+    temps(3) = 2.0;
+    temps(4) = 2.0;
+    temps(5) = 3.0;
+    SP<Mat_State<Sphyramid_Mesh> > mat(new Mat_State<Sphyramid_Mesh>
+				       (temps, temps, temps));
+    
+    // make a comm_patterns
+    SP<Comm_Patterns> cp(new Comm_Patterns());
+    cp->calc_patterns(topology);
 
+    // make a Mesh_Operations instance
+    Mesh_Operations<Sphyramid_Mesh> mesh_op(mesh, mat, topology, cp);
 
+    // test values of slopes
+    Sphyramid_Mesh::CCVF<double> slopes = mesh_op.get_t4_slope();
+    if (slopes.size()  != 3)                 ITFAILS;
+    if (slopes.size(1) != mesh->num_cells()) ITFAILS;
+    if (slopes.size(2) != mesh->num_cells()) ITFAILS;
+    if (slopes.size(3) != mesh->num_cells()) ITFAILS;
 
-if (rtt_imc_test::passed)
+    // the y and z values should be zero
+    for (int i = 1; i <= mesh->num_cells(); i++)
+    { 
+	if (!soft_equiv(slopes(2,i), 0.0))   ITFAILS;
+	if (!soft_equiv(slopes(3,i), 0.0))   ITFAILS;   
+    }
+
+    // check x values    
+    
+    // cell 1 has a reflective boundary
+    if (!soft_equiv(slopes(1,1), 0.0))   ITFAILS;
+
+    // cell 2 has two internal boundaries (limited by left edge temperature)
+    {
+	double slope_value = 1.0/mesh->low_half_width(2);
+	if (!soft_equiv(slopes(1,2), slope_value)) ITFAILS;
+    }
+    // cell 3 has two internal boundaries
+    {
+	double left_value = 16.0-
+	    15.0/(mesh->low_half_width(3)+mesh->high_half_width(2))
+	    *mesh->low_half_width(3);
+	double right_value = 16.0;
+	double slope_value = (right_value-left_value)/
+	    (mesh->low_half_width(3)+mesh->high_half_width(3));
+	if (!soft_equiv(slopes(1,3), slope_value)) ITFAILS;
+    }
+    //cell 4 has two internal boundaries
+    {
+	double right_value = 16.0+
+	    65.0/(mesh->low_half_width(5)+mesh->high_half_width(4))
+	    *mesh->high_half_width(4);
+	double left_value = 16.0;
+	double slope_value = (right_value-left_value)/
+	    (mesh->low_half_width(4)+mesh->high_half_width(4));
+	if (!soft_equiv(slopes(1,4), slope_value)) ITFAILS;
+    }
+    // cell 5 has a vaccum boundary
+    {
+	double slope_value = 
+	    65./(mesh->low_half_width(5)+mesh->high_half_width(4));
+	if (!soft_equiv(slopes(1,5), slope_value)) ITFAILS;
+    }
+   
+    // test sampling in cell 5
+
+    // make two identical random number objects
+    Rnd_Control rcon(39567);
+    Sprng ran1 = rcon.get_rn(10);
+    Sprng ran2 = rcon.get_rn(10);
+    if(ran1.ran() != ran2.ran()) ITFAILS;
+
+    // sample a position
+    vector<double> ref(3);
+    vector<double> r(3);
+    
+    double T4 = 81.0;
+
+    ref = mesh->sample_pos(5, ran1, slopes(5), T4);
+    r   = mesh_op.sample_pos_tilt(5, 3, ran2);
+
+    for (int i = 0; i < 2; i++)
+    {
+	if(!soft_equiv(r[i], ref[i], 1E-6)) ITFAILS;
+    }
+
+    if (rtt_imc_test::passed)
 	PASSMSG("T4 slopes ok for Sphyramid replication.");
 }
 

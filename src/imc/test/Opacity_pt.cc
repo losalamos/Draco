@@ -12,6 +12,7 @@
 
 #include "mc/OS_Mesh.hh"
 #include "mc/RZWedge_Mesh.hh"
+#include "mc/Sphyramid_Mesh.hh"
 #include "../Frequency.hh"
 #include "../Opacity.t.hh"
 #include "../Mat_State.t.hh"
@@ -37,6 +38,10 @@ template class Opacity<RZ_MT, Gray_Frequency>;
 template class Opacity<RZ_MT, Multigroup_Frequency>;
 
 template class Mat_State<RZ_MT>;
+
+// Sphyramid_Mesh instantiations
+
+template class Mat_State<rtt_mc::Sphyramid_Mesh>;
 
 } // end namespace rtt_imc
 
