@@ -35,9 +35,12 @@
 #include "imc/Global_Tally.hh"
 #include "imc/Communicator.hh"
 #include "imc/Global.hh"
+#include "c4/global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <string>
+#include <numeric>
+#include <iostream>
 
 IMCSPACE
 
@@ -53,6 +56,47 @@ using std::string;
 template<class MT, class BT, class IT, class PT = Particle<MT> >
 class IMC_Manager 
 {
+public:
+  // some usefull typedefs
+    typedef typename Particle_Buffer<PT>::Comm_Buffer Comm_Buffer;
+    typedef typename Particle_Buffer<PT>::Census      Census;
+    typedef typename Particle_Buffer<PT>::Bank        Bank;
+    typedef typename PT::Diagnostic                   PT_Diagnostic;
+
+  // dd communication controller
+    class DD_Comm
+    {
+    private:
+      // accumulated status reports
+	vector<int> status;
+      // local status reports
+	int *node_status;
+      // local status indicator
+	int local_status;
+      // number of sends in this timestep
+	int sends;
+	
+      // illegal services
+	DD_Comm(const DD_Comm &);
+	const DD_Comm& operator=(const DD_Comm &);
+
+    public:
+      // constructor
+	inline DD_Comm();
+	inline ~DD_Comm();
+	
+      // async communication accounting
+	inline void update_send(const vector<int> &);
+	inline void update_send(const int);
+	inline void update_recv(const int);
+
+      // communication terminating indicator
+	inline bool terminate();
+
+      // accessor functions
+	int get_sends() const { return sends; }
+    };
+	
 private:
   // objects used by all processors
     SP<MT> mesh;
@@ -70,8 +114,8 @@ private:
     SP<Global_Tally<MT> > global_state;
 
   // census objects
-    SP<typename Particle_Buffer<PT>::Comm_Buffer> new_census_buffer;
-    SP<typename Particle_Buffer<PT>::Census> new_census_bank;
+    SP<Comm_Buffer> new_census_buffer;
+    SP<Census> new_census_bank;
 
   // problem variables
     double delta_t;
@@ -84,6 +128,11 @@ private:
 
   // verbosity switch
     bool verbose;
+
+  // DD transport functions
+    void dd_loop(Bank &, SP<PT_Diagnostic>, int &, DD_Comm &); 
+    void dd_Particle_transport(SP<PT>, SP<PT_Diagnostic>, Bank &, int &,
+			       DD_Comm &);
 
   // convert the parallel_scheme to an int for easy sending
     inline int get_scheme(string) const;
@@ -172,6 +221,126 @@ inline string IMC_Manager<MT,BT,IT,PT>::get_scheme(int ps) const
     return value;
 }
 
+//---------------------------------------------------------------------------//
+// DD_Comm nested class inline functions
+//---------------------------------------------------------------------------//
+// constructor
+
+template<class MT, class BT, class IT, class PT> inline 
+IMC_Manager<MT,BT,IT,PT>::DD_Comm::DD_Comm()
+    : status(C4::nodes()), local_status(0), sends(0)
+{
+  // make local node status object that we will use for updates between
+  // synchronizations of the timestep
+    node_status = new int[C4::nodes()];
+
+  // initialize node status arrays to zero
+    for (int i = 0; i < C4::nodes(); i++)
+    {
+	status[i]      = 0;
+	node_status[i] = 0;
+    }
+    
+    Ensure (!std::accumulate(status.begin(), status.end(), 0));
+}
+
+//---------------------------------------------------------------------------//
+// destructor
+
+template<class MT, class BT, class IT, class PT>
+inline IMC_Manager<MT,BT,IT,PT>::DD_Comm::~DD_Comm()
+{
+  // reclaim memory
+    delete [] node_status;
+}
+
+//---------------------------------------------------------------------------//
+// update the node_status for single particle Communications
+
+template<class MT, class BT, class IT, class PT>
+inline void IMC_Manager<MT,BT,IT,PT>::DD_Comm::update_send(const int node)
+{
+    Require (node < C4::nodes());
+    
+  // update the node_status array with the node we sent a particle buffer to
+    if (node >= 0)
+    {
+	node_status[node]++;
+	local_status = 1;
+	sends++;
+    }
+}
+
+//---------------------------------------------------------------------------//
+// update the node_status after a flush of Communications	
+
+template<class MT, class BT, class IT, class PT> inline 
+void IMC_Manager<MT,BT,IT,PT>::DD_Comm::update_send(const vector<int> &nodes) 
+{
+  // update the node_status array with the nodes we sent particles to
+    int global_node;
+    for (int i = 0; i < nodes.size(); i++)
+    {
+	global_node = nodes[i];
+	Check (global_node < C4::nodes());
+	if (global_node >= 0)
+	{
+	    node_status[global_node]++;
+	    local_status = 1;
+	    sends++;
+	}
+    }
+}
+
+//---------------------------------------------------------------------------//
+// update the node_status if we have received something
+
+template<class MT, class BT, class IT, class PT> inline 
+void IMC_Manager<MT,BT,IT,PT>::DD_Comm::update_recv(const int num_arrived)
+{
+    Require (num_arrived < C4::nodes());
+
+  // subtract the number of times this node has received data
+    if (num_arrived > 0)
+    {
+	node_status[C4::node()] -= num_arrived;
+	local_status = 1;
+    }
+}
+
+//---------------------------------------------------------------------------//
+// determine if we need to terminate or keep going
+
+template<class MT, class BT, class IT, class PT> inline 
+bool IMC_Manager<MT,BT,IT,PT>::DD_Comm::terminate()
+{
+  // add up the local status data on each node
+    C4::gsum(node_status, C4::nodes());
+    C4::gsum(local_status);
+
+  // by default we will assume we are done and then find out otherwise
+    bool all_done = true;
+    for (int i = 0; i < nodes(); i++)
+    {
+	status[i] += node_status[i];
+	if (status[i] != 0)
+	    all_done = false;
+	node_status[i] = 0;
+    }
+
+  // determine if we need to stop
+    if (all_done && local_status == 0)
+	return true;
+    else 
+    {
+      // we are not done so return false and reset the local_status
+	local_status = 0;
+    }
+
+  // we aren't done so return false
+    return false;
+}
+	
 CSPACE
 
 #endif                          // __imc_IMC_Manager_hh__

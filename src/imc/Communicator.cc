@@ -17,6 +17,7 @@ using std::fill;
 using std::endl;
 using std::ios;
 using std::setw;
+using std::cout;
 
 // draco componentes
 using C4::node;
@@ -77,14 +78,16 @@ int Communicator<PT>::communicate(const Particle_Buffer<PT> &buffer,
     if (send_buffer[local_node].n_part ==
 	Particle_Buffer<PT>::get_buffer_s()) 
     {
-	multiplier = 1;
-	buffer.async_wait(send_buffer[local_node]);
 	buffer.asend_buffer(send_buffer[local_node], global_node);
+	buffer.async_wait(send_buffer[local_node]);
 	Check (send_buffer[local_node].n_part == 0);
+
+      // return the node this particle has been sent to
+	return global_node;
     }
 
-  // return the node this particle has been sent to
-    return global_node * multiplier;
+  // if we didn't send anything out, return -1 as indicator
+    return multiplier;
 }
 
 //---------------------------------------------------------------------------//
@@ -110,9 +113,9 @@ void Communicator<PT>::post(const Particle_Buffer<PT> &buffer)
 // check to see if any buffers have come in, if they have stuff them in the
 // bank and post a new receive for that buffer
 
-template<class PT>
-bool Communicator<PT>::arecv_post(const Particle_Buffer<PT> &buffer, 
-				  typename Particle_Buffer<PT>::Bank &bank)
+template<class PT> 
+int Communicator<PT>::arecv_post(const Particle_Buffer<PT> &buffer, 
+				 Bank &bank)
 {
   // tag to check if something arrives from somewhere
     int arrived = 0;
@@ -137,7 +140,7 @@ bool Communicator<PT>::arecv_post(const Particle_Buffer<PT> &buffer,
 	}
     }
     
-  // return tag indicating if the bank has been filled
+  // return tag indicating where the bank has been filled
     return arrived;
 }
 
@@ -147,7 +150,7 @@ bool Communicator<PT>::arecv_post(const Particle_Buffer<PT> &buffer,
 
 template<class PT>
 void Communicator<PT>::arecv_wait(const Particle_Buffer<PT> &buffer, 
-				  typename Particle_Buffer<PT>::Bank &bank)
+				  Bank &bank)
 {
   // loop over processors that we are receiving from
     for (int i = 0; i < recv_nodes.size(); i++)
@@ -163,10 +166,79 @@ void Communicator<PT>::arecv_wait(const Particle_Buffer<PT> &buffer,
 }
 
 //---------------------------------------------------------------------------//
-// flush out the send buffers
+// wait on each buffer to receive a Comm_Buffer of zeroes, this is used to
+// terminate asynchronous communication, it does not post a new receive, it
+// is meant to work with asend_end
 
 template<class PT>
-void Communicator<PT>::flush(const Particle_Buffer<PT> &buffer)
+void Communicator<PT>::arecv_end(const Particle_Buffer<PT> &buffer)
+{
+  // loop over processors that we are receiving from
+    for (int i = 0; i < recv_nodes.size(); i++)
+    {
+      // get the global receive node index
+	int global_node = recv_nodes[i];
+
+      // wait and receive the buffer, it better have zeroes in it
+	buffer.async_wait(recv_buffer[i]);
+	Check (recv_buffer[i].n_part == 0);
+    }
+}
+
+//---------------------------------------------------------------------------//
+// send out all buffers, they should be full of zeroes, this is used to
+// terminate asynchronous commuication, it is meant to work with arecv_end
+
+template<class PT>
+void Communicator<PT>::asend_end(const Particle_Buffer<PT> &buffer)
+{
+  // loop through processors and send out whatever is in there
+    for (int i = 0; i < send_buffer.size(); i++)
+    {
+      // get the global send node index
+	int global_node = send_nodes[i];
+
+      // send out asynchronously, it better have zeroes in it
+	Check (send_buffer[i].n_part == 0);
+	buffer.asend_buffer(send_buffer[i], global_node);
+	buffer.async_wait(send_buffer[i]);
+    }
+}
+
+//---------------------------------------------------------------------------//
+// flush out the send buffers if they contain data
+
+template<class PT>
+vector<int> Communicator<PT>::flush(const Particle_Buffer<PT> &buffer)
+{
+  // tag to check where we sent things
+    vector<int> sent(send_buffer.size());
+
+  // loop through processors and send out whatever is in there
+    for (int i = 0; i < send_buffer.size(); i++)
+    {
+      // get the global send node index and initialize sent to zero
+	int global_node = send_nodes[i];
+	sent[i] = -1;
+
+      // send out asynchronously
+	if (send_buffer[i].n_part > 0)
+	{
+	    buffer.asend_buffer(send_buffer[i], global_node);
+	    buffer.async_wait(send_buffer[i]);
+	    Check (send_buffer[i].n_part == 0);
+	    sent[i] = global_node;
+	}
+    }
+
+  // return tag indicating where things have been sent
+    return sent;
+}
+//---------------------------------------------------------------------------//
+// flush out all the send buffers whether they have data or are zeroes
+
+template<class PT>
+void Communicator<PT>::flush_all(const Particle_Buffer<PT> &buffer)
 {
   // loop through processors and send out whatever is in there
     for (int i = 0; i < send_buffer.size(); i++)
@@ -175,8 +247,8 @@ void Communicator<PT>::flush(const Particle_Buffer<PT> &buffer)
 	int global_node = send_nodes[i];
 
       // send out asynchronously
-	buffer.async_wait(send_buffer[i]);
 	buffer.asend_buffer(send_buffer[i], global_node);
+	buffer.async_wait(send_buffer[i]);
 	Check (send_buffer[i].n_part == 0);
     }
 }
@@ -194,6 +266,30 @@ void Communicator<PT>::free(const Particle_Buffer<PT> &buffer)
 	Check (recv_buffer[i].n_part == 0);
 	buffer.async_free(recv_buffer[i]);
     }
+}
+
+//---------------------------------------------------------------------------//
+// get the status (in use or free) of async recv Comm_Buffers
+
+template<class PT>
+bool Communicator<PT>::arecv_status(const Particle_Buffer<PT> &buffer)
+{
+    for (int i = 0; i < recv_buffer.size(); i++)
+	if (!buffer.comm_status(recv_buffer[i]))
+	    return false;
+    return true;
+}
+
+//---------------------------------------------------------------------------//
+// get the status (in use or free) of async send Comm_Buffers
+
+template<class PT>
+bool Communicator<PT>::asend_status(const Particle_Buffer<PT> &buffer)
+{
+    for (int i = 0; i < send_buffer.size(); i++)
+	if (!buffer.comm_status(send_buffer[i]))
+	    return false;
+    return true;
 }
 
 //---------------------------------------------------------------------------//

@@ -8,7 +8,6 @@
 
 #include "imc/IMC_Manager.hh"
 #include "ds++/Assert.hh"
-#include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include <algorithm>
 #include <iostream>
@@ -28,6 +27,8 @@ using C4::C4_Req;
 using C4::gsync;
 using C4::RecvAsync;
 using C4::SendAsync;
+using C4::gsum;
+using IMC::Global::operator<<;
 
 // stl components
 using std::cout;
@@ -429,20 +430,20 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC_dd()
 	 << " on proc " << node() << " using " << parallel_scheme << "."
 	 << endl;
 
-  // particle history diagnostic
-    SP<PT::Diagnostic> check;
-    if (verbose)
-	check = new PT::Diagnostic(cout, true); 
-
   // make a census and communication bank on this node
-    new_census_bank = new Particle_Buffer<PT>::Census();
-    Particle_Buffer<PT>::Bank bank;
+    new_census_bank = new Census();
+    Bank bank;
 
-  // post arecvs to communicating processors and set active tag
-    bool active = true;
+  // post arecvs to communicating processors and make a DD controler
     communicator->post(*buffer);
+    DD_Comm dd_communicator;
 
-  // do particle transport
+  // DO PARTICLE TRANSPORT
+    
+  // particle history diagnostic
+    SP<PT_Diagnostic> check;
+    if (verbose)
+	check = new PT_Diagnostic(cout, true);
 
   // reset the number of particles counter
     int counter = 0;
@@ -454,167 +455,40 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC_dd()
 	{
 	  // get a particle from the source
 	    SP<PT> particle = source->get_Source_Particle(delta_t);
-	    Check (particle->status());
 
-	  // transport the particle
-	    particle->transport(*mesh, *opacity, *tally, check);
-	    counter++;
-
-	  // after the particle is no longer active take appropriate action
-	    Check (!particle->status());
-	
-	  // if census write to file
-	    if (particle->desc() == "census")
-	    {
-	      // convert the particle cell index back to a global cell index
-		int local_cell  = particle->get_cell();
-		int global_cell = parallel_builder->master_cell(local_cell);
-		particle->set_cell(global_cell);
-
-	      // push particle to census
-		new_census_bank->push(particle);
-	    }
-
-	  // if boundary cross communicate the particle
-	    if (particle->desc() == "cross_boundary")
-		communicator->communicate(*buffer, particle);
-
-	  // if we have transported the same number of particles as the
-	  // buffer size, fulfill our arecv order
-	    if (!(counter % Particle_Buffer<PT>::get_buffer_s()))
-		communicator->arecv_post(*buffer, bank);
-
-	  // message particle counter
-	    if (!(counter % print_f)) 
-		cerr << setw(10) << counter << " particles run on proc " 
-		     << node()   << endl;
+	  // do the transport
+	    dd_Particle_transport(particle, check, bank, counter, 
+				  dd_communicator);
 	}
 
       // finished with this timestep
 	cerr << ">> Finished source particle transport for cycle " << cycle
 	     << " on proc " << node() << endl;
+
+      // define number of source particles
+	Check (counter == source->get_ncentot() + source->get_nvoltot() +
+	       source->get_nsstot());
     }
-
-  // define number of source particles
-    int counter_source = counter;
-    Check (counter_source == source->get_ncentot() + source->get_nvoltot() +
-	   source->get_nsstot());
-
-  // check to see if we need to clean up buffer-receives
-    communicator->arecv_post(*buffer, bank);
 
   // domain particle transport block
-    while (active)
     {
-      // transport the particles in the comm bank
-	while (bank.size())
-	{
-	  // get a particle from the bank and activate it
-	    SP<PT> particle = bank.top();
-	    bank.pop();
-	    particle->reset_status();
-	    
-	  // transport the particle
-	    particle->transport(*mesh, *opacity, *tally, check);
-	    counter++;
-
-	  // do ending particle stuff
-	    Check (!particle->status());
-	    if (particle->desc() == "census")
-	    {
-	      // convert the particle cell index back to a global cell index
-		int local_cell  = particle->get_cell();
-		int global_cell = parallel_builder->master_cell(local_cell);
-		particle->set_cell(global_cell);
-
-	      // push particle to census
-		new_census_bank->push(particle);
-	    }
-
-	    if (particle->desc() == "cross_boundary")
-		communicator->communicate(*buffer, particle);
-
-	    if (!(counter % Particle_Buffer<PT>::get_buffer_s()))
-		communicator->arecv_post(*buffer, bank);
-
-	  // message particle counter
-	    if (!(counter % print_f)) 
-		cerr << setw(10) << counter-counter_source 
-		     << " boundary particles run on proc " << node() << endl; 
-	}
-
-      // check to see if we need to clean up buffer-receives
-	communicator->arecv_post(*buffer, bank);
-
-      // flush out our send buffers and do a receive
-	communicator->flush(*buffer);
-	communicator->arecv_wait(*buffer, bank);
-
-      // determine status on this processor
-	if (bank.size() > 0)
-	    active = true;
-	else 
-	    active = false;
-	    
-      // communicate with master
-// 	int send_message = active;
-// 	int recv_message;
-// 	if (!node())
-// 	{
-// 	  // receive messages from imc processors
-// 	    int imc_message;
-// 	    for (int i = 1; i < nodes(); i++)
-// 	    {
-// 		Recv (&imc_message, i, 300);
-// 		recv_message += imc_message;
-// 	    }
-// 	    recv_message += send_message;
-// 	    send_message =  recv_message;
-
-// 	  // send terminate message back to imc processors
-// 	    for (int i = 1; i < nodes(); i++)
-// 	    {
-// 		cout << "I am here" << endl;
-// 		Send (&send_message, i, 301);
-// 	    }
-// 	}
-// 	if (node())
-// 	{
-// 	    Send (&send_message, 0, 300);
-// 	    cout << "Sent message on " << node() << endl;
-// 	    Recv (&recv_message, 0, 301);
-// 	}
-// 	active = recv_message;
-// 	cout << "Message on node " << node() << " is " << recv_message << endl;
-	
-	gsync();
-	int recv_message;
-	int send_message = active;
-	C4_Req rmessage;
-	C4_Req smessage;
-	if (!node())
-	{
-	    RecvAsync(rmessage, &recv_message, 1, 1, 400);
-	    rmessage.wait();
-	    send_message += recv_message;
-	    recv_message = send_message;
-	    SendAsync(smessage, &send_message, 1, 1, 400);
-	}
-	if (node())
-	{
-	    RecvAsync(rmessage, &recv_message, 1, 0, 400);
-	    send_message = active;
-	    SendAsync(smessage, &send_message, 1, 0, 400);
-	    rmessage.wait();
-	}
-	active = recv_message;
-
-      // THIS WORKED TRY DOING EXPLICIT BLOCKING SEND/RECEIVES!!!!!!!
-
-      // post new receives if active is true
-	if (active)
-	    communicator->post(*buffer);
+	dd_loop(bank, check, counter, dd_communicator);
     }
+
+  // clean up communication, ie. free buffers
+    Check (!communicator->get_send_size());
+    Check (!bank.size());
+    communicator->asend_end(*buffer);
+    communicator->arecv_end(*buffer);
+    Check (!communicator->arecv_status(*buffer));
+    Check (!communicator->asend_status(*buffer));
+
+  // calculate total number of sends
+    int send = dd_communicator.get_sends();
+    gsum(send);
+    if (!node())
+	cerr << ">> There were " << send << " messages sent between " 
+	     << "processors in cycle " << cycle << endl;
 
   // finished with this timestep
     if (!node())
@@ -642,6 +516,101 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC_dd()
     Ensure (!communicator);
 }
 
+//---------------------------------------------------------------------------//
+// SPECIAL DD PRIVATE TRANSPORT FUNCTIONS
+//---------------------------------------------------------------------------//
+// DD loop that returns a status indicator letting us now if we should keep
+// going or not
+
+template<class MT, class BT, class IT, class PT>
+void IMC_Manager<MT,BT,IT,PT>::dd_loop(Bank &bank, SP<PT_Diagnostic> check,
+				       int &counter, 
+				       DD_Comm &dd_communicator) 
+{
+    Require (communicator->arecv_status(*buffer));
+    Require (!communicator->asend_status(*buffer));
+
+  // set active tag
+    bool active = true;
+    
+  // do DD transport
+    while (active)
+    {
+      // transport the particles in the comm bank
+	while (bank.size())
+	{
+	  // get a particle from the bank and activate it
+	    SP<PT> particle = bank.top();
+	    bank.pop();
+	    particle->reset_status();
+	    particle->set_descriptor("boundary_born");
+	    
+	  // transport the particle
+	    dd_Particle_transport(particle, check, bank, counter, 
+				  dd_communicator);
+	}
+
+      // send stuff out and receive stuff
+	vector<int> sent = communicator->flush(*buffer);
+	int arrived      = communicator->arecv_post(*buffer, bank);
+	dd_communicator.update_send(sent);
+	dd_communicator.update_recv(arrived); 
+
+      // update the node_status based on what has been received and what has
+      // been sent
+	if (dd_communicator.terminate())
+	    active = false;
+    }
+}
+
+//---------------------------------------------------------------------------//
+// do particle transport on DD meshes
+
+template<class MT, class BT, class IT, class PT>
+void IMC_Manager<MT,BT,IT,PT>::dd_Particle_transport(SP<PT> particle, 
+						     SP<PT_Diagnostic> check, 
+						     Bank &bank,
+						     int &counter,
+						     DD_Comm &dd_comm)  
+{
+    Require (particle->status());
+
+  // transport the particle
+    particle->transport(*mesh, *opacity, *tally, check);
+    counter++;
+    
+  // after the particle is no longer active take appropriate action
+    Check (!particle->status());
+    
+  // if census write to file
+    if (particle->desc() == "census")
+    {
+      // convert the particle cell index back to a global cell index
+	int local_cell  = particle->get_cell();
+	int global_cell = parallel_builder->master_cell(local_cell);
+	particle->set_cell(global_cell);
+	
+      // push particle to census
+	new_census_bank->push(particle);
+    }
+    
+  // if boundary cross communicate the particle
+    if (particle->desc() == "cross_boundary")
+	dd_comm.update_send(communicator->communicate(*buffer, particle)); 
+    
+  // if we have transported the same number of particles as the
+  // buffer size, fulfill our arecv order
+    if (!(counter % Particle_Buffer<PT>::get_buffer_s()))
+	dd_comm.update_recv(communicator->arecv_post(*buffer, bank));
+    
+  // message particle counter
+    if (!(counter % print_f)) 
+	cerr << setw(10) << counter << " particles run on proc " 
+	     << node()   << endl;
+}
+
+//---------------------------------------------------------------------------//
+// REGROUP FUNCTIONS
 //---------------------------------------------------------------------------//
 // concatentate results on the master processor and update the Global-mesh
 
@@ -789,7 +758,6 @@ void IMC_Manager<MT,BT,IT,PT>::regroup()
 		buffer->add_to_bank(*new_census_buffer, *census);
 	    }
 	}
-
      
       // add the results from the master processor
 	int    ncenmaster = 0;

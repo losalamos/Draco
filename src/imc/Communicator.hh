@@ -41,6 +41,10 @@ using std::ostream;
 template<class PT>
 class Communicator
 {
+public:
+  // usefull typedefs
+    typedef typename Particle_Buffer<PT>::Bank Bank;
+
 private:
   // Comm_Buffers for particle tranport
     typename Particle_Buffer<PT>::Comm_Vector recv_buffer;
@@ -56,9 +60,6 @@ private:
   // convert global->local nodes
     inline int global_to_local(int) const;
 
-  // class specific type-defs
-    typedef typename Particle_Buffer<PT>::Bank Bank;
-
 public:
   // constructors
     explicit Communicator(const vector<int> &, const vector<int> &,
@@ -70,10 +71,15 @@ public:
 
   // message passing (async and sync) operations
     void post(const Particle_Buffer<PT> &);
-    void flush(const Particle_Buffer<PT> &);
+    vector<int> flush(const Particle_Buffer<PT> &);
+    void flush_all(const Particle_Buffer<PT> &);
     void free(const Particle_Buffer<PT> &);
-    bool arecv_post(const Particle_Buffer<PT> &, Bank &);
+    int arecv_post(const Particle_Buffer<PT> &, Bank &);
     void arecv_wait(const Particle_Buffer<PT> &, Bank &);
+    bool asend_status(const Particle_Buffer<PT> &);
+    bool arecv_status(const Particle_Buffer<PT> &);
+    void asend_end(const Particle_Buffer<PT> &);
+    void arecv_end(const Particle_Buffer<PT> &);
 
   // accessor functions
     int num_send_nodes() const { return send_nodes.size(); }
