@@ -128,7 +128,7 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
     // Here comes a pig face.    (With appologies to Dr. Seus :-).
     }
 
-// Grr, have to make aliases since Mesh_XYZ::cell_array is not longer
+// Grr, have to make aliases since Mesh_XYZ::cell_array is no longer
 // publicly derived from dsxx::Mat1.
 
     Mat1<double> xx( &x[0], ncp );
