@@ -99,6 +99,10 @@ class Sphyramid_Mesh
     // vector<vector> of x-extents of each cell
     vf_double cell_x_extents;
 
+    // is this a submesh
+    bool submesh;
+
+
     // Sphyramid angle data; precalculated
     double beta_radians;
     double tan_beta;
@@ -127,7 +131,8 @@ class Sphyramid_Mesh
   public:
     // Constructor
     Sphyramid_Mesh(SP_Coord coord_, Layout &layout_, 
-		   vf_double &cell_x_extents_, double beta_radians_);
+		   vf_double &cell_x_extents_, double beta_radians_, 
+		   bool submesh = false);
 
     // Return the number of cells.
     int num_cells() const { return layout.num_cells(); }
@@ -190,7 +195,7 @@ class Sphyramid_Mesh
 					     rng_Sprng &random) const;
 
     //! Determine if this is a full mesh or partioned mesh (always full).
-    bool full_Mesh() const { return 1;}
+    bool full_Mesh() const { return !submesh; }
 
     // Pack function.
     SP_Pack pack(const sf_int &current_to_new = sf_int()) const;
@@ -731,6 +736,7 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
 
     return position;
 }
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Sample a position on a Sphyramid_Mesh cell face
@@ -741,8 +747,10 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
  *
  * \return position on face
  */
-Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos_on_face(int cell, int face,
-							     rng_Sprng &random) const
+Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos_on_face(
+    int        cell, 
+    int        face,
+    rng_Sprng &random) const
 {
     Require (cell >  0);
     Require (cell <= num_cells());
@@ -774,8 +782,6 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos_on_face(int cell, int face,
 
     return position;
 }
-
-    
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -816,7 +822,7 @@ struct Sphyramid_Mesh::Pack
     int size;
 
     // disallow assignment
-    Pack& operator=(const Pack&);
+    const Pack& operator=(const Pack&);
 
   public:
     // constructor.
@@ -831,24 +837,22 @@ struct Sphyramid_Mesh::Pack
     // >>> Accessors <<<
 
     // get pointer to beginning of char data stream.
-    //const char* begin() { return &data[0]; }
+    const char* begin() { return &data[0]; }
 
     // get pointer to end of char data stream.
-    //const char* end() { return &data[size]; }
+    const char* end() { return &data[size]; }
 
     // return the number of cells in the packed mesh.
     int get_num_packed_cells() const;
 
     // get size of data stream.
-    //int get_size() const { return size; }
+    int get_size() const { return size; }
 
     // Unpack function
-     SP_Mesh unpack() const;
+    SP_Mesh unpack() const;
 };
 
-
-
-} // end namespace rtt_mc
+}  // end namespace rtt_mc
 
 #endif // rtt_mc_Sphyramid_Mesh_hh
 

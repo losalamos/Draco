@@ -44,17 +44,24 @@ namespace rtt_mc
  * \param cell_x_extents_ the x coordinates of each cell in the following
  * form: [cell][low x]; [cell][hi x];
 
- * \param beta_radians_ "angle" of Sphyramid in radians (not angle of spherical
+ * \param beta_radians_ "angle" of Sphyramid in radians (not angle of
+ * spherical
+ 
+ * \param submesh_ [=false] boolean indicator; true if this is a submesh
  * cone)
 
 */
 
 Sphyramid_Mesh::Sphyramid_Mesh(SP_Coord coord_, Layout &layout_, 
-			       vf_double & cell_x_extents_, double beta_radians_)
+			       vf_double & cell_x_extents_, 
+			       double beta_radians_, bool submesh_)
     :coord(coord_),
      layout(layout_),
      cell_x_extents(cell_x_extents_),
-     beta_radians(beta_radians_)
+     beta_radians(beta_radians_),
+     submesh(submesh_)
+    
+
 {
     using global::pi;
 
@@ -110,7 +117,8 @@ void Sphyramid_Mesh::pack_extents(const sf_int &current_to_new,
 	if (ncell > 0)
 	{
 	    Check (ncell <= num_packed);
-	    Check (extents[ncell-1].size() == this->cell_x_extents[cell].size());
+	    Check (extents[ncell-1].size() == 
+		   this->cell_x_extents[cell].size());
 
 	    // add the extents to the new cell extents
 	    for (int i = 0; i < extents[ncell-1].size(); i++)
@@ -316,6 +324,7 @@ int Sphyramid_Mesh::get_cell(const sf_double &r) const
     // I'm including it so I don't get yelled at.
 
     using std::fabs;
+    Require (!this->submesh);
 
     // initialize cell, flag indicating that cell was located
     int located_cell = 0;
@@ -711,6 +720,7 @@ int Sphyramid_Mesh::get_bndface(std_string boundary, int cell) const
 Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_surcells(std::string boundary) const
 {
 
+    Require(!this->submesh);
     Check (this->coord->get_dim() == 3);
 
     // make return vector containing a list of cells along specified boundary
@@ -759,16 +769,16 @@ Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_surcells(std::string boundary) const
     }
     else{
 	Insist(0,
-	       "Unkown or invalid (lor/lox,loy/hiy,loz/hiz) surf in get_surcells!");
+	       "Unkown or invalid (lor/lox,loy/hiy,loz/hiz) "
+	       "surf in get_surcells!");
     }
 
     // return vector
     return return_list;
 }
 //---------------------------------------------------------------------------//
-/*! 
- * \brief check that a user/host-defined set of surface source cells actually
- *  resides on the surface of the system (requires a vacuum bnd). 
+/*! * \brief check that a user/host-defined set of surface source cells
+ *  actually resides on the surface of the system (requires a vacuum bnd).
  * 
  * \param ss_face boundary face
  * \param ss_list reference to a vector of cells
@@ -900,18 +910,15 @@ Sphyramid_Mesh::pair_sf_double Sphyramid_Mesh::sample_random_walk_sphere(
  * mesh to a spatially decomposed mesh.  Thus, the packed mesh will only
  * contain cells in the cell list with the provided mappings.
  *
- * The packer will not produce an "exact" copy of the mesh even if the
- * current_to_new mapping is one to one.  It will produce an equivalent copy
- * (the internal data will be organized differently), and operator == will
- * fail on such a comparison.  To produce an exact copy, call pack without
- * any arguments.
+ * To produce an exact copy, call pack without any arguments.
  *
  * \param current_to_new list of cells to include in the packed mesh, set
  * this to NULL to produce an exact copy
  *
  * \return packed mesh
  */
-Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new) const
+Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new)
+    const
 {
     Require (current_to_new.size() == this->layout.num_cells() ||
 	     current_to_new.size() == 0);
@@ -1130,7 +1137,7 @@ Sphyramid_Mesh::Pack::Pack(const Pack &rhs)
  */
 Sphyramid_Mesh::Pack::~Pack()
 {
-    delete [] data;
+    delete [] this->data;
 }
 
 //---------------------------------------------------------------------------//
@@ -1156,6 +1163,7 @@ int Sphyramid_Mesh::Pack::get_num_packed_cells() const
     
     return num_cells;
 }
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Unpack the Sphyramid_Mesh
@@ -1226,25 +1234,19 @@ Sphyramid_Mesh::SP_Mesh Sphyramid_Mesh::Pack::unpack() const
 
     // build the new mesh
     SP<Sphyramid_Mesh> mesh(new Sphyramid_Mesh(coord, *layout, cell_extents,
-					       beta_radians));
+					       beta_radians,true));
 
     Ensure (mesh->num_cells()             == num_packed_cells);
     Ensure (mesh->get_spatial_dimension() == coord->get_dim());
-    Ensure (mesh->full_Mesh());
+    Ensure (!mesh->full_Mesh());
     Ensure (mesh->get_total_volume()      >  0.0);
 
     return mesh;
 }
 
-
-
-
-
 } // end namespace rtt_mc
 
 #endif                        // rtt_mc_Sphyramid_Mesh_cc
-
-
 
 //---------------------------------------------------------------------------//
 //                 end of Sphyramid_Mesh.cc
