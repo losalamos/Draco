@@ -132,6 +132,8 @@ bool C4_Req::complete()
     int flag;
     if (assigned)
         MPI_Test( &r, &flag, &s );
+    if (flag)
+        clear();   	 
     return flag;
 #endif
 #ifdef C4_SCALAR
