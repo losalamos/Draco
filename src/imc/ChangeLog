@@ -1,3 +1,11 @@
+1999-11-15  Thomas M. Evans  <tme@lanl.gov>
+
+	* Opacity_Builder.hh, Opacity_Builder.t.hh, Particle_Buffer.hh:
+	first of many modifications that will result in full parallel
+	sourcing and opacity reading.  These changes are heading towards
+	release imc-2_0_0.  All of the imc tests should still pass at this 
+	point.
+
 1999-11-12  Todd J. Urbatsch  <tmonster@lanl.gov>
 
 	* : Updated to imc-1_2_0. 
