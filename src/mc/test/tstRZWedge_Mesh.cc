@@ -263,7 +263,7 @@ void simple_one_cell_RZWedge()
     // node 8 (lox,hiy,hiz) - all zeros
     ref_vert[2][7] = 1.0;
 
-    vector<vector<int> > node_num(6,0);
+    vector<vector<int> > node_num(6,vector<int>(0));
     for (int face = 0; face < 6; face++)
 	node_num[face].resize(4);
     // face 1 low x

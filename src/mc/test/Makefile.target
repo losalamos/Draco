@@ -22,7 +22,8 @@ ${test_alltarget}: ${thistestdep} ${testdeps}
 	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
 
 ${thistestdep}: ${thistestlib_dep} ${testdeps}
-	${LD} ${LDFLAGS} -o $@ ${thistestlib_dep} ${testlibs}
+	${AR} ${ARFLAGS} $@ ${thistestlib_dep} ${ARTESTLIBS}
+	${RANLIB} $@
 
 objs += ${thistestdep}
 

@@ -102,8 +102,8 @@ void Particle_Bank()
     // make a bunch of particles
     for (int i = 1; i <= 5; i++)
     {
-	vector<double> r(3, i);
-	vector<double> omega(3, 0);
+	vector<double> r(3, static_cast<double>(i));
+	vector<double> omega(3, 0.0);
 	omega[0] = 1.0;
 	double ew        = i * 10;
 	double time_left = 1.0 / i;
@@ -122,8 +122,8 @@ void Particle_Bank()
 
     for (int i = 5; i >= 1; i--)
     {
-	vector<double> r(3, i);
-	vector<double> omega(3, 0);
+	vector<double> r(3, static_cast<double>(i));
+	vector<double> omega(3, 0.0);
 	omega[0] = 1.0;
 	double ew        = i * 10;
 	double time_left = 1.0 / i;
@@ -171,8 +171,8 @@ void Particle_Comm_Block()
 
 	for (int i = 1; i <= 5; i++)
 	{
-	    vector<double> r(3, i);
-	    vector<double> omega(3, 0);
+	    vector<double> r(3, static_cast<double>(i));
+	    vector<double> omega(3, 0.0);
 	    omega[0] = 1.0;
 	    double ew        = i * 10;
 	    double time_left = 1.0 / i;
@@ -209,8 +209,8 @@ void Particle_Comm_Block()
 	// check the particles in the bank
 	for (int i = 5; i >= 1; i--)
 	{
-	    vector<double> r(3, i);
-	    vector<double> omega(3, 0);
+	    vector<double> r(3, static_cast<double>(i));
+	    vector<double> omega(3, 0.0);
 	    omega[0] = 1.0;
 	    double ew        = i * 10;
 	    double time_left = 1.0 / i;
@@ -268,7 +268,7 @@ void Particle_Comm_Async()
 
     // build two particles on each node
     {
-	vector<double> r(3, proc);
+	vector<double> r(3, static_cast<double>(proc));
 	vector<double> omega(3);
 	omega[2]         = 1.0;
 	double ew        = proc * 10;
@@ -337,7 +337,7 @@ void Particle_Comm_Async()
     for (int i = index.size() - 1; i >= 0; i--)
     {
 	// make reference particles
-	vector<double> r(3, index[i]);
+	vector<double> r(3, static_cast<double>(index[i]));
 	vector<double> omega(3);
 	omega[2]         = 1.0;
 	double ew        = index[i] * 10;
@@ -412,7 +412,7 @@ int main(int argc, char *argv[])
     cout <<     "************************************" << endl;
     if (passed) 
     {
-        cout << "**** Particle Self Test: PASSED ****" << endl;
+        cout << "**** Particle Self Test: PASSED on " << C4::node() << endl; 
     }
     cout <<     "************************************" << endl;
     cout << endl;

@@ -67,8 +67,8 @@ void testXY(Coord_sys &xy)
     
     // test a sampling of position in a cell
     Sprng ts(rndc.get_rn(10));
-    vector<double> min(2, -1);
-    vector<double> max(2, 1);
+    vector<double> min(2, -1.0);
+    vector<double> max(2, 1.0);
     vector<double> answer = xy.sample_pos(min, max, ts);
     vector<double> control(2, 0.0);
     control[0] = 2 * random_nums[0] + -1;
