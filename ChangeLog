@@ -1,3 +1,48 @@
+2003-07-03  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: release draco-3_1_0.  This is a minor release that
+	predates some [more] significant changes.  A summary of changes in
+	this release is:
+
+		- updated tests with return 0; statements in some packages
+		- gray random walk implemented in imc package
+		- surfaces added to mc package
+		- small mods to c4 that returns the count after an async
+		  receive 
+		- improved templates
+		- additions for IBM xlC compiler support
+		- the find_tags.py and find_tags_diff.py tools have
+		  been updated for more general usage
+
+	This release includes the following packages:
+
+		c4
+		cdi
+		cdi_analytic
+		cdi_eospac
+		cdi_gandolf
+		ds++
+		imc
+		lapack_wrap
+		mc
+		meshReaders
+		meshReaders_Services
+		pcgWrap
+		plot2D
+		quadrature
+		rng
+		RTT_Format_Reader
+		stdheaders
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	Because this is a minor release we have not formally documented it
+	with a release note. Also, we have not updated the code
+	statistics. 
+
 2003-06-04  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: released draco-3_0_0.  We have adopted some new policies,
