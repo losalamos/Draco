@@ -451,7 +451,7 @@ void gather()
 
     // make boundary cell data
     vector<double> bc_data;
-    pdop.calc_bnd_cell_data(topology, pattern, local_field, bc_data);
+    pdop.gather_bnd_cell_data(topology, pattern, local_field, bc_data);
 
     // check boundary cell data
     if (C4::node() == 0)
