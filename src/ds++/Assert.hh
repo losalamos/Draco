@@ -183,6 +183,12 @@ void insist( std::string const & cond,
 	     std::string const & file, 
 	     int         const line);
 
+// Pointer version of insist
+void insist_ptr(char const * const cond, 
+		char const * const msg, 
+		char const * const file, 
+		int          const line);
+
 } // end of rtt_dsxx
 
 //---------------------------------------------------------------------------//
@@ -266,6 +272,12 @@ void insist( std::string const & cond,
  * 
  * Inviolate check macro.  Insist is always on.
  */
+/*!
+ * \def Insist_ptr(condition, message)
+ * 
+ * Same as Insist, except that it uses char pointers, rather than strings.
+ * This is more efficient when inlined.
+ */
 //---------------------------------------------------------------------------//
 
 #if !defined(DBC)
@@ -298,6 +310,7 @@ void insist( std::string const & cond,
 #endif
 
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
+#define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 
 #endif				// RTT_dsxx_Assert_HH
 

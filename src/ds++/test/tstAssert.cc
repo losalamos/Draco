@@ -365,6 +365,43 @@ static void tinsist()
 }
 
 //---------------------------------------------------------------------------//
+// Basic test of the Insist_ptr() macro.
+//---------------------------------------------------------------------------//
+
+static void tinsist_ptr()
+{
+    //lint -e506  Do not warn about constant value boolean in the Insist
+    //            test. 
+
+    std::cout << "t-Insist test: ";
+    try {
+	Insist( 0, "You must be kidding!" );
+	throw "Bogus!";
+    }
+    catch( rtt_dsxx::assertion const & a ) 
+   {
+	std::cout << "passed" << std::endl;
+
+	std::cout << "t-Insist_ptr message value test: ";
+	{
+	    bool passed( true );
+	    std::string msg( a.what() );
+	    std::string expected_value( "You must be kidding!" );
+	    string::size_type idx( msg.find( expected_value ) );
+	    if( idx == string::npos ) passed=false;
+	    if( passed )
+		cout << "passed" << std::endl;
+	    else
+		cout << "failed" << std::endl;
+	}
+    }
+    catch(...) 
+    {
+	std::cout << "failed" << std::endl;
+    }
+}
+
+//---------------------------------------------------------------------------//
 
 int main( int argc, const char *argv[] )
 {
@@ -394,6 +431,7 @@ int main( int argc, const char *argv[] )
     tremember();
     tassert();
     tinsist();
+    tinsist_ptr();
 
     // status of test
     cout << endl;

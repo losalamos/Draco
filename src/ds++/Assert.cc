@@ -67,6 +67,25 @@ void insist( std::string const & cond,
     throw assertion( myMessage.str() );
 }
 
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Throw a rtt_dsxx::assertion for Insist_ptr macros.
+ * Having a (non-inlined) version that takes pointers prevents the compiler
+ * from having to construct std::strings from the pointers each time.  This
+ * is particularly important for things like rtt_dsxx::SP::operator->, that
+ * (a) have an insist in them, (b) don't need complicated strings and (c) are
+ * called frequently.
+ */
+void insist_ptr( char const * const cond, 
+		 char const * const msg, 
+		 char const * const file, 
+		 int          const line)
+{
+    // Call the other insist for consistency
+    insist(cond, msg, file, line);
+}
+
+
 } // end of rtt_dsxx
 
 //---------------------------------------------------------------------------//
