@@ -1,3 +1,11 @@
+2001-12-17  Thomas M. Evans  <tme@lanl.gov>
+
+	* mc: Released mc-2_3_0.  The changes include the omega
+	dot-product upgrades described below and a total mesh volume
+	calculation that has been added to RZWedge_Mesh (but not
+	OS_Mesh).  Additionally, added Planckian frequency sampling into
+	Sampler.  Updated to new testing infrastructure.
+
 2001-09-05  Todd J. Urbatsch  <tmonster@lanl.gov>
 
 	* mc: In Coord_sys, made checks consistent on magnitude of
