@@ -19,6 +19,8 @@
 
 using namespace C4;
 
+#include "util/dump.hh"
+
 #include "linalg/pcg_DB.hh"
 #include "linalg/PCG_MatVec.hh"
 #include "linalg/PCG_PreCond.hh"
@@ -105,6 +107,19 @@ Test_Prob::Test_Prob()
     vc = Mat1<double>( ncp );
     for( int i=0; i < ncp; i++ )
 	vc(i) = dx * dy * dz;
+
+// Initialize the face areas.
+
+    xA = Mat1<double>( ncx+1 );
+    yA = Mat1<double>( ncy+1 );
+    zA = Mat1<double>( ncz+1 );
+
+    for( int i=0; i < ncx+1; i++ )
+	xA(i) = dy * dz;
+    for( int i=0; i < ncy+1; i++ )
+	yA(i) = dx * dz;
+    for( int i=0; i < ncz+1; i++ )
+	zA(i) = dx * dy;
 }
 
 //---------------------------------------------------------------------------//
@@ -117,6 +132,24 @@ void Test_Prob::run()
 
     if (node == 0)
 	cout << "Running the test problem, NOT!" << endl;
+
+    {
+    // We need to check some things here.
+	cout << flush;
+	HTSyncSpinLock h;
+
+	cout << "Node " << node << " doing some testing.\n";
+	cout << "global offset = " << goff << endl;
+	for( int i=0; i < ncp; i++ )
+;// 	    cout << "i=" << i << " goff+i=" << goff+i
+// 		 << " goffset(i)=" << goffset(i) << endl;
+    }
+
+    C4::gsync();
+    if (node == 0)
+	cout << "Ready to move on." << endl << flush;
+    fflush(stdout);
+    C4::gsync();
 
 // Now we need a mapping between local cell id, and global i,j,k.  This will
 // be needed in order to calculate the values of E and D.
@@ -177,12 +210,54 @@ void Test_Prob::run()
     // Set up coefficient matrix.
 	A = 0.;
 
-	for( int i=0; i < ncp; i++ ) {
-	    A(i,goff+i) = 1.;
-	    
+	for( int n=0; n < ncp; n++ ) {
+	    int i = I(n), j = J(n), k = K(n);
+	    double d, fac;
+
+	    A(n,goff+n) = 1.;
+
+	// left face.
+
+	    d = D( xf(i), yc(j), zc(k) );
+	    fac = (d * dt) / (vc(n) * dx);
+	    A(n,goff+n) += (fac * xA(i));
+	    if (i > 0)
+		A(n, goffset(i-1,j,k)) -= fac * xA(i);
+	    else
+		rhs(n) += fac * xA(i) * E( xc(i) - dx, yc(j), zc(k), t );
+
+	// right face.
+
+	    d = D( xf(i+1), yc(j), zc(k) );
+	    fac = (d * dt) / (vc(n) * dx);
+	    A(n,goff+n) -= (fac * xA(i+1));
+	    if (i < ncx-1)
+		A(n, goffset(i+1,j,k)) -= fac * xA(i+1);
+	    else
+		rhs(n) -= fac * xA(i+1) * E( xc(i)+dx, yc(j), zc(k), t );
+
+	// front face.
+
+	    d = D( xc(i), yf(j), zc(k) );
+
+	// back face.
+
+	    d = D( xc(i), yf(j+1), zc(k) );
+
+	// top face.
+
+	    d = D( xc(i), yc(j), zf(k) );
+
+	// bottom face.
+
+	    d = D( xc(i), yc(j), zf(k+1) );
+
+	// Here comes a pig face.    (With appologies to Dr. Seus :-).
 	}
 
-    // Solve Ax = b.
+	print2_Mat( A, "A" );
+
+    // Solve Ax = b
 	En = 0;
 
     // The best way to solve Ax = b.
