@@ -1735,13 +1735,14 @@ dnl-------------------------------------------------------------------------dnl
 
 
 dnl-------------------------------------------------------------------------dnl
-dnl ac_dracoenv.m4
-dnl Thomas M. Evans
-dnl 1999/02/04 01:56:21
+dnl File  : draco/config ac_dracoenv.m4
+dnl Author: Thomas M. Evans
+dnl Date  : 1999/02/04 01:56:21
 dnl
 dnl Defines the Draco build system environment.  This is the main
 dnl configure function.
 dnl
+dnl-------------------------------------------------------------------------dnl
 dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
@@ -2080,17 +2081,12 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl define --with-c4
    AC_ARG_WITH(c4, 
-      [  --with-c4[=scalar,mpi|lampi|mpich,shmem]   
+      [  --with-c4[=scalar,mpi,shmem]   
 		          turn on c4 (default scalar) ])
 
    # give with-c4 implied argument
    if test "${with_c4:=scalar}" = yes ; then
        with_c4='scalar'
-   fi
-
-   # if specific vendor is listed (e.g.: lampi or mpich) reset to mpi
-   if test ${with_c4} = mpich || test ${with_c4} = lampi; then
-      with_c4='mpi'
    fi
 
    dnl

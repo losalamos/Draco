@@ -1,14 +1,50 @@
-2005-01-14  Tom Evans  <tme@lanl.gov>
+2005-02-25  Kelly Thompson <kgt@lanl.gov>
 
-	* draco: Released draco-5_4_0.  This is a minor draco release.
+	* draco: Released draco-5_5_0.  This is a minor draco release.
 	Changes are:
-	
-        	- ds++: optimized Vector_Lite operator[] access
-        	- quadrature: updated indexing
-        	- shared_lib: integrated tests replaces libm.so
-        	- viz: updated Ensight implementation
-        	- stdheaders: retired
 
+		- config: Moved all of STLPort setup to a new m4 function;
+		- doc: Updated Makefiles and .tex files for gettingStarted
+		       to be compatible with new location of Draco LaTeX
+		       environment.
+		- environment: Updated configure.package.ac so that
+		       includes examples of setting up new vendors: GSL,
+		       BLACS, SCALAPACK and HYPRE.
+		- src: Updated configure.ac to reflect the retirement of
+		       stdheaders and the addition of norms.
+		- RTT_Format_Reader: Improved robustness of reader when
+		       comment only lines are found in the rtt mesh file. 
+		- c4: Restructured the Timer class so that it can always
+		       provide POSIX timer information, even when compiled
+		       with MPI.  If MPI is available, also provide access
+		       to the MPI_Wtime() timer values.  This release
+		       includes support for the Darwin operating system.
+		- ds++: Updated the File_Streams class to improve
+		       performance. 
+		- meshReaders_Services: Corrected some logic to prevent
+		       potential out-of-bounds memory read.
+		- quadrature: Modified the computation of 1D
+		       Guass-Legendre quadrature set for higher
+		       precision;  Corrected the value returned by
+		       Q[23]DLevelSym.getLevels(); Provide public access
+		       to DbC checks for D and M being inverse matrices of
+		       each other; Add these checks to unit tests;  Add
+		       tests of applyD() and applyM() functions; Add test
+		       of QuadServices constructor where the lkMoments are
+		       provided by the user; Added tests to improve code
+		       coverage values.
+
+		- config: Major update to apptest_modules.py; Constructor
+		       no longer needs to know about the arguments
+		       exec_head or test_name;  These are now determined
+		       by the apptest class;  The actual number of cpus
+		       used is now a part of the test banner; Added
+		       soft_equiv test functions; Added a new class
+		       GMVFile to parse a GMV file and make it's contents
+		       available to a calling routine;
+		       regression_filter.py was updated to report on
+		       coverage values if available.
+	
 	Packages included in this release:
 	
         	RTT_Format_Reader 
@@ -21,7 +57,9 @@
         	meshReaders 
         	meshReaders_Services 
         	mesh_element 
+		norms
         	plot2D 
+		quadrature
         	rng 
         	shared_lib 
         	timestep 
@@ -30,14 +68,76 @@
         	viz 
         	xm
 
-	We are not releasing cdi_eospac in draco until the compiler issues
-	have been resolved [hopefully with the release of a C version of
-	EOSPAC].
+	Package that are NOT included: 
 
-	We are not releasing pcgWrap in draco until the pcgWrap component
-        in Draco is updated to only call double precision routines.  The
-        single precision routines in libpcg have been removed in recent
-        versions.
+		cdi_eospac
+		pcgWrap
+	
+	     We are not releasing cdi_eospac in draco until the compiler
+ 	     issues have been resolved [hopefully with the release of a C
+	     version of EOSPAC].
+
+	     We are not releasing pcgWrap in draco until the pcgWrap
+	     component in Draco is updated to only call double precision
+	     routines.  The single precision routines in libpcg have been
+	     removed in recent versions.
+
+	     For the first time, the package norms is available as a part
+	     of a Draco release.
+
+	Code Statistics:
+
+	     These numbers do not include pcgWrap, cdi_eospac or
+	     regression scripts. 
+
+	     Total C++ source:               23086
+	     C++ source in test directories: 13701
+	     C++ contract specifications:      823
+	     C++ comments:                   24032
+	     Total f90/f95 source:               0
+	     f90/f95 comments:                   0
+	     LaTeX Documentation:            13056
+	     html source:                        0
+	     Executable shell script source:  3040
+	     Executable Perl source:           201
+	     Python source:                   2430
+	     Expect source:                      0
+	     Elisp source:                    6063
+
+	Code coverage:
+
+	     Extensive reports are located in the Documentation directory
+	     of the released code.  Configure options: --enable-debug
+	     --with-dbc=0 --with-c4=mpi 
+
+     Directory                            Function Coverage           C/D Coverage
+     -------------------------------  ---------------------  ---------------------
+     draco/src/shared_lib/                 2 /    17 =  11%       1 /    12 =   8%
+     draco/src/xm/                        89 /   169 =  52%      29 /    32 =  90%
+     draco/src/c4/                        66 /   107 =  61%      25 /    40 =  62%
+     draco/src/cdi_gandolf/               63 /   101 =  62%      93 /   172 =  54%
+     draco/src/lapack_wrap/               11 /    17 =  64%       0 /     0       
+     draco/src/ds++/                     377 /   556 =  67%     280 /   592 =  47%
+     draco/src/traits/                    12 /    17 =  70%       0 /     0       
+     draco/src/plot2D/                    20 /    28 =  71%      50 /    84 =  59%
+     draco/src/xm/test/                   19 /    26 =  73%      14 /    22 =  63%
+     draco/src/timestep/                  49 /    62 =  79%      88 /   178 =  49%
+     draco/src/meshReaders_Services/      17 /    21 =  80%     115 /   138 =  83%
+     draco/src/rng/                       20 /    24 =  83%      12 /    18 =  66%
+     draco/src/c4/test/                   16 /    19 =  84%     171 /   297 =  57%
+     draco/src/ds++/test/                180 /   208 =  86%    2380 /  4674 =  50%
+     draco/src/cdi_analytic/              66 /    76 =  86%      66 /    82 =  80%
+     draco/src/viz/                       23 /    26 =  88%     140 /   190 =  73%
+     draco/src/cdi/                       26 /    29 =  89%      46 /    64 =  71%
+     draco/src/mesh_element/              19 /    21 =  90%     108 /   212 =  50%
+     draco/src/norms/                     22 /    24 =  91%      21 /    34 =  61%
+     draco/src/meshReaders/               13 /    14 =  92%     128 /   174 =  73%
+     draco/src/RTT_Format_Reader/        310 /   320 =  96%     395 /   567 =  69%
+     draco/src/quadrature/                66 /    66 = 100%     151 /   194 =  77%
+     draco/src/units/                     83 /    83 = 100%      58 /    58 = 100%
+     -------------------------------  ---------------------  ---------------------
+     Total                              1569 /  2031 =  77%    4371 /  7834 =  55%
+
 
 2005-01-12  Kelly Thompson  <kgt@lanl.gov>
 

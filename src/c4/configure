@@ -844,7 +844,7 @@ Optional Packages:
   --with-mpi-lib=DIR    tell where MPI libs are (\${MPI_LIB_DIR} by default)
   --with-lib-prefix=library prefix
                           give prefix to libraries (default rtt_)
-  --with-c4=scalar,mpi|lampi|mpich,shmem
+  --with-c4=scalar,mpi,shmem
 		          turn on c4 (default scalar)
   --with-dbc=level      set Design-by-Contract
   --with-cxx=gcc,sgi,kcc,compaq,guide
@@ -1562,11 +1562,6 @@ fi;
    # give with-c4 implied argument
    if test "${with_c4:=scalar}" = yes ; then
        with_c4='scalar'
-   fi
-
-   # if specific vendor is listed (e.g.: lampi or mpich) reset to mpi
-   if test ${with_c4} = mpich || test ${with_c4} = lampi; then
-      with_c4='mpi'
    fi
 
 
@@ -12633,7 +12628,7 @@ echo "${ECHO_T}${components}" >&6
 
 
    # find the release number
-   number=draco-5_4_0
+   number=draco-5_5_0
    echo "$as_me:$LINENO: checking \"component release number\"" >&5
 echo $ECHO_N "checking \"component release number\"... $ECHO_C" >&6
    echo "$as_me:$LINENO: result: $number" >&5

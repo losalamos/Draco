@@ -16,6 +16,7 @@ import os, os.path
 import string
 import sys
 import re
+import math
 
 class AppTest:
 
@@ -224,7 +225,7 @@ class AppTest:
     ##------------------------------------------------------------##
     ## Soft Equivalence of 2 lists
     ##------------------------------------------------------------##
-    def soft_equiv( self, listValue, listReference ):
+    def soft_equiv_list( self, listValue, listReference ):
 
         # Fail if the length of the lists are not equal.
         if len(listValue) != len(listReference):
