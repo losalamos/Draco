@@ -571,7 +571,7 @@ setProps(const int iG,
 
     GracePrintf("focus g%d", graphNum(iG));
 
-    GracePrintf("s%d line type %d", iSet, p.line.style);
+    GracePrintf("s%d line linestyle %d", iSet, p.line.style);
     if ( p.line.style != LineProps::STYLE_NONE ) {
 	GracePrintf("s%d line color %d", iSet, p.line.color);
 	GracePrintf("s%d line linewidth %f", iSet, p.line.width);
