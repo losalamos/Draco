@@ -954,7 +954,7 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-   if test "${PYTHON_PATH}" == null ; then
+   if test "${PYTHON_PATH}" = null ; then
        { echo "configure: error: "No valid Python found!"" 1>&2; exit 1; }
    fi
 
