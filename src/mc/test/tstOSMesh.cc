@@ -349,46 +349,54 @@ void Mesh_2D()
 	if (face != 3)          ITFAILS;
     }
 
-    // minimum orthogonal distance
+    // check minimum orthogonal distance and random walk sphere radius
     {
 	// choose a point in a cell and check the distance
 	vector<double> r(2);
 	double         ref = 0.0;
 	double         d   = 0.0;
-
-	// epsilon shortening of minimum orthogonal distance
-	double eps_reduct = 1.0e-6;
+	double         rwr = 0.0;
+	double         eps = 1.0e-6; // min cell width = 1cm, times 1e-6
 
 	// cell 1
 	r[0] = -0.6;
 	r[1] = 0.9;
-	ref  = 0.1 - eps_reduct;
+	ref  = 0.1;
 	d    = m.get_orthogonal_dist_to_bnd(r, 1);
+	rwr  = m.get_random_walk_sphere_radius(r, 1);
 	
-	if (!soft_equiv(d, ref)) ITFAILS;
+	
+	if (!soft_equiv(d, ref))       ITFAILS;
+	if (!soft_equiv(rwr, ref-eps)) ITFAILS;
 
 	r[0] = -0.6;
 	r[1] = -0.2;
-	ref  = 0.4 - eps_reduct;
+	ref  = 0.4;
 	d    = m.get_orthogonal_dist_to_bnd(r, 1);
+	rwr  = m.get_random_walk_sphere_radius(r, 1);
 	
-	if (!soft_equiv(d, ref)) ITFAILS;
+	if (!soft_equiv(d, ref))       ITFAILS;
+	if (!soft_equiv(rwr, ref-eps)) ITFAILS;
 
 	// cell 2
 	r[0] = 0.5;
 	r[1] = -0.5;
-	ref  = 0.5 - eps_reduct;
+	ref  = 0.5;
 	d    = m.get_orthogonal_dist_to_bnd(r, 2);
+	rwr  = m.get_random_walk_sphere_radius(r, 2);
 	
-	if (!soft_equiv(d, ref)) ITFAILS;
+	if (!soft_equiv(d, ref))       ITFAILS;
+	if (!soft_equiv(rwr, ref-eps)) ITFAILS;
 	
 	// cell 5
 	r[0] = 0.11;
 	r[1] = 2.8;
-	ref  = 0.11 - eps_reduct;
+	ref  = 0.11;
 	d    = m.get_orthogonal_dist_to_bnd(r, 5);
+	rwr  = m.get_random_walk_sphere_radius(r, 5);
 	
-	if (!soft_equiv(d, ref)) ITFAILS;
+	if (!soft_equiv(d, ref))       ITFAILS;
+	if (!soft_equiv(rwr, ref-eps)) ITFAILS;
     }
 
     // neighbors
@@ -478,7 +486,7 @@ void Mesh_2D()
     {
 	Rnd_Control control(seed);
 	Sprng rran = control.get_rn(10);
-	Sprng ran  = control.get_rn(10);
+	Sprng ran  = control.get_rn(10);	
 
 	pair<vector<double>, vector<double> > rn;
 
@@ -488,14 +496,15 @@ void Mesh_2D()
 	vector<double> origin(2);
 	double         radius;
 	vector<double> omega;
+	double         eps = 1.0e-6; // min cell width = 1cm, times 1e-6
 
 	// cell 1 sample
 	origin[0] = -0.8;
 	origin[1] = 0.1;
-	radius    = 0.2;
+	radius    = 0.2 - eps;
 	if (!m.in_cell(1, origin)) ITFAILS;
 
-	rn = m.sample_pos_on_sphere(1, origin, radius, ran);
+	rn = m.sample_random_walk_sphere(1, origin, radius, ran);
 	r  = rn.first;
 	n  = rn.second;
 
@@ -510,10 +519,10 @@ void Mesh_2D()
 	    ITFAILS;
 
 	// check that it is in the sphere (weak)
-	if (r[0] < origin[0] - radius) ITFAILS;
-	if (r[0] > origin[0] + radius) ITFAILS;
-	if (r[1] < origin[1] - radius) ITFAILS;
-	if (r[1] > origin[1] + radius) ITFAILS;
+	if (r[0] <= origin[0] - radius) ITFAILS;
+	if (r[0] >= origin[0] + radius) ITFAILS;
+	if (r[1] <= origin[1] - radius) ITFAILS;
+	if (r[1] >= origin[1] + radius) ITFAILS;
 
 	// check that it is in the sphere (we use only use the X,Y
 	// coordinates, so the point may not be equal to the radius, but it
@@ -540,6 +549,26 @@ void Mesh_2D()
 
 void Mesh_3D()
 {
+    //       y
+    //       ^
+    //       | 
+    //       -------|
+    //      /_/_/_/ |
+    //     / / / /| |
+    //  3 ------- |/| 
+    //    | | | | | |
+    //    | | | |/| |--> x    z=0
+    //  1 ------- |/
+    //    | | | | |  z=1
+    //    | | | |/
+    // -1 -------  z=2
+    //   -1 0 1 2
+    //  /
+    // z (out of screen)
+    //
+    // for all cells, dx = 1cm, dy = 2cm, dz=1
+
+
     // make a builder from parser input 
     SP<Parser> parser(new Parser("OS_Input_3D"));
     OS_Builder builder(parser);
@@ -655,6 +684,7 @@ void Mesh_3D()
 	Rnd_Control control(seed);
 	Sprng rran = control.get_rn(10);
 	Sprng ran  = control.get_rn(10);
+	double eps = 1.0e-6; // 1.0e-6 times minimum cell dimenstion (1cm)
 
 	pair<vector<double>, vector<double> > rn;
 
@@ -669,10 +699,10 @@ void Mesh_3D()
 	origin[0] = -0.8;
 	origin[1] = 0.1;
 	origin[2] = 0.7;
-	radius    = 0.2;
+	radius    = 0.2 - eps;
 	if (!mesh->in_cell(1, origin)) ITFAILS;
 
-	rn = mesh->sample_pos_on_sphere(1, origin, radius, ran);
+	rn = mesh->sample_random_walk_sphere(1, origin, radius, ran);
 	r  = rn.first;
 	n  = rn.second;
 
@@ -702,12 +732,12 @@ void Mesh_3D()
 	    ITFAILS;
 
 	// check that it is in the sphere (weak)
-	if (r[0] < origin[0] - radius) ITFAILS;
-	if (r[0] > origin[0] + radius) ITFAILS;
-	if (r[1] < origin[1] - radius) ITFAILS;
-	if (r[1] > origin[1] + radius) ITFAILS;
-	if (r[2] < origin[2] - radius) ITFAILS;
-	if (r[2] > origin[2] + radius) ITFAILS;
+	if (r[0] <= origin[0] - radius) ITFAILS;
+	if (r[0] >= origin[0] + radius) ITFAILS;
+	if (r[1] <= origin[1] - radius) ITFAILS;
+	if (r[1] >= origin[1] + radius) ITFAILS;
+	if (r[2] <= origin[2] - radius) ITFAILS;
+	if (r[2] >= origin[2] + radius) ITFAILS;
 
 	// check that it is in the sphere (strong)
 	double magnitude = 0.0;
@@ -728,10 +758,10 @@ void Mesh_3D()
 	origin[0] = 0.6;
 	origin[1] = 2.7;
 	origin[2] = 0.5;
-	radius    = 0.29;
+	radius    = 0.29 - eps;
 	if (!mesh->in_cell(5, origin)) ITFAILS;
 
-	rn = mesh->sample_pos_on_sphere(5, origin, radius, ran);
+	rn = mesh->sample_random_walk_sphere(5, origin, radius, ran);
 	r  = rn.first;
 	n  = rn.second;
 
@@ -746,12 +776,12 @@ void Mesh_3D()
 	    ITFAILS;
 
 	// check that it is in the sphere (weak)
-	if (r[0] < origin[0] - radius) ITFAILS;
-	if (r[0] > origin[0] + radius) ITFAILS;
-	if (r[1] < origin[1] - radius) ITFAILS;
-	if (r[1] > origin[1] + radius) ITFAILS;
-	if (r[2] < origin[2] - radius) ITFAILS;
-	if (r[2] > origin[2] + radius) ITFAILS;
+	if (r[0] <= origin[0] - radius) ITFAILS;
+	if (r[0] >= origin[0] + radius) ITFAILS;
+	if (r[1] <= origin[1] - radius) ITFAILS;
+	if (r[1] >= origin[1] + radius) ITFAILS;
+	if (r[2] <= origin[2] - radius) ITFAILS;
+	if (r[2] >= origin[2] + radius) ITFAILS;
 
 	// check that it is in the sphere (strong)
 	magnitude = 0.0;
@@ -772,10 +802,10 @@ void Mesh_3D()
 	origin[0] = 1.23;
 	origin[1] = 0.0;
 	origin[2] = 1.45;
-	radius    = 0.21;
+	radius    = 0.21 - eps;
 	if (!mesh->in_cell(9, origin)) ITFAILS;
 
-	rn = mesh->sample_pos_on_sphere(9, origin, radius, ran);
+	rn = mesh->sample_random_walk_sphere(9, origin, radius, ran);
 	r  = rn.first;
 	n  = rn.second;
 
@@ -790,12 +820,12 @@ void Mesh_3D()
 	    ITFAILS;
 
 	// check that it is in the sphere (weak)
-	if (r[0] < origin[0] - radius) ITFAILS;
-	if (r[0] > origin[0] + radius) ITFAILS;
-	if (r[1] < origin[1] - radius) ITFAILS;
-	if (r[1] > origin[1] + radius) ITFAILS;
-	if (r[2] < origin[2] - radius) ITFAILS;
-	if (r[2] > origin[2] + radius) ITFAILS;
+	if (r[0] <= origin[0] - radius) ITFAILS;
+	if (r[0] >= origin[0] + radius) ITFAILS;
+	if (r[1] <= origin[1] - radius) ITFAILS;
+	if (r[1] >= origin[1] + radius) ITFAILS;
+	if (r[2] <= origin[2] - radius) ITFAILS;
+	if (r[2] >= origin[2] + radius) ITFAILS;
 
 	// check that it is in the sphere (strong)
 	magnitude = 0.0;
@@ -822,7 +852,7 @@ void Mesh_3D()
 	bool caught = false;
 	try
 	{
-	    rn = mesh->sample_pos_on_sphere(8, origin, radius, ran);
+	    rn = mesh->sample_random_walk_sphere(8, origin, radius, ran); 
 	}
 	catch (const rtt_dsxx::assertion &ass)
 	{

@@ -23,6 +23,7 @@
 #include "c4/SpinLock.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 #include <iostream>
 #include <vector>
@@ -35,9 +36,9 @@ using rtt_mc_test::make_RZWedge_Mesh_AMR;
 using rtt_mc::XYZCoord_sys;
 using rtt_mc::AMR_Layout;
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
 using rtt_mc::RZWedge_Mesh;
 using rtt_mc::RZWedge_Builder;
-using rtt_mc::global::soft_equiv;
 using rtt_mc::global::pi;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
@@ -699,6 +700,140 @@ void simple_one_cell_RZWedge()
     if (!soft_equiv(db, 0.99, 1.0e-10)) ITFAILS;
     if (intersecting_face != 5)         ITFAILS;
 
+    // >>> test get_random_walk_sphere function <<< 
+    {
+	// dx = dz = 1cm
+
+	// start at cell center
+	r[0] = mesh->get_x_midpoint(1);
+	r[1] = mesh->get_y_midpoint(1);
+	r[2] = mesh->get_z_midpoint(1);
+	if (!mesh->in_cell(1, r)) ITFAILS;
+	
+	// get random walk sphere radius for this position (cell = 1)
+	double rw_radius = mesh->get_random_walk_sphere_radius(r, 1);
+
+	// check consistency of orthogonal dist-to-bndry and rw sphere
+	if (!soft_equiv(rw_radius, 0.5-1.0e-6)) ITFAILS;
+
+	// move the point and try again
+	r[2] -= 0.25;
+	if (!mesh->in_cell(1, r)) ITFAILS;
+	
+	// get orthogonal distance to boundary (cell = 1)
+	rw_radius = mesh->get_random_walk_sphere_radius(r, 1);
+
+	// check consistency of orthogonal dist-to-bndry and rw sphere
+	if (!soft_equiv(rw_radius, 0.25-1.0e-6)) ITFAILS;
+    }
+
+
+    // >>>>> test sample position on sphere <<<<<
+    {
+	// the final location and final direction are the result of tracking
+	// a distance equal to the random walk sphere radius on the
+	// RZWedge_Mesh.
+
+	// make a random number generator
+	Rnd_Control control(seed);
+	Sprng ran     = control.get_rn(10);
+	Sprng ref_ran = control.get_rn(10);
+
+	// random walk sphere radius
+	double radius = 0.0;
+	
+	// new and reference position and direction declarations
+	vector<double> r_prime(3, 0.0);
+	vector<double> o_prime(3, 0.0);
+	vector<double> ref_r(3, 0.0);
+	vector<double> ref_omega(3, 0.0);
+	vector<double> o(3, 0.0);
+	o = omega;
+
+	pair<vector<double>, vector<double> > ro;
+
+	//  90 degree wedge,  z in [0,1]
+	//
+	//      x
+	//      ^
+	//   ___|____  x=1
+	//   \      /
+	//    \    /
+	//     \  /
+	//      \/     x=0
+	//
+
+	// starting position 
+	r[0] =  0.5;
+	r[1] =  0.49;
+	r[2] =  0.5;
+	if (!mesh->in_cell(1, r)) ITFAILS;
+
+	// simulate a bunch of successive random walks (in practice, they're
+	// always separated by at least a transport step).
+	for (int j = 0; j < 20; j++)
+	{
+	    // keep a reference position
+	    ref_r = r;
+
+	    // calculate the random walk radius for this point
+	    radius = mesh->get_random_walk_sphere_radius(r, 1);
+
+	    // sample new position and direction 
+	    ro      = mesh->sample_random_walk_sphere(1, r, radius, ran);
+	    r_prime = ro.first;
+	    o_prime = ro.second;
+
+	    // check if new position is in cell
+	    if (!mesh->in_cell(1, r_prime)) ITFAILS;
+
+	    // calculate running reference isotropic direction (equivalent to
+	    // the first random walk direction each time)
+	    ref_omega = mesh->get_Coord().sample_isotropic_dir(ref_ran);
+
+	    // if the angles are the same, there were no y-face reflections
+	    if (soft_equiv(o_prime.begin(), o_prime.end(), 
+			   ref_omega.begin(), ref_omega.end()))
+	    {
+		// check that sphere is inside RZWedge_Mesh cell
+		double db = mesh->get_db(r, o_prime, 1, intersecting_face);
+		if (radius > db)  ITFAILS; 
+
+		// update reference position and check sameness
+		ref_r[0] += o_prime[0] * radius;
+		ref_r[1] += o_prime[1] * radius;
+		ref_r[2] += o_prime[2] * radius;
+		if (!soft_equiv(r_prime.begin(), r_prime.end(), 
+				ref_r.begin(),   ref_r.end()))  ITFAILS;		
+	    }
+	    // else there was reflection; make sure it was a y-face (3 or 4)
+	    else
+	    {
+		// use the reference direction as the initial rwalk direction
+		// to calculate a distance to boundary and intersecting face.
+		double db = mesh->get_db(r, ref_omega, 1, intersecting_face);
+
+		if (intersecting_face < 3) ITFAILS;
+		if (intersecting_face > 4) ITFAILS;
+		if (radius < db)           ITFAILS; 
+	    }
+
+	    // check that net dist traveled <= radius (weak check)
+	    double crow_dist = std::sqrt( (r_prime[0]-r[0])*(r_prime[0]-r[0]) 
+				        + (r_prime[1]-r[1])*(r_prime[1]-r[1]) 
+				        + (r_prime[2]-r[2])*(r_prime[2]-r[2]));
+
+	    if (!soft_equiv(crow_dist, radius))
+		if (crow_dist > radius) ITFAILS;
+
+	    // reassign position and direction
+	    r = r_prime;
+	    o = o_prime;
+	}
+    }
+
+    if (rtt_mc_test::passed)
+	PASSMSG("RZWedge_Mesh simple_one_cell problem ok.");
 }
 
 //---------------------------------------------------------------------------//
