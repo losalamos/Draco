@@ -395,16 +395,18 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
        ARFLAGS='cr'
    fi
 
-   # ARLIBS='${DRACO_LIBS}'
-   # ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-   ARLIBS='$(wildcard cxx_repository/*)'
-   ARTESTLIBS='$(wildcard cxx_repository/*)'
+   # with the default template flags (-pt), the contents of the
+   # cxx_repository do not seem to need adding when building
+   # shared libraries; you do have to add them for archives
+   if test "${enable_shared}" != yes ; then
+       ARLIBS='$(wildcard cxx_repository/*)'
+       ARTESTLIBS='$(wildcard cxx_repository/*)'
+   fi
 
    # COMPILATION FLAGS
 
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
-       # STRICTFLAG="-model ansi -std strict_ansi"
        STRICTFLAG="-std strict_ansi"
    fi
 
@@ -422,6 +424,7 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
 
    # add ieee flag
    CXXFLAGS="${CXXFLAGS} -ieee"
+   CFLAGS="${CFLAGS} -ieee"
 
    # turn off implicit inclusion
    CXXFLAGS="${CXXFLAGS} -noimplicit_include"
