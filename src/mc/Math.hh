@@ -20,6 +20,8 @@
 // 1) 04-13-99 : moved into mc package 
 // 2) 08-04-00 : modified soft_equiv to handle comparisons to zero.
 // 3) 08-24-00 : added mod_with_2e9 function.
+// 4) 07-31-01 : modified mod_with_2e9 function to integer_modulo with an 
+//               argument for the integer to mod against
 //
 //===========================================================================//
 
@@ -179,24 +181,27 @@ inline T max(T A, T B)
 }
 
 //---------------------------------------------------------------------------//
-// modulo a nonnegative integer with 2e9 
+// modulo an integer with a big integer
 
-inline int mod_with_2e9(const int value)
+inline int integer_modulo(const int value, unsigned int big_int)
 {
     Require (value >= 0);
 
-    int two_billion = static_cast<int>(2e9);
-    int mod_value   = value % two_billion;
+    int mod_value = value % big_int;
     
-    Ensure (mod_value < two_billion);
+    Ensure (mod_value < big_int);
     Ensure (mod_value >= 0);
 
     return mod_value;
 }
 
-
 } // end namespace global
 } // end namespace rtt_mc
+
+
+// Macros to integer_modulo
+#define INTEGER_MODULO_1E9(v) rtt_mc::global::integer_modulo(v, 1000000000)
+#define INTEGER_MODULO_2E9(v) rtt_mc::global::integer_modulo(v, 2000000000)
 
 #endif                          // __mc_Math_hh__
 
