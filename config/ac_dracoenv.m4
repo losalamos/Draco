@@ -393,7 +393,11 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   if test -n "${MPI_LIB}" ; then
 	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
 	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
+	       if test "${enable_32_bit}" = no ; then
+		   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPT_SGI}/usr/lib64 -lmpi)
+	       else
+		   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPT_SGI}/usr/lib32 -lmpi)
+	       fi
 	   fi
        elif test "${with_mpi}" = mpich ; then
 	   AC_MSG_ERROR("We do not support mpich on the SGI yet!")
