@@ -22,6 +22,10 @@
 #include <vector>
 #include <cstdlib>
 
+namespace rtt_rng {
+class Rnd_Control;
+}
+
 namespace rtt_rng 
 {
 
@@ -94,6 +98,9 @@ class Sprng
     // Number of this particular stream.
     int streamnum;
 
+    // Size of the packed state
+    static int packed_size;
+
   public:
     // Constructors
     inline Sprng(int *, int);
@@ -118,11 +125,15 @@ class Sprng
     int* get_id() const { return streamid->id; }
     int get_num() const { return streamnum; }
 
+    // Return the packed size
+    int get_size() const;
+
     // Test diagnostics.
     bool avg_test(int, double = .001) const;
 
     // Do a diagnostic.
     void print() const { print_sprng(streamid->id); }
+
 };
 
 //---------------------------------------------------------------------------//
@@ -207,7 +218,7 @@ std::vector<char> Sprng::pack() const
     // first pack the random number object and determine the size
     char *prng   = 0;
     int rng_size = pack_sprng(streamid->id, &prng);
-    int size     = rng_size + 2 * sizeof(int);
+    int size = rng_size + 2 * sizeof(int);
     Check (prng);
 
     // now set the buffer
@@ -250,6 +261,7 @@ Sprng& Sprng::operator=(const Sprng &rhs)
     ++streamid->refcount;
     return *this;
 }
+
 
 } // end namespace rtt_rng
 

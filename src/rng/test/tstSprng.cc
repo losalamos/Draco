@@ -134,6 +134,8 @@ void pack_test()
 
 	// pack up the sprng
 	packed = ran1.pack();
+
+	if (packed.size() != ran1.get_size()) ITFAILS; 
     }
 
     // now check it
