@@ -21,6 +21,7 @@
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Packing_Utils.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <vector>
 #include <string>
 #include <iostream> 

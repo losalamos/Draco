@@ -14,6 +14,7 @@
 #define rtt_imc_Surface_tracker_hh
 
 #include <vector>
+#include <algorithm>
 
 #include "mc/Surface.hh"
 #include "ds++/SP.hh"

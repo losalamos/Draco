@@ -16,7 +16,6 @@
 #include <iostream>
 #include <cmath>
 #include <functional>
-#include <algorithm>
 
 using namespace std;
 using rtt_dsxx::SP;
