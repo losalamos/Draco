@@ -37,10 +37,11 @@ ostream& operator<<(ostream &output, const Mat_State<MT> &object)
     using std::endl;
     using std::setw;
 
-    cout << "  Cell  " << " Density  " << "   Temp   " << endl;
-    cout << "----------------------------------------" << endl;
+    cout << setw(8) << "Cell" << setw(10) << "Density" << setw(10)
+	 << "Temp" << endl;
+    cout << "----------------------------" << endl;
 
-    for (int i = 1; i <= Num_cells(); i++)
+    for (int i = 1; i <= object.Num_cells(); i++)
         object.Print(i);
     return output;
 }
