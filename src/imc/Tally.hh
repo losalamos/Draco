@@ -167,6 +167,9 @@ class Tally
     //! Get a Surface_Sub_Tally
     SP_S_ST get_Surface_Sub_Tally(int group = 1) const;
 
+    //! Get the number of surface sub tallies.
+    int get_num_surface_tallies() const { return surface_sub_tallies.size(); }
+
     // >>> TALLY ACCUMULATION FUNCTIONS
 
     // Deposit energy.
