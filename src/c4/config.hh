@@ -68,14 +68,13 @@
 
 //---------------------------------------------------------------------------//
 // By this point, the transport layer in use is supposed to be determined.
-// Now we pull in the right include files, and define some convenience
-// macros. 
+// Now we define some convenience macros.  Also include any platform
+// dependent headers which may be required.
 //---------------------------------------------------------------------------//
 
 // Intel's NX
 
 #ifdef C4_NX
-#include <nx.h>
 #define PGN(a) a
 #else
 #define PGN(a)
@@ -93,7 +92,6 @@
 // SHMEM
 
 #ifdef C4_SHMEM
-#include <mpp/shmem.h>
 #else
 #endif
 
