@@ -10,7 +10,8 @@
 # @configure_input@
 
 # source directories: top_srcdir is the toplevel and srcdir is the
-# package
+# package. These should be the same, because autoconf is being run
+# from this directory
 
 top_srcdir = @top_srcdir@
 srcdir     = @srcdir@

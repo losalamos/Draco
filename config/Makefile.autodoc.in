@@ -7,32 +7,34 @@
 # @> General Makefile.in for draco/autodoc
 ###############################################################################
 
+# Automatic autoconf variables:
+top_srcdir = @top_srcdir@
+srcdir = @srcdir@
+
 # doxygen executable
 DOXYGEN = @DOXYGEN_PATH@
 
+#installation executable
 INSTALL = @INSTALL@
 
+# package name
 package = @package@
-top_srcdir = @top_srcdir@
-prefix = @prefix@
-srcdir = @srcdir@
-#doxygen_extras = @doxygen_extras@
-#installdirs = ${prefix}/html ${prefix}/latex
 
-# get the relative directory to the config files (relative to ${top_srcdir}).
+# directory for doxygen output
+doxygen_output = @doxygen_output@
 
-rel_config_dir := $(shell ( cd ${top_srcdir} ; \
+# get the relative directory to the autoconf files from ${top_srcdir}.
+rel_autoconf_dir := $(shell ( cd ${top_srcdir} ; \
 	tmp="" ; \
-	while test ! -d config ; \
+	while test ! -d autodoc ; \
 	do \
 	   cd .. ; \
 	   tmp=$$tmp../ ; \
 	done ; \
-	echo $$tmp ) )config
+	echo $$tmp ) )autodoc
 
-# get the config directory
-config_dir = $(shell cd ${top_srcdir}/${rel_config_dir}; pwd)
-top_autodoc_dir = $(shell cd ${config_dir}/../autodoc; pwd)
+# get the absolute path of the autoconf dir
+top_autoconf_dir = $(shell cd ${top_srcdir}/${rel_config_dir}; pwd)
 
 # Build lists of image files and support files in the top autodoc
 # directory and the local autodoc directory. The local directory files
@@ -54,7 +56,7 @@ tagfiles = @TAGFILES@
 
 ##---------------------------------------------------------------------------##
 
-.SUFFIXES : .png .gif .jpg .css .html
+# .SUFFIXES : .png .gif .jpg .css .html
 .PHONY : html latex install autodoc configure reconfigure \
 	install_support install_images tagfile_target
 
@@ -76,47 +78,16 @@ check:
 
 install_images: ${imagefiles} 
 	@for file in ${imagefiles}; do \
-	   echo "Install $${file} to ${prefix}/html/${package}";\
-	   ${INSTALL} $${file} ${prefix}/html/${package}/; \
+	   echo "Install $${file} to ${doxygen_output}";\
+	   ${INSTALL} $${file} ${doxygen_output}/; \
 	done
 
 install_support: ${supportfiles} 
 	@for file in ${supportfiles}; do \
-	   echo $${file};\
-	   ${INSTALL} $${file} ${prefix}/html/${package}/; \
+	   echo "Install $${file} to ${doxygen_output}";\
+	   ${INSTALL} $${file} ${doxygen_output}/; \
 	done
 
-#${prefix}/html/${package}/%.gif: ${top_autodoc_dir}/html/%.gif
-#	@echo "Installing file: \"$@\""
-#	${VERBOSE} ${INSTALL} $< $@
-#${prefix}/html/${package}/%.jpg: ${top_autodoc_dir}/html/%.jpg
-#	@echo "Installing file: \"$@\""
-#	${VERBOSE} ${INSTALL} $< $@
-#${prefix}/html/${package}/%.png: ${top_autodoc_dir}/html/%.png
-#	@echo "Installing file: \"$@\""
-#	${VERBOSE} ${INSTALL} $< $@
-#${prefix}/html/${package}/%.css: ${top_autodoc_dir}/html/%.css
-#	@echo "Installing file: \"$@\""
-#	${VERBOSE} ${INSTALL} $< $@
-#${prefix}/html/${package}/%.html: ${top_autodoc_dir}/html/%.html
-#	@echo "Installing file: \"$@\""
-#	${VERBOSE} ${INSTALL} $< $@
-
-#${prefix}/html/${package}/%.gif: ${srcdir}/autodoc/%.gif
-#	@echo "Installing file: \"$@\""
-#	${VERBOSE} ${INSTALL} $< $@
-#${prefix}/html/${package}/%.jpg: ${srcdir}/autodoc/%.jpg
-#	@echo "Installing file: \"$@\""
-#	${VERBOSE} ${INSTALL} $< $@
-#${prefix}/html/${package}/%.png: ${srcdir}/autodoc/%.png
-#	@echo "Installing file: \"$@\""
-#	${VERBOSE} ${INSTALL} $< $@
-#${prefix}/html/${package}/%.css:  ${srcdir}/autodoc/%.css
-#	@echo "Installing file: \"$@\""
-#	${VERBOSE} ${INSTALL} $< $@
-#${prefix}/html/${package}/%.html: ${srcdir}/autodoc/%.html
-#	@echo "Installing file: \"$@\""
-#	${VERBOSE} ${INSTALL} $< $@
 
 ##---------------------------------------------------------------------------##
 ## Build system targets and rules
@@ -139,8 +110,8 @@ reconfigure:
 clean: forced-clean
 
 forced-clean:
-	-rm -rf ${prefix}/html/*
-	-rm -rf ${prefix}/latex/*
+	-rm -rf ${doxygen_output}/*
+#	-rm -rf ${prefix}/latex/*
 
 mostlyclean: clean
 
