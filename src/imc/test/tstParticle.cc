@@ -65,10 +65,13 @@ void Particle_Basics()
     POS pt(r, omega, ew, 100, rnd);
 
     // tests
-    if (pt.status() != true)   ITFAILS;
-    if (pt.get_ew() != 5.0)    ITFAILS;
-    if (pt.desc()   != "born") ITFAILS;
-    if (pt.get_cell() != 100)  ITFAILS;
+    if (pt.status() != true)      ITFAILS;
+    if (pt.get_ew() != 5.0)       ITFAILS;
+    if (pt.desc()   != "born")    ITFAILS;
+    if (pt.get_cell() != 100)     ITFAILS;
+    if (pt.get_omega()[0] != 0.0) ITFAILS;
+    if (pt.get_omega()[1] != 1.0) ITFAILS;
+    if (pt.get_omega()[2] != 0.0) ITFAILS;
 
     // reset and check
     pt.kill_particle();
