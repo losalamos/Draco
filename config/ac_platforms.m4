@@ -286,14 +286,14 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,space)
 
        # add the intel math library for better performance when
        # compiling with intel
        if test "${CXX}" = icc; then
 	   LIBS="$LIBS -limf"
        fi
-])
+]) dnl linux
 
 
 dnl-------------------------------------------------------------------------dnl
@@ -368,7 +368,7 @@ AC_DEFUN([AC_DBS_CYGWIN_ENVIRONMENT], [dnl
        dnl
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,space)
 
 ]) dnl cygwin
 
@@ -501,7 +501,7 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,colon)
 
 ]) dnl osf
 
@@ -712,7 +712,7 @@ AC_DEFUN([AC_DBS_SUN_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(R)
+       AC_DBS_SETUP_RPATH(R,space)
 ]) dnl sun
 
 dnl-------------------------------------------------------------------------dnl
@@ -894,7 +894,7 @@ AC_DEFUN([AC_DBS_IRIX_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,colon)
 
 ]) dnl irix
 
@@ -1119,26 +1119,38 @@ dnl AC_DBS_SETUP_RPATH
 dnl
 dnl set rpath when building shared library executables
 dnl
+dnl We support two forms for RPATH support:
+dnl 1) "-Xlinker -rpath dir1 -Xlinker -rpath dir2 ..."
+dnl 2) "-rpath dir1:dir2:..."
+dnl
+dnl Some compilers/linkers use "R" instead of "rpath".  The option
+dnl name is set from the 1st argument to this function.  The second
+dnl argument specifies the list type as desribed above.
+dnl
 dnl $1 = rpath trigger.  One of "rpath" or "R"
+dnl $2 = delimiter. One of "space" or "colon"
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
 
        rptrigger=$1
-  
+       dilem=$2
+
        if test "${enable_shared}" = yes ; then
 
 	   # turn off ranlib
 	   RANLIB=':'
 
 	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
 	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+           else
+               AC_MSG_ERROR("Cannot determine what rpath format to use!")
 	   fi
        fi
 
@@ -1146,14 +1158,16 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
        for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-
 	   # else we just add the rpath
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+           else
+               AC_MSG_ERROR("Cannot determine what rpath format to use!")
 	   fi
        done
+
 ]) dnl setup_rpath
 
 dnl-------------------------------------------------------------------------dnl
