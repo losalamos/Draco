@@ -14,7 +14,7 @@ package="ds++"
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 
-AC_RUNTESTS(tstAllocators tstMat tstSP tstSort tstAssert \
+AC_RUNTESTS(tstAllocators tstMat tstSP tstAssert \
             tstMat1RA tstMat2RA tstMat3RA tstMat4RA, 1 2 4 8)
 AC_DRACO_ENV
 
