@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "../Allocators.hh"
+#include "ds_test.hh"
 
 #include <iostream>
 #include <string>
@@ -74,20 +75,26 @@ void tG1( T dummy )
 // Check that Guarded_Allocator can detect subversive behavior.
 //---------------------------------------------------------------------------//
 
-template<class T>
+template< class T >
 void tG2( T dummy )
 {
-    try {
-    // First we have to fetch some memory.
+    try 
+    {
+	// First we have to fetch some memory.
         T *p = Guarded_Allocator<T>::fetch( 5 );
-
-    // Now initialize it.
+	
+	// Now initialize it.
+	//lint -e534  Ignore lint warning that function returns a value.  g++
+	//            returns a forward iterator
+	//            (/usr/local/gcc/include/c++/3.2/bits/stl_uninitialized.h) 
+	//            but the standard claims that this function should
+	//            return void.
 	std::uninitialized_fill_n( p, 5, dummy );
-
-    // Now currupt the bottom end of the memory :-).
+	
+	// Now currupt the bottom end of the memory :-).
 	p[-1] = dummy;
-
-    // Now release the memory.
+	
+	// Now release the memory.
         Guarded_Allocator<T>::release( p, 5 );
 #if DBC & 2
 	fail( "tG2", dummy );
@@ -95,7 +102,7 @@ void tG2( T dummy )
 	pass( "tG2", dummy );
 #endif
     }
-    catch(assertion& x)
+    catch( assertion const & x)
     {
 #if DBC & 2
 	pass( "tG2", dummy );
@@ -134,7 +141,7 @@ void tG3( T dummy )
 	pass( "tG3", dummy );
 #endif
     }
-    catch(assertion& x)
+    catch( assertion const & x )
     {
 #if DBC & 2
 	pass( "tG3", dummy );
@@ -148,7 +155,7 @@ void tG3( T dummy )
     }
 }
 
-void version(const std::string &progname)
+static void version(const std::string &progname)
 {
     std::string version = "1.0.0";
     cout << progname << ": version " << version << endl;
@@ -156,14 +163,14 @@ void version(const std::string &progname)
 
 int main( int argc, char *argv[] )
 {
+    //lint -e30 -e85 -e24 -e715 -e818 Suppress warnings about use of argv 
+    //          (string comparison, unknown length, etc.)
 
-    for (int arg=1; arg < argc; arg++)
+    for( int arg=1; arg < argc; arg++ )
+	if( size_t idx=std::string( argv[arg] ).find( "--version" ) == 0 )
 	{
-	    if (std::string(argv[arg]) == "--version")
-		{
-		    version(argv[0]);
-		    return 0;
-		}
+	    version( argv[0] );
+	    return 0;
 	}
 
     cout << "Starting tstAllocators.\n";

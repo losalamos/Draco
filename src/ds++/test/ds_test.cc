@@ -18,6 +18,12 @@ namespace rtt_ds_test
 // PASS/FAILURE
 //===========================================================================//
 
+//lint -e755  do not warn about macro functions not being used by test code.
+//lint -e759  do not warn about moving function definitions away from header
+//            file. 
+//lint -e714  do not warn about these functions not being used.
+//lint -e552  symbol X not accessed.
+
 bool fail(int line)
 {
     std::cout << "Test: failed on line " << line << std::endl;

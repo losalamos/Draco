@@ -38,15 +38,16 @@ using namespace std;
 // rtt_dsxx::assertion. 
 //---------------------------------------------------------------------------//
 
-void t1()
+static void t1()
 {
-    std::cout << "ta test: ";
+    std::cout << "t1 test: ";
     try 
     {
 	throw std::runtime_error( "hello1" );
     } 
-    catch( rtt_dsxx::assertion &a )
+    catch( rtt_dsxx::assertion const & a )
     {
+	std::cout << a.what() << std::endl;
 	std::cout << "failed" << std::endl;
     }
     catch( ... )
@@ -60,7 +61,7 @@ void t1()
 // message. 
 //---------------------------------------------------------------------------//
 
-void t2()
+static void t2()
 {
     std::cout << "t2-a test: ";
     std::string error_message;
@@ -68,7 +69,7 @@ void t2()
     {
 	throw rtt_dsxx::assertion( "hello1", "myfile", 42 );
     } 
-    catch( rtt_dsxx::assertion &a )
+    catch( rtt_dsxx::assertion const & a )
     {
 	std::cout << "passed" << std::endl;
 	error_message = std::string( a.what() );
@@ -91,22 +92,30 @@ void t2()
 
 //---------------------------------------------------------------------------//
 // Test throwing and catching of a literal
+//
+//lint -e1775  do not warn about "const char*" not being a declared exception
+//             type.  
+//lint -e1752  do not warn about catching "const char*" instead of
+//             catching a reference to an exception (see "More Effective C++"
+//             for details about catching exceptions)
 //---------------------------------------------------------------------------//
 
-void t3()
+static void t3()
 {
     std::cout << "t3 test: ";
     try 
     {
 	throw "hello";
     } 
-    catch( rtt_dsxx::assertion &a )
+    catch( rtt_dsxx::assertion const & a )
     {
+	std::cout << a.what() << std::endl;
 	std::cout << "failed" << std::endl;
     }
     catch( const char* msg )
     {
-	std::cout << "passed" << std::endl;
+	std::cout << "passed   "
+		  << "msg = " << msg << std::endl;
     }
     catch( ... )
     {
@@ -118,27 +127,43 @@ void t3()
 // Check the operation of the Require() macro.
 //---------------------------------------------------------------------------//
 
-void trequire()
+static void trequire()
 {
     std::cout << "t-Require test: ";
     try {
 	Require( 0 );
 	throw "Bogus!";
     }
-    catch( rtt_dsxx::assertion& a )
+    catch( rtt_dsxx::assertion const & a )
     {
 #if DBC & 1
-	std::cout << "passed\n";
+	std::cout << "passed" << std::endl;
+
+	std::cout << "t-Require message value test: ";
+	{
+	    std::string msg( a.what() );
+	    std::string expected_value( "Assertion: 0, failed in" );
+	    string::size_type idx = msg.find( expected_value );
+	    if( idx != string::npos )
+	    {
+		cout << "passed" << std::endl;
+	    }
+	    else
+	    {
+		cout << "failed" << std::endl;
+	    }
+	}
+	
 #else
-	std::cout << "failed\n";
+	std::cout << "failed" << "\t" << "a.what() = " << a.what() << std::endl;
 #endif
     }
     catch(...)
     {
 #if DBC & 1
-	std::cout << "failed\n";
+	std::cout << "failed" << std::endl;
 #else
-	std::cout << "passed\n";
+	std::cout << "passed" << std::endl;
 #endif
     }
 }
@@ -147,19 +172,35 @@ void trequire()
 // Check the operation of the Check() macro.
 //---------------------------------------------------------------------------//
 
-void tcheck()
+static void tcheck()
 {
     std::cout << "t-Check test: ";
     try {
 	Check( false );
 	throw std::runtime_error( std::string( "tstAssert: t2()" ) );
     }
-    catch( rtt_dsxx::assertion& a )
+    catch( rtt_dsxx::assertion const & a )
     {
 #if DBC & 2
-	std::cout << "passed\n";
+	std::cout << "passed" << std::endl;
+
+	std::cout << "t-Check message value test: ";
+	{
+	    std::string msg( a.what() );
+	    std::string expected_value( "Assertion: false, failed in" );
+	    string::size_type idx = msg.find( expected_value );
+	    if( idx != string::npos )
+	    {
+		cout << "passed" << std::endl;
+	    }
+	    else
+	    {
+		cout << "failed" << std::endl;
+	    }
+	}
 #else
-	std::cout << "failed\n";
+	std::cout << "failed" << "\t" << "a.what() = " << a.what() << std::endl;
+	std::string msg( a.what() );
 #endif
     }
     catch(...)
@@ -176,22 +217,35 @@ void tcheck()
 // Check the operation of the Ensure() macro.
 //---------------------------------------------------------------------------//
 
-void tensure()
+static void tensure()
 {
-    int x = 0;
-    Remember(x = 5);
-
     std::cout << "t-Ensure test: ";
     try {
 	Ensure(0);
 	throw "Bogus!";
     }
-    catch( rtt_dsxx::assertion& a )
+    catch( rtt_dsxx::assertion const & a )
     {
 #if DBC & 4
-	std::cout << "passed\n";
+	std::cout << "passed" << std::endl;
+
+	std::cout << "t-Ensure message value test: ";
+	{
+	    std::string msg( a.what() );
+	    std::string expected_value( "Assertion: 0, failed in" );
+	    string::size_type idx = msg.find( expected_value );
+	    if( idx != string::npos )
+	    {
+		cout << "passed" << std::endl;
+	    }
+	    else
+	    {
+		cout << "failed" << std::endl;
+	    }
+	}
+
 #else
-	std::cout << "failed\n";
+	std::cout << "failed" << "\t" << "a.what() = " << a.what() << std::endl;
 #endif
     }
     catch(...)
@@ -202,11 +256,27 @@ void tensure()
 	std::cout << "passed\n";
 #endif
     }
+}
 
+static void tremember()
+{
+    //lint -e774  do not warn about if tests always evaluating to False.  The
+    //            #if confuses flexelint here.
+
+    std::cout << "t-Remember test: ";
+
+    int x = 0;
+    Remember(x = 5);
 #if DBC & 4
-    if (x != 5) ITFAILS;
+    if (x != 5) 
+	std::cout << "failed" << std::endl;
+    else
+	std::cout << "passed" << std::endl;
 #else
-    if (x != 0) ITFAILS;
+    if (x != 0) 
+	std::cout << "failed" << std::endl;
+    else
+	std::cout << "passed" << std::endl;
 #endif
 }
 
@@ -214,19 +284,34 @@ void tensure()
 // Check the operation of the Assert() macro, which works like Check().
 //---------------------------------------------------------------------------//
 
-void tassert()
+static void tassert()
 {
     std::cout << "t-Assert test: ";
     try {
 	Assert(0);
 	throw "Bogus!";
     }
-    catch( rtt_dsxx::assertion& a )
+    catch( rtt_dsxx::assertion const & a )
     {
 #if DBC & 2
-	std::cout << "passed\n";
+	std::cout << "passed" << std::endl;
+
+	std::cout << "t-Assert message value test: ";
+	{
+	    std::string msg( a.what() );
+	    std::string expected_value( "Assertion: 0, failed in" );
+	    string::size_type idx = msg.find( expected_value );
+	    if( idx != string::npos )
+	    {
+		cout << "passed" << std::endl;
+	    }
+	    else
+	    {
+		cout << "failed" << std::endl;
+	    }
+	}
 #else
-	std::cout << "failed\n";
+	std::cout << "failed" << "\t" << "a.what() = " << a.what() << std::endl;
 #endif
     }
     catch(...)
@@ -243,28 +328,52 @@ void tassert()
 // Basic test of the Insist() macro.
 //---------------------------------------------------------------------------//
 
-void tinsist()
+static void tinsist()
 {
+    //lint -e506  Do not warn about constant value boolean in the Insist
+    //            test. 
+
     std::cout << "t-Insist test: ";
+    std::string insist_message( "You must be kidding!" );
     try {
-	Insist( 0, "You must be kidding!" );
+	Insist( 0, insist_message );
 	throw "Bogus!";
     }
-    catch( rtt_dsxx::assertion& a ) {
-	std::cout << "passed\n";
+    catch( rtt_dsxx::assertion const & a ) 
+    {
+	std::cout << "passed" << std::endl;
+
+	std::cout << "t-Insist message value test: ";
+	{
+	    bool passed( true );
+	    std::string msg( a.what() );
+	    std::string expected_value( "Insist: 0, failed in" );
+	    string::size_type idx( msg.find( expected_value ) );
+	    if( idx == string::npos ) passed=false;
+	    idx = msg.find( insist_message );
+	    if( idx == string::npos ) passed=false;
+	    if( passed )
+		cout << "passed" << std::endl;
+	    else
+		cout << "failed" << std::endl;
+	}
     }
-    catch(...) {
-	std::cout << "failed\n";
+    catch(...) 
+    {
+	std::cout << "failed" << std::endl;
     }
 }
 
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
+int main( int argc, const char *argv[] )
 {
+    //lint -e30 -e85 -e24 -e715 -e818 Suppress warnings about use of argv 
+    //          (string comparison, unknown length, etc.)
+
     // version tag
     for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
+	if( size_t idx=string( argv[arg] ).find( "--version" ) == 0 )
 	{
 	    cout << argv[0] << ": version " << rtt_dsxx::release() 
 		 << endl;
@@ -282,6 +391,7 @@ int main(int argc, char *argv[])
     trequire();
     tcheck();
     tensure();
+    tremember();
     tassert();
     tinsist();
 
