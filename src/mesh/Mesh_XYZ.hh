@@ -110,7 +110,7 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	fcdtf( const Mesh_XYZ *m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncp(), 6 ), mesh( m )
+	      data( m->get_ncells(), 6 ), mesh( m )
 	{}
 
       public:
@@ -120,7 +120,7 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	fcdtf( const dsxx::SP<Mesh_XYZ>& m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncp(), 6 ), mesh( m.bp() )
+	      data( m->get_ncells(), 6 ), mesh( m.bp() )
 	{}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
@@ -238,7 +238,7 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	cctf( const Mesh_XYZ *m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
-            data( m->get_ncp() ), mesh( m )
+            data( m->get_ncells() ), mesh( m )
         {}
 
       public:
@@ -248,7 +248,7 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	cctf( const dsxx::SP<Mesh_XYZ>& m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
-            data( m->get_ncp() ), mesh( m.bp() ) {}
+            data( m->get_ncells() ), mesh( m.bp() ) {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
 
@@ -425,7 +425,7 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	vctf( const Mesh_XYZ *m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncp(), 8 ), mesh( m )
+	      data( m->get_ncells(), 8 ), mesh( m )
 	{}
 
       public:
@@ -435,7 +435,7 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	vctf( const dsxx::SP<Mesh_XYZ>& m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncp(), 8 ), mesh( m.bp() )
+	      data( m->get_ncells(), 8 ), mesh( m.bp() )
 	{}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
@@ -724,8 +724,8 @@ class Mesh_XYZ : private XYZ_Mapper
     int get_ncx() const { return ncx; }
     int get_ncy() const { return ncy; }
     int get_ncz() const { return ncz; }
-    int get_ncp() const { return ncp; }
-    int get_nct() const { return nct; }
+    int get_ncells() const { return ncp; }
+    int get_total_ncells() const { return nct; }
     int get_nczp() const { return nczp; }
     int get_zoff() const { return zoff; }
     int get_goff() const { return goff; }
@@ -805,6 +805,9 @@ class Mesh_XYZ : private XYZ_Mapper
 
     template <class T>
     static T sum( const fcdtf<T>& from );
+
+    template <class T>
+    static T sum( const bstf<T>& from );
 
     class OpAssign {
       public:

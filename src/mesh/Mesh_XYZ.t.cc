@@ -925,6 +925,20 @@ T Mesh_XYZ::sum( const Mesh_XYZ::fcdtf<T>& from )
     return sum;
 }
 
+template <class T>
+T Mesh_XYZ::sum( const Mesh_XYZ::bstf<T>& from )
+{
+    T sum = 0;
+
+    for (Mesh_XYZ::bstf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        sum += *iter;
+
+    C4::gsum<T>(sum);
+
+    return sum;
+}
+
 //---------------------------------------------------------------------------//
 //                              end of Mesh_XYZ.t.cc
 //---------------------------------------------------------------------------//

@@ -314,6 +314,15 @@ int main( int argc, char *argv[] )
     }
 
     {
+        Mesh_XYZ::bssf oneBS( spm );
+        oneBS = 1.;
+        double total;
+        total = Mesh_XYZ::sum(oneBS);
+        if (total < 95.999 || total > 96.001)
+            cout << "Error in global sum" << endl;
+    }
+
+    {
         Mesh_XYZ::fcdvf face_normals( spm );
         face_normals = spm->get_fn();
 
