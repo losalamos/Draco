@@ -9649,25 +9649,32 @@ echo "$as_me: error: 'Could not find package top source directory'" >&2;}
 
 
 
+   # Define some package-level directories
+   header_dir=${package_top_srcdir}/autodoc/html
+   autodoc_dir=${doxygen_input}/autodoc
+
+   # For a component, the doxygen input is the srcdir and the examples
+   # are in the tests
    doxygen_input=`cd ${srcdir}; pwd`
    doxygen_examples=${doxygen_input}/test
-   package_html=${doxygen_output_top}/html
 
+   # Get the default output location
       if test ${doxygen_output_top} = DEFAULT; then
        doxygen_output_top="${prefix}/documentation"
 
    fi
 
 
+   # Set the package-level html output location
+   package_html=${doxygen_output_top}/html
 
-   # For a component, the doxygen input is the srcdir
-
+   # The local dir is different from the current dir.
    localdir=`pwd`/autodoc
 
+   # Set the component output locations.
    doxygen_html_output="${doxygen_output_top}/html/${package}"
    doxygen_latex_output="${doxygen_output_top}/latex/${package}"
 
-   #
    # compute relative paths from localdir
    for _lcl_i in \
       localdir:doxygen_examples:rel_doxygen_examples \
@@ -9769,7 +9776,8 @@ done
    # add autodoc directory under the source to doxygen input
    rel_doxygen_input="$rel_doxygen_input $rel_doxygen_input/autodoc"
 
-   # Get tags for other components in this package
+   # Get tags for other components in this package which this
+   # component depends on
 
    components=''
    echo "$as_me:$LINENO: checking for Doxygen component dependencies" >&5
@@ -9789,9 +9797,6 @@ echo "${ECHO_T}${components}" >&6
 
    # XXX We will need to expand this to handle tag files in other
    # packages too.
-
-   header_dir=${package_top_srcdir}/autodoc/html
-   autodoc_dir=${doxygen_input}/autodoc
 
    # find the release number
    number=draco-4_3_0

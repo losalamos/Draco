@@ -3029,54 +3029,20 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
        mpich)
 	   # define mpi libs for mpich on linux
 	   mpi_libs='-lmpich'
-           AC_MSG_CHECKING("for mpirun in \$PATH")
-           which_mpirun=`which mpirun`
-           if test -z "`which mpirun | grep -i lampi`"; then
-              AC_MSG_RESULT("found ${which_mpirun}")
-           else
-              AC_MSG_ERROR("found LAMPI mpirun instead of mpich mpirun at ${which_mpirun}")
-           fi
            ;;
-       lampi | LAMPI)
+       lampi | LAMPI | LA-MPI)
            with_mpi='LAMPI'
 	   # define mpi libs for LAMPI on linux
 	   mpi_libs='-lmpi'
-           AC_MSG_CHECKING("for mpirun in \$PATH")
-           which_mpirun=`which mpirun`
-           if test -z "`which mpirun | grep -i lampi`"; then
-              AC_MSG_ERROR("found mpich mpirun instead of LAMPI mpirun at ${which_mpirun}")
+           AC_MSG_CHECKING("mpirun -version")
+           mpi_version=`mpirun -version`
+           if test -n "`echo ${mpi_version} | grep -i LA-MPI`"; then
+              AC_MSG_RESULT(${mpi_version})
            else
-              AC_MSG_RESULT("found ${which_mpirun}")
+              AC_MSG_ERROR("Did not find LA-MPI version of mpirun.")
            fi
            ;;
        esac 
-
-       if test "${with_mpi}" = mpich ||
-          test "${with_mpi}" = LAMPI ; then
-
-           # if /usr/local/$with_mpi/lib exists use it by default;
-           # this is set as the default for the CCS-2/4 network;
-           # it may not be appropriate on other LINUX networks;
-           # in those cases, override with --with-mpi-lib
-           AC_MSG_CHECKING("for MPI library path")
-           if test -z "${MPI_LIB}" && test -d "/usr/local/${with_mpi}/lib"; then
-               MPI_LIB=/usr/local/${with_mpi}/lib
-           fi
-           AC_MSG_RESULT(${MPI_LIB})
-
-	   # set the default include location on LINUX to
-	   # /usr/local/${with_mpi}/include; this is specific to the
-	   # CCS-2/4 LINUX network; to override on other systems use
-	   # --with-mpi-inc on the configure line
-
-	   # if MPI_INC is undefined then define it
-           AC_MSG_CHECKING("for MPI include path")
-	   if test -z "${MPI_INC}" && 
-              test -d "/usr/local/${with_mpi}/include"; then
-	       MPI_INC=/usr/local/${with_mpi}/include
-	   fi
-           AC_MSG_RESULT(${MPI_INC})
-       fi
 ])
 
 
@@ -4200,21 +4166,28 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DRACO_AUTODOC], [dnl
 
+   # Define some package-level directories
+   header_dir=${package_top_srcdir}/autodoc/html
+   autodoc_dir=${doxygen_input}/autodoc
+
+   # For a component, the doxygen input is the srcdir and the examples
+   # are in the tests
    doxygen_input=`cd ${srcdir}; pwd`
    doxygen_examples=${doxygen_input}/test
-   package_html=${doxygen_output_top}/html
 
+   # Get the default output location
    AC_SET_DEFAULT_OUTPUT
 
+   # Set the package-level html output location
+   package_html=${doxygen_output_top}/html
 
-   # For a component, the doxygen input is the srcdir
-
+   # The local dir is different from the current dir.
    localdir=`pwd`/autodoc
 
+   # Set the component output locations.
    doxygen_html_output="${doxygen_output_top}/html/${package}"
    doxygen_latex_output="${doxygen_output_top}/latex/${package}"
 
-   #
    # compute relative paths from localdir
    adl_COMPUTE_RELATIVE_PATHS([\
       localdir:doxygen_examples:rel_doxygen_examples \
@@ -4225,14 +4198,12 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    # add autodoc directory under the source to doxygen input
    rel_doxygen_input="$rel_doxygen_input $rel_doxygen_input/autodoc"
 
-   # Get tags for other components in this package
+   # Get tags for other components in this package which this
+   # component depends on
    AC_AUTODOC_COMPONENT_TAGS
 
    # XXX We will need to expand this to handle tag files in other
    # packages too.
-
-   header_dir=${package_top_srcdir}/autodoc/html
-   autodoc_dir=${doxygen_input}/autodoc
 
    # find the release number
    number=$1
@@ -4281,7 +4252,6 @@ AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
    #   doxygen_input="${srcdir}/../config/doc ${srcdir} ${doxygen_input}"
 
    doxygen_input=`pwd`
-   doxygen_test=''
 
    localdir=`pwd`
 
@@ -4334,7 +4304,9 @@ AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
    AC_SUBST(autodoc_dir)
 
    AC_SUBST(rel_doxygen_input)
+   AC_SUBST(rel_doxygen_examples, '')
    AC_SUBST(doxygen_html_output)
+   AC_SUBST(doxygen_latex_output)
 
    AC_SUBST(PACKAGE_LINKS)
    AC_SUBST(COMP_LINKS)

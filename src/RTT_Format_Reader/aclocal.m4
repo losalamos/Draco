@@ -4166,21 +4166,28 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DRACO_AUTODOC], [dnl
 
+   # Define some package-level directories
+   header_dir=${package_top_srcdir}/autodoc/html
+   autodoc_dir=${doxygen_input}/autodoc
+
+   # For a component, the doxygen input is the srcdir and the examples
+   # are in the tests
    doxygen_input=`cd ${srcdir}; pwd`
    doxygen_examples=${doxygen_input}/test
-   package_html=${doxygen_output_top}/html
 
+   # Get the default output location
    AC_SET_DEFAULT_OUTPUT
 
+   # Set the package-level html output location
+   package_html=${doxygen_output_top}/html
 
-   # For a component, the doxygen input is the srcdir
-
+   # The local dir is different from the current dir.
    localdir=`pwd`/autodoc
 
+   # Set the component output locations.
    doxygen_html_output="${doxygen_output_top}/html/${package}"
    doxygen_latex_output="${doxygen_output_top}/latex/${package}"
 
-   #
    # compute relative paths from localdir
    adl_COMPUTE_RELATIVE_PATHS([\
       localdir:doxygen_examples:rel_doxygen_examples \
@@ -4191,14 +4198,12 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    # add autodoc directory under the source to doxygen input
    rel_doxygen_input="$rel_doxygen_input $rel_doxygen_input/autodoc"
 
-   # Get tags for other components in this package
+   # Get tags for other components in this package which this
+   # component depends on
    AC_AUTODOC_COMPONENT_TAGS
 
    # XXX We will need to expand this to handle tag files in other
    # packages too.
-
-   header_dir=${package_top_srcdir}/autodoc/html
-   autodoc_dir=${doxygen_input}/autodoc
 
    # find the release number
    number=$1
@@ -4247,7 +4252,6 @@ AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
    #   doxygen_input="${srcdir}/../config/doc ${srcdir} ${doxygen_input}"
 
    doxygen_input=`pwd`
-   doxygen_test=''
 
    localdir=`pwd`
 
@@ -4300,7 +4304,9 @@ AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
    AC_SUBST(autodoc_dir)
 
    AC_SUBST(rel_doxygen_input)
+   AC_SUBST(rel_doxygen_examples, '')
    AC_SUBST(doxygen_html_output)
+   AC_SUBST(doxygen_latex_output)
 
    AC_SUBST(PACKAGE_LINKS)
    AC_SUBST(COMP_LINKS)
