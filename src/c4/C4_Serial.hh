@@ -3,7 +3,7 @@
  * \file   c4/C4_Serial.hh
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:06:25 2002
- * \brief  
+ * \brief  Serial implementation of C4.
  */
 //---------------------------------------------------------------------------//
 // $Id$

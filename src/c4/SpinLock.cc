@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "SpinLock.hh"
-#include "C4_Functions.hh"
+#include "global.hh"
 
 namespace rtt_c4
 {
