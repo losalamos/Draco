@@ -39,7 +39,7 @@ install: installdirs ${installfiles}
 installdirs: ${installdirs}
 
 ${installdirs}:
-	mkdir $@
+	${INSTALL} -d $@
 
 uninstall:
 	-rm ${installfiles}
