@@ -84,8 +84,8 @@ void Input_edit::read_edit_data()
 Input_edit::~Input_edit()
 {
     delete [] hi_p;
-    delete [] hi_p;
-    delete [] hi_p;
+    delete [] hj_p;
+    delete [] hk_p;
 }
 
 //---------------------------------------------------------------------------//

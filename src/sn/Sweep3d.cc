@@ -24,8 +24,6 @@ void Sweep3d::do_sweep( Input_edit &data, Cross_section &xsec, Sn_constants &sn,
     Array2D bsavv(data.kt(),data.jbdim());    // storage of vertical boundaries
     Array3D bsavz(data.jt(),data.kbdim(),2);  // storage of in-out   boundaries
 
-    edge_and_boundary_init( data, fh_i, fv_i, fz_i, bsavv, bsavz );
-
     //**************************************************************************
     // Begin the loop over quadrant pairs, where k1 is a loop over tsi, ih is a
     // loop over eta, and mu is reversed within each ordered (thus creating a
@@ -129,25 +127,6 @@ void Sweep3d::do_sweep( Input_edit &data, Cross_section &xsec, Sn_constants &sn,
     delete [] phik;
 
     return;
-}
-
-void Sweep3d::edge_and_boundary_init( Input_edit &data, Array3D &fh_i,
-                                      Array3D &fv_i,    Array3D &fz_i,
-                                      Array2D &bsavv,   Array3D &bsavz )
-{
-    // Initialize arrays. bsavv and bsavz hold the edge fluxes for reflective
-    // boundary conditions. bsavv is 2D because the 2nd pair of octants uses
-    // phij data from the 1st, and the 4th pair uses data from the 3rd, which
-    // is saved over the 1st. bsavz is 3D because it depends on phik data from
-    // the 1st pair while doing a 3rd pair calc, and from the 2nd pair during a
-    // 4th pair calc, thus overwriting is not possible.
-
-    if ( data.ibb() == 1 )  bsavv.Array2D_reinit( 0.0 );
-    if ( data.ibfr() == 1 ) bsavz.Array3D_reinit( 0.0 );
-
-    fh_i.Array3D_reinit( 0.0 );
-    fv_i.Array3D_reinit( 0.0 );
-    fz_i.Array3D_reinit( 0.0 );
 }
 
 void Sweep3d::octant_ordering( Input_edit &data )

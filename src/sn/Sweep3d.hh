@@ -31,10 +31,6 @@ class Sweep3d
                        Pre_calcs &pre,   REAL *lkgs_l,        Array4D &src_mom,
                        Array4D &flux                                          );
 
-        void edge_and_boundary_init( Input_edit &data, Array3D &fh_i,
-                                     Array3D &fv_i,    Array3D &fz_i,
-                                     Array2D &bsavv,   Array3D &bsavz );
-
         void octant_ordering( Input_edit &data );
 
         void build_angular_source( Input_edit &data, Sn_constants &sn,

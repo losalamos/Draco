@@ -43,9 +43,9 @@ class Array2D
         {
             addr = new REAL [ i1 * i2 ];
 
-            for ( int i=0 ; i < i1 ; i++ )
-                for ( int j=0 ; j < i2 ; j++ )
-                    addr[ i*i2 + j ] = 0.0;
+            for ( int i=0 ; i < i2 ; i++ )
+                for ( int j=0 ; j < i1 ; j++ )
+                    addr[ i*i1 + j ] = 0.0;
         }
 
         // define a destructor
@@ -59,9 +59,9 @@ class Array2D
 
         void Array2D_reinit( const REAL init_value )
         {
-            for ( int i=0 ; i < i1_pv ; i++ )
-                for ( int j=0 ; j < i2_pv ; j++ )
-                    addr[ i*i2_pv + j ] = init_value;
+            for ( int i=0 ; i < i2_pv ; i++ )
+                for ( int j=0 ; j < i1_pv ; j++ )
+                    addr[ i*i1_pv + j ] = init_value;
         }
 
         // overload () so that Fortran array style can be used (non-const)
@@ -106,10 +106,10 @@ class Array3D
         {
             addr = new REAL [ i1 * i2 * i3 ];
 
-            for ( int i=0 ; i < i1 ; i++ )
-                for ( int j=0 ; j < i2 ; j++ )
-                    for ( int k=0 ; k < i3 ; k++ )
-                        addr[ i*i2*i3 + j*i3 + k ] = 0.0;
+            for ( int i=0 ; i < i3 ; i++ )
+                for ( int k=0 ; k < i2 ; k++ )
+                    for ( int j=0 ; j < i1 ; j++ )
+                        addr[ i*i1*i2 + k*i1 + j ] = 0.0;
         }
 
         // define a destructor
@@ -123,10 +123,10 @@ class Array3D
 
         void Array3D_reinit( const REAL init_value )
         {
-            for ( int i=0 ; i < i1_pv ; i++ )
-                for ( int j=0 ; j < i2_pv ; j++ )
-                    for ( int k=0 ; k < i3_pv ; k++ )
-                        addr[ i*i2_pv*i3_pv + j*i3_pv + k ] = init_value;
+            for ( int i=0 ; i < i3_pv ; i++ )
+                for ( int k=0 ; k < i2_pv ; k++ )
+                    for ( int j=0 ; j < i1_pv ; j++ )
+                        addr[ i*i1_pv*i2_pv + k*i1_pv + j ] = init_value;
         }
 
         // overload () so that Fortran array style can be used (non-const)
@@ -172,11 +172,11 @@ class Array4D
         {
           addr = new REAL [ i1 * i2 * i3 * i4 ];
 
-          for ( int i=0 ; i < i1 ; i++ )
-              for ( int j=0 ; j < i2 ; j++ )
-                  for ( int k=0 ; k < i3 ; k++ )
-                      for ( int l=0 ; l < i4 ; l++ )
-                          addr[ i*i2*i3*i4 + j*i3*i4 + k*i4 + l ] = 0.0;
+          for ( int l=0 ; l < i4 ; l++ )
+              for ( int i=0 ; i < i3 ; i++ )
+                  for ( int k=0 ; k < i2 ; k++ )
+                      for ( int j=0 ; j < i1 ; j++ )
+                          addr[ l*i1*i2*i3 + i*i1*i2 + k*i1 + j ] = 0.0;
         }
 
         // define a destructor
@@ -190,13 +190,13 @@ class Array4D
 
         void Array4D_reinit( const REAL init_value )
         {
-          for ( int i=0 ; i < i1_pv ; i++ )
-              for ( int j=0 ; j < i2_pv ; j++ )
-                  for ( int k=0 ; k < i3_pv ; k++ )
-                      for ( int l=0 ; l < i4_pv ; l++ )
-                          addr[ i*i2_pv*i3_pv*i4_pv +
-                                      j*i3_pv*i4_pv +
-                                            k*i4_pv + l ] = init_value;
+          for ( int l=0 ; l < i4_pv ; l++ )
+              for ( int i=0 ; i < i3_pv ; i++ )
+                  for ( int k=0 ; k < i2_pv ; k++ )
+                      for ( int j=0 ; j < i1_pv ; j++ )
+                          addr[ l*i1_pv*i2_pv*i3_pv +
+                                      i*i1_pv*i2_pv +
+                                            k*i1_pv + j ] = init_value;
         }
 
         // overload () so that Fortran array style can be used (non-const)

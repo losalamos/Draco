@@ -18,8 +18,6 @@ void Inner_iter::do_inner_iter( Input_edit &data )
       
     Array4D flux(data.jt(),data.kt(),data.it(),data.nm());
 
-    flux.Array4D_reinit( 0.0 );
-
     int its = 0;
 
     // begin cpu and wallclock timing
