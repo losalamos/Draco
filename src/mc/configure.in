@@ -26,9 +26,10 @@ AC_NEEDS_LIBS_TEST(RTT_Format_Reader)
 
 dnl runtesting
 AC_RUNTESTS(tstMath tstCoord tstLayout tstOSMesh tstFields \
-            tstTopology tstParallel_Data_Op tstTET_Mesh \
-            tstSampler tstRZWedge_Mesh tstComm_Patterns \
-            tstOSMesh_Pack tstRZWedge_Mesh_Pack, 1 2 4)
+            tstTopology tstParallel_Data_Op tstTET_Mesh    \
+            tstSampler tstRZWedge_Mesh tstComm_Patterns    \
+            tstOSMesh_Pack tstRZWedge_Mesh_Pack            \
+            tstParticle_Buffer, 1 2 4)
 
 dnl DRACO SETUP
 AC_DRACO_ENV

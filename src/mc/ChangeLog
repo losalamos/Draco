@@ -1,6 +1,15 @@
+2002-01-03  Thomas M. Evans  <tme@lanl.gov>
+
+	* Particle_Buffer, Particle_IO, Particle_Stack: moved
+	Particle_Buffer class to mc from imc package.  Redesigned the
+	class substantially.  Broke off the Particle_Stack and IO
+	functions into their own classes.  Redesigned Particle_Buffer into
+	a base class with 2 derived classes: Recv_Particle_Buffer and
+	Send_Particle_Buffer.
+
 2001-12-19  Todd J. Urbatsch  <tmonster@lanl.gov>
 
-	* mc: added functions sample_bin_from_discrete_cdf and
+	* Sampler.hh: added functions sample_bin_from_discrete_cdf and
 	is_this_cdf_valid, where cdf is a discrete (histogram) cumulative
 	distribution function.
 

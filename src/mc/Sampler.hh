@@ -156,7 +156,6 @@ template<class Ran>
 inline double sample_planckian_frequency(Ran ran, const double k_temperature)
 {
     using namespace std;
-    using rtt_mc::global::soft_equiv;
 
     // check that temp is nonnegative
     Require (k_temperature >= 0.0);
