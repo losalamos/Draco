@@ -400,10 +400,6 @@ void Parallel_Source_Init<MT,PT>::comb_census(const MT &mesh,
 
 	eloss_cen += ecencheck;
 	ecencheck  = 0.0;
-	
-	// make a temporary census to put ew-adjusted particles into
-	SP<Particle_Buffer<PT>::Census> adjusted_census
-	    (new Particle_Buffer<PT>::Census());
 
 	while (comb_census->size() > 0)
 	{
@@ -411,12 +407,11 @@ void Parallel_Source_Init<MT,PT>::comb_census(const MT &mesh,
 	    comb_census->pop();
 	    cencell = particle->get_cell();	
 	    particle->set_ew(ew_cen(cencell));
-	    adjusted_census->push(particle);	  
+	    census->push(particle);	  
 	    ecencheck += ew_cen(cencell);
 	    eloss_cen -= ew_cen(cencell);
 	}
 	
-	census = adjusted_census;
 	Check (census->size() == ncentot);
 	Check (comb_census->size() == 0);
     }

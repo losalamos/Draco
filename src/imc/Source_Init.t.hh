@@ -47,7 +47,7 @@ Source_Init<MT,PT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     Require (interface);
     Require (mesh);
 
-  // get values from interface
+    // get values from interface
     evol_ext   = interface->get_evol_ext();
     rad_source = interface->get_rad_source();
     rad_s_tend = interface->get_rad_s_tend();
@@ -61,14 +61,14 @@ Source_Init<MT,PT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     capacity   = interface->get_capacity();
     ss_dist    = interface->get_ss_dist();
     
-  // do some assertions to check that all is well
+    // do some assertions to check that all is well
     int num_cells = mesh->num_cells();
     Check (evol_ext.size()   == num_cells);
     Check (rad_source.size() == num_cells);
     Check (rad_temp.size()   == num_cells);
     Check (ss_pos.size()     == ss_temp.size());
 
-  // temporary assertions
+    // temporary assertions
     Check (evol.get_Mesh()     == *mesh);
     Check (ess.get_Mesh()      == *mesh);
     Check (fss.get_Mesh()      == *mesh);
@@ -92,33 +92,33 @@ void Source_Init<MT,PT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity,
 				    SP<Mat_State<MT> > state, 
 				    SP<Rnd_Control> rcontrol, int cycle)
 {
-  // check to make sure objects exist
+    // check to make sure objects exist
     Require (mesh);
     Require (opacity);
     Require (state);
     Require (rcontrol);
 
-  // calculate number of particles this cycle
+    // calculate number of particles this cycle
     npwant = min(npmax, static_cast<int>(npnom + dnpdt*(cycle-1)*delta_t));
     Check (npwant != 0);
 
-  // on first pass do initial census, on all cycles calc source energies 
+    // on first pass do initial census, on all cycles calc source energies 
     if (cycle == 1)
 	calc_initial_census(*mesh, *opacity, *state, *rcontrol, cycle);
     else
 	calc_source_energies(*opacity, *state, cycle);
     
-  // calculate source numbers
+    // calculate source numbers
     calc_source_numbers(*opacity, cycle);
 
-  // comb the census
+    // comb the census
     if (census->size() > 0)
 	comb_census(*mesh, *rcontrol); 
 
-  // calculate the slopes of T_electron^4
+    // calculate the slopes of T_electron^4
     calc_t4_slope(*mesh, *state);
 
-  // make sure a Census has been created
+    // make sure a Census has been created
     Ensure (census);
     Ensure (ncentot == census->size());
 }
@@ -134,22 +134,22 @@ void Source_Init<MT,PT>::calc_initial_census(const MT &mesh,
 					     Rnd_Control &rcontrol, 
 					     int cycle)
 {
-  // calculate and write the initial census source
+    // calculate and write the initial census source
     Require (!census);
 
-  // make the Census 
+    // make the Census 
     census = new Particle_Buffer<PT>::Census();
 
-  // calc volume emission and surface source energies
+    // calc volume emission and surface source energies
     calc_source_energies(opacity, state, cycle);
     
-  // calc radiation energy for census
+    // calc radiation energy for census
     calc_ecen();
 
-  // calc initial number of census particles
+    // calc initial number of census particles
     calc_ncen_init();
 
-  // write out the initial census
+    // write out the initial census
     if (ncentot > 0)
 	write_initial_census(mesh, rcontrol);  
 }
@@ -161,10 +161,10 @@ void Source_Init<MT,PT>::calc_source_energies(const Opacity<MT> &opacity,
 					      const Mat_State<MT> &state,
 					      int cycle)
 {
-  // calc volume emission energy per cell, total
+    // calc volume emission energy per cell, total
     calc_evol(opacity, state, cycle);
 
-  // calc surface source energy per cell, total
+    // calc surface source energy per cell, total
     calc_ess();
 }
 
@@ -174,11 +174,11 @@ template<class MT, class PT>
 void Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity, 
 					     const int cycle)
 {
-  // iterate on number of census, surface source, and volume emission
-  // particles so that all particles have nearly the same ew (i.e., 
-  // variance reduction, in its most basic form).  The actual census
-  // particles will be combed to give the number and weight determined
-  // here.
+    // iterate on number of census, surface source, and volume emission
+    // particles so that all particles have nearly the same ew (i.e., 
+    // variance reduction, in its most basic form).  The actual census
+    // particles will be combed to give the number and weight determined
+    // here.
 
     Insist ((evoltot+esstot+ecentot) != 0, "You must specify some source!");
 
@@ -191,7 +191,7 @@ void Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity,
     double d_nvol;
     double d_nss;
     int    numtot;
-  // check size of existing census list
+    // check size of existing census list
     int    censize = census->size();
 
     while (retry)
@@ -205,13 +205,13 @@ void Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity,
 	part_per_e = nptryfor / (evoltot+esstot+ecentot);
 	for (int cell = 1; cell <= nvol.get_Mesh().num_cells(); cell++)
 	{
-	  // census
+	    // census
 	    if (ecen(cell) > 0.0  &&  censize > 0)
 	    {
 		d_ncen = ecen(cell) * part_per_e;
-	      // * bias(cell)
+		// * bias(cell)
 		ncen(cell) = static_cast<int>(d_ncen + 0.5);
-	      // try our darnedest to get at least one particle
+		// try our darnedest to get at least one particle
 		if (ncen(cell) == 0) 
 		    ncen(cell) = static_cast<int>(d_ncen + 0.9999);
 		numtot += ncen(cell);
@@ -219,13 +219,13 @@ void Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity,
 	    else
 		ncen(cell) = 0;
 
-	  // volume emission
+	    // volume emission
 	    if (evol(cell) > 0)
 	    {
 		d_nvol = evol(cell) * part_per_e;
-	      // * bias(cell)
+		// * bias(cell)
 		nvol(cell) = static_cast<int>(d_nvol + 0.5);
-	      // try our darnedest to get at least one particle
+		// try our darnedest to get at least one particle
 		if (nvol(cell) == 0) 
 		    nvol(cell) = static_cast<int>(d_nvol + 0.9999);
 		numtot += nvol(cell);
@@ -233,13 +233,13 @@ void Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity,
 	    else
 		nvol(cell) = 0;
 
-	  // surface source
+	    // surface source
 	    if (ess(cell) > 0)
 	    {
 		d_nss = ess(cell) * part_per_e;
-	      // * bias(cell)
+		// * bias(cell)
 		nss(cell) = static_cast<int>(d_nss + 0.5);
-	      // try our darnedest to get at least one particle
+		// try our darnedest to get at least one particle
 		if (nss(cell) == 0) 
 		    nss(cell) = static_cast<int>(d_nss + 0.9999);
 		numtot += nss(cell);
@@ -254,7 +254,7 @@ void Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity,
 	    retry = false;
     }
 
-  // with numbers per cell calculated, calculate ew and eloss
+    // with numbers per cell calculated, calculate ew and eloss
     ncentot = 0;
     nvoltot = 0;
     nsstot  = 0;
@@ -264,7 +264,7 @@ void Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity,
 
     for (int cell = 1; cell <= nvol.get_Mesh().num_cells(); cell++)
     {
-      // census
+	// census
 	if (ncen(cell) > 0)
 	{
 	    ew_cen(cell) = ecen(cell) / ncen(cell);
@@ -275,7 +275,7 @@ void Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity,
 
 	eloss_cen += ecen(cell) - ncen(cell) * ew_cen(cell);
 
-      // volume emission (evol is adjusted for accurate temperature update)
+	// volume emission (evol is adjusted for accurate temperature update)
 	if (nvol(cell) > 0)
 	{
 	    ew_vol(cell) = evol(cell) / nvol(cell);
@@ -289,7 +289,7 @@ void Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity,
 	if (nvol(cell) == 0)
 	    evol_net(cell) = 0.0;
 
-      // surface source 
+	// surface source 
 	if (nss(cell) > 0)
 	{
 	    ew_ss(cell) = ess(cell) / nss(cell);
@@ -431,17 +431,17 @@ void Source_Init<MT,PT>::calc_ecen()
 template<class MT, class PT>
 void Source_Init<MT,PT>::calc_ncen_init()
 {
-  // first guess at census particles per cell
+    // first guess at census particles per cell
     Insist ((evoltot+esstot+ecentot) != 0, "You must specify some source!");
 
     int ncenwant = static_cast<int>((ecentot) / (evoltot + esstot + ecentot) 
-	* npwant);
+				    * npwant);
 
-  // particles per unit energy
+    // particles per unit energy
     double part_per_e;
 
-  // attempt to make all census particles have the same energy weight,
-  // iterate on number of initial census particles
+    // attempt to make all census particles have the same energy weight,
+    // iterate on number of initial census particles
     bool   retry = true;
     int    ntry = 0;
     int    ncenguess = ncenwant;
@@ -449,7 +449,7 @@ void Source_Init<MT,PT>::calc_ncen_init()
 
     while (retry)
     {
-      // calculate census particles per cell
+	// calculate census particles per cell
 	ntry++;
 	ncentot   =   0;
 	eloss_cen = 0.0;
@@ -466,7 +466,7 @@ void Source_Init<MT,PT>::calc_ncen_init()
 	    {
 		double d_ncen = ecen(cell) * part_per_e + 0.5;
 		ncen(cell) = static_cast<int>(d_ncen);
-	      // try our darnedest to get at least one particle
+		// try our darnedest to get at least one particle
 		if (ncen(cell) == 0)
 		    ncen(cell) = static_cast<int>(d_ncen + 0.9999);
 	    }
@@ -484,7 +484,7 @@ void Source_Init<MT,PT>::calc_ncen_init()
 	    eloss_cen += ecen(cell) - ew * ncen(cell);
 	}
 
-      // check to see we haven't exceeded total particles for this cycle
+	// check to see we haven't exceeded total particles for this cycle
 	if (ncentot > ncenwant  &&  ntry < 100  &&  ncenguess > 1)
 	    ncenguess -= (ncentot - ncenwant);
 	else
@@ -499,39 +499,39 @@ template<class MT, class PT>
 void Source_Init<MT,PT>::write_initial_census(const MT &mesh, 
 					      Rnd_Control &rcon) 
 {
-  // we should not have made any Random numbers yet
+    // we should not have made any Random numbers yet
     Require (rtt_rng::rn_stream == 0);
 
-  // loop over cells
+    // loop over cells
     for (int cell = 1; cell <= mesh.num_cells(); cell++)
 	for (int i = 1; i <= ncen(cell); i++)
 	{
-	  // make a new random number for delivery to Particle
+	    // make a new random number for delivery to Particle
 	    Sprng random = rcon.get_rn();
 	    
-	  // sample particle location
+	    // sample particle location
 	    vector<double> r = mesh.sample_pos(cell, random);
 
-	  // sample particle direction
+	    // sample particle direction
 	    vector<double> omega = mesh.get_Coord().
 		sample_dir("isotropic", random);
 	    
-	  // sample frequency (not now, 1 group)
+	    // sample frequency (not now, 1 group)
 
-	  // calculate energy weight
+	    // calculate energy weight
 	    double ew = ecen(cell) / ncen(cell);
 
-	  // create Particle
+	    // create Particle
 	    SP<PT> particle(new PT(r, omega, ew, cell, random));
 
-	  // write particle to census
+	    // write particle to census
 	    census->push(particle);
 	}
 
-  // update the rn_stream constant
+    // update the rn_stream constant
     rtt_rng::rn_stream = rcon.get_num();
 
-  // a final assertion
+    // a final assertion
     Ensure (rtt_rng::rn_stream == ncentot);
     Ensure (census->size() == ncentot);
 }
@@ -543,16 +543,16 @@ void Source_Init<MT,PT>::write_initial_census(const MT &mesh,
 template<class MT, class PT>
 void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon) 
 {
-  // make double sure we have census particles to comb
+    // make double sure we have census particles to comb
     Require (census->size() > 0);
 
-  // obtain a random number stream for the comb
+    // obtain a random number stream for the comb
     Sprng random = rcon.get_rn();
 
-  // update the rn_stream constant
+    // update the rn_stream constant
     rtt_rng::rn_stream = rcon.get_num();
 
-  // declare and initialize the comb in each cell
+    // declare and initialize the comb in each cell
     vector<double> comb(mesh.num_cells());
     for (int cell = 1; cell <= mesh.num_cells(); cell++)
     {
@@ -560,12 +560,12 @@ void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon)
 	comb[cell-1] = max(0.0001, min(0.9999, comb[cell-1]));
     }
 
-  // initialize number of (new, combed) census particles per cell
+    // initialize number of (new, combed) census particles per cell
     ncentot = 0;
     for (int cell = 1; cell <= mesh.num_cells(); cell++)
 	ncen(cell) = 0;
 
-  // read census particle and comb it
+    // read census particle and comb it
     double dbl_cen_part;
     double prev_comb;
     int    numcomb;
@@ -573,13 +573,13 @@ void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon)
     int    cencell;
     double cenew;
 
-  // make new census bank to hold combed census particles
+    // make new census bank to hold combed census particles
     SP<Particle_Buffer<PT>::Census> 
 	comb_census(new	Particle_Buffer<PT>::Census());
 
     while (census->size())
     {
-      // read census particle and get cencell, ew
+	// read census particle and get cencell, ew
 	SP<PT> particle = census->top();
 	census->pop();
 	cencell = particle->get_cell();
@@ -594,7 +594,7 @@ void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon)
 		(dbl_cen_part + (prev_comb - static_cast<int>(prev_comb)));
 	    ecencheck += numcomb * ew_cen(cencell);
 
-	  // create newly combed census particles
+	    // create newly combed census particles
 	    if (numcomb > 0)
 	    {
 		particle->set_ew(ew_cen(cencell));
@@ -603,14 +603,14 @@ void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon)
 		if (numcomb > 1)
 		    for (int nc = 1; nc <= numcomb-1; nc++)
 		    {
-		      // COPY a new particle and spawn a new RN state
+			// COPY a new particle and spawn a new RN state
 			SP<PT> another(new PT(*particle));
 			Sprng nran = rcon.spawn(particle->get_random());
 			another->set_random(nran);
 			comb_census->push(another);
 		    }
 		   
-	      // add up newly combed census particles
+		// add up newly combed census particles
 		ncen(cencell) += numcomb;
 		ncentot       += numcomb;
 	    }
@@ -620,11 +620,12 @@ void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon)
     Check (census->size() == 0);
     Check (comb_census->size() == ncentot);
 
-  // assign the newly combed census to census
+    // assign the newly combed census to census
     census = comb_census;
 
     Require (fabs(ecencheck + eloss_cen - ecentot) <= 1.0e-6 * ecentot);
 }
+
 //---------------------------------------------------------------------------//
 // comb the census -- different way, numcomb depends on particle's own
 // random number (thus, it is not order dependent).  perform a post-comb ew
@@ -633,10 +634,10 @@ void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon)
 template<class MT, class PT>
 void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon) 
 {
-  // make double sure we have census particles to comb
+    // make double sure we have census particles to comb
     Require (census->size() > 0);
 
-  // initialize number of (new, combed) census particles per cell
+    // initialize number of (new, combed) census particles per cell
     ncentot = 0;
     for (int cell = 1; cell <= mesh.num_cells(); cell++)
 	ncen(cell) = 0;
@@ -647,17 +648,17 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
     int    cencell = 0;
     double cenew = 0.0;
 
-  // add total existing census energy to eloss_cen, then take away as 
-  // new census particles are combed.
+    // add total existing census energy to eloss_cen, then take away as 
+    // new census particles are combed.
     eloss_cen += (ecentot - eloss_cen);
 
-  // make new census bank to hold combed census particles
+    // make new census bank to hold combed census particles
     SP<Particle_Buffer<PT>::Census> 
 	comb_census(new Particle_Buffer<PT>::Census());
 
     while (census->size())
     {
-      // read census particle and get cencell, ew
+	// read census particle and get cencell, ew
 	SP<PT> particle = census->top();
 	census->pop();
 	cencell = particle->get_cell();
@@ -669,7 +670,7 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
 	    dbl_cen_part = (cenew / ew_cen(cencell)) + random.ran();
 	    numcomb = static_cast<int>(dbl_cen_part);
 
-	  // create newly combed census particles
+	    // create newly combed census particles
 	    if (numcomb > 0)
 	    {
 		particle->set_ew(ew_cen(cencell));
@@ -678,33 +679,33 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
 		if (numcomb > 1)
 		    for (int nc = 1; nc <= numcomb-1; nc++)
 		    {
-		      // COPY a new particle and spawn a new RN state
+			// COPY a new particle and spawn a new RN state
 			SP<PT> another(new PT(*particle));
 			Sprng nran = rcon.spawn(particle->get_random());
 			another->set_random(nran);
 			comb_census->push(another);
 		    }
 		   
-	      // add up newly combed census particles
+		// add up newly combed census particles
 		ncen(cencell) += numcomb;
 		ncentot       += numcomb;
 
-	      // subtract newly combed particles from eloss_cen
+		// subtract newly combed particles from eloss_cen
 		eloss_cen -= numcomb * ew_cen(cencell);
 		ecencheck += numcomb * ew_cen(cencell);
 	    }
 	}
     }
 
-  // Combing is a variance reduction technique. 
-  // 
-  // If there is imminent loss of census energy (unsampled), we must settle 
-  // for the statistical conservation of energy (to adjust the ew's with 
-  // imminent loss would bias the energy).  Unfortunately, energy loss
-  // propagates.  If there is no imminent loss, we may adjust the ew's for 
-  // exact conservation of energy and some degradation of variance reduction.
-  // The check for imminent loss may be loosened by checking on some minimal
-  // energy loss instead any nonzero loss.
+    // Combing is a variance reduction technique. 
+    // 
+    // If there is imminent loss of census energy (unsampled), we must settle 
+    // for the statistical conservation of energy (to adjust the ew's with 
+    // imminent loss would bias the energy).  Unfortunately, energy loss
+    // propagates.  If there is no imminent loss, we may adjust the ew's for 
+    // exact conservation of energy and some degradation of variance reduction.
+    // The check for imminent loss may be loosened by checking on some minimal
+    // energy loss instead any nonzero loss.
     bool imminent_loss = false;
     for (int cell = 1; cell <= mesh.num_cells(); cell++)
     {
@@ -717,13 +718,13 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
 
     if (imminent_loss)
     {
-      // assign newly combed census to census
+	// assign newly combed census to census
 	census = comb_census;
     }
     else
     {
-      // post-comb ew adjustment: 
-      // read from comb_census, modify ew, push to census
+	// post-comb ew adjustment: 
+	// read from comb_census, modify ew, push to census
 	for (int cell = 1; cell <= mesh.num_cells(); cell++)
 	{
 	    if (ncen(cell) > 0)
@@ -750,7 +751,7 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
 	Check (comb_census->size() == 0);
     }
 
-    Require (fabs(ecencheck + eloss_cen - ecentot) <= 1.0e-6 * ecentot);
+    Ensure (fabs(ecencheck + eloss_cen - ecentot) <= 1.0e-6 * ecentot);
 
 }
 
@@ -775,15 +776,15 @@ void Source_Init<MT,PT>::calc_t4_slope(const MT &mesh,
 	    int cell_low  = mesh.next_cell(cell, face_low);
 	    int cell_high = mesh.next_cell(cell, face_high);
 
-	  // set slope to zero if either side is radiatively reflecting
+	    // set slope to zero if either side is radiatively reflecting
 	    if (cell_low == cell || cell_high == cell)
 		t4_slope(coord, cell) = 0.0;
 
-	  // set slope to zero if both sides are radiatively vacuum
+	    // set slope to zero if both sides are radiatively vacuum
 	    else if (cell_low == 0 && cell_high == 0)
 		t4_slope(coord, cell) = 0.0;
 
-	  // if low side is vacuum, use only two t^4's
+	    // if low side is vacuum, use only two t^4's
 	    else if (cell_low == 0)
 	    {
 		t4_high = pow(state.get_T(cell_high), 4);
@@ -792,15 +793,15 @@ void Source_Init<MT,PT>::calc_t4_slope(const MT &mesh,
 
 		t4_slope(coord, cell) = (t4_high - t4) / delta_r;
 
-	      // make sure slope isn't too large so as to give a negative
-	      // t4_low.  If so, limit slope so t4_low is zero.
+		// make sure slope isn't too large so as to give a negative
+		// t4_low.  If so, limit slope so t4_low is zero.
 		t4_low = t4 - t4_slope(coord, cell) * 0.5 * 
 		    mesh.dim(coord, cell); 
 		if (t4_low < 0.0)
 		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell); 
 	    }
 
-	  // if high side is vacuum, use only two t^4's
+	    // if high side is vacuum, use only two t^4's
 	    else if (cell_high == 0)
 	    {
 		t4_low = pow(state.get_T(cell_low), 4);
@@ -808,15 +809,15 @@ void Source_Init<MT,PT>::calc_t4_slope(const MT &mesh,
 				 mesh.dim(coord, cell_low));
 		t4_slope(coord, cell) = (t4 - t4_low) / delta_r;
 
-	      // make sure slope isn't too large so as to give a negative
-	      // t4_high.  If so, limit slope so t4_high is zero.
+		// make sure slope isn't too large so as to give a negative
+		// t4_high.  If so, limit slope so t4_high is zero.
 		t4_high = t4 + t4_slope(coord,cell) * 0.5 * 
 		    mesh.dim(coord, cell); 
 		if (t4_high < 0.0)
 		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell);
 	    }
 
-	  // no conditions on calculating slope; just do it
+	    // no conditions on calculating slope; just do it
 	    else
 	    {
 		t4_low  = pow(state.get_T(cell_low),  4);
@@ -836,7 +837,7 @@ void Source_Init<MT,PT>::calc_t4_slope(const MT &mesh,
 		    mesh.dim(coord, cell);
 
 		t4_slope(coord, cell) = (t4_hi_edge - t4_lo_edge) / 
-		                         mesh.dim(coord, cell);
+		    mesh.dim(coord, cell);
 	    }
 	}
     }
@@ -853,7 +854,7 @@ void Source_Init<MT,PT>::print(ostream &out) const
     out << ">>> SOURCE INITIALIZATION <<<" << endl;
     out << "=============================" << endl;
 
-  // give them the particulars of the source init
+    // give them the particulars of the source init
     out << setw(35) << setiosflags(ios::right) 
 	<< "Number of particles requested: " << setw(10) << npnom << endl;
     out << setw(35) << setiosflags(ios::right)
