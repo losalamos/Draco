@@ -3,15 +3,19 @@
 // Julian C. Cummings
 // Mon Oct 05 09:53:44 1998
 //---------------------------------------------------------------------------//
-// @>
+// @> 
 //---------------------------------------------------------------------------//
 
-// include files
+// Pooma defines are in config.h include file
 
+#include <POOMA_MT/config.h>
+
+// include files
 #include "Utility/PoomaInfo.h"
 #include "Utility/Inform.h"
 #include "PETE/PoomaExpressions.h"
-#include "POOMA_MT/PoomaMesh_XYZ.hh"
+
+#include "../PoomaMesh_XYZ.hh"
 
 // main routine
 
@@ -36,7 +40,7 @@ int main(int argc, char* argv[])
   typedef PoomaMesh_XYZ<PoomaMesh_t> MT_t;
 
   // create MT mesh object
-  dsxx::SP<MT_t> spm = new MT_t(NumCells,CellWidth,Decomposition);
+  dsxx::SP<MT_t> spm(new MT_t(NumCells,CellWidth,Decomposition));
 
   // print out mesh sizes
   msg0 << "PoomaMesh constructed." << endl;
@@ -58,7 +62,7 @@ int main(int argc, char* argv[])
   // iterate over elements and check correctness
   bool passed = true;
   MT_t::ccsf::const_iterator zit, zend = z.end();
-  for (zit = z.begin(); zit != zend; ++zit)
+  for (zit = z.begin(); zit != zend; ++zit) 
     if (*zit != 3) passed = false;
   if (passed)
     msgall << "Simple arithmetic with MT::ccsf objects passed!" << endl;
@@ -81,7 +85,7 @@ int main(int argc, char* argv[])
   // iterate over elements and check correctness
   passed = true;
   MT_t::fcdsf::const_iterator zfit, zfend = zf.end();
-  for (zfit = zf.begin(); zfit != zfend; ++zfit)
+  for (zfit = zf.begin(); zfit != zfend; ++zfit) 
     if (*zfit != 0) passed = false;
   if (passed)
     msgall << "Simple arithmetic with MT::fcdsf objects passed!" << endl;
@@ -95,14 +99,13 @@ int main(int argc, char* argv[])
 
   // construct a bssf object
   MT_t::bssf b1(spm);
-
+  
   // iterate through faces and assign
-  b1.Uncompress();  // must uncompress before writing with iterator!
   MT_t::bssf::iterator b1it, b1end = b1.end();
-  for (b1it = b1.begin(); b1it != b1end; ++b1it)
+  for (b1it = b1.begin(); b1it != b1end; ++b1it) 
     *b1it = 0.0;
 
-  msg0 << "Assignment to bssf completed!" << endl << endl;
+  msg0 << "Assignment to bssf completed!" << endl << endl;  
 
   // try some gather and scatter operations
   MT_t::ccsf oneCC(spm);
@@ -139,13 +142,6 @@ int main(int argc, char* argv[])
   double nineMax = MT_t::max(nineFC);
   msg0 << "Sum of threeCC = " << threeSum << endl;
   msg0 << "Max of nineFC = " << nineMax << endl;
-
-  Vektor<double,3> v1(3.0), v2(4.0);
-
-  // double val = rtt_traits::vector_traits<Vektor<double,3> >::dot(v1, v2);
-  double val = dot(v1, v2);
-
-  msg0 << "dot of (3,3,3) and (4,4,4) is " << val << endl;
 
   return 0;
 }

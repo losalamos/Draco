@@ -1,0 +1,42 @@
+##---------------------------------------------------------------------------##
+## clean rules
+## Do not include the dependfiles when doing clean-like stuff.
+
+ifneq (,$(filter uninstall dvi distclean mostlyclean clean maintainer-clean, \
+	${MAKECMDGOALS}))
+
+#empty
+
+else
+
+include Makefile.POOMA
+
+Makefile: POOMA_MT/PoomaDefines.h
+
+endif
+
+Makefile.POOMA: ${top_srcdir}/Makefile.POOMA.in
+	CONFIG_FILES=Makefile.POOMA:Makefile.POOMA.in \
+		CONFIG_HEADERS= ./config.status
+
+${dependfiles}: POOMA_MT/PoomaDefines.h POOMA_MT/config.h
+
+POOMA_MT/PoomaDefines.h: ${POOMA_ROOT}/lib/${POOMA_ARCH}/PoomaVersions.h
+	${top_srcdir}/stripPoomaDefines.sh ${POOMA_ROOT} ${POOMA_ARCH} >./tmp0
+	@if cmp -s ./tmp0 $@ ;\
+	then \
+	   echo "PoomaDefines.h unchanged" ;\
+	else \
+	   echo "Updating PoomaDefines.h" ;\
+	   echo cp ./tmp0 $@ ;\
+	   cp ./tmp0 $@ ;\
+	fi
+	rm ./tmp0
+
+clean: forced-MakfilePoomaClean
+
+forced-MakfilePoomaClean:
+	-rm Makefile.POOMA
+	-rm POOMA_MT/PoomaDefines.h
+
+.PHONY: forced-MakfilePoomaClean
