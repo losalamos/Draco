@@ -12,10 +12,19 @@
 
 int node, nodes;
 
+template<class T>
+bool equal_buffers( T *s1, const T *e1, T *s2 )
+{
+    while( s1 < e1 )
+	if (*s1++ != *s2++) return false;
+
+    return true;
+}
+
 //---------------------------------------------------------------------------//
 
 template<class T>
-void tReduce_sum( T dummy )
+void scalar_sum( T dummy )
 {
     T local_sum = 0, global_sum = 0;
 
@@ -27,11 +36,11 @@ void tReduce_sum( T dummy )
 
     if (node == 0) {
 	if (local_sum == global_sum)
-	    cout << "gsum for type "
+	    cout << "scalar sum for type "
 		 << typeid(T).name()
 		 << " correct: " << global_sum << endl;
 	else
-	    cout << "gsum for type "
+	    cout << "scalar sum for type "
 		 << typeid(T).name()
 		 << " bogus: " << global_sum << endl;
     }
@@ -40,7 +49,7 @@ void tReduce_sum( T dummy )
 //---------------------------------------------------------------------------//
 
 template<class T>
-void tReduce_min( T dummy )
+void scalar_min( T dummy )
 {
     int local_min = -nodes+1, global_min;
 
@@ -49,11 +58,11 @@ void tReduce_min( T dummy )
 
     if (node == 0) {
 	if (local_min == global_min)
-	    cout << "gmin for type "
+	    cout << "scalar min for type "
 		 << typeid(T).name()
 		 << " correct: " << global_min << endl;
 	else
-	    cout << "gmin for type "
+	    cout << "scalar min for type "
 		 << typeid(T).name()
 		 << " bogus: " << global_min << endl;
     }
@@ -62,7 +71,7 @@ void tReduce_min( T dummy )
 //---------------------------------------------------------------------------//
 
 template<class T>
-void tReduce_max( T dummy )
+void scalar_max( T dummy )
 {
     int local_max = nodes-1, global_max;
 
@@ -71,13 +80,96 @@ void tReduce_max( T dummy )
 
     if (node == 0) {
 	if (local_max == global_max)
-	    cout << "gmax for type "
+	    cout << "scalar max for type "
 		 << typeid(T).name()
 		 << " correct: " << global_max << endl;
 	else
-	    cout << "gmax for type "
+	    cout << "scalar max for type "
 		 << typeid(T).name()
 		 << " bogus: " << global_max << endl;
+    }
+}
+
+//---------------------------------------------------------------------------//
+
+template<class T>
+void array_sum( T dummy )
+{
+    T *global_sum = new T[ 20 ];
+    T *local_sum = new T[ 20 ];
+
+    for( int i=0; i < 20; i++ ) {
+	local_sum[i] = 0;
+	global_sum[i] = 100*node + i;
+	for( int j=0; j < nodes; j++ )
+	    local_sum[i] +=  100*j + i;
+    }
+
+    C4::gsum( global_sum, 20 );
+
+    if (node == 0) {
+	if ( equal_buffers( local_sum, local_sum+20, global_sum ) )
+	    cout << "array sum for type "
+		 << typeid(T).name()
+		 << ": correct." << endl;
+	else
+	    cout << "array sum for type "
+		 << typeid(T).name()
+		 << ": bogus." << endl;
+    }
+}
+
+//---------------------------------------------------------------------------//
+
+template<class T>
+void array_min( T dummy )
+{
+    T *global_min = new T[ 20 ];
+    T *local_min = new T[ 20 ];
+
+    for( int i=0; i < 20; i++ ) {
+	global_min[i] = -node + i;
+	local_min[i] = -nodes+1 + i;
+    }
+
+    C4::gmin( global_min, 20 );
+
+    if (node == 0) {
+	if ( equal_buffers( local_min, local_min+20, global_min ) )
+	    cout << "array min for type "
+		 << typeid(T).name()
+		 << ": correct." << endl;
+	else
+	    cout << "array min for type "
+		 << typeid(T).name()
+		 << ": bogus." << endl;
+    }
+}
+
+//---------------------------------------------------------------------------//
+
+template<class T>
+void array_max( T dummy )
+{
+    T *global_max = new T[ 20 ];
+    T *local_max = new T[ 20 ];
+
+    for( int i=0; i < 20; i++ ) {
+	global_max[i] = 100*i + node;
+	local_max[i] = 100*i + nodes - 1;
+    }
+
+    C4::gmax( global_max, 20 );
+
+    if (node == 0) {
+	if ( equal_buffers( local_max, local_max+20, global_max ) )
+	    cout << "array max for type "
+		 << typeid(T).name()
+		 << ": correct." << endl;
+	else
+	    cout << "array max for type "
+		 << typeid(T).name()
+		 << ": bogus." << endl;
     }
 }
 
@@ -92,17 +184,29 @@ int main( int argc, char *argv[] )
     node = C4::node();
     nodes = C4::nodes();
 
-    tReduce_sum( int() );
-    tReduce_sum( float() );
-    tReduce_sum( double() );
+    scalar_sum( int() );
+    scalar_sum( float() );
+    scalar_sum( double() );
 
-    tReduce_min( int() );
-    tReduce_min( float() );
-    tReduce_min( double() );
+    scalar_min( int() );
+    scalar_min( float() );
+    scalar_min( double() );
 
-    tReduce_max( int() );
-    tReduce_max( float() );
-    tReduce_max( double() );
+    scalar_max( int() );
+    scalar_max( float() );
+    scalar_max( double() );
+
+    array_sum( int() );
+    array_sum( float() );
+    array_sum( double() );
+
+    array_min( int() );
+    array_min( float() );
+    array_min( double() );
+
+    array_max( int() );
+    array_max( float() );
+    array_max( double() );
 
     C4::Finalize();
     return 0;
