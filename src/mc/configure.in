@@ -41,13 +41,21 @@ AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in \
           test/OS_Input:test/OS_Input.in \
 	  test/OS_Input_3D:test/OS_Input_3D.in \
-          test/TET_MODEL_1:test/TET_MODEL_1.in \
-          test/TET_RTT_1:test/TET_RTT_1.in \
-          test/TET_RTT_2:test/TET_RTT_2.in \
-          test/TET_RTT_3:test/TET_RTT_3.in \
-          test/TET_RTT_4:test/TET_RTT_4.in \
-          test/TET_RTT_5:test/TET_RTT_5.in \
           test/RZWedge_Input:test/RZWedge_Input.in)
+
+# copy TET meshes to test directory (because they are big)
+echo copying ${srcdir}/test/TET_MODEL_1.in to test/TET_MODEL_1
+cp ${srcdir}/test/TET_MODEL_1.in test/TET_MODEL_1
+echo copying ${srcdir}/test/TET_RTT_1.in to test/TET_RTT_1
+cp ${srcdir}/test/TET_RTT_1.in test/TET_RTT_1
+echo copying ${srcdir}/test/TET_RTT_2.in to test/TET_RTT_2
+cp ${srcdir}/test/TET_RTT_2.in test/TET_RTT_2
+echo copying ${srcdir}/test/TET_RTT_3.in to test/TET_RTT_3
+cp ${srcdir}/test/TET_RTT_3.in test/TET_RTT_3
+echo copying ${srcdir}/test/TET_RTT_4.in to test/TET_RTT_4
+cp ${srcdir}/test/TET_RTT_4.in test/TET_RTT_4
+echo copying ${srcdir}/test/TET_RTT_5.in to test/TET_RTT_5
+cp ${srcdir}/test/TET_RTT_5.in test/TET_RTT_5
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/mc configure.in
