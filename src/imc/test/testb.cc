@@ -122,6 +122,7 @@ void write_part(const MT &mesh, Rnd_Control &rcon, vector<double> &match)
     cout.precision(4);
 
   // test random number stream
+    rcon.set_num(0);
     Sprng ran1 = rcon.get_rn();
     for (int i = 0; i < 25; i++)
 	match[i] = ran1.ran();
@@ -140,13 +141,14 @@ void write_part(const MT &mesh, Rnd_Control &rcon, vector<double> &match)
 
   // write particles
     ofstream outfile("part.out");
-    Particle_Buffer<Particle<MT> > buffer(mesh);
+    Particle_Buffer<Particle<MT> > buffer(mesh, rcon);
     buffer.write_census(outfile, part1);
     buffer.write_census(outfile, part2);
 }
 
 template<class MT>
-void read_part(const MT &mesh, vector<double> &match)
+void read_part(const MT &mesh, const Rnd_Control &rcon,
+	       vector<double> &match)
 {
   // test io attributes of Particle
     
@@ -157,7 +159,7 @@ void read_part(const MT &mesh, vector<double> &match)
 
   // read particles
 
-    Particle_Buffer<Particle<MT> > buffer(mesh);
+    Particle_Buffer<Particle<MT> > buffer(mesh, rcon);
     SP<Particle_Buffer<Particle<MT> >::Census_Particle> cenpart;
     int index = 0;
     do
@@ -180,11 +182,11 @@ void read_part(const MT &mesh, vector<double> &match)
     std::remove("part.out");
 }
 
-void print_ran(vector<double> &control)
+void print_ran(vector<double> &control, Rnd_Control &rcon)
 {
     cout.precision(4);
 
-    Rnd_Control rcon(3978342);
+    rcon.set_num(0);
     Sprng random = rcon.get_rn();
 
     for (int i = 0; i < 50; i++)
@@ -198,8 +200,8 @@ void Persistence_diagnostic(const MT &mesh, Rnd_Control &rcont)
     vector<double> match(50);
 
     write_part(mesh, rcont, match);
-    read_part(mesh, match);
-    print_ran(control);
+    read_part(mesh, rcont, match);
+    print_ran(control, rcont);
 
     cout << "The following should match:" << endl;
     cout.precision(4);
@@ -219,7 +221,6 @@ int main(int argc, char *argv[])
 	SP< Opacity<OS_Mesh> > opacity;
 	SP< Source_Init<OS_Mesh> > sinit;
 	SP<Rnd_Control> rcon = new Rnd_Control(9836592);
-	SP<Rnd_Control> rcont = new Rnd_Control(3978342);
 
       // scoping blocks for build-stuff
 	{
@@ -245,7 +246,7 @@ int main(int argc, char *argv[])
 
       // mesh diagnostics
 	Builder_diagnostic(*mesh, *mat_state, *opacity);
-	Persistence_diagnostic(*mesh, *rcont);
+	Persistence_diagnostic(*mesh, *rcon);
 
     }
     catch (const assertion &ass)
