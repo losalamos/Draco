@@ -18,7 +18,8 @@ AC_INSTALL_LIB
 
 AC_RUNTESTS(tstAllocators tstMat tstSP tstAssert tstNestMap \
             tstMat1RA tstMat2RA tstMat3RA tstMat4RA tstMat5RA \
-	    tstCheck_Strings tstSortPermutation, scalar)
+	    tstCheck_Strings tstSortPermutation \
+	    tstPacking_Utils, scalar)
 
 AC_DRACO_ENV
 
