@@ -113,6 +113,12 @@ class opaque_pointers
  */
     typedef std::map<opaque_pointer_type, SP<T> > ptr_map;
 
+    // We must forward declare "struct rep" and make it a friend,
+    // or else "struct rep" will not be able to access "ptr_map".
+
+    struct rep;
+    friend struct rep;
+    
 /*! 
  * \brief  Defines a C++ data structure that is used to store the 
  *         opaque_pointers container and the next available opaque pointer 
