@@ -138,6 +138,11 @@ int main( int argc, char *argv[] )
     Mesh_XYZ::fcdvf face_normals( spm );
     face_normals = spm->get_fn();
 
+    Mesh_XYZ::fcdsf face_areas( spm );
+    spm->get_face_areas(face_areas);
+    Mesh_XYZ::fcdsf face_lengths( spm );
+    spm->get_face_lengths(face_lengths);
+
     C4::Finalize();
 
     return 0;

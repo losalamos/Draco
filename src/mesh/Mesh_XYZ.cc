@@ -187,6 +187,34 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     diags[0] = -diags[6];
 }
 
+void Mesh_XYZ::get_face_areas(Mesh_XYZ::fcdsf& fa)
+{
+    for ( int i = 0; i < fa.ncx; ++i )
+      for ( int j = 0; j < fa.ncy; ++j )
+        for ( int k = fa.zoff; k < fa.zoff + fa.nczp; ++k )
+	{
+	    fa(i,j,k,0) = this->dy*this->dz;
+	    fa(i,j,k,1) = fa(i,j,k,0);
+	    fa(i,j,k,2) = this->dx*this->dz;
+	    fa(i,j,k,3) = fa(i,j,k,2);
+	    fa(i,j,k,4) = this->dx*this->dy;
+	    fa(i,j,k,5) = fa(i,j,k,4);
+	}
+}
+
+void Mesh_XYZ::get_face_lengths(fcdsf& fl) {
+    for ( int i = 0; i < fl.ncx; ++i )
+      for ( int j = 0; j < fl.ncy; ++j )
+        for ( int k = fl.zoff; k < fl.zoff + fl.nczp; ++k )
+	{
+	    fl(i,j,k,0) = this->dx;
+	    fl(i,j,k,1) = fl(i,j,k,0);
+	    fl(i,j,k,2) = this->dy;
+	    fl(i,j,k,3) = fl(i,j,k,2);
+	    fl(i,j,k,4) = this->dz;
+	    fl(i,j,k,5) = fl(i,j,k,4);
+	}
+}
 
 //---------------------------------------------------------------------------//
 //                              end of Mesh_XYZ.cc

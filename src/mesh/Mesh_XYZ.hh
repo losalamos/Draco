@@ -555,6 +555,8 @@ class Mesh_XYZ : private XYZ_Mapper
     const fcdsf& get_zF() const { return zF; }
 
     const fcdvf& get_fn() const { return face_norms; }
+    void get_face_areas(fcdsf& fa);
+    void get_face_lengths(fcdsf& fl);
 
     const dsxx::Mat1<double>& get_xA() const { return xA; }
     const dsxx::Mat1<double>& get_yA() const { return yA; }
