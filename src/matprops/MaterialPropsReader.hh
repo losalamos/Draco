@@ -11,6 +11,7 @@
 
 #include "ds++/Mat.hh"
 
+#include <string>
 #include <vector>
 
 #ifndef BEGIN_NS_XTM
@@ -31,13 +32,13 @@ class MaterialPropsReader
 
   public:
 
-    virtual bool getNextMaterial(int &materialId_) const = 0;
+    virtual bool getNextMaterial(int &materialId_, std::string &name) const = 0;
 
     virtual void getTemperatureGrid(int materialId,
-				    std::vector<double> &tempGrid) const = 0;
+				    std::vector<double> &tempGrid_) const = 0;
     
     virtual void getDensityGrid(int materialId,
-				std::vector<double> &densityGrid) const = 0;
+				std::vector<double> &densityGrid_) const = 0;
 
     virtual void getNumGroups(int materialId, int &numGroups) const = 0;
 

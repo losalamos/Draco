@@ -30,8 +30,9 @@ IMP::InterpedMaterialProps(Units units_, const MaterialPropsReader &reader)
     : units(units_)
 {
     int materialId;
+    std::string materialName;
     
-    while (reader.getNextMaterial(materialId))
+    while (reader.getNextMaterial(materialId, materialName))
     {
 	// Make sure that this materialId
 	// has not been used before.
@@ -111,7 +112,8 @@ IMP::InterpedMaterialProps(Units units_, const MaterialPropsReader &reader)
 
 	retval =
 	    materials.insert(ValuePair(materialId,
-				       MaterialTables(spGrid,
+				       MaterialTables(materialName,
+						      spGrid,
 						      sigmaTotal,
 						      sigmaAbsorption,
 						      sigmaEmission,

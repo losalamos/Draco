@@ -13,6 +13,8 @@
 #include "matprops/BilinearInterpTable.hh"
 #include "ds++/SP.hh"
 #include "3T/Units.hh"
+
+#include <string>
 #include <vector>
 #include <map>
 
@@ -289,6 +291,8 @@ struct InterpedMaterialProps::GroupedTable
 
 struct InterpedMaterialProps::MaterialTables
 {
+    std::string              materialName;
+    
     SP<BilinearInterpGrid>   spGrid;
 
     GroupedTable             sigmaTotal;
@@ -302,7 +306,8 @@ struct InterpedMaterialProps::MaterialTables
 
     MaterialTables() {};
     
-    MaterialTables(const SP<BilinearInterpGrid> &spGrid_,
+    MaterialTables(const std::string &materialName_,
+		   const SP<BilinearInterpGrid> &spGrid_,
 		   const GroupedTable &sigmaTotal_,
 		   const GroupedTable &sigmaAbsorption_,
 		   const GroupedTable &sigmaEmission_,
@@ -311,7 +316,8 @@ struct InterpedMaterialProps::MaterialTables
 		   const BilinearInterpTable &ionConductionCoeff_,
 		   const BilinearInterpTable &electronSpecificHeat_,
 		   const BilinearInterpTable &ionSpecificHeat_)
-	: spGrid(spGrid_),
+	: materialName(materialName_),
+	  spGrid(spGrid_),
 	  sigmaTotal(sigmaTotal_),
           sigmaAbsorption(sigmaAbsorption_),
 	  sigmaEmission(sigmaEmission_),
@@ -324,6 +330,11 @@ struct InterpedMaterialProps::MaterialTables
 	// **empty
     }
 
+    const std::string &getMaterialName() const
+    {
+	return materialName;
+    }
+    
     const BilinearInterpGrid &getGrid() const
     {
 	return *spGrid;
