@@ -54,6 +54,16 @@ class Matrix
 						         int quad_order, 
 						         double lambda, 
 						         double delta_x);
+    lapack_matrix<complex<double> >::type UCB_matrix(double sigma_t, 
+						     double sigma_s,
+						     int quad_order, 
+						     double lambda, 
+						     double delta_x);
+    lapack_matrix<complex<double> >::type UCB_M4S_matrix(double sigma_t, 
+						         double sigma_s,
+						         int quad_order, 
+						         double lambda, 
+						         double delta_x);
     lapack_matrix<complex<double> >::type LIN_CHAR_matrix(double sigma_t, 
 							  double sigma_s,
 							  int quad_order, 

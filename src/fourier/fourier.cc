@@ -155,11 +155,26 @@ void Fourier::solve()
 							     delta_x);
 		    }
 		}
+		else if(method == "UCB")
+		{
+		    if(acceleration_type == "SI")
+		    {
+			T_total = matrix_ptr->UCB_matrix(sigma_t, sigma_s,
+							 quad_order, lambda,
+							 delta_x);
+		    }
+		    else if(acceleration_type == "SCB_M4S_DSA")
+		    {
+			T_total = matrix_ptr->UCB_M4S_matrix(sigma_t, sigma_s,
+							     quad_order, lambda, 
+							     delta_x);
+		    }
+		}
 		else if(method == "LIN_CHAR")
 		{
 		    T_total = matrix_ptr->LIN_CHAR_matrix(sigma_t, sigma_s,
-						     quad_order, lambda,
-						     delta_x);
+							  quad_order, lambda,
+							  delta_x);
 		}
 
 
