@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 IMCSPACE
 
@@ -26,11 +27,49 @@ using C4::Recv;
 // std necessities
 using std::vector;
 using std::string;
+using std::fill;
 
 //---------------------------------------------------------------------------//
 // constructors
 //---------------------------------------------------------------------------//
-// defined inline
+// calls the topology build to determine the multi-processor topology
+
+template<class MT>
+Parallel_Builder<MT>::Parallel_Builder(const MT &mesh, 
+				       const Source_Init<MT> &sinit)
+    : ncells_per_proc(nodes()), nprocs_per_cell(mesh.num_cells()),
+      cells_per_proc(nodes()), procs_per_cell(mesh.num_cells()),
+      proc_capacity(sinit.get_capacity())
+{
+  // initialize the one-d vectors
+    fill (ncells_per_proc.begin(), ncells_per_proc.end(), 0);
+    fill (nprocs_per_cell.begin(), nprocs_per_cell.end(), 0);
+
+  // calculate the parameters for splitting the problem amongst many
+  // processors 
+    parallel_params(sinit);
+}
+
+//---------------------------------------------------------------------------//
+// IMC Topology calculation
+//---------------------------------------------------------------------------//
+// calculate topology parameters to determine what cells go where
+
+template<class MT>
+void Parallel_Builder<MT>::parallel_params(const Source_Init<MT> &sinit)
+{
+  // number of cells in the mesh
+    int num_cells = nprocs_per_cell.size();
+
+  // calculate the total capacity of all processors
+    int total_capacity = proc_capacity * nodes();
+
+  // looping over cells to calculate salient quantities
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+      // <<<CONTINUE HERE>>>
+    }
+}
 
 //---------------------------------------------------------------------------//
 // Mesh passing interface
@@ -523,6 +562,12 @@ SP<Opacity<MT> > Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
     return_opacity = new Opacity<MT>(sigma);
     return return_opacity;
 }
+
+//---------------------------------------------------------------------------//
+// 
+//---------------------------------------------------------------------------//
+
+
     
 CSPACE
 

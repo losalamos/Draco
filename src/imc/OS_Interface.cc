@@ -494,7 +494,15 @@ void OS_Interface::zone_source_parser(ifstream &in)
 	    in >> npnom;
 	if (keyword == "dnpdt:")
 	    in >> dnpdt;
-    }    
+	if (keyword == "capacity:")
+	    in >> capacity;
+    }   
+  
+  // do some assertions on the source variables
+    Insist (delta_t > 0, "The timestep must be > 0!");
+    Insist (npmax > 0, "The npmax must be > 0!");
+    Insist (npnom > 0, "The npnom must be > 0!");
+    Insist (capacity > 0, "The capacity must be > 0!");
 }
 
 //---------------------------------------------------------------------------//

@@ -25,6 +25,7 @@
 #include "imctest/Coord_sys.hh"
 #include "imctest/Layout.hh"
 #include "imctest/Opacity.hh"
+#include "imctest/Source_Init.hh"
 #include "ds++/SP.hh"
 
 IMCSPACE
@@ -33,6 +34,17 @@ template<class MT>
 class Parallel_Builder
 {
 private:
+  // topology data
+    vector<int> ncells_per_proc;
+    vector<int> nprocs_per_cell;
+    vector<vector<int> > cells_per_proc;
+    vector<vector<int> > procs_per_cell;
+
+  // processor capacity (in cells)
+    int proc_capacity;
+
+  // calculate topology map
+    void parallel_params(const Source_Init<MT> &);
 
   // functionality for Mesh passing
 
@@ -52,7 +64,7 @@ private:
 
 public:
   // default constructor
-    Parallel_Builder() {}
+    Parallel_Builder(const MT &, const Source_Init<MT> &);
 
   // Mesh passing functionality
     void send_Mesh(const MT &);

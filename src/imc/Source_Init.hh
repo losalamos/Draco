@@ -30,8 +30,11 @@
 
 IMCSPACE
 
-using std::string;
+// draco components
 using RNG::Rnd_Control;
+
+// STL components
+using std::string;
 
 template<class MT>
 class Source_Init
@@ -83,6 +86,9 @@ private:
     typename MT::CCSF_double ew_vol;
     typename MT::CCSF_double ew_ss;
 
+  // maximum number of cells capable of fitting on a processor
+    int capacity;
+
   // private member functions used to calc initial source information
 
   // number of source particles, census, source energies, number of volume
@@ -100,12 +106,21 @@ private:
     void write_initial_census(const MT &, Rnd_Control &);
 
 public:
-    template<class IT>
-    Source_Init(SP<IT>, SP<MT>);
+  // constructor
+    template<class IT> Source_Init(SP<IT>, SP<MT>);
 
   // source initialyzer function
     void initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
 		    SP<Rnd_Control>, int);
+
+  // accessor functions for Parallel_Builder
+    int get_capacity() const { return capacity; }
+    int get_ncentot() const { return ncentot; }
+    int get_nsstot() const { return nsstot; }
+    int get_nvoltot() const { return nvoltot; }
+    int get_ncen(int cell) const { return ncen(cell); }
+    int get_nvol(int cell) const { return nvol(cell); }
+    int get_nss(int cell) const { return nss(cell); }
 };
 
 CSPACE

@@ -31,8 +31,8 @@ Source<MT>::Source(typename MT::CCSF_int &vol_rnnum_,
 {
   // some assertions
     Check (vol_rnnum.get_Mesh() == nvol.get_Mesh());
-    Check (nvol.get_Mesh() == ss_rnnum.get_Mesh());
-    Check (nvol.get_Mesh() == nss.get_Mesh());
+    Check (nvol.get_Mesh()      == ss_rnnum.get_Mesh());
+    Check (nvol.get_Mesh()      == nss.get_Mesh());
     Check (census);
 }
 	

@@ -76,6 +76,7 @@ private:
     double delta_t;
     int npmax, npnom;
     double dnpdt;
+    int capacity;
 
   // Parser member functions
 
@@ -123,6 +124,7 @@ public:
     int get_npmax() const { return npmax; }
     int get_npnom() const { return npnom; }
     double get_dnpdt() const { return dnpdt; }
+    int get_capacity() const { return capacity; }
 };
 
 //---------------------------------------------------------------------------//
@@ -134,7 +136,7 @@ inline OS_Interface::OS_Interface(const string &infile)
       accum_cells(0), coarse_edge(0), fine_edge(0), bnd_cond(0), 
       zone(0), mat_zone(0), density(0), kappa(0), temperature(0),
       evol_ext(0), ss_pos(0), ss_temp(0), rad_temp(0), delta_t(0), npmax(0),
-      dnpdt(0)
+      dnpdt(0), capacity(0)
 {}
 
 CSPACE

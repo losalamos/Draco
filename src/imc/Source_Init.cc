@@ -19,10 +19,13 @@
 
 IMCSPACE
 
+// draco components
 using RNG::Sprng;
+using Global::min;
+
+// STL components
 using std::pow;
 using std::ofstream;
-using Global::min;
 
 //---------------------------------------------------------------------------//
 // constructor
@@ -46,6 +49,7 @@ Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     npmax    = interface->get_npmax();
     npwant   = interface->get_npnom();
     dnpdt    = interface->get_dnpdt();
+    capacity = interface->get_capacity();
     
   // do some assertions to check that all is well
     int num_cells = mesh->num_cells();
@@ -54,15 +58,15 @@ Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     Check (ss_pos.size() == ss_temp.size());
 
   // temporary assertions
-    Check (evol.get_Mesh().num_cells() == num_cells);
-    Check (ess.get_Mesh().num_cells() == num_cells);
-    Check (fss.get_Mesh().num_cells() == num_cells);
-    Check (erad.get_Mesh().num_cells() == num_cells);
-    Check (ncen.get_Mesh().num_cells() == num_cells);
-    Check (nvol.get_Mesh().num_cells() == num_cells);
-    Check (nss.get_Mesh().num_cells() == num_cells);
-    Check (ew_vol.get_Mesh().num_cells() == num_cells);
-    Check (ew_ss.get_Mesh().num_cells() == num_cells);
+    Check (evol.get_Mesh()   == *mesh);
+    Check (ess.get_Mesh()    == *mesh);
+    Check (fss.get_Mesh()    == *mesh);
+    Check (erad.get_Mesh()   == *mesh);
+    Check (ncen.get_Mesh()   == *mesh);
+    Check (nvol.get_Mesh()   == *mesh);
+    Check (nss.get_Mesh()    == *mesh);
+    Check (ew_vol.get_Mesh() == *mesh);
+    Check (ew_ss.get_Mesh()  == *mesh);
 }
 
 //---------------------------------------------------------------------------//

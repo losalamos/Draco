@@ -220,7 +220,7 @@ void Particle_Buffer<PT>::send_bank(Comm_Buffer &buffer, int proc,
     }
 
   // send the particle buffers
-    SendAsync(buffer.comm_n, num_part, proc, 100);
+    SendAsync(buffer.comm_n, &num_part, 1, proc, 100);
     SendAsync(buffer.comm_d, &array_d[0], Global::buffer_d, proc, 101);
     SendAsync(buffer.comm_i, &array_i[0], Global::buffer_i, proc, 102);
     SendAsync(buffer.comm_c, &array_c[0], Global::buffer_c, proc, 103);
@@ -230,13 +230,13 @@ void Particle_Buffer<PT>::send_bank(Comm_Buffer &buffer, int proc,
 // post async recives
 
 template<class PT>
-void Particle_Buffer<PT>::recv_bank(Comm_Buffer &buffer, int proc) const
+void Particle_Buffer<PT>::recv_bank(Comm_Buffer &buf, int proc) const
 {
   // post c4 async receives
-    RecvAsync(buffer.comm_n, buffer.n_part, proc, 100);
-    RecvAsync(buffer.comm_d, &buffer.array_d[0], proc, 101);
-    RecvAsync(buffer.comm_i, &buffer.array_i[0], proc, 102);
-    RecvAsync(buffer.comm_c, &buffer.array_c[0], proc, 103);
+    RecvAsync(buf.comm_n, &(buf.n_part), 1, proc, 100);
+    RecvAsync(buf.comm_d, &(buf.array_d[0]), Global::buffer_d, proc, 101);
+    RecvAsync(buf.comm_i, &(buf.array_i[0]), Global::buffer_i, proc, 102);
+    RecvAsync(buf.comm_c, &(buf.array_c[0]), Global::buffer_c, proc, 103);
 }
 
 //---------------------------------------------------------------------------//
