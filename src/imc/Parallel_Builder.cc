@@ -243,6 +243,7 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
     typename MT::CCSF_int nss(mesh);
     typename MT::CCSF_int fss(mesh);
     typename MT::CCSF_double ew_ss(mesh);
+    typename Particle_Buffer<PT>::Census census;
 
   // send the numbers of each type of source to the other processors
     for (int i = 1; i < nodes(); i++)
@@ -254,7 +255,7 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
 
   // first distribute the census
     if (sinit.get_ncentot() > 0) 
-	dist_census(sinit, buffer);
+	dist_census(sinit, buffer, census);
 
   // next do the volume source
     if (sinit.get_nvoltot() > 0)
@@ -392,11 +393,14 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
 template<class MT>
 template<class PT>
 void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit, 
-				       const Particle_Buffer<PT> &buffer)
+				       const Particle_Buffer<PT> &buffer,
+				       typename Particle_Buffer<PT>::Census
+				       &census_bank)
 {
-  // get number of cells
+  // get number of cells on the global mesh
     int num_cells = procs_per_cell.size();
     Require (num_cells > 0);
+    Require (census_bank.size() == 0);
 
   // calculate census particle-to-processor data
     vector<int> ncen2proc(num_cells);
@@ -469,9 +473,20 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
 	    if (num_to_send[proc_goto] ==
 		Particle_Buffer<PT>::get_buffer_s())
 	    {
-		buffer.send_buffer(cen_buffer[proc_goto], proc_goto);
-		cen_buffer[proc_goto].n_part = 0;
-		num_to_send[proc_goto] = 0;
+		if (!proc_goto)
+		{
+		  // if we are on the host fill up the census bank
+		    buffer.add_to_bank(cen_buffer[proc_goto], census_bank);
+		    Check (cen_buffer[proc_goto].n_part == 0);
+		    num_to_send[proc_goto] = 0;
+		}
+		else
+		{
+		  // if we are on an IMC processor send these guys
+		    buffer.send_buffer(cen_buffer[proc_goto], proc_goto);
+		    cen_buffer[proc_goto].n_part = 0;
+		    num_to_send[proc_goto] = 0;
+		}
 	    }
 	}
     } while (cenpart);
@@ -481,14 +496,21 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
     Check (total_read == sinit.get_ncentot());
 
   // send the guys off that haven't been sent yet
-    for (int proc = 0; proc < nodes(); proc++)
+    for (int proc = 1; proc < nodes(); proc++)
     {
 	if (num_to_send[proc] > 0)
 	{
-	    buffer.send_buffer(cen_buffer[proc], proc_goto);
+	    buffer.send_buffer(cen_buffer[proc], proc);
 	    cen_buffer[proc].n_part = 0;
 	    num_to_send[proc] = 0;  
 	}
+    }
+
+  // send a final message to indicate completion
+    for (int proc = 1; proc < nodes(); proc++)
+    {
+	Check (cen_buffer[proc].m_part == 0);
+	buffer.send_buffer(cen_buffer[proc], proc);
     }
 }
 

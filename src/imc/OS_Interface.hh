@@ -79,6 +79,7 @@ private:
     vector<double> ss_temp;
     vector<double> rad_temp;
     double delta_t;
+    int max_cycle;
     int npmax, npnom;
     double dnpdt;
     string ss_dist;
@@ -135,6 +136,7 @@ public:
     int get_capacity() const { return capacity; }
     string get_ss_dist() const { return ss_dist; }
     string get_analytic_opacity() const { return analytic_opacity; }
+    int get_max_cycle() const { return max_cycle; }
 };
 
 //---------------------------------------------------------------------------//
@@ -146,7 +148,7 @@ inline OS_Interface::OS_Interface(const string &infile)
       coarse_edge(0), fine_edge(0), bnd_cond(0), zone(0), mat_zone(0), 
       density(0), kappa(0), temperature(0), implicitness(0), 
       analytic_opacity("straight"), specific_heat(0), evol_ext(0), ss_pos(0), 
-      ss_temp(0), rad_temp(0), delta_t(0), npmax(0), dnpdt(0), 
+      ss_temp(0), rad_temp(0), delta_t(0), max_cycle(0), npmax(0), dnpdt(0), 
       ss_dist("none"), capacity(0)
 {}
 

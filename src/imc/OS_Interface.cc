@@ -517,6 +517,8 @@ void OS_Interface::zone_source_parser(ifstream &in)
 	    in >> dnpdt;
 	if (keyword == "capacity:")
 	    in >> capacity;
+	if (keyword == " max_cycle:")
+	    in >> max_cycle;
     }   
   
   // do some assertions on the source variables
@@ -524,6 +526,7 @@ void OS_Interface::zone_source_parser(ifstream &in)
     Insist (npmax > 0, "The npmax must be > 0!");
     Insist (npnom > 0, "The npnom must be > 0!");
     Insist (capacity > 0, "The capacity must be > 0!");
+    Insist (max_cycle > 0, "The max_cycle must be > 0!");
 }
 
 //---------------------------------------------------------------------------//

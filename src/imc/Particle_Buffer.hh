@@ -143,7 +143,10 @@ public:
   // standard buffers for particles
     typedef Particle_Stack<SP<PT> > Census;
     typedef Particle_Stack<SP<PT> > Bank;
-    typedef Particle_Stack<SP<PT> > Comm_Bank;
+
+  // standard buffers for Comm_Buffers
+    typedef vector<Comm_Buffer> Comm_Vector;
+    typedef Particle_Stack<Comm_Buffer> Comm_Bank;
 
 private:
   // data of type double size (number of elements) saved to census
@@ -181,7 +184,7 @@ public:
   // fill and get buffer functions
     void buffer_census(Comm_Buffer &, const Census_Buffer &) const;
     void buffer_particle(Comm_Buffer &, const PT &) const;
-    void add_to_bank(Comm_Buffer &, Comm_Bank &) const;
+    void add_to_bank(Comm_Buffer &, Bank &) const;
 
   // Particle send and receives
 
@@ -190,7 +193,7 @@ public:
     SP<Comm_Buffer> recv_buffer(int) const;
 
   // async
-    void asend_buffer(Comm_Buffer &, int, Comm_Bank &) const;
+    void asend_buffer(Comm_Buffer &, int, Bank &) const;
     void asend_buffer(Comm_Buffer &, int) const;
     void post_arecv(Comm_Buffer &, int) const;
     void arecv_buffer(Comm_Buffer &) const;

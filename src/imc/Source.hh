@@ -27,7 +27,6 @@
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <iostream>
-#include <fstream>
 #include <string>
 
 IMCSPACE
@@ -36,9 +35,8 @@ IMCSPACE
 using RNG::Rnd_Control;
 
 // STL components
-using std::ifstream;
-using std::ostream;
 using std::string;
+using std::ostream;
 
 template<class MT, class PT=Particle<MT> >
 class Source
@@ -57,8 +55,8 @@ public:
     typename MT::CCSF_double ew_ss;
     string ss_dist;
 
-  // census file
-    ifstream census;
+  // census bank
+    typename Particle_Buffer<PT>::Census census;
 
   // total number of sources
     int nvoltot;
@@ -92,7 +90,8 @@ public:
 	   typename MT::CCSF_double &, typename MT::CCVF_double &,
 	   typename MT::CCSF_int &, typename MT::CCSF_int &, 
 	   typename MT::CCSF_int &, typename MT::CCSF_double &,
-	   string, string, int, int, int, SP<Rnd_Control>, 
+	   typename Particle_Buffer<PT>::Census &,
+	   string, int, int, SP<Rnd_Control>, 
 	   const Particle_Buffer<PT> &, SP<Mat_State<MT> >);
 
   // required services for Source

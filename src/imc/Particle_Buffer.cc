@@ -334,11 +334,11 @@ Particle_Buffer<PT>::recv_buffer(int proc) const
 }
 
 //---------------------------------------------------------------------------//
-// Do an asyncronous send using C4 on a Comm_Bank of Particles
+// Do an asyncronous send using C4 on a Bank of Particles
 
 template<class PT>
 void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc, 
-				       Comm_Bank &bank) const
+				       Bank &bank) const
 {
   // find out the number of Particles
     int num_part = bank.size();
@@ -544,7 +544,7 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
 // make a Particle bank out of a Comm_Buffer
 
 template<class PT> void 
-Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Comm_Bank &bank) const 
+Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const 
 {
   // get the number of Particles in the Comm_Buffer
     int num_part = buffer.n_part;
@@ -555,7 +555,7 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Comm_Bank &bank) const
     int ii = 0;
     int ic = 0;
 
-  // loop through Comm_Buffer and add the Particles to the Comm_Bank
+  // loop through Comm_Buffer and add the Particles to the Bank
     for (int n = 1; n <= num_part; n++)
     {
       // make the Particle data
@@ -593,7 +593,7 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Comm_Bank &bank) const
       // make the Particle
 	SP<PT> particle = new PT(r, omega, ew, cell, random, frac, t_left); 
 
-      // add the Particle to the Comm_Bank and update the num_part counter
+      // add the Particle to the Bank and update the num_part counter
 	bank.push(particle);
 	buffer.n_part--;
     }

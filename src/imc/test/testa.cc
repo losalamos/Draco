@@ -161,7 +161,9 @@ int main(int argc, char *argv[])
           // send out objects
             pcomm->send_Mesh(*mesh);
 	    pcomm->send_Opacity(*opacity);
-	    source = pcomm->send_Source(mesh, *sinit, *buffer, rcon);
+	    mat_state = pcomm->send_Mat(mesh, *mat_state);
+	    source = pcomm->send_Source(mesh, mat_state, rcon, *sinit,
+					*buffer); 
 	    cout << *sinit << endl;
 	    cout << " ** Source on node " << mynode << endl;
 	    cout << endl << *source;
@@ -175,14 +177,15 @@ int main(int argc, char *argv[])
   	    pcomm = new Parallel_Builder<OS_Mesh>();
 
           // get mesh and opacity
-  	    mesh    = pcomm->recv_Mesh();
-  	    opacity = pcomm->recv_Opacity(mesh);
+  	    mesh      = pcomm->recv_Mesh();
+  	    opacity   = pcomm->recv_Opacity(mesh);
+	    mat_state = pcomm->recv_Mat(mesh);
 
           // make a particle buffer on this node
             buffer  = new Particle_Buffer<Particle<OS_Mesh> >(*mesh, *rcon);
 
           // get the source for this node
-	    source  = pcomm->recv_Source(mesh, rcon, *buffer);
+	    source  = pcomm->recv_Source(mesh, mat_state, rcon, *buffer);
 	    cout << " ** Source on node " << mynode << endl;	    
 	    cout << endl << *source;
   	}

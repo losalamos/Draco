@@ -88,7 +88,8 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
   // the first cycle
     if (!rnd_con)
     {
-	delta_t = interface->get_delta_t();
+	delta_t   = interface->get_delta_t();
+	max_cycle = interface->get_max_cycle();
 	rnd_con = new Rnd_Control(9836592);
 	Particle_Buffer<PT>::set_buffer_size(100000);
     }
@@ -106,14 +107,14 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
 	Opacity_Builder<MT>  opacity_builder(interface);
 
       // build the mat_state
-	mat_state    = opacity_builder.build_Mat(mesh);
+	mat_state = opacity_builder.build_Mat(mesh);
 
       // update the Mat_State from our last cycle
 	if (global_state) 
 	    global_state->update_Mat(*mat_state);
 
       // now build the opacity
-	opacity      = opacity_builder.build_Opacity(mesh, mat_state);	
+	opacity = opacity_builder.build_Opacity(mesh, mat_state);	
 	if (verbose)
 	    cout << " ** Built Mat_State and Opacity on node " << node() 
 		 << endl; 

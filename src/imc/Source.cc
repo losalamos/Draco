@@ -27,7 +27,6 @@ using std::endl;
 using std::setiosflags;
 using std::setw;
 
-
 //---------------------------------------------------------------------------//
 // constructor
 //---------------------------------------------------------------------------//
@@ -42,15 +41,16 @@ Source<MT, PT>::Source(typename MT::CCSF_int &vol_rnnum_,
 		       typename MT::CCSF_int &nss_, 
 		       typename MT::CCSF_int &fss_,
 		       typename MT::CCSF_double &ew_ss_,
-		       string ssd, string title,
-		       int nvoltot_, int nsstot_, int ncentot_,
+		       typename Particle_Buffer<PT>::Census &census_,
+		       string ssd, int nvoltot_, int nsstot_,
 		       SP<Rnd_Control> rcon_, 
 		       const Particle_Buffer<PT> &buffer_,
 		       SP<Mat_State<MT> > mat_state) 
     : vol_rnnum(vol_rnnum_), nvol(nvol_), ew_vol(ew_vol_), t4_slope(t4_),
-      ss_rnnum(ss_rnnum_), nss(nss_), fss(fss_), ew_ss(ew_ss_), ss_dist(ssd), 
-      census(title.c_str(), ios::in), nvoltot(nvoltot_), nsstot(nsstot_),
-      ncentot(ncentot_), rcon(rcon_), buffer(buffer_), material(mat_state) 
+      ss_rnnum(ss_rnnum_), nss(nss_), fss(fss_), ew_ss(ew_ss_),
+      census(census_), ss_dist(ssd),, nvoltot(nvoltot_), nsstot(nsstot_),
+      ncentot(census.size()), rcon(rcon_), buffer(buffer_),
+      material(mat_state) 
 {
   // some assertions
     Check (vol_rnnum.get_Mesh() == nvol.get_Mesh());

@@ -62,7 +62,8 @@ private:
 
   // distribute the census, volume, and surface sources
     template<class PT>
-    void dist_census(const Source_Init<MT> &, const Particle_Buffer<PT> &);
+    void dist_census(const Source_Init<MT> &, const Particle_Buffer<PT> &,
+		     typename Particle_Buffer<PT>::Census &);
     void dist_vol(const Source_Init<MT> &, typename MT::CCSF_int &,
 		  typename MT::CCSF_int &, typename MT::CCSF_double &,
 		  typename MT::CCVF_double &);
@@ -152,10 +153,11 @@ inline int Parallel_Builder<MT>::imc_cell(int mcell, int proc) const
 {
     Require (proc < nodes());
 
-  // get the iterator location
-    vector<int>::iterator itr = const_cast<vector<int>::iterator>
-	(find(cells_per_proc[proc].begin(), cells_per_proc[proc].end(),
-	      mcell));  
+  // get the iterator location, for const_iterator explanation see KAI
+  // response of 6-19-98
+    vector<int>::const_iterator itr = find(cells_per_proc[proc].begin(), 
+					   cells_per_proc[proc].end(),
+					   mcell);   
 
   // if the cell is here return it
     if (itr != cells_per_proc[proc].end())
