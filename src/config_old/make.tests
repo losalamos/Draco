@@ -37,11 +37,16 @@ ifndef notstlib
 tstlib = -L. -l$(pkg)_$(env)
 endif
 
+pureopts = 
+ifeq ($(windows),no)
+pureopts += -windows=no
+endif
+
 $(tstprogs) : %_$(env) : $(default_lib) $(env)/%.o
 	$(CXX) $(CXXFLAGS) -o $@ $(env)/$*.o $(tstlib) $(LINK_LIBS)
 
 $(puretstprogs) : %_$(env).pure : %_$(env)
-	purify $*_$(env)
+	purify $(pureopts) $*_$(env)
 
 ###############################################################################
 #                           End of config/make.tests
