@@ -37,6 +37,19 @@ AC_DEFINE_EIGHT_BYTE_INT_TYPE
 dnl DRACO SETUP
 AC_DRACO_ENV
 
+dnl define the COMPAQ flag to turn on scoping definitions
+case $host in
+alpha*-dec-osf*)
+   AC_MSG_CHECKING("Compaq CXX compiler scoping rules")
+   if test "${with_cxx}" = compaq ; then
+       AC_DEFINE(MC_COMPAQ)
+       AC_MSG_RESULT("MC_COMPAQ defined in config.h for CXX compiler")
+   else
+       AC_MSG_RESULT("not needed on $host with $with_cxx")
+   fi
+   ;;
+esac
+
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in \
           test/OS_Input:test/OS_Input.in \

@@ -269,6 +269,12 @@ void Particle_Buffer<PT>::async_free()
 }
 
 //===========================================================================//
+// INCLUDE DEFINITIONS TO ADD BASE CLASS SCOPING FOR SOME PLATFORMS
+//===========================================================================//
+
+#include "Particle_Buffer_Defs.h"
+
+//===========================================================================//
 // RECV_PARTICLE_BUFFER DERIVED CLASS FUNCTIONS
 //===========================================================================//
 //---------------------------------------------------------------------------//
@@ -527,6 +533,10 @@ bool Send_Particle_Buffer<PT>::async_check()
 
     return total;
 }
+
+
+// Unset scoping rules.
+#include "Unset_Particle_Buffer_Defs.h"
 
 } // end namespace rtt_mc
 

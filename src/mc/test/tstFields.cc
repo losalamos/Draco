@@ -40,13 +40,13 @@ template<class MT>
 void test_CCSF(SP<MT> mesh)
 {
     // now build a CCSF
-    typename MT::CCSF<double> field(mesh);
+    typename MT::template CCSF<double> field(mesh);
     if (field.empty())                     ITFAILS;
     if (field.size() != mesh->num_cells()) ITFAILS;
     if (field.get_Mesh() != *mesh)         ITFAILS;
 
     // lets go through this guy and fill up its stuff
-    typename MT::CCSF<double>::iterator iter;
+    typename MT::template CCSF<double>::iterator iter;
     double value = 10;
     for (iter = field.begin(); iter != field.end(); iter++)
 	*iter = value++;
@@ -69,7 +69,7 @@ void test_CCSF(SP<MT> mesh)
     vector<double> ref(mesh->num_cells());
     for (int i = 0; i < ref.size(); i++)
 	ref[i] = static_cast<double>(i) * 2;
-    typename MT::CCSF<double> ccf(mesh, ref);
+    typename MT::template CCSF<double> ccf(mesh, ref);
 
     value = 0;
     int index = 0;
@@ -91,13 +91,13 @@ void test_CCSF(SP<MT> mesh)
 template<class MT>
 void test_CCVF(SP<MT> mesh)
 {
-    typename MT::CCVF<double> field(mesh);
+    typename MT::template CCVF<double> field(mesh);
     if (field.empty())             ITFAILS;
     if (field.size() != 2)         ITFAILS;
     if (field.get_Mesh() != *mesh) ITFAILS;
 
     // fill up the field
-    typename MT::CCSF<double>::iterator itor;
+    typename MT::template CCSF<double>::iterator itor;
     double value = 10;
     for (int i = 1; i <= field.size(); i++)
     {
@@ -114,7 +114,7 @@ void test_CCVF(SP<MT> mesh)
 
     // check an algorithm
     field(1, 3) = 12;
-    typename MT::CCSF<double>::iterator find_itor;
+    typename MT::template CCSF<double>::iterator find_itor;
     
     find_itor = find(field.begin(1), field.end(1), 12);
 
@@ -130,14 +130,14 @@ void test_CCSF_STL(SP<MT> mesh)
 {
     // build a vector of info and a CCSF
     vector<double> ref(mesh->num_cells(), 10.0);
-    typename MT::CCSF<double> field(mesh, ref);
+    typename MT::template CCSF<double> field(mesh, ref);
     if (ref.size() != field.size()) ITFAILS;
 
     field(1) = 5.0;
     field(4) = 5.0;
 
     // make first and last iterators
-    typename MT::CCSF<double>::iterator first, last, var;
+    typename MT::template CCSF<double>::iterator first, last, var;
     first = field.begin();
     last  = field.end();
     if (last - first != mesh->num_cells()) ITFAILS;

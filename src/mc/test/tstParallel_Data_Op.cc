@@ -95,10 +95,10 @@ void test_MT_Fields()
     Parallel_Data_Operator pdop(topology);
 
     // build some fields
-    typename MT::CCSF<double> field(mesh);
-    typename MT::CCSF<double>::iterator begin = field.begin();
-    typename MT::CCSF<double>::iterator end   = field.end();
-    typename MT::CCSF<double>::iterator itr;
+    typename MT::template CCSF<double> field(mesh);
+    typename MT::template CCSF<double>::iterator begin = field.begin();
+    typename MT::template CCSF<double>::iterator end   = field.end();
+    typename MT::template CCSF<double>::iterator itr;
     
     for (itr = begin; itr != end; itr++)
 	*itr = .5;
