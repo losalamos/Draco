@@ -323,8 +323,8 @@ std::string tDummyOpacity::runTest()
 // Compare Reference value to computed values
 //---------------------------------------------
 
-bool tDummyOpacity::match( const double computedValue,
-			   const double referenceValue ) const
+bool tDummyOpacity::match( double computedValue,
+			   double referenceValue ) const
 {
     // Compare items up to 10 digits of accuracy.
     const double TOL = 1.0e-10;

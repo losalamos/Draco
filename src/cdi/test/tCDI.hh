@@ -62,8 +62,8 @@ class tCDI : public rtt_UnitTestFrame::TestApp
     // These routines are used by the test routine to compare computed 
     // results to tabulated values.  
     bool match( 
-	const double computedValue,
-	const double referenceValue ) const;
+	double computedValue,
+	double referenceValue ) const;
     bool match( 
 	const std::vector< double >& computedValue, 
 	const std::vector< double >& referenceValue ) const;

@@ -60,7 +60,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     const int numDensities;        // = 2
     const int numGroupBoundaries;  // = 4
 
-    std::vector< double> groupBoundaries;   // = { 0.05, 0.5, 5.0, 50.0 }
+    std::vector< double > groupBoundaries;  // = { 0.05, 0.5, 5.0, 50.0 }
     std::vector< double > temperatureGrid;  // = { 1.0, 2.0, 3.0 }
     std::vector< double > densityGrid;      // = { 0.1, 0.2 }
 
@@ -99,17 +99,15 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     Opacity = 2 * ( temperature + density/1000 ) 
      *                 / ( E_high + E_low )
      *
-     * \parameter targetTemperature The temperature value for which an
+     * \param targetTemperature The temperature value for which an
      *     opacity value is being requested (keV).
-     *
-     * \parameter targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity 
      *     value is being requested (g/cm^3).
-     *
      * \return A vector of interpolated opacities (cm^2/g).  Each
      *     entry of this vector corresponds to one energy group.
      */
-    std::vector< double > getOpacity( const double targetTemperature,
-				      const double targetDensity ) const; 
+    std::vector< double > getOpacity( double targetTemperature,
+				      double targetDensity ) const; 
 
     /*!
      * \brief Opacity accessor that returns a vector of multigroup
@@ -120,12 +118,10 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     Opacity = 2 * ( temperature + density/1000 ) 
      *                 / ( E_high + E_low )
      *
-     * \parameter targetTemperature A vector of temperature values for
+     * \param targetTemperature A vector of temperature values for
      *     which corresponding opacity values are being requested (keV).
-     *
-     * \parameter targetDensity The density value for which opacity 
+     * \param targetDensity The density value for which opacity 
      *     values are being requested (g/cm^3).
-     *
      * \return A vector of interpolated multigroup opacities (cm^2/g).
      *     Each entry of this vector corresponds to one of the
      *     provided temperatures and is itself a vector of numGroups
@@ -133,7 +129,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      */
     std::vector< std::vector <double > > getOpacity( 
 	const std::vector< double >& targetTemperature,
-	const double targetDensity ) const; 
+	double targetDensity ) const; 
 
     /*!
      * \brief Opacity accessor that returns a vector of multigroup
@@ -144,11 +140,11 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     Opacity = 2 * ( temperature + density/1000 ) 
      *                 / ( E_high + E_low )
      *
-     * \parameter targetTemperature The temperature value for
+     * \param targetTemperature The temperature value for
      *     which corresponding opacity values are being requested
      *     (keV). 
      *
-     * \parameter targetDensity A vector of density values for which
+     * \param targetDensity A vector of density values for which
      *     corresponding opacity values are being requested (g/cm^3).
      *
      * \return A vector of interpolated multigroup opacities (cm^2/g).
@@ -157,7 +153,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     opacities. 
      */
     std::vector< std::vector< double > > getOpacity( 
-	const double targetTemperature,
+	double targetTemperature,
 	const std::vector< double >& targetDensity ) const; 
 
     /*! 
@@ -170,24 +166,19 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *
      *     This function is not required by MultigroupOpacity.
      *
-     * \parameter tempFirst The beginning position of a STL container
+     * \param tempFirst The beginning position of a STL container
      *     that holds a list of temperatures (keV).
-     *
-     * \parameter tempLast The end position of a STL container that
+     * \param tempLast The end position of a STL container that
      *     holds a list of temperatures (keV).
-     *
-     * \parameter densFirst The beginning position of a STL container
+     * \param densFirst The beginning position of a STL container
      *     that holds a list of densities (g/cm^3).
-     *
-     * \parameter densLast The end position of a STL container that
+     * \param densLast The end position of a STL container that
      *     holds a list of densities (g/cm^3).
-     *
-     * \parameter opacityFirst The beginning position of a STL
+     * \param opacityFirst The beginning position of a STL
      *     container into which multigroup opacity values
      *     corresponding to the given tuple of (temperature, density) 
      *     values and the number of energy groups will be stored
      *     (cm^2/g).  
-     * 
      * \return A list (of type OpacityIterator) of multigroup
      *     opacities are returned (cm^2/g).  These multigroup
      *     opacities correspond to the provided tuple of (temperature,
@@ -209,16 +200,16 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *
      *     This function is not required by MultigroupOpacity.
      *
-     * \parameter tempFirst The beginning position of a STL container
+     * \param tempFirst The beginning position of a STL container
      *     that holds a list of temperatures (keV).
      *
-     * \parameter tempLast The end position of a STL container that
+     * \param tempLast The end position of a STL container that
      *     holds a list of temperatures (keV).
      *
-     * \parameter targetDensity A single density value for which
+     * \param targetDensity A single density value for which
      *     opacity values are being requested (g/cm^3).
      *
-     * \parameter opacityFirst The beginning position of a STL
+     * \param opacityFirst The beginning position of a STL
      *     container into which multigroup opacity values
      *     corresponding to the given list of temperature
      *     values and the number of energy groups will be stored
@@ -233,7 +224,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     template < class TemperatureIterator, class OpacityIterator >
     OpacityIterator getOpacity( TemperatureIterator tempIter,
 				TemperatureIterator templast,
-				const double targetDensity,
+				double targetDensity,
 				OpacityIterator opacityIter ) const;
 
     /*! 
@@ -244,21 +235,17 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *
      *     This function is not required by MultigroupOpacity.
      *
-     * \parameter targetTemperature A single temperature value for which
+     * \param targetTemperature A single temperature value for which
      *     opacity values are being requested (keV).
-     *     
-     * \parameter densFirst The beginning position of a STL container
+     * \param densFirst The beginning position of a STL container
      *     that holds a list of densities (g/cm^3).
-     *
-     * \parameter densLast The end position of a STL container that
+     * \param densLast The end position of a STL container that
      *     holds a list of densities (g/cm^3).
-     *
-     * \parameter opacityFirst The beginning position of a STL
+     * \param opacityFirst The beginning position of a STL
      *     container into which multigroup opacity values
      *     corresponding to the given list of density
      *     values and the number of energy groups will be stored
      *     (cm^2/g).  
-     * 
      * \return A list (of type OpacityIterator) of multigroup
      *     opacities are returned (cm^2/g).  These multigroup
      *     opacities correspond to the provided list of density
@@ -266,7 +253,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     energy groups. 
      */
     template < class DensityIterator, class OpacityIterator >
-    OpacityIterator getOpacity( const double targetTemperature,
+    OpacityIterator getOpacity( double targetTemperature,
 				DensityIterator densIter,
 				DensityIterator densLast,
 				OpacityIterator opacityIter ) const;
@@ -274,14 +261,14 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     /*!
      * \brief Returns a "plain English" description of the data.
      */
-    const std::string& getDataDescriptor() const {
+    std::string getDataDescriptor() const {
 	return dataDescriptor; };
 
     /*!
      * \brief Returns a "plain English" description of the energy
      *	  group structure (gray vs. multigroup).
      */	
-    const std::string& getEnergyPolicyDescriptor() const { 
+    std::string getEnergyPolicyDescriptor() const { 
 	return energyPolicyDescriptor; };
 
    /*!
@@ -289,28 +276,28 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     there is no data file associated with this opacity class
      *     the string "none" is returned.
      */
-    const std::string& getDataFilename() const {
+    std::string getDataFilename() const {
 	return dataFilename; };
 
     /*!
      * \brief Returns a vector of temperatures that define the cached
      *     opacity data table.
      */
-    const std::vector<double>& getTemperatureGrid() const {
+    std::vector<double> getTemperatureGrid() const {
 	return temperatureGrid; };
 
     /*!
      * \brief Returns a vector of densities that define the cached
      *     opacity data table.
      */
-    const std::vector<double>& getDensityGrid() const {
+    std::vector<double> getDensityGrid() const {
 	return densityGrid; };
 
     /*!
      * \brief Returns a vector of energy group boundaries that define
      *     the cached multigroup opacity data table.
      */
-    const std::vector<double>& getGroupBoundaries() const {
+    std::vector<double> getGroupBoundaries() const {
 	return groupBoundaries; };
     
     /*!
