@@ -1,43 +1,33 @@
 //----------------------------------*-C++-*----------------------------------//
-/*!
- * \file   amr_mesh/Release.hh
- * \author Todd Adams
- * \date   Tue Sep 21 15:09:59 1999
- * \brief  Release function for the amr_mesh library
- */
-//---------------------------------------------------------------------------//
+// Release.hh
+// Thomas M. Evans
+// Wed Apr 14 15:36:52 1999
 // $Id$
 //---------------------------------------------------------------------------//
+// @> Release function for imc library
+//---------------------------------------------------------------------------//
 
-#ifndef __amr_mesh_Release_hh__
-#define __amr_mesh_Release_hh__
+#ifndef __imc_Release_hh__
+#define __imc_Release_hh__
 
 //===========================================================================//
-/*!
- * \page amr_mesh_overview Overview of the amr_mesh package
- * \version
- * \author Todd Adams
- * 
- * 
- */
-//===========================================================================//
-/*!
- * \namespace rtt_amr_mesh
- *
- * \brief Namespace that contains the amr_mesh package classes and variables.
- *
- */
+// namespace version - 
+//
+// Purpose : Return the version of imc; 
+// this can be used to get exact version information in codes that 
+// use imc
+// 
 //===========================================================================//
 
 #include <string>
 
-namespace rtt_amr_mesh 
+namespace rtt_imc 
 {
     const std::string release();
 }
 
-#endif                          // __amr_mesh_Release_hh__
+#endif                          // __imc_Release_hh__
 
 //---------------------------------------------------------------------------//
-//                           end of amr_mesh/Release.hh
+//                              end of Release.hh
 //---------------------------------------------------------------------------//

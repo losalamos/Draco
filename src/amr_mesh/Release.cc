@@ -1,35 +1,29 @@
 //----------------------------------*-C++-*----------------------------------//
-/*!
- * \file   amr_mesh/Release.cc
- * \author Todd Adams
- * \date   Tue Sep 21 15:10:00 1999
- * \brief  Release function implementation for amr_mesh library
- */
-//---------------------------------------------------------------------------//
+// Release.cc
+// Thomas M. Evans
+// Wed Apr 14 15:36:52 1999
 // $Id$
+//---------------------------------------------------------------------------//
+// @> Release function implementation for imc library
 //---------------------------------------------------------------------------//
 
 #include "Release.hh"
 
-namespace rtt_amr_mesh
+namespace rtt_imc
 {
 
 using std::string;
 
-/*!  
- * \return string of the release number
- *
- * Function definition for Release, define the local version number for
- * this library in the form amr_mesh-\#_\#_\# in pkg_release variable 
- */
+// function definition for Release, define the local version number for
+// this library in the form imc_#.#.# in pkg_version variable
 const string release()
 {
-    string pkg_release = "@(#)amr_mesh-0_0_0";
+    string pkg_release = "@(#)imc-1_0_0";
     return pkg_release;
 }
 
-}  // end of rtt_amr_mesh
+}  // end of rtt_imc
 
 //---------------------------------------------------------------------------//
-//                             end of Release.cc
+//                              end of Release.cc
 //---------------------------------------------------------------------------//
