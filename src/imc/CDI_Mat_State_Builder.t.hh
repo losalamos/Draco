@@ -13,6 +13,7 @@
 #define __imc_CDI_Mat_State_Builder_t_hh__
 
 #include "CDI_Mat_State_Builder.hh"
+#include "Global.hh"
 
 namespace rtt_imc
 {

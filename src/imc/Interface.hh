@@ -98,11 +98,6 @@ class Interface
 
     //! Get the timestep in shakes.
     virtual double    get_delta_t() const = 0;
-
-    // >>> FUNCTIONS REQUIRED BY TOPOLOGY BUILDER
-    
-    // Get the cells per processor capacity.
-    virtual int       get_capacity() const = 0;
     
     // >>> FUNCTIONS REQUIRED BY SOURCE_BUILDERs
 
