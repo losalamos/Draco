@@ -1,3 +1,8 @@
+2002-05-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* viz: released version 1_3_0.  Updated Ensight_Translator to
+	produce the same outputting with gcc as with KCC.
+
 2001-12-17  Thomas M. Evans  <tme@lanl.gov>
 
 	* viz: release version 1_2_0.  This release no longer includes
