@@ -1,0 +1,6 @@
+block: test
+	double 	D	3.3333333e-2
+	double	q	1.0
+	double 	sigma	1.0
+	double	fTop	0.0
+	double	fBot	0.0
