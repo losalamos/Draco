@@ -16,8 +16,9 @@ namespace rtt_matprops
 {
 
  template<class MT>
- TempMapper<MT>::TempMapper(const SP<MT> &spMesh_, double gamma_)
-    : spMesh(spMesh_), gamma(gamma_)
+ TempMapper<MT>::TempMapper(const SP<MT> &spMesh_, double gamma_,
+                            const FieldConstructor &FC_)
+    : spMesh(spMesh_), gamma(gamma_), FC(FC_)
  {
      Require(gamma >= 0.0 && gamma <= 1.0);
  }
@@ -30,12 +31,12 @@ namespace rtt_matprops
  {
      // Copy the average CC temperatures to the cell faces.
      
-     MT::fcdsf faceTempsAvg(spMesh);
+     MT::fcdsf faceTempsAvg(FC);
      MT::gather(faceTempsAvg, cellTempsAvg, MT::OpAssign());
 
      // Calculate the multiplicative ratio value "alpha"
 
-     MT::fcdsf alpha(spMesh);
+     MT::fcdsf alpha(FC);
 
      calculateAlpha(alpha, faceTempsAvg);
 
@@ -70,7 +71,7 @@ namespace rtt_matprops
  {
      // Get the temperatures in the cell adjacent to each face
 
-     MT::fcdsf adjacentFaceTemp(spMesh);
+     MT::fcdsf adjacentFaceTemp(FC);
      MT::swap_faces(adjacentFaceTemp, faceTempsAvg);
 
      MT::fcdsf::const_iterator aFTit = adjacentFaceTemp.begin();

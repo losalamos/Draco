@@ -36,16 +36,19 @@ namespace rtt_matprops
 
      // NESTED CLASSES AND TYPEDEFS
 
+     typedef typename MT::FieldConstructor FieldConstructor;
+
      // DATA
 
      double gamma;
      const SP<MT> &spMesh;
+     const FieldConstructor &FC;
     
    public:
 
      // CREATORS
     
-     TempMapper(const SP<MT> &spMesh_, double gamma_);
+     TempMapper(const SP<MT> &spMesh_, double gamma_, const FieldConstructor &FC_);
 
      // MANIPULATORS
     

@@ -23,8 +23,9 @@ namespace rtt_P1Diffusion
  template<class MT, class MS>
  P1Diffusion<MT,MS>::P1Diffusion(const Diffusion_DB &diffdb,
 				 const SP<MT>& spm_,
-				 const SP<MS> &spsolver_)
-     : spm(spm_), spsolver(spsolver_)
+				 const SP<MS> &spsolver_,
+                                 const FieldConstructor &FC_)
+     : spm(spm_), spsolver(spsolver_), FC(FC_)
  {
      // empty
  }
@@ -38,7 +39,7 @@ namespace rtt_P1Diffusion
  {
      // Get the cell lengths perpendicular to the face.
 
-     fcdsf deltaL(spm);
+     fcdsf deltaL(FC);
      spm->get_face_lengths(deltaL);
      
     // Cache swapped values of
@@ -50,23 +51,23 @@ namespace rtt_P1Diffusion
      // continuity, and the elimination of the face phi unknown.
      // (for internal and boundary faces)
     
-     fcdsf DEffOverDeltaL(spm);
+     fcdsf DEffOverDeltaL(FC);
      getDEffOverDeltaL(DEffOverDeltaL, D, alpha, beta);
 
     // Get the areas of each face.
     
-     fcdsf areas(spm);
+     fcdsf areas(FC);
      spm->get_face_areas(areas);
 
     // Store the off-diagonal elements of the matrix in a face-centered-
     // discontinous scalar field.
     
-     SP<fcdsf> spAOffDiagonal = new fcdsf(spm);
+     SP<fcdsf> spAOffDiagonal = new fcdsf(FC);
      *spAOffDiagonal = -1.0 * areas * DEffOverDeltaL;
     
     // Get the cell volumes.
     
-     ccsf volumes(spm);
+     ccsf volumes(FC);
      spm->get_cell_volumes(volumes);
 
     // Store the diagonal elements of the matrix in a cell-centered
@@ -76,7 +77,7 @@ namespace rtt_P1Diffusion
     // The other part of the diagonal elements includes the negative
     // sum over faces of the off-diagonal elements .
 
-     SP<ccsf> spADiagonal = new ccsf(spm);
+     SP<ccsf> spADiagonal = new ccsf(FC);
     
      *spADiagonal = volumes*sigma;
      MT::scatter(*spADiagonal, *spAOffDiagonal, MT::OpSubAssign());
@@ -85,20 +86,20 @@ namespace rtt_P1Diffusion
      // continuity, and the elimination of the face phi unknown.
      // (for internal and boundary faces)
     
-     fcdsf FprimeEff(spm);
+     fcdsf FprimeEff(FC);
      getFprimeEff(FprimeEff, Fprime, D, alpha, beta, fb);
     
     // The right hand side of the matrix equation is a cell-centered
     // scalar field.
 
-     ccsf brhs(spm);
+     ccsf brhs(FC);
 
      // This bracket is for scoping.
      {
 	 // Need a temporary face-centered field for continuing the rhs
 	 // calculation.
 	
-	 fcdsf bf(spm);
+	 fcdsf bf(FC);
 
 	 // The right hand side consists the volume multiplied by the source...
 	 // The rhs also consists of the negative sum over faces
@@ -167,13 +168,13 @@ namespace rtt_P1Diffusion
 					     const fcdsf &Fprime,
 					     const fcdsf &deltaL) const
  {
-     spDSwap = new fcdsf(spm);
+     spDSwap = new fcdsf(FC);
      MT::swap_faces(*spDSwap, D);
 
-     spFprimeSwap = new fcdsf(spm);
+     spFprimeSwap = new fcdsf(FC);
      MT::swap_faces(*spFprimeSwap, Fprime);
 
-     spDeltaLSwap = new fcdsf(spm);
+     spDeltaLSwap = new fcdsf(FC);
      MT::swap_faces(*spDeltaLSwap, deltaL);
  }
 
@@ -193,7 +194,7 @@ namespace rtt_P1Diffusion
  {
      // Get the cell lengths perpendicular to the face.
 
-     fcdsf deltaL(spm);
+     fcdsf deltaL(FC);
      spm->get_face_lengths(deltaL);
     
     // Calculate the effective D/delta l on the faces due to flux
@@ -206,7 +207,7 @@ namespace rtt_P1Diffusion
      // continuity, and the elimination of the face phi unknown.
      // (boundary faces only)
     
-     bssf DEffOverDeltaLBndry(spm);
+     bssf DEffOverDeltaLBndry(FC);
      getDEffOverDeltaLBndry(DEffOverDeltaLBndry, D, deltaL, alpha, beta);
 
     // Combine the boundary term with interior term.
@@ -236,8 +237,8 @@ namespace rtt_P1Diffusion
  {
      // Need to strip off the boundary part of the D's and deltaL's.
 
-     bssf DBndry(spm);
-     bssf deltaLBndry(spm);
+     bssf DBndry(FC);
+     bssf deltaLBndry(FC);
 
      MT::gather(DBndry, D, MT::OpAssign());
      MT::gather(deltaLBndry, deltaL, MT::OpAssign());
@@ -256,7 +257,7 @@ namespace rtt_P1Diffusion
  {
      // Get the cell lengths perpendicular to the face.
 
-     fcdsf deltaL(spm);
+     fcdsf deltaL(FC);
      spm->get_face_lengths(deltaL);
     
     // Calculate the effective Fprime on the faces due to flux
@@ -269,7 +270,7 @@ namespace rtt_P1Diffusion
      // continuity, and the elimination of the face phi unknown.
      // (boundary faces only)
     
-     bssf FprimeEffBndry(spm);
+     bssf FprimeEffBndry(FC);
      getFprimeEffBndry(FprimeEffBndry, Fprime, D, deltaL, alpha, beta, fb);
 
     // Combine the boundary term with interior term.
@@ -305,9 +306,9 @@ namespace rtt_P1Diffusion
  {
      // Need to strip off the boundary part of the D's, Fprime's, and deltaL's.
 
-     bssf DBndry(spm);
-     bssf FprimeBndry(spm);
-     bssf deltaLBndry(spm);
+     bssf DBndry(FC);
+     bssf FprimeBndry(FC);
+     bssf deltaLBndry(FC);
 
      MT::gather(DBndry, D, MT::OpAssign());
      MT::gather(FprimeBndry, Fprime, MT::OpAssign());
@@ -326,7 +327,7 @@ namespace rtt_P1Diffusion
      // The sparse matrix can be constructed from the diagonal and
      // off-diagonal elements.
     
-     SP<Matrix> spMatrix = new Matrix(spm, spADiagonal, spAOffDiagonal);
+     SP<Matrix> spMatrix = new Matrix(spm, spADiagonal, spAOffDiagonal, FC);
 
      // Solve the "matrix*phi = b" equations.
     
@@ -341,13 +342,13 @@ namespace rtt_P1Diffusion
  {
      // Get the cell-centered phi onto the faces.
 
-     fcdsf phiFC(spm);
+     fcdsf phiFC(FC);
      MT::gather(phiFC, phi, MT::OpAssign());
     
     // Get the values of phi from the opposite side of the face.
     // (Boundary face values will be zero-ed out by the swap.)
     
-     fcdsf phiFCSwap(spm);
+     fcdsf phiFCSwap(FC);
      MT::swap_faces(phiFCSwap, phiFC);
 
     // Calculate the new flux.

@@ -40,6 +40,7 @@ namespace rtt_P1Diffusion
 
      typedef typename MT::ccsf ccsf;
      typedef typename MT::fcdsf fcdsf;
+     typedef typename MT::FieldConstructor FieldConstructor;
 
      typedef typename ccsf::value_type value_type;
      typedef fcdsf Vector;
@@ -51,6 +52,7 @@ namespace rtt_P1Diffusion
      SP<MT> spMesh;
      SP<const ccsf> spDiagonal;
      SP<const fcdsf> spOffDiagonal;
+     FieldConstructor FC;
 
      // Mutable temporary data
 
@@ -66,15 +68,16 @@ namespace rtt_P1Diffusion
     
      MatrixP1Diff(const SP<MT> &spMesh_,
 		  const SP<const ccsf> &spDiagonal_,
-		  const SP<const fcdsf> &spOffDiagonal_)
+		  const SP<const fcdsf> &spOffDiagonal_,
+                  const FieldConstructor &FC_)
 	 : spMesh(spMesh_), spDiagonal(spDiagonal_),
-	   spOffDiagonal(spOffDiagonal_)
+	   spOffDiagonal(spOffDiagonal_), FC(FC_)
      {
-	 spxFC = new fcdsf(spMesh);
-	 spxSwap = new fcdsf(spMesh);
-	 spbFC = new fcdsf(spMesh);
-	 spbtmp = new ccsf(spMesh);
-	 spxtmp = new ccsf(spMesh);
+	 spxFC = new fcdsf(FC);
+	 spxSwap = new fcdsf(FC);
+	 spbFC = new fcdsf(FC);
+	 spbtmp = new ccsf(FC);
+	 spxtmp = new ccsf(FC);
      }
      
      // MANIPULATORS

@@ -46,6 +46,7 @@ namespace rtt_P1Diffusion
      typedef typename MT::vcvsf vcvsf;
      typedef typename MT::vcsf vcsf;
 #endif
+     typedef typename MT::FieldConstructor FieldConstructor;
 
    public:
 
@@ -63,6 +64,7 @@ namespace rtt_P1Diffusion
     
      dsxx::SP<MeshType> spm;
      dsxx::SP<MatrixSolver> spsolver;
+     FieldConstructor FC;
 
      // Cache the swapped values to avoid too much communication.
      
@@ -75,7 +77,8 @@ namespace rtt_P1Diffusion
      // CREATORS
     
      P1Diffusion(const Diffusion_DB &diffdb, const dsxx::SP<MeshType>& spm_,
-		 const dsxx::SP<MatrixSolver> &spsolver_);
+		 const dsxx::SP<MatrixSolver> &spsolver_,
+                 const FieldConstructor &FC_);
 
      // MANIPULATORS
     
