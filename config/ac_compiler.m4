@@ -143,6 +143,9 @@ AC_DEFUN(AC_DRACO_CC, [dnl
 
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
+   # dirs to clean
+   dirstoclean='ii_files'
+
    # LINKER AND LIBRARY (AR)
    LD='${CXX}'
    AR='${CXX}'
@@ -189,6 +192,7 @@ AC_DEFUN(AC_DRACO_CC, [dnl
 
    # final compiler additions
    CXXFLAGS="${CXXFLAGS} -LANG:std -no_auto_include"
+   LDFLAGS="${LDFLAGS} -LANG:std"
 
    AC_MSG_RESULT("SGI CC compiler flags set")
 
