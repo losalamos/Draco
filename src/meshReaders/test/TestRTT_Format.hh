@@ -62,7 +62,7 @@ class TestRTT_Format : public rtt_UnitTestFrame::TestApp
   private:
 
     // DATA
-    enum Meshes {DEFINED};
+    enum Meshes {DEFINED, SORTED};
     // All nested class accessor function tests with the exception of 
     // check_header and check_dims require that the Dims data has been
     // properly processed, and use the verify_Dims member function to 
@@ -97,6 +97,8 @@ class TestRTT_Format : public rtt_UnitTestFrame::TestApp
 			     const Meshes & meshtype);
     bool check_cell_defs(const rtt_meshReaders::RTT_Format & mesh, 
 			 const Meshes & meshtype);
+    bool check_renumber(const rtt_meshReaders::RTT_Format & mesh, 
+			const Meshes & meshtype);
     bool check_nodes(const rtt_meshReaders::RTT_Format & mesh, 
 		     const Meshes & meshtype);
     bool check_sides(const rtt_meshReaders::RTT_Format & mesh, 

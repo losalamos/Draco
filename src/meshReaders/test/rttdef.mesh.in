@@ -147,9 +147,9 @@ end_cell_defs                  ! end cell_def block keyword
 
 nodes                          ! nodes block keyword
   1  0.0 0.0 0.0   1  11 1 101 ! node#, x,y,z-coord, parent, node_flags
-  2  1.0 0.0 0.0   2  21 1 101 ! 
+  2  0.0 0.0 3.0   2  21 1 101 ! 
   3  0.0 2.0 0.0   3  21 4 101 ! 
-  4  0.0 0.0 3.0   4  6  4 22  ! 
+  4  1.0 0.0 0.0   4  6  4 22  ! 
 end_nodes                      ! end_nodes block keyword
 
 
@@ -166,16 +166,16 @@ end_cells                      ! end cell block keyword
 
 nodedat                        ! node data keyword
   1  0.0 0.0 0.0               ! bs data just to test interface
-  2  1.0 0.0 0.0
+  2  0.0 0.0 3.0
   3  0.0 2.0 0.0
-  4  0.0 0.0 3.0
+  4  1.0 0.0 0.0
 end_nodedat                    ! end node data keyword
 
 sidedat                        ! side data keyword
   1  0.0 0.0                   ! bs data just to test interface
-  2  1.0 0.0
+  2  0.0 0.0
   3  0.0 2.0
-  4  0.0 0.0
+  4  1.0 0.0
 end_sidedat                    ! end side data keyword
 
 celldat                        ! cell data keyword

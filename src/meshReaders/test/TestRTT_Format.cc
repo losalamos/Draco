@@ -67,15 +67,28 @@ string TestRTT_Format::runTest()
 {
     // New meshes added to this test will have to be added to the enumeration
     // Meshes in the header file.
-    const int MAX_MESHES = 1;
-    string filename[MAX_MESHES] = {"rttdef.mesh"};
+    const int MAX_MESHES = 2;
+    string filename[MAX_MESHES] = {"rttdef.mesh", "rttdef.mesh"};
     Meshes mesh_type;
+    bool renumber;
 
     for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++)
     {
+        // Set the option to renumber the RTT_Format nodes, sides, and cells
+        // in ascending order for those mesh-types that require this option 
+        // (e.g., AMR mesh). Default is no renumbering.
+        switch (mesh_number)
+	{
+	case(1):
+	    renumber = true;
+	    break;
+
+	default:
+	    renumber = false;
+	}
         // Construct an RTT_Format class object from the data in the specified
         //  mesh file. 
-        RTT_Format mesh(filename[mesh_number]);
+        RTT_Format mesh(filename[mesh_number], renumber);
 	pass(" Construct ") << "Read and connected " << filename[mesh_number] 
 			    << " without coreing in or firing an assertion." 
 			    << endl;
@@ -89,7 +102,7 @@ string TestRTT_Format::runTest()
         switch (mesh_number)
 	{
 	// Test all nested class accessor functions for a very simplistic 
-	// mesh file.
+	// mesh file (enum DEFINED).
 	case (0):
 	    mesh_type = DEFINED;
 	    all_passed = all_passed && check_header(mesh, mesh_type);
@@ -109,15 +122,42 @@ string TestRTT_Format::runTest()
 	    all_passed = all_passed && check_cell_data(mesh, mesh_type);
 	    all_passed = all_passed && check_virtual(mesh, mesh_type);
 	    all_passed = all_passed && check_connectivity(mesh, mesh_type);
-	    if (!all_passed)
-	        fail(filename[mesh_number]) << "Errors occured testing mesh " 
-					    << "number " << mesh_type << endl;
+	    break;
+
+	// Test all nested class accessor functions for the same simplistic 
+	// mesh file with node, side, and cell renumbering implemented 
+	// (enum SORTED). Note that nothing should change from the previous
+	// case until the check_cell_defs accessor function call, but the 
+	// preceding accessor function calls are included to verify that this
+	// fact remains true.
+	case (1):
+	    mesh_type = SORTED;
+	    all_passed = all_passed && check_header(mesh, mesh_type);
+	    all_passed = all_passed && check_dims(mesh, mesh_type);
+	    all_passed = all_passed && check_node_flags(mesh, mesh_type);
+	    all_passed = all_passed && check_side_flags(mesh, mesh_type);
+	    all_passed = all_passed && check_cell_flags(mesh, mesh_type);
+	    all_passed = all_passed && check_node_data_ids(mesh, mesh_type);
+	    all_passed = all_passed && check_side_data_ids(mesh, mesh_type);
+	    all_passed = all_passed && check_cell_data_ids(mesh, mesh_type);
+	    all_passed = all_passed && check_cell_defs(mesh, mesh_type);
+	    all_passed = all_passed && check_renumber(mesh, mesh_type);
+	    all_passed = all_passed && check_nodes(mesh, mesh_type);
+	    all_passed = all_passed && check_sides(mesh, mesh_type);
+	    all_passed = all_passed && check_cells(mesh, mesh_type);
+	    all_passed = all_passed && check_node_data(mesh, mesh_type);
+	    all_passed = all_passed && check_side_data(mesh, mesh_type);
+	    all_passed = all_passed && check_cell_data(mesh, mesh_type);
 	    break;
 
 	default:
 	    fail("runTest") << "Invalid mesh type encountered." << endl;
+	    all_passed = false;
 	    break;
 	}
+	if (!all_passed)
+	    fail(filename[mesh_number]) << "Errors occured testing mesh " 
+					<< "number " << mesh_type << endl;
     }
 
     // Report results of test.
@@ -141,6 +181,7 @@ bool TestRTT_Format::check_header(const rtt_meshReaders::RTT_Format & mesh,
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED:
         version = "v1.0.0";
 	title = "RTT_format mesh file definition, version 7.";
 	date = "24 Jul 97";
@@ -245,6 +286,7 @@ bool TestRTT_Format::check_dims(const rtt_meshReaders::RTT_Format & mesh,
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED:
 	coor_units = "cm";
 	prob_time_units= "s";
         ncell_defs = 8;
@@ -480,6 +522,7 @@ bool TestRTT_Format::check_node_flags(const rtt_meshReaders::RTT_Format & mesh,
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED:
         flagTypes.push_back("node_type");
 	    num_name.push_back(make_pair(11,"interior"));
 	    num_name.push_back(make_pair(21,"dudded"));
@@ -587,6 +630,7 @@ bool TestRTT_Format::check_side_flags(const rtt_meshReaders::RTT_Format & mesh,
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED:
 	flagTypes.push_back("boundary");
 	    num_name.push_back(make_pair(1,"reflective"));
 	    num_name.push_back(make_pair(2,"vacuum"));
@@ -658,14 +702,14 @@ bool TestRTT_Format::check_side_flags(const rtt_meshReaders::RTT_Format & mesh,
 				      << endl;
  	all_passed = false;
     }
-    // Check side flag boundary flag number.
+    // Check side flag required boundary flag number.
     if (bndry != mesh.get_side_flags_boundary_flag_number())
     {
         fail(" SideFlags bndry_flag ") << 
 	     "Side Flags boundary flag not obtained." << endl;
  	all_passed = false;
     }
-    // Check side flag surface source flag number.
+    // Check side flag optional surface source flag number.
     if (src != mesh.get_side_flags_surface_src_flag_number())
     {
         fail(" SideFlags src_flag ") << 
@@ -698,6 +742,7 @@ bool TestRTT_Format::check_cell_flags(const rtt_meshReaders::RTT_Format & mesh,
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED:
         flagTypes.push_back("material");
 	    num_name.push_back(make_pair(1,"control_rod"));
 	    num_name.push_back(make_pair(2,"shield"));
@@ -775,21 +820,21 @@ bool TestRTT_Format::check_cell_flags(const rtt_meshReaders::RTT_Format & mesh,
 				      << endl;
  	all_passed = false;
     }
-    // Check cell flag material flag number.
+    // Check cell flag required material flag number.
     if (matl != mesh.get_cell_flags_material_flag_number())
     {
         fail(" CellFlags matl_flag ") << 
 	     "Cell Flags material flag not obtained." << endl;
  	all_passed = false;
     }
-    // Check cell flag volume source flag number.
+    // Check cell flag optional volume source flag number.
     if (vsrc != mesh.get_cell_flags_volume_src_flag_number())
     {
         fail(" CellFlags vsrc_flag ") << 
 	     "Cell Flags volume source flag not obtained." << endl;
  	all_passed = false;
     }
-     // Check cell flag radiation source flag number.
+     // Check cell flag optional radiation source flag number.
     if (rsrc != mesh.get_cell_flags_radiation_src_flag_number())
     {
         fail(" CellFlags rsrc_flag ") << 
@@ -822,6 +867,7 @@ bool TestRTT_Format::check_node_data_ids(const rtt_meshReaders::RTT_Format &
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED:
         names.push_back("density"); units.push_back("gm/cm**3");
         names.push_back("ion_temp"); units.push_back("keV");
         names.push_back("x_vel"); units.push_back("cm/sec");
@@ -886,6 +932,7 @@ bool TestRTT_Format::check_side_data_ids(const rtt_meshReaders::RTT_Format &
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED:
         names.push_back("density"); units.push_back("gm/cm**3");
         names.push_back("ion_temp"); units.push_back("keV");
 	break;
@@ -941,7 +988,7 @@ bool TestRTT_Format::check_cell_data_ids(const rtt_meshReaders::RTT_Format &
     if (!verify_Dims(mesh, meshtype))
         return false;
 
-    // Exercise the node_data_ids functions for this mesh.
+    // Exercise the cell_data_ids functions for this mesh.
     bool all_passed = true;
     vector<string> names;
     vector<string> units;
@@ -949,6 +996,7 @@ bool TestRTT_Format::check_cell_data_ids(const rtt_meshReaders::RTT_Format &
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED:
         names.push_back("density"); units.push_back("gm/cm**3");
 	break;
 
@@ -1010,83 +1058,87 @@ bool TestRTT_Format::check_cell_defs(const rtt_meshReaders::RTT_Format & mesh,
     vector<int> nsides;
     vector<vector<int> > side_types;
     vector<vector<set<int> > > sides;
-    set<int> side_set;
     vector<vector<vector<int> > > ordered_sides;
 
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED:
+        // Size vectors and load data consistent between both the standard
+        //  and sorted cell definitions (names, nnodes, nsides).
+        side_types.resize(8);
+	sides.resize(8);
+	ordered_sides.resize(8);
+	// Size and load point data
         names.push_back("point");
-	    nnodes.push_back(1);
-	    nsides.push_back(0);
-	    side_types.resize(1);
-	    side_types[0].resize(0);
-	    sides.resize(1);
-	    sides[0].resize(0);
- 	    ordered_sides.resize(1);
-	    ordered_sides[0].resize(0);
-       names.push_back("line");
-	    nnodes.push_back(2);
-	    nsides.push_back(2);
-	    side_types.resize(2);
-	    side_types[1].resize(2,0);
-	    sides.resize(2);
-	    sides[1].resize(2);
-	    side_set.insert(0);
-	    sides[1][0] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(1);
-	    sides[1][1] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
- 	    ordered_sides.resize(2);
-	    ordered_sides[1].resize(2);
-	    ordered_sides[1][0].push_back(0); 
-	    ordered_sides[1][1].push_back(1);
+	nnodes.push_back(1);
+	nsides.push_back(0);
+	side_types[0].resize(0);
+	sides[0].resize(0);
+	ordered_sides[0].resize(0);
+	// Size and load line data.
+        names.push_back("line");
+	nnodes.push_back(2);
+	nsides.push_back(2);
+	side_types[1].resize(2,0);
+	sides[1].resize(2);
+	ordered_sides[1].resize(2);
+	ordered_sides[1][0].push_back(0); 
+	ordered_sides[1][1].push_back(1);
+	// Size triangle data.
         names.push_back("triangle");
-	    nnodes.push_back(3);
-	    nsides.push_back(3);
-	    side_types.resize(3);
-	    side_types[2].resize(3,1);
-	    sides.resize(3);
-	    sides[2].resize(3);
-	    side_set.insert(1); side_set.insert(2);
-	    sides[2][0] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(2); side_set.insert(0);
-	    sides[2][1] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(0); side_set.insert(1);
-	    sides[2][2] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
- 	    ordered_sides.resize(3);
-	    ordered_sides[2].resize(3);
+	nnodes.push_back(3);
+	nsides.push_back(3);
+	side_types[2].resize(3,1);
+	sides[2].resize(3);
+	ordered_sides[2].resize(3);
+	// Size quad data.
+        names.push_back("quad");
+	nnodes.push_back(4);
+	nsides.push_back(4);
+        side_types[3].resize(4,1);
+	sides[3].resize(4);
+	ordered_sides[3].resize(4);
+	// Size quad pyramid data.
+        names.push_back("quad_pyr");
+	nnodes.push_back(5);
+	nsides.push_back(5);
+	side_types[4].resize(5,2);
+	side_types[4][0] = 3;
+	sides[4].resize(5);
+	ordered_sides[4].resize(5);
+	// Size tetrahedron data.
+        names.push_back("tetrahedron");
+	nnodes.push_back(4);
+	nsides.push_back(4);
+	side_types[5].resize(4,2);
+	sides[5].resize(4);
+	ordered_sides[5].resize(4);
+	// Size tri_prism data.
+        names.push_back("tri_prism");
+        nnodes.push_back(6);
+        nsides.push_back(5);
+        side_types[6].resize(5,3);
+        sides[6].resize(5);
+        ordered_sides[6].resize(5);
+	// Size hexahedron data.
+        names.push_back("hexahedron");
+        nnodes.push_back(8);
+        nsides.push_back(6);
+        side_types[7].resize(6,3);
+        sides[7].resize(6);
+        ordered_sides[7].resize(6);
+	switch (meshtype)
+	{
+	case DEFINED:
+	    // triangle
 	    ordered_sides[2][0].push_back(1); 
 	        ordered_sides[2][0].push_back(2); 
 	    ordered_sides[2][1].push_back(2); 
 	        ordered_sides[2][1].push_back(0); 
 	    ordered_sides[2][2].push_back(0); 
 	        ordered_sides[2][2].push_back(1); 
-        names.push_back("quad");
-	    nnodes.push_back(4);
-	    nsides.push_back(4);
-	    side_types.resize(4);
-	    side_types[3].resize(4,1);
-	    sides.resize(4);
-	    sides[3].resize(4);
-	    side_set.insert(0); side_set.insert(1);
-	    sides[3][0] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(1); side_set.insert(2);
-	    sides[3][1] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(2); side_set.insert(3);
-	    sides[3][2] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
- 	    side_set.insert(3); side_set.insert(0);
-	    sides[3][3] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    ordered_sides.resize(4);
-	    ordered_sides[3].resize(4);
+	    // quad
 	    ordered_sides[3][0].push_back(0); 
 	        ordered_sides[3][0].push_back(1); 
 	    ordered_sides[3][1].push_back(1); 
@@ -1095,32 +1147,7 @@ bool TestRTT_Format::check_cell_defs(const rtt_meshReaders::RTT_Format & mesh,
 	        ordered_sides[3][2].push_back(3); 
  	    ordered_sides[3][3].push_back(3); 
 	        ordered_sides[3][3].push_back(0); 
-       names.push_back("quad_pyr");
-	    nnodes.push_back(5);
-	    nsides.push_back(5);
-	    side_types.resize(5);
-	    side_types[4].resize(5,2);
-	    side_types[4][0] = 3;
-	    sides.resize(5);
-	    sides[4].resize(5);
-	    side_set.insert(0); side_set.insert(3); side_set.insert(2);
-	        side_set.insert(1);
-	    sides[4][0] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(0); side_set.insert(1); side_set.insert(4);
-	    sides[4][1] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(1); side_set.insert(2); side_set.insert(4);
-	    sides[4][2] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
- 	    side_set.insert(2); side_set.insert(3); side_set.insert(4);
-	    sides[4][3] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
- 	    side_set.insert(3); side_set.insert(0); side_set.insert(4);
-	    sides[4][4] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    ordered_sides.resize(5);
-	    ordered_sides[4].resize(5);
+	    //quad_pyr
 	    ordered_sides[4][0].push_back(0); 
 	        ordered_sides[4][0].push_back(3); 
 	        ordered_sides[4][0].push_back(2); 
@@ -1137,27 +1164,7 @@ bool TestRTT_Format::check_cell_defs(const rtt_meshReaders::RTT_Format & mesh,
  	    ordered_sides[4][4].push_back(3); 
 	        ordered_sides[4][4].push_back(0); 
 	        ordered_sides[4][4].push_back(4); 
-        names.push_back("tetrahedron");
-	    nnodes.push_back(4);
-	    nsides.push_back(4);
-	    side_types.resize(6);
-	    side_types[5].resize(4,2);
-	    sides.resize(6);
-	    sides[5].resize(4);
-	    side_set.insert(1); side_set.insert(2); side_set.insert(3);
-	    sides[5][0] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(0); side_set.insert(3); side_set.insert(2);
-	    sides[5][1] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(0); side_set.insert(1); side_set.insert(3);
-	    sides[5][2] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
- 	    side_set.insert(0); side_set.insert(2); side_set.insert(1);
-	    sides[5][3] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    ordered_sides.resize(6);
-	    ordered_sides[5].resize(4);
+	    //tetrahedron
 	    ordered_sides[5][0].push_back(1); 
 	        ordered_sides[5][0].push_back(2); 
 	        ordered_sides[5][0].push_back(3); 
@@ -1170,34 +1177,9 @@ bool TestRTT_Format::check_cell_defs(const rtt_meshReaders::RTT_Format & mesh,
  	    ordered_sides[5][3].push_back(0); 
 	        ordered_sides[5][3].push_back(2); 
 	        ordered_sides[5][3].push_back(1); 
-        names.push_back("tri_prism");
-	    nnodes.push_back(6);
-	    nsides.push_back(5);
-	    side_types.resize(7);
-	    side_types[6].resize(5,3);
+	    // tri_prism
+	    // the side_types vary between the cases for this cell def. 
 	    side_types[6][0] = side_types[6][1] = 2;
-	    sides.resize(7);
-	    sides[6].resize(5);
-	    side_set.insert(0); side_set.insert(2); side_set.insert(1);
-	    sides[6][0] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(3); side_set.insert(4); side_set.insert(5);
-	    sides[6][1] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(0); side_set.insert(1); side_set.insert(4);
-	         side_set.insert(3);
-	    sides[6][2] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
- 	    side_set.insert(0); side_set.insert(3); side_set.insert(5);
-	        side_set.insert(2);
-	    sides[6][3] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
- 	    side_set.insert(1); side_set.insert(2); side_set.insert(5);
-	        side_set.insert(4);
-	    sides[6][4] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    ordered_sides.resize(7);
-	    ordered_sides[6].resize(5);
 	    ordered_sides[6][0].push_back(0); 
 	        ordered_sides[6][0].push_back(2); 
 	        ordered_sides[6][0].push_back(1); 
@@ -1216,39 +1198,7 @@ bool TestRTT_Format::check_cell_defs(const rtt_meshReaders::RTT_Format & mesh,
 	        ordered_sides[6][4].push_back(2); 
 	        ordered_sides[6][4].push_back(5); 
 	        ordered_sides[6][4].push_back(4); 
-        names.push_back("hexahedron");
-	    nnodes.push_back(8);
-	    nsides.push_back(6);
-	    side_types.resize(8);
-	    side_types[7].resize(6,3);
-	    sides.resize(8);
-	    sides[7].resize(6);
-	    side_set.insert(0); side_set.insert(3); side_set.insert(2); 
-	        side_set.insert(1);
-	    sides[7][0] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(4); side_set.insert(5); side_set.insert(6);
-	        side_set.insert(7);
-	    sides[7][1] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    side_set.insert(0); side_set.insert(1); side_set.insert(5);
-	        side_set.insert(4);
-	    sides[7][2] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
- 	    side_set.insert(1); side_set.insert(2); side_set.insert(6);
-	        side_set.insert(5);
-	    sides[7][3] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
- 	    side_set.insert(2); side_set.insert(3); side_set.insert(7);
-	        side_set.insert(6);
-	    sides[7][4] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
- 	    side_set.insert(0); side_set.insert(4); side_set.insert(7);
-	        side_set.insert(3);
-	    sides[7][5] = side_set;
-	    side_set.erase(side_set.begin(), side_set.end());
-	    ordered_sides.resize(8);
-	    ordered_sides[7].resize(6);
+	    // hexahedron
 	    ordered_sides[7][0].push_back(0); 
 	        ordered_sides[7][0].push_back(3); 
 	        ordered_sides[7][0].push_back(2); 
@@ -1272,7 +1222,112 @@ bool TestRTT_Format::check_cell_defs(const rtt_meshReaders::RTT_Format & mesh,
  	    ordered_sides[7][5].push_back(0); 
 	        ordered_sides[7][5].push_back(4); 
 	        ordered_sides[7][5].push_back(7); 
-	        ordered_sides[7][5].push_back(3); 
+	        ordered_sides[7][5].push_back(3);
+	    break;
+
+	case SORTED:
+	    // triangle
+	    ordered_sides[2][0].push_back(1); 
+	        ordered_sides[2][0].push_back(0); 
+	    ordered_sides[2][1].push_back(0); 
+	        ordered_sides[2][1].push_back(2); 
+	    ordered_sides[2][2].push_back(2); 
+	        ordered_sides[2][2].push_back(1); 
+	    // quad
+	    ordered_sides[3][0].push_back(1); 
+	        ordered_sides[3][0].push_back(0); 
+	    ordered_sides[3][1].push_back(0); 
+	        ordered_sides[3][1].push_back(2); 
+	    ordered_sides[3][2].push_back(3); 
+	        ordered_sides[3][2].push_back(1); 
+ 	    ordered_sides[3][3].push_back(2); 
+	        ordered_sides[3][3].push_back(3); 
+	    //quad_pyr
+	    ordered_sides[4][0].push_back(0); 
+	        ordered_sides[4][0].push_back(1); 
+	        ordered_sides[4][0].push_back(3); 
+	        ordered_sides[4][0].push_back(2); 
+	    ordered_sides[4][1].push_back(0); 
+	        ordered_sides[4][1].push_back(4); 
+	        ordered_sides[4][1].push_back(1); 
+	    ordered_sides[4][2].push_back(0); 
+	        ordered_sides[4][2].push_back(2); 
+	        ordered_sides[4][2].push_back(4); 
+ 	    ordered_sides[4][3].push_back(1); 
+	        ordered_sides[4][3].push_back(4); 
+	        ordered_sides[4][3].push_back(3); 
+ 	    ordered_sides[4][4].push_back(2); 
+	        ordered_sides[4][4].push_back(3); 
+	        ordered_sides[4][4].push_back(4); 
+	    //tetrahedron
+	    ordered_sides[5][0].push_back(0); 
+	        ordered_sides[5][0].push_back(1); 
+	        ordered_sides[5][0].push_back(2); 
+	    ordered_sides[5][1].push_back(0); 
+	        ordered_sides[5][1].push_back(3); 
+	        ordered_sides[5][1].push_back(1); 
+	    ordered_sides[5][2].push_back(0); 
+	        ordered_sides[5][2].push_back(2); 
+	        ordered_sides[5][2].push_back(3); 
+ 	    ordered_sides[5][3].push_back(1); 
+	        ordered_sides[5][3].push_back(3); 
+	        ordered_sides[5][3].push_back(2); 
+	    // tri_prism
+	    // the side_types vary between the cases for this cell def. 
+	    side_types[6][0] = side_types[6][4] = 2;
+	    ordered_sides[6][0].push_back(0); 
+	        ordered_sides[6][0].push_back(1); 
+	        ordered_sides[6][0].push_back(2); 
+	    ordered_sides[6][1].push_back(0); 
+	        ordered_sides[6][1].push_back(3);
+		ordered_sides[6][1].push_back(4);
+	        ordered_sides[6][1].push_back(1); 
+	    ordered_sides[6][2].push_back(0); 
+	        ordered_sides[6][2].push_back(2); 
+	        ordered_sides[6][2].push_back(5); 
+	        ordered_sides[6][2].push_back(3); 
+ 	    ordered_sides[6][3].push_back(1); 
+	        ordered_sides[6][3].push_back(4); 
+	        ordered_sides[6][3].push_back(5); 
+	        ordered_sides[6][3].push_back(2); 
+ 	    ordered_sides[6][4].push_back(3); 
+	        ordered_sides[6][4].push_back(5); 
+	        ordered_sides[6][4].push_back(4); 
+	    // hexahedron
+	    ordered_sides[7][0].push_back(0); 
+	        ordered_sides[7][0].push_back(1); 
+	        ordered_sides[7][0].push_back(3); 
+	        ordered_sides[7][0].push_back(2); 
+	    ordered_sides[7][1].push_back(0); 
+	        ordered_sides[7][1].push_back(4); 
+	        ordered_sides[7][1].push_back(5); 
+	        ordered_sides[7][1].push_back(1); 
+	    ordered_sides[7][2].push_back(0); 
+	        ordered_sides[7][2].push_back(2); 
+	        ordered_sides[7][2].push_back(6); 
+	        ordered_sides[7][2].push_back(4); 
+ 	    ordered_sides[7][3].push_back(1); 
+	        ordered_sides[7][3].push_back(5); 
+	        ordered_sides[7][3].push_back(7); 
+	        ordered_sides[7][3].push_back(3); 
+ 	    ordered_sides[7][4].push_back(2); 
+	        ordered_sides[7][4].push_back(3); 
+	        ordered_sides[7][4].push_back(7); 
+	        ordered_sides[7][4].push_back(6); 
+ 	    ordered_sides[7][5].push_back(4); 
+	        ordered_sides[7][5].push_back(6); 
+	        ordered_sides[7][5].push_back(7); 
+	        ordered_sides[7][5].push_back(5);
+	    break;
+	}
+	// Load the (sorted) sides data from the ordered_sides data specified
+	// above. The first element of ordered_sides and sides vectors 
+	// corresponds to a point (no sides, and thus the second "array" 
+	// size is zero) so start at cell definition one.
+	for (int c = 1; c < ordered_sides.size(); c++)
+	    for (int s = 0; s < ordered_sides[c].size(); s++)
+	        for (int n = 0; n < ordered_sides[c][s].size(); n++)
+		    sides[c][s].insert(ordered_sides[c][s][n]);
 	break;
 
     default:
@@ -1373,6 +1428,86 @@ bool TestRTT_Format::check_cell_defs(const rtt_meshReaders::RTT_Format & mesh,
 
     return all_passed;
 }
+bool TestRTT_Format::check_renumber(const rtt_meshReaders::RTT_Format & mesh, 
+				    const Meshes & meshtype)
+{
+    // Return if the Dims data is corrupt.        
+    if (!verify_Dims(mesh, meshtype))
+        return false;
+    // Return if the renumbering flag is not set for the mesh constructor.
+    if (!mesh.get_dims_renumber())
+        return false;
+
+    // Exercise the renumbering accessor functions for this mesh.
+    bool all_passed = true;
+    vector<int> node_map(mesh.get_dims_nnodes());
+    vector<int> side_map(mesh.get_dims_nsides());
+    vector<int> cell_map(mesh.get_dims_ncells());
+
+    switch (meshtype)
+    {
+    case SORTED:
+        node_map[0] = 0; node_map[1] = 3; node_map[2] = 2; node_map[3] = 1; 
+        side_map[0] = 3; side_map[1] = 0; side_map[2] = 1; side_map[3] = 2; 
+        cell_map[0] = 0; 
+	break;
+
+    default:
+        fail("check_renumber") << "Invalid mesh type encountered." 
+				    << endl;
+	all_passed = false;
+	return all_passed;
+    }
+
+    // Check node_map
+    bool got_node_map = true;
+    for (int i = 0; i < mesh.get_dims_nnodes(); i++)
+    {
+        if (node_map[i] != mesh.get_nodes_map(i))
+	    got_node_map = false;
+    }
+    if (!got_node_map)
+    {
+        fail(" Renumber node_map ") << "Renumber node_map not obtained." 
+				    << endl;
+ 	all_passed = false;
+    }
+    // Check side_map
+    bool got_side_map = true;
+    for (int i = 0; i < mesh.get_dims_nsides(); i++)
+    {
+        if (side_map[i] != mesh.get_sides_map(i))
+	    got_side_map = false;
+    }
+    if (!got_side_map)
+    {
+        fail(" Renumber side_map ") << "Renumber side_map not obtained." 
+				    << endl;
+ 	all_passed = false;
+    }
+    // Check cell_map
+    bool got_cell_map = true;
+    for (int i = 0; i < mesh.get_dims_ncells(); i++)
+    {
+        if (cell_map[i] != mesh.get_cells_map(i))
+	    got_cell_map = false;
+    }
+    if (!got_cell_map)
+    {
+        fail(" Renumber cell_map ") << "Renumber cell_map not obtained." 
+				    << endl;
+ 	all_passed = false;
+    }
+
+    if (all_passed)
+        pass(" Renumber Accessors " ) << "Got all Renumber accessors." 
+					 << endl;
+    else
+	fail(" Renumber Accessors ") << 
+             "Errors in some Renumber accessors." << endl;
+
+    return all_passed;
+}
 bool TestRTT_Format::check_nodes(const rtt_meshReaders::RTT_Format & mesh, 
 				 const Meshes & meshtype)
 {
@@ -1382,31 +1517,45 @@ bool TestRTT_Format::check_nodes(const rtt_meshReaders::RTT_Format & mesh,
 
     // Exercise the nodes accessor functions for this mesh.
     bool all_passed = true;
-    vector<vector<double> > coords;
-    vector<int> parents;
-    vector<vector<int> > flags;
-    vector<double> node_coords(mesh.get_dims_ndim(),0.0);
+    vector<vector<double> > coords(mesh.get_dims_nnodes(), 
+				   vector<double>(mesh.get_dims_ndim(),0.0));
+    vector<int> parents(mesh.get_dims_nnodes());
+    vector<vector<int> > flags(mesh.get_dims_nnodes());
 
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED:
         // set node coords per the input deck.
-	coords.push_back(node_coords);
-	node_coords[0] = 1.0;
-	coords.push_back(node_coords);
-	node_coords[1] = 2.0; node_coords[0] = 0.0;
-	coords.push_back(node_coords);
-	node_coords[2] = 3.0; node_coords[1] = 0.0;
-	coords.push_back(node_coords);
+	coords[2][1] = 2.0;
 	// set node parents per the input deck.
 	for (int i = 0; i < mesh.get_dims_nnodes(); i++)
-	    parents.push_back(i);
+	    parents[i] = i;
 	// load the node flags.
-	flags.resize(mesh.get_dims_nnodes());
 	flags[0].push_back(11); flags[0].push_back(1); flags[0].push_back(101);
-	flags[1].push_back(21); flags[1].push_back(1); flags[1].push_back(101);
 	flags[2].push_back(21); flags[2].push_back(4); flags[2].push_back(101);
-	flags[3].push_back(6); flags[3].push_back(4); flags[3].push_back(22);
+	switch (meshtype)
+	{
+	case DEFINED:
+            coords[1][2] = 3.0;
+            coords[3][0] = 1.0;
+            flags[1].push_back(21); flags[1].push_back(1); 
+	        flags[1].push_back(101);
+	    flags[3].push_back(6); flags[3].push_back(4); 
+	        flags[3].push_back(22);
+	    break;
+
+	case SORTED: // Nodes 2 and 4 swapped.
+            coords[1][0] = 1.0;
+            coords[3][2] = 3.0;
+            flags[1].push_back(6); flags[1].push_back(4); 
+                flags[1].push_back(22);
+            flags[3].push_back(21); flags[3].push_back(1); 
+                flags[3].push_back(101);
+            flags[1].push_back(6); flags[1].push_back(4); 
+                flags[1].push_back(22);
+            break;
+	}
 	break;
 
     default:
@@ -1418,8 +1567,8 @@ bool TestRTT_Format::check_nodes(const rtt_meshReaders::RTT_Format & mesh,
     // Check all of the node coords.
     if (coords != mesh.get_nodes_coords())
     {
-        fail(" Node Coordinates ") << "Nodes coordinates not obtained." 
-				   << endl;
+        fail(" Nodes Coordinates ") << "Nodes coordinates not obtained." 
+				    << endl;
 	all_passed = false;
     }
     // Check all of the coordinate directions for a single node.
@@ -1505,7 +1654,7 @@ bool TestRTT_Format::check_sides(const rtt_meshReaders::RTT_Format & mesh,
     case DEFINED:
 	// set side sideType per the input deck.
 	sideType.resize(mesh.get_dims_nsides(), 2);
-	// load the side nodess.
+	// load the side nodes.
 	nodes.resize(mesh.get_dims_nsides());
 	nodes[0].push_back(1); nodes[0].push_back(2); nodes[0].push_back(3); 
 	nodes[1].push_back(0); nodes[1].push_back(3); nodes[1].push_back(2); 
@@ -1519,7 +1668,25 @@ bool TestRTT_Format::check_sides(const rtt_meshReaders::RTT_Format & mesh,
 	flags[3].push_back(1);
 	break;
 
-    default:
+    case SORTED: // (1->4, 2->1, 3->2, 4->3 is side translation from original)
+	// set sorted side sideType per the node renumbering.
+        // (1->4, 2->1, 3->2, 4->3 is side translation from original).
+	sideType.resize(mesh.get_dims_nsides(), 2);
+	// load the side nodess.
+	nodes.resize(mesh.get_dims_nsides());
+	nodes[0].push_back(0); nodes[0].push_back(1); nodes[0].push_back(2); 
+	nodes[1].push_back(0); nodes[1].push_back(3); nodes[1].push_back(1); 
+	nodes[2].push_back(0); nodes[2].push_back(2); nodes[2].push_back(3); 
+	nodes[3].push_back(3); nodes[3].push_back(2); nodes[3].push_back(1); 
+	// load the side flags.
+	flags.resize(mesh.get_dims_nsides());
+	flags[0].push_back(1);
+	flags[1].push_back(1);
+	flags[2].push_back(1);
+	flags[3].push_back(2);
+	break;
+
+   default:
         fail("check_sides") << "Invalid mesh type encountered." << endl;
 	all_passed = false;
 	return all_passed;
@@ -1602,15 +1769,16 @@ bool TestRTT_Format::check_cells(const rtt_meshReaders::RTT_Format & mesh,
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED: // Nothing changes for this case.
 	// set cell cellType per the input deck.
 	cellType.resize(mesh.get_dims_ncells(), 5);
-	// load the cell nodess.
-	nodes.resize(mesh.get_dims_ncells());
-	nodes[0].push_back(0); nodes[0].push_back(1); nodes[0].push_back(2); 
-	    nodes[0].push_back(3); 
 	// load the cell flags.
 	flags.resize(mesh.get_dims_ncells());
 	flags[0].push_back(1); flags[0].push_back(2);
+	// Load the cell nodes.
+	nodes.resize(mesh.get_dims_ncells());
+	nodes[0].push_back(0); nodes[0].push_back(1); nodes[0].push_back(2); 
+	nodes[0].push_back(3);
 	break;
 
     default:
@@ -1689,20 +1857,23 @@ bool TestRTT_Format::check_node_data(const rtt_meshReaders::RTT_Format & mesh,
 
     // Exercise the node_data functions for this mesh.
     bool all_passed = true;
-    vector<vector<double> > data;
-    vector<double> node_data(mesh.get_dims_nnode_data(),0.0);
+    vector<vector<double> > data(mesh.get_dims_nnodes(), 
+			    vector<double>(mesh.get_dims_nnode_data(),0.0));
 
     switch (meshtype)
     {
     case DEFINED:
         // set node data per the input deck.
-	data.push_back(node_data);
-	node_data[0] = 1.0;
-	data.push_back(node_data);
-	node_data[1] = 2.0; node_data[0] = 0.0;
-	data.push_back(node_data);
-	node_data[2] = 3.0; node_data[1] = 0.0;
-	data.push_back(node_data);
+	data[1][2] = 3.0;
+	data[2][1] = 2.0;
+	data[3][0] = 1.0;
+	break;
+
+    case SORTED:
+        // set node data per the input deck.
+	data[1][0] = 1.0;
+	data[2][1] = 2.0;
+	data[3][2] = 3.0;
 	break;
 
     default:
@@ -1760,20 +1931,21 @@ bool TestRTT_Format::check_side_data(const rtt_meshReaders::RTT_Format & mesh,
 
     // Exercise the side_data functions for this mesh.
     bool all_passed = true;
-    vector<vector<double> > data;
-    vector<double> side_data(mesh.get_dims_nside_data(),0.0);
+    vector<vector<double> > data(mesh.get_dims_nsides(), 
+			    vector<double>(mesh.get_dims_nside_data(),0.0));
 
     switch (meshtype)
     {
     case DEFINED:
         // set side data per the input deck.
-	data.push_back(side_data);
-	side_data[0] = 1.0;
-	data.push_back(side_data);
-	side_data[1] = 2.0; side_data[0] = 0.0;
-	data.push_back(side_data);
-	side_data[2] = 3.0; side_data[1] = 0.0;
-	data.push_back(side_data);
+	data[2][1] = 2.0;
+	data[3][0] = 1.0;
+	break;
+
+    case SORTED:
+        // set side data per the input deck.
+	data[1][1] = 2.0;
+	data[2][0] = 1.0;
 	break;
 
     default:
@@ -1837,6 +2009,7 @@ bool TestRTT_Format::check_cell_data(const rtt_meshReaders::RTT_Format & mesh,
     switch (meshtype)
     {
     case DEFINED:
+    case SORTED: // Nothing changes for this case.
         // set cell data per the input deck.
 	data.push_back(cell_data);
 	break;
@@ -1913,11 +2086,11 @@ bool TestRTT_Format::check_virtual(const rtt_meshReaders::RTT_Format & mesh,
     case DEFINED:
         // set node coords per the input deck.
 	node_coords.push_back(coords);
-	coords[0] = 1.0;
+	coords[2] = 3.0;
 	node_coords.push_back(coords);
-	coords[1] = 2.0; coords[0] = 0.0;
+	coords[1] = 2.0; coords[2] = 0.0;
 	node_coords.push_back(coords);
-	coords[2] = 3.0; coords[1] = 0.0;
+	coords[0] = 1.0; coords[1] = 0.0;
 	node_coords.push_back(coords);
 	// set the coordinate units used for the nodes.
 	node_coord_units = "cm";
