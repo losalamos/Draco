@@ -21,10 +21,10 @@
 // 
 //===========================================================================//
 
-#include "amr_mesh/CAR_CU_Mesh.hh"
+#include "CAR_CU_Mesh.hh"
 #include "imc/Global.hh"
 #include "ds++/SP.hh"
-#include "amr_mesh/RTT_Format.hh"
+#include "RTT_Format.hh"
 #include <iostream>
 #include <fstream>
 #include <string>

@@ -18,7 +18,7 @@
 
       program alpha
 !===========================================================================
-! Shadow Interface modules
+! Shadow Interface modules - have to have this stuff
 !===========================================================================
 
           USE CAR_CU_Interface_Class
@@ -32,14 +32,15 @@
           type(CAR_CU_RTT_Format) :: rtt_format_class
           type(CAR_CU_Builder)    :: builder_class
           type(CAR_CU_Mesh)       :: mesh_class
-          type(CAR_CU_Mesh)       :: mesh_class
 
 !===========================================================================
-! Define variables just needed for testing the shadow interface functions
+! Define variables needed just for testing the shadow interface functions
 !===========================================================================
 
           type(integer_CCSF)      :: iCCSF_class, idCCSF_class
           type(real_CCSF)         :: rCCSF_class, rdCCSF_class
+          type(integer_FCSF)      :: iFCSF_class, idFCSF_class
+          type(real_FCSF)         :: rFCSF_class, rdFCSF_class
           integer ndims, dir, ncells, nnodes, ncnodes, nfnodes, cell,   &
               face, node
           integer, dimension (:,:), allocatable :: num_adj, adj_cell,   &
@@ -50,9 +51,11 @@
               cell_vertices, face_vertices
           integer, dimension (:), allocatable   :: generation,          &
               cell_nodes, cell_corner_nodes, cell_face_cen_nodes,       &
-              cell_face_nodes, cell_face_specific_nodes
+              cell_face_nodes, cell_face_specific_nodes, int_face_nodes,&
+              cell_face_node_nums
           real*8, dimension (:), allocatable    :: volume,mesh_min_val, &
-              mesh_max_val, node_vertices
+              mesh_max_val, node_vertices, real_face_nodes,             &
+              cell_face_areas
 
 !===========================================================================
 ! Input the command line arguments - input file name followed by anything to
@@ -96,7 +99,7 @@
 
 !===========================================================================
 ! Get rid of RTT_Format, CAR_CU_Interface, and CAR_CU_Builder class objects 
-! that are no longer needed. 
+! since they are no longer needed. 
 !===========================================================================
 
           call destruct_RTT_Format_Class(rtt_format_class)
@@ -122,6 +125,8 @@
           allocate(num_adj(ncells, 2 * ndims))
           allocate(adj_cell(ncells, 2 * ndims))
           allocate(face_area(ncells, 2 * ndims))
+          allocate(cell_face_node_nums( 2 * ndims))
+          allocate(cell_face_areas( 2 * ndims))
           ! Direction-dependent values
           allocate(mesh_min_val(ndims))
           allocate(mesh_max_val(ndims))
@@ -144,10 +149,14 @@
           allocate(cell_vertices((2**ndims), ndims))
           allocate(face_vertices((2*(ndims - 1)), ndims))
           allocate(node_vertices(ndims))
+          allocate(int_face_nodes(nfnodes))
+          allocate(real_face_nodes(nfnodes))
 
           ! Build some uninitialized mesh fields
           call construct_integer_CCSF_Class(mesh_class, iCCSF_Class)
           call construct_real_CCSF_Class(mesh_class, rCCSF_Class)
+          call construct_integer_FCSF_Class(mesh_class, iFCSF_Class)
+          call construct_real_FCSF_Class(mesh_class, rFCSF_Class)
 
           ! Test functions that return large arrays
           vertices = get_vertices(mesh_class)
@@ -169,12 +178,30 @@
                   face_area(cell, face) =                               &
                       get_cell_face_area(mesh_class, cell, face)
                   cell_face_nodes = get_cell_face_nodes(mesh_class, cell, face)
+                  face_vertices = get_cell_face_vertices(mesh_class,cell,face)
+
+                  cell_face_node_nums(face) =                           &
+                      get_cell_face_centered_node(mesh_class, cell, face)
+                  cell_face_areas(face) = face_area(cell, face)
                   cell_face_specific_nodes(face) =                      &
                       get_cell_face_centered_node(mesh_class, cell, face)
-                  face_vertices = get_cell_face_vertices(mesh_class,cell,face)
+                  call set_integer_FCSF_cell_face(iFCSF_Class, cell,    &
+                                                  face, generation(cell))
+                  generation(cell) =                                    &
+                      get_integer_FCSF_cell_face(iFCSF_Class, cell, face)
+                  call set_real_FCSF_cell_face(rFCSF_Class, cell, face, &
+                      volume(cell))
+                  volume(cell) =                                        &
+                      get_real_FCSF_cell_face(rFCSF_Class, cell, face)
 
                   face = face + 1
               end do
+
+              ! Test functions that treat all of a cells faces
+              call set_integer_FCSF_cell(iFCSF_Class,cell,cell_face_node_nums)
+              cell_face_node_nums = get_integer_FCSF_cell(iFCSF_Class, cell)
+              call set_real_FCSF_cell(rFCSF_Class, cell, cell_face_areas)
+              cell_face_areas = get_real_FCSF_cell(rFCSF_Class, cell)
 
               ! Test direction-dependent cell values
               dir = 1
@@ -229,12 +256,31 @@
                                             generation)
           call construct_real_CCSF_Class(mesh_class, rdCCSF_Class,      &
                                          volume)
+          node = 1
+          cell = 1
+          do while (node .le. nfnodes)
+              int_face_nodes(node) = generation(cell)
+              real_face_nodes(node) = volume(cell)
+
+              node = node + 1
+          end do
+          call construct_integer_FCSF_Class(mesh_class, idFCSF_Class,   &
+                                            int_face_nodes)
+          call construct_real_FCSF_Class(mesh_class, rdFCSF_Class,      &
+                                         real_face_nodes)
+
 
           ! Test mesh field assignment and query operators
           call set_integer_CCSF(iCCSF_Class, generation)
           generation = get_integer_CCSF(iCCSF_Class)
           call set_real_CCSF(rCCSF_Class, volume)
           volume = get_real_CCSF(rCCSF_Class)
+
+          call set_integer_FCSF(iFCSF_Class, int_face_nodes)
+          int_face_nodes = get_integer_FCSF(iFCSF_Class)
+
+          call set_real_FCSF(rFCSF_Class, real_face_nodes)
+          real_face_nodes = get_real_FCSF(rFCSF_Class)
 
           ! Deallocate memory for test variable arrays
           ! Cell-centered values
@@ -244,6 +290,8 @@
           deallocate(num_adj)
           deallocate(adj_cell)
           deallocate(face_area)
+          deallocate(cell_face_node_nums)
+          deallocate(cell_face_areas)
           ! Direction-dependent values
           deallocate(mesh_min_val)
           deallocate(mesh_max_val)
@@ -266,6 +314,8 @@
           deallocate(cell_vertices)
           deallocate(face_vertices)
           deallocate(node_vertices)
+          deallocate(int_face_nodes)
+          deallocate(real_face_nodes)
 
 
 !===========================================================================

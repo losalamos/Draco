@@ -120,14 +120,14 @@ class CAR_CU_Mesh
 	// SP back to CAR_CU_Mesh 
 	SP<CAR_CU_Mesh> mesh;
 	// data in field, (num_faces)
-	vector<vector<T> > data;
+	vector<T> data;
 
       public:
 	// inline explicit constructor
 	inline explicit FCSF(SP<CAR_CU_Mesh>);
 
 	// additional constructors
-	inline FCSF(SP<CAR_CU_Mesh>, const vector<vector<T> > &);
+	inline FCSF(SP<CAR_CU_Mesh>, const vector<T> &);
 
 	// return reference to mesh
 	const CAR_CU_Mesh & get_Mesh() const { return * mesh; }
@@ -136,9 +136,10 @@ class CAR_CU_Mesh
 	inline const T & operator()(int, int) const;
 	inline T & operator()(int, int);
 
-	// getting a CC vector
-	inline vector<T> operator()(int) const;
-    };  
+ 	inline const T & operator()(int) const;
+	inline T & operator()(int);
+
+   };  
 
     template<class T>
     class FCDSF
@@ -544,13 +545,9 @@ inline vector<T> CAR_CU_Mesh::CCVF<T>::operator()(int cell) const
 
 template<class T>
 inline CAR_CU_Mesh::FCSF<T>::FCSF(SP<CAR_CU_Mesh> mesh_)
-    : mesh(mesh_), data(mesh->num_cells())
+    : mesh(mesh_), data(mesh->num_face_nodes())
 {
     Require (mesh);
-
-    // initialize data array
-    for (int i = 0; i <mesh->num_cells(); i++)
-	data[i].resize(mesh->num_face_nodes());
 }
 
 //---------------------------------------------------------------------------//
@@ -558,13 +555,21 @@ inline CAR_CU_Mesh::FCSF<T>::FCSF(SP<CAR_CU_Mesh> mesh_)
 
 template<class T>
 inline CAR_CU_Mesh::FCSF<T>::FCSF(SP<CAR_CU_Mesh> mesh_, 
-			      const vector<vector<T> > & array)
+			      const vector<T> & array)
     : mesh(mesh_), data(array)
 {
+    Require (mesh);
     // check things out
-    Ensure (data.size() == mesh->num_cells());
-    for (int i = 0; i <mesh->num_cells(); i++)
-	Ensure (data[i].size() == mesh->num_face_nodes());
+    Ensure (data.size() == mesh->num_face_nodes());
+}
+
+//---------------------------------------------------------------------------//
+// constant overloaded ()
+
+template<class T>
+inline const T & CAR_CU_Mesh::FCSF<T>::operator()(int face) const 
+{
+    return data[face - 1]; 
 }
 
 //---------------------------------------------------------------------------//
@@ -573,9 +578,18 @@ inline CAR_CU_Mesh::FCSF<T>::FCSF(SP<CAR_CU_Mesh> mesh_,
 template<class T>
 inline const T & CAR_CU_Mesh::FCSF<T>::operator()(int cell, int face) const 
 {
-    int index = cell_pair[cell - 1][face - 1 + static_cast<int>(pow(2.0, 
-        mesh->get_Coord().get_dim()))];
-    return data[cell - 1][index - num_corner_nodes() - 1]; 
+    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
+        mesh->get_Coord().get_dim())));
+    return data[index - mesh->num_corner_nodes() - 1]; 
+}
+
+//---------------------------------------------------------------------------//
+// assignment overloaded ()
+
+template<class T>
+inline T & CAR_CU_Mesh::FCSF<T>::operator()(int face)
+{
+    return data[face - 1];
 }
 
 //---------------------------------------------------------------------------//
@@ -584,29 +598,9 @@ inline const T & CAR_CU_Mesh::FCSF<T>::operator()(int cell, int face) const
 template<class T>
 inline T & CAR_CU_Mesh::FCSF<T>::operator()(int cell, int face)
 {
-    int index = cell_pair[cell - 1][face - 1 + static_cast<int>(pow(2.0, 
-        mesh->get_Coord().get_dim()))];
-    return data[cell - 1][index - num_corner_nodes() - 1];
-}
-
-//---------------------------------------------------------------------------//
-// vector return overload()
-
-template<class T>
-inline vector<T> CAR_CU_Mesh::FCSF<T>::operator()(int cell) const
-{
-    // declare return vector
-    vector<T> x;
-    int index = cell_pair[cell - 1][static_cast<int>(pow(2.0, 
-        mesh->get_Coord().get_dim()))];
-    
-    // loop through faces and make return vector for this cell
-    for (int i = 0; i < 2 *  mesh->get_Coord().get_dim(); i++)
-	x.push_back(data[cell-1][index - num_corner_nodes() + i - 1]);
-
-    // return
-    Ensure (x.size() == 2 *  mesh->get_Coord().get_dim());
-    return x;
+    int index = mesh->cell_node(cell, face + static_cast<int>(pow(2.0, 
+        mesh->get_Coord().get_dim())));
+    return data[index - mesh->num_corner_nodes() - 1];
 }
 
 //---------------------------------------------------------------------------//
