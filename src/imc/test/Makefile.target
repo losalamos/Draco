@@ -17,6 +17,8 @@ ${test_alltarget}: ${testdeps}
 tstOpacity_dep = tstOpacity.o tstOpacity_pt.o
 tstTally_dep = tstTally.o tstTally_pt.o
 tstParticle_dep = tstParticle.o tstParticle_pt.o tstTally_pt.o
+tstTopology_Builder_dep = tstTopology_Builder.o \
+                          tstTopology_Builder_pt.o 
 
 tstOpacity: ${tstOpacity_dep}
 	${LD} ${LDFLAGS} -o $@ ${tstOpacity_dep} ${testlibs}
@@ -26,6 +28,9 @@ tstTally: ${tstTally_dep}
 
 tstParticle: ${tstParticle_dep}
 	${LD} ${LDFLAGS} -o $@ ${tstParticle_dep} ${testlibs}
+
+tstTopology_Builder: ${tstTopology_Builder_dep}
+	${LD} ${LDFLAGS} -o $@ ${tstTopology_Builder_dep} ${testlibs}
 
 ###############################################################################
 #			 end of draco/src/imc/test Makefile.target

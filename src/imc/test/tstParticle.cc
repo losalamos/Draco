@@ -17,6 +17,7 @@
 #include "mc/OS_Builder.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
+#include "ds++/SP.hh"
 
 #include <iostream>
 #include <string>

@@ -61,9 +61,12 @@ class IMC_Interface : public rtt_imc::Interface
     std::string analytic_opacity;
     std::string analytic_sp_heat;
 
+    // data for topology
+    int capacity;
+
   public:
-    // constructor
-    inline IMC_Interface();
+    // constructor -> the default processor capacity is 6 cells
+    inline IMC_Interface(int = 6);
 
     // public copy functions for Mesh
     std::string get_coordinates() const {return coord;}
@@ -91,14 +94,16 @@ class IMC_Interface : public rtt_imc::Interface
     int get_npmax() const { return int(); }
     int get_npnom() const { return int(); }
     double get_dnpdt() const { return double(); }
+    int get_capacity() const { return capacity; }
 };
 
 // constructor
-IMC_Interface::IMC_Interface()
+IMC_Interface::IMC_Interface(int capacity_)
     :  rtt_imc::Interface(), coord("xy"), fine_edge(2), bnd(4),
        density(6), kappa(6), kappa_thomson(6), temperature(6),
        specific_heat(6), implicitness(1.0), delta_t(.001),
-       analytic_opacity("straight"), analytic_sp_heat("straight")
+       analytic_opacity("straight"), analytic_sp_heat("straight"),
+       capacity(capacity_)
 {
     // make the Mesh stuff
 
