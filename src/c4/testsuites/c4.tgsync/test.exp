@@ -1,0 +1,52 @@
+puts "Running test of C4 gsync component."
+
+global ENV
+global C4
+global Serial
+
+puts "ENV = $ENV"
+puts "C4 = $C4"
+
+load_lib draco.exp
+
+if {$Serial} { set maxprocs 1 } else { set maxprocs 8 }
+
+proc runit {np args} {
+    set output [c4run $np $args]
+    puts "output is :$output:"
+
+    set lines [split $output \n]
+
+    set x [lrange $lines 0 [expr $np - 1]]
+    set y [lrange $lines $np [expr 2 * $np - 1]]
+
+    foreach line $x {
+	if {![regexp "Hello from" $line]} { return 0 }
+    }
+
+    foreach line $y {
+	if {![regexp "Hello again from" $line]} { return 0 }
+    }
+
+    return 1
+}
+
+for {set np 1} {$np <= $maxprocs} {incr np} {
+    puts "test.exp: np=$np"
+    puts "Running tgsync_$ENV on $np nodes."
+
+    set x "tgsync_$ENV -np $np"
+
+    set err [catch {set rc [runit $np tgsync_$ENV]}]
+    puts "err=$err rc=$rc"
+
+    if {$err} {
+	fail $x
+    } elseif { !$rc } {
+	xfail $x
+    } else {
+	pass $x
+    }
+}
+
+# All done with tests of tgsync_$(env)
