@@ -92,6 +92,13 @@ class General_Topology : public Topology
     inline int local_cell(int) const;
     inline int local_cell(int, int) const;
 
+    // Access boundary cell indices.
+    inline int global_to_boundary(int, int) const;
+    inline int boundary_to_global(int, int) const;
+
+    //! Get the number of boundary cells on a given processor.
+    inline int get_boundary_cells(int) const;  
+
     // Get a list of global cells on processor.
     inline sf_int get_cells(int) const;
 
@@ -235,6 +242,84 @@ int General_Topology::local_cell(int global_cell, int proc) const
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Return the boundary cell index for a global cell index and
+ * processor id.
+ *
+ * This function gives the index of a boundary cell on processor for a given
+ * global cell index.
+ *
+ * \param global_cell requested global cell index
+ * \param proc processor id
+ * \return boundary cell index of global cell on proc or 0 if the global cell
+ * is not a boundary cell on the processor
+ */
+int General_Topology::global_to_boundary(int global_cell, int proc) const
+{
+    Require (global_cell > 0 && global_cell <= num_cells());
+    Require (proc < C4::nodes());
+
+    // leave if we have no boundary cells
+    if (bound_cells.size() == 0) 
+	return 0;
+    else if (bound_cells[proc].size() == 0)
+	return 0;
+
+    // get the iterator location of the desired cell, we need to use const
+    // iterators because that is what find returns-->see KAI reponse on
+    // 19-JUN-98 for details
+    sf_int::const_iterator itr = std::find(bound_cells[proc].begin(),
+					   bound_cells[proc].end(), 
+					   global_cell);
+
+    // if the cell is here return it, remember the boundary cell is [1,N]
+    // whereas the dimensionality is [0,N-1]; thus we need to add one to the
+    // iterator position to return the actual boundary cell index
+    if (itr != bound_cells[proc].end())
+	return (itr - bound_cells[proc].begin()) + 1;
+
+    // if the global_cell does not live on this node return 0
+    return 0;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the global cell index of a given boundary cell on processor.
+ *
+ * This function gives the index of a global cell for a given boundary cell
+ * on processor.
+ *
+ * The boundary cell must be in the range of boundary cells on a processor.
+ * This range may be queried by calls to get_boundary_cells() on a processor.
+ *
+ * \param boundary_cell boundary cell index, must be in range of boundary
+ * cells on processor
+ * \param proc processor id
+ * \return global cell index for given boundary cell 
+ */
+int General_Topology::boundary_to_global(int boundary_cell, int proc) const
+{
+    Require (boundary_cell > 0 && boundary_cell <= bound_cells[proc].size()); 
+    Require (proc < C4::nodes());
+
+    return bound_cells[proc][boundary_cell-1];
+}
+
+//---------------------------------------------------------------------------//
+
+int General_Topology::get_boundary_cells(int proc) const
+{
+    // if bound_cells.size is zero than this is a full replication topology
+    if (bound_cells.size() == 0)
+    {
+	Check (get_parallel_scheme() == "replication");
+	return 0;
+    }
+    
+    return bound_cells[proc].size();
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Get a local-global cell list on processor.
  *
  * This function returns a vector<int> of global cells on processor.  The
@@ -244,8 +329,7 @@ int General_Topology::local_cell(int global_cell, int proc) const
  * index + 1
  *
  * \param proc processor id
- * \return vector<int> of global cells on proc 
- */
+ * \return vector<int> of global cells on proc */
 Topology::sf_int General_Topology::get_cells(int proc) const
 {
     Require (proc < C4::nodes());

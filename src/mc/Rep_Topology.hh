@@ -40,9 +40,10 @@ namespace rtt_mc
  *
  * The Rep_Topology class assumes simple replication.  That is, a local cell
  * and global cell have the same index on each processor and all processors
- * hold all cells.  In other words, the mesh looks identical on each
+ * hold all cells. No boundary cells exist.  Calls to boundary_to_local will
+ * result in a failure. In other words, the mesh looks identical on each
  * processor.  If some different type of full replication topology is desired
- * than the General_Topology class should be used.
+ * than the General_Topology class should be used.  
  */
 // revision history:
 // -----------------
@@ -83,6 +84,15 @@ class Rep_Topology : public Topology
     //! Get the local cell index on a given processor.
     int local_cell(int gcell, int proc) const { return gcell; }
 
+    //! Get the boundary cell index for a global cell on a given processor.
+    int global_to_boundary(int gcell, int proc) const { return 0; }
+
+    //! Get the global cell index for a boundary cell on a given processor.
+    inline int boundary_to_global(int c, int p) const;
+
+    //! Get the number of boundary cells on a given processor.
+    int get_boundary_cells(int proc) const { return 0; }
+    
     // Get a list of global cells on processor.
     inline sf_int get_cells(int) const;
 
@@ -133,6 +143,14 @@ Topology::sf_int Rep_Topology::get_procs(int global_cell) const
     for (int i = 0; i < procs.size(); i++)
 	procs[i] = i;
     return procs;
+}
+
+//---------------------------------------------------------------------------//
+
+int Rep_Topology::boundary_to_global(int boundary_cell, int proc) const
+{
+    Insist(0, "Not in rep!");
+    return 0;
 }
 
 } // end namespace rtt_mc

@@ -36,7 +36,7 @@ namespace rtt_mc
  * \arg \b processor: gives the processor for a global_cell index
  * \arg \b cell_list: gives the global cells on a given processor
  * \arg \b processor_list: gives the processors that a global_cell is on
- * \arg \b boundary_cells: returns boundary cell information for a processor.
+ * \arg \b boundary_cells: boundary cell information for a processor.
  *
  * Topology has two derived classes-a rtt_mc::General_Topology class that is
  * used for DD and DD/replication topologies and a rtt_mc::Rep_Topology class
@@ -50,6 +50,9 @@ namespace rtt_mc
  * class.  The constructors for the derived classes demand different
  * information.  See rtt_mc::General_Topology and rtt_mc::Rep_Topology for
  * the appropriate building requirements. 
+ *
+ * Local and Global cell indices run [1,N].  Zero is reserved for special
+ * purposes (when a queried cell does not reside on processor).  
  */
 /*!
  * \example mc/test/tstTopology.cc
@@ -112,6 +115,15 @@ class Topology
     
     //! Get the local cell index on a given processor.
     virtual int local_cell(int, int) const = 0;
+
+    //! Get the boundary cell index for a global cell on a given processor.
+    virtual int global_to_boundary(int, int) const = 0;
+
+    //! Get the global cell index for a boundary cell on a given processor.
+    virtual int boundary_to_global(int, int) const = 0;
+
+    //! Get the number of boundary cells on a given processor.
+    virtual int get_boundary_cells(int) const = 0;
 
     //! Get a list of global cells on processor.
     virtual sf_int get_cells(int) const = 0;

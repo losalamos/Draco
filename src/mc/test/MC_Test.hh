@@ -128,6 +128,22 @@ bool topology_replication_test(dsxx::SP<rtt_mc::OS_Mesh> mesh,
 	for (int gc = 1; gc <= top.num_cells(); gc++)
 	    if (top.local_cell(gc, proc) != gc) p = FAILURE;
 
+    // test boundary cell functions
+    for (int proc = 0; proc < C4::nodes(); proc++)
+    {
+	if (top.get_boundary_cells(proc) != 0) p = FAILURE; 
+	for (int gc = 1; gc <= top.num_cells(); gc++)
+	    if (top.global_to_boundary(gc, proc) != 0) p = FAILURE;
+    }
+
+    for (int proc = 0; proc < C4::nodes(); proc++)
+	for (int bc = 1; bc <= top.get_boundary_cells(proc); bc++)
+	{ 
+	    // shouldn't get here because there are no boundary
+	    // cells
+	    p = FAILURE; 
+	}
+
     // test get_cells function
     {
 	vector<int> cell_list(mesh->num_cells());
@@ -168,6 +184,8 @@ bool topology_DD_test(dsxx::SP<rtt_mc::OS_Mesh> mesh,
 		      const rtt_mc::Topology &top)
 {
     using std::vector;
+    using std::cout;
+    using std::endl;
 
     // passing condition
     bool p = true;
@@ -242,6 +260,40 @@ bool topology_DD_test(dsxx::SP<rtt_mc::OS_Mesh> mesh,
 	if (top.local_cell(5, 1) != 2) p = FAILURE;
 	if (top.local_cell(6, 1) != 3) p = FAILURE;
     }
+
+    // check boundary cells
+    if (top.get_boundary_cells(0) != 3) p = FAILURE;
+    if (top.get_boundary_cells(1) != 3) p = FAILURE;
+    {
+	if (top.global_to_boundary(1, 0) != 0) p = FAILURE;
+	if (top.global_to_boundary(2, 0) != 0) p = FAILURE;
+	if (top.global_to_boundary(3, 0) != 0) p = FAILURE;
+	if (top.global_to_boundary(4, 0) != 1) p = FAILURE;
+	if (top.global_to_boundary(5, 0) != 2) p = FAILURE;
+	if (top.global_to_boundary(6, 0) != 3) p = FAILURE;
+	if (top.global_to_boundary(1, 1) != 1) p = FAILURE;
+	if (top.global_to_boundary(2, 1) != 2) p = FAILURE;
+	if (top.global_to_boundary(3, 1) != 3) p = FAILURE;
+	if (top.global_to_boundary(4, 1) != 0) p = FAILURE;
+	if (top.global_to_boundary(5, 1) != 0) p = FAILURE;
+	if (top.global_to_boundary(6, 1) != 0) p = FAILURE;
+    }
+    
+    for (int np = 0; np < C4::nodes(); np++)
+    {
+	int offset;
+	if (np == 0) offset = 3;
+	if (np == 1) offset = 0;
+	for (int bc = 1; bc <= top.get_boundary_cells(np); bc++)
+	    if (top.boundary_to_global(bc, np) != bc + offset) p = FAILURE;
+    }
+
+    if (top.boundary_to_global(1, 0) != 4) p = FAILURE;
+    if (top.boundary_to_global(2, 0) != 5) p = FAILURE;
+    if (top.boundary_to_global(3, 0) != 6) p = FAILURE;
+    if (top.boundary_to_global(1, 1) != 1) p = FAILURE;
+    if (top.boundary_to_global(2, 1) != 2) p = FAILURE;
+    if (top.boundary_to_global(3, 1) != 3) p = FAILURE;
 
     // check cell lists on processor
     vector<int> cell_list(3);
