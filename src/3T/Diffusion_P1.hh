@@ -38,6 +38,7 @@ class Diffusion_P1 : private MT::Coord_Mapper,
     SP<MT> spm;
 
     Banded_Matrix< double, 7 > A;
+    ccsf b;
 
     PCG_Ctrl<double> pcg_ctrl;
 
@@ -47,6 +48,7 @@ class Diffusion_P1 : private MT::Coord_Mapper,
     Mat1<double> dx, dy, dz;
 
     fcdsf Dprime, Dtwidle, Dhat;
+    fcdsf Ftwidle, Fhat;
 
   public:
 
@@ -75,7 +77,10 @@ class Diffusion_P1 : private MT::Coord_Mapper,
 
     void calculate_Dprime( const fcdsf& D );
     void calculate_Dtwidle( const fcdsf& D, const fcdsf& Dp );
-    void calculate_Dhat_on_boundaries();
+    void calculate_Dhat_on_boundaries( const fcdsf& D );
+    void calculate_A( const ccsf& sigmaabar );
+    void calculate_b( const ccsf& Qbar_r );
+    void calculate_b( const ccsf& Qbar_r, const fcdsf& Fh );
 
     Banded_Matrix<double,7>& get_A() { return A; }
 };

@@ -17,11 +17,14 @@ Diffusion_P1<MT>::Diffusion_P1( const Diffusion_DB& diffdb,
       Diffusion_DB( diffdb ),
       spm(spm_),
       A( static_cast<MT::Coord_Mapper>(*this), spm->get_diag_offsets() ),
+      b( spm ),
+      
       pcg_ctrl( pcg_db, ncp ),
 
       dx( ncx ), dy( ncy ), dz( ncz ),
 
-      Dprime( spm ), Dtwidle( spm ), Dhat( spm )
+      Dprime( spm ), Dtwidle( spm ), Dhat( spm ),
+      Ftwidle( spm ), Fhat( spm )
 {
 // Fetch the face locations from the mesh.
     const Mat1<double>& xf = spm->get_xf();
@@ -67,9 +70,11 @@ void Diffusion_P1<MT>::solve( const fcdsf& D,
 // Dtwidle and the boundary conditions.
 
     Dhat = Dtwidle;
-    calculate_Dhat_on_boundaries();
+    calculate_Dhat_on_boundaries( D );
 
 // Calculate A from sigmaabar, Dhat, and geometric data.
+
+    calculate_A( sigmaabar );
 
 // Calculate Ftwidle.  This is an fcdsf computed from D, Dprime, and Fprime.
 // Like Dtwidle, it can only be calculated on interior faces because it
@@ -80,6 +85,8 @@ void Diffusion_P1<MT>::solve( const fcdsf& D,
 // exterior faces.
 
 // Calculate b from Qbar_r, Fhat, and various geometric data.
+
+    calculate_b( Qbar_r, Fhat );
 
 // Assert that A is symmetric.
 
@@ -114,9 +121,15 @@ void Diffusion_P1<MT>::solve( const fcdsf& D,
 // solve method is used when solving the conduction equations, which always
 // user reflective boundary conditions, for which alpha=0, beta=1.
 
+    Dhat = Dtwidle;
+
 // Calculate A from sigmaabar, Dhat, and geometric data.
 
+    calculate_A( sigmaabar );
+
 // Calculate b from Qbar_r.  Do not include Fhat terms in this case.
+
+    calculate_b( Qbar_r );
 
 // Solve A.phi = b using PCG.
 }
@@ -263,7 +276,126 @@ void Diffusion_P1<MT>::calculate_Dtwidle( const fcdsf& D, const fcdsf& Dp )
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Diffusion_P1<MT>::calculate_Dhat_on_boundaries()
+void Diffusion_P1<MT>::calculate_Dhat_on_boundaries( const fcdsf& D )
+{
+// Calculate faces perpendicular to x (left and right).
+
+    for( int k=zoff; k < zoff+nczp; k++ )
+        for( int j=0; j < ncy; j++ )
+        {
+            int cl = local_cell_index( 0, j, k );
+            int cr = local_cell_index( ncx-1, j, k );
+
+            Assert( Dhat(cl,0) == 0. );
+            Dhat( cl, 0 ) = 2.*alpha_left*D(cl,0) /
+                ( alpha_left - 2.*beta_left*D(cl,0)/dx(0) );
+
+            Assert( Dhat(cr,1) == 0. );
+            Dhat( cr, 1 ) = 2.*alpha_right*D(cr,1) /
+                ( alpha_right - 2.*beta_right*D(cr,1)/dx(ncx-1) );
+        }
+
+// Calculate faces perpendicular to y (front and back).
+
+    for( int k=zoff; k < zoff+nczp; k++ )
+        for( int i=0; i < ncx; i++ )
+        {
+            int cf = local_cell_index( i, 0, k );
+            int cb = local_cell_index( i, ncy-1, k );
+
+            Assert( Dhat(cf,2) == 0. );
+            Dhat( cf, 2 ) = 2.*alpha_front*D(cf,2) /
+                ( alpha_front - 2.*beta_front*D(cf,2)/dy(0) );
+
+            Assert( Dhat(cb,3) == 0. );
+            Dhat( cb, 3 ) = 2.*alpha_back*D(cf,3) /
+                ( alpha_back - 2.*beta_back*D(cb,3)/dy(ncy-1) );
+        }
+
+// Calculate faces perpendicular to z (bottom and top).
+
+    if (zoff == 0)
+        for( int j=0; j < ncy; j++ )
+            for( int i=0; i < ncx; i++ )
+            {
+                int c = local_cell_index( i, j, 0 );
+
+                Assert( Dhat(c,4) == 0. );
+                Dhat( c, 4 ) = 2.*alpha_bottom*D(c,4) /
+                    ( alpha_bottom - 2.*beta_bottom*D(c,4)/dz(0) );
+            }
+
+    if (zoff+nczp == ncz)
+        for( int j=0; j < ncy; j++ )
+            for( int i=0; i < ncx; i++ )
+            {
+                int c = local_cell_index( i, j, ncz-1 );
+
+                Assert( Dhat(c,5) == 0. );
+                Dhat( c, 5 ) = 2.*alpha_top*D(c,5) /
+                    ( alpha_top - 2.*beta_top*D(c,5)/dz(ncz-1) );
+            }
+}
+
+//---------------------------------------------------------------------------//
+// Calculate the coefficient matrix.
+//---------------------------------------------------------------------------//
+
+template<class MT>
+void Diffusion_P1<MT>::calculate_A( const ccsf& sigmaabar )
+{
+    A = 0.;
+
+// Note that A(c,3) is the diagonal.
+//           A(c,2) is for interaction with cell (i-1,j,k)
+//           A(c,4) is for interaction with cell (i+1,j,k)
+//           A(c,1) is for interaction with cell (i,j-1,k)
+//           A(c,5) is for interaction with cell (i,j+1,k)
+//           A(c,0) is for interaction with cell (i,j,k-1)
+//           A(c,6) is for interaction with cell (i,j,k+1)
+
+    for( int c=0; c < ncp; c++ )
+    {
+        int i = I(c), j = J(c), k = K(c);
+
+        A(c,3) = sigmaabar(c)*dx(i)*dy(j)*dz(k)
+        // left face
+            + dy(j)*dz(k) * Dhat(c,0) / dx(i)
+        // right face
+            + dy(j)*dz(k) * Dhat(c,1) / dx(i)
+        // front face
+            + dx(i)*dz(k) * Dhat(c,2) / dy(j)
+        // back face
+            + dx(i)*dz(k) * Dhat(c,3) / dy(j)
+        // bottom face
+            + dx(i)*dy(j) * Dhat(c,4) / dz(k)
+        // top face
+            + dx(i)*dy(j) * Dhat(c,5) / dz(k);
+
+        if (i > 0)
+            A(c,2) = -dy(j)*dz(k) * Dhat(c,0) / dx(i);
+        if (i < ncx-1)
+            A(c,4) = -dy(j)*dz(k) * Dhat(c,1) / dx(i);
+
+        if (j > 0)
+            A(c,1) = -dx(i)*dz(k) * Dhat(c,2) / dy(j);
+        if (j < ncy-1)
+            A(c,5) = -dx(i)*dz(k) * Dhat(c,3) / dy(j);
+
+        if (k > 0)
+            A(c,0) = -dx(i)*dy(j) * Dhat(c,4) / dz(k);
+        if (k < ncz-1)
+            A(c,6) = -dx(i)*dy(j) * Dhat(c,5) / dz(k);
+    }
+}
+
+template<class MT>
+void Diffusion_P1<MT>::calculate_b( const ccsf& Qbar_r )
+{
+}
+
+template<class MT>
+void Diffusion_P1<MT>::calculate_b( const ccsf& Qbar_r, const fcdsf& Fh )
 {
 }
 
