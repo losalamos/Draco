@@ -1,0 +1,99 @@
+% Make the slide taller to accommodate the slide's headers.
+
+\definecolor{red}{rgb}{1,0,0}
+\definecolor{blue}{rgb}{0,0,1}
+\definecolor{green}{rgb}{0,1,0}
+\definecolor{purple}{rgb}{1,0,1}
+
+\newcommand{\splitcolor}[1]{\textcolor{blue}{#1}}
+\newcommand{\futurecolor}[1]{\textcolor{red}{#1}}
+\newcommand{\colorfuture}{\color{red}}
+\newcommand{\telegraphcolor}[1]{\textcolor{green}{#1}}
+
+\newbox{\doombox}
+\sbox{\doombox}{\scalebox{.8}{\includegraphics[54,596][176,720]{SphereDoom.ps}}}
+
+\newlength{\doomheight}
+\settoheight{\doomheight}{\usebox{\doombox}}
+
+\newlength{\doomdepth}
+\settodepth{\doomdepth}{\usebox{\doombox}}
+
+\newlength{\doomwidth}
+\settowidth{\doomwidth}{\usebox{\doombox}}
+
+\newlength{\headerwidth}
+\setlength{\headerwidth}{\textwidth}
+\addtolength{\headerwidth}{-\doomwidth}
+\addtolength{\headerwidth}{-3ex}
+
+\newsavebox{\slideheader}
+
+\newcommand{\makeslideheader}[1]{%
+  \sbox{\slideheader}{%
+    \begin{minipage}[b]{.95\textwidth}%
+      \parbox[t]{.9\textwidth}{%
+        \parbox{\doomwidth}{\usebox{\doombox}}%
+        \makebox[2ex]{}%
+        \parbox{.85\headerwidth}{%
+          \tiny {#1}%
+        }%
+      }%
+      \\ \makebox[.95\textwidth]{\hrulefill}%
+    \end{minipage}%
+  }%
+}
+
+\makeslideheader{LANL X--TM Unstructured Mesh Team}
+
+\setslideheader{\usebox{\slideheader}}
+
+\setslidefooter{%
+  \parbox{.8\textwidth}{%
+    \hrulefill \\
+    \tiny Solon Discussion and Integration Issues \hfil 05/21/98
+  }%
+}
+
+\newlength{\slideheaderheight}
+\newlength{\slideheaderdepth}
+\settoheight{\slideheaderheight}{\usebox{\slideheader}}
+\settodepth{\slideheaderdepth}{\usebox{\slideheader}}
+
+\newcommand{\makeheaderbox}{%
+  \fbox{\rule{0in}{\headheight}Head Height.}%
+  \fbox{\rule{0in}{\slideheaderheight}Slide Header Height.}%
+  \fbox{\rule{0in}{\slideheaderdepth}Slide Header Depth.}%
+  %\fbox{\rule{0in}{\doomheight}Doom Height Box.}%
+  %\fbox{\rule{0in}{\doomdepth}Doom Depth Box.}%
+}
+
+\newcommand{\grad}{\ensuremath{\vec{\nabla}}}
+\newcommand{\Grad}{\ensuremath{\mathcal{G}}}
+\newcommand{\Div}{\ensuremath{\mathcal{D}}}
+\newcommand{\A}{\ensuremath{\mathcal{A}}}
+
+\newcommand{\partl}[2]{\ensuremath{\frac{\partial{#1}}{\partial{#2}}}}\newcommand{\del}{\ensuremath{\vec{\nabla}}}
+\newcommand{\dt}{\ensuremath{\Delta t}}
+\newcommand{\cviOdt}{\ensuremath{\frac{C_{vi}}{\dt}}}
+\newcommand{\cveOdt}{\ensuremath{\frac{C_{ve}}{\dt}}}
+\newcommand{\Cvs}{\ensuremath{C_{v}^{*}}}
+\newcommand{\cvsOdt}{\ensuremath{\frac{\Cvs}{\dt}}}
+\newcommand{\B}{\ensuremath{\hat{B}}}
+\newcommand{\Bg}{\ensuremath{\hat{B}_{g}}}
+\newcommand{\Bnphlf}{\ensuremath{\hat{B}^{n+\frac{1}{2}}}}
+\newcommand{\pBnphlfdT}{\ensuremath{\frac{\partial\hat{B}}{\partial T}^{n+\frac{1}{2}}}}
+\newcommand{\Bgnphlf}{\ensuremath{\hat{B}_{g}^{n+\frac{1}{2}}}}
+\newcommand{\pBgnphlfdT}{\ensuremath{\frac{\partial\hat{B}}{\partial T}^{n+\frac{1}{2}}}}
+\newcommand{\Bknphlf}{\ensuremath{\hat{B}_{k}^{n+\frac{1}{2}}}}
+\newcommand{\pBknphlfdT}{\ensuremath{\frac{\partial\hat{B}}{\partial T}^{n+\frac{1}{2}}}}
+\newcommand{\units}[1]{\ensuremath{[\mbox{#1}]}}
+\newcommand{\bfunc}{\ensuremath{f_{b}}}
+\newcommand{\tensor}[1]{\ensuremath{\stackrel{\leftrightarrow}{#1}}}
+\newcommand{\bracket}[3]{%
+  \ensuremath{%
+       \left\langle {#1} \rule{0mm}{4ex} \right|%
+       {#2} \left| {#3}  \rule{0mm}{4ex} \right\rangle%
+  }%
+}
+
