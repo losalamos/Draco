@@ -2,7 +2,10 @@
 
 import os, sys, math, re
 
-sys.path.append('../../tools')
+numdiff_path = '../../tools'
+numdiff_py = numdiff_path + '/numdiff.py'
+
+sys.path.append(numdiff_path)
 
 from numdiff import Numdiff
 
@@ -49,8 +52,8 @@ checkStats(filesDiffer, stats, 7, 2)
 
 print '\n********* SCRIPT MODE\n'
 print '\n>>>>>>>>> Run with defaults options: \n'
-os.system('../numdiff.py %s %s' % (file1, file2))
+os.system('%s %s %s' % (numdiff_py, file1, file2))
 print '\n>>>>>>>>> Run with -v 2: \n'
-os.system('../numdiff.py -v 2 %s %s' % (file1, file2))
+os.system('%s -v 2 %s %s' % (numdiff_py, file1, file2))
 print '\n>>>>>>>>> Run with --verbosity=2: \n'
-os.system('../numdiff.py --verbosity=2 %s %s' % (file1, file2))
+os.system('%s --verbosity=2 %s %s' % (numdiff_py, file1, file2))
