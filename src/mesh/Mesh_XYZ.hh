@@ -19,6 +19,8 @@ using dsxx::Mat2;
 
 #include "c4/NodeInfo.hh"
 
+#include "xm/xm.hh"
+
 struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo
 {
     int nct;			// # of total cells in problem.
@@ -50,6 +52,13 @@ struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo
     }
 
     const Mesh_DB& get_Mesh_DB() const{ return *this; }
+
+// Stuff needed to instantiate a Banded_Matrix
+
+    int row_offset() const { return goff; }
+    int nrows_this_processor() const { return ncp; }
+    int nrows_total() const { return nct; }
+    bool verbose() const { return false; }
 };
 
 //===========================================================================//
@@ -103,12 +112,43 @@ class Mesh_XYZ : private XYZ_Mapper
 	}
     };
 
-    class cell_array : public Mat1<double> {
+    class cell_array : public xm::Indexable<double,cell_array>
+    {
+        Mat1<double> data;
 
-	cell_array( const Mesh_XYZ *m ) : Mat1<double>( m->get_ncp() ) {}
+	cell_array( const Mesh_XYZ *m ) : data( m->get_ncp() ) {}
 
       public:
-	cell_array( const SP<Mesh_XYZ>& m ) : Mat1<double>( m->get_ncp() ) {}
+        typedef dsxx::Mat1<double>::iterator iterator;
+        typedef dsxx::Mat1<double>::const_iterator const_iterator;
+
+	cell_array( const SP<Mesh_XYZ>& m ) : data( m->get_ncp() ) {}
+
+        cell_array& operator=( double x )
+        {
+            data = x;
+            return *this;
+        }
+
+        template<class X>
+        cell_array& operator=( const xm::Xpr< double, X, cell_array >& x )
+        {
+            return assign_from( x );
+        }
+
+        double operator()( int i ) const { return data(i); }
+        double& operator()( int i ) { return data(i); }
+
+        double operator[]( int i ) const { return data(i); }
+        double& operator[]( int i ) { return data(i); }
+
+        iterator begin() { return data.begin(); }
+        iterator end() { return data.end(); }
+
+        const_iterator begin() const { return data.begin(); }
+        const_iterator end() const { return data.end(); }
+
+        int size() const { return data.size(); }
 
 	friend class Mesh_XYZ;
     };
@@ -121,6 +161,8 @@ class Mesh_XYZ : private XYZ_Mapper
     Mat1<double> xA, yA, zA;
 
     fcdsf xF, yF, zF;
+
+    int diags[7];
 
   public:
     typedef XYZ_Mapper Coord_Mapper;
@@ -153,6 +195,8 @@ class Mesh_XYZ : private XYZ_Mapper
     const Mat1<double>& get_zA() const { return zA; }
 
     const cell_array& get_vc() const { return vc; }
+
+    const int *get_diag_offsets() const { return diags; }
 };
 
 void dump( const Mesh_XYZ::cell_array& data, char *name );
