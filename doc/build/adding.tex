@@ -186,10 +186,74 @@ customization until \S~\ref{sec:customize}.
   \comp{configure.in} file determines how the \comp{configure*} script
   gets built by \autoconf.  We will step through a standard package
   \comp{configure.in} script to learn how to generate package
-  \comp{configure*} files.  Consider the \cfour\ \comp{configure.in}
-  script illustrated in Fig.~\ref{fig/c4-in}.
-  \cdFramedFigure{fig/c4-in}{\comp{configure.in} file in the \textsc{c4}
-    package.}
+  \comp{configure*} files.  An example is the \cfour\ 
+  \comp{configure.in} script illustrated in Fig.~\ref{fig:c4-in}.
+  \begin{figure}
+    \begin{center}
+      \input{fig/conin}
+    \end{center}
+    \caption{\comp{configure.in} file for the \pkg{c4} package.}
+    \label{fig:c4-in}
+  \end{figure}
+  Notice that the \confin\ file has seven basic sections.  Within
+  these sections there are both required and unrequired macros.
+  Table~\ref{tab:confmacros} lists all of the usable macros in a
+  \draco\ \confin\ script.  Customizing a \confin\ script is explained 
+  in \S~\ref{sec:customize}.
+  \begin{table}
+    \caption{Macros used by the \confin\ scripts.  Macros that require 
+      arguments are indicated by \comp{()} following the macro name.
+      Note that some macros take the literal argument \comp{pkg},
+      while some macros require the package name \vble{pkg}.  Examples 
+      of these are \comp{AC\_MPI\_SETUP(pkg)} and
+      \comp{AC\_PKGNAME(\vble{pkg})}.}
+    \label{tab:confmacros}
+    \begin{center}
+      \begin{tabularx}{\linewidth}{
+          >{\setlength{\hsize}{.7\hsize}}L %
+          >{\setlength{\hsize}{.3\hsize}}Y %
+          >{\setlength{\hsize}{2.\hsize}}X}
+        \hline\hline
+        {\normalfont Macro} & Required & Description\\ \hline
+                                % INTRO
+        \multicolumn{3}{X}{Section 1: INTRO} \\ \hline 
+        AC\_INIT() & yes & initializes configure, takes a filename
+        from the package directory as an argument \\
+        AC\_CONFIG() & yes & tells configure where the macro
+        definitions are located, takes a relative path argument
+        pointing to the directory \comp{draco/config} \\
+        AC\_CONFIG\_HEADER() & yes & tells configure to make the
+        \comp{config.h} header, takes the argument
+        \comp{\vble{pkg}/config.h:config.h.in} \\
+        AC\_PKGNAME() & yes & defines the package name, takes the
+        argument \vble{pkg} \\
+        \hline
+                                % VENDORS
+        \multicolumn{3}{X}{Section 2: VENDOR SETUPS} \\ \hline
+        AC\_MPI\_SETUP() & no & sets up \mpi\ options for this
+        package, takes either \comp{pkg} or \comp{test} as an argument
+        depending if the vendor is required by the package or for
+        testing (in \comp{\vble{pkg}/test/}) \\
+        AC\_SHMEM\_SETUP() & no & sets up \shmem\ options for this
+        package, takes either \comp{pkg} or \comp{test} as an argument
+        \\
+        AC\_SPRNG\_SETUP() & no & sets up \sprng\ options for this
+        package, takes either \comp{pkg} or \comp{test} as an argument
+        \\ 
+        AC\_PGSLIB\_SETUP() & no & sets up \pgslib\ options for this
+        package, takes either \comp{pkg} or \comp{test} as an argument
+        \\ 
+        \hline\hline
+      \end{tabularx}
+    \end{center}
+  \end{table}
+\item[\comp{config.h.in}]\index{config.h.in|textbf} The \confhin\ file 
+  contains \comp{\#define} and other \lang{cpp} macros needed to build 
+  the package.  By isolating macros to the \confhin\ file, compile
+  line bloat is drastically reduced.  Additionally, each package's
+  macro requirements are isolated from other packages.  A symptom of
+  placing \comp{-D\vble{option}} on the compile line is that these
+  definitions tend to get probagated throughout the build cycle.
 \end{description}
 
 %%---------------------------------------------------------------------------%%
