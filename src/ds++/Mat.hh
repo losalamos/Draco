@@ -50,201 +50,6 @@
 // provide more sophisticated allocators, and 3) provide a 1-d analog to Mat2
 // and Mat3.
 //===========================================================================//
-#if 0
-template< class T, class Allocator = typename alloc_traits<T>::Default_Allocator >
-class Mat1 {
-    int xmin, xmax;
-    bool may_free_space;
-
-    void check( int i ) const { Assert( i >= xmin && i < xmax ); }
-
-  protected:
-    Allocator alloc;
-    T *v;
-
-  public:
-    typedef typename Allocator::iterator iterator;
-    typedef typename Allocator::const_iterator const_iterator;
-
-// Constructors
-
-    Mat1() : xmin(0), xmax(0), may_free_space(false), v(0) {}
-
-    Mat1( int _xmax, const T& t = T() )
-	: xmin(0), xmax(_xmax), may_free_space(true),
-	  v(alloc.fetch(xmax))
-    {
-	std::uninitialized_fill_n( v+xmin, nx(), t );
-    }
-    
-    Mat1( const Mat1<T>& m )
-	: xmin(m.xmin), xmax(m.xmax),
-	  may_free_space(true), v(alloc.fetch(xmax-xmin) - xmin)
-    {
-	std::copy( m.begin(), m.end(), v+xmin );
-    }
-
-    Mat1( T *vv, int x )
-	: xmin(0), xmax(x), may_free_space(false), v(vv) {}
-
-    Mat1( T *begin, T *end )
-	: xmin(0), xmax(end - begin),
-	  may_free_space(false), v(begin)
-    {}
-
-    Mat1( const Bounds& b, const T& t = T() )
-	: xmin( b.min() ), xmax( b.max() + 1 ),
-	  may_free_space(true),
-	  v( alloc.fetch(xmax-xmin) - xmin )
-    {
-	std::uninitialized_fill_n( v+xmin, nx(), t );
-    }
-
-    Mat1( T *vv, const Bounds& b )
-	: xmin( b.min() ), xmax( b.max() + 1 ),
-	  may_free_space(false),
-	  v(vv)
-    {}
-
-// Destructor
-
-    ~Mat1()
-    {
-	if (may_free_space) {
-	    std::destroy( v+xmin, v+xmax );
-	    alloc.release( v+xmin, xmax-xmin );
-	}
-    }
-
-// Assignment operators
-
-    Mat1& operator=( const T& t )
-    {
-	for( int i=xmin; i < xmax; i++ )
-	    v[i] = t;
-
-	return *this;
-    }
-
-    Mat1& operator=( const Mat1& m )
-    {
-	if (this == &m) return *this;
-
-	if (m.xmin != xmin || m.xmax != xmax) {
-	    if (may_free_space) alloc.release( v+xmin, xmax-xmin );
-	    xmin = m.xmin;
-	    xmax = m.xmax;
-	    v = alloc.fetch( xmax ) - xmin;
-	}
-
-	std::copy( m.begin(), m.end(), v+xmin );
-
-	return *this;
-    }
-
-// Accessors
-
-    T& operator()( int i ) { check(i); return v[i]; }
-    T& operator[]( int i ) { check(i); return v[i]; }
-
-    const T& operator()( int i ) const { check(i); return v[i]; }
-    const T& operator[]( int i ) const { check(i); return v[i]; }
-
-    iterator begin() { return v+xmin; }
-    const_iterator begin() const { return v+xmin; }
-
-    iterator end() { return v+xmax; }
-    const_iterator end() const { return v+xmax; }
-
-    int nx()   const { return xmax - xmin; }
-    int size() const { return xmax - xmin; }
-    int base() const { return xmin; }
-
-// Mathematical support
-
-    template<class X> Mat1& operator+=( const X& x )
-    {
-	for( int i=xmin; i < xmax; i++ )
-	    v[i] += x;
-	return *this;
-    }
-    Mat1& operator+=( const Mat1<T>& m )
-    {
-	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
-	for( int i=xmin; i < xmax; i++ )
-	    v[i] += m.v[i];
-	return *this;
-    }
-
-    template<class X> Mat1& operator-=( const X& x )
-    {
-	for( int i=xmin; i < xmax; i++ )
-	    v[i] -= x;
-	return *this;
-    }
-    Mat1& operator-=( const Mat1<T>& m )
-    {
-	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
-	for( int i=xmin; i < xmax; i++ )
-	    v[i] -= m.v[i];
-	return *this;
-    }
-
-    template<class X> Mat1& operator*=( const X& x )
-    {
-	for( int i=xmin; i < xmax; i++ )
-	    v[i] *= x;
-	return *this;
-    }
-    Mat1& operator*=( const Mat1<T>& m )
-    {
-	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
-	for( int i=xmin; i < xmax; i++ )
-	    v[i] *= m.v[i];
-	return *this;
-    }
-
-    template<class X> Mat1& operator/=( const X& x )
-    {
-	for( int i=xmin; i < xmax; i++ )
-	    v[i] /= x;
-	return *this;
-    }
-    Mat1& operator/=( const Mat1<T>& m )
-    {
-	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
-	for( int i=xmin; i < xmax; i++ )
-	    v[i] /= m.v[i];
-	return *this;
-    }
-
-// Utility support
-
-    void redim( int nxmax, const T& t = T() )
-    {
-	if (v && !may_free_space) {
-	// User thinks he wants to expand the aliased region.
-	    xmax = nxmax;
-	    return;
-	}
-	if (v) {
-	    std::destroy( v+xmin, v+xmax );
-	    alloc.release( v+xmin, xmax-xmin );
-	}
-	xmax = nxmax;
-	v = alloc.fetch(xmax-xmin) - xmin;
-	may_free_space = true;
-	std::uninitialized_fill_n( v, nx(), t );
-    }
-
-// WARNING: This doesn't make a lot of sense anymore.
-    bool conformal( int n ) const { return n == xmax; }
-};
-#endif
 
 template< class T,
     class Allocator = typename alloc_traits<T>::Default_Allocator >
@@ -255,18 +60,24 @@ class Mat1 {
 
     int xmax() const { return xmin + xlen - 1; }
 
+// index() is used for indexing, so is checked.  offset() is used for
+// adjusting the memory pointer, which is logically distinct from indexing,
+// so is not checked.  Note in particular, that a zero size matrix will have
+// no valid index, but we still need to be able to compute the offsets.
+
     int index( int i ) const
     {
 	Assert( i >= xmin );
 	Assert( i < xmin + xlen );
-	return i;
+	return offset(i);
     }
+    int offset( int i ) const { return i; }
 
     void detach()
     {
 	if (may_free_space) {
 	    std::destroy( begin(), end() );
-	    alloc.release( v + index(xmin), size() );
+	    alloc.release( v + offset(xmin), size() );
 	}
     }
 
@@ -274,29 +85,33 @@ class Mat1 {
     Allocator alloc;
     T *v;
 
-    T&       operator[]( int i )       { return v[ index(i) ]; }
-    const T& operator[]( int i ) const { return v[ index(i) ]; }
-
   public:
     typedef typename Allocator::iterator iterator;
     typedef typename Allocator::const_iterator const_iterator;
 
 // Accessors
 
+    T&       operator[]( int i )       { return v[ index(i) ]; }
+    const T& operator[]( int i ) const { return v[ index(i) ]; }
+
     T&       operator()( int i )       { return v[ index(i) ]; }
     const T& operator()( int i ) const { return v[ index(i) ]; }
 
-    iterator       begin()       { return v + index(xmin); }
-    const_iterator begin() const { return v + index(xmin); }
+    iterator       begin()       { return v + offset(xmin); }
+    const_iterator begin() const { return v + offset(xmin); }
 
-    iterator       end()         { return v + index(xmax) + 1; }
-    const_iterator end() const   { return v + index(xmax) + 1; }
+    iterator       end()         { return v + offset(xmax()) + 1; }
+    const_iterator end() const   { return v + offset(xmax()) + 1; }
 
-    int nx() const { return xlen; }
+    int get_xmin() const { return xmin; }
+    int get_xlen() const { return xlen; }
+
     int size() const { return nx(); }
 
-// Constructors
+// For backward compatibility.
+    int nx() const { return xlen; }
 
+// Constructors
     Mat1()
 	: xmin(0), xlen(0),
 	  may_free_space(false), v(0)
@@ -305,7 +120,7 @@ class Mat1 {
     Mat1( int xmax_, const T& t = T() )
 	: xmin(0), xlen(xmax_),
 	  may_free_space(true),
-	  v( alloc.fetch( size() ) - index(xmin) )
+	  v( alloc.fetch( size() ) - offset(xmin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
@@ -318,21 +133,21 @@ class Mat1 {
     Mat1( const Bounds& bx, const T& t = T() )
 	: xmin( bx.min() ), xlen( bx.len() ),
 	  may_free_space(true),
-	  v( alloc.fetch( size() ) - index(xmin) )
+	  v( alloc.fetch( size() ) - offset(xmin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
 
     Mat1( T *vv, const Bounds& bx )
 	: xmin( bx.min() ), xlen( bx.len() ),
-	  may_free_space(true),
-	  v( vv - index(xmin) )
+	  may_free_space(false),
+	  v( vv - offset(xmin) )
     {}
 
     Mat1( const Mat1<T>& m )
 	: xmin(m.xmin), xlen(m.xlen),
 	  may_free_space(true),
-	  v( alloc.fetch( size() ) - index(xmin) )
+	  v( alloc.fetch( size() ) - offset(xmin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
@@ -348,7 +163,7 @@ class Mat1 {
 
     Mat1& operator=( const T& t )
     {
-	std::fill( begin(), end(), t )
+	std::fill( begin(), end(), t );
 	return *this;
     }
 
@@ -360,7 +175,7 @@ class Mat1 {
 	    detach();
 	    xmin = m.xmin;
 	    xlen = m.xlen;
-	    v = alloc.fetch( size() ) - index(xmin);
+	    v = alloc.fetch( size() ) - offset(xmin);
 	    std::uninitialized_copy( m.begin(), m.end(), begin() );
 	    may_free_space = true;
 	}
@@ -382,10 +197,10 @@ class Mat1 {
     }
     Mat1& operator+=( const Mat1<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
-	for( iterator i = begin(), j = m.begin(); i != end(); )
-	    *i++ += *j++;
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ += *j++;
 	return *this;
     }
 
@@ -397,10 +212,10 @@ class Mat1 {
     }
     Mat1& operator-=( const Mat1<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xlen == m.xlen );
-	for( iterator i = begin(), j = m.begin(); i != end(); )
-	    *i++ -= *j++;
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ -= *j++;
 	return *this;
     }
 
@@ -412,10 +227,10 @@ class Mat1 {
     }
     Mat1& operator*=( const Mat1<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xlen == m.xlen );
-	for( iterator i = begin(), j = m.begin(); i != end(); )
-	    *i++ *= *j++;
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ *= *j++;
 	return *this;
     }
 
@@ -427,14 +242,20 @@ class Mat1 {
     }
     Mat1& operator/=( const Mat1<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xlen == m.xlen );
-	for( iterator i = begin(), j = m.begin(); i != end(); )
-	    *i++ /= *j++;
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ /= *j++;
 	return *this;
     }
 
 // Utility support
+
+    void assert_conformality( const Mat1<T>& m ) const
+    {
+	Assert( xmin == m.xmin );
+	Assert( xlen == m.xlen );
+    }
 
     void redim( int nxmax, const T& t = T() )
     {
@@ -442,12 +263,12 @@ class Mat1 {
 	Assert( xmin == 0 );
 	if (v && !may_free_space) {
 	// User thinks he wants to expand the aliased region.
-	    xmax = nxmax;
+	    xlen = nxmax;
 	    return;
 	}
 	detach();
 	xlen = nxmax;
-	v = alloc.fetch( size() ) - index(xmin);
+	v = alloc.fetch( size() ) - offset(xmin);
 	std::uninitialized_fill( begin(), end(), t );
 	may_free_space = true;
     }
@@ -456,26 +277,26 @@ class Mat1 {
     {
 	if (v && !may_free_space) {
 	// Respecify the aliased region.
-	    v += index(xmin);
+	    v += offset(xmin);
 	    xmin = bx.min(); xlen = bx.len();
-	    v -= index(xmin);
+	    v -= offset(xmin);
 	    return;
 	}
 	detach();
 	xmin = bx.min(); xlen = bx.len();
-	v = alloc.fetch( size() ) - index(xmin);
+	v = alloc.fetch( size() ) - offset(xmin);
 	std::uninitialized_fill( begin(), end(), t );
 	may_free_space = true;
     }
 
-// Check to see if this Mat2<T> is of size x by y.
+// Check to see if this Mat1<T> is of size x.
 
     bool conformal( int x ) const
     {
 	return xmin == 0 && x == xlen;
     }
 
-// Obtain dimensions of this Mat2<T>.
+// Obtain dimension of this Mat1<T>.
 
     void elements( int& nx_ ) const { nx_ = nx(); }
 };
@@ -494,6 +315,11 @@ class Mat2 {
     int xmax() const { return xmin + xlen - 1; }
     int ymax() const { return ymin + ylen - 1; }
 
+// index() is used for indexing, so is checked.  offset() is used for
+// adjusting the memory pointer, which is logically distinct from indexing,
+// so is not checked.  Note in particular, that a zero size matrix will have
+// no valid index, but we still need to be able to compute the offsets.
+
 // Compute the offset into the data array, of the i,j th element.
     int index( int i, int j ) const
     {
@@ -502,21 +328,22 @@ class Mat2 {
 	Assert( j >= ymin );
 	Assert( j < ymin + ylen );
 
-	return xlen * j + i;
+	return offset(i,j);
     }
+    int offset( int i, int j ) const { return xlen * j + i; }
 
 // Make sure a bare integer index is within the appropriate range.
     void check( int i )
     {
-	Assert( i >= index( xmin, ymin ) );
-	Assert( i <= index( xmax, ymax ) );
+	Assert( i >= offset( xmin, ymin ) );
+	Assert( i <= offset( xmax(), ymax() ) );
     }
 
     void detach()
     {
 	if (may_free_space) {
 	    std::destroy( begin(), end() );
-	    alloc.release( v +index(xmin,ymin), size() );
+	    alloc.release( v + offset(xmin,ymin), size() );
 	}
     }
 
@@ -536,15 +363,22 @@ class Mat2 {
     T&       operator()( int i, int j )       { return v[ index(i,j) ]; }
     const T& operator()( int i, int j ) const { return v[ index(i,j) ]; }
 
-    iterator       begin()       { return v + index(xmin,ymin); }
-    const_iterator begin() const { return v + index(xmin,ymin); }
+    iterator       begin()       { return v + offset(xmin,ymin); }
+    const_iterator begin() const { return v + offset(xmin,ymin); }
 
-    iterator       end()         { return v + index(xmax(),ymax()) + 1; }
-    const_iterator end() const   { return v + index(xmax(),ymax()) + 1; }
+    iterator       end()         { return v + offset(xmax(),ymax()) + 1; }
+    const_iterator end() const   { return v + offset(xmax(),ymax()) + 1; }
 
+    int get_xmin() const { return xmin; }
+    int get_xlen() const { return xlen; }
+    int get_ymin() const { return ymin; }
+    int get_ylen() const { return ylen; }
+
+    int size() const { return nx() * ny(); }
+
+// For backward compatibility.
     int nx() const { return xlen; }
     int ny() const { return ylen; }
-    int size() const { return nx() * ny(); }
 
 // Constructors
 
@@ -557,7 +391,7 @@ class Mat2 {
 	: xmin(0), xlen(xmax_),
 	  ymin(0), ylen(ymax_),
 	  may_free_space(true),
-	  v( alloc.fetch( size() ) - index(xmin,ymin) )
+	  v( alloc.fetch( size() ) - offset(xmin,ymin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
@@ -572,7 +406,7 @@ class Mat2 {
 	: xmin( bx.min() ), xlen( bx.len() ),
 	  ymin( by.min() ), ylen( by.len() ),
 	  may_free_space(true),
-	  v( alloc.fetch( size() ) - index(xmin,ymin) )
+	  v( alloc.fetch( size() ) - offset(xmin,ymin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
@@ -580,15 +414,15 @@ class Mat2 {
     Mat2( T *vv, const Bounds& bx, const Bounds& by )
 	: xmin( bx.min() ), xlen( bx.len() ),
 	  ymin( by.min() ), ylen( by.len() ),
-	  may_free_space(true),
-	  v( vv - index(xmin,ymin) )
+	  may_free_space(false),
+	  v( vv - offset(xmin,ymin) )
     {}
 
     Mat2( const Mat2<T>& m )
 	: xmin(m.xmin), xlen(m.xlen),
 	  ymin(m.ymin), ylen(m.ylen),
 	  may_free_space(true),
-	  v( alloc.fetch( size() ) - index(xmin,ymin) )
+	  v( alloc.fetch( size() ) - offset(xmin,ymin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
@@ -604,7 +438,7 @@ class Mat2 {
 
     Mat2& operator=( const T& t )
     {
-	std::fill( begin(), end(), t )
+	std::fill( begin(), end(), t );
 	return *this;
     }
 
@@ -619,7 +453,7 @@ class Mat2 {
 	    xlen = m.xlen;
 	    ymin = m.ymin;
 	    ylen = m.ylen;
-	    v = alloc.fetch( size() ) - index(xmin,ymin);
+	    v = alloc.fetch( size() ) - offset(xmin,ymin);
 	    std::uninitialized_copy( m.begin(), m.end(), begin() );
 	    may_free_space = true;
 	}
@@ -641,12 +475,10 @@ class Mat2 {
     }
     Mat2& operator+=( const Mat2<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
-	Assert( ymin == m.ymin );
-	Assert( ymax == m.ymax );
-	for( iterator i = begin(), j = m.begin(); i != end(); )
-	    *i++ += *j++;
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ += *j++;
 	return *this;
     }
 
@@ -658,12 +490,10 @@ class Mat2 {
     }
     Mat2& operator-=( const Mat2<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xlen == m.xlen );
-	Assert( ymin == m.ymin );
-	Assert( ylen == m.ylen );
-	for( iterator i = begin(), j = m.begin(); i != end(); )
-	    *i++ -= *j++;
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ -= *j++;
 	return *this;
     }
 
@@ -675,12 +505,10 @@ class Mat2 {
     }
     Mat2& operator*=( const Mat2<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xlen == m.xlen );
-	Assert( ymin == m.ymin );
-	Assert( ylen == m.ylen );
-	for( iterator i = begin(), j = m.begin(); i != end(); )
-	    *i++ *= *j++;
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ *= *j++;
 	return *this;
     }
 
@@ -692,16 +520,22 @@ class Mat2 {
     }
     Mat2& operator/=( const Mat2<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xlen == m.xlen );
-	Assert( ymin == m.ymin );
-	Assert( ylen == m.ylen );
-	for( iterator i = begin(), j = m.begin(); i != end(); )
-	    *i++ /= *j++;
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ /= *j++;
 	return *this;
     }
 
 // Utility support
+
+    void assert_conformality( const Mat2<T>& m ) const
+    {
+	Assert( xmin == m.xmin );
+	Assert( xlen == m.xlen );
+	Assert( ymin == m.ymin );
+	Assert( ylen == m.ylen );
+    }
 
     void redim( int nxmax, int nymax, const T& t = T() )
     {
@@ -710,14 +544,14 @@ class Mat2 {
 	Assert( ymin == 0 );
 	if (v && !may_free_space) {
 	// User thinks he wants to expand the aliased region.
-	    xmax = nxmax;
-	    ymax = nymax;
+	    xlen = nxmax;
+	    ylen = nymax;
 	    return;
 	}
 	detach();
 	xlen = nxmax;
 	ylen = nymax;
-	v = alloc.fetch( size() ) - index(0,0);
+	v = alloc.fetch( size() ) - offset(0,0);
 	std::uninitialized_fill( begin(), end(), t );
 	may_free_space = true;
     }
@@ -726,16 +560,17 @@ class Mat2 {
     {
 	if (v && !may_free_space) {
 	// Respecify the aliased region.
-	    v += index(xmin,ymin);
+	    v += offset(xmin,ymin);
 	    xmin = bx.min(); xlen = bx.len();
 	    ymin = by.min(); ylen = by.len();
-	    v -= index(xmin,ymin);
+	    v -= offset(xmin,ymin);
 	    return;
 	}
 	detach();
 	xmin = bx.min(); xlen = bx.len();
 	ymin = by.min(); ylen = by.len();
-	v = alloc.fetch( size() ) - index(xmin,ymin);
+	v = alloc.fetch( size() ) - offset(xmin,ymin);
+	std::uninitialized_fill( begin(), end(), t );
 	may_free_space = true;
     }
 
@@ -759,16 +594,46 @@ class Mat2 {
 
 template< class T, class Allocator = Simple_Allocator<T> >
 class Mat3 {
-    int xmin, xmax, ymin, ymax, zmin, zmax;
+  private:
+    int xmin, xlen, ymin, ylen, zmin, zlen;
     bool may_free_space;
 
-    void check( int i ) const { Assert( i >= 0 && i < xmax*ymax*zmax ); }
+    int xmax() const { return xmin + xlen - 1; }
+    int ymax() const { return ymin + ylen - 1; }
+    int zmax() const { return zmin + zlen - 1; }
 
-    void check( int i, int j, int k ) const
+// index() is used for indexing, so is checked.  offset() is used for
+// adjusting the memory pointer, which is logically distinct from indexing,
+// so is not checked.  Note in particular, that a zero size matrix will have
+// no valid index, but we still need to be able to compute the offsets.
+
+// Compute the offset into the data array, of the i,j th element.
+    int index( int i, int j, int k ) const
     {
-	Assert( i >= xmin && i < xmax );
-	Assert( j >= ymin && j < ymax );
-	Assert( k >= zmin && k < zmax );
+	Assert( i >= xmin );
+	Assert( i < xmin + xlen );
+	Assert( j >= ymin );
+	Assert( j < ymin + ylen );
+	Assert( k >= zmin );
+	Assert( k < zmin + zlen );
+
+	return offset(i,j,k);
+    }
+    int offset( int i, int j, int k ) const { return xlen*(k*ylen+j)+i; }
+
+// Make sure a bare integer index is within the appropriate range.
+    void check( int i )
+    {
+	Assert( i >= offset( xmin, ymin, zmin ) );
+	Assert( i <= offset( xmax(), ymax(), zmax() ) );
+    }
+
+    void detach()
+    {
+	if (may_free_space) {
+	    std::destroy( begin(), end() );
+	    alloc.release( v + offset(xmin,ymin,zmin), size() );
+	}
     }
 
   protected:
@@ -782,59 +647,96 @@ class Mat3 {
     typedef typename Allocator::iterator iterator;
     typedef typename Allocator::const_iterator const_iterator;
 
+// Accessors
+
+    T&       operator()( int i, int j, int k )       { return v[ index(i,j,k) ]; }
+    const T& operator()( int i, int j, int k ) const { return v[ index(i,j,k) ]; }
+
+    iterator       begin()       { return v + offset(xmin,ymin,zmin); }
+    const_iterator begin() const { return v + offset(xmin,ymin,zmin); }
+
+    iterator       end()         { return v + offset(xmax(),ymax(),zmax()) + 1; }
+    const_iterator end() const   { return v + offset(xmax(),ymax(),zmax()) + 1; }
+
+    int get_xmin() const { return xmin; }
+    int get_xlen() const { return xlen; }
+    int get_ymin() const { return ymin; }
+    int get_ylen() const { return ylen; }
+    int get_zmin() const { return zmin; }
+    int get_zlen() const { return zlen; }
+
+    int size() const { return nx() * ny() * nz(); }
+
+// For backward compatibility.
+    int nx() const { return xlen; }
+    int ny() const { return ylen; }
+    int nz() const { return zlen; }
+
 // Constructors
 
-// WARNING: Not set up for offset bounds yet...
-
     Mat3()
-	: xmin(0), xmax(0), ymin(0), ymax(0), zmin(0), zmax(0),
+	: xmin(0), xlen(0), ymin(0), ylen(0), zmin(0), zlen(0),
 	  may_free_space(false), v(0)
     {}
 
-    Mat3( int _xmax, int _ymax, int _zmax )
-	: xmin(0), xmax(_xmax),
-	  ymin(0), ymax(_ymax),
-	  zmin(0), zmax(_zmax),
+    Mat3( int xmax_, int ymax_, int zmax_, const T& t = T() )
+	: xmin(0), xlen(xmax_),
+	  ymin(0), ylen(ymax_),
+	  zmin(0), zlen(zmax_),
 	  may_free_space(true),
-	  v( alloc.fetch( xmax * ymax * zmax ) )
-    {}
-    
-    Mat3( const Mat3<T>& m )
-	: xmin(m.xmin), xmax(m.xmax),
-	  ymin(m.ymin), ymax(m.ymax),
-	  zmin(m.zmin), zmax(m.zmax),
-	  may_free_space(true),
-	  v( alloc.fetch( xmax * ymax * zmax ) )
+	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin) )
     {
-	std::copy( m.begin(), m.end(), v );
+	std::uninitialized_fill( begin(), end(), t );
     }
 
-    Mat3( T *vv, int xmx, int ymx, int zmx )
-	: xmin(0), xmax(xmx),
-	  ymin(0), ymax(ymx),
-	  zmin(0), zmax(zmx),
+    Mat3( T *vv, int xmax_, int ymax_, int zmax_ )
+	: xmin(0), xlen(xmax_),
+	  ymin(0), ylen(ymax_),
+	  zmin(0), zlen(zmax_),
 	  may_free_space(false), v(vv)
     {}
 
-//     Mat1( T *vv, int x ) : xmin(0), xmax(x), may_free_space(false), v(vv) {}
+    Mat3( const Bounds& bx, const Bounds& by,
+	  const Bounds& bz, const T& t = T() )
+	: xmin( bx.min() ), xlen( bx.len() ),
+	  ymin( by.min() ), ylen( by.len() ),
+	  zmin( bz.min() ), zlen( bz.len() ),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin) )
+    {
+	std::uninitialized_fill( begin(), end(), t );
+    }
 
-//     Mat1( const Bounds& b )
-// 	: xmin( b.min() ), xmax( b.max() + 1 ),
-// 	  may_free_space(true),
-// 	  v( alloc.fetch(xmax-xmin) - xmin )
-//     {}
+    Mat3( T *vv, const Bounds& bx, const Bounds& by, const Bounds& bz )
+	: xmin( bx.min() ), xlen( bx.len() ),
+	  ymin( by.min() ), ylen( by.len() ),
+	  zmin( bz.min() ), zlen( bz.len() ),
+	  may_free_space(false),
+	  v( vv - offset(xmin,ymin,zmin) )
+    {}
+
+    Mat3( const Mat3<T>& m )
+	: xmin(m.xmin), xlen(m.xlen),
+	  ymin(m.ymin), ylen(m.ylen),
+	  zmin(m.zmin), zlen(m.zlen),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin) )
+    {
+	std::uninitialized_copy( m.begin(), m.end(), begin() );
+    }
 
 // Destructor
 
-    ~Mat3() { if (may_free_space) alloc.release( v, xmax * ymax * zmax ); }
+    ~Mat3()
+    {
+	detach();
+    }
 
 // Assignment operators
 
     Mat3& operator=( const T& t )
     {
-	for( int i=0; i < xmax*ymax*zmax; i++ )
-	    v[i] = t;
-
+	std::fill( begin(), end(), t );
 	return *this;
     }
 
@@ -842,188 +744,143 @@ class Mat3 {
     {
 	if (this == &m) return *this;
 
-	if ( m.xmin != xmin || m.xmax != xmax ||
-	     m.ymin != ymin || m.ymax != ymax ||
-	     m.zmin != zmin || m.zmax != zmax ) {
-	    if (may_free_space) alloc.release( v, xmax*ymax*zmax );
+	if ( m.xmin != xmin || m.xlen != xlen ||
+	     m.ymin != ymin || m.ylen != ylen ||
+	     m.zmin != zmin || m.zlen != zlen ) {
+	    detach();
 	    xmin = m.xmin;
-	    xmax = m.xmax;
+	    xlen = m.xlen;
 	    ymin = m.ymin;
-	    ymax = m.ymax;
+	    ylen = m.ylen;
 	    zmin = m.zmin;
-	    zmax = m.zmax;
-	    v = alloc.fetch( xmax*ymax*zmax );
+	    zlen = m.zlen;
+	    v = alloc.fetch( size() ) - offset(xmin,ymin,zmin);
+	    std::uninitialized_copy( m.begin(), m.end(), begin() );
+	    may_free_space = true;
 	}
-
-	std::copy( m.begin(), m.end(), v );
+	else {
+	    if (v)
+		std::copy( m.begin(), m.end(), begin() );
+	}
 
 	return *this;
     }
-
-// Accessors
-
-    T& operator()( int i, int j, int k )
-    {
-	check(i,j,k);
-	return v[ xmax * (k * ymax + j) + i ];
-    }
-
-    const T& operator()( int i, int j, int k ) const
-    {
-	check(i,j,k);
-	return v[ xmax * (k * ymax + j) + i ];
-    }
-
-    iterator begin() { return v; }
-    const_iterator begin() const { return v; }
-
-    iterator end() { return v + xmax*ymax*zmax; }
-    const_iterator end() const { return v + xmax*ymax*zmax; }
-
-    int nx() const { return xmax - xmin; }
-    int ny() const { return ymax - ymin; }
-    int nz() const { return zmax - zmin; }
 
 // Mathematical support
 
-    template<class X>
-    Mat3& operator+=( const X& x )
+    template<class X> Mat3& operator+=( const X& x )
     {
-	for( int i=0; i < xmax*ymax*zmax; i++ )
-	    v[i] += x;
+	for( iterator i = begin(); i != end(); )
+	    *i++ += x;
 	return *this;
     }
-
     Mat3& operator+=( const Mat3<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
-	Assert( ymin == m.ymin );
-	Assert( ymax == m.ymax );
-	Assert( zmin == m.zmin );
-	Assert( zmax == m.zmax );
-	for( int i=0; i < xmax*ymax*zmax; i++ )
-	    v[i] += m.v[i];
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ += *j++;
 	return *this;
     }
 
-    template<class X>
-    Mat3& operator-=( const X& x )
+    template<class X> Mat3& operator-=( const X& x )
     {
-	for( int i=0; i < xmax*ymax*zmax; i++ )
-	    v[i] -= x;
+	for( iterator i = begin(); i != end(); )
+	    *i++ -= x;
 	return *this;
     }
-
     Mat3& operator-=( const Mat3<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
-	Assert( ymin == m.ymin );
-	Assert( ymax == m.ymax );
-	Assert( zmin == m.zmin );
-	Assert( zmax == m.zmax );
-	for( int i=0; i < xmax*ymax*zmax; i++ )
-	    v[i] -= m.v[i];
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ -= *j++;
 	return *this;
     }
 
-    template<class X>
-    Mat3& operator*=( const X& x )
+    template<class X> Mat3& operator*=( const X& x )
     {
-	for( int i=0; i < xmax*ymax*zmax; i++ )
-	    v[i] *= x;
+	for( iterator i = begin(); i != end(); )
+	    *i++ *= x;
 	return *this;
     }
-
     Mat3& operator*=( const Mat3<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
-	Assert( ymin == m.ymin );
-	Assert( ymax == m.ymax );
-	Assert( zmin == m.zmin );
-	Assert( zmax == m.zmax );
-	for( int i=0; i < xmax*ymax*zmax; i++ )
-	    v[i] *= m.v[i];
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ *= *j++;
 	return *this;
     }
 
-    template<class X>
-    Mat3& operator/=( const X& x )
+    template<class X> Mat3& operator/=( const X& x )
     {
-	for( int i=0; i < xmax*ymax*zmax; i++ )
-	    v[i] /= x;
+	for( iterator i = begin(); i != end(); )
+	    *i++ /= x;
 	return *this;
     }
-
     Mat3& operator/=( const Mat3<T>& m )
     {
-	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
-	Assert( ymin == m.ymin );
-	Assert( ymax == m.ymax );
-	Assert( zmin == m.zmin );
-	Assert( zmax == m.zmax );
-	for( int i=0; i < xmax*ymax*zmax; i++ )
-	    v[i] /= m.v[i];
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ /= *j++;
 	return *this;
-    }
-
-    int operator==( const Mat3<T>& m ) const
-    {
-	if (xmax != m.xmax) return 0;
-	if (ymax != m.ymax) return 0;
-	if (zmax != m.zmax) return 0;
-
-	for( int i=0; i < xmax*ymax*zmax; i++ )
-	    if (v[i] != m.v[i]) return 0;
-
-	return 1;
-    }
-
-    int operator!=( const Mat3<T>& m ) const
-    {
-	return !(*this == m);
     }
 
 // Utility support
 
+    void assert_conformality( const Mat3<T>& m ) const
+    {
+	Assert( xmin == m.xmin );
+	Assert( xlen == m.xlen );
+	Assert( ymin == m.ymin );
+	Assert( ylen == m.ylen );
+	Assert( zmin == m.zmin );
+	Assert( zlen == m.zlen );
+    }
+
     void redim( int nxmax, int nymax, int nzmax, const T& t = T() )
     {
-    // This one only works right if xmin == 0.
+    // This one only works right if xmin == 0 and ymin == 0 and zmin == 0.
 	Assert( xmin == 0 );
 	Assert( ymin == 0 );
 	Assert( zmin == 0 );
 	if (v && !may_free_space) {
 	// User thinks he wants to expand the aliased region.
-	    xmax = nxmax;
-	    ymax = nymax;
-	    zmax = nzmax;
+	    xlen = nxmax;
+	    ylen = nymax;
+	    zlen = nzmax;
 	    return;
 	}
-	if (v) {
-	    std::destroy( begin(), end() );
-	    alloc.release( v, xmax*ymax*zmax );
-	}
-	xmax = nxmax;
-	ymax = nymax;
-	zmax = nzmax;
-	v = alloc.fetch( xmax*ymax*zmax );
-	may_free_space = true;
+	detach();
+	xlen = nxmax;
+	ylen = nymax;
+	zlen = nzmax;
+	v = alloc.fetch( size() ) - offset(0,0,0);
 	std::uninitialized_fill( begin(), end(), t );
+	may_free_space = true;
     }
 
-// This is here temporarily until Geoff figures out where he wants it to be.
-
-    T norm() const
+    void redim( const Bounds& bx, const Bounds& by,
+		const Bounds& bz, const T& t = T() )
     {
-	T nrm = T(0.);
-	int i;
-	for( i=0; i < xmax*ymax*zmax; i++ )
-	    nrm += v[i]*v[i];
-
-	return sqrt(nrm/i);
+	if (v && !may_free_space) {
+	// Respecify the aliased region.
+	    v += offset(xmin,ymin,zmin);
+	    xmin = bx.min(); xlen = bx.len();
+	    ymin = by.min(); ylen = by.len();
+	    zmin = bz.min(); zlen = bz.len();
+	    v -= offset(xmin,ymin,zmin);
+	    return;
+	}
+	detach();
+	xmin = bx.min(); xlen = bx.len();
+	ymin = by.min(); ylen = by.len();
+	zmin = bz.min(); zlen = bz.len();
+	v = alloc.fetch( size() ) - offset(xmin,ymin,zmin);
+	std::uninitialized_fill( begin(), end(), t );
+	may_free_space = true;
     }
 
 // WARNING: This doesn't make a lot of sense anymore.
@@ -1032,16 +889,369 @@ class Mat3 {
 
     bool conformal( int x, int y, int z ) const
     {
-	return x == xmax && y == ymax && z == zmax;
+	return x == xlen && y == ylen && z == zlen;
     }
 
 // Obtain dimensions of this Mat3<T>.
 
     void elements( int& nx, int& ny, int& nz ) const
     {
-	nx = xmax; ny = ymax; nz = zmax;
+	nx = xlen; ny = ylen; nz = zlen;
+    }
+};
+
+//===========================================================================//
+// class Mat4 - A 4-d container.
+
+//===========================================================================//
+
+template< class T, class Allocator = Simple_Allocator<T> >
+class Mat4 {
+  private:
+    int xmin, xlen, ymin, ylen, zmin, zlen, wmin, wlen;
+    bool may_free_space;
+
+    int xmax() const { return xmin + xlen - 1; }
+    int ymax() const { return ymin + ylen - 1; }
+    int zmax() const { return zmin + zlen - 1; }
+    int wmax() const { return wmin + wlen - 1; }
+
+// index() is used for indexing, so is checked.  offset() is used for
+// adjusting the memory pointer, which is logically distinct from indexing,
+// so is not checked.  Note in particular, that a zero size matrix will have
+// no valid index, but we still need to be able to compute the offsets.
+
+// Compute the offset into the data array, of the i,j,k,l th element.
+    int index( int i, int j, int k, int l ) const
+    {
+	Assert( i >= xmin );
+	Assert( i <  xmin + xlen );
+	Assert( j >= ymin );
+	Assert( j <  ymin + ylen );
+	Assert( k >= zmin );
+	Assert( k <  zmin + zlen );
+	Assert( l >= wmin );
+	Assert( l <  wmin + wlen );
+
+	return offset(i,j,k,l);
+    }
+    int offset( int i, int j, int k, int l ) const
+    {
+	return xlen*(ylen*(zlen*l+k)+j)+i;
     }
 
+// Make sure a bare integer index is within the appropriate range.
+    void check( int i )
+    {
+	Assert( i >= offset( xmin,   ymin,   zmin,   wmin   ) );
+	Assert( i <= offset( xmax(), ymax(), zmax(), wmax() ) );
+    }
+
+    void detach()
+    {
+	if (may_free_space) {
+	    std::destroy( begin(), end() );
+	    alloc.release( v + offset(xmin,ymin,zmin,wmin), size() );
+	}
+    }
+
+  protected:
+    Allocator alloc;
+    T *v;
+
+    T& operator[]( int i ) { check(i); return v[i]; }
+    const T& operator[]( int i ) const { check(i); return v[i]; }
+
+  public:
+    typedef typename Allocator::iterator iterator;
+    typedef typename Allocator::const_iterator const_iterator;
+
+// Accessors
+
+    T& operator()( int i, int j, int k, int l )
+    {
+	return v[ index(i,j,k,l) ];
+    }
+    const T& operator()( int i, int j, int k, int l ) const
+    {
+	return v[ index(i,j,k,l) ];
+    }
+
+    iterator       begin()       { return v + offset(xmin,ymin,zmin,wmin); }
+    const_iterator begin() const { return v + offset(xmin,ymin,zmin,wmin); }
+
+    iterator end()
+    {
+	return v + offset(xmax(),ymax(),zmax(),wmax()) + 1;
+    }
+    const_iterator end() const
+    {
+	return v + offset(xmax(),ymax(),zmax(),wmax()) + 1;
+    }
+
+    int get_xmin() const { return xmin; }
+    int get_xlen() const { return xlen; }
+    int get_ymin() const { return ymin; }
+    int get_ylen() const { return ylen; }
+    int get_zmin() const { return zmin; }
+    int get_zlen() const { return zlen; }
+    int get_wmin() const { return wmin; }
+    int get_wlen() const { return wlen; }
+
+    int size() const { return nx() * ny() * nz() * nw(); }
+
+// For backward compatibility.
+    int nx() const { return xlen; }
+    int ny() const { return ylen; }
+    int nz() const { return zlen; }
+    int nw() const { return wlen; }
+
+// Constructors
+
+    Mat4()
+	: xmin(0), xlen(0), ymin(0), ylen(0),
+	  zmin(0), zlen(0), wmin(0), wlen(0),
+	  may_free_space(false), v(0)
+    {}
+
+    Mat4( int xmax_, int ymax_, int zmax_, int wmax_, const T& t = T() )
+	: xmin(0), xlen(xmax_),
+	  ymin(0), ylen(ymax_),
+	  zmin(0), zlen(zmax_),
+	  wmin(0), wlen(wmax_),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin) )
+    {
+	std::uninitialized_fill( begin(), end(), t );
+    }
+
+    Mat4( T *vv, int xmax_, int ymax_, int zmax_, int wmax_ )
+	: xmin(0), xlen(xmax_),
+	  ymin(0), ylen(ymax_),
+	  zmin(0), zlen(zmax_),
+	  wmin(0), wlen(wmax_),
+	  may_free_space(false), v(vv)
+    {}
+
+    Mat4( const Bounds& bx, const Bounds& by,
+	  const Bounds& bz, const Bounds& bw, const T& t = T() )
+	: xmin( bx.min() ), xlen( bx.len() ),
+	  ymin( by.min() ), ylen( by.len() ),
+	  zmin( bz.min() ), zlen( bz.len() ),
+	  wmin( bw.min() ), wlen( bw.len() ),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin) )
+    {
+	std::uninitialized_fill( begin(), end(), t );
+    }
+
+    Mat4( T *vv,
+	  const Bounds& bx, const Bounds& by,
+	  const Bounds& bz, const Bounds& bw )
+	: xmin( bx.min() ), xlen( bx.len() ),
+	  ymin( by.min() ), ylen( by.len() ),
+	  zmin( bz.min() ), zlen( bz.len() ),
+	  wmin( bw.min() ), wlen( bw.len() ),
+	  may_free_space(false),
+	  v( vv - offset(xmin,ymin,zmin,wmin) )
+    {}
+
+    Mat4( const Mat4<T>& m )
+	: xmin(m.xmin), xlen(m.xlen),
+	  ymin(m.ymin), ylen(m.ylen),
+	  zmin(m.zmin), zlen(m.zlen),
+	  wmin(m.wmin), wlen(m.wlen),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin) )
+    {
+	std::uninitialized_copy( m.begin(), m.end(), begin() );
+    }
+
+// Destructor
+
+    ~Mat4()
+    {
+	detach();
+    }
+
+// Assignment operators
+
+    Mat4& operator=( const T& t )
+    {
+	std::fill( begin(), end(), t );
+	return *this;
+    }
+
+    Mat4& operator=( const Mat4& m )
+    {
+	if (this == &m) return *this;
+
+	if ( m.xmin != xmin || m.xlen != xlen ||
+	     m.ymin != ymin || m.ylen != ylen ||
+	     m.zmin != zmin || m.zlen != zlen ||
+	     m.wmin != wmin || m.wlen != wlen ) {
+	    detach();
+	    xmin = m.xmin;
+	    xlen = m.xlen;
+	    ymin = m.ymin;
+	    ylen = m.ylen;
+	    zmin = m.zmin;
+	    zlen = m.zlen;
+	    wmin = m.wmin;
+	    wlen = m.wlen;
+	    v = alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin);
+	    std::uninitialized_copy( m.begin(), m.end(), begin() );
+	    may_free_space = true;
+	}
+	else {
+	    if (v)
+		std::copy( m.begin(), m.end(), begin() );
+	}
+
+	return *this;
+    }
+
+// Mathematical support
+
+    template<class X> Mat4& operator+=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ += x;
+	return *this;
+    }
+    Mat4& operator+=( const Mat4<T>& m )
+    {
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ += *j++;
+	return *this;
+    }
+
+    template<class X> Mat4& operator-=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ -= x;
+	return *this;
+    }
+    Mat4& operator-=( const Mat4<T>& m )
+    {
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ -= *j++;
+	return *this;
+    }
+
+    template<class X> Mat4& operator*=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ *= x;
+	return *this;
+    }
+    Mat4& operator*=( const Mat4<T>& m )
+    {
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ *= *j++;
+	return *this;
+    }
+
+    template<class X> Mat4& operator/=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ /= x;
+	return *this;
+    }
+    Mat4& operator/=( const Mat4<T>& m )
+    {
+	assert_conformality( m );
+	iterator i = begin();
+	const_iterator j = m.begin();
+	while( i != end() ) *i++ /= *j++;
+	return *this;
+    }
+
+// Utility support
+
+    void assert_conformality( const Mat4<T>& m ) const
+    {
+	Assert( xmin == m.xmin );
+	Assert( xlen == m.xlen );
+	Assert( ymin == m.ymin );
+	Assert( ylen == m.ylen );
+	Assert( zmin == m.zmin );
+	Assert( zlen == m.zlen );
+	Assert( wmin == m.wmin );
+	Assert( wlen == m.wlen );
+    }
+
+    void redim( int nxmax, int nymax,
+		int nzmax, int nwmax, const T& t = T() )
+    {
+    // This one only works right if xmin == 0 and ymin == 0 and zmin == 0 and
+    // wmin == 0.
+	Assert( xmin == 0 );
+	Assert( ymin == 0 );
+	Assert( zmin == 0 );
+	Assert( wmin == 0 );
+	if (v && !may_free_space) {
+	// User thinks he wants to expand the aliased region.
+	    xlen = nxmax;
+	    ylen = nymax;
+	    zlen = nzmax;
+	    wlen = nwmax;
+	    return;
+	}
+	detach();
+	xlen = nxmax;
+	ylen = nymax;
+	zlen = nzmax;
+	wlen = nwmax;
+	v = alloc.fetch( size() ) - offset(0,0,0,0);
+	std::uninitialized_fill( begin(), end(), t );
+	may_free_space = true;
+    }
+
+    void redim( const Bounds& bx, const Bounds& by,
+		const Bounds& bz, const Bounds& bw, const T& t = T() )
+    {
+	if (v && !may_free_space) {
+	// Respecify the aliased region.
+	    v += offset(xmin,ymin,zmin,wmin);
+	    xmin = bx.min(); xlen = bx.len();
+	    ymin = by.min(); ylen = by.len();
+	    zmin = bz.min(); zlen = bz.len();
+	    wmin = bw.min(); wlen = bw.len();
+	    v -= offset(xmin,ymin,zmin,wmin);
+	    return;
+	}
+	detach();
+	xmin = bx.min(); xlen = bx.len();
+	ymin = by.min(); ylen = by.len();
+	zmin = bz.min(); zlen = bz.len();
+	wmin = bw.min(); wlen = bw.len();
+	v = alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin);
+	std::uninitialized_fill( begin(), end(), t );
+	may_free_space = true;
+    }
+
+// WARNING: This doesn't make a lot of sense anymore.
+
+// Check to see if this Mat4<T> is of size x by y by z by w.
+
+    bool conformal( int x, int y, int z, int w ) const
+    {
+	return x == xlen && y == ylen && z == zlen && w == wlen;
+    }
+
+// Obtain dimensions of this Mat4<T>.
+
+    void elements( int& nx, int& ny, int& nz, int& nw ) const
+    {
+	nx = xlen; ny = ylen; nz = zlen; nw = wlen;
+    }
 };
 
 #ifdef TEST_MAT
