@@ -143,7 +143,7 @@ void Global_Tally<MT,PT>::set_energy_end(const vector<int> &ncen_,
 	ecentot += ecen[i];
     }
     Check (ncentot == census->size());
-    Check (fabs(ecentot - ecent) < 1.0e-6 * ecent);
+    Check (fabs(ecentot - ecent) <= 1.0e-6 * ecent);
 
   // get the energy-weighted path length for cycle-average 
   // radiation temperature and energy
