@@ -699,13 +699,13 @@ fi
 
       
   cat >> confdefs.h <<\EOF
-#define SELECTOR_PCG 1
+#define SELECTOR_PCG_TEST 1
 EOF
 
 else
   echo "$ac_t""ConjGradDiffusionSolver" 1>&6
   cat >> confdefs.h <<\EOF
-#define SELECTOR_CONJGRAD 1
+#define SELECTOR_CONJGRAD_TEST 1
 EOF
 
      DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"

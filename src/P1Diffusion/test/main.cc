@@ -8,7 +8,7 @@
 
 #include "testP1Diffusion.hh"
 
-#include "../DiffusionSelector.hh"
+#include "DiffusionSelector.hh"
 #include "nml/Group.hh"
 #include "nml/Item.hh"
 #include "nml/Items.hh"
@@ -72,31 +72,21 @@ int main(int argc, char *argv[])
     
 	rtt_mesh::Mesh_DB mdb;
 
-	typedef rtt_P1Diffusion::DiffusionSelector<MT>::Options Options;
-	
-#ifdef SELECTOR_PCG
-	Options options("pcg");
-#endif
 	mdb.setup_namelist(g);
-    
-#ifdef SELECTOR_PCG
-	options.setup_namelist(g);
-#endif
+
+	using rtt_P1Diffusion_test::DiffusionSelector;
+	typedef DiffusionSelector<MT>::Options Options;
+	Options options = DiffusionSelector<MT>::create(g, tdb);
+	
 	g.readgroup("testP1Diffusion.in");
 	g.writegroup("testP1Diffusion.out");
 
 	mdb.resize();
 	
-#ifdef SELECTOR_CONJGRAD
-	Options options(tdb.maxIterations, tdb.epsilon);
-#endif	
-
 	SP<MT> spMesh(new MT(mdb));
-	rtt_P1Diffusion_test::testP1Diffusion<MT> testP1(spMesh, spMesh,
-							 tdb.D, tdb.sigma,
-							 tdb.q, tdb.fTop,
-							 tdb.fBot,
-							 diffdb, options);
+	using rtt_P1Diffusion_test::testP1Diffusion;
+	testP1Diffusion<MT> testP1(spMesh, spMesh, tdb.D, tdb.sigma,
+				   tdb.q, tdb.fTop, tdb.fBot, diffdb, options);
 	double error = testP1.run();
 
 	if (error <= tdb.tolerance)

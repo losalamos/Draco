@@ -104,7 +104,7 @@ namespace rtt_P1Diffusion_test
  template<class MT>
  double testP1Diffusion<MT>::run()
  {
-#ifdef SELECTOR_PCG
+#ifdef SELECTOR_PCG_TEST
      bool jacobiScale = diffdb.pc_meth == 1;
      if (jacobiScale)
 	 Assert(options.iqside == 0);

@@ -9,9 +9,9 @@
 #ifndef __P1Diffusion_config_h__
 #define __P1Diffusion_config_h__
 
-#undef SELECTOR_LAMG
-#undef SELECTOR_PCG
-#undef SELECTOR_CONJGRAD
+#undef SELECTOR_LAMG_TEST
+#undef SELECTOR_PCG_TEST
+#undef SELECTOR_CONJGRAD_TEST
 
 #endif    /* __P1Diffusion_config_h__ */
 

@@ -27,10 +27,10 @@ if test "${enable_pcglib:=no}" != no
 then
   AC_MSG_RESULT([PCGDiffusionSolver])
   AC_PCGLIB_SETUP(test)
-  AC_DEFINE(SELECTOR_PCG)
+  AC_DEFINE(SELECTOR_PCG_TEST)
 else
   AC_MSG_RESULT([ConjGradDiffusionSolver])
-  AC_DEFINE(SELECTOR_CONJGRAD)
+  AC_DEFINE(SELECTOR_CONJGRAD_TEST)
   AC_NEEDS_LIBS_TEST(ConjGrad)
 fi
 

@@ -10,7 +10,7 @@
 #define __P1Diffusion_test_testP1Diffusion_hh__
 
 #include "../P1Diffusion.hh"
-#include "../DiffusionSelector.hh"
+#include "DiffusionSelector.hh"
 
 namespace rtt_P1Diffusion_test
 {
@@ -18,8 +18,8 @@ namespace rtt_P1Diffusion_test
  template<class MT>
  class testP1Diffusion
  {
-     typedef typename rtt_P1Diffusion::DiffusionSelector<MT>::SolverP1Diff MS;
-     typedef typename rtt_P1Diffusion::DiffusionSelector<MT>::Options Options;
+     typedef typename DiffusionSelector<MT>::SolverP1Diff MS;
+     typedef typename DiffusionSelector<MT>::Options Options;
      typedef MS MatrixSolver;
      typedef rtt_P1Diffusion::P1Diffusion<MT, MS> DiffSolver;
 
