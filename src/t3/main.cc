@@ -25,10 +25,16 @@
 #include "c4/global.hh"
 
 #include "util/ADFile.hh"
-#include "util/dump.hh"
-#include "util/g.hh"
+//#include "util/dump.hh"
+//#include "util/g.hh"
+
+//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 void solve( const Mat2<double>& A, Mat1<double>& x, const Mat1<double>& b );
+
+//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 int main( int argc, char *argv[] )
 {
@@ -226,7 +232,7 @@ void solve( const Mat2<double>& A, Mat1<double>& x, const Mat1<double>& b )
     Mat2<double> Ainv( A );
     Mat1<double> binv( b );
 
-    gaussj( Ainv, binv );
+//    gaussj( Ainv, binv );
 
     x = 0.;
     for( int i=0; i < n; i++ )
