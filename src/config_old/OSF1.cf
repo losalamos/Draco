@@ -146,13 +146,22 @@ MPI_DIR         = /usr/users/furnish/wrk/local
 endif
 
 MPI_INCDIR      = $(MPI_DIR)/include
-MPI_LIB         = -L$(MPI_DIR)/lib/alpha/ch_shmem -lmpi
+#MPI_LIB         = -L$(MPI_DIR)/lib/alpha/ch_shmem -lmpi
+MPI_LIB         = -L$(MPI_DIR)/lib/alpha/ch_p4 -lmpi
 SYS_FLAGS       = -I$(MPI_INCDIR) 
 CXX_DEPEND_FLAG	+= $(SYS_FLAGS)
 commlib		= mpi
 
 parallel	:= yes
 endif
+
+include $(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.def
+
+POOMA_INC_FLAG	= -I$(POOMA_ROOT)/src
+#POOMA_FLAGS	= -D_OSF_SOURCE
+#POOMA_FLAGS	= -D_OSF_SOURCE -D__MPI__
+POOMA_FLAGS	= $(POOMA_INC_FLAG) $(DEFINES) -D_OSF_SOURCE -D__MPI__
+POOMA_LIB	= -L$(POOMA_ROOT)/lib/$(POOMA_ARCH) -lpooma
 
 env	:= $(mach)$(cmplr)$(optns)$(commlib)
 
