@@ -85,11 +85,13 @@ void wall_clock_test()
     {
 	std::ostringstream msg;
 	msg << "The sum of cpu and user time exceeds the reported wall "
-	    << "clock time.\n"
-	    << "\t posix_error() = " << prec << std::endl;
-// 	    << "\tSystem time: " << t.system_cpu() << std::endl
-// 	    << "\tUser time  : " << t.user_cpu()   << std::endl
-// 	    << "\tWall time  : " << t.wall_clock() << std::endl;
+	    << "clock time.  Here are the details:"
+	    << "\n\tposix_error() = " << prec
+	    << "\n\tdeltaWallTime = " << deltaWallTime 
+ 	    << "\n\tSystem time   : " << t.system_cpu() 
+ 	    << "\n\tUser time     : " << t.user_cpu()   
+ 	    << "\n\tWall time     : " << t.wall_clock()
+	    << std::endl;
 	FAILMSG(msg.str());
     }
 
