@@ -244,6 +244,9 @@ void CAR_CU_Interface::zone_source_parser(ifstream &in)
 	    ss_pos.resize(data);
 	    ss_temp.resize(data);
 	    fill(ss_temp.begin(), ss_temp.end(), 0.0);
+	    num_defined_surcells.resize(data);
+	    fill(num_defined_surcells.begin(), num_defined_surcells.end(), 0);
+	    defined_surcells.resize(data);
 	}
 	if (keyword == "sur_source:")
 	{

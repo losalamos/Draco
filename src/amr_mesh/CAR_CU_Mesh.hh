@@ -465,6 +465,7 @@ class CAR_CU_Mesh
     inline double volume(int) const;
     inline double face_area(int, int) const;
     vector<int> get_surcells(string) const;
+    void check_defined_surcells(const string, const vector<int> &) const;
     int get_bndface(string, int) const;
     inline vector<double> get_vertex(int node) const;
     inline NCVF_d get_vertices(int, int) const;

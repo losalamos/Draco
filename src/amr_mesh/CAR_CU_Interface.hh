@@ -83,6 +83,8 @@ class CAR_CU_Interface
     double rad_s_tend;
     vector<string> ss_pos;
     vector<double> ss_temp;
+    vector<int> num_defined_surcells;
+    vector< vector<int> > defined_surcells;
     vector<double> rad_temp;
     double delta_t;
     int max_cycle;
@@ -137,6 +139,16 @@ class CAR_CU_Interface
     double get_rad_s_tend() const { return rad_s_tend; }
     const vector<string>& get_ss_pos() const { return ss_pos; }
     const vector<double>& get_ss_temp() const { return ss_temp; }
+    void set_defined_surcells(vector< vector<int> > surcells) 
+    {
+        Insist(ss_pos.size() == surcells.size(),
+	       "Invalide surface cells definitions in set_defined_surcells!");
+
+        defined_surcells = surcells;
+	return; 
+    } 
+    const vector< vector<int> >& get_defined_surcells() const {
+	return defined_surcells; } 
     vector<double> get_rad_temp() const;
     double get_delta_t() const { return delta_t; }
     int get_npmax() const { return npmax; }

@@ -327,6 +327,26 @@ SP<Layout> CAR_CU_Builder::build_Layout(const Coord_sys & coord,
 	                      name.find_first_not_of("reflctionREFLCTION")
 			      == string::npos)
 		        local_layout(cell, side, 1) = cell;
+	            // external source boundary
+	            else if ((name[0] == 's' || name[0] == 'S') && 
+	                      name.find_first_not_of("sourceSOURCE")
+			      == string::npos)
+		    {
+		        // set the boundary condition to vacuum
+		        local_layout(cell, side, 1) = 0;
+
+			// Find the surface source index
+		        string face_name = get_face_name(side);
+			int surf_ind = 0;
+			while (surf_ind < defined_surcells.size() && 
+			       face_name != ss_pos[surf_ind])
+			    ++surf_ind;
+
+			Insist(surf_ind < defined_surcells.size(),
+			       "Surface source could not be assigned a face!");
+
+			defined_surcells[surf_ind].push_back(cell);
+		    }
 		    else
 		        Insist(0,"Illegal boundary condition found!");
 	        }
@@ -921,6 +941,34 @@ void CAR_CU_Builder::FC_Nodes(int nnodes, const SP<RTT_Format> & rttMesh)
 	}
     }
     return;
+}
+
+//---------------------------------------------------------------------------//
+// return the face name for given face number.
+
+string CAR_CU_Builder::get_face_name(int face) const
+{
+
+  // return value
+    string boundary;
+
+    if (face == 1)
+	boundary = "loz";
+    else if (face == 2)
+	boundary = "loy";
+    else if (face == 3)
+        boundary = "lox";
+    else if (face == 4)
+        boundary = "hix";
+    else if (face == 5)
+        boundary = "hiy";
+    else if (face == 6)
+        boundary = "hiz";
+    else
+        Insist(0, "Illegal cell face number input to get_face_name!");
+
+  // return the face
+    return  boundary;
 }
 
 } // end namespace rtt_mc

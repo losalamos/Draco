@@ -68,6 +68,7 @@ extern "C"
 
 	// Construct a new CAR_CU_Mesh class object and build the mesh.
 	mesh = builder->build_Mesh(rttFormat);
+	interface->set_defined_surcells(builder->get_defined_surcells());
 	if (verbose)
 	    cout << " ** Built mesh ** " << endl;
 

@@ -55,6 +55,10 @@ private:
   // cell vertexes
     CAR_CU_Mesh::CCVF_i cell_pair;
 
+  // Data needed for localized surface sources
+    vector<string> ss_pos;
+    vector< vector<int> > defined_surcells;
+
   // member functions for building CAR_CU_Mesh
   // build Layout helper functions
     SP<Layout> build_Layout(const Coord_sys &, const SP<RTT_Format> & rttMesh);
@@ -89,6 +93,9 @@ private:
   // vertex vector.
     void FC_Nodes(int nnodes, const SP<RTT_Format> & rttMesh);
 
+  // return the face name for given face number.
+    string get_face_name(int face) const;
+
   // Begin_Doc os_builder-int.tex
   // Begin_Verbatim 
 
@@ -100,6 +107,9 @@ public:
   // build Mesh member functions
     SP<CAR_CU_Mesh> build_Mesh(const SP<RTT_Format> & rttMesh);
     
+  // return the defined surface cells read from the RTT Format file
+    vector<vector<int> > get_defined_surcells() { return defined_surcells; }
+
   // End_Verbatim 
   // End_Doc 
 };
@@ -115,6 +125,8 @@ inline CAR_CU_Builder::CAR_CU_Builder(SP<IT> interface)
 
   // get data arrays from CAR_CU_Interface needed to build CAR_CU_Mesh
     coord_system = interface->get_coordinates();
+    ss_pos = interface->get_ss_pos();
+    defined_surcells.resize(ss_pos.size());
 }
 
 } // end namespace rtt_mc

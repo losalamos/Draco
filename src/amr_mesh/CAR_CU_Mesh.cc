@@ -298,6 +298,28 @@ vector<int> CAR_CU_Mesh::get_surcells(string boundary) const
 }
 
 //---------------------------------------------------------------------------//
+// check that a user-/host-defined set of surface source cells actually
+// resides on the surface of the system (requires a vacuum bnd).
+
+void CAR_CU_Mesh::check_defined_surcells(const string ss_face, 
+					 const vector<int> &ss_list) const
+{
+    // a weak check on number of surface cells
+    Check (ss_list.size() <= num_cells());
+
+    for (int ss_indx = 0; ss_indx < ss_list.size(); ss_indx++)
+    {
+        // convert face on which ss resides from string to int.
+        // despite its args, get_bndface actually has no cell dependence
+	int ss_face_num = get_bndface(ss_face, ss_list[ss_indx]);
+
+        // get bnd condition on ss face; had better be vacuum (0)
+	int bc = layout(ss_list[ss_indx], ss_face_num);
+	Check (bc == 0);
+    }
+}
+
+//---------------------------------------------------------------------------//
 // Overloaded operators
 //---------------------------------------------------------------------------//
 // overloaded == for design-by-contract

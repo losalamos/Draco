@@ -42,25 +42,25 @@ Source_Init<MT,PT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     : evol(mesh), evol_net(mesh), evoltot(0),  ess(mesh), fss(mesh), 
       esstot(0), ecen(mesh), ecentot(0), ncen(mesh), ncentot(0), nvol(mesh), 
       nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), 
-      eloss_cen(0), ew_vol(mesh), ew_ss(mesh), ew_cen(mesh), 
-      t4_slope(mesh)
+      eloss_cen(0), ew_vol(mesh), ew_ss(mesh), ew_cen(mesh), t4_slope(mesh)
 {
     Require (interface);
     Require (mesh);
 
     // get values from interface
-    evol_ext   = interface->get_evol_ext();
-    rad_source = interface->get_rad_source();
-    rad_s_tend = interface->get_rad_s_tend();
-    ss_pos     = interface->get_ss_pos();
-    ss_temp    = interface->get_ss_temp();
-    rad_temp   = interface->get_rad_temp();
-    delta_t    = interface->get_delta_t();
-    npmax      = interface->get_npmax();
-    npnom      = interface->get_npnom();
-    dnpdt      = interface->get_dnpdt();
-    capacity   = interface->get_capacity();
-    ss_dist    = interface->get_ss_dist();
+    evol_ext         = interface->get_evol_ext();
+    rad_source       = interface->get_rad_source();
+    rad_s_tend       = interface->get_rad_s_tend();
+    ss_pos           = interface->get_ss_pos();
+    ss_temp          = interface->get_ss_temp();
+    defined_surcells = interface->get_defined_surcells();
+    rad_temp         = interface->get_rad_temp();
+    delta_t          = interface->get_delta_t();
+    npmax            = interface->get_npmax();
+    npnom            = interface->get_npnom();
+    dnpdt            = interface->get_dnpdt();
+    capacity         = interface->get_capacity();
+    ss_dist          = interface->get_ss_dist();
     
     // do some assertions to check that all is well
     int num_cells = mesh->num_cells();
@@ -381,7 +381,16 @@ void Source_Init<MT,PT>::calc_ess()
     // loop over surface sources in problem
     for (int ss = 0; ss < ss_pos.size(); ss++)
     {
-	vector<int> surcells = ess.get_Mesh().get_surcells(ss_pos[ss]);
+        // use either user-/host-defined surf src cells or entire face
+	vector<int> surcells;
+	if (defined_surcells[ss].size() > 0)
+	{
+	    surcells = defined_surcells[ss];
+	    ess.get_Mesh().check_defined_surcells(ss_pos[ss], surcells);
+	}
+	else
+	    surcells = ess.get_Mesh().get_surcells(ss_pos[ss]);
+
 	for (int sc = 0; sc < surcells.size(); sc++)
 	{      
 	    // make sure this cell doesn't already have a surface source
