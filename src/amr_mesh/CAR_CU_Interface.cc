@@ -147,19 +147,19 @@ SP<RTT_Format> CAR_CU_Interface::parser_Mesh(ifstream &in)
     if (surface_src_flag >= 0)
     {
         int num_ss = rttMesh->get_dims_nside_flags(surface_src_flag);
-        int null_flag_num = -1;
+        int null_flag_num = 0;
         // Check for null surface source flag definitions so that they can be
 	// excluded from the defined_surcells and associated vectors.
-        for (int sf = 0; sf < num_ss; sf++)
+        for (int sf = 1; sf <= num_ss; sf++)
 	{
 	    string null_flag = 
-	        rttMesh->get_side_flags_flag_name(surface_src_flag,sf);
+	        rttMesh->get_side_flags_flag_name(surface_src_flag,sf - 1);
 	    if ((null_flag[0] == 'n' || null_flag[0] == 'N') && 
 		 null_flag.find_first_not_of("noulsrceNOULSRCE") == 
 		 string::npos)
 	        null_flag_num = sf;
 	}
-	if (null_flag_num >= 0)
+	if (null_flag_num > 0)
 	    --num_ss;
 
         // resize the surface source vectors according to the number of
@@ -173,8 +173,14 @@ SP<RTT_Format> CAR_CU_Interface::parser_Mesh(ifstream &in)
 	{
 	    int cell = rttMesh->get_Cell_from_Side(side);
 	    int source = rttMesh->get_sides_flags(side, surface_src_flag);
-	    if (cell >= 0 && source - 1 != null_flag_num)
-	        defined_surcells[source - 1].push_back(cell);
+	    if (cell >= 0 && source != null_flag_num)
+	    {
+	        if (source > null_flag_num)
+		    --source;
+		// Cell numbering starts at one while the RTT format cell 
+		// numbering starts at zero.
+	        defined_surcells[source - 1].push_back(cell + 1);
+	    }
 	}
     }
 

@@ -633,10 +633,10 @@
 
           end do
 
-          node = 1
           cell = 1
           face = 1
           do while (cell .le. ncells)
+              node = 1
               do while (node .le. 2 * ndims)
                   dis_face_generation(cell, node) = generation(cell)
                   dis_face_nodes_area(cell, node) = cells_faces_area(cell,face)
@@ -799,9 +799,16 @@
           deallocate(face_nodes_faces_gen)
           deallocate(face_nodes_faces_area)
 
+          ! Deallocate source memory
+          deallocate(surf_src_pos)
+          deallocate(surf_src_temperature)
+          deallocate(surf_src_cells%row)
+          deallocate(volume_src)
+          deallocate(radiation_src)
+
 !===========================================================================
 ! Get rid of the mesh fields that were defined for testing and the 
-! CAR_CU_Mat_State, CAR_CU_Opacity, and CAR_CU_Mesh class objects 
+! CAR_CU_Mat_State, CAR_CU_Opacity, and CAR_CU_Mesh class objects -
 ! we are done.
 !===========================================================================
 
