@@ -21,7 +21,10 @@
 //                smart pointer
 //  2)  2-20-98 : added assertion to constructor to make sure that the number
 //                of cells defined in the mesh is consistent with the Layout
-//  3)  3-16-98 : added Get_normal public member function
+//  3)  3-16-98 : added Get_normal public member function, OS_Meshes know the
+//                normals a priori so they can just be sent.  Non_OS meshes
+//                may need a yet undefined (Calc_normal) function from
+//                Coord_sys to calculate the normal based on the cell vertices
 // 
 //===========================================================================//
 
@@ -36,8 +39,9 @@
 #include "ds++/SP.hh"
 #include <vector>
 #include <algorithm>
-#include <cassert>
 #include <ostream>
+#include <cmath>
+#include <cassert>
 
 IMCSPACE
 
@@ -45,6 +49,7 @@ IMCSPACE
 using std::vector;
 using std::fill;
 using std::ostream;
+using std::pow;
     
 class OS_Mesh
 {
@@ -143,19 +148,18 @@ public:
 	: coord(coord_), layout(layout_), pos(pos_), dim(dim_), sur(sur_)
     {
       // assertions to verify size of mesh and existence of a Layout and
-      // Coord_sys
-
+      // Coord_sys  
 	assert (coord);
-    
+	
       // variable initialization
 	int num_cells = Num_cells();
 	int dimension = coord->Get_dim();
-
+    
       // dimension assertions
 	assert (dimension == pos.size());
 	assert (dimension == dim.size());
 	assert (dimension == sur.size());
-	
+    
       // mesh size assertions
 	int mesh_size = 1;
 	for (int d = 0; d < dimension; d++)
@@ -186,17 +190,20 @@ public:
     int Get_cell(const vector<double> &) const;
     double Get_db(const vector<double> &, const vector<double> &, int, 
 		  int &) const;
-    vector<double> Get_normal(int cell, int face)
+    vector<double> Get_normal(int cell, int face) const
     {
-      // send necessary dimensions to Coordinate system to calculate the normal
-	vector<double> center(coord->Get_dim());
-	vector<double> extent(coord->Get_dim());
-	for (int i = 0; i < coord->Get_dim(); i++)
-	{
-	    center[i] = pos[i][cell-1];
-	    extent[i] = dim[i][cell-1];
-	}
-	vector<double> normal = coord->Calc_normal(center, extent, face);
+      // OS_Meshes do not require any functionality from Coord_sys to 
+      // calculate the normal, do simple return
+
+      // normal always has 3 components, use Get_sdim()
+	vector<double> normal(coord->Get_sdim(), 0.0);
+	
+      // calculate normal based on face, (-x, +x, -y, +y, -z, +z), only
+      // one coordinate is non-zero
+	normal[(face-1)/2] = pow(-1.0, face);
+
+      // return the normal
+	return normal;
     }
 };
 

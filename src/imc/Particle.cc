@@ -19,6 +19,7 @@ using std::endl;
 using std::setw;
 using std::ios;
 using std::setiosflags;
+using Global::Dot;
 
 //===========================================================================//
 // class Particle<MT>
@@ -96,10 +97,6 @@ void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs,
 
       // get distance-to-boundary and cell face
         d_boundary  = mesh.Get_db(r, omega, cell, face);
-	
-      // for 3D transport in 2D meshes, do a transform, for 3D transform
-      // simply returns value
-	double d_travel = mesh.Coord().Transform(d_boundary, omega);
 
       // streaming
         if (d_collision <= d_boundary)
@@ -110,7 +107,7 @@ void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs,
 	else
         {
 	  // stream to cell boundary and find next cell
-            Stream(d_travel);
+            Stream(d_boundary);
 	    alive = Surface(mesh, face);
 	}
 	
@@ -176,8 +173,8 @@ bool Particle<MT>::Surface(const MT &mesh, int face)
 	descriptor = "reflection";
 	vector<double> normal = mesh.Get_normal(cell, face);
 	double factor = Dot(omega, normal);
-	for (int i = 0; i < mesh.Coord().Get_dim(); i++
-		 omega[i] -= 2 * factor * normal[i];
+	for (int i = 0; i < mesh.Coord().Get_sdim(); i++)
+	    omega[i] -= 2 * factor * normal[i];
 	cell = next_cell;
     }
     else if (next_cell == 0)

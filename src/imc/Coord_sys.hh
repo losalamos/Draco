@@ -21,7 +21,9 @@
 //  1)  3-12-98 : moved Calc and Set_omega functions into Coord_sys as
 //                non-pure virtual functions because they are the same in
 //                both XY and XYZ transport, added a transform for 2D meshes
-//  2)  3-16-98 : added normal calculation as pure virtual function
+//  2)  3-16-98 : reserve calc_normal function for later if need be
+//  3)  3-17-98 : because of a dumb-ass oversight on my part, we don't need
+//                a transform for 2D XY, it has been removed
 // 
 //===========================================================================//
 
@@ -57,15 +59,8 @@ public:
     int Get_dim() const { return dimension; } 
     int Get_sdim() const { return set_dimension; }
 
-
   // pure virtual functions
     virtual string Get_coord() const = 0;
-    virtual vector<double> Calc_normal(vector<double> &, vector<double> &, 
-				       int) = 0;
-
-  // virtual functions, these are only needed in some coordinate systems
-    virtual double Transform(double dist_bnd, const vector<double> &omega) 
-	const {	return dist_bnd; }
 
     virtual void Set_omega(vector<double> &, Random &) const;
     virtual void Calc_omega(double, double, vector<double> &) const;

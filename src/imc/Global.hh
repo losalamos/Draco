@@ -70,6 +70,7 @@ inline VT Dot(vector<VT> A, vector<VT> B)
     VT value = 0.0;
     for (int i = 0; i < A.size(); i++)
 	value += A[i] * B[i];
+    return value;
 }
 
 CSPACE

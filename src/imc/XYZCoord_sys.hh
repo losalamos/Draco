@@ -21,6 +21,7 @@
 //  1)  2-18-98 : added getCoord() function for debugging
 //  2)  3-12-98 : moved Calc and Set_omega functions to Coord_sys because
 //                they are the same for XY and XYZ transport
+//  3)  3-16-98 : reserve calc_normal function for later if need be
 // 
 //===========================================================================//
 
