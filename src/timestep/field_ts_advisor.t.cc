@@ -12,6 +12,8 @@
 
 #include "ds++/Assert.hh"
 
+#include "c4/global.hh"
+
 #include <algorithm>
 
 #include <stdexcept>
@@ -39,6 +41,11 @@ void field_ts_advisor::set_floor(const FT &y1, double frac)
 	x1 = small();
     }
     floor_value = x1;
+
+    // All process will get the same floor_value.
+
+    C4::gmin(floor_value);
+
     Ensure(invariant_satisfied());
 }
 
@@ -106,6 +113,20 @@ void field_ts_advisor::update_tstep(const ts_manager &tsm,
 	}
     }
 
+    // If we are doing an infinity norm, then we must find the max on
+    // all processors.
+    // Otherwise we must add are partial sums across processors.
+    
+    if ( update_method == inf_norm)
+    {
+	C4::gmax(x1);
+    }
+    else
+    {
+	C4::gsum(x1);
+	C4::gsum(x2);
+    }
+    
     if (x1 < small()) 
     {
 	dt_rec = large();

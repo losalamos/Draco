@@ -12,6 +12,8 @@
 
 #include "ds++/Assert.hh"
 
+#include "c4/global.hh"
+
 #include <iostream>
 
 using std::cout;
@@ -51,6 +53,9 @@ double target_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 
 void target_ts_advisor::print_state() const
 {
+    if (C4::node() != 0)
+	return;
+    
     std::string status = is_active() ? "true " : "false";
     cout << endl;
     cout << "  ** Time-Step Advisor State Listing **" << endl;

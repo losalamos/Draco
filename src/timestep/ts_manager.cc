@@ -10,6 +10,8 @@
 
 #include "ds++/Assert.hh"
 
+#include "c4/global.hh"
+
 #include <functional>
 
 #include <stdexcept>
@@ -100,9 +102,12 @@ double ts_manager::compute_new_timestep()
     
     if (!found)
     {
-	cerr << "  ** Time-Step Manager Warning **" << endl;
-	cerr << "  No usable time-step advisors found," << endl;
-	cerr << "  defaulting to current time-step" << endl;
+	if (C4::node() == 0)
+	{
+	    cerr << "  ** Time-Step Manager Warning **" << endl;
+	    cerr << "  No usable time-step advisors found," << endl;
+	    cerr << "  defaulting to current time-step" << endl;
+	}
 	dt_new = dt;
 	controlling_advisor = "Current Time-Step";
 	return dt_new;
@@ -125,7 +130,7 @@ double ts_manager::compute_new_timestep()
     {
 	return dt_new;
     }
-    else if (i != 0)
+    else if (i != 0 && C4::node() == 0)
     {
 	cerr << "  ** Time-Step Manager Warning **" << endl;
 	cerr << "  Cycle Number: " << cycle << endl;
@@ -165,10 +170,13 @@ double ts_manager::compute_new_timestep()
 
     if (py1 == advisors.end() && py2 == advisors.end() )
     {
-	cerr << "  ** Time-Step Manager Warning **" << endl;
-	cerr << "  Cycle Number: " << cycle << endl;
-	cerr << "  No usable time-step advisors found," << endl;
-	cerr << "  defaulting to current time-step" << endl;
+	if (C4::node() == 0)
+	{
+	    cerr << "  ** Time-Step Manager Warning **" << endl;
+	    cerr << "  Cycle Number: " << cycle << endl;
+	    cerr << "  No usable time-step advisors found," << endl;
+	    cerr << "  defaulting to current time-step" << endl;
+	}
 	dt_new = dt;
 	controlling_advisor = "Current Time-Step";
 	return dt_new;
@@ -189,10 +197,13 @@ double ts_manager::compute_new_timestep()
 	{
 	    dt_new = x1;
 	    controlling_advisor = (**py1).get_name();
-	    cerr << "  ** Time-Step Manager Warning **" << endl;
-	    cerr << "  Cycle Number: " << cycle << endl;
-	    cerr << "  No window between min and max advisors," << endl;
-	    cerr << "  defaulting to min recommended dt" << endl;
+	    if (C4::node() == 0)
+	    {
+		cerr << "  ** Time-Step Manager Warning **" << endl;
+		cerr << "  Cycle Number: " << cycle << endl;
+		cerr << "  No window between min and max advisors," << endl;
+		cerr << "  defaulting to min recommended dt" << endl;
+	    }
 	}
 	else
 	{
@@ -224,6 +235,9 @@ struct sptsa_less_than : public std::binary_function< SP<ts_advisor>,
 
 void ts_manager::print_advisors() const
 {
+    if (C4::node() != 0)
+	return;
+    
     cout << endl;
     cout << "*** Time-Step Manager: Advisor Listing ***" << endl;
     for (list< SP<ts_advisor> >::const_iterator 
@@ -236,6 +250,9 @@ void ts_manager::print_advisors() const
 
 void ts_manager::print_summary() const
 {
+    if (C4::node() != 0)
+	return;
+
     ios::fmtflags oldOptions = cout.flags();
     cout.setf(ios::scientific, ios::floatfield);
     cout.precision(4);
@@ -263,6 +280,9 @@ void ts_manager::print_summary() const
 
 void ts_manager::print_adv_states() const
 {
+    if (C4::node() != 0)
+	return;
+
     cout << endl;
     cout << "*** Time-Step Manager: Advisor State Listing ***" << endl;
     for (list< SP<ts_advisor> >::const_iterator 

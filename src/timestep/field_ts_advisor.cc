@@ -12,6 +12,8 @@
 
 #include "ds++/Assert.hh"
 
+#include "c4/global.hh"
+
 #include <iostream>
 
 using std::cout;
@@ -45,7 +47,8 @@ double field_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 {
     using std::cerr;
     
-    if ( cycle_at_last_update != tsm.get_cycle() && is_active() ) 
+    if ( cycle_at_last_update != tsm.get_cycle() && is_active()
+	&& C4::node() == 0 ) 
     {
 	cerr << "Warning: ts_adivsor " << get_name() << 
 	    " has not been updated" << endl;
@@ -64,6 +67,9 @@ bool field_ts_advisor::advisor_usable(const ts_manager &tsm) const
 
 void field_ts_advisor::print_state() const
 {
+    if (C4::node() != 0)
+	return;
+
     std::string status = is_active() ? "true " : "false";
     cout << endl;
     cout << "  ** Time-Step Advisor State Listing **" << endl;

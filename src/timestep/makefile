@@ -8,6 +8,7 @@
 
 pkg := timestep
 
+need_c4		:= yes
 need_mesh	:= yes
 need_linalg	:= yes
 
@@ -34,8 +35,12 @@ include ../config/make.lib
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../ds++;   $(MAKE) $(subnj))
+	(cd ../ds++;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../c4;     $(MAKE) $(subnj) dodeps=no)
 endif
+
+$(dep_libc4):
+$(dep_libds++):
 
 # Rules for building docs
 

@@ -8,6 +8,8 @@
 
 #include "timestep/ts_advisor.hh"
 
+#include "c4/global.hh"
+
 #include <iostream>
 
 using std::string; 
@@ -32,7 +34,9 @@ ts_advisor::~ts_advisor()
 
 void ts_advisor::print(const ts_manager &tsm, const bool controlling) const
 {
-
+    if (C4::node() != 0)
+	return;
+    
     string status = advisor_usable(tsm) ? "true " : "false";
     string space  = "   ";
     string cflag = controlling ? "  ==> " : "      ";
