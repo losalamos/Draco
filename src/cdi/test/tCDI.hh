@@ -12,7 +12,7 @@
 #ifndef __cdi_tCDI_hh__
 #define __cdi_tCDI_hh__
 
-#include "UnitTestFrame/TestApp.hh"
+#include "UnitTestFrame/TestAppNoC4.hh"
 
 #include <vector>
 #include <string>

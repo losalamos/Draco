@@ -12,7 +12,7 @@
 #ifndef __cdi_tDummyOpacity_hh__
 #define __cdi_tDummyOpacity_hh__
 
-#include "UnitTestFrame/TestApp.hh"
+#include "UnitTestFrame/TestAppNoC4.hh"
 
 namespace rtt_dummy_opacity_test
 {
