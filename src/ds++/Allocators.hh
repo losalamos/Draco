@@ -26,6 +26,14 @@
 
 #include <memory>
 
+// MSIPL_THROW is defined in KCC's memory header file. In order to allow
+// compilation with other compilers, we define MSIPL_THROW to state that 
+// functions declared with MSIPL_THROW will not throw exceptions.
+
+#ifndef MSIPL_THROW
+#define MSIPL_THROW throw()
+#endif
+
 NAMESPACE_DS_BEG
 
 // These functions were in the April '96 draft, but disappeared by December
