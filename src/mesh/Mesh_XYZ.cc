@@ -168,7 +168,7 @@ template <>
 void Mesh_XYZ::scatter<Mesh_XYZ::AddOp>( Mesh_XYZ::fcdsf& to,
                                          const Mesh_XYZ::ccsf& from )
 {
-    Mesh_XYZ::guarded_cell_array<double> gfrom( from );
+    Mesh_XYZ::gccsf gfrom( from );
     to += gfrom;
 }
 
@@ -176,25 +176,8 @@ template <>
 void Mesh_XYZ::scatter<Mesh_XYZ::MultOp>( Mesh_XYZ::fcdsf& to,
                                           const Mesh_XYZ::ccsf& from )
 {
-    Mesh_XYZ::guarded_cell_array<double> gfrom( from );
+    Mesh_XYZ::gccsf gfrom( from );
     to *= gfrom;
-}
-
-void dump( const Mesh_XYZ::fcdsf& data, char *name )
-{
-    cout << "dumping a Mesh_XYZ::fcdsf: " << name << endl;
-    {
-    //	HTSyncSpinLock h;
-	char buf[80];
-	for( int i=0; i < data.size()/6; i++ ) {
-            for( int j=0; j < 6; j++ ) {
-	        sprintf( buf, "cell %d, face %d, value=%lf \n",
-		         i, j, data(i,j) );
-                cout << buf;
-            }
-	}
-    }
-
 }
 
 

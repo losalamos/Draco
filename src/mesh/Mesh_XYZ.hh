@@ -77,38 +77,41 @@ class Mesh_XYZ : private XYZ_Mapper
 {
   public:
 
-    template<class T> class cell_array;
-    template<class T> class guarded_cell_array;
+    template<class T> class cctf;
+    template<class T> class gcctf;
 
-    typedef cell_array<double> ccsf;
+    typedef cctf<double> ccsf;
+    typedef cctf<int> ccif;
+    typedef gcctf<double> gccsf;
 
 // Face centered discontinuous scalar field
 // Has a value on each face in each cell.
 
-    class fcdsf : private XYZ_Mapper,
-                  public xm::Indexable<double,fcdsf> {
+    template<class T>
+    class fcdtf : private XYZ_Mapper,
+                  public xm::Indexable< T, fcdtf<T> > {
 	friend class Mesh_XYZ;
 
-	Mat2<double> data;
+	Mat2<T> data;
 
-	fcdsf( const Mesh_XYZ *m )
+	fcdtf( const Mesh_XYZ *m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
 	      data( m->get_ncp(), 6 )
 	{}
 
       public:
-	typedef double value_type;
-        typedef dsxx::Mat2<double>::iterator iterator;
-        typedef dsxx::Mat2<double>::const_iterator const_iterator;
+	typedef T value_type;
+        typedef dsxx::Mat2<T>::iterator iterator;
+        typedef dsxx::Mat2<T>::const_iterator const_iterator;
 
-	fcdsf( const dsxx::SP<Mesh_XYZ>& m )
+	fcdtf( const dsxx::SP<Mesh_XYZ>& m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
 	      data( m->get_ncp(), 6 )
 	{}
 
-	fcdsf& operator=( double x ) { data = x; return *this; }
+	fcdtf& operator=( T x ) { data = x; return *this; }
 
-       	fcdsf& operator=( const cell_array<double>& x )
+       	fcdtf& operator=( const cctf<T>& x )
         {
             for ( int i = 0; i < ncx; ++i )
                 for ( int j = 0; j < ncy; ++j )
@@ -118,7 +121,7 @@ class Mesh_XYZ : private XYZ_Mapper
             return *this;
         }
 
-	fcdsf& operator+=( const guarded_cell_array<double>& x )
+	fcdtf& operator+=( const gcctf<T>& x )
         {
           for ( int i = 0; i < ncx; ++i )
             for ( int j = 0; j < ncy; ++j )
@@ -152,7 +155,7 @@ class Mesh_XYZ : private XYZ_Mapper
           return *this;
         }
 
-	fcdsf& operator*=( const guarded_cell_array<double>& x )
+	fcdtf& operator*=( const gcctf<T>& x )
         {
           for ( int i = 0; i < ncx; ++i )
             for ( int j = 0; j < ncy; ++j )
@@ -187,7 +190,7 @@ class Mesh_XYZ : private XYZ_Mapper
         }
 
         template<class X>
-        fcdsf& operator=( const xm::Xpr< double, X, fcdsf >& x )
+        fcdtf& operator=( const xm::Xpr< T, X, fcdtf >& x )
         {
             return assign_from( x );
         }
@@ -196,20 +199,20 @@ class Mesh_XYZ : private XYZ_Mapper
     // f == face index
     // c == local cell index
 
-	double& operator()( int c, int f )       { return data(c,f); }
-	double  operator()( int c, int f ) const { return data(c,f); }
+	T& operator()( int c, int f )       { return data(c,f); }
+	T  operator()( int c, int f ) const { return data(c,f); }
 
-	double& operator()( int i, int j, int k, int f )
+	T& operator()( int i, int j, int k, int f )
 	{
 	    return data( local_cell_index(i,j,k), f );
 	}
-	double  operator()( int i, int j, int k, int f ) const 
+	T operator()( int i, int j, int k, int f ) const 
 	{
 	    return data( local_cell_index(i,j,k), f );
 	}
 
-        double operator[]( int i ) const { return data[i]; }
-        double& operator[]( int i ) { return data[i]; }
+        T operator[]( int i ) const { return data[i]; }
+        T& operator[]( int i ) { return data[i]; }
 
         iterator begin() { return data.begin(); }
         iterator end() { return data.end(); }
@@ -220,13 +223,16 @@ class Mesh_XYZ : private XYZ_Mapper
         int size() const { return data.size(); }
     };
 
+    typedef fcdtf<double> fcdsf;
+    typedef fcdtf<int> fcdif;
+
     template<class T>
-    class cell_array : private XYZ_Mapper,
-                       public xm::Indexable< T, cell_array<T> >
+    class cctf : private XYZ_Mapper,
+                       public xm::Indexable< T, cctf<T> >
     {
         Mat1<T> data;
 
-	cell_array( const Mesh_XYZ *m ) 
+	cctf( const Mesh_XYZ *m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
             data( m->get_ncp() ) {}
 
@@ -235,18 +241,18 @@ class Mesh_XYZ : private XYZ_Mapper
         typedef typename dsxx::Mat1<T>::iterator iterator;
         typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
 
-	cell_array( const dsxx::SP<Mesh_XYZ>& m ) 
+	cctf( const dsxx::SP<Mesh_XYZ>& m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
             data( m->get_ncp() ) {}
 
-        cell_array& operator=( T x )
+        cctf& operator=( T x )
         {
             data = x;
             return *this;
         }
 
         template<class X>
-        cell_array& operator=( const xm::Xpr< T, X, cell_array >& x )
+        cctf& operator=( const xm::Xpr< T, X, cctf >& x )
         {
             return assign_from( x );
         }
@@ -275,13 +281,13 @@ class Mesh_XYZ : private XYZ_Mapper
         int size() const { return data.size(); }
 
 	friend class Mesh_XYZ;
-	friend class guarded_cell_array<T>;
+	friend class gcctf<T>;
     };
 
     template<class T>
-    class guarded_cell_array
+    class gcctf
         : private XYZ_Mapper,
-          public xm::Indexable< T, guarded_cell_array<T> >
+          public xm::Indexable< T, gcctf<T> >
     {
         dsxx::Mat3<T> data;
 
@@ -289,17 +295,17 @@ class Mesh_XYZ : private XYZ_Mapper
         typedef typename dsxx::Mat3<T>::iterator iterator;
         typedef typename dsxx::Mat3<T>::const_iterator const_iterator;
 
-        guarded_cell_array( const dsxx::SP<Mesh_XYZ>& m )
+        gcctf( const dsxx::SP<Mesh_XYZ>& m )
             : XYZ_Mapper( m->get_Mesh_DB() ),
               data( dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
                     dsxx::Bounds( zoff - 1, zoff + nczp ) )
         {}
 
-        guarded_cell_array<T>& operator=( const cell_array<T>& c );
+        gcctf<T>& operator=( const cctf<T>& c );
         void update_guard_cells();
 
-        guarded_cell_array<T>( const cell_array<T>& c )
+        gcctf<T>( const cctf<T>& c )
             : XYZ_Mapper( c.get_Mesh_DB() ),
               data( dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
@@ -323,18 +329,18 @@ class Mesh_XYZ : private XYZ_Mapper
     };
 
     template<class T>
-    class bssf : private XYZ_Mapper
+    class bstf : private XYZ_Mapper
     {
-        Mat2<double> f0, f1, f2, f3, f4, f5;
+        Mat2<T> f0, f1, f2, f3, f4, f5;
       public:
-        bssf( dsxx::SP<Mesh_XYZ>& spm )
+        bstf( dsxx::SP<Mesh_XYZ>& spm )
             : XYZ_Mapper( spm->get_Mesh_DB() ),
               f0( ncy, ncz ), f1( ncy, ncz ),
               f2( ncx, ncz ), f3( ncx, ncz ),
               f4( ncx, ncy ), f5( ncx, ncy )
         {}
 
-        Mat2<double>& face( int f )
+        Mat2<T>& face( int f )
         {
             if (f == 0) return f0;
             if (f == 1) return f1;
@@ -345,7 +351,7 @@ class Mesh_XYZ : private XYZ_Mapper
             throw "f out of range!";
         }
 
-        const Mat2<double>& face( int f ) const
+        const Mat2<T>& face( int f ) const
         {
             if (f == 0) return f0;
             if (f == 1) return f1;
@@ -357,13 +363,13 @@ class Mesh_XYZ : private XYZ_Mapper
         }
     };
 
-    typedef bssf<double> bsbf;
+    typedef bstf<double> bssf;
 
   private:
     Mat1<double> xc, yc, zc;
     Mat1<double> xf, yf, zf;
     double       dx, dy, dz;
-    cell_array<double> vc;
+    ccsf vc;
     Mat1<double> xA, yA, zA;
 
     fcdsf xF, yF, zF;
@@ -405,7 +411,7 @@ class Mesh_XYZ : private XYZ_Mapper
     const Mat1<double>& get_yA() const { return yA; }
     const Mat1<double>& get_zA() const { return zA; }
 
-    const cell_array<double>& get_vc() const { return vc; }
+    const ccsf& get_vc() const { return vc; }
 
     const int *get_diag_offsets() const { return diags; }
 
@@ -417,9 +423,10 @@ class Mesh_XYZ : private XYZ_Mapper
 };
 
 template<class T>
-void dump( const Mesh_XYZ::cell_array<T>& data, char *name );
+void dump( const Mesh_XYZ::cctf<T>& data, char *name );
 
-void dump( const Mesh_XYZ::fcdsf& data, char *name );
+template<class T>
+void dump( const Mesh_XYZ::fcdtf<T>& data, char *name );
 
 template <>
 void Mesh_XYZ::scatter<Mesh_XYZ::AddOp>( Mesh_XYZ::fcdsf& to,

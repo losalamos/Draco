@@ -10,9 +10,9 @@
 #include "c4/C4_Req.hh"
 
 template<class T>
-void dump( const Mesh_XYZ::cell_array<T>& data, char *name )
+void dump( const Mesh_XYZ::cctf<T>& data, char *name )
 {
-    cout << "dumping a Mesh_XYZ::cell_array: " << name << endl;
+    cout << "dumping a Mesh_XYZ::cctf: " << name << endl;
     {
     //	HTSyncSpinLock h;
 	char buf[80];
@@ -27,8 +27,26 @@ void dump( const Mesh_XYZ::cell_array<T>& data, char *name )
 }
 
 template<class T>
-Mesh_XYZ::guarded_cell_array<T>& 
-Mesh_XYZ::guarded_cell_array<T>::operator=( const Mesh_XYZ::cell_array<T>& c )
+void dump( const Mesh_XYZ::fcdtf<T>& data, char *name )
+{
+    cout << "dumping a Mesh_XYZ::fcdtf: " << name << endl;
+    {
+    //	HTSyncSpinLock h;
+	char buf[80];
+	for( int i=0; i < data.size()/6; i++ ) {
+            for( int j=0; j < 6; j++ ) {
+	        sprintf( buf, "cell %d, face %d, value=%lf \n",
+		         i, j, data(i,j) );
+                cout << buf;
+            }
+	}
+    }
+
+}
+
+template<class T>
+Mesh_XYZ::gcctf<T>& 
+Mesh_XYZ::gcctf<T>::operator=( const Mesh_XYZ::cctf<T>& c )
 {
     for( int k=zoff; k < zoff + nczp; k++ )
         for( int j=0; j < ncy; j++ )
@@ -41,7 +59,7 @@ Mesh_XYZ::guarded_cell_array<T>::operator=( const Mesh_XYZ::cell_array<T>& c )
 }
 
 template<class T>
-void Mesh_XYZ::guarded_cell_array<T>::update_guard_cells()
+void Mesh_XYZ::gcctf<T>::update_guard_cells()
 {
     using namespace C4;
     C4_Req lrcv, rrcv;

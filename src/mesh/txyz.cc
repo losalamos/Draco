@@ -33,8 +33,8 @@ int main( int argc, char *argv[] )
     cout << "t2: passed" << endl;
 
 
-    Mesh_XYZ::cell_array<double> x( spm ), y( spm ), z( spm );
-    Mesh_XYZ::cell_array<int> xi( spm ), yi( spm ), zi( spm );
+    Mesh_XYZ::ccsf x( spm ), y( spm ), z( spm );
+    Mesh_XYZ::ccif xi( spm ), yi( spm ), zi( spm );
     Mesh_XYZ::fcdsf xf( spm ), yf( spm ), zf( spm );
 
     x = 1.;
@@ -53,7 +53,7 @@ int main( int argc, char *argv[] )
     x = 1.;
     xf = x;
 
-    Mesh_XYZ::cell_array<double> oneCC( spm );
+    Mesh_XYZ::ccsf oneCC( spm );
     oneCC = 1.0;
 //    dump( oneCC, "oneCC, before" );
     Mesh_XYZ::fcdsf twoFC( spm );
@@ -63,7 +63,7 @@ int main( int argc, char *argv[] )
     dump( oneCC, "oneCC, after" );
     dump( twoFC, "twoFC, after" );
 
-    Mesh_XYZ::cell_array<double> threeCC( spm );
+    Mesh_XYZ::ccsf threeCC( spm );
     threeCC = 3.0;
 //    dump( threeCC, "threeCC, before" );
     Mesh_XYZ::fcdsf nineFC( spm );
@@ -73,7 +73,7 @@ int main( int argc, char *argv[] )
 //    dump( threeCC, "threeCC, after" );
 //    dump( nineFC, "nineFC, after" );
 
-    Mesh_XYZ::guarded_cell_array<double> xgc( spm );
+    Mesh_XYZ::gccsf xgc( spm );
 
     x = 1.;
     xgc = x;
@@ -81,6 +81,9 @@ int main( int argc, char *argv[] )
     xf += xgc;
     xf = 1.;
     xf *= xgc;
+
+    Mesh_XYZ::bssf b1( spm );
+    b1.face(0) = 0.;
 
     C4::Finalize();
 
