@@ -37,17 +37,9 @@ class C4_ReqRefRep {
     int n;
     int assigned;
 
-#ifdef C4_NX
-    long mid;
-#endif
 #ifdef C4_MPI
     MPI_Status  s;
     MPI_Request r;
-#endif
-#ifdef C4_SHMEM
-    pthread_t thread;
-    int mid;
-    int type;
 #endif
 
   private:
@@ -112,7 +104,7 @@ class C4_Req {
     void clear()    { p->clear(); }
 
     // Private access to the C4_ReqRefRep internals.
-
+    
 #ifdef C4_MPI
     MPI_Status  &s() { return p->s; }
     MPI_Request &r() { return p->r; }
