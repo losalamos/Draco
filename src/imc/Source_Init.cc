@@ -247,7 +247,7 @@ void Source_Init<MT>::calc_ess()
 	    Check (fss(surcells[sc]) == 0);
 
 	  // assign energy to surface source cell
-	    ess(surcells[sc]) = Global::a * c * 0.25 * 
+	    ess(surcells[sc]) = Global::a * Global::c * 0.25 * 
 		pow(ss_temp[ss],4) * delta_t;
 
 	  // assign source face to surface source cell

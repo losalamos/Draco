@@ -83,7 +83,7 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
     if (num_cells <= sinit.get_capacity())
     {
       // do full replication as we can fit the whole mesh on each processor
-	std::cout << "** Doing full replication" << std::endl;
+	std::cout << " ** Doing full replication" << std::endl;
 	for (int proc = 0; proc < nodes(); proc++)
 	{
 	    for (int cell = 1; cell <= num_cells; cell++)
@@ -98,7 +98,7 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
     else if (num_cells == total_capacity)
     {
       // do full DD
-	std::cout << "** Doing full DD" << std::endl;
+	std::cout << " ** Doing full DD" << std::endl;
 	int cell = 1;
 	for (int proc = 0; proc < nodes(); proc++)
 	{
@@ -118,7 +118,7 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
     {
       // do DD/replication
 
-	std::cout << "** Doing general DD/rep" << std::endl;
+	std::cout << " ** Doing general DD/rep" << std::endl;
       // set up variables for cell replication
 	vector<int> cellrep(num_cells);
 	fill(cellrep.begin(), cellrep.end(), 0);
