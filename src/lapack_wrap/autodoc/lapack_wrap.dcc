@@ -1,0 +1,34 @@
+//---------------------------------*-text-*-----------------------------------//
+// lapack_wrap.dcc
+// lapack_wrap Overview page
+// Thomas M. Evans
+// Mon Apr 19 14:20:27 2004
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+/*!
+
+<!---------------------------------------------------------------------------->
+
+\mainpage Overview of the lapack_wrap package
+\version draco-4_3_0
+\author Thomas M. Evans
+
+The lapack_wrap package contains a C++ functional interface to BLAS
+and LAPACK functions.
+ 
+BLAS functions are included in the headers Blas_Level_1.hh (level 1
+BLAS), Blas_Level_2.hh (level 2 BLAS), and Blas_Level_3.hh (level 3
+BLAS).  To include the C++ wrapped BLAS include the header <Blas.hh>.
+This header includes all three Blas_Level headers.
+ 
+LAPACK functionality has not been wrapped yet.
+
+<!---------------------------------------------------------------------------->
+
+*/
+
+//---------------------------------------------------------------------------//
+//                              end of lapack_wrap.dcc
+//---------------------------------------------------------------------------//

@@ -1,0 +1,32 @@
+//---------------------------------*-text-*-----------------------------------//
+// stdheaders.dcc
+// stdheaders Overview page
+// Thomas M. Evans
+// Mon Apr 19 22:12:48 2004
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+/*!
+
+<!---------------------------------------------------------------------------->
+
+\mainpage Overview of the stdheaders package
+\version draco-4_3_0
+\author Michelle Murillo Thomas M. Evans
+
+stdheaders provides C++ Standard defined headers for the ANSI C-STD
+library.  The C++ standard stipulates that c-std libraries,
+ie. math.h, should sit in the std namespace and be called using
+c(library name).  Thus, cos from math.h is called using std::cos from
+cmath.
+
+stdheaders is turned on by the --enable-draco-stdhdrs option.
+
+<!---------------------------------------------------------------------------->
+
+*/
+
+//---------------------------------------------------------------------------//
+//                              end of stdheaders.dcc
+//---------------------------------------------------------------------------//

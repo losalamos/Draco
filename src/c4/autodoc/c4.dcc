@@ -1,0 +1,32 @@
+//---------------------------------*-text-*-----------------------------------//
+// c4.dcc
+// c4 Overview page
+// Thomas M. Evans
+// Mon Apr 19 14:11:01 2004
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+/*!
+
+<!---------------------------------------------------------------------------->
+
+\mainpage Overview of the c4 package
+\version draco-4_3_0
+\author Thomas M. Evans, Todd Urbatsch, Geoff Furnish
+
+The basic functions provided by C4 sit in the C4_Functions.hh header.
+These are canonical forms of message passing functions.  c4 is set to
+either serial or mpi (as determined by the C4_MPI or C4_SCALAR
+macros). To use c4 include the following                        
+\code                                                                   
+#include "c4/global.hh"                                                 
+\endcode
+
+<!---------------------------------------------------------------------------->
+
+*/
+
+//---------------------------------------------------------------------------//
+//                              end of c4.dcc
+//---------------------------------------------------------------------------//

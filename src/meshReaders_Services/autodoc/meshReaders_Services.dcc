@@ -1,0 +1,29 @@
+//---------------------------------*-text-*-----------------------------------//
+// meshReaders_Services.dcc
+// meshReaders_Services Overview page
+// Thomas M. Evans
+// Mon Apr 19 14:56:08 2004
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+/*!
+
+<!---------------------------------------------------------------------------->
+
+\mainpage Overview of the meshReaders_Services package
+\version draco-4_3_0
+\author B.T. Adams
+
+The meshReaders_Services class constructor automatically instantiates
+and executes the readMesh member function used to parse the mesh
+data. Accessor functions are provided for all of the remaining member
+classes to allow data retrieval.
+
+<!---------------------------------------------------------------------------->
+
+*/
+
+//---------------------------------------------------------------------------//
+//                              end of meshReaders_Services.dcc
+//---------------------------------------------------------------------------//

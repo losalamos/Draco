@@ -1,0 +1,33 @@
+//---------------------------------*-text-*-----------------------------------//
+// quadrature.dcc
+// quadrature Overview page
+// Thomas M. Evans
+// Mon Apr 19 21:19:57 2004
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+/*!
+
+<!---------------------------------------------------------------------------->
+
+\mainpage Overview of the quadrature package
+\version draco-4_3_0
+\author Kelly Thompson
+
+The quadrature package provides services related to the angular
+transport discretization.  This package provides many different
+quadrature sets (Level Symmetric, Gauss Legendre, etc.) for problems
+of varying dimension.
+
+This package also performs other related services including
+integrating angularly dependent variables over the quadrature set
+range (psi2phi).
+
+<!---------------------------------------------------------------------------->
+
+*/
+
+//---------------------------------------------------------------------------//
+//                              end of quadrature.dcc
+//---------------------------------------------------------------------------//
