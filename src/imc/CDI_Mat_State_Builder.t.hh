@@ -4,17 +4,21 @@
  * \author Thomas M. Evans
  * \date   Fri Nov 16 11:23:17 2001
  * \brief  CDI_Mat_State_Builder class definitions.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_CDI_Mat_State_Builder_t_hh__
-#define __imc_CDI_Mat_State_Builder_t_hh__
+#ifndef rtt_imc_CDI_Mat_State_Builder_t_hh
+#define rtt_imc_CDI_Mat_State_Builder_t_hh
 
 #include "CDI_Mat_State_Builder.hh"
-#include "Global.hh"
+#include "Opacity_Builder_Helper.hh"
 #include "Fleck_Factors.hh"
+#include "Global.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include <utility>
 
 namespace rtt_imc
 {
@@ -192,16 +196,9 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
     typename MT::template CCSF<double> absorption(mesh);
     typename MT::template CCSF<double> scattering(mesh);
 
-    // make a fleck factors object
-    SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
-    Check (fleck->fleck.size() == num_cells);
-
     // constants needed for calculation of opacities in /cm
     double T      = 0.0; // temp in keV
     double rho    = 0.0; // density in g/cc
-    double dedT   = 0.0; // dedT in Jerks/keV
-    double volume = 0.0; // volume in cc
-    double beta   = 0.0;
 
     // cdi index
     int    icdi   = 0;
@@ -228,16 +225,8 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
 	// get material data
 	T      = mat_state->get_T(cell);
 	rho    = mat_state->get_rho(cell);
-	dedT   = mat_state->get_dedt(cell);
-	volume = mesh->volume(cell);
-
-	Check (T      >=  0.0);
-	Check (rho    >   0.0);
-	Check (dedT   >   0.0);
-	Check (volume >   0.0);
-
-	// calculate beta (4acT^3/Cv)
-	beta = 4.0 * a * T*T*T * volume / dedT;
+	Check (T   >=  0.0);
+	Check (rho >   0.0);
 
 	// get the models (the standard allows explicit casts from int to a
 	// valid enumeration)
@@ -258,16 +247,18 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
 	absorption(cell) = cdi->gray(model_abs, abs)->getOpacity(T, rho) * rho;
 
 	// get the scattering opacity (multiply by density to convert to /cm)
-	scattering(cell) = cdi->gray(model_sct, sct)->getOpacity(T, rho) * rho;
-
-	// calculate Fleck Factor
-	fleck->fleck(cell) = 1.0 / 
-	    (1.0 + implicitness * beta * c * delta_t * absorption(cell)); 
+	scattering(cell) = cdi->gray(model_sct, sct)->getOpacity(T, rho) * rho; 
 	
 	Check (absorption(cell)   >= 0.0);
 	Check (scattering(cell)   >= 0.0);
-	Check (fleck->fleck(cell) >= 0.0 && fleck->fleck(cell) <= 1.0);
     }
+
+    // build fleck factors
+    SP<Fleck_Factors<MT> > fleck = 
+	Opacity_Builder_Helper<MT,Gray_Frequency>::build_Fleck_Factors(
+	    mesh, mat_state, absorption, delta_t, implicitness);
+    Check (fleck);
+    Check (fleck->fleck.size() == num_cells);
 
     // build the return opacity
     opacity = new Opacity<MT, Gray_Frequency>(gray, absorption, scattering, 
@@ -340,11 +331,11 @@ void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Diffusion_Opacity(
 	Check (cdi);
 
 	// get material data
-	T      = mat_state->get_T(cell);
-	rho    = mat_state->get_rho(cell);
+	T   = mat_state->get_T(cell);
+	rho = mat_state->get_rho(cell);
 
-	Check (T      >=  0.0);
-	Check (rho    >   0.0);
+	Check (T   >= 0.0);
+	Check (rho >  0.0);
 
 	// determine how to calculate the Rosseland opacity:
 	// (multiply by density to convert to /cm)
@@ -466,11 +457,12 @@ void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_mat_classes(
  */
 template<class MT>
 void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
-    SP_Mesh      mesh)
+    SP_Mesh mesh)
 {
     using rtt_mc::global::a;
     using rtt_mc::global::c;
     using rtt_cdi::CDI;
+    using std::pair;
     using rtt_dsxx::soft_equiv;
     using rtt_dsxx::SP;
 
@@ -480,107 +472,28 @@ void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
     Require (mesh->num_cells() == mat_state->num_cells());
     Require (mesh->num_cells() == density.size());
     Require (CDI::getNumberFrequencyGroups() == mg->get_num_groups());
-
-    // return opacity
-    SP_Opacity return_opacity;
-    
-    // number of cells and groups
-    int num_cells  = mesh->num_cells();
-    int num_groups = mg->get_num_groups();
  
     // make cell-centered, scalar fields for opacities
     typename MT::template CCSF<sf_double> absorption(mesh);
     typename MT::template CCSF<sf_double> scattering(mesh);
-    typename MT::template CCSF<double>    integrated_norm_planck(mesh);
-    typename MT::template CCSF<sf_double> emission_group_cdf(mesh);
-
-    // make a Fleck Factors object
-    SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
-    Check (fleck->fleck.size() == num_cells);
 
     // get the multigroup absorption and scattering opacities in /cm,
     // integrate the Planckian
     build_opacities(absorption, scattering);
 
-    // variables needed to calculate the fleck factor and integrated Planck
-    // functions 
-    double planck = 0.0;
-    double dedT   = 0.0;
-    double volume = 0.0;
-    double beta   = 0.0;
-    double T      = 0.0;
-    double b_g    = 0.0;
+    // build the opacities
+    std::pair<SP_Opacity, SP_Diff_Opacity> opacities = 
+	Opacity_Builder_Helper<MT,Multigroup_Frequency>::build_Opacity(
+	    mesh, mg, mat_state, absorption, scattering, delta_t,
+	    implicitness, build_diffusion_opacity);
+    Check (opacities.first);
 
-    // loop through cells and build the integrated normalized Planck
-    for (int cell = 1; cell <= num_cells; cell++)
-    {
-	// initialize summation of sigma * b_g over the cell
-	double sum = 0.0;
-
-	// resize to the number of groups
-	emission_group_cdf(cell).resize(num_groups);
-
-	// get mat state and mesh data
-	dedT   = mat_state->get_dedt(cell);
-	volume = mesh->volume(cell);
-	T      = mat_state->get_T(cell);
-
-	Check (dedT   >  0.0);
-	Check (volume >  0.0);
-	Check (T      >= 0.0);
-
-	// calculate the emission group CDF (int sigma * b(x) dx)
-	for (int g = 1; g <= num_groups; g++)
-	{
-	    // integrate the normalized Planckian over the group
-	    b_g = CDI::integratePlanckSpectrum(g, mat_state->get_T(cell)); 
-
-	    // multiply by the absorption opacity and sum
-	    sum += b_g * absorption(cell)[g-1];
-
-	    // assign to the cdf
-	    emission_group_cdf(cell)[g-1] = sum;
-	}
-
-	// integrate the unnormalized Planckian
-	integrated_norm_planck(cell) = 
-	    CDI::integratePlanckSpectrum(mat_state->get_T(cell));
-	Check (integrated_norm_planck(cell) >= 0.0);
-
-	// calculate the Planckian opacity
-	if (integrated_norm_planck(cell) > 0.0)
-	    planck = emission_group_cdf(cell).back() /
-		integrated_norm_planck(cell); 
-	else
-	{
-	    // weak check that the zero integrated Planck is due to a cold
-	    // temperature whose Planckian peak is below the lowest (first)
-	    // group boundary.
-	    Check (soft_equiv(emission_group_cdf(cell).back(), 0.0));
-	    Check (3.0 * mat_state->get_T(cell) 
-		   <= mg->get_group_boundaries(1).first); 
-
-	    // set the ill-defined integrated Planck opacity to zero
-	    planck = 0.0;
-	}	    
-	Check (planck >= 0.0);
-
-	// calculate beta (4aT^3/Cv)
-	beta = 4.0 * a * T*T*T * volume / dedT;
-	
-	// calculate Fleck Factor
-	fleck->fleck(cell) = 1.0 / 
-	    (1.0 + implicitness * beta * c * delta_t * planck); 
-	Check (fleck->fleck(cell) >= 0.0 && fleck->fleck(cell) <= 1.0);
-    }
-
-    // build the return opacity
-    opacity = new Opacity<MT, Multigroup_Frequency>(
-	mg, absorption, scattering, fleck, integrated_norm_planck, 
-	emission_group_cdf);
-
+    // assign opacities
+    opacity      = opacities.first;
+    diff_opacity = opacities.second;
+    
     Ensure (opacity);
-    Ensure (opacity->num_cells() == mesh->num_cells());
+    Ensure (build_diffusion_opacity ? diff_opacity : true);
 }
 
 //---------------------------------------------------------------------------//
@@ -668,7 +581,7 @@ void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_opacities(
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_CDI_Mat_State_Builder_t_hh__
+#endif                          // rtt_imc_CDI_Mat_State_Builder_t_hh
 
 //---------------------------------------------------------------------------//
 //                        end of imc/CDI_Mat_State_Builder.t.hh

@@ -4,17 +4,19 @@
  * \author Thomas M. Evans
  * \date   Wed Nov 14 16:36:43 2001
  * \brief  Flat_Mat_State_Builder member definitions.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Flat_Mat_State_Builder_t_hh__
-#define __imc_Flat_Mat_State_Builder_t_hh__
+#ifndef rtt_imc_Flat_Mat_State_Builder_t_hh
+#define rtt_imc_Flat_Mat_State_Builder_t_hh
 
 #include "Flat_Mat_State_Builder.hh"
+#include "Opacity_Builder_Helper.hh"
 #include "Fleck_Factors.hh"
-#include "cdi/CDI.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <utility>
 
 namespace rtt_imc
@@ -64,7 +66,7 @@ void Flat_Mat_State_Builder<MT,FT>::build_mat_classes(SP_Mesh mesh)
 
     // build the opacity
     {
-	opacity = build_opacity<Dummy_Type>(Type_Switch<FT>(), mesh);
+	build_opacity<Dummy_Type>(Type_Switch<FT>(), mesh);
     }
     Ensure (opacity);
     Ensure (opacity->num_cells() == mesh->num_cells());
@@ -151,8 +153,7 @@ Flat_Mat_State_Builder<MT,FT>::build_frequency(Switch_MG)
  */
 template<class MT, class FT>
 template<class Stop_Explicit_Instantiation>
-rtt_dsxx::SP<Opacity<MT,Gray_Frequency> >
-Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray, SP_Mesh mesh)
+void Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray, SP_Mesh mesh)
 {
     using rtt_mc::global::c;
     using rtt_mc::global::a;
@@ -164,9 +165,6 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray, SP_Mesh mesh)
 
     Check (mesh->num_cells() == flat_data->gray_absorption_opacity.size());
     Check (mesh->num_cells() == flat_data->gray_scattering_opacity.size());
-
-    // return Opacity object
-    rtt_dsxx::SP<Opacity<MT,Gray_Frequency> > return_opacity;
     
     // number of cells
     int num_cells = mesh->num_cells();
@@ -179,40 +177,15 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray, SP_Mesh mesh)
 	mesh, flat_data->gray_scattering_opacity);
 
     // make a Fleck Factors object
-    SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
+    SP<Fleck_Factors<MT> > fleck =
+	Opacity_Builder_Helper<MT,Gray_Frequency>::build_Fleck_Factors(
+	    mesh, mat_state, absorption, delta_t, implicitness);
+    Check (fleck);
     Check (fleck->fleck.size() == num_cells);
-
-    // calculate the Fleck factor in each cell
-    double dedT   = 0.0; // dedT in Jerks/keV
-    double T      = 0.0; // temp in keV
-    double volume = 0.0; // volume in cc
-    double beta   = 0.0;
-    for (int cell = 1; cell <= num_cells; cell++)
-    {
-	// calculate coefficients needed for Fleck factor
-	dedT   = mat_state->get_dedt(cell);
-	T      = mat_state->get_T(cell);
-	volume = mesh->volume(cell);
-
-	Check (T      >= 0.0);
-	Check (dedT   >  0.0);
-	Check (volume >  0.0);
-
-	// calculate beta (4acT^3/Cv)
-	beta = 4.0 * a * T*T*T * volume / dedT;
-	
-	// calculate Fleck factor
-	fleck->fleck(cell) = 1.0 / 
-	    (1.0 + implicitness * beta * c * delta_t * absorption(cell));
-	
-	Check (fleck->fleck(cell) >= 0.0 && fleck->fleck(cell) <= 1.0);
-	Check (absorption(cell)   >= 0.0);
-	Check (scattering(cell)   >= 0.0);
-    }
     
     // create Opacity object
-    return_opacity = new Opacity<MT,Gray_Frequency>(frequency, absorption, 
-						    scattering, fleck);
+    opacity = new Opacity<MT,Gray_Frequency>(frequency, absorption, 
+					     scattering, fleck);
 
     // build the Diffusion_Opacity
     if (build_diffusion_opacity)
@@ -229,10 +202,8 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray, SP_Mesh mesh)
 	Ensure (diff_opacity->num_cells() == mesh->num_cells());
     }
 
-    Ensure (return_opacity);
-    Ensure (return_opacity->num_cells() == num_cells);
-    
-    return return_opacity;
+    Ensure (opacity);
+    Ensure (opacity->num_cells() == num_cells);
 }
 
 //---------------------------------------------------------------------------//
@@ -241,30 +212,14 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray, SP_Mesh mesh)
  */
 template<class MT, class FT>
 template<class Stop_Explicit_Instantiation>
-rtt_dsxx::SP<Opacity<MT,Multigroup_Frequency> >
-Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG, SP_Mesh mesh)
+void Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG, SP_Mesh mesh)
 {
-    using rtt_mc::global::a;
-    using rtt_mc::global::c;
-    using rtt_cdi::CDI;
-    using std::pair;
-    using rtt_dsxx::soft_equiv;
-    using rtt_dsxx::SP;
-
     Require (frequency);
     Require (mat_state);
     Require (mesh);
 
     Check (mesh->num_cells() == flat_data->mg_absorption_opacity.size());
     Check (mesh->num_cells() == flat_data->mg_scattering_opacity.size());
-
-    // return opacity
-    rtt_dsxx::SP<Opacity<MT,Multigroup_Frequency> > return_opacity;
-    
-    // number of cells and groups
-    int num_cells  = mesh->num_cells();
-    int num_groups = frequency->get_num_groups();
-    Check (num_groups > 0);
 
     // make cell-centered, scalar fields for opacities
     typename MT::template CCSF<sf_double> absorption(
@@ -273,157 +228,24 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG, SP_Mesh mesh)
     typename MT::template CCSF<sf_double> scattering(
 	mesh, flat_data->mg_scattering_opacity);
 
-    typename MT::template CCSF<double>    rosseland(mesh);
+    // build the opacities
+    std::pair<SP_MG_Opacity, SP_Diff_Opacity> opacities = 
+	Opacity_Builder_Helper<MT,Multigroup_Frequency>::build_Opacity(
+	    mesh, frequency, mat_state, absorption, scattering, delta_t,
+	    implicitness, build_diffusion_opacity);
+    Check (opacities.first);
 
-    typename MT::template CCSF<double>    integrated_norm_planck(mesh);
-
-    typename MT::template CCSF<sf_double> emission_group_cdf(mesh);
-
-    // make a Fleck Factors object
-    SP<Fleck_Factors<MT> > fleck(new Fleck_Factors<MT>(mesh));
-    Check (fleck->fleck.size() == num_cells);
-
-    // variables needed to calculate the fleck factor and integrated Planck
-    // functions 
-    double planck        = 0.0;
-    double dedT          = 0.0;
-    double volume        = 0.0;
-    double beta          = 0.0;
-    double T             = 0.0;
-    double b_g           = 0.0;
-    double r_g           = 0.0;
-    double b_sum         = 0.0;
-    double r_sum         = 0.0;
-    double sig_p_sum     = 0.0;
-    double inv_sig_r_sum = 0.0;
-    double tot_sig_g     = 0.0;
-
-    // loop through cells and build the integrated normalized Planck
-    for (int cell = 1; cell <= num_cells; cell++)
-    {
-	// initialize summation of sigma * b_g over the cell
-	sig_p_sum = 0.0;
-
-	// initialize summation of 1/sigma * r_g over the cell
-	inv_sig_r_sum = 0.0;
-
-	// resize to the number of groups
-	emission_group_cdf(cell).resize(num_groups);
-
-	// get mat state and mesh data
-	dedT   = mat_state->get_dedt(cell);
-	volume = mesh->volume(cell);
-	T      = mat_state->get_T(cell);
-
-	Check (dedT   >  0.0);
-	Check (volume >  0.0);
-	Check (T      >= 0.0);
-
-	Check (absorption(cell).size() == num_groups);
-	Check (scattering(cell).size() == num_groups);
-
-	// calculate the emission group CDF (int sigma * b(x) dx)
-	for (int g = 1; g <= num_groups; g++)
-	{
-	    Check (absorption(cell)[g-1] >= 0.0);
-	    Check (scattering(cell)[g-1] >= 0.0);
-
-	    // get the group boundaries
-	    pair<double,double> bounds = frequency->get_group_boundaries(g);
-
-	    // integrate the normalized Planckian and Rosseland functions
-	    // over the group
-	    CDI::integrate_Rosseland_Planckian_Spectrum(bounds.first, 
-							bounds.second,
-							mat_state->get_T(cell),
-							b_g,
-							r_g);
-
-	    // multiply by the absorption opacity and sum
-	    sig_p_sum += b_g * absorption(cell)[g-1];
-
-	    // assign to the cdf
-	    emission_group_cdf(cell)[g-1] = sig_p_sum;
-
-	    // absorption + scattering
-	    tot_sig_g = absorption(cell)[g-1] + scattering(cell)[g-1];
-	    
-	    // calculate numerator of Rosseland opacity
-	    if (tot_sig_g == 0.0)
-	    {
-		inv_sig_r_sum += rtt_mc::global::huge;
-	    }
-	    else
-	    {
-		inv_sig_r_sum += r_g / tot_sig_g;
-	    }
-	}
-
-	// integrate the unnormalized Planckian and Rosseland over the group
-	// spectrum 
-	CDI::integrate_Rosseland_Planckian_Spectrum(
-	    frequency->get_group_boundaries().front(),
-	    frequency->get_group_boundaries().back(), 
-	    mat_state->get_T(cell),
-	    b_sum, r_sum);
-
-	// assign the Planckian integral to the integrated_norm_planck
-	integrated_norm_planck(cell) = b_sum;
-	Check (integrated_norm_planck(cell) >= 0.0);
-
-	// calculate the Planckian opacity
-	if (integrated_norm_planck(cell) > 0.0)
-	    planck = emission_group_cdf(cell).back() /
-		integrated_norm_planck(cell); 
-	else
-	{
-	    // weak check that the zero integrated Planck is due to a cold
-	    // temperature whose Planckian peak is below the lowest (first)
-	    // group boundary.
-	    Check (soft_equiv(emission_group_cdf(cell).back(), 0.0));
-	    Check (3.0 * mat_state->get_T(cell) 
-		   <= frequency->get_group_boundaries(1).first); 
-
-	    // set the ill-defined integrated Planck opacity to zero
-	    planck = 0.0;
-	}
-	Check (planck >= 0.0);
-
-	// build the rosseland opacity
-	Check (inv_sig_r_sum > 0.0);
-	rosseland(cell) = r_sum / inv_sig_r_sum;
-
-	// calculate beta (4aT^3/Cv)
-	beta = 4.0 * a * T*T*T * volume / dedT;
-	
-	// calculate Fleck Factor
-	fleck->fleck(cell) = 1.0 / 
-	    (1.0 + implicitness * beta * c * delta_t * planck); 
-	Check (fleck->fleck(cell) >= 0.0 && fleck->fleck(cell) <= 1.0);
-    }
-
-    // build the return opacity
-    return_opacity = new Opacity<MT, Multigroup_Frequency>(
-	frequency, absorption, scattering, fleck, integrated_norm_planck, 
-	emission_group_cdf);
-
-    // build the Diffusion_Opacity
-    if (build_diffusion_opacity)
-    {
-	// make the diffusion opacity
-	diff_opacity = new Diffusion_Opacity<MT>(fleck, rosseland);
-	Ensure (diff_opacity);
-	Ensure (diff_opacity->num_cells() == mesh->num_cells());
-    }
-
-    Ensure (return_opacity);
-    Ensure (return_opacity->num_cells() == mesh->num_cells());
-    return return_opacity;
+    // assign opacities
+    opacity      = opacities.first;
+    diff_opacity = opacities.second;
+    
+    Ensure (opacity);
+    Ensure (build_diffusion_opacity ? diff_opacity : true);
 }
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Flat_Mat_State_Builder_t_hh__
+#endif                          // rtt_imc_Flat_Mat_State_Builder_t_hh
 
 //---------------------------------------------------------------------------//
 //                        end of imc/Flat_Mat_State_Builder.t.hh

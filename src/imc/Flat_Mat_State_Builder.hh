@@ -4,13 +4,14 @@
  * \author Thomas M. Evans
  * \date   Wed Nov 14 16:36:42 2001
  * \brief  Flat_Mat_State_Builder class definition.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Flat_Mat_State_Builder_hh__
-#define __imc_Flat_Mat_State_Builder_hh__
+#ifndef rtt_imc_Flat_Mat_State_Builder_hh
+#define rtt_imc_Flat_Mat_State_Builder_hh
 
 #include "Mat_State_Builder.hh"
 #include "Flat_Data_Container.hh"
@@ -21,7 +22,7 @@
 #include "Hybrid_Diffusion.hh"
 #include "Global.hh"
 #include "ds++/Assert.hh"
-#include "ds++/Soft_Equivalence.hh"
+#include "ds++/SP.hh"
 #include <vector>
 
 namespace rtt_imc
@@ -159,11 +160,11 @@ class Flat_Mat_State_Builder : public Mat_State_Builder<MT,FT>
 
     // Build an Opacity<MT,Gray_Frequency>
     template<class Stop_Explicit_Instantiation>
-    SP_Gray_Opacity build_opacity(Switch_Gray, SP_Mesh);
+    void build_opacity(Switch_Gray, SP_Mesh);
 
     // Build an Opacity<MT,Multigroup_Frequency>
     template<class Stop_Explicit_Instantiation>
-    SP_MG_Opacity build_opacity(Switch_MG, SP_Mesh);
+    void build_opacity(Switch_MG, SP_Mesh);
 
   public:
     // Constructor.
@@ -247,7 +248,7 @@ Flat_Mat_State_Builder<MT,FT>::Flat_Mat_State_Builder(
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Flat_Mat_State_Builder_hh__
+#endif                          // rtt_imc_Flat_Mat_State_Builder_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Flat_Mat_State_Builder.hh

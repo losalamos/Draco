@@ -4,13 +4,14 @@
  * \author Thomas M. Evans
  * \date   Fri Nov 16 11:23:17 2001
  * \brief  CDI_Mat_State_Builder class definition.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_CDI_Mat_State_Builder_hh__
-#define __imc_CDI_Mat_State_Builder_hh__
+#ifndef rtt_imc_CDI_Mat_State_Builder_hh
+#define rtt_imc_CDI_Mat_State_Builder_hh
 
 #include "Mat_State_Builder.hh"
 #include "Frequency.hh"
@@ -20,7 +21,7 @@
 #include "Hybrid_Diffusion.hh"
 #include "cdi/CDI.hh"
 #include "ds++/Assert.hh"
-#include "ds++/Soft_Equivalence.hh"
+#include "ds++/SP.hh"
 #include <vector>
 
 namespace rtt_imc
@@ -79,6 +80,7 @@ namespace rtt_imc
 // 0) original
 // 1) 20-FEB-2003 : updated to match new Mat_State_Builder interface
 // 2) 06-MAR-2003 : updated to build diffusion opacities for gray problems
+// 3) 08-AUG-2003 : updated to build diffusion opacities for mg problems
 // 
 //===========================================================================//
 
@@ -299,6 +301,10 @@ class CDI_Mat_State_Builder<MT, Multigroup_Frequency>
     // Timestep in shakes.
     double        delta_t;
 
+    // Switch for building diffusion opacities.
+    bool          build_diffusion_opacity;
+
+
   private:
     // >>> BUILT OBJECTS
     
@@ -351,7 +357,7 @@ class CDI_Mat_State_Builder<MT, Multigroup_Frequency>
 // MEMBER TEMPLATE DEFINITIONS
 //---------------------------------------------------------------------------//
 /*!
- * \brief Constructor for CDI_Mat_State_Builder<MT, Gray_Opacity>
+ * \brief Constructor for CDI_Mat_State_Builder<MT, Multigroup_Opacity>
  * specialization.
  *
  * The constructor gets data from the interface type.  The interface type
@@ -369,18 +375,35 @@ template<class MT>
 template<class IT>
 CDI_Mat_State_Builder<MT,Multigroup_Frequency>::CDI_Mat_State_Builder(
     rtt_dsxx::SP<IT> interface)
-    : Mat_State_Builder<MT,Multigroup_Frequency>()
+    : Mat_State_Builder<MT,Multigroup_Frequency>(),
+      material_cdi(interface->get_CDIs()),
+      cdi_cell_map(interface->get_CDI_map()),
+      cdi_models(interface->get_CDI_models()),
+      density(interface->get_density()),
+      temperature(interface->get_temperature()),
+      implicitness(interface->get_implicitness_factor()),
+      delta_t(interface->get_delta_t()),
+      build_diffusion_opacity(false)
 {
     Require (interface);
+    
+    // set switch
+    int hybrid = interface->get_hybrid_diffusion_method();
+    switch (hybrid)
+    {
+    case Hybrid_Diffusion::TRANSPORT:
+	build_diffusion_opacity = false;
+	break;
 
-    // assign data members from the interface parser
-    material_cdi = interface->get_CDIs();
-    cdi_cell_map = interface->get_CDI_map();
-    cdi_models   = interface->get_CDI_models();
-    density      = interface->get_density();
-    temperature  = interface->get_temperature();
-    implicitness = interface->get_implicitness_factor();
-    delta_t      = interface->get_delta_t();
+    case Hybrid_Diffusion::RANDOM_WALK:
+    case Hybrid_Diffusion::DDIMC:
+	build_diffusion_opacity = true;
+	break;
+
+    default:
+	throw rtt_dsxx::assertion("Invalid hybrid diffusion scheme.");
+	break;
+    }
 
     Ensure (delta_t > 0.0);
     Ensure (implicitness >= 0.0 && implicitness <= 1.0);
@@ -392,7 +415,7 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::CDI_Mat_State_Builder(
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_CDI_Mat_State_Builder_hh__
+#endif                          // rtt_imc_CDI_Mat_State_Builder_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/CDI_Mat_State_Builder.hh
