@@ -186,13 +186,19 @@ void Mesh_XYZ::scatter
         for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
 	{
           for ( int f = 0; f < 6; ++f )
-	     op(to(i,j,k,f), gfrom(i,j,k));
-          if (i != 0) op(to(i,j,k,0), gfrom(i-1,j,k));
-          if (i != to.ncx - 1) op(to(i,j,k,1), gfrom(i+1,j,k));
-          if (j != 0) op(to(i,j,k,2), gfrom(i,j-1,k));
-          if (j != to.ncy - 1) op(to(i,j,k,3), gfrom(i,j+1,k));
-          if (k != 0) op(to(i,j,k,4), gfrom(i,j,k-1));
-          if (k != to.ncz - 1) op(to(i,j,k,5), gfrom(i,j,k+1));
+	      op(to(i,j,k,f), gfrom(i,j,k));
+          if (i != 0)
+              op(to(i,j,k,0), gfrom(i-1,j,k));
+          if (i != to.ncx - 1)
+              op(to(i,j,k,1), gfrom(i+1,j,k));
+          if (j != 0)
+              op(to(i,j,k,2), gfrom(i,j-1,k));
+          if (j != to.ncy - 1)
+              op(to(i,j,k,3), gfrom(i,j+1,k));
+          if (k != 0)
+              op(to(i,j,k,4), gfrom(i,j,k-1));
+          if (k != to.ncz - 1)
+              op(to(i,j,k,5), gfrom(i,j,k+1));
         }
 }
 
@@ -262,18 +268,30 @@ void Mesh_XYZ::swap
       for ( int j = 0; j < to.ncy; ++j )
         for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
 	{
-          if (i != 0) to(i,j,k,0) = gfrom(i-1,j,k,1);
-          else to(i,j,k,0) = 0;
-          if (i != to.ncx - 1) to(i,j,k,1) = gfrom(i+1,j,k,0);
-          else to(i,j,k,1) = 0;
-          if (j != 0) to(i,j,k,2) = gfrom(i,j-1,k,3);
-          else to(i,j,k,2) = 0;
-          if (j != to.ncy - 1) to(i,j,k,3) = gfrom(i,j+1,k,2);
-          else to(i,j,k,3) = 0;
-          if (k != 0) to(i,j,k,4) = gfrom(i,j,k-1,5);
-          else to(i,j,k,4) = 0;
-          if (k != to.ncz - 1) to(i,j,k,5) = gfrom(i,j,k+1,4);
-          else to(i,j,k,5) = 0;
+          if (i != 0)
+              to(i,j,k,0) = gfrom(i-1,j,k,1);
+          else
+              to(i,j,k,0) = 0;
+          if (i != to.ncx - 1)
+              to(i,j,k,1) = gfrom(i+1,j,k,0);
+          else
+              to(i,j,k,1) = 0;
+          if (j != 0)
+              to(i,j,k,2) = gfrom(i,j-1,k,3);
+          else
+              to(i,j,k,2) = 0;
+          if (j != to.ncy - 1)
+              to(i,j,k,3) = gfrom(i,j+1,k,2);
+          else
+              to(i,j,k,3) = 0;
+          if (k != 0)
+              to(i,j,k,4) = gfrom(i,j,k-1,5);
+          else
+              to(i,j,k,4) = 0;
+          if (k != to.ncz - 1)
+              to(i,j,k,5) = gfrom(i,j,k+1,4);
+          else
+              to(i,j,k,5) = 0;
 	}
 }
 

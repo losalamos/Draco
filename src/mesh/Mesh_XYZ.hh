@@ -101,10 +101,11 @@ class Mesh_XYZ : private XYZ_Mapper
 	friend class gfcdtf<T>;
 
 	dsxx::Mat2<T> data;
+        const Mesh_XYZ* mesh;
 
 	fcdtf( const Mesh_XYZ *m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncp(), 6 )
+	      data( m->get_ncp(), 6 ), mesh( m )
 	{}
 
       public:
@@ -114,110 +115,12 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	fcdtf( const dsxx::SP<Mesh_XYZ>& m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncp(), 6 )
+	      data( m->get_ncp(), 6 ), mesh( m.bp() )
 	{}
 
+        const Mesh_XYZ& get_Mesh() const { return *mesh; }
+
 	fcdtf& operator=( T x ) { data = x; return *this; }
-
-       	fcdtf& operator=( const cctf<T>& x )
-        {
-            for ( int i = 0; i < ncx; ++i )
-                for ( int j = 0; j < ncy; ++j )
-                    for ( int k = zoff; k < zoff + nczp; ++k )
-                        for ( int f = 0; f < 6; ++f )
-                            data( local_cell_index(i,j,k), f) = x(i,j,k);
-            return *this;
-        }
-
-	fcdtf& operator+=( const gcctf<T>& x )
-        {
-          for ( int i = 0; i < ncx; ++i )
-            for ( int j = 0; j < ncy; ++j )
-              for ( int k = zoff; k < zoff + nczp; ++k )
-	      {
-                if ( i == 0 )
-                  data( local_cell_index(i,j,k), 0) += x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 0) += x(i,j,k) + x(i-1,j,k);
-                if ( i == ncx - 1 )
-                  data( local_cell_index(i,j,k), 1) += x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 1) += x(i,j,k) + x(i+1,j,k);
-                if ( j == 0 )
-                  data( local_cell_index(i,j,k), 2) += x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 2) += x(i,j,k) + x(i,j-1,k);
-                if ( j == ncy - 1 )
-                  data( local_cell_index(i,j,k), 3) += x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 3) += x(i,j,k) + x(i,j+1,k);
-                if ( k == 0 )
-                  data( local_cell_index(i,j,k), 4) += x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 4) += x(i,j,k) + x(i,j,k-1);
-                if ( k == ncz - 1 )
-                  data( local_cell_index(i,j,k), 5) += x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 5) += x(i,j,k) + x(i,j,k+1);
-              }
-          return *this;
-        }
-
-	fcdtf& operator*=( const gcctf<T>& x )
-        {
-          for ( int i = 0; i < ncx; ++i )
-            for ( int j = 0; j < ncy; ++j )
-              for ( int k = zoff; k < zoff + nczp; ++k )
-	      {
-                if ( i == 0 )
-                  data( local_cell_index(i,j,k), 0) *= x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 0) *= x(i,j,k) * x(i-1,j,k);
-                if ( i == ncx - 1 )
-                  data( local_cell_index(i,j,k), 1) *= x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 1) *= x(i,j,k) * x(i+1,j,k);
-                if ( j == 0 )
-                  data( local_cell_index(i,j,k), 2) *= x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 2) *= x(i,j,k) * x(i,j-1,k);
-                if ( j == ncy - 1 )
-                  data( local_cell_index(i,j,k), 3) *= x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 3) *= x(i,j,k) * x(i,j+1,k);
-                if ( k == 0 )
-                  data( local_cell_index(i,j,k), 4) *= x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 4) *= x(i,j,k) * x(i,j,k-1);
-                if ( k == ncz - 1 )
-                  data( local_cell_index(i,j,k), 5) *= x(i,j,k);
-                else
-                  data( local_cell_index(i,j,k), 5) *= x(i,j,k) * x(i,j,k+1);
-              }
-          return *this;
-        }
-
-	fcdtf& operator+=( const vctf<T>& x )
-        {
-          for ( int i = 0; i < ncx; ++i )
-            for ( int j = 0; j < ncy; ++j )
-              for ( int k = zoff; k < zoff + nczp; ++k )
-	      {
-                data( local_cell_index(i,j,k), 0) += 
-                  x(i,j,k,0) + x(i,j,k,2) + x(i,j,k,4) + x(i,j,k,6);
-                data( local_cell_index(i,j,k), 1) += 
-                  x(i,j,k,1) + x(i,j,k,3) + x(i,j,k,5) + x(i,j,k,7);
-                data( local_cell_index(i,j,k), 2) += 
-                  x(i,j,k,0) + x(i,j,k,1) + x(i,j,k,4) + x(i,j,k,5);
-                data( local_cell_index(i,j,k), 3) += 
-                  x(i,j,k,2) + x(i,j,k,3) + x(i,j,k,6) + x(i,j,k,7);
-                data( local_cell_index(i,j,k), 4) += 
-                  x(i,j,k,0) + x(i,j,k,1) + x(i,j,k,2) + x(i,j,k,3);
-                data( local_cell_index(i,j,k), 5) += 
-                  x(i,j,k,4) + x(i,j,k,5) + x(i,j,k,6) + x(i,j,k,7);
-              }
-          return *this;
-        }
 
         template<class X>
         fcdtf& operator=( const xm::Xpr< T, X, fcdtf >& x )
@@ -264,6 +167,7 @@ class Mesh_XYZ : private XYZ_Mapper
     class gfcdtf : private XYZ_Mapper,
                    public xm::Indexable< T, gfcdtf<T> > {
 	dsxx::Mat4<T> data;
+        const Mesh_XYZ* mesh;
 
       public:
         typedef typename dsxx::Mat4<T>::iterator iterator;
@@ -274,8 +178,11 @@ class Mesh_XYZ : private XYZ_Mapper
 	      data( dsxx::Bounds( 0, 5 ),
                     dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
-                    dsxx::Bounds( zoff - 1, zoff + nczp ) )
+                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+              mesh( m.bp() )
 	{}
+
+        const Mesh_XYZ& get_Mesh() const { return *mesh; }
 
         gfcdtf<T>& operator=( const fcdtf<T>& c );
         void update_gfcdtf();
@@ -285,7 +192,8 @@ class Mesh_XYZ : private XYZ_Mapper
               data( dsxx::Bounds( 0, 5 ),
                     dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
-                    dsxx::Bounds( zoff - 1, zoff + nczp ) )
+                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+              mesh( c.mesh )
         { *this = c; }
 
     // i, j, k == global xyz cell indicies
@@ -321,10 +229,12 @@ class Mesh_XYZ : private XYZ_Mapper
                        public xm::Indexable< T, cctf<T> >
     {
         dsxx::Mat1<T> data;
+        const Mesh_XYZ* mesh;
 
 	cctf( const Mesh_XYZ *m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
-            data( m->get_ncp() ) {}
+            data( m->get_ncp() ), mesh( m )
+        {}
 
       public:
 	typedef T value_type;
@@ -333,7 +243,9 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	cctf( const dsxx::SP<Mesh_XYZ>& m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
-            data( m->get_ncp() ) {}
+            data( m->get_ncp() ), mesh( m.bp() ) {}
+
+        const Mesh_XYZ& get_Mesh() const { return *mesh; }
 
         cctf& operator=( T x )
         {
@@ -383,6 +295,7 @@ class Mesh_XYZ : private XYZ_Mapper
           public xm::Indexable< T, gcctf<T> >
     {
         dsxx::Mat3<T> data;
+        const Mesh_XYZ* mesh;
 
       public:
         typedef typename dsxx::Mat3<T>::iterator iterator;
@@ -392,8 +305,11 @@ class Mesh_XYZ : private XYZ_Mapper
             : XYZ_Mapper( m->get_Mesh_DB() ),
               data( dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
-                    dsxx::Bounds( zoff - 1, zoff + nczp ) )
+                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+              mesh( m.bp() )
         {}
+
+        const Mesh_XYZ& get_Mesh() const { return *mesh; }
 
         gcctf<T>& operator=( const cctf<T>& c );
         void update_guard_cells();
@@ -402,7 +318,8 @@ class Mesh_XYZ : private XYZ_Mapper
             : XYZ_Mapper( c.get_Mesh_DB() ),
               data( dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
-                    dsxx::Bounds( zoff - 1, zoff + nczp ) )
+                    dsxx::Bounds( zoff - 1, zoff + nczp ) ),
+              mesh( c.mesh )
         { *this = c; }
 
         T  operator()( int i, int j, int k ) const { return data(i,j,k); }
@@ -430,10 +347,11 @@ class Mesh_XYZ : private XYZ_Mapper
 	friend class Mesh_XYZ;
 
 	dsxx::Mat2<T> data;
+        const Mesh_XYZ* mesh;
 
 	vctf( const Mesh_XYZ *m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncp(), 8 )
+	      data( m->get_ncp(), 8 ), mesh( m )
 	{}
 
       public:
@@ -443,8 +361,10 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	vctf( const dsxx::SP<Mesh_XYZ>& m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
-	      data( m->get_ncp(), 8 )
+	      data( m->get_ncp(), 8 ), mesh( m.bp() )
 	{}
+
+        const Mesh_XYZ& get_Mesh() const { return *mesh; }
 
 	vctf& operator=( T x ) { data = x; return *this; }
 
@@ -491,17 +411,20 @@ class Mesh_XYZ : private XYZ_Mapper
         friend class Mesh_XYZ;
 
         fcdtf<T> data;
+        const Mesh_XYZ* mesh;
 
         bstf ( const Mesh_XYZ *m )
-            : XYZ_Mapper( m->get_Mesh_DB() ), data( m )
+            : XYZ_Mapper( m->get_Mesh_DB() ), data( m ), mesh( m )
 	{}
 
       public:
         typedef T value_type;
 
         bstf( const dsxx::SP<Mesh_XYZ>& m )
-            : XYZ_Mapper( m->get_Mesh_DB() ), data( m )
+            : XYZ_Mapper( m->get_Mesh_DB() ), data( m ), mesh( m.bp() )
 	{}
+
+        const Mesh_XYZ& get_Mesh() const { return *mesh; }
 
         bstf& operator=( T x );
 
@@ -516,6 +439,11 @@ class Mesh_XYZ : private XYZ_Mapper
 
         T& operator()( int i, int j, int k, int f );
         T  operator()( int i, int j, int k, int f ) const;
+
+        T operator[]( int i ) const { return data[i]; }
+        T& operator[]( int i ) { return data[i]; }
+
+        int size() const { return data.size(); }
     };
 
     typedef bstf<double> bssf;
@@ -583,6 +511,8 @@ class Mesh_XYZ : private XYZ_Mapper
     typedef XYZ_Mapper Coord_Mapper;
 
     Mesh_XYZ( const Mesh_DB& mdb );
+
+    bool operator==( const Mesh_XYZ& m ) const { return this == &m; }
 
     const Mesh_DB& get_Mesh_DB() const { return XYZ_Mapper::get_Mesh_DB(); }
     const dsxx::Mat1<double>& get_xc() const { return xc; }
