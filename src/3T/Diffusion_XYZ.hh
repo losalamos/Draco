@@ -10,13 +10,11 @@
 #define __3T_Diffusion_XYZ_hh__
 
 #include "ds++/SP.hh"
-#include "ds++/Mat.hh"
-
-using dsxx::Mat2;
 
 #include "linalg/PCG_Ctrl.hh"
 #include "linalg/Banded_Matrix.cc"
 
+#include "3T/Diffusion_DB.hh"
 #include "3T/MatVec_3T.hh"
 #include "3T/PreCond.hh"
 
@@ -27,19 +25,22 @@ using dsxx::Mat2;
 //===========================================================================//
 
 template<class MT>
-class Diffusion_XYZ : private MT::Coord_Mapper {
+class Diffusion_XYZ : private MT::Coord_Mapper,
+                      protected Diffusion_DB
+{
 
     SP<MT> spm;
 
-    Mat2<double> A;
-    Banded_Matrix< double, 7 > AA;
+    Banded_Matrix< double, 7 > A;
 
     PCG_Ctrl<double> pcg_ctrl;
 
-    SP< MatVec_3T< MT, Diffusion_XYZ<MT> > > spmv;
-    SP< PCG_PreCond<double> > precond;
-
-    typename MT::cell_array<double> vc;
+    SP< MatVec_3T< Diffusion_XYZ<MT> > > spmv;
+    SP< PreCond< Diffusion_XYZ<MT> > > precond;
+ 
+    typedef typename MT::template cell_array<double> cell_array_double;
+//     typename MT::template cell_array<double> vc;
+    cell_array_double vc;
 
     double dx, dy, dz;
 
@@ -52,16 +53,17 @@ class Diffusion_XYZ : private MT::Coord_Mapper {
     
     typedef double NumT;
 
-    Diffusion_XYZ( const SP<MT>& spm_, const pcg_DB& pcg_db );
+    Diffusion_XYZ( const Diffusion_DB& diffdb,
+                   const SP<MT>& spm_, const pcg_DB& pcg_db );
 
     void solve( const typename MT::fcdsf& D,
-		typename MT::cell_array<double>& r,
-		double dt, typename MT::cell_array<double>& x,
+		cell_array_double& r,
+		double dt,
+                cell_array_double& x,
 		const typename MT::fcdsf& Eb );
 
-    Mat2<double>& get_A() { return A; }
-    Banded_Matrix<double,7>& get_AA() { return AA; }
-    SP< MatVec_3T< MT, Diffusion_XYZ<MT> > > get_matvec() { return spmv; }
+    Banded_Matrix<double,7>& get_A() { return A; }
+    SP< MatVec_3T< Diffusion_XYZ<MT> > > get_matvec() { return spmv; }
     SP<MT> getMesh() { return spm; }
     const SP<MT> getMesh() const { return spm; }
 };
