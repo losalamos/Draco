@@ -185,7 +185,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     density) values and the total number of energy groups.
      */
     template < class TemperatureIterator, class DensityIterator, 
-	class OpacityIterator >
+	       class OpacityIterator >
     OpacityIterator getOpacity( TemperatureIterator tempIter,
 				TemperatureIterator templast,
 				DensityIterator densIter,
@@ -259,6 +259,21 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
 				OpacityIterator opacityIter ) const;
 
     /*!
+     * \brief Data is in tables.
+     */
+    bool data_in_tabular_form() const { return true; }
+
+    /*!
+     * \brief Return the reaction type.
+     */
+    rtt_cdi::Reaction getReactionType() const { return rtt_cdi::TOTAL; }
+
+    /*!
+     * \brief Return the model type.
+     */
+    rtt_cdi::Model getModelType() const { return rtt_cdi::ANALYTIC; }
+
+    /*!
      * \brief Returns a "plain English" description of the data.
      */
     std::string getDataDescriptor() const {
@@ -271,7 +286,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     std::string getEnergyPolicyDescriptor() const { 
 	return energyPolicyDescriptor; };
 
-   /*!
+    /*!
      * \brief Returns the name of the associated data file.  Since
      *     there is no data file associated with this opacity class
      *     the string "none" is returned.

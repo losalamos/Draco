@@ -227,14 +227,19 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
 				OpacityIterator opacityFirst ) const;
 
     /*!
-     * \brief Data is analytic, not in tables.
+     * \brief Data is in tables.
      */
-    bool data_in_tabular_form() const { return false; }
+    bool data_in_tabular_form() const { return true; }
 
     /*!
      * \brief Return the reaction type.
      */
     rtt_cdi::Reaction getReactionType() const { return rtt_cdi::TOTAL; }
+
+    /*!
+     * \brief Return the model type.
+     */
+    rtt_cdi::Model getModelType() const { return rtt_cdi::ANALYTIC; }
 
     /*!
      * \brief Returns a "plain English" description of the data.
