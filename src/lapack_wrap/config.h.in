@@ -1,0 +1,38 @@
+/*-----------------------------------*-C-*-----------------------------------*/
+/* lapack_wrap/config.h
+ * Thomas M. Evans 
+ * Thu Aug 29 11:06:46 2002 */
+/*---------------------------------------------------------------------------*/
+/* $Id$ */
+/*---------------------------------------------------------------------------*/
+
+#ifndef __lapack_wrap_config_h__
+#define __lapack_wrap_config_h__
+
+/* LEVEL 1 BLAS */
+
+/* x */
+#undef SCOPY
+#undef DCOPY
+
+/* ax */
+#undef SSCAL
+#undef DSCAL
+
+/* x^T y */
+#undef SDOT
+#undef DDOT
+
+/* ax + y */
+#undef DAXPY
+#undef SAXPY
+
+/* ||x||_2 */
+#undef SNRM2
+#undef DNRM2
+
+#endif                          /* __lapack_wrap_config_h__ */
+
+/*---------------------------------------------------------------------------*/
+/*                              end of lapack_wrap/config.h */
+/*---------------------------------------------------------------------------*/
