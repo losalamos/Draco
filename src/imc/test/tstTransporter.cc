@@ -164,11 +164,13 @@ int main(int argc, char *argv[])
     {
 	cout << "Test: assertion failure at line " 
 	     << ass.what() << endl;
+	C4::Finalize();
 	return 1;
     }
     catch(...)
     {
 	cout << "HELP ME" << endl;
+	C4::Finalize();
 	return 1;
     }
 
