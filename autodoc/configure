@@ -4384,7 +4384,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
 
        # default is to have debug flag on when opt=0
        if test "${enable_debug:=yes}" = yes ; then
-	   gcc_opt_flags="-g3 ${gcc_opt_flags}"
+	   gcc_opt_flags="-g ${gcc_opt_flags}"
        fi
 
    fi
@@ -5514,8 +5514,7 @@ echo "$as_me: WARNING: \"Linux KCC strict option set to allow long long type!\""
 echo $ECHO_N "checking \"for extra eospac library requirements.\"... $ECHO_C" >&6
        if test -n "${vendor_eospac}"; then
            lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfccx86_6a"
-#	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
            LIBS="${LIBS} ${extra_eospac_libs}"
            echo "$as_me:$LINENO: result: \"${extra_eospac_libs}\"" >&5
 echo "${ECHO_T}\"${extra_eospac_libs}\"" >&6

@@ -44,7 +44,7 @@ supportfiles := $(subst ${srcdir}/html, ${prefix}/html, $(wildcard ${srcdir}/htm
 
 autodoc: html
 
-html latex: install_graphics install_support
+html latex: install_graphics install_support reconfigure
 	@if test ! ${DOXYGEN} = 'null'; then \
 	   ${DOXYGEN} doxygen_config; \
 	fi
