@@ -21,6 +21,30 @@ template<class T>
 class c4_traits {
 };
 
+// Intrinsic elemental types.
+
+template<> class c4_traits<char> {
+  public:
+    static const int Tag = C4_char_Tag;
+};
+
+template<> class c4_traits<int> {
+  public:
+    static const int Tag = C4_int_Tag;
+};
+
+template<> class c4_traits<float> {
+  public:
+    static const int Tag = C4_float_Tag;
+};
+
+template<> class c4_traits<double> {
+  public:
+    static const int Tag = C4_double_Tag;
+};
+
+// Intrinsic pointer types.
+
 template<> class c4_traits<char *> {
   public:
     static const int Tag = C4_char_ptr_Tag;
