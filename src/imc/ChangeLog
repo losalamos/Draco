@@ -1,3 +1,8 @@
+2001-11-20  Thomas M. Evans  <tme@lanl.gov>
+
+	* CDI_Mat_State_Builder, CDI_Data_Interface: added CDI version of
+	Mat_State_Builder and CDI interface.
+
 2001-11-15  Thomas M. Evans  <tme@lanl.gov>
 
 	* Mat_State_Builder: Made new class hierarchy, Mat_State_Builder

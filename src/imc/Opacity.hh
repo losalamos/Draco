@@ -33,7 +33,6 @@ namespace rtt_imc
 
  * \arg absorption opacities (1/cm)
  * \arg coherent (isotropic) scattering cross sections (1/cm)
- * \arg planck (one-group) opacities (1/cm)
  * \arg fleck factor (dimensionless)
 
  * The Opacity class simply stores these opacities for IMC.  It is the job of
@@ -48,8 +47,6 @@ namespace rtt_imc
 
  * \arg the effective absorption
  * \arg the effective scattering
- * \arg the Fleck factor times the Planck absorption opacity
-
  */
 /*!
  * \example imc/test/tstOpacity.cc
@@ -77,16 +74,12 @@ class Opacity
     // Scattering (coherent) in 1/cm.
     ccsf_double sigma_thomson;
 
-    // Plankian opacity in 1/cm.
-    ccsf_double planck;
-
     // Fleck factor.
     ccsf_double fleck;
     
   public:
     // Opacity constructor.
-    Opacity(const ccsf_double &, const ccsf_double &, const ccsf_double &, 
-	    const ccsf_double &);
+    Opacity(const ccsf_double &, const ccsf_double &, const ccsf_double &);
 
     // >>> ACCESSORS
 
@@ -96,9 +89,6 @@ class Opacity
     //! Get the (coherent) scattering cross section in a cell in per cm.
     double get_sigma_thomson(int cell) const { return sigma_thomson(cell); }
 
-    //! Get the Planck absorption opacity in a cell in per cm.
-    double get_planck(int cell) const { return planck(cell); }
-
     //! Get the Fleck factor in a cell.
     double get_fleck(int cell) const { return fleck(cell); }
 
@@ -106,9 +96,6 @@ class Opacity
     int num_cells() const { return sigma_abs.get_Mesh().num_cells(); }
 
     // >>> FLECK AND CUMMINGS OPACITY OPERATIONS
-
-    //! Return the Fleck factor times the Planck opacity in a cell.
-    double fplanck(int cell) const { return fleck(cell) * planck(cell); }
 
     // Get the effective scattering cross section.
     inline double get_sigeffscat(int cell) const;

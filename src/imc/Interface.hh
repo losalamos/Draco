@@ -86,39 +86,82 @@ class Interface
     virtual ~Interface() { /* need a destructor for inheritance chain */ }
    
     // >>> FUNCTIONS REQUIRED BY MULTIPLE BUILDER CLASSES
+    
+    //! Get cell-centered densities in g/cc.
+    virtual sf_double get_density() const = 0;
+
+    //! Get cell-centered temperatures in keV.
+    virtual sf_double get_temperature() const = 0;
+
+    //! Get Fleck and Cummings implicitness factor.
+    virtual double    get_implicitness_factor() const = 0;
 
     //! Get the timestep in shakes.
-    virtual double get_delta_t() const = 0;
+    virtual double    get_delta_t() const = 0;
 
     // >>> FUNCTIONS REQUIRED BY TOPOLOGY BUILDER
     
     // Get the cells per processor capacity.
-    virtual int get_capacity() const = 0;
+    virtual int       get_capacity() const = 0;
     
     // >>> FUNCTIONS REQUIRED BY SOURCE_BUILDERs
 
     // Interface to Source_Builder base class.
-    virtual double get_elapsed_t() const = 0;
-    virtual sf_double get_evol_ext() const = 0;
-    virtual double get_rad_s_tend() const = 0;
-    virtual sf_double get_rad_source() const = 0;
-    virtual sf_double get_rad_temp() const = 0;
-    virtual sf_string get_ss_pos() const = 0;
-    virtual sf_double get_ss_temp() const = 0;
-    virtual vf_int get_defined_surcells() const = 0;
-    virtual int get_npnom() const = 0;
-    virtual int get_npmax() const = 0;
-    virtual double get_dnpdt() const = 0;
-    virtual int get_cycle() const = 0;
-    virtual std_string get_ss_dist() const = 0;
-    virtual sf_string get_ss_desc() const = 0;
+
+    //! Get elapsed time to beginning of timestep of imc run in shakes.
+    virtual double     get_elapsed_t()        const = 0;
+
+    //! Get cell-centered external material source in Jerks/cm^3/shake.
+    virtual sf_double  get_evol_ext()         const = 0;
+
+    //! Get turn-off time of radiation source in shakes.
+    virtual double     get_rad_s_tend()       const = 0;
+    
+    //! Get cell-centered radiation source in Jerks/cm^3/shake.
+    virtual sf_double  get_rad_source()       const = 0;
+
+    //! Get cell-centered radiation temperature in keV.
+    virtual sf_double  get_rad_temp()         const = 0;
+
+    //! Get vector of surface source positions.
+    virtual sf_string  get_ss_pos()           const = 0;
+
+    //! Get vector of surface source temperatures in keV.
+    virtual sf_double  get_ss_temp()          const = 0;
+
+    //! Get vector field of surface source cell indices.
+    virtual vf_int     get_defined_surcells() const = 0;
+
+    //! Get nominal number of particles for this timestep.
+    virtual int        get_npnom()            const = 0;
+
+    //! Get maximum number of particles for this timestep.
+    virtual int        get_npmax()            const = 0;
+
+    //! Get differential number of particle/(shake of elapsed time).
+    virtual double     get_dnpdt()            const = 0;
+
+    //! Get problem cycle number.
+    virtual int        get_cycle()            const = 0;
+
+    //! Get the surface source angular distribution descriptor.
+    virtual std_string get_ss_dist()          const = 0;
+
+    //! Get the surface source descriptor.
+    virtual sf_string  get_ss_desc()          const = 0;
 
     // persistent source data, this data is calculated and is persistent
     // between time steps; at the beginning of a non-initial timestep this
     // data must be retrieved from storage
-    virtual SP_Census get_census() const = 0;
-    virtual double get_ecen(int cell) const = 0;
-    virtual double get_ecentot() const = 0;
+
+    // Get the particle census.
+    virtual SP_Census  get_census()           const = 0;
+
+    // Get the census energy in a cell in keV.
+    virtual double     get_ecen(int cell)     const = 0;
+
+    // Get the total, global census energy in keV.
+    virtual double     get_ecentot()          const = 0;
 };
 
 } // end namespace rtt_imc

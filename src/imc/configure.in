@@ -19,7 +19,8 @@ AC_SPRNG_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(mc viz meshReaders rng c4 traits ds++)
+AC_NEEDS_LIBS(mc viz meshReaders cdi rng c4 traits ds++)
+AC_NEEDS_LIBS_TEST(cdi_analytic)
 
 # testing setup
 AC_RUNTESTS(tstTally tstParticle tstTopology_Builder \

@@ -13,6 +13,9 @@
 #include "../Global.hh"
 #include "mc/AMR_Layout.hh"
 #include "mc/XYZCoord_sys.hh"
+#include "cdi_analytic/Analytic_Models.hh"
+#include "cdi_analytic/Analytic_Gray_Opacity.hh"
+#include "cdi_analytic/Analytic_EoS.hh"
 #include <cmath>
 
 namespace rtt_imc_test
@@ -23,6 +26,16 @@ using rtt_mc::RZWedge_Mesh;
 using rtt_mc::AMR_Layout;
 using rtt_mc::Coord_sys;
 using rtt_mc::XYZCoord_sys;
+using rtt_cdi_analytic::Analytic_Gray_Opacity;
+using rtt_cdi_analytic::Analytic_EoS;
+using rtt_cdi_analytic::Analytic_Opacity_Model;
+using rtt_cdi_analytic::Analytic_EoS_Model;
+using rtt_cdi_analytic::Polynomial_Specific_Heat_Analytic_EoS_Model;
+using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
+using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
+using rtt_cdi::CDI;
+using rtt_cdi::GrayOpacity;
+using rtt_cdi::EoS;
 using rtt_dsxx::SP;
 
 using std::sqrt;
@@ -31,6 +44,170 @@ using std::sin;
 
 typedef std::vector<double>    sf_double;
 typedef std::vector<sf_double> vf_double;
+
+//===========================================================================//
+// INTERFACE CLASSES
+//===========================================================================//
+
+//---------------------------------------------------------------------------//
+// IMC_FLAT_INTERFACE DEFINITIONS
+//---------------------------------------------------------------------------//
+
+// constructor
+IMC_Flat_Interface::IMC_Flat_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder> osb, 
+				       int capacity_) 
+    : builder(osb),
+      density(6), 
+      absorption(6), 
+      scattering(6),  
+      temperature(6),
+      specific_heat(6), 
+      implicitness(1.0), 
+      delta_t(.001),
+      capacity(capacity_),
+      elapsed_t(.001),
+      evol_ext(6),
+      rad_source(6),
+      rad_temp(6),
+      ss_temp(2),
+      ss_desc(2, "standard")
+{   
+    // make the Opacity and Mat_State stuff
+
+    for (int i = 0; i < 3; i++)
+    {
+	// density
+	density[i]   = 1.0;
+	density[i+3] = 2.0;
+
+	// absorption opacity in /cm
+	absorption[i]     = .1  * density[i];
+	absorption[i+3]   = .01 * density[i+3];
+	
+	// scattering opacity in /cm
+	scattering[i]   = .5  * density[i];
+	scattering[i+3] = 0.0 * density[i+3];
+
+	// specific heat in jks/g/keV
+	specific_heat[i]   = .1;
+	specific_heat[i+3] = .2;
+
+	// temperature
+	temperature[i]   = 10;
+	temperature[i+3] = 20;
+    }
+
+    // make the Source_Builder stuff
+
+    for (int i = 0; i < 6; i++)
+    {
+	evol_ext[i]   = 100;
+	rad_source[i] = 200;
+	rad_temp[i]   = 10.0;
+    }
+
+    ss_temp[0] = 20.0;
+    ss_temp[1] = 0.0;
+}
+
+//---------------------------------------------------------------------------//
+
+std::vector<std::vector<int> > IMC_Flat_Interface::get_defined_surcells()
+    const
+{
+    return builder->get_defined_surcells();
+}
+
+//---------------------------------------------------------------------------//
+// IMC_CDI_INTERFACE DEFINITIONS
+//---------------------------------------------------------------------------//
+
+// constructor
+IMC_CDI_Interface::IMC_CDI_Interface() 
+    : 
+      density(6),   
+      temperature(6, 3.0), 
+      implicitness(1.0), 
+      delta_t(.001),
+      cdi_map(6),
+      cdi_list(3)
+{  
+    // make material data
+    density[0] = 1.0;
+    density[1] = 2.0;
+    density[2] = 1.0;
+    density[3] = 3.0;
+    density[4] = 1.0;
+    density[5] = 2.0;
+
+    // make cdi map (see Vol III pg 1, TME)
+    cdi_map[0] = 1;
+    cdi_map[1] = 3;
+    cdi_map[2] = 1;
+    cdi_map[3] = 2;
+    cdi_map[4] = 1;
+    cdi_map[5] = 2;
+
+    // make 3 cdi materials: 
+    //      MAT 1: sigma = 100/T^3 cm^2/g, Cv = .1e6    kJ/g/keV
+    //      MAT 2: sigma = 1.5     cm^2/g, Cv = .2e6    kJ/g/keV
+    //      MAT 3: sigma = 1+.1T   cm^2/g, Cv = .1e6T^3 kJ/g/keV
+    // Note: 1kJ = 1e-6 Jerks
+
+    // analytic opacity models
+    SP<Analytic_Opacity_Model> model_1(new Polynomial_Analytic_Opacity_Model
+				       (0.0, 100.0, -3.0, 1.0, 0.0));
+    SP<Analytic_Opacity_Model> model_2(new Constant_Analytic_Opacity_Model
+				       (1.5));
+    SP<Analytic_Opacity_Model> model_3(new Polynomial_Analytic_Opacity_Model
+				       (1.0, 0.1, 1.0, 1.0, 0.0));
+
+    SP<Analytic_Opacity_Model> model_s(new Constant_Analytic_Opacity_Model
+				       (0.0));
+
+    // analytic eos models
+    SP<Analytic_EoS_Model> aeos_1(
+	new Polynomial_Specific_Heat_Analytic_EoS_Model(0.1e6, 0.0, 0.0, 
+							0.0, 0.0, 0.0));
+    SP<Analytic_EoS_Model> aeos_2(
+	new Polynomial_Specific_Heat_Analytic_EoS_Model(0.2e6, 0.0, 0.0, 
+							0.0, 0.0, 0.0));
+    SP<Analytic_EoS_Model> aeos_3(
+	new Polynomial_Specific_Heat_Analytic_EoS_Model(0.0, 0.1e6, 3.0, 
+							0.0, 0.0, 0.0));
+
+    // make gray opacities
+    SP<const GrayOpacity> gop_1(new Analytic_Gray_Opacity(
+				    model_1, rtt_cdi::ABSORPTION));
+    SP<const GrayOpacity> gop_2(new Analytic_Gray_Opacity(
+				    model_2, rtt_cdi::ABSORPTION));
+    SP<const GrayOpacity> gop_3(new Analytic_Gray_Opacity(
+				    model_3, rtt_cdi::ABSORPTION));
+    SP<const GrayOpacity> gop_s(new Analytic_Gray_Opacity(
+				    model_s, rtt_cdi::SCATTERING));
+
+    // make EoS
+    SP<const EoS> eos_1(new Analytic_EoS(aeos_1));
+    SP<const EoS> eos_2(new Analytic_EoS(aeos_2));
+    SP<const EoS> eos_3(new Analytic_EoS(aeos_3));
+
+    // Make CDIs
+    cdi_list[0] = new CDI;
+    cdi_list[1] = new CDI;
+    cdi_list[2] = new CDI;
+
+    cdi_list[0]->setGrayOpacity(gop_1);
+    cdi_list[0]->setGrayOpacity(gop_s);
+    cdi_list[0]->setEoS(eos_1);
+
+    cdi_list[1]->setGrayOpacity(gop_2);
+    cdi_list[1]->setGrayOpacity(gop_s);
+    cdi_list[1]->setEoS(eos_2);
+
+    cdi_list[2]->setGrayOpacity(gop_3);
+    cdi_list[2]->setGrayOpacity(gop_s);
+    cdi_list[2]->setEoS(eos_3);
+}
 
 //===========================================================================//
 // BUILD A RZWEDGE MESH

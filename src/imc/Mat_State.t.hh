@@ -10,7 +10,6 @@
 //---------------------------------------------------------------------------//
 
 #include "Mat_State.hh"
-#include <iomanip>
 
 namespace rtt_imc 
 {

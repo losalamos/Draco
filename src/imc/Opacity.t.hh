@@ -24,25 +24,21 @@ namespace rtt_imc
 
  * \param sigma_abs cell-centered field of absorption opacities
  * \param sigma_thomson cell-centered field of scattering cross sections
- * \param planck cell-centered field of Planck opacities
  * \param fleck cell-centered field of Fleck factors
 
  */
 template<class MT>
 Opacity<MT>::Opacity(const ccsf_double &sigma_abs_,
 		     const ccsf_double &sigma_thomson_,
-		     const ccsf_double &planck_,
 		     const ccsf_double &fleck_)
     : sigma_abs(sigma_abs_),
-      sigma_thomson(sigma_thomson_),
-      planck(planck_), 
+      sigma_thomson(sigma_thomson_), 
       fleck(fleck_)
 {
     int num_cells = sigma_abs.get_Mesh().num_cells();
     
     Ensure (sigma_abs.size() == num_cells);
     Ensure (sigma_thomson.size() == num_cells);
-    Ensure (planck.size() == num_cells);
     Ensure (fleck.size() == num_cells);
 }
 

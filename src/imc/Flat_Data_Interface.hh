@@ -50,23 +50,14 @@ class Flat_Data_Interface
 
     // >>> PUBLIC INTERFACE REQUIRED BY FLAT_MAT_STATE_BUILDER
 
-    //! Get cell-centered densities in g/cc.
-    virtual std::vector<double> get_density()             const = 0;
-
     //! Get cell-centered absorption opacities in /cm.
     virtual std::vector<double> get_absorption_opacity()  const = 0;
 
     //! Get cell-centered scattering opacities in /cm.
     virtual std::vector<double> get_scattering_opacity()  const = 0;
 
-    //! Get cell-centered temperatures in keV.
-    virtual std::vector<double> get_temperature()         const = 0;
-
     //! Get cell-centered specific heats in Jerks/g/keV.
     virtual std::vector<double> get_specific_heat()       const = 0;
-
-    //! Get Fleck and Cummings implicitness factor.
-    virtual double              get_implicitness_factor() const = 0;
 };
 
 } // end namespace rtt_imc

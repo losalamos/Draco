@@ -195,9 +195,9 @@ void Source_Builder<MT,PT>::calc_evol(const Mat_State<MT> &state,
     for (int cell = 1; cell <= evol.size(); cell++)
     {
 	// calc cell centered radiation volume source
-	evol_net(cell) = opacity.fplanck(cell) * a * c *
-	    pow(state.get_T(cell), 4) * evol.get_Mesh().volume(cell) * 
-	    delta_t;
+	evol_net(cell) = opacity.get_fleck(cell) *
+	    opacity.get_sigma_abs(cell) * a * c * pow(state.get_T(cell), 4) *
+	    evol.get_Mesh().volume(cell) * delta_t;
 	evol(cell) = evol_net(cell) + 
 	    evol_ext[cell-1] * (1.0 - opacity.get_fleck(cell)) *  
 	    evol.get_Mesh().volume(cell) * delta_t;
