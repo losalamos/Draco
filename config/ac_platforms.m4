@@ -211,6 +211,22 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        fi
 
        #
+       # add librt to LIBS if udm is used
+       #
+       AC_MSG_CHECKING("librt requirements")
+       if test -n "${vendor_udm}"; then
+	   
+	   # Add rt for g++
+	   if test "${CXX}" = g++ ; then
+	       LIBS="${LIBS} -lrt"
+	       AC_MSG_RESULT("-lrt added to LIBS")
+	   fi
+
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
        # finalize vendors
        #
        AC_VENDOR_FINALIZE
@@ -324,7 +340,8 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        if test "${with_mpi}" = vendor ; then
 
 	   # define mpi libraries
-	   mpi_libs='-lmpi'
+	   # note: mpi and mpio are separate libraries on compaqs
+	   mpi_libs='-lmpi -lmpio'
        
        # setup mpich
        elif test "${with_mpi}" = mpich ; then
@@ -357,14 +374,27 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
 
        #
-       # gandolf, eospac, pcg require -lfor on the link line.
+       # udm requires long long warnings to be disabled
+       #
+
+       if test -n "${vendor_udm}" ; then
+	   STRICTFLAG="${STRICTFLAG} -msg_disable nostdlonglong"
+	   STRICTFLAG="${STRICTFLAG} -msg_disable nostdlonglong"
+       fi
+
+       #
+       # end of udm setup
+       #
+
+       #
+       # gandolf, eospac, pcg, udm require -lfor on the link line.
        #
 
        AC_MSG_CHECKING("libfortran requirements")
        if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfor"
-          AC_MSG_RESULT("-lfor added to LIBS")
+          test -n "${vendor_pcg}" || test -n "${vendor_udm}"; then
+           LIBS="${LIBS} -lfor"
+           AC_MSG_RESULT("-lfor added to LIBS")
        else
 	   AC_MSG_RESULT("not needed")
        fi
@@ -374,19 +404,35 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
 
        #
-       # libpcg/libfmpi setup
+       # libpcg/libudm/libfmpi setup
        #
 
        AC_MSG_CHECKING("libfmpi requirements")
-       if test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfmpi"
-          AC_MSG_RESULT("-lfmpi added to LIBS")
+       if test -n "${vendor_pcg}" || test "${with_udm}" = mpi; then
+           LIBS="${LIBS} -lfmpi"
+           AC_MSG_RESULT("-lfmpi added to LIBS")
        else
 	   AC_MSG_RESULT("not needed")
        fi
 
        #
        # end of libpcg setup
+       #
+
+       #
+       # libudm/librmscall setup
+       #
+
+       AC_MSG_CHECKING("librmscall requirements")
+       if test -n "${vendor_udm}"; then
+          LIBS="${LIBS} -lrmscall"
+          AC_MSG_RESULT("-lrmscall added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # end of libudm setup
        #
 
        #

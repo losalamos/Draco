@@ -62,14 +62,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        AC_DEFINE(C4_MPI)
    fi
 
-   # if c4=mpi and with-mpi=no explicitly then 
-   # define them (mpi gets set to vendor by default)
-   if test "$with_c4" = mpi ; then
-       if test "$with_mpi" = no ; then
-	   with_mpi='vendor'
-       fi
-   fi
-   
    dnl
    dnl DBC SETUP
    dnl
