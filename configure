@@ -1323,23 +1323,23 @@ fi
        if test -z "${LAPACK_LIB}" ; then
 	   
    # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -llapack -lf77blas -lcblas -latlas are the directories added 
+   # -llapack -lf77blas -latlas are the directories added 
 
    if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -llapack -lf77blas -lcblas -latlas"
+       VENDOR_LIBS="${VENDOR_LIBS} -llapack -lf77blas -latlas"
    elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -llapack -lf77blas -lcblas -latlas"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -llapack -lf77blas -latlas"
    fi
 
        elif test -n "${LAPACK_LIB}" ; then
 	   
    # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas are the directories added 
+   # -L${LAPACK_LIB} -llapack -lf77blas -latlas are the directories added 
 
    if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -latlas"
    elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -latlas"
    fi
 
        fi
