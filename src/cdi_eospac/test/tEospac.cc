@@ -21,6 +21,7 @@
 
 // STL dependencies
 #include <iostream>
+#include <cmath>     // define fabs()
 
 // DEBUG dependencies
 // #include <iomanip>
