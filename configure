@@ -44,6 +44,9 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-cxx[=kcc,cc]     choose a c++ compiler (KCC is default)"
 ac_help="$ac_help
+  --with-f90[=XL,WorkShop,Fujitsu,Cray,MIPS]
+                                 choose an F90 compiler"
+ac_help="$ac_help
   --enable-static-ld      use (.a) libraries if possible"
 ac_help="$ac_help
   --disable-strict-ansi   turn off strict ansi compliance"
@@ -1118,6 +1121,14 @@ fi
       if test "${with_cxx:=kcc}" = yes ; then
        with_cxx='kcc'
    fi
+
+         
+      # Check whether --with-f90 or --without-f90 was given.
+if test "${with_f90+set}" = set; then
+  withval="$with_f90"
+  :
+fi
+
 
          
       # Check whether --enable-static-ld or --disable-static-ld was given.
