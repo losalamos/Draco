@@ -4,13 +4,14 @@
  * \author Thomas M. Evans
  * \date   Fri Dec 10 09:58:21 1999
  * \brief  Parallel_Data_Operator header file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Parallel_Data_Operator_hh__
-#define __mc_Parallel_Data_Operator_hh__
+#ifndef rtt_mc_Parallel_Data_Operator_hh
+#define rtt_mc_Parallel_Data_Operator_hh
 
 #include "Topology.hh"
 #include "Comm_Patterns.hh"
@@ -203,9 +204,9 @@ void Parallel_Data_Operator::global_sum(T *begin, T *end)
  * the global_field, it is assumed that the local_fields are the same on each
  * processor;
 
- * \arg \b * "replication"/Data_Decomposed the local_field is copied into the
+ * \arg \b "replication"/Data_Decomposed the local_field is copied into the
  * global field on each processor, the global_fields are subsequently summed
- * across * all processors;
+ * across all processors;
 
  * \arg \b "DD"/Data_Distributed local_fields are mapped into the appropriate
  * cells on the global_field on each processor, the global_fields are then
@@ -577,7 +578,7 @@ Parallel_Data_Operator::gather_bnd_cell_data(SP_Comm_Patterns pattern,
 
 } // end namespace rtt_mc
 
-#endif                          // __mc_Parallel_Data_Operator_hh__
+#endif                          // rtt_mc_Parallel_Data_Operator_hh
 
 //---------------------------------------------------------------------------//
 //                              end of mc/Parallel_Data_Operator.hh

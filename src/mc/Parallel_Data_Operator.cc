@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Dec 13 10:27:31 1999
  * \brief  Parallel_Data_Operator implementation file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
