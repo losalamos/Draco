@@ -299,6 +299,11 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    # systems setup
    case $host in
    *-linux-gnu)
+   
+       # print out cpu message
+       AC_MSG_CHECKING("host platform cpu")
+       AC_MSG_RESULT("${host_cpu}")
+
        # we do not do any posix source defines unless the user
        # specifically requests them
        if test "${with_posix:=no}" = yes ; then
