@@ -296,6 +296,100 @@ int Sphyramid_Mesh::get_cell(const sf_double &r) const
 }
 //---------------------------------------------------------------------------//
 /*! 
+ * \brief calculate minimum distance to cell boundary
+ * 
+ * \param r position
+ * \param omega direction
+ * \param cell cell number
+ * \param face index of boundary (return value)
+ * \return mininum distance to boundary
+ */
+double Sphyramid_Mesh::get_db(const sf_double &r, const sf_double &omega,
+			      int cell, int &face) const
+{
+    using global::dot;
+    using global::soft_equiv;
+    using global::huge;
+
+    Require (r.size()     == 3);
+    Require (omega.size() == 3);
+    Require (soft_equiv(dot(omega,omega), 1.0, 1.0E-4));
+
+    // set up 6 dists-to-bndry, initialize to huge value
+    // -- 'cause there always be six faces in dis mesh, dogg!
+    sf_double distance(6,huge);
+
+    // low x face (x-x_low=0)
+    if (omega[0] < 0.0)
+    {
+	distance[0] = (get_low_x(cell)-r[0])/omega[0];
+    }
+
+    // high x face (x-x-high=0)
+    if (omega[0] > 0.0)
+    {
+	distance[1] = (get_high_x(cell)-r[0])/omega[0];
+    }
+
+    // low y face (y+x*tan_beta=0)
+    if (dot(omega,get_normal(cell,3)) > 0.0)
+    {
+	distance[2] = -(r[1]+r[0]*this->tan_beta)/
+	    (omega[1]+omega[0]*this->tan_beta);
+    }
+    
+    // high y face (y-x*tan_beta=0)
+    if (dot(omega,get_normal(cell,4)) > 0.0)
+    {
+	distance[3] = (r[1]-r[0]*this->tan_beta)/
+	    (omega[0]*this->tan_beta-omega[1]);
+    }
+
+    // low z face (z+x*tan_beta=0)
+    if (dot(omega,get_normal(cell,5)) > 0.0)
+    {
+	distance[4] = -(r[2]+r[0]*this->tan_beta)/
+	    (omega[2]+omega[0]*this->tan_beta);
+    }
+    
+    // high z face (z-x*tan_beta=0)
+    if (dot(omega,get_normal(cell,6)) > 0.0)
+    {
+	distance[5] = (r[2]-r[0]*this->tan_beta)/
+	    (omega[0]*this->tan_beta-omega[2]);
+    }
+
+
+    // find face index and value of minimum distance
+    double min_dist = huge;
+    int face_index  = 0;
+
+    for (int f = 0; f < 6; f++)
+    {
+	if (distance[f] < min_dist)
+	{
+	    min_dist  = distance[f];
+	    face_index = f;
+	}
+    }
+    
+    // set face index
+    Ensure (face_index >= 0);
+    Ensure (face_index <  6);
+
+    face = face_index+1;
+
+    //return output
+    Ensure (min_dist >= 0.0);
+    Ensure (face > 0);
+    Ensure (face <=6);
+
+    return min_dist;
+}
+
+
+//---------------------------------------------------------------------------//
+/*! 
  * \brief Calculate the vertices for a given Sphyramid_Mesh cell.
  *
  * During normal use of the Sphyramid_Mesh, the explicit cell vertices are not

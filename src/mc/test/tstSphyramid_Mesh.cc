@@ -799,6 +799,90 @@ void simple_one_cell_Sphyramid()
 	vector<double> omega(3,0.0);
 	int intersecting_face;
 	double db;
+
+
+	omega[0] = 1.0;
+	db = mesh->get_db(r, omega, 1, intersecting_face);
+	if(!soft_equiv(db, 1.0))   ITFAILS;
+	if(intersecting_face != 2) ITFAILS;
+
+	r[0]     =  0.5;
+	r[1]     = -0.5*tan_beta;
+	r[2]     =  0.2;
+	omega[0] =  0.0;
+	omega[1] =  1.0;
+	omega[2] =  0.0;
+	db = mesh->get_db(r, omega, 1, intersecting_face);
+	if(!soft_equiv(db, tan_beta)) ITFAILS;
+	if(intersecting_face != 4)    ITFAILS;
+
+	r[0]     =  0.5;
+	r[1]     =  0.0;
+	r[2]     =  0.2;
+	omega[0] =  0.0;
+	omega[1] =  0.0;
+	omega[2] =  1.0;
+	db = mesh->get_db(r, omega, 1, intersecting_face);
+	if(!soft_equiv(db, 0.5*tan_beta-0.2)) ITFAILS;
+	if(intersecting_face != 6)            ITFAILS;
+
+	r[0]     =  0.5;
+	r[1]     =  0.0;
+	r[2]     =  0.0;
+	omega[0] = -0.70710678119;
+	omega[1] =  0.70710678119;
+	omega[2] =  0.0;
+	db = mesh->get_db(r, omega, 1, intersecting_face);
+	if(!soft_equiv(db, 0.332227824872, 1.E-10)) ITFAILS;
+	if(intersecting_face != 4)                  ITFAILS;
+
+	r[0]     =  0.5;
+	r[1]     =  0.0;
+	r[2]     =  0.0;
+	omega[0] = -0.70710678119;
+	omega[1] = -0.70710678119;
+	omega[2] =  0.0;
+	db = mesh->get_db(r, omega, 1, intersecting_face);
+	if(!soft_equiv(db, 0.332227824872, 1.E-10)) ITFAILS;
+	if(intersecting_face != 3)                  ITFAILS;
+	
+	r[0]     =  0.5678;
+	r[1]     =  0.0;
+	r[2]     =  0.0;
+	omega[0] = -1.0;
+	omega[1] =  0.0;
+	omega[2] =  0.0;
+	db = mesh->get_db(r, omega, 1, intersecting_face);
+	if(!soft_equiv(db, 0.5678, 1.E-10)) ITFAILS;
+	if(!((intersecting_face == 1) || (intersecting_face == 3) ||
+	     (intersecting_face == 4) || (intersecting_face == 5) ||
+	     (intersecting_face == 6))) ITFAILS;
+
+	r[0]     =  1.0;
+	r[1]     = -0.5;
+	r[2]     =  0.1;
+	omega[0] = -1.0;
+	omega[1] =  0.0;
+	omega[2] =  0.0;
+	db = mesh->get_db(r, omega, 1, intersecting_face);
+	if(!soft_equiv(db, 1.0-0.5/tan_beta, 1.E-10)) ITFAILS;
+	if(intersecting_face != 3)                    ITFAILS;
+	
+	r[0]     =  0.5;
+	r[1]     =  0.0;
+	r[2]     =  0.5*tan_beta;
+	omega[0] =  0.0;
+	omega[1] =  0.0;
+	omega[2] = -1.0;
+	db = mesh->get_db(r, omega, 1, intersecting_face);
+	if(!soft_equiv(db, tan_beta, 1.E-10)) ITFAILS;
+	if(intersecting_face != 5)            ITFAILS;
+
+    }
+
+    // test get_random_walk_sphere_radius fucntion
+    {
+
     }
 
 

@@ -170,7 +170,8 @@ class Sphyramid_Mesh
     // get_spatial_dimension() const {return 3;}
     inline int next_cell(int cell, int face) const;
     int get_cell(const sf_double &) const;
-    // double get_db(const sf_double &, const sf_double &, int, int &) const;
+    double get_db(const sf_double &r, const sf_double &omega, int cell, 
+		  int &face) const;
     // inline double get_random_walk_sphere_radius(const sf_double &,int) const;
     inline sf_double get_normal(int cell, int face) const;
     inline sf_double get_normal_in(int cell, int face) const;
