@@ -28,7 +28,7 @@ using XTM::P13T;
 
 template<class MT, class MP, class DS>
 P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
-		       const SP<MeshType> &spMesh_)
+		       const dsxx::SP<MeshType> &spMesh_)
     : options(options_), spMesh(spMesh_)
 {
     // empty
@@ -41,8 +41,8 @@ P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
 
 template<class MT, class MP, class DS>
 P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
-		       const SP<MeshType> &spMesh_,
-		       SP<ts_manager> &spTsManager_)
+		       const dsxx::SP<MeshType> &spMesh_,
+		       dsxx::SP<ts_manager> &spTsManager_)
     : options(options_), spMesh(spMesh_), spTsManager(spTsManager_)
 {
     // Set up timestep advisors, and add them to the manager.
@@ -306,6 +306,8 @@ void P13T<MT, MP, DS>::solve3T(double dt,
 			       const bssf &boundary,
 			       DiffusionSolver &solver,
 			       RadiationStateField &resultsStateField,
+			       ccsf &QEEM,
+			       ccsf &REEM,
 			       ccsf &electronEnergyDeposition,
 			       ccsf &ionEnergyDeposition,
 #if 0
@@ -336,7 +338,7 @@ void P13T<MT, MP, DS>::solve3T(double dt,
     
     calcNewRadState(dt, groupNo, matStateCC, matStateFC, prevStateField,
 		    QRad, QElectron, QIon, TnElectron, TnIon,
-		    boundary, solver, resultsStateField);
+		    boundary, solver, QEEM, REEM, resultsStateField);
 
     // Calculate the delta electron temperature from the new radiation
     // state, (Te^n+1 - Te^n).
@@ -417,6 +419,8 @@ calcNewRadState(double dt,
 		const ccsf &TIon,
 		const bssf &boundary,
 		DiffusionSolver &solver,
+		ccsf &QEEM,
+		ccsf &REEM,
 		RadiationStateField &resultsStateField) const
 {
     // Calculate the coefficients needed by the diffusion solver.
@@ -428,7 +432,7 @@ calcNewRadState(double dt,
     
     calcP1Coeffs(dt, groupNo, matStateCC, matStateFC, prevStateField,
 		 QRad, QElectron, QIon,
-		 TElectron, TIon, D, Fprime, sigmaAbsBar, QRadBar);
+		 TElectron, TIon, D, Fprime, sigmaAbsBar, QEEM, REEM, QRadBar);
 
     cerr << "sigmaAbsBar: " << *sigmaAbsBar.begin() << endl;
     cerr << "D: " << *D.begin() << endl;
@@ -474,6 +478,8 @@ calcP1Coeffs(double dt,
 	     fcdsf &D,
 	     DiscFluxField &Fprime,
 	     ccsf &sigmaAbsBar,
+	     ccsf &QEEM,
+	     ccsf &REEM,
 	     ccsf &QRadBar) const
 {
     // Set the radiation physics to the given units.
@@ -533,19 +539,28 @@ calcP1Coeffs(double dt,
 
 	sigmaAbsBar = (1.0 - nu) * sigmaAbs + tau;
 
-	// Calculated modified radiation source
-
+	// Calculate the emmissive removal coefficient
+	
+	REEM = -1.0 * nu * sigmaAbs;
+	
 	// We need the Bhat.
 
 	ccsf Bhat(spMesh);
 	getBhat(radPhys, TElectron, Bhat);
-    
-	QRadBar = tau*prevStateField.phi + (1.0 - nu)*sigmaEmission*Bhat
-	    + nu*QElecStar + QRad;
+
+	// Calculate the emmissive source term.
+	
+	QEEM = (1.0 - nu)*sigmaEmission*Bhat + nu*QElecStar;
+
+	// Calculated modified radiation source
+
+	QRadBar = tau*prevStateField.phi + QEEM + QRad;
     }
     else
     {
 	sigmaAbsBar = sigmaAbs + tau;
+	REEM = 0.0;
+	QEEM = 0.0;
 	QRadBar = tau*prevStateField.phi + QRad;
     }
 
@@ -630,7 +645,8 @@ void P13T<MT, MP, DS>::calcStarredFields(double dt,
     // Let's just do it once.
     
     ccsf tmpCoeff(spMesh);
-    tmpCoeff = (gamma*dt) / (CvIon + gamma*dt);
+    // tmpCoeff = (gamma*dt) / (CvIon + gamma*dt);
+    tmpCoeff = gamma / (CvIon/dt + gamma);
 
     // CvStar is one of the results, as well as intermediate.
     
@@ -682,6 +698,8 @@ void P13T<MT, MP, DS>::calcDeltaTElectron(double dt,
     {
 	// calculate delta T electron
     
+	cerr << "QElecStar: " << *QElecStar.begin() << endl;
+	cerr << "CvStar: " << *CvStar.begin() << endl;
 	deltaTelectron = dt * QElecStar / CvStar;
 	return;
     }

@@ -193,6 +193,8 @@ namespace XTM {
 		  const bssf &boundary,
 		  DiffusionSolver &solver,
 		  RadiationStateField &resultsStateField,
+		  ccsf &QEEM,
+		  ccsf &REEM,
 		  ccsf &electronEnergyDeposition,
 		  ccsf &ionEnergyDeposition,
 #if 0
@@ -241,6 +243,8 @@ namespace XTM {
 			  const ccsf &TIon,
 			  const bssf &boundary,
 			  DiffusionSolver &solver,
+			  ccsf &QEEM,
+			  ccsf &REEM,
 			  RadiationStateField &resultsStateField) const;
     
      //------------------------------------------------------------------------//
@@ -262,6 +266,8 @@ namespace XTM {
 		       fcdsf &D,
 		       DiscFluxField &Fprime,
 		       ccsf &sigmaAbsBar,
+		       ccsf &QEEM,
+		       ccsf &REEM,
 		       ccsf &QRadBar) const;
 
      //------------------------------------------------------------------------//
