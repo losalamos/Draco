@@ -11,11 +11,9 @@
 
 #include "mc/OS_Mesh.hh"
 #include "mc/RZWedge_Mesh.hh"
+#include "../Frequency.hh"
 #include "../Opacity.t.hh"
 #include "../Mat_State.t.hh"
-#include "../Flat_Mat_State_Builder.t.hh"
-#include "../CDI_Mat_State_Builder.t.hh"
-#include <iostream> 
 
 namespace rtt_imc
 {
@@ -23,15 +21,11 @@ namespace rtt_imc
 typedef rtt_mc::OS_Mesh      OS_MT;
 typedef rtt_mc::RZWedge_Mesh RZ_MT;
 
-using std::ostream;
-
 // OS_Mesh instantiations
 
-template class Flat_Mat_State_Builder<OS_MT>;
+template class Opacity<OS_MT, Gray_Frequency>;
 
-template class CDI_Mat_State_Builder<OS_MT>;
-
-template class Opacity<OS_MT>; 
+template class Opacity<OS_MT, Multigroup_Frequency>; 
 
 template class Mat_State<OS_MT>;
 

@@ -10,7 +10,6 @@
 //---------------------------------------------------------------------------//
 
 #include "imc_test.hh"
-#include "IMC_Test.hh"
 #include "../Frequency.hh"
 #include "../Release.hh"
 #include "c4/global.hh"
@@ -76,11 +75,8 @@ void tstFreq()
 
     // >>> Test a gray Frequency.
 
-    // Declaration of null local vector of group boundaries.
-    vector<double> null_bnds;
-
     // Make a new gray Frequency.
-    SP<Gray_Frequency> gray_frequency(new Gray_Frequency(null_bnds));
+    SP<Gray_Frequency> gray_frequency(new Gray_Frequency);
 
     // This should be a gray Frequency.
     if (!gray_frequency->is_gray())          ITFAILS;
@@ -92,9 +88,6 @@ void tstFreq()
 //---------------------------------------------------------------------------//
 void tstFreq_Ops()
 {
-    // Useful typedefs.
-    typedef rtt_mc::OS_Mesh MT;
-
     // Make a local vector of group boundaries.
     vector<double> bnds(4, 0.0);
     bnds[0] = 0.1;
