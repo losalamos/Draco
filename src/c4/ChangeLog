@@ -1,3 +1,8 @@
+2001-12-17  Thomas M. Evans  <tme@lanl.gov>
+
+	* c4: Updated to c4-1_6_0.  The only change in this release is
+	that configure is no longer part of the package.
+
 2001-07-30  Thomas M. Evans  <tme@lanl.gov>
 
 	* c4: Updated to c4-1_5_0.  This release adds the ParallelUtils
