@@ -204,7 +204,7 @@ std::pair<double,double> Random_Walk<MT>::random_walk(sf_double   &r,
 
     // now sample a new particle position on the sphere
     std::pair<sf_double, sf_double> r_and_normal = 
-	mesh->sample_pos_on_sphere(cell, r, time_radius.second, random);
+	mesh->sample_random_walk_sphere(cell, r, time_radius.second, random);
 
     // assign the particle position
     r = r_and_normal.first;

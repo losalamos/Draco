@@ -587,7 +587,7 @@ void Gray_Particle<MT>::rw_transport(
 	    Base::descriptor == Base::EFF_SCATTER)
 	{
 	    // get the size of the random walk sphere
-	    rw_radius = mesh.get_orthogonal_dist_to_bnd(r, cell);
+	    rw_radius = mesh.get_random_walk_sphere_radius(r, cell);
 	    Check (rw_radius >= 0.0);
 
 	    // tally rw sphere radius
