@@ -53,7 +53,7 @@ using std::string;
     //                gmatids                 //
     //----------------------------------------//
     
-    void gmatids( const std::string &fname , vector<int> &matids, 
+    void wgmatids( const std::string &fname , vector<int> &matids, 
 		  const int const_kmat, int &nmat, int &ier ) 
 	{
 
@@ -80,7 +80,7 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_gmatids( ccfname, a_matids, kmat, nmat, ier );
+	    gmatids( ccfname, a_matids, kmat, nmat, ier );
 
 	    // ----------------------------------------
 	    // Copy the data back into C++ data types
@@ -102,7 +102,7 @@ using std::string;
     //                gkeys                   //
     //----------------------------------------//
     
-    void gkeys( const std::string &fname, const int &const_matid, 
+    void wgkeys( const std::string &fname, const int &const_matid, 
 		vector<string> &vkeys,
 		const int const_kkeys, int &nkeys, int &ier)
 	{
@@ -124,15 +124,48 @@ using std::string;
 	    // maxKeys long.  This array will later be copied into the
 	    // vector vkeys that is returned to the calling program.
 
-	    std::cout << "GandolfWrapper.cc::gkeys()  --> const char * ???" << std::endl;
-	    
+	    // should this be a const char* ?
 	    char keys[maxKeys][key_length];
-
+	    
 	    // --------------------------------------------------
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 	    
-	    extc_gkeys( ccfname, matid, keys, kkeys, nkeys, ier );
+	    char *bjkeys[maxKeys] = {
+			"a00aaa",
+			"b01bbb",
+			"c02ccc",
+			"d03ddd",
+			"e04eee",
+			"f05fff",
+			"g06ggg",
+			"h",
+			"i",
+			"j",
+			"k",
+			"l",
+			"m",
+			"n",
+			"o",
+			"p",
+			"q",
+			"r",
+			"s",
+			"t",
+			"u",
+			"v",
+			"w",
+			"x",
+			"y",
+	    };
+
+// 	    gkeys( ccfname, matid, *keys, kkeys, nkeys, ier );
+	    gkeys( ccfname, matid, bjkeys, kkeys, nkeys, ier );
+
+	    for ( int i=0; i < maxKeys; ++i )
+		std::cout << "bjkeys[" << i << "] = " << bjkeys[i] <<
+		    std::endl;
+
 
 	    // ----------------------------------------
 	    // Copy the data back into C++ data types
@@ -145,7 +178,7 @@ using std::string;
 	    for ( int i=0; i<nkeys; ++i )
 		{
 		    // copy all 24 characters of keys[i] into key.
-		    strncpy( key, keys[i], key_length );
+		    strncpy( key, bjkeys[i], key_length );
 		    // kill trailing whitespace.
 		    strtok( key, " " );
 		    // store the keyword in a vector.
@@ -159,7 +192,7 @@ using std::string;
     //                gchgrids                //
     //----------------------------------------//
     
-    void gchgrids( const std::string &fname, const int &matid,
+    void wgchgrids( const std::string &fname, const int &matid,
 		   int &nt, int &nrho, int &nhnu, int &ngray, int &nmg,
 		   int &ier )
 	{
@@ -179,7 +212,7 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 	    
-	    extc_gchgrids( ccfname, nc_matid, nt, nrho, nhnu,
+	    gchgrids( ccfname, nc_matid, nt, nrho, nhnu,
 			   ngray, nmg, ier );
 
     } // end of gchgrids
@@ -188,7 +221,7 @@ using std::string;
     //                ggetgray                //
     //----------------------------------------//
     
-    void ggetgray( const string &fname,   const int &const_matid, const string skey,
+    void wggetgray( const string &fname,   const int &const_matid, const string skey,
 		   vector<double> &temps, const int &const_kt,    int &nt, 
 		   vector<double> &rhos,  const int &const_krho,  int &nrho,
 		   vector<double> &data,  const int &const_kgray, int &ngray,
@@ -223,7 +256,7 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_ggetgray( ccfname,     matid, cckey,
+	    ggetgray( ccfname,     matid, cckey,
 			   array_temps, kt,    nt, 
 			   array_rhos,  krho,  nrho,
 			   array_data,  kgray, ngray,
@@ -251,7 +284,7 @@ using std::string;
     //                gintgrlog               //
     //----------------------------------------//
     
-    void gintgrlog( const vector<double> &temps, const int &const_nt,
+    void wgintgrlog( const vector<double> &temps, const int &const_nt,
 		    const vector<double> &rhos,  const int &const_nrho,
 		    const vector<double> &data,  const int &const_ngray,
 		    const double &const_tlog, const double &const_rlog, 
@@ -283,7 +316,7 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_gintgrlog( array_temps, nt, array_rhos, nrho,
+	    gintgrlog( array_temps, nt, array_rhos, nrho,
 			    array_data, ngray, tlog, rlog, ans );
 	    
 	    // no error code is returned from this function.
@@ -304,7 +337,7 @@ using std::string;
     // Read data grid (temp,density,energy_bounds) and mg opacity
     // data.  Retrieve both the size of the data and the actual data.
 
-    void ggetmg( const string &fname,   const int &const_matid, const string skey,
+    void wggetmg( const string &fname,   const int &const_matid, const string skey,
 		 vector<double> &temps, const int &const_kt,    int &nt, 
 		 vector<double> &rhos,  const int &const_krho,  int &nrho,
 		 vector<double> &hnus,  const int &const_khnu,  int &nhnu,
@@ -342,7 +375,7 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_ggetmg( ccfname, matid, cckey,
+	    ggetmg( ccfname, matid, cckey,
 			 array_temps, kt,    nt, 
 			 array_rhos,  krho,  nrho,
 			 array_hnus,  khnu,  nhnu,
@@ -377,7 +410,7 @@ using std::string;
     //                gintmglog               //
     //----------------------------------------//
     
-    void gintmglog( const vector<double> &temps, const int &const_nt,
+    void wgintmglog( const vector<double> &temps, const int &const_nt,
 		    const vector<double> &rhos,  const int &const_nrho,
 		    const int &const_nhnu,
 		    const vector<double> &data,  const int &const_ndata,
@@ -416,7 +449,7 @@ using std::string;
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 
-	    extc_gintmglog( array_temps, nt, array_rhos, nrho,
+	    gintmglog( array_temps, nt, array_rhos, nrho,
 			    nhnu, array_data, ndata, tlog, rlog,
 			    array_ansmg ); 
 	    

@@ -104,8 +104,8 @@ using std::vector;
  * \return       matids, nmat and ier.
  *
  */
-    void gmatids( const string &fname , vector<int> &matids, 
-		  const int kmat, int &nmat, int &ier );
+    void wgmatids( const string &fname , vector<int> &matids, 
+		   const int kmat, int &nmat, int &ier );
 /*!
  * \brief Retrieve a list of keys that specify the types of
  *        information available for the spacified material in the
@@ -125,7 +125,7 @@ using std::vector;
  * \return       keys, nkeys, ier.
  *
  */
-    void gkeys( const string &fname, const int &matid, 
+    void wgkeys( const string &fname, const int &matid, 
 		vector<string> &vkeys,
 		const int kkeys, int &nkeys, int &ier );
 
@@ -147,7 +147,7 @@ using std::vector;
  * \return       nt, nrho, nhnu, ngray, nmg.
  *
  */
-    void gchgrids( const string &fname, const int &matid,
+    void wgchgrids( const string &fname, const int &matid,
 		   int &nt, int &nrho, int &nhnu, int &ngray, int &nmg,
 		   int &ier );
  
@@ -178,7 +178,7 @@ using std::vector;
  * \return       temps, nt, rhos, nrho, gray, ngray.
  *
  */
-    void ggetgray( const string &fname,   const int &matid, const string key, 
+    void wggetgray( const string &fname,   const int &matid, const string key, 
 		   vector<double> &temps, const int &kt,    int &nt, 
 		   vector<double> &rhos,  const int &krho,  int &nrho,
 		   vector<double> &gray,  const int &kgray, int &ngray,
@@ -201,7 +201,7 @@ using std::vector;
  * \return       ans.
  *
  */
-    void gintgrlog( const vector<double> &temps, const int &nt,
+    void wgintgrlog( const vector<double> &temps, const int &nt,
 		    const vector<double> &rhos,  const int &nrho,
 		    const vector<double> &gray,  const int &ngray,
 		    const double &tlog, const double &rlog, double &ans );
@@ -239,7 +239,7 @@ using std::vector;
  * \return       temps, nt, rhos, nrho, hnus, nhnu, data, ndata, ier.
  *
  */
-    void ggetmg( const string &fname,   const int &matid, const string key, 
+    void wggetmg( const string &fname,   const int &matid, const string key, 
 		 vector<double> &temps, const int &kt,    int &nt,
 		 vector<double> &rhos,  const int &krho,  int &nrho,
 		 vector<double> &hnus,  const int &khnu,  int &nhnu,
@@ -265,7 +265,7 @@ using std::vector;
  * \return       ansmg.
  *
  */
-    void gintmglog( const vector<double> &temps, const int &nt,
+    void wgintmglog( const vector<double> &temps, const int &nt,
 		    const vector<double> &rhos,  const int &nrho,
 		    const int &nhnu,
 		    const vector<double> &data,  const int &ndata,
@@ -277,24 +277,24 @@ using std::vector;
 
 
 
-// Handle machine specific FORTRAN name linkage.
-//---------------------------------------------------------------------------//
+// // Handle machine specific FORTRAN name linkage.
+// //---------------------------------------------------------------------------//
 
-// Replace these with c-wrapper written by Robert (Bob) Judd.
+// // Replace these with c-wrapper written by Robert (Bob) Judd.
 
-#if defined(sun) || defined(__sun) || defined(__sgi) || defined(__linux)
+// #if defined(sun) || defined(__sun) || defined(__sgi) || defined(__linux)
     
-#define extc_gmatids gmatids_
-#define extc_gkeys gkeys_    
-#define extc_gchgrids gchgrids_
-#define extc_ggetgray ggetgray_
-#define extc_gintgrlog gintgrlog_
-#define extc_ggetmg ggetmg_
-#define extc_gintmglog gintmglog_
+// #define extc_gmatids gmatids
+// #define extc_gkeys gkeys_    
+// #define extc_gchgrids gchgrids_
+// #define extc_ggetgray ggetgray_
+// #define extc_gintgrlog gintgrlog_
+// #define extc_ggetmg ggetmg_
+// #define extc_gintmglog gintmglog_
 
-// Add defines for gandolf_integer and gandolf_double?
+// // Add defines for gandolf_integer and gandolf_double?
 
-#endif
+// #endif
     
 
 
@@ -308,45 +308,45 @@ using std::vector;
 
 extern "C" {
 
-    void extc_gmatids( const char *cfname, int *matids, int &ckmat,
-		       int &nmat, int &ier );
+    void gmatids( const char *cfname, int *matids, int &ckmat,
+		  int &nmat, int &ier );
 
-    // key_length is specified to be 24 by the Gandolf standard.  This 
-    // variable is set in the rtt_cdi_gandolf namespace but since this 
-    // "extern C" block is outside of that namespace we must specify
-    // this length manually.
-    void extc_gkeys( const char *cfname, int &matid, 
-		     char keys[][rtt_cdi_gandolf::wrapper::key_length],
-		     int &kkeys, int &nkeys, int &ier );
+//     void gkeys( const char* cfname, int &matid, 
+// 		const char* keys,
+// 		int &kkeys, int &nkeys, int &ier );
 
-    void extc_gchgrids( const char *cfname, int &matid, int &nt,
-			int &nrho, int &nhnu, 
-			int &ngray, int &nmg, int &ier );
+    void gkeys( const char* cfname, int &matid, 
+		char* bjkeys[],
+		int &kkeys, int &nkeys, int &ier );
 
-    void extc_ggetgray( const char *cfname,  int &matid, const char *key, 
-			double *temps, int &kt,    int &nt, 
-			double *rhos,  int &krho,  int &nrho,
-			double *gray,  int &kgray, int &ngray,
-			int &ier );
+    void gchgrids( const char *cfname, int &matid, int &nt,
+		   int &nrho, int &nhnu, 
+		   int &ngray, int &nmg, int &ier );
 
-    void extc_gintgrlog( double *temps, int &nt,
-			 double *rhos,  int &nrho,
-			 double *gray,  int &ngray,
-			 double &tlog, double &rlog, double &ans );
+    void ggetgray( const char *cfname,  int &matid, const char *key, 
+		   double *temps, int &kt,    int &nt, 
+		   double *rhos,  int &krho,  int &nrho,
+		   double *gray,  int &kgray, int &ngray,
+		   int &ier );
 
-    void extc_ggetmg( const char *cfname,   int &matid, const char *key, 
-		      double *temps,  int &kt,    int &nt,
-		      double *rhos,   int &krho,  int &nrho,
-		      double *hnus,   int &khnu,  int &nhnu,
-		      double *data,   int &kdata, int &ndata,
-		      int &ier );
+    void gintgrlog( double *temps, int &nt,
+		    double *rhos,  int &nrho,
+		    double *gray,  int &ngray,
+		    double &tlog, double &rlog, double &ans );
+    
+    void ggetmg( const char *cfname,   int &matid, const char *key, 
+		 double *temps,  int &kt,    int &nt,
+		 double *rhos,   int &krho,  int &nrho,
+		 double *hnus,   int &khnu,  int &nhnu,
+		 double *data,   int &kdata, int &ndata,
+		 int &ier );
 
-    void extc_gintmglog( double *temps, int &nt,
-		         double *rhos,  int &nrho,
-			 int &nhnu,
-			 double *data,  int &ndata,
-			 double &tlog,  double &rlog, 
-			 double *ansmg );
+    void gintmglog( double *temps, int &nt,
+		    double *rhos,  int &nrho,
+		    int &nhnu,
+		    double *data,  int &ndata,
+		    double &tlog,  double &rlog, 
+		    double *ansmg );
 
 } // end of extern "C" block
 

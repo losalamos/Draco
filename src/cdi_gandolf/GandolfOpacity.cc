@@ -16,6 +16,8 @@
 
 #include "ds++/Assert.hh"
 
+#include <iostream>
+
 namespace rtt_cdi_gandolf
 {
 /*!
@@ -38,14 +40,14 @@ GandolfOpacity::GandolfOpacity(
 
 	// Retrieve keys available for this material from data file.
 	int errorCode;
-	wrapper::gkeys( spGandolfFile->getDataFilename(),
+	wrapper::wgkeys( spGandolfFile->getDataFilename(),
 			matID, vkeys, wrapper::maxKeys,
 			numKeys, errorCode ); 
 
 	if ( errorCode != 0 ) throw gkeysException ( errorCode );
 	
 	// Retrieve size of the data set.
-	wrapper::gchgrids( spGandolfFile->getDataFilename(), matID,
+	wrapper::wgchgrids( spGandolfFile->getDataFilename(), matID,
 			   numTemps, numDensities, numGroupBoundaries,
 			   numGrayOpacities, numMGOpacities, errorCode );
 
@@ -74,6 +76,10 @@ GandolfOpacity::GandolfOpacity(
 
 	 // Require that key is available in keys[].
 // 	 Require( key_available( skey, vkeys ) );
+
+	 std::cout << "skey = " << skey << std::endl;
+	 for ( int i=0; i<vkeys.size(); ++i )
+	     std::cout << "vkeys[" << i << "] = " << vkeys[i] << std::endl;
 	 if( ! key_available( skey, vkeys ) )
 	     throw gkeysException( -2 );
 
@@ -93,7 +99,7 @@ GandolfOpacity::GandolfOpacity(
 		 
 		 // Retrieve the gray data 
 		 int errorCode;
-		 wrapper::ggetgray( spGandolfFile->getDataFilename(), matID, skey, 
+		 wrapper::wggetgray( spGandolfFile->getDataFilename(), matID, skey, 
 				    logGrayTemperatures, numTemps, numTemps,
 				    logGrayDensities, numDensities, numDensities,
 				    logGrayOpacities, numGrayOpacities, numGrayOpacities,
@@ -136,7 +142,7 @@ GandolfOpacity::GandolfOpacity(
 
 	 // Send the opacity grid information to the interpolation routine.
 	 double grayOpacity;
-	 wrapper::gintgrlog( logTemperatures, numTemps, logDensities, numDensities,
+	 wrapper::wgintgrlog( logTemperatures, numTemps, logDensities, numDensities,
 		    logGrayOpacities, numGrayOpacities, 
 		    log(targetTemp), log(targetDensity), grayOpacity );
 	 
@@ -184,7 +190,7 @@ GandolfOpacity::GandolfOpacity(
 		 
 		 // Retrieve the multi-group data
 		 int errorCode;
-		 wrapper::ggetmg( spGandolfFile->getDataFilename(), matID, skey, 
+		 wrapper::wggetmg( spGandolfFile->getDataFilename(), matID, skey, 
 			 logMGtemperatures, numTemps, numTemps,
 			 logMGdensities, numDensities, numDensities,
 			 groupBoundaries, numGroupBoundaries, numGroupBoundaries,
@@ -230,7 +236,7 @@ GandolfOpacity::GandolfOpacity(
 	 std::vector<double> MGOpacity( numGroupBoundaries-1 );
 
 	 // Send the opacity grid information to the interpolation routine.
-	 wrapper::gintmglog( logTemperatures, numTemps, logDensities,
+	 wrapper::wgintmglog( logTemperatures, numTemps, logDensities,
 			     numDensities, numGroupBoundaries,
 		    logMGOpacities, numMGOpacities, 
 		    log(targetTemp), log(targetDensity), MGOpacity );
