@@ -20,6 +20,7 @@
 
 using namespace std;
 
+using rtt_imc_test::Parser;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_imc::Tally;
@@ -34,9 +35,8 @@ bool passed = true;
 void Tally_Test()
 {
     // make a mesh and tally
-    SP<rtt_imc_test::IMC_Interface> 
-	interface(new rtt_imc_test::IMC_Interface());
-    OS_Builder mb(interface);
+    SP<Parser> parser(new Parser("OS_Input"));
+    OS_Builder mb(parser);
     SP<OS_Mesh> mesh = mb.build_Mesh();
     Tally<OS_Mesh> t(mesh);
     
@@ -78,9 +78,8 @@ void Tally_Test()
 void Tally_Test_Evol_Net()
 {
     // Make a mesh and field
-    SP<rtt_imc_test::IMC_Interface> 	
-	interface(new rtt_imc_test::IMC_Interface());
-    OS_Builder mb(interface);
+    SP<Parser> parser(new Parser("OS_Input"));
+    OS_Builder mb(parser);
     SP<OS_Mesh> mesh = mb.build_Mesh();
     OS_Mesh::CCSF_double evol_net(mesh);
     for (int i = 1; i <= evol_net.get_Mesh().num_cells(); i++)

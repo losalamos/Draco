@@ -29,9 +29,7 @@ namespace rtt_imc
  * 
  * This class is a prelude to parallel partitioning.  It is designed to
  * perform the following tasks: \arg calculate source particle numbers in
- * each cell so that optimal, parallel-spatial partitioning can be done; \arg
- * calculate a defined-surface-cells vector from a problem surface boundary,
- * this calculation requires a global mesh (full_Mesh() == true).
+ * each cell so that optimal, parallel-spatial partitioning can be done..
  *
  * Preliminary source data estimated in this class can be used by the
  * Topology_Builder to calculate the parallel-problem topology.
@@ -62,9 +60,6 @@ class Source_Init
   public:
     //! Constructor.
     Source_Init(SP_Interface);
-
-    // Calculate a defined surface cells array.
-    void calc_defined_surcells(SP_Mesh);
 
     // Calculate source numbers as a prelude to parallel, spatial
     // partitioning. 

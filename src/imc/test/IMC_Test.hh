@@ -12,6 +12,7 @@
 
 #include "../Interface.hh"
 #include "mc/OS_Mesh.hh"
+#include "mc/OS_Builder.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <vector>
@@ -31,6 +32,20 @@ inline bool fail(int line)
 }
 
 //===========================================================================//
+// PARSER CLASS FOR MESH BUILDERS
+//===========================================================================//
+// make a simple parser class that tells mesh builders the name of the mesh
+// input file
+
+class Parser
+{
+  public:
+    std::string file_name;
+    explicit Parser(std::string fn) : file_name(fn) {/*...*/}
+    std::string get_mesh_file() const { return file_name; }
+};
+
+//===========================================================================//
 // INTERFACE CLASS
 //===========================================================================//
 // make an interface for a 6 cell mesh
@@ -38,11 +53,9 @@ inline bool fail(int line)
 class IMC_Interface : public rtt_imc::Interface<rtt_mc::OS_Mesh>
 {
   private:
-    // Mesh data
-    std_string coord;
-    vf_double  fine_edge;
-    sf_string  bnd;
-    
+    // sp to OS_Builder
+    rtt_dsxx::SP<rtt_mc::OS_Builder> builder;
+
     // data for the Opacity and Mat_State
     sf_double  density;
     sf_double  kappa;
@@ -62,19 +75,12 @@ class IMC_Interface : public rtt_imc::Interface<rtt_mc::OS_Mesh>
     sf_double evol_ext;
     sf_double rad_source;
     sf_double rad_temp;
-    sf_string ss_pos;
     sf_double ss_temp;
-    vf_int surcells;
     sf_string ss_desc;
 
   public:
     // constructor -> the default processor capacity is 6 cells
-    inline IMC_Interface(int = 6);
-
-    // public interface for Mesh
-    std_string get_coordinates() const {return coord;}
-    vf_double get_fine_edge() const {return fine_edge;} 
-    sf_string get_boundaries() const {return bnd;}
+    inline IMC_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder>, int = 6);
     
     // public interface for Opacity_Builder
     sf_double get_density() const {return density;}
@@ -90,18 +96,15 @@ class IMC_Interface : public rtt_imc::Interface<rtt_mc::OS_Mesh>
     // public interface for Topology
     int get_capacity() const { return capacity; }
 
-    // public interface for Source_Init
-    void set_defined_surcells(int i, const sf_int &sc) {surcells[i-1] = sc;}
-
     // public interface for Source_Builder
     double get_elapsed_t() const { return elapsed_t; }
     sf_double get_evol_ext() const { return evol_ext; }
     double get_rad_s_tend() const { return double(.1); }
     sf_double get_rad_source() const { return rad_source; }
     sf_double get_rad_temp() const { return rad_temp; }
-    sf_string get_ss_pos() const { return ss_pos; }
+    sf_string get_ss_pos() const { return builder->get_ss_pos(); }
     sf_double get_ss_temp() const { return ss_temp; }
-    vf_int get_defined_surcells() const { return surcells; }
+    inline vf_int get_defined_surcells() const;
     int get_npnom() const { return int(1000); }
     int get_npmax() const { return int(1000); }
     double get_dnpdt() const { return double(0); }
@@ -114,11 +117,10 @@ class IMC_Interface : public rtt_imc::Interface<rtt_mc::OS_Mesh>
 };
 
 // constructor
-IMC_Interface::IMC_Interface(int capacity_)
-    :  rtt_imc::Interface<rtt_mc::OS_Mesh>(), 
-       coord("xy"), 
-       fine_edge(2),
-       bnd(4),
+IMC_Interface::IMC_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder> osb, 
+			     int capacity_) 
+    :  rtt_imc::Interface<rtt_mc::OS_Mesh>(),
+       builder(osb),
        density(6), 
        kappa(6), 
        kappa_thomson(6), 
@@ -133,30 +135,9 @@ IMC_Interface::IMC_Interface(int capacity_)
        evol_ext(6),
        rad_source(6),
        rad_temp(6),
-       ss_pos(2),
        ss_temp(2),
-       surcells(2),
        ss_desc(2, "standard")
-{
-    // make the Mesh stuff
-
-    // calculate the fine edges
-    fine_edge[0].resize(4);
-    fine_edge[1].resize(3);
-
-    fine_edge[0][0] = -1;
-    fine_edge[1][0] = -1;
-
-    for (int i = 1; i < fine_edge[0].size(); i++)
-	fine_edge[0][i] = fine_edge[0][i-1] + 1;
-    for (int i = 1; i < fine_edge[1].size(); i++)
-	fine_edge[1][i] = fine_edge[1][i-1] + 2;
-
-    // calculate the boundaries
-    for (int i = 1; i < 4; i++)
-	bnd[i] = "vacuum";
-    bnd[0] = "reflect";
-    
+{   
     // make the Opacity and Mat_State stuff
 
     for (int i = 0; i < 3; i++)
@@ -191,14 +172,8 @@ IMC_Interface::IMC_Interface(int capacity_)
 	rad_temp[i]   = 10.0;
     }
 
-    ss_pos[0]  = "loy";
-    ss_pos[1]  = "hix";
     ss_temp[0] = 20.0;
     ss_temp[1] = 0.0;
-    
-    surcells[0].resize(2);
-    surcells[0][0] = 1;
-    surcells[0][1] = 2;
 }
 
 
@@ -210,6 +185,11 @@ std::string IMC_Interface::get_analytic_opacity() const
 std::string IMC_Interface::get_analytic_sp_heat() const 
 { 
     return analytic_sp_heat; 
+}
+
+std::vector<std::vector<int> > IMC_Interface::get_defined_surcells() const
+{
+    return builder->get_defined_surcells();
 }
 
 } // end namespace rtt_imc_test

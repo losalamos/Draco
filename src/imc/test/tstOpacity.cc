@@ -29,6 +29,7 @@ using rtt_imc::Opacity;
 using rtt_imc::Opacity_Builder;
 using rtt_imc::Mat_State;
 using rtt_imc_test::IMC_Interface;
+using rtt_imc_test::Parser;
 using rtt_dsxx::SP;
 
 // some typedefs
@@ -42,12 +43,13 @@ bool passed = true;
 // test Opacity Builder and Mat_State
 void Mat_Test()
 {
-    // get an interface (dummy)
-    SP<IMC_Interface> interface(new IMC_Interface());
-
     // build a mesh
-    OS_Builder mb(interface);
-    SP<OS_Mesh> mesh = mb.build_Mesh();
+    SP<Parser> parser(new Parser("OS_Input"));
+    SP<OS_Builder> mb(new OS_Builder(parser));
+    SP<OS_Mesh> mesh = mb->build_Mesh();
+
+    // get an interface (dummy)
+    SP<IMC_Interface> interface(new IMC_Interface(mb));
 
     // build the Mat_State
     Opacity_Builder<OS_Mesh> ob(interface);
@@ -81,12 +83,13 @@ void Mat_Test()
 // test Opacity Builder, Mat_State, and Opacity
 void Opacity_Test()
 {
-    // get an interface (dummy)
-    SP<IMC_Interface> interface(new IMC_Interface());
-
     // build a mesh
-    OS_Builder mb(interface);
-    SP<OS_Mesh> mesh = mb.build_Mesh();
+    SP<Parser> parser(new Parser("OS_Input"));
+    SP<OS_Builder> mb(new OS_Builder(parser));
+    SP<OS_Mesh> mesh = mb->build_Mesh();
+
+    // get an interface (dummy)
+    SP<IMC_Interface> interface(new IMC_Interface(mb));
 
     // build the Mat_State and Opacity
     Opacity_Builder<OS_Mesh> ob(interface);

@@ -29,6 +29,7 @@
 using namespace std;
 
 using rtt_imc_test::IMC_Interface;
+using rtt_imc_test::Parser;
 using rtt_imc::Topology_Builder;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
@@ -45,13 +46,14 @@ bool passed = true;
 // build and test a full replication Topology built by Topology_Builder
 
 void replication_test()
-{	
-    // get the dummy interface with a capacity of 6 cells (the full mesh)
-    SP<IMC_Interface> interface(new IMC_Interface(6));
-    
+{	    
     // build a mesh
-    OS_Builder mb(interface);
-    SP<OS_Mesh> mesh = mb.build_Mesh();
+    SP<Parser> parser(new Parser("OS_Input"));
+    SP<OS_Builder> mb(new OS_Builder(parser));
+    SP<OS_Mesh> mesh = mb->build_Mesh();
+
+    // get the dummy interface with a capacity of 6 cells (the full mesh)
+    SP<IMC_Interface> interface(new IMC_Interface(mb, 6));
     
     // build the Topology Builder and full replication topology
     Topology_Builder<OS_Mesh> tb(interface);
@@ -84,12 +86,13 @@ void DD_test()
     if (C4::nodes() != 2) 
 	return;
 
-    // get the dummy interface with a capacity of 3 cells (2 processor)
-    SP<IMC_Interface> interface(new IMC_Interface(3));
-
     // build a mesh
-    OS_Builder mb(interface);
-    SP<OS_Mesh> mesh = mb.build_Mesh();
+    SP<Parser> parser(new Parser("OS_Input"));
+    SP<OS_Builder> mb(new OS_Builder(parser));
+    SP<OS_Mesh> mesh = mb->build_Mesh();
+
+    // get the dummy interface with a capacity of 3 cells (2 processor)
+    SP<IMC_Interface> interface(new IMC_Interface(mb, 3));
 
     // build the Topology builder and full replication topology
     Topology_Builder<OS_Mesh> tb(interface);

@@ -1,3 +1,18 @@
+2000-02-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* Source_Init.*, Interface.hh: updated these classes to reflect
+	the new mesh builder model.  In this model the mesh builder reads
+	its own mesh format file.  Thus, Source_Init is not required to
+	calculate surface source cells; this is now taken care of by the
+	mesh builder class.
+
+	* test, IMC_Test.hh, OS_Input.in: updated tests to reflect the new
+ 	builder model.  Added a mesh format file for testing
+	(OS_Input.in).  Also, updated IMC_Test.hh so that is now contains
+	a parser (gives the interface the name of the mesh file) and an
+	interface, which uses the mesh builder to get certain data (like
+	the list of surface cells).
+
 2000-01-19  Todd J. Urbatsch  <tmonster@lanl.gov>
 
 	* Rep_Source_Builder.t.hh: Corrected a long-time error: after

@@ -33,6 +33,7 @@
 using namespace std;
 
 using rtt_imc_test::IMC_Interface;
+using rtt_imc_test::Parser;
 using rtt_imc::Mesh_Operations;
 using rtt_imc::Opacity_Builder;
 using rtt_imc::Mat_State;
@@ -55,13 +56,14 @@ bool passed = true;
 
 void T4_slope_test()
 {
-    // build an interface to a six cell fully replicated mesh
-    SP<IMC_Interface> interface(new IMC_Interface);
-
     // build a FULL mesh --> this mesh will be fully replicated on all
     // processors in the test
-    OS_Builder mb(interface);
-    SP<OS_Mesh> mesh = mb.build_Mesh();
+    SP<Parser> parser(new Parser("OS_Input"));
+    SP<OS_Builder> mb(new OS_Builder(parser));
+    SP<OS_Mesh> mesh = mb->build_Mesh();
+
+    // build an interface to a six cell fully replicated mesh
+    SP<IMC_Interface> interface(new IMC_Interface(mb));
 
     // build a Topology: we do not use the Topology builder here because the
     // topology builder is designed to work on the host processor only -->

@@ -91,11 +91,6 @@ class Interface
     
     // Get the cells per processor capacity.
     virtual int get_capacity() const = 0;
-
-    // >>> FUNCTIONS REQUIRED BY SOURCE_INIT
-    
-    // Set the defined surface cells for a given surface source.
-    virtual void set_defined_surcells(int, const sf_int &) = 0;
     
     // >>> FUNCTIONS REQUIRED BY SOURCE_BUILDERs
 
