@@ -144,6 +144,9 @@ class Random_Walk : public Hybrid_Diffusion
     // Constructor.
     Random_Walk(SP_Mesh, SP_Diffusion_Opacity, double = 1.0);
 
+    // Number of cells in the mesh.
+    int num_cells() const { return mesh->num_cells(); }
+
     // See if we should do Random Walk on this step.
     bool do_a_random_walk(int, double, double, double);
 

@@ -13,6 +13,7 @@
 #define RTT_imc_Multigroup_Particle_HH
 
 #include "Particle.hh"
+#include "Random_Walk.hh"
 #include "mc/Sampler.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cmath>
@@ -34,6 +35,7 @@ class Multigroup_Frequency;
 // 0) original
 // 1) 10-FEB-03 : removed #define's for Base class scoping; added real
 //                scoping
+// 2) 19-MAY-03 : added Random_Walk to transport
 // 
 //===========================================================================//
 
@@ -47,6 +49,7 @@ class Multigroup_Particle : public Particle<MT>
     typedef rtt_dsxx::SP<Rnd_Type>           SP_Rnd_Type;
     typedef std::string                      std_string;
     typedef Opacity<MT,Multigroup_Frequency> MG_Opacity;
+    typedef rtt_dsxx::SP<Random_Walk<MT> >   SP_Random_Walk;
 
     // >>> NESTED TYPES
 
@@ -107,7 +110,8 @@ class Multigroup_Particle : public Particle<MT>
 
     // IMC transport step.
     void transport(const MT &, const MG_Opacity &, 
-		   Tally<MT> &, SP_Diagnostic = SP_Diagnostic()); 
+		   Tally<MT> &, SP_Random_Walk = SP_Random_Walk(),
+		   SP_Diagnostic = SP_Diagnostic()); 
 
     // >>> ACCESSORS
 

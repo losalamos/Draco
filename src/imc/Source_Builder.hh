@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Source_Builder_hh__
-#define __imc_Source_Builder_hh__
+#ifndef rtt_imc_Source_Builder_hh
+#define rtt_imc_Source_Builder_hh
 
 #include "Particle.hh"
 #include "Global.hh"
@@ -674,7 +674,7 @@ void Source_Builder<MT,FT,PT>::set_ss_temperature_in_source(
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Source_Builder_hh__
+#endif                          // rtt_imc_Source_Builder_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Source_Builder.hh

@@ -84,6 +84,7 @@ void Tally_Test()
 	    t.accum_ew_escaped(i * 1.0);
 	    t.accum_n_bndcross();
 	    t.accum_n_reflections();
+	    t.accum_n_random_walks();
 
 	    // momentum checks - hardwired for 2 dimensions, 2 depositions
 	    omega[0] = (1.0 - pow(-1.0,j))/2.0;
@@ -105,6 +106,7 @@ void Tally_Test()
 	    if (t.get_accum_n_escaped() != pcount)         ITFAILS;
 	    if (t.get_accum_n_bndcross() != pcount)        ITFAILS;
 	    if (t.get_accum_n_reflections() != pcount)     ITFAILS;
+	    if (t.get_accum_n_random_walks() != pcount)    ITFAILS;
 
 	}
     }
@@ -116,13 +118,15 @@ void Tally_Test()
     t.accum_n_escaped(2);
     t.accum_n_bndcross(3);
     t.accum_n_reflections(6);
+    t.accum_n_random_walks(11);
 
-    if (t.get_accum_n_effscat() != pcount + 5)     ITFAILS;
-    if (t.get_accum_n_thomscat() != pcount + 20)   ITFAILS;
-    if (t.get_accum_n_killed() != pcount + 10)     ITFAILS;
-    if (t.get_accum_n_escaped() != pcount + 2)     ITFAILS;
-    if (t.get_accum_n_bndcross() != pcount + 3)    ITFAILS;
-    if (t.get_accum_n_reflections() != pcount + 6) ITFAILS;
+    if (t.get_accum_n_effscat() != pcount + 5)       ITFAILS;
+    if (t.get_accum_n_thomscat() != pcount + 20)     ITFAILS;
+    if (t.get_accum_n_killed() != pcount + 10)       ITFAILS;
+    if (t.get_accum_n_escaped() != pcount + 2)       ITFAILS;
+    if (t.get_accum_n_bndcross() != pcount + 3)      ITFAILS;
+    if (t.get_accum_n_reflections() != pcount + 6)   ITFAILS;
+    if (t.get_accum_n_random_walks() != pcount + 11) ITFAILS;
 
     for (int i = 1; i <= mesh->num_cells(); i++)
 	t.accumulate_cen_info(i, i*1.0, i);

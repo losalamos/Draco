@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Rep_Transporter_t_hh__
-#define __imc_Rep_Transporter_t_hh__
+#ifndef rtt_imc_Rep_Transporter_t_hh
+#define rtt_imc_Rep_Transporter_t_hh
 
 #include "Rep_Transporter.hh"
 #include "mc/Particle_Stack.hh"
@@ -42,6 +42,7 @@ Rep_Transporter<MT,FT,PT>::Rep_Transporter(SP_Topology top)
     Require (!mat_state);
     Require (!source);
     Require (!tally);
+    Require (!random_walk);
     Require (!communicator);
     Require (topology);
 
@@ -71,8 +72,11 @@ Rep_Transporter<MT,FT,PT>::Rep_Transporter(SP_Topology top)
  */
 template<class MT, class FT, class PT>
 typename Rep_Transporter<MT,FT,PT>::SP_Census 
-Rep_Transporter<MT,FT,PT>::transport(double dt, int cycle, int print_f, 
-				     int num_to_run, bool verbose) 
+Rep_Transporter<MT,FT,PT>::transport(double dt,
+				     int    cycle, 
+				     int    print_f, 
+				     int    num_to_run,
+				     bool   verbose) 
 {
     using std::cerr;
     using std::cout;
@@ -104,7 +108,7 @@ Rep_Transporter<MT,FT,PT>::transport(double dt, int cycle, int print_f,
 	Check (particle->status());
 
 	// transport the particle
-	particle->transport(*mesh, *opacity, *tally, check);
+	particle->transport(*mesh, *opacity, *tally, random_walk, check);
 	counter++;
 
 	// after the particle is no longer active take appropriate action
@@ -158,15 +162,17 @@ Rep_Transporter<MT,FT,PT>::transport(double dt, int cycle, int print_f,
  * \param opacity_in rtt_dsxx::SP to a valid Opacity object
  * \param source_in rtt_dsxx::SP to a valid Source object
  * \param tally_in rtt_dsxx::SP to a valid Tally object
- * \param communicator_in null rtt_dsxx::SP to a Communicator
+ * \param random_walk_in rtt_dsxx::SP to a random walk object (can be null)
+ * \param communicator_in null rtt_dsxx::SP to a Communicator (must be null)
 
  */
 template<class MT, class FT, class PT>
-void Rep_Transporter<MT,FT,PT>::set(SP_Mesh mesh_in,
-				    SP_Mat_State mat_state_in,
-				    SP_Opacity opacity_in,
-				    SP_Source source_in,
-				    SP_Tally tally_in,
+void Rep_Transporter<MT,FT,PT>::set(SP_Mesh         mesh_in,
+				    SP_Mat_State    mat_state_in,
+				    SP_Opacity      opacity_in,
+				    SP_Source       source_in,
+				    SP_Tally        tally_in,
+				    SP_Random_Walk  random_walk_in,
 				    SP_Communicator communicator_in)
 {
     Require (mesh_in);
@@ -177,11 +183,12 @@ void Rep_Transporter<MT,FT,PT>::set(SP_Mesh mesh_in,
     Require (!communicator_in);
 
     // assign objects (no need to assign communicator as it should be null)
-    mesh      = mesh_in;
-    opacity   = opacity_in;
-    source    = source_in;
-    mat_state = mat_state_in;
-    tally     = tally_in;
+    mesh        = mesh_in;
+    opacity     = opacity_in;
+    source      = source_in;
+    mat_state   = mat_state_in;
+    tally       = tally_in;
+    random_walk = random_walk_in;
     
     // number of global cells is the same number of cells on processor
     int num_cells = topology->num_cells();
@@ -191,6 +198,7 @@ void Rep_Transporter<MT,FT,PT>::set(SP_Mesh mesh_in,
     Ensure (num_cells == source->num_cells());
     Ensure (num_cells == mat_state->num_cells());
     Ensure (num_cells == tally->num_cells());
+    Ensure (random_walk ? num_cells == random_walk->num_cells() : true);
     Ensure (topology);
     Ensure (!communicator);
 }
@@ -220,12 +228,14 @@ void Rep_Transporter<MT,FT,PT>::unset()
     tally        = SP_Tally();
     source       = SP_Source();
     communicator = SP_Communicator();
+    random_walk  = SP_Random_Walk();
 
     Ensure (!mesh);
     Ensure (!opacity);
     Ensure (!mat_state);
     Ensure (!tally);
     Ensure (!source);
+    Ensure (!random_walk);
     Ensure (!communicator);
 }
 
@@ -263,7 +273,7 @@ bool Rep_Transporter<MT,FT,PT>::ready() const
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Rep_Transporter_t_hh__
+#endif                          // rtt_imc_Rep_Transporter_t_hh
 
 //---------------------------------------------------------------------------//
 //                        end of imc/Rep_Transporter.t.hh

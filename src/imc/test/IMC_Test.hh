@@ -55,7 +55,8 @@ class Parser
 //===========================================================================//
 // INTERFACE CLASSES
 //===========================================================================//
-// make a flat interface for a 6 cell mesh
+// make a flat interface for an n cell mesh where n is even
+// the mesh must define 2 surface sources
 
 template<class PT>
 class IMC_Flat_Interface :
@@ -139,27 +140,34 @@ IMC_Flat_Interface<PT>::IMC_Flat_Interface(
     int                              hmodel) 
     : builder(osb),
       mat_data(new rtt_imc::Flat_Data_Container),
-      density(6), 
-      temperature(6),
+      density(osb->num_cells()), 
+      temperature(osb->num_cells()),
       implicitness(1.0), 
       delta_t(.001),
       elapsed_t(.001),
-      evol_ext(6),
-      rad_source(6),
-      rad_temp(6),
+      evol_ext(osb->num_cells()),
+      rad_source(osb->num_cells()),
+      rad_temp(osb->num_cells()),
       ss_temp(2),
       ss_desc(2, "standard"),
       hybrid_model(hmodel)
 {   
+    if (osb->num_cells() % 2 != 0)
+	throw rtt_dsxx::assertion("Non-even celled test mesh.");
+
+    // num cells (on each processor)
+    int nc  = osb->num_cells();
+    int mod = nc / 2;
+
     // make the Opacity and Mat_State stuff
     
     // size the data in the flat data container
-    mat_data->gray_absorption_opacity.resize(6);
-    mat_data->gray_scattering_opacity.resize(6);
-    mat_data->rosseland_opacity.resize(6);
-    mat_data->mg_absorption_opacity.resize(6, sf_double(3));
-    mat_data->mg_scattering_opacity.resize(6, sf_double(3));
-    mat_data->specific_heat.resize(6);
+    mat_data->gray_absorption_opacity.resize(nc);
+    mat_data->gray_scattering_opacity.resize(nc);
+    mat_data->rosseland_opacity.resize(nc);
+    mat_data->mg_absorption_opacity.resize(nc, sf_double(3));
+    mat_data->mg_scattering_opacity.resize(nc, sf_double(3));
+    mat_data->specific_heat.resize(nc);
     mat_data->group_boundaries.resize(4);
 
     // make group boundaries
@@ -168,32 +176,32 @@ IMC_Flat_Interface<PT>::IMC_Flat_Interface(
     mat_data->group_boundaries[2] = 15.0;
     mat_data->group_boundaries[3] = 100.0;
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < mod; i++)
     {
 	// density
-	density[i]   = 1.0;
-	density[i+3] = 2.0;
+	density[i]     = 1.0;
+	density[i+mod] = 2.0;
 
 	// absorption opacity in /cm
-	mat_data->gray_absorption_opacity[i]    = .1  * density[i];
-	mat_data->gray_absorption_opacity[i+3]  = .01 * density[i+3];
+	mat_data->gray_absorption_opacity[i]     = .1  * density[i];
+	mat_data->gray_absorption_opacity[i+mod] = .01 * density[i+mod];
 
 	if (common_mg_opacities)
 	{
-	    mat_data->mg_absorption_opacity[i][0]   = 0.1 * density[i];
-	    mat_data->mg_absorption_opacity[i][1]   = 0.1 * density[i];
-	    mat_data->mg_absorption_opacity[i][2]   = 0.1 * density[i];
+	    mat_data->mg_absorption_opacity[i][0] = 0.1 * density[i];
+	    mat_data->mg_absorption_opacity[i][1] = 0.1 * density[i];
+	    mat_data->mg_absorption_opacity[i][2] = 0.1 * density[i];
 	    
-	    mat_data->mg_absorption_opacity[i+3][0] = 0.01 * density[i+3];
-	    mat_data->mg_absorption_opacity[i+3][1] = 0.01 * density[i+3];
-	    mat_data->mg_absorption_opacity[i+3][2] = 0.01 * density[i+3];
+	    mat_data->mg_absorption_opacity[i+mod][0] = 0.01 * density[i+mod];
+	    mat_data->mg_absorption_opacity[i+mod][1] = 0.01 * density[i+mod];
+	    mat_data->mg_absorption_opacity[i+mod][2] = 0.01 * density[i+mod];
 
-	    mat_data->mg_scattering_opacity[i][0]   = 0.5 * density[i];
-	    mat_data->mg_scattering_opacity[i][1]   = 0.5 * density[i];
-	    mat_data->mg_scattering_opacity[i][2]   = 0.5 * density[i];
-	    mat_data->mg_scattering_opacity[i+3][0] = 0.0;
-	    mat_data->mg_scattering_opacity[i+3][1] = 0.0;
-	    mat_data->mg_scattering_opacity[i+3][2] = 0.0;
+	    mat_data->mg_scattering_opacity[i][0]     = 0.5 * density[i];
+	    mat_data->mg_scattering_opacity[i][1]     = 0.5 * density[i];
+	    mat_data->mg_scattering_opacity[i][2]     = 0.5 * density[i];
+	    mat_data->mg_scattering_opacity[i+mod][0] = 0.0;
+	    mat_data->mg_scattering_opacity[i+mod][1] = 0.0;
+	    mat_data->mg_scattering_opacity[i+mod][2] = 0.0;
 	}
 	else
 	{
@@ -201,42 +209,45 @@ IMC_Flat_Interface<PT>::IMC_Flat_Interface(
 	    mat_data->mg_absorption_opacity[i][1]   = 0.5;
 	    mat_data->mg_absorption_opacity[i][2]   = 0.1;
 	    
-	    mat_data->mg_absorption_opacity[i+3][0] = 2.0;
-	    mat_data->mg_absorption_opacity[i+3][1] = 1.5;
-	    mat_data->mg_absorption_opacity[i+3][2] = 1.1;
+	    mat_data->mg_absorption_opacity[i+mod][0] = 2.0;
+	    mat_data->mg_absorption_opacity[i+mod][1] = 1.5;
+	    mat_data->mg_absorption_opacity[i+mod][2] = 1.1;
 
-	    mat_data->mg_scattering_opacity[i][0]   = 0.0;
-	    mat_data->mg_scattering_opacity[i][1]   = 0.0;
-	    mat_data->mg_scattering_opacity[i][2]   = 0.0;
-	    mat_data->mg_scattering_opacity[i+3][0] = 0.0;
-	    mat_data->mg_scattering_opacity[i+3][1] = 0.0;
-	    mat_data->mg_scattering_opacity[i+3][2] = 0.0;
+	    mat_data->mg_scattering_opacity[i][0]     = 0.0;
+	    mat_data->mg_scattering_opacity[i][1]     = 0.0;
+	    mat_data->mg_scattering_opacity[i][2]     = 0.0;
+	    mat_data->mg_scattering_opacity[i+mod][0] = 0.0;
+	    mat_data->mg_scattering_opacity[i+mod][1] = 0.0;
+	    mat_data->mg_scattering_opacity[i+mod][2] = 0.0;
 	}
 	
 	// scattering opacity in /cm
-	mat_data->gray_scattering_opacity[i]    = 0.5 * density[i];
-	mat_data->gray_scattering_opacity[i+3]  = 0.0 * density[i+3];
+	mat_data->gray_scattering_opacity[i]      = 0.5 * density[i];
+	mat_data->gray_scattering_opacity[i+mod]  = 0.0 * density[i+mod];
 
 	// specific heat in jks/g/keV
-	mat_data->specific_heat[i]   = .1;
-	mat_data->specific_heat[i+3] = .2;
+	mat_data->specific_heat[i]     = .1;
+	mat_data->specific_heat[i+mod] = .2;
 
 	// rosseland opacities
 	mat_data->rosseland_opacity[i] =
 	    mat_data->gray_absorption_opacity[i] +
 	    mat_data->gray_scattering_opacity[i];
-	mat_data->rosseland_opacity[i+3] = 
-	    mat_data->gray_absorption_opacity[i+3] +
-	    mat_data->gray_scattering_opacity[i+3];
+	mat_data->rosseland_opacity[i+mod] = 
+	    mat_data->gray_absorption_opacity[i+mod] +
+	    mat_data->gray_scattering_opacity[i+mod];
 
 	// temperature
 	temperature[i]   = 10.0;
-	temperature[i+3] = 20.0;
+	temperature[i+mod] = 20.0;
     }
 
     // make the Source_Builder stuff
 
-    for (int i = 0; i < 6; i++)
+    if (osb->get_ss_pos().size() != 2)
+	throw rtt_dsxx::assertion("Need to have 2 surface source.");
+
+    for (int i = 0; i < nc; i++)
     {
 	evol_ext[i]   = 100;
 	rad_source[i] = 200;

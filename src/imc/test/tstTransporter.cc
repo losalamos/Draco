@@ -24,6 +24,7 @@
 #include "../Rep_Source_Builder.hh"
 #include "../Source.hh"
 #include "../Tally.hh"
+#include "../Random_Walk.hh"
 #include "mc/Communicator.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/General_Topology.hh"
@@ -56,6 +57,7 @@ using rtt_imc::Opacity;
 using rtt_imc::Mat_State;
 using rtt_imc::Rep_Source_Builder;
 using rtt_imc::Tally;
+using rtt_imc::Random_Walk;
 using rtt_mc::Communicator;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
@@ -153,9 +155,12 @@ void rep_transporter_run_test()
 
     // build a "NULL" communicator
     SP<Communicator<PT> > comm;
+
+    // build a random walk object
+    SP<Random_Walk<MT> > rwalk;
     
     // set the transporter
-    transporter->set(mesh, mat, opacity, source, tally, comm);
+    transporter->set(mesh, mat, opacity, source, tally, rwalk, comm);
 
     // transport
     double dt = interface->get_delta_t();

@@ -125,7 +125,7 @@ Gray_Particle<MT>::Gray_Particle(const std::vector<char> &packed)
  * \ref trans_method.  If random_walk is active then Random Walk is turned on
  * in thick cells as described in \ref trans_method_walk.
  *
- * \subsection trans_method Simple Transport Method
+ * \subsection trans_method Straight Transport Method
  *
  * Particles undergo implicit absorption until their energy weight drops
  * below 0.01 of their original value. During this time their energy weight
@@ -207,7 +207,7 @@ void Gray_Particle<MT>::transport(
 
     // otherwise run simple transport
     else
-	simple_transport(mesh, xs, tally, diagnostic);
+	straight_transport(mesh, xs, tally, diagnostic);
 
     Ensure (!Base::alive);
 }
@@ -269,7 +269,7 @@ std::vector<char> Gray_Particle<MT>::pack() const
  * gets killed.
  */
 template<class MT>
-void Gray_Particle<MT>::simple_transport(
+void Gray_Particle<MT>::straight_transport(
     const MT                         &mesh, 
     const Opacity<MT,Gray_Frequency> &xs, 
     Tally<MT>                        &tally, 
@@ -837,6 +837,9 @@ void Gray_Particle<MT>::random_walk_event(
 	    
     // do energy deposition
     tally.deposit_energy(Base::cell, delta_ew);
+
+    // tally random walk event
+    tally.accum_n_random_walks();
 
     // update particle energy weight
     Base::ew = new_ew;

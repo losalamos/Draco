@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Transporter_hh__
-#define __imc_Transporter_hh__
+#ifndef rtt_imc_Transporter_hh
+#define rtt_imc_Transporter_hh
 
 #include "ds++/SP.hh"
 #include <string>
@@ -30,6 +30,7 @@ namespace rtt_imc
 // Forward declarations.
 template<class MT> class Mat_State;
 template<class MT> class Tally;
+template<class MT> class Random_Walk;
 template<class MT, class FT> class Opacity;
 template<class MT, class FT, class PT> class Source;
  
@@ -39,14 +40,15 @@ template<class MT, class FT, class PT> class Source;
  *
  * \brief Perform IMC transport -> base class specification.
  *
- * The transporter class requires five fundamental objects: MT, Source,
- * Opacity, Mat_State, Tally, and Communicator to perform IMC transport.  The
- * fundamental operation of the transporter is to transport all IMC particles
- * from a source in one timestep.
+ * The transporter class requires six fundamental objects: MT, Source,
+ * Opacity, Mat_State, Tally, Random_Walk, and Communicator to perform IMC
+ * transport.  The fundamental operation of the transporter is to transport
+ * all IMC particles from a source in one timestep.
  */
 // revision history:
 // -----------------
 // 0) original
+// 1) 19-MAY-03 : added Random_Walk class to Transporter
 // 
 //===========================================================================//
 
@@ -60,6 +62,7 @@ class Transporter
     typedef rtt_dsxx::SP<Mat_State<MT> >                     SP_Mat_State;
     typedef rtt_dsxx::SP<Source<MT,FT,PT> >                  SP_Source;
     typedef rtt_dsxx::SP<Tally<MT> >                         SP_Tally;
+    typedef rtt_dsxx::SP<Random_Walk<MT> >                   SP_Random_Walk;
     typedef rtt_dsxx::SP<rtt_mc::Communicator<PT> >          SP_Communicator;
     typedef typename rtt_mc::Particle_Containers<PT>::Census Census;
     typedef rtt_dsxx::SP<Census>                             SP_Census;
@@ -76,7 +79,7 @@ class Transporter
 
     //! Set objects.
     virtual void set(SP_Mesh, SP_Mat_State, SP_Opacity, SP_Source, SP_Tally,
-		     SP_Communicator) = 0;
+		     SP_Random_Walk, SP_Communicator) = 0;
 
     //! Unset objects.
     virtual void unset() = 0;
@@ -93,7 +96,7 @@ class Transporter
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Transporter_hh__
+#endif                          // rtt_imc_Transporter_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Transporter.hh

@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Multigroup_Particle_t_hh__
-#define __imc_Multigroup_Particle_t_hh__
+#ifndef rtt_imc_Multigroup_Particle_t_hh
+#define rtt_imc_Multigroup_Particle_t_hh
 
 #include "Multigroup_Particle.hh"
 
@@ -77,7 +77,8 @@ int Multigroup_Particle<MT>::get_packed_particle_size(
 template<class MT>
 void Multigroup_Particle<MT>::transport(const MT         &mesh, 
 					const MG_Opacity &xs, 
-					Tally<MT>        &tally, 
+					Tally<MT>        &tally,
+					SP_Random_Walk    random_walk,
 					SP_Diagnostic     diagnostic)
 {
     Require (Base::alive);
@@ -381,7 +382,7 @@ void Multigroup_Particle<MT>::Diagnostic::print_xs(
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Multigroup_Particle_t_hh__
+#endif                          // rtt_imc_Multigroup_Particle_t_hh
 
 //---------------------------------------------------------------------------//
 //                        end of imc/Multigroup_Particle.t.hh

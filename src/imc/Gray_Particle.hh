@@ -79,8 +79,8 @@ class Gray_Particle : public Particle<MT>
     // >>> IMPLEMENTATION
 
     // Transport a particle without hybrid methods.
-    void simple_transport(const MT &, const Opacity<MT,Gray_Frequency> &,
-			  Tally<MT> &, SP_Diagnostic);
+    void straight_transport(const MT &, const Opacity<MT,Gray_Frequency> &,
+			    Tally<MT> &, SP_Diagnostic);
 
     // Transport a particle with random walk.
     void rw_transport(const MT &, const Opacity<MT,Gray_Frequency> &,

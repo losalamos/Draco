@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_DD_Transporter_t_hh__
-#define __imc_DD_Transporter_t_hh__
+#ifndef rtt_imc_DD_Transporter_t_hh
+#define rtt_imc_DD_Transporter_t_hh
 
 #include "DD_Transporter.hh"
 #include "mc/Particle_Stack.hh"
@@ -85,8 +85,11 @@ DD_Transporter<MT,FT,PT>::DD_Transporter(SP_Topology top)
  */
 template<class MT, class FT, class PT>
 typename DD_Transporter<MT,FT,PT>::SP_Census 
-DD_Transporter<MT,FT,PT>::transport(double dt, int cycle_in, int print_f_in, 
-				    int num_to_run_in, bool verbose)
+DD_Transporter<MT,FT,PT>::transport(double dt,
+				    int    cycle_in, 
+				    int    print_f_in, 
+				    int    num_to_run_in, 
+				    bool   verbose)
 {
     using std::cerr;
     using std::cout;
@@ -197,9 +200,10 @@ DD_Transporter<MT,FT,PT>::transport(double dt, int cycle_in, int print_f_in,
  * \brief Run a source particle and, possibly, incoming particles.
  */
 template<class MT, class FT, class PT>
-void DD_Transporter<MT,FT,PT>::trans_src_async(SP_PT_Diagnostic check,
-					       Bank &bank,
-					       SP_Census new_census_bank)
+void DD_Transporter<MT,FT,PT>::trans_src_async(
+    SP_PT_Diagnostic check,
+    Bank            &bank,
+    SP_Census        new_census_bank)
 {
     using rtt_dsxx::SP;
     using std::cerr;
@@ -273,9 +277,10 @@ void DD_Transporter<MT,FT,PT>::trans_src_async(SP_PT_Diagnostic check,
  * particles. 
  */
 template<class MT, class FT, class PT>
-void DD_Transporter<MT,FT,PT>::trans_domain_async(SP_PT_Diagnostic check, 
-						  Bank &bank,
-						  SP_Census new_census_bank)
+void DD_Transporter<MT,FT,PT>::trans_domain_async(
+    SP_PT_Diagnostic check, 
+    Bank            &bank,
+    SP_Census        new_census_bank)
 {
     using rtt_dsxx::SP;
     using std::cerr;
@@ -478,15 +483,17 @@ void DD_Transporter<MT,FT,PT>::complete_step_arecvs()
  * \param opacity_in rtt_dsxx::SP to a valid Opacity object
  * \param source_in rtt_dsxx::SP to a valid Source object
  * \param tally_in rtt_dsxx::SP to a valid Tally object
+ * \param random_walk_in rtt_dsxx::SP to a random walk object (can be null)
  * \param communicator_in rtt_dsxx::SP to a valid Communicator object
 
  */
 template<class MT, class FT, class PT>
-void DD_Transporter<MT,FT,PT>::set(SP_Mesh mesh_in,
-				   SP_Mat_State mat_state_in,
-				   SP_Opacity opacity_in,
-				   SP_Source source_in,
-				   SP_Tally tally_in,
+void DD_Transporter<MT,FT,PT>::set(SP_Mesh         mesh_in,
+				   SP_Mat_State    mat_state_in,
+				   SP_Opacity      opacity_in,
+				   SP_Source       source_in,
+				   SP_Tally        tally_in,
+				   SP_Random_Walk  random_walk_in,
 				   SP_Communicator communicator_in)
 {
     Require (mesh_in);
@@ -502,6 +509,7 @@ void DD_Transporter<MT,FT,PT>::set(SP_Mesh mesh_in,
     source       = source_in;
     mat_state    = mat_state_in;
     tally        = tally_in;
+    random_walk  = random_walk_in;
     communicator = communicator_in;
     
     // number of global cells is the same number of cells on processor
@@ -512,6 +520,7 @@ void DD_Transporter<MT,FT,PT>::set(SP_Mesh mesh_in,
     Ensure (num_cells == source->num_cells());
     Ensure (num_cells == mat_state->num_cells());
     Ensure (num_cells == tally->num_cells());
+    Ensure (random_walk ? num_cells == random_walk->num_cells() : true);
     Ensure (communicator);
     Ensure (topology);
 }
@@ -541,12 +550,14 @@ void DD_Transporter<MT,FT,PT>::unset()
     tally        = SP_Tally();
     source       = SP_Source();
     communicator = SP_Communicator();
+    random_walk  = SP_Random_Walk();
 
     Ensure (!mesh);
     Ensure (!opacity);
     Ensure (!mat_state);
     Ensure (!tally);
     Ensure (!source);
+    Ensure (!random_walk);
     Ensure (!communicator);
 }
 
@@ -585,7 +596,7 @@ bool DD_Transporter<MT,FT,PT>::ready() const
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_DD_Transporter_t_hh__
+#endif                          // rtt_imc_DD_Transporter_t_hh
 
 //---------------------------------------------------------------------------//
 //                        end of imc/DD_Transporter.t.hh

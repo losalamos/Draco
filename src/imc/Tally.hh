@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Tally_hh__
-#define __imc_Tally_hh__
+#ifndef rtt_imc_Tally_hh
+#define rtt_imc_Tally_hh
 
 #include "ds++/SP.hh"
 #include <iostream>
@@ -67,7 +67,7 @@ namespace rtt_imc
 // 7) 17-JAN-01 : fixed accumulate_momentum function so that it adds up
 //                momentum only in problem spatial dimensions, not based on
 //                the dimension of the direction vector (which is always 3-D) 
-//                
+// 8) 21-MAY-03 : added random walk number accumulation to tally
 //
 //===========================================================================//
 
@@ -109,6 +109,7 @@ class Tally
     double ew_escaped;
     int    n_bndcross;
     int    n_reflections;
+    int    n_random_walks;
 
   public:
     // Tally constructor.
@@ -150,7 +151,10 @@ class Tally
     void accum_n_bndcross(const int n = 1) { n_bndcross += n; }
 
     //! Accumulate the number of reflections made by particles.
-    void accum_n_reflections(const int n = 1) { n_reflections += n;} 
+    void accum_n_reflections(const int n = 1) { n_reflections += n; } 
+
+    //! Accumulate the number of random walks made by particles.
+    void accum_n_random_walks(const int n = 1) { n_random_walks += n; }
 
     //>>> ACCESSORS
 
@@ -202,6 +206,9 @@ class Tally
     //! Get the number of reflections made by particles.
     int get_accum_n_reflections() const { return n_reflections; }
 
+    //! Get the number of random walks made by particles.
+    int get_accum_n_random_walks() const { return n_random_walks; }
+
     //! Get the number of cells represented by this tally (on-processor).
     int num_cells() const { return energy_dep.get_Mesh().num_cells(); }
 
@@ -233,13 +240,14 @@ std::ostream& operator<<(std::ostream &out, const Tally<MT> &object)
 template<class MT>
 double Tally<MT>::volume(int cell) const
 {
+    Require (cell > 0);
     Require (cell <= energy_dep.get_Mesh().num_cells());
     return energy_dep.get_Mesh().volume(cell);
 }
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Tally_hh__
+#endif                          // rtt_imc_Tally_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Tally.hh

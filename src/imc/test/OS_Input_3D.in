@@ -1,4 +1,4 @@
-c Test 2D OS_Mesh input file
+c Test 3D OS_Mesh input file
 
 coord: xyz
 end-title
@@ -22,4 +22,6 @@ zcoarse: 0 1 2
 num_zfine: 1 1
 end-mesh
 
+num_ss: 2
+sur_source: lox hiz
 end-source

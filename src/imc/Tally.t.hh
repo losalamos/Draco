@@ -45,7 +45,8 @@ Tally<MT>::Tally(SP_MT mesh)
       n_escaped(0),
       ew_escaped(0), 
       n_bndcross(0),
-      n_reflections(0)
+      n_reflections(0),
+      n_random_walks(0)
 {
     Require (mesh);
 }
@@ -194,6 +195,7 @@ void Tally<MT>::print(std::ostream &out) const
     out << endl;
     out << setw(16) << " bnd crossings: " << setw(10) << n_bndcross 
 	<< setw(16) << " reflections: "   << setw(10) << n_reflections
+	<< setw(16) << " random walks: "   << setw(10) << n_random_walks
 	<< setw(16) << " eff scatters: "  << setw(10) << n_effscat
 	<< setw(16) << " thomson scats: " << setw(10) << n_thomscat
 	<< endl;
@@ -211,8 +213,9 @@ void Tally<MT>::print(std::ostream &out) const
  * \brief Print particle transport statistics (over a cycle).
 
  * This function prints out particle transport statistics including number of
- * boundary crossings, number of reflections, number of effective scatters,
- * number killed, number escaped, and number to census.
+ * boundary crossings, number of reflections, number of random walks, number
+ * of effective scatters, number killed, number escaped, and number to
+ * census.
 
  * \param out ostream to print data to
 
@@ -228,6 +231,7 @@ void Tally<MT>::cycle_print(std::ostream &out) const
     out << endl;
     out << setw(16) << " bnd crossings: " << setw(10) << n_bndcross 
 	<< setw(16) << " reflections: "   << setw(10) << n_reflections
+	<< setw(16) << " random walks: "   << setw(10) << n_random_walks
 	<< setw(16) << " eff scatters: "  << setw(10) << n_effscat
 	<< endl;
 
