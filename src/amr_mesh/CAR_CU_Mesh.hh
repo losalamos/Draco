@@ -91,11 +91,11 @@ class CAR_CU_Mesh
 	vector< vector<T> > data;
 
       public:
-	// inline explicit constructor (default the vector size to the problem 
-        // geometry dimension)
+	// inline explicit constructor (default the leading index vector size
+        // to the problem geometry dimension)
 	inline explicit CCVF(SP<CAR_CU_Mesh>);
 
-	// inline explicit constructor (arbitrary vector size)
+	// inline explicit constructor (arbitry leading index vector size)
 	inline explicit CCVF(SP<CAR_CU_Mesh>, int size);
 
 	// additional constructors
@@ -110,6 +110,9 @@ class CAR_CU_Mesh
 
 	// getting a CC vector
 	inline vector<T> operator()(int) const;
+
+        // return the size of the CCVF leading index
+        int get_size() {return data.size();}
     };  
 
     // class definitions of the face-centered fields.
@@ -463,29 +466,30 @@ inline CAR_CU_Mesh::CCSF<T>::CCSF(SP<CAR_CU_Mesh> mesh_,
 //---------------------------------------------------------------------------//
 // CAR_CU_Mesh::CCVF inline functions
 //---------------------------------------------------------------------------//
-// CCVF explicit constructor (default vector size to geometry dimension)
+// CCVF explicit constructor (default vector leading index size to the 
+// problem geometry dimension)
 
 template<class T>
-inline CAR_CU_Mesh::CCVF<T>::CCVF(SP<CAR_CU_Mesh> mesh_ ) 
-    : mesh(mesh_), data(mesh->get_Coord().get_dim())
+inline CAR_CU_Mesh::CCVF<T>::CCVF(SP<CAR_CU_Mesh> mesh_) 
+    : mesh(mesh_), data(mesh->get_ndim())
 {
     Require (mesh);
 
     // initialize data array
-    for (int i = 0; i <  mesh->get_Coord().get_dim(); i++)
+    for (int i = 0; i <  mesh->get_ndim(); i++)
 	data[i].resize(mesh->num_cells());
 }
 
-// CCVF explicit constructor (arbitrary leading vector size)
+// CCVF explicit constructor (arbitrary vector leading index size)
 
 template<class T>
-inline CAR_CU_Mesh::CCVF<T>::CCVF(SP<CAR_CU_Mesh> mesh_, int size_ ) 
+inline CAR_CU_Mesh::CCVF<T>::CCVF(SP<CAR_CU_Mesh> mesh_, int size_) 
     : mesh(mesh_), data(size_)
 {
     Require (mesh);
 
     // initialize data array
-    for (int i = 0; i < size_; i++)
+    for (int i = 0; i <  data.size(); i++)
 	data[i].resize(mesh->num_cells());
 }
 
@@ -494,10 +498,12 @@ inline CAR_CU_Mesh::CCVF<T>::CCVF(SP<CAR_CU_Mesh> mesh_, int size_ )
 // constructor for automatic initialization
 
 template<class T>
-inline CAR_CU_Mesh::CCVF<T>::CCVF(SP<CAR_CU_Mesh> mesh_, 
-			      const vector<vector<T> > & array)
+inline CAR_CU_Mesh::CCVF<T>::CCVF(SP<CAR_CU_Mesh> mesh_,
+				  const vector<vector<T> > & array)
     : mesh(mesh_), data(array)
 {
+    Require (mesh);
+
     for (int s = 0; s < data.size(); s++)
 	Ensure (data[s].size() == mesh->num_cells());
 }
@@ -672,7 +678,7 @@ inline vector<T> CAR_CU_Mesh::FCDSF<T>::operator()(int cell) const
 //---------------------------------------------------------------------------//
 // CAR_CU_Mesh::NCSF inline functions
 //---------------------------------------------------------------------------//
-// NCSF explicit constructor (default vector size to geometry dimension)
+// NCSF explicit constructor (default vector size to the number of nodes)
 
 template<class T>
 inline CAR_CU_Mesh::NCSF<T>::NCSF(SP<CAR_CU_Mesh> mesh_) 
@@ -699,7 +705,7 @@ template<class T>
 inline CAR_CU_Mesh::NCSF<T>::NCSF(SP<CAR_CU_Mesh> mesh_, 
    const vector<T> & array) : mesh(mesh_), data(array)
 {
-
+    Require (mesh);
 }
 
 //---------------------------------------------------------------------------//

@@ -39,6 +39,10 @@
 
           type(integer_CCSF)      ::   int_CCSF_1,   int_CCSF_2
           type(real_CCSF)         ::  real_CCSF_1,  real_CCSF_2
+          type(integer_CCVF)      ::   int_CCVF_1,   int_CCVF_2,        &
+                                       int_CCVF_3,   int_CCVF_4
+          type(real_CCVF)         ::  real_CCVF_1,  real_CCVF_2,        &
+                                      real_CCVF_3,  real_CCVF_4
           type(integer_FCSF)      ::   int_FCSF_1,   int_FCSF_2
           type(real_FCSF)         ::  real_FCSF_1,  real_FCSF_2
           type(integer_FCDSF)     ::  int_FCDSF_1,  int_FCDSF_2
@@ -47,7 +51,8 @@
               face, node
 
           integer, dimension (:,:), allocatable :: num_adj_cell_faces,  &
-              adj_cells_faces, cells_nodes, dis_face_generation
+              adj_cells_faces, cells_nodes, dis_face_generation,        &
+              cells_dirs
 
           real*8, dimension (:,:), allocatable  :: nodes_vertices,      &
               corner_nodes_vertices, centered_nodes_vertices,           &
@@ -118,7 +123,7 @@
 !===========================================================================
 
           ! Test scalar values
-          ndims = get_dimension(mesh_class)
+          ndims = get_num_dims(mesh_class)
           ncells = get_num_cells(mesh_class)
           nnodes = get_num_nodes(mesh_class)
           ncnodes = get_num_corner_nodes(mesh_class)
@@ -142,6 +147,7 @@
           allocate(cells_mid_coords(ncells, ndims))
           allocate(cells_max_coords(ncells, ndims))
           allocate(cells_dirs_width(ncells, ndims))
+          allocate(cells_dirs(ncells, ndims))
           ! Node-dependent cell values
           allocate(cell_face_nodes(2 * (ndims -1)))
           allocate(cell_faces_specific_node(2 * ndims))
@@ -164,8 +170,15 @@
           ! Build some uninitialized mesh fields
           call construct_CCSF_Class(mesh_class,  int_CCSF_1)
           call construct_CCSF_Class(mesh_class, real_CCSF_1)
+
+          call construct_CCVF_Class(mesh_class,  int_CCVF_1)
+          call construct_CCVF_Class(mesh_class, real_CCVF_1)
+          call construct_CCVF_Class(mesh_class,  int_CCVF_2, 2*ndims)
+          call construct_CCVF_Class(mesh_class, real_CCVF_2, 2*ndims)
+
           call construct_FCSF_Class(mesh_class,  int_FCSF_1)
           call construct_FCSF_Class(mesh_class, real_FCSF_1)
+
           call construct_FCDSF_Class(mesh_class,  int_FCDSF_1)
           call construct_FCDSF_Class(mesh_class, real_FCDSF_1)
 
@@ -199,6 +212,11 @@
                   cell_faces_specific_node(face) =                      &
                       get_cell_face_centered_node(mesh_class, cell, face)
 
+                  call set_CCVF(int_CCVF_2, cell, face, generation(cell))
+                  generation(cell) = get_CCVF(int_CCVF_2, cell, face)
+                  call set_CCVF(real_CCVF_2, cell, face, volume(cell))
+                  volume(cell) = get_CCVF(real_CCVF_2, cell, face)
+
                   call set_FCSF(int_FCSF_1, cell, face, generation(cell))
                   generation(cell) = get_FCSF(int_FCSF_1, cell, face)
                   call set_FCSF(real_FCSF_1,cell,face,volume(cell))
@@ -210,9 +228,15 @@
                   volume(cell) = get_FCDSF(real_FCDSF_1, cell, face)
 
                   face = face + 1
+
               end do
 
               ! Test functions that treat all of a single cell's faces
+              call set_CCVF(int_CCVF_2, cell, cell_faces_centered_node)
+              cell_faces_centered_node = get_CCVF(int_CCVF_2, cell)
+              call set_CCVF(real_CCVF_2, cell, cell_faces_area)
+              cell_faces_area = get_CCVF(real_CCVF_2, cell)
+
               call set_FCSF(int_FCSF_1, cell, cell_faces_centered_node)
               cell_faces_centered_node = get_FCSF(int_FCSF_1, cell)
               call set_FCSF(real_FCSF_1, cell, cell_faces_area)
@@ -241,6 +265,15 @@
                       get_cell_max_coord(mesh_class, cell, dir)
                   cells_dirs_width(cell, dir) =                         &
                       get_cell_width(mesh_class, cell, dir)
+                  cells_dirs(cell, dir) = dir
+
+                  call set_CCVF(int_CCVF_1, cell, dir,                  &
+                                cells_dirs(cell, dir))
+                  cells_dirs(cell, dir) = get_CCVF(int_CCVF_1, cell, dir)
+                  call set_CCVF(real_CCVF_1, cell, dir,                 &
+                                cells_dirs_width(cell, dir))
+                  cells_dirs_width(cell, dir) = get_CCVF(real_CCVF_1,   &
+                                                         cell, dir)
 
                   dir = dir + 1
               end do
@@ -281,6 +314,9 @@
           call construct_CCSF_Class(mesh_class,   int_CCSF_2, generation)
           call construct_CCSF_Class(mesh_class,  real_CCSF_2, volume)
 
+          call construct_CCVF_Class(mesh_class,   int_CCVF_3, cells_dirs)
+          call construct_CCVF_Class(mesh_class,  real_CCVF_3, cells_dirs_width)
+
           node = 1
           cell = 1
           do while (node .le. nfnodes)
@@ -303,6 +339,11 @@
               cell = cell + 1
           end do
 
+          call construct_CCVF_Class(mesh_class,   int_CCVF_4, 2 * ndims,&
+               dis_face_generation)
+          call construct_CCVF_Class(mesh_class,  real_CCVF_4, 2 * ndims,&
+               dis_face_nodes_area)
+
           call construct_FCDSF_Class(mesh_class,  int_FCDSF_2,          &
                                          dis_face_generation)
           call construct_FCDSF_Class(mesh_class, real_FCDSF_2,          &
@@ -313,6 +354,11 @@
           generation = get_CCSF(int_CCSF_1)
           call set_CCSF(real_CCSF_1, volume)
           volume = get_CCSF(real_CCSF_1)
+
+          call set_CCVF(int_CCVF_4, dis_face_generation)
+          dis_face_generation = get_CCVF(int_CCVF_4)
+          call set_CCVF(real_CCVF_4, dis_face_nodes_area)
+          dis_face_nodes_area = get_CCVF(real_CCVF_4)
 
           call set_FCSF(int_FCSF_1, face_generation)
           face_generation = get_FCSF(int_FCSF_1)
@@ -363,7 +409,7 @@
 
 
 !===========================================================================
-! Get rid of the CAR_CU_Mesh class object and the associated fields. 
+! Get rid of the CAR_CU_Mesh class object and the associated test fields. 
 ! We are done.
 !===========================================================================
 
@@ -371,6 +417,15 @@
           call destruct_CCSF_Class(int_CCSF_2)
           call destruct_CCSF_Class(real_CCSF_1)
           call destruct_CCSF_Class(real_CCSF_2)
+
+          call destruct_CCVF_Class(int_CCVF_1)
+          call destruct_CCVF_Class(int_CCVF_2)
+          call destruct_CCVF_Class(int_CCVF_3)
+          call destruct_CCVF_Class(int_CCVF_4)
+          call destruct_CCVF_Class(real_CCVF_1)
+          call destruct_CCVF_Class(real_CCVF_2)
+          call destruct_CCVF_Class(real_CCVF_3)
+          call destruct_CCVF_Class(real_CCVF_4)
 
           call destruct_FCSF_Class(int_FCSF_1)
           call destruct_FCSF_Class(int_FCSF_2)
