@@ -61,7 +61,14 @@ class SP {
     void validate() const  { Insist( p, "No dumb pointer bound "
 				     "to this smart pointer." ); }
 
-    void detach() { if ( --r->refs == 0) delete p, r; }
+    void detach()
+    {
+	if ( --r->refs == 0) {
+	    delete p;
+	    delete r;
+	}
+    }
+
   public:
     SP() : p(0) { r = new SPref; }
 
@@ -125,7 +132,12 @@ class SP {
 	X *px = spx.p;
 	T *np = dynamic_cast<T *>( px );
 	if (!np) throw "Incompatible smart pointer types.";
-	if (p == np) return;	// It could happen.
+	if (p == np) {
+	// If we have the same pointer, we'd better be sharing the reference
+	// holder too!
+	    Assert( r == spx.r );
+	    return *this;	// It could happen.
+	}
 	detach();
 	p = np;
 	r = spx.r;
