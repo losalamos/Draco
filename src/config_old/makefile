@@ -12,6 +12,9 @@
 # @> options. 
 ###############################################################################
 
+.SUFFIXES:
+.SUFFIXES: .cpp .cc .o
+
 # Find out where we are running.
 
 uname = $(shell uname)
@@ -61,6 +64,15 @@ SRC_TOP	= ..
 endif
 
 DS++_LIB	= -L$(SRC_TOP)/ds++ -lds++_$(env)
+
+GEOM_LIB	= -L$(SRC_TOP)/geom -lgeom_$(env)
+MESH_LIB	= -L$(SRC_TOP)/mesh -lmesh_$(env)
+
+ifeq ($(need_mesh),yes)
+need_geom := yes
+need_c4 := yes
+need_namelist := yes
+endif
 
 #-----------------------------------------------------------------------------#
 # Set up some tools.
@@ -162,6 +174,12 @@ LINK_LIBS	:=
 ifdef SYS_LINK_FLAGS
 LINK_LIBS	+= $(SYS_LINK_FLAGS)
 endif
+ifeq ($(need_mesh),yes)
+LINK_LIBS	+= $(MESH_LIB)
+endif
+ifeq ($(need_geom),yes)
+LINK_LIBS	+= $(GEOM_LIB)
+endif
 ifeq ($(need_namelist),yes)
 LINK_LIBS	+= $(NML_LIBS)
 endif
@@ -195,6 +213,10 @@ dep_libds++	= $(SRC_TOP)/ds++/libds++_$(env).$(lib_suffix)
 dep_libnml	= $(SRC_TOP)/nml/libnml_$(env).$(lib_suffix)
 dep_libnmltk	= $(SRC_TOP)/nml/libnmltk_$(env).$(lib_suffix)
 dep_libc4	= $(SRC_TOP)/c4/libc4_$(env).$(lib_suffix)
+dep_libgeom	= $(SRC_TOP)/geom/libgeom_$(env).$(lib_suffix)
+dep_libmesh	= $(SRC_TOP)/mesh/libmesh_$(env).$(lib_suffix)
+
+dep_libpooma	= $(POOMA_LIB_DIR)/libpooma.a
 
 #-----------------------------------------------------------------------------#
 # Now finally, some implicit rules which we will be using constantly,
