@@ -44,6 +44,7 @@ struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 
     double small_radius, large_radius;
 
+    std::vector<double> bin_cosines;
     Surface_Descriptor descriptor[4];
 
     Surface_Tracking_Tester(double small, double large);
@@ -53,6 +54,8 @@ struct Surface_Tracking_Tester : public Surface_Tracking_Interface
     { 
 	Check(surface > 0); Check(surface <= 4); return descriptor[surface-1]; 
     }
+
+    const std::vector<double>& get_bin_cosines() const { return bin_cosines; }
 
     ~Surface_Tracking_Tester() { /* ... */ }
 
@@ -82,6 +85,8 @@ Surface_Tracking_Tester::Surface_Tracking_Tester(double small, double large)
     descriptor[3].data[0] = 2.0;
     descriptor[3].data[1] = large_radius;
 
+    double bin_data[3] = {-0.5*sqrt(2.0), 0.0, 0.5*sqrt(2.0)};
+    bin_cosines.assign(bin_data, bin_data+3);
 }
 
 //---------------------------------------------------------------------------//

@@ -52,11 +52,8 @@ class Azimuthal_Mesh
 
     // CREATORS
     
-    //! default constructors
+    //! default constructor
     Azimuthal_Mesh(const std::vector<double>& cosines);
-
-    //! copy constructor
-    Azimuthal_Mesh(const Azimuthal_Mesh &rhs);
 
     //! destructor
     ~Azimuthal_Mesh() { /* ... */ }

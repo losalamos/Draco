@@ -53,7 +53,7 @@ class Surface_Tracking_Interface
     virtual const rtt_mc::Surface_Descriptor& get_surface(int surface) const = 0;
 
     //! Get the vector of angular bin data
-    virtual const vector<double> get_bin_cosines() const = 0;
+    virtual const std::vector<double>& get_bin_cosines() const = 0;
     
 };
 

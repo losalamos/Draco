@@ -56,6 +56,8 @@ struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 
     Surface_Descriptor descriptor[3];
 
+    std::vector<double> bin_cosines;
+
     Surface_Tracking_Tester();
 
     int number_of_surfaces() const { return 3; }
@@ -64,6 +66,8 @@ struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 	Check(surface > 0); Check(surface <= 3);
 	return descriptor[surface-1]; 
     }
+
+    const std::vector<double>& get_bin_cosines() const { return bin_cosines; }
     
     ~Surface_Tracking_Tester() { /* ... */ }
 
@@ -86,6 +90,9 @@ Surface_Tracking_Tester::Surface_Tracking_Tester()
     descriptor[2].data.resize(2);
     descriptor[2].data[0] = -1.0;
     descriptor[2].data[1] =  3.0;
+
+    double bin_data[3] = {-0.5*sqrt(2.0), 0.0, 0.5*sqrt(2.0)};
+    bin_cosines.assign(bin_data, bin_data+3);
     
 }
 
