@@ -8,13 +8,13 @@
 
 SRC_TOP = ../..
 
-need_linalg     := no
-need_c4		:= no
-need_namelist	:= no
-need_spdf	:= no
-need_util	:= no
+need_linalg     := yes
+need_c4		:= yes
+need_namelist	:= yes
+need_spdf	:= yes
+need_util	:= yes
 need_pooma	:= no
-need_mesh	:= no
+need_mesh	:= yes
 need_3T		:= yes
 need_units	:= yes
 need_matprops	:= yes
@@ -25,9 +25,8 @@ include ../../config/makefile
 
 srcs	= \
 	main.cc \
-	MeshTypeStub.cc \
-	testP13T.cc \
-	testP13T_pt.cc
+	testFullP13T.cc \
+	testFullP13T_pt.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.

@@ -1,17 +1,14 @@
 //----------------------------------*-C++-*----------------------------------//
-// testP13T.cc
+// testFullP13T.cc
 // Randy M. Roberts
-// Fri Mar 20 12:04:08 1998
+// Sat May 30 15:09:58 1998
 //---------------------------------------------------------------------------//
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "3T/testP13T/testP13T.hh"
+#include "3T/testP13T/testFullP13T.hh"
 
 #include "matprops/FifiMatPropsReader.hh"
-#include "3T/testP13T/MeshTypeStub.hh"
-#include "3T/testP13T/DiffusionSolverStub.hh"
-#include "3T/P13T.hh"
 #include "3T/P13TOptions.hh"
 #include "units/Units.hh"
 #include "radphys/RadiationPhysics.hh"
@@ -25,22 +22,44 @@ using std::endl;
 using std::vector;
 
 using namespace XTM;
-    
-testP13T::testP13T()
+
+std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::ccsf rhs)
 {
-    SP<MT> spmesh = new MT;
+    typedef testFullP13T::MT::ccsf FT;
+    
+    for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+    {
+	os << *it << " ";
+    }
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::fcdsf rhs)
+{
+    typedef testFullP13T::MT::fcdsf FT;
+    
+    for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+    {
+	os << *it << " ";
+    }
+    return os;
+}
+
+testFullP13T::testFullP13T()
+{
+    Mesh_DB mdb;
+    SP<MT> spmesh = new MT(mdb);
     
     P13TOptions options;
 
     spP13T = new P13T<MT,MP,DS>(options, spmesh);
 }
 
-void testP13T::solve() const
+void testFullP13T::run() const
 {
     typedef MT::ccsf ccsf;
     typedef MT::fcdsf fcdsf;
     typedef MT::bsbf bsbf;
-    typedef MT::ncvf ncvf;
 
     SP<MT> spmesh = spP13T->getMesh();
     
@@ -60,21 +79,32 @@ void testP13T::solve() const
     
     MP matProp(matIds, reader);
 
-    double TElect0 = 2.0;
-    double TIon0 = 4.0;
-    double density = 1.0;
-    int matid = 1;
-    
-    MP::MaterialStateField<ccsf> matStateCC
-	= matProp.getMaterialState(ccsf(spmesh, density),
-				   ccsf(spmesh, TElect0),
-				   ccsf(spmesh, TIon0), ccsf(spmesh, matid));
+    ccsf TElect0(spmesh);
+    ccsf TIon0(spmesh);
+    ccsf density(spmesh);
+    ccsf matid(spmesh);
 
-    // Here is where you would do anything fancy to the cell-temperatures,
-    // like averaging, etc., in order to obtain the face-temperatures.
+    TElect0 = 2.0;
+    TIon0 = 4.0;
+    density = 1.0;
+    matid = 1;
+
+    MP::MaterialStateField<ccsf> matStateCC
+	= matProp.getMaterialState(density, TElect0, TIon0,  matid);
+
+    fcdsf TElectFC(spmesh);
+    fcdsf TIonFC(spmesh);
+    fcdsf densityFC(spmesh);
+    fcdsf matidFC(spmesh);
+
+    TElectFC = TElect0;
+    TIonFC = TIon0;
+    densityFC = density;
+    matidFC = matid;
     
-    MP::MaterialStateField<fcdsf> matStateFC = matStateCC;
-    
+    MP::MaterialStateField<fcdsf> matStateFC
+	= matProp.getMaterialState(densityFC, TElectFC, TIonFC,  matidFC);
+
     P13T<MT,MP,DS>::RadiationStateField radState(spmesh);
 
     spP13T->initializeRadiationState(matStateCC, radState);
@@ -108,46 +138,57 @@ void testP13T::solve() const
     cout << "radState.phi: " << radState.phi
 	 << " radState.F: " << radState.F << endl;
 
-    double dt = 1.0e-3;
+    double dt = 1.0e-2;
 
     ccsf QRad(spmesh);
     ccsf QElectron(spmesh);
     ccsf QIon(spmesh);
-    bsbf boundary(spmesh);
+    bsbf boundary;
     P13T<MT,MP,DS>::RadiationStateField newRadState(spmesh);
     ccsf electEnergyDep(spmesh);
     ccsf ionEnergyDep(spmesh);
-    ncvf momDep(spmesh);
     
     QRad = 2.5;
     QElectron = 10.0;
     QIon = 4.25;
-    boundary = 0.0;
+    // boundary = 0.0;
 
-    DS diffSolver(spmesh);
+    Diffusion_DB diffdb;
+    pcg_DB pcg_db("pcg");
+    DS diffSolver(diffdb, spmesh, pcg_db);
     
     spP13T->solve3T(dt, matStateCC, matStateFC, radState, QRad, QElectron, QIon,
 		    boundary, diffSolver, newRadState,
-		    electEnergyDep, ionEnergyDep, /* momDep, */ TElec, TIon);
+		    electEnergyDep, ionEnergyDep, TElec, TIon);
 
     const RadiationPhysics radPhys(matProp.getUnits());
     double c = radPhys.getLightSpeed();
     
-    ccsf deltaRadEnergy = (newRadState.phi - radState.phi) / c;
+    ccsf deltaRadEnergy(spmesh);
+    deltaRadEnergy = (newRadState.phi - radState.phi) / c;
 
+    ccsf rate(spmesh);
+
+    rate = deltaRadEnergy/dt;
     cout << "deltaRadEnergy: " << deltaRadEnergy
-	 << "\trate: " << deltaRadEnergy/dt << endl;
+	 << "\trate: " << rate << endl;
+
+    rate = electEnergyDep/dt;
     cout << "electEnergyDep: " << electEnergyDep
-	 << "\trate: " << electEnergyDep/dt << endl;
+	 << "\trate: " << rate << endl;
+
+    rate = ionEnergyDep/dt;
     cout << "  ionEnergyDep: " << ionEnergyDep
-	 << "\trate: " << ionEnergyDep/dt << endl;
-    cout << "Energy rate: "
-	 << (deltaRadEnergy + electEnergyDep + ionEnergyDep) / dt << endl;
+	 << "\trate: " << rate << endl;
+
+    rate = (deltaRadEnergy + electEnergyDep + ionEnergyDep) / dt;
+    cout << "Energy rate: " << rate << endl;
+    
     cout << "newRadState.phi: " << newRadState.phi << endl;
     cout << "TElectron: " << TElec << endl;
     cout << "TIon: " << TIon << endl;
 }
 
 //---------------------------------------------------------------------------//
-//                              end of testP13T.cc
+//                              end of testFullP13T.cc
 //---------------------------------------------------------------------------//

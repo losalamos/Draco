@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "3T/testP13T/testP13T.hh"
+#include "3T/testP13T/testFullP13T.hh"
 #include "ds++/Assert.hh"
 
 #include <stdexcept>
@@ -20,13 +20,13 @@ int main()
     {
 	cerr << "In main()" << endl;
 
-	XTM::testP13T test;
+	XTM::testFullP13T test;
 
-	cerr << "before test.solve()" << endl;
+	cerr << "before test.run()" << endl;
     
-	test.solve();
+	test.run();
 
-	cerr << "after test.solve()" << endl;
+	cerr << "after test.run()" << endl;
     }
     catch (const char *str)
     {
