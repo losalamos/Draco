@@ -333,7 +333,7 @@ class Mesh_XYZ : private XYZ_Mapper
     {
         Mat2<T> f0, f1, f2, f3, f4, f5;
       public:
-        bstf( dsxx::SP<Mesh_XYZ>& spm )
+        bstf( const dsxx::SP<Mesh_XYZ>& spm )
             : XYZ_Mapper( spm->get_Mesh_DB() ),
               f0( ncy, ncz ), f1( ncy, ncz ),
               f2( ncx, ncz ), f3( ncx, ncz ),
