@@ -1,3 +1,9 @@
+2000-01-31  Thomas M. Evans  <tme@lanl.gov>
+
+	* .: released version 1_0_0 of the traits package.  Note that this 
+	does require the current head version of configure.in because
+	traits now depends on ds++ for assertion checking.
+
 2000-01-21  Thomas M. Evans  <tme@lanl.gov>
 
 	* Release.*, Viz_Traits.hh: added Release.hh and Release.cc to
