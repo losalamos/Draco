@@ -36,7 +36,8 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     // Read in the dimensions of the problem.
     meshfile >> npoints >> ncells >> nvrtx >> nvrpf >> ndim >> nvb_faces
 	     >> nrb_faces >> nmat;
-
+    Insist(check_dims(),"Error in Mesh Dimension data!")
+	
     // Read the point coordinates data.
     point_coords.resize(npoints);
     for (int i=0; i<npoints; i++)
@@ -239,20 +240,45 @@ Hex_Mesh_Reader::get_element_sets() const
 
 bool Hex_Mesh_Reader::invariant() const
 {
-    bool ldum =
-	(npoints > 0) && (ncells > 0) 
-	&& ( (ndim == 3 && nvrtx == 8 && nvrpf == 4) || 
-	     (ndim == 2 && nvrtx == 4 && nvrpf == 2) ||
-	     (ndim == 1 && nvrtx == 2 && nvrpf == 1) )
-	&& (nvb_faces >= 0) && (nrb_faces >= 0)
-	&& (nmat > 0) 
+    bool ldum = check_dims()
 	&& (point_coords.size() == npoints)
 	&& (ipar.size() == ncells)
 	&& (imat_index.size() == ncells)
 	&& (irgn_vb_index.size() == nvb_faces)
 	&& (ipar_vb.size() == nvb_faces)
 	&& (ipar_rb.size() == nrb_faces);
+
+    for (int i=0; i<ncells; ++i)
+    {
+	ldum = ldum && ipar[i].size() == nvrtx;
+	for (int j=0; j<nvrtx; ++j)
+	    ldum = ldum && ipar[i][j] >=0 && ipar[i][j] < npoints;
+    }
+    for (int i=0; i<nvb_faces; ++i)
+    {
+	ldum = ldum && ipar_vb[i].size() == nvrpf;
+	for (int j=0; j<nvrpf; ++j) 
+	    ldum = ldum && ipar_vb[i][j] >=0 && ipar_vb[i][j] < npoints;
+    }
+    for (int i=0; i<nrb_faces; ++i)
+    {
+	ldum = ldum && ipar_rb[i].size() == nvrpf;
+	for (int j=0; j<nvrpf; ++j) 
+	    ldum = ldum && ipar_rb[i][j] >=0 && ipar_rb[i][j] < npoints;
+    }
     return ldum;
+}
+
+bool Hex_Mesh_Reader::check_dims() const
+{
+    bool ldum =
+	(npoints > 0) && (ncells > 0) 
+	&& ( (ndim == 3 && nvrtx == 8 && nvrpf == 4) || 
+	     (ndim == 2 && nvrtx == 4 && nvrpf == 2) ||
+	     (ndim == 1 && nvrtx == 2 && nvrpf == 1) )
+	&& (nvb_faces >= 0) && (nrb_faces >= 0)
+	&& (nmat > 0); 
+	return ldum;
 }
 
 } // end namespace rtt_meshReaders
