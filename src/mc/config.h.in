@@ -10,8 +10,8 @@
 #ifndef __mc_config_h__
 #define __mc_config_h__
 
+/* 8 byte integer type */
 #undef EIGHT_BYTE_INT_TYPE
-#undef TEST
 
 #endif                          /* __mc_config_h__ */
 
