@@ -112,8 +112,8 @@ configure_command = @configure_command@
 # Add the src directory and the DRACO/doc/tex directory to the TEXINPUTS
 # environment variable for every invocation of a LaTeX-like command.
 
-DRACOTEXINPUTS := ${top_srcdir}/../doc/tex
-TEXINPUTSENV := TEXINPUTS="${TEXINPUTS}:${srcdir}:${DRACOTEXINPUTS}"
+DRACOTEXINPUTS := ${top_srcdir}/../../doc/tex
+TEXINPUTSENV := TEXINPUTS="${srcdir}:${DRACOTEXINPUTS}:${TEXINPUTS}"
 LATEXCMD  := ${TEXINPUTSENV} ${LATEX}
 BIBTEXCMD := ${TEXINPUTSENV} ${BIBTEX}
 DVIPSCMD  := ${TEXINPUTSENV} ${DVIPS}
