@@ -2771,7 +2771,7 @@ echo "$as_me: error: not found" >&2;}
 	    F90FLAGS="-g -check bounds -fpe2 ${F90FLAGS}"
        else
 	  # F90FLAGS="-O ${F90FLAGS}"
-	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library fast -tune host ${F90FLAGS}"
+	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library accurate -tune host ${F90FLAGS}"
        fi
    fi
 
@@ -3720,7 +3720,7 @@ echo "$as_me: error: not found" >&2;}
 	    F90FLAGS="-g -check bounds -fpe2 ${F90FLAGS}"
        else
 	  # F90FLAGS="-O ${F90FLAGS}"
-	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library fast -tune host ${F90FLAGS}"
+	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library accurate -tune host ${F90FLAGS}"
        fi
    fi
 
@@ -3801,7 +3801,7 @@ echo "$as_me: error: not found" >&2;}
 	    F90FLAGS="-g -check bounds -fpe2 ${F90FLAGS}"
        else
 	  # F90FLAGS="-O ${F90FLAGS}"
-	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library fast -tune host ${F90FLAGS}"
+	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library accurate -tune host ${F90FLAGS}"
        fi
    fi
 
@@ -7557,6 +7557,25 @@ echo "${ECHO_T}\"not needed\"" >&6
 
        #
        # end of gandolf/libfortran setup
+       #
+
+       #
+       # libpcg/libfmpi setup
+       #
+
+       echo "$as_me:$LINENO: checking \"libfmpi requirements\"" >&5
+echo $ECHO_N "checking \"libfmpi requirements\"... $ECHO_C" >&6
+       if test -n "${vendor_pcg}"; then
+          LIBS="${LIBS} -lfmpi"
+          echo "$as_me:$LINENO: result: \"-lfmpi added to LIBS\"" >&5
+echo "${ECHO_T}\"-lfmpi added to LIBS\"" >&6
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
+       fi
+
+       #
+       # end of libpcg setup
        #
 
        #

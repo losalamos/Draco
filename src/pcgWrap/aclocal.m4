@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.2 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -2108,7 +2108,7 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
 	    F90FLAGS="-g -check bounds -fpe2 ${F90FLAGS}"
        else
 	  # F90FLAGS="-O ${F90FLAGS}"
-	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library fast -tune host ${F90FLAGS}"
+	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library accurate -tune host ${F90FLAGS}"
        fi
    fi
 

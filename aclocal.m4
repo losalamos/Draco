@@ -1843,7 +1843,7 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
 	    F90FLAGS="-g -check bounds -fpe2 ${F90FLAGS}"
        else
 	  # F90FLAGS="-O ${F90FLAGS}"
-	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library fast -tune host ${F90FLAGS}"
+	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library accurate -tune host ${F90FLAGS}"
        fi
    fi
 

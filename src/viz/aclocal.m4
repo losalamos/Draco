@@ -1132,7 +1132,7 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
 	    F90FLAGS="-g -check bounds -fpe2 ${F90FLAGS}"
        else
 	  # F90FLAGS="-O ${F90FLAGS}"
-	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library fast -tune host ${F90FLAGS}"
+	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library accurate -tune host ${F90FLAGS}"
        fi
    fi
 
@@ -2791,6 +2791,22 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 
        #
        # end of gandolf/libfortran setup
+       #
+
+       #
+       # libpcg/libfmpi setup
+       #
+
+       AC_MSG_CHECKING("libfmpi requirements")
+       if test -n "${vendor_pcg}"; then
+          LIBS="${LIBS} -lfmpi"
+          AC_MSG_RESULT("-lfmpi added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # end of libpcg setup
        #
 
        #
