@@ -52,6 +52,8 @@ clean:
 	(cd imc;       $(MAKE) clean cleanonly=yes)
 	(cd pycxx;     $(MAKE) clean cleanonly=yes)
 	(cd pydraco;   $(MAKE) clean cleanonly=yes)
+	(cd diffusion;   $(MAKE) clean cleanonly=yes)
+	(cd P1Diffusion;   $(MAKE) clean cleanonly=yes)
 #	(cd draco;     $(MAKE) clean cleanonly=yes)
 
 # The clean target has a pernicious failure mode.  If one of these
