@@ -44,15 +44,24 @@ bool fail_msg(const std::string &);
 //---------------------------------------------------------------------------//
 // PASSING CONDITIONALS
 //---------------------------------------------------------------------------//
-// USAGE:
-// if (!condition) ITFAILS;
 
 extern bool passed;
 
 } // end namespace rtt_<spkg>
 
-#define ITFAILS rtt_<spkg>::fail(__LINE__);
-#define FAILURE rtt_<spkg>::fail(__LINE__, __FILE__);
+//===========================================================================//
+// TEST MACROS
+//
+// USAGE:
+// if (!condition) ITFAILS;
+//
+// These are a convenience only
+//===========================================================================//
+
+#define ITFAILS    rtt_<spkg>::fail(__LINE__);
+#define FAILURE    rtt_<spkg>::fail(__LINE__, __FILE__);
+#define PASSMSG(a) rtt_<spkg>::pass_msg(a);
+#define FAILMSG(a) rtt_<spkg>::fail_msg(a);
 
 #endif                          // __<spkg>_hh__
 
