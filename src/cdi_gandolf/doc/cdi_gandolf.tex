@@ -259,7 +259,7 @@ main()
       {
          spGF = new rtt_cdi_gandolf::GandolfFile( filename );
       }
-   catch (rtt_cdi_gandolf::GandolfException GandError )
+   catch ( const rtt_cdi_gandolf::GandolfException& GandError )
       {
          // Instantiation failed.
          cout << GandError.errorSummary() << endl;
@@ -478,7 +478,7 @@ main()
                rtt_cdi::Total );       // All opacity values are total cross 
                                        // sections.
       }
-   catch ( rtt_cdi_gandolf::GandolfException GandError )
+   catch ( const rtt_cdi_gandolf::GandolfException& GandError )
       {
          // Instantiation failed so print a report and exit.
          cout << GandError.errorSummary();
@@ -669,7 +669,7 @@ main()
                 rtt_cdi::Total );       // All opacity values are total cross 
                                         // sections.
       }
-   catch ( rtt_cdi_gandolf::GandolfException GandError )
+   catch ( const rtt_cdi_gandolf::GandolfException& GandError )
       {
          // Instantiation failed so print a report and exit.
          cout << GandError.errorSummary();
