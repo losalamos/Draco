@@ -17,16 +17,15 @@
 
 //---------------------------------------------------------------------------//
 
-#ifdef __PARAGON__
+#ifdef C4_NX
 #include "c4/global_nx.cc"
 #endif
-#ifdef __MPI__
+#ifdef C4_MPI
 #include "c4/global_mpi.cc"
 #endif
-#ifdef __C4_SCALAR__
+#ifdef C4_SCALAR
 #include "c4/global_scalar.cc"
 #endif
-
 #ifdef C4_SHMEM
 #include "c4/global_shmem.cc"
 #endif

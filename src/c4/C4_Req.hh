@@ -40,10 +40,10 @@ class C4_Req {
 
   public:			// So C4 api functions can see them, but
 				// don't anybody else touch them!
-#ifdef __PARAGON__
+#ifdef C4_NX
     long mid;
 #endif
-#ifdef __MPI__
+#ifdef C4_MPI
     MPI_Status  s;
     MPI_Request r;
 #endif

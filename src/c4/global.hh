@@ -3,7 +3,7 @@
 // Geoffrey Furnish
 // Tue Dec 20 1994
 //---------------------------------------------------------------------------//
-// @> Improves on the NX API for global operations.
+// @> Global functions provided by the C4 Messaging API.
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_global_hh__
@@ -274,10 +274,10 @@ inline void C4_gmax( double *px, int n ) { C4::gmax( px, n ); }
 #ifdef C4_SHMEM
 #include "c4/global_shmem.hh"
 #endif
-#ifdef __MPI__
+#ifdef C4_MPI
 #include "global_mpi.hh"
 #endif
-#ifdef __C4_SCALAR__
+#ifdef C4_SCALAR
 #include "global_scalar.hh"
 #endif
 
