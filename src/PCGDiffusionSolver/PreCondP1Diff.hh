@@ -62,8 +62,8 @@ namespace rtt_PCGDiffusionSolver
 
      // MANIPULATORS
     
-     void  Left_PreCond(Mat1 &x, Mat1 &b);
-     void Right_PreCond(Mat1 &x, Mat1 &b);
+     void  Left_PreCond(Mat1 &x, const Mat1 &b);
+     void Right_PreCond(Mat1 &x, const Mat1 &b);
 
      // ACCESSORS
 

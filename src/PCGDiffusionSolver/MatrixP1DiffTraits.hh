@@ -50,7 +50,7 @@ class MatrixFactoryTraits<rtt_PCGDiffusionSolver::MatrixP1Diff<MT> >
 
     // STATIC CLASS METHODS
 
-    static PreComputedState preComputeState(const FieldConstructor &rep,
+    static PreComputedState preComputeState(const FieldConstructor &fCtor,
 					    const MT &mesh)
     {
 	// There is no needed precomputed state.
@@ -61,7 +61,7 @@ class MatrixFactoryTraits<rtt_PCGDiffusionSolver::MatrixP1Diff<MT> >
     static Matrix *create(const rtt_diffusion::P1Matrix<MT> &rep,
 			  const PreComputedState &state)
     {
-	return new Matrix(rep.fCtor(), rep.spADiagonal(), rep.spAOffDiagonal());
+	return new Matrix(rep.fCtor(), rep.diagonal(), rep.offDiagonal());
     }
 
     // CREATORS

@@ -9,6 +9,7 @@
 #include "PreCondP1Diff.hh"
 #include <stdexcept>
 #include <string>
+#include <sstream>
 
 namespace rtt_PCGDiffusionSolver
 {
@@ -18,20 +19,23 @@ namespace rtt_PCGDiffusionSolver
  //---------------------------------------------------------------------------//
 
  template<class Matrix>
- void PreCondP1Diff<Matrix>::Left_PreCond(Mat1 &x, Mat1 &b)
+ void PreCondP1Diff<Matrix>::Left_PreCond(Mat1 &x, const Mat1 &b)
  {
      switch(method)
      {
-     case 0:
-	 // This is "null preconditioning".
-	 x = b;
-	 break;
      case 1:
-	 // Here is Jacobi preconditioning ("diagonal scaling").
+	 // Here is Left Jacobi preconditioning ("diagonal scaling").
 	 spMatrix->jacobiIteration(x, b);
 	 break;
+     case 0:
+     case 2:
+	 // This is Left "null preconditioning".
+	 // x = b;
+	 // break;
      default:
-	 throw std::runtime_error("Unrecognized preconditioning option.");
+	 std::ostringstream ost;
+	 ost << "Unrecognized Left preconditioning option: " << method;
+	 throw std::runtime_error(ost.str());
      }
  }
 
@@ -40,9 +44,24 @@ namespace rtt_PCGDiffusionSolver
  //---------------------------------------------------------------------------//
 
  template<class Matrix>
- void PreCondP1Diff<Matrix>::Right_PreCond(Mat1 &x, Mat1 &b)
+ void PreCondP1Diff<Matrix>::Right_PreCond(Mat1 &x, const Mat1 &b)
  {
-    x = b;
+     switch(method)
+     {
+     case 2:
+	 // Here is Right Jacobi preconditioning ("diagonal scaling").
+	 spMatrix->jacobiIteration(x, b);
+	 break;
+     case 0:
+     case 1:
+	 // This is Right "null preconditioning".
+	 // x = b;
+	 // break;
+     default:
+	 std::ostringstream ost;
+	 ost << "Unrecognized Right preconditioning option: " << method;
+	 throw std::runtime_error(ost.str());
+     }
  }
  
 } // end namespace rtt_PCGDiffusionSolver

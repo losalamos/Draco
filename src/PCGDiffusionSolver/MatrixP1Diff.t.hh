@@ -15,48 +15,49 @@ namespace rtt_PCGDiffusionSolver
  template<class MT>
  void MatrixP1Diff<MT>::multiply(ccsf &b, const ccsf &x) const
  {
-     b = *spDiagonal * x;
+     b = diagonal_m * x;
 
-     MT::gather(*spxFC, x, MT::OpAssign());
-     MT::swap_faces(*spxSwap, *spxFC);
+     MT::gather(xFC, x, MT::OpAssign());
+     MT::swap_faces(xSwap, xFC, 0.0);
 
-     *spbFC = *spOffDiagonal * (*spxSwap);
+     bFC = offDiagonal_m * xSwap;
 
-     MT::scatter(b, *spbFC, MT::OpAddAssign());
+     MT::scatter(b, bFC, MT::OpAddAssign());
+     
  }
  
  template<class MT>
  template<class FT>
  void MatrixP1Diff<MT>::multiply(FT &b, const FT &x) const
  {
-     Assert(spbtmp->size() == b.size());
-     Assert(spxtmp->size() == x.size());
+     Assert(btmp.size() == b.size());
+     Assert(xtmp.size() == x.size());
 
-     std::copy(x.begin(), x.end(), spxtmp->begin());
+     std::copy(x.begin(), x.end(), xtmp.begin());
 
-     multiply(*spbtmp, *spxtmp);
+     multiply(btmp, xtmp);
 
-     std::copy(spbtmp->begin(), spbtmp->end(), b.begin());
+     std::copy(btmp.begin(), btmp.end(), b.begin());
  }
  
  template<class MT>
  void MatrixP1Diff<MT>::jacobiIteration(ccsf &b, const ccsf &x) const
  {
-     b = x / *spDiagonal;
+     b = x / diagonal_m;
  }
  
  template<class MT>
  template<class FT>
  void MatrixP1Diff<MT>::jacobiIteration(FT &b, const FT &x) const
  {
-     Assert(spbtmp->size() == b.size());
-     Assert(spxtmp->size() == x.size());
+     Assert(btmp.size() == b.size());
+     Assert(xtmp.size() == x.size());
 
-     std::copy(x.begin(), x.end(), spxtmp->begin());
+     std::copy(x.begin(), x.end(), xtmp.begin());
 
-     jacobiIteration(*spbtmp, *spxtmp);
+     jacobiIteration(btmp, xtmp);
 
-     std::copy(spbtmp->begin(), spbtmp->end(), b.begin());
+     std::copy(btmp.begin(), btmp.end(), b.begin());
  }
  
 } // end namespace rtt_PCGDiffusionSolver

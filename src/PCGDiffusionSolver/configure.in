@@ -19,14 +19,14 @@ AC_INSTALL_LIB
 dnl No longer any libs to install
 dnl AC_INSTALL_LIB
 
-AC_NEEDS_LIBS(linalg c4 ds++)
-AC_NEEDS_LIBS_TEST(mesh diffusion nml)
+AC_NEEDS_LIBS(linalg nml c4 ds++)
+AC_NEEDS_LIBS_TEST(mesh diffusion)
 
 AC_PCGLIB_SETUP(pkg)
 AC_MPI_SETUP(pkg)
 AC_SHMEM_SETUP(pkg)
 
-AC_RUNTESTS(testPCGDiffusionSolver, 1 2)
+AC_RUNTESTS(testSolver, 1 2)
 
 AC_DRACO_ENV
 

@@ -9,6 +9,7 @@
 #ifndef __PCGDiffusionSolver_SolverP1Diff_hh__
 #define __PCGDiffusionSolver_SolverP1Diff_hh__
 
+#include "pcg_DB.hh"
 #include "ds++/SP.hh"
 #include "linalg/PCG_Ctrl.hh"
 #include "MatrixP1Diff.hh"
@@ -49,13 +50,20 @@ namespace rtt_PCGDiffusionSolver
      typedef MatrixP1Diff<MT> Matrix;
      typedef MatVecP1Diff<Matrix> MatVec;
      typedef PreCondP1Diff<Matrix> PreCond;
+     typedef typename ccsf::value_type value_type;
+
+   private:
+     
+     typedef PCG_Ctrl<value_type> PCG_Ctrl;
 
      // DATA
 
    private:
      
      SP<const MT> spMesh;
-     PCG_Ctrl<typename ccsf::value_type> pcg_ctrl;
+     PCG_Ctrl pcg_ctrl;
+     // precond method 0 - none, 1 - left, 2 - right, 3 - both
+     int iqside;
     
    public:
 
@@ -73,6 +81,16 @@ namespace rtt_PCGDiffusionSolver
    private:
     
      // IMPLEMENTATION
+
+     // STATIC IMPLEMENTATION
+
+     static typename PCG_Ctrl::Method pcgMethod(int itmeth);
+     static typename PCG_Ctrl::OutputLevel outputLevel(int levout);
+     static typename PCG_Ctrl::StopTest stopTest(int ntest);
+     static typename PCG_Ctrl::Uinit uninit(int iuinit);
+     static typename PCG_Ctrl::Precon precon(int iqside);
+     static typename PCG_Ctrl::Logical logical(int value);
+     
  };
 
 } // end namespace rtt_PCGDiffusionSolver

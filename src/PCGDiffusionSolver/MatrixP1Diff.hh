@@ -49,37 +49,32 @@ namespace rtt_PCGDiffusionSolver
 
    private:
      
-     SP<const ccsf> spDiagonal;
-     SP<const fcdsf> spOffDiagonal;
      FieldConstructor fCtor;
+     ccsf diagonal_m;
+     fcdsf offDiagonal_m;
 
      // Mutable temporary data
 
-     mutable SP<fcdsf> spxFC;
-     mutable SP<fcdsf> spxSwap;
-     mutable SP<fcdsf> spbFC;
-     mutable SP<ccsf> spbtmp;
-     mutable SP<ccsf> spxtmp;
+     mutable fcdsf xFC;
+     mutable fcdsf xSwap;
+     mutable fcdsf bFC;
+     mutable ccsf btmp;
+     mutable ccsf xtmp;
      
    public:
 
      // CREATORS
     
-     MatrixP1Diff(const FieldConstructor &fCtor_, 
-		  const SP<const ccsf> &spDiagonal_,
-		  const SP<const fcdsf> &spOffDiagonal_)
-	 : fCtor(fCtor_), spDiagonal(spDiagonal_),
-	   spOffDiagonal(spOffDiagonal_)
+     MatrixP1Diff(const FieldConstructor &fCtor_, const ccsf &diagonal_,
+		  const fcdsf &offDiagonal_)
+	 : fCtor(fCtor_), diagonal_m(diagonal_), offDiagonal_m(offDiagonal_),
+	   xFC(fCtor_), xSwap(fCtor_), bFC(fCtor_), btmp(fCtor_), xtmp(fCtor_)
      {
-	 spxFC = new fcdsf(fCtor);
-	 spxSwap = new fcdsf(fCtor);
-	 spbFC = new fcdsf(fCtor);
-	 spbtmp = new ccsf(fCtor);
-	 spxtmp = new ccsf(fCtor);
+	 // empty
      }
      
      // MANIPULATORS
-    
+
      // ACCESSORS
 
      void multiply(ccsf &b, const ccsf &x) const;
@@ -112,6 +107,11 @@ namespace rtt_PCGDiffusionSolver
      void jacobiIteration(const SP<FT> &b, const SP<const FT> &x) const
      {
 	 jacobiIteration(*b, *x);
+     }
+
+     const ccsf &diagonal() const
+     {
+	 return diagonal_m;
      }
 
    private:

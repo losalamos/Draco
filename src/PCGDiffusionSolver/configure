@@ -601,7 +601,7 @@ package="PCGDiffusionSolver"
        has_libdir="yes"
    fi
 
-   for lib in linalg c4 ds++
+   for lib in linalg nml c4 ds++
    do
        # temporary string to keep line from getting too long
        draco_depends="\${libdir}/lib${lib}\${libsuffix}"
@@ -610,7 +610,7 @@ package="PCGDiffusionSolver"
    done
 
    DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
-   for lib in mesh diffusion nml
+   for lib in mesh diffusion
    do
        # temporary string to keep line from getting too long
        draco_test_depends="\${libdir}/lib${lib}\${libsuffix}"
@@ -955,7 +955,7 @@ EOF
 
             
 
-	test_alltarget="$test_alltarget testPCGDiffusionSolver"
+	test_alltarget="$test_alltarget testSolver"
         
 	test_nprocs="1 2"
 
