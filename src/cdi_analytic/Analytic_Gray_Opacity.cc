@@ -19,7 +19,7 @@ namespace rtt_cdi_analytic
 // CONSTRUCTORS
 //---------------------------------------------------------------------------//
 /*!
- * \brief Constructor for an analytic opacity model.
+ * \brief Constructor for an analytic gray opacity model.
  *
  * This constructor builds an opacity model defined by the
  * rtt_cdi_analytic::Analytic_Opacity_Model derived class argument.

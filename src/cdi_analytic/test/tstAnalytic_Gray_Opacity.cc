@@ -14,8 +14,6 @@
 #include "../Analytic_Gray_Opacity.hh"
 #include "../Analytic_Models.hh"
 #include "cdi/CDI.hh"
-#include "cdi/OpacityCommon.hh"
-#include "cdi/GrayOpacity.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
@@ -28,8 +26,6 @@
 
 using namespace std;
 
-using rtt_cdi_analytic_test::pass_msg;
-using rtt_cdi_analytic_test::fail_msg;
 using rtt_cdi_analytic::Analytic_Gray_Opacity;
 using rtt_cdi_analytic::Analytic_Opacity_Model;
 using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
