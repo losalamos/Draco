@@ -141,7 +141,7 @@ class Tally
     int    n_reflections;
 
     // >>> SUB TALLY OBJECTS
-    SP_RW_ST rw_sub_tally;
+    SP_RW_ST              rw_sub_tally;
     std::vector<SP_S_ST>  surface_sub_tallies;
 
   public:

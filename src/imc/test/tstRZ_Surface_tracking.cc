@@ -20,6 +20,8 @@
 #include "imc_test.hh"
 #include "mc/RZWedge_Mesh.hh"
 #include "mc/RZWedge_Builder.hh"
+#include "mc/Global_Mesh_Data.hh"
+#include "mc/Rep_Topology.hh"
 #include "IMC_Test.hh"
 
 #include "../Opacity.hh"
@@ -51,6 +53,7 @@ int seed = 395731;
 //---------------------------------------------------------------------------//
 // Test interface implemetation
 //---------------------------------------------------------------------------//
+
 struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 {
 
@@ -62,12 +65,14 @@ struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 
     int number_of_surfaces() const { return 3; }
 
-    const vector<Surface_Descriptor>& get_surface_data() const { return descriptor;}
+    const vector<Surface_Descriptor>& get_surface_data() const 
+    { 
+	return descriptor;
+    }
 
     const vector<double>& get_bin_cosines() const { return bin_cosines; }
     
     ~Surface_Tracking_Tester() { /* ... */ }
-
 };
 
 Surface_Tracking_Tester::Surface_Tracking_Tester()
@@ -91,17 +96,14 @@ Surface_Tracking_Tester::Surface_Tracking_Tester()
 
     double bin_data[5] = {-1.0, -0.5*sqrt(2.0), 0.0, 0.5*sqrt(2.0), 1.0};
     bin_cosines.assign(bin_data, bin_data+5);
-    
 }
-
-//---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
 // BUILDERS
 //---------------------------------------------------------------------------//
+
 SP<RZWedge_Mesh> build_an_RZWedge()
 {
-
     // Make a builder from the RZWedge input
     SP<Parser> parser(new Parser("RZWedge_Input"));
     RZWedge_Builder builder(parser);
@@ -111,12 +113,12 @@ SP<RZWedge_Mesh> build_an_RZWedge()
     Ensure(mesh);
 
     return mesh;
-
 }
+
+//---------------------------------------------------------------------------//
 
 SP<Azimuthal_Mesh> build_an_az_mesh(const Surface_Tracking_Interface &interface)
 {
-
     SP<Azimuthal_Mesh> az_mesh ( new Azimuthal_Mesh(interface) );
 
     Ensure (az_mesh);
@@ -124,22 +126,23 @@ SP<Azimuthal_Mesh> build_an_az_mesh(const Surface_Tracking_Interface &interface)
     return az_mesh;
 }
 
+//---------------------------------------------------------------------------//
 
 SP<Extrinsic_Surface_Tracker> build_extrinsic_tracker(
     const RZWedge_Mesh& mesh,
     const Surface_Tracking_Interface& interface)
 {
-
-    Extrinsic_Tracker_Builder<RZWedge_Mesh> builder(mesh, interface);
+    SP<Topology> topology(new Rep_Topology(mesh.num_cells()));
+    Global_Mesh_Data<RZWedge_Mesh> md(topology, mesh);
+    
+    Extrinsic_Tracker_Builder<RZWedge_Mesh> builder(mesh, md, interface);
 
     SP<Extrinsic_Surface_Tracker> tracker = builder.build_tracker();
 
     Ensure(tracker);
 
     return tracker;
-
 }
-
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -148,11 +151,9 @@ SP<Extrinsic_Surface_Tracker> build_extrinsic_tracker(
  * \param mesh the mesh
  * \return the opacity object
  */
-
 SP<Opacity<RZWedge_Mesh, Gray_Frequency> > build_a_gray_opacity(
     SP<RZWedge_Mesh> mesh)
 {
-
     SP<Gray_Frequency> frequency ( new Gray_Frequency );
 
     RZWedge_Mesh::CCSF<double> absorption(mesh);
@@ -176,7 +177,6 @@ SP<Opacity<RZWedge_Mesh, Gray_Frequency> > build_a_gray_opacity(
     Ensure (opacity);
 
     return opacity;
-
 }
 
 //---------------------------------------------------------------------------//
@@ -187,11 +187,9 @@ SP<Opacity<RZWedge_Mesh, Gray_Frequency> > build_a_gray_opacity(
  * \param mesh the mesh
  * \return the opacity object
  */
-
 SP<Opacity<RZWedge_Mesh, Multigroup_Frequency> > build_a_mg_opacity(
     SP<RZWedge_Mesh> mesh)
 {
-
     vector<double> grps(3);
     grps[0] = 0.01;
     grps[1] = 0.1;
@@ -221,7 +219,6 @@ SP<Opacity<RZWedge_Mesh, Multigroup_Frequency> > build_a_mg_opacity(
     Ensure (opacity);
 
     return opacity;
-
 }
 
 //---------------------------------------------------------------------------//
@@ -231,12 +228,11 @@ SP<Opacity<RZWedge_Mesh, Multigroup_Frequency> > build_a_mg_opacity(
  * \param mesh the mesh
  * \return the diffusion opacity object via smart pointer
  */
-
-
 SP<Diffusion_Opacity<RZWedge_Mesh> > get_diff_opacity(SP<RZWedge_Mesh> mesh)
 {
     // make data
-    SP<Fleck_Factors<RZWedge_Mesh> > fleck(new Fleck_Factors<RZWedge_Mesh>(mesh));
+    SP<Fleck_Factors<RZWedge_Mesh> > fleck(
+	new Fleck_Factors<RZWedge_Mesh>(mesh));
     RZWedge_Mesh::CCSF<double> ross(mesh);
     RZWedge_Mesh::CCSF<double> scat(mesh);
 
@@ -256,15 +252,12 @@ SP<Diffusion_Opacity<RZWedge_Mesh> > get_diff_opacity(SP<RZWedge_Mesh> mesh)
     return diff;
 }
 
-
-
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
+
 void test_gray_particle_straight()
 {
-
     // Make a mesh
     SP<RZWedge_Mesh> mesh = build_an_RZWedge();
 
@@ -285,17 +278,20 @@ void test_gray_particle_straight()
     SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh(tester);
 
     // Make a surface-tracker
-    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh, tester);
+    SP<Extrinsic_Surface_Tracker> tracker = 
+	build_extrinsic_tracker(*mesh, tester);
 
     // Make a tally
     SP<Tally<RZWedge_Mesh> > tally ( new Tally<RZWedge_Mesh>(mesh) );
 
     // Make a surface tracking sub-tally
-    SP<Surface_Sub_Tally> surface_tally ( new Surface_Sub_Tally(az_mesh, tester));
+    SP<Surface_Sub_Tally> surface_tally ( 
+	new Surface_Sub_Tally(az_mesh, tester));
     tally->assign_Surface_Sub_Tally(surface_tally);
 
     // Make a gray opacity
-    SP<Opacity<RZWedge_Mesh, Gray_Frequency> > opacity = build_a_gray_opacity(mesh);
+    SP<Opacity<RZWedge_Mesh, Gray_Frequency> > opacity =
+	build_a_gray_opacity(mesh);
 
     // Make an (empty) random walk pointer
     SP<Random_Walk<RZWedge_Mesh> > rwalk;
@@ -355,10 +351,9 @@ void test_gray_particle_straight()
     if (surface_tally->crossings(1, true , 4) != 1 ) ITFAILS;
     if (surface_tally->crossings(3, true , 4) != 1 ) ITFAILS;
     if (surface_tally->crossings(2, true , 4) != 1 ) ITFAILS;
-
-
 }
 
+//---------------------------------------------------------------------------//
 
 void test_gray_particle_rw()
 {
@@ -373,7 +368,8 @@ void test_gray_particle_rw()
     SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh(tester);
 
     // Make a surface-tracker
-    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh, tester);
+    SP<Extrinsic_Surface_Tracker> tracker = 
+	build_extrinsic_tracker(*mesh, tester);
 
     // Make a tally
     SP<Tally<RZWedge_Mesh> > tally ( new Tally<RZWedge_Mesh>(mesh) );
@@ -386,13 +382,15 @@ void test_gray_particle_rw()
     tally->assign_RW_Sub_Tally(rw_tally);
 
     // Make a gray opacity
-    SP<Opacity<RZWedge_Mesh, Gray_Frequency> > opacity = build_a_gray_opacity(mesh);
+    SP<Opacity<RZWedge_Mesh, Gray_Frequency> > opacity =
+	build_a_gray_opacity(mesh);
 
     // Make a diffusion opacity
     SP<Diffusion_Opacity<RZWedge_Mesh> > diff = get_diff_opacity(mesh);
 
     // make random walk
-    SP<Random_Walk<RZWedge_Mesh> > rw( new Random_Walk<RZWedge_Mesh>(mesh, diff) );
+    SP<Random_Walk<RZWedge_Mesh> > rw( 
+	new Random_Walk<RZWedge_Mesh>(mesh, diff) );
 
     // Make a particle
     vector<double> r(3), o(3);
@@ -453,12 +451,12 @@ void test_gray_particle_rw()
     SP<Random_Walk_Sub_Tally> rwsb = tally->get_RW_Sub_Tally();
 
     if (rwsb->get_accum_n_random_walks() != 0) ITFAILS;
-
 }
+
+//---------------------------------------------------------------------------//
 
 void test_mg_particle()
 {
-
     // Make an test interface object
     Surface_Tracking_Tester tester;
 
@@ -469,13 +467,15 @@ void test_mg_particle()
     SP<Azimuthal_Mesh> az_mesh = build_an_az_mesh(tester);
 
     // Make a surface-tracker
-    SP<Extrinsic_Surface_Tracker> tracker = build_extrinsic_tracker(*mesh, tester);
+    SP<Extrinsic_Surface_Tracker> tracker = 
+	build_extrinsic_tracker(*mesh, tester);
 
     // Make a tally
     SP<Tally<RZWedge_Mesh> > tally ( new Tally<RZWedge_Mesh>(mesh) );
 
     // Make a surface tracking sub-tally
-    SP<Surface_Sub_Tally> surface_tally ( new Surface_Sub_Tally(az_mesh, tester));
+    SP<Surface_Sub_Tally> surface_tally (
+	new Surface_Sub_Tally(az_mesh, tester));
     tally->assign_Surface_Sub_Tally(surface_tally);
 
     // Make a multigroup opacity
@@ -538,7 +538,6 @@ void test_mg_particle()
     if (surface_tally->crossings(2, true , 4) != 1 ) ITFAILS;
 }
 
-
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -571,13 +570,13 @@ int main(int argc, char *argv[])
 
     // status of test
     std::cout << std::endl;
-    std::cout <<     "*********************************************" << std::endl;
+    std::cout << "*********************************************" << std::endl;
     if (rtt_imc_test::passed) 
     {
         std::cout << "**** tstRZ_Surface_tracking Test: PASSED" 
 		  << std::endl;
     }
-    std::cout <<     "*********************************************" << std::endl;
+    std::cout << "*********************************************" << std::endl;
     std::cout << std::endl;
     
     std::cout << "Done testing tstRZ_Surface_tracking." << std::endl;

@@ -196,7 +196,6 @@ const std::vector<int>& Surface_Sub_Tally::get_inward_count_tally(int surface)
 
 }
 
-
 } // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//

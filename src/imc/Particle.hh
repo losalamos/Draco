@@ -275,8 +275,9 @@ class Particle
     inline void scatter(const MT &);
 
     // Dispatch to correct streaming method.
-    inline void stream_and_capture(Tally<MT> &, SP_Surface_tracker, double sigma, 
-				   double distance, int group = 1);
+    inline void stream_and_capture(Tally<MT> &, SP_Surface_tracker, 
+				   double sigma, double distance, 
+				   int group = 1);
 
   public:
     // Particle constructor.

@@ -3,7 +3,8 @@
  * \file   imc/test/tstExtrinsic_Tracker.cc
  * \author Mike Buksas
  * \date   Mon Jul 21 10:10:06 2003
- * \brief  unit test for Extrinsic_Surface_Tracker and Extrinsic_Tracker_Builder
+ * \brief  unit test for Extrinsic_Surface_Tracker and
+ *         Extrinsic_Tracker_Builder 
  * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
@@ -22,6 +23,8 @@
 #include "mc/RZWedge_Builder.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
+#include "mc/Rep_Topology.hh"
+#include "mc/Global_Mesh_Data.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "IMC_Test.hh"
@@ -44,9 +47,9 @@ typedef rtt_mc::RZWedge_Mesh RZ;
 //---------------------------------------------------------------------------//
 // Test interface implemetation
 //---------------------------------------------------------------------------//
+
 struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 {
-
     double small_radius, large_radius;
 
     vector<double> bin_cosines;
@@ -56,18 +59,19 @@ struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 
     int number_of_surfaces() const { return 4; }
 
-    const vector<Surface_Descriptor>& get_surface_data() const { return descriptor;}
+    const vector<Surface_Descriptor>& get_surface_data() const 
+    { 
+	return descriptor;
+    }
 
     const vector<double>& get_bin_cosines() const { return bin_cosines; }
 
     ~Surface_Tracking_Tester() { /* ... */ }
-
 };
 
 Surface_Tracking_Tester::Surface_Tracking_Tester(double small, double large)
     : small_radius(small), large_radius(large)
 {
-
     descriptor.resize(4);
 
     descriptor[0].type = Surface_Descriptor::SPHERE;
@@ -115,17 +119,14 @@ struct Surface_Tracking_Tester_Zero : public Surface_Tracking_Interface
 
 Surface_Sub_Tally make_surface_tally(const Surface_Tracking_Interface& interface)
 {
-
     SP<Azimuthal_Mesh> mesh ( new Azimuthal_Mesh( interface ) );
     return Surface_Sub_Tally(mesh, interface);
-
 }
 
-
 //---------------------------------------------------------------------------//
+
 SP<RZWedge_Mesh> build_mesh()
 {
-
     // make a builder from the RZWedge input
     SP<Parser> parser(new Parser("RZWedge_Input"));
     RZWedge_Builder builder(parser);
@@ -135,23 +136,35 @@ SP<RZWedge_Mesh> build_mesh()
     Ensure(mesh);
 
     return mesh;
-
 }
 
+//---------------------------------------------------------------------------//
+
+template<class MT>
+SP<Global_Mesh_Data<MT> > build_Mesh_Data(const MT &mesh)
+{
+    SP<Topology> topology(new Rep_Topology(mesh.num_cells()));
+    
+    SP<Global_Mesh_Data<MT> > mesh_data(
+	new Global_Mesh_Data<MT>(topology, mesh));
+
+    Ensure (mesh_data);
+    return mesh_data;
+}
 
 //---------------------------------------------------------------------------//
-SP<Extrinsic_Tracker_Builder<RZ> > build_tracker_builder(
-    const RZWedge_Mesh& mesh,
-    const Surface_Tracking_Interface& interface)
-{
 
+SP<Extrinsic_Tracker_Builder<RZ> > build_tracker_builder(
+    const RZWedge_Mesh&                   mesh,
+    const Global_Mesh_Data<RZWedge_Mesh>& mesh_data,
+    const Surface_Tracking_Interface&     interface)
+{
     SP<Extrinsic_Tracker_Builder<RZ> > builder (
-	new Extrinsic_Tracker_Builder<RZ>(mesh, interface) );
+	new Extrinsic_Tracker_Builder<RZ>(mesh, mesh_data, interface) );
 
     Ensure (builder);
 
     return builder;
-
 }
 
 //---------------------------------------------------------------------------//
@@ -160,15 +173,15 @@ SP<Extrinsic_Tracker_Builder<RZ> > build_tracker_builder(
 
 void test_RZWedge_Mesh_tracker()
 {
-
-    SP<RZWedge_Mesh> mesh = build_mesh();
+    SP<RZWedge_Mesh>                    mesh      = build_mesh();
+    SP<Global_Mesh_Data<RZWedge_Mesh> > mesh_data = build_Mesh_Data(*mesh);
 
     double x1 = mesh->get_high_x(1);
     double x3 = mesh->get_high_x(3);
     Surface_Tracking_Tester tester(x1,x3);
     
     SP<Extrinsic_Tracker_Builder<RZ> > builder = 
-	build_tracker_builder(*mesh, tester);
+	build_tracker_builder(*mesh, *mesh_data, tester);
 
     // Test the builder:
     if (builder->get_global_surfaces() != 4) ITFAILS;
@@ -222,9 +235,6 @@ void test_RZWedge_Mesh_tracker()
 
     if (!soft_equiv(tally.weight(2,true,4) ,
 		    ew * exp(-sigma*(1.0+x1*sqrt(3.0)/2.0) ) ) ) ITFAILS;
-
-    
-
 }
 
 //---------------------------------------------------------------------------//
@@ -236,6 +246,9 @@ void test_OS_Mesh_tracker()
     SP<OS_Builder>  mb(new OS_Builder(parser));
     SP<OS_Mesh>     mesh = mb->build_Mesh();
 
+    // build the mesh data
+    SP<Global_Mesh_Data<OS_Mesh> > mesh_data = build_Mesh_Data(*mesh);
+
     double x1 = 1.0;
     double x3 = 2.0;
     Surface_Tracking_Tester tester(x1,x3);
@@ -243,7 +256,7 @@ void test_OS_Mesh_tracker()
     bool caught = false;
     try
     {
-	Extrinsic_Tracker_Builder<OS_Mesh> builder(*mesh, tester);
+	Extrinsic_Tracker_Builder<OS_Mesh> builder(*mesh, *mesh_data, tester);
     }
     catch (rtt_dsxx::assertion &ass)
     {
@@ -263,12 +276,13 @@ void test_OS_Mesh_tracker()
 
 void test_null_tracker()
 {
-    SP<RZWedge_Mesh> mesh = build_mesh();
+    SP<RZWedge_Mesh>                    mesh      = build_mesh();
+    SP<Global_Mesh_Data<RZWedge_Mesh> > mesh_data = build_Mesh_Data(*mesh);
 
     Surface_Tracking_Tester_Zero tester;
     
     SP<Extrinsic_Tracker_Builder<RZ> > builder = 
-	build_tracker_builder(*mesh, tester);
+	build_tracker_builder(*mesh, *mesh_data, tester);
 
     SP<Extrinsic_Surface_Tracker> tracker = builder->build_tracker();
 
@@ -306,13 +320,15 @@ int main(int argc, char *argv[])
 
     // status of test
     std::cout << std::endl;
-    std::cout <<     "*********************************************" << std::endl;
+    std::cout <<     "*********************************************" 
+	      << std::endl;
     if (rtt_imc_test::passed) 
     {
         std::cout << "**** tstExtrinsic_Tracker Test: PASSED" 
 		  << std::endl;
     }
-    std::cout <<     "*********************************************" << std::endl;
+    std::cout <<     "*********************************************" 
+	      << std::endl;
     std::cout << std::endl;
     
     std::cout << "Done testing tstExtrinsic_Tracker." << std::endl;

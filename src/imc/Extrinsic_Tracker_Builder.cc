@@ -10,8 +10,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "ds++/Soft_Equivalence.hh"
 #include "mc/Sphere.hh"
 #include "mc/RZWedge_Mesh.hh"
+#include "mc/Global_Mesh_Data.hh"
+#include "Global.hh"
 #include "Extrinsic_Tracker_Builder.hh"
 
 namespace rtt_imc
@@ -97,6 +100,61 @@ bool Extrinsic_Tracker_Builder<rtt_mc::RZWedge_Mesh>::sphere_intersects_cell(
     
     // default return condition
     return false;
+}
+
+//---------------------------------------------------------------------------//
+// MESH SPECIALIZATIONS ON build_surface_areas()
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Determines the surface areas of the spheres that are subtended
+ *  by the mesh; specialized for RZWedge_Mesh.
+ * 
+ * \param sphere The sphere object
+ */
+template<>
+void Extrinsic_Tracker_Builder<rtt_mc::RZWedge_Mesh>::build_surface_areas(
+    const rtt_mc::Sphere& sphere)
+{
+    using std::vector;
+    using rtt_dsxx::soft_equiv;
+
+    // sphere radius and center
+    double r_s = sphere.get_radius();
+    double z_s = sphere.get_center();
+
+    // the extents are [0->low x][1->high x][2->low z][3->high z]
+    vector<double> extents = mesh_data.get_spatial_extents();
+    Check (extents.size() == 4);
+
+    // make sure that the sphere does not extend out the high x side of the
+    // mesh
+    Insist (z_s + r_s <= extents[1],
+	    "Tally sphere outside of mesh on high x side");
+
+    // make sure that the sphere is (a) entirely contained between (-z,+z) or
+    // (b) is a half-sphere, origin = -z or +z
+    bool   half_sphere         = false;
+    double surface_area_factor = 1.0;
+    if (soft_equiv(z_s, extents[2]) || soft_equiv(z_s, extents[3]))
+    {
+	surface_area_factor = 0.5;
+	half_sphere         = true;
+    }
+    else
+    {
+	Insist (z_s - r_s >= extents[2], 
+		"Tally sphere outside of mesh on low z side");
+	Insist (z_s + r_s <= extents[3], 
+		"Tally sphere outside of mesh on high z side");	
+    }
+
+    // calculate the surface area (the surface_area_factor is set to 1/2 if
+    // we have a half sphere)
+    double surface_area = surface_area_factor * 
+	2.0 * mesh.get_theta_radians() * r_s * r_s;
+
+    // add to the surface area list
+    surface_areas.push_back(surface_area);
 }
 
 } // end of rtt_imc

@@ -26,7 +26,7 @@ namespace rtt_mc
 class Sphere; 
 class Surface_Descriptor;
 class RZWedge_Mesh;
-
+template<class MT> class Global_Mesh_Data;
 }
 
 namespace rtt_imc
@@ -55,6 +55,7 @@ namespace rtt_imc
 // 0) (Thu Jul 17 13:16:13 2003) Mike Buksas: original
 // 1) 20-AUG-2003 : added templating on MT; this requires some specialization
 //                  in the sphere_intersects_cell function
+// 2) 04-DEC-2003 : add surface areas for a sphere
 // 
 //===========================================================================//
 
@@ -70,14 +71,17 @@ class Extrinsic_Tracker_Builder
     typedef Extrinsic_Surface_Tracker     Tracker;
     typedef rtt_dsxx::SP<Tracker>         SP_Tracker;
     typedef rtt_dsxx::SP<rtt_mc::Surface> SP_Surface;
+    typedef rtt_mc::Global_Mesh_Data<MT>  Mesh_Data;
 
     // CREATORS
     
     //! Construct from mesh and pointer to interface.
-    Extrinsic_Tracker_Builder(const MT &, SP_Interface interface);
+    Extrinsic_Tracker_Builder(const MT &, const Mesh_Data &,
+			      SP_Interface interface);
 
     //! Construct from mesh and interface.
-    Extrinsic_Tracker_Builder(const MT &, const Interface& interface);
+    Extrinsic_Tracker_Builder(const MT &, const Mesh_Data &,
+			      const Interface& interface);
 
     //! Destructor.
     ~Extrinsic_Tracker_Builder() { /* ... */ }
@@ -103,12 +107,16 @@ class Extrinsic_Tracker_Builder
     // Const reference to a mesh.
     const MT &mesh;
 
+    // Const reference to global mesh data.
+    const Mesh_Data &mesh_data;
+
     // Data used to build surface tracker.
     int                                         number_of_cells;
     int                                         global_surface_number;
     std::vector<rtt_dsxx::SP<rtt_mc::Surface> > surfaces;
     std::vector<int>                            surface_indices;
     std::vector<bool>                           surface_in_cell;
+    std::vector<double>                         surface_areas;
 
     // IMPLEMENTATION
 
@@ -124,6 +132,7 @@ class Extrinsic_Tracker_Builder
     void process_sphere(const rtt_mc::Surface_Descriptor &descriptor); 
     bool sphere_intersects_cell(const rtt_mc::Sphere& sphere, int cell);
     bool check_intersections(const rtt_mc::Sphere& sphere);
+    void build_surface_areas(const rtt_mc::Sphere& sphere);
 };
 
 //---------------------------------------------------------------------------//
@@ -137,6 +146,10 @@ class Extrinsic_Tracker_Builder
 template<>
 bool Extrinsic_Tracker_Builder<rtt_mc::RZWedge_Mesh>::sphere_intersects_cell(
     const rtt_mc::Sphere& sphere, int cell);
+
+template<>
+void Extrinsic_Tracker_Builder<rtt_mc::RZWedge_Mesh>::build_surface_areas(
+    const rtt_mc::Sphere &sphere);
 
 //---------------------------------------------------------------------------//
 // INLINE FUNCTIONS

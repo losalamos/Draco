@@ -124,10 +124,7 @@ class Surface_Sub_Tally
     // Implementation
 
     inline int get_surface_index(int surface, bool is_outward) const;
-
-
 };
-
 
 //---------------------------------------------------------------------------//
 // Inline accessors:
@@ -136,12 +133,16 @@ class Surface_Sub_Tally
 //---------------------------------------------------------------------------//
 const std::vector<std::vector<double> >& Surface_Sub_Tally::get_weight_tally() 
     const
-{ return weight_tally; }
+{
+    return weight_tally;
+}
 
 //---------------------------------------------------------------------------//
 const std::vector<std::vector<int> >& Surface_Sub_Tally::get_count_tally() 
     const
-{ return count_tally; }
+{
+    return count_tally; 
+}
 
 //---------------------------------------------------------------------------//
 double Surface_Sub_Tally::weight(int surface, bool outward, int bin) const
@@ -191,7 +192,6 @@ int Surface_Sub_Tally::get_surface_index(int surface, bool is_outward) const
 
     return surface_index;
 }
-
 
 } // end namespace rtt_imc
 

@@ -37,6 +37,7 @@ namespace rtt_mc
 
 class Topology;
 class Comm_Patterns;
+template<class MT> class Global_Mesh_Data;
 
 }
 
@@ -112,21 +113,22 @@ class IMC_Objects_Builder
 {
   public:
     // Useful typedefs.
-    typedef rtt_dsxx::SP<IT>                        SP_Interface;
-    typedef rtt_dsxx::SP<MT>                        SP_Mesh;
-    typedef rtt_dsxx::SP<FT>                        SP_Frequency;
-    typedef rtt_dsxx::SP<Mat_State<MT> >            SP_Mat_State;
-    typedef rtt_dsxx::SP<Opacity<MT,FT> >           SP_Opacity;
-    typedef rtt_dsxx::SP<Diffusion_Opacity<MT> >    SP_Diff_Opacity;
-    typedef rtt_dsxx::SP<Source<MT,FT,PT> >         SP_Source;
-    typedef rtt_dsxx::SP<Tally<MT> >                SP_Tally;
-    typedef rtt_dsxx::SP<Random_Walk<MT> >          SP_Random_Walk;
-    typedef rtt_dsxx::SP<Extrinsic_Surface_Tracker> SP_Tracker;
-    typedef rtt_dsxx::SP<rtt_mc::Topology>          SP_Topology;
-    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>     SP_Comm_Patterns;
-    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>      SP_Rnd_Control;
-    typedef rtt_dsxx::SP<Source_Builder<MT,FT,PT> > SP_Source_Builder; 
-    typedef rtt_dsxx::SP<Mat_State_Builder<MT,FT> > SP_Mat_State_Builder;
+    typedef rtt_dsxx::SP<IT>                            SP_Interface;
+    typedef rtt_dsxx::SP<MT>                            SP_Mesh;
+    typedef rtt_dsxx::SP<FT>                            SP_Frequency;
+    typedef rtt_dsxx::SP<Mat_State<MT> >                SP_Mat_State;
+    typedef rtt_dsxx::SP<Opacity<MT,FT> >               SP_Opacity;
+    typedef rtt_dsxx::SP<Diffusion_Opacity<MT> >        SP_Diff_Opacity;
+    typedef rtt_dsxx::SP<Source<MT,FT,PT> >             SP_Source;
+    typedef rtt_dsxx::SP<Tally<MT> >                    SP_Tally;
+    typedef rtt_dsxx::SP<Random_Walk<MT> >              SP_Random_Walk;
+    typedef rtt_dsxx::SP<Extrinsic_Surface_Tracker>     SP_Tracker;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>              SP_Topology;
+    typedef rtt_dsxx::SP<rtt_mc::Global_Mesh_Data<MT> > SP_Mesh_Data;
+    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>         SP_Comm_Patterns;
+    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>          SP_Rnd_Control;
+    typedef rtt_dsxx::SP<Source_Builder<MT,FT,PT> >     SP_Source_Builder; 
+    typedef rtt_dsxx::SP<Mat_State_Builder<MT,FT> >     SP_Mat_State_Builder;
 
   private: 
     // >>> IMPLEMENTATION
@@ -192,7 +194,7 @@ class IMC_Objects_Builder
 
     // Build particle transport objects.
     void build_time_dependent_particle_objects(SP_Mesh);
-    void build_time_independent_particle_objects(SP_Mesh);
+    void build_time_independent_particle_objects(SP_Mesh, SP_Mesh_Data);
 
     // Reset a member object.
     template<class T>

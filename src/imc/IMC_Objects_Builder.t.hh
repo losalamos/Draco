@@ -18,6 +18,7 @@
 #include "rng/Random.hh"
 #include "mc/Comm_Patterns.hh"
 #include "mc/Topology.hh"
+#include "mc/Global_Mesh_Data.hh"
 #include "CDI_Mat_State_Builder.hh"
 #include "Flat_Mat_State_Builder.hh"
 #include "CDI_Data_Interface.hh"
@@ -297,7 +298,8 @@ void IMC_Objects_Builder<IT,MT,FT,PT>::build_time_dependent_particle_objects(
  */
 template<class IT, class MT, class FT, class PT>
 void IMC_Objects_Builder<IT,MT,FT,PT>::build_time_independent_particle_objects(
-    SP_Mesh mesh)
+    SP_Mesh      mesh,
+    SP_Mesh_Data mesh_data)
 {
     Require (interface);
     Require (mesh);
@@ -306,7 +308,7 @@ void IMC_Objects_Builder<IT,MT,FT,PT>::build_time_independent_particle_objects(
 
     // build the extrinsic surface tracker
     {
-	Extrinsic_Tracker_Builder<MT> builder(*mesh, interface);
+	Extrinsic_Tracker_Builder<MT> builder(*mesh, *mesh_data, interface);
 	tracker = builder.build_tracker();
     }
 

@@ -26,6 +26,7 @@
 #include "mc/RZWedge_Builder.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/Comm_Patterns.hh"
+#include "mc/Global_Mesh_Data.hh"
 #include "../Release.hh"
 #include "../IMC_Objects_Builder.hh"
 #include "../Frequency.hh"
@@ -46,6 +47,7 @@ using rtt_mc::RZWedge_Builder;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::Comm_Patterns;
+using rtt_mc::Global_Mesh_Data;
 
 using rtt_rng::Rnd_Control;
 
@@ -103,13 +105,15 @@ class DBuilder : public IMC_Objects_Builder<IT, M, MG, P>
     }
 
     // Builder.
-    void build_IMC_objects(SP<M> mesh,
-			   SP<Topology> topology,
-			   SP<Comm_Patterns> comm_patterns,
-			   SP<Rnd_Control> rnd_control)
+    void build_IMC_objects(SP<M>                    mesh,
+			   SP<Topology>             topology,
+			   SP<Global_Mesh_Data<M> > mesh_data,
+			   SP<Comm_Patterns>        comm_patterns,
+			   SP<Rnd_Control>          rnd_control)
     {
 	Require (mesh);
 	Require (topology);
+	Require (mesh_data);
 	Require (comm_patterns);
 	Require (rnd_control);
 
@@ -145,7 +149,7 @@ class DBuilder : public IMC_Objects_Builder<IT, M, MG, P>
 
 	// build the particle transport objects
 	Base::build_time_dependent_particle_objects(mesh);
-	Base::build_time_independent_particle_objects(mesh);
+	Base::build_time_independent_particle_objects(mesh, mesh_data);
     }
 
     void reset()
@@ -180,6 +184,10 @@ void cdi_objects_test()
     // build a Topology:  a Replication topology on each mesh
     SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
 
+    // build a Global_Mesh_Data
+    SP<Global_Mesh_Data<RZ> > mesh_data(
+	new Global_Mesh_Data<RZ>(topology, *mesh));
+
     // build a comm_patterns
     SP<Comm_Patterns> patterns(new Comm_Patterns());
     patterns->calc_patterns(topology);
@@ -190,7 +198,7 @@ void cdi_objects_test()
     // make the objects builder
     DBuilder<CDI_Interface, RZ, MGPRZ> builder(interface);
 
-    builder.build_IMC_objects(mesh, topology, patterns, rcon); 
+    builder.build_IMC_objects(mesh, topology, mesh_data, patterns, rcon); 
 
     // get objects
 
@@ -272,6 +280,10 @@ void flat_objects_test()
     // build a Topology:  a Replication topology on each mesh
     SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
 
+    // build a Global_Mesh_Data
+    SP<Global_Mesh_Data<OS_Mesh> > mesh_data(
+	new Global_Mesh_Data<OS_Mesh>(topology, *mesh));
+
     // build a comm_patterns
     SP<Comm_Patterns> patterns(new Comm_Patterns());
     patterns->calc_patterns(topology);
@@ -282,7 +294,7 @@ void flat_objects_test()
     // make the objects builder
     DBuilder<Flat_Interface, MT, MGP> builder(interface);
 
-    builder.build_IMC_objects(mesh, topology, patterns, rcon);  
+    builder.build_IMC_objects(mesh, topology, mesh_data, patterns, rcon);  
 
     // get objects
 

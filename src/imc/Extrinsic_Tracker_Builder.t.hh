@@ -31,14 +31,17 @@ namespace rtt_imc
  */
 template<class MT>
 Extrinsic_Tracker_Builder<MT>::Extrinsic_Tracker_Builder(
-    const MT&    mesh_,
-    SP_Interface interface) 
+    const MT&        mesh_,
+    const Mesh_Data& mesh_data_,
+    SP_Interface     interface) 
     : mesh(mesh_),
+      mesh_data(mesh_data_),
       number_of_cells(mesh_.num_cells()),
       global_surface_number(0),
       surfaces(),
       surface_indices(),
-      surface_in_cell(mesh_.num_cells())
+      surface_in_cell(mesh_.num_cells()),
+      surface_areas()
 { 
 
     construction_implementation(*interface);
@@ -56,13 +59,16 @@ Extrinsic_Tracker_Builder<MT>::Extrinsic_Tracker_Builder(
 template<class MT>
 Extrinsic_Tracker_Builder<MT>::Extrinsic_Tracker_Builder(
     const MT&        mesh_,
+    const Mesh_Data& mesh_data_,
     const Interface& interface)
     : mesh(mesh_),
+      mesh_data(mesh_data_),
       number_of_cells(mesh_.num_cells()),
       global_surface_number(0),
       surfaces(),
       surface_indices(),
-      surface_in_cell(mesh_.num_cells())
+      surface_in_cell(mesh_.num_cells()),
+      surface_areas()
 {
 
     construction_implementation(interface);
@@ -125,7 +131,10 @@ void Extrinsic_Tracker_Builder<MT>::construction_implementation(
 	
     }
 
-    Check(global_surface_number == given_surface_number);
+    Ensure (global_surface_number == given_surface_number);
+    Ensure (surface_areas.size() == surfaces.size());
+    Ensure (surfaces.size() == surface_indices.size());
+    Ensure (surfaces.size() <= given_surface_number);
 }
 
 //---------------------------------------------------------------------------//
@@ -136,12 +145,10 @@ template<class MT>
 void Extrinsic_Tracker_Builder<MT>::process_surface(
     const rtt_mc::Surface_Descriptor& descriptor)
 {
-
     if (descriptor.type == rtt_mc::Surface_Descriptor::SPHERE)
 	process_sphere(descriptor);
     else
 	Insist(0, "Invalid surface descriptor encountered.");
-
 }
 		     
 //---------------------------------------------------------------------------//
@@ -168,7 +175,6 @@ bool Extrinsic_Tracker_Builder<MT>::check_point(
     point[0] = x;  point[1] = 0.0;  point[2] = z;
 
     return surface.is_inside(point);
-
 }
 
 //---------------------------------------------------------------------------//
@@ -189,8 +195,12 @@ void Extrinsic_Tracker_Builder<MT>::process_sphere(
 
     bool on_mesh = check_intersections(*sphere);
 
-    if (on_mesh) add_surface_to_list(sphere);
-
+    if (on_mesh) 
+    {
+	// if the sphere intersects a cell on this mesh then add it
+	add_surface_to_list(sphere);
+	build_surface_areas(*sphere);
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -214,7 +224,6 @@ bool Extrinsic_Tracker_Builder<MT>::check_intersections(
     }
 
     return on_mesh;
-
 }
 
 //---------------------------------------------------------------------------//
@@ -233,6 +242,21 @@ bool Extrinsic_Tracker_Builder<MT>::sphere_intersects_cell(
 	"No specialization provided for this MT in Extrinsic_Tracker_Builder.");
 
     return false;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Generalization of build_surface_areas.
+ *
+ * This function will always throw an assertion as specializations are
+ * required to implement this.
+ */
+template<class MT>
+void Extrinsic_Tracker_Builder<MT>::build_surface_areas(
+    const rtt_mc::Sphere& sphere)
+{
+    throw rtt_dsxx::assertion(
+	"No specialization provided for this MT in Extrinsic_Tracker_Builder.");
 }
 
 } // end namespace rtt_imc
