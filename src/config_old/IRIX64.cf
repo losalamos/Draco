@@ -84,7 +84,7 @@ cmplr	= kcc33e
 endif
 
 ifeq ($(zeta),yes)
-CXX	= /v/furnish/kcc3.3zeta/KCC_BASE/bin/KCC $(STRICT) -D_POSIX_SOURCE --one_instantiation_per_object -64
+CXX	= /v/furnish/kcc3.3zeta/KCC_BASE/bin/KCC -64 -mips4 $(STRICT) -D_POSIX_SOURCE --one_instantiation_per_object
 #CXX	= /v/furnish/kcc3.3zeta/KCC_BASE/bin/KCC $(STRICT) -D_POSIX_SOURCE 
 cmplr	= kcc33z
 endif
