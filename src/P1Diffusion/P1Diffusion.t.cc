@@ -22,8 +22,8 @@ namespace rtt_P1Diffusion
  
  template<class MT, class MS>
  P1Diffusion<MT,MS>::P1Diffusion(const Diffusion_DB &diffdb,
-				 const SP<Mesh>& spm_,
-				 const SP<MatrixSolver> &spsolver_)
+				 const SP<MT>& spm_,
+				 const SP<MS> &spsolver_)
      : spm(spm_), spsolver(spsolver_)
  {
      // empty

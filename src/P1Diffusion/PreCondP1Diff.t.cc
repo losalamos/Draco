@@ -8,6 +8,7 @@
 
 #include "P1Diffusion/PreCondP1Diff.hh"
 #include <stdexcept>
+#include <string>
 
 namespace rtt_P1Diffusion
 {

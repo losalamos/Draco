@@ -17,7 +17,7 @@ namespace rtt_P1Diffusion
  template<class MT>
  SolverP1Diff<MT>::SolverP1Diff(const SP<const MT>& spMesh_,
 				const pcg_DB& pcg_db)
-     : spMesh(spMesh_), pcg_ctrl(pcg_db, spMesh_->get_ncp())
+     : spMesh(spMesh_), pcg_ctrl(pcg_db, spMesh_->get_ncells())
  {
      // empty
  }

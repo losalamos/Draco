@@ -36,16 +36,18 @@ namespace rtt_P1Diffusion
  {
      // NESTED CLASSES AND TYPEDEFS
 
+   public:
+
      typedef typename MT::ccsf ccsf;
      typedef typename MT::fcdsf fcdsf;
-
-   public:
 
      typedef typename ccsf::value_type value_type;
      typedef fcdsf Vector;
      
      // DATA
 
+   private:
+     
      SP<MT> spMesh;
      SP<const ccsf> spDiagonal;
      SP<const fcdsf> spOffDiagonal;
