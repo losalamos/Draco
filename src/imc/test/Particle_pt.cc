@@ -10,17 +10,17 @@
 //---------------------------------------------------------------------------//
 
 #include "mc/OS_Mesh.hh"
-#include "rng/Rnd_Control.hh"
-#include "../Particle.t.hh"
+#include "../Gray_Particle.t.hh"
+#include "../Multigroup_Particle.t.hh"
 
 namespace rtt_imc
 {
 
-typedef rtt_mc::OS_Mesh       MT;
-typedef rtt_imc::Particle<MT> PT;
-typedef rtt_rng::Rnd_Control  RC;
+typedef rtt_mc::OS_Mesh MT;
 
-template class Particle<MT>;
+template class Gray_Particle<MT>;
+
+template class Multigroup_Particle<MT>;
 
 } // end namespace rtt_imc
 
