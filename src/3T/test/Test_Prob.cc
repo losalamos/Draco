@@ -9,7 +9,8 @@
 #include "3T/test/Test_Prob.hh"
 #include "3T/test/Test_3T.hh"
 #include "3T/test/Run_DB.hh"
-#include "3T/test/XYZ_Quadratic.hh"
+//include "3T/test/XYZ_Quadratic.hh"
+#include "3T/test/XYZ_Trigonometric.hh"
 
 #include "mesh/Mesh_XYZ.hh"
 
@@ -29,8 +30,11 @@ SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] )
     Mesh_DB mdb;
     mdb.setup_namelist( g );
 
-    Quad_Params qpdb;
-    qpdb.setup_namelist( g );
+//  Quad_Params qpdb;
+//  qpdb.setup_namelist( g );
+
+    Trig_Params tpdb;
+    tpdb.setup_namelist( g );
 
     pcg_DB pcg_db( "pcg" );
     pcg_db.setup_namelist( g );
@@ -43,7 +47,8 @@ SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] )
 // Theoretically we could parse argc, argv to figure out which test problem
 // to initiate.  For now, however, we just hardwire one.
 
-    prob = new Test_3T< Mesh_XYZ, XYZ_Quadratic >( spm, rdb, qpdb, pcg_db );
+//  prob = new Test_3T< Mesh_XYZ, XYZ_Quadratic >( spm, rdb, qpdb, pcg_db );
+    prob = new Test_3T< Mesh_XYZ, XYZ_Trigonometric >( spm, rdb, tpdb, pcg_db );
 
     return prob;
 }

@@ -8,21 +8,28 @@ $run
 $
 
 $mesh
-	ncx=4 ncy=4 ncz=4
+	ncx=2 ncy=2 ncz=2
 $
 
-$Trig_Params
+$Quad_Params
 	et0=1.0
 	et1=0.0
 
 	ex0=0.0
+	ex1=0.0
 	ex1=1.0
+	ex2=0.0
+	ex2=2.0
 
 	ey0=0.0
 	ey0=1.0
+	ey1=0.0
+	ey2=0.0
 
 	ez0=0.0
-	ez1=1.0
+	ez0=1.0
+	ez1=0.0
+	ez2=0.0
 
 	dx0=1.0
 	dx1=0.0

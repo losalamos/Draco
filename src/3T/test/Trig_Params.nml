@@ -1,0 +1,42 @@
+#-----------------------------------------------------------------------------#
+# Trig_Params.nml
+# Scott A. Turner (based on Geoffrey Furnish's Quad_Params.nml)
+# 11 December 1997
+#-----------------------------------------------------------------------------#
+# @> Specification of type, name, default value, and documentation for
+# @> various input parameters.
+#-----------------------------------------------------------------------------#
+
+block: Trig_Params
+
+# Assume for this test problem, that: 
+#     E(X,t) = (et1 t + et0)*[ex1*sin(x) + ex0]
+#                           *[ey1*cos(y) + ey0]
+#                           *[ez1*tan(z) + ey0]
+# and
+#     D(X) = (dx1 x + dx0)(dy1 y + dy0)(dz1 z + dz)
+
+double	et1	1.	# Default to linear in time.
+double	et0	0.
+
+double	ex1	1.	# Default to sine in x.
+double	ex0	0.
+
+double	ey1     1.	# Default to cosine in y.
+double	ey0	0.
+
+double	ez1	1.	# Default to tangent in z.
+double	ez0	0.
+
+double	dx1	0.	# Default to constant in x.
+double	dx0	1.
+
+double	dy1	0.	# Default to constant in y.
+double	dy0	1.
+
+double	dz1	0.	# Default to constant in z.
+double	dz0	1.
+
+#-----------------------------------------------------------------------------#
+#				end of Trig_Params.nml
+#-----------------------------------------------------------------------------#

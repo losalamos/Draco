@@ -11,7 +11,8 @@
 
 #include "Test_Prob.hh"
 #include "Run_DB.hh"
-#include "Quad_Params.hh"
+//include "Quad_Params.hh"
+#include "Trig_Params.hh"
 
 class ADFile;
 

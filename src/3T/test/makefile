@@ -21,7 +21,8 @@ need_3T		:= yes
 
 include ../../config/makefile
 
-srcs	= main.cc Quad_Params.cc Test_Prob.cc Run_DB.cc
+#srcs	= main.cc Quad_Params.cc Test_Prob.cc Run_DB.cc
+srcs	= main.cc Trig_Params.cc Test_Prob.cc Run_DB.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.
