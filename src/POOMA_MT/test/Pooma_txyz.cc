@@ -140,6 +140,13 @@ int main(int argc, char* argv[])
   msg0 << "Sum of threeCC = " << threeSum << endl;
   msg0 << "Max of nineFC = " << nineMax << endl;
 
+  Vektor<double,3> v1(3.0), v2(4.0);
+
+  // double val = rtt_traits::vector_traits<Vektor<double,3> >::dot(v1, v2);
+  double val = dot(v1, v2);
+
+  msg0 << "dot of (3,3,3) and (4,4,4) is " << val << endl;
+
   return 0;
 }
 
