@@ -71,52 +71,51 @@ Element_Definition::Element_Definition(const Element_Type &type_)
 	
     }
     
-    invariant_satisfied();
+    Ensure( invariant_satisfied() );
 }
 
 bool Element_Definition::invariant_satisfied() const
 {
-    
-    Ensure(name.empty() == false);
+    bool ldum = (name.empty() == false);
     
     if (type == NODE) 
     {
-	Ensure(dimension         == 0);
-	Ensure(number_of_nodes   == 1);
-	Ensure(number_of_sides   == 0);	
-	Ensure(elem_defs.size()  == 0);
+	ldum = ldum && (dimension         == 0);
+	ldum = ldum && (number_of_nodes   == 1);
+	ldum = ldum && (number_of_sides   == 0);	
+	ldum = ldum && (elem_defs.size()  == 0);
     }
     else
     {
-	Ensure(dimension > 0); 
-	Ensure(dimension < 4);
-	Ensure(number_of_nodes > dimension);
-	Ensure(number_of_sides <= number_of_nodes);
-	Ensure(number_of_sides > dimension); 
-	Ensure(elem_defs.size() > 0);
+	ldum = ldum && (dimension > 0); 
+	ldum = ldum && (dimension < 4);
+	ldum = ldum && (number_of_nodes > dimension);
+	ldum = ldum && (number_of_sides <= number_of_nodes);
+	ldum = ldum && (number_of_sides > dimension); 
+	ldum = ldum && (elem_defs.size() > 0);
     }
     
-    Ensure(side_type.size()  == number_of_sides);
-    Ensure(side_nodes.size() == number_of_sides);
-    Ensure(node_loc.size()   == number_of_nodes);
+    ldum = ldum && (side_type.size()  == number_of_sides);
+    ldum = ldum && (side_nodes.size() == number_of_sides);
+    ldum = ldum && (node_loc.size()   == number_of_nodes);
     
     for (int i=0; i < elem_defs.size(); i++)
-	Ensure(elem_defs[i].dimension == dimension-1);
+	ldum = ldum && (elem_defs[i].dimension == dimension-1);
     
     for (int i=0; i < side_nodes.size(); i++)
     {
-	Ensure(side_nodes[i].size() > 0);
-	Ensure(side_nodes[i].size() == 
-	       elem_defs[ side_type[i] ].number_of_nodes);
+	ldum = ldum && (side_nodes[i].size() > 0);
+	ldum = ldum && (side_nodes[i].size() == 
+			elem_defs[ side_type[i] ].number_of_nodes);
 	for (int j=0; j < side_nodes[i].size(); j++)
 	{
-	    Ensure(side_nodes[i][j] >= 0);
-	    Ensure(side_nodes[i][j] < number_of_nodes);
-	    Ensure(node_loc[ side_nodes[i][j] ] ==
-		   elem_defs[ side_type[i] ].node_loc[j]);
+	    ldum = ldum && (side_nodes[i][j] >= 0);
+	    ldum = ldum && (side_nodes[i][j] < number_of_nodes);
+	    ldum = ldum && (node_loc[ side_nodes[i][j] ] ==
+			    elem_defs[ side_type[i] ].node_loc[j]);
 	}
     }
-    return true;
+    return ldum;
 }
 
 void Element_Definition::construct_node()
