@@ -42,7 +42,7 @@ INSTALL_DATA = @INSTALL_DATA@
 CC = @CC@
 CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
-CPPFLAGS += -I . -I .. @testcppflags@ -I ${includedir}
+CPPFLAGS += -I. -I.. @testcppflags@ -I${includedir}
 
 CXX = @CXX@
 STRICTFLAG = @STRICTFLAG@

@@ -14,7 +14,7 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_NEEDS_LIBS, [dnl
    if test ${has_libdir:=no} != "yes" ; then
-       DRACO_LIBS="${DRACO_LIBS} -L \${libdir}"
+       DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
        has_libdir="yes"
    fi
 
@@ -35,7 +35,7 @@ dnl usage: configure.in
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_NEEDS_LIBS_TEST, [dnl
-   DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L \${libdir}"
+   DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
    for lib in $1
    do
        # temporary string to keep line from getting too long
@@ -88,7 +88,7 @@ AC_DEFUN(AC_INSTALL_LIB, [ dnl
 
    # test will need to link this library
    PKG_DEPENDS='../lib${package}${libsuffix}'
-   PKG_LIBS='-L .. -l${package}'
+   PKG_LIBS='-L.. -l${package}'
 ])
 
 dnl-------------------------------------------------------------------------dnl
