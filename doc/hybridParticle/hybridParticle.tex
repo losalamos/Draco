@@ -113,19 +113,24 @@ The hybrid Particle type was created by modifying the original
 \texttt{Particle} type present in the IMC component directory of
 Draco.  The \texttt{transport} member function of this new type was
 modified to implement the new absorption behavior. The modified
-\texttt{transport} method in the new class acts as before so long as
-the fractional energy weight of the particle is above 0.01 (i.e. the
+\texttt{transport} method in the new class acts as before when the
+fractional energy weight of the particle is above 0.01 (i.e. the
 energy weight is greater than 1\% of its initial value). In this case,
-the energy weight is decreased along the path of the particle to
-represent implicit absorption. Particles which reach a fractional
-energy weight of 0.01 are stopped and immediately switched to analog
-absorption behavior. This prevents the appearence of particles with
-very low fractional energy weights. If large numbers of these
-particles go into the census the combing process can fail to produce a
-reasonable selection of particles, resulting in considerable energy
-loss. When particles are at 1\% of their original energy weight, a
-cross section is computed for absorption and the energy weight of the
-particle remains constant.
+the energy weight of the particle decreases exponentially with
+streaming distance. When particles are at 1\% of their original energy
+weight, a cross section is computed for absorption events and the
+energy weight of the particle remains constant until the particle is
+absorbed.
+
+The old particle's streaming distance was limited by the time to the
+end of the time-step, the distance before a boundary crossing, and the
+randomly generated distance to a scattering event.  The new particle
+is also limited by the distance at which the particle attains it's
+cutoff energy weight. By limiting the streaming distance with the
+cutoff energy weight we prevent particles from attaining fractional
+weights that are lower than 0.01. Doing so prevents the appearance of
+numerous low-weight particles that can frustrate the combing operation
+at the beginning of a new time step.
 
 The new class was then added to the Draco/IMC library. A version of
 \texttt{milagro\_xyz} was written that allowed the type of particle to
@@ -171,11 +176,11 @@ runs are performed with 1,000 particles.
 \end{center}
 
 We notice that the discrepancy in the material and radiation
-temperatures is smaller by a factor of 26 and is no longer in the
-characteristic direction of greater material temperature. As expected,
-an increase in the variance is also observed. (We compute the
-approximate variance of the difference based on the assumption that
-the two quantities are independent.) The increase in variance is
+temperatures is smaller by more than a factor of 26 and is no longer
+in the characteristic direction of greater material temperature. As
+expected, an increase in the variance is also observed. (We compute
+the approximate variance of the difference based on the assumption
+that the two quantities are independent.) The increase in variance is
 sufficiently small that the merit of the new absorption behavior is
 not substantially reduced. Where the difference between material and
 radiation temperature is seven times the approximate standard
