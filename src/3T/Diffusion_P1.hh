@@ -3,7 +3,7 @@
 // Geoffrey M. Furnish
 // Thu May 28 13:16:55 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Class for solving P1 Diffusion equations to support P1-3T package.
 //---------------------------------------------------------------------------//
 
 #ifndef __3T_Diffusion_P1_hh__
@@ -19,15 +19,22 @@
 #include "3T/PreCond.hh"
 
 //===========================================================================//
-// class Diffusion_P1 - 
+// class Diffusion_P1 - Solve P1 diffusion equation for P13T package
 
-// 
+// This class implements the P1 diffusion solver needed to support the
+// conduction and radiation diffusion equations in the P13T package.  These
+// equations are documented in "3-T Diffusion with Material Motion
+// Corrections", part of the Draco doc set.
 //===========================================================================//
 
 template<class MT>
 class Diffusion_P1 : private MT::Coord_Mapper,
                      protected Diffusion_DB
 {
+    typedef typename MT::template cell_array<double> ccsf;
+    typedef typename MT::fcdsf fcdsf;
+    typedef typename MT::template bssf<double> bssf;
+
     SP<MT> spm;
 
     Banded_Matrix< double, 7 > A;
@@ -39,16 +46,14 @@ class Diffusion_P1 : private MT::Coord_Mapper,
 
     Mat1<double> dx, dy, dz;
 
+    fcdsf Dprime, Dtwidle, Dhat;
+
   public:
 
     // NESTED CLASSES AND TYPEDEFS
 
     typedef typename MT::fcdsf FluxField;
     typedef typename MT::fcdsf DiscFluxField;
-
-    typedef typename MT::template cell_array<double> ccsf;
-    typedef typename MT::fcdsf fcdsf;
-    typedef typename MT::template bssf<double> bssf;
 
     typedef double NumT;
 
@@ -67,6 +72,10 @@ class Diffusion_P1 : private MT::Coord_Mapper,
                 const ccsf& sigmaabar,
                 const ccsf& Qbar_r,
                 ccsf& phi );
+
+    void calculate_Dprime( const fcdsf& D );
+    void calculate_Dtwidle( const fcdsf& D, const fcdsf& Dp );
+    void calculate_Dhat_on_boundaries();
 
     Banded_Matrix<double,7>& get_A() { return A; }
 };
