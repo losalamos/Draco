@@ -11,6 +11,8 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_KCC, [dnl
 
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
    # KCC SPECIFIC FLAGS
    dirstoclean='ti_files'
 
@@ -61,6 +63,75 @@ AC_DEFUN(AC_DRACO_KCC, [dnl
        LDFLAGS="${LDFLAGS} --thread_safe --static_libKCC"
    fi
 
+   AC_MSG_RESULT("KCC compiler flags set")
+   
+   dnl end of AC_DRACO_KCC
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl GUIDEC++ (KCC) COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DRACO_GUIDE, [dnl
+
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # KCC SPECIFIC FLAGS
+   dirstoclean='ti_files'
+
+   # LINKER AND LIBRARY (AR)
+   LD='${CXX}'
+   AR='${CXX}'
+   ARFLAGS='--exceptions -o'
+   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="--strict"
+   fi
+
+   # --one_per flag
+   if test "${enable_one_per:=yes}" = yes ; then
+       # yes there is an extra space before the flag
+       ONEPERFLAG=" --one_per"
+   fi
+
+   # optimization level
+   if test "${enable_debug:=no}" = yes && \
+      test "${with_opt:=0}" != 0 ; then
+      CXXFLAGS="${CXXFLAGS} -g"
+      CFLAGS="${CFLAGS} -g"
+   fi
+   CXXFLAGS="${CXXFLAGS} +K${with_opt:=0}"
+   CFLAGS="${CFLAGS} +K${with_opt:=0}"
+
+   # static linking option
+   if test "${enable_static_ld}" = yes ; then
+       LDFLAGS="${LDFLAGS} --static_libKCC -Bstatic"
+   fi
+
+   # final compiler additions
+   # yes there is no space before the flag
+   # also, guide turns off exceptions by default, here we turn them on
+
+   CXXFLAGS="${CXXFLAGS}${ONEPERFLAG} --exceptions"
+
+   # For version 3.3 of KCC the strict and thread_safe
+   # cannot be used together (in general).
+
+   if test "$with_c4" = shmem ; then
+       CXXFLAGS="${CXXFLAGS} --thread_safe"
+       STRICTFLAG=""
+       LDFLAGS="${LDFLAGS} --thread_safe --static_libKCC"
+   fi
+
+   # add exceptions to ldflags
+   LDFLAGS="--exceptions ${LDFLAGS}"
+
+   AC_MSG_RESULT("Guide compiler flags set")
+
    dnl end of AC_DRACO_KCC
 ])
 
@@ -69,6 +140,8 @@ dnl CC COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_CC, [dnl
+
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
    # LINKER AND LIBRARY (AR)
    LD='${CXX}'
@@ -116,6 +189,8 @@ AC_DEFUN(AC_DRACO_CC, [dnl
    # final compiler additions
    CXXFLAGS="${CXXFLAGS} -LANG:std -no_auto_include"
 
+   AC_MSG_RESULT("SGI CC compiler flags set")
+
    dnl end of AC_DRACO_CC
 ])
 
@@ -124,7 +199,13 @@ dnl EGCS COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_EGCS, [dnl
+
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
    LD='${CXX}'
+
+   AC_MSG_RESULT("EGCS compiler flags set")
+
    dnl end of AC_DRACO_EGCS
 ])
 

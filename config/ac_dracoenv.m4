@@ -174,10 +174,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    
    if test "${with_cxx}" = kcc ; then
        AC_CHECK_PROG(CXX, KCC, KCC)
+
        if test "${CXX}" = KCC ; then
 	   CC='KCC --c'
 	   AC_DRACO_KCC
        else
+	   AC_MSG_WARN(cannot find KCC trying for CC)
 	   AC_PROG_CXX
 	   AC_PROG_CC
 	   if test "${CXX}" = CC && test "${CC}" = cc ; then
@@ -186,26 +188,51 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	       AC_DRACO_EGCS
 	   fi
        fi
+
+   elif test "${with_cxx}" = guide ; then
+       AC_CHECK_PROG(CXX, guidec++, guidec++)
+       AC_CHECK_PROG(CC, guidec, guidec)
+
+       if test "${CXX}" = guidec++ && test "${CC}" = guidec ; then 
+	   AC_DRACO_GUIDE
+       else
+	   AC_MSG_WARN(cannot find guide trying for KCC)
+	   AC_CHECK_PROG(CXX, KCC, KCC)
+	   if test "${CXX}" = KCC ; then
+	       CC='KCC --c'
+	       AC_DRACO_KCC
+	   else
+	       AC_PROG_CXX
+	       AC_PROG_CC
+	       AC_DRACO_EGCS
+	   fi
+       fi
+
    elif test "${with_cxx}" = cc ; then
        AC_CHECK_PROG(CXX, CC, CC)
-       AC_CHECK_PROG(CC, cc, cc)
+       AC_CHECK_PROG(CC, cc, cc)  
+
        if test "${CXX}" = CC && test "${CC}" = cc ; then
 	   AC_DRACO_CC
        else 
+	   AC_MSG_WARN(cannot find CC trying EGCS)
 	   AC_PROG_CXX
 	   AC_PROG_CC
 	   AC_DRACO_EGCS
        fi
-   elif test "${with_cxx}" = egcs ; then
+
+   elif test "${with_cxx}" = egcs ; then 
        AC_PROG_CXX
        AC_PROG_CC
        AC_DRACO_EGCS
+
    fi
    
    # check to see that we have a C++ compiler defined, throw an error
    # if not
-   if test "${CXX}" = KCC || test "${CXX}" = CC || \
-      test "${CXX}" = g++ || test "${CXX}" = c++ ; then
+   if test "${CXX}" = KCC || test "${CXX}" = CC  || \
+      test "${CXX}" = g++ || test "${CXX}" = c++ || \
+      test "${CXX}" = guidec++ ; then
 	   found_cxx='good'
    fi
    
