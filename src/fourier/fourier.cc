@@ -315,7 +315,6 @@ for(int i=0; i<2; i++)
        u = new float [dx_count];
        v = new float [dx_count];
        delta_x = delta_x_begin;
-       int step_counter;
        step_counter = 0;
        for(int m=0; m<num_delta_x; m++)
            {
@@ -367,6 +366,81 @@ for(int i=0; i<2; i++)
        cpgend();
        }
    }
+}
+
+
+//***************************************
+//Print member function of class fourier.
+//***************************************
+void Fourier::print()
+{
+    // Global input data (wave and delta_x).
+    cout                                             <<endl;
+    cout <<"INPUT INFORMATION"                       <<endl;
+    cout                                             <<endl;
+    cout <<"Method: "            <<method            <<endl;            
+    cout <<"Acceleration_Type: " <<acceleration_type <<endl;
+    cout <<"Analysis_Type: "     <<analysis_type     <<endl;
+    cout <<"Sigma_t: "           <<sigma_t           <<endl;
+    cout <<"Sigma_s: "           <<sigma_s           <<endl;
+    cout <<"Delta_x: "           <<delta_x           <<endl;
+    cout <<"Quad_order: "        <<quad_order        <<endl;
+    cout <<"Lambda_begin: "      <<lambda_begin      <<endl;
+    cout <<"Lambda_end: "        <<lambda_end        <<endl;
+    cout <<"Lambda_step_size: "  <<lambda_step_size  <<endl;
+    cout <<"Delta_x_begin: "     <<delta_x_begin     <<endl;
+    cout <<"Num_delta_x: "       <<num_delta_x       <<endl;
+
+    // Input data for delta_x problem.
+    if(analysis_type == "delta")
+    {
+	cout <<"Region " <<"Number " <<"Step Size " <<endl;
+	for(int i=0; i<num_delta_x; i++)
+	{
+	    cout <<region_number[i] <<"      " <<num_points[i] <<"      " 
+		 <<dx_step_size[i]  <<endl;
+    	}
+    }
+
+    cout                        <<endl;
+    cout <<"OUTPUT INFORMATION" <<endl;
+    cout                        <<endl;
+    //Print out spectral radius vs. lambda/wave/frequency.
+    if(analysis_type == "wave")
+    {
+	cout <<"Spectral Radius vs. Lambda/Wave/Frequency" <<endl;
+	cout                                               <<endl;
+	cout <<"Number of Waves: " <<num_lambda            <<endl;
+	cout <<"Lambda   Spectral Radius"                 <<endl;        
+        double lambda_step = lambda_begin;
+	for(int j=0; j<num_lambda; j++)
+	{
+	    cout <<lambda_step <<"        " <<spec_rad_lam[j] <<endl;
+	    lambda_step += lambda_step_size;
+	}
+    }
+
+    //Print out spectral radius vs. thickness.
+    if(analysis_type == "delta")
+    {
+	cout                                               <<endl;
+	cout <<"Spectral Radius vs. Thickness" <<endl;
+	cout                                               <<endl;
+	cout <<"Number of Thicknesses: " <<step_counter    <<endl;
+	cout <<"Thickness (mfps)   Spectral Radius"        <<endl;        
+	step_counter = 0;
+	delta_x      = dx_step_size[0];
+	for(int k=0; k<num_delta_x; k++)
+	{
+	    for(int l=0; l<num_points[k]; l++)
+	    {
+		cout <<delta_x <<"                  " 
+		     <<spec_rad_dx[step_counter+1] <<endl;;
+		delta_x += dx_step_size[k]; 
+		step_counter += 1;
+	    }
+	}
+    }
 }
 
 

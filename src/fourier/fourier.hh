@@ -55,7 +55,9 @@ class Fourier
 
     //! Plot member function.
     void plot();
-    //void print();
+
+    //! Print member function.
+    void print();
     
   private:
 
@@ -71,6 +73,7 @@ class Fourier
     double lambda_step_size;
     double delta_x_begin;
     int    num_delta_x;
+    int    step_counter;
     int    tot_num_delta_x;
     int    *region_number;
     int    *num_points;

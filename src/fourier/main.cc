@@ -16,7 +16,7 @@ Fourier fourier;
 fourier.input();
 fourier.solve();
 fourier.plot();
-//fourier.print();
+fourier.print();
 }
  
 
