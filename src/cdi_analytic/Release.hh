@@ -9,13 +9,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_analytic_Release_hh__
-#define __cdi_analytic_Release_hh__
+#ifndef rtt_cdi_analytic_Release_hh
+#define rtt_cdi_analytic_Release_hh
 
 //===========================================================================//
 /*!
  * \page cdi_analytic_overview Overview of the cdi_analytic package
- * \version 0_0_0
+ * \version 1_1_0
  * \author Tom Evans and Todd Urbatsch
  * 
  * The cdi_analytic package contains analytic data models that can be
@@ -39,7 +39,7 @@ namespace rtt_cdi_analytic
     const std::string release();
 }
 
-#endif                          // __cdi_analytic_Release_hh__
+#endif                          // rtt_cdi_analytic_Release_hh
 
 //---------------------------------------------------------------------------//
 //                           end of cdi_analytic/Release.hh
