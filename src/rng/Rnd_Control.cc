@@ -8,8 +8,11 @@
 
 #include "rng/Rnd_Control.hh"
 #include "ds++/Assert.hh"
+#include <cstdlib>
 
 RNGSPACE
+
+using std::free;
 
 //---------------------------------------------------------------------------//
 // member functions
@@ -47,7 +50,10 @@ Sprng Rnd_Control::spawn(Sprng &random)
   // create a new SPRNG random number object with new stream
     Sprng ran(newstream[0], random.get_num());
 
-  // retrun the new random object
+  // free some memory
+    free(newstream);
+
+  // return the new random object
     return ran;
 }
 

@@ -3,7 +3,7 @@
 // Thomas M. Evans
 // Thu Apr 30 13:33:20 1998
 //---------------------------------------------------------------------------//
-// @> Test of SPRNG and Sprng random number class
+// @> Test of SPRNG and Sprng random number class.
 //---------------------------------------------------------------------------//
 
 #include "rng/Sprng.hh"
@@ -39,6 +39,8 @@ void t1()
 
     for (int i = 2; i < 5; i++)
 	cout << ran2.ran() << endl;
+
+    ran2.print();
 
     cout << endl << "<< END TEST1 >>" << endl << endl;
 }
