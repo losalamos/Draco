@@ -527,6 +527,33 @@ RZWedge_Mesh::sf_int RZWedge_Mesh::get_surcells(std::string boundary) const
 }
 
 //---------------------------------------------------------------------------//
+/*! 
+ * \brief Sample a position on the surface of a sphere inside a cell.
+ *
+ * This function is required by the IMC_MT concept.
+ * 
+ * \param cell cell index
+ * \param origin sphere origin
+ * \param radius sphere radius
+ * \param random random number object
+ * \return a pair of vector<double> where the first element of the pair is
+ * the position on the surface of the sphere and the second element of the
+ * pair is the normal of the sphere at that position
+ */
+RZWedge_Mesh::pair_sf_double RZWedge_Mesh::sample_pos_on_sphere(
+    int              cell, 
+    const sf_double &origin,
+    double           radius,
+    rng_Sprng       &random) const
+{
+    pair_sf_double returnit;
+
+    Insist(0, "Not implemented in rz yet.");
+
+    return returnit;
+}
+
+//---------------------------------------------------------------------------//
 // check that a user-/host-defined set of surface source cells actually
 // resides on the surface of the system (requires a vacuum bnd).
 

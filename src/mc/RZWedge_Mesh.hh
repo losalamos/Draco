@@ -23,6 +23,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <utility>
 
 namespace rtt_mc
 {
@@ -89,6 +90,7 @@ class RZWedge_Mesh
     typedef std::vector<double>               sf_double;
     typedef std::vector<std::vector<double> > vf_double;
     typedef std::string                       std_string;
+    typedef std::pair<sf_double, sf_double>   pair_sf_double;
 
     // Handy typedefs to CC fields (not formally needed in KCC3.3+).
     typedef CCSF<double>     CCSF_double;
@@ -185,6 +187,7 @@ class RZWedge_Mesh
     inline int next_cell(int, int, const sf_double & = sf_double(3)) const;
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &, const sf_double &, int, int &) const;
+    inline double get_orthogonal_dist_to_bnd(const sf_double &, int) const;
     inline sf_double get_normal(int, int) const;
     inline sf_double get_normal_in(int, int) const;
     inline double volume(int) const;
@@ -198,8 +201,11 @@ class RZWedge_Mesh
     sf_int get_surcells(std_string) const;
     bool check_defined_surcells(const std_string, const sf_int &) const;
     inline sf_int get_neighbors(int) const;
-    bool full_Mesh() const { return !submesh; }
+    pair_sf_double sample_pos_on_sphere(int, const sf_double &, double,
+					rng_Sprng &) const;
 
+    //! Determine if this is a full mesh or partitioned mesh.
+    bool full_Mesh() const { return !submesh; }
     // Pack function.
     SP_Pack pack(const sf_int & = sf_int()) const;
 
@@ -789,6 +795,21 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos_on_face(int cell, int face,
     // return the sampled position
     return position;
 }
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the minimum distance to a cell boundary.
+ */
+double RZWedge_Mesh::get_orthogonal_dist_to_bnd(const sf_double &r, 
+						int              cell) const
+{
+    Insist(0, "Not implemented in rz yet.");
+
+    // loop over dimensions and calculate the minimum distance
+    double min_distance = global::huge_int;
+    return min_distance;
+}
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Calculate the neighbors around a cell.
