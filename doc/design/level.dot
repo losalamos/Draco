@@ -39,6 +39,7 @@ digraph draco_level {
     meshread [shape=box, label="meshReaders"];
     plot [shape=box, label="plot2D"];
     lapack [shape=box, label="lapack_wrap"];
+    shlib [shape=box, label="shared_lib"];
     
     /* level 4 */
     viz [shape=box, label="viz"];
@@ -55,7 +56,7 @@ digraph draco_level {
     /* dependencies */
     {rank=same; level1 stdheaders vlapack vpcg vmpi veospac  vgandolf vgrace vspring};
     {rank=same; level2 dsxx};
-    {rank=same; level3 plot lapack traits xm c4 rng units meshread cdi quad};
+    {rank=same; level3 shlib plot lapack traits xm c4 rng units meshread cdi quad};
     {rank=same; level4 rttread viz timestep cdianal cdieos cdigan pcg};
     {rank=same; level5 meshservice};
     
@@ -84,6 +85,7 @@ digraph draco_level {
     plot        -> {vgrace}  [color="green"];
     lapack      -> {dsxx};
     lapack      -> {vlapack} [color="green"];
+    shlib       -> {dsxx};
     
     /* level 4 */
     viz         -> {traits};      /* traits: dsxx */
