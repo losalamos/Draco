@@ -110,7 +110,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    
    dnl check for and assign the path to python
    AC_PATH_PROG(PYTHON_PATH, python, null)
-   if test "${PYTHON_PATH}" == null ; then
+   if test "${PYTHON_PATH}" = null ; then
        AC_MSG_ERROR("No valid Python found!")
    fi
 
