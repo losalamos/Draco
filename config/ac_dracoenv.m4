@@ -638,11 +638,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        #
 
        #
-       # gandolf and eospac requires -lfortran on the link line.
+       # gandolf, eospac, pcg require -lfor on the link line.
        #
 
        AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ; then
+       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
+          test -n "${vendor_pcg}"; then
           LIBS="${LIBS} -lfor"
           AC_MSG_RESULT("-lfor added to LIBS")
        fi
