@@ -425,10 +425,24 @@ void simple_one_cell_Sphyramid()
 	vector<double> position_sampled;
 	
 	position_sampled = mesh->sample_pos(1,ran_object);
-	//if (position_sampled.size() != 3)                    ITFAILS;
-	//if (!soft_equiv(position_sampled[0], 0.2515, 0.001)) ITFAILS;
-	//if (!soft_equiv(position_sampled[1], 0.1961, 0.001)) ITFAILS;
-	//if (!soft_equiv(position_sampled[2], 0.2216, 0.001)) ITFAILS;
+	if (position_sampled.size() != 3)                    ITFAILS;
+	if (!soft_equiv(position_sampled[0], 0.7289, 0.001)) ITFAILS;
+	if (!soft_equiv(position_sampled[1],-0.5642, 0.001)) ITFAILS;
+	if (!soft_equiv(position_sampled[2], 0.5035, 0.001)) ITFAILS;
+
+	position_sampled = mesh->sample_pos(1,ran_object);
+	if (position_sampled.size() != 3)                    ITFAILS;
+	if (!soft_equiv(position_sampled[0], 0.6051, 0.001)) ITFAILS;
+	if (!soft_equiv(position_sampled[1],-0.2852, 0.001)) ITFAILS;
+	if (!soft_equiv(position_sampled[2],-0.2427, 0.001)) ITFAILS;
+
+	// sample with slope -- explicit-value test;
+	vector<double> slope(3);
+	slope[0] =-1.0;
+	slope[1] = 0.0;
+	slope[2] = 0.0;
+
+	
     }
 
 

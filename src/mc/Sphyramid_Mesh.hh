@@ -20,9 +20,9 @@
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
-//#include "Math.hh"
+#include "Math.hh"
 //#include "Constants.hh"
-//#include "Sampler.hh"
+#include "Sampler.hh"
 #include <vector>
 //#include <iostream>
 #include <string>
@@ -179,8 +179,8 @@ class Sphyramid_Mesh
     vf_double get_vertices(int cell) const;
     vf_double get_vertices(int cell, int face) const;
     inline sf_double sample_pos(int cell, rng_Sprng &random) const;
-    // inline sf_double sample_pos(int, rng_Sprng &, sf_double, double)
-    // const;
+    inline sf_double sample_pos(int cell, rng_Sprng &random, sf_double slope, 
+				double center_pt) const;
     // inline sf_double sample_pos_on_face(int,int, rng_Sprng &) const;
     int get_bndface(std_string boundary, int cell) const;
     sf_int get_surcells(std_string boundary) const;
@@ -497,6 +497,8 @@ double Sphyramid_Mesh::face_area(int cell, int face) const
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Sample a position uniformly in an Sphyramid_Mesh cell
+ * the form of the (unormalized) pdf is
+ * f(x)=tan_beta*tan_beta*x*x x_low<x<x_high
  * 
  * \param cell cell number
  * \param random random number object
@@ -523,9 +525,12 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
     double hiy = hix*this->tan_beta;
     Check (loy >= 0.0);
     Check (hiy >= 0.0);
+
+    // calculate pdf coefficient(i.e. (tan_beta)^2)
+    double coeff = this->tan_beta*this->tan_beta;
     
     // sample x uniformly in cell
-    position[0] = 0.0;
+    position[0] = rtt_mc::sampler::sample_xsquared(random, lox, hix, coeff);
     
     // sample y and z value
     double pos_y = position[0]*this->tan_beta;
@@ -548,7 +553,48 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
     return position;
 
 }
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief  sample a position in a Sphyramid_Mesh cell according to a slope
+ * 
+ * \param cell cell number
+ * \param random random number object
+ * \param slope slope sampling weight function (i.e. T^4)
+ * \param center_pt cell-centered value of sampling weight function
+ * \return location in cell
+ */
+Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell, rng_Sprng &random,
+						     sf_double slope,
+						     double center_pt) const
+{
+    using global::soft_equiv
 
+    Require (cell >  0);
+    Require (cell <= num_cells());
+    Check   (this->coord->get_dim() == 3);
+
+    // make sure that there is no y or z slopes
+    Require (soft_equiv(slope[1], 0.0));
+    Require (soft_equiv(slope[2], 0.0));
+	
+
+    // initialize location vector
+    sf_double position(this->coord->get_dim(), 0.0);
+
+    // get x-dimension cell extents
+    double lox = get_low_x(cell);
+    double hix = get_high_x(cell);
+    Check (lox >= 0.0);
+    Check (hix >= 0.0);
+
+    // calculate corresponding y (and z) cell extents
+    double loy = lox*this->tan_beta;
+    double hiy = hix*this->tan_beta;
+    Check (loy >= 0.0);
+    Check (hiy >= 0.0);
+
+    return position;
+}
       
 //---------------------------------------------------------------------------//
 /*! 

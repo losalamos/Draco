@@ -16,7 +16,6 @@
 #include "Sphyramid_Mesh.hh"
 //#include "XYZCoord_sys.hh"
 //#include "Constants.hh"
-#include "Math.hh"
 #include "viz/Ensight_Translator.hh"
 //#include "ds++/Packing_Utils.hh"
 //#include <iomanip>
