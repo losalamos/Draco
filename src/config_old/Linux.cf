@@ -60,7 +60,8 @@ endif
 
 ifeq ($(kcc_deps),yes)
 ifneq ($(gendeps),no)
-CXX	+= --output_dependencies .dkcc.$(basename $(notdir $*))_$(env)
+CXX_DEPEND	= --output_dependencies .dkcc.$(basename $(notdir $*))_$(env)
+#CXX	+= --output_dependencies .dkcc.$(basename $(notdir $*))_$(env)
 endif
 endif
 
@@ -69,8 +70,12 @@ INSTANTIALYZER	+= -m edg
 ifeq ($(c4),no)
 #SYS_FLAGS = -DNOMPI
 comm	:=
-else
-comm	:= c4
+endif
+
+ifeq ($(c4),mpi)
+
+ifeq ($(lam),yes)
+comm	:= c4l
 LAMHCP  := KCC
 export LAMHCP
 compiler = hcp
@@ -79,13 +84,23 @@ SYS_LIBS = -lmpi
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77
 endif
 
-lib_cmd	:= $(CXX) -o
-ifdef nj
-lib_cmd	:= $(CXX) --parallel_build $(nj) -o
-SYS_LINK_FLAGS	:= --parallel_build $(nj)
-else
-lib_cmd	:= $(CXX) -o
+ifneq ($(lam),yes)
+# Assume MPICH
+comm	:= c4m
+SYS_FLAGS = -DC4_MPI -I/home/furnish/mpich/include
+SYS_LIBS = -L/home/furnish/mpich/lib/LINUX/ch_p4 -lmpi
+PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77
 endif
+
+endif				# c4 = mpi
+
+lib_cmd	:= $(CXX) -o
+#ifdef nj
+#lib_cmd	:= $(CXX) --parallel_build $(nj) -o
+#SYS_LINK_FLAGS	:= --parallel_build $(nj)
+#else
+#lib_cmd	:= $(CXX) -o
+#endif
 
 ifndef opt
 opt	= g
