@@ -1,0 +1,83 @@
+#!/usr/local/gnu/bin/bash
+##---------------------------------------------------------------------------##
+## settest: sets up a draco/src/pkg/test directory with the proper
+##          dejagnu directories and files
+##---------------------------------------------------------------------------##
+## Thomas M. Evans
+## $Id$
+##---------------------------------------------------------------------------##
+
+##---------------------------------------------------------------------------##
+## find the draco/tools directory
+
+testdir=`pwd`
+
+draco_tools=`dirname $0`
+draco_tools=`cd $draco_tools; pwd`
+
+draco="${draco_tools}/.."
+draco=`cd $draco; pwd`
+
+draco_config="${draco}/config"
+
+cd $testdir
+
+##---------------------------------------------------------------------------##
+## make the config directory if it does not exist
+
+echo ">>> Checking for config/"
+
+if test -d "config" ; then
+    echo "** config/ directory exists"
+else
+    echo "** Making the config/ directory"
+    mkdir config
+fi
+
+cd "${testdir}/config"
+
+if test -f "unix.exp" ; then
+    echo "** config/unix.exp exists"
+else
+    echo "** Making config/unix.exp"
+    cp "${draco_config}/unix.exp" .
+fi
+
+cd $testdir
+echo
+
+##---------------------------------------------------------------------------##
+## now do the .cc test files
+
+echo ">>> Checking for test executable directories"
+
+files_cc=`ls *.cc`
+
+for file in $files_cc
+    do
+    file=`echo "$file" | sed -e 's/...$//'`
+    dir=${file}.0
+    
+    # see if the directory exists
+    if test -d $dir ; then
+	echo "** ${dir}/ directory exists"
+    else
+	echo "** Making the ${dir}/ directory"
+	mkdir $dir
+    fi
+
+    # see if the test.exp file exists
+    cd ${testdir}/${dir}
+
+    if test -f "test.exp" ; then
+	echo "** ${dir}/test.exp exists"
+    else
+	echo "** Making ${dir}/test.exp"
+	cp "${draco_config}/test.exp" .
+    fi
+
+    # back to the testdir
+    cd $testdir
+    echo
+done
+    
