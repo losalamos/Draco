@@ -21,6 +21,7 @@
 //      Added Insist() call when an unknown quad_type is specified.
 
 #include <iostream>
+#include <math.h>
 #include "QuadCreator.hh"
 
 namespace rtt_quadrature
