@@ -41,6 +41,8 @@ void FileSet::scan()
 
     active = this;
 
+#if 0
+
 #define SELECT_HACK 
 #define COMPAR_HACK 
 
@@ -75,6 +77,8 @@ void FileSet::scan()
     free( namelist );
 
     find_last_sequence_number();
+
+#endif
 }
 
 //---------------------------------------------------------------------------//
