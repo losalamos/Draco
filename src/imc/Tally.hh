@@ -4,7 +4,7 @@
  * \author Todd J. Urbatsch
  * \date   Mon Apr  6 14:38:03 1998
  * \brief  IMC Tally class header file.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -302,11 +302,10 @@ void Tally<MT>::accum_n_reflections(const int n)
     n_reflections += n;
 }
 
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Get the surface sub-tally for the designated group, or the only one
- * for multigroup.
+ * for gray.
  * 
  * \param group The group index
  * \return Smart pointer to the surface sub-tally
@@ -321,8 +320,8 @@ typename Tally<MT>::SP_S_ST Tally<MT>::get_Surface_Sub_Tally(int group) const
 	Check ( group <= surface_sub_tallies.size() );
 	return surface_sub_tallies[group-1]; 
     }
-    else return SP_S_ST(0);
 
+    return SP_S_ST(0);
 }
 
 //---------------------------------------------------------------------------//
@@ -348,7 +347,6 @@ void Tally<MT>::assign_Surface_Sub_Tally(SP_S_ST tally)
 {
     surface_sub_tallies.resize(1, tally); 
 } 
-
 
 } // end of rtt_imc
 

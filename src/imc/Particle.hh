@@ -4,7 +4,7 @@
  * \author Thomas M. Evans, Todd J. Urbatsch and Mike Buksas
  * \date   Fri Jan 30 17:04:24 1998
  * \brief  Particle class header file.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -493,7 +493,7 @@ void Particle<MT>::stream_implicit_capture(
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Dispatch to correct streaming operation
+ * \brief Dispatch to the correct streaming operation
  */
 template <typename MT>
 void Particle<MT>::stream_and_capture(Tally<MT>         &tally, 
@@ -502,6 +502,7 @@ void Particle<MT>::stream_and_capture(Tally<MT>         &tally,
 				      double             d_stream,
 				      int                group_index)
 {
+    Require (group_index >= 1);
 
     if (use_analog_absorption())
     {
@@ -509,11 +510,10 @@ void Particle<MT>::stream_and_capture(Tally<MT>         &tally,
 	if (surface_tracker) 
 	    surface_tracker->tally_crossings_analog_abs(
 		r, omega, cell, d_stream, ew, 
-		*(tally.get_Surface_Sub_Tally()) 
+		*(tally.get_Surface_Sub_Tally(group_index)) 
 		);
           
 	stream_analog_capture(tally, d_stream);
-
     }
     else
     {
@@ -521,7 +521,7 @@ void Particle<MT>::stream_and_capture(Tally<MT>         &tally,
 	if (surface_tracker) 
 	    surface_tracker->tally_crossings_implicit_abs(
 		r, omega, cell, d_stream, ew, sigma_eff_abs,
-		*(tally.get_Surface_Sub_Tally()) 
+		*(tally.get_Surface_Sub_Tally(group_index)) 
 		);
           
 	stream_implicit_capture(sigma_eff_abs, tally, d_stream);    
@@ -529,7 +529,6 @@ void Particle<MT>::stream_and_capture(Tally<MT>         &tally,
     
     // Adjust the time remaining till the end of the time step
     time_left -= d_stream / rtt_mc::global::c;
-
 }
 
 //---------------------------------------------------------------------------//

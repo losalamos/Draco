@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Wed Jul  9 10:44:54 2003
  * \brief  Unit test for the surface tracking feature on RZ meshes.  
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -459,14 +459,23 @@ void test_mg_particle()
     // Make a tally
     SP<Tally<RZWedge_Mesh> > tally ( new Tally<RZWedge_Mesh>(mesh) );
 
-    // Make a surface tracking sub-tally
-    SP<Surface_Sub_Tally> surface_tally (
-	new Surface_Sub_Tally(az_mesh, tester));
-    tally->assign_Surface_Sub_Tally(surface_tally);
-
     // Make a multigroup opacity
     SP<Opacity<RZWedge_Mesh, Multigroup_Frequency> > opacity = 
 	build_a_mg_opacity(mesh);
+
+    // Make a surface tracking sub-tallies
+    vector<SP<Surface_Sub_Tally> > surface_tallies(
+        opacity->get_Frequency()->get_num_groups()); 
+
+    if (surface_tallies.size() != 2) ITFAILS;
+
+    for (int i = 0; i < 2; i++)
+    {
+        SP<Surface_Sub_Tally> surface_tally (
+            new Surface_Sub_Tally(az_mesh, tester));
+        surface_tallies[i] = surface_tally;
+    }
+    tally->assign_Surface_Sub_Tally(surface_tallies);
 
     // Make an (empty) random walk pointer
     SP<Random_Walk<RZWedge_Mesh> > rwalk;
@@ -491,7 +500,6 @@ void test_mg_particle()
     // Do the transport
     particle.transport(*mesh, *opacity, *tally, rwalk, tracker);
 
-
     // Check the results
     if (particle.status() != false ) ITFAILS;
 
@@ -501,6 +509,12 @@ void test_mg_particle()
 // 		    correct_final_r, correct_final_r+3) ) ITFAILS;
 
     // Check the tallies:
+
+    SP<Surface_Sub_Tally> surface_tally;
+
+    // all results are in group 2
+    surface_tally = tally->get_Surface_Sub_Tally(2);
+    if (!surface_tally) ITFAILS;
 
     // 1st: inward across surface 2
     if (!soft_equiv(surface_tally->weight(2, false, 4) , 1.0))
