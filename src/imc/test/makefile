@@ -15,7 +15,7 @@ need_c4         := yes
 
 include ../../config/makefile
 
-srcs    = tsr.cc
+srcs    = testb.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.
