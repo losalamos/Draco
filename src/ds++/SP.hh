@@ -292,23 +292,9 @@ SP<T>::SP(const SP<X> &spx_in)
     Require (spx_in.r);
 
     // make a pointer to T *
-    T *np = 0;
-
-    // if spx_in points to a null pointer then check to make sure that X * is
-    // convertible to T * using typeinfo
-    if (!spx_in)
-    {
-	Insist (typeid(*np) == typeid(X), 
-		"Incompatible NULL SP conversion between SP<X> and SP<T>.");
-    }
-
-    // otherwise we do a dynamic_cast to convert between types
-    else
-    {
-	// make a dynamic cast to check that we can cast between X * and T *
-	np = dynamic_cast<T *>(spx_in.p);
-	Insist(np, "Incompatible SP conversion between SP<X> and SP<T>.");
-    }
+    T *np = dynamic_cast<T *>(spx_in.p);
+    Insist(spx_in.p ? np != NULL : true, 
+	   "Incompatible SP conversion between SP<X> and SP<T>.");
 
     // assign the pointer and reference
     p = np;
@@ -432,23 +418,9 @@ SP<T>& SP<T>::operator=(const SP<X> &spx_in)
     Require (spx_in.r);
 
     // make a pointer to T *
-    T *np = 0;
-
-    // if spx_in points to a null pointer then check to make sure that X * is
-    // convertible to T * using typeinfo
-    if (!spx_in)
-    {
-	Insist (typeid(*np) == typeid(X), 
-		"Incompatible NULL SP conversion between SP<X> and SP<T>.");
-    }
-
-    // otherwise we do a dynamic_cast to convert between types
-    else
-    {
-	// make a dynamic cast to check that we can cast between X * and T *
-	np = dynamic_cast<T *>(spx_in.p);
-	Insist(np, "Incompatible SP conversion between SP<X> and SP<T>.");
-    }
+    T *np = dynamic_cast<T *>(spx_in.p);
+    Insist(spx_in.p ? np != NULL : true, 
+	   "Incompatible SP conversion between SP<X> and SP<T>.");
 
     // check to see if we are holding the same pointer (and np is not NULL);
     // to NULL pointers to the same type are defined to be equal by the
