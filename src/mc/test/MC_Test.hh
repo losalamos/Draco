@@ -156,7 +156,123 @@ bool topology_replication_test(dsxx::SP<rtt_mc::OS_Mesh> mesh,
 	}
     }
 
-    // if we haven't returned than we pass
+    // return passing condition
+    return p;
+}
+
+//---------------------------------------------------------------------------//
+// Full DD topology test --> uses base class reference to derived
+// class type
+
+bool topology_DD_test(dsxx::SP<rtt_mc::OS_Mesh> mesh,
+		      const rtt_mc::Topology &top)
+{
+    using std::vector;
+
+    // passing condition
+    bool p = true;
+
+    // verify the parallel scheme
+    if (top.get_parallel_scheme() != "DD") p = FAILURE;
+
+    // check the number of cells, this is a 2 processor/3 cell mesh
+    // decomposition
+    if (top.num_cells() != mesh->num_cells()) p = FAILURE;
+    if (top.num_cells(C4::node()) != 3) p = FAILURE;
+
+    // check the number of procs--each cell should be on one processor
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	if (top.num_procs(cell) != 1) p = FAILURE;
+
+    // check global cell indices
+    if (C4::node() == 0)
+    {
+	if (top.global_cell(1) != 1) p = FAILURE;
+	if (top.global_cell(2) != 2) p = FAILURE;
+	if (top.global_cell(3) != 3) p = FAILURE;
+    }
+
+    if (C4::node() == 1)
+    {
+	if (top.global_cell(1) != 4) p = FAILURE;
+	if (top.global_cell(2) != 5) p = FAILURE;
+	if (top.global_cell(3) != 6) p = FAILURE;
+    }
+
+    for (int np = 0; np < C4::nodes(); np++)
+    {
+	int offset = np * 3;
+	for (int lc = 1; lc <= 3; lc++)
+	    if (top.global_cell(lc, np) != lc + offset) p = FAILURE;
+    }
+	
+
+    // check local cell indices
+    if (C4::node() == 0)
+    {
+	if (top.local_cell(1) != 1) p = FAILURE;
+	if (top.local_cell(2) != 2) p = FAILURE;
+	if (top.local_cell(3) != 3) p = FAILURE;
+	if (top.local_cell(4) != 0) p = FAILURE;
+	if (top.local_cell(5) != 0) p = FAILURE;
+	if (top.local_cell(6) != 0) p = FAILURE;
+    }
+
+    if (C4::node() == 1)
+    {
+	if (top.local_cell(1) != 0) p = FAILURE;
+	if (top.local_cell(2) != 0) p = FAILURE;
+	if (top.local_cell(3) != 0) p = FAILURE;
+	if (top.local_cell(4) != 1) p = FAILURE;
+	if (top.local_cell(5) != 2) p = FAILURE;
+	if (top.local_cell(6) != 3) p = FAILURE;
+    }
+
+    {
+	if (top.local_cell(1, 0) != 1) p = FAILURE;
+	if (top.local_cell(2, 0) != 2) p = FAILURE;
+	if (top.local_cell(3, 0) != 3) p = FAILURE;
+	if (top.local_cell(4, 0) != 0) p = FAILURE;
+	if (top.local_cell(5, 0) != 0) p = FAILURE;
+	if (top.local_cell(6, 0) != 0) p = FAILURE;
+	if (top.local_cell(1, 1) != 0) p = FAILURE;
+	if (top.local_cell(2, 1) != 0) p = FAILURE;
+	if (top.local_cell(3, 1) != 0) p = FAILURE;
+	if (top.local_cell(4, 1) != 1) p = FAILURE;
+	if (top.local_cell(5, 1) != 2) p = FAILURE;
+	if (top.local_cell(6, 1) != 3) p = FAILURE;
+    }
+
+    // check cell lists on processor
+    vector<int> cell_list(3);
+    if (C4::node() == 0) 
+    {
+	cell_list[0] = 1;
+	cell_list[1] = 2;
+	cell_list[2] = 3;
+	if (top.get_cells(0) != cell_list) p = FAILURE;
+    }
+    
+    if (C4::node() == 1) 
+    {
+	cell_list[0] = 4;
+	cell_list[1] = 5;
+	cell_list[2] = 6;
+	if (top.get_cells(1) != cell_list) p = FAILURE;
+    }
+
+    // check proc lists for global cells
+    vector<int> proc_list(1);
+    proc_list[0] = 0;
+    if (top.get_procs(1) != proc_list) p = FAILURE;
+    if (top.get_procs(2) != proc_list) p = FAILURE;
+    if (top.get_procs(3) != proc_list) p = FAILURE;
+    proc_list[0] = 1;
+    if (top.get_procs(4) != proc_list) p = FAILURE;
+    if (top.get_procs(5) != proc_list) p = FAILURE;
+    if (top.get_procs(6) != proc_list) p = FAILURE;
+
+    // return passing condition
     return p;
 }
 

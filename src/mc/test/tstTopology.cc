@@ -86,6 +86,66 @@ void test_Replication()
 }
 
 //---------------------------------------------------------------------------//
+// DD TESTS
+//---------------------------------------------------------------------------//
+
+void test_DD()
+{
+    // only perform this test on two processors
+    if (C4::nodes() != 2) 
+	return;
+
+    // get an OS_Mesh (2D 6 cells)
+    SP<MC_Interface> interface(new MC_Interface());
+    OS_Builder builder(interface);
+    SP<OS_Mesh> mesh = builder.build_Mesh();
+
+    // build a topology based on full DD
+    Topology::vf_int cpp(C4::nodes());
+    Topology::vf_int ppc(mesh->num_cells());
+    Topology::vf_int bc(C4::nodes());
+
+    // fill up cells per processor array
+    cpp[0].resize(3);
+    cpp[1].resize(3);
+
+    cpp[0][0] = 1;
+    cpp[0][1] = 2;
+    cpp[0][2] = 3;
+    cpp[1][0] = 4;
+    cpp[1][1] = 5;
+    cpp[1][2] = 6;
+
+    // fill up processor per cells array
+    for (int i = 0; i < ppc.size(); i++)
+	ppc[i].resize(1);
+
+    ppc[0][0] = 0;
+    ppc[1][0] = 0;
+    ppc[2][0] = 0;
+    ppc[3][0] = 1;
+    ppc[4][0] = 1;
+    ppc[5][0] = 1;
+
+    // fill up boundary cells array
+    bc[0].resize(3);
+    bc[1].resize(3);
+    
+    bc[0][0] = 4;
+    bc[0][1] = 5;
+    bc[0][2] = 6;   
+    bc[1][0] = 1;
+    bc[1][1] = 2;
+    bc[1][2] = 3;
+
+    // build topology
+    General_Topology topology(cpp, ppc, bc, "DD");
+
+    // test topology
+    if ( !rtt_mc_test::topology_DD_test(mesh, topology) ) ITFAILS;
+}
+
+//---------------------------------------------------------------------------//
 // MAIN
 //---------------------------------------------------------------------------//
 
@@ -106,6 +166,9 @@ int main(int argc, char *argv[])
 
     // full replication tests of General_Topology and Rep_Topology
     test_Replication();
+
+    // DD tests of General_Topology
+    test_DD();
 
     // status of test
     cout << endl;
