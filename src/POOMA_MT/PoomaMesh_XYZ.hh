@@ -24,6 +24,7 @@
 #include "Field/GuardCellSizes.h"
 #include "Field/BCond.h"
 
+#include "traits/MT_traits.hh"
 #include "ds++/config.hh"
 #include "ds++/SP.hh"
 
@@ -1272,6 +1273,24 @@ class PoomaMesh_XYZ
       Mesh_m->getCellVolumeField(*CellVolumes_m);
     }
 };
+
+namespace rtt_traits
+{
+
+ template<class T, unsigned D>
+ class vector_traits<Vektor<T,D> >
+ {
+   public:
+
+     typedef T value_type;
+
+     inline static value_type dot(const Vektor<T,D> &v1, const Vektor<T,D> &v2)
+     {
+	 return dot(v1, v2);
+     }    
+ };
+ 
+}
 
 #include "PoomaMesh_XYZ.t.cc"
 
