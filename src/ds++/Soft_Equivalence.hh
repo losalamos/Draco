@@ -49,6 +49,9 @@ namespace rtt_dsxx
  *
  * \return true if values are the same within relative error specified by
  * precision, false if otherwise
+ *
+ * \todo Should we be using numeric_limits instead of hard coded vales for
+ *       e-12 and e-14?
  */
 template<class FPT>
 inline bool soft_equiv(const FPT &value, const FPT &reference, 
