@@ -88,8 +88,6 @@ AC_DEFUN(AC_MIDDLEWARE_VENDOR_SETUP, [dnl
 
    AC_MSG_CHECKING("$1 directories")
 
-   echo ${with_$1}
-
    # if we use the with-vendor option to specify the location of vendor,
    # then check it
    if test -n "${with_$1}" ; then 
