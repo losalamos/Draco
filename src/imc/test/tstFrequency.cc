@@ -24,7 +24,8 @@
 #include <iostream>
 #include <sstream>
 
-using rtt_imc::Frequency;
+using rtt_imc::Gray_Frequency;
+using rtt_imc::Multigroup_Frequency;
 using rtt_dsxx::soft_equiv;
 using rtt_dsxx::SP;
 
@@ -46,7 +47,7 @@ void tstFreq()
     bnds[3] = 1.0;
 
     // Make a smart pointer to a Frequency object.
-    SP<Frequency> frequency(new Frequency(bnds));
+    SP<Multigroup_Frequency> frequency(new Multigroup_Frequency(bnds));
 
     // This should be a multigroup Frequency.
     if ( frequency->is_gray())          ITFAILS;
@@ -79,13 +80,47 @@ void tstFreq()
     vector<double> null_bnds;
 
     // Make a new gray Frequency.
-    SP<Frequency> gray_frequency(new Frequency(null_bnds));
+    SP<Gray_Frequency> gray_frequency(new Gray_Frequency(null_bnds));
 
     // This should be a gray Frequency.
     if (!gray_frequency->is_gray())          ITFAILS;
     if ( gray_frequency->is_multigroup())    ITFAILS;
 }
 
+//---------------------------------------------------------------------------//
+// TEST OPERATIONS OF THE FREQUENCY CLASS
+//---------------------------------------------------------------------------//
+void tstFreq_Ops()
+{
+    // Useful typedefs.
+    typedef rtt_mc::OS_Mesh MT;
+
+    // Make a local vector of group boundaries.
+    vector<double> bnds(4, 0.0);
+    bnds[0] = 0.1;
+    bnds[1] = 0.2;
+    bnds[2] = 0.5;
+    bnds[3] = 1.0;
+
+    // Make a smart pointer to a new Frequency object.
+    SP<Multigroup_Frequency> frequency(new Multigroup_Frequency(bnds));
+
+    // >>> Test the group-search capability.
+
+    // Test the group-search capability.
+    if (frequency->find_group_given_a_freq(0.15) != 1)  ITFAILS;
+    if (frequency->find_group_given_a_freq(0.25) != 2)  ITFAILS;
+    if (frequency->find_group_given_a_freq(0.49) != 2)  ITFAILS;
+    if (frequency->find_group_given_a_freq(0.51) != 3)  ITFAILS;
+
+    // Test boundaries.
+    if (frequency->find_group_given_a_freq(0.1) != 1)   ITFAILS;
+    if (frequency->find_group_given_a_freq(1.0) != 3)   ITFAILS;
+
+    // Test out-of-bounds.
+    if (frequency->find_group_given_a_freq(0.05) != -1) ITFAILS;
+    if (frequency->find_group_given_a_freq(100.) != -1) ITFAILS;
+}
 
 //---------------------------------------------------------------------------//
 
@@ -109,6 +144,8 @@ int main(int argc, char *argv[])
 
 	// test the Frequency class
 	tstFreq();
+
+	tstFreq_Ops();
 
     }
     catch (rtt_dsxx::assertion &ass)
