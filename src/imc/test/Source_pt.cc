@@ -24,7 +24,7 @@
 namespace rtt_imc
 {
 
-typedef rtt_dsxx::SP<rtt_imc_test::IMC_Interface>       SP_REP_IT;
+typedef rtt_dsxx::SP<rtt_imc_test::IMC_Flat_Interface>  SP_REP_IT;
 typedef rtt_dsxx::SP<rtt_imc_dd_test::IMC_DD_Interface> SP_DD_IT;
 typedef rtt_mc::OS_Mesh                                 MT;
 typedef rtt_dsxx::SP<MT>                                SP_MT;
@@ -44,7 +44,7 @@ template DD_Source_Builder<MT,PT>::DD_Source_Builder(SP_DD_IT, SP_MT,
 
 template class Source<MT,PT>;
 
-template class Source_Init<rtt_imc_test::IMC_Interface, MT>;
+template class Source_Init<rtt_imc_test::IMC_Flat_Interface, MT>;
 
 } // end namespace rtt_imc
 

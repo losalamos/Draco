@@ -30,7 +30,7 @@
 
 using namespace std;
 
-using rtt_imc_test::IMC_Interface;
+using rtt_imc_test::IMC_Flat_Interface;
 using rtt_imc_test::Parser;
 using rtt_imc::Topology_Builder;
 using rtt_mc::Topology;
@@ -53,7 +53,7 @@ void replication_test()
     SP<OS_Mesh> mesh = mb->build_Mesh();
 
     // get the dummy interface with a capacity of 6 cells (the full mesh)
-    SP<IMC_Interface> interface(new IMC_Interface(mb, 6));
+    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb, 6));
     
     // build the Topology Builder and full replication topology
     Topology_Builder<OS_Mesh> tb(interface);
@@ -92,7 +92,7 @@ void DD_test()
     SP<OS_Mesh> mesh = mb->build_Mesh();
 
     // get the dummy interface with a capacity of 3 cells (2 processor)
-    SP<IMC_Interface> interface(new IMC_Interface(mb, 3));
+    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb, 3));
 
     // build the Topology builder and full replication topology
     Topology_Builder<OS_Mesh> tb(interface);

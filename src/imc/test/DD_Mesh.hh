@@ -370,7 +370,7 @@ build_Mat(rtt_dsxx::SP<rtt_mc::OS_Mesh> mesh)
     for (int i = 1; i <= temp.size(); i++)
 	temp(i) = C4::node() + 10.5;
     
-    SP<Mat_State<OS_Mesh> > mat(new Mat_State<OS_Mesh>(x,temp,x,x));
+    SP<Mat_State<OS_Mesh> > mat(new Mat_State<OS_Mesh>(x,temp,x));
     return mat;
 }
 

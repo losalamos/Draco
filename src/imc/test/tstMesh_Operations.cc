@@ -13,7 +13,7 @@
 #include "IMC_Test.hh"
 #include "DD_Mesh.hh"
 #include "../Mesh_Operations.hh"
-#include "../Opacity_Builder.hh"
+#include "../Flat_Mat_State_Builder.hh"
 #include "../Opacity.hh"
 #include "../Mat_State.hh"
 #include "../Release.hh"
@@ -39,10 +39,10 @@
 
 using namespace std;
 
-using rtt_imc_test::IMC_Interface;
+using rtt_imc_test::IMC_Flat_Interface;
 using rtt_imc_test::Parser;
 using rtt_imc::Mesh_Operations;
-using rtt_imc::Opacity_Builder;
+using rtt_imc::Flat_Mat_State_Builder;
 using rtt_imc::Mat_State;
 using rtt_imc::Opacity;
 using rtt_mc::global::soft_equiv;
@@ -73,7 +73,7 @@ void T4_slope_test()
     SP<OS_Mesh> mesh = mb->build_Mesh();
 
     // build an interface to a six cell fully replicated mesh
-    SP<IMC_Interface> interface(new IMC_Interface(mb));
+    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb));
 
     // build a Topology: we do not use the Topology builder here because the
     // topology builder is designed to work on the host processor only -->
@@ -81,8 +81,8 @@ void T4_slope_test()
     SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
 
     // build a Mat_State and Opacity
-    Opacity_Builder<OS_Mesh> ob(interface);
-    SP<Mat_State<OS_Mesh> > mat    = ob.build_Mat(mesh);
+    Flat_Mat_State_Builder<OS_Mesh> ob(interface);
+    SP<Mat_State<OS_Mesh> > mat    = ob.build_Mat_State(mesh);
     SP<Opacity<OS_Mesh> > opacity  = ob.build_Opacity(mesh, mat);
 
     // Build a Comm_Patterns
@@ -243,7 +243,7 @@ void T4_slope_test_AMR()
     for (int i = 7; i <= 9; i++)
 	temps(i) = 3.0;
     SP<Mat_State<RZWedge_Mesh> > mat(new Mat_State<RZWedge_Mesh>
-				     (temps, temps, temps, temps));
+				     (temps, temps, temps));
 
     // make a comm_patterns
     SP<Comm_Patterns> cp(new Comm_Patterns());

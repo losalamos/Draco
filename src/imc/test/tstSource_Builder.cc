@@ -15,7 +15,7 @@
 #include "../Source_Builder.hh"
 #include "../Rep_Source_Builder.hh"
 #include "../DD_Source_Builder.hh"
-#include "../Opacity_Builder.hh"
+#include "../Flat_Mat_State_Builder.hh"
 #include "../Opacity.hh"
 #include "../Mat_State.hh"
 #include "../Topology_Builder.hh"
@@ -43,14 +43,14 @@
 
 using namespace std;
 
-using rtt_imc_test::IMC_Interface;
+using rtt_imc_test::IMC_Flat_Interface;
 using rtt_imc_test::Parser;
 using rtt_imc_dd_test::IMC_DD_Interface;
 using rtt_imc::Source_Builder;
 using rtt_imc::Rep_Source_Builder;
 using rtt_imc::DD_Source_Builder;
 using rtt_imc::Opacity;
-using rtt_imc::Opacity_Builder;
+using rtt_imc::Flat_Mat_State_Builder;
 using rtt_imc::Mat_State;
 using rtt_imc::Source;
 using rtt_imc::Topology_Builder;
@@ -84,10 +84,10 @@ void source_init_test()
     SP<OS_Mesh> mesh = mb->build_Mesh();
 
     // build an interface to a six cell fully replicated mesh
-    SP<IMC_Interface> interface(new IMC_Interface(mb));  
+    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb));  
 
     // build a Source_Init object->doesn't do anything yet
-    Source_Init<IMC_Interface, OS_Mesh> source_init(interface);
+    Source_Init<IMC_Flat_Interface, OS_Mesh> source_init(interface);
 }
 
 //---------------------------------------------------------------------------//
@@ -106,11 +106,11 @@ void source_replication_test()
     SP<OS_Mesh> mesh = mb->build_Mesh();
 
     // build an interface to a six cell fully replicated mesh
-    SP<IMC_Interface> interface(new IMC_Interface(mb));
+    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb));
 
     // build a Source_Init object; however, we haven't added this
     // functionality yet so we don't do anything else with it
-    Source_Init<IMC_Interface, OS_Mesh> source_init(interface);
+    Source_Init<IMC_Flat_Interface, OS_Mesh> source_init(interface);
 
     // build a Topology: we do not use the Topology builder here because the
     // topology builder is designed to work on the host processor only -->
@@ -123,8 +123,8 @@ void source_replication_test()
     patterns->calc_patterns(topology);
 
     // build a Mat_State and Opacity
-    Opacity_Builder<OS_Mesh> ob(interface);
-    SP<Mat_State<OS_Mesh> > mat    = ob.build_Mat(mesh);
+    Flat_Mat_State_Builder<OS_Mesh> ob(interface);
+    SP<Mat_State<OS_Mesh> > mat    = ob.build_Mat_State(mesh);
     SP<Opacity<OS_Mesh> > opacity  = ob.build_Opacity(mesh, mat);
 
     // build a Rep_Source Builder
@@ -462,8 +462,8 @@ void source_DD_test()
     if (interface->get_delta_t() != 0.001) ITFAILS;
 
     // build a Mat_State and Opacity
-    Opacity_Builder<OS_Mesh> ob(interface);
-    SP<Mat_State<OS_Mesh> > mat   = ob.build_Mat(mesh);
+    Flat_Mat_State_Builder<OS_Mesh> ob(interface);
+    SP<Mat_State<OS_Mesh> > mat   = ob.build_Mat_State(mesh);
     SP<Opacity<OS_Mesh> > opacity = ob.build_Opacity(mesh, mat);
 
     // build a DD_Source Builder

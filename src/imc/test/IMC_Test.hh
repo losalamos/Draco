@@ -11,6 +11,7 @@
 #define __imc_test_IMC_Test_hh__
 
 #include "../Interface.hh"
+#include "../Flat_Data_Interface.hh"
 #include "../Particle.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
@@ -41,12 +42,14 @@ class Parser
 };
 
 //===========================================================================//
-// INTERFACE CLASS
+// INTERFACE CLASSES
 //===========================================================================//
+
 // make an interface for a 6 cell mesh
 
-class IMC_Interface : 
-    public rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh> >
+class IMC_Flat_Interface :
+	public rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh> >,
+	public rtt_imc::Flat_Data_Interface
 {
   private:
     // sp to OS_Builder
@@ -54,21 +57,18 @@ class IMC_Interface :
 
     // data for the Opacity and Mat_State
     sf_double  density;
-    sf_double  kappa;
-    sf_double  kappa_offset;
-    sf_double  kappa_thomson;
+    sf_double  absorption;
+    sf_double  scattering;
     sf_double  temperature;
     sf_double  specific_heat;
     double     implicitness;
     double     delta_t;
-    std_string analytic_opacity;
-    std_string analytic_sp_heat;
 
     // data for topology
     int capacity;
 
     // data for the source builder
-    double elapsed_t;
+    double    elapsed_t;
     sf_double evol_ext;
     sf_double rad_source;
     sf_double rad_temp;
@@ -77,19 +77,16 @@ class IMC_Interface :
 
   public:
     // constructor -> the default processor capacity is 6 cells
-    inline IMC_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder>, int = 6);
+    inline IMC_Flat_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder>, int = 6);
     
     // public interface for Opacity_Builder
     sf_double get_density() const {return density;}
-    sf_double get_kappa() const {return kappa;}
-    sf_double get_kappa_offset() const {return kappa_offset;}
-    sf_double get_kappa_thomson() const {return kappa_thomson;}
+    sf_double get_absorption_opacity() const { return absorption; }
+    sf_double get_scattering_opacity() const { return scattering; }
     sf_double get_specific_heat() const {return specific_heat;}
     sf_double get_temperature() const {return temperature;}
-    inline std::string get_analytic_opacity() const;
-    inline std::string get_analytic_sp_heat() const;
-    double get_implicit() const { return implicitness; }
-    double get_delta_t() const { return delta_t; }
+    double    get_implicitness_factor() const { return implicitness; }
+    double    get_delta_t() const { return delta_t; }
 
     // public interface for Topology
     int get_capacity() const { return capacity; }
@@ -115,27 +112,23 @@ class IMC_Interface :
 };
 
 // constructor
-IMC_Interface::IMC_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder> osb, 
-			     int capacity_) 
-    :  rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh> >(),
-       builder(osb),
-       density(6), 
-       kappa(6), 
-       kappa_offset(6), 
-       kappa_thomson(6), 
-       temperature(6),
-       specific_heat(6), 
-       implicitness(1.0), 
-       delta_t(.001),
-       analytic_opacity("straight"), 
-       analytic_sp_heat("straight"),
-       capacity(capacity_),
-       elapsed_t(.001),
-       evol_ext(6),
-       rad_source(6),
-       rad_temp(6),
-       ss_temp(2),
-       ss_desc(2, "standard")
+IMC_Flat_Interface::IMC_Flat_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder> osb, 
+				       int capacity_) 
+    : builder(osb),
+      density(6), 
+      absorption(6), 
+      scattering(6),  
+      temperature(6),
+      specific_heat(6), 
+      implicitness(1.0), 
+      delta_t(.001),
+      capacity(capacity_),
+      elapsed_t(.001),
+      evol_ext(6),
+      rad_source(6),
+      rad_temp(6),
+      ss_temp(2),
+      ss_desc(2, "standard")
 {   
     // make the Opacity and Mat_State stuff
 
@@ -145,19 +138,15 @@ IMC_Interface::IMC_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder> osb,
 	density[i]   = 1.0;
 	density[i+3] = 2.0;
 
-	// kappa (in cm^2/g)
-	kappa[i]     = .1;
-	kappa[i+3]   = .01;
+	// absorption opacity in /cm
+	absorption[i]     = .1  * density[i];
+	absorption[i+3]   = .01 * density[i+3];
 	
-	// kappa_offset (in cm^2/g)
-	kappa_offset[i]    = 0.0;
-	kappa_offset[i+3]  = 0.0;
-	
-	// kappa thomson
-	kappa_thomson[i]   = .5;
-	kappa_thomson[i+3] = 0.0;
+	// scattering opacity in /cm
+	scattering[i]   = .5  * density[i];
+	scattering[i+3] = 0.0 * density[i+3];
 
-	// specific heat
+	// specific heat in jks/g/keV
 	specific_heat[i]   = .1;
 	specific_heat[i+3] = .2;
 
@@ -179,18 +168,8 @@ IMC_Interface::IMC_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder> osb,
     ss_temp[1] = 0.0;
 }
 
-
-std::string IMC_Interface::get_analytic_opacity() const 
-{ 
-    return analytic_opacity;
-}
-
-std::string IMC_Interface::get_analytic_sp_heat() const 
-{ 
-    return analytic_sp_heat; 
-}
-
-std::vector<std::vector<int> > IMC_Interface::get_defined_surcells() const
+std::vector<std::vector<int> > IMC_Flat_Interface::get_defined_surcells()
+    const
 {
     return builder->get_defined_surcells();
 }

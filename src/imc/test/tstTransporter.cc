@@ -20,7 +20,7 @@
 #include "../Release.hh"
 #include "../Mat_State.hh"
 #include "../Opacity.hh"
-#include "../Opacity_Builder.hh"
+#include "../Flat_Mat_State_Builder.hh"
 #include "../Rep_Source_Builder.hh"
 #include "../Source.hh"
 #include "../Tally.hh"
@@ -44,7 +44,7 @@
 
 using namespace std;
 
-using rtt_imc_test::IMC_Interface;
+using rtt_imc_test::IMC_Flat_Interface;
 using rtt_imc_test::Parser;
 using rtt_imc::Transporter;
 using rtt_imc::Rep_Transporter;
@@ -52,7 +52,7 @@ using rtt_imc::DD_Transporter;
 using rtt_imc::Particle_Buffer;
 using rtt_imc::Particle;
 using rtt_imc::Topology_Builder;
-using rtt_imc::Opacity_Builder;
+using rtt_imc::Flat_Mat_State_Builder;
 using rtt_imc::Mat_State;
 using rtt_imc::Opacity;
 using rtt_imc::Source;
@@ -122,11 +122,11 @@ void rep_transporter_run_test()
     patterns->calc_patterns(topology);
 
     // get an interface (dummy)
-    SP<IMC_Interface> interface(new IMC_Interface(mb));
+    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb));
 
     // build the Mat_State
-    Opacity_Builder<OS_Mesh> ob(interface);
-    SP<OS_Mat> mat         = ob.build_Mat(mesh);
+    Flat_Mat_State_Builder<OS_Mesh> ob(interface);
+    SP<OS_Mat> mat         = ob.build_Mat_State(mesh);
     SP<OS_Opacity> opacity = ob.build_Opacity(mesh, mat);
 
     // build a Rep_Source Builder
@@ -173,7 +173,7 @@ void DD_transporter_test()
     SP<OS_Mesh> mesh = mb->build_Mesh();
 
     // get the dummy interface with a capacity of 3 cells (2 processor)
-    SP<IMC_Interface> interface(new IMC_Interface(mb, 3));
+    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb, 3));
 
     // build the Topology builder and full replication topology
     SP<Topology> topology;

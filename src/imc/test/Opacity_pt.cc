@@ -11,9 +11,9 @@
 
 #include "mc/OS_Mesh.hh"
 #include "mc/RZWedge_Mesh.hh"
-#include "../Opacity_Builder.t.hh"
 #include "../Opacity.t.hh"
 #include "../Mat_State.t.hh"
+#include "../Flat_Mat_State_Builder.t.hh"
 #include <iostream> 
 
 namespace rtt_imc
@@ -26,12 +26,11 @@ using std::ostream;
 
 // OS_Mesh instantiations
 
-template class Opacity_Builder<OS_MT>;
+template class Flat_Mat_State_Builder<OS_MT>;
 
 template class Opacity<OS_MT>; 
 
 template class Mat_State<OS_MT>;
-template ostream& operator<<(ostream &, const Mat_State<OS_MT> &);
 
 // RZWedge_Mesh instantiations
 

@@ -13,6 +13,7 @@
 #define __test_IMC_DD_Test_hh__
 
 #include "../Interface.hh"
+#include "../Flat_Data_Interface.hh"
 #include "../Particle.hh"
 #include "mc/Topology.hh"
 #include "mc/OS_Mesh.hh"
@@ -44,26 +45,24 @@ rtt_dsxx::SP<rtt_mc::Topology> build_DD_Topology();
 // interface for the 9-cell DD mesh on 4 processors.
 
 class IMC_DD_Interface :
-    public rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh> >
+	public rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh> >,
+	public rtt_imc::Flat_Data_Interface
 {
   private:
     // data for the Opacity and Mat_State
     sf_double  density;
-    sf_double  kappa;
-    sf_double  kappa_offset;
-    sf_double  kappa_thomson;
+    sf_double  absorption;
+    sf_double  scattering;
     sf_double  temperature;
     sf_double  specific_heat;
     double     implicitness;
     double     delta_t;
-    std_string analytic_opacity;
-    std_string analytic_sp_heat;
 
     // data for topology
     int capacity;
 
     // data for the source builder
-    double elapsed_t;
+    double    elapsed_t;
     sf_double evol_ext;
     sf_double rad_source;
     sf_double rad_temp;
@@ -76,15 +75,12 @@ class IMC_DD_Interface :
     
     // public interface for Opacity_Builder
     sf_double get_density() const {return density;}
-    sf_double get_kappa() const {return kappa;}
-    sf_double get_kappa_offset() const {return kappa_offset;}
-    sf_double get_kappa_thomson() const {return kappa_thomson;}
+    sf_double get_absorption_opacity() const { return absorption; }
+    sf_double get_scattering_opacity() const { return scattering; }
     sf_double get_specific_heat() const {return specific_heat;}
     sf_double get_temperature() const {return temperature;}
-    std_string get_analytic_opacity() const;
-    std_string get_analytic_sp_heat() const;
-    double get_implicit() const { return implicitness; }
-    double get_delta_t() const { return delta_t; }
+    double    get_implicitness_factor() const { return implicitness; }
+    double    get_delta_t() const { return delta_t; }
 
     // public interface for Topology
     int get_capacity() const { return capacity; }

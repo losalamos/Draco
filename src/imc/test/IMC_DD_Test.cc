@@ -354,17 +354,13 @@ SP<Topology> build_DD_Topology()
 // constructor
 
 IMC_DD_Interface::IMC_DD_Interface(int capacity_) 
-    : Interface<Particle<OS_Mesh> >(),
-      density(capacity_), 
-      kappa(capacity_), 
-      kappa_offset(capacity_), 
-      kappa_thomson(capacity_), 
+    : density(capacity_), 
+      absorption(capacity_), 
+      scattering(capacity_), 
       temperature(capacity_),
       specific_heat(capacity_), 
       implicitness(1.0), 
       delta_t(.001),
-      analytic_opacity("straight"), 
-      analytic_sp_heat("straight"),
       capacity(capacity_),
       elapsed_t(.001),
       evol_ext(capacity_),
@@ -384,14 +380,11 @@ IMC_DD_Interface::IMC_DD_Interface(int capacity_)
 	// density
 	density[i] = C4::node() + i + 1.0;
 
-	// kappa (in cm^2/g)
-	kappa[i] = 2 * C4::node() + i + 1.0;
-	
-	// kappa_offset (in cm^2/g)
-	kappa_offset[i] = 0.0;
+	// absorption in /cm
+	absorption[i] = (2 * C4::node() + i + 1.0) * density[i];
 
-	// kappa thomson
-	kappa_thomson[i] = 2.0 * (C4::node() + i + 1.0);
+	// scattering in /cm
+	scattering[i] = (2.0 * (C4::node() + i + 1.0)) * density[i];
 
 	// specific heat
 	specific_heat[i] = 3.0 * C4::node() + i + 1.0;
@@ -410,20 +403,6 @@ IMC_DD_Interface::IMC_DD_Interface(int capacity_)
     }
 
     ss_temp[0] = 20.0;
-}
-
-//---------------------------------------------------------------------------//
-
-string IMC_DD_Interface::get_analytic_opacity() const 
-{ 
-    return analytic_opacity;
-}
-
-//---------------------------------------------------------------------------//
-
-string IMC_DD_Interface::get_analytic_sp_heat() const 
-{ 
-    return analytic_sp_heat; 
 }
 
 //---------------------------------------------------------------------------//

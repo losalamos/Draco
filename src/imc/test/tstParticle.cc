@@ -33,7 +33,6 @@ using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_imc::Particle;
 using rtt_imc::Particle_Buffer;
-using rtt_imc_test::IMC_Interface;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
