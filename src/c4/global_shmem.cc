@@ -13,10 +13,7 @@
 
 #include <mpp/shmem.h>
 
-#ifndef _CRAYMPP
-#define shmalloc malloc
-#define shfree free
-#endif
+#define SHMDBG 1
 
 //---------------------------------------------------------------------------//
 // Miscellaneous
@@ -30,11 +27,13 @@ using std::string;
 
 C4_NAMESPACE_BEG
 
-static void C4_shm_init_scalar_work_arrays();
+// defined in shmem_reduce.cc
+void C4_shm_init_scalar_work_arrays();
+
 static void C4_shm_init_pt2pt();
 
-static int C4_shm_mynode;
-static int C4_shm_nodes;
+int C4_shm_mynode;
+int C4_shm_nodes;
 
 //---------------------------------------------------------------------------//
 // Set up the work buffers we need in order to ensure that addresses we pass
@@ -159,6 +158,8 @@ static void C4_shm_init_pt2pt()
 	pe_msg_waiting[i] = 0;
 	pe_ready[i] = 1;
     }
+
+    cout << "pt2pt arrays are ready on node " << node() << endl;
     gsync();
 }
 
@@ -187,16 +188,15 @@ static void pull_msg_from_inbox( int source, void *buf, int msglen )
 
 static void mark_inbox_as_clear( int source )
 {
-#if 0
 // Clear my own msg_waiting flag, and tell soruce I'm ready to receive again.
 
 // Must do it in this order to avoid a race.
 
     pe_msg_waiting[source] = 0;
     int one=1;
-    shmem_put( (long *) &pe_ready[C4_shm_mynode],
-	       (long *) &one, 1, source );
-#endif
+//     shmem_put( (long *) &pe_ready[C4_shm_mynode],
+// 	       (long *) &one, 1, source );
+    shmem_int_put( &pe_ready[C4_shm_mynode], &one, 1, source );
 }
 
 //---------------------------------------------------------------------------//
@@ -286,22 +286,27 @@ static int search_msg_queue( int source, void *buf, int size, int tag,
 
 static void mark_recv_req_inactive( int source, int mid )
 {
-#if 0
+//     throw "Unimplemented";
+// #if 0
     Async_DB& adb = pe_async_recv_req[source][mid];
 
     adb.state = Inactive;
 
-    shmem_put( (long *) &pe_posted_recv[C4_shm_mynode][mid],
-	       (long *) &adb, sizeof(Async_DB)/sizeof(double),
-	       source );
+//     shmem_put( (long *) &pe_posted_recv[C4_shm_mynode][mid],
+// 	       (long *) &adb, sizeof(Async_DB)/sizeof(double),
+// 	       source );
+    shmem_putmem( (void *) &pe_posted_recv[C4_shm_mynode][mid],
+		  (void *) &adb, sizeof(Async_DB), source );
 
     pe_posted_recvs[source]--;
-    shmem_put( (long *) &pe_async_recvs_pending[C4_shm_mynode],
-	       (long *) &pe_posted_recvs[source], 1, source );
+//     shmem_put( (long *) &pe_async_recvs_pending[C4_shm_mynode],
+// 	       (long *) &pe_posted_recvs[source], 1, source );
+    shmem_int_put( &pe_async_recvs_pending[C4_shm_mynode],
+		   &pe_posted_recvs[source], 1, source );
 
     Assert( pe_posted_recvs[source] >= 0 );
     Assert( pe_posted_recvs[source] <= pe_async_recv_reqs[source]-1 );
-#endif
+// #endif
 }
 
 //---------------------------------------------------------------------------//
@@ -416,7 +421,7 @@ void gsync()
 
 int SHM_Send( void *buf, int size, int dest, int tag, int group )
 {
-#if 0
+//#if 0
 // Check to see if we can short circuit send this to an already pending async
 // receive posted by the dest node.
 
@@ -424,7 +429,7 @@ int SHM_Send( void *buf, int size, int dest, int tag, int group )
 printf( "%d, pe_async_recvs_pending[%d]=%d\n",
 	C4_shm_mynode, dest, pe_async_recvs_pending[dest] );
 #endif
-
+//#if 0
     if (pe_async_recvs_pending[dest]) {
 	for( int i=0; i < C4_max_asyncs; i++ ) {
 	    Async_DB& adb = pe_posted_recv[dest][i];
@@ -444,18 +449,25 @@ printf( "%d, pe_async_recvs_pending[%d]=%d\n",
 
 		Insist( size <= adb.size,
 			"Receive buffer not large enough to send." );
-
+		cout << "size = " << size << " adb.size=" << adb.size << endl;
 		int words = size / 8 + ( size % 8 ? 1 : 0 );
 
-		shmem_put( (long *) adb.data, (long *) buf, words, dest );
+		printf( "%d preparing to send data to node %d:%x\n",
+			C4_shm_mynode, dest, adb.data );
 
+// 		shmem_put( (long *) adb.data, (long *) buf, words, dest );
+		shmem_putmem( adb.data, buf, size, dest );
+		shmem_int_put( (int *)adb.data, (int *)buf, 4, dest );
+		cout << "put the data, adjusting adb.state.\n";
 	    // Update the book keeping info.
 
 		adb.state = No_Longer_Pending;
 
-		shmem_put( (long *) &pe_async_recv_req[C4_shm_mynode][i],
-			   (long *) &adb, sizeof(Async_DB)/sizeof(double),
-			   dest );
+// 		shmem_put( (long *) &pe_async_recv_req[C4_shm_mynode][i],
+// 			   (long *) &adb, sizeof(Async_DB)/sizeof(double),
+// 			   dest );
+		shmem_putmem( (void *) &pe_async_recv_req[C4_shm_mynode][i],
+			      (void *) &adb, sizeof(Async_DB), dest );
 
 	    // Note, to avoid races, we really can't decrement the pending
 	    // receives count, but rather must let dest do it whenever it
@@ -465,7 +477,7 @@ printf( "%d, pe_async_recvs_pending[%d]=%d\n",
 	    }
 	}
     }
-
+//#endif
 // Okay, we couldn't short circuit send it to dest, so we'll have to wait for
 // it to be ready to receive "the normal way".
 
@@ -487,14 +499,19 @@ printf( "%d, pe_async_recvs_pending[%d]=%d\n",
 
 	hdr.length = size; hdr.tag = tag;
 
-	shmem_put( (long *) &pe_recv_buf[C4_shm_mynode],
- 		   (long *) &hdr, 2, dest );
+// 	shmem_put( (long *) &pe_recv_buf[C4_shm_mynode],
+//  		   (long *) &hdr, 2, dest );
+	shmem_int_put( (int *) &pe_recv_buf[C4_shm_mynode],
+		       (int *) &hdr, 2, dest );
 
-	int words = size / 8 + ( size % 8 ? 1 : 0 );
-	Assert( words <= C4_max_buf_sz/8 );
+// 	int words = size / 8 + ( size % 8 ? 1 : 0 );
+// 	Assert( words <= C4_max_buf_sz/8 );
 
-	shmem_put( (long*) &pe_recv_buf[C4_shm_mynode].data,
- 		   (long *) buf, words, dest );
+// 	shmem_put( (long*) &pe_recv_buf[C4_shm_mynode].data,
+//  		   (long *) buf, words, dest );
+
+	shmem_putmem( (void *) &pe_recv_buf[C4_shm_mynode].data,
+		      buf, size, dest );
 
     // indicate dest is not ready
 
@@ -503,10 +520,12 @@ printf( "%d, pe_async_recvs_pending[%d]=%d\n",
     // set msg_waiting flag in dest.
 
 	int one=1;
-	shmem_put( (long *) &pe_msg_waiting[C4_shm_mynode],
-		   (long *) &one, 1, dest );
+// 	shmem_put( (long *) &pe_msg_waiting[C4_shm_mynode],
+// 		   (long *) &one, 1, dest );
+	shmem_int_put( (int *) &pe_msg_waiting[C4_shm_mynode],
+		       &one, 1, dest );
     }    
-#endif
+//#endif
     return C4_SUCCESS;
 }
 
@@ -651,7 +670,8 @@ printf( "%d, match!\n", C4_shm_mynode );
 
 C4_Req SHM_SendAsync( void *buf, int size, int dest, int tag, int group )
 {
-#if 0
+//     throw "Unimplemented";
+// #if 0
 // Actually, I think I should just go ahead and allocate an mid right now,
 // b/c no matter what happens below, we still have to return the C4_Req in a
 // valid state, since the user will have to wait() on it anyway.
@@ -673,7 +693,7 @@ C4_Req SHM_SendAsync( void *buf, int size, int dest, int tag, int group )
     r.set();
 
 // C4_req's mid must encode which async message for which destination pe.
-    r.mid = dest << 32 + mid;
+    r.mid = dest << 16 + mid;
     r.type = Async_Send;
 
     Async_DB& adb = pe_async_send_req[dest][mid];
@@ -707,15 +727,20 @@ C4_Req SHM_SendAsync( void *buf, int size, int dest, int tag, int group )
 
 		int words = size / 8 + ( size % 8 ? 1 : 0 );
 
-		shmem_put( (long *) pdb.data, (long *) buf, words, dest );
+	    //		shmem_put( (long *) pdb.data, (long *) buf, words,
+	    // dest );
+		shmem_putmem( pdb.data, buf, size, dest );
 
 	    // Update the book keeping info.
 
 		pdb.state = No_Longer_Pending;
 
-		shmem_put( (long *) &pe_async_recv_req[C4_shm_mynode][i],
-			   (long *) &pdb, sizeof(Async_DB)/sizeof(double),
-			   dest );
+// 		shmem_put( (long *) &pe_async_recv_req[C4_shm_mynode][i],
+// 			   (long *) &pdb, sizeof(Async_DB)/sizeof(double),
+// 			   dest );
+
+		shmem_putmem( (void *) &pe_async_recv_req[C4_shm_mynode][i],
+			      (void *) &pdb, sizeof(Async_DB), dest );
 
 	    // Note, to avoid races, we really can't decrement the pending
 	    // receives count, but rather must let dest do it whenever it
@@ -740,8 +765,10 @@ C4_Req SHM_SendAsync( void *buf, int size, int dest, int tag, int group )
 
 	hdr.length = size; hdr.tag = tag;
 
-	shmem_put( (long *) &pe_recv_buf[C4_shm_mynode],
-		   (long *) &hdr, 2, dest );
+// 	shmem_put( (long *) &pe_recv_buf[C4_shm_mynode],
+// 		   (long *) &hdr, 2, dest );
+	shmem_int_put( (int *) &pe_recv_buf[C4_shm_mynode],
+		       (int *) &hdr, 2, dest );
 
 	int words = size/8;
 	if (size % 8) 
@@ -756,8 +783,10 @@ C4_Req SHM_SendAsync( void *buf, int size, int dest, int tag, int group )
 	}
 #endif
 
-	shmem_put( (long*) &pe_recv_buf[C4_shm_mynode].data,
-		   (long *) buf, words, dest );
+// 	shmem_put( (long*) &pe_recv_buf[C4_shm_mynode].data,
+// 		   (long *) buf, words, dest );
+
+	shmem_putmem( &pe_recv_buf[C4_shm_mynode].data, buf, size, dest );
 
     // indicate dest is not ready
 
@@ -768,8 +797,9 @@ C4_Req SHM_SendAsync( void *buf, int size, int dest, int tag, int group )
     // set msg_waiting flag in dest.
 
 	int one=1;
-	shmem_put( (long *) &pe_msg_waiting[C4_shm_mynode],
-		   (long *) &one, 1, dest );
+// 	shmem_put( (long *) &pe_msg_waiting[C4_shm_mynode],
+// 		   (long *) &one, 1, dest );
+	shmem_int_put( &pe_msg_waiting[C4_shm_mynode], &one, 1, dest );
 
 #ifdef SHMDBG
 	printf( "%d sent message to %d\n", C4_shm_mynode, dest );
@@ -780,9 +810,9 @@ C4_Req SHM_SendAsync( void *buf, int size, int dest, int tag, int group )
 // Post async send request with necessary data to remote node.
 
     throw( "Not able to post async send requests yet." );
-#endif
-    C4_Req r;
-    return r;
+// #endif
+//     C4_Req r;
+//     return r;
 }
 
 //---------------------------------------------------------------------------//
@@ -791,7 +821,8 @@ C4_Req SHM_SendAsync( void *buf, int size, int dest, int tag, int group )
 
 C4_Req SHM_RecvAsync( void *buf, int size, int source, int tag, int group )
 {
-#if 0
+//     throw "Unimplemented";
+// #if 0
     Assert( source == C4_Any_Source || 
 	    (source >= 0 && source < C4_shm_nodes) );
     Assert( size >= 0 );
@@ -839,7 +870,7 @@ printf( "%d, mid=%d\n", C4_shm_mynode, mid );
     r.set();
 
 // C4_req's mid must encode which async message for which destination pe.
-    r.mid = source << 32 + mid;
+    r.mid = source << 16 + mid;
     r.type = Async_Recv;
 
     Async_DB& adb = pe_async_recv_req[source][mid];
@@ -926,22 +957,29 @@ printf( "%d inbox was a match\n", C4_shm_mynode );
 
 //  shmem_put( target, source, words, dest );
 
-    shmem_put( (long *) &pe_posted_recv[C4_shm_mynode][mid],
-	       (long *) &adb, sizeof(Async_DB)/sizeof(double),
-	       source );
+//     shmem_put( (long *) &pe_posted_recv[C4_shm_mynode][mid],
+// 	       (long *) &adb, sizeof(Async_DB)/sizeof(double),
+// 	       source );
+
+    shmem_putmem( (void *) &pe_posted_recv[C4_shm_mynode][mid],
+		  (void *) &adb, sizeof(Async_DB), source );
 
     pe_posted_recvs[source]++;
-    shmem_put( (long *) &pe_async_recvs_pending[C4_shm_mynode],
-	       (long *) &pe_posted_recvs[source], 1, source );
+//     shmem_put( (long *) &pe_async_recvs_pending[C4_shm_mynode],
+// 	       (long *) &pe_posted_recvs[source], 1, source );
+    shmem_int_put( &pe_async_recvs_pending[C4_shm_mynode],
+		   &pe_posted_recvs[source], 1, source );
 
 #ifdef SHMDBG
 printf( "%d posted async recv to pe %d\n", C4_shm_mynode, source );
 printf( "%d pe_posted_recvs[%d]=%d\n", C4_shm_mynode, source,
 	pe_posted_recvs[source] );
 printf( "%d state=%d\n", C4_shm_mynode, adb.state );
+printf( "%d data is suppose dto be written to address %x\n",
+	C4_shm_mynode, buf );
 #endif
-#endif
-C4_Req r; 
+// #endif
+// C4_Req r; 
     return r;
 }
 
@@ -975,11 +1013,12 @@ void C4_Wait( int m, int t )
 #ifdef SHMDBG
     printf( "%d waiting, C4_Req.mid = %x\n", C4_shm_mynode, m );
 #endif
-    int node = m >> 32 ;
-    int mid = m & 0xFFFFFFFF;
+//    int node = m >> 32 ;
+    int node = m >> 16 ;
+    int mid = m & 0xFFFF;
 
 #ifdef SHMDBG
-    printf( "Trying to wait on mid %d for node %d, type=%s\n",
+    printf( "Trying to wait on mid %x for node %d, type=%s\n",
 	    mid, node, 
 	    (t == Async_Send ? "send" : "recv" ) );
 #endif
@@ -1102,371 +1141,6 @@ printf( "%d, async recv msg mid=%d, state=%d\n",
 	throw( "Unknown message type, something is /really/ hosed." );
     }
 }
-#if 0
-//---------------------------------------------------------------------------//
-// Send a buffer of integers.
-//---------------------------------------------------------------------------//
-
-int C4_Send( int *buf, int nels, int dest, int group /*=0*/ )
-{
-    return C4_Send( (void *)buf, nels * sizeof(int),
-		    dest, C4_int_ptr_Tag, group );
-}
-
-//---------------------------------------------------------------------------//
-// Receive a buffer of integers.  nels is how many we can receive, the return
-// value is how many we did receive.
-//---------------------------------------------------------------------------//
-
-int C4_Recv( int *buf, int nels, int source, int group /*=0*/ )
-{
-    int cnt = C4_Recv( (void *) buf, nels * sizeof(int),
-		       source, C4_int_ptr_Tag, group );
-    return cnt/sizeof(int);
-}
-
-//---------------------------------------------------------------------------//
-// Send a buffer of floats.
-//---------------------------------------------------------------------------//
-
-int C4_Send( float *buf, int nels, int dest, int group /*=0*/ )
-{
-    return C4_Send( (void *)buf, nels * sizeof(float),
-		    dest, C4_float_ptr_Tag, group );
-}
-
-//---------------------------------------------------------------------------//
-// Receive a buffer of floats.  nels is how many we can receive, the return
-// value is how many we did receive.
-//---------------------------------------------------------------------------//
-
-int C4_Recv( float *buf, int nels, int source, int group /*=0*/ )
-{
-    int cnt = C4_Recv( (void *) buf, nels * sizeof(float),
-		       source, C4_float_ptr_Tag, group );
-    return cnt/sizeof(float);
-}
-
-//---------------------------------------------------------------------------//
-// Send a buffer of doubles.
-//---------------------------------------------------------------------------//
-
-int C4_Send( double *buf, int nels, int dest, int group /*=0*/ )
-{
-    return C4_Send( (void *)buf, nels * sizeof(double),
-		    dest, C4_double_ptr_Tag, group );
-}
-
-//---------------------------------------------------------------------------//
-// Receive a buffer of floats.  nels is how many we can receive, the return
-// value is how many we did receive.
-//---------------------------------------------------------------------------//
-
-int C4_Recv( double *buf, int nels, int source, int group /*=0*/ )
-{
-    int cnt = C4_Recv( (void *) buf, nels * sizeof(double),
-		       source, C4_double_ptr_Tag, group );
-    return cnt/sizeof(double);
-}
-#endif
-//---------------------------------------------------------------------------//
-// Global reduction operations.
-//
-// The call most like that in NX is:
-//
-//	MPI_Allreduce(void* sendbuf, void* recvbuf, int count,
-//		      MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-// 
-// which returns the result to all processes in the group.  "op" determines
-// the type of reduction performed.
-//
-// Available reduction operators, description, and allowed types: 
-//
-// MPI_MAX, MPI_MIN		min, max			I, F
-// MPI_SUM, MPI_PROD		sum, product			I, F
-// MPI_BAND, MPI_BOR, MPI_BXOR	bitwise and, or, xor		I, B
-// MPI_LAND, MPI_LOR, MPI_LXOR	logical and, or, xor		I
-// MPI_MAXLOC, MPI_MINLOC	min, max value and location
-//
-// where types are:
-//
-// I:	MPI_INT, MPI_LONG, MPI_SHORT, MPI_UNSIGNED_SHORT, 
-//	MPI_UNSIGNED, MPI_UNSIGNED_LONG
-// F:	MPI_FLOAT, MPI_DOUBLE, MPI_LONG_DOUBLE
-// B:	MPI_BYTE
-//---------------------------------------------------------------------------//
-
-// "sr" == "scalar reduce"
-
-static int sri_pWrk[ _SHMEM_REDUCE_MIN_WRKDATA_SIZE ];
-static float srf_pWrk[ _SHMEM_REDUCE_MIN_WRKDATA_SIZE ];
-static double srd_pWrk[ _SHMEM_REDUCE_MIN_WRKDATA_SIZE ];
-static long sr_pSync[ _SHMEM_REDUCE_SYNC_SIZE ];
-
-static void C4_shm_init_scalar_work_arrays()
-{
-    for( int i=0; i < _SHMEM_REDUCE_SYNC_SIZE; i++ ) {
-	sr_pSync[i] = _SHMEM_SYNC_VALUE;
-    }
-
-    gsync();
-}
-
-const int ar_data_size = 256;
-#if ar_data_suze/2 + 1 > _SHMEM_REDUCE_MIN_WRKDATA_SIZE
-const int ar_pWrk_size = ar_data_size/2 +1
-#else
-const int ar_pWrk_size = _SHMEM_REDUCE_MIN_WRKDATA_SIZE;
-#endif
-
-template<class T> class shm_ar_helper
-{
-  protected:
-    static T ar_data[ ar_data_size ];
-    static T ar_pWrk[ ar_pWrk_size ];
-
-  public:
-    static void copy_data_to_symmetric_work_arrays( T *px, int n )
-    {
-	Assert( n <= ar_data_size );
-	for( int i=0; i < n; i++ )
-	    ar_data[i] = px[i];
-    }
-
-    static void get_data_from_symmetric_work_arrays( T *px, int n )
-    {
-	Assert( n <= ar_data_size );
-	for( int i=0; i < n; i++ )
-	    px[i] = ar_data[i];
-    }
-};
-
-template<class T>
-T shm_ar_helper<T>::ar_data[ar_data_size];
-template<class T>
-T shm_ar_helper<T>::ar_pWrk[ar_pWrk_size];
-
-template<class T> class shm_traits {};
-
-template<> class shm_traits<int> : public shm_ar_helper<int>
-{
-  public:
-    static void sum_to_all( int& xo, int xi )
-    {
-	shmem_int_sum_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
-			      sri_pWrk, sr_pSync );
-	gsync();
-    }
-    static void min_to_all( int& xo, int xi )
-    {
-	shmem_int_min_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
-			      sri_pWrk, sr_pSync );
-	gsync();
-    }
-    static void max_to_all( int& xo, int xi )
-    {
-	shmem_int_max_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
-			      sri_pWrk, sr_pSync );
-	gsync();
-    }
-    static void ar_sum_to_all( int n )
-    {
-	shmem_int_sum_to_all( ar_data, ar_data, n, 0, 0, C4_shm_nodes,
-			      ar_pWrk, sr_pSync );
-	gsync();
-    }
-    static void ar_min_to_all( int n )
-    {
-	shmem_int_min_to_all( ar_data, ar_data, n, 0, 0, C4_shm_nodes,
-			      ar_pWrk, sr_pSync );
-	gsync();
-    }
-    static void ar_max_to_all( int n )
-    {
-	shmem_int_max_to_all( ar_data, ar_data, n, 0, 0, C4_shm_nodes,
-			      ar_pWrk, sr_pSync );
-	gsync();
-    }
-};
-
-template<> class shm_traits<float> : public shm_ar_helper<float>
-{
-  public:
-    static void sum_to_all( float& xo, float xi )
-    {
-	shmem_float_sum_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
-				srf_pWrk, sr_pSync );
-	gsync();
-    }
-    static void min_to_all( float& xo, float xi )
-    {
-	shmem_float_min_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
-				srf_pWrk, sr_pSync );
-	gsync();
-    }
-    static void max_to_all( float& xo, float xi )
-    {
-	shmem_float_max_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
-				srf_pWrk, sr_pSync );
-	gsync();
-    }
-    static void ar_sum_to_all( int n )
-    {
-	shmem_float_sum_to_all( ar_data, ar_data, n, 0, 0, C4_shm_nodes,
-				ar_pWrk, sr_pSync );
-	gsync();
-    }
-    static void ar_min_to_all( int n )
-    {
-	shmem_float_min_to_all( ar_data, ar_data, n, 0, 0, C4_shm_nodes,
-				ar_pWrk, sr_pSync );
-	gsync();
-    }
-    static void ar_max_to_all( int n )
-    {
-	shmem_float_max_to_all( ar_data, ar_data, n, 0, 0, C4_shm_nodes,
-				ar_pWrk, sr_pSync );
-	gsync();
-    }
-};
-
-template<> class shm_traits<double> : public shm_ar_helper<double>
-{
-  public:
-    static void sum_to_all( double& xo, double xi )
-    {
-	shmem_double_sum_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
-				 srd_pWrk, sr_pSync );
-	gsync();
-    }
-    static void min_to_all( double& xo, double xi )
-    {
-	shmem_double_min_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
-				 srd_pWrk, sr_pSync );
-	gsync();
-    }
-    static void max_to_all( double& xo, double xi )
-    {
-	shmem_double_max_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
-				 srd_pWrk, sr_pSync );
-	gsync();
-    }
-    static void ar_sum_to_all( int n )
-    {
-	shmem_double_sum_to_all( ar_data, ar_data, n, 0, 0, C4_shm_nodes,
-				 ar_pWrk, sr_pSync );
-	gsync();
-    }
-    static void ar_min_to_all( int n )
-    {
-	shmem_double_min_to_all( ar_data, ar_data, n, 0, 0, C4_shm_nodes,
-				 ar_pWrk, sr_pSync );
-	gsync();
-    }
-    static void ar_max_to_all( int n )
-    {
-	shmem_double_max_to_all( ar_data, ar_data, n, 0, 0, C4_shm_nodes,
-				 ar_pWrk, sr_pSync );
-	gsync();
-    }
-};
-
-//---------------------------------------------------------------------------//
-// Scalar reduction API.
-
-template<class T>
-void gsum( T& x )
-{
-    static T s;
-    s = x;
-    shm_traits<T>::sum_to_all( s, s );
-    x = s;
-}
-
-template<class T>
-void gmin( T& x )
-{
-    static T s;
-    s = x;
-    shm_traits<T>::min_to_all( s, s );
-    x = s;
-}
-
-template<class T>
-void gmax( T& x )
-{
-    static T s;
-    s = x;
-    shm_traits<T>::max_to_all( s, s );
-    x = s;
-}
-
-template void gsum( int& x );
-template void gsum( float& x );
-template void gsum( double& x );
-
-template void gmin( int& x );
-template void gmin( float& x );
-template void gmin( double& x );
-
-template void gmax( int& x );
-template void gmax( float& x );
-template void gmax( double& x );
-
-//---------------------------------------------------------------------------//
-// Array reduction API.
-//
-// Because the sucky SGI SHMEM implementation doesn't have shmalloc, we have
-// to "packetize" these reduction ops.  Grrrr.
-//---------------------------------------------------------------------------//
-
-template<class T> 
-void gsum( T *px, int n )
-{
-    for( int i=0; i < n; i += ar_data_size )
-    {
-	int ilim = std::min( ar_data_size, n - i );
-	shm_traits<T>::copy_data_to_symmetric_work_arrays( px+i, ilim );
-	shm_traits<T>::ar_sum_to_all( ilim );
-	shm_traits<T>::get_data_from_symmetric_work_arrays( px+i, ilim );
-    }
-}
-
-template<class T> 
-void gmin( T *px, int n )
-{
-    for( int i=0; i < n; i += ar_data_size )
-    {
-	int ilim = std::min( ar_data_size, n - i );
-	shm_traits<T>::copy_data_to_symmetric_work_arrays( px+i, ilim );
-	shm_traits<T>::ar_min_to_all( ilim );
-	shm_traits<T>::get_data_from_symmetric_work_arrays( px+i, ilim );
-    }
-}
-
-template<class T> 
-void gmax( T *px, int n )
-{
-    for( int i=0; i < n; i += ar_data_size )
-    {
-	int ilim = std::min( ar_data_size, n - i );
-	shm_traits<T>::copy_data_to_symmetric_work_arrays( px+i, ilim );
-	shm_traits<T>::ar_max_to_all( ilim );
-	shm_traits<T>::get_data_from_symmetric_work_arrays( px+i, ilim );
-    }
-}
-
-template void gsum( int *, int );
-template void gsum( float *, int );
-template void gsum( double *, int );
-
-template void gmin( int *, int );
-template void gmin( float *, int );
-template void gmin( double *, int );
-
-template void gmax( int *, int );
-template void gmax( float *, int );
-template void gmax( double *, int );
 
 //---------------------------------------------------------------------------//
 // Now some debugging functions, just in case we ever have any bugs :-).
