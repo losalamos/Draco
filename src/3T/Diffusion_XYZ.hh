@@ -39,7 +39,7 @@ class Diffusion_XYZ : private MT::Coord_Mapper {
     SP< MatVec_3T< MT, Diffusion_XYZ<MT> > > spmv;
     SP< PCG_PreCond<double> > precond;
 
-    typename MT::cell_array vc;
+    typename MT::cell_array<double> vc;
 
     double dx, dy, dz;
 
@@ -55,8 +55,8 @@ class Diffusion_XYZ : private MT::Coord_Mapper {
     Diffusion_XYZ( const SP<MT>& spm_, const pcg_DB& pcg_db );
 
     void solve( const typename MT::fcdsf& D,
-		typename MT::cell_array& r,
-		double dt, typename MT::cell_array& x,
+		typename MT::cell_array<double>& r,
+		double dt, typename MT::cell_array<double>& x,
 		const typename MT::fcdsf& Eb );
 
     Mat2<double>& get_A() { return A; }

@@ -37,8 +37,8 @@ Diffusion_XYZ<MT>::Diffusion_XYZ( const SP<MT>& spm_, const pcg_DB& pcg_db )
 
 template<class MT>
 void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
-			       typename  MT::cell_array& r,
-			       double dt, typename MT::cell_array& x,
+			       typename  MT::cell_array<double>& r,
+			       double dt, typename MT::cell_array<double>& x,
 			       const typename MT::fcdsf& Eb )
 {
     const Mat1<double>& xA = spm->get_xA();
