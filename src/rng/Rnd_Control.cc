@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   Rnd_Control.cc
+ * \file   rng/Rnd_Control.cc
  * \author Thomas M. Evans
  * \date   Wed Apr 29 16:08:59 1998
  * \brief  Rnd_Control class implementation file

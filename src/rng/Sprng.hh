@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   Sprng.hh
+ * \file   rng/Sprng.hh
  * \author Thomas M. Evans
  * \date   Wed Apr 29 13:57:25 1998
  * \brief  Sprng random number class header file.

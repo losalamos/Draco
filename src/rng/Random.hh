@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   Random.hh
+ * \file   rng/Random.hh
  * \author Thomas M. Evans
  * \date   Tue May 12 09:00:52 1998
  * \brief  General header file for including the Rnd_Control, Sprng, and

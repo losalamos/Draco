@@ -1,8 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
-// \file   Release.hh
-// \author Thomas M. Evans
-// \date   Thu May 27 15:24:01 1999
-// \brief  Release function for rng library
+/*!
+ * \file   rng/Release.hh
+ * \author Thomas M. Evans
+ * \date   Thu May 27 15:24:01 1999
+ * \brief  Release function for rng library
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//

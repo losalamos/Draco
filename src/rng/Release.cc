@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file   Release.cc
+ * \file   rng/Release.cc
  * \author Thomas M. Evans
  * \date   Thu May 27 15:24:02 1999
  * \brief  Release function implementation for rng library

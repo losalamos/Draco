@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   Rnd_Control.hh
+ * \file   rng/Rnd_Control.hh
  * \author Thomas M. Evans
  * \date   Wed Apr 29 16:08:58 1998
  * \brief  Rnd_Control header file.

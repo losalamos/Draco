@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   Random.cc
+ * \file   rng/Random.cc
  * \author Thomas M. Evans
  * \date   Mon Jun 15 08:18:20 1998
  * \brief  Variable definitions in the rtt_rng namespace.

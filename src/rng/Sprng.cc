@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   Sprng.cc
+ * \file   rng/Sprng.cc
  * \author Thomas M. Evans
  * \date   Fri Jun 26 07:41:48 1998
  * \brief  \link rtt_rng::Sprng Sprng \endlink random number class 
