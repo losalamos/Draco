@@ -1242,49 +1242,49 @@ fi
 
 
             
-      # Check whether --enable-cppflags or --disable-cppflags was given.
-if test "${enable_cppflags+set}" = set; then
-  enableval="$enable_cppflags"
+      # Check whether --with-cppflags or --without-cppflags was given.
+if test "${with_cppflags+set}" = set; then
+  withval="$with_cppflags"
   :
 fi
 
 
             
-      # Check whether --enable-cxxflags or --disable-cxxflags was given.
-if test "${enable_cxxflags+set}" = set; then
-  enableval="$enable_cxxflags"
+      # Check whether --with-cxxflags or --without-cxxflags was given.
+if test "${with_cxxflags+set}" = set; then
+  withval="$with_cxxflags"
   :
 fi
 
 
             
-      # Check whether --enable-cflags or --disable-cflags was given.
-if test "${enable_cflags+set}" = set; then
-  enableval="$enable_cflags"
+      # Check whether --with-cflags or --without-cflags was given.
+if test "${with_cflags+set}" = set; then
+  withval="$with_cflags"
   :
 fi
 
 
             
-      # Check whether --enable-f90flags or --disable-f90flags was given.
-if test "${enable_f90flags+set}" = set; then
-  enableval="$enable_f90flags"
+      # Check whether --with-f90flags or --without-f90flags was given.
+if test "${with_f90flags+set}" = set; then
+  withval="$with_f90flags"
   :
 fi
 
 
             
-      # Check whether --enable-arflags or --disable-arflags was given.
-if test "${enable_arflags+set}" = set; then
-  enableval="$enable_arflags"
+      # Check whether --with-arflags or --without-arflags was given.
+if test "${with_arflags+set}" = set; then
+  withval="$with_arflags"
   :
 fi
 
 
             
-      # Check whether --enable-ldflags or --disable-ldflags was given.
-if test "${enable_ldflags+set}" = set; then
-  enableval="$enable_ldflags"
+      # Check whether --with-ldflags or --without-ldflags was given.
+if test "${with_ldflags+set}" = set; then
+  withval="$with_ldflags"
   :
 fi
 
