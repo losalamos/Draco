@@ -19,7 +19,6 @@ AC_INSTALL_LIB
 
 AC_RUNTESTS(tstCheck_Strings \
             tstAssert \
-            tstShared_Lib \
             tstSoft_Equiv \
             tstSP \
             tstRCF \
@@ -37,31 +36,6 @@ AC_RUNTESTS(tstCheck_Strings \
 
 AC_DRACO_ENV
 AC_DRACO_AUTODOC(draco-4_3_0)
-
-dnl ---------------------------------------------------
-dnl Need libdl for dlopen, which is used by Shared_Lib.
-dnl ---------------------------------------------------
-#
-# Case through different hosts, if it is a host we haven't configured
-# yet then make the code "NULL"
-#
-case $host in
-
-   # >>> LINUX
-   *-linux-gnu)
-       LIBS="$LIBS -ldl"
-   ;;
-   
-   # >>> TRU64 COMPAQ
-   #alpha*-dec-osf*)
-       
-   #;;
-
-   # >>> All others
-   *)
-       AC_DEFINE(NO_DLOPEN)
-   ;;
-esac
 
 dnl -------------------------------------------
 dnl look for flexelint, dot and ps2pdf on Linux

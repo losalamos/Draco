@@ -1320,7 +1320,6 @@ package="ds++"
 
 	test_alltarget="$test_alltarget tstCheck_Strings \
             tstAssert \
-            tstShared_Lib \
             tstSoft_Equiv \
             tstSP \
             tstRCF \
@@ -9908,31 +9907,6 @@ echo "${ECHO_T}$number" >&6
 
 
 
-
-#
-# Case through different hosts, if it is a host we haven't configured
-# yet then make the code "NULL"
-#
-case $host in
-
-   # >>> LINUX
-   *-linux-gnu)
-       LIBS="$LIBS -ldl"
-   ;;
-
-   # >>> TRU64 COMPAQ
-   #alpha*-dec-osf*)
-
-   #;;
-
-   # >>> All others
-   *)
-       cat >>confdefs.h <<\_ACEOF
-#define NO_DLOPEN 1
-_ACEOF
-
-   ;;
-esac
 
 # Extract the first word of "lin", so it can be a program name with args.
 set dummy lin; ac_word=$2
