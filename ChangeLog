@@ -1,3 +1,43 @@
+2004-04-30  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: Released draco-5_0_0.  See CCS-4:04-36 for details about
+	the release.  This draco release includes the following component
+	packages:
+
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_gandolf
+		ds++
+		lapack_wrap
+		meshReaders
+		meshReaders_Services
+		pcgWrap
+		plot2D
+		quadrature
+		rng
+		stdheaders
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	Note that imc and mc have been moved out of draco [to clubimc].
+	Also, we have not released cdi_eospac as part of draco-5_0_0
+	because of compiler issues involving EOSPAC.
+
+	There are significant build system changes particularly with
+	regard to the autodoc system [see CCS-4:04-25].  
+
+	The Project Thuban [CCS-4:04-21] directory reorganization has been
+	completed.  The draco development environment files have been
+	moved to draco/environment.  Also, draco CVS now exists at
+	sf.lanl.gov:/cvsroot/draco [draco SourceForge page].
+
+	Again, see CCS-4:04-36 for details.
+
 2004-04-19  Thomas M. Evans  <tme@lanl.gov>
 
 	* src/*/autodoc/*: added autodoc/pkg.dcc to each draco package to
