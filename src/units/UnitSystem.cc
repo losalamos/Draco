@@ -54,17 +54,17 @@ bool UnitSystem::validUnits() const
 
 /*!
  * \brief Return true if op1 and op2 are identical.
- * \return true if xxxConversion data members are the same between op1 and
- *         op2. 
+ * \return true if conversion data members are the same between op1 and
+ *         op2. Otherwise return false.
  *
  * For example:
- *
+ * \verbatim
  * UnitSystem UserUnits(34.0, 60.0, 0.0003, 99);
  * UnitSystem SIUnits(1.0, 1.0, 1.0 1.0 );
  * 
  * Units NewUnits = UserUnits/SIUnits
  * Ensure( NewUnits == UserUnits );
- *
+ * \endverbatim
  */
 bool operator==( UnitSystem const & op1, UnitSystem const & op2 )
 {
