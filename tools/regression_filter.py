@@ -213,7 +213,7 @@ print
 
 print "%41s" % ("Test Results")
 print "======================================================================="
-print "%30s %10s %15s %13s" % ("Package | Test","Num Run", "Num Passed", "Num Fail")
+print "%40s %8s %11s %9s" % ("Package | Test","Num Run", "Num Passed", "Num Fail")
 print "======================================================================="
 
 for pkg in pkg_tests.keys():
@@ -226,8 +226,8 @@ for pkg in pkg_tests.keys():
     for key in pkg_tests[pkg]:
         nc      = nc + 1
         results = tests[key]
-        print "%30s %10i %15i %13i" % (key, results[0], results[1],
-                                       results[2])
+        print "%40s %8i %11i %9i" % (key, results[0], results[1],
+                                      results[2])
 
         if nc < nr:
             print "-----------------------------------------------------------------------"
