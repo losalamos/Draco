@@ -133,9 +133,9 @@ void rep_transporter_run_test()
     Rep_Source_Builder<OS_Mesh> source_builder(interface, mesh, topology);
 
     // build the source
-    SP<Source<OS_Mesh> > source = source_builder.build_Source(mesh, mat,
-							      opacity, rcon,
-							      patterns);
+    SP<Source<OS_Mesh, Particle<OS_Mesh> > > source = source_builder.build_Source(mesh, mat,
+										  opacity, rcon,
+										  patterns);
 
     cout << source->get_num_source_particles() << endl;
 
