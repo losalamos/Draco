@@ -89,7 +89,7 @@ string tCDIGandolf::runTest()
 
     // Obtain a Rosseland Gray Opacity value for T=0.1 keV and density 
     // = 27.0 g/cm^3.
-    double grayRosselandOpacity = spOpacityABC->getGray( 0.1, 27.0 );
+    double grayRosselandOpacity = spOpacityABC->getGrayRosseland( 0.1, 27.0 );
 
     cout << endl << "grayRosselandOpacity for material Aluminum (matID=" 
 	 << matid << ") is:" << endl
@@ -108,11 +108,6 @@ string tCDIGandolf::runTest()
     //=================//
     // MG Opacity test //
     //=================//
-
-    cout << endl << "Multigroup Rosseland Opacities for Aluminum (matID=" 
-	 << matid << ") test:" << endl
-	 << "   MGOpacities at T=0.01 keV and rho=2.0 g/cm^3 ( in cm^2/gm. )."
-	 << endl << endl;
 
     // The solution to compare against:
     const int numGroups = 33;
@@ -158,7 +153,19 @@ string tCDIGandolf::runTest()
     // Interpolate the multigroup opacities for T = 0.01 keV and
     // density = 2.0 g/cm^3. 
     vector<double> mgRosselandOpacity
-	= spOpacityABC->getMG( 0.01, 2.0 );
+	= spOpacityABC->getMGRosseland( 0.01, 2.0 );
+
+    // print the results
+    cout << endl << "Multigroup Rosseland Opacities for Aluminum (matID=" 
+	 << matid << ") test:" << endl
+	 << "   MGOpacities at T=0.01 keV and rho=2.0 g/cm^3 ( in cm^2/gm. )."
+	 << endl << endl;
+    for ( int i=0; i<mgRosselandOpacity.size(); ++i )
+	cout << "   Opacity(group=" << std::setw(2) << i << ") = " 
+	     << std::scientific << std::setprecision(5) 
+	     << mgRosselandOpacity[i] << endl;
+    cout << endl;
+    
 
     // Compare the interpolated value with previous interpolations:
     if ( match( mgRosselandOpacity, tabulatedMGOpacity ) )
