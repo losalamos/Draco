@@ -342,7 +342,6 @@ void RadiationPhysics::getElectElectCoulombLog(const Field &density,
     while(lit != CTF::end(lambda_ee))
     {
 	double T = *Tit;
-	double z = *zit;
 	double n = *nit;
 	double lambda;
 
