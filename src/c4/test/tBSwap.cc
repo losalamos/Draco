@@ -12,6 +12,8 @@ using namespace C4;
 
 #include <iostream>
 #include <string>
+#include <cmath>
+
 using std::cout;
 using std::endl;
 
