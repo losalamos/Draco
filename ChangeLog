@@ -1,3 +1,55 @@
+2000-05-03  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco/: Released draco version draco-1_0_0.  This version
+	contains the following sub-directories:
+
+		src/
+		doc/
+		templates/
+		autodoc/
+
+	It contains the following packages under draco/:
+
+		config-1_2_0
+		tools-1_0_0
+
+	It contains the following packages under draco/src/:
+
+		mesh-1_8_0
+		meshReaders-1_0_0
+		imc-1_3_0
+		mc-1_2_0
+		rng-1_3_0
+		c4-1_3_0
+		viz-1_0_0 
+		timestep-1_2_0
+		xm-1_2_0
+		stopwatch-1_1_0
+		matprops-1_4_0
+		nml-1_2_0
+		UnitTestFrame-1_0_0
+		traits-1_3_0
+		diffusion-1_3_0
+		radphys-1_4_0
+		units-1_3_0
+		ds++-1_3_0
+		P1Diffusion-1_5_0
+		ConjGradDiffusionSolver-1_0_0
+		ConjGrad-1_0_0
+		meshTest-1_2_0
+
+	All regression tests in these packages passed on mikonos utilizing 
+	the following configuration:
+
+		draco_config .. --with-c4=mpi 
+		--with-mpi-inc=/usr/local/mpich/include 
+		--with-mpi-lib=/usr/local/mpich/lib 
+		--with-sprng-inc=/usr/local/vendors/sprng/include 
+		--with-sprng-lib=/usr/local/vendors/sprng/lib
+
+	KCC 3.4g (LINUX) was used as the compiler.  See Memo
+	X-6:00-22(U). For details.
+
 1999-09-08  Thomas M. Evans  <tme@lanl.gov>
 
 	* templates: update templates to 1_1_0, added ChangeLog file to
