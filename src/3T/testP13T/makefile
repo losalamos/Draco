@@ -27,6 +27,7 @@ include ../../config/makefile
 
 srcs	= \
 	main.cc \
+	Mesh_XYZ_IO.cc \
 	testFullP13T_MS_pt.cc \
 	testFullP13T_MP_pt.cc \
 	testFullP13T_MMP_pt.cc \
@@ -57,12 +58,12 @@ main_$(env) : deps $(objs) \
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../../3T;         $(MAKE) $(subnj))
+	(cd ../../P1Diffusion;   $(MAKE) $(subnj))
 	(cd ../../units;      $(MAKE) $(subnj))
 	(cd ../../radphys;    $(MAKE) $(subnj))
 	(cd ../../matprops;   $(MAKE) $(subnj))
 	(cd ../../timestep;   $(MAKE) $(subnj))
-	(cd ../../P1Diffusion;   $(MAKE) $(subnj))
+	(cd ../../3T;         $(MAKE) $(subnj))
 endif
 
 $(dep_libtimestep):

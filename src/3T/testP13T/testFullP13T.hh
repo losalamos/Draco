@@ -36,6 +36,11 @@ namespace rtt_matprops {
  template<class MT> class TempMapper;
 }
 
+namespace rtt_3T_testP13T {
+ template<class MaterialStateFieldCC, class MaterialStateFieldFC, class MT>
+ class testMaterialProps;
+}
+
 namespace XTM {
  
  //===========================================================================//
@@ -88,7 +93,10 @@ namespace XTM {
      typedef typename MP:: template MaterialStateField<ccsf, ccvsf, ccvif> MatStateCC;
      typedef typename MP:: template MaterialStateField<fcdsf, fcdvsf, fcdvif> MatStateFC;
 
-     typedef P13T<MT,MatStateCC,MatStateFC,DS> P13T;
+     typedef rtt_3T_testP13T::testMaterialProps<MatStateCC,MatStateFC,MT>
+     testMaterialProps;
+
+     typedef P13T<DS> P13T;
      typedef typename P13T::RadiationStateField RadiationStateField;
 
      // DATA

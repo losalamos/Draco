@@ -19,6 +19,7 @@
 #include "timestep/ratio_ts_advisor.hh"
 #include "matprops/TempMapper.hh"
 #include "3T/testP13T/GmvDump.hh"
+#include "3T/testP13T/testMaterialProps.hh"
 
 #include <functional>
 #include <new>
@@ -33,6 +34,8 @@ using std::vector;
 #include <string>
 using std::string;
 
+#include "3T/testP13T/Mesh_XYZ_IO.hh"
+
 using dsxx::SP;
 
 using namespace XTM;
@@ -40,6 +43,8 @@ using namespace XTM;
 namespace
 {
 
+ using rtt_3T_testP13T::operator<<;
+ 
  enum Faces { LEFT=0, RIGHT=1, FRONT=2, BACK=3, BOTTOM=4, TOP=5 };
  
  int nx;
@@ -150,175 +155,6 @@ namespace
 	 if (op(*it) > results)
 	     results = *it;
      return results;
- }
-
- std::ostream &operator<<(std::ostream &os, 
-			  const Mesh_XYZ::ccsf &rhs)
- {
-     typedef Mesh_XYZ::ccsf FT;
-
-     std::ios_base::fmtflags fmtflags = os.flags();
-
-     os << std::scientific << std::setprecision(6);
-    
-#if 0
-     int iline = 0;
-     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-     {
-	 os << std::setw(16) << *it << " ";
-	 if (++iline % 6 == 0)
-	     os << endl;
-     }
-     if (iline % 6 != 0)
-	 os << endl;
-#else
-     os << endl;
-     int icell = 0;
-     for (int k=0; k<nz; k++)
-	 for (int j=0; j<ny; j++)
-	     for (int i=0; i<nx; i++)
-	     {
-		 os << std::setw(5) << icell++ << ":";
-		 os << " " << std::setw(16) << rhs(i,j,k);
-		 os << endl;
-	     }
-#endif    
-
-     // restore the original flags.
-    
-     os.flags(fmtflags);
-
-     return os;
- }
-
- std::ostream &operator<<(std::ostream &os, 
-			  const Mesh_XYZ::cctf<std::vector<double> > &rhs)
- {
-     typedef Mesh_XYZ::cctf<std::vector<double> > FT;
-
-     std::ios_base::fmtflags fmtflags = os.flags();
-
-     os << std::scientific << std::setprecision(6);
-    
-#if 0
-     int iline = 0;
-     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-     {
-	 os << std::setw(16) << *it << " ";
-	 if (++iline % 6 == 0)
-	     os << endl;
-     }
-     if (iline % 6 != 0)
-	 os << endl;
-#else
-     os << endl;
-     int icell = 0;
-     for (int k=0; k<nz; k++)
-	 for (int j=0; j<ny; j++)
-	     for (int i=0; i<nx; i++)
-	     {
-		 os << std::setw(5) << icell++ << ":";
-		 int nmat = rhs(i,j,k).size();
-		 for (int imat = 0; imat < nmat; imat++)
-		 {
-		     os << " " << std::setw(16) << rhs(i,j,k)[imat];
-		 }
-		 os << endl;
-	     }
-#endif    
-
-     // restore the original flags.
-    
-     os.flags(fmtflags);
-
-     return os;
- }
-
-
- std::ostream &operator<<(std::ostream &os,
-	     const Mesh_XYZ::fcdsf &rhs)
- {
-     typedef Mesh_XYZ::fcdsf FT;
-    
-     std::ios_base::fmtflags fmtflags = os.flags();
-
-     os << std::scientific << std::setprecision(6);
-
-#if 0
-     int iline = 0;
-     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-     {
-	 os << std::setw(16) << *it << " ";
-	 if (++iline % 6 == 0)
-	     os << endl;
-     }
-     if (iline % 6 != 0)
-	 os << endl;
-#else
-     os << endl;
-
-     int icell = 0;
-     for (int k=0; k<nz; k++)
-	 for (int j=0; j<ny; j++)
-	     for (int i=0; i<nx; i++)
-	     {
-		 os << std::setw(5) << icell++ << ":";
-		 for (int f=0; f<6; f++)
-		     os << " " << std::setw(16) << rhs(i,j,k,f);
-		 os << endl;
-	     }
-#endif
-
-     // restore the original flags.
-    
-     os.flags(fmtflags);
-
-     return os;
- }
-
- std::ostream &operator<<(std::ostream &os,
-			  const Mesh_XYZ::fcdtf<std::vector<double> > &rhs)
- {
-     typedef Mesh_XYZ::fcdtf<std::vector<double> > FT;
-    
-     std::ios_base::fmtflags fmtflags = os.flags();
-
-     os << std::scientific << std::setprecision(6);
-
-#if 0
-     int iline = 0;
-     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-     {
-	 os << std::setw(16) << *it << " ";
-	 if (++iline % 6 == 0)
-	     os << endl;
-     }
-     if (iline % 6 != 0)
-	 os << endl;
-#else
-     os << endl;
-
-     int icell = 0;
-     for (int k=0; k<nz; k++)
-	 for (int j=0; j<ny; j++)
-	     for (int i=0; i<nx; i++)
-	     {
-		 for (int f=0; f<6; f++)
-		 {
-		     os << std::setw(5) << icell++ << ":" << f << ":";
-		     int nmat = rhs(i,j,k,f).size();
-		     for (int imat=0; imat<nmat; imat++)
-			 os << " " << std::setw(16) << rhs(i,j,k,f)[imat];
-		     os << endl;
-		 }
-	     }
-#endif
-
-     // restore the original flags.
-    
-     os.flags(fmtflags);
-
-     return os;
  }
 
  using rtt_matprops::MultiMatCellMatProps;
@@ -616,7 +452,8 @@ void testFullP13T<UMCMP>::run() const
    
     RadiationStateField radState(spMesh);
 
-    spP13T->initializeRadiationState(matStateCC, radState);
+    spP13T->initializeRadiationState(testMaterialProps(matStateCC, matStateFC),
+				     radState);
 
     ccsf QRad(spMesh);
     ccsf QElectron(spMesh);
@@ -789,12 +626,10 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
     ccsf REEM(spMesh);
 	
     spP13T->solve3T(newRadState, QEEM, REEM,
-		    electEnergyDep, ionEnergyDep, momentumDeposition, 
-                    TElec, TIon,
-		    *spDiffSolver, dt, matStateCC, matStateFC, velocity,
-                    radState,
-		    QRad, QElectron, QIon,
-		    alpha, beta, bSrc);
+		    electEnergyDep, ionEnergyDep, momentumDeposition,
+		    TElec, TIon, *spDiffSolver, dt,
+		    testMaterialProps(matStateCC, matStateFC), velocity,
+		    radState, QRad, QElectron, QIon, alpha, beta, bSrc);
 
     std::cerr << "Made it after solve3T" << endl;
 
@@ -839,7 +674,7 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
 	    << std::ends;
 	std::ofstream ofs(oss.str());
 	ofs << "# testFullP13T cycle=" << cycle << " time=" << time << endl;
-	ofs << "# z \t phi(z)" << endl;
+	ofs << "# z \t TRad(z)" << endl;
 	ccsf TElect(spMesh);
 	newMatStateCC.getElectronTemperature(TElect);
 	const double dz = spMesh->get_dz();

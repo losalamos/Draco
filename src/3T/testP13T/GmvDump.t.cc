@@ -21,6 +21,7 @@ namespace rtt_3T_testP13T
        ny(spMesh->get_ncy()), nz(spMesh->get_ncz()), vid(nx, ny, nz),
        variablePrinted(false), cycle(cycle_), time(time_)
  {
+     using std::endl;
      std::ios_base::fmtflags fmtflags = os.flags();
 
      os << std::setw(16) << std::scientific << std::setprecision(6);
@@ -120,6 +121,8 @@ namespace rtt_3T_testP13T
  template<class MT>
  GmvDump<MT>::~GmvDump()
  {
+     using std::endl;
+    
      if (variablePrinted)
 	 os << "endvars" << endl;
      os << "probtime " << time << endl;
@@ -130,6 +133,7 @@ namespace rtt_3T_testP13T
  template<class MT>
  void GmvDump<MT>::dump(const typename MT::ccsf &var, const std::string &name)
  {
+     using std::endl;
      std::ios_base::fmtflags fmtflags = os.flags();
 
      os << std::setw(16) << std::scientific << std::setprecision(6);

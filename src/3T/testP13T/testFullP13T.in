@@ -1,8 +1,8 @@
 $P13T
 	verbose=false
 	units=astro
-	nsteps=100000
-	dumpcycles=1000
+	nsteps=1
+	dumpcycles=1
 	dt=1.0e-6
 	dtMin=1.0e-6
 	dtMax=1.0e-2
