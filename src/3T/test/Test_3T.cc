@@ -79,7 +79,6 @@ void Test_3T<MT, Problem>::run()
 
 // Set up initial conditions of the problem.
 
-//    Mat1<double> Eo(ncp), En(ncp);
     MT::cell_array Eo(spm), En(spm);
 
     Mat1<double> xc( spm->get_xc() );
@@ -115,6 +114,7 @@ void Test_3T<MT, Problem>::run()
     }
 
     MT::cell_array E_analytic(spm), rhs(spm), r(spm);
+    MT::fcdsf Eb(spm);
 
 // main loop.
     for( int ns=1; ns <= nsteps; ns++ ) {
@@ -154,114 +154,39 @@ void Test_3T<MT, Problem>::run()
 
     // Calculate boundary values.
 
+	Eb = 0.;
+	for( int n=0; n < ncp; n++ ) {
+	    int i = I(n), j = J(n), k = K(n);
+
+	    if (i == 0)     Eb(n,0) = E( xc(i) - dx, yc(j), zc(k), t );
+	    if (i == ncx-1) Eb(n,1) = E( xc(i) + dx, yc(j), zc(k), t );
+
+	    if (j == 0)     Eb(n,2) = E( xc(i), yc(j) - dy, zc(k), t );
+	    if (j == ncy-1) Eb(n,3) = E( xc(i), yc(j) + dy, zc(k), t );
+
+	    if (k == 0)     Eb(n,4) = E( xc(i), yc(j), zc(k) - dz, t );
+	    if (k == ncz-1) Eb(n,5) = E( xc(i), yc(j), zc(k) + dz, t );
+	}
+
     // Begin setting up to solve the problem.  First, set r.
 	for( int i=0; i < ncp; i++ )
 	    r(i) = rhs(i)*dt + Eo(i);
 
     // Ask the solver to solve the system.
 
-	spd->solve( Df, r, dt, En );
-#if 0
-    // Set up coefficient matrix.
-	A = 0.;
+	spd->solve( Df, r, dt, En, Eb );
 
-	for( int n=0; n < ncp; n++ ) {
-	    int i = I(n), j = J(n), k = K(n);
-	    double d, fac;
-
-	    A(n,goff+n) = 1.;
-
-	// left face.
-
-	    d = D( xf(i), yc(j), zc(k) );
-	    fac = (d * dt) / (vc(n) * dx);
-	    A(n,goff+n) += (fac * xA(i));
-	    if (i > 0)
-		A(n, goffset(i-1,j,k)) -= fac * xA(i);
-	    else
-		r(n) += fac * xA(i) * E( xc(i) - dx, yc(j), zc(k), t );
-
-	// right face.
-
-	    d = D( xf(i+1), yc(j), zc(k) );
-	    fac = (d * dt) / (vc(n) * dx);
-	    A(n,goff+n) += (fac * xA(i+1));
-	    if (i < ncx-1)
-		A(n, goffset(i+1,j,k)) -= fac * xA(i+1);
-	    else
-		r(n) += fac * xA(i+1) * E( xc(i)+dx, yc(j), zc(k), t );
-
-	// front face.
-
-	    d = D( xc(i), yf(j), zc(k) );
-	    fac = (d * dt) / (vc(n) * dy);
-	    A(n,goff+n) += (fac * yA(j));
-	    if (j > 0)
-		A(n, goffset(i,j-1,k)) -= fac * yA(j);
-	    else
-		r(n) += fac * yA(j) * E( xc(i), yc(j) - dy, zc(k), t );
-
-	// back face.
-
-	    d = D( xc(i), yf(j+1), zc(k) );
-	    fac = (d * dt) / (vc(n) * dy);
-	    A(n,goff+n) += (fac * yA(j+1));
-	    if (j < ncy-1)
-		A(n, goffset(i,j+1,k)) -= fac * yA(j+1);
-	    else
-		r(n) += fac * yA(j+1) * E( xc(i), yc(j)+dy, zc(k), t );
-
-	// bottom face.
-
-	    d = D( xc(i), yc(j), zf(k) );
-	    fac = (d * dt) / (vc(n) * dz);
-	    A(n,goff+n) += (fac * zA(k));
-	    if (k > 0)
-		A(n, goffset(i,j,k-1)) -= fac * zA(k);
-	    else
-		r(n) += fac * zA(k) * E( xc(i), yc(j), zc(k) - dz, t );
-
-	// top face.
-
-	    d = D( xc(i), yc(j), zf(k+1) );
-	    fac = (d * dt) / (vc(n) * dz);
-	    A(n,goff+n) += (fac * zA(k+1));
-	    if (k < ncz-1)
-		A(n, goffset(i,j,k+1)) -= fac * zA(k+1);
-	    else
-		r(n) += fac * zA(k+1) * E( xc(i), yc(j), zc(k)+dz, t );
-
-	// Here comes a pig face.    (With appologies to Dr. Seus :-).
-	}
-
-	print2_Mat( A, "A" );
-
-    // Solve Ax = b
-
-	SP< PCG_MatVec<double> >  matvec  =
-	    new MatVec_3T< Test_3T<MT,Problem> >( this );
-	SP< MatVec_3T< Test_3T<MT,Problem> > >  t3matvec  = matvec;
-	SP< PCG_PreCond<double> > precond = new PreCond<double>();
-
-	PCG_Ctrl<double> pcg_ctrl( pcg_db, ncp );
-
-	pcg_ctrl.pcg_fe( En, r, matvec, precond );
-
-	int pcgits = t3matvec->get_iterations();
-
-    // Calculate A.En, compare to r.
+    // Compute the product of A and En to see how well it compares to r.
+	double r1 = 0.;
+	int pcgits = spd->get_matvec()->get_iterations();
 
 	Mat1<double> b( ncp );
-	matvec->MatVec( b, En );
+	spd->get_matvec()->MatVec( b, En );
 
-	double r1=0.;
 	for( int i=0; i < ncp; i++ ) {
 	    double d = b[i] - r[i];
 	    r1 += d*d;
 	}
-#endif
-	double r1 = 0.;		// Sick hack till we fix the above.
-	int pcgits = 0;		// same as above.
 
     // Compute solution quality metrics
 	double s1=0.;
