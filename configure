@@ -272,7 +272,7 @@ PACKAGE_BUGREPORT=
 
 ac_unique_file="README.draco"
 ac_subdirs_all="$ac_subdirs_all tools src autodoc"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS subdirs CC CFLAGS CXX CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB GSLCBLAS_INC GSLCBLAS_LIB TRILINOS_INC TRILINOS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS subdirs CC CFLAGS CXX CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -848,6 +848,15 @@ Optional Packages:
   --with-aztec=lib      determine the aztec lib (aztec is the default
   --with-aztec-inc=DIR    tell where AZTEC includes are (\${AZTEC_INC_DIR} by default)
   --with-aztec-lib=DIR    tell where AZTEC libraries are (\${AZTEC_LIB_DIR} by default)
+  --with-gsl=lib      determine the gsl lib (gsl is the default
+  --with-gsl-inc=DIR    tell where GSL includes are (\${GSL_INC_DIR} by default)
+  --with-gsl-lib=DIR    tell where GSL libraries are (\${GSL_LIB_DIR} by default)
+  --with-gslcblas=lib      determine the gslcblas lib (gslcblas is the default
+  --with-gslcblas-inc=DIR    tell where GSLCBLAS includes are (\${GSLCBLAS_INC_DIR} by default)
+  --with-gslcblas-lib=DIR    tell where GSLCBLAS libraries are (\${GSLCBLAS_LIB_DIR} by default)
+  --with-trilinos=lib    determine the trilinos implementation (aztecoo is default
+  --with-trilinos-inc=DIR    tell where TRILINOS includes are (\${TRILINOS_INC_DIR} by default)
+  --with-trilinos-lib=DIR    tell where TRILINOS libraries are (\${TRILINOS_LIB_DIR} by default)
   --with-lapack=vendor,atlas
                           determine LAPACK implementation (vendor default)
   --with-lapack-lib=DIR    tell where LAPACK libs are (\${LAPACK_LIB_DIR} by default)
@@ -1838,6 +1847,456 @@ fi;
 
    # add AZTEC directory to VENDOR_DIRS
    VENDOR_DIRS="${AZTEC_LIB} ${VENDOR_DIRS}"
+
+
+
+
+# Check whether --with-gsl or --without-gsl was given.
+if test "${with_gsl+set}" = set; then
+  withval="$with_gsl"
+
+fi;
+
+
+
+
+
+# Check whether --with-gsl-inc or --without-gsl-inc was given.
+if test "${with_gsl_inc+set}" = set; then
+  withval="$with_gsl_inc"
+  if test $with_gsl_inc != "no" ; then
+      if test $with_gsl_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${GSL_INC_DIR}
+         eval with_gsl_inc=\${GSL_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_gsl_inc=`eval echo "$with_gsl_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_gsl_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-gsl-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_gsl_inc ; then
+         { echo "configure: error: $with_gsl_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      GSL_INC="${with_gsl_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define GSL_INC ${with_gsl_inc}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "GSL_INC has been set to $GSL_INC" 1>&6
+
+   fi
+fi;
+
+
+
+
+
+
+
+
+# Check whether --with-gsl-lib or --without-gsl-lib was given.
+if test "${with_gsl_lib+set}" = set; then
+  withval="$with_gsl_lib"
+  if test $with_gsl_lib != "no" ; then
+      if test $with_gsl_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${GSL_LIB_DIR}
+         eval with_gsl_lib=\${GSL_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_gsl_lib=`eval echo "$with_gsl_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_gsl_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-gsl-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_gsl_lib ; then
+         { echo "configure: error: $with_gsl_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      GSL_LIB="${with_gsl_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define GSL_LIB ${with_gsl_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "GSL_LIB has been set to $GSL_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # set default value of gsl includes and libs
+   if test "${with_gsl:=gsl}" = yes ; then
+       with_gsl='gsl'
+   fi
+
+   # define GSL include path
+   if test -n "${GSL_INC}" ; then
+       # remember that GSL_INC has the final slash
+       GSL_H="\"${GSL_INC}az_gsl.h\""
+       GSL_DEFS_H="\"${GSL_INC}az_gsl_defs.h\""
+   elif test -z "${GSL_INC}" ; then
+       GSL_H="<az_gsl.h>"
+       GSL_DEFS_H="<az_gsl_defs.h>"
+   fi
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_gsl=pkg
+
+   # set up the libraries
+   if test "${with_gsl}" != no ; then
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+   fi
+
+   # add GSL directory to VENDOR_DIRS
+   VENDOR_DIRS="${GSL_LIB} ${VENDOR_DIRS}"
+
+
+
+
+# Check whether --with-gslcblas or --without-gslcblas was given.
+if test "${with_gslcblas+set}" = set; then
+  withval="$with_gslcblas"
+
+fi;
+
+
+
+
+
+# Check whether --with-gslcblas-inc or --without-gslcblas-inc was given.
+if test "${with_gslcblas_inc+set}" = set; then
+  withval="$with_gslcblas_inc"
+  if test $with_gslcblas_inc != "no" ; then
+      if test $with_gslcblas_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${GSLCBLAS_INC_DIR}
+         eval with_gslcblas_inc=\${GSLCBLAS_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_gslcblas_inc=`eval echo "$with_gslcblas_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_gslcblas_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-gslcblas-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_gslcblas_inc ; then
+         { echo "configure: error: $with_gslcblas_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      GSLCBLAS_INC="${with_gslcblas_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define GSLCBLAS_INC ${with_gslcblas_inc}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "GSLCBLAS_INC has been set to $GSLCBLAS_INC" 1>&6
+
+   fi
+fi;
+
+
+
+
+
+
+
+
+# Check whether --with-gslcblas-lib or --without-gslcblas-lib was given.
+if test "${with_gslcblas_lib+set}" = set; then
+  withval="$with_gslcblas_lib"
+  if test $with_gslcblas_lib != "no" ; then
+      if test $with_gslcblas_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${GSLCBLAS_LIB_DIR}
+         eval with_gslcblas_lib=\${GSLCBLAS_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_gslcblas_lib=`eval echo "$with_gslcblas_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_gslcblas_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-gslcblas-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_gslcblas_lib ; then
+         { echo "configure: error: $with_gslcblas_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      GSLCBLAS_LIB="${with_gslcblas_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define GSLCBLAS_LIB ${with_gslcblas_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "GSLCBLAS_LIB has been set to $GSLCBLAS_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # set default value of gslcblas includes and libs
+   if test "${with_gslcblas:=gslcblas}" = yes ; then
+       with_gslcblas='gslcblas'
+   fi
+
+   # define GSLCBLAS include path
+   if test -n "${GSLCBLAS_INC}" ; then
+       # remember that GSLCBLAS_INC has the final slash
+       GSLCBLAS_H="\"${GSLCBLAS_INC}az_gslcblas.h\""
+       GSLCBLAS_DEFS_H="\"${GSLCBLAS_INC}az_gslcblas_defs.h\""
+   elif test -z "${GSLCBLAS_INC}" ; then
+       GSLCBLAS_H="<az_gslcblas.h>"
+       GSLCBLAS_DEFS_H="<az_gslcblas_defs.h>"
+   fi
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_gslcblas=pkg
+
+   # set up the libraries
+   if test "${with_gslcblas}" != no ; then
+       if test -n "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   fi
+
+       elif test -z "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
+   fi
+
+       fi
+   fi
+
+   # add GSLCBLAS directory to VENDOR_DIRS
+   VENDOR_DIRS="${GSLCBLAS_LIB} ${VENDOR_DIRS}"
+
+
+
+
+# Check whether --with-trilinos or --without-trilinos was given.
+if test "${with_trilinos+set}" = set; then
+  withval="$with_trilinos"
+
+fi;
+
+
+
+
+
+# Check whether --with-trilinos-inc or --without-trilinos-inc was given.
+if test "${with_trilinos_inc+set}" = set; then
+  withval="$with_trilinos_inc"
+  if test $with_trilinos_inc != "no" ; then
+      if test $with_trilinos_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${TRILINOS_INC_DIR}
+         eval with_trilinos_inc=\${TRILINOS_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_trilinos_inc=`eval echo "$with_trilinos_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_trilinos_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-trilinos-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_trilinos_inc ; then
+         { echo "configure: error: $with_trilinos_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      TRILINOS_INC="${with_trilinos_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define TRILINOS_INC ${with_trilinos_inc}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "TRILINOS_INC has been set to $TRILINOS_INC" 1>&6
+
+   fi
+fi;
+
+
+
+
+
+
+
+
+# Check whether --with-trilinos-lib or --without-trilinos-lib was given.
+if test "${with_trilinos_lib+set}" = set; then
+  withval="$with_trilinos_lib"
+  if test $with_trilinos_lib != "no" ; then
+      if test $with_trilinos_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${TRILINOS_LIB_DIR}
+         eval with_trilinos_lib=\${TRILINOS_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_trilinos_lib=`eval echo "$with_trilinos_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_trilinos_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-trilinos-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_trilinos_lib ; then
+         { echo "configure: error: $with_trilinos_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      TRILINOS_LIB="${with_trilinos_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define TRILINOS_LIB ${with_trilinos_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "TRILINOS_LIB has been set to $TRILINOS_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # set default value of trilinos includes and libs
+   if test "${with_trilinos:=aztecoo}" = yes ; then
+       with_trilinos='aztecoo'
+   fi
+
+   # define TRILINOS include path
+   if test -n "${TRILINOS_INC}" ; then
+       # remember that TRILINOS_INC has the final slash
+       Trilinos_Util_H="\"${TRILINOS_INC}Trilinos_Util.h\""
+       AztecOO_H="\"${TRILINOS_INC}AztecOO.h\""
+       Epetra_MpiComm_H="\"${TRILINOS_INC}Epetra_MpiComm.h\""
+       Epetra_Map_H="\"${TRILINOS_INC}Epetra_Map.h\""
+       Epetra_Vector_H="\"${TRILINOS_INC}Epetra_Vector.h\""
+       Epetra_CrsMatrix_H="\"${TRILINOS_INC}Epetra_CrsMatrix.h\""
+       Epetra_LinearProblem_H="\"${TRILINOS_INC}Epetra_LinearProblem.h\""
+       Epetra_IntVector_H="\"${TRILINOS_INC}Epetra_IntVector.h\""
+       Epetra_Import_H="\"${TRILINOS_INC}Epetra_Import.h\""
+       Epetra_Export_H="\"${TRILINOS_INC}Epetra_Export.h\""
+       Epetra_CompObject_H="\"${TRILINOS_INC}Epetra_CompObject.h\""
+       Epetra_Distributor_H="\"${TRILINOS_INC}Epetra_Distributor.h\""
+       Epetra_DistObject_H="\"${TRILINOS_INC}Epetra_DistObject.h\""
+       Epetra_MpiDistributor_H="\"${TRILINOS_INC}Epetra_MpiDistributor.h\""
+       Epetra_BasicDirectory_H="\"${TRILINOS_INC}Epetra_BasicDirectory.h\""
+       Epetra_Util_H="\"${TRILINOS_INC}Epetra_Util.h\""
+       Epetra_Time_H="\"${TRILINOS_INC}Epetra_Time.h\""
+   fi
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_trilinos=pkg
+
+   # set up the libraries
+   if test "${with_trilinos}" != no ; then
+       if test -n "${TRILINOS_LIB}" ; then
+
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   fi
+
+       elif test -z "${TRILINOS_LIB}" ; then
+
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   fi
+
+       fi
+   fi
+
+   # add TRILINOS directory to VENDOR_DIRS
+   VENDOR_DIRS="${TRILINOS_LIB} ${VENDOR_DIRS}"
 
 
 
@@ -3588,6 +4047,12 @@ s,@SPRNG_LIB@,$SPRNG_LIB,;t t
 s,@PCG_LIB@,$PCG_LIB,;t t
 s,@AZTEC_INC@,$AZTEC_INC,;t t
 s,@AZTEC_LIB@,$AZTEC_LIB,;t t
+s,@GSL_INC@,$GSL_INC,;t t
+s,@GSL_LIB@,$GSL_LIB,;t t
+s,@GSLCBLAS_INC@,$GSLCBLAS_INC,;t t
+s,@GSLCBLAS_LIB@,$GSLCBLAS_LIB,;t t
+s,@TRILINOS_INC@,$TRILINOS_INC,;t t
+s,@TRILINOS_LIB@,$TRILINOS_LIB,;t t
 s,@LAPACK_LIB@,$LAPACK_LIB,;t t
 s,@GANDOLF_LIB@,$GANDOLF_LIB,;t t
 s,@EOSPAC5_LIB@,$EOSPAC5_LIB,;t t
