@@ -1518,10 +1518,7 @@ AC_DEFUN(AC_F90_ENV, [dnl
        i??86-pc-cygwin*)
           AC_COMPILER_COMPAQ_F90
        ;;
-       alphaev67-dec*)
-          AC_COMPILER_COMPAQ_F90
-       ;;
-       alpha-dec*)
+       alpha*)
           AC_COMPILER_COMPAQ_F90
        ;;
        *hp-hpux*)

@@ -17,6 +17,7 @@
 #include "../XYZCoord_sys.hh"
 #include "../OS_Builder.hh"
 #include "../Release.hh"
+#include "rng/Random.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include "ds++/SP.hh"
@@ -24,6 +25,7 @@
 #include "ds++/Soft_Equivalence.hh"
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <cmath>
 
@@ -33,10 +35,14 @@ using rtt_mc::Layout;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_mc_test::Parser;
+using rtt_rng::Rnd_Control;
+using rtt_rng::Sprng;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
 using namespace std;
+
+int seed = 23423;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -449,6 +455,330 @@ void Mesh_2D()
 	
 	if (ptc != m.get_point_coord()) ITFAILS;
     }
+
+    // check position in sphere
+    {
+	Rnd_Control control(seed);
+	Sprng rran = control.get_rn(10);
+	Sprng ran  = control.get_rn(10);
+
+	vector<double> r;
+	vector<double> ref(2, 0.0);
+	vector<double> origin(2);
+	double         radius;
+	vector<double> omega;
+
+	// cell 1 sample
+	origin[0] = -0.8;
+	origin[1] = 0.1;
+	radius    = 0.2;
+	if (!m.in_cell(1, origin)) ITFAILS;
+
+	r = m.sample_pos_on_sphere(1, origin, radius, ran);
+
+	// check it
+	omega = m.get_Coord().sample_isotropic_dir(rran);
+	for (int i = 0; i < 2; i++)
+	    ref[i] = origin[i] + radius * omega[i];
+
+	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end())) ITFAILS;
+
+	// check that it is in the sphere (weak)
+	if (r[0] < origin[0] - radius) ITFAILS;
+	if (r[0] > origin[0] + radius) ITFAILS;
+	if (r[1] < origin[1] - radius) ITFAILS;
+	if (r[1] > origin[1] + radius) ITFAILS;
+
+	// check that it is in the sphere (we use only use the X,Y
+	// coordinates, so the point may not be equal to the radius, but it
+	// can't be greater than the radius)
+	double magnitude = 0.0;
+	for (int i = 0; i < 2; i++)
+	    magnitude += (r[i] - origin[i]) * (r[i] - origin[i]);
+	magnitude = sqrt(magnitude);
+	if (magnitude > radius) ITFAILS; // radius is the maximum extent in
+					 // XY 
+
+	// check that it is in the cell
+	if (r[0] > 0.0)  ITFAILS;
+	if (r[0] < -1.0) ITFAILS;
+	if (r[1] > 1.0)  ITFAILS;
+	if (r[1] < -1.0) ITFAILS;
+    }
+
+    if (rtt_mc_test::passed)
+	PASSMSG("2D OS_Mesh tests ok.");
+}
+
+//---------------------------------------------------------------------------//
+
+void Mesh_3D()
+{
+    // make a builder from parser input 
+    SP<Parser> parser(new Parser("OS_Input_3D"));
+    OS_Builder builder(parser);
+
+    SP<OS_Mesh> mesh = builder.build_Mesh();
+    if (mesh->num_cells() != 12)            ITFAILS;
+    if (mesh->get_spatial_dimension() != 3) ITFAILS;
+    if (!mesh->full_Mesh())                 ITFAILS;
+
+    // check centerpoints of cells
+    {
+	double x,y,z;
+
+	// cell 1
+	x = mesh->pos(1,1);
+	y = mesh->pos(2,1);
+	z = mesh->pos(3,1);
+	if (!soft_equiv(x, -0.5)) ITFAILS;
+	if (!soft_equiv(y, 0.0))  ITFAILS;
+	if (!soft_equiv(z, 0.5))  ITFAILS;
+
+	// cell 2
+	x = mesh->pos(1,2);
+	y = mesh->pos(2,2);
+	z = mesh->pos(3,2);
+	if (!soft_equiv(x, 0.5))  ITFAILS;
+	if (!soft_equiv(y, 0.0))  ITFAILS;
+	if (!soft_equiv(z, 0.5))  ITFAILS;
+
+	// cell 3
+	x = mesh->pos(1,3);
+	y = mesh->pos(2,3);
+	z = mesh->pos(3,3);
+	if (!soft_equiv(x, 1.5))  ITFAILS;
+	if (!soft_equiv(y, 0.0))  ITFAILS;
+	if (!soft_equiv(z, 0.5))  ITFAILS;
+
+	// cell 4
+	x = mesh->pos(1,4);
+	y = mesh->pos(2,4);
+	z = mesh->pos(3,4);
+	if (!soft_equiv(x, -0.5)) ITFAILS;
+	if (!soft_equiv(y, 2.0))  ITFAILS;
+	if (!soft_equiv(z, 0.5))  ITFAILS;
+
+	// cell 5
+	x = mesh->pos(1,5);
+	y = mesh->pos(2,5);
+	z = mesh->pos(3,5);
+	if (!soft_equiv(x, 0.5))  ITFAILS;
+	if (!soft_equiv(y, 2.0))  ITFAILS;
+	if (!soft_equiv(z, 0.5))  ITFAILS;
+
+	// cell 6
+	x = mesh->pos(1,6);
+	y = mesh->pos(2,6);
+	z = mesh->pos(3,6);
+	if (!soft_equiv(x, 1.5))  ITFAILS;
+	if (!soft_equiv(y, 2.0))  ITFAILS;
+	if (!soft_equiv(z, 0.5))  ITFAILS;
+
+	// cell 7
+	x = mesh->pos(1,7);
+	y = mesh->pos(2,7);
+	z = mesh->pos(3,7);
+	if (!soft_equiv(x, -0.5)) ITFAILS;
+	if (!soft_equiv(y, 0.0))  ITFAILS;
+	if (!soft_equiv(z, 1.5))  ITFAILS;
+
+	// cell 8
+	x = mesh->pos(1,8);
+	y = mesh->pos(2,8);
+	z = mesh->pos(3,8);
+	if (!soft_equiv(x, 0.5))  ITFAILS;
+	if (!soft_equiv(y, 0.0))  ITFAILS;
+	if (!soft_equiv(z, 1.5))  ITFAILS;
+
+	// cell 9
+	x = mesh->pos(1,9);
+	y = mesh->pos(2,9);
+	z = mesh->pos(3,9);
+	if (!soft_equiv(x, 1.5))  ITFAILS;
+	if (!soft_equiv(y, 0.0))  ITFAILS;
+	if (!soft_equiv(z, 1.5))  ITFAILS;
+
+	// cell 10
+	x = mesh->pos(1,10);
+	y = mesh->pos(2,10);
+	z = mesh->pos(3,10);
+	if (!soft_equiv(x, -0.5)) ITFAILS;
+	if (!soft_equiv(y, 2.0))  ITFAILS;
+	if (!soft_equiv(z, 1.5))  ITFAILS;
+
+	// cell 11
+	x = mesh->pos(1,11);
+	y = mesh->pos(2,11);
+	z = mesh->pos(3,11);
+	if (!soft_equiv(x, 0.5))  ITFAILS;
+	if (!soft_equiv(y, 2.0))  ITFAILS;
+	if (!soft_equiv(z, 1.5))  ITFAILS;
+
+	// cell 12
+	x = mesh->pos(1,12);
+	y = mesh->pos(2,12);
+	z = mesh->pos(3,12);
+	if (!soft_equiv(x, 1.5))  ITFAILS;
+	if (!soft_equiv(y, 2.0))  ITFAILS;
+	if (!soft_equiv(z, 1.5))  ITFAILS; 
+    }
+
+    // test position on sphere
+    {
+	Rnd_Control control(seed);
+	Sprng rran = control.get_rn(10);
+	Sprng ran  = control.get_rn(10);
+
+	vector<double> r;
+	vector<double> ref(3, 0.0);
+	vector<double> origin(3);
+	double         radius;
+	vector<double> omega;
+
+	// cell 1 sample
+	origin[0] = -0.8;
+	origin[1] = 0.1;
+	origin[2] = 0.7;
+	radius    = 0.2;
+	if (!mesh->in_cell(1, origin)) ITFAILS;
+
+	r = mesh->sample_pos_on_sphere(1, origin, radius, ran);
+
+	// check it
+	omega = mesh->get_Coord().sample_isotropic_dir(rran);
+	for (int i = 0; i < 3; i++)
+	    ref[i] = origin[i] + radius * omega[i];
+
+	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end())) ITFAILS;
+
+	// check that it is in the sphere (weak)
+	if (r[0] < origin[0] - radius) ITFAILS;
+	if (r[0] > origin[0] + radius) ITFAILS;
+	if (r[1] < origin[1] - radius) ITFAILS;
+	if (r[1] > origin[1] + radius) ITFAILS;
+	if (r[2] < origin[2] - radius) ITFAILS;
+	if (r[2] > origin[2] + radius) ITFAILS;
+
+	// check that it is in the sphere (strong)
+	double magnitude = 0.0;
+	for (int i = 0; i < 3; i++)
+	    magnitude += (r[i] - origin[i]) * (r[i] - origin[i]);
+	magnitude = sqrt(magnitude);
+	if (!soft_equiv(magnitude, radius)) ITFAILS;
+
+	// check that it is in the cell
+	if (r[0] > 0.0)  ITFAILS;
+	if (r[0] < -1.0) ITFAILS;
+	if (r[1] > 1.0)  ITFAILS;
+	if (r[1] < -1.0) ITFAILS;
+	if (r[2] > 1.0)  ITFAILS;
+	if (r[2] < 0.0)  ITFAILS;
+
+	// cell 5 sample
+	origin[0] = 0.6;
+	origin[1] = 2.7;
+	origin[2] = 0.5;
+	radius    = 0.29;
+	if (!mesh->in_cell(5, origin)) ITFAILS;
+
+	r = mesh->sample_pos_on_sphere(5, origin, radius, ran);
+
+	// check it
+	omega = mesh->get_Coord().sample_isotropic_dir(rran);
+	for (int i = 0; i < 3; i++)
+	    ref[i] = origin[i] + radius * omega[i];
+
+	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end())) ITFAILS;
+
+	// check that it is in the sphere (weak)
+	if (r[0] < origin[0] - radius) ITFAILS;
+	if (r[0] > origin[0] + radius) ITFAILS;
+	if (r[1] < origin[1] - radius) ITFAILS;
+	if (r[1] > origin[1] + radius) ITFAILS;
+	if (r[2] < origin[2] - radius) ITFAILS;
+	if (r[2] > origin[2] + radius) ITFAILS;
+
+	// check that it is in the sphere (strong)
+	magnitude = 0.0;
+	for (int i = 0; i < 3; i++)
+	    magnitude += (r[i] - origin[i]) * (r[i] - origin[i]);
+	magnitude = sqrt(magnitude);
+	if (!soft_equiv(magnitude, radius)) ITFAILS;
+
+	// check that it is in the cell
+	if (r[0] > 1.0)  ITFAILS;
+	if (r[0] < 0.0)  ITFAILS;
+	if (r[1] > 3.0)  ITFAILS;
+	if (r[1] < 1.0)  ITFAILS;
+	if (r[2] > 1.0)  ITFAILS;
+	if (r[2] < 0.0)  ITFAILS;
+
+	// cell 9 sample
+	origin[0] = 1.23;
+	origin[1] = 0.0;
+	origin[2] = 1.45;
+	radius    = 0.21;
+	if (!mesh->in_cell(9, origin)) ITFAILS;
+
+	r = mesh->sample_pos_on_sphere(9, origin, radius, ran);
+
+	// check it
+	omega = mesh->get_Coord().sample_isotropic_dir(rran);
+	for (int i = 0; i < 3; i++)
+	    ref[i] = origin[i] + radius * omega[i];
+
+	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end())) ITFAILS;
+
+	// check that it is in the sphere (weak)
+	if (r[0] < origin[0] - radius) ITFAILS;
+	if (r[0] > origin[0] + radius) ITFAILS;
+	if (r[1] < origin[1] - radius) ITFAILS;
+	if (r[1] > origin[1] + radius) ITFAILS;
+	if (r[2] < origin[2] - radius) ITFAILS;
+	if (r[2] > origin[2] + radius) ITFAILS;
+
+	// check that it is in the sphere (strong)
+	magnitude = 0.0;
+	for (int i = 0; i < 3; i++)
+	    magnitude += (r[i] - origin[i]) * (r[i] - origin[i]);
+	magnitude = sqrt(magnitude);
+	if (!soft_equiv(magnitude, radius)) ITFAILS;
+
+	// check that it is in the cell
+	if (r[0] > 2.0)  ITFAILS;
+	if (r[0] < 1.0)  ITFAILS;
+	if (r[1] > 1.0)  ITFAILS;
+	if (r[1] < -1.0) ITFAILS;
+	if (r[2] > 2.0)  ITFAILS;
+	if (r[2] < 1.0)  ITFAILS;
+
+	// catch an assertion if Require is on
+#if DBC & 1
+
+	origin[0]   = 0.5;
+	origin[1]   = 0.0;
+	origin[2]   = 1.5;
+	radius      = 0.6;
+	bool caught = false;
+	try
+	{
+	    r = mesh->sample_pos_on_sphere(8, origin, radius, ran);
+	}
+	catch (const rtt_dsxx::assertion &ass)
+	{
+	    caught = true;
+	    PASSMSG("Caught Require check on sphere size.");
+	}
+
+	if (!caught)
+	    FAILMSG("Failed to catch out-of-cell check for sphere sampling.");
+
+#endif
+    }
+
+    if (rtt_mc_test::passed)
+	PASSMSG("3D OS_Mesh tests ok.");
 }
 
 //---------------------------------------------------------------------------//
@@ -482,6 +812,7 @@ int main(int argc, char *argv[])
 	// 2D Mesh tests
 	Builder_2D();
 	Mesh_2D();
+	Mesh_3D();
     }
     catch (rtt_dsxx::assertion &ass)
     {

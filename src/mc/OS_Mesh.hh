@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_OS_Mesh_hh__
-#define __mc_OS_Mesh_hh__
+#ifndef rtt_mc_OS_Mesh_hh
+#define rtt_mc_OS_Mesh_hh
 
 #include "Coord_sys.hh"
 #include "Layout.hh"
@@ -122,6 +122,7 @@ namespace rtt_mc
 // 21) 17-APR-01: added Pack function
 // 22) 29-JAN-03: added function to calculate the minimum distance along
 //                axial directions
+// 23) 12-MAY-03: added sample position on sphere function
 // 
 //===========================================================================//
     
@@ -218,11 +219,13 @@ class OS_Mesh
     bool check_defined_surcells(const std_string, const sf_int &) const;
     int get_bndface(std_string, int) const;
     inline vf_double get_vertices(int, int) const;
-    inline vf_double get_vertices(int) const;
+    inline vf_double get_vertices(int) const;  
+    inline sf_int get_neighbors(int) const;
     inline sf_double sample_pos(int, rng_Sprng &) const;
     inline sf_double sample_pos(int, rng_Sprng &, sf_double, double) const; 
     inline sf_double sample_pos_on_face(int, int, rng_Sprng &)	const;
-    inline sf_int get_neighbors(int) const;
+    sf_double sample_pos_on_sphere(int, const sf_double &, double,
+				   rng_Sprng &) const;
 
     //! Determine if this is a full mesh or partitioned mesh.
     bool full_Mesh() const { return !submesh; }
@@ -247,6 +250,9 @@ class OS_Mesh
 
     // Find centerpoint of cell.
     inline double pos(int, int) const;
+
+    // Check to see if a point is in the cell.
+    bool in_cell(int, const sf_double &) const;
 
     //! Get dimensional width of cell.
     double dim(int d, int cell) const { return max(d, cell) - min(d, cell); } 
@@ -1154,7 +1160,7 @@ bool OS_Mesh::CCVF<T>::empty(int i) const
 
 } // end namespace rtt_mc
 
-#endif                          // __mc_OS_Mesh_hh__
+#endif                          // rtt_mc_OS_Mesh_hh
 
 //---------------------------------------------------------------------------//
 //                              end of mc/OS_Mesh.hh

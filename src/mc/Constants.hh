@@ -6,8 +6,8 @@
 // @> mc::global namespace constants
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Constants_hh__
-#define __mc_Constants_hh__
+#ifndef rtt_mc_Constants_hh
+#define rtt_mc_Constants_hh
 
 //===========================================================================//
 // Namespace Constants - 
@@ -64,7 +64,7 @@ const double h = 4.135706e-18;
 } // end namespace global
 } // end namespace rtt_mc
 
-#endif                          // __mc_Constants_hh__
+#endif                          // rtt_mc_Constants_hh
 
 //---------------------------------------------------------------------------//
 //                              end of mc/Constants.hh

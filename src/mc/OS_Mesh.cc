@@ -170,6 +170,75 @@ double OS_Mesh::get_db(const sf_double &r,
 }
 
 //---------------------------------------------------------------------------//
+/*! 
+ * \brief Sample a position on the surface of a sphere inside a cell.
+ *
+ * This function is required by the IMC_MT concept.
+ * 
+ * \param cell cell index
+ * \param origin sphere origin
+ * \param radius sphere radius
+ * \param random random number object
+ * \return coordinates on surface of sphere
+ */
+OS_Mesh::sf_double OS_Mesh::sample_pos_on_sphere(int              cell, 
+						 const sf_double &origin,
+						 double           radius,
+						 rng_Sprng       &random) const
+{
+    Require (cell > 0);
+    Require (cell <= layout.num_cells());
+    Require (origin.size() == coord->get_dim());
+    Require (in_cell(cell, origin));
+
+    Require (origin[0] - radius >= min(1, cell));
+    Require (origin[0] + radius <= max(1, cell));
+    Require (origin[1] - radius >= min(2, cell));
+    Require (origin[1] + radius <= max(2, cell));
+
+    // return value
+    sf_double r_final(coord->get_dim(), 0.0);
+
+    // sample (theta, phi) uniformly
+    sf_double omega = coord->sample_isotropic_dir(random);
+
+    // track to surface of sphere (unrolled for performance)
+    if (coord->get_dim() == 2)
+    {
+	r_final[0] = origin[0] + radius * omega[0];
+	r_final[1] = origin[1] + radius * omega[1];
+    }
+
+    else if (coord->get_dim() == 3)
+    {
+	Require (origin[2] - radius >= min(3, cell));
+	Require (origin[2] + radius <= max(3, cell));
+
+	r_final[0] = origin[0] + radius * omega[0];
+	r_final[1] = origin[1] + radius * omega[1];
+	r_final[2] = origin[2] + radius * omega[2];
+
+	// check to make sure final location is inside cell
+	Check (r_final[2] >= min(3, cell));
+	Check (r_final[2] <= max(3, cell));
+    }
+    
+    // check to make sure final location is inside cell
+    Check (r_final[0] >= min(1, cell));
+    Check (r_final[0] <= max(1, cell));
+    Check (r_final[1] >= min(2, cell));
+    Check (r_final[1] <= max(2, cell));
+    
+    else
+    {
+	throw rtt_dsxx::assertion("Don't do 1-D in OS_Mesh.");
+    }
+
+    // return
+    return r_final;
+}
+
+//---------------------------------------------------------------------------//
 /*!
  * \brief Return the face index for a descriptive cell boundary.
  *
@@ -362,6 +431,43 @@ bool OS_Mesh::operator==(const OS_Mesh &rhs) const
 
     // if we haven't returned, then the two meshes must be equal
     return true;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Check to see if a point is in the cell.
+ * 
+ * \param cell cell index
+ * \param r point
+ * \return true if in cell; false if not
+ */
+bool OS_Mesh::in_cell(int cell, const sf_double &r) const 
+{
+    Require (r.size() == coord->get_dim());
+    Require (cell > 0);
+    Require (cell <= layout.num_cells());
+    
+    // boolean check
+    bool in = true;
+
+    // loop through dimensions and check point
+    for (int d = 1; d <= coord->get_dim(); d++)
+    {
+	if (r[d-1] < min(d, cell))
+	{
+	    in = false;
+	    break;
+	}
+	
+	if (r[d-1] > max(d, cell))
+	{
+	    in = false;
+	    break;
+	}
+    } // break to here
+
+    // return 
+    return in;
 }
 
 //---------------------------------------------------------------------------//
