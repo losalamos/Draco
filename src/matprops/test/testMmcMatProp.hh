@@ -29,14 +29,19 @@ class testMmcMatProp {
     void execute_test();
 
     template<class T>
-    void CellAvgResultsOK(T &results, 
-			  std::vector<double> &answer, 
-			  double eps, bool &pass);
+    void CellAvgResultsOK(const T &results, 
+			  const std::vector<double> &answer, 
+			  const double eps, bool &pass) const;
+
+    template <class T2, class T3>
+    void ByMatResultsOK(const T2 &results, 
+			const std::vector<std::vector<T3> > &answer, 
+			const double eps, bool &pass) const;
 
     template <class T2>
-    void ByMatResultsOK(T2 &results, 
-			std::vector<std::vector<double> > &answer, 
-			double eps, bool &pass);
+    void ByMatResultsOK(const T2 &results, 
+			const std::vector<std::vector<int> > &answer, 
+			const double eps, bool &pass) const;
 
 };
 

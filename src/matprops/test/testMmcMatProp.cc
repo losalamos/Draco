@@ -105,7 +105,7 @@ void testMmcMatProp::execute_test()
 
 // Create the material state field
 
-    MMCMP::MaterialStateField<FTVD,FTVVD> msf =
+    MMCMP::MaterialStateField<FTVD,FTVVD,FTVVI> msf =
 	mmcmp.getMaterialState<FTVD,FTVVD,FTVVI>(density, electron_temp,
 			       ion_temp, volume_fraction, 
 			       mat_id);
@@ -176,6 +176,127 @@ void testMmcMatProp::execute_test()
     std::cout << std::endl;
 
     std::cout.precision(12);
+
+// Check the material temperature mapper
+
+    {
+	std::cout << " ** Electron Temperature Map **" << std::endl;
+	std::cout << " Cell Mat   Temperature (K)    Relative Error" 
+		  << std::endl;
+	FTVD avgTemps(ncell);
+	FTVD::iterator atit=avgTemps.begin();
+	*atit++ = 6.025766197348e+00;
+	*atit++ = 1.932154402511e+01;
+	*atit++ = 1.807729859204e+01;
+	*atit++ = 3.864308805021e+01;
+        FTVVD results(ncell);
+        std::vector<std::vector<double> > answer(ncell);
+	FTVVD::iterator resit=results.begin();
+	for (int icell = 0; icell<ncell; icell++)
+	{
+	    (*resit++).resize(nmat[icell]);
+	    answer[icell].resize(nmat[icell]);
+	}
+	answer[0]  [0]= 6.025766197348e+00;  
+	answer[0]  [1]= 6.025766197348e+00;  
+	answer[1]  [0]= 1.932154402511e+01;  
+	answer[1]  [1]= 1.932154402511e+01; 
+	answer[1]  [2]= 1.932154402511e+01; 
+	answer[2]  [0]= 1.807729859204e+01; 
+	answer[2]  [1]= 1.807729859204e+01; 
+	answer[3]  [0]= 3.864308805021e+01;  
+	answer[3]  [1]= 3.864308805021e+01; 
+	answer[3]  [2]= 3.864308805021e+01; 
+	msf.mapAvgTemp(results, avgTemps);
+	ByMatResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK;
+    }
+
+
+
+// Check electron energy deposition by material results.
+
+    {
+	std::cout << " ** Electron Energy Deposition By Material **" << 
+	    std::endl;
+	std::cout << " Cell Mat   Energy Dep (J)     Relative Error" 
+		  << std::endl;
+        FTVVD results(ncell);
+	FTVD  newTemp(ncell);
+	FTVD  volCell(ncell);
+        std::vector<std::vector<double> > answer(ncell);
+	FTVVD::iterator resit=results.begin();
+	for (int icell = 0; icell<ncell; icell++)
+	{
+	    (*resit++).resize(nmat[icell]);
+	    answer[icell].resize(nmat[icell]);
+	}
+	answer[0]  [0]=   3.959370288537e+01;
+	answer[0]  [1]=   3.498678999836e+01;
+	answer[1]  [0]=   4.468019318305e+02;
+	answer[1]  [1]=   6.012015750739e+02;
+	answer[1]  [2]=   5.595314681841e+02;
+	answer[2]  [0]=   1.589239212895e+03;
+	answer[2]  [1]=   2.229872350304e+03;
+	answer[3]  [0]=   1.936141704599e+03;
+	answer[3]  [1]=   2.605206825320e+03;
+	answer[3]  [2]=   2.424636362131e+03;
+	FTVD::iterator ntit = newTemp.begin();
+	*ntit++ = 9.0;
+	*ntit++ = 22.5;
+        *ntit++ = 35.0;
+	*ntit++ = 45.0;
+	FTVD::iterator volit = volCell.begin();
+	*volit++ = 3.0;
+	*volit++ = 12.0;
+	*volit++ = 9.0;
+	*volit++ = 13.0;
+	msf.getElectronEnergyDepbyMat(results, newTemp, volCell);
+	ByMatResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK;
+    }
+
+// Check ion energy deposition by material results.
+
+    {
+	std::cout << " ** Ion Energy Deposition By Material **" << 
+	    std::endl;
+	std::cout << " Cell Mat   Energy Dep (J)     Relative Error" 
+		  << std::endl;
+        FTVVD results(ncell);
+	FTVD  newTemp(ncell);
+	FTVD  volCell(ncell);
+        std::vector<std::vector<double> > answer(ncell);
+	FTVVD::iterator resit=results.begin();
+	for (int icell = 0; icell<ncell; icell++)
+	{
+	    (*resit++).resize(nmat[icell]);
+	    answer[icell].resize(nmat[icell]);
+	}
+	answer[0]  [0]=   4.000261646872e+01;
+	answer[0]  [1]=   1.487224093482e+01;
+	answer[1]  [0]=   4.883241565177e+02;
+	answer[1]  [1]=   3.433875986488e+02;
+	answer[1]  [2]=   6.753223230259e+02;
+	answer[2]  [0]=   1.630881198442e+03;
+	answer[2]  [1]=   1.135982156343e+03;
+	answer[3]  [0]=   2.049770074547e+03;
+	answer[3]  [1]=   1.399609117623e+03;
+	answer[3]  [2]=   1.252256725611e+03;
+	FTVD::iterator ntit = newTemp.begin();
+	*ntit++ = 9.0;
+	*ntit++ = 23.5;
+        *ntit++ = 35.0;
+	*ntit++ = 46.0;
+	FTVD::iterator volit = volCell.begin();
+	*volit++ = 3.0;
+	*volit++ = 12.0;
+	*volit++ = 9.0;
+	*volit++ = 13.0;
+	msf.getIonEnergyDepbyMat(results, newTemp, volCell);
+	ByMatResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK;
+    }
 
 // Check absorption opacity results.
 
@@ -353,7 +474,7 @@ void testMmcMatProp::execute_test()
 // Check electron specific heat by material results.
 
     {
-	std::cout << " ** Electron Specific Heat By Material**" << std::endl;
+	std::cout << " ** Electron Specific Heat By Material **" << std::endl;
 	std::cout << " Cell Mat   Cve (J/m**3-K)     Relative Error" 
 		  << std::endl;
         FTVVD results(ncell);
@@ -384,7 +505,7 @@ void testMmcMatProp::execute_test()
 // Check ion specific heat by material results.
 
     {
-	std::cout << " ** Ion Specific Heat By Material**" << std::endl;
+	std::cout << " ** Ion Specific Heat By Material **" << std::endl;
 	std::cout << " Cell Mat   Cvi (J/m**3-K)     Relative Error" 
 		  << std::endl;
         FTVVD results(ncell);
@@ -415,7 +536,7 @@ void testMmcMatProp::execute_test()
 // Check electron temperature by material results.
 
     {
-	std::cout << " ** Electron Temperature By Material**" << std::endl;
+	std::cout << " ** Electron Temperature By Material **" << std::endl;
 	std::cout << " Cell Mat   Te (K)             Relative Error" 
 		  << std::endl;
         FTVVD results(ncell);
@@ -444,7 +565,7 @@ void testMmcMatProp::execute_test()
 // Check ion temperature by material results.
 
     {
-	std::cout << " ** Ion Temperature By Material**" << std::endl;
+	std::cout << " ** Ion Temperature By Material **" << std::endl;
 	std::cout << " Cell Mat   Ti (K)             Relative Error" 
 		  << std::endl;
         FTVVD results(ncell);
@@ -469,6 +590,94 @@ void testMmcMatProp::execute_test()
 	ByMatResultsOK(results, answer, eps, results_OK);
 	passed = passed && results_OK;
     }
+
+    // Check Density results
+
+    {
+	std::cout << " ** Density By Material **" << std::endl;
+	std::cout << " Cell Mat   Dens (kg/m**3))    Relative Error" 
+		  << std::endl;
+        FTVVD results(ncell);
+        std::vector<std::vector<double> > answer(ncell);
+	FTVVD::iterator resit=results.begin();
+	for (int icell = 0; icell<ncell; icell++)
+	{
+	    (*resit++).resize(nmat[icell]);
+	    answer[icell].resize(nmat[icell]);
+	}
+	answer[0]  [0]=   2.125000000000e+00;
+	answer[0]  [1]=   4.250000000000e+00;
+	answer[1]  [0]=   4.250000000000e+00;
+	answer[1]  [1]=   8.500000000000e+00;
+	answer[1]  [2]=   1.275000000000e+01;
+	answer[2]  [0]=   6.375000000000e+00;
+	answer[2]  [1]=   1.275000000000e+01;
+	answer[3]  [0]=   8.500000000000e+00;
+	answer[3]  [1]=   1.700000000000e+01;
+	answer[3]  [2]=   2.550000000000e+01;
+	msf.getDensity(results);
+	ByMatResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK;
+    }
+
+    // Check Volume Fraction results
+
+    {
+	std::cout << " ** Material Volume Fractions **" << std::endl;
+	std::cout << " Cell Mat   Volume Frac (nd)   Relative Error" 
+		  << std::endl;
+        FTVVD results(ncell);
+        std::vector<std::vector<double> > answer(ncell);
+	FTVVD::iterator resit=results.begin();
+	for (int icell = 0; icell<ncell; icell++)
+	{
+	    (*resit++).resize(nmat[icell]);
+	    answer[icell].resize(nmat[icell]);
+	}
+	answer[0]  [0]=   3.333333333333e-01;
+	answer[0]  [1]=   6.666666666667e-01;
+	answer[1]  [0]=   1.666666666667e-01;
+	answer[1]  [1]=   3.333333333333e-01;
+	answer[1]  [2]=   5.000000000000e-01;
+	answer[2]  [0]=   3.333333333333e-01;
+	answer[2]  [1]=   6.666666666667e-01;
+	answer[3]  [0]=   1.666666666667e-01;
+	answer[3]  [1]=   3.333333333333e-01;
+	answer[3]  [2]=   5.000000000000e-01;
+	msf.getVolumeFraction(results);
+	ByMatResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK;
+    }
+
+    // Check Material ID results
+
+    {
+	std::cout << " ** Material ID's **" << std::endl;
+	std::cout << " Cell Mat  ID Error" 
+		  << std::endl;
+        FTVVI results(ncell);
+        std::vector<std::vector<int> > answer(ncell);
+	FTVVI::iterator resit=results.begin();
+	for (int icell = 0; icell<ncell; icell++)
+	{
+	    (*resit++).resize(nmat[icell]);
+	    answer[icell].resize(nmat[icell]);
+	}
+	answer[0]  [0]=   1;
+	answer[0]  [1]=   2;
+	answer[1]  [0]=   1;
+	answer[1]  [1]=   2;
+	answer[1]  [2]=   3;
+	answer[2]  [0]=   1;
+	answer[2]  [1]=   2;
+	answer[3]  [0]=   1;
+	answer[3]  [1]=   2;
+	answer[3]  [2]=   3;
+	msf.getMatId(results);
+	ByMatResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK;
+    }
+
 
 // Print the status of the test.
 
