@@ -19,6 +19,7 @@
 #include "../Source.hh"
 #include "../Release.hh"
 #include "../Particle.hh"
+#include "../Source_Init.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/OS_Builder.hh"
 #include "mc/OS_Mesh.hh"
@@ -42,6 +43,7 @@ using rtt_imc::Mat_State;
 using rtt_imc::Source;
 using rtt_imc::Topology_Builder;
 using rtt_imc::Particle;
+using rtt_imc::Source_Init;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::OS_Mesh;
@@ -56,6 +58,48 @@ bool passed = true;
 #define ITFAILS passed = rtt_imc_test::fail(__LINE__);
 
 //---------------------------------------------------------------------------//
+// source init test --> satisfies all topologies because source init must be
+// run with a full mesh
+
+void source_init_test()
+{
+    // build an interface to a six cell fully replicated mesh
+    SP<IMC_Interface> interface(new IMC_Interface);  
+
+    // build a FULL mesh --> this mesh will be fully replicated on all
+    // processors in the test
+    OS_Builder mb(interface);
+    SP<OS_Mesh> mesh = mb.build_Mesh();
+
+    // build a Source_Init object
+    Source_Init<IMC_Interface, OS_Mesh> source_init(interface);
+
+    // build the hix surface source
+    source_init.calc_defined_surcells(mesh);
+
+    // check the built cells
+    vector<vector<int> > sc = interface->get_defined_surcells();
+
+    if (sc[0][0] != 1) ITFAILS;
+    if (sc[0][1] != 2) ITFAILS;
+    if (sc[1][0] != 3) ITFAILS;
+    if (sc[1][1] != 6) ITFAILS;
+
+    // do it again and nothing should happen
+    source_init.calc_defined_surcells(mesh);
+
+    // check the built cells
+    sc = interface->get_defined_surcells();
+
+    if (sc[0][0] != 1) ITFAILS;
+    if (sc[0][1] != 2) ITFAILS;
+    if (sc[1][0] != 3) ITFAILS;
+    if (sc[1][1] != 6) ITFAILS;
+}
+
+//---------------------------------------------------------------------------//
+// build source test for a full replication topology --> tests
+// Rep_Source_Builder 
 
 void source_replication_test()
 {
@@ -69,6 +113,12 @@ void source_replication_test()
     // processors in the test
     OS_Builder mb(interface);
     SP<OS_Mesh> mesh = mb.build_Mesh();
+
+    // build a Source_Init object
+    Source_Init<IMC_Interface, OS_Mesh> source_init(interface);
+
+    // build the hix surface source
+    source_init.calc_defined_surcells(mesh);
 
     // build a Topology: we do not use the Topology builder here because the
     // topology builder is designed to work on the host processor only -->
@@ -202,6 +252,9 @@ int main(int argc, char *argv[])
 	    C4::Finalize();
 	    return 0;
 	}
+
+    // check source init -> independent of topology
+    source_init_test();
 
     // full replication source test
     source_replication_test();

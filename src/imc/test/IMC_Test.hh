@@ -89,6 +89,9 @@ class IMC_Interface : public rtt_imc::Interface<rtt_mc::OS_Mesh>
     // public interface for Topology
     int get_capacity() const { return capacity; }
 
+    // public interface for Source_Init
+    void set_defined_surcells(int i, const sf_int &sc) {surcells[i-1] = sc;}
+
     // public interface for Source_Builder
     double get_elapsed_t() const { return elapsed_t; }
     sf_double get_evol_ext() const { return evol_ext; }
@@ -128,9 +131,9 @@ IMC_Interface::IMC_Interface(int capacity_)
        evol_ext(6),
        rad_source(6),
        rad_temp(6),
-       ss_pos(1),
-       ss_temp(1),
-       surcells(1)
+       ss_pos(2),
+       ss_temp(2),
+       surcells(2)
 {
     // make the Mesh stuff
 
@@ -186,7 +189,9 @@ IMC_Interface::IMC_Interface(int capacity_)
     }
 
     ss_pos[0]  = "loy";
+    ss_pos[1]  = "hix";
     ss_temp[0] = 20.0;
+    ss_temp[1] = 0.0;
     
     surcells[0].resize(2);
     surcells[0][0] = 1;

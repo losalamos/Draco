@@ -256,7 +256,7 @@ void Source_Builder<MT,PT>::calc_ess()
         // surface src cells (local id) must be defined by the host
 	Check (defined_surcells[ss].size() > 0);
 	vector<int> surcells = defined_surcells[ss];
-	ess.get_Mesh().check_defined_surcells(ss_pos[ss], surcells);
+	Check (ess.get_Mesh().check_defined_surcells(ss_pos[ss], surcells));
 
 	int local_cell;
 	for (int sc = 0; sc < surcells.size(); sc++)

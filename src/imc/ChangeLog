@@ -1,3 +1,13 @@
+2000-01-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* Source_Init.*: removed the old Source_Init.  The new Source_Init 
+	does pre-initialization source initialization.  This includes
+	evaluating surface source cells and estimating source numbers as a 
+	precursor to parallel partitioning.  The new Source_Init requires
+	a full mesh.  At present it only calculates the surface source
+	cells.  Source number calculations will not be necessary until we
+	go to a general/DD topology.
+
 1999-12-20  Thomas M. Evans  <tme@lanl.gov>
 
 	* Mesh_Operations.*: added Mesh_Operations class.  This class is
