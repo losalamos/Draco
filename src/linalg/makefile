@@ -61,6 +61,13 @@ tstpretarg := $(pretarg)
 include ../config/make.tests
 
 ###############################################################################
+# Testing out some dejagnu support
+
+deja:
+	(cd testsuites; $(MAKE) links)
+	runtest --tool=linalg --srcdir=./testsuites ENV=$(env) DBC=$(DBC)
+
+###############################################################################
 # Perstalyser targets.
 
 pcg_DB_prs.cc: pcg_DB.hh pcg_DB.prs .nml_pcg.hh
