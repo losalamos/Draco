@@ -34,6 +34,7 @@ bin_files="\${bindir}/include_tree.py ${bin_files}"
 bin_files="\${bindir}/package_depends.py ${bin_files}"
 bin_files="\${bindir}/regression_filter.py ${bin_files}"
 bin_files="\${bindir}/check_coverage ${bin_files}"
+bin_files="\${bindir}/check_package_coverage ${bin_files}"
 bin_files="\${bindir}/numdiff.py ${bin_files}"
 
 installfiles="$libexec_files $bin_files"
@@ -48,7 +49,7 @@ AC_SUBST(installfiles)
 AC_SUBST(INSTALL)
 AC_SUBST(INSTALL_DATA)
 
-AC_CONFIG_FILES([Makefile draco check_coverage])
+AC_CONFIG_FILES([Makefile draco check_coverage check_package_coverage])
 AC_OUTPUT
 
 ##---------------------------------------------------------------------------##
