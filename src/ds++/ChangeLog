@@ -1,3 +1,11 @@
+2001-12-17  Thomas M. Evans  <tme@lanl.gov>
+
+	* ds++: updated to release ds++-1_5_0.  This release contained a
+	new header, Soft_Equivalence.hh, which is used for floating point
+	comparisons.  It also contains some fixes to Packing_Utils and
+	improved testing infrastructure using the new draco testing
+	templates (although not all tests were updated this way).
+
 2001-07-25  Thomas M. Evans  <tme@lanl.gov>
 
 	* ds++: updated to release ds++-1_4_0.  This release contains the
