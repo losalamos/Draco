@@ -8,15 +8,9 @@
 
 pkg := units
 
-# need_mesh	:= yes
-# need_linalg	:= yes
-
 # Go get the standard includeable makefile for Draco components.
 
 include ../config/makefile
-
-# turn on full debugging
-CXXFLAGS += -DDBC=7
 
 # Put non template code here
 
@@ -26,15 +20,13 @@ libsrcs = Units.cc
 
 pretarg = deps
 
-resolve_libs = 
+resolve_libs = -L../ds++ -lds++_$(env)
 
 include ../config/make.lib
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../ds++;   $(MAKE))
-	(cd ../nml;    $(MAKE) dodeps=no)
-	(cd ../c4;     $(MAKE) dodeps=no)
+	(cd ../ds++;   $(MAKE) $(subnj))
 endif
 
 # Rules for building docs
