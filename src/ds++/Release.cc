@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file ds++/Release.cc
- * \author Randy M. Roberts
- * \date Thu Jul 15 09:31:44 1999
- * \brief Provides the function definition for Release.
+ * \file   ds++/Release.cc
+ * \author Thomas Evans
+ * \date   Thu Jul 15 09:31:44 1999
+ * \brief  Provides the function definition for Release.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,7 +18,7 @@ namespace rtt_dsxx
 // this library in the form ds_#.#.# in pkg_version variable
 const std::string release()
 {
-    std::string pkg_release = "@(#)ds++-1_8_0";
+    std::string pkg_release = "@(#)ds++-1_9_0";
     return pkg_release;
 }
 

@@ -9,7 +9,6 @@
 #ifndef __ds_Allocators_hh__
 #define __ds_Allocators_hh__
 
-#include "config.hh"
 #include "Assert.hh"
 
 //---------------------------------------------------------------------------//
@@ -34,7 +33,8 @@
 #define MSIPL_THROW throw()
 #endif
 
-NAMESPACE_DS_BEG
+namespace rtt_dsxx
+{
 
 // These functions were in the April '96 draft, but disappeared by December
 // '96.  Too bad, b/c they are extremely helpful for building allocators.
@@ -227,7 +227,7 @@ template<> class alloc_traits<int> {
     typedef Guarded_Allocator<int> Default_Allocator;
 };
 
-NAMESPACE_DS_END
+} // end of rtt_dsxx
 
 #endif                          // __ds_Allocators_hh__
 

@@ -9,9 +9,8 @@
 #ifndef __ds_Bounds_hh__
 #define __ds_Bounds_hh__
 
-#include "config.hh"
-
-NAMESPACE_DS_BEG
+namespace rtt_dsxx
+{
 
 //===========================================================================//
 // class Bounds - Index range specifier class
@@ -31,7 +30,7 @@ class Bounds {
     int len() const { return b - a + 1; }
 };
 
-NAMESPACE_DS_END
+} // end of rtt_dsxx
 
 #endif                          // __ds_Bounds_hh__
 

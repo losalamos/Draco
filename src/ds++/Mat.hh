@@ -1,59 +1,48 @@
 //----------------------------------*-C++-*----------------------------------//
-// Mat.hh
-// Geoffrey Furnish
-// Fri Jan 24 15:48:31 1997
+/*!
+ * \file   Mat.hh
+ * \author Geoffrey Furnish
+ * \date   Fri Jan 24 15:48:31 1997
+ * \brief  Mat class definitions.
+ */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __ds_Mat_hh__
-#define __ds_Mat_hh__
+#ifndef rtt_ds_Mat_hh
+#define rtt_ds_Mat_hh
 
-// The matrix family of classes presented in this file represent a total
-// rewrite of the matrix family used in GTS up until this time.  The C++
-// industry has matured dramatically since the initial days of GTS.  There
-// is now a pretty decent, and very thoroughly documented, standard library
-// for C++, which largely subsums the original goals of DS++.  Moreover, the
-// compiler industry has finally begun to produce compilers that are
-// acceptable in terms of their language conformance.  This necesitates some
-// "repositioning" of DS++.  IMO, people don't really need a map class
-// anymore, since they can use the one in the STL.  But there are things the
-// STL doesn't really cover, and that is where DS++ is going to have to be
-// positioned in order to be useful.  The first effort at modernizing DS++
-// will thus concentrate on moving the Matrix family out of GTS proper and
-// into DS++.  This will involve generalizing it so that it works more like
-// an STL container.  The reconstituted family will be just a container
-// family.  The algorithms which were member functions in the old GTS matrix
-// family will be split out, just as in the STL.  What we will retain,
-// however, and improve in the process, is the ability to provide a
-// sophisticated container facility with good memory management.  Also, we
-// will fix the instantiation annoyances which have haunted the older GTS
-// matrix family.
-
-#include <algorithm>
-
-#include "config.hh"
 #include "Assert.hh"
 #include "Allocators.hh"
 #include "Bounds.hh"
 #include "destroy.hh"
+#include <algorithm>
 
-NAMESPACE_DS_BEG
+namespace rtt_dsxx
+{
 
 //===========================================================================//
-// class Mat1 - A 1-d container.
-
-// This class is intended to be a replacement for the STL vector<T> class.
-// The reasons for wanting a replacement for vector<T> are primarily
-// threefold: 1) Integration with the DS++ assertion model.  2) Ability to
-// provide more sophisticated allocators, and 3) provide a 1-d analog to Mat2
-// and Mat3.
+/*!
+ * \class Mat1
+ * \brief A 1-d container.
+ *
+ * This class is intended to be a replacement for the STL vector<T> class.
+ * The reasons for wanting a replacement for vector<T> are primarily
+ * threefold: 
+ * -# Integration with the DS++ assertion model. 
+ * -# Ability to provide more sophisticated allocators.
+ * -# provide a 1-d analog to Mat2 and Mat3.
+ * .
+ */
+/*!
+ * \example ds++/test/tstMat1RA.cc
+ * 
+ * Test of Mat1.
+ */
 //===========================================================================//
-
-using std::lexicographical_compare;
 
 template< class T,
-    class Allocator = typename alloc_traits<T>::Default_Allocator >
+	  class Allocator = typename alloc_traits<T>::Default_Allocator >
 class Mat1 {
   private:
     int xmin, xlen;
@@ -61,10 +50,11 @@ class Mat1 {
 
     int xmax() const { return xmin + xlen - 1; }
 
-// index() is used for indexing, so is checked.  offset() is used for
-// adjusting the memory pointer, which is logically distinct from indexing,
-// so is not checked.  Note in particular, that a zero size matrix will have
-// no valid index, but we still need to be able to compute the offsets.
+    // index() is used for indexing, so is checked.  offset() is used for
+    // adjusting the memory pointer, which is logically distinct from
+    // indexing, so is not checked.  Note in particular, that a zero size
+    // matrix will have no valid index, but we still need to be able to
+    // compute the offsets.
 
     int index( int i ) const
     {
@@ -99,7 +89,7 @@ class Mat1 {
     typedef typename Allocator::reverse_iterator reverse_iterator;
     typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
 
-// Accessors
+    // Accessors
 
     T&       operator[]( int i )       { return v[ index(i) ]; }
     const T& operator[]( int i ) const { return v[ index(i) ]; }
@@ -128,10 +118,10 @@ class Mat1 {
     size_type max_size () const { return alloc.max_size(); }
     bool empty() const { return (this->size() == 0); }
 
-// For backward compatibility.
+    // For backward compatibility.
     int nx() const { return xlen; }
 
-// Constructors
+    // Constructors
     Mat1()
 	: xmin(0), xlen(0),
 	  may_free_space(false), v(0)
@@ -172,14 +162,14 @@ class Mat1 {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
 
-// Destructor
+    // Destructor
 
     ~Mat1()
     {
 	detach();
     }
 
-// Assignment operators
+    // Assignment operators
 
     Mat1& operator=( const T& t )
     {
@@ -235,7 +225,7 @@ class Mat1 {
         m.v = ptemp;
     }
 
-// Boolean operators
+    // Boolean operators
 
     bool operator==( const Mat1& m ) const
     {
@@ -263,7 +253,7 @@ class Mat1 {
     bool operator<( const Mat1& m ) const
     {
         return lexicographical_compare(this->begin(), this->end(), m.begin(), 
-                                            m.end());
+				       m.end());
     }
 
     bool operator>( const Mat1& m ) const
@@ -281,7 +271,7 @@ class Mat1 {
         return !(*this < m);
     }
 
-// Mathematical support
+    // Mathematical support
 
     template<class X> Mat1& operator+=( const X& x )
     {
@@ -343,7 +333,7 @@ class Mat1 {
 	return *this;
     }
 
-// Utility support
+    // Utility support
 
     void assert_conformality( const Mat1<T>& m ) const
     {
@@ -353,10 +343,10 @@ class Mat1 {
 
     void redim( int nxmax, const T& t = T() )
     {
-    // This one only works right if xmin == 0.
+	// This one only works right if xmin == 0.
 	Assert( xmin == 0 );
 	if (v && !may_free_space) {
-	// User thinks he wants to expand the aliased region.
+	    // User thinks he wants to expand the aliased region.
 	    xlen = nxmax;
 	    return;
 	}
@@ -370,7 +360,7 @@ class Mat1 {
     void redim( const Bounds& bx, const T& t = T() )
     {
 	if (v && !may_free_space) {
-	// Respecify the aliased region.
+	    // Respecify the aliased region.
 	    v += offset(xmin);
 	    xmin = bx.min(); xlen = bx.len();
 	    v -= offset(xmin);
@@ -383,24 +373,32 @@ class Mat1 {
 	may_free_space = true;
     }
 
-// Check to see if this Mat1<T> is of size x.
+    // Check to see if this Mat1<T> is of size x.
 
     bool conformal( int x ) const
     {
 	return xmin == 0 && x == xlen;
     }
 
-// Obtain dimension of this Mat1<T>.
+    // Obtain dimension of this Mat1<T>.
 
     void elements( int& nx_ ) const { nx_ = nx(); }
 };
 
 //===========================================================================//
-// class Mat2 - A 2-d container.
-
-// Mat2 provides a container which can be indexed using two indices.  The STL 
-// provides nothing quite like this, but it is essential for many
-// mathematical purposes to have a 2-d container.  
+/*!
+ * \class Mat2 
+ * \brief A 2-d container.
+ *
+ * Mat2 provides a container which can be indexed using two indices.  The STL
+ * provides nothing quite like this, but it is essential for many
+ * mathematical purposes to have a 2-d container.
+ */
+/*!
+ * \example ds++/test/tstMat2RA.cc
+ * 
+ * Test of Mat2.
+ */
 //===========================================================================//
 
 template< class T, class Allocator = Simple_Allocator<T> >
@@ -412,12 +410,13 @@ class Mat2 {
     int xmax() const { return xmin + xlen - 1; }
     int ymax() const { return ymin + ylen - 1; }
 
-// index() is used for indexing, so is checked.  offset() is used for
-// adjusting the memory pointer, which is logically distinct from indexing,
-// so is not checked.  Note in particular, that a zero size matrix will have
-// no valid index, but we still need to be able to compute the offsets.
+    // index() is used for indexing, so is checked.  offset() is used for
+    // adjusting the memory pointer, which is logically distinct from
+    // indexing, so is not checked.  Note in particular, that a zero size
+    // matrix will have no valid index, but we still need to be able to
+    // compute the offsets.
 
-// Compute the offset into the data array, of the i,j th element.
+    // Compute the offset into the data array, of the i,j th element.
     int index( int i, int j ) const
     {
 	Assert( i >= xmin );
@@ -429,7 +428,7 @@ class Mat2 {
     }
     int offset( int i, int j ) const { return xlen * j + i; }
 
-// Make sure a bare integer index is within the appropriate range.
+    // Make sure a bare integer index is within the appropriate range.
     void check( int i ) const
     {
 	Assert( i >= offset( xmin, ymin ) );
@@ -461,7 +460,7 @@ class Mat2 {
     typedef typename Allocator::reverse_iterator reverse_iterator;
     typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
 
-// Accessors
+    // Accessors
 
     T&       operator()( int i, int j )       { return v[ index(i,j) ]; }
     const T& operator()( int i, int j ) const { return v[ index(i,j) ]; }
@@ -492,11 +491,11 @@ class Mat2 {
     size_type max_size () const { return alloc.max_size(); }
     bool empty() const { return (this->size() == 0); }
 
-// For backward compatibility.
+    // For backward compatibility.
     int nx() const { return xlen; }
     int ny() const { return ylen; }
 
-// Constructors
+    // Constructors
 
     Mat2()
 	: xmin(0), xlen(0), ymin(0), ylen(0),
@@ -543,14 +542,14 @@ class Mat2 {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
 
-// Destructor
+    // Destructor
 
     ~Mat2()
     {
 	detach();
     }
 
-// Assignment operators
+    // Assignment operators
 
     Mat2& operator=( const T& t )
     {
@@ -617,7 +616,7 @@ class Mat2 {
         m.v = ptemp;
     }
 
-// Boolean operators
+    // Boolean operators
 
     bool operator==( const Mat2& m ) const
     {
@@ -663,7 +662,7 @@ class Mat2 {
         return !(*this < m);
     }
 
-// Mathematical support
+    // Mathematical support
 
     template<class X> Mat2& operator+=( const X& x )
     {
@@ -725,7 +724,7 @@ class Mat2 {
 	return *this;
     }
 
-// Utility support
+    // Utility support
 
     void assert_conformality( const Mat2<T>& m ) const
     {
@@ -737,11 +736,11 @@ class Mat2 {
 
     void redim( int nxmax, int nymax, const T& t = T() )
     {
-    // This one only works right if xmin == 0 and ymin == 0.
+	// This one only works right if xmin == 0 and ymin == 0.
 	Assert( xmin == 0 );
 	Assert( ymin == 0 );
 	if (v && !may_free_space) {
-	// User thinks he wants to expand the aliased region.
+	    // User thinks he wants to expand the aliased region.
 	    xlen = nxmax;
 	    ylen = nymax;
 	    return;
@@ -757,7 +756,7 @@ class Mat2 {
     void redim( const Bounds& bx, const Bounds& by, const T& t = T() )
     {
 	if (v && !may_free_space) {
-	// Respecify the aliased region.
+	    // Respecify the aliased region.
 	    v += offset(xmin,ymin);
 	    xmin = bx.min(); xlen = bx.len();
 	    ymin = by.min(); ylen = by.len();
@@ -772,7 +771,7 @@ class Mat2 {
 	may_free_space = true;
     }
 
-// Check to see if this Mat2<T> is of size x by y.
+    // Check to see if this Mat2<T> is of size x by y.
 
     bool conformal( int x, int y ) const
     {
@@ -780,16 +779,24 @@ class Mat2 {
 	    ymin == 0 && y == ylen;
     }
 
-// Obtain dimensions of this Mat2<T>.
+    // Obtain dimensions of this Mat2<T>.
 
     void elements( int& nx_, int& ny_ ) const { nx_ = nx(); ny_ = ny(); }
 };
 
 //===========================================================================//
-// class Mat3 - A 3-d container.
-
-// Mat3 is a container which supports three indices.  It is otherwise similar 
-// to Mat1 and Mat2.
+/*!
+ * \class Mat3
+ * \brief A 3-d container.
+ *
+ * Mat3 is a container which supports three indices.  It is otherwise similar
+ * to Mat1 and Mat2.
+ */
+/*!
+ * \example ds++/test/tstMat3RA.cc
+ * 
+ * Test of Mat3.
+ */
 //===========================================================================//
 
 template< class T, class Allocator = Simple_Allocator<T> >
@@ -802,12 +809,13 @@ class Mat3 {
     int ymax() const { return ymin + ylen - 1; }
     int zmax() const { return zmin + zlen - 1; }
 
-// index() is used for indexing, so is checked.  offset() is used for
-// adjusting the memory pointer, which is logically distinct from indexing,
-// so is not checked.  Note in particular, that a zero size matrix will have
-// no valid index, but we still need to be able to compute the offsets.
+    // index() is used for indexing, so is checked.  offset() is used for
+    // adjusting the memory pointer, which is logically distinct from
+    // indexing, so is not checked.  Note in particular, that a zero size
+    // matrix will have no valid index, but we still need to be able to
+    // compute the offsets.
 
-// Compute the offset into the data array, of the i,j th element.
+    // Compute the offset into the data array, of the i,j th element.
     int index( int i, int j, int k ) const
     {
 	Assert( i >= xmin );
@@ -821,7 +829,7 @@ class Mat3 {
     }
     int offset( int i, int j, int k ) const { return xlen*(k*ylen+j)+i; }
 
-// Make sure a bare integer index is within the appropriate range.
+    // Make sure a bare integer index is within the appropriate range.
     void check( int i ) const
     {
 	Assert( i >= offset( xmin, ymin, zmin ) );
@@ -853,7 +861,7 @@ class Mat3 {
     typedef typename Allocator::reverse_iterator reverse_iterator;
     typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
 
-// Accessors
+    // Accessors
 
     T&       operator()( int i, int j, int k )       { return v[ index(i,j,k) ]; }
     const T& operator()( int i, int j, int k ) const { return v[ index(i,j,k) ]; }
@@ -886,12 +894,12 @@ class Mat3 {
     size_type max_size () const { return alloc.max_size(); }
     bool empty() const { return (this->size() == 0); }
 
-// For backward compatibility.
+    // For backward compatibility.
     int nx() const { return xlen; }
     int ny() const { return ylen; }
     int nz() const { return zlen; }
 
-// Constructors
+    // Constructors
 
     Mat3()
 	: xmin(0), xlen(0), ymin(0), ylen(0), zmin(0), zlen(0),
@@ -944,14 +952,14 @@ class Mat3 {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
 
-// Destructor
+    // Destructor
 
     ~Mat3()
     {
 	detach();
     }
 
-// Assignment operators
+    // Assignment operators
 
     Mat3& operator=( const T& t )
     {
@@ -1029,7 +1037,7 @@ class Mat3 {
         m.v = ptemp;
     }
 
-// Boolean operators
+    // Boolean operators
 
     bool operator==( const Mat3& m ) const
     {
@@ -1075,7 +1083,7 @@ class Mat3 {
         return !(*this < m);
     }
 
-// Mathematical support
+    // Mathematical support
 
     template<class X> Mat3& operator+=( const X& x )
     {
@@ -1137,7 +1145,7 @@ class Mat3 {
 	return *this;
     }
 
-// Utility support
+    // Utility support
 
     void assert_conformality( const Mat3<T>& m ) const
     {
@@ -1151,12 +1159,12 @@ class Mat3 {
 
     void redim( int nxmax, int nymax, int nzmax, const T& t = T() )
     {
-    // This one only works right if xmin == 0 and ymin == 0 and zmin == 0.
+	// This one only works right if xmin == 0 and ymin == 0 and zmin == 0.
 	Assert( xmin == 0 );
 	Assert( ymin == 0 );
 	Assert( zmin == 0 );
 	if (v && !may_free_space) {
-	// User thinks he wants to expand the aliased region.
+	    // User thinks he wants to expand the aliased region.
 	    xlen = nxmax;
 	    ylen = nymax;
 	    zlen = nzmax;
@@ -1175,7 +1183,7 @@ class Mat3 {
 		const Bounds& bz, const T& t = T() )
     {
 	if (v && !may_free_space) {
-	// Respecify the aliased region.
+	    // Respecify the aliased region.
 	    v += offset(xmin,ymin,zmin);
 	    xmin = bx.min(); xlen = bx.len();
 	    ymin = by.min(); ylen = by.len();
@@ -1192,16 +1200,16 @@ class Mat3 {
 	may_free_space = true;
     }
 
-// WARNING: This doesn't make a lot of sense anymore.
+    // WARNING: This doesn't make a lot of sense anymore.
 
-// Check to see if this Mat3<T> is of size x by y by z.
+    // Check to see if this Mat3<T> is of size x by y by z.
 
     bool conformal( int x, int y, int z ) const
     {
 	return x == xlen && y == ylen && z == zlen;
     }
 
-// Obtain dimensions of this Mat3<T>.
+    // Obtain dimensions of this Mat3<T>.
 
     void elements( int& nx, int& ny, int& nz ) const
     {
@@ -1210,10 +1218,18 @@ class Mat3 {
 };
 
 //===========================================================================//
-// class Mat4 - A 4-d container.
-
-// Mat3 is a container which supports four indices.  It is otherwise similar 
-// to Mat1, Mat2 and Mat3.
+/*!
+ * \class Mat4
+ * \brief A 4-d container.
+ *
+ * Mat3 is a container which supports four indices.  It is otherwise similar
+ * to Mat1, Mat2 and Mat3.
+ */
+/*!
+ * \example ds++/test/tstMat4RA.cc
+ * 
+ * Test of Mat4.
+ */
 //===========================================================================//
 
 template< class T, class Allocator = Simple_Allocator<T> >
@@ -1227,12 +1243,13 @@ class Mat4 {
     int zmax() const { return zmin + zlen - 1; }
     int wmax() const { return wmin + wlen - 1; }
 
-// index() is used for indexing, so is checked.  offset() is used for
-// adjusting the memory pointer, which is logically distinct from indexing,
-// so is not checked.  Note in particular, that a zero size matrix will have
-// no valid index, but we still need to be able to compute the offsets.
+    // index() is used for indexing, so is checked.  offset() is used for
+    // adjusting the memory pointer, which is logically distinct from
+    // indexing, so is not checked.  Note in particular, that a zero size
+    // matrix will have no valid index, but we still need to be able to
+    // compute the offsets.
 
-// Compute the offset into the data array, of the i,j,k,l th element.
+    // Compute the offset into the data array, of the i,j,k,l th element.
     int index( int i, int j, int k, int l ) const
     {
 	Assert( i >= xmin );
@@ -1251,7 +1268,7 @@ class Mat4 {
 	return xlen*(ylen*(zlen*l+k)+j)+i;
     }
 
-// Make sure a bare integer index is within the appropriate range.
+    // Make sure a bare integer index is within the appropriate range.
     void check( int i ) const
     {
 	Assert( i >= offset( xmin,   ymin,   zmin,   wmin   ) );
@@ -1283,7 +1300,7 @@ class Mat4 {
     typedef typename Allocator::reverse_iterator reverse_iterator;
     typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
 
-// Accessors
+    // Accessors
 
     T& operator()( int i, int j, int k, int l )
     {
@@ -1330,13 +1347,13 @@ class Mat4 {
     size_type max_size () const { return alloc.max_size(); }
     bool empty() const { return (this->size() == 0); }
 
-// For backward compatibility.
+    // For backward compatibility.
     int nx() const { return xlen; }
     int ny() const { return ylen; }
     int nz() const { return zlen; }
     int nw() const { return wlen; }
 
-// Constructors
+    // Constructors
 
     Mat4()
 	: xmin(0), xlen(0), ymin(0), ylen(0),
@@ -1397,7 +1414,7 @@ class Mat4 {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
 
-// Destructor
+    // Destructor
 
     ~Mat4()
     {
@@ -1456,7 +1473,7 @@ class Mat4 {
         m.v = ptemp;
     }
 
-// Boolean operators
+    // Boolean operators
 
     bool operator==( const Mat4& m ) const
     {
@@ -1502,7 +1519,7 @@ class Mat4 {
         return !(*this < m);
     }
 
-// Assignment operators
+    // Assignment operators
 
     Mat4& operator=( const T& t )
     {
@@ -1539,7 +1556,7 @@ class Mat4 {
 	return *this;
     }
 
-// Mathematical support
+    // Mathematical support
 
     template<class X> Mat4& operator+=( const X& x )
     {
@@ -1601,7 +1618,7 @@ class Mat4 {
 	return *this;
     }
 
-// Utility support
+    // Utility support
 
     void assert_conformality( const Mat4<T>& m ) const
     {
@@ -1618,14 +1635,14 @@ class Mat4 {
     void redim( int nxmax, int nymax,
 		int nzmax, int nwmax, const T& t = T() )
     {
-    // This one only works right if xmin == 0 and ymin == 0 and zmin == 0 and
-    // wmin == 0.
+	// This one only works right if xmin == 0 and ymin == 0 and zmin == 0 and
+	// wmin == 0.
 	Assert( xmin == 0 );
 	Assert( ymin == 0 );
 	Assert( zmin == 0 );
 	Assert( wmin == 0 );
 	if (v && !may_free_space) {
-	// User thinks he wants to expand the aliased region.
+	    // User thinks he wants to expand the aliased region.
 	    xlen = nxmax;
 	    ylen = nymax;
 	    zlen = nzmax;
@@ -1646,7 +1663,7 @@ class Mat4 {
 		const Bounds& bz, const Bounds& bw, const T& t = T() )
     {
 	if (v && !may_free_space) {
-	// Respecify the aliased region.
+	    // Respecify the aliased region.
 	    v += offset(xmin,ymin,zmin,wmin);
 	    xmin = bx.min(); xlen = bx.len();
 	    ymin = by.min(); ylen = by.len();
@@ -1665,16 +1682,16 @@ class Mat4 {
 	may_free_space = true;
     }
 
-// WARNING: This doesn't make a lot of sense anymore.
+    // WARNING: This doesn't make a lot of sense anymore.
 
-// Check to see if this Mat4<T> is of size x by y by z by w.
+    // Check to see if this Mat4<T> is of size x by y by z by w.
 
     bool conformal( int x, int y, int z, int w ) const
     {
 	return x == xlen && y == ylen && z == zlen && w == wlen;
     }
 
-// Obtain dimensions of this Mat4<T>.
+    // Obtain dimensions of this Mat4<T>.
 
     void elements( int& nx, int& ny, int& nz, int& nw ) const
     {
@@ -1683,10 +1700,18 @@ class Mat4 {
 };
 
 //===========================================================================//
-// class Mat5 - A 5-d container.
-
-// Mat5 is a container which supports four indices.  It is otherwise similar 
-// to Mat1, Mat2, Mat3 and Mat4.
+/*!
+ * \class Mat5
+ * \brief A 5-d container.
+ *
+ * Mat5 is a container which supports four indices.  It is otherwise similar 
+ * to Mat1, Mat2, Mat3 and Mat4.
+ */
+/*!
+ * \example ds++/test/tstMat5RA.cc
+ * 
+ * Test of Mat5.
+ */
 //===========================================================================//
 
 template< class T, class Allocator = Simple_Allocator<T> >
@@ -1701,12 +1726,13 @@ class Mat5 {
     int wmax() const { return wmin + wlen - 1; }
     int umax() const { return umin + ulen - 1; }
 
-// index() is used for indexing, so is checked.  offset() is used for
-// adjusting the memory pointer, which is logically distinct from indexing,
-// so is not checked.  Note in particular, that a zero size matrix will have
-// no valid index, but we still need to be able to compute the offsets.
+    // index() is used for indexing, so is checked.  offset() is used for
+    // adjusting the memory pointer, which is logically distinct from
+    // indexing, so is not checked.  Note in particular, that a zero size
+    // matrix will have no valid index, but we still need to be able to
+    // compute the offsets.
 
-// Compute the offset into the data array, of the i,j,k,l,m th element.
+    // Compute the offset into the data array, of the i,j,k,l,m th element.
     int index( int i, int j, int k, int l, int m ) const
     {
 	Assert( i >= xmin );
@@ -1727,7 +1753,7 @@ class Mat5 {
 	return xlen*(ylen*(zlen*(wlen*m+l)+k)+j)+i;
     }
 
-// Make sure a bare integer index is within the appropriate range.
+    // Make sure a bare integer index is within the appropriate range.
     void check( int i ) const
     {
 	Assert( i >= offset( xmin,   ymin,   zmin,   wmin,   umin   ) );
@@ -1759,7 +1785,7 @@ class Mat5 {
     typedef typename Allocator::reverse_iterator reverse_iterator;
     typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
 
-// Accessors
+    // Accessors
 
     T& operator()( int i, int j, int k, int l, int m )
     {
@@ -1808,14 +1834,14 @@ class Mat5 {
     size_type max_size () const { return alloc.max_size(); }
     bool empty() const { return (this->size() == 0); }
 
-// For backward compatibility.
+    // For backward compatibility.
     int nx() const { return xlen; }
     int ny() const { return ylen; }
     int nz() const { return zlen; }
     int nw() const { return wlen; }
     int nu() const { return ulen; }
 
-// Constructors
+    // Constructors
 
     Mat5()
 	: xmin(0), xlen(0), ymin(0), ylen(0),
@@ -1883,7 +1909,7 @@ class Mat5 {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
 
-// Destructor
+    // Destructor
 
     ~Mat5()
     {
@@ -1950,7 +1976,7 @@ class Mat5 {
         m.v = ptemp;
     }
 
-// Boolean operators
+    // Boolean operators
 
     bool operator==( const Mat5& m ) const
     {
@@ -1996,7 +2022,7 @@ class Mat5 {
         return !(*this < m);
     }
 
-// Assignment operators
+    // Assignment operators
 
     Mat5& operator=( const T& t )
     {
@@ -2036,7 +2062,7 @@ class Mat5 {
 	return *this;
     }
 
-// Mathematical support
+    // Mathematical support
 
     template<class X> Mat5& operator+=( const X& x )
     {
@@ -2098,7 +2124,7 @@ class Mat5 {
 	return *this;
     }
 
-// Utility support
+    // Utility support
 
     void assert_conformality( const Mat5<T>& m ) const
     {
@@ -2117,15 +2143,15 @@ class Mat5 {
     void redim( int nxmax, int nymax, int nzmax,
 		int nwmax, int numax, const T& t = T() )
     {
-    // This one only works right if xmin == 0 and ymin == 0 and zmin == 0 and
-    // wmin == 0 and umin == 0.
+	// This one only works right if xmin == 0 and ymin == 0 and zmin == 0
+	// and wmin == 0 and umin == 0.
 	Assert( xmin == 0 );
 	Assert( ymin == 0 );
 	Assert( zmin == 0 );
 	Assert( wmin == 0 );
 	Assert( umin == 0 );
 	if (v && !may_free_space) {
-	// User thinks he wants to expand the aliased region.
+	    // User thinks he wants to expand the aliased region.
 	    xlen = nxmax;
 	    ylen = nymax;
 	    zlen = nzmax;
@@ -2148,7 +2174,7 @@ class Mat5 {
 		const Bounds& bw, const Bounds& bu, const T& t = T() )
     {
 	if (v && !may_free_space) {
-	// Respecify the aliased region.
+	    // Respecify the aliased region.
 	    v += offset(xmin,ymin,zmin,wmin,umin);
 	    xmin = bx.min(); xlen = bx.len();
 	    ymin = by.min(); ylen = by.len();
@@ -2169,9 +2195,9 @@ class Mat5 {
 	may_free_space = true;
     }
 
-// WARNING: This doesn't make a lot of sense anymore.
+    // WARNING: This doesn't make a lot of sense anymore.
 
-// Check to see if this Mat5<T> is of size x by y by z by w by u.
+    // Check to see if this Mat5<T> is of size x by y by z by w by u.
 
     bool conformal( int x, int y, int z, int w, int u ) const
     {
@@ -2179,7 +2205,7 @@ class Mat5 {
 	    && w == wlen && u == ulen;
     }
 
-// Obtain dimensions of this Mat5<T>.
+    // Obtain dimensions of this Mat5<T>.
 
     void elements( int& nx, int& ny, int& nz, int& nw, int& nu ) const
     {
@@ -2187,9 +2213,9 @@ class Mat5 {
     }
 };
 
-NAMESPACE_DS_END
+} // end of rtt_dsxx
 
-#endif                          // __ds_Mat_hh__
+#endif                          // rtt_ds_Mat_hh
 
 //---------------------------------------------------------------------------//
 //                              end of ds++/Mat.hh

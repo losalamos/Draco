@@ -11,7 +11,8 @@
 
 #include <iostream>
 
-NAMESPACE_DS_BEG
+namespace rtt_dsxx
+{
 
 //---------------------------------------------------------------------------//
 // Principal constructor.  Specify initial size. Base defaults to zero, and
@@ -241,7 +242,7 @@ std::ostream& operator<<( std::ostream& os, const DynArray<T>& d )
     return os;
 }
 
-NAMESPACE_DS_END
+} // end of rtt_dsxx
 
 //---------------------------------------------------------------------------//
 //                              end of DynArray.cc

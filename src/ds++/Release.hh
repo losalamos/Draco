@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
  *  \file   ds++/Release.hh
- *  \author Randy M. Roberts
+ *  \author Thomas Evans
  *  \date   Thu Jul 15 09:31:44 1999
  *  \brief  Header file for ds++ library release function.
  */
@@ -9,16 +9,16 @@
 // $Id$
 //===========================================================================//
 
-#ifndef __ds_Release_hh__
-#define __ds_Release_hh__
+#ifndef rtt_ds_Release_hh
+#define rtt_ds_Release_hh
 
 #include <string>
 
 //===========================================================================//
 /*!
  * \page ds++-overview Overview of the Data Structures in C++ (DS++) Package
- *
- * \version 1_4_0
+ * \author Tom Evans, Kelly Thompson, Todd Urbatsch
+ * \version 1_9_0
  *
  * This package provides data structures and other miscellaneous support
  * for the Draco system. Classes for matrices, design-by-contract, 
@@ -42,7 +42,7 @@ const std::string release();
 
 } // end of rtt_ds++
 
-#endif                          // __ds_Release_hh__
+#endif                          // rtt_ds_Release_hh
 
 //---------------------------------------------------------------------------//
 //                              end of ds++/Release.hh

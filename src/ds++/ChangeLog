@@ -1,3 +1,12 @@
+2003-03-13  Thomas M. Evans  <tme@lanl.gov>
+
+	* ds++: release 1_9_0.  Lots of changes.  Got rid of some
+	deprecated stuff [still have to get rid of DynArray and Allocator
+	and replace them with std::allocator].  Refactored SP and tstSP
+	with lots more comments and testing.  Made assertion class a
+	derived class of std::runtime_error.  Updated lots of tests to new
+ 	testing templates.
+
 2003-03-10  Kelly Thompson  <kgt@lanl.gov>
 
 	* Assert.*, test/tstAssert.cc: Let rtt_dsxx::assertion derive from
