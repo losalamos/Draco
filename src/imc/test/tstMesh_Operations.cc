@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "IMC_Test.hh"
+#include "DD_Mesh.hh"
 #include "../Mesh_Operations.hh"
 #include "../Opacity_Builder.hh"
 #include "../Opacity.hh"
@@ -20,6 +21,7 @@
 #include "mc/General_Topology.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
+#include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
@@ -43,6 +45,7 @@ using rtt_mc::Rep_Topology;
 using rtt_mc::General_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
+using rtt_mc::Comm_Patterns;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
@@ -75,8 +78,12 @@ void T4_slope_test()
     SP<Mat_State<OS_Mesh> > mat    = ob.build_Mat(mesh);
     SP<Opacity<OS_Mesh> > opacity  = ob.build_Opacity(mesh, mat);
 
+    // Build a Comm_Patterns
+    SP<Comm_Patterns> comm_patterns(new Comm_Patterns());
+    comm_patterns->calc_patterns(topology);
+
     // build a Mesh_Operations class for OS_Mesh
-    Mesh_Operations<OS_Mesh> mesh_op(mesh, mat, topology);
+    Mesh_Operations<OS_Mesh> mesh_op(mesh, mat, topology, comm_patterns);
 
     // get the t4 slopes
     OS_Mesh::CCVF<double> slopes = mesh_op.get_t4_slope();
@@ -138,6 +145,77 @@ void T4_slope_test()
 }
 
 //---------------------------------------------------------------------------//
+
+void T4_slope_test_DD()
+{
+    if (C4::nodes() != 4)
+	return;
+
+    // local meshes 9 cell (4 cells on processor 0, 5 cells on processor 1)
+    SP<OS_Mesh>             mesh;
+    SP<Topology>            topology;
+    SP<Mat_State<OS_Mesh> > mat;
+
+    mesh     = rtt_imc_test::build_Mesh();
+    topology = rtt_imc_test::build_Topology();
+    mat      = rtt_imc_test::build_Mat(mesh);
+
+    // make and calculate comm_patterns
+    SP<Comm_Patterns> comm_patterns(new Comm_Patterns());
+    comm_patterns->calc_patterns(topology);
+
+    // build a Mesh_Operations class for OS_Mesh
+    Mesh_Operations<OS_Mesh> mesh_op(mesh, mat, topology, comm_patterns);
+
+    // get the slopes
+    OS_Mesh::CCVF<double> slopes = mesh_op.get_t4_slope();
+    if (slopes.size() != 2) ITFAILS;
+
+    // now check out the data
+    if (C4::node() == 0)
+    {
+	if (slopes.size(1) != 2)   ITFAILS;
+	if (slopes(1,1) != 0.0)    ITFAILS;
+	if (slopes(1,2) != 2667.5) ITFAILS;
+	if (slopes.size(2) != 2)   ITFAILS;
+	if (slopes(2,1) != 5335)   ITFAILS;
+	if (slopes(2,2) != 12259)  ITFAILS;
+    }
+    else if (C4::node() == 1)
+    {
+	if (slopes.size(1) != 2)   ITFAILS;
+	if (slopes(1,1) != 5335)   ITFAILS;
+	if (slopes(1,2) != 6924)   ITFAILS;
+	if (slopes.size(2) != 2)   ITFAILS;
+	if (slopes(2,1) != 6924)   ITFAILS;
+	if (slopes(2,2) != 10530)  ITFAILS;
+    }
+    else if (C4::node() == 2)
+    {
+	if (slopes.size(1) != 2)   ITFAILS;
+	if (slopes(1,1) != 3462)   ITFAILS;
+	if (slopes(1,2) != 0)      ITFAILS;
+	if (slopes.size(2) != 2)   ITFAILS;
+	if (slopes(2,1) != 10530)  ITFAILS;
+	if (slopes(2,2) != 7862.5) ITFAILS;
+    }
+    else if (C4::node() == 3)
+    {
+	if (slopes.size(1) != 3)   ITFAILS;
+	if (slopes(1,1) != 0)      ITFAILS;
+	if (slopes(1,2) != 0)      ITFAILS;
+	if (slopes(1,3) != 0)      ITFAILS;
+	if (slopes.size(2) != 3)   ITFAILS;
+	if (slopes(2,1) != 0)      ITFAILS;
+	if (slopes(2,2) != 0)      ITFAILS;
+	if (slopes(2,3) != 0)      ITFAILS;
+    }
+
+    // we already checked sample_pos_tilt above, since the slopes are correct 
+    // we can assume that sample_pos_tilt is also correct
+}
+
+//---------------------------------------------------------------------------//
 // main
 
 int main(int argc, char *argv[])
@@ -155,9 +233,19 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
-    // run test on each processor
-    T4_slope_test();
-	
+    try
+    {
+	// run test on each processor
+	T4_slope_test();
+	T4_slope_test_DD();
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "Test: assertion failure at line " 
+	     << ass.what() << endl;
+	C4::Finalize();
+	return 1;
+    }
 
     // status of test
     cout << endl;
