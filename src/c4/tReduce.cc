@@ -12,6 +12,12 @@
 
 int node, nodes;
 
+// We choose an odd ball length like this because it will force several loops 
+// through the shmem interface layer, with the last one being an odd length.
+// The shmem array reduction buffer length is currently 256 elements...
+
+int array_length = 1033;
+
 template<class T>
 bool equal_buffers( T *s1, const T *e1, T *s2 )
 {
@@ -95,20 +101,20 @@ void scalar_max( T dummy )
 template<class T>
 void array_sum( T dummy )
 {
-    T *global_sum = new T[ 20 ];
-    T *local_sum = new T[ 20 ];
+    T *global_sum = new T[ array_length ];
+    T *local_sum = new T[ array_length ];
 
-    for( int i=0; i < 20; i++ ) {
+    for( int i=0; i < array_length; i++ ) {
 	local_sum[i] = 0;
 	global_sum[i] = 100*node + i;
 	for( int j=0; j < nodes; j++ )
 	    local_sum[i] +=  100*j + i;
     }
 
-    C4::gsum( global_sum, 20 );
+    C4::gsum( global_sum, array_length );
 
     if (node == 0) {
-	if ( equal_buffers( local_sum, local_sum+20, global_sum ) )
+	if ( equal_buffers( local_sum, local_sum+array_length, global_sum ) )
 	    cout << "array sum for type "
 		 << typeid(T).name()
 		 << ": correct." << endl;
@@ -124,18 +130,18 @@ void array_sum( T dummy )
 template<class T>
 void array_min( T dummy )
 {
-    T *global_min = new T[ 20 ];
-    T *local_min = new T[ 20 ];
+    T *global_min = new T[ array_length ];
+    T *local_min = new T[ array_length ];
 
-    for( int i=0; i < 20; i++ ) {
+    for( int i=0; i < array_length; i++ ) {
 	global_min[i] = -node + i;
 	local_min[i] = -nodes+1 + i;
     }
 
-    C4::gmin( global_min, 20 );
+    C4::gmin( global_min, array_length );
 
     if (node == 0) {
-	if ( equal_buffers( local_min, local_min+20, global_min ) )
+	if ( equal_buffers( local_min, local_min+array_length, global_min ) )
 	    cout << "array min for type "
 		 << typeid(T).name()
 		 << ": correct." << endl;
@@ -151,18 +157,18 @@ void array_min( T dummy )
 template<class T>
 void array_max( T dummy )
 {
-    T *global_max = new T[ 20 ];
-    T *local_max = new T[ 20 ];
+    T *global_max = new T[ array_length ];
+    T *local_max = new T[ array_length ];
 
-    for( int i=0; i < 20; i++ ) {
+    for( int i=0; i < array_length; i++ ) {
 	global_max[i] = 100*i + node;
 	local_max[i] = 100*i + nodes - 1;
     }
 
-    C4::gmax( global_max, 20 );
+    C4::gmax( global_max, array_length );
 
     if (node == 0) {
-	if ( equal_buffers( local_max, local_max+20, global_max ) )
+	if ( equal_buffers( local_max, local_max+array_length, global_max ) )
 	    cout << "array max for type "
 		 << typeid(T).name()
 		 << ": correct." << endl;
