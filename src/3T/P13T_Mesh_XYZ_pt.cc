@@ -17,7 +17,7 @@ typedef rtt_P1Diffusion::SolverP1Diff<MT> MS;
 
 typedef rtt_P1Diffusion::P1Diffusion<MT, MS> DS;
 
-template class P13T<DS>;
+template class rtt_3T::P13T<DS>;
 
 typedef MT::ccsf T1;
 

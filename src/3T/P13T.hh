@@ -31,7 +31,9 @@ namespace rtt_matprops {
 
 // DEFINING NAMESPACE
 
-namespace XTM {
+namespace rtt_3T {
+
+ using XTM::RadiationPhysics;
 
  //===========================================================================//
  // class P13T - 
@@ -44,6 +46,10 @@ namespace XTM {
  {
 
      // NESTED CLASSES AND TYPEDEFS
+
+   private:
+
+     class P1Coeffs;
 
    public:
 
@@ -233,83 +239,11 @@ namespace XTM {
      //-----------------------------------------------------------------------//
     
      void calcNewRadState(RadiationStateField &resultsStateField,
-			  ccsf &QEEM,
-			  ccsf &REEM,
 			  DiffusionSolver &solver,
-			  double dt,
-			  int groupNo,
-			  const MaterialProperties &matprops,
-		          const ncvsf &velocity,
-			  const RadiationStateField &prevStateField,
-			  const ccsf &QRad,
-			  const ccsf &QElectron,
-			  const ccsf &QIon,
-			  const ccsf &TElectron,
-			  const ccsf &TIon,
+			  const P1Coeffs &p1coeffs,
 			  const bssf &alpha,
 			  const bssf &beta,
 			  const bssf &bSrc) const;
-    
-     //-----------------------------------------------------------------------//
-     // calcP1Coeffs:
-     //     Calculate the coefficients, e.g. diffusion and removal, and
-     //     source terms for solving the P1 equation.
-     //-----------------------------------------------------------------------//
-
-     void calcP1Coeffs(fcdsf &D,
-		       DiscFluxField &Fprime,
-		       ccsf &sigmaAbsBar,
-		       ccsf &QEEM,
-		       ccsf &REEM,
-		       ccsf &QRadBar,
-		       double dt,
-		       int groupNo,
-		       const MaterialProperties &matprops,
-		       const ncvsf &velocity,
-		       const RadiationStateField &prevStateField,
-		       const ccsf &QRad,
-		       const ccsf &QElectron,
-		       const ccsf &QIon,
-		       const ccsf &TElectron,
-		       const ccsf &TIon) const;
-
-     //-----------------------------------------------------------------------//
-     // calcStarredFields:
-     //    Calculate Qe*, Cv*, and nu.
-     //    These are needed to calculate other coefficients
-     //    and delta temperatures.
-     //-----------------------------------------------------------------------//
-
-     void calcStarredFields(ccsf &QElecStar,
-			    ccsf &CvStar,
-			    ccsf &nu,
-			    double dt,
-			    int groupNo,
-			    const MaterialProperties &matprops,
-			    const RadiationPhysics &radPhys,
-			    const ccsf &QElectron,
-			    const ccsf &QIon,
-			    const ccsf &TElectron,
-			    const ccsf &TIon,
-			    const ccsf &sigmaEmission) const;
-    
-     //-----------------------------------------------------------------------//
-     // calcStarredFields:
-     //    Calculate Qe*, Cv*, but not nu.
-     //    These are needed to calculate other coefficients
-     //    and delta temperatures.
-     //-----------------------------------------------------------------------//
-
-     void calcStarredFields(ccsf &QElecStar,
-			    ccsf &CvStar,
-			    double dt,
-			    int groupNo,
-			    const MaterialProperties &matprops,
-			    const RadiationPhysics &radPhys,
-			    const ccsf &QElectron,
-			    const ccsf &QIon,
-			    const ccsf &TElectron,
-			    const ccsf &TIon) const;
     
      //-----------------------------------------------------------------------//
      // calcDeltaTElectron:
@@ -320,13 +254,8 @@ namespace XTM {
      void calcDeltaTElectron(ccsf &deltaTelectron,
 			     double dt,
 			     int numGroups, 
-			     const MaterialProperties &matprops,
-			     const RadiationStateField &prevStateField, 
-			     const ccsf &QElectron, 
-			     const ccsf &QIon,
-			     const ccsf &TElectron,
-			     const ccsf &TIon,
-			     const RadiationStateField &resultsStateField) const;
+			     const P1Coeffs &p1coeffs,
+			     const RadiationStateField &radStateField) const;
 
      //-----------------------------------------------------------------------//
      // calcDeltaTIon:
@@ -336,15 +265,13 @@ namespace XTM {
 
      void calcDeltaTIon(ccsf &deltaTIon,
 			double dt,
-			const MaterialProperties &matprops,
-			const RadiationStateField &prevStateField, 
-			const ccsf &QIon,
-			const ccsf &TElectron,
-			const ccsf &TIon,
+			const P1Coeffs &p1coeffs,
 			const ccsf &deltaTelectron) const;
  };
 
-} // namespace XTM
+} // namespace rtt_3T
+
+#include "P1Coeffs.hh"
 
 #endif                          // __3T_P13T_hh__
 
