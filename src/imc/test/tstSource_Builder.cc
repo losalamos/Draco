@@ -10,8 +10,10 @@
 //---------------------------------------------------------------------------//
 
 #include "IMC_Test.hh"
+#include "IMC_DD_Test.hh"
 #include "../Source_Builder.hh"
 #include "../Rep_Source_Builder.hh"
+#include "../DD_Source_Builder.hh"
 #include "../Opacity_Builder.hh"
 #include "../Opacity.hh"
 #include "../Mat_State.hh"
@@ -22,9 +24,11 @@
 #include "../Source_Init.hh"
 #include "../Global.hh"
 #include "mc/Rep_Topology.hh"
+#include "mc/General_Topology.hh"
 #include "mc/OS_Builder.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/Parallel_Data_Operator.hh"
+#include "mc/Math.hh"
 #include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
@@ -39,8 +43,10 @@ using namespace std;
 
 using rtt_imc_test::IMC_Interface;
 using rtt_imc_test::Parser;
+using rtt_imc_dd_test::IMC_DD_Interface;
 using rtt_imc::Source_Builder;
 using rtt_imc::Rep_Source_Builder;
+using rtt_imc::DD_Source_Builder;
 using rtt_imc::Opacity;
 using rtt_imc::Opacity_Builder;
 using rtt_imc::Mat_State;
@@ -50,10 +56,12 @@ using rtt_imc::Particle;
 using rtt_imc::Source_Init;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
+using rtt_mc::General_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_mc::Comm_Patterns;
 using rtt_mc::Parallel_Data_Operator;
+using rtt_mc::global::soft_equiv;
 using rtt_rng::Rnd_Control;
 using rtt_dsxx::SP;
 
@@ -387,6 +395,310 @@ void source_replication_test()
 }
 
 //---------------------------------------------------------------------------//
+// test the source builder for a fully domain-decomposed (DD) mesh.
+
+void source_DD_test()
+{
+    // the DD test mesh is only for four processors
+    if (C4::nodes() != 4)
+	return;
+
+    // build a random number controller and reinitialize the global random
+    // number stream number, which was incremented in previous source_builder
+    // tests.
+    SP<Rnd_Control> rcon(new Rnd_Control(347223));
+    rtt_rng::rn_stream = 0;
+
+    // build each processor's portion of the DD Mesh 
+    // (9-cell DD mesh from IMC_DD_Test.hh)
+    SP<OS_Mesh> mesh = rtt_imc_dd_test::build_DD_Mesh(); 
+
+    // check number of cells in mesh on each processor
+    if (!((C4::node() != 3) ? (mesh->num_cells() == 2) : true)) ITFAILS;
+    if (!((C4::node() == 3) ? (mesh->num_cells() == 3) : true)) ITFAILS;
+
+    // build the topology for the DD test mesh
+    SP<Topology> topology = rtt_imc_dd_test::build_DD_Topology();
+    Parallel_Data_Operator pop(topology);
+
+    // build a comm_patterns
+    SP<Comm_Patterns> patterns(new Comm_Patterns());
+    patterns->calc_patterns(topology);
+
+    // check parallel scheme
+    if (topology->get_parallel_scheme() != "DD") ITFAILS;
+
+    // check topology's value of num_cells() compared to mesh's value
+    if (mesh->num_cells() != topology->num_cells(C4::node())) ITFAILS;
+
+    // need an interface object (not explicitly used in
+    // calc_fullDD_rn_fields).
+    SP<IMC_DD_Interface> interface(new IMC_DD_Interface(mesh->num_cells())); 
+
+    // check one thing from the interface
+    if (interface->get_delta_t() != 0.001) ITFAILS;
+
+    // build a Mat_State and Opacity
+    Opacity_Builder<OS_Mesh> ob(interface);
+    SP<Mat_State<OS_Mesh> > mat   = ob.build_Mat(mesh);
+    SP<Opacity<OS_Mesh> > opacity = ob.build_Opacity(mesh, mat);
+
+    // build a DD_Source Builder
+    DD_Source_Builder<OS_Mesh> source_builder(interface, mesh, topology);
+
+    // build the source
+    SP<Source<OS_Mesh> > source = source_builder.build_Source(mesh, mat,
+							      opacity, rcon,
+							      patterns); 
+
+    // <<<<<< SET REFERENCE VARIABLES >>>>>>
+
+    // set reference variables
+    vector<double>        temp(mesh->num_cells(), 0.0);
+    vector<double>        dens(mesh->num_cells(), 0.0); 
+    vector<double>        kapp(mesh->num_cells(), 0.0); 
+    vector<double>        kapt(mesh->num_cells(), 0.0);
+    vector<double>         c_v(mesh->num_cells(), 0.0); 
+    vector<double>     evolext(mesh->num_cells(), 100.0);
+    vector<double>     rad_src(mesh->num_cells(), 200.0);
+    vector<double>       rtemp(mesh->num_cells(), 10.0);
+    vector<double>    ref_evol(mesh->num_cells(), 0.0);
+    vector<double> ref_evolnet(mesh->num_cells(), 0.0);
+    vector<double>    ref_ecen(mesh->num_cells(), 0.0);
+    vector<double> ref_matvsrc(mesh->num_cells(), 0.0);
+    double radconst       = 0.01372;
+    double sol            = 299.792458;
+    double ref_evoltot    = 0.0;
+    double ref_esstot     = sol*radconst/4.0 *20*20*20*20 * 0.001;
+    double ref_ecentot    = 0.0;
+    double ref_matvsrctot = 0.0;
+
+    for (int c = 0; c < mesh->num_cells(); c++)
+    {
+	temp[c] = 3.0*(C4::node()+c+1);
+	dens[c] = C4::node() + c + 1;
+	kapp[c] = 2.0*C4::node() + c + 1;
+	kapt[c] = 2.0*(C4::node()+c+1);
+	c_v[c]  = 3.0*C4::node() + c + 1;
+	double fleck    = 1.0/(1.0 +  4.0 * radconst * temp[c]*temp[c]*temp[c] * 
+			       sol * 0.001 * kapp[c] / c_v[c]);
+	ref_evolnet[c]  = fleck * kapp[c] * dens[c]* radconst * sol *
+	                   (temp[c]*temp[c]*temp[c]*temp[c]) * 0.001; 
+	// ext src
+	ref_evol[c]     =  ref_evolnet[c] + 100.0 * (1.0-fleck) * 0.001;
+	// add rad_source to evol
+	ref_evol[c]    += 200.0 * 0.001; 
+	ref_matvsrc[c]  = 100.0 * fleck * 0.001;
+	ref_matvsrctot += ref_matvsrc[c];
+	ref_ecen[c]     = radconst * 1.0e4;
+	ref_evoltot    += ref_evol[c];
+	ref_ecentot    += ref_ecen[c];
+    }
+	
+    // <<<<<< CHECK LOCAL VOLUME EMISSION ENERGY >>>>>>>>
+    // check net volume emission (each proc has 2 cells, except proc 3 has 3)
+    if (mesh->num_cells() > 0)
+	if (!soft_equiv(ref_evolnet[0],source_builder.get_evol_net(1)))
+	    ITFAILS;
+    if (mesh->num_cells() > 1)
+	if (!soft_equiv(ref_evolnet[1],source_builder.get_evol_net(2)))
+	    ITFAILS; 
+    if (mesh->num_cells() > 2)
+	if (!soft_equiv(ref_evolnet[2],source_builder.get_evol_net(3)))
+	    ITFAILS; 
+
+    // do processor-dependent evol checks only if there is no global energy loss
+    double evol_loss     = source_builder.get_eloss_vol();
+    double check_evoltot = source_builder.get_evoltot();
+    if (soft_equiv(evol_loss, 0.0, 1.0e-12))
+	if (!soft_equiv(check_evoltot, ref_evoltot, 1.0e-12)) ITFAILS;
+
+    // do global evol check
+    C4::gsum(ref_evoltot);	
+    C4::gsum(check_evoltot);
+    if (!soft_equiv(check_evoltot+evol_loss, ref_evoltot, 1.0e-12)) ITFAILS;
+
+
+    // <<<<<< SURFACE SOURCE ENERGY >>>>>>>>
+
+    // do processor-dependent ess checks only if there is no global energy loss
+    double ess_loss = source_builder.get_eloss_ss();
+    if (soft_equiv(ess_loss, 0.0, 1.0e-12))
+    {
+	// each processor has one surface source--compare to hand calc
+	if (!soft_equiv(source_builder.get_esstot(), 164.526101, 1.0e-6))
+	    ITFAILS; 
+	// each processor has one surface source--compare to reference calc
+	if (!soft_equiv(source_builder.get_esstot(), ref_esstot)) ITFAILS; 
+    }
+
+    // do global ess checks (energies same on each of 4 processors)
+    double global_esstot = source_builder.get_esstot();
+    C4::gsum(global_esstot);
+
+    if (!soft_equiv(global_esstot+ess_loss, 4.0*ref_esstot, 1.0e-12))
+	ITFAILS;  
+
+
+    // <<<<<< MATERIAL VOLUME SOURCE ENERGY >>>>>>>>
+
+    // check material volume source
+    if (mesh->num_cells() > 0)
+	if (!soft_equiv(ref_matvsrc[0],source_builder.get_mat_vol_src(1)))
+	    ITFAILS;
+    if (mesh->num_cells() > 1)
+	if (!soft_equiv(ref_matvsrc[1],source_builder.get_mat_vol_src(2)))
+	    ITFAILS; 
+    if (mesh->num_cells() > 2)
+	if (!soft_equiv(ref_matvsrc[2],source_builder.get_mat_vol_src(3)))
+	    ITFAILS; 
+
+    // check on-processor totals
+    if (!soft_equiv(ref_matvsrctot, source_builder.get_mat_vol_srctot()))
+	ITFAILS; 
+
+
+    // <<<<<< INITIAL CENSUS ENERGY >>>>>>>>
+
+    // check the on-processor total census energy only if there is no global
+    // energy loss 
+    if (soft_equiv(source_builder.get_eloss_cen(), 0.0, 1.0e-12))
+    {
+	double sb_local_ecen = source_builder.get_initial_census_energy();
+	if (!soft_equiv(sb_local_ecen, ref_ecentot, 1.0e-12))        ITFAILS;
+    }	    
+
+    // global census energy check
+    double global_ecentot = source_builder.get_initial_census_energy();
+    C4::gsum(global_ecentot);
+    double ref_global_ecentot = ref_ecentot;
+    C4::gsum(ref_global_ecentot);
+    double check_ecentot = global_ecentot + source_builder.get_eloss_cen(); 
+    if (!soft_equiv(check_ecentot, ref_global_ecentot, 1.0e-12))     ITFAILS;
+
+
+    // <<<<<< NUMBER OF VOLUME EMISSION PARTICLES >>>>>>
+
+    // check consistency between local cell values and global total
+    vector<int> nvol(mesh->num_cells(),0);
+    int nvoltot = 0;
+    for (int c = 1; c <= mesh->num_cells(); c++)
+    {
+	nvol[c-1] = source_builder.get_nvol(c);
+	nvoltot += nvol[c-1];
+    }
+    int global_nvoltot = nvoltot;
+    C4::gsum(global_nvoltot);
+    if (global_nvoltot != source_builder.get_nvoltot()) ITFAILS;
+
+
+    // <<<<<< GLOBAL TOTAL NUMBER OF PARTICLES >>>>>>>> 
+
+    // contrived (not hand checked) check on global total number of particles
+    int global_nsstot  = source_builder.get_nsstot();
+    int global_ncentot = source_builder.get_ncentot();
+    if (global_nvoltot + global_nsstot + global_ncentot != 991) ITFAILS; 
+
+
+    // <<<<<< CALC VOLUME EMISSION RANDOM NUMBER STREAM INFO >>>>>>
+
+    // global vector of number of volume emission particles
+    int *global_nvol = new int[9];
+    for (int i = 0; i < 9; i++)
+	global_nvol[i] = 0;
+
+    // loop over local cells and map local nvol to global vector
+    for (int lc = 1; lc <= mesh->num_cells(); lc++)
+    {
+	int gc = 2*C4::node() + lc;
+	global_nvol[gc-1] = nvol[lc-1];
+    }
+    C4::gsum(global_nvol,9);
+    
+    // calc volrn and construct nvol rn checksum
+    vector<int> volrn(9, 0);
+    int checksum_vol_rn = 0;
+    int offset = 0;
+    for (int gc = 0; gc < 9; gc++)
+    {
+	volrn[gc] = global_ncentot + offset;
+
+	for (int np = 0; np < global_nvol[gc]; np++)
+	    checksum_vol_rn += volrn[gc] + np;
+
+	offset += global_nvol[gc];
+    }
+
+    // <<<<<< RETRIEVE PARTICLES FROM SOURCE >>>>>>
+
+    // sums of surface source and vol emiss ew's
+    double calc_ss_ewtot  = 0.0;    
+    double calc_vol_ewtot = 0.0;
+    double calc_cen_ewtot = 0.0;
+
+    // sum of volume emission particle random number stream id's
+    int sum_vol_rn = 0;
+
+    // get surface sources; weakly check random number stream id's
+    for (int i = 0; i < source->get_nsstot(); i++)
+    {
+	SP_Particle particle = source->get_Source_Particle(.001);
+	calc_ss_ewtot       += particle->get_ew();
+
+	int ssrnid = particle->get_random().get_num();
+	if (ssrnid < global_ncentot + global_nvoltot)                ITFAILS; 
+	if (ssrnid > 990)                                            ITFAILS; 
+    }
+    C4::gsum(calc_ss_ewtot);
+
+    if (!soft_equiv(calc_ss_ewtot + ess_loss, 4.0*ref_esstot, 1.0e-12))
+	ITFAILS; 
+
+    // get volume sources; check random number stream id's
+    for (int i = 0; i < source->get_nvoltot(); i++)
+    {
+	SP_Particle particle = source->get_Source_Particle(.001);
+	calc_vol_ewtot      += particle->get_ew();
+
+	int volrnid     = particle->get_random().get_num();
+	sum_vol_rn     += volrnid;
+	int cell        = particle->get_cell();
+	int global_cell = 2*C4::node() + cell;
+
+	int lo_id_limit = volrn[global_cell-1];
+	int hi_id_limit = volrn[global_cell-1]+global_nvol[global_cell-1];
+
+	if (volrnid <  lo_id_limit)                                  ITFAILS;
+	if (volrnid >= hi_id_limit)                                  ITFAILS;
+    }
+    C4::gsum(calc_vol_ewtot);
+    C4::gsum(sum_vol_rn);
+
+    if (!soft_equiv(calc_vol_ewtot+evol_loss, ref_evoltot, 1.0e-12)) ITFAILS;
+    if (sum_vol_rn != checksum_vol_rn)                               ITFAILS; 
+
+
+    // get census sources; weakly check random number stream id's
+    for (int i = 0; i < source->get_ncentot(); i++)
+    {
+	SP_Particle particle = source->get_Source_Particle(.001);
+	calc_cen_ewtot      += particle->get_ew();
+
+	int cenrnid  = particle->get_random().get_num();
+	if (cenrnid >= global_ncentot)                               ITFAILS;
+	if (cenrnid < 0)                                             ITFAILS;
+    }
+    C4::gsum(calc_cen_ewtot);
+
+    if (!soft_equiv(calc_cen_ewtot + source_builder.get_eloss_cen(),
+		    ref_global_ecentot, 1.0e-9))                     ITFAILS; 
+
+    // the source should be empty
+    if (*source) ITFAILS;
+}
+
+
+//---------------------------------------------------------------------------//
 // main
 
 int main(int argc, char *argv[])
@@ -409,6 +721,9 @@ int main(int argc, char *argv[])
 
     // full replication source test
     source_replication_test();
+
+    // source builder test on full domain decomposition 
+    source_DD_test();
 
     // status of test
     cout << endl;
