@@ -1,0 +1,134 @@
+############################## -*- makefile -*- ###############################
+# draco/src/config/Linux.cf
+# Geoffrey Furnish
+# 20 August 1997
+###############################################################################
+# @> This file contains configuration data for compiling on Blue Mountain
+###############################################################################
+
+mach	= x86
+cmplr	=
+optns	=
+
+cxx	:= KCC
+c4	:= no
+strict	:= yes
+
+# Currently avoid the gui support, until we can get all the tools built.
+spartan	:= yes
+
+# Tools which are independent of the compiler
+
+ar	= /bin/ar
+ranlib	= /bin/true
+
+#-----------------------------------------------------------------------------#
+# Kuck and Associates C++
+
+ifeq ($(cxx),KCC)
+
+CC	= gcc
+CXX	= KCC -x --restrict #--no_implicit_include
+cmplr	= kai
+
+ifdef strict
+CXX += --strict
+endif
+
+#DEFINES = -DPOOMA_KAI -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_HAS_TEMPLATED_COMPLEX -DPOOMA_USE_MEMBER_TEMPLATES
+#DEFINES = -DPOOMA_KAI -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_HAS_TEMPLATED_COMPLEX -DPOOMA_USE_MEMBER_TEMPLATES -DPOOMA_USE_PARTIAL_SPECIALIZATION
+DEFINES = 
+DEBUG_FLAG	=
+
+MAKEDEPEND	= $(CXX) -M
+CXX_DEPEND_FLAG	= $(CXXFLAGS)
+
+preinstantiate	:= yes
+
+ifndef kcc_deps
+kcc_deps := yes
+endif
+
+ifeq ($(kcc_deps),yes)
+ifneq ($(gendeps),no)
+CXX	+= --output_dependencies .dkcc.$(basename $(notdir $*))_$(env)
+endif
+endif
+
+INSTANTIALYZER	+= -m edg
+
+ifeq ($(c4),no)
+#SYS_FLAGS = -DNOMPI
+comm	:=
+else
+comm	:= c4
+SYS_FLAGS = 
+SYS_LIBS = -lmpi
+endif
+
+ifdef nj
+ifneq ($(kcc),old)
+lib_cmd	:= $(CXX) --parallel_build $(nj) -o
+SYS_LINK_FLAGS	:= --parallel_build $(nj)
+else
+lib_cmd	:= $(CXX) -o
+endif
+else
+lib_cmd	:= $(CXX) -o
+endif
+
+ifndef opt
+opt	= g
+endif
+
+ifeq ($(opt),g)
+optns		= g
+cxx_opt         = +K0
+shared		:= no
+endif
+
+ifeq ($(opt),0)
+optns		= o0
+cxx_opt		= +K1 -O0 --inline_keyword_space_time=0.0 --inline_auto_space_time=0.0
+shared		:= no
+endif
+
+ifeq ($(opt),1)
+optns		= o1
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt		= +K1 -O1
+endif
+
+ifeq ($(opt),2)
+optns		= o2
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt		= +K2 -O2
+endif
+
+ifeq ($(opt),3)
+optns		= o3
+ASSERT_FLAG	= -DNOASSERT
+cxx_opt		= +K3 -O3
+endif
+
+CXX	+= $(cxx_opt)
+
+endif				# Photon C++
+
+#POOMA_INC_FLAG	= -I$(POOMA_ROOT)/src
+#POOMA_FLAGS	= $(POOMA_INC_FLAG) $(DEFINES)
+#POOMA_LIB_DIR	= $(POOMA_ROOT)/lib/$(POOMA_ARCH)
+#POOMA_LIB	= -L$(POOMA_LIB_DIR) -lpooma
+
+env	:= $(mach)$(cmplr)$(optns)$(comm)
+
+include $(SRC_TOP)/config/.pooma.$(env)
+
+POOMA_INC_FLAG	= $(POOMA_INCLUDES)
+POOMA_FLAGS	= $(POOMA_INCLUDES) $(POOMA_DEFINES)
+POOMA_LIB_DIR	= $(POOMA_LFLAGS)
+POOMA_LIB	= $(POOMA_LIBS)
+
+###############################################################################
+#                        End of draco/src/config/Linux.cf
+###############################################################################
