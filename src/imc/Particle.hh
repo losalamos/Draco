@@ -48,13 +48,13 @@
 #include "imctest/Tally.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 #include <vector>
 #include <string>
 #include <iostream>
 #include <cmath>
 #include <stack>
 #include <list>
-#include <cassert>
 
 IMCSPACE
 
@@ -160,11 +160,12 @@ private:
 
 public:
   // Particle constructor
-    inline Particle(const MT &, long, double);
+    inline Particle(vector<double> &, vector<double> &, double, int, Sprng, 
+		    double = 1, double = 1);
 
   // null constructor required as kluge for the STL containers which need a
   // default constructor, this calls an assert(0) so you can't use it
-    inline Particle();
+    Particle() { Insist (0, "You tried to default construct a Particle!"); }
 
   // transport solvers
 
@@ -174,6 +175,7 @@ public:
 
   // other services
     bool status() const { return alive; }
+    void write_to_census(ostream &) const;
 
   // public diagnostic services
     void print(ostream &) const;
@@ -196,7 +198,6 @@ inline ostream& operator<<(ostream &output, Particle<MT> &object)
 //---------------------------------------------------------------------------//
 // inline functions for Particle
 //---------------------------------------------------------------------------//
-
 // Particle<MT>::Diagnostic inline functions
 
 template<class MT>
@@ -206,27 +207,20 @@ inline void Particle<MT>::Diagnostic::header() const
     output << "------------------------" << endl;
 }
 
+//---------------------------------------------------------------------------//
 // Particle<MT> inline functions
 
 template<class MT>
-inline Particle<MT>::Particle(const MT &mesh, long seed, double ew_)
-    : ew(ew_), r(mesh.get_Coord().get_dim(), 0.0), 
-      omega(mesh.get_Coord().get_sdim(), 0.0), cell(0), alive(true), 
-      descriptor("born"), random(seed), time_left(0), fraction(1)
+inline Particle<MT>::Particle(vector<double> &r_, vector<double> &omega_, 
+			      double ew_, int cell_, Sprng random_, 
+			      double frac, double tleft)
+    : ew(ew_), r(r_), omega(omega_), cell(cell_), time_left(tleft), 
+      fraction(frac), alive(true), descriptor("born"), random(random_)
 {
-  // non-default constructor, Particle must be defined with a Mesh
+  // non-default particle constructor
 }
 
-template<class MT>
-inline Particle<MT>::Particle()
-    : random(-1)
-{
-  // default constructor for use with stl containers; must provide an
-  // initializer for Random because it doesn't have a default constructor 
-
-  // assertion to kill the run if anybody actually tries to use this
-    assert (0);
-}
+//---------------------------------------------------------------------------//
 
 template<class MT>
 inline void Particle<MT>::stream(double distance)
@@ -235,6 +229,8 @@ inline void Particle<MT>::stream(double distance)
     for (int i = 0; i <= r.size()-1; i++)
 	r[i] = r[i] + distance * omega[i];
 }
+
+//---------------------------------------------------------------------------//
 
 template<class MT>
 inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,

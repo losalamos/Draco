@@ -260,7 +260,7 @@ template<class MT>
 void Source_Init<MT>::calc_ncen_init()
 {
   // first guess at census particles per cell
-    Insist ((evoltot+esstot+eradtot) != 0, "You must specify some source");
+    Insist ((evoltot+esstot+eradtot) != 0, "You must specify some source!");
     int ncenguess = eradtot / (evoltot + esstot + eradtot) * npwant;
 
   // particles per unit energy

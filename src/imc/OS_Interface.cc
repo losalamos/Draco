@@ -27,7 +27,7 @@ void OS_Interface::parser()
     ifstream input(file);
 
   // make sure file exists
-    Check (input);
+    Insist (input, "You must supply an input file!");
 
   // call OS_Mesh Parser
     parser_Mesh(input);
@@ -53,7 +53,7 @@ void OS_Interface::parser_Mesh(ifstream &in)
     while (keyword != "end-title")
     {
       // test that we have not reached end-of-file
-	Check (!in.eof());
+	Insist (!in.eof(), "You did not supply an end-title!");
 
       // do title block input
 	in >> keyword;
@@ -63,8 +63,8 @@ void OS_Interface::parser_Mesh(ifstream &in)
 
   // check to make sure an appropriate coord_sys is called
     Check (coord_system == "xy" || coord_system == "XY" || 
-	    coord_system == "rz" || coord_system == "RZ" ||
-	    coord_system == "XYZ" || coord_system == "xyz");
+	   coord_system == "rz" || coord_system == "RZ" ||
+	   coord_system == "XYZ" || coord_system == "xyz");
 
   // call appropriate sub-parser
     if (coord_system == "xy" || coord_system == "XY" || coord_system == "rz"
@@ -132,7 +132,7 @@ void OS_Interface::parser2D(ifstream &in)
     while (keyword != "end-init")
     {
       // test that we have not reached end-of-file
-	Check (!in.eof());
+	Insist (!in.eof(), "You did not specify a proper end-init!");
 
       // do input
 	in >> keyword;
@@ -162,7 +162,7 @@ void OS_Interface::parser2D(ifstream &in)
     while (keyword != "end-mesh")
     {
       // test that we have not reached end-of-file
-	Check (!in.eof());
+	Insist (!in.eof(), "You did not specify a proper end-mesh!");
 
       // do input
 	in >> keyword;
@@ -195,7 +195,7 @@ void OS_Interface::parser3D(ifstream &in)
     while (keyword != "end-init")
     {
       // test that we have not reached end-of-file
-	Check (!in.eof());
+	Insist (!in.eof(), "You did not specify a proper end-init!");
 
       // do input
 	in >> keyword;
@@ -235,7 +235,7 @@ void OS_Interface::parser3D(ifstream &in)
     while (keyword != "end-mesh")
     {
       // test that we have not reached end-of-file
-	Check (!in.eof());
+	Insist (!in.eof(), "You did not specify a proper end-mesh!");
      
       // do input
 	in >> keyword;
@@ -301,7 +301,7 @@ void OS_Interface::zone_opacity_parser(ifstream &in)
     while (keyword != "end-mat")
     {
       // test that we have not reached end-of-file
-	Check (!in.eof());
+	Insist (!in.eof(), "You did not specify a proper end-mat!");
 	
       // do input
 	in >> keyword;
@@ -454,7 +454,7 @@ void OS_Interface::zone_source_parser(ifstream &in)
     while (keyword != "end-source")
     {
       // test that we have not reached end-of-file
-	Check (!in.eof());
+	Insist (!in.eof(), "You did not specify a proper end-source!");
 	
       // do input
 	in >> keyword;
