@@ -33,14 +33,14 @@ using rtt_mc::Send_Particle_Buffer;
 using rtt_mc::Recv_Particle_Buffer;
 using rtt_mc::Particle_Buffer;
 using rtt_mc::Particle_IO;
-using rtt_mc::Particle_Stack;
+using rtt_mc::Particle_Containers;
 using rtt_rng::Sprng;
 using rtt_rng::Rnd_Control;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
-typedef rtt_mc_test::Dummy_Particle DP;
-typedef Particle_Stack<DP>::Bank    Bank;
+typedef rtt_mc_test::Dummy_Particle   DP;
+typedef Particle_Containers<DP>::Bank Bank;
 
 // random number seed
 int seed = 392745;
@@ -119,7 +119,7 @@ void file_input()
     }
 
     // make a bank
-    Particle_Stack<DP>::Bank bank;
+    Particle_Containers<DP>::Bank bank;
 
     // make the input file
     ifstream file("particles");
@@ -186,7 +186,7 @@ void check_empty()
 	// try to read the particles off the empty file
 
 	// make a bank
-	Particle_Stack<DP>::Bank bank;
+	Particle_Containers<DP>::Bank bank;
 
 	// read particles from disk
 	Particle_IO<DP>::read_particles(ifile, bank);
@@ -206,7 +206,7 @@ void check_empty()
 	// try to read the particles off the empty file
 
 	// make a bank
-	Particle_Stack<DP>::Bank bank;
+	Particle_Containers<DP>::Bank bank;
 
 	// read particles from disk
 	Particle_IO<DP>::read_particles(ifile, bank);

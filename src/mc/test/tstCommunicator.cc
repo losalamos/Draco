@@ -35,7 +35,7 @@
 using namespace std;
 
 using rtt_mc::Particle_Buffer;
-using rtt_mc::Particle_Stack;
+using rtt_mc::Particle_Containers;
 using rtt_mc::Communicator_Builder;
 using rtt_mc::Communicator;
 using rtt_mc::Topology;
@@ -294,7 +294,7 @@ void DD_Comm_transport()
     
     if (C4::node() == 1)
     {
-	Particle_Stack<PT>::Bank bank;
+	Particle_Containers<PT>::Bank bank;
 
 	int arrived = 0;
 	while (arrived != 3)
@@ -435,7 +435,7 @@ void DD_Comm_simple()
     if (communicator->get_recv_size() != 0) ITFAILS;
 
     // make a bank
-    Particle_Stack<PT>::Bank bank;
+    Particle_Containers<PT>::Bank bank;
 
     // >>> CHECK FUNCTIONS
     
