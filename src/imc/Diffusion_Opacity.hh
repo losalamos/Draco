@@ -30,11 +30,13 @@ namespace rtt_imc
  * (rtt_imc::Random_Walk) and discrete diffusion (DDIMC).  The data held by
  * the class are Fleck factors and gray Rosseland opacities (needed to
  * generate diffusion coefficients):
+ * 
  * - Rosseland gray opacities (1/cm)
  * - fleck factors (dimensionaless)
- * .
- * Also, the class can generate diffusion coefficients for random walk and
- * (in the future, DDIMC).
+ *
+ * Also, the class can generate diffusion coefficients and the gray Rosseland
+ * effective scattering opacity (1/cm), (1-fleck)$\sigma_R$, for Random Walk
+ * and, in the future, DDIMC.
  *
  * The Diffusion_Opacity class is not frequency-dependent.  All diffusion
  * data in this class is "gray".
@@ -80,6 +82,9 @@ class Diffusion_Opacity
     //! Get the gray Rosseland opacity in a cell (1/cm).
     double get_Rosseland_opacity(int c) const { return rosseland(c); }
 
+    //! Get the Rosseland effective scattering opacity in a cell (1/cm).
+    double get_Rosseland_effscat(int cell) const;
+
     // Get diffusion coefficents for random walk per cell.
     inline double get_random_walk_D(int cell) const;
 };
@@ -110,6 +115,23 @@ double Diffusion_Opacity<MT>::get_random_walk_D(int cell) const
     Check (fleck->fleck(cell) <= 1.0);
 
     return c / (3.0 * (1.0-fleck->fleck(cell)) * rosseland(cell)); 
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return $(1-f)\sigma_{R}$, the effective Rosseland scattering
+ * opacity (cm^-1).
+ *
+ */
+template<class MT>
+double Diffusion_Opacity<MT>::get_Rosseland_effscat(int cell) const
+{
+
+    Require (cell > 0 && cell <= num_cells());
+    Check (fleck->fleck(cell) >= 0.0);
+    Check (fleck->fleck(cell) <= 1.0);
+
+    return (1.0-fleck->fleck(cell)) * rosseland(cell); 
 }
 
 //---------------------------------------------------------------------------//

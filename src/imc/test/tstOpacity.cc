@@ -101,10 +101,12 @@ void test_diffusion_opacity()
 	double f = 0.023 + 0.1 * static_cast<double>(i);
 	double r = 1.1 * factor;
 	double D = rtt_mc::global::c / (3.0 * (1.0-f) * r);
+	double e = (1.0 - f) * r;
 
 	if (!soft_equiv(opac.get_fleck(i), f))             ITFAILS;
 	if (!soft_equiv(opac.get_Rosseland_opacity(i), r)) ITFAILS;
 	if (!soft_equiv(opac.get_random_walk_D(i), D))     ITFAILS;
+	if (!soft_equiv(opac.get_Rosseland_effscat(i), e)) ITFAILS;
 
 	factor  *= 2.0;
     }
