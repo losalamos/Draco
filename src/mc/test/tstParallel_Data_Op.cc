@@ -1,14 +1,15 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/tstParallel_Data_Op.cc
+ * \file   mc/test/tstParallel_Data_Op.cc
  * \author Thomas M. Evans
- * \date   Fri Dec 10 13:12:10 1999
+ * \date   Thu Dec 20 16:38:29 2001
  * \brief  Parallel_Data_Operator test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "mc_test.hh"
 #include "MC_Test.hh"
 #include "DD_Mesh.hh"
 #include "../Rep_Topology.hh"
@@ -19,13 +20,14 @@
 #include "../OS_Mesh.hh"
 #include "../Release.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
+#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include <deque>
-#include <list>
-#include <string>
 
 using namespace std;
 
@@ -42,9 +44,9 @@ using rtt_dsxx::SP;
 typedef OS_Mesh::CCSF<int>           ccsf_int;
 typedef OS_Mesh::CCSF<int>::iterator field_itor;
 
-bool passed = true;
-#define ITFAILS passed = rtt_mc_test::fail(__LINE__, __FILE__);
-
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
 //---------------------------------------------------------------------------//
 // TEST Parallel Data Operations on MT Fields
 //---------------------------------------------------------------------------//
@@ -495,18 +497,16 @@ void gather()
 }
 
 //---------------------------------------------------------------------------//
-// MAIN
-//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
     C4::Init(argc, argv);
-    
+
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    if (!C4::node())
+	    if (C4::node() == 0)
 		cout << argv[0] << ": version " << rtt_mc::release() 
 		     << endl;
 	    C4::Finalize();
@@ -515,6 +515,8 @@ int main(int argc, char *argv[])
 
     try
     {
+	// >>> UNIT TESTS
+
 	// Fields test
 	test_MT_Fields();
 	test_MT_Fields<OS_Builder,OS_Mesh>();
@@ -535,33 +537,36 @@ int main(int argc, char *argv[])
 	// test gathers
 	gather();
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &ass)
     {
-	cout << "Dumbass you screwed up, assertion: " << ass.what()
+	cout << "While testing tstParallel_Data_Op, " << ass.what()
 	     << endl;
 	C4::Finalize();
 	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "**************************************************" 
-	 << endl;
-    if (passed) 
     {
-        cout << "**** Parallel_Data_Operator Self Test: PASSED on " 
-	     << C4::node() << endl;
+	C4::HTSyncSpinLock slock;
+
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_mc_test::passed) 
+	{
+	    cout << "**** tstParallel_Data_Op Test: PASSED on " 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
     }
-    cout <<     "**************************************************" 
-	 << endl;
-    cout << endl;
+    
+    C4::gsync();
 
-    cout << "Done testing Parallel_Data_Operator on node " << C4::node() 
-	 << endl;
-
+    cout << "Done testing tstParallel_Data_Op on " << C4::node() << endl;
+    
     C4::Finalize();
-}
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstParallel_Data_Op.cc
+//                        end of tstParallel_Data_Op.cc
 //---------------------------------------------------------------------------//

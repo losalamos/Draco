@@ -1,32 +1,33 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/tstMath.cc
+ * \file   mc/test/tstMath.cc
  * \author Thomas M. Evans
- * \date   Thu Jan 13 14:51:33 2000
- * \brief  Math Functions test.
+ * \date   Thu Dec 20 16:33:26 2001
+ * \brief  Math functions test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "mc_test.hh"
 #include "MC_Test.hh"
 #include "../Math.hh"
 #include "../Release.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
+#include "ds++/Assert.hh"
 
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <string>
 
 using namespace std;
 
 using rtt_mc::global::soft_equiv;
 using rtt_mc::global::integer_modulo;
 
-bool passed = true;
-#define ITFAILS passed = rtt_mc_test::fail(__LINE__);
-
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 
 void test_math()
@@ -85,38 +86,50 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_mc::release() << endl;
+	    if (C4::node() == 0)
+		cout << argv[0] << ": version " << rtt_mc::release() 
+		     << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
     try
     {
+	// >>> UNIT TESTS
+
 	// test math functions
 	test_math();
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "You are a bona-fide Uncle-#@&%er: " << ass.what() << endl;
+	cout << "While testing tstMath, " << ass.what()
+	     << endl;
 	C4::Finalize();
 	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "********************************" << endl;
-    if (passed) 
     {
-        cout << "**** Math Self Test: PASSED ****" << endl;
-    }
-    cout <<     "********************************" << endl;
-    cout << endl;
+	C4::HTSyncSpinLock slock;
 
-    cout << "Done testing Math." << endl;
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_mc_test::passed) 
+	{
+	    cout << "**** tstMath Test: PASSED on " 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
+    }
+    
+    C4::gsync();
+
+    cout << "Done testing tstMath on " << C4::node() << endl;
     
     C4::Finalize();
 }   
 
 //---------------------------------------------------------------------------//
-//                              end of tstMath.cc
+//                        end of tstMath.cc
 //---------------------------------------------------------------------------//

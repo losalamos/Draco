@@ -1,46 +1,52 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstCoord.cc
-// Thomas M. Evans
-// Fri Apr 16 14:33:48 1999
+/*!
+ * \file   mc/test/tstCoord.cc
+ * \author Thomas M. Evans
+ * \date   Thu Dec 20 16:28:17 2001
+ * \brief  Coord_sys test.
+ */
+//---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-// @> Test of MC Coord_sys classes 
-//---------------------------------------------------------------------------//
 
+#include "mc_test.hh"
 #include "MC_Test.hh"
 #include "../Coord_sys.hh"
 #include "../XYCoord_sys.hh"
 #include "../XYZCoord_sys.hh"
 #include "../Math.hh"
 #include "../Release.hh"
-#include "rng/Rnd_Control.hh"
+#include "rng/Random.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
+#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
+
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <string>
+
+using namespace std;
 
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
 using rtt_mc::Coord_sys;
 using rtt_mc::XYCoord_sys;
 using rtt_mc::XYZCoord_sys; 
-using rtt_mc::global::soft_equiv;
 using rtt_mc::global::dot;
 
 using rtt_dsxx::SP;
-
-using namespace std;
-
-bool passed = true;
-#define ITFAILS passed = rtt_mc_test::fail(__LINE__, __FILE__);
+using rtt_dsxx::soft_equiv;
 
 // some necessary global stuff
 vector<double> random_nums(100, 0.0);
 int seed = 9375632;
 Rnd_Control rndc(seed);
 
+
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 
 // make some random numbers for testing
@@ -187,7 +193,7 @@ void test_scatters(Coord_sys &xyz)
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
-{  
+{
     C4::Init(argc, argv);
 
     // this is a scalar test
@@ -201,13 +207,16 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_mc::release() << endl; 
+	    if (C4::node() == 0)
+		cout << argv[0] << ": version " << rtt_mc::release() 
+		     << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
     try
     {
+	// >>> UNIT TESTS
 	// fill up the random number array
 	make_ran();
 	
@@ -230,31 +239,34 @@ int main(int argc, char *argv[])
     }
     catch (rtt_dsxx::assertion &ass)
     {
-        std::cout << "Test: assertion failure at line "
-		  << ass.what() << std::endl;
-        C4::Finalize();
-        return 1;
+	cout << "While testing tstCoord, " << ass.what()
+	     << endl;
+	C4::Finalize();
+	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "*************************************" << endl;
-    if (passed) 
     {
-        cout << "**** Coord_sys Self Test: PASSED ****" << endl;
-    }
-    else
-    {
-        cout << "**** Coord_sys Self Test: FAILED ****" << endl;
-    }
-    cout <<     "*************************************" << endl;
-    cout << endl;
+	C4::HTSyncSpinLock slock;
 
-    cout << "Done testing Coord_sys." << endl;
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_mc_test::passed) 
+	{
+	    cout << "**** tstCoord Test: PASSED on " 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
+    }
+    
+    C4::gsync();
 
+    cout << "Done testing tstCoord on " << C4::node() << endl;
+    
     C4::Finalize();
 }   
 
 //---------------------------------------------------------------------------//
-//                              end of tstCoord.cc
+//                        end of tstCoord.cc
 //---------------------------------------------------------------------------//

@@ -23,19 +23,6 @@ namespace rtt_mc_test
 
 using rtt_meshReaders::Element_Definition;
 
-bool fail(int line)
-{
-    std::cout << "Test: failed on line " << line << std::endl;
-    return false;
-}
-
-bool fail(int line, char *file)
-{
-    std::cout << "Test: failed on line " << line << " in " << file
-          << std::endl;
-    return false;
-}
-
 //___________________________________________________________________________//
 /*!
  * \class TET_test_1

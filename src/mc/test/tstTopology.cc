@@ -1,14 +1,15 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/tstTopology.cc
+ * \file   mc/test/tstTopology.cc
  * \author Thomas M. Evans
- * \date   Thu Nov 18 16:02:11 1999
- * \brief  Topology test code.
+ * \date   Thu Dec 20 16:48:54 2001
+ * \brief  
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "mc_test.hh"
 #include "MC_Test.hh"
 #include "../General_Topology.hh"
 #include "../Rep_Topology.hh"
@@ -16,11 +17,12 @@
 #include "../OS_Builder.hh"
 #include "../Release.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/SP.hh"
 
 #include <iostream>
 #include <vector>
-#include <string>
+#include <cmath>
 
 using namespace std;
 
@@ -34,9 +36,9 @@ using rtt_dsxx::SP;
 using C4::Send;
 using C4::Recv;
 
-bool passed = true;
-#define ITFAILS passed = rtt_mc_test::fail(__LINE__, __FILE__);
-
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
 //---------------------------------------------------------------------------//
 // REPLICATION TOPOLOGY TESTS
 //---------------------------------------------------------------------------//
@@ -123,6 +125,9 @@ void test_Replication()
 	SP<Topology> new_top = pack.unpack();
 	if (!rtt_mc_test::topology_replication_test(mesh, *new_top)) ITFAILS; 
     }
+
+    if (rtt_mc_test::passed)
+	PASSMSG("Topology replication tests pass.");
 }
 
 //---------------------------------------------------------------------------//
@@ -216,49 +221,68 @@ void test_DD()
 	SP<Topology> new_top = pack.unpack();
 	if (!rtt_mc_test::topology_DD_test(mesh, *new_top) ) ITFAILS;
     }
+
+    if (rtt_mc_test::passed)
+	PASSMSG("Topology DD tests pass.");
 }
 
-//---------------------------------------------------------------------------//
-// MAIN
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
     C4::Init(argc, argv);
-    
+
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    if (!C4::node())
+	    if (C4::node() == 0)
 		cout << argv[0] << ": version " << rtt_mc::release() 
 		     << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
-    // full replication tests of General_Topology and Rep_Topology
-    test_Replication();
-
-    // DD tests of General_Topology
-    test_DD();
-
-    // status of test
-    cout << endl;
-    cout <<     "************************************" << endl;
-    if (passed) 
+    try
     {
-        cout << "**** Topology Self Test: PASSED on " << C4::node()
-	     << endl;
+	// >>> UNIT TESTS
+
+	// full replication tests of General_Topology and Rep_Topology
+	test_Replication();
+
+	// DD tests of General_Topology
+	test_DD();
     }
-    cout <<     "************************************" << endl;
-    cout << endl;
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing tstTopology, " << ass.what()
+	     << endl;
+	C4::Finalize();
+	return 1;
+    }
 
-    cout << "Done testing Topology on node " << C4::node() << endl;
+    {
+	C4::HTSyncSpinLock slock;
 
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_mc_test::passed) 
+	{
+	    cout << "**** tstTopology Test: PASSED on " 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
+    }
+    
+    C4::gsync();
+
+    cout << "Done testing tstTopology on " << C4::node() << endl;
+    
     C4::Finalize();
-}
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstTopology.cc
+//                        end of tstTopology.cc
 //---------------------------------------------------------------------------//

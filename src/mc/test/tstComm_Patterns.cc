@@ -1,29 +1,29 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/tstComm_Patterns.cc
+ * \file   mc/test/tstComm_Patterns.cc
  * \author Thomas M. Evans
- * \date   Wed May  3 14:36:31 2000
+ * \date   Thu Dec 20 16:26:43 2001
  * \brief  Comm_Patterns test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "mc_test.hh"
 #include "MC_Test.hh"
 #include "DD_Mesh.hh"
+#include "../Release.hh"
 #include "../Comm_Patterns.hh"
 #include "../General_Topology.hh"
 #include "../Rep_Topology.hh"
-#include "../Release.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
 #include <iostream>
 #include <vector>
-#include <deque>
-#include <list>
-#include <string>
+#include <cmath>
 
 using namespace std;
 
@@ -33,8 +33,9 @@ using rtt_mc::General_Topology;
 using rtt_mc::Rep_Topology;
 using rtt_dsxx::SP;
 
-bool passed = true;
-#define ITFAILS passed = rtt_mc_test::fail(__LINE__, __FILE__);
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
 // Comm_Patterns DD Test on 9 cell mesh
@@ -263,18 +264,16 @@ void rep_Comm_Patterns()
 }
 
 //---------------------------------------------------------------------------//
-// MAIN
-//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
     C4::Init(argc, argv);
-    
+
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    if (!C4::node())
+	    if (C4::node() == 0)
 		cout << argv[0] << ": version " << rtt_mc::release() 
 		     << endl;
 	    C4::Finalize();
@@ -283,36 +282,40 @@ int main(int argc, char *argv[])
 
     try
     {
+	// >>> UNIT TESTS
 	rep_Comm_Patterns();
 	DD_Comm_Patterns();
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &ass)
     {
-	cout << "Dumb ass you screwed up; assertion: " << ass.what()
+	cout << "While testing tstComm_Patterns, " << ass.what()
 	     << endl;
 	C4::Finalize();
 	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "*****************************************" 
-	 << endl;
-    if (passed) 
     {
-        cout << "**** Comm_Patterns Self Test: PASSED on " 
-	     << C4::node() << endl;
+	C4::HTSyncSpinLock slock;
+
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_mc_test::passed) 
+	{
+	    cout << "**** tstComm_Patterns Test: PASSED on " 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
     }
-    cout <<     "*****************************************" 
-	 << endl;
-    cout << endl;
+    
+    C4::gsync();
 
-    cout << "Done testing Comm_Patterns on node " << C4::node() 
-	 << endl;
-
+    cout << "Done testing tstComm_Patterns on " << C4::node() << endl;
+    
     C4::Finalize();
-}
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstComm_Patterns.cc
+//                        end of tstComm_Patterns.cc
 //---------------------------------------------------------------------------//

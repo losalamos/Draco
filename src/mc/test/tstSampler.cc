@@ -1,30 +1,37 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/tstSampler.cc
- * \author Todd J. Urbatsch
- * \date   Wed Apr  5 09:13:05 2000
- * \brief  Monte Carlo Sampler tests.
+ * \file   mc/test/tstSampler.cc
+ * \author Thomas M. Evans
+ * \date   Thu Dec 20 16:43:54 2001
+ * \brief  Sampler.hh tests.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "mc_test.hh"
 #include "MC_Test.hh"
 #include "../Sampler.hh"
 #include "../Release.hh"
-#include "rng/Rnd_Control.hh"
+#include "rng/Random.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
+#include "ds++/Assert.hh"
+
+#include <iostream>
+#include <vector>
+#include <cmath>
 
 using namespace std;
+
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
 using rtt_mc::global::soft_equiv;
-#include <vector>
 
-
-bool passed = true;
-#define ITFAILS passed = rtt_mc_test::fail(__LINE__);
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
 // make a fake random number generator that always returns "1"
@@ -358,8 +365,6 @@ void test_cdf_sampling()
 }
 
 //---------------------------------------------------------------------------//
-// main function for tstSampler
-//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
@@ -374,15 +379,19 @@ int main(int argc, char *argv[])
 
     // version tag
     for (int arg = 1; arg < argc; arg++)
-        if (string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " << rtt_mc::release() << endl;
-            C4::Finalize();
-            return 0;
-        }
+	if (string(argv[arg]) == "--version")
+	{
+	    if (C4::node() == 0)
+		cout << argv[0] << ": version " << rtt_mc::release() 
+		     << endl;
+	    C4::Finalize();
+	    return 0;
+	}
 
     try
     {
+	// >>> UNIT TESTS
+
         // test the sampling of a general linear pdf
 	sample_general_linear_test();
 
@@ -397,26 +406,34 @@ int main(int argc, char *argv[])
     }
     catch (rtt_dsxx::assertion &ass)
     {
-        cout << "Assertion during tstSampler: " 
-	     << ass.what() << endl;
-        C4::Finalize();
-        return 1;
+	cout << "While testing tstSampler, " << ass.what()
+	     << endl;
+	C4::Finalize();
+	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "***********************************" << endl;
-    if (passed)
     {
-        cout << "**** Sampler Self Test: PASSED ****" << endl;
+	C4::HTSyncSpinLock slock;
+
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_mc_test::passed) 
+	{
+	    cout << "**** tstSampler Test: PASSED on " 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
     }
-    cout <<     "***********************************" << endl;
+    
+    C4::gsync();
 
-    cout << "Done testing Sampler (always serial)" << endl;
-
+    cout << "Done testing tstSampler on " << C4::node() << endl;
+    
     C4::Finalize();
-}
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstSampler.cc
+//                        end of tstSampler.cc
 //---------------------------------------------------------------------------//

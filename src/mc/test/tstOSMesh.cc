@@ -2,13 +2,14 @@
 /*!
  * \file   mc/test/tstOSMesh.cc
  * \author Thomas M. Evans
- * \date   Wed Apr 21 18:50:01 1999
- * \brief  Test file for rtt_mc::OS_Mesh class
+ * \date   Thu Dec 20 16:34:09 2001
+ * \brief  OS_Mesh test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "mc_test.hh"
 #include "MC_Test.hh"
 #include "../OS_Mesh.hh"
 #include "../Layout.hh"
@@ -17,15 +18,13 @@
 #include "../OS_Builder.hh"
 #include "../Release.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <string>
-
-using namespace std;
 
 using rtt_mc::XYCoord_sys;
 using rtt_mc::XYZCoord_sys;
@@ -35,9 +34,10 @@ using rtt_mc::OS_Builder;
 using rtt_mc_test::Parser;
 using rtt_dsxx::SP;
 
-bool passed = true;
-#define ITFAILS passed = rtt_mc_test::fail(__LINE__);
+using namespace std;
 
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 
 // mesh proxy class
@@ -427,39 +427,51 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_mc::release() << endl;
+	    if (C4::node() == 0)
+		cout << argv[0] << ": version " << rtt_mc::release() 
+		     << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
     try
     {
+	// >>> UNIT TESTS
+
 	// 2D Mesh tests
 	Builder_2D();
 	Mesh_2D();
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "Dumbass, you screwed up: " << ass.what() << endl;
+	cout << "While testing tstOSMesh, " << ass.what()
+	     << endl;
 	C4::Finalize();
 	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "***********************************" << endl;
-    if (passed) 
     {
-        cout << "**** OS_Mesh Self Test: PASSED ****" << endl;
-    }
-    cout <<     "***********************************" << endl;
-    cout << endl;
+	C4::HTSyncSpinLock slock;
 
-    cout << "Done testing OS_Mesh." << endl;
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_mc_test::passed) 
+	{
+	    cout << "**** tstOSMesh Test: PASSED on " 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
+    }
+    
+    C4::gsync();
+
+    cout << "Done testing tstOSMesh on " << C4::node() << endl;
     
     C4::Finalize();
 }   
 
 //---------------------------------------------------------------------------//
-//                              end of tstOSMesh.cc
+//                        end of tstOSMesh.cc
 //---------------------------------------------------------------------------//

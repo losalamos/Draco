@@ -1,31 +1,32 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/tstRZWedge_Mesh.cc
- * \author Todd J. Urbatsch
- * \date   Wed Apr 12 12:49:14 2000
- * \brief  Test the RZWedge_Mesh class.
+ * \file   mc/test/tstRZWedge_Mesh.cc
+ * \author Thomas M. Evans
+ * \date   Thu Dec 20 16:39:53 2001
+ * \brief  RZWedge_Mesh test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __test_tstRZWedge_Mesh_cc__
-#define __test_tstRZWedge_Mesh_cc__
- 
+#include "mc_test.hh"
 #include "MC_Test.hh"
 #include "../RZWedge_Mesh.hh"
 #include "../XYZCoord_sys.hh"
 #include "../AMR_Layout.hh"
 #include "../RZWedge_Builder.hh"
-#include "../Release.hh"
 #include "../Math.hh"
+#include "../Release.hh"
+#include "viz/Ensight_Translator.hh"
+#include "rng/Rnd_Control.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
-#include "viz/Ensight_Translator.hh"
+
 #include <iostream>
 #include <vector>
-#include "rng/Rnd_Control.hh"
+#include <cmath>
 
 using namespace std;
 
@@ -43,9 +44,8 @@ using rtt_rng::Sprng;
 
 using std::pow;
 
-bool passed = true;
-#define ITFAILS passed = rtt_mc_test::fail(__LINE__);
-
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 
 void simple_one_cell_RZWedge()
@@ -1450,13 +1450,17 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_mc::release() << endl;
+	    if (C4::node() == 0)
+		cout << argv[0] << ": version " << rtt_mc::release() 
+		     << endl;
 	    C4::Finalize();
 	    return 0;
 	}
 
     try
     {
+	// >>> UNIT TESTS
+
 	// simple one-celled test problem
 	simple_one_cell_RZWedge();
 
@@ -1468,28 +1472,34 @@ int main(int argc, char *argv[])
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "While testing RZWedge_Mesh, " << ass.what() << endl;
+	cout << "While testing tstRZWedge_Mesh, " << ass.what()
+	     << endl;
 	C4::Finalize();
 	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "****************************************" << endl;
-    if (passed) 
     {
-        cout << "**** RZWedge_Mesh Self Test: PASSED ****" << endl;
-    }
-    cout <<     "****************************************" << endl;
-    cout << endl;
+	C4::HTSyncSpinLock slock;
 
-    cout << "Done testing RZWedge_Mesh." << endl;
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_mc_test::passed) 
+	{
+	    cout << "**** tstRZWedge_Mesh Test: PASSED on " 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
+    }
+    
+    C4::gsync();
+
+    cout << "Done testing tstRZWedge_Mesh on " << C4::node() << endl;
     
     C4::Finalize();
 }   
 
-#endif                          // __test_tstRZWedge_Mesh_cc__
-
 //---------------------------------------------------------------------------//
-//                        end of test/tstRZWedge_Mesh.cc
+//                        end of tstRZWedge_Mesh.cc
 //---------------------------------------------------------------------------//

@@ -2,60 +2,25 @@
 /*!
  * \file   mc/test/tstTET_Mesh.cc
  * \author H. Grady Hughes
- * \date   Thu Jan 27 16:34:07 MST 2000
+ * \date   Thu Dec 20 16:45:26 2001
  * \brief  Tests for tetrahedral meshes and ThreeVectors.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-// revision history:
-// -----------------
-//  0)   Original: Committed 2000-01-28
-//  1) 2000-02-07: Added many tests of TET_Mesh functions, for a "hand-coded"
-//                 test mesh.
-//  2) 2000-02-09: Extension to include instantiation from a generic interface
-//                 class, and tests based on a particular example of such an
-//                 interface class, contained in TET_test_1.hh.
-//  3) 2000-04-10: Rewritten to be consistent with new meshReader classes.
-//  4) 2000-05-03: TET_Builder, TET_Mesh, and their test files now use the
-//                 get_node_coord_units(), get_node_sets(), get_element_sets(),
-//                 and get_title() services of the Mesh_Reader base class.
-//                 At the top level (TET_Mesh), the get_element_sets() services
-//                 will later be replaced by side- and cell-specific data
-//                 structures.
-//  5) 2000-06-08: Information from the interface service get_element_sets()
-//                 is now converted to two separate maps, side_sets and
-//                 cell_sets, and used to initialize data members of the
-//                 TET_Mesh class.  The TET_Mesh class no longer has knowledge
-//                 of element_sets.  New diagnostic functions print_node_sets,
-//                 print_side_sets, and print_cell_sets are added to TET_Mesh.
-//  6) 2000-06-19: Added a regression test for the get_db() and get_min_db()
-//                 services of the TET_Mesh class.
-//  7) 2000-07-23: Initial tests of TET_Mesh::sample_pos() for linearly
-//                 interpolated temperature**4 given the temperatures**4 on
-//                 the vertices of the cells.
-//  8) 2000-11-30: Include-file and using-declaration for Ensight_Translator.
-//                 Replace locally generated output (cerr) test file with
-//                 ifstream/ostringstream technique for in-memory comparison
-//                 with the predicted outputs, thus increasing coverage for
-//                 regression tests.  Added tests for get_cell_pair() member
-//                 function of TET_Mesh class.
-//  9) 2000-12-01: New fstream/stringstream techniques for regression tests,
-//                 and new, larger RTT-format test case.
-//
-//___________________________________________________________________________//
-
+#include "mc_test.hh"
+#include "TET_test_1.hh"
 #include "../TET_Mesh.hh"
 #include "../TET_Builder.hh"
 #include "../Layout.hh"
 #include "../XYZCoord_sys.hh"
 #include "../Release.hh"
-#include "TET_test_1.hh"
 #include "viz/Ensight_Translator.hh"
-#include "c4/global.hh"
 #include "rng/Sprng.hh"
-#include "ds++/SP.hh"
+#include "c4/global.hh"
+#include "c4/SpinLock.hh"
+#include "ds++/Assert.hh"
 #include "meshReaders/RTT_Mesh_Reader.hh"
 
 #include <iomanip>
@@ -86,6 +51,10 @@ using rtt_dsxx::SP;
 using rtt_mc_test::TET_test_1;
 using rtt_meshReaders::RTT_Mesh_Reader;
 
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
+
 //! Typedef for scalar field of ThreeVectors.
 typedef std::vector<ThreeVector> SF_THREEVECTOR;
 
@@ -107,9 +76,6 @@ ostringstream theOutput;
 double MID_epsilon = 0.0001;
 int seed = 493875348;
 int num = 5;
-
-bool passed = true;
-#define ITFAILS passed = rtt_mc_test::fail(__LINE__);
 
 //! Mesh proxy class
 class Mesh_Proxy
@@ -992,9 +958,10 @@ void Test_TET()
 
 }   // end Test_TET()
 
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
- try {
     C4::Init(argc, argv);
 
 #ifdef __sun
@@ -1003,46 +970,81 @@ int main(int argc, char *argv[])
 
     // this is a serial test
     if (C4::node())
-        {
-            C4::Finalize();
-            return 0;
-        }
+    {
+	C4::Finalize();
+	return 0;
+    }
 
     // version tag
     for (int arg = 1; arg < argc; arg++)
-        if (string(argv[arg]) == "--version")
-            {
-                cout << argv[0] << ": version " << rtt_mc::release() << endl;
-                C4::Finalize();
-                return 0;
-            }
+	if (string(argv[arg]) == "--version")
+	{
+	    if (C4::node() == 0)
+		cout << argv[0] << ": version " << rtt_mc::release() 
+		     << endl;
+	    C4::Finalize();
+	    return 0;
+	}
 
-    ifstream fileModel("TET_MODEL_1");
-    ostringstream theModel;
-    char c_model;
-    while (fileModel.get(c_model))
-        theModel.put(c_model);
-    fileModel.close();
+    try
+    {
+	// >>> UNIT TESTS
 
-    // ThreeVector tests
-    Test_ThreeVector();
+	ifstream fileModel("TET_MODEL_1");
+	ostringstream theModel;
+	char c_model;
+	while (fileModel.get(c_model))
+	    theModel.put(c_model);
+	fileModel.close();
 
-    // TET_Mesh tests
-    Test_TET();
+	// ThreeVector tests
+	Test_ThreeVector();
 
-    if (theOutput.str() != theModel.str())                         ITFAILS;
+	// TET_Mesh tests
+	Test_TET();
 
-    // status of test
-    if (theOutput.str() != theModel.str())
-        cout << theOutput.str();
+	if (theOutput.str() != theModel.str()) ITFAILS;
 
-    cout << endl;
-    cout <<     "************************************" << endl;
-    if (passed)
-        cout << "**** TET_Mesh Self Test: PASSED ****" << endl;
-    cout <<     "************************************" << endl;
-    cout << endl;
-    cout << "Done testing TET_Mesh." << endl;
+	// status of test
+	if (theOutput.str() != theModel.str())
+	    cout << theOutput.str();
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing tstTET_Mesh, " << ass.what()
+	     << endl;
+	C4::Finalize();
+	return 1;
+    }
+    catch (string &s) 
+    {
+	cerr << "\aERROR:  " << s << endl;
+	return 1;
+    }
+    catch (...) 
+    {
+	cerr << "\aUnrecognized error." << endl;
+	return 1;
+    }
+
+    {
+	C4::HTSyncSpinLock slock;
+
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_mc_test::passed) 
+	{
+	    cout << "**** tstTET_Mesh Test: PASSED on " 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
+    }
+    
+    C4::gsync();
+
+    cout << "Done testing tstTET_Mesh on " << C4::node() << endl;
 
 #ifdef __sun
     clock_t t_2 = clock();
@@ -1050,25 +1052,10 @@ int main(int argc, char *argv[])
          << static_cast<double>(t_2 - t_1)/static_cast<double>(CLOCKS_PER_SEC)
          << endl;
 #endif
-
+    
     C4::Finalize();
-
- }
- catch (rtt_dsxx::assertion &yucch) {
-    cerr << "\a" << yucch.what() << endl;
-    return 1;
- }
- catch (string &s) {
-    cerr << "\aERROR:  " << s << endl;
-    return 1;
- }
- catch (...) {
-    cerr << "\aUnrecognized error." << endl;
-    return 1;
- }
-
-}   // end main(int, char *[])
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstTET_Mesh.cc
+//                        end of tstTET_Mesh.cc
 //---------------------------------------------------------------------------//

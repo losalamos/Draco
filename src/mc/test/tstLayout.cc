@@ -2,23 +2,26 @@
 /*!
  * \file   mc/test/tstLayout.cc
  * \author Thomas M. Evans
- * \date   Wed Jul 19 17:42:55 2000
- * \brief  Layout class tests.
+ * \date   Thu Dec 20 16:32:14 2001
+ * \brief  Layout tests.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "MC_Test.hh"
+#include "MC_Test.hh"
+#include "mc_test.hh"
 #include "../AMR_Layout.hh"
 #include "../Layout.hh"
 #include "../Release.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
-#include "ds++/SP.hh"
 
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include <deque>
 #include <list>
 #include <string>
@@ -30,8 +33,10 @@ using rtt_mc::Layout;
 using rtt_mc::AMR_Layout;
 using rtt_dsxx::SP;
 
-bool passed = true;
-#define ITFAILS passed = rtt_mc_test::fail(__LINE__, __FILE__);
+
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
 // Layout TESTS
@@ -471,18 +476,16 @@ void test_AMR_Layout_2(const AMR_Layout &ref)
 }
 
 //---------------------------------------------------------------------------//
-// MAIN
-//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
     C4::Init(argc, argv);
-    
+
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    if (!C4::node())
+	    if (C4::node() == 0)
 		cout << argv[0] << ": version " << rtt_mc::release() 
 		     << endl;
 	    C4::Finalize();
@@ -491,6 +494,8 @@ int main(int argc, char *argv[])
 
     try
     {
+	// >>> UNIT TESTS
+
 	// layout tests
 	test_Layout();
 	
@@ -498,33 +503,36 @@ int main(int argc, char *argv[])
 	AMR_Layout reference = test_AMR_Layout_1();
 	test_AMR_Layout_2(reference);
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &ass)
     {
-	cout << "Dumb ass you screwed up; assertion: " << ass.what()
+	cout << "While testing tstLayout, " << ass.what()
 	     << endl;
 	C4::Finalize();
 	return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "**********************************" 
-	 << endl;
-    if (passed) 
     {
-        cout << "**** Layout Self Test: PASSED on " 
-	     << C4::node() << endl;
+	C4::HTSyncSpinLock slock;
+
+	// status of test
+	cout << endl;
+	cout <<     "*********************************************" << endl;
+	if (rtt_mc_test::passed) 
+	{
+	    cout << "**** tstLayout Test: PASSED on " 
+		 << C4::node() << endl;
+	}
+	cout <<     "*********************************************" << endl;
+	cout << endl;
     }
-    cout <<     "**********************************" 
-	 << endl;
-    cout << endl;
+    
+    C4::gsync();
 
-    cout << "Done testing Layout on node " << C4::node() 
-	 << endl;
-
+    cout << "Done testing tstLayout on " << C4::node() << endl;
+    
     C4::Finalize();
-}
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstLayout.cc
+//                        end of tstLayout.cc
 //---------------------------------------------------------------------------//
