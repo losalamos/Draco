@@ -53,7 +53,7 @@ namespace rtt_matprops
      {
 	 double alpha = *ait;
 
-	 typedef XTM::ContainerTraits<FCV::value_type> CT;
+	 typedef rtt_traits::ContainerTraits<FCV::value_type> CT;
 
 	 for (CT::iterator tempit = CT::begin(*ftmit);
 	      tempit != CT::end(*ftmit); tempit++)
