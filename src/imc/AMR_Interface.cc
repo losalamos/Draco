@@ -8,11 +8,9 @@
 
 #include "imc/AMR_Interface.hh"
 #include "imc/AMR_Builder.hh"
-#include "imc/OS_Mesh.hh"
 #include "imc/IMC_Manager.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
-#include "ds++/SP.hh"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -64,22 +62,25 @@ void rage_imc_(int *num_cells, double *node_coord, int *layout,
 	begin = Wtime();
     }
 
+  // barrier sync so everything starts at the same time
+    C4::gsync();
+
   // put the data into an arguments list
-    AMR_Interface::Arguments arg(node_coord, layout, b_proc, b_cell,
-				 *num_cells, *num_b_cells);
-    SP<AMR_Interface> interface = new AMR_Interface(arg);
-    cout << ">> Interface with RAGE on node " << node() << endl;
+//     AMR_Interface::Arguments arg(node_coord, layout, b_proc, b_cell,
+// 				 *num_cells, *num_b_cells);
+//     SP<AMR_Interface> interface = new AMR_Interface(arg);
+//     cout << ">> Interface with RAGE on node " << node() << endl;
 
-    AMR_Builder amr_build(interface);
-    SP<OS_Mesh> mesh = amr_build.build_Mesh();
-    cout << ">> Built Mesh on node " << node() << endl;
+//     AMR_Builder amr_build(interface);
+//     SP<OS_Mesh> mesh = amr_build.build_Mesh();
+//     cout << ">> Built Mesh on node " << node() << endl;
 
-  // print out the mesh
-    ostringstream stitle;
-    stitle << "mesh." << node();
-    string title = stitle.str();
-    ofstream output(title.c_str());
-    output << *mesh;
+//   // print out the mesh
+//     ostringstream stitle;
+//     stitle << "mesh." << node();
+//     string title = stitle.str();
+//     ofstream output(title.c_str());
+//     output << *mesh;
 
 //   // make a manager
 //     IMC_Manager<OS_Mesh, OS_Builder, OS_Interface> manager;
@@ -101,6 +102,16 @@ void rage_imc_(int *num_cells, double *node_coord, int *layout,
 
 }
 
+//---------------------------------------------------------------------------//
+// census definitions
+
+GLOBALSPACE
+
+dsxx::SP<IMC::Particle_Buffer<IMC::Particle<IMC::OS_Mesh> >::Census> 
+host_census;
+
+CSPACE
+
 //===========================================================================//
 // class AMR_Interface
 //===========================================================================//
@@ -112,10 +123,18 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 
 AMR_Interface::Arguments::Arguments(const double *nc, const int *l, 
-				    const int *bp, const int *bc, int numc,
-				    int numbc)
-    : node_coord(nc), layout(l), b_proc(bp), b_cell(bc), num_cells(numc),
-      num_b_cells(numbc)
+				    const int *bp, const int *bc, 
+				    const double *de, const double *r,
+				    const double *op_abs, const double *t,
+				    const double *re, int numc,
+				    int numbc, double imp, double dt,
+				    double dndt, int nnom, int nmax, 
+				    double rst, int s, int b, int pf)
+    : node_coord(nc), layout(l), b_proc(bp), b_cell(bc), dedt(de), rho(r),
+      opacity_abs(op_abs), tev(t), rev(re), num_cells(numc),
+      num_b_cells(numbc), implicitness(imp), delta_t(dt), dnpdt(dndt),
+      npnom(nnom), npmax(nmax), rad_s_tend(rst), seed(s), buffer(b),
+      print_f(pf) 
 {
     Require (num_cells != 0);
 }
@@ -125,7 +144,7 @@ AMR_Interface::Arguments::Arguments(const double *nc, const int *l,
 //---------------------------------------------------------------------------//
 
 AMR_Interface::AMR_Interface(const Arguments &arg)
-    : arguments(arg)
+    : arguments(arg), evol_ext(arguments.num_cells), ss_pos(0), ss_temp(0)
 {
     Require (arguments.num_cells != 0);
 }

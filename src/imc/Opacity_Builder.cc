@@ -74,13 +74,24 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
 	double heat   = specific_heat[cell-1];
 	rho(cell)     = den;
 	temp(cell)    = T;
-	sp_heat(cell) = heat;
         if (analytic_sp_heat == "straight")
+	{
           // specific heat units: [jks/g/keV]
-	    dedt(cell) = heat * mesh->volume(cell) * den;
+	    dedt(cell)    = heat * mesh->volume(cell) * den;
+	    sp_heat(cell) = heat;
+	}
         else if (analytic_sp_heat == "tcube")
+	{
           // specific heat multiplier, units: [jks/cm^3/keV^4]
-            dedt(cell) = heat * mesh->volume(cell) * T*T*T;
+            dedt(cell)    = heat * mesh->volume(cell) * T*T*T;
+	    sp_heat(cell) = heat;
+	}
+	else if (analytic_sp_heat == "dedt")
+	{
+	  // we are given de/dt, not Cv
+	    dedt(cell)    = heat;
+	    sp_heat(cell) = heat / (mesh->volume(cell) * den);
+	}
     }
     
   // create Mat_State object
@@ -123,22 +134,24 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
 	double T = mat->get_T(cell);
 
       // calculate real absorption opacities
-	double k;
+	double den = mat->get_rho(cell);
 	if (analytic_opacity == "straight")
-	    k = kappa[cell-1];
+	{
+	    sigma_abs(cell)     = kappa[cell-1] * den;
+	    sigma_thomson(cell) = kappa_thomson[cell-1] * den;
+	}
 	else if (analytic_opacity == "tcube")
-	    k = kappa[cell-1] / (T*T*T);
+	{
+	    sigma_abs(cell)     = kappa[cell-1] / (T*T*T) * den;
+	    sigma_thomson(cell) = kappa_thomson[cell-1] * den;
+	}
+	else if (analytic_opacity == "opacity")
+	{
+	    sigma_abs(cell)     = kappa[cell-1];
+	    sigma_thomson(cell) = kappa_thomson[cell-1];
+	}
 	else
 	    Check (0);
-	double den      = mat->get_rho(cell);
-	sigma_abs(cell) = den * k;
-
-      // calculate Thomson scattering opacity
-	double kt = kappa_thomson[cell-1];
-	if (analytic_opacity == "opacity")
-	    sigma_thomson(cell) = kt;
-	else
-	    sigma_thomson(cell) = den * kt;
 
       // calculate Fleck factor, for 1 group sigma_abs = planck
 	double dedt  = mat->get_dedt(cell);

@@ -45,6 +45,7 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 			     Tally<MT> &tally, SP<Diagnostic> diagnostic)
 {
   // transport particle through mesh using regular IMC transport
+    Require (alive);
 
   // initialize diagnostics
     if (diagnostic)
@@ -224,9 +225,9 @@ bool Particle<MT>::surface(const MT &mesh, int face)
     if (next_cell == cell)
     {
       // reflection
-	descriptor = "reflection";
+	descriptor            = "reflection";
 	vector<double> normal = mesh.get_normal(cell, face);
-	double factor = Global::dot(omega, normal);
+	double factor         = Global::dot(omega, normal);
 	for (int i = 0; i < mesh.get_Coord().get_sdim(); i++)
 	    omega[i] -= 2 * factor * normal[i];
 	cell = next_cell;
@@ -235,17 +236,26 @@ bool Particle<MT>::surface(const MT &mesh, int face)
     {
       // escape
 	descriptor = "escape";
-	cell = next_cell;
+	cell       = next_cell;
+    }
+    else if (next_cell < 0)
+    {
+      // domain boundary crossing
+	descriptor = "cross_boundary";
+	cell       = next_cell;
     }
     else 
     {
       // continue streaming
 	descriptor = "stream";
-	cell = next_cell;
+	cell       = next_cell;
     }
 
   // return outcome of the event
-    status = cell;
+    if (next_cell <= 0)
+	status = false;
+    else 
+	status = true;	    
     return status;
 }
 

@@ -14,15 +14,20 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
 #include <iomanip>
+#include <vector>
 
 IMCSPACE
 
 // draco components
 using C4::node;
 using C4::nodes;
-using C4::HTSyncSpinLock;
+using C4::Send;
+using C4::Recv;
+using C4::C4_Req;
+using C4::gsync;
+using C4::RecvAsync;
+using C4::SendAsync;
 
 // stl components
 using std::cout;
@@ -30,12 +35,12 @@ using std::cerr;
 using std::endl;
 using std::ofstream;
 using std::ostringstream;
-using std::string;
 using std::ios;
 using std::setiosflags;
 using std::setw;
 using std::fill;
 using std::fabs;
+using std::vector;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -45,7 +50,7 @@ using std::fabs;
 template<class MT, class BT, class IT, class PT>
 IMC_Manager<MT,BT,IT,PT>::IMC_Manager(bool verbose_)
     : delta_t(0), cycle(0), max_cycle(1), print_f(0), dump_f(1), rnstream(0), 
-      verbose(verbose_)
+      verbose(verbose_), parallel_scheme("null")
 {
   // all the SPs should be null defined
 
@@ -58,13 +63,15 @@ IMC_Manager<MT,BT,IT,PT>::IMC_Manager(bool verbose_)
     Check (!buffer);
     Check (!source);
     Check (!tally);
+    Check (!communicator);
 
   // objects used only by the host
     Check (!source_init);
     Check (!global_state);
 
   // objects used to control the census
-    Check (!new_census);
+    Check (!new_census_buffer);
+    Check (!new_census_bank);
 }
 
 //---------------------------------------------------------------------------//
@@ -84,8 +91,13 @@ void IMC_Manager<MT,BT,IT,PT>::execute_IMC(char *argv)
       // initialize the IMC processors
 	IMC_init();
 
-      // do a time_step
-	step_IMC();
+      // do a time-step
+	if (parallel_scheme == "replication")
+	    step_IMC_rep();
+	else if (parallel_scheme == "DD")
+	    step_IMC_dd();
+	else 
+	    Check (0);
 
       // regroup all the results on the host
 	regroup();
@@ -205,6 +217,8 @@ void IMC_Manager<MT,BT,IT,PT>::IMC_init()
 	{
 	    parallel_builder = new Parallel_Builder<MT>(*mesh, *source_init);
 	    buffer           = new Particle_Buffer<PT>(*mesh, *rnd_con);
+	    parallel_scheme  = parallel_builder->get_parallel_scheme();
+	    Insist (parallel_scheme != "DD/replication", "Not yet!");
 
 	  // make sure the global mesh is perserved here
 	    Check (parallel_builder->num_cells() ==
@@ -222,6 +236,7 @@ void IMC_Manager<MT,BT,IT,PT>::IMC_init()
 		Send (delta_t, i, 205);
 		Send (max_cycle, i, 206);
 		Send (print_f, i, 207);	
+		Send (get_scheme(parallel_scheme), i, 208);
 	    }
 	}
 
@@ -231,6 +246,10 @@ void IMC_Manager<MT,BT,IT,PT>::IMC_init()
 	mat_state = parallel_builder->send_Mat(mesh, *mat_state);
 	source    = parallel_builder->send_Source(mesh, mat_state, rnd_con,
 						  *source_init, *buffer);
+
+      // if we are doing DD send out communicators
+	if (parallel_scheme != "replication")
+	    communicator = parallel_builder->send_Communicator<PT>();
 
       // make a tally
 	tally = new Tally<MT>(mesh);
@@ -253,6 +272,7 @@ void IMC_Manager<MT,BT,IT,PT>::IMC_init()
 	  // receive the data from the host proc the first cycle
 	    int seed;
 	    int s, d, i, c;
+	    int ps;
 	    Recv (seed, 0, 200);
 	    Recv (s, 0, 201);
 	    Recv (d, 0, 202);
@@ -261,12 +281,14 @@ void IMC_Manager<MT,BT,IT,PT>::IMC_init()
 	    Recv (delta_t, 0, 205);
 	    Recv (max_cycle, 0, 206);
 	    Recv (print_f, 0, 207);
+	    Recv (ps, 0, 208);
 	    
 	  // now make the objects
 	    rnd_con = new Rnd_Control(seed);
 	    Particle_Buffer<PT>::set_buffer_size(s);
 	    parallel_builder = new Parallel_Builder<MT>();
 	    buffer           = new Particle_Buffer<PT>(d, i, c);
+	    parallel_scheme  = get_scheme(ps);
 	}
 	
       // receive the objects necessary for transport
@@ -275,7 +297,13 @@ void IMC_Manager<MT,BT,IT,PT>::IMC_init()
 	mat_state = parallel_builder->recv_Mat(mesh);
 	source    = parallel_builder->recv_Source(mesh, mat_state, rnd_con, 
 						  *buffer);
-	tally     = new Tally<MT>(mesh);
+
+      // if we are doing DD receive communicators
+	if (parallel_scheme != "replication")
+	    communicator = parallel_builder->recv_Communicator<PT>();
+	
+      // make a tally
+	tally = new Tally<MT>(mesh);
     }
 
   // set up the dump cycle
@@ -304,7 +332,7 @@ void IMC_Manager<MT,BT,IT,PT>::IMC_init()
 
   // objects we shouldn't have
     Ensure (!source_init);
-    Ensure (!new_census);
+    Ensure (!new_census_buffer);
 
   // ensure we have times straight
     Ensure (delta_t   > 0);
@@ -319,16 +347,19 @@ void IMC_Manager<MT,BT,IT,PT>::IMC_init()
 //---------------------------------------------------------------------------//
 // IMC transport functions
 //---------------------------------------------------------------------------//
-// run particles on the problem geometry for one time step
+// run particles on the problem geometry for one time step with a fully
+// replicated mesh
 
 template<class MT, class BT, class IT, class PT>
-void IMC_Manager<MT,BT,IT,PT>::step_IMC()
+void IMC_Manager<MT,BT,IT,PT>::step_IMC_rep()
 {
-    cerr << ">> Doing particle transport for cycle " << cycle
-	 << " on proc " << node() << endl;
+    Require (!communicator);
+    
+    cerr << ">> Doing transport for cycle " << cycle
+	 << " on proc " << node() << " using full replication." << endl;
 
   // make a new census Comm_Buffer on this node
-    new_census = new Particle_Buffer<PT>::Comm_Buffer();
+    new_census_bank = new Particle_Buffer<PT>::Census();
 
   // diagnostic
     SP<typename PT::Diagnostic> check = new PT::Diagnostic(cout, true);
@@ -350,8 +381,7 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC()
 	
       // if census write to file
 	if (particle->desc() == "census")
-	    buffer->buffer_particle(*new_census, *particle);
-      // no other choices right now
+	    new_census_bank->push(particle);
 
       // message particle counter
 	if (!(counter % print_f)) 
@@ -374,12 +404,215 @@ void IMC_Manager<MT,BT,IT,PT>::step_IMC()
     Ensure (buffer);
     Ensure (parallel_builder);
     Ensure (tally);	
-    Ensure (new_census);
+    Ensure (new_census_bank);
     Ensure (!source);
     Ensure (!mat_state);
     Ensure (!opacity);
     Ensure (!source_init);
     Ensure (!mesh);
+    Ensure (!new_census_buffer);
+}
+
+//---------------------------------------------------------------------------//
+// run particles on the problem geometry for one time step with a DD mesh
+
+template<class MT, class BT, class IT, class PT>
+void IMC_Manager<MT,BT,IT,PT>::step_IMC_dd()
+{
+    Require (communicator);
+
+    cerr << ">> Doing transport for cycle " << cycle
+	 << " on proc " << node() << " using " << parallel_scheme << "."
+	 << endl;
+
+  // make a census and communication bank on this node
+    new_census_bank = new Particle_Buffer<PT>::Census();
+    Particle_Buffer<PT>::Bank bank;
+
+  // post arecvs to communicating processors and set active tag
+    bool active = true;
+    communicator->post(*buffer);
+
+  // do particle transport
+
+  // reset the number of particles counter
+    int counter = 0;
+
+  // source particle transport block
+    {
+      // get the source particles and run them to completion
+	while (*source)
+	{
+	  // get a particle from the source
+	    SP<PT> particle = source->get_Source_Particle(delta_t);
+	    Check (particle->status());
+
+	  // transport the particle
+	    particle->transport(*mesh, *opacity, *tally);
+	    counter++;
+
+	  // after the particle is no longer active take appropriate action
+	    Check (!particle->status());
+	
+	  // if census write to file
+	    if (particle->desc() == "census")
+		new_census_bank->push(particle);
+
+	  // if boundary cross communicate the particle
+	    if (particle->desc() == "cross_boundary")
+		communicator->communicate(*buffer, particle);
+
+	  // if we have transported the same number of particles as the
+	  // buffer size, fulfill our arecv order
+	    if (!(counter % Particle_Buffer<PT>::get_buffer_s()))
+		communicator->arecv_post(*buffer, bank);
+
+	  // message particle counter
+	    if (!(counter % print_f)) 
+		cerr << setw(10) << counter << " particles run on proc " 
+		     << node()   << endl;
+	}
+
+      // finished with this timestep
+	cerr << ">> Finished source particle transport for cycle " << cycle
+	     << " on proc " << node() << endl;
+    }
+
+  // define number of source particles
+    int counter_source = counter;
+    Check (counter_source == source->get_ncentot() + source->get_nvoltot() +
+	   source->get_nsstot());
+
+  // check to see if we need to clean up buffer-receives
+    communicator->arecv_post(*buffer, bank);
+
+  // domain particle transport block
+    while (active)
+    {
+      // transport the particles in the comm bank
+	while (bank.size())
+	{
+	  // get a particle from the bank and activate it
+	    SP<PT> particle = bank.top();
+	    bank.pop();
+	    particle->reset_status();
+	    
+	  // transport the particle
+	    particle->transport(*mesh, *opacity, *tally);
+	    counter++;
+
+	  // do ending particle stuff
+	    Check (!particle->status());
+	    if (particle->desc() == "census")
+		new_census_bank->push(particle);
+	    if (particle->desc() == "cross_boundary")
+		communicator->communicate(*buffer, particle);
+	    if (!(counter % Particle_Buffer<PT>::get_buffer_s()))
+		communicator->arecv_post(*buffer, bank);
+
+	  // message particle counter
+	    if (!(counter % print_f)) 
+		cerr << setw(10) << counter-counter_source 
+		     << " boundary particles run on proc " << node() << endl; 
+	}
+
+      // check to see if we need to clean up buffer-receives
+	communicator->arecv_post(*buffer, bank);
+
+      // flush out our send buffers and do a receive
+	communicator->flush(*buffer);
+	communicator->arecv_wait(*buffer, bank);
+
+      // determine status on this processor
+	if (bank.size() > 0)
+	    active = true;
+	else 
+	    active = false;
+	    
+      // communicate with master
+// 	int send_message = active;
+// 	int recv_message;
+// 	if (!node())
+// 	{
+// 	  // receive messages from imc processors
+// 	    int imc_message;
+// 	    for (int i = 1; i < nodes(); i++)
+// 	    {
+// 		Recv (&imc_message, i, 300);
+// 		recv_message += imc_message;
+// 	    }
+// 	    recv_message += send_message;
+// 	    send_message =  recv_message;
+
+// 	  // send terminate message back to imc processors
+// 	    for (int i = 1; i < nodes(); i++)
+// 	    {
+// 		cout << "I am here" << endl;
+// 		Send (&send_message, i, 301);
+// 	    }
+// 	}
+// 	if (node())
+// 	{
+// 	    Send (&send_message, 0, 300);
+// 	    cout << "Sent message on " << node() << endl;
+// 	    Recv (&recv_message, 0, 301);
+// 	}
+// 	active = recv_message;
+// 	cout << "Message on node " << node() << " is " << recv_message << endl;
+	
+	gsync();
+	int recv_message;
+	int send_message = active;
+	C4_Req rmessage;
+	C4_Req smessage;
+	if (!node())
+	{
+	    RecvAsync(rmessage, &recv_message, 1, 1, 400);
+	    rmessage.wait();
+	    send_message += recv_message;
+	    recv_message = send_message;
+	    SendAsync(smessage, &send_message, 1, 1, 400);
+	}
+	if (node())
+	{
+	    RecvAsync(rmessage, &recv_message, 1, 0, 400);
+	    send_message = active;
+	    SendAsync(smessage, &send_message, 1, 0, 400);
+	    rmessage.wait();
+	}
+	active = recv_message;
+
+      // THIS WORKED TRY DOING EXPLICIT BLOCKING SEND/RECEIVES!!!!!!!
+
+      // post new receives if active is true
+	if (active)
+	    communicator->post(*buffer);
+    }
+
+  // finished with this timestep
+    if (!node())
+	cerr << ">> Finished particle transport for cycle " << cycle << endl; 
+    
+  // now remove objects we no longer need
+    kill (source);
+    kill (mat_state);
+    kill (opacity);
+    kill (mesh);
+    kill (communicator);
+
+  // object inventory
+    Ensure (rnd_con);
+    Ensure (buffer);
+    Ensure (parallel_builder);
+    Ensure (tally);	
+    Ensure (new_census_bank);
+    Ensure (!source);
+    Ensure (!mat_state);
+    Ensure (!opacity);
+    Ensure (!source_init);
+    Ensure (!mesh);
+    Ensure (!new_census_buffer);
+    Ensure (!communicator);
 }
 
 //---------------------------------------------------------------------------//
@@ -426,15 +659,36 @@ void IMC_Manager<MT,BT,IT,PT>::regroup()
 	Send (ewpl_send, num_cells, 0, 306);
 
       // send back the Census buffers created on the processor
-	buffer->send_buffer(*new_census, 0);
-
+	new_census_buffer = new Particle_Buffer<PT>::Comm_Buffer();
+	while (new_census_bank->size())
+	{
+	    SP<PT> particle = new_census_bank->top();
+	    new_census_bank->pop();
+	    buffer->buffer_particle(*new_census_buffer, *particle);
+	    if (new_census_buffer->n_part == 
+		Particle_Buffer<PT>::get_buffer_s())
+	    {
+		buffer->send_buffer(*new_census_buffer, 0);
+		Check (new_census_buffer->n_part == 0);
+	    }
+	}
+	if (new_census_buffer->n_part == 0)
+	    buffer->send_buffer(*new_census_buffer, 0);
+	else
+	{
+	    buffer->send_buffer(*new_census_buffer, 0);
+	    Check (new_census_buffer->n_part == 0);
+	    buffer->send_buffer(*new_census_buffer, 0);
+	}
+	
       // release memory
 	delete [] edep_send;
 	delete [] ncen_send;
 	delete [] ecen_send;
 	delete [] ewpl_send;
 	kill (tally);
-	kill (new_census);
+	kill (new_census_buffer);
+	kill (new_census_bank);
     }
 
   // receive the tallies on the master and update the global buffer
@@ -494,13 +748,21 @@ void IMC_Manager<MT,BT,IT,PT>::regroup()
 	    delete [] ewpl_recv;
 	    
 	  // receive the census particles from the remote processors
-	    SP<Particle_Buffer<PT>::Comm_Buffer> temp_buffer = 
-		buffer->recv_buffer(i);
-	    ncentot += temp_buffer->n_part;
+	    bool recv_census = true;
+	    while (recv_census)
+	    {
+		new_census_buffer = buffer->recv_buffer(i);
+		ncentot += new_census_buffer->n_part;
 
-	  // write the buffers to the census container
-	    buffer->add_to_bank(*temp_buffer, *census);
+	      // determine if this was our last receive
+		if (new_census_buffer->n_part == 0)
+		    recv_census = false;
+
+	      // write the buffers to the census container
+		buffer->add_to_bank(*new_census_buffer, *census);
+	    }
 	}
+
      
       // add the results from the master processor
 	int    ncenmaster = 0;
@@ -518,17 +780,22 @@ void IMC_Manager<MT,BT,IT,PT>::regroup()
 	}
 	Check (ncenmaster == tally->get_new_ncen_tot());
 	ecentot      += tally->get_new_ecen_tot();
+
       // check total census energy on master node
 	Check (fabs(ecenmaster - tally->get_new_ecen_tot()) 
 	       <= 1.0e-6 * tally->get_new_ecen_tot());
+
       // Check problem total census energy
 	Check (fabs(ecencheck - ecentot) <= 1.0e-6 * ecentot);
-
 	e_escape_tot += tally->get_ew_escaped();
 
       // write the master processor census buffer to the census container
-	ncentot += new_census->n_part;
-	buffer->add_to_bank(*new_census, *census);
+	ncentot += new_census_bank->size();
+	while (new_census_bank->size())
+	{
+	    census->push(new_census_bank->top());
+	    new_census_bank->pop();
+	}
 	Check (ncentot == census->size());
 
       // update the global state
@@ -542,7 +809,8 @@ void IMC_Manager<MT,BT,IT,PT>::regroup()
 
       // reclaim objects on the master processor
 	kill (tally);
-	kill (new_census);
+	kill (new_census_buffer);
+	kill (new_census_bank);
     }
 
   // do our inventory
@@ -551,8 +819,9 @@ void IMC_Manager<MT,BT,IT,PT>::regroup()
     Ensure (!mat_state);
     Ensure (!source);
     Ensure (!tally);
-    Ensure (!new_census);
+    Ensure (!new_census_buffer);
     Ensure (!source_init);
+    Ensure (!new_census_bank);
     Ensure (parallel_builder);
     Ensure (buffer);
     Ensure (rnd_con);

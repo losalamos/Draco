@@ -123,6 +123,49 @@ void Source_Init<MT,PT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity,
 }
 
 //---------------------------------------------------------------------------//
+// host_init : this is a TEMPORARY fixup to do source initialization on the
+// host code
+
+template<class MT, class PT>
+void Source_Init<MT,PT>::host_init(SP<MT> mesh, SP<Opacity<MT> > opacity, 
+				   SP<Mat_State<MT> > state, 
+				   SP<Rnd_Control> rcontrol, int cycle)
+{
+  // check to make sure objects exist
+    Require (mesh);
+    Require (opacity);
+    Require (state);
+    Require (rcontrol);
+
+  // calculate number of particles this cycle
+    npwant = min(npmax, static_cast<int>(npnom + dnpdt * delta_t));
+    Check (npwant != 0);
+
+  // on first pass do initial census, on all cycles calc source energies 
+    if (cycle == 0)
+	calc_initial_census(*mesh, *opacity, *state, *rcontrol, cycle);
+    else
+    {
+      // calculate source energies
+	calc_source_energies(*opacity, *state, cycle);
+	
+      // calculate source numbers
+	calc_source_numbers(*opacity, cycle);
+	
+      // comb the census
+	if (census->size() > 0)
+	    comb_census(*mesh, *rcontrol); 
+	
+      // calculate the slopes of T_electron^4
+	calc_t4_slope(*mesh, *state);
+    }
+
+  // make sure a Census has been created
+    Ensure (census);
+    Ensure (ncentot == census->size());
+}
+
+//---------------------------------------------------------------------------//
 // private member functions used in Initialize
 //---------------------------------------------------------------------------//
 

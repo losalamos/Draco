@@ -8,6 +8,7 @@
 
 #include "imc/OS_Mesh.hh"
 #include "imc/OS_Interface.hh"
+#include "imc/AMR_Interface.hh"
 #include "ds++/SP.hh"
 #include "Opacity_Builder.cc"
 
@@ -18,6 +19,9 @@ using dsxx::SP;
 instantiate class Opacity_Builder<OS_Mesh>
 
 instantiate funcproto MT=OS_Mesh, IT=OS_Interface
+Opacity_Builder<MT>::Opacity_Builder(SP<IT>)
+
+instantiate funcproto MT=OS_Mesh, IT=AMR_Interface
 Opacity_Builder<MT>::Opacity_Builder(SP<IT>)
 
 CSPACE

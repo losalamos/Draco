@@ -18,7 +18,9 @@
 // revision history:
 // -----------------
 //  0) original
-//  1)  7-13-98: Added reproducible combing of census particles.
+//  1)  7-13-98 : Added reproducible combing of census particles.
+//  2)   8-3-98 : Temporary kluge (grrr) initializer for host code
+//                interfacing 
 // 
 //===========================================================================//
 
@@ -137,6 +139,8 @@ public:
   // source initialyzer function
     void initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
 		    SP<Rnd_Control>, int);
+    void host_init(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >,
+		   SP<Rnd_Control>, int);
 
   // accessor functions for Parallel_Builder
     int get_capacity() const { return capacity; }

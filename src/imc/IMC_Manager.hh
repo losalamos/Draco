@@ -12,7 +12,7 @@
 //===========================================================================//
 // class IMC_Manager - 
 //
-// Purpose : Manager for running IMCTEST package.
+// Purpose : Manager for running IMCTEST package as a standalone module.
 //
 // revision history:
 // -----------------
@@ -31,15 +31,20 @@
 #include "imc/Mat_State.hh"
 #include "imc/Opacity.hh"
 #include "imc/Global_Tally.hh"
+#include "imc/Communicator.hh"
 #include "imc/Global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
+#include <string>
 
 IMCSPACE
 
 // draco components
 using RNG::Rnd_Control;
 using dsxx::SP;
+
+// stl components
+using std::string;
 
 // template manager on: MT=mesh type; BT=mesh builder type; IT=interface
 // type; PT=particle type
@@ -56,13 +61,15 @@ private:
     SP<Particle_Buffer<PT> > buffer;
     SP<Source<MT> > source;
     SP<Tally<MT> > tally;
+    SP<Communicator<PT> > communicator;
 
   // objects used only by the host
     SP<Source_Init<MT> > source_init;
     SP<Global_Tally<MT> > global_state;
 
   // census objects
-    SP<typename Particle_Buffer<PT>::Comm_Buffer> new_census;
+    SP<typename Particle_Buffer<PT>::Comm_Buffer> new_census_buffer;
+    SP<typename Particle_Buffer<PT>::Census> new_census_bank;
 
   // problem variables
     double delta_t;
@@ -71,9 +78,14 @@ private:
     int print_f;
     int dump_f;
     int rnstream;
+    string parallel_scheme;
 
   // verbosity switch
     bool verbose;
+
+  // convert the parallel_scheme to an int for easy sending
+    inline int get_scheme(string) const;
+    inline string get_scheme(int) const;
 
   // some service functions for conserving memory
     template<class T> inline void kill(SP<T> &spref);
@@ -92,7 +104,8 @@ public:
     void IMC_init();
 
   // run the problem for one time-cycle
-    void step_IMC();
+    void step_IMC_rep();
+    void step_IMC_dd();
 
   // do collect stuff at the end of the timestep
     void regroup();
@@ -118,6 +131,43 @@ inline void IMC_Manager<MT,BT,IT,PT>::kill(SP<T> &spref)
   // assigning this SP to a null SP
     spref = SP<T>();
     Ensure (!spref);
+}
+
+//---------------------------------------------------------------------------//
+// convert the parallel_scheme string into an integer
+
+template<class MT, class BT, class IT, class PT>
+inline int IMC_Manager<MT,BT,IT,PT>::get_scheme(string ps) const
+{
+  // replication = 1 : DD = 2 : DD/replication = 3
+    int value;
+    if (ps == "replication")
+	value = 1;
+    else if (ps == "DD")
+	value = 2;
+    else if (ps == "DD/replication")
+	value = 3;
+    else 
+	Check (0);
+    return value;
+}
+
+//---------------------------------------------------------------------------//
+// convert an int back into an integer
+
+template<class MT, class BT, class IT, class PT>
+inline string IMC_Manager<MT,BT,IT,PT>::get_scheme(int ps) const
+{
+    string value;
+    if (ps == 1)
+	value = "replication";
+    else if (ps == 2)
+	value = "DD";
+    else if (ps == 3)
+	value == "DD/replication";
+    else 
+	Check (0);
+    return value;
 }
 
 CSPACE

@@ -1688,6 +1688,8 @@ template<class MT>
 template<class PT>
 SP<Communicator<PT> > Parallel_Builder<MT>::send_Communicator()
 {
+    Require (!node());
+
   // first let's build a Communicator on each processor
     for (int np = 1; np < nodes(); np++)
     {
@@ -1767,6 +1769,8 @@ template<class MT>
 template<class PT>
 SP<Communicator<PT> > Parallel_Builder<MT>::recv_Communicator()
 {
+    Require (node());
+
   // receive the sizes of object data needed for the Communicator
     int *sizes = new int[4];
     Recv (sizes, 4, 0, 42);
@@ -1785,6 +1789,10 @@ SP<Communicator<PT> > Parallel_Builder<MT>::recv_Communicator()
     int *b_cell_recv = new int[bound_size];
     int *b_num       = new int[num_bcells];
     int *nodes_recv  = new int[recv_size + send_size];
+    Recv (b_node_recv, bound_size, 0, 43);
+    Recv (b_cell_recv, bound_size, 0, 44);
+    Recv (b_num, num_bcells, 0, 45);
+    Recv (nodes_recv, recv_size+send_size, 0, 46);
 
   // assign data to these objects
 

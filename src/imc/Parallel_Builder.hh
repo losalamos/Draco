@@ -53,6 +53,7 @@ using dsxx::SP;
 // std stuff
 using std::vector;
 using std::find;
+using std::string;
 
 template<class MT>
 class Parallel_Builder
@@ -157,6 +158,8 @@ public:
     int num_cells(int proc) const { return cells_per_proc[proc].size(); }
     int num_procs(int mcell) const { return procs_per_cell[mcell-1].size(); } 
     
+  // parallel scheme
+    string get_parallel_scheme() const { return parallel_scheme; }
 
   // diagnostics
     void print(ostream &) const;

@@ -38,6 +38,9 @@ SP<Communicator<PT> > Parallel_Builder<MT>::build_Communicator(int)
 instantiate funcproto PT=Particle<OS_Mesh>, MT=OS_Mesh
 SP<Communicator<PT> > Parallel_Builder<MT>::send_Communicator()
 
+instantiate funcproto PT=Particle<OS_Mesh>, MT=OS_Mesh
+SP<Communicator<PT> > Parallel_Builder<MT>::recv_Communicator()
+
 CSPACE
 
 //---------------------------------------------------------------------------//

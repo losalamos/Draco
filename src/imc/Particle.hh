@@ -302,6 +302,14 @@ inline int Particle<MT>::get_index(string desc)
   // declare return type
     int return_value;
 
+  // born descriptors
+    if (desc == "born")
+	return_value = 1;
+    if (desc == "census_born")
+	return_value = 2;
+    if (desc == "boundary_born")
+	return_value = 3;
+
   // collision event descriptors
     if (desc == "scatter")
 	return_value = 100;
@@ -319,10 +327,16 @@ inline int Particle<MT>::get_index(string desc)
 	return_value = 201;
     if (desc == "escape")
 	return_value = 202;
+    if (desc == "cross_boundary")
+	return_value = 203;
 
   // time and census descriptors
     if (desc == "census")
 	return_value = 300;
+
+  // death
+    if (desc == "killed")
+	return_value = 1000;
 
   // return
     return return_value;
@@ -336,6 +350,14 @@ inline string Particle<MT>::get_descriptor(int index)
 {
   // declare return type
     string return_value;
+
+  // born descriptors
+    if (index == 1)
+	return_value = "born";
+    if (index == 2)
+	return_value = "census_born";
+    if (index == 3)
+	return_value = "boundary_born";
 
   // collision event descriptors
     if (index == 100)
@@ -354,10 +376,16 @@ inline string Particle<MT>::get_descriptor(int index)
 	return_value = "stream";
     if (index == 202)
 	return_value = "escape";
+    if (index == 203)
+	return_value = "cross_boundary";
 
   // time and census descriptors
     if (index == 300)
 	return_value = "census";
+
+  // death
+    if (index == 1000)
+	return_value = "killed";
 
   // return
     return return_value;
