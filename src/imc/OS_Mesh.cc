@@ -38,8 +38,6 @@ int OS_Mesh::getCell(vector<double> &r) const
 	while ( (high_index - low_index) != 1)
 	{
 	    index = (high_index + low_index) / 2;
-// 	    std::cout << std::endl;
-// 	    std::cout << "INDEX : " << index << std::endl;
 	    if (r[i] < sur[i][index])
 		high_index = index;
 	    else

@@ -12,7 +12,6 @@
 //===========================================================================//
 // class OS_Mesh - 
 //
-// Date created : 2-3-97
 // Purpose      : Orthogonal-Structured Mesh Class
 //
 // revision history:

@@ -3,7 +3,7 @@
 // Thomas M. Evans
 // Fri Jan 30 16:52:13 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> XYCoord_sys class header file
 //---------------------------------------------------------------------------//
 
 #ifndef __imctest_XYCoord_sys_hh__
@@ -12,7 +12,6 @@
 //===========================================================================//
 // class XYCoord_sys - 
 //
-// Date created : 1-12-98
 // Purpose      : XY geometry coordinate system functions, derived
 //                class of Coord_sys
 //

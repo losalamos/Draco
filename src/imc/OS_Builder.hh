@@ -12,7 +12,6 @@
 //===========================================================================//
 // class OS_Builder - 
 //
-// Date created : 2-9-98
 // Purpose      : builds an OS_Mesh object, parses the input file, 
 //                redistributes the Mesh for parallel purposes
 //
