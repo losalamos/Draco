@@ -649,7 +649,7 @@ double OS_Mesh::get_orthogonal_dist_to_bnd(const sf_double &r,
  * return value is not allowed to be negative.
  */
 double OS_Mesh::get_random_walk_sphere_radius(const sf_double &r, 
-					    int              cell) const
+					      int              cell) const
 {
     Require (cell > 0);
     Require (cell <= layout.num_cells());

@@ -1612,14 +1612,29 @@ fi;
    done
 
 
-	test_alltarget="$test_alltarget tstConfig tstMath tstCoord tstLayout tstOSMesh \
-            tstFields tstTopology tstParallel_Data_Op \
-	    tstTET_Mesh tstSampler tstRZWedge_Mesh \
-            tstComm_Patterns tstOSMesh_Pack \
-            tstRZWedge_Mesh_Pack tstParticle_Buffer \
-            tstCommunicator tstParticle_IO tstConstants \
-            tstSphere tstSurface_Descriptor \
-	    tstSphyramid_Mesh tstSphyramid_Mesh_Pack"
+	test_alltarget="$test_alltarget tstConfig \
+            tstConstants \
+            tstMath \
+            tstLayout \
+            tstSampler \
+            tstSurface_Descriptor \
+            tstTopology \
+            tstSphere \
+            tstCoord \
+            tstComm_Patterns \
+            tstParticle_Buffer \
+            tstCommunicator \
+            tstParticle_IO \
+            tstParallel_Data_Op \
+            tstOSMesh \
+            tstOSMesh_Pack \
+            tstRZWedge_Mesh \
+            tstRZWedge_Mesh_Pack \
+	    tstTET_Mesh \
+	    tstSphyramid_Mesh \
+            tstSphyramid_Mesh_Pack \
+            tstFields \
+            tstGlobal_Mesh_Data"
 
 	test_nprocs="1 2 4"
 
