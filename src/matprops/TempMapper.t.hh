@@ -17,10 +17,11 @@ namespace rtt_matprops
 
  template<class MT>
  TempMapper<MT>::TempMapper(const SP<MT> &spMesh_, double gamma_,
-                            const FieldConstructor &fCtor_)
-    : spMesh(spMesh_), gamma(gamma_), fCtor(fCtor_)
+                            double power_, const FieldConstructor &fCtor_)
+    : spMesh(spMesh_), gamma(gamma_), power(power_), fCtor(fCtor_)
  {
      Require(gamma >= 0.0 && gamma <= 1.0);
+     Require(power != 0.0);
  }
 
  template<class MT>
@@ -83,7 +84,13 @@ namespace rtt_matprops
 	 double Tavg = *fTit;
 	 double Thigh = std::max(*aFTit, *fTit);
 	 double Tlow = std::min(*aFTit, *fTit);
-	 *ait = (gamma*Thigh + (1.0 - gamma)*Tlow) / Tavg;
+
+	 double &alpha = *ait;
+
+	 using std::pow;
+	 alpha = gamma*pow(Thigh, power) + (1.0 - gamma)*pow(Tlow, power);
+	 alpha = pow(alpha, 1.0/power);
+	 alpha /= Tavg;
 
 	 aFTit++;
 	 fTit++;

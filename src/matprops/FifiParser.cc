@@ -10,12 +10,11 @@
 
 #include "ds++/Assert.hh"
 
+#include "DbgOstream.hh"
+
 #include <iostream>
 using std::istream;
 using std::cin;
-#ifdef DEBUG_FIFIPARSER
-using std::cerr;
-#endif
 using std::cout;
 using std::endl;
 
@@ -50,6 +49,19 @@ FifiParser::DataTypeMap FifiParser::dataTypeMap;
 // Fifi files are by definition only 80 characters long, period!!!
 
 const int FifiParser::lineSize = 80;
+
+// Set up a Debug-Only ostream in the unnamed namespace
+
+namespace
+{
+
+#ifdef DEBUG_FIFIPARSER
+    DbgOstream derr(std::cerr);
+#else
+    DbgOstream derr;
+#endif
+
+}
 
 //---------------------------------------------------------------------------//
 // FifiParser c-tor:
@@ -128,9 +140,7 @@ bool FifiParser::parseMaterial()
 	}
     }
 
-#ifdef DEBUG_FIFIPARSER
-    cerr << "parseMaterial: material id card: <" << card << ">" << endl << endl;
-#endif
+    derr << "parseMaterial: material id card: <" << card << ">" << endl << endl;
 
     // Convert the text of the "card" into an integer material id.
     
@@ -145,9 +155,7 @@ bool FifiParser::parseMaterial()
 	throw ParseError(string("FifiParser::parseMaterial: ")
 			 + "material id not found.");
 
-#ifdef DEBUG_FIFIPARSER
-    cerr << "found material: " << matid << endl;
-#endif
+    derr << "found material: " << matid << endl;
     
     // Ensure that this a new material id.
 	    
@@ -167,9 +175,7 @@ bool FifiParser::parseMaterial()
     while (getCard(card))
     {
 
-#ifdef DEBUG_FIFIPARSER
-	cerr << "parseMaterial: keyword card: <" << card << ">" << endl << endl;
-#endif
+	derr << "parseMaterial: keyword card: <" << card << ">" << endl << endl;
 
 	// This "card" (line) will contain some kind of keyword.
 	// If it is a "material" keyword, then we have seen the whole
@@ -238,9 +244,7 @@ bool FifiParser::parseMaterial()
     if (foundNextMaterial || is.eof())
     {
 
-#ifdef DEBUG_FIFIPARSER
-	cerr << "Inserting keyword map for material: " << matid << endl;
-#endif
+	derr << "Inserting keyword map for material: " << matid << endl;
 
 	// Cache the position map for this material into the FifiParser's
 	// material position map.
@@ -293,9 +297,7 @@ istream &FifiParser::getCard(string &str) const
     while (!foundData)
     {
 
-#ifdef DEBUG_FIFIPARSER
-	cerr << "Getting line: " << curLinePos.lineNo << endl;
-#endif
+	derr << "Getting line: " << curLinePos.lineNo << endl;
 
 	// Get the line into the buffer, up to but not including the '\n'
 	
@@ -317,16 +319,11 @@ istream &FifiParser::getCard(string &str) const
 	
 	if (buf.length() == 0)
 	{
-#ifdef DEBUG_FIFIPARSER
-	    cerr << "Empty line" << endl;
-#endif
+	    derr << "Empty line" << endl;
 	}
 	else
 	{
-	    
-#ifdef DEBUG_FIFIPARSER
-	    cerr << "About to check for comments." << endl;
-#endif
+	    derr << "About to check for comments." << endl;
 	
 	    // Is this a comment line?  If so, keep on scanning in lines.
 	
@@ -336,10 +333,7 @@ istream &FifiParser::getCard(string &str) const
 
 	    if (!isComment)
 	    {
-		
-#ifdef DEBUG_FIFIPARSER
-		cerr << "About to check for non-whitespace data." << endl;
-#endif
+		derr << "About to check for non-whitespace data." << endl;
 		
 		// Is this a blank line?  If so keep on scanning in lines.
 
@@ -387,10 +381,8 @@ void FifiParser::parse()
 	    throw ParseError(string("FifiParser::parse: ")
 			     + "keyword not found.");
 	
-#ifdef DEBUG_FIFIPARSER
-	cerr << "parse found keyword: <" << keyword
+	derr << "parse found keyword: <" << keyword
 	     << "> on line: " << curLinePos.lineNo - 1 << endl << endl;
-#endif
 	
 	if (keyword == "material")
 	{
@@ -445,9 +437,7 @@ bool FifiParser::getData(vector<double> &data_) const
 				 + "stream error");
 	}
 
-#ifdef DEBUG_FIFIPARSER
-	cerr << "getData: data card: <" << card << ">" << endl << endl;
-#endif
+	derr << "getData: data card: <" << card << ">" << endl << endl;
 
 	int nvalsReadThisLine = 0;
 	
@@ -562,9 +552,7 @@ FifiParser::DataType FifiParser::getDataType(const std::string &keyword)
 
     // keyword rsmg can have a positive integer after it
 
-#ifdef DEBUG_FIFIPARSER
-    cerr << "Is keyword: <" << keyword << "> part of the rsmg family?" << endl;
-#endif
+    derr << "Is keyword: <" << keyword << "> part of the rsmg family?" << endl;
     
     if (keyword == "rsmg")
     {
@@ -573,15 +561,11 @@ FifiParser::DataType FifiParser::getDataType(const std::string &keyword)
     else if (keyword.length() > 4 &&
 	     keyword.compare(0, 4, "rsmg", 4) == 0)
     {
-#ifdef DEBUG_FIFIPARSER
-	cerr << "We have rsmg#" << endl;
-#endif
+	derr << "We have rsmg#" << endl;
 	
 	string numStr = keyword.substr(4, keyword.length()-4);
 
-#ifdef DEBUG_FIFIPARSER
-	cerr << "numStr: <" << numStr << ">" << endl;
-#endif
+	derr << "numStr: <" << numStr << ">" << endl;
 	
 	istrstream iss(numStr.c_str());
 
@@ -595,10 +579,8 @@ FifiParser::DataType FifiParser::getDataType(const std::string &keyword)
 	return REAL;
     }
 
-#ifdef DEBUG_FIFIPARSER
-    cerr << "Searching dataTypeMap for keyword: <" << keyword
+    derr << "Searching dataTypeMap for keyword: <" << keyword
 	 << ">" << endl;
-#endif
     
     DataTypeMap::iterator iter = dataTypeMap.find(keyword);
 
@@ -607,9 +589,7 @@ FifiParser::DataType FifiParser::getDataType(const std::string &keyword)
     if (iter == dataTypeMap.end())
 	return UNKNOWN;
 
-#ifdef DEBUG_FIFIPARSER
-    cerr << "Good Keyword: " << keyword << endl;
-#endif
+    derr << "Good Keyword: " << keyword << endl;
     
     return (*iter).second;
 }
@@ -620,10 +600,8 @@ void FifiParser::setPosition(const Position &position) const
     is.seekg(position.filePosition);
     Position tmpLinePos = curLinePos;
     curLinePos = position;
-#ifdef DEBUG_FIFIPARSER
-    cerr << "Setting position beggining of line: "
+    derr << "Setting position beggining of line: "
 	 << position.lineNo << endl;
-#endif
     prevLinePos = tmpLinePos;
 }
 
@@ -673,11 +651,9 @@ bool FifiParser::getData(MaterialId matid, const string &keyword,
 	throw ParseError(os.str());
     }
 
-#ifdef DEBUG_FIFIPARSER
-    cerr << "Found keyword: <"
+    derr << "Found keyword: <"
 	 << keyword
 	 << "> for material: " << matid << endl;
-#endif
 
     getData(data);
 

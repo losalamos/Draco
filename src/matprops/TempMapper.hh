@@ -40,6 +40,7 @@ namespace rtt_matprops
 
      // DATA
 
+     double power;
      double gamma;
      const SP<MT> &spMesh;
      const FieldConstructor &fCtor;
@@ -48,7 +49,8 @@ namespace rtt_matprops
 
      // CREATORS
     
-     TempMapper(const SP<MT> &spMesh_, double gamma_, const FieldConstructor &fCtor_);
+     TempMapper(const SP<MT> &spMesh_, double gamma_,
+		double power_, const FieldConstructor &fCtor_);
 
      // MANIPULATORS
     
