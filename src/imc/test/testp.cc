@@ -26,6 +26,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <algorithm>
 
 using IMC::OS_Interface;
 using IMC::OS_Builder;
@@ -77,7 +78,7 @@ void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
     output << "Mat_State: " << mat.num_cells() << endl;
 
   // message
-    cout << "Wrote Full Mesh diagnostic file " << title << " from proc. " 
+    cout << "** Wrote Full Mesh diagnostic file " << title << " from proc. " 
 	 << mynode << endl;
 }
 
@@ -110,8 +111,62 @@ void Builder_diagnostic(const MT &mesh,	const Opacity<MT> &opacity)
     output << "Opacity:   " << opacity.num_cells() << endl;
 
   // message
-    cout << "Wrote Mesh diagnostic file " << title << " from proc. " 
+    cout << "** Wrote Mesh diagnostic file " << title << " from proc. " 
 	 << mynode << endl;
+}
+
+template<class MT, class PT>
+void comm_particle(const MT &mesh,
+		   const Particle_Buffer<PT> &buffer, 
+		   Rnd_Control &rcon)
+{
+  // lets do stuff on the host
+    if (!mynode)
+    {    
+	cout << endl << ">> Particle Comm_Buffer blocking send/recv test"
+	     << endl;
+
+      // let's make some particles
+	vector<double> r(mesh.get_Coord().get_dim(), 1.0);
+	vector<double> omega(mesh.get_Coord().get_sdim(), 0.0);
+	PT p1(r, omega, 1.0, 1, rcon.get_rn());
+	fill(r.begin(), r.end(), 2.0);
+	PT p2(r, omega, 2.0, 2, rcon.get_rn());
+	fill(r.begin(), r.end(), 3.0);
+	PT p3(r, omega, 3.0, 3, rcon.get_rn());
+
+      // lets dump them
+	cout << "** Printing Particles on node " << mynode << endl;
+	cout << p1 << p2 << p3 << endl;
+
+      // lets buffer them
+	cout << "** Putting Particles in a Comm_Buffer on node " 
+	     << mynode << endl;
+	Particle_Buffer<PT>::Comm_Buffer cbuf;
+	buffer.buffer_particle(cbuf, p1);
+	buffer.buffer_particle(cbuf, p2);
+	buffer.buffer_particle(cbuf, p3);
+
+      // lets send them
+	for (int np = 1; np < mynodes; np++) 
+	{
+	    buffer.send_buffer(cbuf, np);
+	    cout << "** Sent buffer to node " << np << endl;
+	}
+    }
+
+  // lets get stuff from the host
+    if (mynode)
+    {
+	SP<Particle_Buffer<PT>::Comm_Buffer> rbuf;
+	
+      // let's receive the buffers
+	rbuf = buffer.recv_buffer(0);
+	cout << "** We received a buffer with " << rbuf->n_part 
+	     << " particles from node " << 0 << endl;
+    }
+
+  // <<CONTINUE TESTING OF PARTICLE_BUFFER HERE>>
 }
 
 int main(int argc, char *argv[])
@@ -134,28 +189,29 @@ int main(int argc, char *argv[])
       // read input and stuff on the host-topology
 	if (!mynode)
 	{
+	    cout << ">> Running through problem builders" << endl;
 	    string infile = argv[1];
 	
 	  // run the interface parser
 	    SP<OS_Interface> interface = new OS_Interface(infile);
 	    interface->parser();
-            cout << ">> Read input file on host " << mynode << endl;
+            cout << "** Read input file on host " << mynode << endl;
 
 	  // initialize the mesh builder and build mesh
 	    OS_Builder os_build(interface);
 	    mesh = os_build.build_Mesh();
-            cout << ">> Built mesh on host " << mynode << endl;
+            cout << "** Built mesh on host " << mynode << endl;
 
 	  // initialize the Opacity builder and build state 
 	    Opacity_Builder<OS_Mesh> opacity_build(interface, mesh);
 	    mat_state = opacity_build.build_Mat();
 	    opacity   = opacity_build.build_Opacity();
-            cout << ">> Built opacities on host " << mynode << endl;
+            cout << "** Built opacities on host " << mynode << endl;
 
 	  // do the source initialization
 	    sinit = new Source_Init<OS_Mesh>(interface, mesh);
 	    sinit->initialize(mesh, opacity, mat_state, rcon, 1);
-            cout << ">> Initialized source on host " << mynode << endl;
+            cout << "** Initialized source on host " << mynode << endl;
             cout << endl;
 	}
 
@@ -193,8 +249,10 @@ int main(int argc, char *argv[])
   	}
      
   	if (mesh) 
+	{
   	    Builder_diagnostic(*mesh, *opacity);
-
+	    comm_particle(*mesh, *buffer, *rcon);
+	}
     }
     catch (const dsxx::assertion &ass)
     {
