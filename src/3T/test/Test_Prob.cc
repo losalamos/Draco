@@ -18,8 +18,48 @@
 
 #include "nml/Group.hh"
 
+#include <string>
+using std::string;
+
+char *input_file = "test.in";
+int verbose = 0;
+
+void process_cli( int argc, char **argv )
+{
+    argc--, argv++;             // skip over program name.
+
+    while( argc )
+    {
+        string cmd = *argv;
+
+        cout << "processing option " << cmd << endl;
+
+        if (cmd == "-f") {
+            Assert( argc > 1 );
+            input_file = argv[1];
+            argc -= 2, argv += 2;
+            continue;
+        }
+
+        if (cmd[0] == '-' && cmd.length() > 1 && cmd[1] == 'v') {
+        // count the v's to determine the verbosity setting.
+            for( int i=1; i < cmd.length(); i++ )
+                if (cmd[i] == 'v') verbose++;
+            argc--, argv++;
+            continue;
+        }
+
+        if (verbose)
+            cout << "unrecognized option: " << cmd << endl;
+
+        argc--, argv++;
+    }
+}
+
 SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] )
 {
+    process_cli( argc, argv );
+
     SP<Test_Prob> prob;
 
     NML_Group g( "test" );
@@ -39,7 +79,10 @@ SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] )
     pcg_DB pcg_db( "pcg" );
     pcg_db.setup_namelist( g );
 
-    g.readgroup( "test.in" );
+    if (verbose)
+        cout << "Reading input from " << input_file << ".\n";
+
+    g.readgroup( input_file );
     g.writegroup( "test.out" );
 
     SP<Mesh_XYZ> spm = new Mesh_XYZ( mdb );
@@ -51,12 +94,14 @@ SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] )
     {
     case Quad:
 	prob = new Test_3T< Mesh_XYZ, XYZ_Quadratic >( spm, rdb,
-						       qpdb, pcg_db );
+						       qpdb, pcg_db,
+                                                       verbose );
 	break;
 
     case Trig:
 	prob = new Test_3T< Mesh_XYZ, XYZ_Trigonometric >( spm, rdb,
-							   tpdb, pcg_db );
+							   tpdb, pcg_db,
+                                                           verbose );
 	break;
 
     default:
