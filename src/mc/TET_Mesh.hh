@@ -295,7 +295,12 @@ class TET_Mesh
         return cell_type;
     }
 
-    //! \brief Return vertex vectors [0..#vertices] [0..2]
+    /*!
+     * \brief Return vector coordinates for each vertex in the mesh.
+     *
+     * return_coords[vertex#][0,1,2] == (X,Y,Z) coordinate of vertex#.
+     * vertex# == (0, 1, 2, 3, 4, ...) for an internal list of all vertices.
+     */
     VF_DOUBLE get_point_coord() const
     {
         VF_DOUBLE return_coords(vertex_vector.size());
@@ -306,6 +311,24 @@ class TET_Mesh
             return_coords[v_].push_back(vertex_vector[v_].get_z());
         }
         return return_coords;
+    }
+
+    /*!
+     * \brief Return external vertex numbers for each vertex of each cell.
+     *
+     * cell_pair[cell#][cell_vertex#] == external number of the given
+     * vertex belonging to the given cell.
+     *
+     * cell# == (0, 1, 2, 3, 4, ...) for an internal list of all cells.
+     * cell_vertex# == (0, 1, 2, 3) for each tetrahedral cell.
+     */
+    VF_INT get_cell_pair() const 
+    {
+        VF_INT cell_pair(cells_vertices);
+        for (int i = 0; i < cell_pair.size(); ++i)
+            for (int j = 0; j < cell_pair[i].size(); ++j)
+                ++cell_pair[i][j];
+        return cell_pair;
     }
 
     //______________________________//

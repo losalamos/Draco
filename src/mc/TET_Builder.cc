@@ -90,7 +90,6 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
             L_face[f].erase(L_face[f].begin(),L_face[f].end());
     }
 
-
     // Create third constructor argument: vertex_vector.
     SF_THREEVECTOR vertex_vector;
     for (int v_ = 0 ; v_ < node_coords.size() ; v_++)
