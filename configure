@@ -92,7 +92,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-latex-doc      built latex docs with doxygen (off by default)"
 ac_help="$ac_help
-  --with-f90[=XL,Fujitsu,Lahey,Portland,Absoft,WorkShop,Cray,MIPS,Compaq,HP]
+  --with-f90[=XL,Fujitsu,Lahey,Portland,WorkShop,Cray,MIPS,Compaq,HP,Intel,NAG,Absoft]
                           choose an F90 compiler"
 
 # Initialize some variables set by options.
