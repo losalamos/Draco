@@ -13,7 +13,7 @@
 
 #include <cmath> // pow(x,n)
 
-namespace rtt_dummyMultigroupOpacity
+namespace rtt_cdi_test
 {
 
 // ------------ //
@@ -31,13 +31,14 @@ namespace rtt_dummyMultigroupOpacity
  *     Densities        = { 0.1, 0.2 }
  *     EnergyBoundaries = { 0.05, 0.5, 5.0, 50.0 }
  */
-DummyMultigroupOpacity::DummyMultigroupOpacity( )
+DummyMultigroupOpacity::DummyMultigroupOpacity(rtt_cdi::Reaction reaction)
     : dataFilename( "none" ),
       dataDescriptor( "DummyMultigroupOpacity" ),
       energyPolicyDescriptor( "Multigroup" ),
       numTemperatures( 3 ),
       numDensities( 2 ),
-      numGroupBoundaries( 4 )
+      numGroupBoundaries( 4 ),
+      reaction_type(reaction)
 {
     temperatureGrid.resize( numTemperatures );
     densityGrid.resize( numDensities );
@@ -51,7 +52,6 @@ DummyMultigroupOpacity::DummyMultigroupOpacity( )
 	groupBoundaries[i] = 5.0 * pow(10.0,(i-2.0));
 } 
     
-
 // --------- //
 // Accessors //
 // --------- //
@@ -135,8 +135,7 @@ DummyMultigroupOpacity::getOpacity(
     return opacity;
 }
 
-} // end namespace rtt_dummyMultigroupOpacity
-
+} // end namespace rtt_cdi_test
 
 //---------------------------------------------------------------------------//
 // end of DummyMultigroupOpacity.cc

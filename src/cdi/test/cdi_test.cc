@@ -106,6 +106,29 @@ bool match( const std::vector< double > &computedValue,
     return true;
 }
 
+bool match(const std::vector< std::vector< double > >& computedValue, 
+	   const std::vector< std::vector< double > >& referenceValue )
+{
+    // Compare items up to 10 digits of accuracy.
+    const double TOL = 1.0e-10;
+    
+    // Test each item in the list
+    double reldiff = 0.0;
+    for ( int i=0; i<computedValue.size(); ++i )
+    {
+	for ( int j=0; j<computedValue[i].size(); ++j )
+	{
+	    reldiff = std::fabs( ( computedValue[i][j] - referenceValue[i][j] )
+				 / referenceValue[i][j] );
+	    // If the comparison fails then stop testing and
+	    // return "false" to indicate that the test
+	    // failed. 
+	    if ( reldiff > TOL ) return false; 
+	}
+    }
+    return true;
+}
+
 } // end namespace rtt_cdi_test
 
 //---------------------------------------------------------------------------//

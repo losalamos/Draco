@@ -14,7 +14,8 @@ testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 
 thistestdep := libcdi_test${libsuffix}
 thistestlib := -L. -lcdi_test
-thistestlib_dep := cdi_test.o DummyEoS.o DummyGrayOpacity.o
+thistestlib_dep := cdi_test.o DummyEoS.o DummyGrayOpacity.o \
+                   DummyMultigroupOpacity.o
 
 ${test_alltarget}: ${thistestdep} ${testdeps}
 

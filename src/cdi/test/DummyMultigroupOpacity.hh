@@ -15,7 +15,7 @@
 
 #include "../MultigroupOpacity.hh"
 
-namespace rtt_dummyMultigroupOpacity
+namespace rtt_cdi_test
 {
 
 //===========================================================================//
@@ -64,6 +64,8 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     std::vector< double > temperatureGrid;  // = { 1.0, 2.0, 3.0 }
     std::vector< double > densityGrid;      // = { 0.1, 0.2 }
 
+    rtt_cdi::Reaction reaction_type;
+
   public:
 
     // -------------------------- //
@@ -77,7 +79,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     data.  Every instance of this object has the same member
      *     data. 
      */
-    DummyMultigroupOpacity( );
+    DummyMultigroupOpacity(rtt_cdi::Reaction = rtt_cdi::TOTAL);
 
     /*!
      * \brief Default DummyMultigroupOpacity destructor.
@@ -266,7 +268,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     /*!
      * \brief Return the reaction type.
      */
-    rtt_cdi::Reaction getReactionType() const { return rtt_cdi::TOTAL; }
+    rtt_cdi::Reaction getReactionType() const { return reaction_type; }
 
     /*!
      * \brief Return the model type.
@@ -341,7 +343,87 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
 
 }; // end of class DummyMultigroupOpacity
 
-} // end namespace rtt_dummyMultigroupOpacity
+//---------------------------------------------------------------------------//
+// TEMPLATE DEFINITIONS
+// (enable us to use automatic instantiation)
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Opacity accessor that returns an STL container of
+ *     opacities that correspond to a tuple of provided STL
+ *     containers (temperatures and densities).  The length of the 
+ *     temperature and the the density container should be equal
+ *     and the length of the opacity container should be
+ *     numGroups x temperature.size().
+ */
+template < class TemperatureIterator, class DensityIterator, 
+	   class OpacityIterator >
+OpacityIterator DummyMultigroupOpacity::getOpacity(
+    TemperatureIterator tempIter,
+    TemperatureIterator tempLast,
+    DensityIterator densIter,
+    DensityIterator densLast,
+    OpacityIterator opacityIter ) const
+{ 
+    int ng = numGroupBoundaries - 1;
+    // loop over all temperatures and densities in the range
+    // (tempFirst,tempLast) & (densIter,densLast).
+    for ( ; densIter != densLast && tempIter != tempLast;
+	  ++tempIter, ++densIter )
+	for ( int ig=0; ig<ng; ++ig, ++opacityIter )
+	    *opacityIter = 2.0 * ( *tempIter + *densIter/1000.0 )
+		/ ( groupBoundaries[ig] + groupBoundaries[ig+1] );
+    return opacityIter;
+}
+
+//---------------------------------------------------------------------------//    
+/*! 
+ * \brief Opacity accessor that returns an STL container of
+ *     opacities that correspond to a list of provided STL
+ *     temperature values.  The length of the opacity container
+ *     should be numGroups x temperature.size().
+ */
+template < class TemperatureIterator, class OpacityIterator >
+OpacityIterator DummyMultigroupOpacity::getOpacity(
+    TemperatureIterator tempIter,
+    TemperatureIterator templast,
+    double targetDensity,
+    OpacityIterator opacityIter ) const
+{ 
+    int ng = numGroupBoundaries - 1;
+    // loop over all temperatures in the range
+    // (tempFirst,tempLast).
+    for ( ; tempIter != tempLast; ++tempIter )
+	for ( int ig=0; ig<ng; ++ig, ++opacityIter )
+	    *opacityIter = 2.0 * ( *tempIter + targetDensity/1000.0 )
+		/ ( groupBoundaries[ig] + groupBoundaries[ig+1] );
+    return opacityIter;
+}
+ 
+//---------------------------------------------------------------------------//   
+/*! 
+ * \brief Opacity accessor that returns an STL container of
+ *     opacities that correspond to a list of provided STL
+ *     density values and a fixed temperature.  The length of the
+ *     opacity container should be numGroups x density.size().
+ */
+template < class DensityIterator, class OpacityIterator >
+OpacityIterator DummyMultigroupOpacity::getOpacity(
+    double targetTemperature,
+    DensityIterator densIter,
+    DensityIterator densLast,
+    OpacityIterator opacityIter ) const
+{ 
+    int ng = numGroupBoundaries - 1;
+    // loop over all densities in the range
+    // (densIter,densLast).
+    for ( ; densIter != densLast; ++densIter )
+	for ( int ig=0; ig<ng; ++ig, ++opacityIter )
+	    *opacityIter = 2.0 * ( targetTemperature + *densIter/1000.0 )
+		/ ( groupBoundaries[ig] + groupBoundaries[ig+1] );
+    return opacityIter;
+}
+
+} // end namespace rtt_cdi_test
 
 #endif // __cdi_DummyMultigroupOpacity_hh__
 

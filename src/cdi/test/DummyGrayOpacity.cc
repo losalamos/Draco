@@ -28,12 +28,13 @@ namespace rtt_cdi_test
  *     Temperatures = { 1.0, 2.0, 3.0 }
  *     Densities    = { 0.1, 0.2 }
  */
-DummyGrayOpacity::DummyGrayOpacity()
+DummyGrayOpacity::DummyGrayOpacity(rtt_cdi::Reaction reaction)
     : dataFilename( "none"), 
       dataDescriptor( "DummyGrayOpacity" ), 
       energyPolicyDescriptor( "Gray" ), 
       numTemperatures( 3 ), 
-      numDensities( 2 )
+      numDensities( 2 ),
+      reaction_type(reaction)
 {
     // Set up the temperature and density grid.
     temperatureGrid.resize( numTemperatures );
