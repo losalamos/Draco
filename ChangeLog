@@ -1,3 +1,37 @@
+2002-11-15  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: released draco-2_2_0.  This release includes the
+	following packages:
+	
+		c4-2_2_0
+		cdi-1_2_0
+		cdi_analytic-1_0_0
+		cdi_eospac-1_1_0
+		cdi_gandolf-1_2_0
+		ds++-1_7_0
+		imc-3_2_0 
+		lapack_wrap-1_0_0 
+		mc-3_2_0
+		meshReaders-1_4_0
+		meshReaders_Services-1_0_0          
+		pcgWrap-1_1_0
+		plot2D-1_1_0
+		quadrature-1_1_0
+		radphys-1_5_0
+		rng-1_6_0
+		RTT_Format_Reader-1_3_0
+		stdheaders-1_3_0
+		stopwatch-1_2_0 
+		timestep-1_3_0
+		traits-1_4_0
+		units-1_3_0 
+		viz-1_3_0
+		xm-1_4_0
+
+	This release mainly has fixes for standard-compliant compiler
+	stuff.  Very minor release, but it does seem to run on all
+	systems.  The standard compliant fixes are for gcc 3.2.
+
 2002-09-05  Thomas M. Evans  <tme@lanl.gov>
 
 	* lapack_wrap: Added lapack_wrap component that provides
