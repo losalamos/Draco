@@ -54,7 +54,7 @@ class nmostream {
     nmostream& operator<<( const NML_Block& b );
     nmostream& operator<<( const NML_Group& g );
 
-    nmostream& operator<<( const String& s );
+    nmostream& operator<<( const dsxx::String& s );
 };
 
 #endif				// __nml_nmstream_hh__

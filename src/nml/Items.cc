@@ -13,6 +13,9 @@
 #include "nml/Items.hh"
 #include "nml/nmstream.hh"
 
+using dsxx::DynArray;
+using dsxx::String;
+
 //===========================================================================//
 // class nmi_int
 

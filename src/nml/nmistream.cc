@@ -16,6 +16,8 @@
 
 #include "nml/nmstream.hh"
 
+using dsxx::String;
+
 #define MAX_ITEM_LEN 40
 #define MAX_LINE_LEN 200
 

@@ -18,6 +18,8 @@ using std::map;
 #include "ds++/String.hh"
 #include "ds++/Assert.hh"
 
+using dsxx::String;
+
 // Maintain a list of pointers to all available namelist groups, so
 // that the itcl/tk interface can figure out where to find its data.
 

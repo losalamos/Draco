@@ -12,6 +12,8 @@
 
 #include <ctype.h>
 
+using dsxx::String;
+
 void NML_Item::set_default()
 {
     value = default_value;

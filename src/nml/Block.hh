@@ -18,22 +18,22 @@ using std::list;
 #include <stdarg.h>
 
 class NML_Block {
-    String name;
+    dsxx::String name;
     list< NML_Item * > itmlist;
 
   public:
-    NML_Block( const String& n ) : name(n) {}
+    NML_Block( const dsxx::String& n ) : name(n) {}
     ~NML_Block();
 
     int add( NML_Item *pitm );
     int modify_defaults( va_list *pap );
 
-    int add_callback( const String& itmnam, NML_Callback& cb );
+    int add_callback( const dsxx::String& itmnam, NML_Callback& cb );
 
-    const String& Name() const { return name; }
+    const dsxx::String& Name() const { return name; }
     const list<NML_Item *>& Itemlist() const { return itmlist; }
 
-    NML_Item *Get_item( String itmnam );
+    NML_Item *Get_item( dsxx::String itmnam );
 
     void set_defaults();
 };

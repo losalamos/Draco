@@ -14,6 +14,8 @@
 #include <iostream>
 using namespace std;
 
+using dsxx::String;
+
 NML_Block::~NML_Block()
 {
     for( list<NML_Item *>::iterator i = itmlist.begin();
