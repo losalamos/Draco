@@ -20,6 +20,7 @@
 \usepackage{shading}
 \usepackage{fancybox}
 \usepackage{url}
+\usepackage[hang,small]{caption2}
 
 %%---------------------------------------------------------------------------%%
 %% DEFINE SPECIFIC ENVIRONMENTS HERE
@@ -164,12 +165,13 @@ below in Table~\ref{tab:components}.
 % h - here, t - top, p - page
 \begin{table}[!ht]
 %  \begin{quote}
-    \caption{This package consists of five classes and a C++ wrapper for
-      the Gandolf vendor library.}
-    \label{tab:components}
+  \setcaptionwidth{0.9\textwidth}
+  \caption{This package consists of five classes and a C++ wrapper for
+    the Gandolf vendor library.}
+  \label{tab:components}
 %  \end{quote}
-    \footnotesize
-    
+  \footnotesize
+  
     \begin{center}
       \newcolumntype{Y}{>{\raggedleft\setlength{\hsize}{0.4\linewidth}\arraybackslash}X}
       \newcolumntype{Z}{>{\raggedright\setlength{\hsize}{0.6\linewidth}\arraybackslash}X}
