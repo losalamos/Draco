@@ -22,7 +22,7 @@ namespace rtt_cdi
 
     // forward declaration (we don't include Opacity.hh in CDI.hh -- but
     // we do in CDI.cc).
-    class Opacity;
+    //    class Opacity;
 
 //===========================================================================//
 /*!
@@ -75,7 +75,7 @@ class CDI
      * constructor. 
      *
      */
-    const rtt_dsxx::SP<Opacity> spOpacity;
+    //    const rtt_dsxx::SP<Opacity> spOpacity;
     
     // future expansion
     // const rtt_dsxx::SP<EOS> spEOS;
@@ -102,7 +102,8 @@ class CDI
      * avoid requiring a large number of constructors.  See
      * B. Stroustrup, "The Design and Evolution of C++," Section 6.5.1.
      */
-    CDI( const rtt_dsxx::SP<Opacity> _spOpacity );
+    CDI() {};
+    //    CDI( const rtt_dsxx::SP<Opacity> _spOpacity );
     
     // defaulted CDI(const CDI &rhs);
 
@@ -125,7 +126,7 @@ class CDI
     /*!
      * \breif Returns the opacity data filename.
      */
-    virtual std::string getOpacityDataFilename() const;
+//     virtual std::string getOpacityDataFilename() const;
 
     /*!
      * \breif Returns a single gray Rosseland opacity value for the
@@ -143,9 +144,9 @@ class CDI
      * \return Gray opacity value for the current material at
      *         targetTemperature keV and targetDensity g/cm^3.
      */
-    virtual double getGrayRosselandOpacity( 
-	const double targetTemperature, 
-	const double targetDensity ) const;
+//     virtual double getGrayRosselandOpacity( 
+// 	const double targetTemperature, 
+// 	const double targetDensity ) const;
 
     /*!
      * \breif Returns a vector of Rosseland opacity values
@@ -168,10 +169,10 @@ class CDI
      *         vector has ngroups entries.  The number of groups is
      *         specified by the data file. 
      */
-    virtual std::vector<double> getMGRosselandOpacity( 
-	const double targetTemperature,
-	const double targetDensity,
- 	const std::string skey = "rtmg" ) const ;
+//     virtual std::vector<double> getMGRosselandOpacity( 
+// 	const double targetTemperature,
+// 	const double targetDensity,
+//  	const std::string skey = "rtmg" ) const ;
 
     /*!
      * \breif Returns a single gray Plank opacity value for the
@@ -189,9 +190,9 @@ class CDI
      * \return Gray opacity value for the current material at
      *         targetTemperature keV and targetDensity g/cm^3.
      */
-    virtual double getGrayPlankOpacity( 
-	const double targetTemperature, 
-	const double targetDensity ) const;
+//     virtual double getGrayPlankOpacity( 
+// 	const double targetTemperature, 
+// 	const double targetDensity ) const;
 
     /*!
      * \breif Returns a vector of Plank opacity values
@@ -212,9 +213,9 @@ class CDI
      *         vector has ngroups entries.  The number of groups is
      *         specified by the data file. 
      */
-    virtual std::vector<double> getMGPlankOpacity( 
-	const double targetTemperature,
-	const double targetDensity ) const ;
+//     virtual std::vector<double> getMGPlankOpacity( 
+// 	const double targetTemperature,
+// 	const double targetDensity ) const ;
 
   private:
     
