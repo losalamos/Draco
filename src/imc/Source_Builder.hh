@@ -625,8 +625,11 @@ void Source_Builder<MT,FT,PT>::calc_prob_Planck_emission(
     Check (typeid(FT) == typeid(Multigroup_Frequency));
 
     // calculate the probability of straight Planckian emission in a cell
-    freq_samp_data.prob_of_straight_Planck_emission(cell) = evol_add / 
-	evol(cell);
+    if (evol(cell) == 0.0)
+	freq_samp_data.prob_of_straight_Planck_emission(cell) = 0.0;
+    else
+	freq_samp_data.prob_of_straight_Planck_emission(cell) = evol_add / 
+	    evol(cell);
 }
 
 //---------------------------------------------------------------------------//
