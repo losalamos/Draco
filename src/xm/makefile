@@ -23,7 +23,7 @@ include ../config/make.tests
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../ds++; $(MAKE))
+	(cd ../ds++; $(MAKE) $(subnj))
 endif
 
 # Go pick up the standard signature for makefiles.
