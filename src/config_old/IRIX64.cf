@@ -56,6 +56,16 @@ CC	= cc
 CXX	= KCC -x -mips4 --no_implicit_include --strict -D_POSIX_SOURCE
 cmplr	= kai
 
+ifeq ($(bits),32)
+CXX	= KCC -x -32 --no_implicit_include --strict -D_POSIX_SOURCE
+cmplr	= k32
+endif
+
+ifeq ($(beta),yes)
+CXX	= /v/furnish/kcc33pb/KCC_BASE/bin/KCC --strict --no_implicit_include -D_POSIX_SOURCE
+cmplr	= kcc33pb
+endif
+
 LDSHARED = cc -64 -shared
 
 ifeq ($(kcc),old)
