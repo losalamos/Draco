@@ -3,7 +3,7 @@
  * \file   ds++/SortPermutation.hh
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:18:27 2000
- * \brief  
+ * \brief  SortPermutation class definition.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -33,14 +33,14 @@ namespace rtt_dsxx
  *
  *  Create an object of class SortPermutation using either of the following
  *  constructors:
+ *  \code
+ *      template<class ForwardIterator>
+ *      SortPermutation(ForwardIterator first, ForwardIterator last)
  *
- *          template<class ForwardIterator>
- *          SortPermutation(ForwardIterator first, ForwardIterator last)
- *
- *          template<class ForwardIterator, class StrictWeakOrdering>
- *          SortPermutation(ForwardIterator first, ForwardIterator last,
- *                          StrictWeakOrdering comp)
- *
+ *      template<class ForwardIterator, class StrictWeakOrdering>
+ *      SortPermutation(ForwardIterator first, ForwardIterator last,
+ *                      StrictWeakOrdering comp)
+ *  \endcode
  *  The object creates a permutation that results in an ordering of
  *  elements in [first,last) into nondescending order.  This ordering
  *  is not necessarily stable.
@@ -61,6 +61,17 @@ namespace rtt_dsxx
  *  sequence element, the second sequence element, and so on.
  *  See "Numerical Recipes" for a full discussion of a rank table.
  */
+/*!
+ * \example tstSortPermutation.cc
+ * 
+ * Test of rtt_dsxx::SortPermutation and isSorted.hh functions.
+ */
+// revision history:
+// -----------------
+// 0) original
+// 1) 020503 : added some comments and formatting (this class is used by
+//             meshReaders-Services
+//
 //===========================================================================//
 
 class SortPermutation 
@@ -180,14 +191,15 @@ class SortPermutation
      * \param i The i'th entry into the sorted order.
      * The condition, *(first + sortPerm[i+1]) < *(first + sortPerm[i]),
      * is guaranteed to be false.
-     *
-     * eg.
+     * 
+     * For example,
+     * \code
      *     first = unsorted.begin();
-     *     last = unsorted.end()
+     *     last  = unsorted.end()
      *     SortPermutation sortPerm(first, last);
      *     for (int i=0; i<unsorted.size(); i++)
      *        sorted[i] = unsorted[sortPerm[i]];
-     *
+     * \endcode
      * results in sorted containing the sorted elements of [first, last).
      */
     
@@ -214,13 +226,15 @@ class SortPermutation
     /*!
      * \brief Returns the i'th entry into the rank table.
      * \param i The i'th entry from the sorted order.
-     * eg.
+     * 
+     * For example,
+     * \code 
      *     first = unsorted.begin();
-     *     last = unsorted.end()
+     *     last  = unsorted.end()
      *     SortPermutation sortPerm(first, last);
      *     for (int i=0; i<unsorted.size(); i++)
      *        sorted[sortPerm.inv(i)] = unsorted[i];
-     *
+     * \endcode
      * results in sorted containing the sorted elements of [first, last).
      */
     
@@ -306,7 +320,6 @@ class SortPermutation
 
 	Ensure(isPermutationSorted(first, last, comp));
     }
-
 };
 
 } // end namespace rtt_dsxx

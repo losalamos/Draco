@@ -13,6 +13,7 @@
 #define __ds_test_hh__
 
 #include <iostream>
+#include <string>
 
 namespace rtt_ds_test
 {

@@ -16,10 +16,9 @@ package="ds++"
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 
-AC_RUNTESTS(tstAllocators tstMat tstSP tstAssert tstNestMap \
+AC_RUNTESTS(tstAllocators tstMat tstSP tstAssert tstSortPermutation \
             tstMat1RA tstMat2RA tstMat3RA tstMat4RA tstMat5RA \
-	    tstCheck_Strings tstSortPermutation tstSort \
-	    tstPacking_Utils tstSoft_Equiv, scalar)
+	    tstCheck_Strings tstPacking_Utils tstSoft_Equiv, scalar)
 
 AC_DRACO_ENV
 

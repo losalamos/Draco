@@ -10,8 +10,6 @@
 //---------------------------------------------------------------------------//
 
 #include "ds_test.hh"
-#include <iostream>
-#include <string>
 
 namespace rtt_ds_test
 {

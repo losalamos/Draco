@@ -1,3 +1,10 @@
+2003-02-05  Thomas M. Evans  <tme@lanl.gov>
+
+	* Algorithms.hh, Nestmap.*, Sort.*, SortPermutation.*, String.*,
+	isSorted.hh, opaquePointers.*: These classes/files have been
+	removed.  With the STL they are not needed.  Coming soon,
+	refactoring of Mat that will allow us to remove Allocator, etc.
+
 2002-12-11  Thomas M. Evans  <tme@lanl.gov>
 
 	* ds++: release 1_8_0.  Fixed some problems with standard
