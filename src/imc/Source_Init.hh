@@ -151,6 +151,14 @@ public:
     inline void set_census(SP<typename Particle_Buffer<PT>::Census>);
     inline SP<typename Particle_Buffer<PT>::Census> get_census() const;	
 
+  // get functions for energy
+    double get_evoltot() const { return evoltot; }
+    double get_esstot() const { return esstot; } 
+    double get_eradtot() const { return eradtot; }
+    double get_eloss_ss() const { return eloss_ss; }
+    double get_eloss_vol() const { return eloss_vol; }
+    double get_eloss_cen() const { return eloss_cen; }
+
   // diagnostic functions
     void print(ostream &)const;
 };

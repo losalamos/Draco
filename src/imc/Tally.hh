@@ -95,6 +95,9 @@ public:
     inline void accum_n_bndcross();
     inline void accum_n_reflections();
 
+  // access accumulated particle activity tallies
+    double get_ew_escaped() const { return ew_escaped; }
+
   // accessors
     int num_cells() const { return energy_dep.get_Mesh().num_cells(); }
 

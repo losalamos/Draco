@@ -1,20 +1,20 @@
 //----------------------------------*-C++-*----------------------------------//
-// Global_Buffer.pt
+// Global_Tally.pt
 // Thomas M. Evans
 // Wed Jun 17 10:48:10 1998
 //---------------------------------------------------------------------------//
-// @> Instantialyzer for template class Global_Buffer
+// @> Instantialyzer for template class Global_Tally
 //---------------------------------------------------------------------------//
 
 #include "imc/OS_Mesh.hh"
-#include "Global_Buffer.cc"
+#include "Global_Tally.cc"
 
 IMCSPACE
 
-instantiate class Global_Buffer<OS_Mesh>
+instantiate class Global_Tally<OS_Mesh>
 
 CSPACE
 
 //---------------------------------------------------------------------------//
-//                              end of Global_Buffer.pt
+//                              end of Global_Tally.pt
 //---------------------------------------------------------------------------//

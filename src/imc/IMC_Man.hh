@@ -30,7 +30,8 @@
 #include "imc/Tally.hh"
 #include "imc/Mat_State.hh"
 #include "imc/Opacity.hh"
-#include "imc/Global_Buffer.hh"
+#include "imc/Global_Tally.hh"
+#include "imc/Global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 
@@ -57,7 +58,7 @@ private:
 
   // objects used only by the host
     SP<Source_Init<MT> > source_init;
-    SP<Global_Buffer<MT> > global_state;
+    SP<Global_Tally<MT> > global_state;
 
   // census objects
     SP<typename Particle_Buffer<PT>::Comm_Buffer> new_census;
@@ -67,6 +68,7 @@ private:
     int cycle;
     int max_cycle;
     int print_f;
+    int dump_f;
 
   // verbosity switch
     bool verbose;

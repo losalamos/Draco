@@ -43,7 +43,8 @@ using std::fill;
 
 template<class MT, class BT, class IT, class PT>
 IMC_Man<MT,BT,IT,PT>::IMC_Man(bool verbose_)
-    : delta_t(0), cycle(0), max_cycle(1), print_f(0), verbose(verbose_)
+    : delta_t(0), cycle(0), max_cycle(1), print_f(0), dump_f(1),
+      verbose(verbose_)
 {
   // all the SPs should be null defined
 
@@ -135,10 +136,7 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
 	BT mt_builder(interface);
 	mesh = mt_builder.build_Mesh();
 	if (verbose)
-	{
 	    cout << " ** Built mesh on node " << node() << endl;
-	    cout << *mesh << endl;
-	}
     }
 
   // initialize the opacity builder and build the state
@@ -155,31 +153,29 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
       // now build the opacity
 	opacity = opacity_builder.build_Opacity(mesh, mat_state);	
 	if (verbose)
-	{
 	    cout << " ** Built Mat_State and Opacity on node " << node() 
 		 << endl;
-	    cout << *mat_state << endl;
-	    cout << *opacity << endl;
-	}
     }
 
   // prepare to do the source initialization
     source_init = new Source_Init<MT>(interface, mesh);
-
+    
   // update the Source with census info from the last cycle
     if (global_state)
 	global_state->update_Source_Init(*source_init);
-
-  // do source initialization
+    
+  // initialize the source
     source_init->initialize(mesh, opacity, mat_state, rnd_con, cycle); 
     if (verbose)
 	cout << " ** Did the source initialization on node " << node()
-	     << endl;
+	     << endl; 
     
-  // make a Global_Buffer to hold T, Cv, evol_net, etc, for all time
+  // make a Global_Tally to hold T, Cv, evol_net, etc, for all time
     if (!global_state)
-	global_state = new Global_Buffer<MT>(*mesh, *mat_state,
-					     *source_init); 
+	global_state = new Global_Tally<MT>(*mesh, *mat_state, *source_init); 
+    
+  // update energy in the problem and place in the global_state
+    global_state->set_energy_begin(*source_init);
 }
 
 //---------------------------------------------------------------------------//
@@ -283,9 +279,20 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
 						  *buffer);
 	tally     = new Tally<MT>(mesh);
     }
-    
-    if (verbose)
-	cout << *source << endl;
+
+  // set up the dump cycle
+    if (cycle == 1)
+    {
+	if (print_f < 0)
+	    print_f = -print_f;
+	else if (print_f > 0)
+	{
+	    dump_f  = print_f;
+	    print_f = Global::huge;
+	} 
+	else 
+	    Insist(0, "Print cycle may not be 0!");
+    }
 
   // make sure each processor has the requisite objects to do transport
     Ensure (mesh);
@@ -354,9 +361,6 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
 		 << node()   << endl;
     }
 
-  // cout << *tally << endl;
-    tally->cycle_print(cout);
-
   // finished with this timestep
     cout << ">> Finished particle transport for cycle " << cycle
 	 << " on proc " << node() << endl;
@@ -410,6 +414,8 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	Send (num_cells, 0, 300);
 	Send (edep_send, num_cells, 0, 301);
 	Send (ncen_send, num_cells, 0, 302);
+	Send (tally->get_new_ecen_tot(), 0, 303);
+	Send (tally->get_ew_escaped(), 0, 304);
 
       // send back the Census buffers created on the processor
 	buffer->send_buffer(*new_census, 0);
@@ -428,6 +434,8 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	vector<double> accumulate_edep(global_state->num_cells(), 0.0);
 	vector<int> accumulate_ncen(global_state->num_cells());
 	fill (accumulate_ncen.begin(), accumulate_ncen.end(), 0);
+	double e_escape_tot = 0.0;
+	double ecentot = 0.0;
 
       // census container that is presently in the Global_State
 	SP<Particle_Buffer<PT>::Census> census = global_state->get_census();
@@ -444,6 +452,12 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	    int *ncen_recv    = new int[num_cells];
 	    Recv (edep_recv, num_cells, i, 301);
 	    Recv (ncen_recv, num_cells, i, 302);
+	    double ecen_proc;
+	    double e_escape_proc;
+	    Recv (ecen_proc, i, 303);
+	    ecentot += ecen_proc;
+	    Recv (e_escape_proc, i, 304);
+	    e_escape_tot += e_escape_proc;
 
 	  // assign data to accumulate_tally by looping over IMC cells
 	    for (int cell = 1; cell <= num_cells; cell++)
@@ -476,6 +490,8 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	    ncenmaster += tally->get_new_ncen(cell);
 	}
 	Check (ncenmaster == tally->get_new_ncen_tot());
+	ecentot      += tally->get_new_ecen_tot();
+	e_escape_tot += tally->get_ew_escaped();
 
       // write the master processor census buffer to the census container
 	ncentot += new_census->n_part;
@@ -483,11 +499,12 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	Check (ncentot == census->size());
 
       // update the global state
-	global_state->update_T(accumulate_edep);
-	global_state->update_cen(accumulate_ncen);
+	global_state->set_T(accumulate_edep);
+	global_state->set_energy_end(accumulate_ncen, ecentot, e_escape_tot); 
 
       // dump this timestep to the screen
-	cycle_dump();
+	if (!(cycle % dump_f))
+	    cycle_dump();
 
       // reclaim objects on the master processor
 	kill (tally);

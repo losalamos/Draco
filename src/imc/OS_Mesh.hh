@@ -189,7 +189,7 @@ public:
 
   // find centerpoint of cell and width of cell
     inline double pos(int, int) const;
-    double dim(int d, int cell) const { return max(d, cell) - min(d, cell); }
+    double dim(int d, int cell) const { return max(d, cell) - min(d, cell); } 
 
   // diagnostic functions
     void print(ostream &) const;

@@ -38,8 +38,8 @@ template<class IT>
 Source_Init<MT,PT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     : evol(mesh), evol_net(mesh), evoltot(0), ess(mesh), fss(mesh), 
       esstot(0), erad(mesh), eradtot(0), ncen(mesh), ncentot(0), nvol(mesh),
-      nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), 
-      ew_vol(mesh), ew_ss(mesh), t4_slope(mesh)
+      nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0),
+      eloss_cen(0), ew_vol(mesh), ew_ss(mesh), t4_slope(mesh)
 {
     Require (interface);
     Require (mesh);

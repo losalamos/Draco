@@ -37,7 +37,7 @@ private:
   // data which defines the material state
     typename MT::CCSF_double density;
     typename MT::CCSF_double temperature;
-    typename MT::CCSF_double Cv;
+    typename MT::CCSF_double dedt;
 
 public:
   // inline constructors
@@ -51,8 +51,8 @@ public:
     double get_rho(int cell) const { return density(cell); }
     double& get_T(int cell) { return temperature(cell); }
     double get_T(int cell) const { return temperature(cell); }
-    double& get_Cv(int cell) { return Cv(cell); }
-    double get_Cv(int cell) const { return Cv(cell); }
+    double& get_dedt(int cell) { return dedt(cell); }
+    double get_dedt(int cell) const { return dedt(cell); }
 
   // get the number of cells in the mesh
     inline int num_cells() const;
@@ -76,8 +76,8 @@ ostream& operator<<(ostream &, const Mat_State<MT> &);
 template<class MT>
 inline Mat_State<MT>::Mat_State(const typename MT::CCSF_double &density_, 
 				const typename MT::CCSF_double &temp_,
-				const typename MT::CCSF_double &Cv_)
-    : density(density_), temperature(temp_), Cv(Cv_) 
+				const typename MT::CCSF_double &dedt_)
+    : density(density_), temperature(temp_), dedt(dedt_) 
 {}
 
 //---------------------------------------------------------------------------//

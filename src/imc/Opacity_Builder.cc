@@ -60,7 +60,7 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
   // make CCSF objects needed for Mat_State
     typename MT::CCSF_double rho(mesh);
     typename MT::CCSF_double temp(mesh);
-    typename MT::CCSF_double Cv(mesh);
+    typename MT::CCSF_double dedt(mesh);
 
   // assign density and temperature to each cell
     for (int cell = 1; cell <= num_cells; cell++)
@@ -70,11 +70,11 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
 	double heat = specific_heat[mat_zone[zone[cell-1]-1]-1];
 	rho(cell)   = den;
 	temp(cell)  = T;
-	Cv(cell)    = heat * mesh->volume(cell) * den;;
+	dedt(cell)  = heat * mesh->volume(cell) * den;;
     }
     
   // create Mat_State object
-    return_state = new Mat_State<MT>(rho, temp, Cv);
+    return_state = new Mat_State<MT>(rho, temp, dedt);
 
   // return Mat_State SP
     return return_state;
@@ -120,9 +120,9 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
 	sigma_abs(cell) = den * k;
 
       // calculate Fleck factor, for 1 group sigma_abs = planck
-	double Cv    = mat->get_Cv(cell);
-	Insist(Cv > 0, "The specific heat is <= 0!");
-	double beta  = 4.0 * Global::a * T*T*T / Cv;
+	double dedt  = mat->get_dedt(cell);
+	Insist(dedt > 0, "The specific heat is <= 0!");
+	double beta  = 4.0 * Global::a * T*T*T * mesh->volume(cell) / dedt;
 	double denom = implicitness * beta * Global::c * delta_t *
 	    sigma_abs(cell);
 	fleck(cell)  = 1.0 / (1.0 + denom);
