@@ -11,6 +11,7 @@
 #include "units/PhysicalConstants.hh"
 #include "timestep/ts_manager.hh"
 #include "timestep/field_ts_advisor.hh"
+#include "matprops/MaterialProperties.hh"
 #include <cmath>
 
 #include <iostream>
@@ -26,9 +27,8 @@ using XTM::P13T;
 //     Constructor
 //---------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-P13T<MT,MSFCC,MSFFC,DS>::P13T(const P13TOptions &options_,
-		       const dsxx::SP<MeshType> &spMesh_)
+template<class DS>
+P13T<DS>::P13T(const P13TOptions &options_, const dsxx::SP<MeshType> &spMesh_)
     : options(options_), spMesh(spMesh_)
 {
     // empty
@@ -39,10 +39,9 @@ P13T<MT,MSFCC,MSFFC,DS>::P13T(const P13TOptions &options_,
 //     Constructor
 //---------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-P13T<MT,MSFCC,MSFFC,DS>::P13T(const P13TOptions &options_,
-		       const dsxx::SP<MeshType> &spMesh_,
-		       dsxx::SP<ts_manager> &spTsManager_)
+template<class DS>
+P13T<DS>::P13T(const P13TOptions &options_, const dsxx::SP<MeshType> &spMesh_,
+	       dsxx::SP<ts_manager> &spTsManager_)
     : options(options_), spMesh(spMesh_), spTsManager(spTsManager_)
 {
     // Set up timestep advisors, and add them to the manager.
@@ -81,8 +80,8 @@ P13T<MT,MSFCC,MSFFC,DS>::P13T(const P13TOptions &options_,
 //     Destructor
 //---------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-P13T<MT,MSFCC,MSFFC,DS>::~P13T()
+template<class DS>
+P13T<DS>::~P13T()
 {
     // If we have a timestep manager, we must remove the registered
     // timestep advisors.
@@ -106,8 +105,8 @@ P13T<MT,MSFCC,MSFFC,DS>::~P13T()
 //     Set the contained options object to the new value.
 //---------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-void P13T<MT,MSFCC,MSFFC,DS>::setOptions(const P13TOptions options_)
+template<class DS>
+void P13T<DS>::setOptions(const P13TOptions options_)
 {
     options = options_;
 }
@@ -119,8 +118,8 @@ void P13T<MT,MSFCC,MSFFC,DS>::setOptions(const P13TOptions options_)
 //     Print itself (for debug mostly)
 //------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-std::ostream &P13T<MT,MSFCC,MSFFC,DS>::print(std::ostream &os) const
+template<class DS>
+std::ostream &P13T<DS>::print(std::ostream &os) const
 {
     os << "(P13T::this: " << (void *)this
        << ")";
@@ -133,17 +132,17 @@ std::ostream &P13T<MT,MSFCC,MSFFC,DS>::print(std::ostream &os) const
 //     based on material electron temperatures.
 //---------------------------------------------------------------------------//
     
-template<class MT, class MSFCC, class MSFFC, class DS>
-void P13T<MT,MSFCC,MSFFC,DS>::
-initializeRadiationState(const CCMaterialStateField &matStateCC,
+template<class DS>
+void P13T<DS>::
+initializeRadiationState(const MaterialProperties &matprops,
 			 RadiationStateField &resultsStateField) const
 {
     ccsf TElectron(spMesh);
-    matStateCC.getElectronTemperature(TElectron);
+    matprops.getElectronTemperature(TElectron);
     
     // Set the radiation physics to the given units.
 
-    const RadiationPhysics radPhys(matStateCC.getUnits());
+    const RadiationPhysics radPhys(matprops.getUnits());
 
     // The radiation field is set to the 4pi*planckian with no current flow.
 
@@ -158,40 +157,36 @@ initializeRadiationState(const CCMaterialStateField &matStateCC,
 //     the conduction equation split.
 //---------------------------------------------------------------------------//
     
-template<class MT, class MSFCC, class MSFFC, class DS>
-void
-P13T<MT,MSFCC,MSFFC,DS>::
-solveElectConduction(ccsf &electronEnergyDeposition,
-		     ccsf &Tnp1Electron,
-		     DiffusionSolver &solver,
-		     double dt,
-		     const CCMaterialStateField &matStateCC,
-		     const FCMaterialStateField &matStateFC,
-		     const bssf &alpha,
-		     const bssf &beta,
-		     const bssf &bSrc) const
+template<class DS>
+void P13T<DS>::solveElectConduction(ccsf &electronEnergyDeposition,
+				    ccsf &Tnp1Electron,
+				    DiffusionSolver &solver,
+				    double dt,
+				    const MaterialProperties &matprops,
+				    const bssf &alpha,
+				    const bssf &beta,
+				    const bssf &bSrc) const
 {
     // Require dt > 0, etc.
 
     Require(dt > 0.0);
-    Require(matStateCC.getUnits() == matStateFC.getUnits());
 
     // Let's save the temperatures at time t^n.
     
     ccsf TnElectron(spMesh);
 
-    matStateCC.getElectronTemperature(TnElectron);
+    matprops.getElectronTemperature(TnElectron);
 
     // Calculate the conduction coefficient
 	
     fcdsf kappaElectron(spMesh);
-    matStateFC.getElectronConductionCoeff(kappaElectron);
+    matprops.getElectronConductionCoeff(kappaElectron);
     kappaElectron = kappaElectron * dt;
 	
     // Calculate the removal coefficient.
 	
     ccsf removalCoeff(spMesh);
-    matStateCC.getElectronSpecificHeat(removalCoeff);
+    matprops.getElectronSpecificHeat(removalCoeff);
 
     // Calculate the source term.
     ccsf source(spMesh);
@@ -214,7 +209,7 @@ solveElectConduction(ccsf &electronEnergyDeposition,
 
     ccsf Cv(spMesh);
 
-    matStateCC.getElectronSpecificHeat(Cv);
+    matprops.getElectronSpecificHeat(Cv);
     electronEnergyDeposition = Cv * deltaTElectron;
 
     // Let's activate and update the electron conduction timestep advisor.
@@ -234,40 +229,36 @@ solveElectConduction(ccsf &electronEnergyDeposition,
 //     the conduction equation split.
 //---------------------------------------------------------------------------//
     
-template<class MT, class MSFCC, class MSFFC, class DS>
-void
-P13T<MT,MSFCC,MSFFC,DS>::
-solveIonConduction(ccsf &ionEnergyDeposition,
-		   ccsf &Tnp1Ion,
-		   DiffusionSolver &solver,
-		   double dt,
-		   const CCMaterialStateField &matStateCC,
-		   const FCMaterialStateField &matStateFC,
-		   const bssf &alpha,
-		   const bssf &beta,
-		   const bssf &bSrc) const
+template<class DS>
+void P13T<DS>::solveIonConduction(ccsf &ionEnergyDeposition,
+				  ccsf &Tnp1Ion,
+				  DiffusionSolver &solver,
+				  double dt,
+				  const MaterialProperties &matprops,
+				  const bssf &alpha,
+				  const bssf &beta,
+				  const bssf &bSrc) const
 {
     // Require dt > 0, etc.
 
     Require(dt > 0.0);
-    Require(matStateCC.getUnits() == matStateFC.getUnits());
     
     // Let's save the temperatures at time t^n.
     
     ccsf TnIon(spMesh);
 
-    matStateCC.getIonTemperature(TnIon);
+    matprops.getIonTemperature(TnIon);
 
     // Calculate the conduction coefficient
 	
     fcdsf kappaIon(spMesh);
-    matStateFC.getIonConductionCoeff(kappaIon);
+    matprops.getIonConductionCoeff(kappaIon);
     kappaIon = kappaIon * dt;
 	
     // Calculate the removal coefficient.
 	
     ccsf removalCoeff(spMesh);
-    matStateCC.getIonSpecificHeat(removalCoeff);
+    matprops.getIonSpecificHeat(removalCoeff);
 
     // Calculate the source term.
     ccsf source(spMesh);
@@ -290,7 +281,7 @@ solveIonConduction(ccsf &ionEnergyDeposition,
 
     ccsf Cv(spMesh);
 
-    matStateCC.getIonSpecificHeat(Cv);
+    matprops.getIonSpecificHeat(Cv);
     ionEnergyDeposition = Cv * deltaTIon;
 
     // Let's activate and update the ion conduction timestep advisor.
@@ -309,32 +300,30 @@ solveIonConduction(ccsf &ionEnergyDeposition,
 //     and the momentom deposition.
 //---------------------------------------------------------------------------//
     
-template<class MT, class MSFCC, class MSFFC, class DS>
-void P13T<MT,MSFCC,MSFFC,DS>::solve3T(RadiationStateField &resultsStateField,
-			       ccsf &QEEM,
-			       ccsf &REEM,
-			       ccsf &electronEnergyDeposition,
-			       ccsf &ionEnergyDeposition,
-			       ncvsf &momentumDeposition,
-			       ccsf &Tnp1Electron,
-			       ccsf &Tnp1Ion,
-			       DiffusionSolver &solver,
-			       double dt,
-			       const CCMaterialStateField &matStateCC,
-			       const FCMaterialStateField &matStateFC,
-		               const ncvsf &velocity,
-			       const RadiationStateField &prevStateField,
-			       const ccsf &QRad,
-			       const ccsf &QElectron,
-			       const ccsf &QIon,
-			       const bssf &alpha,
-			       const bssf &beta,
-			       const bssf &bSrc) const
+template<class DS>
+void P13T<DS>::solve3T(RadiationStateField &resultsStateField,
+		       ccsf &QEEM,
+		       ccsf &REEM,
+		       ccsf &electronEnergyDeposition,
+		       ccsf &ionEnergyDeposition,
+		       ncvsf &momentumDeposition,
+		       ccsf &Tnp1Electron,
+		       ccsf &Tnp1Ion,
+		       DiffusionSolver &solver,
+		       double dt,
+		       const MaterialProperties &matprops,
+		       const ncvsf &velocity,
+		       const RadiationStateField &prevStateField,
+		       const ccsf &QRad,
+		       const ccsf &QElectron,
+		       const ccsf &QIon,
+		       const bssf &alpha,
+		       const bssf &beta,
+		       const bssf &bSrc) const
 {
     // Require dt > 0, etc.
 
     Require(dt > 0.0);
-    Require(matStateCC.getUnits() == matStateFC.getUnits());
     
     // This is a one-group problem
 
@@ -345,15 +334,14 @@ void P13T<MT,MSFCC,MSFFC,DS>::solve3T(RadiationStateField &resultsStateField,
     
     ccsf TnElectron(spMesh);
     ccsf TnIon(spMesh);
-    matStateCC.getElectronTemperature(TnElectron);
-    matStateCC.getIonTemperature(TnIon);
+    matprops.getElectronTemperature(TnElectron);
+    matprops.getIonTemperature(TnIon);
 
     // Calculate the new radiation state due to the radiation P1,
     // electron and ion equations ***without*** the conduction equations.
     
     calcNewRadState(resultsStateField, QEEM, REEM, solver,
-		    dt, groupNo, matStateCC, matStateFC, velocity, 
-                    prevStateField,
+		    dt, groupNo, matprops, velocity, prevStateField,
 		    QRad, QElectron, QIon, TnElectron, TnIon, alpha, beta,
 		    bSrc);
 
@@ -361,7 +349,7 @@ void P13T<MT,MSFCC,MSFFC,DS>::solve3T(RadiationStateField &resultsStateField,
     // state, (Te^n+1 - Te^n).
     
     ccsf deltaTElectron(spMesh);
-    calcDeltaTElectron(deltaTElectron, dt, numGroups, matStateCC,
+    calcDeltaTElectron(deltaTElectron, dt, numGroups, matprops,
 		       prevStateField,
 		       QElectron, QIon,
 		       TnElectron, TnIon,
@@ -371,7 +359,7 @@ void P13T<MT,MSFCC,MSFFC,DS>::solve3T(RadiationStateField &resultsStateField,
     // temperature, (Ti^n+1 - Ti^n).
     
     ccsf deltaTIon(spMesh);
-    calcDeltaTIon(deltaTIon, dt, matStateCC, prevStateField, QIon,
+    calcDeltaTIon(deltaTIon, dt, matprops, prevStateField, QIon,
 		  TnElectron, TnIon,
 		  deltaTElectron);
 
@@ -379,12 +367,12 @@ void P13T<MT,MSFCC,MSFFC,DS>::solve3T(RadiationStateField &resultsStateField,
 
     ccsf Cv(spMesh);
 
-    matStateCC.getElectronSpecificHeat(Cv);
+    matprops.getElectronSpecificHeat(Cv);
     electronEnergyDeposition = Cv * deltaTElectron;
 
     Tnp1Electron = TnElectron + deltaTElectron;
 
-    matStateCC.getIonSpecificHeat(Cv);
+    matprops.getIonSpecificHeat(Cv);
     ionEnergyDeposition = Cv * deltaTIon;
 
     Tnp1Ion = TnIon + deltaTIon;
@@ -423,26 +411,24 @@ void P13T<MT,MSFCC,MSFFC,DS>::solve3T(RadiationStateField &resultsStateField,
 //---------------------------------------------------------------------------//
 
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-void P13T<MT,MSFCC,MSFFC,DS>::
-calcNewRadState(RadiationStateField &resultsStateField,
-		ccsf &QEEM,
-		ccsf &REEM,
-		DiffusionSolver &solver,
-		double dt,
-		int groupNo,
-		const CCMaterialStateField &matStateCC,
-		const FCMaterialStateField &matStateFC,
-		const ncvsf &velocity,
-		const RadiationStateField &prevStateField,
-		const ccsf &QRad,
-		const ccsf &QElectron,
-		const ccsf &QIon,
-		const ccsf &TElectron,
-		const ccsf &TIon,
-		const bssf &alpha,
-		const bssf &beta,
-		const bssf &bSrc) const
+template<class DS>
+void P13T<DS>::calcNewRadState(RadiationStateField &resultsStateField,
+			       ccsf &QEEM,
+			       ccsf &REEM,
+			       DiffusionSolver &solver,
+			       double dt,
+			       int groupNo,
+			       const MaterialProperties &matprops,
+			       const ncvsf &velocity,
+			       const RadiationStateField &prevStateField,
+			       const ccsf &QRad,
+			       const ccsf &QElectron,
+			       const ccsf &QIon,
+			       const ccsf &TElectron,
+			       const ccsf &TIon,
+			       const bssf &alpha,
+			       const bssf &beta,
+			       const bssf &bSrc) const
 {
     // Calculate the coefficients needed by the diffusion solver.
 
@@ -452,7 +438,7 @@ calcNewRadState(RadiationStateField &resultsStateField,
     ccsf QRadBar(spMesh);
     
     calcP1Coeffs(D, Fprime, sigmaAbsBar, QEEM, REEM, QRadBar,
-		 dt, groupNo, matStateCC, matStateFC, velocity, prevStateField,
+		 dt, groupNo, matprops, velocity, prevStateField,
 		 QRad, QElectron, QIon,
 		 TElectron, TIon);
 
@@ -486,29 +472,27 @@ calcNewRadState(RadiationStateField &resultsStateField,
 //     source terms for solving the P1 equation.
 //---------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-void P13T<MT,MSFCC,MSFFC,DS>::
-calcP1Coeffs(fcdsf &D,
-	     DiscFluxField &Fprime,
-	     ccsf &sigmaAbsBar,
-	     ccsf &QEEM,
-	     ccsf &REEM,
-	     ccsf &QRadBar,
-	     double dt,
-	     int groupNo,
-	     const CCMaterialStateField &matStateCC,
-	     const FCMaterialStateField &matStateFC,
-	     const ncvsf &velocity,
-	     const RadiationStateField &prevStateField,
-	     const ccsf &QRad,
-	     const ccsf &QElectron,
-	     const ccsf &QIon,
-	     const ccsf &TElectron,
-	     const ccsf &TIon) const
+template<class DS>
+void P13T<DS>::calcP1Coeffs(fcdsf &D,
+			    DiscFluxField &Fprime,
+			    ccsf &sigmaAbsBar,
+			    ccsf &QEEM,
+			    ccsf &REEM,
+			    ccsf &QRadBar,
+			    double dt,
+			    int groupNo,
+			    const MaterialProperties &matprops,
+			    const ncvsf &velocity,
+			    const RadiationStateField &prevStateField,
+			    const ccsf &QRad,
+			    const ccsf &QElectron,
+			    const ccsf &QIon,
+			    const ccsf &TElectron,
+			    const ccsf &TIon) const
 {
     // Set the radiation physics to the given units.
     
-    const RadiationPhysics radPhys(matStateCC.getUnits());
+    const RadiationPhysics radPhys(matprops.getUnits());
 
     // set up some needed scalars, like tau
 
@@ -526,14 +510,14 @@ calcP1Coeffs(fcdsf &D,
     // resulting sigmaTotal.
 
     fcdsf sigmaTotal(spMesh);
-    matStateFC.getSigmaTotal(groupNo, sigmaTotal);
+    matprops.getSigmaTotal(groupNo, sigmaTotal);
 
     //
     // We can now calculate the results
     //
 
     ccsf sigmaAbs(spMesh);
-    matStateCC.getSigmaAbsorption(groupNo, sigmaAbs);
+    matprops.getSigmaAbsorption(groupNo, sigmaAbs);
     
     // Calculate the diffusion constant.
 
@@ -543,7 +527,7 @@ calcP1Coeffs(fcdsf &D,
 
     // Get sigma emission
     ccsf sigmaEmission(spMesh);
-    matStateCC.getSigmaEmission(groupNo, sigmaEmission);
+    matprops.getSigmaEmission(groupNo, sigmaEmission);
 
     ccsf QElecStar(spMesh);
     ccsf CvStar(spMesh);
@@ -552,7 +536,7 @@ calcP1Coeffs(fcdsf &D,
     if (options.getIsCoupledMaterial())
     {
 	calcStarredFields(QElecStar, CvStar, nu,
-			  dt, groupNo, matStateCC, radPhys,
+			  dt, groupNo, matprops, radPhys,
 			  QElectron, QIon, TElectron, TIon,
 			  sigmaEmission);
 
@@ -602,25 +586,25 @@ calcP1Coeffs(fcdsf &D,
 //    and delta temperatures.
 //------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-void P13T<MT,MSFCC,MSFFC,DS>::calcStarredFields(ccsf &QElecStar,
-					 ccsf &CvStar,
-					 ccsf &nu,
-					 double dt,
-					 int groupNo,
-					 const CCMaterialStateField &matStateCC,
-					 const RadiationPhysics &radPhys,
-					 const ccsf &QElectron,
-					 const ccsf &QIon,
-					 const ccsf &TElectron,
-					 const ccsf &TIon,
-					 const ccsf &sigmaEmission) const
+template<class DS>
+void P13T<DS>::calcStarredFields(ccsf &QElecStar,
+				 ccsf &CvStar,
+				 ccsf &nu,
+				 double dt,
+				 int groupNo,
+				 const MaterialProperties &matprops,
+				 const RadiationPhysics &radPhys,
+				 const ccsf &QElectron,
+				 const ccsf &QIon,
+				 const ccsf &TElectron,
+				 const ccsf &TIon,
+				 const ccsf &sigmaEmission) const
 {
     // Calculate Qe* and Cv*.
     // We will then calculate nu ourself.
     
     calcStarredFields(QElecStar, CvStar,
-		      dt, groupNo, matStateCC, radPhys,
+		      dt, groupNo, matprops, radPhys,
 		      QElectron, QIon, TElectron, TIon);
 
     // Calculate the 4pi*Planckian's temperature derivative.
@@ -641,30 +625,30 @@ void P13T<MT,MSFCC,MSFFC,DS>::calcStarredFields(ccsf &QElecStar,
 //    and delta temperatures.
 //------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-void P13T<MT,MSFCC,MSFFC,DS>::calcStarredFields(ccsf &QElecStar,
-					 ccsf &CvStar,
-					 double dt,
-					 int groupNo,
-					 const CCMaterialStateField &matStateCC,
-					 const RadiationPhysics &radPhys,
-					 const ccsf &QElectron,
-					 const ccsf &QIon,
-					 const ccsf &TElectron,
-					 const ccsf &TIon) const
+template<class DS>
+void P13T<DS>::calcStarredFields(ccsf &QElecStar,
+				 ccsf &CvStar,
+				 double dt,
+				 int groupNo,
+				 const MaterialProperties &matprops,
+				 const RadiationPhysics &radPhys,
+				 const ccsf &QElectron,
+				 const ccsf &QIon,
+				 const ccsf &TElectron,
+				 const ccsf &TIon) const
 {
     // Get the electron and ion heat capacities.
     
     ccsf CvElec(spMesh);
-    matStateCC.getElectronSpecificHeat(CvElec);
+    matprops.getElectronSpecificHeat(CvElec);
 
     ccsf CvIon(spMesh);
-    matStateCC.getIonSpecificHeat(CvIon);
+    matprops.getIonSpecificHeat(CvIon);
 
     // We need gamma, the electron-ion coupling coefficient.
 
     ccsf gamma(spMesh);
-    matStateCC.getElectronIonCoupling(gamma);
+    matprops.getElectronIonCoupling(gamma);
 
     // tmpCoeff is a common term to two calculations.
     // Let's just do it once.
@@ -689,18 +673,17 @@ void P13T<MT,MSFCC,MSFFC,DS>::calcStarredFields(ccsf &QElecStar,
 //    n+1 to timestep n+1/2
 //------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-void P13T<MT,MSFCC,MSFFC,DS>::
-calcDeltaTElectron(ccsf &deltaTelectron,
-		   double dt,
-		   int numGroups, 
-		   const CCMaterialStateField &matStateCC, 
-		   const RadiationStateField &prevStateField,
-		   const ccsf &QElectron, 
-		   const ccsf &QIon,
-		   const ccsf &TElectron,
-		   const ccsf &TIon,
-		   const RadiationStateField &resultsStateField) const
+template<class DS>
+void P13T<DS>::calcDeltaTElectron(ccsf &deltaTelectron,
+				  double dt,
+				  int numGroups, 
+				  const MaterialProperties &matprops, 
+				  const RadiationStateField &prevStateField,
+				  const ccsf &QElectron, 
+				  const ccsf &QIon,
+				  const ccsf &TElectron,
+				  const ccsf &TIon,
+				  const RadiationStateField &resultsStateField) const
 {
     // Only one group.
 
@@ -709,14 +692,14 @@ calcDeltaTElectron(ccsf &deltaTelectron,
     
     // Set the radiation physics to the given units.
     
-    const RadiationPhysics radPhys(matStateCC.getUnits());
+    const RadiationPhysics radPhys(matprops.getUnits());
 
     // Calculate QElecStar and CvStar.
 
     ccsf QElecStar(spMesh);
     ccsf CvStar(spMesh);
     
-    calcStarredFields(QElecStar, CvStar, dt, groupNo, matStateCC, radPhys,
+    calcStarredFields(QElecStar, CvStar, dt, groupNo, matprops, radPhys,
 		      QElectron, QIon, TElectron, TIon);
 
     if (!options.getIsCoupledMaterial())
@@ -730,7 +713,7 @@ calcDeltaTElectron(ccsf &deltaTelectron,
     }
 
     ccsf sigmaAbs(spMesh);
-    matStateCC.getSigmaAbsorption(groupNo, sigmaAbs);
+    matprops.getSigmaAbsorption(groupNo, sigmaAbs);
 
     // Get the 4pi*planckian and its temperature derivative
     
@@ -744,7 +727,7 @@ calcDeltaTElectron(ccsf &deltaTelectron,
     const ccsf &phi_np1 = resultsStateField.phi;
 
     ccsf sigmaEmission(spMesh);
-    matStateCC.getSigmaEmission(groupNo, sigmaEmission);
+    matprops.getSigmaEmission(groupNo, sigmaEmission);
 
     // calculate delta T electron
     
@@ -758,25 +741,25 @@ calcDeltaTElectron(ccsf &deltaTelectron,
 //    n+1 to timestep n+1/2
 //------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-void P13T<MT,MSFCC,MSFFC,DS>::calcDeltaTIon(ccsf &deltaTIon,
-				     double dt,
-				     const CCMaterialStateField &matStateCC,
-				     const RadiationStateField &prevStateField, 
-				     const ccsf &QIon,
-				     const ccsf &TElectron,
-				     const ccsf &TIon,
-				     const ccsf &deltaTelectron) const
+template<class DS>
+void P13T<DS>::calcDeltaTIon(ccsf &deltaTIon,
+			     double dt,
+			     const MaterialProperties &matprops,
+			     const RadiationStateField &prevStateField, 
+			     const ccsf &QIon,
+			     const ccsf &TElectron,
+			     const ccsf &TIon,
+			     const ccsf &deltaTelectron) const
 {
     // Get the ion heat capacity.
     
     ccsf CvIon(spMesh);
-    matStateCC.getIonSpecificHeat(CvIon);
+    matprops.getIonSpecificHeat(CvIon);
 
     // We need gamma, the electron-ion coupling coefficient.
 
     ccsf gamma(spMesh);
-    matStateCC.getElectronIonCoupling(gamma);
+    matprops.getElectronIonCoupling(gamma);
 
     deltaTIon = dt * (gamma*(TElectron - TIon + deltaTelectron) + QIon)
 	/ (CvIon + dt*gamma);
@@ -788,9 +771,9 @@ void P13T<MT,MSFCC,MSFFC,DS>::calcDeltaTIon(ccsf &deltaTIon,
 //    get the 4pi*planckian
 //------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-void P13T<MT,MSFCC,MSFFC,DS>::getBhat(ccsf &Bhat, const RadiationPhysics &radPhys,
-			       const ccsf &TElectron) const
+template<class DS>
+void P13T<DS>::getBhat(ccsf &Bhat, const RadiationPhysics &radPhys,
+		       const ccsf &TElectron) const
 {
     radPhys.getPlanck(TElectron, Bhat);
 
@@ -805,10 +788,10 @@ void P13T<MT,MSFCC,MSFFC,DS>::getBhat(ccsf &Bhat, const RadiationPhysics &radPhy
 //    get the 4pi*dPlanckiandT
 //------------------------------------------------------------------------//
 
-template<class MT, class MSFCC, class MSFFC, class DS>
-void P13T<MT,MSFCC,MSFFC,DS>::getdBhatdT(ccsf &dBhatdT,
-				  const RadiationPhysics &radPhys,
-				  const ccsf &TElectron) const
+template<class DS>
+void P13T<DS>::getdBhatdT(ccsf &dBhatdT,
+			  const RadiationPhysics &radPhys,
+			  const ccsf &TElectron) const
 {
     radPhys.getPlanckTemperatureDerivative(TElectron, dBhatdT);
 

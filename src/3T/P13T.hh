@@ -25,6 +25,10 @@ namespace XTM {
  class RadiationPhysics;
 }
 
+namespace rtt_matprops {
+ template<class MT> class MaterialProperties;
+}
+
 // DEFINING NAMESPACE
 
 namespace XTM {
@@ -35,7 +39,7 @@ namespace XTM {
  // 
  //===========================================================================//
 
- template<class MT, class MSFCC, class MSFFC, class DS>
+ template<class DS>
  class P13T
  {
 
@@ -50,10 +54,11 @@ namespace XTM {
 
      // Longhand type names.
     
-     typedef MT MeshType;
      typedef DS DiffusionSolver;
-     typedef MSFCC CCMaterialStateField;
-     typedef MSFFC FCMaterialStateField;
+     typedef typename DiffusionSolver::MeshType MT;
+     typedef MT MeshType;
+
+     typedef rtt_matprops::MaterialProperties<MT> MaterialProperties;
     
      // The diffusion solver knows the correct representation for
      // the continuous anb discontinuous face-centered flux fields.
@@ -104,7 +109,7 @@ namespace XTM {
 
      // We will not allow copy construction.
      
-     P13T(const P13T<MT,MSFCC,MSFFC,DS>& );
+     P13T(const P13T<DS>& );
 
      // We will not allow assignment.
      
@@ -140,7 +145,7 @@ namespace XTM {
      //     based on material electron temperatures.
      //-----------------------------------------------------------------------//
     
-     void initializeRadiationState(const CCMaterialStateField &matStateCC,
+     void initializeRadiationState(const MaterialProperties &matprops,
 				   RadiationStateField &resultsStateField) const;
 
      //-----------------------------------------------------------------------//
@@ -153,8 +158,7 @@ namespace XTM {
 			       ccsf &Tnp1Electron,
 			       DiffusionSolver &solver,
 			       double dt,
-			       const CCMaterialStateField &matStateCC,
-			       const FCMaterialStateField &matStateFC,
+			       const MaterialProperties &matprops,
 			       const bssf &alpha,
 			       const bssf &beta,
 			       const bssf &bSrc) const;
@@ -169,8 +173,7 @@ namespace XTM {
 			     ccsf &Tnp1Ion,
 			     DiffusionSolver &solver,
 			     double dt,
-			     const CCMaterialStateField &matStateCC,
-			     const FCMaterialStateField &matStateFC,
+			     const MaterialProperties &matprops,
 			     const bssf &alpha,
 			     const bssf &beta,
 			     const bssf &bSrc) const;
@@ -191,8 +194,7 @@ namespace XTM {
 		  ccsf &Tnp1Ion,
 		  DiffusionSolver &solver,
 		  double dt,
-		  const CCMaterialStateField &matStateCC,
-		  const FCMaterialStateField &matStateFC,
+		  const MaterialProperties &matprops,
 		  const ncvsf &velocity,
 		  const RadiationStateField &prevStateField,
 		  const ccsf &QRad,
@@ -236,8 +238,7 @@ namespace XTM {
 			  DiffusionSolver &solver,
 			  double dt,
 			  int groupNo,
-			  const CCMaterialStateField &matStateCC,
-			  const FCMaterialStateField &matStateFC,
+			  const MaterialProperties &matprops,
 		          const ncvsf &velocity,
 			  const RadiationStateField &prevStateField,
 			  const ccsf &QRad,
@@ -263,8 +264,7 @@ namespace XTM {
 		       ccsf &QRadBar,
 		       double dt,
 		       int groupNo,
-		       const CCMaterialStateField &matStateCC,
-		       const FCMaterialStateField &matStateFC,
+		       const MaterialProperties &matprops,
 		       const ncvsf &velocity,
 		       const RadiationStateField &prevStateField,
 		       const ccsf &QRad,
@@ -285,7 +285,7 @@ namespace XTM {
 			    ccsf &nu,
 			    double dt,
 			    int groupNo,
-			    const CCMaterialStateField &matStateCC,
+			    const MaterialProperties &matprops,
 			    const RadiationPhysics &radPhys,
 			    const ccsf &QElectron,
 			    const ccsf &QIon,
@@ -304,7 +304,7 @@ namespace XTM {
 			    ccsf &CvStar,
 			    double dt,
 			    int groupNo,
-			    const CCMaterialStateField &matStateCC,
+			    const MaterialProperties &matprops,
 			    const RadiationPhysics &radPhys,
 			    const ccsf &QElectron,
 			    const ccsf &QIon,
@@ -320,7 +320,7 @@ namespace XTM {
      void calcDeltaTElectron(ccsf &deltaTelectron,
 			     double dt,
 			     int numGroups, 
-			     const CCMaterialStateField &matStateCC, 
+			     const MaterialProperties &matprops,
 			     const RadiationStateField &prevStateField, 
 			     const ccsf &QElectron, 
 			     const ccsf &QIon,
@@ -336,26 +336,13 @@ namespace XTM {
 
      void calcDeltaTIon(ccsf &deltaTIon,
 			double dt,
-			const CCMaterialStateField &matStateCC, 
+			const MaterialProperties &matprops,
 			const RadiationStateField &prevStateField, 
 			const ccsf &QIon,
 			const ccsf &TElectron,
 			const ccsf &TIon,
 			const ccsf &deltaTelectron) const;
  };
-
- //---------------------------------------------------------------------------//
- // operator<<:
- //    A convenience function to print a P13T
- //    (mostly for debug purposes)
- //---------------------------------------------------------------------------//
-
- template<class MT, class MSFCC, class MSFFC, class DS>
- inline 
- std::ostream &operator<<(std::ostream &os, const P13T<MT,MSFCC,MSFFC,DS> &rhs)
-{
-    return rhs.print(os);
-}
 
 } // namespace XTM
 
