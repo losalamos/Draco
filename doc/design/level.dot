@@ -33,25 +33,26 @@ digraph draco_level {
     
     /* level 3 */
     traits [shape=box, label="traits"];
-    xm [shape=box, label="xm"];
-    c4 [shape=box, label="c4"];
-    rng [shape=box, label="rng"];
-    units [shape=box, label="units"];
-    cdi [shape=box, label="cdi"];
-    quad [shape=box, label="quadrature"];
+    xm     [shape=box, label="xm"];
+    c4     [shape=box, label="c4"];
+    rng    [shape=box, label="rng"];
+    units  [shape=box, label="units"];
+    cdi    [shape=box, label="cdi"];
+    quad   [shape=box, label="quadrature"];
     meshelement [shape=box, label="mesh_element"];
-    plot [shape=box, label="plot2D"];
+    plot   [shape=box, label="plot2D"];
     lapack [shape=box, label="lapack_wrap"];
-    shlib [shape=box, label="shared_lib"];
+    shlib  [shape=box, label="shared_lib"];
     
     /* level 4 */
-    viz [shape=box, label="viz"];
+    viz      [shape=box, label="viz"];
     timestep [shape=box, label="timestep"];
-    cdianal [shape=box, label="cdi_analytic"];
-    cdieos [shape=box, label="cdi_eospac"];
-    cdigan [shape=box, label="cdi_gandolf"];
-    pcg [shape=box, label="pcgWrap"];
+    cdianal  [shape=box, label="cdi_analytic"];
+    cdieos   [shape=box, label="cdi_eospac"];
+    cdigan   [shape=box, label="cdi_gandolf"];
+    pcg      [shape=box, label="pcgWrap"];
     meshread [shape=box, label="meshReaders"];
+    norms    [shape=box, label="norms"];
     
     /* level 5 */
     rttread     [shape=box, label="RTT_Format_Reader"];
@@ -108,6 +109,7 @@ digraph draco_level {
     cdigan      -> {cdi};         /* cdi     : dsxx */
     cdigan      -> {vgandolf}     [color="green"];
     meshread    -> {meshelement};
+    norms       -> {c4}; /* dsxx */
 
     /* level 5 */
     rttread     -> {meshread};           /* meshread: dsxx */
