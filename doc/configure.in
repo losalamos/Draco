@@ -1,3 +1,10 @@
+dnl-------------------------------------------------------------------------dnl
+dnl draco/doc configure.in
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for draco/doc/
+dnl-------------------------------------------------------------------------dnl
+
 AC_INIT(Makefile.in)
 AC_CONFIG_AUX_DIR(../config)
 
@@ -6,4 +13,32 @@ AC_DRACO_ARGS
 
 AC_CONFIG_SUBDIRS(ExpEngineTraits MatrixFactory)
 
+# check for configure
+AC_CHECK_PROG(AUTOCONF, autoconf, autoconf, null)
+if test "${AUTOCONF}" = null ; then
+   AC_MSG_ERROR("Cannot find autoconf; cannot build configure scripts!")
+fi
+
+CURRENT_DIR=`pwd`
+
+# build configure scripts in subdirs
+for dir in $subdirs
+   do
+       if test -d ${srcdir}/${dir} ; then
+	   AC_MSG_CHECKING("configure in ${srcdir}/${dir}")
+	   cd $srcdir/$dir
+	   if test -f configure ; then 
+	       AC_MSG_RESULT("exists")
+	   else
+	       ${AUTOCONF} --localdir=../../config
+	       AC_MSG_RESULT("built")
+	   fi
+	   cd $CURRENT_DIR
+       fi
+   done 
+
 AC_OUTPUT(Makefile)
+
+dnl-------------------------------------------------------------------------dnl
+dnl			 end of draco/doc/ configure.in
+dnl-------------------------------------------------------------------------dnl

@@ -2,13 +2,22 @@
 
 ac_help="$ac_help
 dnl
-  --with-f90[=XL,WorkShop,Fujitsu,Cray,MIPS,Compaq]     choose an F90 compiler
+  --with-f90[=XL,WorkShop,Fujitsu,Absoft,Cray,MIPS,Compaq]     choose an F90 compiler
 "
 # Check whether --with-f90 or --without-f90 was given.
 if test "${with_f90+set}" = set; then
   withval="$with_f90"
   :
 fi
+
+
+
+
+
+
+
+
+
 
 
 
