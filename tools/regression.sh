@@ -20,7 +20,7 @@ runregression ()
 {
    # directories that depend on sprnglib
 
-   SPRNG_DEPEND_DIRS="src/imc src/rng"
+   SPRNG_DEPEND_DIRS="src/mc src/imc src/rng"
 
    # directories that depend on pcglib
 
@@ -91,25 +91,26 @@ fi
 # Set up paths to look for libraries
 
 CONTRIB=/usr/local/contrib/radtran/$uname
+SPRNG_INCPATH=/scratch/tme/sprng/sprng0.5/SRC
 
 case $uname in
 SunOS)
     PCG_LIBPATH=${CONTRIB}/lib
-    SPRNG_LIBPATH=
+    SPRNG_LIBPATH=/scratch/tme/sprng/sprng0.5/solaris
 
     BITS="0"
     C4="scalar mpi"
     ;;
 IRIX64)
     PCG_LIB64PATH=${CONTRIB}/lib64
-    SPRNG_LIB64PATH=
+    SPRNG_LIB64PATH=/scratch/tme/sprng/sprng0.5/sgi64
 
     PCG_LIBN32PATH=${CONTRIB}/libn32
-    SPRNG_LIBN32PATH=
+    SPRNG_LIBN32PATH=/scratch/tme/sprng/sprng0.5/sgi32
 
     BITS="64 N32"
-#    C4="scalar mpi shmem"
     C4="scalar mpi"
+#    C4="scalar mpi shmem"
     ;;
 *)
     PCG_LIBPATH=
@@ -139,15 +140,27 @@ do
          TARGETDIR=$TARGETROOT/$c4/draco
       else
          eval PCG_LIBPATH='$PCG_LIB'$b'PATH'
+         eval SPRNG_LIBPATH='$SPRNG_LIB'$b'PATH'
          TARGETDIR=$TARGETROOT/${c4}_$b/draco
       fi
-
 
       # Check if pcglib is available
 
       if [ -d $PCG_LIBPATH -a -f $PCG_LIBPATH/libpcg_f77.a ] ; then
          PCGLIB=$PCG_LIBPATH/libpcg_f77.a
-         CONFIGUREFLAGS="--enable-pcglib --with-pcglib-lib=$PCG_LIBPATH $CONFIGUREFLAGS"
+         CONFIGUREFLAGS="--enable-pcglib --with-pcglib-lib=$PCG_LIBPATH $CONFIGUREFLAGS" 
+      fi
+
+      # Check if sprnglib is available
+
+      if [    -d $SPRNG_INCPATH            \
+           -a -d $SPRNG_LIBPATH            \
+           -a -f $SPRNG_LIBPATH/libcmrg.a  \
+           -a -f $SPRNG_LIBPATH/liblcg.a   \
+           -a -f $SPRNG_LIBPATH/liblcg64.a \
+           -a -f $SPRNG_LIBPATH/liblfg.a   ] ; then
+         SPRNGLIB=$SPRNG_LIBPATH/libcmrg.a
+         CONFIGUREFLAGS="--with-sprng-lib=$SPRNG_LIBPATH --with-sprng-inc=$SPRNG_INCPATH $CONFIGUREFLAGS" 
       fi
 
       # turn on N32 bit compilation if $b is N32
