@@ -681,20 +681,24 @@ void get_test()
     CHECK_0_OBJECTS;
 
     // get a foo and bar
-    SP<Foo> f  = get_foo();
-    SP<Foo> fb = get_bar();
-    SP<Bar> b  = get_bar();
-    
-    CHECK_N_OBJECTS(3, 2, 0, 0);
-
-    if (fb == b) ITFAILS;
-
-    if (f->f() != 11)   ITFAILS;
-    if (fb->vf() != 22) ITFAILS;
-    if (b->vf() != 22)  ITFAILS;
-
-    if (fb->f() != 21)  ITFAILS;
-    if (b->f() != 23)   ITFAILS;
+    {
+	
+	SP<Foo> f  = get_foo();
+	SP<Foo> fb = get_bar();
+	SP<Bar> b  = get_bar();
+	
+	CHECK_N_OBJECTS(3, 2, 0, 0);
+	
+	if (fb == b) ITFAILS;
+	
+	if (f->f() != 11)   ITFAILS;
+	if (fb->vf() != 22) ITFAILS;
+	if (b->vf() != 22)  ITFAILS;
+	
+	if (fb->f() != 21)  ITFAILS;
+	if (b->f() != 23)   ITFAILS;
+	
+    }
 
     if (rtt_ds_test::passed)
 	PASSMSG("Get/factory tests work ok.");
@@ -784,6 +788,7 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing tstSP." << endl;
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

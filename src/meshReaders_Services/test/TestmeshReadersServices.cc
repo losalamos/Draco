@@ -456,6 +456,7 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing TestmeshReadersServices." << endl;
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

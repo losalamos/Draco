@@ -1014,6 +1014,7 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing TestElementDefinition." << endl;
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

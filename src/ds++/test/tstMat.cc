@@ -146,6 +146,7 @@ int main( int argc, char *argv[] )
     }
 
     cout << "Done testing Mat family.\n";
+    return 0;
 }
 
 //---------------------------------------------------------------------------//

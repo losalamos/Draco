@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
     std::cout << std::endl;
     
     std::cout << "Done testing <class>." << std::endl;
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

@@ -545,6 +545,8 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing TestHexMeshReader." << endl;
+    return 0;
+
 }   
 
 //---------------------------------------------------------------------------//

@@ -297,6 +297,7 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing tstAssert." << endl;
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

@@ -1811,6 +1811,7 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing TestRTTFormatReader." << endl;
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//
