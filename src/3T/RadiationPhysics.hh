@@ -121,7 +121,10 @@ class RadiationPhysics
 inline double RadiationPhysics::getLightSpeed() const
 {
     using XTM::PhysicalConstants::cLightSI;
-    return units.SI2UserVelocity(cLightSI);
+
+    // Convert from SI to user's units with the InvertXXX method.
+    
+    return units.InvertVelocity(cLightSI);
 }
 
 END_NS_XTM  // namespace XTM

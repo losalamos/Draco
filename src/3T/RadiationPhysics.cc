@@ -42,11 +42,11 @@ double RadiationPhysics::getStefanBoltzmann() const
     //     W m^-2 K^-4 = kg s^-3 K^-4  (W - watts = kg m^2 s^-3)
     //
     // Therefore, we must convert temperature^-4, time^-3, and
-    // mass^1 from SI units to the user's units.
+    // mass^1 from SI units to the user's units, using the user's
+    // Units.InvertXXX methods.
     
-    const double stefanBoltzmann =
-	stefanBoltzmannSI * pow(units.getTemperatureConversion(), 4)
-	* pow(units.getTimeConversion(), 3) / units.getMassConversion();
+    const double stefanBoltzmann = units.InvertMass(
+	units.ConvertTemparature(units.ConvertTime(stefanBoltzmannSI, 3), 4));
 
     return stefanBoltzmann;
 }
