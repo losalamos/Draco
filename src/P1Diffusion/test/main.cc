@@ -32,7 +32,7 @@ class Test_DB {
 typedef Mesh_XYZ MT;
 typedef MT::ccsf ccsf;
 
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 void version(const std::string &progname)
 {
@@ -88,8 +88,11 @@ int main(int argc, char *argv[])
 							 diffdb, pcg_db);
 	testP1.run();
 
+	std::cout << "**** " << "testP1Diffusion"
+		  << " Test: PASSED ****" << std::endl;
+ 
     }
-    catch( dsxx::assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 	std::cout << "Failed assertion: " << a.what() << std::endl;
 	std::cout << "**** " << "testP1Diffusion"
