@@ -29,7 +29,8 @@ dnl DRACO SETUP
 AC_DRACO_ENV
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
-          test/Makefile:../../config/Makefile.test.in)
+          test/Makefile:../../config/Makefile.test.in \
+	  test/test.in)
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/LAMGDiffusionSolver configure.in
