@@ -27,6 +27,8 @@ bin_files='${bindir}/draco'
 # useful utilities that we install
 bin_files="\${bindir}/count_loc.sh ${bin_files}"
 bin_files="\${bindir}/find_tags.py ${bin_files}"
+bin_files="\${bindir}/find_tags_diff.py ${bin_files}"
+bin_files="\${bindir}/update_release_tags.py ${bin_files}"
 bin_files="\${bindir}/include_tree.py ${bin_files}"
 bin_files="\${bindir}/package_depends.py ${bin_files}"
 bin_files="\${bindir}/regression_filter.py ${bin_files}"

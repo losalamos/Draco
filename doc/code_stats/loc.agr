@@ -54,7 +54,7 @@
 @timestamp rot 0
 @timestamp font 0
 @timestamp char size 1.000000
-@timestamp def "Tue Jun  3 18:03:48 2003"
+@timestamp def "Thu Jul 24 19:08:59 2003"
 @r0 off
 @link r0 to g0
 @r0 type above
@@ -103,8 +103,8 @@
 @with g0
 @    world xmin 0
 @    world xmax 23
-@    world ymin 0
-@    world ymax 9000
+@    world ymin 1
+@    world ymax 10000
 @    stack world 0, 0, 0, 0
 @    znorm 1
 @    view xmin 0.150000
@@ -120,7 +120,7 @@
 @    subtitle size 1.000000
 @    subtitle color 1
 @    xaxes scale Normal
-@    yaxes scale Normal
+@    yaxes scale Logarithmic
 @    xaxes invert off
 @    yaxes invert off
 @    xaxis  on
@@ -234,8 +234,8 @@
 @    yaxis  label color 1
 @    yaxis  label place normal
 @    yaxis  tick on
-@    yaxis  tick major 2000
-@    yaxis  tick minor ticks 1
+@    yaxis  tick major 10
+@    yaxis  tick minor ticks 9
 @    yaxis  tick default 6
 @    yaxis  tick place rounded true
 @    yaxis  tick in
@@ -274,7 +274,7 @@
 @    altyaxis  off
 @    legend on
 @    legend loctype world
-@    legend 15, 8000
+@    legend 17, 8000
 @    legend box color 1
 @    legend box pattern 1
 @    legend box linewidth 1.0
@@ -282,7 +282,7 @@
 @    legend box fill color 0
 @    legend box fill pattern 1
 @    legend font 0
-@    legend char size 1.000000
+@    legend char size 0.750000
 @    legend color 1
 @    legend length 4
 @    legend vgap 1
@@ -493,22 +493,22 @@
 @    s3 legend  "Comments"
 @target G0.S0
 @type xy
-               1              571
-               2              259
+               1              582
+               2              356
                3              502
                4              424
                5              665
                6             1459
-               7             3972
+               7             4275
                8               77
-               9             4718
+               9             4848
               10              657
-              11              265
+              11              266
               12              224
               13              226
-              14              561
+              14              560
               15              115
-              16             1235
+              16             1265
               17                4
               18              334
               19               87
@@ -518,22 +518,22 @@
 &
 @target G0.S1
 @type xy
-               1              401
-               2              663
+               1              407
+               2              772
                3              488
                4              198
                5              713
-               6             5486
-               7             3861
+               6             5489
+               7             4337
                8              116
-               9             5207
-              10              829
-              11              268
+               9             5365
+              10              831
+              11              269
               12               79
               13               75
               14               64
               15              158
-              16             1040
+              16             1041
               17                0
               18              127
               19               49
@@ -544,21 +544,21 @@
 @target G0.S2
 @type xy
                1               19
-               2               44
+               2               60
                3              110
                4                5
                5               25
                6              161
-               7              638
+               7              705
                8               37
-               9              646
+               9              678
               10               33
               11                9
               12                9
               13               20
-              14               44
+              14               48
               15               15
-              16                9
+              16               38
               17                0
               18               16
               19                9
@@ -568,20 +568,20 @@
 &
 @target G0.S3
 @type xy
-               1             1133
-               2             2368
+               1             1150
+               2             2741
                3             1334
                4             1457
                5             2786
                6             3150
-               7             6796
+               7             7622
                8              325
-               9             8636
+               9             9022
               10              912
               11              455
               12              389
               13              595
-              14              759
+              14              740
               15              550
               16             2671
               17               54

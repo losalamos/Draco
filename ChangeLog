@@ -1,3 +1,46 @@
+2003-07-25  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: release draco-3_2_0.  This is a minor release that has
+	some significant build changes.  These changes are detailed in
+	draco/doc/releases/draco-3_2_0.tex.  In summary they are:
+
+		- finished ASCI White build system mods
+		- updated vendor treatments in build system to add include
+		  paths to CPPFLAGS
+		- surfaces added to mc package
+		- tally surfaces added to imc package
+		- Rosseland integrators added to cdi
+		- improvements to RTT_Format_Reader
+		- improvements to c4::Timer
+
+	This draco release includes the following packages:
+
+		c4
+		cdi
+		cdi_analytic
+		cdi_eospac
+		cdi_gandolf
+		ds++
+		imc
+		lapack_wrap
+		mc
+		meshReaders
+		meshReaders_Services
+		pcgWrap
+		plot2D
+		quadrature
+		rng
+		RTT_Format_Reader
+		stdheaders
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	Future releases of draco will include DBS defaults and better
+	build system Doxygen documentation.
+
 2003-07-03  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: release draco-3_1_0.  This is a minor release that

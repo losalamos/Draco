@@ -15,8 +15,6 @@
 
 \bug Should this document specify version numbers for supported compilers? 
      --kellyt (06/27/2003) TID#1562 
-\bug Do we support IBM-AIX now?  If so this document should be updated.
-     --kellyt (06/27/2003) TID#1563
 \bug Need to add details for Trilinos vendor (assigned to warsa) 
      --kellyt (06/27/2003) TID#1583
 \bug Need to add details for Parmetis vendor (assigned to warsa) 
@@ -41,7 +39,7 @@ The Draco build system has the following highlighted features:
 \arg built using <a href="http://www.gnu.org/software/autoconf/">GNU AUTOCONF
      v. 2.52+</a> and <a href="http://www.gnu.org/software/make/">GNU
      MAKE</a> tools according to GNU Software standards
-\arg full C/C++ build support for gcc, KAI KCC, Compaq CXX, and SGI CC
+\arg full C/C++ build support for gcc, KAI KCC, Compaq CXX, IBM xlC, and SGI CC
 \arg a well-defined C++ template instantiation model
 \arg extensible vendor support for 
      <a href="http://www.mcs.anl.gov/mpi/index.html" 
@@ -74,17 +72,17 @@ systems/operating systems:
 - SGI (IRIX64)
 - Compaq (Tru64)
 - Linux (i686-based platforms)
+- IBM (AIX)
 
 The DBS has been tested and verified on these systems.  
 
 The DBS has been used on the following systems that are no longer
-supported or maintaied:
+supported or maintained:
 
 - SUN (Solaris)
  
-We expect to have full, verified support for IBM-AIX in the near future.  New
-systems will be added as required by the Draco development and user
-community.
+New systems will be added as required by the Draco development and
+user community.
 
 This document describes the Draco Build System. It contains the following
 sections:
@@ -688,7 +686,7 @@ following table summarizes the \c --with DBS build options:
 <td class="draco"> <tt> --with-cxx</tt> </td>
 <td class="draco"> system-dependent </td>
 <td class="draco"> <tt> gcc</tt> </td>
-<td class="draco"> <tt> gcc</tt>, <tt> kcc</tt>, <tt> compaq</tt>, <tt> sgi</tt>, <tt> guide</tt> </td>
+<td class="draco"> <tt> gcc</tt>, <tt> kcc</tt>, <tt> compaq</tt>, <tt> sgi</tt>, <tt> guide</tt> <tt>asciwhite</tt> <tt>ibm</tt> </td>
 <td class="draco">  see <a href="#config_compiler">below</a> </td>
 </tr>
 <!-- f90 -->
@@ -875,22 +873,32 @@ overrides any system defaults.  The system defaults are:
 <tr>
   <td class="draco"> Linux  </td>
   <td class="draco"> gcc </td>
-  <td class="draco"> KCC, Guide and IBM </td>
+  <td class="draco"> KCC and Intel </td>
 </tr>
 <tr>
   <td class="draco"> SGI (IRIX64) </td>
   <td class="draco"> CC </td>
-  <td class="draco"> KCC, Guide and gcc </td>
+  <td class="draco"> KCC and gcc </td>
 </tr>
 <tr>
   <td class="draco"> Compaq (Tru64) </td>
   <td class="draco"> CXX </td>
-  <td class="draco"> KCC, Guide and gcc </td>
+  <td class="draco"> KCC and gcc </td>
+</tr>
+<tr>
+  <td class="draco"> ASCI White (IBM-AIX) </td>
+  <td class="draco"> new(mp)xlC </td>
+  <td class="draco"> xlC and gcc </td>
+</tr>
+<tr>
+  <td class="draco"> IBM (AIX) </td>
+  <td class="draco"> xlC </td>
+  <td class="draco"> gcc </td>
 </tr>
 <tr>
   <td class="draco"> SUN (Solaris) </td>
   <td class="draco"> KCC </td>
-  <td class="draco"> Guide </td>
+  <td class="draco"> - </td>
 </tr>
 </table>
 </center>
@@ -1204,6 +1212,14 @@ use ATLAS instead of the vendor implementations of LAPACK and BLAS.
 Trilinos dependes on the availability of LAPACK or ATLAS on the current
 machine for this build.  Thus, if Trilinos is specified on the configure line
 then you must also specify the location for LAPACK.
+
+\par Note on ASCI White
+
+ASCI White uses scripts for compilers, newmpxlC for MPI-based builds
+and newxlC for serial builds.  If the default ASCI White compiler is
+used then setting MPI include or library paths will result in
+link-time errors. Also, do not use cache (-C) when configuring on ASCI
+White.
 
 \subsection ex_builds Example Builds
 

@@ -24,7 +24,7 @@ using std::string;
 // this library in the form meshReaders_Servicess-#_#_# in pkg_version variable
 const string release()
 {
-    string pkg_release = "meshReaders_Services(draco-3_0_0)";
+    string pkg_release = "meshReaders_Services(draco-3_2_0)";
     return pkg_release;
 }
 

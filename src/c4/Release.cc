@@ -24,7 +24,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "c4(draco-3_0_0)";
+    string pkg_release = "c4(draco-3_2_0)";
     return pkg_release;
 }
 
