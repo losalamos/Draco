@@ -32,6 +32,7 @@ template<class Field>
 void RadiationPhysics::getPlanck(const Field &TElectron,
 				 Field &planckian) const
 {
+    using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(TElectron, planckian));
 
     using PhysicalConstants::pi;
@@ -52,6 +53,7 @@ template<class Field>
 void RadiationPhysics::getPlanckTemperatureDerivative(const Field &TElectron,
 						      Field &dplanckdT) const
 {
+    using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(TElectron, dplanckdT));
 
     using PhysicalConstants::pi;
@@ -88,6 +90,7 @@ void RadiationPhysics::getElectIonCoupling(const Field &density,
     //                MIYAMOTO, "PLASMA PHYSICS FOR NUCLEAR FUSION",
     //                MIT PRESS, 1989. SECTION 4.3
 
+    using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(density, electIonCoupling));
     Require(ContainerTraits<Field>::conformal(TElectron, electIonCoupling));
     Require(ContainerTraits<Field>::conformal(z, electIonCoupling));
@@ -142,6 +145,7 @@ void RadiationPhysics::getElectIonCoulombLog(const Field &density,
     //    NRL Plasma Formulary, 1994. Assumes
     //    (ion_temp) .le. (1836*abar*electron_temp)
 
+    using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(density, lambda_ei));
     Require(ContainerTraits<Field>::conformal(TElectron, lambda_ei));
     Require(ContainerTraits<Field>::conformal(z, lambda_ei));
@@ -218,6 +222,7 @@ void RadiationPhysics::getElectronConductionCoeff(const Field &density,
     //                MIYAMOTO, "PLASMA PHYSICS FOR NUCLEAR FUSION",
     //                MIT PRESS, 1989. SECTION 4.3
 
+    using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(density, electCondCoeff));
     Require(ContainerTraits<Field>::conformal(TElectron, electCondCoeff));
     Require(ContainerTraits<Field>::conformal(z, electCondCoeff));
@@ -281,6 +286,7 @@ void RadiationPhysics::getElectElectCoulombLog(const Field &density,
     //    electron-electron interactions. Reference:
     //    NRL Plasma Formulary, 1994.
 
+    using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(density, lambda_ee));
     Require(ContainerTraits<Field>::conformal(TElectron, lambda_ee));
     Require(ContainerTraits<Field>::conformal(z, lambda_ee));
@@ -342,6 +348,7 @@ template<class Field>
 void RadiationPhysics::getElectronGamma0(const Field &z, Field &gamma0) const
 {
 
+    using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(z, gamma0));
 
     typedef ContainerTraits<Field> CTF;
@@ -403,6 +410,7 @@ void RadiationPhysics::getIonConductionCoeff(const Field &density,
     //                MIYAMOTO, "PLASMA PHYSICS FOR NUCLEAR FUSION",
     //                MIT PRESS, 1989. SECTION 4.3
 
+    using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(density, ionCondCoeff));
     Require(ContainerTraits<Field>::conformal(TElectron, ionCondCoeff));
     Require(ContainerTraits<Field>::conformal(z, ionCondCoeff));
@@ -466,6 +474,7 @@ void RadiationPhysics::getIonIonCoulombLog(const Field &density,
     //    ion-ion interactions. Reference:
     //    NRL Plasma Formulary, 1994.
 
+    using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(density, lambda_ii));
     Require(ContainerTraits<Field>::conformal(TElectron, lambda_ii));
     Require(ContainerTraits<Field>::conformal(z, lambda_ii));
@@ -522,6 +531,7 @@ void RadiationPhysics::getIonGamma0(const Field &z, const Field &TElect,
 				    Field &gamma0) const
 {
 
+    using rtt_traits::ContainerTraits;
     Require(ContainerTraits<Field>::conformal(z, gamma0));
     Require(ContainerTraits<Field>::conformal(TElect, gamma0));
     Require(ContainerTraits<Field>::conformal(TIon, gamma0));

@@ -9,7 +9,7 @@
 #ifndef __P1Diffusion_test_testSolverP1Diff_hh__
 #define __P1Diffusion_test_testSolverP1Diff_hh__
 
-#include "../SolverP1Diff.hh"
+#include "PCGDiffusionSolver/SolverP1Diff.hh"
 #include "mesh/Mesh_DB.hh"
 #include "linalg/pcg_DB.hh"
 
@@ -36,7 +36,7 @@ namespace rtt_P1Diffusion_test
      typedef typename MT::ccsf ccsf;
      typedef typename MT::fcdsf fcdsf;
 
-     typedef rtt_P1Diffusion::SolverP1Diff<MT> Solver;
+     typedef rtt_PCGDiffusionSolver::SolverP1Diff<MT> Solver;
      typedef typename Solver::Matrix Matrix;
 
      // DATA

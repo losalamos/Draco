@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-namespace rtt_P1Diffusion {
+namespace rtt_PCGDiffusionSolver {
 
  template<class Matrix>
  void MatVecP1Diff<Matrix>::MatVec(Mat1 &b, const Mat1 &x)

@@ -10,10 +10,8 @@
 #define __P1Diffusion_test_testP1Diffusion_hh__
 
 #include "../P1Diffusion.hh"
-#include "../MatrixP1Diff.hh"
-#include "../MatVecP1Diff.hh"
-#include "../PreCondP1Diff.hh"
-#include "../SolverP1Diff.hh"
+#include "PCGDiffusionSolver/PreCondP1Diff.hh"
+#include "PCGDiffusionSolver/SolverP1Diff.hh"
 
 namespace rtt_P1Diffusion_test
 {
@@ -21,7 +19,7 @@ namespace rtt_P1Diffusion_test
  template<class MT>
  class testP1Diffusion
  {
-     typedef rtt_P1Diffusion::SolverP1Diff<MT> MS;
+     typedef rtt_PCGDiffusionSolver::SolverP1Diff<MT> MS;
      typedef MS MatrixSolver;
      typedef rtt_P1Diffusion::P1Diffusion<MT, MS> DiffSolver;
 
@@ -48,12 +46,13 @@ namespace rtt_P1Diffusion_test
 
      dsxx::SP<MT> spMesh;
      FieldConstructor fCtor;
-     Diffusion_DB diffdb;
+     rtt_diffusion::Diffusion_DB diffdb;
      pcg_DB pcg_db;
 
      int nx;
      int ny;
      int nz;
+     int nzp;
      
    public:
 
@@ -61,7 +60,7 @@ namespace rtt_P1Diffusion_test
 		     const FieldConstructor &fCtor_,
 		     double D_, double sigma_, double q_,
 		     double fTop_, double fBot_,
-		     const Diffusion_DB &diffdb_,
+		     const rtt_diffusion::Diffusion_DB &diffdb_,
 		     const pcg_DB &pcg_db_);
      
      void run();

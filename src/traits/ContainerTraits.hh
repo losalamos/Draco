@@ -11,12 +11,8 @@
 
 #include <vector>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
-BEGIN_NS_XTM
+namespace rtt_traits
+{
     
 //===========================================================================//
 // class ContainerTraits - 
@@ -150,7 +146,7 @@ class ContainerTraits<std::vector<T1>, std::vector<T2> >
     }
 };
 
-END_NS_XTM  // namespace XTM
+}  // namespace rtt_traits
 
 #endif                          // __traits_ContainerTraits_hh__
 

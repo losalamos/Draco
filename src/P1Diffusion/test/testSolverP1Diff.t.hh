@@ -7,8 +7,9 @@
 //---------------------------------------------------------------------------//
 
 #include "testSolverP1Diff.hh"
-#include "../SolverP1Diff.hh"
+#include "PCGDiffusionSolver/SolverP1Diff.hh"
 #include "ds++/SP.hh"
+#include "c4/global.hh"
 
 namespace rtt_P1Diffusion_test
 {
@@ -99,6 +100,9 @@ namespace rtt_P1Diffusion_test
 	 l2nPhi0 += phi0[i]*phi0[i];
      }
 
+     C4::gsum(error);
+     C4::gsum(l2nPhi0);
+     
      error /= l2nPhi0;
      error = std::sqrt(error);
      

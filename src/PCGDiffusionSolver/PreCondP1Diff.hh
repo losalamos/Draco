@@ -6,17 +6,17 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __P1Diffusion_PreCondP1Diff_hh__
-#define __P1Diffusion_PreCondP1Diff_hh__
+#ifndef __PCGDiffusionSolver_PreCondP1Diff_hh__
+#define __PCGDiffusionSolver_PreCondP1Diff_hh__
 
 #include "linalg/PCG_PreCond.hh"
 #include "ds++/Mat.hh"
 #include "ds++/SP.hh"
 
-namespace rtt_P1Diffusion
+namespace rtt_PCGDiffusionSolver
 {
 
- // Since rtt_P1Diffusion is a limited namespace
+ // Since rtt_PCGDiffusionSolver is a limited namespace
  // I risk putting in this using declaration for dsxx::SP, and dsxx::Mat1.
  
  using dsxx::SP;
@@ -72,10 +72,10 @@ namespace rtt_P1Diffusion
      // IMPLEMENTATION
  };
 
-} // end namespace rtt_P1Diffusion
+} // end namespace rtt_PCGDiffusionSolver
 
-#endif                          // __P1Diffusion_PreCondP1Diff_hh__
+#endif                          // __PCGDiffusionSolver_PreCondP1Diff_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of P1Diffusion/PreCondP1Diff.hh
+//                              end of PCGDiffusionSolver/PreCondP1Diff.hh
 //---------------------------------------------------------------------------//

@@ -8,7 +8,7 @@
 
 #include "P1Diffusion.hh"
 #include "ds++/SP.hh"
-#include "P1Matrix.hh"
+#include "diffusion/P1Matrix.hh"
 #include "traits/MatrixFactoryTraits.hh"
 
 // Note:
@@ -23,11 +23,12 @@ namespace rtt_P1Diffusion
  using dsxx::SP;
  
  template<class MT, class MS>
- P1Diffusion<MT,MS>::P1Diffusion(const Diffusion_DB &diffdb,
+ P1Diffusion<MT,MS>::P1Diffusion(const rtt_diffusion::Diffusion_DB &diffdb,
 				 const SP<MT>& spm_,
 				 const SP<MS> &spsolver_,
                                  const FieldConstructor &fCtor_)
-     : spm(spm_), spsolver(spsolver_), fCtor(fCtor_)
+     : spm(spm_), spsolver(spsolver_), fCtor(fCtor_),
+       preComputedMatrixState(MatFacTraits::preComputeState(fCtor_, *spm_))
  {
      // empty
  }
@@ -416,11 +417,11 @@ namespace rtt_P1Diffusion
      // The sparse matrix can be constructed from the diagonal and
      // off-diagonal elements.
 
-     P1Matrix<MT> p1Mat(fCtor, spADiagonal, spAOffDiagonal);
+     rtt_diffusion::P1Matrix<MT> p1Mat(fCtor, spADiagonal, spAOffDiagonal);
 
-     typedef rtt_traits::MatrixFactoryTraits<Matrix> MatFacTraits;
+     // Create the solver's matrix with a matrix factor traits method.
      
-     SP<Matrix> spMatrix(MatFacTraits::create(p1Mat));
+     SP<Matrix> spMatrix(MatFacTraits::create(p1Mat, preComputedMatrixState));
 
      // Solve the "matrix*phi = b" equations.
     

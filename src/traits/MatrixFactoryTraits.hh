@@ -30,6 +30,15 @@ class MatrixFactoryTraits
 
     // NESTED CLASSES AND TYPEDEFS
 
+  public:
+
+    // This is a bogus typedef.
+    // Create your own, as needed.
+    
+    typedef int PreComputedState;
+
+  private:
+
     // DATA
     
   public:
@@ -37,13 +46,23 @@ class MatrixFactoryTraits
     // STATIC CLASS METHODS
 
     template<class T>
-    static Matrix *create(const T &rep)
+    static PreComputedState preComputeState(const T &rep)
     {
 	// You should be specializing this class.
 	// BogusMethod is being used to trigger a compilation
 	// error.
 	
-	return MatrixFactoryTraits<Matrix>::BogusMethod(rep);
+	return MatrixFactoryTraits<Matrix>::BogusMethod1(rep);
+    }
+
+    template<class T>
+    static Matrix *create(const T &rep, const PreComputedState &state)
+    {
+	// You should be specializing this class.
+	// BogusMethod is being used to trigger a compilation
+	// error.
+	
+	return MatrixFactoryTraits<Matrix>::BogusMethod2(rep, state);
     }
 
     // CREATORS

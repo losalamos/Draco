@@ -11,7 +11,7 @@
 #include "MatVecP1Diff.hh"
 #include "PreCondP1Diff.hh"
 
-namespace rtt_P1Diffusion
+namespace rtt_PCGDiffusionSolver
 {
 
  template<class MT>

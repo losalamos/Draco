@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "testP1Diffusion.hh"
+#include "c4/SpinLock.hh"
 #include <fstream>
 #include <cmath>
 
@@ -40,7 +41,8 @@ namespace rtt_P1Diffusion_test
 				      const FieldConstructor &fCtor_,
 				      double D_, double sigma_, double q_,
 				      double fTop_, double fBot_,
-				      const Diffusion_DB &diffdb_,
+				      const rtt_diffusion::Diffusion_DB
+				      &diffdb_,
 				      const pcg_DB &pcg_db_)
      : spMesh(spMesh_), fCtor(fCtor_), D(D_), sigma(sigma_), q(q_),
        fTop(fTop_), fBot(fBot_), diffdb(diffdb_), pcg_db(pcg_db_)
@@ -48,12 +50,35 @@ namespace rtt_P1Diffusion_test
      nx = spMesh->get_ncx();
      ny = spMesh->get_ncy();
      nz = spMesh->get_ncz();
+     nzp = spMesh->get_nczp();
 
      fcdsf zloc(fCtor);
      spMesh->get_zloc(zloc);
 	 
-     zBot = zloc(0,0,0,4);
-     zTop = zloc(0,0,nz-1,5);
+
+     int last_node = C4::nodes() - 1;
+
+     if (C4::node() == 0)
+     {
+	 zBot = zloc(0,0,0,4);
+	 for (int dest=1; dest <= last_node; dest++)
+	     C4::Send<double>(zBot, dest);
+     }
+     else
+     {
+	 C4::Recv(zBot, 0);
+     }
+
+     if (C4::node() == last_node)
+     {
+	 zTop = zloc(0,0,nz-1,5);
+ 	 for (int dest=0; dest < last_node; dest++)
+	     C4::Send<double>(zTop, dest);
+     }
+     else
+     {
+ 	 C4::Recv(zTop, last_node);
+     }
 
      alphaBot = diffdb.alpha_bottom;
      alphaTop = diffdb.alpha_top;
@@ -109,21 +134,41 @@ namespace rtt_P1Diffusion_test
 	 l2nPhi0 += phi0[i]*phi0[i];
      }
 
+     C4::gsum(error);
+     C4::gsum(l2nPhi0);
+     
      error /= l2nPhi0;
      error = std::sqrt(error);
 
      std::cout << "error: " << error << std::endl;
 
-     std::cout << "phi(0), F(0): " << phi[0] << " " << F(0,0,0,4)
-	       << std::endl;
-     std::cout << "phi(nz-1), F(nz-1): " << phi[nz-1] << " " << F(0,0,nz-1,5)
-	       << std::endl;
+     if (C4::node() == 0)
+     {
+	 std::cout << "phi[0], F(0): " << phi[0] << " " << F(0,0,0,4)
+		   << std::endl;
+     }
+
+     if (C4::node() == C4::nodes() - 1)
+     {
+	 std::cout << "phi[nzp-1], F(nz-1): " << phi[nzp-1]
+		   << " " << F(0,0,nz-1,5) << std::endl;
+     }
 
      ccsf zc(fCtor);
      spMesh->get_zloc(zc);
-     std::ofstream ofs("testP1Diffusion.dat");
-     for (int i=0; i<phi.size(); i++)
-	 ofs << zc[i] << "\t" << phi0[i] << "\t" << phi[i] << std::endl;
+     {
+	 C4::SpinLock sl;
+
+	 std::ofstream ofs;
+
+	 if (C4::node() == 0)
+	     ofs.open("testP1Diffusion.dat");
+	 else
+	     ofs.open("testP1Diffusion.dat", std::ios_base::app);
+
+	 for (int i=0; i<phi.size(); i++)
+	     ofs << zc[i] << "\t" << phi0[i] << "\t" << phi[i] << std::endl;
+     }
  }
  
  template<class MT>
@@ -222,12 +267,18 @@ namespace rtt_P1Diffusion_test
      {
 	 for (int j=0; j<ny; j++)
 	 {
-	     alpha(i, j, 0   , 4) = alphaBot;
-	     beta (i, j, 0   , 4) = betaBot;
-	     fb   (i, j, 0   , 4) = fBot;
-	     alpha(i, j, nz-1, 5) = alphaTop;
-	     beta (i, j, nz-1, 5) = betaTop;
-	     fb   (i, j, nz-1, 5) = fTop;
+	     if (C4::node() == 0)
+	     {
+		 alpha(i, j, 0   , 4) = alphaBot;
+		 beta (i, j, 0   , 4) = betaBot;
+		 fb   (i, j, 0   , 4) = fBot;
+	     }
+	     if (C4::node() == C4::nodes() - 1)
+	     {
+		 alpha(i, j, nz-1, 5) = alphaTop;
+		 beta (i, j, nz-1, 5) = betaTop;
+		 fb   (i, j, nz-1, 5) = fTop;
+	     }
 	 }
      }
  }    

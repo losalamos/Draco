@@ -7,12 +7,12 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __P1Diffusion_P1Matrix_hh__
-#define __P1Diffusion_P1Matrix_hh__
+#ifndef __diffusion_P1Matrix_hh__
+#define __diffusion_P1Matrix_hh__
 
 #include "ds++/SP.hh"
 
-namespace rtt_P1Diffusion
+namespace rtt_diffusion
 {
  
 //===========================================================================//
@@ -81,10 +81,10 @@ class P1Matrix
     // ** none **
 };
 
-} // end namespace rtt_P1Diffusion
+} // end namespace rtt_diffusion
 
-#endif                          // __P1Diffusion_P1Matrix_hh__
+#endif                          // __diffusion_P1Matrix_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of P1Diffusion/P1Matrix.hh
+//                              end of diffusion/P1Matrix.hh
 //---------------------------------------------------------------------------//

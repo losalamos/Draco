@@ -11,6 +11,9 @@
 
 class NML_Group;
 
+namespace rtt_diffusion
+{
+
 //===========================================================================//
 // class Diffusion_DB - 
 
@@ -24,6 +27,8 @@ class Diffusion_DB {
 
     void setup_namelist( NML_Group& g );
 };
+
+} // end namespace rtt_diffusion
 
 #endif                          // __diffusion_Diffusion_DB_hh__
 

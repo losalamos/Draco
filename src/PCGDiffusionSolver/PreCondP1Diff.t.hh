@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace rtt_P1Diffusion
+namespace rtt_PCGDiffusionSolver
 {
 
  //---------------------------------------------------------------------------//
@@ -45,7 +45,7 @@ namespace rtt_P1Diffusion
     x = b;
  }
  
-} // end namespace rtt_P1Diffusion
+} // end namespace rtt_PCGDiffusionSolver
 
 //---------------------------------------------------------------------------//
 //                              end of PreCondP1Diff.t.cc

@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 
     NML_Group g("testP1Diffusion");
 
-    Diffusion_DB diffdb;
+    rtt_diffusion::Diffusion_DB diffdb;
     diffdb.setup_namelist(g);
 
     Test_DB tdb;

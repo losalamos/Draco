@@ -1,0 +1,4 @@
+$mesh
+	ncx=1 ncy=1 ncz=5
+	ncx=4 ncy=5 ncz=6
+$

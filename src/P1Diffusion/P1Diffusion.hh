@@ -12,6 +12,7 @@
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include "diffusion/Diffusion_DB.hh"
+#include "traits/MatrixFactoryTraits.hh"
 
 namespace rtt_P1Diffusion
 {
@@ -48,6 +49,8 @@ namespace rtt_P1Diffusion
 #endif
      typedef typename MT::FieldConstructor FieldConstructor;
 
+     typedef rtt_traits::MatrixFactoryTraits<Matrix> MatFacTraits;
+     
    public:
 
      typedef MT MeshType;
@@ -66,6 +69,7 @@ namespace rtt_P1Diffusion
      dsxx::SP<MeshType> spm;
      dsxx::SP<MatrixSolver> spsolver;
      FieldConstructor fCtor;
+     typename MatFacTraits::PreComputedState preComputedMatrixState;
 
      // Cache the swapped values to avoid too much communication.
      
@@ -77,7 +81,8 @@ namespace rtt_P1Diffusion
 
      // CREATORS
     
-     P1Diffusion(const Diffusion_DB &diffdb, const dsxx::SP<MeshType>& spm_,
+     P1Diffusion(const rtt_diffusion::Diffusion_DB &diffdb,
+		 const dsxx::SP<MeshType>& spm_,
 		 const dsxx::SP<MatrixSolver> &spsolver_,
                  const FieldConstructor &fCtor_);
 

@@ -9,7 +9,7 @@
 #include "MatrixP1Diff.hh"
 #include "ds++/Assert.hh"
 
-namespace rtt_P1Diffusion
+namespace rtt_PCGDiffusionSolver
 {
 
  template<class MT>
@@ -59,7 +59,7 @@ namespace rtt_P1Diffusion
      std::copy(spbtmp->begin(), spbtmp->end(), b.begin());
  }
  
-} // end namespace rtt_P1Diffusion
+} // end namespace rtt_PCGDiffusionSolver
 
 
 //---------------------------------------------------------------------------//

@@ -6,15 +6,14 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __P1Diffusion_SolverP1Diff_hh__
-#define __P1Diffusion_SolverP1Diff_hh__
+#ifndef __PCGDiffusionSolver_SolverP1Diff_hh__
+#define __PCGDiffusionSolver_SolverP1Diff_hh__
 
 #include "ds++/SP.hh"
 #include "linalg/PCG_Ctrl.hh"
 #include "MatrixP1Diff.hh"
-#include "MatrixP1DiffTraits.hh"
 
-namespace rtt_P1Diffusion
+namespace rtt_PCGDiffusionSolver
 {
 
  // Within namespace forward declarations.
@@ -76,10 +75,10 @@ namespace rtt_P1Diffusion
      // IMPLEMENTATION
  };
 
-} // end namespace rtt_P1Diffusion
+} // end namespace rtt_PCGDiffusionSolver
 
-#endif                          // __P1Diffusion_SolverP1Diff_hh__
+#endif                          // __PCGDiffusionSolver_SolverP1Diff_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of P1Diffusion/SolverP1Diff.hh
+//                              end of PCGDiffusionSolver/SolverP1Diff.hh
 //---------------------------------------------------------------------------//

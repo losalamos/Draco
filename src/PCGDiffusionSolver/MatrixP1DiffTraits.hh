@@ -7,12 +7,12 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __P1Diffusion_MatrixP1DiffTraits_hh__
-#define __P1Diffusion_MatrixP1DiffTraits_hh__
+#ifndef __PCGDiffusionSolver_MatrixP1DiffTraits_hh__
+#define __PCGDiffusionSolver_MatrixP1DiffTraits_hh__
 
 #include "traits/MatrixFactoryTraits.hh"
-#include "MatrixP1Diff.hh"
-#include "P1Matrix.hh"
+#include "PCGDiffusionSolver/MatrixP1Diff.hh"
+#include "diffusion/P1Matrix.hh"
 
 namespace rtt_traits
 {
@@ -29,12 +29,20 @@ namespace rtt_traits
 //===========================================================================//
 
 template<class MT>
-class MatrixFactoryTraits<rtt_P1Diffusion::MatrixP1Diff<MT> >
+class MatrixFactoryTraits<rtt_PCGDiffusionSolver::MatrixP1Diff<MT> >
 {
 
     // NESTED CLASSES AND TYPEDEFS
 
-    typedef rtt_P1Diffusion::MatrixP1Diff<MT> Matrix;
+    typedef typename MT::FieldConstructor FieldConstructor;
+    
+    typedef rtt_PCGDiffusionSolver::MatrixP1Diff<MT> Matrix;
+
+  public:
+
+    typedef int PreComputedState;
+    
+  private:
 
     // DATA
     
@@ -42,10 +50,18 @@ class MatrixFactoryTraits<rtt_P1Diffusion::MatrixP1Diff<MT> >
 
     // STATIC CLASS METHODS
 
-    static Matrix *create(const rtt_P1Diffusion::P1Matrix<MT> &rep)
+    static PreComputedState preComputeState(const FieldConstructor &rep,
+					    const MT &mesh)
     {
-	return new Matrix(rep.fCtor(), rep.spADiagonal(),
-			  rep.spAOffDiagonal());
+	// There is no needed precomputed state.
+	
+	return 42;
+    }
+    
+    static Matrix *create(const rtt_diffusion::P1Matrix<MT> &rep,
+			  const PreComputedState &state)
+    {
+	return new Matrix(rep.fCtor(), rep.spADiagonal(), rep.spAOffDiagonal());
     }
 
     // CREATORS
@@ -67,8 +83,8 @@ class MatrixFactoryTraits<rtt_P1Diffusion::MatrixP1Diff<MT> >
 
 } // end namespace rtt_traits
 
-#endif                          // __P1Diffusion_MatrixP1DiffTraits_hh__
+#endif                          // __PCGDiffusionSolver_MatrixP1DiffTraits_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of P1Diffusion/MatrixP1DiffTraits.hh
+//                              end of PCGDiffusionSolver/MatrixP1DiffTraits.hh
 //---------------------------------------------------------------------------//

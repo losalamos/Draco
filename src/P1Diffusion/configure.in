@@ -14,14 +14,15 @@ AC_CONFIG_HEADER(P1Diffusion/config.h:config.h.in)
 package="P1Diffusion"
 
 AC_INSTALL_HEADERS
+AC_INSTALL_LIB
 
 dnl No longer any libs to install
 dnl AC_INSTALL_LIB
 
-AC_NEEDS_LIBS(linalg c4 ds++)
-AC_NEEDS_LIBS_TEST(mesh diffusion nml)
+dnl AC_NEEDS_LIBS(xxx)
+AC_NEEDS_LIBS_TEST(PCGDiffusionSolver linalg mesh diffusion nml c4 ds++)
 
-AC_PCGLIB_SETUP(pkg)
+AC_PCGLIB_SETUP(test)
 AC_MPI_SETUP(pkg)
 AC_SHMEM_SETUP(pkg)
 
