@@ -1,3 +1,12 @@
+2000-02-09  H. Grady Hughes  <hgh@lanl.gov>
+
+    * TET_Builder.hh, TET_Builder.cc, test/TET_test_1.hh, and
+    test/tstTET_Mesh.cc:
+    Initial commit of TET_test_1.hh, an example of a TET_Mesh
+    Interface Type class, and extension of tstTET_Mesh.cc to
+    include instantiation from that <IT> class.  Also corrected
+    some out-of-range index errors in TET_Builder.
+
 2000-02-08  H. Grady Hughes  <hgh@lanl.gov>
 
     * TET_Builder.hh, TET_Builder.cc:

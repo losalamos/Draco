@@ -21,7 +21,9 @@ SP<TET_Mesh> TET_Builder::build_Mesh()
     SP<Coord_sys> coord(new XYZCoord_sys);
 
     // Create second constructor argument: layout.
-    Layout layout;
+    Layout layout(cells_vertices.size());
+    for (int c = 1; c <= cells_vertices.size(); c++)
+        layout.set_size(c,FOUR);
 
     std::vector< std::set<int> > L_face;
     L_face.resize(FOUR);
@@ -53,7 +55,7 @@ SP<TET_Mesh> TET_Builder::build_Mesh()
 
             if (L_face_found >=0)
             {
-                layout(L_cell, L_face_found) = R_cell + 1;
+                layout(L_cell + 1, L_face_found + 1) = R_cell + 1;
 
                 // Load R_face[0] with vertices #1,#2,#3; etc.
                 for (int f = 0; f < FOUR; f++)
@@ -68,7 +70,7 @@ SP<TET_Mesh> TET_Builder::build_Mesh()
                         R_face_found = f;
 
                 Check (R_face_found >= 0);
-                layout(R_cell, R_face_found) = L_cell + 1;
+                layout(R_cell + 1, R_face_found + 1) = L_cell + 1;
 
                 // Empty out R_face[0], R_face[1], R_face[2], and R_face[3].
                 for (int f = 0; f < FOUR; f++)

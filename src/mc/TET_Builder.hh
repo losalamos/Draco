@@ -16,6 +16,9 @@
 namespace rtt_mc
 {
 
+// using std::cerr;  // FOR DEBUGGING.
+// using std::endl;  // FOR DEBUGGING.
+
 // draco namespaces
 using rtt_rng::Sprng;
 using rtt_dsxx::SP;
