@@ -171,25 +171,19 @@ namespace rtt_3T {
 			       ccsf &Tnp1Electron,
 			       DiffusionSolver &solver,
 			       double dt,
-			       const MaterialProperties &matprops,
-			       const bssf &alpha,
-			       const bssf &beta,
-			       const bssf &bSrc) const;
+			       const MaterialProperties &matprops) const;
 
      //-----------------------------------------------------------------------//
      // solveIonConduction:
      //     Solve for the energy deposition and new temperature due to  
      //     the conduction equation split.
      //-----------------------------------------------------------------------//
-    
+
      void solveIonConduction(ccsf &ionEnergyDeposition,
 			     ccsf &Tnp1Ion,
 			     DiffusionSolver &solver,
 			     double dt,
-			     const MaterialProperties &matprops,
-			     const bssf &alpha,
-			     const bssf &beta,
-			     const bssf &bSrc) const;
+			     const MaterialProperties &matprops) const;
 
      //-----------------------------------------------------------------------//
      // solve3T:

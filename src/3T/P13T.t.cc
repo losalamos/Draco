@@ -163,10 +163,7 @@ void P13T<DS>::solveElectConduction(ccsf &electronEnergyDeposition,
 				    ccsf &Tnp1Electron,
 				    DiffusionSolver &solver,
 				    double dt,
-				    const MaterialProperties &matprops,
-				    const bssf &alpha,
-				    const bssf &beta,
-				    const bssf &bSrc) const
+				    const MaterialProperties &matprops) const
 {
     // Require dt > 0, etc.
 
@@ -193,10 +190,22 @@ void P13T<DS>::solveElectConduction(ccsf &electronEnergyDeposition,
     ccsf source(spMesh);
     source = removalCoeff * TnElectron;
 
-    // Do the diffusion solve for the temperature at n+1.
-
+    // For a conduction calculation there is no P1 flux term.
+    
     FluxField Flux(spMesh);
     const DiscFluxField Fprime(spMesh);
+
+    // The boundary conditions for a conduction calculation are
+    // always reflective, and there is no boundary source.
+    
+    bssf alpha(spMesh);
+    bssf beta(spMesh);
+    bssf bSrc(spMesh);
+
+    beta = 1.0;
+
+    // Do the diffusion solve for the temperature at n+1.
+
     solver.solve(Tnp1Electron, Flux, kappaElectron, removalCoeff, source,
 		 Fprime, alpha, beta, bSrc);
 
@@ -235,10 +244,7 @@ void P13T<DS>::solveIonConduction(ccsf &ionEnergyDeposition,
 				  ccsf &Tnp1Ion,
 				  DiffusionSolver &solver,
 				  double dt,
-				  const MaterialProperties &matprops,
-				  const bssf &alpha,
-				  const bssf &beta,
-				  const bssf &bSrc) const
+				  const MaterialProperties &matprops) const
 {
     // Require dt > 0, etc.
 
@@ -265,10 +271,22 @@ void P13T<DS>::solveIonConduction(ccsf &ionEnergyDeposition,
     ccsf source(spMesh);
     source = removalCoeff * TnIon;
 
-    // Do the diffusion solve for the temperature at n+1.
-	
+    // For a conduction calculation there is no P1 flux term.
+    
     FluxField Flux(spMesh);
     const DiscFluxField Fprime(spMesh);
+
+    // The boundary conditions for a conduction calculation are
+    // always reflective, and there is no boundary source.
+    
+    bssf alpha(spMesh);
+    bssf beta(spMesh);
+    bssf bSrc(spMesh);
+
+    beta = 1.0;
+
+    // Do the diffusion solve for the temperature at n+1.
+	
     solver.solve(Tnp1Ion, Flux, kappaIon, removalCoeff, source,
 		 Fprime, alpha, beta, bSrc);
 
