@@ -29,7 +29,7 @@ namespace rtt_imc
  * \brief Build a source in a Domain Decomposed parallel topology.
  */
 template<class MT, class FT, class PT>
-DD_Source_Builder<MT,FT,PT>::SP_Source
+typename DD_Source_Builder<MT,FT,PT>::SP_Source
 DD_Source_Builder<MT,FT,PT>::build_Source(SP_Mesh          mesh,
 				          SP_Mat_State     state,
 					  SP_Opacity       opacity,

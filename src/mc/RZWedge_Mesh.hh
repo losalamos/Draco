@@ -1080,35 +1080,38 @@ std::vector<T> RZWedge_Mesh::CCVF<T>::operator()(int cell) const
 // STL style functionality for CCVF fields
 
 template<class T>
-RZWedge_Mesh::CCVF<T>::iterator RZWedge_Mesh::CCVF<T>::begin(int i)
+typename RZWedge_Mesh::CCVF<T>::iterator RZWedge_Mesh::CCVF<T>::begin(int i)
 {
     Require(i > 0 && i <= data.size());
     return data[i-1].begin();
 }
 
 template<class T>
-RZWedge_Mesh::CCVF<T>::const_iterator RZWedge_Mesh::CCVF<T>::begin(int i) const
+typename RZWedge_Mesh::CCVF<T>::const_iterator 
+RZWedge_Mesh::CCVF<T>::begin(int i) const
 {
     Require(i > 0 && i <= data.size());
     return data[i-1].begin();
 }
 
 template<class T>
-RZWedge_Mesh::CCVF<T>::iterator RZWedge_Mesh::CCVF<T>::end(int i)
+typename RZWedge_Mesh::CCVF<T>::iterator RZWedge_Mesh::CCVF<T>::end(int i)
 {
     Require(i > 0 && i <= data.size());
     return data[i-1].end();
 }
 
 template<class T>
-RZWedge_Mesh::CCVF<T>::const_iterator RZWedge_Mesh::CCVF<T>::end(int i) const
+typename RZWedge_Mesh::CCVF<T>::const_iterator 
+RZWedge_Mesh::CCVF<T>::end(int i) const
 {
     Require(i > 0 && i <= data.size());
     return data[i-1].end();
 }
 
 template<class T>
-RZWedge_Mesh::CCVF<T>::size_type RZWedge_Mesh::CCVF<T>::size(int i) const
+typename RZWedge_Mesh::CCVF<T>::size_type
+RZWedge_Mesh::CCVF<T>::size(int i) const
 {
     Require(i > 0 && i <= data.size());
     return data[i-1].size();

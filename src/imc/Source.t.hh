@@ -291,7 +291,7 @@ rtt_dsxx::SP<PT> Source<MT,FT,PT>::get_ss(double delta_t)
     double time_left = rand.ran() * delta_t;
 
     // instantiate particle to return
-    SP<PT> ss_particle = make_ss_particle<Type_Switch<PT>::Type>(
+    SP<PT> ss_particle = make_ss_particle<Dummy_Type>(
 	Type_Switch<FT>(), Type_Switch<PT>(), r, omega, ew, cell, rand, 
 	fraction, time_left);
 
@@ -328,7 +328,7 @@ rtt_dsxx::SP<PT> Source<MT,FT,PT>::get_evol(double delta_t)
     double time_left = rand.ran() * delta_t;
 
     // instantiate particle to return
-    SP<PT> vol_particle = make_vol_particle<Type_Switch<PT>::Type>(
+    SP<PT> vol_particle = make_vol_particle<Dummy_Type>(
 	Type_Switch<FT>(), Type_Switch<PT>(), r, omega, ew, cell, rand, 
 	fraction, time_left);
 
@@ -375,7 +375,7 @@ rtt_dsxx::SP<PT> Source<MT,FT,PT>::get_census(double delta_t)
 
 template<class MT, class FT, class PT>
 template<class Stop_Explicit_Instantiation>
-Source<MT,FT,PT>::SP_Gray_PT Source<MT,FT,PT>::make_ss_particle(
+typename Source<MT,FT,PT>::SP_Gray_PT Source<MT,FT,PT>::make_ss_particle(
     Switch_Gray,
     Switch_Gray_PT,
     const sf_double      &r,
@@ -400,7 +400,7 @@ Source<MT,FT,PT>::SP_Gray_PT Source<MT,FT,PT>::make_ss_particle(
 
 template<class MT, class FT, class PT>
 template<class Stop_Explicit_Instantiation>
-Source<MT,FT,PT>::SP_MG_PT Source<MT,FT,PT>::make_ss_particle(
+typename Source<MT,FT,PT>::SP_MG_PT Source<MT,FT,PT>::make_ss_particle(
     Switch_MG,
     Switch_MG_PT,
     const sf_double      &r,
@@ -446,7 +446,7 @@ Source<MT,FT,PT>::SP_MG_PT Source<MT,FT,PT>::make_ss_particle(
 
 template<class MT, class FT, class PT>
 template<class Stop_Explicit_Instantiation>
-Source<MT,FT,PT>::SP_Gray_PT Source<MT,FT,PT>::make_vol_particle(
+typename Source<MT,FT,PT>::SP_Gray_PT Source<MT,FT,PT>::make_vol_particle(
     Switch_Gray,
     Switch_Gray_PT,
     const sf_double      &r,
@@ -471,7 +471,7 @@ Source<MT,FT,PT>::SP_Gray_PT Source<MT,FT,PT>::make_vol_particle(
 
 template<class MT, class FT, class PT>
 template<class Stop_Explicit_Instantiation>
-Source<MT,FT,PT>::SP_MG_PT Source<MT,FT,PT>::make_vol_particle(
+typename Source<MT,FT,PT>::SP_MG_PT Source<MT,FT,PT>::make_vol_particle(
     Switch_MG,
     Switch_MG_PT,
     const sf_double      &r,

@@ -126,6 +126,7 @@ class Source
     typedef rtt_imc::global::Type_Switch<Gray_PT>              Switch_Gray_PT;
     typedef rtt_imc::global::Type_Switch<MG_PT>                Switch_MG_PT;
     typedef std::vector<double>                                sf_double;
+    typedef typename rtt_imc::global::Type_Switch<FT>::Type    Dummy_Type;
 
   private:
     // >>> DATA

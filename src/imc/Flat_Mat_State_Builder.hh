@@ -69,6 +69,7 @@ class Flat_Mat_State_Builder
     typedef rtt_dsxx::SP<Opacity<MT,Multigroup_Frequency> >    SP_MG_Opacity;
     typedef rtt_dsxx::SP<Gray_Frequency>                       SP_Gray;
     typedef rtt_dsxx::SP<Multigroup_Frequency>                 SP_MG;
+    typedef typename rtt_imc::global::Type_Switch<FT>::Type    Dummy_Type;
 
   private:
     // Flat, cell-centered data fields received from the interface.

@@ -27,7 +27,7 @@ namespace rtt_imc
  * \brief Build the source in a full replication parallel topology.
  */
 template<class MT, class FT, class PT>
-Rep_Source_Builder<MT,FT,PT>::SP_Source
+typename Rep_Source_Builder<MT,FT,PT>::SP_Source
 Rep_Source_Builder<MT,FT,PT>::build_Source(SP_Mesh          mesh,
 					   SP_Mat_State     state,
 					   SP_Opacity       opacity,

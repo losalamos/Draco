@@ -84,7 +84,7 @@ DD_Transporter<MT,FT,PT>::DD_Transporter(SP_Topology top)
 
  */
 template<class MT, class FT, class PT>
-DD_Transporter<MT,FT,PT>::SP_Census 
+typename DD_Transporter<MT,FT,PT>::SP_Census 
 DD_Transporter<MT,FT,PT>::transport(double dt, int cycle_in, int print_f_in, 
 				    int num_to_run_in, bool verbose)
 {

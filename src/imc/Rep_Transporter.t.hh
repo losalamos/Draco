@@ -70,7 +70,7 @@ Rep_Transporter<MT,FT,PT>::Rep_Transporter(SP_Topology top)
 
  */
 template<class MT, class FT, class PT>
-Rep_Transporter<MT,FT,PT>::SP_Census 
+typename Rep_Transporter<MT,FT,PT>::SP_Census 
 Rep_Transporter<MT,FT,PT>::transport(double dt, int cycle, int print_f, 
 				     int num_to_run, bool verbose) 
 {

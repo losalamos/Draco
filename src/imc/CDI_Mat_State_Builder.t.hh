@@ -64,7 +64,7 @@ class CDI_Mat_State_Builder_Helper
  * \brief Build the Mat_State class for all specializations of <MT,FT> types.
  */
 template<class MT>
-CDI_Mat_State_Builder_Helper<MT>::SP_Mat_State 
+typename CDI_Mat_State_Builder_Helper<MT>::SP_Mat_State 
 CDI_Mat_State_Builder_Helper<MT>::build_Mat_State(
     SP_Mesh          mesh,
     const sf_CDI    &material_cdi,

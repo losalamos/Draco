@@ -146,8 +146,8 @@ void Source_Builder<MT,FT,PT>::calc_evol(const Mat_State<MT>  &state,
 		evoltot    += evol_add;
 
 		// calculate fraction of evol_net to evol
-		calc_prob_Planck_emission<Type_Switch<FT>::Type>(
-		    Type_Switch<FT>(), evol_add, cell);
+		calc_prob_Planck_emission<Dummy_Type>(Type_Switch<FT>(), 
+						      evol_add, cell);
 	    }
 	}
     }
@@ -216,7 +216,7 @@ void Source_Builder<MT,FT,PT>::calc_ess(const Opacity<MT,FT> &opacity)
 
 		// set the surface source temperature in the source object's
 		// Frequency_Sampling_Data struct
-		set_ss_temperature_in_source<Type_Switch<FT>::Type>(
+		set_ss_temperature_in_source<Dummy_Type>(
 		    Type_Switch<FT>(), ss_temp[ss], local_cell);
 	    }
 	}
@@ -379,7 +379,7 @@ void Source_Builder<MT,FT,PT>::write_initial_census(
 		sample_dir("isotropic", random);
 
 	    // create Particle
-	    SP<PT> particle = make_particle<Type_Switch<FT>::Type>(
+	    SP<PT> particle = make_particle<Dummy_Type>(
 		Type_Switch<FT>(), Type_Switch<PT>(), frequency,
 		mat_state.get_T(cell), r, omega, ew_cen(cell),
 		global_cell, random);

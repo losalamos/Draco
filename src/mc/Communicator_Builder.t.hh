@@ -35,7 +35,7 @@ namespace rtt_mc
 
  */
 template<class PT>
-Communicator_Builder<PT>::SP_Communicator 
+typename Communicator_Builder<PT>::SP_Communicator 
 Communicator_Builder<PT>::build_Communicator(SP_Topology topology)
 {
     Require (topology);
@@ -80,7 +80,8 @@ Communicator_Builder<PT>::build_Communicator(SP_Topology topology)
  * Clients should use the build_Communicator(SP_Topology) instead.
 
  */
-template<class PT> Communicator_Builder<PT>::SP_Communicator 
+template<class PT> 
+typename Communicator_Builder<PT>::SP_Communicator 
 Communicator_Builder<PT>::build_Communicator(const sf_int &b_node,
 					     const sf_int &b_cell)
 {
@@ -148,7 +149,7 @@ Communicator_Builder<PT>::build_Communicator(const sf_int &b_node,
  * \brief Build a communicator in DD topologies.
  */
 template<class PT>
-Communicator_Builder<PT>::SP_Communicator 
+typename Communicator_Builder<PT>::SP_Communicator 
 Communicator_Builder<PT>::build_DD_Comm(SP_Topology topology)
 {
     using std::vector;

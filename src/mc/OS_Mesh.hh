@@ -780,35 +780,35 @@ std::vector<T> OS_Mesh::CCVF<T>::operator()(int cell) const
 // STL style functionality for CCVF fields
 
 template<class T>
-OS_Mesh::CCVF<T>::iterator OS_Mesh::CCVF<T>::begin(int i)
+typename OS_Mesh::CCVF<T>::iterator OS_Mesh::CCVF<T>::begin(int i)
 {
     Require(i > 0 && i <= data.size());
     return data[i-1].begin();
 }
 
 template<class T>
-OS_Mesh::CCVF<T>::const_iterator OS_Mesh::CCVF<T>::begin(int i) const
+typename OS_Mesh::CCVF<T>::const_iterator OS_Mesh::CCVF<T>::begin(int i) const
 {
     Require(i > 0 && i <= data.size());
     return data[i-1].begin();
 }
 
 template<class T>
-OS_Mesh::CCVF<T>::iterator OS_Mesh::CCVF<T>::end(int i)
+typename OS_Mesh::CCVF<T>::iterator OS_Mesh::CCVF<T>::end(int i)
 {
     Require(i > 0 && i <= data.size());
     return data[i-1].end();
 }
 
 template<class T>
-OS_Mesh::CCVF<T>::const_iterator OS_Mesh::CCVF<T>::end(int i) const
+typename OS_Mesh::CCVF<T>::const_iterator OS_Mesh::CCVF<T>::end(int i) const
 {
     Require(i > 0 && i <= data.size());
     return data[i-1].end();
 }
 
 template<class T>
-OS_Mesh::CCVF<T>::size_type OS_Mesh::CCVF<T>::size(int i) const
+typename OS_Mesh::CCVF<T>::size_type OS_Mesh::CCVF<T>::size(int i) const
 {
     Require(i > 0 && i <= data.size());
     return data[i-1].size();

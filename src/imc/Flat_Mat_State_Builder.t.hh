@@ -43,7 +43,7 @@ Flat_Mat_State_Builder<MT,FT>::build_Frequency()
     SP_Frequency frequency;
 
     // build the frequency, specialize on the frequency type
-    frequency = build_frequency<Type_Switch<FT>::Type>(Type_Switch<FT>());
+    frequency = build_frequency<Dummy_Type>(Type_Switch<FT>());
 
     Ensure (frequency);
     return frequency;
@@ -112,8 +112,8 @@ Flat_Mat_State_Builder<MT,FT>::build_Opacity(SP_Mesh      mesh,
     SP_Opacity opacity;
 
     // build the opacity depending on the frequency type
-    opacity = build_opacity<Type_Switch<FT>::Type>(Type_Switch<FT>(), mesh,
-						   frequency, mat_state);
+    opacity = build_opacity<Dummy_Type>(Type_Switch<FT>(), 
+					mesh, frequency, mat_state);
 
     Ensure (opacity);
     Ensure (opacity->num_cells() == mesh->num_cells());

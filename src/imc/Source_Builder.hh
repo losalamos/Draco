@@ -155,24 +155,25 @@ class Source_Builder
 {
   public:
     // typedefs used in the inheritance chain
-    typedef rtt_dsxx::SP<Source<MT,FT,PT> >       SP_Source;
-    typedef rtt_mc::Particle_Containers<PT>       Containers;
-    typedef typename Containers::Census           Census;
-    typedef rtt_dsxx::SP<Census>                  SP_Census;
-    typedef rtt_dsxx::SP<Opacity<MT,FT> >         SP_Opacity;
-    typedef rtt_dsxx::SP<Mat_State<MT> >          SP_Mat_State;
-    typedef rtt_dsxx::SP<MT>                      SP_Mesh;
-    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>    SP_Rnd_Control;
-    typedef rtt_dsxx::SP<rtt_mc::Topology>        SP_Topology;
-    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>   SP_Comm_Patterns;
-    typedef std::vector<int>                      sf_int;
-    typedef std::vector<std::vector<int> >        vf_int;
-    typedef std::vector<double>                   sf_double;
-    typedef std::vector<std::string>              sf_string;
-    typedef std::string                           std_string;
-    typedef typename MT::template CCSF<double>    ccsf_double;
-    typedef typename MT::template CCSF<int>       ccsf_int;
-    typedef typename MT::template CCVF<double>    ccvf_double;
+    typedef rtt_dsxx::SP<Source<MT,FT,PT> >                 SP_Source;
+    typedef rtt_mc::Particle_Containers<PT>                 Containers;
+    typedef typename Containers::Census                     Census;
+    typedef rtt_dsxx::SP<Census>                            SP_Census;
+    typedef rtt_dsxx::SP<Opacity<MT,FT> >                   SP_Opacity;
+    typedef rtt_dsxx::SP<Mat_State<MT> >                    SP_Mat_State;
+    typedef rtt_dsxx::SP<MT>                                SP_Mesh;
+    typedef rtt_dsxx::SP<rtt_rng::Rnd_Control>              SP_Rnd_Control;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>                  SP_Topology;
+    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>             SP_Comm_Patterns;
+    typedef std::vector<int>                                sf_int;
+    typedef std::vector<std::vector<int> >                  vf_int;
+    typedef std::vector<double>                             sf_double;
+    typedef std::vector<std::string>                        sf_string;
+    typedef std::string                                     std_string;
+    typedef typename MT::template CCSF<double>              ccsf_double;
+    typedef typename MT::template CCSF<int>                 ccsf_int;
+    typedef typename MT::template CCVF<double>              ccvf_double;
+    typedef typename rtt_imc::global::Type_Switch<FT>::Type Dummy_Type;
 
   private:
     // >>> BASE CLASS DATA
