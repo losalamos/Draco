@@ -21,8 +21,6 @@
 #include <iomanip>
 #include <cmath>
 
-#include "ds++/Assert.hh"
-
 #include "Quadrature.hh"
 
 namespace rtt_quadrature
