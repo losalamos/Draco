@@ -1447,6 +1447,13 @@ fi;
 
 
 
+# draco version
+
+   # we need at least autoconf 2.53 to work correctly
+
+
+
+
 # we use the install script provided with autoconf on all machines
 INSTALL='${config_dir}/install-sh -c'
 INSTALL_DATA='${INSTALL} -m 444'

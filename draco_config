@@ -8,6 +8,8 @@
 ## if this is run in draco then no arguments are required; if not then
 ## the relative (or absolute) path of the config directory must be
 ## given, ie. if running in draco/src, ../draco_config ..
+##
+## $Id$
 ##---------------------------------------------------------------------------##
 
 ## Build the configure scripts

@@ -11,6 +11,9 @@ AC_INIT
 AC_CONFIG_SRCDIR([doxygen_config.in])
 AC_CONFIG_AUX_DIR(../config)
 
+# draco version
+AC_DRACO_PREREQ
+
 dnl
 dnl doxygen setup
 dnl

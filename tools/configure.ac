@@ -8,6 +8,9 @@ AC_CONFIG_SRCDIR([launchtest])
 AC_CONFIG_AUX_DIR(../config)
 AC_DRACO_ARGS
 
+# draco version
+AC_DRACO_PREREQ
+
 # we use the install script provided with autoconf on all machines
 INSTALL='${config_dir}/install-sh -c'
 INSTALL_DATA='${INSTALL} -m 444'

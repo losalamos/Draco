@@ -13,6 +13,9 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(<pkg>/config.h:config.h.in)
 package="<pkg>"
 
+# draco version
+AC_DRACO_PREREQ
+
 dnl VENDOR SETUPS
 dnl AC_MPI_SETUP(pkg)
 dnl AC_SHMEM_SETUP(pkg)

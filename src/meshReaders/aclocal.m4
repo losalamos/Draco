@@ -19,6 +19,19 @@ dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_DRACO_PREREQ
+dnl
+dnl Checks the configure version
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_PREREQ], [dnl
+
+   # we need at least autoconf 2.53 to work correctly
+   AC_PREREQ(2.53)
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_NEEDS_LIBS
 dnl
 dnl add DRACO-dependent libraries necessary for a package
@@ -247,7 +260,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl first find the host
    dnl
    
-   AC_CANONICAL_HOST
+   AC_REQUIRE([AC_CANONICAL_HOST])
 
    dnl
    dnl INSTALL
