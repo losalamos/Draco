@@ -13,8 +13,6 @@
 #include "../Interface.hh"
 #include "../Flat_Data_Interface.hh"
 #include "../CDI_Data_Interface.hh"
-#include "../Particle.hh"
-#include "../Frequency.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "mc/General_Topology.hh"
@@ -30,6 +28,11 @@
 #include <iostream>
 #include <vector>
 #include <string>
+
+namespace rtt_mc
+{
+template<class PT> class Particle_Containers;
+}
 
 namespace rtt_imc_test
 {
@@ -53,26 +56,32 @@ class Parser
 //===========================================================================//
 // make a flat interface for a 6 cell mesh
 
+template<class PT>
 class IMC_Flat_Interface :
-	public rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh,
-	rtt_imc::Gray_Frequency> >,
+	public rtt_imc::Interface<PT>,
 	public rtt_imc::Flat_Data_Interface
 {
+  public:
+    // Useful typedefs
+    typedef std::vector<double>                              sf_double;
+    typedef std::vector<int>                                 sf_int;
+    typedef std::vector<sf_int>                              vf_int;
+    typedef std::vector<std::string>                         sf_string;
+    typedef std::string                                      std_string;
+    typedef rtt_dsxx::SP<rtt_imc::Flat_Data_Container>       SP_Data;
+    typedef typename rtt_mc::Particle_Containers<PT>::Census Census;
+    typedef rtt_dsxx::SP<Census>                             SP_Census;
+
   private:
     // sp to OS_Builder
     rtt_dsxx::SP<rtt_mc::OS_Builder> builder;
 
     // data for the Opacity and Mat_State
+    SP_Data    mat_data;
     sf_double  density;
-    sf_double  absorption;
-    sf_double  scattering;
     sf_double  temperature;
-    sf_double  specific_heat;
     double     implicitness;
     double     delta_t;
-
-    // data for topology
-    int capacity;
 
     // data for the source builder
     double    elapsed_t;
@@ -83,20 +92,15 @@ class IMC_Flat_Interface :
     sf_string ss_desc;
 
   public:
-    // constructor -> the default processor capacity is 6 cells
-    IMC_Flat_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder>, int = 6);
+    // constructor
+    IMC_Flat_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder>);
     
     // public interface for Opacity_Builder
+    SP_Data   get_flat_data_container() const { return mat_data; }
     sf_double get_density() const {return density;}
-    sf_double get_absorption_opacity() const { return absorption; }
-    sf_double get_scattering_opacity() const { return scattering; }
-    sf_double get_specific_heat() const {return specific_heat;}
     sf_double get_temperature() const {return temperature;}
     double    get_implicitness_factor() const { return implicitness; }
     double    get_delta_t() const { return delta_t; }
-
-    // public interface for Topology
-    int get_capacity() const { return capacity; }
 
     // public interface for Source_Builder
     double get_elapsed_t() const { return elapsed_t; }
@@ -119,10 +123,108 @@ class IMC_Flat_Interface :
 };
 
 //---------------------------------------------------------------------------//
+// IMC_FLAT_INTERFACE DEFINITIONS
+//---------------------------------------------------------------------------//
+
+// constructor
+template<class PT>
+IMC_Flat_Interface<PT>::IMC_Flat_Interface(
+    rtt_dsxx::SP<rtt_mc::OS_Builder> osb) 
+    : builder(osb),
+      mat_data(new rtt_imc::Flat_Data_Container),
+      density(6), 
+      temperature(6),
+      implicitness(1.0), 
+      delta_t(.001),
+      elapsed_t(.001),
+      evol_ext(6),
+      rad_source(6),
+      rad_temp(6),
+      ss_temp(2),
+      ss_desc(2, "standard")
+{   
+    // make the Opacity and Mat_State stuff
+    
+    // size the data in the flat data container
+    mat_data->gray_absorption_opacity.resize(6);
+    mat_data->gray_scattering_opacity.resize(6);
+    mat_data->mg_absorption_opacity.resize(6, sf_double(3));
+    mat_data->mg_scattering_opacity.resize(6, sf_double(3));
+    mat_data->specific_heat.resize(6);
+    mat_data->group_boundaries.resize(4);
+
+    // make group boundaries
+    mat_data->group_boundaries[0] = 0.01;
+    mat_data->group_boundaries[1] = 0.1;
+    mat_data->group_boundaries[2] = 1.0;
+    mat_data->group_boundaries[3] = 10.0;
+
+    for (int i = 0; i < 3; i++)
+    {
+	// density
+	density[i]   = 1.0;
+	density[i+3] = 2.0;
+
+	// absorption opacity in /cm
+	mat_data->gray_absorption_opacity[i]    = .1  * density[i];
+	mat_data->gray_absorption_opacity[i+3]  = .01 * density[i+3];
+
+	mat_data->mg_absorption_opacity[i][0]   = 1.0;
+	mat_data->mg_absorption_opacity[i][1]   = 0.5;
+	mat_data->mg_absorption_opacity[i][2]   = 0.1;
+
+	mat_data->mg_absorption_opacity[i+3][0] = 2.0;
+	mat_data->mg_absorption_opacity[i+3][1] = 1.5;
+	mat_data->mg_absorption_opacity[i+3][2] = 1.1;
+	
+	// scattering opacity in /cm
+	mat_data->gray_scattering_opacity[i]    = 0.5 * density[i];
+	mat_data->gray_scattering_opacity[i+3]  = 0.0 * density[i+3];
+
+	mat_data->mg_scattering_opacity[i][0]   = 0.0;
+	mat_data->mg_scattering_opacity[i][1]   = 0.0;
+	mat_data->mg_scattering_opacity[i][2]   = 0.0;
+	mat_data->mg_scattering_opacity[i+3][0] = 0.0;
+	mat_data->mg_scattering_opacity[i+3][1] = 0.0;
+	mat_data->mg_scattering_opacity[i+3][2] = 0.0;
+
+	// specific heat in jks/g/keV
+	mat_data->specific_heat[i]   = .1;
+	mat_data->specific_heat[i+3] = .2;
+
+	// temperature
+	temperature[i]   = 10.0;
+	temperature[i+3] = 20.0;
+    }
+
+    // make the Source_Builder stuff
+
+    for (int i = 0; i < 6; i++)
+    {
+	evol_ext[i]   = 100;
+	rad_source[i] = 200;
+	rad_temp[i]   = 10.0;
+    }
+
+    ss_temp[0] = 20.0;
+    ss_temp[1] = 0.0;
+}
+
+//---------------------------------------------------------------------------//
+
+template<class PT>
+std::vector<std::vector<int> > IMC_Flat_Interface<PT>::get_defined_surcells()
+    const
+{
+    return builder->get_defined_surcells();
+}
+
+//---------------------------------------------------------------------------//
 //make a CDI interface for a 6 cell mesh; the data specifications for each
 //cell are in Vol III pg. 1; this interface is used to test
 //CDI_Mat_State_Builder only.  It contains both multigroup and gray data in
 //the CDIs. The source parts of the interface have no meaning
+//---------------------------------------------------------------------------//
 
 template<class PT>
 class IMC_CDI_Interface :
@@ -130,15 +232,15 @@ class IMC_CDI_Interface :
 	public rtt_imc::CDI_Data_Interface
 {
   public:
-    typedef rtt_dsxx::SP<rtt_cdi::CDI>                  SP_CDI;
-    typedef std::vector<int>                            sf_int;
-    typedef std::vector<SP_CDI>                         sf_CDI;
-    typedef std::vector<double>                         sf_double;
-    typedef std::string                                 std_string;
-    typedef std::vector<std_string>                     sf_string;
-    typedef std::vector<sf_int>                         vf_int;
-    typedef typename rtt_mc::Particle_Stack<PT>::Census Census;
-    typedef rtt_dsxx::SP<Census>                        SP_Census;
+    typedef rtt_dsxx::SP<rtt_cdi::CDI>                       SP_CDI;
+    typedef std::vector<int>                                 sf_int;
+    typedef std::vector<SP_CDI>                              sf_CDI;
+    typedef std::vector<double>                              sf_double;
+    typedef std::string                                      std_string;
+    typedef std::vector<std_string>                          sf_string;
+    typedef std::vector<sf_int>                              vf_int;
+    typedef typename rtt_mc::Particle_Containers<PT>::Census Census;
+    typedef rtt_dsxx::SP<Census>                             SP_Census;
 
 
   private:
@@ -164,9 +266,6 @@ class IMC_CDI_Interface :
     // CDI specific parts of interface
     sf_CDI get_CDIs() const { return cdi_list; }
     sf_int get_CDI_map() const { return cdi_map; }
-
-    // public interface for Topology
-    int get_capacity() const { return int(); }
 
     // public interface for Source_Builder
     double get_elapsed_t() const { return double(); }
@@ -215,6 +314,7 @@ IMC_CDI_Interface<PT>::IMC_CDI_Interface()
     using rtt_cdi::GrayOpacity;
     using rtt_cdi::EoS;
     using rtt_cdi::MultigroupOpacity;
+    using rtt_dsxx::SP;
 
     // make material data
     density[0] = 1.0;

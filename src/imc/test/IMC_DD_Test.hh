@@ -17,8 +17,16 @@
 #include "../Particle.hh"
 #include "mc/Topology.hh"
 #include "mc/OS_Mesh.hh"
+#include "c4/global.hh"
 #include "ds++/SP.hh"
 #include <iostream>
+#include <vector>
+#include <string>
+
+namespace rtt_mc
+{
+template<class PT> class Particle_Containers;
+}
 
 namespace rtt_imc_dd_test
 {
@@ -44,17 +52,27 @@ rtt_dsxx::SP<rtt_mc::Topology> build_DD_Topology();
 //===========================================================================//
 // interface for the 9-cell DD mesh on 4 processors.
 
+template<class PT>
 class IMC_DD_Interface :
-	public rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh> >,
+	public rtt_imc::Interface<PT>,
 	public rtt_imc::Flat_Data_Interface
 {
+  public:
+    // Useful typedefs
+    typedef std::vector<double>                              sf_double;
+    typedef std::vector<int>                                 sf_int;
+    typedef std::vector<sf_int>                              vf_int;
+    typedef std::vector<std::string>                         sf_string;
+    typedef std::string                                      std_string;
+    typedef rtt_dsxx::SP<rtt_imc::Flat_Data_Container>       SP_Data;
+    typedef typename rtt_mc::Particle_Containers<PT>::Census Census;
+    typedef rtt_dsxx::SP<Census>                             SP_Census;
+
   private:
     // data for the Opacity and Mat_State
+    SP_Data    mat_data;
     sf_double  density;
-    sf_double  absorption;
-    sf_double  scattering;
     sf_double  temperature;
-    sf_double  specific_heat;
     double     implicitness;
     double     delta_t;
 
@@ -74,15 +92,13 @@ class IMC_DD_Interface :
     IMC_DD_Interface(int = 2);
     
     // public interface for Opacity_Builder
+    SP_Data   get_flat_data_container() const {return mat_data;}
     sf_double get_density() const {return density;}
-    sf_double get_absorption_opacity() const { return absorption; }
-    sf_double get_scattering_opacity() const { return scattering; }
-    sf_double get_specific_heat() const {return specific_heat;}
     sf_double get_temperature() const {return temperature;}
     double    get_implicitness_factor() const { return implicitness; }
     double    get_delta_t() const { return delta_t; }
 
-    // public interface for Topology
+    // processor capacity
     int get_capacity() const { return capacity; }
 
     // public interface for Source_Builder
@@ -105,6 +121,106 @@ class IMC_DD_Interface :
     // get_ecentot returns the global value
     double get_ecentot() const { return double(9*137.2); }
 };
+
+//---------------------------------------------------------------------------//
+// DD INTERFACE CLASS MEMBER DEFINITIONS
+//---------------------------------------------------------------------------//
+// constructor
+
+template<class PT>
+IMC_DD_Interface<PT>::IMC_DD_Interface(int capacity_) 
+    : mat_data(new rtt_imc::Flat_Data_Container), 
+      density(capacity_),
+      temperature(capacity_),
+      implicitness(1.0), 
+      delta_t(.001),
+      capacity(capacity_),
+      elapsed_t(.001),
+      evol_ext(capacity_),
+      rad_source(capacity_),
+      rad_temp(capacity_),
+      ss_temp(1),
+      ss_desc(1, "standard")
+{   
+    // check the hardwired numbers of cells for each processor
+    Check (C4::nodes() == 4);
+    Check ((C4::node() != 3) ? (capacity == 2) : true);
+    Check ((C4::node() == 3) ? (capacity == 3) : true);
+
+    // make the Opacity and Mat_State stuff
+    
+    // size the data in the flat data container
+    mat_data->gray_absorption_opacity.resize(capacity);
+    mat_data->gray_scattering_opacity.resize(capacity);
+    mat_data->specific_heat.resize(capacity);
+
+    for (int i = 0; i < capacity; i++)
+    {
+	// density
+	density[i] = C4::node() + i + 1.0;
+
+	// absorption in /cm
+	mat_data->gray_absorption_opacity[i] = (2 * C4::node() + i + 1.0) *
+	    density[i];
+
+	// scattering in /cm
+	mat_data->gray_scattering_opacity[i] = (2.0 * (C4::node() + i + 1.0)) * 
+	    density[i];
+
+	// specific heat
+	mat_data->specific_heat[i] = 3.0 * C4::node() + i + 1.0;
+
+	// temperature
+	mat_data->temperature[i]   = 3.0 * (C4::node() + i + 1.0);
+    }
+
+    // make the Source_Builder stuff
+
+    for (int i = 0; i < capacity; i++)
+    {
+	evol_ext[i]   = 100;
+	rad_source[i] = 200;
+	rad_temp[i]   = 10.0;
+    }
+
+    ss_temp[0] = 20.0;
+}
+
+//---------------------------------------------------------------------------//
+
+template<class PT>
+std::vector<std::vector<int> > IMC_DD_Interface<PT>::get_defined_surcells()
+    const
+{
+    // each processor has one surface source and one SS cell (cell 2)
+    vf_int surcells(1);
+    surcells[0].resize(1);
+    surcells[0][0] = 2;
+
+    return surcells;
+}
+
+//---------------------------------------------------------------------------//
+
+template<class PT>
+std::vector<std::string> IMC_DD_Interface<PT>::get_ss_pos() const
+{
+    // each processor has one surface source
+    sf_string ss_pos(1);
+
+    if (C4::node() == 0)
+	ss_pos[0] = "loy";
+    else if (C4::node() == 1)
+	ss_pos[0] = "lox";
+    else if (C4::node() == 2)
+	ss_pos[0] = "hix";
+    else if (C4::node() == 3)
+	ss_pos[0] = "hiy";
+    else
+	Insist (0, "Incorrect processor number!");
+
+    return ss_pos;
+}
 
 } // end namespace rtt_imc_dd_test
 
