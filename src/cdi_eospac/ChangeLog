@@ -1,3 +1,8 @@
+2002-12-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* cdi_eospac: release 1_2_0.  Fixes in configure.in for Compaq
+	machine. 
+
 2002-05-09  Thomas M. Evans  <tme@lanl.gov>
 
 	* cdi_eospac: released version 1_1_0.  Updated to work with
