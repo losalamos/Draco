@@ -23,6 +23,7 @@ class NML_Block {
 
   public:
     NML_Block( const String& n ) : name(n) {}
+    ~NML_Block();
 
     int add( NML_Item *pitm );
     int modify_defaults( va_list *pap );

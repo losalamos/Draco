@@ -11,6 +11,13 @@
 
 #include "ds++/Assert.hh"
 
+NML_Block::~NML_Block()
+{
+    for( list<NML_Item *>::iterator i = itmlist.begin();
+         i != itmlist.end(); i++ )
+        delete *i;
+}
+
 int NML_Block::add( NML_Item *pitm )
 {
 //     cout << "NML_Block(" << name << ")::add, Adding "
