@@ -14,38 +14,39 @@ dnl
 dnl AC_DRACO_VENDOR_SETUP
 dnl
 dnl AC_NEEDS_LIBS(pkg_components)
-dnl AC_NEEDS_DRACO_LIBS(cdi ds++)
+dnl AC_NEEDS_LIBS_DRACO(cdi ds++)
 dnl
-dnl That is, it must be called before AC_NEEDS_DRACO_LIBS.
+dnl That is, it must be called before AC_NEEDS_LIBS_DRACO.
 dnl
 dnl Three options are defined that tell configure where draco includes
 dnl and libraries are located:
 dnl
 dnl  --with-draco
-dnl  --with-draco-inc
 dnl  --with-draco-lib
+dnl  --with-draco-inc
 dnl
-dnl Setting --with-draco=<dir> will tell configure to look in
-dnl <dir>/lib or <dir>/include for draco stuff.  Setting 
-dnl --with-draco without arguments tells configure to look in
-dnl the directory set by --prefix for draco stuff. Either the 
-dnl include or lib directories can be set/overridden by 
-dnl directories set by --with-draco-inc --with-draco-lib.  If
-dnl nothing is set, configure will try to look in standard locations
-dnl (ie, /usr/lib, /usr/include, etc) for draco stuff.
+dnl Setting --with-draco=<dir> tells configure to look in <dir>/lib,
+dnl <dir>/inc, <dir>/libexec for draco stuff.  The include and/or lib 
+dnl directories can be overridden by setting --with-draco-inc or
+dnl --with-draco-lib.  If --with-draco is set, without arguments, then
+dnl --prefix is used as the draco directory.  The default location (if
+dnl --with-draco is not called at all) is /usr/local.  Of course, this
+dnl can be overwritten for the lib and include directories by using 
+dnl --with-draco-lib and/or --with-draco-inc (libexec is found in the
+dnl directory set by --with-draco-lib (in libexec instead of lib.
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_VENDOR_SETUP, [dnl
 
    dnl define --with-draco 
    AC_ARG_WITH(draco,
-      [  --with-draco            give head location of draco includes and libs])
+      [  --with-draco            give head location of draco includes and libs (default is /usr/local; no argmument sets to prefix)])
 
    AC_ARG_WITH(draco-inc,
-      [  --with-draco-lib        give location of draco includes])
+      [  --with-draco-inc        give location of draco includes])
 
    AC_ARG_WITH(draco-lib,
-      [  --with-draco-inc        give location of draco libs])
+      [  --with-draco-lib        give location of draco libs])
 
    # draco include and lib dirs
    DRACO_INC=''
@@ -65,6 +66,7 @@ AC_DEFUN(AC_DRACO_VENDOR_SETUP, [dnl
 	   # set DRACO_INC and DRACO_LIB
 	   DRACO_INC="${prefix}/include"
 	   DRACO_LIB="${prefix}/lib"
+	   libexecdir="${prefix}/libexec"
 
 	   draco_in_prefix='true'
 
@@ -73,55 +75,92 @@ AC_DEFUN(AC_DRACO_VENDOR_SETUP, [dnl
        else
 	   
 	   # set DRACO_INC and DRACO_LIB
+	   DRACO_LIB="${with_draco}/lib"   
 	   DRACO_INC="${with_draco}/include"
-	   DRACO_LIB="${with_draco}/lib"
+	   libexecdir="${with_draco}/libexec"
 
        fi
 
-       # make sure they exist
-       if test ! -d "${DRACO_INC}" ; then
-	   AC_MSG_ERROR("${DRACO_INC} does not exist")
-       elif test ! -d "${DRACO_LIB}" ; then
-	   AC_MSG_ERROR("${DRACO_LIB} does not exist")
-       fi
-
-   # check to see if --with_draco_inc or --with_draco_lib have 
-   # been set
+   # set draco default location to /usr/local
    else
+
+       DRACO_INC="/usr/local/include"
+       DRACO_LIB="/usr/local/lib"
+       libexecdir="/usr/local/libexec"
+
+   fi
      
-       # if --with_draco_inc is defined then set and check DRACO_INC
-       if test -n "${with_draco_inc}" ; then
-	   DRACO_INC="${with_draco_inc}"
-	   if test ! -d "${DRACO_INC}" ; then
-	       AC_MSG_ERROR("${DRACO_INC} does not exist")
-	   fi
-       fi
-
-       # if --with_draco_lib is defined then set and check DRACO_LIB
-       if test -n "${with_draco_lib}" ; then
-	   DRACO_LIB="${with_draco_lib}"
-	   if test ! -d "${DRACO_LIB}" ; then
-	       AC_MSG_ERROR("${DRACO_LIB} does not exist")
-	   fi
-       fi
-
+   # if --with_draco_inc is defined then set and check DRACO_INC
+   if test -n "${with_draco_inc}" ; then
+       DRACO_INC="${with_draco_inc}"
    fi
 
-   # check settings of DRACO_INC and DRACO_LIB
-   if test -n "${DRACO_INC}" && test -n "${DRACO_LIB}" ; then
-       AC_MSG_RESULT("${DRACO_INC} and ${DRACO_LIB} set")
-   elif test -n "${DRACO_INC}" && test -z "${DRACO_LIB}" ; then
-       AC_MSG_RESULT("${DRACO_INC} set, draco libraries will be searched in standard locations")
-   elif test -n "${DRACO_LIB}" && test -z "${DRACO_INC}" ; then
-       AC_MSG_RESULT("${DRACO_LIB} set, draco includes will be searched in standard locations")
-   else
-       AC_MSG_RESULT("use default search paths for draco libraries and includes")
+   # if --with_draco_lib is defined then set and check DRACO_LIB
+   if test -n "${with_draco_lib}" ; then
+       DRACO_LIB="${with_draco_lib}"
+       libexecdir="${with_draco_lib}/../libexec"
    fi
+
+   # make sure they exist   
+   if test ! -d "${DRACO_INC}" && test -z "${draco_in_prefix}" ; then
+       AC_MSG_ERROR("${DRACO_INC} does not exist")
+   fi
+
+   if test ! -d "${DRACO_LIB}" && test -z "${draco_in_prefix}" ; then
+       AC_MSG_ERROR("${DRACO_LIB} does not exist")
+   fi
+
+
+   AC_MSG_RESULT("${DRACO_INC} and ${DRACO_LIB} and ${libexecdir} set")
 
    # add draco include directory to CPPFLAGS
-   if test -n "${DRACO_INC}" && test -z "${draco_in_prefix}" ; then
+   if test -z "${draco_in_prefix}" ; then
        CPPFLAGS="${CPPFLAGS} -I ${DRACO_INC}"
    fi
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_NEEDS_LIBS_DRACO
+dnl
+dnl add DRACO libraries necessary for a package
+dnl this MACRO must be called after AC_NEEDS_LIBS
+dnl usage: configure.in
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_NEEDS_LIBS_DRACO, [dnl
+   if test ${has_draco_libdir:=no} != "yes" &&
+      test -z "${draco_in_prefix}" ; then
+       DRACO_LIBS="${DRACO_LIBS} -L${DRACO_LIB}"
+       has_draco_libdir="yes"
+   fi
+
+   for lib in $1
+   do
+       # temporary string to keep line from getting too long
+       draco_depends="${DRACO_LIB}/lib${lib}\${libsuffix}"
+       DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
+       DRACO_LIBS="${DRACO_LIBS} -l${lib}"
+   done
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_NEEDS_LIBS_TEST_DRACO
+dnl
+dnl add DRACO libraries necessary for testing a package
+dnl this MACRO must be called after AC_NEEDS_LIBS_TEST
+dnl usage: configure.in
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_NEEDS_LIBS_TEST_DRACO, [dnl
+   DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L${DRACO_LIB}"
+
+   for lib in $1
+   do
+       # temporary string to keep line from getting too long
+       draco_test_depends="${DRACO_LIB}/lib${lib}\${libsuffix}"
+       DRACO_TEST_DEPENDS="${DRACO_TEST_DEPENDS} ${draco_test_depends}"
+       DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -l${lib}"
+   done
 ])
 
 dnl-------------------------------------------------------------------------dnl
