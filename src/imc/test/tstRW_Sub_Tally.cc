@@ -16,6 +16,7 @@
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 #include <iostream>
 #include <vector>
@@ -24,6 +25,7 @@
 using namespace std;
 
 using rtt_imc::Random_Walk_Sub_Tally;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -31,6 +33,29 @@ using rtt_imc::Random_Walk_Sub_Tally;
 
 void sub_tally_test()
 {
+    // make sub tally
+    Random_Walk_Sub_Tally rwsub;
+
+    if (rwsub.get_accum_n_random_walks() != 0) ITFAILS;
+    if (rwsub.get_accum_n_spheres() != 0)      ITFAILS;
+    if (rwsub.get_accum_sphere_radii() != 0.0) ITFAILS;
+    if (rwsub.get_accum_step_lengths() != 0.0) ITFAILS;
+
+    // do some tallies
+    rwsub.accum_n_random_walks();
+    rwsub.accum_n_random_walks(4);
+
+    rwsub.accum_sphere_radii(0.1);
+    rwsub.accum_sphere_radii(0.4);
+
+    rwsub.accum_step_length(0.8);
+    rwsub.accum_step_length(0.7);
+
+    if (rwsub.get_accum_n_random_walks() != 5) ITFAILS;
+    if (rwsub.get_accum_n_spheres() != 2)      ITFAILS;
+    if (rwsub.get_accum_sphere_radii() != 0.5) ITFAILS;
+    if (rwsub.get_accum_step_lengths() != 1.5) ITFAILS;
+    
     if (rtt_imc_test::passed)
 	PASSMSG("Random_Walk_Sub_Tally ok.");
 }
