@@ -1,0 +1,95 @@
+#!/bin/sh
+##---------------------------------------------------------------------------##
+## build_ccs4_release
+##
+## Build draco releases in /codes/radtran/vendors/draco-#_#_# on the
+## CCS-4 Linux network.  Note, this only builds Linux versions:
+##
+##   /codes/radtran/vendors/draco-#_#_#/Linux/debug
+##   /codes/radtran/vendors/draco-#_#_#/Linux/opt
+##
+## This script should be run from 
+## 
+##   /codes/radtran/vendors/draco-#_#_#/draco/tools
+##---------------------------------------------------------------------------##
+
+## determine version from argument
+
+draco_src=`cd ..; pwd`
+draco_home=`cd $draco_src/..; pwd`
+draco_debug="$draco_home/Linux/debug"
+draco_opt="$draco_home/Linux/opt"
+
+##---------------------------------------------------------------------------##
+
+## options
+
+MPI="--with-c4=mpi"
+MPI_INC="--with-mpi-inc=/usr/local/mpich/include"
+MPI_LIB="--with-mpi-lib=/usr/local/mpich/lib"
+
+SPRNG_INC="--with-sprng-inc=/codes/radtran/vendors/sprng/include"
+SPRNG_LIB="--with-sprng-lib=/codes/radtran/vendors/sprng/Linux/lib"
+
+PCG_LIB="--with-pcg-lib=/codes/radtran/vendors/pcg/Linux/lib"
+
+LAPACK="--with-lapack=atlas"
+LAPACK_LIB="--with-lapack-lib=/codes/radtran/vendors/atlas/Linux/lib"
+
+GANDOLF_LIB="--with-gandolf-lib=/codes/radtran/vendors/gandolf/Linux"
+
+EOSPAC_LIB="--with-eospac-lib=/codes/radtran/vendors/eospac/Linux/lib"
+
+GRACE_INC="--with-grace-inc=/usr/local/grace/include"
+GRACE_LIB="--with-grace-lib=/usr/local/grace/lib"
+
+VENDORS="$MPI $MPI_INC $MPI_LIB $SPRNG_INC $SPRNG_LIB $PCG_LIB $LAPACK"
+VENDORS="$VENDORS $LAPACK_LIB $GANDOLF_LIB $EOSPAC_LIB $GRACE_INC $GRACE_LIB"
+
+##---------------------------------------------------------------------------##
+
+## debug
+
+if ! test -d $draco_debug ; then
+    echo "No $draco_debug directory exists! Exiting"
+    exit
+fi
+
+cd $draco_debug
+mkdir d
+cd d
+
+OPTIONS="--enable-shared"
+$draco_src/configure --prefix=$draco_debug $VENDORS $OPTIONS
+gmake nj=2
+
+gmake check > $draco_debug/log
+
+cd $draco_debug
+rm -rf d
+
+python $draco_src/tools/regression_filter.py < log
+
+##---------------------------------------------------------------------------##
+
+## opt
+
+if ! test -d $draco_opt ; then
+    echo "No $draco_opt directory exists! Exiting"
+    exit
+fi
+
+cd $draco_opt
+mkdir d
+cd d
+
+OPTIONS="--with-opt=3 --disable-debug --with-dbc=0 --enable-shared"
+$draco_src/configure --prefix=$draco_opt $VENDORS $OPTIONS
+gmake nj=2
+
+gmake check > $draco_opt/log
+
+cd $draco_opt
+rm -rf d
+
+python $draco_src/tools/regression_filter.py < log
