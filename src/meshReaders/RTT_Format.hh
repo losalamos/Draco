@@ -1124,9 +1124,7 @@ class RTT_Format : public Mesh_Reader
     virtual string get_title() const
         { return header.get_title(); }
 
-    virtual bool invariant() const
-        { bool test = true;
-	  return test; }
+    virtual bool invariant() const;
 
     // header data access
 /*!

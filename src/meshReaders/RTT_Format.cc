@@ -1152,7 +1152,7 @@ void RTT_Format::CellDef::sortData()
 
     ordered_sides.resize(nsides);
     // this flag is for debugging use only (not user-selectable).
-    bool debugging = true;
+    bool debugging = false;
 
     for (int i = 0; i < nsides; ++i)
     {
@@ -1512,7 +1512,7 @@ void RTT_Format::Nodes::sortData()
         parents[i] =  sort_map[parents[i]];
 
     // this flag is for debugging use only (not user-selectable).
-    bool debugging = true;
+    bool debugging = false;
     if (debugging)
     {
         for (int i = 0; i < dims.get_nnodes(); ++i)
@@ -1758,7 +1758,7 @@ void RTT_Format::Sides::sortData()
     }
 
     // this flag is for debugging use only (not user-selectable).
-    bool debugging = true;
+    bool debugging = false;
 
     if (debugging)
     {
@@ -1926,7 +1926,7 @@ void RTT_Format::Cells::sortData()
     }
 
     // this flag is for debugging use only (not user-selectable).
-    bool debugging = true;
+    bool debugging = false;
 
     if (debugging)
     {
@@ -2532,7 +2532,7 @@ void RTT_Format::Connectivity::calcAdjacentCells()
     cell_faces.resize(0);
 
     // this flag is for debugging use only (not user-selectable).
-    bool debugging = true;
+    bool debugging = false;
 
     if (debugging)
     {
@@ -2647,7 +2647,7 @@ map<string, set<int> > RTT_Format::get_node_sets() const
  *        flag_type_name and flag_name combination for the sides and cells
  *        read from the mesh file data.
  * \return The elements associated with each flag_type_name/flag_name 
- *         combination for the sides and cells
+ *         combination for the sides and cells.
  */
 map<string, set<int> > RTT_Format::get_element_sets() const
 {
@@ -2710,6 +2710,20 @@ map<string, set<int> > RTT_Format::get_element_sets() const
     }
 
     return element_sets;
+}
+
+/*!
+ * \brief Performs a basic sanity check on the mesh file data.
+ * \return Acceptablity of the mesh file data.
+ */
+bool RTT_Format::invariant() const
+{
+    bool test =  (get_dims_ndim() > 0)       && (get_dims_nnodes() > 0) && 
+                 (get_dims_nsides() > 0)     && (get_dims_ncells() > 0) &&
+                 (get_dims_ncell_defs() > 0) &&
+                 (get_dims_ncell_defs() >= get_dims_nside_types())  &&
+		 (get_dims_ncell_defs() >= get_dims_ncell_types());
+    return test;
 }
 
 } // end namespace rtt_format
