@@ -25,8 +25,8 @@
  * utilities.
  *
  * \sa The ts_manager and ts_advisor classes provide most of the
- * functionality of the namespace. The <a href="./index.html">Main Page</a>
- * presents a summary of the capabilities provided within the namespace.
+ * functionality of the namespace. The \ref index presents a summary of the
+ * capabilities provided within the namespace.
  */
 /*!
  * \example timestep/test/main.cc

@@ -24,8 +24,8 @@
  * \sa The meshReaders_Services class constructor automatically instantiates
  * and executes the readMesh member function used to parse the mesh
  * data. Accessor functions are provided for all of the remaining member
- * classes to allow data retrieval. The <a href="./index.html"> Main Page
- * </a> presents a summary of the *capabilities provided by the namespace.
+ * classes to allow data retrieval. The \ref index presents a summary of the
+ * *capabilities provided by the namespace.
  */
 //===========================================================================//
 

@@ -27,8 +27,8 @@
  * Hex_Mesh_Reader class provides a capability to read CIC-19 Hex Mesh format
  * mesh files.
  
- * \sa The <a href="./index.html">Main Page</a> presents a summary of the
- * capabilities provided within the namespace.
+ * \sa The \ref index presents a summary of the capabilities provided within
+ * the namespace.
 
  */
 //===========================================================================//
