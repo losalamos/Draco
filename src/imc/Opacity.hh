@@ -1,106 +1,175 @@
 //----------------------------------*-C++-*----------------------------------//
-// Opacity.hh
-// Thomas M. Evans
-// Fri Feb  6 13:52:29 1998
+/*!
+ * \file   imc/Opacity.hh
+ * \author Thomas M. Evans
+ * \date   Fri Feb  6 13:52:29 1998
+ * \brief  Opacity class header file.
+ */
 //---------------------------------------------------------------------------//
-// @> Opacity class header file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __imc_Opacity_hh__
 #define __imc_Opacity_hh__
 
+#include "ds++/Assert.hh"
+#include <vector>
+#include <string>
+#include <iostream>
+
+namespace rtt_imc 
+{
+
 //===========================================================================//
-// class Opacity - 
-//
-// Date created : 2-6-98
-// Purpose      : Simple opacity package for IMCTEST
-//
+/*!
+ * \brief Opacity class for Fleck and Cumming's IMC.
+
+ * The Opacity class stores the opacities necessary for one timestep of
+ * transport.  It is designed to be rebuilt each timestep when the material
+ * properties cause a change in the particle opacities, although this is not
+ * required.  The data it provides are:
+
+ * \arg absorption opacities (1/cm)
+ * \arg coherent (isotropic) scattering cross sections (1/cm)
+ * \arg planck (one-group) opacities (1/cm)
+ * \arg fleck factor (dimensionless)
+
+ * The Opacity class simply stores these opacities for IMC.  It is the job of
+ * a builder class to actually generate the opacities that Opacity stores.
+ * Thus, for gray calculations, the Planck and absorption opacities have the
+ * same value.
+
+ * Additionally, the Opacity class uses the stored opacities to return Fleck
+ * and Cummings specific "opacity-like" quantities. These result from the
+ * time-implicit differencing in the material-energy equation and the
+ * time-continuous treatment of the transport equation.  These are:
+
+ * \arg the effective absorption
+ * \arg the effective scattering
+ * \arg the Fleck factor times the Planck absorption opacity
+
+ */
+/*!
+ * \example imc/test/tstOpacity.cc
+
+ * Example usage of the rtt_imc::Opacity class.
+
+ */
 // revision history:
 // -----------------
 // 0) original
 // 
 //===========================================================================//
 
-#include <iostream>
-
-namespace rtt_imc 
-{
-
 template<class MT>
 class Opacity
 {
-private:
-  // sigma = kappa * rho
-    typename MT::CCSF_double sigma_abs;
+  public:
+    // Useful typedefs.
+    typedef typename MT::CCSF_double ccsf_double;
 
-  // sigma_thomson = kappa_thomson * rho
-    typename MT::CCSF_double sigma_thomson;
+  private:
+    // Absorption opacity in 1/cm.
+    ccsf_double sigma_abs;
 
-  // Plankian opacity
-    typename MT::CCSF_double planck;
+    // Scattering (coherent) in 1/cm.
+    ccsf_double sigma_thomson;
 
-  // fleck factors
-    typename MT::CCSF_double fleck;
+    // Plankian opacity in 1/cm.
+    ccsf_double planck;
+
+    // Fleck factor.
+    ccsf_double fleck;
     
-public:
-  // opacity constructor
-    inline Opacity(const typename MT::CCSF_double &,
-		   const typename MT::CCSF_double &,
-		   const typename MT::CCSF_double &,
-		   const typename MT::CCSF_double &);
+  public:
+    // Opacity constructor.
+    Opacity(const ccsf_double &, const ccsf_double &, const ccsf_double &, 
+	    const ccsf_double &);
 
-  // member set and accessor functions
+    //>>> ACCESSORS
+
+    //! Get the absorption opacity in a cell in per cm.
     double get_sigma_abs(int cell) const { return sigma_abs(cell); }
+
+    //! Get the (coherent) scattering cross section in a cell in per cm.
     double get_sigma_thomson(int cell) const { return sigma_thomson(cell); }
+
+    //! Get the Planck absorption opacity in a cell in per cm.
     double get_planck(int cell) const { return planck(cell); }
+
+    //! Get the Fleck factor in a cell.
     double get_fleck(int cell) const { return fleck(cell); }
+
+    //! Get the number of cells that these opacities are stored in.
     int num_cells() const { return sigma_abs.get_Mesh().num_cells(); }
 
-  // operations
+    //>>> FLECK AND CUMMINGS OPACITY OPERATIONS
+
+    //! Return the Fleck factor times the Planck opacity in a cell.
     double fplanck(int cell) const { return fleck(cell) * planck(cell); }
+
+    // Get the effective scattering cross section.
     inline double get_sigeffscat(int cell) const;
+
+    // Get the effective absorption cross section.
     inline double get_sigeffabs(int cell) const;
 
-  // diagnostic member functions
+    // Print diagnostic function.
     void print(std::ostream &, int) const;
 };
 
 //---------------------------------------------------------------------------//
-// overloaded operators
+// OVERLOADED OPERATORS
 //---------------------------------------------------------------------------//
 
 template<class MT>
-std::ostream& operator<<(std::ostream &, const Opacity<MT> &);
-
-//---------------------------------------------------------------------------//
-// inline member functions for Opacity
-//---------------------------------------------------------------------------//
-// constructor
-
-template<class MT>
-inline Opacity<MT>::Opacity(const typename MT::CCSF_double &sigma_abs_,
-			    const typename MT::CCSF_double &sigma_thomson_,
-			    const typename MT::CCSF_double &planck_,
-			    const typename MT::CCSF_double &fleck_)
-    : sigma_abs(sigma_abs_), sigma_thomson(sigma_thomson_), planck(planck_), 
-      fleck(fleck_)
-{}
-
-//---------------------------------------------------------------------------//
-// Fleck effective scatter cross section
-
-template<class MT>
-inline double Opacity<MT>::get_sigeffscat(int cell) const 
+std::ostream& operator<<(std::ostream &output, const Opacity<MT> &object)
 {
+    // print out opacities for all cells
+    using std::endl;
+    using std::setw;
+    using std::ios;
+    using std::setiosflags;
+
+    output << setw(8) << setiosflags(ios::right) << "Cell" 
+	   << setw(15) << "Abs Opacity" 
+	   << setw(15) << "Thomson Opac" << endl;
+    output << "--------------------------------------" << endl;
+
+    for (int i = 1; i <= object.num_cells(); i++)
+        object.print(output, i);
+    return output;
+}
+
+//---------------------------------------------------------------------------//
+// FLECK AND CUMMINGS OPACITY OPERATIONS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the Fleck and Cummings effective scattering cross section.
+
+ * The effective scattering cross section in the Fleck and Cummings IMC
+ * method is sigma = (1-F)*sigma_absorption, where F is the Fleck factor.
+
+ */
+template<class MT>
+double Opacity<MT>::get_sigeffscat(int cell) const 
+{
+    Require (cell > 0 && cell <= num_cells());
     return (1.0 - fleck(cell)) * sigma_abs(cell);
 }
 
 //---------------------------------------------------------------------------//
-// Fleck effective absorption cross section
-
+/*!  
+ * \brief Return the Fleck and Cummings effective absorption cross section.
+  
+ * The effective absorption cross section in the Fleck and Cummings IMC
+ * method is sigma = F*sigma_absorption, where F is the Fleck factor.
+ 
+ */
 template<class MT>
-inline double Opacity<MT>::get_sigeffabs(int cell) const 
+double Opacity<MT>::get_sigeffabs(int cell) const 
 { 
+    Require (cell > 0 && cell <= num_cells());
     return fleck(cell) * sigma_abs(cell);
 }
 

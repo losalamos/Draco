@@ -28,9 +28,6 @@ using std::ostream;
 
 template class Opacity_Builder<OS_MT>;
 
-template class Opacity<OS_MT>;
-template ostream& operator<<(ostream &, const Opacity<OS_MT> &);
-
 template class Mat_State<OS_MT>;
 template ostream& operator<<(ostream &, const Mat_State<OS_MT> &);
 
