@@ -1,3 +1,14 @@
+2000-11-30  H. Grady Hughes  <hgh@lanl.gov>
+
+	* TET_Mesh.hh, test/tstTET_Mesh.cc, test/TET_MODEL_1.in:
+	Added get_cell_pair(), the third graphic service for TET_Mesh
+	class, to support Ensight_Translator.  Added include-file and
+	using-declaration for rtt_viz::Ensight_Translator.  Replaced
+	locally generated output (cerr) test file with technique using
+	ifstream/ostringstream for in-memory comparison with predicted
+	outputs, thus increasing coverage for regression tests.  Added
+	tests for get_cell_pair() member of TET_Mesh class.
+
 2000-09-22  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
