@@ -190,34 +190,6 @@ int main( int argc, char *argv[] )
     }
 
     {
-        Mesh_XYZ::fcdsf oneFC( spm );
-        oneFC = 0.0;
-        Mesh_XYZ::ccsf oneCC( spm );
-        oneCC = 1.0;
-        Mesh_XYZ::gather ( oneFC, oneCC, Mesh_XYZ::OpAddAssign() );
-        //dump( oneFC, "oneFC, after" );
-    }
-
-    {
-        Mesh_XYZ::vcsf oneVC( spm );
-        oneVC = 0.0;
-        Mesh_XYZ::ncsf oneNC( spm );
-        oneNC = 1.0;
-        Mesh_XYZ::gather ( oneVC, oneNC, Mesh_XYZ::OpAddAssign() );
-        //dump( oneNC, "oneNC, after" );
-        //dump( oneVC, "oneVC, after" );
-    }
-
-    {
-        Mesh_XYZ::ncsf eightNC( spm );
-        eightNC = 0.0;
-        Mesh_XYZ::vcsf oneVC( spm );
-        oneVC = 1.0;
-        Mesh_XYZ::scatter ( eightNC, oneVC, Mesh_XYZ::OpAddAssign() );
-        //dump( eightNC, "eightNC, after" );
-    }
-
-    {
         Mesh_XYZ::vcsf oneVC( spm );
         oneVC = 1.0;
         Mesh_XYZ::fcdsf fourFC( spm );
@@ -245,6 +217,64 @@ int main( int argc, char *argv[] )
         zerovec = 0.0;
         fourFCV = zerovec;
         Mesh_XYZ::scatter( fourFCV, oneVCV, Mesh_XYZ::OpAddAssign() );
+    }
+
+    {
+        Mesh_XYZ::ncsf eightNC( spm );
+        eightNC = 0.0;
+        Mesh_XYZ::vcsf oneVC( spm );
+        oneVC = 1.0;
+        Mesh_XYZ::scatter ( eightNC, oneVC, Mesh_XYZ::OpAddAssign() );
+        //dump( eightNC, "eightNC, after" );
+    }
+
+    {
+        Mesh_XYZ::ccsf eightCC( spm );
+        eightCC = 0.0;
+        Mesh_XYZ::vcsf oneVC( spm );
+        oneVC = 1.0;
+        Mesh_XYZ::scatter ( eightCC, oneVC, Mesh_XYZ::OpAddAssign() );
+        //dump( eightCC, "eightCC, after" );
+    }
+
+    {
+        Mesh_XYZ::fcdsf oneFC( spm );
+        oneFC = 0.0;
+        Mesh_XYZ::ccsf oneCC( spm );
+        oneCC = 1.0;
+        Mesh_XYZ::gather ( oneFC, oneCC, Mesh_XYZ::OpAddAssign() );
+        //dump( oneFC, "oneFC, after" );
+    }
+
+    {
+        Mesh_XYZ::bssf oneBS( spm );
+        oneBS = 0.;
+        Mesh_XYZ::fcdsf oneFC( spm );
+        oneFC = 1.;
+        Mesh_XYZ::gather( oneBS, oneFC, Mesh_XYZ::OpAssign() );
+        oneFC = 0.;
+        Mesh_XYZ::gather( oneFC, oneBS, Mesh_XYZ::OpAssign() );
+        //dump( oneFC, "oneFC, after" );
+    }
+
+    {
+        Mesh_XYZ::vcsf oneVC( spm );
+        oneVC = 0.0;
+        Mesh_XYZ::ncsf oneNC( spm );
+        oneNC = 1.0;
+        Mesh_XYZ::gather ( oneVC, oneNC, Mesh_XYZ::OpAddAssign() );
+        //dump( oneNC, "oneNC, after" );
+        //dump( oneVC, "oneVC, after" );
+    }
+
+    {
+        Mesh_XYZ::vcsf oneVC( spm );
+        oneVC = 0.0;
+        Mesh_XYZ::ccsf oneCC( spm );
+        oneCC = 1.0;
+        Mesh_XYZ::gather ( oneVC, oneCC, Mesh_XYZ::OpAddAssign() );
+        //dump( oneCC, "oneCC, after" );
+        //dump( oneVC, "oneVC, after" );
     }
 
     {
@@ -281,17 +311,6 @@ int main( int argc, char *argv[] )
         total = Mesh_XYZ::sum(oneFC);
         if (total < 383.999 || total > 384.001)
             cout << "Error in global sum" << endl;
-    }
-
-    {
-        Mesh_XYZ::bssf oneBS( spm );
-        oneBS = 0.;
-        Mesh_XYZ::fcdsf oneFC( spm );
-        oneFC = 1.;
-        Mesh_XYZ::gather( oneBS, oneFC, Mesh_XYZ::OpAssign() );
-        oneFC = 0.;
-        Mesh_XYZ::gather( oneFC, oneBS, Mesh_XYZ::OpAssign() );
-        //dump( oneFC, "oneFC, after" );
     }
 
     {

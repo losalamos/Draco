@@ -736,6 +736,17 @@ void Mesh_XYZ::scatter
 }
 
 template <class T1, class T2, class Op>
+void Mesh_XYZ::scatter
+( Mesh_XYZ::cctf<T1>& to, const Mesh_XYZ::vctf<T2>& from, const Op& op )
+{
+    for ( int i = 0; i < to.ncx; ++i )
+      for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+          for ( int v = 0; v < 8; ++v )
+	    op(to(i,j,k), from(i,j,k,v));
+}
+
+template <class T1, class T2, class Op>
 void Mesh_XYZ::gather
 ( Mesh_XYZ::fcdtf<T1>& to, const Mesh_XYZ::cctf<T2>& from, const Op& op )
 {
@@ -837,6 +848,17 @@ void Mesh_XYZ::gather
             op(to(i,j,k,6), from(i,j+1,k+1));
             op(to(i,j,k,7), from(i+1,j+1,k+1));
         }
+}
+
+template <class T1, class T2, class Op>
+void Mesh_XYZ::gather
+( Mesh_XYZ::vctf<T1>& to, const Mesh_XYZ::cctf<T2>& from, const Op& op )
+{
+    for ( int i = 0; i < to.ncx; ++i )
+      for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+          for ( int v = 0; v < 8; ++v )
+            op(to(i,j,k,v), from(i,j,k));
 }
 
 template <class T>

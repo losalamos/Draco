@@ -780,6 +780,9 @@ class Mesh_XYZ : private XYZ_Mapper
     static void scatter( nctf<T1>& to, const vctf<T2>& from, const Op& op );
 
     template <class T1, class T2, class Op>
+    static void scatter( cctf<T1>& to, const vctf<T2>& from, const Op& op );
+
+    template <class T1, class T2, class Op>
     static void gather( fcdtf<T1>& to, const cctf<T2>& from, const Op& op );
 
     template <class T1, class T2, class Op>
@@ -790,6 +793,9 @@ class Mesh_XYZ : private XYZ_Mapper
 
     template <class T1, class T2, class Op>
     static void gather( vctf<T1>& to, const nctf<T2>& from, const Op& op );
+
+    template <class T1, class T2, class Op>
+    static void gather( vctf<T1>& to, const cctf<T2>& from, const Op& op );
 
     template <class T>
     static void swap( fcdtf<T>& to, const fcdtf<T>& from );
