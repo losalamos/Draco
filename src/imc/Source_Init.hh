@@ -112,14 +112,16 @@ private:
   // number of source particles, census, source energies, number of volume
   // and surface sources
     void calc_initial_census(const MT &, const Opacity<MT> &, 
-			     const Mat_State<MT> &, Rnd_Control &);
-    void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &);
+			     const Mat_State<MT> &, Rnd_Control &, 
+			     const int);
+    void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &,
+			      const int);
     void calc_source_numbers(const Opacity<MT> &, const int);
     void old_comb_census(const MT &, Rnd_Control &);
     void comb_census(const MT &, Rnd_Control &);
 
   // initial census service functions
-    void calc_evol(const Opacity<MT> &, const Mat_State<MT> &);
+    void calc_evol(const Opacity<MT> &, const Mat_State<MT> &, const int);
     void calc_ess();
     void calc_ecen();
     void calc_ncen_init();
@@ -149,6 +151,10 @@ public:
     string get_ss_dist() const { return ss_dist; }
     double get_evol_net(int cell) const { return evol_net(cell); }
     int num_cells() const { return ncen.get_Mesh().num_cells(); }
+
+  // accessor functions for Global_Tally
+    double get_delta_t() const { return delta_t; }
+    double get_volume(int cell) const { return ncen.get_Mesh().volume(cell); }
 
   // set and get functions for census stuff
     void set_ncen(int cell, int num) { ncen(cell) = num; }

@@ -36,6 +36,7 @@ Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface)
     specific_heat    = interface->get_specific_heat();
     delta_t          = interface->get_delta_t();
     analytic_opacity = interface->get_analytic_opacity();
+    analytic_sp_heat = interface->get_analytic_sp_heat();
 
   // some crucial checks about our data
     Check (implicitness >= 0 && implicitness <= 1);
@@ -70,7 +71,12 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
 	double heat = specific_heat[mat_zone[zone[cell-1]-1]-1];
 	rho(cell)   = den;
 	temp(cell)  = T;
-	dedt(cell)  = heat * mesh->volume(cell) * den;;
+        if (analytic_sp_heat == "straight")
+          // specific heat units: [jks/g/keV]
+	    dedt(cell) = heat * mesh->volume(cell) * den;
+        else if (analytic_sp_heat == "tcube")
+          // specific heat multiplier, units: [jks/cm^3/keV^4]
+            dedt(cell) = heat * mesh->volume(cell) * T*T*T;
     }
     
   // create Mat_State object

@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imc/Global_Tally.hh"
+#include "imc/Global.hh"
 #include <iomanip>
 
 IMCSPACE
@@ -24,8 +25,9 @@ using std::fabs;
 template<class MT, class PT>
 Global_Tally<MT,PT>::Global_Tally(const MT &mesh, const Mat_State<MT>
 				  &material, const Source_Init<MT> &source)
-    : temperature(mesh.num_cells()), dedt(mesh.num_cells()), e_elec_tot(0),
-      eint_initial(0), eint_begin(0), eint_end(0), e_in_probtot(0),
+    : temperature(mesh.num_cells()), volume(mesh.num_cells()),
+      dedt(mesh.num_cells()), e_elec_tot(0), delta_t(0), eint_initial(0), 
+      eint_begin(0), eint_end(0), e_in_probtot(0),
       e_esc_probtot(0), e_loss_probtot(0), evol_net(mesh.num_cells()),   
       evoltot(0), evolext(0), nvoltot(0), ncen(mesh.num_cells()), ncentot(0),  
       ncenrun(0), eradtot_b(0), eradtot_e(0), ecen(mesh.num_cells()),
@@ -117,6 +119,11 @@ void Global_Tally<MT,PT>::set_energy_begin(const Source_Init<MT> &source)
 
   // calculate integrated energy at beginning of timestep
     eint_begin += eradtot_b;
+
+  // quantities necessary to calculate path length radiation energy
+    delta_t = source.get_delta_t();
+    for (int i = 0; i < num_cells(); i++)
+	volume[i] = source.get_volume(i+1);
 }
 
 //---------------------------------------------------------------------------//
@@ -220,16 +227,19 @@ void Global_Tally<MT,PT>::print(ostream &out) const
     out << "======================" << endl;
     out << setw(10) << setiosflags(ios::right) << "Cell"
 	<< setw(20) << setiosflags(ios::right) << "Temperature"
+	<< setw(20) << setiosflags(ios::right) << "Rad Temp (path)"
 	<< setw(20) << setiosflags(ios::right) << "Evol-net"
 	<< setw(20) << setiosflags(ios::right) << "dE/dT" << endl;
     out << "=================================================="
-	<< "====================" << endl;
+	<< "========================================" << endl;
     out.precision(6);
     out.setf(ios::scientific, ios::floatfield);
     for (int i = 0; i < num_cells(); i++)
     {	
 	out << setw(10) << i+1 << setw(20) << temperature[i] << setw(20)
-	    << evol_net[i] << setw(20) << dedt[i] << endl;
+	    << pow(ewpl[i] / 
+		   (Global::a * Global::c * delta_t * volume[i]), 0.25)
+	    << setw(20) << evol_net[i] << setw(20) << dedt[i] << endl;
     }
 
   // do the energy conservation check

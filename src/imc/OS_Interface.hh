@@ -25,6 +25,7 @@
 //  4)  6-17-98 : added card for input of analytic opacities
 //  5)   7-1-98 : added input for RN seed and print frequency
 //  6)  7-15-98 : added zonal radiation source from t=0 to rad_s_tend
+//  7)  7-17-98 : added analytic specific heat ala Su and Olson
 // 
 //===========================================================================//
 
@@ -75,6 +76,7 @@ private:
     vector<double> specific_heat;
     double implicitness;
     string analytic_opacity;
+    string analytic_sp_heat;
 
   // data required for Source_Init
     vector<double> evol_ext;
@@ -146,6 +148,7 @@ public:
     int get_capacity() const { return capacity; }
     string get_ss_dist() const { return ss_dist; }
     string get_analytic_opacity() const { return analytic_opacity; }
+    string get_analytic_sp_heat() const { return analytic_sp_heat; }
     int get_max_cycle() const { return max_cycle; }
     int get_printf() const { return print_f; }
     int get_buffer() const { return buffer; }
@@ -160,10 +163,11 @@ inline OS_Interface::OS_Interface(const string &infile)
     : input_file(infile), coord_system(""), fine_cells(0), accum_cells(0), 
       coarse_edge(0), fine_edge(0), bnd_cond(0), zone(0), mat_zone(0), 
       density(0), kappa(0), temperature(0), implicitness(0), 
-      analytic_opacity("straight"), specific_heat(0), evol_ext(0),
-      rad_source(0), rad_s_tend(0), ss_pos(0), ss_temp(0), rad_temp(0), 
-      delta_t(0), max_cycle(0), npmax(0), dnpdt(0), ss_dist("none"), 
-      capacity(0), print_f(1), buffer(1000), seed(9836592) 
+      analytic_opacity("straight"), analytic_sp_heat("straight"),
+      specific_heat(0), evol_ext(0), rad_source(0), rad_s_tend(0), 
+      ss_pos(0), ss_temp(0), rad_temp(0), delta_t(0), max_cycle(0), 
+      npmax(0), dnpdt(0), ss_dist("none"), capacity(0), print_f(1), 
+      buffer(1000), seed(9836592) 
 {}
 
 CSPACE

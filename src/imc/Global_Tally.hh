@@ -46,8 +46,10 @@ class Global_Tally
 private:
   // tally info
     vector<double> temperature;
+    vector<double> volume;
     vector<double> dedt;
     double e_elec_tot;
+    double delta_t;
 
   // problem energies
 

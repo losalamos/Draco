@@ -343,6 +343,8 @@ void OS_Interface::zone_opacity_parser(ifstream &in)
 	    in >> implicitness;
 	if (keyword == "analytic_opacity:")
 	    in >> analytic_opacity;
+        if (keyword == "analytic_sp_heat:")
+            in >> analytic_sp_heat;
     }    
 
   // make sure we have gotten a fleck factor
@@ -557,7 +559,8 @@ void OS_Interface::zone_source_parser(ifstream &in)
     if (have_rad_source)
 	Insist (rad_s_tend > 0, "You have a radiation source of zero time!");
     if (rad_s_tend > 0)
-	Insist (have_rad_source, "Duration defined for no radiation source!");
+	Insist (have_rad_source, 
+		"Duration defined for zero radiation source!");
 }
 
 //---------------------------------------------------------------------------//

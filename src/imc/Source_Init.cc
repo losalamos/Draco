@@ -38,9 +38,9 @@ using std::fabs;
 template<class MT, class PT>
 template<class IT>
 Source_Init<MT,PT>::Source_Init(SP<IT> interface, SP<MT> mesh)
-    : evol(mesh), evol_net(mesh), evoltot(0), ess(mesh), fss(mesh), 
-      esstot(0), ecen(mesh), ecentot(0), ncen(mesh), ncentot(0), nvol(mesh),
-      nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0),
+    : evol(mesh), evol_net(mesh), evoltot(0),  ess(mesh), fss(mesh), 
+      esstot(0), ecen(mesh), ecentot(0), ncen(mesh), ncentot(0), nvol(mesh), 
+      nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), 
       eloss_cen(0), ew_vol(mesh), ew_ss(mesh), ew_cen(mesh), t4_slope(mesh)
 {
     Require (interface);
@@ -78,6 +78,7 @@ Source_Init<MT,PT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     Check (ew_vol.get_Mesh()   == *mesh);
     Check (ew_ss.get_Mesh()    == *mesh);
     Check (evol_net.get_Mesh() == *mesh);
+
 }
 
 //---------------------------------------------------------------------------//
@@ -102,9 +103,9 @@ void Source_Init<MT,PT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity,
 
   // on first pass do initial census, on all cycles calc source energies 
     if (cycle == 1)
-	calc_initial_census(*mesh, *opacity, *state, *rcontrol);
+	calc_initial_census(*mesh, *opacity, *state, *rcontrol, cycle);
     else
-	calc_source_energies(*opacity, *state);
+	calc_source_energies(*opacity, *state, cycle);
 	
   // calculate source numbers
     calc_source_numbers(*opacity, cycle);
@@ -129,7 +130,8 @@ template<class MT, class PT>
 void Source_Init<MT,PT>::calc_initial_census(const MT &mesh,
 					     const Opacity<MT> &opacity,
 					     const Mat_State<MT> &state,
-					     Rnd_Control &rcontrol)
+					     Rnd_Control &rcontrol, 
+					     int cycle)
 {
   // calculate and write the initial census source
     Require (!census);
@@ -138,7 +140,7 @@ void Source_Init<MT,PT>::calc_initial_census(const MT &mesh,
     census = new Particle_Buffer<PT>::Census();
 
   // calc volume emission and surface source energies
-    calc_source_energies(opacity, state);
+    calc_source_energies(opacity, state, cycle);
     
   // calc radiation energy for census
     calc_ecen();
@@ -155,10 +157,11 @@ void Source_Init<MT,PT>::calc_initial_census(const MT &mesh,
 
 template<class MT, class PT>
 void Source_Init<MT,PT>::calc_source_energies(const Opacity<MT> &opacity, 
-					      const Mat_State<MT> &state)
+					      const Mat_State<MT> &state,
+					      int cycle)
 {
   // calc volume emission energy per cell, total
-    calc_evol(opacity, state);
+    calc_evol(opacity, state, cycle);
 
   // calc surface source energy per cell, total
     calc_ess();
@@ -308,7 +311,7 @@ void Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity,
 
 template<class MT, class PT>
 void Source_Init<MT,PT>::calc_evol(const Opacity<MT> &opacity,
-				   const Mat_State<MT> &state)
+				   const Mat_State<MT> &state, int cycle)
 {
   // reset evoltot
     evoltot = 0.0;
@@ -327,6 +330,31 @@ void Source_Init<MT,PT>::calc_evol(const Opacity<MT> &opacity,
 
       // accumulate evoltot
 	evoltot += evol(cell);
+    }
+
+  // calculate evol due to external radiation source
+    if (rad_s_tend > 0.0)
+    {
+      // calculate time duration [sh]
+	double duration;
+	double t_remain = rad_s_tend - (cycle - 1) * delta_t;
+	if (t_remain > delta_t)
+	    duration = delta_t;
+	else 
+	    duration = t_remain;
+
+      // calculate radiation source energy and add to evol
+	if (duration > 0.0)
+	{
+	  // normalize volume integral of rad_source to 1
+	    double rad_volume = 0.0;
+	    for (int cell = 1; cell <= evol.get_Mesh().num_cells(); cell++)
+		rad_volume += rad_source[cell-1] * evol.get_Mesh().volume(cell);
+	    Ensure (rad_volume > 0.0);
+	    for (int cell = 1; cell <= evol.get_Mesh().num_cells(); cell++)
+		evol(cell) += rad_source[cell-1] / rad_volume * 
+		    evol.get_Mesh().volume(cell) * duration; 
+	}
     }
 }
 

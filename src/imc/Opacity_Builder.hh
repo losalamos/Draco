@@ -50,6 +50,7 @@ private:
     double implicitness;
     double delta_t;
     string analytic_opacity;
+    string analytic_sp_heat;
 
   // Begin_Doc opacity_builder-int.tex
   // Begin_Verbatim 
