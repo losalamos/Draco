@@ -12,10 +12,12 @@
 #include "testFullP13T_DB.hh"
 #include "ds++/SP.hh"
 #include "3T/P13T.hh"
-#include "3T/Diffusion_P1.hh"
+// #include "3T/Diffusion_P1.hh"
+#include "P1Diffusion/P1Diffusion.hh"
+#include "P1Diffusion/SolverP1Diff.hh"
 #include "mesh/Mesh_XYZ.hh"
 
-// #define MARSHAK_MATPROPS
+#define MARSHAK_MATPROPS
 
 #include "matprops/MarshakMaterialProps.hh"
 #include "matprops/InterpedMaterialProps.hh"
@@ -60,7 +62,11 @@ namespace XTM {
      typedef InterpedMaterialProps MP;
 #endif
      
-     typedef Diffusion_P1<MT> DS;
+     // typedef Diffusion_P1<MT> DS;
+
+     typedef rtt_P1Diffusion::SolverP1Diff<MT> MS;
+     typedef MS MatrixSolver;
+     typedef rtt_P1Diffusion::P1Diffusion<MT, MS> DS;
 
      typedef MT::ccsf ccsf;
      typedef MT::ccif ccif;
@@ -115,7 +121,7 @@ namespace XTM {
 		   RadiationStateField &radState,
 		   ccsf &electEnergyDep, ccsf &ionEnergyDep,
 		   const ccsf &QRad, const ccsf &QElectron, const ccsf &QIon,
-		   const bssf &boundary) const;
+		   const bssf &alpha, const bssf &beta, const bssf &bSrc) const;
 
      void getMatProp();
      void getMatProp(dsxx::SP<MarshakMaterialProps> &spMatProp_) const;
@@ -130,7 +136,7 @@ namespace XTM {
      void gmvDump(const RadiationStateField &radState, const ccsf &TElec,
 		  const ccsf &TIon, int cycle, double time) const;
 
-     void setBoundary(bssf &boundary) const;
+     void setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const;
      
      void postProcess(const RadiationStateField &radState,
 		      const RadiationStateField &newRadState,

@@ -41,6 +41,7 @@ double src_front        0.0
 double src_back         0.0
 double src_bottom       0.0
 double src_top          0.0
+double Te_bottom        -1.0
 
 int_set units astro
 si SI

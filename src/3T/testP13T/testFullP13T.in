@@ -1,9 +1,9 @@
 $P13T
-	verbose=true
+	verbose=false
 	units=astro
-	nsteps=10
-	dt=1.0e-4
-	dtMin=1.0e-4
+	nsteps=1000
+	dt=1.0e-3
+	dtMin=1.0e-3
 	dtMax=1.0e-1
 	P1TauMultiplier=1.0
 	P1TauMultiplier=0.0
@@ -13,21 +13,23 @@ $P13T
 	materialName="H"
 	materialId=1
 	abar=1.0
-	kappa0=10
+	kappa0=1
 	kappaPower=3
-	Te=1.0e-5
-	Ti=1.0e-5
+	Te=1.0e-3
+	Ti=1.0e-3
 	rho=3.0
 #	src_bottom=1.0
-	Qr = 1.0
-	Qloc = 50
+	Te_bottom=1.0
+#	Qr = 1.0e3
+#	Qloc = 50
 $
 
 $diffusion
-	alpha_bottom=.25  beta_bottom=-.5
-	alpha_top=.25 beta_top=-.5
-#	alpha_bottom=1  beta_bottom=0
-#	alpha_top=1 beta_top=0
+#	alpha_bottom=.25  beta_bottom=-.5    # vacuum/source
+	alpha_bottom=1.0 beta_bottom=0       # dirichlet
+	alpha_top=.25 beta_top=-.5           # vacuum/source
+#	alpha_bottom=1  beta_bottom=0        # dirichlet
+#	alpha_top=1 beta_top=0               # dirichlet
 $
 
 $mesh
@@ -43,8 +45,8 @@ $pcg
 	itmeth=11		# cg
 	levout=4
 	levout=0
-	levout=3
-#	levout=2
+#	levout=3
+	levout=2
 	itsmax=1000
 	nwi=10000
 	nwf=10000000

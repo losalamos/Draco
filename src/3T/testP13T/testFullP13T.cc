@@ -41,6 +41,22 @@ namespace
  int ny;
  int nz;
 
+ bool isContinuous(const testFullP13T::MT::fcdsf &rhs)
+ {
+     for (int i=0; i<nx; i++)
+	 for (int j=0; j<ny; j++)
+	     for (int k=0; k<nz; k++)
+	     {
+		 if (i > 0 && (rhs(i,j,k,0) != -rhs(i-1,j,k,1)))
+		     return false;
+		 if (j > 0 && (rhs(i,j,k,2) != -rhs(i,j-1,k,3)))
+		     return false;
+		 if (k > 0 && (rhs(i,j,k,4) != -rhs(i,j,k-1,5)))
+		     return false;
+	     }
+     return true;
+ }
+ 
  double sum(const testFullP13T::MT::ccsf &rhs)
  {
      typedef testFullP13T::MT::ccsf FT;
@@ -282,13 +298,13 @@ std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::ccsf &rhs)
 
     std::ios_base::fmtflags fmtflags = os.flags();
 
-    os << std::setw(16) << std::scientific << std::setprecision(6);
+    os << std::scientific << std::setprecision(6);
     
 #if 0
     int iline = 0;
     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
     {
-	os << *it << " ";
+	os << std::setw(16) << *it << " ";
 	if (++iline % 6 == 0)
 	    os << endl;
     }
@@ -301,8 +317,8 @@ std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::ccsf &rhs)
 	for (int j=0; j<ny; j++)
 	    for (int i=0; i<nx; i++)
 	    {
-		os << icell++ << ":";
-		os << " " << rhs(i,j,k);
+		os << std::setw(5) << icell++ << ":";
+		os << " " << std::setw(16) << rhs(i,j,k);
 		os << endl;
 	    }
 #endif    
@@ -320,13 +336,13 @@ std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::fcdsf &rhs)
     
     std::ios_base::fmtflags fmtflags = os.flags();
 
-    os << std::setw(16) << std::scientific << std::setprecision(6);
+    os << std::scientific << std::setprecision(6);
 
 #if 0
     int iline = 0;
     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
     {
-	os << *it << " ";
+	os << std::setw(16) << *it << " ";
 	if (++iline % 6 == 0)
 	    os << endl;
     }
@@ -340,9 +356,9 @@ std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::fcdsf &rhs)
 	for (int j=0; j<ny; j++)
 	    for (int i=0; i<nx; i++)
 	    {
-		os << icell++ << ":";
+		os << std::setw(5) << icell++ << ":";
 		for (int f=0; f<6; f++)
-		    os << " " << rhs(i,j,k,f);
+		    os << " " << std::setw(16) << rhs(i,j,k,f);
 		os << endl;
 	    }
 #endif
@@ -527,6 +543,13 @@ void testFullP13T::run() const
     density = pdb.rho;
     matid = pdb.materialId;
 
+    if (pdb.Te_bottom > 0.)
+    {
+	for (int i=0; i<nx; i++)
+	    for (int j=0; j<ny; j++)
+		TElect0(i, j, 0) = TIon0(i, j, 0) = pdb.Te_bottom;
+    }
+
     MatStateCC matStateCC = getMatStateCC(TElect0, TIon0, density, matid);
     MatStateFC matStateFC = getMatStateFC(TElect0, TIon0, density, matid);
    
@@ -537,7 +560,9 @@ void testFullP13T::run() const
     ccsf QRad(spMesh);
     ccsf QElectron(spMesh);
     ccsf QIon(spMesh);
-    bssf boundary(spMesh);
+    bssf alpha(spMesh);
+    bssf beta(spMesh);
+    bssf bSrc(spMesh);
     ccsf electEnergyDep(spMesh);
     ccsf ionEnergyDep(spMesh);
 
@@ -554,11 +579,12 @@ void testFullP13T::run() const
 	QIon(pdb.Qloc) = pdb.Qi;
     }
 
-    setBoundary(boundary);
+    setBoundary(alpha, beta, bSrc);
     
     std::cerr << "Made it before diffSolver ctor" << endl;
-    
-    spDiffSolver = new DS(diffdb, spMesh, pcg_db);
+
+    SP<MatrixSolver> spMatrixSolver = new MatrixSolver(spMesh, pcg_db);
+    spDiffSolver = new DS(diffdb, spMesh, spMatrixSolver);
     
     std::cerr << "Made it after diffSolver ctor" << endl;
 
@@ -606,7 +632,7 @@ void testFullP13T::run() const
     {
 	timestep(time, dt, cycle, matStateCC, matStateFC, radState,
 		 electEnergyDep, ionEnergyDep,
-		 QRad, QElectron, QIon, boundary);
+		 QRad, QElectron, QIon, alpha, beta, bSrc);
     }
 }
 
@@ -616,7 +642,8 @@ void testFullP13T::timestep(double &time, double &dt, int &cycle,
 			    RadiationStateField &radState,
 			    ccsf &electEnergyDep, ccsf &ionEnergyDep,
 			    const ccsf &QRad, const ccsf &QElectron,
-			    const ccsf &QIon, const bssf &boundary) const
+			    const ccsf &QIon, const bssf &alpha,
+			    const bssf &beta, const bssf &bSrc) const
 {
     // end of cycle time
     
@@ -631,7 +658,7 @@ void testFullP13T::timestep(double &time, double &dt, int &cycle,
     ccsf CvElec(spMesh);
     ccsf CvIon(spMesh);
     ccsf sigAbs(spMesh);
-    ccsf alpha(spMesh);
+    ccsf coupleEI(spMesh);
     ccsf kappaElec(spMesh);
     ccsf kappaIon(spMesh);
     
@@ -640,7 +667,7 @@ void testFullP13T::timestep(double &time, double &dt, int &cycle,
     matStateCC.getElectronSpecificHeat(CvElec);
     matStateCC.getIonSpecificHeat(CvIon);
     matStateCC.getSigmaAbsorption(1,sigAbs);
-    matStateCC.getElectronIonCoupling(alpha);
+    matStateCC.getElectronIonCoupling(coupleEI);
     matStateCC.getElectronConductionCoeff(kappaElec);
     matStateCC.getIonConductionCoeff(kappaIon);
 
@@ -651,7 +678,7 @@ void testFullP13T::timestep(double &time, double &dt, int &cycle,
 	cout << "Cv Electron: " << CvElec << endl;
 	cout << "Cv Ion: " << CvIon << endl;
 	cout << "Absorption: " << sigAbs << endl;
-	cout << "alpha: " << alpha << endl;
+	cout << "coupleEI: " << coupleEI << endl;
 	cout << "kappa Electron: " << kappaElec << endl;
 	cout << "kappa Ion: " << kappaIon << endl;
 	cout << "radState.phi: " << radState.phi
@@ -673,8 +700,8 @@ void testFullP13T::timestep(double &time, double &dt, int &cycle,
 	    max(CvIon, opAbs) << endl;
 	cout << "sigAbs (min), (max): " << min(sigAbs, opAbs) << " " <<
 	    max(sigAbs, opAbs) << endl;
-	cout << "alpha (min), (max): " << min(alpha, opAbs) << " " <<
-	    max(alpha, opAbs) << endl;
+	cout << "coupleEI (min), (max): " << min(coupleEI, opAbs) << " " <<
+	    max(coupleEI, opAbs) << endl;
 	cout << "kappaElec (min), (max): "
 	     << min(kappaElec, opAbs) << " "
 	     << max(kappaElec, opAbs) << endl;
@@ -696,9 +723,11 @@ void testFullP13T::timestep(double &time, double &dt, int &cycle,
 		    electEnergyDep, ionEnergyDep, TElec, TIon,
 		    *spDiffSolver, dt, matStateCC, matStateFC, radState,
 		    QRad, QElectron, QIon,
-		    boundary);
+		    alpha, beta, bSrc);
 
     std::cerr << "Made it after solve3T" << endl;
+
+    Assert(isContinuous(newRadState.F));
 
     gmvDump(newRadState, TElec, TIon, cycle, time);
 
@@ -723,14 +752,18 @@ void testFullP13T::timestep(double &time, double &dt, int &cycle,
     radState = newRadState;
 }
 
-void testFullP13T::setBoundary(bssf &boundary) const
+void testFullP13T::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 {
     for (int j=0; j<ny; j++)
     {
 	for (int k=0; k<nz; k++)
 	{
-	    boundary(0   , j, k, 0) = pdb.src_left;
-	    boundary(nx-1, j, k, 1) = pdb.src_right;
+	    alpha(0,    j, k, 0) = diffdb.alpha_left;
+	    beta (0   , j, k, 0) = diffdb.beta_left;
+	    bSrc (0   , j, k, 0) = pdb.src_left;
+	    alpha(nx-1, j, k, 1) = diffdb.alpha_right;
+	    beta (nx-1, j, k, 1) = diffdb.beta_right;
+	    bSrc (nx-1, j, k, 1) = pdb.src_right;
 	}
     }
 
@@ -738,17 +771,49 @@ void testFullP13T::setBoundary(bssf &boundary) const
     {
 	for (int k=0; k<nz; k++)
 	{
-	    boundary(i, 0   , k, 2) = pdb.src_front;
-	    boundary(i, ny-1, k, 3) = pdb.src_back;
+	    alpha(i, 0   , k, 2) = diffdb.alpha_front;
+	    beta (i, 0   , k, 2) = diffdb.beta_front;
+	    bSrc (i, 0   , k, 2) = pdb.src_front;
+	    alpha(i, ny-1, k, 3) = diffdb.alpha_back;
+	    beta (i, ny-1, k, 3) = diffdb.beta_back;
+	    bSrc (i, ny-1, k, 3) = pdb.src_back;
 	}
     }
     
-    for (int i=0; i<nx; i++)
+    if (pdb.Te_bottom > 0.0)
     {
-	for (int j=0; j<ny; j++)
+	const RadiationPhysics radphys(units);
+	double phi_bottom = 0.0;
+	radphys.getPlanck(pdb.Te_bottom, phi_bottom);
+
+	phi_bottom *= 4.0*PhysicalConstants::pi;
+
+	for (int i=0; i<nx; i++)
 	{
-	    boundary(i, j, 0   , 4) = pdb.src_bottom;
-	    boundary(i, j, nz-1, 5) = pdb.src_top;
+	    for (int j=0; j<ny; j++)
+	    {
+		alpha(i, j, 0   , 4) = diffdb.alpha_bottom;
+		beta (i, j, 0   , 4) = diffdb.beta_bottom;
+		bSrc (i, j, 0   , 4) = phi_bottom*diffdb.alpha_bottom;
+		alpha(i, j, nz-1, 5) = diffdb.alpha_top;
+		beta (i, j, nz-1, 5) = diffdb.beta_top;
+		bSrc (i, j, nz-1, 5) = pdb.src_top;
+	    }
+	}
+    }
+    else
+    {
+	for (int i=0; i<nx; i++)
+	{
+	    for (int j=0; j<ny; j++)
+	    {
+		alpha(i, j, 0   , 4) = diffdb.alpha_bottom;
+		beta (i, j, 0   , 4) = diffdb.beta_bottom;
+		bSrc (i, j, 0   , 4) = pdb.src_bottom;
+		alpha(i, j, nz-1, 5) = diffdb.alpha_top;
+		beta (i, j, nz-1, 5) = diffdb.beta_top;
+		bSrc (i, j, nz-1, 5) = pdb.src_top;
+	    }
 	}
     }
 }    

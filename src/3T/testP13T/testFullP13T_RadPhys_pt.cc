@@ -73,6 +73,9 @@ class ContainerTraits<MT::fcdsf >
     }
 };
 
+template void RadiationPhysics::getPlanck(const double &TElectron,
+					  double &planckian) const;
+
 template void RadiationPhysics::getPlanck(const MT::ccsf &TElectron,
 					  MT::ccsf &planckian) const;
 template void RadiationPhysics::
