@@ -38,7 +38,7 @@ mips-sgi-irix6.*)
    AC_DEFINE(V_FLOAT, double)
    AC_DEFINE(V_BOOL, long) 
    dnl fix problems with lahey 6.2 and EOSPAC 5.35
-   RPATH="${RPATH} -Xlinker -rpath /usr/local/lf9560/lib"
+   dnl RPATH="${RPATH} -Xlinker -rpath /usr/local/lf9560/lib"
    ;;
 alpha*-dec-osf*)
    AC_DEFINE(V_INT, int)
