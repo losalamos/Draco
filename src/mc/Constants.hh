@@ -40,9 +40,10 @@ namespace global
 // FUNDAMENTAL CONSTANTS
 //---------------------------------------------------------------------------//
 
-const double pi = 2.0 * std::asin(1.0);
-const double huge = DBL_MAX;
-const double epsilon = DBL_EPSILON;
+const double pi       = 2.0 * std::asin(1.0);
+const double huge     = DBL_MAX;
+const int    huge_int = 2000000000;
+const double epsilon  = DBL_EPSILON;
 
 //---------------------------------------------------------------------------//
 // Physical constants

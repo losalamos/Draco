@@ -21,21 +21,30 @@ namespace rtt_mc
 //===========================================================================//
 /*!
  * \class Layout
- *
+
+ * \brief Provides cell connectivity information for 1-1 meshes.
+
  * Class that describes the cell-face-cell connectivity for 1-to-1 cell
  * meshes.  1-to-1 describes meshes whose cells each have only 1 cell
  * neighbor across a face.  Layout itself is independent of the geometry of
  * the mesh.  Thus it can be used to describe the connectivity in any
  * structured or unstructered 1-to-1 mesh.
- *
+
  * This class is used primarily as a component class of valid mesh types.  It
  * is not a general service class.  See rtt_mc::OS_Mesh and
  * rtt_mc::OS_Builder to see how it is used in a mesh implementation.
+
+ * There is no "defined" face ordering.  One can build the Layout however one
+ * desires.  However, the face numbering must be consistent throughout the
+ * Layout to get proper performance.
+
+ * Data is built into Layout through the use of overloaded operator().
+
  */
 // revision history:
 // -----------------
 //  0) original
-//  1)  5-20-98 : added overloaded ==,!= operators for desing-by-contract
+//  1)  5-20-98 : added overloaded ==,!= operators for design-by-contract
 //                purposes  
 // 
 //===========================================================================//
@@ -53,7 +62,7 @@ class Layout
 
   public:
     // Default constructor.
-    Layout(int num_cells = 0) : face_cell(num_cells) {}
+    explicit Layout(int num_cells = 0) : face_cell(num_cells) {}
 
     // Set size member functions.
 
