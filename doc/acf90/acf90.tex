@@ -97,7 +97,7 @@ platforms.  The simple, reusable build system required several
 iterations of careful planning and hard work.
 
 One feature missing from the build system was support for \fninety.
-Although Draco will remain primarily a \cpp repository, \fninety\
+Although Draco will remain primarily a \cpp\ repository, \fninety\
 interface packages, numerical packages, and vendor packages are
 planned additions.  Further, just as the build system in Draco is
 reused in other \cpp\ projects, a common build system that could be
@@ -120,20 +120,20 @@ several necessary build system features for \fninety\ support.
 \section{Introduction}
 
 How should the Draco build system support \fninety?  Ideally the user
-should see a set of macros which hide configuration complexity and work
-just like autoconf's support for other languages.  The solution should
-be backwards compatable; existing Draco configuration files should
-continue to work.  In this section I will examine how the Draco build
-system works for \cpp, the problems involved with applying this
-approach to \fninety, and the resolution of these problems.
+should see a set of macros that work just like autoconf's support for
+other languages.  The solution should be backwards compatable;
+existing Draco configuration files should continue to work.  In this
+section I will examine how the Draco build system works for \cpp, the
+problems involved with applying this approach to \fninety, and the
+resolution of these problems.
 
 How does the Draco build system support \cpp?  Autoconf's support for
 \cpp\ works as follows:
 \begin{enumerate} 
 \item \cpp\ is made the default language used for testing by the macro
-\texttt{AC\_LANG\_CPLUSPLUS},
-\item the compiler availability and viability are tested by
-the macro \texttt{AC\_PROG\_CXX}.
+\texttt{AC\_LANG\_CPLUSPLUS}
+\item The compiler availability and viability are tested by
+the macro \texttt{AC\_PROG\_CXX}
 \end{enumerate}
 \cpp\ compiler tests can be made without knowledge of the specific
 vendor because \cpp\ compilers are remarkably uniform from platform to
@@ -159,7 +159,7 @@ not designed to supporting other languages.
 the compiler name, flags, default file extensions, and method of
 handling modules varies greatly from product to product.
 \item The assumptions autoconf makes because of item 1 and the
-inconsistency of \fninety\ compiler stated in item 2 makes the
+inconsistency of \fninety\ compilers stated in item 2 makes the
 autoconf method of guessing compiler names, flags, etc. actually
 dangerous.
 \end{enumerate}
@@ -169,15 +169,16 @@ Fortunately, the Draco additions provide a solution; in order to add
 \begin{enumerate}
 \item Autoconf macros must be written for \fninety\ support; some
 native autoconf macros must be rewritten to redress autoconf's
-\texttt{C}-centricness,  
+\texttt{C}-centricness  
 \item \fninety\ compiler information must be available in a database
-to configure names, flags, extensions, and module information,
+to configure names, flags, extensions, and module information
 \item a better guessing heuristic must be devised.
 \end{enumerate}
 
 In the spirit of the Draco build system, \fninety\ support aims at
 simplifying the configuration for the user, at the expense of
-considerable work on the part of the build system.
+considerable work on the part of the build system to hide the
+underlying complexity.
 
 \section{New Arguments}
 
@@ -193,7 +194,7 @@ Table~\ref{tbl:compilers}.
 Compiler        & Executable & Target  & Target \\
 (\withfninety=) & File       & OS      & Platform \\ \hline
 Fujitsu         & f90        & Linux   & ix86 \\
-XL	        & xlf90      & AUX     & RS6000 \\
+XL	        & xlf90      & AIX     & RS6000 \\
 WorkShop        & f90	     & Solaris & Sparc \\
 Cray            & f90        & UNICOS  & Y-MP \\
 MIPS            & f90        & IRIX    & SGI  
@@ -203,10 +204,9 @@ MIPS            & f90        & IRIX    & SGI
 \end{table}
 The \langfninety\ macro must be present in \texttt{configure.in} for
 the \withfninety\ argument to be processed.  If \withfninety\ is not
-given or given without any arguments, an attempt to guess the compiler
-is made by the configure script based on the target.  This guess is
-verified by running \texttt{\$F90 --version} (or its equivalent) and
-checking the output for the product name.  
+given or given without any arguments, the compiler is set based on the
+target.  The compiler is verified by running \texttt{\$F90 --version}
+(or its equivalent) and checking the output for the product name.
 
 A new compiler can be added by putting a database entry for it in
 \texttt{ac\_compiler.m4}, adding it to the case statement in
@@ -217,7 +217,6 @@ the \texttt{--with-cxx} argument in \texttt{ac\_dracoarg.m4}.
 \section{New Macros}
 
 Four new macros have been added for \fninety\ support:
-
 \begin{description}
 \item[\langfninety:] set the compile and link test invocation
 using \texttt{F90} and the extension \texttt{F90EXT}.  This macro is
@@ -334,7 +333,7 @@ The last line processes \texttt{Makefile.in} to produce a
 
 Figure~\ref{fig:makefile} shows a test \texttt{Makefile.in} that
 illustrates the use of the \fninety\ variables.  
-\begin{figure}[hbt]
+\begin{figure}[phbt]
 \hrulefill
 \begin{verbatim}
 # Macro Definitions
@@ -373,8 +372,8 @@ Running autoconf on the \texttt{configure.in} file from
 Figure~\ref{fig:configure} and running the resulting
 \texttt{configure} file in a directory containing the test
 \texttt{Makefile.in} produces a {Makefile} which, when executed,
-produces the output in Figure~\ref{fig:make}
-\begin{figure}[hbt]
+produces the output in Figure~\ref{fig:make}.
+\begin{figure}[phbt]
 \hrulefill
 \begin{verbatim}
 azathoth $ make
@@ -390,7 +389,7 @@ GM4       = m4
 \end{verbatim}%$
 \caption{Result of sample make on azathoth (a Linux
 machine).  The compiler is named f90.  The flags specify level 0
-optimaztion, \fninety\ standard, and module generation.  The proper
+optimization, \fninety\ standard, and module generation.  The proper
 file extension is .f90.  Free and fixed source are specified with
 -Free and -Fixed, respectively.  Module files are named after the
 module, with extension .mod.  Module include directories are specified
@@ -402,8 +401,8 @@ with -I.  GNU m4 was found, under the name m4.}\label{fig:make}
 
 I have written autoconf macros that provide rudimentary \fninety\
 support for the Draco build system.  For \cpp\ clients, nothing in the
-build system is affected.  For \fninety clients (defined by the use of
-\langfninety in \texttt{configure.in}) these macros find an
+build system is affected.  For \fninety\ clients (defined by the use of
+\langfninety\ in \texttt{configure.in}) these macros find an
 appropriate \fninety\ compiler, verify its operation, and set the
 flags needed for its use as a makefile command.
 
@@ -428,7 +427,7 @@ template \texttt{Makefile.in} serve all.
 
 \bibliographystyle{plain}
 \bibliography{../bib/draco}
-\newpage
+\clearpage
 \closing
 
 \end{document}
