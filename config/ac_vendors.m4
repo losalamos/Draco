@@ -253,6 +253,46 @@ AC_DEFUN(AC_GANDOLF_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_EOSPAC5_SETUP
+dnl
+dnl EOSPAC5 LIBRARY SETUP (on by default)
+dnl EOSPAC5 is a required vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_EOSPAC5_SETUP, [dnl
+
+   dnl define --with-eospac
+   AC_ARG_WITH(eospac,        
+      [  --with-eospac[=lib]    determine the eospac lib name (eospac is default)])
+
+   dnl define --with-eospac-lib
+   AC_WITH_DIR(eospac-lib, EOSPAC5_LIB, \${EOSPAC5_LIB_DIR},
+	       [tell where EOSPAC5 libraries are])
+
+   # determine if this package is needed for testing or for the 
+   # package (valid values are pkg or test)
+   vendor_eospac=$1
+
+   # eospac is set to libeospac by default
+   if test "${with_eospac:=eospac}" = yes ; then
+       with_eospac='eospac'
+   fi
+
+   # set up the libraries
+   if test "${with_eospac}" != no ; then
+       if test -z "${EOSPAC5_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_eospac, -l${with_eospac})
+       elif test -n "${EOSPAC5_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_eospac, -L${EOSPAC5_LIB} -l${with_eospac})
+       fi
+   fi
+
+   dnl note that we add some system-specific libraries for this
+   dnl vendor in AC_DRACO_ENV; also, the user must set up LAPACK for
+   dnl this to work
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_LAPACK_SETUP
 dnl
 dnl LAPACK SETUP (on by default)
@@ -317,6 +357,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_PCG_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
    AC_GANDOLF_SETUP(pkg)
+   AC_EOSPAC5_SETUP(pkg)
 ])
 
 dnl-------------------------------------------------------------------------dnl
