@@ -54,11 +54,6 @@ bindir      = @bindir@
 dirstoclean = @dirstoclean@
 
 ##---------------------------------------------------------------------------##
-## nml package
-
-NMLGEN = @NMLGEN@
-
-##---------------------------------------------------------------------------##
 ## install locations
 
 INSTALL      = @INSTALL@
@@ -265,7 +260,7 @@ uninstall:
 
 ##---------------------------------------------------------------------------##
 ## dependencies in the build system
-# Makefile depends on all of the M4 files in the config directory
+## Makefile depends on all of the M4 files in the config directory
 ## and the pkg_config directory
 
 configfiles := $(wildcard ${top_srcdir}/${rel_config_dir}/*.m4) \
@@ -286,18 +281,12 @@ config.status: configure
 	  CONFIG_FILES=test/$@:test/$(notdir $<) \
 	      CONFIG_HEADERS= ./config.status; fi)
 
-# Locate the namelist input files automatically.
-
-nml_files := $(notdir $(wildcard ${srcdir}/*.nml))
-nml_hh := $(nml_files:%.nml=.nml_%.hh)
-nml_cc := $(nml_files:%.nml=.nml_%.cc)
-
-nmldependfiles := $(nml_files:.nml=.nml.d)
+# Locate the source depends automatically
 
 dependfiles := $(notdir $(ccsrc:.cc=.cc.d)) \
 	$(notdir $(csrc:.c=.c.d))
 
-${dependfiles}: ${nml_hh} ${nml_cc}
+${dependfiles}:
 
 %.cc.d: %.cc
 	@echo making dependency $@
@@ -323,15 +312,6 @@ ${dependfiles}: ${nml_hh} ${nml_cc}
 	fi
 	@-rm -f .tmp0
 
-%.nml.d: .nml_%.hh .nml_%.cc
-
-%.nml.d: %.nml
-	echo making dependency $@
-	echo "$(notdir ${<:%.nml=.nml_%.hh} ${<:%.nml=.nml_%.cc}) $@: $<" >$@
-
-.nml_%.hh .nml_%.cc: ${srcdir}/%.nml
-	-$(NMLGEN) ${srcdir}/$*.nml
-
 # Do not include the dependfiles when doing clean-like stuff.
 
 ifneq (,$(filter uninstall distclean mostlyclean clean maintainer-clean, \
@@ -344,7 +324,7 @@ endif
 clean:
 	-rm ${test_alltarget} ${objs} ${dependfiles}
 	-rm -f lex.yy.c y.output y.tab.c y.tab.h
-	-rm -f ${nml_hh} ${nml_cc} .tmp?
+	-rm -f .tmp?
 	-rm -f ${test_output_files}
 	-rm -r ${dirstoclean}
 

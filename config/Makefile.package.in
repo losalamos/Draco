@@ -54,11 +54,6 @@ bindir      = @bindir@
 dirstoclean = @dirstoclean@
 
 ##---------------------------------------------------------------------------##
-## nml package 
-
-NMLGEN = @NMLGEN@
-
-##---------------------------------------------------------------------------##
 ## install locations
 
 INSTALL      = @INSTALL@
@@ -315,19 +310,12 @@ config.status: configure
 	./config.status --recheck
 
 ##---------------------------------------------------------------------------##
-## rules for building source code
-## Locate the namelist input files automatically.
-
-nml_files := $(notdir $(wildcard ${srcdir}/*.nml))
-nml_hh := $(nml_files:%.nml=.nml_%.hh)
-nml_cc := $(nml_files:%.nml=.nml_%.cc)
-
-nmldependfiles := $(nml_files:.nml=.nml.d)
+## rules for building source code dependencies
 
 dependfiles := $(notdir $(ccsrc:.cc=.cc.d)) \
 	$(notdir $(csrc:.c=.c.d))
 
-${dependfiles}: ${nml_hh} ${nml_cc}
+${dependfiles}:
 
 %.cc.d: %.cc
 	@echo making dependency $@
@@ -353,15 +341,6 @@ ${dependfiles}: ${nml_hh} ${nml_cc}
 	fi
 	@-rm -f .tmp0
 
-%.nml.d: .nml_%.hh .nml_%.cc
-
-%.nml.d: %.nml
-	echo making dependency $@
-	echo "$(notdir ${<:%.nml=.nml_%.hh} ${<:%.nml=.nml_%.cc}) $@: $<" >$@
-
-.nml_%.hh .nml_%.cc: ${srcdir}/%.nml
-	-$(NMLGEN) ${srcdir}/$*.nml
-
 ##---------------------------------------------------------------------------##
 ## clean rules
 ## Do not include the dependfiles when doing clean-like stuff.
@@ -382,7 +361,7 @@ clean: forced-clean
 forced-clean:
 	-rm bin/${package} ${objs} lib${package}${libsuffix} ${dependfiles}
 	-rm -f lex.yy.c y.output y.tab.c y.tab.h
-	-rm -f ${nml_hh} ${nml_cc} .tmp?
+	-rm -f .tmp?
 	-rm -r ${dirstoclean}
 	-rmdir bin
 

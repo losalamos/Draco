@@ -43,8 +43,6 @@ bindir = @bindir@
 
 dirstoclean = @dirstoclean@
 
-NMLGEN = @NMLGEN@
-
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 UNINSTALL = rm -f

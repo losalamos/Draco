@@ -74,54 +74,6 @@ AC_DEFUN(AC_MPI_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_SHMEM_SETUP
-dnl
-dnl SHMEM implementation (off by default)
-dnl SHMEM is an optional vendor
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_SHMEM_SETUP, [dnl
-	
-   dnl define --enable-shmem
-   AC_ARG_ENABLE(shmem,
-      [  --enable-shmem          turn on shmem (off by default)])
-
-   dnl define --with-shmem-inc and --with-shmem-lib
-   AC_WITH_DIR(shmem-inc, SHMEM_INC, \${SHMEM_INC_DIR},
-	       [tell where SHMEM includes are])
-   AC_WITH_DIR(shmem-lib, SHMEM_LIB, \${SHMEM_LIB_DIR},
-	       [tell where SHMEM libs are])
-
-   # define SHMEM include path
-   if test -n "${SHMEM_INC}" ; then
-       # remember that SHMEM_INC has the final slash
-       SHMEM_H="\"${SHMEM_INC}shmem.h\""
-   elif test -z "${SHMEM_INC}" ; then
-       SHMEM_H="<mpp/shmem.h>"
-   fi
-   
-   # we define SHMEM_H regardless of whether a PATH is set
-   AC_DEFINE_UNQUOTED(SHMEM_H, ${SHMEM_H})dnl 
-
-   # determine if this package is needed for testing or for the
-   # package
-   vendor_shmem=$1
-	
-   # if the user sets SHMEM_INC or SHMEM_LIB and enable_shmem=no
-   # then turn on enable_shmem
-   if test "${enable_shmem:=no}" = no ; then
-       if test -n "${SHMEM_INC}" ; then
-	   enable_shmem='yes'
-       elif test -n "${SHMEM_LIB}" ; then
-	   enable_shmem='yes'
-       fi
-   fi
-
-   dnl shmem is only available on sgis in this build system (and in
-   dnl general I think)
-])
-
-dnl-------------------------------------------------------------------------dnl
 dnl AC_SPRNG_SETUP
 dnl
 dnl SPRNG LIBRARY SETUP (on by default -lfg)
@@ -351,7 +303,6 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
 
    dnl include all macros for easy use in top-level configure.in's
    AC_MPI_SETUP(pkg)
-   AC_SHMEM_SETUP(pkg)
    AC_SPRNG_SETUP(pkg)
    AC_PCG_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)

@@ -348,7 +348,7 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl end of ac_compiler.m4
+dnl FORTRAN COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
 builtin(include, ac_f90.m4)dnl AC_LANG_FORTRAN90 and AC_PROG_F90

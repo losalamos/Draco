@@ -11,8 +11,8 @@ dnl-------------------------------------------------------------------------dnl
 
 builtin(include,ac_local.m4)dnl internal macros used in *.m4 config files
 builtin(include,ac_compiler.m4)dnl C++ compilers
-builtin(include, ac_f90env.m4)dnl Fortran 90 macros
-builtin(include, ac_gm4.m4)dnl GNU m4 macros
+builtin(include,ac_f90env.m4)dnl Fortran 90 macros
+builtin(include,ac_gm4.m4)dnl GNU m4 macros
 
 ###-------------------------------------------------------------------------###
 ### include the service macros used in configure.in scripts
@@ -25,6 +25,7 @@ builtin(include,ac_conf.m4)dnl
 ###-------------------------------------------------------------------------###
 
 builtin(include,ac_vendors.m4)dnl
+builtin(include,ac_draco_vendor.m4)dnl
 
 ###-------------------------------------------------------------------------###
 ### include the DRACO argument macro
