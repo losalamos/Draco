@@ -29,6 +29,14 @@ imc [draco/src/imc]: A Implicit Monte Carlo (imc) component library.
 This package contains a set of components including particles,
 sources, and tallies that can be used to build IMC codes.
 
+units [draco/src/units]: Provides units standardization for
+Draco. Contains Units class for representing arbitrary systems and
+converting quantities to SI units.
+
+radphys [draco/src/radphys]: Calculates parameters needed for
+radiation physics in arbitrary units. Uses the units package to
+represent units system.
+
 Retired Draco Package Synopsis
 ==============================
 
