@@ -116,6 +116,9 @@ bool C4_Req::complete()
     MPI_Test( &r, &flag, &s );
     return flag;
 #endif
+#ifdef C4_SCALAR
+    throw "Send to self machinery has not been implemented in scalar mode.";
+#endif
 }
 
 C4_NAMESPACE_END
