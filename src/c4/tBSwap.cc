@@ -7,27 +7,11 @@
 //---------------------------------------------------------------------------//
 
 #include "c4/global.hh"
-#include "c4/NodeInfo.hh"
 #include "c4/BSwap.hh"
-
-#include <iostream.h>
-
-#ifdef __GNUC__
-#include "c4/BSwap.cc"
-template class BSwap<int>;
-#endif
-
-#ifdef _POWER
-#include "c4/BSwap.cc"
-#pragma define ( BSwap<int> )
-#endif
-
-#ifdef __DECCXX
-#include "c4/BSwap.cc"
-#pragma define_template BSwap<int>
-#endif
-
 using namespace C4;
+
+#include <iostream>
+using namespace std;
 
 //---------------------------------------------------------------------------//
 // This program demonstrates the use of the BSwap<T> class by passing an
@@ -44,8 +28,9 @@ int main( int argc, char *argv[] )
 
     cout << "Hello from " << node << endl;
 
+    int i;
+
     if (node) {
-	int i;
 	BSwap<int> left( node-1 );
 	left.recv(i);
 	i *= 2;
@@ -57,13 +42,22 @@ int main( int argc, char *argv[] )
 	}
 
     } else {
-	int i=2;
+	i=2;
 	if (nodes > 1) {
 	    BSwap<int> right( 1 );
 
 	    right.send(i);
 	} else
 	    cout << "2 to the 1 power is " << i << endl;
+    }
+
+    if (node == nodes-1) {
+    // We're the last node, so its our job to assess success/failure.
+
+        if ( i == pow(2.,nodes) )
+            cout << "Test passed\n";
+        else
+            cout << "Test failed\n";
     }
 
     C4::gsync();
