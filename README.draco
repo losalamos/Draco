@@ -42,3 +42,28 @@ Retired Draco Package Synopsis
 
 meshTest [meshTest-retired]: A test mesh that can be used to test
 other draco components that require a Mesh Type.
+
+LAMG [LAMG-retired]: An initial interface attempt for an Algebraic
+Multigrid solver.
+
+LAMGDiffusionSolver [LAMGDiffusionSolver-retired]:
+
+fourier [fourier-retired]:
+
+POOMA_MT [POOMA_MT-retired]:
+
+P1Diffusion [P1Diffusion-retired]:
+
+ConjGradDiffusionSolver [ConjGradDiffusionSolver-retired]:
+
+mesh [mesh-retired]:
+
+meshTest [meshTest-retired]:
+
+PCGDiffusionSolver [PCGDiffusionSolver-retired]:
+
+diffusion [diffusion-retired]:
+
+matprops [matprops-retired]:
+
+sn [sn-retired]:

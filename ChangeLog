@@ -15,8 +15,16 @@
 			 ConjGrad meshReaders viz cdi_eospac 
 			 cdi_gandolf cdi_analytic
 		level 4: RTT_Format_Reader amr_mesh
-		level 5: mc meshReader_Services
+		level 5: mc meshReaders_Services
 		level 6: imc
+
+	* pcgWrap: changed linalg to pcgWrap.  Released pcgWrap-1_0_0.
+	This is a temporary package because pcg is no longer supported at
+	the lab.  It will be superceded in the near future.
+
+	* config: build-system improvements.  Notably, cleaned up vendor
+	stuff--added with-lapack, with-gandolf, with-pcg, removed
+	with-pcglib.
 
 2000-05-03  Thomas M. Evans  <tme@lanl.gov>
 
