@@ -64,15 +64,13 @@ docsrcs := $(wildcard *.h *.cc)
 
 include ../config/make.doc
 
-# Rules for building test executables
+# Build the tests.
 
-tsrcs		= $(wildcard t*.cc)
-testprogs_all	= $(tsrcs:%.cc=%_$(env))
+tstsrcs	:= $(wildcard t*.cc) c4run.cc
 
-tests: libc4_$(env).$(lib_suffix) $(testprogs_all)
+tstsrcs := $(tstsrcs:tstSort.cc=)
 
-$(testprogs_all) : t%_$(env) : $(env) $(env)/t%.o libc4_$(env).$(lib_suffix)
-	$(CXX) $(CXXFLAGS) -o $@ $(env)/t$*.o -L. -lc4_$(env) $(LINK_LIBS)
+include ../config/make.tests
 
 # Go pick up the standard signature for makefiles.
 
