@@ -35,10 +35,10 @@ all: $(objects)
 
 # UTILITIES
 
-cleanall: cleanobj cleankcc cleandep
+cleanall: cleanobj cleankcc cleandep cleantest
 
 cleandep:
-	$(RM) *.cd
+	$(RM) *.cd *.td
 
 cleanobj:
 	$(RM) *.o

@@ -79,6 +79,7 @@ private:
     void Zone_mapper();
     void Cell_zone(int, int);
     void Cell_zone(int, int, int);
+    void Zone_parser(ifstream &);
 public:
   // constructor
     explicit OS_Parser(const string &infile)

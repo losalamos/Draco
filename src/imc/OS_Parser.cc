@@ -271,6 +271,15 @@ void OS_Parser::Parser_opacity(ifstream &in)
 
   // map fine cells to zones
     Zone_mapper();
+
+  // read zone map
+    Zone_parser(in);
+}
+
+//---------------------------------------------------------------------------//
+void OS_Parser::Zone_parser(ifstream &in)
+{
+  // FINISH WHEN BACK FROM CO
 }
 
 //---------------------------------------------------------------------------//
