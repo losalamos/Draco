@@ -112,6 +112,7 @@ public:
   // accessors for Opacity<MT>
     vector<double> get_density() const;
     vector<double> get_kappa() const;
+    vector<double> get_kappa_thomson() const;
     vector<double> get_specific_heat() const;
     vector<double> get_temperature() const;
     double get_implicit() const { return arguments.implicitness; }

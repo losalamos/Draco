@@ -1,0 +1,22 @@
+//----------------------------------*-C++-*----------------------------------//
+// Host_Manager.pt
+// Thomas M. Evans
+// Mon Aug  3 10:57:02 1998
+//---------------------------------------------------------------------------//
+// @> Instantialyzer for template class Host_Manager
+//---------------------------------------------------------------------------//
+
+#include "imc/OS_Mesh.hh"
+#include "imc/AMR_Builder.hh"
+#include "imc/AMR_Interface.hh"
+#include "Host_Manager.cc"
+
+IMCSPACE
+
+instantiate class Host_Manager<OS_Mesh, AMR_Builder, AMR_Interface>
+
+CSPACE
+
+//---------------------------------------------------------------------------//
+//                              end of Host_Manager.pt
+//---------------------------------------------------------------------------//
