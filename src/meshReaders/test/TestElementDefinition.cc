@@ -137,9 +137,9 @@ bool TestElementDefinition::test_node(
     ldum = ldum && elem_def.get_node_location(0) ==
 	Element_Definition::CORNER;
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -169,9 +169,9 @@ bool TestElementDefinition::test_bar_2(
     ldum = ldum && elem_def.get_side_nodes(1) == 
 	std::vector<int>(s1,s1+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -204,9 +204,9 @@ bool TestElementDefinition::test_bar_3(
     ldum = ldum && elem_def.get_side_nodes(1) == 
 	std::vector<int>(s1,s1+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -239,9 +239,9 @@ bool TestElementDefinition::test_tri_3(
     ldum = ldum && elem_def.get_side_nodes(2) == 
 	std::vector<int>(s2,s2+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -277,9 +277,9 @@ bool TestElementDefinition::test_tri_6(
     ldum = ldum && elem_def.get_side_nodes(2) == 
 	std::vector<int>(s2,s2+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -315,9 +315,9 @@ bool TestElementDefinition::test_quad_4(
     ldum = ldum && elem_def.get_side_nodes(3) == 
 	std::vector<int>(s3,s3+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -356,9 +356,9 @@ bool TestElementDefinition::test_quad_8(
     ldum = ldum && elem_def.get_side_nodes(3) == 
 	std::vector<int>(s3,s3+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }   
 
@@ -401,9 +401,9 @@ bool TestElementDefinition::test_quad_9(
     ldum = ldum && elem_def.get_side_nodes(3) == 
 	std::vector<int>(s3,s3+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -439,9 +439,9 @@ bool TestElementDefinition::test_tetra_4(
     ldum = ldum && elem_def.get_side_nodes(3) == 
 	std::vector<int>(s3,s3+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -480,9 +480,9 @@ bool TestElementDefinition::test_tetra_10(
     ldum = ldum && elem_def.get_side_nodes(3) == 
 	std::vector<int>(s3,s3+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -526,9 +526,9 @@ bool TestElementDefinition::test_pyra_5(
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -577,9 +577,9 @@ bool TestElementDefinition::test_pyra_14(
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -621,9 +621,9 @@ bool TestElementDefinition::test_penta_6(
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -668,9 +668,9 @@ bool TestElementDefinition::test_penta_15(
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -718,9 +718,9 @@ bool TestElementDefinition::test_penta_18(
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -761,9 +761,9 @@ bool TestElementDefinition::test_hexa_8(
     ldum = ldum && elem_def.get_side_nodes(5) == 
 	std::vector<int>(s5,s5+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -807,9 +807,9 @@ bool TestElementDefinition::test_hexa_20(
     ldum = ldum && elem_def.get_side_nodes(5) == 
 	std::vector<int>(s5,s5+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
@@ -858,9 +858,9 @@ bool TestElementDefinition::test_hexa_27(
     ldum = ldum && elem_def.get_side_nodes(5) == 
 	std::vector<int>(s5,s5+size);
     if (ldum) 
-	pass() << ename << " Element OK." << endl;
+	pass(ename) << ename << " Element OK." << endl;
     else
-	fail() << "Error in " << ename << " Element." << endl;
+	fail(ename) << "Error in " << ename << " Element." << endl;
     return ldum;
 }
 
