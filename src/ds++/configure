@@ -5442,8 +5442,7 @@ echo $ECHO_N "checking \"host platform cpu\"... $ECHO_C" >&6
        echo "$as_me:$LINENO: result: \"${host_cpu}\"" >&5
 echo "${ECHO_T}\"${host_cpu}\"" >&6
 
-       # we do not do any posix source defines unless the user
-       # specifically requests them
+
        if test "${with_posix:=no}" = yes ; then
 	   with_posix='199309L'
        fi
@@ -5458,6 +5457,8 @@ _ACEOF
 _ACEOF
 
        fi
+
+
 
        #
        # LONG LONG on Linux
@@ -5510,50 +5511,84 @@ echo "$as_me: Linux KCC strict option set to allow long long type!" >&6;}
        fi
 
        #
-       # setup communication packages
+       # Setup communications packages
        #
 
-       # the default locations for mpi include/lib are:
-       #   /usr/local/mpich/include
-       #   /usr/local/mpich/lib
-       # to make life easy for CCS-2/4 users; needless to say,
-       # these can be overridden by --with-mpi-lib and --with-mpi-inc
-
-       # setup for mpi support, on linux vendor and mich are one
+       # setup for mpi support, on linux vendor and mpich are one
        # and the same because there is no vendor for mpi on linux
 
        if test "${with_mpi}" = vendor ; then
-	   with_mpi='mpich'
+	   with_mpi=mpich
        fi
 
-       if test "${with_mpi}" = mpich ; then
+       # For CCS-2/4 users, we can also specify LAMPI in place of
+       # mpich.
 
+       case ${with_mpi} in
+       mpich)
 	   # define mpi libs for mpich on linux
 	   mpi_libs='-lmpich'
+           echo "$as_me:$LINENO: checking \"for mpirun in \$PATH\"" >&5
+echo $ECHO_N "checking \"for mpirun in \$PATH\"... $ECHO_C" >&6
+           which_mpirun=`which mpirun`
+           if test -z "`which mpirun | grep -i lampi`"; then
+              echo "$as_me:$LINENO: result: \"found ${which_mpirun}\"" >&5
+echo "${ECHO_T}\"found ${which_mpirun}\"" >&6
+           else
+              { { echo "$as_me:$LINENO: error: \"found LAMPI mpirun instead of mpich mpirun at ${which_mpirun}\"" >&5
+echo "$as_me: error: \"found LAMPI mpirun instead of mpich mpirun at ${which_mpirun}\"" >&2;}
+   { (exit 1); exit 1; }; }
+           fi
+           ;;
+       lampi | LAMPI)
+           with_mpi='LAMPI'
+	   # define mpi libs for LAMPI on linux
+	   mpi_libs='-lmpi'
+           echo "$as_me:$LINENO: checking \"for mpirun in \$PATH\"" >&5
+echo $ECHO_N "checking \"for mpirun in \$PATH\"... $ECHO_C" >&6
+           which_mpirun=`which mpirun`
+           if test -z "`which mpirun | grep -i lampi`"; then
+              { { echo "$as_me:$LINENO: error: \"found mpich mpirun instead of LAMPI mpirun at ${which_mpirun}\"" >&5
+echo "$as_me: error: \"found mpich mpirun instead of LAMPI mpirun at ${which_mpirun}\"" >&2;}
+   { (exit 1); exit 1; }; }
+           else
+              echo "$as_me:$LINENO: result: \"found ${which_mpirun}\"" >&5
+echo "${ECHO_T}\"found ${which_mpirun}\"" >&6
+           fi
+           ;;
+       esac
 
-	   # if /usr/local/mpich/lib exists use it by default;
-	   # this is set as the default for the CCS-2/4 network;
-	   # it may not be appropriate on other LINUX networks;
-	   # in those cases, override with --with-mpi-lib
-	   if test -z "${MPI_LIB}" && test -d "/usr/local/mpich/lib"; then
-	       MPI_LIB='/usr/local/mpich/lib'
-	   fi
+       if test "${with_mpi}" = mpich ||
+          test "${with_mpi}" = LAMPI ; then
+
+           # if /usr/local/$with_mpi/lib exists use it by default;
+           # this is set as the default for the CCS-2/4 network;
+           # it may not be appropriate on other LINUX networks;
+           # in those cases, override with --with-mpi-lib
+           echo "$as_me:$LINENO: checking \"for MPI library path\"" >&5
+echo $ECHO_N "checking \"for MPI library path\"... $ECHO_C" >&6
+           if test -z "${MPI_LIB}" && test -d "/usr/local/${with_mpi}/lib"; then
+               MPI_LIB=/usr/local/${with_mpi}/lib
+           fi
+           echo "$as_me:$LINENO: result: ${MPI_LIB}" >&5
+echo "${ECHO_T}${MPI_LIB}" >&6
 
 	   # set the default include location on LINUX to
-	   # /usr/local/mpich/include; this is specific to the CCS-2/4
-	   # LINUX network; to override on other systems use
+	   # /usr/local/${with_mpi}/include; this is specific to the
+	   # CCS-2/4 LINUX network; to override on other systems use
 	   # --with-mpi-inc on the configure line
 
 	   # if MPI_INC is undefined then define it
-	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include"; then
-	       MPI_INC='/usr/local/mpich/include'
+           echo "$as_me:$LINENO: checking \"for MPI include path\"" >&5
+echo $ECHO_N "checking \"for MPI include path\"... $ECHO_C" >&6
+	   if test -z "${MPI_INC}" &&
+              test -d "/usr/local/${with_mpi}/include"; then
+	       MPI_INC=/usr/local/${with_mpi}/include
 	   fi
-
+           echo "$as_me:$LINENO: result: ${MPI_INC}" >&5
+echo "${ECHO_T}${MPI_INC}" >&6
        fi
 
-       #
-       # end of communication package setup
-       #
 
        #
        # setup lapack
@@ -6175,7 +6210,9 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
 
-       # set rpath when building shared library executables
+
+       rptrigger=rpath
+
        if test "${enable_shared}" = yes ; then
 
 	   # turn off ranlib
@@ -6183,34 +6220,35 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 	   # the g++/icc rpath needs Xlinker in front of it
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
-	       RPATHA="-Xlinker -rpath \${curdir}"
-	       RPATHB="-Xlinker -rpath \${curdir}/.."
-	       RPATHC="-Xlinker -rpath \${libdir}"
+	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
+	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
+	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
 	   else
-	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
 	   fi
-
        fi
 
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
-	   # if we are using gcc/icc then add xlinker
+	   # if we are using gcc then add xlinker
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
-	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
+	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
 	   else
-	       RPATH="-rpath ${vendor_dir} ${RPATH}"
+	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
 	   fi
        done
+
 
        # add the intel math library for better performance when
        # compiling with intel
        if test "${CXX}" = icc; then
 	   LIBS="$LIBS -limf"
        fi
+
    ;;
 
    # ***********
@@ -6224,8 +6262,7 @@ echo $ECHO_N "checking \"host platform cpu\"... $ECHO_C" >&6
        echo "$as_me:$LINENO: result: \"${host_cpu}\"" >&5
 echo "${ECHO_T}\"${host_cpu}\"" >&6
 
-       # we do not do any posix source defines unless the user
-       # specifically requests them
+
        if test "${with_posix:=no}" = yes ; then
 	   with_posix='199309L'
        fi
@@ -6241,54 +6278,82 @@ _ACEOF
 
        fi
 
-       #
-       # setup linux strict if the compiler is KCC (also turn off the
-       # warnings about long long being non-standard)
-       #
-       if test "${CXX}" = KCC && test -n "${STRICTFLAG}" ; then
-	   { echo "$as_me:$LINENO: WARNING: \"Linux KCC strict option set to allow long long type!\"" >&5
-echo "$as_me: WARNING: \"Linux KCC strict option set to allow long long type!\"" >&2;}
-	   STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
-       fi
-
-       #
-       # add thread safety if we are using KCC on linux
-       #
-       if test "${CXX}" = KCC ; then
-	   CFLAGS="--thread_safe ${CFLAGS}"
-	   CXXFLAGS="--thread_safe ${CXXFLAGS}"
-	   ARFLAGS="--thread_safe ${ARFLAGS}"
-	   LDFLAGS="--thread_safe ${LDFLAGS}"
-       fi
-
-       #
-       # setup communication packages
-       #
-
-       # the default locations for mpi include/lib are:
-       #   /usr/local/mpich/include
-       #   /us	   # define mpi libs for mpich on linux
-	   mpi_libs='-lmpich'
 
 
+
+       # setup for mpi support, on linux vendor and mpich are one
+       # and the same because there is no vendor for mpi on linux
 
        if test "${with_mpi}" = vendor ; then
-	   with_mpi='mpich'
+	   with_mpi=mpich
        fi
 
-       if test "${with_mpi}" = mpich ; then
+       # For CCS-2/4 users, we can also specify LAMPI in place of
+       # mpich.
 
-	   	   mpi_libs='-lmpich'
+       case ${with_mpi} in
+       mpich)
+	   # define mpi libs for mpich on linux
+	   mpi_libs='-lmpich'
+           echo "$as_me:$LINENO: checking \"for mpirun in \$PATH\"" >&5
+echo $ECHO_N "checking \"for mpirun in \$PATH\"... $ECHO_C" >&6
+           which_mpirun=`which mpirun`
+           if test -z "`which mpirun | grep -i lampi`"; then
+              echo "$as_me:$LINENO: result: \"found ${which_mpirun}\"" >&5
+echo "${ECHO_T}\"found ${which_mpirun}\"" >&6
+           else
+              { { echo "$as_me:$LINENO: error: \"found LAMPI mpirun instead of mpich mpirun at ${which_mpirun}\"" >&5
+echo "$as_me: error: \"found LAMPI mpirun instead of mpich mpirun at ${which_mpirun}\"" >&2;}
+   { (exit 1); exit 1; }; }
+           fi
+           ;;
+       lampi | LAMPI)
+           with_mpi='LAMPI'
+	   # define mpi libs for LAMPI on linux
+	   mpi_libs='-lmpi'
+           echo "$as_me:$LINENO: checking \"for mpirun in \$PATH\"" >&5
+echo $ECHO_N "checking \"for mpirun in \$PATH\"... $ECHO_C" >&6
+           which_mpirun=`which mpirun`
+           if test -z "`which mpirun | grep -i lampi`"; then
+              { { echo "$as_me:$LINENO: error: \"found mpich mpirun instead of LAMPI mpirun at ${which_mpirun}\"" >&5
+echo "$as_me: error: \"found mpich mpirun instead of LAMPI mpirun at ${which_mpirun}\"" >&2;}
+   { (exit 1); exit 1; }; }
+           else
+              echo "$as_me:$LINENO: result: \"found ${which_mpirun}\"" >&5
+echo "${ECHO_T}\"found ${which_mpirun}\"" >&6
+           fi
+           ;;
+       esac
 
-	   	   	   	   	   if test -z "${MPI_LIB}" && test -d "/usr/local/mpich/lib"; then
-	       MPI_LIB='/usr/local/mpich/lib'
+       if test "${with_mpi}" = mpich ||
+          test "${with_mpi}" = LAMPI ; then
+
+           # if /usr/local/$with_mpi/lib exists use it by default;
+           # this is set as the default for the CCS-2/4 network;
+           # it may not be appropriate on other LINUX networks;
+           # in those cases, override with --with-mpi-lib
+           echo "$as_me:$LINENO: checking \"for MPI library path\"" >&5
+echo $ECHO_N "checking \"for MPI library path\"... $ECHO_C" >&6
+           if test -z "${MPI_LIB}" && test -d "/usr/local/${with_mpi}/lib"; then
+               MPI_LIB=/usr/local/${with_mpi}/lib
+           fi
+           echo "$as_me:$LINENO: result: ${MPI_LIB}" >&5
+echo "${ECHO_T}${MPI_LIB}" >&6
+
+	   # set the default include location on LINUX to
+	   # /usr/local/${with_mpi}/include; this is specific to the
+	   # CCS-2/4 LINUX network; to override on other systems use
+	   # --with-mpi-inc on the configure line
+
+	   # if MPI_INC is undefined then define it
+           echo "$as_me:$LINENO: checking \"for MPI include path\"" >&5
+echo $ECHO_N "checking \"for MPI include path\"... $ECHO_C" >&6
+	   if test -z "${MPI_INC}" &&
+              test -d "/usr/local/${with_mpi}/include"; then
+	       MPI_INC=/usr/local/${with_mpi}/include
 	   fi
-
-
-	   	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include"; then
-	       MPI_INC='/usr/local/mpich/include'
-	   fi
-
+           echo "$as_me:$LINENO: result: ${MPI_INC}" >&5
+echo "${ECHO_T}${MPI_INC}" >&6
        fi
 
 
@@ -6838,7 +6903,9 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
 
-       # set rpath when building shared library executables
+
+       rptrigger=rpath
+
        if test "${enable_shared}" = yes ; then
 
 	   # turn off ranlib
@@ -6846,34 +6913,30 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 	   # the g++/icc rpath needs Xlinker in front of it
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
-	       RPATHA="-Xlinker -rpath \${curdir}"
-	       RPATHB="-Xlinker -rpath \${curdir}/.."
-	       RPATHC="-Xlinker -rpath \${libdir}"
+	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
+	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
+	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
 	   else
-	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
 	   fi
-
        fi
 
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
-	   # if we are using gcc/icc then add xlinker
+	   # if we are using gcc then add xlinker
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
-	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
+	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
 	   else
-	       RPATH="-rpath ${vendor_dir} ${RPATH}"
+	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
 	   fi
        done
 
-       # add the intel math library for better performance when
-       # compiling with intel
-       if test "${CXX}" = icc; then
-	   LIBS="$LIBS -limf"
-       fi
+
+
    ;;
 
    # *********
@@ -6887,21 +6950,23 @@ echo $ECHO_N "checking \"host platform cpu\"... $ECHO_C" >&6
        echo "$as_me:$LINENO: result: \"${host_cpu}\"" >&5
 echo "${ECHO_T}\"${host_cpu}\"" >&6
 
-       # posix source defines, by default we set posix on
-       if test "${with_posix:=yes}" = yes ; then
+
+       if test "${with_posix:=no}" = yes ; then
 	   with_posix='199309L'
        fi
 
        if test "${with_posix}" != no ; then
-	   cat >>confdefs.h <<_ACEOF
-#define _POSIX_C_SOURCE $with_posix
-_ACEOF
-
 	   cat >>confdefs.h <<\_ACEOF
 #define _POSIX_SOURCE 1
 _ACEOF
 
+	   cat >>confdefs.h <<_ACEOF
+#define _POSIX_C_SOURCE $with_posix
+_ACEOF
+
        fi
+
+
 
        # RANLIB TAG ON SGI
        RANLIB=':'
@@ -7586,33 +7651,40 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
 
-       # set rpath when building shared library executables
-       if test "${enable_shared}" = yes; then
 
-	   # the g++ rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++; then
-	       RPATHA="-Xlinker -rpath \${curdir}"
-	       RPATHB="-Xlinker -rpath \${curdir}/.."
-	       RPATHC="-Xlinker -rpath \${libdir}"
+       rptrigger=rpath
+
+       if test "${enable_shared}" = yes ; then
+
+	   # turn off ranlib
+	   RANLIB=':'
+
+	   # the g++/icc rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
+	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
+	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
 	   else
-	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
 	   fi
-
        fi
 
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
 	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++; then
-	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
 	   else
-	       RPATH="-rpath ${vendor_dir} ${RPATH}"
+	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
 	   fi
        done
+
+
+
    ;;
 
    # ******************
@@ -7626,21 +7698,23 @@ echo $ECHO_N "checking \"host platform cpu\"... $ECHO_C" >&6
        echo "$as_me:$LINENO: result: \"${host_cpu}\"" >&5
 echo "${ECHO_T}\"${host_cpu}\"" >&6
 
-       # posix source defines, by default we set posix off
+
        if test "${with_posix:=no}" = yes ; then
 	   with_posix='199309L'
        fi
 
        if test "${with_posix}" != no ; then
-	   cat >>confdefs.h <<_ACEOF
-#define _POSIX_C_SOURCE $with_posix
-_ACEOF
-
 	   cat >>confdefs.h <<\_ACEOF
 #define _POSIX_SOURCE 1
 _ACEOF
 
+	   cat >>confdefs.h <<_ACEOF
+#define _POSIX_C_SOURCE $with_posix
+_ACEOF
+
        fi
+
+
 
        #
        # setup communication packages
@@ -8236,36 +8310,40 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
 
-       # set rpath when building shared library executables
-       if test "${enable_shared}" = yes; then
+
+       rptrigger=rpath
+
+       if test "${enable_shared}" = yes ; then
 
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++ rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++; then
-	       RPATHA="-Xlinker -rpath \${curdir}"
-	       RPATHB="-Xlinker -rpath \${curdir}/.."
-	       RPATHC="-Xlinker -rpath \${libdir}"
+	   # the g++/icc rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
+	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
+	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
 	   else
-	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
 	   fi
-
        fi
 
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
 	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++; then
-	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
 	   else
-	       RPATH="-rpath ${vendor_dir} ${RPATH}"
+	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
 	   fi
        done
+
+
+
    ;;
 
    # *************
@@ -8284,21 +8362,23 @@ echo $ECHO_N "checking \"host platform cpu\"... $ECHO_C" >&6
        echo "$as_me:$LINENO: result: \"${host_cpu}\"" >&5
 echo "${ECHO_T}\"${host_cpu}\"" >&6
 
-       # posix source defines, by default we set posix off
+
        if test "${with_posix:=no}" = yes ; then
 	   with_posix='199309L'
        fi
 
        if test "${with_posix}" != no ; then
-	   cat >>confdefs.h <<_ACEOF
-#define _POSIX_C_SOURCE $with_posix
-_ACEOF
-
 	   cat >>confdefs.h <<\_ACEOF
 #define _POSIX_SOURCE 1
 _ACEOF
 
+	   cat >>confdefs.h <<_ACEOF
+#define _POSIX_C_SOURCE $with_posix
+_ACEOF
+
        fi
+
+
 
        # set up 32 or 64 bit compiling on IBM
        if test "${enable_32_bit:=no}" = yes ; then
@@ -8932,13 +9012,15 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
 
-       # RPATH is derived from -L, don't need explicit setup
+       # RPATH is derived from -L, we don't need an explicit setup.
 
        # do shared specific stuff
        if test "${enable_shared}" = yes ; then
 	   # turn off ranlib
 	   RANLIB=':'
        fi
+
+
    ;;
 
    # *****************
@@ -8952,21 +9034,23 @@ echo $ECHO_N "checking \"host platform cpu\"... $ECHO_C" >&6
        echo "$as_me:$LINENO: result: \"${host_cpu}\"" >&5
 echo "${ECHO_T}\"${host_cpu}\"" >&6
 
-       # posix source defines, by default we set poaix on
-       if test "${with_posix:=yes}" = yes ; then
+
+       if test "${with_posix:=no}" = yes ; then
 	   with_posix='199309L'
        fi
 
        if test "${with_posix}" != no ; then
-	   cat >>confdefs.h <<_ACEOF
-#define _POSIX_C_SOURCE $with_posix
-_ACEOF
-
 	   cat >>confdefs.h <<\_ACEOF
 #define _POSIX_SOURCE 1
 _ACEOF
 
+	   cat >>confdefs.h <<_ACEOF
+#define _POSIX_C_SOURCE $with_posix
+_ACEOF
+
        fi
+
+
 
        #
        # setup communication packages
@@ -9516,24 +9600,39 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
 
-       # set -R when building shared library executables
-       if test "${enable_shared}" = yes; then
-	   RPATH="-R \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+
+       rptrigger=R
+
+       if test "${enable_shared}" = yes ; then
+
+	   # turn off ranlib
 	   RANLIB=':'
+
+	   # the g++/icc rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
+	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
+	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+	   else
+	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	   fi
        fi
 
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
-	   # if we are using gcc/icc then add xlinker
+	   # if we are using gcc then add xlinker
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
-	       RPATH="-Xlinker -R ${vendor_dir} ${RPATH}"
+	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
 	   else
-	       RPATH="-R ${vendor_dir} ${RPATH}"
+	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
 	   fi
        done
+
+
    ;;
 
    # *******

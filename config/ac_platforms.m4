@@ -33,21 +33,68 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
    # LINUX SETUP
    # ***********
    *-linux-gnu)
+       AC_DBS_LINUX_ENVIRONMENT
+   ;;
+
+   # ***********
+   # CYGWIN SETUP
+   # ***********
+   i686-pc-cygwin)
+       AC_DBS_CYGWIN_ENVIRONMENT
+   ;;
+
+   # *********
+   # SGI SETUP
+   # *********
+   mips-sgi-irix6.*)
+       AC_DBS_IRIX_ENVIRONMENT
+   ;;
+
+   # ******************
+   # TRU64 COMPAQ SETUP
+   # ******************
+   alpha*-dec-osf*)
+       AC_DBS_OSF_ENVIRONMENT
+   ;;
+
+   # *************
+   # IBM AIX SETUP
+   # *************
+   *ibm-aix*)
+       AC_DBS_IBM_ENVIRONMENT
+   ;;
+
+   # *****************
+   # SUN/SOLARIS SETUP
+   # *****************
+   sparc-sun-solaris2.*)
+       AC_DBS_SUN_ENVIRONMENT
+   ;;
+
+   # *******
+   # NOTHING
+   # *******
+   *)
+       AC_MSG_ERROR("Cannot figure out the platform or host!")
+   ;;
+   esac
+])
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_LINUX_ENVIRONMENT
+dnl
+dnl Configure draco build system Linux-specific variables
+dnl This function is called within AC_DBS_PLATFORM_ENVIRONMENT
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 
        # print out cpu message
        AC_MSG_CHECKING("host platform cpu")
        AC_MSG_RESULT("${host_cpu}")
 
-       # we do not do any posix source defines unless the user
-       # specifically requests them
-       if test "${with_posix:=no}" = yes ; then
-	   with_posix='199309L'
-       fi
-
-       if test "${with_posix}" != no ; then
-	   AC_DEFINE(_POSIX_SOURCE)
-	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
-       fi
+       AC_DBS_SETUP_POSIX
 
        #   
        # LONG LONG on Linux
@@ -98,50 +145,9 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
 
        #
-       # setup communication packages
+       # Setup communications packages
        #
-       
-       # the default locations for mpi include/lib are:
-       #   /usr/local/mpich/include
-       #   /usr/local/mpich/lib
-       # to make life easy for CCS-2/4 users; needless to say,
-       # these can be overridden by --with-mpi-lib and --with-mpi-inc
-
-       # setup for mpi support, on linux vendor and mich are one
-       # and the same because there is no vendor for mpi on linux
-        
-       if test "${with_mpi}" = vendor ; then
-	   with_mpi='mpich'
-       fi
-
-       if test "${with_mpi}" = mpich ; then
-
-	   # define mpi libs for mpich on linux
-	   mpi_libs='-lmpich'
-
-	   # if /usr/local/mpich/lib exists use it by default;
-	   # this is set as the default for the CCS-2/4 network;
-	   # it may not be appropriate on other LINUX networks;
-	   # in those cases, override with --with-mpi-lib
-	   if test -z "${MPI_LIB}" && test -d "/usr/local/mpich/lib"; then
-	       MPI_LIB='/usr/local/mpich/lib'
-	   fi
-
-	   # set the default include location on LINUX to
-	   # /usr/local/mpich/include; this is specific to the CCS-2/4
-	   # LINUX network; to override on other systems use
-	   # --with-mpi-inc on the configure line
-
-	   # if MPI_INC is undefined then define it
-	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include"; then
-	       MPI_INC='/usr/local/mpich/include'
-	   fi
-
-       fi
-
-       #
-       # end of communication package setup
-       #  
+       AC_DBS_SETUP_COMM(mpich)
 
        # 
        # setup lapack 
@@ -209,131 +215,32 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       # set rpath when building shared library executables
-       if test "${enable_shared}" = yes ; then
-
-	   # turn off ranlib
-	   RANLIB=':'
-
-	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
-	       RPATHA="-Xlinker -rpath \${curdir}"
-	       RPATHB="-Xlinker -rpath \${curdir}/.."
-	       RPATHC="-Xlinker -rpath \${libdir}"
-	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
-	   else
-	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
-	   fi
-
-       fi
-
-       # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS}; 
-       do
-	   # if we are using gcc/icc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
-	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
-
-	   # else we just add the rpath
-	   else
-	       RPATH="-rpath ${vendor_dir} ${RPATH}"
-	   fi
-       done
+       AC_DBS_SETUP_RPATH(rpath)
 
        # add the intel math library for better performance when
        # compiling with intel
        if test "${CXX}" = icc; then
 	   LIBS="$LIBS -limf"
        fi
-   ;;
+])
 
-   # ***********
-   # CYGWIN SETUP
-   # ***********
-   i686-pc-cygwin)
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_CYWGIN_ENVIRONMENT
+dnl
+dnl Configure draco build system Cygwin-specific variables
+dnl This function is called within AC_DBS_PLATFORM_ENVIRONMENT
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_CYGWIN_ENVIRONMENT], [dnl
 
        # print out cpu message
        AC_MSG_CHECKING("host platform cpu")
        AC_MSG_RESULT("${host_cpu}")
 
-       # we do not do any posix source defines unless the user
-       # specifically requests them
-       if test "${with_posix:=no}" = yes ; then
-	   with_posix='199309L'
-       fi
+       AC_DBS_SETUP_POSIX
 
-       if test "${with_posix}" != no ; then
-	   AC_DEFINE(_POSIX_SOURCE)
-	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
-       fi
-
-       #
-       # setup linux strict if the compiler is KCC (also turn off the
-       # warnings about long long being non-standard)
-       #
-       if test "${CXX}" = KCC && test -n "${STRICTFLAG}" ; then
-	   AC_MSG_WARN("Linux KCC strict option set to allow long long type!")
-	   STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
-       fi
-
-       #
-       # add thread safety if we are using KCC on linux
-       #
-       if test "${CXX}" = KCC ; then
-	   CFLAGS="--thread_safe ${CFLAGS}"
-	   CXXFLAGS="--thread_safe ${CXXFLAGS}"
-	   ARFLAGS="--thread_safe ${ARFLAGS}"
-	   LDFLAGS="--thread_safe ${LDFLAGS}"
-       fi
-
-       #
-       # setup communication packages
-       #
-       
-       # the default locations for mpi include/lib are:
-       #   /usr/local/mpich/include
-       #   /us	   # define mpi libs for mpich on linux
-	   mpi_libs='-lmpich'
-
-	   dnl ifr/local/mpich/lib
-       dnl to make life easy for CCS-2/4 users; needless to say,
-       dnl these can be overridden by --with-mpi-lib and --with-mpi-inc
-
-       dnl setup for mpi support, on linux vendor and mich are one
-       dnl and the same because there is no vendor for mpi on linux
-        
-       if test "${with_mpi}" = vendor ; then
-	   with_mpi='mpich'
-       fi
-
-       if test "${with_mpi}" = mpich ; then
-
-	   dnl define mpi libs for mpich on linux
-	   mpi_libs='-lmpich'
-
-	   dnl if /usr/local/mpich/lib exists use it by default;
-	   dnl this is set as the default for the CCS-2/4 network;
-	   dnl it may not be appropriate on other LINUX networks;
-	   dnl in those cases, override with --with-mpi-lib
-	   if test -z "${MPI_LIB}" && test -d "/usr/local/mpich/lib"; then
-	       MPI_LIB='/usr/local/mpich/lib'
-	   fi
-
-	   dnl set the default include location on LINUX to
-	   dnl /usr/local/mpich/include; this is specific to the CCS-2/4
-	   dnl LINUX network; to override on other systems use
-	   dnl --with-mpi-inc on the configure line
-
-	   dnl if MPI_INC is undefined then define it
-	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include"; then
-	       MPI_INC='/usr/local/mpich/include'
-	   fi
-
-       fi
-
-       dnl
-       dnl end of communication package setup
-       dnl  
+       AC_DBS_SETUP_COMM(mpich)
 
        dnl 
        dnl setup lapack 
@@ -390,62 +297,331 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        dnl
        AC_VENDOR_FINALIZE
 
-       # set rpath when building shared library executables
-       if test "${enable_shared}" = yes ; then
+       AC_DBS_SETUP_RPATH(rpath)
 
-	   # turn off ranlib
-	   RANLIB=':'
+]) dnl cygwin
 
-	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
-	       RPATHA="-Xlinker -rpath \${curdir}"
-	       RPATHB="-Xlinker -rpath \${curdir}/.."
-	       RPATHC="-Xlinker -rpath \${libdir}"
-	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
-	   else
-	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
-	   fi
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_OSF_ENVIRONMENT
+dnl
+dnl Configure draco build system OSF-specific variables
+dnl This function is called within AC_DBS_PLATFORM_ENVIRONMENT
+dnl-------------------------------------------------------------------------dnl
 
+AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
+
+       # print out cpu message
+       AC_MSG_CHECKING("host platform cpu")
+       AC_MSG_RESULT("${host_cpu}")
+
+       AC_DBS_SETUP_POSIX
+
+       #
+       # setup communication packages
+       #
+
+       # setup vendor mpi
+       if test "${with_mpi}" = vendor ; then
+
+	   # define mpi libraries
+	   mpi_libs='-lmpi'
+       
+       # setup mpich
+       elif test "${with_mpi}" = mpich ; then
+
+	   # define mpi libraries
+	   mpi_libs='-lmpich'
+   
        fi
 
-       # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS}; 
-       do
-	   # if we are using gcc/icc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
-	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
-
-	   # else we just add the rpath
-	   else
-	       RPATH="-rpath ${vendor_dir} ${RPATH}"
-	   fi
-       done
-
-       # add the intel math library for better performance when
-       # compiling with intel
-       if test "${CXX}" = icc; then
-	   LIBS="$LIBS -limf"
+       # add COMPAQ ALASKA Specfic options
+       if test "${with_mpi}" = vendor ; then
+	   # define version check
+	   AC_DEFINE(MPI_VERSION_CHECK)
        fi
-   ;;
 
-   # *********
-   # SGI SETUP
-   # *********
-   mips-sgi-irix6.*)
+       #
+       # end of communication packages
+       #
+
+       #
+       # setup lapack
+       #
+
+       if test "${with_lapack}" = vendor ; then
+	   lapack_libs='-lcxmlp -lcxml'
+       fi
+
+       #
+       # end of lapack setup
+       #
+
+       #
+       # gandolf, eospac, pcg require -lfor on the link line.
+       #
+
+       AC_MSG_CHECKING("libfortran requirements")
+       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
+          test -n "${vendor_pcg}"; then
+          LIBS="${LIBS} -lfor"
+          AC_MSG_RESULT("-lfor added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # end of gandolf/libfortran setup
+       #
+
+       #
+       # libpcg/libfmpi setup
+       #
+
+       AC_MSG_CHECKING("libfmpi requirements")
+       if test -n "${vendor_pcg}"; then
+          LIBS="${LIBS} -lfmpi"
+          AC_MSG_RESULT("-lfmpi added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # end of libpcg setup
+       #
+
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
+
+       AC_DBS_SETUP_RPATH(rpath)
+
+]) dnl osf
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_IBM_ENVIRONMENT
+dnl
+dnl Configure draco build system IBM-specific variables
+dnl This function is called within AC_DBS_PLATFORM_ENVIRONMENT
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_IBM_ENVIRONMENT], [dnl
+
+       # dependency rules for IBM visual age compiler are complex
+       if test "${with_cxx}" = asciwhite || test "${with_cxx}" = ibm; then
+	   DEPENDENCY_RULES='Makefile.dep.xlC'
+       fi
    
        # print out cpu message
        AC_MSG_CHECKING("host platform cpu")
        AC_MSG_RESULT("${host_cpu}")
 
-       # posix source defines, by default we set posix on 
-       if test "${with_posix:=yes}" = yes ; then
-	   with_posix='199309L'
+       AC_DBS_SETUP_POSIX
+
+       # set up 32 or 64 bit compiling on IBM
+       if test "${enable_32_bit:=no}" = yes ; then
+	   
+	   # switch on gcc or xlC compiler
+	   if test "${with_cxx}" = gcc; then
+	       CXXFLAGS="${CXXFLAGS} -maix32"
+	       CFLAGS="${CFLAGS} -maix32"
+	   elif test "${with_cxx}" = asciwhite || 
+                test "${with_cxx}" = ibm; then
+	       CXXFLAGS="${CXXFLAGS} -q32"
+	       CFLAGS="${CFLAGS} -q32"
+	   fi
+
+       elif test "${enable_64_bit:=no}" = yes ; then
+	   
+	   # switch on gcc or xlC compiler
+	   if test "${with_cxx}" = gcc; then
+	       CXXFLAGS="${CXXFLAGS} -maix64"
+	       CFLAGS="${CFLAGS} -maix64"
+	   elif test "${with_cxx}" = asciwhite || 
+                test "${with_cxx}" = ibm; then
+	       CXXFLAGS="${CXXFLAGS} -q64"
+	       CFLAGS="${CFLAGS} -q64"
+	   fi
+
        fi
 
-       if test "${with_posix}" != no ; then
-	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
-	   AC_DEFINE(_POSIX_SOURCE)
+       # set up the heap size
+       if test "${with_cxx}" = asciwhite ; then
+	   LDFLAGS="${LDFLAGS} -bmaxdata:0x80000000"
        fi
+
+       # 
+       # GCC on AIX FLAGS
+       #
+       if test "${with_cxx}" = gcc; then
+
+	   # add the appropriate runtime linking for shared compiling
+	   if test "${enable_shared}" = yes; then
+	       ARFLAGS="-Xlinker -brtl -Xlinker -bh:5 ${ARFLAGS}"
+	       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+	       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+	       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}" 
+	   fi
+
+	   # we always allow shared object linking
+	   if test "${enable_static_ld}" != yes; then
+	       LDFLAGS="${LDFLAGS} -Xlinker -brtl -Xlinker -bh:5"
+	   fi
+
+	   # turn off the rpath
+	   RPATH=''
+       fi
+
+       #
+       # setup communication packages
+       #
+       if test -n "${vendor_mpi}"; then
+
+	   # setup vendor mpi
+	   if test "${with_mpi}" = vendor ; then
+
+	       # on asciwhite the newmpxlC compiler script takes care
+	       # of loading the mpi libraries; since it will fail
+	       # if libraries are loaded and newmpxlC is used; throw
+	       # an error if it occurs
+	       if test "${with_cxx}" = asciwhite; then
+
+		   if test -n "${MPI_INC}" || test -n "${MPI_LIB}"; then
+		       AC_MSG_ERROR("Cannot set mpi paths with newmpxlC.")
+		   fi
+
+		   mpi_libs=''
+
+	       fi
+
+	       # set up libraries if we are on ibm
+	       if test "${with_cxx}" = ibm; then
+
+		   # set up mpi library
+		   mpi_libs='-lmpi'
+
+	       fi
+
+	       # now turn on long long support if we are using the 
+	       # visual age compiler
+	       if test "${with_cxx}" = ibm || 
+	          test "${with_cxx}" = asciwhite ; then
+
+		   if test "${enable_strict_ansi}"; then
+		       AC_MSG_WARN("xlC set to allow long long")
+		       STRICTFLAG="-qlanglvl=extended"
+		       CFLAGS="${CFLAGS} -qlonglong"
+		       CXXFLAGS="${CXXFLAGS} -qlonglong"
+		   fi
+
+	       fi   
+       
+	   # setup mpich
+	   elif test "${with_mpi}" = mpich ; then
+
+	       # set up mpi libs
+	       mpi_libs='-lmpich'
+   
+	   fi
+
+       fi
+       #
+       # end of communication packages
+       #
+
+       #
+       # OTHER VENDORS
+       #
+
+       # we don't have the other vendors setup explicitly 
+
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
+
+       # RPATH is derived from -L, we don't need an explicit setup.
+
+       # do shared specific stuff
+       if test "${enable_shared}" = yes ; then
+	   # turn off ranlib
+	   RANLIB=':'
+       fi
+
+])
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_SUN_ENVIRONMENT
+dnl
+dnl Configure draco build system Sun-specific variables
+dnl This function is called within AC_DBS_PLATFORM_ENVIRONMENT
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_SUN_ENVIRONMENT], [dnl
+
+       # print out cpu message
+       AC_MSG_CHECKING("host platform cpu")
+       AC_MSG_RESULT("${host_cpu}")
+
+       AC_DBS_SETUP_POSIX
+
+       #
+       # setup communication packages
+       #
+   
+       # setup for mpi support
+       # we only support mpich on sgis       
+       if test "${with_mpi}" = vendor ; then
+
+	   AC_MSG_ERROR("We do not support vendor mpi on the SUN yet!")
+
+       elif test "${with_mpi}" = mpich ; then
+	   
+	   # define sun-required libraries for mpich, v 1.0 (this
+	   # needs to be updated for version 1.2)
+	   mpi_libs='-lpmpi -lmpi -lsocket -lnsl'
+
+       fi
+
+       #
+       # end of communication package setup
+       #
+
+       #
+       # setup lapack
+       #
+
+       if test "${with_lapack}" = vendor ; then
+	   lapack_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
+       fi
+
+       #
+       # end of lapack setup
+       #
+
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
+
+       AC_DBS_SETUP_RPATH(R)
+]) dnl sun
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_IRIX_ENVIRONMENT
+dnl
+dnl Configure draco build system IRIX-specific variables
+dnl This function is called within AC_DBS_PLATFORM_ENVIRONMENT
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_IRIX_ENVIRONMENT], [dnl
+
+       # print out cpu message
+       AC_MSG_CHECKING("host platform cpu")
+       AC_MSG_RESULT("${host_cpu}")
+
+       AC_DBS_SETUP_POSIX
 
        # RANLIB TAG ON SGI
        RANLIB=':'
@@ -611,405 +787,153 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       # set rpath when building shared library executables
-       if test "${enable_shared}" = yes; then
+       AC_DBS_SETUP_RPATH(rpath)
 
-	   # the g++ rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++; then
-	       RPATHA="-Xlinker -rpath \${curdir}"
-	       RPATHB="-Xlinker -rpath \${curdir}/.."
-	       RPATHC="-Xlinker -rpath \${libdir}"
-	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
-	   else
-	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
-	   fi
+]) dnl irix
 
-       fi
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_SETUP_POSIX
+dnl
+dnl we do not do any posix source defines unless the user specifically
+dnl requests them. 
+dnl-------------------------------------------------------------------------dnl
 
-       # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS}; 
-       do
-	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++; then
-	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
+AC_DEFUN([AC_DBS_SETUP_POSIX], [dnl
 
-	   # else we just add the rpath
-	   else
-	       RPATH="-rpath ${vendor_dir} ${RPATH}"
-	   fi
-       done
-   ;;
-
-   # ******************
-   # TRU64 COMPAQ SETUP
-   # ******************
-   alpha*-dec-osf*)
-   
-       # print out cpu message
-       AC_MSG_CHECKING("host platform cpu")
-       AC_MSG_RESULT("${host_cpu}")
-
-       # posix source defines, by default we set posix off
        if test "${with_posix:=no}" = yes ; then
 	   with_posix='199309L'
        fi
 
        if test "${with_posix}" != no ; then
-	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
 	   AC_DEFINE(_POSIX_SOURCE)
+	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
        fi
 
-       #
-       # setup communication packages
-       #
+]) dnl setup_posix
 
-       # setup vendor mpi
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_SETUP_COMM
+dnl
+dnl Setup communication packages
+dnl
+dnl default locations for mpi include/lib are:
+dnl          /usr/local/mpich/include
+dnl          /usr/local/mpich/lib
+dnl to make life easy for CCS-2/4 users; needless to say,
+dnl these can be overridden by --with-mpi-lib and --with-mpi-inc
+dnl
+dnl First argument is the default value for ${with_mpi} when this
+dnl variable has the value 'vendor'.  
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
+
+       # setup for mpi support, on linux vendor and mpich are one
+       # and the same because there is no vendor for mpi on linux
+        
        if test "${with_mpi}" = vendor ; then
+	   with_mpi=$1
+       fi
 
-	   # define mpi libraries
-	   mpi_libs='-lmpi'
-       
-       # setup mpich
-       elif test "${with_mpi}" = mpich ; then
+       # For CCS-2/4 users, we can also specify LAMPI in place of
+       # mpich. 
 
-	   # define mpi libraries
+       case ${with_mpi} in
+       mpich)
+	   # define mpi libs for mpich on linux
 	   mpi_libs='-lmpich'
-   
+           AC_MSG_CHECKING("for mpirun in \$PATH")
+           which_mpirun=`which mpirun`
+           if test -z "`which mpirun | grep -i lampi`"; then
+              AC_MSG_RESULT("found ${which_mpirun}")
+           else
+              AC_MSG_ERROR("found LAMPI mpirun instead of mpich mpirun at ${which_mpirun}")
+           fi
+           ;;
+       lampi | LAMPI)
+           with_mpi='LAMPI'
+	   # define mpi libs for LAMPI on linux
+	   mpi_libs='-lmpi'
+           AC_MSG_CHECKING("for mpirun in \$PATH")
+           which_mpirun=`which mpirun`
+           if test -z "`which mpirun | grep -i lampi`"; then
+              AC_MSG_ERROR("found mpich mpirun instead of LAMPI mpirun at ${which_mpirun}")
+           else
+              AC_MSG_RESULT("found ${which_mpirun}")
+           fi
+           ;;
+       esac 
+
+       if test "${with_mpi}" = mpich ||
+          test "${with_mpi}" = LAMPI ; then
+
+           # if /usr/local/$with_mpi/lib exists use it by default;
+           # this is set as the default for the CCS-2/4 network;
+           # it may not be appropriate on other LINUX networks;
+           # in those cases, override with --with-mpi-lib
+           AC_MSG_CHECKING("for MPI library path")
+           if test -z "${MPI_LIB}" && test -d "/usr/local/${with_mpi}/lib"; then
+               MPI_LIB=/usr/local/${with_mpi}/lib
+           fi
+           AC_MSG_RESULT(${MPI_LIB})
+
+	   # set the default include location on LINUX to
+	   # /usr/local/${with_mpi}/include; this is specific to the
+	   # CCS-2/4 LINUX network; to override on other systems use
+	   # --with-mpi-inc on the configure line
+
+	   # if MPI_INC is undefined then define it
+           AC_MSG_CHECKING("for MPI include path")
+	   if test -z "${MPI_INC}" && 
+              test -d "/usr/local/${with_mpi}/include"; then
+	       MPI_INC=/usr/local/${with_mpi}/include
+	   fi
+           AC_MSG_RESULT(${MPI_INC})
        fi
+])
 
-       # add COMPAQ ALASKA Specfic options
-       if test "${with_mpi}" = vendor ; then
-	   # define version check
-	   AC_DEFINE(MPI_VERSION_CHECK)
-       fi
 
-       #
-       # end of communication packages
-       #
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_SETUP_RPATH
+dnl
+dnl set rpath when building shared library executables
+dnl
+dnl $1 = rpath trigger.  One of "rpath" or "R"
+dnl-------------------------------------------------------------------------dnl
 
-       #
-       # setup lapack
-       #
+AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
 
-       if test "${with_lapack}" = vendor ; then
-	   lapack_libs='-lcxmlp -lcxml'
-       fi
-
-       #
-       # end of lapack setup
-       #
-
-       #
-       # gandolf, eospac, pcg require -lfor on the link line.
-       #
-
-       AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfor"
-          AC_MSG_RESULT("-lfor added to LIBS")
-       else
-	   AC_MSG_RESULT("not needed")
-       fi
-
-       #
-       # end of gandolf/libfortran setup
-       #
-
-       #
-       # libpcg/libfmpi setup
-       #
-
-       AC_MSG_CHECKING("libfmpi requirements")
-       if test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfmpi"
-          AC_MSG_RESULT("-lfmpi added to LIBS")
-       else
-	   AC_MSG_RESULT("not needed")
-       fi
-
-       #
-       # end of libpcg setup
-       #
-
-       #
-       # finalize vendors
-       #
-       AC_VENDOR_FINALIZE
-
-       # set rpath when building shared library executables
-       if test "${enable_shared}" = yes; then
+       rptrigger=$1
+  
+       if test "${enable_shared}" = yes ; then
 
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++ rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++; then
-	       RPATHA="-Xlinker -rpath \${curdir}"
-	       RPATHB="-Xlinker -rpath \${curdir}/.."
-	       RPATHC="-Xlinker -rpath \${libdir}"
+	   # the g++/icc rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
+	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
+	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
 	   else
-	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
 	   fi
-
        fi
 
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++; then
-	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
-
-	   # else we just add the rpath
-	   else
-	       RPATH="-rpath ${vendor_dir} ${RPATH}"
-	   fi
-       done
-   ;;
-
-   # *************
-   # IBM AIX SETUP
-   # *************
-   *ibm-aix*)
-
-       # dependency rules for IBM visual age compiler are complex
-       if test "${with_cxx}" = asciwhite || test "${with_cxx}" = ibm; then
-	   DEPENDENCY_RULES='Makefile.dep.xlC'
-       fi
-   
-       # print out cpu message
-       AC_MSG_CHECKING("host platform cpu")
-       AC_MSG_RESULT("${host_cpu}")
-
-       # posix source defines, by default we set posix off
-       if test "${with_posix:=no}" = yes ; then
-	   with_posix='199309L'
-       fi
-
-       if test "${with_posix}" != no ; then
-	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
-	   AC_DEFINE(_POSIX_SOURCE)
-       fi
-
-       # set up 32 or 64 bit compiling on IBM
-       if test "${enable_32_bit:=no}" = yes ; then
-	   
-	   # switch on gcc or xlC compiler
-	   if test "${with_cxx}" = gcc; then
-	       CXXFLAGS="${CXXFLAGS} -maix32"
-	       CFLAGS="${CFLAGS} -maix32"
-	   elif test "${with_cxx}" = asciwhite || 
-                test "${with_cxx}" = ibm; then
-	       CXXFLAGS="${CXXFLAGS} -q32"
-	       CFLAGS="${CFLAGS} -q32"
-	   fi
-
-       elif test "${enable_64_bit:=no}" = yes ; then
-	   
-	   # switch on gcc or xlC compiler
-	   if test "${with_cxx}" = gcc; then
-	       CXXFLAGS="${CXXFLAGS} -maix64"
-	       CFLAGS="${CFLAGS} -maix64"
-	   elif test "${with_cxx}" = asciwhite || 
-                test "${with_cxx}" = ibm; then
-	       CXXFLAGS="${CXXFLAGS} -q64"
-	       CFLAGS="${CFLAGS} -q64"
-	   fi
-
-       fi
-
-       # set up the heap size
-       if test "${with_cxx}" = asciwhite ; then
-	   LDFLAGS="${LDFLAGS} -bmaxdata:0x80000000"
-       fi
-
-       # 
-       # GCC on AIX FLAGS
-       #
-       if test "${with_cxx}" = gcc; then
-
-	   # add the appropriate runtime linking for shared compiling
-	   if test "${enable_shared}" = yes; then
-	       ARFLAGS="-Xlinker -brtl -Xlinker -bh:5 ${ARFLAGS}"
-	       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-	       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-	       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}" 
-	   fi
-
-	   # we always allow shared object linking
-	   if test "${enable_static_ld}" != yes; then
-	       LDFLAGS="${LDFLAGS} -Xlinker -brtl -Xlinker -bh:5"
-	   fi
-
-	   # turn off the rpath
-	   RPATH=''
-       fi
-
-       #
-       # setup communication packages
-       #
-       if test -n "${vendor_mpi}"; then
-
-	   # setup vendor mpi
-	   if test "${with_mpi}" = vendor ; then
-
-	       # on asciwhite the newmpxlC compiler script takes care
-	       # of loading the mpi libraries; since it will fail
-	       # if libraries are loaded and newmpxlC is used; throw
-	       # an error if it occurs
-	       if test "${with_cxx}" = asciwhite; then
-
-		   if test -n "${MPI_INC}" || test -n "${MPI_LIB}"; then
-		       AC_MSG_ERROR("Cannot set mpi paths with newmpxlC.")
-		   fi
-
-		   mpi_libs=''
-
-	       fi
-
-	       # set up libraries if we are on ibm
-	       if test "${with_cxx}" = ibm; then
-
-		   # set up mpi library
-		   mpi_libs='-lmpi'
-
-	       fi
-
-	       # now turn on long long support if we are using the 
-	       # visual age compiler
-	       if test "${with_cxx}" = ibm || 
-	          test "${with_cxx}" = asciwhite ; then
-
-		   if test "${enable_strict_ansi}"; then
-		       AC_MSG_WARN("xlC set to allow long long")
-		       STRICTFLAG="-qlanglvl=extended"
-		       CFLAGS="${CFLAGS} -qlonglong"
-		       CXXFLAGS="${CXXFLAGS} -qlonglong"
-		   fi
-
-	       fi   
-       
-	   # setup mpich
-	   elif test "${with_mpi}" = mpich ; then
-
-	       # set up mpi libs
-	       mpi_libs='-lmpich'
-   
-	   fi
-
-       fi
-       #
-       # end of communication packages
-       #
-
-       #
-       # OTHER VENDORS
-       #
-
-       # we don't have the other vendors setup explicitly 
-
-       #
-       # finalize vendors
-       #
-       AC_VENDOR_FINALIZE
-
-       # RPATH is derived from -L, don't need explicit setup
-
-       # do shared specific stuff
-       if test "${enable_shared}" = yes ; then
-	   # turn off ranlib
-	   RANLIB=':'
-       fi
-   ;;
-
-   # *****************
-   # SUN/SOLARIS SETUP
-   # *****************
-   sparc-sun-solaris2.*)
-   
-       # print out cpu message
-       AC_MSG_CHECKING("host platform cpu")
-       AC_MSG_RESULT("${host_cpu}")
-
-       # posix source defines, by default we set poaix on 
-       if test "${with_posix:=yes}" = yes ; then
-	   with_posix='199309L'
-       fi
-
-       if test "${with_posix}" != no ; then
-	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
-	   AC_DEFINE(_POSIX_SOURCE)
-       fi
-
-       #
-       # setup communication packages
-       #
-   
-       # setup for mpi support
-       # we only support mpich on sgis       
-       if test "${with_mpi}" = vendor ; then
-
-	   AC_MSG_ERROR("We do not support vendor mpi on the SUN yet!")
-
-       elif test "${with_mpi}" = mpich ; then
-	   
-	   # define sun-required libraries for mpich, v 1.0 (this
-	   # needs to be updated for version 1.2)
-	   mpi_libs='-lpmpi -lmpi -lsocket -lnsl'
-
-       fi
-
-       #
-       # end of communication package setup
-       #
-
-       #
-       # setup lapack
-       #
-
-       if test "${with_lapack}" = vendor ; then
-	   lapack_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
-       fi
-
-       #
-       # end of lapack setup
-       #
-
-       #
-       # finalize vendors
-       #
-       AC_VENDOR_FINALIZE
-
-       # set -R when building shared library executables
-       if test "${enable_shared}" = yes; then
-	   RPATH="-R \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
-	   RANLIB=':'
-       fi
-
-       # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS}; 
-       do
-	   # if we are using gcc/icc then add xlinker
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
-	       RPATH="-Xlinker -R ${vendor_dir} ${RPATH}"
+	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
 	   else
-	       RPATH="-R ${vendor_dir} ${RPATH}"
+	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
 	   fi
        done
-   ;;
-
-   # *******
-   # NOTHING
-   # *******
-   *)
-       AC_MSG_ERROR("Cannot figure out the platform or host!")
-   ;;
-   esac
-])
+]) dnl setup_rpath
 
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_platforms.m4

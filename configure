@@ -836,7 +836,7 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-mpi=vendor,mpich
+  --with-mpi=vendor,mpich,lampi
 	                  determine MPI implementation (vendor on SGI,SUN; mpich on LINUX)
   --with-mpi-inc=DIR    tell where MPI includes are (\${MPI_INC_DIR} by default)
   --with-mpi-lib=DIR    tell where MPI libs are (\${MPI_LIB_DIR} by default)

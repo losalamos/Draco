@@ -303,7 +303,7 @@ AC_DEFUN([AC_MPI_SETUP], [dnl
 
    dnl define --with-mpi
    AC_ARG_WITH(mpi,
-      [  --with-mpi=[vendor,mpich] 
+      [  --with-mpi=[vendor,mpich,lampi] 
 	                  determine MPI implementation (vendor on SGI,SUN; mpich on LINUX)])
 
    dnl define --with-mpi-inc and --with-mpi-lib
