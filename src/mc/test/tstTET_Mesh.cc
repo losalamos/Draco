@@ -30,7 +30,7 @@ using rtt_mc::TET_Mesh;
 using rtt_mc::ThreeVector;
 using rtt_mc::sample_in_triangle;
 using rtt_rng::Sprng;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 //! Typedef for scalar field of ThreeVectors.
 typedef std::vector<ThreeVector> SF_THREEVECTOR;

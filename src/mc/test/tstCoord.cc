@@ -25,7 +25,7 @@ using rtt_mc::Coord_sys;
 using rtt_mc::XYCoord_sys;
 using rtt_mc::XYZCoord_sys;
 
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 using namespace std;
 

@@ -93,7 +93,7 @@ MC_Interface::MC_Interface()
 // Full replication topology test --> uses base class reference to derived
 // class type
 
-bool topology_replication_test(dsxx::SP<rtt_mc::OS_Mesh> mesh, 
+bool topology_replication_test(rtt_dsxx::SP<rtt_mc::OS_Mesh> mesh, 
 			       const rtt_mc::Topology &top)
 {
     using std::vector;
@@ -180,7 +180,7 @@ bool topology_replication_test(dsxx::SP<rtt_mc::OS_Mesh> mesh,
 // Full DD topology test --> uses base class reference to derived
 // class type
 
-bool topology_DD_test(dsxx::SP<rtt_mc::OS_Mesh> mesh,
+bool topology_DD_test(rtt_dsxx::SP<rtt_mc::OS_Mesh> mesh,
 		      const rtt_mc::Topology &top)
 {
     using std::vector;

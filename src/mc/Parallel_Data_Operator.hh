@@ -62,7 +62,7 @@ class Parallel_Data_Operator
 {
   public:
     // some typedefs used in this class
-    typedef dsxx::SP<Topology> SP_Topology;
+    typedef rtt_dsxx::SP<Topology> SP_Topology;
 
     // nested operations classes
     struct Data_Replicated;

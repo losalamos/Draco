@@ -34,7 +34,7 @@ using rtt_mc::Parallel_Data_Operator;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_mc_test::MC_Interface;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 typedef OS_Mesh::CCSF<int>           ccsf_int;
 typedef OS_Mesh::CCSF<int>::iterator field_itor;

@@ -49,9 +49,9 @@ class OS_Builder
 {
   public:
     // Useful typdefs to std:: namespace members.
-    typedef dsxx::SP<OS_Mesh>                 SP_Mesh;
-    typedef dsxx::SP<Coord_sys>               SP_Coord_sys;
-    typedef dsxx::SP<Layout>                  SP_Layout;
+    typedef rtt_dsxx::SP<OS_Mesh>             SP_Mesh;
+    typedef rtt_dsxx::SP<Coord_sys>           SP_Coord_sys;
+    typedef rtt_dsxx::SP<Layout>              SP_Layout;
     typedef std::vector<int>                  sf_int;
     typedef std::vector<std::vector<int> >    vf_int;
     typedef std::vector<double>               sf_double;
@@ -87,7 +87,7 @@ class OS_Builder
 
   public:
     // Constructor.
-    template<class IT> explicit OS_Builder(dsxx::SP<IT>);
+    template<class IT> explicit OS_Builder(rtt_dsxx::SP<IT>);
 
     // Build Mesh function..
     SP_Mesh build_Mesh();
@@ -98,7 +98,7 @@ class OS_Builder
 //---------------------------------------------------------------------------//
 
 template<class IT>
-OS_Builder::OS_Builder(dsxx::SP<IT> interface)
+OS_Builder::OS_Builder(rtt_dsxx::SP<IT> interface)
 {
     Require (interface);
 

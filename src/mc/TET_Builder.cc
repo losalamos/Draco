@@ -7,6 +7,8 @@
  */
 //---------------------------------------------------------------------------//
 
+#ifdef Not_Ready_for_Primetime
+
 #include "TET_Builder.hh"
 
 namespace rtt_mc
@@ -100,6 +102,8 @@ SP<TET_Mesh> TET_Builder::build_Mesh()
 }   // end TET_Builder::build_Mesh()
 
 }   // end namespace rtt_mc
+
+#endif // NOT READY FOR PRIMETIME
 
 //---------------------------------------------------------------------------//
 //                              end of mc/TET_Builder.cc

@@ -30,7 +30,7 @@ using rtt_mc::Rep_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_mc_test::MC_Interface;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__, __FILE__);

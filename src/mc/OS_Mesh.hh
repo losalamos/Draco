@@ -90,8 +90,8 @@ class OS_Mesh
 {
   public:
     // Useful typdefs to std:: namespace members.
-    typedef dsxx::SP<OS_Mesh>                 SP_Mesh;
-    typedef dsxx::SP<Coord_sys>               SP_Coord_sys;
+    typedef rtt_dsxx::SP<OS_Mesh>             SP_Mesh;
+    typedef rtt_dsxx::SP<Coord_sys>           SP_Coord_sys;
     typedef rtt_rng::Sprng                    rng_Sprng;
     typedef std::vector<int>                  sf_int;
     typedef std::vector<std::vector<int> >    vf_int;
@@ -112,7 +112,7 @@ class OS_Mesh
 
   private:
     // Base class reference to a derived coord class.
-    dsxx::SP<Coord_sys> coord;
+    rtt_dsxx::SP<Coord_sys> coord;
 
     // Layout of mesh.
     Layout layout;
@@ -172,7 +172,7 @@ class OS_Mesh
     // Parallel_Building. 
     const Layout& get_Layout() const { return layout; }
     const Coord_sys& get_Coord() const { return *coord; }
-    dsxx::SP<Coord_sys> get_SPCoord() const { return coord; }
+    rtt_dsxx::SP<Coord_sys> get_SPCoord() const { return coord; }
     const vf_double& get_vertex() const { return vertex; }
     const vf_int& get_cell_pair() const { return cell_pair; }
 

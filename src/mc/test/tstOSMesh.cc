@@ -33,7 +33,7 @@ using rtt_mc::Layout;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_mc_test::MC_Interface;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__);
@@ -348,7 +348,7 @@ int main(int argc, char *argv[])
 	// 2D Mesh tests
 	Test_2D();
     }
-    catch (dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &ass)
     {
 	cout << "Dumbass, you screwed up: " << ass.what() << endl;
 	C4::Finalize();

@@ -17,7 +17,7 @@ namespace rtt_mc
 
 // draco namespaces
 using rtt_rng::Sprng;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 //___________________________________________________________________________//
 /*!
@@ -103,6 +103,7 @@ class TET_Builder
  * \brief           Non-inline, templated TET_Builder constructor.
  * \param interface Smart pointer to an instance of an Interface Type.
  */
+template<class IT>
 TET_Builder::TET_Builder(SP<IT> interface)
 {
     Require (interface);

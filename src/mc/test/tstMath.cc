@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 	// test math functions
 	test_math();
     }
-    catch (dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &ass)
     {
 	cout << "You are a bona-fide Uncle-#@&%er: " << ass.what() << endl;
 	C4::Finalize();

@@ -18,7 +18,7 @@
 namespace rtt_mc 
 {
 
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 using std::string;
 using std::vector;

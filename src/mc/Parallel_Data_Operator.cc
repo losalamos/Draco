@@ -36,7 +36,7 @@ using std::fabs;
  * Constructs a Parallel_Data_Operator object with an appropriate
  * rtt_mc::Topology.
  *
- * \param top a dsxx::SP to a rtt_mc::Topology object.
+ * \param top a rtt_dsxx::SP to a rtt_mc::Topology object.
  */
 Parallel_Data_Operator::Parallel_Data_Operator(SP_Topology top)
     : topology(top)

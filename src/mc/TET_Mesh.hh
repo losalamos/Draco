@@ -35,7 +35,7 @@ using std::string;
 
 // draco namespaces
 using rtt_rng::Sprng;
-using dsxx::SP;
+using rtt_dsxx::SP;
 
 //___________________________________________________________________________//
 /*!
