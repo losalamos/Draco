@@ -162,7 +162,10 @@ namespace XTM {
 			       DiffusionSolver &solver,
 			       double dt,
 			       const CCMaterialStateField &matStateCC,
-			       const FCMaterialStateField &matStateFC) const;
+			       const FCMaterialStateField &matStateFC,
+			       const bssf &alpha,
+			       const bssf &beta,
+			       const bssf &bSrc) const;
 
      //-----------------------------------------------------------------------//
      // solveIonConduction:
@@ -175,7 +178,10 @@ namespace XTM {
 			     DiffusionSolver &solver,
 			     double dt,
 			     const CCMaterialStateField &matStateCC,
-			     const FCMaterialStateField &matStateFC) const;
+			     const FCMaterialStateField &matStateFC,
+			     const bssf &alpha,
+			     const bssf &beta,
+			     const bssf &bSrc) const;
 
      //-----------------------------------------------------------------------//
      // solve3T:
@@ -201,7 +207,9 @@ namespace XTM {
 		  const ccsf &QRad,
 		  const ccsf &QElectron,
 		  const ccsf &QIon,
-		  const bssf &boundary) const;
+		  const bssf &alpha,
+		  const bssf &beta,
+		  const bssf &bSrc) const;
 
      // IMPLEMENTATION
 
@@ -245,7 +253,9 @@ namespace XTM {
 			  const ccsf &QIon,
 			  const ccsf &TElectron,
 			  const ccsf &TIon,
-			  const bssf &boundary) const;
+			  const bssf &alpha,
+			  const bssf &beta,
+			  const bssf &bSrc) const;
     
      //-----------------------------------------------------------------------//
      // calcP1Coeffs:

@@ -166,7 +166,10 @@ solveElectConduction(ccsf &electronEnergyDeposition,
 		     DiffusionSolver &solver,
 		     double dt,
 		     const CCMaterialStateField &matStateCC,
-		     const FCMaterialStateField &matStateFC) const
+		     const FCMaterialStateField &matStateFC,
+		     const bssf &alpha,
+		     const bssf &beta,
+		     const bssf &bSrc) const
 {
     // Require dt > 0, etc.
 
@@ -195,8 +198,11 @@ solveElectConduction(ccsf &electronEnergyDeposition,
     source = removalCoeff * TnElectron;
 
     // Do the diffusion solve for the temperature at n+1.
-	
-    solver.solve(Tnp1Electron, kappaElectron, removalCoeff, source);
+
+    FluxField Flux(spMesh);
+    const DiscFluxField Fprime(spMesh);
+    solver.solve(Tnp1Electron, Flux, kappaElectron, removalCoeff, source,
+		 Fprime, alpha, beta, bSrc);
 
     // deltaTElectron for radiation will
     // be Te^n+1 - Te^n
@@ -236,7 +242,10 @@ solveIonConduction(ccsf &ionEnergyDeposition,
 		   DiffusionSolver &solver,
 		   double dt,
 		   const CCMaterialStateField &matStateCC,
-		   const FCMaterialStateField &matStateFC) const
+		   const FCMaterialStateField &matStateFC,
+		   const bssf &alpha,
+		   const bssf &beta,
+		   const bssf &bSrc) const
 {
     // Require dt > 0, etc.
 
@@ -266,7 +275,10 @@ solveIonConduction(ccsf &ionEnergyDeposition,
 
     // Do the diffusion solve for the temperature at n+1.
 	
-    solver.solve(Tnp1Ion, kappaIon, removalCoeff, source);
+    FluxField Flux(spMesh);
+    const DiscFluxField Fprime(spMesh);
+    solver.solve(Tnp1Ion, Flux, kappaIon, removalCoeff, source,
+		 Fprime, alpha, beta, bSrc);
 
     // deltaTIon for radiation will
     // be Ti^n+1 - Ti^n
@@ -316,7 +328,9 @@ void P13T<MT, MP, DS>::solve3T(RadiationStateField &resultsStateField,
 			       const ccsf &QRad,
 			       const ccsf &QElectron,
 			       const ccsf &QIon,
-			       const bssf &boundary) const
+			       const bssf &alpha,
+			       const bssf &beta,
+			       const bssf &bSrc) const
 {
     // Require dt > 0, etc.
 
@@ -340,7 +354,8 @@ void P13T<MT, MP, DS>::solve3T(RadiationStateField &resultsStateField,
     
     calcNewRadState(resultsStateField, QEEM, REEM, solver,
 		    dt, groupNo, matStateCC, matStateFC, prevStateField,
-		    QRad, QElectron, QIon, TnElectron, TnIon, boundary);
+		    QRad, QElectron, QIon, TnElectron, TnIon, alpha, beta,
+		    bSrc);
 
     // Calculate the delta electron temperature from the new radiation
     // state, (Te^n+1 - Te^n).
@@ -424,7 +439,9 @@ calcNewRadState(RadiationStateField &resultsStateField,
 		const ccsf &QIon,
 		const ccsf &TElectron,
 		const ccsf &TIon,
-		const bssf &boundary) const
+		const bssf &alpha,
+		const bssf &beta,
+		const bssf &bSrc) const
 {
     // Calculate the coefficients needed by the diffusion solver.
 
@@ -451,7 +468,8 @@ calcNewRadState(RadiationStateField &resultsStateField,
     // Since phi and F are aliased to the resultsStateField members,
     // this is all we have to do.
     
-    solver.solve(phi, F, D, sigmaAbsBar, QRadBar, Fprime, boundary);
+    solver.solve(phi, F, D, sigmaAbsBar, QRadBar, Fprime, alpha, beta,
+		 bSrc);
 
     cerr << "QRadBar/sigmaAbsBar: " <<
 	(*QRadBar.begin())/(*sigmaAbsBar.begin()) << endl;
