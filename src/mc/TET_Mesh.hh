@@ -55,7 +55,12 @@ using dsxx::SP;
  */
 // revision history:
 // -----------------
-// 0) original
+//  0)   Original : Committed 2000_01_27.
+//  1) 2000_01_28 : Added public functions to TET_Mesh:
+//                          bool   in_cell(const SF_DOUBLE &, int);
+//                          int    get_cell(const SF_DOUBLE &);
+//                          double get_min_db(const SF_DOUBLE &, int);
+//
 //___________________________________________________________________________//
 
 class TET_Mesh
@@ -156,6 +161,10 @@ class TET_Mesh
     //! Return the number of cells in the mesh.
     int num_cells() const { return layout.num_cells(); }
 
+    // Determine whether a given position is inside a given cell.
+    bool in_cell(const SF_DOUBLE &, int) const;
+
+    //___________________________________________________//
     // Services required by all mesh types used in JAYENNE.
 
     int next_cell(int cell, int face) const
@@ -202,7 +211,14 @@ class TET_Mesh
     bool operator==(const TET_Mesh &) const;
     bool operator!=(const TET_Mesh &rhs) const { return !(*this == rhs); }
 
+    //_____________________________________//
     // End of required JAYENNE mesh services.
+
+    // Find the cell comtaining a given position.
+    int get_cell(const SF_DOUBLE &) const;
+
+    // Get minimum distance to cell boundary, regardless of direction.
+    double get_min_db(const SF_DOUBLE &, int) const;
 
     // References to imbedded objects and data required for Parallel_Building.
     // More may be added later.

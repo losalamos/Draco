@@ -142,6 +142,36 @@ const ThreeVector TET_Mesh::get_inward_cross(int cell_, int face_) const
 
 //___________________________________________________________________________//
 /*!
+ * \brief          Determine whether a given position is inside a given cell.
+ * \param position XYZ-position as STL vector.
+ * \param cell     External number of cell.
+ * \return         True if position is strictly within the cell, else false.
+ *
+ * The external number "cell" is checked for validity, then converted to
+ * cell_ = cell - 1 for internal use.
+ */
+bool TET_Mesh::in_cell(const SF_DOUBLE &position, int cell) const
+{
+    Valid(cell);
+    int cell_ = cell - 1;
+
+    ThreeVector XYZ(position);
+
+    for (int f_ = 0 ; f_ < FOUR ; f_++)
+        {
+            ThreeVector N = get_outward_cross(cell_, f_);
+            int v_ = (f_ + 1) % FOUR;  // any vertex on the face.
+
+            if ( N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ) <= 0.0 )
+                return false;
+        }
+    // If position is "inside" every face, it is inside the cell.
+    return true;
+
+}   // end TET_Mesh::in_cell(const SF_DOUBLE &, int)
+
+//___________________________________________________________________________//
+/*!
  * \brief          Find the distance to the boundary and the encountered face.
  * \param position XYZ-position of particle.
  * \param omega    XYZ-direction of particle.
@@ -174,13 +204,13 @@ double TET_Mesh::get_db(const SF_DOUBLE &position, const SF_DOUBLE &omega,
     Valid(cell);
     int cell_ = cell - 1;
 
+    ThreeVector XYZ(position);
+    ThreeVector UVW(omega);
     SF_DOUBLE dist(FOUR);
 
     for (int f_ = 0 ; f_ < FOUR ; f_++)
         {
             ThreeVector N = get_outward_cross(cell_, f_);
-            ThreeVector XYZ(position);
-            ThreeVector UVW(omega);
             double denom = N.dot(UVW);
             int v = (f_ + 1) % FOUR;  // any vertex on the face.
 
@@ -494,6 +524,69 @@ bool TET_Mesh::operator==(const TET_Mesh &rhs) const
     // if we haven't returned, then the two meshes must be equal
     return true;
 }   // end TET_Mesh::operator==(const TET_Mesh &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief          Find the cell comtaining a given position.
+ * \param position XYZ-position as STL vector.
+ * \return         External number of cell containing position.
+ *
+ * This function should only be called for full meshes, and for positions
+ * that are strictly within some cell.  Positions outside the mesh or lying
+ * on boundaries will violate an Ensure() test.
+ *
+ * For TET_Meshes, no binary search is available, so get_cell() will be slow.
+ */
+int TET_Mesh::get_cell(const SF_DOUBLE &position) const
+{
+    Require (!submesh);
+
+    int ret_cell = 0;
+
+    for (int cell = 1 ; cell <= num_cells() ; cell++)
+        if ( in_cell(position, cell) )
+            ret_cell = cell;
+
+    Ensure (ret_cell > 0);
+    return ret_cell;
+
+}   // end TET_Mesh::get_cell(const SF_DOUBLE &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief          Find the minimum distance to boundary in the given cell.
+ * \param position XYZ-position of particle, as STL vector.
+ * \param cell     External number of current cell (containing position).
+ * \return         The distance to the encountered boundary face.
+ *
+ * The external number "cell" is checked for validity, then converted to
+ * cell_ = cell - 1 for internal use.  However, "cell" and the for-loop
+ * index "face" are passed unmodified to get_normal(cell, face).
+ */
+double TET_Mesh::get_min_db(const SF_DOUBLE &position, int cell) const
+{
+    Valid(cell);
+    int cell_ = cell - 1;
+
+    ThreeVector XYZ(position);
+    SF_DOUBLE dist(FOUR);
+
+    for (int face = 1 ; face <= FOUR ; face++)
+        {
+            ThreeVector N(get_normal(cell, face));
+            int v_ = face % FOUR;  // any vertex on the face.
+
+            dist.push_back(
+                N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ));
+        }
+
+    SF_DOUBLE::iterator itor = min_element(dist.begin(),dist.end());
+
+    double dist_min = *itor;
+    Ensure ( dist_min > 0.0 && dist_min < global::huge );
+    return dist_min;
+
+}   // end TET_Mesh::get_min_db(const SF_DOUBLE &, int)
 
 }   // end namespace rtt_mc
 
