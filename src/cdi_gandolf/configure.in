@@ -29,10 +29,9 @@ AC_MPI_SETUP(test)
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++ cdi)
-AC_NEEDS_LIBS_TEST(UnitTestFrame c4)
+AC_NEEDS_LIBS_TEST(UnitTestFrame)
 
-dnl AC_RUNTESTS(tGandolfFile tGandolfOpacity, scalar)
-AC_RUNTESTS(tGandolfFile tGandolfOpacity, 1)
+AC_RUNTESTS(tGandolfFile tGandolfOpacity tGandolfWithCDI, 1)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
@@ -46,7 +45,8 @@ mips-sgi-irix6.*)
 esac
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
-          test/Makefile:../../config/Makefile.test.in)
+          test/Makefile:../../config/Makefile.test.in \
+	  doc/Makefile:../../config/Makefile.doc.in)
 
 # The IPCRESS files are binary so we copy them to the target directory manually.
 echo copying ${srcdir}/test/Al_BeCu.ipcress to test/Al_BeCu.ipcress
