@@ -1,10 +1,10 @@
-//----------------------------------*-C++-*----------------------------------//
+//-------------------------------*-C++-*----------------------------------//
 // FifiMatPropsReader.cc
 // Randy M. Roberts
 // Mon Apr 20 13:44:11 1998
-//---------------------------------------------------------------------------//
+//------------------------------------------------------------------------//
 // @> 
-//---------------------------------------------------------------------------//
+//------------------------------------------------------------------------//
 
 #include "matprops/FifiMatPropsReader.hh"
 #include "radphys/RadiationPhysics.hh"
@@ -17,10 +17,11 @@ using dsxx::Mat2;
 
 #include <iostream>
 using std::istream;
-using std::cin;
+
+#ifdef DEBUG_FIFIMATPROPSREADER
 using std::cerr;
-using std::cout;
 using std::endl;
+#endif
 
 #include <fstream>
 using std::ifstream;
@@ -48,7 +49,23 @@ using std::ends;
 
 using namespace XTM;
 
+//------------------------------------------------------------------------//
+// FMPR:
+//    A shorthand typedef for the very long name, FifiMatPropsReader.
+//------------------------------------------------------------------------//
+
 typedef FifiMatPropsReader FMPR;
+
+//------------------------------------------------------------------------//
+// FifiMatPropsReader:
+//   This constructor takes a vector of MaterialDefinition's,
+//   the desired output Units, and the Fifi file's input stream.
+//   The vector of MaterialDefinition's decides which materials to "look at"
+//   from the file.  Any materials with ids not matching the "matid" field
+//   of any of matdefs' entries will not be processed, and therefore, ignored.
+//   The "abar" field of the MaterialDefinition's are the mass in amus of
+//   the component material.
+//------------------------------------------------------------------------//
 
 FMPR::FifiMatPropsReader(const vector<MaterialDefinition> &matdefs,
 			 const Units &outputUnits_, std::istream &is_)
@@ -65,11 +82,17 @@ FMPR::FifiMatPropsReader(const vector<MaterialDefinition> &matdefs,
 	
     file2OutputUnits = fileUnits / getOutputUnits();
 
+
+    // Go throuth the supplied list of desired materials, and
+    // process their data.
+    
     for (vector<MaterialDefinition>::const_iterator mit = matdefs.begin();
 	 mit != matdefs.end(); mit++)
     {
 	const MaterialDefinition &mat = (*mit);
 	int matid = mat.matid;
+
+	// Make sure that there are no duplicates in the matdefs vector.
 	
 	if (hasMaterial(matid))
 	{
@@ -80,6 +103,9 @@ FMPR::FifiMatPropsReader(const vector<MaterialDefinition> &matdefs,
 	
 	    throw std::runtime_error(os.str());
 	}
+
+	// If the Fifi file parser cannot find the material with this
+	// matid, then this is a problem.
 	
 	if (!fifiParser.hasMaterial(matid))
 	{
@@ -91,25 +117,46 @@ FMPR::FifiMatPropsReader(const vector<MaterialDefinition> &matdefs,
 	    throw std::runtime_error(os.str());
 	}
 
-	MaterialInfo matinfo(matid, mat.abar);
+	// Create a nearly empty MaterialInfo.
+	// It has no grids, only its matid and its mass in amus.
+	// This MaterialInfo is then added to the map, where it
+	// can be references by its matid, and subsequently filled with
+	// its grid information.
+
+	MaterialInfo matinfo(mat.name, matid, mat.abar);
 	materialInfoMap.insert(std::make_pair(matid, matinfo));
     }
+
+    // Go through all of the materials and fill in their temperature,
+    // density, and group energy grid information.
     
     calcGridInfo();
 }
+
+//------------------------------------------------------------------------//
+// getNextMaterial:
+//   This method doesn't really do much but verify that the material exists,
+//   and loads its name into the resulting string, and returns true.
+//   If the material does not exist it returns false.
+//------------------------------------------------------------------------//
 
 bool FMPR::getNextMaterial(MaterialId materialId_, string &name)
 {
     if (hasMaterial(materialId_))
     {
-	std::ostrstream os;
-	os << "material" << materialId_ << std::ends;
-	name = os.str();
+	const MaterialInfo &matinfo = getMaterialInfo(materialId_);
+    	name = matinfo.name;
 	return true;
     }
     return false;
 }
 
+
+//------------------------------------------------------------------------//
+// calcGridInfo:
+//    Go through all of the materials and fill in their temperature,
+//    density, and group energy grid information.
+//------------------------------------------------------------------------//
 
 void FMPR::calcGridInfo()
 {
@@ -124,7 +171,6 @@ void FMPR::calcGridInfo()
 
 	fifiParser.getData(matid, "tgrid", matInfo.temperatureGrid);
 
-	cerr << "matInfo: " << matid << " tgrid: " << endl;
 	for (int i=0; i<matInfo.temperatureGrid.size(); i++)
 	{
 	    const Units &f2O = file2OutputUnits;
@@ -134,15 +180,12 @@ void FMPR::calcGridInfo()
 	    
 	    matInfo.temperatureGrid[i] = f2O.ConvertTemperature(
 		matInfo.temperatureGrid[i]);
-	    cerr << matInfo.temperatureGrid[i] << " ";
 	}
-	cerr << endl;
 	
 	// Get the density grid for this material
 	
 	fifiParser.getData(matid, "rgrid", matInfo.densityGrid);
 
-	cerr << "matInfo: " << matid << " rgrid: " << endl;
 	for (int i=0; i<matInfo.densityGrid.size(); i++)
 	{
 	    const Units &f2O = file2OutputUnits;
@@ -151,9 +194,7 @@ void FMPR::calcGridInfo()
 	    // Convert these to user density units.
 	    
 	    matInfo.densityGrid[i] = f2O.ConvertDensity(matInfo.densityGrid[i]);
-	    cerr << matInfo.densityGrid[i] << " ";
 	}
-	cerr << endl;
 	
 	// Get the energy grid for this material
 	
@@ -169,15 +210,23 @@ void FMPR::calcGridInfo()
 	    matInfo.energyGrid[i] = f2O.ConvertTemperature(
 		matInfo.energyGrid[i]);
 	}
-	
+
+#ifdef DEBUG_FIFIMATPROPSREADER
 	cerr << endl;
 	cerr << "material: " << matid << " statistics:"
 	     << " numTemperatures: " << matInfo.temperatureGrid.size()
 	     << " numDensities: " << matInfo.densityGrid.size()
 	     << " numGroups: " << matInfo.energyGrid.size() - 1
 	     << endl;
+#endif
     }
 }
+
+//------------------------------------------------------------------------//
+// getMaterialInfo:
+//   Return the MaterialInfo spec from the given materialId.
+//   Throw an exception if the material is not in the map.
+//------------------------------------------------------------------------//
 
 const FMPR::MaterialInfo &FMPR::getMaterialInfo(MaterialId materialId) const
 {
@@ -195,6 +244,13 @@ const FMPR::MaterialInfo &FMPR::getMaterialInfo(MaterialId materialId) const
     return (*matiter).second;    
 }
 
+//------------------------------------------------------------------------//
+// getTemperatureGrid:
+//   Return the temperature grid for the material given by materialId.
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//------------------------------------------------------------------------//
+
 bool FMPR::getTemperatureGrid(MaterialId materialId,
 			      vector<double> &tempGrid_)
 {
@@ -204,6 +260,13 @@ bool FMPR::getTemperatureGrid(MaterialId materialId,
 
     return true;
 }
+
+//------------------------------------------------------------------------//
+// getDensityGrid:
+//   Return the density grid for the material given by materialId.
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//------------------------------------------------------------------------//
 
 bool FMPR::getDensityGrid(MaterialId materialId,
 			  vector<double> &densityGrid_)
@@ -215,6 +278,13 @@ bool FMPR::getDensityGrid(MaterialId materialId,
     return true;
 }
 
+//------------------------------------------------------------------------//
+// getNumGroups:
+//   Return the number of energy groups for the material given by materialId.
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//------------------------------------------------------------------------//
+
 bool FMPR::getNumGroups(MaterialId materialId, int &numGroups)
 {
     const MaterialInfo &matInfo = getMaterialInfo(materialId);
@@ -223,17 +293,38 @@ bool FMPR::getNumGroups(MaterialId materialId, int &numGroups)
     return true;
 }
 
+//------------------------------------------------------------------------//
+// getEnergyUpperbounds:
+//   Return the upper bounds of the specified group for the material
+//   given by materialId.
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//   Units: (temp)
+//------------------------------------------------------------------------//
+
 bool FMPR::getEnergyUpperbounds(MaterialId materialId, int group,
 				double &energyUpperbounds_)
 {
     const MaterialInfo &matInfo = getMaterialInfo(materialId);
 
     Require(group >= 1 && group <= matInfo.getNumGroups());
+
+    // The upper bound for group ig is found at egrid[ig].
+    // The lower bound for group ig is found at egrid[ig-1];
     
     energyUpperbounds_ = matInfo.getEnergyGrid()[group];
 
     return true;
 }
+
+//------------------------------------------------------------------------//
+// getEnergyLowerbounds:
+//   Return the lower bounds of the specified group for the material
+//   given by materialId.
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//   Units: (temp)
+//------------------------------------------------------------------------//
 
 bool FMPR::getEnergyLowerbounds(MaterialId materialId, int group,
 				double &energyLowerbounds_)
@@ -242,10 +333,25 @@ bool FMPR::getEnergyLowerbounds(MaterialId materialId, int group,
 
     Require(group >= 1 && group <= matInfo.getNumGroups());
     
+    // The upper bound for group ig is found at egrid[ig].
+    // The lower bound for group ig is found at egrid[ig-1];
+    
     energyLowerbounds_ = matInfo.getEnergyGrid()[group-1];
 
     return true;
 }
+
+//------------------------------------------------------------------------//
+// getSigmaAbsorption:
+//   Return the absorption cross-section at the specified group for the
+//   material given by materialId.
+//   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//   If the fifi file parser cannot find the appropriate data keywords then
+//   return false.
+//   Units: (length^2/mass)
+//------------------------------------------------------------------------//
 
 bool FMPR::getSigmaAbsorption(MaterialId materialId, int group,
 			      Mat2<double> &dataMat)
@@ -254,7 +360,7 @@ bool FMPR::getSigmaAbsorption(MaterialId materialId, int group,
 
     Require(dataMat.nx() == matInfo.getNumTemperatures());
     Require(dataMat.ny() == matInfo.getNumDensities());
-    
+
     if (fifiParser.hasKeyword(matInfo.matid, "ramg"))
     {
 	getSigma(matInfo, group, "ramg", dataMat);
@@ -263,6 +369,18 @@ bool FMPR::getSigmaAbsorption(MaterialId materialId, int group,
 
     return false;
 }
+
+//------------------------------------------------------------------------//
+// getSigmaTotal:
+//   Return the total cross-section at the specified group for the
+//   material given by materialId.
+//   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//   If the fifi file parser cannot find the appropriate data keywords then
+//   return false.
+//   Units: (length^2/mass)
+//------------------------------------------------------------------------//
 
 bool FMPR::getSigmaTotal(MaterialId materialId, int group,
 			 Mat2<double> &dataMat)
@@ -274,19 +392,30 @@ bool FMPR::getSigmaTotal(MaterialId materialId, int group,
 
     Require(dataMat.nx() == matInfo.getNumTemperatures());
     Require(dataMat.ny() == matInfo.getNumDensities());
+
+    // Does the parser have the absorption x-section and also
+    // the l=0 scattering x-section?  If not just return false.
     
     if (!fifiParser.hasKeyword(materialId, "ramg") &&	
-	!(fifiParser.hasKeyword(materialId, "rams")  ||
-	  fifiParser.hasKeyword(materialId, "rams0")))
+	!(fifiParser.hasKeyword(materialId, "rsmg")  ||
+	  fifiParser.hasKeyword(materialId, "rsmg0")))
     {
 	return false;
     }
-	  
+
+    // Get the absorption x-section.
+    // Have it initialized to zero, in case the fifi file does
+    // not have an absorption x-section.
+    
     Mat2<double> sigmaAbs(numTemps, numDensities, 0.0);
 
     if (fifiParser.hasKeyword(materialId, "ramg"))
 	getSigma(matInfo, group, "ramg", sigmaAbs);
  
+    // Get the l=0 scattering x-section.
+    // Have it initialized to zero, in case the fifi file does
+    // not have an l=0 scattering x-section.
+    
     Mat2<double> sigmaSct(numTemps, numDensities, 0.0);
 
     if (fifiParser.hasKeyword(materialId, "rsmg0"))
@@ -298,12 +427,24 @@ bool FMPR::getSigmaTotal(MaterialId materialId, int group,
 	getSigma(matInfo, group, "rsmg", sigmaSct);
     }
 
+    // The total x-section is the sum of the absorption, and l=0
+    // scattering x-sections.
+    
     for (int i=0; i<numTemps; i++)
 	for (int j=0; j<numDensities; j++)
 	    dataMat(i,j) = sigmaAbs(i,j) + sigmaSct(i,j);
 
     return true;
 }
+
+//------------------------------------------------------------------------//
+// getSigma:
+//   Get a set of cross-section data, at the specified group for the
+//   material given by the MaterialInfo spec, from the Fifi file parser
+//   using the supplied keyword (e.g. "ramg", or "rsmg0").
+//   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+//   Units: (length^2/mass)
+//------------------------------------------------------------------------//
 
 void FMPR::getSigma(const MaterialInfo &matInfo, int group,
 		    const string &keyword, Mat2<double> &dataMat)
@@ -314,6 +455,10 @@ void FMPR::getSigma(const MaterialInfo &matInfo, int group,
     int numTemps = matInfo.getNumTemperatures();
     int numDensities = matInfo.getNumDensities();
     int numGroups = matInfo.getNumGroups();
+
+    // The Fifi file parser will allocate the dataVec to what it
+    // thinks is the correct size.  If we are really getting
+    // cross-section data the size will be numGroups * numTemps * numDensities.
     
     vector<double> dataVec;
     fifiParser.getData(matInfo.matid, keyword, dataVec);
@@ -325,6 +470,10 @@ void FMPR::getSigma(const MaterialInfo &matInfo, int group,
 	    " by number of densities.").c_str());
     
     vector<double>::const_iterator dataiter = dataVec.begin();
+
+    // Strip out the data for the desired group.
+    // Place the data into an numTemps by numDensities Mat2<double>.
+    // Convert the x-sections to the desired output units.
     
     for (int i=0; i<numTemps; i++)
     {
@@ -344,10 +493,28 @@ void FMPR::getSigma(const MaterialInfo &matInfo, int group,
     }
 }
 
+//------------------------------------------------------------------------//
+// hasMaterial:
+//    Returns true if material is found based on the mapping from
+//    the materialId.
+//------------------------------------------------------------------------//
+
 bool FMPR::hasMaterial(MaterialId materialId) const
 {
     return materialInfoMap.find(materialId) != materialInfoMap.end();
 }
+
+//------------------------------------------------------------------------//
+// getSigmaEmission:
+//   Return the emission cross-section at the specified group for the
+//   material given by materialId.
+//   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//   If the fifi file parser cannot find the appropriate data keywords then
+//   return false.
+//   Units: (length^2/mass)
+//------------------------------------------------------------------------//
 
 bool FMPR::getSigmaEmission(MaterialId materialId, int group,
 			    Mat2<double> &data)
@@ -356,6 +523,18 @@ bool FMPR::getSigmaEmission(MaterialId materialId, int group,
     
     return getSigmaAbsorption(materialId, group, data);
 }
+
+//------------------------------------------------------------------------//
+// getElectronIonCoupling:
+//   Return the electron-ion coupling coefficient for the material given
+//   by materialId.
+//   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//   If the fifi file parser cannot find the appropriate data keywords then
+//   return false.
+//   Units: (energy/mass-time-temp)
+//------------------------------------------------------------------------//
 
 bool FMPR::getElectronIonCoupling(MaterialId materialId, Mat2<double> &data)
 {
@@ -370,7 +549,7 @@ bool FMPR::getElectronIonCoupling(MaterialId materialId, Mat2<double> &data)
     if (!fifiParser.getData(matInfo.matid, "tfree", z))
 	return false;
 
-    // No units conversion necessary for "tfree".
+    // No units conversion necessary for "tfree" electrons/ion.
 
     // Create RadiationPhysics for the output units.
 
@@ -383,6 +562,18 @@ bool FMPR::getElectronIonCoupling(MaterialId materialId, Mat2<double> &data)
 					z[iz++], abar, data(i,j));
     return true;
 }
+
+//------------------------------------------------------------------------//
+// getElectronConductionCoeff:
+//   Return the electron conduction coefficient for the material given
+//   by materialId.
+//   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//   If the fifi file parser cannot find the appropriate data keywords then
+//   return false.
+//   Units: (energy/length-time-temp-density)
+//------------------------------------------------------------------------//
 
 bool FMPR::getElectronConductionCoeff(MaterialId materialId, Mat2<double> &data)
 {
@@ -397,7 +588,7 @@ bool FMPR::getElectronConductionCoeff(MaterialId materialId, Mat2<double> &data)
     if (!fifiParser.getData(matInfo.matid, "tfree", z))
 	return false;
 
-    // No units converselectron necessary for "tfree".
+    // No units converselectron necessary for "tfree" electrons/ion.
 
     // Create RadiationPhysics for the output units.
 
@@ -410,6 +601,18 @@ bool FMPR::getElectronConductionCoeff(MaterialId materialId, Mat2<double> &data)
 					       z[iz++], abar, data(i,j));
     return true;
 }
+
+//------------------------------------------------------------------------//
+// getIonConductionCoeff:
+//   Return the ion conduction coefficient for the material given
+//   by materialId.
+//   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//   If the fifi file parser cannot find the appropriate data keywords then
+//   return false.
+//   Units: (energy/length-time-temp-density)
+//------------------------------------------------------------------------//
 
 bool FMPR::getIonConductionCoeff(MaterialId materialId, Mat2<double> &data)
 {
@@ -424,7 +627,7 @@ bool FMPR::getIonConductionCoeff(MaterialId materialId, Mat2<double> &data)
     if (!fifiParser.getData(matInfo.matid, "tfree", z))
 	return false;
 
-    // No units conversion necessary for "tfree".
+    // No units conversion necessary for "tfree" electrons/ion.
 
     // Create RadiationPhysics for the output units.
 
@@ -438,8 +641,23 @@ bool FMPR::getIonConductionCoeff(MaterialId materialId, Mat2<double> &data)
     return true;
 }
 
+//------------------------------------------------------------------------//
+// getElectronSpecificHeat:
+//   Return the electron specific heat for the material given
+//   by materialId.
+//   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//   If the fifi file parser cannot find the appropriate data keywords then
+//   return false.
+//   Units: (energy/mass-temp)
+//------------------------------------------------------------------------//
+
 bool FMPR::getElectronSpecificHeat(MaterialId materialId, Mat2<double> &data)
 {
+    // The electron specific heat is calculated as the temperature
+    // derivative of the internal electron energy per unit mass.
+    
     const MaterialInfo &matInfo = getMaterialInfo(materialId);
 
     Require(data.nx() == matInfo.getNumTemperatures());
@@ -468,8 +686,23 @@ bool FMPR::getElectronSpecificHeat(MaterialId materialId, Mat2<double> &data)
     return true;
 }
 
+//------------------------------------------------------------------------//
+// getIonSpecificHeat:
+//   Return the ion specific heat for the material given
+//   by materialId.
+//   The data are returned in a Mat2<double> dataMat(nTemps, nDens).
+//   The call to getMaterialInfo will throw an exception if the material
+//   is not found.
+//   If the fifi file parser cannot find the appropriate data keywords then
+//   return false.
+//   Units: (energy/mass-temp)
+//------------------------------------------------------------------------//
+
 bool FMPR::getIonSpecificHeat(MaterialId materialId, Mat2<double> &data)
 {
+    // The ion specific heat is calculated as the temperature
+    // derivative of the internal ion energy per unit mass.
+    
     const MaterialInfo &matInfo = getMaterialInfo(materialId);
 
     Require(data.nx() == matInfo.getNumTemperatures());
@@ -498,6 +731,12 @@ bool FMPR::getIonSpecificHeat(MaterialId materialId, Mat2<double> &data)
 
     return true;
 }
+
+//------------------------------------------------------------------------//
+// calcTemperatureDerivative:
+//    Calculate the temperature derivative of the nTemps x nDensities
+//    quantities.
+//------------------------------------------------------------------------//
 
 void FMPR::calcTemperatureDerivative(MaterialId materialId,
 				     const Mat2<double> &data,
@@ -545,6 +784,6 @@ void FMPR::calcTemperatureDerivative(MaterialId materialId,
     }
 }
 
-//---------------------------------------------------------------------------//
+//------------------------------------------------------------------------//
 //                              end of FifiMatPropsReader.cc
-//---------------------------------------------------------------------------//
+//------------------------------------------------------------------------//

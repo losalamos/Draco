@@ -24,6 +24,8 @@ BEGIN_NS_XTM
 
 // Forward Reference
 
+class BilinearInterpTable;
+
 //===========================================================================//
 // class BilinearInterpGrid - 
 //
@@ -38,6 +40,8 @@ BEGIN_NS_XTM
 
 class BilinearInterpGrid
 {
+
+    friend class BilinearInterpTable;
 
     //=======================================================================//
     // NESTED CLASSES AND TYPEDEFS
@@ -127,12 +131,30 @@ class BilinearInterpGrid
     Memento getMemento(double x1, double x2) const;
     
 
+    //------------------------------------------------------------------------//
+    // size:
+    //    Return the size of the grid's axes.
+    //    With size(1) return size of x1 axis;
+    //    with size(2) return size of x2 axis.
+    //------------------------------------------------------------------------//
+
     int size(int dim) const
     {
 	return ( dim == 1 ? x1vals.size() : ( dim == 2 ? x2vals.size() : 0 ) );
     }
     
+    //------------------------------------------------------------------------//
+    // size:
+    //    Return the total size of the grid's axes.
+    //    With size() return size(1) * size(2) (See above).
+    //------------------------------------------------------------------------//
+
     int size() const { return size(1)*size(2); }
+
+    //------------------------------------------------------------------------//
+    // x1:
+    //    Return the j'th value on the x1 axis.
+    //------------------------------------------------------------------------//
 
     double x1(int j) const
     {
@@ -140,23 +162,39 @@ class BilinearInterpGrid
 	return x1vals[j];
     }
     
+    //------------------------------------------------------------------------//
+    // x2:
+    //    Return the k'th value on the x2 axis.
+    //------------------------------------------------------------------------//
+
     double x2(int k) const
     {
 	Require(k >= 0 && k < size(2));
 	return x2vals[k];
     }
-    
-    inline void getIndices(const Memento &memento, int &j, int &k) const;
 
-    inline void getCoefficients(const Memento &memento, double &t,
-				double &u) const;
-    
   private:
     
     //=======================================================================//
     // IMPLEMENTATION
     //=======================================================================//
 
+    //------------------------------------------------------------------------//
+    // getIndices:
+    //    Return the j and k indices into the x1 and x2 axes from
+    //    the memento.
+    //------------------------------------------------------------------------//
+
+    inline void getIndices(const Memento &memento, int &j, int &k) const;
+
+    //------------------------------------------------------------------------//
+    // getCoefficients:
+    //    Return the bilinear interpolation coefficients from the memento.
+    //------------------------------------------------------------------------//
+
+    inline void getCoefficients(const Memento &memento, double &t,
+				double &u) const;
+    
     //------------------------------------------------------------------------//
     // axesAreOrdered:
     //    Return true if both axes are monotomically increasingly ordered.
@@ -251,7 +289,8 @@ class BilinearInterpGrid::Memento
 };
 
 //------------------------------------------------------------------------//
-//
+// operator<<
+//    Use this to emit debug output.
 //------------------------------------------------------------------------//
 
 inline std::ostream &operator<<(std::ostream &os,
@@ -264,6 +303,12 @@ inline std::ostream &operator<<(std::ostream &os,
     return os;
 }
 
+//------------------------------------------------------------------------//
+// getIndices:
+//    Return the j and k indices into the x1 and x2 axes from
+//    the memento.
+//------------------------------------------------------------------------//
+
 inline void BilinearInterpGrid::getIndices(const Memento &memento,
 					   int &j, int &k) const
 {
@@ -275,7 +320,8 @@ inline void BilinearInterpGrid::getIndices(const Memento &memento,
 }
 
 //------------------------------------------------------------------------//
-//
+// getCoefficients:
+//    Return the bilinear interpolation coefficients from the memento.
 //------------------------------------------------------------------------//
 
 inline void BilinearInterpGrid::getCoefficients(const Memento &memento,

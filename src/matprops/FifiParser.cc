@@ -13,7 +13,9 @@
 #include <iostream>
 using std::istream;
 using std::cin;
+#ifdef DEBUG_FIFIPARSER
 using std::cerr;
+#endif
 using std::cout;
 using std::endl;
 
@@ -34,25 +36,54 @@ using std::ends;
 
 using namespace XTM;
 
+// C++ demands that we define our static members in the implementation file
+// instead of the header file.
+
+// The dataTypeMap is a map of keywords to their datatypes,
+// e.g. keyword "ramg" is of type REAL.
+
 FifiParser::DataTypeMap FifiParser::dataTypeMap;
 
+// C++ demands that we define our static members in the implementation file
+// instead of the header file, even the const ones.
+
+// Fifi files are by definition only 80 characters long, period!!!
+
 const int FifiParser::lineSize = 80;
+
+//---------------------------------------------------------------------------//
+// FifiParser c-tor:
+//   Create a FifiParser from an open and valid input stream.
+//---------------------------------------------------------------------------//
 
 FifiParser::FifiParser( std::istream &is_)
     : is(is_)
 {
+    // Set the current position to the beginning of the file.
+    
     is.seekg(0);
     curLinePos.lineNo = 1;
     curLinePos.filePosition = is.tellg();
 
+    // There is no previous line position, so also set it to the beginning
+    // of the file.  (Other methods rely on this behaviour.)
+    
     prevLinePos = curLinePos;
-	
+
+    // Start the parsing process.
+    // This will store the file positions associated with materials and
+    // their respective keywords.
+    
     parse();
 }
 
-typedef FifiParser::MaterialInfo MaterialInfo;
+//------------------------------------------------------------------------//
+// getMaterialInfo:
+//   Return a reference to the MaterialInfo referred to by materialId.
+//------------------------------------------------------------------------//
 
-const MaterialInfo &FifiParser::getMaterialInfo(MaterialId materialId) const
+const FifiParser::MaterialInfo &FifiParser::getMaterialInfo(
+    MaterialId materialId) const
 {
     MatInfoMap::const_iterator matiter = materialInfoMap.find(materialId);
 
@@ -68,9 +99,20 @@ const MaterialInfo &FifiParser::getMaterialInfo(MaterialId materialId) const
     return (*matiter).second;    
 }
 
+//------------------------------------------------------------------------//
+// parseMaterial:
+//   Parse the block of text beginning with the line after the
+//   "material" keyword, and ending at the next "material" keyword.
+//   Add all of the intervening keywords to the material's keyword-position
+//   map.
+//------------------------------------------------------------------------//
+
 bool FifiParser::parseMaterial()
 {
     string card;
+
+    // This "card" (line) should only have the material id (an integer) on it.
+    // It better be there.
     
     if (!getCard(card))
     {
@@ -86,18 +128,26 @@ bool FifiParser::parseMaterial()
 	}
     }
 
+#ifdef DEBUG_FIFIPARSER
     cerr << "parseMaterial: material id card: <" << card << ">" << endl << endl;
+#endif
 
+    // Convert the text of the "card" into an integer material id.
+    
     istrstream iss(card.c_str());
     
     MaterialId matid;
     iss >> matid;
 	    
+    // Make sure it is a valid integer.
+
     if (!iss)
 	throw ParseError(string("FifiParser::parseMaterial: ")
 			 + "material id not found.");
 
+#ifdef DEBUG_FIFIPARSER
     cerr << "found material: " << matid << endl;
+#endif
     
     // Ensure that this a new material id.
 	    
@@ -109,22 +159,33 @@ bool FifiParser::parseMaterial()
 	throw ParseError(os.str());
     }
 
+    // Start loading up a keyword/position map for this new material.
+    
     KeywordPosMap keywordPosMap;
     bool foundNextMaterial = false;
     
     while (getCard(card))
     {
-	cerr << "parseMaterial: keyword card: <" << card << ">" << endl << endl;
 
+#ifdef DEBUG_FIFIPARSER
+	cerr << "parseMaterial: keyword card: <" << card << ">" << endl << endl;
+#endif
+
+	// This "card" (line) will contain some kind of keyword.
+	// If it is a "material" keyword, then we have seen the whole
+	// material block.  Otherwise we must store the keyword's position
+	// into this material's keyword/position map.
+	
 	istrstream iss(card.c_str());
 	string keyword;
 	iss >> keyword;
 
-	// Once we see the next material card, it is time to buggy.
+	// Once we see the next material card, it is time to boogie.
 	
 	if (keyword == "material")
 	{
-	    // rewind to beginning of the material line.
+	    // Rewind to beginning of the material line,
+	    // so that the next read will re-read the material keyword.
 
 	    setPosition(getPrevPosition());
 
@@ -138,6 +199,8 @@ bool FifiParser::parseMaterial()
 	
 	Position begOfKeywordBlock = getPrevPosition();
 
+	// Parse the entire keyword block (usually data "cards").
+	
 	if (parseKeywordBlock(keyword))
 	{
 	    // Ensure that this keyword is new to this material.
@@ -151,6 +214,8 @@ bool FifiParser::parseMaterial()
 		throw ParseError(os.str());
 	    }
 
+	    // Insert the keyword's position into the material's map.
+	    
 	    typedef KeywordPosMap::value_type value_type;
 	    
 	    std::pair<KeywordPosMap::iterator, bool> retval =
@@ -167,11 +232,18 @@ bool FifiParser::parseMaterial()
 	}
     }
 
+    // We must clean up if we've found the next material or hit the
+    // end of file.
+
     if (foundNextMaterial || is.eof())
     {
-	cerr << "Inserting keyword map for material: " << matid << endl;
 
-	// Cache the position map for this material
+#ifdef DEBUG_FIFIPARSER
+	cerr << "Inserting keyword map for material: " << matid << endl;
+#endif
+
+	// Cache the position map for this material into the FifiParser's
+	// material position map.
 
 	typedef MatInfoMap::value_type value_type;
 	    
@@ -192,12 +264,21 @@ bool FifiParser::parseMaterial()
     return false;
 }
 
+// NonWhiteSpace: A functor to detect non-whitespace characters.
+
 class NonWhiteSpace
 {
   public:
     bool operator()(char c) { return !isspace(c); }
 };
-    
+
+//---------------------------------------------------------------------------//
+// getCard:
+//    Get the next "card" (line) from the input file, saving
+//    the position of the beginning of the next line into curLinePos.
+//    This method returns the stream (to check its stream state).
+//---------------------------------------------------------------------------//
+
 istream &FifiParser::getCard(string &str) const
 {
     using std::find;
@@ -212,13 +293,23 @@ istream &FifiParser::getCard(string &str) const
 
     while (!foundData)
     {
+
+#ifdef DEBUG_FIFIPARSER
 	cerr << "Getting line: " << curLinePos.lineNo << endl;
+#endif
+
+	// Get the line into the buffer, up to but not including the '\n'
 	
 	std::getline(is, buf, '\n');
+
+	// Is everything OK?
 	
 	if (!is)
 	    return is;
 
+	// Update the current line position to point to the beginning
+	// of the **next line**.
+	
 	prevLinePos = curLinePos;
 	curLinePos.filePosition = is.tellg();
 	curLinePos.lineNo++;
@@ -227,11 +318,16 @@ istream &FifiParser::getCard(string &str) const
 	
 	if (buf.length() == 0)
 	{
+#ifdef DEBUG_FIFIPARSER
 	    cerr << "Empty line" << endl;
+#endif
 	}
 	else
 	{
+	    
+#ifdef DEBUG_FIFIPARSER
 	    cerr << "About to check for comments." << endl;
+#endif
 	
 	    // Is this a comment line?  If so, keep on scanning in lines.
 	
@@ -241,7 +337,10 @@ istream &FifiParser::getCard(string &str) const
 
 	    if (!isComment)
 	    {
+		
+#ifdef DEBUG_FIFIPARSER
 		cerr << "About to check for non-whitespace data." << endl;
+#endif
 		
 		// Is this a blank line?  If so keep on scanning in lines.
 
@@ -258,16 +357,26 @@ istream &FifiParser::getCard(string &str) const
 	
     }
 
-    // Set the return string to the buffer.
+    // Set the return string to the buffer (up to the line size).
     
     str.assign(buf, 0, lineSize);
 
     return is;
 }
 
+//---------------------------------------------------------------------------//
+// parse:
+//   Perform the overall parsing, material text block by material
+//   text block.
+//---------------------------------------------------------------------------//
+
 void FifiParser::parse()
 {
     string card;
+
+    // Go through the material "cards" (lines).
+    // We should **only** see material keywords, since the rest of the
+    // keywords and data will be swallowed up by parseMaterial().
     
     while (getCard(card))
     {
@@ -279,8 +388,10 @@ void FifiParser::parse()
 	    throw ParseError(string("FifiParser::parse: ")
 			     + "keyword not found.");
 	
+#ifdef DEBUG_FIFIPARSER
 	cerr << "parse found keyword: <" << keyword
 	     << "> on line: " << curLinePos.lineNo - 1 << endl << endl;
+#endif
 	
 	if (keyword == "material")
 	{
@@ -294,10 +405,18 @@ void FifiParser::parse()
 	}
     }
 
+    // If getCard() returned a non-zero stream state, then it had
+    // better be due to an end of file!
+    
     if (!is.eof())
 	throw ParseError(string("FifiParser::parse: ")
 			 + "stream error");
 }
+
+//---------------------------------------------------------------------------//
+// getData:
+//    Get the data from a data block, following a data keyword.
+//---------------------------------------------------------------------------//
 
 bool FifiParser::getData(vector<double> &data_) const
 {
@@ -327,14 +446,15 @@ bool FifiParser::getData(vector<double> &data_) const
 				 + "stream error");
 	}
 
+#ifdef DEBUG_FIFIPARSER
 	cerr << "getData: data card: <" << card << ">" << endl << endl;
+#endif
 
 	int nvalsReadThisLine = 0;
 	
 	istrstream iss(card.c_str());
 	while (iss >> val)
 	{
-	    cerr << "read data value: " << val << endl;
 	    data.push_back(val);
 	    nvalsReadThisLine++;
 	}
@@ -439,13 +559,13 @@ FifiParser::DataType FifiParser::getDataType(const std::string &keyword)
 	dataTypeMap.insert(value_type("eelect",  REAL));
 	dataTypeMap.insert(value_type("pnuc",    REAL));
 	dataTypeMap.insert(value_type("enuc",    REAL));
-
-	cerr << "dataTypeMap created" << endl;
     }
 
     // keyword rsmg can have a positive integer after it
 
+#ifdef DEBUG_FIFIPARSER
     cerr << "Is keyword: <" << keyword << "> part of the rsmg family?" << endl;
+#endif
     
     if (keyword == "rsmg")
     {
@@ -454,11 +574,15 @@ FifiParser::DataType FifiParser::getDataType(const std::string &keyword)
     else if (keyword.length() > 4 &&
 	     keyword.compare(0, 4, "rsmg", 4) == 0)
     {
+#ifdef DEBUG_FIFIPARSER
 	cerr << "We have rsmg#" << endl;
+#endif
 	
 	string numStr = keyword.substr(4, keyword.length()-4);
 
+#ifdef DEBUG_FIFIPARSER
 	cerr << "numStr: <" << numStr << ">" << endl;
+#endif
 	
 	istrstream iss(numStr.c_str());
 
@@ -472,8 +596,10 @@ FifiParser::DataType FifiParser::getDataType(const std::string &keyword)
 	return REAL;
     }
 
+#ifdef DEBUG_FIFIPARSER
     cerr << "Searching dataTypeMap for keyword: <" << keyword
 	 << ">" << endl;
+#endif
     
     DataTypeMap::iterator iter = dataTypeMap.find(keyword);
 
@@ -482,7 +608,9 @@ FifiParser::DataType FifiParser::getDataType(const std::string &keyword)
     if (iter == dataTypeMap.end())
 	return UNKNOWN;
 
+#ifdef DEBUG_FIFIPARSER
     cerr << "Good Keyword: " << keyword << endl;
+#endif
     
     return (*iter).second;
 }
@@ -493,8 +621,10 @@ void FifiParser::setPosition(const Position &position) const
     is.seekg(position.filePosition);
     Position tmpLinePos = curLinePos;
     curLinePos = position;
+#ifdef DEBUG_FIFIPARSER
     cerr << "Setting position beggining of line: "
 	 << position.lineNo << endl;
+#endif
     prevLinePos = tmpLinePos;
 }
 
@@ -544,9 +674,11 @@ bool FifiParser::getData(MaterialId matid, const string &keyword,
 	throw ParseError(os.str());
     }
 
+#ifdef DEBUG_FIFIPARSER
     cerr << "Found keyword: <"
 	 << keyword
 	 << "> for material: " << matid << endl;
+#endif
 
     getData(data);
 
@@ -567,4 +699,3 @@ bool FifiParser::MaterialInfo::hasKeyword(const string &keyword) const
 {
     return keywordPosMap.find(keyword) != keywordPosMap.end();
 }
-

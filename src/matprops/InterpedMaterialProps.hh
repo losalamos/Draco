@@ -214,6 +214,7 @@ struct InterpedMaterialProps::GroupedTable
 
     const BilinearInterpTable &getTable(int groupNo) const
     {
+	// Groups are one-based.
 	return tables[groupNo-1];
     }
 
@@ -221,6 +222,7 @@ struct InterpedMaterialProps::GroupedTable
 	
     BilinearInterpTable &getTable(int groupNo)
     {
+	// Groups are one-based.
 	return tables[groupNo-1];
     }
 };
