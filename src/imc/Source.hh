@@ -39,7 +39,7 @@ using dsxx::SP;
 using std::string;
 using std::ostream;
 
-template<class MT, class PT=Particle<MT> >
+template<class MT, class PT = Particle<MT> >
 class Source
 {
 public:

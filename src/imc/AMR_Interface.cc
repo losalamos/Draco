@@ -72,10 +72,10 @@ void rage_imc_(int *imc_ncycle, int *local_numtop, int *global_numtop,
     AMR_Interface::Arguments arg(imc_node_coord, imc_layout, b_proc, b_cell,
 				 imc_cv, imc_rho, imc_mua_n, imc_tev,
 				 imc_rev, *local_numtop, *num_b_cells,
-				 *imc_implicitness, *imc_dt, *imc_dnpdt,
-				 *imc_np_nom, *imc_np_max, 0.0,
+				 *imc_implicitness, *imc_dt, *imc_time,
+				 *imc_dnpdt, *imc_np_nom, *imc_np_max, 0.0,
 				 *imc_random_seed, *imc_buffer_size, 0,
-				 *imc_ncycle);
+				 *imc_ncycle, *global_numtop);
 
   // make a Rage manager and run IMC
     Host_Manager<OS_Mesh, AMR_Builder, AMR_Interface> rage_mgr(*imc_ncycle);
@@ -110,14 +110,14 @@ AMR_Interface::Arguments::Arguments(const double *nc, const int *l,
 				    const double *op_abs, const double *t,
 				    const double *re, int numc,
 				    int numbc, double imp, double dt,
-				    double dndt, int nnom, int nmax, 
-				    double rst, int s, int b, int pf, 
-				    int cycle_)
+				    double et, double dndt, int nnom, 
+				    int nmax, double rst, int s, int b, 
+				    int pf, int cycle_, int gnumc)
     : node_coord(nc), layout(l), b_proc(bp), b_cell(bc), dedt(de), rho(r),
       opacity_abs(op_abs), tev(t), rev(re), num_cells(numc),
-      num_b_cells(numbc), implicitness(imp), delta_t(dt), dnpdt(dndt),
-      npnom(nnom), npmax(nmax), rad_s_tend(rst), seed(s), buffer(b),
-      print_f(pf), cycle(cycle_) 
+      num_b_cells(numbc), implicitness(imp), delta_t(dt), elapsed_t(et),
+      dnpdt(dndt), npnom(nnom), npmax(nmax), rad_s_tend(rst), seed(s), 
+      buffer(b), print_f(pf), cycle(cycle_), global_num_cells(gnumc) 
 {
     Require (num_cells != 0);
 }

@@ -37,21 +37,17 @@
 #include "imc/Particle_Buffer.hh"
 #include "ds++/SP.hh"
 #include <string>
-#include <iostream>
 #include <vector>
 
 IMCSPACE
 
 // draco components
-using C4::node;
-using C4::nodes;
 using RNG::Rnd_Control;
 using dsxx::SP;
 
 // STL components
 using std::string;
 using std::vector;
-using std::ostream;
 
 template<class MT, class PT = Particle<MT> >
 class Parallel_Source_Init 
@@ -65,11 +61,12 @@ private:
     vector<double> ss_temp;
     vector<double> rad_temp;
     double delta_t;
-    double t_elapsed;
+    double elapsed_t;
     int npmax;
     int npnom;
     double dnpdt;
     string ss_dist;
+    int num_global_cells;
     
   // source initialization data
 
@@ -115,18 +112,18 @@ private:
     int capacity;
 
   // global source vectors (only on master node)
-    vector<vector<double> > global_ecen;
-    vector<vector<double> > global_evol;
-    vector<vector<double> > global_ess;
-    vector<vector<int> > global_ncen;
-    vector<vector<int> > global_nvol;
-    vector<vector<int> > global_nss;
-    vector<vector<double> > global_ew_cen;
-    vector<vector<double> > global_ew_vol;
-    vector<vector<double> > global_ew_ss;
-    vector<vector<int> > global_cenrn;
-    vector<vector<int> > global_volrn;
-    vector<vector<int> > global_ssrn;
+    vector<double> global_ecen;
+    vector<double> global_evol;
+    vector<double> global_ess;
+    vector<int> global_ncen;
+    vector<int> global_nvol;
+    vector<int> global_nss;
+    vector<double> global_ew_cen;
+    vector<double> global_ew_vol;
+    vector<double> global_ew_ss;
+    vector<int> global_cenrn;
+    vector<int> global_volrn;
+    vector<int> global_ssrn;
 
   // global source energies and losses
     double global_ecentot;
@@ -136,16 +133,12 @@ private:
     double global_eloss_vol;
     double global_eloss_ss;
 
-  // master node function to resize global vectors
-    void global_source_numbers(const int);
+  // cells on each processor, only used on the master processor
+    vector<vector<int> > cells_on_proc;
 
   // number of source particles, census, source energies, number of volume
   // and surface sources
-    void calc_initial_census(const MT &, const Opacity<MT> &, 
-			     const Mat_State<MT> &, Rnd_Control &, 
-			     const double);
-    void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &,
-			      const int, const double);
+    void calc_source_energies(const Opacity<MT> &, const Mat_State<MT>);
     void calc_source_numbers(const Opacity<MT> &, const int, const double);
     void comb_census(const MT &, Rnd_Control &);
 
@@ -167,14 +160,11 @@ private:
 
 public:
   // constructor for master node
-    Parallel_Source_Init(const int);
-
-  // constructor for IMC nodes
-    Parallel_Source_Init();
+    template<class IT> Parallel_Source_Init(SP<IT>, SP<MT>);
 
   // initial census function
     void calc_initial_census(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
-		    SP<Rnd_Control>, double);
+			     SP<Rnd_Control>);
 
   // source initialyzer function
     void initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
