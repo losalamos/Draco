@@ -93,29 +93,32 @@ class Source
     SP_Mesh_Op mesh_op;
 
   public:
-    // constructor
+    // Constructor.
     Source(ccsf_int &, ccsf_int &, ccsf_double &, ccsf_int &, ccsf_int &, 
 	   ccsf_int &, ccsf_double &, SP_Census, std::string, int, int, 
 	   SP_Rnd_Control, SP_Mat_State, SP_Mesh_Op);
 
-    // required services for Source
+    // Required services for Source.
     rtt_dsxx::SP<PT> get_Source_Particle(double); 
 
-    // Particle sources
+    // Particle sources.
     rtt_dsxx::SP<PT> get_census(double);
     rtt_dsxx::SP<PT> get_evol(double);
     rtt_dsxx::SP<PT> get_ss(double);
 
-    // accessors
+    // Accessors.
     int get_nvoltot() const { return nvoltot; }
     int get_nsstot() const { return nsstot; }
     int get_ncentot() const { return ncentot; }
 
-    // source diagnostic
+    // Source diagnostic.
     void print(std::ostream &) const;
 
-    // bool conversion
+    // Bool conversion.
     inline operator bool() const;
+
+    // Get number of cells.
+    int num_cells() const { return nvol.get_Mesh().num_cells(); }
 };
 
 //---------------------------------------------------------------------------//

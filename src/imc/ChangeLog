@@ -1,5 +1,8 @@
 2000-04-18  Thomas M. Evans  <tme@lanl.gov>
 
+	* Transporter.*, Rep_Transporter.*: Transporter class to handle a
+	single timestep of IMC F&C transport.
+
 	* imc: Updated to version imc-1_3_0.  This still does not have
 	complete DD functionality.  Version 2_0_0 will include complete
 	DD.  Version 1_3_0 has complete functionality for full

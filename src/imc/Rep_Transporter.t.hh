@@ -1,0 +1,178 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   imc/Rep_Transporter.t.hh
+ * \author Thomas M. Evans
+ * \date   Thu Apr 13 11:41:37 2000
+ * \brief  Rep_Transporter template definitions.
+ */
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+#ifndef __imc_Rep_Transporter_t_hh__
+#define __imc_Rep_Transporter_t_hh__
+
+#include "Rep_Transporter.hh"
+#include "ds++/Assert.hh"
+
+namespace rtt_imc
+{
+
+//---------------------------------------------------------------------------//
+// CONSTRUCTOR
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Rep_Transporter constructor.
+ *
+ * Builds an IMC Transporter for full replication topologies.  The
+ * constructor checks to make sure that the proper Topology exists for this
+ * construction.  Additionally, the communicator must be null.
+ */
+template<class MT, class PT>
+Rep_Transporter<MT,PT>::Rep_Transporter(SP_Topology top)
+    : Transporter<MT,PT>(),
+      topology(top)
+{
+    Require (!mesh);
+    Require (!opacity);
+    Require (!mat_state);
+    Require (!source);
+    Require (!tally);
+    Require (!communicator);
+    Require (topology);
+
+    // check the topology
+    Insist (topology->get_parallel_scheme() == "replication", 
+	    "Invalid topology assigned to Transporter!");
+}
+
+//---------------------------------------------------------------------------//
+// PUBLIC INTERFACE
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Set fundamental objects for a transport step.
+ 
+ * This function sets the fundamental transport objects: MT, Opacity,
+ * Mat_State, Source, Tally, and Communicator for a current timestep.  After
+ * the transport function is executed these objects are automatically unset
+ * using the unset function.  Thus, the set is valid for \b one execution of
+ * transport.
+
+ * The Communicator should be null for Rep_Transporter as a communicator is
+ * unnecessary for full replication transport.
+ 
+ * \param mesh_in rtt_dsxx::SP to a fully replicated mesh.
+ * \param mat_state_in rtt_dsxx::SP to a valid Mat_State object
+ * \param opacity_in rtt_dsxx::SP to a valid Opacity object
+ * \param source_in rtt_dsxx::SP to a valid Source object
+ * \param tally_in rtt_dsxx::SP to a valid Tally object
+ * \param communicator_in null rtt_dsxx::SP to a Communicator
+
+ */
+template<class MT, class PT>
+void Rep_Transporter<MT,PT>::set(SP_Mesh mesh_in,
+				 SP_Mat_State mat_state_in,
+				 SP_Opacity opacity_in,
+				 SP_Source source_in,
+				 SP_Tally tally_in,
+				 SP_Communicator communicator_in)
+{
+    Require (mesh_in);
+    Require (opacity_in);
+    Require (source_in);
+    Require (mat_state_in);
+    Require (tally_in);
+    Require (!communicator_in);
+
+    // assign objects (no need to assign communicator as it should be null)
+    mesh      = mesh_in;
+    opacity   = opacity_in;
+    source    = source_in;
+    mat_state = mat_state_in;
+    tally     = tally_in;
+    
+    // number of global cells is the same number of cells on processor
+    int num_cells = topology->num_cells();
+
+    Ensure (num_cells == mesh->num_cells());
+    Ensure (num_cells == opacity->num_cells());
+    Ensure (num_cells == source->num_cells());
+    Ensure (num_cells == mat_state->num_cells());
+    Ensure (num_cells == tally->num_cells());
+    Ensure (topology);
+    Ensure (!communicator);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Unset transport objects.
+
+ * This function is used to unset the fundamental transport objects assigned
+ * in set.  It is provided in the public interface as a memory conservation
+ * feature.  It is automatically called at the end of transport.  We include
+ * it in the public interface so that users may optionally unset object.
+
+ * The function does \b not check to see if the fundamental objects are
+ * assigned prior to unsetting them.
+
+ */
+template<class MT, class PT>
+void Rep_Transporter<MT,PT>::unset()
+{
+    Require (topology);
+
+    // assign the fundamental objects to null pointers
+    mesh         = SP_Mesh();
+    opacity      = SP_Opacity();
+    mat_state    = SP_Mat_State();
+    tally        = SP_Tally();
+    source       = SP_Source();
+    communicator = SP_Communicator();
+
+    Ensure (!mesh);
+    Ensure (!opacity);
+    Ensure (!mat_state);
+    Ensure (!tally);
+    Ensure (!source);
+    Ensure (!communicator);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Query to see if all objects are ready for transport.
+ 
+ * This function checks to make sure that all fundamental IMC transport
+ * objects are set in the transporter.  If everything is ready a value of
+ * true is returned; otherwise, ready returns false.
+ 
+ */
+template<class MT, class PT>
+bool Rep_Transporter<MT,PT>::ready() const
+{
+    Require (!communicator);
+    Require (topology);
+
+    bool indicator = true;
+
+    // if any of the fundamental objects does not exist we are not ready
+    if (!mesh) 
+	indicator = false;
+    else if (!opacity)
+	indicator = false;
+    else if (!mat_state)
+	indicator = false;
+    else if (!source) 
+	indicator = false;
+    else if (!tally)
+	indicator = false;
+
+    return indicator;
+}
+
+} // end namespace rtt_imc
+
+#endif                          // __imc_Rep_Transporter_t_hh__
+
+//---------------------------------------------------------------------------//
+//                        end of imc/Rep_Transporter.t.hh
+//---------------------------------------------------------------------------//
