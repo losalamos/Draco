@@ -178,12 +178,17 @@ inline double polylog_series_minus_one_planck(double x)
     double li3 = 0.0;
     double li4 = 0.0;
 
+    double eix = std::exp(-x);
+    double eixp = 1;
+
     for (int i = 1; i <= 10; i++)
     {
-	li1 += std::exp(-i * x) / i;
-	li2 += std::exp(-i * x) / (i*i);
-	li3 += std::exp(-i * x) / (i*i*i);
-	li4 += std::exp(-i * x) / (i*i*i*i);
+	eixp *= eix;
+	double eixr = eixp;
+	li1 += (eixr /= i);
+	li2 += (eixr /= i);
+	li3 += (eixr /= i);
+	li4 += (eixr /= i);
     }
 
     // calculate the lower polylogarithmic integral
