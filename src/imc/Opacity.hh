@@ -26,8 +26,6 @@
 namespace rtt_imc 
 {
 
-using std::ostream;
-
 template<class MT>
 class Opacity
 {
@@ -64,7 +62,7 @@ public:
     inline double get_sigeffabs(int cell) const;
 
   // diagnostic member functions
-    void print(ostream &, int) const;
+    void print(std::ostream &, int) const;
 };
 
 //---------------------------------------------------------------------------//
@@ -72,7 +70,7 @@ public:
 //---------------------------------------------------------------------------//
 
 template<class MT>
-ostream& operator<<(ostream &, const Opacity<MT> &);
+std::ostream& operator<<(std::ostream &, const Opacity<MT> &);
 
 //---------------------------------------------------------------------------//
 // inline member functions for Opacity

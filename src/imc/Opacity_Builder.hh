@@ -32,47 +32,45 @@
 namespace rtt_imc 
 {
 
-// stl components
-using std::string;
-using std::vector;
-
-// draco components
-using dsxx::SP;
-
 template<class MT>
 class Opacity_Builder
 {
-private:
+    // typedefs
+    typedef dsxx::SP<MT> SP_MT;
+    typedef dsxx::SP<Mat_State<MT> > SP_Mat;
+    typedef dsxx::SP<Opacity<MT> > SP_Opacity;
 
-  // data received from XX_Interface
-    vector<double> density;
-    vector<double> kappa;
-    vector<double> kappa_thomson;
-    vector<double> temperature;
-    vector<double> specific_heat;
+  private:
+
+    // data received from XX_Interface
+    std::vector<double> density;
+    std::vector<double> kappa;
+    std::vector<double> kappa_thomson;
+    std::vector<double> temperature;
+    std::vector<double> specific_heat;
     double implicitness;
     double delta_t;
-    string analytic_opacity;
-    string analytic_sp_heat;
+    std::string analytic_opacity;
+    std::string analytic_sp_heat;
 
-  // Begin_Doc opacity_builder-int.tex
-  // Begin_Verbatim 
+    // Begin_Doc opacity_builder-int.tex
+    // Begin_Verbatim 
 
-public:
-  // templated explicit constructor depends on interface type (IT)
+  public:
+    // templated explicit constructor depends on interface type (IT)
     template<class IT>
-    explicit Opacity_Builder(SP<IT>);
+    explicit Opacity_Builder(dsxx::SP<IT>);
 
-  // build state member functions
+    // build state member functions
 
-  // build Mat_State helper functions
-    SP< Mat_State<MT> > build_Mat(SP<MT>);
+    // build Mat_State helper functions
+    SP_Mat build_Mat(SP_MT);
     
-  // build Opacity helper functions
-    SP< Opacity<MT> > build_Opacity(SP<MT>, SP<Mat_State<MT> >);	
+    // build Opacity helper functions
+    SP_Opacity build_Opacity(SP_MT, SP_Mat);	
 
-  // End_Verbatim 
-  // End_Doc 
+    // End_Verbatim 
+    // End_Doc 
 };
     
 } // end namespace rtt_imc

@@ -46,6 +46,7 @@
 //                number has the SAME streamnum, not the same ID, because you
 //                will get the same stream for the same streamnum even if you
 //                have a different pointer pointing to the state data
+// 11)  4-29-99 : removed using declarations from namespace
 // 
 //===========================================================================//
 
@@ -69,147 +70,138 @@
 namespace rtt_imc 
 {
 
-// STL classes used in Particle
-using std::vector;
-using std::string;
-using std::ostream;
-using std::log;
-using std::exp;
-
-// DRACO classes used in Particle
-using rtt_rng::Sprng;
-using dsxx::SP;
-
 template<class MT>
 class Particle
 {
-public: 
-  // nested diagnostic class
+  public: 
+    // nested diagnostic class
     class Diagnostic
     {
-    private:
-      // stream output is sent to
-	ostream &output;
-      // boolean for detailed diagnostic
+      private:
+	// stream output is sent to
+	std::ostream &output;
+	// boolean for detailed diagnostic
 	bool detail;
 
-    public:
-      // constructor
-	Diagnostic(ostream &output_, bool detail_ = false) 
+      public:
+	// constructor
+	Diagnostic(std::ostream &output_, bool detail_ = false) 
 	    : output(output_), detail(detail_) {}
 
-      // switches
+	// switches
 	bool detail_status() const { return detail; }
 
-      // diagnostic print functions
+	// diagnostic print functions
 	void print(const Particle<MT> &) const;
 	void print_alive(const Particle<MT> &) const;
 	void print_dead(const Particle<MT> &) const;
 	void print_dist(double, double, double, int) const;
 	void print_xs(const Opacity<MT> &, int) const;
 
-      // inline output formatters
+	// inline output formatters
 	inline void header() const;
     };
 
-  // friends and such
+    // friends and such
     friend class Diagnostic;
     template<class PT> friend class Particle_Buffer;
 
-private:
-  // particle energy-weight
+  private:
+    // particle energy-weight
     double ew;
-  // particle location
-    vector<double> r;
-  // particle direction
-    vector<double> omega;
-  // particle cell
+    // particle location
+    std::vector<double> r;
+    // particle direction
+    std::vector<double> omega;
+    // particle cell
     int cell;
-  // time remaining in this time step
+    // time remaining in this time step
     double time_left;
-  // fraction of original energy weight
+    // fraction of original energy weight
     double fraction;
-  // status of particle
+    // status of particle
     bool alive;
-  // event type descriptor
-    string descriptor;
+    // event type descriptor
+    std::string descriptor;
 
-  // random number object
-    Sprng random;
+    // random number object
+    rtt_rng::Sprng random;
 
-  // private particle service functions
+    // private particle service functions
 
-  // stream a distance d
+    // stream a distance d
     inline void stream(double);  
 
-  // stream a distance d
+    // stream a distance d
     inline void stream_IMC(const Opacity<MT> &, Tally<MT> &, double);
 
-  // collision, return a false if particle is absorbed
+    // collision, return a false if particle is absorbed
     bool collide(const MT &, const Opacity<MT> &);
 
-  // effective scatter
+    // effective scatter
     void scatter(const MT & );
 
-  // surface crossings, return a false if particle escapes
+    // surface crossings, return a false if particle escapes
     bool surface(const MT &, int);
 
-  // IMC transport step
+    // IMC transport step
     void trans_IMC(const MT &, const Opacity<MT> &);
     
-  // DDMC transport step
+    // DDMC transport step
     void trans_DDMC(const MT &, const Opacity<MT> &);
 
-  // Begin_Doc particle-int.tex
-  // Begin_Verbatim 
+    // Begin_Doc particle-int.tex
+    // Begin_Verbatim 
 
-public:
-  // Particle constructor
-    inline Particle(vector<double>, vector<double>, double, int, Sprng, 
-		    double = 1, double = 1, string = "born");
+  public:
+    // Particle constructor
+    inline Particle(std::vector<double>, std::vector<double>, double, int,
+		    rtt_rng::Sprng, double = 1, double = 1, 
+		    std::string = "born");
 
-  // null constructor required as kluge for the STL containers which need a
-  // default constructor, this calls an assert(0) so you can't use it
+    // null constructor required as kluge for the STL containers which need a
+    // default constructor, this calls an assert(0) so you can't use it
     Particle() { Insist (0, "You tried to default construct a Particle!"); }
 
-  // transport solvers
+    // transport solvers
 
-  // IMC transport step
+    // IMC transport step
     void transport(const MT &, const Opacity<MT> &, Tally<MT> &,
-		   SP<Diagnostic> = SP<Diagnostic>());
+		   dsxx::SP<Diagnostic> = dsxx::SP<Diagnostic>());
 
-  // other services
+    // other services
 
-  // particle status functions
+    // particle status functions
     bool status() const { return alive; }
     void reset_status() { alive = true; }
     void kill_particle() { alive = false; }
 
-  // accessors
+    // accessors
     int get_cell() const { return cell; }
     double get_ew() const { return ew; }
-    const Sprng& get_random() const { return random; }
+    const rtt_rng::Sprng& get_random() const { return random; }
 
-  // set functions for sourcing particles
-    void set_random(Sprng &ran) { random = ran; }
+    // set functions for sourcing particles
+    void set_random(rtt_rng::Sprng &ran) { random = ran; }
     void set_time_left(double t) { time_left = t; }
-    void set_descriptor(string s) { descriptor = s; }
+    void set_descriptor(std::string s) { descriptor = s; }
     void set_ew(double new_ew) { ew = new_ew; }
     void set_cell(int new_cell) { cell = new_cell; }
 
-  // transport descriptors
-    string desc() const { return descriptor; }
-    inline static int get_index(string);
-    inline static string get_descriptor(int);
+    // transport descriptors
+    std::string desc() const { return descriptor; }
+    inline static int get_index(std::string);
+    inline static std::string get_descriptor(int);
 
-  // public diagnostic services
-    void print(ostream &) const;
+    // public diagnostic services
+    void print(std::ostream &) const;
 
-  // overloaded operators
+    // overloaded operators
     bool operator==(const Particle<MT> &) const;
+    bool operator!=(const Particle<MT> &p) const { return !(*this == p); } 
 
-  // End_Verbatim 
-  // End_Doc 
+    // End_Verbatim 
+    // End_Doc 
 };
 
 //---------------------------------------------------------------------------//
@@ -218,7 +210,8 @@ public:
 // output ascii version of Particle
 
 template<class MT>
-inline ostream& operator<<(ostream &output, const Particle<MT> &object)
+inline std::ostream& operator<<(std::ostream &output, 
+				const Particle<MT> &object)
 {
     object.print(output);
     return output;
@@ -242,13 +235,18 @@ inline void Particle<MT>::Diagnostic::header() const
 // Particle<MT> constructor
 
 template<class MT>
-inline Particle<MT>::Particle(vector<double> r_, vector<double> omega_, 
-			      double ew_, int cell_, Sprng random_, 
-			      double frac, double tleft, string desc)
+inline Particle<MT>::Particle(std::vector<double> r_, 
+			      std::vector<double> omega_, 
+			      double ew_, int cell_, 
+			      rtt_rng::Sprng random_, 
+			      double frac, double tleft, std::string desc)
     : ew(ew_), r(r_), omega(omega_), cell(cell_), time_left(tleft), 
       fraction(frac), alive(true), descriptor(desc), random(random_)
 {
-  // non-default particle constructor
+    // non-default particle constructor
+    Ensure (r.size() < 4);
+    Ensure (omega.size() == 3);
+    Ensure (cell > 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -256,7 +254,7 @@ inline Particle<MT>::Particle(vector<double> r_, vector<double> omega_,
 template<class MT>
 inline void Particle<MT>::stream(double distance)
 {
-  // calculate new location when Particle streams
+    // calculate new location when Particle streams
     for (int i = 0; i <= r.size()-1; i++)
 	r[i] = r[i] + distance * omega[i];
 }
@@ -267,7 +265,7 @@ template<class MT>
 inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
 				     double distance)
 {
-  // hardwire minimum energy weight fraction
+    // hardwire minimum energy weight fraction
     double minwt_frac = 0.01;
     double min_arg    = log(0.1 * minwt_frac);
 
@@ -305,12 +303,12 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
 // convert a particle event descriptor string into an int
 
 template<class MT>
-inline int Particle<MT>::get_index(string desc)
+inline int Particle<MT>::get_index(std::string desc)
 {
-  // declare return type
+    // declare return type
     int return_value;
 
-  // born descriptors
+    // born descriptors
     if (desc == "born")
 	return_value = 1;
     if (desc == "census_born")
@@ -318,7 +316,7 @@ inline int Particle<MT>::get_index(string desc)
     if (desc == "boundary_born")
 	return_value = 3;
 
-  // collision event descriptors
+    // collision event descriptors
     if (desc == "scatter")
 	return_value = 100;
     if (desc == "low_weight")
@@ -328,7 +326,7 @@ inline int Particle<MT>::get_index(string desc)
     if (desc == "thom_scatter")
 	return_value = 103;
  
-  // streaming descriptors
+    // streaming descriptors
     if (desc == "reflection")
 	return_value = 200;
     if (desc == "stream")
@@ -338,15 +336,15 @@ inline int Particle<MT>::get_index(string desc)
     if (desc == "cross_boundary")
 	return_value = 203;
 
-  // time and census descriptors
+    // time and census descriptors
     if (desc == "census")
 	return_value = 300;
 
-  // death
+    // death
     if (desc == "killed")
 	return_value = 1000;
 
-  // return
+    // return
     return return_value;
 }
 
@@ -354,12 +352,14 @@ inline int Particle<MT>::get_index(string desc)
 // convert an int into a particle event descriptor
 
 template<class MT>
-inline string Particle<MT>::get_descriptor(int index)
+inline std::string Particle<MT>::get_descriptor(int index)
 {
-  // declare return type
+    using std::string;
+
+    // declare return type
     string return_value;
 
-  // born descriptors
+    // born descriptors
     if (index == 1)
 	return_value = "born";
     if (index == 2)
@@ -367,7 +367,7 @@ inline string Particle<MT>::get_descriptor(int index)
     if (index == 3)
 	return_value = "boundary_born";
 
-  // collision event descriptors
+    // collision event descriptors
     if (index == 100)
 	return_value = "scatter";
     if (index == 101)
@@ -377,7 +377,7 @@ inline string Particle<MT>::get_descriptor(int index)
     if (index == 103)
 	return_value = "thom_scatter";
  
-  // streaming descriptors
+    // streaming descriptors
     if (index == 200)
 	return_value = "reflection";
     if (index == 201)
@@ -387,15 +387,15 @@ inline string Particle<MT>::get_descriptor(int index)
     if (index == 203)
 	return_value = "cross_boundary";
 
-  // time and census descriptors
+    // time and census descriptors
     if (index == 300)
 	return_value = "census";
 
-  // death
+    // death
     if (index == 1000)
 	return_value = "killed";
 
-  // return
+    // return
     return return_value;
 }
 

@@ -17,6 +17,8 @@ namespace rtt_imc
 // stl components
 using std::pow;
 
+using dsxx::SP;
+
 //---------------------------------------------------------------------------//
 // constructors
 //---------------------------------------------------------------------------//
@@ -27,7 +29,7 @@ Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface)
 {
     Require (interface);
 
-  // assign data members from the interface parser
+    // assign data members from the interface parser
     density          = interface->get_density();
     kappa            = interface->get_kappa();
     kappa_thomson    = interface->get_kappa_thomson();
@@ -38,7 +40,7 @@ Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface)
     analytic_opacity = interface->get_analytic_opacity();
     analytic_sp_heat = interface->get_analytic_sp_heat();
 
-  // some crucial checks about our data
+    // some crucial checks about our data
     Check (implicitness >= 0 && implicitness <= 1);
     Check (delta_t > 0);
 }
@@ -55,19 +57,19 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
     Require (mesh->num_cells() == temperature.size());
     Require (mesh->num_cells() == specific_heat.size());
 
-  // return Mat_State object
+    // return Mat_State object
     SP< Mat_State<MT> > return_state;
 
-  // number of cells
+    // number of cells
     int num_cells = mesh->num_cells();
 
-  // make CCSF objects needed for Mat_State
+    // make CCSF objects needed for Mat_State
     typename MT::CCSF_double rho(mesh);
     typename MT::CCSF_double temp(mesh);
     typename MT::CCSF_double dedt(mesh);
     typename MT::CCSF_double sp_heat(mesh);
 
-  // assign density and temperature to each cell
+    // assign density and temperature to each cell
     for (int cell = 1; cell <= num_cells; cell++)
     {
 	double den    = density[cell-1];
@@ -77,29 +79,29 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
 	temp(cell)    = T;
         if (analytic_sp_heat == "straight")
 	{
-          // specific heat units: [jks/g/keV]
+	    // specific heat units: [jks/g/keV]
 	    dedt(cell)    = heat * mesh->volume(cell) * den;
 	    sp_heat(cell) = heat;
 	}
         else if (analytic_sp_heat == "tcube")
 	{
-          // specific heat multiplier, units: [jks/cm^3/keV^4]
+	    // specific heat multiplier, units: [jks/cm^3/keV^4]
             dedt(cell)    = heat * mesh->volume(cell) * T*T*T;
 	    sp_heat(cell) = heat;
 	}
 	else if (analytic_sp_heat == "dedt")
 	{
-	  // we are given de/dt, not Cv
+	    // we are given de/dt, not Cv
 	    dedt(cell)    = heat;
 	    sp_heat(cell) = heat / (mesh->volume(cell) * den);
 	}
     }
     
-  // create Mat_State object
+    // create Mat_State object
     return_state = new Mat_State<MT>(rho, temp, dedt, sp_heat, 
 				     analytic_sp_heat);
 
-  // return Mat_State SP
+    // return Mat_State SP
     return return_state;
 }
 

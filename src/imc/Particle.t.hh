@@ -18,6 +18,11 @@ using std::endl;
 using std::setw;
 using std::ios;
 using std::setiosflags;
+using std::ostream;
+using std::vector;
+
+// draco stuff
+using dsxx::SP;
 
 // services from IMC::Global namespace
 using rtt_mc::global::pi;

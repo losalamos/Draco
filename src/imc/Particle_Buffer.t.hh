@@ -14,8 +14,22 @@
 namespace rtt_imc 
 {
 
+// std Namespace objects
 using std::fill;
 using std::accumulate;
+using std::vector;
+using std::istream;
+using std::ostream;
+
+// draco namespace objects
+using dsxx::SP;
+using C4::C4_Req;
+using C4::Send;
+using C4::Recv;
+using C4::SendAsync;
+using C4::RecvAsync;
+using rtt_rng::Rnd_Control;
+using rtt_rng::Sprng;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -27,20 +41,20 @@ template<class MT>
 Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon) 
 {
     
-  // determine size of double info from Particles;
-  // 5 = omega(3) + ew + fraction
+    // determine size of double info from Particles;
+    // 5 = omega(3) + ew + fraction
     dsize = mesh.get_Coord().get_dim() + 5;
 
-  // determine size of integer info from Particles;
-  // 2 = cell + streamnum
+    // determine size of integer info from Particles;
+    // 2 = cell + streamnum
     isize = 2;
 
-  // determine size of character (RN state) from Particles;
-  // in bytes
+    // determine size of character (RN state) from Particles;
+    // in bytes
     csize = rcon.get_size();
     Check (csize <= rtt_rng::max_buffer);
 
-  // set the static buffer variables
+    // set the static buffer variables
     set_buffer(dsize+1, isize, csize);
 }
 
@@ -52,7 +66,7 @@ template<class MT>
 Particle_Buffer<MT>::Particle_Buffer(int d, int i, int c)
     : dsize(d), isize(i), csize(c) 
 {
-  // set the static buffer variables
+    // set the static buffer variables
     set_buffer(dsize+1, isize, csize);
 }
 
@@ -69,15 +83,15 @@ Particle_Buffer<PT>::Census_Buffer::Census_Buffer(vector<double> &r_,
     : r(r_), omega(omega_), ew(ew_), fraction(fraction_), cell(cell_),
       random(random_)
 {
-  // constructor for abbreviated particle data that comes back from census
-  // files
+    // constructor for abbreviated particle data that comes back from census
+    // files
 }
 
 template<class PT>
 Particle_Buffer<PT>::Census_Buffer::Census_Buffer()
     : random(0, 0)
 {
-  // constructor for use with STL, this cannot be used
+    // constructor for use with STL, this cannot be used
     Insist (0, "You tried to default construct a Census_Buffer!");
 }
 
@@ -99,7 +113,7 @@ template<class PT> int Particle_Buffer<PT>::buffer_c = buffer_s * 500;
 template<class PT>
 void Particle_Buffer<PT>::set_buffer(int d, int i, int c)
 {
-  // reset the double, int, and char buffer sizes
+    // reset the double, int, and char buffer sizes
     buffer_d = buffer_s * d;
     buffer_i = buffer_s * i;
     buffer_c = buffer_s * c;
@@ -108,7 +122,7 @@ void Particle_Buffer<PT>::set_buffer(int d, int i, int c)
 template<class PT>
 void Particle_Buffer<PT>::set_buffer(int d, int i, int c, int s)
 {
-  // reset the buffer size, double, int, and char buffer sizes
+    // reset the buffer size, double, int, and char buffer sizes
     buffer_s = s;
     buffer_d = buffer_s * d;
     buffer_i = buffer_s * i;
@@ -118,10 +132,10 @@ void Particle_Buffer<PT>::set_buffer(int d, int i, int c, int s)
 template<class PT>
 void Particle_Buffer<PT>::set_buffer_size(int s)
 {
-  // reset the buffer sizes
-    buffer_d *= s / buffer_s; 
-    buffer_i *= s / buffer_s; 
-    buffer_c *= s / buffer_s; 
+    // reset the buffer sizes
+    buffer_d = s * (buffer_d / buffer_s); 
+    buffer_i = s * (buffer_i / buffer_s); 
+    buffer_c = s * (buffer_c / buffer_s); 
     buffer_s = s;
 }
 
@@ -134,11 +148,11 @@ template<class PT>
 void Particle_Buffer<PT>::write_census(ostream &cenfile,
 				       const PT &particle) const
 {
-  // dynamicaly assign arrays for output, types double, int
+    // dynamicaly assign arrays for output, types double, int
     double *ddata = new double[dsize];
     int *idata = new int[isize];
 
-  // assign all data of type double about the particle
+    // assign all data of type double about the particle
     int index = 0;
     ddata[index++] = particle.ew;
     ddata[index++] = particle.fraction;
@@ -148,28 +162,28 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
 	ddata[index++] = particle.r[i];
     Check (index == dsize);
 
-  // assign integer data
+    // assign integer data
     idata[0] = particle.cell;
     idata[1] = particle.random.get_num();
 
-  // set the size of dynamic storage for the Random number state and pack it
+    // set the size of dynamic storage for the Random number state and pack it
     char *rdata;
     int size = pack_sprng(particle.random.get_id(), &rdata);
     Check (size == csize);
 
-  // now dump particle data to the census file
+    // now dump particle data to the census file
 
-  // make sure census file exists
+    // make sure census file exists
     Check (cenfile);
 
-  // write the output
+    // write the output
     cenfile.write(reinterpret_cast<const char *>(ddata), dsize *
 		  sizeof(double));
     cenfile.write(reinterpret_cast<const char *>(idata), isize *
 		  sizeof(int)); 
     cenfile.write(reinterpret_cast<const char *>(rdata), csize);
 
-  // reclaim dynamic memory
+    // reclaim dynamic memory
     delete [] ddata;
     delete [] idata;
     std::free(rdata);
@@ -182,67 +196,67 @@ template<class PT>
 void Particle_Buffer<PT>::write_census(ostream &cenfile,
 				       Comm_Buffer &buffer) const
 {
-  // check for output file
+    // check for output file
     if (!cenfile)
 	Insist(0, 
 	       "You tried to write census particles to a non-existent file!");
 
-  // determine number of particles in the buffer
+    // determine number of particles in the buffer
     int num_particles = buffer.n_part;
     if (num_particles == 0)
 	return;
 
-  // make dynamically allocatable arrays
+    // make dynamically allocatable arrays
     double *ddata = new double[dsize];
     int    *idata = new int[isize];
     char   *cdata = new char[csize];
 
-  // define indices for data
+    // define indices for data
     int id = 0;
     int ii = 0;
     int ic = 0;
 
-  // loop through comm_buffer and write the particle data to a census file
+    // loop through comm_buffer and write the particle data to a census file
     for (int n = 1; n <= num_particles; n++)
     {
-      // get the double array data, add 1 because Comm_Buffer includes
-      // time_left in its info
+	// get the double array data, add 1 because Comm_Buffer includes
+	// time_left in its info
 	for (int d = 0; d < dsize; d++)
 	    ddata[d] = buffer.array_d[d+id+1];
 
-      // get the int array data
+	// get the int array data
 	for (int i = 0; i < isize; i++)
 	    idata[i] = buffer.array_i[i+ii];
 
-      // get the char array data
+	// get the char array data
 	for (int c = 0; c < csize; c++)
 	    cdata[c] = buffer.array_c[c+ic];
 
-      // write the particle data
+	// write the particle data
 	cenfile.write(reinterpret_cast<const char *>(ddata), dsize *
 		      sizeof(double));
 	cenfile.write(reinterpret_cast<const char *>(idata), isize *
 		      sizeof(int));
 	cenfile.write(reinterpret_cast<const char *>(cdata), csize);
 
-      // update the counters
+	// update the counters
 	id += dsize + 1;
 	ii += isize;
 	ic += csize;
 	buffer.n_part--;
 
-      // asserts to make sure we haven't gone over
+	// asserts to make sure we haven't gone over
 	Check (id <= buffer_d);
 	Check (ii <= buffer_i);
 	Check (ic <= buffer_c);
     }
 
-  // recover storage
+    // recover storage
     delete [] ddata;
     delete [] idata;
     delete [] cdata;
 
-  // reset the Comm_Buffer to 0
+    // reset the Comm_Buffer to 0
     Ensure (buffer.n_part == 0);
 }
 
@@ -253,30 +267,30 @@ template<class PT>
 SP<typename Particle_Buffer<PT>::Census_Buffer> 
 Particle_Buffer<PT>::read_census(istream &cenfile) const
 {
-  // make sure file exists
+    // make sure file exists
     Check (cenfile);
 
-  // cast smart pointer to Census_Buffer
+    // cast smart pointer to Census_Buffer
     SP<Census_Buffer> return_part;
     
-  // set pointers for dynamic memory storage
+    // set pointers for dynamic memory storage
     double *ddata = new double[dsize];
     int    *idata = new int[isize];
     char   *rdata = new char[csize];
 
-  // read in data
+    // read in data
     cenfile.read(reinterpret_cast<char *>(ddata), dsize * sizeof(double));
     if (!cenfile.eof())
     {
-      // read in integer data
+	// read in integer data
 	cenfile.read(reinterpret_cast<char *>(idata), isize * sizeof(int));
 	Check (!cenfile.eof());
 
-      // read in random number state
+	// read in random number state
 	cenfile.read(reinterpret_cast<char *>(rdata), csize);
 	Check (!cenfile.eof());
 
-      // assign data to proper structures for Census Particle
+	// assign data to proper structures for Census Particle
 	double ew   = ddata[0];
 	double frac = ddata[1];
 	vector<double> r;
@@ -287,20 +301,20 @@ Particle_Buffer<PT>::read_census(istream &cenfile) const
 	    r.push_back(ddata[i]);
 	int cell = idata[0];
 
-      // make new random number
+	// make new random number
 	int *id = unpack_sprng(rdata);
 	Sprng random(id, idata[1]);
 
-      // make new Census_Buffer
+	// make new Census_Buffer
 	return_part = new Census_Buffer(r, omega, ew, frac, cell, random);
     }
 
-  // reclaim dynamic memory
+    // reclaim dynamic memory
     delete [] idata;
     delete [] ddata;
     delete [] rdata;
 
-  // return Census_Buffer
+    // return Census_Buffer
     return return_part;
 }
 
@@ -312,13 +326,13 @@ Particle_Buffer<PT>::read_census(istream &cenfile) const
 template<class PT>
 void Particle_Buffer<PT>::send_buffer(Comm_Buffer &buffer, int proc) const
 {
-  // send out a Comm_Buffer
+    // send out a Comm_Buffer
     Send (buffer.n_part, proc, 200);
     Send (&buffer.array_d[0], buffer_d, proc, 201);
     Send (&buffer.array_i[0], buffer_i, proc, 202);
     Send (&buffer.array_c[0], buffer_c, proc, 203);
 
-  // enpty the buffer
+    // empty the buffer
     buffer.n_part = 0;
 }
 
@@ -329,16 +343,16 @@ template<class PT>
 SP<typename Particle_Buffer<PT>::Comm_Buffer> 
 Particle_Buffer<PT>::recv_buffer(int proc) const
 {
-  // return Comm_Buffer declaration
+    // return Comm_Buffer declaration
     SP<Comm_Buffer> buffer(new Comm_Buffer());
 
-  // receive the n_part
+    // receive the n_part
     Recv (buffer->n_part, proc, 200);
     Recv (&buffer->array_d[0], buffer_d, proc, 201);
     Recv (&buffer->array_i[0], buffer_i, proc, 202);
     Recv (&buffer->array_c[0], buffer_c, proc, 203);
 
-  // return SP
+    // return SP
     return buffer;
 }
     
@@ -348,13 +362,13 @@ Particle_Buffer<PT>::recv_buffer(int proc) const
 template<class PT>
 void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc) const
 {
-  // async send this Comm_Buffer
+    // async send this Comm_Buffer
     SendAsync(buffer.comm_n, &buffer.n_part, 1, proc, 100);
     SendAsync(buffer.comm_d, &buffer.array_d[0], buffer_d, proc, 101);
     SendAsync(buffer.comm_i, &buffer.array_i[0], buffer_i, proc, 102);
     SendAsync(buffer.comm_c, &buffer.array_c[0], buffer_c, proc, 103);
 
-  // empty the buffer
+    // empty the buffer
     buffer.n_part = 0;
 }
 
@@ -364,7 +378,7 @@ void Particle_Buffer<PT>::asend_buffer(Comm_Buffer &buffer, int proc) const
 template<class PT>
 void Particle_Buffer<PT>::post_arecv(Comm_Buffer &buffer, int proc) const
 {
-  // post c4 async receives
+    // post c4 async receives
     RecvAsync(buffer.comm_n, &buffer.n_part, 1, proc, 100);
     RecvAsync(buffer.comm_d, &buffer.array_d[0], buffer_d, proc, 101);
     RecvAsync(buffer.comm_i, &buffer.array_i[0], buffer_i, proc, 102);
@@ -377,7 +391,7 @@ void Particle_Buffer<PT>::post_arecv(Comm_Buffer &buffer, int proc) const
 template<class PT> void 
 Particle_Buffer<PT>::async_wait(Comm_Buffer &buffer) const
 {
-  // wait on recieve buffers to make sure they are full
+    // wait on recieve buffers to make sure they are full
     buffer.comm_n.wait();
     buffer.comm_d.wait();
     buffer.comm_i.wait();
@@ -390,36 +404,36 @@ Particle_Buffer<PT>::async_wait(Comm_Buffer &buffer) const
 template<class PT>
 bool Particle_Buffer<PT>::async_check(Comm_Buffer &buffer) const
 {
-  // tag to check what is in; we want all or nothing
+    // tag to check what is in; we want all or nothing
     vector<int> arrived(4);
     fill(arrived.begin(), arrived.end(), 0);
     int total = 0;
     int count = 0;
     
-  // check to see if the buffers have been received
+    // check to see if the buffers have been received
     do
     {
-      // check comm_n
+	// check comm_n
 	if (arrived[0] == 0)
 	    if (buffer.comm_n.complete())
 		arrived[0] = 1;
 	
-      // check comm_d
+	// check comm_d
 	if (arrived[1] == 0)
 	    if (buffer.comm_d.complete())
 		arrived[1] = 1;
 
-      // check comm_i
+	// check comm_i
 	if (arrived[2] == 0)
 	    if (buffer.comm_i.complete())
 		arrived[2] = 1;
 
-      // check comm_c
+	// check comm_c
 	if (arrived[3] == 0)
 	    if (buffer.comm_c.complete())
 		arrived[3] = 1;
 
-      // accumulate total
+	// accumulate total
 	total = accumulate(arrived.begin(), arrived.end(), 0);
 	count++;
 	
@@ -435,9 +449,9 @@ bool Particle_Buffer<PT>::async_check(Comm_Buffer &buffer) const
 template<class PT>
 void Particle_Buffer<PT>::async_free(Comm_Buffer &buffer) const
 {
-  // free the C4_Req objects from Async posts, note that these must be
-  // reassigned with a post request before they can be received or tested
-  // (async_wait() and async_check())
+    // free the C4_Req objects from Async posts, note that these must be
+    // reassigned with a post request before they can be received or tested
+    // (async_wait() and async_check())
     buffer.comm_n.free();
     buffer.comm_d.free();
     buffer.comm_i.free();
@@ -459,7 +473,7 @@ bool Particle_Buffer<PT>::comm_status(Comm_Buffer &buffer) const
     else if (!buffer.comm_c.inuse())
 	return false;
 
-  // if we haven't returned then these are still active
+    // if we haven't returned then these are still active
     return true;
 }
 
@@ -472,19 +486,19 @@ template<class PT>
 void Particle_Buffer<PT>::buffer_census(Comm_Buffer &comm, 
 					const Census_Buffer &census) const
 {
-  // check to make sure this Comm_Buffer isn't full
+    // check to make sure this Comm_Buffer isn't full
     Require (comm.n_part < buffer_s);
     Require (comm.n_part >= 0);
 
-  // calculate indices for the buffer
+    // calculate indices for the buffer
     int id = comm.n_part * (dsize + 1);
     int ii = comm.n_part * isize;
     int ic = comm.n_part * csize;
 
-  // add one Census_Buffer particle to the buffer
+    // add one Census_Buffer particle to the buffer
   
-  // start with the double data, time_left is not part of the census, but is
-  // part of the Comm_Buffer, any Census_Particle will have a time_left of 1
+    // start with the double data, time_left is not part of the census, but is
+    // part of the Comm_Buffer, any Census_Particle will have a time_left of 1
     comm.array_d[id++] = 1;
     comm.array_d[id++] = census.ew;
     comm.array_d[id++] = census.fraction;
@@ -494,12 +508,12 @@ void Particle_Buffer<PT>::buffer_census(Comm_Buffer &comm,
 	comm.array_d[id++] = census.r[i];
     Check (id - comm.n_part * (dsize+1) == (dsize+1));
 
-  // do the int data
+    // do the int data
     comm.array_i[ii++] = census.cell;
     comm.array_i[ii++] = census.random.get_num();
     Check (ii - comm.n_part * isize == isize);
 
-  // do the char data
+    // do the char data
     char *bytes;
     int size = pack_sprng(census.random.get_id(), &bytes);
     Check (size == csize);
@@ -508,10 +522,10 @@ void Particle_Buffer<PT>::buffer_census(Comm_Buffer &comm,
     std::free(bytes);
     Check (ic - comm.n_part * csize == csize);
   
-  // update the n_particles
+    // update the n_particles
     comm.n_part++;
 
-  // do some assertions
+    // do some assertions
     Ensure (id <= buffer_d);
     Ensure (ii <= buffer_i);
     Ensure (ic <= buffer_c);
@@ -524,19 +538,19 @@ template<class PT>
 void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
 					  const PT &particle) const
 {
-  // check to make sure this Comm_Buffer isn't full
+    // check to make sure this Comm_Buffer isn't full
     Require (buffer.n_part < buffer_s);
     Require (buffer.n_part >= 0);
 
-  // calculate indices for the buffer, remember the particle info required
-  // during a timestep must also include the time left
+    // calculate indices for the buffer, remember the particle info required
+    // during a timestep must also include the time left
     int id = buffer.n_part * (dsize+1);
     int ii = buffer.n_part * isize;
     int ic = buffer.n_part * csize;
     
-  // add one particle to the buffer
+    // add one particle to the buffer
 
-  // start with the double data
+    // start with the double data
     buffer.array_d[id++] = particle.time_left;
     buffer.array_d[id++] = particle.ew;
     buffer.array_d[id++] = particle.fraction;
@@ -546,12 +560,12 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
 	buffer.array_d[id++] = particle.r[i];
     Check (id - buffer.n_part * (dsize+1) == (dsize+1));
 
-  // do the int data
+    // do the int data
     buffer.array_i[ii++] = particle.cell;
     buffer.array_i[ii++] = particle.random.get_num();
     Check (ii - buffer.n_part * isize == isize);
 
-  // do the char data
+    // do the char data
     char *bytes;
     int size = pack_sprng(particle.random.get_id(), &bytes);
     Check (size == csize);
@@ -560,10 +574,10 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
     std::free(bytes);
     Check (ic - buffer.n_part * csize == csize);
   
-  // update the n_particles
+    // update the n_particles
     buffer.n_part++;
 
-  // do some assertions
+    // do some assertions
     Ensure (id <= buffer_d);
     Ensure (ii <= buffer_i);
     Ensure (ic <= buffer_c);
@@ -575,22 +589,22 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
 template<class PT> void 
 Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const 
 {
-  // get the number of Particles in the Comm_Buffer
+    // get the number of Particles in the Comm_Buffer
     int num_part = buffer.n_part;
     Require (num_part <= buffer_s);
     Require (num_part >= 0);
 
-  // set buffer counters
+    // set buffer counters
     int id = 0;
     int ii = 0;
     int ic = 0;
 
-  // loop through Comm_Buffer and add the Particles to the Bank
+    // loop through Comm_Buffer and add the Particles to the Bank
     for (int n = 1; n <= num_part; n++)
     {
-      // make the Particle data
+	// make the Particle data
 
-      // double data
+	// double data
 	double t_left = buffer.array_d[id++];
 	double ew     = buffer.array_d[id++];
 	double frac   = buffer.array_d[id++];
@@ -603,11 +617,11 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const
 	Check (omega.size() == 3);
 	Check (r.size() == (dsize-5));
 
-      // int data
+	// int data
 	int cell = buffer.array_i[ii++];
 	int rnum = buffer.array_i[ii++];
 
-      // char data
+	// char data
 	char *bytes = new char[csize];
 	for (int i = 0; i < csize; i++)
 	    bytes[i] = buffer.array_c[ic++];
@@ -615,20 +629,20 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const
 	Sprng random(rnid, rnum);
 	delete [] bytes;
 
-      // check to make sure we haven't gone over
+	// check to make sure we haven't gone over
 	Check (id <= buffer_d);
 	Check (ii <= buffer_i);
 	Check (ic <= buffer_c);
 
-      // make the Particle
+	// make the Particle
 	SP<PT> particle(new PT(r, omega, ew, cell, random, frac, t_left)); 
 
-      // add the Particle to the Bank and update the num_part counter
+	// add the Particle to the Bank and update the num_part counter
 	bank.push(particle);
 	buffer.n_part--;
     }
 
-  // the buffer should now be empty
+    // the buffer should now be empty
     Ensure (buffer.n_part == 0);
 }
 

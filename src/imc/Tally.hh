@@ -31,12 +31,6 @@
 namespace rtt_imc 
 {
 
-// stl components
-using std::ostream;
-
-// draco components
-using dsxx::SP;
-
 template<class MT>
 class Tally 
 {
@@ -65,10 +59,10 @@ private:
 
 public:
   // Tally constructor
-    explicit Tally(SP<MT>);
+    explicit Tally(dsxx::SP<MT>);
 
   // Tally constructor that gets evol_net
-    Tally(SP<MT>, typename MT::CCSF_double);
+    Tally(dsxx::SP<MT>, typename MT::CCSF_double);
 
   // accumulate energy deposited
     void deposit_energy(const int cell, const double energy);
@@ -113,8 +107,8 @@ public:
     inline double volume(int) const;
 
   // diagnostics for tally
-    void print(ostream &) const;
-    void cycle_print(ostream &) const;
+    void print(std::ostream &) const;
+    void cycle_print(std::ostream &) const;
 };
 
 //---------------------------------------------------------------------------//
@@ -122,7 +116,7 @@ public:
 //---------------------------------------------------------------------------//
 
 template<class MT>
-ostream& operator<<(ostream &out, const Tally<MT> &object)
+std::ostream& operator<<(std::ostream &out, const Tally<MT> &object)
 {
     object.print(out);
     return out;

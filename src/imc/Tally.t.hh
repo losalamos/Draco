@@ -12,10 +12,14 @@
 namespace rtt_imc 
 {
 
+// namespace objects
 using std::setw;
 using std::ios;
 using std::setiosflags;
 using std::endl;
+using std::ostream;
+
+using dsxx::SP;
 
 //---------------------------------------------------------------------------//
 // constructors
