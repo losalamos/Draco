@@ -627,8 +627,6 @@ Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_surcells(std::string boundary) const
  * \param ss_list reference to a vector of cells
  * \return true if cells comprise a valide surface source
  */
-
-
 bool Sphyramid_Mesh::check_defined_surcells(const std_string ss_face,
 					 const sf_int &ss_list) const
 {
@@ -649,6 +647,35 @@ bool Sphyramid_Mesh::check_defined_surcells(const std_string ss_face,
 
     return true;
 }
+
+//---------------------------------------------------------------------------//
+// Overloaded == operator
+//---------------------------------------------------------------------------//
+bool Sphyramid_Mesh::operator==(const Sphyramid_Mesh &rhs) const
+{
+    using rtt_mc::global::soft_equiv;
+
+    // check to see that the Layouts are equal
+    if (this->layout != rhs.layout) return false;
+
+    // check the x extents
+    for (int cell = 1; cell <= this->layout.num_cells(); cell++)
+    {
+	if(!soft_equiv(get_low_x(cell),rhs.get_low_x(cell))) return false;
+
+	if(!soft_equiv(get_high_x(cell),rhs.get_high_x(cell))) return false;
+    }
+
+    // check the beta angle
+    if(!soft_equiv(this->beta_radians,rhs.beta_radians)) return false;
+
+    // don't bother with coord system, all Sphyramid Meshs are XYZ
+
+    // if we haven't returned, then the two meshes must be equal
+
+    return true;
+}
+
 
 } // end namespace rtt_mc
 

@@ -197,9 +197,8 @@ class Sphyramid_Mesh
     // SP_Pack pack(const sf_int & = sf_int()) const;
 
     // Overloaded Operators.
-    // bool operator==(const Sphyramid_Mesh &) const;
-    // bool operator!=(const Sphyramid_Mes &rhs) const {return !(*this == rhs);
-    // }
+    bool operator==(const Sphyramid_Mesh &rhs) const;
+    bool operator!=(const Sphyramid_Mesh &rhs) const {return !(*this == rhs); }
 
 
 

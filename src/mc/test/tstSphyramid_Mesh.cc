@@ -772,10 +772,34 @@ void simple_one_cell_Sphyramid()
 	{
 	    double fvalue = 0.5/tan_beta;
 	    if (fabs(ydist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;
-	    if (fabs(zdist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;	    
+ 	    if (fabs(zdist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;
 	}
     }
 
+
+    // check the == and != operations.
+    // first, build another mesh object equivalent to old mesh object.
+    // these two meshes, althoug identical, should not occupy the same memory
+    {
+	SP<Sphyramid_Mesh> other_mesh(new Sphyramid_Mesh(coord, layout,
+							 cell_x_extents,
+							 beta_radians));
+	if (mesh == other_mesh) ITFAILS;
+
+	Sphyramid_Mesh &mesh_obj       = *mesh;
+	Sphyramid_Mesh &other_mesh_obj = *other_mesh;
+
+	if(mesh_obj   != other_mesh_obj)  ITFAILS;
+	if(!(mesh_obj == other_mesh_obj)) ITFAILS;
+    }
+
+    // test the mesh's distance-to-boundary function
+    {
+	vector<double> r(3,0.0);
+	vector<double> omega(3,0.0);
+	int intersecting_face;
+	double db;
+    }
 
 
 
