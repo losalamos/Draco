@@ -36,7 +36,7 @@ private:
 public:
     Opacity(SP<MT> mesh) : sigma(mesh), sigma_a(mesh), sigma_s(mesh)
     {}
-    void quickset(double, double, double);
+    void Quickset(double, double, double);
   // member set and accessor functions
     double& Sigma(int cell) { return sigma(cell); }
     double Sigma(int cell) const { return sigma(cell); }

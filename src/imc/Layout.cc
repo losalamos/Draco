@@ -31,8 +31,8 @@ void Layout::Print(int cell_index) const
 
   // print the face information for cell indexed by cell_index
     cout << "=============" << endl;
-    cout << "Cell   :     " << cell_index << endl;
-    cout << "# faces:     " << num_faces << endl;
+    cout << "Cell   : "     << cell_index << endl;
+    cout << "# faces: "     << num_faces << endl;
     cout << "-------------" << endl;
     cout << setw(4) << "Face" << setw(9) << " Neighbor" << endl;
     cout << "-------------" << endl;

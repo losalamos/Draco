@@ -144,14 +144,30 @@ private:
     OS_Mesh& operator=(const OS_Mesh &);
 public:
   // base class constructor
-    OS_Mesh(SP<Coord_sys> coord_, const Layout &layout_, CCVF_a &pos_,
+    OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_a &pos_,
 	    CCVF_a &dim_, CCVF_a &sur_)
 	: coord(coord_), layout(layout_), pos(pos_), dim(dim_), sur(sur_)
     {
+      // assertions to verify size of mesh
+    
+      // variable initialization
 	int num_cells = Num_cells();
-	assert (num_cells == pos.size());
-	assert (num_cells == dim.size());
-	assert (num_cells == (sur.size() - 1));
+	int dimension = coord->Get_dim();
+
+      // dimension assertions
+	assert (dimension == pos.size());
+	assert (dimension == dim.size());
+	assert (dimension == sur.size());
+	
+      // mesh size assertions
+	int mesh_size = 1;
+	for (int d = 0; d < dimension; d++)
+	{
+	    assert (num_cells == pos[d].size());
+	    assert (num_cells == dim[d].size());
+	    mesh_size *= (sur[d].size() - 1);
+	}
+	assert (num_cells == mesh_size);
     }
 
   // member functions

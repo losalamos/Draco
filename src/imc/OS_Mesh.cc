@@ -102,9 +102,11 @@ void OS_Mesh::Print(int cell) const
 
   // print out content info for 1 cell
     cout << "+++++++++++++++" << endl;
-    cout << "Cell        :  " << cell << endl;
     cout << "---------------" << endl;
-    cout << "Dimensions  :  " << endl;
+    cout << "Cell : "         << cell << endl;
+    cout << "---------------" << endl;
+    cout << "Dimensions "     << endl;
+    cout << "---------------" << endl;
     if (coord->Get_dim() == 2)
     {
 	cout << " x  : " << pos[0][cell-1] << endl;
@@ -122,7 +124,8 @@ void OS_Mesh::Print(int cell) const
 	cout << " dz : " << dim[2][cell-1] << endl;
     }	
     cout << "---------------" << endl;
-    cout << "Layout      :  " << endl;
+    cout << "Layout "         << endl;
+    cout << "---------------" << endl;
     layout.Print(cell);
     cout << "+++++++++++++++" << endl;
 }
