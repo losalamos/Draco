@@ -14,6 +14,7 @@
 #include "3T/P13T.hh"
 #include "3T/P13TOptions.hh"
 #include "3T/Units.hh"
+#include "3T/RadiationPhysics.hh"
 
 #include <new>
 #include <iostream>
@@ -29,47 +30,77 @@ BEGIN_NS_XTM
     
 testP13T::testP13T()
 {
-    cerr << "In testP13T()" << endl;
-
     SP<MT> spmesh = new MT;
     
     SP<DS> spdiffSolver = new DS(spmesh);
     
     Units units = Units::getAstroPhysUnits();
+
+    double TElectron = 2.0;
+    double TIon = 4.0;
+
+    std::vector<MP::MatVals> matVals(3);
+    matVals[0] = MP::MatVals(/*sigmaTotal*/ 2.0,
+			     /* sigmaAbsorption */ 1.0,
+			     /* sigmaEmission */ 1.0,
+			     /* electronIonCoupling */ 1.0e10,
+			     /* electronConductionCoeff */ 1.0,
+			     /* ionConductionCoeff */ 2.0,
+			     /* electronSpecificHeat */ 1.0,
+			     /* ionSpecificHeat */ 2.0);
+    matVals[1] = MP::MatVals(/*sigmaTotal*/ 2.0,
+			     /* sigmaAbsorption */ 1.0,
+			     /* sigmaEmission */ 1.0,
+			     /* electronIonCoupling */ 1.0,
+			     /* electronConductionCoeff */ 1.0,
+			     /* ionConductionCoeff */ 2.0,
+			     /* electronSpecificHeat */ 1.0,
+			     /* ionSpecificHeat */ 2.0);
+    matVals[2] = MP::MatVals(/*sigmaTotal*/ 2.0,
+			     /* sigmaAbsorption */ 0.0,
+			     /* sigmaEmission */ 0.0,
+			     /* electronIonCoupling */ 0.0,
+			     /* electronConductionCoeff */ 1.0,
+			     /* ionConductionCoeff */ 2.0,
+			     /* electronSpecificHeat */ 1.0,
+			     /* ionSpecificHeat */ 2.0);
     
-    SP<MP> spmatprop = new MP(units, spmesh);
+    SP<MP> spmatprop = new MP(units, spmesh, TElectron, TIon, matVals);
 
     P13TOptions options(true, true);
 
     spP13T = new P13TStub(options, spmatprop, spdiffSolver);
-
-    cerr << "spP13T: " << *spP13T << endl;
 }
 
 void testP13T::solve() const
 {
-    cerr << "in testP13T::solve()" << endl;
-    
-    SP<MT> spmesh = spP13T->getMesh();
-    
-    MP::MaterialStateField matState(spmesh);
-    matState = 1;
-    
-    P13T<MT,MP,DS>::RadiationStateField radState(spmesh);
-
-    cerr << "before spP13T->initializeRadiationState" << endl;
-    
-    spP13T->initializeRadiationState(matState, radState);
-
-    cerr << "after spP13T->initializeRadiationState" << endl;
-    cerr << "radState.phi: " << radState.phi
-	 << " radState.F: " << radState.F << endl;
-
-    double dt = 1.0;
-
     typedef MT::ccsf ccsf;
     typedef MT::bsbf bsbf;
     typedef MT::ncvf ncvf;
+
+    SP<MT> spmesh = spP13T->getMesh();
+    SP<MP> spProp = spP13T->getMaterialProperties();
+
+    MP::MaterialStateField matState(spmesh);
+
+    matState = 0;
+    
+    P13T<MT,MP,DS>::RadiationStateField radState(spmesh);
+
+    spP13T->initializeRadiationState(matState, radState);
+
+    ccsf TElec(spmesh);
+    ccsf TIon(spmesh);
+
+    spProp->getElectronTemperature(matState, TElec);
+    spProp->getIonTemperature(matState, TIon);
+
+    cerr << "TElectron: " << TElec << endl;
+    cerr << "TIon: " << TIon << endl;
+    cerr << "radState.phi: " << radState.phi
+	 << " radState.F: " << radState.F << endl;
+
+    double dt = 1.0e-2;
 
     ccsf QRad(spmesh);
     ccsf QElectron(spmesh);
@@ -80,23 +111,28 @@ void testP13T::solve() const
     ccsf ionEnergyDep(spmesh);
     ncvf momDep(spmesh);
     
-    QRad = 0.0;
-    QElectron = 0.0;
-    QIon = 0.0;
+    QRad = 2.5;
+    QElectron = 10.0;
+    QIon = 4.25;
     boundary = 0.0;
-
-    cerr << "before spP13T->solve()" << endl;
-    
-    ccsf TElec(spmesh);
-    ccsf TIon(spmesh);
 
     spP13T->solve(dt, matState, radState, QRad, QElectron, QIon,
 		  boundary, newRadState, electEnergyDep, ionEnergyDep,
 		  momDep, TElec, TIon);
-    cerr << "after spP13T->solve()" << endl;
 
-    cerr << "electEnergyDep: " << electEnergyDep << endl;
-    cerr << "ionEnergyDep: " << ionEnergyDep << endl;
+    const RadiationPhysics radPhys(spP13T->getMaterialProperties()->getUnits());
+    double c = radPhys.getLightSpeed();
+    
+    ccsf deltaRadEnergy = (newRadState.phi - radState.phi) / c;
+
+    cerr << "deltaRadEnergy: " << deltaRadEnergy
+	 << "\trate: " << deltaRadEnergy/dt << endl;
+    cerr << "electEnergyDep: " << electEnergyDep
+	 << "\trate: " << electEnergyDep/dt << endl;
+    cerr << "  ionEnergyDep: " << ionEnergyDep
+	 << "\trate: " << ionEnergyDep/dt << endl;
+    cerr << "Energy rate: "
+	 << (deltaRadEnergy + electEnergyDep + ionEnergyDep) / dt << endl;
     cerr << "newRadState.phi: " << newRadState.phi << endl;
     cerr << "TElectron: " << TElec << endl;
     cerr << "TIon: " << TIon << endl;

@@ -12,6 +12,7 @@
 #include "ds++/SP.hh"
 #include "3T/Units.hh"
 #include <iostream>
+#include <vector>
 
 #ifndef BEGIN_NS_XTM
 #define BEGIN_NS_XTM namespace XTM  {
@@ -39,20 +40,52 @@ class MaterialPropertiesStub
     // NESTED CLASSES AND TYPEDEFS
 
   public:
+    
+    struct MatVals
+    {
+	double sigmaTotal;
+	double sigmaAbsorption;
+	double sigmaEmission;
+	double electronIonCoupling;
+	double electronConductionCoeff;
+	double ionConductionCoeff;
+	double electronSpecificHeat;
+	double ionSpecificHeat;
+
+	MatVals(double sT=0.0, double sA=0.0, double sE=0.0,
+		double eic=0.0, double ecc=0.0, double icc=0.0,
+		double esh=0.0, double ish=0.0)
+	    : sigmaTotal(sT), sigmaAbsorption(sA), sigmaEmission(sE),
+	      electronIonCoupling(eic), electronConductionCoeff(ecc),
+	      ionConductionCoeff(icc), electronSpecificHeat(esh),
+	      ionSpecificHeat(ish)
+	{
+	    // empty
+	}
+	      
+    };
+
     typedef int MaterialStateField;
 
     // DATA
+
+    std::vector<MatVals> matVals;
 
   private:
 
     Units units;
     SP<MT> spMesh;
+
+    double TElectron;
+    double TIon;
     
   public:
 
     // CREATORS
     
-    MaterialPropertiesStub(const Units &units_, const SP<MT> &spMesh_);
+    MaterialPropertiesStub(const Units &units_, const SP<MT> &spMesh_,
+			   double TElectron_, double TIon_,
+			   const std::vector<MatVals> &matVals_);
 
     // MANIPULATORS
     
@@ -68,6 +101,13 @@ class MaterialPropertiesStub
     
     const SP<MT> getMesh() const { return spMesh; }
     Units getUnits() const { return units; }
+
+    //------------------------------------------------------------------------//
+    // getSigmaTotal:
+    //     It is the material properties' responsibility to do
+    //     any averaging of temperatures, etc. to achieve the correct
+    //     resulting sigmaTotal.
+    //------------------------------------------------------------------------//
 
     template<class FT, class GT>
     void getSigmaTotal(const MaterialStateField &matState,
