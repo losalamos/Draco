@@ -3,7 +3,7 @@
 // RHS Linux User
 // Thu Nov 20 22:08:34 1997
 //---------------------------------------------------------------------------//
-// @> 
+// @> A 3-d cartesian structured mesh facility.
 //---------------------------------------------------------------------------//
 
 #include "mesh/Mesh_XYZ.hh"
@@ -14,8 +14,7 @@ using namespace C4;
 #include <iostream.h>
 
 XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb )
-    : //ncx(mdb.ncx), ncy(mdb.ncy), ncz(mdb.ncz)
-	Mesh_DB( mdb )
+    : Mesh_DB( mdb )
 {
     nct = ncx * ncy * ncz;
     ncp = nct / nodes + ( (nct % nodes) > node );
@@ -33,33 +32,11 @@ XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb )
 
 
 Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
-//    : Mesh_DB( mdb )
-    : XYZ_Mapper( mdb )
+    : XYZ_Mapper( mdb ),
+      xF( this ), yF( this ), zF( this )
 {
     char buf[80];
-#if 0
-// Now that we have the user input, we should be able to resize our data
-// arrays, etc. 
 
-    nct = ncx * ncy * ncz;
-    ncp = nct / nodes + ( (nct % nodes) > node );
-
-    SPINLOCK( cout << "node " << node << " has " << ncp
-	      << " cells." << endl << flush );
-
-    nxy = ncx * ncy;
-
-    goff = 0;
-    {
-	Baton<int> s(goff);
-	goff = s;
-	s += ncp;
-    }
-
-    SPINLOCK( cout << "node " << node
-	      << " has global offset " << goff << endl );
-    C4::gsync();
-#endif
     for( int i=0; i < ncp; i++ ) {
 	sprintf( buf, "node %d, i=%d, I(%d)=%d J(%d)=%d K(%d)=%d",
 		 node, i, i, I(i), i, J(i), i, K(i) );
@@ -67,8 +44,6 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     }
 
 // Allocate the arrays.
-
-    A = Mat2<double>( ncp, nct );
 
     xc = Mat1<double>( ncx );
     yc = Mat1<double>( ncy );

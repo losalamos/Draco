@@ -3,7 +3,7 @@
 // RHS Linux User
 // Thu Nov 20 22:08:34 1997
 //---------------------------------------------------------------------------//
-// @> 
+// @> A 3-d cartesian structured mesh facility.
 //---------------------------------------------------------------------------//
 
 #ifndef __mesh_Mesh_XYZ_hh__
@@ -39,55 +39,76 @@ struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo
 	return goffset( I(nc), J(nc), K(nc) );
     }
 
-//    const Mesh_DB& get_Mesh_DB() const{ return *static_cast<Mesh_DB
-//    *>(this); }
+    int local_cell_index( int i, int j, int k ) const
+    {
+	return goffset(i,j,k) - goff;
+    }
+
     const Mesh_DB& get_Mesh_DB() const{ return *this; }
 };
 
 //===========================================================================//
-// class Mesh_XYZ - 
+// class Mesh_XYZ - A 3-d cartesian mesh class
 
-// 
+// This is a 3-d cartesisan structured mesh.  The main purpose of having this
+// class is in order for it to be instantiated by various test articles
+// throughout the Draco system.  It could also be useful to Draco clients as
+// a point of reference during the construction of their own mesh classes.
 //===========================================================================//
 
-// class Mesh_XYZ : private Mesh_DB, private C4::NodeInfo
-class Mesh_XYZ : private XYZ_Mapper//, private C4::NodeInfo
+class Mesh_XYZ : private XYZ_Mapper
 {
-#if 0
-    int nct;			// # of total cells in problem.
-    int ncp;			// # of cells on this processor.
+  public:
 
-    int goff;			// global offset of this processor's cells.
-    int nxy;
+// Face centered discontinuous scalar field
+// Has a value on each face in each cell.
+    
+    class fcdsf : private XYZ_Mapper {
+	friend class Mesh_XYZ;
 
-// Convert a local cell index to its (i,j,k) indexes in whole domain.
+	Mat2<double> data;
 
-    int I(int x) const { x += goff; return (x % nxy) % ncx; }
-    int J(int x) const { x += goff; return (x % nxy) / ncx; }
-    int K(int x) const { x += goff; return  x / nxy; }
+	fcdsf( const Mesh_XYZ *m )
+	    : XYZ_Mapper( m->get_Mesh_DB() ),
+	      data( m->get_ncp(), 6 )
+	{}
 
-    int goffset( int i, int j, int k ) const { return ncx*(k*ncy + j) +i; }
-    int goffset( int nc ) const
-    {
-	nc += goff;
-	return goffset( I(nc), J(nc), K(nc) );
-    }
-#endif
+      public:
+	fcdsf( const SP<Mesh_XYZ>& m )
+	    : XYZ_Mapper( m->get_Mesh_DB() ),
+	      data( m->get_ncp(), 6 )
+	{}
 
-    Mat2<double> A;
+    // i, j, k == global xyz cell indicies
+    // f == face index
+    // c == local cell index
+
+	double& operator()( int c, int f )       { return data(c,f); }
+	double  operator()( int c, int f ) const { return data(c,f); }
+
+	double& operator()( int i, int j, int k, int f )
+	{
+	    return data( local_cell_index(i,j,k), f );
+	}
+	double  operator()( int i, int j, int k, int f ) const 
+	{
+	    return data( local_cell_index(i,j,k), f );
+	}
+    };
+
+  private:
     Mat1<double> xc, yc, zc;
     Mat1<double> xf, yf, zf;
     double       dx, dy, dz;
     Mat1<double> vc;
     Mat1<double> xA, yA, zA;
 
-  public:
-    Mesh_XYZ( const Mesh_DB& mdb );
-//     Mesh_XYZ( const Mesh_XYZ& );
-//     ~Mesh_XYZ();
-//     Mesh_XYZ& operator=( const Mesh_XYZ& );
+    fcdsf xF, yF, zF;
 
+  public:
     typedef XYZ_Mapper Coord_Mapper;
+
+    Mesh_XYZ( const Mesh_DB& mdb );
 
     const Mesh_DB& get_Mesh_DB() const { return XYZ_Mapper::get_Mesh_DB(); }
     const Mat1<double>& get_xc() const { return xc; }
