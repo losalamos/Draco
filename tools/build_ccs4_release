@@ -17,6 +17,18 @@
 ##   /codes/radtran/vendors/draco-#_#_#/Linux/debug
 ##   /codes/radtran/vendors/draco-#_#_#/Linux/opt
 ##
+##
+## It can actually be run on the CCS4 network in any directory:
+## 
+##   $DRACO_PREFIX/draco/tools
+## 
+## It will build in 
+##
+##   $DRACO_PREFIX/Linux/debug
+##   $DRACO_PREFIX/Linux/opt
+##
+## Be warned that $DRACO_PREFIX/Linux (if it exists) will get
+## destroyed 
 ##---------------------------------------------------------------------------##
 
 ## determine version from argument
