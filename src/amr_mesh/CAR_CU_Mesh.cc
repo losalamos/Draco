@@ -314,7 +314,7 @@ void CAR_CU_Mesh::check_defined_surcells(const string ss_face,
 	int ss_face_num = get_bndface(ss_face, ss_list[ss_indx]);
 
         // get bnd condition on ss face; had better be vacuum (0)
-	int bc = layout(ss_list[ss_indx], ss_face_num);
+	int bc = layout(ss_list[ss_indx], ss_face_num, 1);
 	Check (bc == 0);
     }
 }

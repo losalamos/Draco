@@ -550,12 +550,12 @@ vector<set<int> > CAR_CU_Builder::assign_Generations(CAR_CU_Mesh::CCSF_i &
     // make sure every cell was assigned to a generation and echo the number
     // of cells per generation to the screen (the unstructured mesh)
     cout << endl;
-    cout << "--- Creating unstructured meshes ---" << endl;
+    cout << "--- Resolving unstructured mesh ---" << endl;
     int gen_check = 0;
     for (int gen = 0; gen < gen_cells.size(); gen ++)
     {
         gen_check += gen_cells[gen].size();
-	cout << "cells for mesh " << gen << " at generation " << gen 
+	cout << "cells for mesh at generation " << gen 
 	     << " = " << gen_cells[gen].size() << endl;	
     }
     Insist(gen_check == ncells,"Cell generation assignment failure!");
@@ -711,7 +711,7 @@ vector<set< int> > CAR_CU_Builder::assign_Meshes(const vector<set< int> > &
     // screen echo to distinguish between a child mesh and a parent mesh
     cout << endl;
     if (parents.empty())
-      cout << "--- Creating child meshes ---" << endl;
+      cout << "--- Resolving child meshes ---" << endl;
     else
       cout << "--- Creating parent meshes ---" << endl;
 
