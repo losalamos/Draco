@@ -194,7 +194,7 @@ void testMmcMatProp::execute_test()
 	FTVVD::iterator resit=results.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    (*resit++).resize(nmat[icell]);
+	    //	    (*resit++).resize(nmat[icell]);
 	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0]  [0]= 6.025766197348e+00;  
@@ -207,7 +207,7 @@ void testMmcMatProp::execute_test()
 	answer[3]  [0]= 3.864308805021e+01;  
 	answer[3]  [1]= 3.864308805021e+01; 
 	answer[3]  [2]= 3.864308805021e+01; 
-	msf.mapAvgTemp(results, avgTemps);
+	msf.mapAvgElectronTemp(results, avgTemps);
 	ByMatResultsOK(results, answer, eps, results_OK);
 	passed = passed && results_OK;
     }
@@ -228,7 +228,7 @@ void testMmcMatProp::execute_test()
 	FTVVD::iterator resit=results.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    (*resit++).resize(nmat[icell]);
+	    //	    (*resit++).resize(nmat[icell]);
 	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0]  [0]=   3.959370288537e+01;
@@ -270,7 +270,7 @@ void testMmcMatProp::execute_test()
 	FTVVD::iterator resit=results.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    (*resit++).resize(nmat[icell]);
+	    //	    (*resit++).resize(nmat[icell]);
 	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0]  [0]=   4.000261646872e+01;
@@ -482,7 +482,7 @@ void testMmcMatProp::execute_test()
 	FTVVD::iterator resit=results.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    (*resit++).resize(nmat[icell]);
+	    //	    (*resit++).resize(nmat[icell]);
 	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0] [0]= 7.225128263753e+00;
@@ -513,7 +513,7 @@ void testMmcMatProp::execute_test()
 	FTVVD::iterator resit=results.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    (*resit++).resize(nmat[icell]);
+	    //	    (*resit++).resize(nmat[icell]);
 	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0]  [0]=   7.650146580363e+00;
@@ -544,7 +544,7 @@ void testMmcMatProp::execute_test()
 	FTVVD::iterator resit=results.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    (*resit++).resize(nmat[icell]);
+	    // (*resit++).resize(nmat[icell]);
 	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0]  [0]=   3.520000000000e+00;
@@ -573,7 +573,7 @@ void testMmcMatProp::execute_test()
 	FTVVD::iterator resit=results.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    (*resit++).resize(nmat[icell]);
+	    //	    (*resit++).resize(nmat[icell]);
 	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0]  [0]=   3.771000000000e+00;
@@ -602,7 +602,7 @@ void testMmcMatProp::execute_test()
 	FTVVD::iterator resit=results.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    (*resit++).resize(nmat[icell]);
+	    //	    (*resit++).resize(nmat[icell]);
 	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0]  [0]=   2.125000000000e+00;
@@ -631,7 +631,7 @@ void testMmcMatProp::execute_test()
 	FTVVD::iterator resit=results.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    (*resit++).resize(nmat[icell]);
+	    //	    (*resit++).resize(nmat[icell]);
 	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0]  [0]=   3.333333333333e-01;
@@ -660,7 +660,7 @@ void testMmcMatProp::execute_test()
 	FTVVI::iterator resit=results.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    (*resit++).resize(nmat[icell]);
+	    //	    (*resit++).resize(nmat[icell]);
 	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0]  [0]=   1;

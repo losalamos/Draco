@@ -46,11 +46,6 @@ ByMatResultsOK<FTVVI>(const FTVVI &results,
 		      const std::vector<std::vector<int> > &answer, 
 		      const double eps, bool &pass) const;
 
-#include "matprops/InterpedMaterialProps.t.cc"
-
-template void IMP::MaterialStateField<FTVD>::
-getMatId<FTVI>(FTVI &results) const;
-
 
 //---------------------------------------------------------------------------//
 //                              end of testMmcMatProp_pt.cc

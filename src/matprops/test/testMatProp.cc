@@ -107,7 +107,7 @@ void testMatProp()
 	ccif matids(1);
 	matids[0] = matid;
 	
-	IMP::MaterialStateField<ccsf> matstate =
+	IMP::MaterialStateField<ccsf,ccif> matstate =
 	    matProp.getMaterialState(lastDens, lastTemp, lastTemp, matids);
 	
 	cout << " ABS(ndens,ntemps,1:ngroups):" << endl;
@@ -163,7 +163,7 @@ void testMatProp()
     for (int i=1; i<ncells; i++)
 	temp[i] = 1.055*temp[i-1];
     
-    IMP::MaterialStateField<ccsf> matstate =
+    IMP::MaterialStateField<ccsf,ccif> matstate =
 	matProp.getMaterialState(density, temp, temp, matid);
 
     for (int ig = 1; ig <= ngroups; ig++)

@@ -15,9 +15,9 @@ typedef vector<int> VI;
 
 using rtt_matprops::InterpedMaterialProps;
 
-template class InterpedMaterialProps::MaterialStateField<VD>;
+template class InterpedMaterialProps::MaterialStateField<VD,VI>;
 
-typedef InterpedMaterialProps::MaterialStateField<VD> MSF;
+typedef InterpedMaterialProps::MaterialStateField<VD,VI> MSF;
 
 template MSF InterpedMaterialProps::getMaterialState(const VD &, 
 						     const VD &, const VD &,
