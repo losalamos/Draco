@@ -28,22 +28,22 @@ OS_Mesh::OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_d &vertex_,
     : coord(coord_), layout(layout_), vertex(vertex_),
       cell_pair(cell_pair_), sur(coord->get_dim()), submesh(submesh_)
 {
-  // assertions to verify size of mesh and existence of a Layout and
-  // Coord_sys  
+    // assertions to verify size of mesh and existence of a Layout and
+    // Coord_sys  
     Check (coord);
 	
-  // variable initialization
+    // variable initialization
     int ncells = num_cells();
     int dimension = coord->get_dim();
     
-  // dimension assertions
+    // dimension assertions
     Check (dimension == vertex.size());
     Check (dimension == sur.size());
     
-  // mesh size assertions
+    // mesh size assertions
     Check (ncells == cell_pair.size());
       
-  // calculate surface array
+    // calculate surface array
     if (!submesh)
 	calc_surface();
 }
@@ -90,12 +90,12 @@ int OS_Mesh::get_cell(const vector<double> &r) const
 {
     Require (!submesh);
 
-  // used variables
+    // used variables
     int dim         = coord->get_dim();
     int return_cell = 1;
     int subcells    = 1;
     
-  // binary search of cells
+    // binary search of cells
 
     for (int i = 0; i < dim; i++)
     {
@@ -112,12 +112,12 @@ int OS_Mesh::get_cell(const vector<double> &r) const
 	}
 	return_cell += subcells * (high_index - 1);
 
-      // number of cells per dimension equals the number of surfaces along
-      // that dimension minus one
+	// number of cells per dimension equals the number of surfaces along
+	// that dimension minus one
 	subcells    *= sur[i].size() - 1;
     }  
     
-  // return cell index
+    // return cell index
     return return_cell;
 }
 
@@ -131,18 +131,18 @@ double OS_Mesh::get_db(const vector<double> &r, const vector<double> &omega,
     using std::min_element;
     using global::huge;
     
-  // calculate distance to the vec(r) boundaries
+    // calculate distance to the vec(r) boundaries
 
-  // boundary distances over each coordinate direction
+    // boundary distances over each coordinate direction
     vector<double> dim_dist_boundary(coord->get_dim(), 0.0);
     
-  // loop to get the distances to boundary in each coordinate direction
+    // loop to get the distances to boundary in each coordinate direction
     for (int i = 0; i < coord->get_dim(); i++)
     {
-      // define absolute dimension index
+	// define absolute dimension index
 	int d = i + 1;
 
-      // find the distances to boundary along each dimension
+	// find the distances to boundary along each dimension
 	if (omega[i] == 0.0)
 	    dim_dist_boundary[i] = global::huge;
 	else if (omega[i] > 0.0)
@@ -151,19 +151,19 @@ double OS_Mesh::get_db(const vector<double> &r, const vector<double> &omega,
 	    dim_dist_boundary[i] = (min(d, cell) - r[i]) / omega[i];
     }
 
-  // calculate the distance to boundary
+    // calculate the distance to boundary
     vector<double>::iterator itor = min_element(dim_dist_boundary.begin(),
 						dim_dist_boundary.end());
     double dist_boundary = *itor;
 
-  // calculate the face that the boundary is on
+    // calculate the face that the boundary is on
     int index = itor - dim_dist_boundary.begin();
     if (omega[index] < 0.0)
 	face = 1 + 2 * index;
     else
 	face = 2 + 2 * index;
 
-  // return the distance-to-boundary
+    // return the distance-to-boundary
     return dist_boundary;
 }
 
@@ -172,9 +172,9 @@ double OS_Mesh::get_db(const vector<double> &r, const vector<double> &omega,
 
 int OS_Mesh::get_bndface(string boundary, int cell) const
 {
-  // return the face number for boundary on cell
+    // return the face number for boundary on cell
 
-  // return value
+    // return value
     int face;
 
     if (boundary == "lox")
@@ -190,7 +190,7 @@ int OS_Mesh::get_bndface(string boundary, int cell) const
     if (boundary == "hiz")
 	face = 6;
 
-  // return the face
+    // return the face
     return face;
 }
 
@@ -201,16 +201,16 @@ vector<int> OS_Mesh::get_surcells(string boundary) const
 {
     Require (!submesh);
 
-  // return a list of cells along the specified boundary
+    // return a list of cells along the specified boundary
 
-  // make return vector containing a list of cells along specified boundary
+    // make return vector containing a list of cells along specified boundary
     vector<int> return_list;
 
     int num_xcells = 1;
     int num_ycells = 1;
     int num_zcells = 1;
 
-  // set dimensionality variables
+    // set dimensionality variables
     if (coord->get_dim() == 1)
     {
 	num_xcells = sur[0].size() - 1;
@@ -230,7 +230,7 @@ vector<int> OS_Mesh::get_surcells(string boundary) const
 	num_zcells = sur[2].size() - 1;
     }
 
-  // calculate the cells along the boundary
+    // calculate the cells along the boundary
     if (boundary == "lox")
     {
 	for (int k = 1; k <= num_zcells; k++)
@@ -290,7 +290,7 @@ vector<int> OS_Mesh::get_surcells(string boundary) const
 	    }
     }
 
-  // return vector
+    // return vector
     return return_list;
 }
 
@@ -323,21 +323,21 @@ void OS_Mesh::check_defined_surcells(const string ss_face,
 
 bool OS_Mesh::operator==(const OS_Mesh &rhs) const
 {
-  // check to see that we have the same coordinate systems
+    // check to see that we have the same coordinate systems
     if (coord != rhs.coord)
 	return false;
 
-  // check to see that the Layouts are equal
+    // check to see that the Layouts are equal
     if (layout != rhs.layout)
 	return false;
 
-  // check the vertices
+    // check the vertices
     if (vertex != rhs.vertex)
 	return false;
     if (cell_pair != rhs.cell_pair)
 	return false;
 
-  // if we haven't returned, then the two meshes must be equal
+    // if we haven't returned, then the two meshes must be equal
     return true;
 }
 
@@ -361,7 +361,7 @@ void OS_Mesh::print(ostream &out) const
 
 void OS_Mesh::print(ostream &output, int cell) const
 {
-  // print out content info for 1 cell
+    // print out content info for 1 cell
     output << "+++++++++++++++" << endl;
     output << "---------------" << endl;
     output << "Cell : "         << cell << endl;
