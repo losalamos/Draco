@@ -199,6 +199,11 @@ ifndef opt
 opt	= 0
 endif
 
+ifeq ($(opt),g)
+optns		= g
+cxx_opt		= -g
+endif
+
 ifeq ($(opt),0)
 optns		= g
 cxx_opt		= -g
