@@ -3401,6 +3401,10 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    powerpc-apple-darwin*)
    ;;
 
+   # COMPAQ -> CXX
+   alpha*-dec-osf*)
+   ;;
+
    # EVERYTHING ELSE -> linux?
    *)
       if test -n "${GCC_LIB_DIR}"; then
@@ -3439,7 +3443,13 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
        ARFLAGS="-shared -nocxxstd -expect_unresolved '*3td*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' -o"
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*ios_base*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_ostream*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_string*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*cout*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*cerr*' "
+       ARFLAGS="${ARFLAGS} -o"
    else
        AR='ar'
        ARFLAGS='cr'
@@ -3983,14 +3993,14 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,space)
 
        # add the intel math library for better performance when
        # compiling with intel
        if test "${CXX}" = icc; then
 	   LIBS="$LIBS -limf"
        fi
-])
+]) dnl linux
 
 
 dnl-------------------------------------------------------------------------dnl
@@ -4065,7 +4075,7 @@ AC_DEFUN([AC_DBS_CYGWIN_ENVIRONMENT], [dnl
        dnl
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,space)
 
 ]) dnl cygwin
 
@@ -4139,12 +4149,16 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
 
        #
-       # gandolf, eospac, pcg, udm require -lfor on the link line.
+       # libfor.a requirements:
+       # GANDOLF, EOSPAC, PCG, BLACS, udm require -lfor on the link line.
        #
 
-       AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}" || test -n "${vendor_udm}"; then
+       AC_MSG_CHECKING("libfor.a requirements")
+       if test -n "${vendor_gandolf}" || 
+          test -n "${vendor_eospac}"  ||
+          test -n "${vendor_pcg}"     || 
+          test -n "${vendor_udm}"     ||
+          test -n "${vendor_blacs}"; then
            LIBS="${LIBS} -lfor"
            AC_MSG_RESULT("-lfor added to LIBS")
        else
@@ -4152,15 +4166,17 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        fi
 
        #
-       # end of gandolf/libfortran setup
+       # end of libfor.a requirements
        #
 
        #
-       # libpcg/libudm/libfmpi setup
+       # libpcg/libudm/libfmpi setup (libfmpi.a requirements)
        #
 
        AC_MSG_CHECKING("libfmpi requirements")
-       if test -n "${vendor_pcg}" || test "${with_udm}" = mpi; then
+       if test -n "${vendor_pcg}"  || 
+          test "${with_udm}" = mpi || 
+          test -n "${vendor_blacs}" ; then
            LIBS="${LIBS} -lfmpi"
            AC_MSG_RESULT("-lfmpi added to LIBS")
        else
@@ -4192,7 +4208,7 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,colon)
 
 ]) dnl osf
 
@@ -4403,7 +4419,7 @@ AC_DEFUN([AC_DBS_SUN_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(R)
+       AC_DBS_SETUP_RPATH(R,space)
 ]) dnl sun
 
 dnl-------------------------------------------------------------------------dnl
@@ -4585,7 +4601,7 @@ AC_DEFUN([AC_DBS_IRIX_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,colon)
 
 ]) dnl irix
 
@@ -4598,6 +4614,11 @@ dnl ***** NOT FULLY IMPLEMENTED *****
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
+
+       # dependency rules for IBM visual age compiler are complex
+       if test "${with_cxx}" = ibm; then
+	   DEPENDENCY_RULES='Makefile.dep.xlC.darwin'
+       fi
 
        # print out cpu message
        AC_MSG_CHECKING("host platform cpu")
@@ -4620,7 +4641,12 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
                AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
            ;;
-
+  	   ibm)	
+	       AC_MSG_WARN("xlC set to allow long long")
+	       STRICTFLAG="-qlanglvl=extended"
+	       CFLAGS="${CFLAGS} -qlonglong"
+	       CXXFLAGS="${CXXFLAGS} -qlonglong"
+	   ;;
            # catchall
            *) 
                # do nothing
@@ -4810,26 +4836,38 @@ dnl AC_DBS_SETUP_RPATH
 dnl
 dnl set rpath when building shared library executables
 dnl
+dnl We support two forms for RPATH support:
+dnl 1) "-Xlinker -rpath dir1 -Xlinker -rpath dir2 ..."
+dnl 2) "-rpath dir1:dir2:..."
+dnl
+dnl Some compilers/linkers use "R" instead of "rpath".  The option
+dnl name is set from the 1st argument to this function.  The second
+dnl argument specifies the list type as desribed above.
+dnl
 dnl $1 = rpath trigger.  One of "rpath" or "R"
+dnl $2 = delimiter. One of "space" or "colon"
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
 
        rptrigger=$1
-  
+       dilem=$2
+
        if test "${enable_shared}" = yes ; then
 
 	   # turn off ranlib
 	   RANLIB=':'
 
 	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
 	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+           else
+               AC_MSG_ERROR("Cannot determine what rpath format to use!")
 	   fi
        fi
 
@@ -4837,14 +4875,16 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
        for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-
 	   # else we just add the rpath
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+           else
+               AC_MSG_ERROR("Cannot determine what rpath format to use!")
 	   fi
        done
+
 ]) dnl setup_rpath
 
 dnl-------------------------------------------------------------------------dnl

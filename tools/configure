@@ -1487,6 +1487,7 @@ installdirs='${libexecdir} ${bindir}'
 # required tools for draco build system testing framework
 libexec_files="\${libexecdir}/launchtest"
 libexec_files="\${libexecdir}/test_filter.py ${libexec_files}"
+libexec_files="\${libexecdir}/apptest_modules.py ${libexec_files}"
 
 # draco information script
 bin_files='${bindir}/draco'
