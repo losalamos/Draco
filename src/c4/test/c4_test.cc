@@ -11,6 +11,7 @@
 
 #include "c4_test.hh"
 #include <iostream>
+#include <string>
 
 namespace rtt_c4_test
 {

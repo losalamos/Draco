@@ -9,6 +9,7 @@
 
 #include "../NestMap.t.hh"
 #include <iostream>
+#include <string>
 
 #ifdef SDP
 
