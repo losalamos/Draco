@@ -1,0 +1,24 @@
+//----------------------------------*-C++-*----------------------------------//
+// Particle_Buffer.pt
+// Thomas M. Evans
+// Tue May 12 16:00:54 1998
+//---------------------------------------------------------------------------//
+// @> Instantialyzer for template class Particle_Buffer
+//---------------------------------------------------------------------------//
+
+#include "imctest/OS_Mesh.hh"
+#include "imctest/Particle.hh"
+#include "Particle_Buffer.cc"
+
+IMCSPACE
+
+instantiate class Particle_Buffer<Particle<OS_Mesh> >
+
+instantiate funcproto PT=Particle<OS_Mesh> MT=OS_Mesh
+Particle_Buffer<Particle<OS_Mesh> >::Particle_Buffer(const OS_Mesh &)
+
+CSPACE
+
+//---------------------------------------------------------------------------//
+//                              end of Particle_Buffer.pt
+//---------------------------------------------------------------------------//
