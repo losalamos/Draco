@@ -3,16 +3,22 @@
 // Geoffrey Furnish
 // Fri Oct  3 09:18:33 1997
 //---------------------------------------------------------------------------//
-// @> 
+// @> MPI traits specializations.
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_mpi_traits_hh__
 #define __c4_mpi_traits_hh__
 
-//===========================================================================//
-// class mpi_traits - 
+#include "c4/config.hh"
 
-// 
+C4_NAMESPACE_BEG
+
+//===========================================================================//
+// class mpi_traits - Traits support for the MPI API
+
+// This class and its specializations are intended to support typesafe
+// defaulting of the various parameters needed to call MPI API routines.
+// Makes life with MPI a lot easier to deal with.
 //===========================================================================//
 
 template<class T>
@@ -21,23 +27,25 @@ class mpi_traits {
 
 template<> class mpi_traits<char> {
   public:
-    static const MPI_Datatype element_type = MPI_CHAR;
+    static MPI_Datatype element_type() { return MPI_CHAR; }
 };
 
 template<> class mpi_traits<int> {
   public:
-    static const MPI_Datatype element_type = MPI_INT;
+    static MPI_Datatype element_type() { return MPI_INT; }
 };
 
 template<> class mpi_traits<float> {
   public:
-    static const MPI_Datatype element_type = MPI_FLOAT;
+    static MPI_Datatype element_type() { return MPI_FLOAT; }
 };
 
 template<> class mpi_traits<double> {
   public:
-    static const MPI_Datatype element_type = MPI_DOUBLE;
+    static MPI_Datatype element_type() { return MPI_DOUBLE; }
 };
+
+C4_NAMESPACE_END
 
 #endif                          // __c4_mpi_traits_hh__
 
