@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include <iostream>
 
 using namespace std;
@@ -50,7 +51,7 @@ void nonblock()
   // recieve data on node 1
     if (node())
     {
-	int ctr;
+	int ctr = 0;
 	while (receiving)
 	{
 	    ctr++;
