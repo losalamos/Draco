@@ -54,20 +54,20 @@ for variable in $*
     do
     
     # assign variables
-    if test "$next" == 'proc' ; then
+    if test "$next" = 'proc' ; then
 	procs=$variable
 	next='option'
-    elif test "$next" == 'exe_options' ; then
+    elif test "$next" = 'exe_options' ; then
 	exe_options="${exe_options} ${variable}"
-    elif test "$variable" == '--python' ; then
+    elif test "$variable" = '--python' ; then
 	exe='python'
-    elif test "$variable" == '--binary' ; then
+    elif test "$variable" = '--binary' ; then
 	exe='binary'
-    elif test "$variable" == '--mpi' ; then
+    elif test "$variable" = '--mpi' ; then
 	mpi='yes'
 	parallel='yes'
 	next='proc'
-    elif test "$variable" == '--shmem' ; then
+    elif test "$variable" = '--shmem' ; then
 	shmem='yes'
 	parallel='yes'
 	next='proc'
@@ -80,19 +80,19 @@ done
 ##---------------------------------------------------------------------------##
 ## translate the executable line
 
-if test "$exe" == 'python'; then
-    if test "$parallel" == 'no' ; then
+if test "$exe" = 'python'; then
+    if test "$parallel" = 'no' ; then
 	test_exec="python $executable --scalar $exe_options"
-    elif test "$parallel" == 'yes' ; then
+    elif test "$parallel" = 'yes' ; then
 	test_exec="python $executable --procs $procs $exe_options"
     fi
-elif test "$exe" == 'binary'; then
-    if test "$parallel" == 'no' ; then
+elif test "$exe" = 'binary'; then
+    if test "$parallel" = 'no' ; then
 	test_exec="$executable $exe_options"
-    elif test "$parallel" == 'yes'; then
-	if test "$mpi" == 'yes'; then
+    elif test "$parallel" = 'yes'; then
+	if test "$mpi" = 'yes'; then
 	    test_exec="mpirun -np $procs $executable $exe_options"
-	elif test "$shmem" == 'yes'; then
+	elif test "$shmem" = 'yes'; then
 	    test_exec="$executable -npes $procs $exe_options"
 	fi
     fi
