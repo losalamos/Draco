@@ -118,14 +118,20 @@ class RZWedge_Mesh
     double sin_half_theta;
     double cos_half_theta;
 
+    // Total, processor-local volume
+    double total_volume;
+
     // >>> Private implementations
 
     // Pack up the cell extents
     void pack_extents(const sf_int &, char *, int, int) const;
 
     // Function to calculate frequently used wedge data
-    void calc_wedge_angle_data(const double);
-   
+    void calc_wedge_angle_data(const double); 
+    
+    // Function to calculate and set the total, on-processor volume
+    void calc_total_volume();
+
     // Private copy and assignment operators (can't copy or assign a mesh).
     RZWedge_Mesh(const RZWedge_Mesh &);
     RZWedge_Mesh& operator=(const RZWedge_Mesh &);
@@ -165,6 +171,9 @@ class RZWedge_Mesh
     const AMR_Layout& get_Layout()  const { return layout; }
     const Coord_sys&  get_Coord()   const { return *coord; }
     SP_Coord          get_SPCoord() const { return coord; }
+
+    // Access total, on-processor RZWedge volume
+    inline double get_total_volume() const;
 
     // Services required for graphics dumps.
     sf_int get_cell_types() const;
@@ -499,6 +508,19 @@ double RZWedge_Mesh::volume(int cell) const
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Access the total (on-processor) volume of an RZWedge_Mesh.
+ *
+ * \return total volume of on-processor RZWedge cells
+ */
+double RZWedge_Mesh::get_total_volume() const
+{
+    Ensure (total_volume > 0.0);
+
+    return total_volume;
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Return the area of a face in an RZWedge_Mesh cell.
  *
  * \param cell RZWedge_Mesh cell.
@@ -507,7 +529,7 @@ double RZWedge_Mesh::volume(int cell) const
  * RZWedge cell construction: align R with X; unfold RZ mesh about X;
  * correct X values to conserve radial/XY area.
  *
- * \return volume of wedge cell
+ * \return face area of wedge cell
  */
 double RZWedge_Mesh::face_area(int cell, int face) const
 {

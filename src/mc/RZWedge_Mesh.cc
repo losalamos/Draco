@@ -71,8 +71,12 @@ RZWedge_Mesh::RZWedge_Mesh(rtt_dsxx::SP<Coord_sys> coord_,
     Check (cell_xz_extents.size() == layout.num_cells());
     Check (cell_xz_extents[0].size() == 4);
     Check (cell_xz_extents[layout.num_cells()-1].size() == 4);
-    
+
+    // precalculate heavily used angle quantities    
     calc_wedge_angle_data(theta_degrees);
+
+    // Calculate and assign the on-processor total volume
+    calc_total_volume();
 }
 
 //---------------------------------------------------------------------------//
@@ -96,6 +100,26 @@ void RZWedge_Mesh::calc_wedge_angle_data(const double theta_degrees)
     tan_half_theta    = std::tan(half_theta);
     sin_half_theta    = std::sin(half_theta);
     cos_half_theta    = std::cos(half_theta);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Calculate and set the total (on-processor) volume of the mesh.
+ *
+ * \return total volume of on-processor RZWedge cells
+ */
+void RZWedge_Mesh::calc_total_volume()
+{
+    Require (num_cells() > 0);
+
+    // initialize private data member
+    total_volume = 0.0;
+
+    // sum local cell volumes
+    for (int cell = 1; cell <= num_cells(); cell++)
+	total_volume += volume(cell);
+
+    Ensure (total_volume > 0.0);
 }
 
 //---------------------------------------------------------------------------//
@@ -1259,6 +1283,7 @@ RZWedge_Mesh::SP_Mesh RZWedge_Mesh::Pack::unpack() const
     Ensure (mesh->num_cells() == num_packed_cells);
     Ensure (mesh->get_spatial_dimension() == coord->get_dim());
     Ensure (!mesh->full_Mesh());
+    Ensure (mesh->get_total_volume() > 0.0);
 
     return mesh;
 }
