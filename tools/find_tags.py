@@ -32,7 +32,11 @@ import sys
 
 # determine package directory
 pkg_dir  = os.getcwd()
-pkg_name = os.path.basename(pkg_dir)
+
+if len(sys.argv) > 1:
+    pkg_name = sys.argv[1]
+else:
+    pkg_name = os.path.basename(pkg_dir)
 
 ##---------------------------------------------------------------------------##
 ## Regular expressions
