@@ -25,7 +25,14 @@ BEGIN_NS_XTM
 //===========================================================================//
 
 template<class T1, class T2=T1>
-class ContainerTraits { };
+class ContainerTraits
+{
+  public:
+    static inline bool conformal(const T1 &a, const T2 &b)
+    {
+	return false;
+    }
+};
 
 template <>
 class ContainerTraits<double>
