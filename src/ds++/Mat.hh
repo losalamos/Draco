@@ -37,11 +37,6 @@
 #include "Allocators.hh"
 #include "Bounds.hh"
 
-#ifdef TEST_MAT
-#define private public
-#define protected public
-#endif
-
 NAMESPACE_DS_BEG
 
 //===========================================================================//
@@ -307,6 +302,9 @@ class Mat1 {
 //===========================================================================//
 // class Mat2 - A 2-d container.
 
+// Mat2 provides a container which can be indexed using two indices.  The STL 
+// provides nothing quite like this, but it is essential for many
+// mathematical purposes to have a 2-d container.  
 //===========================================================================//
 
 template< class T, class Allocator = Simple_Allocator<T> >
@@ -593,6 +591,8 @@ class Mat2 {
 //===========================================================================//
 // class Mat3 - A 3-d container.
 
+// Mat3 is a container which supports three indices.  It is otherwise similar 
+// to Mat1 and Mat2.
 //===========================================================================//
 
 template< class T, class Allocator = Simple_Allocator<T> >
@@ -906,6 +906,8 @@ class Mat3 {
 //===========================================================================//
 // class Mat4 - A 4-d container.
 
+// Mat3 is a container which supports four indices.  It is otherwise similar 
+// to Mat1, Mat2 and Mat3.
 //===========================================================================//
 
 template< class T, class Allocator = Simple_Allocator<T> >
@@ -1258,12 +1260,6 @@ class Mat4 {
 };
 
 NAMESPACE_DS_END
-
-#ifdef TEST_MAT
-#undef class
-#undef private
-#undef protected
-#endif
 
 #endif                          // __ds_Mat_hh__
 
