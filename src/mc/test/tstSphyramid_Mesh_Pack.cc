@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -36,6 +37,9 @@ void test_pack()
     using rtt_mc::global::pi;
     using std::cout;
     using std::endl;
+    using std::pow;
+    using std::tan;
+    using std::cos;
 
     // make a builder from parsing the Sphyramid_Input file
     SP<Parser> parser(new Parser("Sphyramid_Input"));

@@ -25,6 +25,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <cmath>
 
 namespace rtt_mc
 {
@@ -628,7 +629,8 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
 						     sf_double slope,
 						     double center_value) const
 {
-    using global::soft_equiv
+    using global::soft_equiv;
+    using std::pow;
 
     Require (cell >  0);
     Require (cell <= num_cells());

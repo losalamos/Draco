@@ -49,6 +49,7 @@ void simple_one_cell_Sphyramid()
     using rtt_rng::Sprng;
     using std::fabs;
     using std::pair;
+    using std::sqrt;
 
     // >>> setup one cell mesh <<<
 
@@ -537,7 +538,7 @@ void simple_one_cell_Sphyramid()
 	fabs_zavg /= num_particles;
 
 	// rough estimate of 1 standard deviation
-	double est_std_of_mean = 1.0/sqrt(num_particles);
+	double est_std_of_mean = 1.0/sqrt(static_cast<double>(num_particles));
 
 	// check averages (average value of x is 57/80)
 	if (!soft_equiv(xavg, 57./80., 4.*est_std_of_mean))  ITFAILS;
@@ -649,7 +650,7 @@ void simple_one_cell_Sphyramid()
 	fabs_zavg /= num_particles;
 
 	// rough estimate of 1 standard deviation
-	double est_std_of_mean = 1.0/sqrt(num_particles);
+	double est_std_of_mean = 1.0/sqrt(static_cast<double>(num_particles));
 
 	// check averages (average value of x is 3/4)
 	if (!soft_equiv(xavg, 3./4.  , 4.*est_std_of_mean))  ITFAILS;
@@ -747,7 +748,7 @@ void simple_one_cell_Sphyramid()
 	fabs_zavg /= num_particles;   
 
 	// rough estimate of 1 standard deviation
-	double est_std_of_mean = 1.0/sqrt(num_particles);
+	double est_std_of_mean = 1.0/sqrt(static_cast<double>(num_particles));
 
 	// check averages (average value of fabs_y and fabs_z is 0.5*tan_beta)
 	if (!soft_equiv(yavg,      0.0,          4.*est_std_of_mean))  ITFAILS;
@@ -1013,6 +1014,7 @@ void build_a_Sphyramid()
     using std::tan;
     using std::sin;
     using std::atan;
+    using std::sqrt;
 
     SP<Parser> parser(new Parser("Sphyramid_Input"));
     Sphyramid_Builder builder(parser);

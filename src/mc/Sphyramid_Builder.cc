@@ -578,7 +578,7 @@ Sphyramid_Builder::build_Sphyramid_Mesh(SP_Coord_sys coord, Layout &layout)
  */
 Sphyramid_Builder::SP_Coord_sys Sphyramid_Builder::build_Coord() const
 {
-    using rtt_dsxx::SP
+    using rtt_dsxx::SP;
 
     //build coordinate system
     SP_Coord_sys coord;
