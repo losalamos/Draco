@@ -291,6 +291,7 @@ with isotropic scattering is
          \left( \sigma^{s}_{g} \phi_{g}
                 + \xi_{g}
                 + \sigma^{e}_{g} \Bg(T_{e})
+                + Q_{r}
          \right)
 \label{eq:psi}
 \end{equation}
@@ -307,7 +308,7 @@ Implicitly time-differencing this equation we obtain
 \hat{\Omega} \cdot \del \psi^{n+1}_{g} + (\sigma^{t}_{g} + \tau) \psi^{n+1}_{g}
         &=&  \tau \psi_{g}^{n}
          + \frac{1}{4\pi} \left( \sigma^{s}_{g} \phi^{n+1}_{g}
-        + \xi_{g}^{n} \right)
+        + \xi_{g}^{n} + Q_{r} \right)
   \nonumber \\
     & & \mbox{}
         + \frac{1}{4\pi} \sigma^{e}_{g} 
@@ -329,7 +330,7 @@ Substituting (\ref{eq:Tenp1}) into (\ref{eq:RadEq1}) we get,
         + \frac{1}{4\pi} \left(
                 \sigma^{s}_{g} \phi^{n+1}_{g}
                 + \xi_{g}^{n}
-                + \sigma^{e}_{g} \Bgnphlf \right)
+                + \sigma^{e}_{g} \Bgnphlf + Q_{r}\right)
         \\
         + \frac{1}{4\pi} \sigma^{e}_{g} \pBgnphlfdT
                 \left\{ \frac{\sum_{k} (\sigma_{k}^{a}\phi_{k}^{n+1} 
@@ -358,7 +359,7 @@ We then sum (\ref{eq:RadEqMG}) over groups to obtain:
         &=& \tau \psi^{n}
         + \frac{1}{4\pi} \left( \sigma^{s} \phi^{n+1}
                         + \xi^{n}
-                        + \sigma^{e} \Bnphlf \right)
+                        + \sigma^{e} \Bnphlf + Q_{r} \right)
         \nonumber \\
         & & \mbox{}
         + \frac{1}{4\pi} \nu \left( \sigma^{a}\phi^{n+1}
@@ -367,7 +368,8 @@ We then sum (\ref{eq:RadEqMG}) over groups to obtain:
 \end{eqnarray}
 where
 \begin{equation}
-        \nu = \frac{\sigma^{e} \pBnphlfdT } {\frac{\Cvs}{\dt} + \sigma^{e}\pBnphlfdT}
+        \nu = \frac{\sigma^{e} \pBnphlfdT } {\frac{\Cvs}{\dt}
+                                             + \sigma^{e}\pBnphlfdT}
 \end{equation}
 
 \subsection{Grey Diffusion Equation}
@@ -385,7 +387,7 @@ we obtain:
 \del \cdot \vec{F}^{n+1} + (\sigma^{t} + \tau) \phi^{n+1}
         &=& \sigma^{s}\phi^{n+1} + \tau \phi^{n}
         + \langle \xi^{n} \rangle
-        + \sigma^{e} \Bnphlf 
+        + \sigma^{e} \Bnphlf  + Q_{r}
         \nonumber \\
         & & \mbox{}
         + \nu (\sigma^{a}\phi^{n+1} - \sigma^{e}\Bnphlf + Q_{e}^{*})
@@ -412,7 +414,7 @@ Rearranging terms:
         + (1 - \nu) \sigma^{e} \Bnphlf  
         \nonumber \\
         & & \mbox{}
-        + \nu Q_{e}^{*}
+        + \nu Q_{e}^{*} + Q_{r}
 \label{eq:phiEq}
 \end{eqnarray}
 where we have used
@@ -468,7 +470,7 @@ where
   \\
         \bar{Q}_{r} =\tau \phi^{n}
                 + \langle \xi^{n} \rangle
-                + (1 - \nu) \sigma^{e} \Bnphlf  + \nu Q_{e}^{*} 
+                + (1 - \nu) \sigma^{e} \Bnphlf  + \nu Q_{e}^{*} + Q_{r}
   \\
         \vec{F}' = \frac{\tau \vec{F}^{n}
                         + \langle \hat{\Omega} \xi^{n} \rangle}
