@@ -21,6 +21,8 @@ namespace rtt_quadrature
 using std::vector;
 using std::string;
 
+const double PI = 3.14159265358979323846;
+
 //===========================================================================//
 /*!
  * \class Quadrature
@@ -45,8 +47,8 @@ using std::string;
 // 1) 3-17-2000 a) Added lots of comments.
 //              b) Changed "getmu()" to "getMu()" because Tycho was already 
 //                 using the 2nd convention.
-//              c) Added several accessors: getEta(), getXi(), getwt(), 
-//                 getMu(int), getEta(int), getXi(int), getwt(int),
+//              c) Added several accessors: getEta(), getXi(), getWt(), 
+//                 getMu(int), getEta(int), getXi(int), getWt(int),
 //                 getOmega(int), name(), dimensionality(),getSnOrder().
 //              d) Implemented clients ability to specify norm == sumwt.
 //              e) Added checks to verify that 
@@ -133,7 +135,7 @@ class Quadrature
      *
      * See comments for getMu().
      */
-    const vector<double>& getwt() { return wt; };
+    const vector<double>& getWt() { return wt; };
 
     /*!
      * \brief Return the mu component of the direction Omega_m.
@@ -188,7 +190,7 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    double getwt( const int ) const;
+    double getWt( const int ) const;
 
     /*!
      * \brief Returns the Omega vector for all directions.
@@ -219,6 +221,12 @@ class Quadrature
      * \brief Prints a table containing all quadrature directions and weights.
      */
     virtual void display() const = 0;
+
+    /*!
+     * \brief The sum of the quadrature weights will be normalized so
+     *        that they sum to this value.
+     */
+    double getNorm() const { return norm; };
 
     /*!
      * \brief Returns a string containing the name of the quadrature set.
@@ -417,6 +425,10 @@ class Q3DLevelSym : public Quadrature
     string name()        const { return "3D Level Symmetric"; };
     int dimensionality() const { return 3; };
     int getSnOrder()     const { return snOrder; };
+    /*!
+     * \brief Returns the number of xi levels in the quadrature set.
+     */
+    int getLevels()      const { return snOrder; };
 
   private:
     

@@ -30,9 +30,9 @@ using std::setprecision;
 namespace rtt_quadrature
 {
 
-static double PI  = 3.14159265358979323846;
-static double EPS = 3.0e-14;
-static double TOL = 1.0e-12;
+double EPS = 3.0e-14;
+double TOL = 1.0e-12;
+
 
 
 // BASE CLASS QUADRATURE MEMBER FUNCTION DEFINITIONS
@@ -79,7 +79,7 @@ double Quadrature::getXi( const int m ) const {
     return xi[m];
 }
 
-double Quadrature::getwt( const int m ) const {
+double Quadrature::getWt( const int m ) const {
     // Angle index m must be greater than zero and less than numAngles.
     Require( m >= 0 && m < getNumAngles() ); 
     return wt[m];

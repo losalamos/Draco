@@ -18,8 +18,8 @@ using std::endl;
 
 #include "ds++/SP.hh"
 
-static const double PI = 3.1415926535899323846;
-static const double TOL = 1.0e-14;
+const double PI = 3.1415926535899323846;
+const double TOL = 1.0e-14;
 
 namespace rtt_quadrature
 {
