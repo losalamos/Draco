@@ -6,11 +6,11 @@
 // @> Template instantiation for Multi-Material Mat Props test facility.
 //---------------------------------------------------------------------------//
 
-#include "matprops/MultiMatCellMatProps.t.cc"
-#include "matprops/test/testMmcMatProp.t.cc"
+#include "../MultiMatCellMatProps.t.hh"
+#include "testMmcMatProp.t.hh"
 #include <list>
 #include <vector>
-#include "matprops/InterpedMaterialProps.hh"
+#include "../InterpedMaterialProps.hh"
 
 typedef std::list<double> FTVD;
 typedef std::list<std::list< double > > FTVVD;

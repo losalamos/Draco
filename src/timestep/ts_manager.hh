@@ -48,7 +48,7 @@
 
 #include <list>
 
-#include "timestep/ts_advisor.hh"
+#include "ts_advisor.hh"
 
 #include "ds++/SP.hh"
 
@@ -116,5 +116,5 @@ class ts_manager {
 #endif                          // __timestep_ts_manager_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of timestep/ts_manager.hh
+//                              end of ts_manager.hh
 //---------------------------------------------------------------------------//

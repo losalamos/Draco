@@ -20,7 +20,7 @@
 // 
 //===========================================================================//
 
-#include "timestep/ts_advisor.hh"
+#include "ts_advisor.hh"
 
 namespace rtt_timestep {
 
@@ -81,5 +81,5 @@ class ratio_ts_advisor : public ts_advisor {
 #endif                          // __timestep_ratio_ts_advisor_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of timestep/ratio_ts_advisor.hh
+//                              end of ratio_ts_advisor.hh
 //---------------------------------------------------------------------------//

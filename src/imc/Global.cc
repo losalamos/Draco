@@ -6,7 +6,7 @@
 // @> Global namespace definitions
 //---------------------------------------------------------------------------//
 
-#include "imc/Global.hh"
+#include "Global.hh"
 
 IMCSPACE
 GLOBALSPACE

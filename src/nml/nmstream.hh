@@ -12,7 +12,7 @@
 
 #include "ds++/String.hh"
 
-#include "nml/Group.hh"
+#include "Group.hh"
 
 #define ATT_io
 #include <iostream.h>
@@ -60,5 +60,5 @@ class nmostream {
 #endif				// __nml_nmstream_hh__
 
 //-------------------------------------------------------------------------//
-//                              end of nml/nmstream.hh
+//                              end of nmstream.hh
 //-------------------------------------------------------------------------//

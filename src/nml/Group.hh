@@ -15,7 +15,7 @@
 #include <map>
 // using std::map;
 
-#include "nml/Block.hh"
+#include "Block.hh"
 #include "ds++/String.hh"
 
 #include <stdarg.h>
@@ -62,5 +62,5 @@ class NML_Group {
 #endif				// __nml_Group_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of nml/Group.hh
+//                              end of Group.hh
 //---------------------------------------------------------------------------//

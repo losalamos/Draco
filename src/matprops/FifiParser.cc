@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "matprops/FifiParser.hh"
+#include "FifiParser.hh"
 
 #include "ds++/Assert.hh"
 

@@ -6,9 +6,9 @@
 // @> Defines the field time-step advisor.
 //---------------------------------------------------------------------------//
 
-#include "timestep/field_ts_advisor.hh"
+#include "field_ts_advisor.hh"
 
-#include "timestep/ts_manager.hh"
+#include "ts_manager.hh"
 
 #include "ds++/Assert.hh"
 

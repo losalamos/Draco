@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "mesh/K_Mesh_DB.hh"
+#include "K_Mesh_DB.hh"
 
 #include "nml/Items.hh"
 #include "nml/Group.hh"

@@ -6,7 +6,7 @@
 // @> Template instantiation for the time-step manager test facility.
 //---------------------------------------------------------------------------//
 
-#include "timestep/field_ts_advisor.t.cc"
+#include "../field_ts_advisor.t.hh"
 #include <vector>
 
 using namespace rtt_timestep;

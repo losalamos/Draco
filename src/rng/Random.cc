@@ -6,7 +6,7 @@
 // @> Random RNG Namespace variable definitions
 //---------------------------------------------------------------------------//
 
-#include "rng/Random.hh"
+#include "Random.hh"
 
 RNGSPACE
 

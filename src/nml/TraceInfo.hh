@@ -9,8 +9,8 @@
 #ifndef __nml_TraceInfo_hh__
 #define __nml_TraceInfo_hh__
 
-#include "nml/Item.hh"
-#include "nml/Block.hh"
+#include "Item.hh"
+#include "Block.hh"
 
 //===========================================================================//
 // class NML_TraceInfo
@@ -33,5 +33,5 @@ class NML_TraceInfo {
 #endif                          // __nml_TraceInfo_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of nml/TraceInfo.hh
+//                              end of TraceInfo.hh
 //---------------------------------------------------------------------------//

@@ -11,9 +11,9 @@
 
 #include <stdio.h>
 
-#include "c4/config.hh"
-#include "c4/NodeInfo.hh"
-#include "c4/Sync.hh"
+#include "config.hh"
+#include "NodeInfo.hh"
+#include "Sync.hh"
 
 C4_NAMESPACE_BEG
 

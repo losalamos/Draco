@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "matprops/TempMapper.t.cc"
+#include "TempMapper.t.hh"
 #include "mesh/Mesh_XYZ.hh"
 
 namespace rtt_matprops

@@ -9,7 +9,7 @@
 #ifndef __c4_NodeInfo_hh__
 #define __c4_NodeInfo_hh__
 
-#include "c4/config.hh"
+#include "config.hh"
 
 C4_NAMESPACE_BEG
 

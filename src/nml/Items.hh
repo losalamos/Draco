@@ -12,7 +12,7 @@
 #include <map>
 // using std::map;
 
-#include "nml/Item.hh"
+#include "Item.hh"
 #include "ds++/DynArray.hh"
 
 #include <stdarg.h>
@@ -230,5 +230,5 @@ class nmi_BoxEnd : public NML_Item {
 #endif				// __nml_Items_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of nml/Items.hh
+//                              end of Items.hh
 //---------------------------------------------------------------------------//

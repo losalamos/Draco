@@ -6,7 +6,7 @@
 // @> 
 //------------------------------------------------------------------------//
 
-#include "matprops/FifiMatPropsReader.hh"
+#include "FifiMatPropsReader.hh"
 #include "radphys/RadiationPhysics.hh"
 #include "units/Units.hh"
 

@@ -6,13 +6,7 @@
 // @> pcg descriptor block.
 //---------------------------------------------------------------------------//
 
-#include "linalg/pcg_DB.hh"
-
-//---------------------------------------------------------------------------//
-// Go pick up the Perstalyzer generated methods.
-//---------------------------------------------------------------------------//
-
-#include "linalg/pcg_DB_prs.cc"
+#include "pcg_DB.hh"
 
 //---------------------------------------------------------------------------//
 // Attach the parameters to a namelist group.
@@ -22,7 +16,7 @@ void pcg_DB::setup_namelist( NML_Group& g )
 {
     dsxx::String fldeqn = name;
 
-#include "linalg/.nml_pcg.cc"
+#include ".nml_pcg.cc"
 }
 
 //---------------------------------------------------------------------------//

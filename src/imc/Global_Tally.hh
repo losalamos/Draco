@@ -21,12 +21,12 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/Mat_State.hh"
-#include "imc/Source_Init.hh"
-#include "imc/Tally.hh"
-#include "imc/Particle.hh"
-#include "imc/Particle_Buffer.hh"
+#include "Names.hh"
+#include "Mat_State.hh"
+#include "Source_Init.hh"
+#include "Tally.hh"
+#include "Particle.hh"
+#include "Particle_Buffer.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <iostream>

@@ -7,8 +7,8 @@
 //---------------------------------------------------------------------------//
 
 #include "ds++/String.hh"
-#include "nml/Items.hh"
-#include "nml/Group.hh"
+#include "Items.hh"
+#include "Group.hh"
 
 int a1, a2, a3, a4, a5;
 

@@ -9,7 +9,7 @@
 #ifndef __P1Diffusion_test_testSolverP1Diff_hh__
 #define __P1Diffusion_test_testSolverP1Diff_hh__
 
-#include "P1Diffusion/SolverP1Diff.hh"
+#include "../SolverP1Diff.hh"
 #include "mesh/Mesh_DB.hh"
 #include "linalg/pcg_DB.hh"
 

@@ -6,13 +6,7 @@
 // @> tstpcg descriptor block.
 //---------------------------------------------------------------------------//
 
-#include "linalg/test/tstpcg_DB.hh"
-
-//---------------------------------------------------------------------------//
-// Go pick up the Perstalyzer generated methods.
-//---------------------------------------------------------------------------//
-
-#include "linalg/test/tstpcg_DB_prs.cc"
+#include "tstpcg_DB.hh"
 
 //---------------------------------------------------------------------------//
 // Attach the parameters to a namelist group.
@@ -20,7 +14,7 @@
 
 void tstpcg_DB::setup_namelist( NML_Group& g )
 {
-#include "linalg/test/.nml_tstpcg.cc"
+#include ".nml_tstpcg.cc"
 }
 
 //---------------------------------------------------------------------------//

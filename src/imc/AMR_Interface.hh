@@ -20,10 +20,10 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/OS_Mesh.hh"
-#include "imc/Particle.hh"
-#include "imc/Particle_Buffer.hh"
+#include "Names.hh"
+#include "OS_Mesh.hh"
+#include "Particle.hh"
+#include "Particle_Buffer.hh"
 #include "c4/global.hh"
 #include "ds++/SP.hh"
 #include <vector>

@@ -45,6 +45,9 @@
 // part to promote "standard C++".
 //---------------------------------------------------------------------------//
 
+// add ds++ package configure
+#include <ds++/config.h>
+
 #include "config.hh"
 
 NAMESPACE_DS_BEG

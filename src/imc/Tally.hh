@@ -25,7 +25,7 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
+#include "Names.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 

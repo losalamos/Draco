@@ -1,0 +1,3 @@
+# Want input decks up to date
+
+check: testMatProp.inp testMmcMatProp.opac.inp

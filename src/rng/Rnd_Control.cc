@@ -6,9 +6,13 @@
 // @> Rnd_Control class implementation file
 //---------------------------------------------------------------------------//
 
-#include "rng/Rnd_Control.hh"
+#include "Rnd_Control.hh"
 #include "ds++/Assert.hh"
 #include <cstdlib>
+
+// header file for SPRNG package
+#include <rng/config.h>
+#include "rng_sprng.h"
 
 RNGSPACE
 

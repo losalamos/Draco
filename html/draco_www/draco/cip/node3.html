@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Modern C++ Culture</TITLE>
+<META NAME="description" CONTENT="Modern C++ Culture">
+<META NAME="keywords" CONTENT="cip">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="cip.css">
+<LINK REL="next" HREF="node4.html">
+<LINK REL="previous" HREF="node2.html">
+<LINK REL="up" HREF="cip.html">
+<LINK REL="next" HREF="node4.html">
+</HEAD>
+<BODY >
+
+<A NAME="tex2html50"
+ HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html48"
+ HREF="cip.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html42"
+ HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME="tex2html51"
+ HREF="node4.html">A First Solution</A>
+<B>Up:</B> <A NAME="tex2html49"
+ HREF="cip.html">Container-Free Numerical Algorithms in</A>
+<B> Previous:</B> <A NAME="tex2html43"
+ HREF="node2.html">The Problem</A>
+<BR> <P>
+
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00030000000000000000">
+Modern <TT>C++</TT> Culture</A>
+</H1>
+
+<P>
+It is worth noting that except for the fact that <TT>ltsolve1</TT> is a
+numerical algorithm, the basic problem is very similar in character to
+the problems faced by the <TT>C++</TT> standards committee in specifying a
+standard library for <TT>C++</TT>.  Specifically, the Standard Template
+Library (STL) provides abstractions for containers, iterators which
+traverse the elements of containers, and algorithms, which use
+iterators to operate on the data in containers (see any book on the
+STL, for example [<A
+ HREF="node10.html#Nelson95">5</A>]).  The entire algorithm base of the
+STL is, however, container neutral.  
+
+<P>
+The significance of this design cannot be over stated.  Instead of
+placing requirements on the types of containers that users must pass
+when calling functions from the <TT>C++</TT> standard library, the library
+designers chose to design the library in such a way that it could work 
+with whole classes of user specified containers.  This is essential in 
+a language such as <TT>C++</TT> which supports the creation of user defined
+types, since once that door is opened, there can be no doubt that
+users will in fact create indenumerable variations of containers.  
+
+<P>
+However, it is not merely important <EM>that</EM> the standard library is 
+container neutral, but it is also important to understand <EM>how</EM>
+this was achieved.  In traditional object oriented programming styles, 
+you might imagine that the standard <TT>copy</TT> algorithm might take a
+data source and copy it to a data sink.  One could imagine the
+specification of abstract classes <TT>copy_source</TT> and <TT>copy_sink</TT> with appropriate pure virtual methods which the user
+defined type would have to subclass and implement.  One could at least 
+imagine that such a plan could be made to work, at some significant
+cost to the user.
+
+<P>
+Instead, the standard library designers used ``generic programming''
+in which the standard algorithms are actually templated on the types
+of entities which represent the concepts of data sources and sinks.
+In STL parlance, these are called ``iterators'', and iterators are
+divided into a standard set of ``iterator categories'' based <EM>not</EM>
+on any mandated class ancestry, but rather <EM>solely</EM> on the
+presence or absence of various <EM>services</EM> provided by the
+iterators.  By using templates instead of inheritance, the STL
+achieves a sort of ``auto-morphing'' character in which the compiler
+literally writes a specialized version of the algorithm for each type
+of container/iterator that it is asked to operate on.  A template is
+best thought of not as code itself, but as a prescription with which
+the compiler is able to write code on your behalf (which it will then
+compile).
+
+<P>
+The development of the STL has quite literally ushered in a new era of 
+<TT>C++</TT> culture by encouraging the maturation of a style of programming
+which <TT>C++</TT> had long supported, but which was little
+developed[<A
+ HREF="node10.html#Koenig95">3</A>].  Although this article cannot presume to be
+a tutorial on the STL or the <TT>C++</TT> standard library--interested
+readers should consult the vast popular press on such matters--we can
+hope to explore the application of modern <TT>C++</TT> culture and style to
+the issue of constructing high quality reusable numeric algorithms in
+<TT>C++</TT>.
+
+<P>
+<HR>
+<A NAME="tex2html50"
+ HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html48"
+ HREF="cip.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html42"
+ HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME="tex2html51"
+ HREF="node4.html">A First Solution</A>
+<B>Up:</B> <A NAME="tex2html49"
+ HREF="cip.html">Container-Free Numerical Algorithms in</A>
+<B> Previous:</B> <A NAME="tex2html43"
+ HREF="node2.html">The Problem</A>
+
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Mark Gray <BR>
+1998-05-20</I>
+</ADDRESS>
+</BODY>
+</HTML>

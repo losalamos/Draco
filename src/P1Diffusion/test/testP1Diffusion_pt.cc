@@ -11,25 +11,25 @@
 
 typedef Mesh_XYZ MT;
 
-#include "P1Diffusion/SolverP1Diff.t.cc"
+#include "../SolverP1Diff.t.hh"
 template class rtt_P1Diffusion::SolverP1Diff<MT>;
 
 typedef rtt_P1Diffusion::SolverP1Diff<MT> Solver;
 
-#include "P1Diffusion/P1Diffusion.t.cc"
+#include "../P1Diffusion.t.hh"
 template class rtt_P1Diffusion::P1Diffusion<MT, Solver >;
 
-#include "P1Diffusion/MatVecP1Diff.t.cc"
+#include "../MatVecP1Diff.t.hh"
 
 template
 class rtt_P1Diffusion::MatVecP1Diff<Solver::Matrix>;
 
-#include "P1Diffusion/PreCondP1Diff.t.cc"
+#include "../PreCondP1Diff.t.hh"
 
 template
 class rtt_P1Diffusion::PreCondP1Diff<Solver::Matrix>;
 
-#include "P1Diffusion/MatrixP1Diff.t.cc"
+#include "../MatrixP1Diff.t.hh"
 
 template
 class rtt_P1Diffusion::MatrixP1Diff<MT>;

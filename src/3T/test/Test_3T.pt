@@ -1,7 +1,0 @@
-#include "Test_3T.cc"
-#include "XYZ_Quadratic.hh"
-#include "XYZ_Trigonometric.hh"
-#include "mesh/Mesh_XYZ.hh"
-
-instantiate class Test_3T< Mesh_XYZ, XYZ_Quadratic >
-instantiate class Test_3T< Mesh_XYZ, XYZ_Trigonometric >

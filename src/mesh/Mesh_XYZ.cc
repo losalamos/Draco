@@ -6,7 +6,7 @@
 // @> A 3-d cartesian structured mesh facility.
 //---------------------------------------------------------------------------//
 
-#include "mesh/Mesh_XYZ.hh"
+#include "Mesh_XYZ.hh"
 #include "c4/SpinLock.hh"
 #include "c4/Baton.hh"
 using namespace C4;

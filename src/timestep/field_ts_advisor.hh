@@ -19,7 +19,7 @@
 // 
 //===========================================================================//
 
-#include "timestep/ts_advisor.hh"
+#include "ts_advisor.hh"
 #include <iostream>
 
 namespace rtt_timestep {
@@ -150,5 +150,5 @@ class field_ts_advisor : public ts_advisor {
 #endif                          // __timestep_field_ts_advisor_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of timestep/field_ts_advisor.hh
+//                              end of field_ts_advisor.hh
 //---------------------------------------------------------------------------//

@@ -1,0 +1,195 @@
+This is TeX, Version 3.14159 (C version 6.1) (format=latex 96.9.10)  20 MAY 1998 15:59
+**./images.tex
+(images.tex
+LaTeX2e <1995/12/01> patch level 1
+Hyphenation patterns for english, german, loaded.
+
+(/usr/local/special/texmf/tex/latex/base/article.cls
+Document Class: article 1995/12/20 v1.3q Standard LaTeX document class
+(/usr/local/special/texmf/tex/latex/base/size12.clo
+File: size12.clo 1995/12/20 v1.3q Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (/usr/local/special/texmf/tex/latex/graphics/color.sty
+Package: color 1995/12/07 v0.3l Standard LaTeX Color (DPC)
+(/usr/local/special/texmf/tex/latex/config/color.cfg)
+Package color Info: Driver file: dvips.def on input line 127.
+(/usr/local/special/texmf/tex/latex/graphics/dvips.def
+File: dvips.def 1995/12/04 v2.14 Driver-dependant file (DPC,SPQR)
+) (/usr/local/special/texmf/tex/latex/graphics/dvipsnam.def
+File: dvipsnam.def 1995/12/04 v2.14 Driver-dependant file (DPC,SPQR)
+))
+\sizebox=\box26
+\lthtmlwrite=\write3
+(images.aux)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+latex2htmlLength hsize=468.0pt
+latex2htmlLength vsize=680.43pt
+latex2htmlLength hoffset=0.0pt
+latex2htmlLength voffset=0.0pt
+latex2htmlLength topmargin=0.0pt
+latex2htmlLength topskip=0.00003pt
+latex2htmlLength headheight=0.0pt
+latex2htmlLength headsep=0.0pt
+latex2htmlLength parskip=0.0pt plus 1.0pt
+latex2htmlLength oddsidemargin=0.0pt
+latex2htmlLength evensidemargin=0.0pt
+
+! LaTeX Error: Environment tex2html_preform undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.112 \begin{figure}\begin{tex2html_preform}
+                                            \begin{verbatim}// cip_traits.hh
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: \begin{figure} on input line 112 ended by \end{tex2html_preform}
+.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.118 };\end{verbatim}\end{tex2html_preform}
+                                            
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+l2hSize :figure525:109.99998pt::0.0pt::468.0pt.
+[1
+
+
+]
+
+! LaTeX Error: Environment tex2html_preform undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.125 \begin{figure}\begin{tex2html_preform}
+                                            \begin{verbatim}// umat_traits.hh
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: \begin{figure} on input line 125 ended by \end{tex2html_preform}
+.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.141 };\end{verbatim}\end{tex2html_preform}
+                                            
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+l2hSize :figure595:254.99998pt::0.0pt::468.0pt.
+[2
+
+
+]
+
+! LaTeX Error: Environment tex2html_preform undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.149 \begin{figure}\begin{tex2html_preform}
+                                            \begin{verbatim}// vwrap.hh
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: \begin{figure} on input line 149 ended by \end{tex2html_preform}
+.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.166 };\end{verbatim}\end{tex2html_preform}
+                                            
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+l2hSize :figure625:269.49998pt::0.0pt::468.0pt.
+[3
+
+
+]
+
+! LaTeX Error: Environment tex2html_preform undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.173 \begin{figure}\begin{tex2html_preform}
+                                            \begin{verbatim}// carraywrap.hh
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: \begin{figure} on input line 173 ended by \end{tex2html_preform}
+.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.196 };\end{verbatim}\end{tex2html_preform}
+                                            
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+l2hSize :figure668:356.49998pt::0.0pt::468.0pt.
+[4
+
+
+] (images.aux) ) 
+Here is how much of TeX's memory you used:
+ 519 strings out of 10912
+ 6206 string characters out of 72266
+ 50018 words of memory out of 262141
+ 3444 multiletter control sequences out of 9500
+ 4107 words of font info for 16 fonts, out of 150000 for 255
+ 14 hyphenation exceptions out of 607
+ 22i,5n,21p,182b,334s stack positions out of 300i,40n,60p,3000b,4000s
+
+Output written on images.dvi (4 pages, 2884 bytes).

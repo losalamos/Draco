@@ -9,7 +9,10 @@
 #ifndef __c4_C4_Req_hh__
 #define __c4_C4_Req_hh__
 
-#include "c4/config.hh"
+// C4 package configure
+#include <c4/config.h>
+
+#include "config.hh"
 
 // autodoc: noprint C4_ReqRefRep
 

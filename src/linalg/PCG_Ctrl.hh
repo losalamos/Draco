@@ -12,9 +12,9 @@
 #include "ds++/Mat.hh"
 #include "ds++/SP.hh"
 
-#include "linalg/pcg_DB.hh"
-#include "linalg/PCG_MatVec.hh"
-#include "linalg/PCG_PreCond.hh"
+#include "pcg_DB.hh"
+#include "PCG_MatVec.hh"
+#include "PCG_PreCond.hh"
 
 //===========================================================================//
 // class PCG_Ctrl - 

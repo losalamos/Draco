@@ -10,7 +10,7 @@
 #define __units_Units_hh__
 
 #include "ds++/Assert.hh"
-#include "units/PhysicalConstants.hh"
+#include "PhysicalConstants.hh"
 
 #include <cmath>
 
@@ -502,5 +502,5 @@ END_NS_XTM  // namespace XTM
 #endif                          // __units_Units_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of units/Units.hh
+//                              end of Units.hh
 //---------------------------------------------------------------------------//

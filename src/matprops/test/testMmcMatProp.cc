@@ -8,13 +8,13 @@
 
 #include <fstream>
 #include <sstream>
-#include "matprops/test/testMmcMatProp.hh"
+#include "testMmcMatProp.hh"
 #include <list>
 #include <vector>
-#include "matprops/FifiMatPropsReader.hh"
+#include "../FifiMatPropsReader.hh"
 #include "ds++/SP.hh"
-#include "matprops/InterpedMaterialProps.hh"
-#include "matprops/MultiMatCellMatProps.hh"
+#include "../InterpedMaterialProps.hh"
+#include "../MultiMatCellMatProps.hh"
 #include <limits>
 
 using rtt_matprops::MultiMatCellMatProps;

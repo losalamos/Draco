@@ -6,8 +6,8 @@
 // @> A class for managing a set of Items.
 //---------------------------------------------------------------------------//
 
-#include "nml/Block.hh"
-#include "nml/Items.hh"
+#include "Block.hh"
+#include "Items.hh"
 
 #include "ds++/Assert.hh"
 

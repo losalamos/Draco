@@ -6,8 +6,8 @@
 // @> Class to hold parallel configuration information.
 //---------------------------------------------------------------------------//
 
-#include "c4/NodeInfo.hh"
-#include "c4/global.hh"
+#include "NodeInfo.hh"
+#include "global.hh"
 
 C4_NAMESPACE_BEG
 

@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "matprops/BilinearInterpGrid.hh"
+#include "BilinearInterpGrid.hh"
 
 #include <algorithm>
 #include <numeric>

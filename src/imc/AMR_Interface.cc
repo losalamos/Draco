@@ -6,9 +6,9 @@
 // @> AMR (Rage) interface implementation
 //---------------------------------------------------------------------------//
 
-#include "imc/AMR_Interface.hh"
-#include "imc/AMR_Builder.hh"
-#include "imc/Host_Manager.hh"
+#include "AMR_Interface.hh"
+#include "AMR_Builder.hh"
+#include "Host_Manager.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 #include <iomanip>

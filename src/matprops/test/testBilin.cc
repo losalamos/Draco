@@ -1,4 +1,4 @@
-#include "matprops/BilinearInterpTable.hh"
+#include "../BilinearInterpTable.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Mat.hh"
 

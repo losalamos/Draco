@@ -6,12 +6,12 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "radphys/test/testRadPhys_pt.hh"
+#include "testRadPhys_pt.hh"
 
 #include <vector>
 typedef std::vector<double> VD;
 
-#include "radphys/RadiationPhysics.t.cc"
+#include "../RadiationPhysics.t.hh"
 using namespace XTM;
 
 template 

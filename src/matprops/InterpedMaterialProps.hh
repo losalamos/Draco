@@ -9,8 +9,8 @@
 #ifndef __matprops_InterpedMaterialProps_hh__
 #define __matprops_InterpedMaterialProps_hh__
 
-#include "matprops/BilinearInterpGrid.hh"
-#include "matprops/BilinearInterpTable.hh"
+#include "BilinearInterpGrid.hh"
+#include "BilinearInterpTable.hh"
 #include "ds++/SP.hh"
 #include "units/Units.hh"
 

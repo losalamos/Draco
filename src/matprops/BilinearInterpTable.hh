@@ -9,7 +9,7 @@
 #ifndef __matprops_BilinearInterpTable_hh__
 #define __matprops_BilinearInterpTable_hh__
 
-#include "matprops/BilinearInterpGrid.hh"
+#include "BilinearInterpGrid.hh"
 #include "ds++/Mat.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"

@@ -1,5 +1,0 @@
-$(SRC_TOP)/config/.pooma.$(env): $(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.def \
-   $(POOMA_ROOT)/lib/$(POOMA_ARCH)/Makefile.app
-	$(RM) $@
-	${MAKE} -f $(SRC_TOP)/config/make.pooma2 makeout=$@
-

@@ -9,6 +9,9 @@
 #ifndef __c4_config_hh__
 #define __c4_config_hh__
 
+// include C4 package configure (defines)
+#include <c4/config.h>
+
 // Configure some namespace support
 
 #define C4_NAMESPACE_BEG namespace C4 {
@@ -65,7 +68,7 @@
 // MPI
 
 #ifdef C4_MPI
-#include <mpi.h>
+#include "c4_mpi.h"
 #define MPI(a) a
 #else
 #define MPI(a)
@@ -74,7 +77,7 @@
 // SHMEM
 
 #ifdef C4_SHMEM
-#include "c4/shmem.hh"
+#include "shmem.hh"
 #else
 #endif
 

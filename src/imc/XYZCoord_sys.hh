@@ -28,8 +28,8 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/Coord_sys.hh"
+#include "Names.hh"
+#include "Coord_sys.hh"
 #include "rng/Sprng.hh"
 #include "ds++/Assert.hh"
 #include <vector>

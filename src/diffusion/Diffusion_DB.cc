@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "diffusion/Diffusion_DB.hh"
+#include "Diffusion_DB.hh"
 
 #include "nml/Group.hh"
 #include "nml/Items.hh"

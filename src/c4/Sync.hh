@@ -9,7 +9,7 @@
 #ifndef __c4_Sync_hh__
 #define __c4_Sync_hh__
 
-#include "c4/global.hh"
+#include "global.hh"
 
 C4_NAMESPACE_BEG
 

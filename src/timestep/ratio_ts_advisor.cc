@@ -6,9 +6,9 @@
 // @> Defines the ratio time-step advisor.
 //---------------------------------------------------------------------------//
 
-#include "timestep/ratio_ts_advisor.hh"
+#include "ratio_ts_advisor.hh"
 
-#include "timestep/ts_manager.hh"
+#include "ts_manager.hh"
 
 #include "ds++/Assert.hh"
 

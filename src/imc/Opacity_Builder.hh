@@ -23,9 +23,9 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/Opacity.hh"
-#include "imc/Mat_State.hh"
+#include "Names.hh"
+#include "Opacity.hh"
+#include "Mat_State.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <string>
@@ -34,6 +34,7 @@ IMCSPACE
 
 // stl components
 using std::string;
+using std::vector;
 
 // draco components
 using dsxx::SP;

@@ -23,11 +23,11 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/Coord_sys.hh"
-#include "imc/Layout.hh"
-#include "imc/OS_Mesh.hh"
-#include "imc/OS_Interface.hh"
+#include "Names.hh"
+#include "Coord_sys.hh"
+#include "Layout.hh"
+#include "OS_Mesh.hh"
+#include "OS_Interface.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>

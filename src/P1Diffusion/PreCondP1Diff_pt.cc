@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "P1Diffusion/PreCondP1Diff.t.cc"
-#include "P1Diffusion/MatrixP1Diff.hh"
+#include "PreCondP1Diff.t.hh"
+#include "MatrixP1Diff.hh"
 #include "mesh/Mesh_XYZ.hh"
 
 typedef Mesh_XYZ MT;

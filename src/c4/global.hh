@@ -9,10 +9,13 @@
 #ifndef __c4_global_hh__
 #define __c4_global_hh__
 
-#include "c4/config.hh"
-#include "c4/C4_Req.hh"
-#include "c4/tags.hh"
-#include "c4/c4_traits.hh"
+// c4 package configure
+#include <c4/config.h>
+
+#include "config.hh"
+#include "C4_Req.hh"
+#include "tags.hh"
+#include "c4_traits.hh"
 
 C4_NAMESPACE_BEG
 
@@ -101,7 +104,7 @@ C4_NAMESPACE_END
 // layer.  For example, C4_gsync might be inlined...
 
 #ifdef C4_SHMEM
-#include "c4/global_shmem.hh"
+#include "global_shmem.hh"
 #endif
 #ifdef C4_MPI
 #include "global_mpi.hh"

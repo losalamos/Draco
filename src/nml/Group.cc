@@ -12,9 +12,9 @@ using std::map;
 #include <list>
 using std::list;
 
-#include "nml/Group.hh"
-#include "nml/Items.hh"
-#include "nml/nmstream.hh"
+#include "Group.hh"
+#include "Items.hh"
+#include "nmstream.hh"
 
 #include <stdarg.h>
 

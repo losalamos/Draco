@@ -1,0 +1,19 @@
+#!/bin/sh
+# usage: draco_conf prefix [stuff]
+
+case $1 in
+    --*)
+      prefix=`pwd`
+      ;;
+    *)
+      prefix=$1
+      prefix=`cd $prefix; pwd`
+      shift
+      ;;
+esac
+
+rootme=`dirname $0`
+
+echo ${rootme}/configure --prefix=$prefix $*
+exec ${rootme}/configure --prefix=$prefix $*
+

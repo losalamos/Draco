@@ -1,0 +1,276 @@
+###############################################################################
+# draco/config Makefile.package.in
+# Thomas M. Evans
+# Wed Feb  3 16:36:55 1999
+# Time-stamp: <99/02/05 10:56:29 rsqrd>
+###############################################################################
+# @> General Makefile.in for draco packages
+###############################################################################
+
+top_srcdir = @top_srcdir@
+srcdir = @srcdir@
+
+# get the relative directory between the top_srcdir and the srcdir
+
+reldir := $(shell echo "${srcdir}" | sed s%${top_srcdir}%% | sed 's%/[^/]*%../%g')
+ifeq (,${reldir})
+  reldir := "."
+endif
+
+##---------------------------------------------------------------------------##
+## VARIABLES THAT ARE ASSIGNED BY AUTOCONF
+## These are assigned using "="
+##---------------------------------------------------------------------------##
+
+VPATH = @srcdir@:@top_srcdir@:${reldir} # : this colon is a bug work around.
+
+package = @package@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+includedir = @includedir@
+libdir = @libdir@
+libexecdir = @libexecdir@
+bindir = @bindir@
+
+dirstoclean = @dirstoclean@
+
+NMLGEN = @NMLGEN@
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+
+CC = @CC@
+CFLAGS = @CFLAGS@
+CPPFLAGS = @CPPFLAGS@
+CPPFLAGS += -I . -I ${includedir}
+
+CXX = @CXX@
+CXXFLAGS = @CXXFLAGS@
+
+LD = @LD@
+LDFLAGS = @LDFLAGS@
+PKG_LIBS = @PKG_LIBS@
+DRACO_LIBS = @DRACO_LIBS@
+VENDOR_LIBS = @VENDOR_LIBS@
+DRACO_TEST_LIBS = @DRACO_TEST_LIBS@
+VENDOR_TEST_LIBS = @VENDOR_TEST_LIBS@
+PKG_DEPENDS = @PKG_DEPENDS@
+DRACO_DEPENDS = @DRACO_DEPENDS@
+VENDOR_DEPENDS = @VENDOR_DEPENDS@
+DRACO_TEST_DEPENDS = @DRACO_TEST_DEPENDS@
+VENDOR_TEST_DEPENDS = @VENDOR_TEST_DEPENDS@
+LIBS = @LIBS@
+
+AR = @AR@
+ARFLAGS = @ARFLAGS@
+ARLIBS = @ARLIBS@
+RANLIB = @RANLIB@
+
+libsuffix = @libsuffix@
+
+configure_command = @configure_command@
+
+install_executable = @install_executable@
+install_lib = @install_lib@
+install_headers = @install_headers@
+installfiles = @installfiles@
+installdirs = @installdirs@
+
+alltarget = @alltarget@
+
+##---------------------------------------------------------------------------##
+## EXPLICIT VARIABLES
+## these are assigned using ":="
+##---------------------------------------------------------------------------##
+
+# find the header files that live in both the source and target directories
+
+srcheaders := $(wildcard *.h) $(wildcard *.hh) \
+	$(wildcard ${package}/*.h) $(wildcard ${package}/*.hh) \
+	$(wildcard ${srcdir}/*.h) $(wildcard ${srcdir}/*.hh)
+dottedsrcheaders := $(wildcard .*.h) $(wildcard .*.hh) \
+	$(wildcard ${srcdir}/.*.h) $(wildcard ${srcdir}/.*.hh)
+
+# strip the directory names from the header files in order to build the
+# installation target for the header files.
+
+headers := $(notdir ${srcheaders}) $(notdir ${dottedsrcheaders})
+
+# the headers will be installed under the package's own subdirectory
+
+installheaders := $(addprefix ${includedir}/${package}/, ${headers})
+
+# if the source developer wants to over override what sources and objects
+# are to be made then create a Makefile.srcs file that lives in the source
+# directory that defines the variables:
+# "csrc" "ccsrc" "cobjs" "ccobjs" and "objs"
+
+ifeq (,$(wildcard ${srcdir}/Makefile.srcs))
+
+  csrc := $(wildcard ${srcdir}/*.c)
+  ccsrc := $(wildcard ${srcdir}/*.cc)
+  cobjs := $(notdir $(patsubst %.c,%.o,${csrc}))
+  ccobjs := $(notdir $(patsubst %.cc,%.o,${ccsrc}))
+  objs := ${cobjs} ${ccobjs}
+
+else
+
+  include ${srcdir}/Makefile.srcs
+
+endif
+
+##---------------------------------------------------------------------------##
+## TARGETS
+##---------------------------------------------------------------------------##
+
+.PHONY : all install installdirs clean distclean forced-distclean \
+	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
+	forced-clean dvi
+
+all: ${alltarget}
+
+dvi:
+	: # do nothing
+
+packagelibs := ${DRACO_LIBS} ${VENDOR_LIBS} ${LIBS}
+
+${package}: ${objs} ${DRACO_DEPENDS} ${VENDOR_DEPENDS}
+	${LD} ${LDFLAGS} -o ${package} ${objs} ${packagelibs}
+
+lib${package}${libsuffix}: ${objs} ${DRACO_DEPENDS} ${VENDOR_DEPENDS}
+	${AR} ${ARFLAGS} $@ ${objs} ${ARLIBS}
+	${RANLIB} $@
+
+check: ${alltarget}
+	@if test -d "${srcdir}/test" && test -d "test" ; then \
+		(cd test && ${MAKE} $@) || exit; \
+	fi
+
+installdirs: ${installdirs}
+
+${installdirs}:
+	mkdir $@
+
+install: installdirs ${installfiles}
+
+uninstall:
+	-rm ${installfiles}
+
+${libdir}/%: %
+	${INSTALL_DATA} $< $@
+
+${bindir}/%: %
+	${INSTALL} $< $@
+
+${libexecdir}/%: %
+	${INSTALL} $< $@
+
+${includedir}/${package}/%: %
+	${INSTALL_DATA} $< $@
+
+${includedir}/${package}/%: ${package}/%
+	${INSTALL_DATA} $< $@
+
+# Makefile depends on all of the M4 files in the config directory
+
+configfiles := aclocal.m4 ac_local.m4 ac_conf.m4 ac_vendors.m4 ac_dracoarg.m4 \
+ ac_dracoenv.m4
+configfiles := $(addprefix ${top_srcdir}/../../config/, ${configfiles})
+
+${top_srcdir}/configure: configure.in ${configfiles}
+	cd ${top_srcdir} && autoconf --localdir=../../config
+
+${package}/config.h: ${package}/stamp-h
+	@: echo "config.h newer than stamp-h" # need any no-op command here!
+
+${package}/stamp-h: config.h.in config.status
+	CONFIG_FILES= CONFIG_HEADERS=${package}/config.h:config.h.in ./config.status
+	echo timestamp >${package}/stamp-h
+
+${package}/%.hh: %.hh.in
+	CONFIG_FILES=$@:$(notdir $<) CONFIG_HEADERS= ./config.status
+
+${package}/%.h: %.h.in
+	CONFIG_FILES=$@:$(notdir $<) CONFIG_HEADERS= ./config.status
+
+Makefile: ../../config/Makefile.package.in config.status
+	CONFIG_FILES=Makefile:../../config/Makefile.package.in \
+		CONFIG_HEADERS= ./config.status
+
+config.status: configure
+	./config.status --recheck
+
+# Locate the namelist input files automatically.
+
+nml_files := $(notdir $(wildcard ${srcdir}/*.nml))
+nml_hh := $(nml_files:%.nml=.nml_%.hh)
+nml_cc := $(nml_files:%.nml=.nml_%.cc)
+
+nmldependfiles := $(nml_files:.nml=.nml.d)
+
+dependfiles := $(notdir $(ccsrc:.cc=.cc.d)) \
+	$(notdir $(csrc:.c=.c.d))
+
+${dependfiles}: ${nml_hh} ${nml_cc}
+
+%.cc.d: %.cc
+	@echo making dependency $@
+	@${SHELL} -ec '${CXX} -M ${CPPFLAGS} $< \
+		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@; \
+		[ -s $@ ] || rm -f $@'
+
+%.c.d: %.c
+	@echo making dependency $@
+	@${SHELL} -ec '${CC} -M ${CPPFLAGS} $< \
+		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@; \
+		[ -s $@ ] || rm -f $@'
+
+%.nml.d: .nml_%.hh .nml_%.cc
+
+%.nml.d: %.nml
+	echo making dependency $@
+	echo "$(notdir ${<:%.nml=.nml_%.hh} ${<:%.nml=.nml_%.cc}) $@: $<" >$@
+
+.nml_%.hh .nml_%.cc: ${srcdir}/%.nml
+	-$(NMLGEN) ${srcdir}/$*.nml
+
+# Do not include the dependfiles when doing clean-like stuff.
+
+ifneq (,$(filter uninstall dvi distclean mostlyclean clean maintainer-clean, \
+	${MAKECMDGOALS}))
+#empty
+else
+include ${dependfiles}
+endif
+
+maintainer-clean distclean mostlyclean clean:
+	@if test -d "test" ; then \
+		(cd test && ${MAKE} $@); \
+	fi
+
+clean: forced-clean
+forced-clean:
+	-rm ${package} ${objs} lib${package}${libsuffix} ${dependfiles}
+	-rm -f ${nml_hh} ${nml_cc}
+	-rm -r ${dirstoclean}
+
+distclean: clean forced-distclean
+forced-distclean:
+	-rm config.status config.cache config.log
+	-rm ${package}/*.h ${package}/*.hh ${package}/stamp-h Makefile
+
+# maintainer-clean does not delete "configure"
+
+maintainer-clean: forced-maintainer-clean distclean
+forced-maintainer-clean:
+	@echo 'This command is intended for maintainers to use; it'
+	@echo 'deletes files that may need special tools to rebuild.'
+
+# any other hand-coded dependencies or any thing **additional** can
+# be put into Makefile.misc in the source directory
+
+-include ${srcdir}/Makefile.misc
+
+###############################################################################
+#			 end of draco/config Makefile.package.in
+###############################################################################

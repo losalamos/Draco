@@ -30,12 +30,12 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/Opacity.hh"
-#include "imc/Mat_State.hh"
+#include "Names.hh"
+#include "Opacity.hh"
+#include "Mat_State.hh"
+#include "Particle.hh"
+#include "Particle_Buffer.hh"
 #include "rng/Random.hh"
-#include "imc/Particle.hh"
-#include "imc/Particle_Buffer.hh"
 #include "ds++/SP.hh"
 #include <string>
 #include <iostream>

@@ -1,0 +1,12 @@
+# override the source and object definitions for the package
+
+csrc = $(wildcard ${srcdir}/*.c)
+ccsrc = Item.cc \
+	Block.cc \
+	Group.cc \
+	Items.cc \
+	nmostream.cc \
+	nmistream.cc
+cobjs = $(notdir $(patsubst %.c,%.o,${csrc}))
+ccobjs = $(notdir $(patsubst %.cc,%.o,${ccsrc}))
+objs = ${cobjs} ${ccobjs}

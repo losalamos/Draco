@@ -6,6 +6,10 @@
 // @> Global C4 functions for a scalar architecture
 //---------------------------------------------------------------------------//
 
+// determine if this should be compiled or not
+#include <c4/config.h>
+#if C4_SCALAR
+
 #include "config.hh"
 
 #include <time.h>
@@ -49,6 +53,10 @@ double Wtime()
     gettimeofday( &tvclock, NULL );
     return tvclock.tv_sec + tvclock.tv_usec*1.0e-6;
 #endif
+
+#if !defined(C4_USE_CLOCK_GETTIME) && !defined(C4_USE_GETTIMEOFDAY)
+    return 0.0;
+#endif
 }
 
 double Wtick() 
@@ -65,6 +73,10 @@ double Wtick()
     return tsclock.tv_sec + tsclock.tv_nsec*1.0e-9;
 #endif
 #ifdef C4_USE_GETTIMEOFDAY
+    return 1.0e-3;              // Oh, this is so bogus!
+#endif
+
+#if !defined(C4_USE_CLOCK_GETTIME) && !defined(C4_USE_GETTIMEOFDAY)
     return 1.0e-3;              // Oh, this is so bogus!
 #endif
 }
@@ -87,6 +99,8 @@ int  group()
 void gsync() {}
 
 C4_NAMESPACE_END
+
+#endif // C4_SCALAR
 
 //---------------------------------------------------------------------------//
 //                              end of global_scalar.cc

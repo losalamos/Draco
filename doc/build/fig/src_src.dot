@@ -1,0 +1,46 @@
+/* Time-stamp: <99/02/01 15:45:27 tme> */
+
+digraph source_tree {
+  /* graph attributes */
+    center=1;
+    margin=".25,.25";
+    size="6.5,9";
+    rankdir=LR;
+    
+  /* main directories */
+
+  /* .. level */
+    node [fontname=Courier];
+    
+    src  [label="src/", fontsize=20, shape=box, height=3];
+
+  /* draco/ level */
+    node [fontsize=18];
+    {
+	node    [shape=ellipse];
+	src_c   [label="configure*"];
+	src_cin [label="configure.in"];
+	src_m   [label="Makefile.in"];
+
+	node     [shape=box];
+	p1diff   [label="P1Diffusion/"];
+	c4       [label="c4/"];
+	diff     [label="diffusion/"];
+	dsxx     [label="ds++/"];
+	imc      [label="imc/"];
+	linalg   [label="linalg/"];
+	mat      [label="matprops/"];	
+	mesh     [label="mesh/"];
+	nml      [label="nml/"];
+	radphys  [label="radphys/"];
+	rng      [label="rng/"];
+	timestep [label="timestep/"];
+	traits   [label="traits/"];
+	units    [label="units/"];
+	xm       [label="xm/"];
+    }
+    
+  /* tree */
+    src -> {src_c src_cin src_m p1diff c4 diff dsxx imc linalg mat mesh nml
+		radphys rng timestep traits units xm};
+}

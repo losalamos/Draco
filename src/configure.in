@@ -1,0 +1,18 @@
+AC_INIT(Makefile.in)
+AC_CONFIG_AUX_DIR(../config)
+
+AC_ALL_VENDORS_SETUP
+AC_DRACO_ARGS
+
+# The order of packages in AC_CONFIG_SUBDIRS **is** important.
+# Each AC_CONFIG_SUBDIRS corresponds to a level, level 1 at the
+# top -> level 4 at the bottom.  On each level the ordering is
+# NOT important with the exception of mesh (mesh is need for the
+# radphys test suite)
+
+AC_CONFIG_SUBDIRS(ds++ xm traits)
+AC_CONFIG_SUBDIRS(units nml c4 rng)
+AC_CONFIG_SUBDIRS(mesh radphys linalg diffusion imc timestep)
+AC_CONFIG_SUBDIRS(matprops P1Diffusion)
+
+AC_OUTPUT(Makefile)

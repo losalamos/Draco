@@ -23,8 +23,8 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/Particle_Buffer.hh"
+#include "Names.hh"
+#include "Particle_Buffer.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <algorithm>

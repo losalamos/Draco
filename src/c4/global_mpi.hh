@@ -16,7 +16,7 @@ namespace C4 {
 
 }
 
-#include "mpi_t.cc"
+#include "mpi.t.hh"
 
 #endif                          // __c4_global_mpi_hh__
 

@@ -1,8 +1,0 @@
-proc ds++_exit {} {
-puts "ds++_exit"
-}
-
-proc ds++_version {} {
-puts "ds++_version"
-}
-

@@ -23,9 +23,12 @@
 // 
 //===========================================================================//
 
-#include "rng/Names.hh"
+#include "Names.hh"
 #include "ds++/Assert.hh"
-#include "sprng.h"
+
+// Header file that includes the SPRNG library
+#include <rng/config.h>
+#include "rng_sprng.h"
 
 RNGSPACE
 

@@ -6,8 +6,12 @@
 // @> Global C4 functions for MPI
 //---------------------------------------------------------------------------//
 
-#include "c4/global.hh"
-#include "c4/mpi_traits.hh"
+// determine if we need to compile this
+#include <c4/config.h>
+#ifdef C4_MPI
+
+#include "global.hh"
+#include "mpi_traits.hh"
 
 #include "ds++/Assert.hh"
 
@@ -165,6 +169,8 @@ template void gmax( float *px, int n );
 template void gmax( double *px, int n );
 
 C4_NAMESPACE_END
+
+#endif // C4_MPI
 
 //---------------------------------------------------------------------------//
 //                              end of global_mpi.cc

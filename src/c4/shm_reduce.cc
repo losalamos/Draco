@@ -6,10 +6,14 @@
 // @> Implement the C4 global reduction API over SHMEM.
 //---------------------------------------------------------------------------//
 
-#include "c4/shmem.hh"
-#include "c4/global.hh"
+// determine if we compile any of this
+#include <c4/config.h>
+#ifdef C4_SHMEM
 
-#include <mpp/shmem.h>
+#include "shmem.hh"
+#include "global.hh"
+
+#include "c4_shmem.h"
 
 #include <algorithm>
 
@@ -540,6 +544,8 @@ template void gmax( float *, int );
 template void gmax( double *, int );
 
 C4_NAMESPACE_END
+
+#endif // C4_SHMEM
 
 //---------------------------------------------------------------------------//
 //                              end of shm_reduce.cc

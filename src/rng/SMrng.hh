@@ -25,7 +25,7 @@
 // 
 //===========================================================================//
 
-#include "rng/Names.hh"
+#include "Names.hh"
 #include <vector>
 #include <algorithm>
 #include <iostream>

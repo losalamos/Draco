@@ -6,8 +6,8 @@
 // @> Coord_sys base class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imc/Coord_sys.hh"
-#include "imc/Global.hh"
+#include "Coord_sys.hh"
+#include "Global.hh"
 #include <iostream>
 #include <cmath>
 

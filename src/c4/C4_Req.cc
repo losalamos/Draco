@@ -8,7 +8,7 @@
 
 #include <iostream.h>
 
-#include "c4/C4_Req.hh"
+#include "C4_Req.hh"
 #include "ds++/Assert.hh"
 
 C4_NAMESPACE_BEG

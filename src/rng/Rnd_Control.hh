@@ -23,9 +23,8 @@
 // 
 //===========================================================================//
 
-#include "rng/Names.hh"
-#include "rng/Sprng.hh"
-#include "sprng.h"
+#include "Names.hh"
+#include "Sprng.hh"
 
 RNGSPACE
 

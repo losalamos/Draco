@@ -24,5 +24,5 @@ char *nml_catch_write( ClientData cd, Tcl_Interp *interp,
 #endif                          // __nml_nmitcl_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of nml/nmitcl.hh
+//                              end of nmitcl.hh
 //---------------------------------------------------------------------------//

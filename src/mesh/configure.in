@@ -1,0 +1,32 @@
+dnl-------------------------------------------------------------------------dnl
+dnl draco/src/mesh configure.in
+dnl Randy M. Roberts
+dnl Fri Jan  8 14:46:27 1999
+dnl Time-stamp: <99/02/05 13:37:56 rsqrd>
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for mesh
+dnl-------------------------------------------------------------------------dnl
+
+AC_INIT(Mesh_XYZ.hh)
+AC_CONFIG_AUX_DIR(../../config)
+AC_CONFIG_HEADER(mesh/config.h:config.h.in)
+package="mesh"
+
+AC_INSTALL_HEADERS
+AC_INSTALL_LIB
+
+AC_MPI_SETUP(pkg)
+AC_SHMEM_SETUP(pkg)
+
+AC_NEEDS_LIBS(nml c4 ds++)
+AC_RUNTESTS(tcctf tfcdtf tnctf tvctf txyz tbstf, 1 5)
+
+AC_DRACO_ENV
+
+AC_OUTPUT(Makefile:../../config/Makefile.package.in \
+test/Makefile:../../config/Makefile.test.in \
+test/test.in:test/test.in.in)
+
+dnl-------------------------------------------------------------------------dnl
+dnl			 end of draco/src/mesh configure.in
+dnl-------------------------------------------------------------------------dnl

@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "P1Diffusion/MatVecP1Diff.hh"
+#include "MatVecP1Diff.hh"
 
 using rtt_P1Diffusion::MatVecP1Diff;
 

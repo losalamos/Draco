@@ -6,10 +6,10 @@
 // @> test parallel building and mixing for AMR IMC
 //---------------------------------------------------------------------------//
 
-#include "imc/AMR_Interface.hh"
-#include "imc/AMR_Builder.hh"
-#include "imc/OS_Mesh.hh"
-#include "imc/Global.hh"
+#include "../AMR_Interface.hh"
+#include "../AMR_Builder.hh"
+#include "../OS_Mesh.hh"
+#include "../Global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"

@@ -8,9 +8,9 @@
 
 #include "tk.h"
 #include "itcl.h"
-#include "nml/nmitcl.hh"
-#include "nml/Group.hh"
-#include "nml/TraceInfo.hh"
+#include "nmitcl.hh"
+#include "Group.hh"
+#include "TraceInfo.hh"
 
 #include "Assert.hh"
 

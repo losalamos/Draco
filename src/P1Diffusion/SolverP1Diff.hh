@@ -11,7 +11,7 @@
 
 #include "ds++/SP.hh"
 #include "linalg/PCG_Ctrl.hh"
-#include "P1Diffusion/MatrixP1Diff.hh"
+#include "MatrixP1Diff.hh"
 
 namespace rtt_P1Diffusion
 {

@@ -6,9 +6,9 @@
 // @> OS_Builder class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imc/OS_Builder.hh"
-#include "imc/XYCoord_sys.hh"
-#include "imc/XYZCoord_sys.hh"
+#include "OS_Builder.hh"
+#include "XYCoord_sys.hh"
+#include "XYZCoord_sys.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 

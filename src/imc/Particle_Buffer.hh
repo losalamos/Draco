@@ -28,7 +28,7 @@
 //
 //===========================================================================//
 
-#include "imc/Names.hh"
+#include "Names.hh"
 #include "c4/global.hh"
 #include "rng/Random.hh"
 #include "ds++/Assert.hh"

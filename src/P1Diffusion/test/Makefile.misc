@@ -1,0 +1,3 @@
+# Make sure the input is up to date.
+
+check: testP1Diffusion.in

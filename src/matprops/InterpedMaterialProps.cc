@@ -6,11 +6,11 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "matprops/InterpedMaterialProps.hh"
+#include "InterpedMaterialProps.hh"
 
-#include "matprops/BilinearInterpGrid.hh"
-#include "matprops/BilinearInterpTable.hh"
-#include "matprops/MaterialPropsReader.hh"
+#include "BilinearInterpGrid.hh"
+#include "BilinearInterpTable.hh"
+#include "MaterialPropsReader.hh"
 
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"

@@ -976,7 +976,7 @@ void dump( const Mesh_XYZ::nctf<T>& data, char *name );
 template<class T>
 void dump( const Mesh_XYZ::vctf<T>& data, char *name );
 
-#include "Mesh_XYZ.t.cc"
+#include "Mesh_XYZ.t.hh"
 
 #endif                          // __mesh_Mesh_XYZ_hh__
 

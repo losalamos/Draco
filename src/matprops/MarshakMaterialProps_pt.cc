@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "matprops/MultiMatCellMatProps.t.cc"
-#include "matprops/MarshakMaterialProps.hh"
+#include "MultiMatCellMatProps.t.hh"
+#include "MarshakMaterialProps.hh"
 #include "mesh/Mesh_XYZ.hh"
 #include <vector>
 

@@ -9,7 +9,10 @@
 #ifndef __c4_tags_hh__
 #define __c4_tags_hh__
 
-#include "c4/config.hh"
+// c4 package configure
+#include <c4/config.h>
+
+#include "config.hh"
 
 const int C4_SUCCESS = 0;
 #ifdef __PARAGON__

@@ -9,8 +9,8 @@
 #ifndef __matprops_FifiMatPropsReader_hh__
 #define __matprops_FifiMatPropsReader_hh__
 
-#include "matprops/MaterialPropsReader.hh"
-#include "matprops/FifiParser.hh"
+#include "MaterialPropsReader.hh"
+#include "FifiParser.hh"
 
 #include "ds++/Mat.hh"
 

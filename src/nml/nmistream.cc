@@ -14,7 +14,7 @@
 
 #include <ctype.h>
 
-#include "nml/nmstream.hh"
+#include "nmstream.hh"
 
 #include <list>
 using std::list;

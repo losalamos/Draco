@@ -6,7 +6,7 @@
 // @> OS_Interface class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imc/OS_Interface.hh"
+#include "OS_Interface.hh"
 #include "ds++/Assert.hh"
 #include <algorithm>
 

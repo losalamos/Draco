@@ -6,7 +6,7 @@
 // @> Defines the base class time-step advisor.
 //---------------------------------------------------------------------------//
 
-#include "timestep/ts_advisor.hh"
+#include "ts_advisor.hh"
 
 #include "c4/global.hh"
 

@@ -6,12 +6,16 @@
 // @> Global C4 functions for Cray SHMEM.
 //---------------------------------------------------------------------------//
 
+// determine if we compile any of this
+#include <c4/config.h>
+#ifdef C4_SHMEM
+
 #include "ds++/DynArray.hh"
 #include "ds++/Assert.hh"
 
-#include "c4/global_shmem.hh"
+#include "global_shmem.hh"
 
-#include <mpp/shmem.h>
+#include "c4_shmem.h"
 
 #define SHMDBG 1
 
@@ -85,6 +89,7 @@ static void C4_shm_init_pt2pt()
 
 // Setup the Async Recv structures.
     pe_async_recv_reqs = (int *) shmalloc( nodes * sizeof(int) );
+
     Assert( pe_async_recv_reqs );
 
     pe_async_recv_req = (Async_DB **) shmalloc( nodes * sizeof(Async_DB *) );
@@ -1167,6 +1172,8 @@ C4_NAMESPACE_END
 #include "ds++/DynArray.cc"
 
 template class DynArray<C4::Msg_DB *>;
+
+#endif // C4_SHMEM
 
 //---------------------------------------------------------------------------//
 //                              end of global_shmem.cc

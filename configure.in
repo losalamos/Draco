@@ -1,0 +1,12 @@
+AC_INIT(README.draco)
+AC_CONFIG_AUX_DIR(config)
+
+AC_ALL_VENDORS_SETUP
+AC_DRACO_ARGS
+
+# The order of packages in AC_CONFIG_SUBDIRS **is** important.
+# The packages may depend on other packages to the left of them
+# in the list.
+
+AC_CONFIG_SUBDIRS(tools src doc)
+AC_OUTPUT(Makefile)

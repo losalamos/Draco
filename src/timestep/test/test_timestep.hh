@@ -27,5 +27,5 @@ class test_timestep {
 #endif                          // __timestep_test_test_timestep_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of timestep/test/test_timestep.hh
+//                              end of test_timestep.hh
 //---------------------------------------------------------------------------//

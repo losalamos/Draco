@@ -61,5 +61,5 @@ class dummy_package {
 #endif                          // __timestep_test_dummy_package_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of timestep/test/dummy_package.hh
+//                              end of dummy_package.hh
 //---------------------------------------------------------------------------//

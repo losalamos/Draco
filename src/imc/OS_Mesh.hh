@@ -46,9 +46,9 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/Coord_sys.hh"
-#include "imc/Layout.hh"
+#include "Names.hh"
+#include "Coord_sys.hh"
+#include "Layout.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"

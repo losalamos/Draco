@@ -9,6 +9,8 @@
 #ifndef __c4_global_scalar_hh__
 #define __c4_global_scalar_hh__
 
+#include "ds++/Assert.hh"
+
 C4_NAMESPACE_BEG
 
 //---------------------------------------------------------------------------//

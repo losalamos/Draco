@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "P1Diffusion/test/testSolverP1Diff.hh"
-#include "P1Diffusion/test/testP1Diffusion.hh"
+#include "testSolverP1Diff.hh"
+#include "testP1Diffusion.hh"
 
 #include "nml/Group.hh"
 #include "ds++/SP.hh"
@@ -64,12 +64,12 @@ int main()
     return 0;
 }
 
-#include "testSolverP1Diff.t.cc"
+#include "testSolverP1Diff.t.hh"
 
 template
 class rtt_P1Diffusion_test::testSolverP1Diff<MT>;
 
-#include "testP1Diffusion.t.cc"
+#include "testP1Diffusion.t.hh"
 template
 class rtt_P1Diffusion_test::testP1Diffusion<MT>;
 

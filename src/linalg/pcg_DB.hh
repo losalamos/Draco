@@ -9,8 +9,6 @@
 #ifndef __linalg_pcg_DB_hh__
 #define __linalg_pcg_DB_hh__
 
-#include "util/persist.hh"
-
 #include "nml/Group.hh"
 #include "nml/Items.hh"
 
@@ -22,7 +20,7 @@
 // Holds namelist parameters for setting up and controlling pcg.
 //===========================================================================//
 
-class pcg_DB : public persist {
+class pcg_DB {
   public:
 // Some way to name this thing.
 
@@ -30,7 +28,7 @@ class pcg_DB : public persist {
 
 // Pick up the namelist variables.
 
-#include "linalg/.nml_pcg.hh"
+#include ".nml_pcg.hh"
 
 // Pick up the auxiliary variables.
 
@@ -42,9 +40,6 @@ class pcg_DB : public persist {
     dsxx::String Name() const { return name; }
 
     void setup_namelist( NML_Group& g );
-
-    void save   ( std::ofstream& ofs );
-    void restore( std::ifstream& ifs );
 };
 
 #endif                          // __linalg_pcg_DB_hh__

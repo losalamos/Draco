@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "linalg/PCG_Subroutines.hh"
-using namespace pcg;
+#include "PCG_Subroutines.hh"
+// using namespace pcg;
 
 //---------------------------------------------------------------------------//
 // xdfalt

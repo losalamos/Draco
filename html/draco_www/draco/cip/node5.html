@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Refinement</TITLE>
+<META NAME="description" CONTENT="Refinement">
+<META NAME="keywords" CONTENT="cip">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="cip.css">
+<LINK REL="next" HREF="node6.html">
+<LINK REL="previous" HREF="node4.html">
+<LINK REL="up" HREF="cip.html">
+<LINK REL="next" HREF="node6.html">
+</HEAD>
+<BODY >
+
+<A NAME="tex2html70"
+ HREF="node6.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html68"
+ HREF="cip.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html62"
+ HREF="node4.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME="tex2html71"
+ HREF="node6.html">Adaptors</A>
+<B>Up:</B> <A NAME="tex2html69"
+ HREF="cip.html">Container-Free Numerical Algorithms in</A>
+<B> Previous:</B> <A NAME="tex2html63"
+ HREF="node4.html">A First Solution</A>
+<BR> <P>
+
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00050000000000000000">
+Refinement</A>
+</H1>
+
+<P>
+What we need is a way to learn information about a user defined type
+without asking our questions in a way which forces the user to
+actually modify the source code for the class.  That is, what we would
+like to be able to do is to write our generic algorithms in a way
+which morphs to the characteristics of the user supplied containers.
+Clearly we have to be able to expect certain functionality from a
+numeric container, like the ability to ask how many elements it
+contains, but we would like to avoid making the constraints so
+stringent that most programmers would be forced to modify the source
+to their containers just in order to be able to call our algorithms.
+In other words, we would like to be able to state what functionality
+is required of a container, without mandating exact names of member
+functions and the like.
+
+<P>
+At first glance, this seems daunting.  We are literally asking for the
+ability to extend the interface of a class without modifying the class
+itself.  Once again <TT>C++</TT> template technology provides the answer, this
+time in the form of a technique known as
+``traits''[<A
+ HREF="node10.html#Nathan_Myers_95">4</A>].  The way this works is you declare a
+template class whose purpose is to be able to provide answers to
+questions you want to ask about some other class.  In other words, it
+is a sort of compile-time consultable database which stores the
+``traits'' of another class.  You can then write your algorithm in
+terms of this traits class.  The final piece of machinery is that the
+user specializes the traits class on the type of container he is going
+to pass you.  This particularly clever use of parametric
+polymorphism[<A
+ HREF="node10.html#Stroustrup97">7</A>] was originally invented to support
+internationalization requirements in the standard <TT>C++</TT> library, but we 
+will find it to be exceedingly useful for our purposes as well.
+Figure&nbsp;<A HREF="node5.html#ltsolve3">4</A> presents our lower triangular
+solver algorithm reformulated to use traits.
+
+<P>
+<BR>
+<DIV ALIGN="CENTER"><A NAME="ltsolve3">&#160;</A><A NAME="496">&#160;</A>
+<TABLE WIDTH="50%">
+<CAPTION><STRONG>Figure 4:</STRONG>
+Reformulation using template traits to provide a forwarding interface between the algorithm and the user supplied container classes.</CAPTION>
+<TR><TD><IMG
+ WIDTH="738" HEIGHT="708"
+ SRC="img5.gif"
+ ALT="\begin{figure}\begin{tex2html_preform}\begin{verbatim}// ltsolve3.cc
+// Implemen...
+...xir ) - z) / A( row, col );
+}
+}\end{verbatim}\end{tex2html_preform}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+<BR>
+
+<P>
+With this expression of the algorithm, we are finally able to claim
+that the algorithm is reusable in a meaningful sense of the word.  We
+are still placing requirements on the user supplied container types,
+but these requirements are now much easier to satisfy.  For example,
+whereas <TT>ltsolve2</TT> required that the class represented by the
+template parameter <TT>Vector</TT> must possess a member function <TT>nx()</TT> which would return the number of contained elements, <TT>ltsolve3</TT> merely requires that <EM>there exist some way</EM> to determine
+this information.  Exactly how this is to be determined is not the
+concern of the author of <TT>ltsolve3</TT>, but rather is specified by
+the user by specializing the template class <TT>cip_traits&lt;T&gt;</TT> on the
+supplied types.
+
+<P>
+In fact, by this time, the only remaining template (service)
+constraints placed on the user defined types represented by the
+template parameters <TT>Matrix</TT> and <TT>Vector</TT> are that they
+possess an <TT>operator()(int,int)</TT> and <TT>operator()(int)</TT>
+respectively.  This warrants some additional comment.  I could have
+chosen to use <TT>operator[](int)</TT> instead.  For one dimensional
+containers, these will perform identically, and the choice is
+arbitrary.  However, in the case of multidimensional containers, <TT>operator()</TT> is preferred because there is no multi-argument form of
+<TT>operator[]</TT>.  Although you can implement multidimensional
+indexing with <TT>operator[]</TT>, the cost is the introduction of a
+temporary ``proxy'' object for each <TT>[]</TT> to the left of the
+rightmost.  This both complicates the implementation of the container
+and results in some amount of runtime overhead.  So <TT>operator()</TT>
+will be simpler and faster than <TT>operator[]</TT> for multidimensional
+containers, and is moreover reminiscent of Fortran syntax, from which
+much of the culture of numerical algorithms is inherited.
+The use of <TT>operator()</TT> for the one dimensional container is thus
+chosen for consistency with containers of higher rank.
+
+<P>
+To remove any remaining mystery from the techniques exhibited in <TT>ltsolve3</TT>, we will now explore precisely how to implement the traits
+classes.  Figure&nbsp;<A HREF="node5.html#cip_traits">5</A> shows the unspecialized traits
+class.  By putting literally nothing in it, we ensure that any attempt
+to call <TT>ltsolve3</TT> without first specializing <TT>cip_traits</TT>
+will result in a compile error.  This is because if the user doesn't
+specialize <TT>cip_traits</TT>, then service requests of <TT>cip_traits&lt;T&gt;</TT> for some type <TT>T</TT> will go to the default class,
+which in fact has no services, thus resulting in a compile error.
+
+<P>
+<BR>
+<DIV ALIGN="CENTER"><A NAME="cip_traits">&#160;</A><A NAME="588">&#160;</A>
+<TABLE WIDTH="50%">
+<CAPTION><STRONG>Figure 5:</STRONG>
+The unspecialized traits class.</CAPTION>
+<TR><TD><IMG
+ WIDTH="429" HEIGHT="156"
+ SRC="img6.gif"
+ ALT="\begin{figure}\begin{tex2html_preform}\begin{verbatim}// cip_traits.hhtemplate...
+...don't put /anything/ in here!
+};\end{verbatim}\end{tex2html_preform}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+<BR>
+<P>
+Figure&nbsp;<A HREF="node5.html#umat_traits">6</A> shows how the <TT>cip_traits</TT> class can be
+specialized for some particular user defined matrix class.  Here we
+see that the class <TT>UserMat</TT> uses zero based indexing.
+Consequently the traits class can answer questions about the starting
+index without even consulting the object at run time.  However, for
+questions about the size of the container, the traits class must
+forward the request on to the actual run-time object.  It is precisely
+this sort of ``forwarding'' which makes the traits class such a
+powerful idiom.  It literally allows the user to construct a map
+between questions a library function may ask, and methods which can
+answer those questions.  Note in particular, that this map can be
+either static (known at compile time) or dynamic (consult object at
+run time) on a question by question basis.  Good optimizing compilers
+should be able to exploit the static mappings through constant
+propagation and related techniques[<A
+ HREF="node10.html#Robison96">6</A>].
+
+<P>
+<BR>
+<DIV ALIGN="CENTER"><A NAME="umat_traits">&#160;</A><A NAME="608">&#160;</A>
+<TABLE WIDTH="50%">
+<CAPTION><STRONG>Figure 6:</STRONG>
+Specialization of the traits class for a particular user defined type.</CAPTION>
+<TR><TD><IMG
+ WIDTH="697" HEIGHT="387"
+ SRC="img7.gif"
+ ALT="\begin{figure}\begin{tex2html_preform}\begin{verbatim}// umat_traits.hh
+// Shows...
+...number_of_rows(); }
+// etc...
+};\end{verbatim}\end{tex2html_preform}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+<BR>
+<P>
+<HR>
+<A NAME="tex2html70"
+ HREF="node6.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html68"
+ HREF="cip.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html62"
+ HREF="node4.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME="tex2html71"
+ HREF="node6.html">Adaptors</A>
+<B>Up:</B> <A NAME="tex2html69"
+ HREF="cip.html">Container-Free Numerical Algorithms in</A>
+<B> Previous:</B> <A NAME="tex2html63"
+ HREF="node4.html">A First Solution</A>
+
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Mark Gray <BR>
+1998-05-20</I>
+</ADDRESS>
+</BODY>
+</HTML>

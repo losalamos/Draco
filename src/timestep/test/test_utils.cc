@@ -6,7 +6,7 @@
 // @> Utility function used in the time-step tester.
 //---------------------------------------------------------------------------//
 
-#include "timestep/test/test_utils.hh"
+#include "test_utils.hh"
 
 #include <cmath>
 

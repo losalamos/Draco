@@ -6,14 +6,14 @@
 // @> test of source initialization
 //---------------------------------------------------------------------------//
 
-#include "imc/OS_Interface.hh"
-#include "imc/OS_Builder.hh"
-#include "imc/OS_Mesh.hh"
-#include "imc/Mat_State.hh"
-#include "imc/Opacity_Builder.hh"
-#include "imc/Opacity.hh"
-#include "imc/Source_Init.hh"
-#include "imc/Global.hh"
+#include "../OS_Interface.hh"
+#include "../OS_Builder.hh"
+#include "../OS_Mesh.hh"
+#include "../Mat_State.hh"
+#include "../Opacity_Builder.hh"
+#include "../Opacity.hh"
+#include "../Source_Init.hh"
+#include "../Global.hh"
 #include "rng/Rnd_Control.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"

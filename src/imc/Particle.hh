@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-// Particle.hh
+// Particle.hh 
 // Thomas M. Evans
 // Fri Jan 30 17:04:24 1998
 //---------------------------------------------------------------------------//
@@ -56,9 +56,9 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/Opacity.hh"
-#include "imc/Tally.hh"
+#include "Names.hh"
+#include "Opacity.hh"
+#include "Tally.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"

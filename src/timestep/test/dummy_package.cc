@@ -6,17 +6,17 @@
 // @> A dummy package to exercize the time-step controller field advisors.
 //---------------------------------------------------------------------------//
 
-#include "timestep/test/dummy_package.hh"
+#include "dummy_package.hh"
 
-#include "timestep/ts_manager.hh"
+#include "../ts_manager.hh"
 
-#include "timestep/field_ts_advisor.hh"
+#include "../field_ts_advisor.hh"
 
 #include "c4/global.hh"
 
 #include <vector>
 
-#include "timestep/test/test_utils.hh"
+#include "test_utils.hh"
 
 using std::vector;
 

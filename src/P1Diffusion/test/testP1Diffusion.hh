@@ -9,11 +9,11 @@
 #ifndef __P1Diffusion_test_testP1Diffusion_hh__
 #define __P1Diffusion_test_testP1Diffusion_hh__
 
-#include "P1Diffusion/P1Diffusion.hh"
-#include "P1Diffusion/MatrixP1Diff.hh"
-#include "P1Diffusion/MatVecP1Diff.hh"
-#include "P1Diffusion/PreCondP1Diff.hh"
-#include "P1Diffusion/SolverP1Diff.hh"
+#include "../P1Diffusion.hh"
+#include "../MatrixP1Diff.hh"
+#include "../MatVecP1Diff.hh"
+#include "../PreCondP1Diff.hh"
+#include "../SolverP1Diff.hh"
 
 namespace rtt_P1Diffusion_test
 {

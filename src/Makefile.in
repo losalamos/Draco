@@ -1,0 +1,69 @@
+top_srcdir = @top_srcdir@
+srcdir = @srcdir@
+VPATH = @srcdir@  # : this colon is a bug work around.
+
+# The subdirectories to recurs into (if they exist).
+
+subdirs = @subdirs@
+
+# If the make flags include a -k then do not exit on errors.
+
+ifneq (,$(findstring k,${MAKEFLAGS}))
+  EXIT = :
+else
+  EXIT = exit
+endif
+
+.PHONY : all install installdirs clean distclean mostlyclean maintainer-clean \
+	check uninstall forced-distclean forced-maintainer-clean \
+	dvi
+
+all: install
+
+install dvi: 
+	@for dir in ${subdirs} ; do \
+		if test -d "$${dir}" ; then \
+			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
+		fi \
+	done
+
+# Make sure that we do not install a subdirectory before it is checked.
+
+check:
+	@for dir in ${subdirs} ; do \
+		if test -d "$${dir}" ; then \
+			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
+			(cd $${dir} && ${MAKE} install) || ${EXIT}; \
+		fi; \
+	done
+
+uninstall clean mostlyclean distclean maintainer-clean:
+	@for dir in ${subdirs} ; do \
+		if test -d "$${dir}" ; then \
+			(cd $${dir} && ${MAKE} $@); \
+		fi \
+	done
+
+# Makefile depends on all of the M4 files in the config directory
+
+configfiles := aclocal.m4 ac_local.m4 ac_conf.m4 ac_vendors.m4 ac_dracoarg.m4 \
+ ac_dracoenv.m4
+configfiles := $(addprefix ${top_srcdir}/../config/, ${configfiles})
+
+${top_srcdir}/configure: configure.in ${configfiles}
+	cd ${top_srcdir} && autoconf --localdir=../config
+
+Makefile: Makefile.in config.status
+	./config.status
+
+config.status: configure
+	./config.status --recheck
+
+distclean: forced-distclean
+forced-distclean:
+	-rm config.status config.cache config.log config.h stamp-h Makefile
+
+maintainer-clean: forced-maintainer-clean distclean
+forced-maintainer-clean:
+	@echo 'This command is intended for maintainers to use; it'
+	@echo 'deletes files that may need special tools to rebuild.'

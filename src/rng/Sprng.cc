@@ -6,7 +6,7 @@
 // @> Sprng random number class implementation file
 //---------------------------------------------------------------------------//
 
-#include "rng/Sprng.hh"
+#include "Sprng.hh"
 #include <cmath>
 #include <iostream>
 

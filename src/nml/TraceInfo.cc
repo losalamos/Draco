@@ -6,7 +6,7 @@
 // @> A class for holding info needed during Tcl trace processing.
 //---------------------------------------------------------------------------//
 
-#include "nml/TraceInfo.hh"
+#include "TraceInfo.hh"
 
 //---------------------------------------------------------------------------//
 // Setup the TraceInfo class with the data which will be needed by the

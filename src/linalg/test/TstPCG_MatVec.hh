@@ -9,7 +9,7 @@
 #ifndef __linalg_test_TstPCG_MatVec_hh__
 #define __linalg_test_TstPCG_MatVec_hh__
 
-#include "linalg/PCG_MatVec.hh"
+#include "../PCG_MatVec.hh"
 
 #include "ds++/Mat.hh"
 
@@ -27,7 +27,7 @@ class TstPCG_MatVec : public PCG_MatVec<T> {
     TstPCG_MatVec( int _nxs, int _nys );
     ~TstPCG_MatVec();
 
-    void MatVec( Mat1<T>& b, Mat1<T>& x );
+    void MatVec( dsxx::Mat1<T>& b, const dsxx::Mat1<T>& x );
 };
 
 #endif                          // __linalg_test_TstPCG_MatVec_hh__

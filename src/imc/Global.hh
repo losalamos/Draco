@@ -21,9 +21,9 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/Math.hh"
-#include "imc/Constants.hh"
+#include "Names.hh"
+#include "Math.hh"
+#include "Constants.hh"
 
 IMCSPACE
 GLOBALSPACE

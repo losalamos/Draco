@@ -14,7 +14,7 @@
 
 #include "ds++/String.hh"
 
-#include "nml/Callback.hh"
+#include "Callback.hh"
 
 #include <stdarg.h>
 
@@ -95,5 +95,5 @@ class NML_Item {
 #endif				// __nml_Item_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of nml/Item.hh
+//                              end of Item.hh
 //---------------------------------------------------------------------------//

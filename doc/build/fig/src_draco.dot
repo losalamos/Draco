@@ -1,0 +1,42 @@
+/* Time-stamp: <99/02/11 18:10:47 tme> */
+
+digraph source_tree {
+  /* graph attributes */
+    center=1;
+    margin=".25,.25";
+    size="6.5,9";
+    rankdir=LR;
+    
+  /* main directories */
+
+  /* .. level */
+    node [fontname=Courier];
+    
+    draco  [label="draco/", fontsize=20, shape=box, height=2];
+
+  /* draco/ level */
+    node [fontsize=18];
+    {
+      /* directories */
+	node   [shape=box];
+	src    [label="src/"];
+	tools  [label="tools/"];
+	doc    [label="doc/"];
+	config [label="config/"];
+
+      /* files */
+	node       [shape=ellipse];
+	draco_min  [label="Makefile.in"];
+	news       [label="NEWS"];
+	readme     [label="README.draco"];
+	change     [label="ChangeLog"];
+	draco_cin  [label="configure.in"];
+	draco_c    [label="configure*"];
+	draco_conf [label="draco_config*"];
+    }
+    
+  /* tree */
+    
+    draco -> {src tools doc config draco_min news readme change draco_cin
+		  draco_c draco_conf};
+}

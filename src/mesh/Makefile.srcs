@@ -1,0 +1,7 @@
+# override the source and object definitions for the package
+
+csrc = $(wildcard ${srcdir}/*.c)
+ccsrc = Mesh_DB.cc Mesh_XYZ.cc
+cobjs = $(notdir $(patsubst %.c,%.o,${csrc}))
+ccobjs = $(notdir $(patsubst %.cc,%.o,${ccsrc}))
+objs = ${cobjs} ${ccobjs}

@@ -1,4 +1,4 @@
-#include "radphys/test/vectorops.hh"
+#include "vectorops.hh"
 
 #include <cmath>
 

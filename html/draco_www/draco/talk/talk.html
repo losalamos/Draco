@@ -1,0 +1,592 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>No Title</TITLE>
+<META NAME="description" CONTENT="No Title">
+<META NAME="keywords" CONTENT="talk">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="talk.css">
+<LINK REL="next" HREF="node1.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2"
+ HREF="node1.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="./next_motif.gif"></A> 
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="./up_motif_gr.gif"> 
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="./previous_motif_gr.gif">   
+<BR>
+<B> Next:</B> <A NAME="tex2html3"
+ HREF="node1.html">About this document ...</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<P>
+<FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Design by Contract
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR></B></FONT><B>Mark G. Gray
+<BR>
+May 7, 1998
+</B></DIV><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Outline
+</B></FONT></DIV><UL>
+<LI>What is Design by Contract
+<LI>Example: square root problem
+<LI>Example: <TT>zathras</TT> contracts
+<LI>Advanced Design by Contract
+<LI>Applying Design by Contract
+<LI>Conclusion
+</UL><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT></FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>What is Design by Contract?
+</B></FONT></DIV><BLOCKQUOTE>
+I believe that the use of Eiffel-like module contracts is the most
+important non-practice in software today. <EM>-Tom DeMarco</EM>
+</BLOCKQUOTE>Design by Contract is:<UL>
+<LI>A specification discipline
+<LI>An implementation guide
+<LI>A verification mechanism
+<LI>A documentation discipline
+</UL><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT></FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>What is Design by Contract?
+</B></FONT></DIV><BLOCKQUOTE>
+How can one check a large routine in the sense that it's right?  In
+order that the man who checks may not have too difficult a task, the
+programmer should make a number of definite assertions which can be
+checked individually, and from which the correctness of the whole
+program easily follows. <EM>-Alan Turing</EM>
+</BLOCKQUOTE>
+<P>
+<FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Initial Problem Specification
+</B></FONT></DIV>
+A user goes to a programmer and says: 
+
+<P>
+<FONT COLOR="#0000ff">``Write a function that calculates the square root of
+its input.''</FONT>
+
+<P>
+So the programmer goes off and writes a routine that calculates square
+roots, runs a few tests, and delivers the following to the user:<FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Initial Solution
+</B></FONT></DIV><PRE>
+function root2(x)
+    ! Newton's method to calculate square roots
+    implicit none
+    real, intent(in) :: x
+    real :: root2
+
+    integer :: i
+
+    root2 = x/2.0 
+    do i = 1, 5
+        root2 = 0.5 * (root2 + x/root2)
+    end do
+
+end function root2
+</PRE><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT></FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Initial Verification
+</B></FONT></DIV>
+The user runs his own tests and gets the following results:<PRE>
+ The square root of 4 is 6.25E-2
+ The square root of -1.0 is -0.841530919
+ The square root of 400.0 is 20.0651569
+</PRE><FONT COLOR="#0000ff">``<B>This</B> is <B>all</B> wrong!''</FONT>, says the user.
+<BR>
+
+<FONT COLOR="#ff0000">So what's the problem?...</FONT>
+<FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>The Problem
+</B></FONT></DIV>
+The problem is the specification.  The code actually does fulfill its
+specification. 
+
+<P>
+A vague specification affects every aspect of the code's lifetime:<UL>
+<LI>Design is based on it
+<LI>Implementation is made according to it
+<LI>Testing is against it
+<LI>Documentation is built around it
+</UL>Getting the specification right is arguably the most important part of code
+development; If it is wrong the chances of success certainly aren't
+good.
+
+<FONT COLOR="#ff0000">How could the specification be made clearer?</FONT>
+
+<P>
+<FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>The Solution
+</B></FONT></DIV>
+<P>
+In order to be complete a function specification <B>must</B>:<DL COMPACT>
+<DT>1.
+<DD>Specify the signature of the function 
+<DT>2.
+<DD>Specify the allowable inputs
+<DT>3.
+<DD>Define conditions on acceptable output
+</DL>A good specification is a <B>contract</B> between the client and
+supplier; for all parties concerned it <B>must</B> answer the question:
+
+<FONT COLOR="#ff0000">What am I responsible for?</FONT><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>The Contract
+</B></FONT></DIV><FONT COLOR="#0000ff">``The client (user) will supply a real
+scalar (<I>x</I>) greater than or equal to zero; the supplier (programmer)
+will provide code that calculates the real scalar square root (<I>y</I>) of
+<I>x</I> such that the relative error in |<I>y</I><SUP>2</SUP> - <I>x</I>| is smaller than
+machine epsilon.''</FONT>
+
+<P><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=144>Obligations</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=144>Benefits</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Client</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=144>Ensure 
+<!-- MATH: $x \in \Re; x \geq 0$ -->
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=144>Assume 
+<!-- MATH: $|y^2 - x| < x \epsilon$ -->
+</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Supplier</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=144>Ensure 
+<!-- MATH: $|y^2 - x| < x \epsilon$ -->
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=144>Assume 
+<!-- MATH: $x \in \Re; x\geq
+0$ -->
+</TD>
+</TR>
+</TABLE>
+<P>
+Design by Contract <B>specifies</B> and <B>enforces</B> this contract by
+putting <B>assertions</B> in the code.<FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Applying the Contract
+</B></FONT></DIV><PRE>
+function root2(x)
+    ! Newton's method to calculate square root
+    include(assert.fm4)       ! REQUIRE, ENSURE
+    implicit none
+    real, intent(in) :: x
+    real :: root2
+
+    integer :: i
+
+    REQUIRE(x &gt;= 0.0)
+
+    root2 = x/2.0 
+    do i = 1, 5
+        root2 = 0.5 * (root2 + x/root2)
+    end do
+
+    ENSURE(abs(x - root2**2) &lt; epsilon(x) * x)
+
+end function root2
+</PRE><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT></FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Violating the Contract
+</B></FONT></DIV><PRE>
+ Assertion failed: x &gt;= 0.0, file root2b.fm4, line 10
+ The square root of -1.0 is -7.883110594E+28
+ Assertion failed: abs(x - root2**2) &lt; epsilon(x) * x, file root2b.fm4, line 17
+ The square root of 400.0 is 20.0651569
+</PRE><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Coding to the Contract
+</B></FONT></DIV><PRE>
+function root2(x)
+    ! Newton's method for square roots
+    include(assert.fm4)         ! REQUIRE, ENSURE
+    implicit none
+    real, intent(in) :: x
+    real :: root2
+        
+    REQUIRE(x &gt;= 0.0)
+
+    if (x == 0.0) then
+        root2 = 0.0 
+        return
+    else
+        root2 = x/2.0
+        do while (abs(x - root2**2) &gt;= epsilon(x) * x)
+            root2 = 0.5 * (root2 + x/root2)
+        end do
+    end if
+
+    ENSURE(abs(x - root2**2) &lt; epsilon(x) * x)
+
+end function root2
+</PRE>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT></FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Verification of the Contract
+</B></FONT></DIV><PRE>
+ Assertion failed: x &gt;= 0.0, file root2c.fm4, line 8
+ The square root of -1.0 is 0.E+0
+ The square root of 400.0 is 20.
+</PRE>
+<P>
+<FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B><TT>zathras code examples</TT>
+</B></FONT></DIV>
+Conjugate gradient solver:
+
+<P><PRE>
+subroutine cg_solve(self, A, b, x)
+    ! Conjugate gradient solve with preconditioning.
+    type(cg), intent(inout) :: self
+    type(crs_matrix), intent(in) :: A
+    real, dimension(:), intent(in) :: b
+    real, dimension(:), intent(inout) :: x
+
+    ! REQUIRE(spd(A))
+    REQUIRE(size(x) == size(A, 1), size(x) == size(b))
+    ENSURE((self%iteration == self%max_iteration).or.
+        (norm(r) &lt;= self%stop_tol*(norm(A)*norm(x)+norm(b))))
+</PRE><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B><TT>zathras code examples</TT>
+</B></FONT></DIV>
+First order ODE solver:
+
+<P><PRE>
+subroutine ode1_solver_step(self, y1, f, dt, y2)
+    ! y2 = y1 + f*dt
+    type(ode1_solver), intent(in) :: self
+    type(ccsf), intent(in) :: y1
+    type(ccsf), intent(in) :: f
+    real, intent(in) :: dt
+    type(ccsf), intent(out) :: y2
+
+    REQUIRE(y1%mesh == y2%mesh, f%mesh == y1%mesh)
+    ENSURE(abs((y2 - y1) - f*dt) &lt;= 
+        abs((y1 + y2)/2.0 * epsilon(y1)))
+</PRE>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT></FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Advanced Design by Contract
+</B></FONT></DIV>
+This talk just touches the tip of the Design by Contract iceberg;
+Design by Contract has important consequences for:<UL>
+<LI>Instrumentation
+<LI>Loop correctness
+<LI>Abstract Data Types
+<LI>Disciplined Inheritance
+<LI>Disciplined Exception Handling
+<LI>Formal Correctness proofs
+<LI>Levelized Design
+</UL>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT></FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Applying Design by Contract
+</B></FONT></DIV>
+Design by Contract can be used as part of any design methodology, and
+is an important addition to any documentation effort.  In order to
+benefit from it in implementation and testing some language support is
+necessary.  In particular one must:<UL>
+<LI>Use as much type safety as the language will allow
+<LI>Use preprocessor macros for assertions
+</UL><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT></FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Conclusion
+</B></FONT></DIV>
+Design by Contract is the single most important software engineering
+technique one can employ.  Code without assertions is like government
+without checks; the executive can do almost anything it wants.
+Assertions and exceptions add the same checks and balances to code
+that the legislative and judicial branches do to our government.  In
+this ``programming triune'': <UL>
+<LI>Code is the executive branch.  It is responsible for executing
+the laws.
+<LI>Assertions are the legislative branch.  They are responsible for
+specifying what the laws are.
+<LI>Exceptions are the judicial branch.  They decide what actions to
+take if the laws are violated<A NAME="tex2html1"
+  HREF="footnode.html#foot507"><SUP><IMG  ALIGN="BOTTOM" 
+  BORDER="1" ALT="[foot note]"
+  SRC="./foot_motif.gif"></SUP></A>.
+</UL><FONT SIZE="-1"> <FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT></FONT>
+<P>
+<FONT SIZE="-1"><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff"><U>Design by Contract</U></FONT>
+</FONT></FONT></FONT>
+<DIV ALIGN="CENTER">
+<FONT SIZE="+2"><B>Bibliography
+</B></FONT></DIV><UL>
+<LI>E. W. Dijkstra, <I>A Discipline of Programming</I>, Prentice-Hall,
+New Jersey, 1976
+<LI>J. Bentley, <I>Programming Pearls</I>, pp. 35-48, Addison-Wesley
+1986
+<LI>S. Maguire, <I>Writing Solid Code</I>, pp. 13-44, Microsoft Press
+1993
+<LI>B. Meyer, <I>Object-oriented Software Construction</I>,
+pp. 331-410, Prentice-Hall, New Jersey, 1997
+<LI>C. A. R. Hoare, <I>An Axiomatic Basis for Computer
+Programming</I>, Communications of the ACM, 12(<B>10</B>) pp. 576-580,
+583, October 1969
+<LI>J. Lakos, <I>Large-Scale C++ Software Design</I>, Addison-Wesley 1996
+<LI>http://www.eiffel.com/
+</UL><FONT SIZE="-1"><FONT SIZE="-1"><FONT COLOR="#0000ff">
+<BR>
+LANL XTM <BR>
+<BR>
+-------
+<BR>
+<BR></FONT>
+</FONT></FONT>
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS">&#160;</A>
+<UL>
+<LI><A NAME="tex2html4"
+ HREF="node1.html">About this document ... </A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2"
+ HREF="node1.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="./next_motif.gif"></A> 
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="./up_motif_gr.gif"> 
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="./previous_motif_gr.gif">   
+<BR>
+<B> Next:</B> <A NAME="tex2html3"
+ HREF="node1.html">About this document ...</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>John McGhee</I>
+<BR><I>1998-05-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,70 @@
+# test.exp Time-stamp: <99/02/11 10:21:40 rsqrd>
+
+send_user "In $tool.0/test.exp.\n"
+
+proc parse_output {output} {
+
+  global NPROCS
+  global tool
+
+  set found_test 0
+  set test_failed 0
+  set nPreLines 0
+  set nPostLines 0
+  set lines [split $output \n]
+
+  set preSyncLines [lrange $lines 0 [expr $NPROCS - 1]]
+  set postSyncLines [lrange $lines $NPROCS [expr 2 * $NPROCS - 1]]
+
+  foreach line $preSyncLines {
+    if {[regexp "Hello from" $line]} {
+       set found_test 1
+       incr nPreLines
+    } elseif {[regexp "Hello again from" $line]} {
+       set found_test 1
+       set test_failed 1
+    }
+  }
+
+  foreach line $postSyncLines {
+    if {[regexp "Hello again from" $line]} {
+       set found_test 1
+       incr nPostLines
+    } elseif {[regexp "Hello from" $line]} {
+       set found_test 1
+       set test_failed 1
+    }
+  }
+
+  set test_failed [ expr $test_failed || $nPreLines != $NPROCS \
+                   || $nPostLines != $NPROCS ]
+
+  if { ${test_failed} } {
+     fail "$tool.0: output is... \n\"$output\""
+  } elseif { ${found_test} } {
+     pass "$tool.0"
+  }
+
+  return $found_test
+}
+
+proc run_test {} {
+
+  global tool
+  global ${tool}_start
+  global comp_output
+  global comp_completion_code
+
+  if {!$comp_completion_code} {
+     fail $comp_output
+  } elseif [info exists comp_output] {
+     if ![parse_output $comp_output] {
+        fail "Test not found."
+     }
+  } else {
+     fail "No output from $tool."
+  }
+  	
+}
+
+run_test

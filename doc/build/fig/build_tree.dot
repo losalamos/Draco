@@ -1,0 +1,76 @@
+/* Time-stamp: <99/02/01 16:18:21 tme> */
+
+digraph build_tree {
+  /* graph attributes */
+    center=1;
+    margin=".25,.25";
+    size="6.5,9";
+    rankdir=LR;
+    
+  /* main directories */
+
+    node [fontname=Courier];
+
+  /* .. level */
+
+    sgi [label="sgi_scalar/", fontsize=22, shape=box];
+    
+  /* sgi_scalar level */
+
+    draco   [label="draco/", fontsize=20, shape=box];
+    bin     [label="bin/", fontsize=20, shape=box];
+    include [label="include/", fontsize=20, shape=box];
+    lib     [label="lib/", fontsize=20, shape=box];
+    libexe  [label="libexec/", fontsize=20, shape=box];
+
+  /* draco/ level */
+    node [fontsize=18];
+    {
+      /* directories */
+	node   [shape=box];
+	src    [label="src/"];
+	tools  [label="tools/"];
+	doc    [label="doc/"];
+
+      /* files */
+	node       [shape=ellipse];
+	draco_make [label="Makefile"];
+	draco_cach [label="config.cache"];
+	draco_log  [label="config.log"];
+	draco_stat [label="config.status*"];
+    }
+    
+  /* draco/<dir> */
+    node [fontsize=14];
+    {
+      /* src */
+	node    [shape=ellipse];
+	src_cs  [label="config.status*"];
+	src_cl  [label="config.log"];
+	src_m   [label="Makefile"];
+
+	src_files [label="source directories ...", shape=plaintext];
+
+      /* tools */
+	node     [shape=ellipse];
+	tools_m  [label="Makefile"];
+	tools_cl [label="config.log"];
+	tools_cs [label="config.status*"];
+
+      /* doc */
+	node   [shape=ellipse];
+	doc_m  [label="Makefile"];
+	doc_cl [label="config.log"];
+	doc_cs [label="config.status*"];
+
+	doc_files [label="doc directories ...", shape=plaintext];
+    }
+    
+  /* tree */
+
+    sgi -> {draco include lib bin libexe};
+    draco -> {src tools doc draco_make draco_cach draco_log draco_stat};
+    src -> {src_cs src_cl src_m src_files};
+    tools -> {tools_m tools_cl tools_cs};
+    doc -> {doc_m doc_cl doc_cs doc_files};
+}

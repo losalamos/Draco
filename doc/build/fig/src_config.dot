@@ -1,0 +1,34 @@
+/* Time-stamp: <99/02/01 15:48:29 tme> */
+
+digraph source_tree {
+  /* graph attributes */
+    center=1;
+    margin=".25,.25";
+    size="6.5,9";
+    rankdir=LR;
+    
+  /* main directories */
+
+  /* .. level */
+    node [fontname=Courier];
+    
+    config  [label="config/", fontsize=20, shape=box];
+
+  /* draco/ level */
+    node [fontsize=18];
+    {
+      /* config */
+	node      [shape=ellipse];
+	mpin      [label="Makefile.package.in"];
+	mtin      [label="Makefile.test.in"];
+	makefile  [label="Makefile.in"];
+	aclocal   [label="aclocal.m4"];
+	config_g  [label="config.guess*"];
+	config_s  [label="config.sub*"];
+	install   [label="install-sh*"];
+    }
+    
+  /* tree */
+    
+    config -> {mpin mtin makefile aclocal config_g config_s install};
+}

@@ -11,7 +11,7 @@
 
 #include <pthread.h>
 
-#include "c4/tags.hh"
+#include "tags.hh"
 
 #include "ds++/Assert.hh"
 #include "ds++/DynArray.hh"

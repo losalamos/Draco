@@ -20,17 +20,17 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/Opacity_Builder.hh"
-#include "imc/Parallel_Source_Init.hh"
-#include "imc/Particle_Buffer.hh"
-#include "imc/Particle.hh"
-#include "imc/Source.hh"
-#include "imc/Tally.hh"
-#include "imc/Mat_State.hh"
-#include "imc/Opacity.hh"
-#include "imc/Communicator.hh"
-#include "imc/Global.hh"
+#include "Names.hh"
+#include "Opacity_Builder.hh"
+#include "Parallel_Source_Init.hh"
+#include "Particle_Buffer.hh"
+#include "Particle.hh"
+#include "Source.hh"
+#include "Tally.hh"
+#include "Mat_State.hh"
+#include "Opacity.hh"
+#include "Communicator.hh"
+#include "Global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 

@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "matprops/BilinearInterpTable.hh"
+#include "BilinearInterpTable.hh"
 
 // #include <iostream>
 // using std::cerr;

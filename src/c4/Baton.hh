@@ -9,7 +9,7 @@
 #ifndef __c4_Baton_hh__
 #define __c4_Baton_hh__
 
-#include "c4/NodeInfo.hh"
+#include "NodeInfo.hh"
 
 C4_NAMESPACE_BEG
 

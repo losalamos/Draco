@@ -9,11 +9,11 @@
 #ifndef __c4_global_shmem_hh__
 #define __c4_global_shmem_hh__
 
-#include "c4/global.hh"
+#include "global.hh"
 
-#include "c4/shmem.hh"
+#include "shmem.hh"
 
-#include "shmem_t.cc"
+#include "shmem.t.hh"
 
 #endif                          // __c4_global_shmem_hh__
 

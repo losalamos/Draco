@@ -10,8 +10,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "nml/Items.hh"
-#include "nml/nmstream.hh"
+#include "Items.hh"
+#include "nmstream.hh"
 
 #include <map>
 using std::map;

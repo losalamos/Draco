@@ -20,7 +20,7 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
+#include "Names.hh"
 #include <iostream>
 #include <vector>
 
@@ -36,14 +36,14 @@ private:
     vector<vector<int> > face;
     
   // number of cells in this mesh
-    int num_cells;
+    int nc;
 
 public:
   // inline default constructor
     inline AMR_Layout(int = 0, int = 6);
 
   // get size member functions
-    int num_cells() const { return num_cells; }
+    int num_cells() const { return nc; }
     inline int num_faces(int, int) const;
 
   // diagnostic functions
@@ -71,7 +71,7 @@ ostream& operator<<(ostream &, const AMR_Layout &);
 inline bool AMR_Layout::operator==(const AMR_Layout &rhs) const
 {
   // if the data is equal, the AMR_Layouts are equal
-    if (face == rhs.face && num_cells == rhs.num_cells)
+    if (face == rhs.face && nc == rhs.nc)
 	return true;
 
   // if we haven't returned then the AMR_Layouts aren't equal
@@ -84,7 +84,9 @@ inline bool AMR_Layout::operator==(const AMR_Layout &rhs) const
 // constructor
 
 AMR_Layout::AMR_Layout(int ncells, int coarse_faces)
-    : face(ncells * coarse_faces), num_cells(ncells) {}
+    : face(ncells * coarse_faces), nc(ncells) {}
+
+CSPACE
 
 #endif                          // __imc_AMR_Layout_hh__
 

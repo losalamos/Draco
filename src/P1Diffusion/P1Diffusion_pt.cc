@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "P1Diffusion/P1Diffusion.t.cc"
-#include "P1Diffusion/SolverP1Diff.hh"
+#include "P1Diffusion.t.hh"
+#include "SolverP1Diff.hh"
 
 #include "mesh/Mesh_XYZ.hh"
 

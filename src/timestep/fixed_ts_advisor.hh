@@ -20,7 +20,7 @@
 // 
 //===========================================================================//
 
-#include "timestep/ts_advisor.hh"
+#include "ts_advisor.hh"
 
 namespace rtt_timestep {
 
@@ -78,5 +78,5 @@ class fixed_ts_advisor : public ts_advisor {
 #endif                          // __timestep_fixed_ts_advisor_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of timestep/fixed_ts_advisor.hh
+//                              end of fixed_ts_advisor.hh
 //---------------------------------------------------------------------------//

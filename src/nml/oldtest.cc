@@ -22,9 +22,9 @@
 // #include <stream.h>
 // #endif
 
-#include "nml/Items.hh"
-#include "nml/Group.hh"
-//#include <nml/namelist.h>
+#include "Items.hh"
+#include "Group.hh"
+//#include <namelist.h>
 
 // block aaa
 

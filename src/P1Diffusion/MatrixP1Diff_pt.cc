@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "P1Diffusion/MatrixP1Diff.t.cc"
+#include "MatrixP1Diff.t.hh"
 #include "mesh/Mesh_XYZ.hh"
 #include "ds++/Mat.hh"
 

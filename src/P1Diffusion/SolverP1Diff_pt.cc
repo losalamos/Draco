@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "P1Diffusion/SolverP1Diff.t.cc"
+#include "SolverP1Diff.t.hh"
 #include "mesh/Mesh_XYZ.hh"
 
 typedef Mesh_XYZ MT;

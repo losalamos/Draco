@@ -1,0 +1,49 @@
+\begin{thebibliography}{1}
+
+\bibitem{Furnish97}
+Geoffrey Furnish.
+\newblock Disambiguated glommable expression templates.
+\newblock {\em Computers in Physics}, 11(3):263--269, May/Jun 1997.
+
+\bibitem{Haney96}
+Scott~W. Haney.
+\newblock Beating the abstraction penalty in {C++} using expression templates.
+\newblock {\em Computers in Physics}, 10(6):552--557, Nov/Dec 1996.
+
+\bibitem{Koenig95}
+Andrew Koenig and Bjarne Stroustrup.
+\newblock Foundations for native {C++} styles.
+\newblock {\em Software Practice and Experience}, 25(S4), Dec 1995.
+
+\bibitem{Nathan_Myers_95}
+Nathan Myers.
+\newblock A new and useful template technique:``traits''.
+\newblock {\em C++ Report}, pages 33--35, June 1995.
+
+\bibitem{Nelson95}
+Mark Nelson.
+\newblock {\em {C++} Programmer's Guide to the Standard Template Library}.
+\newblock IDG Books Worldwide, Foster City, CA, 1995.
+
+\bibitem{Robison96}
+Arch~D. Robison.
+\newblock {C++} gets faster for scientific computing.
+\newblock {\em Computers in Physics}, 10(5):458--462, Sep/Oct 1996.
+
+\bibitem{Stroustrup97}
+Bjarne Stroustrup.
+\newblock {\em The C++ Programming Language}.
+\newblock Addison-Wesley, Reading Mass., third edition, 1997.
+
+\bibitem{Veldhuizen95b}
+Todd Veldhuizen.
+\newblock Expression templates.
+\newblock {\em C++ Report}, 7(5):26--31, June 1995.
+
+\bibitem{Veldhuizen96}
+Todd Veldhuizen and K.~Ponnambalam.
+\newblock Linear algebra with {C++} template metaprograms.
+\newblock {\em Dr. Dobb's Journal of Software Tools}, 21(8):38--44, August
+  1996.
+
+\end{thebibliography}

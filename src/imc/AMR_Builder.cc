@@ -6,9 +6,9 @@
 // @> AMR_Builder class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imc/AMR_Builder.hh"
-#include "imc/XYZCoord_sys.hh"
-#include "imc/XYCoord_sys.hh"
+#include "AMR_Builder.hh"
+#include "XYZCoord_sys.hh"
+#include "XYCoord_sys.hh"
 #include <cmath>
 #include <iostream>
 

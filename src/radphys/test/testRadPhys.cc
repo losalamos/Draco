@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "radphys/RadiationPhysics.hh"
+#include "../RadiationPhysics.hh"
 
 #include <iostream>
 

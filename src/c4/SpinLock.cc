@@ -6,7 +6,7 @@
 // @> A spin lock class.  Serializes execution of a blcok.
 //---------------------------------------------------------------------------//
 
-#include "c4/SpinLock.hh"
+#include "SpinLock.hh"
 
 C4_NAMESPACE_BEG
 

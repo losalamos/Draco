@@ -253,11 +253,11 @@ class XprUnaryOp {
 
 XM_NAMESPACE_END
 
-#include "xm/XprBin.hh"
-#include "xm/XprUnary.hh"
+#include "XprBin.hh"
+#include "XprUnary.hh"
 
 #endif                          // __xm_Xpr_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of xm/Xpr.hh
+//                              end of Xpr.hh
 //---------------------------------------------------------------------------//

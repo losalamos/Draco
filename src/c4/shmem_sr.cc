@@ -6,6 +6,10 @@
 // @> Implement SHMEM send/receive functionality.
 //---------------------------------------------------------------------------//
 
+// determine if we should compile any of this
+#include <c4/config.h>
+#ifdef C4_SHMEM
+
 #include "config.hh"
 #include "global.hh"
 #include "C4_Req.hh"
@@ -16,7 +20,7 @@
 using namespace std;
 
 #include <time.h>
-#include <mpp/shmem.h>
+#include "c4_shmem.h"
 #include <pthread.h>
 
 // #define SHMDBG 1
@@ -677,6 +681,7 @@ C4_NAMESPACE_END
 
 template class dsxx::DynArray<C4::Msg_DB *>;
 
+#endif // C4_SHMEM
 //---------------------------------------------------------------------------//
 //                              end of shmem_sr.cc
 //---------------------------------------------------------------------------//

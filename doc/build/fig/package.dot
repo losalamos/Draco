@@ -1,0 +1,48 @@
+/* Time-stamp: <99/02/10 16:39:30 tme> */
+
+digraph pkg {
+  /* graph attributes */
+    center=1;
+    margin=".25,.25";
+    size="6.5,9";
+    rankdir=LR;
+
+    node [fontname=Courier, fontsize=22];
+    
+  /* draco package */
+
+    package [shape=box, label="pkg/", height=2];
+
+  /* subdirectories in package */
+
+    node [fontsize=18];
+    
+    node [shape=box];
+    test [label="test/"];
+    sub1 [label="sub-directory/", style=dotted];
+    sub2 [label="sub-directory/", style=dotted];
+    sub3 [label="sub-directory/", style=dotted];
+
+  /* files */
+    node [shape=ellipse];
+    confin [label="configure.in"];
+    conf [label="configure*"];
+
+    node [style=dotted];
+    config [label="config.h.in"];
+    pkgin [label="pkg-vendor.h"];
+    msrc [label="Makefile.srcs"];
+    mmisc [label="Makefile.misc"];
+
+    code [label="source code ...", shape=plaintext];
+
+    mtar [label="Makefile.target", fontsize=16];
+    tcode [label="source code ...", fontsize=16, shape=plaintext];
+
+  /* tree */
+    
+    package -> {test sub1 sub2 sub3 confin conf config pkgin code msrc
+		    mmisc};
+    test -> {mtar tcode};
+    
+}

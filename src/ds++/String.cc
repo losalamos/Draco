@@ -11,7 +11,7 @@
 #include "String.hh"
 #include <string.h>
 
-#include "ds++/Assert.hh"
+#include "Assert.hh"
 
 NAMESPACE_DS_BEG
 

@@ -20,10 +20,16 @@
 // 
 //===========================================================================//
 
-#include "rng/Names.hh"
-#include "rng/Rnd_Control.hh"
-#include "rng/Sprng.hh"
-#include "sprng.h"
+// get configurations for the RNG package
+#include <rng/config.h>
+
+// get rng package files
+#include "Names.hh"
+#include "Rnd_Control.hh"
+#include "Sprng.hh"
+
+// Header file that includes the SPRNG library.
+#include "rng_sprng.h"
 
 RNGSPACE
 

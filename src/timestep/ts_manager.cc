@@ -6,7 +6,7 @@
 // @> Defines a manager utility for time-step advisors.
 //---------------------------------------------------------------------------//
 
-#include "timestep/ts_manager.hh"
+#include "ts_manager.hh"
 
 #include "ds++/Assert.hh"
 

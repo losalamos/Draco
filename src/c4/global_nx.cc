@@ -6,8 +6,12 @@
 // @> Global C4 functions for the paragon
 //---------------------------------------------------------------------------//
 
-#include "DynArray.hh"
-#include "Assert.hh"
+// c4 package includes
+#include <c4/config.h>
+#ifdef C4_NX
+
+#include "ds++/DynArray.hh"
+#include "ds++/Assert.hh"
 
 //---------------------------------------------------------------------------//
 // Miscellaneous
@@ -344,6 +348,8 @@ void C4_gmax( double& x )
 {
     gdhigh( &x, 1, &dwork );
 }
+
+#endif // C4_NX
 
 //---------------------------------------------------------------------------//
 //                              end of global_nx.cc

@@ -14,5 +14,5 @@ bool compare_reals(const double x1, const double x2, const int ndigits);
 #endif                          // __timestep_test_test_utils_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of timestep/test/test_utils.hh
+//                              end of test_utils.hh
 //---------------------------------------------------------------------------//

@@ -13,14 +13,23 @@
 
 //#include "base/Log.hh"
 
-#include "linalg/pcg_DB.hh"
-#include "linalg/PCG_Ctrl.hh"
-#include "linalg/PCG_MatVec.hh"
-#include "linalg/PCG_PreCond.hh"
+#include "../pcg_DB.hh"
+#include "../PCG_Ctrl.hh"
+#include "../PCG_MatVec.hh"
+#include "../PCG_PreCond.hh"
 
-#include "linalg/test/tstpcg_DB.hh"
-#include "linalg/test/TstPCG_MatVec.hh"
-#include "linalg/test/TstPCG_PreCond.hh"
+#include "tstpcg_DB.hh"
+#include "TstPCG_MatVec.hh"
+#include "TstPCG_PreCond.hh"
+
+#include <iostream>
+#include <string>
+
+void version(const std::string &progname)
+{
+    std::string version = "1.0.0";
+    std::cout << progname << ": version " << version << std::endl;
+}
 
 //---------------------------------------------------------------------------//
 // main
@@ -31,6 +40,18 @@ int main( int argc, char *argv[] )
 // Initialize C4.
     C4::Init( argc, argv );
 
+// Provide for output of a version number
+    for (int arg=1; arg < argc; arg++)
+	{
+	    if (std::string(argv[arg]) == "--version")
+		{
+		    version(argv[0]);
+		    C4::Finalize();
+		    return 0;
+		}
+	}
+
+// Initialize some local variables
     int node  = C4::node();
     int nodes = C4::nodes();
     int ptype = C4::group();
@@ -59,11 +80,15 @@ int main( int argc, char *argv[] )
     int nys = tstpcg_db.nys;
     int nru = nxs * nys;
 
+    using dsxx::SP;
+    
     SP< PCG_MatVec<double> >  pcg_matvec  = new TstPCG_MatVec<double>(nxs,nys);
     SP< PCG_PreCond<double> > pcg_precond = new TstPCG_PreCond<double>();
 
     PCG_Ctrl<double> pcg_ctrl( pcg_db, nru );
 
+    using dsxx::Mat1;
+    
     Mat1<double> x(nru);
     Mat1<double> b(nru);
 

@@ -12,7 +12,7 @@
 #include <list>
 // using std::list;
 
-#include "nml/Item.hh"
+#include "Item.hh"
 #include "ds++/String.hh"
 
 #include <stdarg.h>
@@ -41,5 +41,5 @@ class NML_Block {
 #endif				// __nml_Block_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of nml/Block.hh
+//                              end of Block.hh
 //---------------------------------------------------------------------------//

@@ -33,9 +33,9 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
-#include "imc/OS_Mesh.hh"
-#include "imc/Global.hh"
+#include "Names.hh"
+#include "OS_Mesh.hh"
+#include "Global.hh"
 #include <iostream>
 #include <fstream>
 #include <string>

@@ -1,0 +1,4 @@
+# Make sure the input is up to date.
+
+check: test.in
+

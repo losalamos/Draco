@@ -6,14 +6,14 @@
 // @> Performs test of time-step manager facility.
 //---------------------------------------------------------------------------//
 
-#include "timestep/test/test_timestep.hh"
+#include "test_timestep.hh"
 
-#include "timestep/ts_manager.hh"
-#include "timestep/fixed_ts_advisor.hh"
-#include "timestep/ratio_ts_advisor.hh"
-#include "timestep/target_ts_advisor.hh"
-#include "timestep/test/dummy_package.hh"
-#include "timestep/test/test_utils.hh"
+#include "../ts_manager.hh"
+#include "../fixed_ts_advisor.hh"
+#include "../ratio_ts_advisor.hh"
+#include "../target_ts_advisor.hh"
+#include "../test/dummy_package.hh"
+#include "../test/test_utils.hh"
 
 #include "c4/global.hh"
 

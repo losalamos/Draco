@@ -6,10 +6,10 @@
 // @> Implements the NML_Item base class.
 //---------------------------------------------------------------------------//
 
-#include "nml/Item.hh"
+#include "Item.hh"
 using std::list;
 
-#include "nml/nmstream.hh"
+#include "nmstream.hh"
 
 #include <ctype.h>
 

@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "P1Diffusion/MatVecP1Diff.t.cc"
-#include "P1Diffusion/MatrixP1Diff.hh"
+#include "MatVecP1Diff.t.hh"
+#include "MatrixP1Diff.hh"
 
 #include "mesh/Mesh_XYZ.hh"
 

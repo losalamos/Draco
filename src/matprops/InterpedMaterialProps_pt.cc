@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "matprops/MultiMatCellMatProps.t.cc"
-#include "matprops/InterpedMaterialProps.t.cc"
+#include "MultiMatCellMatProps.t.hh"
+#include "InterpedMaterialProps.t.hh"
 #include "mesh/Mesh_XYZ.hh"
 #include <vector>
 

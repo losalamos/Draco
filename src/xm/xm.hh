@@ -19,19 +19,22 @@
 // The purpose of this file is to implement an expression template math
 // facility which is generally useful to Kull.
 
-#include "xm/applicative.hh"
+#include "applicative.hh"
 
-#include "xm/Xpr.hh"
+#include "Xpr.hh"
 
-#include "xm/XprBin.hh"
+#include "XprBin.hh"
 
-#include "xm/XprUnary.hh"
+#include "XprUnary.hh"
 
 #undef XM_NAMESPACE_BEG
 #undef XM_NAMESPACE_END
 
+// This will not be necessary when the compiler adopt Koenig lookup
+using namespace xm;
+
 #endif                          // __xm_xm_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of xm/xm.hh
+//                              end of xm.hh
 //---------------------------------------------------------------------------//

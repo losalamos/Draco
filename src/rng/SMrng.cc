@@ -6,8 +6,7 @@
 // @> SMrng implementation file
 //---------------------------------------------------------------------------//
 
-#include "rng/SMrng.hh"
-#include "imc/Math.hh"
+#include "SMrng.hh"
 #include <iostream>
 #include <fstream>
 
@@ -76,7 +75,6 @@ void SMrng::print_values()
 {
     using std::cout;
     using std::endl;
-    using IMC::Global::operator<<;
     
     cout << "mbig:  " << mbig  << endl;
     cout << "mseed: " << mseed << endl;
@@ -86,7 +84,8 @@ void SMrng::print_values()
     cout << "count: " << count << endl;
     cout << "iff:   " << iff   << endl;
     cout << "ma:    " << endl;
-    cout << ma;
+    for (int i = 0; i < ma.size(); i++)
+	cout << i << "\t" << ma[i] << endl;
 }
 
 //---------------------------------------------------------------------------//

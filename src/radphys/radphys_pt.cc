@@ -6,7 +6,7 @@
 // @> Template instantiations for the radphyslibrary.
 //---------------------------------------------------------------------------//
 
-#include "radphys/RadiationPhysics.t.cc"
+#include "RadiationPhysics.t.hh"
 #include "mesh/Mesh_XYZ.hh"
 
 namespace XTM

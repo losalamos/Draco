@@ -9,7 +9,7 @@
 #ifndef __radphys_test_testRadPhys_pt_hh__
 #define __radphys_test_testRadPhys_pt_hh__
 
-#include "radphys/test/vectorops.hh"
+#include "vectorops.hh"
 
 #endif                          // __radphys_test_testRadPhys_pt_hh__
 

@@ -1,8 +1,0 @@
-#include "Indx_File.cc"
-#include "ADKey.hh"
-
-instantiate class Indx_File<ADKey>
-
-#include "ds++/DynArray.cc"
-
-instantiate class DynArray<TOC_entry<ADKey> >

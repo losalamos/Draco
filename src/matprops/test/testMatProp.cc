@@ -1,8 +1,8 @@
-#include "matprops/InterpedMaterialProps.hh"
+#include "../InterpedMaterialProps.hh"
 
-#include "matprops/BilinearInterpGrid.hh"
-#include "matprops/BilinearInterpTable.hh"
-#include "matprops/FifiMatPropsReader.hh"
+#include "../BilinearInterpGrid.hh"
+#include "../BilinearInterpTable.hh"
+#include "../FifiMatPropsReader.hh"
 
 #include "units/Units.hh"
 

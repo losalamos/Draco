@@ -6,7 +6,7 @@
 // @> AMR_Layout class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imc/AMR_Layout.hh"
+#include "AMR_Layout.hh"
 
 
 

@@ -6,10 +6,10 @@
 // @> test executable to try out parallelism in IMCTEST
 //---------------------------------------------------------------------------//
 
-#include "imc/OS_Mesh.hh"
-#include "imc/Particle_Buffer.hh"
-#include "imc/Particle.hh"
-#include "imc/Global.hh"
+#include "../OS_Mesh.hh"
+#include "../Particle_Buffer.hh"
+#include "../Particle.hh"
+#include "../Global.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"

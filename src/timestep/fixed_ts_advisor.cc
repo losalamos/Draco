@@ -6,7 +6,7 @@
 // @> Defines the fixed time-step advisor. 
 //---------------------------------------------------------------------------//
 
-#include "timestep/fixed_ts_advisor.hh"
+#include "fixed_ts_advisor.hh"
 
 #include "ds++/Assert.hh"
 

@@ -20,7 +20,7 @@
 // 
 //===========================================================================//
 
-#include "imc/Names.hh"
+#include "Names.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 #include <string>

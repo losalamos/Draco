@@ -1,0 +1,31 @@
+/*-----------------------------------*-C-*-----------------------------------*/
+/* config.h */
+/* Thomas M. Evans */
+/* Fri Jan  8 14:54:44 1999 */
+/*---------------------------------------------------------------------------*/
+/* @> defines necessary for the C4 package                                   */
+/*---------------------------------------------------------------------------*/
+
+#ifndef __c4_config_h__
+#define __c4_config_h__
+
+/* C4 Environments */
+#undef C4_SCALAR   /* scalar (default) */
+#undef C4_MPI      /* mpi */
+#undef C4_SHMEM    /* shmem */
+#undef C4_NX       /* nx (paragon) */
+
+/* Communication library include paths */
+/* Defined in ac_vendors.m4 */
+#undef MPI_H
+#undef SHMEM_H
+
+/* POSIX DEFINES */
+#undef _POSIX_SOURCE
+#undef _POSIX_C_SOURCE
+
+#endif                          /* __c4_config_h__ */
+
+/*---------------------------------------------------------------------------*/
+/*                              end of config.h */
+/*---------------------------------------------------------------------------*/

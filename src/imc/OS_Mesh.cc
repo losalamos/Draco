@@ -6,8 +6,8 @@
 // @> OS_Mesh class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imc/OS_Mesh.hh"
-#include "imc/Global.hh"
+#include "OS_Mesh.hh"
+#include "Global.hh"
 #include <iomanip>
 
 IMCSPACE
