@@ -14,6 +14,7 @@
 #include "imctest/Opacity.hh"
 #include "imctest/Particle.hh"
 #include "imctest/Random.hh"
+#include "imctest/Math.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <fstream>
@@ -28,6 +29,7 @@ using IMC::Opacity_Builder;
 using IMC::Opacity;
 using IMC::Particle;
 using IMC::Random;
+using IMC::Global::operator<<;
 using namespace std;
 
 template<class MT>
@@ -129,11 +131,23 @@ main()
   // mesh diagnostics
     Builder_diagnostic(*mesh, *mat_state, *opacity);
 
-    for (int cell = 1; cell <= mesh->num_cells(); cell++)
-	cout << cell << " " << mesh->volume(cell) << endl;
+    vector<int> surfaces = mesh->get_surcells("lox");
+    cout << surfaces << endl;
+    surfaces = mesh->get_surcells("hix");
+    cout << surfaces << endl;  
+    surfaces = mesh->get_surcells("loy");
+    cout << surfaces << endl;
+    surfaces = mesh->get_surcells("hiy");
+    cout << surfaces << endl;
+    surfaces = mesh->get_surcells("loz");
+    cout << surfaces << endl;  
+    surfaces = mesh->get_surcells("hiz");
+    cout << surfaces << endl;
 
-    long seed = -345632;
-    Run_Particle(*mesh, *opacity, seed);
+    cout << mesh->get_bndface("hiz", 9);
+
+//     long seed = -345632;
+//     Run_Particle(*mesh, *opacity, seed);
 }
 
 
