@@ -41,7 +41,7 @@ SP<OS_Mesh> OS_Builder::Build_Mesh()
     if (dim == 2)
 	return_mesh = Build_2DMesh(coord, *layout);
     else if (dim == 3)
-      	return_mesh = build_3DMesh(coord, *layout);
+      	return_mesh = Build_3DMesh(coord, *layout);
     return return_mesh;
 }
 

@@ -10,7 +10,7 @@ RM = rm -r
 # MAIN DRIVER PROGRAM
 
 all: Particle.o XYCoord_sys.o XYZCoord_sys.o Layout.o OS_Mesh.o \
-     Random.o OS_Builder.o Random.o Opacity.o
+     Random.o OS_Builder.o Random.o Opacity.o OS_Parser.o
 
 # CLASS MODULES
 
@@ -42,6 +42,11 @@ OS_Builder.o: OS_Builder.cc OS_Builder.hh OS_Mesh.hh Layout.hh \
               Coord_sys.hh Names.hh XYCoord_sys.hh XYZCoord_sys.hh
 	${CC} -c OS_Builder.cc ${INCLUDE} ${OPTIONS}
 
+OS_Parser.o: OS_Parser.cc OS_Parser.hh OS_Mesh.hh Names.hh
+	${CC} -c OS_Parser.cc ${INCLUDE} ${OPTIONS}
+
+OS_Parser.o:
+
 # UTILITIES
 
 cleanall:
@@ -61,9 +66,9 @@ testm.o: testm.cc Global.hh Layout.hh XYCoord_sys.hh XYZCoord_sys.hh \
 	${CC} -c testm.cc ${INCLUDE} ${OPTIONS}
 
 testb: testb.o OS_Builder.o OS_Mesh.o XYCoord_sys.o XYZCoord_sys.o \
-       Layout.o Random.o
+       Layout.o Random.o OS_Parser.o
 	${CC} -o testb testb.o OS_Builder.o OS_Mesh.o XYCoord_sys.o \
-                 XYZCoord_sys.o Layout.o Random.o ${LIB} ${OPTIONS}
+                 XYZCoord_sys.o Layout.o Random.o OS_Parser.o ${LIB} ${OPTIONS}
 
-testb.o: testb.cc OS_Builder.hh OS_Mesh.hh
+testb.o: testb.cc OS_Parser.hh OS_Builder.hh OS_Mesh.hh
 	${CC} -c testb.cc ${INCLUDE} ${OPTIONS}

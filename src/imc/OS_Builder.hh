@@ -25,17 +25,15 @@
 #include "Coord_sys.hh"
 #include "Layout.hh"
 #include "OS_Mesh.hh"
+#include "OS_Parser.hh"
 #include <vector>
 #include <string>
-#include <iostream>
-#include <fstream>
 #include "SP.hh"
 
 IMCSPACE
 
 using std::vector;
 using std::string;
-using std::ifstream;
 
 class OS_Builder
 {
