@@ -73,7 +73,7 @@ template < class TemperatureIterator, class OpacityIterator >
 OpacityIterator GandolfGrayOpacity::getOpacity(
     TemperatureIterator tempIter,
     TemperatureIterator tempLast,
-    const double targetDensity,
+    double targetDensity,
     OpacityIterator opIter ) const
     { 
 	// loop over all the entries the temperature container and
@@ -98,7 +98,7 @@ OpacityIterator GandolfGrayOpacity::getOpacity(
 
 template < class DensityIterator, class OpacityIterator >
 OpacityIterator GandolfGrayOpacity::getOpacity(
-    const double targetTemperature,
+    double targetTemperature,
     DensityIterator densIter, 
     DensityIterator densLast,
     OpacityIterator opIter ) const

@@ -79,6 +79,13 @@ namespace rtt_cdi_gandolf
  *      <tt>    --with-gandolf-lib=${VENDORS}/gandolf/IRIX64/lib64</tt><br><br>
  *      Currently, the Gandolf library is only available on 64 bit
  *      IRIX architectures.
+ * <p>
+ * Things to do:
+ * <ul>
+ *   <li>Implement an interpolation policy</li>
+ *   <li>Create STL accessors for accessing the temperature, density
+ *       and energyboundary grids.</li>
+ * </ul>
  */
 
 /*!
@@ -114,7 +121,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     spGandolfFile acts as a hook to link this object to an
      *     IPCRESS file.
      */
-    const rtt_dsxx::SP< GandolfFile > spGandolfFile;
+    const rtt_dsxx::SP< const GandolfFile > spGandolfFile;
 
     /*!
      * \brief Identification number for one of the materials found in
@@ -173,7 +180,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      * There is a one-to-one relationship between GandolfGrayOpacity and
      * GandolfDataTable. 
      */
-    rtt_dsxx::SP< GandolfDataTable > spGandolfDataTable;
+    rtt_dsxx::SP< const GandolfDataTable > spGandolfDataTable;
 
   public:
 
@@ -190,23 +197,23 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     specifies a material.  If we add the Model, Reaction and
      *     EnergyPolicy the opacity table is uniquely defined.
      *
-     * \param _spGandolfFile This smart pointer links an IPCRESS
+     * \param spGandolfFile This smart pointer links an IPCRESS
      *     file (via the GandolfFile object) to a GandolfOpacity
      *     object. There may be many GandolfOpacity objects per
      *     GandolfFile object but only one GandolfFile object for each 
      *     GandolfOpacity object.
-     * \param _materialID An identifier that links the
+     * \param materialID An identifier that links the
      *     GandolfOpacity object to a single material found in the
      *     specified IPCRESS file.
-     * \param _opacityModel The physics model that the current
+     * \param opacityModel The physics model that the current
      *     data set is based on.
-     * \param _opacityReaction The type of reaction rate that the
+     * \param opacityReaction The type of reaction rate that the
      *     current data set represents. 
      */
-    GandolfGrayOpacity( const rtt_dsxx::SP< GandolfFile > _spGandolfFile,
-			const int _materialID, 
-			const rtt_cdi::Model _opacityModel,
-			const rtt_cdi::Reaction _opacityReaction );
+    GandolfGrayOpacity( const rtt_dsxx::SP< const GandolfFile >& spGandolfFile,
+			int materialID, 
+			rtt_cdi::Model opacityModel,
+			rtt_cdi::Reaction opacityReaction );
 
     /*!
      * \brief Default GandolfOpacity() destructor.
@@ -276,7 +283,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
     template < class TemperatureIterator, class OpacityIterator >
     OpacityIterator getOpacity( TemperatureIterator temperatureFirst,
 				TemperatureIterator temperatureLast,
-				const double targetDensity,
+				double targetDensity,
 				OpacityIterator opacityFirst ) const;
 
     /*!
@@ -300,7 +307,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     and density values provied.
      */
     template < class DensityIterator, class OpacityIterator >
-    OpacityIterator getOpacity( const double targetTemperature,
+    OpacityIterator getOpacity( double targetTemperature,
 				DensityIterator densityFirst, 
 				DensityIterator densityLast,
 				OpacityIterator opacityFirst ) const;
@@ -315,8 +322,8 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     value is being requested.
      * \return A single opacity.
      */
-    double getOpacity( const double targetTemperature,
-		       const double targetDensity ) const; 
+    double getOpacity( double targetTemperature,
+		       double targetDensity ) const; 
 
     /*!
      * \brief Opacity accessor that returns a vector of opacities 
@@ -331,7 +338,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      */
     std::vector< double > getOpacity( 
 	const std::vector<double>& targetTemperature,
-	const double targetDensity ) const; 
+	double targetDensity ) const; 
 
     /*!
      * \brief Opacity accessor that returns a vector of opacities that
@@ -344,7 +351,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      * \return A vector of opacities.
      */
     std::vector< double > getOpacity( 
-	const double targetTemperature,
+	double targetTemperature,
 	const std::vector<double>& targetDensity ) const; 
 
     // It is not clear how to assume order of opacity(temp,dens) when
@@ -360,7 +367,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     EnergyPolicy.  Currently this will return either "mg" or
      *     "gray."
      */ 
-    const std::string& getEnergyPolicyDescriptor() const {
+    std::string getEnergyPolicyDescriptor() const {
 	return energyPolicyDescriptor; };
 
     /*!
@@ -372,7 +379,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     the inclusion of the GandolfFile.hh definitions within this 
      *     header file.
      */
-    const std::string& getDataDescriptor() const;
+    std::string getDataDescriptor() const;
 
     /*!
      * \brief Returns the name of the associated IPCRESS file.
@@ -381,7 +388,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     the inclusion of the GandolfFile.hh definitions within this 
      *     header file.
      */
-    const std::string& getDataFilename() const;
+    std::string getDataFilename() const;
 
     /*!
      * \brief Returns a vector of temperatures that define the cached
@@ -390,7 +397,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      * We do not return a const reference because this function
      * must construct this information from more fundamental tables.
      */
-    const std::vector< double >& getTemperatureGrid() const;
+    std::vector< double > getTemperatureGrid() const;
 
     /*!
      * \brief Returns a vector of densities that define the cached
@@ -399,7 +406,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      * We do not return a const reference because this function
      * must construct this information from more fundamental tables.
      */
-    const std::vector< double >& getDensityGrid() const;
+    std::vector< double > getDensityGrid() const;
 
     /*!
      * \brief Returns the size of the temperature grid.

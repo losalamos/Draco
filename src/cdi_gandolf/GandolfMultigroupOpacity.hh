@@ -114,7 +114,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     spGandolfFile acts as a hook to link this object to an
      *     IPCRESS file.
      */
-    const rtt_dsxx::SP< GandolfFile > spGandolfFile;
+    const rtt_dsxx::SP< const GandolfFile > spGandolfFile;
 
     /*!
      * \brief Identification number for one of the materials found in
@@ -173,7 +173,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      * There is a one-to-one relationship between GandolfOpacity and
      * GandolfDataTable. 
      */
-    rtt_dsxx::SP< GandolfDataTable > spGandolfDataTable;
+    rtt_dsxx::SP< const GandolfDataTable > spGandolfDataTable;
 
   public:
 
@@ -190,23 +190,23 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     specifies a material.  If we add the Model, Reaction and
      *     EnergyPolicy the opacity table is uniquely defined.
      *
-     * \param _spGandolfFile This smart pointer links an IPCRESS
+     * \param spGandolfFile This smart pointer links an IPCRESS
      *     file (via the GandolfFile object) to a GandolfOpacity
      *     object. There may be many GandolfOpacity objects per
      *     GandolfFile object but only one GandolfFile object for each 
      *     GandolfOpacity object.
-     * \param _materialID An identifier that links the
+     * \param materialID An identifier that links the
      *     GandolfOpacity object to a single material found in the
      *     specified IPCRESS file.
-     * \param _opacityModel The physics model that the current
+     * \param opacityModel The physics model that the current
      *     data set is based on.
-     * \param _opacityReaction The type of reaction rate that the
+     * \param opacityReaction The type of reaction rate that the
      *     current data set represents. 
      */
-    GandolfMultigroupOpacity( const rtt_dsxx::SP< GandolfFile > _spGandolfFile,
-			      const int _materialID, 
-			      const rtt_cdi::Model _opacityModel,
-			      const rtt_cdi::Reaction _opacityReaction );
+    GandolfMultigroupOpacity( const rtt_dsxx::SP< const GandolfFile >& spGandolfFile,
+			      int materialID, 
+			      rtt_cdi::Model opacityModel,
+			      rtt_cdi::Reaction opacityReaction );
 
     /*!
      * \brief Default GandolfOpacity() destructor.
@@ -279,7 +279,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     template < class TemperatureIterator, class OpacityIterator >
     OpacityIterator getOpacity( TemperatureIterator temperatureFirst,
 				TemperatureIterator temperatureLast,
-				const double targetDensity,
+				double targetDensity,
 				OpacityIterator opacityFirst ) const;
 
     /*!
@@ -305,7 +305,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     provided in the STL container and the single temperature value.
      */
     template < class DensityIterator, class OpacityIterator >
-    OpacityIterator getOpacity( const double targetTemperature,
+    OpacityIterator getOpacity( double targetTemperature,
 				DensityIterator densityFirst,
 				DensityIterator densityLast,
 				OpacityIterator opacityFirst ) const;
@@ -321,8 +321,8 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     value is being requested.
      * \return A vector of opacities.
      */
-    std::vector< double > getOpacity( const double targetTemperature,
-				      const double targetDensity ) const; 
+    std::vector< double > getOpacity( double targetTemperature,
+				      double targetDensity ) const; 
     
     /*!
      * \brief Opacity accessor that returns a vector of vectors of
@@ -338,7 +338,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      */
     std::vector< std::vector< double > > getOpacity( 
 	const std::vector<double>& targetTemperature,
-	const double targetDensity ) const; 
+	double targetDensity ) const; 
 
     /*!
      * \brief Opacity accessor that returns a vector of vectors of
@@ -352,7 +352,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      * \return A vector of vectors of opacities.
      */
     std::vector< std::vector< double > > getOpacity( 
-	const double targetTemperature,
+	double targetTemperature,
 	const std::vector<double>& targetDensity ) const; 
 
     // It is not clear how to assume order of opacity(temp,dens) when
@@ -368,7 +368,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     EnergyPolicy.  Currently this will return either "mg" or
      *     "gray."
      */ 
-    const std::string& getEnergyPolicyDescriptor() const {
+    std::string getEnergyPolicyDescriptor() const {
 	return energyPolicyDescriptor; };
 
     /*!
@@ -380,7 +380,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     the inclusion of the GandolfFile.hh definitions within this 
      *     header file.
      */
-    const std::string& getDataDescriptor() const;
+    std::string getDataDescriptor() const;
 
     /*!
      * \brief Returns the name of the associated IPCRESS file.
@@ -389,7 +389,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     the inclusion of the GandolfFile.hh definitions within this 
      *     header file.
      */
-    const std::string& getDataFilename() const;
+    std::string getDataFilename() const;
 
     /*!
      * \brief Returns a vector of temperatures that define the cached
@@ -398,7 +398,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      * We do not return a const reference because this function
      * must construct this information from more fundamental tables.
      */
-    const std::vector< double >& getTemperatureGrid() const;
+    std::vector< double > getTemperatureGrid() const;
 
     /*!
      * \brief Returns a vector of densities that define the cached
@@ -407,14 +407,14 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      * We do not return a const reference because this function
      * must construct this information from more fundamental tables.
      */
-    const std::vector< double >& getDensityGrid() const;
+    std::vector< double > getDensityGrid() const;
 
     /*!
      * \brief Returns a vector of energy values (keV) that define the
      *     energy boundaries of the cached multigroup opacity data
      *     table. 
      */
-    const std::vector< double >& getGroupBoundaries() const;
+    std::vector< double > getGroupBoundaries() const;
     
     /*!
      * \brief Returns the size of the temperature grid.

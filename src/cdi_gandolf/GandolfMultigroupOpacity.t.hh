@@ -88,7 +88,7 @@ template < class TemperatureIterator, class OpacityIterator >
 OpacityIterator GandolfMultigroupOpacity::getOpacity(
     TemperatureIterator tempIter,
     TemperatureIterator tempLast,
-    const double targetDensity,
+    double targetDensity,
     OpacityIterator opIter ) const
     { 
 	// number of groups in this multigroup set.
@@ -128,7 +128,7 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
 
 template < class DensityIterator, class OpacityIterator >
 OpacityIterator GandolfMultigroupOpacity::getOpacity(
-    const double targetTemperature,
+    double targetTemperature,
     DensityIterator densIter, 
     DensityIterator densLast,
     OpacityIterator opIter ) const
