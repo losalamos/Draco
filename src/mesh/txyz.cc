@@ -6,15 +6,19 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "mesh/Mesh_XYZ.cc"
+#include "mesh/Mesh_XYZ.hh"
 
 #include "nml/Group.hh"
+
+#include "c4/global.hh"
 
 #include <iostream>
 using namespace std;
 
 int main( int argc, char *argv[] )
 {
+    C4::Init( argc, argv );
+
     cout << "t1: passed\n";
 
     NML_Group g( "test" );
@@ -26,12 +30,15 @@ int main( int argc, char *argv[] )
 
     SP<Mesh_XYZ> spm = new Mesh_XYZ( mdb );
 
+    cout << "t2: passed" << endl;
+
+
     Mesh_XYZ::cell_array<double> x( spm ), y( spm ), z( spm );
     Mesh_XYZ::cell_array<int> xi( spm ), yi( spm ), zi( spm );
     Mesh_XYZ::fcdsf xf( spm ), yf( spm ), zf( spm );
 
     x = 1.;
-//     y = 2.;
+    y = 2.;
     z = x + y;
 
     xi = 1;
@@ -42,6 +49,11 @@ int main( int argc, char *argv[] )
     yf = xf;
     zf = xf + yf;
     zf = xf - yf;
+
+
+    Mesh_XYZ::guarded_cell_array<double> xgc( spm );
+
+    C4::Finalize();
 
     return 0;
 }
