@@ -59,6 +59,13 @@ CXX = @CXX@
 STRICTFLAG = @STRICTFLAG@
 CXXFLAGS = @CXXFLAGS@
 
+LEX = @LEX@
+LEXLIB = @LEXLIB@
+YACC = @YACC@
+YACCLIB = @YACCLIB@
+
+GM4 = @GM4@
+
 PYTHON = @PYTHON_PATH@
 
 LD = @LD@
@@ -264,6 +271,7 @@ endif
 
 clean:
 	-rm ${test_alltarget} ${objs} ${dependfiles}
+	-rm -f lex.yy.c y.output y.tab.c y.tab.h
 	-rm -f ${nml_hh} ${nml_cc} .tmp?
 	-rm -f ${test_output_files}
 	-rm -r ${dirstoclean}

@@ -59,6 +59,13 @@ CXX = @CXX@
 STRICTFLAG = @STRICTFLAG@
 CXXFLAGS = @CXXFLAGS@
 
+LEX = @LEX@
+LEXLIB = @LEXLIB@
+YACC = @YACC@
+YACCLIB = @YACCLIB@
+
+GM4 = @GM4@
+
 PYTHON = @PYTHON_PATH@
 
 LD = @LD@
@@ -300,6 +307,7 @@ maintainer-clean distclean mostlyclean clean:
 clean: forced-clean
 forced-clean:
 	-rm bin/${package} ${objs} lib${package}${libsuffix} ${dependfiles}
+	-rm -f lex.yy.c y.output y.tab.c y.tab.h
 	-rm -f ${nml_hh} ${nml_cc} .tmp?
 	-rm -r ${dirstoclean}
 	-rmdir bin
