@@ -9,6 +9,8 @@
 #include "DynArray.hh"
 #include "Assert.hh"
 
+#include <iostream>
+
 //---------------------------------------------------------------------------//
 // Principal constructor.  Specify initial size. Base defaults to zero, and
 // growth factor defaults to 1.5, but both can be overridden if desired.
@@ -225,8 +227,10 @@ int DynArray<T>::operator!=( const DynArray<T>& da ) const
 //---------------------------------------------------------------------------//
 
 template<class T>
-ostream& operator<<( ostream& os, const DynArray<T>& d )
+std::ostream& operator<<( std::ostream& os, const DynArray<T>& d )
 {
+    using std::endl;
+
     os << "DynArray<T>: low=" << d.low() << " high=" << d.high() << endl;
     for( int i= d.low(); i <= d.high(); i++ )
 	os << d[i] << ' ';

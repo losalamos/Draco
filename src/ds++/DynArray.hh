@@ -9,7 +9,7 @@
 #ifndef __ds_DynArray_hh__
 #define __ds_DynArray_hh__
 
-#include <iostream.h>
+#include <iosfwd>
 
 //===========================================================================//
 // class DynArray<T> - A dynamically growable templated array class
@@ -70,11 +70,11 @@ class DynArray {
 };
 
 template<class T>
-ostream& operator<<( ostream& os, const DynArray<T>& d );
+std::ostream& operator<<( std::ostream& os, const DynArray<T>& d );
 
 #define INSTANTIATE_DynArray(a) \
 template class DynArray<a>; \
-template ostream& ostream<<( ostream& os, const DynArray<a>& d );
+template std::ostream& ostream<<( std::ostream& os, const DynArray<a>& d );
 
 #endif				// __ds_DynArray_hh__
 

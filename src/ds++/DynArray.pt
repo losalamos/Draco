@@ -7,24 +7,24 @@
 #include "DynArray.cc"
 
 instantiate class DynArray<int>
-instantiate function int ostream& operator<<( ostream& os, const DynArray<int>& d )
+instantiate function int std::ostream& operator<<( std::ostream& os, const DynArray<int>& d )
 
 instantiate class DynArray<long>
-instantiate function long ostream& operator<<( ostream& os, const DynArray<long>& d )
+instantiate function long std::ostream& operator<<( std::ostream& os, const DynArray<long>& d )
 
 instantiate class DynArray<char>
-instantiate function char ostream& operator<<( ostream& os, const DynArray<char>& d )
+instantiate function char std::ostream& operator<<( std::ostream& os, const DynArray<char>& d )
 
 instantiate class DynArray<float>
-instantiate function float ostream& operator<<( ostream& os, const DynArray<float>& d )
+instantiate function float std::ostream& operator<<( std::ostream& os, const DynArray<float>& d )
 
 instantiate class DynArray<double>
-instantiate function double ostream& operator<<( ostream& os, const DynArray<double>& d )
+instantiate function double std::ostream& operator<<( std::ostream& os, const DynArray<double>& d )
 
 #include <string>
 
 instantiate class DynArray<std::string>
-instantiate function double ostream& operator<<( ostream& os, const DynArray<std::string>& d )
+instantiate function double std::ostream& operator<<( std::ostream& os, const DynArray<std::string>& d )
 
 // instantiate class DynArray<String>
 // instantiate function String ostream& operator<<( ostream& os, const DynArray<String>& d )
