@@ -37,7 +37,7 @@ namespace rtt_P1Diffusion_test
      typedef typename MT::fcdsf fcdsf;
 
      typedef rtt_P1Diffusion::SolverP1Diff<MT> Solver;
-     typedef Solver::Matrix Matrix;
+     typedef typename Solver::Matrix Matrix;
 
      // DATA
 
