@@ -51,12 +51,14 @@ namespace rtt_3T_testP13T
      
      // DATA
     
-     std::ostream &os;
+     std::string fname;
      const SP<MT> &spMesh;
 
      int nx;
      int ny;
      int nz;
+     int nzp;
+     int zoff;
 
      VertId vid;
 
@@ -69,7 +71,7 @@ namespace rtt_3T_testP13T
 
      // CREATORS
     
-     GmvDump(std::ostream &os_, const SP<MT> &spMesh_,
+     GmvDump(const std::string &fname_, const SP<MT> &spMesh_,
 	     int cycle_, double time_);
 
      ~GmvDump();

@@ -8,6 +8,7 @@
 
 #include "3T/testP13T/testFullP13T.hh"
 #include "ds++/Assert.hh"
+#include "c4/global.hh"
 
 #include <stdexcept>
 #include <iostream>
@@ -27,74 +28,95 @@ namespace {
 		 const Mesh_DB &mdb, const pcg_DB &pcg_db)
  {
      XTM::testFullP13T<UMCMP> test(tdb, diffdb, mdb, pcg_db);
-     cerr << "before test.run()" << endl;
+
+     cerr << C4::node() << " before test.run()" << endl;
+
      test.run();
-     cerr << "after test.run()" << endl;
+
+     cerr << C4::node() << " after test.run()" << endl;
  }
-}
 
-int main()
+ int run(int argc, char *argv[])
+ {
+     try
+     {
+	 NML_Group g("testFullP13T");
+
+	 XTM::testFullP13T_DB tdb;
+	 tdb.setup_namelist(g);
+
+	 Diffusion_DB diffdb;
+	 diffdb.setup_namelist(g);
+
+	 Mesh_DB mdb;
+	 mdb.setup_namelist(g);
+
+	 pcg_DB pcg_db("pcg");
+	 pcg_db.setup_namelist(g);
+
+	 if (C4::node() == 0)
+	     cout << "Reading input from " << infile << ".\n";
+
+	 g.readgroup(infile.c_str());
+	 g.writegroup(outfile.c_str());
+
+	 if (C4::node() == 0)
+	     cerr << "In main()" << endl;
+	 
+	 switch (tdb.matprops)
+	 {
+	 case XTM::Marshak:
+	     runProblem<rtt_matprops::MarshakMaterialProps>(tdb, diffdb, mdb,
+							    pcg_db);
+	     break;
+	 case XTM::Interped:
+	     runProblem<rtt_matprops::InterpedMaterialProps>(tdb, diffdb, mdb,
+							     pcg_db);
+	     break;
+	 default:
+	     runProblem<rtt_matprops::MarshakMaterialProps>(tdb, diffdb, mdb,
+							    pcg_db);
+	     break;
+	 }
+
+     }
+     catch (const char *str)
+     {
+	 cerr << "caught: " << str << endl;
+	 return 1;
+     }
+     catch (const dsxx::assertion &ass)
+     {
+	 cerr << "caught assertion exception: " << ass.what() << endl;
+	 return 1;
+     }
+     catch (const std::runtime_error &rtx)
+     {
+	 cerr << "caught assertion exception: " << rtx.what() << endl;
+	 return 1;
+     }
+     catch (...)
+     {
+	 cerr << "caught unknown exception" << endl;
+	 return 1;
+     }
+     return 0;
+ }
+
+} // end unnamed namespace
+
+int main(int argc, char *argv[])
 {
-    try
+    C4::Init( argc, argv );
+
     {
-	NML_Group g("testFullP13T");
+	// Introduce a new scope in case the test problem object may need
+	// to do MPI work in its dtor.
 
-	XTM::testFullP13T_DB tdb;
-	tdb.setup_namelist(g);
-
-	Diffusion_DB diffdb;
-	diffdb.setup_namelist(g);
-
-	Mesh_DB mdb;
-	mdb.setup_namelist(g);
-
-	pcg_DB pcg_db("pcg");
-	pcg_db.setup_namelist(g);
-
-	cout << "Reading input from " << infile << ".\n";
-
-	g.readgroup(infile.c_str());
-	g.writegroup(outfile.c_str());
-
-	cerr << "In main()" << endl;
-	switch (tdb.matprops)
-	{
-	case XTM::Marshak:
-	    runProblem<rtt_matprops::MarshakMaterialProps>(tdb, diffdb, mdb,
-							   pcg_db);
-	    break;
-	case XTM::Interped:
-	    runProblem<rtt_matprops::InterpedMaterialProps>(tdb, diffdb, mdb,
-							   pcg_db);
-	    break;
-	default:
-	    runProblem<rtt_matprops::MarshakMaterialProps>(tdb, diffdb, mdb,
-							   pcg_db);
-	    break;
-	}
-
+	run(argc, argv);
     }
-    catch (const char *str)
-    {
-	cerr << "caught: " << str << endl;
-	return 1;
-    }
-    catch (const dsxx::assertion &ass)
-    {
-	cerr << "caught assertion exception: " << ass.what() << endl;
-	return 1;
-    }
-    catch (const std::runtime_error &rtx)
-    {
-	cerr << "caught assertion exception: " << rtx.what() << endl;
-	return 1;
-    }
-    catch (...)
-    {
-	cerr << "caught unknown exception" << endl;
-	return 1;
-    }
-    return 0;
+
+    C4::Finalize();    
 }
 
 #include "3T/testP13T/testFullP13T.cc"

@@ -3,7 +3,7 @@
 #
 
 $P13T
-	verbose=false nsteps=1 dt=1.0e-6 dtMin=1.0e-6 dtMax=1.0e-2 
+	verbose=true nsteps=1 dt=1.0e-6 dtMin=1.0e-6 dtMax=1.0e-2 
 	dumpcycles=1 P1TauMultiplier=0.0 IsCoupledMaterial=true 
 	opacityFile="opac.inp" materialName="H" materialId=1 abar=1.436 
 	kappa0=10 kappaPower=3 faceGamma=1.0 Te=1.0e-3 Ti=1.0e-3 TFile="" 

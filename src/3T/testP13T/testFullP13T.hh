@@ -96,7 +96,7 @@ namespace XTM {
      typedef rtt_3T_testP13T::testMaterialProps<MatStateCC,MatStateFC,MT>
      testMaterialProps;
 
-     typedef P13T<DS> P13T;
+     typedef rtt_3T::P13T<DS> P13T;
      typedef typename P13T::RadiationStateField RadiationStateField;
 
      // DATA

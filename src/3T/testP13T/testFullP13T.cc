@@ -20,6 +20,8 @@
 #include "matprops/TempMapper.hh"
 #include "3T/testP13T/GmvDump.hh"
 #include "3T/testP13T/testMaterialProps.hh"
+#include "3T/testP13T/utils.hh"
+#include "c4/global.hh"
 
 #include <functional>
 #include <new>
@@ -44,8 +46,6 @@ namespace
 {
 
  using rtt_3T_testP13T::operator<<;
- 
- enum Faces { LEFT=0, RIGHT=1, FRONT=2, BACK=3, BOTTOM=4, TOP=5 };
  
  int nx;
  int ny;
@@ -86,75 +86,6 @@ namespace
 	 }
 	 *mvit = tmp;
      }
- }
-
-
- template<class UMCMP>
- bool isContinuous(const typename testFullP13T<UMCMP>::MT::fcdsf &rhs)
- {
-     for (int i=0; i<nx; i++)
-	 for (int j=0; j<ny; j++)
-	     for (int k=0; k<nz; k++)
-	     {
-		 if (i > 0 && (rhs(i,j,k,LEFT) != -rhs(i-1,j,k,RIGHT)))
-		     return false;
-		 if (j > 0 && (rhs(i,j,k,FRONT) != -rhs(i,j-1,k,BACK)))
-		     return false;
-		 if (k > 0 && (rhs(i,j,k,BOTTOM) != -rhs(i,j,k-1,TOP)))
-		     return false;
-	     }
-     return true;
- }
- 
- template<class UMCMP>
- double sum(const typename testFullP13T<UMCMP>::MT::ccsf &rhs)
- {
-     typedef testFullP13T<UMCMP>::MT::ccsf FT;
-
-     double results = 0.0;
-     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-	 results += *it;
-     return results;
- }
-
- template<class FT>
-     typename FT::value_type min(const FT &rhs)
- {
-     FT::value_type results = *rhs.begin();
-     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-	 if (*it < results)
-	     results = *it;
-     return results;
- }
-
- template<class FT>
-     typename FT::value_type max(const FT &rhs)
- {
-     FT::value_type results = *rhs.begin();
-     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-	 if (*it > results)
-	     results = *it;
-     return results;
- }
-
- template<class FT, class OP>
-     typename FT::value_type min(const FT &rhs, OP &op)
- {
-     FT::value_type results = *rhs.begin();
-     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-	 if (op(*it) < results)
-	     results = *it;
-     return results;
- }
-
- template<class FT, class OP>
-     typename FT::value_type max(const FT &rhs, OP &op)
- {
-     FT::value_type results = *rhs.begin();
-     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-	 if (op(*it) > results)
-	     results = *it;
-     return results;
  }
 
  using rtt_matprops::MultiMatCellMatProps;
@@ -212,30 +143,6 @@ namespace
      spMatProp = new MultiMatCellMatProps<InterpedMaterialProps>(spUMatProp);
  }
 
- void setTempFromFile(Mesh_XYZ::ccsf &Temp, const std::string &filename, double floor)
- {
-     std::ifstream ifs(filename.c_str());
-
-     ifs.ignore(10000, '\n');
-     ifs.ignore(10000, '\n');
-
-     for (int k=0; k<nz; k++)
-     {
-	 double r, T1, T2, T3;
-
-	 ifs >> r >> T1 >> T2 >> T3;
-	 if (ifs.eof())
-	     throw std::runtime_error("Premature EOF reading temperatures.");
-
-	 if (T1 < floor)
-	     T1 = floor;
-	 
-	 for (int i=0; i<nx; i++)
-	     for (int j=0; j<ny; j++)
-		 Temp(i, j, k) = T1;
-     }     
- }
- 
 } // end unnamed namespace
 
 template<class UMCMP>
@@ -347,26 +254,26 @@ testFullP13T<UMCMP>::getMatStateFC(const MatStateCC &msfcc) const
     MT::gather(densityFC, density, MT::OpAssign());
     MT::gather(volFracFC, volFrac, MT::OpAssign());
     MT::gather(matidFC, matid, MT::OpAssign());
-    
+
     if (tdb.Te_bottom > 0.)
     {
-	for (int i=0; i<nx; i++)
-	    for (int j=0; j<ny; j++)
-	    {
-		using std::fill;
-		fill(TElectFC(i, j, 0, BOTTOM).begin(),
-		     TElectFC(i, j, 0, BOTTOM).end(), tdb.Te_bottom);
-		fill(TIonFC(i, j, 0, BOTTOM).begin(),
-		     TIonFC(i, j, 0, BOTTOM).end(), tdb.Te_bottom);
-	    }
+	using rtt_3T_testP13T::BOTTOM;
+	using rtt_3T_testP13T::setBoundary;
+
+	MT::bstf<vector<double> > bndTemp(spMesh);
+
+	MT::gather(bndTemp, TElectFC, MT::OpAssign());
+	setBoundary(bndTemp, tdb.Te_bottom, BOTTOM);
+	MT::gather(TElectFC, bndTemp, MT::OpAssign());
+
+	MT::gather(bndTemp, TIonFC, MT::OpAssign());
+	setBoundary(bndTemp, tdb.Te_bottom, BOTTOM);
+	MT::gather(TIonFC, bndTemp, MT::OpAssign());
     }
 
     if (tdb.verbose)
     {
-	cout << "In testFullP13T::getMatStateFC" << endl;
-	cout << endl;
 	cout << "TElectFC: " << TElectFC << endl;
-	cout << endl;
     }
 
     return spMatProp->getMaterialState<fcdsf, fcdvsf, fcdvif>(
@@ -383,7 +290,6 @@ void testFullP13T<UMCMP>::gmvDump(const RadiationStateField &radState,
     oss << "testFullP13T.gmvout."
 	<< std::setw(5) << std::setfill('0') << dumpno
 	<< std::ends;
-    std::ofstream ofs(oss.str());
 
     using PhysicalConstants::pi;
     
@@ -400,7 +306,7 @@ void testFullP13T<UMCMP>::gmvDump(const RadiationStateField &radState,
 	*trit++ = std::pow((*pit) / (a*c), 0.25);
     }
 
-    rtt_3T_testP13T::GmvDump<MT> gmv(ofs, spMesh, cycle, time);
+    rtt_3T_testP13T::GmvDump<MT> gmv(oss.str(), spMesh, cycle, time);
     gmv.dump(radState.phi, "phi");
     gmv.dump(TRad, "TRad");
     gmv.dump(TElec, "TElec");
@@ -420,7 +326,7 @@ void testFullP13T<UMCMP>::run() const
 
     if (TFile != "")
     {
-	setTempFromFile(TElect0_in, TFile, tdb.Te);
+	rtt_3T_testP13T::setTempFromFile(TElect0_in, TFile, tdb.Te);
 	TIon0_in = TElect0_in;
     }
     else
@@ -440,15 +346,22 @@ void testFullP13T<UMCMP>::run() const
     ccvif matid(spMesh); 
 
     int nmat_prob = 1;
+    std::cerr << C4::node() << " Made it before first cpCell2Mats" << endl;
     cpCell2Mats<ccvsf,ccsf>(TElect0, TElect0_in, nmat_prob);
     cpCell2Mats<ccvsf,ccsf>(TIon0, TIon0_in, nmat_prob);
     cpCell2Mats<ccvsf,ccsf>(density, density_in, nmat_prob);
     cpCell2Mats<ccvsf,ccsf>(VolFrac, VolFrac_in, nmat_prob);
     cpCell2Mats<ccvif,ccif>(matid, matid_in, nmat_prob);
+    std::cerr << C4::node() << " Made it after last cpCell2Mats" << endl;
 
+    std::cerr << C4::node() << " Made it before getMatStateCC" << endl;
     MatStateCC matStateCC = getMatStateCC(TElect0, TIon0, density, 
 					  VolFrac, matid);
+    std::cerr << C4::node() << " Made it after getMatStateCC" << endl;
+
+    std::cerr << C4::node() << " Made it before getMatStateFC" << endl;
     MatStateFC matStateFC = getMatStateFC(matStateCC);
+    std::cerr << C4::node() << " Made it after getMatStateFC" << endl;
    
     RadiationStateField radState(spMesh);
 
@@ -478,14 +391,36 @@ void testFullP13T<UMCMP>::run() const
 	QIon(tdb.Qloc) = tdb.Qi;
     }
 
+    std::cerr << C4::node() << " Made it before setBoundary" << endl;
+
     setBoundary(alpha, beta, bSrc);
+
+    std::cerr << C4::node() << " Made it after setBoundary" << endl;
+
+    if (tdb.verbose)
+    {
+	if (C4::node() == 0)
+	    cout << "alpha: " << endl;
+	cout << alpha << endl;
     
-    std::cerr << "Made it before diffSolver ctor" << endl;
+	if (C4::node() == 0)
+	    cout << "beta: " << endl;
+	cout << beta << endl;
+    
+	if (C4::node() == 0)
+	    cout << "bSrc: " << endl;
+	cout << bSrc << endl;
+    
+    }
+
+    if (C4::node() == 0)
+	std::cerr << "Made it before diffSolver ctor" << endl;
 
     SP<MatrixSolver> spMatrixSolver = new MatrixSolver(spMesh, pcg_db);
     spDiffSolver = new DS(diffdb, spMesh, spMatrixSolver);
     
-    std::cerr << "Made it after diffSolver ctor" << endl;
+    if (C4::node() == 0)
+	std::cerr << "Made it after diffSolver ctor" << endl;
 
     using dsxx::SP;
     using rtt_timestep::ts_advisor;
@@ -592,34 +527,42 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
     }
     else
     {
+	using rtt_3T_testP13T::min;
+	using rtt_3T_testP13T::max;
+	
 	double (*pabs)(double) = std::abs;
 	std::pointer_to_unary_function<double,double> opAbs =
 	    std::ptr_fun(pabs);
-	    
-	cout << "TElec (min), (max): " << min(TElec, opAbs) << " " <<
-	    max(TElec, opAbs) << endl;
-	cout << "TIon (min), (max): " << min(TIon, opAbs) << " " <<
-	    max(TIon, opAbs) << endl;
-	cout << "CvElec (min), (max): " << min(CvElec, opAbs) << " " <<
-	    max(CvElec, opAbs) << endl;
-	cout << "CvIon (min), (max): " << min(CvIon, opAbs) << " " <<
-	    max(CvIon, opAbs) << endl;
-	cout << "sigAbs (min), (max): " << min(sigAbs, opAbs) << " " <<
-	    max(sigAbs, opAbs) << endl;
-	cout << "coupleEI (min), (max): " << min(coupleEI, opAbs) << " " <<
-	    max(coupleEI, opAbs) << endl;
-	cout << "kappaElec (min), (max): "
-	     << min(kappaElec, opAbs) << " "
-	     << max(kappaElec, opAbs) << endl;
-	cout << "kappaIon (min), (max): " << min(kappaIon, opAbs)
-	     << " " << max(kappaIon, opAbs) << endl;
-	cout << "radState.phi (min), (max): " << min(radState.phi, opAbs)
-	     << " " << max(radState.phi, opAbs) << endl;
-	cout << "radState.F (min), (max): " << min(radState.F, opAbs)
-	     << " " << max(radState.F, opAbs) << endl;
+
+	double minval;
+	double maxval;
+
+	minval = min(TElec, opAbs);
+	maxval = max(TElec, opAbs);
+	if (C4::node() == 0)
+	    cout << "TElec (min), (max): " << minval << " " <<
+		maxval << endl;
+
+	minval = min(TIon, opAbs);
+	maxval = max(TIon, opAbs);
+	if (C4::node() == 0)
+	    cout << "TIon (min), (max): " << minval << " " <<
+		maxval << endl;
+	
+	minval = min(radState.phi, opAbs);
+	maxval = max(radState.phi, opAbs);
+	if (C4::node() == 0)
+	    cout << "radState.phi (min), (max): " << minval
+		 << " " << maxval << endl;
+
+	minval = min(radState.F, opAbs);
+	maxval = max(radState.F, opAbs);
+	if (C4::node() == 0)
+	    cout << "radState.F (min), (max): " << minval
+		 << " " << maxval << endl;
     }
-    
-    std::cerr << "Made it before solve3T" << endl;
+
+    std::cerr << C4::node() << " Made it before solve3T" << endl;
     
     RadiationStateField newRadState(spMesh);
     ccsf QEEM(spMesh);
@@ -631,9 +574,9 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
 		    testMaterialProps(matStateCC, matStateFC), velocity,
 		    radState, QRad, QElectron, QIon, alpha, beta, bSrc);
 
-    std::cerr << "Made it after solve3T" << endl;
+    std::cerr << C4::node() << " Made it after solve3T" << endl;
 
-    Assert(isContinuous<UMCMP>(newRadState.F));
+    Assert(rtt_3T_testP13T::isContinuous<MT>(newRadState.F, spMesh));
 
     if (cycle % tdb.dumpcycles == 0)
     {
@@ -665,22 +608,18 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
 #if 1
     if (cycle % tdb.dumpcycles == 0)
     {
-	static int dumpno = 0;
+	static int dumpno = 1;
     
 	std::ostrstream oss;
 	oss << "testFullP13T."
 	    << std::setw(5) << std::setfill('0') << dumpno++
 	    << ".dat"
 	    << std::ends;
-	std::ofstream ofs(oss.str());
-	ofs << "# testFullP13T cycle=" << cycle << " time=" << time << endl;
-	ofs << "# z \t TRad(z)" << endl;
+
 	ccsf TElect(spMesh);
 	newMatStateCC.getElectronTemperature(TElect);
-	const double dz = spMesh->get_dz();
-	for (int m=0; m<nz; m++)
-	    ofs << dz*(m+.5) << '\t' << TElect(0,0,m)
-		<< endl;
+	
+	rtt_3T_testP13T::dumpInZ(oss.str(), cycle, time, TElect);
     }
 #endif
 
@@ -699,32 +638,15 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
 template<class UMCMP>
 void testFullP13T<UMCMP>::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 {
-    for (int j=0; j<ny; j++)
-    {
-	for (int k=0; k<nz; k++)
-	{
-	    alpha(0,    j, k, LEFT) = diffdb.alpha_left;
-	    beta (0   , j, k, LEFT) = diffdb.beta_left;
-	    bSrc (0   , j, k, LEFT) = tdb.src_left;
-	    alpha(nx-1, j, k, RIGHT) = diffdb.alpha_right;
-	    beta (nx-1, j, k, RIGHT) = diffdb.beta_right;
-	    bSrc (nx-1, j, k, RIGHT) = tdb.src_right;
-	}
-    }
-
-    for (int i=0; i<nx; i++)
-    {
-	for (int k=0; k<nz; k++)
-	{
-	    alpha(i, 0   , k, FRONT) = diffdb.alpha_front;
-	    beta (i, 0   , k, FRONT) = diffdb.beta_front;
-	    bSrc (i, 0   , k, FRONT) = tdb.src_front;
-	    alpha(i, ny-1, k, BACK) = diffdb.alpha_back;
-	    beta (i, ny-1, k, BACK) = diffdb.beta_back;
-	    bSrc (i, ny-1, k, BACK) = tdb.src_back;
-	}
-    }
+    using rtt_3T_testP13T::setBoundary;
     
+    setBoundary(alpha, diffdb.alpha_left, diffdb.alpha_right,
+		diffdb.alpha_front, diffdb.alpha_back,
+		diffdb.alpha_bottom, diffdb.alpha_top);
+    setBoundary(beta, diffdb.beta_left, diffdb.beta_right,
+		diffdb.beta_front, diffdb.beta_back,
+		diffdb.beta_bottom, diffdb.beta_top);
+
     if (tdb.Te_bottom > 0.0)
     {
 	const RadiationPhysics radphys(units);
@@ -733,34 +655,17 @@ void testFullP13T<UMCMP>::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 
 	phi_bottom *= 4.0*PhysicalConstants::pi;
 
-	for (int i=0; i<nx; i++)
-	{
-	    for (int j=0; j<ny; j++)
-	    {
-		alpha(i, j, 0   , BOTTOM) = diffdb.alpha_bottom;
-		beta (i, j, 0   , BOTTOM) = diffdb.beta_bottom;
-		bSrc (i, j, 0   , BOTTOM) = phi_bottom*diffdb.alpha_bottom;
-		alpha(i, j, nz-1, TOP) = diffdb.alpha_top;
-		beta (i, j, nz-1, TOP) = diffdb.beta_top;
-		bSrc (i, j, nz-1, TOP) = tdb.src_top;
-	    }
-	}
+	setBoundary(bSrc, tdb.src_left, tdb.src_right,
+		    tdb.src_front, tdb.src_back,
+		    phi_bottom*diffdb.alpha_bottom, tdb.src_top);
     }
     else
     {
-	for (int i=0; i<nx; i++)
-	{
-	    for (int j=0; j<ny; j++)
-	    {
-		alpha(i, j, 0   , BOTTOM) = diffdb.alpha_bottom;
-		beta (i, j, 0   , BOTTOM) = diffdb.beta_bottom;
-		bSrc (i, j, 0   , BOTTOM) = tdb.src_bottom;
-		alpha(i, j, nz-1, TOP) = diffdb.alpha_top;
-		beta (i, j, nz-1, TOP) = diffdb.beta_top;
-		bSrc (i, j, nz-1, TOP) = tdb.src_top;
-	    }
-	}
+	setBoundary(bSrc, tdb.src_left, tdb.src_right,
+		    tdb.src_front, tdb.src_back,
+		    tdb.src_bottom, tdb.src_top);
     }
+
 }    
 
 template<class UMCMP>
@@ -789,35 +694,6 @@ void testFullP13T<UMCMP>::postProcess(const RadiationStateField &radState,
     newMatStateCC.getElectronTemperature(TElec);
     newMatStateCC.getIonTemperature(TIon);
 
-    if (tdb.verbose)
-    {
-	cout << "newRadState.phi: " << newRadState.phi << endl;
-	cout << "newRadState.F: " << newRadState.F << endl;
-	cout << "TElectron: " << TElec << endl;
-	cout << "TIon: " << TIon << endl;
-    }
-    else
-    {
-	double (*pabs)(double) = std::abs;
-	std::pointer_to_unary_function<double,double> opAbs =
-	    std::ptr_fun(pabs);
-
-	cout << "TElec0 (min), (max): " << min(TElec0, opAbs) << " " <<
-	    max(TElec0, opAbs) << endl;
-	cout << "TElec (min), (max): " << min(TElec, opAbs) << " " <<
-	    max(TElec, opAbs) << endl;
-	cout << "TIon0 (min), (max): " << min(TIon0, opAbs) << " " <<
-	    max(TIon0, opAbs) << endl;
-	cout << "TIon (min), (max): " << min(TIon, opAbs) << " " <<
-	    max(TIon, opAbs) << endl;
-	cout << "radState.phi (min), (max): "
-	     << min(radState.phi, opAbs) << " " <<
-	    max(radState.phi, opAbs) << endl;
-	cout << "newRadState.phi (min), (max): "
-	     << min(newRadState.phi, opAbs) << " "
-	     << max(newRadState.phi, opAbs) << endl;
-    }
-
     const double dx = spMesh->get_dx();
     const double dy = spMesh->get_dy();
     const double dz = spMesh->get_dz();
@@ -837,13 +713,17 @@ void testFullP13T<UMCMP>::postProcess(const RadiationStateField &radState,
     ccsf deltaRadEnergyCC(spMesh);
     deltaRadEnergyCC = (newRadState.phi - radState.phi) / c;
 
-    const double deltaRadEnergy = sum<UMCMP>(deltaRadEnergyCC)*volpcell;
-    cout << "deltaRadEnergy: " << deltaRadEnergy
-	 << "\trate: " << deltaRadEnergy/dt << endl;
+    using rtt_3T_testP13T::sum;
 
-    const double electEnergyDep = sum<UMCMP>(electEnergyDepCC)*volpcell;
-    cout << "electEnergyDep: " << electEnergyDep
-	 << "\trate: " << electEnergyDep/dt << endl;
+    const double deltaRadEnergy = sum(deltaRadEnergyCC)*volpcell;
+    if (C4::node() == 0)
+	cout << "deltaRadEnergy: " << deltaRadEnergy
+	     << "\trate: " << deltaRadEnergy/dt << endl;
+
+    const double electEnergyDep = sum(electEnergyDepCC)*volpcell;
+    if (C4::node() == 0)
+	cout << "electEnergyDep: " << electEnergyDep
+	     << "\trate: " << electEnergyDep/dt << endl;
 
     ccsf CvElec(spMesh);
     ccsf CvIon(spMesh);
@@ -856,71 +736,87 @@ void testFullP13T<UMCMP>::postProcess(const RadiationStateField &radState,
     // cout << "electEnergyDep (recalc): " << delta
     //      << "\trate: " << delta/dt << endl;
 
-    const double ionEnergyDep = sum<UMCMP>(ionEnergyDepCC)*volpcell;
-    cout << "  ionEnergyDep: " << ionEnergyDep
-	 << "\trate: " << ionEnergyDep/dt << endl;
+    const double ionEnergyDep = sum(ionEnergyDepCC)*volpcell;
+    if (C4::node() == 0)
+	cout << "  ionEnergyDep: " << ionEnergyDep
+	     << "\trate: " << ionEnergyDep/dt << endl;
 
     const double energyDep = deltaRadEnergy + electEnergyDep + ionEnergyDep;
+    if (C4::node() == 0)
+	cout << "energyDep: " << energyDep
+	     << "\trate: " << energyDep/dt << endl;
 
-    cout << "energyDep: " << energyDep
-	 << "\trate: " << energyDep/dt << endl;
+    const double inhomosrc = sum(QRad) * volpcell;
+    const double qsrc = inhomosrc + (sum(QElectron) +
+				     sum(QIon))*volpcell;
 
-    const double inhomosrc = sum<UMCMP>(QRad) * volpcell;
-    const double qsrc = inhomosrc + (sum<UMCMP>(QElectron) +
-				     sum<UMCMP>(QIon))*volpcell;
-
-    cout << "Volume src: " << qsrc << endl;
+    if (C4::node() == 0)
+	cout << "Volume src: " << qsrc << endl;
 
     double bndsrc;
     bndsrc  = (tdb.src_left + tdb.src_right) * ny*dy * nz*dz ;
     bndsrc += (tdb.src_front + tdb.src_back) * nz*dz * nx*dx;
     bndsrc += (tdb.src_bottom + tdb.src_top) * nx*dx * ny*dy;
 
-    cout << "Boundary src: " << bndsrc << endl;
+    if (C4::node() == 0)
+	cout << "Boundary src: " << bndsrc << endl;
 
     const double externsrc = bndsrc + qsrc;
-    cout << "Total external src: " << externsrc << endl;
+    if (C4::node() == 0)
+	cout << "Total external src: " << externsrc << endl;
 
-    const double timedepsrc = sum<UMCMP>(radState.phi) * volpcell / (c*dt);
-    cout << "time dep src: " << timedepsrc << endl;
+    const double timedepsrc = sum(radState.phi) * volpcell / (c*dt);
+    if (C4::node() == 0)
+	cout << "time dep src: " << timedepsrc << endl;
     
-    const double timedeprem = sum<UMCMP>(newRadState.phi) * volpcell / (c*dt);
-    cout << "time dep removal: " << timedeprem << endl;
+    const double timedeprem = sum(newRadState.phi) * volpcell / (c*dt);
+    if (C4::node() == 0)
+	cout << "time dep removal: " << timedeprem << endl;
     
     ccsf sigAbs(spMesh);
     matStateCC.getSigmaAbsorption(1,sigAbs);
 
     ccsf temp(spMesh);
     temp = newRadState.phi*sigAbs;
-    const double absorption = sum<UMCMP>(temp) * volpcell;
-    cout << "absorption: " << absorption << endl;
+    const double absorption = sum(temp) * volpcell;
+    if (C4::node() == 0)
+	cout << "absorption: " << absorption << endl;
 
     temp = newRadState.phi*REEM;
-    const double emisrem = sum<UMCMP>(temp) * volpcell;
-    cout << "emissive removal: " << emisrem << endl;
+    const double emisrem = sum(temp) * volpcell;
+    if (C4::node() == 0)
+	cout << "emissive removal: " << emisrem << endl;
     
-    const double emission = sum<UMCMP>(QEEM) *	volpcell;
-    cout << "emission: " << emission << endl;
+    const double emission = sum(QEEM) *	volpcell;
+    if (C4::node() == 0)
+	cout << "emission: " << emission << endl;
 
     // cout << "emission-absorption: " << emission - absorption << endl;
 
     const double leakage = calcLeakage(newRadState);
     
-    cout << "leakage (x-y): " << leakage << endl;
+    if (C4::node() == 0)
+	cout << "leakage (x-y): " << leakage << endl;
 
     const double totsrc = inhomosrc + bndsrc + timedepsrc + emission;
-    cout << "total radiation sources: " << totsrc << endl;
+    if (C4::node() == 0)
+	cout << "total radiation sources: " << totsrc << endl;
 
     const double totrem = leakage + absorption + emisrem + timedeprem;
-    cout << "total radiation removal: " << totrem << endl;
+    if (C4::node() == 0)
+	cout << "total radiation removal: " << totrem << endl;
     
     const double balance = totsrc - totrem;
-    cout << "Rad only Balance: " << balance << endl;
+    if (C4::node() == 0)
+	cout << "Rad only Balance: " << balance << endl;
 
     const double relbal = balance / totsrc;
-    cout << "Relative Balance: " << relbal << endl;
+    if (C4::node() == 0)
+	cout << "Relative Balance: " << relbal << endl;
 
-    cout << endl;
+    if (C4::node() == 0)
+	cout << endl;
+    
     cout.flags(oldOptions);
 }
 
@@ -941,12 +837,13 @@ testFullP13T<UMCMP>::calcLeakage(const RadiationStateField &radstate) const
     {
 	for (int l=0; l<ny; l++)
 	{
-	    if (diffdb.alpha_bottom != 0)
+	    if (C4::node() == 0 && diffdb.alpha_bottom != 0)
 	    {
 		double alpha_bottom = diffdb.alpha_bottom;
 		double beta_bottom = diffdb.beta_bottom;
 		double src_bottom = tdb.src_bottom;
 
+		using rtt_3T_testP13T::BOTTOM;
 		double F_bottom = radstate.F(k,l,0,BOTTOM);
 		
 		// calculate phi along bottom face
@@ -957,12 +854,13 @@ testFullP13T<UMCMP>::calcLeakage(const RadiationStateField &radstate) const
 		// leakage += alpha_bottom*phi_bottom - beta_bottom*F_bottom;
 	    }
 
-	    if (diffdb.alpha_top != 0)
+	    if (C4::node() == C4::nodes() - 1 && diffdb.alpha_top != 0)
 	    {
 		double alpha_top = diffdb.alpha_top;
 		double beta_top = diffdb.beta_top;
 		double src_top = tdb.src_top;
 
+		using rtt_3T_testP13T::TOP;
 		double F_top = radstate.F(k,l,nz-1,TOP);
 		
 		// calculate phi along top face
@@ -973,8 +871,11 @@ testFullP13T<UMCMP>::calcLeakage(const RadiationStateField &radstate) const
 	    }
 	}
     }
+
     leakage *= dx*dy;
 
+    C4::gsum(leakage);
+    
     return leakage;
 }
 

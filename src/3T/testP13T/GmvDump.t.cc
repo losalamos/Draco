@@ -7,20 +7,32 @@
 //---------------------------------------------------------------------------//
 
 #include "3T/testP13T/GmvDump.hh"
+#include "3T/testP13T/Mesh_XYZ_IO.hh"
+
+#include "c4/global.hh"
+#include "c4/SpinLock.hh"
+#include "ds++/Mat.hh"
 
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 
 namespace rtt_3T_testP13T
 {
 
  template<class MT>
- GmvDump<MT>:: GmvDump(std::ostream &os_, const SP<MT> &spMesh_,
+ GmvDump<MT>::GmvDump(const std::string &fname_, const SP<MT> &spMesh_,
 		       int cycle_, double time_)
-     : os(os_), spMesh(spMesh_), nx(spMesh->get_ncx()),
-       ny(spMesh->get_ncy()), nz(spMesh->get_ncz()), vid(nx, ny, nz),
+     : fname(fname_), spMesh(spMesh_), nx(spMesh->get_ncx()),
+       ny(spMesh->get_ncy()), nz(spMesh->get_ncz()), nzp(spMesh->get_nczp()),
+       zoff(spMesh->get_zoff()), vid(nx, ny, nz),
        variablePrinted(false), cycle(cycle_), time(time_)
  {
+     if (C4::node() != 0)
+	 return;
+
+     std::ofstream os(fname.c_str());
+     
      using std::endl;
      std::ios_base::fmtflags fmtflags = os.flags();
 
@@ -121,8 +133,13 @@ namespace rtt_3T_testP13T
  template<class MT>
  GmvDump<MT>::~GmvDump()
  {
+     if (C4::node() != 0)
+	 return;
+
      using std::endl;
     
+     std::ofstream os(fname.c_str(), std::ios_base::app);
+
      if (variablePrinted)
 	 os << "endvars" << endl;
      os << "probtime " << time << endl;
@@ -132,23 +149,29 @@ namespace rtt_3T_testP13T
 
  template<class MT>
  void GmvDump<MT>::dump(const typename MT::ccsf &var, const std::string &name)
- {
+{
+     C4::HTSyncSpinLock htlock;
+
      using std::endl;
+
+     std::ofstream os(fname.c_str(), std::ios_base::app);
+     
      std::ios_base::fmtflags fmtflags = os.flags();
 
      os << std::setw(16) << std::scientific << std::setprecision(6);
 	 
-     if (!variablePrinted)
+     if (C4::node() == 0 && !variablePrinted)
      {
 	 os << "variable" << endl;
 	 variablePrinted = true;
      }
-	 
-     os << name << " 0" << endl;
+
+     if (C4::node() == 0)
+	 os << name << " 0" << endl;
 
      const int nitemsPerLine = 5;
      int nitems = 0;
-     for (int k=0; k<nz; k++)
+     for (int k=zoff; k<zoff+nzp; k++)
      {
 	 for (int j=0; j<ny; j++)
 	 {
