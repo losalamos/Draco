@@ -6,11 +6,14 @@
 # @> Rules for building the baby solver test executable.
 ###############################################################################
 
+need_linalg     := yes
 need_c4		:= yes
 need_namelist	:= yes
 need_spdf	:= yes
 need_util	:= yes
-need_pooma	:= yes
+#need_pooma	:= yes
+need_pcg        := yes
+need_lapack     := yes
 
 # Go get the standard includeable makefile for Draco components.
 
@@ -37,11 +40,12 @@ main_$(env) : deps $(objs) \
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../ds++; $(MAKE) $(subnj))
-	(cd ../c4;   $(MAKE) $(subnj) dodeps=no)
-	(cd ../nml;  $(MAKE) $(subnj) dodeps=no)
-	(cd ../spdf; $(MAKE) $(subnj) dodeps=no)
-	(cd ../util; $(MAKE) $(subnj) dodeps=no)
+	(cd ../ds++;   $(MAKE) $(subnj))
+	(cd ../c4;     $(MAKE) $(subnj) dodeps=no)
+	(cd ../nml;    $(MAKE) $(subnj) dodeps=no)
+	(cd ../spdf;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../util;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../linalg; $(MAKE) $(subnj) dodeps=no)
 endif
 
 $(dep_libutil):
