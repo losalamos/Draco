@@ -55,9 +55,9 @@ public:
 		temperature.Mesh().Num_cells());
 	return density.Mesh().Num_cells();
     }
-
-  // diagnostic print
-    void Print(int) const;
+    
+  // diagnostic functions (for printing)
+    void Print(ostream &, int) const;
 };
 
 // overloaded operators

@@ -62,7 +62,7 @@ public:
     {
 	return face_cell[cell_index-1].size();
     }
-    void Print(int) const;
+    void Print(ostream &, int) const;
 
   // overloaded operator for subscripting, not assignment,
   // for const objects

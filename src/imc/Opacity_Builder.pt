@@ -7,15 +7,16 @@
 //---------------------------------------------------------------------------//
 
 #include "imctest/OS_Mesh.hh"
-#include "imctest/OS_Parser.hh"
+#include "imctest/OS_Interface.hh"
 #include "ds++/SP.hh"
 #include "Opacity_Builder.cc"
 
 IMCSPACE
 
 instantiate class Opacity_Builder<OS_Mesh>
-instantiate funcproto MT=OS_Mesh, PT=OS_Parser
-Opacity_Builder<MT>::Opacity_Builder(SP<PT>, SP<MT>)
+
+instantiate funcproto MT=OS_Mesh, IT=OS_Interface
+Opacity_Builder<MT>::Opacity_Builder(SP<IT>, SP<MT>)
 
 CSPACE
 

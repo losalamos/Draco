@@ -16,14 +16,19 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // print function for diagnostics
 template<class MT>
-void Opacity<MT>::Print(int cell) const
+void Opacity<MT>::Print(ostream &output, int cell) const
 {
   // print out opacities in cell
     using std::cout;
     using std::endl;
     using std::setw;
+    using std::ios;
+    using std::setiosflags;
 
-    cout << setw(8) << cell << setw(10) << sigma(cell) << endl;
+    output.precision(4);
+
+    output << setw(8) << cell << setw(15) << setiosflags(ios::scientific)
+	   << sigma(cell) << endl;
 }
 
 //---------------------------------------------------------------------------//
@@ -36,12 +41,15 @@ ostream& operator<<(ostream &output, const Opacity<MT> &object)
     using std::cout;
     using std::endl;
     using std::setw;
+    using std::ios;
+    using std::setiosflags;
 
-    cout << "  Cell  " << " Opacity  " << endl;
-    cout << "------------------------" << endl;
+    output << setw(8) << setiosflags(ios::right) << "Cell" 
+	   << setw(15) << "Opacity" << endl;
+    output << "-----------------------" << endl;
 
     for (int i = 1; i <= object.Num_cells(); i++)
-        object.Print(i);
+        object.Print(output, i);
     return output;
 }
 

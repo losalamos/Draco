@@ -37,7 +37,7 @@ private:
     typename MT::CCSF temp;
     typename MT::CCSF opacity;
 
-  // data received from XX_Parser
+  // data received from XX_Interface
     vector<int> zone;
     vector<int> mat_zone;
     vector<double> density;
@@ -45,9 +45,9 @@ private:
     vector<double> temperature;
 
 public:
-  // templated explicit constructor depends on parser type (PT)
-    template<class PT>
-    explicit Opacity_Builder(SP<PT>, SP<MT>);
+  // templated explicit constructor depends on interface type (IT)
+    template<class IT>
+    explicit Opacity_Builder(SP<IT>, SP<MT>);
 
   // build state member functions
 

@@ -45,7 +45,7 @@ public:
     int Num_cells() const { return sigma.Mesh().Num_cells(); }
 
   // diagnostic member functions
-    void Print(int) const;
+    void Print(ostream &, int) const;
 };
 
 // overloaded operators

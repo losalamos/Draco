@@ -14,18 +14,22 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // public member functions
 //---------------------------------------------------------------------------//
+
 template<class MT>
-void Mat_State<MT>::Print(int cell) const
+void Mat_State<MT>::Print(ostream &output, int cell) const
 {
   // print out material state of cell
     using std::cout;
     using std::endl;
     using std::setw;
+    using std::ios;
+    using std::setiosflags;
 
-    cout << setw(8) << cell << setw(10) << density(cell) << setw(10) 
-	 << temperature(cell) << endl;
+    output.precision(4);
+       
+    output << setw(8) << cell << setw(15) << setiosflags(ios::scientific)
+	   << density(cell) << setw(15) << temperature(cell) << endl;
 } 
-
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
@@ -33,16 +37,17 @@ template<class MT>
 ostream& operator<<(ostream &output, const Mat_State<MT> &object)
 {
   // print out opacities for all cells
-    using std::cout;
     using std::endl;
     using std::setw;
-
-    cout << setw(8) << "Cell" << setw(10) << "Density" << setw(10)
-	 << "Temp" << endl;
-    cout << "----------------------------" << endl;
+    using std::ios;
+    using std::setiosflags;
+    
+    output << setw(8)  << setiosflags(ios::right) << "Cell" 
+	   << setw(15) << "Density" << setw(15) << "Temp" << endl;
+    output << "--------------------------------------" << endl;
 
     for (int i = 1; i <= object.Num_cells(); i++)
-        object.Print(i);
+	object.Print(output, i);
     return output;
 }
 

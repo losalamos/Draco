@@ -1,22 +1,25 @@
 //----------------------------------*-C++-*----------------------------------//
-// OS_Parser.hh
+// OS_Interface.hh
 // Thomas M. Evans
 // Mon Feb 23 17:22:21 1998
 //---------------------------------------------------------------------------//
-// @> OS_Parser class header file
+// @> OS_Interface class header file
 //---------------------------------------------------------------------------//
 
-#ifndef __imctest_OS_Parser_hh__
-#define __imctest_OS_Parser_hh__
+#ifndef __imctest_OS_Interface_hh__
+#define __imctest_OS_Interface_hh__
 
 //===========================================================================//
-// class OS_Parser - 
+// class OS_Interface - 
 //
-// Purpose : parses a Orthogonal structured mesh input file
+// Purpose : parses a Orthogonal structured mesh input file, interface
+//           between input file and IMCTEST package
 //
 // revision history:
 // -----------------
-// 0) original
+//  0) original
+//  1)  3-13-98 : changed name to OS_Interface because this class is the
+//                interface between our input and the builders.
 // 
 //===========================================================================//
 
@@ -33,7 +36,7 @@ using std::string;
 using std::vector;
 using std::ifstream;
 
-class OS_Parser 
+class OS_Interface 
 {
 private:
   // input file particulars
@@ -82,7 +85,7 @@ private:
     void Zone_parser(ifstream &);
 public:
   // constructor
-    explicit OS_Parser(const string &infile)
+    explicit OS_Interface(const string &infile)
 	: input_file(infile), coord_system(""), fine_cells(0), 
 	  accum_cells(0), coarse_edge(0), fine_edge(0), bnd_cond(0), 
 	  zone(0), mat_zone(0), density(0), kappa(0), temperature(0)
@@ -90,12 +93,12 @@ public:
 
   // public Parser member functions
     void Parser();
-
+    
   // public copy functions for mesh
     string Coordinates() const { return coord_system; }
     const vector<string>& Boundaries() const { return bnd_cond; }
     const OS_Mesh::CCVF_a& Fine_edge() const { return fine_edge; }
-
+    
   // public copy functions for Opacity<MT>
     const vector<int>& Zone() const { return zone; }
     const vector<int>& Mat_zone() const { return mat_zone; }
@@ -106,8 +109,8 @@ public:
 
 CSPACE
 
-#endif                          // __imctest_OS_Parser_hh__
+#endif                          // __imctest_OS_Interface_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imctest/OS_Parser.hh
+//                              end of imctest/OS_Interface.hh
 //---------------------------------------------------------------------------//

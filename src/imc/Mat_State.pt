@@ -15,6 +15,7 @@ IMCSPACE
 using std::ostream;
 
 instantiate class Mat_State<OS_Mesh>
+
 instantiate funcproto MT=OS_Mesh
 ostream& operator<<(ostream &, const Mat_State<MT> &)
 

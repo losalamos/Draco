@@ -15,16 +15,16 @@ IMCSPACE
 // constructors
 //---------------------------------------------------------------------------//
 template<class MT>
-template<class PT>
-Opacity_Builder<MT>::Opacity_Builder(SP<PT> parser, SP<MT> mesh)
+template<class IT>
+Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface, SP<MT> mesh)
     : rho(mesh), temp(mesh), opacity(mesh)
 {
-  // assign data members from the parser
-    zone        = parser->Zone();
-    mat_zone    = parser->Mat_zone();
-    density     = parser->Density();
-    kappa       = parser->Kappa();
-    temperature = parser->Temperature();
+  // assign data members from the interface parser
+    zone        = interface->Zone();
+    mat_zone    = interface->Mat_zone();
+    density     = interface->Density();
+    kappa       = interface->Kappa();
+    temperature = interface->Temperature();
 
   // check some asserts verifying size of mesh
     assert (mesh->Num_cells() == rho.Mesh().Num_cells());

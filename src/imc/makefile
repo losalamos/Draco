@@ -14,7 +14,7 @@ include ../config/makefile
 
 # Put non template code here
 
-libsrcs = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Parser.cc Random.cc \
+libsrcs = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Interface.cc Random.cc \
           Coord_sys.cc
 
 # Get the library built, minding our various other targets too.

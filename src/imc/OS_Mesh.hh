@@ -36,12 +36,14 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <ostream>
 
 IMCSPACE
 
 // defined namespaces
 using std::vector;
 using std::fill;
+using std::ostream;
     
 class OS_Mesh
 {
@@ -176,7 +178,7 @@ public:
     int Num_cells() const { return layout.Num_cells(); }
 
   // diagnostic functions
-    void Print(int) const;
+    void Print(ostream &, int) const;
 
   // required services
     int Next_cell(int cell, int face) const { return layout(cell, face); }

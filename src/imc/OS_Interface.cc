@@ -1,12 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// OS_Parser.cc
+// OS_Interface.cc
 // Thomas M. Evans
 // Mon Feb 23 17:22:21 1998
 //---------------------------------------------------------------------------//
-// @> OS_Parser class implementation file
+// @> OS_Interface class implementation file
 //---------------------------------------------------------------------------//
 
-#include "imctest/OS_Parser.hh"
+#include "imctest/OS_Interface.hh"
 #include <cassert>
 
 IMCSPACE
@@ -19,7 +19,7 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // public Parser member functions
 //---------------------------------------------------------------------------//
-void OS_Parser::Parser()
+void OS_Interface::Parser()
 {
   // open input file, ifstream object requires C-style string
     const char *file = input_file.c_str();
@@ -40,7 +40,7 @@ void OS_Parser::Parser()
 //---------------------------------------------------------------------------//
 // private Parser member functions for OS_Mesh build
 //---------------------------------------------------------------------------//
-void OS_Parser::Parser_mesh(ifstream &in)
+void OS_Interface::Parser_mesh(ifstream &in)
 {
   // OS_Mesh Parser
 
@@ -115,7 +115,7 @@ void OS_Parser::Parser_mesh(ifstream &in)
 }
 
 //---------------------------------------------------------------------------//
-void OS_Parser::Parser2D(ifstream &in)
+void OS_Interface::Parser2D(ifstream &in)
 {
   // 2D parser
 
@@ -176,7 +176,7 @@ void OS_Parser::Parser2D(ifstream &in)
 }    
 
 //---------------------------------------------------------------------------//
-void OS_Parser::Parser3D(ifstream &in)
+void OS_Interface::Parser3D(ifstream &in)
 {
   // 3D parser
 
@@ -255,7 +255,7 @@ void OS_Parser::Parser3D(ifstream &in)
 //---------------------------------------------------------------------------//
 // private Parser member functions for Opacity<MT> build
 //---------------------------------------------------------------------------//
-void OS_Parser::Parser_opacity(ifstream &in)
+void OS_Interface::Parser_opacity(ifstream &in)
 { 
   // determine size of mesh and initialize zone and zone_map arrays
     int dim       = fine_edge.size();
@@ -277,7 +277,7 @@ void OS_Parser::Parser_opacity(ifstream &in)
 }
 
 //---------------------------------------------------------------------------//
-void OS_Parser::Zone_parser(ifstream &in)
+void OS_Interface::Zone_parser(ifstream &in)
 {
   // Opacity Parser
 
@@ -322,7 +322,7 @@ void OS_Parser::Zone_parser(ifstream &in)
 }
 
 //---------------------------------------------------------------------------//
-void OS_Parser::Zone_mapper()
+void OS_Interface::Zone_mapper()
 {
   // dimension of mesh
     int dim = fine_edge.size();
@@ -348,7 +348,7 @@ void OS_Parser::Zone_mapper()
 }
   
 //---------------------------------------------------------------------------//
-void OS_Parser::Cell_zone(int iz, int jz)
+void OS_Interface::Cell_zone(int iz, int jz)
 {
   // match a fine-cell to a zone for 2D meshes
 
@@ -374,7 +374,7 @@ void OS_Parser::Cell_zone(int iz, int jz)
 }
 
 //---------------------------------------------------------------------------//
-void OS_Parser::Cell_zone(int iz, int jz, int kz)
+void OS_Interface::Cell_zone(int iz, int jz, int kz)
 {
   // match a fine-cell to a zone for 3D meshes
 
@@ -409,5 +409,5 @@ void OS_Parser::Cell_zone(int iz, int jz, int kz)
 CSPACE
 
 //---------------------------------------------------------------------------//
-//                              end of OS_Parser.cc
+//                              end of OS_Interface.cc
 //---------------------------------------------------------------------------//

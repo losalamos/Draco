@@ -28,9 +28,9 @@ SP<OS_Mesh> OS_Builder::Build_Mesh()
     SP<Layout> layout;
     SP<OS_Mesh> return_mesh;
 
-  // get data arrays from OS_Parser needed to build OS_Mesh
-    fine_edge = parser->Fine_edge();
-    bnd_cond  = parser->Boundaries();
+  // get data arrays from OS_Interface needed to build OS_Mesh
+    fine_edge = interface->Fine_edge();
+    bnd_cond  = interface->Boundaries();
     
   // build mesh-independent objects
     coord  = Build_Coord();
@@ -136,8 +136,8 @@ SP<OS_Mesh> OS_Builder::Build_3DMesh(SP<Coord_sys> coord, Layout &layout)
 //---------------------------------------------------------------------------//
 SP<Coord_sys> OS_Builder::Build_Coord()
 {
-  // get coordinate system from OS_Parser
-    string coord_system = parser->Coordinates();
+  // get coordinate system from OS_Interface
+    string coord_system = interface->Coordinates();
 
   // build coordinate system
     SP<Coord_sys> coord;

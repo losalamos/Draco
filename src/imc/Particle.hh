@@ -47,23 +47,34 @@ private:
     vector<double> omega;
   // particle cell
     int cell;
+  // status of particle
+    bool alive;
   // random number object
     Random random;
 
   // private particle service functions
 
   // stream a distance d
-    void stream(double);
+    void Stream(double);
   // collision, return a false if particle is absorbed
-    bool collide(const MT &, const Opacity<MT> &);
+    bool Collide(const MT &, const Opacity<MT> &);
+
+  // private diagnostic functions
+    void Print();
+    void Print_alive();
+    void Print_dead();
+
 public:
   // default constructor, explicit to guarantee definition
   // of coord. sys during Particle instantiation
     explicit Particle(const MT &, int, double = 0, double = 0);
 
   // transport member functions
-    void source(vector<double> &, const MT &);
-    void transport(const MT &, const Opacity<MT> &);
+    void Source(vector<double> &,vector<double> &, const MT &);
+    void Transport(const MT &, const Opacity<MT> &);
+
+  // other services
+    bool Status() { return alive; }
 };
 
 CSPACE

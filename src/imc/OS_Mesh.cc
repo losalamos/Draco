@@ -81,11 +81,7 @@ double OS_Mesh::Get_db(const vector<double> &r, const vector<double> &omega,
   // calculate the distance to boundary
     vector<double>::iterator itor = min_element(dim_dist_boundary.begin(),
 						dim_dist_boundary.end());
-    double dist_boundary_real = *itor;
-
-  // get the transformed distance to boundary from the coordinate system for
-  // 3D transport in 2D and non-cartesian 3D meshes
-    double dist_boundary = coord->Transform(dist_boundary_real, omega);
+    double dist_boundary = *itor;
 
   // calculate the face that the boundary is on
     int index = itor - dim_dist_boundary.begin();
@@ -98,40 +94,40 @@ double OS_Mesh::Get_db(const vector<double> &r, const vector<double> &omega,
     return dist_boundary;
 }
 
-void OS_Mesh::Print(int cell) const
+void OS_Mesh::Print(ostream &output, int cell) const
 {
     using std::cout;
     using std::endl;
     using std::setw;
 
   // print out content info for 1 cell
-    cout << "+++++++++++++++" << endl;
-    cout << "---------------" << endl;
-    cout << "Cell : "         << cell << endl;
-    cout << "---------------" << endl;
-    cout << "Dimensions "     << endl;
-    cout << "---------------" << endl;
+    output << "+++++++++++++++" << endl;
+    output << "---------------" << endl;
+    output << "Cell : "         << cell << endl;
+    output << "---------------" << endl;
+    output << "Dimensions "     << endl;
+    output << "---------------" << endl;
     if (coord->Get_dim() == 2)
     {
-	cout << " x  : " << pos[0][cell-1] << endl;
-	cout << " y  : " << pos[1][cell-1] << endl;
-    	cout << " dx : " << dim[0][cell-1] << endl;
-	cout << " dy : " << dim[1][cell-1] << endl;
+	output << " x  : " << pos[0][cell-1] << endl;
+	output << " y  : " << pos[1][cell-1] << endl;
+    	output << " dx : " << dim[0][cell-1] << endl;
+	output << " dy : " << dim[1][cell-1] << endl;
     }
     else
     {
-	cout << " x  : " << pos[0][cell-1] << endl;
-	cout << " y  : " << pos[1][cell-1] << endl;
-	cout << " z  : " << pos[2][cell-1] << endl;
-    	cout << " dx : " << dim[0][cell-1] << endl;
-	cout << " dy : " << dim[1][cell-1] << endl;
-	cout << " dz : " << dim[2][cell-1] << endl;
+	output << " x  : " << pos[0][cell-1] << endl;
+	output << " y  : " << pos[1][cell-1] << endl;
+	output << " z  : " << pos[2][cell-1] << endl;
+    	output << " dx : " << dim[0][cell-1] << endl;
+	output << " dy : " << dim[1][cell-1] << endl;
+	output << " dz : " << dim[2][cell-1] << endl;
     }	
-    cout << "---------------" << endl;
-    cout << "Layout "         << endl;
-    cout << "---------------" << endl;
-    layout.Print(cell);
-    cout << "+++++++++++++++" << endl;
+    output << "---------------" << endl;
+    output << "Layout "         << endl;
+    output << "---------------" << endl;
+    layout.Print(output, cell);
+    output << "+++++++++++++++" << endl;
 }
 
 CSPACE

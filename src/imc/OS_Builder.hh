@@ -25,7 +25,7 @@
 #include "imctest/Coord_sys.hh"
 #include "imctest/Layout.hh"
 #include "imctest/OS_Mesh.hh"
-#include "imctest/OS_Parser.hh"
+#include "imctest/OS_Interface.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <string>
@@ -40,8 +40,8 @@ class OS_Builder
 private:
   // data from Parser needed to build mesh
     
-  // SP to parser object
-    SP<OS_Parser> parser;
+  // SP to interface object
+    SP<OS_Interface> interface;
   // number of fine_cells along each dimension
     OS_Mesh::CCVF_a fine_edge;
   // boundary conditions
@@ -60,8 +60,8 @@ private:
     SP<OS_Mesh> Build_3DMesh(SP<Coord_sys>, Layout &);
 public:
   // constructor
-    explicit OS_Builder(SP<OS_Parser> parser_) 
-	: parser(parser_), fine_edge(0), bnd_cond(0) {}
+    explicit OS_Builder(SP<OS_Interface> interface_) 
+	: interface(interface_), fine_edge(0), bnd_cond(0) {}
 
   // build Mesh member functions
     SP<OS_Mesh> Build_Mesh();
