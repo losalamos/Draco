@@ -40,10 +40,19 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
+	
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (std::exception &err)
     {
-	std::cout << "While testing <class>, " << ass.what()
+	std::cout << "ERROR: While testing <class>, " 
+		  << err.what()
+		  << std::endl;
+	return 1;
+    }
+    catch( ... )
+    {
+	std::cout << "ERROR: While testing <class>, " 
+		  << "An unknown exception was thrown."
 		  << std::endl;
 	return 1;
     }
