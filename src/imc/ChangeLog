@@ -1,3 +1,10 @@
+2000-04-18  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: Updated to version imc-1_3_0.  This still does not have
+	complete DD functionality.  Version 2_0_0 will include complete
+	DD.  Version 1_3_0 has complete functionality for full
+	replication.
+
 2000-02-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* Source_Init.*, Interface.hh: updated these classes to reflect
