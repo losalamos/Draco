@@ -1,0 +1,34 @@
+dnl-------------------------------------------------------------------------dnl
+dnl draco/src/MatrixFactory configure.in
+dnl Randy M. Roberts
+dnl Tue Apr 20 16:08:00 1999
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for MatrixFactory
+dnl-------------------------------------------------------------------------dnl
+
+AC_INIT(matFactory.tex)
+AC_CONFIG_AUX_DIR(../../config)
+dnl AC_CONFIG_HEADER(MatrixFactory/config.h:config.h.in)
+package="MatrixFactory"
+
+dnl VENDOR SETUPS
+dnl AC_MPI_SETUP(pkg)
+dnl AC_SHMEM_SETUP(pkg)
+dnl AC_SPRNG_SETUP(pkg)
+dnl AC_PCGLIB_SETUP(pkg)
+
+dnl AC_INSTALL_HEADERS
+dnl AC_INSTALL_LIB
+dnl AC_NEEDS_LIBS(ds++)
+
+dnl DRACO SETUP
+AC_DRACO_ENV
+
+AC_CONFIG_SUBDIRS(code)
+
+AC_OUTPUT(Makefile:Makefile.in)
+
+dnl-------------------------------------------------------------------------dnl
+dnl			 end of draco/src/ExpEngineTraits configure.in
+dnl-------------------------------------------------------------------------dnl

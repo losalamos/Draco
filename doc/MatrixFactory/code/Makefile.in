@@ -1,0 +1,41 @@
+CPPFLAGS += -I. -I${includedir}
+
+CXXFLAGS = --strict
+CXX = KCC
+
+ccsrc := $(wildcard *.cc)
+ccobjs := $(notdir $(patsubst %.cc,%.o,${ccsrc}))
+dependfiles := $(notdir $(ccsrc:.cc=.cc.d))
+
+prefix := /home/rsqrd/work/Draco/`uname`
+
+includedir := ${prefix}/include
+libdir := ${prefix}/lib
+
+all: main
+
+ifneq (,$(filter uninstall dvi distclean mostlyclean clean maintainer-clean, \
+	${MAKECMDGOALS}))
+#empty
+else
+include ${dependfiles}
+endif
+
+main: ${ccobjs}
+	KCC -o main ${ccobjs} -L ${libdir} -lds++
+
+%.cc.d: %.cc
+	@echo making dependency $@
+	@if ${CXX} -M ${CPPFLAGS} $< >.tmp0 ; then \
+	   cat .tmp0 | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+		[ -s $@ ] || rm -f $@ ; \
+	else \
+	   echo failed making dependency $@ ; \
+	   rm -f $@ .tmp0 ; \
+	   exit 1; \
+	fi
+	@-rm -f .tmp0
+
+clean:
+	-rm main *.o *.d
+	-rm -rf ti_files

@@ -1,0 +1,98 @@
+%%---------------------------------------------------------------------------%%
+%% matFactory.tex
+%% Randy M. Roberts
+%% $Id$
+%%---------------------------------------------------------------------------%%
+\documentclass[11pt]{nmemo}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{tmadd,tmath}
+\usepackage{cite}
+\usepackage{c++}
+\usepackage{fancycodes}
+\usepackage[dvips]{color}
+
+%%---------------------------------------------------------------------------%%
+%% DEFINE SPECIFIC ENVIRONMENTS HERE
+%%---------------------------------------------------------------------------%%
+%\newcommand{\elfit}{\ensuremath{\operatorname{Im}(-1/\epsilon(\vq,\omega)}}
+%\msection{}-->section commands
+%\tradem{}  -->add TM subscript to entry
+%\ucatm{}   -->add trademark footnote about entry
+
+\definecolor{codecolor}{rgb}{0,0,1}
+\definecolor{comcolor}{rgb}{1,0,0}
+\newcommand{\cxxcom}{\color{comcolor}}
+\newcommand{\cxxcode}{\color{codecolor}}
+
+\newcommand{\code}[1]{\textcolor{codecolor}{#1}}
+
+\newcommand{\tmpl}[1]{$<$#1$>$}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\toms{Distribution}
+
+\refno{XTM-99-??? (U)}
+\subject{Matrix Factory}
+
+%-------NO CHANGES
+\divisionname{Applied Theoretical \& Computational Physics Div.}
+\groupname{X-TM:Transport Methods Group}
+\fromms{Randy M. Roberts/XTM D409}
+\phone{(505)665--4285}
+\originator{rmr}
+\typist{rmr}
+\date{\today}
+%-------NO CHANGES
+
+%-------OPTIONS
+%\reference{NPB Star Reimbursable Project}
+%\thru{P. D. Soran, XTM, MS B226}
+%\enc{list}      
+%\attachments{list}
+%\cy{list}
+%\encas
+%\attachmentas
+%\attachmentsas 
+%-------OPTIONS
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+\distribution {}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN NOTE
+%%---------------------------------------------------------------------------%%
+
+\opening
+
+\section{Introduction}
+
+\begin{ttfamily}
+\begin{small}
+\cxxcode
+\input{MatrixFactoryTraits.hh.cfg}
+\end{small}
+\end{ttfamily}
+
+\bibliographystyle{apalike}
+
+\bibliography{matFactory}
+
+\closing
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of matFactory.tex
+%%---------------------------------------------------------------------------%%
