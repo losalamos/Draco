@@ -47,6 +47,7 @@ clean:
 	(cd ds++;    $(MAKE) clean cleanonly=yes)
 	(cd nml;     $(MAKE) clean cleanonly=yes)
 	(cd c4;      $(MAKE) clean cleanonly=yes)
+	(cd util;    $(MAKE) clean cleanonly=yes)
 	(cd geom;    $(MAKE) clean cleanonly=yes)
 	(cd mesh;    $(MAKE) clean cleanonly=yes)
 	(cd draco;   $(MAKE) clean cleanonly=yes)
