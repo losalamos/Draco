@@ -1,3 +1,8 @@
+2000-01-27  H. Grady Hughes <hgh@lanl.gov>
+
+    * TET_Mesh.hh, TET_Mesh.cc, ThreeVector.hh:
+    Initial commit of components for the TET_Mesh.
+
 1999-12-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* Parallel_Data_Operator.*, /test/tstParallel_Data_Operator.*:
