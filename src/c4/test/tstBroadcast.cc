@@ -12,7 +12,6 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-#include <unistd.h>
 
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -77,9 +76,12 @@ void test_simple()
 }
 
 //---------------------------------------------------------------------------//
+//  By adjusting the parameters below, this test will overflow the MPI memory
+//  buffers.  Read the comments below if you'd like to do this.
 void test_loop()
 {
-    // If kmax is too big (like 10000000), shmem will fail.
+    // >>> kmax controls how much data is broadcast.  If kmax is too big
+    // >>> (like 10000000), shmem will fail.
     const int kmax = 10;
     
     if (rtt_c4::node() == 0) // host proc
@@ -94,8 +96,11 @@ void test_loop()
     }
     else // all other procs
     {
-	// ... wait for a bit, so that host fills up the buffers
-	sleep(1);
+	// >>> Use sleep() if you want the host processor to fill up the
+	// >>> buffers.  We comment out the sleep() command here because it's
+	// >>> not supported on all all platforms.
+
+	// sleep(10);
 	
 	int kk;
 	double foofoo;
