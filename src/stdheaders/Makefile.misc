@@ -1,0 +1,6 @@
+extraheaders := cmath
+
+extraInstallHeaders := $(addprefix ${includedir}/${package}/, ${extraheaders})
+
+install: ${extraInstallHeaders}
+
