@@ -13,6 +13,7 @@
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "c4/global.hh"
+#include "mc/Math.hh"
 
 #include <iostream>
 #include <string>
@@ -25,6 +26,8 @@ using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_imc::Tally;
 using rtt_dsxx::SP;
+using std::pow;
+using rtt_mc::global::soft_equiv;
 
 // passing condition
 bool passed = true;
@@ -42,6 +45,8 @@ void Tally_Test()
     
     if (t.num_cells() != 6) ITFAILS;
 
+    std::vector<double> omega(2, 0.0);
+
     // add some stuff and check the tally
     for (int j = 1; j <= 2; j++)
 	for (int i = 1; i <= mesh->num_cells(); i++)
@@ -58,12 +63,28 @@ void Tally_Test()
 	    t.accum_n_bndcross();
 	    t.accum_n_reflections();
 
+	    // momentum checks - hardwired for 2 dimensions, 2 depositions
+	    omega[0] = (1.0 - pow(-1.0,j))/2.0;
+	    omega[1] = (1.0 - pow(-1.0,j+1))/2.0;
+	    t.accumulate_momentum(i,static_cast<double>(i),omega);
+
 	    // checks
 	    if (t.get_energy_dep(i) != j * i * 10) ITFAILS;
 	    if (t.get_accum_ewpl(i) != j * i * 20) ITFAILS;
 	    if (t.get_new_ecen(i) != j * i * 30)   ITFAILS;
 	    if (t.get_new_ncen(i) != j * 1)        ITFAILS;
+
 	}
+    
+    // momentum deposition checks
+    std::vector<double> mom(2, 0.0);
+    for (int i = 1; i <= mesh->num_cells(); i++)
+    {
+	mom = t.get_momentum_dep(i);
+	if (mom.size() != 2)                            ITFAILS;
+	if (!soft_equiv(mom[0],static_cast<double>(i))) ITFAILS;
+	if (!soft_equiv(mom[1],static_cast<double>(i))) ITFAILS;
+    }
     
     // totals test
     if (t.get_energy_dep_tot() != 20+40+60+80+100+120)  ITFAILS;
