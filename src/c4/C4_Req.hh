@@ -48,6 +48,7 @@ class C4_Req {
     MPI_Request r;
 #endif
 #ifdef C4_SHMEM
+    pthread_t thread;
     int mid;
     int type;
 #endif
