@@ -9,9 +9,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-// revision history:
-// -----------------
-// 1.1) Original
+#include <cmath> // defines fabs()
 
 #include "tCDI.hh"
 #include "../Release.hh"

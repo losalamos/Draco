@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include <vector>  // required by match()
+#include <cmath>   // define fabs()
 
 #include "tDummyOpacity.hh"
 #include "../Release.hh"
