@@ -28,33 +28,35 @@
 
           implicit none
           integer narg, iargc, fnlgth
-          type(CAR_CU_Interface) :: interface_class
+          type(CAR_CU_Interface)  :: interface_class
           type(CAR_CU_RTT_Format) :: rtt_format_class
-          type(CAR_CU_Builder) :: builder_class
-          type(CAR_CU_Mesh) :: mesh_class
+          type(CAR_CU_Builder)    :: builder_class
+          type(CAR_CU_Mesh)       :: mesh_class
+          type(CAR_CU_Mesh)       :: mesh_class
 
 !===========================================================================
 ! Define variables just needed for testing the shadow interface functions
 !===========================================================================
 
+          type(integer_CCSF)      :: iCCSF_class, idCCSF_class
+          type(real_CCSF)         :: rCCSF_class, rdCCSF_class
           integer ndims, dir, ncells, nnodes, ncnodes, nfnodes, cell,   &
-              face, node_index
+              face, node
           integer, dimension (:,:), allocatable :: num_adj, adj_cell,   &
               face_area, cell_specific_nodes
-          real*8, dimension (:,:), allocatable  :: cell_min_val,      &
+          real*8, dimension (:,:), allocatable  :: cell_min_val,        &
               cell_mid_val, cell_max_val, cell_width, vertices,         &
               corner_node_vertices, face_centered_node_vertices,        &
               cell_vertices, face_vertices
           integer, dimension (:), allocatable   :: generation,          &
               cell_nodes, cell_corner_nodes, cell_face_cen_nodes,       &
               cell_face_nodes, cell_face_specific_nodes
-
-          real*8, dimension (:), allocatable    :: volume,mesh_min_val,&
+          real*8, dimension (:), allocatable    :: volume,mesh_min_val, &
               mesh_max_val, node_vertices
 
 !===========================================================================
 ! Input the command line arguments - input file name followed by anything to
-! activate the verbose switch (typically v or the word verbose)
+! activate the verbose switch (typically v or the word verbose).
 !===========================================================================
 
           narg = iargc()
@@ -143,6 +145,10 @@
           allocate(face_vertices((2*(ndims - 1)), ndims))
           allocate(node_vertices(ndims))
 
+          ! Build some uninitialized mesh fields
+          call construct_integer_CCSF_Class(mesh_class, iCCSF_Class)
+          call construct_real_CCSF_Class(mesh_class, rCCSF_Class)
+
           ! Test functions that return large arrays
           vertices = get_vertices(mesh_class)
           corner_node_vertices = get_corner_node_vertices(mesh_class)
@@ -154,26 +160,6 @@
               volume(cell) = get_cell_volume(mesh_class, cell)
               generation(cell) = get_cell_generation(mesh_class, cell)
               cell_vertices = get_cell_vertices(mesh_class, cell)
-
-              ! Test node-dependent cell values
-              cell_nodes = get_cell_nodes(mesh_class, cell)
-              cell_corner_nodes = get_cell_corner_nodes(mesh_class, cell)
-              cell_face_cen_nodes =                                     &
-                  get_cell_face_centered_nodes(mesh_class, cell)
-              node_index = 1
-              do while (node_index .le. (2**ndims + 2*ndims))
-                 cell_specific_nodes(cell, node_index) =                &
-                     get_cell_node(mesh_class, cell, node_index)
-
-                 node_index = node_index + 1
-              end do
-              node_index = 1
-              do while (node_index .le. (2**ndims + 2*ndims))
-                 node_vertices =                                        &
-                     get_node_vertices(mesh_class, cell_nodes(node_index))
-
-                 node_index = node_index + 1
-              end do
 
               ! Test face-dependent cell values
               face = 1
@@ -208,8 +194,47 @@
 
                   dir = dir + 1
               end do
+
+              ! Test node-dependent cell values
+              cell_nodes = get_cell_nodes(mesh_class, cell)
+              cell_corner_nodes = get_cell_corner_nodes(mesh_class, cell)
+              cell_face_cen_nodes =                                     &
+                  get_cell_face_centered_nodes(mesh_class, cell)
+              node = 1
+              do while (node .le. (2**ndims + 2*ndims))
+                 cell_specific_nodes(cell, node) =                      &
+                     get_cell_node(mesh_class, cell, node)
+
+                 node = node + 1
+              end do
+              node = 1
+              do while (node .le. (2**ndims + 2*ndims))
+                 node_vertices =                                        &
+                     get_node_vertices(mesh_class, cell_nodes(node))
+
+                 node = node + 1
+              end do
+
+              ! Test mesh field cell-dependent assignment and query operators
+              call set_integer_CCSF_cell(iCCSF_Class, cell, generation(cell))
+              generation(cell) = get_integer_CCSF_cell(iCCSF_Class, cell)
+              call set_real_CCSF_cell(rCCSF_Class, cell, volume(cell))
+              volume(cell) = get_real_CCSF_cell(rCCSF_Class, cell)
+
               cell = cell + 1
           end do
+
+          ! Build some initialized mesh fields
+          call construct_integer_CCSF_Class(mesh_class, idCCSF_Class,   &
+                                            generation)
+          call construct_real_CCSF_Class(mesh_class, rdCCSF_Class,      &
+                                         volume)
+
+          ! Test mesh field assignment and query operators
+          call set_integer_CCSF(iCCSF_Class, generation)
+          generation = get_integer_CCSF(iCCSF_Class)
+          call set_real_CCSF(rCCSF_Class, volume)
+          volume = get_real_CCSF(rCCSF_Class)
 
           ! Deallocate memory for test variable arrays
           ! Cell-centered values
@@ -244,9 +269,14 @@
 
 
 !===========================================================================
-! Get rid of the CAR_CU_Mesh class object - we are done.
+! Get rid of the CAR_CU_Mesh class object and the associated fields. 
+! We are done.
 !===========================================================================
 
+          call destruct_integer_CCSF_Class(iCCSF_Class)
+          call destruct_integer_CCSF_Class(idCCSF_Class)
+          call destruct_real_CCSF_Class(rCCSF_Class)
+          call destruct_real_CCSF_Class(rdCCSF_Class)
           call destruct_Mesh_Class(mesh_class)
 
       end program alpha

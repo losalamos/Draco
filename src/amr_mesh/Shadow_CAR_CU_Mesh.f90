@@ -28,7 +28,9 @@
 ! Constructors and destructors
 !===========================================================================
 
-          public :: destruct_Mesh_Class
+          public :: destruct_Mesh_Class, construct_integer_CCSF_Class,  &
+                    destruct_integer_CCSF_Class,                        &
+                    construct_real_CCSF_Class, destruct_real_CCSF_Class
 
 !===========================================================================
 ! General mesh scalar accessor functions
@@ -65,12 +67,32 @@
                     get_cell_generation
 
 !===========================================================================
-! CAR_CU_Mesh Class type definition
+! Mesh field accessor functions
+!===========================================================================
+! CCSF class objects
+
+          public :: get_integer_CCSF, get_integer_CCSF_cell,            &
+                    set_integer_CCSF, set_integer_CCSF_cell,            &
+                    get_real_CCSF, get_real_CCSF_cell, set_real_CCSF,   &
+                    set_real_CCSF_cell
+
+!===========================================================================
+! Class type definitions
 !===========================================================================
 
           type, public :: CAR_CU_Mesh
               integer             :: this
           end type CAR_CU_Mesh 
+
+          type, public :: integer_CCSF
+              integer             :: this
+              type(CAR_CU_Mesh)   :: mesh            
+          end type integer_CCSF
+
+          type, public :: real_CCSF
+              integer             :: this
+              type(CAR_CU_Mesh)   :: mesh
+          end type real_CCSF
 
 !===========================================================================
 ! Define interfaces
@@ -78,6 +100,22 @@
 
           interface destruct_Mesh_Class
               module procedure CAR_CU_Mesh_destruct
+          end interface
+
+          interface construct_integer_CCSF_Class
+              module procedure CAR_CU_Mesh_int_CCSF_construct
+          end interface
+
+          interface destruct_integer_CCSF_Class
+              module procedure CAR_CU_Mesh_int_CCSF_destruct
+          end interface
+
+          interface construct_real_CCSF_Class
+              module procedure CAR_CU_Mesh_real_CCSF_construct
+          end interface
+
+          interface destruct_real_CCSF_Class
+              module procedure CAR_CU_Mesh_real_CCSF_destruct
           end interface
 
           interface get_dimension
@@ -192,6 +230,38 @@
               module procedure get_cell_generation
           end interface
 
+          interface get_integer_CCSF
+              module procedure get_integer_CCSF
+          end interface
+
+          interface get_integer_CCSF_cell
+              module procedure get_integer_CCSF_cell
+          end interface
+
+          interface set_integer_CCSF
+              module procedure set_integer_CCSF
+          end interface
+
+          interface set_integer_CCSF_cell
+              module procedure set_integer_CCSF_cell
+          end interface
+
+          interface get_real_CCSF
+              module procedure get_real_CCSF
+          end interface
+
+          interface get_real_CCSF_cell
+              module procedure get_real_CCSF_cell
+          end interface
+
+          interface set_real_CCSF
+              module procedure set_real_CCSF
+          end interface
+
+          interface set_real_CCSF_cell
+              module procedure set_real_CCSF_cell
+          end interface
+
           contains
 
 !===========================================================================
@@ -204,6 +274,64 @@
                   call destruct_car_cu_mesh(self%this)
 
               end subroutine CAR_CU_Mesh_destruct
+
+! Construct a C++ CAR_CU_Mesh integer CCSF class object (self). Initialization
+! can be performed by including the optional data argument. An uninitialized
+! CCSF is created if this argument is not specified.
+              subroutine CAR_CU_Mesh_int_CCSF_construct(mesh, self, data)
+                  type(CAR_CU_Mesh),  intent(in)           :: mesh
+                  type(integer_CCSF), intent(inout)        :: self
+                  integer, optional,                                    &
+                           dimension(get_num_cells(mesh))  :: data
+                  integer                                  :: data_size
+
+                  if (.not. present(data)) then
+                      call construct_mesh_ccsf_i(mesh%this,self%this)
+                  else
+                      data_size = get_num_cells(mesh)
+                      call construct_mesh_ccsf_i_data(mesh%this,        &
+                                     self%this, data, data_size)
+                  endif
+                  self%mesh = mesh
+
+              end subroutine CAR_CU_Mesh_int_CCSF_construct
+
+! Destroy a C++ CAR_CU_Mesh int CCSF class object (self).
+              subroutine CAR_CU_Mesh_int_CCSF_destruct(self)
+                  type(integer_CCSF), intent(inout) :: self
+
+                  call destruct_mesh_ccsf_i(self%this)
+
+              end subroutine CAR_CU_Mesh_int_CCSF_destruct
+
+! Construct a C++ CAR_CU_Mesh real CCSF class object (self). Initialization
+! can be performed by including the optional data argument. An uninitialized
+! CCSF is created if this argument is not specified.
+              subroutine CAR_CU_Mesh_real_CCSF_construct(mesh, self, data)
+                  type(CAR_CU_Mesh), intent(in)            :: mesh
+                  type(real_CCSF),   intent(inout)         :: self
+                  real*8, optional,                                     &
+                          dimension(get_num_cells(mesh))   :: data
+                  integer                                  :: data_size
+
+                  if (.not. present(data)) then
+                      call construct_mesh_ccsf_d(mesh%this, self%this)
+                  else
+                      data_size = get_num_cells(mesh)
+                      call construct_mesh_ccsf_d_data(mesh%this,        &
+                                     self%this, data, data_size)
+                  endif
+                  self%mesh = mesh
+
+              end subroutine CAR_CU_Mesh_real_CCSF_construct
+
+! Destroy a C++ CAR_CU_Mesh real CCSF class object (self).
+              subroutine CAR_CU_Mesh_real_CCSF_destruct(self)
+                  type(real_CCSF), intent(inout) :: self
+
+                  call destruct_mesh_ccsf_d(self%this)
+
+              end subroutine CAR_CU_Mesh_real_CCSF_destruct
 
 !===========================================================================
 ! General mesh scalar accessor functions
@@ -603,6 +731,110 @@
                   call get_mesh_cell_generation(self%this, cell, gener)
 
               end function get_cell_generation
+!===========================================================================
+! Mesh field accessor functions
+!===========================================================================
+!===========================================================================
+! integer CCSF class objects
+!===========================================================================
+! Return an entire C++ CAR_CU_Mesh integer CCSF class object (self).
+              function get_integer_CCSF(self)    result(data)
+                  type(integer_CCSF), intent(in)                :: self
+                  integer, dimension(get_num_cells(self%mesh))  :: data
+                  integer                                       :: data_size
+
+                  data_size = get_num_cells(self%mesh)
+                  call get_mesh_ccsf_i(self%mesh%this, self%this, data, &
+                                       data_size)
+
+              end function get_integer_CCSF
+
+! Return a cell value from a C++ CAR_CU_Mesh integer CCSF class object (self).
+              function get_integer_CCSF_cell(self, cell)      result(data)
+                  type(integer_CCSF), intent(in)           :: self
+                  integer, intent(in)                      :: cell
+                  integer                                  :: data
+
+                  call get_mesh_ccsf_i_cell(self%mesh%this, self%this,  &
+                                            cell, data)
+
+              end function get_integer_CCSF_cell
+
+! Set an entire C++ CAR_CU_Mesh integer CCSF class object (self) (can also
+! be done at initialization using the constructor).
+              subroutine set_integer_CCSF(self, data)
+                  type(integer_CCSF), intent(in)                :: self
+                  integer, intent(in),                                  &
+                           dimension(get_num_cells(self%mesh))  :: data
+                  integer                                       :: data_size
+
+                  data_size = get_num_cells(self%mesh)
+                  call set_mesh_ccsf_i(self%mesh%this, self%this, data, &
+                                       data_size)
+
+              end subroutine set_integer_CCSF
+
+! Set a cell value for a C++ CAR_CU_Mesh integer CCSF class object (self).
+              subroutine set_integer_CCSF_cell(self, cell, data)
+                  type(integer_CCSF), intent(in)           :: self
+                  integer, intent(in)                      :: cell
+                  integer, intent(in)                      :: data
+
+                  call set_mesh_ccsf_i_cell(self%mesh%this, self%this,  &
+                                            cell, data)
+
+              end subroutine set_integer_CCSF_cell
+
+!===========================================================================
+! double CCSF class objects
+!===========================================================================
+! Return an entire C++ CAR_CU_Mesh double CCSF class object (self).
+              function get_real_CCSF(self)       result(data)
+                  type(real_CCSF), intent(in)                   :: self
+                  real*8, dimension(get_num_cells(self%mesh))   :: data
+                  integer                                       :: data_size
+
+                  data_size = get_num_cells(self%mesh)
+                  call get_mesh_ccsf_d(self%mesh%this, self%this, data, &
+                                       data_size)
+
+              end function get_real_CCSF
+
+! Return a cell value from a C++ CAR_CU_Mesh double CCSF class object (self).
+              function get_real_CCSF_cell(self, cell)     result(data)
+                  type(real_CCSF), intent(in)             :: self
+                  integer, intent(in)                     :: cell
+                  real*8                                  :: data
+
+                  call get_mesh_ccsf_d_cell(self%mesh%this, self%this,  &
+                                            cell, data)
+
+              end function get_real_CCSF_cell
+
+! Set an entire C++ CAR_CU_Mesh double CCSF class object (self) (can also
+! be done at initialization using the constructor).
+              subroutine set_real_CCSF(self, data)
+                  type(real_CCSF), intent(in)                   :: self
+                  real*8, intent(in),                                   &
+                           dimension(get_num_cells(self%mesh))  :: data
+                  integer                                       :: data_size
+
+                  data_size = get_num_cells(self%mesh)
+                  call set_mesh_ccsf_d(self%mesh%this, self%this, data, &
+                                       data_size)
+
+              end subroutine set_real_CCSF
+
+! Set a cell value from a C++ CAR_CU_Mesh double CCSF class object (self).
+              subroutine set_real_CCSF_cell(self, cell, data)
+                  type(real_CCSF), intent(in)              :: self
+                  integer, intent(in)                      :: cell
+                  real*8, intent(in)                       :: data
+
+                  call set_mesh_ccsf_d_cell(self%mesh%this, self%this,  &
+                                            cell, data)
+
+              end subroutine set_real_CCSF_cell
 
     end module CAR_CU_Mesh_Class
 
