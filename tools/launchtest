@@ -42,10 +42,23 @@
 
 exe='binary'
 mpi='no'
-shmem='no'
 procs='scalar'
 next='option'
 parallel='no'
+
+##---------------------------------------------------------------------------##
+## SYSTEM
+host=`uname`
+
+##---------------------------------------------------------------------------##
+## MPI EXECUTABLE
+
+mpiexe='mpirun -np'
+
+# on COMPAQ the executable is prun -n
+if $host = 'OSF1' ; then
+    mpiexe='prun -n'
+fi
 
 ##---------------------------------------------------------------------------##
 ## command line actions
@@ -65,10 +78,6 @@ for variable in $*
 	exe='binary'
     elif test "$variable" = '--mpi' ; then
 	mpi='yes'
-	parallel='yes'
-	next='proc'
-    elif test "$variable" = '--shmem' ; then
-	shmem='yes'
 	parallel='yes'
 	next='proc'
     else
@@ -91,9 +100,7 @@ elif test "$exe" = 'binary'; then
 	test_exec="$executable $exe_options"
     elif test "$parallel" = 'yes'; then
 	if test "$mpi" = 'yes'; then
-	    test_exec="mpirun -np $procs $executable $exe_options"
-	elif test "$shmem" = 'yes'; then
-	    test_exec="$executable -npes $procs $exe_options"
+	    test_exec="$mpiexe $procs $executable $exe_options"
 	fi
     fi
 else
