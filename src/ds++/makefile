@@ -44,7 +44,7 @@ include ../config/make.tests
 
 deja:
 	(cd testsuites; $(MAKE) links)
-	runtest --tool=ds++ --srcdir=./testsuites ENV=$(env)
+	runtest --tool=ds++ --srcdir=./testsuites ENV=$(env) DBC=$(DBC)
 
 # And now documentation.
 
