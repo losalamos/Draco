@@ -363,11 +363,20 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    # RPATH FLAGS
 
    # add -rpath for the compiler library (G++ as LD does not do this
-   # automatically); this, unfortunately, may become host dependent
-   # in the future
-   if test -n "${GCC_LIB_DIR}"; then
-       RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
-   fi
+   # automatically) if required.
+   case $host in
+
+   # Darwin doesn't need any special flags
+   powerpc-apple-darwin*)
+   ;;
+
+   # EVERYTHING ELSE -> linux?
+   *)
+      if test -n "${GCC_LIB_DIR}"; then
+           RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
+      fi
+   ;;
+   esac
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
