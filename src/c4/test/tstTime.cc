@@ -27,7 +27,7 @@
 
 void wall_clock_test()
 {
-    using rtt_dsxx::soft_equiv;
+    using rtt_dsxx::soft_equiv; 
     using rtt_c4::wall_clock_time;
     using rtt_c4::wall_clock_resolution;
     using rtt_c4::Timer;
@@ -45,7 +45,8 @@ void wall_clock_test()
     t.stop();
 
     double const prec( t.posix_err() );
-    if( soft_equiv( end-begin, t.wall_clock(), prec ) )
+    double const error( t.wall_clock() - (end-begin) );
+    if( std::fabs(error) <= prec )
     {
 	PASSMSG("wall_clock() value looks ok.");
     }
