@@ -13,8 +13,8 @@ AC_CONFIG_HEADER(meshReaders/config.h:config.h.in)
 package="meshReaders"
 
 dnl VENDOR SETUPS
-dnl AC_MPI_SETUP(pkg)
-dnl AC_SHMEM_SETUP(pkg)
+AC_MPI_SETUP(pkg)
+AC_SHMEM_SETUP(pkg)
 dnl AC_SPRNG_SETUP(pkg)
 dnl AC_PCGLIB_SETUP(pkg)
 
