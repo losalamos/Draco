@@ -1,19 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
-// IMC_Man.pt
+// IMC_Manager.pt
 // Thomas M. Evans
 // Mon Jun 15 17:03:01 1998
 //---------------------------------------------------------------------------//
-// @> Instantialyzer for template class IMC_Man
+// @> Instantialyzer for template class IMC_Manager
 //---------------------------------------------------------------------------//
 
 #include "imc/OS_Mesh.hh"
 #include "imc/OS_Builder.hh"
 #include "imc/OS_Interface.hh"
-#include "IMC_Man.cc"
+#include "IMC_Manager.cc"
 
 IMCSPACE
 
-instantiate class IMC_Man<OS_Mesh, OS_Builder, OS_Interface>
+instantiate class IMC_Manager<OS_Mesh, OS_Builder, OS_Interface>
 
 CSPACE
 

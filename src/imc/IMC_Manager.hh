@@ -1,16 +1,16 @@
 //----------------------------------*-C++-*----------------------------------//
-// IMC_Man.hh
+// IMC_Manager.hh
 // Thomas M. Evans
 // Wed Jun  3 10:36:11 1998
 //---------------------------------------------------------------------------//
-// @> IMC_Man class header file.
+// @> IMC_Manager class header file.
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_IMC_Man_hh__
-#define __imc_IMC_Man_hh__
+#ifndef __imc_IMC_Manager_hh__
+#define __imc_IMC_Manager_hh__
 
 //===========================================================================//
-// class IMC_Man - 
+// class IMC_Manager - 
 //
 // Purpose : Manager for running IMCTEST package.
 //
@@ -44,7 +44,7 @@ using dsxx::SP;
 // template manager on: MT=mesh type; BT=mesh builder type; IT=interface
 // type; PT=particle type
 template<class MT, class BT, class IT, class PT = Particle<MT> >
-class IMC_Man 
+class IMC_Manager 
 {
 private:
   // objects used by all processors
@@ -80,7 +80,7 @@ private:
     
 public:
   // default constructor
-    IMC_Man(bool = false);
+    IMC_Manager(bool = false);
 
   // run everything over the requisite number of cycles
     void execute_IMC(char *);
@@ -113,7 +113,7 @@ public:
 
 template<class MT, class BT, class IT, class PT>
 template<class T>
-inline void IMC_Man<MT,BT,IT,PT>::kill(SP<T> &spref)
+inline void IMC_Manager<MT,BT,IT,PT>::kill(SP<T> &spref)
 {
   // assigning this SP to a null SP
     spref = SP<T>();
@@ -122,8 +122,8 @@ inline void IMC_Man<MT,BT,IT,PT>::kill(SP<T> &spref)
 
 CSPACE
 
-#endif                          // __imc_IMC_Man_hh__
+#endif                          // __imc_IMC_Manager_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of imc/IMC_Man.hh
+//                              end of imc/IMC_Manager.hh
 //---------------------------------------------------------------------------//

@@ -1,12 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// IMC_Man.cc
+// IMC_Manager.cc
 // Thomas M. Evans
 // Wed Jun  3 10:36:11 1998
 //---------------------------------------------------------------------------//
-// @> IMC_Man class implementation file.
+// @> IMC_Manager class implementation file.
 //---------------------------------------------------------------------------//
 
-#include "imc/IMC_Man.hh"
+#include "imc/IMC_Manager.hh"
 #include "ds++/Assert.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
@@ -43,7 +43,7 @@ using std::fabs;
 // default constructor
 
 template<class MT, class BT, class IT, class PT>
-IMC_Man<MT,BT,IT,PT>::IMC_Man(bool verbose_)
+IMC_Manager<MT,BT,IT,PT>::IMC_Manager(bool verbose_)
     : delta_t(0), cycle(0), max_cycle(1), print_f(0), dump_f(1), rnstream(0), 
       verbose(verbose_)
 {
@@ -73,7 +73,7 @@ IMC_Man<MT,BT,IT,PT>::IMC_Man(bool verbose_)
 // run IMC from beginning to end
 
 template<class MT, class BT, class IT, class PT>
-void IMC_Man<MT,BT,IT,PT>::execute_IMC(char *argv)
+void IMC_Manager<MT,BT,IT,PT>::execute_IMC(char *argv)
 {
   // run through IMC timesteps until we have reached the last cycle
     while (cycle < max_cycle)
@@ -99,7 +99,7 @@ void IMC_Man<MT,BT,IT,PT>::execute_IMC(char *argv)
 // processor 
 
 template<class MT, class BT, class IT, class PT>
-void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
+void IMC_Manager<MT,BT,IT,PT>::host_init(char *argv)
 {
   // update the cycle and rnstream
     cycle++;
@@ -187,7 +187,7 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
 // processors
 
 template<class MT, class BT, class IT, class PT>
-void IMC_Man<MT,BT,IT,PT>::IMC_init()
+void IMC_Manager<MT,BT,IT,PT>::IMC_init()
 {
   // first lets do stuff on the host node
     if (!node())
@@ -322,7 +322,7 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
 // run particles on the problem geometry for one time step
 
 template<class MT, class BT, class IT, class PT>
-void IMC_Man<MT,BT,IT,PT>::step_IMC()
+void IMC_Manager<MT,BT,IT,PT>::step_IMC()
 {
     cerr << ">> Doing particle transport for cycle " << cycle
 	 << " on proc " << node() << endl;
@@ -386,7 +386,7 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
 // concatentate results on the master processor and update the Global-mesh
 
 template<class MT, class BT, class IT, class PT>
-void IMC_Man<MT,BT,IT,PT>::regroup()
+void IMC_Manager<MT,BT,IT,PT>::regroup()
 {
   // send the tallies to the master node
     if (node())
@@ -564,7 +564,7 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 // do a screen dump per cycle
 
 template<class MT, class BT, class IT, class PT>
-void IMC_Man<MT,BT,IT,PT>::cycle_dump() const
+void IMC_Manager<MT,BT,IT,PT>::cycle_dump() const
 {
     cout << endl;
     cout << ">>> RESULTS FOR CYCLE " << setw(7) << cycle << " <<<" << endl;
@@ -593,5 +593,5 @@ void IMC_Man<MT,BT,IT,PT>::cycle_dump() const
 CSPACE
 
 //---------------------------------------------------------------------------//
-//                              end of IMC_Man.cc
+//                              end of IMC_Manager.cc
 //---------------------------------------------------------------------------//
