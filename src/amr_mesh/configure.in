@@ -20,7 +20,7 @@ dnl AC_PCGLIB_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(imc mc meshReaders c4 rng ds++)
+AC_NEEDS_LIBS(meshReaders ds++)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
