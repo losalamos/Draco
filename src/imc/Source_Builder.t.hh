@@ -247,7 +247,7 @@ void Source_Builder<MT,FT,PT>::calc_initial_ecen(
 	// calc cell centered census radiation energy
 	ecen(cell) = a * ecen.get_Mesh().volume(cell) *
 	    pow(rad_temp[cell-1], 4) * 
-	    opacity.get_integrated_norm_Planck(cell);
+	    opacity.get_integrated_norm_Planck(rad_temp[cell-1]);
 
 	// accumulate ecentot on-processor
 	ecentot += ecen(cell);

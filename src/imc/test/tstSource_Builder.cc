@@ -439,6 +439,8 @@ void gray_source_replication_test()
 //   |||||||||||
 //   SS_temp = 20
 //
+//   T_rad = 10 for all cells
+//
 
 
 void mg_source_replication_test()
@@ -543,22 +545,19 @@ void mg_source_replication_test()
     vector<int> rn_ss(mesh->num_cells());
 
     // numbers of particles per cell per species; NOTE: the census numbers
-    // are from the initial census calculation and are used to get the
-    // initial random number stream ids, these are not necessarily the final
-    // census numbers; however, because there is no combing, they are
-    // equivalent to the final census numbers
+    // are obtained heuristically from the initial census calculation and are
+    // used to get the initial random number stream ids here.  These are not
+    // necessarily the final census numbers; however, because there is no
+    // combing, they are equivalent to the final census numbers
     vector<int> global_nvol(mesh->num_cells(), 1);
-    vector<int> global_ncen(mesh->num_cells(), 160);
-    vector<int> global_nss(mesh->num_cells(), 0);
+    vector<int> global_ncen(mesh->num_cells(), 143);
+    vector<int> global_nss(mesh->num_cells(),  0);
     {
-	global_ncen[3] = 122;
-	global_ncen[4] = 122;
-	global_ncen[5] = 122;
 	global_nvol[3] = 2;
 	global_nvol[4] = 2;
 	global_nvol[5] = 2;
-	global_nss[0]  = 73;
-	global_nss[1]  = 73;
+	global_nss[0]  = 65;
+	global_nss[1]  = 65;
     }
 
     // local source numbers per processor per species
@@ -767,10 +766,11 @@ void mg_source_replication_test()
     if (fabs(ss_ew - ref_ss) > 1.e-8 * ref_ss)    ITFAILS;
     if (fabs(cen_ew - ref_cen) > 1.e-8 * ref_cen) ITFAILS;
 
-    // check to hand calculations of same energies
+    // check to hand calculations of same energies (from xess spreadsheet
+    // file source.xs4)
     double hand_vol = 12.747095;
     double hand_ss  = 248.280745;
-    double hand_cen = 1436.471652;
+    double hand_cen = 1630.676880;
 
     if (fabs(vol_ew - hand_vol) > 1.e-4 * hand_vol) ITFAILS;
     if (fabs(ss_ew - hand_ss) > 1.e-4 * hand_ss)    ITFAILS;
