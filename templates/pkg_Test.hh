@@ -9,11 +9,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __<spkg>_hh__
-#define __<spkg>_hh__
+#ifndef rtt_<spkg>_test_hh
+#define rtt_<spkg>_test_hh
 
 #include <iostream>
-#include <string>
 
 namespace rtt_<spkg>
 {
@@ -64,8 +63,8 @@ extern bool passed;
 #define PASSMSG(a) rtt_<spkg>::pass_msg(a);
 #define FAILMSG(a) rtt_<spkg>::fail_msg(a);
 
-#endif                          // __<spkg>_hh__
+#endif // rtt_<spkg>_test_hh
 
 //---------------------------------------------------------------------------//
-//                              end of <pkg>/<spkg>.hh
+//     end of <pkg>/<spkg>.hh
 //---------------------------------------------------------------------------//

@@ -1,9 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   <pkg>/<basename>.cc
+ * \file   <pkg>/<basename>_pt.cc
  * \author <user>
  * \date   <date>
- * \brief  <start>
+ * \brief  Explicit template instatiations for class <basename>.
+ * 
+ * <start>
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,8 +16,10 @@
 namespace rtt_<spkg>
 {
 
+// Explicit template instantiations go here.
+
 } // end namespace rtt_<spkg>
 
 //---------------------------------------------------------------------------//
-//                 end of <basename>.cc
+//                 end of <basename>_pt.cc
 //---------------------------------------------------------------------------//

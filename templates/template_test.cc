@@ -17,8 +17,6 @@
 #include <vector>
 #include <cmath>
 
-using namespace std;
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -30,10 +28,11 @@ int main(int argc, char *argv[])
 {
     // version tag
     for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
+	if (std::string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_<pkg>::release() 
-		 << endl;
+	    std::cout << argv[0] << ": version " 
+		      << rtt_<pkg>::release() 
+		      << std::endl;
 	    return 0;
 	}
 
@@ -43,23 +42,23 @@ int main(int argc, char *argv[])
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "While testing <class>, " << ass.what()
-	     << endl;
+	std::cout << "While testing <class>, " << ass.what()
+		  << std::endl;
 	return 1;
     }
 
     // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
+    std::cout << std::endl;
+    std::cout <<     "*********************************************" << std::endl;
     if (rtt_<spkg>::passed) 
     {
-        cout << "**** <class> Test: PASSED" 
-	     << endl;
+        std::cout << "**** <class> Test: PASSED" 
+		  << std::endl;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing <class>." << endl;
+    std::cout <<     "*********************************************" << std::endl;
+    std::cout << std::endl;
+    
+    std::cout << "Done testing <class>." << std::endl;
 }   
 
 //---------------------------------------------------------------------------//

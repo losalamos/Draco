@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __<spkg>_Release_hh__
-#define __<spkg>_Release_hh__
+#ifndef rtt_<spkg>_Release_hh
+#define rtt_<spkg>_Release_hh
 
 //===========================================================================//
 /*!
@@ -36,8 +36,8 @@ namespace rtt_<spkg>
     const std::string release();
 }
 
-#endif                          // __<spkg>_Release_hh__
+#endif // rtt_<spkg>_Release_hh
 
 //---------------------------------------------------------------------------//
-//                           end of <pkg>/Release.hh
+//                        end of <pkg>/Release.hh
 //---------------------------------------------------------------------------//
