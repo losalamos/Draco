@@ -2504,37 +2504,45 @@ EOF
    LIBS='-lm'
 
          
-   # If we ran AC_RUNTESTS with "serial" then mark it so here.
+   # determine whether this is a scalar or parallel test suite,
+   # the tests can be inherently scalar or they can be the result
+   # of a parallel build
 
+   test_scalar='no'
+
+   # If we ran AC_RUNTESTS with "serial" then mark it so here.
    for np in $test_nprocs; do
        if test $np = serial || test $np = scalar ; then
           test_scalar="scalar"
        fi
    done
 
-   # Double dollar signs in MAKE commands will become single dollar signs.
-   # Backslashes are needed to ensure that objdir is not
-   # evaluated until unix.exp
-   
-   for tool in $test_alltarget; do
-       if test "${with_c4:=scalar}" = scalar || \
-	 test "$with_c4" = yes || \
-         test "$test_scalar" = scalar ; then
-           test_launch='\$$objdir/'"${tool}"
-	   test_nprocs="1"
-       elif test "$with_c4" = mpi ; then
-	   test_launch='--mpi \$$NPROCS \$$objdir/'"${tool}"
-       elif test "$with_c4" = shmem ; then
-	   test_launch='--shmem \$$NPROCS \$$objdir/'"${tool}"
+   # if this is a parallel build, mark it the tests scalar
+   if test "${with_c4}" = scalar ; then
+       test_scalar="scalar"
+   fi
+
+   # define the TESTFLAGS, for parallel runs the processor will be
+   # added later in the Makefile
+
+   if test "${test_scalar}" = scalar ; then
+       test_flags="--${test_exe:=binary}"
+   elif test "${with_c4}" = mpi ; then
+       test_flags="--${test_exe:=binary} --mpi"
+   elif test "${with_c4}" = shmem ; then
+       test_flags="--${test_exe:=binary} --shmem"
+   fi
+
+   ## define the test_output_files for cleaning
+   for file in $test_alltarget; do
+       if test "${test_scalar}" = scalar ; then
+	   test_output_files="${test_output_files} ${file}-scalar.log"
+       else
+	   for np in $test_nprocs; do
+	       test_output_files="${test_output_files} ${file}-${np}.log"
+	   done
        fi
-       
-       # add the proper executable tag to test_launch
-       test_launch="--${test_exe:=binary} ${test_launch}"
-
-       test_output_files="$test_output_files $tool.sum $tool.log"
-       site_exp="$site_exp 'set ${tool}name \"${test_launch}\"'"
    done
-
 
          
                      
@@ -2543,12 +2551,7 @@ EOF
    : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}
                
                         
-   : ${RUNTEST:=runtest}
-   : ${RUNTESTTOOLFLAG:="--tool"}
-   : ${SITE_EXP:=site.exp}
-   : ${test_nprocs:="1 2 4 7"}
-
-                                                
+                                    
    
    CXXFLAGS="${CXXFLAGS} \${STRICTFLAG}"
    
@@ -2727,13 +2730,9 @@ s%@DRACO_TEST_LIBS@%$DRACO_TEST_LIBS%g
 s%@VENDOR_TEST_DEPENDS@%$VENDOR_TEST_DEPENDS%g
 s%@VENDOR_TEST_LIBS@%$VENDOR_TEST_LIBS%g
 s%@test_alltarget@%$test_alltarget%g
-s%@RUNTEST@%$RUNTEST%g
-s%@RUNTESTFLAGS@%$RUNTESTFLAGS%g
-s%@RUNTESTTOOLFLAG@%$RUNTESTTOOLFLAG%g
-s%@FLAGS_TO_PASS@%$FLAGS_TO_PASS%g
+s%@test_flags@%$test_flags%g
+s%@test_scalar@%$test_scalar%g
 s%@test_nprocs@%$test_nprocs%g
-s%@SITE_EXP@%$SITE_EXP%g
-s%@site_exp@%$site_exp%g
 s%@test_output_files@%$test_output_files%g
 s%@configure_command@%$configure_command%g
 s%@STRICTFLAG@%$STRICTFLAG%g
