@@ -35,7 +35,7 @@ namespace XTM {
  // 
  //===========================================================================//
 
- template<class MT, class MP, class DS>
+ template<class MT, class MSFCC, class MSFFC, class DS>
  class P13T
  {
 
@@ -52,7 +52,8 @@ namespace XTM {
     
      typedef MT MeshType;
      typedef DS DiffusionSolver;
-     typedef MP MaterialProperties;
+     typedef MSFCC CCMaterialStateField;
+     typedef MSFFC FCMaterialStateField;
     
      // The diffusion solver knows the correct representation for
      // the continuous anb discontinuous face-centered flux fields.
@@ -68,15 +69,6 @@ namespace XTM {
 #endif
      typedef typename MeshType::fcdsf fcdsf;  // face-centered discontinuous s.f.
      typedef typename MeshType::bssf bssf;    // bndry-specified boundary field.
-
-     // The MaterialProperties knows the correct representation for the
-     // material state field
-
-     typedef typename MaterialProperties::template MaterialStateField<ccsf>
-     CCMaterialStateField;
-
-     typedef typename MaterialProperties::template MaterialStateField<fcdsf>
-     FCMaterialStateField;
 
      // The state of the radiation field is passed in and returned
      // in this structure.
@@ -112,7 +104,7 @@ namespace XTM {
 
      // We will not allow copy construction.
      
-     P13T(const P13T<MT,MP,DS>& );
+     P13T(const P13T<MT,MSFCC,MSFFC,DS>& );
 
      // We will not allow assignment.
      
@@ -357,8 +349,9 @@ namespace XTM {
  //    (mostly for debug purposes)
  //---------------------------------------------------------------------------//
 
- template<class MT, class MP, class DS>
- inline std::ostream &operator<<(std::ostream &os, const P13T<MT, MP, DS> &rhs)
+ template<class MT, class MSFCC, class MSFFC, class DS>
+ inline 
+ std::ostream &operator<<(std::ostream &os, const P13T<MT,MSFCC,MSFFC,DS> &rhs)
 {
     return rhs.print(os);
 }

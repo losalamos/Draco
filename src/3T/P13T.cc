@@ -3,7 +3,7 @@
 // Randy M. Roberts
 // Wed Mar 11 11:17:54 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> P1 3T Radiation Solver.
 //---------------------------------------------------------------------------//
 
 #include "3T/P13T.hh"
@@ -26,8 +26,8 @@ using XTM::P13T;
 //     Constructor
 //---------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
+template<class MT, class MSFCC, class MSFFC, class DS>
+P13T<MT,MSFCC,MSFFC,DS>::P13T(const P13TOptions &options_,
 		       const dsxx::SP<MeshType> &spMesh_)
     : options(options_), spMesh(spMesh_)
 {
@@ -39,8 +39,8 @@ P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
 //     Constructor
 //---------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
+template<class MT, class MSFCC, class MSFFC, class DS>
+P13T<MT,MSFCC,MSFFC,DS>::P13T(const P13TOptions &options_,
 		       const dsxx::SP<MeshType> &spMesh_,
 		       dsxx::SP<ts_manager> &spTsManager_)
     : options(options_), spMesh(spMesh_), spTsManager(spTsManager_)
@@ -81,8 +81,8 @@ P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
 //     Destructor
 //---------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-P13T<MT, MP, DS>::~P13T()
+template<class MT, class MSFCC, class MSFFC, class DS>
+P13T<MT,MSFCC,MSFFC,DS>::~P13T()
 {
     // If we have a timestep manager, we must remove the registered
     // timestep advisors.
@@ -106,8 +106,8 @@ P13T<MT, MP, DS>::~P13T()
 //     Set the contained options object to the new value.
 //---------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::setOptions(const P13TOptions options_)
+template<class MT, class MSFCC, class MSFFC, class DS>
+void P13T<MT,MSFCC,MSFFC,DS>::setOptions(const P13TOptions options_)
 {
     options = options_;
 }
@@ -119,8 +119,8 @@ void P13T<MT, MP, DS>::setOptions(const P13TOptions options_)
 //     Print itself (for debug mostly)
 //------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-std::ostream &P13T<MT, MP, DS>::print(std::ostream &os) const
+template<class MT, class MSFCC, class MSFFC, class DS>
+std::ostream &P13T<MT,MSFCC,MSFFC,DS>::print(std::ostream &os) const
 {
     os << "(P13T::this: " << (void *)this
        << ")";
@@ -133,8 +133,8 @@ std::ostream &P13T<MT, MP, DS>::print(std::ostream &os) const
 //     based on material electron temperatures.
 //---------------------------------------------------------------------------//
     
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::
+template<class MT, class MSFCC, class MSFFC, class DS>
+void P13T<MT,MSFCC,MSFFC,DS>::
 initializeRadiationState(const CCMaterialStateField &matStateCC,
 			 RadiationStateField &resultsStateField) const
 {
@@ -158,9 +158,9 @@ initializeRadiationState(const CCMaterialStateField &matStateCC,
 //     the conduction equation split.
 //---------------------------------------------------------------------------//
     
-template<class MT, class MP, class DS>
+template<class MT, class MSFCC, class MSFFC, class DS>
 void
-P13T<MT, MP, DS>::
+P13T<MT,MSFCC,MSFFC,DS>::
 solveElectConduction(ccsf &electronEnergyDeposition,
 		     ccsf &Tnp1Electron,
 		     DiffusionSolver &solver,
@@ -234,9 +234,9 @@ solveElectConduction(ccsf &electronEnergyDeposition,
 //     the conduction equation split.
 //---------------------------------------------------------------------------//
     
-template<class MT, class MP, class DS>
+template<class MT, class MSFCC, class MSFFC, class DS>
 void
-P13T<MT, MP, DS>::
+P13T<MT,MSFCC,MSFFC,DS>::
 solveIonConduction(ccsf &ionEnergyDeposition,
 		   ccsf &Tnp1Ion,
 		   DiffusionSolver &solver,
@@ -309,8 +309,8 @@ solveIonConduction(ccsf &ionEnergyDeposition,
 //     and the momentom deposition.
 //---------------------------------------------------------------------------//
     
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::solve3T(RadiationStateField &resultsStateField,
+template<class MT, class MSFCC, class MSFFC, class DS>
+void P13T<MT,MSFCC,MSFFC,DS>::solve3T(RadiationStateField &resultsStateField,
 			       ccsf &QEEM,
 			       ccsf &REEM,
 			       ccsf &electronEnergyDeposition,
@@ -423,8 +423,8 @@ void P13T<MT, MP, DS>::solve3T(RadiationStateField &resultsStateField,
 //---------------------------------------------------------------------------//
 
 
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::
+template<class MT, class MSFCC, class MSFFC, class DS>
+void P13T<MT,MSFCC,MSFFC,DS>::
 calcNewRadState(RadiationStateField &resultsStateField,
 		ccsf &QEEM,
 		ccsf &REEM,
@@ -485,8 +485,8 @@ calcNewRadState(RadiationStateField &resultsStateField,
 //     source terms for solving the P1 equation.
 //---------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::
+template<class MT, class MSFCC, class MSFFC, class DS>
+void P13T<MT,MSFCC,MSFFC,DS>::
 calcP1Coeffs(fcdsf &D,
 	     DiscFluxField &Fprime,
 	     ccsf &sigmaAbsBar,
@@ -600,8 +600,8 @@ calcP1Coeffs(fcdsf &D,
 //    and delta temperatures.
 //------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::calcStarredFields(ccsf &QElecStar,
+template<class MT, class MSFCC, class MSFFC, class DS>
+void P13T<MT,MSFCC,MSFFC,DS>::calcStarredFields(ccsf &QElecStar,
 					 ccsf &CvStar,
 					 ccsf &nu,
 					 double dt,
@@ -639,8 +639,8 @@ void P13T<MT, MP, DS>::calcStarredFields(ccsf &QElecStar,
 //    and delta temperatures.
 //------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::calcStarredFields(ccsf &QElecStar,
+template<class MT, class MSFCC, class MSFFC, class DS>
+void P13T<MT,MSFCC,MSFFC,DS>::calcStarredFields(ccsf &QElecStar,
 					 ccsf &CvStar,
 					 double dt,
 					 int groupNo,
@@ -687,8 +687,8 @@ void P13T<MT, MP, DS>::calcStarredFields(ccsf &QElecStar,
 //    n+1 to timestep n+1/2
 //------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::
+template<class MT, class MSFCC, class MSFFC, class DS>
+void P13T<MT,MSFCC,MSFFC,DS>::
 calcDeltaTElectron(ccsf &deltaTelectron,
 		   double dt,
 		   int numGroups, 
@@ -756,8 +756,8 @@ calcDeltaTElectron(ccsf &deltaTelectron,
 //    n+1 to timestep n+1/2
 //------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::calcDeltaTIon(ccsf &deltaTIon,
+template<class MT, class MSFCC, class MSFFC, class DS>
+void P13T<MT,MSFCC,MSFFC,DS>::calcDeltaTIon(ccsf &deltaTIon,
 				     double dt,
 				     const CCMaterialStateField &matStateCC,
 				     const RadiationStateField &prevStateField, 
@@ -786,8 +786,8 @@ void P13T<MT, MP, DS>::calcDeltaTIon(ccsf &deltaTIon,
 //    get the 4pi*planckian
 //------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::getBhat(ccsf &Bhat, const RadiationPhysics &radPhys,
+template<class MT, class MSFCC, class MSFFC, class DS>
+void P13T<MT,MSFCC,MSFFC,DS>::getBhat(ccsf &Bhat, const RadiationPhysics &radPhys,
 			       const ccsf &TElectron) const
 {
     radPhys.getPlanck(TElectron, Bhat);
@@ -803,8 +803,8 @@ void P13T<MT, MP, DS>::getBhat(ccsf &Bhat, const RadiationPhysics &radPhys,
 //    get the 4pi*dPlanckiandT
 //------------------------------------------------------------------------//
 
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::getdBhatdT(ccsf &dBhatdT,
+template<class MT, class MSFCC, class MSFFC, class DS>
+void P13T<MT,MSFCC,MSFFC,DS>::getdBhatdT(ccsf &dBhatdT,
 				  const RadiationPhysics &radPhys,
 				  const ccsf &TElectron) const
 {
