@@ -35,8 +35,6 @@
 #include "ds++/SP.hh"
 #include <iostream>
 #include <vector>
-#include <stack>
-#include <list>
 
 IMCSPACE
 
@@ -54,8 +52,6 @@ using dsxx::SP;
 
 // STL components
 using std::vector;
-using std::list;
-using std::stack;
 using std::istream;
 using std::ostream;
 
@@ -63,7 +59,9 @@ using std::ostream;
 // class Particle_Stack - 
 // Temporary class to account for the KCC 3.3 parser/stack deficiency,
 // ie. the KCC 3.3 compiler expects the type to have ==, !=, <= etc defined.
-// These constraints should not be placed on the user-defined type.
+// These constraints should not be placed on the user-defined type. 
+// NOTE: The Particle_Stack class is now our preferred class because we have
+// added subscripting for sequential access for looking at the data
 //===========================================================================//
 
 template<class PT>
@@ -71,16 +69,16 @@ class Particle_Stack
 {
 public:
   // typedefs
-    typedef typename list<PT>::value_type value_type;
-    typedef typename list<PT>::size_type size_type;
+    typedef typename vector<PT>::value_type value_type;
+    typedef typename vector<PT>::size_type size_type;
 
 private:
   // container
-    list<PT> c;
+    vector<PT> c;
 
 public:
   // constructor
-    explicit Particle_Stack(const list<PT> &ct = list<PT>()) : c(ct) {}
+    explicit Particle_Stack(const vector<PT> &ct = vector<PT>()) : c(ct) {}
     
   // members
     bool empty() const { return c.empty(); }
@@ -89,6 +87,9 @@ public:
     const value_type& top() const { return c.back(); }
     void push(const value_type &x) { c.push_back(x); }
     void pop() { c.pop_back(); }
+
+  // overloaded operator () for viewing elements sequentially
+    const value_type& operator()(int i) const { return c[i]; }
 };
 
 //===========================================================================//
