@@ -31,8 +31,7 @@ namespace rtt_quadrature
  * \bug move to ds++
  */
 template< typename T >
-T QuadServices::kronecker_delta( T const test_value,
-				 T const offset ) const
+T kronecker_delta( T const test_value, T const offset ) 
 { 
     return (test_value==offset) ? 1 : 0; 
 }
@@ -49,7 +48,7 @@ T QuadServices::kronecker_delta( T const test_value,
  * \bug move to ds++
  */
 template< typename T >
-T QuadServices::factorial( T const k ) const
+T factorial( T const k ) 
 {
     if( k <= 1 ) 
 	return 1;
