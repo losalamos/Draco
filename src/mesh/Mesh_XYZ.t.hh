@@ -1014,7 +1014,7 @@ void Mesh_XYZ::scatter
               op(to(i,j+1,k+1), gfrom(i,j,k,6));
               op(to(i+1,j+1,k+1), gfrom(i,j,k,7));
           }
-          if (from.zoff + from.nczp - 1 != from.ncz)
+          if (from.zoff + from.nczp != from.ncz)
           {
               op(to(i,j,from.zoff + from.nczp),
                  gfrom(i,j,from.zoff + from.nczp,0));
@@ -1224,15 +1224,15 @@ T Mesh_XYZ::sum( const Mesh_XYZ::nctf<T>& from )
     T sum = 0;
     int bound;
 
-    if (node = lastnode)
-        bound = 0;
+    if (C4::node() == (C4::nodes()-1))
+        bound = 1;
     else
-        bound = -1;
+        bound = 0;
 
-    for ( int i = 0; i < to.ncx; ++i )
-      for ( int j = 0; j < to.ncy; ++j )
-        for ( int k = to.zoff; k < to.zoff + to.nczp + bound; ++k )
-          sum += to(i,j,k);
+    for ( int i = 0; i <= from.ncx; ++i )
+      for ( int j = 0; j <= from.ncy; ++j )
+        for ( int k = from.zoff; k < from.zoff + from.nczp + bound; ++k )
+          sum += from(i,j,k);
 
     C4::gsum<T>(sum);
 
@@ -1270,7 +1270,8 @@ T Mesh_XYZ::sum( const Mesh_XYZ::bstf<T>& from )
 template <class T>
 T Mesh_XYZ::min( const Mesh_XYZ::cctf<T>& from )
 {
-    T minimum = 0;
+    Mesh_XYZ::cctf<T>::const_iterator iter = from.begin();
+    T minimum = *iter;
 
     for (Mesh_XYZ::cctf<T>::const_iterator iter = from.begin();
          iter != from.end(); ++iter)
@@ -1284,7 +1285,8 @@ T Mesh_XYZ::min( const Mesh_XYZ::cctf<T>& from )
 template <class T>
 T Mesh_XYZ::min( const Mesh_XYZ::fcdtf<T>& from )
 {
-    T minimum = 0;
+    Mesh_XYZ::fcdtf<T>::const_iterator iter = from.begin();
+    T minimum = *iter;
 
     for (Mesh_XYZ::fcdtf<T>::const_iterator iter = from.begin();
          iter != from.end(); ++iter)
@@ -1298,7 +1300,8 @@ T Mesh_XYZ::min( const Mesh_XYZ::fcdtf<T>& from )
 template <class T>
 T Mesh_XYZ::min( const Mesh_XYZ::nctf<T>& from )
 {
-    T minimum = 0;
+    Mesh_XYZ::nctf<T>::const_iterator iter = from.begin();
+    T minimum = *iter;
 
     for (Mesh_XYZ::nctf<T>::const_iterator iter = from.begin();
          iter != from.end(); ++iter)
@@ -1312,7 +1315,8 @@ T Mesh_XYZ::min( const Mesh_XYZ::nctf<T>& from )
 template <class T>
 T Mesh_XYZ::min( const Mesh_XYZ::vctf<T>& from )
 {
-    T minimum = 0;
+    Mesh_XYZ::vctf<T>::const_iterator iter = from.begin();
+    T minimum = *iter;
 
     for (Mesh_XYZ::vctf<T>::const_iterator iter = from.begin();
          iter != from.end(); ++iter)
@@ -1326,7 +1330,8 @@ T Mesh_XYZ::min( const Mesh_XYZ::vctf<T>& from )
 template <class T>
 T Mesh_XYZ::min( const Mesh_XYZ::bstf<T>& from )
 {
-    T minimum = 0;
+    Mesh_XYZ::bstf<T>::const_iterator iter = from.begin();
+    T minimum = *iter;
 
     for (Mesh_XYZ::bstf<T>::const_iterator iter = from.begin();
          iter != from.end(); ++iter)
@@ -1340,11 +1345,12 @@ T Mesh_XYZ::min( const Mesh_XYZ::bstf<T>& from )
 template <class T>
 T Mesh_XYZ::max( const Mesh_XYZ::cctf<T>& from )
 {
-    T maximum = 0;
+    Mesh_XYZ::cctf<T>::const_iterator iter = from.begin();
+    T maximum = *iter;
 
     for (Mesh_XYZ::cctf<T>::const_iterator iter = from.begin();
          iter != from.end(); ++iter)
-        maximum = (maximum < *iter) ? maximum : *iter;
+        maximum = (maximum > *iter) ? maximum : *iter;
 
     C4::gmax<T>(maximum);
 
@@ -1354,11 +1360,12 @@ T Mesh_XYZ::max( const Mesh_XYZ::cctf<T>& from )
 template <class T>
 T Mesh_XYZ::max( const Mesh_XYZ::fcdtf<T>& from )
 {
-    T maximum = 0;
+    Mesh_XYZ::fcdtf<T>::const_iterator iter = from.begin();
+    T maximum = *iter;
 
     for (Mesh_XYZ::fcdtf<T>::const_iterator iter = from.begin();
          iter != from.end(); ++iter)
-        maximum = (maximum < *iter) ? maximum : *iter;
+        maximum = (maximum > *iter) ? maximum : *iter;
 
     C4::gmax<T>(maximum);
 
@@ -1368,11 +1375,12 @@ T Mesh_XYZ::max( const Mesh_XYZ::fcdtf<T>& from )
 template <class T>
 T Mesh_XYZ::max( const Mesh_XYZ::nctf<T>& from )
 {
-    T maximum = 0;
+    Mesh_XYZ::nctf<T>::const_iterator iter = from.begin();
+    T maximum = *iter;
 
     for (Mesh_XYZ::nctf<T>::const_iterator iter = from.begin();
          iter != from.end(); ++iter)
-        maximum = (maximum < *iter) ? maximum : *iter;
+        maximum = (maximum > *iter) ? maximum : *iter;
 
     C4::gmax<T>(maximum);
 
@@ -1382,11 +1390,12 @@ T Mesh_XYZ::max( const Mesh_XYZ::nctf<T>& from )
 template <class T>
 T Mesh_XYZ::max( const Mesh_XYZ::vctf<T>& from )
 {
-    T maximum = 0;
+    Mesh_XYZ::vctf<T>::const_iterator iter = from.begin();
+    T maximum = *iter;
 
     for (Mesh_XYZ::vctf<T>::const_iterator iter = from.begin();
          iter != from.end(); ++iter)
-        maximum = (maximum < *iter) ? maximum : *iter;
+        maximum = (maximum > *iter) ? maximum : *iter;
 
     C4::gmax<T>(maximum);
 
@@ -1396,11 +1405,12 @@ T Mesh_XYZ::max( const Mesh_XYZ::vctf<T>& from )
 template <class T>
 T Mesh_XYZ::max( const Mesh_XYZ::bstf<T>& from )
 {
-    T maximum = 0;
+    Mesh_XYZ::bstf<T>::const_iterator iter = from.begin();
+    T maximum = *iter;
 
     for (Mesh_XYZ::bstf<T>::const_iterator iter = from.begin();
          iter != from.end(); ++iter)
-        maximum = (maximum < *iter) ? maximum : *iter;
+        maximum = (maximum > *iter) ? maximum : *iter;
 
     C4::gmax<T>(maximum);
 
