@@ -49,7 +49,7 @@ void CellDefs::readDefs(ifstream & meshfile)
     int cellDefNum;
     string dummyString;
 
-    for (int i = 0; i < dims.get_ncell_defs(); ++i)
+    for (unsigned i = 0; i < dims.get_ncell_defs(); ++i)
     {
 	meshfile >> cellDefNum >> dummyString;
 	Insist(cellDefNum == i+1,
@@ -57,6 +57,7 @@ void CellDefs::readDefs(ifstream & meshfile)
 	// Ignore plurals in cell definitions
 	if (dummyString[dummyString.size()-1] == 's')
 	    dummyString.resize(dummyString.size()-1);
+	Check(i<defs.size());
 	defs[i] = new CellDef(*this, dummyString);
 	std::getline(meshfile, dummyString);
 	defs[i]->readDef(meshfile);
@@ -94,8 +95,13 @@ void CellDefs::redefineCellDefs(const vector_vector_int & cell_side_types,
 
     redefined = true;
 
-    for (int cd = 0; cd < dims.get_ncell_defs(); cd ++)
+    for (unsigned cd = 0; cd < dims.get_ncell_defs(); cd ++)
+    {
+	Check(cd<defs.size());
+	Check(cd<cell_side_types.size());
+	Check(cd<cell_ordered_sides.size());
         defs[cd]->redefineCellDef(cell_side_types[cd], cell_ordered_sides[cd]);
+    }
 }
 /*!
  * \brief Used by the CellDefs class objects to parse the number of nodes and
@@ -112,8 +118,9 @@ void CellDef::readDef(ifstream & meshfile)
     ordered_sides.resize(nsides);
     std::getline(meshfile, dummyString);
 
-    for (int i = 0; i < nsides; ++i)
+    for (unsigned i = 0; i < nsides; ++i)
     {
+	Check(i<side_types.size());
 	meshfile >> side_types[i];
 	--side_types[i];
     }
@@ -126,15 +133,19 @@ void CellDef::readDef(ifstream & meshfile)
     // the connectivity, however. The ordered_sides vector was added to allow
     // the original ordered data to be retained.
     int side;
-    for (int i = 0; i < nsides; ++i)
+    for (unsigned i = 0; i < nsides; ++i)
     {
+	Check(i<side_types.size());
         int numb_nodes = cellDefs.get_cell_def(side_types[i]).get_nnodes();
+	Check(i<ordered_sides.size());
         ordered_sides[i].resize(numb_nodes);
-	for (int j = 0; j < numb_nodes; ++j)
+	Check(i<sides.size());
+	for (unsigned j = 0; j < numb_nodes; ++j)
 	{
 	    meshfile >> side;
 	    --side;
 	    sides[i].insert(side);
+	    Check(j<ordered_sides[i].size());
 	    ordered_sides[i][j] = side;
 	}
 	if (sides[i].size() > 0)

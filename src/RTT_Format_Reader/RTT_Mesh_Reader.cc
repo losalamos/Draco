@@ -29,7 +29,7 @@ void RTT_Mesh_Reader::transform2CGNS()
     vector_vector_vector_int 
         cell_ordered_sides(rttMesh->get_dims_ncell_defs());
 
-    for (int cd = 0; cd < rttMesh->get_dims_ncell_defs(); cd++)
+    for (unsigned cd = 0; cd < rttMesh->get_dims_ncell_defs(); cd++)
     {
         string cell_name = rttMesh->get_cell_defs_name(cd);
 
@@ -56,7 +56,7 @@ void RTT_Mesh_Reader::transform2CGNS()
 	cell = new rtt_meshReaders::Element_Definition(cell_defs);
 	new_side_types.resize(cell->get_number_of_sides());
 	new_ordered_sides.resize(cell->get_number_of_sides());
-	for (int s = 0; s < cell->get_number_of_sides(); s++)
+	for (unsigned s = 0; s < cell->get_number_of_sides(); s++)
 	{
 	    new_side_types[s] = (std::find(unique_element_types.begin(), 
 					   unique_element_types.end(),
@@ -64,6 +64,7 @@ void RTT_Mesh_Reader::transform2CGNS()
 				 - unique_element_types.begin());
 	    new_ordered_sides[s] = cell->get_side_nodes(s);
 	}
+	Check(cd<cell_side_types.size() && cd<cell_ordered_sides.size());
 	cell_side_types[cd] = new_side_types;
 	cell_ordered_sides[cd] = new_ordered_sides;
     }

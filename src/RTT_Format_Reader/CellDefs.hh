@@ -153,7 +153,8 @@ class CellDefs
  * \param i Cell definition index number.
  * \return The cell definition name.
  */
-    string get_name(int i) const { return defs[i]->get_name(); }
+    string get_name(unsigned i) const { Require(i<defs.size());
+                                        return defs[i]->get_name(); }
 /*!
  * \brief Returns the specified cell definition.
  * \param i Cell definition index number.

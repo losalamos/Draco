@@ -49,11 +49,12 @@ void SideFlags::readFlagTypes(ifstream & meshfile)
     int flagTypeNum;
     string dummyString;
 
-    for (int i = 0; i < dims.get_nside_flag_types(); ++i)
+    for (unsigned i = 0; i < dims.get_nside_flag_types(); ++i)
     {
 	meshfile >> flagTypeNum >> dummyString;
 	Insist(flagTypeNum == i+1,
 	       "Invalid mesh file: side flag type out of order");
+	Check(i<flagTypes.size());
 	flagTypes[i] = new Flags(dims.get_nside_flags(i), dummyString);
 	std::getline(meshfile, dummyString);
 	flagTypes[i]->readFlags(meshfile);

@@ -49,17 +49,24 @@ void Nodes::readData(ifstream & meshfile)
     string dummyString;
     int nodeNum;
 
-    for (int i = 0; i < dims.get_nnodes(); ++i)
+    for (unsigned i = 0; i < dims.get_nnodes(); ++i)
     {
 	meshfile >> nodeNum;
 	Insist(nodeNum == i+1,
 	       "Invalid mesh file: node index out of order");
-	for (int j = 0; j < dims.get_ndim(); ++j)
+	Check(i<coords.size());
+	for (unsigned j = 0; j < dims.get_ndim(); ++j)
+	{
+	    Check(j<coords[i].size());
 	    meshfile >> coords[i][j];
+	}
+	Check(i<parents.size());
 	meshfile >> parents[i];
 	--parents[i];
-	for (int j = 0; j < dims.get_nnode_flag_types(); ++j)
+	Check(i<flags.size());
+	for (unsigned j = 0; j < dims.get_nnode_flag_types(); ++j)
 	{
+	    Check(j<flags[i].size());
 	    meshfile >> flags[i][j];
 	    Insist(nodeFlags.allowed_flag(j, flags[i][j]),
 		   "Invalid mesh file: illegal node flag");

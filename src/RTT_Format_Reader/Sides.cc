@@ -49,23 +49,27 @@ void Sides::readData(ifstream & meshfile)
     string dummyString;
     int sideNum;
 
-    for (int i = 0; i < dims.get_nsides(); ++i)
+    for (unsigned i = 0; i < dims.get_nsides(); ++i)
     {
 	meshfile >> sideNum;
 	Insist(sideNum == i+1,
 	       "Invalid mesh file: side index out of order");
+	Check(i<sideType.size());
 	meshfile >> sideType[i];
 	--sideType[i];
 	Insist(dims.allowed_side_type(sideType[i]),
 	       "Invalid mesh file: illegal side type");
+	Check(i<nodes.size());
 	nodes[i].resize(cellDefs.get_nnodes(sideType[i]));
-	for (int j = 0; j < cellDefs.get_nnodes(sideType[i]); ++j)
+	for (unsigned j = 0; j < cellDefs.get_nnodes(sideType[i]); ++j)
 	{
+	    Check(j<nodes[i].size());
 	    meshfile >> nodes[i][j];
 	    --nodes[i][j];
 	}
-	for (int j = 0; j < dims.get_nside_flag_types(); ++j)
+	for (unsigned j = 0; j < dims.get_nside_flag_types(); ++j)
 	{
+	    Check(j<flags[i].size());
 	    meshfile >> flags[i][j];
 	    Insist(sideFlags.allowed_flag(j, flags[i][j]),
 		   "Invalid mesh file: illegal side flag");

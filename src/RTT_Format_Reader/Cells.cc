@@ -48,22 +48,26 @@ void Cells::readData(ifstream & meshfile)
     string dummyString;
     int cellNum;
 
-    for (int i = 0; i < dims.get_ncells(); ++i)
+    for (unsigned i = 0; i < dims.get_ncells(); ++i)
     {
 	meshfile >> cellNum;
 	Insist(cellNum == i+1, "Invalid mesh file: cell index out of order");
+	Check(i<cellType.size());
 	meshfile >> cellType[i];
 	--cellType[i];
 	Insist(dims.allowed_cell_type(cellType[i]),
 	       "Invalid mesh file: illegal cell type");
+	Check(i<nodes.size());
 	nodes[i].resize(cellDefs.get_nnodes(cellType[i]));
-	for (int j = 0; j < cellDefs.get_nnodes(cellType[i]); ++j)
+	for (unsigned j = 0; j < cellDefs.get_nnodes(cellType[i]); ++j)
 	{
+	    Check(j<nodes[i].size());
 	    meshfile >> nodes[i][j];
 	    --nodes[i][j];
 	}
-	for (int j = 0; j < dims.get_ncell_flag_types(); ++j)
+	for (unsigned j = 0; j < dims.get_ncell_flag_types(); ++j)
 	{
+	    Check(j<flags[i].size());
 	    meshfile >> flags[i][j];
 	    Insist(cellFlags.allowed_flag(j, flags[i][j]),
 		   "Invalid mesh file: illegal cell flag");
