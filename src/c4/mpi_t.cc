@@ -102,6 +102,30 @@ void RecvAsync( C4_Req& r, T *buf, int nels, int source,
 	       source, tag, MPI_COMM_WORLD, &r.r );
 }
 
+template<class T>
+void gsum( T& x )
+{
+    T y = x;
+    MPI_Allreduce( &y, &x, 1, mpi_traits<T>::element_type,
+		   MPI_SUM, MPI_COMM_WORLD );
+}
+
+template<class T>
+void gmin( T& x )
+{
+    T y = x;
+    MPI_Allreduce( &y, &x, 1, mpi_traits<T>::element_type,
+		   MPI_MIN, MPI_COMM_WORLD );
+}
+
+template<class T>
+void gmax( T& x )
+{
+    T y = x;
+    MPI_Allreduce( &y, &x, 1, mpi_traits<T>::element_type,
+		   MPI_MAX, MPI_COMM_WORLD );
+}
+
 C4_NAMESPACE_END
 
 //---------------------------------------------------------------------------//
