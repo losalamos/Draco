@@ -24,8 +24,9 @@ Diffusion_XYZ<MT>::Diffusion_XYZ( const SP<MT>& spm_ )
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Diffusion_XYZ<MT>::solve( const MT::fcdsf& D, const MT::cell_array& rhs,
-			       double dt, MT::cell_array& x )
+void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
+			       const typename  MT::cell_array& rhs,
+			       double dt, typename MT::cell_array& x )
 {
 // Clear the matrix.
 

@@ -27,8 +27,9 @@ class Diffusion_XYZ : private MT::Coord_Mapper {
 
   public:
     Diffusion_XYZ( const SP<MT>& spm_ );
-    void solve( const MT::fcdsf& D, const MT::cell_array& rhs,
-		double dt, MT::cell_array& x );
+    void solve( const typename MT::fcdsf& D,
+		const typename MT::cell_array& rhs,
+		double dt, typename MT::cell_array& x );
 };
 
 #endif                          // __3T_Diffusion_XYZ_hh__
