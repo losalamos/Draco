@@ -85,6 +85,113 @@ def get_test_name(key):
     return key[i+1:]
 
 ##---------------------------------------------------------------------------##
+## Function to print a summary pass/fail information.
+##
+## 1. Print 5 line summary of overall PASS/FAIL and number of pass/fail msgs.
+## 2. Print a table of test results:
+##    a. Create sections for each package.
+##    b. Within each section print a list of tests.
+##    c. For each test print the number of tests run, passed, failed.
+## 3. Print the actual errors and warnings unless there are too many.  In
+##    the later case, report the line numbers of the errors.
+##
+## Parameters:
+##
+## all_passed: bool
+##             False if there were any warnings or errors caught.
+## total_passes: int
+##             Total number of pass messages.
+## total_fails: int
+##             Total number of fail messages.
+## warn_log: list of strings
+##             The actual warning lines from the regression output.
+## error_log: list of strings
+##             The actual error lines from the regression output.
+## use_short: bool
+##             Level of verbosity in the report.
+## pkg_tests: dictionary string:list of strings
+##             The key is a package name, the data is a list of test names
+##             associated with the package.
+##---------------------------------------------------------------------------##
+def print_error_summary( all_passed, total_passes, total_fails, warn_log,
+			 error_log, use_short, pkg_tests ):
+    
+    print "Test Summary for All Packages :",
+
+    if all_passed:
+	print "PASSED"
+    else:
+	print "FAILED"
+
+    print "  Total Passed   : %i" % (total_passes)
+    print "  Total Failed   : %i" % (total_fails)
+    print "  Total Warnings : %i" % (len(warn_log))
+    print "  Total Errors   : %i" % (len(error_log))
+    print
+
+    # only print out test results if we are not using the short form
+    if not use_short:
+
+	print "%47s" % ("Test Results for Each Package")
+	print "======================================================================="
+	print "%40s %8s %11s %9s" % ("Package | Test","Num Run", "Num Passed", "Num Fail")
+	print "======================================================================="
+
+	for pkg in pkg_tests.keys():
+
+	    print ">>>> " + pkg + " package <<<<"
+	    print "-----------------------------------------------------------------------"
+
+	    nc = 0
+	    nr = len(pkg_tests[pkg])
+	    for key in pkg_tests[pkg]:
+		nc        = nc + 1
+		results   = tests[key]
+		test_name = get_test_name(key)
+		print "%40s %8i %11i %9i" % (test_name, results[0], results[1],
+					     results[2])
+
+		if nc < nr:
+		    print "-----------------------------------------------------------------------"
+        
+	    print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+
+    # print out error and warning line numbers
+
+    if len(error_log) or len(warn_log):
+	print "Logfile %s contains the errors and" % (log_tag_str)
+	print "warning messages that are summarized below."
+
+    print_logfile_entries(use_short, error_log, "errors")
+    print_logfile_entries(use_short, warn_log, "warnings")
+
+
+##---------------------------------------------------------------------------##
+## Print a Coverage Analysis Report
+##---------------------------------------------------------------------------##
+
+def print_coverage_report( coverage_dir_report, log_tag_str ) :
+
+    print "Coverage Analsysis for All Packages:\n"
+
+    for line in coverage_dir_report:
+	print "%s"%line,
+
+    print "\nFunction, Class and Source code coverage reports can be " \
+	  + "found in the logfile: %s\n\n"%log_tag_str
+
+    
+
+################################################################################
+################################################################################
+###                                                                          ###
+###                              MAIN PROGRAM                                ###
+###                                                                          ###
+################################################################################
+################################################################################
+
+
+##---------------------------------------------------------------------------##
 ## Set hostname where this filter is run
 ##---------------------------------------------------------------------------##
 
@@ -110,7 +217,10 @@ script_tag = re.compile(r'.*>>>\s*REGRESSION\s*SCRIPT\s*:\s*(.+)', re.IGNORECASE
 options_tag= re.compile(r'.*>>>\s*OPTIONAL\s*ARGS\s*:\s*(.+)', re.IGNORECASE)
 log_tag    = re.compile(r'.*>>>\s*REGRESSION\s*LOG\s*:\s*(.+)', re.IGNORECASE)
 date_tag   = re.compile(r'.*>>>\s*DATE\s*:\s*(.+)', re.IGNORECASE)
-elapsed_time_tag = re.compile(r'.*>>>\s*Elapsed Time\s*:\s*(\d\d[:]\d\d[:]\d\d)',re.IGNORECASE)
+elapsed_time_tag      = re.compile(r'.*>>>\s*Elapsed Time\s*:\s*(\d\d[:]\d\d[:]\d\d)',re.IGNORECASE)
+coverage_tag          = re.compile( r'^>>>.*Coverage Analysis' )
+coverage_begin_report = re.compile( r'^>>>\s*Generating coverage reports' )
+coverage_end_report   = re.compile( r'.*Source.*Function Coverage' )
 
 # The following expressions are ignored:
 lahey     = re.compile(r'Encountered 0 errors, 0 warnings in file.*',re.IGNORECASE)
@@ -140,6 +250,11 @@ warn_log  = []
 
 # short form of regression output is off by default
 use_short = 0
+
+# We do things a bit different if this is a coverage analsysis run.
+coverage_analysis = 0 # 0 for :no", 1 for "yes"
+coverage_dir_report = []
+coverage_recording_report = 0
 
 ##---------------------------------------------------------------------------##
 ## main program
@@ -187,31 +302,37 @@ for line in lines:
     np      = 0
     nf      = 0
 
-    # search on checkout echo line 
-    # don't want to catch checkout of files with name "error" in them.
-    match = checkout.search(line)
+    #-----------------------------------------------------#
+    # Regular expressions matches that should be ignored: #
+    #                                                     #
+    # 1. Ignore cvs checkout commands.                    #
+    # 2. Ignore Lahey F95 output                          #
+    #    "Encountered 0 errors, 0 warnings ..."           #
+    # 3. Ignore warnings about "modification time in the  #
+    #    fugure..."                                       #
+    # 4. Ignore warnings bout "clock skew."               #
+    #-----------------------------------------------------#
 
-    if match:
+    cvs_co_match        = checkout.search(line)
+    lahey_enc00_match   = lahey.search(line)
+    mod_in_future_match = future.search(line)
+    clock_skew_match    = clockskew.search(line)
+
+    if cvs_co_match            or lahey_enc00_match or \
+	   mod_in_future_match or clock_skew_match:
         continue
 
-    # search on compile echo line
-    # Do not catch Lahey F95 echo: "Encountered 0 errors, 0 warnings ..."
-    match = lahey.search(line)
-
-    if match:
-        continue
-
-    # Do not catch warnings for "modification time in the future..."
-    match = future.search(line)
-
-    if match:
-        continue
-
-    # Do not catch warnings for "clock skew"
-    match = clockskew.search(line)
-
-    if match:
-        continue
+    #-----------------------------------------------------#
+    # Regular expressions matches that must be processed: #
+    #                                                     #
+    # 1. Extract the hostname.                            #
+    # 2. Extract the package name.                        #
+    # 3. Extract the regression script name.              #
+    # 4. Extract options provided to the script.          #
+    # 5. Extract the name of the log file.                #
+    # 6. Extract the date for this regression run.        #
+    # 7. Extract the elapsed time for this regression run.#
+    #-----------------------------------------------------#
 
     # search on tags
     match = reg_host.search(line)
@@ -241,6 +362,34 @@ for line in lines:
     match = elapsed_time_tag.search(line)
     if match:
         elapsed_time_str = match.group(1)
+
+    # ----------------------------------------
+    # Coverage Report:
+    # ----------------------------------------
+
+    match = coverage_tag.search(line)
+    if match:
+	coverage_analysis = 1 # yes, we are doing coverage analysis.
+
+    if coverage_analysis:
+
+	# Start recording the output when we see this tag.
+	match = coverage_begin_report.search(line)
+	if match:
+	    coverage_recording_report = 1
+
+	# Stop recording the output when we see this tag.
+	match = coverage_end_report.search(line)
+	if match:
+	    coverage_recording_report = 0
+
+	# Record the coverage report into the variable "coverage_dir_report".
+	if coverage_recording_report:
+	    coverage_dir_report.append( line )
+
+    # ----------------------------------------
+    # End Coverage Report
+    # ----------------------------------------
 
     # search on package
     match = package.search(line)
@@ -346,68 +495,24 @@ if options_str=='':
 
 # print out test results
 
-print "Regression output from package  : %s" % (pkg_tag_str)
-print "Regression filter run on machine: %s" % (hostname)
-print "Date                            : %s" % (date_tag_str)
+print "CCS-4 Regression Report:\n"
+print "Package : %s" % (pkg_tag_str)
+print "Machine : %s" % (hostname)
+print "Date    : %s" % (date_tag_str)
 #print "Regression log stored in        : %s:%s." % (reg_host_str, log_tag_str)
 #print "Regression run from script %s:%s %s." % (reg_host_str,
 #                                                script_tag_str,
 #                                                options_tag_str)
-print "Regression log stored in        : %s" % (log_tag_str)
-print "Regression run from script      : %s" % (script_tag_str)
-print "Command line options            : %s" % (options_str)
-print "Elapsed time (HH:MM:SS)         : %s" % (elapsed_time_str)
-print
-print "Test Summary for All Packages :",
+print "Log file: %s" % (log_tag_str)
+print "Script  : %s" % (script_tag_str)
+print "Options : %s" % (options_str)
+print "Run time: %s (HH:MM:SS\n" % (elapsed_time_str)
 
-if all_passed:
-    print "PASSED"
+if coverage_analysis:
+    print_coverage_report( coverage_dir_report, log_tag_str)
 else:
-    print "FAILED"
-
-print "  Total Passed   : %i" % (total_passes)
-print "  Total Failed   : %i" % (total_fails)
-print "  Total Warnings : %i" % (len(warn_log))
-print "  Total Errors   : %i" % (len(error_log))
-print
-
-# only print out test results if we are not using the short form
-if not use_short:
-
-    print "%47s" % ("Test Results for Each Package")
-    print "======================================================================="
-    print "%40s %8s %11s %9s" % ("Package | Test","Num Run", "Num Passed", "Num Fail")
-    print "======================================================================="
-
-    for pkg in pkg_tests.keys():
-
-        print ">>>> " + pkg + " package <<<<"
-        print "-----------------------------------------------------------------------"
-
-        nc = 0
-        nr = len(pkg_tests[pkg])
-        for key in pkg_tests[pkg]:
-            nc        = nc + 1
-            results   = tests[key]
-            test_name = get_test_name(key)
-            print "%40s %8i %11i %9i" % (test_name, results[0], results[1],
-                                         results[2])
-
-            if nc < nr:
-                print "-----------------------------------------------------------------------"
-        
-        print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    print
-
-# print out error and warning line numbers
-
-if len(error_log) or len(warn_log):
-    print "Logfile %s contains the errors and" % (log_tag_str)
-    print "warning messages that are summarized below."
-
-print_logfile_entries(use_short, error_log, "errors")
-print_logfile_entries(use_short, warn_log, "warnings")
-
+    print_error_summary( all_passed, total_passes, total_fails, warn_log,
+			 error_log, use_short, pkg_tests )
 
 ###############################################################################
 ##                            end of regression_filter.py
