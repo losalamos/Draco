@@ -23,18 +23,14 @@ package = @package@
 # directory for doxygen output
 doxygen_output = @doxygen_output@
 
-# get the relative directory to the autoconf files from ${top_srcdir}.
-rel_autoconf_dir := $(shell ( cd ${top_srcdir} ; \
-	tmp="" ; \
-	while test ! -d autodoc ; \
-	do \
-	   cd .. ; \
-	   tmp=$$tmp../ ; \
-	done ; \
-	echo $$tmp ) )autodoc
+# pacakage top source directory
+package_top_srcdir = @package_top_srcdir@
 
-# get the absolute path of the autoconf dir
-top_autoconf_dir = $(shell cd ${top_srcdir}/${rel_config_dir}; pwd)
+# Get the config directory from the package root.
+config_dir = $(shell cd ${package_top_srcdir}/config; pwd)
+
+# Get the autodoc directory from the package root
+top_autodoc_dir = $(shell cd ${package_top_srcdir}/autodoc; pwd)
 
 # Build lists of image files and support files in the top autodoc
 # directory and the local autodoc directory. The local directory files

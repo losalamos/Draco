@@ -303,6 +303,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        fi
    done
 
+   # Define the package-level source directory (e.g. draco)
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+
    dnl
    dnl ENVIRONMENT SUBSTITUTIONS
    dnl
@@ -311,6 +314,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    dnl end of AC_DRACO_ENV
 ])
+
 
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_dracoenv.m4
