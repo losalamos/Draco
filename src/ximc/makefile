@@ -28,9 +28,9 @@ endif
 objs    = $(srcs:%.cc=$(env)/%.o) \
                 $(ptcc_files:.%_$(env).cc=$(env)/%.o)
 
-default: main_$(env)
+default: imctest_$(env)
 
-main_$(env) : deps $(objs) \
+imctest_$(env) : deps $(objs) \
 	$(dep_libimc) $(dep_libds++) $(dep_libc4)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm 
 
@@ -48,7 +48,7 @@ $(dep_libc4):
 aux_clean := exe_clean
 
 exe_clean:
-	$(RM) main_$(env)
+	$(RM) imctest_$(env)
 
 cc_files := $(srcs)
 
