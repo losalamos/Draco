@@ -11,8 +11,8 @@
 
 #include "c4_test.hh"
 #include "../Release.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
+#include "../global.hh"
+#include "../SpinLock.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 
