@@ -1201,7 +1201,7 @@ void Mesh_XYZ::gather
 
 template <class T>
 void Mesh_XYZ::swap_faces
-( Mesh_XYZ::fcdtf<T>& to, const Mesh_XYZ::fcdtf<T>& from )
+( Mesh_XYZ::fcdtf<T>& to, const Mesh_XYZ::fcdtf<T>& from, T bndryValue )
 {
     Mesh_XYZ::gfcdtf<T> gfrom(from);
     for ( int i = 0; i < to.ncx; ++i )
@@ -1211,27 +1211,27 @@ void Mesh_XYZ::swap_faces
           if (i != 0)
               to(i,j,k,0) = gfrom(i-1,j,k,1);
           else
-              to(i,j,k,0) = 0;
+              to(i,j,k,0) = bndryValue;
           if (i != to.ncx - 1)
               to(i,j,k,1) = gfrom(i+1,j,k,0);
           else
-              to(i,j,k,1) = 0;
+              to(i,j,k,1) = bndryValue;
           if (j != 0)
               to(i,j,k,2) = gfrom(i,j-1,k,3);
           else
-              to(i,j,k,2) = 0;
+              to(i,j,k,2) = bndryValue;
           if (j != to.ncy - 1)
               to(i,j,k,3) = gfrom(i,j+1,k,2);
           else
-              to(i,j,k,3) = 0;
+              to(i,j,k,3) = bndryValue;
           if (k != 0)
               to(i,j,k,4) = gfrom(i,j,k-1,5);
           else
-              to(i,j,k,4) = 0;
+              to(i,j,k,4) = bndryValue;
           if (k != to.ncz - 1)
               to(i,j,k,5) = gfrom(i,j,k+1,4);
           else
-              to(i,j,k,5) = 0;
+              to(i,j,k,5) = bndryValue;
 	}
 }
 
