@@ -288,7 +288,8 @@ bool TestHexMeshReader::check_element_sets(
     const mt elmsets = mesh.get_element_sets();
     if (testid == "slab") 
     {
-	pass_es == pass_es && elmsets.size() == 3;
+	pass_es == pass_es && elmsets.size() == 4;
+	pass_es = pass_es && check_map(elmsets,"Interior",0,100);
 	pass_es = pass_es && check_map(elmsets,"Interior_Region_1",0,100);
 	pass_es = pass_es && check_map(elmsets,"Vacuum_Boundary",100,102);
 	pass_es = pass_es && check_map(elmsets,"Vacuum_Boundary_Region_1",
@@ -296,7 +297,8 @@ bool TestHexMeshReader::check_element_sets(
     }
     else if (testid == "quad")
     {
-	pass_es = pass_es && elmsets.size() == 5;
+	pass_es = pass_es && elmsets.size() == 6;
+	pass_es = pass_es && check_map(elmsets,"Interior",0,400);
 	pass_es = pass_es && check_map(elmsets,"Interior_Region_1",20,400);
 	pass_es = pass_es && check_map(elmsets,"Interior_Region_2",0,20);
 	pass_es = pass_es && check_map(elmsets,"Vacuum_Boundary",400,420);
@@ -308,18 +310,19 @@ bool TestHexMeshReader::check_element_sets(
     }
     else if (testid == "cube") 
     {
-	bool pass0 = elmsets.size() == 9;
-	bool pass1 = check_map(elmsets,"Interior_Region_10",0,2);
-	bool pass2 = check_map(elmsets,"Interior_Region_14",2,3);
-	bool pass3 = check_map(elmsets,"Interior_Region_1",3,122);
-	bool pass4 = check_map(elmsets,"Interior_Region_2",122,125);
-	bool pass5 = check_map(elmsets,"Vacuum_Boundary",125,250);
-	bool pass6 = check_map(elmsets,"Vacuum_Boundary_Region_3",125,130);
-	bool pass7 = check_map(elmsets,"Vacuum_Boundary_Region_4",130,131);
-	bool pass8 = check_map(elmsets,"Vacuum_Boundary_Region_1",131,250);
-	bool pass9 = check_map(elmsets,"Reflective_Boundary",250,275);
+	bool pass0 = elmsets.size() == 10;
+	bool pass1 = check_map(elmsets,"Interior",0,125);
+	bool pass2 = check_map(elmsets,"Interior_Region_10",0,2);
+	bool pass3 = check_map(elmsets,"Interior_Region_14",2,3);
+	bool pass4 = check_map(elmsets,"Interior_Region_1",3,122);
+	bool pass5 = check_map(elmsets,"Interior_Region_2",122,125);
+	bool pass6 = check_map(elmsets,"Vacuum_Boundary",125,250);
+	bool pass7 = check_map(elmsets,"Vacuum_Boundary_Region_3",125,130);
+	bool pass8 = check_map(elmsets,"Vacuum_Boundary_Region_4",130,131);
+	bool pass9 = check_map(elmsets,"Vacuum_Boundary_Region_1",131,250);
+	bool pass10= check_map(elmsets,"Reflective_Boundary",250,275);
 	pass_es = pass0 && pass1 && pass2 && pass3 && pass4 && pass5
-	    && pass6 && pass7 && pass8 && pass9;
+	    && pass6 && pass7 && pass8 && pass9 && pass10;
     }
     else
 	Insist(false,"Unrecognized test id string!");
