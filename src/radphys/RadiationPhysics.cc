@@ -6,8 +6,11 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "3T/RadiationPhysics.hh"
-#include "3T/PhysicalConstants.hh"
+#include "radphys/RadiationPhysics.hh"
+
+#include "radphys/ContainerTraits.hh"
+#include "units/PhysicalConstants.hh"
+
 #include <cmath>
 
 #ifndef BEGIN_NS_XTM
@@ -46,7 +49,7 @@ double RadiationPhysics::getStefanBoltzmann() const
     // Units.InvertXXX methods.
     
     const double stefanBoltzmann = units.InvertMass(
-	units.ConvertTemparature(units.ConvertTime(stefanBoltzmannSI, 3), 4));
+	units.ConvertTemperature(units.ConvertTime(stefanBoltzmannSI, 3), 4));
 
     return stefanBoltzmann;
 }

@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __3T_RadiationPhysics_hh__
-#define __3T_RadiationPhysics_hh__
+#ifndef __radphys_RadiationPhysics_hh__
+#define __radphys_RadiationPhysics_hh__
 
 #ifndef BEGIN_NS_XTM
 #define BEGIN_NS_XTM namespace XTM  {
@@ -29,8 +29,8 @@ BEGIN_NS_XTM
 // 
 //===========================================================================//
 
-#include "3T/Units.hh"
-#include "3T/PhysicalConstants.hh"
+#include "units/Units.hh"
+#include "units/PhysicalConstants.hh"
 
 class RadiationPhysics
 {
@@ -116,7 +116,7 @@ class RadiationPhysics
 
     template<class Field>
     void getElectIonCoupling(const Field &density, const Field &TElectron,
-			     const Field &z, double abar,
+			     const Field &z, const Field &abar,
 			     Field &electIonCoupling) const;
 
   private:
@@ -143,8 +143,8 @@ inline double RadiationPhysics::getLightSpeed() const
 
 END_NS_XTM  // namespace XTM
 
-#endif                          // __3T_RadiationPhysics_hh__
+#endif                          // __radphys_RadiationPhysics_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of 3T/RadiationPhysics.hh
+//                              end of radphys/RadiationPhysics.hh
 //---------------------------------------------------------------------------//
