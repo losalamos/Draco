@@ -1,0 +1,337 @@
+//---------------------------------*-text-*----------------------------------//
+// build_system.dcc
+// The Draco Build System Documenation
+// This file is prepared by doxygen so that it can be part of the CCS-4
+// development web site as well as a written report.
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+/*!
+
+\page build_system The Draco Build System
+\version LA-UR-03-0000
+\author Tom Evans
+
+Draco is a C++ radiation transport component library developed by CCS-4, Los
+Alamos National Laboratory. In addition to providing infrastructure for
+radiation transport code development, Draco serves as a "model Development
+Environment (DE)" for code development activities within CCS-4.  Most CCS-4
+code projects are based on the coding standards, idioms, style, organization,
+and architecture of Draco.  In this vein, an important service that Draco
+provides is its configure/make system, forwith referred to as the Draco Build
+System (DBS).
+
+Utilization of a common build system provides two primary benefits:
+\arg code infrastructure maintainence is leveraged
+\arg porting to new systems is leveraged.
+The Draco build system has the following highlighted features:
+\arg built using GNU AUTOCONF and GNU MAKE tools according to GNU Software
+standards
+\arg full C/C++ build support for gcc, KAI KCC, Compaq CXX, and SGI CC
+\arg a well-defined C++ template instantiation model
+\arg extensible vendor support for 
+<a href="http://www.mcs.anl.gov/mpi/index.html">MPI</a>, 
+<a href="http://www.ncsa.uiuc.edu/Apps/SPRNG/">SPRNG</a>,
+<a href="http://www.netlib.org"> LAPACK and BLAS, ATLAS</a>,
+GANDOLF, and EOSPAC
+\arg parallel builds
+\arg target-source architecture that protects source integrity and allows
+multiple configurations from the same source
+\arg limited FORTRAN support
+\arg automated unit-testing framework
+\arg DBS is exportable
+\arg integrated with a set of elisp macros (for emacs, xemacs) that allows
+automated package inclusion
+
+This document describes the Draco Build System. It contains the following
+sections:
+\arg \ref build describes how to configure and build Draco
+\arg \ref arch describes the build system architecture including directory
+structure, file-naming conventions, and template instantiation model
+\arg \ref pkg describes how to add a new package to Draco
+\arg \ref import describes how to import the DBS into other projects
+\arg \ref system describes the inner workings of the DBS
+
+These sections are aimed at three different audiences: users, developers, and
+code architects.  The appropriate sections for each target group are:
+\par Users
+\ref build
+\par Developers
+\ref build, \ref arch, \ref pkg, \ref import,
+\par Code Architects
+\ref build, \ref arch, \ref pkg, \ref import, \ref system
+
+This manual assumes that the reader is familiar with GNU MAKE (or UNIX MAKE
+in general).  The examples cover AUTOCONF usage; however, we do not describe
+all the details of AUTOCONF.  For those readers interested in the DBS
+inner-workings described in section \ref system, the GNU MAKE and AUTOCONF
+manuals (available with the software through the 
+<a href="http://www.fsf.org">Free Software Foundation</a>) are invaluable and
+necessary references.
+
+\par Note on semantics
+We use \e package to refer to the components sitting in Draco.  Thus, each
+directory in draco/src is a package.  Examples are \c ds++ , \c c4, \c mc ,
+etc. This usage is historical.  We realize that the word \e de \e jour in
+LANL software circles is \e component.  Certainly, Draco is a component
+library, and its constituent packages could be called components.  However,
+the DBS uses the term package to refer to code components sitting in
+draco/src, and that is the convention that will be used here.
+
+<!---------------------------------------------------------------------------->
+
+\section build Configuring and Building Draco 
+
+The Draco Build System is based on GNU AUTOCONF and MAKE.  We have endeavored
+to follow the GNU Coding Standards while designing the build system.  See 
+Stallman, R. \e Gnu \e coding \e standards. Free Software Foundation, 1996,
+for more details on the configure/make model of code development.
+
+The basic steps to build Draco are the following:
+-# create a target directory
+-# run configure in target directory
+-# run make in target directory
+.
+The following sections will show how to configure and build Draco using the
+DBS. 
+
+\subsection configure Configuring Draco
+
+The first step in the configure/make process is to build a target directory.
+The source directory can be used as the target directory; however, this
+prevents multiple configurations.  The best method is to generate a separate
+target directory, which allows the user to generate multiple configurations
+from the same source. Additionally, creating a disjoint target directory
+preserves the sanctity of the source.  For demonstration purposes, $DRACO
+refers to the Draco source directory and $BUILD refers to the target
+directory; thus (> is the command prompt)
+\verbatim
+  > mkdir $BUILD
+\endverbatim
+Next, we need to choose an install location ($INSTALL).  After building the
+$INSTALL location will have the following sub-directories:
+- $INSTALL/bin : installed executables
+- $INSTALL/lib : installed libraries
+- $INSTALL/include : installed headers
+- $INSTALL/libexec : build system tools
+- $INSTALL/html : doxygenated documents (optional)
+- $INSTALL/latex : doxygenated documents (optional)
+.
+The $BUILD and $INSTALL directories can be located anywhere (constrained by
+permission).  For example, we have found it useful to define a install/target
+tree such as $PATH/debug/build or $PATH/opt/build where
+$PATH/opt or $PATH/debug is the $INSTALL directory and $PATH/debug/build or
+$PATH/opt/build is the $BUILD directory.
+
+Continuing, the basic configure step, in the absence of packages that require
+vendors or other options, is
+\verbatim
+  > cd $BUILD
+  > $DRACO/configure --prefix=$INSTALL
+\endverbatim 
+This configure step will build a mirror of the Draco direcotry source tree in
+$BUILD. All package directories inside of the $DRACO/src directory are
+configured.  After configuration the following directories (with build system
+files inside them) will exist in $BUILD:
+- $BUILD/src
+- $BUILD/tools
+- $BUILD/autodoc
+.
+Only directories that exist in the $DRACO source tree will be found in the
+$BUILD directory tree.  For example, if the source version of Draco does not
+have autodoc then there will be no $BUILD/autodoc directory.
+
+Obviously, there are many options that dictate how Draco is built.  We
+reserve this discussion until section \ref config_options.
+Additionally, many Draco packages require vendors whose paths may need
+to be specified at configure time.  See section \ref draco_pkgs for
+details on the Draco package tree and required vendors.
+
+\subsection make_draco Compiling and Installing Draco
+
+Having configured Draco, compiling and installing is straightforward
+\verbatim
+  > cd $BUILD
+  > make nj=2
+\endverbatim
+The MAKE variable \c nj is used to specify the number of processors to use
+for the compiling/linking step.  MAKE runs different targets depending upon
+the the directory level at which it is run.  Running MAKE under $BUILD will
+actually do a compile + install for each Draco package sitting in $DRACO/src.
+After this make is run the following directories will exist:
+- $INSTALL/bin : installed executables
+- $INSTALL/lib : installed libraries
+- $INSTALL/include : installed headers
+- $INSTALL/libexec : build system tools
+- $INSTALL/html : doxygenated documents (optional)
+- $INSTALL/latex : doxygenated documents (optional)
+.
+The first thing that MAKE does when it is run in $BUILD is install tools into
+the $INSTALL/libexec directory.  These tools are necessary for subsequent
+operations; thus, MAKE must be run in $BUILD before any other compile tasks
+are performed.  Alternatively, one could run \c make \c install in
+$BUILD/tools to install the tools.
+
+After the tools are installed, MAKE will enter each $BUILD/src/\e pkg
+directory and do a compile + install.  The \e pkg subdirectories are entered
+in the appropriate order automatically to ensure that dependencies are
+preserved.  The steps from a \c make in $BUILD are as follows:
+-# enter $BUILD/tools and do a \c make \c install
+-# enter $BUILD/src
+-# enter $BUILD/src/\e pkg in order and do a \c make \c install
+.
+
+As inferred from this list, running MAKE at various directory levels has
+different behavior.  The following table shows what default MAKE targets are
+run at each directory level
+<table> 
+<caption align=top> Default MAKE targets when building in $BUILD. </caption>
+<tr> 
+<th> Directory </th>
+<th> Default MAKE Target </th>
+</tr>
+<tr>
+<td> $BUILD </td>
+<td> install </td>
+</tr>
+<tr>
+<td> $BUILD/src </td>
+<td> install </td>
+</tr>
+<tr> 
+<td> $BUILD/src/\e pkg </td>
+<td> all </td>
+</tr>
+<tr>
+<td> $BUILD/src/\e pkg /test </td>
+<td> all </td>
+</tr>
+<tr>
+<td> $BUILD/autodoc </td>
+<td> all </td>
+</td>
+</table>   
+Thus, running MAKE in $BUILD or $BUILD/src actually does a \c make \c install
+in each subdirectory.  Running MAKE in the subdirectories does a build
+(compile) of the package directory's principle targets.
+
+The targets for each package directory in Draco are
+- an executable
+- a library
+- headers
+- a custom target
+- one or more of the above
+. 
+The targets are determined by the package \c configure.in file.
+Generating this file is the subject of \ref pkg.  By default the
+executable and/or library name will be the package name.  For example,
+the \c ds++ package will produce a library called 
+\c libds++.a(so).  As described above, libraries are installed in
+$INSTALL/lib, headers in $INSTALL/include/pkg, and executables in
+$INSTALL/bin. 
+
+The DBS allows the definition of custom targets through inclusion of a
+\c Makefile.target file.  Sources for the build can also be customized
+using a \c Makefile.source file.  Finally, a \c Makefile.misc can be
+created for nearly any miscellaneous purpose. See section \ref system
+for details on customizing the configure/make environment.
+
+The DBS supports several (GNU) standard MAKE targets:      
+<table> 
+<caption> MAKE targets in the Draco DBS </caption>
+<tr> 
+<th> Target </th> 
+<th> Description </th> 
+</tr>
+<tr>
+<td> install </td> 
+<td> installs targets in $INSTALL </td>
+</tr>
+<tr>
+<td> check </td>
+<td> builds and runs unit tests </td>
+</tr>
+<tr>
+<td> clean </td>
+<td> cleans directory (recursively) </td>
+</tr>
+<tr>
+<td> distclean </td>
+<td> cleans configuration files (recursively) </td>
+</tr>
+<tr>
+<td> autodoc </td>
+<td> runs doxygen (from $BUILD directory) </td>
+</tr>
+</table> 
+Two items should be noted from this table.  First, doxygen
+documentation is not generated by default.  One must run \c make 
+\c autodoc from $BUILD or \c make from $BUILD/autodoc.  Second, the
+unit tests are run using the \c make \c check command.  Unit tests can
+be run recursively from any directory level.  For example, to run
+every package's unit tests run \c make \c check from $BUILD.  To run
+the \c c4 package unit tests run \c make \c check from $BUILD/src/c4
+or $BUILD/src/c4/test.  More detail is given on the unit testing
+support in \ref arch.
+
+In each directory MAKE is run recursively.  For example, running \c make
+inside of $BUILD/src will do a compile + install in each $BUILD/src
+subdirectory.  However, it will not install the tools in $BUILD/tools.  One  
+must run \c make in $BUILD or \c make \c install in $BUILD/tools to install 
+the tools.
+
+The default makefiles that are generated by configure contain several
+variables that can be overridden at compile-time.  We saw one already,
+\c nj for the number of processors to use in parallel builds.  Other
+useful variables are:
+- \c CXX : C++ compiler
+- \c CC : C compiler
+- \c INSTALL : install program
+. 
+For example, to build code using INSURE++ compile using the command 
+\verbatim
+  > make nj=2 CXX=insure
+\endverbatim
+See section \ref system for a more complete description of the
+makefiles and variables defined in the DBS.
+
+\subsection draco_pkgs Draco Packages and Vendors
+
+Draco packages co-exist according the the principles of Levelized Software
+Design (Lakos, J. \e Large-scale \e C++ \e software \e design. 1996).   The
+current hierarchy of Draco packages is as follows:
+
+\dotfile level.dot "Levelization diagram of the Draco packages." 
+
+\subsection config_options Configure Options
+
+<!---------------------------------------------------------------------------->
+
+\section arch Build System Architecture
+
+This is the build system architecture.
+  
+<!---------------------------------------------------------------------------->
+
+\section pkg Adding a Package to Draco
+
+New packages are easily added to Draco through the build system.
+
+<!---------------------------------------------------------------------------->
+
+\section import Importing the Draco Build System
+
+The Draco Build System is designed to be imported into other codes.
+
+<!---------------------------------------------------------------------------->
+  
+\section system Draco Build System Reference Manual.
+
+The Draco Build System components reside within the draco/config directory.
+
+*/
+
+//---------------------------------------------------------------------------//
+//                              end of build_system.dcc
+//---------------------------------------------------------------------------//

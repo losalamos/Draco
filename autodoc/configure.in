@@ -22,7 +22,11 @@ doxygen_src=${srcdir}/../src
 
 # find sources
 AC_MSG_CHECKING("directories to doxygenize")
-dirs=`ls ../src`
+
+dirs=''
+if test -d ../src ; then
+   dirs=`ls ../src`
+fi
 
 doxygen_input=''
 doxygen_examples=''
@@ -36,6 +40,15 @@ do
        doxygen_examples="${doxygen_src}/${dir}/test ${doxygen_examples}"
    fi
 done
+
+# add config/doc to directories
+doxygen_dirs="config ${doxygen_dirs}"
+doxygen_input="${srcdir}/../config/doc ${doxygen_input}"
+
+# add autodoc to directories
+doxygen_dirs="autodoc ${doxygen_dirs}"
+doxygen_input="${srcdir} ${doxygen_input}"
+
 AC_MSG_RESULT($doxygen_dirs)
 
 # check if we should build latex sources
@@ -43,6 +56,9 @@ latex_yes_no='NO'
 if test "${enable_latex_doc:=no}" = yes ; then
    latex_yes_no='YES'
 fi
+
+# dotpath (for draco levelization diagram
+dotpath="${srcdir}/../doc/design"
 
 # find the release number
 number='null'
@@ -53,6 +69,7 @@ AC_MSG_RESULT($number)
 AC_SUBST(doxygen_input)
 AC_SUBST(doxygen_examples)
 AC_SUBST(latex_yes_no)
+AC_SUBST(dotpath)
 AC_SUBST(number)
 
 AC_OUTPUT(Makefile doxygen_config header.html footer.html)
