@@ -6,13 +6,13 @@
 /* @> put the right includes for MPI header files                            */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __c4_c4_mpi_h__
-#define __c4_c4_mpi_h__
+#ifndef rtt_c4_c4_mpi_h
+#define rtt_c4_c4_mpi_h
 
 #include <c4/config.h>
 
 /* defined in ac_vendors.m4, location of <mpi.h> */
-#include MPI_H
+#include <mpi.h>
 
 #endif                          /* __c4_c4_mpi_h__ */
 

@@ -6,16 +6,16 @@
 /* @> put the right includes for SPRNG header files                          */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __rng_rng_sprng_h__
-#define __rng_rng_sprng_h__
+#ifndef rtt_rng_rng_sprng_h
+#define rtt_rng_rng_sprng_h
 
 /* get the rng configuration file */
 #include <rng/config.h>
 
-/* location of <sprng.h>, defined in ac_vendors.m4 */
-#include SPRNG_H
+/* Sprng Headers */
+#include <sprng.h>
 
-#endif                          /* __rng_rng_sprng_h__ */
+#endif                          /* rtt_rng_rng_sprng_h */
 
 /*---------------------------------------------------------------------------*/
 /*                              end of rng_sprng.h */

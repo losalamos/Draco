@@ -14,8 +14,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __c4_global_hh__
-#define __c4_global_hh__
+#ifndef rtt_c4_global_hh
+#define rtt_c4_global_hh
 
 // C4 package configure
 #include <c4/config.h>
@@ -197,7 +197,7 @@ inline double Wtick()
 
 } // end of namespace C4
 
-#endif                          // __c4_global_hh__
+#endif                          // rtt_c4_global_hh
 
 //---------------------------------------------------------------------------//
 //                              end of c4/global.hh

@@ -6,18 +6,15 @@
 /* @> rng package defines                                                    */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __rng_config_h__
-#define __rng_config_h__
-
-/* SPRNG library include path */
-#undef SPRNG_H
+#ifndef rtt_rng_config_h
+#define rtt_rng_config_h
 
 /* USE STANDARD C INTERFACE */
 #ifndef __STDC__
 #define __STDC__
 #endif
 
-#endif                          /* __rng_config_h__ */
+#endif                          /* rtt_rng_config_h */
 
 /*---------------------------------------------------------------------------*/
 /*                              end of config.h */

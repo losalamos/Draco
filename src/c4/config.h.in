@@ -6,8 +6,8 @@
 /* @> defines necessary for the C4 package                                   */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __c4_config_h__
-#define __c4_config_h__
+#ifndef rtt_c4_config_h
+#define rtt_c4_config_h
 
 /* C4 Environments */
 
@@ -16,10 +16,6 @@
 
 /* mpi */
 #undef C4_MPI
-
-/* Communication library include paths */
-/* Defined in ac_vendors.m4 */
-#undef MPI_H
 
 /* POSIX DEFINES */
 #undef _POSIX_SOURCE
@@ -31,7 +27,7 @@
 /* Add version check for Compaq ALASKA MPI releases */
 #undef MPI_VERSION_CHECK
 
-#endif                          /* __c4_config_h__ */
+#endif                          /* rtt_c4_config_h */
 
 /*---------------------------------------------------------------------------*/
 /*                              end of config.h */

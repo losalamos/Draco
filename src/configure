@@ -1382,14 +1382,6 @@ fi;
 
 
 
-   # define MPI include path
-   if test -n "${MPI_INC}" ; then
-       # remember that MPI_INC has the final slash
-       MPI_H="\"${MPI_INC}mpi.h\""
-   elif test -z "${MPI_INC}" ; then
-       MPI_H="<mpi.h>"
-   fi
-
    # determine if this package is needed for testing or for the
    # package
    vendor_mpi=pkg
@@ -1408,10 +1400,6 @@ fi;
 	   with_mpi='vendor'
        fi
    fi
-
-   # add MPI directory to VENDOR_DIRS
-   VENDOR_DIRS="${MPI_LIB} ${VENDOR_DIRS}"
-
 
 
 
@@ -1509,54 +1497,17 @@ fi;
 
 
 
-   # define SPRNG include path
-   if test -n "${SPRNG_INC}" ; then
-       # remember that SPRNG_INC has the final slash
-       SPRNG_H="\"${SPRNG_INC}sprng.h\""
-   elif test -z "${SPRNG_INC}" ; then
-       SPRNG_H="<sprng.h>"
-   fi
-
    # determine if this package is needed for testing or for the
    # package
    vendor_sprng=pkg
 
    # choices are with_sprng = lfg, lcg, yes, or no
 
-   # default (sprng is no and set to lfg by default)
+   # default (sprng is set to lfg by default)
    if test "${with_sprng:=lfg}" = yes ; then
        with_sprng='lfg'
    fi
 
-   # set up the libraries
-   if test "${with_sprng}" != no ; then
-       if test -n "${SPRNG_LIB}" ; then
-
-   # vendor_sprng is the vendor_<> tag (equals pkg or test)
-   # -L${SPRNG_LIB} -l${with_sprng} are the directories added
-
-   if test "${vendor_sprng}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
-   elif test "${vendor_sprng}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
-   fi
-
-       elif test -z "${SPRNG_LIB}" ; then
-
-   # vendor_sprng is the vendor_<> tag (equals pkg or test)
-   # -l${with_sprng} are the directories added
-
-   if test "${vendor_sprng}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_sprng}"
-   elif test "${vendor_sprng}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_sprng}"
-   fi
-
-       fi
-   fi
-
-   # add sprng directory to VENDOR_DIRS
-   VENDOR_DIRS="${SPRNG_LIB} ${VENDOR_DIRS}"
 
 
 
@@ -1618,36 +1569,6 @@ fi;
    if test "${with_pcg:=pcg}" = yes ; then
        with_pcg='pcg'
    fi
-
-   # set up the libraries
-   if test "${with_pcg}" != no ; then
-       if test -z "${PCG_LIB}" ; then
-
-   # vendor_pcg is the vendor_<> tag (equals pkg or test)
-   # -l${with_pcg} are the directories added
-
-   if test "${vendor_pcg}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_pcg}"
-   elif test "${vendor_pcg}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_pcg}"
-   fi
-
-       elif test -n "${PCG_LIB}" ; then
-
-   # vendor_pcg is the vendor_<> tag (equals pkg or test)
-   # -L${PCG_LIB} -l${with_pcg} are the directories added
-
-   if test "${vendor_pcg}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${PCG_LIB} -l${with_pcg}"
-   elif test "${vendor_pcg}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${PCG_LIB} -l${with_pcg}"
-   fi
-
-       fi
-   fi
-
-   # add PCG directory to VENDOR_DIRS
-   VENDOR_DIRS="${PCG_LIB} ${VENDOR_DIRS}"
 
 
 
@@ -1751,49 +1672,9 @@ fi;
        with_aztec='aztec'
    fi
 
-   # define AZTEC include path
-   if test -n "${AZTEC_INC}" ; then
-       # remember that AZTEC_INC has the final slash
-       AZTEC_H="\"${AZTEC_INC}az_aztec.h\""
-       AZTEC_DEFS_H="\"${AZTEC_INC}az_aztec_defs.h\""
-   elif test -z "${AZTEC_INC}" ; then
-       AZTEC_H="<az_aztec.h>"
-       AZTEC_DEFS_H="<az_aztec_defs.h>"
-   fi
-
    # determine if this package is needed for testing or for the
    # package
    vendor_aztec=pkg
-
-   # set up the libraries
-   if test "${with_aztec}" != no ; then
-       if test -n "${AZTEC_LIB}" ; then
-
-   # vendor_aztec is the vendor_<> tag (equals pkg or test)
-   # -L${AZTEC_LIB} -l${with_aztec} are the directories added
-
-   if test "${vendor_aztec}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
-   elif test "${vendor_aztec}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
-   fi
-
-       elif test -z "${AZTEC_LIB}" ; then
-
-   # vendor_aztec is the vendor_<> tag (equals pkg or test)
-   # -l${with_aztec} are the directories added
-
-   if test "${vendor_aztec}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_aztec}"
-   elif test "${vendor_aztec}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_aztec}"
-   fi
-
-       fi
-   fi
-
-   # add AZTEC directory to VENDOR_DIRS
-   VENDOR_DIRS="${AZTEC_LIB} ${VENDOR_DIRS}"
 
 
 
@@ -1897,49 +1778,9 @@ fi;
        with_gsl='gsl'
    fi
 
-   # define GSL include path
-   if test -n "${GSL_INC}" ; then
-       # remember that GSL_INC has the final slash
-       GSL_H="\"${GSL_INC}az_gsl.h\""
-       GSL_DEFS_H="\"${GSL_INC}az_gsl_defs.h\""
-   elif test -z "${GSL_INC}" ; then
-       GSL_H="<az_gsl.h>"
-       GSL_DEFS_H="<az_gsl_defs.h>"
-   fi
-
    # determine if this package is needed for testing or for the
    # package
    vendor_gsl=pkg
-
-   # set up the libraries
-   if test "${with_gsl}" != no ; then
-       if test -n "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
-   fi
-
-       elif test -z "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
-   fi
-
-       fi
-   fi
-
-   # add GSL directory to VENDOR_DIRS
-   VENDOR_DIRS="${GSL_LIB} ${VENDOR_DIRS}"
 
 
 
@@ -2043,49 +1884,9 @@ fi;
        with_gslcblas='gslcblas'
    fi
 
-   # define GSLCBLAS include path
-   if test -n "${GSLCBLAS_INC}" ; then
-       # remember that GSLCBLAS_INC has the final slash
-       GSLCBLAS_H="\"${GSLCBLAS_INC}az_gslcblas.h\""
-       GSLCBLAS_DEFS_H="\"${GSLCBLAS_INC}az_gslcblas_defs.h\""
-   elif test -z "${GSLCBLAS_INC}" ; then
-       GSLCBLAS_H="<az_gslcblas.h>"
-       GSLCBLAS_DEFS_H="<az_gslcblas_defs.h>"
-   fi
-
    # determine if this package is needed for testing or for the
    # package
    vendor_gslcblas=pkg
-
-   # set up the libraries
-   if test "${with_gslcblas}" != no ; then
-       if test -n "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   fi
-
-       elif test -z "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
-   fi
-
-       fi
-   fi
-
-   # add GSLCBLAS directory to VENDOR_DIRS
-   VENDOR_DIRS="${GSLCBLAS_LIB} ${VENDOR_DIRS}"
 
 
 
@@ -2189,61 +1990,9 @@ fi;
        with_trilinos='aztecoo'
    fi
 
-   # define TRILINOS include path
-   if test -n "${TRILINOS_INC}" ; then
-       # remember that TRILINOS_INC has the final slash
-       Trilinos_Util_H="\"${TRILINOS_INC}Trilinos_Util.h\""
-       AztecOO_H="\"${TRILINOS_INC}AztecOO.h\""
-       Epetra_MpiComm_H="\"${TRILINOS_INC}Epetra_MpiComm.h\""
-       Epetra_Map_H="\"${TRILINOS_INC}Epetra_Map.h\""
-       Epetra_Vector_H="\"${TRILINOS_INC}Epetra_Vector.h\""
-       Epetra_CrsMatrix_H="\"${TRILINOS_INC}Epetra_CrsMatrix.h\""
-       Epetra_LinearProblem_H="\"${TRILINOS_INC}Epetra_LinearProblem.h\""
-       Epetra_IntVector_H="\"${TRILINOS_INC}Epetra_IntVector.h\""
-       Epetra_Import_H="\"${TRILINOS_INC}Epetra_Import.h\""
-       Epetra_Export_H="\"${TRILINOS_INC}Epetra_Export.h\""
-       Epetra_CompObject_H="\"${TRILINOS_INC}Epetra_CompObject.h\""
-       Epetra_Distributor_H="\"${TRILINOS_INC}Epetra_Distributor.h\""
-       Epetra_DistObject_H="\"${TRILINOS_INC}Epetra_DistObject.h\""
-       Epetra_MpiDistributor_H="\"${TRILINOS_INC}Epetra_MpiDistributor.h\""
-       Epetra_BasicDirectory_H="\"${TRILINOS_INC}Epetra_BasicDirectory.h\""
-       Epetra_Util_H="\"${TRILINOS_INC}Epetra_Util.h\""
-       Epetra_Time_H="\"${TRILINOS_INC}Epetra_Time.h\""
-   fi
-
    # determine if this package is needed for testing or for the
    # package
    vendor_trilinos=pkg
-
-   # set up the libraries
-   if test "${with_trilinos}" != no ; then
-       if test -n "${TRILINOS_LIB}" ; then
-
-   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
-
-   if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
-   elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
-   fi
-
-       elif test -z "${TRILINOS_LIB}" ; then
-
-   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
-
-   if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
-   elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
-   fi
-
-       fi
-   fi
-
-   # add TRILINOS directory to VENDOR_DIRS
-   VENDOR_DIRS="${TRILINOS_LIB} ${VENDOR_DIRS}"
 
 
 
@@ -2307,42 +2056,10 @@ fi;
        with_lapack='vendor'
    fi
 
-   # set up the libraries: if the option is vendor than we will take
-   # care of things in dracoenv under each platform case; if the
-   # option is atlas we will setup the basic library calls
-   if test "${with_lapack}" = atlas ; then
-
-       # if a library path has been defined use it otherwise assume
-       # the libraries are in a default location
-       if test -z "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -llapack -lf77blas -lcblas -latlas are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -llapack -lf77blas -lcblas -latlas"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -llapack -lf77blas -lcblas -latlas"
+   # define the atlas libraries (these are system independent)
+   if test "${with_lapack}" = atlas; then
+       lapack_libs='-llapack -lf77blas -lcblas -latlas'
    fi
-
-       elif test -n "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas"
-   fi
-
-       fi
-
-   fi
-
-   # add LAPACK directory to VENDOR_DIRS
-   VENDOR_DIRS="${LAPACK_LIB} ${VENDOR_DIRS}"
-
 
 
 
@@ -2405,36 +2122,6 @@ fi;
        with_gandolf='gandolf'
    fi
 
-   # set up the libraries
-   if test "${with_gandolf}" != no ; then
-       if test -z "${GANDOLF_LIB}" ; then
-
-   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
-   # -l${with_gandolf} are the directories added
-
-   if test "${vendor_gandolf}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gandolf}"
-   elif test "${vendor_gandolf}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gandolf}"
-   fi
-
-       elif test -n "${GANDOLF_LIB}" ; then
-
-   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
-   # -L${GANDOLF_LIB} -l${with_gandolf} are the directories added
-
-   if test "${vendor_gandolf}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
-   elif test "${vendor_gandolf}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
-   fi
-
-       fi
-   fi
-
-   # add GANDOLF directory to VENDOR_DIRS
-   VENDOR_DIRS="${GANDOLF_LIB} ${VENDOR_DIRS}"
-
 
 
 
@@ -2496,36 +2183,6 @@ fi;
    if test "${with_eospac:=eospac}" = yes ; then
        with_eospac='eospac'
    fi
-
-   # set up the libraries
-   if test "${with_eospac}" != no ; then
-       if test -z "${EOSPAC5_LIB}" ; then
-
-   # vendor_eospac is the vendor_<> tag (equals pkg or test)
-   # -l${with_eospac} are the directories added
-
-   if test "${vendor_eospac}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_eospac}"
-   elif test "${vendor_eospac}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_eospac}"
-   fi
-
-       elif test -n "${EOSPAC5_LIB}" ; then
-
-   # vendor_eospac is the vendor_<> tag (equals pkg or test)
-   # -L${EOSPAC5_LIB} -l${with_eospac} are the directories added
-
-   if test "${vendor_eospac}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
-   elif test "${vendor_eospac}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
-   fi
-
-       fi
-   fi
-
-   # add EOSPAC5 directory to VENDOR_DIRS
-   VENDOR_DIRS="${EOSPAC5_LIB} ${VENDOR_DIRS}"
 
 
 
@@ -2629,47 +2286,15 @@ fi;
        with_grace='grace_np'
    fi
 
-   # define GRACE include path
-   if test -n "${GRACE_INC}" ; then
-       # remember that GRACE_INC has the final slash
-       GRACE_H="\"${GRACE_INC}${with_grace}.h\""
-   elif test -z "${GRACE_INC}" ; then
-       GRACE_H="<${with_grace}.h>"
-   fi
+   # define GRACE header file
+   GRACE_H="<${with_grace}.h>"
+   cat >>confdefs.h <<_ACEOF
+#define GRACE_H ${GRACE_H}
+_ACEOF
 
    # determine if this package is needed for testing or for the
    # package
    vendor_grace=pkg
-
-   # set up the libraries
-   if test "${with_grace}" != no ; then
-       if test -n "${GRACE_LIB}" ; then
-
-   # vendor_grace is the vendor_<> tag (equals pkg or test)
-   # -L${GRACE_LIB} -l${with_grace} are the directories added
-
-   if test "${vendor_grace}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GRACE_LIB} -l${with_grace}"
-   elif test "${vendor_grace}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GRACE_LIB} -l${with_grace}"
-   fi
-
-       elif test -z "${GRACE_LIB}" ; then
-
-   # vendor_grace is the vendor_<> tag (equals pkg or test)
-   # -l${with_grace} are the directories added
-
-   if test "${vendor_grace}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_grace}"
-   elif test "${vendor_grace}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_grace}"
-   fi
-
-       fi
-   fi
-
-   # add GRACE directory to VENDOR_DIRS
-   VENDOR_DIRS="${GRACE_LIB} ${VENDOR_DIRS}"
 
 
 

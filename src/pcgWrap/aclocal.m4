@@ -27,9 +27,20 @@ dnl AC_MPI_SETUP
 dnl
 dnl MPI implementation (off by default)
 dnl MPI is an optional vendor
+dnl
+dnl we wait to set the basic MPI libraries (if it is on) until
+dnl after checking the C4 status; these functions are performed
+dnl in ac_dracoenv.m4, section SYSTEM-SPECIFIC SETUP; we do this
+dnl here because each platform has different mpi options for
+dnl vendors and mpich
+dnl
+dnl note that we used to do this in a function called AC_COMM_SET;
+dnl however, there are too many platform-dependent variables 
+dnl to continue doing this; so we do all these operations in the
+dnl platform specific section of ac_dracoenv.m4
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_MPI_SETUP, [dnl
+AC_DEFUN([AC_MPI_SETUP], [dnl
 
    dnl define --with-mpi
    AC_ARG_WITH(mpi,
@@ -41,14 +52,6 @@ AC_DEFUN(AC_MPI_SETUP, [dnl
 	       [tell where MPI includes are])
    AC_WITH_DIR(mpi-lib, MPI_LIB, \${MPI_LIB_DIR},
 	       [tell where MPI libs are])
-
-   # define MPI include path
-   if test -n "${MPI_INC}" ; then
-       # remember that MPI_INC has the final slash
-       MPI_H="\"${MPI_INC}mpi.h\""
-   elif test -z "${MPI_INC}" ; then
-       MPI_H="<mpi.h>"
-   fi
 
    # determine if this package is needed for testing or for the
    # package
@@ -69,19 +72,33 @@ AC_DEFUN(AC_MPI_SETUP, [dnl
        fi
    fi
 
-   # add MPI directory to VENDOR_DIRS
-   VENDOR_DIRS="${MPI_LIB} ${VENDOR_DIRS}"
+]) 
 
-   dnl we wait to set the basic MPI libraries (if it is on) until
-   dnl after checking the C4 status; these functions are performed
-   dnl in ac_dracoenv.m4, section SYSTEM-SPECIFIC SETUP; we do this
-   dnl here because each platform has different mpi options for
-   dnl vendors and mpich
 
-   dnl note that we used to do this in a function called AC_COMM_SET;
-   dnl however, there are too many platform-dependent variables 
-   dnl to continue doing this; so we do all these operations in the
-   dnl platform specific section of ac_dracoenv.m4
+AC_DEFUN([AC_MPI_FINALIZE], [dnl
+
+   # only add stuff if mpi is not no and the vendor is defined
+   if test "${with_mpi}" != no && test -n "${vendor_mpi}"; then
+
+       # include path
+       if test -n "${MPI_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${MPI_INC}"
+       fi
+   
+       # libraries
+       if test -n "${MPI_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} ${mpi_libs})
+       elif test -z "${MPI_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_mpi, ${mpi_libs})
+       fi
+
+       # add MPI directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${MPI_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${MPI_INC}"
+
+   fi
+
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -91,7 +108,7 @@ dnl SPRNG LIBRARY SETUP (on by default -lfg)
 dnl SPRNG is a required vendor
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_SPRNG_SETUP, [dnl
+AC_DEFUN([AC_SPRNG_SETUP], [dnl
 
    dnl define --with-sprng
    AC_ARG_WITH(sprng,
@@ -103,36 +120,44 @@ AC_DEFUN(AC_SPRNG_SETUP, [dnl
    AC_WITH_DIR(sprng-lib, SPRNG_LIB, \${SPRNG_LIB_DIR},
 	       [tell where SPRNG libraries are])
 
-   # define SPRNG include path
-   if test -n "${SPRNG_INC}" ; then
-       # remember that SPRNG_INC has the final slash
-       SPRNG_H="\"${SPRNG_INC}sprng.h\""
-   elif test -z "${SPRNG_INC}" ; then
-       SPRNG_H="<sprng.h>"
-   fi
-
    # determine if this package is needed for testing or for the 
    # package
    vendor_sprng=$1
 
    # choices are with_sprng = lfg, lcg, yes, or no
 
-   # default (sprng is no and set to lfg by default)
+   # default (sprng is set to lfg by default)
    if test "${with_sprng:=lfg}" = yes ; then
        with_sprng='lfg'
    fi
 
-   # set up the libraries
-   if test "${with_sprng}" != no ; then
+])
+
+
+AC_DEFUN([AC_SPRNG_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_sprng}"; then
+
+       # include path
+       if test -n "${SPRNG_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SPRNG_INC}"
+       fi
+   
+       # libraries
        if test -n "${SPRNG_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_sprng, -L${SPRNG_LIB} -l${with_sprng})
        elif test -z "${SPRNG_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_sprng, -l${with_sprng})
        fi
+
+       # add sprng directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SPRNG_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SPRNG_INC}"
+
    fi
 
-   # add sprng directory to VENDOR_DIRS
-   VENDOR_DIRS="${SPRNG_LIB} ${VENDOR_DIRS}"
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -143,7 +168,7 @@ dnl AZTEC is a required vendor
 dnl
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_AZTEC_SETUP, [dnl
+AC_DEFUN([AC_AZTEC_SETUP], [dnl
 
    dnl define --with-aztec
    AC_ARG_WITH(aztec,
@@ -162,31 +187,36 @@ AC_DEFUN(AC_AZTEC_SETUP, [dnl
        with_aztec='aztec'
    fi
 
-   # define AZTEC include path
-   if test -n "${AZTEC_INC}" ; then
-       # remember that AZTEC_INC has the final slash
-       AZTEC_H="\"${AZTEC_INC}az_aztec.h\""
-       AZTEC_DEFS_H="\"${AZTEC_INC}az_aztec_defs.h\""
-   elif test -z "${AZTEC_INC}" ; then
-       AZTEC_H="<az_aztec.h>"
-       AZTEC_DEFS_H="<az_aztec_defs.h>"
-   fi
-
    # determine if this package is needed for testing or for the 
    # package
    vendor_aztec=$1
 
-   # set up the libraries
-   if test "${with_aztec}" != no ; then
+])
+
+
+AC_DEFUN([AC_AZTEC_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_aztec}" ; then
+
+       # include path
+       if test -n "${AZTEC_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${AZTEC_INC}"
+       fi
+
+       # library path
        if test -n "${AZTEC_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_aztec, -L${AZTEC_LIB} -l${with_aztec})
        elif test -z "${AZTEC_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_aztec, -l${with_aztec})
        fi
-   fi
 
-   # add AZTEC directory to VENDOR_DIRS
-   VENDOR_DIRS="${AZTEC_LIB} ${VENDOR_DIRS}"
+       # add AZTEC directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${AZTEC_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${AZTEC_INC}"
+
+   fi
 
 ])
 
@@ -217,31 +247,36 @@ AC_DEFUN(AC_GSL_SETUP, [dnl
        with_gsl='gsl'
    fi
 
-   # define GSL include path
-   if test -n "${GSL_INC}" ; then
-       # remember that GSL_INC has the final slash
-       GSL_H="\"${GSL_INC}az_gsl.h\""
-       GSL_DEFS_H="\"${GSL_INC}az_gsl_defs.h\""
-   elif test -z "${GSL_INC}" ; then
-       GSL_H="<az_gsl.h>"
-       GSL_DEFS_H="<az_gsl_defs.h>"
-   fi
-
    # determine if this package is needed for testing or for the 
    # package
    vendor_gsl=$1
 
-   # set up the libraries
-   if test "${with_gsl}" != no ; then
+])
+
+
+AC_DEFUN([AC_GSL_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
        if test -n "${GSL_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} -l${with_gsl})
        elif test -z "${GSL_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_gsl, -l${with_gsl})
        fi
-   fi
 
-   # add GSL directory to VENDOR_DIRS
-   VENDOR_DIRS="${GSL_LIB} ${VENDOR_DIRS}"
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
 
 ])
 
@@ -253,7 +288,7 @@ dnl GSLCBLAS is a required vendor
 dnl
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_GSLCBLAS_SETUP, [dnl
+AC_DEFUN([AC_GSLCBLAS_SETUP], [dnl
 
    dnl define --with-gslcblas
    AC_ARG_WITH(gslcblas,
@@ -272,31 +307,36 @@ AC_DEFUN(AC_GSLCBLAS_SETUP, [dnl
        with_gslcblas='gslcblas'
    fi
 
-   # define GSLCBLAS include path
-   if test -n "${GSLCBLAS_INC}" ; then
-       # remember that GSLCBLAS_INC has the final slash
-       GSLCBLAS_H="\"${GSLCBLAS_INC}az_gslcblas.h\""
-       GSLCBLAS_DEFS_H="\"${GSLCBLAS_INC}az_gslcblas_defs.h\""
-   elif test -z "${GSLCBLAS_INC}" ; then
-       GSLCBLAS_H="<az_gslcblas.h>"
-       GSLCBLAS_DEFS_H="<az_gslcblas_defs.h>"
-   fi
-
    # determine if this package is needed for testing or for the 
    # package
    vendor_gslcblas=$1
 
-   # set up the libraries
-   if test "${with_gslcblas}" != no ; then
+])
+
+
+AC_DEFUN([AC_GSLCBLAS_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test "${vendor_gslcblas}"; then
+
+       # include path
+       if test -n "${GSLCBLAS_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
+       fi
+
+       # library path
        if test -n "${GSLCBLAS_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_gslcblas, -L${GSLCBLAS_LIB} -l${with_gslcblas})
        elif test -z "${GSLCBLAS_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_gslcblas, -l${with_gslcblas})
        fi
-   fi
 
-   # add GSLCBLAS directory to VENDOR_DIRS
-   VENDOR_DIRS="${GSLCBLAS_LIB} ${VENDOR_DIRS}"
+       # add GSLCBLAS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
+
+   fi
 
 ])
 
@@ -308,7 +348,7 @@ dnl TRILINOS is a required vendor
 dnl
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_TRILINOS_SETUP, [dnl
+AC_DEFUN([AC_TRILINOS_SETUP], [dnl
 
    dnl define --with-trilinos
    AC_ARG_WITH(trilinos,
@@ -327,44 +367,36 @@ AC_DEFUN(AC_TRILINOS_SETUP, [dnl
        with_trilinos='aztecoo'
    fi
 
-   # define TRILINOS include path
-   if test -n "${TRILINOS_INC}" ; then
-       # remember that TRILINOS_INC has the final slash
-       Trilinos_Util_H="\"${TRILINOS_INC}Trilinos_Util.h\""
-       AztecOO_H="\"${TRILINOS_INC}AztecOO.h\""
-       Epetra_MpiComm_H="\"${TRILINOS_INC}Epetra_MpiComm.h\"" 
-       Epetra_Map_H="\"${TRILINOS_INC}Epetra_Map.h\""
-       Epetra_Vector_H="\"${TRILINOS_INC}Epetra_Vector.h\""
-       Epetra_CrsMatrix_H="\"${TRILINOS_INC}Epetra_CrsMatrix.h\""
-       Epetra_LinearProblem_H="\"${TRILINOS_INC}Epetra_LinearProblem.h\""
-       Epetra_IntVector_H="\"${TRILINOS_INC}Epetra_IntVector.h\""
-       Epetra_Import_H="\"${TRILINOS_INC}Epetra_Import.h\""
-       Epetra_Export_H="\"${TRILINOS_INC}Epetra_Export.h\""
-       Epetra_CompObject_H="\"${TRILINOS_INC}Epetra_CompObject.h\""
-       Epetra_Distributor_H="\"${TRILINOS_INC}Epetra_Distributor.h\""
-       Epetra_DistObject_H="\"${TRILINOS_INC}Epetra_DistObject.h\""
-       Epetra_MpiDistributor_H="\"${TRILINOS_INC}Epetra_MpiDistributor.h\""
-       Epetra_BasicDirectory_H="\"${TRILINOS_INC}Epetra_BasicDirectory.h\""
-       Epetra_Util_H="\"${TRILINOS_INC}Epetra_Util.h\""
-       Epetra_Time_H="\"${TRILINOS_INC}Epetra_Time.h\""
-dnl   elif test -z "${TRILINOS_INC}" ; then
-   fi
-
    # determine if this package is needed for testing or for the 
    # package
    vendor_trilinos=$1
 
-   # set up the libraries
-   if test "${with_trilinos}" != no ; then
+])
+
+
+AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_trilinos}" ; then
+
+       # include path
+       if test -n "${TRILINOS_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
+       fi
+
+       # library path
        if test -n "${TRILINOS_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m)
        elif test -z "${TRILINOS_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -ltriutils -ly12m)
        fi
-   fi
 
-   # add TRILINOS directory to VENDOR_DIRS
-   VENDOR_DIRS="${TRILINOS_LIB} ${VENDOR_DIRS}"
+       # add TRILINOS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${TRILINOS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
+
+   fi
 
 ])
 
@@ -373,9 +405,13 @@ dnl AC_PCG_SETUP
 dnl
 dnl PCG LIBRARY SETUP (on by default)
 dnl PCG is a required vendor
+dnl
+dnl note that we add some system-specific libraries for this
+dnl vendor in AC_DRACO_ENV; also, the user must set up LAPACK for
+dnl this to work
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_PCG_SETUP, [dnl
+AC_DEFUN([AC_PCG_SETUP], [dnl
 
    dnl define --with-pcg
    AC_ARG_WITH(pcg,        
@@ -394,21 +430,26 @@ AC_DEFUN(AC_PCG_SETUP, [dnl
        with_pcg='pcg'
    fi
 
+])
+
+
+AC_DEFUN([AC_PCG_FINALIZE], [dnl
+
    # set up the libraries
-   if test "${with_pcg}" != no ; then
+   if test -n "${vendor_pcg}"; then
+
+       # library path
        if test -z "${PCG_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_pcg, -l${with_pcg})
        elif test -n "${PCG_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_pcg, -L${PCG_LIB} -l${with_pcg})
        fi
+
+       # add PCG directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
+
    fi
 
-   # add PCG directory to VENDOR_DIRS
-   VENDOR_DIRS="${PCG_LIB} ${VENDOR_DIRS}"
-
-   dnl note that we add some system-specific libraries for this
-   dnl vendor in AC_DRACO_ENV; also, the user must set up LAPACK for
-   dnl this to work
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -416,9 +457,12 @@ dnl AC_GANDOLF_SETUP
 dnl
 dnl GANDOLF LIBRARY SETUP (on by default)
 dnl GANDOLF is a required vendor
+dnl
+dnl SGI needs "-lfortran" on the load line when including libgandolf.a.
+dnl This library is added to ${LIBS} in AC_DRACO_ENV.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_GANDOLF_SETUP, [dnl
+AC_DEFUN([AC_GANDOLF_SETUP], [dnl
 
    dnl define --with-gandolf
    AC_ARG_WITH(gandolf,        
@@ -437,20 +481,26 @@ AC_DEFUN(AC_GANDOLF_SETUP, [dnl
        with_gandolf='gandolf'
    fi
 
+])
+
+
+AC_DEFUN([AC_GANDOLF_FINALIZE], [dnl
+
    # set up the libraries
-   if test "${with_gandolf}" != no ; then
+   if test -n "${vendor_gandolf}"; then
+
+       # set up library paths
        if test -z "${GANDOLF_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_gandolf, -l${with_gandolf})
        elif test -n "${GANDOLF_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_gandolf, -L${GANDOLF_LIB} -l${with_gandolf})
        fi
+
+       # add GANDOLF directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GANDOLF_LIB}"
+
    fi
 
-   # add GANDOLF directory to VENDOR_DIRS
-   VENDOR_DIRS="${GANDOLF_LIB} ${VENDOR_DIRS}"
-
-   dnl SGI needs "-lfortran" on the load line when including libgandolf.a.
-   dnl This library is added to ${LIBS} in AC_DRACO_ENV.
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -460,7 +510,7 @@ dnl EOSPAC5 LIBRARY SETUP (on by default)
 dnl EOSPAC5 is a required vendor
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_EOSPAC5_SETUP, [dnl
+AC_DEFUN([AC_EOSPAC5_SETUP], [dnl
 
    dnl define --with-eospac
    AC_ARG_WITH(eospac,        
@@ -479,21 +529,26 @@ AC_DEFUN(AC_EOSPAC5_SETUP, [dnl
        with_eospac='eospac'
    fi
 
+])
+
+
+AC_DEFUN([AC_EOSPAC5_FINALIZE], [dnl
+
    # set up the libraries
-   if test "${with_eospac}" != no ; then
+   if test -n "${vendor_eospac}"; then
+
+       # set up library paths
        if test -z "${EOSPAC5_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_eospac, -l${with_eospac})
        elif test -n "${EOSPAC5_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_eospac, -L${EOSPAC5_LIB} -l${with_eospac})
        fi
+
+       # add EOSPAC5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${EOSPAC5_LIB}"
+
    fi
 
-   # add EOSPAC5 directory to VENDOR_DIRS
-   VENDOR_DIRS="${EOSPAC5_LIB} ${VENDOR_DIRS}"
-
-   dnl note that we add some system-specific libraries for this
-   dnl vendor in AC_DRACO_ENV; also, the user must set up LAPACK for
-   dnl this to work
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -503,9 +558,12 @@ dnl LAPACK SETUP (on by default)
 dnl LAPACK is a required vendor
 dnl
 dnl NOTE: this also sets up the BLAS
+dnl
+dnl note that we add system specific libraries to this list in
+dnl ac_platforms.m4
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_LAPACK_SETUP, [dnl
+AC_DEFUN([AC_LAPACK_SETUP], [dnl
 
    dnl define --with-lapack
    AC_ARG_WITH(lapack,
@@ -525,26 +583,30 @@ AC_DEFUN(AC_LAPACK_SETUP, [dnl
        with_lapack='vendor'
    fi
 
-   # set up the libraries: if the option is vendor than we will take
-   # care of things in dracoenv under each platform case; if the
-   # option is atlas we will setup the basic library calls
-   if test "${with_lapack}" = atlas ; then
-       
-       # if a library path has been defined use it otherwise assume
-       # the libraries are in a default location
+   # define the atlas libraries (these are system independent)
+   if test "${with_lapack}" = atlas; then
+       lapack_libs='-llapack -lf77blas -lcblas -latlas'
+   fi
+])
+
+
+AC_DEFUN([AC_LAPACK_FINALIZE], [dnl
+
+   # set up lapack libraries
+   if test -n "${vendor_lapack}"; then
+
+       # set libraries
        if test -z "${LAPACK_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_lapack, -llapack -lf77blas -lcblas -latlas)
+	   AC_VENDORLIB_SETUP(vendor_lapack, ${lapack_libs})
        elif test -n "${LAPACK_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas)
+	   AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} ${lapack_libs})
        fi
+
+       # add LAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${LAPACK_LIB}"
 
    fi
 
-   # add LAPACK directory to VENDOR_DIRS
-   VENDOR_DIRS="${LAPACK_LIB} ${VENDOR_DIRS}"
-
-   dnl note that we add system specific libraries to this list in
-   dnl dracoenv
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -554,7 +616,7 @@ dnl GRACE SETUP (on by default)
 dnl GRACE is a required vendor
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_GRACE_SETUP, [dnl
+AC_DEFUN([AC_GRACE_SETUP], [dnl
 
    dnl define --with-grace
    AC_ARG_WITH(grace,
@@ -573,153 +635,88 @@ AC_DEFUN(AC_GRACE_SETUP, [dnl
        with_grace='grace_np'
    fi
 
-   # define GRACE include path
-   if test -n "${GRACE_INC}" ; then
-       # remember that GRACE_INC has the final slash
-       GRACE_H="\"${GRACE_INC}${with_grace}.h\""
-   elif test -z "${GRACE_INC}" ; then
-       GRACE_H="<${with_grace}.h>"
-   fi
+   # define GRACE header file
+   GRACE_H="<${with_grace}.h>"
+   AC_DEFINE_UNQUOTED(GRACE_H, ${GRACE_H})dnl
 
    # determine if this package is needed for testing or for the 
    # package
    vendor_grace=$1
 
-   # set up the libraries
-   if test "${with_grace}" != no ; then
+])
+
+
+AC_DEFUN([AC_GRACE_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_grace}" ; then
+
+       # include path
+       if test -n "${GRACE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GRACE_INC}"
+       fi
+
+       # library path
        if test -n "${GRACE_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_grace, -L${GRACE_LIB} -l${with_grace})
        elif test -z "${GRACE_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_grace, -l${with_grace})
        fi
-   fi
 
-   # add GRACE directory to VENDOR_DIRS
-   VENDOR_DIRS="${GRACE_LIB} ${VENDOR_DIRS}"
+       # add GRACE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GRACE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GRACE_INC}"
+
+   fi
 
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_VENDOR_DEFINES
+dnl AC_VENDOR_FINALIZE
 dnl
 dnl Run at the end of the environment setup to add defines required by
 dnl the vendors.  We do this to allow platform specific mods to the 
-dnl vendor defines BEFORE they are output to config.h, etc files.  
+dnl vendor defines BEFORE they are added to CCPFLAGS, etc. 
 dnl
 dnl This macro needs to be updated when new vendors are added.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN([AC_VENDOR_DEFINES], [dnl
+AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
 
-   AC_MSG_CHECKING("vendor defines")
-   defines=''
+   # call finalize functions for each vendor, the order is important
+   # each vendor setup is appended to the previous; thus, the calling
+   # level goes from high to low
+   AC_TRILINOS_FINALIZE
 
-   # ***
-   # MPI
-   # ***
-   if test -n "${vendor_mpi}"; then
-       # define mpi include path
-       AC_DEFINE_UNQUOTED(MPI_H, ${MPI_H})dnl
+   AC_AZTEC_FINALIZE
+   AC_PCG_FINALIZE
 
-       # add to defines
-       defines="${defines} ${MPI_H}"
-   fi
+   AC_LAPACK_FINALIZE
+   AC_EOSPAC5_FINALIZE
+   AC_GANDOLF_FINALIZE
+   AC_SPRNG_FINALIZE
+   AC_GRACE_FINALIZE
 
-   # *****
-   # SPRNG
-   # *****
-   if test -n "${vendor_sprng}"; then
-       # define sprng include path
-       AC_DEFINE_UNQUOTED(SPRNG_H, ${SPRNG_H})dnl 
+   AC_GSL_FINALIZE
+   AC_GSLCBLAS_FINALIZE
 
-       # add to defines
-       defines="${defines} ${SPRNG_H}"
-   fi
+   AC_MPI_FINALIZE
 
-   # *****
-   # AZTEC
-   # *****
-   if test -n "${vendor_aztec}"; then 
-       # define aztec include paths
-       AC_DEFINE_UNQUOTED(AZTEC_H, ${AZTEC_H})dnl
-       AC_DEFINE_UNQUOTED(AZTEC_DEFS_H, ${AZTEC_DEFS_H})dnl
-
-       # add to defines
-       defines="${defines} ${AZTEC_H} ${AZTEC_DEFS_H}"
-   fi
-
-   # *****
-   # GSL
-   # *****
-   if test -n "${vendor_gsl}"; then 
-       # define gsl include paths
-       AC_DEFINE_UNQUOTED(GSL_H, ${GSL_H})dnl
-       AC_DEFINE_UNQUOTED(GSL_DEFS_H, ${GSL_DEFS_H})dnl
-
-       # add to defines
-       defines="${defines} ${GSL_H} ${GSL_DEFS_H}"
-   fi
-
-   # *****
-   # GSLCBLAS
-   # *****
-   if test -n "${vendor_gslcblas}"; then 
-       # define gslcblas include paths
-       AC_DEFINE_UNQUOTED(GSLCBLAS_H, ${GSLCBLAS_H})dnl
-       AC_DEFINE_UNQUOTED(GSLCBLAS_DEFS_H, ${GSLCBLAS_DEFS_H})dnl
-
-       # add to defines
-       defines="${defines} ${GSLCBLAS_H} ${GSLCBLAS_DEFS_H}"
-   fi
-
-
-   # *****
-   # TRILINOS
-   # *****
-   if test -n "${vendor_trilinos}"; then 
-       # define trilinos include paths
-       AC_DEFINE_UNQUOTED(Trilinos_Util_H, ${Trilinos_Util_H})dnl
-       AC_DEFINE_UNQUOTED(AztecOO_H, ${AztecOO_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_MpiComm_H, ${Epetra_MpiComm_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_Map_H, ${Epetra_Map_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_Vector_H, ${Epetra_Vector_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_CrsMatrix_H, ${Epetra_CrsMatrix_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_LinearProblem_H, ${Epetra_LinearProblem_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_IntVector_H, ${Epetra_IntVector_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_Import_H, ${Epetra_Import_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_Export_H, ${Epetra_Export_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_CompObject_H, ${Epetra_CompObject_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_Distributor_H, ${Epetra_Distributor_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_DistObject_H, ${Epetra_DistObject_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_MpiDistributor_H, ${Epetra_MpiDistributor_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_BasicDirectory_H, ${Epetra_BasicDirectory_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_Util_H, ${Epetra_Util_H})dnl
-       AC_DEFINE_UNQUOTED(Epetra_Time_H, ${Epetra_Time_H})dnl
-
-       # add to defines
-       defines="${defines} ${Trilinos_Util_H} ${AztecOO_H} ${Epetra_MpiComm_H} ${Epetra_Map_H}"
-       defines="${defines} ${Epetra_Vector_H} ${Epetra_CrsMatrix_H} ${Epetra_LinearProblem_H}"
-       defines="${defines} ${Epetra_IntVector_H} ${Epetra_Import_H} ${Epetra_Export_H}"
-       defines="${defines} ${Epetra_CompObject_H} ${Epetra_Distributor_H} ${Epetra_DistObject_H}"
-       defines="${defines} ${Epetra_MpiDistributor_H} ${Epetra_BasicDirectory_H}"
-       defines="${defines} ${Epetra_Util_H} ${Epetra_Time_H}"
-   fi
-
-   # *****
-   # GRACE
-   # *****
-   if test -n "${vendor_grace}"; then
-       # define grace include path
-       AC_DEFINE_UNQUOTED(GRACE_H, ${GRACE_H})dnl
-
-       # add to defines
-       defines="${defines} ${GRACE_H}"
-   fi
-
-   if test -n "${defines}"; then
-       AC_MSG_RESULT("${defines}")
+   # print out vendor include paths
+   AC_MSG_CHECKING("vendor include paths")
+   if test -n "${VENDOR_INC_DIRS}"; then
+       AC_MSG_RESULT("${VENDOR_INC_DIRS}")
    else
-       AC_MSG_RESULT("no vendors definitions required")
+       AC_MSG_RESULT("no vendor include dirs defined")
+   fi
+
+   # print out vendor lib paths
+   AC_MSG_CHECKING("vendor lib paths")
+   if test -n "${VENDOR_LIB_DIRS}"; then
+       AC_MSG_RESULT("${VENDOR_LIB_DIRS}")
+   else
+       AC_MSG_RESULT("no vendor lib dirs defined")
    fi
 
 ])
@@ -899,6 +896,7 @@ AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
    AC_SUBST(DRACO_DEPENDS)dnl
    AC_SUBST(DRACO_LIBS)dnl
    AC_SUBST(VENDOR_DEPENDS)dnl
+   AC_SUBST(VENDOR_INC)dnl
    AC_SUBST(VENDOR_LIBS)dnl
    AC_SUBST(ARLIBS)dnl
 
@@ -1138,6 +1136,39 @@ AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND
+dnl
+dnl changes compiler from newmpxlC to newxlC so that tests can be run
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND], [dnl
+
+   # change compiler
+   if test "${CXX}" = newmpxlC; then
+       white_compiler='newmpxlC'
+       CXX='newxlC'
+       AC_MSG_WARN("Changing to ${CXX} compiler for configure tests.")
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND
+dnl
+dnl changes compiler back to newmpxlC
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND], [dnl
+
+   # change compiler back
+   if test "${white_compiler}" = newmpxlC; then
+       CXX='newmpxlC'
+       AC_MSG_WARN("Changing back to ${CXX} compiler.")
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl end of ac_conf.m4
 dnl-------------------------------------------------------------------------dnl
 
@@ -1231,7 +1262,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        libsuffix='.a'
    fi
 
-   dnl										      
+   dnl      
    dnl POSIX SOURCE
    dnl
 
@@ -1392,12 +1423,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   done
        fi
    done
-
-   dnl
-   dnl VENDOR MACRO DEFINITIONS
-   dnl
-
-   AC_VENDOR_DEFINES
 
    dnl
    dnl ENVIRONMENT SUBSTITUTIONS
@@ -2459,13 +2484,27 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 
    elif test "${with_cxx}" = asciwhite ; then 
 
-       AC_CHECK_PROG(CXX, newxlC, newxlC)
-       AC_CHECK_PROG(CC, newxlc, newxlc)
+       # asci white uses different executables depending upon
+       # the mpi setup; so we check to see if mpi is on 
+       # and set the executable appropriately 
 
-       if test "${CXX}" = newxlC ; then
+       # mpi is on, use newmpxlC
+       if test -n "${vendor_mpi}" && test "${with_mpi}" = vendor; then
+	   AC_CHECK_PROG(CXX, newmpxlC, newmpxlC)
+	   AC_CHECK_PROG(CC, newmpxlc, newmpxlc)
+
+       # scalar build, use newxlC
+       else
+	   AC_CHECK_PROG(CXX, newxlC, newxlC)
+	   AC_CHECK_PROG(CC, newxlc, newxlc)
+
+       fi
+
+       # check to make sure compiler is valid
+       if test "${CXX}" = newxlC || test "${CXX}" = newmpxlC ; then
 	   AC_DRACO_IBM_VISUAL_AGE
        else
-	   AC_MSG_ERROR("Did not find ASCI White newxlC compiler!")
+	   AC_MSG_ERROR("Did not find ASCI White new(mp)xlC compiler!")
        fi
 
    else
@@ -2854,11 +2893,19 @@ AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -G -o'
 
-       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+       # when AR=newmpxlC we need to add /lib/crt0.o to 
+       # avoid p_argcx and p_argvx link error when building libs
+       if test "${AR}" = newmpxlC ; then
+	   ARLIBS='/lib/crt0.o'
+	   ARTESTLIBS='/lib/crt0.o'
+       fi
+
+       ARLIBS="${ARLIBS} \${DRACO_LIBS} \${VENDOR_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${PKG_LIBS} \${DRACO_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${DRACO_LIBS}\${VENDOR_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
@@ -3009,9 +3056,6 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	   LDFLAGS="--thread_safe ${LDFLAGS}"
        fi
 
-       # determine word sizes
-       # AC_DETERMINE_WORD_SIZES
-
        #
        # setup communication packages
        #
@@ -3030,42 +3074,28 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
 
        if test "${with_mpi}" = mpich ; then
-	   
-	   # define mpich libraries for v1.2 of mpich
-	   if test -n "${MPI_LIB}" ; then
-	       linux_mpi_libs="-L${MPI_LIB} -lmpich"
-	   elif test -z "${MPI_LIB}" ; then
-	       # if /usr/local/mpich/lib exists use it by default;
-	       # this is set as the default for the CCS-2/4 network;
-	       # it may not be appropriate on other LINUX networks;
-	       # in those cases, override with --with-mpi-lib
-	       if test -d /usr/local/mpich/lib ; then
-	           linux_mpi_libs="-L/usr/local/mpich/lib -lmpich"
-	       else
-		   linux_mpi_libs="-lmpich"
-	       fi
-	   fi
 
-	   # define the linux mpi libs
-	   AC_VENDORLIB_SETUP(vendor_mpi, ${linux_mpi_libs})
+	   # define mpi libs for mpich on linux
+	   mpi_libs='-lmpich'
+
+	   # if /usr/local/mpich/lib exists use it by default;
+	   # this is set as the default for the CCS-2/4 network;
+	   # it may not be appropriate on other LINUX networks;
+	   # in those cases, override with --with-mpi-lib
+	   if test -z "${MPI_LIB}" && test -d "/usr/local/mpich/lib"; then
+	       MPI_LIB='/usr/local/mpich/lib'
+	   fi
 
 	   # set the default include location on LINUX to
 	   # /usr/local/mpich/include; this is specific to the CCS-2/4
 	   # LINUX network; to override on other systems use
 	   # --with-mpi-inc on the configure line
 
-	   # if MPI_INC is undefined, then put in the explicit default
-	   # path if /usr/local/mpich/include exists
-	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include" ; then
-	       MPI_H="\"/usr/local/mpich/include/mpi.h\""
-	       AC_DEFINE_UNQUOTED(MPI_H, ${MPI_H})
+	   # if MPI_INC is undefined then define it
+	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include"; then
+	       MPI_INC='/usr/local/mpich/include'
 	   fi
 
-       fi
-
-       # shmem (not available on suns)
-       if test "${enable_shmem}" = yes ; then
-	   AC_MSG_ERROR("We do not support shmem on linux!")
        fi
 
        #
@@ -3081,14 +3111,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        # that has already been defined
 
        if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -llapack -lblas)
-	   elif test -z "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -llapack -lblas)
-	   fi
-
+	   lapack_libs='-llapack -lblas'
        fi 
 
        # 
@@ -3139,6 +3162,11 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	   AC_MSG_RESULT("not needed")
        fi
 
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes ; then
 
@@ -3158,7 +3186,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS}; 
+       for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc/icc then add xlinker
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
@@ -3258,25 +3286,30 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        # setup for mpi support
        # we only support vendor mpi on sgis       
        if test "${with_mpi}" = vendor ; then
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
-	   elif test -z "${MPI_LIB}" ; then
+	   
+	   # mpi library on sgi is mpi
+	   mpi_libs='-lmpi'
+
+	   # set up sgi mpi defaults
+	   if test -z "${MPI_LIB}" ; then
 	       if test "${enable_32_bit}" = no ; then
-		   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPT_SGI}/usr/lib64 -lmpi)
+		   MPI_LIB="${MPI_SGI}/usr/lib64"
 	       else
-		   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPT_SGI}/usr/lib32 -lmpi)
+		   MPI_LIB="${MPI_SGI}/usr/lib32"
 	       fi
 	   fi
+
        elif test "${with_mpi}" = mpich ; then
+
+	   # no mpich support on SGI
 	   AC_MSG_ERROR("We do not support mpich on the SGI yet!")
+
        fi
 
        # MPT (Message Passing Toolkit) for SGI vendor
-       # implementation of MPI and SHMEM
+       # implementation of MPI
        if test -z "${MPI_INC}" &&  test "${with_mpi}" = vendor ; then
-	   MPI_INC="${MPT_SGI}/usr/include/"	   
-	   MPI_H="\"${MPI_INC}mpi.h\""
-	   AC_DEFINE_UNQUOTED(MPI_H, ${MPI_H})
+	   MPI_INC="${MPT_SGI}/usr/include/"
        fi
 
        # add SGI MPT Specfic options
@@ -3309,14 +3342,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -lcomplib.sgimath)
-	   elif test -z "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -lcomplib.sgimath)
-	   fi
-
+	   lapack_libs='-lcomplib.sgimath'
        fi
 
        #
@@ -3339,6 +3365,11 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        # end of gandolf/libfortran setup
        #
 
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
 
@@ -3355,7 +3386,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS}; 
+       for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc then add xlinker
 	   if test "${CXX}" = g++; then
@@ -3390,26 +3421,18 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
        # setup communication packages
        #
-       
+
        # setup vendor mpi
        if test "${with_mpi}" = vendor ; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
-	   fi
+	   # define mpi libraries
+	   mpi_libs='-lmpi'
        
        # setup mpich
        elif test "${with_mpi}" = mpich ; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpich)
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpich)
-	   fi
+	   # define mpi libraries
+	   mpi_libs='-lmpich'
    
        fi
 
@@ -3428,14 +3451,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -ldxml)
-	   elif test -z "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -ldxml)
-	   fi
-
+	   lapack_libs='-ldxml'
        fi
 
        #
@@ -3459,6 +3475,11 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        # end of gandolf/libfortran setup
        #
 
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
 
@@ -3478,7 +3499,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS}; 
+       for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc then add xlinker
 	   if test "${CXX}" = g++; then
@@ -3565,89 +3586,77 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	       LDFLAGS="${LDFLAGS} -Xlinker -brtl -Xlinker -bh:5"
 	   fi
 
-	   # turn of the rpath
+	   # turn off the rpath
 	   RPATH=''
        fi
 
        #
        # setup communication packages
        #
-       
-       # setup vendor mpi
-       if test "${with_mpi}" = vendor ; then
+       if test -n "${vendor_mpi}"; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi -lmpi_r)
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi -lmpi_r)
-	   fi
+	   # setup vendor mpi
+	   if test "${with_mpi}" = vendor ; then
 
-	   # now turn on long long support if we are using the 
-	   # visual age compiler
-	   if test "${with_cxx}" = ibm || 
-	      test "${with_cxx}" = asciwhite ; then
+	       # on asciwhite the newmpxlC compiler script takes care
+	       # of loading the mpi libraries; since it will fail
+	       # if libraries are loaded and newmpxlC is used; throw
+	       # an error if it occurs
+	       if test "${with_cxx}" = asciwhite; then
 
-	       if test "${enable_strict_ansi}"; then
-		   AC_MSG_WARN("xlC set to allow long long")
-		   STRICTFLAG="-qlanglvl=extended"
-		   CFLAGS="${CFLAGS} -qlonglong"
-		   CXXFLAGS="${CXXFLAGS} -qlonglong"
+		   if test -n "${MPI_INC}" || test -n "${MPI_LIB}"; then
+		       AC_MSG_ERROR("Cannot set mpi paths with newmpxlC.")
+		   fi
+
+		   mpi_libs=''
+
 	       fi
 
-	   fi   
+	       # set up libraries if we are on ibm
+	       if test "${with_cxx}" = ibm; then
+
+		   # set up mpi library
+		   mpi_libs='-lmpi'
+
+	       fi
+
+	       # now turn on long long support if we are using the 
+	       # visual age compiler
+	       if test "${with_cxx}" = ibm || 
+	          test "${with_cxx}" = asciwhite ; then
+
+		   if test "${enable_strict_ansi}"; then
+		       AC_MSG_WARN("xlC set to allow long long")
+		       STRICTFLAG="-qlanglvl=extended"
+		       CFLAGS="${CFLAGS} -qlonglong"
+		       CXXFLAGS="${CXXFLAGS} -qlonglong"
+		   fi
+
+	       fi   
        
-       # setup mpich
-       elif test "${with_mpi}" = mpich ; then
+	   # setup mpich
+	   elif test "${with_mpi}" = mpich ; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpich)
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpich)
-	   fi
+	       # set up mpi libs
+	       mpi_libs='-lmpich'
    
-       fi
+	   fi
 
+       fi
        #
        # end of communication packages
        #
 
        #
-       # setup lapack
+       # OTHER VENDORS
        #
 
-       if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -ldxml)
-	   elif test -z "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -ldxml)
-	   fi
-
-       fi
+       # we don't have the other vendors setup explicitly 
 
        #
-       # end of lapack setup
+       # finalize vendors
        #
-
-       #
-       # gandolf, eospac, pcg require -lfor on the link line.
-       #
-
-       AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfor"
-          AC_MSG_RESULT("-lfor added to LIBS") 
-       else
-	   AC_MSG_RESULT("not needed")
-       fi
-
-       #
-       # end of gandolf/libfortran setup
-       #
+       AC_VENDOR_FINALIZE
 
        # RPATH is derived from -L, don't need explicit setup
 
@@ -3684,24 +3693,15 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        # setup for mpi support
        # we only support mpich on sgis       
        if test "${with_mpi}" = vendor ; then
+
 	   AC_MSG_ERROR("We do not support vendor mpi on the SUN yet!")
+
        elif test "${with_mpi}" = mpich ; then
 	   
 	   # define sun-required libraries for mpich, v 1.0 (this
 	   # needs to be updated for version 1.2)
-	   sun_mpi_libs='-lpmpi -lmpi -lsocket -lnsl'
-   
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} ${sun_mpi_libs})
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, ${sun_mpi_libs})
-	   fi
+	   mpi_libs='-lpmpi -lmpi -lsocket -lnsl'
 
-       fi
-
-       # shmem (not available on suns)
-       if test "${enable_shmem}" = yes ; then
-	   AC_MSG_ERROR("We do not support shmem on suns!")
        fi
 
        #
@@ -3713,21 +3713,17 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        if test "${with_lapack}" = vendor ; then
-
-	   sun_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} ${sun_libs})
-	   elif test -z "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, ${sun_libs})
-	   fi
-
+	   lapack_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
        fi
 
        #
        # end of lapack setup
        #
+
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
 
        # set -R when building shared library executables
        if test "${enable_shared}" = yes; then
@@ -3736,7 +3732,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS}; 
+       for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc/icc then add xlinker
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
@@ -3761,3 +3757,4 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_platforms.m4
 dnl-------------------------------------------------------------------------dnl
+

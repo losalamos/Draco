@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="ts_manager.hh"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1404,14 +1404,6 @@ fi;
 
 
 
-   # define MPI include path
-   if test -n "${MPI_INC}" ; then
-       # remember that MPI_INC has the final slash
-       MPI_H="\"${MPI_INC}mpi.h\""
-   elif test -z "${MPI_INC}" ; then
-       MPI_H="<mpi.h>"
-   fi
-
    # determine if this package is needed for testing or for the
    # package
    vendor_mpi=pkg
@@ -1430,10 +1422,6 @@ fi;
 	   with_mpi='vendor'
        fi
    fi
-
-   # add MPI directory to VENDOR_DIRS
-   VENDOR_DIRS="${MPI_LIB} ${VENDOR_DIRS}"
-
 
 
 
@@ -4858,11 +4846,19 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -G -o'
 
-       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+       # when AR=newmpxlC we need to add /lib/crt0.o to
+       # avoid p_argcx and p_argvx link error when building libs
+       if test "${AR}" = newmpxlC ; then
+	   ARLIBS='/lib/crt0.o'
+	   ARTESTLIBS='/lib/crt0.o'
+       fi
+
+       ARLIBS="${ARLIBS} \${DRACO_LIBS} \${VENDOR_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${PKG_LIBS} \${DRACO_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${DRACO_LIBS}\${VENDOR_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
@@ -4949,7 +4945,86 @@ echo "$as_me: error: \"Did not find IBM Visual Age xlC compiler!\"" >&2;}
 
    elif test "${with_cxx}" = asciwhite ; then
 
-       # Extract the first word of "newxlC", so it can be a program name with args.
+       # asci white uses different executables depending upon
+       # the mpi setup; so we check to see if mpi is on
+       # and set the executable appropriately
+
+       # mpi is on, use newmpxlC
+       if test -n "${vendor_mpi}" && test "${with_mpi}" = vendor; then
+	   # Extract the first word of "newmpxlC", so it can be a program name with args.
+set dummy newmpxlC; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_CXX+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$CXX"; then
+  ac_cv_prog_CXX="$CXX" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CXX="newmpxlC"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+CXX=$ac_cv_prog_CXX
+if test -n "$CXX"; then
+  echo "$as_me:$LINENO: result: $CXX" >&5
+echo "${ECHO_T}$CXX" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+	   # Extract the first word of "newmpxlc", so it can be a program name with args.
+set dummy newmpxlc; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_CC+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$CC"; then
+  ac_cv_prog_CC="$CC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CC="newmpxlc"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+CC=$ac_cv_prog_CC
+if test -n "$CC"; then
+  echo "$as_me:$LINENO: result: $CC" >&5
+echo "${ECHO_T}$CC" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+
+       # scalar build, use newxlC
+       else
+	   # Extract the first word of "newxlC", so it can be a program name with args.
 set dummy newxlC; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
@@ -4984,7 +5059,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-       # Extract the first word of "newxlc", so it can be a program name with args.
+	   # Extract the first word of "newxlc", so it can be a program name with args.
 set dummy newxlc; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
@@ -5020,7 +5095,10 @@ echo "${ECHO_T}no" >&6
 fi
 
 
-       if test "${CXX}" = newxlC ; then
+       fi
+
+       # check to make sure compiler is valid
+       if test "${CXX}" = newxlC || test "${CXX}" = newmpxlC ; then
 
    echo "$as_me:$LINENO: checking \"configuration of ${CXX}/${CC} compilers\"" >&5
 echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >&6
@@ -5033,11 +5111,19 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -G -o'
 
-       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+       # when AR=newmpxlC we need to add /lib/crt0.o to
+       # avoid p_argcx and p_argvx link error when building libs
+       if test "${AR}" = newmpxlC ; then
+	   ARLIBS='/lib/crt0.o'
+	   ARTESTLIBS='/lib/crt0.o'
+       fi
+
+       ARLIBS="${ARLIBS} \${DRACO_LIBS} \${VENDOR_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${PKG_LIBS} \${DRACO_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${DRACO_LIBS}\${VENDOR_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
@@ -5117,8 +5203,8 @@ echo "${ECHO_T}\"${CXX} compiler flags set\"" >&6
 
 
        else
-	   { { echo "$as_me:$LINENO: error: \"Did not find ASCI White newxlC compiler!\"" >&5
-echo "$as_me: error: \"Did not find ASCI White newxlC compiler!\"" >&2;}
+	   { { echo "$as_me:$LINENO: error: \"Did not find ASCI White new(mp)xlC compiler!\"" >&5
+echo "$as_me: error: \"Did not find ASCI White new(mp)xlC compiler!\"" >&2;}
    { (exit 1); exit 1; }; }
        fi
 
@@ -5357,9 +5443,6 @@ echo "$as_me: WARNING: \"Linux KCC strict option set to allow long long type!\""
 	   LDFLAGS="--thread_safe ${LDFLAGS}"
        fi
 
-       # determine word sizes
-       # AC_DETERMINE_WORD_SIZES
-
        #
        # setup communication packages
        #
@@ -5379,55 +5462,27 @@ echo "$as_me: WARNING: \"Linux KCC strict option set to allow long long type!\""
 
        if test "${with_mpi}" = mpich ; then
 
-	   # define mpich libraries for v1.2 of mpich
-	   if test -n "${MPI_LIB}" ; then
-	       linux_mpi_libs="-L${MPI_LIB} -lmpich"
-	   elif test -z "${MPI_LIB}" ; then
-	       # if /usr/local/mpich/lib exists use it by default;
-	       # this is set as the default for the CCS-2/4 network;
-	       # it may not be appropriate on other LINUX networks;
-	       # in those cases, override with --with-mpi-lib
-	       if test -d /usr/local/mpich/lib ; then
-	           linux_mpi_libs="-L/usr/local/mpich/lib -lmpich"
-	       else
-		   linux_mpi_libs="-lmpich"
-	       fi
+	   # define mpi libs for mpich on linux
+	   mpi_libs='-lmpich'
+
+	   # if /usr/local/mpich/lib exists use it by default;
+	   # this is set as the default for the CCS-2/4 network;
+	   # it may not be appropriate on other LINUX networks;
+	   # in those cases, override with --with-mpi-lib
+	   if test -z "${MPI_LIB}" && test -d "/usr/local/mpich/lib"; then
+	       MPI_LIB='/usr/local/mpich/lib'
 	   fi
-
-	   # define the linux mpi libs
-
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # ${linux_mpi_libs} are the directories added
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} ${linux_mpi_libs}"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${linux_mpi_libs}"
-   fi
-
 
 	   # set the default include location on LINUX to
 	   # /usr/local/mpich/include; this is specific to the CCS-2/4
 	   # LINUX network; to override on other systems use
 	   # --with-mpi-inc on the configure line
 
-	   # if MPI_INC is undefined, then put in the explicit default
-	   # path if /usr/local/mpich/include exists
-	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include" ; then
-	       MPI_H="\"/usr/local/mpich/include/mpi.h\""
-	       cat >>confdefs.h <<_ACEOF
-#define MPI_H ${MPI_H}
-_ACEOF
-
+	   # if MPI_INC is undefined then define it
+	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include"; then
+	       MPI_INC='/usr/local/mpich/include'
 	   fi
 
-       fi
-
-       # shmem (not available on suns)
-       if test "${enable_shmem}" = yes ; then
-	   { { echo "$as_me:$LINENO: error: \"We do not support shmem on linux!\"" >&5
-echo "$as_me: error: \"We do not support shmem on linux!\"" >&2;}
-   { (exit 1); exit 1; }; }
        fi
 
        #
@@ -5443,32 +5498,7 @@ echo "$as_me: error: \"We do not support shmem on linux!\"" >&2;}
        # that has already been defined
 
        if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -L${LAPACK_LIB} -llapack -lblas are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} -llapack -lblas"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} -llapack -lblas"
-   fi
-
-	   elif test -z "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -llapack -lblas are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -llapack -lblas"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -llapack -lblas"
-   fi
-
-	   fi
-
+	   lapack_libs='-llapack -lblas'
        fi
 
        #
@@ -5566,6 +5596,476 @@ echo "${ECHO_T}\"-lg2c added to LIBS\"" >&6
 echo "${ECHO_T}\"not needed\"" >&6
        fi
 
+       #
+       # finalize vendors
+       #
+
+   # call finalize functions for each vendor, the order is important
+   # each vendor setup is appended to the previous; thus, the calling
+   # level goes from high to low
+
+   # set up the libraries and include path
+   if test -n "${vendor_trilinos}" ; then
+
+       # include path
+       if test -n "${TRILINOS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
+       fi
+
+       # library path
+       if test -n "${TRILINOS_LIB}" ; then
+
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   fi
+
+       elif test -z "${TRILINOS_LIB}" ; then
+
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   fi
+
+       fi
+
+       # add TRILINOS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${TRILINOS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_aztec}" ; then
+
+       # include path
+       if test -n "${AZTEC_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${AZTEC_INC}"
+       fi
+
+       # library path
+       if test -n "${AZTEC_LIB}" ; then
+
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -L${AZTEC_LIB} -l${with_aztec} are the directories added
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   fi
+
+       elif test -z "${AZTEC_LIB}" ; then
+
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -l${with_aztec} are the directories added
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_aztec}"
+   fi
+
+       fi
+
+       # add AZTEC directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${AZTEC_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${AZTEC_INC}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_pcg}"; then
+
+       # library path
+       if test -z "${PCG_LIB}" ; then
+
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -l${with_pcg} are the directories added
+
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_pcg}"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_pcg}"
+   fi
+
+       elif test -n "${PCG_LIB}" ; then
+
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -L${PCG_LIB} -l${with_pcg} are the directories added
+
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${PCG_LIB} -l${with_pcg}"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${PCG_LIB} -l${with_pcg}"
+   fi
+
+       fi
+
+       # add PCG directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
+
+   fi
+
+
+
+
+   # set up lapack libraries
+   if test -n "${vendor_lapack}"; then
+
+       # set libraries
+       if test -z "${LAPACK_LIB}" ; then
+
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # ${lapack_libs} are the directories added
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${lapack_libs}"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${lapack_libs}"
+   fi
+
+       elif test -n "${LAPACK_LIB}" ; then
+
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # -L${LAPACK_LIB} ${lapack_libs} are the directories added
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} ${lapack_libs}"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} ${lapack_libs}"
+   fi
+
+       fi
+
+       # add LAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${LAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_eospac}"; then
+
+       # set up library paths
+       if test -z "${EOSPAC5_LIB}" ; then
+
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -l${with_eospac} are the directories added
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_eospac}"
+   fi
+
+       elif test -n "${EOSPAC5_LIB}" ; then
+
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -L${EOSPAC5_LIB} -l${with_eospac} are the directories added
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   fi
+
+       fi
+
+       # add EOSPAC5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${EOSPAC5_LIB}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_gandolf}"; then
+
+       # set up library paths
+       if test -z "${GANDOLF_LIB}" ; then
+
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -l${with_gandolf} are the directories added
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gandolf}"
+   fi
+
+       elif test -n "${GANDOLF_LIB}" ; then
+
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -L${GANDOLF_LIB} -l${with_gandolf} are the directories added
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   fi
+
+       fi
+
+       # add GANDOLF directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GANDOLF_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_sprng}"; then
+
+       # include path
+       if test -n "${SPRNG_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SPRNG_INC}"
+       fi
+
+       # libraries
+       if test -n "${SPRNG_LIB}" ; then
+
+   # vendor_sprng is the vendor_<> tag (equals pkg or test)
+   # -L${SPRNG_LIB} -l${with_sprng} are the directories added
+
+   if test "${vendor_sprng}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
+   elif test "${vendor_sprng}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
+   fi
+
+       elif test -z "${SPRNG_LIB}" ; then
+
+   # vendor_sprng is the vendor_<> tag (equals pkg or test)
+   # -l${with_sprng} are the directories added
+
+   if test "${vendor_sprng}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_sprng}"
+   elif test "${vendor_sprng}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_sprng}"
+   fi
+
+       fi
+
+       # add sprng directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SPRNG_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SPRNG_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_grace}" ; then
+
+       # include path
+       if test -n "${GRACE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GRACE_INC}"
+       fi
+
+       # library path
+       if test -n "${GRACE_LIB}" ; then
+
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -L${GRACE_LIB} -l${with_grace} are the directories added
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   fi
+
+       elif test -z "${GRACE_LIB}" ; then
+
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -l${with_grace} are the directories added
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_grace}"
+   fi
+
+       fi
+
+       # add GRACE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GRACE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GRACE_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test "${vendor_gslcblas}"; then
+
+       # include path
+       if test -n "${GSLCBLAS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
+       fi
+
+       # library path
+       if test -n "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   fi
+
+       elif test -z "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
+   fi
+
+       fi
+
+       # add GSLCBLAS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
+
+   fi
+
+
+
+
+   # only add stuff if mpi is not no and the vendor is defined
+   if test "${with_mpi}" != no && test -n "${vendor_mpi}"; then
+
+       # include path
+       if test -n "${MPI_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${MPI_INC}"
+       fi
+
+       # libraries
+       if test -n "${MPI_LIB}" ; then
+
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # -L${MPI_LIB} ${mpi_libs} are the directories added
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} ${mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} ${mpi_libs}"
+   fi
+
+       elif test -z "${MPI_LIB}" ; then
+
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # ${mpi_libs} are the directories added
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${mpi_libs}"
+   fi
+
+       fi
+
+       # add MPI directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${MPI_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${MPI_INC}"
+
+   fi
+
+
+
+   # print out vendor include paths
+   echo "$as_me:$LINENO: checking \"vendor include paths\"" >&5
+echo $ECHO_N "checking \"vendor include paths\"... $ECHO_C" >&6
+   if test -n "${VENDOR_INC_DIRS}"; then
+       echo "$as_me:$LINENO: result: \"${VENDOR_INC_DIRS}\"" >&5
+echo "${ECHO_T}\"${VENDOR_INC_DIRS}\"" >&6
+   else
+       echo "$as_me:$LINENO: result: \"no vendor include dirs defined\"" >&5
+echo "${ECHO_T}\"no vendor include dirs defined\"" >&6
+   fi
+
+   # print out vendor lib paths
+   echo "$as_me:$LINENO: checking \"vendor lib paths\"" >&5
+echo $ECHO_N "checking \"vendor lib paths\"... $ECHO_C" >&6
+   if test -n "${VENDOR_LIB_DIRS}"; then
+       echo "$as_me:$LINENO: result: \"${VENDOR_LIB_DIRS}\"" >&5
+echo "${ECHO_T}\"${VENDOR_LIB_DIRS}\"" >&6
+   else
+       echo "$as_me:$LINENO: result: \"no vendor lib dirs defined\"" >&5
+echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
+   fi
+
+
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes ; then
 
@@ -5585,7 +6085,7 @@ echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS};
+       for vendor_dir in ${VENDOR_LIB_DIRS};
        do
 	   # if we are using gcc/icc then add xlinker
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
@@ -5693,57 +6193,32 @@ _ACEOF
        # setup for mpi support
        # we only support vendor mpi on sgis
        if test "${with_mpi}" = vendor ; then
-	   if test -n "${MPI_LIB}" ; then
 
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPI_LIB} -lmpi are the directories added
+	   # mpi library on sgi is mpi
+	   mpi_libs='-lmpi'
 
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpi"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpi"
-   fi
-
-	   elif test -z "${MPI_LIB}" ; then
+	   # set up sgi mpi defaults
+	   if test -z "${MPI_LIB}" ; then
 	       if test "${enable_32_bit}" = no ; then
-
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPT_SGI}/usr/lib64 -lmpi are the directories added
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPT_SGI}/usr/lib64 -lmpi"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPT_SGI}/usr/lib64 -lmpi"
-   fi
-
+		   MPI_LIB="${MPI_SGI}/usr/lib64"
 	       else
-
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPT_SGI}/usr/lib32 -lmpi are the directories added
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPT_SGI}/usr/lib32 -lmpi"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPT_SGI}/usr/lib32 -lmpi"
-   fi
-
+		   MPI_LIB="${MPI_SGI}/usr/lib32"
 	       fi
 	   fi
+
        elif test "${with_mpi}" = mpich ; then
+
+	   # no mpich support on SGI
 	   { { echo "$as_me:$LINENO: error: \"We do not support mpich on the SGI yet!\"" >&5
 echo "$as_me: error: \"We do not support mpich on the SGI yet!\"" >&2;}
    { (exit 1); exit 1; }; }
+
        fi
 
        # MPT (Message Passing Toolkit) for SGI vendor
-       # implementation of MPI and SHMEM
+       # implementation of MPI
        if test -z "${MPI_INC}" &&  test "${with_mpi}" = vendor ; then
 	   MPI_INC="${MPT_SGI}/usr/include/"
-	   MPI_H="\"${MPI_INC}mpi.h\""
-	   cat >>confdefs.h <<_ACEOF
-#define MPI_H ${MPI_H}
-_ACEOF
-
        fi
 
        # add SGI MPT Specfic options
@@ -5780,32 +6255,7 @@ echo "$as_me: WARNING: \"KCC strict option set to allow long long type\"" >&2;}
        #
 
        if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -L${LAPACK_LIB} -lcomplib.sgimath are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} -lcomplib.sgimath"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} -lcomplib.sgimath"
-   fi
-
-	   elif test -z "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -lcomplib.sgimath are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lcomplib.sgimath"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lcomplib.sgimath"
-   fi
-
-	   fi
-
+	   lapack_libs='-lcomplib.sgimath'
        fi
 
        #
@@ -5831,6 +6281,476 @@ echo "${ECHO_T}\"not needed\"" >&6
        # end of gandolf/libfortran setup
        #
 
+       #
+       # finalize vendors
+       #
+
+   # call finalize functions for each vendor, the order is important
+   # each vendor setup is appended to the previous; thus, the calling
+   # level goes from high to low
+
+   # set up the libraries and include path
+   if test -n "${vendor_trilinos}" ; then
+
+       # include path
+       if test -n "${TRILINOS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
+       fi
+
+       # library path
+       if test -n "${TRILINOS_LIB}" ; then
+
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   fi
+
+       elif test -z "${TRILINOS_LIB}" ; then
+
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   fi
+
+       fi
+
+       # add TRILINOS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${TRILINOS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_aztec}" ; then
+
+       # include path
+       if test -n "${AZTEC_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${AZTEC_INC}"
+       fi
+
+       # library path
+       if test -n "${AZTEC_LIB}" ; then
+
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -L${AZTEC_LIB} -l${with_aztec} are the directories added
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   fi
+
+       elif test -z "${AZTEC_LIB}" ; then
+
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -l${with_aztec} are the directories added
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_aztec}"
+   fi
+
+       fi
+
+       # add AZTEC directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${AZTEC_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${AZTEC_INC}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_pcg}"; then
+
+       # library path
+       if test -z "${PCG_LIB}" ; then
+
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -l${with_pcg} are the directories added
+
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_pcg}"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_pcg}"
+   fi
+
+       elif test -n "${PCG_LIB}" ; then
+
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -L${PCG_LIB} -l${with_pcg} are the directories added
+
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${PCG_LIB} -l${with_pcg}"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${PCG_LIB} -l${with_pcg}"
+   fi
+
+       fi
+
+       # add PCG directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
+
+   fi
+
+
+
+
+   # set up lapack libraries
+   if test -n "${vendor_lapack}"; then
+
+       # set libraries
+       if test -z "${LAPACK_LIB}" ; then
+
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # ${lapack_libs} are the directories added
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${lapack_libs}"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${lapack_libs}"
+   fi
+
+       elif test -n "${LAPACK_LIB}" ; then
+
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # -L${LAPACK_LIB} ${lapack_libs} are the directories added
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} ${lapack_libs}"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} ${lapack_libs}"
+   fi
+
+       fi
+
+       # add LAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${LAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_eospac}"; then
+
+       # set up library paths
+       if test -z "${EOSPAC5_LIB}" ; then
+
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -l${with_eospac} are the directories added
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_eospac}"
+   fi
+
+       elif test -n "${EOSPAC5_LIB}" ; then
+
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -L${EOSPAC5_LIB} -l${with_eospac} are the directories added
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   fi
+
+       fi
+
+       # add EOSPAC5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${EOSPAC5_LIB}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_gandolf}"; then
+
+       # set up library paths
+       if test -z "${GANDOLF_LIB}" ; then
+
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -l${with_gandolf} are the directories added
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gandolf}"
+   fi
+
+       elif test -n "${GANDOLF_LIB}" ; then
+
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -L${GANDOLF_LIB} -l${with_gandolf} are the directories added
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   fi
+
+       fi
+
+       # add GANDOLF directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GANDOLF_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_sprng}"; then
+
+       # include path
+       if test -n "${SPRNG_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SPRNG_INC}"
+       fi
+
+       # libraries
+       if test -n "${SPRNG_LIB}" ; then
+
+   # vendor_sprng is the vendor_<> tag (equals pkg or test)
+   # -L${SPRNG_LIB} -l${with_sprng} are the directories added
+
+   if test "${vendor_sprng}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
+   elif test "${vendor_sprng}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
+   fi
+
+       elif test -z "${SPRNG_LIB}" ; then
+
+   # vendor_sprng is the vendor_<> tag (equals pkg or test)
+   # -l${with_sprng} are the directories added
+
+   if test "${vendor_sprng}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_sprng}"
+   elif test "${vendor_sprng}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_sprng}"
+   fi
+
+       fi
+
+       # add sprng directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SPRNG_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SPRNG_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_grace}" ; then
+
+       # include path
+       if test -n "${GRACE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GRACE_INC}"
+       fi
+
+       # library path
+       if test -n "${GRACE_LIB}" ; then
+
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -L${GRACE_LIB} -l${with_grace} are the directories added
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   fi
+
+       elif test -z "${GRACE_LIB}" ; then
+
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -l${with_grace} are the directories added
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_grace}"
+   fi
+
+       fi
+
+       # add GRACE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GRACE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GRACE_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test "${vendor_gslcblas}"; then
+
+       # include path
+       if test -n "${GSLCBLAS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
+       fi
+
+       # library path
+       if test -n "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   fi
+
+       elif test -z "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
+   fi
+
+       fi
+
+       # add GSLCBLAS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
+
+   fi
+
+
+
+
+   # only add stuff if mpi is not no and the vendor is defined
+   if test "${with_mpi}" != no && test -n "${vendor_mpi}"; then
+
+       # include path
+       if test -n "${MPI_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${MPI_INC}"
+       fi
+
+       # libraries
+       if test -n "${MPI_LIB}" ; then
+
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # -L${MPI_LIB} ${mpi_libs} are the directories added
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} ${mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} ${mpi_libs}"
+   fi
+
+       elif test -z "${MPI_LIB}" ; then
+
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # ${mpi_libs} are the directories added
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${mpi_libs}"
+   fi
+
+       fi
+
+       # add MPI directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${MPI_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${MPI_INC}"
+
+   fi
+
+
+
+   # print out vendor include paths
+   echo "$as_me:$LINENO: checking \"vendor include paths\"" >&5
+echo $ECHO_N "checking \"vendor include paths\"... $ECHO_C" >&6
+   if test -n "${VENDOR_INC_DIRS}"; then
+       echo "$as_me:$LINENO: result: \"${VENDOR_INC_DIRS}\"" >&5
+echo "${ECHO_T}\"${VENDOR_INC_DIRS}\"" >&6
+   else
+       echo "$as_me:$LINENO: result: \"no vendor include dirs defined\"" >&5
+echo "${ECHO_T}\"no vendor include dirs defined\"" >&6
+   fi
+
+   # print out vendor lib paths
+   echo "$as_me:$LINENO: checking \"vendor lib paths\"" >&5
+echo $ECHO_N "checking \"vendor lib paths\"... $ECHO_C" >&6
+   if test -n "${VENDOR_LIB_DIRS}"; then
+       echo "$as_me:$LINENO: result: \"${VENDOR_LIB_DIRS}\"" >&5
+echo "${ECHO_T}\"${VENDOR_LIB_DIRS}\"" >&6
+   else
+       echo "$as_me:$LINENO: result: \"no vendor lib dirs defined\"" >&5
+echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
+   fi
+
+
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
 
@@ -5847,7 +6767,7 @@ echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS};
+       for vendor_dir in ${VENDOR_LIB_DIRS};
        do
 	   # if we are using gcc then add xlinker
 	   if test "${CXX}" = g++; then
@@ -5894,58 +6814,14 @@ _ACEOF
        # setup vendor mpi
        if test "${with_mpi}" = vendor ; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPI_LIB} -lmpi are the directories added
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpi"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpi"
-   fi
-
-	   elif test -z "${MPI_LIB}" ; then
-
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -lmpi are the directories added
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lmpi"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpi"
-   fi
-
-	   fi
+	   # define mpi libraries
+	   mpi_libs='-lmpi'
 
        # setup mpich
        elif test "${with_mpi}" = mpich ; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPI_LIB} -lmpich are the directories added
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpich"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpich"
-   fi
-
-	   elif test -z "${MPI_LIB}" ; then
-
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -lmpich are the directories added
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lmpich"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpich"
-   fi
-
-	   fi
+	   # define mpi libraries
+	   mpi_libs='-lmpich'
 
        fi
 
@@ -5967,32 +6843,7 @@ _ACEOF
        #
 
        if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -L${LAPACK_LIB} -ldxml are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} -ldxml"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} -ldxml"
-   fi
-
-	   elif test -z "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -ldxml are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -ldxml"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -ldxml"
-   fi
-
-	   fi
-
+	   lapack_libs='-ldxml'
        fi
 
        #
@@ -6019,6 +6870,476 @@ echo "${ECHO_T}\"not needed\"" >&6
        # end of gandolf/libfortran setup
        #
 
+       #
+       # finalize vendors
+       #
+
+   # call finalize functions for each vendor, the order is important
+   # each vendor setup is appended to the previous; thus, the calling
+   # level goes from high to low
+
+   # set up the libraries and include path
+   if test -n "${vendor_trilinos}" ; then
+
+       # include path
+       if test -n "${TRILINOS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
+       fi
+
+       # library path
+       if test -n "${TRILINOS_LIB}" ; then
+
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   fi
+
+       elif test -z "${TRILINOS_LIB}" ; then
+
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   fi
+
+       fi
+
+       # add TRILINOS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${TRILINOS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_aztec}" ; then
+
+       # include path
+       if test -n "${AZTEC_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${AZTEC_INC}"
+       fi
+
+       # library path
+       if test -n "${AZTEC_LIB}" ; then
+
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -L${AZTEC_LIB} -l${with_aztec} are the directories added
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   fi
+
+       elif test -z "${AZTEC_LIB}" ; then
+
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -l${with_aztec} are the directories added
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_aztec}"
+   fi
+
+       fi
+
+       # add AZTEC directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${AZTEC_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${AZTEC_INC}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_pcg}"; then
+
+       # library path
+       if test -z "${PCG_LIB}" ; then
+
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -l${with_pcg} are the directories added
+
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_pcg}"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_pcg}"
+   fi
+
+       elif test -n "${PCG_LIB}" ; then
+
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -L${PCG_LIB} -l${with_pcg} are the directories added
+
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${PCG_LIB} -l${with_pcg}"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${PCG_LIB} -l${with_pcg}"
+   fi
+
+       fi
+
+       # add PCG directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
+
+   fi
+
+
+
+
+   # set up lapack libraries
+   if test -n "${vendor_lapack}"; then
+
+       # set libraries
+       if test -z "${LAPACK_LIB}" ; then
+
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # ${lapack_libs} are the directories added
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${lapack_libs}"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${lapack_libs}"
+   fi
+
+       elif test -n "${LAPACK_LIB}" ; then
+
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # -L${LAPACK_LIB} ${lapack_libs} are the directories added
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} ${lapack_libs}"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} ${lapack_libs}"
+   fi
+
+       fi
+
+       # add LAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${LAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_eospac}"; then
+
+       # set up library paths
+       if test -z "${EOSPAC5_LIB}" ; then
+
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -l${with_eospac} are the directories added
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_eospac}"
+   fi
+
+       elif test -n "${EOSPAC5_LIB}" ; then
+
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -L${EOSPAC5_LIB} -l${with_eospac} are the directories added
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   fi
+
+       fi
+
+       # add EOSPAC5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${EOSPAC5_LIB}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_gandolf}"; then
+
+       # set up library paths
+       if test -z "${GANDOLF_LIB}" ; then
+
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -l${with_gandolf} are the directories added
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gandolf}"
+   fi
+
+       elif test -n "${GANDOLF_LIB}" ; then
+
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -L${GANDOLF_LIB} -l${with_gandolf} are the directories added
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   fi
+
+       fi
+
+       # add GANDOLF directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GANDOLF_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_sprng}"; then
+
+       # include path
+       if test -n "${SPRNG_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SPRNG_INC}"
+       fi
+
+       # libraries
+       if test -n "${SPRNG_LIB}" ; then
+
+   # vendor_sprng is the vendor_<> tag (equals pkg or test)
+   # -L${SPRNG_LIB} -l${with_sprng} are the directories added
+
+   if test "${vendor_sprng}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
+   elif test "${vendor_sprng}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
+   fi
+
+       elif test -z "${SPRNG_LIB}" ; then
+
+   # vendor_sprng is the vendor_<> tag (equals pkg or test)
+   # -l${with_sprng} are the directories added
+
+   if test "${vendor_sprng}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_sprng}"
+   elif test "${vendor_sprng}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_sprng}"
+   fi
+
+       fi
+
+       # add sprng directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SPRNG_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SPRNG_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_grace}" ; then
+
+       # include path
+       if test -n "${GRACE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GRACE_INC}"
+       fi
+
+       # library path
+       if test -n "${GRACE_LIB}" ; then
+
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -L${GRACE_LIB} -l${with_grace} are the directories added
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   fi
+
+       elif test -z "${GRACE_LIB}" ; then
+
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -l${with_grace} are the directories added
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_grace}"
+   fi
+
+       fi
+
+       # add GRACE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GRACE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GRACE_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test "${vendor_gslcblas}"; then
+
+       # include path
+       if test -n "${GSLCBLAS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
+       fi
+
+       # library path
+       if test -n "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   fi
+
+       elif test -z "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
+   fi
+
+       fi
+
+       # add GSLCBLAS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
+
+   fi
+
+
+
+
+   # only add stuff if mpi is not no and the vendor is defined
+   if test "${with_mpi}" != no && test -n "${vendor_mpi}"; then
+
+       # include path
+       if test -n "${MPI_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${MPI_INC}"
+       fi
+
+       # libraries
+       if test -n "${MPI_LIB}" ; then
+
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # -L${MPI_LIB} ${mpi_libs} are the directories added
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} ${mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} ${mpi_libs}"
+   fi
+
+       elif test -z "${MPI_LIB}" ; then
+
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # ${mpi_libs} are the directories added
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${mpi_libs}"
+   fi
+
+       fi
+
+       # add MPI directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${MPI_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${MPI_INC}"
+
+   fi
+
+
+
+   # print out vendor include paths
+   echo "$as_me:$LINENO: checking \"vendor include paths\"" >&5
+echo $ECHO_N "checking \"vendor include paths\"... $ECHO_C" >&6
+   if test -n "${VENDOR_INC_DIRS}"; then
+       echo "$as_me:$LINENO: result: \"${VENDOR_INC_DIRS}\"" >&5
+echo "${ECHO_T}\"${VENDOR_INC_DIRS}\"" >&6
+   else
+       echo "$as_me:$LINENO: result: \"no vendor include dirs defined\"" >&5
+echo "${ECHO_T}\"no vendor include dirs defined\"" >&6
+   fi
+
+   # print out vendor lib paths
+   echo "$as_me:$LINENO: checking \"vendor lib paths\"" >&5
+echo $ECHO_N "checking \"vendor lib paths\"... $ECHO_C" >&6
+   if test -n "${VENDOR_LIB_DIRS}"; then
+       echo "$as_me:$LINENO: result: \"${VENDOR_LIB_DIRS}\"" >&5
+echo "${ECHO_T}\"${VENDOR_LIB_DIRS}\"" >&6
+   else
+       echo "$as_me:$LINENO: result: \"no vendor lib dirs defined\"" >&5
+echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
+   fi
+
+
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
 
@@ -6038,7 +7359,7 @@ echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS};
+       for vendor_dir in ${VENDOR_LIB_DIRS};
        do
 	   # if we are using gcc then add xlinker
 	   if test "${CXX}" = g++; then
@@ -6133,147 +7454,545 @@ _ACEOF
 	       LDFLAGS="${LDFLAGS} -Xlinker -brtl -Xlinker -bh:5"
 	   fi
 
-	   # turn of the rpath
+	   # turn off the rpath
 	   RPATH=''
        fi
 
        #
        # setup communication packages
        #
+       if test -n "${vendor_mpi}"; then
 
-       # setup vendor mpi
-       if test "${with_mpi}" = vendor ; then
+	   # setup vendor mpi
+	   if test "${with_mpi}" = vendor ; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
+	       # on asciwhite the newmpxlC compiler script takes care
+	       # of loading the mpi libraries; since it will fail
+	       # if libraries are loaded and newmpxlC is used; throw
+	       # an error if it occurs
+	       if test "${with_cxx}" = asciwhite; then
 
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPI_LIB} -lmpi -lmpi_r are the directories added
+		   if test -n "${MPI_INC}" || test -n "${MPI_LIB}"; then
+		       { { echo "$as_me:$LINENO: error: \"Cannot set mpi paths with newmpxlC.\"" >&5
+echo "$as_me: error: \"Cannot set mpi paths with newmpxlC.\"" >&2;}
+   { (exit 1); exit 1; }; }
+		   fi
 
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpi -lmpi_r"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpi -lmpi_r"
-   fi
+		   mpi_libs=''
 
-	   elif test -z "${MPI_LIB}" ; then
-
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -lmpi -lmpi_r are the directories added
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lmpi -lmpi_r"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpi -lmpi_r"
-   fi
-
-	   fi
-
-	   # now turn on long long support if we are using the
-	   # visual age compiler
-	   if test "${with_cxx}" = ibm ||
-	      test "${with_cxx}" = asciwhite ; then
-
-	       if test "${enable_strict_ansi}"; then
-		   { echo "$as_me:$LINENO: WARNING: \"xlC set to allow long long\"" >&5
-echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
-		   STRICTFLAG="-qlanglvl=extended"
-		   CFLAGS="${CFLAGS} -qlonglong"
-		   CXXFLAGS="${CXXFLAGS} -qlonglong"
 	       fi
 
-	   fi
+	       # set up libraries if we are on ibm
+	       if test "${with_cxx}" = ibm; then
 
-       # setup mpich
-       elif test "${with_mpi}" = mpich ; then
+		   # set up mpi library
+		   mpi_libs='-lmpi'
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
+	       fi
 
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPI_LIB} -lmpich are the directories added
+	       # now turn on long long support if we are using the
+	       # visual age compiler
+	       if test "${with_cxx}" = ibm ||
+	          test "${with_cxx}" = asciwhite ; then
 
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpich"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpich"
-   fi
+		   if test "${enable_strict_ansi}"; then
+		       { echo "$as_me:$LINENO: WARNING: \"xlC set to allow long long\"" >&5
+echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
+		       STRICTFLAG="-qlanglvl=extended"
+		       CFLAGS="${CFLAGS} -qlonglong"
+		       CXXFLAGS="${CXXFLAGS} -qlonglong"
+		   fi
 
-	   elif test -z "${MPI_LIB}" ; then
+	       fi
 
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -lmpich are the directories added
+	   # setup mpich
+	   elif test "${with_mpi}" = mpich ; then
 
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lmpich"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpich"
-   fi
+	       # set up mpi libs
+	       mpi_libs='-lmpich'
 
 	   fi
 
        fi
-
        #
        # end of communication packages
        #
 
        #
-       # setup lapack
+       # OTHER VENDORS
        #
 
-       if test "${with_lapack}" = vendor ; then
+       # we don't have the other vendors setup explicitly
 
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
+       #
+       # finalize vendors
+       #
 
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -L${LAPACK_LIB} -ldxml are the directories added
+   # call finalize functions for each vendor, the order is important
+   # each vendor setup is appended to the previous; thus, the calling
+   # level goes from high to low
 
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} -ldxml"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} -ldxml"
+   # set up the libraries and include path
+   if test -n "${vendor_trilinos}" ; then
+
+       # include path
+       if test -n "${TRILINOS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
+       fi
+
+       # library path
+       if test -n "${TRILINOS_LIB}" ; then
+
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
    fi
 
-	   elif test -z "${LAPACK_LIB}" ; then
+       elif test -z "${TRILINOS_LIB}" ; then
 
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -ldxml are the directories added
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
 
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -ldxml"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -ldxml"
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
    fi
-
-	   fi
 
        fi
 
-       #
-       # end of lapack setup
-       #
+       # add TRILINOS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${TRILINOS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
 
-       #
-       # gandolf, eospac, pcg require -lfor on the link line.
-       #
+   fi
 
-       echo "$as_me:$LINENO: checking \"libfortran requirements\"" >&5
-echo $ECHO_N "checking \"libfortran requirements\"... $ECHO_C" >&6
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfor"
-          echo "$as_me:$LINENO: result: \"-lfor added to LIBS\"" >&5
-echo "${ECHO_T}\"-lfor added to LIBS\"" >&6
-       else
-	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
-echo "${ECHO_T}\"not needed\"" >&6
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_aztec}" ; then
+
+       # include path
+       if test -n "${AZTEC_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${AZTEC_INC}"
        fi
 
-       #
-       # end of gandolf/libfortran setup
-       #
+       # library path
+       if test -n "${AZTEC_LIB}" ; then
+
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -L${AZTEC_LIB} -l${with_aztec} are the directories added
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   fi
+
+       elif test -z "${AZTEC_LIB}" ; then
+
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -l${with_aztec} are the directories added
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_aztec}"
+   fi
+
+       fi
+
+       # add AZTEC directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${AZTEC_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${AZTEC_INC}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_pcg}"; then
+
+       # library path
+       if test -z "${PCG_LIB}" ; then
+
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -l${with_pcg} are the directories added
+
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_pcg}"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_pcg}"
+   fi
+
+       elif test -n "${PCG_LIB}" ; then
+
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -L${PCG_LIB} -l${with_pcg} are the directories added
+
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${PCG_LIB} -l${with_pcg}"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${PCG_LIB} -l${with_pcg}"
+   fi
+
+       fi
+
+       # add PCG directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
+
+   fi
+
+
+
+
+   # set up lapack libraries
+   if test -n "${vendor_lapack}"; then
+
+       # set libraries
+       if test -z "${LAPACK_LIB}" ; then
+
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # ${lapack_libs} are the directories added
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${lapack_libs}"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${lapack_libs}"
+   fi
+
+       elif test -n "${LAPACK_LIB}" ; then
+
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # -L${LAPACK_LIB} ${lapack_libs} are the directories added
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} ${lapack_libs}"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} ${lapack_libs}"
+   fi
+
+       fi
+
+       # add LAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${LAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_eospac}"; then
+
+       # set up library paths
+       if test -z "${EOSPAC5_LIB}" ; then
+
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -l${with_eospac} are the directories added
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_eospac}"
+   fi
+
+       elif test -n "${EOSPAC5_LIB}" ; then
+
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -L${EOSPAC5_LIB} -l${with_eospac} are the directories added
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   fi
+
+       fi
+
+       # add EOSPAC5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${EOSPAC5_LIB}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_gandolf}"; then
+
+       # set up library paths
+       if test -z "${GANDOLF_LIB}" ; then
+
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -l${with_gandolf} are the directories added
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gandolf}"
+   fi
+
+       elif test -n "${GANDOLF_LIB}" ; then
+
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -L${GANDOLF_LIB} -l${with_gandolf} are the directories added
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   fi
+
+       fi
+
+       # add GANDOLF directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GANDOLF_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_sprng}"; then
+
+       # include path
+       if test -n "${SPRNG_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SPRNG_INC}"
+       fi
+
+       # libraries
+       if test -n "${SPRNG_LIB}" ; then
+
+   # vendor_sprng is the vendor_<> tag (equals pkg or test)
+   # -L${SPRNG_LIB} -l${with_sprng} are the directories added
+
+   if test "${vendor_sprng}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
+   elif test "${vendor_sprng}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
+   fi
+
+       elif test -z "${SPRNG_LIB}" ; then
+
+   # vendor_sprng is the vendor_<> tag (equals pkg or test)
+   # -l${with_sprng} are the directories added
+
+   if test "${vendor_sprng}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_sprng}"
+   elif test "${vendor_sprng}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_sprng}"
+   fi
+
+       fi
+
+       # add sprng directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SPRNG_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SPRNG_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_grace}" ; then
+
+       # include path
+       if test -n "${GRACE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GRACE_INC}"
+       fi
+
+       # library path
+       if test -n "${GRACE_LIB}" ; then
+
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -L${GRACE_LIB} -l${with_grace} are the directories added
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   fi
+
+       elif test -z "${GRACE_LIB}" ; then
+
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -l${with_grace} are the directories added
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_grace}"
+   fi
+
+       fi
+
+       # add GRACE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GRACE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GRACE_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test "${vendor_gslcblas}"; then
+
+       # include path
+       if test -n "${GSLCBLAS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
+       fi
+
+       # library path
+       if test -n "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   fi
+
+       elif test -z "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
+   fi
+
+       fi
+
+       # add GSLCBLAS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
+
+   fi
+
+
+
+
+   # only add stuff if mpi is not no and the vendor is defined
+   if test "${with_mpi}" != no && test -n "${vendor_mpi}"; then
+
+       # include path
+       if test -n "${MPI_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${MPI_INC}"
+       fi
+
+       # libraries
+       if test -n "${MPI_LIB}" ; then
+
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # -L${MPI_LIB} ${mpi_libs} are the directories added
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} ${mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} ${mpi_libs}"
+   fi
+
+       elif test -z "${MPI_LIB}" ; then
+
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # ${mpi_libs} are the directories added
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${mpi_libs}"
+   fi
+
+       fi
+
+       # add MPI directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${MPI_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${MPI_INC}"
+
+   fi
+
+
+
+   # print out vendor include paths
+   echo "$as_me:$LINENO: checking \"vendor include paths\"" >&5
+echo $ECHO_N "checking \"vendor include paths\"... $ECHO_C" >&6
+   if test -n "${VENDOR_INC_DIRS}"; then
+       echo "$as_me:$LINENO: result: \"${VENDOR_INC_DIRS}\"" >&5
+echo "${ECHO_T}\"${VENDOR_INC_DIRS}\"" >&6
+   else
+       echo "$as_me:$LINENO: result: \"no vendor include dirs defined\"" >&5
+echo "${ECHO_T}\"no vendor include dirs defined\"" >&6
+   fi
+
+   # print out vendor lib paths
+   echo "$as_me:$LINENO: checking \"vendor lib paths\"" >&5
+echo $ECHO_N "checking \"vendor lib paths\"... $ECHO_C" >&6
+   if test -n "${VENDOR_LIB_DIRS}"; then
+       echo "$as_me:$LINENO: result: \"${VENDOR_LIB_DIRS}\"" >&5
+echo "${ECHO_T}\"${VENDOR_LIB_DIRS}\"" >&6
+   else
+       echo "$as_me:$LINENO: result: \"no vendor lib dirs defined\"" >&5
+echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
+   fi
+
+
 
        # RPATH is derived from -L, don't need explicit setup
 
@@ -6318,46 +8037,17 @@ _ACEOF
        # setup for mpi support
        # we only support mpich on sgis
        if test "${with_mpi}" = vendor ; then
+
 	   { { echo "$as_me:$LINENO: error: \"We do not support vendor mpi on the SUN yet!\"" >&5
 echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
    { (exit 1); exit 1; }; }
+
        elif test "${with_mpi}" = mpich ; then
 
 	   # define sun-required libraries for mpich, v 1.0 (this
 	   # needs to be updated for version 1.2)
-	   sun_mpi_libs='-lpmpi -lmpi -lsocket -lnsl'
+	   mpi_libs='-lpmpi -lmpi -lsocket -lnsl'
 
-	   if test -n "${MPI_LIB}" ; then
-
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPI_LIB} ${sun_mpi_libs} are the directories added
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} ${sun_mpi_libs}"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} ${sun_mpi_libs}"
-   fi
-
-	   elif test -z "${MPI_LIB}" ; then
-
-   # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # ${sun_mpi_libs} are the directories added
-
-   if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} ${sun_mpi_libs}"
-   elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${sun_mpi_libs}"
-   fi
-
-	   fi
-
-       fi
-
-       # shmem (not available on suns)
-       if test "${enable_shmem}" = yes ; then
-	   { { echo "$as_me:$LINENO: error: \"We do not support shmem on suns!\"" >&5
-echo "$as_me: error: \"We do not support shmem on suns!\"" >&2;}
-   { (exit 1); exit 1; }; }
        fi
 
        #
@@ -6369,39 +8059,482 @@ echo "$as_me: error: \"We do not support shmem on suns!\"" >&2;}
        #
 
        if test "${with_lapack}" = vendor ; then
-
-	   sun_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # -L${LAPACK_LIB} ${sun_libs} are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} ${sun_libs}"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} ${sun_libs}"
-   fi
-
-	   elif test -z "${LAPACK_LIB}" ; then
-
-   # vendor_lapack is the vendor_<> tag (equals pkg or test)
-   # ${sun_libs} are the directories added
-
-   if test "${vendor_lapack}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} ${sun_libs}"
-   elif test "${vendor_lapack}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${sun_libs}"
-   fi
-
-	   fi
-
+	   lapack_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
        fi
 
        #
        # end of lapack setup
        #
+
+       #
+       # finalize vendors
+       #
+
+   # call finalize functions for each vendor, the order is important
+   # each vendor setup is appended to the previous; thus, the calling
+   # level goes from high to low
+
+   # set up the libraries and include path
+   if test -n "${vendor_trilinos}" ; then
+
+       # include path
+       if test -n "${TRILINOS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
+       fi
+
+       # library path
+       if test -n "${TRILINOS_LIB}" ; then
+
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   fi
+
+       elif test -z "${TRILINOS_LIB}" ; then
+
+   # vendor_trilinos is the vendor_<> tag (equals pkg or test)
+   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+
+   if test "${vendor_trilinos}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   elif test "${vendor_trilinos}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+   fi
+
+       fi
+
+       # add TRILINOS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${TRILINOS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_aztec}" ; then
+
+       # include path
+       if test -n "${AZTEC_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${AZTEC_INC}"
+       fi
+
+       # library path
+       if test -n "${AZTEC_LIB}" ; then
+
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -L${AZTEC_LIB} -l${with_aztec} are the directories added
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${AZTEC_LIB} -l${with_aztec}"
+   fi
+
+       elif test -z "${AZTEC_LIB}" ; then
+
+   # vendor_aztec is the vendor_<> tag (equals pkg or test)
+   # -l${with_aztec} are the directories added
+
+   if test "${vendor_aztec}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_aztec}"
+   elif test "${vendor_aztec}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_aztec}"
+   fi
+
+       fi
+
+       # add AZTEC directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${AZTEC_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${AZTEC_INC}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_pcg}"; then
+
+       # library path
+       if test -z "${PCG_LIB}" ; then
+
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -l${with_pcg} are the directories added
+
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_pcg}"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_pcg}"
+   fi
+
+       elif test -n "${PCG_LIB}" ; then
+
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -L${PCG_LIB} -l${with_pcg} are the directories added
+
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${PCG_LIB} -l${with_pcg}"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${PCG_LIB} -l${with_pcg}"
+   fi
+
+       fi
+
+       # add PCG directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
+
+   fi
+
+
+
+
+   # set up lapack libraries
+   if test -n "${vendor_lapack}"; then
+
+       # set libraries
+       if test -z "${LAPACK_LIB}" ; then
+
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # ${lapack_libs} are the directories added
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${lapack_libs}"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${lapack_libs}"
+   fi
+
+       elif test -n "${LAPACK_LIB}" ; then
+
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # -L${LAPACK_LIB} ${lapack_libs} are the directories added
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} ${lapack_libs}"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} ${lapack_libs}"
+   fi
+
+       fi
+
+       # add LAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${LAPACK_LIB}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_eospac}"; then
+
+       # set up library paths
+       if test -z "${EOSPAC5_LIB}" ; then
+
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -l${with_eospac} are the directories added
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_eospac}"
+   fi
+
+       elif test -n "${EOSPAC5_LIB}" ; then
+
+   # vendor_eospac is the vendor_<> tag (equals pkg or test)
+   # -L${EOSPAC5_LIB} -l${with_eospac} are the directories added
+
+   if test "${vendor_eospac}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   elif test "${vendor_eospac}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${EOSPAC5_LIB} -l${with_eospac}"
+   fi
+
+       fi
+
+       # add EOSPAC5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${EOSPAC5_LIB}"
+
+   fi
+
+
+
+   # set up the libraries
+   if test -n "${vendor_gandolf}"; then
+
+       # set up library paths
+       if test -z "${GANDOLF_LIB}" ; then
+
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -l${with_gandolf} are the directories added
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gandolf}"
+   fi
+
+       elif test -n "${GANDOLF_LIB}" ; then
+
+   # vendor_gandolf is the vendor_<> tag (equals pkg or test)
+   # -L${GANDOLF_LIB} -l${with_gandolf} are the directories added
+
+   if test "${vendor_gandolf}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   elif test "${vendor_gandolf}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GANDOLF_LIB} -l${with_gandolf}"
+   fi
+
+       fi
+
+       # add GANDOLF directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GANDOLF_LIB}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_sprng}"; then
+
+       # include path
+       if test -n "${SPRNG_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SPRNG_INC}"
+       fi
+
+       # libraries
+       if test -n "${SPRNG_LIB}" ; then
+
+   # vendor_sprng is the vendor_<> tag (equals pkg or test)
+   # -L${SPRNG_LIB} -l${with_sprng} are the directories added
+
+   if test "${vendor_sprng}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
+   elif test "${vendor_sprng}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SPRNG_LIB} -l${with_sprng}"
+   fi
+
+       elif test -z "${SPRNG_LIB}" ; then
+
+   # vendor_sprng is the vendor_<> tag (equals pkg or test)
+   # -l${with_sprng} are the directories added
+
+   if test "${vendor_sprng}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_sprng}"
+   elif test "${vendor_sprng}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_sprng}"
+   fi
+
+       fi
+
+       # add sprng directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SPRNG_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SPRNG_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_grace}" ; then
+
+       # include path
+       if test -n "${GRACE_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GRACE_INC}"
+       fi
+
+       # library path
+       if test -n "${GRACE_LIB}" ; then
+
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -L${GRACE_LIB} -l${with_grace} are the directories added
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   fi
+
+       elif test -z "${GRACE_LIB}" ; then
+
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -l${with_grace} are the directories added
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_grace}"
+   fi
+
+       fi
+
+       # add GRACE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GRACE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GRACE_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test "${vendor_gslcblas}"; then
+
+       # include path
+       if test -n "${GSLCBLAS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
+       fi
+
+       # library path
+       if test -n "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
+   fi
+
+       elif test -z "${GSLCBLAS_LIB}" ; then
+
+   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
+   # -l${with_gslcblas} are the directories added
+
+   if test "${vendor_gslcblas}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
+   elif test "${vendor_gslcblas}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
+   fi
+
+       fi
+
+       # add GSLCBLAS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
+
+   fi
+
+
+
+
+   # only add stuff if mpi is not no and the vendor is defined
+   if test "${with_mpi}" != no && test -n "${vendor_mpi}"; then
+
+       # include path
+       if test -n "${MPI_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${MPI_INC}"
+       fi
+
+       # libraries
+       if test -n "${MPI_LIB}" ; then
+
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # -L${MPI_LIB} ${mpi_libs} are the directories added
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} ${mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} ${mpi_libs}"
+   fi
+
+       elif test -z "${MPI_LIB}" ; then
+
+   # vendor_mpi is the vendor_<> tag (equals pkg or test)
+   # ${mpi_libs} are the directories added
+
+   if test "${vendor_mpi}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} ${mpi_libs}"
+   elif test "${vendor_mpi}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${mpi_libs}"
+   fi
+
+       fi
+
+       # add MPI directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${MPI_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${MPI_INC}"
+
+   fi
+
+
+
+   # print out vendor include paths
+   echo "$as_me:$LINENO: checking \"vendor include paths\"" >&5
+echo $ECHO_N "checking \"vendor include paths\"... $ECHO_C" >&6
+   if test -n "${VENDOR_INC_DIRS}"; then
+       echo "$as_me:$LINENO: result: \"${VENDOR_INC_DIRS}\"" >&5
+echo "${ECHO_T}\"${VENDOR_INC_DIRS}\"" >&6
+   else
+       echo "$as_me:$LINENO: result: \"no vendor include dirs defined\"" >&5
+echo "${ECHO_T}\"no vendor include dirs defined\"" >&6
+   fi
+
+   # print out vendor lib paths
+   echo "$as_me:$LINENO: checking \"vendor lib paths\"" >&5
+echo $ECHO_N "checking \"vendor lib paths\"... $ECHO_C" >&6
+   if test -n "${VENDOR_LIB_DIRS}"; then
+       echo "$as_me:$LINENO: result: \"${VENDOR_LIB_DIRS}\"" >&5
+echo "${ECHO_T}\"${VENDOR_LIB_DIRS}\"" >&6
+   else
+       echo "$as_me:$LINENO: result: \"no vendor lib dirs defined\"" >&5
+echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
+   fi
+
+
 
        # set -R when building shared library executables
        if test "${enable_shared}" = yes; then
@@ -6410,7 +8543,7 @@ echo "$as_me: error: \"We do not support shmem on suns!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS};
+       for vendor_dir in ${VENDOR_LIB_DIRS};
        do
 	   # if we are using gcc/icc then add xlinker
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
@@ -6474,176 +8607,6 @@ echo "$as_me: error: \"Cannot figure out the platform or host!\"" >&2;}
 	   done
        fi
    done
-
-
-
-   echo "$as_me:$LINENO: checking \"vendor defines\"" >&5
-echo $ECHO_N "checking \"vendor defines\"... $ECHO_C" >&6
-   defines=''
-
-   # ***
-   # MPI
-   # ***
-   if test -n "${vendor_mpi}"; then
-       # define mpi include path
-       cat >>confdefs.h <<_ACEOF
-#define MPI_H ${MPI_H}
-_ACEOF
-
-       # add to defines
-       defines="${defines} ${MPI_H}"
-   fi
-
-   # *****
-   # SPRNG
-   # *****
-   if test -n "${vendor_sprng}"; then
-       # define sprng include path
-       cat >>confdefs.h <<_ACEOF
-#define SPRNG_H ${SPRNG_H}
-_ACEOF
-
-       # add to defines
-       defines="${defines} ${SPRNG_H}"
-   fi
-
-   # *****
-   # AZTEC
-   # *****
-   if test -n "${vendor_aztec}"; then
-       # define aztec include paths
-       cat >>confdefs.h <<_ACEOF
-#define AZTEC_H ${AZTEC_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define AZTEC_DEFS_H ${AZTEC_DEFS_H}
-_ACEOF
-
-       # add to defines
-       defines="${defines} ${AZTEC_H} ${AZTEC_DEFS_H}"
-   fi
-
-   # *****
-   # GSL
-   # *****
-   if test -n "${vendor_gsl}"; then
-       # define gsl include paths
-       cat >>confdefs.h <<_ACEOF
-#define GSL_H ${GSL_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define GSL_DEFS_H ${GSL_DEFS_H}
-_ACEOF
-
-       # add to defines
-       defines="${defines} ${GSL_H} ${GSL_DEFS_H}"
-   fi
-
-   # *****
-   # GSLCBLAS
-   # *****
-   if test -n "${vendor_gslcblas}"; then
-       # define gslcblas include paths
-       cat >>confdefs.h <<_ACEOF
-#define GSLCBLAS_H ${GSLCBLAS_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define GSLCBLAS_DEFS_H ${GSLCBLAS_DEFS_H}
-_ACEOF
-
-       # add to defines
-       defines="${defines} ${GSLCBLAS_H} ${GSLCBLAS_DEFS_H}"
-   fi
-
-
-   # *****
-   # TRILINOS
-   # *****
-   if test -n "${vendor_trilinos}"; then
-       # define trilinos include paths
-       cat >>confdefs.h <<_ACEOF
-#define Trilinos_Util_H ${Trilinos_Util_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define AztecOO_H ${AztecOO_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_MpiComm_H ${Epetra_MpiComm_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_Map_H ${Epetra_Map_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_Vector_H ${Epetra_Vector_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_CrsMatrix_H ${Epetra_CrsMatrix_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_LinearProblem_H ${Epetra_LinearProblem_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_IntVector_H ${Epetra_IntVector_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_Import_H ${Epetra_Import_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_Export_H ${Epetra_Export_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_CompObject_H ${Epetra_CompObject_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_Distributor_H ${Epetra_Distributor_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_DistObject_H ${Epetra_DistObject_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_MpiDistributor_H ${Epetra_MpiDistributor_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_BasicDirectory_H ${Epetra_BasicDirectory_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_Util_H ${Epetra_Util_H}
-_ACEOF
-       cat >>confdefs.h <<_ACEOF
-#define Epetra_Time_H ${Epetra_Time_H}
-_ACEOF
-
-       # add to defines
-       defines="${defines} ${Trilinos_Util_H} ${AztecOO_H} ${Epetra_MpiComm_H} ${Epetra_Map_H}"
-       defines="${defines} ${Epetra_Vector_H} ${Epetra_CrsMatrix_H} ${Epetra_LinearProblem_H}"
-       defines="${defines} ${Epetra_IntVector_H} ${Epetra_Import_H} ${Epetra_Export_H}"
-       defines="${defines} ${Epetra_CompObject_H} ${Epetra_Distributor_H} ${Epetra_DistObject_H}"
-       defines="${defines} ${Epetra_MpiDistributor_H} ${Epetra_BasicDirectory_H}"
-       defines="${defines} ${Epetra_Util_H} ${Epetra_Time_H}"
-   fi
-
-   # *****
-   # GRACE
-   # *****
-   if test -n "${vendor_grace}"; then
-       # define grace include path
-       cat >>confdefs.h <<_ACEOF
-#define GRACE_H ${GRACE_H}
-_ACEOF
-
-       # add to defines
-       defines="${defines} ${GRACE_H}"
-   fi
-
-   if test -n "${defines}"; then
-       echo "$as_me:$LINENO: result: \"${defines}\"" >&5
-echo "${ECHO_T}\"${defines}\"" >&6
-   else
-       echo "$as_me:$LINENO: result: \"no vendors definitions required\"" >&5
-echo "${ECHO_T}\"no vendors definitions required\"" >&6
-   fi
-
-
 
 
 
@@ -7348,6 +9311,7 @@ s,@package@,$package,;t t
 s,@DRACO_DEPENDS@,$DRACO_DEPENDS,;t t
 s,@DRACO_LIBS@,$DRACO_LIBS,;t t
 s,@VENDOR_DEPENDS@,$VENDOR_DEPENDS,;t t
+s,@VENDOR_INC@,$VENDOR_INC,;t t
 s,@VENDOR_LIBS@,$VENDOR_LIBS,;t t
 s,@ARLIBS@,$ARLIBS,;t t
 s,@PKG_DEPENDS@,$PKG_DEPENDS,;t t
