@@ -155,7 +155,7 @@ void rep_transporter_run_test()
     // transport
     double dt = interface->get_delta_t();
     int cycle = interface->get_cycle();
-    transporter->transport(dt, cycle, 0, 0, 0);
+    transporter->transport(dt, cycle, 100000, 0, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -235,9 +235,11 @@ int main(int argc, char *argv[])
     // tests
     try
     {
+	rep_transporter_test<OS_Mesh,Particle<OS_Mesh> >();
+	DD_transporter_test<OS_Mesh, Particle<OS_Mesh> >();
+
+	// run some particles
 	rep_transporter_run_test<OS_Mesh,Particle<OS_Mesh> >();
-	//rep_transporter_test<OS_Mesh,Particle<OS_Mesh> >();
-	//DD_transporter_test<OS_Mesh, Particle<OS_Mesh> >();
     }
     catch (const rtt_dsxx::assertion &ass)
     {

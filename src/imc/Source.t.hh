@@ -106,14 +106,12 @@ Source<MT, PT>::Source(ccsf_int &vol_rnnum_,
     Check (nvol.get_Mesh()      == fss.get_Mesh());
     Check (nvol.get_Mesh()      == ew_ss.get_Mesh());
 
-    // nsrcdone_cell is the running number of source particles completed for a
-    // particular source type in a particular cell.  
+    // nsrcdone_cell is the running number of source particles completed for
+    // a particular source type in a particular cell.
     nsrcdone_cell = 0;
 
     // Begin with first cell
     current_cell = 1;
-
-    ncentot = 0;
 
     // running totals of completed source particles, by type
     nssdone  = 0;

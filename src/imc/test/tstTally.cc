@@ -151,25 +151,6 @@ void Tally_Test()
 
 //---------------------------------------------------------------------------//
 
-void Tally_Test_Evol_Net()
-{
-    // Make a mesh and field
-    SP<Parser> parser(new Parser("OS_Input"));
-    OS_Builder mb(parser);
-    SP<OS_Mesh> mesh = mb.build_Mesh();
-    OS_Mesh::CCSF_double evol_net(mesh);
-    for (int i = 1; i <= evol_net.get_Mesh().num_cells(); i++)
-	evol_net(i) = i;
-
-    Tally<OS_Mesh> t(mesh, evol_net);
-    for (int i = 1; i <= 6; i++)
-	if (t.get_evol_net(i) != i) ITFAILS;
-
-    if (t.num_cells() != evol_net.get_Mesh().num_cells()) ITFAILS;
-}
-
-//---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     // C4 Init
@@ -184,7 +165,6 @@ int main(int argc, char *argv[])
 
     // Tally tests
     Tally_Test();
-    Tally_Test_Evol_Net();
 
     // version tag
     for (int arg = 1; arg < argc; arg++)

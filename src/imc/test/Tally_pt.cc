@@ -11,16 +11,13 @@
 
 #include "mc/OS_Mesh.hh"
 #include "../Tally.t.hh"
-#include <iostream>
 
 namespace rtt_imc
 {
 
 using rtt_mc::OS_Mesh;
-using std::iostream;
 
 template class Tally<OS_Mesh>;
-template ostream& operator<<(ostream &, const Tally<OS_Mesh> &);
 
 } // end namespace rtt_imc
 
