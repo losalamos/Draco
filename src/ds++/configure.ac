@@ -20,7 +20,7 @@ AC_INSTALL_LIB
 AC_RUNTESTS(tstCheck_Strings \
             tstAssert \
             tstSP tstSoft_Equiv tstPacking_Utils tstAllocators \
-            tstSortPermutation \
+            tstSortPermutation tstVector_Lite \
             tstMat tstMat1RA tstMat2RA tstMat3RA tstMat4RA tstMat5RA\
             , scalar)
 
