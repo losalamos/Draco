@@ -13,19 +13,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static FileSet *active;
-
-int FileSet_select_vector( const struct dirent *d )
-{
-    return active->select( d );
-}
+#include <vector>
+#include <algorithm>
 
 //---------------------------------------------------------------------------//
 // Set up the file name components, and scan the directory for matches.
 //---------------------------------------------------------------------------//
 
-FileSet::FileSet( String _stem, String _ext, int _nwid /*=2*/ )
-    : stem(_stem), ext(_ext), nwid(_nwid)
+FileSet::FileSet( const char *stem_, const char *ext_, int nwid_ /*=2*/ )
+    : stem(stem_), ext(ext_), nwid(nwid_)
 {
     scan();
 }
@@ -36,49 +32,34 @@ FileSet::FileSet( String _stem, String _ext, int _nwid /*=2*/ )
 
 void FileSet::scan()
 {
-    int i;
-    struct dirent **namelist;
+    std::vector<char *> vnames;
 
-    active = this;
+    DIR *pdir = opendir( "." );
 
-#if 0
-
-#define SELECT_HACK 
-#define COMPAR_HACK 
-
-#if defined(_CRAYMPP) || defined(__sgi) || defined(__DECCXX) || \
-    (defined(__alpha) && defined(__osf__)) // DEC OSF1 on AlphaServer
-#undef SELECT_HACK
-#define SELECT_HACK (int (*)( struct dirent * ))
-#endif
-
-#if defined(__PGI) || defined(_POWER)
-#undef SELECT_HACK
-#undef COMPAR_HACK
-#define SELECT_HACK (int (*)())
-#define COMPAR_HACK (int (*)())
-#endif
-
-    nfiles = scandir( ".", &namelist,
-		      SELECT_HACK FileSet_select_vector,
-		      COMPAR_HACK alphasort );
-
-    if (nfiles < 0) {
-	throw( "scandir error!  Maybe invalid directory?" );
+    struct dirent *d;
+    while( (d = readdir(pdir)) != NULL )
+    {
+	if (select(d))
+	    vnames.push_back( d->d_name );
+	free( d );
     }
+
+    nfiles = vnames.size();
+
+// Time to sort elements in vnames.;
+    std::sort( vnames.begin(), vnames.end() );
+
+// Now load the names DynArray.
 
     names.low(0);
     names.high(0);
 
-    for( i=0; i < nfiles; i++ ) {
-	names[i] = namelist[i]->d_name;
-	free( namelist[i] );
+    for( int i=0; i < nfiles; i++ ) {
+	names[i] = vnames[i];
+	free( vnames[i] );
     }
-    free( namelist );
 
     find_last_sequence_number();
-
-#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -86,21 +67,21 @@ void FileSet::scan()
 // fileset. 
 //---------------------------------------------------------------------------//
 
-int FileSet::select( const struct dirent *pdir )
+bool FileSet::select( const struct dirent *pdir )
 {
     int i, j;
-     const char *s = pdir->d_name;
+    const char *s = pdir->d_name;
 
-     for( i=0; i < stem.len(); i++ )
-	 if (s[i] != stem[i]) return 0;
+    for( i=0; i < stem.length(); i++ )
+	if (s[i] != stem[i]) return false;
 
-     for( j=0; j < nwid; j++ )
-	 if (!isdigit(s[i+j])) return 0;
+    for( j=0; j < nwid; j++ )
+	if (!isdigit(s[i+j])) return false;
 
-     if (!strcmp( s+i+j, &ext[0] ))
-	 return 1;
+    if (!strcmp( s+i+j, &ext[0] ))
+	return true;
 
-     return 0;
+    return false;
 }
 
 //---------------------------------------------------------------------------//
@@ -115,7 +96,7 @@ int FileSet::find_last_sequence_number()
     if (nfiles) {
 	char *s = &names[nfiles-1][0];
 	char buf[40];
-	s += stem.len();
+	s += stem.length();
 
 	int i=0;
 	while( isdigit(s[i]) ) {
@@ -147,7 +128,7 @@ int FileSet::next_sequence_number()
 // not create it, but rather only says what it should be.
 //---------------------------------------------------------------------------//
 
-String FileSet::next_sequence_name()
+std::string FileSet::next_sequence_name()
 {
     return format_sequence_name( next_sequence_number() );
 }
@@ -157,13 +138,13 @@ String FileSet::next_sequence_name()
 // sequence number.
 //---------------------------------------------------------------------------//
 
-String FileSet::format_sequence_name( int seq )
+std::string FileSet::format_sequence_name( int seq )
 {
     char buf[20];
 
     sprintf( buf, "%0*d", nwid, seq );
 
-    String r = stem;
+    std::string r = stem;
     r += buf;
     r += ext;
 

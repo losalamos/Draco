@@ -9,16 +9,12 @@
 #ifndef __util_FileSet_hh__
 #define __util_FileSet_hh__
 
-#ifdef __PARAGON__
-#define _BSD
-extern "C" int alphasort( struct dirent **dir1, struct dirnt **dir2 );
-#endif
-
 #include <dirent.h>
 #include <ctype.h>
 
-#include "ds++/String.hh"
 #include "ds++/DynArray.hh"
+
+#include <string>
 
 //===========================================================================//
 // class FileSet - Help manage sets of files
@@ -39,28 +35,28 @@ class FileSet {
     FileSet( const FileSet& );
     FileSet& operator=( const FileSet& );
 
-    String stem;
-    String ext;
+    std::string stem;
+    std::string ext;
     int nwid;			// width of numeric field.
 
-    DynArray<String> names;
+    DynArray<std::string> names;
     int nfiles;
 
     int lstseq;
 
   public:
-    FileSet( String _stem, String _ext, int _nwid =2 );
+    FileSet( const char *stem_, const char *ext_, int nwid_ =2 );
 
     void scan();
-    int select( const struct dirent *pdir );
+    bool select( const struct dirent *pdir );
 
     int find_last_sequence_number();
     int      next_sequence_number();
-    String   next_sequence_name();
-    String format_sequence_name( int seq );
+    std::string   next_sequence_name();
+    std::string format_sequence_name( int seq );
 
     int matching_files() const { return nfiles; }
-    String name( int i ) const { return names[i]; }
+    std::string name( int i ) const { return names[i]; }
 };
 
 #endif                          // __util_FileSet_hh__
