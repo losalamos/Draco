@@ -140,7 +140,7 @@ void Fourier::solve()
 
 		//Get T_total (A in the system A*x=lam*x) based on type of run.
 		//Needs to be done differently...kinda kludgey!
-		if(method == "SCB")
+		if(method == "SCB" || method == "LLD")
 		{
 		    if(acceleration_type == "SI")
 		    {
@@ -155,10 +155,12 @@ void Fourier::solve()
 							     delta_x);
 		    }
 		}
-		//else if(method != "LIN_CHAR")
-		//   {
-
-		//   }
+		else if(method == "LIN_CHAR")
+		{
+		    T_total = matrix_ptr->LIN_CHAR_matrix(sigma_t, sigma_s,
+						     quad_order, lambda,
+						     delta_x);
+		}
 
 
 		//Solve for Eigenvalues/Eigenvectors.

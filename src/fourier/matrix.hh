@@ -31,7 +31,7 @@
 #include "mtl/mtl.h"
 #include "mtl/matrix.h"
 #include "gauss.hh"
-
+#include "matrix.t.hh"
 
 using namespace std;
 using namespace mtl;
@@ -54,6 +54,11 @@ class Matrix
 						         int quad_order, 
 						         double lambda, 
 						         double delta_x);
+    lapack_matrix<complex<double> >::type LIN_CHAR_matrix(double sigma_t, 
+							  double sigma_s,
+							  int quad_order, 
+							  double lambda, 
+							  double delta_x);
 
     int             mat_order;
     double          sigma_t;
