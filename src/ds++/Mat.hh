@@ -819,7 +819,7 @@ class Mat3 {
     int offset( int i, int j, int k ) const { return xlen*(k*ylen+j)+i; }
 
 // Make sure a bare integer index is within the appropriate range.
-    void check( int i )
+    void check( int i ) const
     {
 	Assert( i >= offset( xmin, ymin, zmin ) );
 	Assert( i <= offset( xmax(), ymax(), zmax() ) );
@@ -837,23 +837,40 @@ class Mat3 {
     Allocator alloc;
     T *v;
 
-    T& operator[]( int i ) { check(i); return v[i]; }
-    const T& operator[]( int i ) const { check(i); return v[i]; }
-
   public:
+    typedef T value_type;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef T* pointer;
+    typedef const T* const_pointer;
+    typedef typename Allocator::difference_type difference_type;
+    typedef typename Allocator::size_type size_type;
     typedef typename Allocator::iterator iterator;
     typedef typename Allocator::const_iterator const_iterator;
+    typedef typename Allocator::reverse_iterator reverse_iterator;
+    typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
 
 // Accessors
 
     T&       operator()( int i, int j, int k )       { return v[ index(i,j,k) ]; }
     const T& operator()( int i, int j, int k ) const { return v[ index(i,j,k) ]; }
 
+    T& operator[]( int i ) { check(i); return v[i]; }
+    const T& operator[]( int i ) const { check(i); return v[i]; }
+
     iterator       begin()       { return v + offset(xmin,ymin,zmin); }
     const_iterator begin() const { return v + offset(xmin,ymin,zmin); }
 
     iterator       end()         { return v + offset(xmax(),ymax(),zmax()) + 1; }
     const_iterator end() const   { return v + offset(xmax(),ymax(),zmax()) + 1; }
+
+    reverse_iterator       rbegin()       { return reverse_iterator(end()); }
+    const_reverse_iterator rbegin() const
+    { return const_reverse_iterator(end()); }
+
+    reverse_iterator       rend()         { return reverse_iterator(begin()); }
+    const_reverse_iterator rend() const
+    { return const_reverse_iterator(begin()); }
 
     int get_xmin() const { return xmin; }
     int get_xlen() const { return xlen; }
@@ -862,7 +879,9 @@ class Mat3 {
     int get_zmin() const { return zmin; }
     int get_zlen() const { return zlen; }
 
-    int size() const { return nx() * ny() * nz(); }
+    size_type size() const { return nx() * ny() * nz(); }
+    size_type max_size () const { return alloc.max_size(); }
+    bool empty() const { return (this->size() == 0); }
 
 // For backward compatibility.
     int nx() const { return xlen; }
@@ -961,6 +980,96 @@ class Mat3 {
 	}
 
 	return *this;
+    }
+
+    void swap ( Mat3& m )
+    {
+        int itemp;
+        bool btemp;
+        Allocator atemp;
+        T* ptemp;
+
+        itemp = xmin;
+        xmin = m.xmin;
+        m.xmin = itemp;
+
+        itemp = xlen;
+        xlen = m.xlen;
+        m.xlen = itemp;
+
+        itemp = ymin;
+        ymin = m.ymin;
+        m.ymin = itemp;
+
+        itemp = ylen;
+        ylen = m.ylen;
+        m.ylen = itemp;
+
+        itemp = zmin;
+        zmin = m.zmin;
+        m.zmin = itemp;
+
+        itemp = zlen;
+        zlen = m.zlen;
+        m.zlen = itemp;
+
+        btemp = may_free_space;
+        may_free_space = m.may_free_space;
+        m.may_free_space = btemp;
+
+        atemp = alloc;
+        alloc = m.alloc;
+        m.alloc = atemp;
+
+        ptemp = v;
+        v = m.v;
+        m.v = ptemp;
+    }
+
+// Boolean operators
+
+    bool operator==( const Mat3& m ) const
+    {
+        if (this == &m)
+            return true;
+
+        if ( m.size() != this->size() )
+            return false;
+
+        const_iterator miter = m.begin();
+        for (const_iterator iter = this->begin(); iter != this->end(); ++iter)
+        {
+            if (*iter != *miter) return false;
+            ++miter;
+        }
+
+        return true;
+    }
+
+    bool operator!=( const Mat3& m ) const
+    {
+        return !(*this == m);
+    }
+
+    bool operator<( const Mat3& m ) const
+    {
+        return lexicographical_compare(this->begin(), this->end(), m.begin(), 
+				       m.end());
+    }
+
+    bool operator>( const Mat3& m ) const
+    {
+        return (m < *this);
+    }
+
+    bool operator<=( const Mat3& m ) const
+    {
+        return !(m < *this);
+    }
+
+    bool operator>=( const Mat3& m ) const
+    {
+        return !(*this < m);
     }
 
 // Mathematical support
@@ -1140,7 +1249,7 @@ class Mat4 {
     }
 
 // Make sure a bare integer index is within the appropriate range.
-    void check( int i )
+    void check( int i ) const
     {
 	Assert( i >= offset( xmin,   ymin,   zmin,   wmin   ) );
 	Assert( i <= offset( xmax(), ymax(), zmax(), wmax() ) );
@@ -1158,12 +1267,18 @@ class Mat4 {
     Allocator alloc;
     T *v;
 
-    T& operator[]( int i ) { check(i); return v[i]; }
-    const T& operator[]( int i ) const { check(i); return v[i]; }
-
   public:
+    typedef T value_type;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef T* pointer;
+    typedef const T* const_pointer;
+    typedef typename Allocator::difference_type difference_type;
+    typedef typename Allocator::size_type size_type;
     typedef typename Allocator::iterator iterator;
     typedef typename Allocator::const_iterator const_iterator;
+    typedef typename Allocator::reverse_iterator reverse_iterator;
+    typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
 
 // Accessors
 
@@ -1175,6 +1290,9 @@ class Mat4 {
     {
 	return v[ index(i,j,k,l) ];
     }
+
+    T& operator[]( int i ) { check(i); return v[i]; }
+    const T& operator[]( int i ) const { check(i); return v[i]; }
 
     iterator       begin()       { return v + offset(xmin,ymin,zmin,wmin); }
     const_iterator begin() const { return v + offset(xmin,ymin,zmin,wmin); }
@@ -1188,6 +1306,14 @@ class Mat4 {
 	return v + offset(xmax(),ymax(),zmax(),wmax()) + 1;
     }
 
+    reverse_iterator       rbegin()       { return reverse_iterator(end()); }
+    const_reverse_iterator rbegin() const
+    { return const_reverse_iterator(end()); }
+
+    reverse_iterator       rend()         { return reverse_iterator(begin()); }
+    const_reverse_iterator rend() const
+    { return const_reverse_iterator(begin()); }
+
     int get_xmin() const { return xmin; }
     int get_xlen() const { return xlen; }
     int get_ymin() const { return ymin; }
@@ -1197,7 +1323,9 @@ class Mat4 {
     int get_wmin() const { return wmin; }
     int get_wlen() const { return wlen; }
 
-    int size() const { return nx() * ny() * nz() * nw(); }
+    size_type size() const { return nx() * ny() * nz() * nw(); }
+    size_type max_size () const { return alloc.max_size(); }
+    bool empty() const { return (this->size() == 0); }
 
 // For backward compatibility.
     int nx() const { return xlen; }
@@ -1271,6 +1399,104 @@ class Mat4 {
     ~Mat4()
     {
 	detach();
+    }
+
+    void swap ( Mat4& m )
+    {
+        int itemp;
+        bool btemp;
+        Allocator atemp;
+        T* ptemp;
+
+        itemp = xmin;
+        xmin = m.xmin;
+        m.xmin = itemp;
+
+        itemp = xlen;
+        xlen = m.xlen;
+        m.xlen = itemp;
+
+        itemp = ymin;
+        ymin = m.ymin;
+        m.ymin = itemp;
+
+        itemp = ylen;
+        ylen = m.ylen;
+        m.ylen = itemp;
+
+        itemp = zmin;
+        zmin = m.zmin;
+        m.zmin = itemp;
+
+        itemp = zlen;
+        zlen = m.zlen;
+        m.zlen = itemp;
+
+        itemp = wmin;
+        wmin = m.wmin;
+        m.wmin = itemp;
+
+        itemp = wlen;
+        wlen = m.wlen;
+        m.wlen = itemp;
+
+        btemp = may_free_space;
+        may_free_space = m.may_free_space;
+        m.may_free_space = btemp;
+
+        atemp = alloc;
+        alloc = m.alloc;
+        m.alloc = atemp;
+
+        ptemp = v;
+        v = m.v;
+        m.v = ptemp;
+    }
+
+// Boolean operators
+
+    bool operator==( const Mat4& m ) const
+    {
+        if (this == &m)
+            return true;
+
+        if ( m.size() != this->size() )
+            return false;
+
+        const_iterator miter = m.begin();
+        for (const_iterator iter = this->begin(); iter != this->end(); ++iter)
+        {
+            if (*iter != *miter) return false;
+            ++miter;
+        }
+
+        return true;
+    }
+
+    bool operator!=( const Mat4& m ) const
+    {
+        return !(*this == m);
+    }
+
+    bool operator<( const Mat4& m ) const
+    {
+        return lexicographical_compare(this->begin(), this->end(), m.begin(), 
+				       m.end());
+    }
+
+    bool operator>( const Mat4& m ) const
+    {
+        return (m < *this);
+    }
+
+    bool operator<=( const Mat4& m ) const
+    {
+        return !(m < *this);
+    }
+
+    bool operator>=( const Mat4& m ) const
+    {
+        return !(*this < m);
     }
 
 // Assignment operators
