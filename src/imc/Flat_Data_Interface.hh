@@ -12,6 +12,9 @@
 #ifndef __imc_Flat_Data_Interface_hh__
 #define __imc_Flat_Data_Interface_hh__
 
+#include "Flat_Data_Container.hh"
+#include "ds++/SP.hh"
+
 namespace rtt_imc
 {
  
@@ -41,6 +44,10 @@ namespace rtt_imc
 
 class Flat_Data_Interface 
 { 
+  private:
+    // Useful typedefs.
+    typedef rtt_dsxx::SP<Flat_Data_Container> SP_Flat_Data_Container;
+    
   public:
     //! Constructor.
     Flat_Data_Interface() { /* no data to construct */ }
@@ -50,14 +57,8 @@ class Flat_Data_Interface
 
     // >>> PUBLIC INTERFACE REQUIRED BY FLAT_MAT_STATE_BUILDER
 
-    //! Get cell-centered absorption opacities in /cm.
-    virtual std::vector<double> get_absorption_opacity()  const = 0;
-
-    //! Get cell-centered scattering opacities in /cm.
-    virtual std::vector<double> get_scattering_opacity()  const = 0;
-
-    //! Get cell-centered specific heats in Jerks/g/keV.
-    virtual std::vector<double> get_specific_heat()       const = 0;
+    //! Get a Smart-Pointer to the Flat_Data_Container.
+    virtual SP_Flat_Data_Container get_flat_data_container() const = 0;
 };
 
 } // end namespace rtt_imc

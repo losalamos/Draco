@@ -241,6 +241,12 @@ class Opacity<MT, Multigroup_Frequency>
 
     // Frequency definitions.
     SP_Frequency frequency;
+
+  private:
+    // >>> IMPLEMENTATION
+
+    // Check frequency/opacity group sizes.
+    bool check_group_sizes() const;
     
   public:
     // Opacity constructor.

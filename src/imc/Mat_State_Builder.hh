@@ -71,10 +71,10 @@ class Mat_State_Builder
 {
   public:
     // Useful typedefs.
-    typedef rtt_dsxx::SP<MT>                        SP_Mesh;
-    typedef rtt_dsxx::SP<Mat_State<MT> >            SP_Mat_State;
-    typedef rtt_dsxx::SP<Opacity<MT,FT> >           SP_Opacity;
-    typedef rtt_dsxx::SP<FT>                        SP_Frequency;
+    typedef rtt_dsxx::SP<MT>               SP_Mesh;
+    typedef rtt_dsxx::SP<Mat_State<MT> >   SP_Mat_State;
+    typedef rtt_dsxx::SP<Opacity<MT,FT> >  SP_Opacity;
+    typedef rtt_dsxx::SP<FT>               SP_Frequency;
     
   public:
     //! Constructor.

@@ -177,12 +177,6 @@ class Gray_Frequency
 {
   public:
 
-    // Useful typedefs.
-    typedef std::vector<double>        sf_double;
-    typedef std::pair<double,double>   pair_doubles;
-
-  public:
-
     // Constructor.
     explicit Gray_Frequency() {/*...*/}
 
@@ -196,23 +190,6 @@ class Gray_Frequency
 
     //! Get number of frequency groups.
     int get_num_groups() const { return 0; }
-
-    //! Get number of frequency group boundaries.
-    int get_num_group_boundaries() const { return 0; }
-
-    //! Get all group boundaries.
-    sf_double get_group_boundaries() const { return sf_double(); }
-
-    //! Find a frequency group, in [1,G], given a frequency [keV]. 
-    int find_group_given_a_freq(const double hnu) const { return 0; }
-
-    //! Get both low and high frequency group boundaries [keV].  Usage is
-    //  get_group_boundaries.first and get_group_boundaries.second.
-    pair_doubles get_group_boundaries(const int group) const
-    {
-	// Return a pair of double zeros.
-	return pair_doubles(0.0, 0.0); 
-    }
 };
 
 } // end namespace rtt_imc

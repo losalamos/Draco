@@ -118,6 +118,8 @@ Opacity<MT,Multigroup_Frequency>::Opacity(SP_Frequency freq,
       integrated_norm_planck(int_planck),
       emission_group_cdf(group_cdf)
 {
+    Check (check_group_sizes());
+
     int num_cells = sigma_abs.get_Mesh().num_cells();
     
     Ensure (sigma_abs.size() == num_cells);
@@ -158,6 +160,31 @@ void Opacity<MT,Multigroup_Frequency>::print(std::ostream &output) const
 
 	output << endl;
     }
+}
+
+//---------------------------------------------------------------------------//
+// PRIVATE IMPLEMENTATION
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Check group consistency of multigroup opacities.
+ */
+template<class MT>
+bool Opacity<MT,Multigroup_Frequency>::check_group_sizes() const
+{
+    bool ok = true;
+
+    int num_groups = frequency->get_num_groups();
+
+    // loop through opacities and make sure they all have the same number of
+    // groups 
+    for (int cell = 1; cell <= num_cells(); cell++)
+    {
+	if (sigma_abs(cell).size() != num_groups)          ok = false;
+	if (sigma_thomson(cell).size() != num_groups)      ok = false;
+	if (emission_group_cdf(cell).size() != num_groups) ok = false;
+    }
+
+    return ok;
 }
 
 } // end namespace rtt_imc

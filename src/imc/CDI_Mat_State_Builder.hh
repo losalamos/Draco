@@ -20,6 +20,10 @@
 namespace rtt_imc
 {
  
+// Forward declarations.
+class Gray_Frequency;
+class Multigroup_Frequency;
+
 //===========================================================================//
 /*!
  * \class CDI_Mat_State_Builder
@@ -64,7 +68,6 @@ class CDI_Mat_State_Builder
  * \brief Specialization of CDI_Mat_State_Builder on Gray_Frequency.
  */
 //===========================================================================//
-
 
 template<class MT>
 class CDI_Mat_State_Builder<MT,Gray_Frequency>

@@ -17,7 +17,6 @@
 #include "Opacity.hh"
 #include "Mat_State.hh"
 #include "Global.hh"
-#include <utility>
 
 namespace rtt_imc
 {
@@ -474,7 +473,6 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
     using rtt_mc::global::a;
     using rtt_mc::global::c;
     using rtt_cdi::CDI;
-    using std::pair;
 
     Require (mesh);
     Require (mat_state);
