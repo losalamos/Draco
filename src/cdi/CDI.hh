@@ -19,7 +19,7 @@ namespace rtt_cdi
 
     class GrayOpacity;
     class MultigroupOpacity;
-    //    class EOS;
+    class EoS;
     
     //========================================================================
     /*!
@@ -27,6 +27,9 @@ namespace rtt_cdi
      *
      * \brief This class provides a Common Data Interface (CDI) to Atomic, 
      *        Nuclear and Equation of State (EOS) data.
+     *
+     * \sa The Draco packages cdi_gandolf (opacity data) and
+     *     cdi_eospac (equation of state data).
      *
      * The client must first instantiate concrete Opacity, Nuclear and EOS 
      * classes that are derived from the abstract classes found in the CDI
@@ -76,7 +79,7 @@ namespace rtt_cdi
 	 * \brief Smart pointer to the GrayOpacity object.
 	 *
 	 * spGrayOpacity is a smart pointer that links a CDI object to
-	 * an GrayOpacity object (any type of gray opacity - Gandolf,
+	 * a GrayOpacity object (any type of gray opacity - Gandolf,
 	 * EOSPAC, Analytic, etc.).  The pointer is established in the
 	 * CDI constructor. 
 	 */
@@ -86,22 +89,21 @@ namespace rtt_cdi
 	 * \brief Smart pointer to the MultigroupOpacity object.
 	 *
 	 * spMultigroupOpacity is a smart pointer that links a CDI
-	 * object to an MultigroupOpacity object (any type of gray
+	 * object to a MultigroupOpacity object (any type of gray
 	 * opacity - Gandolf, EOSPAC, Analytic, etc.).  The pointer is
 	 * established in the CDI constructor. 
 	 */
 	rtt_dsxx::SP< const MultigroupOpacity > spMultigroupOpacity;
 	
-	//     Smart pointer to the EOS object.
-	//     
-	//       spEOS is a smart pointer that links a CDI object to an 
-	//           EOS object (any type of gray opacity - Gandolf, EOSPAC,  
-	//           Analytic, etc.).  The pointer is established in the CDI
-	//           constructor. 
-	//     
-	//       EOS objects have not yet been implemented in the CDI.
-	//     
-	//    rtt_dsxx::SP< const EOS > spEOS;
+	/*!
+	 * \brief Smart pointer to the equation of state object.
+	 *
+	 * spEoS is a smart pointer that links a CDI
+	 * object to an equation of state object (any type of EoS
+	 * - EOSPAC, Analytic, etc.).  The pointer is
+	 * established in the CDI constructor. 
+	 */	     
+	rtt_dsxx::SP< const EoS > spEoS;
 	
       public:
 	
@@ -139,32 +141,15 @@ namespace rtt_cdi
 	 *        MultigroupOpacity class.  The MultigroupOpacity class
 	 *        must be derived from the abstract class found in the CDI
 	 *        package. 
+	 * \param spEoS A smart pointer object to an EoS class.  The
+	 *        EoS class must be derived from the abstract class
+	 *        found in the CDI package.
 	 * \return A CDI object.  A CDI object will be able to access the 
 	 *         data for a single material
 	 */
-	CDI( const rtt_dsxx::SP< const GrayOpacity >& spGrayOpacity, 
-	     const rtt_dsxx::SP< const MultigroupOpacity >& spMultigroupOpacity );
-	/*!
-	 * \brief CDI constructor
-	 *
-	 * This constructor creates a CDI that only contains hooks to
-	 * access gray opacity data.
-	 *
-	 * \sa More details can be found in the comments for other CDI
-	 *     constructors. 
-	 */
 	CDI( const rtt_dsxx::SP< const GrayOpacity >& spGrayOpacity );
-	
-	/*!
-	 * \brief CDI constructor
-	 *
-	 * This constructor creates a CDI that only contains hooks to
-	 * access multigroup opacity data.
-	 *
-	 * \sa More details can be found in the comments for other CDI
-	 *     constructors. 
-	 */
 	CDI( const rtt_dsxx::SP< const MultigroupOpacity >& spMultigroupOpacity );
+	CDI( const rtt_dsxx::SP< const EoS >& spEoS );
 	
 	/*!
 	 * \brief Destructor for CDI objects.
@@ -176,6 +161,18 @@ namespace rtt_cdi
 	virtual ~CDI();
 	
 	// ACCESSORS
+
+	// "set" functions
+
+	void setGrayOpacity( 
+	    const rtt_dsxx::SP< const GrayOpacity >& spGrayOpacity );
+
+	void setMultigroupOpacity( 
+	    const rtt_dsxx::SP< const MultigroupOpacity >& spMultigroupOpacity );
+
+	void setEoS( const rtt_dsxx::SP< const EoS >& spEoS );
+
+	// "get" functions
 	
 	/*!
 	 * \brief This fuction returns the GrayOpacity object.
@@ -196,11 +193,24 @@ namespace rtt_cdi
 	 *     interface defined in MultigroupOpacity.hh.  For example,
 	 *     the host code could make the following call:<br>
 	 * <tt>
-	 *    int numGroups = spCDI1->mg()->getNumGroupBoundaries()
+	 *    int numGroups = spCDI1->mg()->getNumGroupBoundaries();
 	 * </tt>
 	 */
 	const rtt_dsxx::SP< const MultigroupOpacity >& mg() const;
 	
+	/*!
+	 * \brief This fuction returns the EoS object.
+	 *
+	 * This provides the CDI with the full functionality of the
+	 *     interface defined in EoS.hh.  For example,
+	 *     the host code could make the following call:<br>
+	 * <tt>
+	 *    double Cve = spCDI1->eos()->getElectronHeatCapacity(
+	 *	 density, temperature );
+	 * </tt>
+	 */
+	const rtt_dsxx::SP< const EoS >& eos() const;
+
       private:
 	
 	// IMPLEMENTATION
