@@ -80,17 +80,6 @@ void t1()
 {
     cout << "t1: beginning.\n";
 
-    NML_Group g( "test" );
-
-    Mesh_DB mdb;
-    mdb.setup_namelist( g );
-
-    g.readgroup( "test.in" );
-
-    dsxx::SP<const MT> spm = new MT( mdb );
-
-    ccvsf vecField(spm);
-
     {
     // Test for required typedefs
 
@@ -234,12 +223,12 @@ void t1()
     // Container concept, but we need to get an object somehow.
 
         X x, y, v, w;
-        const X cx;
 
         x = value;
         y = value;
         v = value + 1.;
         w = value + 1.;
+        const X cx = x;
 
     // Test for required container member functions.
 
@@ -1711,6 +1700,7 @@ void t5()
     // Container concept, but we need to get an object somehow.
 
         X w;
+
         w = value;
 
         const X x(w);

@@ -89,13 +89,13 @@ void t1()
 {
     cout << "t1: beginning.\n";
 
-    NML_Group g( "test" );
+    // The following constructor is not required by the MT
+    // concept, but we need to get an object somehow.
 
+    NML_Group g( "test" );
     Mesh_DB mdb;
     mdb.setup_namelist( g );
-
     g.readgroup( "test.in" );
-
     dsxx::SP<const MT> spm = new MT( mdb );
 
     {
@@ -117,6 +117,7 @@ void t1()
     // Container concept, but we need to get an object somehow.
 
         X x(spm), w(spm);
+
         x = value;
         w = value + 1.;
 
@@ -146,6 +147,7 @@ void t1()
     // Container concept, but we need to get an object somehow.
 
         X x(spm), y(spm), z(spm);
+
         x = value;
         y = value + 1.;
         z = value + 2.;
@@ -178,6 +180,7 @@ void t1()
     // Container concept, but we need to get an object somehow.
 
         X x(spm), y(spm), z(spm);
+
         x = value;
         y = value + 1.;
         z = value - 2.;
@@ -211,11 +214,13 @@ void t1()
         if (x < x)
             passed = false;
         y = x;
-        x[1] -= 1.;
+        X::iterator iter = x.begin();
+        *iter -= 1.;
         if (x < y != !(y < x))
             passed = false;
         z = y;
-        z[1] += 1.;
+        iter = z.begin();
+        *iter += 1.;
         if (((x < y) && (y < z)) && !(x < z))
             passed = false;
     }
@@ -225,6 +230,7 @@ void t1()
     // Container concept, but we need to get an object somehow.
 
         X *x = new X(spm);
+
         *x = value;
 
     // Test destructor.
@@ -237,6 +243,7 @@ void t1()
     // Container concept, but we need to get an object somehow.
 
         X x(spm), y(spm), v(spm), w(spm);
+
         x = value;
         y = value;
         v = value + 1.;
@@ -293,13 +300,13 @@ void t2()
 {
     cout << "t2: beginning.\n";
 
-    NML_Group g( "test" );
+    // The following constructor is not required by the MT
+    // concept, but we need to get an object somehow.
 
+    NML_Group g( "test" );
     Mesh_DB mdb;
     mdb.setup_namelist( g );
-
     g.readgroup( "test.in" );
-
     dsxx::SP<const MT> spm = new MT( mdb );
 
     {
@@ -316,6 +323,7 @@ void t2()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
 
     // Test the default constructor.
@@ -347,6 +355,7 @@ void t2()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
 
         X::iterator iter1, iter2, iter3;
@@ -380,6 +389,7 @@ void t2()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
 
         X::iterator iter = x.begin();
@@ -400,6 +410,7 @@ void t2()
     // Container concept, but we need to get an object somehow.
 
         XDC x(spm);
+
         x = dc;
 
         XDC::iterator iter = x.begin();
@@ -416,6 +427,7 @@ void t2()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
 
         X::iterator iter1 = x.begin();
@@ -473,6 +485,7 @@ void t2()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
 
         X::iterator iter1 = x.begin();
@@ -497,13 +510,13 @@ void t3()
 {
     cout << "t3: beginning.\n";
 
-    NML_Group g( "test" );
+    // The following constructor is not required by the MT
+    // concept, but we need to get an object somehow.
 
+    NML_Group g( "test" );
     Mesh_DB mdb;
     mdb.setup_namelist( g );
-
     g.readgroup( "test.in" );
-
     dsxx::SP<const MT> spm = new MT( mdb );
 
     {
@@ -521,6 +534,7 @@ void t3()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
         const X cx = x;
 
@@ -553,6 +567,7 @@ void t3()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
         const X cx = x;
 
@@ -587,6 +602,7 @@ void t3()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
         const X cx = x;
 
@@ -605,6 +621,7 @@ void t3()
     // Container concept, but we need to get an object somehow.
 
         XDC x(spm);
+
         x = dc;
         const XDC cx = x;
 
@@ -621,6 +638,7 @@ void t3()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
         const X cx = x;
 
@@ -643,6 +661,7 @@ void t3()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         int count = 0;
         for (X::iterator iter = x.begin(); iter != x.end(); ++iter)
         {
@@ -679,6 +698,7 @@ void t3()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
         const X cx = x;
 
@@ -704,13 +724,13 @@ void t4()
 {
     cout << "t4: beginning.\n";
 
-    NML_Group g( "test" );
+    // The following constructor is not required by the MT
+    // concept, but we need to get an object somehow.
 
+    NML_Group g( "test" );
     Mesh_DB mdb;
     mdb.setup_namelist( g );
-
     g.readgroup( "test.in" );
-
     dsxx::SP<const MT> spm = new MT( mdb );
 
     {
@@ -718,6 +738,7 @@ void t4()
     // Container concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
 
         X::iterator iter = x.begin();
@@ -738,13 +759,13 @@ void t5()
 {
     cout << "t5: beginning.\n";
 
-    NML_Group g( "test" );
+    // The following constructor is not required by the MT
+    // concept, but we need to get an object somehow.
 
+    NML_Group g( "test" );
     Mesh_DB mdb;
     mdb.setup_namelist( g );
-
     g.readgroup( "test.in" );
-
     dsxx::SP<const MT> spm = new MT( mdb );
 
     {
@@ -752,6 +773,7 @@ void t5()
     // concept, but we need to get an object somehow.
 
         X x(spm);
+
         x = value;
 
         // Test field construction
@@ -777,13 +799,13 @@ void t6()
 {
     cout << "t6: beginning.\n";
 
-    NML_Group g( "test" );
+    // The following constructor is not required by the MT
+    // concept, but we need to get an object somehow.
 
+    NML_Group g( "test" );
     Mesh_DB mdb;
     mdb.setup_namelist( g );
-
     g.readgroup( "test.in" );
-
     dsxx::SP<const MT> spm = new MT( mdb );
 
     // Check the simple binary operations with assignments.
