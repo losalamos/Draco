@@ -15,6 +15,7 @@ need_spdf	:= yes
 need_util	:= yes
 #need_pooma	:= yes
 need_mesh	:= yes
+need_3T		:= yes
 
 # Go get the standard includeable makefile for Draco components.
 
@@ -49,6 +50,7 @@ ifneq ($(dodeps),no)
 	(cd ../../linalg; $(MAKE) $(subnj) dodeps=no)
 	(cd ../../geom;   $(MAKE) $(subnj) dodeps=no)
 	(cd ../../mesh;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../../3T;   $(MAKE) $(subnj) dodeps=no)
 endif
 
 $(dep_libutil):
