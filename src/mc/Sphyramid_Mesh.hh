@@ -71,6 +71,7 @@ class Sphyramid_Mesh
     typedef rtt_dsxx::SP<Sphyramid_Mesh::Pack> SP_Pack;
     typedef rtt_rng::Sprng                     rng_Sprng;
     typedef std::vector<int>                   sf_int;
+    typedef std::vector<std::vector<int> >     vf_int;
     typedef std::vector<double>                sf_double;
     typedef std::vector<std::vector<double> >  vf_double;
     typedef std::string                        std_string;
@@ -78,6 +79,8 @@ class Sphyramid_Mesh
 
     // Handy typedefs for Sphyramid_Mesh dependent classes
     typedef CCSF<double>                       CCSF_double;
+    typedef CCSF<int>                          CCSF_int;
+    typedef CCVF<double>                       CCVF_double;
 
   private:
     // Base class reference to a derived coordinate system class
@@ -154,11 +157,13 @@ class Sphyramid_Mesh
 
     // Services required for graphics dumps.
     sf_int get_cell_types() const;
-    vf_double get_point_coord() const;    
+    vf_double get_point_coord() const;
+    vf_int get_cell_pair() const;
 
     // Services for transport and source
     int get_spatial_dimension() const { return 3; }
-    inline int next_cell(int cell, int face) const;
+    inline int next_cell(int cell, int face,
+			 const sf_double & = sf_double(3)) const;
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &r, const sf_double &omega, int cell, 
 		  int &face) const;
@@ -318,9 +323,10 @@ double Sphyramid_Mesh::get_total_volume() const
  *
  * \param cell current cell index
  * \param face face index
+ * \param r    position on face (ignored in Sphyramid_Mesh)
  * \return the cell across the face
  */
-int Sphyramid_Mesh::next_cell(int cell, int face) const
+int Sphyramid_Mesh::next_cell(int cell, int face, const sf_double &r) const
 {
     Require (cell > 0); 
     Require (cell <= this->layout.num_cells());

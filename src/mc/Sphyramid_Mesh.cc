@@ -301,6 +301,33 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_point_coord() const
    return return_coord;
 }
 //---------------------------------------------------------------------------//
+/*! 
+ * \brief get cell-pairing data that matches the coordinate data returned by
+ * get_point_coord.
+ * 
+ * \return a vector of of node numbers for each cell
+ */
+Sphyramid_Mesh::vf_int Sphyramid_Mesh::get_cell_pair() const
+{
+    // each cell points to eight vertices, this is always a 3D mesh
+    vf_int cp(this->layout.num_cells(), sf_int(8));
+
+    // the coordinates are cyclic starting from the low z to the high z face
+    // going counterclockwise in the xy plane
+    int counter = 0;
+    for (int cell = 0; cell < cp.size(); cell++)
+    {
+	for (int node = 0; node < cp[cell].size(); node++)
+	{
+	    cp[cell][node] = ++counter;
+	}
+	    Check (((cell+1)*counter) % 8 == 0);
+    }
+
+    Ensure (counter == cp.size() * 8);
+    return cp;
+}
+//---------------------------------------------------------------------------//
 /*!
  * \brief Find cell in Sphyramid_Mesh given position
  *
