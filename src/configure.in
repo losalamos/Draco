@@ -22,8 +22,8 @@ AC_CONFIG_SUBDIRS(traits units nml c4 UnitTestFrame rng)
 AC_CONFIG_SUBDIRS(stopwatch meshTest viz meshReaders \
                   quadrature)
 AC_CONFIG_SUBDIRS(mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
-                  mc timestep RTT_Format_Reader)
-AC_CONFIG_SUBDIRS(matprops PCGDiffusionSolver LAMGDiffusionSolver \
+                  timestep RTT_Format_Reader)
+AC_CONFIG_SUBDIRS(mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver)
 AC_CONFIG_SUBDIRS(P1Diffusion)
 AC_CONFIG_SUBDIRS(imc)
