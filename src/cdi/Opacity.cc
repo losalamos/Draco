@@ -3,7 +3,7 @@
  * \file   cdi/Opacity.cc
  * \author Kelly Thompson
  * \date   Thu Jun 23 13:57:07 2000
- * \brief  
+ * \brief  Opacity class implementation file.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,7 +13,6 @@
 
 namespace rtt_cdi
 {
-
     // empty
 
 } // end namespace rtt_cdi
