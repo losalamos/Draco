@@ -474,18 +474,45 @@ mesh_ptr_1->print_cell_sets(cerr);
     if (*mesh_ptr_H != *mesh_ptr_1)                      ITFAILS;
 
     // Test get_db() and get_min_db().
-    SF_DOUBLE R1;
-    SF_DOUBLE V1;
-    int I1;
+    SF_DOUBLE R_dist(3);
+    SF_DOUBLE V_dist(3);
+    int I_dist;
 
-    R1.push_back(0.5); R1.push_back(0.4); R1.push_back(0.4);
-    V1.push_back(0.0); V1.push_back(-0.6); V1.push_back(-0.8);
+    // Example 1:
+    R_dist[0] = 0.5; R_dist[1] =  0.4; R_dist[2] =  0.4;
+    V_dist[0] = 0.0; V_dist[1] = -0.6; V_dist[2] = -0.8;
 
-    if (fabs(mesh_ptr_1->get_db(R1,V1,1,I1) - 0.5) > TET_epsilon)  ITFAILS;
-    if (I1 != 4)                                                   ITFAILS;
+    if (fabs(mesh_ptr_1->get_db(R_dist,V_dist,1,I_dist) - 0.5) > TET_epsilon)   ITFAILS;
+    if (I_dist != 4)                                                            ITFAILS;
 
-    if (fabs(mesh_ptr_1->get_min_db(R1,1) - 0.0707106781187) > TET_epsilon)
-                                                                   ITFAILS;
+    if (fabs(mesh_ptr_1->get_min_db(R_dist,1) - 0.0707106781187) > TET_epsilon) ITFAILS;
+
+    // Example 2:
+    R_dist[0] = 0.4; R_dist[1] =  0.3; R_dist[2] =  0.4;
+    V_dist[0] = 0.0; V_dist[1] = -0.6; V_dist[2] = -0.8;
+
+    if (fabs(mesh_ptr_1->get_db(R_dist,V_dist,1,I_dist) - 0.5) > TET_epsilon) ITFAILS;
+    if (I_dist != 3 && I_dist != 4)                                           ITFAILS;
+
+    if (fabs(mesh_ptr_1->get_min_db(R_dist,1) - 0.0894427191) > TET_epsilon)  ITFAILS;
+
+    // Example 3:
+    R_dist[0] = 0.3; R_dist[1] = 0.4; R_dist[2] = 0.4;
+    V_dist[0] = 0.312347523777; V_dist[1] = 0.156173761889; V_dist[2] = 0.937042571332;
+
+    if (fabs(mesh_ptr_1->get_db(R_dist,V_dist,1,I_dist) - 0.640312423743) > TET_epsilon) ITFAILS;
+    if (I_dist != 1 && I_dist != 2 && I_dist != 3)                                       ITFAILS;
+
+    if (fabs(mesh_ptr_1->get_min_db(R_dist,1) - 0.0894427191) > TET_epsilon)             ITFAILS;
+
+    // Example 4:
+    R_dist[0] = 0.4; R_dist[1] = 0.4; R_dist[2] = 0.141421356237;
+    V_dist[0] = 1.0; V_dist[1] = 0.0; V_dist[2] = 0.0;
+
+    if (fabs(mesh_ptr_1->get_db(R_dist,V_dist,1,I_dist) - 0.2) > TET_epsilon)  ITFAILS;
+    if (I_dist != 1)                                                           ITFAILS;
+
+    if (fabs(mesh_ptr_1->get_min_db(R_dist,1) - 0.141421356237) > TET_epsilon) ITFAILS;
 
     // Test sampling in a tethedron.
 
