@@ -48,54 +48,54 @@ using std::string;
 	 std::copy(s1.begin(),s1.end(),c1);
 	 return c1;
      }
-
-    //----------------------------------------//
-    //                gmatids                 //
-    //----------------------------------------//
-    
-    void wgmatids( const std::string &fname , vector<int> &matids, 
-		  const int const_kmat, int &nmat, int &ier ) 
-	{
-
-	    // I could change this subroutine so that it identifies
-	    // nmat=kmat by repeatedly calling gmatids_().
-
-	    // ----------------------------------------
-	    // Create simple flat data types
-	    // ----------------------------------------
-
-	    // copy filename into a const char * array;
-    	    char cfname[maxDataFilenameLength];
- 	    const char * ccfname = s2ccwp( fname, cfname,
-					   maxDataFilenameLength );
-
-	    // Remove constness from kmat.
-	    int kmat = const_kmat; 
-
-	    // we don't know the value of nmat until runtime so we
-	    // must dynamically allocate a_matids.
-	    int *a_matids = new int [ kmat ];
-
-	    // --------------------------------------------------
-	    // call the Gandolf library function
-	    // --------------------------------------------------
-
-	    gmatids( ccfname, a_matids, kmat, nmat, ier );
-
-	    // ----------------------------------------
-	    // Copy the data back into C++ data types
-	    // ----------------------------------------
-
-	    // resize and update the vector matids fromt he array version.
-	    matids.resize( nmat );
-	    std::copy( a_matids, a_matids+nmat, matids.begin() );
-	    
-	    // Free up dynamic memory and return.
-	    delete [] a_matids;
-
-	    return;
-
-	} // end of gmatids
+ 
+ //----------------------------------------//
+ //                gmatids                 //
+ //----------------------------------------//
+ 
+ void wgmatids( const std::string &fname , vector<int> &matids, 
+		const int const_kmat, int &nmat, int &ier ) 
+     {
+	 
+	 // I could change this subroutine so that it identifies
+	 // nmat=kmat by repeatedly calling gmatids_().
+	 
+	 // ----------------------------------------
+	 // Create simple flat data types
+	 // ----------------------------------------
+	 
+	 // copy filename into a const char * array;
+	 char cfname[maxDataFilenameLength];
+	 const char * ccfname = s2ccwp( fname, cfname,
+					maxDataFilenameLength );
+	 
+	 // Remove constness from kmat.
+	 int kmat = const_kmat; 
+	 
+	 // we don't know the value of nmat until runtime so we
+	 // must dynamically allocate a_matids.
+	 int *a_matids = new int [ kmat ];
+	 
+	 // --------------------------------------------------
+	 // call the Gandolf library function
+	 // --------------------------------------------------
+	 
+	 gmatids( ccfname, a_matids, kmat, nmat, ier );
+	 
+	 // ----------------------------------------
+	 // Copy the data back into C++ data types
+	 // ----------------------------------------
+	 
+	 // resize and update the vector matids fromt he array version.
+	 matids.resize( nmat );
+	 std::copy( a_matids, a_matids+nmat, matids.begin() );
+	 
+	 // Free up dynamic memory and return.
+	 delete [] a_matids;
+	 
+	 return;
+	 
+     } // end of gmatids
 
 
     //----------------------------------------//

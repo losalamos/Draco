@@ -24,7 +24,7 @@ namespace rtt_cdi_gandolf
  * \brief This class handles exceptions thrown by GandolfOpacity when
  *        it calls the Gandolf library functions.
  *
- * \sa This class provides an exception data type.  When an exception is
+ * This class provides an exception data type.  When an exception is
  *     thrown in the cdi_gandolf package a GandolfException object is
  *     created and may be trapped in the calling routine by using a
  *     try/catch block when a GandolfFile or GandolfOpacity object is
@@ -37,6 +37,7 @@ namespace rtt_cdi_gandolf
  *
  * \example cdi_gandolf/test/tGandolfFile.cc
  * \example cdi_gandolf/test/tCDIGandolf.cc
+ * \example cdi_gandolf/test/tGandolfWithCDI.cc
  *
  * These two examples demonstrate how the try/catch blocks may be used 
  * to trap errors in the cdi_gandolf package.  They also demonstrate
@@ -66,11 +67,8 @@ class GandolfException
     /*!
      * \brief Standard GandolfException constructor.
      *
-     * \sa
-     *
-     * \parameter _gandolfFunctionName
-     *
-     * \parameter _errorCode
+     * \param _gandolfFunctionName
+     * \param _errorCode
      */    
     GandolfException( const std::string _gandolfFunctionName, const int _errorCode )
 	: gandolfFunctionName( _gandolfFunctionName ), errorCode( _errorCode )
@@ -81,7 +79,7 @@ class GandolfException
     /*!
      * \brief Standard GandolfException destructor.
      *
-     * \sa We require a virtual destructor to avoid potential memory
+     *     We require a virtual destructor to avoid potential memory
      *     leaks that may occur when derived objects are destroyed
      *     without first destroying this parent object.
      */

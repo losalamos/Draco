@@ -35,7 +35,7 @@ namespace rtt_cdi_gandolf
  * with a specific opacity type (e.g.: total, plank, multigroup) for a 
  * single single material.
  *
- * \sa When the user instantiates a GandolfOpacity object a
+ * When the user instantiates a GandolfOpacity object a
  * GandolfDataTable object is also created.  There is a one-to-one
  * correspondence between these two objects.  The 
  * GandolfDataTable object will load a single opacity table from the
@@ -164,36 +164,31 @@ class GandolfDataTable
     /*!
      * \brief Standard GandolfDataTable constructor.
      *
-     * \sa The constructor requires that the data state to be
+     * The constructor requires that the data state to be
      *     completely defined.  With this information the DataTypeKey
      *     is set, then the data table sizes are loaded and finally
      *     the table data is loaded.
      *
-     * \parameter _opacityEnergyDescriptor This string variable 
+     * \param _opacityEnergyDescriptor This string variable 
      *     specifies the energy model { "gray" or "mg" } for the
      *     opacity data contained in this GandolfDataTable object. 
-     *     
-     * \parameter _opacityModel This enumerated value specifies the
+     * \param _opacityModel This enumerated value specifies the
      *     physics model { Rosseland or Plank } for the opacity data
      *     contained in this object.  The enumeration is defined in
      *     GandolfOpacity.hh 
-     *
-     * \parameter _opacityReaction This enumerated value specifies the 
+     * \param _opacityReaction This enumerated value specifies the 
      *     interaction model { total, scattering, absorption " for the 
      *     opacity data contained in this object.  The enumeration is
      *     defined in GandolfOpacity.hh
-     *
-     * \parameter _vKnownKeys This vector of strings is a list of
+     * \param _vKnownKeys This vector of strings is a list of
      *     data keys that the IPCRESS file knows about.  This list is
      *     read from the IPCRESS file when a GandolfOpacity object is
      *     instantiated but before the associated GandolfDataTable
      *     object is created. 
-     *
-     * \parameter _matID The material identifier that specifies a
+     * \param _matID The material identifier that specifies a
      *     particular material in the IPCRESS file to associate with
      *     the GandolfDataTable container.
-     *
-     * \parameter _spGandolfFile A DS++ SmartPointer to a GandolfFile
+     * \param _spGandolfFile A DS++ SmartPointer to a GandolfFile
      *     object.  One GanolfFile object should exist for each
      *     IPCRESS file.  Many GandolfOpacity (and thus
      *     GandolfDataTable) objects may point to the same GandolfFile 

@@ -31,15 +31,17 @@ namespace rtt_cdi_gandolf
 /*!
  * \class GandolfGrayOpacity
  *
- * \brief GandolfGrayOpacity allows the client code to retrieve opacity
+ * \brief provides access to gray opacity data located in IPCRESS files.
+ *
+ *        GandolfGrayOpacity allows the client code to retrieve opacity
  *        data for a particular material.  Each GandolfOpacity object
  *        represents a specific type of data defined by five
  *        attributes: an IPCRESS File (via a GandolfFile object), a
- *        material identifier, an energy policy (already selected
+ *        material identifier, an energy model (already selected
  *        since this is a Gray Opacity class), a physics model and a
  *        reaction type.
  *
- * \sa  This is a concrete class derived from cdi/GrayOpacity.  This
+ *      This is a concrete class derived from cdi/GrayOpacity.  This
  *      class allows to client to access the data in IPCRESS files
  *      via the Gandolf libraries.
  * <p>
@@ -70,12 +72,19 @@ namespace rtt_cdi_gandolf
  *      calls the appropriate GANDOLF library routine, which in turn,
  *      interpolates on the data cached in the GandolfDataTable
  *      object.
+ * <p>
+ *      When compiling DRACO with support for the IPCRESS file reader
+ *      (via Gandolf) you must add the following option on the
+ *      configure line:<br><br>
+ *      <tt>    --with-gandolf-lib=${VENDORS}/gandolf/IRIX64/lib64</tt><br><br>
+ *      Currently, the Gandolf library is only available on 64 bit
+ *      IRIX architectures.
  */
 
 /*!
  * \example cdi_gandolf/test/tGandolfOpacity.cc
  *
- * \sa  Example of GandolfGrayOpacity usage independent of CDI.  In
+ * Example of GandolfGrayOpacity usage independent of CDI.  In
  *      this example we construct a GandolfGrayOpacity object for the
  *      material Aluminum (matID=10001 in our example IPCRESS file).
  *      We then use the GandolfGrayOpacity object to compute a
@@ -83,6 +92,11 @@ namespace rtt_cdi_gandolf
  *      temperature and density.  Other forms of the getOpacity()
  *      accessor are tested along with accessors that return
  *      information about the data set and the cached data table.
+ *
+ * \example cdi_gandolf/test/tGandolfWithCDI.cc
+ * 
+ * This example tests and demonstrates how to use the cdi_gandolf
+ * package as a plug-in for the CDI class.
  */
 //===========================================================================//
 
@@ -143,7 +157,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
     const rtt_cdi::Reaction opacityReaction;
 
     /*!
-     * \brief A string that identifies the energy policy for this
+     * \brief A string that identifies the energy model for this
      *     class.
      */
     const std::string energyPolicyDescriptor;
@@ -172,24 +186,21 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     requires four arguments plus the energy policy (this class)
      *     to be instantiated.
      * 
-     * \sa The combiniation of a data file and a material ID uniquely 
+     *     The combiniation of a data file and a material ID uniquely 
      *     specifies a material.  If we add the Model, Reaction and
      *     EnergyPolicy the opacity table is uniquely defined.
      *
-     * \parameter _spGandolfFile This smart pointer links an IPCRESS
+     * \param _spGandolfFile This smart pointer links an IPCRESS
      *     file (via the GandolfFile object) to a GandolfOpacity
      *     object. There may be many GandolfOpacity objects per
      *     GandolfFile object but only one GandolfFile object for each 
      *     GandolfOpacity object.
-     *
-     * \parameter _materialID An identifier that links the
+     * \param _materialID An identifier that links the
      *     GandolfOpacity object to a single material found in the
      *     specified IPCRESS file.
-     *
-     * \parameter _opacityModel The physics model that the current
+     * \param _opacityModel The physics model that the current
      *     data set is based on.
-     *
-     * \parameter _opacityReaction The type of reaction rate that the
+     * \param _opacityReaction The type of reaction rate that the
      *     current data set represents. 
      */
     GandolfGrayOpacity( const rtt_dsxx::SP< GandolfFile > _spGandolfFile,
@@ -200,7 +211,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
     /*!
      * \brief Default GandolfOpacity() destructor.
      *
-     * \sa This is required to correctly release memory when a
+     *     This is required to correctly release memory when a
      *     GandolfGrayOpacity is destroyed.  We define the destructor
      *     in the implementation file to avoid including the
      *     unnecessary header files.
@@ -219,22 +230,17 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     be the same length.  The opacity iterator should also have
      *     this same length.
      * 
-     * \parameter temperatureFirst The beginning position of a STL
+     * \param temperatureFirst The beginning position of a STL
      *     container that holds a list of temperatures.
-     *
-     * \parameter temperatureLast The end position of a STL
+     * \param temperatureLast The end position of a STL
      *     container that holds a list of temperatures.
-     *
-     * \parameter densityFirst The beginning position of a STL
+     * \param densityFirst The beginning position of a STL
      *     container that holds a list of densities.
-     *
-     * \parameter densityLast
+     * \param densityLast
      *     container that holds a list of temperatures.
-     * 
-     * \parameter opacityFirst The beginning position of a STL
+     * \param opacityFirst The beginning position of a STL
      *     container into which opacity values corresponding to the
      *     given (temperature,density) tuple will be stored.
-     *
      * \return A list (of type OpacityIterator) of opacities are
      *     returned.  These opacities correspond to the temperature
      *     and density values provied in the two InputIterators.
@@ -254,19 +260,15 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     provided.  The opacity iterator should be the same length
      *     as the temperature STL container.
      *
-     * \parameter temperatureFirst The beginning position of a STL
+     * \param temperatureFirst The beginning position of a STL
      *     container that holds a list of temperatures.
-     *
-     * \parameter temperatureLast The end position of a STL
+     * \param temperatureLast The end position of a STL
      *     container that holds a list of temperatures.
-     *
-     * \parameter targetDensity The single density value used when
+     * \param targetDensity The single density value used when
      *     computing opacities for each given temperature.
-     * 
-     * \parameter opacityFirst The beginning position of a STL
+     * \param opacityFirst The beginning position of a STL
      *     container into which opacity values (corresponding to the
      *     provided temperature and density values) will be stored.
-     *
      * \return A list (of type OpacityIterator) of opacities are
      *     returned.  These opacities correspond to the temperature
      *     and density values provied.
@@ -284,19 +286,15 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     provided.  The opacity iterator should be the same length
      *     as the density STL container.
      *
-     * \parameter targetTemperature The single temperature value used when
+     * \param targetTemperature The single temperature value used when
      *     computing opacities for each given density.
-     * 
-     * \parameter densityFirst The beginning position of a STL
+     * \param densityFirst The beginning position of a STL
      *     container that holds a list of densities.
-     *
-     * \parameter densityLast The end position of a STL
+     * \param densityLast The end position of a STL
      *     container that holds a list of densities.
-     *
-     * \parameter opacityFirst beginning position of a STL
+     * \param opacityFirst beginning position of a STL
      *     container into which opacity values (corresponding to the
      *     provided temperature and density values) will be stored.
-     *
      * \return A list (of type OpacityIterator) of opacities are
      *     returned.  These opacities correspond to the temperature
      *     and density values provied.
@@ -308,55 +306,42 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
 				OpacityIterator opacityFirst ) const;
     
     /*!
-     * \brief Opacity accessor that returns a single opacity (or a
-     *     vector of opacities for the multigroup EnergyPolicy) that 
+     * \brief Opacity accessor that returns a single opacity that 
      *     corresponds to the provided temperature and density.
      *
-     * \parameter targetTemperature The temperature value for which an
+     * \param targetTemperature The temperature value for which an
      *     opacity value is being requested.
-     *
-     * \parameter targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity 
      *     value is being requested.
-     *
-     * \return A single opacity (or a vector of opacities for the
-     *     multigroup EnergyPolicy).
+     * \return A single opacity.
      */
     double getOpacity( const double targetTemperature,
 		       const double targetDensity ) const; 
 
     /*!
-     * \brief Opacity accessor that returns a vector of opacities (or a
-     *     vector of vectors of opacities for the multigroup
-     *     EnergyPolicy) that correspond to the provided vector of
+     * \brief Opacity accessor that returns a vector of opacities 
+     *     that correspond to the provided vector of
      *     temperatures and a single density value.
      *
-     * \parameter targetTemperature A vector of temperature values for
+     * \param targetTemperature A vector of temperature values for
      *     which opacity values are being requested.
-     *
-     * \parameter targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity 
      *     value is being requested.
-     *
-     * \return A vector of opacities (or a vector of vectors of
-     *     opacities for the multigroup EnergyPolicy).
+     * \return A vector of opacities.
      */
     std::vector< double > getOpacity( 
 	const std::vector<double>& targetTemperature,
 	const double targetDensity ) const; 
 
     /*!
-     * \brief Opacity accessor that returns a vector of opacities (or a
-     *     vector of vectors of opacities for the multigroup
-     *     EnergyPolicy) that correspond to the provided vector of
+     * \brief Opacity accessor that returns a vector of opacities that
+     *     correspond to the provided vector of 
      *     densities and a single temperature value.
-     *
-     * \parameter targetTemperature The temperature value for which an 
+     * \param targetTemperature The temperature value for which an 
      *     opacity value is being requested.
-     *
-     * \parameter targetDensity A vector of density values for which
+     * \param targetDensity A vector of density values for which
      *     opacity values are being requested.
-     *
-     * \return A vector of opacities (or a vector of vectors of
-     *     opacities for the multigroup EnergyPolicy).
+     * \return A vector of opacities.
      */
     std::vector< double > getOpacity( 
 	const double targetTemperature,

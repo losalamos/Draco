@@ -28,11 +28,13 @@ namespace rtt_cdi_gandolf
  *        will access the same GandolfFile object (one per material
  *        found in the data file).
  *
- * \sa This class is designed to be used in conjuction with
+ * This class is designed to be used in conjuction with
  * GandolfOpacity.  The client code should create a GandolfFile object 
  * and that object is passed to the GandolfOpacity constructor to
  * create a link between the opacity object and the IPCRESS data file.
- *
+ */
+
+/*!
  * \example cdi_gandolf/test/tGandolfFile.cc
  *
  * Example of GandolfFile useage independent of GandolfOpacity or CDI.
@@ -69,9 +71,9 @@ class GandolfFile
     // CREATORS
     
     /*!
-     * \breif Standard GandolfFile constructor.
+     * \brief Standard GandolfFile constructor.
      *
-     * \sa This is the standard GandolfFile constructor.  This object
+     *    This is the standard GandolfFile constructor.  This object
      *    is typically instantiated as a smart pointer.
      *
      * \param _gandolfDataFilename A string that contains the name of
