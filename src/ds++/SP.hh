@@ -69,8 +69,6 @@ class SP {
 	    delete p;
 	    delete r;
 	}
-	p = 0;
-	r = 0;
     }
 
   public:
