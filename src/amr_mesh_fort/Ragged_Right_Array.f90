@@ -50,5 +50,5 @@
       end module Ragged_Right_Array
 
 !---------------------------------------------------------------------------
-!                              end of amr_mesh/Ragged_Right_Array.f90
+!                              end of amr_mesh_fort/Ragged_Right_Array.f90
 !---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 !----------------------------------*-F90-*----------------------------------
-! Shadow_CAR_CU_Opacity_Builder.f90
+! Shadow_Opacity_Builder.f90
 ! B.T. Adams (bta@lanl.gov)
 ! 27 Sept 99
 !---------------------------------------------------------------------------
@@ -7,7 +7,7 @@
 !---------------------------------------------------------------------------
 
 !===========================================================================
-! Shadow_CAR_CU_Opacity_Builder - 
+! Shadow_Opacity_Builder - 
 !
 ! Purpose : Provides shadow interface functions for the C++ Continuous 
 ! Adaptive Refinement Cartesion Unstructured Opacity Builder Class

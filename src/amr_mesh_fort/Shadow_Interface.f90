@@ -1,13 +1,13 @@
 !----------------------------------*-F90-*----------------------------------
-! Shadow_CAR_CU_Interface.f90
+! Shadow_Interface.f90
 ! B.T. Adams (bta@lanl.gov)
 ! 27 Sept 99
 !---------------------------------------------------------------------------
-! @> Shadow_CAR_CU_Interface interface file
+! @> Shadow_Interface interface file
 !---------------------------------------------------------------------------
 
 !===========================================================================
-! Shadow_CAR_CU_Interface - 
+! Shadow_Interface - 
 !
 ! Purpose : Provides shadow interface functions for the C++ Continuous 
 ! Adaptive Refinement Cartesion Unstructured Mesh Interface Class
@@ -385,5 +385,5 @@
        end module CAR_CU_Interface_Class
 
 !---------------------------------------------------------------------------
-!                              end of amr_mesh/Shadow_CAR_CU_Interface.f90
+!                              end of amr_mesh_fort/Shadow_Interface.f90
 !---------------------------------------------------------------------------

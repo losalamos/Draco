@@ -1,18 +1,18 @@
 !----------------------------------*-F90-*----------------------------------
-! Shadow_CAR_CU_Opacity.f90
+! Shadow_Opacity.f90
 ! B.T. Adams (bta@lanl.gov)
 ! 27 Sept 99
 !---------------------------------------------------------------------------
-! @> Shadow_CAR_CU_Opacity interface file
+! @> Shadow_Opacity interface file
 !---------------------------------------------------------------------------
 
 !===========================================================================
-! Shadow_CAR_CU_Opacity - 
+! Shadow_Opacity - 
 !
 ! Purpose : Provides shadow interface functions for the C++ Continuous 
 ! Adaptive Refinement Cartesion Unstructured Opacity Class. Note that the 
-! class constructor is not shadowed because the mesh is constructed by the 
-! Shadow_CAR_CU_Opacity_Builder class object.
+! class constructor is not shadowed because this object is constructed by 
+! the CAR_CU_Opacity_Builder class object.
 !
 ! revision history:
 ! -----------------
@@ -195,5 +195,5 @@
       end module CAR_CU_Opacity_Class
 
 !---------------------------------------------------------------------------
-!                              end of amr_mesh/Shadow_CAR_CU_Opacity.f90
+!                              end of amr_mesh_fort/Shadow_Opacity.f90
 !---------------------------------------------------------------------------

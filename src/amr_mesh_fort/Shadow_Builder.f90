@@ -1,13 +1,13 @@
 !----------------------------------*-F90-*----------------------------------
-! Shadow_CAR_CU_Mesh_Builder.f90
+! Shadow_Builder.f90
 ! B.T. Adams (bta@lanl.gov)
 ! 27 Sept 99
 !---------------------------------------------------------------------------
-! @> Shadow_CAR_CU_Mesh_Builder interface file
+! @> Shadow_Builder interface file
 !---------------------------------------------------------------------------
 
 !===========================================================================
-! Shadow_CAR_CU_Mesh_Builder - 
+! Shadow_Builder - 
 !
 ! Purpose : Provides shadow interface functions for the C++ Continuous 
 ! Adaptive Refinement Cartesion Unstructured Mesh Builder Class
@@ -82,5 +82,5 @@
        end module CAR_CU_Mesh_Builder_Class
 
 !---------------------------------------------------------------------------
-!                        end of amr_mesh/Shadow_CAR_CU_Mesh_Builder.f90
+!                        end of amr_mesh_fort/Shadow_Builder.f90
 !---------------------------------------------------------------------------

@@ -1,18 +1,18 @@
 !----------------------------------*-F90-*----------------------------------
-! Shadow_CAR_CU_Mat_State.f90
+! Shadow_Mat_State.f90
 ! B.T. Adams (bta@lanl.gov)
 ! 27 Sept 99
 !---------------------------------------------------------------------------
-! @> Shadow_CAR_CU_Mat_State interface file
+! @> Shadow_Mat_State interface file
 !---------------------------------------------------------------------------
 
 !===========================================================================
-! Shadow_CAR_CU_Mat_State - 
+! Shadow_Mat_State - 
 !
 ! Purpose : Provides shadow interface functions for the C++ Continuous 
 ! Adaptive Refinement Cartesion Unstructured Mat_State Class. Note that the 
-! class constructor is not shadowed because the mesh is constructed by the 
-! Shadow_CAR_CU_Opacity_Builder class object.
+! class constructor is not shadowed because this object is constructed by 
+! the CAR_CU_Opacity_Builder class object.
 !
 ! revision history:
 ! -----------------
@@ -182,5 +182,5 @@
       end module CAR_CU_Mat_State_Class
 
 !---------------------------------------------------------------------------
-!                              end of amr_mesh/Shadow_CAR_CU_Mat_State.f90
+!                              end of amr_mesh_fort/Shadow_Mat_State.f90
 !---------------------------------------------------------------------------
