@@ -11,7 +11,7 @@
 #include <vector>
 typedef std::vector<double> VD;
 
-#include "radphys/RadiationPhysics.cc"
+#include "radphys/RadiationPhysics.t.cc"
 using namespace XTM;
 
 template 
