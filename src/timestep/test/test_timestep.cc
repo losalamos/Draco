@@ -60,6 +60,9 @@ void package_XXX(field_ts_advisor &telect_adv,
 
 void test_timestep::execute_test()
 {
+
+    using dsxx::SP;
+
     double graphics_time = 10.;
     double dt_min = 0.000001;
     double dt_max = 100000.;

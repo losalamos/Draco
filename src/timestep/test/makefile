@@ -1,20 +1,20 @@
 ###############################################################################
 # draco/src/timestep/test/makefile
-# Geoffrey Furnish
-# 29 September 1997
+# John McGhee
+# 3 Jun 1998
 ###############################################################################
-# @> Rules for building the baby solver test executable.
+# @> Rules for building the timestep test executable.
 ###############################################################################
 
 SRC_TOP = ../..
 
-need_linalg     := yes
-need_c4		:= yes
-need_namelist	:= yes
-need_spdf	:= yes
-need_util	:= yes
+#need_linalg    := yes
+#need_c4	:= yes
+#need_namelist	:= yes
+#need_spdf	:= yes
+#need_util	:= yes
 #need_pooma	:= yes
-need_mesh	:= yes
+#need_mesh	:= yes
 need_timestep	:= yes
 
 # Go get the standard includeable makefile for Draco components.
