@@ -49,7 +49,6 @@ public:
 		   const typename MT::CCSF_double &);
 
   // member set and accessor functions
-
     double get_sigma_abs(int cell) const { return sigma_abs(cell); }
     double get_planck(int cell) const { return planck(cell); }
     double get_fleck(int cell) const { return fleck(cell); }

@@ -81,6 +81,8 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
     if (num_cells <= sinit.get_capacity())
     {
       // do full replication as we can fit the whole mesh on each processor
+	parallel_scheme = "replication";
+
 	for (int proc = 0; proc < nodes(); proc++)
 	{
 	    for (int cell = 1; cell <= num_cells; cell++)
@@ -95,6 +97,8 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
     else if (num_cells == total_capacity)
     {
       // do full DD
+	parallel_scheme = "DD";
+
 	int cell = 1;
 	for (int proc = 0; proc < nodes(); proc++)
 	{
@@ -113,6 +117,7 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
     else
     {
       // do DD/replication
+	parallel_scheme = "DD/replication";
 
       // set up variables for cell replication
 	vector<int> cellrep(num_cells);
@@ -868,27 +873,36 @@ void Parallel_Builder<MT>::recv_ss(typename MT::CCSF_int &ssrn,
 //---------------------------------------------------------------------------//
 // Mesh passing interface
 //---------------------------------------------------------------------------//
-// send out the Mesh components
+// send out the Mesh components and return a new mesh to the host process
 
 template<class MT>
-void Parallel_Builder<MT>::send_Mesh(const MT &mesh)
+SP<MT> Parallel_Builder<MT>::send_Mesh(const MT &mesh)
 {
   // send the mesh components out to the other processors
 
   // assure that we are on the host node only
     Check (!node());
 
+  // new host mesh objects
+    SP<Coord_sys> host_coord = mesh.get_SPCoord();
+    Layout host_layout = mesh.get_Layout();
+    typename MT::CCVF_d host_vertex(mesh.get_Coord().get_dim());
+    typename MT::CCVF_i host_cell_pair(cells_per_proc[0].size());
+    SP<MT> host_mesh;
+
   // let us pass a coordinate system, shall we
-    send_Coord(mesh.get_Coord());
+    send_Coord(host_coord);
 
   // let us pass the Layout
-    send_Layout(mesh.get_Layout());
+    send_Layout(host_layout);
 
-  // let us pass the vertex
-    send_vertex(mesh.get_vertex());
+  // let us pass the vertex and cell_pairings, ie. the cells
+    send_cells(mesh, host_vertex, host_cell_pair);
 
-  // let us pass the cell_pair
-    send_cellpair(mesh.get_cell_pair());
+  // build the new mesh on the host
+    host_mesh = new OS_Mesh(host_coord, host_layout, host_vertex,
+			    host_cell_pair);
+    return host_mesh;
 }
 
 //---------------------------------------------------------------------------//
@@ -912,11 +926,8 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
   // get Layout
     Layout layout = recv_Layout();
 
-  // <<CONTINUE HERE>>
-  // <<LAYOUT STUFF SHOULD WORK, MOVE ON TO VERTEX ETC.>>
-
   // get vertices and cell_pair
-    typename MT::CCVF_d vertex = recv_vertex();
+    typename MT::CCVF_d vertex    = recv_vertex();
     typename MT::CCVF_i cell_pair = recv_cellpair();
 
   // build mesh
@@ -933,12 +944,12 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
 // pass the Coord_sys object
 
 template<class MT>
-void Parallel_Builder<MT>::send_Coord(const Coord_sys &coord)
+void Parallel_Builder<MT>::send_Coord(SP<Coord_sys> coord)
 {
   // send out the coordinate system designator
 
   // send variables
-    string cs          = coord.get_Coord();
+    string cs          = coord->get_Coord();
     const char *sendcs = cs.c_str();
     int cs_size        = cs.size();
 
@@ -989,10 +1000,10 @@ SP<Coord_sys> Parallel_Builder<MT>::recv_Coord()
 // pass the Layout
 
 template<class MT>
-void Parallel_Builder<MT>::send_Layout(const Layout &global_layout)
+void Parallel_Builder<MT>::send_Layout(Layout &host_layout)
 {
-  // make sure we have the global layout
-    Require (global_layout.num_cells() == procs_per_cell.size());
+  // make sure we have the global layout at this junction
+    Require (host_layout.num_cells() == procs_per_cell.size());
 
   // size the boundary cells object
     bound_cells.resize(nodes());
@@ -1001,7 +1012,7 @@ void Parallel_Builder<MT>::send_Layout(const Layout &global_layout)
     for (int np = 1; np < nodes(); np++)
     {
       // get the Layout for processor np
-	Layout layout = build_Layout(global_layout, np);
+	Layout layout = build_Layout(host_layout, np);
 
       // set the Layout size
 	int num_cells = layout.num_cells();
@@ -1043,49 +1054,10 @@ void Parallel_Builder<MT>::send_Layout(const Layout &global_layout)
 	delete [] faces;
 	delete [] num_faces;
     }
-}
 
-//---------------------------------------------------------------------------//
-// build a new layout on each processor
-
-template<class MT>
-Layout Parallel_Builder<MT>::build_Layout(const Layout &layout, int proc)
-{
-  // assure that we have the global Layout
-    Require (layout.num_cells() == procs_per_cell.size());
-
-  // determine the number of cells on this processor
-    int num_cells = cells_per_proc[proc].size();
-    Layout imc_layout(num_cells);
-
-  // loop over cells on IMC processor and calculate new Layout
-    int global_cell;
-    int next_global_cell;
-    int next_imc_cell;
-    for (int cell = 1; cell <= num_cells; cell++)
-    {
-      // determine the global cell index
-	global_cell = cells_per_proc[proc][cell-1];
-	
-      // size the new layout to the proper number of faces
-	imc_layout.set_size(cell, layout.num_faces(global_cell));
-	
-      // loop through faces and build the Layout for this IMC cell
-	for (int face = 1; face <= imc_layout.num_faces(cell); face++)
-	{
-	    next_global_cell = layout(global_cell, face);
-	    next_imc_cell    = imc_cell(next_global_cell, proc);
-	    if (!next_imc_cell && next_global_cell)
-	    {
-		bound_cells[proc].push_back(next_global_cell);
-		next_imc_cell = -bound_cells[proc].size();
-	    }
-	    imc_layout(cell, face) = next_imc_cell;
-	}
-    }
-    
-  // return the new Layout
-    return imc_layout;
+  // now rebuild the host layout
+    host_layout = build_Layout(host_layout, 0);
+    Ensure (host_layout.num_cells() == cells_per_proc[0].size());
 }
 
 //---------------------------------------------------------------------------//
@@ -1132,10 +1104,118 @@ Layout Parallel_Builder<MT>::recv_Layout()
 }
 
 //---------------------------------------------------------------------------//
+// build a new layout on each processor
+
+template<class MT>
+Layout Parallel_Builder<MT>::build_Layout(const Layout &layout, int proc)
+{
+  // assure that we have the global Layout
+    Require (layout.num_cells() == procs_per_cell.size());
+
+  // determine the number of cells on this processor
+    int num_cells = cells_per_proc[proc].size();
+    Layout imc_layout(num_cells);
+
+  // loop over cells on IMC processor and calculate new Layout
+    int global_cell;
+    int next_global_cell;
+    int next_imc_cell;
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+      // determine the global cell index
+	global_cell = cells_per_proc[proc][cell-1];
+	
+      // size the new layout to the proper number of faces
+	imc_layout.set_size(cell, layout.num_faces(global_cell));
+	
+      // loop through faces and build the Layout for this IMC cell
+	for (int face = 1; face <= imc_layout.num_faces(cell); face++)
+	{
+	    next_global_cell = layout(global_cell, face);
+	    next_imc_cell    = imc_cell(next_global_cell, proc);
+	    if (!next_imc_cell && next_global_cell)
+	    {
+		bound_cells[proc].push_back(next_global_cell);
+		next_imc_cell = -bound_cells[proc].size();
+	    }
+	    imc_layout(cell, face) = next_imc_cell;
+	}
+    }
+    
+  // return the new Layout
+    return imc_layout;
+}
+
+//---------------------------------------------------------------------------//
+// send out the cells in the form of cell vertices and cell_pair arrays
+
+template<class MT>
+void Parallel_Builder<MT>::send_cells(const MT &host_mesh,
+				      typename MT::CCVF_d &host_vertex,
+				      typename MT::CCVF_i &host_cellpair)
+{
+  // loop over processors and build new vertices and cell_pairs and send them 
+  // out
+    for (int np = 1; np < nodes(); np++)
+    {
+      // build new vertices and cell_pairs on this node
+	typename MT::CCVF_d imc_vertex(host_mesh.get_Coord().get_dim());
+	typename MT::CCVF_i imc_cellpair(cells_per_proc[np].size());
+	build_cells(host_mesh, imc_vertex, imc_cellpair, np);
+
+      // send them to the other processors
+	send_vertex(imc_vertex, np);
+	send_cellpair(imc_cellpair, np);
+    }
+
+  // now rebuild the host vertices and cell_pair
+    build_cells(host_mesh, host_vertex, host_cellpair, 0);
+    Ensure (host_cellpair.size() == cells_per_proc[0].size());
+}
+
+//---------------------------------------------------------------------------//
+// build a new vertex and cell_pair on each processor
+
+template<class MT>
+void Parallel_Builder<MT>::build_cells(const MT &mesh,
+				       typename MT::CCVF_d &vertex, 
+				       typename MT::CCVF_i &cellpair,
+				       int proc)
+{
+    Require (cells_per_proc[proc].size() == cellpair.size());
+    Require (mesh.get_Coord().get_dim() == vertex.size());
+
+  // determine dimension and number of cells
+    int num_cells = cells_per_proc[proc].size();
+    int dim       = vertex.size();
+
+  // loop over cells on IMC processor and calculate new vertex
+    int global_cell;
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+      // determine the global_cell index
+	global_cell = cells_per_proc[proc][cell-1];
+	
+      // get vertices from the global mesh
+	typename MT::CCVF_d cell_vert = mesh.get_vertices(global_cell);
+	Check (cell_vert.size() == dim);
+
+      // assign these vertices to the new IMC vertices and cell_pair
+	for (int d = 0; d < dim; d++)
+	    for (int i = 0; i < cell_vert[d].size(); i++)
+	    {
+		vertex[d].push_back(cell_vert[d][i]);
+		cellpair[cell-1].push_back(vertex[d].size());
+	    }
+    }
+}
+
+//---------------------------------------------------------------------------//
 // pass the mesh vertices
 
 template<class MT>
-void Parallel_Builder<MT>::send_vertex(const typename MT::CCVF_d &vertex)
+void Parallel_Builder<MT>::send_vertex(const typename MT::CCVF_d &vertex, 
+				       int proc)
 {
   // send the vertices to another processor
     
@@ -1144,38 +1224,34 @@ void Parallel_Builder<MT>::send_vertex(const typename MT::CCVF_d &vertex)
     int vertex_size = vertex[0].size();
     int total_size  = vertex_dim * vertex_size;
 
-  // push all vertices onto one array for communication
-    double *vert = new double[total_size];
-    int index = 0;
-    for (int d = 0; d < vertex_dim; d++)
-    {
-      // some assertions to check that the vertex size is constant over all
-      // dimensions 
-	Check (vertex_size == vertex[d].size());
-
-      // now load up the communication vertex array
-	for (int i = 0; i < vertex_size; i++)
+      // push all vertices onto one array for communication
+	double *vert = new double[total_size];
+	int index = 0;
+	for (int d = 0; d < vertex_dim; d++)
 	{
-	    vert[index] = vertex[d][i];
-	    index++;
-	}
-    }
+	  // some assertions to check that the vertex size is constant over all
+	  // dimensions 
+	    Check (vertex_size == vertex[d].size());
 
-  // send out the goodies
-    for (int np = 1; np < nodes(); np++)
-    {
+	  // now load up the communication vertex array
+	    for (int i = 0; i < vertex_size; i++)
+	    {
+		vert[index] = vertex[d][i];
+		index++;
+	    }
+	}
+
       // send the dimensionality of the vertex-array
-	Send (vertex_dim, np, 7);
+	Send (vertex_dim, proc, 7);
 
       // send the total size of the vertex-array
-	Send (total_size, np, 8);
+	Send (total_size, proc, 8);
 
       // send the vertex array
-	Send (vert, total_size, np, 9);
-    }
+	Send (vert, total_size, proc, 9);
 
-  // delete dynamically allocated arrays
-    delete [] vert;
+      // delete dynamically allocated arrays
+	delete [] vert;
 }
 	   
 //---------------------------------------------------------------------------//
@@ -1226,13 +1302,15 @@ typename MT::CCVF_d Parallel_Builder<MT>::recv_vertex()
 // pass the cell_pair
 
 template<class MT>
-void Parallel_Builder<MT>::send_cellpair(const typename MT::CCVF_i
-					 &cell_pair)
+void Parallel_Builder<MT>::send_cellpair(const typename MT::CCVF_i &cellpair, 
+					 int proc)  
 {
   // send the cell_pair array to another processor
     
-  // set the cell_pair size
-    int num_cells = cell_pair.size();
+    Require (cellpair.size() == cells_per_proc[proc].size())
+
+      // set the cell_pair size
+	int num_cells = cellpair.size();
 
   // calculate the number of vertices per cell and the total size of the
   // cell_pair object
@@ -1240,7 +1318,7 @@ void Parallel_Builder<MT>::send_cellpair(const typename MT::CCVF_i
     int size = 0;
     for (int i = 0; i < num_cells; i++)
     {
-	num_vert[i] = cell_pair[i].size();
+	num_vert[i] = cellpair[i].size();
 	size += num_vert[i];
     }
 
@@ -1248,27 +1326,23 @@ void Parallel_Builder<MT>::send_cellpair(const typename MT::CCVF_i
     int *vertices = new int[size];
     int index = 0;
     for (int i = 0; i < num_cells; i++)
-	for (int j = 0; j < cell_pair[i].size(); j++)
+	for (int j = 0; j < cellpair[i].size(); j++)
 	{
-	    vertices[index] = cell_pair[i][j];
+	    vertices[index] = cellpair[i][j];
 	    index++;
 	}
 
-  // pass the important stuff to other processors
-    for (int np = 1; np < nodes(); np++)
-    {
-      // pass the size
-	Send (num_cells, np, 10);
+  // pass the size
+    Send (num_cells, proc, 10);
 
-      // pass the total size of the cell_pair object
-	Send (size, np, 11);
+  // pass the total size of the cell_pair object
+    Send (size, proc, 11);
 
-      // pass the num_vert array
-	Send (num_vert, num_cells, np, 12);
+  // pass the num_vert array
+    Send (num_vert, num_cells, proc, 12);
 	
-      // pass the vertices-values array
-	Send (vertices, size, np, 13);
-    }
+  // pass the vertices-values array
+    Send (vertices, size, proc, 13);
 
   // delete the dynamically allocated arrays
     delete [] num_vert;
@@ -1324,42 +1398,81 @@ typename MT::CCVF_i Parallel_Builder<MT>::recv_cellpair()
 //---------------------------------------------------------------------------//
 // send the Opacity object
 
-template<class MT>
-void Parallel_Builder<MT>::send_Opacity(const Opacity<MT> &opacity)
+template<class MT> SP<Opacity<MT> > 
+Parallel_Builder<MT>::send_Opacity(SP<MT> mesh, const Opacity<MT> &opacity) 
 {
   // send out the Opacities, one component at a time
 
   // assure that we are on the host node
-    Check (!node());
+    Require (!node());
 
-  // determine the number of cells
-    int num_cells = opacity.num_cells();
+  // we must have a local mesh and a global opacity
+    Require (mesh);
+    Require (opacity.num_cells() == procs_per_cell.size());
 
-  // assign the Opacity data
-    double *sigma  = new double[num_cells];
-    double *planck = new double[num_cells];
-    double *fleck  = new double[num_cells];
+  // data necessary to build Opacity on host
+    SP<Opacity<MT> > host_opacity;
+    typename MT::CCSF_double sigma(mesh);
+    typename MT::CCSF_double planck(mesh);
+    typename MT::CCSF_double fleck(mesh);
+
+  // loop over procs and send out the Opacities
+    for (int np = 0; np < nodes(); np++)
+    {
+      // determine the number of cells
+	int num_cells = cells_per_proc[np].size();
+
+      // assign the Opacity data
+	double *sigma_send  = new double[num_cells];
+	double *planck_send = new double[num_cells];
+	double *fleck_send  = new double[num_cells];
     
-    for (int cell = 1; cell <= num_cells; cell++)
-    {
-	sigma[cell-1]  = opacity.get_sigma_abs(cell);
-	planck[cell-1] = opacity.get_planck(cell);
-	fleck[cell-1]  = opacity.get_fleck(cell);
-    }
+	int global_cell;
+	for (int cell = 1; cell <= num_cells; cell++)
+	{
+	  // get the global_cell index
+	    global_cell = cells_per_proc[np][cell-1];
 
-  // send the Opacity data
-    for (int np = 1; np < nodes(); np++)
-    {
-	Send (num_cells, np, 20);
-	Send (sigma, num_cells, np, 21);
-	Send (planck, num_cells, np, 22);
-	Send (fleck, num_cells, np, 23);
-    }
+	  // assign the data
+	    sigma_send[cell-1]  = opacity.get_sigma_abs(global_cell); 
+	    planck_send[cell-1] = opacity.get_planck(global_cell); 
+	    fleck_send[cell-1]  = opacity.get_fleck(global_cell);
+	}
 
-  // delete dynamic allocation
-    delete [] sigma;
-    delete [] planck;
-    delete [] fleck;
+      // send the Opacity data to the IMC nodes
+	if (np)
+	{
+	    Send (num_cells, np, 20);
+	    Send (sigma_send, num_cells, np, 21);
+	    Send (planck_send, num_cells, np, 22);
+	    Send (fleck_send, num_cells, np, 23);
+	}
+	else
+	{
+	  // build the host processor CCSF
+	    
+	  // check to make sure the local mesh is the right size
+	    Check (mesh->num_cells() == num_cells);
+	    
+	  // assign the data
+	    for (int cell = 1; cell <= num_cells; cell++)
+	    {
+		sigma(cell)  = sigma_send[cell-1];
+		planck(cell) = planck_send[cell-1];
+		fleck(cell)  = fleck_send[cell-1];
+	    }
+	}
+
+      // delete dynamic allocation
+	delete [] sigma_send;
+	delete [] planck_send;
+	delete [] fleck_send;
+    }
+    
+  // make and return the Opacity to the host
+    host_opacity = new Opacity<MT>(sigma, planck, fleck);
+    Ensure (host_opacity->num_cells() == mesh->num_cells());
+    return host_opacity;
 }
 
 //---------------------------------------------------------------------------//
@@ -1370,26 +1483,20 @@ SP<Opacity<MT> > Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
 {
   // receive and rebuild the Opacity object
 
-  // assure we are on receive nodes
-    Check (node());
+  // assure we are on receive nodes and have a valid mesh
+    Require (node());
+    Require (mesh);
 
   // declare return opacity object
-    SP< Opacity<MT> > return_opacity;
-
-  // check to make sure we have a valid mesh pointer
-    Check (mesh);
+    SP< Opacity<MT> > imc_opacity;
+    typename MT::CCSF_double sigma(mesh);
+    typename MT::CCSF_double planck(mesh);
+    typename MT::CCSF_double fleck(mesh);
 
   // receive the size of this guy
     int num_cells;
     Recv (num_cells, 0, 20);
-
-  // check to make sure our meshes are of proper size
     Check (num_cells == mesh->num_cells());
-
-  // make new Opacity objects
-    typename MT::CCSF_double sigma(mesh);
-    typename MT::CCSF_double planck(mesh);
-    typename MT::CCSF_double fleck(mesh);
 
   // receive data from host
     double *rsigma  = new double[num_cells];
@@ -1413,8 +1520,9 @@ SP<Opacity<MT> > Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
     delete [] rfleck;
 
   // build and return new opacity object
-    return_opacity = new Opacity<MT>(sigma, planck, fleck);
-    return return_opacity;
+    imc_opacity = new Opacity<MT>(sigma, planck, fleck);
+    Ensure (imc_opacity->num_cells() == num_cells);
+    return imc_opacity;
 }
 
 //---------------------------------------------------------------------------//
@@ -1449,11 +1557,12 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
 	double *T_send       = new double[num_cells];
 	double *dedt_send    = new double[num_cells];
 
-      // loop over on-proc cells and assign the data	
+      // loop over on-proc cells and assign the data
+	int global_cell;
 	for (int cell = 1; cell <= num_cells; cell++)
 	{
 	  // get the global cell index
-	    int global_cell = cells_per_proc[np][cell-1];
+	    global_cell = cells_per_proc[np][cell-1];
 
 	  // assign the data
 	    density_send[cell-1] = mat.get_rho(global_cell);
@@ -1461,7 +1570,7 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
 	    dedt_send[cell-1]    = mat.get_dedt(global_cell);
 	}
 	
-      // send the Opacity data to the IMC nodes
+      // send the Mat_State data to the IMC nodes
 	if (np)
 	{
 	    Send (num_cells, np, 37);

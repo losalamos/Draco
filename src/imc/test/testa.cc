@@ -153,22 +153,22 @@ int main(int argc, char *argv[])
  	    pcomm = new Parallel_Builder<OS_Mesh>(*mesh, *sinit);
 
 	  // topology diagnostic
-	    topology(*mesh, *pcomm);
+	  // topology(*mesh, *pcomm);
 	
           // make Particle buffer
             buffer = new Particle_Buffer<Particle<OS_Mesh> >(*mesh, *rcon);
 
           // send out objects
-            pcomm->send_Mesh(*mesh);
-	    pcomm->send_Opacity(*opacity);
+            mesh      = pcomm->send_Mesh(*mesh);
+	    opacity   = pcomm->send_Opacity(mesh, *opacity);
 	    mat_state = pcomm->send_Mat(mesh, *mat_state);
-	    source = pcomm->send_Source(mesh, mat_state, rcon, *sinit,
-					*buffer); 
-	    cout << *sinit << endl;
-	    cout << " ** Source on node " << mynode << endl;
-	    cout << endl << *source;
-	    cout << endl << ">> We are now at RN Stream " << RNG::rn_stream
-		 << endl;
+	    source    = pcomm->send_Source(mesh, mat_state, rcon, *sinit,
+					   *buffer); 
+// 	    cout << *sinit << endl;
+// 	    cout << " ** Source on node " << mynode << endl;
+// 	    cout << endl << *source;
+// 	    cout << endl << ">> We are now at RN Stream " << RNG::rn_stream
+// 		 << endl;
 	}
 	
   	if (mynode)
@@ -187,8 +187,15 @@ int main(int argc, char *argv[])
           // get the source for this node
 	    source  = pcomm->recv_Source(mesh, mat_state, rcon, *buffer);
 	    cout << " ** Source on node " << mynode << endl;	    
-	    cout << endl << *source;
+	  // cout << endl << *source;
   	}
+
+	HTSyncSpinLock h;
+	{
+	    cout << *mesh      << endl;
+	    cout << *mat_state << endl;
+	    cout << *opacity   << endl;
+	}
     }
     catch (const dsxx::assertion &ass)
     {

@@ -224,16 +224,12 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
 	    }
 	}
 
-      // now send out the mesh, Opacity (full rep right now)
-	parallel_builder->send_Mesh(*mesh);
-	parallel_builder->send_Opacity(*opacity);
-
-      // send out the Mat_State
+      // now send out the mesh, Opacity, mat, and source
+	mesh      = parallel_builder->send_Mesh(*mesh);
+	opacity   = parallel_builder->send_Opacity(mesh, *opacity);
 	mat_state = parallel_builder->send_Mat(mesh, *mat_state);
-
-      // send out the Source
-	source = parallel_builder->send_Source(mesh, mat_state, rnd_con,
-					       *source_init, *buffer);
+	source    = parallel_builder->send_Source(mesh, mat_state, rnd_con,
+						  *source_init, *buffer);
 
       // make a tally
 	tally = new Tally<MT>(mesh);
@@ -358,7 +354,7 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
 
       // message particle counter
 	if (!(counter % print_f)) 
-	    cout << setw(10) << counter << " particles run on proc " 
+	    cerr << setw(10) << counter << " particles run on proc " 
 		 << node()   << endl;
     }
 

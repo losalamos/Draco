@@ -41,6 +41,8 @@
 //                function
 // 10)  6-15-98 : added vector return operator() to CCVF for getting a CC
 //                vector from a cell
+// 11)   7-6-98 : added submesh indicator for domain decomposition problems
+// 12)   7-8-98 : added new get_vertices(int cell) member   
 // 
 //===========================================================================//
 
@@ -208,6 +210,7 @@ public:
   // references to imbedded objects and data required for Parallel_Building
     const Layout& get_Layout() const { return layout; }
     const Coord_sys& get_Coord() const { return *coord; }
+    SP<Coord_sys> get_SPCoord() const { return coord; }
     const CCVF_d& get_vertex() const { return vertex; }
     const CCVF_i& get_cell_pair() const { return cell_pair; }
 
@@ -223,6 +226,7 @@ public:
     vector<int> get_surcells(string) const;
     int get_bndface(string, int) const;
     inline CCVF_d get_vertices(int, int) const;
+    inline CCVF_d get_vertices(int) const;
     inline vector<double> sample_pos(int, Sprng &) const;
     inline vector<double> sample_pos(int, Sprng &, vector<double>, 
 				     double) const; 
@@ -484,6 +488,7 @@ inline vector<double> OS_Mesh::get_normal_in(int cell, int face) const
 }
 
 //---------------------------------------------------------------------------//
+// calculate the vertices bounding a cell face
 
 inline OS_Mesh::CCVF_d OS_Mesh::get_vertices(int cell, int face) const
 {
@@ -506,9 +511,24 @@ inline OS_Mesh::CCVF_d OS_Mesh::get_vertices(int cell, int face) const
 	    for (int d = 0; d < coord->get_dim(); d++)
 		ret_vert[d].push_back(vertex[d][cell_pair[cell-1][i]-1]);
 
-  // asserts
-    for (int d = 0; d < coord->get_dim(); d++)
-	Check (ret_vert[0].size() == ret_vert[d].size());
+  // return vector of vertices
+    return ret_vert;
+}
+
+//---------------------------------------------------------------------------//
+// calculate the vertices bounding a cell
+
+inline OS_Mesh::CCVF_d OS_Mesh::get_vertices(int cell) const
+{
+  // determine the vertices bounding a cell
+    
+  // return vertices
+    CCVF_d ret_vert(coord->get_dim());
+
+  // loop over cell vertices and build the cell vertices
+    for (int i = 0; i < cell_pair[cell-1].size(); i++)
+	for (int d = 0; d < coord->get_dim(); d++)
+	    ret_vert[d].push_back(vertex[d][cell_pair[cell-1][i]-1]);
 
   // return vector of vertices
     return ret_vert;

@@ -36,6 +36,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <string>
 
 IMCSPACE
 
@@ -56,6 +57,9 @@ private:
     vector<vector<int> > cells_per_proc;
     vector<vector<int> > procs_per_cell;
     vector<vector<int> > bound_cells;
+
+  // decomposition mode
+    string parallel_scheme;
 
   // calculate topology map
     void parallel_topology(const MT &, const Source_Init<MT> &);
@@ -85,18 +89,22 @@ private:
   // functionality for Mesh passing
 
   // build and pass the Layout
-    Layout build_Layout(const Layout &, int);
-    void send_Layout(const Layout &);
+    void send_Layout(Layout &);
     Layout recv_Layout();
+    Layout build_Layout(const Layout &, int);
 
   // pass the coord_sys
-    void send_Coord(const Coord_sys &);
+    void send_Coord(SP<Coord_sys>);
     SP<Coord_sys> recv_Coord();
   
-  // pass the vertices
-    void send_vertex(const typename MT::CCVF_d &);
+  // pass the cells (vertices and cell pairings)
+    void send_cells(const MT &, typename MT::CCVF_d &, 
+		    typename MT::CCVF_i &);
+    void build_cells(const MT &, typename MT::CCVF_d &,
+		     typename MT::CCVF_i &, int);
+    void send_vertex(const typename MT::CCVF_d &, int);
     typename MT::CCVF_d recv_vertex();
-    void send_cellpair(const typename MT::CCVF_i &);
+    void send_cellpair(const typename MT::CCVF_i &, int);
     typename MT::CCVF_i recv_cellpair();
 
 public:
@@ -107,11 +115,11 @@ public:
     Parallel_Builder(const MT &, const Source_Init<MT> &);
 
   // Mesh passing functionality
-    void send_Mesh(const MT &);
+    SP<MT> send_Mesh(const MT &);
     SP<MT> recv_Mesh();
 
   // Opacity passing functionality
-    void send_Opacity(const Opacity<MT> &);
+    SP<Opacity<MT> > send_Opacity(SP<MT>, const Opacity<MT> &);
     SP<Opacity<MT> > recv_Opacity(SP<MT>);
 
   // Mat State passing functionality
