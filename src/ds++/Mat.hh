@@ -36,6 +36,7 @@
 #include "Assert.hh"
 #include "Allocators.hh"
 #include "Bounds.hh"
+#include "destroy.hh"
 
 NAMESPACE_DS_BEG
 
@@ -76,7 +77,7 @@ class Mat1 {
     void detach()
     {
 	if (may_free_space) {
-	    std::destroy( begin(), end() );
+	    dsxx::Destroy( begin(), end() );
 	    alloc.release( v + offset(xmin), size() );
 	}
     }
@@ -438,7 +439,7 @@ class Mat2 {
     void detach()
     {
 	if (may_free_space) {
-	    std::destroy( begin(), end() );
+	    dsxx::Destroy( begin(), end() );
 	    alloc.release( v + offset(xmin,ymin), size() );
 	}
     }
@@ -830,7 +831,7 @@ class Mat3 {
     void detach()
     {
 	if (may_free_space) {
-	    std::destroy( begin(), end() );
+	    dsxx::Destroy( begin(), end() );
 	    alloc.release( v + offset(xmin,ymin,zmin), size() );
 	}
     }
@@ -1260,7 +1261,7 @@ class Mat4 {
     void detach()
     {
 	if (may_free_space) {
-	    std::destroy( begin(), end() );
+	    dsxx::Destroy( begin(), end() );
 	    alloc.release( v + offset(xmin,ymin,zmin,wmin), size() );
 	}
     }

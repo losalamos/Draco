@@ -42,4 +42,4 @@ template std::ostream& operator<<( std::ostream& os,
 template class DynArray<DynArray<int> >;
 template class DynArray<DynArray<char> >;
 
-}
+} // namespace dsxx
