@@ -49,6 +49,7 @@ void simple_one_cell_Sphyramid()
     using std::cos;
     using rtt_rng::Rnd_Control;
     using rtt_rng::Sprng;
+    using std::fabs;
 
     // >>> setup one cell mesh <<<
 
@@ -475,7 +476,313 @@ void simple_one_cell_Sphyramid()
 	if (!soft_equiv(position_sampled[2], -0.8006,0.001)) ITFAILS;	
     }
 
+    // now, examine sampled distributions
+    // first, sample position using slope
+    {
+	int num_bins = 100;
+	vector<double> xdist(num_bins, 0.0);
+	vector<double> ydist(num_bins, 0.0);
+	vector<double> zdist(num_bins, 0.0);
+	
+	double xavg = 0.0;
+	double yavg = 0.0;
+	double zavg = 0.0;
+	double fabs_yavg = 0.0;
+	double fabs_zavg = 0.0;
 
+	int xbin, ybin, zbin;
+	int num_particles = 100000;
+
+	// -1.0 slope, cell-averaged value of 1 for weighting function
+	vector<double> slope(3);
+	slope[0] = -1.0;
+	slope[1] =  0.0;
+	slope[2] =  0.0 ;
+	double center_value = 1.0;
+
+	// cell parameters
+	double low_y_limit  = -tan_beta;
+	double high_y_limit =  tan_beta;
+
+	double xbin_width = 1.0/num_bins;
+	double ybin_width = (high_y_limit-low_y_limit)/num_bins;
+
+	// sample position
+	vector<double> position_sampled(3);
+	for (int num_p = 0; num_p < num_particles; num_p++)
+	{
+	    position_sampled = mesh->sample_pos(1, ran_object, slope, 
+	    					center_value);
+
+	    xbin = static_cast<int>(position_sampled[0]*num_bins);
+	    ybin = static_cast<int>((position_sampled[1]-low_y_limit)
+				    *num_bins/(high_y_limit-low_y_limit));
+	    zbin = static_cast<int>((position_sampled[2]-low_y_limit)
+				    *num_bins/(high_y_limit-low_y_limit));
+	    xdist[xbin]++;
+	    ydist[ybin]++;
+	    zdist[zbin]++;
+
+	    xavg += position_sampled[0];
+	    yavg += position_sampled[1];
+	    zavg += position_sampled[2];
+
+	    fabs_yavg += fabs(position_sampled[1]);
+	    fabs_zavg += fabs(position_sampled[2]);
+	}
+
+	xavg /= num_particles;
+	yavg /= num_particles;
+	zavg /= num_particles;
+
+	fabs_yavg /= num_particles;
+	fabs_zavg /= num_particles;
+
+	// rough estimate of 1 standard deviation
+	double est_std_of_mean = 1.0/sqrt(num_particles);
+
+	// check averages (average value of x is 57/80)
+	if (!soft_equiv(xavg, 57./80., 4.*est_std_of_mean))  ITFAILS;
+	if (!soft_equiv(yavg, 0.0    , 4.*est_std_of_mean))  ITFAILS;
+	if (!soft_equiv(zavg, 0.0    , 4.*est_std_of_mean))  ITFAILS;
+	
+	// check absolute avergages (both fabs_yavg and fabs_zavg
+	// = tan_beta*57/160)	
+	if (!soft_equiv(fabs_yavg, tan_beta*57/160, 4.*est_std_of_mean))  
+	    ITFAILS;
+	if (!soft_equiv(fabs_zavg, tan_beta*57/160, 4.*est_std_of_mean))  
+	    ITFAILS;
+
+	// now examine distributions themselves
+	for (int bin = 0; bin < num_bins; bin++)
+	{
+	    xdist[bin] /= xbin_width*num_particles;
+	    ydist[bin] /= ybin_width*num_particles;
+	    zdist[bin] /= ybin_width*num_particles;
+	}
+
+	double estimated_std = 
+	    sqrt(static_cast<double>(num_bins)/num_particles);
+
+	// check if within 4 sigma
+	// x position, ignore first 20 bins (distribution has a tail)
+	for (int bin = 20; bin < num_bins; bin++)
+	{
+	    double xvalue = (bin+0.5)*xbin_width;
+	    double fvalue = 21./4.*xvalue*xvalue-3*xvalue*xvalue*xvalue;
+	    if (fabs(xdist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;
+	    
+	}
+	// check y and z distributions
+	// ignore first and last 10
+	for (int bin = 10; bin < num_bins-10; bin++)
+	{
+	    double yvalue = low_y_limit+(bin+0.5)*ybin_width;
+	    double fvalue = 7./8.*(1.-yvalue*yvalue/(tan_beta*tan_beta));
+	    if (yvalue > 0)
+	    {
+		fvalue -= 1./3.*(1.-yvalue*yvalue*yvalue/
+				 (tan_beta*tan_beta*tan_beta));
+	    }
+	    else
+	    {
+		fvalue -= 1./3.*(1+yvalue*yvalue*yvalue/
+				 (tan_beta*tan_beta*tan_beta));
+	    }
+	    fvalue *= (3./2.)/tan_beta;
+
+	    if (fabs(ydist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;
+
+	    if (fabs(zdist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;
+	    
+	}   
+    }
+    // next, sample positions using uniform distribution
+    {
+	int num_bins = 100;
+	vector<double> xdist(num_bins, 0.0);
+	vector<double> ydist(num_bins, 0.0);
+	vector<double> zdist(num_bins, 0.0);
+
+	double xavg = 0.0;
+	double yavg = 0.0;
+	double zavg = 0.0;
+	double fabs_yavg = 0.0;
+	double fabs_zavg = 0.0;
+
+	int xbin, ybin, zbin;
+	int num_particles = 100000;
+
+	// cell paramters
+	double low_y_limit  = -tan_beta;
+	double high_y_limit =  tan_beta;
+
+	double xbin_width = 1.0/num_bins;
+	double ybin_width = (high_y_limit-low_y_limit)/num_bins;
+
+	// sample position
+	vector<double> position_sampled(3);
+	for (int num_p = 0; num_p < num_particles; num_p++)
+	{
+	    position_sampled = mesh->sample_pos(1, ran_object);
+ 
+	    xbin = static_cast<int>(position_sampled[0]*num_bins);
+	    ybin = static_cast<int>((position_sampled[1]-low_y_limit)
+				    *num_bins/(high_y_limit-low_y_limit));
+	    zbin = static_cast<int>((position_sampled[2]-low_y_limit)
+				    *num_bins/(high_y_limit-low_y_limit));
+	    xdist[xbin]++;
+	    ydist[ybin]++;
+	    zdist[zbin]++;
+
+	    xavg += position_sampled[0];
+	    yavg += position_sampled[1];
+	    zavg += position_sampled[2];
+
+	    fabs_yavg += fabs(position_sampled[1]);
+	    fabs_zavg += fabs(position_sampled[2]);
+	}
+
+	xavg /= num_particles;
+	yavg /= num_particles;
+	zavg /= num_particles;
+
+	fabs_yavg /= num_particles;
+	fabs_zavg /= num_particles;
+
+	// rough estimate of 1 standard deviation
+	double est_std_of_mean = 1.0/sqrt(num_particles);
+
+	// check averages (average value of x is 3/4)
+	if (!soft_equiv(xavg, 3./4.  , 4.*est_std_of_mean))  ITFAILS;
+	if (!soft_equiv(yavg, 0.0    , 4.*est_std_of_mean))  ITFAILS;
+	if (!soft_equiv(zavg, 0.0    , 4.*est_std_of_mean))  ITFAILS;
+
+
+	// check absolute avergages (both fabs_yavg and fabs_zavg
+	// = 3/8*tan_beta)	
+	if (!soft_equiv(fabs_yavg, 3./8.*tan_beta, 4.*est_std_of_mean))  ITFAILS;
+	if (!soft_equiv(fabs_zavg, 3./8.*tan_beta, 4.*est_std_of_mean))  ITFAILS;
+
+
+	// now examine distribuitions themselves
+	for (int bin = 0; bin < num_bins; bin++)
+	{
+	    xdist[bin] /= xbin_width*num_particles;
+	    ydist[bin] /= ybin_width*num_particles;
+	    zdist[bin] /= ybin_width*num_particles;
+	}
+
+	double estimated_std = 
+	    sqrt(static_cast<double>(num_bins)/num_particles);
+
+	// check if within 4 sigma
+	// xposition, ignore first 20 bins
+	for (int bin = 20; bin < num_bins; bin++)
+	{
+	    double xvalue = (bin+0.5)*xbin_width;
+	    double fvalue =3.*xvalue*xvalue;
+	    if (fabs(xdist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;
+	   
+	}
+
+	// check y and z distributions
+	// ignore first and last ten
+	for (int bin = 10; bin < num_bins-10; bin++)
+	{
+	    double yvalue = low_y_limit+(bin+0.5)*ybin_width;
+	    double fvalue = (3./4.)*(1.-yvalue*yvalue/(tan_beta*tan_beta))/tan_beta;
+	    if (fabs(ydist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;
+	    if (fabs(zdist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;
+	    
+	}
+    }
+
+    // now test sampling on face
+
+    {
+	int num_bins = 100;	
+	vector<double> ydist(num_bins, 0.0);
+	vector<double> zdist(num_bins, 0.0);
+	
+	double yavg = 0.0;
+	double zavg = 0.0;
+	double fabs_yavg = 0.0;
+	double fabs_zavg = 0.0;
+
+	int ybin, zbin;
+	int num_particles = 100000;
+	
+	// cell paramters
+	double low_y_limit  = -tan_beta;
+	double high_y_limit =  tan_beta;
+
+	double ybin_width = (high_y_limit-low_y_limit)/num_bins;
+
+	// sample position
+	vector<double> position_sampled(3);
+	for (int num_p = 0; num_p < num_particles; num_p++)
+	{
+	    position_sampled = mesh->sample_pos_on_face(1, 2, ran_object);
+ 
+	    if(!soft_equiv(position_sampled[0], 1.0))  ITFAILS;
+	    ybin = static_cast<int>((position_sampled[1]-low_y_limit)
+				    *num_bins/(high_y_limit-low_y_limit));
+	    zbin = static_cast<int>((position_sampled[2]-low_y_limit)
+				    *num_bins/(high_y_limit-low_y_limit));
+	    ydist[ybin]++;
+	    zdist[zbin]++;
+
+	    yavg += position_sampled[1];
+	    zavg += position_sampled[2];
+
+	    fabs_yavg += fabs(position_sampled[1]);
+	    fabs_zavg += fabs(position_sampled[2]);
+	}
+
+	yavg /= num_particles;
+	zavg /= num_particles;
+
+	fabs_yavg /= num_particles;
+	fabs_zavg /= num_particles;   
+
+	// rough estimate of 1 standard deviation
+	double est_std_of_mean = 1.0/sqrt(num_particles);
+
+	// check averages (average value of fabs_y and fabs_z is 0.5*tan_beta)
+	if (!soft_equiv(yavg,      0.0,          4.*est_std_of_mean))  ITFAILS;
+	if (!soft_equiv(zavg,      0.0,          4.*est_std_of_mean))  ITFAILS;
+	if (!soft_equiv(fabs_yavg, 0.5*tan_beta, 4.*est_std_of_mean))  ITFAILS;
+	if (!soft_equiv(fabs_zavg, 0.5*tan_beta, 4.*est_std_of_mean))  ITFAILS;
+
+	// now examine distribuitions themselves
+	for (int bin = 0; bin < num_bins; bin++)
+	{
+	    ydist[bin] /= ybin_width*num_particles;
+	    zdist[bin] /= ybin_width*num_particles;
+	}
+	
+	double estimated_std = 
+	    sqrt(static_cast<double>(num_bins)/num_particles);
+
+	// check if within 4 sigma
+	// check y and z distributions
+	// ignore first and last ten
+	for (int bin = 0; bin < num_bins-0; bin++)
+	{
+	    double fvalue = 0.5/tan_beta;
+	    if (fabs(ydist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;
+	    if (fabs(zdist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;	    
+	}
+    }
+
+
+
+
+
+
+
+    return;
     
 }
 
