@@ -101,7 +101,7 @@ Q1DGaussLeg::Q1DGaussLeg( size_t numGaussPoints, double norm_ )
 	    // Newton's Method
 	    z = z1 - p1/pp;   
 
-	} while( ! soft_equiv(z,z1) );
+	} while( ! soft_equiv(z,z1, 1.0e-15) );
 
 	// Roots wil be between -1 and 1.0 and symmetric about the origin. 
 	mu[ iroot-1 ]              = -z;       
