@@ -4,7 +4,7 @@ dnl Thomas M. Evans
 dnl Mon Jan 11 17:09:11 1999
 dnl $Id$
 dnl-------------------------------------------------------------------------dnl
-dnl Copyright © 2003 The Regents of the University of California.
+dnl Copyright Â© 2003 The Regents of the University of California.
 dnl-------------------------------------------------------------------------dnl
 dnl configure.in for imc
 dnl-------------------------------------------------------------------------dnl
@@ -23,6 +23,15 @@ AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(mc viz meshReaders cdi rng c4 traits ds++)
 AC_NEEDS_LIBS_TEST(cdi_analytic)
+
+# setup verbose imc cycles
+AC_ARG_ENABLE(verbose-cycle,
+   [  --enable-verbose-cycle  turn on in-cycle verbose messages (default on)])
+
+# the default is on
+if test "${enable_verbose_cycle:=yes}" != no ; then
+   AC_DEFINE(IMC_VERBOSE_CYCLE)dnl
+fi
 
 # testing setup
 AC_RUNTESTS(tstFrequency \

@@ -9,6 +9,9 @@
 #ifndef RTT_imc_config_H
 #define RTT_imc_config_H
 
+/* Run IMC verbose cycle output */
+#undef IMC_VERBOSE_CYCLE
+
 #endif                          /* RTT_imc_config_H */
 
 /*---------------------------------------------------------------------------*/

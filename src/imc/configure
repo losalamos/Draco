@@ -826,6 +826,7 @@ if test -n "$ac_init_help"; then
 Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-verbose-cycle  turn on in-cycle verbose messages (default on)
   --enable-shared         turn on shared libraries (.a default)
   --enable-static-ld      use (.a) libraries if possible
   --disable-strict-ansi   turn off strict ansi compliance
@@ -1569,6 +1570,20 @@ fi;
        DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -l\${LIB_PREFIX}${lib}"
    done
 
+
+# setup verbose imc cycles
+# Check whether --enable-verbose-cycle or --disable-verbose-cycle was given.
+if test "${enable_verbose_cycle+set}" = set; then
+  enableval="$enable_verbose_cycle"
+
+fi;
+
+# the default is on
+if test "${enable_verbose_cycle:=yes}" != no ; then
+   cat >>confdefs.h <<\_ACEOF
+#define IMC_VERBOSE_CYCLE 1
+_ACEOF
+fi
 
 # testing setup
 	test_alltarget="$test_alltarget tstFrequency \

@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Apr 13 11:41:37 2000
  * \brief  Rep_Transporter template definitions.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -20,6 +20,8 @@
 #include "ds++/Assert.hh"
 #include <iostream>
 #include <iomanip>
+
+#include <imc/config.h>
 
 namespace rtt_imc
 {
@@ -89,8 +91,10 @@ Rep_Transporter<MT,FT,PT>::transport(double dt,
 
     Require (ready());    
     
+#ifdef IMC_VERBOSE_CYCLE
     cerr << ">> Doing transport for cycle " << cycle
 	 << " on proc " << C4::node() << " using full replication." << endl;
+#endif
 
     // make a new census Comm_Buffer on this node
     SP_Census new_census_bank(new Census());
@@ -135,11 +139,13 @@ Rep_Transporter<MT,FT,PT>::transport(double dt,
     double trans_end = C4::Wtime();
 
     // finished with this timestep
+#ifdef IMC_VERBOSE_CYCLE
     cerr << ">> Finished transporting " << num_done
          << " particles for cycle "
 	 << cycle << " on proc " << C4::node() 
 	 << " in " << trans_end - trans_begin << " seconds." << endl;
-    
+#endif
+
     // unset the transport stuff
     unset();
     
