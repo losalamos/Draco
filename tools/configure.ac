@@ -33,6 +33,7 @@ bin_files="\${bindir}/include_tree.py ${bin_files}"
 bin_files="\${bindir}/package_depends.py ${bin_files}"
 bin_files="\${bindir}/regression_filter.py ${bin_files}"
 bin_files="\${bindir}/check_coverage ${bin_files}"
+bin_files="\${bindir}/numdiff.py ${bin_files}"
 
 installfiles="$libexec_files $bin_files"
 
