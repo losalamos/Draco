@@ -20,19 +20,16 @@ bool passed = true;
 
 template class NestMap<std::string, int>;
 
+#endif
+
 void version(const std::string &progname)
 {
     std::string version = "1.0.0";
-    cout << progname << ": version " << version << endl;
+    std::cout << progname << ": version " << version << std::endl;
 }
-
-#endif
 
 int main( int argc, char *argv[] )
 {
-
-#ifdef SDP
-
     for (int arg=1; arg < argc; arg++)
     {
 	if (std::string(argv[arg]) == "--version")
@@ -42,6 +39,8 @@ int main( int argc, char *argv[] )
 	}
     }
     
+#ifdef SDP
+
     cout << "Initiating test of the NestMap class.\n";
 
     NestMap<std::string, int> intTree;
@@ -93,6 +92,8 @@ int main( int argc, char *argv[] )
     cout << "Done testing NestMap class.\n";
 
 #endif
+
+    std::cout << "**** NestMap Self Test: PASSED ****" << std::endl;
 
     return 0;
 }

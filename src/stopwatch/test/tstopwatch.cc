@@ -18,18 +18,16 @@ using std::endl;
 
 bool passed = true;
 
+#endif
+
 void version(const std::string &progname)
 {
     std::string version = "1.0.0";
-    cout << progname << ": version " << version << endl;
+    std::cout << progname << ": version " << version << std::endl;
 }
-
-#endif
 
 int main( int argc, char *argv[] )
 {
-
-#ifdef SDP
 
     for (int arg=1; arg < argc; arg++)
     {
@@ -40,6 +38,8 @@ int main( int argc, char *argv[] )
 	}
     }
     
+#ifdef SDP
+
     cout << "Initiating test of the Stopwatch class.\n";
 
     Stopwatch timers;
@@ -91,6 +91,8 @@ int main( int argc, char *argv[] )
     cout << "Done testing Stopwatch class.\n";
 
 #endif
+
+    std::cout << "**** Stopwatch Self Test: PASSED ****" << std::endl;
 
     return 0;
 }
