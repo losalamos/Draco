@@ -9,8 +9,6 @@
 		- small additions to draco-stdheaders
 		- moved elisp XEmacs development environment to draco
 
-	This version of draco has been tested successfully with gcc-3.3.2.
-
 	This draco release includes the following packages:
 	
 		RTT_Format_Reader
