@@ -13,6 +13,7 @@
 #include "XYCoord_sys.hh"
 #include "XYZCoord_sys.hh"
 #include "Constants.hh"
+#include "Math.hh"
 #include "viz/Ensight_Translator.hh"
 #include "ds++/Packing_Utils.hh"
 #include <iomanip>
@@ -147,6 +148,11 @@ double OS_Mesh::get_db(const sf_double &r, const sf_double &omega, int cell,
     using std::min_element;
     using std::vector;
     using global::huge;
+    using global::soft_equiv;
+    using global::dot;
+
+    // check that direction cosines are properly normalized
+    Check (soft_equiv(dot(omega,omega), 1.0, 1.0e-5));
     
     // calculate distance to the vec(r) boundaries
 

@@ -1,3 +1,12 @@
+2001-09-05  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* mc: In Coord_sys, made checks consistent on magnitude of
+	direction cosines.  We use soft_equiv(Omega-dot-Omega,1.0,1.0e-5)
+	and soft_equiv(sqrt(Omega-dot-Omega),1.0,1.0e-10), since
+	magnitude^2 is farther away from unity than magnitude.  Checks
+	fail if magnitude is more than 1.0e-5 from unity.  Omega is
+	renormalized if its magnitude is more than 1.0e-10 from unity.
+
 2001-07-30  Thomas M. Evans  <tme@lanl.gov>
 
 	* mc: Release mc-2_2_0.  This release includes the use of

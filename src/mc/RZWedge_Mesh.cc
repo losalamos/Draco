@@ -164,9 +164,9 @@ double RZWedge_Mesh::get_db(const sf_double &r, const sf_double &omega,
     using std::vector;
     using global::dot;
 
-    Require (r.size() == 3);
-    Require (omega.size() == 3);
-    Require (global::soft_equiv(dot(omega,omega), 1.0, 1.0e-6));
+    Check (r.size() == 3);
+    Check (omega.size() == 3);
+    Check (global::soft_equiv(dot(omega,omega), 1.0, 1.0e-5));
 
     // set up 6 dists-to-bndry, initialize to huge value
     // -- always 6 faces in an RZWedge mesh cell. 

@@ -51,7 +51,15 @@ namespace rtt_mc
 //                a transform for 2D XY, it has been removed
 //  4)  4-13-99 : moved into mc package
 //  5) 3-AUG-00 : fixed calc_omega error! the degenerate z-case was incorrect
-// 
+//  6) 5-SEP-01 : made checks consistent on magnitude of direction cosines.
+//                For soft_equiv(*,1.0,eps), we use eps=1.0e-5 for
+//                Omega-dot-Omega = magnitude^2 and eps=1.0e-10 for
+//                sqrt(Omega-dot-Omega) = magnitude, since magnitude^2 is
+//                farther away from unity than  magnitude.  Checks fail if
+//                magnitude is more than 1.0e-5 from  unity.  Omega is
+//                renormalized if its magnitude is more than 1.0e-10 from
+//                unity.  
+//
 //===========================================================================//
 
 class Coord_sys
