@@ -68,29 +68,29 @@ const ThreeVector TET_Mesh::get_outward_cross(int cell_, int face_) const
     int head1, tail1, head2, tail2;
 
     if (face_ == 0)
-        {
-            head1 = tail2 = cells_vertices[cell_][2];
-            tail1 = cells_vertices[cell_][1];
-            head2 = cells_vertices[cell_][3];
-        }
+    {
+        head1 = tail2 = cells_vertices[cell_][2];
+        tail1 = cells_vertices[cell_][1];
+        head2 = cells_vertices[cell_][3];
+    }
     else if (face_ == 1)
-        {
-            head1 = cells_vertices[cell_][2];
-            tail1 = tail2 = cells_vertices[cell_][3];
-            head2 = cells_vertices[cell_][0];
-        }
+    {
+        head1 = cells_vertices[cell_][2];
+        tail1 = tail2 = cells_vertices[cell_][3];
+        head2 = cells_vertices[cell_][0];
+    }
     else if (face_ == 2)
-        {
-            head1 = tail2 = cells_vertices[cell_][0];
-            tail1 = cells_vertices[cell_][3];
-            head2 = cells_vertices[cell_][1];
-        }
+    {
+        head1 = tail2 = cells_vertices[cell_][0];
+        tail1 = cells_vertices[cell_][3];
+        head2 = cells_vertices[cell_][1];
+    }
     else
-        {
-            head1 = cells_vertices[cell_][0];
-            tail1 = tail2 = cells_vertices[cell_][1];
-            head2 = cells_vertices[cell_][2];
-        }
+    {
+        head1 = cells_vertices[cell_][0];
+        tail1 = tail2 = cells_vertices[cell_][1];
+        head2 = cells_vertices[cell_][2];
+    }
 
     return (vertex_vector[head1] - vertex_vector[tail1]).cross(
                 vertex_vector[head2] - vertex_vector[tail2]);
@@ -120,29 +120,29 @@ const ThreeVector TET_Mesh::get_inward_cross(int cell_, int face_) const
     int head1, tail1, head2, tail2;
 
     if (face_ == 0)
-        {
-            head1 = cells_vertices[cell_][1];
-            tail1 = tail2 = cells_vertices[cell_][2];
-            head2 = cells_vertices[cell_][3];
-        }
+    {
+        head1 = cells_vertices[cell_][1];
+        tail1 = tail2 = cells_vertices[cell_][2];
+        head2 = cells_vertices[cell_][3];
+    }
     else if (face_ == 1)
-        {
-            head1 = tail2 = cells_vertices[cell_][3];
-            tail1 = cells_vertices[cell_][2];
-            head2 = cells_vertices[cell_][0];
-        }
+    {
+        head1 = tail2 = cells_vertices[cell_][3];
+        tail1 = cells_vertices[cell_][2];
+        head2 = cells_vertices[cell_][0];
+    }
     else if (face_ == 2)
-        {
-            head1 = cells_vertices[cell_][3];
-            tail1 = tail2 = cells_vertices[cell_][0];
-            head2 = cells_vertices[cell_][1];
-        }
+    {
+        head1 = cells_vertices[cell_][3];
+        tail1 = tail2 = cells_vertices[cell_][0];
+        head2 = cells_vertices[cell_][1];
+    }
     else
-        {
-            head1 = tail2 = cells_vertices[cell_][1];
-            tail1 = cells_vertices[cell_][0];
-            head2 = cells_vertices[cell_][2];
-        }
+    {
+        head1 = tail2 = cells_vertices[cell_][1];
+        tail1 = cells_vertices[cell_][0];
+        head2 = cells_vertices[cell_][2];
+    }
 
     return (vertex_vector[head1] - vertex_vector[tail1]).cross(
                 vertex_vector[head2] - vertex_vector[tail2]);
@@ -174,15 +174,15 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::get_barycentric_coords(
     double summ = 0.;
 
     for (int f_ = 0 ; f_ < FOUR ; f_++)
-        {
-            ThreeVector N = get_inward_cross(cell_, f_);
-            int v_ = (f_ + 1) % FOUR;  // any vertex on the face.
-            int base = cells_vertices[cell_][v_];
+    {
+        ThreeVector N = get_inward_cross(cell_, f_);
+        int v_ = (f_ + 1) % FOUR;  // any vertex on the face.
+        int base = cells_vertices[cell_][v_];
 
-            b_coords[f_] = N.dot(R - vertex_vector[base]);
-            Check (b_coords[f_] > 0.);
-            summ += b_coords[f_];
-        }
+        b_coords[f_] = N.dot(R - vertex_vector[base]);
+        Check (b_coords[f_] > 0.);
+        summ += b_coords[f_];
+    }
 
     for (int f_ = 0 ; f_ < FOUR ; f_++)
         b_coords[f_] /= summ;
@@ -209,13 +209,13 @@ bool TET_Mesh::in_open_cell(const SF_DOUBLE &position, int cell) const
     ThreeVector XYZ(position);
 
     for (int f_ = 0 ; f_ < FOUR ; f_++)
-        {
-            ThreeVector N = get_outward_cross(cell_, f_);
-            int v_ = (f_ + 1) % FOUR;  // any vertex on the face.
+    {
+        ThreeVector N = get_outward_cross(cell_, f_);
+        int v_ = (f_ + 1) % FOUR;  // any vertex on the face.
 
-            if ( N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ) <= 0.0 )
-                return false;
-        }
+        if ( N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ) <= 0.0 )
+            return false;
+    }
 
     // If position is "inside" every face, it is inside the cell.
     return true;
@@ -240,13 +240,13 @@ bool TET_Mesh::in_closed_cell(const SF_DOUBLE &position, int cell) const
     ThreeVector XYZ(position);
 
     for (int f_ = 0 ; f_ < FOUR ; f_++)
-        {
-            ThreeVector N = get_outward_cross(cell_, f_);
-            int v_ = (f_ + 1) % FOUR;  // any vertex on the face.
+    {
+        ThreeVector N = get_outward_cross(cell_, f_);
+        int v_ = (f_ + 1) % FOUR;  // any vertex on the face.
 
-            if ( N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ) < 0.0 )
-                return false;
-        }
+        if ( N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ) < 0.0 )
+            return false;
+    }
     // If position is "inside-or-on" every face, it is in the closed cell.
     return true;
 
@@ -291,17 +291,17 @@ double TET_Mesh::get_db(const SF_DOUBLE &position, const SF_DOUBLE &omega,
     SF_DOUBLE dist(FOUR);
 
     for (int f_ = 0 ; f_ < FOUR ; f_++)
-        {
-            ThreeVector N = get_outward_cross(cell_, f_);
-            double denom = N.dot(UVW);
-            int v = (f_ + 1) % FOUR;  // any vertex on the face.
+    {
+        ThreeVector N = get_outward_cross(cell_, f_);
+        double denom = N.dot(UVW);
+        int v = (f_ + 1) % FOUR;  // any vertex on the face.
 
-            if (denom > 0.0)
-                dist[f_] = N.dot(vertex_vector[cells_vertices[cell_][v]] - XYZ)
-                           /denom;
-            else
-                dist[f_] = global::huge;
-        }
+        if (denom > 0.0)
+            dist[f_] = N.dot(vertex_vector[cells_vertices[cell_][v]] - XYZ)
+                       /denom;
+        else
+            dist[f_] = global::huge;
+    }
 
     SF_DOUBLE::iterator itor = std::min_element(dist.begin(),dist.end());
 
@@ -424,12 +424,12 @@ const TET_Mesh::VF_DOUBLE TET_Mesh::get_vertices(int cell) const
     TET_Mesh::VF_DOUBLE ret_vert(THREE);
 
     for (int cv = 0 ; cv < FOUR ; cv++)
-        {
-            int v = cells_vertices[cell_][cv];
-            ret_vert[0].push_back(vertex_vector[v].get_x());
-            ret_vert[1].push_back(vertex_vector[v].get_y());
-            ret_vert[2].push_back(vertex_vector[v].get_z());
-        }
+    {
+        int v = cells_vertices[cell_][cv];
+        ret_vert[0].push_back(vertex_vector[v].get_x());
+        ret_vert[1].push_back(vertex_vector[v].get_y());
+        ret_vert[2].push_back(vertex_vector[v].get_z());
+    }
 
     return ret_vert;
 
@@ -460,29 +460,29 @@ const TET_Mesh::VF_DOUBLE TET_Mesh::get_vertices(int cell, int face) const
     int fv[THREE];
 
     if (face_ == 0)
-        {
-            fv[0] = 1; fv[1] = 2; fv[2] = 3;
-        }
+    {
+        fv[0] = 1; fv[1] = 2; fv[2] = 3;
+    }
     else if (face_ == 1)
-        {
-            fv[0] = 2; fv[1] = 0; fv[2] = 3;
-        }
+    {
+        fv[0] = 2; fv[1] = 0; fv[2] = 3;
+    }
     else if (face_ == 2)
-        {
-            fv[0] = 3; fv[1] = 0; fv[2] = 1;
-        }
+    {
+        fv[0] = 3; fv[1] = 0; fv[2] = 1;
+    }
     else
-        {
-            fv[0] = 0; fv[1] = 2; fv[2] = 1;
-        }
+    {
+        fv[0] = 0; fv[1] = 2; fv[2] = 1;
+    }
 
     for (int i = 0 ; i < THREE ; i++)
-        {
-            int v = cells_vertices[cell_][fv[i]];
-            ret_vert[0].push_back(vertex_vector[v].get_x());
-            ret_vert[1].push_back(vertex_vector[v].get_y());
-            ret_vert[2].push_back(vertex_vector[v].get_z());
-        }
+    {
+        int v = cells_vertices[cell_][fv[i]];
+        ret_vert[0].push_back(vertex_vector[v].get_x());
+        ret_vert[1].push_back(vertex_vector[v].get_y());
+        ret_vert[2].push_back(vertex_vector[v].get_z());
+    }
 
     return ret_vert;
 
@@ -622,11 +622,11 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
 
     SF_DOUBLE R(THREE);
     do
-        {
-            R = sample_pos(cell, random);  // Trial uniform sampling.
-            SF_DOUBLE B = get_barycentric_coords(R, cell_);
-            Tr = B[0]*T4[0] + B[1]*T4[1] + B[2]*T4[2] + B[3]*T4[3];
-        } while (Tr <= Tmax*random.ran());
+    {
+        R = sample_pos(cell, random);  // Trial uniform sampling.
+        SF_DOUBLE B = get_barycentric_coords(R, cell_);
+        Tr = B[0]*T4[0] + B[1]*T4[1] + B[2]*T4[2] + B[3]*T4[3];
+    } while (Tr <= Tmax*random.ran());
 
     return R;
 
@@ -652,21 +652,21 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos_on_face(int cell, int face,
     // choose these so that right-handed circulation in the order specified
     // would result in an outward direction.
     if (face_ == 0)
-        {
-            va = 1; vb = 2; vc = 3;
-        }
+    {
+        va = 1; vb = 2; vc = 3;
+    }
     else if (face_ == 1)
-        {
-            va = 2; vb = 0; vc = 3;
-        }
+    {
+        va = 2; vb = 0; vc = 3;
+    }
     else if (face_ == 2)
-        {
-            va = 3; vb = 0; vc = 1;
-        }
+    {
+        va = 3; vb = 0; vc = 1;
+    }
     else
-        {
-            va = 0; vb = 2; vc = 1;
-        }
+    {
+        va = 0; vb = 2; vc = 1;
+    }
 
     return rtt_mc::sample_in_triangle(vertex_vector[cells_vertices[cell_][va]],
                               vertex_vector[cells_vertices[cell_][vb]],
@@ -747,21 +747,21 @@ void TET_Mesh::print_title(std::ostream &output) const
 void TET_Mesh::print_layout(std::ostream &output) const
 {
     output << "___ LAYOUT ___\n";
-    output << "Cell:  Face ==> Neighbor;  Face ==> Neighbor; ...\n";
+    output << "Cell:  Face ==> Neighbor;  Face ==> Neighbor; ...";
     for (int c = 0 ; c < layout.num_cells() ; c++)
+    {
+        output << "\n    cell " << c << ":";
+        for (int f = 0 ; f < layout.num_faces(c+1) ; f++)
         {
-            output << "    cell " << c << ":";
-            for (int f = 0 ; f < layout.num_faces(c+1) ; f++)
-            {
-                output << "  " << f << " ==> ";
-                int n = layout(c+1,f+1);
-                if (n == 0)
-                    output << "ext;";
-                else
-                    output << n-1 << ";";
-            }
-            output << std::endl;
+            output << "  " << f << " ==> ";
+            int n = layout(c+1,f+1);
+            if (n == 0)
+                output << "ext;";
+            else
+                output << n-1 << ";";
         }
+    }
+    output << std::endl;
 }   // end TET_Mesh::print_layout(std::ostream &)
 
 //___________________________________________________________________________//
@@ -771,14 +771,18 @@ void TET_Mesh::print_layout(std::ostream &output) const
  */
 void TET_Mesh::print_vertex_vector(std::ostream &output) const
 {
-    output << "___ VERTEX VECTOR ___\n";
-    std::ios_base::fmtflags old_state = output.flags();
-    std::streamsize old_prec = output.precision();
-
+    output << "___ VERTEX VECTOR ___";
+    std::ios_base::fmtflags prev_state = output.flags();
+    std::streamsize prev_prec = output.precision();
     output << std::scientific << std::setprecision(5);
 
-    output.flags(old_state);
-    output << std::setprecision(old_prec);
+    for (int v = 0 ; v < vertex_vector.size() ; v++)
+        output << "\n   " << v << ":  " << vertex_vector[v].get_x() << ", " <<
+            vertex_vector[v].get_y() << ", " << vertex_vector[v].get_z();
+    output << std::endl;
+
+    output.flags(prev_state);
+    output << std::setprecision(prev_prec);
 }   // end TET_Mesh::print_vertex_vector(std::ostream &)
 
 //___________________________________________________________________________//
@@ -799,19 +803,20 @@ void TET_Mesh::print_node_coord_units(std::ostream &output) const
  */
 void TET_Mesh::print_node_sets(std::ostream &output) const
 {
-    output << "___ NODE SETS ___\n";
+    output << "___ NODE SETS ___";
     for (MAP_String_SetInt::const_iterator flag = node_sets.begin() ;
             flag != node_sets.end() ; flag++)
-        {
-            output << (*flag).first << "\n";
-            int nnode = (*flag).second.size();
-            output << "   " << nnode << " flagged node" <<
-                (nnode == 1 ? "." : "s.") << "\n";
-            if (nnode > 0)
-                for (SetInt::const_iterator i = (*flag).second.begin() ;
-                                       i != (*flag).second.end(); i++)
-                    output << "      " << *i << std::endl;
-        }
+    {
+        output << "\n" << (*flag).first;
+        int nnode = (*flag).second.size();
+        output << "\n   " << nnode << " flagged node" <<
+            (nnode == 1 ? "." : "s.");
+        if (nnode > 0)
+            for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                   i != (*flag).second.end(); i++)
+                output << "\n      " << *i;
+    }
+    output << std::endl;
 }   // end TET_Mesh::print_node_sets(std::ostream &)
 
 //___________________________________________________________________________//
@@ -821,19 +826,20 @@ void TET_Mesh::print_node_sets(std::ostream &output) const
  */
 void TET_Mesh::print_side_sets(std::ostream &output) const
 {
-    output << "___ SIDE SETS ___\n";
+    output << "___ SIDE SETS ___";
     for (MAP_String_SetInt::const_iterator flag = side_sets.begin() ;
             flag != side_sets.end() ; flag++)
-        {
-            output << (*flag).first << "\n";
-            int nside = (*flag).second.size();
-            output << "   " << nside << " flagged side" <<
-                (nside == 1 ? "." : "s.") << "\n";
-            if (nside > 0)
-                for (SetInt::const_iterator i = (*flag).second.begin() ;
-                                       i != (*flag).second.end(); i++)
-                    output << "      " << *i << std::endl;
-        }
+    {
+        output << "\n" << (*flag).first;
+        int nside = (*flag).second.size();
+        output << "\n   " << nside << " flagged side" <<
+            (nside == 1 ? "." : "s.");
+        if (nside > 0)
+            for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                   i != (*flag).second.end(); i++)
+                output << "\n      " << *i;
+    }
+    output << std::endl;
 }   // end TET_Mesh::print_side_sets(std::ostream &)
 
 //___________________________________________________________________________//
@@ -843,19 +849,20 @@ void TET_Mesh::print_side_sets(std::ostream &output) const
  */
 void TET_Mesh::print_cell_sets(std::ostream &output) const
 {
-    output << "___ CELL SETS ___\n";
+    output << "___ CELL SETS ___";
     for (MAP_String_SetInt::const_iterator flag = cell_sets.begin() ;
             flag != cell_sets.end() ; flag++)
-        {
-            output << (*flag).first << "\n";
-            int ncell = (*flag).second.size();
-            output << "   " << ncell << " flagged cell" <<
-                (ncell == 1 ? "." : "s.") << "\n";
-            if (ncell > 0)
-                for (SetInt::const_iterator i = (*flag).second.begin() ;
-                                       i != (*flag).second.end(); i++)
-                    output << "      " << *i << std::endl;
-        }
+    {
+        output << "\n" << (*flag).first;
+        int ncell = (*flag).second.size();
+        output << "\n   " << ncell << " flagged cell" <<
+            (ncell == 1 ? "." : "s.");
+        if (ncell > 0)
+            for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                   i != (*flag).second.end(); i++)
+                output << "\n      " << *i;
+    }
+    output << std::endl;
 }   // end TET_Mesh::print_cell_sets(std::ostream &)
 
 //___________________________________________________________________________//
@@ -865,14 +872,14 @@ void TET_Mesh::print_cell_sets(std::ostream &output) const
  */
 void TET_Mesh::print_sides_vertices(std::ostream &output) const
 {
-    output << "___ SIDES VERTICES ___\n";
+    output << "___ SIDES VERTICES ___";
     for (int s = 0 ; s < sides_vertices.size() ; s++)
     {
-        output << "    side " << s << ":";
+        output << "\n    side " << s << ":";
         for (int v = 0 ; v < sides_vertices[s].size() ; v++)
             output << "   " << sides_vertices[s][v];
-        output << std::endl;
     }
+    output << std::endl;
 }   // end TET_Mesh::print_sides_vertices(std::ostream &)
 
 //___________________________________________________________________________//
@@ -882,14 +889,14 @@ void TET_Mesh::print_sides_vertices(std::ostream &output) const
  */
 void TET_Mesh::print_cells_vertices(std::ostream &output) const
 {
-    output << "___ CELLS VERTICES ___\n";
+    output << "___ CELLS VERTICES ___";
     for (int c = 0 ; c < cells_vertices.size() ; c++)
     {
-        output << "    cell " << c << ":";
+        output << "\n    cell " << c << ":";
         for (int v = 0 ; v < cells_vertices[c].size() ; v++)
             output << "   " << cells_vertices[c][v];
-        output << std::endl;
     }
+    output << std::endl;
 }   // end TET_Mesh::print_cells_vertices(std::ostream &)
 
 //___________________________________________________________________________//
@@ -976,13 +983,13 @@ double TET_Mesh::get_min_db(const SF_DOUBLE &position, int cell) const
     SF_DOUBLE dist(FOUR);
 
     for (int face = 1 ; face <= FOUR ; face++)
-        {
-            ThreeVector N(get_normal(cell, face));
-            int v_ = face % FOUR;  // any vertex on the face.
+    {
+        ThreeVector N(get_normal(cell, face));
+        int v_ = face % FOUR;  // any vertex on the face.
 
-            dist[face-1] =
-                N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ);
-        }
+        dist[face-1] =
+            N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ);
+    }
 
     SF_DOUBLE::iterator itor = std::min_element(dist.begin(),dist.end());
 

@@ -81,6 +81,8 @@ namespace rtt_mc
 //                 be changed; and it is less efficient than it might be,
 //                 because of recalculation of certain quantities that we will
 //                 probably decide to store.
+// 10) 2000-11-21: Implemented print_vertex_vector() member function, which
+//                 was the last part of the overall print_mesh() function.
 //
 //___________________________________________________________________________//
 
@@ -501,11 +503,8 @@ class TET_Mesh::CCVF
  private:
 
     // Typedefs for notational convenience.
-//  typedef T value_type;
     typedef T& reference;
     typedef const T& const_reference;
-//  typedef typename std::vector<T>::pointer pointer;
-//  typedef typename std::vector<T>::const_pointer const_pointer;
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
     typedef typename std::vector<T>::size_type size_type;
