@@ -38,11 +38,6 @@ namespace rtt_cdi_gandolf
  * Example of GandolfFile useage independent of GandolfOpacity or CDI.
  *
  */
-
-// revision history:
-// -----------------
-// 0) original
-// 
 //===========================================================================//
 
 class GandolfFile 
@@ -121,6 +116,12 @@ class GandolfFile
 	return matIDs;
     }
 
+    /*!
+     * \brief Indicate if the requested material id is available in
+     *        the data file.
+     */
+    bool materialFound( const int matid ) const;
+
   private:
     
     // IMPLEMENTATION
@@ -128,8 +129,8 @@ class GandolfFile
 
 } // end namespace rtt_cdi_gandolf
 
-#endif                          // __cdi_gandolf_GandolfFile_hh__
+#endif // __cdi_gandolf_GandolfFile_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of cdi_gandolf/GandolfFile.hh
+// end of cdi_gandolf/GandolfFile.hh
 //---------------------------------------------------------------------------//

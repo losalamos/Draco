@@ -13,8 +13,8 @@
 #define __cdi_gandolf_GandolfException_hh__
 
 #include <string>
-#include <sstream>
-#include <iostream>
+// #include <sstream>
+// #include <iostream>
 
 namespace rtt_cdi_gandolf
 {
@@ -45,10 +45,6 @@ namespace rtt_cdi_gandolf
  * how the calling program can extract information about the exception.
  *
  */
-// revision history:
-// -----------------
-// 0) original
-// 
 //===========================================================================//
 
 class GandolfException 
@@ -68,16 +64,29 @@ class GandolfException
   public:
 
     // CREATORS
-    
+
+    /*!
+     * \brief Standard GandolfException constructor.
+     *
+     * \sa
+     *
+     * \parameter _gandolfFunctionName
+     *
+     * \parameter _errorCode
+     */    
     GandolfException( const std::string _gandolfFunctionName, const int _errorCode )
 	: gandolfFunctionName( _gandolfFunctionName ), errorCode( _errorCode )
     { 
 	// empty
     };
 
-    // we require a virtual destructor to avoid potential memory leaks 
-    // that may occur when derived objects are destroyed without first 
-    // destroying this parent object.
+    /*!
+     * \brief Standard GandolfException destructor.
+     *
+     * \sa We require a virtual destructor to avoid potential memory
+     *     leaks that may occur when derived objects are destroyed
+     *     without first destroying this parent object.
+     */
     ~GandolfException() {};
 
     // ACCESSORS

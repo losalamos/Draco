@@ -22,5 +22,5 @@ ${test_alltarget}: ${testdeps}
 	${LD} ${LDFLAGS} -o $@ $< ${utilObjs} ${testlibs}
 
 ###############################################################################
-#                        end of draco/src/meshReaders/test Makefile.target
+# end of draco/src/meshReaders/test Makefile.target
 ###############################################################################

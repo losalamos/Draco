@@ -16,7 +16,7 @@
 namespace rtt_cdi_gandolf
 {
     /*!
-     * The standard GandolfFile constructor.
+     * \brief The standard GandolfFile constructor.
      */
     GandolfFile::GandolfFile( const std::string& gandolfDataFilename_ )
 	: dataFilename( gandolfDataFilename_ )
@@ -40,9 +40,25 @@ namespace rtt_cdi_gandolf
    
 	}
 
+    /*!
+     * \brief Indicate if the requested material id is available in
+     *        the data file.
+     */
+    bool GandolfFile::materialFound( const int matid ) const
+	{
+	    // Loop over all available materials.  If the requested
+	    // material id matches on in the list then return true.
+	    // If we reach the end of the list without a match return
+	    // false. 
+	    for ( int i=0; i<numMaterials; ++i )
+		if ( matid == matIDs[i] ) return true;
+	    return false;
+	    
+	} // end of materialFound()
+
 } // end namespace rtt_cdi_gandolf
 
 
 //---------------------------------------------------------------------------//
-//                              end of GandolfFile.cc
+// end of GandolfFile.cc
 //---------------------------------------------------------------------------//

@@ -11,6 +11,8 @@
 
 #include "GandolfException.hh"
 
+#include <sstream> // define std::endl and std::ostringstream
+
 namespace rtt_cdi_gandolf
 {
 
@@ -167,6 +169,8 @@ std::string ggetgrayException::errorMessage()
 	    return "Data found is larger than allocated array size.";
 	case 6: // Data size not equal to nt*nrho
 	    return "Data size not equal to expected size (ndata != nt*nrho)";
+	case 7: // Opacity requested but no table loaded.
+	    return "The gray opacity data table is not currently available.";
 	default: // unknown error.
 	    return "Unknown error returned from Gandolf::ggetgray().";
 	}
