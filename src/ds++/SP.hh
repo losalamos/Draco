@@ -72,7 +72,7 @@ class SP {
   public:
     SP() : p(0) { r = new SPref; }
 
-    SP( T *_p ) : p(_p) { r = new SPref; }
+    explicit SP( T *_p ) : p(_p) { r = new SPref; }
 
     template<class X>
     SP( X *px )
