@@ -802,6 +802,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_XERCES_SETUP
 dnl
 dnl XERCES LIBRARY SETUP
+dnl xerces is a required vendor
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_XERCES_SETUP], [dnl
@@ -820,13 +821,10 @@ AC_DEFUN([AC_XERCES_SETUP], [dnl
    # package
    vendor_xerces=$1
 
-   # choices are with_xerces = lfg, lcg, yes, or no
-
    # default (xerces is set to xerces-c by default)
    if test "${with_xerces:=xerces-c}" = yes ; then
        with_xerces='xerces-c'
    fi
-
 ])
 
 ##---------------------------------------------------------------------------##
@@ -854,7 +852,6 @@ AC_DEFUN([AC_XERCES_FINALIZE], [dnl
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${XERCES_INC}"
 
    fi
-
 ])
 
 dnl-------------------------------------------------------------------------dnl
