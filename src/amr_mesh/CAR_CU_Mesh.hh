@@ -408,6 +408,7 @@ class CAR_CU_Mesh
     inline double face_area(int, int) const;
     vector<int> get_surcells(string) const;
     int get_bndface(string, int) const;
+    inline vector<double> get_vertex(int node) const;
     inline NCVF_d get_vertices(int, int) const;
     inline NCVF_d get_vertices(int) const;
     inline int get_generation(int) const;
@@ -1067,6 +1068,23 @@ inline vector<double> CAR_CU_Mesh::get_normal_in(int cell, int face) const
 
     // return the normal
     return normal;
+}
+
+//---------------------------------------------------------------------------//
+// Return the node vertex
+
+inline vector<double> CAR_CU_Mesh::get_vertex(int node) const
+{
+    // determine the vertices along a cell-face
+
+    // return vertices
+    vector<double> ret_vert(coord->get_dim());
+
+    for (int d = 0; d < coord->get_dim(); d++)
+        ret_vert[d] = vertex[d][node-1];
+
+    // return vector of vertices
+    return ret_vert;
 }
 
 //---------------------------------------------------------------------------//

@@ -24,21 +24,48 @@
           implicit none
 
           private
-          public :: destruct_Mesh_Class, get_dimension, get_num_cells,  &
-                    get_num_nodes, get_num_corner_nodes, get_cell_node, &
-                    get_num_face_nodes, get_num_adj, get_next_cell,     &
-                    get_cell_nodes, get_cell_corner_nodes,              &
-                    get_cell_face_centered_nodes, get_cell_face_nodes,  &
-                    get_cell_volume, get_cell_face_area,                &
-                    get_mesh_min_coord, get_mesh_max_coord,             &
-                    get_cell_min_coord, get_cell_max_coord,             &
-                    get_cell_mid_coord, get_cell_generation,            &
-                    get_cell_face_centered_node
+!===========================================================================
+! Constructors and destructors
+!===========================================================================
+
+          public :: destruct_Mesh_Class
 
 !===========================================================================
-!
+! General mesh scalar accessor functions
+!===========================================================================
+
+          public :: get_dimension, get_num_cells, get_num_nodes,        &
+                    get_num_corner_nodes, get_num_face_nodes
+
+!===========================================================================
+! Layout accessor functions
+!===========================================================================
+
+          public :: get_num_adj, get_next_cell, get_cell_node,          &
+                    get_cell_face_centered_node, get_cell_nodes,        &
+                    get_cell_face_centered_nodes, get_cell_corner_nodes,&
+                    get_cell_face_nodes
+
+!===========================================================================
+! Vertex accessor functions
+!===========================================================================
+
+          public :: get_vertices, get_corner_node_vertices,             &
+                    get_face_centered_node_vertices, get_cell_vertices, &
+                    get_cell_face_vertices, get_node_vertices
+
+!===========================================================================
+! Mesh geometry scalar accessor functions
+!===========================================================================
+
+          public :: get_cell_volume, get_cell_face_area,                &
+                    get_mesh_min_coord, get_mesh_max_coord,             &
+                    get_cell_min_coord, get_cell_mid_coord,             &
+                    get_cell_max_coord, get_cell_width,                 &
+                    get_cell_generation
+
+!===========================================================================
 ! CAR_CU_Mesh Class type definition
-! 
 !===========================================================================
 
           type, public :: CAR_CU_Mesh
@@ -46,9 +73,7 @@
           end type CAR_CU_Mesh 
 
 !===========================================================================
-!
-! Interfaces
-! 
+! Define interfaces
 !===========================================================================
 
           interface destruct_Mesh_Class
@@ -95,16 +120,40 @@
               module procedure get_cell_nodes
           end interface
 
-          interface get_cell_corner_nodes
-              module procedure get_cell_corner_nodes
-          end interface
-
           interface get_cell_face_centered_nodes
               module procedure get_cell_face_centered_nodes
           end interface
 
+          interface get_cell_corner_nodes
+              module procedure get_cell_corner_nodes
+          end interface
+
           interface get_cell_face_nodes
               module procedure get_cell_face_nodes
+          end interface
+
+          interface get_vertices
+              module procedure get_vertices
+          end interface
+
+          interface get_corner_node_vertices
+              module procedure get_corner_node_vertices
+          end interface
+
+          interface get_face_centered_node_vertices
+              module procedure get_face_centered_node_vertices
+          end interface
+
+          interface get_cell_vertices
+              module procedure get_cell_vertices
+          end interface
+
+          interface get_cell_face_vertices
+              module procedure get_cell_face_vertices
+          end interface
+
+          interface get_node_vertices
+              module procedure get_node_vertices
           end interface
 
           interface get_cell_volume
@@ -113,10 +162,6 @@
 
           interface get_cell_face_area
               module procedure get_cell_face_area
-          end interface
-
-          interface get_cell_generation
-              module procedure get_cell_generation
           end interface
 
           interface get_mesh_min_coord
@@ -131,20 +176,26 @@
               module procedure get_cell_min_coord
           end interface
 
+          interface get_cell_mid_coord
+              module procedure get_cell_mid_coord
+          end interface
+
           interface get_cell_max_coord
               module procedure get_cell_max_coord
           end interface
 
-          interface get_cell_mid_coord
-              module procedure get_cell_mid_coord
+          interface get_cell_width
+              module procedure get_cell_width
+          end interface
+
+          interface get_cell_generation
+              module procedure get_cell_generation
           end interface
 
           contains
 
 !===========================================================================
-!
-! Subroutines
-! 
+! Constructors and destructors
 !===========================================================================
 ! Destroy a C++ CAR_CU_Mesh class object (self).
               subroutine CAR_CU_Mesh_destruct(self)
@@ -155,9 +206,7 @@
               end subroutine CAR_CU_Mesh_destruct
 
 !===========================================================================
-!
-! Functions
-! 
+! General mesh scalar accessor functions
 !===========================================================================
 ! Return the geometry dimension of the mesh (self).
               integer function get_dimension(self) result(ndim)
@@ -205,6 +254,9 @@
 
               end function get_num_face_nodes
 
+!===========================================================================
+! Layout accessor functions
+!===========================================================================
 ! Return the number of cells that are adjacent to this cell face in the mesh
 ! (self).
               integer function get_num_adj(self, cell, face) result(num_adj)
@@ -235,7 +287,7 @@
 
               end function get_next_cell
 
-! Return the cell node specified by the index.
+! Return the single cell node specified by the index.
               function get_cell_node(self, cell, node_index) result(node)
                   type(CAR_CU_Mesh), intent(in) :: self
                   integer, intent(in)           :: cell, node_index
@@ -245,7 +297,7 @@
 
               end function get_cell_node
 
-! Return the face-centered cell node specified by the face.
+! Return the single face-centered cell node specified by the face.
               function get_cell_face_centered_node(self, cell, face)     &
                   result(node)
                   type(CAR_CU_Mesh), intent(in) :: self
@@ -257,7 +309,7 @@
               end function get_cell_face_centered_node
 
 
-! Return the set of nodes that make up a cell, including both the corner nodes
+! Return an array of nodes that make up a cell, including both the corner nodes
 ! and the face-centered nodes.
               function get_cell_nodes(self, cell) result(nodes)
                   type(CAR_CU_Mesh), intent(in) :: self
@@ -271,19 +323,7 @@
 
               end function get_cell_nodes
 
-! Return the set of cell corner nodes.
-              function get_cell_corner_nodes(self, cell) result(nodes)
-                  type(CAR_CU_Mesh), intent(in)              :: self
-                  integer, intent(in)                        :: cell
-                  integer, dimension(2**get_dimension(self)) :: nodes
-                  integer                                    :: nsize
-
-                  nsize = 2**get_dimension(self)
-                  call get_mesh_cell_corner_nodes(self%this,cell,nodes,nsize)
-
-              end function get_cell_corner_nodes
-
-! Return the set of cell face-centered nodes.
+! Return an array of the cell face-centered nodes.
               function get_cell_face_centered_nodes(self, cell) result(nodes)
                   type(CAR_CU_Mesh), intent(in)              :: self
                   integer, intent(in)                        :: cell
@@ -295,7 +335,19 @@
 
               end function get_cell_face_centered_nodes
 
-! Return the set of nodes that comprise a cell face.
+! Return an array of the cell corner nodes.
+              function get_cell_corner_nodes(self, cell) result(nodes)
+                  type(CAR_CU_Mesh), intent(in)              :: self
+                  integer, intent(in)                        :: cell
+                  integer, dimension(2**get_dimension(self)) :: nodes
+                  integer                                    :: nsize
+
+                  nsize = 2**get_dimension(self)
+                  call get_mesh_cell_corner_nodes(self%this,cell,nodes,nsize)
+
+              end function get_cell_corner_nodes
+
+! Return an array of the nodes that comprise a cell face.
               function get_cell_face_nodes(self, cell, face) result(nodes)
                   type(CAR_CU_Mesh), intent(in)                   :: self
                   integer, intent(in)                             :: cell, face
@@ -308,41 +360,192 @@
 
               end function get_cell_face_nodes
 
+!===========================================================================
+! Vertex accessor functions
+!===========================================================================
+! Return the entire node vertex array (including both the corner and 
+! face-centered nodes).
+
+              function get_vertices(self) result(vertices)
+                  type(CAR_CU_Mesh), intent(in)            :: self
+                  real*8, dimension(get_num_nodes(self),                &
+                                  get_dimension(self))     :: vertices
+                  real*8, dimension(get_num_nodes(self) *               &
+                                  get_dimension(self))     :: ret_vert
+                  integer                                  :: node, dir, nsize
+
+                  nsize = get_num_nodes(self) * get_dimension(self)
+                  call get_mesh_vertices(self%this, ret_vert, nsize)
+
+                  node = 1
+                  do while (node .le. get_num_nodes(self))
+                      dir = 1
+                      do while (dir .le. get_dimension(self))
+                          vertices(node, dir) =                         &
+                              ret_vert(get_dimension(self)*(node-1) + dir)
+                          dir = dir + 1
+                      end do
+                      node = node + 1
+                  end do
+
+              end function get_vertices
+
+! Return an array containing the vertices for all of the cell corner nodes.
+
+              function get_corner_node_vertices(self) result(vertices)
+                  type(CAR_CU_Mesh), intent(in)             :: self
+                  real*8, dimension(get_num_corner_nodes(self),         &
+                                    get_dimension(self))    :: vertices
+                  real*8, dimension(get_num_corner_nodes(self) *        &
+                                    get_dimension(self))    :: ret_vert
+                  integer                                   :: node, dir, nsize
+
+                  nsize = get_num_corner_nodes(self) * get_dimension(self)
+                  call get_mesh_corner_node_vertices(self%this,ret_vert,nsize)
+
+                  node = 1
+                  do while (node .le. get_num_corner_nodes(self))
+                      dir = 1
+                      do while (dir .le. get_dimension(self))
+                          vertices(node, dir) =                         &
+                              ret_vert(get_dimension(self)*(node-1) + dir)
+                          dir = dir + 1
+                      end do
+                      node = node + 1
+                  end do
+
+              end function get_corner_node_vertices
+
+! Return an array containing the vertices for all of the face_centered nodes.
+
+              function get_face_centered_node_vertices(self) result(vertices)
+                  type(CAR_CU_Mesh), intent(in)            :: self
+                  real*8, dimension(get_num_face_nodes(self),           &
+                                    get_dimension(self))   :: vertices
+                  real*8, dimension(get_num_face_nodes(self) *          &
+                                    get_dimension(self))   :: ret_vert
+                  integer                                  :: node, dir, nsize
+
+                  nsize = get_num_face_nodes(self) * get_dimension(self)
+                  call get_mesh_face_cen_node_vertices(self%this,       &
+                                                       ret_vert, nsize)
+
+                  node = 1
+                  do while (node .le. get_num_face_nodes(self))
+                      dir = 1
+                      do while (dir .le. get_dimension(self))
+                          vertices(node, dir) =                         &
+                              ret_vert(get_dimension(self)*(node-1) + dir)
+                          dir = dir + 1
+                      end do
+                      node = node + 1
+                  end do
+
+              end function get_face_centered_node_vertices
+
+! Return an array with all of a cell's vertices
+              function get_cell_vertices(self, cell) result(vertices)
+                  type(CAR_CU_Mesh), intent(in)             :: self
+                  integer, intent(in)                       :: cell
+                  real*8, dimension(2**get_dimension(self),             &
+                                    get_dimension(self))    :: vertices
+                  real*8, dimension(2**get_dimension(self) *            &
+                                    get_dimension(self))    :: ret_vert
+
+                  integer                                   :: node, nsize, dir
+
+                  nsize = 2**get_dimension(self) * get_dimension(self)
+                  call get_mesh_cell_vertices(self%this, cell,ret_vert, nsize)
+
+                  node = 1
+                  do while (node .le. 2**get_dimension(self))
+                      dir = 1
+                      do while (dir .le. get_dimension(self))
+                          vertices(node, dir) =                         &
+                              ret_vert(get_dimension(self)*(node-1) + dir)
+                          dir = dir + 1
+                      end do
+                      node = node + 1
+                  end do
+
+              end function get_cell_vertices
+
+! Return an array of all of the cell face vertices
+              function get_cell_face_vertices(self,cell,face) result(vertices)
+                  type(CAR_CU_Mesh), intent(in)             :: self
+                  integer, intent(in)                       :: cell, face
+                  real*8, dimension(2*(get_dimension(self)-1),          &
+                                    get_dimension(self))    :: vertices
+                  real*8, dimension(2*(get_dimension(self)-1) *         &
+                                    get_dimension(self))    :: ret_vert
+                  integer                                   :: node, nsize, dir
+
+                  nsize = 2 * (get_dimension(self) - 1) * get_dimension(self)
+                  call get_mesh_cell_face_vertices(self%this, cell,     &
+                                                   face, ret_vert, nsize)
+                  node = 1
+                  do while (node .le. 2*(get_dimension(self) - 1))
+                      dir = 1
+                      do while (dir .le. get_dimension(self))
+                          vertices(node, dir) =                         &
+                              ret_vert(get_dimension(self)*(node-1) + dir)
+                          dir = dir + 1
+                      end do
+                      node = node + 1
+                  end do
+
+              end function get_cell_face_vertices
+
+! Return a single node's vertices
+              function get_node_vertices(self, node) result(vertices)
+                  type(CAR_CU_Mesh), intent(in)            :: self
+                  integer, intent(in)                      :: node
+                  real*8, dimension(get_dimension(self))   :: vertices
+                  integer                                  :: nsize
+
+                  nsize = get_dimension(self)
+                  call get_mesh_node_vertices(self%this, node, vertices, nsize)
+
+              end function get_node_vertices
+
+!===========================================================================
+! Mesh geometry scalar accessor functions
+!===========================================================================
 ! Return the volume of the cell in the mesh (self).
-              real function get_cell_volume(self, cell) result(volume)
+                  function get_cell_volume(self, cell) result(volume)
                   type(CAR_CU_Mesh), intent(in) :: self
                   integer, intent(in)           :: cell
-                  real                          :: volume
+                  real*8                        :: volume
 
                   call get_mesh_cell_volume(self%this, cell, volume)
 
               end function get_cell_volume
 
 ! Return the face area of the cell in the mesh (self).
-              real function get_cell_face_area(self, cell, face) result(area)
+                  function get_cell_face_area(self, cell, face) result(area)
                   type(CAR_CU_Mesh), intent(in) :: self
                   integer, intent(in)           :: cell, face
-                  real                          :: area
+                  real*8                        :: area
 
                   call get_mesh_cell_face_area(self%this, cell, face, area)
 
               end function get_cell_face_area
 
 ! Return the minimum coordinate value in a given direction for the mesh (self).
-              real function get_mesh_min_coord(self, direction) result(min_val)
+                  function get_mesh_min_coord(self, direction) result(min_val)
                   type(CAR_CU_Mesh), intent(in) :: self
                   integer, intent(in)           :: direction
-                  real                          :: min_val
+                  real*8                        :: min_val
 
                   call get_mesh_min_coordinates(self%this, direction, min_val)
 
               end function get_mesh_min_coord
 
 ! Return the maximum coordinate value in a given direction for the mesh (self).
-              real function get_mesh_max_coord(self, direction) result(max_val)
+                  function get_mesh_max_coord(self, direction) result(max_val)
                   type(CAR_CU_Mesh), intent(in) :: self
                   integer, intent(in)           :: direction
-                  real                          :: max_val
+                  real*8                        :: max_val
 
                   call get_mesh_max_coordinates(self%this, direction, max_val)
 
@@ -350,36 +553,46 @@
 
 ! Return the minimum coordinate value in a given direction for a cell in the 
 ! mesh (self).
-              real function get_cell_min_coord(self, cell, dir) result(min_val)
+                  function get_cell_min_coord(self, cell, dir) result(min_val)
                   type(CAR_CU_Mesh), intent(in) :: self
                   integer, intent(in)           :: cell, dir
-                  real                          :: min_val
+                  real*8                        :: min_val
 
                   call get_mesh_cell_min_coord(self%this,cell,dir,min_val)
 
               end function get_cell_min_coord
 
-! Return the maximum coordinate value in a given direction for a cell in the 
-! mesh (self).
-              real function get_cell_max_coord(self, cell, dir) result(max_val)
+! Return the midpoint (i.e., center point) coordinate value in a given 
+! direction for a cell in the mesh (self).
+                  function get_cell_mid_coord(self, cell, dir) result(mid_val)
                   type(CAR_CU_Mesh), intent(in) :: self
                   integer, intent(in)           :: cell, dir
-                  real                          :: max_val
+                  real*8                        :: mid_val
+
+                  call get_mesh_cell_mid_coord(self%this,cell,dir,mid_val)
+
+              end function get_cell_mid_coord
+
+! Return the maximum coordinate value in a given direction for a cell in the 
+! mesh (self).
+                  function get_cell_max_coord(self, cell, dir) result(max_val)
+                  type(CAR_CU_Mesh), intent(in) :: self
+                  integer, intent(in)           :: cell, dir
+                  real*8                        :: max_val
 
                   call get_mesh_cell_max_coord(self%this,cell,dir,max_val)
 
               end function get_cell_max_coord
 
-! Return the midpoint (i.e., center point) coordinate value in a given 
-! direction for a cell in the mesh (self).
-              real function get_cell_mid_coord(self, cell, dir) result(mid_val)
+! Return the width in a given direction for a cell in the mesh (self).
+                  function get_cell_width(self, cell, dir) result(width)
                   type(CAR_CU_Mesh), intent(in) :: self
                   integer, intent(in)           :: cell, dir
-                  real                          :: mid_val
+                  real*8                        :: width
 
-                  call get_mesh_cell_mid_coord(self%this,cell,dir,mid_val)
+                  call get_mesh_cell_width(self%this,cell,dir,width)
 
-              end function get_cell_mid_coord
+              end function get_cell_width
 
 ! Return the cell generation level in the mesh (self).
               integer function get_cell_generation(self, cell) result(gener)

@@ -18,9 +18,7 @@
 
       program alpha
 !===========================================================================
-!
 ! Shadow Interface modules
-!
 !===========================================================================
 
           USE CAR_CU_Interface_Class
@@ -38,18 +36,21 @@
 !===========================================================================
 ! Define variables just needed for testing the shadow interface functions
 !===========================================================================
+
           integer ndims, dir, ncells, nnodes, ncnodes, nfnodes, cell,   &
               face, node_index
           integer, dimension (:,:), allocatable :: num_adj, adj_cell,   &
               face_area, cell_specific_nodes
-          real, dimension (:,:), allocatable    :: cell_min_val,        &
-              cell_mid_val,cell_max_val          
+          real*8, dimension (:,:), allocatable  :: cell_min_val,      &
+              cell_mid_val, cell_max_val, cell_width, vertices,         &
+              corner_node_vertices, face_centered_node_vertices,        &
+              cell_vertices, face_vertices
           integer, dimension (:), allocatable   :: generation,          &
               cell_nodes, cell_corner_nodes, cell_face_cen_nodes,       &
               cell_face_nodes, cell_face_specific_nodes
 
-          real, dimension (:), allocatable     :: volume, mesh_min_val, &
-              mesh_max_val
+          real*8, dimension (:), allocatable    :: volume,mesh_min_val,&
+              mesh_max_val, node_vertices
 
 !===========================================================================
 ! Input the command line arguments - input file name followed by anything to
@@ -126,19 +127,33 @@
           allocate(cell_min_val(ncells, ndims))
           allocate(cell_mid_val(ncells, ndims))
           allocate(cell_max_val(ncells, ndims))
+          allocate(cell_width(ncells, ndims))
           ! Node-dependent cell values
           allocate(cell_specific_nodes(ncells, (2**ndims + 2*ndims)))
           allocate(cell_nodes(2**ndims + 2*ndims))
           allocate(cell_corner_nodes(2**ndims))
           allocate(cell_face_cen_nodes(2 * ndims))
           allocate(cell_face_nodes(2 * (ndims -1)))
-          allocate(cell_face_specific_nodes(2 * (ndims -1)))
+          allocate(cell_face_specific_nodes(2 * ndims))
+          ! Node-centered values
+          allocate(vertices(nnodes, ndims))
+          allocate(corner_node_vertices(ncnodes, ndims))
+          allocate(face_centered_node_vertices(nfnodes, ndims))
+          allocate(cell_vertices((2**ndims), ndims))
+          allocate(face_vertices((2*(ndims - 1)), ndims))
+          allocate(node_vertices(ndims))
 
+          ! Test functions that return large arrays
+          vertices = get_vertices(mesh_class)
+          corner_node_vertices = get_corner_node_vertices(mesh_class)
+          face_centered_node_vertices =                                 &
+                                   get_face_centered_node_vertices(mesh_class)
           cell = 1
           do while (cell .le. ncells)
               ! Test cell-centered values
               volume(cell) = get_cell_volume(mesh_class, cell)
               generation(cell) = get_cell_generation(mesh_class, cell)
+              cell_vertices = get_cell_vertices(mesh_class, cell)
 
               ! Test node-dependent cell values
               cell_nodes = get_cell_nodes(mesh_class, cell)
@@ -149,6 +164,13 @@
               do while (node_index .le. (2**ndims + 2*ndims))
                  cell_specific_nodes(cell, node_index) =                &
                      get_cell_node(mesh_class, cell, node_index)
+
+                 node_index = node_index + 1
+              end do
+              node_index = 1
+              do while (node_index .le. (2**ndims + 2*ndims))
+                 node_vertices =                                        &
+                     get_node_vertices(mesh_class, cell_nodes(node_index))
 
                  node_index = node_index + 1
               end do
@@ -163,6 +185,7 @@
                   cell_face_nodes = get_cell_face_nodes(mesh_class, cell, face)
                   cell_face_specific_nodes(face) =                      &
                       get_cell_face_centered_node(mesh_class, cell, face)
+                  face_vertices = get_cell_face_vertices(mesh_class,cell,face)
 
                   face = face + 1
               end do
@@ -181,6 +204,7 @@
                       get_cell_mid_coord(mesh_class, cell, dir)
                   cell_max_val(cell,dir) =                              &
                       get_cell_max_coord(mesh_class, cell, dir)
+                  cell_width(cell,dir) = get_cell_width(mesh_class, cell, dir)
 
                   dir = dir + 1
               end do
@@ -202,6 +226,7 @@
           deallocate(cell_min_val)
           deallocate(cell_mid_val)
           deallocate(cell_max_val)
+          deallocate(cell_width)
           ! Node-dependent cell values
           deallocate(cell_specific_nodes)
           deallocate(cell_nodes)
@@ -209,6 +234,13 @@
           deallocate(cell_face_cen_nodes)
           deallocate(cell_face_nodes)
           deallocate(cell_face_specific_nodes)
+          ! Node-centered values
+          deallocate(vertices)
+          deallocate(corner_node_vertices)
+          deallocate(face_centered_node_vertices)
+          deallocate(cell_vertices)
+          deallocate(face_vertices)
+          deallocate(node_vertices)
 
 
 !===========================================================================
