@@ -27,19 +27,13 @@ libsrcs = ts_manager.cc \
 
 pretarg = deps
 
-resolve_libs = $(dep_libmesh) $(dep_liblinalg) \
-	$(dep_libc4) $(dep_libnml) $(dep_libds++)
+resolve_libs = -L../ds++ -lds++_$(env)
 
 include ../config/make.lib
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../ds++;   $(MAKE))
-	(cd ../nml;    $(MAKE) dodeps=no)
-	(cd ../c4;     $(MAKE) dodeps=no)
-	(cd ../geom;   $(MAKE) dodeps=no)
-	(cd ../mesh;   $(MAKE) dodeps=no)
-	(cd ../linalg; $(MAKE) dodeps=no)
+	(cd ../ds++;   $(MAKE) $(subnj))
 endif
 
 # Rules for building docs
