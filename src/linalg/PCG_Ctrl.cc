@@ -10,18 +10,11 @@
 #include "linalg/PCG_Subroutines.hh"
 
 //---------------------------------------------------------------------------//
-// Destructor.
-//---------------------------------------------------------------------------//
-
-template<class T>
-PCG_Ctrl<T>::~PCG_Ctrl() {}
-
-//---------------------------------------------------------------------------//
 // Constructor.
 //---------------------------------------------------------------------------//
 
 template<class T>
-PCG_Ctrl<T>::PCG_Ctrl( pcg_DB& pcg_db, int _nru )
+PCG_Ctrl<T>::PCG_Ctrl( const pcg_DB& pcg_db, int _nru )
     : pcg_DB(pcg_db),
       iparm(Bounds(1,50)), fparm(Bounds(1,30)),
       iwk(pcg_db.nwi), fwk(pcg_db.nwf),

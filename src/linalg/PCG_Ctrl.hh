@@ -23,7 +23,8 @@
 //===========================================================================//
 
 template<class T>
-class PCG_Ctrl : public pcg_DB {
+class PCG_Ctrl : private pcg_DB
+{
     Mat1<int>            iparm;
     Mat1<T>              fparm;
     Mat1<int>            iwk;
@@ -35,10 +36,7 @@ class PCG_Ctrl : public pcg_DB {
 
   public:
 // Constructor.
-    PCG_Ctrl( pcg_DB& _pcg_db, int _nru );
-
-// Destructor.
-    ~PCG_Ctrl();
+    PCG_Ctrl( const pcg_DB& _pcg_db, int _nru );
 
 // Public Methods
   public:
