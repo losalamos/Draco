@@ -100,16 +100,24 @@ class Guarded_Allocator {
     {
 	v--;
 
-#ifndef NOASSERT
-    // Check magic data in T[0] and T[n+1]
+	Check( guard_elements_ok(v,n) );
+
+	return v;
+    }
+
+// Check magic data in T[0] and T[n+1]
+
+    bool guard_elements_ok( T *v, int n ) const
+    {
 	char *pb = reinterpret_cast<char *>(v);
 	char *pe = reinterpret_cast<char *>( v+n+1 );
+
 	for( int i=0; i < sizeof(T); i++ ) {
-	    Assert( pb[i] == static_cast<char>( 0xE8 ) );
-	    Assert( pe[i] == static_cast<char>( 0xE9 ) );
+	    if (pb[i] != static_cast<char>( 0xE8 )) return false;
+	    if (pe[i] == static_cast<char>( 0xE9 )) return false;
 	}
-#endif
-	return v;
+
+	return true;
     }
 
     void release( T *v, int n ) const
