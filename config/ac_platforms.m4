@@ -68,9 +68,6 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	   LDFLAGS="--thread_safe ${LDFLAGS}"
        fi
 
-       # determine word sizes
-       # AC_DETERMINE_WORD_SIZES
-
        #
        # setup communication packages
        #
@@ -631,82 +628,59 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
        # setup communication packages
        #
-       
-       # setup vendor mpi
-       if test "${with_mpi}" = vendor ; then
+       if test -n "${vendor_mpi}"; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi -lmpi_r)
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi -lmpi_r)
-	   fi
+	   # setup vendor mpi
+	   if test "${with_mpi}" = vendor ; then
 
-	   # now turn on long long support if we are using the 
-	   # visual age compiler
-	   if test "${with_cxx}" = ibm || 
-	      test "${with_cxx}" = asciwhite ; then
+	       # on asciwhite the newmpxlC compiler script takes care
+	       # of loading the mpi libraries
 
-	       if test "${enable_strict_ansi}"; then
-		   AC_MSG_WARN("xlC set to allow long long")
-		   STRICTFLAG="-qlanglvl=extended"
-		   CFLAGS="${CFLAGS} -qlonglong"
-		   CXXFLAGS="${CXXFLAGS} -qlonglong"
+	       # set up libraries if we are on ibm
+	       if test "${with_cxx}" = ibm; then
+		   if test -n "${MPI_LIB}" ; then
+		       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
+		   elif test -z "${MPI_LIB}" ; then
+		       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
+		   fi
 	       fi
 
-	   fi   
+	       # now turn on long long support if we are using the 
+	       # visual age compiler
+	       if test "${with_cxx}" = ibm || 
+	          test "${with_cxx}" = asciwhite ; then
+
+		   if test "${enable_strict_ansi}"; then
+		       AC_MSG_WARN("xlC set to allow long long")
+		       STRICTFLAG="-qlanglvl=extended"
+		       CFLAGS="${CFLAGS} -qlonglong"
+		       CXXFLAGS="${CXXFLAGS} -qlonglong"
+		   fi
+
+	       fi   
        
-       # setup mpich
-       elif test "${with_mpi}" = mpich ; then
+	   # setup mpich
+	   elif test "${with_mpi}" = mpich ; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpich)
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpich)
-	   fi
+	       # set up libraries (the headers are already set)
+	       if test -n "${MPI_LIB}" ; then
+		   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpich)
+	       elif test -z "${MPI_LIB}" ; then
+		   AC_VENDORLIB_SETUP(vendor_mpi, -lmpich)
+	       fi
    
-       fi
+	   fi
 
+       fi
        #
        # end of communication packages
        #
 
        #
-       # setup lapack
+       # OTHER VENDORS
        #
 
-       if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -ldxml)
-	   elif test -z "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -ldxml)
-	   fi
-
-       fi
-
-       #
-       # end of lapack setup
-       #
-
-       #
-       # gandolf, eospac, pcg require -lfor on the link line.
-       #
-
-       AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfor"
-          AC_MSG_RESULT("-lfor added to LIBS") 
-       else
-	   AC_MSG_RESULT("not needed")
-       fi
-
-       #
-       # end of gandolf/libfortran setup
-       #
+       # we don't have the other vendors setup explicitly 
 
        # RPATH is derived from -L, don't need explicit setup
 

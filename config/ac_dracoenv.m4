@@ -90,7 +90,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        libsuffix='.a'
    fi
 
-   dnl										      
+   dnl      
    dnl POSIX SOURCE
    dnl
 

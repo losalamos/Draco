@@ -130,15 +130,19 @@ AC_DEFUN([AC_CHECK_EIGHT_BYTE_INT_TYPE], [dnl
 	   if test "${with_cxx}" = ibm || 
 	      test "${with_cxx}" = asciwhite ; then
 
-	       # long long is already on when we use vendor mpi
-	       
-	       if test "${with_mpi}" != vendor &&
-	          test "${enable_strict_ansi}"; then
-
-		   AC_MSG_RESULT("xlC set to allow long long")
-		   STRICTFLAG="-qlanglvl=extended"
-		   CFLAGS="${CFLAGS} -qlonglong"
-		   CXXFLAGS="${CXXFLAGS} -qlonglong"
+	       # if the code package is serial we need to turn on long
+	       # long or if mpi is on, but is not the vendor then
+	       # we need long long
+	       if test -z "${vendor_mpi}" || test "${with_mpi}" != vendor; then
+	          
+		   if test "${enable_strict_ansi}"; then
+		       AC_MSG_RESULT("xlC set to allow long long")
+		       STRICTFLAG="-qlanglvl=extended"
+		       CFLAGS="${CFLAGS} -qlonglong"
+		       CXXFLAGS="${CXXFLAGS} -qlonglong" 
+		   else
+		       AC_MSG_RESULT("long long - no additional mods needed on $host/${CXX}") 
+		   fi
 	   
 	       else
 		   AC_MSG_RESULT("long long - no additional mods needed on $host/${CXX}")

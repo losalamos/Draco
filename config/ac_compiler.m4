@@ -121,13 +121,27 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 
    elif test "${with_cxx}" = asciwhite ; then 
 
-       AC_CHECK_PROG(CXX, newxlC, newxlC)
-       AC_CHECK_PROG(CC, newxlc, newxlc)
+       # asci white uses different executables depending upon
+       # the mpi setup; so we check to see if mpi is on 
+       # and set the executable appropriately 
 
-       if test "${CXX}" = newxlC ; then
+       # mpi is on, use newmpxlC
+       if test -n "${vendor_mpi}" && test "${with_mpi}" = vendor; then
+	   AC_CHECK_PROG(CXX, newmpxlC, newmpxlC)
+	   AC_CHECK_PROG(CC, newmpxlc, newmpxlc)
+
+       # scalar build, use newxlC
+       else
+	   AC_CHECK_PROG(CXX, newxlC, newxlC)
+	   AC_CHECK_PROG(CC, newxlc, newxlc)
+
+       fi
+
+       # check to make sure compiler is valid
+       if test "${CXX}" = newxlC || test "${CXX}" = newmpxlC ; then
 	   AC_DRACO_IBM_VISUAL_AGE
        else
-	   AC_MSG_ERROR("Did not find ASCI White newxlC compiler!")
+	   AC_MSG_ERROR("Did not find ASCI White new(mp)xlC compiler!")
        fi
 
    else
@@ -516,11 +530,19 @@ AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-brtl -Wl,-bh:5 -qmkshrobj -o'
+       ARFLAGS='-brtl -Wl,-bh:5 -G -o'
 
-       ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
-       ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_TEST_LIBS} \${VENDOR_LIBS}"
+       # when AR=newmpxlC we need to add /lib/crt0.o to 
+       # avoid p_argcx and p_argvx link error when building libs
+       if test "${AR}" = newmpxlC ; then
+	   ARLIBS='/lib/crt0.o'
+	   ARTESTLIBS='/lib/crt0.o'
+       fi
+
+       ARLIBS="${ARLIBS} \${DRACO_LIBS} \${VENDOR_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${PKG_LIBS} \${DRACO_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${DRACO_LIBS}\${VENDOR_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_LIBS}"
    else
        AR='ar'
        ARFLAGS='cr'
