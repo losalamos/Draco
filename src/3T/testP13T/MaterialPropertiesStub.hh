@@ -58,12 +58,12 @@ class MaterialPropertiesStub
     
     // ACCESSORS
 
-    void print(std::ostream &os) const
+    std::ostream &print(std::ostream &os) const
     {
-	os << "in MaterialPropertiesStub::print(), this: "
+	os << "(MaterialPropertiesStub::this: "
 	   << (void *)(this)
-	   << " spMesh: ";
-	spMesh->print(os);
+	   << " spMesh: " << *spMesh << ")";
+	return os;
     }
     
     const SP<MT> getMesh() const { return spMesh; }
@@ -113,6 +113,13 @@ class MaterialPropertiesStub
     
     // IMPLEMENTATION
 };
+
+template<class MT>
+inline std::ostream &operator<<(std::ostream &os,
+				const MaterialPropertiesStub<MT> &rhs)
+{
+    return rhs.print(os);
+}
 
 END_NS_XTM  // namespace XTM
 

@@ -62,12 +62,11 @@ class DiffusionSolverStub
 
     const SP<MT> &getMesh() const { return spmesh; }
 
-    void print(std::ostream &os) const
+    std::ostream &print(std::ostream &os) const
     {
-	os << "in DiffusionSolverStub::print(), "
-	   << "this: " << (void *)this
-	   << " spmesh: ";
-	spmesh->print(os);
+	os << "(DiffusionSolverStub::this: " << (void *)this
+	   << " spmesh: " << *spmesh << ")";
+	return os;
     }
     
     void solve(const fcdsf &diffCoeff, const ccsf &removalCoeff,
@@ -82,6 +81,13 @@ class DiffusionSolverStub
     
     // IMPLEMENTATION
 };
+
+template<class MT>
+inline std::ostream &operator<<(std::ostream &os,
+				const DiffusionSolverStub<MT> &rhs)
+{
+    return rhs.print(os);
+}
 
 END_NS_XTM  // namespace XTM
 

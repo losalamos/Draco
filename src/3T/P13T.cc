@@ -118,6 +118,21 @@ void P13T<MT, MP, DS>::setDiffSolver(const SP<DiffusionSolver> &spDiffSolver_)
 
 // ACCESSORS
 
+//------------------------------------------------------------------------//
+// print:
+//     Print itself (for debug mostly)
+//------------------------------------------------------------------------//
+
+template<class MT, class MP, class DS>
+std::ostream &P13T<MT, MP, DS>::print(std::ostream &os) const
+{
+    os << "(P13T::this: " << (void *)this
+       << " spProp: " << *spProp
+       << " spDiffSolver: " << *spDiffSolver
+       << ")";
+    return os;
+}
+
 //---------------------------------------------------------------------------//
 // initializeRadiationState:
 //     Initialize the radiation field to Planckian
@@ -129,8 +144,6 @@ void P13T<MT, MP, DS>::
 initializeRadiationState(const MaterialStateField &matState,
 			 RadiationStateField &resultsStateField) const
 {
-    cerr << "in P13T::initializeRadiationState()" << endl;
-    
     // We need a smart pointer to a mesh
 
     const SP<MeshType> spMesh = spDiffSolver->getMesh();
@@ -181,8 +194,6 @@ void P13T<MT, MP, DS>::solve(double dt,
 
     Require(dt > 0.0);
 
-    cerr << "In P13T::solve()" << endl;
-   
     // This is a one-group problem
 
     int groupNo = 1;
@@ -254,10 +265,6 @@ void P13T<MT, MP, DS>::solve(double dt,
 			    boundary, Tnp12Electron);
     }
 
-    cerr << "After conduction: " << endl;
-    cerr << "Tnp12Electron: " << Tnp12Electron << endl;
-    cerr << "Tnp12Ion: " << Tnp12Ion << endl;
-    
     // Calculate the new radiation state due to the radiation P1,
     // electron and ion equations ***without*** the conduction equations.
     
@@ -396,8 +403,6 @@ calcP1Coeffs(double dt,
     double c = radPhys.getLightSpeed();
     double tau = 1.0/(c*dt);
 
-    cerr << "c: " << c << " tau: " << tau << endl;
-
     // We need a smart pointer to a mesh
 
     const SP<MeshType> spMesh = spDiffSolver->getMesh();
@@ -435,11 +440,6 @@ calcP1Coeffs(double dt,
 		      QElectron, QIon, TElectron, TIon,
 		      sigmaEmission, QElecStar, CvStar, nu);
 
-    cerr << "Qe*: " << QElecStar << endl;
-    cerr << "Cv*: " << CvStar << endl;
-    cerr << "nu: " << nu << endl;
-    cerr << "tau " << tau << endl;
-    
     // Calculate modified sigma absorption
 
     sigmaAbsBar = (1.0 - nu) * sigmaAbs + tau;
@@ -463,9 +463,14 @@ calcP1Coeffs(double dt,
 
     Fprime = tau*prevStateField.F / (sigmaTotal + tau);
 
-    cerr << "sigmaAbsBar: " << sigmaAbsBar << endl;
-    cerr << "QRadBar: " << QRadBar << endl;
 }
+
+//------------------------------------------------------------------------//
+// calcStarredFields:
+//    Calculate Qe*, Cv*, but not nu.
+//    These are needed to calculate other coefficients
+//    and delta temperatures.
+//------------------------------------------------------------------------//
 
 template<class MT, class MP, class DS>
 void P13T<MT, MP, DS>::calcStarredFields(double dt,
@@ -481,6 +486,9 @@ void P13T<MT, MP, DS>::calcStarredFields(double dt,
 					 ccsf &CvStar,
 					 ccsf &nu) const
 {
+
+    // Calculate Qe* and Cv*.
+    // We will then calculate nu ourself.
     
     calcStarredFields(dt, groupNo, matState, radPhys,
 		      QElectron, QIon, TElectron, TIon,
@@ -505,6 +513,13 @@ void P13T<MT, MP, DS>::calcStarredFields(double dt,
     nu = dt * sigmaEmission * dPlanckdT / (CvStar + dt * dPlanckdT);
 
 }
+
+//------------------------------------------------------------------------//
+// calcStarredFields:
+//    Calculate Qe*, Cv*, but not nu.
+//    These are needed to calculate other coefficients
+//    and delta temperatures.
+//------------------------------------------------------------------------//
 
 template<class MT, class MP, class DS>
 void P13T<MT, MP, DS>::calcStarredFields(double dt,
@@ -551,6 +566,12 @@ void P13T<MT, MP, DS>::calcStarredFields(double dt,
 
 }
 
+//------------------------------------------------------------------------//
+// calcDeltaTElectron:
+//    Calculate the difference between T electron from timestep
+//    n+1 to timestep n+1/2
+//------------------------------------------------------------------------//
+
 template<class MT, class MP, class DS>
 void P13T<MT, MP, DS>::calcDeltaTElectron(double dt,
 					  int numGroups, 
@@ -588,9 +609,6 @@ void P13T<MT, MP, DS>::calcDeltaTElectron(double dt,
 		      QElectron, QIon, TElectron, TIon,
 		      sigmaEmission, QElecStar, CvStar);
 
-    cerr << "Qe*: " << QElecStar << endl;
-    cerr << "Cv*: " << CvStar << endl;
-
     ccsf sigmaAbs(spMesh);
     spProp->getSigmaAbsorption(matState, groupNo, sigmaAbs);
 
@@ -614,6 +632,12 @@ void P13T<MT, MP, DS>::calcDeltaTElectron(double dt,
     deltaTelectron = dt * (sigmaAbs*phi_np1 - sigmaEmission*planck + QElecStar)
 	/ (CvStar + dt*sigmaEmission*dPlanckdT);
 }
+
+//------------------------------------------------------------------------//
+// calcDeltaTIon:
+//    Calculate the difference between T ion from timestep
+//    n+1 to timestep n+1/2
+//------------------------------------------------------------------------//
 
 template<class MT, class MP, class DS>
 void P13T<MT, MP, DS>::calcDeltaTIon(double dt,

@@ -70,16 +70,22 @@ class MeshTypeStub
     
     // ACCESSORS
 
-    void print(std::ostream &os) const
+    std::ostream &print(std::ostream &os) const
     {
-	os << "in MeshTypeStub::print(), this: "
-	   << (void *)(this);
+	os << "(MeshTypeStub::this: " << (void *)(this) << ")";
+	return os;
     }
 
   private:
     
     // IMPLEMENTATION
 };
+
+inline std::ostream &operator<<(std::ostream &os,
+				const MeshTypeStub &rhs)
+{
+    return rhs.print(os);
+}
 
 MeshTypeStub::scalar operator+(const MeshTypeStub::scalar &lop,
 			       const MeshTypeStub::scalar &rop);

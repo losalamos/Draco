@@ -42,6 +42,8 @@ testP13T::testP13T()
     P13TOptions options(true, true);
 
     spP13T = new P13TStub(options, spmatprop, spdiffSolver);
+
+    cerr << "spP13T: " << *spP13T << endl;
 }
 
 void testP13T::solve() const

@@ -16,6 +16,11 @@
 
 BEGIN_NS_XTM
     
+//------------------------------------------------------------------------//
+// minConversion:
+//    A class utility that returns the minimum allowed conversion factor.
+//------------------------------------------------------------------------//
+
 double Units::minConversion()
 {
     static double minConv = std::numeric_limits<double>::min();

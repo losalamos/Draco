@@ -11,7 +11,7 @@
 
 #include "ds++/SP.hh"
 #include "3T/P13TOptions.hh"
-#include <iostream>
+#include <iosfwd>
 
 #ifndef BEGIN_NS_XTM
 #define BEGIN_NS_XTM namespace XTM  {
@@ -107,20 +107,18 @@ class P13T
     // ACCESSORS
 
     const SP<MeshType> getMesh() const { return spProp->getMesh(); }
+    
     const SP<MaterialProperties> getMaterialProperties() const
     {
 	return spProp;
     }
 
-    void print(std::ostream &os) const
-    {
-	os << "in P13T::print(), "
-	   << "this: " << (void *)this
-	   << " spProp: ";
-	spProp->print(os);
-	os << " spDiffSolver: ";
-	spDiffSolver->print(os);
-    }
+    //------------------------------------------------------------------------//
+    // print:
+    //     Print itself (for debug mostly)
+    //------------------------------------------------------------------------//
+
+    std::ostream &print(std::ostream &os) const;
 
     //------------------------------------------------------------------------//
     // initializeRadiationState:
@@ -199,6 +197,13 @@ class P13T
 		      ccsf &sigmaAbsBar,
 		      ccsf &QRadBar) const;
 
+    //------------------------------------------------------------------------//
+    // calcStarredFields:
+    //    Calculate Qe*, Cv*, and nu.
+    //    These are needed to calculate other coefficients
+    //    and delta temperatures.
+    //------------------------------------------------------------------------//
+
     void calcStarredFields(double dt,
 			   int groupNo,
 			   const MaterialStateField &matState,
@@ -212,6 +217,13 @@ class P13T
 			   ccsf &CvStar,
 			   ccsf &nu) const;
     
+    //------------------------------------------------------------------------//
+    // calcStarredFields:
+    //    Calculate Qe*, Cv*, but not nu.
+    //    These are needed to calculate other coefficients
+    //    and delta temperatures.
+    //------------------------------------------------------------------------//
+
     void calcStarredFields(double dt,
 			   int groupNo,
 			   const MaterialStateField &matState,
@@ -224,6 +236,12 @@ class P13T
 			   ccsf &QElecStar,
 			   ccsf &CvStar) const;
     
+    //------------------------------------------------------------------------//
+    // calcDeltaTElectron:
+    //    Calculate the difference between T electron from timestep
+    //    n+1 to timestep n+1/2
+    //------------------------------------------------------------------------//
+
     void calcDeltaTElectron(double dt,
 			    int numGroups, 
 			    const MaterialStateField &matState, 
@@ -235,6 +253,12 @@ class P13T
 			    const RadiationStateField &resultsStateField, 
 			    ccsf &deltaTelectron) const;
 
+    //------------------------------------------------------------------------//
+    // calcDeltaTIon:
+    //    Calculate the difference between T ion from timestep
+    //    n+1 to timestep n+1/2
+    //------------------------------------------------------------------------//
+
     void calcDeltaTIon(double dt,
 		       const MaterialStateField &matState, 
 		       const RadiationStateField &prevStateField, 
@@ -244,6 +268,18 @@ class P13T
 		       const ccsf &deltaTelectron,
 		       ccsf &deltaTIon) const;
 };
+
+//---------------------------------------------------------------------------//
+// operator<<:
+//    A convenience function to print a P13T
+//    (mostly for debug purposes)
+//---------------------------------------------------------------------------//
+
+template<class MT, class MP, class DS>
+inline std::ostream &operator<<(std::ostream &os, const P13T<MT, MP, DS> &rhs)
+{
+    return rhs.print(os);
+}
 
 END_NS_XTM  // namespace XTM
 
