@@ -55,7 +55,7 @@ class Mesh_XYZFactory
     
     // DATA
 
-    const Mesh_DB &mdb_m;
+    const Mesh_DB mdb_m;
     
   public:
 
