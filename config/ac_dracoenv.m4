@@ -91,7 +91,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        libsuffix='.a'
    fi
 
-   dnl
+   dnl										      
    dnl POSIX SOURCE
    dnl
 
@@ -99,55 +99,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl SYSTEM-SPECIFIC SETUP section below
 
    dnl
-   dnl TOOL CHECKS
+   dnl TOOL CHECKS 
    dnl
-   
-   dnl check for and assign the path to python
-   AC_PATH_PROG(PYTHON_PATH, python, null)
-   if test "${PYTHON_PATH}" = null ; then
-       AC_MSG_ERROR("No valid Python found!")
-   fi
 
-   dnl check for and assign the path to ghostview
-   AC_CHECK_PROGS(GHOSTVIEW, ghostview gv, null)
-   if test "${GHOSTVIEW}" = null ; then
-       AC_MSG_WARN("No valid ghostview found!")
-   fi
-
-   dnl check for and assign the path to latex
-   AC_CHECK_PROGS(LATEX, latex, null)
-   if test "${LATEX}" = null ; then
-       AC_MSG_WARN("No valid latex found!")
-   fi
-   AC_SUBST(LATEXFLAGS)
-
-   dnl check for and assign the path to bibtex
-   AC_CHECK_PROGS(BIBTEX, bibtex, null)
-   if test "${BIBTEX}" = null ; then
-       AC_MSG_WARN("No valid bibtex found!")
-   fi
-   AC_SUBST(BIBTEXFLAGS)
-
-   dnl check for and assign the path to xdvi
-   AC_CHECK_PROGS(XDVI, xdvi, null)
-   if test "${XDVI}" = null ; then
-       AC_MSG_WARN("No valid xdvi found!")
-   fi
-   AC_SUBST(XDVIFLAGS)
-
-   dnl check for and assign the path to dvips
-   AC_CHECK_PROGS(DVIPS, dvips, null)
-   if test "${DVIPS}" = null ; then
-       AC_MSG_WARN("No valid dvips found!")
-   fi
-   AC_SUBST(DVIPSFLAGS)
-
-   dnl check for and assign the path for printing (lp)
-   AC_CHECK_PROGS(LP, lp lpr, null)
-   if test "${LP}" = null ; then
-       AC_MSG_WARN("No valid lp or lpr found!")
-   fi
-   AC_SUBST(LPFLAGS)
+   # the tool checks are called in the top-level configure, so in 
+   # each subsequent configure these should just grab cached values
+   AC_CHECK_TOOLS
 
    dnl
    dnl COMPILER SETUPS
@@ -156,79 +113,21 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl first find the system
    AC_CANONICAL_SYSTEM
 
-   dnl set up a default compiler
-   case $host in
-   mips-sgi-irix6.*)   
-       if test -z "${with_cxx}" ; then
-	   with_cxx='sgi'
-       fi
-   ;;
-   alpha-dec-osf*)
-       if test -z "${with_cxx}" ; then
-	   with_cxx='compaq'
-       fi
-   ;;
-   *)
-       if test -z "${with_cxx}" ; then
-	   with_cxx='gcc'
-       fi
-   ;;
-   esac
+   # the default compiler is C++; we do not turn on F90 unless
+   # AC_WITH_F90 is called in configure.in (which sets with_cxx='no')
+   if test "${with_cxx}" = no ; then
 
-   dnl determine which compiler we are using
+       # if with_f90 defined test with_f90 for compiler, and call setup
+       # if with_f90 set to yes or not set 
+       # attempt to guess compiler based on target
+       AC_F90_ENV
 
-   # do tests of --with-cxx, see if the compiler exists and then call
-   # the proper setup function
+   else
    
-   if test "${with_cxx}" = kcc ; then
-       AC_CHECK_PROG(CXX, KCC, KCC)
+       # set up the C++ compilers; if with_cxx is undefined, an
+       # appropriate default for the machine will be choosen
+       AC_CPP_ENV
 
-       if test "${CXX}" = KCC ; then
-	   CC='KCC --c'
-	   AC_DRACO_KCC
-       else
-	   AC_MSG_ERROR("Did not find KCC compiler!")
-       fi
-
-   elif test "${with_cxx}" = guide ; then
-       AC_CHECK_PROG(CXX, guidec++, guidec++)
-       AC_CHECK_PROG(CC, guidec, guidec)
-
-       if test "${CXX}" = guidec++ && test "${CC}" = guidec ; then 
-	   AC_DRACO_GUIDE
-       else
-	   AC_MSG_ERROR("Did not find Guide compiler!")
-       fi
-
-   elif test "${with_cxx}" = sgi ; then
-       AC_CHECK_PROG(CXX, CC, CC)
-       AC_CHECK_PROG(CC, cc, cc)  
-
-       if test "${CXX}" = CC && test "${CC}" = cc ; then
-	   AC_DRACO_SGI_CC
-       else 
-	   AC_MSG_ERROR("Did not find SGI CC compiler!")
-       fi
-
-   elif test "${with_cxx}" = gcc ; then 
-       AC_CHECK_PROG(CXX, g++, g++)
-       AC_CHECK_PROG(CC, gcc, gcc)
-
-       if test "${CXX}" = g++ && test "${CC}" = gcc ; then
-	   AC_DRACO_GNU_GCC
-       else
-	   AC_MSG_ERROR("Did not find gnu c++ compiler!")
-       fi
-
-   elif test "${with_cxx}" = compaq ; then
-       AC_CHECK_PROG(CXX, cxx, cxx)
-       AC_CHECK_PROG(CC, cc, cc)
-
-       if test "${CXX}" = cxx && test "${CC}" = cc ; then
-	   AC_DRACO_COMPAQ_CXX
-       else
-	   AC_MSG_ERROR("Did not find Compaq cxx compiler!")
-       fi
    fi
 
    # do draco standard headers
@@ -239,15 +138,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
       AC_MSG_RESULT("CPPFLAGS modified")
    else
       AC_MSG_RESULT("no") 
-   fi
-
-   # if with_f90 defined test with_f90 for compiler, and call setup
-   # if with_f90 set to yes or not set 
-   # attempt to guess compiler based on target
-
-   if test "${with_f90+set}" = "set"   
-   then
-       AC_F90_ENV
    fi
 
    dnl add any additional flags
@@ -300,38 +190,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl check for ranlib
    AC_PROG_RANLIB
 
-   dnl determine and define data types for word sizes
-
-   # eight byte integer types
-   if test -n "${def_eight_byte_int_type}" ; then
-       AC_DETERMINE_INT(8)
-       AC_DEFINE_UNQUOTED(EIGHT_BYTE_INT_TYPE, ${INTEGER_SIZE_TYPE})
-       if test "${INTEGER_SIZE_TYPE}" = 'long long' ; then
-	   long_long_used='true'
-       fi
-   fi
-
-   # four byte integer types
-   if test -n "${def_four_byte_int_type}" ; then
-       AC_DETERMINE_INT(4)
-       AC_DEFINE_UNQUOTED(FOUR_BYTE_INT_TYPE, ${INTEGER_SIZE_TYPE})
-       if test "${INTEGER_SIZE_TYPE}" = 'long long' ; then
-	   long_long_used='true'
-       fi
-   fi
-
-   # eight byte float types
-   if test -n "${def_eight_byte_float_type}" ; then
-       AC_DETERMINE_FLOAT(8)
-       AC_DEFINE_UNQUOTED(EIGHT_BYTE_FLOAT_TYPE, ${FLOAT_SIZE_TYPE})
-   fi
-
-   # four byte float types
-   if test -n "${def_four_byte_float_type}" ; then
-       AC_DETERMINE_FLOAT(4)
-       AC_DEFINE_UNQUOTED(FOUR_BYTE_FLOAT_TYPE, ${FLOAT_SIZE_TYPE})
-   fi
-
    dnl
    dnl SYSTEM-SPECIFIC SETUP
    dnl
@@ -354,6 +212,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_DEFINE(_POSIX_SOURCE)
 	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
        fi
+
+       # determine word sizes
+       AC_DETERMINE_WORD_SIZES
 
        #
        # setup linux strict if the compiler is KCC (also turn off the
@@ -540,6 +401,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   LDFLAGS="-mips${with_mips:=4} ${LDFLAGS}"
        fi
 
+       # determine word sizes
+       AC_DETERMINE_WORD_SIZES
+
        #
        # setup communication packages
        #
@@ -652,6 +516,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_DEFINE(_POSIX_SOURCE)
        fi
 
+       # determine word sizes
+       AC_DETERMINE_WORD_SIZES
+
        #
        # setup communication packages
        #
@@ -692,6 +559,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
 	   AC_DEFINE(_POSIX_SOURCE)
        fi
+
+       # determine word sizes
+       AC_DETERMINE_WORD_SIZES
 
        #
        # setup communication packages
@@ -776,7 +646,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        fi
    done
 
-   # if this is a parallel build, mark it the tests scalar
+   # if this is a parallel build, mark the tests scalar
    if test "${with_c4}" = scalar ; then
        test_scalar="scalar"
    fi
@@ -788,8 +658,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        test_flags="--${test_exe:=binary}"
    elif test "${with_c4}" = mpi ; then
        test_flags="--${test_exe:=binary} --mpi"
-   elif test "${with_c4}" = shmem ; then
-       test_flags="--${test_exe:=binary} --shmem"
    fi
 
    ## define the test_output_files for cleaning

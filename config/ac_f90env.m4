@@ -33,16 +33,19 @@ dnl ========================================================================
 dnl ### Ensure with_f90 set
 AC_DEFUN(AC_WITH_F90, [dnl
    : ${with_f90:=yes}
+    
+   dnl turn off C++ compiler
+   with_cxx='no'
+
+   dnl defines --with-f90
+   AC_ARG_WITH(f90,
+       [  --with-f90[=XL,Fujitsu,Lahey,Portland,Absoft,WorkShop,Cray,MIPS,Compaq,HP]
+                          choose an F90 compiler])
 ])
 
 dnl
 dnl CHOOSE A F90 COMPILER
 dnl
-
-dnl defines --with-f90
-AC_ARG_WITH(f90,[dnl
-  --with-f90[=XL,Fujitsu,Lahey,Portland,Absoft,WorkShop,Cray,MIPS,Compaq,HP]     choose an F90 compiler
-])
 
 AC_DEFUN(AC_F90_ENV, [dnl
    AC_REQUIRE([AC_CANONICAL_SYSTEM])

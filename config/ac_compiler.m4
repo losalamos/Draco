@@ -6,6 +6,98 @@ dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
+dnl C++ COMPILER SETUP FUNCTION-->this is called within AC_DRACO_ENV;
+dnl default is to use the C++ Compiler.  To change defaults,
+dnl AC_WITH_F90 should be called in configure.in (before
+dnl AC_DRACO_ENV)
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_CPP_ENV, [dnl
+
+   # make sure that the host is defined
+   AC_REQUIRE([AC_CANONICAL_SYSTEM])
+
+   dnl set up a default compiler
+   case $host in
+   mips-sgi-irix6.*)   
+       if test -z "${with_cxx}" ; then
+	   with_cxx='sgi'
+       fi
+   ;;
+   alpha-dec-osf*)
+       if test -z "${with_cxx}" ; then
+	   with_cxx='compaq'
+       fi
+   ;;
+   *)
+       if test -z "${with_cxx}" ; then
+	   with_cxx='gcc'
+       fi
+   ;;
+   esac
+
+   dnl determine which compiler we are using
+
+   # do tests of --with-cxx, see if the compiler exists and then call
+   # the proper setup function
+   
+   if test "${with_cxx}" = kcc ; then
+       AC_CHECK_PROG(CXX, KCC, KCC)
+
+       if test "${CXX}" = KCC ; then
+	   CC='KCC --c'
+	   AC_DRACO_KCC
+       else
+	   AC_MSG_ERROR("Did not find KCC compiler!")
+       fi
+
+   elif test "${with_cxx}" = guide ; then
+       AC_CHECK_PROG(CXX, guidec++, guidec++)
+       AC_CHECK_PROG(CC, guidec, guidec)
+
+       if test "${CXX}" = guidec++ && test "${CC}" = guidec ; then 
+	   AC_DRACO_GUIDE
+       else
+	   AC_MSG_ERROR("Did not find Guide compiler!")
+       fi
+
+   elif test "${with_cxx}" = sgi ; then
+       AC_CHECK_PROG(CXX, CC, CC)
+       AC_CHECK_PROG(CC, cc, cc)  
+
+       if test "${CXX}" = CC && test "${CC}" = cc ; then
+	   AC_DRACO_SGI_CC
+       else 
+	   AC_MSG_ERROR("Did not find SGI CC compiler!")
+       fi
+
+   elif test "${with_cxx}" = gcc ; then 
+       AC_CHECK_PROG(CXX, g++, g++)
+       AC_CHECK_PROG(CC, gcc, gcc)
+
+       if test "${CXX}" = g++ && test "${CC}" = gcc ; then
+	   AC_DRACO_GNU_GCC
+       else
+	   AC_MSG_ERROR("Did not find gnu c++ compiler!")
+       fi
+
+   elif test "${with_cxx}" = compaq ; then
+       AC_CHECK_PROG(CXX, cxx, cxx)
+       AC_CHECK_PROG(CC, cc, cc)
+
+       if test "${CXX}" = cxx && test "${CC}" = cc ; then
+	   AC_DRACO_COMPAQ_CXX
+       else
+	   AC_MSG_ERROR("Did not find Compaq cxx compiler!")
+       fi
+   fi
+
+   # set the language to CPLUSPLUS
+   AC_LANG_CPLUSPLUS
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl KCC COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 

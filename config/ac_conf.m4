@@ -198,7 +198,7 @@ dnl dracoenv to define the FOUR_BYTE_FLOAT_TYPE macro to the appropriate C++
 dnl data type
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DEFINE_FOUR_BYTE_FLOAT_TYPE, [dnl
+   AC_DEFUN(AC_DEFINE_FOUR_BYTE_FLOAT_TYPE, [dnl
 
    def_four_byte_float_type='true'
 
@@ -215,6 +215,67 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN(AC_DEFINE_EIGHT_BYTE_FLOAT_TYPE, [dnl
 
    def_eight_byte_float_type='true'
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_CHECK_TOOLS
+dnl
+dnl Find tools used by the build system (latex, bibtex, python, etc)
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_CHECK_TOOLS, [dnl
+
+   dnl
+   dnl TOOL CHECKS
+   dnl
+   
+   dnl check for and assign the path to python
+   AC_PATH_PROG(PYTHON_PATH, python, null)
+   if test "${PYTHON_PATH}" = null ; then
+       AC_MSG_ERROR("No valid Python found!")
+   fi
+
+   dnl check for and assign the path to ghostview
+   AC_CHECK_PROGS(GHOSTVIEW, ghostview gv, null)
+   if test "${GHOSTVIEW}" = null ; then
+       AC_MSG_WARN("No valid ghostview found!")
+   fi
+
+   dnl check for and assign the path to latex
+   AC_CHECK_PROGS(LATEX, latex, null)
+   if test "${LATEX}" = null ; then
+       AC_MSG_WARN("No valid latex found!")
+   fi
+   AC_SUBST(LATEXFLAGS)
+
+   dnl check for and assign the path to bibtex
+   AC_CHECK_PROGS(BIBTEX, bibtex, null)
+   if test "${BIBTEX}" = null ; then
+       AC_MSG_WARN("No valid bibtex found!")
+   fi
+   AC_SUBST(BIBTEXFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(XDVI, xdvi, null)
+   if test "${XDVI}" = null ; then
+       AC_MSG_WARN("No valid xdvi found!")
+   fi
+   AC_SUBST(XDVIFLAGS)
+
+   dnl check for and assign the path to dvips
+   AC_CHECK_PROGS(DVIPS, dvips, null)
+   if test "${DVIPS}" = null ; then
+       AC_MSG_WARN("No valid dvips found!")
+   fi
+   AC_SUBST(DVIPSFLAGS)
+
+   dnl check for and assign the path for printing (lp)
+   AC_CHECK_PROGS(LP, lp lpr, null)
+   if test "${LP}" = null ; then
+       AC_MSG_WARN("No valid lp or lpr found!")
+   fi
+   AC_SUBST(LPFLAGS)
 
 ])
 

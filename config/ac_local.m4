@@ -88,18 +88,71 @@ AC_DEFUN(AC_VENDORLIB_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_DETERMINE_WORD_SIZES
+dnl
+dnl determine word sizes for C++ POD data types, this function checks
+dnl the type of 4/8 byte integers and 4/8 byte floats, it defines the 
+dnl cpp variables EIGHT_BYTE_INT_TYPE, FOUR_BYTE_INT_TYPE,
+dnl EIGHT_BYTE_FLOAT_TYPE, and FOUR_BYTE_FLOAT_TYPE; it only acts if
+dnl macros AC_DEFINE_EIGHT_BYTE_INT_TYPE,
+dnl        AC_DEFINE_FOUR_BYTE_INT_TYPE,
+dnl        AC_DEFINE_FOUR_BYTE_FLOAT_TYPE,
+dnl        AC_DEFINE_EIGHT_BYTE_FLOAT_TYPE
+dnl are called in configure.in.  It defines long_long_used='true' if 
+dnl the integer type long long is required for a certain size integer
+dnl usage: in aclocal.m4 (called in AC_DRACO_ENV)
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DETERMINE_WORD_SIZES, [dnl
+
+   dnl determine and define data types for word sizes
+
+   # eight byte integer types
+   if test -n "${def_eight_byte_int_type}" ; then
+       AC_DETERMINE_INT(8)
+       AC_DEFINE_UNQUOTED(EIGHT_BYTE_INT_TYPE, ${INTEGER_SIZE_TYPE})
+       if test "${INTEGER_SIZE_TYPE}" = 'long long' ; then
+	   long_long_used='true'
+       fi
+   fi
+
+   # four byte integer types
+   if test -n "${def_four_byte_int_type}" ; then
+       AC_DETERMINE_INT(4)
+       AC_DEFINE_UNQUOTED(FOUR_BYTE_INT_TYPE, ${INTEGER_SIZE_TYPE})
+       if test "${INTEGER_SIZE_TYPE}" = 'long long' ; then
+	   long_long_used='true'
+       fi
+   fi
+
+   # eight byte float types
+   if test -n "${def_eight_byte_float_type}" ; then
+       AC_DETERMINE_FLOAT(8)
+       AC_DEFINE_UNQUOTED(EIGHT_BYTE_FLOAT_TYPE, ${FLOAT_SIZE_TYPE})
+   fi
+
+   # four byte float types
+   if test -n "${def_four_byte_float_type}" ; then
+       AC_DETERMINE_FLOAT(4)
+       AC_DEFINE_UNQUOTED(FOUR_BYTE_FLOAT_TYPE, ${FLOAT_SIZE_TYPE})
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_DETERMINE_INT
 dnl
 dnl DETERMINE C++ DATA TYPE FOR A GIVEN INTEGER SIZE
 dnl eg. AC_DETERMINE_INT(4) sets the variable INTEGER_SIZE_TYPE to int
+dnl used in AC_DETERMINE_WORD_SIZES
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DETERMINE_INT, [dnl
 
    AC_MSG_CHECKING("C++ data type of integer of size $1 bytes")
 
-   # set the language to C++
-   AC_LANG_CPLUSPLUS
+   # set the language to C++ (if not all ready set)
+   AC_REQUIRE([AC_LANG_CPLUSPLUS])
 
    check_ints='false'
    
@@ -158,6 +211,7 @@ dnl DETERMINE C++ DATA TYPE FOR HOST_FLOAT
 dnl
 dnl DETERMINE C++ DATA TYPE FOR A GIVEN FLOAT SIZE
 dnl eg. AC_DETERMINE_FLOAT(8) sets the variable FLOAT_SIZE_TYPE to double
+dnl used in AC_DETERMINE_WORD_SIZES
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DETERMINE_FLOAT, [dnl
@@ -165,7 +219,7 @@ AC_DEFUN(AC_DETERMINE_FLOAT, [dnl
    AC_MSG_CHECKING("C++ data type of float of size $1 bytes")
 
    # set the language to C++
-   AC_LANG_CPLUSPLUS
+   AC_REQUIRE([AC_LANG_CPLUSPLUS])
 
    check_floats='false'
    
