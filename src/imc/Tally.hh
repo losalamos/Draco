@@ -14,6 +14,7 @@
 #define rtt_imc_Tally_hh
 
 #include "Random_Walk_Sub_Tally.hh"
+#include "Surface_Sub_Tally.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <vector>
@@ -96,6 +97,7 @@ class Tally
     // Useful typedefs
     typedef rtt_dsxx::SP<MT>                    SP_MT;
     typedef rtt_dsxx::SP<Random_Walk_Sub_Tally> SP_RW_ST;
+    typedef rtt_dsxx::SP<Surface_Sub_Tally>     SP_S_ST;
     typedef std::vector<double>                 sf_double;
     typedef std::vector<sf_double>              vf_double;
 
@@ -138,6 +140,7 @@ class Tally
 
     // >>> SUB TALLY OBJECTS
     SP_RW_ST rw_sub_tally;
+    SP_S_ST  surface_sub_tally;
 
   public:
     // Tally constructor.
@@ -148,10 +151,16 @@ class Tally
     //! Create a Random_Walk_Sub_Tally.
     void create_RW_Sub_Tally() { rw_sub_tally = new Random_Walk_Sub_Tally(); }
 
+    //! Assign a Surface_Sub_Tally
+    void assign_Surface_Sub_Tally(SP_S_ST tally) { surface_sub_tally = tally; }
+
     // >>> SUB TALLY ACCESSORS
     
     //! Get a Random_Walk_Sub_Tally.
     SP_RW_ST get_RW_Sub_Tally() const { return rw_sub_tally; }
+    
+    //! Get a Surface_Sub_Tally
+    SP_S_ST get_Surface_Sub_Tally() const { return surface_sub_tally; }
 
     // >>> TALLY ACCUMULATION FUNCTIONS
 
