@@ -36,25 +36,17 @@ using namespace C4;
 int mynode;
 int mynodes;
 
-int main(int argc, char *argv[])
-{    
-  // init C4 stuff
-    C4::Init(argc, argv);
-    mynode  = C4::node();
-    mynodes = C4::nodes();
-
-    typedef Particle<OS_Mesh> Particle;
-
-  // set buffer size
-    Particle_Buffer<Particle>::set_buffer_size(3);
+void comp_comm()
+{
+    Particle_Buffer<Particle<OS_Mesh> >::set_buffer_size(3);
 
   // declare communication
     SP<OS_Mesh> mesh; 
     SP<Rnd_Control> rcon = new Rnd_Control(9836592);
-    Particle_Buffer<Particle> buffer(8, 2, rcon->get_size()); 
-    Particle_Buffer<Particle>::Comm_Buffer send_buffer;
-    Particle_Buffer<Particle>::Comm_Buffer recv_buffer;
-    Particle_Buffer<Particle>::Bank bank;
+    Particle_Buffer<Particle<OS_Mesh> > buffer(8, 2, rcon->get_size()); 
+    Particle_Buffer<Particle<OS_Mesh> >::Comm_Buffer send_buffer;
+    Particle_Buffer<Particle<OS_Mesh> >::Comm_Buffer recv_buffer;
+    Particle_Buffer<Particle<OS_Mesh> >::Bank bank;
 
   // post a receive on each processor
     if (node() == 0)
@@ -63,34 +55,69 @@ int main(int argc, char *argv[])
 	buffer.post_arecv(recv_buffer, 0);
 
   // make some particles
-    vector<double> r(3, static_cast<double>(node()));
-    vector<double> o(3, 5.0);
-    Particle part(r, o, 10.0 * (node() + 1), 50, rcon->get_rn());
-    buffer.buffer_particle(send_buffer, part);
-
-  // print the particles
-    gsync();
-    cout << "NODE " << node() << endl;
-    cout << part << endl;
+    {
+	vector<double> r(3, static_cast<double>(node()));
+	vector<double> o(3, 5.0);
+	Particle<OS_Mesh>  part(r, o, 10.0 * (node() + 1), 50, rcon->get_rn());
+	buffer.buffer_particle(send_buffer, part);
+    }
 
   // async send the particles
     if (node() == 0)
+    {
+	for (int i = 0; i < 100000; i++);
 	buffer.asend_buffer(send_buffer, 1);
+    }
     if (node() == 1)
 	buffer.asend_buffer(send_buffer, 0);
 
   // get the particles 
-    buffer.async_wait(recv_buffer);
+    bool done = false;
+    while (!done)
+	done = buffer.async_check(recv_buffer);
     buffer.add_to_bank(recv_buffer, bank);
 
-  // print the particles
-    gsync();
-    cout << "NODE " << node() << endl;
+  // check to see we got the right stuff
     while (bank.size())
     {
-	cout << *bank.top() << endl;
-	bank.pop();
+	if (!node())
+	{
+	    vector<double> r(3, 1.0);
+	    vector<double> o(3, 5.0);
+	    Particle<OS_Mesh> part(r, o, 20.0, 50, rcon->get_rn(0));
+	    if (*bank.top() == part)
+		cout << "TEST IS SUCCESSFUL ON NODE " << node() << endl;
+            else
+                cout << "TEST IS UNSUCCESSFUL ON NODE " << node() << endl;	    
+	    bank.pop();
+	}
+	if (node())
+	{
+	    vector<double> r(3, 0.0);
+	    vector<double> o(3, 5.0);
+	    Particle<OS_Mesh> part(r, o, 10.0, 50, rcon->get_rn(0));
+	    if (*bank.top() == part)
+		cout << "TEST IS SUCCESSFUL ON NODE " << node() << endl;
+            else
+                cout << "TEST IS UNSUCCESSFUL ON NODE " << node() << endl;	    
+	    bank.pop();
+	}
     }
+
+  // free the recv buffers
+    buffer.async_free(recv_buffer);
+}
+
+
+int main(int argc, char *argv[])
+{    
+  // init C4 stuff
+    C4::Init(argc, argv);
+    mynode  = C4::node();
+    mynodes = C4::nodes();
+
+  // tests
+    comp_comm();
 
   // c4 end
     C4::Finalize();

@@ -103,6 +103,43 @@ void block()
     gsync();
 }
 
+void reorder()
+{
+    if (!node())
+	cout << endl << "<<< SWITCH ORDER TEST >>>" << endl;
+
+    int x;
+    int y[4];
+
+    if (!node())
+    {
+	x = 5;
+	y[0] = 1;
+	y[1] = 2;
+	y[2] = 3;
+	y[3] = 4;
+	Send (x, 1, 500);
+	cout << "0 has sent x = " << x << " to 1" << endl;
+	Send (&y[0], 4, 1, 501);
+	cout << "0 has sent y = {" << y[0] << "," << y[1] << ","
+	     << y[2] << "," << y[3] << "} to 1" << endl;
+    }
+    
+    if (node())
+    {
+	Recv (&y[0], 4, 0, 501);
+	cout << "1 has received y = {" << y[0] << "," << y[1] << ","
+	     << y[2] << "," << y[3] << "}" << endl;
+	Recv (x, 0, 500);
+	cout << "1 has received x = " << x << endl;
+    }
+
+  // lets get together
+    gsync();
+    cout << node() << " is done with reordered communication!" << endl;
+    gsync();
+}
+
 void mix()
 {    
     if (!node())
@@ -178,6 +215,8 @@ void reduce_array()
    int x[] = {1*(node()+1), 10*(node()+1)};
    cout << "x on " << node() << " is [" << x[0] << "," << x[1] << "]"
 	<< endl;
+   if (node() == 0)
+       for (int i = 0; i < 10000000; i++);
    gsum(x,2);
    gsync();
    cout << "x on " << node() << " after reduction is [" << x[0] << "," 
@@ -202,6 +241,9 @@ int main(int argc, char *argv[])
   // lets try a reduction
     reduce_scalar();
     reduce_array();
+
+  // lets mix up the order on blocking sends
+    reorder();
 
   // C4 final
     Finalize();
