@@ -346,7 +346,7 @@ int main(int argc, char *argv[])
     mynodes = C4::nodes();
  
  // try block
-    try
+//     try
     {
       // lets look at our buffers
 	int sb = 1000;
@@ -421,10 +421,10 @@ int main(int argc, char *argv[])
 
           // get mesh and opacity
   	    mesh    = pcomm->recv_Mesh();
-  	    opacity = pcomm->recv_Opacity(mesh);
+	    opacity = pcomm->recv_Opacity(mesh);
 
           // make a particle buffer on this node
-            buffer  = new Particle_Buffer<Particle<OS_Mesh> >(*mesh, *rcon);
+	    buffer  = new Particle_Buffer<Particle<OS_Mesh> >(*mesh, *rcon);
 
           // get the source for this node
   	}
@@ -432,8 +432,8 @@ int main(int argc, char *argv[])
   	if (mesh) 
 	{
   	    Builder_diagnostic(*mesh, *opacity);
-	    comm_particle1(*mesh, *buffer, *rcon);
-	    comm_particle2(*mesh, *buffer, *rcon);
+// 	    comm_particle1(*mesh, *buffer, *rcon);
+// 	    comm_particle2(*mesh, *buffer, *rcon);
 	}
 
       // print out the buffers
@@ -454,16 +454,16 @@ int main(int argc, char *argv[])
 		 << endl;
 	}
     }
-    catch (const dsxx::assertion &ass)
-    {
-	cout << "Dumbass, you screwed up: " << ass.what() << endl;
-	return 1;
-    }
-    catch(...)
-    {
-	cout << "HELP ME" << endl;
-	return 1;
-    }
+//     catch (const dsxx::assertion &ass)
+//     {
+// 	cout << "Dumbass, you screwed up: " << ass.what() << endl;
+// 	return 1;
+//     }
+//     catch(...)
+//     {
+// 	cout << "HELP ME" << endl;
+// 	return 1;
+//     }
 
   // c4 end
     C4::Finalize();

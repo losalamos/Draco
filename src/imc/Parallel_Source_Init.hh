@@ -164,6 +164,9 @@ private:
     void calc_ncen_init();
     void write_initial_census(const MT &, Rnd_Control &);
 
+  // calculate slope of T_electron^4 for volume emission
+    void calc_t4_slope(const MT &, const Mat_State<MT> &);
+    
   // communication functions
     void send_source_energies(const MT &);
     void recv_source_energies(const MT &);

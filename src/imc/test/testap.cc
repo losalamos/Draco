@@ -116,6 +116,9 @@ int main(int argc, char *argv[])
     mynode  = C4::node();
     mynodes = C4::nodes();
 
+	for (int i = 1; i <= 10; i++)
+	cout << "HERE IS i" << i << endl;
+
   // tests
     comp_comm();
 
