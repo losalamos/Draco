@@ -278,13 +278,13 @@ dep_libpooma	= $(POOMA_ROOT)/lib/$(POOMA_ARCH)/libpooma.a
 # which depend critically on the value of $(env).
 
 $(env)/%.o : %.cc
-	$(CXX) -c $(CXXFLAGS) $*.cc -o $@
+	$(CXX) -c $(CXXFLAGS) $(CXX_DEPEND) $*.cc -o $@
 
 .pt_%_$(env).cc : %.pt
 	$(INSTANTIALYZER) -o $@ $*.pt
 
 $(env)/%.o : .%_$(env).cc
-	$(CXX) -c $(CXXFLAGS) $(usrflg) .$*_$(env).cc -o $@
+	$(CXX) -c $(CXXFLAGS) $(CXX_DEPEND) .$*_$(env).cc -o $@
 
 .nml_%.hh .nml_%.cc : %.nml
 	$(NMLGEN) $*.nml
