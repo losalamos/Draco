@@ -47,6 +47,8 @@ namespace rtt_imc
 // 0) original
 // 1) 19 Jun 2000 : added function recalc_census_ew_after_comb to better
 //                  conserve energy after doing our reproducible comb.
+// 2) 26 Jul 2000 : modified calc_num_part_and_rn_fields to better distribute 
+//                  leftover particles (after integer math) across all procs.
 //===========================================================================//
 
 template<class MT, class PT = Particle<MT> >
