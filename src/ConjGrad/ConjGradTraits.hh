@@ -12,10 +12,9 @@
 #ifndef __ConjGrad_ConjGradTraits_hh__
 #define __ConjGrad_ConjGradTraits_hh__
 
-#include "DefaultScalarMultiplies.hh"
-
-#include "traits/MT_traits.hh"
+#include "traits/ContainerTraits.hh"
 #include "ds++/Mat.hh"
+#include "ds++/Assert.hh"
 #include "c4/global.hh"
 #include <functional>
 #include <cmath>
@@ -43,16 +42,81 @@ class ConjGradTraits
   public:
     
     typedef typename Field::value_type value_type;
+    typedef rtt_traits::ContainerTraits<Field> ContainerTraits;
     
-    typedef DefaultScalarMultiplies<value_type, Field> ScalarMultiplies;
-    typedef std::plus<Field> Add;
-    typedef std::minus<Field> Sub;
+    struct ScalarMultiplies
+	: public std::binary_function<value_type,Field,Field>
+    {
+	Field operator()(const value_type v, const Field &f) const
+	{
+	    Field ret(f);
+	    for (typename Field::iterator rit = ret.begin();
+		 rit != ret.end(); ++rit)
+	    {
+		*rit = v * (*rit);
+	    }
+	    return ret;
+	}
+    };
+
+    struct Add : public std::binary_function<Field,Field,Field>
+    {
+	Field operator()(const Field &f1, const Field &f2) const
+	{
+	    Assert(ContainerTraits::conformal(f1, f2));
+	    
+	    Field ret(f1);
+
+	    typename Field::iterator rit = ret.begin();
+	    typename Field::const_iterator f2it = f2.begin();
+	    while (rit != ret.end())
+	    {
+		*rit = *rit + *f2it;
+		++rit;
+		++f2it;
+	    }
+	    return ret;
+	}
+    };
+
+    struct Sub : public std::binary_function<Field,Field,Field>
+    {
+	Field operator()(const Field &f1, const Field &f2) const
+	{
+	    Assert(ContainerTraits::conformal(f1, f2));
+	    
+	    Field ret(f1);
+
+	    typename Field::iterator rit = ret.begin();
+	    typename Field::const_iterator f2it = f2.begin();
+	    while (rit != ret.end())
+	    {
+		*rit = *rit - *f2it;
+		++rit;
+		++f2it;
+	    }
+	    return ret;
+	}
+    };
 
     struct Dot : public std::binary_function<Field,Field,value_type>
     {
 	value_type operator()(const Field &f1, const Field &f2) const
 	{
-	    return rtt_traits::vector_traits<Field>::dot(f1, f2);
+	    Assert(ContainerTraits::conformal(f1, f2));
+	    
+	    value_type ret = value_type();
+	    typename Field::const_iterator it1 = f1.begin();
+	    typename Field::const_iterator it2 = f2.begin();
+	    while (it1 != f1.end())
+	    {
+		ret = ret + (*it1)*(*it2);
+		++it1;
+		++it2;
+	    }
+
+	    C4::gsum(ret);
+	    return ret;
 	}
     };
 
