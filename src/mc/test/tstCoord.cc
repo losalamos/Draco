@@ -191,6 +191,55 @@ void test_scatters(Coord_sys &xyz)
 
 //---------------------------------------------------------------------------//
 
+void test_directions(const Coord_sys &xyz)
+{
+    Sprng ran = rndc.get_rn(10);
+
+    // bins for sampling direction
+    double bins[8] = {0,0,0,0,0,0,0,0};
+
+    // omega
+    vector<double> o;
+    vector<double> old(3, 0.0);
+
+    // do 24 samples
+    for (int i = 0; i < 24000; i++)
+    {
+	o = xyz.sample_isotropic_dir(ran);
+	if (o.size() != 3) ITFAILS;
+
+	// bin up results
+	if (o[0] >= 0.0 && o[1] >= 0.0 && o[2] >= 0.0) bins[0] += 1.0; 
+	if (o[0] <  0.0 && o[1] >= 0.0 && o[2] >= 0.0) bins[1] += 1.0; 
+	if (o[0] >= 0.0 && o[1] <  0.0 && o[2] >= 0.0) bins[2] += 1.0; 
+	if (o[0] <  0.0 && o[1] <  0.0 && o[2] >= 0.0) bins[3] += 1.0; 
+	if (o[0] >= 0.0 && o[1] >= 0.0 && o[2] <  0.0) bins[4] += 1.0; 
+	if (o[0] <  0.0 && o[1] >= 0.0 && o[2] <  0.0) bins[5] += 1.0; 
+	if (o[0] >= 0.0 && o[1] <  0.0 && o[2] <  0.0) bins[6] += 1.0; 
+	if (o[0] <  0.0 && o[1] <  0.0 && o[2] <  0.0) bins[7] += 1.0; 
+
+	if (soft_equiv(o.begin(), o.end(), old.begin(), old.end())) ITFAILS;
+	old = o;
+
+	// check magnitude
+	if (!soft_equiv(sqrt(dot(o, o)), 1.0, 1.e-10)) ITFAILS;
+    }
+    
+    cout << endl << "Angular octant bins:";
+    for (int i = 0; i < 8; i++)
+    {
+	bins[i] *= 8.0 / 24000.0;
+	cout << " " << bins[i];
+	if (!soft_equiv(bins[i], 1.0, 0.02)) ITFAILS;
+    }
+    cout << endl << endl;
+    
+    if (rtt_mc_test::passed)
+	PASSMSG("Direction integrity in coordinate system ok.");
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     C4::Init(argc, argv);
@@ -232,9 +281,16 @@ int main(int argc, char *argv[])
 	// test XYZ
 	testXYZ(xyz);
 	testXYZ(*sxyz);
-	
+
+	if (rtt_mc_test::passed)
+	    PASSMSG("XY and XYZ coordinate systems ok.");
+
 	// test direction cosines with scattering
 	test_scatters(xyz);
+	test_directions(xyz);
+
+	if (rtt_mc_test::passed)
+	    PASSMSG("Directional sampling ok.");
     }
     catch (rtt_dsxx::assertion &ass)
     {
