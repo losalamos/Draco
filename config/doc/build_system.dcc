@@ -644,7 +644,7 @@ value is unspecified), and valid arguments for a given option. The
 following table summarizes the \c --with DBS build options:
 
 \latexonly
-0, ..., \f$ N_{c}\f$
+$0, \ldots , N_{c}$
 \endlatexonly
 \htmlonly
 <!-- The table command is skipped when processed by doxygen anyway so we make the whole block html -->
