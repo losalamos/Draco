@@ -493,6 +493,9 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
 						 sf_double slope, 
 						 double center_pt ) const
 {
+    using global::soft_equiv;
+    using global::max;
+
     Require (cell > 0 && cell <= num_cells());
     Check (coord->get_dim() == 3);
 
@@ -508,8 +511,18 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
     double half_delw = slope[0]  * half_delx;
     double low_w     = center_pt - half_delw;
     double high_w    = center_pt + half_delw;
-    Check (low_w  >= 0.0);
-    Check (high_w >= 0.0);
+
+    // set low_w and high_w to zero if it is less than zero
+    if (low_w < 0)
+    {
+	Check (soft_equiv(low_w, 0.0));
+	low_w = 0.0;
+    }
+    if (high_w < 0)
+    {
+	Check (soft_equiv(high_w, 0.0));
+	high_w = 0.0;
+    }
 
     // calculate posititve y-values corresponding to x-dimension cell extents
     double loy = lox * tan_half_theta;
@@ -541,8 +554,18 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
     half_delw = slope[2] * half_delz;
     low_w     = center_pt - half_delw;
     high_w    = center_pt + half_delw;
-    Check (low_w  >= 0.0);
-    Check (high_w >= 0.0);
+
+    // set low_w and high_w to zero if it is less than zero
+    if (low_w < 0)
+    {
+	Check (soft_equiv(low_w, 0.0));
+	low_w = 0.0;
+    }
+    if (high_w < 0)
+    {
+	Check (soft_equiv(high_w, 0.0));
+	high_w = 0.0;
+    }
 
     // calculate extents of function from which to sample
     lof = loz * low_w;
