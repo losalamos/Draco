@@ -104,6 +104,9 @@ endif
 ifeq ($(c4),mpi)
 comm	:= c4m
 SYS_FLAGS = -DC4_MPI
+ifdef MPT_SGI
+SYS_FLAGS += -I$(MPT_SGI)/usr/include
+endif
 SYS_LIBS = -lmpi
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77_sgi_64
 endif
@@ -111,6 +114,9 @@ endif
 ifeq ($(c4),s2)
 comm	:= c4s2
 SYS_FLAGS = -DC4_SHMEM
+ifdef MPT_SGI
+SYS_FLAGS += -I$(MPT_SGI)/usr/include
+endif
 SYS_LIBS = -lsma -lpthread
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77_sgi_64
 endif
