@@ -11,6 +11,7 @@
 #define __mc_TET_Builder_hh__
 
 #include "TET_Mesh.hh"
+#include "XYZCoord_sys.hh"
 
 namespace rtt_mc
 {
