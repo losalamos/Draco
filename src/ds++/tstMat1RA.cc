@@ -2040,13 +2040,12 @@ void t6()
         if (citer != x.begin())
             passed = false;
 
-    // The following conversion is currently not supported by the compiler.
+    // The static_cast below is currently required because of a compiler
+    // error.
 
-#ifdef SDP
         criter = riter;
-        if (criter != x.rbegin())
+        if (criter != static_cast<X::const_reverse_iterator>(x.rbegin()))
             passed = false;
-#endif
     }
 
     cout << "t6: end\n";

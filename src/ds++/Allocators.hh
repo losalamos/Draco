@@ -52,6 +52,18 @@ inline void ds_deallocate( T *buf ) { ::operator delete( buf ); }
 template<class T>
 class Simple_Allocator {
   public:
+    typedef size_t                        size_type;
+    typedef ptrdiff_t                     difference_type;
+    typedef T*                            pointer;
+    typedef const T*                      const_pointer;
+    typedef T&                            reference;
+    typedef const T&                      const_reference;
+    typedef T                             value_type;
+    typedef T *iterator;
+    typedef const T *const_iterator;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
     static T *fetch( int n, const T *hint = 0 )
     {
 	return ds_allocate( n, hint );
@@ -64,10 +76,19 @@ class Simple_Allocator {
 	ds_deallocate( validate( v, n ) );
     }
 
-    typedef T *iterator;
-    typedef const T *const_iterator;
-    typedef std::reverse_iterator<iterator> reverse_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    size_type max_size () const MSIPL_THROW
+#ifdef _CRAYT3E
+        // Cray T3E backend sometimes incorrectly uses signed comparisons
+        // instead of unsigned comparisons.  Therefore for T3E, we use
+        // a max_size that is positive even if misinterpreted by backend.
+    { return sizeof(T)==1 ? size_type( size_type (-1)/2u ) :
+               ( size_type(1) > size_type (size_type (-1)/sizeof (T)) ) ? size_type(1) :
+               size_type (size_type (-1)/sizeof (T)); }
+#else
+    { return // max (size_type (1), size_type (size_type (-1)/sizeof (T))); 
+       ( size_type(1) > size_type (size_type (-1)/sizeof (T)) ) ? size_type(1):size_type(size_type(-1)/sizeof (T));}
+#endif /*_CRAYT3E*/
+
 };
 
 //===========================================================================//
@@ -85,6 +106,18 @@ class Simple_Allocator {
 template<class T>
 class Guarded_Allocator {
   public:
+    typedef size_t                        size_type;
+    typedef ptrdiff_t                     difference_type;
+    typedef T*                            pointer;
+    typedef const T*                      const_pointer;
+    typedef T&                            reference;
+    typedef const T&                      const_reference;
+    typedef T                             value_type;
+    typedef T *iterator;
+    typedef const T *const_iterator;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
     static T *fetch( int n, const T* hint = 0 )
     {
 	Assert( n >= 0 );
@@ -132,10 +165,19 @@ class Guarded_Allocator {
 	ds_deallocate( validate( v, n ) );
     }
 
-    typedef T *iterator;
-    typedef const T *const_iterator;
-    typedef std::reverse_iterator<iterator> reverse_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    size_type max_size () const MSIPL_THROW
+#ifdef _CRAYT3E
+        // Cray T3E backend sometimes incorrectly uses signed comparisons
+        // instead of unsigned comparisons.  Therefore for T3E, we use
+        // a max_size that is positive even if misinterpreted by backend.
+    { return sizeof(T)==1 ? size_type( size_type (-1)/2u ) :
+               ( size_type(1) > size_type (size_type (-1)/sizeof (T)) ) ? size_type(1) :
+               size_type (size_type (-1)/sizeof (T)); }
+#else
+    { return // max (size_type (1), size_type (size_type (-1)/sizeof (T))); 
+       ( size_type(1) > size_type (size_type (-1)/sizeof (T)) ) ? size_type(1):size_type(size_type(-1)/sizeof (T));}
+#endif /*_CRAYT3E*/
+
 };
 
 //===========================================================================//

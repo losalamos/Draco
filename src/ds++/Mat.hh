@@ -89,10 +89,10 @@ class Mat1 {
     typedef const T& const_reference;
     typedef T* pointer;
     typedef const T* const_pointer;
+    typedef typename Allocator::difference_type difference_type;
+    typedef typename Allocator::size_type size_type;
     typedef typename Allocator::iterator iterator;
     typedef typename Allocator::const_iterator const_iterator;
-    typedef ptrdiff_t difference_type;
-    typedef size_t size_type;
     typedef typename Allocator::reverse_iterator reverse_iterator;
     typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
 
@@ -121,8 +121,8 @@ class Mat1 {
     int get_xmin() const { return xmin; }
     int get_xlen() const { return xlen; }
 
-    int size() const { return nx(); }
-    int max_size() const { return nx(); }
+    size_type size() const { return nx(); }
+    size_type max_size () const { return alloc.max_size(); }
     bool empty() const { return (this->size() == 0); }
 
 // For backward compatibility.
