@@ -397,6 +397,13 @@ int main( int argc, char *argv[] )
       }
     }
 
+// Print the status of the test.
+
+    if (C4::node() == 0)
+    {
+        cout << "PASSED" << endl;
+    }
+
     cout << "Finalizing" << endl;
 
     C4::Finalize();

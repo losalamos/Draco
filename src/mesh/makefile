@@ -40,11 +40,9 @@ tstpretarg := deps
 
 include ../config/make.tests
 
-# Testing out some dejagnu support
+# Get DejaGnu support
 
-deja:
-	(cd testsuites; $(MAKE) links)
-	runtest --tool=ds++ --srcdir=./testsuites ENV=$(env) DBC=$(DBC)
+include ../config/make.deja
 
 # Dependencies
 
