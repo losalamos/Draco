@@ -32,9 +32,7 @@
 //===========================================================================//
 // class PoomaMesh_XYZ - A 3-d cartesian mesh class based on POOMA r1
 // This is a 3-d cartesisan structured mesh.  The main purpose of having this
-// class is in order for it to be instantiated by various test articles
-// throughout the Draco system.  It could also be useful to Draco clients as
-// a point of reference during the construction of their own mesh classes.
+// class is in order for it to be instantiated by various transport codes.
 //===========================================================================//
 
 template <class Mesh>
@@ -148,11 +146,11 @@ class PoomaMesh_XYZ
 
       // face accessors
         // i, j, k == global xyz cell indices
+        // c == cell number
         // f == face index
-      /*
         cctf<T> operator()(int f) const
         {
-          cctf<T> cf(get_Mesh());
+          cctf<T> cf(get_SP_Mesh());
           cctf<T>::iterator cfit, cfend = cf.end();
           const BaseField_t& bf = dynamic_cast<const BaseField_t&>(*this);
 	  BaseField_t::iterator bfit = bf.begin();
@@ -160,7 +158,6 @@ class PoomaMesh_XYZ
             *cfit = (*bfit)(f);
           return cf;
         }
-	*/
 	value_type& operator()(int i, int j, int k, int f)
 	{
           NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
@@ -168,6 +165,20 @@ class PoomaMesh_XYZ
 	}
 	const value_type& operator()(int i, int j, int k, int f) const
 	{
+          NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
+	  return localElement(loc)(f);
+	}
+	value_type& operator()(int c, int f)
+	{
+          int i,j,k;
+          spm_m->get_cell_indices(c,i,j,k);
+          NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
+	  return localElement(loc)(f);
+	}
+	const value_type& operator()(int c, int f) const
+	{
+          int i,j,k;
+          spm_m->get_cell_indices(c,i,j,k);
           NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
 	  return localElement(loc)(f);
 	}
@@ -238,7 +249,10 @@ class PoomaMesh_XYZ
       // constructors
         fcdtf_iterator() : face_m(0) {}
         fcdtf_iterator(BaseField_t& bf)
-          : bfi_m(bf.begin()), face_m(0) {}
+          : bfi_m(bf.begin()), face_m(0)
+        {
+          bf.Uncompress();
+        }
         fcdtf_iterator(const BaseField_iterator& bfiter)
           : bfi_m(bfiter), face_m(0) {}
         fcdtf_iterator(const fcdtf_iterator<T>& iter)
@@ -491,13 +505,27 @@ class PoomaMesh_XYZ
       // element accessors
 	value_type& operator()(int i, int j, int k)
 	{
-            NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
-            return localElement(loc);
+          NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
+          return localElement(loc);
 	}
 	const value_type& operator()(int i, int j, int k) const
 	{
-            NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
-            return localElement(loc);
+          NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
+          return localElement(loc);
+	}
+	value_type& operator()(int c)
+	{
+          int i,j,k;
+          spm_m->get_cell_indices(c,i,j,k);
+          NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
+          return localElement(loc);
+	}
+	const value_type& operator()(int c) const
+	{
+          int i,j,k;
+          spm_m->get_cell_indices(c,i,j,k);
+          NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
+          return localElement(loc);
 	}
 
       // accessors
@@ -555,10 +583,6 @@ class PoomaMesh_XYZ
 	  : BaseField_t( const_cast<Mesh_t&>(spm->get_Mesh()),
                          const_cast<Layout_t&>(spm->get_Layout()) ), spm_m(spm)
         {
-          // store global mesh sizes
-          ncx_m = spm->get_Mesh().gridSizes[0] - 1;
-          ncy_m = spm->get_Mesh().gridSizes[1] - 1;
-          ncz_m = spm->get_Mesh().gridSizes[2] - 1;
           // compute local number of boundary faces
           computeSize();
         }
@@ -567,22 +591,16 @@ class PoomaMesh_XYZ
                          const_cast<Layout_t&>(m.get_Layout()) ),
             spm_m(const_cast<MT_t*>(&m))
         {
-          // store global mesh sizes
-          ncx_m = m.get_Mesh().gridSizes[0] - 1;
-          ncy_m = m.get_Mesh().gridSizes[1] - 1;
-          ncz_m = m.get_Mesh().gridSizes[2] - 1;
           // compute local number of boundary faces
           computeSize();
         }
         bstf(const bstf<T>& f)
           : BaseField_t( const_cast<Mesh_t&>(f.get_Mesh().get_Mesh()),
                          const_cast<Layout_t&>(f.get_Mesh().get_Layout()) ),
-            spm_m( f.get_SP_Mesh() ), size_m(f.size_m),
-            ncx_m(f.ncx_m), ncy_m(f.ncy_m), ncz_m(f.ncz_m) {}
+            spm_m( f.get_SP_Mesh() ), size_m(f.size_m) {}
 
       // Assignment from scalar
         const bstf<T>& operator=(T x) {
-          Uncompress();
           iterator it, iend = end();
           for (it = begin(); it != iend; ++it)
             *it = x;
@@ -602,6 +620,7 @@ class PoomaMesh_XYZ
 
       // face accessors
         // i, j, k == global xyz cell indices
+        // c == cell number 
         // f == face index
         // must check that indices refer to a boundary face
 	value_type& operator()(int i, int j, int k, int f)
@@ -613,6 +632,24 @@ class PoomaMesh_XYZ
 	}
 	const value_type& operator()(int i, int j, int k, int f) const
 	{
+          bool OK = checkIndices(i,j,k,f);
+          PInsist(OK, "bstf<T>::operator() detects bad indices!!");
+          NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
+	  return localElement(loc)(f);
+	}
+	value_type& operator()(int c, int f)
+	{
+          int i,j,k;
+          spm_m->get_cell_indices(c,i,j,k);
+          bool OK = checkIndices(i,j,k,f);
+          PInsist(OK, "bstf<T>::operator() detects bad indices!!");
+          NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
+	  return localElement(loc)(f);
+	}
+	const value_type& operator()(int c, int f) const
+	{
+          int i,j,k;
+          spm_m->get_cell_indices(c,i,j,k);
           bool OK = checkIndices(i,j,k,f);
           PInsist(OK, "bstf<T>::operator() detects bad indices!!");
           NDIndex<3> loc(Index(i,i),Index(j,j),Index(k,k));
@@ -676,7 +713,7 @@ class PoomaMesh_XYZ
             // left boundary face
             result = true;
           }
-          else if (i == ncx_m-1 && f == 1) {
+          else if (i == spm_m->get_ncx()-1 && f == 1) {
             // right boundary face
             result = true;
           }
@@ -684,7 +721,7 @@ class PoomaMesh_XYZ
             // bottom boundary face
             result = true;
           }
-          else if (j == ncy_m-1 && f == 3) {
+          else if (j == spm_m->get_ncy()-1 && f == 3) {
             // top boundary face
             result = true;
           }
@@ -692,7 +729,7 @@ class PoomaMesh_XYZ
             // rear boundary face
             result = true;
           }
-          else if (k == ncz_m-1 && f == 5) {
+          else if (k == spm_m->get_ncz()-1 && f == 5) {
             // front boundary face
             result = true;
           }
@@ -706,7 +743,6 @@ class PoomaMesh_XYZ
       // data
         SPM_t spm_m;
         int size_m;
-        int ncx_m, ncy_m, ncz_m;
     };
 
 // Boundary specified field iterators
@@ -729,6 +765,7 @@ class PoomaMesh_XYZ
         bstf_iterator(BaseField_t& bf)
           : bfi_m(bf.begin()), bfend_m(bf.end()), face_m(0)
         {
+          bf.Uncompress();
           // make sure we are at the first valid boundary face
           int loc[3];
           bool OK;
@@ -954,6 +991,7 @@ class PoomaMesh_XYZ
     ccvf::BaseField_t*     CellSizes_m;
     ccvf::BaseField_t*     CellPositions_m;
     ccsf::BaseField_t*     CellVolumes_m;
+    int ncx_m, ncy_m, ncz_m;
 
   public:
 
@@ -971,6 +1009,10 @@ class PoomaMesh_XYZ
       Mesh_m->storeSpacingFields(decomp);
       // create the field layout
       FLayout_m = new Layout_t(*Mesh_m, decomp);
+      // store global mesh sizes
+      ncx_m = Mesh_m->gridSizes[0] - 1;
+      ncy_m = Mesh_m->gridSizes[1] - 1;
+      ncz_m = Mesh_m->gridSizes[2] - 1;
       // initialize internal fields
       initializeCellSizes();
       initializeCellPositions();
@@ -989,6 +1031,10 @@ class PoomaMesh_XYZ
       Mesh_m->storeSpacingFields(decomp);
       // create the field layout
       FLayout_m = new Layout_t(*Mesh_m, decomp);
+      // store global mesh sizes
+      ncx_m = Mesh_m->gridSizes[0] - 1;
+      ncy_m = Mesh_m->gridSizes[1] - 1;
+      ncz_m = Mesh_m->gridSizes[2] - 1;
       // initialize internal fields
       initializeCellSizes();
       initializeCellPositions();
@@ -996,7 +1042,7 @@ class PoomaMesh_XYZ
     }
 
   // destructor
-    ~PoomaMesh_XYZ()
+    ~PoomaMesh_XYZ() 
     {
       delete CellSizes_m;
       delete CellPositions_m;
@@ -1011,15 +1057,15 @@ class PoomaMesh_XYZ
     const Layout_t& get_Layout() const { return *FLayout_m; }
     Layout_t&       get_Layout()       { return *FLayout_m; }
 
-    int get_ncx() const { return (Mesh_m->gridSizes[0] - 1); }
-    int get_ncy() const { return (Mesh_m->gridSizes[1] - 1); }
-    int get_ncz() const { return (Mesh_m->gridSizes[2] - 1); }
+    int get_ncx() const { return ncx_m; }
+    int get_ncy() const { return ncy_m; }
+    int get_ncz() const { return ncz_m; }
 
-    int get_total_cells() const
+    int get_total_ncells() const
     {
-      return get_ncx() * get_ncy() * get_ncz();
+      return ncx_m * ncy_m * ncz_m;
     }
-    int get_cells() const
+    int get_ncells() const
     {
       // count cells of one of our internal fields
       ccsf::BaseField_t::iterator cvi, cvend = CellVolumes_m->end();
@@ -1028,13 +1074,10 @@ class PoomaMesh_XYZ
         ++count;  // increment cell counter
       return count;
     }
+    int get_ncp() const { return get_ncells(); }
 
-    // rmr We no longer need get_ncp()
-    int get_ncp() const { return get_cells(); }
-
-    void get_dx(ccsf& f) const
+    void get_dx(ccsf& f) const 
     {
-      f.Uncompress();
       ccvf::BaseField_t::iterator csi, csend = CellSizes_m->end();
       ccsf::iterator fi = f.begin();
       for (csi = CellSizes_m->begin(); csi != csend; ++csi, ++fi)
@@ -1042,7 +1085,6 @@ class PoomaMesh_XYZ
     }
     void get_dy(ccsf& f) const
     {
-      f.Uncompress();
       ccvf::BaseField_t::iterator csi, csend = CellSizes_m->end();
       ccsf::iterator fi = f.begin();
       for (csi = CellSizes_m->begin(); csi != csend; ++csi, ++fi)
@@ -1050,7 +1092,6 @@ class PoomaMesh_XYZ
     }
     void get_dz(ccsf& f) const
     {
-      f.Uncompress();
       ccvf::BaseField_t::iterator csi, csend = CellSizes_m->end();
       ccsf::iterator fi = f.begin();
       for (csi = CellSizes_m->begin(); csi != csend; ++csi, ++fi)
@@ -1059,7 +1100,6 @@ class PoomaMesh_XYZ
 
     void get_xloc(ccsf& f) const
     {
-      f.Uncompress();
       ccvf::BaseField_t::iterator cpi, cpend = CellPositions_m->end();
       ccsf::iterator fi = f.begin();
       for (cpi = CellPositions_m->begin(); cpi != cpend; ++cpi, ++fi)
@@ -1067,7 +1107,6 @@ class PoomaMesh_XYZ
     }
     void get_yloc(ccsf& f) const
     {
-      f.Uncompress();
       ccvf::BaseField_t::iterator cpi, cpend = CellPositions_m->end();
       ccsf::iterator fi = f.begin();
       for (cpi = CellPositions_m->begin(); cpi != cpend; ++cpi, ++fi)
@@ -1075,7 +1114,6 @@ class PoomaMesh_XYZ
     }
     void get_zloc(ccsf& f) const
     {
-      f.Uncompress();
       ccvf::BaseField_t::iterator cpi, cpend = CellPositions_m->end();
       ccsf::iterator fi = f.begin();
       for (cpi = CellPositions_m->begin(); cpi != cpend; ++cpi, ++fi)
@@ -1083,7 +1121,6 @@ class PoomaMesh_XYZ
     }
     void get_xloc(fcdsf& f) const
     {
-      f.Uncompress();
       ccvf::BaseField_t::iterator cpi, cpend = CellPositions_m->end(),
                                   csi = CellSizes_m->begin();
       fcdsf::iterator fi = f.begin();
@@ -1101,7 +1138,6 @@ class PoomaMesh_XYZ
     }
     void get_yloc(fcdsf& f) const
     {
-      f.Uncompress();
       ccvf::BaseField_t::iterator cpi, cpend = CellPositions_m->end(),
                                   csi = CellSizes_m->begin();
       fcdsf::iterator fi = f.begin();
@@ -1119,7 +1155,6 @@ class PoomaMesh_XYZ
     }
     void get_zloc(fcdsf& f) const
     {
-      f.Uncompress();
       ccvf::BaseField_t::iterator cpi, cpend = CellPositions_m->end(),
                                   csi = CellSizes_m->begin();
       fcdsf::iterator fi = f.begin();
@@ -1138,7 +1173,6 @@ class PoomaMesh_XYZ
 
     void get_face_lengths(fcdsf& f) const
     {
-      f.Uncompress();
       ccvf::BaseField_t::iterator csi, csend = CellSizes_m->end();
       fcdsf::iterator fi = f.begin();
       for (csi = CellSizes_m->begin(); csi != csend; ++csi) {
@@ -1152,7 +1186,6 @@ class PoomaMesh_XYZ
     }
     void get_face_areas(fcdsf& f) const
     {
-      f.Uncompress();
       ccvf::BaseField_t::iterator csi, csend = CellSizes_m->end();
       fcdsf::iterator fi = f.begin();
       for (csi = CellSizes_m->begin(); csi != csend; ++csi) {
@@ -1169,6 +1202,18 @@ class PoomaMesh_XYZ
       f = (*CellVolumes_m);
     }
 
+  // conversion function for cell numbering
+    void get_cell_indices(int ncell, int& i, int& j, int& k) const
+    {
+      int res = ncell;
+      k = res % (ncx_m * ncy_m);
+      res -= k * (ncx_m * ncy_m);
+      j = res % ncx_m;
+      res -= j * ncx_m;
+      i = res;
+      return;
+    }
+
   // gather/scatter operations
     template <class T1, class T2, class Op>
     static void scatter(fcdtf<T1>& to, const cctf<T2>& from, const Op& op);
@@ -1181,7 +1226,7 @@ class PoomaMesh_XYZ
     template <class T1, class T2, class Op>
     static void gather(fcdtf<T1>& to, const bstf<T2>& from, const Op& op);
     template <class T>
-    static void swap(fcdtf<T>& f1, fcdtf<T>& f2);
+    static void swap(fcdtf<T>& to, const fcdtf<T>& from);
 
   // reduction operations
     template <class T>
@@ -1206,7 +1251,7 @@ class PoomaMesh_XYZ
   private:
 
   // methods
-    void initializeCellSizes()
+    void initializeCellSizes() 
     {
       CellSizes_m = new ccvf::BaseField_t(*Mesh_m, *FLayout_m);
       Mesh_m->getDeltaVertexField(*CellSizes_m);
