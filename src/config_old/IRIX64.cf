@@ -64,39 +64,32 @@ endif
 
 ifeq ($(cxx),KCC)
 
-ifneq ($(c4),shmem)
-STRICT	= --strict
-endif
+#ifneq ($(c4),shmem)
+#STRICT	= --strict
+#endif
 
 ifeq ($(c4),s2)
-STRICT	=
+strict	:= no
+endif
+
+ifndef strict
+STRICT	= --strict
 endif
 
 ifeq ($(strict),no)
 STRICT	=
 endif
 
+# Assume KCC 3.3 unless told specifically otherwise.
+
 CC	= cc
-CXX	= KCC -x -mips4 --no_implicit_include $(STRICT) -D_POSIX_SOURCE
-cmplr	= k64
+CXX	= KCC --one_per -mips4 --backend -r10000 \
+		$(STRICT) -D_POSIX_SOURCE --backend -Wl,-woff,84
+cmplr	= kcc
 
 ifeq ($(bits),32)
-CXX	= KCC -x -32 --no_implicit_include $(STRICT) -D_POSIX_SOURCE
+CXX	+= -32
 cmplr	= k32
-endif
-
-ifeq ($(eta),yes)
-KCC	= /v/furnish/kcc3.3eta/KCC_BASE/bin/KCC -mips4 --backend -r10000 \
-$(STRICT) -D_POSIX_SOURCE --one_per --backend -Wl,-woff,84	
-
-ifeq ($(bits),32)
-CXX	=  $(KCC) -32
-cmplr	= k32e
-else
-CXX	= $(KCC)
-cmplr	= k64e
-endif
-
 endif
 
 LDSHARED = cc -64 -shared
@@ -114,10 +107,10 @@ ifndef kcc_deps
 kcc_deps := yes
 endif
 
-INSTANTIALYZER	+= -m edg
+INSTANTIALYZER	+= -m ansi
 
 ifeq ($(c4),no)
-SYS_FLAGS = -DNOMPI
+SYS_FLAGS =
 comm	:=
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_f77_sgi_64
 endif
@@ -157,12 +150,8 @@ SYS_LIBS += -lperfex
 endif
 
 ifdef nj
-ifneq ($(kcc),old)
 lib_cmd	:= $(CXX) --parallel_build $(nj) -o
 SYS_LINK_FLAGS	:= --parallel_build $(nj)
-else
-lib_cmd	:= $(CXX) -o
-endif
 else
 lib_cmd	:= $(CXX) -o
 endif
