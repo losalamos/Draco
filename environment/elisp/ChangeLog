@@ -1,0 +1,27 @@
+2004-09-22  Kelly Thompson  <kgt@lanl.gov>
+
+	* Config-pkg.el: By default, turn on doxymacs-mode. The doxymacs
+	  package is available as a part of draco/environment/elisp on
+	  open ICN machines and on the CCS-2/4 LAN. Also fixed declaration
+	  of doxymacs-doxygen-style so this script doesn't overwrite a
+	  value set by the user. 
+
+2004-08-04  Kelly Thompson  <kgt@lanl.gov>
+
+	* rtt-hacks.el (rtt-companion-alist): Added the pairs (.hh;.i.hh)
+	  and (.i.hh;.hh).  This allows C-f8 to map between hh and
+	  i.hh files when a .cc file is not available. Added some
+	  documentation.  
+
+	* ccs4defaults.el ((not (file-installed-p "doxymacs.el"))): Add
+	  elisp code to turn off want-doxymacs-mode if doxymacs.el is not
+	  available.  
+
+	* Config-pkg.el (draco-init-cvs-mode): Added global key binding
+	  for M-S-f5 to run 'cvs-mode-add-change-log-entry-other-window.
+	  This function is only defined if pcl-cvs has been loaded. 
+
+	* Config-key.el (global-map): Added key mapping for C-S-f5 to run
+	  add-change-log-entry. 
+	
+
