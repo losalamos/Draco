@@ -225,6 +225,10 @@ int main( int argc, char *argv[] )
     t5();
     t6();
 
+// Print the status of the test.
+
+    cout << "PASSED" << endl;
+
     return 0;
 }
 

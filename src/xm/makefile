@@ -26,6 +26,10 @@ ifneq ($(dodeps),no)
 	(cd ../ds++; $(MAKE) $(subnj))
 endif
 
+# Get DejaGnu support
+
+include ../config/make.deja
+
 # Go pick up the standard signature for makefiles.
 
 cc_files	:= $(libsrcs) $(tstsrcs)
