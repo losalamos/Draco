@@ -37,6 +37,8 @@
 //                initialize the field
 //  8)  6-11-98 : added get_normal_in public member function; slightly 
 //                modified from get_normal to give the inward normal
+//  9)  6-12-98 : added piecewise-linear sampling to sample_pos member
+//                function
 // 
 //===========================================================================//
 
@@ -213,8 +215,10 @@ public:
     vector<int> get_surcells(string) const;
     int get_bndface(string, int) const;
     inline CCVF_a get_vertices(int, int) const;
-    inline vector<double> sample_pos(string, int, Sprng &) const;
-    inline vector<double> sample_pos_on_face(string, int, int, Sprng &) const;
+    inline vector<double> sample_pos(int, Sprng &) const;
+    inline vector<double> sample_pos(int, Sprng &, vector<double> &, 
+				     double) const; 
+    inline vector<double> sample_pos_on_face(int, int, Sprng &)	const; 
 
   // overloaded operators
     bool operator==(const OS_Mesh &) const;
@@ -467,10 +471,9 @@ inline OS_Mesh::CCVF_a OS_Mesh::get_vertices(int cell, int face) const
 }
 
 //---------------------------------------------------------------------------//
-// sample the position in a cell
+// sample the position uniformly in a cell
 
-inline vector<double> OS_Mesh::sample_pos(string dist, int cell, 
-					  Sprng &random) const
+inline vector<double> OS_Mesh::sample_pos(int cell, Sprng &random) const
 {
   // assign minimums and maximums for cell dimensions
     vector<double> vmin(coord->get_dim());
@@ -483,16 +486,42 @@ inline vector<double> OS_Mesh::sample_pos(string dist, int cell,
     }
 
   // use coord_sys to sample the location
-    vector<double> r = coord->sample_pos(dist, vmin, vmax, random);
+    vector<double> r = coord->sample_pos(vmin, vmax, random);
 
   // return position vector
     return r;
 }
+
+//---------------------------------------------------------------------------//
+// sample the position in a cell given a tilt (or other slope-like function)
+
+inline vector<double> OS_Mesh::sample_pos(int cell, Sprng &random, 
+					  vector<double> &slope, 
+					  double center_pt) const
+{
+  // assign minimums and maximums for cells dimensions
+    vector<double> vmin(coord->get_dim());
+    vector<double> vmax(coord->get_dim());
+
+    for (int d = 1; d <= coord->get_dim(); d++)
+    {
+	vmin[d-1] = min(d, cell);
+	vmax[d-1] = max(d, cell);
+    }
+
+  // use coord_sys to sample the location
+    vector<double> r = coord->sample_pos(vmin, vmax, random, slope,
+					 center_pt);
+
+  // return position vector
+    return r;
+}
+
 //---------------------------------------------------------------------------//
 // sample a position on a face
 
-inline vector<double> OS_Mesh::sample_pos_on_face(string dist, int cell,
-						  int face, Sprng &random) const
+inline vector<double> OS_Mesh::sample_pos_on_face(int cell, int face, 
+						  Sprng &random) const
 {
   // assign minimums and maximums for cell dimensions
     vector<double> vmin(coord->get_dim());
@@ -505,13 +534,11 @@ inline vector<double> OS_Mesh::sample_pos_on_face(string dist, int cell,
     }
 
   // use coord_sys to sample the location
-    vector<double> r = coord->sample_pos_on_face(dist, vmin, vmax, 
-						 face, random);
+    vector<double> r = coord->sample_pos_on_face(vmin, vmax, face, random);
 
   // return position vector
     return r;
 }
-
 
 CSPACE
 

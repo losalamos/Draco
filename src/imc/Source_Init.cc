@@ -331,7 +331,7 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 	    Sprng random = rcon.get_rn();
 	    
 	  // sample particle location
-	    vector<double> r = mesh.sample_pos("uniform", cell, random);
+	    vector<double> r = mesh.sample_pos(cell, random);
 
 	  // sample particle direction
 	    vector<double> omega = mesh.get_Coord().

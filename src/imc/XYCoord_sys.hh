@@ -27,6 +27,7 @@
 //                a transform for 2D XY, it has been removed
 //  5)   5-5-98 : added sample_pos virtual function
 //  6)  6-10-98 : added sample_pos_on_face virtual function
+//  7)  6-12-98 : changed interface to sample_pos()
 // 
 //===========================================================================//
 
@@ -36,11 +37,13 @@
 #include "ds++/Assert.hh"
 #include <vector>
 #include <string>
+#include <cmath>
 
 IMCSPACE
 
 using std::vector;
 using std::string;
+using std::sqrt;
 
 using RNG::Sprng;
     
@@ -56,11 +59,17 @@ public:
 
   // virtual functions
     virtual string get_Coord() const { string c = "xy"; return c; }
-    inline virtual vector<double> sample_pos(string, vector<double>,
-					     vector<double>, Sprng &) const;
-    inline virtual vector<double> sample_pos_on_face(string, vector<double>,
-						     vector<double>, int, 
-						     Sprng &) const;
+
+    inline virtual vector<double> 
+    sample_pos(vector<double> &, vector<double> &, Sprng &) const;
+
+    inline virtual vector<double> 
+    sample_pos(vector<double> &, vector<double> &, Sprng &, 
+	       vector<double> &, double) const;
+
+    inline virtual 
+    vector<double> sample_pos_on_face(vector<double> &, vector<double> &, 
+				      int, Sprng &) const;
 	     
   // End_Verbatim 
   // End_Doc 
@@ -72,7 +81,7 @@ public:
 // sample the position in an XY cell
 
 inline vector<double> 
-XYCoord_sys::sample_pos(string dist, vector<double> min, vector<double> max,
+XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
 			Sprng &random) const
 {
   // make return vector
@@ -84,24 +93,55 @@ XYCoord_sys::sample_pos(string dist, vector<double> min, vector<double> max,
 
     for (int d = 0; d < 2; d++)
     {
-      // do uniform sampling
-	if (dist == "uniform")
-	    r[d] = (max[d] - min[d]) * random.ran() + min[d];
-      // add others as needed
+      // uniform sampling of position
+	r[d] = (max[d] - min[d]) * random.ran() + min[d];
     }
 
   // return assigned array
     return r;
 }
 
+//---------------------------------------------------------------------------//
+// sample the position in a cell from a linear function
+
+inline vector<double> 
+XYCoord_sys::sample_pos(vector<double> &min, vector<double> &max,
+			Sprng &random, vector<double> &slope, 
+			double center_pt) const
+{
+  // make return vector
+    vector<double> r(2);
+
+  // some assertions
+    Check (min.size() == 2);
+    Check (max.size() == 2);
+
+    for (int d = 0; d < 2; d++)
+    {
+      // sample the linear function using linear-linear decomposition of
+      // y = mx + b (b is intercept on low side of cell)
+	double b = center_pt - slope[d] * (max[d] - min[d]) * 0.5;
+
+      // prob is the fractional area of the negative slope line
+	double prob = .5 * b / center_pt;
+
+      // sample the dimension
+	if (random.ran() <= prob)
+	    r[d] = max[d] - (max[d] - min[d]) * sqrt(random.ran());
+	else
+	    r[d] = min[d] + (max[d] - min[d]) * sqrt(random.ran());
+    }
+
+  // return assigned array
+    return r;
+}
 
 //---------------------------------------------------------------------------//
 // sample the position on an XY face
 
 inline vector<double> 
-XYCoord_sys::sample_pos_on_face(string dist, vector<double> min, 
-				vector<double> max, int face, 
-				Sprng &random) const
+XYCoord_sys::sample_pos_on_face(vector<double> &min, vector<double> &max, 
+				int face, Sprng &random) const
 {
   // make return vector
     vector<double> r(2);
@@ -112,28 +152,25 @@ XYCoord_sys::sample_pos_on_face(string dist, vector<double> min,
     Check (face >= 1 && face <= 4);
 
   // distribute uniformly over face
-    if (dist == "uniform")
+    if (face == 1)
     {
-	if (face == 1)
-	{
-	    r[0] = min[0];
-	    r[1] = (max[1] - min[1]) * random.ran() + min[1];
-	}
-	else if (face == 2)
-	{
-	    r[0] = max[0];
-	    r[1] = (max[1] - min[1]) * random.ran() + min[1];
-	}
-	else if (face == 3)
-	{
-	    r[0] = (max[0] - min[0]) * random.ran() + min[0];
-	    r[1] = min[1];
-	}
-	else if (face == 4)
-	{
-	    r[0] = (max[0] - min[0]) * random.ran() + min[0];
-	    r[1] = max[1];
-	}
+	r[0] = min[0];
+	r[1] = (max[1] - min[1]) * random.ran() + min[1];
+    }
+    else if (face == 2)
+    {
+	r[0] = max[0];
+	r[1] = (max[1] - min[1]) * random.ran() + min[1];
+    }
+    else if (face == 3)
+    {
+	r[0] = (max[0] - min[0]) * random.ran() + min[0];
+	r[1] = min[1];
+    }
+    else if (face == 4)
+    {
+	r[0] = (max[0] - min[0]) * random.ran() + min[0];
+	r[1] = max[1];
     }
 
   // return assigned array

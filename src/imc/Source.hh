@@ -46,10 +46,13 @@ public:
   // volume source particles: number and first random number stream per cell
     typename MT::CCSF_int vol_rnnum;
     typename MT::CCSF_int nvol;
+    typename MT::CCSF_int ew_vol;
 
   // surface source particles: number and first random number stream per cell
     typename MT::CCSF_int ss_rnnum;
     typename MT::CCSF_int nss;
+    typename MT::CCSF_int fss;
+    typename MT::CCSF_int ew_ss;
 
   // census file
     ifstream census;
@@ -62,7 +65,6 @@ public:
   // nsrcdone_cell is the running number of source particles completed for a
   // particular source type in a particular cell. 
     int nsrcdone_cell;
-
 
   // cell currently under consideration
     int current_cell;
@@ -86,12 +88,12 @@ public:
 	   const Particle_Buffer<PT> &);
 
   // required services for Source
-    inline SP<PT> get_Source_Particle(); 
+    SP<PT> get_Source_Particle(double); 
 
   // Particle sources
-    SP<PT> get_census();
-    SP<PT> get_evol();
-    SP<PT> get_ss();
+    SP<PT> get_census(double);
+    SP<PT> get_evol(double);
+    SP<PT> get_ss(double);
 
   // source diagnostic
     void print(ostream &) const;
@@ -100,73 +102,6 @@ public:
 //---------------------------------------------------------------------------//
 // inline functions for Source
 //---------------------------------------------------------------------------//
-// get a source particle
-
-// template<class MT, class PT>
-// inline SP<PT> Source<MT, PT>::get_Source_Particle()
-// {
-//     bool sampled = false;
-
-//   // instantiate particle to return
-//     SP<Particle<MT> > source_particle;
-
-//   // do all surface source particles, one-by-one
-//     while (!sampled && nssdone < nsstot)
-//     {
-// 	if (nsrcdone_cell < nss(current_cell))
-// 	{
-// 	    source_particle = get_ss();
-// 	    sampled = true;
-// 	    nsrcdone_cell++;
-// 	    nssdone++;
-// 	}
-// 	else
-// 	{
-// 	    current_cell++;
-// 	    nsrcdone_cell = 0;
-// 	    if (current_cell > numcells)
-// 	    {
-// 		Check (nssdone == nsstot);
-// 		current_cell = 1;
-// 	    }
-// 	}
-//     }
-
-//   // do all volume emission particles, one-by-one
-//     while (!sampled && nvoldone < nvoltot)
-//     {
-// 	if (nsrcdone_cell < nvol(current_cell))
-// 	{
-// 	    source_particle = get_evol();
-// 	    sampled = true;
-// 	    nsrcdone_cell++;
-// 	    nvoldone++;
-// 	}
-// 	else
-// 	{
-// 	    current_cell++;
-// 	    nsrcdone_cell = 0;
-// 	    if (current_cell > numcells)
-// 	    {
-// 		Check (nvoldone == nvoltot);
-// 		current_cell = 1;
-// 	    }
-// 	}
-//     }
-
-//   // do all census particles, one-by-one
-//     while (!sampled && ncendone < ncentot)
-//     {
-// 	    source_particle = get_census();
-// 	    sampled = true;
-// 	    ncendone++;
-//     }
-
-//     Check (sampled);
-
-//     return source_particle;
-// }
-
 
 //---------------------------------------------------------------------------//
 // overloaded operators

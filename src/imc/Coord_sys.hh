@@ -65,11 +65,17 @@ public:
 
   // pure virtual functions
     virtual string get_Coord() const = 0;
-    virtual vector<double> sample_pos(string, vector<double>, vector<double>, 
-				      Sprng &) const = 0;
-    virtual vector<double> sample_pos_on_face(string, vector<double>, 
-					      vector<double>, int,
-					      Sprng &) const = 0;
+ 
+    virtual vector<double> 
+    sample_pos(vector<double> &, vector<double> &, Sprng &) const = 0;
+
+    virtual vector<double> 
+    sample_pos(vector<double> &, vector<double> &, Sprng &, 
+	       vector<double> &, double) const = 0;
+
+    virtual 
+    vector<double> sample_pos_on_face(vector<double> &, vector<double> &, 
+				      int, Sprng &) const = 0;
 
     virtual vector<double> sample_dir(string, Sprng &) const;
     virtual void calc_omega(double, double, vector<double> &) const;

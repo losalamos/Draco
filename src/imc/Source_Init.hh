@@ -129,9 +129,19 @@ public:
     int get_ncen(int cell) const { return ncen(cell); }
     int get_nvol(int cell) const { return nvol(cell); }
     int get_nss(int cell) const { return nss(cell); }
-    double get_t4_slope(int coord, int cell) const { 
-	return t4_slope(coord, cell); }
+    inline double get_t4_slope(int, int) const;
 };
+
+//---------------------------------------------------------------------------//
+// inline functions for source_init
+//---------------------------------------------------------------------------//
+// return the slope of the temperature to the 4th power in each cell
+
+template<class MT>
+inline double Source_Init<MT>::get_t4_slope(int dim, int cell) const 
+{ 
+    return t4_slope(dim, cell); 
+}
 
 CSPACE
 
