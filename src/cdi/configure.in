@@ -12,9 +12,6 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(cdi/config.h:config.h.in)
 package="cdi"
 
-dnl VENDOR SETUPS
-AC_MPI_SETUP(test)
-
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)

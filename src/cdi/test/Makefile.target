@@ -11,17 +11,20 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
                 ${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-#ptCCsrc := $(wildcard ${srcdir}/*_pt.cc)
-#ptObjs := $(notdir $(patsubst %.cc,%.o,${ptCCsrc}))
+thistestdep     := libcdi_Test${libsuffix}
+thistestlib     := -L. -lcdi_Test
+thistestlib_dep := DummyGrayOpacity.o DummyMultigroupOpacity.o DummyEoS.o
 
-#utilObjs := ${ptObjs}
+${test_alltarget}: ${thistestdep} ${testdeps}
 
-extraObjs := DummyGrayOpacity.o DummyMultigroupOpacity.o DummyEoS.o
+%: %.o 
+	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
 
-${test_alltarget}: ${testdeps}
+${thistestdep}: ${thistestlib_dep} ${testdeps}
+	${AR} ${ARFLAGS} $@ ${thistestlib_dep} ${ARTESTLIBS}
+	${RANLIB} $@
 
-%: %.o ${extraObjs}
-	${LD} ${LDFLAGS} -o $@ $< ${extraObjs} ${testlibs}
+objs += ${thistestdep}
 
 ###############################################################################
 # end of draco/src/meshReaders/test Makefile.target
