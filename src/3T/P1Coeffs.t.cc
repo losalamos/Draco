@@ -44,6 +44,7 @@ namespace rtt_3T
      spQElecStar = new ccsf(spMesh);
      spCvStar = new ccsf(spMesh);
      spNu = new ccsf(spMesh);
+     spSigmaAbsBar = new ccsf(spMesh);
      spD = new fcdsf(spMesh);
      spFprime = new DiscFluxField(spMesh);
      
