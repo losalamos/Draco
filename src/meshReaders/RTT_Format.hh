@@ -897,6 +897,12 @@ class RTT_Format : public Mesh_Reader
 	void readEndKeyword(ifstream & meshfile);
 
       public:
+	vector<vector<double> >  get_data() const
+	{ return data; }
+
+	vector<double> get_data(int node_numb) const
+	{ return data[node_numb]; }
+
 	double get_data(int node_numb,int data_index) const
 	{ return data[node_numb][data_index]; }
     };
@@ -927,9 +933,15 @@ class RTT_Format : public Mesh_Reader
 	void readEndKeyword(ifstream & meshfile);
 
       public:
-	double get_data(int side_numb,int data_index) const
+	vector<vector<double> > get_data() const
+	{ return data; }
+
+	vector<double> get_data(int side_numb) const
+	{ return data[side_numb]; }
+
+ 	double get_data(int side_numb,int data_index) const
 	{ return data[side_numb][data_index]; }
-    };
+   };
 
 /*!
  * \brief RTT_Format nested class member that controls parsing, storing, and
@@ -957,6 +969,12 @@ class RTT_Format : public Mesh_Reader
 	void readEndKeyword(ifstream & meshfile);
 
       public:
+	vector<vector<double> > get_data() const
+	{ return data; }
+
+	vector<double> get_data(int cell_numb) const
+	{ return data[cell_numb]; }
+
 	double get_data(int cell_numb,int data_index) const
 	{ return data[cell_numb][data_index]; }
     };
@@ -1701,6 +1719,84 @@ class RTT_Format : public Mesh_Reader
  */
     int get_cells_map(int cell_numb) const
         { return spCells->get_map(cell_numb);}
+
+    // node_data access
+/*!
+ * \brief Returns all of the data field values for each of the nodes read from
+ *        the mesh file.
+ * \return The data field values for each of the nodes.
+ */
+    vector<vector<double> > get_node_data() const
+	{ return spNodeData->get_data(); }
+/*!
+ * \brief Returns all of the data field values for the specified node read 
+ *        from the mesh file.
+ * \param node_numb Node number.
+ * \return The node data field values.
+ */
+    vector<double> get_node_data(int node_numb) const
+	{ return spNodeData->get_data(node_numb); }
+/*!
+ * \brief Returns the specified data field value for the specified node read
+ *        from the mesh file.
+ * \param node_numb Node number.
+ * \param data_index Data field.
+ * \return The node data field value.
+ */
+    double get_node_data(int node_numb, int data_index) const
+	{ return spNodeData->get_data(node_numb, data_index); }
+
+    // side_data access
+/*!
+ * \brief Returns all of the data field values for each of the sides read from
+ *        the mesh file.
+ * \return The data field values for each of the sides.
+ */
+    vector<vector<double> > get_side_data() const
+	{ return spSideData->get_data(); }
+/*!
+ * \brief Returns all of the data field values for the specified side read 
+ *        from the mesh file.
+ * \param side_numb Side number.
+ * \return The side data field values.
+ */
+    vector<double> get_side_data(int side_numb) const
+	{ return spSideData->get_data(side_numb); }
+/*!
+ * \brief Returns the specified data field value for the specified side read
+ *        from the mesh file.
+ * \param side_numb Side number.
+ * \param data_index Data field.
+ * \return The side data field value.
+ */
+    double get_side_data(int side_numb, int data_index) const
+	{ return spSideData->get_data(side_numb, data_index); }
+
+    // cell_data access
+/*!
+ * \brief Returns all of the data field values for each of the cells read from
+ *        the mesh file.
+ * \return The data field values for each of the cells.
+ */
+    vector<vector<double> > get_cell_data() const
+	{ return spCellData->get_data(); }
+/*!
+ * \brief Returns all of the data field values for the specified cell read 
+ *        from the mesh file.
+ * \param cell_numb Cell number.
+ * \return The cell data field values.
+ */
+    vector<double> get_cell_data(int cell_numb) const
+	{ return spCellData->get_data(cell_numb); }
+/*!
+ * \brief Returns the specified data field value for the specified cell read
+ *        from the mesh file.
+ * \param cell_numb Cell number.
+ * \param data_index Data field.
+ * \return The cell data field value.
+ */
+    double get_cell_data(int cell_numb, int data_index) const
+	{ return spCellData->get_data(cell_numb, data_index); }
 
     // Virutal accessor function definitions based on the Mesh_Readers
     // abstract base class.

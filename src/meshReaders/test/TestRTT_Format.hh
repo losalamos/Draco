@@ -89,16 +89,26 @@ class TestRTT_Format : public rtt_UnitTestFrame::TestApp
 			  const Meshes & meshtype);
     bool check_cell_flags(const rtt_meshReaders::RTT_Format & mesh, 
 			  const Meshes & meshtype);
-    bool check_node_data_ids(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_side_data_ids(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_cell_data_ids(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_cell_defs(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_nodes(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_sides(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_cells(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_node_data(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_side_data(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_cell_data(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_node_data_ids(const rtt_meshReaders::RTT_Format & mesh, 
+			     const Meshes & meshtype);
+    bool check_side_data_ids(const rtt_meshReaders::RTT_Format & mesh, 
+			     const Meshes & meshtype);
+    bool check_cell_data_ids(const rtt_meshReaders::RTT_Format & mesh, 
+			     const Meshes & meshtype);
+    bool check_cell_defs(const rtt_meshReaders::RTT_Format & mesh, 
+			 const Meshes & meshtype);
+    bool check_nodes(const rtt_meshReaders::RTT_Format & mesh, 
+		     const Meshes & meshtype);
+    bool check_sides(const rtt_meshReaders::RTT_Format & mesh, 
+		     const Meshes & meshtype);
+    bool check_cells(const rtt_meshReaders::RTT_Format & mesh, 
+		     const Meshes & meshtype);
+    bool check_node_data(const rtt_meshReaders::RTT_Format & mesh, 
+			 const Meshes & meshtype);
+    bool check_side_data(const rtt_meshReaders::RTT_Format & mesh, 
+			 const Meshes & meshtype);
+    bool check_cell_data(const rtt_meshReaders::RTT_Format & mesh, 
+			 const Meshes & meshtype);
     bool check_virtual(const rtt_meshReaders::RTT_Format & mesh, 
 		       const Meshes & meshtype);
     bool check_connectivity(const rtt_meshReaders::RTT_Format & mesh);
