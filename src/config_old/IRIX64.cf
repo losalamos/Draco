@@ -83,14 +83,17 @@ endif
 # Assume KCC 3.3 unless told specifically otherwise.
 
 CC	= cc
-CXX	= KCC --one_per -mips4 --backend -r10000 \
-		$(STRICT) -D_POSIX_SOURCE
+CXX	= KCC --one_per -mips4 $(R10k) $(STRICT) -D_POSIX_SOURCE
 cmplr	= kcc
 
 SYS_LINK_FLAGS	:=  --backend -Wl,-woff,84,-woff,85
 
+R10k	= --backend -r10000 
+
 ifeq ($(bits),32)
 CXX	+= -32
+STRICT	=
+R10k	=
 cmplr	= k32
 endif
 
