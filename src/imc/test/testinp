@@ -21,9 +21,10 @@ zcoarse: 0 1
 num_zfine: 2
 end-mesh
 
-zonemap: 1 1 1 1
-num_materials: 1
+zonemap: 1 2 1 2
+num_materials: 2
 mat: 1 3.0 100 1.e-5 .1
+     2 1.0 5 1.e-3 .05
 analytic_opacity: tcube
 implicitness: 1
 end-mat
