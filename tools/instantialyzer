@@ -6,6 +6,10 @@
 # @> INSTANTIALYZER == "C++ Template Instantiation Tool"
 #
 # $Log$
+# Revision 1.1  1997/06/10 22:13:03  furnish
+# Import the instantialyzer, used for template instantiation on multiple
+# compilers via *.pt files.
+#
 # Revision 1.3  1997/01/24  20:34:18  furnish
 # Correct various bugs in template parameter substitution.
 #
@@ -154,8 +158,9 @@ sub instantiate_func {
 
 sub instantiate_funcproto {
     local( $tmpldefs ) = @_;
-#    $verbose = 1;
+
     print "trying to instantiate via prototype\n" if $verbose;
+    print "tmpldefs is :$tmpldefs:\n" if $verbose;
 
     local( $proto ) = "";
     local( $vals ) = "";
@@ -172,7 +177,7 @@ sub instantiate_funcproto {
     $first = 1;
     foreach $kv ( split( /,/, $tmpldefs ) ) {
 	print "working with kv pair :$kv:\n" if $verbose;
-	if ( $kv =~ /^\s*(\w+)\s*=\s*(\w+)\s*$/ ) {
+	if ( $kv =~ /^\s*(\w+)\s*=\s*([\w<>]+)\s*$/ ) {
 	    $key = $1;
 	    $val = $2;
 	    print "processing key=$key, val=$val\n" if $verbose;
@@ -198,6 +203,17 @@ sub instantiate_funcproto {
 	    } until $initial eq $proto;
 
 	    print "after substitution, proto=$proto\n" if $verbose;
+
+	    # Now try to change ">>" to "> >" where needed.
+
+	    do {
+		$initial = $proto;
+
+		$proto =~ s/>>/> >/;
+
+	    } until $initial eq $proto;
+
+	    print "after fixing >>, proto=$proto\n" if $verbose;
 	}
     }
 
