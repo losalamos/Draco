@@ -23,7 +23,7 @@ AC_CONFIG_SUBDIRS(traits units nml c4 rng meshReaders)
 AC_CONFIG_SUBDIRS(stopwatch meshTest viz RTT_Format_Reader \
                   quadrature cdi)
 AC_CONFIG_SUBDIRS(mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
-                  timestep cdi_gandolf mc)
+                  timestep cdi_gandolf cdi_eospac mc)
 AC_CONFIG_SUBDIRS(imc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver meshReaders_Services)
 AC_CONFIG_SUBDIRS(P1Diffusion)
