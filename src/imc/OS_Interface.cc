@@ -330,6 +330,7 @@ void OS_Interface::zone_mapper()
   // calculate accumulated fine_cell array
     for (int d = 0; d < dim; d++)
     {
+        accum_cells[d].resize(fine_cells[d].size()+1);
 	accum_cells[d][0] = 0;
 	for (int i = 0; i < fine_cells[d].size(); i++)
 	    accum_cells[d][i+1] = accum_cells[d][i] + fine_cells[d][i];
