@@ -21,18 +21,24 @@ srcdir = @srcdir@
 
 # get the relative directory to the config files (relative to ${top_srcdir}).
 
-rel_config_dir := $(shell ( cd ${top_srcdir} ; \
-	tmp="" ; \
-	while test ! -d config ; \
-	do \
-	   cd .. ; \
-	   tmp=$$tmp../ ; \
-	done ; \
-	echo $$tmp ) )config
+#rel_config_dir := $(shell ( cd ${top_srcdir} ; \
+#	tmp="" ; \
+#	while test ! -d config ; \
+#	do \
+#	   cd .. ; \
+#	   tmp=$$tmp../ ; \
+#	done ; \
+#	echo $$tmp ) )config
 
-# get the config directory
-config_dir = $(shell cd ${top_srcdir}/${rel_config_dir}; pwd)
-top_autodoc_dir = $(shell cd ${config_dir}/../autodoc; pwd)
+## get the config directory
+#config_dir = $(shell cd ${top_srcdir}/${rel_config_dir}; pwd)
+#top_autodoc_dir = $(shell cd ${config_dir}/../autodoc; pwd)
+
+top_autodoc_dir = $(shell cd ${top_srcdir}/../autodoc; pwd)
+
+# Build lists of image files and support files in the top autodoc
+# directory and the local autodoc directory. The local directory files
+# are listed last to override earlier entries in the autodoc dir
 
 imagefiles=$(wildcard ${top_autodoc_dir}/html/*.png)\
 	$(wildcard ${top_autodoc_dir}/html/*.gif)\
