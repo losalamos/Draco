@@ -367,7 +367,7 @@ class Quadrature
 /*!
  * \class Q1DGaussLeg
  *
- * \brienf A class to encapsulate a 1D Gauss Legendre Quadrature set.
+ * \brief A class to encapsulate a 1D Gauss Legendre Quadrature set.
  *
  * The client only needs to call QuadCreator::QuadCreate with the requested
  * quadrature set specified.  Since this quadrature set is inheireted from
@@ -427,9 +427,78 @@ class Q1DGaussLeg : public Quadrature
 
 //===========================================================================//
 /*!
+ * \class Q2DLevelSym
+ *
+ * \brief A class to encapsulate a 2D Level Symmetric quadrature set.
+ *
+ * The client only needs to call QuadCreator::QuadCreate with the requested
+ * quadrature set specified.  Since this quadrature set is inherited from
+ * the class Quadrature the client never needs to access this class directly.
+ * The class overrides the virtual member functions contained in the class
+ * Quadrature and contains data members that define the quadrature set.
+ */
+//===========================================================================//
+
+class Q2DLevelSym : public Quadrature
+{
+
+    // NESTED CLASSES and TYPEDEFS
+
+    // DATA
+
+    int numAngles; // defaults to 12.
+
+  public:
+
+    // CREATORS
+    
+    /*!
+     * \brief Constructs a 2D Level Symmetric quadrature object.
+     *
+     * \param snOrder_ Integer specifying the order of the SN set to be
+     *                 constructed.  Number of angles = (snOrder+2)*snOrder/2.
+     * \param norm_    A normalization constant.  The sum of the quadrature
+     *                 weights will be equal to this value (default = 2*PI).
+     */
+    // The default values for snOrder_ and norm_ were set in QuadCreator.
+    Q2DLevelSym( int snOrder_, double norm_ );
+    // Defaulted:   Q2DLevelSym(const Q2DLevelSym &rhs);
+    // Defaulted:  ~Q2DLevelSym();
+
+    // MANIPULATORS
+    
+    // Defaulted:   Q2DLevelSym& operator=(const Q2DLevelSym &rhs);
+
+    // ACCESSORS
+
+    // These functions override the virtual member functions specifed in the
+    // parent class Quadrature.
+
+    //! Returns the number of angles in the current quadrature set.
+    int getNumAngles()   const { return numAngles; }
+    //! Prints a short table containing the quadrature directions and weights.
+    void display()       const;
+    //! Returns the official name of the current quadrature set.
+    string name()        const { return "2D Level Symmetric"; }
+    //! Returns the number of dimensions in the current quadrature set.
+    int dimensionality() const { return 2; }
+    //! Returns the order of the SN set.
+    int getSnOrder()     const { return snOrder; }
+    //! Returns the number of eta levels in the quadrature set.
+    int getLevels()      const { return snOrder; }
+
+  private:
+    
+    // IMPLEMENTATION
+
+};
+
+
+//===========================================================================//
+/*!
  * \class Q3DLevelSym
  *
- * \brienf A class to encapsulate a 3D Level Symmetric quadrature set.
+ * \brief A class to encapsulate a 3D Level Symmetric quadrature set.
  *
  * The client only needs to call QuadCreator::QuadCreate with the requested
  * quadrature set specified.  Since this quadrature set is inheireted from

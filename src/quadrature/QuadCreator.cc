@@ -58,6 +58,11 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 	spQuad = new Q1DGaussLeg( sn_order, norm );
 	break;
 
+    case LevelSym2D:
+	if ( fabs(norm) <= TOL ) norm = 2.0*PI;
+	spQuad = new Q2DLevelSym( sn_order, norm );
+	break;
+
     case LevelSym:
 	if ( fabs(norm) <= TOL ) norm = 4.0*PI;
 	spQuad = new Q3DLevelSym( sn_order, norm );
