@@ -1,6 +1,6 @@
 <html>
 
-<!-- Time-stamp: <99/09/30 08:06:34 mcghee> -->
+<!-- $Id$ -->
 
 <header><title>
 Draco Software Engineering Practices
@@ -100,12 +100,11 @@ prepared a short <a href="./talk/talk.html">
 introduction </a> to Design-by-Contract.
 <p>
 
-<dt> <h4>DejaGnu Testing Framework </h4>
+<dt> <h4>Unit Testing Framework </h4>
 <dd> A significant fraction of code found in the Draco system is
 devoted to testing individual modules. This test code is automatically
-driven by the 
-<a href="http://www.mit.edu:8001/afs/athena.mit.edu/project/gnu/doc/html/dejagnu_toc.html"> DejaGnu </a> Testing Framework. As part
-of the DejaGnu driven test program, Draco utilizes
+driven by a locally developed Python script which is run daily.
+As part of of the automatic testing  program, Draco utilizes
 an advanced test methodology designed to demonstrate the ability
 to accurately solve certain analytic test problems. 
 <p>
@@ -184,11 +183,12 @@ and provides for the simultaneous construction of optimized
 and debug executable versions. 
 <p>
 
-<dt> <h4> Purify </h4>
-<dd> <a href="http://www.rational.com/products/purify_unix/"> Purify </a>
+<dt> <h4> Insure++ </h4>
+<dd> <a href="http://www.parasoft.com/products/insure/index.htm" > 
+Insure++ </a>
 is an industry standard run-time
 memory-leak and error detection utility. All Draco code is 
-checked with Purify prior to release.
+checked with Insure prior to release.
 <p>
 
 <dt> <h4> Context Sensitive Editing </h4>

@@ -1,6 +1,6 @@
 <html>
 
-<!-- Time-stamp: <99/09/30 08:17:51 mcghee> -->
+<!-- $Id$ -->
 
 <header><title>
 Draco Software Engineering Process
@@ -162,7 +162,7 @@ project CVS repository. Test suites are expected to comprise
 approximately 50% of the total code written.  Test suites will
 be stored in the project repository together with 
 the relevant source code. A capability will be
-provided to automatically drive tests via Deja-Gnu. Assertions will
+provided to automatically drive tests. Assertions will
 be liberally used to confirm adherence to DBC requirements.
 Liberal use of comments is required. A conventional coding style
 will be consistently used throughout the project to enhance the
@@ -172,8 +172,8 @@ languages. Code will be compiled and linked under the control of
 the Draco build system.
 
 <h4> Testing </h4>
-Component tests will be run nightly under Deja-Gnu control.
-Purify will be run on all code. Testing must take place with
+Component tests will be run nightly under automatic script control.
+Insure++ will be run on all code. Testing must take place with
 assertions enabled. If applicable, code will be validated 
 using the Analytic-Test-Method (ATM) and by comparison with
 any relevant analytic benchmarks. 
