@@ -4299,7 +4299,7 @@ echo "$as_me: error: Unrecognized F90 compiler, use --help" >&2;}
    # IBM ASCI WHITE -> newxlC (use --with-cxx=ibm for regular SP2)
    *ibm-aix*)
        if test -z "${with_cxx}" ; then
-	   with_cxx='asciwhite'
+	   with_cxx='ibm'
        fi
    ;;
 
@@ -6543,23 +6543,23 @@ _ACEOF
 	   if test -n "${MPI_LIB}" ; then
 
    # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -L${MPI_LIB} -lmpi are the directories added
+   # -L${MPI_LIB} -lmpi -lmpi_r are the directories added
 
    if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpi"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${MPI_LIB} -lmpi -lmpi_r"
    elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpi"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${MPI_LIB} -lmpi -lmpi_r"
    fi
 
 	   elif test -z "${MPI_LIB}" ; then
 
    # vendor_mpi is the vendor_<> tag (equals pkg or test)
-   # -lmpi are the directories added
+   # -lmpi -lmpi_r are the directories added
 
    if test "${vendor_mpi}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lmpi"
+       VENDOR_LIBS="${VENDOR_LIBS} -lmpi -lmpi_r"
    elif test "${vendor_mpi}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpi"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lmpi -lmpi_r"
    fi
 
 	   fi

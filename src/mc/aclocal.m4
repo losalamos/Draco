@@ -2145,7 +2145,7 @@ AC_DEFUN(AC_CPP_ENV, [dnl
    # IBM ASCI WHITE -> newxlC (use --with-cxx=ibm for regular SP2)
    *ibm-aix*)
        if test -z "${with_cxx}" ; then
-	   with_cxx='asciwhite'
+	   with_cxx='ibm'
        fi
    ;;
 
@@ -3322,9 +3322,9 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 
 	   # set up libraries (the headers are already set)
 	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
+	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi -lmpi_r)
 	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
+	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi -lmpi_r)
 	   fi
 
 	   # now turn on long long support if we are using the 
