@@ -12,9 +12,12 @@
 
 #include "TET_Mesh.hh"
 #include "XYZCoord_sys.hh"
+#include "meshReaders/Element_Definition.hh"
 
 namespace rtt_mc
 {
+
+using rtt_meshReaders::Element_Definition;
 
 using std::cerr;  // FOR DEBUGGING.
 using std::endl;  // FOR DEBUGGING.
@@ -116,6 +119,8 @@ template<class IT>
 TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
     : coord_system("xyz"), submesh(false)
 {
+// cerr << Element_Definition::TRI_3 << "\t" << Element_Definition::TETRA_4 << endl;
+
     Require (interface);
 
     // Get data arrays from the interface for TET_Mesh objects.
@@ -125,7 +130,18 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
     for (int node_ = 0 ; node_ < nodes_coords.size() ; node_++)
         Check (nodes_coords[node_].size() == THREE);
 
+    std::vector<Element_Definition::Element_Type> element_types =
+        interface->get_element_types();
+
+    // This can be improved by keeping a separate sides_vertices later.
     cells_vertices = interface->get_element_nodes();
+cerr << cells_vertices.size() << " cells_vertices size." << endl;
+cerr << element_types.size() << " element_types size." << endl;
+
+    Check (element_types.size() == cells_vertices.size());
+
+for (int i = 0 ; i < element_types.size() ; i++)
+cerr << "Type " << element_types[i] << "   with " << cells_vertices[i].size() << " nodes." << endl;
 
     VF_INT::iterator first_cell = cells_vertices.begin();
     for ( ; first_cell != cells_vertices.end() ; first_cell++)
