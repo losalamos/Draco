@@ -102,13 +102,6 @@ class SolverP1Diff
 	// empty
     }
     
-    SolverP1Diff(const SP<const MT>& spMesh_in,
-		 const Options &options_in)
-	: spMesh(spMesh_in), fCtor(spMesh_in), options(options_in)
-    {
-	// empty
-    }
-    
     //Defaulted: SolverP1Diff(const SolverP1Diff &rhs);
     //Defaulted: ~SolverP1Diff();
 
