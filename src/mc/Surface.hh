@@ -22,7 +22,7 @@ namespace rtt_mc
 //===========================================================================//
 /*!
  * \class Surface
- * \brief
+ * \brief An abstract base classes for surfaces
  *
  * Class Surface is an abstract base class which provides virtual functions
  * required for surface tracking.
@@ -57,6 +57,8 @@ class Surface
     //! destructor
     virtual ~Surface() { /* ... */ }
 
+  public:
+
     // MANIPULATORS
     
     //! Assignment operator for Surface
@@ -64,18 +66,27 @@ class Surface
 
     // ACCESSORS
 
+    //! Distance from a point, along a direction, to surface
     virtual double distance_to(std::vector<double> position,
 			       const std::vector<double>& direction) const = 0;
 
+    //! Distance from a point, with offical status, along a direction, to surface
     virtual double distance_to(std::vector<double> position,
 			       const std::vector<double>& direction,
 			       bool is_inside) const = 0;
 
+
+    //! Determine if a point is inside the surface
     virtual bool is_inside(std::vector<double> position) const = 0;
+
+    //! Determine if a point and direction is inside w/ distance_to > 0
     virtual bool is_inside(std::vector<double> position,
 			   const std::vector<double> direction) const = 0;
 
+    //! Compute the surface area of the surface
     virtual double surface_area() const = 0;
+
+    //! Compute the volume contained by the surface
     virtual double volume() const = 0;
     
 		

@@ -28,9 +28,54 @@ Sphere::Sphere(double center_, double radius_)
 
 }
 
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Computes the distance from a particle to the surface.
+ *
+ * The position and direction arguments describe a ray. This function returns
+ * the positive distance along the ray where it first crosses the sphere, or
+ * rtt_mc::global::huge if the ray does not cross the sphere.
+ *
+ * The algorithm described here uses squared quantities as much as
+ * possible. This postpones the computation of a square root until, and only
+ * if, it is needed.
+ *
+ * The position argument is modified by subtracting the vector representing
+ * the center of the sphere. Hence, it becomes the relative position of the
+ * particle with respect to the sphere.
+ *
+ * Variable center_distance_2 is the square of the distance from particle to
+ * sphere center. If center_distance_2 < radius_2 the particle is inside the
+ * sphere.
+ *
+ * Variable normal_projection is the negative dot product of the direction
+ * vector and the relative position vector. If normal_projection > 0 the
+ * particle is heading toward the sphere. Hence for particles outside the
+ * sphere, normal_projection>0 is a necessary (but not sufficient) condition
+ * for a crossing. It is also the distance along the ray to the point of
+ * closest approach to the center.
+ *
+ * Variable normal_distance_2 is the square of normal_projection.
+ *
+ * Variable normal_length_2 is the square of the length of the segment
+ * connecting the sphere center to the point of closest approach. It is
+ * computed with the Pythagorean theorem from the distance to the center and
+ * the distance to the point of closest approach.
+ *
+ * If the particle is outside, necessary and sufficient conditions for a
+ * positive crossing distance are normal_projection>0 and normal_length_2 <
+ * raidus_2
+ * 
+ * \param position Position of the particle
 
-double Sphere::distance_to(vector<double> position,
-			   const vector<double>& direction) const
+ * \param direction Direction of the particle
+
+ * \return distance to the surface of the sphere, or huge if the surface is
+ * not crossed
+
+ */
+double Sphere::distance_to(std::vector<double> position,
+			   const std::vector<double>& direction) const
 {
 
     Check(position.size()  == 3);
@@ -48,14 +93,19 @@ double Sphere::distance_to(vector<double> position,
 
     double distance = global::huge;
 
-    if ( center_distance_2 < radius_2 ) // Inside
+    // Inside, crossing is guaranteed.
+    if ( center_distance_2 < radius_2 )
     {
+	Check ( half_chord_2 > 0);
 	distance = normal_projection + std::sqrt(half_chord_2);
     }
+    // Outside, with a crossing.
     else if ( normal_projection > 0 && normal_length_2 < radius_2 )
     {
+	Check ( half_chord_2 > 0);
 	distance =  normal_projection - std::sqrt(half_chord_2);
     } 
+    // Else, outside, no crossing.
     
     Ensure( distance > 0 );
 
@@ -86,7 +136,7 @@ double Sphere::distance_to(vector<double> position,
     {
 	// This condition catches "leakage" of the ray to the outside when
 	// it's offical status is inside.
-	Ensure( normal_projection > 0 || center_distance_2 < radius_2 );
+	Require( normal_projection > 0 || center_distance_2 < radius_2 );
 	
 	double half_chord_2 = radius_2 - normal_length_2; 
 	distance = normal_projection + std::sqrt(half_chord_2);
@@ -99,7 +149,7 @@ double Sphere::distance_to(vector<double> position,
 
 	// This condition catches "leakage" of the ray to the inside when
 	// it's offical status is outside.
-	Ensure(center_distance_2 > radius_2);
+	Require(center_distance_2 > radius_2);
 	
 	double half_chord_2 = radius_2 - normal_length_2; 
 	distance =  normal_projection - std::sqrt(half_chord_2);
@@ -131,8 +181,10 @@ bool Sphere::is_inside(std::vector<double> position,
     double center_distance_2 =  global::dot(position, position);
 
     if (normal_projection > 0)
+	// Direction is inward, include boundary
 	return ( center_distance_2 <= radius_2 );
     else
+	// Direction is outward, exclude boundary
 	return ( center_distance_2 < radius_2 );
 
     return 0;
