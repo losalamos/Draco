@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# import
+# Geoffrey Furnish
+# 25 September 1997
+#
+# @> This script is based on GTS's gtsimp.
+###############################################################################
+
+pwd=`pwd`
+proj=`basename $pwd`
+
+echo "Importing latest version of $proj."
+
+cd ..
+if [ -f $proj.tar.gz ]; then
+	echo "Gunzip $proj.tar.gz"
+	gunzip $proj.tar.gz
+
+	echo "untarring $proj.tar"
+	tar xvf $proj.tar
+
+	echo "Updating .import"
+	touch $proj/.import
+
+else
+	echo "No file $proj.tar.gz.  Do you know what you're doing?"
+fi
