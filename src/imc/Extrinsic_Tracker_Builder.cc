@@ -135,12 +135,10 @@ void Extrinsic_Tracker_Builder<rtt_mc::RZWedge_Mesh>::build_surface_areas(
 
     // make sure that the sphere is (a) entirely contained between (-z,+z) or
     // (b) is a half-sphere, origin = -z or +z
-    bool   half_sphere         = false;
     double surface_area_factor = 1.0;
     if (soft_equiv(z_s, extents[2]) || soft_equiv(z_s, extents[3]))
     {
 	surface_area_factor = 0.5;
-	half_sphere         = true;
     }
     else
     {
