@@ -13,15 +13,15 @@ AC_CONFIG_HEADER(cdi/config.h:config.h.in)
 package="cdi"
 
 dnl GANDOLF VENDOR SETUP
-AC_WITH_DIR(gandolf-lib, GANDOLF_LIB, \${GANDOLF_LIB_DIR},
-            [tell where GANDOLF libraries are])
+dnl AC_WITH_DIR(gandolf-lib, GANDOLF_LIB, \${GANDOLF_LIB_DIR},
+dnl             [tell where GANDOLF libraries are])
 
-if test -z "${GANDOLF_LIB}" ; then
-   AC_VENDORLIB_SETUP(pkg, -lgandolf)
-elif test -n "${GANDOLF_LIB}" ; then
-   pkg='pkg'
-   AC_VENDORLIB_SETUP(pkg, -L${GANDOLF_LIB} -lgandolf)
-fi
+dnl if test -z "${GANDOLF_LIB}" ; then
+dnl    AC_VENDORLIB_SETUP(pkg, -lgandolf)
+dnl elif test -n "${GANDOLF_LIB}" ; then
+dnl    pkg='pkg'
+dnl    AC_VENDORLIB_SETUP(pkg, -L${GANDOLF_LIB} -lgandolf)
+dnl fi
 
 dnl VENDOR SETUPS
 AC_MPI_SETUP(test)
@@ -37,20 +37,20 @@ dnl AC_RUNTESTS(tCDI, 1)
 dnl DRACO SETUP
 AC_DRACO_ENV
 
-case $host in
-mips-sgi-irix6.*)
-   if test -n "${GANDOLF_LIB}" ; then
-       VENDOR_LIBS="-rpath ${GANDOLF_LIB} ${VENDOR_LIBS}"
-   fi
-;;
-esac
+dnl case $host in
+dnl mips-sgi-irix6.*)
+dnl    if test -n "${GANDOLF_LIB}" ; then
+dnl        VENDOR_LIBS="-rpath ${GANDOLF_LIB} ${VENDOR_LIBS}"
+dnl    fi
+dnl ;;
+dnl esac
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in)
 
-# The IPCRESS file is binary so we copy it to the target directory manually.
-echo copying ${srcdir}/test/Al_BeCu.ipcress to test/Al_BeCu.ipcress
-cp ${srcdir}/test/Al_BeCu.ipcress test/Al_BeCu.ipcress
+dnl The IPCRESS file is binary so we copy it to the target directory manually.
+dnl echo copying ${srcdir}/test/Al_BeCu.ipcress to test/Al_BeCu.ipcress
+dnl cp ${srcdir}/test/Al_BeCu.ipcress test/Al_BeCu.ipcress
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/cdi configure.in
