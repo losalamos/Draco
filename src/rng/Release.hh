@@ -17,7 +17,7 @@
 //===========================================================================//
 /*!
  * \page rng_overview Overview of the RNG package
- * \version 1_3_0
+ * \version 1_4_0
  * \author Tom Evans, Todd Urbatsch
  *
  * The rng package is an object oriented random number generation package

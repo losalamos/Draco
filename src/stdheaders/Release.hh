@@ -15,9 +15,15 @@
 //===========================================================================//
 /*!
  * \page stdheaders_overview Overview of the stdheaders package
- * \version
- * \author
+ * \version 1_0_0
+ * \author Michelle Murillo and Tom Evans
  * 
+ * stdheaders provides C++ Standard defined headers for the ANSI C-STD
+ * library.  The C++ standard stipulates that c-std libraries, ie. math.h,
+ * should sit in the std namespace and be called using c(library name).
+ * Thus, cos from math.h is called using std::cos from cmath.
+ *
+ * stdheaders is turned on by the --enable-draco-stdhdrs option.
  * 
  */
 //===========================================================================//
