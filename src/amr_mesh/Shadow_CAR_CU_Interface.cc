@@ -124,19 +124,15 @@ extern "C"
 
     // Return the position (lox, hix, etc.) of all of the grouped surface 
     // source cell sets.
-    void get_car_cu_ss_pos_(long & self, long & surface, char * pos, 
-			    long & ss_pos_size)
+    void get_car_cu_ss_pos_(long & self, char * pos, long & ss_pos_size)
     {
 	// Get the address of the CAR_CU_Interface class object (self).
 	SP<CAR_CU_Interface> interface = 
 	    opaque_pointers<CAR_CU_Interface>::item(self);
 
 	// Cast the long variable to int
-	int isurface = static_cast<int>(surface);
 	int isize = static_cast<int>(ss_pos_size);
 
-	Insist(isurface > 0 && isurface <= interface->get_ss_pos_size(), 
-	    "Invalid surface number passed to get_car_cu_ss_pos_!");
 	Insist(isize == interface->get_ss_pos_size(), 
 	    "Invalid ss position size passed to get_car_cu_ss_pos_!");
 
@@ -175,6 +171,60 @@ extern "C"
 	}
     }
 
+    // Return the surface source angular distribution.
+    void get_car_cu_ss_dist_(long & self, char * distribution)
+    {
+	// Get the address of the CAR_CU_Interface class object (self).
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	string ss_dist = interface->get_ss_dist();
+
+	for (int ind = 0; ind < ss_dist.size(); ind ++)
+	{
+	    * distribution = ss_dist[ind];
+	    ++distribution;
+	}
+    }
+    // Return the temperature of all of the grouped surface source cell sets.
+    void get_car_cu_ss_temp_(long & self, double & temp, long & ss_temp_size)
+    {
+	// Get the address of the CAR_CU_Interface class object (self).
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	// Cast the long variable to int
+	int isize = static_cast<int>(ss_temp_size);
+	double * data_array = & temp;
+
+	Insist(isize == interface->get_ss_pos_size(), 
+	    "Invalid ss temperature size passed to get_car_cu_ss_temp_!");
+
+	vector<double> ss_temp = interface->get_ss_temp();
+
+	for (int surf = 0; surf < ss_temp.size(); surf++)
+	{
+	        * data_array = ss_temp[surf];
+		++data_array;
+	}
+    }
+
+    // Return the temperature of a set of grouped surface source cells.
+    void get_car_cu_ss_cells_temp_(long & self, long & surface, double & temp)
+    {
+	// Get the address of the CAR_CU_Interface class object (self).
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	// Cast the long variable to int
+	int isurface = static_cast<int>(surface);
+
+	Insist(isurface > 0 && isurface <= interface->get_ss_pos_size(), 
+	    "Invalid surface number passed to get_car_cu_ss_cells_temp_!");
+
+	temp = interface->get_ss_temp(isurface);
+    }
+
     // Return all of the defined surface source cell sets.
     void get_car_cu_ss_cells_(long & self, long & ss_set, long & ss_size)
     {
@@ -191,7 +241,7 @@ extern "C"
 	    size_check += interface->get_ss_cells_size(surf);
 
 	Insist(isize == size_check, 
-	    "Invalid surface source size passed to get_ss_cells_!");
+	    "Invalid surface source cells size passed to get_ss_cells_!");
 
 	vector<vector<int> > iss_set = interface->get_defined_surcells();
 
@@ -221,7 +271,7 @@ extern "C"
 	Insist(isurface > 0 && isurface <= interface->get_ss_pos_size(), 
 	    "Invalid surface number passed to get_car_cu_ss_cell_set_!");
 	Insist(isize == interface->get_ss_cells_size(isurface), 
-	    "Invalid surface source size passed to get_ss_cell_set_!");
+	    "Invalid surface source cells size passed to get_ss_cell_set_!");
 
 	vector<int> iss_set = interface->get_defined_surcells(isurface);
 
@@ -230,6 +280,188 @@ extern "C"
 	    * data_array = static_cast<long>(iss_set[cell]);
 	    ++data_array;
 	}
+    }
+
+    // Return the mesh volumetric sources for all cells.
+    void get_car_cu_vol_src_(long & self, double & src, long & src_size)
+    {
+	// Get the address of the CAR_CU_Interface class object (self).
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	// Cast the long variable to int
+	int isrc_size = static_cast<int>(src_size);
+	double * data_array = & src;
+
+	Insist(isrc_size == interface->get_zone_size(), 
+	    "Invalid volume source size passed to get_car_cu_vol_src_!");
+
+	vector<double> vol_src = interface->get_evol_ext();
+
+	for (int cell = 0; cell < vol_src.size(); cell++)
+	{
+	        * data_array = vol_src[cell];
+		++data_array;
+	}
+    }
+
+    // Return the volumetric source for a single cell.
+    void get_car_cu_cell_vol_src_(long & self, long & cell, double & src)
+    {
+	// Get the address of the CAR_CU_Interface class object (self).
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	// Cast the long variable to int
+	int icell = static_cast<int>(cell);
+
+	Insist(icell > 0 && icell <= interface->get_zone_size(), 
+	    "Invalid cell number passed to get_car_cu_cell_vol_src_!");
+
+	src = interface->get_evol_ext(icell);
+    }
+
+    // Return the mesh radiation sources for all cells.
+    void get_car_cu_rad_src_(long & self, double & src, long & src_size)
+    {
+	// Get the address of the CAR_CU_Interface class object (self).
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	// Cast the long variable to int
+	int isrc_size = static_cast<int>(src_size);
+	double * data_array = & src;
+
+	Insist(isrc_size == interface->get_zone_size(), 
+	    "Invalid radiation source size passed to get_car_cu_rad_src_!");
+
+	vector<double> rad_src = interface->get_rad_source();
+
+	for (int cell = 0; cell < rad_src.size(); cell++)
+	{
+	        * data_array = rad_src[cell];
+		++data_array;
+	}
+    }
+
+    // Return the radiation source for a single cell.
+    void get_car_cu_cell_rad_src_(long & self, long & cell, double & src)
+    {
+	// Get the address of the CAR_CU_Interface class object (self).
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	// Cast the long variable to int
+	int icell = static_cast<int>(cell);
+
+	Insist(icell > 0 && icell <= interface->get_zone_size(), 
+	    "Invalid cell number passed to get_car_cu_cell_rad_src_!");
+
+	src = interface->get_rad_source(icell);
+    }
+
+    // Return the cut-off time for a radiation source.
+    void get_car_cu_rad_s_tend_(long & self, double & time)
+    {
+	// Get the address of the CAR_CU_Interface class object (self).
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	time = interface->get_rad_s_tend();
+    }
+
+    // Return the mesh analytic specific heat type
+    void get_car_cu_analy_opacity_(long & self, char * analy_opacity)
+    {
+	// Get the addresses of the Mat_State (self) and CAR_CU Mesh (mesh_ind)
+        // class objects.
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	string opacity = interface->get_analytic_sp_heat();
+
+	for (int index = 0; index < opacity.size(); index++)
+	{
+	    * analy_opacity = opacity[index];
+	    ++analy_opacity;
+	}
+    }
+
+    // Return the mesh analytic specific heat type
+    void get_car_cu_analy_sp_heat_(long & self, char * analy_spec_heat)
+    {
+	// Get the addresses of the Mat_State (self) and CAR_CU Mesh (mesh_ind)
+        // class objects.
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	string spec_heat = interface->get_analytic_sp_heat();
+
+	for (int index = 0; index < spec_heat.size(); index++)
+	{
+	    * analy_spec_heat = spec_heat[index];
+	    ++analy_spec_heat;
+	}
+    }
+
+    // Return the mesh implicitness factor (Fleck's alpha)
+    void get_car_cu_implicit_(long & self, long & implicit)
+    {
+	// Get the addresses of the Mat_State (self) and CAR_CU Mesh (mesh_ind)
+        // class objects.
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	implicit = static_cast<long>(interface->get_implicit());
+
+    }
+
+    // Return the initial time step size
+    void get_car_cu_time_step_(long & self, double & time_step)
+    {
+	// Get the addresses of the Mat_State (self) and CAR_CU Mesh (mesh_ind)
+        // class objects.
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	time_step = interface->get_delta_t();
+
+    }
+
+    // Return the processor capacity (cells/processor).
+    void get_car_cu_capacity_(long & self, long & capacity)
+    {
+	// Get the addresses of the Mat_State (self) and CAR_CU Mesh (mesh_ind)
+        // class objects.
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	capacity = static_cast<long>(interface->get_capacity());
+
+    }
+
+    // Return the number of cycles to run.
+    void get_car_cu_num_cycles_(long & self, long & num_cycles)
+    {
+	// Get the addresses of the Mat_State (self) and CAR_CU Mesh (mesh_ind)
+        // class objects.
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	num_cycles = static_cast<long>(interface->get_max_cycle());
+
+    }
+
+    // Return the print frequency.
+    void get_car_cu_print_freq_(long & self, long & print_freq)
+    {
+	// Get the addresses of the Mat_State (self) and CAR_CU Mesh (mesh_ind)
+        // class objects.
+	SP<CAR_CU_Interface> interface = 
+	    opaque_pointers<CAR_CU_Interface>::item(self);
+
+	print_freq = static_cast<long>(interface->get_printf());
+
     }
 
 } // end extern "C"

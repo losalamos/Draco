@@ -134,8 +134,11 @@ class CAR_CU_Interface
     double get_implicit() const { return implicitness; }
 
     // public copy functions for Source_Init<MT>
+    int get_zone_size()  { return zone.size();}
     vector<double> get_evol_ext() const;
+    double get_evol_ext(int cell) const { return evol_ext[cell -1]; }
     vector<double> get_rad_source() const;
+    double get_rad_source(int cell) const { return rad_source[cell -1]; }
     double get_rad_s_tend() const { return rad_s_tend; }
     // return the number of grouped surface source cell sets
     int get_ss_pos_size() { return ss_pos.size(); }
@@ -145,6 +148,10 @@ class CAR_CU_Interface
     // return the positions (lox, hix, etc.) of the all of the grouped surface 
     // source cells
     const vector<string> & get_ss_pos() const { return ss_pos; }
+    // return the temperature of a set of the grouped surface source cells
+    const double & get_ss_temp(int surface) const 
+    { return ss_temp[surface - 1]; }
+    // return the temperature of the all of the grouped surface source cells
     const vector<double> & get_ss_temp() const { return ss_temp; }
     // return the number of grouped surface source cells in a given set
     int get_ss_cells_size(int surface) 

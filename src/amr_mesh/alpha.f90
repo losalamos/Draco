@@ -30,9 +30,7 @@
           USE CAR_CU_Mat_State_Class
 
           implicit none
-          integer narg, iargc, fnlgth, ndims, dir, ncells, nnodes,       &
-              ncnodes, nfnodes, cell, face, node, surface,               &
-              num_surface_sources
+          integer narg, iargc, fnlgth
 
           type(CAR_CU_Interface)       :: interface_class
           type(CAR_CU_RTT_Format)      :: rtt_format_class
@@ -42,11 +40,13 @@
           type(CAR_CU_Opacity)         :: opacity_class
           type(CAR_CU_Mat_State)       :: mat_state_class
 
-          character*3, dimension (:), allocatable :: surface_source_pos
-          ! Really need a two dimensional ragged right array class to do
-          ! this right.
-          integer, dimension (:), allocatable :: surface_source_cells,  &
-              num_surface_source_cells
+          character*3, dimension (:), allocatable :: surf_src_pos
+          ! Really need a two dimensional ragged right array Fortran 90 
+          ! derived-type object to do this right.
+          integer, dimension (:), allocatable :: surf_src_cells
+
+          real*8, dimension (:), allocatable :: surf_src_temperature,   &
+              volume_src, radiation_src
 
 !===========================================================================
 ! Define variables needed just for testing the shadow interface functions
@@ -82,17 +82,14 @@
                                       real_NCVF_3,  real_NCVF_4,        &
                                       real_NCVF_5,  real_NCVF_6
 
-          integer, dimension (:,:), allocatable :: num_adj_cell_faces,  &
-              adj_cells_faces, cells_nodes, dis_face_generation,        &
-              cells_dirs, corner_nodes_faces_gen, nodes_dirs,           &
-              corner_nodes_dirs, face_nodes_dirs, face_nodes_faces_gen
+          integer ndims, dir, ncells, nnodes, ncnodes, nfnodes, cell,   &
+                  face, node, surface, implicitness, capacity,          &
+                  num_cycles, print_frequency
 
-          real*8, dimension (:,:), allocatable  :: nodes_vertices,      &
-              corner_nodes_vertices, centered_nodes_vertices,           &
-              cells_faces_area, face_nodes_vertices, cells_min_coords,  &
-              cells_mid_coords, cells_max_coords, cells_dirs_width,     &
-              cell_nodes_coords, dis_face_nodes_area,                   &
-              corner_nodes_faces_area, face_nodes_faces_area
+          real * 8  time_step, rad_src_end_time
+
+          character*8 analytic_opacity, analytic_specific_heat,         &
+              surf_src_ang_dist
 
           integer, dimension (:), allocatable   :: generation,          &
               cell_face_nodes, cell_faces_centered_node,                &
@@ -106,6 +103,18 @@
               corner_nodes_area, sig_abs, sig_thom, planck, fleck,      &
               fleck_planck, sigeffscat, sigeffabs, density, temperature,&
               dedt, specific_heat
+
+          integer, dimension (:,:), allocatable :: num_adj_cell_faces,  &
+              adj_cells_faces, cells_nodes, dis_face_generation,        &
+              cells_dirs, corner_nodes_faces_gen, nodes_dirs,           &
+              corner_nodes_dirs, face_nodes_dirs, face_nodes_faces_gen
+
+          real*8, dimension (:,:), allocatable  :: nodes_vertices,      &
+              corner_nodes_vertices, centered_nodes_vertices,           &
+              cells_faces_area, face_nodes_vertices, cells_min_coords,  &
+              cells_mid_coords, cells_max_coords, cells_dirs_width,     &
+              cell_nodes_coords, dis_face_nodes_area,                   &
+              corner_nodes_faces_area, face_nodes_faces_area
 
 !===========================================================================
 ! Input the command line arguments - input file name followed by anything to
@@ -132,8 +141,9 @@
 ! Create a C++ CAR_CU_Interface class object. This also constructs a C++ 
 ! RTT_Format class object and parses both the input deck and the RTT Format 
 ! mesh file specified therein. The address of the new CAR_CU_Interace class
-! object is set automatically while the address of the new RTT_Format class 
-! objects must be assigned with a seperate statement.
+! object and the number of surface sources is set automatically, while the 
+! address of the new RTT_Format class object must be assigned with a 
+! seperate statement.
 !===========================================================================
 
           call construct_Interface(interface_class)
@@ -145,41 +155,13 @@
 ! new CAR_CU_Mesh_Builder class object is set automatically while the address
 ! of the new CAR_CU_Mesh class object must be assigned with a seperate 
 ! statement. Surface and volume source data is read by the CAR_CU_Mesh_Builder
-! class object from the RTT Format file.
+! class object from the RTT Format file. The CAR_CU_Mesh_Builder sets the 
+! number of cells per surface source in the CAR_CU_Interface class object
+! after this data has been input.
 !===========================================================================
 
           call construct_Mesh_Builder(mesh_builder_class, interface_class)
           mesh_class%this = mesh_builder_class%mesh
-
-!===========================================================================
-! Pick up the rest of the data read into the CAR_CU_Interface class object 
-! that is not stored elsewhere and is needed for the transport calculations.
-! The surface source data is read by the CAR_CU_Mesh_Builder class object,
-! so this has to be done after the mesh builder is executed. The surface 
-! source cells definitions are currently limited to a single surface, since 
-! a ragged-right array type would be required to do this correctly.
-!===========================================================================
-
-          num_surface_sources = get_surface_source_size(interface_class)
-          allocate(surface_source_pos(num_surface_sources))
-          allocate(num_surface_source_cells(num_surface_sources))
-          surface = 1
-          do while (surface .le. num_surface_sources)
-              surface_source_pos(surface) =                             &
-                  get_surface_source_pos(interface_class, surface)
-              surface = surface + 1
-          end do
-
-          surface = 1
-          do while (surface .le. num_surface_sources)
-              num_surface_source_cells(surface) =                       &
-                  get_surface_source_size(interface_class, surface)
-              allocate(surface_source_cells(num_surface_source_cells(surface)))
-              surface_source_cells =                                    &
-                  get_surface_source_cells(interface_class, surface,    &
-                                           num_surface_source_cells(surface))
-              surface = surface + 1
-          end do
 
 !===========================================================================
 ! Create a C++ Opacity_Builder class object. This also constructs the 
@@ -196,6 +178,81 @@
           opacity_class%mesh = mesh_class%this
           mat_state_class%this = opacity_builder_class%matl_state
           mat_state_class%mesh = mesh_class%this
+
+!===========================================================================
+! Retrieve the rest of the data that was read into the CAR_CU_Interface 
+! class object but is not stored elsewhere within a C++ class and is needed 
+! for the transport calculations. The source data is read from the RTT Format 
+! file by the CAR_CU_Mesh_Builder class object, so the source data cannot be 
+! initialized until after the mesh builder has been executed. All other data 
+! is available immediately after the CAR_CU_Interface has been executed via 
+! its constructor (except the number of cells, which is needed to retrieve 
+! the volumetric and radiations sources). It is noted that the surface source 
+! cells definitions are currently limited to a single surface, since a ragged
+! right array derived-type would be required in Fortran 90 to do this 
+! correctly.
+!===========================================================================
+
+          analytic_opacity = get_analytic_opacity(interface_class)
+          analytic_specific_heat = get_analytic_specific_heat(interface_class)
+          implicitness = get_implicitness(interface_class)
+          time_step = get_time_step(interface_class)
+          capacity = get_capacity(interface_class)
+          num_cycles = get_num_cycles(interface_class)
+          print_frequency = get_print_frequency(interface_class)
+
+          allocate(surf_src_pos(interface_class%ss_size))
+          allocate(surf_src_temperature(interface_class%ss_size))
+
+          ! Set all of the surface source array elements with one call.
+          surf_src_pos = get_surf_src_pos(interface_class)
+          surf_src_temperature = get_surf_src_temperature(interface_class)
+          surf_src_ang_dist = get_surf_src_dist(interface_class)
+
+          ! Retrieve the array elements one surface source at a time (same
+          ! thing that was done above)
+          surface = 1
+          do while (surface .le. interface_class%ss_size)
+              surf_src_pos(surface) =                                   &
+                                get_surf_src_pos(interface_class,surface)
+              surf_src_temperature(surface) =                           &
+                       get_surf_src_temperature(interface_class, surface)
+              surface = surface + 1
+          end do
+
+          ! This where we need a Fortran 90 ragged-right array derived-type.
+          ! For now we can only retrieve one set of surface source cells at
+          ! a time in the 1D array surf_src_cells - the rest of the surface 
+          ! source cells would be deleted when the CAR_CU_interface class 
+          ! object is destroyed (and I would rather not keep it hanging
+          ! around just for this).
+          surface = 1
+          do while (surface .le. interface_class%ss_size)
+              allocate(surf_src_cells(interface_class%ss_cells(surface)))
+              surf_src_cells = get_surf_src_cells(interface_class, surface)
+              surface = surface + 1
+          end do
+
+          ! Have to set this derived-type member to use whole mesh assignement
+          ! functions.
+          interface_class%ncells = get_num_cells(mesh_class)
+          allocate(volume_src(interface_class%ncells))
+          allocate(radiation_src(interface_class%ncells))
+
+          ! Set all of the volume and radiation source array elements with 
+          ! one call.
+          volume_src = get_vol_src(interface_class)
+          radiation_src = get_rad_src(interface_class)
+          rad_src_end_time = get_rad_src_tend(interface_class)
+
+          ! Set the volume and radiation source array elements on a cell
+          ! cell basis
+          cell = 1
+          do while (cell .le. interface_class%ncells)
+              volume_src(cell) = get_vol_src(interface_class, cell)
+              radiation_src(cell) = get_rad_src(interface_class, cell)
+              cell = cell + 1
+          end do
 
 !===========================================================================
 ! Get rid of the CAR_CU_Opacity_Builder, CAR_CU_Mesh_Builder, 

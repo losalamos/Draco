@@ -89,7 +89,7 @@
               module procedure get_spec_heat
           end interface
 
-          contains
+         contains
 
 !===========================================================================
 ! Constructors and destructors
@@ -165,7 +165,7 @@
 
               end subroutine set_dedt
 
-! Return the cell cell specific heat.
+! Return the cell specific heat.
               function get_spec_heat(self, cell)      result(data)
                   type(CAR_CU_Mat_State),intent(in)       :: self
                   integer, intent(in)                     :: cell
