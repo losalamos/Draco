@@ -31,7 +31,7 @@ void print_Mat( const Mat1<T>& a, String name )
 template<class T>
 void print_Mat( const Mat2<T>& m, String name )
 {
-    int node = C4_node();
+    int node = C4::node();
 //     int nfu, ncv;
 //     m.elements( nfu, ncv );
 
@@ -137,7 +137,7 @@ void ADdump_Mat( ADFile *f, Mat3<T>& m, String id )
     int ncu, nfu, ncv, ncw;
     m.elements(nfu,ncv,ncw);
     ADKey adk;
-    int node = C4_node(), nodes = C4_nodes(), group = C4_group();
+    int node = C4::node(), nodes = C4::nodes(), group = C4::group();
     ncu = nfu * nodes;
 
     int i, j;
@@ -167,8 +167,9 @@ void ADdump_Mat( ADFile *f, Mat3<T>& m, String id )
 
 		for( int n=1; n < nodes; n++ ) {
 
-		    C4_Recv( &buf(0,0), sizeof(T)*nfu*ncv,
-			     n, 200, group );
+		    throw "Bogus";
+// 		    C4_Recv( &buf(0,0), sizeof(T)*nfu*ncv,
+// 			     n, 200, group );
 
 		    for( j=0; j < ncv; j++ )
 			for( i=0; i < nfu; i++ )
@@ -181,10 +182,11 @@ void ADdump_Mat( ADFile *f, Mat3<T>& m, String id )
 	    f->write( (void *) &mm(0,0), sizeof(T)*ncu*ncv );
 	}
 	else
-	    C4_Send( &m(0,0,k), sizeof(T) * nfu * ncv,
-		     0, 200, group );
+	    throw "Bogus";
+// 	    C4_Send( &m(0,0,k), sizeof(T) * nfu * ncv,
+// 		     0, 200, group );
 
-	C4_gsync();
+	gsync();
     }
 
     if (!node)
@@ -204,7 +206,7 @@ void ADdump_Mat( ADFile *f, Mat2<T>& m, String id )
     m.elements( nfu, ncv );
 
     int i, j;
-    int node = C4_node(), nodes = C4_nodes(), group = C4_group();
+    int node = C4::node(), nodes = C4::nodes(), group = C4::group();
 
     ncu = nfu * nodes;
 
@@ -234,8 +236,9 @@ void ADdump_Mat( ADFile *f, Mat2<T>& m, String id )
 
 	    for( int n=1; n < nodes; n++ ) {
 
-		C4_Recv( &buf(0,0), sizeof(T) * nfu * ncv,
-			 n, 250, group );
+		throw "Bogus";
+// 		C4_Recv( &buf(0,0), sizeof(T) * nfu * ncv,
+// 			 n, 250, group );
 
 		for( j=0; j < ncv; j++ )
 		    for( i=0; i < nfu; i++ )
@@ -249,9 +252,10 @@ void ADdump_Mat( ADFile *f, Mat2<T>& m, String id )
 	f->End_of_entry();
     }
     else
-	C4_Send( &m(0,0), sizeof(T) * nfu * ncv, 0, 250, group );
+	throw "Bogus";
+// 	C4_Send( &m(0,0), sizeof(T) * nfu * ncv, 0, 250, group );
 
-    C4_gsync();
+    gsync();
 }
 
 //---------------------------------------------------------------------------//
