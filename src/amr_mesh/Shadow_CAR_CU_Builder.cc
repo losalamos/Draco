@@ -1,0 +1,100 @@
+//----------------------------------*-C++-*----------------------------------//
+// Shadow_CAR_CU_Builder.cc
+// B.T. Adams (bta@lanl.gov)
+// 27 Sept 99
+//---------------------------------------------------------------------------//
+// @> Shadow_CAR_CU_Builder interface file
+//---------------------------------------------------------------------------//
+
+#ifndef __mc_Shadow_CAR_CU_Builder_cc__
+#define __mc_Shadow_CAR_CU_Builder_cc__
+
+#include "CAR_CU_Builder.hh"
+#include "CAR_CU_Interface.hh"
+#include "RTT_Format.hh"
+#include "CAR_CU_Mesh.hh"
+#include <iostream>
+
+//===========================================================================//
+// Shadow_CAR_CU_Builder - 
+//
+// Purpose : Provides flat interface functions to the Continuous Adaptive 
+// Refinement Cartesion Unstructured Mesh Builder Class for use with Fortran.
+//
+// revision history:
+// -----------------
+//  0) original
+// 
+//===========================================================================//
+
+namespace rtt_mc 
+{
+using std::cout;
+
+// draco components
+using dsxx::SP;
+using rtt_imc::CAR_CU_Interface;
+using rtt_format::RTT_Format;
+
+extern "C" 
+{
+//---------------------------------------------------------------------------//
+// CAR_CU_Builder F90 to C++ flat interface functions
+//---------------------------------------------------------------------------//
+// parse input
+
+    // Construct a CAR_CU_Builder class from a Fortran 90 program call.  This 
+    // also constructs the Coord_sys, Layout, and CAR_CU_Mesh class objects.
+    // The addresses of both the new CAR_CU_Builder and CAR_CU_Mesh class 
+    // objects are set. The CAR_CU_Mesh class contains member functions to 
+    // return the addresses of the Coord and Layout class objects, if needed.
+    void construct_car_cu_builder_(long & self, long & itf_ptr, 
+				   long & rttf_ptr, int verbosity, 
+				   long & mesh_ptr)
+    {
+	bool verbose = verbosity;
+	SP<CAR_CU_Interface> interface;
+	SP<RTT_Format> rttFormat;
+	SP<CAR_CU_Mesh> mesh;
+
+	// Get the addresses of the CAR_CU_Interface (int_ptr) and RTT_Format 
+        // (rttf_ptr) class objects.
+	interface = reinterpret_cast<CAR_CU_Interface * >(itf_ptr);
+	rttFormat = reinterpret_cast<RTT_Format * >(rttf_ptr);
+
+	// Construct a new CAR_CU_Builder class object.
+	SP<CAR_CU_Builder> builder(new CAR_CU_Builder(interface));
+
+	// Construct a new CAR_CU_Mesh class object and build the mesh.
+	mesh = builder->build_Mesh(rttFormat);
+	if (verbose)
+	    cout << " ** Built mesh ** " << endl;
+
+	// return the addresses of the new CAR_CU_Builder (self) and 
+	// CAR_CU_Mesh (mesh_ptr) objects.
+	self = reinterpret_cast<long>(& (* builder));
+	mesh_ptr = reinterpret_cast<long>(& (* mesh));
+
+    }
+
+    // Destroy a CAR_CU_Builder class object from a Fortran 90 program call.
+    void destruct_car_cu_builder_(long & self)
+    {
+	// Get the address of the CAR_CU_Builder class object (self).
+	CAR_CU_Builder * builder = reinterpret_cast<CAR_CU_Builder * >(self);
+
+	// destroy the CAR_CU_Builder class object.
+	delete builder;
+    }
+
+
+}
+
+
+} // end namespace rtt_mc
+
+#endif                          // __mc_Shadow_CAR_CU_Builder_cc__
+
+//---------------------------------------------------------------------------//
+//                              end of amr_mesh/Shadow_CAR_CU_Builder.cc
+//---------------------------------------------------------------------------//

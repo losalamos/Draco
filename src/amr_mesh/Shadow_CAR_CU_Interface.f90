@@ -1,18 +1,47 @@
+!----------------------------------*-F90-*----------------------------------
+! Shadow_CAR_CU_Interface.f90
+! B.T. Adams (bta@lanl.gov)
+! 27 Sept 99
+!---------------------------------------------------------------------------
+! @> Shadow_CAR_CU_Interface interface file
+!---------------------------------------------------------------------------
+
+!===========================================================================
+! Shadow_CAR_CU_Interface - 
+!
+! Purpose : Provides shadow interface functions for the C++ Continuous 
+! Adaptive Refinement Cartesion Unstructured Mesh Interface Class
+!
+! revision history:
+! -----------------
+!  0) original
+! 
+!===========================================================================
+
       module CAR_CU_Interface_Class
           implicit none
-          integer        :: self
-          character * 60 :: file_name =                                 &
-                            '/home/bta/sun_scalar/bin/top_hat' // ACHAR(0)
-          logical        :: verbose = .TRUE.
-          integer        :: rtt_format
 
           private
           public :: construct_Interface_Class, destruct_Interface_Class
 
+!===========================================================================
+!
+! CAR_CU_Interface Class type definition
+! 
+!===========================================================================
+
           type, public :: CAR_CU_Interface
-              private
-              integer  :: this
+              integer        :: this
+              character * 60 :: file_name
+              logical        :: verbose
+              integer        :: rtt_format
           end type CAR_CU_Interface 
+
+!===========================================================================
+!
+! Interfaces
+! 
+!===========================================================================
 
           interface construct_Interface_Class
               module procedure CAR_CU_Interface_construct
@@ -24,16 +53,24 @@
 
           contains
 
+!===========================================================================
+!
+! Subroutines
+! 
+!===========================================================================
+! Construct a new C++ CAR_CU_Interface class object (self).
+
               subroutine CAR_CU_Interface_construct(self)
                   type(CAR_CU_Interface), intent(inout) :: self
                   integer  :: bool_verbose = 0
-                  if (verbose)  bool_verbose = 1
+                  if (self%verbose)  bool_verbose = 1
 
-                  call construct_car_cu_interface(self%this, file_name, &
-                      bool_verbose, rtt_format)
+                  call construct_car_cu_interface(self%this, self%file_name,&
+                      bool_verbose, self%rtt_format)
 
               end subroutine CAR_CU_Interface_construct
 
+! Destroy a C++ CAR_CU_Interface class object (self).
               subroutine CAR_CU_Interface_destruct(self)
                   type(CAR_CU_Interface), intent(inout) :: self
 
@@ -42,3 +79,7 @@
               end subroutine CAR_CU_Interface_destruct
 
        end module CAR_CU_Interface_Class
+
+!---------------------------------------------------------------------------
+!                              end of amr_mesh/Shadow_CAR_CU_Interface.f90
+!---------------------------------------------------------------------------
