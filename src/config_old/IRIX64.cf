@@ -37,7 +37,7 @@ c4	:= no
 endif
 
 ifndef threads
-threads	:= yes
+threads	:= no
 endif
 
 ifndef sprng
