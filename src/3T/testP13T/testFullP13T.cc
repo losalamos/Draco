@@ -174,8 +174,22 @@ void testFullP13T::run() const
     fcdsf densityFC(spmesh);
     fcdsf matidFC(spmesh);
 
-    TElectFC = TElect0;
-    TIonFC = TIon0;
+    ccsf  oneCC(spmesh);
+    oneCC = 1.0;
+    
+    fcdsf twoFC(spmesh);
+    MT::scatter<MT::AddOp>(twoFC, oneCC);
+
+    cout << "twoFC: " << twoFC << endl;
+    
+    MT::scatter<MT::AddOp>(TElectFC, TElect0);
+    TElectFC /= twoFC;
+    
+    cout << "TElectFC: " << TElectFC << endl;
+
+    MT::scatter<MT::AddOp>(TIonFC, TIon0);
+    TIonFC /= twoFC;
+
     densityFC = density;
     matidFC = matid;
     
