@@ -74,16 +74,14 @@ class Vector_Lite
     /// Constructor based on a single element type.
     /// Sets all values to \a u.
     Vector_Lite(const T &u = T()) {
-	for ( size_type i = 0; i < N; i++ ) {
+	for ( size_type i = 0; i < N; i++ )
 	    d_U[i] = u;
-	}
     }
 
     /// Copy constructor.
     Vector_Lite(const Vector_Lite &rhs) {
-	for ( size_type i = 0; i < N; i++ ) {
+	for ( size_type i = 0; i < N; i++ )
 	    d_U[i] = rhs.d_U[i];
-	}
     }
 
     /// Constructor for N = 2.
@@ -118,7 +116,7 @@ class Vector_Lite
     }
 
     /// Destructor.
-    virtual ~Vector_Lite(void) { }
+    ~Vector_Lite(void) { }
 
     // MANIPULATORS
 
@@ -310,150 +308,9 @@ class Vector_Lite
     bool empty() const { return N == 0; }
 };
 
-//---------------------------------------------------------------------------//
-// free functions
-//---------------------------------------------------------------------------//
-
-template <class T, size_t N>
-T inner_product(const rtt_dsxx::Vector_Lite<T, N> &a,
-		const rtt_dsxx::Vector_Lite<T, N> &b)
-{
-    return std::inner_product(a.begin(), a.end(), b.begin(), 0.0);
-}
-
-//---------------------------------------------------------------------------//
-// global opeators
-//---------------------------------------------------------------------------//
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator+(const rtt_dsxx::Vector_Lite<T, N> &a,
-	  const rtt_dsxx::Vector_Lite<T, N> &b)
-{
-    return rtt_dsxx::Vector_Lite<T, N>(a) += b;
-}
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator-(const rtt_dsxx::Vector_Lite<T, N> &a,
-	  const rtt_dsxx::Vector_Lite<T, N> &b)
-{
-    return rtt_dsxx::Vector_Lite<T, N>(a) -= b;
-}
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator*(const rtt_dsxx::Vector_Lite<T, N> &a,
-	  const rtt_dsxx::Vector_Lite<T, N> &b)
-{
-    return rtt_dsxx::Vector_Lite<T, N>(a) *= b;
-}
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator/(const rtt_dsxx::Vector_Lite<T, N> &a,
-	  const rtt_dsxx::Vector_Lite<T, N> &b)
-{
-    return rtt_dsxx::Vector_Lite<T, N>(a) /= b;
-}
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator+(const rtt_dsxx::Vector_Lite<T, N> &a,
-	  const T b)
-{
-    return rtt_dsxx::Vector_Lite<T, N>(a) += b;
-}
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator+(const T a,
-	  const rtt_dsxx::Vector_Lite<T, N> &b)
-{
-    return rtt_dsxx::Vector_Lite<T, N>(b) += a;
-}
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator-(const rtt_dsxx::Vector_Lite<T, N> &a,
-	  const T b)
-{
-    return rtt_dsxx::Vector_Lite<T, N>(a) -= b;
-}
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator-(const T a,
-	  const rtt_dsxx::Vector_Lite<T, N> &b)
-{
-    return rtt_dsxx::Vector_Lite<T, N>(b) -= a;
-}
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator*(const rtt_dsxx::Vector_Lite<T, N> &a,
-	  const T b)
-{
-    return rtt_dsxx::Vector_Lite<T, N>(a) *= b;
-}
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator*(const T a,
-	  const rtt_dsxx::Vector_Lite<T, N> &b)
-{
-    return rtt_dsxx::Vector_Lite<T, N>(b) *= a;
-}
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator/(const rtt_dsxx::Vector_Lite<T, N> &a,
-	  const T b)
-{
-    return rtt_dsxx::Vector_Lite<T, N>(a) /= b;
-}
-
-template <class T, size_t N>
-inline const rtt_dsxx::Vector_Lite<T, N>
-operator-(const rtt_dsxx::Vector_Lite<T, N> &a)
-{
-    rtt_dsxx::Vector_Lite<T, N> neg(a);
-    
-    for (size_t i = 0; i < N; i++ )
-	neg(i) = -a(i);
-    
-    return neg;
-}
-
-//---------------------------------------------------------------------------//
-// stream opeators
-//---------------------------------------------------------------------------//
-
-template <class T, size_t N>
-std::ostream &operator<<(std::ostream &os,
-			 const rtt_dsxx::Vector_Lite<T, N> &a)
-{
-    os << a(0);
-    
-    for (size_t i = 1; i < N; i++) {
-	os << " " << a(i);
-    }
-    
-    return os;
-}
-
-template <class T, size_t N>
-std::istream &operator>>(std::istream &os,
-			 rtt_dsxx::Vector_Lite<T, N> &a)
-{
-    for (size_t i = 0; i < N; i++) {
-	os >> a(i);
-    }
-    
-    return os;
-}
-
 } // namespace rtt_dsxx
+
+#include "Vector_Lite.i.hh"
 
 #endif // rtt_ds_Vector_Lite_hh
 
