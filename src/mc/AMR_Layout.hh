@@ -12,6 +12,7 @@
 #ifndef __mc_AMR_Layout_hh__
 #define __mc_AMR_Layout_hh__
 
+#include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>
 #include <iostream>
@@ -62,16 +63,23 @@ namespace rtt_mc
 // revision history:
 // -----------------
 // 0) original
+// 1) 19-APR-01 : added packing capability
 // 
 //===========================================================================//
 
 class AMR_Layout 
 {
   public:
+    // Forward declaration of pack class.
+    struct Pack;
+
+  public:
     // Important typedefs.
-    typedef std::vector<int>    sf_int;
-    typedef std::vector<sf_int> vf_int;
-    typedef std::vector<vf_int> tf_int;
+    typedef std::vector<int>               sf_int;
+    typedef std::vector<sf_int>            vf_int;
+    typedef std::vector<vf_int>            tf_int;
+    typedef rtt_dsxx::SP<AMR_Layout>       SP_Layout;
+    typedef rtt_dsxx::SP<AMR_Layout::Pack> SP_Pack;
 
   private:
     //! Cell-face data, indexing is 0:N-1.
@@ -112,6 +120,9 @@ class AMR_Layout
     inline int    operator()(int, int, int) const;
     inline int&   operator()(int, int, int);
     inline sf_int operator()(int, int) const;
+
+    // Pack function.
+    SP_Pack pack(const sf_int &) const;
 
     // Overloaded equality operators.
     bool operator==(const AMR_Layout &) const;
@@ -241,6 +252,54 @@ AMR_Layout::sf_int AMR_Layout::operator()(int cell, int coarse_face) const
     Require (coarse_face > 0 && coarse_face <= cell_face[cell-1].size());
     return cell_face[cell-1][coarse_face-1];
 }
+
+//===========================================================================//
+/*!  
+ * \struct Layout::Pack 
+ 
+ * \brief Nested class for packing layouts into raw data for writing
+ * or communication.
+ 
+ */
+//===========================================================================//
+
+struct AMR_Layout::Pack
+{
+  private:
+    // Data contained in the Layout.
+    int *data;
+    int  size;
+
+    // Disallow assignment.
+    const Pack& operator=(const Pack &);
+
+  public:
+    // Constructor.
+    Pack(int, int *);
+    
+    // Copy constructor.
+    Pack(const Pack &);
+
+    // Destructor.
+    ~Pack();
+
+    // >>> Accessors.
+    
+    //! Get pointer to beginning of integer data stream.
+    const int* begin() const { return &data[0]; }
+    
+    //! Get pointer to end of integer data stream.
+    const int* end() const { return &data[size]; }
+
+    //! Get size of integer data stream.
+    int get_size() const { return size; }
+
+    //! Get number of packed cells in the layout.
+    int get_num_packed_cells() const { return data[0]; }
+
+    // Unpack function.
+    SP_Layout unpack() const;
+};
 
 } // end namespace rtt_mc
 
