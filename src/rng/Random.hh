@@ -24,6 +24,7 @@
 #include "rng/Rnd_Control.hh"
 #include "rng/Sprng.hh"
 #include "sprng.h"
+#include <cstdlib>
 
 RNGSPACE
 

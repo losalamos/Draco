@@ -17,7 +17,9 @@
 //
 // revision history:
 // -----------------
-// 0) original
+//  0) original
+//  1)  5-21-98 : added get_size() function that determines the size of the
+//                stored random number state
 // 
 //===========================================================================//
 
@@ -39,11 +41,12 @@ private:
     int streamnum;
   // control parameter for stream inits
     int parameter;
+  // size of packed stream state
+    int size;
 
 public:
   // constructor
-    Rnd_Control(int s, int n = 1000000, int sn = 0, int p = 1) 
-	: seed(s), number(n), streamnum(sn), parameter(p) {}
+    Rnd_Control(int, int = 1000000, int = 0, int = 1);
 
   // start a new random number stream
     Sprng get_rn();
@@ -55,6 +58,9 @@ public:
   // query for the number of random streams
     int get_num() const { return streamnum; }
     void set_num(int num) { streamnum = num; }
+
+  // query size of packed random number state
+    int get_size() const { return size; }
 };
 
 CSPACE

@@ -15,6 +15,27 @@ RNGSPACE
 using std::free;
 
 //---------------------------------------------------------------------------//
+// CONSTRUCTOR
+//---------------------------------------------------------------------------//
+// calculates the size of a stored Random Number state
+
+Rnd_Control::Rnd_Control(int s, int n, int sn, int p)
+    : seed(s), number(n), streamnum(sn), parameter(p)
+{
+  // calculate the size of a stored random number state
+    int  *id;
+    char *buffer;
+
+  // operations
+    id   = init_sprng(0, number, seed, parameter);
+    size = pack_sprng(id, &buffer);
+    
+  // deallocate memory
+    free(buffer);
+    free_sprng(id);
+}
+
+//---------------------------------------------------------------------------//
 // member functions
 //---------------------------------------------------------------------------//
 // get a new Random number object with its own stream

@@ -6,8 +6,7 @@
 // @> Test of SPRNG and Sprng random number class.
 //---------------------------------------------------------------------------//
 
-#include "rng/Sprng.hh"
-#include "rng/Rnd_Control.hh"
+#include "rng/Random.hh"
 #include <vector>
 #include <iostream>
 
@@ -74,12 +73,20 @@ void t3()
     for (int i = 0; i < 5; i++)
 	cout << r1.ran() << " " << rs.ran() << endl;
 }
+
+void t4()
+{
+    cout << "<< TEST 4>>" << endl << endl;
+    Rnd_Control rcon(493875348);
+    cout << rcon.get_size() << endl;
+}
 	
 main()
 {
     t1();
     t2();
     t3();
+    t4();
 }
 
 //---------------------------------------------------------------------------//

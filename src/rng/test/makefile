@@ -14,7 +14,7 @@ need_rng   := yes
 
 include ../../config/makefile
 
-srcs = tstrn3.cc
+srcs = tstrn2.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.
