@@ -6946,12 +6946,14 @@ echo "$as_me: WARNING: \"KCC strict option set to allow long long type\"" >&2;}
        #
 
        #
-       # gandolf and eospac requires -lfortran on the link line.
+       # gandolf, pcg and eospac requires -lfortran on the link line.
        #
 
        echo "$as_me:$LINENO: checking \"libfortran requirements\"" >&5
 echo $ECHO_N "checking \"libfortran requirements\"... $ECHO_C" >&6
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ; then
+       if test -n "${vendor_gandolf}" || \
+          test -n "${vendor_eospac}"  || \
+          test -n "${vendor_pcg}" ; then
           LIBS="${LIBS} -lfortran"
           echo "$as_me:$LINENO: result: \"-lfortran added to LIBS\"" >&5
 echo "${ECHO_T}\"-lfortran added to LIBS\"" >&6
@@ -6961,7 +6963,26 @@ echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        #
-       # end of gandolf/libfortran setup
+       # end of libfortran setup (gandolf, eospac, pcg)
+       #
+
+       #
+       # pcg requires -lperfex on the link line.
+       #
+
+       echo "$as_me:$LINENO: checking \"libperfex requirements\"" >&5
+echo $ECHO_N "checking \"libperfex requirements\"... $ECHO_C" >&6
+       if test -n "${vendor_pcg}" ; then
+          LIBS="${LIBS} -lperfex"
+          echo "$as_me:$LINENO: result: \"-lperfex added to LIBS\"" >&5
+echo "${ECHO_T}\"-lperfex added to LIBS\"" >&6
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
+       fi
+
+       #
+       # end of libfortran setup (gandolf, eospac, pcg)
        #
 
        #
@@ -9519,6 +9540,14 @@ _ACEOF
 _ACEOF
 
 
+
+   echo " "
+   echo "Diagnostics:"
+   which lf95
+   lf95 --version
+   printenv
+   echo "End Diagnostics"
+   echo " "
 
    echo "$as_me:$LINENO: checking \"for EOSPAC v5.35 compatible version of F90\"" >&5
 echo $ECHO_N "checking \"for EOSPAC v5.35 compatible version of F90\"... $ECHO_C" >&6

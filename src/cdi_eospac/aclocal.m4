@@ -3624,11 +3624,13 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        #
-       # gandolf and eospac requires -lfortran on the link line.
+       # gandolf, pcg and eospac requires -lfortran on the link line.
        #
 
        AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ; then
+       if test -n "${vendor_gandolf}" || \
+          test -n "${vendor_eospac}"  || \
+          test -n "${vendor_pcg}" ; then
           LIBS="${LIBS} -lfortran"
           AC_MSG_RESULT("-lfortran added to LIBS")
        else
@@ -3636,7 +3638,23 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
        
        #
-       # end of gandolf/libfortran setup
+       # end of libfortran setup (gandolf, eospac, pcg)
+       #
+
+       #
+       # pcg requires -lperfex on the link line.
+       #
+
+       AC_MSG_CHECKING("libperfex requirements")
+       if test -n "${vendor_pcg}" ; then
+          LIBS="${LIBS} -lperfex"
+          AC_MSG_RESULT("-lperfex added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+       
+       #
+       # end of libfortran setup (gandolf, eospac, pcg)
        #
 
        #
