@@ -126,7 +126,7 @@ PCG_NAMESPACE_END
 
 // Handle machine specific Fortran name linkage.
 
-#if defined(sun) || defined(__sgi)
+#if defined(sun) || defined(__sgi) || defined(__linux)
 #define sdfalt sdfalt_
 #define ddfalt ddfalt_
 #define cdfalt cdfalt_
