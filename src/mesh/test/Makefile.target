@@ -1,7 +1,7 @@
 ###############################################################################
 # draco/src/mesh/test Makefile.target
 # Randy M. Roberts
-# Time-stamp: <99/02/02 15:25:36 rsqrd>
+# $Id$
 ###############################################################################
 # @> Target makefile for MESH component tests
 ###############################################################################
@@ -11,10 +11,15 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
+ptCCsrc := $(wildcard ${srcdir}/*_pt.cc)
+ptObjs := $(notdir $(patsubst %.cc,%.o,${ptCCsrc}))
+
+utilObjs := ${ptObjs} TestRelease.o
+
 ${test_alltarget}: ${testdeps}
 
-%: %.o
-	${LD} ${LDFLAGS} -o $@ $< ${testlibs}
+%: %.o ${utilObjs}
+	${LD} ${LDFLAGS} -o $@ $< ${utilObjs} ${testlibs}
 
 ###############################################################################
 #			 end of draco/src/mesh/test Makefile.target
