@@ -255,6 +255,53 @@ void test_counting()
 
 //---------------------------------------------------------------------------//
 
+void test_constness()
+{
+    if (nfields != 0) ITFAILS;
+
+    RCF<const Field> f = get_field();
+    if (!f.assigned()) ITFAILS;
+
+    if (nfields != 1) ITFAILS;
+
+    {
+        RCF<const Field> g = f;
+        
+        if (nfields != 1) ITFAILS;
+    }
+    
+    if (nfields != 1) ITFAILS;
+
+    dbl_field ref(5, 1.0);
+    
+    // check const field access
+    use_const_field(f.get_field(), ref);
+    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ITFAILS;
+
+    RCF<const Field> g;
+    if (nfields != 1) ITFAILS;
+
+    // test copying and assignment
+    {
+        g = f;
+        if (nfields != 1) ITFAILS;
+        f = new Field();
+        if (nfields != 2) ITFAILS;
+    }
+
+    if (nfields != 2) ITFAILS;
+
+    g = RCF<const Field>();
+    if (g.assigned()) ITFAILS;
+
+    if (nfields != 1) ITFAILS;
+
+    if (rtt_ds_test::passed)
+        PASSMSG("Constness tests ok.");
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     // version tag
@@ -273,6 +320,7 @@ int main(int argc, char *argv[])
 
         test_simple_construction_copy();
         test_counting();
+        test_constness();
 
         // make sure that the field number is zero
         if (nfields == 0)

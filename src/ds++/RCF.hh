@@ -116,6 +116,9 @@ class RCF
     //! Smart pointer to field.
     SP<Field_t> sp_field;
 
+    // Friendship for const specialization.
+    template<class X> friend class RCF;
+
   public:
     //! Default constructor.
     RCF() {/*...*/}
@@ -272,6 +275,153 @@ typename RCF<Field_t>::const_iterator RCF<Field_t>::end() const
  */
 template<class Field_t>
 typename RCF<Field_t>::iterator RCF<Field_t>::end()
+{
+    Require (assigned());
+    return sp_field->end();
+}
+
+//===========================================================================//
+/*!
+ * \class RCF<const Field_t>
+ *
+ * \brief Specialization of RCF on const Field_t.
+ *
+ * This class specializes RCF (reference counted field) for const Field_t.
+ * You can copy a RCF<T> to a RCF<const T> but not the other way.
+ *
+ * \sa rtt_dsxx::RCF for details.
+ */
+//===========================================================================//
+
+template<class Field_t>
+class RCF<const Field_t>
+{
+  public:
+    // Useful typedefs.
+    typedef typename Field_t::value_type     value_type;
+    typedef typename Field_t::size_type      size_type;
+    typedef typename Field_t::const_iterator const_iterator;
+
+  private: 
+    // >>> DATA
+
+    //! Smart pointer to field.
+    SP<const Field_t> sp_field;
+
+  public:
+    //! Default constructor.
+    RCF() {/*...*/}
+
+    //! Constructor from non-const Field_t.
+    RCF(const RCF<Field_t> &x) : sp_field(x.sp_field) {/*...*/}
+
+    // Explicit constructor for type Field_t *.
+    inline explicit RCF(Field_t *p_in);
+
+    // Assignment operator for type Field_t *.
+    inline RCF<const Field_t>& operator=(Field_t *p_in);
+
+    //! Get the field (const).
+    const Field_t& get_field() const { Require(assigned()); return *sp_field; }
+
+    //! Determine if field is assigned.
+    bool assigned() const { return bool(sp_field); }
+
+    // Expose operator[] on underlying Field_t (const).
+    inline const value_type& operator[](const size_type) const;
+
+    // Expose begin() (const).
+    inline const_iterator begin() const;
+
+    // Expose end() (const).
+    inline const_iterator end() const;
+
+    // Expose size().
+    size_type size() const { Require(assigned()); return sp_field->size(); }
+
+    // Expose empty().
+    bool empty() const { Require(assigned()); return sp_field->empty(); }
+};
+
+//---------------------------------------------------------------------------//
+// INLINE FUNCTIONS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Construct a RCF to a const Field_t from a pointer to the field.
+ *
+ * Once a pointer is given to the RCF it \b owns the field.  It would be very
+ * dangerous (although legal) to try to access the pointer to the native
+ * field.  The field is deleted when the last copy of RCF goes out of scope.
+ *
+ * This constructor has the following usage:
+ * \code
+ *     // make a RCF field from a vector<double>
+ *     RCF<const vector<double> > x(new vector<double>(10, 0.0));
+ * \endcode
+ */
+template<class Field_t>
+RCF<const Field_t>::RCF(Field_t *p_in)
+    : sp_field(p_in)
+{
+    // nothing to check because this could be a NULL field pointer
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Assignment operator for type Field_t * to RCF<const Field_t>.
+ *
+ * As in copy construction, the RCF owns the pointer after assignment. Here
+ * is an example of usage:
+ * \code
+ *     RCF<const Mat> f;         // has reference to NULL field
+ *     f      = new Mat;         // now has 1 count of Mat
+ *     Mat *g = new Mat; 
+ *     f      = g;               // f's original pointer to Mat is deleted
+ *                               // because count goes to zero; f now has
+ *                               // 1 reference to g
+ * \endcode
+ */
+template<class Field_t>
+RCF<const Field_t>& RCF<const Field_t>::operator=(Field_t *p_in)
+{
+    // check if we already own this field
+    if (sp_field.bp() == p_in)
+        return *this;
+
+    // reassign the existing smart pointer
+    sp_field = p_in;
+    return *this;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Expose operator[] on underlying Field_t (const).
+ */
+template<class Field_t>
+const typename RCF<const Field_t>::value_type& 
+RCF<const Field_t>::operator[](const size_type i) const
+{
+    Require (assigned());
+    return sp_field->operator[](i);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Expose begin() (const).
+ */
+template<class Field_t>
+typename RCF<const Field_t>::const_iterator RCF<const Field_t>::begin() const
+{
+    Require (assigned());
+    return sp_field->begin();
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Expose end() (const).
+ */
+template<class Field_t>
+typename RCF<const Field_t>::const_iterator RCF<const Field_t>::end() const
 {
     Require (assigned());
     return sp_field->end();
