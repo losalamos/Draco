@@ -210,9 +210,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
        fi
 
-       # determine word sizes
-       AC_DETERMINE_WORD_SIZES
-
        #
        # setup linux strict if the compiler is KCC (also turn off the
        # warnings about long long being non-standard)
@@ -221,6 +218,19 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_MSG_WARN("Linux KCC strict option set to allow long long type!")
 	   STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
        fi
+
+       #
+       # add thread safety if we are using KCC on linux
+       #
+       if test "${CXX}" = KCC ; then
+	   CFLAGS="--thread_safe ${CFLAGS}"
+	   CXXFLAGS="--thread_safe ${CXXFLAGS}"
+	   ARFLAGS="--thread_safe ${ARFLAGS}"
+	   LDFLAGS="--thread_safe ${LDFLAGS}"
+       fi
+
+       # determine word sizes
+       AC_DETERMINE_WORD_SIZES
 
        #
        # setup communication packages
@@ -296,7 +306,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # end of eospac
        #
 
+       #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
+       #
        AC_MSG_CHECKING("libg2c requirements")
        if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||
 	  test -n "${vendor_gandolf}"; then

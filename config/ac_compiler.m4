@@ -148,12 +148,6 @@ AC_DEFUN(AC_DRACO_KCC, [dnl
    # final compiler additions
    CXXFLAGS="${CXXFLAGS} ${ONEPERFLAG}"
 
-   # make thread_safe the default option
-   CFLAGS="--thread_safe ${CFLAGS}"
-   CXXFLAGS="--thread_safe ${CXXFLAGS}"
-   ARFLAGS="--thread_safe ${ARFLAGS}"
-   LDFLAGS="--thread_safe ${LDFLAGS}"
-
    AC_MSG_RESULT("KCC compiler flags set")
    
    dnl end of AC_DRACO_KCC
