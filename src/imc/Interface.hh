@@ -113,6 +113,7 @@ class Interface
     virtual double get_dnpdt() const = 0;
     virtual int get_cycle() const = 0;
     virtual std_string get_ss_dist() const = 0;
+    virtual sf_string get_ss_desc() const = 0;
 
     // persistent source data, this data is calculated and is persistent
     // between time steps; at the beginning of a non-initial timestep this

@@ -161,6 +161,9 @@ class Source_Builder
     //! List of local cells that have surface sources.
     vf_int defined_surcells;
 
+    //! Descriptor for each surface source.
+    sf_string ss_desc;
+
     // BASE CLASS IMPLEMENTATION MEMBER FUNCTIONS
 
     // Calculate volume emission source energies.

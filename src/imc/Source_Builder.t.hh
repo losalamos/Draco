@@ -65,6 +65,7 @@ Source_Builder<MT,PT>::Source_Builder(SP<IT> interface, SP_Mesh mesh,
       ss_pos(interface->get_ss_pos()),
       ss_temp(interface->get_ss_temp()),
       defined_surcells(interface->get_defined_surcells()),
+      ss_desc(interface->get_ss_desc()),
       npnom(interface->get_npnom()),
       npmax(interface->get_npmax()),
       dnpdt(interface->get_dnpdt()),
@@ -104,7 +105,7 @@ Source_Builder<MT,PT>::Source_Builder(SP<IT> interface, SP_Mesh mesh,
 
     Ensure(evol_ext.size() == num_cells);
     Ensure(rad_source.size() == num_cells);
-    Ensure(rad_temp.size() == num_cells);
+    Ensure(rad_temp.size() == num_cells || rad_temp.size() == 0);
     Ensure(ss_pos.size() == ss_temp.size());
     Ensure(ss_pos.size() == defined_surcells.size());
     Ensure(npwant > 0);
@@ -256,7 +257,8 @@ void Source_Builder<MT,PT>::calc_ess()
         // surface src cells (local id) must be defined by the host
 	Check (defined_surcells[ss].size() > 0);
 	vector<int> surcells = defined_surcells[ss];
-	Check (ess.get_Mesh().check_defined_surcells(ss_pos[ss], surcells));
+	Check (ss_desc[ss] == "allow_refl_bc" ? true : 
+	       ess.get_Mesh().check_defined_surcells(ss_pos[ss], surcells));
 
 	int local_cell;
 	for (int sc = 0; sc < surcells.size(); sc++)
@@ -519,15 +521,24 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 		   
 		// add up newly combed census particles
 		local_ncentot += numcomb;
-
-		// subtract newly combed particles from eloss_cen
-		eloss_comb += cenew - numcomb * ew_cen(cencell);
+	    
+		// check census energy
 		ecencheck  += numcomb * ew_cen(cencell);
 	    }
 	}
+	else
+	{
+	    // if there is no census energy weight in the cell we sampled
+	    // zero census particles previously
+	    numcomb = 0;
+	
+	    // if ewcen == 0 and a census particle exists in this cell then
+	    // the energy lost was already tabulated in the energy loss due
+	    // to sampling
+	}
 
-	// if ewcen == 0 and a census particle exists in this cell then the
-	// energy lost was already tabulated in the energy loss due to sampling
+	// add energy loss to eloss_comb
+	eloss_comb += cenew - numcomb * ew_cen(cencell);
     }
 
     Check(census->size() == 0);
@@ -537,8 +548,8 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
     census = comb_census;
 
     Ensure(census->size() == local_ncentot);
-    Ensure(fabs(ecencheck + eloss_comb - local_ecentot) <= 1.0e-6 *
-	   local_ecentot); 
+    Ensure(rtt_mc::global::soft_equiv(ecencheck+eloss_comb, local_ecentot, 
+				      1.e-6));
 }
 
 } // end of rtt_imc

@@ -232,8 +232,8 @@ SP<PT> Source<MT, PT>::get_evol(double delta_t)
     Sprng rand = rcon->get_rn();
 
     // sample location using tilt
-    double t4 = pow(material->get_T(current_cell), 4);
-    vector<double> r = mesh_op->sample_pos_tilt(current_cell, t4, rand);
+    double T = material->get_T(current_cell);
+    vector<double> r = mesh_op->sample_pos_tilt(current_cell, T, rand);
 
     // sample particle direction
     vector<double> omega = nvol.get_Mesh().get_Coord().

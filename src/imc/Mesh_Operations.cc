@@ -12,6 +12,7 @@
 #include "Mesh_Operations.hh"
 #include "c4/global.hh"
 #include <cmath>
+#include <iostream>
 
 namespace rtt_imc
 {

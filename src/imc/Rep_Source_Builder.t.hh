@@ -13,6 +13,7 @@
 #include "Mesh_Operations.hh"
 #include "Global.hh"
 #include "c4/global.hh"
+#include <iomanip>
 
 namespace rtt_imc
 {
@@ -23,6 +24,7 @@ using dsxx::SP;
 
 using std::cout;
 using std::endl;
+using std::ios;
 
 //---------------------------------------------------------------------------//
 // constructor
@@ -74,7 +76,7 @@ Rep_Source_Builder<MT,PT>::Rep_Source_Builder(SP<IT> interface, SP_Mesh mesh,
 	ecentot = interface->get_ecentot();
     
 	// checks
-	Check(ecentot == ecentot_check);
+	Check(rtt_mc::global::soft_equiv(ecentot, ecentot_check, 1.e-12));
     }
 }
 
