@@ -64,6 +64,15 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    fi
 
    dnl
+   dnl CHOOSE A F90 COMPILER
+   dnl
+
+   dnl defines --with-f90
+   AC_ARG_WITH(f90,
+      [  --with-f90[=XL,WorkShop,Fujitsu,Cray,MIPS]
+                                 choose an F90 compiler])
+
+   dnl
    dnl STATIC VERSUS DYNAMIC LINKING
    dnl
 

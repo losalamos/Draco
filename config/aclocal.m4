@@ -11,6 +11,7 @@ dnl-------------------------------------------------------------------------dnl
 
 builtin(include,ac_local.m4)dnl
 builtin(include,ac_compiler.m4)dnl
+builtin(include,ac_f90.m4)dnl
 
 ###-------------------------------------------------------------------------###
 ### include the service macros used in configure.in scripts

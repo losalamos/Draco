@@ -124,8 +124,19 @@ dnl-------------------------------------------------------------------------dnl
 dnl IBM XLF90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_XLF90, [dnl
+AC_DEFUN(AC_DRACO_XL_F90, [dnl
 
+   # Check for working XL F90 compiler
+
+   AC_MSG_CHECKING([for XLF90 compiler])
+   AC_CHECK_PROG(F90, xlf90, xlf90, none)
+   if test "${F90}" = xlf90
+   then
+       AC_MSG_RESULT([found])
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
    # FREE, FIXED AND MODULE FLAGS
 
    F90FREE='-qfree=f90'
@@ -135,9 +146,9 @@ AC_DEFUN(AC_DRACO_XLF90, [dnl
    # LINKER AND LIBRARY (AR)
 
    LD='${F90}'
-   AR='${F90}'
+   AR='ar'
    ARFLAGS=
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+   ARLIBS=
 
    # COMPILATION FLAGS
 
@@ -153,7 +164,7 @@ AC_DEFUN(AC_DRACO_XLF90, [dnl
         F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
    fi
 
-   dnl end of AC_DRACO_XLF90
+   dnl end of AC_DRACO_XL_F90
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -162,7 +173,18 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_FUJITSU_F90, [dnl
 
-   # FREE, FIXED AND MODULE FLAGS
+   # Check for working Fujitsu F90 compiler
+
+   AC_MSG_CHECKING([for Fujitsu f90 compiler])
+   AC_CHECK_PROG(F90, f90, f90, none)
+   if test "${F90}" = f90 && ${F90} -V 2>&1 | grep "Fujitsu"
+   then
+       AC_MSG_RESULT([found])
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
 
    F90FREE='-Free'
    F90FIXED='-Fixed'
@@ -171,9 +193,9 @@ AC_DEFUN(AC_DRACO_FUJITSU_F90, [dnl
    # LINKER AND LIBRARY (AR)
 
    LD='${F90}'
-   AR='${F90}'
+   AR='ar'
    ARFLAGS=
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+   ARLIBS=
 
    # COMPILATION FLAGS
 
@@ -181,7 +203,7 @@ AC_DEFUN(AC_DRACO_FUJITSU_F90, [dnl
 
    if test "${enable_debug:=no}" = yes && test "${with_opt:=0}" != 0
    then
-        F90FLAGS="-g ${F90FLAGS}"
+        F90FLAGS="-g -Haesu ${F90FLAGS}"
    else
         F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
    fi
@@ -190,25 +212,36 @@ AC_DEFUN(AC_DRACO_FUJITSU_F90, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl SUN F90 COMPILER SETUP
+dnl SUN WORKSHOP F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_SUN_F90, [dnl
+AC_DEFUN(AC_DRACO_WORKSHOP_F90, [dnl
 
-   # FREE, FIXED AND MODULE FLAGS
+   # Check for working WorkShop F90 compiler
+
+   AC_MSG_CHECKING([for WorkShop f90 compiler])
+   AC_CHECK_PROG(F90, f90, f90, none)
+   if test "${F90}" = f90 && ${F90} -V 2>&1 | grep "WorkShop"
+   then
+       AC_MSG_RESULT([found])
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # Set F90FREE, F90FIXED, and MODFLAG
 
    F90FREE='-free'
    F90FIXED='-fixed'
    MODFLAG='-M'
 
-   # LINKER AND LIBRARY (AR)
+   # Set LINKER AND LIBRARY (AR)
 
    LD='${F90}'
-   AR='${F90}'
+   AR='ar'
    ARFLAGS=
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+   ARLIBS=
 
-   # COMPILATION FLAGS
+   # Set COMPILATION FLAGS
 
    F90FLAGS=
 
@@ -219,7 +252,7 @@ AC_DEFUN(AC_DRACO_SUN_F90, [dnl
         F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
    fi
 
-   dnl end of AC_DRACO_SUN_F90
+   dnl end of AC_DRACO_WORKSHOP_F90
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -228,6 +261,17 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_CRAY_F90, [dnl
 
+   # Check for working Cray F90 compiler
+
+   AC_MSG_CHECKING([for Cray f90 compiler])
+   AC_CHECK_PROG(F90, f90, f90, none)
+   if test "${F90}" = f90
+   then
+       AC_MSG_RESULT([found])
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
    # FREE, FIXED AND MODULE FLAGS
 
    F90FREE='-f free'
@@ -237,9 +281,9 @@ AC_DEFUN(AC_DRACO_CRAY_F90, [dnl
    # LINKER AND LIBRARY (AR)
 
    LD='${F90}'
-   AR='${F90}'
+   AR='ar'
    ARFLAGS=
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+   ARLIBS=
 
    # COMPILATION FLAGS
 
@@ -256,12 +300,23 @@ AC_DEFUN(AC_DRACO_CRAY_F90, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl IRIX F90 COMPILER SETUP
+dnl IRIX MIPS F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_IRIX_F90, [dnl
+AC_DEFUN(AC_DRACO_MIPS_F90, [dnl
 
-   # FREE, FIXED AND MODULE FLAGS
+   # Look for working MIPS compiler
+
+   AC_MSG_CHECKING([for MIPS f90 compiler])
+   AC_CHECK_PROG(F90, f90, f90, none)
+   if test "${F90}" = f90 && ${F90} -version 2>&1 | grep "MIPS"
+   then
+       AC_MSG_RESULT([found])
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # Set F90FREE, F90FIXED, and MODFLAG
 
    F90FREE='-freeform'
    F90FIXED='-col72'
@@ -270,9 +325,9 @@ AC_DEFUN(AC_DRACO_IRIX_F90, [dnl
    # LINKER AND LIBRARY (AR)
 
    LD='${F90}'
-   AR='${F90}'
+   AR='ar'
    ARFLAGS=
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+   ARLIBS=
 
    # COMPILATION FLAGS
 
@@ -285,7 +340,7 @@ AC_DEFUN(AC_DRACO_IRIX_F90, [dnl
         F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
    fi
 
-   dnl end of AC_DRACO_IRIX_F90
+   dnl end of AC_DRACO_MIPS_F90
 ])
 
 dnl-------------------------------------------------------------------------dnl
