@@ -431,18 +431,21 @@ struct TET_Mesh::Pack
     //! Typedef for a map linking strings to sets of integers.
     typedef std::map< std::string, SetInt > MAP_String_SetInt;
 
- public:
-    // Double data.
+    // Private data members.
+
+    // Collected double data.
     int dsize;
     double *ddata;
 
-    // Integer data.
+    // Collected integer data.
     int isize;
     int *idata;
 
-    // Character data.
+    // Collected character data.
     int csize;
     char *cdata;
+
+ public:
 
     // Constructor.  Note that after construction, the Pack object
     // owns the pointed-to data, and assumes the responsibility of
