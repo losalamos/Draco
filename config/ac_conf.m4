@@ -121,6 +121,48 @@ AC_DEFUN(AC_INSTALL_HEADERS, [ dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_BUILD_CONFIGURES
+dnl
+dnl build (or check if they exist) configure scripts in the current 
+dnl directories subdirectories
+dnl 
+dnl the argument is the relative location of the draco/config
+dnl directory, ie, in draco/src/configure.in the argument would be
+dnl AC_BUILD_CONFIGURE(..)
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_BUILD_CONFIGURES, [ dnl
+
+# check for configure
+AC_CHECK_PROG(AUTOCONF, autoconf, autoconf, null)
+if test "${AUTOCONF}" = null ; then
+   AC_MSG_ERROR("Cannot find autoconf; cannot build configure scripts!")
+fi
+
+CURRENT_DIR=`pwd`
+
+# build configure scripts in subdirs
+for dir in $subdirs
+   do
+       if test -d ${srcdir}/${dir} ; then
+	   AC_MSG_CHECKING("configure in ${srcdir}/${dir}")
+	   cd $srcdir/$dir
+	   if test -f configure ; then 
+	       AC_MSG_RESULT("exists")
+	   elif test -f configure.in ; then
+	       ${AUTOCONF} --localdir=$1/../config
+	       AC_MSG_RESULT("built")
+	   else
+	       AC_MSG_RESULT("no configure.in - skipped")
+	   fi
+	   cd $CURRENT_DIR
+       fi
+   done
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl end of ac_conf.m4
 dnl-------------------------------------------------------------------------dnl
 
