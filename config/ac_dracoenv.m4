@@ -324,6 +324,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # warnings about long long being non-standard)
        #
        if test "${CXX}" = KCC && test -n "${STRICTFLAG}" ; then
+	   AC_MSG_WARN("Linux KCC strict option set to allow long long type!")
 	   STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
        fi
 
