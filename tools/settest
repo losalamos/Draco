@@ -51,9 +51,10 @@ echo
 
 echo ">>> Checking for test executable directories"
 
-files_cc=`ls *.cc`
+files=`ls *.cc *.py *.pl 2>ls_settest.out`
+rm -f ls_settest.out
 
-for file in $files_cc
+for file in $files
     do
     file=`echo "$file" | sed -e 's/...$//'`
     dir=${file}.0
