@@ -86,9 +86,19 @@ class SortPermutation
 
   private:
 
+    // Forward Declarations
+    
+    template<class COMP> class CompareProxy;
+    template<class IT> class Proxy;
+
+    template<class COMP> friend class CompareProxy;
+    template<class IT> friend class Proxy;
+
     template<class IT>
     class Proxy
     {
+	friend class CompareProxy<Proxy>;
+	
 	typedef typename std::iterator_traits<IT>::value_type value_type;
 	
 	SortPermutation::value_type pos;
