@@ -18,12 +18,6 @@
 #include <iostream>
 #include <vector>
 
-using std::cout;
-using std::endl;
-using std::string;
-using std::map;
-using std::make_pair;
-
 namespace rtt_UnitTestFrame
 {
 
@@ -46,6 +40,8 @@ using std::endl;
 using std::string;
 using std::vector;
 using std::map;
+using std::multimap;
+using std::make_pair;
 using std::set;
 using std::pair;
 using std::ostream;
@@ -84,6 +80,12 @@ string TestRTT_Format::runTest()
 			    << " without coreing in or firing an assertion." 
 			    << endl;
 	bool all_passed = true;
+	// The following switch allows addition of other meshes for testing,
+	// with the "DEFINED" mesh providing an example. Only the check_dims
+	// tests is required and it will be automatically called by the other
+	// tests (with the exception of check header) if not invoked herein.
+	// The comparison data must also be provided for additional meshes
+	// within the switch structure residing in the test functions. 
         switch (mesh_number)
 	{
 	// Test all nested class accessor functions for a very simplistic 
@@ -106,6 +108,7 @@ string TestRTT_Format::runTest()
 	    all_passed = all_passed && check_side_data(mesh, mesh_type);
 	    all_passed = all_passed && check_cell_data(mesh, mesh_type);
 	    all_passed = all_passed && check_virtual(mesh, mesh_type);
+	    all_passed = all_passed && check_connectivity(mesh, mesh_type);
 	    if (!all_passed)
 	        fail(filename[mesh_number]) << "Errors occured testing mesh " 
 					    << "number " << mesh_type << endl;
@@ -2051,6 +2054,189 @@ bool TestRTT_Format::check_virtual(const rtt_meshReaders::RTT_Format & mesh,
     else
 	fail(" Virtual Accessors ") << "Errors in some virtual accessors." 
 				    << endl;
+
+    return all_passed;
+}
+bool TestRTT_Format::check_connectivity(const rtt_meshReaders::RTT_Format & 
+					mesh, const Meshes & meshtype)
+{
+    // Return if the Dims data is corrupt.        
+    if (!verify_Dims(mesh, meshtype))
+        return false;
+
+    // Exercise the connectivity accessor functions for this mesh.
+    bool all_passed = true;
+    vector<vector<vector<int> > > adjacent_cell;
+    multimap<int, int> bndryFaces;
+    multimap<int, vector<int> > Side_to_Cell_Face;
+    // Rest of these variables are for the user to specify the tests to be
+    // performed (i.e., the user has to initialize them in a case).
+    vector<int> cells_to_check; // Probably don't want to check every cell.
+    vector<int> sides_to_check; // Probably don't want to check every side.
+    vector<int> bndryFacesCount;
+    vector<int> cell_face(2,0);
+    
+    switch (meshtype)
+    {
+    case DEFINED:
+        cells_to_check.push_back(0); // there is only one cell in the mesh.
+	adjacent_cell.resize(cells_to_check.size());
+	// Resize the adjacent cell vector for the number of sides per cell.
+	for (int c = 0; c < cells_to_check.size(); c++)
+	{
+	    int cell = cells_to_check[c];
+	    int cell_type = mesh.get_cells_type(cell);
+	    int cell_sides = mesh.get_cell_defs_nsides(cell_type);
+	    for (int s = 0; s < cell_sides; s++)
+	        sides_to_check.push_back(s); // only four sides
+	    adjacent_cell[c].resize(cell_sides);
+	}
+	// All of the "adjacent cells" are boundaries for this case, and the
+	// adjacent cell is returned as the negative of the boundary flag #. 
+	adjacent_cell[0][0].push_back(-2);
+	adjacent_cell[0][1].push_back(-1); adjacent_cell[0][2].push_back(-1);
+	adjacent_cell[0][3].push_back(-1);
+	// bndryFaces pairs are keyed on face number (i.e., 0 - 5 for a hex) to
+	// the cell number as a value and contain all the faces that are either
+	// on the outer geometric boundary of the problem or a junction between
+	// cells with differing refinement levels in an AMR mesh. Only the
+	// subset of the multimap that is entered here will be checked. 
+	bndryFaces.insert(make_pair(0,0)); bndryFaces.insert(make_pair(1,0));
+	bndryFaces.insert(make_pair(2,0)); bndryFaces.insert(make_pair(3,0));
+	// bndryFacesCount is input to check the number of cells that have 
+	// faces that occur on the boundaries. The int values to be entered
+	// here correspond to the entire mesh. 
+	bndryFacesCount.resize(4); // Four faces for a tet.
+	bndryFacesCount[0] = bndryFacesCount[1] = bndryFacesCount[2] =
+	bndryFacesCount[3] = 1;
+	// Side_to_Cell_Face correlates the sides data in the RTT_Format file
+	// with the equivalent cell face. The side is the key and the cell and
+	// face number form a vector that is the data value. Only the  subset
+	// of the multimap that is entered here will be checked. 
+	Side_to_Cell_Face.insert(make_pair(0,cell_face));
+	cell_face[1] = 1;
+	Side_to_Cell_Face.insert(make_pair(1,cell_face));
+	cell_face[1] = 2;
+	Side_to_Cell_Face.insert(make_pair(2,cell_face));
+	cell_face[1] = 3;
+	Side_to_Cell_Face.insert(make_pair(3,cell_face));
+	break;
+
+    default:
+        fail("check_connectivity") << "Invalid mesh type encountered." << endl;
+	all_passed = false;
+	return all_passed;
+    }
+
+    // Check the number of cells that are adjacent to the cells that are
+    // specified in cells_to_check.
+    bool got_adj_cell_size = true;
+    for (int c = 0; c < cells_to_check.size(); c++)
+    {
+        int cell = cells_to_check[c];
+	for (int f = 0; f < adjacent_cell[cell].size(); f++)
+	    if (adjacent_cell[cell][f].size() != mesh.get_adjCell_size(cell,f))
+	        got_adj_cell_size = false;
+    }
+    if (!got_adj_cell_size)
+    {
+        fail(" Connectivity ") << 
+	     "Connectivity adjacent cell size not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    // Check the cell faces that are adjacent to the cells that are
+    //  specified in cells_to_check.
+    bool got_adj_cell = true;
+    for (int c = 0; c < cells_to_check.size(); c++)
+    {
+        int cell = cells_to_check[c];
+	for (int f = 0; f < adjacent_cell[cell].size(); f++)
+	    for (int a = 0; a < adjacent_cell[cell][f].size(); a++) 
+	        if (adjacent_cell[cell][f][a] != mesh.get_adjCell(cell,f,a))
+	        got_adj_cell = false;
+    }
+    if (!got_adj_cell)
+    {
+        fail(" Connectivity ") << "Connectivity adjacent cell not obtained." 
+			       << endl;
+ 	all_passed = false;
+    }
+
+    // Check the count of boundary cell faces.
+    bool got_bndry_face_count = true;
+    for (int f = 0; f < bndryFacesCount.size(); f++)
+        if (bndryFacesCount[f] != mesh.get_bndryFaces_count(f))
+	    got_bndry_face_count = false;
+    if (!got_bndry_face_count)
+    {
+        fail(" Connectivity ") << 
+	     "Connectivity boundary face count not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    // Check the get_bndryCells accessor function for those face/cell pairs
+    // that were specified for this case (in bndryFaces for the switch).
+    bool got_bndry_cells = true;
+    for (multimap<int, int>::iterator f = bndryFaces.begin();
+	 f != bndryFaces.end(); f++)
+	    if (mesh.get_bndryCells(f->first).count(f->second) == 0)
+	        got_bndry_cells = false;
+    if (!got_bndry_cells)
+    {
+        fail(" Connectivity ") << "Connectivity boundary cells not obtained." 
+			       << endl;
+ 	all_passed = false;
+    }
+
+    // Check the get_bndryFace accessor function for those face/cell pairs
+    // that were specified for this case (in bndryFaces for the switch).
+    bool got_bndry_face = true;
+    for (multimap<int, int>::iterator f = bndryFaces.begin();
+	 f != bndryFaces.end(); f++)
+	    if (!mesh.check_bndryFace(f->second, f->first))
+	        got_bndry_face = false;
+    if (!got_bndry_face)
+    {
+        fail(" Connectivity ") << "Connectivity boundary face not obtained." 
+			       << endl;
+ 	all_passed = false;
+    }
+
+    // Check the get_Cell_from_Side accessor function for those sides
+    // that were specified for this case (Side_to_Cell_Face in the switch).
+    bool got_cell_from_side = true;
+    for (multimap<int, vector<int> >::iterator s = Side_to_Cell_Face.begin();
+	 s != Side_to_Cell_Face.end(); s++)
+	    if (mesh.get_Cell_from_Side(s->first) != s->second[0])
+	        got_cell_from_side = false;
+    if (!got_cell_from_side)
+    {
+        fail(" Connectivity ") << "Connectivity cell not obtained from side." 
+			       << endl;
+ 	all_passed = false;
+    }
+
+    // Check the get_Cell_Face_from_Side accessor function for those sides
+    // that were specified for this case (Side_to_Cell_Face in the switch).
+    bool got_cell_face_from_side = true;
+    for (multimap<int, vector<int> >::iterator s = Side_to_Cell_Face.begin();
+	 s != Side_to_Cell_Face.end(); s++)
+	    if (mesh.get_Cell_Face_from_Side(s->first) != s->second[1])
+	        got_cell_face_from_side = false;
+    if (!got_cell_face_from_side)
+    {
+        fail(" Connectivity ") << 
+	     "Connectivity cell face not obtained from side." << endl;
+ 	all_passed = false;
+    }
+
+    if (all_passed)
+        pass(" Connectivity Accessors " ) << 
+	     "Got all connectivity accessors." << endl;
+    else
+	fail(" Connectivity Accessors ") << 
+	     "Errors in some connectivity accessors." << endl;
 
     return all_passed;
 }

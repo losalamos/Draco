@@ -17,7 +17,7 @@
 
 namespace rtt_meshReaders_test
 {
- 
+using std::map;
 //===========================================================================//
 /*!
  * \class TestRTT_Format
@@ -111,7 +111,8 @@ class TestRTT_Format : public rtt_UnitTestFrame::TestApp
 			 const Meshes & meshtype);
     bool check_virtual(const rtt_meshReaders::RTT_Format & mesh, 
 		       const Meshes & meshtype);
-    bool check_connectivity(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_connectivity(const rtt_meshReaders::RTT_Format & mesh, 
+			    const Meshes & meshtype);
 
     // IMPLEMENTATION
 };

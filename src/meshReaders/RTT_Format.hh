@@ -25,6 +25,9 @@
 #include <vector>
 #include <map>
 
+
+namespace rtt_meshReaders
+{
 using std::string;
 using std::set;
 using std::ifstream;
@@ -33,9 +36,6 @@ using std::multimap;
 using std::map;
 using rtt_dsxx::SP;
 
-namespace rtt_meshReaders
-{
- 
 //===========================================================================//
 // class RTT_Format - 
 //
@@ -1000,10 +1000,10 @@ class RTT_Format : public Mesh_Reader
 		     const Nodes & nodes_);
 	~Connectivity() {}
 
-	int get_adjCell(int cell, int face, int adjcell = 0) const
-	{ return adjCell[cell][face][adjcell]; }
 	int get_adjCell_size(int cell, int face) const
 	{ return adjCell[cell][face].size(); }
+	int get_adjCell(int cell, int face, int adjcell = 0) const
+	{ return adjCell[cell][face][adjcell]; }
 	int get_bndryFaces_count(int face) const
 	{ return bndryFaces.count(face); }
 	set<int> get_bndryCells(int face) const
@@ -1833,6 +1833,16 @@ class RTT_Format : public Mesh_Reader
 
     // connectivity access
 /*!
+ * \brief Returns the number of cells adjacent to the specified cell face 
+ *        (allows multiple cells to connect to a single cell face for AMR type
+ *         meshes).
+ * \param cell Cell number.
+ * \param face Face number.
+ * \return The number of adjacent cells.
+ */
+    int get_adjCell_size(int cell, int face) const
+        { return spConnectivity->get_adjCell_size(cell,face); }
+/*!
  * \brief Returns the number of the cell adjacent to the specified cell, face,
  *        and optional adjacent cell index (to allow multiple cells to connect
  *        to a single cell face for AMR type meshes).
@@ -1843,16 +1853,6 @@ class RTT_Format : public Mesh_Reader
  */
     int get_adjCell(int cell, int face, int adjcell = 0) const
         { return spConnectivity->get_adjCell(cell, face, adjcell); }
-/*!
- * \brief Returns the number of cells adjacent to the specified cell face 
- *        (allows multiple cells to connect to a single cell face for AMR type
- *         meshes).
- * \param cell Cell number.
- * \param face Face number.
- * \return The number of adjacent cells.
- */
-    int get_adjCell_size(int cell, int face) const
-        { return spConnectivity->get_adjCell_size(cell,face); }
 /*!
  * \brief Returns the number of boundary faces (i.e., faces that are either
  *        on the outer boundary of the problem geometry or a connection between

@@ -45,7 +45,10 @@
 #include <utility>
 #include <algorithm>
 #include <iterator>
+#include <cmath>
 
+namespace rtt_meshReaders
+{
 using std::string;
 using std::ifstream;
 using std::ios;
@@ -63,9 +66,10 @@ using std::sort;
 using std::min;
 using std::max;
 using std::greater;
+using std::pow;
+using std::fabs;
+using std::sqrt;
 
-namespace rtt_meshReaders
-{
 /*!
  * \brief Constructs an RTT_Format class object and instantiates and executes
  *        the readMesh and calculateConnectivity nested classes used to parse
