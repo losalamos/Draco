@@ -9,7 +9,8 @@
 #ifndef __imc_config_h__
 #define __imc_config_h__
 
-/* NO REQUIREMENTS YET IN IMC */
+/* Platform tags for scoping rules*/
+#undef IMC_COMPAQ
 
 #endif                          /* __imc_config_h__ */
 

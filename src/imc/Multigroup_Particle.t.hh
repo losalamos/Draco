@@ -14,6 +14,9 @@
 
 #include "Multigroup_Particle.hh"
 
+// Set scoping rules.
+#include "Particle_Defs.h"
+
 namespace rtt_imc
 {
 
@@ -278,7 +281,7 @@ void Multigroup_Particle<MT>::transport(const MT   &mesh,
  * \brief Print out a Multigroup_Particle to some stream.
  */
 template<class MT>
-void Multigroup_Particle<MT>::print(std::ostream &output) const
+void Multigroup_Particle<MT>::print(std::ostream &out) const
 {
     using std::ios;
     using std::setiosflags;
@@ -286,11 +289,11 @@ void Multigroup_Particle<MT>::print(std::ostream &output) const
     using std::setw;
 
     // call the base class print
-    Particle<MT>::print(output);
+    Particle<MT>::print(out);
 
     // add the group index to the list
-    output << setw(20) << setiosflags(ios::right) << "Group Index: " 
-           << setw(12) << group_index << endl;
+    out << setw(20) << setiosflags(ios::right) << "Group Index: " 
+	<< setw(12) << group_index << endl;
 }
 
 //---------------------------------------------------------------------------//
@@ -350,7 +353,7 @@ bool Multigroup_Particle<MT>::operator!=(const Multigroup_Particle<MT> &rhs)
 template<class MT>
 void Multigroup_Particle<MT>::Diagnostic::print_xs(
     const MG_Opacity &xs,
-    int               cell,
+    int               cell_in,
     int               group_index) const
 {
     using std::setw;
@@ -360,16 +363,19 @@ void Multigroup_Particle<MT>::Diagnostic::print_xs(
 
     // do detailed diagnostic print of particle event cross sections
     output << setw(20) << setiosflags(ios::right) << "Opacity: " 
-	   << setw(12) << xs.get_sigma_abs(cell, group_index)  << endl;
+	   << setw(12) << xs.get_sigma_abs(cell_in, group_index)  << endl;
     output << setw(20) << setiosflags(ios::right) << "Eff. scatter: "
-	   << setw(12) << xs.get_sigeffscat(cell, group_index) << endl; 
+	   << setw(12) << xs.get_sigeffscat(cell_in, group_index) << endl; 
     output << setw(20) << setiosflags(ios::right) << "Eff. absorption: " 
-	   << setw(12) << xs.get_sigeffabs(cell, group_index)  << endl; 
+	   << setw(12) << xs.get_sigeffabs(cell_in, group_index)  << endl; 
     output << setw(20) << setiosflags(ios::right) << "Thomson scatter: " 
-	   << setw(12) << xs.get_sigma_thomson(cell, group_index)  << endl; 
+	   << setw(12) << xs.get_sigma_thomson(cell_in, group_index)  << endl; 
 }
 
 } // end namespace rtt_imc
+
+// Unset scoping rules.
+#include "Unset_Particle_Defs.h"
 
 #endif                          // __imc_Multigroup_Particle_t_hh__
 

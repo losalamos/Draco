@@ -11,6 +11,9 @@
 
 #include "Gray_Particle.hh"
 
+// Set scoping rules.
+#include "Particle_Defs.h"
+
 namespace rtt_imc
 {
 
@@ -320,7 +323,7 @@ bool Gray_Particle<MT>::operator!=(const Gray_Particle<MT> &rhs) const
 template<class MT>
 void Gray_Particle<MT>::Diagnostic::print_xs(
     const Opacity<MT,Gray_Frequency> &xs,
-    int                               cell) const
+    int                               cell_in) const
 {
     using std::setw;
     using std::endl;
@@ -329,16 +332,19 @@ void Gray_Particle<MT>::Diagnostic::print_xs(
 
     // do detailed diagnostic print of particle event cross sections
     output << setw(20) << setiosflags(ios::right) << "Opacity: " 
-	   << setw(12) << xs.get_sigma_abs(cell)  << endl;
+	   << setw(12) << xs.get_sigma_abs(cell_in)  << endl;
     output << setw(20) << setiosflags(ios::right) << "Eff. scatter: "
-	   << setw(12) << xs.get_sigeffscat(cell) << endl; 
+	   << setw(12) << xs.get_sigeffscat(cell_in) << endl; 
     output << setw(20) << setiosflags(ios::right) << "Eff. absorption: " 
-	   << setw(12) << xs.get_sigeffabs(cell)  << endl; 
+	   << setw(12) << xs.get_sigeffabs(cell_in)  << endl; 
     output << setw(20) << setiosflags(ios::right) << "Thomson scatter: " 
-	   << setw(12) << xs.get_sigma_thomson(cell)  << endl; 
+	   << setw(12) << xs.get_sigma_thomson(cell_in)  << endl; 
 }
 
 } // end namespace rtt_imc
+
+// Unset scoping rules.
+#include "Unset_Particle_Defs.h"
 
 //---------------------------------------------------------------------------//
 //                        end of imc/Gray_Particle.t.hh

@@ -29,6 +29,19 @@ AC_RUNTESTS(tstFrequency tstMat_State_Builder tstTally \
 # DRACO SETUP
 AC_DRACO_ENV
 
+dnl define the COMPAQ flag to turn on scoping definitions
+case $host in
+alpha*-dec-osf*)
+   AC_MSG_CHECKING("Compaq CXX compiler scoping rules")
+   if test "${with_cxx}" = compaq ; then
+       AC_DEFINE(IMC_COMPAQ)
+       AC_MSG_RESULT("IMC_COMPAQ defined in config.h for CXX compiler")
+   else
+       AC_MSG_RESULT("not needed on $host with $with_cxx")
+   fi
+   ;;
+esac
+
 # OUTPUTS
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in\

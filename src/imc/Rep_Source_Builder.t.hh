@@ -14,6 +14,9 @@
 #include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 
+// Set scoping rules.
+#include "Source_Builder_Defs.h"
+
 namespace rtt_imc
 {
 
@@ -643,6 +646,9 @@ void Rep_Source_Builder<MT,FT,PT>::calc_num_part_and_rn_fields(
 }
 
 } // end of rtt_imc
+
+// Unset scoping rules.
+#include "Unset_Source_Builder_Defs.h"
 
 //---------------------------------------------------------------------------//
 //                        end of imc/Rep_Source_Builder.t.hh

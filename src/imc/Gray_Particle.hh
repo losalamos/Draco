@@ -16,6 +16,9 @@
 #include "ds++/Soft_Equivalence.hh"
 #include <cmath>
 
+// Set scoping rules.
+#include "Particle_Defs.h"
+
 namespace rtt_imc
 {
 
@@ -372,6 +375,9 @@ void Gray_Particle<MT>::collision_event(
 }
 
 } // end namespace rtt_imc
+
+// Unset scoping rules.
+#include "Unset_Particle_Defs.h"
 
 #endif                          // __imc_Gray_Particle_hh__
 

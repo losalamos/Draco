@@ -16,6 +16,9 @@
 #include "rng/Random.hh"
 #include <numeric>
 
+// Set scoping rules.
+#include "Source_Builder_Defs.h"
+
 namespace rtt_imc
 {
 
@@ -643,8 +646,10 @@ void DD_Source_Builder<MT,FT,PT>::calc_fullDD_rn_fields(
     next_avail_rn += global_ntot;   
 }
 
-
 } // end namespace rtt_imc
+
+// Unset scoping rules.
+#include "Unset_Source_Builder_Defs.h"
 
 //---------------------------------------------------------------------------//
 //                        end of imc/DD_Source_Builder.t.hh

@@ -13,6 +13,7 @@
 #define __imc_Flat_Mat_State_Builder_hh__
 
 #include "Mat_State_Builder.hh"
+#include "Flat_Data_Container.hh"
 #include "Global.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"

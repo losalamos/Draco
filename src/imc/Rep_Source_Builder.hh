@@ -15,6 +15,9 @@
 #include "Source_Builder.hh"
 #include "ds++/Soft_Equivalence.hh"
 
+// Set scoping rules.
+#include "Source_Builder_Defs.h"
+
 namespace rtt_imc
 {
  
@@ -214,6 +217,9 @@ Rep_Source_Builder<MT,FT,PT>::Rep_Source_Builder(rtt_dsxx::SP<IT> interface,
 }
 
 } // end namespace rtt_imc
+
+// Unset scoping rules.
+#include "Unset_Source_Builder_Defs.h"
 
 #endif                          // __imc_Rep_Source_Builder_hh__
 
