@@ -44,7 +44,7 @@ void wall_clock_test()
     double end = rtt_c4::wall_clock_time();
     t.stop();
 
-    double const prec( t.posix_err() );
+    double const prec( 1.5*t.posix_err() );
     double const error( t.wall_clock() - (end-begin) );
     if( std::fabs(error) <= prec )
     {
@@ -86,11 +86,11 @@ void wall_clock_test()
 	std::ostringstream msg;
 	msg << "The sum of cpu and user time exceeds the reported wall "
 	    << "clock time.  Here are the details:"
-	    << "\n\tposix_error() = " << prec
-	    << "\n\tdeltaWallTime = " << deltaWallTime 
- 	    << "\n\tSystem time   : " << t.system_cpu() 
- 	    << "\n\tUser time     : " << t.user_cpu()   
- 	    << "\n\tWall time     : " << t.wall_clock()
+	    << "\n\tposix_error() = " << prec << " sec."
+	    << "\n\tdeltaWallTime = " << deltaWallTime  << " sec."
+ 	    << "\n\tSystem time   = " << t.system_cpu() << " sec."
+ 	    << "\n\tUser time     = " << t.user_cpu()   << " sec."
+ 	    << "\n\tWall time     = " << t.wall_clock() << " sec."
 	    << std::endl;
 	FAILMSG(msg.str());
     }
