@@ -82,12 +82,14 @@ def get_dependencies(file, draco_dep):
 ## FUNCTION: make output
 ##---------------------------------------------------------------------------##
 
-def output_total(draco_includes):
+def output_total(draco_includes, test_includes):
 
     # loop through classes and 
 
-    pkgs = []
+    pkgs      = []
+    test_pkgs = []
 
+    # pkg includes
     for key in draco_includes.keys():
         for dep in draco_includes[key]:
             pkg_match = re.search('([0-9A-Za-z+_]*)::.*', dep)
@@ -103,10 +105,33 @@ def output_total(draco_includes):
             if added == 0:
                 pkgs.append(pkg)
 
-    print ">>> Used packages                       :"
+    # test includes
+    for key in test_includes.keys():
+        for dep in test_includes[key]:
+            pkg_match = re.search('([0-9A-Za-z+_]*)::.*', dep)
+
+            if pkg_match:
+                pkg = pkg_match.group(1)
+
+            # see if we have added it
+            added = 0
+            for p in pkgs:
+                if p == pkg: added = 1
+
+            for t in test_pkgs:
+                if t == pkg: added = 1
+
+            if added == 0:
+                test_pkgs.append(pkg)
+    
+
+    print ">>> Used packages"
     for pkg in pkgs:
         print pkg
-    
+    print
+    print ">>> Additional pkgs used in test"
+    for pkg in test_pkgs:
+        print pkg
         
 ##---------------------------------------------------------------------------##
 ## MAIN PROGRAM
@@ -115,6 +140,7 @@ def output_total(draco_includes):
 # announcement
 print ">>> Working in package directory        : %s" % (pkg_dir)
 print ">>> Package name is                     : %s" % (pkg_name)
+print 
 
 # make a dictionary of includes
 draco_includes = {}
@@ -133,17 +159,13 @@ for file in files:
     
     # add to the dictionaries
     draco_includes[file] = draco_depends
-    
-# write out data
-output_total(draco_includes)
 
 # >>> do test directory
 
 os.chdir(pkg_test_dir)
-print ">>> Working in package test directory   : %s" % (pkg_test_dir)
 
 # make a dictionary of includes
-draco_includes = {}
+draco_test_includes = {}
     
 # first get a list of the filenames associated with this class
 files = get_files()
@@ -158,10 +180,10 @@ for file in files:
     get_dependencies(file, draco_depends)
     
     # add to the dictionaries
-    draco_includes[file] = draco_depends
+    draco_test_includes[file] = draco_depends
     
 # write out data
-output_total(draco_includes)
+output_total(draco_includes, draco_test_includes)
 
 ###############################################################################
 ##                            end of package_depends.py
