@@ -184,7 +184,25 @@ class AppTest:
 
     ##---------------------------------------------------------------------------##
     ## Welcome message
-    def welcome():
+    def welcome(self):
         print "\nUsing the libexec/apptest_modules.py Python module.\n"
 
 
+    ##---------------------------------------------------------------------------##
+    ## Execute test
+    def execute(self):
+        exec_line = "%s %s %s %s" % ( self.exec_head, self.num_procs, \
+                                      self.code_name, self.input_deck )
+        print "Running %s ..." %exec_line
+        # open in, out and error pipes
+        stdin, stdout, stderr = os.popen3( exec_line )
+        # we will not send anything to stdin.
+        stdin.close()
+
+        # keep all output in a list of strings
+        self.output = stdout.readlines()
+        self.errors = stderr.readlines()
+        
+        # Dump stderr and stdout to file.
+        self.outfile.writelines(self.output) # <scriptname>.stdout
+        self.outfile.writelines(self.errors)
