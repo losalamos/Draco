@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   cdi/tCDI.hh
+ * \file   cdi/test/tCDI.hh
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:26:24 2000
- * \brief  
+ * \brief  Header file for the CDI class unit test
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,15 +14,22 @@
 
 #include "UnitTestFrame/TestApp.hh"
 
+#include <vector>
+#include <string>
+
 namespace rtt_CDI_test
 {
+
+using std::vector;
+using std::string;
  
 //===========================================================================//
 /*!
  * \class tCDI
  *
  * \brief A class used to test the QuadCreator and Quadrature
- * classes.  It is inhierited from Randy's UnitTestFrame::TestApp.
+ *        classes.  It is inhierited from Randy's
+ *        UnitTestFrame::TestApp. 
  *
  */
 // revision history:
@@ -61,6 +68,21 @@ class tCDI : public rtt_UnitTestFrame::TestApp
   private:
     
     // IMPLEMENTATION
+
+    /*!
+     * \brief Returns true if the elements of the two vectors are
+     *        identical to 10 decimal places.
+     */
+    bool match( const vector<double> computedValue, 
+		const vector<double> refereneceValue );
+    
+    /*!
+     * \brief Returns true if the two values are identical to 10
+     *        decimal places. 
+     */
+    bool match( const double computedValue,
+		const double referenceValue );
+
 };
 
 } // end namespace rtt_cdi_test

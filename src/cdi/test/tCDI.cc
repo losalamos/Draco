@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// tCDI.cc
-// Kelly Thompson
-// Thu Jun 22 13:07:00 2000
-// $Id$
+/*!
+ * \file   cdi/test/tCDI.cc
+ * \author Kelly Thompson
+ * \date   Thu Jun 22 13:07:00 2000
+ * \brief  Implementation file for the CDI unit test.
+ */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 // revision history:
@@ -21,7 +23,6 @@
 
 #include <iostream>
 #include <vector>
-//#include <fstream>
 
 // Unit Test Frame Stuff
 //----------------------------------------
@@ -32,6 +33,7 @@ namespace rtt_UnitTestFrame {
 	return rtt_dsxx::SP<TestApp> ( new tCDI( argc, argv, os_in ));
     }
 } // end namespace rtt_UnitTestFrame
+
 
 // tCDI Stuff
 //--------------------------------------------------
@@ -57,39 +59,70 @@ string tCDI::version() const
 
 string tCDI::runTest()
 {
-    
     // Start the test.
     cout << endl
 	 << "Testing the CDI package."
 	 << endl;
 	
-    cout << endl
-	 << "Create SP to a Opacity object." << endl
-	 << endl;
-    
+    // Create an opacity object
     SP<rtt_cdi::Opacity> spOpacity;
-    spOpacity = new rtt_dummy_opacity::DummyOpacity();
+    if ( spOpacity = new rtt_dummy_opacity::DummyOpacity() )
+	pass() << "SP to opacity object created successfully.";
+    else
+	fail() << "Failed to create SP to opacity object.";
 
-    cout << endl
-	 << "Create SP to a CDI object." << endl
-	 << endl;
-    
+    // Create a CDI object linked to the opacity object    
     SP<CDI> spCDI_mat1;
-    spCDI_mat1 = new CDI( spOpacity );
+    if ( spCDI_mat1 = new CDI( spOpacity ) )
+	pass() << "SP to CDI object created successfully.";
+    else
+	fail() << "Failed to create SP to CDI object.";
 	
+    //----------------------------------------
+    // Start the tests
+    //----------------------------------------
+
     // do some dummy calls here to make sure things are working
-    //
-    // vector<double> opacities 
-    //    = spCDI_mat1->getGrayOpacity( double temp, 
-    //                                  double density);
+    // These values are actually ignored by DummyOpacity.
 
-	pass() << "Done testing CDI.";
+    double temp = 1.0;        // keV
+    double density = 27.0;    // g/cm^3
 
-	cout << endl << endl;
+    // --> Try to collect gray opacity data.
 
+    double grayOpacityReference = -1.0;  // cm^2/g
+    double grayOpacity 
+        = spCDI_mat1->getGrayOpacity( temp, density);
 
+    if ( match( grayOpacity, grayOpacityReference ) )
+	pass() << "Access to gray opacity data succeeded.";
+    else
+	fail() << "Access to gray opacity data failed.";
+
+    // --> Try to collect multigroup opacity data.
+
+    // In DummyOpacity ngroups is hard coded to 3.
+    vector<double> MGOpacitiesReference(3); // = { 1.0, 2.0, 3.0 }
+    for ( int i=0; i<3; ++i )
+	MGOpacitiesReference[i] = static_cast<double>(i+1);
+
+    vector<double> MGOpacities = spCDI_mat1->getMGOpacity( temp, density);
+
+    if ( match( MGOpacities, MGOpacitiesReference ) )
+	pass() << "Access to multigroup opacity data succeeded.";
+    else
+	fail() << "Access to multigroup data failed.";
+
+    //----------------------------------------
+    // End of tests
+    //----------------------------------------
+    
+    pass() << "Done testing CDI.";
+    cout << endl << endl;
+
+    //----------------------------------------
     // Print the test result.
-    // ----------------------------------------
+    //----------------------------------------
 
     if (passed()) {
 	pass() << "All tests passed.";
@@ -97,6 +130,58 @@ string tCDI::runTest()
     }
     return "Some tests failed.";
 }
+
+//---------------------------------------------
+// Compare Reference value to computed values
+//---------------------------------------------
+bool tCDI::match( const vector<double> computedValue, 
+		  const vector<double> referenceValue )
+{
+    // Start by assuming that the two quantities match exactly.
+    bool em = true;
+
+    // Compare items up to 10 digits of accuracy.
+    const double TOL = 1.0e-10;
+
+    // Test each item in the list
+    double absdiff = 0.0;
+    for ( int i=0; i<computedValue.size(); ++i )
+	{
+	    absdiff = fabs( ( computedValue[i] - referenceValue[i] )
+			    / referenceValue[i] );
+	    // If the comparison fails then change the value of "em"
+	    // and exit the loop.
+	    if ( absdiff > TOL )
+		{
+		    em = false;
+		    break;
+		}
+	}
+    return em;
+} // end of tCDI::match( vector<double>, vector<double> )
+
+bool tCDI::match( const double computedValue,
+		  const double referenceValue )
+{
+    // Start by assuming that the two quantities match exactly.
+    bool em = true;
+
+    // Compare items up to 10 digits of accuracy.
+    const double TOL = 1.0e-10;
+
+    // Calculate the absolute value of the relative difference between 
+    // the computed and reference values.
+    double absdiff = fabs( ( computedValue - referenceValue )
+			   / referenceValue );
+    
+    // If the comparison fails then change the value of "em" return
+    // the result;
+    if ( absdiff > TOL )
+	em = false;
+
+    return em;    
+
+} // end of tCDI::match( double, double )
 
 } // end namespace rtt_CDI_test
 
