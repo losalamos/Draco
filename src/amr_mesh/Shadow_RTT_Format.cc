@@ -34,6 +34,7 @@ namespace rtt_format
 
 // draco components
 using dsxx::SP;
+using rtt_shadow::opaque_pointers;
 
 extern "C" 
 {

@@ -35,6 +35,7 @@ namespace rtt_imc
 // draco components
 using dsxx::SP;
 using rtt_amr::CAR_CU_Mesh;
+using rtt_shadow::opaque_pointers;
 using std::string;
 
 extern "C" 

@@ -32,6 +32,7 @@ namespace rtt_amr
 {
 // draco components
 using dsxx::SP;
+using rtt_shadow::opaque_pointers;
 
 extern "C" 
 {

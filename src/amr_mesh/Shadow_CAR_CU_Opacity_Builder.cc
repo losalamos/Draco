@@ -35,6 +35,7 @@ using std::endl;
 using dsxx::SP;
 using rtt_amr::CAR_CU_Mesh;
 using rtt_amr::CAR_CU_Interface;
+using rtt_shadow::opaque_pointers;
 
 extern "C" 
 {

@@ -3,6 +3,9 @@
 
 #include <map>
 
+namespace rtt_shadow
+{
+
 using dsxx::SP;
 
 typedef long opaque_pointer_type;
@@ -13,8 +16,8 @@ class opaque_pointers
   public:
 
     typedef T value_type;
-    typedef T *pointer_type;
-    typedef T &reference;
+    typedef T * pointer_type;
+    typedef T & reference;
     
     static opaque_pointer_type insert(SP<T>);
 	// add t to list, return opaque pointer to it
@@ -41,14 +44,14 @@ class opaque_pointers
 	ptr_map object_pointers;
     };
 
-    static rep &get_rep();
+    static rep & get_rep();
 
-    static ptr_map &get_object_pointers()
+    static ptr_map & get_object_pointers()
     {
 	return get_rep().object_pointers;
     }
 
-    static opaque_pointer_type &get_next_avail()
+    static opaque_pointer_type & get_next_avail()
     {
 	return get_rep().next_avail;
     }
@@ -58,5 +61,7 @@ class opaque_pointers
 // include implementation
 
 #include "Shadow_Opaque_Pointers.t.hh"
+
+} // end namespace rtt_shadow
 
 #endif

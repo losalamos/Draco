@@ -35,6 +35,7 @@ using std::endl;
 // draco components
 using dsxx::SP;
 using rtt_format::RTT_Format;
+using rtt_shadow::opaque_pointers;
 
 extern "C" 
 {

@@ -1,9 +1,23 @@
+//----------------------------------*-C++-*----------------------------------//
+// Shadow_Opaque_Pointers.t.hh
+// Mark Gray (original) / B.T. Adams (modified to use smart pointers)
+// 1 Sep 99
+/*! 
+ * \file   amr_mesh/Shadow_Opaque_Pointers.t.hh
+ * \author Mark Gray/B.T. Adams
+ * \date   Wed 1 Sep 10:33:26 1999
+ * \brief  Header file for Shadow_Opaque_Pointers library.
+ */
+//---------------------------------------------------------------------------//
+// @> 
+//---------------------------------------------------------------------------//
+
 #include "Shadow_Opaque_Pointers.hh"
 #include <limits>
 #include "assert.h"
 
 template <class T>
-opaque_pointers<T>::rep &opaque_pointers<T>::get_rep()
+opaque_pointers<T>::rep & opaque_pointers<T>::get_rep()
 {
     static rep r;
     return r;
