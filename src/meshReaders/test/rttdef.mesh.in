@@ -70,7 +70,7 @@ cell_flags                     ! cell flags keyword
   1 material                   ! 1st cell flag type name
     1 control_rod              ! cell flag index, name
     2 shield                   !  
-  2 source                     ! 2nd cell flag type name
+  2 rad_source                 ! 2nd cell flag type name
     1 src_name1                ! cell flag index, name
     2 src_name2                !
 end_cell_flags                 ! end cell flags keyword

@@ -47,7 +47,7 @@ class TestRTT_Format : public rtt_UnitTestFrame::TestApp
 
     // MANIPULATORS
     
-    //Defaulted TestRTT_Format& operator=(const TestRTT_Format & rhs);
+    //Defaulted TestRTT_Format & operator=(const TestRTT_Format & rhs);
 
     // ACCESSORS
 
@@ -58,14 +58,37 @@ class TestRTT_Format : public rtt_UnitTestFrame::TestApp
   protected:
 
     std::string runTest();
-    
+
   private:
 
-    bool check_header(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_dims(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_node_flags(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_side_flags(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_cell_flags(const rtt_meshReaders::RTT_Format & mesh);
+    // DATA
+    enum Meshes {DEFINED};
+    // All nested class accessor function tests with the exception of 
+    // check_header and check_dims require that the Dims data has been
+    // properly processed, and use the verify_Dims member function to 
+    // query this data member to determine if this is true.
+    map<Meshes, bool> Dims_validated;
+
+    // ACCESSORS
+    bool verify_Dims(const rtt_meshReaders::RTT_Format & mesh, 
+		     const Meshes & meshtype)
+    {
+        // Verify that the Dims data was previously validated.
+        if (!Dims_validated.count(meshtype))
+	    check_dims(mesh, meshtype);
+	// Return the integrity state of the Dims data.        
+	return Dims_validated.find(meshtype)->second;
+    }
+    bool check_header(const rtt_meshReaders::RTT_Format & mesh, 
+		      const Meshes & meshtype);
+    bool check_dims(const rtt_meshReaders::RTT_Format & mesh, 
+		    const Meshes & meshtype);
+    bool check_node_flags(const rtt_meshReaders::RTT_Format & mesh, 
+			  const Meshes & meshtype);
+    bool check_side_flags(const rtt_meshReaders::RTT_Format & mesh, 
+			  const Meshes & meshtype);
+    bool check_cell_flags(const rtt_meshReaders::RTT_Format & mesh, 
+			  const Meshes & meshtype);
     bool check_node_data_ids(const rtt_meshReaders::RTT_Format & mesh);
     bool check_side_data_ids(const rtt_meshReaders::RTT_Format & mesh);
     bool check_cell_data_ids(const rtt_meshReaders::RTT_Format & mesh);
@@ -76,7 +99,8 @@ class TestRTT_Format : public rtt_UnitTestFrame::TestApp
     bool check_node_data(const rtt_meshReaders::RTT_Format & mesh);
     bool check_side_data(const rtt_meshReaders::RTT_Format & mesh);
     bool check_cell_data(const rtt_meshReaders::RTT_Format & mesh);
-    bool check_virtual(const rtt_meshReaders::RTT_Format & mesh);
+    bool check_virtual(const rtt_meshReaders::RTT_Format & mesh, 
+		       const Meshes & meshtype);
     bool check_connectivity(const rtt_meshReaders::RTT_Format & mesh);
 
     // IMPLEMENTATION
