@@ -398,11 +398,11 @@ void build_a_Spyramid()
     using std::sin;
     using std::atan;
 
-    SP<Parser> parser(new Parser("Pyramid_Input"));
+    SP<Parser> parser(new Parser("Spyramid_Input"));
     Spyramid_Builder builder(parser);
 
     // check some of the Spyramid_Builder properties; before build_Mesh, the
-    // coordinate system is two-dimensional.  After build_Mesh, it's 3D XYZ
+    // coordinate system is one-dimensional.  After build_Mesh, it's 3D XYZ
 
     // test cell region data
     {
@@ -436,8 +436,6 @@ void build_a_Spyramid()
     //build a Spyramid mesh
     SP<Pyramid_Mesh> mesh= builder.build_Mesh();
 
-
-
     //check defined surface source cells
     {
 	vector<vector<int> > ss(1);
@@ -467,8 +465,12 @@ void build_a_Spyramid()
 	if(cell_field[3] !=1001) ITFAILS;
 	if(cell_field[4] !=1001) ITFAILS;
     }
+
+    // check number of cells
+    if(builder.num_cells() !=5) ITFAILS;
+
     // <<<< now do some checks on the mesh itself >>>>
-    // (this is a different mesh than the simpel_one_cell_Pyramid_Mesh
+    // (this is a different mesh than the simple_one_cell_Spyramid_Mesh
     
 
     // check that the mesh returns proper coordinate system information
