@@ -447,6 +447,7 @@ void Particle_Buffer<PT>::buffer_census(Comm_Buffer &comm,
 {
   // check to make sure this Comm_Buffer isn't full
     Require (comm.n_part < buffer_s);
+    Require (comm.n_part >= 0);
 
   // calculate indices for the buffer
     int id = comm.n_part * (dsize + 1);
@@ -498,6 +499,7 @@ void Particle_Buffer<PT>::buffer_particle(Comm_Buffer &buffer,
 {
   // check to make sure this Comm_Buffer isn't full
     Require (buffer.n_part < buffer_s);
+    Require (buffer.n_part >= 0);
 
   // calculate indices for the buffer, remember the particle info required
   // during a timestep must also include the time left
@@ -549,6 +551,7 @@ Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Bank &bank) const
   // get the number of Particles in the Comm_Buffer
     int num_part = buffer.n_part;
     Require (num_part <= buffer_s);
+    Require (num_part >= 0);
 
   // set buffer counters
     int id = 0;

@@ -35,6 +35,7 @@
 #include "ds++/Assert.hh"
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 IMCSPACE
 
@@ -131,7 +132,22 @@ public:
     int num_cells() const { return procs_per_cell.size(); }
     int num_cells(int proc) const { return cells_per_proc[proc].size(); }
     int num_procs(int mcell) const { return procs_per_cell[mcell-1].size(); } 
+    
+
+  // diagnostics
+    void print(ostream &) const;
 };
+
+//---------------------------------------------------------------------------//
+// overloaded operators
+//---------------------------------------------------------------------------//
+
+template<class MT>
+ostream& operator<<(ostream &out, const Parallel_Builder<MT> &object)
+{
+    object.print(out);
+    return out;
+}
 
 //---------------------------------------------------------------------------//
 // INLINE FUNCTIONS FOR PARALLEL_BUILDER

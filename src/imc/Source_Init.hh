@@ -185,7 +185,7 @@ void Source_Init<MT,PT>::set_census(SP<typename Particle_Buffer<PT>::Census>
 
 template<class MT, class PT> inline
 SP<typename Particle_Buffer<PT>::Census> Source_Init<MT,PT>::get_census()
-    const
+    const 
 {
     return census;
 }

@@ -296,8 +296,8 @@ void Source_Init<MT,PT>::calc_ncen_init()
 {
   // first guess at census particles per cell
     Insist ((evoltot+esstot+eradtot) != 0, "You must specify some source!");
-    int ncenguess = static_cast<int>(eradtot) / (evoltot + esstot + eradtot) 
-	* npwant;
+    int ncenguess = static_cast<int>((eradtot) / (evoltot + esstot + eradtot) 
+	* npwant);
 
   // particles per unit energy
     double part_per_e;
@@ -365,7 +365,7 @@ void Source_Init<MT,PT>::write_initial_census(const MT &mesh,
 
 	  // create Particle
 	    SP<PT> particle = new PT(r, omega, ew, cell, random);
-	    
+
 	  // write particle to census
 	    census->push(particle);
 	}

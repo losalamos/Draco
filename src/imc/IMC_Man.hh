@@ -94,6 +94,10 @@ public:
 
   // do the output and end
     void output();
+
+  // print diagnostics
+    void cycle_dump() const;
+    void verbose_dump() const;	
 };
 
 //---------------------------------------------------------------------------//

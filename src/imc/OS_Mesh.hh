@@ -192,7 +192,7 @@ public:
     double dim(int d, int cell) const { return max(d, cell) - min(d, cell); }
 
   // diagnostic functions
-
+    void print(ostream &) const;
     void print(ostream &, int) const;
 
   // End_Verbatim 
@@ -240,8 +240,7 @@ public:
 
 inline ostream& operator<<(ostream &output, const OS_Mesh &object)
 {
-    for (int cell = 1; cell <= object.num_cells(); cell++)
-	object.print(output, cell);
+    object.print(output);
     return output;
 }
 

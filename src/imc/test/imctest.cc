@@ -15,14 +15,21 @@
 #include "c4/SpinLock.hh"
 #include <iostream>
 #include <iomanip>
-
-using IMC::OS_Mesh;
-using IMC::OS_Builder;
-using IMC::OS_Interface;
-using IMC::IMC_Man;
+#include <string>
+#include <vector>
 
 int main(int argc, char *argv[])
 {
+  // IMC namespace declarations
+    using IMC::OS_Mesh;
+    using IMC::OS_Builder;
+    using IMC::OS_Interface;
+    using IMC::IMC_Man;
+
+  // std namespace declarations
+    using std::string;
+    using std::vector;
+
   // init C4 stuff
     C4::Init(argc, argv);
 
@@ -34,20 +41,29 @@ int main(int argc, char *argv[])
     if (C4::node() == 0)
 	begin = C4::Wtime();
 
+  // determine command line arguments
+    vector<string> arguments(argc);
+    bool verbose = false;
+    int input;
+    for (int i = 0; i < argc; i++)
+	arguments[i] = argv[i];
+    for (int i = 0; i < argc; i++)
+    {
+      // get title
+	if (arguments[i] == "-i")
+	    input = i+1;
+      
+      // get verbosity string
+	if (arguments[i] == "-v")
+	    verbose = true;
+    }
+    arguments.resize(0);
+    
   // make a manager
-    IMC_Man<OS_Mesh, OS_Builder, OS_Interface> manager(true);
+    IMC_Man<OS_Mesh, OS_Builder, OS_Interface> manager(verbose);
 
-  // initialize on the host
-    manager.host_init(argv[1]);
-
-  // initialize the IMC processors
-    manager.IMC_init();
-
-  // run a timestpe
-    manager.step_IMC();
-
-  // regroup
-    manager.regroup();
+  // execute IMC
+    manager.execute_IMC(argv[input]);
 
   // ending time
     C4::gsync();

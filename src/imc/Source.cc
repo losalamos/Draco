@@ -263,8 +263,9 @@ SP<PT> Source<MT, PT>::get_census(double delta_t)
 template<class MT, class PT>
 void Source<MT, PT>::print(ostream &out) const
 {
-    out << "*** SOURCE DATA ***" << endl;
-    out << "-------------------" << endl;
+    out << endl;
+    out << ">>> SOURCE DATA <<<" << endl;
+    out << "===================" << endl;
 
   // numbers of each type of particle
     out << setw(25) << setiosflags(ios::right) << "Census Particles: "
@@ -295,9 +296,9 @@ void Source<MT, PT>::print(ostream &out) const
 	<< setw(15) << setiosflags(ios::right) << "Volume ew" 
 	<< setw(15) << setiosflags(ios::right) << "Surface ew" << endl;
     out.precision(3);
+    out.setf(ios::scientific, ios::floatfield);
     for (int i = 1; i <= nvol.get_Mesh().num_cells(); i++)
-	out << setw(10) << i << setw(15) << setiosflags(ios::scientific)
-	    << ew_vol(i) << setw(15) << setiosflags(ios::scientific)
+	out << setw(10) << i << setw(15) << ew_vol(i) << setw(15)
 	    << ew_ss(i) << endl;
 }
 	

@@ -11,9 +11,7 @@
 #include "imc/XYZCoord_sys.hh"
 #include "imc/Global.hh"
 #include <string>
-#include <sstream>
-#include <iostream>
-#include <fstream>
+#include <iomanip>
 #include <cstdio>
 
 IMCSPACE
@@ -27,10 +25,10 @@ using Global::min;
 // std necessities
 using std::string;
 using std::fill;
-using std::ofstream;
-using std::ifstream;
 using std::remove;
-using std::ostringstream;
+using std::endl;
+using std::setw;
+using std::ios;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -83,7 +81,6 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
     if (num_cells <= sinit.get_capacity())
     {
       // do full replication as we can fit the whole mesh on each processor
-	std::cout << " ** Doing full replication" << std::endl;
 	for (int proc = 0; proc < nodes(); proc++)
 	{
 	    for (int cell = 1; cell <= num_cells; cell++)
@@ -98,7 +95,6 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
     else if (num_cells == total_capacity)
     {
       // do full DD
-	std::cout << " ** Doing full DD" << std::endl;
 	int cell = 1;
 	for (int proc = 0; proc < nodes(); proc++)
 	{
@@ -118,7 +114,6 @@ void Parallel_Builder<MT>::parallel_topology(const MT &mesh,
     {
       // do DD/replication
 
-	std::cout << " ** Doing general DD/rep" << std::endl;
       // set up variables for cell replication
 	vector<int> cellrep(num_cells);
 	fill(cellrep.begin(), cellrep.end(), 0);
@@ -324,6 +319,8 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
     Recv (global_nvoltot, 0, 35);
     Recv (global_nsstot, 0, 36);
 
+    std::cout << "Ncentot is " << global_ncentot << " on proc " << node() << endl;
+
   // define the variables for Source construction
     typename MT::CCSF_int volrn(mesh);
     typename MT::CCSF_int nvol(mesh);
@@ -435,7 +432,7 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
     vector<Particle_Buffer<PT>::Comm_Buffer> cen_buffer(nodes());
 
   // loop to read census particles and send them
-    while (old_census->size());
+    while (old_census->size())
     {
       // get a particle from the old census
 	SP<PT> particle = old_census->top();
@@ -448,7 +445,6 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
       // in a cell, total number of census particles after which the
       // leftover particles are placed
 	offset = (ncen2proc[cell-1] + 1) * ncenleft[cell-1];
-
       // determine the processor to go to
 	if (num_placed_per_cell[cell-1] < offset)
 	    proc_index = num_placed_per_cell[cell-1] / 
@@ -495,6 +491,8 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
   // on the host
     if (num_to_send[0] > 0)
     {
+	std::cout << "Num to send to proc " << 0 << " is " 
+		  << num_to_send[0] << endl;
 	buffer.add_to_bank(cen_buffer[0], census_bank);
 	Check (cen_buffer[0].n_part == 0);
     }
@@ -504,18 +502,23 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
     {
 	if (num_to_send[proc] > 0)
 	{
+	    std::cout << "Num to send to proc " << proc << " is " 
+		      << num_to_send[proc] << endl;
 	    buffer.send_buffer(cen_buffer[proc], proc);
 	    cen_buffer[proc].n_part = 0;
 	    num_to_send[proc] = 0;  
 	}
     }
 
+    std::cout << "Sent census to the other processors" << endl;
   // send a final message to indicate completion
     for (int proc = 1; proc < nodes(); proc++)
     {
 	Check (cen_buffer[proc].n_part == 0);
+	cen_buffer[proc].n_part = -1;
 	buffer.send_buffer(cen_buffer[proc], proc);
     }
+    std::cout << "Census should be initialized now" << endl;
 
   // the old census should now be zero
     Ensure (old_census->size() == 0);
@@ -543,9 +546,9 @@ void Parallel_Builder<MT>::recv_census(const Particle_Buffer<PT> &buffer,
 	    buffer.recv_buffer(0); 
 
       // if the buffer has particles bankit, else stop this nonsense
-	if (cen_buffer->n_part > 0)
+	if (cen_buffer->n_part >= 0)
 	    buffer.add_to_bank(*cen_buffer, census_bank);
-	else if (cen_buffer->n_part == 0)
+	else if (cen_buffer->n_part < 0)
 	    receive = false;
 	else
 	    Insist(0, "Buffers are < 0 during census remap!");
@@ -1494,6 +1497,25 @@ Parallel_Builder<MT>::recv_Mat(SP<MT> mesh)
     return imc_mat;
 }
 
+//---------------------------------------------------------------------------//
+// diagnostics
+//---------------------------------------------------------------------------//
+
+template<class MT>
+void Parallel_Builder<MT>::print(ostream &out) const
+{
+    out << endl;
+    out << ">>> PARALLEL BUILD DATA <<<" << endl;
+    out << "===========================" << endl;
+
+  // check to see if we are on an IMC processor
+    if (cells_per_proc.size() == 0 && procs_per_cell.size() == 0)
+    {
+	out << " ** You are on an IMC processor, no topology here!" << endl;
+	return;
+    }
+}
+    
 CSPACE
 
 //---------------------------------------------------------------------------//
