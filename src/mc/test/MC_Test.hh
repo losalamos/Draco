@@ -10,9 +10,6 @@
 #ifndef __mc_test_MC_Test_hh__
 #define __mc_test_MC_Test_hh__
 
-#include "../Layout.hh"
-#include "../XYCoord_sys.hh"
-#include "../OS_Mesh.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <iostream>
