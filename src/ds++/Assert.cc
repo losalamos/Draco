@@ -11,8 +11,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <iostream.h>
-
 NAMESPACE_DS_BEG
 
 assertion::assertion( const char *cond, const char *file, int line )
