@@ -421,15 +421,14 @@ void gsync()
 
 int SHM_Send( void *buf, int size, int dest, int tag, int group )
 {
-//#if 0
 // Check to see if we can short circuit send this to an already pending async
 // receive posted by the dest node.
 
 #ifdef SHMDBG
-printf( "%d, pe_async_recvs_pending[%d]=%d\n",
-	C4_shm_mynode, dest, pe_async_recvs_pending[dest] );
+    printf( "%d, pe_async_recvs_pending[%d]=%d\n",
+	    C4_shm_mynode, dest, pe_async_recvs_pending[dest] );
 #endif
-//#if 0
+
     if (pe_async_recvs_pending[dest]) {
 	for( int i=0; i < C4_max_asyncs; i++ ) {
 	    Async_DB& adb = pe_posted_recv[dest][i];
@@ -449,23 +448,18 @@ printf( "%d, pe_async_recvs_pending[%d]=%d\n",
 
 		Insist( size <= adb.size,
 			"Receive buffer not large enough to send." );
-		cout << "size = " << size << " adb.size=" << adb.size << endl;
-		int words = size / 8 + ( size % 8 ? 1 : 0 );
+// 		cout << "size = " << size << " adb.size=" << adb.size << endl;
+// 		int words = size / 8 + ( size % 8 ? 1 : 0 );
 
 		printf( "%d preparing to send data to node %d:%x\n",
 			C4_shm_mynode, dest, adb.data );
 
-// 		shmem_put( (long *) adb.data, (long *) buf, words, dest );
 		shmem_putmem( adb.data, buf, size, dest );
-		shmem_int_put( (int *)adb.data, (int *)buf, 4, dest );
-		cout << "put the data, adjusting adb.state.\n";
+
 	    // Update the book keeping info.
 
 		adb.state = No_Longer_Pending;
 
-// 		shmem_put( (long *) &pe_async_recv_req[C4_shm_mynode][i],
-// 			   (long *) &adb, sizeof(Async_DB)/sizeof(double),
-// 			   dest );
 		shmem_putmem( (void *) &pe_async_recv_req[C4_shm_mynode][i],
 			      (void *) &adb, sizeof(Async_DB), dest );
 
@@ -477,7 +471,7 @@ printf( "%d, pe_async_recvs_pending[%d]=%d\n",
 	    }
 	}
     }
-//#endif
+
 // Okay, we couldn't short circuit send it to dest, so we'll have to wait for
 // it to be ready to receive "the normal way".
 
@@ -499,16 +493,8 @@ printf( "%d, pe_async_recvs_pending[%d]=%d\n",
 
 	hdr.length = size; hdr.tag = tag;
 
-// 	shmem_put( (long *) &pe_recv_buf[C4_shm_mynode],
-//  		   (long *) &hdr, 2, dest );
 	shmem_int_put( (int *) &pe_recv_buf[C4_shm_mynode],
 		       (int *) &hdr, 2, dest );
-
-// 	int words = size / 8 + ( size % 8 ? 1 : 0 );
-// 	Assert( words <= C4_max_buf_sz/8 );
-
-// 	shmem_put( (long*) &pe_recv_buf[C4_shm_mynode].data,
-//  		   (long *) buf, words, dest );
 
 	shmem_putmem( (void *) &pe_recv_buf[C4_shm_mynode].data,
 		      buf, size, dest );
@@ -520,12 +506,10 @@ printf( "%d, pe_async_recvs_pending[%d]=%d\n",
     // set msg_waiting flag in dest.
 
 	int one=1;
-// 	shmem_put( (long *) &pe_msg_waiting[C4_shm_mynode],
-// 		   (long *) &one, 1, dest );
 	shmem_int_put( (int *) &pe_msg_waiting[C4_shm_mynode],
 		       &one, 1, dest );
     }    
-//#endif
+
     return C4_SUCCESS;
 }
 
