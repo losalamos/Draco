@@ -112,15 +112,14 @@ void Extrinsic_Tracker_Builder::construction_implementation(
 
     int given_surface_number = interface.number_of_surfaces();
 
-    for (int surface = 1; surface <= given_surface_number; ++surface)
+    const vector<Surface_Descriptor>& surface_data(interface.get_surface_data());
+
+    for (int surface = 0; surface < given_surface_number; ++surface)
     {
 
 	global_surface_number++;
 
-	const Surface_Descriptor& descriptor = 
-	    interface.get_surface(surface);
-	
-	process_surface( descriptor );
+	process_surface( surface_data[surface] );
 	
     }
 

@@ -54,20 +54,17 @@ int seed = 395731;
 struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 {
 
-    Surface_Descriptor descriptor[3];
+    vector<Surface_Descriptor> descriptor;
 
-    std::vector<double> bin_cosines;
+    vector<double> bin_cosines;
 
     Surface_Tracking_Tester();
 
     int number_of_surfaces() const { return 3; }
-    const Surface_Descriptor& get_surface(int surface) const 
-    { 
-	Check(surface > 0); Check(surface <= 3);
-	return descriptor[surface-1]; 
-    }
 
-    const std::vector<double>& get_bin_cosines() const { return bin_cosines; }
+    const vector<Surface_Descriptor>& get_surface_data() const { return descriptor;}
+
+    const vector<double>& get_bin_cosines() const { return bin_cosines; }
     
     ~Surface_Tracking_Tester() { /* ... */ }
 
@@ -75,6 +72,7 @@ struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 
 Surface_Tracking_Tester::Surface_Tracking_Tester()
 {
+    descriptor.resize(3);
 
     descriptor[0].type = Surface_Descriptor::SPHERE;
     descriptor[0].data.resize(2);

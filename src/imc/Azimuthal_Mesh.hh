@@ -54,7 +54,7 @@ class Azimuthal_Mesh
 
     // CREATORS
     
-    //! default constructor
+    //! construct from a vector of cosines
     Azimuthal_Mesh(const std::vector<double>& cosines);
 
     //! construct from a Surface_Tracking_Interface

@@ -49,8 +49,9 @@ class Surface_Tracking_Interface
     //! Get the number of surfaces
     virtual int number_of_surfaces() const = 0;
     
-    //! Get the surface descriptor for the given surface
-    virtual const rtt_mc::Surface_Descriptor& get_surface(int surface) const = 0;
+    //! Get the entire vector of descriptors:
+    virtual const std::vector<rtt_mc::Surface_Descriptor>& get_surface_data() 
+	const = 0;
 
     //! Get the vector of angular bin data
     virtual const std::vector<double>& get_bin_cosines() const = 0;
