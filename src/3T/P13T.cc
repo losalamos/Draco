@@ -9,19 +9,16 @@
 #include "3T/P13T.hh"
 #include "radphys/RadiationPhysics.hh"
 #include "units/PhysicalConstants.hh"
+#include "timestep/ts_manager.hh"
+#include "timestep/field_ts_advisor.hh"
 #include <cmath>
 
 #include <iostream>
 using std::cerr;
 using std::endl;
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
+using XTM::P13T;
 
-BEGIN_NS_XTM
-    
 // CREATORS
 
 //---------------------------------------------------------------------------//
@@ -39,14 +36,44 @@ P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
 
 //---------------------------------------------------------------------------//
 // P13T:
-//     Copy constructor
+//     Constructor
 //---------------------------------------------------------------------------//
 
 template<class MT, class MP, class DS>
-P13T<MT, MP, DS>::P13T(const P13T<MT, MP, DS> &rhs)
-    : options(rhs.options), spMesh(rhs.spMesh)
+P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
+		       const SP<MeshType> &spMesh_,
+		       SP<ts_manager> &spTsManager_)
+    : options(options_), spMesh(spMesh_), spTsManager(spTsManager_)
 {
-    // empty
+    // Set up timestep advisors, and add them to the manager.
+
+    Require(spTsManager);
+
+    // We need to add a way to use non-default values on the construction
+    // of these advisors.
+
+    // We will make sure that they are not activated until used.
+	
+    spRadTsAdvisor = new field_ts_advisor("P13T Radiation Intensity");
+    spRadTsAdvisor->deactivate();
+	
+    spElecTsAdvisor = new field_ts_advisor("P13T Electron Temperature");
+    spElecTsAdvisor->deactivate();
+	
+    spIonTsAdvisor = new field_ts_advisor("P13T Ion Temperature");
+    spIonTsAdvisor->deactivate();
+	
+    spElecCondTsAdvisor = new field_ts_advisor("P13T Elec Conduction");
+    spElecCondTsAdvisor->deactivate();
+	
+    spIonCondTsAdvisor = new field_ts_advisor("P13T Ion Conduction");
+    spIonCondTsAdvisor->deactivate();
+
+    spTsManager->add_advisor(spRadTsAdvisor);
+    spTsManager->add_advisor(spElecTsAdvisor);
+    spTsManager->add_advisor(spIonTsAdvisor);
+    spTsManager->add_advisor(spElecCondTsAdvisor);
+    spTsManager->add_advisor(spIonCondTsAdvisor);
 }
 
 //---------------------------------------------------------------------------//
@@ -57,26 +84,22 @@ P13T<MT, MP, DS>::P13T(const P13T<MT, MP, DS> &rhs)
 template<class MT, class MP, class DS>
 P13T<MT, MP, DS>::~P13T()
 {
-    // empty
+    // If we have a timestep manager, we must remove the registered
+    // timestep advisors.
+    
+    if (spTsManager)
+    {
+	spTsManager->remove_advisor(spRadTsAdvisor);
+	spTsManager->remove_advisor(spElecTsAdvisor);
+	spTsManager->remove_advisor(spIonTsAdvisor);
+	spTsManager->remove_advisor(spElecCondTsAdvisor);
+	spTsManager->remove_advisor(spIonCondTsAdvisor);
+    }
 }
 
 
 
 // MANIPULATORS
-
-//---------------------------------------------------------------------------//
-// operator=:
-//   Assignment operator
-//---------------------------------------------------------------------------//
-
-template<class MT, class MP, class DS>
-P13T<MT, MP, DS>& P13T<MT, MP, DS>::operator=(const P13T &rhs)
-{
-    options = rhs.options;
-    spMesh = rhs.spMesh;
-    return *this;
-}
-
 
 //---------------------------------------------------------------------------//
 // setOptions:
@@ -148,7 +171,7 @@ P13T<MT, MP, DS>::solveElectConduction(double dt,
 
     Require(dt > 0.0);
     Require(matStateCC.getUnits() == matStateFC.getUnits());
-    
+
     // Let's save the temperatures at time t^n.
     
     ccsf TnElectron(spMesh);
@@ -186,6 +209,16 @@ P13T<MT, MP, DS>::solveElectConduction(double dt,
 
     matStateCC.getElectronSpecificHeat(Cv);
     electronEnergyDeposition = Cv * deltaTElectron;
+
+    // Let's activate and update the electron conduction timestep advisor.
+    
+    if (spElecCondTsAdvisor)
+    {
+	Assert(spTsManager);
+	spElecCondTsAdvisor->activate();
+	spElecCondTsAdvisor->update_tstep(*spTsManager, TnElectron,
+					  Tnp1Electron);
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -245,6 +278,15 @@ P13T<MT, MP, DS>::solveIonConduction(double dt,
 
     matStateCC.getIonSpecificHeat(Cv);
     ionEnergyDeposition = Cv * deltaTIon;
+
+    // Let's activate and update the ion conduction timestep advisor.
+    
+    if (spIonCondTsAdvisor)
+    {
+	Assert(spTsManager);
+	spIonCondTsAdvisor->activate();
+	spIonCondTsAdvisor->update_tstep(*spTsManager, TnIon, Tnp1Ion);
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -331,6 +373,25 @@ void P13T<MT, MP, DS>::solve3T(double dt,
     // Calculate the momentum deposition.
     momentumDeposition = 0.0;
 #endif
+
+    // Update and activate the timestep advisors.
+    
+    if (spTsManager)
+    {
+	Assert(spRadTsAdvisor);
+	Assert(spElecTsAdvisor);
+	Assert(spIonTsAdvisor);
+	
+	spRadTsAdvisor->activate();
+	spRadTsAdvisor->update_tstep(*spTsManager, prevStateField.phi,
+				     resultsStateField.phi);
+	
+	spElecTsAdvisor->activate();
+	spElecTsAdvisor->update_tstep(*spTsManager, TnElectron, Tnp1Electron);
+	
+	spIonTsAdvisor->activate();
+	spIonTsAdvisor->update_tstep(*spTsManager, TnIon, Tnp1Ion);
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -712,8 +773,6 @@ void P13T<MT, MP, DS>::getdBhatdT(const RadiationPhysics &radPhys,
     using XTM::PhysicalConstants::pi;
     dBhatdT *= 4.0*pi;
 }
-
-END_NS_XTM  // namespace XTM
 
 //---------------------------------------------------------------------------//
 //                              end of P13T.cc
