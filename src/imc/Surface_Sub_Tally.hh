@@ -63,9 +63,6 @@ class Surface_Sub_Tally
 
     // MANIPULATORS
     
-    //! Assignment operator for Surface_Sub_Tally
-    Surface_Sub_Tally& operator=(const Surface_Sub_Tally &rhs);
-
     //! Adds a crossing of given surface with given weight and direction.
     void add_to_tally(int surface, const std::vector<double>& direction, 
 		      bool outward, double ew);
