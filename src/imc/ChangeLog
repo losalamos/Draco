@@ -1,3 +1,10 @@
+2000-06-19  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* Source_Builder.*, DD_Source_Builder.*, Rep_Source_Builder.*:
+	Added topology-dependent functions to recalculate the post-comb
+	census energy-weights and a topology-independent function to reset 
+	the ew's in the census.
+
 2000-06-13  Thomas M. Evans  <tme@lanl.gov>
 
 	* Comm_Builder.*:  Updated the Comm_Builder class to use
