@@ -42,14 +42,6 @@ mips-sgi-irix6.*)
    dnl are built with 6.0.  If we are not using Lahey 6.2 provide a 
    dnl configure time error.
 
-   echo " "
-   echo "Diagnostics:"
-   which lf95
-   lf95 --version
-   printenv
-   echo "End Diagnostics"
-   echo " "
-
    AC_MSG_CHECKING("for EOSPAC v5.35 compatible version of F90")
    cdi_eospac_lf95=`which lf95`
    if test -z `echo ${cdi_eospac_lf95} | grep lf9562`; then

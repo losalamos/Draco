@@ -4441,9 +4441,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    # add -rpath for the compiler library (G++ as LD does not do this
    # automatically); this, unfortunately, may become host dependent
    # in the future
-   if test -n "${GCC_LIB_DIR}"; then
-       RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
-   fi
+   RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
@@ -9542,14 +9540,6 @@ _ACEOF
 _ACEOF
 
 
-
-   echo " "
-   echo "Diagnostics:"
-   which lf95
-   lf95 --version
-   printenv
-   echo "End Diagnostics"
-   echo " "
 
    echo "$as_me:$LINENO: checking \"for EOSPAC v5.35 compatible version of F90\"" >&5
 echo $ECHO_N "checking \"for EOSPAC v5.35 compatible version of F90\"... $ECHO_C" >&6

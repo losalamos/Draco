@@ -2790,9 +2790,7 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    # add -rpath for the compiler library (G++ as LD does not do this
    # automatically); this, unfortunately, may become host dependent
    # in the future
-   if test -n "${GCC_LIB_DIR}"; then
-       RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
-   fi
+   RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
