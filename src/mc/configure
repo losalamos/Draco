@@ -1013,7 +1013,7 @@ EOF
 
 
 	test_alltarget="$test_alltarget tstMath tstCoord tstOSMesh tstFields tstTopology \
-            tstParallel_Data_Op tstTET_Mesh"
+            tstParallel_Data_Op tstTET_Mesh tstSampler"
         
 	test_nprocs="1 2 4"
 
