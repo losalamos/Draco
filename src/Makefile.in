@@ -21,6 +21,13 @@ else
   EXIT = exit
 endif
 
+# Parallel flag
+
+ifndef nj
+nj	:= 1
+endif
+subnj	:= -j $(nj)
+
 .PHONY : all install installdirs clean distclean mostlyclean maintainer-clean \
 	check uninstall forced-distclean forced-maintainer-clean \
 	dvi
@@ -30,7 +37,8 @@ all: install
 install dvi: 
 	@for dir in ${subdirs} ; do \
 		if test -d "$${dir}" ; then \
-			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
+			(cd $${dir} && ${MAKE} dependencies) || ${EXIT}; \
+			(cd $${dir} && ${MAKE} $@ $(subnj)) || ${EXIT}; \
 		fi \
 	done
 
@@ -39,6 +47,8 @@ install dvi:
 check:
 	@for dir in ${subdirs} ; do \
 		if test -d "$${dir}" ; then \
+			(cd $${dir} && ${MAKE} dependencies) || ${EXIT}; \
+			(cd $${dir} && ${MAKE} $(subnj)) || ${EXIT}; \
 			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
 			(cd $${dir} && ${MAKE} install) || ${EXIT}; \
 		fi; \
