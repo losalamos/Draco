@@ -14,7 +14,7 @@
 dnl-------------------------------------------------------------------------dnl
 dnl ac_conf.m4
 dnl
-dnl Service macros used in configure.in's throughout Draco.
+dnl Service macros used in configure.ac's throughout Draco.
 dnl
 dnl Thomas M. Evans
 dnl 1999/02/04 01:56:19
@@ -37,7 +37,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_NEEDS_LIBS
 dnl
 dnl add DRACO-dependent libraries necessary for a package
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_NEEDS_LIBS, [dnl
@@ -55,7 +55,7 @@ AC_DEFUN(AC_NEEDS_LIBS, [dnl
    done
 
    # Keep a list of component dependencies free of other tags or paths.
-   DRACO_COMPONENTS="$1"
+   DEPENDENT_COMPONENTS="$1"
 
 ])
 
@@ -63,7 +63,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_NEEDS_LIBS_TEST
 dnl
 dnl add DRACO-dependent libraries necessary for a package test
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_NEEDS_LIBS_TEST, [dnl
@@ -81,7 +81,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_RUNTESTS
 dnl
 dnl add DRACO-package tests (default to use DejaGnu)
-dnl usage: in configure.in:
+dnl usage: in configure.ac:
 dnl AC_RUNTESTS(testexec1 testexec2 ... , {nprocs1 nprocs2 ... | scalar})
 dnl where serial means run as serial test only.
 dnl If compiling with scalar c4 then nprocs are ignored.
@@ -114,7 +114,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_INSTALL_EXECUTABLE
 dnl
 dnl where executables will be installed
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_INSTALL_EXECUTABLE, [ dnl
@@ -127,7 +127,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_INSTALL_LIB
 dnl
 dnl where libraries will be installed
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_INSTALL_LIB, [ dnl
@@ -144,7 +144,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_INSTALL_HEADERS
 dnl
 dnl where headers will be installed 
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_INSTALL_HEADERS, [ dnl
@@ -1511,7 +1511,14 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl Doxygen options
 
    AC_ARG_ENABLE(latex-doc,
-      [  --enable-latex-doc      built latex docs with doxygen (off by default)])
+      [  --enable-latex-doc      build latex docs with doxygen (off by default)],
+      [AC_SUBST(latex_yes_no,'YES')],
+      [AC_SUBST(latex_yes_no,'NO')])
+
+   AC_ARG_WITH(doc-output,
+      [  --with-doc-output=path  build documentation in path (prefix/documentation by default)],
+      [AC_SUBST(doxygen_output_top,${with_doc_output})],
+      [doxygen_output_top='DEFAULT'])
 
    dnl end of AC_DRACO_ARGS
 ])

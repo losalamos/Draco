@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="Blas.hh"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS LAPACK_LIB build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir doxygen_output doxygen_examples doxygen_input rel_doxygen_output rel_doxygen_examples rel_doxygen_input latex_yes_no dotpath number TAGFILES DOXYGEN_TAGFILES LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS LAPACK_LIB latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir TAGFILES DOXYGEN_TAGFILES doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output rel_doxygen_examples rel_doxygen_input rel_package_html dotpath number header_dir autodoc_dir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -834,7 +834,7 @@ Optional Features:
   --enable-32-bit         do 32-bit compilation (compiler dependent)
   --enable-64-bit         do 64-bit compilation (compiler dependent)
   --enable-draco-stdhdrs  use draco standard headers (off by default)
-  --enable-latex-doc      built latex docs with doxygen (off by default)
+  --enable-latex-doc      build latex docs with doxygen (off by default)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -860,6 +860,7 @@ Optional Packages:
   --with-libs=libs      add libs to \$LIBS
   --with-mips=1,2,3,4   set mips, mips4 by default (SGI ONLY)
   --with-stlport        replace default STL with stlPort (off by default)
+  --with-doc-output=path  build documentation in path (prefix/documentation by default)
 
 Some influential environment variables:
   CC
@@ -1401,7 +1402,7 @@ fi;
    done
 
    # Keep a list of component dependencies free of other tags or paths.
-   DRACO_COMPONENTS="ds++"
+   DEPENDENT_COMPONENTS="ds++"
 
 
 
@@ -1729,7 +1730,21 @@ fi;
    # Check whether --enable-latex-doc or --disable-latex-doc was given.
 if test "${enable_latex_doc+set}" = set; then
   enableval="$enable_latex_doc"
+  latex_yes_no='YES'
 
+else
+  latex_yes_no='NO'
+
+fi;
+
+
+# Check whether --with-doc-output or --without-doc-output was given.
+if test "${with_doc_output+set}" = set; then
+  withval="$with_doc_output"
+  doxygen_output_top=${with_doc_output}
+
+else
+  doxygen_output_top='DEFAULT'
 fi;
 
 
@@ -9775,26 +9790,30 @@ echo "$as_me: error: 'Could not find package top source directory'" >&2;}
 
 
 
-   #
-   # paths of package directories which are sources for doxygen
-   #
-
    doxygen_input=`cd ${srcdir}; pwd`
-   doxygen_examples=`cd ${srcdir}/test; pwd`
+   doxygen_examples=${doxygen_input}/test
+   package_html=${doxygen_output_top}/html
+
+      if test ${doxygen_output_top} = DEFAULT; then
+       doxygen_output_top="${prefix}/documentation"
+
+   fi
+
+
+
+   # For a component, the doxygen input is the srcdir
+
    localdir=`pwd`/autodoc
 
-   # XXX This will change with new destination definition.
-   doxygen_output_top="${prefix}/html"
-   doxygen_output="${doxygen_output_top}/${package}"
+   doxygen_html_output="${doxygen_output_top}/html/${package}"
+   doxygen_latex_output="${doxygen_output_top}/latex/${package}"
 
    #
    # compute relative paths from localdir
-   #
-
    for _lcl_i in \
-      localdir:doxygen_output:rel_doxygen_output \
       localdir:doxygen_examples:rel_doxygen_examples \
       localdir:doxygen_input:rel_doxygen_input\
+      doxygen_html_output:package_html:rel_package_html\
    ; do
   _lcl_from=\$`echo "$_lcl_i" | sed 's,:.*$,,'`
   _lcl_to=\$`echo "$_lcl_i" | sed 's,^[^:]*:,,' | sed 's,:[^:]*$,,'`
@@ -9888,18 +9907,15 @@ esac
   eval $_lcl_result_var='$_lcl_result_tmp'
 done
 
-   #
-   # add autodoc directory to doxygen input
-   #
+   # add autodoc directory under the source to doxygen input
    rel_doxygen_input="$rel_doxygen_input $rel_doxygen_input/autodoc"
 
-   #
-   # use relative paths for tag files also
-   #
+   # Get tags for other components in this package
+
    components=''
    echo "$as_me:$LINENO: checking for Doxygen component dependencies" >&5
 echo $ECHO_N "checking for Doxygen component dependencies... $ECHO_C" >&6
-   for comp in ${DRACO_COMPONENTS}; do
+   for comp in ${DEPENDENT_COMPONENTS}; do
        components="${components} ${comp}"
        TAGFILES="${TAGFILES} ${doxygen_output_top}/${comp}.tag"
        DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${doxygen_output_top}/${comp}.tag = ../${comp}\""
@@ -9907,11 +9923,16 @@ echo $ECHO_N "checking for Doxygen component dependencies... $ECHO_C" >&6
    echo "$as_me:$LINENO: result: ${components}" >&5
 echo "${ECHO_T}${components}" >&6
 
-   # check if we should build latex sources
-   latex_yes_no='NO'
-   if test "${enable_latex_doc:=no}" = yes ; then
-      latex_yes_no='YES'
-   fi
+
+
+
+
+
+   # XXX We will need to expand this to handle tag files in other
+   # packages too.
+
+   header_dir=${package_top_srcdir}/autodoc/html
+   autodoc_dir=${doxygen_input}/autodoc
 
    # find the release number
    number=draco-4_3_0
@@ -9934,7 +9955,10 @@ echo "${ECHO_T}$number" >&6
 
 
 
-                       ac_config_files="$ac_config_files autodoc/Makefile:../../config/Makefile.autodoc.in autodoc/doxygen_config:../../config/doxygen_config.in"
+
+
+
+                                           ac_config_files="$ac_config_files autodoc/Makefile:../../config/Makefile.autodoc.in autodoc/doxygen_config:../../config/doxygen_config.in autodoc/header.html:../../autodoc/html/header.html.in autodoc/footer.html:../../autodoc/html/footer.html.in"
 
 
 
@@ -10466,6 +10490,8 @@ do
   # Handling of arguments.
   "autodoc/Makefile" ) CONFIG_FILES="$CONFIG_FILES autodoc/Makefile:../../config/Makefile.autodoc.in" ;;
   "autodoc/doxygen_config" ) CONFIG_FILES="$CONFIG_FILES autodoc/doxygen_config:../../config/doxygen_config.in" ;;
+  "autodoc/header.html" ) CONFIG_FILES="$CONFIG_FILES autodoc/header.html:../../autodoc/html/header.html.in" ;;
+  "autodoc/footer.html" ) CONFIG_FILES="$CONFIG_FILES autodoc/footer.html:../../autodoc/html/footer.html.in" ;;
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile:../../config/Makefile.package.in" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile:../../config/Makefile.test.in" ;;
   "lapack_wrap/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS lapack_wrap/config.h:config.h.in" ;;
@@ -10554,6 +10580,8 @@ s,@ECHO_N@,$ECHO_N,;t t
 s,@ECHO_T@,$ECHO_T,;t t
 s,@LIBS@,$LIBS,;t t
 s,@LAPACK_LIB@,$LAPACK_LIB,;t t
+s,@latex_yes_no@,$latex_yes_no,;t t
+s,@doxygen_output_top@,$doxygen_output_top,;t t
 s,@build@,$build,;t t
 s,@build_cpu@,$build_cpu,;t t
 s,@build_vendor@,$build_vendor,;t t
@@ -10630,17 +10658,19 @@ s,@test_nprocs@,$test_nprocs,;t t
 s,@test_output_files@,$test_output_files,;t t
 s,@configure_command@,$configure_command,;t t
 s,@package_top_srcdir@,$package_top_srcdir,;t t
-s,@doxygen_output@,$doxygen_output,;t t
-s,@doxygen_examples@,$doxygen_examples,;t t
-s,@doxygen_input@,$doxygen_input,;t t
-s,@rel_doxygen_output@,$rel_doxygen_output,;t t
-s,@rel_doxygen_examples@,$rel_doxygen_examples,;t t
-s,@rel_doxygen_input@,$rel_doxygen_input,;t t
-s,@latex_yes_no@,$latex_yes_no,;t t
-s,@dotpath@,$dotpath,;t t
-s,@number@,$number,;t t
 s,@TAGFILES@,$TAGFILES,;t t
 s,@DOXYGEN_TAGFILES@,$DOXYGEN_TAGFILES,;t t
+s,@doxygen_input@,$doxygen_input,;t t
+s,@doxygen_examples@,$doxygen_examples,;t t
+s,@doxygen_html_output@,$doxygen_html_output,;t t
+s,@doxygen_latex_output@,$doxygen_latex_output,;t t
+s,@rel_doxygen_examples@,$rel_doxygen_examples,;t t
+s,@rel_doxygen_input@,$rel_doxygen_input,;t t
+s,@rel_package_html@,$rel_package_html,;t t
+s,@dotpath@,$dotpath,;t t
+s,@number@,$number,;t t
+s,@header_dir@,$header_dir,;t t
+s,@autodoc_dir@,$autodoc_dir,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

@@ -83,15 +83,7 @@ traversed in the order that is specified in the side set node
 ordering. The RTT_Format cell definitions do not assume any particular
 orientation of the sides relative to the problem coordinate system.
 
-<center>
-  <table>
-    <tr>
-      <td align=center valign=center>
-        <img src="../../draco/src/RTT_Format_Reader/doc/stdcell.jpg"> 
-      </td>
-    </tr>
-  </table>
-</center>
+\image html stdcell.jpg "Cell definitions"
 
 <!---------------------------------------------------------------------------->
 
