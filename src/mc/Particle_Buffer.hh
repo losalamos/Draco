@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   mc/Particle_Buffer.hh
- * \author Thomas M. Evans
+ * \author Thomas M. Evans and Mike Buksas
  * \date   Tue May 12 14:34:33 1998
  * \brief  Particle_Buffer and Particle_Stack header file.
  */
@@ -180,6 +180,9 @@ class Particle_Buffer
 
     // Check if buffer is empty.
     inline bool is_empty() const; 
+
+    // Check if buffer is full.
+    inline bool is_full() const;
 };
 
 //---------------------------------------------------------------------------//
@@ -239,8 +242,17 @@ template<class PT>
 bool Particle_Buffer<PT>::is_empty() const
 {
     // check to see if everything is empty
-    return (int_data[0] == 0 && int_data[1] == 0 && 
-	    packed_particles.size() == 0);
+    return (int_data[0] == 0 && int_data[1] == 0);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Check if buffer is full.
+ */
+template<class PT>
+bool Particle_Buffer<PT>::is_full() const
+{
+    return (int_data[0] == max_num_particles);
 }
 
 //---------------------------------------------------------------------------//

@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   mc/Particle_Buffer.t.hh
- * \author Thomas M. Evans
+ * \author Thomas M. Evans and Mike Buksas
  * \date   Tue May 12 14:34:34 1998
  * \brief  Particle_Buffer member function definitions.
  */
@@ -258,6 +258,8 @@ void Particle_Buffer<PT>::async_free()
     // reassigned with a post request before they can be received or tested 
     comm_int.free();
     comm_char.free();
+
+    Ensure (!comm_status());
 }
 
 //===========================================================================//

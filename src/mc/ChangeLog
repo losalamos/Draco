@@ -1,3 +1,8 @@
+2002-01-04  Thomas M. Evans  <tme@lanl.gov>
+
+	* Comm_Builder, Communicator: moved these two classes from imc to
+	mc.  Updated them to work with the new Particle_Buffer classes.
+
 2002-01-03  Thomas M. Evans  <tme@lanl.gov>
 
 	* Particle_Buffer, Particle_IO, Particle_Stack: moved

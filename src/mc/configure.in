@@ -29,7 +29,7 @@ AC_RUNTESTS(tstMath tstCoord tstLayout tstOSMesh tstFields \
             tstTopology tstParallel_Data_Op tstTET_Mesh    \
             tstSampler tstRZWedge_Mesh tstComm_Patterns    \
             tstOSMesh_Pack tstRZWedge_Mesh_Pack            \
-            tstParticle_Buffer, 1 2 4)
+            tstParticle_Buffer tstCommunicator, 1 2 4)
 
 dnl DRACO SETUP
 AC_DRACO_ENV

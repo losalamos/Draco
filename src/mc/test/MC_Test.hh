@@ -117,6 +117,9 @@ class Dummy_Particle
 
     // >>> TRANSPORT
     void transport(int = 0, double = 0.0, int = 0);
+
+    // >>> MODIFIERS
+    void set_cell(int c) { cell = c; }
 };
 
 } // end namespace rtt_mc_test
