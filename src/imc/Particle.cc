@@ -242,13 +242,9 @@ void Particle<MT>::Diagnostic::Print_alive(const Particle<MT> &particle) const
     output << setw(20) << setiosflags(ios::right) << "Cell: " << setw(12) 
 	   << particle.cell << endl;
     
-  // energy
-    output << setw(20) << setiosflags(ios::right) << "Energy: " << setw(12) 
-	   << particle.energy << endl;
-    
-  // weight
-    output << setw(20) << setiosflags(ios::right) << "Weight: " << setw(12) 
-	   << particle.weight << endl;
+  // energy-weight, ew
+    output << setw(20) << setiosflags(ios::right) << "Energy-weight: " 
+           << setw(12) << particle.ew << endl;
     
     output << endl;
 }
@@ -279,13 +275,9 @@ void Particle<MT>::Diagnostic::Print_dead(const Particle<MT> &particle) const
     output << setw(20) << setiosflags(ios::right) << "Last Cell: " 
 	   << setw(12) << particle.cell << endl;
     
-  // energy
-    output << setw(20) << setiosflags(ios::right) << "Last Energy: "
-	   << setw(12) << particle.energy << endl;
-    
-  // weight
-    output << setw(20) << setiosflags(ios::right) << "Last Weight: " 
-	   << setw(12) << particle.weight << endl;
+  // energy-weight, ew
+    output << setw(20) << setiosflags(ios::right) << "Last Energy-weight: "
+	   << setw(12) << particle.ew << endl;
 
     output << endl;
 }

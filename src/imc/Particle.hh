@@ -76,10 +76,9 @@ public:
     friend class Diagnostic;
 
 private:
-  // particle weight
-    double weight;
-  // particle energy
-    double energy;
+
+  // particle energy-weight
+    double ew;
   // particle location
     vector<double> r;
   // particle direction
@@ -115,9 +114,8 @@ private:
 
 public:
   // default constructor
-    Particle(const MT &mesh, long seed, double weight_, 
-	     double energy_)
-	:weight(weight_), energy(energy_), r(mesh.Coord().Get_dim(), 0.0), 
+    Particle(const MT &mesh, long seed, double ew_)
+	:ew(ew_), r(mesh.Coord().Get_dim(), 0.0), 
 	 omega(mesh.Coord().Get_sdim(), 0.0), cell(0), alive(true), 
 	 descriptor("born"), random(seed)
     {}
