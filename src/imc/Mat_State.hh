@@ -20,9 +20,8 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
-#include "OS_Mesh.hh"
-#include "SP.hh"
+#include "imctest/Names.hh"
+#include "ds++/SP.hh"
 #include <cassert>
 #include <iostream>
 

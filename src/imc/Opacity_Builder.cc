@@ -6,8 +6,7 @@
 // @> Opacity_Builder class implementation file
 //---------------------------------------------------------------------------//
 
-#include "Opacity_Builder.hh"
-#include "OS_Mesh.hh"
+#include "imctest/Opacity_Builder.hh"
 #include <cassert>
 
 IMCSPACE

@@ -6,9 +6,9 @@
 // @> XYZCoord_sys derived class implementation file
 //---------------------------------------------------------------------------//
 
-#include "XYZCoord_sys.hh"
-#include "Global.hh"
-#include "Random.hh"
+#include "imctest/XYZCoord_sys.hh"
+#include "imctest/Global.hh"
+#include "imctest/Random.hh"
 #include <iostream>
 #include <cmath>
 

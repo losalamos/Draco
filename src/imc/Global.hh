@@ -3,7 +3,7 @@
 // Thomas M. Evans
 // Fri Jan 30 16:23:53 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Global constant definitions
 //---------------------------------------------------------------------------//
 
 #ifndef __imctest_Global_hh__
@@ -22,7 +22,7 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
+#include "imctest/Names.hh"
 #include <iostream>
 #include <vector>
 #include <cmath>

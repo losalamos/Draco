@@ -6,9 +6,9 @@
 // @> XYCoord_sys derived class implementation file
 //---------------------------------------------------------------------------//
 
-#include "XYCoord_sys.hh"
-#include "Global.hh"
-#include "Random.hh"
+#include "imctest/XYCoord_sys.hh"
+#include "imctest/Global.hh"
+#include "imctest/Random.hh"
 #include <iostream>
 #include <cmath>
 

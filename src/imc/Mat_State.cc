@@ -6,7 +6,7 @@
 // @> Mat_State class implementation file
 //---------------------------------------------------------------------------//
 
-#include "Mat_State.hh"
+#include "imctest/Mat_State.hh"
 #include <iomanip>
 
 IMCSPACE

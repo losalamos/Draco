@@ -29,10 +29,10 @@
 // ie. a class which HoldsA/UsesA OS_Mesh accesses Layout and Coord_sys
 // through mesh; also, because CCSF and CCVF are all inline functions,
 // it needs to know the member functions of Layout and Coord_sys
-#include "Names.hh"
-#include "Coord_sys.hh"
-#include "Layout.hh"
-#include "SP.hh"
+#include "imctest/Names.hh"
+#include "imctest/Coord_sys.hh"
+#include "imctest/Layout.hh"
+#include "ds++/SP.hh"
 #include <vector>
 #include <algorithm>
 #include <cassert>

@@ -23,11 +23,11 @@ RM = rm
 
 objects = Layout.o OS_Builder.o OS_Mesh.o OS_Parser.o Opacity.o \
           Particle.o Random.o XYCoord_sys.o XYZCoord_sys.o \
-          Opacity_Builder.o Mat_State.o
+          Opacity_Builder.o Mat_State.o Opacity.o
 
 sources = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Parser.cc Opacity.cc \
           Particle.cc Random.cc XYCoord_sys.cc XYZCoord_sys.cc \
-          Opacity_Builder.cc Mat_State.cc
+          Opacity_Builder.cc Mat_State.cc Opacity.cc
 
 ##---------------------------------------------------------------------------##
 ## OBJECT FILE INCLUDE DEPENDENCIES
@@ -75,10 +75,11 @@ cleandep:
 vpath test%.cc test
 
 testbobj = testb.o OS_Builder.o OS_Mesh.o XYCoord_sys.o XYZCoord_sys.o \
-           Layout.o Random.o OS_Parser.o Opacity_Builder.o Mat_State.o
+           Layout.o Random.o OS_Parser.o Opacity_Builder.o Mat_State.o \
+           Opacity.o
 
 testbdep = OS_Parser.hh OS_Builder.hh OS_Mesh.hh Opacity_Builder.hh \
-           Mat_State.hh
+           Mat_State.hh Opacity.hh
 
 testb.o: $(testbdep)
 

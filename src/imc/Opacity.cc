@@ -6,7 +6,7 @@
 // @> Opacity class implementation file
 //---------------------------------------------------------------------------//
 
-#include "Opacity.hh"
+#include "imctest/Opacity.hh"
 #include <iomanip>
 
 IMCSPACE

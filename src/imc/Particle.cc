@@ -6,9 +6,8 @@
 // @> source file for Particle class
 //---------------------------------------------------------------------------//
 
-#include "Particle.hh"
-#include "OS_Mesh.hh"
-#include "Global.hh"
+#include "imctest/Particle.hh"
+#include "imctest/Global.hh"
 #include <iostream>
 #include <cmath>
 

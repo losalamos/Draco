@@ -6,8 +6,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "Random.hh"
-#include "Global.hh"
+#include "imctest/Random.hh"
+#include "imctest/Global.hh"
 
 IMCSPACE
 

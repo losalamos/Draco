@@ -20,11 +20,10 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
-#include "OS_Parser.hh"
-#include "Opacity.hh"
-#include "Mat_State.hh"
-#include "SP.hh"
+#include "imctest/Names.hh"
+#include "imctest/Opacity.hh"
+#include "imctest/Mat_State.hh"
+#include "ds++/SP.hh"
 #include <vector>
 
 IMCSPACE

@@ -3,7 +3,7 @@
 // Thomas M. Evans
 // Fri Jan 30 17:04:24 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Particle class header file
 //---------------------------------------------------------------------------//
 
 #ifndef __imctest_Particle_hh__
@@ -23,9 +23,9 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
-#include "Random.hh"
-#include "Opacity.hh"
+#include "imctest/Names.hh"
+#include "imctest/Random.hh"
+#include "imctest/Opacity.hh"
 #include <vector>
 
 IMCSPACE

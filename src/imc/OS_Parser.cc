@@ -6,7 +6,7 @@
 // @> OS_Parser class implementation file
 //---------------------------------------------------------------------------//
 
-#include "OS_Parser.hh"
+#include "imctest/OS_Parser.hh"
 #include <cassert>
 
 IMCSPACE

@@ -21,14 +21,14 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
-#include "Coord_sys.hh"
-#include "Layout.hh"
-#include "OS_Mesh.hh"
-#include "OS_Parser.hh"
+#include "imctest/Names.hh"
+#include "imctest/Coord_sys.hh"
+#include "imctest/Layout.hh"
+#include "imctest/OS_Mesh.hh"
+#include "imctest/OS_Parser.hh"
+#include "ds++/SP.hh"
 #include <vector>
 #include <string>
-#include "SP.hh"
 
 IMCSPACE
 

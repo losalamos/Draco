@@ -22,8 +22,8 @@
 // 
 //===========================================================================//
 
-#include "Names.hh"
-#include "Coord_sys.hh"
+#include "imctest/Names.hh"
+#include "imctest/Coord_sys.hh"
 #include <vector>
 
 IMCSPACE
