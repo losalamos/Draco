@@ -119,7 +119,7 @@ class Source_Builder
   public:
     // typedefs used in the inheritance chain
     typedef rtt_dsxx::SP<Source<MT,PT> >         SP_Source;
-    typedef typename Particle_Buffer<PT>::Census PB_Census
+    typedef typename Particle_Buffer<PT>::Census PB_Census;
     typedef rtt_dsxx::SP<PB_Census>              SP_Census;
     typedef rtt_dsxx::SP<Opacity<MT> >           SP_Opacity;
     typedef rtt_dsxx::SP<Mat_State<MT> >         SP_Mat_State;
