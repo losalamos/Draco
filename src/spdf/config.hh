@@ -19,14 +19,13 @@
 // appear to have bits ordered in the opposite direction, etc.
 
 #if defined(__alpha) && defined(__osf__)
-
 #define U32 unsigned int
-#define U64 unsigned long
-
+#define U64 unsigned long int
 #endif
 
 #if defined(__sgi)
 #define U32 unsigned int
+#define U64 unsigned long int
 #endif
 
 // Define default values for some unsigned types here.  Use ifndef since they
