@@ -201,6 +201,10 @@ operator==(const Vector_Lite<T, N> &a) const
 // basic arithmetic member functions, vector right-hand side
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Support for +=, Vector_Lite right-hand side
+ */
 template <class T, size_t N>
 Vector_Lite<T,N> &
 Vector_Lite<T, N>::
@@ -214,6 +218,10 @@ operator+=(const Vector_Lite<T, N> &a)
     return *this;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Support for -=, Vector_Lite right-hand side
+ */
 template <class T, size_t N>
 Vector_Lite<T,N> &
 Vector_Lite<T, N>::
@@ -227,6 +235,10 @@ operator-=(const Vector_Lite<T, N> &a)
     return *this;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Support for *=, Vector_Lite right-hand side
+ */
 template <class T, size_t N>
 Vector_Lite<T,N> &
 Vector_Lite<T, N>::
@@ -240,6 +252,10 @@ operator*=(const Vector_Lite<T, N> &a)
     return *this;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Support for /=, Vector_Lite right-hand side
+ */
 template <class T, size_t N>
 Vector_Lite<T,N> &
 Vector_Lite<T, N>::
@@ -257,6 +273,10 @@ operator/=(const Vector_Lite<T, N> &a)
 // basic arithmetic member functions, scalar right-hand side
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Support for +=, scalar right-hand side
+ */
 template <class T, size_t N>
 Vector_Lite<T,N> &
 Vector_Lite<T, N>::
@@ -270,6 +290,10 @@ operator+=(const T &a)
     return *this;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Support for -=, scalar right-hand side
+ */
 template <class T, size_t N>
 Vector_Lite<T,N> &
 Vector_Lite<T, N>::
@@ -283,6 +307,10 @@ operator-=(const T &a)
     return *this;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Support for *=, scalar right-hand side
+ */
 template <class T, size_t N>
 Vector_Lite<T,N> &
 Vector_Lite<T, N>::
@@ -296,6 +324,10 @@ operator*=(const T &a)
     return *this;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Support for /=, scalar right-hand side
+ */
 template <class T, size_t N>
 Vector_Lite<T,N> &
 Vector_Lite<T, N>::
@@ -313,6 +345,13 @@ operator/=(const T &a)
 // free functions
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Computes the inner product between two vectors.
+ * 
+ * \param a 1st vector.
+ * \param b 2nd vector.
+ */
 template <class T, size_t N>
 T inner_product(const Vector_Lite<T, N> &a,
 		const Vector_Lite<T, N> &b)
@@ -324,6 +363,10 @@ T inner_product(const Vector_Lite<T, N> &a,
 // global operators
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief \a a + \a b, element by element.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator+(const Vector_Lite<T, N> &a,
@@ -332,6 +375,10 @@ operator+(const Vector_Lite<T, N> &a,
     return Vector_Lite<T, N>(a) += b;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief \a a - \a b, element by element.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator-(const Vector_Lite<T, N> &a,
@@ -340,6 +387,10 @@ operator-(const Vector_Lite<T, N> &a,
     return Vector_Lite<T, N>(a) -= b;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief \a a * \a b, element by element.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator*(const Vector_Lite<T, N> &a,
@@ -348,6 +399,10 @@ operator*(const Vector_Lite<T, N> &a,
     return Vector_Lite<T, N>(a) *= b;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief \a a / \a b, element by element.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator/(const Vector_Lite<T, N> &a,
@@ -356,6 +411,10 @@ operator/(const Vector_Lite<T, N> &a,
     return Vector_Lite<T, N>(a) /= b;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief \a b added to all elements of \a a.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator+(const Vector_Lite<T, N> &a,
@@ -364,6 +423,10 @@ operator+(const Vector_Lite<T, N> &a,
     return Vector_Lite<T, N>(a) += b;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief \a a added to all elements of \a b.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator+(const T a,
@@ -372,6 +435,10 @@ operator+(const T a,
     return Vector_Lite<T, N>(b) += a;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief \a b subracted from all elements of \a a.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator-(const Vector_Lite<T, N> &a,
@@ -380,6 +447,10 @@ operator-(const Vector_Lite<T, N> &a,
     return Vector_Lite<T, N>(a) -= b;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief \a a subtracted from all elements of \a b.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator-(const T a,
@@ -388,6 +459,10 @@ operator-(const T a,
     return Vector_Lite<T, N>(b) -= a;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief \a b multiplied with all elements of \a a.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator*(const Vector_Lite<T, N> &a,
@@ -396,6 +471,10 @@ operator*(const Vector_Lite<T, N> &a,
     return Vector_Lite<T, N>(a) *= b;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief \a a multiplied with all elements of \a b.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator*(const T a,
@@ -404,6 +483,10 @@ operator*(const T a,
     return Vector_Lite<T, N>(b) *= a;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief \a b divided into all elements of \a a.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator/(const Vector_Lite<T, N> &a,
@@ -412,6 +495,10 @@ operator/(const Vector_Lite<T, N> &a,
     return Vector_Lite<T, N>(a) /= b;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief negates all of \a a.
+ */
 template <class T, size_t N>
 inline const Vector_Lite<T, N>
 operator-(const Vector_Lite<T, N> &a)

@@ -31,7 +31,7 @@ namespace rtt_dsxx
 
   An alternative to this class is boost::array (www.boost.org).  However,
   boost::array is an aggregate type, which has advantages (can use
-  intializers) and disadvantages (public data, cannot be a base class).
+  initializers) and disadvantages (public data, cannot be a base class).
   boost::array also doesn't do bounds checking.
   
   \param T Type of each array element.
@@ -124,34 +124,41 @@ class Vector_Lite
 	return (i >= 0 && static_cast<size_type>(i) < N);
     }
 
-    // ...overloaded versions.
-    // We need to overload to avoid automatic
-    // casts to either int or unsigned versions.
+    // Overload valid_index() to avoid automatic casts to either int or
+    // unsigned versions.
+
+    /// ... overloaded version.
     bool valid_index(const unsigned int i) const { return (i < N); }
 
+    /// ... overloaded version.
     bool valid_index(const long int i) const { return (i >= 0 && i < N); }
 
+    /// ... overloaded version.
     bool valid_index(const unsigned long int i) const { return (i < N); }
 
     // ACCESSORS
 
     // Indexing for int argument
 
+    /// Indexing using ()
     reference operator()(const int i)
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// const indexing using ()
     const_reference operator()(const int i) const
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// Indexing using []
     reference operator[](const int i)
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// const indexing using []
     const_reference operator[](const int i) const
     {
 	Require(valid_index(i)); return d_U[i];
@@ -159,21 +166,25 @@ class Vector_Lite
 
     // Indexing for unsigned int argument
 
+    /// ... overloaded version
     reference operator()(const unsigned int i)
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// ... overloaded version
     const_reference operator()(const unsigned int i) const
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// ... overloaded version
     reference operator[](const unsigned int i)
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// ... overloaded version
     const_reference operator[](const unsigned int i) const
     {
 	Require(valid_index(i)); return d_U[i];
@@ -181,21 +192,25 @@ class Vector_Lite
 
     // Indexing for long int argument
 
+    /// ... overloaded version
     reference operator()(const long int i)
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// ... overloaded version
     const_reference operator()(const long int i) const
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// ... overloaded version
     reference operator[](const long int i)
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// ... overloaded version
     const_reference operator[](const long int i) const
     {
 	Require(valid_index(i)); return d_U[i];
@@ -203,21 +218,25 @@ class Vector_Lite
 
     // Indexing for unsigned long int argument
 
+    /// ... overloaded version
     reference operator()(const unsigned long int i)
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// ... overloaded version
     const_reference operator()(const unsigned long int i) const
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// ... overloaded version
     reference operator[](const unsigned long int i)
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
+    /// ... overloaded version
     const_reference operator[](const unsigned long int i) const
     {
 	Require(valid_index(i)); return d_U[i];
@@ -225,18 +244,25 @@ class Vector_Lite
 
     // Iterator support
     
+    /// iterator begin
     iterator begin() { return d_U; }
 
+    /// const iterator begin
     const_iterator begin() const { return d_U; }
 
+    /// iterator end
     iterator end() { return d_U + N; }
 
+    /// const iterator end
     const_iterator end() const { return d_U + N; }
 
+    /// number of elements (\a N); for STL support
     size_type size() const { return N; }
 
+    /// max number of elements (\a N); for STL support
     size_type max_size() const { return N; }
 
+    /// true if \a N = 0; for STL support
     bool empty() const { return N == 0; }
 };
 
