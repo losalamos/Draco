@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------//
 
 #include "PreCond.cc"
+#include "Diffusion_XYZ.hh"
+#include "mesh/Mesh_XYZ.hh"
 
-//instantiate class T3_PreCond<float>
-instantiate class PreCond<double>
+instantiate class PreCond< Diffusion_XYZ<Mesh_XYZ> >

@@ -19,10 +19,17 @@
 // 
 //===========================================================================//
 
-template<class T>
-class PreCond : public PCG_PreCond<T> {
+template<class Solver>
+class PreCond : public PCG_PreCond<typename Solver::NumT>
+{
+    int ncp;
+    int method;
+    Solver *solver;
+
+    typedef typename Solver::NumT T;
 
   public:
+    PreCond( int ncp_, int m, Solver *p ) : ncp(ncp_), method(m), solver(p) {}
     void  Left_PreCond( Mat1<T>& x, Mat1<T>&b );
     void Right_PreCond( Mat1<T>& x, Mat1<T>&b );
 };

@@ -8,22 +8,41 @@
 
 #include "3T/PreCond.hh"
 
+#include "linalg/Banded_Matrix.hh"
+
 //---------------------------------------------------------------------------//
 // Solve QL * x = b for x.
 //---------------------------------------------------------------------------//
 
-template<class T>
-void PreCond<T>::Left_PreCond( Mat1<T>& x, Mat1<T>&b )
+template<class Solver>
+void PreCond<Solver>::Left_PreCond( Mat1<T>& x, Mat1<T>&b )
 {
-    x = b;
+    Banded_Matrix<double,7>& A = solver->get_A();
+
+    switch(method) {
+
+    case 0:
+    // This is "null preconditioning".
+        x = b;
+        break;
+
+    case 1:
+    // Here is Jacobi preconditioning ("diagonal scaling").
+        for( int i=0; i < ncp; i++ )
+            x(i) = b(i) / A(i,3);
+        break;
+
+    default:
+        throw "Unrecognized preconditioning option.";
+    }
 }
 
 //---------------------------------------------------------------------------//
 // Solve QR * x = b for x.
 //---------------------------------------------------------------------------//
 
-template<class T>
-void PreCond<T>::Right_PreCond( Mat1<T>& x, Mat1<T>&b )
+template<class Solver>
+void PreCond<Solver>::Right_PreCond( Mat1<T>& x, Mat1<T>&b )
 {
     x = b;
 }
