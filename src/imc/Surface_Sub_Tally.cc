@@ -102,20 +102,26 @@ void Surface_Sub_Tally::add_to_tally(int surface, const vector<double>& directio
 {
 
     Check ( ew > 0 );
-    Check ( surface > 0 ); Check ( surface <= surfaces );
+    Check ( surface > 0 ); 
+    Check ( surface <= surfaces );
 
     // Compute the index of the surface & direction in the tally.
     //    int surface_index = 2 * surface + static_cast<int>(is_outward);
+    //    0-based surface_index must be < number of tallies
     int surface_index = get_surface_index(surface, is_outward);
+
+    Check ( surface_index >= 0 ); 
+    Check ( surface_index < tallies );
 
     // Get the bin from the mesh object
     int bin = azimuthal_mesh->find_bin(direction);
+ 
+    Require ( bin >= 1 ); 
+    Require ( bin <= mesh_size );
 
     // Compute the index of the bin in the tally.
     int bin_index = bin - 1;
     
-    Require ( bin > 1); Require (bin <= mesh_size);
-
     weight_tally[surface_index][bin_index] += ew;
     count_tally[surface_index][bin_index] += 1;
 

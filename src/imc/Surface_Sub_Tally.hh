@@ -180,9 +180,15 @@ int Surface_Sub_Tally::crossings(int surface, bool outward, int bin) const
  */
 int Surface_Sub_Tally::get_surface_index(int surface, bool is_outward) const
 {
-    Check(surface > 0); Check(surface <= surfaces);
+    Check(surface > 0); 
+    Check(surface <= surfaces);
+
     int surface_index = 2 * (surface - 1) + static_cast<int>(is_outward);
-    Ensure(surface_index >= 0); Ensure(surface_index < tallies);
+
+    // 0-based surface_index must be < number of tallies
+    Ensure(surface_index >= 0); 
+    Ensure(surface_index < tallies);
+
     return surface_index;
 }
 
