@@ -1,0 +1,45 @@
+#-----------------------------------------------------------------------------#
+# P13T.nml
+# Randy M. Roberts
+# 12 Jun 1998
+#-----------------------------------------------------------------------------#
+# @> Specification of type, name, default value, and documentation for
+# @> various input parameters.
+#-----------------------------------------------------------------------------#
+
+block: P13T
+int	nsteps		10	# number of timesteps to P13T.
+
+double	dt		.01	# timestep.  What should this be, anyway?
+
+double  P1TauMultiplier 1.0     # 1.0 - P1, 0.0 - Diffusion
+
+bool    IsCoupledMaterial true  # flag whether radiation and material, coupled.
+
+String  opacityFile     ""
+String  materialName    ""
+int     materialId      -999
+double  abar            -999.9
+
+double  Te              .05     # initial elect temperature
+double  Ti              .05     # initial ion temperature
+double  rho             3.0     # density
+
+double  Qr              0.0
+double  Qe              0.0
+double  Qi              0.0
+
+double src_left         0.0
+double src_right        0.0
+double src_front        0.0
+double src_back         0.0
+double src_bottom       0.0
+double src_top          0.0
+
+int_set units astro
+si SI
+astro AstroPhysical
+
+#-----------------------------------------------------------------------------#
+#				end of P13T.nml
+#-----------------------------------------------------------------------------#

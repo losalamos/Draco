@@ -1,0 +1,46 @@
+$P13T
+	units=astro
+	nsteps=1
+	dt=1.0e6
+	P1TauMultiplier=0.0
+	IsCoupledMaterial=false
+	opacityFile="opac.const.inp"
+	materialName="H"
+	materialId=1
+	abar=1.0
+	Te=1.0
+	Ti=1.0
+	rho=10.0
+	src_bottom=1.0
+#	Qr = 1.0
+$
+
+$diffusion
+	alpha_bottom=.25  beta_bottom=-.5
+	alpha_top=.25 beta_top=-.5
+#	alpha_bottom=1  beta_bottom=0
+#	alpha_top=1 beta_top=0
+$
+
+$mesh
+	ncx=1 ncy=1 ncz=100
+	xmin=-.5 xmax=.5
+	ymin=-.5 ymax=.5
+	zmin=0.0 zmax=1.0
+$
+
+$pcg
+	itmeth=1		# basic
+	itmeth=6		# gmres
+	itmeth=11		# cg
+	levout=4
+	levout=0
+	levout=3
+	itsmax=1000
+	nwi=10000
+	nwf=10000000
+	ns2=10
+	zeta=1.0e-16
+	alpha=0.1
+$
+

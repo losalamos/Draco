@@ -273,30 +273,31 @@ void testFullP13T::run() const
     
     cout << "volume: " << volume << endl;
     
-    double rate;
+    double delta;
     ccsf temp(spmesh);
 
-    rate = sum(deltaRadEnergy)*volpcell;
-    cout << "deltaRadEnergy: " << rate
-	 << "\trate: " << rate/dt << endl;
+    delta = sum(deltaRadEnergy)*volpcell;
+    cout << "deltaRadEnergy: " << delta
+	 << "\trate: " << delta/dt << endl;
+    double radrate = delta/dt;
 
-    rate = sum(electEnergyDep)*volpcell;
-    cout << "electEnergyDep: " << rate
-	 << "\trate: " << rate/dt << endl;
+    delta = sum(electEnergyDep)*volpcell;
+    cout << "electEnergyDep: " << delta
+	 << "\trate: " << delta/dt << endl;
 
     temp = (TElec - TElect0)*CvElec;
-    rate = sum(temp)*volpcell;
+    delta = sum(temp)*volpcell;
     
-    // cout << "electEnergyDep (recalc): " << rate
-    //      << "\trate: " << rate/dt << endl;
+    // cout << "electEnergyDep (recalc): " << delta
+    //      << "\trate: " << delta/dt << endl;
 
-    rate = sum(ionEnergyDep)*volpcell;
-    cout << "  ionEnergyDep: " << rate
-	 << "\trate: " << rate/dt << endl;
+    delta = sum(ionEnergyDep)*volpcell;
+    cout << "  ionEnergyDep: " << delta
+	 << "\trate: " << delta/dt << endl;
 
-    rate = (sum(deltaRadEnergy) + sum(electEnergyDep) + sum(ionEnergyDep))
-           * volpcell / dt;
-    cout << "Energy rate: " << rate << endl;
+    delta = (sum(deltaRadEnergy) + sum(electEnergyDep) + sum(ionEnergyDep))
+           * volpcell;
+    cout << "Energy rate: " << delta/dt << endl;
 
     double qrate = (pdb.Qr + pdb.Qe + pdb.Qi)*volume;
 
@@ -332,22 +333,21 @@ void testFullP13T::run() const
     {
 	for (int l=0; l<ny; l++)
 	{
-	    if (diffdb.alpha_left != 0)
+	    if (diffdb.alpha_bottom != 0)
 	    {
-		double phi_left = (pdb.src_left -
-				   diffdb.beta_left*newRadState.F(k,l,0,0)) /
-		    diffdb.alpha_left;
-		leakage += phi_left/4.0 + newRadState.F(k,l,0,0)/2.0;
+		double phi_bottom =
+		    (pdb.src_bottom -
+		     diffdb.beta_bottom*newRadState.F(k,l,0,4)) /
+		    diffdb.alpha_bottom;
+		leakage += phi_bottom/4.0 + newRadState.F(k,l,0,4)/2.0;
 	    }
 
-	    if (diffdb.alpha_right != 0)
+	    if (diffdb.alpha_top != 0)
 	    {
-		double phi_right = (pdb.src_right -
-				    diffdb.beta_right
-				    *newRadState.F(k,l,nz-1,1)) /
-		    diffdb.alpha_right;
-
-		leakage += pdb.src_right + newRadState.F(k,l,nz-1,1)/2.0;
+		double phi_top = (pdb.src_top -
+				  diffdb.beta_top*newRadState.F(k,l,nz-1,5)) /
+		    diffdb.alpha_top;
+		leakage += phi_top/4.0 + newRadState.F(k,l,nz-1,5)/2.0;
 	    }
 	}
     }
@@ -355,11 +355,20 @@ void testFullP13T::run() const
 
     cout << "leakage (x-y): " << leakage << endl;
     
-    double balance = rate + leakage - totsrc;
-    cout << "Balance: " << balance << endl;
-    double relbal = balance / rate;
+    double balance = radrate + absorption + leakage - totsrc;
+    cout << "radrate + absorption + leakage: " <<
+	radrate + absorption + leakage << endl;
+    cout << "totsrc: " << totsrc << endl;
+    cout << "Rad only Balance: " << balance << endl;
+    double relbal = balance / radrate;
     cout << "Relative Balance: " << relbal << endl;
 
+    std::ofstream ofs("testFullP13T.dat");
+    for (int m=0; m<nz; m++)
+	ofs << m << '\t' << newRadState.phi(0,0,m)
+	    << '\t' << newRadState.F(0,0,m,4)
+	    << '\t' << newRadState.F(0,0,m,5)
+	    << endl;
 }
 
 //---------------------------------------------------------------------------//
