@@ -270,7 +270,7 @@ PACKAGE_VERSION=
 PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
-ac_unique_file="Units.hh"
+ac_unique_file="Release.hh"
 ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
@@ -1328,6 +1328,17 @@ package="units"
        DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
        DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
    done
+
+
+	test_alltarget="$test_alltarget tstUnitSystemEnums tstFundUnit tstUnitSystemType tstUnitSystem tstPhysicalConstants"
+
+	test_nprocs="1"
+
+	if test -z "${test_nprocs}" ; then
+	    { { echo "$as_me:$LINENO: error: \"No procs choosen for the tests!\"" >&5
+echo "$as_me: error: \"No procs choosen for the tests!\"" >&2;}
+   { (exit 1); exit 1; }; }
+        fi
 
 
 # Make sure we can run config.sub.
@@ -4286,10 +4297,22 @@ echo $ECHO_N "checking \"Setting library path of GNU compiler\"... $ECHO_C" >&6
    else
        GCC_BIN=`dirname ${GCC_BIN}`
        GCC_HOME=`dirname ${GCC_BIN}`
-       GCC_LIB_DIR="${GCC_HOME}/lib"
+
+       # Ensure that libraries exist at this location.  If we can't
+       # libstdc++.a at this location we leave GCC_LIB_DIR set to
+       # null and issue a warning.
+
+       if test -r ${GCC_HOME}/lib/libstdc++.a; then
+         GCC_LIB_DIR="${GCC_HOME}/lib"
+       fi
    fi
    echo "$as_me:$LINENO: result: \"${GCC_LIB_DIR}\"" >&5
 echo "${ECHO_T}\"${GCC_LIB_DIR}\"" >&6
+
+   if test -z ${GCC_LIB_DIR}; then
+       { echo "$as_me:$LINENO: WARNING: \"Could not determine location of gcc libraries. GCC_LIB_DIR is null\"" >&5
+echo "$as_me: WARNING: \"Could not determine location of gcc libraries. GCC_LIB_DIR is null\"" >&2;}
+   fi
 
    # do compiler configuration
    echo "$as_me:$LINENO: checking \"configuration of ${CXX}/${CC} compilers\"" >&5
@@ -5499,32 +5522,30 @@ echo "${ECHO_T}\"not needed\"" >&6
        # include path
        if test -n "${TRILINOS_INC}"; then
 	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}amesos    -I${TRILINOS_INC}aztecoo  -I${TRILINOS_INC}epetra"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}epetraext -I${TRILINOS_INC}ifpack   -I${TRILINOS_INC}komplex"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}nox       -I${TRILINOS_INC}triutils -I${TRILINOS_INC}y12m"
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
        fi
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        fi
@@ -6164,32 +6185,30 @@ echo "${ECHO_T}\"not needed\"" >&6
        # include path
        if test -n "${TRILINOS_INC}"; then
 	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}amesos    -I${TRILINOS_INC}aztecoo  -I${TRILINOS_INC}epetra"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}epetraext -I${TRILINOS_INC}ifpack   -I${TRILINOS_INC}komplex"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}nox       -I${TRILINOS_INC}triutils -I${TRILINOS_INC}y12m"
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
        fi
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        fi
@@ -6893,32 +6912,30 @@ echo "${ECHO_T}\"not needed\"" >&6
        # include path
        if test -n "${TRILINOS_INC}"; then
 	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}amesos    -I${TRILINOS_INC}aztecoo  -I${TRILINOS_INC}epetra"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}epetraext -I${TRILINOS_INC}ifpack   -I${TRILINOS_INC}komplex"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}nox       -I${TRILINOS_INC}triutils -I${TRILINOS_INC}y12m"
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
        fi
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        fi
@@ -7526,32 +7543,30 @@ echo "${ECHO_T}\"not needed\"" >&6
        # include path
        if test -n "${TRILINOS_INC}"; then
 	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}amesos    -I${TRILINOS_INC}aztecoo  -I${TRILINOS_INC}epetra"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}epetraext -I${TRILINOS_INC}ifpack   -I${TRILINOS_INC}komplex"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}nox       -I${TRILINOS_INC}triutils -I${TRILINOS_INC}y12m"
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
        fi
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        fi
@@ -8224,32 +8239,30 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        # include path
        if test -n "${TRILINOS_INC}"; then
 	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}amesos    -I${TRILINOS_INC}aztecoo  -I${TRILINOS_INC}epetra"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}epetraext -I${TRILINOS_INC}ifpack   -I${TRILINOS_INC}komplex"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}nox       -I${TRILINOS_INC}triutils -I${TRILINOS_INC}y12m"
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
        fi
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        fi
@@ -8810,32 +8823,30 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        # include path
        if test -n "${TRILINOS_INC}"; then
 	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}amesos    -I${TRILINOS_INC}aztecoo  -I${TRILINOS_INC}epetra"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}epetraext -I${TRILINOS_INC}ifpack   -I${TRILINOS_INC}komplex"
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}nox       -I${TRILINOS_INC}triutils -I${TRILINOS_INC}y12m"
+	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
        fi
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils -ly12m are the directories added
+   # -l${with_trilinos} -lepetra -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils -ly12m"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
    fi
 
        fi
@@ -9413,7 +9424,7 @@ echo "$as_me: error: \"Cannot figure out the platform or host!\"" >&2;}
 
 
 
-          ac_config_files="$ac_config_files Makefile:../../config/Makefile.package.in"
+                    ac_config_files="$ac_config_files Makefile:../../config/Makefile.package.in test/Makefile:../../config/Makefile.test.in"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -9939,6 +9950,7 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile:../../config/Makefile.package.in" ;;
+  "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile:../../config/Makefile.test.in" ;;
   "units/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS units/config.h:config.h.in" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
