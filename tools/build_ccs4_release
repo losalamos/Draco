@@ -2,124 +2,194 @@
 ##---------------------------------------------------------------------------##
 ## build_ccs4_release
 ##
-## Build draco releases in /codes/radtran/vendors/draco-#_#_# on the
-## CCS-4 Linux network.  Note, this only builds Linux versions:
+## Build draco or draco_client releases.  When provided a project
+## source directory this script will build optimized and debug
+## releases in a location relative to where this script is executed.
+## We recommend that this script be run from $project_dir/$pkg/tools
+## where $project_dir is one of the following:
 ##
-##   /codes/radtran/vendors/draco-#_#_#/Linux/debug
-##   /codes/radtran/vendors/draco-#_#_#/Linux/opt
+##    /codes/radtran/vendors/ccs4-package-#_#_#
 ##
-## This script should be run from 
+## on the CCS-4 Linux network or
 ## 
-##   /codes/radtran/vendors/draco-#_#_#/draco/tools
+##    /usr/projects/draco/ccs4-package-#_#_#
 ##
-## It will build the following directories:
+## on the LANL ICN network or from a home directory as a test build.
 ##
-##   /codes/radtran/vendors/draco-#_#_#/Linux/debug
-##   /codes/radtran/vendors/draco-#_#_#/Linux/opt
+##    $HOME/ccs4-package
 ##
+## $pkg is a directory that contains source code and is typically the
+## name of the CVS module (e.g.: "draco", "capsaicin", etc.)
 ##
-## It can actually be run on the CCS4 network in any directory:
-## 
-##   $DRACO_PREFIX/draco/tools
-## 
-## It will build in 
+## In all cases, the following directories will be created by this script:
 ##
-##   $DRACO_PREFIX/Linux/debug
-##   $DRACO_PREFIX/Linux/opt
+##   $project_dir/$arch/debug
+##   $project_dir/$arch/opt
 ##
-## Be warned that $DRACO_PREFIX/Linux (if it exists) will get
-## destroyed 
+## Be warned that $project_dir/$arch (if it exists) will be
+## destroyed by this script.
+##
+## USAGE:
+##
+##    cd tools
+##    ./build_draco_client_releases [--with-draco=PATH]
+##
+## When building Draco you should not include the --with-draco
+## argument.  When building a Draco client specify the installation
+## location for Draco.  For example to build capsaicin on the CCS-4
+## Linux LAN I would execute the following commands (with
+## $project_dir=/codes/radtran/vendors/capsaicin-3_7_2;
+## $pkg=capsaicin)
+##
+##    cd /codes/radtran/vendors
+##    mkdir capsaicin-3_7_2; cd capsaicin-3_7_2
+##    cvs -d sf:/cvsroot/capsaicin co -P -r capsaicin-3_7_2 capsaicin
+##    cd capsaicin/tools
+##    ./build_draco_client_release --with-draco=/codes/radtran/vendors/draco-2_4_0/Linux/opt >& ../build.log
+##
 ##---------------------------------------------------------------------------##
+
+## deterimine if this is draco or a client
+
+withdraco=$1
+
+if ! test -z "$withdraco"; then
+   argname=`echo $withdraco | sed -e 's/=.*//'`
+   dracodir=`echo $withdraco | sed -e 's/.*=//'`
+   if test "$argname" = "--with-draco"; then
+      if test -d $dracodir; then
+         mydir=`pwd`
+         cd $dracodir
+         dracodir=`pwd`
+         cd $mydir
+         withdraco="--with-draco=$dracodir"
+         echo "Will configure package using $withdraco"
+      else
+         echo "Request was made to build using --with-draco=$dracodir"
+         echo "but the directory \"$dracodir\" could not be found.  Aborting..."
+         exit 1
+      fi
+   else
+      echo "Unknown argument.  Usage..."
+      echo "   build_draco_client_release [--with-draco=PATH]"
+      echo "Aborting..."
+      exit 1
+   fi
+else
+   echo "It looks like you want to build and release Draco"
+   echo "and not a Draco client."
+fi
+
+## determine install directory names
+arch=`uname`
 
 ## determine version from argument
 
-draco_src=`cd ..; pwd`
-draco_home=`cd $draco_src/..; pwd`
-draco_debug="$draco_home/Linux/debug"
-draco_opt="$draco_home/Linux/opt"
+pkg_src=`cd ..; pwd`
+pkg_home=`cd $pkg_src/..; pwd`
+pkg_debug="$pkg_home/$arch/debug"
+pkg_opt="$pkg_home/$arch/opt"
 
-if test -d $draco_home/Linux ; then
-    echo ">>> Removing old $draco_home/Linux directory."
-    rm -rf $draco_home/Linux
+if test -d $pkg_home/$arch ; then
+    echo ">>> Removing old $pkg_home/$arch directory."
+    rm -rf $pkg_home/$arch
 fi
 
-echo ">>> Making $draco_home/Linux."
-mkdir $draco_home/Linux
-echo ">>> Making $draco_debug."
-mkdir $draco_debug
-echo ">>> Making $draco_opt."
-mkdir $draco_opt
+echo ">>> Making $pkg_home/$arch."
+mkdir $pkg_home/$arch
+echo ">>> Making $pkg_debug."
+mkdir $pkg_debug
+echo ">>> Making $pkg_opt."
+mkdir $pkg_opt
 
 ##---------------------------------------------------------------------------##
 
 ## options
 
-MPI="--with-c4=mpi"
-MPI_INC="--with-mpi-inc=/usr/local/mpich/include"
-MPI_LIB="--with-mpi-lib=/usr/local/mpich/lib"
+case "$arch" in
 
-SPRNG_INC="--with-sprng-inc=/codes/radtran/vendors/sprng/include"
-SPRNG_LIB="--with-sprng-lib=/codes/radtran/vendors/sprng/Linux/lib"
+Linux)
 
-PCG_LIB="--with-pcg-lib=/codes/radtran/vendors/pcg/Linux/lib"
+   MPI="--with-c4=mpi"
 
-LAPACK="--with-lapack=atlas"
-LAPACK_LIB="--with-lapack-lib=/codes/radtran/vendors/atlas/Linux/lib"
+   if test -z "$withdraco"; then
+     MPI_INC="--with-mpi-inc=/usr/local/mpich/include"
+     MPI_LIB="--with-mpi-lib=/usr/local/mpich/lib"
+ 
+     SPRNG_INC="--with-sprng-inc=/codes/radtran/vendors/sprng/include"
+     SPRNG_LIB="--with-sprng-lib=/codes/radtran/vendors/sprng/$arch/lib"
 
-GANDOLF_LIB="--with-gandolf-lib=/codes/radtran/vendors/gandolf/Linux"
+     PCG_LIB="--with-pcg-lib=/codes/radtran/vendors/pcg/$arch/lib"
+ 
+     LAPACK="--with-lapack=atlas"
+     LAPACK_LIB="--with-lapack-lib=/codes/radtran/vendors/atlas/$arch/lib"
 
-EOSPAC_LIB="--with-eospac-lib=/codes/radtran/vendors/eospac/Linux/lib"
+     GANDOLF_LIB="--with-gandolf-lib=/codes/radtran/vendors/gandolf/$arch"
 
-GRACE_INC="--with-grace-inc=/usr/local/grace/include"
-GRACE_LIB="--with-grace-lib=/usr/local/grace/lib"
+     EOSPAC_LIB="--with-eospac-lib=/codes/radtran/vendors/eospac/$arch/lib"
 
-VENDORS="$MPI $MPI_INC $MPI_LIB $SPRNG_INC $SPRNG_LIB $PCG_LIB $LAPACK"
-VENDORS="$VENDORS $LAPACK_LIB $GANDOLF_LIB $EOSPAC_LIB $GRACE_INC $GRACE_LIB"
+     GRACE_INC="--with-grace-inc=/usr/local/grace/include"
+     GRACE_LIB="--with-grace-lib=/usr/local/grace/lib"
+
+     VENDORS="$MPI $MPI_INC $MPI_LIB $SPRNG_INC $SPRNG_LIB $PCG_LIB $LAPACK"
+     VENDORS="$VENDORS $LAPACK_LIB $GANDOLF_LIB $EOSPAC_LIB $GRACE_INC $GRACE_LIB"
+   else
+     VENDORS="$MPI"
+   fi
+   ;;
+
+IRIX64)
+   ;;
+
+OSF1)
+   ;;
+
+esac
 
 ##---------------------------------------------------------------------------##
 
 ## debug
 
-if test ! -d $draco_debug ; then
-    echo "No $draco_debug directory exists! Exiting"
+if test ! -d $pkg_debug ; then
+    echo "No $pkg_debug directory exists! Exiting"
     exit
 fi
 
-cd $draco_debug
+cd $pkg_debug
 mkdir d
 cd d
 
-OPTIONS="--enable-shared"
-$draco_src/configure --prefix=$draco_debug $VENDORS $OPTIONS
+OPTIONS="--enable-shared $withdraco"
+$pkg_src/configure --prefix=$pkg_debug $VENDORS $OPTIONS
 gmake nj=2
 
-gmake check > $draco_debug/log
+gmake check > $pkg_debug/log
 
-cd $draco_debug
+cd $pkg_debug
 rm -rf d
 
-python $draco_src/tools/regression_filter.py < log
+python $pkg_src/tools/regression_filter.py < log
 
 ##---------------------------------------------------------------------------##
 
 ## opt
 
-if test ! -d $draco_opt ; then
-    echo "No $draco_opt directory exists! Exiting"
+if test ! -d $pkg_opt ; then
+    echo "No $pkg_opt directory exists! Exiting"
     exit
 fi
 
-cd $draco_opt
+cd $pkg_opt
 mkdir d
 cd d
 
-OPTIONS="--with-opt=3 --disable-debug --with-dbc=0 --enable-shared"
-$draco_src/configure --prefix=$draco_opt $VENDORS $OPTIONS
+OPTIONS="--with-opt=3 --disable-debug --with-dbc=0 --enable-shared $withdraco"
+$pkg_src/configure --prefix=$pkg_opt $VENDORS $OPTIONS
 gmake nj=2
 
-gmake check > $draco_opt/log
+gmake check > $pkg_opt/log
 
-cd $draco_opt
+cd $pkg_opt
 rm -rf d
 
-python $draco_src/tools/regression_filter.py < log
+python $pkg_src/tools/regression_filter.py < log
