@@ -86,7 +86,7 @@ cmplr	= k32
 endif
 
 ifeq ($(eta),yes)
-KCC	= /home/furnish/kcc3.3eta/KCC_BASE/bin/KCC -mips4 --backend -r10000 \
+KCC	= /v/furnish/kcc3.3eta/KCC_BASE/bin/KCC -mips4 --backend -r10000 \
 $(STRICT) -D_POSIX_SOURCE --one_per --backend -Wl,-woff,84	
 
 ifeq ($(bits),32)
