@@ -1,0 +1,6 @@
+1999-10-18  Thomas M. Evans  <tme@lanl.gov>
+
+	* Random.cc, Random.hh, Rnd_Control.cc, Rnd_Control.hh, Sprng.cc,
+	Sprng.hh: added doxygen comment blocks.  Updated minor release to
+	rng-1_1_0.
+
