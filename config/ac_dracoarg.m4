@@ -104,6 +104,46 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
       [  --with-posix[=num]      give posix source (system-dependent defaults)])
 
    dnl
+   dnl ADD TO CXXFLAGS
+   dnl
+   
+   dnl defines --with-cxxflags
+   AC_ARG_ENABLE(cxxflags,
+      [  --with-cxxflags[=flags] add flags to \$CXXFLAGS])
+
+   dnl
+   dnl ADD TO CFLAGS
+   dnl
+   
+   dnl defines --with-cflags
+   AC_ARG_ENABLE(cflags,
+      [  --with-cflags[=flags]   add flags to \$CFLAGS])
+
+   dnl
+   dnl ADD TO F90FLAGS
+   dnl
+   
+   dnl defines --with-f90flags
+   AC_ARG_ENABLE(f90flags,
+      [  --with-f90flags[=flags] add flags to \$F90FLAGS])
+
+   dnl
+   dnl ADD TO ARFLAGS
+   dnl
+   
+   dnl defines --with-arflags
+   AC_ARG_ENABLE(arflags,
+      [  --with-arflags[=flags]  add flags to \$ARFLAGS])
+
+   dnl
+   dnl ADD TO LDFLAGS
+   dnl
+   
+   dnl defines --with-ldflags
+   AC_ARG_ENABLE(ldflags,
+      [  --with-ldflags[=flags]  add flags to \$LDFLAGS])
+
+   dnl
    dnl CHOSE BIT COMPILATION ON SGI'S
    dnl
 
@@ -122,6 +162,10 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    if test "${with_mips}" = yes ; then
        with_mips='4'
    fi
+
+   dnl
+   dnl DRACO STANDARD HEADERS
+   dnl
 
    dnl defines --enable-draco-stdhdrs
    AC_ARG_ENABLE(draco-stdhdrs,

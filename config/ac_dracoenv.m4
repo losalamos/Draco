@@ -177,7 +177,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
       CPPFLAGS="${CPPFLAGS} "'-I${includedir}/stdheaders'
       AC_MSG_RESULT("CPPFLAGS modified")
    else
-     AC_MSG_RESULT("no") 
+      AC_MSG_RESULT("no") 
    fi
 
    # if with_f90 defined test with_f90 for compiler, and call setup
@@ -187,6 +187,41 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    if test "${with_f90+set}" = "set"   
    then
        AC_F90_ENV
+   fi
+
+   dnl add any additional flags
+
+   # add user defined cxxflags
+   if test "${with_cxxflags:=no}" != no ; then
+       CXXFLAGS="${with_cxxflags} ${CXXFLAGS}"
+   fi
+
+   # add user defined cflags
+   if test "${with_cflags:=no}" != no ; then
+       CFLAGS="${with_cflags} ${CFLAGS}"
+   fi
+
+   # add user defined f90flags
+   if test "${with_f90flags:=no}" != no ; then
+       F90FLAGS="${with_f90flags} ${F90FLAGS}"
+   fi
+
+   # add user defined ARFLAGS
+   if test "${with_arflags:=no}" != no ; then
+       ARFLAGS="${with_arflags} ${ARFLAGS}"
+   fi
+
+   # add user defined LDFLAGS
+   if test "${with_ldflags:=no}" != no ; then
+       LDFLAGS="${with_ldflags} ${LDFLAGS}"
+   fi
+
+   dnl throw message errors for poorly defined flags
+   
+   if test "${with_cxxflags}" = yes || test "${with_cflags}" = yes ||\
+      test "${with_f90flags}" = yes || test "${with_arflags}" = yes \
+      || test "${with_ldflags}" = yes ; then
+       AC_MSG_ERROR("Poor definition of user defined flags!")
    fi
    
    dnl check for ranlib
