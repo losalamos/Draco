@@ -1,0 +1,4 @@
+#include "mesh/Mesh_XYZ.hh"
+#include "Diffusion_XYZ.cc"
+
+instantiate class Diffusion_XYZ<Mesh_XYZ>
