@@ -13,6 +13,8 @@
 #define __cdi_gandolf_tCDIGandolf_hh__
 
 #include "UnitTestFrame/TestApp.hh"
+#include "ds++/SP.hh"
+#include "cdi/Opacity.hh"
 
 #include <vector>
 
@@ -79,6 +81,27 @@ class tCDIGandolf : public rtt_UnitTestFrame::TestApp
      */
     bool match( const double computedValue,
 		const double referenceValue );
+
+    // The CDIGandolf tests have been broken down in to smaller test
+    // routines.  The prototypes for these routines are listed here.
+    void testEnergyBoundaryAccessor( 
+	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity ); 
+    void testDensityGridAccessor( 
+	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity ); 
+    void testTemperatureGridAccessor( 
+	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity ); 
+    bool testMGPlankOpacityAccessorPassed(
+	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity ); 
+    bool testGrayPlankOpacityAccessorPassed(
+	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity ); 
+    bool testMGRosselandOpacityAccessorPassed(
+	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity,
+	const double temperature, const double density, 
+	const vector<double> tabulatedValues ); 
+    bool testGrayRosselandOpacityAccessorPassed(
+	const rtt_dsxx::SP<rtt_cdi::Opacity> spOpacity,
+	const double temperature, const double density, 
+	const double tabulatedValue ); 
 };
 
 } // end namespace rtt_cdi_gandolf_test
