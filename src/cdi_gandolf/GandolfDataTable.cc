@@ -36,54 +36,49 @@ namespace rtt_cdi_gandolf
     /*!
      * \brief GandolfData Table constructor.
      *
-     * \sa The constructor requires that the data state be completely
+     *     The constructor requires that the data state be completely
      *     defined.  With this information the DataTypeKey is set,
      *     then the data table sizes are loaded and finally the table
      *     data is loaded. 
      *
-     * \parameter _opacityEnergyDescriptor This string variable 
+     * \param opacityEnergyDescriptor This string variable 
      *     specifies the energy model { "gray" or "mg" } for the
      *     opacity data contained in this GandolfDataTable object. 
-     *     
-     * \parameter _opacityModel This enumerated value specifies the
+     * \param opacityModel This enumerated value specifies the
      *     physics model { Rosseland or Plank } for the opacity data
      *     contained in this object.  The enumeration is defined in
      *     GandolfOpacity.hh 
-     *
-     * \parameter _opacityReaction This enumerated value specifies the 
+     * \param opacityReaction This enumerated value specifies the 
      *     interaction model { total, scattering, absorption " for the 
      *     opacity data contained in this object.  The enumeration is
      *     defined in GandolfOpacity.hh
-     *
-     * \parameter _vKnownKeys This vector of strings is a list of
+     * \param vKnownKeys This vector of strings is a list of
      *     data keys that the IPCRESS file knows about.  This list is
      *     read from the IPCRESS file when a GandolfOpacity object is
      *     instantiated but before the associated GandolfDataTable
      *     object is created. 
-     *
-     * \parameter _matID The material identifier that specifies a
+     * \param matID The material identifier that specifies a
      *     particular material in the IPCRESS file to associate with
      *     the GandolfDataTable container.
-     *
-     * \parameter _spGandolfFile A DS++ SmartPointer to a GandolfFile
+     * \param spGandolfFile A DS++ SmartPointer to a GandolfFile
      *     object.  One GanolfFile object should exist for each
      *     IPCRESS file.  Many GandolfOpacity (and thus
      *     GandolfDataTable) objects may point to the same GandolfFile 
      *     object.  
      */
     GandolfDataTable::GandolfDataTable( 
- 	const std::string& _opacityEnergyDescriptor,
- 	const rtt_cdi::Model _opacityModel, 
-	const rtt_cdi::Reaction _opacityReaction,
-	const std::vector<std::string>& _vKnownKeys,
-	const int _matID,
-	const rtt_dsxx::SP< GandolfFile > _spGandolfFile )
-	: opacityEnergyDescriptor ( _opacityEnergyDescriptor ),
-	  opacityModel( _opacityModel ),
-	  opacityReaction( _opacityReaction ),
-	  vKnownKeys ( _vKnownKeys ),
-	  matID ( _matID ),
-	  spGandolfFile( _spGandolfFile ),
+ 	const std::string& in_opacityEnergyDescriptor,
+ 	rtt_cdi::Model in_opacityModel, 
+	rtt_cdi::Reaction in_opacityReaction,
+	const std::vector<std::string>& in_vKnownKeys,
+	int in_matID,
+	const rtt_dsxx::SP< const GandolfFile >& in_spGandolfFile )
+	: opacityEnergyDescriptor ( in_opacityEnergyDescriptor ),
+	  opacityModel( in_opacityModel ),
+	  opacityReaction( in_opacityReaction ),
+	  vKnownKeys ( in_vKnownKeys ),
+	  matID ( in_matID ),
+	  spGandolfFile( in_spGandolfFile ),
   	  gandolfDataTypeKey( "" ),
 	  dataDescriptor( "" ),
 	  numTemperatures( 0 ),
@@ -121,7 +116,7 @@ namespace rtt_cdi_gandolf
      *     "dataDescriptor" based on the values given for
      *     opacityEnergyDescriptor, opacityModel and opacityReaction.
      */
-    void GandolfDataTable::setGandolfDataTypeKey( )
+    void GandolfDataTable::setGandolfDataTypeKey( ) const
 	{
 	    // Build the Gandolf key for the requested data.  Valid
 	    // keys are:
@@ -239,7 +234,7 @@ namespace rtt_cdi_gandolf
      *     opacity opacity tables from the IPCRESS file.  Convert all
      *     tables (except energy boundaries) to log values.
      */
-    void GandolfDataTable::setGandolfDataTableSizes()
+    void GandolfDataTable::setGandolfDataTableSizes() const
 	{
 	    int idum, errorCode;
 	    // A different wrapper routine must be called for
@@ -285,7 +280,7 @@ namespace rtt_cdi_gandolf
      *     opacity opacity tables from the IPCRESS file.  Convert all
      *     tables (except energy boundaries) to log values.
      */
-    void GandolfDataTable::loadDataTable()
+    void GandolfDataTable::loadDataTable() const
 	{
 	    int errorCode;
 	    // A different wrapper routine must be called for
@@ -331,23 +326,23 @@ namespace rtt_cdi_gandolf
 		logOpacities[i] = log( logOpacities[i] );
 	}
 
-/*! 
-  * \brief This function returns "true" if "key" is found in the list
-  *        of "keys".  This is a static member function.
-  */
-template < typename T >
-bool GandolfDataTable::key_available( const T &key, 
-				      const std::vector<T> &keys ) const
-    {
-	// Loop over all available keys.  If the requested key
-	// matches one in the list return true.  If we reach the end
-	// of the list without a match return false.
-	for ( int i=0; i<keys.size(); ++i )
-	    if ( key == keys[i] ) return true;
-	return false;
-	
-    } // end of GandolfDataTable::key_available( string, vector<string> )
-
+    /*! 
+     * \brief This function returns "true" if "key" is found in the list
+     *        of "keys".  This is a static member function.
+     */
+    template < typename T >
+	bool GandolfDataTable::key_available( const T &key, 
+					      const std::vector<T> &keys ) const
+	{
+	    // Loop over all available keys.  If the requested key
+	    // matches one in the list return true.  If we reach the end
+	    // of the list without a match return false.
+	    for ( int i=0; i<keys.size(); ++i )
+		if ( key == keys[i] ) return true;
+	    return false;
+	    
+	} // end of GandolfDataTable::key_available( string, vector<string> )
+    
 } // end namespace rtt_cdi_gandolf
 
 //---------------------------------------------------------------------------//

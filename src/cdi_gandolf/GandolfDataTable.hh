@@ -57,14 +57,14 @@ class GandolfDataTable
      *     Possible values are rgray, ragray, rsgray, etc.  This key
      *     is provided to the Gandolf libraries as a data specifier.
      */
-    std::string gandolfDataTypeKey;
+    mutable std::string gandolfDataTypeKey;
 
     /*!
      * \brief A string that specifies the type of data being stored.
      *     This variables holds an English version of
      *     gandolfDataTypeKey. 
      */
-    std::string dataDescriptor;
+    mutable std::string dataDescriptor;
 
     /*!
      * \brief A string that specifies the energy model for the data
@@ -100,7 +100,7 @@ class GandolfDataTable
     /*!
      * \brief The GandolfFile object assocaiated with this data.
      */
-    const rtt_dsxx::SP< GandolfFile > spGandolfFile;
+    const rtt_dsxx::SP< const GandolfFile > spGandolfFile;
 
 
     // Data Sizes:
@@ -112,25 +112,25 @@ class GandolfDataTable
     /*!
      * \brief The number of temperature columns in the opacity table.
      */
-    int numTemperatures;
+    mutable int numTemperatures;
 
     /*!
      * \brief The number of density columns in the opacity table.
      */
-    int numDensities;
+    mutable int numDensities;
 
     /*!
      * \brief The number of energy group boundaries in the opacity
      *     table (this entry is not used for gray data).
     */
-    int numGroupBoundaries;
+    mutable int numGroupBoundaries;
 
     /*
      * \brief The number of entries in the opacity table.  This should 
      *     be equal to numTemperatures * numDensities *
      *     (numGroupBoundaries - 1).
      */
-    int numOpacities;
+    mutable int numOpacities;
 
 
     // Data Tables:
@@ -138,24 +138,24 @@ class GandolfDataTable
     /*!
      * \brief The temperature grid for this data set.
      */
-    std::vector<double> logTemperatures;
-    std::vector<double> temperatures;
+    mutable std::vector<double> logTemperatures;
+    mutable std::vector<double> temperatures;
 
     /*!
      * \brief The density grid for this data set.
      */
-    std::vector<double> logDensities;
-    std::vector<double> densities;
+    mutable std::vector<double> logDensities;
+    mutable std::vector<double> densities;
 
     /*!
      * \brief The energy group boundary grid for this data set.
      */
-    std::vector<double> groupBoundaries;
+    mutable std::vector<double> groupBoundaries;
 
     /*!
      * \brief The opacity data table.
      */
-    std::vector<double> logOpacities;
+    mutable std::vector<double> logOpacities;
 
   public:
 
@@ -169,37 +169,37 @@ class GandolfDataTable
      *     is set, then the data table sizes are loaded and finally
      *     the table data is loaded.
      *
-     * \param _opacityEnergyDescriptor This string variable 
+     * \param opacityEnergyDescriptor This string variable 
      *     specifies the energy model { "gray" or "mg" } for the
      *     opacity data contained in this GandolfDataTable object. 
-     * \param _opacityModel This enumerated value specifies the
+     * \param opacityModel This enumerated value specifies the
      *     physics model { Rosseland or Plank } for the opacity data
      *     contained in this object.  The enumeration is defined in
      *     GandolfOpacity.hh 
-     * \param _opacityReaction This enumerated value specifies the 
+     * \param opacityReaction This enumerated value specifies the 
      *     interaction model { total, scattering, absorption " for the 
      *     opacity data contained in this object.  The enumeration is
      *     defined in GandolfOpacity.hh
-     * \param _vKnownKeys This vector of strings is a list of
+     * \param vKnownKeys This vector of strings is a list of
      *     data keys that the IPCRESS file knows about.  This list is
      *     read from the IPCRESS file when a GandolfOpacity object is
      *     instantiated but before the associated GandolfDataTable
      *     object is created. 
-     * \param _matID The material identifier that specifies a
+     * \param matID The material identifier that specifies a
      *     particular material in the IPCRESS file to associate with
      *     the GandolfDataTable container.
-     * \param _spGandolfFile A DS++ SmartPointer to a GandolfFile
+     * \param spGandolfFile A DS++ SmartPointer to a GandolfFile
      *     object.  One GanolfFile object should exist for each
      *     IPCRESS file.  Many GandolfOpacity (and thus
      *     GandolfDataTable) objects may point to the same GandolfFile 
      *     object. 
      */    
-    GandolfDataTable( const std::string& _opacityEnergyDescriptor,
-		      const rtt_cdi::Model _opacityModel, 
-		      const rtt_cdi::Reaction _opacityReaction,
-		      const std::vector< std::string >& _vKnownKeys,
-		      const int _matID,
-		      const rtt_dsxx::SP< GandolfFile > _spGandolfFile );
+    GandolfDataTable( const std::string& opacityEnergyDescriptor,
+		      rtt_cdi::Model opacityModel, 
+		      rtt_cdi::Reaction opacityReaction,
+		      const std::vector< std::string >& vKnownKeys,
+		      int matID,
+		      const rtt_dsxx::SP< const GandolfFile >& spGandolfFile );
 
     // ACCESSORS
 
@@ -271,20 +271,20 @@ class GandolfDataTable
      *     "dataDescriptor" based on the values given for
      *     opacityEnergyDescriptor, opacityModel and opacityReaction.
      */
-    void setGandolfDataTypeKey();
+    void setGandolfDataTypeKey() const;
 
     /*!
      * \brief Load the table sizes from the IPCRESS file and resize
      *     the vector containers for the actual data tables. 
      */
-    void setGandolfDataTableSizes();
+    void setGandolfDataTableSizes() const;
 
     /*!
      * \brief Load the temperature, density, energy boundary and
      *     opacity opacity tables from the IPCRESS file.  Convert all
      *     tables (except energy boundaries) to log values.
      */
-    void loadDataTable();
+    void loadDataTable() const;
 
     /*!
      * \brief Search "keys" for "key".  If found return true,
