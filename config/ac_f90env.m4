@@ -274,7 +274,7 @@ AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
    if test "$F90FLAGS" = ""
    then
      # F90FLAGS="--f95 ${F90FREE}"
-       F90FLAGS="--f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
+       F90FLAGS="--staticlink --f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
 
        if test "${enable_debug:=no}" = yes
        then
