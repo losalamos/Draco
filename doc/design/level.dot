@@ -46,7 +46,6 @@ digraph draco_level {
     
     /* level 4 */
     rttread [shape=box, label="RTT_Format_Reader"];
-    amrmesh [shape=box, label="amr_mesh"];
 
     /* level 5 */
     mc [shape=box, label="mc"];
@@ -59,7 +58,7 @@ digraph draco_level {
     {rank=same; level1 stdheaders dsxx};
     {rank=same; level2 traits xm c4 rng units frame cdi};
     {rank=same; level3 viz radphys timestep quad meshread cdianal cdieos cdigan conjgrad pcg stop};
-    {rank=same; level4 rttread amrmesh};
+    {rank=same; level4 rttread};
     {rank=same; level5 mc meshservice};
     {rank=same; level6 imc};
     
@@ -96,8 +95,6 @@ digraph draco_level {
     /* level 4 */
     rttread     -> {meshread dsxx};
     rttread     -> {frame} [style=dotted];
-    amrmesh     -> {meshread c4 dsxx};
-    amrmesh     -> {frame} [style=dotted];
 
     /* level 5 */
     mc          -> {viz meshread rng c4 dsxx};
@@ -108,4 +105,3 @@ digraph draco_level {
     /* level 6 */
     imc         -> {mc viz meshread rng c4 dsxx};
 }
-      
