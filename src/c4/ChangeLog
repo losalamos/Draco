@@ -1,3 +1,8 @@
+2003-03-13  Thomas M. Evans  <tme@lanl.gov>
+
+	* c4: Updated to version 2_3_0.  This has some improvements made
+	by lowrie to the Timer class.
+
 2002-11-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* c4: Updated to version 2_2_0.  This change added flags to

@@ -9,25 +9,26 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __c4_Release_hh__
-#define __c4_Release_hh__
+#ifndef rtt_c4_Release_hh
+#define rtt_c4_Release_hh
 
 //===========================================================================//
 /*!
  *
  * \page c4_overview Overview of the C4 package
- * \version 2_0_0
+ * \version 2_3_0
  * \author Tom Evans, Todd Urbatsch, Geoff Furnish
 
  * The c4 package is a set of classes and functions that provide wrappers for
- * message passing functionality.  Currently supported are wrappers for MPI.
- * Wrappers for SHMEM are also included; however, they are no longer fully
- * supported.
+ * message passing functionality. 
  *
- * Plans are in place to wrap the Unified Parallel Services (UPS) library.
- * The c4 package will be undergoing significant modification for release
- * 2_0_0, due out sometime in 2001.
- *
+ * The basic functions provided by C4 sit in the C4_Functions.hh header.
+ * These are canonical forms of message passing functions.  c4 is set to
+ * either serial or mpi (as determined by the C4_MPI or C4_SCALAR macros).
+ * To use c4 include the following
+ * \code
+ * #include "c4/global.hh"
+ * \endcode
  */
 //===========================================================================//
 /*!
@@ -35,9 +36,8 @@
  *
  * \brief Namespace that contains c4 package classes and variables.
  *
- * This namespace is not fully in use yet.  The only c4 services provided in
- * this namespace are the rtt_c4::release functions.  Users should use the C4
- * namespace until further notice.
+ * The C4 namespace is now deprecated and only supports pre-c4-2_0_0
+ * functionality. 
  *
  */
 //===========================================================================//
@@ -51,7 +51,7 @@ const std::string release();
 
 }
 
-#endif                          // __c4_Release_hh__
+#endif                          // rtt_c4_Release_hh
 
 //---------------------------------------------------------------------------//
 //                              end of c4/Release.hh
