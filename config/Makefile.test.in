@@ -76,12 +76,11 @@ UNINSTALL    = rm -f
 CC     = @CC@
 CFLAGS = @CFLAGS@
 
-
 ##---------------------------------------------------------------------------##
 ## cpp preprocessor flags
 
 CPPFLAGS  = @CPPFLAGS@
-CPPFLAGS += -I. -I.. -I${includedir}
+CPPFLAGS += -I. -I.. -I${includedir} ${VENDOR_INC}
 
 ##---------------------------------------------------------------------------##
 ## C++ flags
@@ -138,6 +137,7 @@ PKG_DEPENDS         = @PKG_DEPENDS@
 DRACO_LIBS          = @DRACO_LIBS@
 DRACO_DEPENDS       = @DRACO_DEPENDS@
 
+VENDOR_INC          = @VENDOR_INC@
 VENDOR_LIBS         = @VENDOR_LIBS@
 VENDOR_DEPENDS      = @VENDOR_DEPENDS@
 

@@ -1,14 +1,15 @@
-dnl aclocal.m4 generated automatically by aclocal 1.4-p5
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-dnl Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
-dnl This file is free software; the Free Software Foundation
-dnl gives unlimited permission to copy and/or distribute it,
-dnl with or without modifications, as long as this notice is preserved.
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Free Software Foundation, Inc.
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
 
-dnl This program is distributed in the hope that it will be useful,
-dnl but WITHOUT ANY WARRANTY, to the extent permitted by law; without
-dnl even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-dnl PARTICULAR PURPOSE.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_dracoarg.m4
@@ -449,6 +450,39 @@ AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
        AC_MSG_WARN("No valid lp or lpr found!")
    fi
    AC_SUBST(LPFLAGS)
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND
+dnl
+dnl changes compiler from newmpxlC to newxlC so that tests can be run
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND], [dnl
+
+   # change compiler
+   if test "${CXX}" = newmpxlC; then
+       white_compiler='newmpxlC'
+       CXX='newxlC'
+       AC_MSG_WARN("Changing to ${CXX} compiler for configure tests.")
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND
+dnl
+dnl changes compiler back to newmpxlC
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND], [dnl
+
+   # change compiler back
+   if test "${white_compiler}" = newmpxlC; then
+       CXX='newmpxlC'
+       AC_MSG_WARN("Changing back to ${CXX} compiler.")
+   fi
 
 ])
 

@@ -132,13 +132,14 @@ AC_DEFUN(AC_DRACO_VENDOR_SETUP, [dnl
 
    AC_MSG_RESULT("${DRACO_INC} and ${DRACO_LIB} and ${libexecdir} set")
 
-   # add draco include directory to CPPFLAGS
+   # add draco include directory to VENDOR_INC
    if test -z "${draco_in_prefix}" ; then
-       CPPFLAGS="${CPPFLAGS} -I${DRACO_INC}"
+       VENDOR_INC="${VENDOR_INC} -I${DRACO_INC}"
    fi
 
    # add draco to VENDIR_DIRS
-   VENDOR_DIRS="${DRACO_LIB} ${VENDOR_DIRS}"
+   VENDOR_LIB_DIRS="${DRACO_LIB} ${VENDOR_LIB_DIRS}"
+   VENDOR_INC_DIRS="${DRACO_INC} ${VENDOR_INC_DIRS}"
 ])
 
 dnl-------------------------------------------------------------------------dnl

@@ -86,42 +86,28 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
 
        if test "${with_mpi}" = mpich ; then
-	   
-	   # define mpich libraries for v1.2 of mpich
-	   if test -n "${MPI_LIB}" ; then
-	       linux_mpi_libs="-L${MPI_LIB} -lmpich"
-	   elif test -z "${MPI_LIB}" ; then
-	       # if /usr/local/mpich/lib exists use it by default;
-	       # this is set as the default for the CCS-2/4 network;
-	       # it may not be appropriate on other LINUX networks;
-	       # in those cases, override with --with-mpi-lib
-	       if test -d /usr/local/mpich/lib ; then
-	           linux_mpi_libs="-L/usr/local/mpich/lib -lmpich"
-	       else
-		   linux_mpi_libs="-lmpich"
-	       fi
-	   fi
 
-	   # define the linux mpi libs
-	   AC_VENDORLIB_SETUP(vendor_mpi, ${linux_mpi_libs})
+	   # define mpi libs for mpich on linux
+	   mpi_libs='-lmpich'
+
+	   # if /usr/local/mpich/lib exists use it by default;
+	   # this is set as the default for the CCS-2/4 network;
+	   # it may not be appropriate on other LINUX networks;
+	   # in those cases, override with --with-mpi-lib
+	   if test -z "${MPI_LIB}" && test -d "/usr/local/mpich/lib"; then
+	       MPI_LIB='/usr/local/mpich/lib'
+	   fi
 
 	   # set the default include location on LINUX to
 	   # /usr/local/mpich/include; this is specific to the CCS-2/4
 	   # LINUX network; to override on other systems use
 	   # --with-mpi-inc on the configure line
 
-	   # if MPI_INC is undefined, then put in the explicit default
-	   # path if /usr/local/mpich/include exists
-	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include" ; then
-	       MPI_H="\"/usr/local/mpich/include/mpi.h\""
-	       AC_DEFINE_UNQUOTED(MPI_H, ${MPI_H})
+	   # if MPI_INC is undefined then define it
+	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include"; then
+	       MPI_INC='/usr/local/mpich/include'
 	   fi
 
-       fi
-
-       # shmem (not available on suns)
-       if test "${enable_shmem}" = yes ; then
-	   AC_MSG_ERROR("We do not support shmem on linux!")
        fi
 
        #
@@ -137,14 +123,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        # that has already been defined
 
        if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -llapack -lblas)
-	   elif test -z "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -llapack -lblas)
-	   fi
-
+	   lapack_libs='-llapack -lblas'
        fi 
 
        # 
@@ -195,6 +174,11 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	   AC_MSG_RESULT("not needed")
        fi
 
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes ; then
 
@@ -214,7 +198,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS}; 
+       for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc/icc then add xlinker
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
@@ -314,25 +298,30 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        # setup for mpi support
        # we only support vendor mpi on sgis       
        if test "${with_mpi}" = vendor ; then
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
-	   elif test -z "${MPI_LIB}" ; then
+	   
+	   # mpi library on sgi is mpi
+	   mpi_libs='-lmpi'
+
+	   # set up sgi mpi defaults
+	   if test -z "${MPI_LIB}" ; then
 	       if test "${enable_32_bit}" = no ; then
-		   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPT_SGI}/usr/lib64 -lmpi)
+		   MPI_LIB="${MPI_SGI}/usr/lib64"
 	       else
-		   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPT_SGI}/usr/lib32 -lmpi)
+		   MPI_LIB="${MPI_SGI}/usr/lib32"
 	       fi
 	   fi
+
        elif test "${with_mpi}" = mpich ; then
+
+	   # no mpich support on SGI
 	   AC_MSG_ERROR("We do not support mpich on the SGI yet!")
+
        fi
 
        # MPT (Message Passing Toolkit) for SGI vendor
-       # implementation of MPI and SHMEM
+       # implementation of MPI
        if test -z "${MPI_INC}" &&  test "${with_mpi}" = vendor ; then
-	   MPI_INC="${MPT_SGI}/usr/include/"	   
-	   MPI_H="\"${MPI_INC}mpi.h\""
-	   AC_DEFINE_UNQUOTED(MPI_H, ${MPI_H})
+	   MPI_INC="${MPT_SGI}/usr/include/"
        fi
 
        # add SGI MPT Specfic options
@@ -365,14 +354,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -lcomplib.sgimath)
-	   elif test -z "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -lcomplib.sgimath)
-	   fi
-
+	   lapack_libs='-lcomplib.sgimath'
        fi
 
        #
@@ -395,6 +377,11 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        # end of gandolf/libfortran setup
        #
 
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
 
@@ -411,7 +398,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS}; 
+       for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc then add xlinker
 	   if test "${CXX}" = g++; then
@@ -446,26 +433,18 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
        # setup communication packages
        #
-       
+
        # setup vendor mpi
        if test "${with_mpi}" = vendor ; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
-	   fi
+	   # define mpi libraries
+	   mpi_libs='-lmpi'
        
        # setup mpich
        elif test "${with_mpi}" = mpich ; then
 
-	   # set up libraries (the headers are already set)
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpich)
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpich)
-	   fi
+	   # define mpi libraries
+	   mpi_libs='-lmpich'
    
        fi
 
@@ -484,14 +463,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        if test "${with_lapack}" = vendor ; then
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -ldxml)
-	   elif test -z "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -ldxml)
-	   fi
-
+	   lapack_libs='-ldxml'
        fi
 
        #
@@ -515,6 +487,11 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        # end of gandolf/libfortran setup
        #
 
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
 
@@ -534,7 +511,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS}; 
+       for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc then add xlinker
 	   if test "${CXX}" = g++; then
@@ -621,7 +598,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	       LDFLAGS="${LDFLAGS} -Xlinker -brtl -Xlinker -bh:5"
 	   fi
 
-	   # turn of the rpath
+	   # turn off the rpath
 	   RPATH=''
        fi
 
@@ -634,15 +611,25 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	   if test "${with_mpi}" = vendor ; then
 
 	       # on asciwhite the newmpxlC compiler script takes care
-	       # of loading the mpi libraries
+	       # of loading the mpi libraries; since it will fail
+	       # if libraries are loaded and newmpxlC is used; throw
+	       # an error if it occurs
+	       if test "${with_cxx}" = asciwhite; then
+
+		   if test -n "${MPI_INC}" || test -n "${MPI_LIB}"; then
+		       AC_MSG_ERROR("Cannot set mpi paths with newmpxlC.")
+		   fi
+
+		   mpi_libs=''
+
+	       fi
 
 	       # set up libraries if we are on ibm
 	       if test "${with_cxx}" = ibm; then
-		   if test -n "${MPI_LIB}" ; then
-		       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
-		   elif test -z "${MPI_LIB}" ; then
-		       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
-		   fi
+
+		   # set up mpi library
+		   mpi_libs='-lmpi'
+
 	       fi
 
 	       # now turn on long long support if we are using the 
@@ -662,12 +649,8 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 	   # setup mpich
 	   elif test "${with_mpi}" = mpich ; then
 
-	       # set up libraries (the headers are already set)
-	       if test -n "${MPI_LIB}" ; then
-		   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpich)
-	       elif test -z "${MPI_LIB}" ; then
-		   AC_VENDORLIB_SETUP(vendor_mpi, -lmpich)
-	       fi
+	       # set up mpi libs
+	       mpi_libs='-lmpich'
    
 	   fi
 
@@ -681,6 +664,11 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        # we don't have the other vendors setup explicitly 
+
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
 
        # RPATH is derived from -L, don't need explicit setup
 
@@ -717,24 +705,15 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        # setup for mpi support
        # we only support mpich on sgis       
        if test "${with_mpi}" = vendor ; then
+
 	   AC_MSG_ERROR("We do not support vendor mpi on the SUN yet!")
+
        elif test "${with_mpi}" = mpich ; then
 	   
 	   # define sun-required libraries for mpich, v 1.0 (this
 	   # needs to be updated for version 1.2)
-	   sun_mpi_libs='-lpmpi -lmpi -lsocket -lnsl'
-   
-	   if test -n "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} ${sun_mpi_libs})
-	   elif test -z "${MPI_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_mpi, ${sun_mpi_libs})
-	   fi
+	   mpi_libs='-lpmpi -lmpi -lsocket -lnsl'
 
-       fi
-
-       # shmem (not available on suns)
-       if test "${enable_shmem}" = yes ; then
-	   AC_MSG_ERROR("We do not support shmem on suns!")
        fi
 
        #
@@ -746,21 +725,17 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        if test "${with_lapack}" = vendor ; then
-
-	   sun_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
-
-	   # if an lapack location was defined use it
-	   if test -n "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} ${sun_libs})
-	   elif test -z "${LAPACK_LIB}" ; then
-	       AC_VENDORLIB_SETUP(vendor_lapack, ${sun_libs})
-	   fi
-
+	   lapack_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
        fi
 
        #
        # end of lapack setup
        #
+
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
 
        # set -R when building shared library executables
        if test "${enable_shared}" = yes; then
@@ -769,7 +744,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_DIRS}; 
+       for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc/icc then add xlinker
 	   if test "${CXX}" = g++ || test "${CXX}" = icc; then

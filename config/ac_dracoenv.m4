@@ -253,12 +253,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    done
 
    dnl
-   dnl VENDOR MACRO DEFINITIONS
-   dnl
-
-   AC_VENDOR_DEFINES
-
-   dnl
    dnl ENVIRONMENT SUBSTITUTIONS
    dnl
 

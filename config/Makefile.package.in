@@ -81,7 +81,7 @@ CFLAGS = @CFLAGS@
 ## cpp preprocessor flags
 
 CPPFLAGS  = @CPPFLAGS@
-CPPFLAGS += -I. -I${includedir}
+CPPFLAGS += -I. -I${includedir} ${VENDOR_INC}
 
 ##---------------------------------------------------------------------------##
 ## C++ flags
@@ -134,6 +134,7 @@ LDFLAGS       += ${RPATH}
 DRACO_LIBS     = @DRACO_LIBS@
 DRACO_DEPENDS  = @DRACO_DEPENDS@
 
+VENDOR_INC     = @VENDOR_INC@
 VENDOR_LIBS    = @VENDOR_LIBS@
 VENDOR_DEPENDS = @VENDOR_DEPENDS@
 
