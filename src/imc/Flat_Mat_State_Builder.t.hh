@@ -211,7 +211,7 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray,
 	T           = mat_state->get_T(cell);
 	volume      = mesh->volume(cell);
 
-	Check (T      >  0.0);
+	Check (T      >= 0.0);
 	Check (dedT   >  0.0);
 	Check (volume >  0.0);
 
