@@ -3,7 +3,7 @@
 // Thomas M. Evans
 // Mon Apr 13 17:31:21 1998
 //---------------------------------------------------------------------------//
-// @> test executable to try out parallelism in IMCTEST
+// @> test executable to try out parallelism in IMCTEST.
 //---------------------------------------------------------------------------//
 
 #include "imctest/OS_Interface.hh"
@@ -113,7 +113,7 @@ void Builder_diagnostic(const MT &mesh,	const Opacity<MT> &opacity)
 int main(int argc, char *argv[])
 {    
   // init C4 stuff
-    Init(argc, argv);
+    C4::Init(argc, argv);
     mynode  = C4::node();
     mynodes = C4::nodes();
  
@@ -161,27 +161,35 @@ int main(int argc, char *argv[])
 	if (!mynode)
 	{
 	  // make parallel builder object to do my mesh decomposition
-	    pcomm = new Parallel_Builder<OS_Mesh>(*mesh, *sinit);
-	    pcomm->send_Mesh(*mesh);
+	  // 	    pcomm = new Parallel_Builder<OS_Mesh>(*mesh, *sinit);
+ 	    pcomm = new Parallel_Builder<OS_Mesh>();
+	    pcomm->parallel_params(*mesh, *sinit);
+	    Check (pcomm);
+	    Check (mesh);
+	    Check (opacity);
+            pcomm->send_Mesh(*mesh);
 	    pcomm->send_Opacity(*opacity);
 	    Builder_diagnostic(*mesh, *mat_state, *opacity);
 	    
 	  // print out salient quantities from Parallel_Builder
-	  // for (int i = 0; i < nodes(); i++)
-	//cout << setw(10) << i << setw(10) 
-	//     << pcomm->cells_per_proc[i].size() << endl;
+//          for (int i = 0; i < nodes(); i++)
+//              cout << setw(10) << i << setw(10) 
+//                   << pcomm->cells_per_proc[i].size() << endl;
 	}
 	
-//	if (mynode)
-//	{	
-//	  // make parallel builder object to receive objects
-//	    pcomm = new Parallel_Builder<OS_Mesh>();
-//	    mesh    = pcomm->recv_Mesh();
-//	    opacity = pcomm->recv_Opacity(mesh);
-//	}
-//   
-//	if (mesh) 
-//	    Builder_diagnostic(*mesh, *opacity);
+  	if (mynode)
+  	{	
+  	  // make parallel builder object to receive objects
+  	    pcomm = new Parallel_Builder<OS_Mesh>();
+	    Check (pcomm);
+  	    mesh    = pcomm->recv_Mesh();
+  	    opacity = pcomm->recv_Opacity(mesh);
+	    Check (mesh);
+	    Check (opacity);
+  	}
+     
+  	if (mesh) 
+  	    Builder_diagnostic(*mesh, *opacity);
 
     }
     catch (const dsxx::assertion &ass)
@@ -189,14 +197,14 @@ int main(int argc, char *argv[])
 	cout << "Dumbass, you screwed up: " << ass.what() << endl;
 	return 1;
     }
-    catch(...)
-    {
-	cout << "HELP ME" << endl;
-	return 1;
-    }
+//     catch(...)
+//     {
+// 	cout << "HELP ME" << endl;
+// 	return 1;
+//     }
 
   // c4 end
-    Finalize();
+    C4::Finalize();
 
   // we ran ok
     return 0;
