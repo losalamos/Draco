@@ -3,7 +3,7 @@
  * \file   test/tstMesh_Operations.cc
  * \author Thomas M. Evans
  * \date   Mon Dec 20 16:44:16 1999
- * \brief  Mesh_Operations test class
+ * \brief  Mesh_Operations test file.
  */
 //---------------------------------------------------------------------------//
 // $Id$

@@ -25,7 +25,7 @@ tstMesh_Operations_dep = tstMesh_Operations.o tstOpacity_pt.o
 tstTransporter_dep = tstTransporter.o tstTransporter_pt.o \
                      tstParticle_pt.o tstTally_pt.o \
                      tstTopology_Builder_pt.o
-
+tstCommunicator_dep = tstCommunicator.o tstCommunicator_pt.o
 
 tstOpacity: ${tstOpacity_dep}
 	${LD} ${LDFLAGS} -o $@ ${tstOpacity_dep} ${testlibs}
@@ -47,6 +47,9 @@ tstMesh_Operations: ${tstMesh_Operations_dep}
 
 tstTransporter: ${tstTransporter_dep}
 	${LD} ${LDFLAGS} -o $@ ${tstTransporter_dep} ${testlibs}
+
+tstCommunicator: ${tstCommunicator_dep}
+	${LD} ${LDFLAGS} -o $@ ${tstCommunicator_dep} ${testlibs}
 
 ###############################################################################
 #			 end of draco/src/imc/test Makefile.target
