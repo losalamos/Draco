@@ -449,12 +449,12 @@ testFullP13T::MatStateFC testFullP13T::getMatStateFC(const ccsf &TElect,
     oneCC = 1.0;
     
     fcdsf twoFC(spMesh);
-    MT::scatter<MT::AddOp>(twoFC, oneCC);
+    MT::scatter(twoFC, oneCC, MT::OpAddAssign());
 
-    MT::scatter<MT::AddOp>(TElectFC, TElect);
+    MT::scatter(TElectFC, TElect, MT::OpAddAssign());
     TElectFC /= twoFC;
 
-    MT::scatter<MT::AddOp>(TIonFC, TIon);
+    MT::scatter(TIonFC, TIon, MT::OpAddAssign());
     TIonFC /= twoFC;
 
     densityFC = density;
