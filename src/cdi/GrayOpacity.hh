@@ -15,7 +15,8 @@
 #include <vector>
 #include <string>
 
-#include "OpacityEnums.hh"
+#include "OpacityCommon.hh"  // Stuff that is common between Gray and
+                             // Multigroup.
 
 namespace rtt_cdi
 {

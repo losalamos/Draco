@@ -75,7 +75,9 @@ std::string tCDI::runTest()
     // Create some Opacity and CDI objects //
     // ----------------------------------- //
 
-    // Create a GrayOpacity object
+    // Create a GrayOpacity object - If you were creating a "real"
+    // opacity object (e.g. GandolfOpacity) you should wrap this in a
+    // try block.
 
     rtt_dsxx::SP< rtt_cdi::GrayOpacity > spDGrO;
     
@@ -88,7 +90,9 @@ std::string tCDI::runTest()
 	}
 
 
-    // Create a MultigroupOpacity object
+    // Create a MultigroupOpacity object  - If you were creating a "real"
+    // opacity object (e.g. GandolfOpacity) you should wrap this in a
+    // try block.
 
     rtt_dsxx::SP< rtt_cdi::MultigroupOpacity > spDMgO;
     
@@ -168,12 +172,8 @@ std::string tCDI::runTest()
 
      std::vector< double > vRefOpacity( ng );
      for ( int ig=0; ig<ng; ++ig )
-	 {
-	     vRefOpacity[ig] = 2.0*(temp+dens/1000.0)
-		 /(energyBoundary[ig]+energyBoundary[ig+1]);
-	     std::cout << "vRefOpacity[" << ig << "] = "
-		       << vRefOpacity[ig] << " cm^2/g." << std::endl;
-	 }
+	 vRefOpacity[ig] = 2.0*(temp+dens/1000.0)
+	     /(energyBoundary[ig]+energyBoundary[ig+1]);
 
      std::vector< double > vOpacity( ng );
      vOpacity = spCdiDumMg->mg()->getOpacity( temp, dens );

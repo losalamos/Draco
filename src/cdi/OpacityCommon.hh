@@ -14,6 +14,9 @@
 
 namespace rtt_cdi
 {
+    // This file provides access to datatypes that need to be
+    // available in both GrayOpacity and MultigroupOpacity.
+
     // --------------------- //
     // Enumerated data types //
     // --------------------- //

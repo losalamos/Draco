@@ -19,8 +19,9 @@
 namespace rtt_cdi
 {
 
-// CDI constructor:
-// Links the opacity object parameter to the CDI class.
+    // ---------------- //
+    // CDI constructors //
+    // ---------------- //
     
 CDI::CDI( const rtt_dsxx::SP< GrayOpacity > _spGrayOpacity )
     : spGrayOpacity( _spGrayOpacity )
@@ -42,7 +43,12 @@ CDI::CDI(  const rtt_dsxx::SP< GrayOpacity > _spGrayOpacity,
 	// empty
     }
 
-// Accessors
+    // --------- //  
+    // Accessors //
+    // --------- //
+
+// Provide CDI with access to the full interfaces defined by
+// GrayOpacity.hh and MultigroupOpacity.hh
 
 rtt_dsxx::SP< GrayOpacity > CDI::gray() { 
     return spGrayOpacity; }

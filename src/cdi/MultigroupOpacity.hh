@@ -15,7 +15,7 @@
 #include <vector>
 #include <string>
 
-#include "OpacityEnums.hh"
+#include "OpacityCommon.hh"
 
 namespace rtt_cdi
 {
