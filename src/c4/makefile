@@ -20,13 +20,13 @@ libsrcs = \
 	NodeInfo.cc \
         SpinLock.cc \
 	Sync.cc \
-	C4_Req.cc \
+	C4_Req.cc
+
+ifeq ($(threads),yes)
+libsrcs += \
 	ThreadGroupMember.cc \
 	ThreadControl.cc
-
-#        global_nt.cc \
-#	DeepBSwap.cc
-#	DeepObj.cc \
+endif
 
 # Add in the platform specific files
 
@@ -42,10 +42,6 @@ endif
 ifeq ($(c4),no)
 libsrcs	+= global_scalar.cc
 endif
-
-# Pathetic totalview can't handle this file, grrrrr.
-#        global.cc \
-#        global_shmem.cc \
 
 # Template definition files, for C-front systems.
 
@@ -86,8 +82,14 @@ include ../config/make.doc
 
 tstsrcs	:= $(wildcard t*.cc) c4run.cc
 
+# Exclude shmem-rewrite specific tests if not using the shmem rewrite.
 ifneq ($(c4),s2)
 tstsrcs := $(tstsrcs:tsr2.cc=)
+endif
+
+# Exclude the threaded tests if not using threads for this build.
+ifneq ($(threads),yes)
+tstsrcs := $(tstsrcs:tthrd1.cc=)
 endif
 
 tstpretarg := $(pretarg)
