@@ -28,7 +28,7 @@ class Surface_Tally;
 //===========================================================================//
 /*!
  * \class Surface_tracker
- * \brief
+ * \brief Detects particle paths which cross a collection of surfaces.
  *
  * Surface_tracker detects and tallies occasions when a path segment in
  * Cartesian space crosses any of a collection of abstract surfaces. It also
@@ -48,7 +48,7 @@ class Surface_Tally;
  * particle that surface crossing tallies are desired for.
  *
  * \sa Surface_tracker.cc for detailed descriptions.
- *
+ */
 /*! 
  * \example imc/test/imc_test.cc 
  * 

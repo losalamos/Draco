@@ -45,19 +45,6 @@ void Surface_tracker::initialize_status(const vector<double>& position,
 
 
 //---------------------------------------------------------------------------//
-/*! 
- * \brief 
- * 
- * \param vector<double> position
- * \param vector<double> direction
- * \param double distance
- * \param double initial_ew
- * \param double sigma
- * \param Surface_Tally tally
- * \return void
- */
-
-
 void Surface_tracker::tally_crossings(
     const vector<double>& position,
     const vector<double>& direction,

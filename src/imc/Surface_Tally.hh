@@ -25,7 +25,7 @@ class Azimuthal_Mesh;
 //===========================================================================//
 /*!
  * \class Surface_Tally
- * \brief
+ * \brief Records angular dependence and direction of particle tracings
  *
  * Long description or discussion goes here.  Information about Doxygen
  * commands can be found at:
@@ -73,6 +73,7 @@ class Surface_Tally
     //! Assignment operator for Surface_Tally
     Surface_Tally& operator=(const Surface_Tally &rhs);
 
+    //! Adds a crossing of given surface with given weight and direction.
     void add_to_tally(int surface, const std::vector<double>& direction, 
 		      bool outward, double ew);
 
@@ -95,9 +96,9 @@ class Surface_Tally
 
     rtt_dsxx::SP<Azimuthal_Mesh> the_mesh;
     std::vector<std::vector<double> > tally;
-    int mesh_size;
-    int surfaces;
-    int tallies;
+    int mesh_size;   //! number of bins in the azimuthal mesh
+    int surfaces;    //! number of surfaces
+    int tallies;     //! number of tallies
 
 
 };
